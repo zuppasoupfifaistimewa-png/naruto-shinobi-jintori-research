@@ -105,3 +105,12 @@ Pengguna memiliki kuota internet sangat terbatas sehingga upload ulang ROM/ISO s
 - Detail setup/eksperimen: [docs/EMULATOR_WORKFLOW.md](docs/EMULATOR_WORKFLOW.md), [docs/RUNTIME_TEST_PLAN.md](docs/RUNTIME_TEST_PLAN.md).
 - Dalam environment eksekusi yang digunakan pada sesi ini, tidak ditemukan executable emulator PS1 dan jaringan container gagal menyelesaikan DNS; emulator belum dapat dipasang/dijalankan. ROM tetap berhasil diambil dari Library, dan SHA-256 sama dengan catatan. Jadi belum ada hasil gameplay runtime dan jangan mengklaim sebaliknya.
 - Jangan meminta pengguna upload ulang ROM atau ISO sekitar 326 MB. Sumber file untuk analisis tetap Library; bila runtime memerlukan interaksi emulator yang tidak dapat dilakukan environment ini, gunakan prosedur tercatat dan simpan hanya log teks/screenshot yang diperlukan, tanpa mengunggah ROM, BIOS, save state, atau dump memori ke repo.
+
+
+## Emulator research kit — 2026-10-15
+
+- PCSX-Redux Linux x86_64 AppImage dipublikasikan sebagai Release asset (tidak masuk Git history): [Research Emulator release](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/research-emulator-pcsx-redux-2026-10-15). Asset: `PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage`, size 65.747.557 byte, SHA-256 `c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c`. Repo privat; chat baru perlu akses connector GitHub/repo untuk mengunduh asset.
+- Download, verifikasi hash dan best-effort Xvfb launcher check sukses pada GitHub Actions run [#38692549397](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/38692549397). Ini hanya menguji launcher, bukan game.
+- PCSX-Redux GUI menunjukkan “No BIOS loaded, emulation halted”. Workflow `.github/workflows/build-openbios.yml` sedang membangun pengganti BIOS open-source dari PCSX-Redux pinned commit `0c3572c3db75f97542001e453ae80ba8c3f8acba`. Cek Actions run #38693323975 lalu cek release tag yang sama untuk asset `openbios.bin` dan `OPENBIOS-SHA256SUMS`. Jangan mengunduh atau menyimpan retail Sony BIOS.
+- Launcher example setelah OpenBIOS tersedia: `pcsx-redux -bios /path/openbios.bin -interpreter -debugger -gdb -iso /path/game.cue -run`. File CUE harus berada bersama BIN dan menyebut nama BIN persis. Jangan meminta upload ulang ROM.
+- Dokumen prosedur: [docs/EMULATOR_WORKFLOW.md](docs/EMULATOR_WORKFLOW.md), [docs/RUNTIME_TEST_PLAN.md](docs/RUNTIME_TEST_PLAN.md).
