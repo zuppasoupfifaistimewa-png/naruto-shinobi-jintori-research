@@ -47,8 +47,9 @@ jobs:
           cp src/mips/openbios/openbios.bin "$GITHUB_WORKSPACE/dist/openbios/openbios.bin"
           cp src/mips/openbios/openbios.elf "$GITHUB_WORKSPACE/dist/openbios/openbios.elf"
 
-          # Experimental third variant: read the main EXE in 8-sector chunks
-          # and log each read result so a repeat test shows the exact stall point.
+          # Experimental third variant: read the main EXE one sector (2048 bytes) per call.
+          # The 1-sector test stalled in the first syscall_read; one sector matches
+          # the successfully completed header read and tests whether count>1 is the cause.
           ./dockermake.sh -C src/mips/openbios clean
           python3 - <<'PY'
           from pathlib import Path
@@ -60,13 +61,13 @@ jobs:
           new = """    uint32_t remaining = header->text_size;
               char *destination = (char *)header->text_addr;
               unsigned chunkIndex = 0;
-              psxprintf("[CHUNK8] begin text_size=%08x\\n", remaining);
+              psxprintf("[CHUNK1] begin text_size=%08x\\n", remaining);
               while (remaining > 0) {
-                  int chunk = remaining > (8 * 2048) ? (8 * 2048) : (int)remaining;
+                  int chunk = remaining > 2048 ? 2048 : (int)remaining;
                   uint32_t offset = header->text_size - remaining;
-                  psxprintf("[CHUNK8] before idx=%u offset=%08x bytes=%d\\n", chunkIndex, offset, chunk);
+                  if ((chunkIndex % 8) == 0) psxprintf("[CHUNK1] before idx=%u offset=%08x bytes=%d\\n", chunkIndex, offset, chunk);
                   int got = syscall_read(fd, destination, chunk);
-                  psxprintf("[CHUNK8] after idx=%u got=%d\\n", chunkIndex, got);
+                  if ((chunkIndex % 8) == 0 || got != chunk) psxprintf("[CHUNK1] after idx=%u got=%d\\n", chunkIndex, got);
                   if (got != chunk) {
                       syscall_close(fd);
                       return 0;
@@ -75,7 +76,7 @@ jobs:
                   remaining -= chunk;
                   chunkIndex++;
               }
-              psxprintf("[CHUNK8] done chunks=%u\\n", chunkIndex);"""
+              psxprintf("[CHUNK1] done chunks=%u\\n", chunkIndex);"""
           if original.count(old) != 1:
               raise SystemExit("Expected exactly one stock EXE payload read to patch")
           patched = original.replace(old, new)
@@ -111,7 +112,7 @@ jobs:
           Official documentation: https://pcsx-redux.consoledev.net/openbios/
           openbios.bin / openbios.elf use BOOT_MODE=fast to skip the shell and attempt CD-ROM boot.
           openbios-shell.bin / openbios-shell.elf retain the OpenBIOS shell/menu behavior.
-          openbios-chunked.bin / openbios-chunked.elf are experimental fastboot build that reads EXE payload in 8-sector chunks and logs progress after each read.
+          openbios-chunked.bin / openbios-chunked.elf are experimental fastboot build that reads EXE payload in 1-sector chunks and logs progress after each read.
           INFO
           file openbios.bin openbios.elf openbios-shell.bin openbios-shell.elf openbios-chunked.bin openbios-chunked.elf
           cat OPENBIOS-SHA256SUMS
@@ -167,7 +168,7 @@ jobs:
           Package source: https://github.com/pkgforge-dev/PCSX-Redux-AppImage-Enhanced/releases/tag/0c3572c3d%402026-10-01_1790876682
           Emulator AppImage SHA-256: c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
 
-          BIOS replacements: openbios.bin is stock BOOT_MODE=fast (skip shell and attempt CD-ROM boot); openbios-shell.bin retains the normal OpenBIOS shell/menu; openbios-chunked.bin is an experimental fastboot variant that chunks EXE payload reads into 8 sectors per read.
+          BIOS replacements: openbios.bin is stock BOOT_MODE=fast (skip shell and attempt CD-ROM boot); openbios-shell.bin retains the normal OpenBIOS shell/menu; openbios-chunked.bin is an experimental fastboot variant that chunks EXE payload reads into 1 sector per read.
           Both are built from the open-source PCSX-Redux project source commit 0c3572c3db75f97542001e453ae80ba8c3f8acba. OpenBIOS is not a retail Sony BIOS. Source and build directions: https://github.com/grumpycoders/pcsx-redux and https://pcsx-redux.consoledev.net/openbios/
           BIOS assets and their checksums are separate release assets; the AppImage itself does not include a BIOS configured for this game.
 
@@ -182,7 +183,7 @@ jobs:
           - Emulator AppImage: PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage (65,747,557 bytes; SHA-256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c).
           - openbios.bin/openbios.elf: open-source OpenBIOS built with BOOT_MODE=fast to skip the shell and attempt CD-ROM boot.
           - openbios-shell.bin/openbios-shell.elf: default shell/menu build for manual selection.
-          - openbios-chunked.bin/openbios-chunked.elf: experimental fastboot BIOS with a small source patch making loadExe read the payload in 8-sector chunks and log each read instead of one large CdRead request; source patch is attached as OPENBIOS-CHUNKED-PATCH.diff.
+          - openbios-chunked.bin/openbios-chunked.elf: experimental fastboot BIOS with a small source patch making loadExe read the payload in 1-sector chunks and log each read instead of one large CdRead request; source patch is attached as OPENBIOS-CHUNKED-PATCH.diff.
           - OpenBIOS is not a retail Sony BIOS; source commit 0c3572c3db75f97542001e453ae80ba8c3f8acba. Verify both variants with OPENBIOS-SHA256SUMS.
           - Upstream emulator: https://github.com/grumpycoders/pcsx-redux (GPL-2.0).
           - AppImage packaging source: https://github.com/pkgforge-dev/PCSX-Redux-AppImage-Enhanced (MIT).
