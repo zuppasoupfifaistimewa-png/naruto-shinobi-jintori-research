@@ -31,7 +31,7 @@ Hash file hasil ekstraksi dicatat di `docs/ROM_STRUCTURE.md` dan `docs/RESOURCE_
 3. Baca `docs/OVERLAY_MAP.md`.
 4. Baca `docs/RESOURCE_CATALOG.md`.
 5. Baca `docs/ROM_STRUCTURE.md`, `docs/GAME_RULES.md`, dan bagian terbaru `ANALYSIS_LOG.md`.
-6. Baca `docs/RUNTIME_TEST_PLAN.md` sebelum menyusun eksperimen runtime.
+6. Baca `docs/EMULATOR_WORKFLOW.md` dan `docs/RUNTIME_TEST_PLAN.md`; emulator/debugger adalah jalur utama untuk memverifikasi aturan gameplay, bukan opsi tambahan.
 
 ## Identitas dan struktur disc
 
@@ -97,3 +97,11 @@ Pengguna memiliki kuota internet sangat terbatas sehingga upload ulang ROM/ISO s
 - Field +0x04 digunakan sebagai Chakra awal; field +0x08 sebagai target pada cabang kemenangan yang ditelusuri; field +0x0C (400/0) belum dipahami.
 - Label lama 0x800EC200 (target Chakra) dan sekitar 0x800F70D0 (aritmetika Chakra) ditarik kembali karena base/identitas modul belum diverifikasi.
 - Tidak ada uji runtime emulator/debugger yang diselesaikan. Biaya, income, battle, roulette, dan semua efek kartu tetap terbuka.
+
+
+## Kebijakan dan status emulator — 2026-10-15
+
+- Jalur penelitian resmi sekarang mencakup penggunaan emulator/debugger sebagai prioritas untuk menguji aturan yang ditemukan secara statis. Emulator utama yang direkomendasikan adalah PCSX-Redux (debugger CPU, memory editor, breakpoint, GDB server); Mednafen dapat dipakai untuk cek silang.
+- Detail setup/eksperimen: [docs/EMULATOR_WORKFLOW.md](docs/EMULATOR_WORKFLOW.md), [docs/RUNTIME_TEST_PLAN.md](docs/RUNTIME_TEST_PLAN.md).
+- Dalam environment eksekusi yang digunakan pada sesi ini, tidak ditemukan executable emulator PS1 dan jaringan container gagal menyelesaikan DNS; emulator belum dapat dipasang/dijalankan. ROM tetap berhasil diambil dari Library, dan SHA-256 sama dengan catatan. Jadi belum ada hasil gameplay runtime dan jangan mengklaim sebaliknya.
+- Jangan meminta pengguna upload ulang ROM atau ISO sekitar 326 MB. Sumber file untuk analisis tetap Library; bila runtime memerlukan interaksi emulator yang tidak dapat dilakukan environment ini, gunakan prosedur tercatat dan simpan hanya log teks/screenshot yang diperlukan, tanpa mengunggah ROM, BIOS, save state, atau dump memori ke repo.
