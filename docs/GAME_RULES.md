@@ -121,6 +121,17 @@ Ini adalah opsi yang disebut terbuka melalui progres Story menurut panduan terse
 
 Jangan samakan target konfigurasi 0 dengan kemenangan instan. Record dengan target 0 kemungkinan dipakai pada kondisi akhir lain, tetapi pemetaannya belum selesai.
 
+## 7A. Apa yang dibuktikan jalur setter Chakra — dan yang tidak
+
+Penelusuran call site memperlihatkan mengapa pemanggilan setter 0x8001387C harus dibaca bersama instruksi sebelumnya:
+
+- Banyak call site, misalnya 0x800D6D60, 0x800D6E04, 0x800D7AB0, 0x800D7B14, 0x800D8DE8, dan 0x801016E8, mengambil nilai Chakra dari sebuah record lalu menyalinnya ke struktur pemain aktif. Call site tersebut sendiri **bukan** bukti biaya atau pengurangan Chakra.
+- Pada event state di resource yang sementara dipetakan ke base 0x800D0000, jalur sekitar 0x8012CD04–0x8012CD74 membaca delta dari field state +0xB44, menambahkannya ke Chakra pemain yang ditunjuk field +0xB2B, dan setelah itu mereset delta ke nol. Cabang ini bergantung pada state byte +0xB2A bernilai 7. Ini membuktikan adanya mekanisme event untuk menerapkan delta Chakra, tetapi belum menunjukkan event mana yang mengisi delta atau apakah delta itu biaya barrier, efek kartu, hadiah, atau aksi lain.
+- Jalur sekitar 0x8011C0D0 memiliki cabang yang membalik tanda nilai Chakra untuk pemain dan menjepit batas negatif ke -9.999. Namun, identitas pemicu/label menu yang memilih jalur ini belum cukup jelas; jangan menamakannya sebagai aturan “red debt” atau kartu tertentu tanpa bukti tambahan.
+- Base alamat resource di atas masih kandidat hasil pencocokan referensi internal dan belum divalidasi melalui breakpoint loader/emulator. Alamat tersebut merupakan bukti disassembly statis, bukan observasi saat permainan berjalan.
+
+Dengan demikian, biaya bangun/upgrade hanya dapat dinyatakan **terlihat pada UI contoh** (60 dan 150 Chakra), belum diketahui sebagai konstanta atau formula kode. Langkah berikutnya harus menemukan sumber pengisian delta, pemeriksaan saldo sebelum transaksi, dan mutasi field petak pada aksi ESTATE/LVUP_ESTATE.
+ 
 ## 8. Kesimpulan saat ini
 
 **Aturan yang paling kuat dari kode:** setter membatasi nilai Chakra; konfigurasi menyediakan Chakra awal dan target yang bervariasi; pada cabang target tertentu, pemain menang setelah Chakra mencapai atau melewati target. 3.000 berlaku pada sebagian record, bukan target universal. Angka 60 dan 150 dari contoh UI belum terbukti sebagai biaya universal. Formula bangun/upgrade barrier, income, durability, battle, roulette, efek seluruh kartu, dan label seluruh flag masih memerlukan tracing lanjutan serta validasi runtime bila emulator tersedia.
