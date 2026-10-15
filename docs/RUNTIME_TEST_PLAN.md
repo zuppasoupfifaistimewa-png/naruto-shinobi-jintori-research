@@ -97,3 +97,16 @@ Setiap test harus dilengkapi screenshot atau log debugger dan, jika relevan, has
 - Semua flag opsi kemenangan dapat dikaitkan dengan pilihan menu/data record dan hasil permainan.
 - Hasil runtime sesuai analisis statis; bila berbeda, catat perbedaan dan revisi hipotesis.
 - Laporan final membedakan aturan normal, variasi skenario, dan kondisi yang hanya tersedia setelah unlock.
+
+## Status boot sebelum uji gameplay — pembaruan 2026-10-16
+
+Boot masih bermasalah, jadi pengujian aturan gameplay (biaya, income, battle, efek kartu, kemenangan) belum dimulai. Jangan lanjut ke test case RT-001 sampai game menampilkan menu/title yang dikenali dan kontrol terbukti responsif.
+
+Fakta terakhir:
+- Normal CD boot membaca `SYSTEM.CNF` tetapi macet di pengambilan payload `SLPS_035.53`.
+- Varian pemuat 1 sektor menunjukkan progres pembacaan, sedangkan 8 sektor/16 KB dan 32 sektor belum menyelesaikan payload. Varian diagnostik satu sektor: [Actions #38697240018](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/38697240018).
+- Jalur inject EXE mencapai `0x80011448` dan `CD_init`, tetapi layar hitam; perhatikan `flushCache`, init CD-ROM dan wait init kartu memori.
+- Ada petunjuk input: perintah pad `0x43` muncul saat emulator kemungkinan memakai tipe Digital; uji konfigurasi Port 1 Analog/DualShock terlebih dahulu. Petunjuk sumber: https://github.com/grumpycoders/pcsx-redux/blob/db9bc8af44e3c77424127b573c17f9583ee2ab95/src/core/pad.cc.
+- ZIP alternatif yang baru diunggah pengguna belum dapat diperiksa/dijalankan oleh runtime pada sesi ini. Jangan mengubah kesimpulan status boot hanya karena file alternatif sudah tersedia.
+
+Urutan lanjutan yang disarankan: (1) verifikasi isi dan cara menjalankan ZIP alternatif saat lingkungan file tersedia; (2) set Port 1 Analog/DualShock; (3) ulangi CD boot dengan BIOS OpenBIOS, log CPU dan cache flush yang benar; (4) minimalkan bypass kartu memori sehingga hanya satu variabel berubah per eksperimen; (5) simpan hash emulator/BIOS/ROM dan log, bukan dump biner.
