@@ -6,14 +6,16 @@ Tanggal dibuat: 2026-10-15
 
 Emulator/debugger merupakan jalur penelitian utama bersama analisis statis bila tujuan kita menetapkan aturan permainan. Analisis byte/dekompilasi menghasilkan hipotesis; emulator dipakai untuk memeriksa state nyata sebelum/sesudah aksi, mengamati jalur kode yang benar-benar dieksekusi, dan menguji apakah sebuah aturan punya pengecualian menurut mode/skenario.
 
-Jangan pernah menyebut aturan “terbukti runtime” kecuali ada log uji yang bisa diulang. Jangan menyalin ROM, BIOS, memory card, save state, screen capture berisi aset besar, atau dump RAM ke GitHub. Catatan teks, hash, breakpoint, register relevan, dan hasil terukur boleh disimpan.
+Jangan pernah menyebut aturan “terbukti runtime” kecuali ada log uji yang bisa diulang. Jangan mengunggah ROM, game assets, retail Sony BIOS, memory card, save state, screen capture aset besar, atau dump RAM ke GitHub. OpenBIOS adalah pengganti BIOS open-source yang terpisah dan boleh disimpan bersama checksum serta atribusi lisensinya. Catatan teks, hash, breakpoint, register relevan, dan hasil terukur boleh disimpan.
 
-## Status ketersediaan emulator dalam sesi ini
+## Status pemasangan emulator dalam sesi ini
 
-- ROM dibuka dari Library ChatGPT (bukan diunggah ulang dari laptop) dan SHA-256 terverifikasi: `58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88`.
-- File sumber adalah raw-sector 2352 byte; mode byte sektor pertama adalah 2. Untuk emulator yang meminta CUE, gunakan 1 track `MODE2/2352` dengan file BIN yang sudah dimiliki.
-- Pemeriksaan environment pada 2026-10-15 tidak menemukan executable PCSX-Redux, Mednafen, DuckStation, PCSX2, atau RetroArch. Xvfb tersedia, tetapi akses jaringan container gagal pada resolusi DNS sehingga binary emulator tidak dapat dipasang dari rilis di sesi ini.
-- Karena itu, pada tanggal ini belum ada game boot atau uji gameplay runtime yang benar-benar dijalankan. Ini blocker environment yang eksplisit, bukan alasan untuk mengubah hasil statis menjadi klaim runtime. Jangan meminta pengguna upload ulang ROM ~326 MB; file sudah tersedia di Library untuk analisis dan pengguna juga menyimpan salinan lokal.
+- ROM dibuka dari Library ChatGPT (bukan diunggah ulang dari laptop) dan SHA-256 diverifikasi: `58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88`.
+- GitHub Actions mengunduh PCSX-Redux Linux x86_64 AppImage dari paket tidak resmi Package Forge dan memverifikasi ukuran 65.747.557 byte serta SHA-256 `c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c`. Aset berjangka panjang ada di [release research emulator](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/research-emulator-pcsx-redux-2026-10-15). Repo ini privat; akses download bergantung pada izin akun/connector.
+- Run yang berhasil: [GitHub Actions #38692549397](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/38692549397). Smoke-test hanya membuktikan AppImage dapat dieksekusi dan GUI tidak langsung keluar; ini **bukan** bukti game berhasil boot.
+- Screenshot GUI menunjukkan pesan “No BIOS loaded, emulation halted.” Jadi PCSX-Redux terpasang/terpaket, tetapi game belum boot. Workflow kedua sedang membangun OpenBIOS open-source dari sumber PCSX-Redux pinned commit `0c3572c3db75f97542001e453ae80ba8c3f8acba`. Status harus diperiksa sebelum mengklaim OpenBIOS berhasil dipasang.
+- File disc merupakan raw-sector 2352 byte dan mode byte sektor pertama adalah 2. CUE pendamping yang sesuai menggunakan satu track `MODE2/2352`; gunakan nama BIN lokal yang sama persis dalam CUE.
+- Jangan meminta upload ulang ROM ~326 MB. Gunakan berkas yang sudah disimpan di Library dan asset emulator dari release repo.
 
 ## Emulator yang diprioritaskan
 
@@ -28,14 +30,14 @@ Alasan: dibuat untuk riset/reverse-engineering PS1, menyediakan CPU debugger, me
 
 Konfigurasi debugging CPU:
 1. Gunakan build resmi Windows x64 atau Linux x86-64 yang sesuai platform.
-2. Boot disc BIN/CUE. BIOS harus dikonfigurasi sesuai kemampuan emulator; bila kompatibilitas boot bermasalah, coba BIOS konsol yang dimiliki secara sah atau opsi OpenBIOS yang disediakan/dikonfigurasi emulator. Jangan mengunduh atau mengunggah BIOS dari sumber tak tepercaya.
+2. Boot disc BIN/CUE. Prioritaskan OpenBIOS open-source yang sedang dibangun dari source resmi dan akan dilampirkan ke release penelitian; OpenBIOS bukan BIOS retail Sony dan compatibilitas dengan setiap game tidak dijamin. Jangan mengunduh atau mengunggah BIOS retail dari sumber tak tepercaya.
 3. Matikan Dynarec dan aktifkan debugger karena fitur debugging CPU tertentu memerlukan interpreter.
 4. Jika memakai GDB: aktifkan GDB server di Configuration > Emulation; aktifkan debugger juga. Server default di dokumentasi PCSX-Redux adalah localhost:3333. Jalankan GDB multiarch/MIPS yang sesuai, lalu `target remote localhost:3333`.
 5. Untuk penelitian kode tanpa simbol, pasang breakpoint pada alamat executable utama yang sudah terpetakan. Jangan pasang breakpoint overlay dengan alamat RAM hipotesis sampai loader/base overlay dikonfirmasi.
 
 Bila emulator sudah terbuka, contoh command-line resmi untuk memuat image adalah:
 ```text
-pcsx-redux -interpreter -debugger -gdb -iso "path/to/game.cue" -run
+pcsx-redux -bios "path/to/openbios.bin" -interpreter -debugger -gdb -iso "path/to/game.cue" -run
 ```
 Nama biner/argumen build dapat berbeda sedikit; verifikasi dengan `-help` pada build yang dipakai.
 
