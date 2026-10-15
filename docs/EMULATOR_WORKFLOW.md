@@ -119,3 +119,18 @@ Simpan log atau ringkasan debugger sebagai teks. Jangan menyimpan save state, RO
 - **Runtime teramati:** perubahan direkam saat aksi tertentu dilakukan di emulator; bila satu kali saja, tulis bahwa hasil belum direplikasi.
 - **Runtime tereplikasi:** hasil sama muncul pada sedikitnya dua pengulangan dengan state awal terkontrol.
 - **Aturan mapan:** call chain statis cocok dengan state runtime dan variasi skenario/cabang penting telah diuji.
+
+## Catatan boot terbaru — 2026-10-16
+
+Status boot tetap belum berhasil diverifikasi secara visual. Gunakan catatan ini sebagai sumber terbaru untuk troubleshooting:
+
+- Jalur disc normal mengenali label disc `SLPS-03553` serta membaca `SYSTEM.CNF;1`, tetapi berhenti saat payload executable sedang dimuat sebelum log `EXEC:PC0(80011448)`.
+- `SLPS_035.53` berukuran 385.024 byte; payload text 382.976 byte (`0x5D800` atau 187 sektor).
+- Chunk 32 sektor dan 8 sektor gagal menyelesaikan bacaan payload. Varian 8 sektor mencatat `[CHUNK8] before idx=0 ... bytes=16384` tanpa log selesai untuk pemanggilan itu.
+- Varian diagnostik satu sektor dibangun lewat [Actions #38697240018](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/38697240018). Pembacaan satu sektor (2.048 byte) mulai menunjukkan progres dalam uji singkat, tetapi belum ada bukti seluruh payload selesai atau menu Naruto tampil.
+- Jalur manual yang memasukkan executable ke RAM pernah mencapai `EXEC:PC0(80011448)`, `Execute !`, dan `CD_init`, tetapi tampilan hitam. Pastikan `flushCache` dipanggil dan urutan init CD-ROM tidak dilewati. Jalur itu masih belum menghasilkan boot game terverifikasi.
+- Breakpoint berikutnya tampak menunggu di init kartu memori (`buInit`). Bypass sementara melewati tunggu tetapi masih hitam.
+- Perintah kontroler `0x43` (Set Config Mode) terlihat berulang. Source PCSX-Redux hanya meneruskan perintah DualShock seperti ini di mode Analog, sedangkan tipe Digital mencatat `Unknown command for pad: 43`. Sumber: https://github.com/grumpycoders/pcsx-redux/blob/db9bc8af44e3c77424127b573c17f9583ee2ab95/src/core/pad.cc. **Ini hipotesis yang belum diuji:** ubah Port 1 ke Analog/DualShock, ulangi boot dan lihat apakah perintah 0x43 diproses.
+- ZIP alternatif dari pengguna, `PCSX-Redux-9c6f98a0-linux-x86_64.zip` (90.912.361 byte), belum diperiksa atau dijalankan karena runtime shell/file tool gagal pada sesi 2026-10-16. Jangan mengklaim build ini berfungsi; periksa kembali saat akses filesystem pulih.
+
+**Kriteria sukses tetap ketat:** log mencapai entry game, layar menunjukkan title/menu Naruto yang dikenali, lalu kontrol merespons. Jangan menganggap layar hitam atau entry executable saja sebagai boot sukses. Jangan mengunggah ROM, EXE game, Sony BIOS retail, save state atau dump RAM ke repo.
