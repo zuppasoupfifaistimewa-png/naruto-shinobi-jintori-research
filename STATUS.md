@@ -84,5 +84,5 @@ File ekstraksi disimpan di Library ChatGPT pada folder `Naruto Research Files`; 
 ## Trace aturan Chakra — tambahan 2026-10-15
 
 - Kode pembanding target di resource gameplay (base hipotesis 0x800D0000) memastikan syarat cabang target adalah Chakra saat ini >= target konfigurasi bila bit kondisi 0x200 aktif. Target dibaca lewat getter 0x80012A70. Alamat resource masih statis sementara karena loader belum diverifikasi runtime.
-- Pemanggilan setter Chakra 0x8001387C banyak berupa sinkronisasi salinan record. Satu jalur event pada 0x8012CD04–0x8012CD74 menerapkan field delta +0xB44 ke Chakra pemain saat state +0xB2A == 7 lalu mengosongkan delta; penulis delta dan identitas aksi belum ditemukan.
+- Pemanggilan setter Chakra 0x8001387C banyak berupa sinkronisasi salinan record. State machine sementara pada resource DATA.BIN membentuk +0xB40 dari +0xB30 + +0xB38, lalu pada state +0xB2A == 7 memproses jumlah pending +0xB44 bertahap ke Chakra pemain +0xB2B. Sumber operand dan semantik event belum ditemukan; ini bukan bukti biaya barrier.
 - Karena sumber nilai transaksi belum terhubung, biaya build/upgrade universal masih belum terbukti. Angka 60 dan 150 hanya tercatat pada contoh UI tertentu dalam transkripsi komunitas.
