@@ -82,7 +82,7 @@ Catatan untuk chat baru: cari file di Library dengan path di atas; jangan mengas
 ## Penemuan trace Chakra — 2026-10-15
 
 - Setter 0x8001387C banyak dipakai untuk sinkronisasi nilai yang tersalin dari record pemain; jangan menafsirkan semua pemanggil sebagai biaya/pengurangan.
-- Jalur state sekitar 0x8012CD04–0x8012CD74 (base resource sementara 0x800D0000) menerapkan delta pada field +0xB44 ke Chakra pemain +0xB2B ketika state +0xB2A == 7, lalu mengosongkan delta. Penulis delta dan semantik event masih belum terhubung.
+- State machine (base resource sementara 0x800D0000) membentuk nilai +0xB40 dari +0xB30 + +0xB38, lalu pada state +0xB2A == 7 memproses jumlah pending +0xB44 bertahap ke Chakra pemain yang ditunjuk +0xB2B, mengurangi pending sampai selesai. Ini mekanisme transfer/perubahan nilai Chakra, bukan bukti khusus biaya barrier. Sumber +0xB30/+0xB38 dan semantik event belum ditemukan.
 - Jalur kemenangan Chakra sekitar 0x80111200–0x80111280 membandingkan Chakra pemain terhadap getter target 0x80012A70 ketika kondisi bit 0x200 aktif. Kondisi menang adalah current >= target pada jalur ini. Base resource belum divalidasi lewat loader runtime.
 - Prioritas segera: cari penulis field +0xB44 dan kaitkan event ESTATE/LVUP_ESTATE dengan pemeriksaan saldo, sumber biaya, dan perubahan field petak. Jangan mengklaim 60/150 sebagai rumus universal.
 
