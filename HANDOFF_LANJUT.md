@@ -22,7 +22,7 @@ ROM sumber:
 - SHA-256: `58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88`
 - Karena kuota internet pengguna sangat terbatas, jangan menjadikan ROM di laptop sebagai sumber kerja dan jangan meminta upload ulang ROM sekitar 300 MB. ROM asli hanya tercatat untuk identitas/hash; sumber byte-level utama untuk riset lanjutan adalah file hasil ekstraksi yang sudah tersimpan di Library. Jika komponen yang diperlukan tidak dapat diakses di Library, dokumentasikan keterbatasan dan cari jalur riset alternatif tanpa membebani kuota.
 
-Hash file hasil ekstraksi lokal dicatat di `docs/ROM_STRUCTURE.md` dan `docs/RESOURCE_CATALOG.md`. Folder hasil ekstraksi yang ada pada lingkungan kerja saat ini tidak dijamin tersedia pada chat baru; ekstrak ulang hanya dari ROM terverifikasi jika diperlukan.
+Hash file hasil ekstraksi dicatat di `docs/ROM_STRUCTURE.md` dan `docs/RESOURCE_CATALOG.md`. Folder hasil ekstraksi pada filesystem kerja tidak dijamin tersedia di chat baru; pulihkan file dari Library terlebih dahulu. Jangan menyarankan ekstraksi ulang dari laptop/upload ulang ROM sebagai langkah standar karena kuota pengguna sangat terbatas.
 
 ## Urutan baca saat membuka chat baru
 
