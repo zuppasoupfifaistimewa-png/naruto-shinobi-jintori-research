@@ -30,7 +30,7 @@ Serial dalam nama executable cocok dengan serial disc SLPS-03553.
 
 | Nama | Ukuran byte | Catatan |
 |---|---:|---|
-| DATA.BIN | 66.015.232 | Berisi blok kode MIPS dan data; format keseluruhan belum dipetakan |
+| DATA.BIN | 66.015.232 | Berisi bootstrap kode, direktori resource 1.504 entri, lalu resource berbasis LBN; format sebagian besar resource belum teridentifikasi |
 | DATA2.BIN | 166.428.672 | Konten besar; fungsi/format internal belum dipetakan penuh |
 | DUMMY.BIN | 50.667.520 | Konten belum dipetakan penuh |
 | SLPS_035.53 | 385.024 | Executable PS-X EXE |
@@ -61,3 +61,18 @@ Dump sumber menggunakan sektor raw berukuran 2352 byte. Pada pemeriksaan sebelum
 - Keberadaan instruksi MIPS dalam file besar tidak cukup untuk menentukan alamat runtime-nya tanpa mengetahui format container, entry point, relokasi, serta loader.
 - Belum ditemukan semua aturan sebagai teks Shift-JIS biasa; teks mungkin disimpan dalam format lain, tabel glyph/resource, atau data terkompresi/terenkode.
 - Jangan melakukan perubahan atau menyimpan ulang file BIN/ISO selama proses analisis.
+
+## Direktori resource dan hash hasil ekstraksi lokal
+
+Pemeriksaan lanjutan menemukan direktori resource di awal `DATA.BIN`: bootstrap `0x44) byte dan tabel `0x2F00) byte berisi 1.504 entri berukuran 8 byte. Setiap entri aktif paling kuat diinterpretasikan sebagai LBN sektor CD dan panjang byte. Detail analisis serta signature ada di [docs/RESOURCE_CATALOG.md](RESOURCE_CATALOG.md).
+
+Hash SHA-256 berikut dihitung pada salinan file yang diekstrak secara lokal. File-file ini **tidak diunggah ke repo**:
+
+| File | Ukuran byte | SHA-256 |
+|---|---:|---|
+| DATA.BIN | 66.015.232 | `69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822` |
+| DATA2.BIN | 166.428.672 | `be19071f293862e3e65975fa051a7a1a4528aeb3883d5cd74abfc268352ea5f9` |
+| DUMMY.BIN | 50.667.520 | `cac5c852e95c90475a2879f51b6b949afea2df0cb540b2a2743bd791af4c47a2` |
+| SLPS_035.53 | 385.024 | `a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569` |
+| SYSTEM.CNF | 68 | `e5ffa72c5845508ae48b07140c712c9423ff6af733164b57628d1d9cece9ae71` |
+| XASECT.BIN | 692 | `df257fbdabdb848f845466246abf4a36fdb6cf17815fc3a76ff7d7585d1953f0` |
