@@ -76,3 +76,8 @@ Hash SHA-256 berikut dihitung pada salinan file yang diekstrak secara lokal. Fil
 | SLPS_035.53 | 385.024 | `a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569` |
 | SYSTEM.CNF | 68 | `e5ffa72c5845508ae48b07140c712c9423ff6af733164b57628d1d9cece9ae71` |
 | XASECT.BIN | 692 | `df257fbdabdb848f845466246abf4a36fdb6cf17815fc3a76ff7d7585d1953f0` |
+
+
+## Penyimpanan file hasil ekstraksi untuk chat berikutnya
+
+File hasil ekstraksi telah diarsipkan di Library ChatGPT, folder `Naruto Research Files`. Lima file tersedia dalam bentuk aslinya; `DATA2.BIN` disimpan sebagai `DATA2.BIN.zip` karena batas kapasitas Library. Lihat [HANDOFF_LANJUT.md](../HANDOFF_LANJUT.md) untuk lokasi persis dan prosedur pemulihan. Semua file game tetap di luar repo.

@@ -59,3 +59,21 @@ Hash file hasil ekstraksi lokal dicatat di `docs/ROM_STRUCTURE.md` dan `docs/RES
 5. Jalankan pengujian terkontrol dengan debugger PS1 bila tersedia dan rekam hasil yang dapat direproduksi.
 
 Dokumen penelitian terkait: [STATUS.md](STATUS.md), [docs/OVERLAY_MAP.md](docs/OVERLAY_MAP.md), [docs/RESOURCE_CATALOG.md](docs/RESOURCE_CATALOG.md), [docs/ROM_STRUCTURE.md](docs/ROM_STRUCTURE.md), [docs/GAME_RULES.md](docs/GAME_RULES.md), [ANALYSIS_LOG.md](ANALYSIS_LOG.md).
+
+
+## Arsip file kerja — pembaruan 2026-10-15
+
+Enam file hasil ekstraksi ISO disimpan di Library ChatGPT pada folder `Naruto Research Files` untuk memudahkan pemulihan lintas chat. ROM asli tetap terpisah; file game tidak diunggah ke GitHub.
+
+| File / artefak | Lokasi Library | Status |
+|---|---|---|
+| `DATA.BIN` | `/Naruto Research Files/DATA.BIN` | Tersimpan |
+| `DATA2.BIN` | `/Naruto Research Files/DATA2.BIN.zip` | Tersimpan sebagai ZIP; ekstrak sebelum analisis byte-level |
+| `DUMMY.BIN` | `/Naruto Research Files/DUMMY.BIN` | Tersimpan |
+| `SLPS_035.53` | `/Naruto Research Files/SLPS_035.53` | Tersimpan |
+| `SYSTEM.CNF` | `/Naruto Research Files/SYSTEM.CNF` | Tersimpan |
+| `XASECT.BIN` | `/Naruto Research Files/XASECT.BIN` | Tersimpan |
+
+`DATA2.BIN` berukuran 166.428.672 byte dan tidak muat ditambahkan mentah karena batas kapasitas Library. Kompresi ZIP mengurangi berkasnya menjadi sekitar 42 MiB. Hash SHA-256 dari isi hasil ekstraksi tetap harus diverifikasi setelah ekstraksi ZIP sebelum analisis.
+
+Catatan untuk chat baru: cari file di Library dengan path di atas; jangan mengasumsikan file otomatis ada di filesystem. Jika akses Library gagal, pengguna juga menyimpan ROM asli di laptop sehingga file dapat diekstrak ulang. Jangan menghapus file Library lain untuk memberi ruang tanpa instruksi pengguna.
