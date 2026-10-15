@@ -173,6 +173,8 @@ jobs:
             dist/openbios/openbios.elf
             dist/openbios/OPENBIOS-SHA256SUMS
             dist/openbios/OPENBIOS-SOURCE.txt
+            dist/openbios/openbios-shell.bin
+            dist/openbios/openbios-shell.elf
             dist/EMULATOR-ASSET-INFO.txt
           if-no-files-found: error
           retention-days: 90
