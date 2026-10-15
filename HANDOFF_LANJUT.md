@@ -115,12 +115,27 @@ Pengguna memiliki kuota internet sangat terbatas sehingga upload ulang ROM/ISO s
 - Launcher example setelah OpenBIOS tersedia: `pcsx-redux -bios /path/openbios.bin -interpreter -debugger -gdb -iso /path/game.cue -run`. File CUE harus berada bersama BIN dan menyebut nama BIN persis. Jangan meminta upload ulang ROM.
 - Dokumen prosedur: [docs/EMULATOR_WORKFLOW.md](docs/EMULATOR_WORKFLOW.md), [docs/RUNTIME_TEST_PLAN.md](docs/RUNTIME_TEST_PLAN.md).
 
-## Debug boot CD-ROM — prioritas terbaru
+## Status runtime terbaru dan langkah lanjut — 2026-10-16
 
-- ROM tetap diambil dari Library; tidak meminta upload ulang dari laptop. BIOS yang dipakai adalah OpenBIOS hasil build resmi PCSX-Redux (bukan Sony retail BIOS).
-- Dari boot via disc, emulator mengidentifikasi label `SLPS-03553`, membuka `SYSTEM.CNF;1`, membaca `BOOT = cdrom:\\SLPS_035.53;1` lalu menulis `boot file cdrom:\\SLPS_035.53;1`. Setelah itu tidak muncul `EXEC:PC0(80011448)`; boot game belum sukses.
-- EXE main file berukuran 385.024 byte total; 2.048 byte header dan 382.976 byte payload (`0x5D800`, 187 sektor payload). Header bisa dibaca oleh OpenBIOS, tetapi pembacaan payload gagal atau macet.
-- Build diagnostik pertama mengganti satu pemanggilan `syscall_read(..., header->text_size)` dengan loop 32 sektor per panggilan. Uji runtime dengan varian ini juga berhenti tepat setelah `boot file`, sehingga chunk 32 sektor tidak menyelesaikan masalah.
-- Workflow `.github/workflows/build-openbios.yml` kini membuat varian 8-sektor dengan log `[CHUNK8] begin/before/after/done` pada setiap read. Tujuannya mengidentifikasi apakah macet pada pemanggilan pertama, berapa byte yang benar-benar dibaca, dan apakah read mengembalikan ukuran pendek.
-- Run diagnostik terbaru: [Actions #38696846469](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/38696846469). Build sedang berlangsung; periksa hasilnya dan unduh artifact `pcsx-redux-openbios-linux-2026-10-15` setelah selesai. Uji hanya dapat dinyatakan berhasil bila log mencapai `EXEC:PC0` dan layar menunjukkan menu/title game yang dikenali.
-- Jalur bypass `-exe` berhasil membuat PC mulai di `0x80011448` tetapi menjalankan executable sebelum OpenBIOS menginisialisasi CD-ROM; ia log `CD_init` lalu tak menampilkan game. Karena itu jalur tersebut **bukan** bukti boot sukses dan tidak menggantikan jalur disc normal.
+**Status:** game belum terkonfirmasi mencapai title/menu. Jangan menyebut gameplay runtime berhasil.
+
+### Temuan terakhir
+- ROM sumber tetap file Library; jangan meminta upload ulang sekitar 326 MB dan jangan mengunggah ROM/EXE/save state/dump memori ke repo.
+- PCSX-Redux AppImage + OpenBIOS disimpan sebagai release assets: [research emulator release](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/research-emulator-pcsx-redux-2026-10-15).
+- Jalur CD normal membaca disc label `SLPS-03553`, membuka `SYSTEM.CNF;1`, membaca `BOOT = cdrom:\\SLPS_035.53;1`, lalu mencetak `boot file cdrom:\\SLPS_035.53;1`; pembacaan payload EXE tidak langsung mencapai `EXEC:PC0(80011448)`.
+- EXE `SLPS_035.53` berukuran 385.024 byte: header 2.048 byte dan payload 382.976 byte (`0x5D800`, 187 sektor).
+- Build chunked 32 sektor dan 8 sektor tidak mengatasi hang. Pada test 8 sektor, log berhenti setelah `[CHUNK8] before idx=0 ... bytes=16384`, tidak ada pesan `after`.
+- Build diagnostik satu sektor sukses dibangun dan diterbitkan lewat [Actions #38697240018](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/38697240018). Log menunjukkan pembacaan 2.048 byte mulai berjalan dan sedikitnya sektor pertama serta kemajuan sekitar sektor kesembilan terlihat setelah uji singkat sekitar 25 detik; belum ada bukti payload selesai dibaca atau game mencapai title.
+- Jalur injeksi executable/debugger secara manual pernah mencapai `EXEC:PC0(80011448)`, `Execute !`, dan `CD_init`, namun layar tetap hitam. Jalur itu bukan boot disc biasa dan perlu memastikan `flushCache` dilakukan setelah injeksi.
+- Dengan breakpoint diagnostik, jalur startup kemudian terlihat menunggu di rutin inisialisasi kartu memori (`buInit`/status kartu); bypass sementara melewati penantian tetapi belum memunculkan game.
+- Petunjuk kompatibilitas input: log berulang menunjukkan perintah pad `0x43` (Set Config Mode), sementara konfigurasi PCSX-Redux yang dipakai kemungkinan `DeviceType=Digital`. Source upstream PCSX-Redux menunjukkan perintah non-`Read` seperti ini ditangani melalui jalur DualShock hanya jika `PadType::Analog`; bila tipe Digital, emulator mencatat `Unknown command for pad: 43`. Rujukan kode: https://github.com/grumpycoders/pcsx-redux/blob/db9bc8af44e3c77424127b573c17f9583ee2ab95/src/core/pad.cc. **Hipotesis belum diuji**: atur Port 1 ke Analog/DualShock, ulangi boot, dan amati apakah perintah 0x43 terjawab serta apakah startup maju.
+- Pengguna mengunggah alternatif `PCSX-Redux-9c6f98a0-linux-x86_64.zip` (90.912.361 byte). File sudah terlihat/materialisasi dicoba, tetapi belum dapat diperiksa atau dijalankan karena shell/runtime file tool gagal merespons pada sesi tersebut. Jangan klaim ZIP alternatif sudah diuji atau mengunggahnya ke release sebelum isi dan kebutuhan dependensinya diverifikasi.
+
+### Langkah saat melanjutkan
+1. Coba kembali memeriksa ZIP unggahan pengguna dan gunakan build alternatif jika memang executable yang cocok tersedia.
+2. Di PCSX-Redux, ubah controller Port 1 dari Digital menjadi Analog (DualShock), lalu ulangi jalur CD normal.
+3. Bila jalur bypass dipakai, pastikan payload `SLPS_035.53` dimuat ke `text_addr`, cache di-flush, CD-ROM sudah diinisialisasi, dan startup kartu memori ditangani secara terukur—hindari bypass permanen yang mengubah banyak variabel sekaligus.
+4. Simpan log/screenshot teks minimum dan hash build; jangan menyimpan ROM, BIOS retail Sony, save state, atau RAM dump di repo.
+5. Kriteria sukses: log mencapai entry game **dan** layar menunjukkan title/menu Naruto yang dikenali. Setelah itu baru mulai test gameplay terkontrol.
+
+Dokumen prosedur: [docs/EMULATOR_WORKFLOW.md](docs/EMULATOR_WORKFLOW.md), [docs/RUNTIME_TEST_PLAN.md](docs/RUNTIME_TEST_PLAN.md).
