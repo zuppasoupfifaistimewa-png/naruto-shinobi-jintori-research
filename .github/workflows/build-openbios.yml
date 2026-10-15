@@ -1,0 +1,157 @@
+name: Build OpenBIOS for PS1 research
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-openbios.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-openbios:
+    name: Build OpenBIOS from PCSX-Redux source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout PCSX-Redux source at the package source commit
+        uses: actions/checkout@v4
+        with:
+          repository: grumpycoders/pcsx-redux
+          ref: 0c3572c3d
+          path: upstream
+          submodules: recursive
+          persist-credentials: false
+
+      - name: Build the open-source PS1 BIOS replacement
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd upstream
+          ./dockermake.sh -C src/mips/openbios
+          test -s src/mips/openbios/openbios.bin
+          test -s src/mips/openbios/openbios.elf
+          mkdir -p "$GITHUB_WORKSPACE/dist/openbios"
+          cp src/mips/openbios/openbios.bin "$GITHUB_WORKSPACE/dist/openbios/openbios.bin"
+          cp src/mips/openbios/openbios.elf "$GITHUB_WORKSPACE/dist/openbios/openbios.elf"
+          cd "$GITHUB_WORKSPACE/dist/openbios"
+          sha256sum openbios.bin openbios.elf > OPENBIOS-SHA256SUMS
+          cat > OPENBIOS-SOURCE.txt <<'INFO'
+          OpenBIOS for the PCSX-Redux PS1 emulator
+
+          This is an open-source BIOS replacement, not a retail PlayStation BIOS.
+          Upstream project: https://github.com/grumpycoders/pcsx-redux
+          Upstream source commit: 0c3572c3d
+          Source submodule: https://github.com/pcsx-redux/nugget
+          Build command documented upstream: ./dockermake.sh -C src/mips/openbios
+          Official documentation: https://pcsx-redux.consoledev.net/openbios/
+          INFO
+          file openbios.bin openbios.elf
+          cat OPENBIOS-SHA256SUMS
+
+      - name: Upload OpenBIOS build for this run
+        uses: actions/upload-artifact@v4
+        with:
+          name: pcsx-redux-openbios-linux-2026-10-15
+          path: |
+            dist/openbios/openbios.bin
+            dist/openbios/openbios.elf
+            dist/openbios/OPENBIOS-SHA256SUMS
+            dist/openbios/OPENBIOS-SOURCE.txt
+          if-no-files-found: error
+          retention-days: 90
+
+  publish-openbios:
+    name: Attach OpenBIOS to research emulator release
+    needs: build-openbios
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout research docs
+        uses: actions/checkout@v4
+
+      - name: Download OpenBIOS build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pcsx-redux-openbios-linux-2026-10-15
+          path: dist/openbios
+
+      - name: Prepare release information
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s dist/openbios/openbios.bin
+          test -s dist/openbios/openbios.elf
+          sha256sum --check --status <(awk '$2 == "openbios.bin" || $2 == "openbios.elf" {print}' dist/openbios/OPENBIOS-SHA256SUMS)
+          cat > dist/EMULATOR-ASSET-INFO.txt <<'INFO'
+          PCSX-Redux research kit for Naruto Shinobi Jintori (PS1)
+
+          Emulator: PCSX-Redux Linux x86_64 unofficial AppImage
+          Package source: https://github.com/pkgforge-dev/PCSX-Redux-AppImage-Enhanced/releases/tag/0c3572c3d%402026-10-01_1790876682
+          Emulator AppImage SHA-256: c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
+
+          BIOS replacement: openbios.bin, built from the open-source PCSX-Redux project (source commit 0c3572c3d).
+          OpenBIOS is not a retail Sony BIOS. Source and build directions: https://github.com/grumpycoders/pcsx-redux and https://pcsx-redux.consoledev.net/openbios/
+          BIOS assets and their checksums are separate release assets; the AppImage itself does not include a BIOS configured for this game.
+
+          No Naruto ROM/ISO, game assets, retail BIOS, memory card, save state, or memory dump is bundled here.
+          The earlier GUI smoke test reached the PCSX-Redux interface but showed "No BIOS loaded"; no Naruto gameplay boot has been confirmed.
+          INFO
+          cat > dist/RELEASE-NOTES.md <<'NOTES'
+          ## PS1 research kit — PCSX-Redux + OpenBIOS
+
+          This prerelease stores a hash-verified Linux x86_64 emulator AppImage and an OpenBIOS replacement built from the open-source PCSX-Redux source.
+
+          - Emulator AppImage: PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage (65,747,557 bytes; SHA-256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c).
+          - OpenBIOS is an open-source replacement, not a retail Sony BIOS; source commit 0c3572c3d. Verify with OPENBIOS-SHA256SUMS.
+          - Upstream emulator: https://github.com/grumpycoders/pcsx-redux (GPL-2.0).
+          - AppImage packaging source: https://github.com/pkgforge-dev/PCSX-Redux-AppImage-Enhanced (MIT).
+          - OpenBIOS documentation: https://pcsx-redux.consoledev.net/openbios/
+          - Launching the emulator GUI under Xvfb was observed; the first screen indicated no BIOS configured. This release adds OpenBIOS for that next step, but does not claim that the Naruto game has booted or that gameplay was tested.
+
+          The release does not include a game ROM/ISO, game assets, a retail BIOS, memory card, save state, or RAM dump.
+          NOTES
+
+      - name: Update research prerelease notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: research-emulator-pcsx-redux-2026-10-15
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release edit "$TAG_NAME" --repo "$GITHUB_REPOSITORY" \
+              --title "Research Tool: PCSX-Redux + OpenBIOS (Linux x86_64)" \
+              --notes-file dist/RELEASE-NOTES.md
+          else
+            gh release create "$TAG_NAME" --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "Research Tool: PCSX-Redux + OpenBIOS (Linux x86_64)" \
+              --notes-file dist/RELEASE-NOTES.md \
+              --prerelease
+          fi
+          gh release upload "$TAG_NAME" \
+            dist/openbios/openbios.bin \
+            dist/openbios/openbios.elf \
+            dist/openbios/OPENBIOS-SHA256SUMS \
+            dist/openbios/OPENBIOS-SOURCE.txt \
+            dist/EMULATOR-ASSET-INFO.txt \
+            --repo "$GITHUB_REPOSITORY" \
+            --clobber
+
+      - name: Upload a long-term trace artifact for future chats
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-research-runtime-kit-2026-10-15
+          path: |
+            dist/openbios/openbios.bin
+            dist/openbios/openbios.elf
+            dist/openbios/OPENBIOS-SHA256SUMS
+            dist/openbios/OPENBIOS-SOURCE.txt
+            dist/EMULATOR-ASSET-INFO.txt
+          if-no-files-found: error
+          retention-days: 90
