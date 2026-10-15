@@ -72,7 +72,7 @@ jobs:
               raise SystemExit("Expected exactly one stock EXE payload read to patch")
           patched = original.replace(old, new)
           import os
-          dist = Path(os.environ["GITHUB_WORKSPACE"]) / "dist"
+          dist = Path(os.environ["GITHUB_WORKSPACE"]) / "dist" / "openbios"
           dist.mkdir(exist_ok=True)
           (dist / "OPENBIOS-CHUNKED-PATCH.diff").write_text(
               "".join(difflib.unified_diff(
@@ -122,7 +122,7 @@ jobs:
             dist/openbios/openbios-shell.elf
             dist/openbios/openbios-chunked.bin
             dist/openbios/openbios-chunked.elf
-            dist/OPENBIOS-CHUNKED-PATCH.diff
+            dist/openbios/OPENBIOS-CHUNKED-PATCH.diff
           if-no-files-found: error
           retention-days: 90
 
@@ -212,7 +212,7 @@ jobs:
             dist/openbios/openbios-shell.elf \
             dist/openbios/openbios-chunked.bin \
             dist/openbios/openbios-chunked.elf \
-            dist/OPENBIOS-CHUNKED-PATCH.diff \
+            dist/openbios/OPENBIOS-CHUNKED-PATCH.diff \
             dist/EMULATOR-ASSET-INFO.txt \
             --repo "$GITHUB_REPOSITORY" \
             --clobber
@@ -228,6 +228,9 @@ jobs:
             dist/openbios/OPENBIOS-SOURCE.txt
             dist/openbios/openbios-shell.bin
             dist/openbios/openbios-shell.elf
+            dist/openbios/openbios-chunked.bin
+            dist/openbios/openbios-chunked.elf
+            dist/openbios/OPENBIOS-CHUNKED-PATCH.diff
             dist/EMULATOR-ASSET-INFO.txt
           if-no-files-found: error
           retention-days: 90
