@@ -47,7 +47,49 @@ jobs:
           cp src/mips/openbios/openbios.bin "$GITHUB_WORKSPACE/dist/openbios/openbios.bin"
           cp src/mips/openbios/openbios.elf "$GITHUB_WORKSPACE/dist/openbios/openbios.elf"
 
+          # Experimental third variant: read the main EXE in 32-sector chunks.
+          # The stock boot log stops in loadExe() after printing "boot file";
+          # this isolates a possible overly-large single CdRead request.
+          ./dockermake.sh -C src/mips/openbios clean
+          python3 - <<'PY'
+          from pathlib import Path
+          import difflib
+          p = Path("src/mips/openbios/kernel/psxexe.c")
+          original = p.read_text()
+          old = "    syscall_read(fd, (char *)header->text_addr, header->text_size);"
+          new = """    uint32_t remaining = header->text_size;
+              char *destination = (char *)header->text_addr;
+              while (remaining > 0) {
+                  int chunk = remaining > (32 * 2048) ? (32 * 2048) : (int)remaining;
+                  if (syscall_read(fd, destination, chunk) != chunk) {
+                      syscall_close(fd);
+                      return 0;
+                  }
+                  destination += chunk;
+                  remaining -= chunk;
+              }"""
+          if original.count(old) != 1:
+              raise SystemExit("Expected exactly one stock EXE payload read to patch")
+          patched = original.replace(old, new)
+          Path("dist").mkdir(exist_ok=True)
+          Path("dist/OPENBIOS-CHUNKED-PATCH.diff").write_text(
+              "".join(difflib.unified_diff(
+                  original.splitlines(keepends=True),
+                  patched.splitlines(keepends=True),
+                  fromfile="a/openbios/kernel/psxexe.c",
+                  tofile="b/openbios/kernel/psxexe.c"
+              ))
+          )
+          p.write_text(patched)
+          PY
+          ./dockermake.sh -C src/mips/openbios BOOT_MODE=fast
+          test -s src/mips/openbios/openbios.bin
+          test -s src/mips/openbios/openbios.elf
+          cp src/mips/openbios/openbios.bin "$GITHUB_WORKSPACE/dist/openbios/openbios-chunked.bin"
+          cp src/mips/openbios/openbios.elf "$GITHUB_WORKSPACE/dist/openbios/openbios-chunked.elf"
+
           cd "$GITHUB_WORKSPACE/dist/openbios"
+          sha256sum openbios.bin openbios.elf openbios-shell.bin openbios-shell.elf openbios-chunked.bin openbios-chunked.elf > OPENBIOS-SHA256SUMS
           sha256sum openbios.bin openbios.elf openbios-shell.bin openbios-shell.elf > OPENBIOS-SHA256SUMS
           cat > OPENBIOS-SOURCE.txt <<'INFO'
           OpenBIOS builds for the PCSX-Redux PS1 emulator
@@ -61,8 +103,9 @@ jobs:
           Official documentation: https://pcsx-redux.consoledev.net/openbios/
           openbios.bin / openbios.elf use BOOT_MODE=fast to skip the shell and attempt CD-ROM boot.
           openbios-shell.bin / openbios-shell.elf retain the OpenBIOS shell/menu behavior.
+          openbios-chunked.bin / openbios-chunked.elf are experimental fastboot builds that read EXE payload data in 32-sector chunks.
           INFO
-          file openbios.bin openbios.elf openbios-shell.bin openbios-shell.elf
+          file openbios.bin openbios.elf openbios-shell.bin openbios-shell.elf openbios-chunked.bin openbios-chunked.elf
           cat OPENBIOS-SHA256SUMS
 
       - name: Upload OpenBIOS build for this run
@@ -76,6 +119,9 @@ jobs:
             dist/openbios/OPENBIOS-SOURCE.txt
             dist/openbios/openbios-shell.bin
             dist/openbios/openbios-shell.elf
+            dist/openbios/openbios-chunked.bin
+            dist/openbios/openbios-chunked.elf
+            dist/OPENBIOS-CHUNKED-PATCH.diff
           if-no-files-found: error
           retention-days: 90
 
@@ -103,6 +149,8 @@ jobs:
           test -s dist/openbios/openbios.elf
           test -s dist/openbios/openbios-shell.bin
           test -s dist/openbios/openbios-shell.elf
+          test -s dist/openbios/openbios-chunked.bin
+          test -s dist/openbios/openbios-chunked.elf
           (cd dist/openbios && sha256sum --check OPENBIOS-SHA256SUMS)
           cat > dist/EMULATOR-ASSET-INFO.txt <<'INFO'
           PCSX-Redux research kit for Naruto Shinobi Jintori (PS1)
@@ -111,7 +159,7 @@ jobs:
           Package source: https://github.com/pkgforge-dev/PCSX-Redux-AppImage-Enhanced/releases/tag/0c3572c3d%402026-10-01_1790876682
           Emulator AppImage SHA-256: c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
 
-          BIOS replacements: openbios.bin is BOOT_MODE=fast (skip shell and attempt CD-ROM boot); openbios-shell.bin retains the normal OpenBIOS shell/menu.
+          BIOS replacements: openbios.bin is stock BOOT_MODE=fast (skip shell and attempt CD-ROM boot); openbios-shell.bin retains the normal OpenBIOS shell/menu; openbios-chunked.bin is an experimental fastboot variant that chunks EXE payload reads into 32 sectors per read.
           Both are built from the open-source PCSX-Redux project source commit 0c3572c3db75f97542001e453ae80ba8c3f8acba. OpenBIOS is not a retail Sony BIOS. Source and build directions: https://github.com/grumpycoders/pcsx-redux and https://pcsx-redux.consoledev.net/openbios/
           BIOS assets and their checksums are separate release assets; the AppImage itself does not include a BIOS configured for this game.
 
@@ -126,6 +174,7 @@ jobs:
           - Emulator AppImage: PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage (65,747,557 bytes; SHA-256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c).
           - openbios.bin/openbios.elf: open-source OpenBIOS built with BOOT_MODE=fast to skip the shell and attempt CD-ROM boot.
           - openbios-shell.bin/openbios-shell.elf: default shell/menu build for manual selection.
+          - openbios-chunked.bin/openbios-chunked.elf: experimental fastboot BIOS with a small source patch making loadExe read the payload in 32-sector chunks instead of one large CdRead request; source patch is attached as OPENBIOS-CHUNKED-PATCH.diff.
           - OpenBIOS is not a retail Sony BIOS; source commit 0c3572c3db75f97542001e453ae80ba8c3f8acba. Verify both variants with OPENBIOS-SHA256SUMS.
           - Upstream emulator: https://github.com/grumpycoders/pcsx-redux (GPL-2.0).
           - AppImage packaging source: https://github.com/pkgforge-dev/PCSX-Redux-AppImage-Enhanced (MIT).
@@ -160,6 +209,9 @@ jobs:
             dist/openbios/OPENBIOS-SOURCE.txt \
             dist/openbios/openbios-shell.bin \
             dist/openbios/openbios-shell.elf \
+            dist/openbios/openbios-chunked.bin \
+            dist/openbios/openbios-chunked.elf \
+            dist/OPENBIOS-CHUNKED-PATCH.diff \
             dist/EMULATOR-ASSET-INFO.txt \
             --repo "$GITHUB_REPOSITORY" \
             --clobber
