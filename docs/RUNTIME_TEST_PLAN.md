@@ -4,7 +4,7 @@
 
 Emulator/debugger adalah jalur riset utama bersama analisis statis, bukan sekadar opsi terakhir. Gunakan runtime untuk memverifikasi nilai sebelum/sesudah aksi dan menguji cabang kode yang benar-benar berjalan. **Belum ada pengujian gameplay runtime terkontrol yang diselesaikan.** Lihat [EMULATOR_WORKFLOW.md](EMULATOR_WORKFLOW.md) untuk pilihan emulator dan prosedur yang lebih rinci.
 
-Pada 2026-10-15, pemeriksaan environment tidak menemukan executable emulator. Akses jaringan dari container gagal pada resolusi DNS, sehingga emulator tidak dapat dipasang saat sesi berjalan. ROM dapat diakses dari Library dan hashnya cocok; kendala saat ini adalah tidak tersedianya emulator yang bisa dieksekusi di environment, bukan kebutuhan mengunggah ulang ROM. Jangan meminta upload ulang ROM ~326 MB dari laptop.
+Pada 2026-10-15, PCSX-Redux AppImage sudah dipaketkan ke release repo Naruto dan hash-nya diverifikasi via GitHub Actions. GUI berhasil dijalankan pada layar virtual, tetapi berhenti sebelum boot game karena tidak ada BIOS terkonfigurasi. Workflow terpisah sedang membangun OpenBIOS open-source dari source resmi. Periksa status workflow/release dan konfigurasi BIOS sebelum uji; jangan meminta upload ulang ROM ~326 MB dari laptop.
 
 ## Persiapan
 
