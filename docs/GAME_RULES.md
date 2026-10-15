@@ -112,14 +112,15 @@ Ini adalah opsi yang disebut terbuka melalui progres Story menurut panduan terse
 
 ## 7. Kondisi akhir — observasi kode statis
 
-- Jalur pemeriksaan akhir memiliki banyak cabang yang digerakkan oleh flag kondisi dan nilai konfigurasi.
-- Flag yang terlihat diperiksa mencakup bit seperti 0x001, 0x002, 0x004, 0x008, 0x020, 0x040, 0x080, 0x100, 0x200, dan 0x1000.
-- Cabang target Chakra berhubungan dengan perbandingan target dan penetapan pemenang.
-- Ada cabang yang menulis 0xFF ke field ID pemenang. Maknanya sebagai hasil seri/tanpa pemenang masih harus dipastikan dengan menelusuri pemanggil serta mengamati keadaan hasil saat runtime.
-- Ada pemeriksaan nilai negatif dan perubahan keadaan. Belum terbukti bahwa setiap pemain langsung tereliminasi pada Chakra negatif.
+- Kode mempunyai beberapa cabang akhir yang dikendalikan flag kondisi dan field konfigurasi.
+- Flag yang terlihat diperiksa termasuk 0x001, 0x002, 0x004, 0x008, 0x020, 0x040, 0x080, 0x100, 0x200, dan 0x1000; belum seluruhnya dipetakan ke label menu.
+- Cabang kemenangan berbasis Chakra menggunakan target dari getter 0x80012A70 dan kondisi terkait yang memeriksa bit 0x200 pada record kondisi yang ditelusuri.
+- Pada jalur target yang dipetakan, Chakra pemain dibandingkan dengan target dan pemain yang mencapai/melewatinya dapat ditetapkan sebagai pemenang. Ini temuan statis; belum ada uji runtime.
+- Ada cabang yang menyimpan 0xFF sebagai ID pemenang. Makna hasil seri/tanpa pemenang belum dapat dipastikan tanpa menelusuri pemanggil dan/atau mengamati hasil runtime.
+- Ada pemeriksaan nilai Chakra negatif dan transisi status, tetapi belum terbukti semua mode langsung mengeliminasi pemain pada nilai negatif.
 
-Jangan memberi nama pada semua flag hanya berdasarkan nilai bit atau panduan; cocokkan terlebih dahulu record opsi, pemrosesan menu, dan jalur hasil.
+Jangan samakan target konfigurasi 0 dengan kemenangan instan. Record dengan target 0 kemungkinan dipakai pada kondisi akhir lain, tetapi pemetaannya belum selesai.
 
 ## 8. Kesimpulan saat ini
 
-Yang paling kuat didukung oleh kode adalah batas setter Chakra, struktur pemain yang sudah dipetakan sebagian, bitfield kepemilikan petak pada jalur yang diperiksa, dan cabang target Chakra untuk skenario awal. Biaya barrier/upgrade, formula income/durability/battle, roulette, efek seluruh kartu, dan label seluruh flag kondisi masih memerlukan penelusuran statis lengkap serta pengujian runtime.
+**Aturan yang paling kuat dari kode:** setter membatasi nilai Chakra; konfigurasi menyediakan Chakra awal dan target yang bervariasi; pada cabang target tertentu, pemain menang setelah Chakra mencapai atau melewati target. 3.000 berlaku pada sebagian record, bukan target universal. Angka 60 dan 150 dari contoh UI belum terbukti sebagai biaya universal. Formula bangun/upgrade barrier, income, durability, battle, roulette, efek seluruh kartu, dan label seluruh flag masih memerlukan tracing lanjutan serta validasi runtime bila emulator tersedia.
