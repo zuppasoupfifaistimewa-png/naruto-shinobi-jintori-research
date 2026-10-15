@@ -19,7 +19,7 @@ CRC32 cocok dengan catatan dump BIN di [GameGear Archive](https://gamegear.net/a
 
 Isi SYSTEM.CNF yang terbaca:
 
-- BOOT = cdrom:\\SLPS_035.53;1
+- BOOT = cdrom:\SLPS_035.53;1
 - TCB = 4
 - EVENT = 16
 - STACK = 801fff00
