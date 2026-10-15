@@ -79,3 +79,10 @@ File ekstraksi disimpan di Library ChatGPT pada folder `Naruto Research Files`; 
 - Label lama 0x800EC200 sebagai pembanding target Chakra dan 0x800F70D0 sebagai aritmetika Chakra dicabut karena base/identitas modul belum diverifikasi.
 - File Library yang digunakan pada sesi ini: SLPS_035.53, DATA.BIN, XASECT.BIN, DATA2.BIN hasil unzip. Hash DATA2.BIN hasil unzip cocok: be19071f293862e3e65975fa051a7a1a4528aeb3883d5cd74abfc268352ea5f9.
 - Belum ada tes runtime. Prioritas berikutnya: transaksi biaya bangun/upgrade, income, perubahan kepemilikan dan transaksi battle melalui pemanggil setter Chakra dan label event ESTATE/LVUP_ESTATE.
+
+
+## Trace aturan Chakra — tambahan 2026-10-15
+
+- Kode pembanding target di resource gameplay (base hipotesis 0x800D0000) memastikan syarat cabang target adalah Chakra saat ini >= target konfigurasi bila bit kondisi 0x200 aktif. Target dibaca lewat getter 0x80012A70. Alamat resource masih statis sementara karena loader belum diverifikasi runtime.
+- Pemanggilan setter Chakra 0x8001387C banyak berupa sinkronisasi salinan record. Satu jalur event pada 0x8012CD04–0x8012CD74 menerapkan field delta +0xB44 ke Chakra pemain saat state +0xB2A == 7 lalu mengosongkan delta; penulis delta dan identitas aksi belum ditemukan.
+- Karena sumber nilai transaksi belum terhubung, biaya build/upgrade universal masih belum terbukti. Angka 60 dan 150 hanya tercatat pada contoh UI tertentu dalam transkripsi komunitas.
