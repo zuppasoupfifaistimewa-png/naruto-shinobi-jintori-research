@@ -25,33 +25,36 @@ Ini merupakan referensi alamat paling kuat saat ini karena berasal dari header e
 
 Analisis byte-level lanjutan memperkuat hubungan bootstrap DATA.BIN dengan alamat sekitar 0x800AD450: rutin pada offset file DATA.BIN +0x04 berada di sekitar 0x800AD454 dan menyalin direktori +0x44 berukuran 0x2F00 ke RAM 0x8006D830. Ini menunjukkan pemetaan untuk blok bootstrap/direktori tersebut, tetapi **tidak berarti seluruh DATA.BIN dimuat sebagai satu overlay kontigu**. Alamat muat dan lifecycle resource lain tetap perlu dipetakan.
 
-## Lokasi kode yang telah dicatat
+## Lokasi kode yang telah dicatat dan status pemetaan
 
-Alamat berikut merupakan label kerja dari pembacaan/disassembly terdahulu. Alamat harus dipetakan kembali ke modul yang aktif sebelum dijadikan dasar edit, patch, atau kesimpulan formula.
+### Executable utama (alamat tetap dalam SLPS_035.53)
 
-| Alamat/rentang kerja | Fungsi/perilaku yang diamati | Kepastian |
+| Alamat RAM | Perilaku yang diamati | Kepastian |
 |---|---|---|
-| 0x80012A70 | Jalur getter nilai terkait konfigurasi/pemain pada catatan sebelumnya; perlu konfirmasi konteks lengkap | Menengah |
-| 0x8001387C–0x800138E8 | Setter/pembatas nilai Chakra dan jalur terkait | Tinggi untuk rentang batas yang diamati |
-| 0x800138EC, 0x80013918 | Fungsi akses data pemain yang dipakai pada analisis struktur | Menengah–tinggi |
-| 0x800B1D90 | Rutin pemrosesan atribut/field petak | Menengah |
-| 0x800DB114–0x800DB194 | Cabang pemeriksaan akhir yang dalam jalur tertentu menyimpan ID pemenang 0xFF | Menengah; label kondisi belum final |
-| 0x800DB1A0–0x800DB280 | Pemeriksaan nilai negatif/status pemain dan transisi kondisi | Menengah; dampak aturan belum final |
-| 0x800EC200–0x800EC280 | Jalur kondisi yang membandingkan Chakra pemain dengan target dan dapat menetapkan pemenang | Menengah–tinggi |
-| 0x800EC284–0x800EC5FC | Cabang tambahan pemeriksaan kondisi akhir | Menengah untuk adanya percabangan; mapping nama kondisi belum final |
-| sekitar 0x800F70D0 | Jalur aritmetika Chakra dengan pembalikan tanda dan batas bawah | Menengah; konteks pemicu/aksi perlu dipetakan |
+| 0x80012A44 | Getter konfigurasi yang mengembalikan field Chakra awal | Tinggi |
+| 0x80012A70 | Getter target konfigurasi yang dibandingkan pada cabang kemenangan berbasis Chakra | Tinggi untuk peran target |
+| 0x8001387C | Setter Chakra; memvalidasi indeks pemain < 4 dan menjepit nilai ke -9.999…99.999 | Tinggi |
+| 0x800138EC | Getter Chakra untuk struktur pemain utama | Tinggi |
+| 0x80012780 | Memilih record dari tabel konfigurasi 0x80064918 (stride 0x30) dan mengisi global konfigurasi | Tinggi untuk pemilihan/salin data |
+| 0x80012EAC–0x80012Fxx | Memilih record dari tabel 0x80057798 (stride 0x54) dan menyalin field ke global konfigurasi | Tinggi untuk pemilihan/copy field |
 
-**Penting:** daftar alamat di atas diwariskan dari catatan disassembly terdahulu dan belum dibangun ulang dengan pemetaan overlay menyeluruh dalam sesi terbaru. Jangan menafsirkan dua rutinitas di alamat serupa sebagai modul yang sama sebelum memastikan overlay yang aktif.
+Tabel konfigurasi pada executable utama:
+- 0x80057798 (file offset 0x47F98): record stride 0x54. Empat word awal pada record memuat ID mentah / field +0x04 / +0x08 / +0x0C seperti (0xA00, 1500, 3000, 400), (0x10B01, 2000, 4000, 400), (0x20C02, 2000, 4000, 400), (0x81210, 600, 0, 0), (0x31403, 2500, 5000, 400), (0x40E04, 2500, 5000, 400), (0x81211, 600, 0, 0), (0x50F0F, 2500, 5000, 400), (0x61106, 3000, 6000, 400), (0x60809, 3000, 6000, 400).
+- 0x80064918 (file offset 0x55118): record stride 0x30. Sekurangnya 13 record awal nonnol memiliki 1500, 3000, 400 di field +0x04/+0x08/+0x0C. Raw ID belum dipetakan lengkap ke nama mode/stage.
+- Field +0x04 disalin ke global 0x80070C80 dan dipakai untuk inisialisasi Chakra; field +0x08 masuk melalui getter 0x80012A70 sebagai target; field +0x0C disalurkan ke getter 0x80012A90, tetapi semantiknya belum diketahui.
+- Jalur target kemenangan pada resource DATA.BIN memakai target dari 0x80012A70 untuk membandingkan Chakra per pemain; kondisi terkait memeriksa bit 0x200 dan dapat menyimpan pemain sebagai pemenang jika Chakra >= target.
 
-## Data konfigurasi akhir pertandingan
+### Modul gameplay hasil pemetaan sementara (bukan executable utama)
 
-Analisis terdahulu menemukan record konfigurasi dengan nilai yang dibaca melalui offset record berikut:
+DATA.BIN entry index 1 berada pada file offset 0x10BB000, ukuran 596.412 byte, dan berisi campuran string/event dan instruksi kode. Pemetaan sementara ke alamat RAM 0x800D0000 menghasilkan banyak referensi internal yang konsisten dalam kisaran 0x800D0000–0x8016xxxx. Titik jalur target pada peta statis ini antara lain 0x80111228, 0x801112CC, 0x801113B4, 0x801114F0, 0x80111588, dan 0x80112418. **Alamat kandidat belum divalidasi lewat breakpoint loader; gunakan sebagai peta statis sementara, bukan bukti runtime.**
 
-- +0x04: 1500
-- +0x08: 3000
-- +0x0C: 400
+DATA.BIN entry index 0 berada pada file offset 0x5F800, ukuran 110.536 byte; referensi internal mengarah konsisten ke area sekitar 0x800AD000. Base ini juga masih menunggu validasi loader.
 
-Jalur pemeriksaan target memakai nilai 3000. Makna 1500 dan 400 belum ditelusuri penuh sampai ke proses inisialisasi dan seluruh pemanggil. Lokasi offset file record, ukuran record, jumlah record, serta pemetaan record ke semua mode belum terdokumentasi lengkap.
+### Koreksi terhadap label alamat lama
+
+Label lama yang menyebut 0x800EC200 sebagai pemeriksaan target Chakra dan sekitar 0x800F70D0 sebagai aritmetika Chakra **ditarik kembali**: pemetaan modul sebelumnya tidak dibuktikan, dan alamat tersebut tidak boleh dipakai untuk klaim fungsi. Alamat resource/overlay dapat bertumpang tindih atau berubah menurut base pemetaan. Setiap klaim berikutnya harus mencatat identitas resource, offset file, asumsi base, dan alasan referensi internalnya konsisten.
+
+
 
 ## Rencana melengkapi peta overlay
 
