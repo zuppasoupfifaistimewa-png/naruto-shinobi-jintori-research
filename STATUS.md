@@ -94,3 +94,11 @@ File ekstraksi disimpan di Library ChatGPT pada folder `Naruto Research Files`; 
 - Diprioritaskan PCSX-Redux karena dokumentasi resminya mendukung CPU debugger, breakpoint dan GDB server; Mednafen dapat digunakan untuk cek silang. Rujukan dan protokol uji ada di [docs/EMULATOR_WORKFLOW.md](docs/EMULATOR_WORKFLOW.md).
 - Pada environment eksekusi saat ini tidak ditemukan executable PCSX-Redux/Mednafen/DuckStation/RetroArch, dan akses jaringan container gagal pada resolusi DNS. Karena emulator tidak dapat dipasang di sesi ini, belum ada hasil boot maupun uji gameplay runtime. Jangan menyamarkan kendala ini sebagai hasil uji.
 - ROM di Library berhasil dimaterialisasikan dan SHA-256 cocok; tidak dibutuhkan upload ulang dari laptop pengguna.
+
+
+## Emulator tersimpan di repo — 2026-10-15
+
+- PCSX-Redux Linux x86_64 AppImage diunggah sebagai Release asset di [research-emulator-pcsx-redux-2026-10-15](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/research-emulator-pcsx-redux-2026-10-15), bukan Git history. Ukuran 65.747.557 byte; SHA-256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c. GitHub Actions run 38692549397 sukses mendownload dan memverifikasi binary.
+- AppImage dapat diluncurkan di Xvfb, tetapi layar menunjukkan “No BIOS loaded, emulation halted”; belum ada boot game ataupun uji gameplay.
+- Workflow build OpenBIOS open-source ada di .github/workflows/build-openbios.yml. Periksa run #38693323975 dan release asset sesudah build. OpenBIOS bukan BIOS retail Sony.
+- Jangan meminta upload ulang ROM. ROM hash diverifikasi dari Library; CUE dibuat untuk BIN raw-sector MODE2/2352.
