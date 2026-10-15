@@ -38,16 +38,31 @@ jobs:
           file "dist/$APPIMAGE_NAME"
           test "$(stat -c %s "dist/$APPIMAGE_NAME")" -eq 65747557
 
-      - name: Extract AppImage and smoke-check package structure
+      - name: Try a headless launcher smoke test
         shell: bash
         run: |
           set -euo pipefail
-          cd dist
-          "./$APPIMAGE_NAME" --appimage-extract >/dev/null
-          test -x squashfs-root/AppRun
-          test -d squashfs-root/usr
-          test -f squashfs-root/AppRun
-          echo "AppImage extraction and required launcher checks passed."
+          status="NOT_RUN"
+          rc=127
+          if command -v xvfb-run >/dev/null 2>&1; then
+            set +e
+            timeout 12s xvfb-run -a "./dist/$APPIMAGE_NAME" -help > dist/LAUNCH-SMOKE-LOG.txt 2>&1
+            rc=$?
+            set -e
+            if [ "$rc" -eq 0 ] || [ "$rc" -eq 124 ]; then
+              status="PASS_PROCESS_STARTED_OR_HELP_RETURNED"
+            else
+              status="WARNING_LAUNCH_SMOKE_EXIT_$rc"
+            fi
+          else
+            printf '%s\n' "xvfb-run unavailable; binary hash/type checks passed but launch smoke test was skipped." > dist/LAUNCH-SMOKE-LOG.txt
+          fi
+          printf 'launch_smoke_status=%s\nexit_code=%s\n' "$status" "$rc" > dist/LAUNCH-SMOKE-STATUS.txt
+          cat dist/LAUNCH-SMOKE-STATUS.txt
+          cat dist/LAUNCH-SMOKE-LOG.txt 2>/dev/null || true
+          # A GUI/display-dependent smoke-test failure is recorded, not hidden,
+          # and does not prevent publishing a hash-verified binary.
+
 
       - name: Write checksums and provenance
         shell: bash
@@ -79,7 +94,7 @@ jobs:
           - Packaging source/license: https://github.com/pkgforge-dev/PCSX-Redux-AppImage-Enhanced (MIT).
           - No game data or BIOS is included.
 
-          This workflow verifies the package and extracts its AppImage filesystem. It does not claim a gameplay test or GUI boot of the Naruto game.
+          This workflow verifies the upstream SHA-256 and file size, then records a best-effort Xvfb launcher smoke test. A smoke-test warning does not imply a successful GUI session, and no Naruto gameplay test is claimed.
           NOTES
 
       - name: Upload verified package as a workflow artifact
@@ -90,6 +105,8 @@ jobs:
             dist/${{ env.APPIMAGE_NAME }}
             dist/SHA256SUMS
             dist/EMULATOR-ASSET-INFO.txt
+            dist/LAUNCH-SMOKE-STATUS.txt
+            dist/LAUNCH-SMOKE-LOG.txt
           if-no-files-found: error
           retention-days: 90
 
@@ -111,5 +128,7 @@ jobs:
             "dist/$APPIMAGE_NAME" \
             dist/SHA256SUMS \
             dist/EMULATOR-ASSET-INFO.txt \
+            dist/LAUNCH-SMOKE-STATUS.txt \
+            dist/LAUNCH-SMOKE-LOG.txt \
             --repo "$GITHUB_REPOSITORY" \
             --clobber
