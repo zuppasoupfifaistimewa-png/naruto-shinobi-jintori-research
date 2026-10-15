@@ -31,25 +31,38 @@ jobs:
         run: |
           set -euo pipefail
           cd upstream
+          mkdir -p "$GITHUB_WORKSPACE/dist/openbios"
+          # Build the normal shell/menu variant first.
           ./dockermake.sh -C src/mips/openbios
           test -s src/mips/openbios/openbios.bin
           test -s src/mips/openbios/openbios.elf
-          mkdir -p "$GITHUB_WORKSPACE/dist/openbios"
+          cp src/mips/openbios/openbios.bin "$GITHUB_WORKSPACE/dist/openbios/openbios-shell.bin"
+          cp src/mips/openbios/openbios.elf "$GITHUB_WORKSPACE/dist/openbios/openbios-shell.elf"
+
+          # Build a second version that skips the BIOS shell and auto-boots the inserted CD.
+          ./dockermake.sh -C src/mips/openbios clean
+          ./dockermake.sh -C src/mips/openbios BOOT_MODE=fast
+          test -s src/mips/openbios/openbios.bin
+          test -s src/mips/openbios/openbios.elf
           cp src/mips/openbios/openbios.bin "$GITHUB_WORKSPACE/dist/openbios/openbios.bin"
           cp src/mips/openbios/openbios.elf "$GITHUB_WORKSPACE/dist/openbios/openbios.elf"
-          cd "$GITHUB_WORKSPACE/dist/openbios"
-          sha256sum openbios.bin openbios.elf > OPENBIOS-SHA256SUMS
-          cat > OPENBIOS-SOURCE.txt <<'INFO'
-          OpenBIOS for the PCSX-Redux PS1 emulator
 
-          This is an open-source BIOS replacement, not a retail PlayStation BIOS.
+          cd "$GITHUB_WORKSPACE/dist/openbios"
+          sha256sum openbios.bin openbios.elf openbios-shell.bin openbios-shell.elf > OPENBIOS-SHA256SUMS
+          cat > OPENBIOS-SOURCE.txt <<'INFO'
+          OpenBIOS builds for the PCSX-Redux PS1 emulator
+
+          Both files are open-source BIOS replacements, not retail Sony PlayStation BIOS dumps.
           Upstream project: https://github.com/grumpycoders/pcsx-redux
           Upstream source commit: 0c3572c3db75f97542001e453ae80ba8c3f8acba
           Source submodule: https://github.com/pcsx-redux/nugget
-          Build command documented upstream: ./dockermake.sh -C src/mips/openbios
+          Default build: ./dockermake.sh -C src/mips/openbios
+          Fast CD boot build: ./dockermake.sh -C src/mips/openbios BOOT_MODE=fast
           Official documentation: https://pcsx-redux.consoledev.net/openbios/
+          openbios.bin / openbios.elf use BOOT_MODE=fast to skip the shell and attempt CD-ROM boot.
+          openbios-shell.bin / openbios-shell.elf retain the OpenBIOS shell/menu behavior.
           INFO
-          file openbios.bin openbios.elf
+          file openbios.bin openbios.elf openbios-shell.bin openbios-shell.elf
           cat OPENBIOS-SHA256SUMS
 
       - name: Upload OpenBIOS build for this run
@@ -61,6 +74,8 @@ jobs:
             dist/openbios/openbios.elf
             dist/openbios/OPENBIOS-SHA256SUMS
             dist/openbios/OPENBIOS-SOURCE.txt
+            dist/openbios/openbios-shell.bin
+            dist/openbios/openbios-shell.elf
           if-no-files-found: error
           retention-days: 90
 
@@ -86,6 +101,8 @@ jobs:
           set -euo pipefail
           test -s dist/openbios/openbios.bin
           test -s dist/openbios/openbios.elf
+          test -s dist/openbios/openbios-shell.bin
+          test -s dist/openbios/openbios-shell.elf
           (cd dist/openbios && sha256sum --check OPENBIOS-SHA256SUMS)
           cat > dist/EMULATOR-ASSET-INFO.txt <<'INFO'
           PCSX-Redux research kit for Naruto Shinobi Jintori (PS1)
@@ -94,8 +111,8 @@ jobs:
           Package source: https://github.com/pkgforge-dev/PCSX-Redux-AppImage-Enhanced/releases/tag/0c3572c3d%402026-10-01_1790876682
           Emulator AppImage SHA-256: c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
 
-          BIOS replacement: openbios.bin, built from the open-source PCSX-Redux project (source commit 0c3572c3d).
-          OpenBIOS is not a retail Sony BIOS. Source and build directions: https://github.com/grumpycoders/pcsx-redux and https://pcsx-redux.consoledev.net/openbios/
+          BIOS replacements: openbios.bin is BOOT_MODE=fast (skip shell and attempt CD-ROM boot); openbios-shell.bin retains the normal OpenBIOS shell/menu.
+          Both are built from the open-source PCSX-Redux project source commit 0c3572c3db75f97542001e453ae80ba8c3f8acba. OpenBIOS is not a retail Sony BIOS. Source and build directions: https://github.com/grumpycoders/pcsx-redux and https://pcsx-redux.consoledev.net/openbios/
           BIOS assets and their checksums are separate release assets; the AppImage itself does not include a BIOS configured for this game.
 
           No Naruto ROM/ISO, game assets, retail BIOS, memory card, save state, or memory dump is bundled here.
@@ -107,7 +124,9 @@ jobs:
           This prerelease stores a hash-verified Linux x86_64 emulator AppImage and an OpenBIOS replacement built from the open-source PCSX-Redux source.
 
           - Emulator AppImage: PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage (65,747,557 bytes; SHA-256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c).
-          - OpenBIOS is an open-source replacement, not a retail Sony BIOS; source commit 0c3572c3d. Verify with OPENBIOS-SHA256SUMS.
+          - openbios.bin/openbios.elf: open-source OpenBIOS built with BOOT_MODE=fast to skip the shell and attempt CD-ROM boot.
+          - openbios-shell.bin/openbios-shell.elf: default shell/menu build for manual selection.
+          - OpenBIOS is not a retail Sony BIOS; source commit 0c3572c3db75f97542001e453ae80ba8c3f8acba. Verify both variants with OPENBIOS-SHA256SUMS.
           - Upstream emulator: https://github.com/grumpycoders/pcsx-redux (GPL-2.0).
           - AppImage packaging source: https://github.com/pkgforge-dev/PCSX-Redux-AppImage-Enhanced (MIT).
           - OpenBIOS documentation: https://pcsx-redux.consoledev.net/openbios/
@@ -139,6 +158,8 @@ jobs:
             dist/openbios/openbios.elf \
             dist/openbios/OPENBIOS-SHA256SUMS \
             dist/openbios/OPENBIOS-SOURCE.txt \
+            dist/openbios/openbios-shell.bin \
+            dist/openbios/openbios-shell.elf \
             dist/EMULATOR-ASSET-INFO.txt \
             --repo "$GITHUB_REPOSITORY" \
             --clobber
