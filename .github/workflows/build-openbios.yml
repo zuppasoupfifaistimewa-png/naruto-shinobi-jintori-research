@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: grumpycoders/pcsx-redux
-          ref: 0c3572c3d
+          ref: 0c3572c3db75f97542001e453ae80ba8c3f8acba
           path: upstream
           submodules: recursive
           persist-credentials: false
@@ -44,7 +44,7 @@ jobs:
 
           This is an open-source BIOS replacement, not a retail PlayStation BIOS.
           Upstream project: https://github.com/grumpycoders/pcsx-redux
-          Upstream source commit: 0c3572c3d
+          Upstream source commit: 0c3572c3db75f97542001e453ae80ba8c3f8acba
           Source submodule: https://github.com/pcsx-redux/nugget
           Build command documented upstream: ./dockermake.sh -C src/mips/openbios
           Official documentation: https://pcsx-redux.consoledev.net/openbios/
