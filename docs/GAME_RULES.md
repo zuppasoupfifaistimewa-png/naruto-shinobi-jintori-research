@@ -124,3 +124,12 @@ Jangan samakan target konfigurasi 0 dengan kemenangan instan. Record dengan targ
 ## 8. Kesimpulan saat ini
 
 **Aturan yang paling kuat dari kode:** setter membatasi nilai Chakra; konfigurasi menyediakan Chakra awal dan target yang bervariasi; pada cabang target tertentu, pemain menang setelah Chakra mencapai atau melewati target. 3.000 berlaku pada sebagian record, bukan target universal. Angka 60 dan 150 dari contoh UI belum terbukti sebagai biaya universal. Formula bangun/upgrade barrier, income, durability, battle, roulette, efek seluruh kartu, dan label seluruh flag masih memerlukan tracing lanjutan serta validasi runtime bila emulator tersedia.
+
+
+## Referensi eksternal — hanya bukti UI/panduan
+
+- [Transkripsi UI Story Mode oleh proyek terjemahan komunitas](https://github.com/juanoliveira82/naruto-ps1_translation-english/blob/master/Story-mode.md): Act 01 menampilkan target Chakra 3000; tampilan bangun barrier menunjukkan kebutuhan 60 Chakra; contoh upgrade level 1 ke level 2 menunjukkan kebutuhan 150 Chakra; contoh barrier level 1 menunjukkan nilai 100 dan durability 2/2, sementara contoh lain menunjukkan nilai 50. Ini bukti bahwa angka tersebut tampil dalam konteks tertentu, bukan bukti harga universal untuk setiap petak/barrier.
+- [Materi TV Tokyo tentang game PS1](https://www.tv-tokyo.co.jp/anime/naruto2002/goods/playstation.html): sumber promosi untuk Story/Versus serta pertarungan saat masuk wilayah lawan.
+- [Halaman pengembang/kontraktor ROUTE134 tentang game](https://route134.stars.ne.jp/service/naruto.html): uraian umum tentang permainan papan penguasaan wilayah, gerak roulette, penggunaan Chakra untuk mengambil petak, serta battle saat memasuki wilayah musuh.
+
+Sumber UI/eksternal ini membantu memberi nama pada aksi dan membuat hipotesis; mereka tidak menggantikan call chain kode atau tes runtime untuk menetapkan rumus universal.
