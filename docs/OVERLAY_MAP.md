@@ -56,23 +56,24 @@ Label lama yang menyebut 0x800EC200 sebagai pemeriksaan target Chakra dan sekita
 
 
 
-## Rencana melengkapi peta overlay
+## Rencana melengkapi peta overlay dan aturan gameplay
 
-1. Reverse-engineer format resource yang sudah terindeks oleh direktori DATA.BIN, terutama PK02/BIN0/TPK0 dan NARUTOSceneV001; lanjutkan struktur internal DATA2.BIN.
-2. Temukan rutin loader pada executable utama; telusuri pemanggilan CD-ROM, alokasi RAM, dan transfer data.
-3. Buat tabel untuk setiap modul: offset file, ukuran file/payload, alamat tujuan, ukuran di RAM, entry point, relokasi, pemicu load, dan kemungkinan alamat tumpang tindih.
-4. Kaitkan setiap call/jump dari executable dan overlay ke identitas modul pada waktu panggilan.
-5. Verifikasi dengan debugger: breakpoint di titik loader, catat rentang RAM sebelum/sesudah load, lalu bandingkan hash byte overlay dengan payload file.
-6. Hanya setelah mapping benar, tetapkan nama fungsi dan rangkaian call chain untuk aturan gameplay.
+1. Prioritas pertama: telusuri call chain aksi ESTATE (membangun barrier) dan LVUP_ESTATE (upgrade), termasuk sumber harga, pemeriksaan saldo, nilai Chakra sebelum/sesudah, dan perubahan field petak.
+2. Prioritas kedua: identifikasi kapan income diproses, rumusnya, hubungan level barrier dengan income, dan perubahan kepemilikan setelah kunjungan atau battle.
+3. Prioritas ketiga: telusuri pengeluaran Chakra saat battle/jutsu, damage/durability, roulette, serta handler kartu menggunakan referensi ke setter/getter Chakra.
+4. Lacak selektor tabel konfigurasi 0x80057798 dan 0x80064918 sampai raw ID bisa dipetakan ke Story/Party mode, tanpa menebak nama mode dari ID mentah.
+5. Untuk setiap fungsi/data kandidat, cantumkan identitas resource, offset file, ukuran, base RAM hipotesis, bukti referensi silang, serta confidence. Jangan memberi nama fungsi hanya karena ada konstanta yang sama.
+6. Jika emulator/debugger tersedia, validasi call chain dengan breakpoint dan tes terkontrol. Jika tidak, tandai semua kesimpulan sebagai statis.
+7. Format PK02/BIN0/TPK0 dilanjutkan hanya saat dibutuhkan untuk memulihkan kode/parameter yang relevan dengan aturan gameplay.
 
 ## Direktori resource DATA.BIN — hasil byte-level 2026-10-15
 
 Temuan berikut menggantikan status sebelumnya yang menganggap keberadaan tabel resource masih sekadar dugaan:
 
 1. Pada executable `SLPS_035.53`, file offset `0x46098` (RAM `0x80055898`) tersimpan pasangan little-endian `0x000000D4, 0x00002F44`. Nilai pertama adalah LBN 212, tepat extent ISO dari `DATA.BIN`; nilai kedua 12.100 byte.
-2. Bootstrap yang ditunjuk pasangan tersebut mempunyai ukuran `0x2F44). `DATA.BIN` offset `0x00–0x43` berisi kode bootstrap; mulai offset `0x44` terdapat tabel sebesar `0x2F00) byte.
+2. Bootstrap yang ditunjuk pasangan tersebut mempunyai ukuran `0x2F44. `DATA.BIN` offset `0x00–0x43` berisi kode bootstrap; mulai offset `0x44` terdapat tabel sebesar `0x2F00 byte.
 3. Tabel berisi 1.504 entri berukuran 8 byte. Interpretasi paling kuat untuk setiap entri ialah dua uint32 little-endian: LBN CD dan panjang data dalam byte. Kode mengonversi panjang menjadi jumlah sektor dengan pembulatan ke atas pada batas `0x800) byte.
-4. Kode di sekitar `0x800AD454` menyalin `0x2F00) byte dari `0x800AD494` ke alamat `0x8006D830), konsisten dengan menyalin tabel dari offset `+0x44) bootstrap. Lokasi pemanggilan di executable menyetel alamat tujuan pada delay slot.
+4. Kode di sekitar `0x800AD454` menyalin `0x2F00) byte dari `0x800AD494` ke alamat `0x8006D830, konsisten dengan menyalin tabel dari offset `+0x44) bootstrap. Lokasi pemanggilan di executable menyetel alamat tujuan pada delay slot.
 5. Dari 1.504 entri, 1.500 aktif dan empat berukuran nol (indeks 1491–1494). Interval sektor entri aktif tidak saling tumpang-tindih dan berada di dalam extent `DATA.BIN` pada LBN [212, 32446). Total interval yang tercakup adalah 32.227 sektor dari 32.234 sektor file. Tujuh sektor selisih cocok dengan enam sektor bootstrap yang dibulatkan dan satu sektor akhir yang tidak tercakup.
 
 Ini memberikan keyakinan **tinggi** bahwa executable memakai bootstrap DATA.BIN untuk mendaftarkan direktori resource berbasis LBN/panjang. Ini belum mengidentifikasi format setiap resource atau seluruh pemuatan runtime. Detail signature dan hash tercatat di [RESOURCE_CATALOG.md](RESOURCE_CATALOG.md).
