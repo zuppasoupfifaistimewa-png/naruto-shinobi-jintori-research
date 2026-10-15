@@ -71,8 +71,10 @@ jobs:
           if original.count(old) != 1:
               raise SystemExit("Expected exactly one stock EXE payload read to patch")
           patched = original.replace(old, new)
-          Path("dist").mkdir(exist_ok=True)
-          Path("dist/OPENBIOS-CHUNKED-PATCH.diff").write_text(
+          import os
+          dist = Path(os.environ["GITHUB_WORKSPACE"]) / "dist"
+          dist.mkdir(exist_ok=True)
+          (dist / "OPENBIOS-CHUNKED-PATCH.diff").write_text(
               "".join(difflib.unified_diff(
                   original.splitlines(keepends=True),
                   patched.splitlines(keepends=True),
@@ -90,7 +92,6 @@ jobs:
 
           cd "$GITHUB_WORKSPACE/dist/openbios"
           sha256sum openbios.bin openbios.elf openbios-shell.bin openbios-shell.elf openbios-chunked.bin openbios-chunked.elf > OPENBIOS-SHA256SUMS
-          sha256sum openbios.bin openbios.elf openbios-shell.bin openbios-shell.elf > OPENBIOS-SHA256SUMS
           cat > OPENBIOS-SOURCE.txt <<'INFO'
           OpenBIOS builds for the PCSX-Redux PS1 emulator
 
