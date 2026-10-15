@@ -1,16 +1,18 @@
 # Rencana uji runtime PS1
 
-## Tujuan
+## Tujuan dan status
 
-Menghubungkan temuan statis dengan keadaan permainan yang benar-benar diamati. **Belum ada pengujian gameplay terkontrol yang diselesaikan dalam sesi penelitian ini.** Laporan kompatibilitas eksternal hanya menyatakan ROM pernah boot pada test rig; itu tidak membuktikan rumus permainan.
+Emulator/debugger adalah jalur riset utama bersama analisis statis, bukan sekadar opsi terakhir. Gunakan runtime untuk memverifikasi nilai sebelum/sesudah aksi dan menguji cabang kode yang benar-benar berjalan. **Belum ada pengujian gameplay runtime terkontrol yang diselesaikan.** Lihat [EMULATOR_WORKFLOW.md](EMULATOR_WORKFLOW.md) untuk pilihan emulator dan prosedur yang lebih rinci.
+
+Pada 2026-10-15, pemeriksaan environment tidak menemukan executable emulator. Akses jaringan dari container gagal pada resolusi DNS, sehingga emulator tidak dapat dipasang saat sesi berjalan. ROM dapat diakses dari Library dan hashnya cocok; kendala saat ini adalah tidak tersedianya emulator yang bisa dieksekusi di environment, bukan kebutuhan mengunggah ulang ROM. Jangan meminta upload ulang ROM ~326 MB dari laptop.
 
 ## Persiapan
 
-1. Gunakan ROM yang identitas/hash-nya dicatat di docs/ROM_STRUCTURE.md. Jangan patch ROM asli.
-2. Pilih emulator/debugger PS1 yang mendukung breakpoint MIPS, inspeksi RAM, save state, trace instruksi, serta log akses memori. Catat nama dan versi emulator.
-3. Gunakan salinan kerja lokal dengan hak yang sesuai; jangan mengunggah ROM ke repo.
-4. Catat setiap test case: hash ROM, emulator/build, mode permainan, skenario, pemain aktif, aksi, nilai awal, nilai akhir, PC breakpoint, dan alamat RAM yang berubah.
-5. Jalankan baseline tanpa aksi khusus untuk membedakan perubahan normal per giliran dari perubahan akibat aksi.
+1. Prioritaskan PCSX-Redux untuk breakpoint CPU, memory editor, dan GDB server; lihat [EMULATOR_WORKFLOW.md](EMULATOR_WORKFLOW.md). Mednafen adalah alternatif untuk cek silang.
+2. Gunakan image BIN/CUE dengan hash dari `docs/ROM_STRUCTURE.md`; jangan patch ROM asli. CUE harus merujuk file BIN yang sama dan track Mode 2/2352.
+3. Catat versi/build emulator, jenis BIOS, setting CPU/interpreter/debugger, hash ROM, mode permainan, skenario, pemain aktif, aksi, nilai awal/akhir, PC breakpoint dan alamat RAM yang berubah.
+4. Jalankan baseline dari state awal terkontrol. Untuk pengulangan, simpan state/memory card eksperimen di luar repo dan jangan menimpa save asli.
+5. Jangan menganggap alamat overlay statis sebagai RAM live sebelum loader/base overlay dikonfirmasi. Mulai dari breakpoint executable utama dan verifikasi perubahan RAM.
 
 ## Variabel yang dipantau
 
