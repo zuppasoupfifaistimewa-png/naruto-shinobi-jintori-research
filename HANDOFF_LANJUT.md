@@ -139,3 +139,12 @@ Pengguna memiliki kuota internet sangat terbatas sehingga upload ulang ROM/ISO s
 5. Kriteria sukses: log mencapai entry game **dan** layar menunjukkan title/menu Naruto yang dikenali. Setelah itu baru mulai test gameplay terkontrol.
 
 Dokumen prosedur: [docs/EMULATOR_WORKFLOW.md](docs/EMULATOR_WORKFLOW.md), [docs/RUNTIME_TEST_PLAN.md](docs/RUNTIME_TEST_PLAN.md).
+
+
+## Alternatif PCSX-Redux ZIP dari pengguna — pembaruan 2026-10-16
+
+- Nama lampiran: `PCSX-Redux-9c6f98a0-linux-x86_64.zip`; ukuran 90.912.361 byte.
+- Lampiran lama berhasil ditemukan dari daftar file percakapan dan dimaterialisasi pada sesi 2026-10-16 ke lingkungan kerja sebagai `/mnt/data/pcsx-research/PCSX-Redux-9c6f98a0-linux-x86_64.zip`.
+- Upaya menyalin ZIP ke Library pada `/Naruto Research Files/PCSX-Redux-9c6f98a0-linux-x86_64.zip` gagal dengan `library_storage_limit_exceeded`. Jadi ZIP **belum tersimpan di Library** dan chat baru tidak boleh menganggap file itu tersedia lintas-chat. Percobaan membuka/mengecek arsip lewat runtime juga gagal dengan `ClientError`; isi, hash, dependensi, dan kemampuan menjalankannya belum diverifikasi.
+- Jangan meminta pengguna mengunggah ulang ZIP atau ROM hanya karena kegagalan ini. Gunakan PCSX-Redux AppImage + OpenBIOS yang sudah ada di Release sebagai jalur penelitian sementara. Jangan menghapus file Library lain untuk menyediakan ruang tanpa instruksi eksplisit.
+- Agar ZIP alternatif bisa bertahan lintas-chat, kapasitas Library perlu dibebaskan secara sengaja atau file ditempatkan pada penyimpanan persisten lain yang dapat diakses. Setelah kapasitas tersedia, materialisasikan lampiran sumber yang masih dapat diakses, verifikasi SHA-256 dan isi arsip, lalu simpan salinannya di `/Naruto Research Files/`. Jangan menandai solusi Library selesai sebelum penyimpanan terkonfirmasi.
