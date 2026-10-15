@@ -86,7 +86,7 @@ jobs:
           set -euo pipefail
           test -s dist/openbios/openbios.bin
           test -s dist/openbios/openbios.elf
-          sha256sum --check --status <(awk '$2 == "openbios.bin" || $2 == "openbios.elf" {print}' dist/openbios/OPENBIOS-SHA256SUMS)
+          (cd dist/openbios && sha256sum --check OPENBIOS-SHA256SUMS)
           cat > dist/EMULATOR-ASSET-INFO.txt <<'INFO'
           PCSX-Redux research kit for Naruto Shinobi Jintori (PS1)
 
