@@ -144,12 +144,23 @@ Informasi eksternal digunakan untuk membuat hipotesis tentang makna kode, bukan 
 - Pengujian lokal dengan AppImage, fastboot OpenBIOS, interpreter/debugger dan CUE disc dilakukan sekitar 12 detik. BIOS-missing dialog tidak muncul, tetapi layar tetap hitam; tidak ada title atau menu yang bisa dipastikan. Ini **belum merupakan boot game yang terverifikasi**.
 - Next: periksa CUE/raw-sector layout dan log/PC state; uji CD-ROM boot dengan debug step atau media header yang dikenal sebagai kontrol. Jangan unggah ROM ke repo, jangan meminta pengguna mengirim ulang ROM, dan jangan klaim rule gameplay runtime sampai ada bukti langsung.
 
-## Diagnostik boot OpenBIOS: bacaan payload EXE — 2026-10-15
+## Diagnostik runtime lanjutan: sektor, init kartu memori, dan pad — 2026-10-16
 
-- ROM tetap diambil dari Library; tidak meminta upload ulang dari laptop. BIOS yang dipakai adalah OpenBIOS hasil build resmi PCSX-Redux (bukan Sony retail BIOS).
-- Dari boot via disc, emulator mengidentifikasi label `SLPS-03553`, membuka `SYSTEM.CNF;1`, membaca `BOOT = cdrom:\\SLPS_035.53;1` lalu menulis `boot file cdrom:\\SLPS_035.53;1`. Setelah itu tidak muncul `EXEC:PC0(80011448)`; boot game belum sukses.
-- EXE main file berukuran 385.024 byte total; 2.048 byte header dan 382.976 byte payload (`0x5D800`, 187 sektor payload). Header bisa dibaca oleh OpenBIOS, tetapi pembacaan payload gagal atau macet.
-- Build diagnostik pertama mengganti satu pemanggilan `syscall_read(..., header->text_size)` dengan loop 32 sektor per panggilan. Uji runtime dengan varian ini juga berhenti tepat setelah `boot file`, sehingga chunk 32 sektor tidak menyelesaikan masalah.
-- Workflow `.github/workflows/build-openbios.yml` kini membuat varian 8-sektor dengan log `[CHUNK8] begin/before/after/done` pada setiap read. Tujuannya mengidentifikasi apakah macet pada pemanggilan pertama, berapa byte yang benar-benar dibaca, dan apakah read mengembalikan ukuran pendek.
-- Run diagnostik terbaru: [Actions #38696846469](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/38696846469). Build sedang berlangsung; periksa hasilnya dan unduh artifact `pcsx-redux-openbios-linux-2026-10-15` setelah selesai. Uji hanya dapat dinyatakan berhasil bila log mencapai `EXEC:PC0` dan layar menunjukkan menu/title game yang dikenali.
-- Jalur bypass `-exe` berhasil membuat PC mulai di `0x80011448` tetapi menjalankan executable sebelum OpenBIOS menginisialisasi CD-ROM; ia log `CD_init` lalu tak menampilkan game. Karena itu jalur tersebut **bukan** bukti boot sukses dan tidak menggantikan jalur disc normal.
+### Pembacaan payload EXE
+- Boot CD normal berhasil membaca file konfigurasi, tetapi `loadExe` tersangkut saat membaca payload utama `SLPS_035.53`. Payload sepanjang `0x5D800` byte = 382.976 byte = 187 sektor.
+- Percobaan loop 32 sektor dan 8 sektor tidak menyelesaikan masalah. Varian 8 sektor hanya menghasilkan `[CHUNK8] before idx=0 ... bytes=16384` tanpa `after`, sehingga permintaan 16 KB tidak selesai dalam jendela pengamatan.
+- Varian diagnostik satu sektor dibangun/diterbitkan dalam [Actions #38697240018](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/38697240018). Runtime menunjukkan read 2.048 byte mulai berjalan dan ada progres setidaknya sampai sekitar sektor kesembilan dalam pengamatan singkat, tetapi belum ada bukti full payload read atau entry game pada jalur disc normal.
+
+### Jalur manual/injeksi EXE
+- Injeksi payload ke alamat yang ditetapkan header membuat debugger mencapai `EXEC:PC0(80011448)`, `Execute !`, dan `CD_init`; layar tetap hitam. Pastikan `flushCache` dan urutan init CD-ROM benar sebelum mengulang.
+- Breakpoint berikutnya menunjukkan startup menunggu dalam inisialisasi kartu memori (`buInit`) karena status kartu tidak berubah. Bypass eksperimental dapat melewati penantian, tetapi belum menghasilkan layar title/menu; jangan menyebutnya boot berhasil.
+
+### Petunjuk protokol kontroler
+- Log berulang menunjukkan perintah pad `0x43` (Set Config Mode). Source PCSX-Redux upstream mengidentifikasi command ini di jalur DualShock/analog; bila tipe controller emulator Digital, kode log menampilkan `Unknown command for pad: 43`. Sumber: https://github.com/grumpycoders/pcsx-redux/blob/db9bc8af44e3c77424127b573c17f9583ee2ab95/src/core/pad.cc.
+- Hipotesis selanjutnya: ganti Port 1 ke Analog/DualShock dan ulangi boot sebelum melakukan patch game. Belum ada hasil uji setelah perubahan tipe pad, jadi kausalitas belum terbukti.
+
+### Build alternatif yang diunggah pengguna
+- File `PCSX-Redux-9c6f98a0-linux-x86_64.zip`, ukuran 90.912.361 byte, disediakan pengguna pada 2026-10-16. Lingkungan eksekusi shell/file gagal saat inspeksi, sehingga isi paket, hash dan kelayakan menjalankan ROM belum diverifikasi. Lakukan verifikasi terlebih dahulu; jangan menaruh file biner besar ke Git history atau release tanpa alasan yang teruji.
+
+### Syarat bukti
+- Status sekarang: *executable mulai berjalan dalam jalur manual*, bukan game terkonfirmasi boot. Bukti yang dibutuhkan: log entry yang valid, title/menu yang dikenali, dan input responsif. Sesudah itu baru validasi aturan gameplay dengan state awal terkontrol.
