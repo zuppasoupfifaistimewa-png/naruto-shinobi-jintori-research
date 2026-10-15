@@ -14,22 +14,41 @@ Sumber resmi promosi TV Tokyo menggambarkan Story Mode dan Versus/対戦 Mode, s
 
 Ini selaras dengan konsep board game penguasaan wilayah, tetapi dokumentasi eksternal tersebut bukan bukti formula internal.
 
-## 2. Chakra — bukti kode
+## 2. Chakra dan target kemenangan — bukti kode statis
 
-### Struktur pemain
+### Struktur dan batas nilai
 
-- Empat slot pemain ditemukan pada struktur yang diperiksa.
-- Jarak antarstruktur: 0xB4 byte.
-- Offset +0x18 berisi nilai Chakra pada jalur getter/setter yang ditelusuri.
-- Setter yang diperiksa menjepit nilai tersimpan ke rentang -9.999 sampai 99.999.
+- Struktur yang diperiksa memiliki empat slot pemain, berjarak 0xB4 byte; nilai Chakra berada pada offset +0x18.
+- Getter/setter yang ditelusuri membaca/menulis Chakra di 0x80070EA0 + indeks_pemain × 0xB4 + 0x18.
+- Setter 0x8001387C memvalidasi indeks pemain di bawah 4 dan menjepit nilai tersimpan ke rentang inklusif -9.999 sampai 99.999. Ini batas penyimpanan, bukan kondisi menang/kalah.
+- Jalur inisialisasi mengisi Chakra awal tiap pemain dari record konfigurasi melalui getter 0x80012A44; nilai sumber berasal dari field +0x04.
 
-### Target skenario awal
+### Target kemenangan bukan satu angka global
 
-Pada konfigurasi skenario awal yang ditelusuri terdapat nilai 1.500, 3.000, dan 400 pada offset record +0x04, +0x08, dan +0x0C. Jalur kondisi target menggunakan 3.000 untuk membandingkan nilai pemain. Makna tepat dari 1.500 dan 400 belum terkonfirmasi penuh.
+Executable utama mempunyai tabel konfigurasi pada alamat RAM 0x80057798 (record 0x54 byte) dan tabel kedua pada 0x80064918 (record 0x30 byte). Di tabel pertama, field +0x04 dipakai sebagai Chakra awal dan field +0x08 disalurkan ke getter 0x80012A70 sebagai target pada jalur kemenangan Chakra. Jalur hasil yang dipetakan membandingkan Chakra pemain dengan target terkonfigurasi; saat kondisi opsi terkait aktif (bit 0x200 pada record kondisi yang diperiksa), nilai Chakra yang mencapai/melewati target dapat menetapkan pemain sebagai pemenang.
 
-Pada cabang target yang diperiksa, kode membandingkan nilai Chakra terhadap target dan dapat menetapkan ID pemain sebagai pemenang jika nilai mencapai atau melampaui target.
+| Record ID mentah | Chakra awal | Field target (+0x08) | Field +0x0C | Status interpretasi |
+|---|---:|---:|---:|---|
+| 0x00000A00 | 1.500 | 3.000 | 400 | Jalur target cocok; pemetaan ID ke nama skenario belum selesai |
+| 0x00010B01 | 2.000 | 4.000 | 400 | Data tabel; nama skenario belum dipastikan |
+| 0x00020C02 | 2.000 | 4.000 | 400 | Data tabel; nama skenario belum dipastikan |
+| 0x00081210 | 600 | 0 | 0 | Mungkin kondisi akhir non-target; target 0 tidak boleh ditafsirkan sebagai menang seketika |
+| 0x00031403 | 2.500 | 5.000 | 400 | Data tabel; nama skenario belum dipastikan |
+| 0x00040E04 | 2.500 | 5.000 | 400 | Data tabel; nama skenario belum dipastikan |
+| 0x00081211 | 600 | 0 | 0 | Mungkin kondisi akhir non-target; belum dikonfirmasi |
+| 0x00050F0F | 2.500 | 5.000 | 400 | Data tabel; nama skenario belum dipastikan |
+| 0x00061106 | 3.000 | 6.000 | 400 | Data tabel; nama skenario belum dipastikan |
+| 0x00060809 | 3.000 | 6.000 | 400 | Data tabel; nama skenario belum dipastikan |
 
-**Batas klaim:** tidak disimpulkan bahwa semua skenario dan Party Mode memakai target 3.000.
+Tabel kedua di 0x80064918 memiliki sekurangnya 13 record awal nonnol yang diperiksa dengan field awal/target 1.500/3.000 dan field +0x0C = 400. Ini membuktikan bahwa target dipilih lewat konfigurasi dan 3.000 bukan target universal bagi semua record.
+
+**Batas bukti dan confidence:**
+- **Tinggi:** field +0x04 dipakai sebagai nilai awal Chakra; field +0x08 dipakai sebagai target pada cabang kemenangan.
+- **Menengah–tinggi:** cabang dengan kondisi bit 0x200 dapat menetapkan pemenang ketika Chakra mencapai/melewati target; base RAM resource gameplay masih perlu validasi loader.
+- **Belum diketahui:** makna field +0x0C (400 atau 0), pemetaan ID mentah ke nama Story stage/Party rule, dan seluruh mode yang memilih salah satu tabel.
+- Terjemahan fan untuk Story Act 01 menyebut target 3.000 Chakra. Ini cocok dengan salah satu record, tetapi mapping ID satu-ke-satu belum terbukti.
+
+Semua temuan bagian ini berasal dari analisis statis atas berkas Library; tidak ada eksperimen gameplay runtime yang dijalankan.
 
 ## 3. Barrier/petak — status
 
