@@ -30,16 +30,18 @@ jobs:
 
       - name: Download the documented PCSX-Redux research build
         env:
-          RELEASE_URL: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/download/research-emulator-pcsx-redux-2026-10-15
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -eu
           mkdir -p /tmp/naruto-emulator-smoke
           cd /tmp/naruto-emulator-smoke
           curl --fail --location --retry 2 --max-time 90 \
-            "$RELEASE_URL/PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage" \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/642919476" \
             --output pcsx-redux.AppImage
           curl --fail --location --retry 2 --max-time 45 \
-            "$RELEASE_URL/openbios-chunked.bin" \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/643033573" \
             --output openbios-chunked.bin
           chmod +x pcsx-redux.AppImage
           echo "Downloaded emulator package:"
