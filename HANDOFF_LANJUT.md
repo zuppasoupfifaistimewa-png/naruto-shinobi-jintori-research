@@ -151,3 +151,26 @@ Dokumen prosedur: [docs/EMULATOR_WORKFLOW.md](docs/EMULATOR_WORKFLOW.md), [docs/
 - Instruksi untuk chat baru: cari/materialisasikan file dari Library dengan nama/path di atas terlebih dahulu. Jangan meminta upload ulang ZIP atau ROM. Jangan menghapus file Library lain tanpa instruksi eksplisit.
 - Jalur emulator alternatif sementara tetap PCSX-Redux AppImage + OpenBIOS yang sudah ada di [Research Emulator Release](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/research-emulator-pcsx-redux-2026-10-15).
 
+
+
+## Percobaan akses emulator setelah ZIP disimpan di Library — 2026-10-16
+
+### Apa yang berhasil
+- ZIP emulator alternatif, ROM BIN, dan CUE berhasil ditemukan dari Library dan dimaterialisasi melalui Files ke lokasi kerja yang dilaporkan:
+  - `/mnt/data/naruto-runtime/PCSX-Redux-9c6f98a0-linux-x86_64.zip` — 90.912.361 byte.
+  - `/mnt/data/naruto-runtime/Naruto - Shinobi no Sato no Jintori Gassen (Japan).bin` — 325.989.552 byte.
+  - `/mnt/data/naruto-runtime/naruto-shinobi-jintori.cue` — 113 byte.
+- Path tersebut berasal dari respons materialisasi Files; itu sendiri **tidak membuktikan** lingkungan shell dapat membaca file tersebut.
+
+### Kendala sesi
+- `container.exec` gagal dengan `ClientError` pada perintah pemeriksaan file, termasuk percobaan sederhana `echo runtime-check`.
+- Python tool di lingkungan analisis gagal saat inisialisasi ulang, dan pemeriksaan ulang melalui Python serta Python yang terlihat ke pengguna juga gagal dengan `ClientError`.
+- Karena itu isi ZIP belum dapat dilihat, daftar file arsip dan SHA-256 ZIP belum dapat diperoleh, binary belum diekstrak, dan PCSX-Redux **belum dijalankan pada sesi ini**. Tidak ada tes boot baru dari percobaan ini; status tetap belum terverifikasi.
+- Ini adalah kendala tool/runtime, bukan bukti bahwa ZIP rusak atau emulator tidak bisa berjalan. Jangan simpulkan salah satunya tanpa tes.
+
+### Langkah berikutnya saat eksekusi lokal pulih
+1. Periksa ZIP tanpa menjalankan binary: `unzip -t`, daftar isi, SHA-256, arsitektur dan izin executable.
+2. Ekstrak ke direktori terpisah yang dapat ditulis; jalankan binary dengan `--version` atau opsi bantuan terlebih dahulu dan catat dependensi yang hilang.
+3. Siapkan OpenBIOS dari Release yang sudah ada; jangan gunakan/mencari retail Sony BIOS.
+4. Jalankan ROM melalui CUE dengan interpreter/debugger dan log. Uji Port 1 Analog/DualShock sesuai hipotesis command pad `0x43`, tetapi ubah satu variabel setiap percobaan.
+5. Sukses hanya jika title/menu Naruto terlihat dan input terbukti merespons. Jangan masukkan ROM/EXE/save state/RAM dump ke repo.
