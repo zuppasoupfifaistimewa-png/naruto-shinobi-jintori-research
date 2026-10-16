@@ -203,3 +203,9 @@ ZIP alternatif, ROM BIN, dan CUE berhasil dimaterialisasi lewat Files ke lokasi 
 
 - [Actions #38974255045](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974255045) exited with code 139 about 12 seconds after the VSync trace callback was added; no `PC_TRACE` sample appeared. Treat this as an instrumentation failure until isolated, not evidence against the ROM.
 - Retry workflow revision: [9419800](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/941980021c16dee3e779f6cc1066dad70b187ad4). It uses one combined `-exec` script and no longer removes the listener from its callback. Check [run #38974418739](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974418739); if it also crashes, reduce the callback to count VSyncs only.
+
+
+### CPU trace attempt 2 correction — 2026-10-17
+
+- Run [#38974418739](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974418739) ended with exit 134 because Lua parsing failed: `unexpected symbol near '\\'`. The helper used a doubly escaped newline, passing literal `\n` instead of a newline between chunks. No valid tracing code ran; do not interpret as a ROM crash.
+- Workflow commit [7b8ce73](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/7b8ce731378e0115f616b7ff78874f5d17375e80) replaced concatenation with one Lua heredoc. Check retry [Actions #38974563869](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974563869) for setup and VSync samples.
