@@ -294,3 +294,18 @@ First retrieve the run output and confirm the Lua marker and `0x43` result. If t
 - The initial Analog-port workflow edit [6bd261a](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/6bd261a0599f192579f8c091ddcb6d28a4042ec7) accidentally left the Lua heredoc body without YAML block indentation. Do not treat that revision as a valid completed test.
 - The indentation was corrected in final workflow commit [0439c1b](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/0439c1bbf51d3c1be234150d6bee80c5b812ff1e). The current file was re-fetched and visually checked: heredoc contents and its closing LUA delimiter are now indented at the YAML run-block level, which YAML removes before the shell executes the script.
 - No runtime claim is made from these edits. The next evidence must still come from logs of a run using the corrected commit, including the PAD_SETUP marker and presence/absence of the pad 0x43 warning.
+
+
+## Runtime result: Port 1 Analog probe — 2026-10-17
+
+Runner test [#38973267415](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38973267415), job `boot-private-rom`, completed successfully using corrected workflow commit `0439c1bbf51d3c1be234150d6bee80c5b812ff1e`.
+
+- Both AnyLinux and upstream HEAD recorded `PAD_SETUP=port1 analog device connected and remapped`, then loaded OpenBIOS, recognized `SLPS-03553`, completed `[CHUNK1] done chunks=187`, and reached `EXEC:PC0(80011448)` / `Execute !`.
+- Unlike the baseline [#38971848277](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38971848277), neither build logged `Unknown command for pad: 43` after the explicit Analog DeviceType + Connected + remap setup. Each build was stopped at the 90-second cap (`PROCESS_EXIT=124`) rather than crashing.
+- Conclusion: **confirmed emulator protocol-level effect** — configuring Port 1 as Analog removes the observed `0x43` warning while preserving the executable-entry marker. This does not establish that the game title/menu rendered or that buttons worked in-game. The controller setup warning is now separated from the still-open black-screen/boot/rendering problem.
+
+## GUI rendering probe added — 2026-10-17
+
+- Current runner workflow commit: [85c08d9](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/85c08d9ea255dc400c0771361abc95817a0a7ba6). New Actions run [#38973709926](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38973709926) was observed queued immediately after commit; its final outcome has not yet been recorded here.
+- After the same A/B headless run, the workflow launches AnyLinux in a separate Xvfb GUI session with the same verified ROM, temporary CUE, OpenBIOS and Analog setup. It captures frames at 10s and 20s, prints only image size/mean/stddev/color-count and short Japanese/English OCR output, and logs boot/controller markers. Temporary frames and GUI logs are added to the cleanup list, not uploaded as artifacts.
+- GUI result must be checked separately. Non-black pixels or OCR text alone are suggestive only; accept boot only if the frame/text supports Naruto title/menu recognition and a later controlled input probe demonstrates response. If still blank, pursue CD event/init and GPU/rendering causes separately.
