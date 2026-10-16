@@ -214,3 +214,10 @@ Run the full test when the runtime tool is usable again; the current container a
 2. Retrieve the exact ROM and `naruto-shinobi-jintori.cue` from Library; do not upload ROM/BIOS to GitHub.
 3. Run with `openbios-chunked.bin`, isolated PCSX profile and log. Set PS1 Port 1 protocol to Analog (`DeviceType: 1`), keyboard as host input (`PadType: 2`), and `Connected=true`.
 4. Prove menu and controls work. Monitor the complete 187-sector EXE payload read, CD events and entry PC. Repeat boot before starting Story Mode. Do not promise “no obstacles” or claim Story Mode success until these tests genuinely pass.
+
+
+## Current Library package — AnyLinux artifact ZIP (2026-10-16)
+
+Current Library package is `/Naruto Research Files/PCSX-Redux-0c3572c3d-anylinux-x86_64-artifact.zip` (workflow artifact ID 11170447493; Actions-reported ZIP digest `f6c27070b565cbc0554f1093c1374a16aee2b8635c72ef7b141f9ff7bd857ed0`). Extract the AppImage and verify its SHA-256 is `c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c`. The standalone candidate also exists in the [research GitHub release](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/research-emulator-pcsx-redux-2026-10-15). It is a better glibc-2.41 candidate than `9c6f98a0` because AnyLinux packaging bundles dependencies and avoids FUSE; the packaging CI smoke test passed.
+
+**Still untested:** the packager's smoke test is not a Naruto game test. The previous `9c6f98a0` binary needed GLIBC_2.42/2.43, was replaced in Library, and its historical hashes are retained in `docs/PCSX_REDUX_PACKAGE.md`. The separate extracted-manifest file was removed as stale. Container/Python calls currently return ServerError, so a fresh full boot test was not possible. On recovery, verify the AnyLinux binary hash; boot the exact ROM/CUE with OpenBIOS chunked, isolated profile and logs; set Port 1 `DeviceType: 1`, keyboard `PadType: 2`, `Connected=true`; confirm title/menu, input and complete 187-sector read; only then progress into Story Mode.

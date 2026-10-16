@@ -251,3 +251,10 @@ Sources:
 This is a stronger candidate than the Library's `9c6f98a0` AppImage whose inner binary needs GLIBC_2.42/2.43. However, generic smoke tests and portable packaging do not establish game compatibility or stability. In this turn, container.exec and Python returned ServerError even for basic sanity commands, so no fresh test against the Naruto BIN/CUE was performed. Do not claim title/menu, input, stable gameplay, or Story Mode completion.
 
 Next test when runtime access recovers: obtain the exact candidate by release, verify its SHA; use OpenBIOS chunked with CUE, a clean profile, logs, Port 1 `DeviceType: 1` plus keyboard `PadType: 2`, and connected=true. Confirm title/menu and responsive input, then examine the 187-sector EXE read, repeat boot tests, and only afterwards begin Story Mode.
+
+
+## Current Library package — AnyLinux artifact ZIP (2026-10-16)
+
+The candidate AnyLinux artifact ZIP was downloaded from the packager's GitHub Actions artifact ID 11170447493 and saved in Library as `/Naruto Research Files/PCSX-Redux-0c3572c3d-anylinux-x86_64-artifact.zip`. Actions-reported ZIP digest: `f6c27070b565cbc0554f1093c1374a16aee2b8635c72ef7b141f9ff7bd857ed0`; reported size 65,673,524 bytes. Its standalone AppImage SHA-256 is known from Release metadata: `c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c`. This is the preferred candidate for glibc 2.41. The previous 91 MB `9c6f98a0` AppImage and its stale Library manifest were replaced/removed; their hashes remain recorded in `docs/PCSX_REDUX_PACKAGE.md`.
+
+The Actions log confirms a generic `quick-sharun --simple-test` passed. That does not test the ROM. No full Naruto boot, input, runtime stability, or Story Mode result is available. Attempts to run simple local commands now return ServerError, so do not claim an end-to-end test was performed.
