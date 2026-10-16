@@ -1,3 +1,12 @@
+# Status terbaru 2026-10-17 — sesudah tes kontroler Analog
+
+- Run [#38973267415](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38973267415) sukses. Port 1 disetel ke Analog, tersambung, dan di-remap sebelum boot.
+- AnyLinux dan upstream HEAD sama-sama mengenali disc `SLPS-03553`, menyelesaikan pemuatan 187 sektor executable, mencapai `EXEC:PC0(80011448)` lalu `Execute !`. Peringatan `Unknown command for pad: 43` hilang pada kedua log; sebelumnya muncul pada keduanya di run baseline #38971848277.
+- Ini mengonfirmasi koreksi protokol controller, tetapi **belum membuktikan** title/menu dan input in-game. Kedua tes headless tetap mencapai batas 90 detik.
+- GUI probe baru ada pada workflow commit [85c08d9](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/85c08d9ea255dc400c0771361abc95817a0a7ba6), run [#38973709926](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38973709926). Pada saat catatan ini ditambahkan, run masih terlihat in progress; ambil log akhirnya untuk memeriksa dua frame pada detik 10 dan 20, metrik piksel, OCR Jepang/Inggris, dan penanda boot. Frame dan log GUI sementara dihapus oleh cleanup.
+
+---
+
 # Rencana uji runtime PS1
 
 ## Tujuan dan status
