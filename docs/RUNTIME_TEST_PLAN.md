@@ -107,18 +107,31 @@ Setiap test harus dilengkapi screenshot atau log debugger dan, jika relevan, has
 - Hasil runtime sesuai analisis statis; bila berbeda, catat perbedaan dan revisi hipotesis.
 - Laporan final membedakan aturan normal, variasi skenario, dan kondisi yang hanya tersedia setelah unlock.
 
-## Status boot sebelum uji gameplay — pembaruan 2026-10-16
+## Status boot sebelum uji gameplay — pembaruan 2026-10-17
 
-Boot masih bermasalah, jadi pengujian aturan gameplay (biaya, income, battle, efek kartu, kemenangan) belum dimulai. Jangan lanjut ke test case RT-001 sampai game menampilkan menu/title yang dikenali dan kontrol terbukti responsif.
+Jangan mulai test case gameplay RT-001 sampai title/menu yang dikenali benar-benar tampil dan input terbukti direspons.
 
-Fakta terakhir:
-- Normal CD boot membaca `SYSTEM.CNF` tetapi macet di pengambilan payload `SLPS_035.53`.
-- Varian pemuat 1 sektor menunjukkan progres pembacaan, sedangkan 8 sektor/16 KB dan 32 sektor belum menyelesaikan payload. Varian diagnostik satu sektor: [Actions #38697240018](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/38697240018).
-- Jalur inject EXE mencapai `0x80011448` dan `CD_init`, tetapi layar hitam; perhatikan `flushCache`, init CD-ROM dan wait init kartu memori.
-- Ada petunjuk input: perintah pad `0x43` muncul saat emulator kemungkinan memakai tipe Digital; uji konfigurasi Port 1 Analog/DualShock terlebih dahulu. Petunjuk sumber: https://github.com/grumpycoders/pcsx-redux/blob/db9bc8af44e3c77424127b573c17f9583ee2ab95/src/core/pad.cc.
-- ZIP alternatif yang baru diunggah pengguna belum dapat diperiksa/dijalankan oleh runtime pada sesi ini. Jangan mengubah kesimpulan status boot hanya karena file alternatif sudah tersedia.
+### Fakta runtime yang sudah dikonfirmasi
 
-Urutan lanjutan yang disarankan: (1) verifikasi isi dan cara menjalankan ZIP alternatif saat lingkungan file tersedia; (2) set Port 1 Analog/DualShock; (3) ulangi CD boot dengan BIOS OpenBIOS, log CPU dan cache flush yang benar; (4) minimalkan bypass kartu memori sehingga hanya satu variabel berubah per eksperimen; (5) simpan hash emulator/BIOS/ROM dan log, bukan dump biner.
+- ROM private yang diuji terverifikasi dengan ukuran 325.989.552 byte dan SHA-256 `58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88`.
+- OpenBIOS membaca disc `SLPS-03553`, membaca `SYSTEM.CNF` (`BOOT = cdrom:\\SLPS_035.53;1`), lalu loader menyelesaikan 187 chunk executable. Dalam tes headless, log mencatat `EXEC:PC0(80011448)` dan `Execute !`; ini membuktikan loader menyerahkan kendali ke alamat entry executable, bukan membuktikan menu sudah digambar.
+- Peringatan `Unknown command for pad: 43` hilang untuk kedua build setelah Port 1 disetel `Analog`, `Connected=true`, dan di-remap melalui `PCSX.SIO0.slots[1].pads[1].map()`. Catatan pembanding: [Actions #38973267415](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38973267415).
+- Callback penghitung `GPU::Vsync` dapat berjalan stabil sampai lebih dari 2.040 frame dan mencapai marker entry ketika tidak membaca register CPU: [Actions #38974763602](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974763602).
+
+### Pertanyaan yang masih terbuka
+
+- Capture GUI 10s/20s sebelumnya memang seluruhnya hitam, tetapi diambil sebelum titik executable entry (yang pada headless terjadi sekitar frame 1.620, kira-kira 27 detik pada laju sekitar 60 VSync/s). Jadi hasil awal itu **belum membuktikan layar akan terus hitam**.
+- Tes GUI yang diperpanjang hingga frame 30s, 60s dan 90s sedang berjalan: [Actions #38975931679](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975931679). Hasil akhirnya perlu memeriksa metrik gambar dan OCR yang dihasilkan dari frame lokal yang dibersihkan saat cleanup.
+- Kedua AppImage terkemas yang tersedia tidak memiliki Lua API `PCSX.CPU.Trace`; percobaan tersebut gagal sebelum trace dijalankan. Workflow sekarang membangun source PCSX-Redux pada commit upstream yang dipatok agar built-in trace tersedia: [Actions #38975445756](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975445756). Hasil build/trace belum terverifikasi.
+- Pembacaan register CPU secara langsung dari callback VSync menyebabkan emulator berakhir dengan segfault pada eksperimen sebelumnya. Jangan memakai hasil trace itu untuk menyatakan bahwa game macet atau ROM rusak.
+
+### Gate sebelum riset aturan main
+
+1. Pastikan capture setelah entry menunjukkan title/menu Naruto yang benar-benar dikenali, bukan sekadar piksel non-hitam.
+2. Uji input secara terkendali hanya setelah ada frame/menu yang dapat dikenali.
+3. Baru setelah kedua gate tersebut terpenuhi, mulai test case biaya, income, battle, kartu, kepemilikan, dan kondisi kemenangan di bagian berikutnya.
+
+---
 
 
 ## GUI probe result — 2026-10-17
