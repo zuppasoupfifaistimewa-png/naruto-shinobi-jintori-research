@@ -43,3 +43,8 @@ Alamat, ukuran, dan hash di dokumen ini adalah catatan hasil pemeriksaan yang su
 ## Emulator package record
 
 Extracted package provenance, checksums, Library location and runtime compatibility: [docs/PCSX_REDUX_PACKAGE.md](docs/PCSX_REDUX_PACKAGE.md). The 91 MB `9c6f98a0` AppImage itself is retained in ChatGPT Library; the existing GitHub Release carries a different, pinned emulator build.
+
+
+## Recommended emulator for glibc 2.41
+
+Use the research-release `PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage`, whose packaging/build smoke evidence and compatibility limits are documented in [docs/PCSX_REDUX_PACKAGE.md](docs/PCSX_REDUX_PACKAGE.md). The separate 91 MB `9c6f98a0` Library AppImage requires newer GLIBC symbols.

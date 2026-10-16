@@ -201,3 +201,16 @@ Current blocker: Files materialization reports the ROM, CUE, EXE, DATA2 archive 
 3. The build's embedded metadata identifies changeset `9c6f98a0ed0581635f9123147e382c248e0f5ddc`, build ID 335 (2026-09-28). Do not confuse this with the existing research-release emulator AppImage pinned to `0c3572c3db75f97542001e453ae80ba8c3f8acba` (SHA-256 `c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c`).
 4. The extracted binary is not runnable in the current research container without a compatible userspace: its dependencies require GLIBC_2.42/2.43; the current host is glibc 2.41. The outer AppImage runtime answers `--appimage-version`, but mounting the AppImage fails due missing FUSE/fusermount. This is an environment compatibility blocker; do not infer the package or ROM is corrupt.
 5. The repository has a package inventory in `docs/PCSX_REDUX_PACKAGE.md`. The 91 MB new AppImage is in Library, not Git history; the available GitHub connector cannot upload binary Release assets. The repository's existing release has a distinct smaller AppImage. Before resuming game boot tests, choose a build compatible with the actual host/glibc and available graphics backend. Do not claim runtime success based only on this extraction.
+
+
+## Preferred build for GLIBC 2.41 host — 2026-10-16
+
+### Preferred emulator build and unverified game compatibility
+
+Use `PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage` from the [existing research release](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/research-emulator-pcsx-redux-2026-10-15), not the Library's `9c6f98a0` build that requires GLIBC_2.42/2.43. Candidate size 65,747,557 bytes; SHA-256 `c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c`. Packager says AnyLinux bundles dependencies, supports old/musl distributions, and avoids FUSE. GitHub Actions build log (run 36872881656 on 2026-10-01) shows `quick-sharun --simple-test` passed. This confirms generic launch smoke testing only, not Naruto game boot.
+
+Run the full test when the runtime tool is usable again; the current container and Python services return ServerError:
+1. Get the AnyLinux AppImage from the research release and verify the SHA-256 above.
+2. Retrieve the exact ROM and `naruto-shinobi-jintori.cue` from Library; do not upload ROM/BIOS to GitHub.
+3. Run with `openbios-chunked.bin`, isolated PCSX profile and log. Set PS1 Port 1 protocol to Analog (`DeviceType: 1`), keyboard as host input (`PadType: 2`), and `Connected=true`.
+4. Prove menu and controls work. Monitor the complete 187-sector EXE payload read, CD events and entry PC. Repeat boot before starting Story Mode. Do not promise “no obstacles” or claim Story Mode success until these tests genuinely pass.

@@ -50,3 +50,34 @@ Inspect or extract the inner AppImage filesystem without FUSE:
 ```
 
 Before trying to launch the game again, choose a PCSX-Redux build compatible with the host glibc and available display/graphics environment. No game boot, menu/input response, or Story Mode progress was demonstrated by this package extraction.
+
+
+## Preferred build for GLIBC 2.41 host — 2026-10-16
+
+### Recommended candidate: AnyLinux AppImage (not the 9c6f98a0 ZIP)
+
+Use the x86-64 AnyLinux AppImage produced by [pkgforge-dev/PCSX-Redux-AppImage-Enhanced](https://github.com/pkgforge-dev/PCSX-Redux-AppImage-Enhanced/releases/tag/0c3572c3d%402026-10-01_1790876682). The same binary is already attached to the research repo's [PCSX-Redux + OpenBIOS research release](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/research-emulator-pcsx-redux-2026-10-15).
+
+- File: `PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage`
+- Size: 65,747,557 bytes
+- SHA-256: `c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c`
+- Source changeset: `0c3572c3db75f97542001e453ae80ba8c3f8acba` (2026-10-01)
+- Packaging: unofficial AnyLinux AppImage built with `sharun/quick-sharun`; the packager says it bundles dependencies, supports old/musl Linux distributions, and does not require FUSE.
+- Build evidence: the packager's x86_64 GitHub Actions run [36872881656](https://github.com/pkgforge-dev/PCSX-Redux-AppImage-Enhanced/actions/runs/36872881656) completed successfully on 2026-10-01. Its job log states that the `quick-sharun --simple-test` returned “Test went OK” (about 8 seconds). The packaged environment also bundles cross-libc-dlopen and an embedded uruntime.
+- Earlier repo smoke-test notes say the same AppImage GUI opened under Xvfb and showed a “no BIOS configured” screen, which proves only GUI launch, not game boot.
+- The 91 MB `9c6f98a0` AppImage in Library is **not the preferred build**: its inner executable explicitly needs GLIBC_2.42 and GLIBC_2.43, while this work host reports glibc 2.41.
+
+### What is and is not verified
+
+The AnyLinux package is the **best candidate found for the glibc-2.41 host** based on its packaging design and successful generic launch test. Do not overstate that evidence:
+- The build smoke test does not load the Naruto ROM.
+- There is no completed runtime log proving the Naruto title/menu appears, controls respond, CD reads finish, or the game remains stable.
+- The currently available analysis container returns `ServerError` on even trivial shell commands, so this turn could not repeat the launch against the actual ROM. This is a tool/runtime outage, not a new result about emulator or ROM compatibility.
+- No binary build can be promised to run “without any obstacles” before testing the exact BIOS, BIN/CUE, graphics context (upstream PCSX-Redux needs an OpenGL 3.0-capable context), and input configuration.
+
+### Next end-to-end test
+
+1. Materialize the exact ROM and matching CUE from Library. Keep ROM/retail BIOS out of GitHub.
+2. Obtain the AnyLinux AppImage above and verify the SHA-256 before execution.
+3. Configure OpenBIOS `openbios-chunked.bin`; use the CUE, isolated profile and logging. Configure Port 1 emulated controller protocol as Analog (`DeviceType: 1`) while using keyboard host input (`PadType: 2`) and `Connected=true`.
+4. Confirm title/menu and input response first. Record CD reads and CPU PC. Then test a repeatable boot and later Story Mode; don't infer smooth gameplay from GUI launch or packaging CI alone.

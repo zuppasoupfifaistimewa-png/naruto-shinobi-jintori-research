@@ -235,3 +235,19 @@ The user-provided filename PCSX-Redux-9c6f98a0-linux-x86_64.zip maps by its pref
 - Persistent Library manifest: `/Naruto Research Files/PCSX-Redux-EXTRACTION-MANIFEST.md`.
 - New Git documentation records details in `docs/PCSX_REDUX_PACKAGE.md`. The actual 91 MB binary was not added to Git history because the current GitHub connector has no binary Release-asset upload action; a distinct 65,747,557-byte AppImage already exists on the research Release (SHA-256 `c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c`).
 - This work verifies the ZIP and extracted AppImage only. It is **not** a runtime verification of Naruto boot, controls, Story Mode, or the ROM's validity.
+
+
+## Preferred build for GLIBC 2.41 host — 2026-10-16
+
+### Candidate and compatibility evidence
+
+The best candidate located for the glibc 2.41 research host is the x86_64 `AnyLinux` AppImage built from source changeset `0c3572c3db75f97542001e453ae80ba8c3f8acba` on 2026-10-01. It is attached to the research release and the public packager's release. Size 65,747,557 bytes; SHA-256 `c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c`.
+
+Sources:
+- [Packager README](https://github.com/pkgforge-dev/PCSX-Redux-AppImage-Enhanced): states that AnyLinux AppImage bundles dependencies for old/musl Linux distributions and does not require FUSE.
+- [x86_64 GitHub Actions run](https://github.com/pkgforge-dev/PCSX-Redux-AppImage-Enhanced/actions/runs/36872881656), 2026-10-01: successful; the log explicitly says `quick-sharun --simple-test` returned “Test went OK.” The packager embeds cross-libc-dlopen and uruntime.
+- The repo's earlier smoke-test notes reported GUI launch under Xvfb with a “no BIOS configured” message. This was not a game boot test.
+
+This is a stronger candidate than the Library's `9c6f98a0` AppImage whose inner binary needs GLIBC_2.42/2.43. However, generic smoke tests and portable packaging do not establish game compatibility or stability. In this turn, container.exec and Python returned ServerError even for basic sanity commands, so no fresh test against the Naruto BIN/CUE was performed. Do not claim title/menu, input, stable gameplay, or Story Mode completion.
+
+Next test when runtime access recovers: obtain the exact candidate by release, verify its SHA; use OpenBIOS chunked with CUE, a clean profile, logs, Port 1 `DeviceType: 1` plus keyboard `PadType: 2`, and connected=true. Confirm title/menu and responsive input, then examine the 187-sector EXE read, repeat boot tests, and only afterwards begin Story Mode.
