@@ -258,3 +258,10 @@ The first VSync/PC trace run [#38974255045](https://github.com/zuppasoupfifaisti
 ### CPU trace attempt 2: instrument script failed to parse
 
 Run [#38974418739](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974418739) failed with exit 134 due `unexpected symbol near '\\'`; the shell helper passed literal `\n` between Lua chunks. No actual PC trace occurred, so this is not evidence of game/ROM failure. Corrected workflow commit [7b8ce73](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/7b8ce731378e0115f616b7ff78874f5d17375e80) now uses one heredoc. Inspect retry [Actions #38974563869](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974563869), looking for the pad setup marker and `PC_TRACE frame=` samples.
+
+
+### CPU trace attempt 3 — what is actually proven
+
+Run [#38974563869](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974563869) emitted VSync PC/RA/SP samples through at least frame 780, and the separate emulator logfile records `EXEC:PC0(80011448)` / `Execute !`. The process exited 139 (segmentation fault) before the 35-second cap with an incomplete final trace row. Samples mainly show BIOS addresses, but logs do not establish a stable guest hang, and `PCSX.getRegisters()` access inside the callback is a potential test confounder.
+
+Next run [#38974763602](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974763602) is counter-only VSync tracing, commit [85d3e4f](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/85d3e4ff31732b7788d67e447ea9df136dcb84f5). Look for `VSYNC_TRACE frame=...` counters and the final process exit. If counter-only runs stably but PC reads had segfaulted, add registers only with a safer minimal probe; if it crashes, investigate event callbacks separately.
