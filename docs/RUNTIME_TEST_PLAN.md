@@ -119,3 +119,13 @@ Fakta terakhir:
 - ZIP alternatif yang baru diunggah pengguna belum dapat diperiksa/dijalankan oleh runtime pada sesi ini. Jangan mengubah kesimpulan status boot hanya karena file alternatif sudah tersedia.
 
 Urutan lanjutan yang disarankan: (1) verifikasi isi dan cara menjalankan ZIP alternatif saat lingkungan file tersedia; (2) set Port 1 Analog/DualShock; (3) ulangi CD boot dengan BIOS OpenBIOS, log CPU dan cache flush yang benar; (4) minimalkan bypass kartu memori sehingga hanya satu variabel berubah per eksperimen; (5) simpan hash emulator/BIOS/ROM dan log, bukan dump biner.
+
+
+## GUI probe result — 2026-10-17
+
+Actions [#38973709926](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38973709926): Xvfb root frames at 10s and 20s were both all-black (`1280x800`, mean 0, standard deviation 0, one color), and OCR returned no text. The GUI probe showed BIOS/disc/controller setup in logs but no `EXEC:PC0`/`Execute !` marker during 35s; do not interpret that as the same boot result as headless mode.
+
+A separate no-UI CPU trace is now implemented in [workflow file](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/blob/main/.github/workflows/naruto-cpu-trace.yml) and running as [Actions #38974255045](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974255045). It logs the PC/RA/SP every 30 `GPU::Vsync` callbacks up to 600 frames. Use the final logs to determine whether frame callbacks occur and whether the guest PC changes; next step depends on that evidence.
+
+---
+
