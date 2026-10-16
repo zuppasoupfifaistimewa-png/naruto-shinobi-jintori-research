@@ -143,8 +143,11 @@ Dokumen prosedur: [docs/EMULATOR_WORKFLOW.md](docs/EMULATOR_WORKFLOW.md), [docs/
 
 ## Alternatif PCSX-Redux ZIP dari pengguna — pembaruan 2026-10-16
 
-- Nama lampiran: `PCSX-Redux-9c6f98a0-linux-x86_64.zip`; ukuran 90.912.361 byte.
-- Lampiran lama berhasil ditemukan dari daftar file percakapan dan dimaterialisasi pada sesi 2026-10-16 ke lingkungan kerja sebagai `/mnt/data/pcsx-research/PCSX-Redux-9c6f98a0-linux-x86_64.zip`.
-- Upaya menyalin ZIP ke Library pada `/Naruto Research Files/PCSX-Redux-9c6f98a0-linux-x86_64.zip` gagal dengan `library_storage_limit_exceeded`. Jadi ZIP **belum tersimpan di Library** dan chat baru tidak boleh menganggap file itu tersedia lintas-chat. Percobaan membuka/mengecek arsip lewat runtime juga gagal dengan `ClientError`; isi, hash, dependensi, dan kemampuan menjalankannya belum diverifikasi.
-- Jangan meminta pengguna mengunggah ulang ZIP atau ROM hanya karena kegagalan ini. Gunakan PCSX-Redux AppImage + OpenBIOS yang sudah ada di Release sebagai jalur penelitian sementara. Jangan menghapus file Library lain untuk menyediakan ruang tanpa instruksi eksplisit.
-- Agar ZIP alternatif bisa bertahan lintas-chat, kapasitas Library perlu dibebaskan secara sengaja atau file ditempatkan pada penyimpanan persisten lain yang dapat diakses. Setelah kapasitas tersedia, materialisasikan lampiran sumber yang masih dapat diakses, verifikasi SHA-256 dan isi arsip, lalu simpan salinannya di `/Naruto Research Files/`. Jangan menandai solusi Library selesai sebelum penyimpanan terkonfirmasi.
+- **Tersimpan dan terverifikasi di Library ChatGPT** pada `/Naruto Research Files/PCSX-Redux-9c6f98a0-linux-x86_64.zip`.
+- Ukuran: 90.912.361 byte; MIME `application/zip`.
+- Library `file_id`: `file_00000000ff2c820781db759026d06ce2`; `library_file_id`: `libfile_1e46fb09892c819186df7299888b8b8f`.
+- Asal: lampiran percakapan yang sudah ada; file disalin langsung melalui referensi lampiran ke Library, tanpa meminta pengguna mengunggah ulang. Penghapusan `DATA.BIN` dan `DUMMY.BIN` memberikan ruang yang diperlukan.
+- Catatan: ZIP **sudah tersimpan**, tetapi isi arsip, SHA-256, dependensi, dan kemampuan menjalankannya masih belum diverifikasi. Percobaan pemeriksaan sebelumnya terhambat oleh `ClientError`/masalah runtime. Jangan mengklaim ZIP ini telah diuji hingga pemeriksaan benar-benar berhasil.
+- Instruksi untuk chat baru: cari/materialisasikan file dari Library dengan nama/path di atas terlebih dahulu. Jangan meminta upload ulang ZIP atau ROM. Jangan menghapus file Library lain tanpa instruksi eksplisit.
+- Jalur emulator alternatif sementara tetap PCSX-Redux AppImage + OpenBIOS yang sudah ada di [Research Emulator Release](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/research-emulator-pcsx-redux-2026-10-15).
+
