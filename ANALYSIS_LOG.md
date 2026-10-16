@@ -258,3 +258,32 @@ Next test when runtime access recovers: obtain the exact candidate by release, v
 The candidate AnyLinux artifact ZIP was downloaded from the packager's GitHub Actions artifact ID 11170447493 and saved in Library as `/Naruto Research Files/PCSX-Redux-0c3572c3d-anylinux-x86_64-artifact.zip`. Actions-reported ZIP digest: `f6c27070b565cbc0554f1093c1374a16aee2b8635c72ef7b141f9ff7bd857ed0`; reported size 65,673,524 bytes. Its standalone AppImage SHA-256 is known from Release metadata: `c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c`. This is the preferred candidate for glibc 2.41. The previous 91 MB `9c6f98a0` AppImage and its stale Library manifest were replaced/removed; their hashes remain recorded in `docs/PCSX_REDUX_PACKAGE.md`.
 
 The Actions log confirms a generic `quick-sharun --simple-test` passed. That does not test the ROM. No full Naruto boot, input, runtime stability, or Story Mode result is available. Attempts to run simple local commands now return ServerError, so do not claim an end-to-end test was performed.
+
+
+## Controlled Analog-port boot probe configured — 2026-10-17
+
+### What changed
+
+- Runner workflow commit: [6bd261a0599f192579f8c091ddcb6d28a4042ec7](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/6bd261a0599f192579f8c091ddcb6d28a4042ec7).
+- The workflow now passes a Lua setup to each emulator build before execution:
+
+  ```lua
+  PCSX.settings.pads[1].DeviceType = 'Analog'
+  PCSX.settings.pads[1].Connected = true
+  PCSX.SIO0.slots[1].pads[1].map()
+  print("PAD_SETUP=port1 analog device connected and remapped")
+  ```
+
+- This matches the upstream PCSX-Redux test fixture at [tests/pcsxrunner/rumble.cc](https://github.com/grumpycoders/pcsx-redux/blob/6b9df482d7b77b9ae218d9c48c1ce1a43c265206/tests/pcsxrunner/rumble.cc). Its comment says safe mode starts Port 1 digital and that the controller type is cached at map() time.
+- The A/B workflow continues to use the exact same verified ROM SHA-256 `58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88`, the same temporary normalized CUE, OpenBIOS, interpreter and 90-second limit for both the AnyLinux and upstream HEAD builds. It now includes the Lua setup marker in the selected logs.
+
+### How to interpret the pending log
+
+- A visible `PAD_SETUP=port1 analog device connected and remapped` marker is needed to confirm the Lua setup ran.
+- Compare the presence of `Unknown command for pad: 43` against the baseline from Actions run [#38971848277](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38971848277), where both builds emitted the warning.
+- Even if the warning disappears, it proves only that the emulator now accepts the configuration command. It does **not** prove the title/menu is rendered or that input works in the game.
+- The resulting run log has not yet been captured into this research log. Do not infer success merely from the workflow commit or a passing CI job.
+
+### Next diagnostic gate
+
+First retrieve the run output and confirm the Lua marker and `0x43` result. If the warning is gone but the frame remains black, treat controller configuration as a solved protocol mismatch but **not** a sufficient explanation for the boot/rendering failure. Then run a separate GUI-under-Xvfb test with the same ROM and Analog-port setup, capture the emulator window locally on the ephemeral runner, and report only derived pixel/screen metrics (do not upload ROM, BIOS, EXE, save-state, RAM dump, or game screenshots to the repository). Confirm title/menu recognition and input response before starting gameplay-rule tests.
