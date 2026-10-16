@@ -253,3 +253,8 @@ Correction: the initial workflow commit had malformed indentation inside the Lua
 ### CPU tracing retry — 2026-10-17
 
 The first VSync/PC trace run [#38974255045](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974255045) segfaulted with code 139 after ~12 seconds and recorded no PC samples. Do not interpret it as a game/ROM failure because the new Lua listener is a confounder. Workflow commit [9419800](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/941980021c16dee3e779f6cc1066dad70b187ad4) now combines all Lua setup into one `-exec` and leaves the listener installed until timeout; run [#38974418739](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974418739) is the retry. First check if `PC_TRACE frame=` samples exist. If retry still crashes, use a VSync counter-only listener first; then add PC reads only after that works.
+
+
+### CPU trace attempt 2: instrument script failed to parse
+
+Run [#38974418739](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974418739) failed with exit 134 due `unexpected symbol near '\\'`; the shell helper passed literal `\n` between Lua chunks. No actual PC trace occurred, so this is not evidence of game/ROM failure. Corrected workflow commit [7b8ce73](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/7b8ce731378e0115f616b7ff78874f5d17375e80) now uses one heredoc. Inspect retry [Actions #38974563869](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974563869), looking for the pad setup marker and `PC_TRACE frame=` samples.
