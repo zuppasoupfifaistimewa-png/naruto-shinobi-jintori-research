@@ -215,3 +215,9 @@ ZIP alternatif, ROM BIN, dan CUE berhasil dimaterialisasi lewat Files ke lokasi 
 
 - Corrected trace run [#38974563869](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974563869) emitted PC samples from frame 30 through at least 780. Values often point to BIOS routines (`BFC0574C`, `BFC05784`, `BFC03C6C`), with occasional `0xB0` and `0x2998`; the separate log includes `[CHUNK1] done chunks=187`, `EXEC:PC0(80011448)`, `Execute !`. The emulator process still exited 139 (segfault) with an incomplete final sample, so register reads inside the callback could be involved. The trace does not prove the game crashed or remained on one PC.
 - Isolation run [#38974763602](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974763602), workflow commit [85d3e4f](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/85d3e4ff31732b7788d67e447ea9df136dcb84f5), removes CPU-register reads and prints only a VSync counter. Results pending.
+
+
+### Counter-only VSync test passed — 2026-10-17
+
+- Run [#38974763602](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974763602) reached expected `TRACE_PROCESS_EXIT=124` after the 35-second cap; VSync counter advanced through `frame=2040`. Headless boot markers `[CHUNK1] done chunks=187`, `EXEC:PC0(80011448)`, `Execute !` appeared. Counter-only callback is stable.
+- New probe [#38974903834](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974903834), commit [ff0faa5](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/ff0faa598c6e19295229b450c6f9d42c83e590fb), keeps counter and adds sparse PC-only reads from a register view acquired before callback registration. Result pending.
