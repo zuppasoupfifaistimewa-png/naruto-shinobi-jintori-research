@@ -174,3 +174,10 @@ Dokumen prosedur: [docs/EMULATOR_WORKFLOW.md](docs/EMULATOR_WORKFLOW.md), [docs/
 3. Siapkan OpenBIOS dari Release yang sudah ada; jangan gunakan/mencari retail Sony BIOS.
 4. Jalankan ROM melalui CUE dengan interpreter/debugger dan log. Uji Port 1 Analog/DualShock sesuai hipotesis command pad `0x43`, tetapi ubah satu variabel setiap percobaan.
 5. Sukses hanya jika title/menu Naruto terlihat dan input terbukti merespons. Jangan masukkan ROM/EXE/save state/RAM dump ke repo.
+
+
+## Refined next emulator experiment — 2026-10-16
+
+For the pending controller test, change Port 1's **Controller Type** to **Analog** in PCSX-Redux (Configuration → Controls). Do not treat the separate “Analog mode” checkbox or Lua `pad.setAnalogMode(true)` as an equivalent change: in the exact source commit used by the research-kit AppImage, `DeviceType` selects the emulated pad protocol (Digital=0, Analog=1), while `m_analogMode` is a different setting. Only the Analog controller type routes non-`0x42` commands such as `0x43` to the DualShock command handler.
+
+Repeat the same boot attempt with the same ROM/CUE, OpenBIOS variant, CPU mode and other settings; only change Port 1's Controller Type. Compare whether `Unknown command for pad: 43` disappears, and independently verify the title/menu and input. Source evidence and limitations are logged at the end of `ANALYSIS_LOG.md`. This experiment has **not** been run in the current session because the execution runtime is returning `ClientError`.

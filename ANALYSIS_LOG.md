@@ -172,3 +172,16 @@ Informasi eksternal digunakan untuk membuat hipotesis tentang makna kode, bukan 
 - Pemeriksaan lokal gagal sebelum program dijalankan: `container.exec` memberikan `ClientError` untuk listing/file checks dan bahkan `echo runtime-check`; Python di lingkungan analisis dan jalur Python alternatif juga gagal dengan `ClientError`.
 - Akibatnya, belum ada daftar isi ZIP, hash ZIP, hasil ekstraksi, versi PCSX-Redux, log run, atau bukti boot baru. Jangan mengartikan kegagalan tool sebagai kerusakan ZIP atau kegagalan emulator. Tidak ada tes runtime baru yang berhasil dilakukan.
 - Tindakan saat runtime pulih: verifikasi integritas dan isi ZIP, ekstrak binary ke direktori sementara, cek versi/dependensi, lalu ulangi boot ROM dengan OpenBIOS dan Port 1 Analog/DualShock sebagai hipotesis terpisah. Sukses harus dibuktikan dengan layar title/menu Naruto dan respons input.
+
+
+## Refinement of controller `0x43` diagnostic hypothesis — 2026-10-16
+
+The exact upstream PCSX-Redux source commit used for the research-kit AppImage was inspected: [`src/core/pad.cc` at `0c3572c3db75f97542001e453ae80ba8c3f8acba`](https://github.com/grumpycoders/pcsx-redux/blob/0c3572c3db75f97542001e453ae80ba8c3f8acba/src/core/pad.cc).
+
+- `PadType` defines `Digital = 0` and `Analog = 1`. The serialized setting is named `DeviceType`, with `Digital` as its default.
+- When the first received command byte is not the normal read command `0x42`, the pad dispatches the DualShock command handler only when `m_type == PadType::Analog`. Otherwise it logs `Unknown command for pad: %02X`. Thus the existing `Unknown command for pad: 43` log is consistent with Port 1 being configured as a Digital controller.
+- Important distinction: the Lua method `setAnalogMode(bool)` writes `m_analogMode`; it does **not** change `m_type` or the serialized `DeviceType` controller type. Calling that Lua method alone is not a valid test of the current hypothesis.
+- The GUI's `Controller Type` selector updates `SettingDeviceType` and resets/remaps the pad. The next controlled experiment should set Port 1 `Controller Type` to `Analog` through **Configuration → Controls**, confirm that the pad is connected, then repeat the same CD-boot attempt with all other variables unchanged.
+- Compare logs before and after. If the `Unknown command for pad: 43` messages disappear, record that protocol-level effect; if the game still hangs or remains black, the controller mismatch was not a sufficient explanation for the boot failure. Do not infer game boot from that log change alone.
+
+Evidence class: static inspection of the emulator source. **This is not yet a runtime result**: this session could not run the emulator because local execution/file tools returned `ClientError`. The contents and hash of the user-provided alternate ZIP remain unverified.
