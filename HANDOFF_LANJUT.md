@@ -192,3 +192,12 @@ Repeat the same boot attempt with the same ROM/CUE, OpenBIOS variant, CPU mode a
 5. Observe a long enough period for all 187 sectors and log each chunk completion, LBA, CD event/status, and PC. If the same LBA/event stalls repeatedly, use that evidence before changing the BIOS patch. Then verify title/menu pixels and input separately. Do not begin Story Mode testing before both title/menu and responsive input are confirmed.
 
 Current blocker: Files materialization reports the ROM, CUE, EXE, DATA2 archive and user ZIP were copied to working paths, but container.exec and Python returned ClientError even on simple commands. No new runtime test was possible in this session. Never claim gameplay/Story Mode success without runtime evidence. Do not upload the ROM, game EXE, retail BIOS, save states or RAM dumps to GitHub.
+
+
+## PCSX-Redux ZIP extraction record — 2026-10-16
+
+1. Retrieve `/Naruto Research Files/PCSX-Redux-HEAD-x86_64.AppImage` from Library if you need the extracted `9c6f98a0` package. Its expected SHA-256 is `5b2bf850afea345ff1428a38ea75d1776a1857832acf873d9d72d3f4d214b0f8`. The Library also has `PCSX-Redux-EXTRACTION-MANIFEST.md`.
+2. The original ZIP's SHA-256 was `7e4c9378524ebfa35068944ba4aa9e3ebf7462678bcae33b3e7ae7c57dd99849`; it contained only that single AppImage and was replaced in Library by the extracted AppImage due the Library storage limit.
+3. The build's embedded metadata identifies changeset `9c6f98a0ed0581635f9123147e382c248e0f5ddc`, build ID 335 (2026-09-28). Do not confuse this with the existing research-release emulator AppImage pinned to `0c3572c3db75f97542001e453ae80ba8c3f8acba` (SHA-256 `c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c`).
+4. The extracted binary is not runnable in the current research container without a compatible userspace: its dependencies require GLIBC_2.42/2.43; the current host is glibc 2.41. The outer AppImage runtime answers `--appimage-version`, but mounting the AppImage fails due missing FUSE/fusermount. This is an environment compatibility blocker; do not infer the package or ROM is corrupt.
+5. The repository has a package inventory in `docs/PCSX_REDUX_PACKAGE.md`. The 91 MB new AppImage is in Library, not Git history; the available GitHub connector cannot upload binary Release assets. The repository's existing release has a distinct smaller AppImage. Before resuming game boot tests, choose a build compatible with the actual host/glibc and available graphics backend. Do not claim runtime success based only on this extraction.

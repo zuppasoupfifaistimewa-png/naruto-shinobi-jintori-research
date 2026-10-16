@@ -39,3 +39,7 @@ Mulai dari [HANDOFF_LANJUT.md](HANDOFF_LANJUT.md), lalu baca STATUS.md, docs/OVE
 ## Prinsip penulisan
 
 Alamat, ukuran, dan hash di dokumen ini adalah catatan hasil pemeriksaan yang sudah dilakukan. Setiap kesimpulan aturan yang belum dihubungkan sampai ke jalur kode lengkap dan belum diuji runtime harus tetap berstatus belum pasti.
+
+## Emulator package record
+
+Extracted package provenance, checksums, Library location and runtime compatibility: [docs/PCSX_REDUX_PACKAGE.md](docs/PCSX_REDUX_PACKAGE.md). The 91 MB `9c6f98a0` AppImage itself is retained in ChatGPT Library; the existing GitHub Release carries a different, pinned emulator build.

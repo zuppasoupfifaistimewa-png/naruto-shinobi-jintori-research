@@ -219,3 +219,19 @@ The user-provided filename PCSX-Redux-9c6f98a0-linux-x86_64.zip maps by its pref
 3. Set Port 1 protocol to Analog (DeviceType: 1), host input to keyboard (PadType: 2), and Connected=true. Compare Unknown command for pad: 43 logs; independently verify the title/menu and input response.
 4. The executable payload is 187 sectors. Use a longer observation window and log every per-sector read. Determine whether progress completes, stops at a reproducible sector, or waits on a specific CD event. Early progress is not a completed read.
 5. Only start gameplay tests after the title/menu is visible and controls respond. No new runtime test occurred in this session because shell and Python tools returned ClientError; this is an environment blocker, not proof that the ZIP is corrupt or that the game cannot run.
+
+
+## PCSX-Redux ZIP extraction record — 2026-10-16
+
+### Archive validation and extraction
+
+- Materialized the user Library file `PCSX-Redux-9c6f98a0-linux-x86_64.zip` (90,912,361 bytes) to the working container.
+- Source ZIP SHA-256: `7e4c9378524ebfa35068944ba4aa9e3ebf7462678bcae33b3e7ae7c57dd99849`.
+- `unzip -t` passed with no errors; archive contained exactly one entry: `PCSX-Redux-HEAD-x86_64.AppImage`, 91,474,424 bytes.
+- Extracted AppImage SHA-256: `5b2bf850afea345ff1428a38ea75d1776a1857832acf873d9d72d3f4d214b0f8`. A second materialization from Library compared byte-identical with the extracted local file.
+- Embedded `usr/share/pcsx-redux/resources/version.json`: version `9c6f98a0`, build ID 335, changeset `9c6f98a0ed0581635f9123147e382c248e0f5ddc`, build timestamp 2026-09-28 19:56:29 UTC, channel `dev`.
+- The extracted AppImage runtime responded to `--appimage-version`, and the embedded squashfs filesystem could be extracted without FUSE. Running the inner emulator failed due requirements `GLIBC_2.42` and `GLIBC_2.43`; this host provides glibc 2.41. Direct AppImage mounting also failed because no suitable `fusermount`/FUSE device is available.
+- The source ZIP was replaced in Library by the AppImage output to avoid storing two nearly identical large files at Library quota. The source hash is recorded here. The Library item retains stale ZIP MIME metadata despite the new AppImage bytes.
+- Persistent Library manifest: `/Naruto Research Files/PCSX-Redux-EXTRACTION-MANIFEST.md`.
+- New Git documentation records details in `docs/PCSX_REDUX_PACKAGE.md`. The actual 91 MB binary was not added to Git history because the current GitHub connector has no binary Release-asset upload action; a distinct 65,747,557-byte AppImage already exists on the research Release (SHA-256 `c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c`).
+- This work verifies the ZIP and extracted AppImage only. It is **not** a runtime verification of Naruto boot, controls, Story Mode, or the ROM's validity.
