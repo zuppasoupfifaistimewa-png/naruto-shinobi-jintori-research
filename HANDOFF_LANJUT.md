@@ -233,3 +233,11 @@ Current Library package is `/Naruto Research Files/PCSX-Redux-0c3572c3d-anylinux
 6. Jangan mengunggah ROM, game EXE, retail BIOS, save state, RAM dump, atau screenshot yang memuat aset game ke repo. Batas repo tetap Naruto Research/Runner saja, tidak menyentuh Tile Duel.
 
 Correction: the initial workflow commit had malformed indentation inside the Lua heredoc. The corrected, current runner workflow is commit [0439c1b](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/0439c1bbf51d3c1be234150d6bee80c5b812ff1e). Use only a run started from this corrected workflow when reading the Analog-port experiment result; no successful runtime outcome has been verified yet.
+
+
+## Temuan runtime terbaru — 2026-10-17
+
+1. Buka Actions run [#38973267415](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38973267415): tes Analog-port sudah sukses. Kedua build mencetak `PAD_SETUP=...`, mencapai `EXEC:PC0(80011448)`, dan tidak lagi mencatat `Unknown command for pad: 43`; baseline run #38971848277 mencatat warning itu pada keduanya.
+2. Jangan menyatakan game tampil: kedua proses tetap berhenti oleh timeout 90 detik, dan tes ini menggunakan `-no-ui`. Menu Naruto serta respons input masih belum terbukti.
+3. Workflow terbaru commit [85c08d9](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/85c08d9ea255dc400c0771361abc95817a0a7ba6), Actions run [#38973709926](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38973709926), menambahkan GUI probe Xvfb pada AnyLinux. Ambil hasil run tersebut, periksa metrik frame 10/20 detik dan OCR; tangkapan layar/log disimpan sementara lalu dibersihkan di runner.
+4. Jika tampilan masih hitam, jangan ulang tes Analog yang sekarang terjawab. Pisahkan diagnosis jalur CD completion / OpenBIOS init / cache entry dan render-GPU. Input in-game baru boleh diuji setelah title/menu yang dikenali tampil.
