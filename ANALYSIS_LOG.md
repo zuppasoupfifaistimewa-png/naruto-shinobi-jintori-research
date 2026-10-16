@@ -164,3 +164,11 @@ Informasi eksternal digunakan untuk membuat hipotesis tentang makna kode, bukan 
 
 ### Syarat bukti
 - Status sekarang: *executable mulai berjalan dalam jalur manual*, bukan game terkonfirmasi boot. Bukti yang dibutuhkan: log entry yang valid, title/menu yang dikenali, dan input responsif. Sesudah itu baru validasi aturan gameplay dengan state awal terkontrol.
+
+
+## Percobaan setelah ZIP emulator tersimpan di Library — 2026-10-16
+
+- Melalui Files berhasil mematerialisasi ZIP emulator (90.912.361 byte), ROM sumber (325.989.552 byte), dan CUE (113 byte) ke `/mnt/data/naruto-runtime/`.
+- Pemeriksaan lokal gagal sebelum program dijalankan: `container.exec` memberikan `ClientError` untuk listing/file checks dan bahkan `echo runtime-check`; Python di lingkungan analisis dan jalur Python alternatif juga gagal dengan `ClientError`.
+- Akibatnya, belum ada daftar isi ZIP, hash ZIP, hasil ekstraksi, versi PCSX-Redux, log run, atau bukti boot baru. Jangan mengartikan kegagalan tool sebagai kerusakan ZIP atau kegagalan emulator. Tidak ada tes runtime baru yang berhasil dilakukan.
+- Tindakan saat runtime pulih: verifikasi integritas dan isi ZIP, ekstrak binary ke direktori sementara, cek versi/dependensi, lalu ulangi boot ROM dengan OpenBIOS dan Port 1 Analog/DualShock sebagai hipotesis terpisah. Sukses harus dibuktikan dengan layar title/menu Naruto dan respons input.
