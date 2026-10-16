@@ -221,3 +221,9 @@ ZIP alternatif, ROM BIN, dan CUE berhasil dimaterialisasi lewat Files ke lokasi 
 
 - Run [#38974763602](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974763602) reached expected `TRACE_PROCESS_EXIT=124` after the 35-second cap; VSync counter advanced through `frame=2040`. Headless boot markers `[CHUNK1] done chunks=187`, `EXEC:PC0(80011448)`, `Execute !` appeared. Counter-only callback is stable.
 - New probe [#38974903834](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974903834), commit [ff0faa5](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/ff0faa598c6e19295229b450c6f9d42c83e590fb), keeps counter and adds sparse PC-only reads from a register view acquired before callback registration. Result pending.
+
+
+### Emulator trace API mismatch — 2026-10-17
+
+- Run [#38975154606](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975154606) aborted with `attempt to index field 'CPU' (a nil value)` because the pinned AnyLinux build from upstream ref `0c3572c3d` has no `PCSX.CPU.Trace` API. This test did not begin VSync counting; it says nothing negative about the ROM.
+- Corrected workflow commit [c994afc](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/c994afccfa62efcc01751a7c2b39d89b109d936a) now verifies and uses private-release upstream HEAD AppImage SHA-256 `5b2bf850afea345ff1428a38ea75d1776a1857832acf873d9d72d3f4d214b0f8`. Run [#38975223698](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975223698) is the new bounded CPU-trace attempt; outcome pending.
