@@ -185,3 +185,37 @@ The exact upstream PCSX-Redux source commit used for the research-kit AppImage w
 - Compare logs before and after. If the `Unknown command for pad: 43` messages disappear, record that protocol-level effect; if the game still hangs or remains black, the controller mismatch was not a sufficient explanation for the boot failure. Do not infer game boot from that log change alone.
 
 Evidence class: static inspection of the emulator source. **This is not yet a runtime result**: this session could not run the emulator because local execution/file tools returned `ClientError`. The contents and hash of the user-provided alternate ZIP remain unverified.
+
+## OpenBIOS source-level CD-read stall hypothesis — 2026-10-16
+
+### Source trace
+
+Pinned source chain:
+- PCSX-Redux AppImage root commit: https://github.com/grumpycoders/pcsx-redux/commit/0c3572c3db75f97542001e453ae80ba8c3f8acba, dated 2026-10-01.
+- Its src/mips submodule points to OpenBIOS/Nugget commit https://github.com/pcsx-redux/nugget/commit/d93840921b5ad7ed515e95b0e414f1b1e2038b1a.
+
+Relevant source:
+- openbios/kernel/psxexe.c: loadExe() reads the 2,048-byte header, then calls syscall_read(fd, text_addr, text_size) once; it does not check the result count before closing and flushing cache.
+- openbios/cdrom/filesystem.c: dev_cd_read() rejects a size or offset not aligned to 0x800 bytes and converts the request into 2,048-byte sectors before calling cdromBlockReading().
+- openbios/cdrom/helpers.c: cdromBlockReading() polls seek/read startup with bounded cycle counters, but after starting a read it waits for the DNE completion event while checking error/end events; that final wait has no overall timeout. If completion is never delivered, it may wait indefinitely.
+
+The known executable payload is 0x5D800 = 382,976 bytes = 187 sectors; its request size and file offset satisfy the 0x800 alignment guard. The normal-path stall during payload loading is consistent with a CD-ROM read/event completion issue because the log previously showed SYSTEM.CNF read but not EXEC:PC0(80011448). This remains a root-cause hypothesis until a reproducible runtime trace identifies the exact event/state.
+
+### Controller configuration refined
+
+PCSX-Redux source declares PadType::Digital=0 and PadType::Analog=1 and serializes the emulated console pad protocol to DeviceType (default Digital). Upstream tests/core/pad-config.cc confirms DeviceType: 1 means Analog; PadType: 2 is the keyboard host-input source. These settings are distinct. Toggling the keyboard Analog mode binding or Lua setAnalogMode(true) is not equivalent to setting DeviceType.
+
+- Source used by release: https://github.com/grumpycoders/pcsx-redux/blob/0c3572c3db75f97542001e453ae80ba8c3f8acba/src/core/pad.cc
+- Upstream config fixture: https://github.com/grumpycoders/pcsx-redux/blob/e7ced7b681296ace22f7847f7bb3c9a206315571/tests/core/pad-config.cc
+
+### Emulator package comparison
+
+The user-provided filename PCSX-Redux-9c6f98a0-linux-x86_64.zip maps by its prefix to upstream root commit https://github.com/grumpycoders/pcsx-redux/commit/9c6f98a0ed0581635f9123147e382c248e0f5ddc, a merge dated 2026-09-28. The research AppImage is pinned to a later root commit dated 2026-10-01. Since ZIP contents could not be inspected in this session, do not claim the uploaded archive actually contains that exact build; the filename is evidence only.
+
+### Next controlled runtime test
+
+1. When shell runtime is available, inspect the ZIP without executing it: unzip -t, list files, SHA-256, architecture and dependencies. Prefer the pinned research AppImage if the ZIP offers no newer/testable functionality.
+2. Run a clean isolated test with explicit paths: -bios openbios-chunked.bin -iso naruto-shinobi-jintori.cue -run -interpreter -debugger -stdout -lua_stdout -logfile boot-analog.log.
+3. Set Port 1 protocol to Analog (DeviceType: 1), host input to keyboard (PadType: 2), and Connected=true. Compare Unknown command for pad: 43 logs; independently verify the title/menu and input response.
+4. The executable payload is 187 sectors. Use a longer observation window and log every per-sector read. Determine whether progress completes, stops at a reproducible sector, or waits on a specific CD event. Early progress is not a completed read.
+5. Only start gameplay tests after the title/menu is visible and controls respond. No new runtime test occurred in this session because shell and Python tools returned ClientError; this is an environment blocker, not proof that the ZIP is corrupt or that the game cannot run.
