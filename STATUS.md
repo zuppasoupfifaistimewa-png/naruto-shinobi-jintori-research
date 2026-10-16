@@ -233,3 +233,9 @@ ZIP alternatif, ROM BIN, dan CUE berhasil dimaterialisasi lewat Files ke lokasi 
 
 - The private upstream HEAD AppImage in [run #38975223698](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975223698) also lacks `PCSX.CPU.Trace`; it aborted before VSync counting. Neither packaged AppImage asset currently available exposes this newer API.
 - Current runner workflow commit [8304b7d](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/8304b7dd56be13673e83e84bb738458eca0cfc2d) now clones source pinned to upstream commit `6b9df482d7b77b9ae218d9c48c1ce1a43c265206` and compiles it with the official PCSX-Redux builder container. [Actions #38975445756](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975445756) is building; results pending.
+
+
+### Catatan interpretasi GUI — 2026-10-17
+
+- Frame hitam pada 10s/20s di [run #38973709926](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38973709926) diambil sebelum executable game terbukti dijalankan. Counter-only [run #38974763602](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38974763602) menunjukkan entry point baru dicapai setelah sekitar 27–30 detik dalam tes headless. Karena itu capture 10s/20s bukan bukti bahwa layar tetap hitam sesudah entry. Tes GUI harus diperpanjang hingga setidaknya 60–90 detik dan idealnya menangkap window emulator secara langsung.
+- Source-build trace [run #38975445756](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975445756) sedang mencoba build source pinned agar API CPU trace tersedia tanpa membaca register dari callback. Hasil belum terverifikasi.
