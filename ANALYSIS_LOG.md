@@ -287,3 +287,10 @@ The Actions log confirms a generic `quick-sharun --simple-test` passed. That doe
 ### Next diagnostic gate
 
 First retrieve the run output and confirm the Lua marker and `0x43` result. If the warning is gone but the frame remains black, treat controller configuration as a solved protocol mismatch but **not** a sufficient explanation for the boot/rendering failure. Then run a separate GUI-under-Xvfb test with the same ROM and Analog-port setup, capture the emulator window locally on the ephemeral runner, and report only derived pixel/screen metrics (do not upload ROM, BIOS, EXE, save-state, RAM dump, or game screenshots to the repository). Confirm title/menu recognition and input response before starting gameplay-rule tests.
+
+
+## Workflow YAML correction — 2026-10-17
+
+- The initial Analog-port workflow edit [6bd261a](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/6bd261a0599f192579f8c091ddcb6d28a4042ec7) accidentally left the Lua heredoc body without YAML block indentation. Do not treat that revision as a valid completed test.
+- The indentation was corrected in final workflow commit [0439c1b](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/0439c1bbf51d3c1be234150d6bee80c5b812ff1e). The current file was re-fetched and visually checked: heredoc contents and its closing LUA delimiter are now indented at the YAML run-block level, which YAML removes before the shell executes the script.
+- No runtime claim is made from these edits. The next evidence must still come from logs of a run using the corrected commit, including the PAD_SETUP marker and presence/absence of the pad 0x43 warning.
