@@ -309,3 +309,10 @@ State carried forward; do not repeat the Analog-port or asset-setup steps unless
 Actions #39000276365 completed. The corrected workflow found the actual visible PCSX-Redux window at 30s, 60s, and 90s; all three window captures were uniformly black by metrics (mean=0, stddev=0, colors=1) and OCR was empty. Crucially, the GUI probe itself did not log the 187-chunk completion or EXEC:PC0 / Execute !; only the separate -no-ui headless A/B probes did. Thus this is not yet evidence of a black Naruto frame after game entry. Debug the GUI/headless boot-path discrepancy.
 
 No screenshots, ROM, CUE, BIOS or log artifacts were uploaded, and cleanup completed. The CPU-source-build/dependency retest remains Actions #39000257139; inspect its build, dependency and trace output before inferring guest CPU state.
+
+
+## Current GUI initialization diagnostic — 2026-10-17
+
+- Window-targeted run [#39000276365](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000276365) successfully captured the real PCSX-Redux window at 30/60/90s, but each frame was uniformly black and OCR empty. The GUI probe did not log PAD_SETUP, executable chunk completion or EXEC:PC0. Headless A/B probes did log EXEC:PC0, so do not treat the GUI frame as a post-entry game screenshot.
+- New diagnostics run: [#39000751307](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000751307), commit [259d587](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/259d587c6b677be7f6466b0ec61edb1940faec49). It checks GLX capabilities with glxinfo under Xvfb and prints GUI stdout/log tails, including whether the Lua PAD_SETUP marker is reached. Inspect the completed run to distinguish GUI initialization from guest boot.
+- CPU trace/dependency rerun [#39000257139](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000257139) remains active at last check; do not infer anything about guest PC until its actual trace lines appear.
