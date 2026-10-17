@@ -204,6 +204,7 @@ jobs:
           # of the emulator Lua screenshot API. This observes the displayed game surface
           # while avoiding GPU::takeScreenShot() on an uncertain backend.
           (
+            previous_second=0
             for second in 5 15 30 45 60 75; do
               sleep "$((second - previous_second))"
               previous_second="$second"
