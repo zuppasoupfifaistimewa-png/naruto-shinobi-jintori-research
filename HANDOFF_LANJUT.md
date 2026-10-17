@@ -521,3 +521,9 @@ Rerun [#39015722771](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi
 Interpretasi: berbeda dari run #390151/#390154 yang selector-nya cacat, hasil hitam pada #390157 **valid sebagai frame jendela emulator**; grafis game tetap tak tampak walau executable handoff tercapai.
 Run [#39015919056](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015919056) menguji backend OpenGL default vs `-softgpu` dengan Mesa llvmpipe/OpenGL 3.3, tanpa mengubah BIOS fastboot, ROM, atau input setup. Periksa frame/log akhirnya. RT-001 tetap Open / blocked.
 
+
+## Handoff — OpenGL default vs soft GPU sama-sama hitam (#39015919056), 2026-10-17
+
+Run [#39015919056](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015919056) memakai fastboot BIOS, ROM, emulator AnyLinux, controller Analog dan selector X11 non-root yang sama seperti #39015722771. Satu perubahan: argumen `-softgpu` dihapus dan Mesa llvmpipe/OpenGL 3.3 digunakan. `glxinfo -B` mengonfirmasi renderer `llvmpipe (LLVM 21.1.8, 256 bits)`, versi OpenGL 3.3 Compatibility Profile Mesa. Capture jendela PCSX yang sah XID 2097204/ `0x200034` di 20s sebelum input, sesudah Return/Cross, dan 40/65/90s semuanya uniform black, mean 0/stddev 0/satu warna; OCR kosong. Tidak ada PC-register read dalam VSync callback. Log fastboot mencapai SYSTEM.CNF, BOOT, `EXEC:PC0(80011448)`, `Execute !`. Cleanup runner sukses; artifact privat #12094736241, retensi sampai 2026-10-20 08:03 UTC.
+Kesimpulan: mengganti backend dari `-softgpu` ke OpenGL tidak mengubah frame; belum ada title/menu atau input game yang terbukti. Langkah berikut: pakai GDB remote untuk snapshot register PC pada beberapa waktu ketika emulator aktif, bukan membaca register dalam callback VSync dan bukan mencetak raw instruction records. RT-001 tetap Open / blocked.
+
