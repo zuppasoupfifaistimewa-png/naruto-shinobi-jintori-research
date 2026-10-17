@@ -1,5 +1,12 @@
 # Status penelitian
 
+## Koreksi pemilihan window X11 — fastboot probe terbaru, 2026-10-17
+
+Run [#39015419649](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015419649) benar-benar mengecualikan root, tetapi pencarian kandidatnya masih memakai `xdotool search`; hasilnya tidak mengembalikan aplikasi. Potongan `xwininfo -root -tree` di log menunjukkan child window nyata `0x200034 "PCSX-Redux"`, 1280×800. Jadi kesimpulan yang benar: window ada tetapi selector gagal memilihnya; tidak ada gambar emulator yang diambil. Marker fastboot dari log tetap mencapai `SYSTEM.CNF`, `BOOT`, `EXEC:PC0(80011448)`, `Execute !`.
+Workflow diperbarui pada commit `1acd87e9960c0caeb334cffc48ed8aea212212e1` agar mengekstrak XID langsung dari tree, mengecualikan root, dan memakai `windowfocus` sebelum input. Rerun [#39015610296](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015610296) telah dipicu; status awal queued.
+**Belum ada capture GUI fastboot yang sah dan belum terbukti title/menu. RT-001 tetap Open / blocked.**
+
+
 ## Koreksi validitas capture fastboot — 2026-10-17
 
 Audit log run [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) menemukan bahwa ID window `543` sama dengan root Xvfb `0x21f`. Selector `xdotool search --onlyvisible --name '.*'` ternyata memasukkan root, sehingga semua metrik hitam dan OCR kosong dari run ini **bukan** capture jendela emulator dan harus ditarik dari bukti visual. Marker boot tetap sah: fastboot BIOS mencapai `SYSTEM.CNF`, BOOT, `EXEC:PC0(80011448)`, dan `Execute !`.
