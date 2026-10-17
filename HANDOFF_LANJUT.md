@@ -4,6 +4,14 @@ Terakhir diperbarui: 2026-10-17
 Repo: [zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research)  
 Branch utama: `main`
 
+
+## Hasil terverifikasi terkini — OpenGL Mesa, 2026-10-17
+
+- Run [#39049689832](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39049689832) sukses: `glxinfo -B` default dan dipaksa software sama-sama melaporkan Mesa / `llvmpipe (LLVM 21.1.8, 256 bits)`, Mesa 26.0.8, OpenGL 4.5 Core dan Compatibility. Tidak ada GL/GLSL version override; konteks compatibility 3.3 berhasil dibuat. GPU fisik tidak terbukti diperlukan.
+- Pada source PCSX-Redux pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, screenshot software GPU menghitung ukuran berdasarkan register batas display PS1. Dimensi 0×0 dapat berarti display emulasi belum disetel, bukan kegagalan GLX. Coba `PCSX.GPU.getVRAM()` setelah VSync sebagai pembeda berikutnya; konversi ke PNG hanya di runner dan jangan unggah raw VRAM/memory dump.
+- Run [#39047765424](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39047765424) selesai workflow success tetapi capture berstatus `NO_VALID_GPU_SCREENSHOTS`; emulator timeout pada 90 detik. Tidak ada bukti title/menu atau respons input, maka **RT-001 tetap Open / blocked**.
+- Lanjutkan hanya di repo Naruto ini, emulator AnyLinux yang dipin dan OpenBIOS fastboot. Setelah VRAM probe, jika VRAM tetap kosong/tidak berubah, korelasikan dengan PC/CP0 dan marker loader sebelum mengubah backend atau opsi emulator.
+
 ## Aturan proyek dan izin kerja
 
 - ChatGPT hanya bekerja pada repo Naruto ini. Pemilik memberi izin berkelanjutan agar ChatGPT boleh membaca, menganalisis, menambah, memperbarui, mengorganisasi, commit, dan push dokumentasi penelitian yang diperlukan tanpa meminta izin ulang untuk setiap perubahan wajar dalam ruang lingkup riset Naruto.
