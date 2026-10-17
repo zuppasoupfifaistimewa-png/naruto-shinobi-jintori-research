@@ -108,3 +108,24 @@ Perbaikan minimal sudah didorong ke runner pada commit [aac684d120ec025c4a87197d
 CPU-trace run [#39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) juga masih `in_progress`. Secret dan pengunduhan/verifikasi file privat telah dilewati; step source-build di container Docker yang dipatok digest masih berjalan, sedangkan capture trace dan cleanup belum dimulai. Belum ada `CPU_TRACE_SIZE` atau `CPU_TRACE_LINE` yang dapat dipakai untuk analisis.
 
 Current upstream PCSX-Redux yang terverifikasi saat cek adalah [41f3196257d0962942b60983201aade951ebbd54](https://github.com/grumpycoders/pcsx-redux/commit/41f3196257d0962942b60983201aade951ebbd54) (2026-10-17 02:53:17 UTC). AppImage berlabel “HEAD” tetap build source 9c6f98a0, bukan upstream HEAD terkini. Tidak ada bukti bahwa judul/menu tampil atau input gameplay merespons; gate RT-001 tetap tertutup dan Story Mode tidak boleh dimulai.
+
+
+## GUI A/B rerun setelah fix PAD_SETUP — 2026-10-17
+
+Run [#39002846886](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39002846886) pada commit runner `aac684d120ec025c4a87197da8d835f90b89f869` selesai dengan workflow/job sukses, tanpa artefak Actions. Keberhasilan workflow tidak menjadikan uji GUI lulus.
+
+| Kriteria | AnyLinux AppImage | AppImage berlabel “HEAD” |
+|---|---|---|
+| Headless | BIOS/disc `SLPS-03553`, SYSTEM.CNF, 187 chunk, `EXEC:PC0(80011448)`, `Execute !`; exit 124 di batas 90 detik | Sama |
+| GUI startup | PAD_SETUP dijalankan; window ditemukan dan ditargetkan langsung | Gagal membuat window: `Couldn't find matching GLX visual` |
+| GUI boot marker | BIOS/disc/SYSTEM.CNF/BOOT terlihat, tetapi tak ada chunk 187 selesai atau `EXEC:PC0`/`Execute !` | PAD_SETUP dan executable-entry marker tidak muncul |
+| Capture 30/60/90 s | Ketiga frame window 1280×800: mean 0, stddev 0, satu warna; OCR jpn+eng kosong | Tidak ada window atau frame untuk ditangkap |
+| Exit/interpretasi | Exit 124 = batas observasi 100 s; bukan bukti crash | Exit 137 setelah timeout/eskalasi; kegagalan startup window terverifikasi, crash guest tidak terverifikasi |
+
+GLX/renderer test pada run sebelumnya melihat Mesa llvmpipe/OpenGL 3.3. Dengan demikian jangan menyimpulkan seluruh lingkungan tanpa GLX; namun build “HEAD” ini gagal menciptakan window dengan konfirmasi log yang eksplisit. AnyLinux sudah melewati harness setup dan capture tetapi log GUI belum mencapai handoff executable. Frame hitam belum membuktikan layar game hitam setelah entry karena entry tidak muncul dalam log GUI.
+
+Cleanup step berhasil dan tidak ada artefak. Pemeriksaan recursive tree repo runner publik menemukan hanya file workflow, dokumentasi, README, dan .gitignore—tidak ada media game, dump, capture atau binary emulator.
+
+## Status CPU trace source-build saat pemeriksaan — 2026-10-17
+
+Run [#39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) masih `in_progress` pada step `Build pinned upstream PCSX-Redux with CPU trace support`. Download dan verifikasi ROM/CUE/BIOS berhasil; log archive sementara tak tersedia saat job aktif, dan langkah capture/cleanup masih pending. Batas keseluruhan workflow 45 menit. Source commit yang dipatok `6b9df482d7b77b9ae218d9c48c1ce1a43c265206`; build image digest `sha256:d9ae6cbb23a5d0d98d8c3702cc6f512698ee1670bf8d59b236b2baabe99a66e4`. Belum ada hasil kompilasi/dependensi/trace yang dapat dinyatakan lulus. Jangan menyamakan keterlambatan step dengan crash guest dan jangan rerun sebelum state akhir diketahui.

@@ -191,3 +191,19 @@ Perbaikan minimal sudah didorong ke runner pada commit [aac684d120ec025c4a87197d
 CPU-trace run [#39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) juga masih `in_progress`. Secret dan pengunduhan/verifikasi file privat telah dilewati; step source-build di container Docker yang dipatok digest masih berjalan, sedangkan capture trace dan cleanup belum dimulai. Belum ada `CPU_TRACE_SIZE` atau `CPU_TRACE_LINE` yang dapat dipakai untuk analisis.
 
 Current upstream PCSX-Redux yang terverifikasi saat cek adalah [41f3196257d0962942b60983201aade951ebbd54](https://github.com/grumpycoders/pcsx-redux/commit/41f3196257d0962942b60983201aade951ebbd54) (2026-10-17 02:53:17 UTC). AppImage berlabel “HEAD” tetap build source 9c6f98a0, bukan upstream HEAD terkini. Tidak ada bukti bahwa judul/menu tampil atau input gameplay merespons; gate RT-001 tetap tertutup dan Story Mode tidak boleh dimulai.
+
+
+## Hasil GUI A/B sesudah perbaikan harness — 2026-10-17
+
+Run [#39002846886](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39002846886) sudah selesai. Job sukses tidak berarti seluruh kriteria GUI lulus.
+
+- Headless A/B kedua AppImage lulus sampai `[CHUNK1] done chunks=187`, `EXEC:PC0(80011448)`, `Execute !`. `Unknown command for pad: 43` tidak muncul. Proses headless berakhir di batas observasi 90 detik (124).
+- GUI AnyLinux: marker PAD_SETUP, BIOS, disc `SLPS-03553`, `SYSTEM.CNF` dan `BOOT` tampak. Window X11 emulator yang ditemukan (ID 2097204) benar-benar ditangkap pada 30/60/90 detik. Semua frame 1280×800 memiliki mean 0, stddev 0, satu warna; OCR kosong. GUI tidak memiliki marker selesai 187 chunk maupun executable entry. Exit 124 adalah batas observasi 100 detik.
+- GUI build bernama “HEAD”: gagal membuat window dengan pesan `Unable to create main window: Couldn't find matching GLX visual`; SDL gagal membuat OpenGL 3.2 context dan mencoba profil 3.0. Tidak ada window/frame, PAD_SETUP atau executable entry. Exit 137 pada penanganan timeout bukan diagnosis crash guest.
+- Cleanup sukses dan artifact list kosong; frame/log/media privat tetap tidak dipublikasikan.
+
+**RT-001: Open / blocked.** Title/menu belum diidentifikasi dan belum ada demonstrasi input responsif. Tindakan selanjutnya: bandingkan log khusus GUI AnyLinux yang tidak mencapai executable handoff dengan headless `-no-ui`; pisahkan inisialisasi UI/GLX dari progres CD/loader/CPU/Lua. Jangan mulai tes Story Mode dahulu.
+
+## CPU trace source-build: status run saat diperiksa — 2026-10-17
+
+Run [#39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) tetap aktif pada step build pinned source setelah file privat diverifikasi. Step capture trace dan cleanup belum dimulai; log archive belum dapat diunduh selama job berjalan (`BlobNotFound`). Batas workflow 45 menit. Pantau step aktif dan tunggu hasil aktual, tanpa run duplikat. Belum ada hasil CPU trace untuk frame 1620–1680.

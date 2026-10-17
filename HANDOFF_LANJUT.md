@@ -352,3 +352,31 @@ Perbaikan minimal sudah didorong ke runner pada commit [aac684d120ec025c4a87197d
 CPU-trace run [#39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) juga masih `in_progress`. Secret dan pengunduhan/verifikasi file privat telah dilewati; step source-build di container Docker yang dipatok digest masih berjalan, sedangkan capture trace dan cleanup belum dimulai. Belum ada `CPU_TRACE_SIZE` atau `CPU_TRACE_LINE` yang dapat dipakai untuk analisis.
 
 Current upstream PCSX-Redux yang terverifikasi saat cek adalah [41f3196257d0962942b60983201aade951ebbd54](https://github.com/grumpycoders/pcsx-redux/commit/41f3196257d0962942b60983201aade951ebbd54) (2026-10-17 02:53:17 UTC). AppImage berlabel “HEAD” tetap build source 9c6f98a0, bukan upstream HEAD terkini. Tidak ada bukti bahwa judul/menu tampil atau input gameplay merespons; gate RT-001 tetap tertutup dan Story Mode tidak boleh dimulai.
+
+
+## Handoff terbaru — hasil GUI A/B sesudah fix dan CPU trace aktif (2026-10-17)
+
+### Status repo
+
+- Research repo tetap **private**; commit `main` sebelum pembaruan catatan ini `6fb27be6d84c8dbebf10d25af24cfc27803a27fe`.
+- Runner repo **public**; commit runner terbaru yang diuji adalah `aac684d120ec025c4a87197da8d835f90b89f869`. Workflow CPU trace yang sedang berjalan berasal dari `16a6faff066b913480ad121b497db79df03a9de2`.
+- Pemeriksaan pohon repo runner tidak menemukan ROM/ISO/CUE/BIOS, gambar, save state, dump RAM, atau binary emulator yang tersimpan di Git. Run GUI tidak menerbitkan artefak. Cleanup melaporkan file privat dan hasil diagnostik sementara sudah dihapus. Jangan menyimpan media atau hasil trace sensitif pada runner publik.
+
+### GUI A/B: [Actions #39002846886](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39002846886)
+
+Workflow berstatus `success`, tetapi GUI/gameboot tidak lulus gate:
+
+- **AnyLinux:** setup Analog PAD_SETUP berjalan; BIOS, disc `SLPS-03553`, SYSTEM.CNF dan BOOT target terlihat pada log GUI. Window emulator ditemukan dan ditangkap pada 30/60/90 detik tanpa memakai root window. Ketiga frame 1280×800 hitam seragam (mean=0, stddev=0, satu warna), OCR Jepang/Inggris kosong. GUI tidak mencatat chunk 187 selesai, `EXEC:PC0`, atau `Execute !`. Proses timeout 100 detik (exit 124).
+- **Asset “HEAD”:** gagal membuat window: `Unable to create main window: Couldn't find matching GLX visual`; SDL gagal membuat konteks OpenGL 3.2 lalu mencoba profil 3.0. Tidak ada window/frame, PAD_SETUP atau executable-entry GUI. Exit 137 terjadi setelah batas observasi/eskalasi timeout, bukan bukti crash guest yang terisolasi.
+- **Headless tetap terpisah:** kedua AppImage mengenali disc, menyelesaikan 187 chunk, mencapai `EXEC:PC0(80011448)` / `Execute !`, dan tidak lagi mencatat `Unknown command for pad: 43`. Exit 124 merupakan batas observasi 90 detik.
+
+### CPU trace source-build: [Actions #39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849)
+
+Saat pengecekan terakhir, source-build di dalam image Docker ber-digest tetap `in_progress` pada step build; step capture trace dan cleanup belum dimulai. Job mulai 04:17:11 UTC dan step build pada 04:17:26 UTC. API log archive belum tersedia saat run aktif (`BlobNotFound`), jadi belum dapat ditentukan apakah kompilasi bergerak lambat atau tertahan. Batas job 45 menit; pantau status dan baca log lengkap setelah step/run selesai. Jangan duplikasi run, mengubah dependensi, atau menyimpulkan guest hang sebelum log build/capture tersedia. Belum ada output `CPU_TRACE_SIZE` atau `CPU_TRACE_LINE`.
+
+### Lanjutkan dari sini
+
+1. Poll run #39001985849 dan periksa timestamp/hasil tiap step. Jika build gagal, gunakan log build aktual untuk identifikasi penyebab. Bila berhasil, periksa `PCSX_BUILD_RESULT`, shared-library check di image yang sama, semua marker VSync, `CPU_TRACE_SIZE`, `CPU_TRACE_LINE`, dan `TRACE_PROCESS_EXIT`. Exit 124 adalah batas observasi 35 detik yang dirancang, bukan otomatis crash.
+2. Jika ada trace instruksi, inspeksi rentang frame 1620–1680 dan identifikasi transisi BIOS → executable game dari rekaman aktual. Verifikasi mapping overlay/loader sebelum menghubungkan alamat statis dengan RAM live.
+3. Jika GUI tetap gagal, bandingkan log GUI versus `-no-ui` pada pemuatan CD, inisialisasi CPU, Lua, window/OpenGL, dan progres chunk. Jangan mengubah BIOS/ROM tanpa bukti penyebab.
+4. RT-001 tetap **Open / blocked**: jangan mulai Story Mode sampai title/menu Naruto dikenali dan input terkontrol terbukti mengubah gambar atau input-state yang tervalidasi.
