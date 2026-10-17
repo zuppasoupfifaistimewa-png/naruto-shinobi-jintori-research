@@ -271,3 +271,10 @@ The corrected capture test completed successfully. Its log found the actual PCSX
 Important distinction: the GUI probe's own log shows BIOS/OpenBIOS and disc metadata, but does not show [CHUNK1] done chunks=187, EXEC:PC0(80011448) or Execute !. Those entry markers are present in the separate headless A/B probes in the same job. Therefore the current evidence does not show a black game frame after executable entry; it shows that GUI mode remains black and did not log the same executable handoff as headless mode. Investigate this GUI/headless boot-path difference before diagnosing the game's renderer.
 
 Run: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000276365. ROM/BIOS, frames and logs were removed during runner cleanup; no game media or screenshot was committed.
+
+
+## GUI-init/GL diagnostic rerun queued — 2026-10-17
+
+After the corrected capture proved the PCSX-Redux window itself remained uniformly black and the GUI probe lacked both PAD_SETUP and executable-entry markers, the runner workflow was tightened further. Commit [259d587](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/259d587c6b677be7f6466b0ec61edb1940faec49) adds a Mesa/GLX capability report from the same Xvfb + software-rendering environment, prints the final GUI stdout and emulator logfile tails, and explicitly reports whether the Lua PAD_SETUP marker ran. Cloud rerun [Actions #39000751307](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000751307) was in progress at the latest check.
+
+This experiment distinguishes failure in PCSX-Redux GUI/OpenGL initialization or startup from a guest-game display problem. Do not label the title screen black after game entry unless the GUI run itself logs `[CHUNK1] done chunks=187` and `EXEC:PC0(80011448)` before the measured frames. Source-built CPU-trace dependency retest [Actions #39000257139](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000257139) remains in progress; the run must complete its compile/preflight before trace conclusions can be made.
