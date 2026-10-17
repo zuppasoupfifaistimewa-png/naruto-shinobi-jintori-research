@@ -263,10 +263,20 @@ jobs:
                   payload = request(sock, f'm{base:x},40')
                   if len(payload) != 128 or any(ch not in '0123456789abcdefABCDEF' for ch in payload):
                       code_window_errors[base] = 'invalid_response'
+                      print(f"CPU_CODE_WINDOW_UNAVAILABLE base=0x{base:08x} reason=invalid_response", flush=True)
                       return
-                  code_windows[base] = classify_window(base, bytes.fromhex(payload))
+                  result = classify_window(base, bytes.fromhex(payload))
+                  code_windows[base] = result
+                  counts, backward, forward = result
+                  fields = " ".join(f"{key}={counts[key]}" for key in (
+                      "conditional_branch", "jr", "jalr", "jump", "syscall", "break",
+                      "cop0", "cop2", "load", "store", "immediate_arithmetic",
+                      "special_arithmetic", "other"
+                  ))
+                  print(f"CPU_CODE_WINDOW base=0x{base:08x} bytes=64 backward_branches={backward} forward_branches={forward} {fields}", flush=True)
               except Exception as exc:
                   code_window_errors[base] = type(exc).__name__
+                  print(f"CPU_CODE_WINDOW_UNAVAILABLE base=0x{base:08x} error_type={type(exc).__name__}", flush=True)
 
 
           def read_markers():
@@ -550,7 +560,7 @@ jobs:
                   if line.startswith((
                       "CPU_RSP_", "CPU_CORRELATION_MARKER",
                       "CPU_BULK_SAMPLE index=", "CPU_BULK_SAMPLE_ERROR",
-                      "CPU_CODE_WINDOWS_", "CPU_CODE_WINDOW base="
+                      "CPU_CODE_WINDOWS_", "CPU_CODE_WINDOW base=", "CPU_CODE_WINDOW_UNAVAILABLE"
                   ))
               ]
               Path("captures/cpu-state-summary.txt").write_text("\n".join(cpu_lines) + "\n")
