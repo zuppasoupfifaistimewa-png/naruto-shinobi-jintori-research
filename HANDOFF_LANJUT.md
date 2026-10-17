@@ -302,3 +302,10 @@ State carried forward; do not repeat the Analog-port or asset-setup steps unless
 1. Read the final logs and conclusions of runs #39000276365 and #39000257139. Use the visible-window metrics/OCR only when `CAPTURE_WINDOW` confirms the target, and require title/menu recognition rather than simply nonblack pixels.
 2. If the window exists but stays blank, use successful source-built CPU-trace rows to see whether PC moves after `EXEC:PC0`; do not infer that from the job result alone.
 3. After a recognizable title/menu is observed, send controlled inputs in the cloud runner and confirm response; only then begin Story Mode rule tests. No screenshots/game assets should be published as workflow artifacts.
+
+
+## Corrected GUI-window test result — 2026-10-17
+
+Actions #39000276365 completed. The corrected workflow found the actual visible PCSX-Redux window at 30s, 60s, and 90s; all three window captures were uniformly black by metrics (mean=0, stddev=0, colors=1) and OCR was empty. Crucially, the GUI probe itself did not log the 187-chunk completion or EXEC:PC0 / Execute !; only the separate -no-ui headless A/B probes did. Thus this is not yet evidence of a black Naruto frame after game entry. Debug the GUI/headless boot-path discrepancy.
+
+No screenshots, ROM, CUE, BIOS or log artifacts were uploaded, and cleanup completed. The CPU-source-build/dependency retest remains Actions #39000257139; inspect its build, dependency and trace output before inferring guest CPU state.
