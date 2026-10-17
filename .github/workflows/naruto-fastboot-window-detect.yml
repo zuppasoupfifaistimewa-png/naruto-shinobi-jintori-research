@@ -99,7 +99,8 @@ jobs:
           emu_pid=$!
           capture_window() {
             label="$1"
-            xwininfo -root -tree > "$WORK/window-tree-$label.txt" 2>&1 || true
+            tree="$(xwininfo -root -tree 2>&1 || true)"
+            printf '%s\n' "$tree" > "$WORK/window-tree-$label.txt"
             root_hex="$(xwininfo -root 2>/dev/null | awk '/Window id:/{print $4; exit}')"
             root_id=$((root_hex))
             echo "X11_ROOT_ID=$root_id ($root_hex)"
@@ -119,17 +120,17 @@ jobs:
               case "$width:$height" in *[!0-9:]*|:*) continue;; esac
               area=$((width*height))
               if [ "$width" -ge 400 ] && [ "$height" -ge 250 ] && [ "$area" -gt "$best_area" ]; then
-                window_id="$id"; best_area="$area"; best_name="$name"; best_width="$width"; best_height="$height"
+                window_id="$id_num"; best_area="$area"; best_name="$name"; best_width="$width"; best_height="$height"
               fi
-            done < <(xdotool search --onlyvisible --name '.*' 2>/dev/null || true)
+            done < <(printf '%s\n' "$tree" | awk '$1 ~ /^0x[[:xdigit:]]+$/ {print $1}')
             if [ -z "$window_id" ]; then
-              echo "CAPTURE_RESULT=$label no eligible non-root X11 window; root explicitly excluded"
+              echo "CAPTURE_RESULT=$label no eligible non-root X11 window; window tree was saved"
               sed -n '1,100p' "$WORK/window-tree-$label.txt" || true
               return 1
             fi
             echo "CAPTURE_WINDOW=$label id=$window_id name=$best_name width=$best_width height=$best_height"
             import -window "$window_id" "$WORK/captures/$label.png"
-            identify -format 'FRAME_METRICS label=%f width=%w height=%h mean=%[mean] stddev=%[standard-deviation] colors=%k\n' "$WORK/captures/$label.png"
+            identify -format 'FRAME_METRICS label=%f width=%w height=%h mean=%[mean] stddev=%[standard-deviation] colors=%k\\n' "$WORK/captures/$label.png"
             echo "OCR_BEGIN=$label"
             tesseract "$WORK/captures/$label.png" stdout -l jpn+eng 2>/dev/null | head -20 || true
             echo "OCR_END=$label"
@@ -140,7 +141,7 @@ jobs:
           capture_window before-input || true
           if [ -s "$WORK/last-window-id" ]; then
             wid="$(cat "$WORK/last-window-id")"
-            xdotool windowactivate --sync "$wid" 2>/dev/null || true
+            xdotool windowfocus --sync "$wid" 2>/dev/null || true
             echo "INPUT_TEST=Return then Z sent to detected app window; visual result must be interpreted separately"
             xdotool key --clearmodifiers Return
             sleep 2
