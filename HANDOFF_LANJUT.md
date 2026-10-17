@@ -401,3 +401,11 @@ Saat pengecekan terakhir, source-build di dalam image Docker ber-digest tetap `i
 5. RT-001 tetap **Open / blocked**. Jangan mulai Story Mode sampai title/menu Naruto dikenali dan input terkontrol terbukti responsif.
 
 No ROM, BIOS, screenshots, save state, RAM dump, private trace archive or emulator binary was committed/published to the public runner. Don’t repeat secret setup, asset download or PAD_SETUP work; those already succeeded.
+
+## Tambahan handoff — isolasi selisih versi source (2026-10-17)
+
+Source AnyLinux `0c3572c3db75f97542001e453ae80ba8c3f8acba` dan source trace `6b9df482d7b77b9ae218d9c48c1ce1a43c265206` terpisah 803 commit (verifikasi GitHub compare). Area perubahan besar: `src/core/cdrom.cc`, `src/core/psxinterpreter.cc`, `src/core/pad.cc`, `src/core/psxmem.cc`, serta beberapa file emulator. Pada interpreter, target branch dan pelacakan delay slot berubah menjadi jalur `branchBase()`; ini perlu ditelaah, tetapi bukan bukti penyebab. Perintah headless kedua workflow sama-sama memakai `-interpreter`, bukan dynarec; perbedaan durasi tes masih ada, yaitu 90s untuk AppImage baseline versus 35s untuk source trace.
+
+Sebelum menyebut regresi, buat uji source yang sebanding: batas observasi 90s, print `PCSX.getRegisters().pc` setiap 30 VSync, dan tempatkan jendela trace tambahan di frames 4500–4560. Print marker boot (OpenBIOS, SYSTEM.CNF, chunk 187, EXEC:PC0, Execute !) terpisah dari instruction rows agar tidak terbuang oleh `tail`. Jika guest masih di loop, ambil konteks instruksi cukup lebar di awal dan akhir jendela. Setelah itu inspeksi perubahan CD-ROM dan branch-delay dari diff terarah. Rerun seperti ini punya alasan teknis berbeda dari build sebelumnya; jangan memicu compile identik tanpa tambahan observasi.
+
+Jangan keliru menganggap hasil headless AnyLinux pada versi yang lebih lama membuktikan bahwa source pinned telah boot; jangan pula menyimpulkan source gagal hanya dari capture 35 detik. RT-001 tetap Open/blocked.
