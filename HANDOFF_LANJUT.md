@@ -480,3 +480,17 @@ Run [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 
 **Keputusan operasional:** jangan meminta BIOS retail baru atau menganggap DuckStation sudah menguji kompatibilitas game. Dengan hanya OpenBIOS yang tersedia, hentikan investigasi DuckStation untuk saat ini dan prioritaskan PCSX-Redux source-current run [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708), yang masih membangun pada pemeriksaan terakhir. RT-001 tetap Open / blocked sampai title/menu dan respons input nyata terlihat.
 
+
+## Handoff terbaru — hasil source-current dan OpenBIOS A/B, 2026-10-17
+
+### Source-current GUI probe #39011842708
+Run [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) selesai `success`; source pin `1525a93676dbece9fe70f10ff129aeaa14eec30d` berhasil dibangun dan dependency check lulus. Pada GUI, capture jendela emulator di 20/40/60/80/95 detik semuanya uniform black (1280×800, mean 0, stddev 0, satu warna), OCR kosong. Marker: disc `SLPS-03553`, OpenBIOS, PAD_SETUP Port 1 Analog, guest PC sampel pada frame 300=`0x000015a4`; tidak ada `SYSTEM.CNF`/BOOT atau `EXEC:PC0`. Artifact privat #12094116949 berisi lima PNG hitam dan stdout. Cleanup sukses. Kesimpulan: build berhasil, GUI game belum boot/terlihat.
+### Fastboot vs chunked OpenBIOS #39013612865
+Build AnyLinux sama dan ROM sama:
+- `openbios.bin` fastboot mencapai `SYSTEM.CNF`, `BOOT`, `EXEC:PC0(80011448)`, dan `Execute !`.
+- `openbios-chunked.bin` terhenti setelah progress pembacaan payload (log sampai indeks 40); tidak ada entry marker.
+- Capture harness gagal menemukan jendela bagi kedua varian, sehingga tidak ada PNG maupun tes input yang benar-benar dilakukan. Artifact #12094102119 berisi stdout/log saja. Perlakukan perbedaan ini sebagai jalur loader/BIOS yang diskriminatif, bukan bukti title/menu.
+### Next run
+Run [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) menguji ulang hanya fastboot OpenBIOS dengan window enumeration generik, log window tree, frame/OCR dan input bertahap. Status pertama yang terlihat: queued; periksa status dan artefak aktual sebelum menyimpulkan.
+**RT-001 Open / blocked.** Jangan mulai Story Mode hingga title/menu terlihat dan kontrol terbukti merespons. Repo Tile Duel tetap tidak boleh diakses.
+
