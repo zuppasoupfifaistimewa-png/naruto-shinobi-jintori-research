@@ -225,3 +225,15 @@ Hasil capture:
 Bandingkan log startup di source-build pinned dan AnyLinux headless pada titik BIOS/CD read, pemrosesan SYSTEM.CNF, loader/chunk, serta handoff executable. Tambahkan guest-PC sampling periodik atau window trace yang lebih akhir hanya jika diperlukan untuk menguji apakah loop berlanjut; jangan mengulang build yang sama tanpa meningkatkan observasi. Verifikasi alias RAM dan mapping overlay sebelum menamai pemilik PC rendah. Diagnosis GUI terpisah tetap diperlukan: run #39002846886 menunjukkan AnyLinux berhasil membuka window dan menjalankan PAD_SETUP, tetapi tidak mencatat entry; “HEAD” gagal membuat window akibat GLX/OpenGL.
 
 **RT-001 tetap Open / blocked:** jangan mulai Story Mode sampai title/menu dikenali dan respons input terkontrol benar-benar terbukti.
+
+## Isolasi beda versi emulator dan lama observasi — 2026-10-17
+
+Source yang dipakai AnyLinux (`0c3572c3db75f97542001e453ae80ba8c3f8acba`) berbeda 803 commit dari source CPU-trace (`6b9df482d7b77b9ae218d9c48c1ce1a43c265206`). GitHub compare menyorot perubahan besar `src/core/cdrom.cc` (+1.476/-1.392), `src/core/psxinterpreter.cc` (+290/-81), `src/core/pad.cc` dan `src/core/psxmem.cc`; kode branch interpreter berubah untuk mengelola delay slot. Ini hanya calon area inspeksi, bukan akar masalah terverifikasi.
+
+Kedua perintah headless menggunakan `-interpreter`, tetapi AppImage diuji sampai 90s sementara source-trace proses dibatasi 35s. Karena itu absennya EXEC:PC0 di trace run tidak cukup untuk menyatakan regresi/boot gagal. Uji follow-up yang paling diskriminatif:
+1. Ulangi source pinned dengan batas 90s; cetak `PCSX.getRegisters().pc` tiap 30 VSync sepanjang run.
+2. Capture trace frames 4500–4560 agar PC sesudah periode 35s dapat diperiksa.
+3. Cetak boot markers (BIOS/CD label/SYSTEM.CNF/chunk/EXEC) secara terpisah dari tail instruction trace; jangan biarkan 160+ VSync/trace lines memotong marker awal.
+4. Bandingkan jalur CD-ROM dan branch/delay-slot interpreter pada source lama/baru setelah data sebanding tersedia.
+
+Tidak ada perubahan ROM/BIOS atau rerun baru dalam pembaruan ini. RT-001 tetap Open / blocked; title/menu dan input terkontrol belum dibuktikan.
