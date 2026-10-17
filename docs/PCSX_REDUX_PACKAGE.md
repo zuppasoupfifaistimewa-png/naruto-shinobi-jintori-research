@@ -281,3 +281,10 @@ Run terbaru deferred-UI [#39078732160](https://github.com/zuppasoupfifaistimewa-
 Host OpenGL lulus pada run #39049689832 (Mesa llvmpipe, actual GL 4.5 Core/Compatibility, explicit 3.3 compatibility context pass tanpa override). Di source pin, screenshot API `takeScreenShot()` tidak tersedia pada backend OpenGL GPU, tetapi Software GPU memiliki implementasi. Dengan `-softgpu`, capture pasca-handoff frame 300 sah 320×240 tetapi satu warna hitam; VRAM tetap kosong. Screenshot independen X11 jendela aplikasi 1280×800 pada enam waktu juga valid tetapi hitam.
 
 GPUDump private summary run #39079279565 mem-parse hingga 136 VSync live dengan nol GP0 packets/words, satu GP1 word, 136 VSync packets; complete packet stream, not truncated. Paket pre-trace berisi VRAM baseline upload (262153 GP0 words), bukan gambar yang dikirim game. Dump mentah dihapus pada runner. Run #39079291837 berupaya mengulang sampai VSync 300 dan harus dibaca final sebelum memakai hitungan sebagai jendela observasi penuh.
+
+
+## Hasil GPUDump penuh dan CPU/GP0 correlation probe — 2026-10-18
+
+Run [#39079291837](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39079291837) GPUDump selesai parsing dengan satu TraceBegin, 268 VSync live packets/536 words, GP0 live packets=0 dan words=0, GP1 live packets=1/word=1; truncated=false. Pretrace GP0=262153 words adalah reset/full VRAM upload state baseline. Run timeout 90 s (124) walaupun job conclusion success; tidak boleh dinyatakan sebagai game boot sukses. Raw dump dihapus.
+
+Workflow telah ditambah sampling CPU bulk register `g` dengan PC/CP0 dan marker loader ditimestamp pada run yang sama. Run baru [#39079600379](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39079600379) masih pending saat status terakhir diperiksa; validasi kesimpulan menunggu outputnya. Ini pembeda berikutnya untuk menganalisis kegagalan guest executable tanpa mengulang tes OpenGL atau mengunggah trace instruksi.
