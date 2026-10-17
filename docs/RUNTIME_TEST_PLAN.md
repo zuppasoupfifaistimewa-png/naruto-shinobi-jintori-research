@@ -255,3 +255,15 @@ Run [#39004736399](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 **Tafsiran:** ini bukan keberhasilan RT-001. Pencapaian VSync dan summary trace menunjukkan emulator tetap menjalankan callback, sementara guest PC terus berulang pada alamat rendah. Asal loop dan penyebabnya belum terbukti; jangan menggolongkannya sebagai BIOS/game code tertentu tanpa pemetaan tambahan. Gunakan diagnosis source/loader dan marker progres CD sebagai langkah berikut, bukan mengulang tes identik.
 
 **Gerbang RT-001 tetap Open / blocked:** wajib ada title/menu Naruto yang dikenali dan demonstrasi respons terhadap input terkontrol sebelum pengujian Story Mode. Jangan menyatakan gameplay berhasil hanya dari `success` di Actions.
+
+## Perubahan status runtime — 2026-10-17, setelah tes capture internal
+
+Run privat [#39011515345](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011515345) mencapai marker `[CHUNK1] done chunks=187`, `EXEC:PC0(80011448)`, dan `Execute !` pada jalur `-no-ui`. Usaha screenshot melalui `PCSX.GPU.takeScreenShot()` mengembalikan dimensi 0×0 dan bpp 0, jadi konversi/capture tidak valid; cleanup selesai, artifact list kosong. Jangan gunakan API tersebut sebagai bukti tampilan pada mode `-no-ui`.
+
+Run privat [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) dibuka untuk membangun source PCSX-Redux pin current upstream `1525a93676dbece9fe70f10ff129aeaa14eec30d` lalu menguji jalur GUI nyata pada Xvfb dengan capture jendela tiap interval. Status pada saat pembaruan ini belum selesai; periksa log, boot markers, metrik frame, OCR dan artefak privat setelah berakhir. Sumber PIN/build dicatat di workflow. Jangan menampilkan atau mengunggah screenshot di runner publik.
+
+Penghapusan log publik lama telah terverifikasi: cleanup run #39011611436 sukses menghapus spesifik run #39001985849, dan API GET berikutnya memberi 404.
+
+**Gerbang RT-001 tetap Open / blocked:** title/menu yang dikenali dan respons input terkontrol wajib dibuktikan sebelum memulai Story Mode. Belum ada sesi Story Mode terverifikasi.
+
+
