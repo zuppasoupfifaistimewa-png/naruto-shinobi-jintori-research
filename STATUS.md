@@ -1,5 +1,16 @@
 # Status penelitian
 
+## Hasil eksperimen terbaru — 2026-10-17
+
+### Source-current PCSX-Redux
+Run [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) selesai dengan semua langkah workflow `success`: source PCSX-Redux pin `1525a93676dbece9fe70f10ff129aeaa14eec30d` berhasil dibangun, tetapi jendela emulator yang benar-benar ditangkap pada detik 20/40/60/80/95 seluruhnya uniform black (1280×800, mean 0, stddev 0, satu warna), OCR kosong. Log mengenali disc `SLPS-03553` dan OpenBIOS, mencatat Port 1 Analog tersambung, tetapi hanya sampel PC frame 300=`0x000015a4`; tidak ada pembacaan `SYSTEM.CNF`/BOOT atau entry executable. Artifact privat `12094116949` berisi 5 frame hitam dan stdout. Cleanup sukses. Keberhasilan build dan Actions tidak berarti game boot.
+### OpenBIOS fastboot vs chunked
+Run [#39013612865](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39013612865) menguji build AnyLinux sama dengan dua BIOS. Varian fastboot membaca `SYSTEM.CNF`, `BOOT`, lalu mencatat `EXEC:PC0(80011448)` / `Execute !`. Varian chunked hanya menunjukkan pembacaan payload satu sektor sampai indeks 40 sebelum log berhenti. Namun window detector lama tidak menemukan jendela untuk kedua varian, jadi tidak ada capture visual dan urutan input dilewati. Hasil ini mengisolasi beda jalur loader, bukan bukti title/menu.
+### Eksperimen berikutnya
+Workflow privat baru [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) memakai fastboot OpenBIOS dan enumerasi generik jendela X11, bukan hanya mencari caption “PCSX”. Status awal: queued; periksa hasil aktualnya.
+**RT-001 tetap Open / blocked:** title/menu Naruto dan input game yang responsif belum terbukti. Story Mode belum dimulai/tamat.
+
+
 ## Hasil final DuckStation probe — 2026-10-17
 
 - Run [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012694027) berhasil membuka jendela setelah paket `libegl1` ditambahkan. Capture 760×498 konsisten menampilkan first-run setup wizard DuckStation, termasuk halaman BIOS.
