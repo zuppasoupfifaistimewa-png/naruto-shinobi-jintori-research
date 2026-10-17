@@ -95,20 +95,50 @@ jobs:
           print("PAD_SETUP=Port 1 Analog connected/remapped")
           LUA
           )
+          EMU_LAUNCH_EPOCH="$(date +%s.%N)"
+          export EMU_LAUNCH_EPOCH
           echo "EMULATOR_LAUNCH_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           timeout --signal=TERM --kill-after=5s 100s \
             "$WORK/squashfs-root/AppRun" -bios "$WORK/openbios-fastboot.bin" -iso "$WORK/game-run.cue" \
             -exec "$PAD_SETUP" -gdb -gdb-port 3333 -run -interpreter -stdout -lua_stdout \
             -logfile "$WORK/pcsx.log" > "$WORK/pcsx.stdout" 2>&1 &
           emu_pid=$!
-          python3 - <<'PY' > "$WORK/cpu-poll-summary.txt" 2>&1
-          import re, socket, time
+          PCSX_LOG_PATH="$WORK/pcsx.log" python3 - <<'PY' > "$WORK/cpu-poll-summary.txt" 2>&1 &
+          import os, re, socket, time
+          from pathlib import Path
+
           HOST, PORT = "127.0.0.1", 3333
-          POLL_SECONDS, INTERVAL_SECONDS = 66.0, 1.0
+          POLL_SECONDS, INTERVAL_SECONDS = 70.0, 1.0
+          LOG_PATH = Path(os.environ["PCSX_LOG_PATH"])
+          try:
+              LAUNCH_EPOCH = float(os.environ["EMU_LAUNCH_EPOCH"])
+          except (KeyError, ValueError):
+              LAUNCH_EPOCH = time.time()
+          MARKERS = (
+              ("system_cnf", "setup file    : cdrom:SYSTEM.CNF;1"),
+              ("boot_path", "BOOT ="),
+              ("exe_header", "EXEC:PC0(80011448)"),
+              ("execute_handoff", "Execute !"),
+          )
+          seen_markers = set()
 
           def packet(payload):
               raw = payload.encode("ascii")
               return b"$" + raw + b"#" + f"{sum(raw) & 255:02x}".encode("ascii")
+
+          def elapsed_launch():
+              return max(0.0, time.time() - LAUNCH_EPOCH)
+
+          def record_loader_markers():
+              try:
+                  text = LOG_PATH.read_text(errors="replace")
+              except OSError:
+                  return
+              observed = elapsed_launch()
+              for name, needle in MARKERS:
+                  if name not in seen_markers and needle in text:
+                      seen_markers.add(name)
+                      print("LOADER_MARKER marker={} first_observed_elapsed_s={:.2f} source=pcsx_log_poll".format(name, observed), flush=True)
 
           class RSP:
               def __init__(self, sock):
@@ -131,7 +161,7 @@ jobs:
                               want = f"{sum(body) & 255:02x}".encode("ascii")
                               if got != want:
                                   raise ValueError("RSP checksum mismatch")
-                              # PCSX-Redux console packets are output notifications, not replies/stops.
+                              # PCSX-Redux console output is an O packet, never a stop event.
                               if body.startswith(b"O"):
                                   self.console_packets += 1
                                   continue
@@ -155,7 +185,7 @@ jobs:
                   unexpected = []
                   while time.monotonic() < deadline:
                       reply = self.receive_packet(deadline)
-                      if expected == "register" and (re.fullmatch(r"[0-9a-fA-F]{8}", reply) or re.fullmatch(r"E[0-9a-fA-F]{2}", reply)):
+                      if expected == "bulk" and len(reply) == 576 and re.fullmatch(r"[0-9a-fA-F]{576}", reply):
                           return reply
                       if expected == "status" and reply[:1] in ("T", "S", "W", "X"):
                           return reply
@@ -164,27 +194,40 @@ jobs:
                       unexpected.append(reply[:48])
                   raise TimeoutError("unexpected response(s): " + ",".join(unexpected[-3:]))
 
-          def reg_value(reply):
-              if not re.fullmatch(r"[0-9a-fA-F]{8}", reply):
+          def reg_value(field):
+              if len(field) != 8 or not re.fullmatch(r"[0-9a-fA-F]{8}", field):
                   return "unavailable"
-              return f"0x{int.from_bytes(bytes.fromhex(reply), 'little'):08x}"
+              # PCSX-Redux serializes each 32-bit register least-significant byte first.
+              return f"0x{int.from_bytes(bytes.fromhex(field), 'little'):08x}"
+
+          def parse_bulk(reply):
+              # Source at PCSX-Redux commit 0c3572c3: g packet has 72 32-bit registers.
+              regs = [reply[i * 8:(i + 1) * 8] for i in range(72)]
+              return {
+                  "status": reg_value(regs[32]),
+                  "badvaddr": reg_value(regs[35]),
+                  "cause": reg_value(regs[36]),
+                  "pc": reg_value(regs[37]),
+              }
 
           def classify(pc):
               if not pc.startswith("0x"):
                   return "unavailable"
-              v = int(pc, 16)
-              if 0x80010000 <= v < 0x8006d800:
+              value = int(pc, 16)
+              if 0x80010000 <= value < 0x8006d800:
                   return "main-exe-range"
-              if 0x80000000 <= v < 0x80001000:
+              if 0x80000000 <= value < 0x80001000:
                   return "low-ram/exception-vector"
-              if 0xbfc00000 <= v < 0xbfc80000:
+              if 0xbfc00000 <= value < 0xbfc80000:
                   return "bios-range"
-              if 0xa0010000 <= v < 0xa006d800:
+              if 0xa0010000 <= value < 0xa006d800:
                   return "main-exe-alias"
               return "other"
 
           rsp = None
+          sock = None
           for attempt in range(30):
+              record_loader_markers()
               try:
                   sock = socket.create_connection((HOST, PORT), timeout=1.0)
                   rsp = RSP(sock)
@@ -195,65 +238,78 @@ jobs:
               print("RSP_CONNECT=failed port=3333", flush=True)
               raise SystemExit(0)
 
+          sock.settimeout(3.0)
           print("RSP_CONNECT=connected port=3333", flush=True)
-          sock = rsp.sock
-          sock.settimeout(2.0)
           try:
               try:
-                  q = rsp.request("qSupported:multiprocess+", "any", timeout=3.0)
-                  print("RSP_QSUPPORTED=" + q[:220], flush=True)
-              except Exception as e:
-                  print("RSP_QSUPPORTED=error:" + type(e).__name__, flush=True)
+                  caps = rsp.request("qSupported:multiprocess+", "any", timeout=3.0)
+                  print("RSP_QSUPPORTED=" + caps[:220], flush=True)
+              except Exception as error:
+                  print("RSP_QSUPPORTED=error:" + type(error).__name__, flush=True)
 
-              started = time.monotonic()
+              poll_start = time.monotonic()
+              poll_deadline = poll_start + POLL_SECONDS
               samples = []
-              while time.monotonic() - started < POLL_SECONDS:
-                  idx = len(samples)
-                  elapsed = time.monotonic() - started
-                  vals = {}
-                  for label, cmd in (("pc", "p25"), ("status", "p20"), ("badvaddr", "p23"), ("cause", "p24")):
-                      try:
-                          vals[label] = reg_value(rsp.request(cmd, "register", timeout=2.0))
-                      except Exception as e:
-                          vals[label] = "error:" + type(e).__name__
+              while time.monotonic() < poll_deadline:
+                  cycle_start = time.monotonic()
+                  record_loader_markers()
+                  row = {"elapsed_launch_s": elapsed_launch()}
                   try:
-                      # '?' is a stop-reason query response, not proof that an asynchronous stop event occurred.
-                      vals["target_query"] = rsp.request("?", "status", timeout=2.0)
-                  except Exception as e:
-                      vals["target_query"] = "error:" + type(e).__name__
-                  vals["region"] = classify(vals.get("pc", ""))
-                  line = "CPU_SAMPLE index={} elapsed_s={:.1f} pc={} region={} cp0_status={} cp0_badvaddr={} cp0_cause={} target_query={}".format(
-                      idx, elapsed, vals.get("pc"), vals["region"], vals.get("status"), vals.get("badvaddr"), vals.get("cause"), vals.get("target_query")
-                  )
-                  print(line, flush=True)
-                  samples.append(vals)
-                  delay = INTERVAL_SECONDS - (time.monotonic() - started - elapsed)
+                      bulk = rsp.request("g", "bulk", timeout=3.0)
+                      row.update(parse_bulk(bulk))
+                      row["region"] = classify(row["pc"])
+                      row["bulk_valid"] = "yes"
+                      print("CPU_SAMPLE index={} elapsed_launch_s={:.2f} pc={} region={} cp0_status={} cp0_badvaddr={} cp0_cause={} bulk_valid=yes".format(
+                          len(samples), row["elapsed_launch_s"], row["pc"], row["region"], row["status"], row["badvaddr"], row["cause"]
+                      ), flush=True)
+                  except Exception as error:
+                      row.update({"pc":"unavailable","region":"unavailable","status":"unavailable","badvaddr":"unavailable","cause":"unavailable","bulk_valid":"no"})
+                      print("CPU_SAMPLE_ERROR index={} elapsed_launch_s={:.2f} error={}".format(
+                          len(samples), row["elapsed_launch_s"], type(error).__name__
+                      ), flush=True)
+                  samples.append(row)
+
+                  # This explicit query only reports running/paused state; S00 is not a stop event.
+                  if len(samples) == 1 or len(samples) % 10 == 0:
+                      try:
+                          status_reply = rsp.request("?", "status", timeout=2.0)
+                          meaning = "running-not-stop-event" if status_reply == "S00" else ("paused-or-stop-state-query" if status_reply.startswith(("S", "T", "W", "X")) else "other")
+                          print("TARGET_QUERY index={} reply={} meaning={}".format(len(samples)-1, status_reply, meaning), flush=True)
+                      except Exception as error:
+                          print("TARGET_QUERY index={} error={}".format(len(samples)-1, type(error).__name__), flush=True)
+
+                  record_loader_markers()
+                  delay = INTERVAL_SECONDS - (time.monotonic() - cycle_start)
                   if delay > 0:
                       time.sleep(delay)
 
               counts = {}
               unique_pc = set()
+              valid_count = 0
               for row in samples:
-                  region = row.get("region", "unavailable")
-                  counts[region] = counts.get(region, 0) + 1
+                  counts[row.get("region", "unavailable")] = counts.get(row.get("region", "unavailable"), 0) + 1
                   unique_pc.add(row.get("pc", "unavailable"))
-              print("CPU_SUMMARY sample_count={} unique_pc_count={} region_counts={} console_packets_ignored={}".format(
-                  len(samples), len(unique_pc), ",".join(f"{k}:{v}" for k,v in sorted(counts.items())), rsp.console_packets
+                  valid_count += row.get("bulk_valid") == "yes"
+              record_loader_markers()
+              missing = sorted(set(name for name, _ in MARKERS) - seen_markers)
+              print("CPU_SUMMARY sample_count={} valid_bulk_count={} unique_pc_count={} region_counts={} console_packets_ignored={} missing_markers={}".format(
+                  len(samples), valid_count, len(unique_pc), ",".join(f"{key}:{value}" for key,value in sorted(counts.items())), rsp.console_packets, ",".join(missing) or "none"
               ), flush=True)
           finally:
               sock.close()
           PY
           sampler_pid=$!
-          sleep 2
           set +e
           wait "$sampler_pid"
           sampler_rc=$?
+          wait "$emu_pid"
+          emu_rc=$?
           set -e
           echo "CPU_SAMPLER_EXIT=$sampler_rc"
+          echo "GUI_PROCESS_EXIT=$emu_rc (124 means the 100-second observation cap)"
           echo "BOOT_MARKERS_BEGIN"
           grep -E 'Loaded BIOS:|OpenBIOS detected|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|SYSTEM\.CNF|BOOT =|EXEC:PC0|Execute !|PAD_SETUP=|First chance exception|Unknown GDB command|Exception|FATAL|ERROR|Error|Failed|failed' "$WORK/pcsx.stdout" "$WORK/pcsx.log" 2>/dev/null | tail -100 || true
           echo "BOOT_MARKERS_END"
-          if kill -0 "$emu_pid" 2>/dev/null; then echo "GUI_PROCESS_STATE=still-running"; else echo "GUI_PROCESS_STATE=exited"; fi
           echo "CPU_SUMMARY_BEGIN"
           cat "$WORK/cpu-poll-summary.txt" || true
           echo "CPU_SUMMARY_END"
