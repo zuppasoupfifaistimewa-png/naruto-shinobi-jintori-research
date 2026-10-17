@@ -1,5 +1,11 @@
 # Status penelitian
 
+## Hasil fastboot GUI dengan window discovery generik — 2026-10-17
+
+Run [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) berhasil mengidentifikasi jendela X11 (ID `543`, 1280×800); jadi tangkapan sebelumnya yang gagal mencari nama jendela adalah masalah selector, bukan bukti tidak ada window. Namun semua frame sebelum input, sesudah Return, sesudah Z/Cross, serta 40/65/90 s tetap uniform black (mean 0, stddev 0, satu warna), OCR kosong. Log fastboot kembali mencapai `SYSTEM.CNF`, `BOOT`, `EXEC:PC0(80011448)`, dan `Execute !`. Input memang dikirim ke jendela aplikasi, tetapi karena layar tetap hitam, belum bisa ditafsirkan sebagai kontrol game.
+Uji berikut [#39015290594](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015290594) mengulangi fastboot yang sama tanpa pembacaan register CPU di event VSync, karena instrumentasi tersebut pernah mengganggu eksekusi di eksperimen terdahulu. Status saat dibuat: queued. **RT-001 tetap Open / blocked.**
+
+
 ## Hasil eksperimen terbaru — 2026-10-17
 
 ### Source-current PCSX-Redux
