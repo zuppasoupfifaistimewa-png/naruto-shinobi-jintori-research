@@ -1,0 +1,255 @@
+name: Naruto fastboot GPU traffic summary
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/naruto-fastboot-gpu-traffic-summary.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: naruto-fastboot-gpu-traffic-summary
+  cancel-in-progress: true
+
+jobs:
+  gpu-traffic-summary:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 6
+    steps:
+      - name: Install private runtime requirements
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3
+
+      - name: Download and verify private runtime assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          WORK="$RUNNER_TEMP/naruto-fastboot-gpu-traffic"
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+          mkdir -p "$WORK/home" "$WORK/captures/raw"
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; output="$2"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            if [ -z "$id" ] || [ "$id" = "null" ]; then echo "::error::Missing private release asset: $name"; exit 1; fi
+            curl --fail --silent --show-error --location --retry 2 --max-time 300 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$id" -o "$output"
+          }
+          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset openbios.bin openbios-fastboot.bin
+          echo "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c  pcsx-redux.AppImage" | sha256sum --check -
+          test "$(stat -c '%s' game.bin)" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          echo "25c789eb66608847907217c367f04a3ec6e62c08530e97c437ce99d29f4c156d  openbios-fastboot.bin" | sha256sum --check -
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("game.cue")
+          lines = p.read_bytes().decode("utf-8-sig").replace("\r\n", "\n").replace("\r", "\n").splitlines()
+          ids = [i for i, line in enumerate(lines) if line.lstrip().upper().startswith("FILE ")]
+          if len(ids) != 1 or not any(line.lstrip().upper().startswith("TRACK ") for line in lines):
+              raise SystemExit("Invalid CUE")
+          lines[ids[0]] = 'FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines) + "\n", encoding="ascii")
+          PY
+          echo "ROM/CUE/BIOS/PCSX-Redux pin verified."
+
+      - name: Record emulated GPU traffic until post-handoff VSync 300
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          emu_pid=""
+          cleanup() {
+            if [ -n "$emu_pid" ]; then kill "$emu_pid" 2>/dev/null || true; fi
+            kill "$xvfb_pid" 2>/dev/null || true
+            wait "$xvfb_pid" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/home/.config" XDG_DATA_HOME="$WORK/home/.local/share"
+          export LIBGL_ALWAYS_SOFTWARE=1
+          unset MESA_GL_VERSION_OVERRIDE MESA_GLSL_VERSION_OVERRIDE
+          mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME"
+          for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          echo "HOST_GL=software llvmpipe requested; no GL/GLSL version override"
+          glxinfo -B 2>/dev/null | grep -E 'OpenGL vendor string|OpenGL renderer string|OpenGL (core profile )?version string' || true
+
+          PAD_SETUP=$(cat <<'LUA'
+          PCSX.settings.pads[1].DeviceType = 'Analog'
+          PCSX.settings.pads[1].Connected = true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("PAD_SETUP=Port 1 Analog connected/remapped")
+          LUA
+          )
+          cat > "$WORK/gpu-traffic.lua" <<'LUA'
+          local frame_count = 0
+          local stop_frame = 300
+
+          PCSX.GPU.startDump("captures/raw/runtime.gpudump")
+          print(string.format("GPU_DUMP_ARMED=%s", tostring(PCSX.GPU.isDumpArmed())))
+
+          shellReachedListener = PCSX.Events.createEventListener("ExecutionFlow::ShellReached", function()
+              print("EXECUTION_EVENT=ShellReached")
+          end)
+          runListener = PCSX.Events.createEventListener("ExecutionFlow::Run", function()
+              print("EXECUTION_EVENT=Run")
+          end)
+
+          gpuTrafficListener = PCSX.Events.createEventListener("GPU::Vsync", function()
+              frame_count = frame_count + 1
+              if frame_count % 100 == 0 then
+                  print(string.format("GPU_TRAFFIC_VSYNC frame=%d guest_fps=%.4f dump_frames=%d",
+                      frame_count, PCSX.GPU.getGuestFPS(), PCSX.GPU.getDumpFrames()))
+              end
+              if frame_count == stop_frame then
+                  PCSX.nextTick(function()
+                      local frames = PCSX.GPU.getDumpFrames()
+                      local recording = PCSX.GPU.isDumping()
+                      local armed = PCSX.GPU.isDumpArmed()
+                      PCSX.GPU.stopDump()
+                      print(string.format(
+                          "GPU_DUMP_STOP requested_frame=%d observed_vsync_count=%d dump_frames=%d was_recording=%s was_armed=%s",
+                          stop_frame, frame_count, frames, tostring(recording), tostring(armed)))
+                      PCSX.quit(0)
+                  end)
+              end
+          end)
+          print("GPU_TRAFFIC_PROBE=armed target_vsync=300 backend=softgpu; raw dump will be parsed then deleted")
+          LUA
+
+          timeout --signal=TERM --kill-after=5s 90s \
+            "$WORK/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/openbios-fastboot.bin" -iso "$WORK/game-run.cue" \
+              -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
+              -softgpu -no-debugger -no-gdb -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+              > "$WORK/pcsx.stdout" 2>&1 &
+          emu_pid=$!
+          set +e
+          wait "$emu_pid"
+          emu_rc=$?
+          set -e
+          emu_pid=""
+          echo "EMULATOR_EXIT_CODE=$emu_rc"
+          grep -E 'PAD_SETUP|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|error|Error|ERROR' \
+            "$WORK/pcsx.stdout" "$WORK/pcsx.log" > "$WORK/captures/important-log-lines.txt" || true
+          cat "$WORK/captures/important-log-lines.txt" || true
+          echo "GPU_TRAFFIC_EMULATOR_STEP_DONE=1"
+
+      - name: Summarize GPU packet traffic and delete raw dump
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          python3 - <<'PY'
+          import struct
+          from collections import Counter
+          from pathlib import Path
+
+          path = Path("captures/raw/runtime.gpudump")
+          output = []
+          packet_names = {0:"GP0", 1:"GP1", 2:"VSync", 3:"ThrowAway", 4:"Readback",
+                          5:"TraceBegin", 6:"GPUVersion", 16:"GameID", 17:"VideoFormat", 18:"Comment"}
+          if not path.exists():
+              output.append("GPU_DUMP_RESULT=missing")
+          else:
+              data = path.read_bytes()
+              output.append(f"GPU_DUMP_FILE_BYTES={len(data)}")
+              if len(data) < 16 or data[:16] != b"PSXGPUDUMPv1r1\0\0":
+                  output.append("GPU_DUMP_RESULT=invalid_magic_or_too_short")
+              else:
+                  pos = 16
+                  packets_before = Counter()
+                  packets_live = Counter()
+                  words_before = Counter()
+                  words_live = Counter()
+                  trace_markers = 0
+                  truncated = False
+                  packet_count = 0
+                  live = False
+                  while pos + 4 <= len(data):
+                      header = struct.unpack_from("<I", data, pos)[0]
+                      pos += 4
+                      kind = (header >> 24) & 0xff
+                      count = header & 0xffffff
+                      size = count * 4
+                      if pos + size > len(data):
+                          truncated = True
+                          break
+                      packet_count += 1
+                      if kind == 5:
+                          trace_markers += 1
+                          live = True
+                      elif live:
+                          packets_live[kind] += 1
+                          words_live[kind] += count
+                      else:
+                          packets_before[kind] += 1
+                          words_before[kind] += count
+                      pos += size
+                  output += [
+                      f"GPU_DUMP_RESULT=parsed",
+                      f"GPU_DUMP_PACKETS_TOTAL={packet_count}",
+                      f"GPU_DUMP_TRACE_BEGIN_MARKERS={trace_markers}",
+                      f"GPU_DUMP_TRUNCATED={str(truncated).lower()}",
+                  ]
+                  for kind in (0,1,2,3,4):
+                      name = packet_names[kind]
+                      output.append(f"GPU_DUMP_PRETRACE_{name}_PACKETS={packets_before[kind]}")
+                      output.append(f"GPU_DUMP_PRETRACE_{name}_WORDS={words_before[kind]}")
+                      output.append(f"GPU_DUMP_LIVE_{name}_PACKETS={packets_live[kind]}")
+                      output.append(f"GPU_DUMP_LIVE_{name}_WORDS={words_live[kind]}")
+                  output.append(f"GPU_DUMP_LIVE_GPU_TRAFFIC_PRESENT={str(words_live[0] > 0 or words_live[1] > 0).lower()}")
+              path.unlink(missing_ok=True)
+
+          raw_dir = Path("captures/raw")
+          if raw_dir.exists():
+              for item in raw_dir.iterdir():
+                  if item.is_file():
+                      item.unlink(missing_ok=True)
+                  elif item.is_dir():
+                      import shutil
+                      shutil.rmtree(item)
+              raw_dir.rmdir()
+          output.append("RAW_GPU_DUMP_REMOVED=1")
+          Path("captures/gpu-traffic-summary.txt").write_text("\n".join(output) + "\n")
+          print("\n".join(output))
+          PY
+
+      - name: Upload only text summary (never upload raw GPU dump)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-private-gpu-traffic-summary
+          path: |
+            ${{ env.WORK }}/captures/gpu-traffic-summary.txt
+            ${{ env.WORK }}/captures/important-log-lines.txt
+          if-no-files-found: warn
+          retention-days: 1
+
+      - name: Remove runtime assets from ephemeral runner
+        if: always()
+        shell: bash
+        run: |
+          rm -rf "$WORK"
