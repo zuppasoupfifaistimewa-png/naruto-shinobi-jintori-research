@@ -403,3 +403,11 @@ Workflow [#39016277234](https://github.com/zuppasoupfifaistimewa-png/naruto-shin
 GDB run [#39016277234](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39016277234) selesai sukses dari sisi workflow, tetapi snapshot PC eksternal tidak tersedia (t20/t30/t50/t70 exit 1; t90 exit 124 timeout). Frame jendela aplikasi non-root tetap uniform black di 20/30/50/70 detik dan sesudah input, OCR kosong. Jadi belum ada title/menu atau perubahan state gameplay yang terbukti.
 Eksperimen berikut tetap di fastboot AnyLinux dan menargetkan diagnosis setelah `EXEC:PC0`. Jangan menandai RT-001 lulus sebelum title/menu bisa dikenali dan respons input nyata terlihat. Story Mode belum dimulai.
 
+
+
+## Pembaruan — hasil OpenGL mandiri dan diagnosis screenshot 0×0 (2026-10-17)
+
+- Workflow [naruto-opengl-diagnostic.yml](../.github/workflows/naruto-opengl-diagnostic.yml), run [#39049689832](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39049689832), berhasil pada `ubuntu-26.04`: GLX default dan `LIBGL_ALWAYS_SOFTWARE=1` aktif, renderer `llvmpipe (LLVM 21.1.8, 256 bits)`, Mesa 26.0.8, OpenGL Core/Compatibility Profile 4.5. Tanpa `MESA_GL_VERSION_OVERRIDE` atau `MESA_GLSL_VERSION_OVERRIDE`, konteks compatibility 3.3 dapat dibuat; versi aktual yang dilaporkan 4.5.
+- Maka lapisan GLX/Mesa software rendering sudah dibuktikan berfungsi. Jangan ulangi diagnosis backend grafis atau mengasumsikan GPU fisik dibutuhkan tanpa bukti lain.
+- Source pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`: `src/gpu/soft/gpu.cc` menghitung screenshot dari register batas display PS1 (`DisplayEnd - DisplayPosition`), sehingga ukuran 0×0 konsisten dengan batas display belum disiapkan. `src/core/pcsxlua.cc` juga mengikat `PCSX.GPU.getVRAM()`; ambil snapshot VRAM 1024×512 setelah VSync, tanpa menyimpan/mengunggah raw VRAM. Konversi lokal di runner ke gambar PNG pada artifact Actions privat untuk inspeksi, dan hapus raw file sebelum upload.
+- Run capture [#39047765424](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39047765424) menghasilkan `NO_VALID_GPU_SCREENSHOTS`, dimensi 0×0, dan timeout emulator 90 detik (124). Itu bukan bukti boot game. RT-001 masih terblokir; title/menu, input yang mengubah state, serta Story Mode belum terverifikasi.
