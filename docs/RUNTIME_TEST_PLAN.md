@@ -207,3 +207,21 @@ Run [#39002846886](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 ## CPU trace source-build: status run saat diperiksa — 2026-10-17
 
 Run [#39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) tetap aktif pada step build pinned source setelah file privat diverifikasi. Step capture trace dan cleanup belum dimulai; log archive belum dapat diunduh selama job berjalan (`BlobNotFound`). Batas workflow 45 menit. Pantau step aktif dan tunggu hasil aktual, tanpa run duplikat. Belum ada hasil CPU trace untuk frame 1620–1680.
+
+## CPU trace source-build selesai — interpretasi dan gerbang berikutnya (2026-10-17)
+
+Run [#39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) berhasil menyelesaikan semua step: download/verifikasi, compile PCSX-Redux source `6b9df482d7b77b9ae218d9c48c1ce1a43c265206` dalam builder image ter-patok, dependency check, CPU trace, dan cleanup. Build berjalan 04:17:26–04:43:46 UTC; trace berjalan 04:43:46–04:44:21; cleanup sukses. `PCSX_BUILD_RESULT` tercatat; pemeriksaan `ldd` tidak menemukan dependency `not found`. Run berakhir pada 04:44:27 UTC.
+
+Hasil capture:
+- `VSYNC_TRACE` mencapai frame 1620, 1650, 1680 lalu berlanjut setelah jendela trace; `CPU_TRACE_WINDOW=enabled frame=1620`.
+- `CPU_TRACE_SIZE=16031631`; `TRACE_RESULT=VSync counter callbacks fired.`; `CPU_TRACE_RESULT=Built-in instruction records were printed.`.
+- 80 record ekor memperlihatkan loop guest `0x000015a4–0x000015c4`: load `0x5de4(a3)` dibaca nol, dua cabang, decrement `$v1`, dan branch kembali ke `0x000015a4`. Penghitung menurun pada sampel, sehingga ada progres dalam loop; identitas flag/modul dan apakah loop berakhir belum diketahui.
+- `TRACE_PROCESS_EXIT=124` adalah batas observasi 35 detik yang disengaja, bukan otomatis crash guest.
+- Capture `-no-ui` ini tidak menampilkan SYSTEM.CNF/BOOT, `[CHUNK1] done chunks=187`, `EXEC:PC0(80011448)`, atau `Execute !`. Ini berbeda dari jalur headless dua AppImage pada GUI A/B yang mencapai entry. Jangan menyatakan source build/GUI berhasil boot hanya dari VSync atau status job.
+- Tidak ada artefak Actions. Cleanup menyatakan ROM/CUE/BIOS, emulator dan trace logs temporer terhapus.
+
+### Diagnosis berikutnya
+
+Bandingkan log startup di source-build pinned dan AnyLinux headless pada titik BIOS/CD read, pemrosesan SYSTEM.CNF, loader/chunk, serta handoff executable. Tambahkan guest-PC sampling periodik atau window trace yang lebih akhir hanya jika diperlukan untuk menguji apakah loop berlanjut; jangan mengulang build yang sama tanpa meningkatkan observasi. Verifikasi alias RAM dan mapping overlay sebelum menamai pemilik PC rendah. Diagnosis GUI terpisah tetap diperlukan: run #39002846886 menunjukkan AnyLinux berhasil membuka window dan menjalankan PAD_SETUP, tetapi tidak mencatat entry; “HEAD” gagal membuat window akibat GLX/OpenGL.
+
+**RT-001 tetap Open / blocked:** jangan mulai Story Mode sampai title/menu dikenali dan respons input terkontrol benar-benar terbukti.
