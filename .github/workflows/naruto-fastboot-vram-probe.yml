@@ -24,7 +24,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils xdotool imagemagick libgl1-mesa-dri python3 python3-pil
 
       - name: Download and verify private runtime assets
         shell: bash
@@ -190,7 +190,7 @@ jobs:
                       frame_count, PCSX.GPU.getGuestFPS()))
               end
           end)
-          print("VRAM_PROBE=UI-thread GPU::Vsync checkpoints=1,300 backend=softgpu")
+          print("VRAM_PROBE=UI-thread GPU::Vsync checkpoints=1,300 backend=softgpu; display screenshots taken by X11")
           LUA
           timeout --signal=TERM --kill-after=5s 90s \
             "$WORK/squashfs-root/AppRun" \
@@ -199,13 +199,38 @@ jobs:
               -softgpu -no-debugger -no-gdb -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
               > "$WORK/pcsx.stdout" 2>&1 &
           emu_pid=$!
+
+          # Capture the host application's non-root window periodically, independently
+          # of the emulator Lua screenshot API. This observes the displayed game surface
+          # while avoiding GPU::takeScreenShot() on an uncertain backend.
+          (
+            for second in 5 15 30 45 60 75; do
+              sleep "$((second - previous_second))"
+              previous_second="$second"
+              tree="$(xwininfo -root -tree 2>/dev/null || true)"
+              winid="$(printf '%s\n' "$tree" | sed -nE 's/^\s*(0x[0-9a-fA-F]+) "PCSX-Redux".*/\1/p' | head -n 1)"
+              if [ -n "$winid" ]; then
+                out="$(printf 'captures/window-t%02d.png' "$second")"
+                if import -window "$winid" "$out" 2>/dev/null; then
+                  echo "WINDOW_CAPTURE status=ok second=$second window=$winid path=$out"
+                else
+                  echo "WINDOW_CAPTURE status=error second=$second window=$winid"
+                fi
+              else
+                echo "WINDOW_CAPTURE status=no-window second=$second"
+              fi
+            done
+          ) &
+          sampler_pid=$!
+          previous_second=0
           set +e
           wait "$emu_pid"
           emu_rc=$?
           set -e
           emu_pid=""
           echo "EMULATOR_EXIT_CODE=$emu_rc"
-          grep -E 'PAD_SETUP|VRAM_PROBE|VRAM_CAPTURE|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|error|Error|ERROR' \
+          wait "$sampler_pid" 2>/dev/null || true
+          grep -E 'PAD_SETUP|VRAM_PROBE|VRAM_CAPTURE|SCREEN_CAPTURE|WINDOW_CAPTURE|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|error|Error|ERROR' \
             "$WORK/pcsx.stdout" "$WORK/pcsx.log" > "$WORK/captures/important-log-lines.txt" || true
           cat "$WORK/captures/important-log-lines.txt" || true
           echo "VRAM_PROBE_EMULATOR_STEP_DONE=1"
