@@ -1,5 +1,12 @@
 # Status penelitian
 
+## Hasil capture fastboot yang sah — 2026-10-17
+
+Run [#39015722771](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015722771) kini menghasilkan capture valid jendela aplikasi PCSX-Redux, XID 2097204 (`0x200034`), 1280×800. Selector membaca `xwininfo -root -tree`, mengecualikan root 543/`0x21f`, dan memakai non-root window bernama `PCSX-Redux`. Lima capture (sebelum input, sesudah Return/Cross, 40/65/90 detik) semuanya uniform black (mean 0, stddev 0, satu warna); OCR kosong. Ini bukan lagi masalah salah mengambil root. Port 1 Analog tetap dikonfigurasi dan input telah dikirim ke jendela aplikasi, tetapi tidak ada perubahan visual/game yang bisa diverifikasi. Tidak ada pembacaan register CPU di callback VSync. Log fastboot mencapai `SYSTEM.CNF`, `BOOT`, `EXEC:PC0(80011448)`, `Execute !`.
+Run berikut [#39015919056](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015919056) mengganti satu variabel grafis: menghapus `-softgpu`, mengaktifkan Mesa llvmpipe/OpenGL 3.3, dan mencatat kapabilitas GL. Status saat dicatat: in progress.
+**RT-001 tetap Open / blocked** sampai title/menu dikenali dan input nyata menghasilkan perubahan game.
+
+
 ## Koreksi pemilihan window X11 — fastboot probe terbaru, 2026-10-17
 
 Run [#39015419649](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015419649) benar-benar mengecualikan root, tetapi pencarian kandidatnya masih memakai `xdotool search`; hasilnya tidak mengembalikan aplikasi. Potongan `xwininfo -root -tree` di log menunjukkan child window nyata `0x200034 "PCSX-Redux"`, 1280×800. Jadi kesimpulan yang benar: window ada tetapi selector gagal memilihnya; tidak ada gambar emulator yang diambil. Marker fastboot dari log tetap mencapai `SYSTEM.CNF`, `BOOT`, `EXEC:PC0(80011448)`, `Execute !`.
