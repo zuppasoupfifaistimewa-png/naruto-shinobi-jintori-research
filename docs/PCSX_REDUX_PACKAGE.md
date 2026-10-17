@@ -56,3 +56,18 @@ No build can be guaranteed to run “without any obstacles” until the exact BI
 3. Use `openbios-chunked.bin`, an isolated PCSX profile and a log file. Set Port 1 controller protocol to Analog (`DeviceType: 1`), keyboard as host input (`PadType: 2`) and `Connected=true`.
 4. Confirm the title/menu and input response. Log CD progress and CPU PC; the main EXE payload is 187 sectors. Repeat boot tests before starting Story Mode.
 5. Only claim stability or Story Mode completion after the corresponding runtime evidence exists.
+
+
+## Cloud-runner result and current compatibility note — 2026-10-17
+
+This section supersedes earlier statements that no remote end-to-end attempt had been made. The public Actions runner successfully downloaded the private-release ROM/CUE and diagnostic OpenBIOS through the configured read-only secret without printing the secret value. It verified ROM size 325,989,552 and SHA-256 `58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88`, validated a temporary CUE reference, and logged BIOS/disc recognition (`SLPS-03553`), all 187 executable chunks, `EXEC:PC0(80011448)`, and `Execute !`. Port 1 Analog configuration removed `Unknown command for pad: 43` in both headless test builds. See [Actions #38975931679](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975931679).
+
+**Interpretation:** the executable-entry handoff is proven for the headless probes; the visible title/menu, working in-game input, and Story Mode are still not proven. The 30/60/90-second frame metrics from that run must not be used as a game-display diagnosis because the script captured the Xvfb root background rather than an emulator window.
+
+The CPU trace attempt [Actions #38975445756](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975445756) compiled the pinned upstream source but failed before emulation because the host could not locate `libcapstone.so.5`. No trace rows were produced. A runner workflow correction at [commit d965dcc](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/d965dcc864c73818e67d6a1e5f9edc19d4a3a17c) installs `libcapstone-dev` and checks the binary's linked libraries before launch.
+
+Two bounded retests were started from corrective runner commits:
+- [GUI window-capture retest #39000276365](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000276365), intended to capture the PCSX-Redux window rather than the root background.
+- [CPU trace retest #39000257139](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000257139), intended to launch the source-built emulator after dependency preflight.
+
+At the most recent check, both retests remained `in_progress`; neither is recorded as passing yet. Do not start Story Mode rule experiments until a recognizable title/menu and controlled input response are independently evidenced. Keep ROM/BIOS/CUE, captures and trace data out of Git and delete them from the ephemeral runner after each run.
