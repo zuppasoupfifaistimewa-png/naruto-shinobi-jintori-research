@@ -100,10 +100,18 @@ jobs:
           capture_window() {
             label="$1"
             xwininfo -root -tree > "$WORK/window-tree-$label.txt" 2>&1 || true
+            root_hex="$(xwininfo -root 2>/dev/null | awk '/Window id:/{print $4; exit}')"
+            root_id=$((root_hex))
+            echo "X11_ROOT_ID=$root_id ($root_hex)"
             window_id=""
             best_area=0
             while IFS= read -r id; do
               [ -n "$id" ] || continue
+              id_num=$((id))
+              if [ "$id_num" -eq "$root_id" ]; then
+                echo "WINDOW_CANDIDATE_SKIPPED=root id=$id_num"
+                continue
+              fi
               stats="$(xwininfo -id "$id" 2>/dev/null || true)"
               width="$(printf '%s\n' "$stats" | awk '/Width:/{print $2; exit}')"
               height="$(printf '%s\n' "$stats" | awk '/Height:/{print $2; exit}')"
@@ -115,7 +123,7 @@ jobs:
               fi
             done < <(xdotool search --onlyvisible --name '.*' 2>/dev/null || true)
             if [ -z "$window_id" ]; then
-              echo "CAPTURE_RESULT=$label no eligible non-root X11 window"
+              echo "CAPTURE_RESULT=$label no eligible non-root X11 window; root explicitly excluded"
               sed -n '1,100p' "$WORK/window-tree-$label.txt" || true
               return 1
             fi
