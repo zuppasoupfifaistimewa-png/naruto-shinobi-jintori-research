@@ -337,3 +337,8 @@ Run berikut [#39015919056](https://github.com/zuppasoupfifaistimewa-png/naruto-s
 Run [#39015919056](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015919056) mempertahankan fastboot OpenBIOS, ROM, AnyLinux emulator, dan Port 1 Analog; hanya `-softgpu` yang dihapus. Mesa llvmpipe OpenGL 3.3 Compatibility Profile tersedia. Jendela PCSX-Redux non-root `0x200034`/2097204 ditangkap sah; frame sebelum/sesudah Return dan Cross serta pada 40/65/90s semuanya uniform black dan OCR kosong. Log terpisah tetap mencapai `EXEC:PC0(80011448)`/ `Execute !`. Tidak ada CPU-register read di callback VSync. Peralihan renderer bukan solusi.
 Langkah diagnostik berikut: ambil snapshot PC melalui GDB remote dari luar emulator pada beberapa titik waktu, dengan hanya alamat PC/status stop yang diringkas; jangan menerbitkan trace instruksi mentah. RT-001 tetap Open / blocked.
 
+
+## Tes PC snapshot pasca-entry — sedang berjalan (2026-10-17)
+
+Workflow [#39016277234](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39016277234) telah dimulai untuk mengambil PC melalui GDB remote eksternal, dengan fastboot BIOS/ROM/controller yang sama dan capture non-root yang sama. Output dibatasi ke snapshot PC; tidak mengambil register dari callback VSync atau merekam instruksi mentah. Saat pemeriksaan terakhir job masih memasang GDB; hasil belum tersedia. Gunakan snapshot PC, boot markers dan frame/OCR bersama-sama untuk menentukan langkah berikut. RT-001 tetap Open / blocked.
+
