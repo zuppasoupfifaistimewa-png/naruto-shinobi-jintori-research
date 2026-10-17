@@ -316,3 +316,28 @@ No screenshots, ROM, CUE, BIOS or log artifacts were uploaded, and cleanup compl
 - Window-targeted run [#39000276365](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000276365) successfully captured the real PCSX-Redux window at 30/60/90s, but each frame was uniformly black and OCR empty. The GUI probe did not log PAD_SETUP, executable chunk completion or EXEC:PC0. Headless A/B probes did log EXEC:PC0, so do not treat the GUI frame as a post-entry game screenshot.
 - New diagnostics run: [#39000751307](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000751307), commit [259d587](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/259d587c6b677be7f6466b0ec61edb1940faec49). It checks GLX capabilities with glxinfo under Xvfb and prints GUI stdout/log tails, including whether the Lua PAD_SETUP marker is reached. Inspect the completed run to distinguish GUI initialization from guest boot.
 - CPU trace/dependency rerun [#39000257139](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000257139) remains active at last check; do not infer anything about guest PC until its actual trace lines appear.
+
+
+## Handoff — cloud A/B and GUI/trace repairs, 2026-10-17
+
+Repos allowed remain Naruto Research (private) and Naruto Runner (public); do not access Tile Duel. Do not request ROM re-upload or secret recreation.
+
+### Verified results
+
+- Private Release: [research-emulator-pcsx-redux-2026-10-15](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/research-emulator-pcsx-redux-2026-10-15). Exact AppImage asset hashes and sizes are in docs/PCSX_REDUX_PACKAGE.md.
+- Matched headless A/B run [#39000751307](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000751307): both builds read all 187 executable chunks and log EXEC:PC0(80011448) plus Execute !. Analog Port 1 suppresses the earlier Unknown command for pad: 43 warning on both. This is executable-entry evidence only.
+- GUI part of that run is different: GLX/Mesa llvmpipe OpenGL 3.3 is available; actual AnyLinux emulator window found, but captures at 30/60/90 seconds are all-black (one color, mean/stddev zero) and OCR empty. GUI log did not reach chunk completion or executable entry.
+- AppImage called PCSX-Redux-HEAD-x86_64.AppImage is not the same as source-build used for trace. Package metadata identifies source 9c6f98a0... from 2026-09-28; trace source commit is 6b9df482d7b77b9ae218d9c48c1ce1a43c265206. Neither prebuilt AppImage has the PCSX.CPU.Trace Lua API; source build is needed for instruction trace.
+
+### Workflow changes on runner main
+
+- GUI comparator workflow commit [0c4e3c1](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/0c4e3c172de6beda2c81a73579b45ba25d899ef4) captures both AppImage GUI windows in separate profiles, at 30/60/90 seconds, and cleanup now removes newly introduced images/logs/profile data. Rerun [#39002136781](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39002136781) was queued when this handoff was written; inspect both builds' GUI results.
+- Source trace workflow commit [16a6faff](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/16a6faff066b913480ad121b497db79df03a9de2) pins builder image ghcr.io/grumpycoders/pcsx-redux-build@sha256:d9ae6cbb23a5d0d98d8c3702cc6f512698ee1670bf8d59b236b2baabe99a66e4, runs dependency checks and emulator inside that image, and extends build timeout to 45 minutes. Rerun [#39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) was still compiling; do not call it a passed trace until CPU_TRACE_SIZE and CPU_TRACE_LINE outputs appear.
+
+### Next steps
+
+1. Check final logs for runs #39002136781 and #39001985849.
+2. If both GUI windows are black before EXEC:PC0, diagnose GUI CPU/disc/CD-read path separately from GLX. Compare with the -no-ui route.
+3. If source trace succeeds, inspect VSync counters at frames 1620–1680, CPU_TRACE_SIZE and last 80 instruction lines.
+4. Do not test Story Mode until a recognizable title/menu appears and a controlled, logged input visibly changes the game or a reliably identified input state.
+5. Keep ROM, BIOS, CUE, captures, saves, RAM dumps and sensitive material out of Git and public artifacts.
