@@ -27,7 +27,7 @@ jobs:
         run: |
           set -eu
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils xdotool imagemagick tesseract-ocr tesseract-ocr-jpn libopengl0 libglx0 libgl1
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils xdotool imagemagick tesseract-ocr tesseract-ocr-jpn libopengl0 libglx0 libgl1 libegl1
 
       - name: Download and verify private game files plus signed-upstream emulator package
         env:
