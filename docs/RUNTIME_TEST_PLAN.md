@@ -237,3 +237,21 @@ Kedua perintah headless menggunakan `-interpreter`, tetapi AppImage diuji sampai
 4. Bandingkan jalur CD-ROM dan branch/delay-slot interpreter pada source lama/baru setelah data sebanding tersedia.
 
 Tidak ada perubahan ROM/BIOS atau rerun baru dalam pembaruan ini. RT-001 tetap Open / blocked; title/menu dan input terkontrol belum dibuktikan.
+
+## Hasil CPU trace 90 detik — Actions #39004736399 (2026-10-17)
+
+Run [#39004736399](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39004736399) selesai `success`; seluruh step download/verifikasi, build, capture, dan cleanup sukses. Build source pin `6b9df482d7b77b9ae218d9c48c1ce1a43c265206` dan dependency preflight pada builder digest tetap tidak menemukan library `not found`. ROM lolos verifikasi ukuran/hash dan CUE sementara lolos validasi struktur.
+
+| Kriteria | Hasil | Makna |
+|---|---|---|
+| Boot setup | OpenBIOS terdeteksi; disc `SLPS-03553`, ID `SLPS03553`, EXE `SLPS_035.53;1` | BIOS dan media dikenali |
+| Guest PC sampling | 158 sampel frame 30–4740; 157 kali `0x000015a4`, satu kali `0x00000870` di frame 420 | PC kembali ke loop alamat rendah setelah satu sampel yang berbeda |
+| Trace awal (1620–1680) | 200 records sampel, 9 PC unik, total 16.031.631 | Pola hot PC berada di sekitar `0x000015a4–0x000015c4` |
+| Trace akhir (4500–4560) | 200 records sampel, 9 PC unik, total 16.031.484 | Pola yang sama masih ada mendekati akhir observasi |
+| Handoff executable | Tidak ada SYSTEM.CNF/BOOT, 187 chunk selesai, EXEC:PC0, atau Execute ! | Entry executable game tidak terbukti |
+| Batas proses | Exit 124 pada batas 90 detik | Timeout observasi yang disengaja; bukan bukti crash |
+| Kebersihan | Cleanup sukses; artifact list kosong; tidak ada instruksi/operand mentah pada output runtime baru | File privat tidak diterbitkan sebagai artefak |
+
+**Tafsiran:** ini bukan keberhasilan RT-001. Pencapaian VSync dan summary trace menunjukkan emulator tetap menjalankan callback, sementara guest PC terus berulang pada alamat rendah. Asal loop dan penyebabnya belum terbukti; jangan menggolongkannya sebagai BIOS/game code tertentu tanpa pemetaan tambahan. Gunakan diagnosis source/loader dan marker progres CD sebagai langkah berikut, bukan mengulang tes identik.
+
+**Gerbang RT-001 tetap Open / blocked:** wajib ada title/menu Naruto yang dikenali dan demonstrasi respons terhadap input terkontrol sebelum pengujian Story Mode. Jangan menyatakan gameplay berhasil hanya dari `success` di Actions.

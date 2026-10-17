@@ -145,3 +145,17 @@ No Actions artifact was produced. Cleanup confirmed temporary ROM/CUE/BIOS, buil
 Source AnyLinux adalah `0c3572c3db75f97542001e453ae80ba8c3f8acba`; source trace adalah `6b9df482d7b77b9ae218d9c48c1ce1a43c265206`, 803 commit lebih baru menurut GitHub compare. Perubahan yang menonjol meliputi rewrite besar CD-ROM (`src/core/cdrom.cc` +1.476/-1.392) dan perubahan interpreter (`src/core/psxinterpreter.cc` +290/-81), termasuk logika branch-delay. Keduanya menjalankan mode interpreter pada command line cloud, tetapi waktu observasinya tak seimbang: baseline prebuilt 90s, source CPU-trace 35s. Tidak terbukti bahwa perbedaan source adalah akar masalah, dan belum tepat mengklaim satu build lebih stabil berdasarkan tes ini.
 
 Follow-up yang tepat adalah membangun source pinned sekali lagi dengan observasi sampai 90s, guest PC sampling tiap 30 VSync, serta trace akhir sekitar frames 4500–4560; pisahkan output boot markers dari instruction rows. Ini akan menilai apakah PC rendah berlanjut atau keluar dari loop setelah window sebelumnya, kemudian mengarahkan pembandingan pada CD-ROM/interpreter. AnyLinux tetap kandidat operasional headless sementara, bukan pemenang yang telah terbukti untuk GUI/gameplay.
+
+## Build source-trace dan hasil runtime follow-up — Actions #39004736399 (2026-10-17)
+
+Run [#39004736399](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39004736399) mengonfirmasi source-build PCSX-Redux pin `6b9df482d7b77b9ae218d9c48c1ce1a43c265206` dapat dibangun serta dijalankan di builder image `ghcr.io/grumpycoders/pcsx-redux-build@sha256:d9ae6cbb23a5d0d98d8c3702cc6f512698ee1670bf8d59b236b2baabe99a66e4`. Semua step berakhir sukses. ROM hash/ukuran dan struktur CUE diverifikasi; pemeriksaan `ldd` dalam image yang sama tak menemukan `not found`. Compile sekitar 26m20s, disusul observasi 90 detik dan cleanup sukses.
+
+Hasil runtime tetap diagnostik, bukan kelulusan boot game:
+- OpenBIOS dan disc `SLPS-03553` dikenali; executable yang terdeteksi bernama `SLPS_035.53;1`.
+- 158 sampel PC setiap 30 VSync dari frame 30 hingga 4740: 157 bernilai `0x000015a4`, satu sampel frame 420 bernilai `0x00000870`. Kedua jendela trace frames 1620–1680 dan 4500–4560 melaporkan sembilan PC unik dengan alamat dominan yang sama, sekitar `0x000015a4–0x000015c4`.
+- Log tidak memiliki marker SYSTEM.CNF/BOOT, chunk executable 187 selesai, `EXEC:PC0(80011448)`, atau `Execute !`. Exit 124 adalah observation cap 90 detik, bukan otomatis crash.
+- Trace runtime hanya dicetak sebagai ringkasan frekuensi PC, tanpa baris instruksi/operand mentah. Cleanup menyatakan ROM/CUE/BIOS, emulator source-build dan log sementara dihapus. Tidak ada Actions artifact.
+
+Hasil ini membuktikan harness source-build, PC sampling, kedua jendela agregasi, dan cleanup bekerja. Hasil ini **tidak membuktikan** title/menu ditampilkan atau input permainan bekerja; RT-001 tetap Open / blocked. AnyLinux AppImage sebelumnya mencapai executable handoff pada jalur headless, tetapi fakta itu tidak boleh dicampur dengan run source-build ini.
+
+Catatan keamanan: public log run lama [#39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) masih perlu penanganan terpisah karena memuat 80 record instruksi/operand mentah. Run terbaru telah menghindari pengulangan keluaran tersebut.

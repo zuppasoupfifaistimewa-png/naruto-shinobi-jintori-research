@@ -480,3 +480,30 @@ GitHub compare [PCSX-Redux `0c3572c3` → `6b9df482`](https://github.com/grumpyc
 Perintah headless di workflow GUI A/B dan trace source sama-sama mencantumkan `-no-ui`, `-run`, `-interpreter`, `-softgpu`, Lua setup/analog PAD, dan stdout/log. Perbedaan observasi pentingnya: AppImage diberi hingga 90s; source trace hanya 35s. Trace source mencapai VSync frame 2040 dalam proses tersebut, tetapi rekaman instruksi hanya frames 1620–1680 dan ekornya berada pada loop guest PC rendah. Karena itu belum dapat dibedakan apakah versi source punya perubahan boot, tahap BIOS/CD menjadi lebih lambat, atau loop segera keluar setelah capture ditutup.
 
 Lanjutan yang mengisolasi hipotesis: jalankan source pinned dengan batas 90s dan PC guest sampling per 30 VSync, ambil trace window yang lebih akhir (mis. 4500–4560), dan cetak marker `SYSTEM.CNF`/chunk/EXEC terpisah dari `CPU_TRACE_LINE` supaya tidak tersisih oleh `tail -160`. Setelah ada PC kemudian, bandingkan cabang `cdrom.cc` dan perubahan branch/delay-slot interpreter terhadap jalur yang dipetakan; hindari menunjuk commit/file sebagai akar masalah sebelum hasil sebanding tersedia.
+
+## CPU-trace follow-up 90 detik — Actions #39004736399 (2026-10-17)
+
+Sumber bukti utama adalah log final [Actions #39004736399](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39004736399), bukan status workflow semata. Run selesai `success` dari 05:01:31–05:29:40 UTC (12:01:31–12:29:40 WIB). Semua step sukses.
+
+### Build dan integritas input
+
+Source PCSX-Redux dipatok pada `6b9df482d7b77b9ae218d9c48c1ce1a43c265206`; builder image tetap digest `d9ae6cbb23a5d0d98d8c3702cc6f512698ee1670bf8d59b236b2baabe99a66e4`. ROM ukuran 325.989.552 byte dan SHA-256 `58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88` terverifikasi; struktur CUE sah setelah referensi FILE sementara dinormalisasi. Build berjalan sekitar 26m20s lalu mengeluarkan `PCSX_BUILD_RESULT`. Pemeriksaan `ldd` pada builder yang sama sukses tanpa `not found`.
+
+### Observasi runtime
+
+Trace berjalan hingga batas observasi 90 detik dan keluar dengan kode 124 yang memang ditetapkan sebagai timeout. PC sampling setiap 30 VSync menghasilkan 158 sampel (frame 30–4740); histogramnya: `0x000015a4` sebanyak 157 sampel, dan `0x00000870` sekali di frame 420. PC kemudian kembali ke `0x000015a4` dan bertahan sampai sampel frame 4740.
+
+Kedua jendela CPU trace selesai:
+- Frames 1620–1680: 16.031.631 total records menurut summary, 200 records disampling, 9 PC unik.
+- Frames 4500–4560: 16.031.484 total records menurut summary, 200 records disampling, 9 PC unik.
+- Pola hot PC konsisten di dua jendela; `0x000015c0` dan `0x000015c4` masing-masing muncul 23 kali pada sampel ringkasan, `0x000015a4` dan alamat tetangga muncul sekitar 22 kali.
+
+Boot marker pada log aktual mengonfirmasi OpenBIOS, disc label `SLPS-03553`, disc ID `SLPS03553`, serta nama EXE `SLPS_035.53;1`. Marker `SYSTEM.CNF`, `BOOT =`, penyelesaian 187 chunk, `EXEC:PC0(80011448)`, dan `Execute !` tidak muncul. Maka sesi tidak membuktikan game executable dicapai.
+
+Workflow baru memfilter CPU trace menjadi agregat PC dan tidak mengeluarkan baris instruksi/operand mentah di hasil runtime. Cleanup step selesai: ROM, CUE, BIOS, emulator dan file trace sementara dihapus; tidak ada artefak Actions. Periksa terpisah isu retensi log lama #39001985849, yang sebelumnya diaudit berisi 80 record instruksi/operand mentah.
+
+### Interpretasi
+
+Bukti mendukung loop PC rendah yang masih muncul hingga akhir observasi, bukan kesimpulan pasti bahwa CPU crash atau hang permanen. Jangan menetapkan fungsi/alamat sebagai OpenBIOS, CD loader, atau kode game tanpa validasi source/mapping. Hipotesis berikutnya perlu menghubungkan alamat loop ke source dan state tunggu yang relevan; jika perlu pengujian baru, tambahkan marker diagnostik yang membedakan progres CD/loader dari polling, tanpa mengeluarkan disassembly mentah.
+
+RT-001 masih **Open / blocked**; title/menu Naruto dan respons input terkontrol belum diverifikasi.

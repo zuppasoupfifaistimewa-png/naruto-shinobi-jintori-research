@@ -350,3 +350,19 @@ Kedua perintah headless memakai `-no-ui -exec ... -run -interpreter -softgpu -st
 - Run [#39004736399](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39004736399) menggunakan commit workflow tersebut. Pemeriksaan terakhir: secret check, workspace, dan download/verifikasi file lulus; build source masih `in_progress`; capture dan cleanup belum berjalan. Jangan menganggap pengujian runtime berhasil/gagal sebelum status dan log final diperiksa.
 - Audit log publik menemukan 80 record instruksi/operand aktual pada run #39001985849; tidak ada artifact Actions. Run CPU-trace lama lain yang diperiksa tidak memuat record instruksi aktual. Workflow baru tak lagi mencetak record mentah. Log run #39001985849 masih dapat diakses; antarmuka GitHub yang tersedia di sesi ini tidak menyediakan tindakan penghapusan run/log.
 - RT-001 tetap **Open / blocked**; title/menu Naruto dan respons input terkontrol belum terbukti.
+
+## Hasil final CPU trace 90 detik — Actions #39004736399 (2026-10-17)
+
+Run [#39004736399](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39004736399) selesai dengan status workflow/job `success`. Waktu run 05:01:31–05:29:40 UTC (12:01:31–12:29:40 WIB). Semua step selesai sukses: secret check, persiapan workspace, download/verifikasi aset, build source PCSX-Redux, capture/diagnostik, dan cleanup.
+
+- ROM lulus pemeriksaan ukuran 325.989.552 byte dan SHA-256 `58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88`. CUE dinormalisasi hanya untuk referensi berkas sementara. Source pin `6b9df482d7b77b9ae218d9c48c1ce1a43c265206`; builder image tetap `ghcr.io/grumpycoders/pcsx-redux-build@sha256:d9ae6cbb23a5d0d98d8c3702cc6f512698ee1670bf8d59b236b2baabe99a66e4`.
+- Build berlangsung sekitar 26 menit 20 detik, berakhir dengan `PCSX_BUILD_RESULT`. Pemeriksaan dependency `ldd` di image builder yang sama lulus tanpa library bertanda `not found`.
+- Capture mencapai sampel VSync dari frame 30 sampai 4740, tiap 30 frame: 158 sampel. PC adalah `0x000015a4` pada 157 sampel; satu pengecualian sampel berada di frame 420 pada `0x00000870`, lalu PC kembali ke `0x000015a4`.
+- Ringkasan CPU trace pada frames 1620–1680: 200 record diperiksa, 9 PC unik, total terlapor 16.031.631 record. Pada frames 4500–4560: 200 record, 9 PC unik, total terlapor 16.031.484 record. Kedua jendela memiliki pola hot PC yang sama; alamat teratas `0x000015c0` dan `0x000015c4` masing-masing muncul 23 kali, `0x000015a4` dan beberapa alamat tetangganya sekitar 22 kali.
+- Boot marker yang terlihat: OpenBIOS dikenali, disc label `SLPS-03553`, disc ID `SLPS03553`, executable `SLPS_035.53;1`. Tidak terlihat `SYSTEM.CNF`/baris `BOOT =`, `[CHUNK1] done chunks=187`, `EXEC:PC0(80011448)`, atau `Execute !`.
+- `TRACE_PROCESS_EXIT=124` adalah batas observasi 90 detik yang disengaja, bukan bukti crash guest. Tidak ada marker FATAL/Exception/ERROR pada bagian runtime yang disaring. Keluaran runtime baru hanya agregat PC dan tidak memuat record instruksi/operand mentah.
+- Cleanup menyatakan ROM/CUE/BIOS, emulator hasil build, dan log runtime sementara telah dihapus dari runner ephemeral. Daftar artefak Actions kosong.
+
+**Interpretasi:** pengujian memperkuat bukti adanya loop PC berulang dalam sesi OpenBIOS/disc, tetapi tidak mengidentifikasi pemilik loop dan tidak membuktikan handoff ke executable utama. Jangan menyebutnya kode game, hang permanen, atau akar masalah spesifik sebelum mapping alamat dan jalur pemanggil diverifikasi.
+
+**RT-001 tetap Open / blocked.** Belum ada title/menu Naruto yang dikenali dan belum ada respons input terkontrol yang terbukti. Jangan mulai Story Mode. Log publik lama [#39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) masih perlu ditinjau karena memuat 80 record instruksi/operand; run baru ini tidak mengulangi keluaran mentah tersebut.

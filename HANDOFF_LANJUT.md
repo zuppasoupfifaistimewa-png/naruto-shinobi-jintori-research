@@ -420,3 +420,27 @@ Perubahan yang sudah ada di runner: timeout observasi 90s; `PCSX.getRegisters().
 Source `psxmem.cc` pada pin yang dipakai memetakan PC rendah `0x000015a4–0x000015c4` ke RAM (alias wilayah `0x8000xxxx/0xa000xxxx)); ini hanya bukti pemetaan memori, **bukan** identifikasi pemilik loop sebagai BIOS, loader, atau overlay. Interpretasi harus menunggu PC sampling dan jendela akhir.
 
 Log publik run lama [#39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) memuat 80 record instruksi/operand. Workflow baru tidak mencetak baris tersebut, tetapi log lama belum terhapus karena tool GitHub yang tersedia di sesi ini tidak mempunyai aksi delete workflow run/log.
+
+## Handoff final — hasil CPU trace 90 detik (#39004736399), 2026-10-17
+
+### Status GitHub yang diverifikasi
+
+- Run [#39004736399](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39004736399) berakhir `success`. Job mulai 05:01:31 UTC, selesai 05:29:40 UTC; dalam WIB 12:01:31–12:29:40. Ketujuh step termasuk build, capture trace, dan cleanup berakhir sukses.
+- ROM diverifikasi pada ukuran 325.989.552 byte serta SHA-256 `58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88`; CUE sementara valid setelah normalisasi path. Source pin `6b9df482d7b77b9ae218d9c48c1ce1a43c265206`; digest image builder `sha256:d9ae6cbb23a5d0d98d8c3702cc6f512698ee1670bf8d59b236b2baabe99a66e4`.
+- Build source menghabiskan sekitar 26m20s; `PCSX_BUILD_RESULT` muncul dan pemeriksaan `ldd` tanpa dependency `not found` sukses.
+- Step capture mencapai batas 90 detik dengan `TRACE_PROCESS_EXIT=124`; itu exit code timeout observasi yang dirancang, bukan crash dengan sendirinya. Kedua jendela agregasi berjalan dan cleanup menghapus ROM/CUE/BIOS, binary source-build, dan trace log sementara. Artifact list kosong.
+
+### Hasil guest PC dan marker boot
+
+- Terekam 158 sampel PC setiap 30 VSync dari frame 30 hingga 4740. Sebanyak 157 sampel bernilai `0x000015a4`; hanya frame 420 bernilai `0x00000870`, kemudian PC kembali ke `0x000015a4`.
+- Jendela trace awal 1620–1680 dan akhir 4500–4560 masing-masing melaporkan 200 record yang disampling, 9 PC unik, dan pola alamat teratas yang sama: `0x000015c0` / `0x000015c4` masing-masing 23 kemunculan; `0x000015a4` dan alamat tetangga sekitar 22 kemunculan. Ini mendukung pola loop berulang sepanjang observasi.
+- Marker positif terbatas pada OpenBIOS terdeteksi serta disc `SLPS-03553`, ID `SLPS03553`, executable `SLPS_035.53;1`. Tidak ada marker `SYSTEM.CNF`/BOOT, chunk executable 187 selesai, `EXEC:PC0(80011448)`, atau `Execute !`. Tidak ada bukti title/menu.
+- Pada bagian runtime log yang sebenarnya (bukan echo isi skrip), tidak ada baris disassembly/operand mentah. Workflow baru mengeluarkan agregat PC saja. Log lama #39001985849 masih dapat diakses dan dilaporkan memuat 80 record instruksi/operand; tool GitHub yang tersedia di sesi ini belum menyediakan operasi delete run/log.
+
+### Kesimpulan dan langkah selanjutnya
+
+Perlakukan `0x000015a4–0x000015c4` sebagai **loop PC yang belum diidentifikasi**. Alamat rendah dipetakan ke RAM oleh konfigurasi memori emulator, tetapi itu tidak cukup untuk menamai pemiliknya sebagai BIOS, loader, atau overlay. Run ini lebih kuat daripada trace 35 detik sebelumnya karena memakai batas observasi 90 detik dan jendela akhir, namun tidak mencapai handoff executable.
+
+Langkah riset berikut yang paling diskriminatif adalah menelusuri sumber OpenBIOS/boot-loader yang sesuai dengan PC rendah dan menentukan apakah pembacaan CD atau event tunggu yang terkait bisa dibuktikan dari sumber/marker. Pertahankan output publik hanya pada boot markers, status tunggu yang terpilih, PC sampling dan agregat; jangan mencetak disassembly/operand mentah. Hindari build identik tanpa hipotesis baru.
+
+**RT-001 tetap Open / blocked:** jangan memulai Story Mode sampai title/menu Naruto terlihat dan input terkontrol terbukti responsif. Jangan meminta ROM upload ulang, secret baru, atau uji laptop. Jangan membuka/menyentuh repo Tile Duel.
