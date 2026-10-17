@@ -313,3 +313,9 @@ Kriteria RT-001 belum dipenuhi. Jangan meminta atau mengambil BIOS retail baru. 
 Run [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) membuktikan bahwa jendela sebenarnya dapat ditemukan bila enumerasi X11 generik digunakan (ID 543). Fastboot BIOS mencapai entry executable, tetapi setiap capture window 1280×800—sebelum/sesudah Return dan Cross serta pada 40/65/90 detik—tetap satu warna hitam; OCR kosong. Input dikirim ke window, tetapi tidak ada perubahan tampilan yang dapat dikaitkan ke game. Jadi RT-001 belum lolos.
 Follow-up [#39015290594](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015290594) membuang `PCSX.getRegisters()` dari callback VSync untuk menguji kemungkinan instrumentasi membekukan emulator. Bandingkan frame, marker BOOT dan input sebelum menyimpulkan root cause.
 
+
+## Koreksi wajib — fastboot selector menangkap root Xvfb (2026-10-17)
+
+Capture run [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) **tidak sah untuk menilai gambar game**. ID 543 = hexadecimal `0x21f` ialah root Xvfb; regex `xdotool search --onlyvisible --name '.*'` mencocokkan root. Jadi frame hitam, OCR kosong, dan tak adanya delta visual Return/Cross dari run tersebut tidak boleh dianggap sebagai observasi window PCSX. Marker fastboot `SYSTEM.CNF`/BOOT/`EXEC:PC0`/ `Execute !` tetap sah dari log terpisah.
+Workflow diperbaiki pada commit `83173bb10cfbf905a296f59720c0a63c95bc3a32` dengan pengecualian eksplisit X11 root. Nilai hasil run [#39015419649](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015419649) hanya boleh dipakai jika `CAPTURE_WINDOW` menyebut ID non-root. Jika tidak ditemukan, root tree adalah diagnosis dan tidak boleh diganti dengan gambar root. RT-001 tetap Open / blocked.
+
