@@ -284,3 +284,10 @@ Workflow telah dikoreksi di commit `058aadea1c664712b62a63cf01fcb3e5598ef047` un
 3. Nyatakan boot hanya jika title/menu Naruto dikenali pada capture. Nyatakan kontrol bekerja hanya setelah perubahan layar/game state dapat diatribusikan ke input.
 4. Pertahankan RT-001 Open / blocked hingga kedua gerbang itu lolos. Story Mode, persistensi progres, dan aturan gameplay tetap belum diuji.
 
+
+## DuckStation retest dependency status — 2026-10-17
+
+Run [#39012504017](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012504017) keluar dengan 127 karena `libEGL.so.1` masih hilang setelah pemasangan OpenGL/GLX. Window tidak ditemukan dan input dilewati; tidak ada frame untuk menilai game. Ini bukan gagal boot ROM karena emulator belum mulai.
+
+Commit `5afd32eca0d32ee191de7f2963f74b53aed89448` menambah `libegl1`; rerun [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012694027) masih berjalan pada boot/capture ketika dicatat. Periksa log dan artifact setelah selesai. PCSX source-current [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) masih di tahap build. RT-001 tetap Open / blocked sampai title/menu dikenal dan input terbukti responsif.
+
