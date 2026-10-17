@@ -262,3 +262,12 @@ Koreksi yang sudah dikirim ke repo runner:
 - Commit [8829933](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/8829933b3b6815dce694ebe6d46cd2a1f0fee9f0) memasang `xdotool`/`x11-utils` dan menargetkan window PCSX-Redux untuk pengukuran/OCR. Jika window tidak ditemukan, workflow mencatat pohon window dan tidak menggantinya dengan capture root hitam. File gambar tetap lokal di runner dan dihapus saat cleanup.
 
 Retest yang dimulai dari dua commit itu belum selesai pada waktu catatan dibuat: GUI [Actions #39000276365](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000276365), CPU trace [Actions #39000257139](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000257139). Periksa hasil finalnya sebelum menetapkan status boot. Jangan mulai RT-001/gameplay sampai title/menu yang dikenali dan respons input terbukti.
+
+
+## GUI-window retest result — 2026-10-17 (Actions #39000276365)
+
+The corrected capture test completed successfully. Its log found the actual PCSX-Redux X11 window (CAPTURE_WINDOW at 30s, 60s and 90s), rather than the Xvfb root. All three captured PCSX-Redux-window frames nevertheless measured 1280x800, mean=0, stddev=0, colors=1; Japanese/English OCR returned no text.
+
+Important distinction: the GUI probe's own log shows BIOS/OpenBIOS and disc metadata, but does not show [CHUNK1] done chunks=187, EXEC:PC0(80011448) or Execute !. Those entry markers are present in the separate headless A/B probes in the same job. Therefore the current evidence does not show a black game frame after executable entry; it shows that GUI mode remains black and did not log the same executable handoff as headless mode. Investigate this GUI/headless boot-path difference before diagnosing the game's renderer.
+
+Run: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000276365. ROM/BIOS, frames and logs were removed during runner cleanup; no game media or screenshot was committed.
