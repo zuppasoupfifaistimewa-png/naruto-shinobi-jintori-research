@@ -298,3 +298,12 @@ Run [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 
 Kriteria RT-001 belum dipenuhi. Jangan meminta atau mengambil BIOS retail baru. DuckStation bukan jalur runtime yang dapat dilanjutkan dengan asset OpenBIOS sekarang. Prioritaskan hasil akhir source-current PCSX-Redux [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708); saat terakhir diperiksa masih pada tahap build. Jangan menyebut Story Mode berjalan/tamat.
 
+
+## Hasil terbaru — source-current GUI dan BIOS variants (2026-10-17)
+
+- [Source-current PCSX-Redux #39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708): source pin berhasil dibangun. Capture window 20/40/60/80/95 s semua hitam uniform 1280×800 (mean 0/stddev 0/satu warna), OCR kosong. Log mengenali disc/OpenBIOS/Analog port, tetapi guest PC hanya tercatat sekali pada frame 300=`0x000015a4`; tidak ada `SYSTEM.CNF`/BOOT atau executable entry. Ini bukan sukses RT-001.
+- [OpenBIOS A/B #39013612865](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39013612865): fastboot OpenBIOS mencapai `EXEC:PC0(80011448)`/ `Execute !`; chunked OpenBIOS hanya mencatat payload read sampai indeks 40. Namun window detector tidak menemukan jendela untuk kedua varian sehingga capture/input dilewati.
+- [Follow-up fastboot window-identification #39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) memakai enumerasi X11 semua jendela yang terlihat, memilih jendela aplikasi berukuran wajar, menyimpan window tree saat pencarian gagal, lalu capture/OCR sebelum/sesudah input. Status awal queued; hasil final perlu dinilai dari log/capture.
+
+**RT-001 tetap Open / blocked.** EXEC handoff tidak menggantikan title/menu yang terlihat; input hanya tervalidasi bila perubahan game dapat diamati.
+
