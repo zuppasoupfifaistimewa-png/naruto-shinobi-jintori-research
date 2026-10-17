@@ -142,3 +142,14 @@ A separate no-UI CPU trace is now implemented in [workflow file](https://github.
 
 ---
 
+
+
+## Cloud runner retest gate — updated 2026-10-17
+
+The asset/entry test completed successfully in [run #38975931679](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975931679): private release retrieval, ROM size/hash, CUE validation, OpenBIOS and disc recognition, 187 executable chunks, and `EXEC:PC0(80011448)` / `Execute !` were logged. Analog Port 1 suppressed `Unknown command for pad: 43` in both compared builds.
+
+The former GUI metrics are invalid for diagnosing game display because the script captured the Xvfb root, not the emulator window. The corrected probe in [run #39000276365](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000276365) must produce `CAPTURE_WINDOW` and measurements from that window; a missing window is itself a GUI-startup diagnostic, and the test must not substitute the root background.
+
+The previous source-built CPU trace [run #38975445756](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975445756) failed before emulation because the host lacked `libcapstone.so.5`. The corrected workflow [run #39000257139](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000257139) installs `libcapstone-dev` and verifies linked dependencies. Its final trace output is still required before diagnosing any guest loop or stall.
+
+**Gate remains closed:** no title/menu identified and no controlled in-game input response yet. Keep test row RT-001 open. Do not start gameplay formula experiments until both observations are independently proven.
