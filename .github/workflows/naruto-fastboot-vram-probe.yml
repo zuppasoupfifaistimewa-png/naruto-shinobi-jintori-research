@@ -105,23 +105,71 @@ jobs:
 
           cat > "$WORK/vram-probe.lua" <<'LUA'
           local frame_count = 0
-          local targets = { [60]=true, [300]=true, [600]=true, [900]=true, [1800]=true, [3000]=true, [3600]=true }
-          local function capture_vram(n)
+          local started = os.time()
+          local checkpoints = {5,10,15,20,30,40,50,60,70,80}
+          local next_checkpoint = 1
+
+          local function capture_vram(target_s, elapsed_s)
               local ok, err = pcall(function()
                   local vram = PCSX.GPU.getVRAM()
-                  local path = string.format("captures/raw/vram-frame-%06d.raw", n)
-                  local raw = assert(Support.File.open(path, "TRUNCATE"), "cannot create VRAM checkpoint")
+                  local stem = string.format("vram-t%02d", target_s)
+                  local raw = assert(Support.File.open("captures/raw/" .. stem .. ".raw", "TRUNCATE"))
                   raw:writeMoveSlice(vram)
                   raw:close()
-                  local meta = assert(io.open(string.format("captures/raw/vram-frame-%06d.json", n), "wb"))
-                  meta:write(string.format('{"frame":%d,"width":1024,"height":512,"bpp":16,"bytes":1048576,"guest_fps":%.4f}\n',
-                      n, PCSX.GPU.getGuestFPS()))
+                  local meta = assert(io.open("captures/raw/" .. stem .. ".json", "wb"))
+                  meta:write(string.format(
+                      '{"kind":"vram","checkpoint":"t%02d","elapsed_s":%d,"width":1024,"height":512,"bpp":16,"bytes":1048576,"guest_fps":%.4f}\n',
+                      target_s, elapsed_s, PCSX.GPU.getGuestFPS()))
                   meta:close()
-                  print(string.format("VRAM_CAPTURE status=ok frame=%d width=1024 height=512 bytes=1048576 guest_fps=%.4f",
-                      n, PCSX.GPU.getGuestFPS()))
+                  print(string.format("VRAM_CAPTURE status=ok checkpoint=t%02d elapsed_s=%d width=1024 height=512 bytes=1048576 guest_fps=%.4f",
+                      target_s, elapsed_s, PCSX.GPU.getGuestFPS()))
               end)
               if not ok then
-                  printError(string.format("VRAM_CAPTURE status=error frame=%d error=%s", n, tostring(err)))
+                  printError(string.format("VRAM_CAPTURE status=error checkpoint=t%02d elapsed_s=%d error=%s",
+                      target_s, elapsed_s, tostring(err)))
+              end
+          end
+
+          local function capture_screen(target_s, elapsed_s)
+              local ok, err = pcall(function()
+                  local shot = PCSX.GPU.takeScreenShot()
+                  local bpp = (shot.bpp == 0) and 16 or 24
+                  if shot.width <= 0 or shot.height <= 0 then
+                      print(string.format("SCREEN_CAPTURE status=empty checkpoint=t%02d elapsed_s=%d width=%d height=%d bpp=%d",
+                          target_s, elapsed_s, shot.width, shot.height, bpp))
+                      return
+                  end
+                  local stem = string.format("screen-t%02d", target_s)
+                  local raw = assert(Support.File.open("captures/raw/" .. stem .. ".raw", "TRUNCATE"))
+                  raw:writeMoveSlice(shot.data)
+                  raw:close()
+                  local meta = assert(io.open("captures/raw/" .. stem .. ".json", "wb"))
+                  meta:write(string.format(
+                      '{"kind":"screen","checkpoint":"t%02d","elapsed_s":%d,"width":%d,"height":%d,"bpp":%d,"guest_fps":%.4f}\n',
+                      target_s, elapsed_s, shot.width, shot.height, bpp, PCSX.GPU.getGuestFPS()))
+                  meta:close()
+                  print(string.format("SCREEN_CAPTURE status=ok checkpoint=t%02d elapsed_s=%d width=%d height=%d bpp=%d",
+                      target_s, elapsed_s, shot.width, shot.height, bpp))
+              end)
+              if not ok then
+                  printError(string.format("SCREEN_CAPTURE status=error checkpoint=t%02d elapsed_s=%d error=%s",
+                      target_s, elapsed_s, tostring(err)))
+              end
+          end
+
+          local function poll_time()
+              local elapsed = os.time() - started
+              if next_checkpoint <= #checkpoints and elapsed >= checkpoints[next_checkpoint] then
+                  local target = checkpoints[next_checkpoint]
+                  capture_vram(target, elapsed)
+                  capture_screen(target, elapsed)
+                  next_checkpoint = next_checkpoint + 1
+              end
+              if next_checkpoint <= #checkpoints then
+                  PCSX.nextTick(poll_time)
+              else
+                  print("TIMED_CHECKPOINTS_COMPLETE=1")
+                  PCSX.quit(0)
               end
           end
 
@@ -130,18 +178,9 @@ jobs:
               if frame_count % 300 == 0 then
                   print(string.format("VRAM_PROBE_VSYNC frame=%d guest_fps=%.4f", frame_count, PCSX.GPU.getGuestFPS()))
               end
-              if targets[frame_count] then
-                  local n = frame_count
-                  PCSX.nextTick(function() capture_vram(n) end)
-              end
-              if frame_count == 4200 then
-                  PCSX.nextTick(function()
-                      print("VRAM_PROBE_END=target_frame_reached")
-                      PCSX.quit(0)
-                  end)
-              end
           end)
-          print("VRAM_PROBE=armed checkpoints=60,300,600,900,1800,3000,3600")
+          print("VRAM_PROBE=timed checkpoints 5,10,15,20,30,40,50,60,70,80 seconds")
+          PCSX.nextTick(poll_time)
           LUA
 
           timeout --signal=TERM --kill-after=5s 90s \
@@ -162,7 +201,7 @@ jobs:
           cat "$WORK/captures/important-log-lines.txt" || true
           echo "VRAM_PROBE_EMULATOR_STEP_DONE=1"
 
-      - name: Convert VRAM privately and delete raw checkpoints
+      - name: Convert timed VRAM/screen captures privately and delete raw files
         if: always()
         shell: bash
         run: |
@@ -175,65 +214,99 @@ jobs:
           root = Path("captures")
           raw_dir = root / "raw"
           summary = []
-          images = []
-          for meta_path in sorted(raw_dir.glob("vram-frame-*.json")):
-              meta = json.loads(meta_path.read_text())
+          grouped = {"vram": [], "screen": []}
+
+          for meta_path in sorted(raw_dir.glob("*.json")):
+              try:
+                  meta = json.loads(meta_path.read_text())
+              except Exception as exc:
+                  summary.append(f"invalid metadata {meta_path.name}: {exc}")
+                  meta_path.unlink(missing_ok=True)
+                  continue
               raw_path = meta_path.with_suffix(".raw")
               if not raw_path.exists():
-                  summary.append(f"frame={meta['frame']} missing raw VRAM bytes")
+                  summary.append(f"{meta.get('kind','unknown')} {meta.get('checkpoint','?')}: raw file missing")
+                  meta_path.unlink(missing_ok=True)
                   continue
               raw = raw_path.read_bytes()
-              expected = 1024 * 512 * 2
-              if len(raw) != expected:
-                  summary.append(f"frame={meta['frame']} INVALID bytes={len(raw)} expected={expected}")
+              width, height, bpp = int(meta["width"]), int(meta["height"]), int(meta["bpp"])
+              expected = width * height * (bpp // 8)
+              if width <= 0 or height <= 0 or bpp not in (16, 24) or len(raw) != expected:
+                  summary.append(f"{meta.get('kind','unknown')} {meta.get('checkpoint','?')}: INVALID bytes={len(raw)} expected={expected}")
                   raw_path.unlink(missing_ok=True)
+                  meta_path.unlink(missing_ok=True)
                   continue
-              pixels = []
-              nonblack = 0
-              unique = set()
-              for i in range(0, len(raw), 2):
-                  value = raw[i] | (raw[i + 1] << 8)
-                  r = (value & 31) * 255 // 31
-                  g = ((value >> 5) & 31) * 255 // 31
-                  b = ((value >> 10) & 31) * 255 // 31
-                  pixels.extend((r, g, b))
-                  unique.add(value & 0x7fff)
-                  if (value & 0x7fff) != 0:
-                      nonblack += 1
-              img = Image.frombytes("RGB", (1024, 512), bytes(pixels))
-              png_path = root / f"vram-frame-{meta['frame']:06d}.png"
+
+              if bpp == 16:
+                  rgb = bytearray()
+                  nonblack = 0
+                  unique = set()
+                  for i in range(0, len(raw), 2):
+                      value = raw[i] | (raw[i + 1] << 8)
+                      r = (value & 31) * 255 // 31
+                      g = ((value >> 5) & 31) * 255 // 31
+                      b = ((value >> 10) & 31) * 255 // 31
+                      rgb.extend((r, g, b))
+                      unique.add(value & 0x7fff)
+                      if (value & 0x7fff) != 0:
+                          nonblack += 1
+                  pixels = bytes(rgb)
+                  unique_count = len(unique)
+                  nonblack_ratio = nonblack / (width * height)
+              else:
+                  pixels = raw
+                  triples = [tuple(raw[i:i+3]) for i in range(0, len(raw), 3)]
+                  unique_count = len(set(triples))
+                  nonblack_ratio = sum(1 for r,g,b in triples if r > 8 or g > 8 or b > 8) / (width * height)
+
+              img = Image.frombytes("RGB", (width, height), pixels)
+              kind = meta.get("kind", "unknown")
+              checkpoint = meta.get("checkpoint", meta_path.stem)
+              png_path = root / f"{kind}-{checkpoint}.png"
               img.save(png_path)
-              ratio = nonblack / (1024 * 512)
               digest = hashlib.sha256(png_path.read_bytes()).hexdigest()
               summary.append(
-                  f"frame={meta['frame']} size=1024x512 raw_bytes={len(raw)} "
-                  f"unique_15bit_colors={len(unique)} nonblack_ratio={ratio:.6f} "
-                  f"guest_fps={meta.get('guest_fps', 0):.2f} png_sha256={digest}"
+                  f"kind={kind} checkpoint={checkpoint} elapsed_s={meta.get('elapsed_s','?')} "
+                  f"size={width}x{height} bpp={bpp} raw_bytes={len(raw)} "
+                  f"unique_colors={unique_count} nonblack_ratio={nonblack_ratio:.6f} "
+                  f"guest_fps={meta.get('guest_fps',0):.2f} png_sha256={digest}"
               )
               thumb = img.copy()
-              thumb.thumbnail((340, 170), Image.Resampling.NEAREST)
-              images.append((meta["frame"], thumb))
-              raw_path.unlink()
-              meta_path.unlink()
-          if images:
+              thumb.thumbnail((340, 190), Image.Resampling.NEAREST)
+              grouped.setdefault(kind, []).append((str(checkpoint), thumb))
+              raw_path.unlink(missing_ok=True)
+              meta_path.unlink(missing_ok=True)
+
+          # Clean up orphaned raw bytes too; raw data is never included in uploaded artifacts.
+          for path in raw_dir.iterdir():
+              if path.is_file():
+                  if path.suffix == ".raw":
+                      summary.append(f"orphan raw file removed: {path.name}")
+                  path.unlink(missing_ok=True)
+              elif path.is_dir():
+                  import shutil
+                  shutil.rmtree(path)
+          raw_dir.rmdir()
+
+          for kind, images in grouped.items():
+              if not images:
+                  continue
+              images.sort(key=lambda item: item[0])
               cols = 2
               rows = math.ceil(len(images) / cols)
-              sheet = Image.new("RGB", (cols * 360, rows * 205), (24, 24, 24))
+              sheet = Image.new("RGB", (cols * 360, rows * 225), (24, 24, 24))
               draw = ImageDraw.Draw(sheet)
-              for i, (frame, img) in enumerate(images):
-                  x, y = (i % cols) * 360, (i // cols) * 205
-                  draw.text((x + 8, y + 6), f"PS1 VRAM checkpoint {frame}", fill=(255, 255, 255))
+              for i, (label, img) in enumerate(images):
+                  x, y = (i % cols) * 360, (i // cols) * 225
+                  draw.text((x + 8, y + 6), f"{kind} checkpoint {label}", fill=(255, 255, 255))
                   sheet.paste(img, (x + 8, y + 26))
-              sheet.save(root / "vram-contact-sheet.png")
-          else:
-              summary.append("NO_VALID_VRAM_CHECKPOINTS")
+              sheet.save(root / f"{kind}-contact-sheet.png")
+
+          if not summary:
+              summary.append("NO_VALID_TIMED_CAPTURES")
           (root / "vram-summary.txt").write_text("\n".join(summary) + "\n")
           print("\n".join(summary))
-          remaining_raw = list(raw_dir.glob("*"))
-          if remaining_raw:
-              raise SystemExit(f"Raw VRAM files remain: {len(remaining_raw)}")
-          raw_dir.rmdir()
-          print("RAW_VRAM_REMOVED=1")
+          print("RAW_VRAM_AND_SCREEN_BYTES_REMOVED=1")
           PY
 
       - name: Upload only private PNG diagnostics and summary (no raw VRAM or traces)
