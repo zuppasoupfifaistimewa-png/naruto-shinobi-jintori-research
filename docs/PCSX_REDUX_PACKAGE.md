@@ -209,3 +209,8 @@ Run [#39015290594](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 The apparent black frames from [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) are invalid for visual judgment: window ID 543 is Xvfb root ID `0x21f`, selected because the generic `.*` X11-name regex matches root. Withdraw the claim that those frames prove fastboot's emulator window was black. Only the fastboot boot log (SYSTEM.CNF, BOOT, EXEC:PC0, Execute!) remains valid.
 Commit `83173bb10cfbf905a296f59720c0a63c95bc3a32` explicitly excludes root; inspect replacement run [#39015419649](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015419649). Do not treat a frame as emulator evidence unless the captured XID is non-root.
 
+
+### X11 window selector follow-up — 2026-10-17
+
+Run [#39015419649](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015419649) properly excluded root Xvfb, but the xdotool candidate list did not contain the child window. The printed X11 tree revealed `0x200034 "PCSX-Redux"` at 1280×800. There was no capture, so this does not indicate a game black screen. Run [#39015610296](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015610296) now parses child XIDs directly from the tree and focuses the non-root window before input; evaluate only its actual window capture and boot markers.
+
