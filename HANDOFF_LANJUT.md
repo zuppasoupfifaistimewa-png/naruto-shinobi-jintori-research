@@ -501,3 +501,10 @@ Run [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 Run lanjutan [#39015290594](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015290594) mengulang fastboot dengan capture yang sama tetapi tanpa `PCSX.getRegisters()` dalam callback VSync. Ini memeriksa hipotesis bahwa pembacaan register yang pernah mengganggu emulator memengaruhi frame loop. Periksa hasil akhir. Jangan anggap entry handoff sebagai title/menu.
 RT-001 tetap Open / blocked.
 
+
+## Koreksi capture fastboot dan run pengganti — 2026-10-17
+
+**Koreksi wajib:** run [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) melaporkan `CAPTURE_WINDOW id=543`, tetapi 543 adalah ID root Xvfb (`0x21f`), karena regex `.*` juga cocok dengan root. Capture hitam/mean 0/OCR kosong dari run ini bukan evidence visual emulator; tarik kembali kesimpulan bahwa fastboot GUI tampil hitam. Yang tetap sah adalah log fastboot mencapai `SYSTEM.CNF`, `BOOT`, `EXEC:PC0(80011448)`, `Execute !`.
+Run #39015290594 memakai logic root-inclusive yang sama dan tidak boleh digunakan untuk memutuskan visual game; commit root-exclusion memicu run pengganti [#39015419649](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015419649). Workflow commit `83173bb10cfbf905a296f59720c0a63c95bc3a32` kini membaca ID root melalui `xwininfo -root` lalu melewatinya sebelum memilih jendela aplikasi ≥400×250. Validasi capture baru: ID harus bukan ID root, ada `CAPTURE_WINDOW` non-root, dan window tree saat tidak ditemukan harus menunjukkan alasan sebenarnya.
+Source-current PCSX run #39011842708 masih sah sebagai capture window aplikasi karena dipilih lewat nama PCSX, dan frame aktualnya memang seragam hitam; tetapi itu build source + chunked BIOS, bukan fastboot. RT-001 tetap Open / blocked.
+
