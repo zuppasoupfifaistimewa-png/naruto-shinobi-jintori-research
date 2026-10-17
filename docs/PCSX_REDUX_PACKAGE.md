@@ -197,3 +197,9 @@ Source-current build pada [#39011842708](https://github.com/zuppasoupfifaistimew
 Dalam A/B AnyLinux [#39013612865](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39013612865), fastboot OpenBIOS mencapai `EXEC:PC0`/ `Execute !`, tetapi chunked hanya menunjukkan read progress sampai indeks 40. Detector lama tidak menemukan window; tak ada frame/input evidence. Jadi fastboot saat ini kandidat jalur loader terbaik, tetapi belum terbukti menampilkan game.
 Run berikut [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) fokus memperbaiki identifikasi jendela untuk fastboot; periksa hasilnya sebelum klaim lebih lanjut.
 
+
+### Fastboot GUI detector correction — 2026-10-17
+
+Run [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) menemukan aplikasi PCSX pada window ID 543 setelah pencarian diperlebar; window capture 1280×800 benar-benar berasal dari aplikasi, bukan Xvfb root. Fastboot BIOS mencapai executable entry marker, tetapi seluruh frame sebelum/sesudah input dan sampai 90 detik tetap uniform black, OCR kosong. Return/Cross tidak membuktikan respons game.
+Run [#39015290594](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015290594) mengulang jalur fastboot tanpa pengambilan register CPU di callback VSync, sebab pola tersebut pernah bermasalah sebelumnya. Hasil inilah pembanding berikutnya; status boot masih belum terverifikasi secara visual.
+
