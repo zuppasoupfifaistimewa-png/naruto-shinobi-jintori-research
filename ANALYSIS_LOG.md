@@ -507,3 +507,18 @@ Workflow baru memfilter CPU trace menjadi agregat PC dan tidak mengeluarkan bari
 Bukti mendukung loop PC rendah yang masih muncul hingga akhir observasi, bukan kesimpulan pasti bahwa CPU crash atau hang permanen. Jangan menetapkan fungsi/alamat sebagai OpenBIOS, CD loader, atau kode game tanpa validasi source/mapping. Hipotesis berikutnya perlu menghubungkan alamat loop ke source dan state tunggu yang relevan; jika perlu pengujian baru, tambahkan marker diagnostik yang membedakan progres CD/loader dari polling, tanpa mengeluarkan disassembly mentah.
 
 RT-001 masih **Open / blocked**; title/menu Naruto dan respons input terkontrol belum diverifikasi.
+
+## Catatan eksperimen runtime tambahan — 2026-10-17
+
+### Internal screenshot path
+Run privat [#39011515345](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011515345) memvalidasi kembali ROM (325.989.552 byte; SHA-256 yang diharapkan), lalu menjalankan AnyLinux dengan OpenBIOS pada jalur `-no-ui`. Marker BIOS/disc dan `[CHUNK1] done chunks=187`, `EXEC:PC0(80011448)`, `Execute !` tercatat. Tetapi `PCSX.GPU.takeScreenShot()` memberi width=0, height=0, bpp=0 pada frame 1500, 1680, 1800; VSync capture tidak mencapai titik selanjutnya dalam batas 110 detik. Konversi gagal karena buffer/dimensi tidak valid, cleanup selesai, dan daftar artefak Actions kosong. Ini kegagalan metode capture, bukan bukti layar game berhasil tampil atau rusak.
+
+### Source-current GUI probe
+Workflow privat [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) dibuat untuk membangun source pin PCSX-Redux `1525a93676dbece9fe70f10ff129aeaa14eec30d` yang diverifikasi sebagai `main` pada saat workflow dibuat, lalu menguji ROM sama di Xvfb, menangkap langsung jendela emulator, dan mencatat ringkasan PC. Ini menghindari penggunaan ulang capture API dalam mode no-UI dan membandingkan source-current terhadap AppImage lama. Status ketika catatan dibuat: workflow masih berjalan; hasil perlu diperiksa sebelum kesimpulan. Capture hanya dimaksudkan sebagai private Actions artifact retensi 3 hari; file media dan capture dibersihkan dari runner.
+
+### Log-retention action
+Run [#39011611436](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39011611436) berhasil memanggil DELETE API terhadap **hanya** run publik `#39001985849`, yang sebelumnya berisi 80 record instruksi/operand. GET sesudahnya mengembalikan 404; tidak ada run lain yang ditargetkan. Jangan mengulang keluaran instruksi/operand mentah di log publik.
+
+**Kesimpulan saat ini:** tidak ada bukti title/menu Naruto, input dalam game, atau progres Story Mode. RT-001 tetap Open / blocked. Jangan memperlakukan keberhasilan workflow, CD recognition, atau executable-entry handoff sebagai keberhasilan gameplay.
+
+
