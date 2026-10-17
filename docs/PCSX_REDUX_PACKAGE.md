@@ -231,3 +231,9 @@ Next diagnostic is a few external GDB-remote PC snapshots after entry, not raw i
 
 The next private run [#39016277234](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39016277234) keeps the fastboot BIOS/ROM/controller the same and queries PC through the emulator's external GDB server at bounded intervals. It avoids reading CPU registers inside VSync callbacks and emits only PC snapshots, not instruction/operand traces. At the latest check the runner was still installing GDB; no result is available yet.
 
+
+### Emulator choice after GDB PC-snapshot run — 2026-10-17
+
+Continue with the **prebuilt PCSX-Redux AnyLinux package plus fastboot OpenBIOS** as the main test path. It reaches SYSTEM.CNF/BOOT/EXEC:PC0/Execute! without DuckStation's additional BIOS wizard gate. This is only the best current loader path; it is not proof the title screen or gameplay has started. The chunked OpenBIOS variant has not reached the same entry marker in the tested window, and DuckStation did not accept the available OpenBIOS as a valid PS1/PS2 BIOS.
+GDB run [#39016277234](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39016277234) completed, but external PC snapshots were unavailable at t20/t30/t50/t70 and timed out at t90. Valid PCSX window captures remained uniform black before and after Return/Cross, with empty OCR. Runner cleanup succeeded; private artifact #12095276220 contains temporary evidence and expires 2026-10-20 08:11 UTC. RT-001 remains Open / blocked.
+
