@@ -168,4 +168,7 @@ Catatan keamanan: public log run lama [#39001985849](https://github.com/zuppasou
 - Run CPU-trace lama #39001985849 pada runner publik telah dihapus secara selektif lewat run #39011611436; API fetch sesudahnya memberi 404. Tidak ada keluaran instruksi mentah yang ditambahkan dari eksperimen baru.
 - Tidak ada emulator yang terbukti menampilkan menu/gameplay, dan tidak ada input game yang terbukti berfungsi. RT-001 tetap Open / blocked; emulator alternatif harus dipilih melalui uji aktual jika current-source probe tidak berhasil.
 
+## Uji emulator alternatif tambahan — 2026-10-17
+
+Workflow privat [#39012200147](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012200147) kini menguji rilis DuckStation resmi, dengan AppImage SHA-256 `c5e6f045f6a242082fcafa9f02d56ad895e233b942728788d232ad0c0c765c24`, ROM yang sama dan OpenBIOS `openbios.bin` dari private release. Harness Xvfb mengambil frame jendela dan mengirim Return/Cross lewat pemetaan keyboard sementara, lalu menyimpan capture sebagai artifact privat 3 hari dan menghapus workspace. Status saat catatan ini dibuat: queued; belum ada hasil boot/menu/input yang bisa disimpulkan. Ini uji kandidat, bukan klaim kompatibilitas.
 
