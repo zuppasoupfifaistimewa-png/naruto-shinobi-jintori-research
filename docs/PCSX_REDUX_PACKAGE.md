@@ -190,3 +190,10 @@ Setelah GL/GLX dipasang, DuckStation run [#39012504017](https://github.com/zuppa
 
 Setelah runtime GL diperbaiki, run [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012694027) membuka GUI tetapi berhenti pada first-run setup wizard dan pesan BIOS PS1/PS2 yang diperlukan. UI mendeteksi satu file tetapi tidak menerima file itu sebagai BIOS valid; tidak ada marker game disc/executable atau title screen. Return memajukan wizard, bukan game. Kesimpulan terbatas pada **BIOS gate**: DuckStation belum menguji kompatibilitas ROM dalam kondisi OpenBIOS-only ini. Jangan meminta BIOS retail baru. Tetap prioritaskan PCSX-Redux source-current run [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708); hasil build/GUI-nya belum final pada pemeriksaan terakhir.
 
+
+## Update source-current dan OpenBIOS variants — 2026-10-17
+
+Source-current build pada [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) selesai dibangun dan link-check lulus, tetapi jendela PCSX hitam pada detik 20/40/60/80/95, OCR kosong, hanya PC sample frame 300=`0x000015a4`, dan tidak ada marker SYSTEM.CNF/BOOT/entry. Artifact #12094116949 berisi lima PNG hitam.
+Dalam A/B AnyLinux [#39013612865](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39013612865), fastboot OpenBIOS mencapai `EXEC:PC0`/ `Execute !`, tetapi chunked hanya menunjukkan read progress sampai indeks 40. Detector lama tidak menemukan window; tak ada frame/input evidence. Jadi fastboot saat ini kandidat jalur loader terbaik, tetapi belum terbukti menampilkan game.
+Run berikut [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) fokus memperbaiki identifikasi jendela untuk fastboot; periksa hasilnya sebelum klaim lebih lanjut.
+
