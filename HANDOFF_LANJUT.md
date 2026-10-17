@@ -1,5 +1,14 @@
 
 
+## Temuan terbaru CPU/GPU — 2026-10-18
+
+- Run [#39079981314](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39079981314) mencapai VSync 300 dan keluar normal. Dump GPUDump valid: 299 live VSync packets, 43 GP0 words/8 packets, 16 GP1 words/11 packets, 5 ThrowAway. Decoder mengonsumsi semua 43 GP0 words: 39 GPU-state-setting, 1 clear-cache, 1 monochrome rectangle, 1 NOP; tidak ada triangle/quad/line/textured sprite family. Raw dump dihapus.
+- RSP tersambung dan mengumpulkan 76 bulk samples valid. Marker dari pcsx.log: SYSTEM.CNF ~4.85s, BOOT ~6.14s, EXEC/Execute ! ~38.01s. PC memasuki EXE pada t=38–41s, lalu BIOS t=42–87s, kemudian masuk lagi ke EXE pada t=88–99s. Cause umumnya 0x400; jangan mengklaim exception tertentu tanpa bukti tambahan.
+- Screenshot Software GPU (320×240) dan capture eksternal jendela (1280×800) tetap hitam. OpenGL host sudah lulus tes llvmpipe; tidak ada dasar untuk memerlukan GPU fisik.
+- Probe berikutnya: bucket command-family GP0 per rentang VSync (0–49, 50–99, 100–199, 200–299) hanya sebagai hitungan, tak pernah menyimpan/upload raw words. Gunakan korelasi timestamp dari pcsx.log, bukan stdout buffered.
+- **RT-001 tetap Open / blocked**; menu, respons input, dan Story Mode belum terverifikasi.
+
+
 ## Pembaruan hasil runtime terbaru — 2026-10-18
 
 - GPUDump run penuh [#39079291837](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39079291837) berakhir timeout 90 s / exit 124, meski workflow cleanup success. Loader mencapai `Execute !`; dump valid/not truncated. Traffic sesudah TraceBegin: 268 VSync packets, 0 GP0 packets/words, 1 GP1 word. Pretrace GP0 262153 words merupakan full VRAM upload baseline, bukan rendering gameplay. Raw dump dihapus.
