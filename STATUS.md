@@ -1,5 +1,14 @@
 # Status penelitian
 
+## Verifikasi terbaru — 2026-10-17, DuckStation probe dan source-current GUI
+
+- Run privat [#39012200147](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012200147) berakhir dengan conclusion Actions `success`, tetapi **DuckStation tidak diluncurkan**: log aktual menunjukkan `AppRun: error while loading shared libraries: libOpenGL.so.0: cannot open shared object file`. Tidak ada jendela DuckStation, frame/OCR game, input terkirim, atau bukti BIOS/disc dari proses emulator. Artifact ZIP (ID `12093451882`, 293 byte) hanya berisi `duckstation.stdout` sepanjang 183 byte; tidak ada PNG.
+- Harness telah diperbaiki pada commit `058aadea1c664712b62a63cf01fcb3e5598ef047`: pasang paket `libopengl0 libglx0 libgl1` dan unggah `captures/*.png` (sebelumnya glob `frame-*.png` tidak cocok dengan nama file capture). Rerun aktual [#39012504017](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012504017) telah dimulai; periksa hasil finalnya.
+- Source-current PCSX-Redux [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) masih pada tahap build source saat diperiksa. Belum ada frame GUI atau OCR yang bisa dinilai.
+- Cleanup private workspace pada DuckStation run awal berhasil. Tidak ada bukti title/menu atau input gameplay.
+- **RT-001 tetap Open / blocked** sampai title/menu Naruto dikenali secara visual dan respons input terkontrol dibuktikan.
+
+
 ## Uji emulator alternatif tambahan — 2026-10-17
 
 Workflow privat [#39012200147](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012200147) kini menguji rilis DuckStation resmi, dengan AppImage SHA-256 `c5e6f045f6a242082fcafa9f02d56ad895e233b942728788d232ad0c0c765c24`, ROM yang sama dan OpenBIOS `openbios.bin` dari private release. Harness Xvfb mengambil frame jendela dan mengirim Return/Cross lewat pemetaan keyboard sementara, lalu menyimpan capture sebagai artifact privat 3 hari dan menghapus workspace. Status saat catatan ini dibuat: queued; belum ada hasil boot/menu/input yang bisa disimpulkan. Ini uji kandidat, bukan klaim kompatibilitas.
