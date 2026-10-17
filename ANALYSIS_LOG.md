@@ -440,3 +440,35 @@ Cleanup step berhasil; tidak ada artefak Actions. Log menyatakan file media priv
 ## Status source-build CPU trace ketika diperiksa — 2026-10-17
 
 Run [#39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) masih aktif pada step **Build pinned upstream PCSX-Redux with CPU trace support**, yang mulai 04:17:26 UTC setelah download/validasi selesai. Run tetap `in_progress`; capture trace dan cleanup belum mulai. Log archive belum tersedia sementara job aktif (`BlobNotFound` dari endpoint unduh log), jadi durasi build yang panjang belum cukup untuk menyimpulkan penyebab atau hasil. Batas workflow adalah 45 menit; periksa status step/log lagi sebelum deadline dan hindari run duplikat. Belum ada instruction record yang dapat dianalisis pada frame 1620–1680.
+
+## Hasil CPU trace pinned source dan diagnosis boot — 2026-10-17
+
+### Run dan integritas build
+
+[Actions #39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849), workflow commit `16a6faff066b913480ad121b497db79df03a9de2`, job `117306664750`, selesai `success` pada 04:44:27 UTC. Job mulai 04:17:11 UTC. Pengunduhan/validasi privat selesai 04:17:26; source build mulai 04:17:26 dan selesai 04:43:46; capture trace selesai 04:44:21; cleanup selesai 04:44:25. Sumber dipatok pada `6b9df482d7b77b9ae218d9c48c1ce1a43c265206`; image builder dipatok pada `ghcr.io/grumpycoders/pcsx-redux-build@sha256:d9ae6cbb23a5d0d98d8c3702cc6f512698ee1670bf8d59b236b2baabe99a66e4`. Log memuat `PCSX_BUILD_RESULT=compiled pinned source with built-in CPU trace API; dependency check and runtime use the same builder image`. Pemeriksaan `ldd` dalam image yang sama sukses; library termasuk `libcapstone.so.5`, FFmpeg, SDL3, dan X11 ter-resolve. Step build memerlukan sekitar 26m20s, bukan hang workflow; tidak perlu mengulang build identik.
+
+### Hasil capture dan makna instruksi
+
+Marker terverifikasi: `PAD_SETUP=port1 analog device connected and remapped`; `VSYNC_TRACE frame=1620`; `CPU_TRACE_WINDOW=enabled frame=1620`; `VSYNC_TRACE frame=1650`; `VSYNC_TRACE frame=1680`; `CPU_TRACE_SIZE=16031631`; `CPU_TRACE_WINDOW=disabled and last 80 records printed`; `TRACE_RESULT=VSync counter callbacks fired.`; `CPU_TRACE_RESULT=Built-in instruction records were printed.`; `TRACE_PROCESS_EXIT=124`. Exit 124 ialah batas capture 35 detik, bukan bukti crash. Tidak ada artefak Actions. Cleanup step sukses dan log menyatakan ROM, CUE, BIOS, emulator, dan log trace temporer dihapus.
+
+Contoh ekor trace (record pra-eksekusi guest):
+```
+PC 000015a4: lw    $v0, 0x5de4(a3)   # nilai terbaca 00000000
+PC 000015a8: nop
+PC 000015ac: beq   $v0, $a0, 0x000015c8
+PC 000015b0: nop
+PC 000015b4: beq   $v0, $a1, 0x000015cc
+PC 000015b8: nop
+PC 000015bc: addiu $v1, $v1, -1
+PC 000015c0: bnez  $v1, 0x000015a4
+PC 000015c4: nop
+```
+Pola ini berulang; nilai register pada disassembly bergerak turun dari sekitar 0x21b ke 0x212 dalam tail terakhir. Ini adalah loop/polling guest yang memiliki penghitung menurun; belum diketahui field/flag apa yang diuji melalui effective address `0x5de4(a3)`. Tidak cukup bukti untuk menyebut infinite loop atau hang permanen.
+
+Provenance kode: source pinned [`psxinterpreter.cc`](https://github.com/grumpycoders/pcsx-redux/blob/6b9df482d7b77b9ae218d9c48c1ce1a43c265206/src/core/psxinterpreter.cc#L1831-L1838) mengambil `const uint32_t pc = m_regs.pc` sebelum memanggil `m_cpuTrace->capture(pc, code)`; [`cputrace.cc`](https://github.com/grumpycoders/pcsx-redux/blob/6b9df482d7b77b9ae218d9c48c1ce1a43c265206/src/core/cputrace.cc#L82-L85) menyimpan nilai itu langsung pada `e.pc`. Maka alamat trace merupakan PC guest mentah, bukan logika PCSX-Redux. Entry dari header EXE utama tetap `0x80011448` dengan load base `0x80010000`; loop pada `0x000015a4–0x000015c4` tidak sama dengan entry tersebut. Physical RAM alias, provenance BIOS/loader, dan alamat overlay belum tervalidasi, sehingga jangan menyebut loop sebagai BIOS atau game code tertentu.
+
+### Perbandingan boot yang penting
+
+Source-build `-no-ui` ini merekam BIOS OpenBIOS, disc `SLPS-03553`, ID `SLPS03553`, executable `SLPS_035.53;1`, serta PAD_SETUP; tetapi log tidak memperlihatkan SYSTEM.CNF/BOOT, chunk selesai, atau EXEC:PC0 selama capture. Ini berbeda dari headless dua AppImage di run GUI A/B #39002846886 yang mencapai 187 chunk dan `EXEC:PC0(80011448)`/ `Execute !`. Karena itu trace ini belum boleh digunakan untuk menyatakan entry game berhasil. Berikutnya bandingkan sumber boot/CD/BIOS pada build source pinned dengan jalur headless AppImage yang sudah mencapai entry, lalu catat guest PC berkala di VSync yang lebih akhir bila dibutuhkan. Jangan ubah ROM atau BIOS tanpa temuan penyebab.
+
+Run GUI A/B #39002846886 terpisah: AnyLinux menjalankan PAD_SETUP dan window sebenarnya tertangkap 30/60/90s, tetapi frame 1280×800 tetap mean=0, stddev=0, satu warna, OCR kosong, tanpa marker handoff executable. AppImage berlabel “HEAD” gagal membuat window dengan `Couldn't find matching GLX visual` serta kegagalan konteks OpenGL 3.2. Hal ini memisahkan diagnosis UI/startup dari guest; belum ada bukti title/menu atau input game responsif.
