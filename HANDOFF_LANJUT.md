@@ -380,3 +380,24 @@ Saat pengecekan terakhir, source-build di dalam image Docker ber-digest tetap `i
 2. Jika ada trace instruksi, inspeksi rentang frame 1620–1680 dan identifikasi transisi BIOS → executable game dari rekaman aktual. Verifikasi mapping overlay/loader sebelum menghubungkan alamat statis dengan RAM live.
 3. Jika GUI tetap gagal, bandingkan log GUI versus `-no-ui` pada pemuatan CD, inisialisasi CPU, Lua, window/OpenGL, dan progres chunk. Jangan mengubah BIOS/ROM tanpa bukti penyebab.
 4. RT-001 tetap **Open / blocked**: jangan mulai Story Mode sampai title/menu Naruto dikenali dan input terkontrol terbukti mengubah gambar atau input-state yang tervalidasi.
+
+## Handoff final — CPU trace source-build selesai, diagnosis lanjutan — 2026-10-17
+
+### Status terkini langsung dari GitHub
+
+- Repo riset tetap **private**, `main` sebelumnya `a004b01315c7555fcb5415fba0d3c663fc9969fe`. Repo runner tetap **public**, `main` `aac684d120ec025c4a87197da8d835f90b89f869`.
+- CPU trace [run #39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) selesai `success`, job mulai 04:17:11 UTC dan selesai 04:44:27 UTC. Build pinned source 04:17:26–04:43:46, trace 04:43:46–04:44:21, cleanup 04:44:21–04:44:25. Source `6b9df482d7b77b9ae218d9c48c1ce1a43c265206`; image `ghcr.io/grumpycoders/pcsx-redux-build@sha256:d9ae6cbb23a5d0d98d8c3702cc6f512698ee1670bf8d59b236b2baabe99a66e4`.
+- `PCSX_BUILD_RESULT` sukses; dependency check `ldd` sukses dalam image yang sama tanpa `not found`. Trace: frames 1620/1650/1680 tercatat; window aktif di 1620; `CPU_TRACE_SIZE=16031631`; `TRACE_RESULT=VSync counter callbacks fired.`; `CPU_TRACE_RESULT=Built-in instruction records were printed.`; exit 124 adalah batas 35s yang dirancang.
+- Log trace menunjukkan guest PC loop berulang `0x000015a4–0x000015c4`; load `0x5de4(a3)` bernilai 0, perbandingan register berulang, dan counter `$v1` menurun. Ini belum membuktikan hang permanen atau identitas modul. Trace tidak memuat SYSTEM.CNF, chunk 187, `EXEC:PC0(80011448)` atau `Execute !`.
+- Run GUI A/B [#39002846886](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39002846886) sudah selesai `success`; itu bukan kelulusan GUI. AnyLinux window berhasil di-capture 30/60/90s tetapi hitam seragam/OCR kosong dan GUI tidak mencapai handoff. Build berlabel “HEAD” gagal startup GLX/OpenGL. Headless prebuilt kedua AppImage—jalur terpisah—tetap mencapai EXEC:PC0, tetapi tak boleh dipakai sebagai bukti bahwa source-build atau GUI mencapai entry.
+- Tidak ada artefak Actions. Log cleanup menyatakan semua file ROM/CUE/BIOS/emulator/trace sementara dibersihkan. Tree repo runner publik hanya workflow, docs, README, dan .gitignore.
+
+### Langkah berikutnya
+
+1. Diagnosis beda jalur boot: bandingkan source pinned `-no-ui` dengan headless AnyLinux yang terverifikasi mencapai entry, berfokus pada OpenBIOS reset/CD read, pemuatan `SYSTEM.CNF`, keputusan menjalankan `SLPS_035.53`, dan mapping PC rendah. Catat marker terpisah untuk setiap jalur, jangan menyamakan keluaran.
+2. Jika diperlukan, tambahkan sampling guest `PCSX.getRegisters().pc` pada VSync setiap 30 frame atau capture kedua di window frame lebih akhir, bukan mengulangi workflow identik. Build source sebelumnya perlu ~26 menit dan trace tidak dipublikasikan sebagai artefak, jadi setiap rerun harus mengubah observasi dengan alasan teknis yang jelas.
+3. Setelah diketahui apakah PC tetap pada loop atau pindah, validasi alias RAM/BIOS/loader dan overlay dari sumber sebelum menetapkan nama fungsi. Jangan menamai alamat berdasarkan dugaan.
+4. Perbaiki jalur GUI setelah penyebab perbedaan boot diketahui. Pastikan log GUI sendiri mencatat executable handoff sebelum menilai frame sebagai output game. Build “HEAD” perlu diagnosis startup GLX terpisah.
+5. RT-001 tetap **Open / blocked**. Jangan mulai Story Mode sampai title/menu Naruto dikenali dan input terkontrol terbukti responsif.
+
+No ROM, BIOS, screenshots, save state, RAM dump, private trace archive or emulator binary was committed/published to the public runner. Don’t repeat secret setup, asset download or PAD_SETUP work; those already succeeded.
