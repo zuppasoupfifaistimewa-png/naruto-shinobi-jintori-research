@@ -214,3 +214,9 @@ Commit `83173bb10cfbf905a296f59720c0a63c95bc3a32` explicitly excludes root; insp
 
 Run [#39015419649](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015419649) properly excluded root Xvfb, but the xdotool candidate list did not contain the child window. The printed X11 tree revealed `0x200034 "PCSX-Redux"` at 1280×800. There was no capture, so this does not indicate a game black screen. Run [#39015610296](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015610296) now parses child XIDs directly from the tree and focuses the non-root window before input; evaluate only its actual window capture and boot markers.
 
+
+### Fastboot: valid app-window capture, software GPU still black — 2026-10-17
+
+Run [#39015722771](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015722771) used direct X11 tree enumeration, captured the non-root PCSX-Redux window `0x200034` (decimal 2097204), and explicitly skipped root Xvfb. All five valid app-window captures were uniform black (1280×800, one color; OCR empty), even after Return/Cross. No CPU-register read callback was used. The independent boot log reached `EXEC:PC0(80011448)` and `Execute !`; visible gameplay remains unproven.
+The next run [#39015919056](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015919056) switches only the graphics backend from `-softgpu` to default OpenGL with Mesa software rendering/OpenGL 3.3 to test a renderer-specific cause.
+
