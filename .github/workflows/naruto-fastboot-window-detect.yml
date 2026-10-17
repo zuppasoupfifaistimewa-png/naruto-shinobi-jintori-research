@@ -141,7 +141,7 @@ jobs:
           capture_window before-input || true
           if [ -s "$WORK/last-window-id" ]; then
             wid="$(cat "$WORK/last-window-id")"
-            xdotool windowfocus --sync "$wid" 2>/dev/null || true
+            timeout 2s xdotool windowfocus "$wid" 2>/dev/null || true
             echo "INPUT_TEST=Return then Z sent to detected app window; visual result must be interpreted separately"
             xdotool key --clearmodifiers Return
             sleep 2
