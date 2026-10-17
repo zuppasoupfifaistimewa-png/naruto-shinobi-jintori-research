@@ -560,3 +560,17 @@ Input Return pada jendela ini memajukan wizard. Z/Cross tidak menghasilkan bukti
 
 **Langkah berikut:** utamakan PCSX-Redux source-current [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708), yang masih pada tahap build ketika diperiksa. RT-001 tetap Open / blocked.
 
+
+## Hasil source-current dan perbandingan OpenBIOS — 2026-10-17
+
+### PCSX-Redux source-current GUI (#39011842708)
+Run selesai dengan workflow `success`, source commit pin `1525a93676dbece9fe70f10ff129aeaa14eec30d` berhasil dibangun dan `ldd` lulus. Lima capture jendela pada 20/40/60/80/95 s seluruhnya hitam uniform (1280×800, mean 0/stddev 0/satu warna); OCR kosong. Log memuat disc label `SLPS-03553`, OpenBIOS, dan PAD_SETUP Analog, tetapi hanya satu guest PC sample pada frame 300, `0x000015a4`. Tidak ada `SYSTEM.CNF`, marker BOOT, seluruh 187 chunk, ataupun `EXEC:PC0`. Exit 124 ialah batas observasi. Artifak #12094116949 berisi lima PNG hitam dan stdout; cleanup sukses.
+### AnyLinux: fastboot BIOS vs chunked BIOS (#39013612865)
+Dengan emulator/AppImage, ROM/CUE, interpreter/software GPU, Port 1 Analog, dan interval sama:
+- Fastboot BIOS (`openbios.bin`, hash `25c789eb66608847907217c367f04a3ec6e62c08530e97c437ce99d29f4c156d`) membaca `SYSTEM.CNF`, `BOOT`, lalu mencatat `EXEC:PC0(80011448)` dan `Execute !`.
+- Chunked BIOS (`openbios-chunked.bin`, hash `7644ab45db8519a3621ef9cb0283f0ced5258287f8105c0e9d7e784fef9362b7`) membaca payload satu sektor per call dan berhenti mencatat progres setelah indeks 40, tanpa entry marker selama window observasi.
+- Window selector berdasarkan judul tidak menemukan jendela pada kedua run sehingga tidak ada screenshot; input test dilewati. Artifact #12094102119 berisi stdout dan log, bukan PNG. Maka perbedaan BIOS berpengaruh pada progres loader, tetapi belum ada bukti visual boot.
+### Follow-up
+Workflow [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) mengulang fastboot saja dengan identifikasi jendela X11 generik dan tree dump, agar jendela tanpa caption yang dikenali tidak menyebabkan kesimpulan keliru. Periksa hasil akhirnya.
+**Status:** belum ada title/menu Naruto dan input game nyata; RT-001 tetap Open / blocked.
+
