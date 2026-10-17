@@ -105,10 +105,7 @@ jobs:
 
           cat > "$WORK/vram-probe.lua" <<'LUA'
           local frame_count = 0
-          local targets = {
-              [1]=true, [2]=true, [3]=true, [5]=true,
-              [10]=true, [20]=true, [30]=true, [45]=true, [60]=true
-          }
+          local targets = { [1]=true, [60]=true }
 
           local function capture_vram(frame)
               local ok, err = pcall(function()
@@ -171,23 +168,29 @@ jobs:
               print("EXECUTION_EVENT=Pause")
           end)
 
-          -- Do capture synchronously during GPU::Vsync. This intentionally avoids
-          -- recursively using PCSX.nextTick(), whose AfterPollingCleanup hand-off
-          -- may overwrite a callback scheduled from inside its own callback.
+          -- GPU::Vsync can originate outside the UI's OpenGL-context thread.
+          -- Defer GPU readback to the UI thread; do not recursively schedule timers.
           vramProbeListener = PCSX.Events.createEventListener("GPU::Vsync", function()
               frame_count = frame_count + 1
               if targets[frame_count] then
-                  print(string.format("VRAM_PROBE_EVENT=GPU::Vsync frame=%d guest_fps=%.4f",
-                      frame_count, PCSX.GPU.getGuestFPS()))
-                  capture_vram(frame_count)
-                  capture_screen(frame_count)
+                  local scheduled_frame = frame_count
+                  print(string.format("VRAM_PROBE_EVENT=GPU::Vsync scheduled_frame=%d guest_fps=%.4f",
+                      scheduled_frame, PCSX.GPU.getGuestFPS()))
+                  -- OpenGL readback is deferred to the UI thread, where PCSX-Redux owns
+                  -- the active context. Record the actual VSync count when the callback runs.
+                  PCSX.nextTick(function()
+                      print(string.format("VRAM_PROBE_CAPTURE_CALLBACK scheduled_frame=%d observed_vsync_count=%d",
+                          scheduled_frame, frame_count))
+                      capture_vram(scheduled_frame)
+                      capture_screen(scheduled_frame)
+                  end)
               end
               if frame_count % 300 == 0 then
                   print(string.format("VRAM_PROBE_VSYNC frame=%d guest_fps=%.4f",
                       frame_count, PCSX.GPU.getGuestFPS()))
               end
           end)
-          print("VRAM_PROBE=direct GPU::Vsync checkpoints=1,2,3,5,10,20,30,45,60")
+          print("VRAM_PROBE=UI-thread GPU::Vsync checkpoints=1,60")
           LUA
           timeout --signal=TERM --kill-after=5s 90s \
             "$WORK/squashfs-root/AppRun" \
