@@ -270,3 +270,17 @@ Penghapusan log publik lama telah terverifikasi: cleanup run #39011611436 sukses
 
 Workflow privat [#39012200147](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012200147) kini menguji rilis DuckStation resmi, dengan AppImage SHA-256 `c5e6f045f6a242082fcafa9f02d56ad895e233b942728788d232ad0c0c765c24`, ROM yang sama dan OpenBIOS `openbios.bin` dari private release. Harness Xvfb mengambil frame jendela dan mengirim Return/Cross lewat pemetaan keyboard sementara, lalu menyimpan capture sebagai artifact privat 3 hari dan menghapus workspace. Status saat catatan ini dibuat: queued; belum ada hasil boot/menu/input yang bisa disimpulkan. Ini uji kandidat, bukan klaim kompatibilitas.
 
+
+
+## Hasil aktual DuckStation probe dan retest dependensi — 2026-10-17
+
+Run [#39012200147](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012200147) berakhir sebagai workflow `success` tetapi emulator tidak pernah start: error `libOpenGL.so.0` hilang, tidak ada window/frame OCR, dan input keyboard dilewati. Artifact ZIP 293 byte hanya berisi stdout 183 byte, tanpa PNG. Ini **bukan** hasil negatif kompatibilitas game; tes gagal pada dependensi host sebelum boot BIOS/disc.
+
+Workflow telah dikoreksi di commit `058aadea1c664712b62a63cf01fcb3e5598ef047` untuk memasang `libopengl0 libglx0 libgl1` dan mengunggah pola capture yang benar `captures/*.png`. Rerun [#39012504017](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012504017) sedang berlangsung ketika diperiksa. Run source-current PCSX-Redux [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) juga masih membangun source dan belum menghasilkan evidence GUI.
+
+### Gerbang tetap
+1. Periksa hasil final kedua run, bukan status awal maupun conclusion Actions saja.
+2. Bila window DuckStation muncul, periksa OCR/frame dan log BIOS/CD; input synthetic hanya dianggap terkirim jika window benar-benar ditemukan dan UI/game berubah.
+3. Nyatakan boot hanya jika title/menu Naruto dikenali pada capture. Nyatakan kontrol bekerja hanya setelah perubahan layar/game state dapat diatribusikan ke input.
+4. Pertahankan RT-001 Open / blocked hingga kedua gerbang itu lolos. Story Mode, persistensi progres, dan aturan gameplay tetap belum diuji.
+
