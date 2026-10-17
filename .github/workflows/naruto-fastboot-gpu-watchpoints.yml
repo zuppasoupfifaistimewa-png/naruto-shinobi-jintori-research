@@ -81,9 +81,16 @@ jobs:
           export LIBGL_ALWAYS_SOFTWARE=1 MESA_GL_VERSION_OVERRIDE=3.3
           mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME"
           for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
-          timeout --signal=TERM --kill-after=5s 65s \
+          PAD_SETUP=$(cat <<'LUA'
+          PCSX.settings.pads[1].DeviceType = 'Analog'
+          PCSX.settings.pads[1].Connected = true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("PAD_SETUP=Port 1 Analog connected/remapped")
+          LUA
+          )
+          timeout --signal=TERM --kill-after=5s 95s \
             "$WORK/squashfs-root/AppRun" -bios "$WORK/openbios-fastboot.bin" -iso "$WORK/game-run.cue" \
-            -gdb -gdb-port 3333 -interpreter -stdout -lua_stdout -logfile "$WORK/pcsx.log" \
+            -exec "$PAD_SETUP" -gdb -gdb-port 3333 -interpreter -stdout -lua_stdout -logfile "$WORK/pcsx.log" \
             > "$WORK/pcsx.stdout" 2>&1 &
           emu_pid=$!
           python3 - <<'PY' > "$WORK/gpu-watchpoint-summary.txt" 2>&1
@@ -169,7 +176,7 @@ jobs:
                   raise SystemExit(0)
               sock.sendall(packet("c"))
               try:
-                  event = wait_stop(rsp, 20.0)
+                  event = wait_stop(rsp, 40.0)
                   print("ENTRY_BREAKPOINT_STOP_EVENT=" + event)
               except Exception as e:
                   print("ENTRY_BREAKPOINT_STOP_EVENT=timeout:" + type(e).__name__)
