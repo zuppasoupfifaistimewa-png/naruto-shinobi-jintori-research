@@ -1,3 +1,11 @@
+# Addendum 2026-10-17 — RSP minimal dan GPU-watchpoint
+
+Run [#39017271906](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39017271906) menyelesaikan probe register: PCSX-Redux AnyLinux GDB server default port 3333 menerima klien RSP minimal, negosiasi `qSupported` berhasil, lalu `p25` (PC), `p20` (CP0 Status), `p23` (BadVAddr), `p24` (Cause), dan `?` berhasil dibaca pada 10 sampel. Ini menghindari paket GDB modern yang tidak didukung source build ini. Nilai PC bervariasi di alamat BIOS dan rentang main EXE, tetapi sampel berkala tidak membuktikan jalur inisialisasi selesai. Window nyata PCSX tetap hitam pada semua capture termasuk setelah Return/Cross; RT-001 tidak berubah.
+
+Eksperimen selanjutnya adalah [run #39017636267](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39017636267), yang menetapkan breakpoint entry EXE ketika emulasi paused sebelum `-run` dan mencoba write-watchpoint terarah pada GPU GP0/GP1 serta DMA2. Baca log final dahulu; hasil workflow ini masih in progress saat addendum ini dicatat. Tidak ada izin untuk mengubah RT-001 menjadi pass tanpa title/menu dan respons input nyata.
+
+---
+
 # Status terbaru 2026-10-17 — sesudah tes kontroler Analog
 
 - Run [#38973267415](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38973267415) sukses. Port 1 disetel ke Analog, tersambung, dan di-remap sebelum boot.
