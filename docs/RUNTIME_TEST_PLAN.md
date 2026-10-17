@@ -153,3 +153,10 @@ The former GUI metrics are invalid for diagnosing game display because the scrip
 The previous source-built CPU trace [run #38975445756](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975445756) failed before emulation because the host lacked `libcapstone.so.5`. The corrected workflow [run #39000257139](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000257139) installs `libcapstone-dev` and verifies linked dependencies. Its final trace output is still required before diagnosing any guest loop or stall.
 
 **Gate remains closed:** no title/menu identified and no controlled in-game input response yet. Keep test row RT-001 open. Do not start gameplay formula experiments until both observations are independently proven.
+
+
+## GUI window retest — results and gate update (2026-10-17)
+
+Actions #39000276365 captured the actual PCSX-Redux X11 window at 30s, 60s and 90s; all images were uniformly black by pixel statistics, OCR found no text. The GUI probe log did not show executable chunk completion or EXEC:PC0 / Execute !, unlike the headless -no-ui probes in the same job. Treat this as a GUI-vs-headless boot discrepancy; do not interpret the frames as game graphics after entry.
+
+RT-001 remains Open / blocked. Next investigate why GUI-mode execution does not show the headless boot handoff; only after a recognizable title/menu and a controlled, responsive input are observed should Story Mode state-delta tests begin.
