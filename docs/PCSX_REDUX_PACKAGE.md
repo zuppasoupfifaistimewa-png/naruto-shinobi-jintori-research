@@ -71,3 +71,24 @@ Two bounded retests were started from corrective runner commits:
 - [CPU trace retest #39000257139](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000257139), intended to launch the source-built emulator after dependency preflight.
 
 At the most recent check, both retests remained `in_progress`; neither is recorded as passing yet. Do not start Story Mode rule experiments until a recognizable title/menu and controlled input response are independently evidenced. Keep ROM/BIOS/CUE, captures and trace data out of Git and delete them from the ephemeral runner after each run.
+
+
+## Cloud A/B comparison — 2026-10-17
+
+These tests use release assets from the [private research release](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/research-emulator-pcsx-redux-2026-10-15), verified by Release SHA-256 metadata, and matched headless tests in [Actions #39000751307](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000751307).
+
+| Criterion | AnyLinux AppImage | AppImage labelled “HEAD” | Evidence and interpretation |
+|---|---|---|---|
+| Asset identity | PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage; 65,747,557 bytes; SHA-256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c; source commit 0c3572c3db75f97542001e453ae80ba8c3f8acba | PCSX-Redux-HEAD-x86_64.AppImage; 91,474,424 bytes; SHA-256 5b2bf850afea345ff1428a38ea75d1776a1857832acf873d9d72d3f4d214b0f8; package metadata source 9c6f98a0ed0581635f9123147e382c248e0f5ddc (2026-09-28) | Same Release tag; checksums verified in Actions. “HEAD” is an asset name, not proof it is today's upstream HEAD. |
+| Headless boot handoff | Pass: disc/CUE and BIOS recognized; 187 executable chunks; EXEC:PC0(80011448) + Execute ! | Same pass | Both in common matched step; proves entry handoff only. |
+| Pad protocol warning | No Unknown command for pad: 43 with Port 1 Analog | Same | This doesn't prove game controls respond. |
+| GUI/OpenGL | Mesa llvmpipe OpenGL 3.3; real window captured, but AnyLinux frames black at 30/60/90 s; OCR empty; GUI log did not reach executable entry | Matched GUI result pending | Run #39000751307 tested GUI only for AnyLinux; matched A/B GUI rerun #39002136781 was queued at time of writing. |
+| Stability/runtime | Headless process reaches 90-s observation cap; no crash marker established | Same | An intentional timeout boundary is not a crash or proof of long-term stability. |
+| Debug APIs | Packaged build lacks PCSX.CPU.Trace; GUI/debugger features available but gameplay debugging unproven | Same; not the source build | Source build at commit 6b9df482d7b77b9ae218d9c48c1ce1a43c265206 is required for built-in PCSX.CPU.Trace. Rerun #39001985849 was still building at note time. |
+| Compatibility | AnyLinux/sharun package is smaller and aims to bundle dependencies/avoid FUSE | Larger; older package was recorded as requiring GLIBC 2.42/2.43 on prior glibc 2.41 analysis host, though runs under current Ubuntu 26.04 Actions | Prefer AnyLinux as default portable candidate; GUI/gameplay unresolved. |
+
+### Interim selection and limits
+
+Use **AnyLinux as the default cloud runner build** for now because it is smaller, intended for broad Linux compatibility, and observed to reach the same headless executable handoff/controller-protocol result. Keep the 9c6f98a0 AppImage as an A/B fallback, not “latest upstream HEAD”. Use a separate source build for instruction trace. This is a conditional operational choice, not a claim either build displays or plays Naruto better.
+
+OpenGL 3.3 is present in Xvfb/llvmpipe, yet the GUI window captures and GUI-specific boot log do not show a rendered Naruto title or executable entry. The next gate is to inspect the matched GUI A/B rerun. Keep captures and all private media out of Git and public artifacts; cleanup removes per-build temporary GUI logs, frames and profiles from the ephemeral runner.
