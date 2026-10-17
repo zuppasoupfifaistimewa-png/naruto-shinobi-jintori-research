@@ -286,3 +286,19 @@ The newest CPU trace workflow commit [8304b7d](https://github.com/zuppasoupfifai
 - Extended GUI capture (30/60/90s): [Actions #38975931679](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975931679), workflow commit [aea4c20](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/aea4c20accfd6d1c5089a226f52a2c4183d2d9a8). Its private ROM/BIOS and emulator downloads passed; GUI/A-B step was still running at the last check. Check the final log after the run is completed. Temporary frame images should be deleted by cleanup; do not upload them to the repo.
 - Built-in CPU trace via pinned upstream source: [Actions #38975445756](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975445756), workflow commit [8304b7d](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/8304b7dd56be13673e83e84bb738458eca0cfc2d). It was still compiling the pinned source in the official container at last check; build/trace result is not yet established.
 - Latest runtime gating/caveat is also in `docs/RUNTIME_TEST_PLAN.md`: do not start RT-001 until both a recognized title/menu and responsive input are independently proven.
+
+
+## Latest cloud verification and active retests — 2026-10-17
+
+State carried forward; do not repeat the Analog-port or asset-setup steps unless new logs prove a regression.
+
+- **Completed:** [boot test #38975931679](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975931679) verified secret presence, private Release asset retrieval, expected ROM size/SHA-256, CUE structure, BIOS/disc recognition, 187-chunk executable load, and `EXEC:PC0(80011448)` plus `Execute !`. Analog Port 1 removed `Unknown command for pad: 43`. This is executable-entry evidence only, not a visible Naruto title/menu or responsive gameplay.
+- **GUI harness flaw fixed:** run #38975931679 measured the Xvfb root (all-black metrics), not the PCSX window. Runner commit [8829933](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/8829933b3b6815dce694ebe6d46cd2a1f0fee9f0) installs window-query tools and captures a matching emulator window; if none is found, it records the window tree and avoids the root fallback. Retest: [#39000276365](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000276365).
+- **CPU trace dependency fix:** prior source build #38975445756 failed to launch due missing host `libcapstone.so.5`; no guest trace occurred. Runner commit [d965dcc](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/d965dcc864c73818e67d6a1e5f9edc19d4a3a17c) installs `libcapstone-dev` and checks all linked runtime dependencies before running the emulator. Retest: [#39000257139](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000257139).
+- Runner setup documentation was corrected; the existing read-only secret and release assets have already been validated in a successful run. Do not ask the user to re-upload ROM, re-create the token, or run the emulator locally.
+
+### Next actions
+
+1. Read the final logs and conclusions of runs #39000276365 and #39000257139. Use the visible-window metrics/OCR only when `CAPTURE_WINDOW` confirms the target, and require title/menu recognition rather than simply nonblack pixels.
+2. If the window exists but stays blank, use successful source-built CPU-trace rows to see whether PC moves after `EXEC:PC0`; do not infer that from the job result alone.
+3. After a recognizable title/menu is observed, send controlled inputs in the cloud runner and confirm response; only then begin Story Mode rule tests. No screenshots/game assets should be published as workflow artifacts.
