@@ -1,0 +1,278 @@
+name: Naruto fastboot minimal GDB RSP probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/naruto-fastboot-rsp-probe.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: naruto-fastboot-rsp-probe
+  cancel-in-progress: true
+
+jobs:
+  rsp-probe:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 12
+    steps:
+      - name: Install private runtime and diagnostic tools
+        run: |
+          set -eu
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils xdotool imagemagick tesseract-ocr tesseract-ocr-jpn libgl1-mesa-dri mesa-utils python3
+
+      - name: Download and verify private ROM, fastboot BIOS and AnyLinux emulator
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -eu
+          WORK="$RUNNER_TEMP/naruto-fastboot-rsp"
+          mkdir -p "$WORK/captures" "$WORK/home"
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; output="$2"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            if [ -z "$id" ] || [ "$id" = "null" ]; then echo "::error::Missing private release asset: $name"; exit 1; fi
+            curl --fail --silent --show-error --location --retry 2 --max-time 300 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$id" -o "$output"
+          }
+          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset openbios.bin openbios-fastboot.bin
+          echo "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c  pcsx-redux.AppImage" | sha256sum --check -
+          test "$(stat -c '%s' game.bin)" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          echo "25c789eb66608847907217c367f04a3ec6e62c08530e97c437ce99d29f4c156d  openbios-fastboot.bin" | sha256sum --check -
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("game.cue")
+          lines = p.read_bytes().decode("utf-8-sig").replace("\r\n", "\n").replace("\r", "\n").splitlines()
+          ids = [i for i, line in enumerate(lines) if line.lstrip().upper().startswith("FILE ")]
+          if len(ids) != 1 or not any(line.lstrip().upper().startswith("TRACK ") for line in lines):
+              raise SystemExit("Invalid CUE")
+          lines[ids[0]] = 'FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines) + "\n", encoding="ascii")
+          PY
+          echo "ROM, emulator and BIOS identity checks passed."
+          echo "PCSX_GDB_RSP_PORT=3333 (source default; explicit CLI override used)"
+
+      - name: Boot PCSX-Redux and query supported RSP register packets
+        run: |
+          set -eu
+          cd "$WORK"
+          Xvfb :99 -ac -screen 0 1280x800x24 -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          trap 'kill "$xvfb_pid" 2>/dev/null || true' EXIT
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/home/.config" XDG_DATA_HOME="$WORK/home/.local/share"
+          export LIBGL_ALWAYS_SOFTWARE=1 MESA_GL_VERSION_OVERRIDE=3.3
+          mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME"
+          for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          PAD_SETUP=$(cat <<'LUA'
+          PCSX.settings.pads[1].DeviceType = 'Analog'
+          PCSX.settings.pads[1].Connected = true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("PAD_SETUP=Port 1 Analog connected/remapped")
+          LUA
+          )
+          timeout --signal=TERM --kill-after=5s 110s \
+            "$WORK/squashfs-root/AppRun" -bios "$WORK/openbios-fastboot.bin" -iso "$WORK/game-run.cue" \
+            -exec "$PAD_SETUP" -gdb -gdb-port 3333 -run -interpreter -stdout -lua_stdout \
+            -logfile "$WORK/pcsx.log" > "$WORK/pcsx.stdout" 2>&1 &
+          emu_pid=$!
+
+          capture_window() {
+            label="$1"
+            tree="$(xwininfo -root -tree 2>&1 || true)"
+            printf '%s\n' "$tree" > "$WORK/window-tree-$label.txt"
+            root_hex="$(xwininfo -root 2>/dev/null | awk '/Window id:/{print $4; exit}')"
+            [ -n "$root_hex" ] || return 1
+            root_id=$((root_hex))
+            window_id=""
+            best_area=0
+            while IFS= read -r id; do
+              [ -n "$id" ] || continue
+              id_num=$((id))
+              [ "$id_num" -ne "$root_id" ] || continue
+              stats="$(xwininfo -id "$id" 2>/dev/null || true)"
+              width="$(printf '%s\n' "$stats" | awk '/Width:/{print $2; exit}')"
+              height="$(printf '%s\n' "$stats" | awk '/Height:/{print $2; exit}')"
+              name="$(printf '%s\n' "$stats" | sed -n 's/.*Window id: [^"]*"\(.*\)".*/\1/p' | head -n 1)"
+              case "$width:$height" in *[!0-9:]*|:*) continue;; esac
+              area=$((width*height))
+              if [ "$width" -ge 400 ] && [ "$height" -ge 250 ] && [ "$area" -gt "$best_area" ]; then
+                window_id="$id_num"; best_area="$area"; best_name="$name"; best_width="$width"; best_height="$height"
+              fi
+            done < <(printf '%s\n' "$tree" | awk '$1 ~ /^0x[[:xdigit:]]+$/ {print $1}')
+            if [ -z "$window_id" ]; then
+              echo "CAPTURE_WINDOW=$label result=no-eligible-non-root-window"
+              return 1
+            fi
+            echo "CAPTURE_WINDOW=$label id=$window_id name=$best_name width=$best_width height=$best_height"
+            import -window "$window_id" "$WORK/captures/$label.png"
+            identify -format 'FRAME_METRICS file=%f width=%w height=%h mean=%[mean] stddev=%[standard-deviation] colors=%k\n' "$WORK/captures/$label.png"
+            echo "OCR_BEGIN=$label"
+            tesseract "$WORK/captures/$label.png" stdout -l jpn+eng 2>/dev/null | head -20 || true
+            echo "OCR_END=$label"
+            echo "$window_id" > "$WORK/last-window-id"
+          }
+
+          sleep 12
+          capture_window before-input || true
+          python3 - <<'PY' > "$WORK/gdb-rsp-summary.txt" 2>&1 &
+          import socket, time
+          HOST, PORT = "127.0.0.1", 3333
+          def packet(payload):
+              raw = payload.encode("ascii")
+              return b"$" + raw + b"#" + f"{sum(raw) & 255:02x}".encode("ascii")
+          def receive_packet(sock, timeout=3.0):
+              deadline = time.monotonic() + timeout
+              buf = bytearray()
+              while time.monotonic() < deadline:
+                  sock.settimeout(max(0.1, deadline - time.monotonic()))
+                  try:
+                      chunk = sock.recv(4096)
+                  except socket.timeout:
+                      continue
+                  if not chunk:
+                      raise ConnectionError("peer closed")
+                  buf.extend(chunk)
+                  start = buf.find(b"$")
+                  if start >= 0:
+                      mark = buf.find(b"#", start + 1)
+                      if mark >= 0 and len(buf) >= mark + 3:
+                          body = bytes(buf[start + 1:mark])
+                          got = buf[mark + 1:mark + 3]
+                          del buf[:mark + 3]
+                          want = f"{sum(body) & 255:02x}".encode("ascii")
+                          if got.lower() != want:
+                              raise ValueError("response checksum mismatch")
+                          return body.decode("ascii", "replace")
+              raise TimeoutError("no RSP packet before deadline")
+          def request(sock, payload):
+              sock.sendall(packet(payload))
+              return receive_packet(sock)
+          def reg_value(text):
+              if len(text) != 8:
+                  return "unavailable"
+              try:
+                  return f"0x{int.from_bytes(bytes.fromhex(text), 'little'):08x}"
+              except ValueError:
+                  return "unavailable"
+          sock = None
+          for attempt in range(20):
+              try:
+                  sock = socket.create_connection((HOST, PORT), timeout=1.0)
+                  break
+              except OSError:
+                  time.sleep(0.5)
+          if sock is None:
+              print("GDB_RSP_CONNECT=failed port=3333")
+              raise SystemExit(0)
+          sock.settimeout(3.0)
+          print("GDB_RSP_CONNECT=connected port=3333")
+          try:
+              try:
+                  cap = request(sock, "qSupported:multiprocess+")
+                  print("GDB_RSP_QSUPPORTED=" + cap[:240])
+              except Exception as e:
+                  print("GDB_RSP_QSUPPORTED=failed type=" + type(e).__name__)
+              for idx in range(10):
+                  if idx:
+                      time.sleep(8)
+                  elapsed = round(time.monotonic(), 2)
+                  try:
+                      pc = reg_value(request(sock, "p25"))
+                  except Exception as e:
+                      pc = "error:" + type(e).__name__
+                  try:
+                      status = reg_value(request(sock, "p20"))
+                  except Exception as e:
+                      status = "unavailable"
+                  try:
+                      badvaddr = reg_value(request(sock, "p23"))
+                  except Exception as e:
+                      badvaddr = "unavailable"
+                  try:
+                      cause = reg_value(request(sock, "p24"))
+                  except Exception as e:
+                      cause = "unavailable"
+                  try:
+                      run_state = request(sock, "?")
+                  except Exception as e:
+                      run_state = "error:" + type(e).__name__
+                  print(f"GDB_RSP_SAMPLE index={idx} pc={pc} cp0_status={status} cp0_badvaddr={badvaddr} cp0_cause={cause} target_status={run_state}", flush=True)
+          finally:
+              sock.close()
+          PY
+          probe_pid=$!
+
+          sleep 4
+          if [ -s "$WORK/last-window-id" ]; then
+            wid="$(cat "$WORK/last-window-id")"
+            timeout 2s xdotool windowfocus "$wid" 2>/dev/null || true
+            echo "INPUT_TEST=Return then Z/Cross sent; only visual/state deltas count as response evidence"
+            xdotool key --clearmodifiers Return
+            sleep 2
+            capture_window after-return || true
+            xdotool key --clearmodifiers z
+            sleep 2
+            capture_window after-cross || true
+          else
+            echo "INPUT_TEST_SKIPPED=no-valid-app-window"
+          fi
+          sleep 14
+          capture_window frame-40s || true
+          sleep 25
+          capture_window frame-65s || true
+          sleep 25
+          capture_window frame-90s || true
+          set +e
+          wait "$probe_pid"
+          probe_rc=$?
+          wait "$emu_pid"
+          emu_rc=$?
+          set -e
+          echo "GDB_RSP_PROBE_EXIT=$probe_rc"
+          echo "GUI_PROCESS_EXIT=$emu_rc (124 means bounded observation cap)"
+          echo "RSP_SUMMARY_BEGIN"
+          cat "$WORK/gdb-rsp-summary.txt" || true
+          echo "RSP_SUMMARY_END"
+          echo "BOOT_MARKERS_BEGIN"
+          grep -E 'Loaded BIOS:|OpenBIOS detected|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|SYSTEM\.CNF|BOOT =|\[CHUNK1\].*(after|done)|EXEC:PC0|Execute !|PAD_SETUP=|Unknown GDB command|Exception|FATAL|ERROR|Error|Failed|failed' "$WORK/pcsx.stdout" "$WORK/pcsx.log" 2>/dev/null | tail -100 || true
+          echo "BOOT_MARKERS_END"
+
+      - name: Upload private diagnostic summary and screenshots for 3 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-fastboot-minimal-rsp-private
+          path: |
+            ${{ runner.temp }}/naruto-fastboot-rsp/gdb-rsp-summary.txt
+            ${{ runner.temp }}/naruto-fastboot-rsp/captures/*.png
+            ${{ runner.temp }}/naruto-fastboot-rsp/pcsx.stdout
+            ${{ runner.temp }}/naruto-fastboot-rsp/pcsx.log
+          if-no-files-found: warn
+          retention-days: 3
+
+      - name: Clean private game data, emulator, and captures
+        if: always()
+        run: |
+          if [ -n "${WORK:-}" ] && [ -d "$WORK" ]; then rm -rf "$WORK"; fi
+          echo "Cleanup complete; private ROM, BIOS, emulator, logs and captures removed from runner."
