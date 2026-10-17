@@ -291,3 +291,10 @@ Run [#39012504017](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 
 Commit `5afd32eca0d32ee191de7f2963f74b53aed89448` menambah `libegl1`; rerun [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012694027) masih berjalan pada boot/capture ketika dicatat. Periksa log dan artifact setelah selesai. PCSX source-current [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) masih di tahap build. RT-001 tetap Open / blocked sampai title/menu dikenal dan input terbukti responsif.
 
+
+## Hasil final DuckStation probe — setup wizard, BIOS gate belum lolos (2026-10-17)
+
+Run [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012694027) kini membuka window 760×498 setelah `libegl1` dipasang. Capture privat menunjukkan setup wizard DuckStation, bukan title/menu Naruto. Halaman BIOS menjelaskan bahwa BIOS PS1/PS2 dibutuhkan; satu file terdeteksi tetapi tidak dinilai valid. Tidak ada marker disc/EXE di runtime log. Tombol Return bergerak dalam wizard, sehingga bukan bukti input ke game; Z/Cross juga belum diuji terhadap game state.
+
+Kriteria RT-001 belum dipenuhi. Jangan meminta atau mengambil BIOS retail baru. DuckStation bukan jalur runtime yang dapat dilanjutkan dengan asset OpenBIOS sekarang. Prioritaskan hasil akhir source-current PCSX-Redux [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708); saat terakhir diperiksa masih pada tahap build. Jangan menyebut Story Mode berjalan/tamat.
+
