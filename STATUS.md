@@ -1,5 +1,13 @@
 # Status penelitian
 
+## Pembaruan status terbaru — 2026-10-17, hasil DuckStation setelah perbaikan GL
+
+- Rerun [#39012504017](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012504017) juga menyelesaikan workflow `success`, tetapi DuckStation keluar dengan kode 127 sebelum membuat jendela: `libEGL.so.1: cannot open shared object file`. Tidak ada frame, OCR, input, atau bukti boot BIOS/disc. Artifact 292 byte tidak berisi PNG.
+- Workflow diperbarui lagi pada commit `5afd32eca0d32ee191de7f2963f74b53aed89448` dengan paket `libegl1`. Rerun [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012694027) sedang berada pada langkah boot/capture ketika terakhir diperiksa.
+- PCSX-Redux source-current [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) masih membangun source; belum ada frame yang dapat dinilai.
+- **RT-001 tetap Open / blocked.** Belum ada title/menu Naruto dan respons input yang terverifikasi.
+
+
 ## Verifikasi terbaru — 2026-10-17, DuckStation probe dan source-current GUI
 
 - Run privat [#39012200147](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012200147) berakhir dengan conclusion Actions `success`, tetapi **DuckStation tidak diluncurkan**: log aktual menunjukkan `AppRun: error while loading shared libraries: libOpenGL.so.0: cannot open shared object file`. Tidak ada jendela DuckStation, frame/OCR game, input terkirim, atau bukti BIOS/disc dari proses emulator. Artifact ZIP (ID `12093451882`, 293 byte) hanya berisi `duckstation.stdout` sepanjang 183 byte; tidak ada PNG.
