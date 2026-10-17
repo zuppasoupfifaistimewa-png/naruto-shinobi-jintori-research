@@ -409,3 +409,14 @@ Source AnyLinux `0c3572c3db75f97542001e453ae80ba8c3f8acba` dan source trace `6b9
 Sebelum menyebut regresi, buat uji source yang sebanding: batas observasi 90s, print `PCSX.getRegisters().pc` setiap 30 VSync, dan tempatkan jendela trace tambahan di frames 4500–4560. Print marker boot (OpenBIOS, SYSTEM.CNF, chunk 187, EXEC:PC0, Execute !) terpisah dari instruction rows agar tidak terbuang oleh `tail`. Jika guest masih di loop, ambil konteks instruksi cukup lebar di awal dan akhir jendela. Setelah itu inspeksi perubahan CD-ROM dan branch-delay dari diff terarah. Rerun seperti ini punya alasan teknis berbeda dari build sebelumnya; jangan memicu compile identik tanpa tambahan observasi.
 
 Jangan keliru menganggap hasil headless AnyLinux pada versi yang lebih lama membuktikan bahwa source pinned telah boot; jangan pula menyimpulkan source gagal hanya dari capture 35 detik. RT-001 tetap Open/blocked.
+
+
+## Handoff prioritas — trace lanjutan aktif, jangan gandakan run (2026-10-17)
+
+Run [#39004736399](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39004736399) dipicu oleh workflow commit `d1c5b731befe5afacdfbdf3b9914b9f5e9f9ac64`. Pada pemeriksaan terakhir (2026-10-17 sekitar 05:03 UTC), job `trace-private-rom` masih membangun source; download/verifikasi sudah sukses, langkah capture serta cleanup masih pending. **Periksa run yang sama lebih dahulu; jangan dispatch/commit workflow identik saat run ini aktif.**
+
+Perubahan yang sudah ada di runner: timeout observasi 90s; `PCSX.getRegisters().pc` tiap 30 VSync; trace awal frame 1620–1680 dan akhir frame 4500–4560; output trace hanya agregat frekuensi PC dari 200 record terakhir tiap jendela, tanpa disassembly/operand mentah; boot markers dicetak terpisah; cleanup `if: always()` tetap aktif. Source dan image builder tetap dipatok sama. Setelah run selesai, verifikasi seluruh step dan cleanup, periksa marker boot serta PC awal/akhir dan ringkasan trace, pastikan tidak ada baris instruksi mentah, lalu perbarui bersama-sama `STATUS.md`, `HANDOFF_LANJUT.md`, `ANALYSIS_LOG.md`, `docs/RUNTIME_TEST_PLAN.md`, dan `docs/PCSX_REDUX_PACKAGE.md` dengan hasil aktual.
+
+Source `psxmem.cc` pada pin yang dipakai memetakan PC rendah `0x000015a4–0x000015c4` ke RAM (alias wilayah `0x8000xxxx/0xa000xxxx)); ini hanya bukti pemetaan memori, **bukan** identifikasi pemilik loop sebagai BIOS, loader, atau overlay. Interpretasi harus menunggu PC sampling dan jendela akhir.
+
+Log publik run lama [#39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) memuat 80 record instruksi/operand. Workflow baru tidak mencetak baris tersebut, tetapi log lama belum terhapus karena tool GitHub yang tersedia di sesi ini tidak mempunyai aksi delete workflow run/log.
