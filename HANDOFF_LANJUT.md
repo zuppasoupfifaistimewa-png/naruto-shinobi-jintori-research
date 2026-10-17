@@ -458,3 +458,13 @@ Langkah riset berikut yang paling diskriminatif adalah menelusuri sumber OpenBIO
 
 Workflow privat [#39012200147](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012200147) kini menguji rilis DuckStation resmi, dengan AppImage SHA-256 `c5e6f045f6a242082fcafa9f02d56ad895e233b942728788d232ad0c0c765c24`, ROM yang sama dan OpenBIOS `openbios.bin` dari private release. Harness Xvfb mengambil frame jendela dan mengirim Return/Cross lewat pemetaan keyboard sementara, lalu menyimpan capture sebagai artifact privat 3 hari dan menghapus workspace. Status saat catatan ini dibuat: queued; belum ada hasil boot/menu/input yang bisa disimpulkan. Ini uji kandidat, bukan klaim kompatibilitas.
 
+
+
+## Handoff terbaru — hasil aktual DuckStation probe, 2026-10-17
+
+- Run [#39012200147](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012200147) menyelesaikan workflow, tetapi emulator tidak start. Pesan runtime adalah `libOpenGL.so.0` hilang sebelum jendela dibuat; seluruh capture report `no DuckStation window found`, urutan Return/Cross dilewati, dan artifact ZIP ID `12093451882` hanya berisi log stdout 183 byte, tanpa PNG. Ini bukan uji kompatibilitas BIOS/ROM yang valid.
+- Saya memperbaiki workflow `.github/workflows/naruto-duckstation-private-probe.yml` dalam commit `058aadea1c664712b62a63cf01fcb3e5598ef047`: instal `libopengl0 libglx0 libgl1` serta glob artifact `captures/*.png`. Rerun [#39012504017](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012504017) perlu dinilai berdasarkan log/frame aktual.
+- Source-current PCSX-Redux run [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) masih membangun source pin `1525a93676dbece9fe70f10ff129aeaa14eec30d`; jangan mulai run build duplikat selama proses itu belum selesai.
+- Langkah lanjut: cek hasil akhir kedua run dan artefak privat; jika DuckStation membuka window, pastikan title/menu dikenali lalu buktikan kontrol; jika tidak, perbaiki berdasarkan error baru atau pilih eksperimen yang lebih diskriminatif. Jangan menafsirkan conclusion Actions sebagai keberhasilan game.
+- **RT-001 Open / blocked.** Story Mode belum terbukti dimulai atau tamat. Jangan menyentuh repo Tile Duel, meminta ROM upload ulang, atau menaruh ROM/BIOS/screenshot privat/save state/dump memori di repo publik.
+
