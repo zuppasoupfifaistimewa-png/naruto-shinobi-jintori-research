@@ -18,13 +18,14 @@ jobs:
   visual-probe:
     runs-on: ubuntu-26.04
     timeout-minutes: 6
-    env:
-      WORK: ${{ runner.temp }}/naruto-cloud-visual-boot-probe
     steps:
       - name: Install cloud display and image tools
         shell: bash
         run: |
           set -eu
+          WORK="$RUNNER_TEMP/naruto-cloud-visual-boot-probe"
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+          mkdir -p "$WORK"
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil
 
