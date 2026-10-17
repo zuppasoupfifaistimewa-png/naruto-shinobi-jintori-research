@@ -160,3 +160,8 @@ The previous source-built CPU trace [run #38975445756](https://github.com/zuppas
 Actions #39000276365 captured the actual PCSX-Redux X11 window at 30s, 60s and 90s; all images were uniformly black by pixel statistics, OCR found no text. The GUI probe log did not show executable chunk completion or EXEC:PC0 / Execute !, unlike the headless -no-ui probes in the same job. Treat this as a GUI-vs-headless boot discrepancy; do not interpret the frames as game graphics after entry.
 
 RT-001 remains Open / blocked. Next investigate why GUI-mode execution does not show the headless boot handoff; only after a recognizable title/menu and a controlled, responsive input are observed should Story Mode state-delta tests begin.
+
+
+## Next diagnostic when GUI window is black — 2026-10-17
+
+The prior run found a real PCSX-Redux window but did not reach the PAD_SETUP Lua marker or game executable entry in GUI mode. The next runner job [#39000751307](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000751307) reports GLX/renderer capability and full tail diagnostics from GUI stdout and emulator logs. Use its GUI-specific boot markers to distinguish UI initialization from a guest boot stall. The headless `EXEC:PC0` marker is separate evidence and cannot establish that the GUI has entered the game. RT-001 remains blocked until a visible Naruto title/menu and responsive input are evidenced.
