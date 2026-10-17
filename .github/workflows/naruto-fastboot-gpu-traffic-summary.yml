@@ -139,7 +139,7 @@ jobs:
           LUA
 
           timeout --signal=TERM --kill-after=5s 125s \
-            "$WORK/squashfs-root/AppRun" \
+            stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/openbios-fastboot.bin" -iso "$WORK/game-run.cue" \
               -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
               -softgpu -gdb -gdb-port 3333 -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
@@ -153,16 +153,17 @@ jobs:
           import pathlib, re, socket, time
           HOST, PORT = "127.0.0.1", 3333
           stdout_path = pathlib.Path("pcsx.stdout")
+          log_path = pathlib.Path("pcsx.log")
           start = time.monotonic()
           buf = bytearray()
           marker_patterns = [
-              ("SYSTEM_CNF", re.compile("SYSTEM[.]CNF")),
-              ("BOOT_PATH", re.compile(r"BOOT =")),
-              ("EXEC_HEADER", re.compile("EXEC:PC0[(]")),
-              ("EXECUTE_HANDOFF", re.compile(r"Execute !")),
+              ("SYSTEM_CNF", "SYSTEM.CNF"),
+              ("BOOT_PATH", "BOOT ="),
+              ("EXEC_HEADER", "EXEC:PC0("),
+              ("EXECUTE_HANDOFF", "Execute !"),
           ]
           seen = set()
-          last_offset = 0
+          offsets = {str(stdout_path): 0, str(log_path): 0}
 
           def packet(payload):
               raw = payload.encode("ascii")
@@ -209,19 +210,20 @@ jobs:
               return receive_response(sock)
 
           def read_markers():
-              global last_offset
-              try:
-                  with stdout_path.open("rb") as file:
-                      file.seek(last_offset)
-                      chunk = file.read()
-                      last_offset = file.tell()
-              except FileNotFoundError:
-                  return
-              for line in chunk.decode("utf-8", "replace").splitlines():
-                  for label, pattern in marker_patterns:
-                      if label not in seen and pattern.search(line):
-                          seen.add(label)
-                          print(f"CPU_CORRELATION_MARKER elapsed_s={time.monotonic()-start:.2f} marker={label}", flush=True)
+              for path in (stdout_path, log_path):
+                  key = str(path)
+                  try:
+                      with path.open("rb") as file:
+                          file.seek(offsets[key])
+                          chunk = file.read()
+                          offsets[key] = file.tell()
+                  except FileNotFoundError:
+                      continue
+                  for line in chunk.decode("utf-8", "replace").splitlines():
+                      for label, marker in marker_patterns:
+                          if label not in seen and marker in line:
+                              seen.add(label)
+                              print(f"CPU_CORRELATION_MARKER elapsed_s={time.monotonic()-start:.2f} marker={label} source={path.name}", flush=True)
 
           sock = None
           for _ in range(30):
@@ -307,6 +309,7 @@ jobs:
                   packets_live = Counter()
                   words_before = Counter()
                   words_live = Counter()
+                  live_gp0_words = []
                   trace_markers = 0
                   truncated = False
                   packet_count = 0
@@ -330,6 +333,8 @@ jobs:
                       else:
                           packets_before[kind] += 1
                           words_before[kind] += count
+                      if live and kind == 0 and count:
+                          live_gp0_words.extend(struct.unpack_from(f"<{count}I", data, pos))
                       pos += size
                   output += [
                       f"GPU_DUMP_RESULT=parsed",
@@ -343,6 +348,90 @@ jobs:
                       output.append(f"GPU_DUMP_PRETRACE_{name}_WORDS={words_before[kind]}")
                       output.append(f"GPU_DUMP_LIVE_{name}_PACKETS={packets_live[kind]}")
                       output.append(f"GPU_DUMP_LIVE_{name}_WORDS={words_live[kind]}")
+                  # Summarize GP0 command families only; never print/store operand words.
+                  gp0_families = Counter()
+                  cursor = 0
+                  decode_stop = "end_of_stream"
+                  while cursor < len(live_gp0_words):
+                      word = live_gp0_words[cursor]
+                      op = (word >> 24) & 0xff
+                      remaining = len(live_gp0_words) - cursor
+                      length = None
+                      family = None
+                      if op == 0x00:
+                          family, length = "nop", 1
+                      elif op == 0x01:
+                          family, length = "clear-cache", 1
+                      elif op == 0x02:
+                          family, length = "fill-vram", 3
+                      elif 0x20 <= op <= 0x23:
+                          family, length = "flat-triangle", 4
+                      elif 0x24 <= op <= 0x27:
+                          family, length = "textured-triangle", 7
+                      elif 0x28 <= op <= 0x2b:
+                          family, length = "flat-quad", 5
+                      elif 0x2c <= op <= 0x2f:
+                          family, length = "textured-quad", 9
+                      elif 0x30 <= op <= 0x33:
+                          family, length = "gouraud-triangle", 6
+                      elif 0x34 <= op <= 0x37:
+                          family, length = "gouraud-textured-triangle", 9
+                      elif 0x38 <= op <= 0x3b:
+                          family, length = "gouraud-quad", 8
+                      elif 0x3c <= op <= 0x3f:
+                          family, length = "gouraud-textured-quad", 12
+                      elif 0x40 <= op <= 0x47:
+                          family, length = "flat-line", 3
+                      elif 0x48 <= op <= 0x4f:
+                          decode_stop = "variable-polyline-unparsed"
+                          break
+                      elif 0x50 <= op <= 0x57:
+                          family, length = "gouraud-line", 4
+                      elif 0x58 <= op <= 0x5f:
+                          decode_stop = "variable-gouraud-polyline-unparsed"
+                          break
+                      elif 0x60 <= op <= 0x63:
+                          family, length = "monochrome-rectangle", 2
+                      elif 0x64 <= op <= 0x67:
+                          family, length = "textured-rectangle", 3
+                      elif 0x68 <= op <= 0x6b:
+                          family, length = "monochrome-dot-rectangle", 2
+                      elif 0x70 <= op <= 0x73:
+                          family, length = "texture-sprite-8x8", 3
+                      elif 0x74 <= op <= 0x77:
+                          family, length = "texture-sprite-16x16", 3
+                      elif 0x78 <= op <= 0x7f:
+                          family, length = "texture-rectangle-variable", 4
+                      elif 0x80 <= op <= 0x9f:
+                          family, length = "vram-to-vram-copy", 4
+                      elif 0xa0 <= op <= 0xbf:
+                          if remaining < 3:
+                              decode_stop = "short-load-image-header"
+                              break
+                          size_word = live_gp0_words[cursor + 2]
+                          width = size_word & 0xffff
+                          height = (size_word >> 16) & 0xffff
+                          width = width or 1024
+                          height = height or 512
+                          family = "load-image-to-vram"
+                          length = 3 + (width * height + 1) // 2
+                      elif 0xc0 <= op <= 0xdf:
+                          family, length = "store-image-from-vram", 3
+                      elif 0xe0 <= op <= 0xe6:
+                          family, length = "gpu-state-setting", 1
+                      else:
+                          decode_stop = "unknown-or-reserved-opcode"
+                          break
+                      if length is None or length > remaining:
+                          decode_stop = "command-incomplete-at-end-of-capture"
+                          break
+                      gp0_families[family] += 1
+                      cursor += length
+                  output.append(f"GPU_DUMP_LIVE_GP0_DECODED_WORDS={cursor}")
+                  output.append(f"GPU_DUMP_LIVE_GP0_DECODE_STOP={decode_stop}")
+                  output.append(f"GPU_DUMP_LIVE_GP0_DECODED_COMMANDS={sum(gp0_families.values())}")
+                  for family, count in sorted(gp0_families.items()):
+                      output.append(f"GPU_DUMP_LIVE_GP0_COMMAND_FAMILY_{family}={count}")
                   output.append(f"GPU_DUMP_LIVE_GPU_TRAFFIC_PRESENT={str(words_live[0] > 0 or words_live[1] > 0).lower()}")
               path.unlink(missing_ok=True)
 
@@ -367,9 +456,9 @@ jobs:
                       "CPU_BULK_SAMPLE index=", "CPU_BULK_SAMPLE_ERROR"
                   ))
               ]
-              Path("captures/cpu-state-summary.txt").write_text("\\n".join(cpu_lines) + "\\n")
+              Path("captures/cpu-state-summary.txt").write_text("\n".join(cpu_lines) + "\n")
           else:
-              Path("captures/cpu-state-summary.txt").write_text("CPU_RSP_SUMMARY=missing\\n")
+              Path("captures/cpu-state-summary.txt").write_text("CPU_RSP_SUMMARY=missing\n")
           print("\n".join(output))
           PY
 
