@@ -220,3 +220,9 @@ Run [#39015419649](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 Run [#39015722771](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015722771) used direct X11 tree enumeration, captured the non-root PCSX-Redux window `0x200034` (decimal 2097204), and explicitly skipped root Xvfb. All five valid app-window captures were uniform black (1280×800, one color; OCR empty), even after Return/Cross. No CPU-register read callback was used. The independent boot log reached `EXEC:PC0(80011448)` and `Execute !`; visible gameplay remains unproven.
 The next run [#39015919056](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015919056) switches only the graphics backend from `-softgpu` to default OpenGL with Mesa software rendering/OpenGL 3.3 to test a renderer-specific cause.
 
+
+### Default OpenGL A/B final — 2026-10-17
+
+Run [#39015919056](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015919056) removed `-softgpu` while retaining fastboot OpenBIOS, AnyLinux, the same ROM and Analog controller. Mesa llvmpipe OpenGL 3.3 Compatibility Profile was present. A valid non-root PCSX-Redux window (XID 2097204/`0x200034`) was captured; all frames before/after Return/Cross and at 40/65/90s were uniform black, OCR empty. The log nevertheless reaches SYSTEM.CNF/BOOT/EXEC:PC0/Execute!. No register sampling occurred in the VSync callback. Changing GPU backend alone does not solve display/guest startup.
+Next diagnostic is a few external GDB-remote PC snapshots after entry, not raw instruction logging. RT-001 remains Open / blocked.
+
