@@ -1,10 +1,9 @@
-name: Naruto fastboot CPU and CP0 polling
+name: Naruto cloud visual boot probe (PCSX-Redux framebuffer capture)
 
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - ".github/workflows/naruto-fastboot-cpu-poll.yml"
 
@@ -12,29 +11,31 @@ permissions:
   contents: read
 
 concurrency:
-  group: naruto-fastboot-cpu-poll
+  group: naruto-cloud-visual-boot-probe
   cancel-in-progress: true
 
 jobs:
-  cpu-poll:
+  visual-probe:
     runs-on: ubuntu-26.04
-    timeout-minutes: 8
+    timeout-minutes: 6
+    env:
+      WORK: ${{ runner.temp }}/naruto-cloud-visual-boot-probe
     steps:
-      - name: Install private runtime tools
+      - name: Install cloud display and image tools
+        shell: bash
         run: |
           set -eu
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil
 
       - name: Download and verify private runtime assets
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           RESEARCH_REPO: ${{ github.repository }}
         run: |
           set -eu
-          WORK="$RUNNER_TEMP/naruto-fastboot-cpu-poll"
-          mkdir -p "$WORK/home"
-          echo "WORK=$WORK" >> "$GITHUB_ENV"
+          mkdir -p "$WORK/home" "$WORK/captures"
           cd "$WORK"
           API="https://api.github.com/repos/$RESEARCH_REPO"
           curl --fail --silent --show-error --location --max-time 30 \
@@ -69,12 +70,14 @@ jobs:
           lines[ids[0]] = 'FILE "game.bin" BINARY'
           Path("game-run.cue").write_text("\n".join(lines) + "\n", encoding="ascii")
           PY
-          echo "ROM, BIOS and AnyLinux hashes verified."
+          echo "ROM, CUE, BIOS and AnyLinux hashes/structure verified."
 
-      - name: Run baseline and poll CPU registers without breakpoints
+      - name: Run normal emulation and capture the emulated display
+        shell: bash
         run: |
-          set -eu
+          set -euo pipefail
           cd "$WORK"
+          mkdir -p captures
           Xvfb :99 -ac -screen 0 1280x800x24 -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
           xvfb_pid=$!
           emu_pid=""
@@ -88,6 +91,10 @@ jobs:
           mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME"
           for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
           xdpyinfo -display "$DISPLAY" >/dev/null
+
+          # Preserve the already-tested Port 1 Analog/remap setup. Do not attach GDB
+          # or force the interpreter in this visual run: first measure ordinary
+          # emulator execution, then add debugger instrumentation only if needed.
           PAD_SETUP=$(cat <<'LUA'
           PCSX.settings.pads[1].DeviceType = 'Analog'
           PCSX.settings.pads[1].Connected = true
@@ -95,239 +102,164 @@ jobs:
           print("PAD_SETUP=Port 1 Analog connected/remapped")
           LUA
           )
-          EMU_LAUNCH_EPOCH="$(date +%s.%N)"
-          export EMU_LAUNCH_EPOCH
-          echo "EMULATOR_LAUNCH_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          timeout --signal=TERM --kill-after=5s 100s \
-            "$WORK/squashfs-root/AppRun" -bios "$WORK/openbios-fastboot.bin" -iso "$WORK/game-run.cue" \
-            -exec "$PAD_SETUP" -gdb -gdb-port 3333 -run -interpreter -stdout -lua_stdout \
-            -logfile "$WORK/pcsx.log" > "$WORK/pcsx.stdout" 2>&1 &
+
+          cat > "$WORK/cloud-capture.lua" <<'LUA'
+          local output_dir = "captures"
+          local frame_count = 0
+          local targets = { [60]=true, [300]=true, [600]=true, [900]=true, [1800]=true, [3000]=true, [3600]=true }
+          local function capture_frame(n)
+              local ok, err = pcall(function()
+                  local shot = PCSX.GPU.takeScreenShot()
+                  local bpp = (shot.bpp == 0) and 16 or 24
+                  local raw_path = string.format("%s/frame-%06d.raw", output_dir, n)
+                  local raw = Support.File.open(raw_path, "TRUNCATE")
+                  assert(raw, "cannot create raw screenshot: " .. raw_path)
+                  raw:writeMoveSlice(shot.data)
+                  raw:close()
+                  local meta_path = string.format("%s/frame-%06d.json", output_dir, n)
+                  local meta = assert(io.open(meta_path, "wb"), "cannot create screenshot metadata")
+                  meta:write(string.format(
+                      '{"frame":%d,"width":%d,"height":%d,"bpp":%d,"expected_bytes":%d,"guest_fps":%.4f}\n',
+                      n, shot.width, shot.height, bpp, shot.width * shot.height * bpp / 8,
+                      PCSX.GPU.getGuestFPS()
+                  ))
+                  meta:close()
+                  print(string.format(
+                      "GPU_CAPTURE status=ok frame=%d width=%d height=%d bpp=%d",
+                      n, shot.width, shot.height, bpp
+                  ))
+              end)
+              if not ok then
+                  printError(string.format("GPU_CAPTURE status=error frame=%d error=%s", n, tostring(err)))
+              end
+          end
+
+          -- Keep this listener global; PCSX removes listeners that are garbage-collected.
+          cloudCaptureListener = PCSX.Events.createEventListener("GPU::Vsync", function()
+              frame_count = frame_count + 1
+              if frame_count % 300 == 0 then
+                  print(string.format("GPU_VSYNC frame=%d guest_fps=%.4f", frame_count, PCSX.GPU.getGuestFPS()))
+              end
+              if targets[frame_count] then
+                  local n = frame_count
+                  PCSX.nextTick(function() capture_frame(n) end)
+              end
+              if frame_count == 4200 then
+                  PCSX.nextTick(function()
+                      print("CLOUD_PROBE_END=target_frame_reached")
+                      PCSX.quit(0)
+                  end)
+              end
+          end)
+          print("CLOUD_PROBE=armed checkpoints=60,300,600,900,1800,3000,3600")
+          LUA
+
+          echo "EMULATOR_MODE=normal-run-without-GDB-or-forced-interpreter"
+          echo "SCREENSHOT_SOURCE=PCSX.GPU.takeScreenShot (emulated GPU display, not Xvfb root)"
+          timeout --signal=TERM --kill-after=5s 90s \
+            "$WORK/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/openbios-fastboot.bin" -iso "$WORK/game-run.cue" \
+              -exec "$PAD_SETUP" -dofile "$WORK/cloud-capture.lua" \
+              -no-debugger -no-gdb -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+              > "$WORK/pcsx.stdout" 2>&1 &
           emu_pid=$!
-          PCSX_LOG_PATH="$WORK/pcsx.log" python3 - <<'PY' > "$WORK/cpu-poll-summary.txt" 2>&1 &
-          import os, re, socket, time
-          from pathlib import Path
-
-          HOST, PORT = "127.0.0.1", 3333
-          POLL_SECONDS, INTERVAL_SECONDS = 70.0, 1.0
-          LOG_PATH = Path(os.environ["PCSX_LOG_PATH"])
-          try:
-              LAUNCH_EPOCH = float(os.environ["EMU_LAUNCH_EPOCH"])
-          except (KeyError, ValueError):
-              LAUNCH_EPOCH = time.time()
-          MARKERS = (
-              ("system_cnf", "setup file    : cdrom:SYSTEM.CNF;1"),
-              ("boot_path", "BOOT ="),
-              ("exe_header", "EXEC:PC0(80011448)"),
-              ("execute_handoff", "Execute !"),
-          )
-          seen_markers = set()
-
-          def packet(payload):
-              raw = payload.encode("ascii")
-              return b"$" + raw + b"#" + f"{sum(raw) & 255:02x}".encode("ascii")
-
-          def elapsed_launch():
-              return max(0.0, time.time() - LAUNCH_EPOCH)
-
-          def record_loader_markers():
-              try:
-                  text = LOG_PATH.read_text(errors="replace")
-              except OSError:
-                  return
-              observed = elapsed_launch()
-              for name, needle in MARKERS:
-                  if name not in seen_markers and needle in text:
-                      seen_markers.add(name)
-                      print("LOADER_MARKER marker={} first_observed_elapsed_s={:.2f} source=pcsx_log_poll".format(name, observed), flush=True)
-
-          class RSP:
-              def __init__(self, sock):
-                  self.sock = sock
-                  self.buf = bytearray()
-                  self.console_packets = 0
-
-              def receive_packet(self, deadline):
-                  while time.monotonic() < deadline:
-                      start = self.buf.find(b"$")
-                      if start > 0:
-                          del self.buf[:start]
-                          start = 0
-                      if start == 0:
-                          mark = self.buf.find(b"#", 1)
-                          if mark >= 0 and len(self.buf) >= mark + 3:
-                              body = bytes(self.buf[1:mark])
-                              got = bytes(self.buf[mark + 1:mark + 3]).lower()
-                              del self.buf[:mark + 3]
-                              want = f"{sum(body) & 255:02x}".encode("ascii")
-                              if got != want:
-                                  raise ValueError("RSP checksum mismatch")
-                              # PCSX-Redux console output is an O packet, never a stop event.
-                              if body.startswith(b"O"):
-                                  self.console_packets += 1
-                                  continue
-                              return body.decode("ascii", "replace")
-                      elif self.buf:
-                          # Ignore standalone ACK/NACK bytes while preserving incomplete '$' frames.
-                          self.buf.clear()
-                      self.sock.settimeout(max(0.05, deadline - time.monotonic()))
-                      try:
-                          chunk = self.sock.recv(4096)
-                      except socket.timeout:
-                          continue
-                      if not chunk:
-                          raise ConnectionError("RSP peer closed")
-                      self.buf.extend(chunk)
-                  raise TimeoutError("no non-console RSP response before deadline")
-
-              def request(self, command, expected, timeout=2.0):
-                  self.sock.sendall(packet(command))
-                  deadline = time.monotonic() + timeout
-                  unexpected = []
-                  while time.monotonic() < deadline:
-                      reply = self.receive_packet(deadline)
-                      if expected == "bulk" and len(reply) == 576 and re.fullmatch(r"[0-9a-fA-F]{576}", reply):
-                          return reply
-                      if expected == "status" and reply[:1] in ("T", "S", "W", "X"):
-                          return reply
-                      if expected == "any":
-                          return reply
-                      unexpected.append(reply[:48])
-                  raise TimeoutError("unexpected response(s): " + ",".join(unexpected[-3:]))
-
-          def reg_value(field):
-              if len(field) != 8 or not re.fullmatch(r"[0-9a-fA-F]{8}", field):
-                  return "unavailable"
-              # PCSX-Redux serializes each 32-bit register least-significant byte first.
-              return f"0x{int.from_bytes(bytes.fromhex(field), 'little'):08x}"
-
-          def parse_bulk(reply):
-              # Source at PCSX-Redux commit 0c3572c3: g packet has 72 32-bit registers.
-              regs = [reply[i * 8:(i + 1) * 8] for i in range(72)]
-              return {
-                  "status": reg_value(regs[32]),
-                  "badvaddr": reg_value(regs[35]),
-                  "cause": reg_value(regs[36]),
-                  "pc": reg_value(regs[37]),
-              }
-
-          def classify(pc):
-              if not pc.startswith("0x"):
-                  return "unavailable"
-              value = int(pc, 16)
-              if 0x80010000 <= value < 0x8006d800:
-                  return "main-exe-range"
-              if 0x80000000 <= value < 0x80001000:
-                  return "low-ram/exception-vector"
-              if 0xbfc00000 <= value < 0xbfc80000:
-                  return "bios-range"
-              if 0xa0010000 <= value < 0xa006d800:
-                  return "main-exe-alias"
-              return "other"
-
-          rsp = None
-          sock = None
-          for attempt in range(30):
-              record_loader_markers()
-              try:
-                  sock = socket.create_connection((HOST, PORT), timeout=1.0)
-                  rsp = RSP(sock)
-                  break
-              except OSError:
-                  time.sleep(0.5)
-          if rsp is None:
-              print("RSP_CONNECT=failed port=3333", flush=True)
-              raise SystemExit(0)
-
-          sock.settimeout(3.0)
-          print("RSP_CONNECT=connected port=3333", flush=True)
-          try:
-              try:
-                  caps = rsp.request("qSupported:multiprocess+", "any", timeout=3.0)
-                  print("RSP_QSUPPORTED=" + caps[:220], flush=True)
-              except Exception as error:
-                  print("RSP_QSUPPORTED=error:" + type(error).__name__, flush=True)
-
-              poll_start = time.monotonic()
-              poll_deadline = poll_start + POLL_SECONDS
-              samples = []
-              while time.monotonic() < poll_deadline:
-                  cycle_start = time.monotonic()
-                  record_loader_markers()
-                  row = {"elapsed_launch_s": elapsed_launch()}
-                  try:
-                      bulk = rsp.request("g", "bulk", timeout=3.0)
-                      row.update(parse_bulk(bulk))
-                      row["region"] = classify(row["pc"])
-                      row["bulk_valid"] = "yes"
-                      print("CPU_SAMPLE index={} elapsed_launch_s={:.2f} pc={} region={} cp0_status={} cp0_badvaddr={} cp0_cause={} bulk_valid=yes".format(
-                          len(samples), row["elapsed_launch_s"], row["pc"], row["region"], row["status"], row["badvaddr"], row["cause"]
-                      ), flush=True)
-                  except Exception as error:
-                      row.update({"pc":"unavailable","region":"unavailable","status":"unavailable","badvaddr":"unavailable","cause":"unavailable","bulk_valid":"no"})
-                      print("CPU_SAMPLE_ERROR index={} elapsed_launch_s={:.2f} error={}".format(
-                          len(samples), row["elapsed_launch_s"], type(error).__name__
-                      ), flush=True)
-                  samples.append(row)
-
-                  # This explicit query only reports running/paused state; S00 is not a stop event.
-                  if len(samples) == 1 or len(samples) % 10 == 0:
-                      try:
-                          status_reply = rsp.request("?", "status", timeout=2.0)
-                          meaning = "running-not-stop-event" if status_reply == "S00" else ("paused-or-stop-state-query" if status_reply.startswith(("S", "T", "W", "X")) else "other")
-                          print("TARGET_QUERY index={} reply={} meaning={}".format(len(samples)-1, status_reply, meaning), flush=True)
-                      except Exception as error:
-                          print("TARGET_QUERY index={} error={}".format(len(samples)-1, type(error).__name__), flush=True)
-
-                  record_loader_markers()
-                  delay = INTERVAL_SECONDS - (time.monotonic() - cycle_start)
-                  if delay > 0:
-                      time.sleep(delay)
-
-              counts = {}
-              unique_pc = set()
-              valid_count = 0
-              for row in samples:
-                  counts[row.get("region", "unavailable")] = counts.get(row.get("region", "unavailable"), 0) + 1
-                  unique_pc.add(row.get("pc", "unavailable"))
-                  valid_count += row.get("bulk_valid") == "yes"
-              record_loader_markers()
-              missing = sorted(set(name for name, _ in MARKERS) - seen_markers)
-              print("CPU_SUMMARY sample_count={} valid_bulk_count={} unique_pc_count={} region_counts={} console_packets_ignored={} missing_markers={}".format(
-                  len(samples), valid_count, len(unique_pc), ",".join(f"{key}:{value}" for key,value in sorted(counts.items())), rsp.console_packets, ",".join(missing) or "none"
-              ), flush=True)
-          finally:
-              sock.close()
-          PY
-          sampler_pid=$!
           set +e
-          wait "$sampler_pid"
-          sampler_rc=$?
           wait "$emu_pid"
           emu_rc=$?
           set -e
-          echo "CPU_SAMPLER_EXIT=$sampler_rc"
-          echo "GUI_PROCESS_EXIT=$emu_rc (124 means the 100-second observation cap)"
-          echo "BOOT_MARKERS_BEGIN"
-          grep -E 'Loaded BIOS:|OpenBIOS detected|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|SYSTEM\.CNF|BOOT =|EXEC:PC0|Execute !|PAD_SETUP=|First chance exception|Unknown GDB command|Exception|FATAL|ERROR|Error|Failed|failed' "$WORK/pcsx.stdout" "$WORK/pcsx.log" 2>/dev/null | tail -100 || true
-          echo "BOOT_MARKERS_END"
-          echo "CPU_SUMMARY_BEGIN"
-          cat "$WORK/cpu-poll-summary.txt" || true
-          echo "CPU_SUMMARY_END"
+          emu_pid=""
+          echo "EMULATOR_EXIT_CODE=$emu_rc"
+          cp "$WORK/pcsx.stdout" "$WORK/captures/pcsx.stdout" 2>/dev/null || true
+          cp "$WORK/pcsx.log" "$WORK/captures/pcsx.log" 2>/dev/null || true
+          grep -E 'PAD_SETUP|CLOUD_PROBE|GPU_CAPTURE|GPU_VSYNC|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|error|Error|ERROR' \
+            "$WORK/pcsx.stdout" "$WORK/pcsx.log" > "$WORK/captures/important-log-lines.txt" || true
+          echo "EMULATOR_STEP_DONE=1"
 
-      - name: Upload private CPU summary and loader logs for 3 days
+      - name: Convert framebuffer checkpoints and summarize visual activity
+        if: always()
+        shell: bash
+        run: |
+          set -eu
+          cd "$WORK"
+          python3 - <<'PY'
+          import json, hashlib, math, struct
+          from pathlib import Path
+          from PIL import Image, ImageDraw
+          root = Path("captures")
+          summary = []
+          images = []
+          for meta_path in sorted(root.glob("frame-*.json")):
+              meta = json.loads(meta_path.read_text())
+              raw_path = meta_path.with_suffix(".raw")
+              if not raw_path.exists():
+                  summary.append(f"frame {meta['frame']}: missing raw data")
+                  continue
+              raw = raw_path.read_bytes()
+              width, height, bpp = meta["width"], meta["height"], meta["bpp"]
+              expected = width * height * (bpp // 8)
+              if width <= 0 or height <= 0 or len(raw) != expected:
+                  summary.append(f"frame {meta['frame']}: invalid image dimensions/data actual={len(raw)} expected={expected}")
+                  continue
+              if bpp == 16:
+                  rgb = bytearray()
+                  for i in range(0, len(raw), 2):
+                      v = raw[i] | (raw[i + 1] << 8)
+                      rgb.extend(((v & 31) * 255 // 31,
+                                  ((v >> 5) & 31) * 255 // 31,
+                                  ((v >> 10) & 31) * 255 // 31))
+                  pixels = bytes(rgb)
+              elif bpp == 24:
+                  pixels = raw
+              else:
+                  summary.append(f"frame {meta['frame']}: unsupported bpp={bpp}")
+                  continue
+              img = Image.frombytes("RGB", (width, height), pixels)
+              png_path = root / f"frame-{meta['frame']:06d}.png"
+              img.save(png_path)
+              # Useful diagnostics if the image is black or stale; visual inspection remains authoritative.
+              colors = len(set(img.getdata()))
+              nonblack = sum(1 for r,g,b in img.getdata() if r > 8 or g > 8 or b > 8)
+              ratio = nonblack / (width * height)
+              digest = hashlib.sha256(png_path.read_bytes()).hexdigest()
+              summary.append(
+                  f"frame={meta['frame']} size={width}x{height} bpp={bpp} "
+                  f"guest_fps={meta['guest_fps']:.2f} unique_colors={colors} "
+                  f"nonblack_ratio={ratio:.4f} png_sha256={digest}"
+              )
+              thumb = img.copy()
+              thumb.thumbnail((340, 220), Image.Resampling.NEAREST)
+              images.append((meta["frame"], thumb))
+          if images:
+              cols = 2
+              rows = math.ceil(len(images) / cols)
+              sheet = Image.new("RGB", (cols * 360, rows * 255), (24,24,24))
+              draw = ImageDraw.Draw(sheet)
+              for i, (frame, img) in enumerate(images):
+                  x, y = (i % cols) * 360, (i // cols) * 255
+                  draw.text((x + 8, y + 6), f"Emulated frame {frame}", fill=(255,255,255))
+                  sheet.paste(img, (x + 8, y + 28))
+              sheet.save(root / "contact-sheet.png")
+          else:
+              summary.append("NO_VALID_GPU_SCREENSHOTS")
+          (root / "visual-summary.txt").write_text("\n".join(summary) + "\n")
+          print("\n".join(summary))
+          PY
+
+      - name: Upload short-lived private diagnostic artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: naruto-fastboot-cpu-poll-private
+          name: naruto-private-gpu-frame-captures
           path: |
-            ${{ runner.temp }}/naruto-fastboot-cpu-poll/cpu-poll-summary.txt
-            ${{ runner.temp }}/naruto-fastboot-cpu-poll/pcsx.stdout
-            ${{ runner.temp }}/naruto-fastboot-cpu-poll/pcsx.log
+            ${{ runner.temp }}/naruto-cloud-visual-boot-probe/captures/*.png
+            ${{ runner.temp }}/naruto-cloud-visual-boot-probe/captures/*.json
+            ${{ runner.temp }}/naruto-cloud-visual-boot-probe/captures/visual-summary.txt
+            ${{ runner.temp }}/naruto-cloud-visual-boot-probe/captures/important-log-lines.txt
           if-no-files-found: warn
-          retention-days: 3
+          retention-days: 1
 
-      - name: Clean private ROM, BIOS, emulator and logs
+      - name: Remove runtime files from the ephemeral runner
         if: always()
+        shell: bash
         run: |
-          if [ -n "${WORK:-}" ] && [ -d "$WORK" ]; then rm -rf "$WORK"; fi
-          echo "Cleanup complete; private ROM, BIOS, emulator and logs removed from runner."
+          rm -rf "$WORK"
