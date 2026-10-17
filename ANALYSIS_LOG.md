@@ -592,3 +592,9 @@ Audit terhadap log aktual menunjukkan `CAPTURE_WINDOW=before-input id=543 name= 
 
 Log boot tetap merupakan bukti sah dan menyebut `SYSTEM.CNF`, BOOT, `EXEC:PC0(80011448)`, `Execute !` pada fastboot BIOS. Run #39015290594 mengulang selector yang sama tanpa pembacaan register; jangan tafsirkan gambar sebelum dipastikan bukan root. Workflow diperbaiki pada commit `83173bb10cfbf905a296f59720c0a63c95bc3a32` agar menghitung ID root dan mengecualikannya. Run yang perlu diperiksa berikutnya: [#39015419649](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015419649). Kriteria frame sah: `CAPTURE_WINDOW` mengarah ke XID non-root dan dimensi cocok dengan window aplikasi; jika tidak ada non-root window, jangan capture root sebagai gantinya.
 
+
+## Follow-up selector X11: tree menunjukkan window PCSX nyata (#39015419649), 2026-10-17
+
+Run [#39015419649](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015419649) mengecualikan root `0x21f`, tetapi tidak menghasilkan capture sebab daftar dari `xdotool search --onlyvisible --name '.*'` hanya memberi root. Root tree yang dicetak saat selector gagal memperlihatkan child `0x200034 "PCSX-Redux"` berukuran 1280×800. Maka aplikasi window ada; cara pengambilan XID-nya yang salah. Jangan menafsirkan ketiadaan PNG pada run ini sebagai ketiadaan window ataupun sebagai layar game hitam.
+Run [#39015610296](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015610296) yang baru memakai parsing ID langsung dari root tree dan root exclusion, lalu fokuskan XID sebelum input. Probe tetap fastboot dan tidak membaca register CPU di callback VSync. Boot markers yang sudah terkonfirmasi pada run sebelumnya adalah SYSTEM.CNF/BOOT/EXEC:PC0/Execute!; tampilan title/menu masih belum terverifikasi.
+
