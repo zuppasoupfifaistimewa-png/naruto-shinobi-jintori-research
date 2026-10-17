@@ -1,0 +1,197 @@
+name: Naruto standalone Mesa OpenGL diagnosis
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/naruto-opengl-diagnostic.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: naruto-opengl-diagnostic
+  cancel-in-progress: true
+
+jobs:
+  mesa-opengl:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 5
+    steps:
+      - name: Install standalone GLX test tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            mesa-utils libgl1-mesa-dri libgl-dev libx11-dev xvfb x11-utils build-essential
+
+      - name: Test GLX and real OpenGL contexts without version override
+        shell: bash
+        run: |
+          set -euo pipefail
+          WORK="$RUNNER_TEMP/naruto-opengl-diagnostic"
+          mkdir -p "$WORK"
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -noreset \
+            > "$WORK/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          cleanup() {
+            kill "$xvfb_pid" 2>/dev/null || true
+            wait "$xvfb_pid" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+
+          export DISPLAY=:99
+          for i in $(seq 1 40); do
+            if xdpyinfo -display "$DISPLAY" >/dev/null 2>&1; then break; fi
+            sleep 0.25
+          done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          echo "DISPLAY_READY=$DISPLAY"
+          echo "MESA_GL_VERSION_OVERRIDE=${MESA_GL_VERSION_OVERRIDE-<unset>}"
+          echo "MESA_GLSL_VERSION_OVERRIDE=${MESA_GLSL_VERSION_OVERRIDE-<unset>}"
+
+          env -u LIBGL_ALWAYS_SOFTWARE -u MESA_GL_VERSION_OVERRIDE -u MESA_GLSL_VERSION_OVERRIDE \
+            glxinfo -B > "$WORK/glxinfo-default.txt" 2>&1
+          echo "=== GLXINFO_DEFAULT_BEGIN ==="
+          cat "$WORK/glxinfo-default.txt"
+          echo "=== GLXINFO_DEFAULT_END ==="
+
+          env -u MESA_GL_VERSION_OVERRIDE -u MESA_GLSL_VERSION_OVERRIDE LIBGL_ALWAYS_SOFTWARE=1 \
+            glxinfo -B > "$WORK/glxinfo-software.txt" 2>&1
+          echo "=== GLXINFO_SOFTWARE_BEGIN ==="
+          cat "$WORK/glxinfo-software.txt"
+          echo "=== GLXINFO_SOFTWARE_END ==="
+
+          if ! grep -Eiq 'OpenGL renderer string:.*(llvmpipe|softpipe|swrast)' "$WORK/glxinfo-software.txt"; then
+            echo "::error::Forced Mesa software renderer was not identified by glxinfo."
+            exit 1
+          fi
+
+          cat > "$WORK/glx33-compat.c" <<'C'
+          #include <GL/gl.h>
+          #include <GL/glx.h>
+          #include <GL/glxext.h>
+          #include <X11/Xlib.h>
+          #include <X11/Xutil.h>
+          #include <stdio.h>
+          #include <stdlib.h>
+
+          static int x_error_code = 0;
+          static int capture_x_error(Display *display, XErrorEvent *event) {
+              (void)display;
+              x_error_code = event->error_code;
+              return 0;
+          }
+
+          int main(void) {
+              Display *display = XOpenDisplay(NULL);
+              if (!display) {
+                  fprintf(stderr, "FAIL: XOpenDisplay\n");
+                  return 2;
+              }
+              int screen = DefaultScreen(display);
+              int fb_attrs[] = {
+                  GLX_X_RENDERABLE, True,
+                  GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
+                  GLX_RENDER_TYPE, GLX_RGBA_BIT,
+                  GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
+                  GLX_RED_SIZE, 8, GLX_GREEN_SIZE, 8, GLX_BLUE_SIZE, 8,
+                  GLX_ALPHA_SIZE, 8, GLX_DEPTH_SIZE, 24,
+                  GLX_DOUBLEBUFFER, True, None
+              };
+              int count = 0;
+              GLXFBConfig *configs = glXChooseFBConfig(display, screen, fb_attrs, &count);
+              if (!configs || count == 0) {
+                  fprintf(stderr, "FAIL: glXChooseFBConfig count=%d\n", count);
+                  XCloseDisplay(display);
+                  return 3;
+              }
+              XVisualInfo *visual = glXGetVisualFromFBConfig(display, configs[0]);
+              if (!visual) {
+                  fprintf(stderr, "FAIL: glXGetVisualFromFBConfig\n");
+                  XFree(configs);
+                  XCloseDisplay(display);
+                  return 4;
+              }
+              XSetWindowAttributes attrs;
+              attrs.colormap = XCreateColormap(display, RootWindow(display, visual->screen),
+                                                visual->visual, AllocNone);
+              attrs.event_mask = StructureNotifyMask;
+              Window window = XCreateWindow(display, RootWindow(display, visual->screen),
+                  0, 0, 64, 64, 0, visual->depth, InputOutput, visual->visual,
+                  CWColormap | CWEventMask, &attrs);
+              XMapWindow(display, window);
+              XSync(display, False);
+
+              PFNGLXCREATECONTEXTATTRIBSARBPROC create_context =
+                  (PFNGLXCREATECONTEXTATTRIBSARBPROC)
+                  glXGetProcAddressARB((const GLubyte *)"glXCreateContextAttribsARB");
+              if (!create_context) {
+                  fprintf(stderr, "FAIL: GLX_ARB_create_context unavailable\n");
+                  XFree(visual); XFree(configs); XCloseDisplay(display);
+                  return 5;
+              }
+
+              int context_attrs[] = {
+                  GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+                  GLX_CONTEXT_MINOR_VERSION_ARB, 3,
+                  GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
+                  None
+              };
+              XSetErrorHandler(capture_x_error);
+              x_error_code = 0;
+              GLXContext context = create_context(display, configs[0], NULL, True, context_attrs);
+              XSync(display, False);
+              if (!context || x_error_code) {
+                  fprintf(stderr, "FAIL: OpenGL 3.3 compatibility context creation; X error=%d\n",
+                          x_error_code);
+                  if (context) glXDestroyContext(display, context);
+                  XDestroyWindow(display, window);
+                  XFree(visual); XFree(configs); XCloseDisplay(display);
+                  return 6;
+              }
+              if (!glXMakeCurrent(display, window, context)) {
+                  fprintf(stderr, "FAIL: glXMakeCurrent for OpenGL 3.3 compatibility context\n");
+                  glXDestroyContext(display, context);
+                  XDestroyWindow(display, window);
+                  XFree(visual); XFree(configs); XCloseDisplay(display);
+                  return 7;
+              }
+              const GLubyte *vendor = glGetString(GL_VENDOR);
+              const GLubyte *renderer = glGetString(GL_RENDERER);
+              const GLubyte *version = glGetString(GL_VERSION);
+              if (!vendor || !renderer || !version) {
+                  fprintf(stderr, "FAIL: glGetString returned NULL\n");
+                  return 8;
+              }
+              printf("GLX_CONTEXT_REQUEST=3.3 compatibility profile\n");
+              printf("GL_CONTEXT_VENDOR=%s\n", vendor);
+              printf("GL_CONTEXT_RENDERER=%s\n", renderer);
+              printf("GL_CONTEXT_VERSION_ACTUAL=%s\n", version);
+              int major = 0, minor = 0;
+              if (sscanf((const char *)version, "%d.%d", &major, &minor) != 2 ||
+                  major < 3 || (major == 3 && minor < 3)) {
+                  fprintf(stderr, "FAIL: actual context version is below OpenGL 3.3\n");
+                  return 9;
+              }
+              printf("OPENGL_33_COMPAT_CONTEXT=PASS\n");
+              glXMakeCurrent(display, None, NULL);
+              glXDestroyContext(display, context);
+              XDestroyWindow(display, window);
+              XFree(visual);
+              XFree(configs);
+              XCloseDisplay(display);
+              return 0;
+          }
+          C
+
+          cc "$WORK/glx33-compat.c" -o "$WORK/glx33-compat" -lGL -lX11
+          echo "=== EXPLICIT_GL_CONTEXT_TEST_BEGIN ==="
+          env -u MESA_GL_VERSION_OVERRIDE -u MESA_GLSL_VERSION_OVERRIDE LIBGL_ALWAYS_SOFTWARE=1 \
+            "$WORK/glx33-compat"
+          echo "=== EXPLICIT_GL_CONTEXT_TEST_END ==="
+          echo "OPENGL_DIAGNOSTIC_RESULT=PASS"
