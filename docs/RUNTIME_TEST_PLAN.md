@@ -419,3 +419,12 @@ Eksperimen berikut tetap di fastboot AnyLinux dan menargetkan diagnosis setelah 
 - Snapshot langsung pada GPU::Vsync mengonfirmasi API `PCSX.GPU.getVRAM()` dapat mengembalikan 1 MiB, tetapi sembilan frame 1–60 semuanya satu warna hitam dengan `guest_fps=0`. Log menunjukkan `Execute !` terjadi setelah checkpoint frame 60 dan event VSync frame 300 sesudahnya; jangan memakai checkpoint pra-handoff sebagai bukti keadaan game sesudah launch.
 - Capture grafis di event callback perlu didefer ke thread UI/konteks OpenGL dengan `PCSX.nextTick()`. Hindari callback membaca VRAM/screenshot langsung pada thread event GPU. Run [#39078732160](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39078732160) menguji capture deferred pada frame 1 dan 60; periksa log/artifact final sebelum menyimpulkan.
 - Setelah pemeriksaan thread UI tervalidasi, ambil snapshot tambahan pada VSync pasca-handoff (sekitar frame 300) dan bandingkan dengan pra-handoff. Semua data mentah harus dihapus sebelum artifact privat diunggah.
+
+
+## Temuan layar hitam dan traffic GPU — 2026-10-18
+
+OpenGL host sudah dibuktikan sehat oleh run #39049689832: renderer llvmpipe, GL 4.5 tanpa override, explicit GLX compatibility context 3.3 lulus. Pada source pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, fungsi screenshot belum diimplementasikan untuk backend OpenGL GPU, sedangkan Software GPU memilikinya. Dengan `-softgpu`, capture setelah handoff di frame 300 menghasilkan screenshot 320×240 valid tetapi hitam seragam; VRAM tetap satu warna. Enam capture eksternal jendela PCSX non-root juga valid 1280×800 dan hitam seragam.
+
+GPUDump partial run #39079279565 parsed lengkap sampai 136 VSyncs live: GP0 packets/words 0/0, GP1 1/1, VSync 136 packets/272 words; not truncated. Baseline upload yang mendahului TraceBegin mencakup full VRAM upload dan tidak boleh ditafsirkan sebagai drawing game. GPUDump mentah dihapus; hanya ringkasan teks privat yang diunggah. Run #39079291837 (target VSync 300) masih perlu diperiksa sebelum klaim data full-window.
+
+Prioritas berikut: korelasikan PC/CP0 dan marker loader pada jendela waktu yang sama. Jangan mengganti emulator atau menyimpulkan GPU fisik dibutuhkan; jangan tandai RT-001 complete sampai title/menu dan perubahan akibat input teramati.
