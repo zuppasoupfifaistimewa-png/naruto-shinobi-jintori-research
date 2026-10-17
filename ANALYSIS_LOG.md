@@ -551,3 +551,12 @@ Setelah `libopengl0 libglx0 libgl1` dipasang, rerun [#39012504017](https://githu
 
 Commit `5afd32eca0d32ee191de7f2963f74b53aed89448` menambahkan paket `libegl1` untuk run berikutnya [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012694027). Run itu masih pada langkah boot/capture saat diperiksa; periksa exit diagnostics dan artifact aktual. Source-current PCSX [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) masih membangun source. RT-001 tetap Open / blocked.
 
+
+## DuckStation probe final — GUI wizard tetapi belum masuk BIOS/game, 2026-10-17
+
+Run [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012694027) memperbaiki dependensi EGL dan membuka window sebenarnya (760×498). Artifact privat `12094155047` berisi delapan frame dan stdout; pemeriksaan visual pada `pre-input-20-sec.png`, `after-return.png`, dan `after-second-return.png` menunjukkan first-run setup wizard DuckStation. Halaman BIOS menampilkan pesan bahwa DuckStation memerlukan BIOS PS1/PS2, walaupun satu file terdeteksi. Log menyebut BIOS dipetakan dan pencarian Auto BIOS, tetapi tidak ada marker disc, SYSTEM.CNF, load executable atau Naruto. `DUCKSTATION_EXIT=137` muncul saat batas observasi; workflow/cleanup tetap sukses.
+
+Input Return pada jendela ini memajukan wizard. Z/Cross tidak menghasilkan bukti perubahan state game. Maka hasilnya bukan game boot maupun input test. Hipotesis yang paling kuat berdasarkan bukti sekarang adalah OpenBIOS yang tersedia tidak diterima DuckStation sebagai BIOS PS1 yang valid; tidak ada dasar untuk menyimpulkan ROM Naruto tidak kompatibel. Tidak meminta retail BIOS atau secret tambahan. Salinan artifak screenshot lokal telah dibersihkan sesudah pemeriksaan.
+
+**Langkah berikut:** utamakan PCSX-Redux source-current [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708), yang masih pada tahap build ketika diperiksa. RT-001 tetap Open / blocked.
+
