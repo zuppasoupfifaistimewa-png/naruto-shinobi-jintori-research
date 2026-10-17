@@ -549,7 +549,8 @@ jobs:
                   line for line in cpu_text.splitlines()
                   if line.startswith((
                       "CPU_RSP_", "CPU_CORRELATION_MARKER",
-                      "CPU_BULK_SAMPLE index=", "CPU_BULK_SAMPLE_ERROR"
+                      "CPU_BULK_SAMPLE index=", "CPU_BULK_SAMPLE_ERROR",
+                      "CPU_CODE_WINDOWS_", "CPU_CODE_WINDOW base="
                   ))
               ]
               Path("captures/cpu-state-summary.txt").write_text("\n".join(cpu_lines) + "\n")
