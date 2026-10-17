@@ -66,6 +66,19 @@ jobs:
           cat "$WORK/glxinfo-software.txt"
           echo "=== GLXINFO_SOFTWARE_END ==="
 
+          # Both GLX paths must report real context identity and version fields.
+          # No MESA_GL_VERSION_OVERRIDE or MESA_GLSL_VERSION_OVERRIDE is permitted.
+          for profile in default software; do
+            report="$WORK/glxinfo-$profile.txt"
+            for field in "OpenGL vendor string:" "OpenGL renderer string:" "OpenGL version string:"; do
+              if ! grep -Fq "$field" "$report"; then
+                echo "::error::Missing '$field' in GLX $profile report."
+                exit 1
+              fi
+            done
+            echo "GLXINFO_${profile^^}_CONTEXT=PASS"
+          done
+
           if ! grep -Eiq 'OpenGL renderer string:.*(llvmpipe|softpipe|swrast)' "$WORK/glxinfo-software.txt"; then
             echo "::error::Forced Mesa software renderer was not identified by glxinfo."
             exit 1
