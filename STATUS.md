@@ -1,5 +1,9 @@
 # Status penelitian
 
+## Uji emulator alternatif tambahan — 2026-10-17
+
+Workflow privat [#39012200147](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012200147) kini menguji rilis DuckStation resmi, dengan AppImage SHA-256 `c5e6f045f6a242082fcafa9f02d56ad895e233b942728788d232ad0c0c765c24`, ROM yang sama dan OpenBIOS `openbios.bin` dari private release. Harness Xvfb mengambil frame jendela dan mengirim Return/Cross lewat pemetaan keyboard sementara, lalu menyimpan capture sebagai artifact privat 3 hari dan menghapus workspace. Status saat catatan ini dibuat: queued; belum ada hasil boot/menu/input yang bisa disimpulkan. Ini uji kandidat, bukan klaim kompatibilitas.
+
 ## Pembaruan runtime terbaru — 2026-10-17
 
 - GUI baseline AnyLinux tetap belum membuktikan title/menu: jendela ada tetapi hitam, log GUI belum menyelesaikan pemuatan executable; jalur headless pada build tersebut mencapai 187 chunk dan `EXEC:PC0(80011448)`.
