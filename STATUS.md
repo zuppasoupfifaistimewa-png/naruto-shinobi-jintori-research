@@ -1,5 +1,10 @@
 # Status penelitian
 
+## Diagnostik pasca-entry berikutnya sedang berjalan — 2026-10-17
+
+Karena fastboot GUI tetap hitam baik dengan "-softgpu" maupun backend OpenGL default (Mesa llvmpipe 3.3), workflow privat [#39016277234](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39016277234) telah dimulai. Tes ini mempertahankan fastboot BIOS, ROM dan controller yang sama, lalu mengambil snapshot PC melalui GDB remote eksternal pada beberapa waktu; tidak memakai pembacaan register CPU dalam callback VSync dan tidak mencetak instruksi/operand mentah. Status ketika terakhir diperiksa: masih memasang tool GDB; belum ada snapshot atau hasil boot baru. RT-001 tetap Open / blocked.
+
+
 ## Hasil A/B backend GPU — 2026-10-17
 
 Run [#39015919056](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015919056) menguji fastboot OpenBIOS yang sama pada PCSX-Redux AnyLinux tanpa `-softgpu`, memakai backend OpenGL default melalui Mesa llvmpipe. Kapabilitas GL terkonfirmasi: vendor Mesa, renderer `llvmpipe (LLVM 21.1.8, 256 bits)`, OpenGL 3.3 Compatibility Profile. Capture berasal dari jendela PCSX non-root `0x200034` / XID 2097204, 1280×800. Seluruh frame sebelum input, setelah Return/Cross, dan pada 40/65/90 detik tetap uniform black (mean 0, stddev 0, satu warna); OCR kosong. Tidak ada callback pembaca register CPU. Log fastboot tetap mencapai SYSTEM.CNF/BOOT, `EXEC:PC0(80011448)`, `Execute !`. Jadi backend OpenGL default pun belum membuat title/menu terlihat.
