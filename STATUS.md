@@ -245,3 +245,20 @@ ZIP alternatif, ROM BIN, dan CUE berhasil dimaterialisasi lewat Files ke lokasi 
 
 - GUI run terbaru [#38975931679](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975931679), workflow commit [aea4c20](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/aea4c20accfd6d1c5089a226f52a2c4183d2d9a8), memperpanjang pengamatan hingga 100 detik dan mengambil frame pada 30/60/90 detik. Saat catatan ini diperbarui, langkah A/B + GUI masih berjalan.
 - CPU trace source-build run [#38975445756](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975445756) belum melewati langkah build pinned upstream source. Hasil build dan trace tetap pending.
+
+
+## Verifikasi cloud runner dan koreksi observasi — 2026-10-17
+
+Pemeriksaan ulang repositori mengonfirmasi riset ini tetap **private**, sedangkan `naruto-shinobi-jintori-runner` tetap public. Release `research-emulator-pcsx-redux-2026-10-15` berisi aset ROM/CUE/OpenBIOS yang diperlukan; nama aset ROM dan CUE dinormalisasi dengan titik oleh proses unggah Release. Tidak ada media permainan yang ditambahkan ke Git runner.
+
+Run [runner Actions #38975931679](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975931679) selesai dengan kesimpulan job **success**. Log mengonfirmasi secret read-only hadir tanpa menampilkan nilainya, ukuran ROM 325.989.552 byte, SHA-256 cocok, CUE valid, BIOS OpenBIOS dikenali, disc label `SLPS-03553`, `SYSTEM.CNF` menunjuk `SLPS_035.53`, seluruh 187 chunk executable dibaca, lalu tercatat `EXEC:PC0(80011448)` dan `Execute !`. Konfigurasi Port 1 Analog juga menghilangkan pesan `Unknown command for pad: 43` pada dua build pembanding. Ini membuktikan transfer kendali ke entry executable dalam jalur headless, **bukan** bukti title/menu atau input gameplay.
+
+Capture GUI 30/60/90 detik pada run tersebut melaporkan gambar hitam (mean 0, stddev 0, satu warna) dan OCR kosong. Audit workflow memperlihatkan capture dilakukan dengan `import -window root`, yaitu latar root Xvfb, bukan window emulator secara eksplisit. Karena itu angka tersebut tidak boleh dipakai untuk menyimpulkan bahwa framebuffer game hitam.
+
+CPU trace source-build [Actions #38975445756](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/38975445756) membangun emulator tetapi peluncuran di host berhenti dengan `libcapstone.so.5: cannot open shared object file`; belum ada VSync atau instruksi yang direkam. Ini kegagalan dependensi runtime runner, bukan bukti masalah ROM/game.
+
+Koreksi yang sudah dikirim ke repo runner:
+- Commit [d965dcc](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/d965dcc864c73818e67d6a1e5f9edc19d4a3a17c) menambahkan `libcapstone-dev` dan pemeriksaan `ldd` sebelum trace, supaya dependensi yang hilang terdeteksi sebelum emulasi.
+- Commit [8829933](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/8829933b3b6815dce694ebe6d46cd2a1f0fee9f0) memasang `xdotool`/`x11-utils` dan menargetkan window PCSX-Redux untuk pengukuran/OCR. Jika window tidak ditemukan, workflow mencatat pohon window dan tidak menggantinya dengan capture root hitam. File gambar tetap lokal di runner dan dihapus saat cleanup.
+
+Retest yang dimulai dari dua commit itu belum selesai pada waktu catatan dibuat: GUI [Actions #39000276365](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000276365), CPU trace [Actions #39000257139](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000257139). Periksa hasil finalnya sebelum menetapkan status boot. Jangan mulai RT-001/gameplay sampai title/menu yang dikenali dan respons input terbukti.
