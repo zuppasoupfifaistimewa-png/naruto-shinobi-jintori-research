@@ -1,5 +1,14 @@
 
 
+## Hasil setelah audit Mesa, screenshot, dan GPU traffic — 2026-10-18
+
+- Mesa host GLX sehat: run [#39049689832](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39049689832) melaporkan llvmpipe GL 4.5 actual dan lulus konteks compatibility 3.3 tanpa override. GPU fisik belum terbukti dibutuhkan.
+- API `takeScreenShot()` tidak diimplementasikan untuk backend OpenGL GPU pada pinned source, tetapi Software GPU memiliki implementasi. Dengan `-softgpu`, frame300 screenshot 320×240 valid tapi hitam; VRAM hitam. Screenshot host window eksternal 1280×800 di enam titik waktu juga hitam.
+- GPUDump private summary [#39079279565](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39079279565), partial 136 VSync live: GP0 0 packet/word; GP1 1 word; VSync 136 packets/272 words; not truncated. Pretrace VRAM upload 262153 GP0 words ialah baseline dump, bukan drawing game. Dump mentah sudah dihapus.
+- Run konfirmasi [#39079291837](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39079291837) menargetkan VSync 300; cek hasil finalnya. Jika GP0 tetap 0, fokus pada korelasi CPU PC/CP0 dengan loader/handoff, bukan backend grafis.
+- RT-001 tetap Open / blocked; tidak ada title/menu atau bukti controller response. Story Mode belum dimulai. Semua perubahan terbatas pada repo Naruto.
+
+
 ## Status lanjutan riset — 2026-10-18 (sesudah diagnosis OpenGL)
 
 - Run OpenGL mandiri [#39049689832](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39049689832) lulus: Mesa `llvmpipe`, OpenGL 4.5 aktual tanpa version override, konteks compatibility 3.3 berhasil dibuat. GPU fisik tidak terbukti dibutuhkan.
