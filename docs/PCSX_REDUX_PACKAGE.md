@@ -172,3 +172,11 @@ Catatan keamanan: public log run lama [#39001985849](https://github.com/zuppasou
 
 Workflow privat [#39012200147](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012200147) kini menguji rilis DuckStation resmi, dengan AppImage SHA-256 `c5e6f045f6a242082fcafa9f02d56ad895e233b942728788d232ad0c0c765c24`, ROM yang sama dan OpenBIOS `openbios.bin` dari private release. Harness Xvfb mengambil frame jendela dan mengirim Return/Cross lewat pemetaan keyboard sementara, lalu menyimpan capture sebagai artifact privat 3 hari dan menghapus workspace. Status saat catatan ini dibuat: queued; belum ada hasil boot/menu/input yang bisa disimpulkan. Ini uji kandidat, bukan klaim kompatibilitas.
 
+
+
+## Pembanding DuckStation dan status source-current — 2026-10-17
+
+Uji kandidat DuckStation resmi [#39012200147](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012200147) **belum memberi hasil kompatibilitas**. Paket lolos hash, tetapi tidak bisa diluncurkan karena host runner tidak memiliki `libOpenGL.so.0`; tidak ada jendela, screenshot, input atau boot BIOS/disc yang dapat dinilai. Artifact ZIP 293 byte hanya berisi stdout 183 byte (tanpa capture PNG). Workflow diperbaiki pada commit `058aadea1c664712b62a63cf01fcb3e5598ef047` dengan paket `libopengl0 libglx0 libgl1` dan pola upload gambar `captures/*.png`; rerun [#39012504017](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012504017) harus menjadi sumber hasil aktual.
+
+Dengan demikian DuckStation belum dapat dinilai lebih baik atau lebih buruk dari PCSX-Redux untuk ROM ini. Source-current PCSX-Redux run [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) masih membangun source di pemeriksaan terakhir; belum ada capture GUI yang terverifikasi. **RT-001 tetap Open / blocked** sampai title/menu dan input kontrol nyata dibuktikan.
+
