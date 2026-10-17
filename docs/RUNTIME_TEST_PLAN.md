@@ -428,3 +428,10 @@ OpenGL host sudah dibuktikan sehat oleh run #39049689832: renderer llvmpipe, GL 
 GPUDump partial run #39079279565 parsed lengkap sampai 136 VSyncs live: GP0 packets/words 0/0, GP1 1/1, VSync 136 packets/272 words; not truncated. Baseline upload yang mendahului TraceBegin mencakup full VRAM upload dan tidak boleh ditafsirkan sebagai drawing game. GPUDump mentah dihapus; hanya ringkasan teks privat yang diunggah. Run #39079291837 (target VSync 300) masih perlu diperiksa sebelum klaim data full-window.
 
 Prioritas berikut: korelasikan PC/CP0 dan marker loader pada jendela waktu yang sama. Jangan mengganti emulator atau menyimpulkan GPU fisik dibutuhkan; jangan tandai RT-001 complete sampai title/menu dan perubahan akibat input teramati.
+
+
+## Hasil final GPU traffic dan pengujian korelasi CPU (2026-10-18)
+
+Run penuh [#39079291837](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39079291837) selesai workflow-success tetapi emulator mencapai timeout (exit 124). Boot markers mencakup SYSTEM.CNF, BOOT path, EXEC:PC0 dan Execute !. GPU dump diparse lengkap/not truncated sampai 268 live VSyncs: GP0 packets/words 0/0, GP1 packets/words 1/1, VSync 268 packets/536 words. Pretrace GP0 baseline 262153 words merupakan full VRAM upload untuk state awal GPUDump, bukan output game. Dump mentah dihapus dan tak diunggah.
+
+Workflow kini juga mengambil bulk RSP register `g` per interval, meringkas PC dan CP0 Status/BadVAddr/Cause, serta merekam timestamp marker loader pada run yang sama tanpa trace instruksi mentah. Run konfirmasi [#39079600379](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39079600379) terakhir terlihat pending. Periksa hasil final; gunakan korelasi tersebut untuk memilih probe CPU berikutnya. GL host tak lagi jadi hipotesis utama. RT-001 tetap blocked.
