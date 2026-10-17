@@ -444,3 +444,12 @@ Run [#39079981314](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 RSP mengembalikan 76 sampel bulk valid. Log marker dibaca dari `pcsx.log` yang timestamp-nya line-buffered: `Execute !` sekitar t=38.01s; sampel PC masuk executable utama pada 38.33–40.91s, lalu sampel kembali dominan di BIOS mulai 42.20s. PC muncul lagi pada executable sekitar 88.39s dan tetap di dua alamat sekitar `0x800372d8/0x80037320` sampai akhir jendela. Ini bukan bukti exception root cause; Cause biasanya 0x400 (interrupt pending), sedangkan dua sampel 0x20 perlu dianalisis terpisah.
 
 Berikutnya, tambahkan bucket waktu GP0 berdasarkan jumlah VSync yang telah lewat (mis. 0–49, 50–99, 100–199, 200–299) dan simpan hanya hitungan command family per bucket, bukan isi words. Tujuannya memastikan apakah satu monochrome rectangle dan state commands seluruhnya muncul saat startup sebelum guest CPU kembali ke BIOS. RT-001 tetap blocked sampai title/menu plus respons input teramati.
+
+
+## Hasil bucket GP0 per VSync dan probe kontrol-alur berikutnya — 2026-10-18
+
+Run #39080239541 mem-parse dump penuh/tidak terpotong sampai VSync 300. GP0 commands hanya muncul di bin live VSync 200–299 (43 words/42 commands), sementara bin 0–49, 50–99, 100–199 semuanya nol. Decoded family: 39 state setting, 1 clear-cache, 1 monochrome rectangle, 1 NOP; tidak ada triangle/quad/line/textured sprite. GP1 16 words, ThrowAway 5 words. Raw dump dihapus sebelum upload.
+
+Dalam run yang sama, marker Execute ! ~38.01s; PC masuk main EXE sekitar 38.33–40.91s, kembali ke BIOS sekitar 42.20–87.09s, lalu kembali ke EXE pada 88.39–98.63s. Semua GP0 output berada di bucket VSync akhir 200–299, jadi timing ini konsisten dengan PC sampel akhir yang masuk EXE lagi. Jangan menyatakan akar sebab masih terbukti.
+
+Lanjutkan dengan sampling privat instruction window pada alamat PC executable yang sudah teramati, lalu ekspor hanya statistik kategori instruksi (branch/jump/syscall/load-store/COP0/backward branches), bukan bytes/instruction operands. Tujuan membedakan loop wait/kembali BIOS dari jalur yang meneruskan startup. RT-001 tetap blocked.
