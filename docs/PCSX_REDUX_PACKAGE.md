@@ -159,3 +159,13 @@ Hasil runtime tetap diagnostik, bukan kelulusan boot game:
 Hasil ini membuktikan harness source-build, PC sampling, kedua jendela agregasi, dan cleanup bekerja. Hasil ini **tidak membuktikan** title/menu ditampilkan atau input permainan bekerja; RT-001 tetap Open / blocked. AnyLinux AppImage sebelumnya mencapai executable handoff pada jalur headless, tetapi fakta itu tidak boleh dicampur dengan run source-build ini.
 
 Catatan keamanan: public log run lama [#39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) masih perlu penanganan terpisah karena memuat 80 record instruksi/operand mentah. Run terbaru telah menghindari pengulangan keluaran tersebut.
+
+## Pembaruan paket dan capture — 2026-10-17
+
+- Baseline AnyLinux AppImage masih berguna untuk pembanding headless, tetapi GUI probe lama [#39002846886](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39002846886) tidak mencapai executable-entry dalam jalur GUI. Frame jendela 30/60/90 detik hitam seragam; ini bukan bukti title screen karena boot marker executable tidak dicapai.
+- Percobaan screenshot internal privat [#39011515345](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011515345) mencapai handoff di jalur no-UI, tetapi `PCSX.GPU.takeScreenShot()` memberi dimensi 0×0; postprocessing gagal dan artifact list kosong. Jangan pakai metode itu untuk mode no-UI.
+- Probe source-current [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) membangun source pin `1525a93676dbece9fe70f10ff129aeaa14eec30d` dalam image builder yang dipatok, menggunakan jalur GUI nyata Xvfb dan menangkap hanya jendela PCSX, dengan retensi artefak maksimal tiga hari. Status ketika ditambahkan: belum selesai; periksa hasil final sebelum memilih emulator.
+- Run CPU-trace lama #39001985849 pada runner publik telah dihapus secara selektif lewat run #39011611436; API fetch sesudahnya memberi 404. Tidak ada keluaran instruksi mentah yang ditambahkan dari eksperimen baru.
+- Tidak ada emulator yang terbukti menampilkan menu/gameplay, dan tidak ada input game yang terbukti berfungsi. RT-001 tetap Open / blocked; emulator alternatif harus dipilih melalui uji aktual jika current-source probe tidak berhasil.
+
+
