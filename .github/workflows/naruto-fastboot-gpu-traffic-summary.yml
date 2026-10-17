@@ -326,15 +326,15 @@ jobs:
               read_markers()
           finally:
               sock.close()
-           print(f"CPU_CODE_WINDOWS_VALID={len(code_windows)}", flush=True)
-           print(f"CPU_CODE_WINDOWS_UNAVAILABLE={len(code_window_errors)}", flush=True)
-           for base, (counts, backward, forward) in sorted(code_windows.items()):
-               fields = " ".join(f"{key}={counts[key]}" for key in (
-                   "conditional_branch", "jr", "jalr", "jump", "syscall", "break",
-                   "cop0", "cop2", "load", "store", "immediate_arithmetic",
-                   "special_arithmetic", "other"
-               ))
-               print(f"CPU_CODE_WINDOW base=0x{base:08x} bytes=64 backward_branches={backward} forward_branches={forward} {fields}", flush=True)
+          print(f"CPU_CODE_WINDOWS_VALID={len(code_windows)}", flush=True)
+          print(f"CPU_CODE_WINDOWS_UNAVAILABLE={len(code_window_errors)}", flush=True)
+          for base, (counts, backward, forward) in sorted(code_windows.items()):
+              fields = " ".join(f"{key}={counts[key]}" for key in (
+                  "conditional_branch", "jr", "jalr", "jump", "syscall", "break",
+                  "cop0", "cop2", "load", "store", "immediate_arithmetic",
+                  "special_arithmetic", "other"
+              ))
+              print(f"CPU_CODE_WINDOW base=0x{base:08x} bytes=64 backward_branches={backward} forward_branches={forward} {fields}", flush=True)
           PY
           sampler_pid=$!
 
