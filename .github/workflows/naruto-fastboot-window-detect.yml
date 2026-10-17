@@ -87,14 +87,9 @@ jobs:
           PCSX.settings.pads[1].Connected = true
           PCSX.SIO0.slots[1].pads[1].map()
           print("PAD_SETUP=Port 1 Analog connected/remapped")
-          local frames = 0
-          PCSX.Events.createEventListener('GPU::Vsync', function()
-            frames = frames + 1
-            if frames % 300 == 0 then
-              local regs = PCSX.getRegisters()
-              if regs ~= nil then print(string.format("GUEST_PC_SAMPLE frame=%d pc=0x%08x",frames,tonumber(regs.pc))) end
-            end
-          end)
+          -- Deliberately avoid PCSX.getRegisters() inside GPU::Vsync callbacks:
+          -- previous probes showed register reads there can freeze/segfault the emulator.
+          print("SAFE_MONITORING=no CPU register reads inside VSync callbacks")
           LUA
           )
           timeout --signal=TERM --kill-after=5s 100s \
