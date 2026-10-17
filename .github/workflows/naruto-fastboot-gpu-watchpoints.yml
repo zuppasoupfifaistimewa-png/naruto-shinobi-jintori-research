@@ -131,7 +131,7 @@ jobs:
               def wait_stop(self, timeout=5.0):
                   return self.receive(timeout=timeout, stop_only=True, ignore_console=True)
               def interrupt(self):
-                  self.sock.sendall(b"\\x03")
+                  self.sock.sendall(bytes([3]))
                   try: return self.wait_stop(3.0)
                   except Exception as e: return "interrupt-no-stop:" + type(e).__name__
           def request(rsp, payload, timeout=3.0):
