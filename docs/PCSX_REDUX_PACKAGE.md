@@ -274,3 +274,10 @@ Pada build pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, Lua API `PCSX.GPU.get
 Percobaan berbasis timer rekursif via `PCSX.nextTick()` tidak menjalankan checkpoint. Source `src/core/pcsxffi.lua` membungkus fungsi dengan `AfterPollingCleanup`, sedangkan `src/core/ui.cc` menjalankan lalu membersihkan callback itu; penjadwalan ulang dari callback dapat tertimpa. Jangan menggunakannya sebagai timer rekursif. Untuk capture OpenGL, event GPU sebaiknya hanya menjadwalkan readback ke thread UI, karena membaca langsung dari callback event dapat memakai thread/konteks yang salah.
 
 Run terbaru deferred-UI [#39078732160](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39078732160) terakhir dilihat masih berjalan pada 2026-10-18; hasilnya belum terverifikasi saat entri ini ditulis. Tidak ada perubahan keputusan emulator/pin, dan belum ada klaim bahwa title/menu/gameplay berhasil.
+
+
+## Diagnosis GL host vs PS1 GPU traffic — 2026-10-18
+
+Host OpenGL lulus pada run #39049689832 (Mesa llvmpipe, actual GL 4.5 Core/Compatibility, explicit 3.3 compatibility context pass tanpa override). Di source pin, screenshot API `takeScreenShot()` tidak tersedia pada backend OpenGL GPU, tetapi Software GPU memiliki implementasi. Dengan `-softgpu`, capture pasca-handoff frame 300 sah 320×240 tetapi satu warna hitam; VRAM tetap kosong. Screenshot independen X11 jendela aplikasi 1280×800 pada enam waktu juga valid tetapi hitam.
+
+GPUDump private summary run #39079279565 mem-parse hingga 136 VSync live dengan nol GP0 packets/words, satu GP1 word, 136 VSync packets; complete packet stream, not truncated. Paket pre-trace berisi VRAM baseline upload (262153 GP0 words), bukan gambar yang dikirim game. Dump mentah dihapus pada runner. Run #39079291837 berupaya mengulang sampai VSync 300 dan harus dibaca final sebelum memakai hitungan sebagai jendela observasi penuh.
