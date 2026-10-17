@@ -142,7 +142,7 @@ jobs:
             "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/openbios-fastboot.bin" -iso "$WORK/game-run.cue" \
               -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
-              -softgpu -no-debugger -no-gdb -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+              -softgpu -gdb -gdb-port 3333 -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
               > "$WORK/pcsx.stdout" 2>&1 &
           emu_pid=$!
 
