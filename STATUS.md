@@ -1,5 +1,12 @@
 # Status penelitian
 
+## Keputusan emulator utama dan hasil GDB terbaru — 2026-10-17
+
+**Emulator utama yang dipilih untuk penelitian lanjut: PCSX-Redux AnyLinux prebuilt + OpenBIOS fastboot (`openbios.bin`, SHA-256 `25c789eb66608847907217c367f04a3ec6e62c08530e97c437ce99d29f4c156d`).** Ini keputusan operasional berdasarkan jalur terjauh yang terkonfirmasi di log: membaca `SYSTEM.CNF`, `BOOT = cdrom:\\SLPS_035.53;1`, lalu `EXEC:PC0(80011448)` dan `Execute !`. Varian chunked belum mencapai marker entry dalam rentang uji yang sama; DuckStation terblokir oleh wizard yang tidak menerima OpenBIOS sebagai BIOS PS1/PS2 valid. Keputusan ini tidak menyatakan game sudah boot ke title/menu.
+Run terakhir [#39016277234](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39016277234) selesai sukses secara workflow, tetapi GDB remote gagal menghasilkan snapshot PC pada t20/t30/t50/t70 (exit 1) dan t90 timeout (exit 124). Jendela PCSX non-root XID `0x200034`/2097204 tetap valid dan frame pre-input, frame 30/50/70s, sesudah Return dan Cross semuanya hitam uniform (1280×800, mean 0, stddev 0, satu warna); OCR kosong. Log fastboot tetap mencatat entry handoff. Cleanup runner sukses, artifact privat #12095276220.
+**RT-001 tetap Open / blocked** sampai title/menu Naruto dikenali dan respons input yang mengubah kondisi game terbukti. Story Mode belum dimulai/tamat.
+
+
 ## Diagnostik pasca-entry berikutnya sedang berjalan — 2026-10-17
 
 Karena fastboot GUI tetap hitam baik dengan "-softgpu" maupun backend OpenGL default (Mesa llvmpipe 3.3), workflow privat [#39016277234](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39016277234) telah dimulai. Tes ini mempertahankan fastboot BIOS, ROM dan controller yang sama, lalu mengambil snapshot PC melalui GDB remote eksternal pada beberapa waktu; tidak memakai pembacaan register CPU dalam callback VSync dan tidak mencetak instruksi/operand mentah. Status ketika terakhir diperiksa: masih memasang tool GDB; belum ada snapshot atau hasil boot baru. RT-001 tetap Open / blocked.
