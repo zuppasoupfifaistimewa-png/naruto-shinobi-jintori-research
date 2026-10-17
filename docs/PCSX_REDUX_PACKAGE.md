@@ -185,3 +185,8 @@ Dengan demikian DuckStation belum dapat dinilai lebih baik atau lebih buruk dari
 
 Setelah GL/GLX dipasang, DuckStation run [#39012504017](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012504017) masih tidak bisa memulai proses GUI karena `libEGL.so.1` hilang. Karena tidak ada window dan input tidak dikirim, ini bukan bukti bahwa DuckStation lebih buruk dalam kompatibilitas game. Commit `5afd32eca0d32ee191de7f2963f74b53aed89448` menambahkan `libegl1`; rerun [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012694027) sedang berlangsung. Source-current PCSX build [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) juga belum selesai.
 
+
+### Final DuckStation comparison note — 2026-10-17
+
+Setelah runtime GL diperbaiki, run [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012694027) membuka GUI tetapi berhenti pada first-run setup wizard dan pesan BIOS PS1/PS2 yang diperlukan. UI mendeteksi satu file tetapi tidak menerima file itu sebagai BIOS valid; tidak ada marker game disc/executable atau title screen. Return memajukan wizard, bukan game. Kesimpulan terbatas pada **BIOS gate**: DuckStation belum menguji kompatibilitas ROM dalam kondisi OpenBIOS-only ini. Jangan meminta BIOS retail baru. Tetap prioritaskan PCSX-Redux source-current run [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708); hasil build/GUI-nya belum final pada pemeriksaan terakhir.
+
