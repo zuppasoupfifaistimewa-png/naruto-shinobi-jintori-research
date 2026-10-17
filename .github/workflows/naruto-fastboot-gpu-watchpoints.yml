@@ -92,45 +92,65 @@ jobs:
           def packet(payload):
               raw = payload.encode("ascii")
               return b"$" + raw + b"#" + f"{sum(raw) & 255:02x}".encode("ascii")
-          def receive_packet(sock, timeout=3.0):
-              deadline = time.monotonic() + timeout
-              buf = bytearray()
-              while time.monotonic() < deadline:
-                  sock.settimeout(max(0.1, deadline - time.monotonic()))
-                  try: chunk = sock.recv(4096)
-                  except socket.timeout: continue
-                  if not chunk: raise ConnectionError("peer closed")
-                  buf.extend(chunk)
-                  start = buf.find(b"$")
-                  if start >= 0:
-                      mark = buf.find(b"#", start + 1)
-                      if mark >= 0 and len(buf) >= mark + 3:
-                          body = bytes(buf[start + 1:mark])
-                          got = bytes(buf[mark + 1:mark + 3]).lower()
-                          del buf[:mark + 3]
-                          if got != f"{sum(body) & 255:02x}".encode("ascii"):
-                              raise ValueError("response checksum mismatch")
-                          return body.decode("ascii", "replace")
-              raise TimeoutError("no RSP packet before deadline")
-          def request(sock, payload, timeout=3.0):
-              sock.sendall(packet(payload))
-              return receive_packet(sock, timeout)
-          def interrupt(sock):
-              sock.sendall(b"\x03")
-              try: return receive_packet(sock, 3.0)
-              except Exception as e: return "interrupt-no-packet:" + type(e).__name__
+          class RSP:
+              def __init__(self, sock):
+                  self.sock = sock
+                  self.buf = bytearray()
+              def receive(self, timeout=3.0, stop_only=False, ignore_console=False):
+                  deadline = time.monotonic() + timeout
+                  while time.monotonic() < deadline:
+                      start = self.buf.find(b"$")
+                      if start >= 0:
+                          if start: del self.buf[:start]
+                          mark = self.buf.find(b"#", 1)
+                          if mark >= 0 and len(self.buf) >= mark + 3:
+                              body = bytes(self.buf[1:mark])
+                              got = bytes(self.buf[mark + 1:mark + 3]).lower()
+                              del self.buf[:mark + 3]
+                              want = f"{sum(body) & 255:02x}".encode("ascii")
+                              if got != want: raise ValueError("response checksum mismatch")
+                              # PCSX-Redux streams console output as RSP 'O' packets
+                              # while the target runs; these are NOT debugger stop events.
+                              if ignore_console and body.startswith(b"O"):
+                                  continue
+                              if stop_only and not body.startswith((b"T", b"S", b"W", b"X")):
+                                  continue
+                              return body.decode("ascii", "replace")
+                      elif self.buf:
+                          # ACK/NACK bytes may be interleaved with framed replies.
+                          self.buf.clear()
+                      self.sock.settimeout(max(0.1, deadline - time.monotonic()))
+                      try: chunk = self.sock.recv(4096)
+                      except socket.timeout: continue
+                      if not chunk: raise ConnectionError("peer closed")
+                      self.buf.extend(chunk)
+                  raise TimeoutError("no matching RSP packet before deadline")
+              def request(self, payload, timeout=3.0):
+                  self.sock.sendall(packet(payload))
+                  return self.receive(timeout=timeout)
+              def wait_stop(self, timeout=5.0):
+                  return self.receive(timeout=timeout, stop_only=True, ignore_console=True)
+              def interrupt(self):
+                  self.sock.sendall(b"\\x03")
+                  try: return self.wait_stop(3.0)
+                  except Exception as e: return "interrupt-no-stop:" + type(e).__name__
+          def request(rsp, payload, timeout=3.0):
+              return rsp.request(payload, timeout)
           def reg_value(value):
               if len(value) != 8: return "unavailable"
               try: return f"0x{int.from_bytes(bytes.fromhex(value), 'little'):08x}"
               except ValueError: return "unavailable"
-          def sample(sock, label):
+          def sample(rsp, label):
               vals = {}
               for name, command in [("pc","p25"),("status","p20"),("badvaddr","p23"),("cause","p24")]:
-                  try: vals[name] = reg_value(request(sock, command))
+                  try: vals[name] = reg_value(request(rsp, command))
                   except Exception as e: vals[name] = "error:" + type(e).__name__
-              try: vals["target_status"] = request(sock, "?")
+              try: vals["target_status"] = request(rsp, "?")
               except Exception as e: vals["target_status"] = "error:" + type(e).__name__
               print("RSP_STATE label=" + label + " " + " ".join(f"{k}={v}" for k,v in vals.items()), flush=True)
+              return vals
+          def wait_stop(rsp, timeout):
+              return rsp.wait_stop(timeout)
           sock = None
           for attempt in range(24):
               try: sock = socket.create_connection((HOST, PORT), timeout=1.0); break
@@ -138,25 +158,31 @@ jobs:
           if sock is None:
               print("RSP_CONNECT=failed port=3333"); raise SystemExit(0)
           sock.settimeout(3.0)
+          rsp = RSP(sock)
           print("RSP_CONNECT=connected port=3333")
           try:
-              print("RSP_QSUPPORTED=" + request(sock, "qSupported:multiprocess+")[:220])
+              print("RSP_QSUPPORTED=" + request(rsp, "qSupported:multiprocess+")[:220])
               try:
-                  print("ENTRY_BREAKPOINT_SET=" + request(sock, "Z1,80011448,4"))
+                  print("ENTRY_BREAKPOINT_SET=" + request(rsp, "Z1,80011448,4"))
               except Exception as e:
                   print("ENTRY_BREAKPOINT_SET=error:" + type(e).__name__)
                   raise SystemExit(0)
               sock.sendall(packet("c"))
               try:
-                  event = receive_packet(sock, 20.0)
-                  print("ENTRY_BREAKPOINT_EVENT=" + event)
+                  event = wait_stop(rsp, 20.0)
+                  print("ENTRY_BREAKPOINT_STOP_EVENT=" + event)
               except Exception as e:
-                  print("ENTRY_BREAKPOINT_EVENT=timeout:" + type(e).__name__)
-                  print("ENTRY_INTERRUPT_EVENT=" + interrupt(sock))
-                  sample(sock, "after-entry-timeout")
+                  print("ENTRY_BREAKPOINT_STOP_EVENT=timeout:" + type(e).__name__)
+                  print("ENTRY_INTERRUPT_EVENT=" + rsp.interrupt())
+                  sample(rsp, "after-entry-timeout")
                   raise SystemExit(0)
-              sample(sock, "exe-entry")
-              try: print("ENTRY_BREAKPOINT_CLEAR=" + request(sock, "z1,80011448,4"))
+              entry_state = sample(rsp, "after-entry-stop")
+              entry_pc = entry_state.get("pc", "")
+              if entry_pc != "0x80011448":
+                  print("ENTRY_BREAKPOINT_VERIFIED=no expected_pc=0x80011448 observed_pc=" + entry_pc)
+                  raise SystemExit(0)
+              print("ENTRY_BREAKPOINT_VERIFIED=yes")
+              try: print("ENTRY_BREAKPOINT_CLEAR=" + request(rsp, "z1,80011448,4"))
               except Exception as e: print("ENTRY_BREAKPOINT_CLEAR=error:" + type(e).__name__)
               phases = [
                 ("gpu-gp0-write", ["1f801810"]),
@@ -167,7 +193,7 @@ jobs:
                   active=[]
                   for addr in addresses:
                       try:
-                          reply=request(sock, f"Z2,{addr},4")
+                          reply=request(rsp, f"Z2,{addr},4")
                           if reply=="OK": active.append(addr)
                           else: print(f"WATCHPOINT_SET label={label} address={addr} reply={reply}")
                       except Exception as e:
@@ -178,15 +204,16 @@ jobs:
                   print(f"WATCHPOINT_SET label={label} installed={','.join(active)}", flush=True)
                   sock.sendall(packet("c"))
                   try:
-                      event=receive_packet(sock, 5.0)
-                      print(f"WATCHPOINT_RESULT label={label} result=hit event={event}", flush=True)
-                      sample(sock, label + "-hit")
+                      event=rsp.wait_stop(5.0)
+                      print(f"WATCHPOINT_RESULT label={label} result=stop-event event={event}", flush=True)
+                      state = sample(rsp, label + "-stop")
+                      print(f"WATCHPOINT_STOP_PC label={label} pc={state.get('pc','unavailable')} cause={state.get('cause','unavailable')}", flush=True)
                   except Exception as e:
-                      print(f"WATCHPOINT_RESULT label={label} result=no-hit-within-5s error={type(e).__name__}", flush=True)
-                      print("WATCHPOINT_INTERRUPT_EVENT=" + interrupt(sock), flush=True)
-                      sample(sock, label + "-timeout")
+                      print(f"WATCHPOINT_RESULT label={label} result=no-stop-within-5s error={type(e).__name__}", flush=True)
+                      print("WATCHPOINT_INTERRUPT_EVENT=" + rsp.interrupt(), flush=True)
+                      sample(rsp, label + "-timeout")
                   for addr in active:
-                      try: request(sock, f"z2,{addr},4")
+                      try: request(rsp, f"z2,{addr},4")
                       except Exception: pass
               print("WATCHPOINT_TEST_COMPLETE", flush=True)
           finally:
