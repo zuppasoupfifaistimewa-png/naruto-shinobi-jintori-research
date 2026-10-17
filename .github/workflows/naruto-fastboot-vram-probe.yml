@@ -105,84 +105,90 @@ jobs:
 
           cat > "$WORK/vram-probe.lua" <<'LUA'
           local frame_count = 0
-          local started = os.time()
-          local checkpoints = {5,10,15,20,30,40,50,60,70,80}
-          local next_checkpoint = 1
+          local targets = {
+              [1]=true, [2]=true, [3]=true, [5]=true,
+              [10]=true, [20]=true, [30]=true, [45]=true, [60]=true
+          }
 
-          local function capture_vram(target_s, elapsed_s)
+          local function capture_vram(frame)
               local ok, err = pcall(function()
                   local vram = PCSX.GPU.getVRAM()
-                  local stem = string.format("vram-t%02d", target_s)
-                  local raw = assert(Support.File.open("captures/raw/" .. stem .. ".raw", "TRUNCATE"))
+                  local stem = string.format("vram-f%06d", frame)
+                  local raw = assert(Support.File.open("captures/raw/" .. stem .. ".raw", "TRUNCATE"),
+                      "cannot create VRAM checkpoint")
                   raw:writeMoveSlice(vram)
                   raw:close()
                   local meta = assert(io.open("captures/raw/" .. stem .. ".json", "wb"))
                   meta:write(string.format(
-                      '{"kind":"vram","checkpoint":"t%02d","elapsed_s":%d,"width":1024,"height":512,"bpp":16,"bytes":1048576,"guest_fps":%.4f}\n',
-                      target_s, elapsed_s, PCSX.GPU.getGuestFPS()))
+                      '{"kind":"vram","checkpoint":"f%06d","frame":%d,"width":1024,"height":512,"bpp":16,"bytes":1048576,"guest_fps":%.4f}\n',
+                      frame, frame, PCSX.GPU.getGuestFPS()))
                   meta:close()
-                  print(string.format("VRAM_CAPTURE status=ok checkpoint=t%02d elapsed_s=%d width=1024 height=512 bytes=1048576 guest_fps=%.4f",
-                      target_s, elapsed_s, PCSX.GPU.getGuestFPS()))
+                  print(string.format(
+                      "VRAM_CAPTURE status=ok frame=%d width=1024 height=512 bytes=1048576 guest_fps=%.4f",
+                      frame, PCSX.GPU.getGuestFPS()))
               end)
               if not ok then
-                  printError(string.format("VRAM_CAPTURE status=error checkpoint=t%02d elapsed_s=%d error=%s",
-                      target_s, elapsed_s, tostring(err)))
+                  printError(string.format("VRAM_CAPTURE status=error frame=%d error=%s", frame, tostring(err)))
               end
           end
 
-          local function capture_screen(target_s, elapsed_s)
+          local function capture_screen(frame)
               local ok, err = pcall(function()
                   local shot = PCSX.GPU.takeScreenShot()
                   local bpp = (shot.bpp == 0) and 16 or 24
                   if shot.width <= 0 or shot.height <= 0 then
-                      print(string.format("SCREEN_CAPTURE status=empty checkpoint=t%02d elapsed_s=%d width=%d height=%d bpp=%d",
-                          target_s, elapsed_s, shot.width, shot.height, bpp))
+                      print(string.format("SCREEN_CAPTURE status=empty frame=%d width=%d height=%d bpp=%d",
+                          frame, shot.width, shot.height, bpp))
                       return
                   end
-                  local stem = string.format("screen-t%02d", target_s)
-                  local raw = assert(Support.File.open("captures/raw/" .. stem .. ".raw", "TRUNCATE"))
+                  local stem = string.format("screen-f%06d", frame)
+                  local raw = assert(Support.File.open("captures/raw/" .. stem .. ".raw", "TRUNCATE"),
+                      "cannot create screen checkpoint")
                   raw:writeMoveSlice(shot.data)
                   raw:close()
                   local meta = assert(io.open("captures/raw/" .. stem .. ".json", "wb"))
                   meta:write(string.format(
-                      '{"kind":"screen","checkpoint":"t%02d","elapsed_s":%d,"width":%d,"height":%d,"bpp":%d,"guest_fps":%.4f}\n',
-                      target_s, elapsed_s, shot.width, shot.height, bpp, PCSX.GPU.getGuestFPS()))
+                      '{"kind":"screen","checkpoint":"f%06d","frame":%d,"width":%d,"height":%d,"bpp":%d,"guest_fps":%.4f}\n',
+                      frame, frame, shot.width, shot.height, bpp, PCSX.GPU.getGuestFPS()))
                   meta:close()
-                  print(string.format("SCREEN_CAPTURE status=ok checkpoint=t%02d elapsed_s=%d width=%d height=%d bpp=%d",
-                      target_s, elapsed_s, shot.width, shot.height, bpp))
+                  print(string.format("SCREEN_CAPTURE status=ok frame=%d width=%d height=%d bpp=%d",
+                      frame, shot.width, shot.height, bpp))
               end)
               if not ok then
-                  printError(string.format("SCREEN_CAPTURE status=error checkpoint=t%02d elapsed_s=%d error=%s",
-                      target_s, elapsed_s, tostring(err)))
+                  printError(string.format("SCREEN_CAPTURE status=error frame=%d error=%s", frame, tostring(err)))
               end
           end
 
-          local function poll_time()
-              local elapsed = os.time() - started
-              if next_checkpoint <= #checkpoints and elapsed >= checkpoints[next_checkpoint] then
-                  local target = checkpoints[next_checkpoint]
-                  capture_vram(target, elapsed)
-                  capture_screen(target, elapsed)
-                  next_checkpoint = next_checkpoint + 1
-              end
-              if next_checkpoint <= #checkpoints then
-                  PCSX.nextTick(poll_time)
-              else
-                  print("TIMED_CHECKPOINTS_COMPLETE=1")
-                  PCSX.quit(0)
-              end
-          end
+          -- Record execution-flow callbacks to show whether the pinned build reaches
+          -- its shell/run transition even when regular GPU VSync callbacks stop.
+          shellReachedListener = PCSX.Events.createEventListener("ExecutionFlow::ShellReached", function()
+              print("EXECUTION_EVENT=ShellReached")
+          end)
+          runListener = PCSX.Events.createEventListener("ExecutionFlow::Run", function()
+              print("EXECUTION_EVENT=Run")
+          end)
+          pauseListener = PCSX.Events.createEventListener("ExecutionFlow::Pause", function()
+              print("EXECUTION_EVENT=Pause")
+          end)
 
+          -- Do capture synchronously during GPU::Vsync. This intentionally avoids
+          -- recursively using PCSX.nextTick(), whose AfterPollingCleanup hand-off
+          -- may overwrite a callback scheduled from inside its own callback.
           vramProbeListener = PCSX.Events.createEventListener("GPU::Vsync", function()
               frame_count = frame_count + 1
+              if targets[frame_count] then
+                  print(string.format("VRAM_PROBE_EVENT=GPU::Vsync frame=%d guest_fps=%.4f",
+                      frame_count, PCSX.GPU.getGuestFPS()))
+                  capture_vram(frame_count)
+                  capture_screen(frame_count)
+              end
               if frame_count % 300 == 0 then
-                  print(string.format("VRAM_PROBE_VSYNC frame=%d guest_fps=%.4f", frame_count, PCSX.GPU.getGuestFPS()))
+                  print(string.format("VRAM_PROBE_VSYNC frame=%d guest_fps=%.4f",
+                      frame_count, PCSX.GPU.getGuestFPS()))
               end
           end)
-          print("VRAM_PROBE=timed checkpoints 5,10,15,20,30,40,50,60,70,80 seconds")
-          PCSX.nextTick(poll_time)
+          print("VRAM_PROBE=direct GPU::Vsync checkpoints=1,2,3,5,10,20,30,45,60")
           LUA
-
           timeout --signal=TERM --kill-after=5s 90s \
             "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/openbios-fastboot.bin" -iso "$WORK/game-run.cue" \
