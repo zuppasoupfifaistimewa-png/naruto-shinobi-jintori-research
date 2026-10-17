@@ -319,3 +319,9 @@ Follow-up [#39015290594](https://github.com/zuppasoupfifaistimewa-png/naruto-shi
 Capture run [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) **tidak sah untuk menilai gambar game**. ID 543 = hexadecimal `0x21f` ialah root Xvfb; regex `xdotool search --onlyvisible --name '.*'` mencocokkan root. Jadi frame hitam, OCR kosong, dan tak adanya delta visual Return/Cross dari run tersebut tidak boleh dianggap sebagai observasi window PCSX. Marker fastboot `SYSTEM.CNF`/BOOT/`EXEC:PC0`/ `Execute !` tetap sah dari log terpisah.
 Workflow diperbaiki pada commit `83173bb10cfbf905a296f59720c0a63c95bc3a32` dengan pengecualian eksplisit X11 root. Nilai hasil run [#39015419649](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015419649) hanya boleh dipakai jika `CAPTURE_WINDOW` menyebut ID non-root. Jika tidak ditemukan, root tree adalah diagnosis dan tidak boleh diganti dengan gambar root. RT-001 tetap Open / blocked.
 
+
+## Koreksi pemilihan window kedua — fastboot tree audit (2026-10-17)
+
+Pada [#39015419649](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015419649), root Xvfb sudah dikecualikan tetapi selector `xdotool search` tidak memberi child window sebagai kandidat. Root tree menunjukkan child `0x200034 "PCSX-Redux"` 1280×800. Karena capture tidak dilakukan, tidak boleh menyatakan aplikasi tak punya window ataupun bahwa game tampil hitam. Boot markers fastboot sah secara terpisah: SYSTEM.CNF, BOOT, EXEC:PC0, Execute!.
+Workflow terbaru [#39015610296](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015610296) mengekstrak XID langsung dari root tree, mengecualikan root, serta memfokuskan window sebelum input. Validasi RT-001 membutuhkan `CAPTURE_WINDOW` atas child non-root dan screenshot/OCR game yang dapat diidentifikasi.
+
