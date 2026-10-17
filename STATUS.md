@@ -1,5 +1,12 @@
 # Status penelitian
 
+## Koreksi validitas capture fastboot — 2026-10-17
+
+Audit log run [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) menemukan bahwa ID window `543` sama dengan root Xvfb `0x21f`. Selector `xdotool search --onlyvisible --name '.*'` ternyata memasukkan root, sehingga semua metrik hitam dan OCR kosong dari run ini **bukan** capture jendela emulator dan harus ditarik dari bukti visual. Marker boot tetap sah: fastboot BIOS mencapai `SYSTEM.CNF`, BOOT, `EXEC:PC0(80011448)`, dan `Execute !`.
+Run [#39015290594](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015290594) menggunakan selector sama dan juga tidak boleh dianggap sebagai capture game bila memilih root; ia sedang digantikan oleh run [#39015419649](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015419649). Workflow telah diperbaiki pada commit `83173bb10cfbf905a296f59720c0a63c95bc3a32` untuk mengecualikan root ID secara eksplisit sebelum memilih jendela non-root yang layak. Verifikasi hasil run baru dari `X11_ROOT_ID`, `WINDOW_CANDIDATE_SKIPPED=root`, dan `CAPTURE_WINDOW` non-root sebelum menilai gambar.
+**RT-001 tetap Open / blocked.** Sampai capture non-root yang sah menunjukkan Naruto dan kontrol merespons, tidak ada bukti title/menu/gameplay.
+
+
 ## Hasil fastboot GUI dengan window discovery generik — 2026-10-17
 
 Run [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) berhasil mengidentifikasi jendela X11 (ID `543`, 1280×800); jadi tangkapan sebelumnya yang gagal mencari nama jendela adalah masalah selector, bukan bukti tidak ada window. Namun semua frame sebelum input, sesudah Return, sesudah Z/Cross, serta 40/65/90 s tetap uniform black (mean 0, stddev 0, satu warna), OCR kosong. Log fastboot kembali mencapai `SYSTEM.CNF`, `BOOT`, `EXEC:PC0(80011448)`, dan `Execute !`. Input memang dikirim ke jendela aplikasi, tetapi karena layar tetap hitam, belum bisa ditafsirkan sebagai kontrol game.
