@@ -156,9 +156,9 @@ jobs:
           start = time.monotonic()
           buf = bytearray()
           marker_patterns = [
-              ("SYSTEM_CNF", re.compile(r"SYSTEM\\.CNF")),
+              ("SYSTEM_CNF", re.compile("SYSTEM[.]CNF")),
               ("BOOT_PATH", re.compile(r"BOOT =")),
-              ("EXEC_HEADER", re.compile(r"EXEC:PC0\\(")),
+              ("EXEC_HEADER", re.compile("EXEC:PC0[(]")),
               ("EXECUTE_HANDOFF", re.compile(r"Execute !")),
           ]
           seen = set()
@@ -357,6 +357,19 @@ jobs:
               raw_dir.rmdir()
           output.append("RAW_GPU_DUMP_REMOVED=1")
           Path("captures/gpu-traffic-summary.txt").write_text("\n".join(output) + "\n")
+          cpu_path = Path("cpu-state-summary.txt")
+          if cpu_path.exists():
+              cpu_text = cpu_path.read_text(errors="replace")
+              cpu_lines = [
+                  line for line in cpu_text.splitlines()
+                  if line.startswith((
+                      "CPU_RSP_", "CPU_CORRELATION_MARKER",
+                      "CPU_BULK_SAMPLE index=", "CPU_BULK_SAMPLE_ERROR"
+                  ))
+              ]
+              Path("captures/cpu-state-summary.txt").write_text("\\n".join(cpu_lines) + "\\n")
+          else:
+              Path("captures/cpu-state-summary.txt").write_text("CPU_RSP_SUMMARY=missing\\n")
           print("\n".join(output))
           PY
 
