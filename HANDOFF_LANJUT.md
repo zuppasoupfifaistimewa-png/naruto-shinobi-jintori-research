@@ -1,3 +1,12 @@
+
+
+## Status lanjutan riset — 2026-10-18 (sesudah diagnosis OpenGL)
+
+- Run OpenGL mandiri [#39049689832](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39049689832) lulus: Mesa `llvmpipe`, OpenGL 4.5 aktual tanpa version override, konteks compatibility 3.3 berhasil dibuat. GPU fisik tidak terbukti dibutuhkan.
+- Run [#39050174557](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39050174557) menguji timer rekursif `PCSX.nextTick()` tetapi tidak menghasilkan snapshot karena `AfterPollingCleanup` dibersihkan oleh `UI::tick()` setelah callback. Jangan pakai pola itu sebagai timer.
+- Run [#39078592809](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39078592809) mendapat sembilan VRAM snapshot awal; semuanya identik hitam dan guest FPS 0. Log `Execute !` muncul setelah frame 60, dan VSync frame 300 teramati sesudah handoff. Artinya snapshot awal belum menunjukkan keadaan executable.
+- Workflow kini mendefer readback melalui UI thread; run [#39078732160](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39078732160) saat terakhir diperiksa masih berjalan. Periksa status/log/artifact final dahulu; selanjutnya prioritaskan frame sekitar 300 pasca-handoff.
+- Jangan menandai RT-001 selesai sebelum gambar title/menu dapat dikenali serta input terbukti mengubah state. Jangan mengubah emulator atau pin berdasarkan data ini.
 # HANDOFF_LANJUT — Naruto Shinobi Jintori Research
 
 Terakhir diperbarui: 2026-10-17  
