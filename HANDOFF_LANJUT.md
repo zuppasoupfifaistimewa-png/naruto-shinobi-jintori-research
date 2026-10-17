@@ -555,3 +555,9 @@ Keputusan tetap PCSX-Redux AnyLinux prebuilt AppImage dari release riset + OpenB
 - Semua artefak capture/diagnostik disimpan sebagai Actions artifact privat berumur 3 hari saja; jangan mengunggah ROM, BIOS, screenshot privat, memory dump atau instruction trace mentah ke repo.
 - **RT-001 tetap Open / blocked** sampai title/menu Naruto dikenali dan input game yang terkontrol menghasilkan perubahan yang dapat diamati. Story Mode belum dimulai/tamat.
 
+
+
+## Koreksi penting run GPU-watchpoint — 2026-10-17
+
+Jangan memakai run [#39017636267](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39017636267) sebagai bukti hit breakpoint/watchpoint. Implementasi klien RSP sebelumnya memperlakukan paket konsol `O...` sebagai event stop; sampel PC sesudahnya berada di BIOS, bukan entry `0x80011448`. Ini false positive dari harness, bukan bukti bahwa game menyentuh GPU. Workflow diperbaiki pada commit `5055074671acf8cb2f2512182f8484dc2815552d` untuk mengabaikan paket `O`, mempertahankan paket buffered, menunggu stop packet yang sah, dan memeriksa PC tepat pada EXE entry. Rerun [#39020810743](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39020810743) sedang berjalan; periksa hasil final sebelum kesimpulan.
+
