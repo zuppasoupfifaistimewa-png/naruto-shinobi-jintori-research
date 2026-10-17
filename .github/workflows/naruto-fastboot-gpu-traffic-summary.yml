@@ -17,7 +17,7 @@ concurrency:
 jobs:
   gpu-traffic-summary:
     runs-on: ubuntu-26.04
-    timeout-minutes: 6
+    timeout-minutes: 8
     steps:
       - name: Install private runtime requirements
         shell: bash
@@ -138,19 +138,142 @@ jobs:
           print("GPU_TRAFFIC_PROBE=armed target_vsync=300 backend=softgpu; raw dump will be parsed then deleted")
           LUA
 
-          timeout --signal=TERM --kill-after=5s 90s \
+          timeout --signal=TERM --kill-after=5s 125s \
             "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/openbios-fastboot.bin" -iso "$WORK/game-run.cue" \
               -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
               -softgpu -no-debugger -no-gdb -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
               > "$WORK/pcsx.stdout" 2>&1 &
           emu_pid=$!
+
+          # Concurrent minimal RSP sampler: one atomic-ish bulk register packet per
+          # sample, no instruction/operand tracing. It records only PC/CP0 summaries
+          # and timestamps known loader markers from pcsx.stdout for correlation.
+          python3 -u - <<'PY' > "$WORK/cpu-state-summary.txt" 2>&1 &
+          import pathlib, re, socket, time
+          HOST, PORT = "127.0.0.1", 3333
+          stdout_path = pathlib.Path("pcsx.stdout")
+          start = time.monotonic()
+          buf = bytearray()
+          marker_patterns = [
+              ("SYSTEM_CNF", re.compile(r"SYSTEM\\.CNF")),
+              ("BOOT_PATH", re.compile(r"BOOT =")),
+              ("EXEC_HEADER", re.compile(r"EXEC:PC0\\(")),
+              ("EXECUTE_HANDOFF", re.compile(r"Execute !")),
+          ]
+          seen = set()
+          last_offset = 0
+
+          def packet(payload):
+              raw = payload.encode("ascii")
+              return b"$" + raw + b"#" + f"{sum(raw) & 255:02x}".encode("ascii")
+
+          def receive_response(sock, timeout=2.0):
+              deadline = time.monotonic() + timeout
+              global buf
+              while time.monotonic() < deadline:
+                  start_idx = buf.find(b"$")
+                  if start_idx >= 0:
+                      hash_idx = buf.find(b"#", start_idx + 1)
+                      if hash_idx >= 0 and len(buf) >= hash_idx + 3:
+                          body = bytes(buf[start_idx + 1:hash_idx])
+                          checksum = bytes(buf[hash_idx + 1:hash_idx + 3])
+                          del buf[:hash_idx + 3]
+                          expected = f"{sum(body) & 255:02x}".encode("ascii")
+                          if checksum.lower() != expected:
+                              raise ValueError("RSP checksum mismatch")
+                          try:
+                              sock.sendall(b"+")
+                          except OSError:
+                              pass
+                          # Ignore the PCSX console's O<hex> packets; they are not
+                          # stop replies or register payloads.
+                          if body.startswith(b"O") and len(body) > 1 and all(c in b"0123456789abcdefABCDEF" for c in body[1:]):
+                              continue
+                          return body.decode("ascii", "replace")
+                  remaining = deadline - time.monotonic()
+                  if remaining <= 0:
+                      break
+                  sock.settimeout(max(0.1, remaining))
+                  try:
+                      chunk = sock.recv(4096)
+                  except socket.timeout:
+                      continue
+                  if not chunk:
+                      raise ConnectionError("RSP peer closed")
+                  buf.extend(chunk)
+              raise TimeoutError("no RSP response")
+
+          def request(sock, payload):
+              sock.sendall(packet(payload))
+              return receive_response(sock)
+
+          def read_markers():
+              global last_offset
+              try:
+                  with stdout_path.open("rb") as file:
+                      file.seek(last_offset)
+                      chunk = file.read()
+                      last_offset = file.tell()
+              except FileNotFoundError:
+                  return
+              for line in chunk.decode("utf-8", "replace").splitlines():
+                  for label, pattern in marker_patterns:
+                      if label not in seen and pattern.search(line):
+                          seen.add(label)
+                          print(f"CPU_CORRELATION_MARKER elapsed_s={time.monotonic()-start:.2f} marker={label}", flush=True)
+
+          sock = None
+          for _ in range(30):
+              try:
+                  sock = socket.create_connection((HOST, PORT), timeout=1.0)
+                  break
+              except OSError:
+                  time.sleep(0.5)
+          if sock is None:
+              print("CPU_RSP_CONNECT=failed", flush=True)
+              raise SystemExit(0)
+
+          sock.settimeout(2.0)
+          print("CPU_RSP_CONNECT=connected", flush=True)
+          try:
+              try:
+                  caps = request(sock, "qSupported:multiprocess+")
+                  print("CPU_RSP_QSUPPORTED=ok" if caps else "CPU_RSP_QSUPPORTED=empty", flush=True)
+              except Exception as exc:
+                  print(f"CPU_RSP_QSUPPORTED=failed type={type(exc).__name__}", flush=True)
+
+              idx = 0
+              while time.monotonic() - start < 120:
+                  read_markers()
+                  try:
+                      registers = request(sock, "g")
+                      if len(registers) == 576 and all(c in "0123456789abcdefABCDEF" for c in registers):
+                          def reg(number):
+                              raw = bytes.fromhex(registers[number*8:number*8+8])
+                              return f"0x{int.from_bytes(raw,'little'):08x}"
+                          pc, status, badvaddr, cause = reg(37), reg(32), reg(35), reg(36)
+                          print(f"CPU_BULK_SAMPLE index={idx} elapsed_s={time.monotonic()-start:.2f} pc={pc} cp0_status={status} cp0_badvaddr={badvaddr} cp0_cause={cause} bulk_valid=yes", flush=True)
+                      else:
+                          print(f"CPU_BULK_SAMPLE index={idx} elapsed_s={time.monotonic()-start:.2f} bulk_valid=no response_len={len(registers)} response_kind={registers[:8]}", flush=True)
+                  except Exception as exc:
+                      print(f"CPU_BULK_SAMPLE_ERROR index={idx} elapsed_s={time.monotonic()-start:.2f} error_type={type(exc).__name__}", flush=True)
+                  idx += 1
+                  time.sleep(1.0)
+              read_markers()
+          finally:
+              sock.close()
+          PY
+          sampler_pid=$!
+
           set +e
           wait "$emu_pid"
           emu_rc=$?
           set -e
           emu_pid=""
           echo "EMULATOR_EXIT_CODE=$emu_rc"
+          if kill -0 "$sampler_pid" 2>/dev/null; then kill "$sampler_pid" 2>/dev/null || true; fi
+          wait "$sampler_pid" 2>/dev/null || true
           grep -E 'PAD_SETUP|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|error|Error|ERROR' \
             "$WORK/pcsx.stdout" "$WORK/pcsx.log" > "$WORK/captures/important-log-lines.txt" || true
           cat "$WORK/captures/important-log-lines.txt" || true
@@ -244,6 +367,7 @@ jobs:
           name: naruto-private-gpu-traffic-summary
           path: |
             ${{ env.WORK }}/captures/gpu-traffic-summary.txt
+            ${{ env.WORK }}/captures/cpu-state-summary.txt
             ${{ env.WORK }}/captures/important-log-lines.txt
           if-no-files-found: warn
           retention-days: 1
