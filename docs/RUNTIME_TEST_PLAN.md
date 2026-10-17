@@ -165,3 +165,16 @@ RT-001 remains Open / blocked. Next investigate why GUI-mode execution does not 
 ## Next diagnostic when GUI window is black — 2026-10-17
 
 The prior run found a real PCSX-Redux window but did not reach the PAD_SETUP Lua marker or game executable entry in GUI mode. The next runner job [#39000751307](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000751307) reports GLX/renderer capability and full tail diagnostics from GUI stdout and emulator logs. Use its GUI-specific boot markers to distinguish UI initialization from a guest boot stall. The headless `EXEC:PC0` marker is separate evidence and cannot establish that the GUI has entered the game. RT-001 remains blocked until a visible Naruto title/menu and responsive input are evidenced.
+
+
+---
+
+## A/B emulator evidence and GUI gate — 2026-10-17
+
+Matched headless evidence: [Actions #39000751307](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000751307). Both AnyLinux and the AppImage named PCSX-Redux-HEAD-x86_64.AppImage used the same ROM/CUE, chunked OpenBIOS, CPU interpreter/software GPU, Analog connected/remapped Port 1, and 90-second observation cap. Both reached 187 completed executable chunks, EXEC:PC0(80011448) and Execute !; neither logged Unknown command for pad: 43. These are headless handoff results, not title/menu or playable-input evidence.
+
+GUI result from the same run is distinct: GLX returned Mesa llvmpipe/OpenGL 3.3, but the actual AnyLinux window was all-black at 30/60/90 seconds and OCR empty. Its GUI log did not show all chunks completed or executable entry. The latest workflow runs the same GUI probe against both AppImages; inspect [Actions #39002136781](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39002136781) for each build's GUI_BOOT_RESULT, GUI_PAD_RESULT, FRAME_METRICS, OCR and cleanup.
+
+CPU tracing is still in progress. Prior run [#39000257139](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39000257139) compiled pinned source commit 6b9df482d7b77b9ae218d9c48c1ce1a43c265206 but failed dependency preflight because FFmpeg/SDL libraries were available in the builder image but not on the host. Corrected workflow [commit 16a6faff](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/commit/16a6faff066b913480ad121b497db79df03a9de2) checks and launches the binary inside the same digest-pinned container. Inspect [run #39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) for VSYNC_TRACE frame markers, CPU_TRACE_SIZE and CPU_TRACE_LINE rows.
+
+**RT-001 remains blocked.** Do not test Story Mode or transactions until a recognizable Naruto title/menu appears in a GUI frame and a controlled, logged input visibly changes the game or a reliably identified input state.
