@@ -1,0 +1,249 @@
+name: Naruto fastboot VRAM checkpoints
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/naruto-fastboot-vram-probe.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: naruto-fastboot-vram-probe
+  cancel-in-progress: true
+
+jobs:
+  vram-probe:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 7
+    steps:
+      - name: Install cloud runtime tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil
+
+      - name: Download and verify private runtime assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          WORK="$RUNNER_TEMP/naruto-fastboot-vram-probe"
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+          mkdir -p "$WORK/home" "$WORK/captures/raw"
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; output="$2"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            if [ -z "$id" ] || [ "$id" = "null" ]; then echo "::error::Missing private release asset: $name"; exit 1; fi
+            curl --fail --silent --show-error --location --retry 2 --max-time 300 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$id" -o "$output"
+          }
+          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset openbios.bin openbios-fastboot.bin
+          echo "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c  pcsx-redux.AppImage" | sha256sum --check -
+          test "$(stat -c '%s' game.bin)" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          echo "25c789eb66608847907217c367f04a3ec6e62c08530e97c437ce99d29f4c156d  openbios-fastboot.bin" | sha256sum --check -
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("game.cue")
+          lines = p.read_bytes().decode("utf-8-sig").replace("\r\n", "\n").replace("\r", "\n").splitlines()
+          ids = [i for i, line in enumerate(lines) if line.lstrip().upper().startswith("FILE ")]
+          if len(ids) != 1 or not any(line.lstrip().upper().startswith("TRACK ") for line in lines):
+              raise SystemExit("Invalid CUE")
+          lines[ids[0]] = 'FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines) + "\n", encoding="ascii")
+          PY
+          echo "ROM, CUE, BIOS and pinned AnyLinux hashes/structure verified."
+
+      - name: Capture PS1 VRAM checkpoints through the pinned PCSX-Redux Lua API
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          emu_pid=""
+          cleanup() {
+            if [ -n "$emu_pid" ]; then kill "$emu_pid" 2>/dev/null || true; fi
+            kill "$xvfb_pid" 2>/dev/null || true
+            wait "$xvfb_pid" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/home/.config" XDG_DATA_HOME="$WORK/home/.local/share"
+          export LIBGL_ALWAYS_SOFTWARE=1
+          unset MESA_GL_VERSION_OVERRIDE MESA_GLSL_VERSION_OVERRIDE
+          mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME"
+          for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          echo "HOST_GL=software renderer requested; no GL/GLSL version override"
+          glxinfo -B 2>/dev/null | grep -E 'OpenGL vendor string|OpenGL renderer string|OpenGL (core profile )?version string' || true
+
+          PAD_SETUP=$(cat <<'LUA'
+          PCSX.settings.pads[1].DeviceType = 'Analog'
+          PCSX.settings.pads[1].Connected = true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("PAD_SETUP=Port 1 Analog connected/remapped")
+          LUA
+          )
+
+          cat > "$WORK/vram-probe.lua" <<'LUA'
+          local frame_count = 0
+          local targets = { [60]=true, [300]=true, [600]=true, [900]=true, [1800]=true, [3000]=true, [3600]=true }
+          local function capture_vram(n)
+              local ok, err = pcall(function()
+                  local vram = PCSX.GPU.getVRAM()
+                  local path = string.format("captures/raw/vram-frame-%06d.raw", n)
+                  local raw = assert(Support.File.open(path, "TRUNCATE"), "cannot create VRAM checkpoint")
+                  raw:writeMoveSlice(vram)
+                  raw:close()
+                  local meta = assert(io.open(string.format("captures/raw/vram-frame-%06d.json", n), "wb"))
+                  meta:write(string.format('{"frame":%d,"width":1024,"height":512,"bpp":16,"bytes":1048576,"guest_fps":%.4f}\n',
+                      n, PCSX.GPU.getGuestFPS()))
+                  meta:close()
+                  print(string.format("VRAM_CAPTURE status=ok frame=%d width=1024 height=512 bytes=1048576 guest_fps=%.4f",
+                      n, PCSX.GPU.getGuestFPS()))
+              end)
+              if not ok then
+                  printError(string.format("VRAM_CAPTURE status=error frame=%d error=%s", n, tostring(err)))
+              end
+          end
+
+          vramProbeListener = PCSX.Events.createEventListener("GPU::Vsync", function()
+              frame_count = frame_count + 1
+              if frame_count % 300 == 0 then
+                  print(string.format("VRAM_PROBE_VSYNC frame=%d guest_fps=%.4f", frame_count, PCSX.GPU.getGuestFPS()))
+              end
+              if targets[frame_count] then
+                  local n = frame_count
+                  PCSX.nextTick(function() capture_vram(n) end)
+              end
+              if frame_count == 4200 then
+                  PCSX.nextTick(function()
+                      print("VRAM_PROBE_END=target_frame_reached")
+                      PCSX.quit(0)
+                  end)
+              end
+          end)
+          print("VRAM_PROBE=armed checkpoints=60,300,600,900,1800,3000,3600")
+          LUA
+
+          timeout --signal=TERM --kill-after=5s 90s \
+            "$WORK/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/openbios-fastboot.bin" -iso "$WORK/game-run.cue" \
+              -exec "$PAD_SETUP" -dofile "$WORK/vram-probe.lua" \
+              -no-debugger -no-gdb -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+              > "$WORK/pcsx.stdout" 2>&1 &
+          emu_pid=$!
+          set +e
+          wait "$emu_pid"
+          emu_rc=$?
+          set -e
+          emu_pid=""
+          echo "EMULATOR_EXIT_CODE=$emu_rc"
+          grep -E 'PAD_SETUP|VRAM_PROBE|VRAM_CAPTURE|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|error|Error|ERROR' \
+            "$WORK/pcsx.stdout" "$WORK/pcsx.log" > "$WORK/captures/important-log-lines.txt" || true
+          cat "$WORK/captures/important-log-lines.txt" || true
+          echo "VRAM_PROBE_EMULATOR_STEP_DONE=1"
+
+      - name: Convert VRAM privately and delete raw checkpoints
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          python3 - <<'PY'
+          import hashlib, json, math
+          from pathlib import Path
+          from PIL import Image, ImageDraw
+          root = Path("captures")
+          raw_dir = root / "raw"
+          summary = []
+          images = []
+          for meta_path in sorted(raw_dir.glob("vram-frame-*.json")):
+              meta = json.loads(meta_path.read_text())
+              raw_path = meta_path.with_suffix(".raw")
+              if not raw_path.exists():
+                  summary.append(f"frame={meta['frame']} missing raw VRAM bytes")
+                  continue
+              raw = raw_path.read_bytes()
+              expected = 1024 * 512 * 2
+              if len(raw) != expected:
+                  summary.append(f"frame={meta['frame']} INVALID bytes={len(raw)} expected={expected}")
+                  raw_path.unlink(missing_ok=True)
+                  continue
+              pixels = []
+              nonblack = 0
+              unique = set()
+              for i in range(0, len(raw), 2):
+                  value = raw[i] | (raw[i + 1] << 8)
+                  r = (value & 31) * 255 // 31
+                  g = ((value >> 5) & 31) * 255 // 31
+                  b = ((value >> 10) & 31) * 255 // 31
+                  pixels.extend((r, g, b))
+                  unique.add(value & 0x7fff)
+                  if (value & 0x7fff) != 0:
+                      nonblack += 1
+              img = Image.frombytes("RGB", (1024, 512), bytes(pixels))
+              png_path = root / f"vram-frame-{meta['frame']:06d}.png"
+              img.save(png_path)
+              ratio = nonblack / (1024 * 512)
+              digest = hashlib.sha256(png_path.read_bytes()).hexdigest()
+              summary.append(
+                  f"frame={meta['frame']} size=1024x512 raw_bytes={len(raw)} "
+                  f"unique_15bit_colors={len(unique)} nonblack_ratio={ratio:.6f} "
+                  f"guest_fps={meta.get('guest_fps', 0):.2f} png_sha256={digest}"
+              )
+              thumb = img.copy()
+              thumb.thumbnail((340, 170), Image.Resampling.NEAREST)
+              images.append((meta["frame"], thumb))
+              raw_path.unlink()
+              meta_path.unlink()
+          if images:
+              cols = 2
+              rows = math.ceil(len(images) / cols)
+              sheet = Image.new("RGB", (cols * 360, rows * 205), (24, 24, 24))
+              draw = ImageDraw.Draw(sheet)
+              for i, (frame, img) in enumerate(images):
+                  x, y = (i % cols) * 360, (i // cols) * 205
+                  draw.text((x + 8, y + 6), f"PS1 VRAM checkpoint {frame}", fill=(255, 255, 255))
+                  sheet.paste(img, (x + 8, y + 26))
+              sheet.save(root / "vram-contact-sheet.png")
+          else:
+              summary.append("NO_VALID_VRAM_CHECKPOINTS")
+          (root / "vram-summary.txt").write_text("\n".join(summary) + "\n")
+          print("\n".join(summary))
+          remaining_raw = list(raw_dir.glob("*"))
+          if remaining_raw:
+              raise SystemExit(f"Raw VRAM files remain: {len(remaining_raw)}")
+          raw_dir.rmdir()
+          print("RAW_VRAM_REMOVED=1")
+          PY
+
+      - name: Upload only private PNG diagnostics and summary (no raw VRAM or traces)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-private-vram-png-checkpoints
+          path: |
+            ${{ env.WORK }}/captures/*.png
+            ${{ env.WORK }}/captures/vram-summary.txt
+            ${{ env.WORK }}/captures/important-log-lines.txt
+          if-no-files-found: warn
+          retention-days: 1
