@@ -544,3 +544,10 @@ Run [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 
 **Kesimpulan saat catatan ini ditulis:** belum ada title/menu Naruto yang terkonfirmasi; RT-001 tetap Open / blocked dan Story Mode belum dijalankan.
 
+
+## DuckStation retest #39012504017 — dependensi EGL, 2026-10-17
+
+Setelah `libopengl0 libglx0 libgl1` dipasang, rerun [#39012504017](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012504017) tidak lagi gagal di `libOpenGL.so.0`, tetapi keluar 127 pada pesan `libEGL.so.1: cannot open shared object file`. Semua capture mencari window dan gagal; tidak ada gambar/OCR, input keyboard tidak pernah dikirim ke game. Artifact hanya 292 byte dan tidak berisi PNG. Ini tetap kegagalan dependency host, bukan hasil kompatibilitas ROM/BIOS.
+
+Commit `5afd32eca0d32ee191de7f2963f74b53aed89448` menambahkan paket `libegl1` untuk run berikutnya [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012694027). Run itu masih pada langkah boot/capture saat diperiksa; periksa exit diagnostics dan artifact aktual. Source-current PCSX [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) masih membangun source. RT-001 tetap Open / blocked.
+
