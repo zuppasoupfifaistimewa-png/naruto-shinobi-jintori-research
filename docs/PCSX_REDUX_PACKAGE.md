@@ -258,3 +258,10 @@ Artefak privat: [#12100266232](https://github.com/zuppasoupfifaistimewa-png/naru
 ## Next CPU probe
 
 Gunakan PCSX-Redux AnyLinux + OpenBIOS fastboot yang sama dan setup Port 1 Analog/remap yang sama. Gunakan klien RSP minimal, tanpa GDB modern, breakpoint, atau GPU/DMA watchpoint. Ambil satu paket RSP `g` per interval untuk membaca PC serta CP0 dalam transaksi yang sama; validasi panjang dan dekode byte sesuai source commit `0c3572c3db75f97542001e453ae80ba8c3f8acba`. Pantau log PCSX selama eksperimen, catat waktu pertama `SYSTEM.CNF`, `BOOT =`, `EXEC:PC0`, dan `Execute !` terlihat, lalu korelasikan dengan kategori PC. Benahi PID/exit label harness. Pilih penyelidikan setelah itu berdasarkan data; jangan mengulang tes backend grafis.
+
+
+## Hasil verifikasi runtime OpenGL — 2026-10-17
+
+Run mandiri [#39049689832](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39049689832) sukses pada runner `ubuntu-26.04`. `glxinfo -B` default dan dengan `LIBGL_ALWAYS_SOFTWARE=1` sama-sama melaporkan vendor Mesa, renderer `llvmpipe (LLVM 21.1.8, 256 bits)`, OpenGL 4.5 Core/Compatibility Profile, Mesa 26.0.8; dua variabel override versi tidak digunakan. Program GLX menguji penciptaan konteks OpenGL compatibility 3.3 dan konteks berhasil; actual version 4.5. Ini membuktikan kemampuan Mesa software GL pada runner untuk versi tersebut, bukan bukti emulator/game sedang merender layar dengan benar.
+
+Pada pin source `0c3572c3db75f97542001e453ae80ba8c3f8acba`, `src/gpu/soft/gpu.cc` menghitung dimensi screenshot dari `m_softDisplay.DisplayEnd - DisplayPosition`; jika register display PS1 belum menetapkan batas, hasil screenshot bisa 0×0 meskipun OpenGL host sehat. `src/core/pcsxlua.cc` mengikat `PCSX.GPU.getVRAM()`, dan source `src/core/pcsxffi.lua` memaparkan wrapper-nya. Gunakan API VRAM sebagai eksperimen pembeda berikutnya, lalu konversi sementara ke gambar diagnostik privat; jangan unggah raw VRAM/memory dump. Jangan mengganti emulator/pin maupun menyimpulkan kebutuhan GPU fisik berdasarkan screenshot 0×0.
