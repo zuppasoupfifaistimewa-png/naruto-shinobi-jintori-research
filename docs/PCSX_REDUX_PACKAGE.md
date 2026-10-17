@@ -226,3 +226,8 @@ The next run [#39015919056](https://github.com/zuppasoupfifaistimewa-png/naruto-
 Run [#39015919056](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015919056) removed `-softgpu` while retaining fastboot OpenBIOS, AnyLinux, the same ROM and Analog controller. Mesa llvmpipe OpenGL 3.3 Compatibility Profile was present. A valid non-root PCSX-Redux window (XID 2097204/`0x200034`) was captured; all frames before/after Return/Cross and at 40/65/90s were uniform black, OCR empty. The log nevertheless reaches SYSTEM.CNF/BOOT/EXEC:PC0/Execute!. No register sampling occurred in the VSync callback. Changing GPU backend alone does not solve display/guest startup.
 Next diagnostic is a few external GDB-remote PC snapshots after entry, not raw instruction logging. RT-001 remains Open / blocked.
 
+
+### External GDB PC snapshot probe started — 2026-10-17
+
+The next private run [#39016277234](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39016277234) keeps the fastboot BIOS/ROM/controller the same and queries PC through the emulator's external GDB server at bounded intervals. It avoids reading CPU registers inside VSync callbacks and emits only PC snapshots, not instruction/operand traces. At the latest check the runner was still installing GDB; no result is available yet.
+
