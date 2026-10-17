@@ -1,5 +1,15 @@
 # Status penelitian
 
+## Hasil final DuckStation probe — 2026-10-17
+
+- Run [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012694027) berhasil membuka jendela setelah paket `libegl1` ditambahkan. Capture 760×498 konsisten menampilkan first-run setup wizard DuckStation, termasuk halaman BIOS.
+- Layar BIOS secara eksplisit menyatakan DuckStation membutuhkan BIOS PS1/PS2; UI mendeteksi satu berkas BIOS tetapi tetap menyatakan tidak ada BIOS yang dapat dipakai. Log hanya menunjukkan BIOS dipetakan dan pencarian Auto BIOS; tidak ada marker disc/executable Naruto. Return bergerak di wizard; Z/Cross tidak terbukti mencapai game. Ini bukan tes kompatibilitas ROM yang tuntas.
+- Artifact privat `12094155047` berisi 8 screenshot dan stdout. Ditinjau lokal untuk membedakan wizard BIOS dari layar game; salinan ZIP/gambar lokal sementara kemudian dibersihkan. Cleanup workspace runner sukses.
+- **Tidak meminta atau mengunduh BIOS retail baru.** Dalam batas hanya memakai OpenBIOS yang sudah tersedia, DuckStation saat ini terblokir pada validasi BIOS; emulator ini tidak dinilai sebagai gagal kompatibilitas Naruto.
+- PCSX-Redux source-current [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) masih membangun source ketika terakhir diperiksa; itu jalur prioritas selanjutnya.
+- **RT-001 tetap Open / blocked.** Belum ada title/menu Naruto terverifikasi dan belum ada input game terverifikasi.
+
+
 ## Pembaruan status terbaru — 2026-10-17, hasil DuckStation setelah perbaikan GL
 
 - Rerun [#39012504017](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012504017) juga menyelesaikan workflow `success`, tetapi DuckStation keluar dengan kode 127 sebelum membuat jendela: `libEGL.so.1: cannot open shared object file`. Tidak ada frame, OCR, input, atau bukti boot BIOS/disc. Artifact 292 byte tidak berisi PNG.
