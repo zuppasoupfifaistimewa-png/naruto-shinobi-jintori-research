@@ -525,3 +525,22 @@ Run [#39011611436](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 
 Workflow privat [#39012200147](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012200147) kini menguji rilis DuckStation resmi, dengan AppImage SHA-256 `c5e6f045f6a242082fcafa9f02d56ad895e233b942728788d232ad0c0c765c24`, ROM yang sama dan OpenBIOS `openbios.bin` dari private release. Harness Xvfb mengambil frame jendela dan mengirim Return/Cross lewat pemetaan keyboard sementara, lalu menyimpan capture sebagai artifact privat 3 hari dan menghapus workspace. Status saat catatan ini dibuat: queued; belum ada hasil boot/menu/input yang bisa disimpulkan. Ini uji kandidat, bukan klaim kompatibilitas.
 
+
+
+## Eksperimen runtime — audit DuckStation dan perbaikan harness, 2026-10-17
+
+### Run #39012200147: hasil aktual
+- ROM lolos pemeriksaan ukuran dan SHA-256; paket DuckStation yang diunduh lolos pemeriksaan SHA-256.
+- Tetapi proses emulator keluar dengan kode 127 sebelum membuat window: `/squashfs-root/AppRun: error while loading shared libraries: libOpenGL.so.0: cannot open shared object file`.
+- Lima percobaan capture menghasilkan `no DuckStation window found`; harness mencatat `INPUT_SEQUENCE_SKIPPED=no visible window`. Jadi Return/Cross tidak benar-benar dikirim ke game, dan hasil ini tidak menguji apakah DuckStation/OpenBIOS kompatibel dengan ROM.
+- Artifact terdaftar (ID `12093451882`) hanya berukuran 293 byte; pemeriksaan ZIP menunjukkan satu file `duckstation.stdout` 183 byte dan nol gambar. Retensi artifact tiga hari, tetapi tidak ada media game yang ditangkap. Cleanup menyatakan ROM, BIOS, emulator, frame dan log pada runner dihapus.
+
+### Koreksi spesifik, bukan pengulangan build identik
+- Workflow `.github/workflows/naruto-duckstation-private-probe.yml` diperbaiki pada commit `058aadea1c664712b62a63cf01fcb3e5598ef047`: menambahkan paket runtime `libopengl0 libglx0 libgl1` untuk library GL yang hilang dan mengubah upload glob menjadi `captures/*.png`, sebab capture dinamai `pre-input-20-sec.png`/ `after-return.png`, bukan `frame-*.png`.
+- Rerun [#39012504017](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012504017) menjadi eksperimen berikutnya. Keberhasilan berikutnya hanya berarti launcher/probe berjalan; title/menu dan input harus dibuktikan terpisah.
+
+### PCSX-Redux source-current
+Run [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) masih pada langkah build source pin `1525a93676dbece9fe70f10ff129aeaa14eec30d` ketika diperiksa. Hasil capture belum tersedia; tunggu sampai run final dan evaluasi marker boot, frame metric/OCR, respons pad, serta cleanup.
+
+**Kesimpulan saat catatan ini ditulis:** belum ada title/menu Naruto yang terkonfirmasi; RT-001 tetap Open / blocked dan Story Mode belum dijalankan.
+
