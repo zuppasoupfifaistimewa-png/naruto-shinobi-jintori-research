@@ -494,3 +494,10 @@ Build AnyLinux sama dan ROM sama:
 Run [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) menguji ulang hanya fastboot OpenBIOS dengan window enumeration generik, log window tree, frame/OCR dan input bertahap. Status pertama yang terlihat: queued; periksa status dan artefak aktual sebelum menyimpulkan.
 **RT-001 Open / blocked.** Jangan mulai Story Mode hingga title/menu terlihat dan kontrol terbukti merespons. Repo Tile Duel tetap tidak boleh diakses.
 
+
+## Handoff — fastboot ditangkap tetapi tetap hitam, 2026-10-17
+
+Run [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) menemukan jendela X11 generic (ID 543, 1280×800), sehingga kegagalan pencarian caption sebelumnya memang selector yang terlalu sempit. Gambar sebelum input, sesudah Return, sesudah Z/Cross dan pada 40/65/90s semuanya uniform black; OCR kosong. Log fastboot mencapai `SYSTEM.CNF`, `BOOT`, `EXEC:PC0(80011448)`, `Execute !`. Tombol sudah dikirim ke window yang ditemukan, tetapi karena layar hitam tidak ada respons gameplay yang bisa diverifikasi. Artifact privat #12094179559 berisi frame/log; cleanup sukses.
+Run lanjutan [#39015290594](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015290594) mengulang fastboot dengan capture yang sama tetapi tanpa `PCSX.getRegisters()` dalam callback VSync. Ini memeriksa hipotesis bahwa pembacaan register yang pernah mengganggu emulator memengaruhi frame loop. Periksa hasil akhir. Jangan anggap entry handoff sebagai title/menu.
+RT-001 tetap Open / blocked.
+
