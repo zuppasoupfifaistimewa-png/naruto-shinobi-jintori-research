@@ -92,3 +92,8 @@ These tests use release assets from the [private research release](https://githu
 Use **AnyLinux as the default cloud runner build** for now because it is smaller, intended for broad Linux compatibility, and observed to reach the same headless executable handoff/controller-protocol result. Keep the 9c6f98a0 AppImage as an A/B fallback, not “latest upstream HEAD”. Use a separate source build for instruction trace. This is a conditional operational choice, not a claim either build displays or plays Naruto better.
 
 OpenGL 3.3 is present in Xvfb/llvmpipe, yet the GUI window captures and GUI-specific boot log do not show a rendered Naruto title or executable entry. The next gate is to inspect the matched GUI A/B rerun. Keep captures and all private media out of Git and public artifacts; cleanup removes per-build temporary GUI logs, frames and profiles from the ephemeral runner.
+
+
+### Current upstream revision cross-check — 2026-10-17
+
+A direct GitHub API query returned upstream main/head commit [41f3196257d0962942b60983201aade951ebbd54](https://github.com/grumpycoders/pcsx-redux/commit/41f3196257d0962942b60983201aade951ebbd54), timestamped 2026-10-17 02:53:17 UTC. Consequently, neither Release AppImage in this A/B test is built from that current commit: AnyLinux uses source 0c3572c3 (2026-10-01), while the asset named “HEAD” embeds source 9c6f98a0 (2026-09-28). The CPU-trace source pin 6b9df482 is from 2026-10-16 and is distinct from both packaged AppImages and from the latest upstream commit observed.
