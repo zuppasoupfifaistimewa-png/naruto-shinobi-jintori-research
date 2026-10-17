@@ -1,5 +1,12 @@
 
 
+## Pembaruan hasil runtime terbaru — 2026-10-18
+
+- GPUDump run penuh [#39079291837](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39079291837) berakhir timeout 90 s / exit 124, meski workflow cleanup success. Loader mencapai `Execute !`; dump valid/not truncated. Traffic sesudah TraceBegin: 268 VSync packets, 0 GP0 packets/words, 1 GP1 word. Pretrace GP0 262153 words merupakan full VRAM upload baseline, bukan rendering gameplay. Raw dump dihapus.
+- Run korelasi berikut [#39079600379](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39079600379) menambahkan bulk CPU RSP register `g`, meringkas PC/CP0 dan timestamp loader marker sambil merekam GPUDump. Status terakhir: pending; periksa hasil final sebelum membuat hipotesis baru.
+- Mesa/GLX terbukti sehat; screenshot emulator tetap hitam, GP0 drawing command belum tampak. Jangan mengubah emulator/pin, jangan mengklaim game/menu/controller berhasil. RT-001 tetap blocked.
+
+
 ## Hasil setelah audit Mesa, screenshot, dan GPU traffic — 2026-10-18
 
 - Mesa host GLX sehat: run [#39049689832](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39049689832) melaporkan llvmpipe GL 4.5 actual dan lulus konteks compatibility 3.3 tanpa override. GPU fisik belum terbukti dibutuhkan.
