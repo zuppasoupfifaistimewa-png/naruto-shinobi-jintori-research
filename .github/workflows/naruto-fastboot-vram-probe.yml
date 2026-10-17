@@ -105,7 +105,7 @@ jobs:
 
           cat > "$WORK/vram-probe.lua" <<'LUA'
           local frame_count = 0
-          local targets = { [1]=true, [60]=true }
+          local targets = { [1]=true, [300]=true }
 
           local function capture_vram(frame)
               local ok, err = pcall(function()
@@ -190,13 +190,13 @@ jobs:
                       frame_count, PCSX.GPU.getGuestFPS()))
               end
           end)
-          print("VRAM_PROBE=UI-thread GPU::Vsync checkpoints=1,60")
+          print("VRAM_PROBE=UI-thread GPU::Vsync checkpoints=1,300 backend=softgpu")
           LUA
           timeout --signal=TERM --kill-after=5s 90s \
             "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/openbios-fastboot.bin" -iso "$WORK/game-run.cue" \
               -exec "$PAD_SETUP" -dofile "$WORK/vram-probe.lua" \
-              -no-debugger -no-gdb -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+              -softgpu -no-debugger -no-gdb -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
               > "$WORK/pcsx.stdout" 2>&1 &
           emu_pid=$!
           set +e
