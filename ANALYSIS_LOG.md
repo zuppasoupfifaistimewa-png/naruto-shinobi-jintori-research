@@ -585,3 +585,10 @@ Workflow [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shin
 Karena pengambilan register CPU melalui `PCSX.getRegisters()` dalam `GPU::Vsync` callback pernah berhubungan dengan pembekuan/segfault pada eksperimen terdahulu, follow-up [#39015290594](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015290594) mempertahankan fastboot/window detection/input sequence namun menghapus callback pembaca register. Hasilnya perlu dibandingkan sebelum memilih diagnosis GPU/rendering vs guest execution.
 RT-001 tetap Open / blocked.
 
+
+## Audit validitas capture — fastboot window probe #39015133027, 2026-10-17
+
+Audit terhadap log aktual menunjukkan `CAPTURE_WINDOW=before-input id=543 name= width=1280 height=800`. Hex ID root yang muncul pada Xvfb adalah `0x21f` (decimal 543); karena selector generik `xdotool search --onlyvisible --name '.*'` cocok dengan root, capture tersebut adalah root Xvfb, bukan window emulator. Karena itu seluruh klaim metrik hitam/OCR kosong dan respons visual input dari run #39015133027 ditarik kembali sebagai **tidak valid**. Ini perbaikan interpretasi penting; jangan teruskan metrik itu ke diagnosis GPU.
+
+Log boot tetap merupakan bukti sah dan menyebut `SYSTEM.CNF`, BOOT, `EXEC:PC0(80011448)`, `Execute !` pada fastboot BIOS. Run #39015290594 mengulang selector yang sama tanpa pembacaan register; jangan tafsirkan gambar sebelum dipastikan bukan root. Workflow diperbaiki pada commit `83173bb10cfbf905a296f59720c0a63c95bc3a32` agar menghitung ID root dan mengecualikannya. Run yang perlu diperiksa berikutnya: [#39015419649](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015419649). Kriteria frame sah: `CAPTURE_WINDOW` mengarah ke XID non-root dan dimensi cocok dengan window aplikasi; jika tidak ada non-root window, jangan capture root sebagai gantinya.
+
