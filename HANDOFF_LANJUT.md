@@ -532,3 +532,14 @@ Kesimpulan: mengganti backend dari `-softgpu` ke OpenGL tidak mengubah frame; be
 
 Run privat [#39016277234](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39016277234) menggunakan fastboot BIOS dan ROM yang sama, tetapi mengambil PC dari GDB remote eksternal, bukan Lua/VSync. Ini untuk membedakan apakah CPU masih berada di loop pasca-entry atau tidak, tanpa trace instruksi mentah. Saat handoff ini ditulis, Actions masih pada step pemasangan tool; belum ada snapshot PC atau capture baru. Periksa status akhir, PC-only summary, frame/OCR, boot markers dan cleanup sebelum menyimpulkan. RT-001 tetap Open / blocked.
 
+
+## Keputusan emulator untuk dilanjutkan — 2026-10-17
+
+Pakai **PCSX-Redux AnyLinux prebuilt + OpenBIOS fastboot** sebagai emulator utama. Ini bukan klaim gameplay berhasil; ini jalur dengan kemajuan loader paling jelas dan tanpa gerbang BIOS tambahan:
+- Fastboot mencatat `SYSTEM.CNF`, `BOOT = cdrom:\\SLPS_035.53;1`, `EXEC:PC0(80011448)`, `Execute !`.
+- Varian chunked belum mencapai entry marker selama window observasi.
+- DuckStation hanya sampai first-run wizard yang meminta BIOS PS1/PS2 yang valid dan tidak menerima OpenBIOS yang tersedia.
+- Run fastboot #39015722771/#39015919056 mengambil jendela PCSX yang benar, namun frame tetap hitam di semua interval dan sebelum/sesudah Return/Cross; OCR kosong, jadi RT-001 belum lolos.
+- GDB follow-up #39016277234 selesai tetapi snapshot PC eksternal unavailable pada t20/t30/t50/t70 (exit 1) dan timeout pada t90 (exit 124); tidak berhasil mengukur perkembangan PC. Log internal GDB dibersihkan sesuai desain, tidak disimpan.
+Langkah berikut: pertahankan PCSX-Redux AnyLinux dan fastboot BIOS; jangan pindah emulator tanpa hasil diskriminatif baru. Fokuskan eksperimen pada penyebab pasca-entry (output GPU/display, CPU forward progress atau interaksi BIOS/firmware) sambil mempertahankan capture non-root. **Jangan mulai menyatakan aturan gameplay sampai title/menu muncul dan tombol memiliki efek nyata.** RT-001 Open / blocked.
+
