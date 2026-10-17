@@ -1,5 +1,13 @@
 # Status penelitian
 
+## Pembaruan runtime terbaru — 2026-10-17
+
+- GUI baseline AnyLinux tetap belum membuktikan title/menu: jendela ada tetapi hitam, log GUI belum menyelesaikan pemuatan executable; jalur headless pada build tersebut mencapai 187 chunk dan `EXEC:PC0(80011448)`.
+- Run privat [#39011515345](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011515345) mengonfirmasi screenshot Lua pada mode `-no-ui` mengembalikan ukuran 0×0; proses mencapai handoff executable tetapi capture tidak valid dan postprocess gagal. Cleanup berhasil, artefak gambar tidak tersedia.
+- Tes source GUI baru [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) memakai source PCSX-Redux pin `1525a93676dbece9fe70f10ff129aeaa14eec30d` (HEAD upstream yang diverifikasi pada saat workflow dibuat), sedang berjalan saat catatan ini ditulis. Source pin CPU-trace sebelumnya 24 commit di belakang.
+- Workflow retensi [#39011611436](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39011611436) sukses menghapus run publik lama `#39001985849` secara spesifik. Fetch API untuk run itu sesudah penghapusan mengembalikan 404.
+- **RT-001 tetap Open / blocked.** Tidak ada bukti visual title/menu Naruto, input terkontrol, atau gameplay Story Mode. Jangan mengklaim Story Mode dimulai atau tamat.
+
 Terakhir dirangkum: 2026-10-17
 
 ## Ringkasan
