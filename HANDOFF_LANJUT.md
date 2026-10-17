@@ -543,3 +543,15 @@ Pakai **PCSX-Redux AnyLinux prebuilt + OpenBIOS fastboot** sebagai emulator utam
 - GDB follow-up #39016277234 selesai tetapi snapshot PC eksternal unavailable pada t20/t30/t50/t70 (exit 1) dan timeout pada t90 (exit 124); tidak berhasil mengukur perkembangan PC. Log internal GDB dibersihkan sesuai desain, tidak disimpan.
 Langkah berikut: pertahankan PCSX-Redux AnyLinux dan fastboot BIOS; jangan pindah emulator tanpa hasil diskriminatif baru. Fokuskan eksperimen pada penyebab pasca-entry (output GPU/display, CPU forward progress atau interaksi BIOS/firmware) sambil mempertahankan capture non-root. **Jangan mulai menyatakan aturan gameplay sampai title/menu muncul dan tombol memiliki efek nyata.** RT-001 Open / blocked.
 
+
+
+## Handoff runtime PCSX-Redux — 2026-10-17 (setelah RSP minimal)
+
+Keputusan tetap PCSX-Redux AnyLinux prebuilt AppImage dari release riset + OpenBIOS fastboot + ROM/CUE privat yang hash-nya diverifikasi di runner. Jangan kembali membandingkan emulator atau mengulangi A/B backend grafis tanpa hipotesis teknis baru.
+
+- Run [#39016277234](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39016277234): GDB multiarch modern tidak cocok dengan subset protokol RSP PCSX-Redux build ini; log mengandung `Unknown GDB command` untuk paket seperti `vCont?`, `qAttached:1` dan lainnya. Jendela PCSX nyata tetap hitam.
+- Run [#39017271906](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39017271906): klien RSP Python minimal berhasil pada port 3333. `qSupported` dan pembacaan register individual sukses; 10 sampel PC berubah (termasuk alamat dalam rentang EXE utama dan BIOS), `BadVAddr=0`, `Cause=0x400`, target running. Tidak cukup untuk menyimpulkan title/game logic berhasil; seluruh frame tetap hitam dan input tidak menghasilkan perubahan visual.
+- Langkah eksperimen terarah berikutnya ialah run [#39017636267](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39017636267), breakpoint entry `0x80011448` dipasang saat pause lalu GPU MMIO/DMA2 write-watchpoint. Periksa status dan log finalnya sebelum menyimpulkan apa pun.
+- Semua artefak capture/diagnostik disimpan sebagai Actions artifact privat berumur 3 hari saja; jangan mengunggah ROM, BIOS, screenshot privat, memory dump atau instruction trace mentah ke repo.
+- **RT-001 tetap Open / blocked** sampai title/menu Naruto dikenali dan input game yang terkontrol menghasilkan perubahan yang dapat diamati. Story Mode belum dimulai/tamat.
+
