@@ -574,3 +574,14 @@ Dengan emulator/AppImage, ROM/CUE, interpreter/software GPU, Port 1 Analog, dan 
 Workflow [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) mengulang fastboot saja dengan identifikasi jendela X11 generik dan tree dump, agar jendela tanpa caption yang dikenali tidak menyebabkan kesimpulan keliru. Periksa hasil akhirnya.
 **Status:** belum ada title/menu Naruto dan input game nyata; RT-001 tetap Open / blocked.
 
+
+## Fastboot GUI dengan window discovery generik — 2026-10-17 (#39015133027)
+
+- Fastboot OpenBIOS + AnyLinux kembali mengenali disc `SLPS-03553`, membaca `SYSTEM.CNF`/BOOT dan mencapai `EXEC:PC0(80011448)`/ `Execute !`.
+- Perbaikan selector X11 berhasil mendeteksi window ID 543 pada 1280×800. Jadi pengujian sebelumnya yang melaporkan no window terlalu sempit dalam pencarian title; sekarang pengambilan pasti berasal dari window aplikasi, bukan root Xvfb.
+- Semua capture (before-input, after Return, after Z/Cross, frame 40/65/90s) mempunyai mean 0/stddev 0/satu warna; OCR kosong. Walaupun input event disampaikan ke app window, hasil visual sama persis hitam, jadi respons input game tidak terbukti.
+- Workflow selesai dan cleanup sukses; artifact privat #12094179559 disimpan sementara.
+
+Karena pengambilan register CPU melalui `PCSX.getRegisters()` dalam `GPU::Vsync` callback pernah berhubungan dengan pembekuan/segfault pada eksperimen terdahulu, follow-up [#39015290594](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015290594) mempertahankan fastboot/window detection/input sequence namun menghapus callback pembaca register. Hasilnya perlu dibandingkan sebelum memilih diagnosis GPU/rendering vs guest execution.
+RT-001 tetap Open / blocked.
+
