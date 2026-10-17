@@ -1,5 +1,12 @@
 
 
+## Temuan VSync-bucket terbaru — 2026-10-18
+
+- Run [#39080239541](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080239541) selesai normal pada VSync 300. GP0 bucket 0–49/50–99/100–199 semuanya nol; GP0 hanya muncul pada bin 200–299 dengan 43 words / 42 decoded commands: 39 state settings, 1 clear-cache, 1 monochrome rectangle, 1 NOP. Tak ada triangle/quad/line/textured sprite family. GP1 16 words, ThrowAway 5; dump mentah dihapus.
+- Di run yang sama, marker Execute ! ~38.01 s; PC sampel masuk EXE t=38.33–40.91, kembali dominan BIOS t=42.20–87.09, kemudian EXE t=88.39–98.63. GP0 only on VSync 200–299, selaras dengan sampel CPU akhir; belum akar sebab final.
+- Langkah berikut: baca window memori secara privat di sekitar PC executable yang teramati dan hitung keluarga instruksi/cabang saja. Jangan masukkan instruction bytes/disassembly mentah ke log atau artifact. RT-001 tetap blocked sampai title/menu dan input terbukti.
+
+
 ## Temuan terbaru CPU/GPU — 2026-10-18
 
 - Run [#39079981314](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39079981314) mencapai VSync 300 dan keluar normal. Dump GPUDump valid: 299 live VSync packets, 43 GP0 words/8 packets, 16 GP1 words/11 packets, 5 ThrowAway. Decoder mengonsumsi semua 43 GP0 words: 39 GPU-state-setting, 1 clear-cache, 1 monochrome rectangle, 1 NOP; tidak ada triangle/quad/line/textured sprite family. Raw dump dihapus.
