@@ -27,7 +27,7 @@ jobs:
         run: |
           set -eu
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils xdotool imagemagick tesseract-ocr tesseract-ocr-jpn
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils xdotool imagemagick tesseract-ocr tesseract-ocr-jpn libopengl0 libglx0 libgl1
 
       - name: Download and verify private game files plus signed-upstream emulator package
         env:
@@ -208,7 +208,7 @@ jobs:
         with:
           name: naruto-duckstation-private-captures
           path: |
-            ${{ runner.temp }}/naruto-duckstation-probe/captures/frame-*.png
+            ${{ runner.temp }}/naruto-duckstation-probe/captures/*.png
             ${{ runner.temp }}/naruto-duckstation-probe/duckstation.stdout
           if-no-files-found: warn
           retention-days: 3
