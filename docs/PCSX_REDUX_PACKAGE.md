@@ -180,3 +180,8 @@ Uji kandidat DuckStation resmi [#39012200147](https://github.com/zuppasoupfifais
 
 Dengan demikian DuckStation belum dapat dinilai lebih baik atau lebih buruk dari PCSX-Redux untuk ROM ini. Source-current PCSX-Redux run [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) masih membangun source di pemeriksaan terakhir; belum ada capture GUI yang terverifikasi. **RT-001 tetap Open / blocked** sampai title/menu dan input kontrol nyata dibuktikan.
 
+
+### DuckStation dependency retest — 2026-10-17
+
+Setelah GL/GLX dipasang, DuckStation run [#39012504017](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012504017) masih tidak bisa memulai proses GUI karena `libEGL.so.1` hilang. Karena tidak ada window dan input tidak dikirim, ini bukan bukti bahwa DuckStation lebih buruk dalam kompatibilitas game. Commit `5afd32eca0d32ee191de7f2963f74b53aed89448` menambahkan `libegl1`; rerun [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012694027) sedang berlangsung. Source-current PCSX build [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) juga belum selesai.
+
