@@ -1,6 +1,6 @@
 # PCSX-Redux package inventory for Naruto research
 
-**Updated:** 2026-10-16  
+**Updated:** 2026-10-18  
 **Scope:** Naruto Shinobi Jintori Research only. No ROM or game data is stored in the repo.
 
 ## Current candidate saved in ChatGPT Library
@@ -302,3 +302,22 @@ Sampler RSP terkoneksi dan mengumpulkan 76 bulk snapshots valid. Timestamp marke
 Run [#39080239541](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080239541) menghasilkan dump penuh yang ter-parse tanpa truncation sampai target VSync 300. Seluruh 43 live GP0 words berada pada bin VSync 200–299; bins 000–049, 050–099 dan 100–199 masing-masing 0 words. Decoder menyatakan 42 commands: GPU-state-setting=39, clear-cache=1, monochrome rectangle=1, NOP=1. Tidak teramati triangle/quad/line/textured sprite family. GP1 16 words, ThrowAway 5. Dump mentah dihapus.
 
 Sampling bulk RSP dengan marker timestamp dari pcsx.log menunjukkan PC berada di executable sekitar t=38.33–40.91s, di BIOS sekitar t=42.20–87.09s, lalu executable lagi t=88.39–98.63s. Kemunculan GP0 pada bin akhir 200–299 sejalan dengan kunjungan PC ke executable di akhir run, meski data ini belum menjelaskan penyebab return ke BIOS. Probe berikutnya menargetkan statistik kontrol-alur pada beberapa alamat executable, tanpa menulis instruction bytes atau disassembly ke artifact.
+
+
+## Validasi ulang OpenGL host (mandiri) — 2026-10-18, Actions #39080977686
+
+Run [#39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686) selesai dengan status success setelah workflow naruto-opengl-diagnostic.yml menambahkan validasi field vendor, renderer, dan versi untuk laporan GLX default serta software. Commit: [cf16162c](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/cf16162c85001d1006fee32725ce01407843ac35).
+
+Bukti log:
+- Xvfb siap pada :99; MESA_GL_VERSION_OVERRIDE dan MESA_GLSL_VERSION_OVERRIDE keduanya tidak disetel.
+- GLX default dan software melaporkan vendor Mesa, renderer llvmpipe (LLVM 21.1.8, 256 bits), Compatibility Profile 4.5 serta Core Profile 4.5; marker GLXINFO_DEFAULT_CONTEXT=PASS dan GLXINFO_SOFTWARE_CONTEXT=PASS.
+- Tes GLX C meminta konteks OpenGL 3.3 compatibility; konteks berhasil dibuat dan diaktifkan. Versi aktual dari glGetString(GL_VERSION) adalah 4.5 (Compatibility Profile) Mesa 26.0.8-1ubuntu0.3; marker OPENGL_33_COMPAT_CONTEXT=PASS dan OPENGL_DIAGNOSTIC_RESULT=PASS.
+
+Interpretasi: lapisan host Xvfb/GLX/Mesa tervalidasi dan dapat membuat konteks compatibility yang diperlukan tanpa override versi. Ini tidak menunjukkan bahwa title/menu Naruto tampil dan tidak membebaskan RT-001 dari kriteria gambar game + respons input.
+
+Audit source persis pada pin PCSX-Redux 0c3572c3db75f97542001e453ae80ba8c3f8acba:
+- [src/core/gpu.h](https://github.com/grumpycoders/pcsx-redux/blob/0c3572c3db75f97542001e453ae80ba8c3f8acba/src/core/gpu.h) mendefinisikan implementasi dasar GPU::takeScreenShot() yang melempar “Not yet implemented”; jangan menganggap API screenshot tersebut tersedia pada setiap backend.
+- [src/gpu/soft/gpu.cc](https://github.com/grumpycoders/pcsx-redux/blob/0c3572c3db75f97542001e453ae80ba8c3f8acba/src/gpu/soft/gpu.cc) mengisi lebar/tinggi screenshot Software GPU dari DisplayEnd - DisplayPosition. Dimensi 0×0 dari jalur ini konsisten dengan rentang display guest yang belum valid, bukan bukti kegagalan GLX.
+- [src/core/pcsxlua.cc](https://github.com/grumpycoders/pcsx-redux/blob/0c3572c3db75f97542001e453ae80ba8c3f8acba/src/core/pcsxlua.cc) meneruskan PCSX.GPU.takeScreenShot() ke backend GPU; binding getVRAM() tersedia untuk tes VRAM terpisah.
+
+Arah lanjutan: jangan mengulang diagnosis GLX atau mewajibkan GPU fisik. Fokus berikutnya adalah kondisi guest (GPU PS1 display/VRAM dan eksekusi CPU) serta pemeriksaan hasil runtime terakhir sebelum mengubah harness. RT-001 tetap Open / blocked.
