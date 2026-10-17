@@ -468,3 +468,8 @@ Workflow privat [#39012200147](https://github.com/zuppasoupfifaistimewa-png/naru
 - Langkah lanjut: cek hasil akhir kedua run dan artefak privat; jika DuckStation membuka window, pastikan title/menu dikenali lalu buktikan kontrol; jika tidak, perbaiki berdasarkan error baru atau pilih eksperimen yang lebih diskriminatif. Jangan menafsirkan conclusion Actions sebagai keberhasilan game.
 - **RT-001 Open / blocked.** Story Mode belum terbukti dimulai atau tamat. Jangan menyentuh repo Tile Duel, meminta ROM upload ulang, atau menaruh ROM/BIOS/screenshot privat/save state/dump memori di repo publik.
 
+
+## Handoff tambahan — DuckStation EGL dependency, 2026-10-17
+
+Rerun DuckStation [#39012504017](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012504017) mengungkap dependensi kedua yang hilang: `libEGL.so.1` (exit 127 sebelum jendela). Tidak ada capture PNG/OCR dan input dilewati; workflow sukses hanya karena skrip memperlakukan ketidaktersediaan window sebagai nonfatal. Commit `5afd32eca0d32ee191de7f2963f74b53aed89448` menambahkan `libegl1`; run [#39012694027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39012694027) masih berjalan pada boot/capture. Source-current PCSX [#39011842708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39011842708) juga masih build. Periksa kedua hasil aktual sebelum memilih metode berikutnya. RT-001 tetap Open / blocked.
+
