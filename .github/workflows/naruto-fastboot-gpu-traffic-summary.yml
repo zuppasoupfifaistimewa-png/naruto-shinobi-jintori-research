@@ -316,7 +316,7 @@ jobs:
                               return f"0x{int.from_bytes(raw,'little'):08x}"
                           pc, status, badvaddr, cause = reg(37), reg(32), reg(35), reg(36)
                           print(f"CPU_BULK_SAMPLE index={idx} elapsed_s={time.monotonic()-start:.2f} pc={pc} cp0_status={status} cp0_badvaddr={badvaddr} cp0_cause={cause} bulk_valid=yes", flush=True)
-                           inspect_code_window(sock, pc)
+                          inspect_code_window(sock, pc)
                       else:
                           print(f"CPU_BULK_SAMPLE index={idx} elapsed_s={time.monotonic()-start:.2f} bulk_valid=no response_len={len(registers)} response_kind={registers[:8]}", flush=True)
                   except Exception as exc:
