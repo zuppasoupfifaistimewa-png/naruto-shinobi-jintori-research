@@ -307,3 +307,9 @@ Kriteria RT-001 belum dipenuhi. Jangan meminta atau mengambil BIOS retail baru. 
 
 **RT-001 tetap Open / blocked.** EXEC handoff tidak menggantikan title/menu yang terlihat; input hanya tervalidasi bila perubahan game dapat diamati.
 
+
+## Fastboot entry dengan capture window generik — 2026-10-17
+
+Run [#39015133027](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015133027) membuktikan bahwa jendela sebenarnya dapat ditemukan bila enumerasi X11 generik digunakan (ID 543). Fastboot BIOS mencapai entry executable, tetapi setiap capture window 1280×800—sebelum/sesudah Return dan Cross serta pada 40/65/90 detik—tetap satu warna hitam; OCR kosong. Input dikirim ke window, tetapi tidak ada perubahan tampilan yang dapat dikaitkan ke game. Jadi RT-001 belum lolos.
+Follow-up [#39015290594](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39015290594) membuang `PCSX.getRegisters()` dari callback VSync untuk menguji kemungkinan instrumentasi membekukan emulator. Bandingkan frame, marker BOOT dan input sebelum menyimpulkan root cause.
+
