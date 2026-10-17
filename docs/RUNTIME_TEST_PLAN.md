@@ -1,3 +1,11 @@
+# Koreksi RSP watchpoint — 2026-10-17
+
+Run [#39017636267](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39017636267) tidak mengonfirmasi entry breakpoint atau GPU watchpoint: parser salah menafsirkan paket console RSP `O...` sebagai stop packet. PC setelah “entry” masih alamat BIOS, bukan `0x80011448`. Run itu tidak boleh dijadikan bukti hit GPU. Koreksi parser pada commit `5055074671acf8cb2f2512182f8484dc2815552d` mengabaikan paket console, mempertahankan paket tersisa, dan hanya menerima stop packet yang sah; entry dinyatakan valid hanya jika PC tepat `0x80011448`. Rerun [#39020810743](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39020810743) sedang berjalan saat addendum ini dicatat.
+
+RT-001 tetap Open / blocked; title/menu, input game, dan Story Mode belum terverifikasi.
+
+---
+
 # Addendum 2026-10-17 — RSP minimal dan GPU-watchpoint
 
 Run [#39017271906](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39017271906) menyelesaikan probe register: PCSX-Redux AnyLinux GDB server default port 3333 menerima klien RSP minimal, negosiasi `qSupported` berhasil, lalu `p25` (PC), `p20` (CP0 Status), `p23` (BadVAddr), `p24` (Cause), dan `?` berhasil dibaca pada 10 sampel. Ini menghindari paket GDB modern yang tidak didukung source build ini. Nilai PC bervariasi di alamat BIOS dan rentang main EXE, tetapi sampel berkala tidak membuktikan jalur inisialisasi selesai. Window nyata PCSX tetap hitam pada semua capture termasuk setelah Return/Cross; RT-001 tidak berubah.
