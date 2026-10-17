@@ -342,3 +342,10 @@ Langkah diagnostik berikut: ambil snapshot PC melalui GDB remote dari luar emula
 
 Workflow [#39016277234](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39016277234) telah dimulai untuk mengambil PC melalui GDB remote eksternal, dengan fastboot BIOS/ROM/controller yang sama dan capture non-root yang sama. Output dibatasi ke snapshot PC; tidak mengambil register dari callback VSync atau merekam instruksi mentah. Saat pemeriksaan terakhir job masih memasang GDB; hasil belum tersedia. Gunakan snapshot PC, boot markers dan frame/OCR bersama-sama untuk menentukan langkah berikut. RT-001 tetap Open / blocked.
 
+
+## Keputusan jalur utama dan GDB probe — 2026-10-17
+
+**Jalur utama berikutnya: PCSX-Redux AnyLinux prebuilt + OpenBIOS fastboot.** Bukti pemilih: log loader mencapai `SYSTEM.CNF`, BOOT, `EXEC:PC0(80011448)`, `Execute !`; varian chunked tertahan sebelum entry dalam window uji; DuckStation terblokir sebelum boot disc karena OpenBIOS tidak diterima wizard BIOS-nya.
+GDB run [#39016277234](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39016277234) selesai sukses dari sisi workflow, tetapi snapshot PC eksternal tidak tersedia (t20/t30/t50/t70 exit 1; t90 exit 124 timeout). Frame jendela aplikasi non-root tetap uniform black di 20/30/50/70 detik dan sesudah input, OCR kosong. Jadi belum ada title/menu atau perubahan state gameplay yang terbukti.
+Eksperimen berikut tetap di fastboot AnyLinux dan menargetkan diagnosis setelah `EXEC:PC0`. Jangan menandai RT-001 lulus sebelum title/menu bisa dikenali dan respons input nyata terlihat. Story Mode belum dimulai.
+
