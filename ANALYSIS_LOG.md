@@ -1,10 +1,19 @@
-## Runtime GPU terbaru yang sah dan probe CPU yang berjalan — 2026-10-18
+## Run CPU/GPU terbaru selesai — 2026-10-18 (Actions #39080987461)
 
-- Run penuh terakhir yang selesai: [#39080721606](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080721606), conclusion success, target VSync 300 / 299 live VSync packets, EMULATOR_EXIT_CODE=0. Setelah TraceBegin tercatat 43 GP0 words dalam 8 packet; parser mengonsumsi 43/43 words sebagai 42 commands: 39 GPU-state-setting, satu clear-cache, satu monochrome rectangle, satu NOP. Seluruh traffic GP0 berada pada bucket VSync 200–299. Tidak ada triangle, quad, line, atau textured-sprite command.
-- Run [#39080926618](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080926618) dibatalkan sebelum target: 172 live VSync packets, GP0 0 words/0 packets pada jendela yang sempat direkam. Artifact yang terunggah hanya ringkasan teks privat 1,348 byte. Hasil parsial itu bukan pengujian 300 VSync yang lengkap.
-- Probe terbaru [#39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461), pada commit [1edab836](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/1edab8366f250a1cb380b8a87e2f5fb2d7baaf62), masih berstatus in_progress pada pemeriksaan terakhir. Revisi mencoba menghasilkan kategori instruksi/cabang dari memory windows tanpa menerbitkan instruction bytes atau disassembly mentah. Jangan menganggap hasil final sebelum Actions selesai.
+Run [#39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461) selesai dengan status success, mencapai target VSync 300 dan keluar normal (EMULATOR_EXIT_CODE=0). Artifact yang diunggah hanya ringkasan teks privat [artifact #12118148960](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461/artifacts/12118148960); raw GPUDump dihapus.
 
-Kesimpulan guest saat ini: meskipun host OpenGL sehat, traffic GPU guest yang terukur sampai VSync 300 nyaris tidak memiliki perintah gambar. Belum ada gambar game, title/menu, ataupun respons input yang terverifikasi. Fokus berikutnya ialah membaca ringkasan code-window dari run #39080987461 dan memutuskan apakah pola eksekusi membantu menjelaskan transisi CPU; jangan kembali ke diagnosis GLX dan jangan mengganti emulator/pin. **RT-001 tetap Open / blocked.**
+GPUDump valid, tidak truncated: 299 live VSync packets; GP0 8 packets / 43 words, GP1 11 packets / 16 words, ThrowAway 5 packets / 5 words. Semua 43 live GP0 words terparse sebagai 42 commands: 39 GPU-state-setting, 1 clear-cache, 1 monochrome rectangle, 1 NOP. Semua GP0 berada pada bucket VSync 200–299; bucket 0–199 nol. Tidak ada triangle, quad, line, atau textured-sprite command. Marker GPU melaporkan guest FPS 0 pada frame 100/200 dan 1.0 pada frame 300.
+
+RSP terhubung; qSupported sukses; 75 pembacaan bulk register valid (index 0–74). Marker EXEC header dan Execute ! muncul sekitar t=36.75 s; PC memasuki executable pada t=37.03 s (0x80050b30) serta t=38.68 s (0x8003c0b4), lalu sampel kembali dominan ke BIOS sekitar t=40.28–87.73 s (0xbfc03bxx/0xbfc075xx–0xbfc076xx), dan masuk ke executable lagi t=89.01–98.62 s (0x80037320/0x800372d8). Status CP0 umumnya 0x40000401, BadVAddr nol, Cause umumnya 0x400; beberapa sampel Cause 0x20 tidak cukup untuk menetapkan exception/penyebab.
+
+Ringkasan kelas instruksi untuk jendela lokal 64-byte (tanpa byte instruksi atau disassembly mentah):
+- 0x80050b00: branch 0, load 2, store 6, immediate arithmetic 4, special arithmetic 4.
+- 0x8003c080: conditional branch 2, forward branch 2, jump 4, load 1, immediate arithmetic 5, special arithmetic 4.
+- 0x80037300: backward branch 1, conditional branch 1, jump 3, load 2, immediate arithmetic 4, special arithmetic 6.
+- 0x800372c0: conditional branch 2, forward branch 2, jump 1, load 3, store 2, immediate arithmetic 3, special arithmetic 5. Tidak terhitung syscall, break, COP0, atau COP2 pada keempat jendela tersebut.
+
+Interpretasi: ini memperkuat bahwa runner GLX bukan hambatan utama; guest mencapai executable sesaat tetapi mengirim hampir tidak ada perintah gambar GP0 sampai VSync 300. Statistik lokal saja belum membuktikan loop tertentu ataupun penyebab kembali ke BIOS. Langkah berikutnya: tingkatkan korelasi transisi PC/branch target secara ringkas dan aman, tetap hindari log byte mesin/disassembly; jangan kembali ke diagnosis GLX dan jangan mengganti emulator/pin. **RT-001 tetap Open / blocked** karena belum ada gambar game, title/menu yang dikenali, atau perubahan state yang dibuktikan berasal dari input controller.
+
 
 ---
 
