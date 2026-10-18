@@ -102,8 +102,8 @@ jobs:
                   f"BIOS_SHA256={sha256.hexdigest()}",
                   f"BIOS_CRC32={crc & 0xffffffff:08X}",
               ])
-          md5_ok = report[-5].split("=", 1)[1] == "b9d9a0286c33dc6b7237bb13cd46fdee"
-          sha1_ok = report[-4].split("=", 1)[1] == "8d5de56a79954f29e9006929ba3fed9b6a418c1d"
+          md5_ok = report[-4].split("=", 1)[1] == "b9d9a0286c33dc6b7237bb13cd46fdee"
+          sha1_ok = report[-3].split("=", 1)[1] == "8d5de56a79954f29e9006929ba3fed9b6a418c1d"
           crc_ok = report[-1].split("=", 1)[1] == "318178BF"
           match = md5_ok and sha1_ok and crc_ok and size == 524288
           report.append("SCPH7502_REFERENCE_IDENTITY=" + ("MATCH" if match else "MISMATCH"))
