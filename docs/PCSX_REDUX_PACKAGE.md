@@ -342,3 +342,9 @@ Pada source pin [src/core/pad.cc](https://github.com/grumpycoders/pcsx-redux/blo
 Pada pin yang sama, [src/core/pcsxlua.cc](https://github.com/grumpycoders/pcsx-redux/blob/0c3572c3db75f97542001e453ae80ba8c3f8acba/src/core/pcsxlua.cc) mengembalikan objek screenshot berisi Slice data, width, height, dan bpp. Dalam run tersebut frame 235/250/265 screenshot 0×0; frame 299 320×240 16-bpp tetapi satu warna RGB555 dan nol piksel non-black dari 76.800. Screenshot raw dan metadata hanya digunakan sementara pada runner dan dihapus sebelum artifact teks dibuat.
 
 Kesimpulan: Mesa/GLX host telah lolos tes mandiri; saat ini guest berada di siklus PC yang berulang dan tidak mengeluarkan perintah gambar yang bermakna. Selanjutnya klasifikasikan tipe branch (tanpa operand mentah) dan identifikasi kondisi runtime yang diuji; jangan menyimpulkan bahwa tombol telah membuat game maju hanya dari pad API readback.
+
+
+## VRAM host-vs-guest cross-check — 2026-10-18
+
+Run [#39082375609](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082375609) memanggil `PCSX.GPU.getVRAM()` pada VSync 299 di pin emulator `0c3572c3db75f97542001e453ae80ba8c3f8acba`. Slice VRAM 1.048.576 byte diproses di runner sebagai 1024×512 word RGB555: hasil hanya 1 warna berbeda dan 0 piksel non-black dari 524.288. Snapshot VRAM sementara dihapus sebelum artifact. Pada frame yang sama, screenshot `takeScreenShot()` 320×240 16-bpp juga hanya 1 warna dan 0 piksel non-black. Ini mendukung diagnosis bahwa guest VRAM/framebuffer belum berisi konten game, bukan bahwa framebuffer berwarna gagal ditampilkan oleh Mesa.
+
