@@ -1,3 +1,17 @@
+## RT-001 terbaru — Start-only sukses, menu stabil, Circle tidak dikirim (2026-10-19)
+
+Run [#39176328030](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39176328030) menyelesaikan 3.000 VSync dengan workflow `success`. Urutan input hanya Start press 2.650/release 2.680. Screenshot aktual menunjukkan title prompt pada 2.650, menu `はじめから` / `ロード` pada 2.670, dan menu yang sama pada 2.999. Tidak ada Circle yang dikirim.
+
+**Acceptance status:**
+1. Start membuka menu pilihan — **PASS**.
+2. `はじめから` berhasil dikonfirmasi — **PENDING** (sengaja tidak diuji pada run Start-only).
+3. Mode Select / Story Mode dimulai — **PENDING**.
+4. Input mengubah state gameplay secara nyata — **PENDING** di luar respons menu Start.
+5. Gameplay/mekanik diuji — **PENDING**.
+6. Story Mode tamat dengan bukti — **PENDING**.
+
+Bukti privat #12155370415 mencakup screenshot dan ringkasan minimum; raw GPU dump/temp screenshot telah dihapus sebelum artifact diunggah. Aset runtime dibersihkan. Jangan menandai Story Mode dimulai atau tamat berdasarkan status workflow.
+
 ## RT-001 — Start-only sesuai instruksi pengguna (2026-10-19)
 
 Setelah run #39149443247 menekan Start kemudian Circle, frame 2.900–2.999 berubah menjadi framebuffer hitam 320×240 seragam; tidak ada Mode Select yang terbaca. Pengguna menegaskan layar target adalah judul Naruto dengan prompt Start dan meminta Start digunakan, bukan Circle.

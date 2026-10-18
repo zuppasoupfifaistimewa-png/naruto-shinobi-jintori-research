@@ -1,3 +1,13 @@
+## Hasil Start-only — run #39176328030, 2026-10-19
+
+**Input:** Start press frame 2.650 dan release frame 2.680; tidak ada Circle. Emulator mencapai 3.000 VSync, exit code 0, cleanup berhasil.
+
+**Bukti aktual:** frame 2.650 = title screen Naruto dengan prompt Start; frame 2.670 = menu biru dengan panah di `はじめから` dan `ロード` di bawah; frame 2.999 = menu yang sama masih tampil. Resolusi checkpoint 640×480. Log `PAD_INJECT` mengonfirmasi readback Start saja, sementara screenshot sebelum/sesudah membuktikan efek visual pada state game.
+
+**Kesimpulan:** Start membuka main menu dan menu bertahan tanpa Circle. Ini membedakan hasil dari run #39149443247 yang mengirim Circle dan kemudian menampilkan framebuffer hitam setelah transisi. Run ini tidak menguji apakah `はじめから` dapat dikonfirmasi; Mode Select dan Story Mode belum terbukti.
+
+Artifact privat #12155370415 memiliki retensi 3 hari. `RAW_GPU_DUMP_REMOVED=1`, `RAW_TEMP_SCREENSHOTS_REMOVED=1`; folder runtime ephemeral dibersihkan. ROM, BIOS, dan dump mentah tidak diunggah.
+
 ## Follow-up terkoreksi — Start saja tanpa Circle (2026-10-19)
 
 Run [#39149443247](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39149443247) menekan Start pada 2.650–2.680 lalu Circle pada 2.750–2.780. Setelah Circle, screenshot frame 2.850 menampilkan fade/transisi; frame 2.900, 2.950, dan 2.999 adalah framebuffer 320×240 hitam seragam. Tidak ada teks Mode Select yang dikenali, sehingga frame hitam tidak cukup untuk menyimpulkan mode atau Story Mode.

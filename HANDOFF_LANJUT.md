@@ -1,3 +1,11 @@
+## Handoff terbaru — Start-only kembali membuktikan menu dan dibiarkan terbuka (2026-10-19)
+
+Run [#39176328030](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39176328030) selesai dan artifact privat #12155370415 diperiksa. Pada frame 2.650 prompt Start terlihat; sesudah Start pulse 2.650–2.680, frame 2.670 menampilkan menu `はじめから` dan `ロード` dengan penunjuk pada pilihan pertama. Frame 2.999 masih menunjukkan menu, sehingga layar tidak berubah ke hitam seperti eksperimen yang menekan Circle setelah Start.
+
+Run ini tidak mengirim Circle sama sekali, sesuai instruksi pengguna. Karena itu hasilnya membuktikan kembali transisi Start→menu, bukan konfirmasi `はじめから`. Belum ada bukti Mode Select, Story Mode, atau gameplay. Pertahankan state menu sebagai checkpoint visual yang diketahui; jangan mengirim tombol konfirmasi lagi sampai aksi selanjutnya memang diminta/diizinkan.
+
+Baseline tidak berubah: retail BIOS SCPH-7502 (EU), disc SLPS03553 / executable SLPS_035.53;1, PCSX-Redux pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, SoftGPU, Port 1 Analog/Auto. Raw assets dan dump tetap privat dan dihapus dari runner sebelum artifact diunggah.
+
 ## Instruksi terbaru — Start saja, jangan tekan Circle (2026-10-19)
 
 Run #39149443247 menekan Start lalu Circle pada satu boot; setelah Circle, framebuffer memudar dan menjadi hitam sejak 2.900 hingga 2.999. Tidak ada tulisan `モードセレクト` yang teridentifikasi. Jangan lanjutkan dengan menebak state layar hitam.

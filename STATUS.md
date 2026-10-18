@@ -1,3 +1,10 @@
+## Hasil terbaru — Start saja membuka menu dan menu bertahan sampai VSync 3000 (2026-10-19)
+
+- Run [#39176328030](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39176328030) selesai `success` pada commit workflow `69ab7544ef7aaea40dc8af4ab12132e9997b3575`. Input sequence hanya Start press frame 2.650 dan release frame 2.680; tidak ada injeksi Circle atau tombol lain.
+- Screenshot framebuffer 640×480 yang diperiksa langsung: frame 2.650 masih menampilkan judul Naruto dan prompt Start; frame 2.670 menunjukkan menu dengan panah di `はじめから` dan pilihan kedua `ロード`; frame 2.999 masih menampilkan menu yang sama. Ini kembali mengonfirmasi Start membuka menu, dan menu tetap stabil selama observasi.
+- Log `PAD_INJECT` menunjukkan Start press/release terbaca oleh API, sedangkan bukti transisi game ialah perubahan visual pada screenshot sesudah Start. Artifact privat [#12155370415](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39176328030/artifacts/12155370415), retensi 3 hari; raw GPU dump/temp screenshot telah dihapus dan aset runtime dibersihkan.
+- Sesuai instruksi pengguna, tidak menekan Circle saat layar judul. Eksperimen ini sengaja berhenti pada menu; `はじめから` belum dikonfirmasi dan Mode Select/Story Mode belum terbukti. Langkah lanjut untuk masuk ke opsi tersebut memerlukan aksi konfirmasi terpisah setelah layar menu dikenali.
+
 ## Instruksi terbaru — gunakan Start saja, tanpa Circle (2026-10-19)
 
 - Pengguna mengarahkan bahwa layar yang ingin diuji adalah judul Naruto dengan prompt Start dan input yang dipakai harus **Start, bukan Circle**.
