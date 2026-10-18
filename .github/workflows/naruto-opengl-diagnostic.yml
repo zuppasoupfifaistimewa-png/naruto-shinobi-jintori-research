@@ -205,6 +205,31 @@ jobs:
           cc "$WORK/glx33-compat.c" -o "$WORK/glx33-compat" -lGL -lX11
           echo "=== EXPLICIT_GL_CONTEXT_TEST_BEGIN ==="
           env -u MESA_GL_VERSION_OVERRIDE -u MESA_GLSL_VERSION_OVERRIDE LIBGL_ALWAYS_SOFTWARE=1 \
-            "$WORK/glx33-compat"
+            "$WORK/glx33-compat" | tee "$WORK/explicit-gl-context.txt"
           echo "=== EXPLICIT_GL_CONTEXT_TEST_END ==="
-          echo "OPENGL_DIAGNOSTIC_RESULT=PASS"
+
+          # Keep a small text-only artifact to preserve exact, inspectable host-GL evidence.
+          # No ROM, BIOS, screenshots, VRAM, memory dumps, or emulator traces are included.
+          {
+            echo "RUNNER_IMAGE=ubuntu-26.04"
+            echo "MESA_GL_VERSION_OVERRIDE=${MESA_GL_VERSION_OVERRIDE-<unset>}"
+            echo "MESA_GLSL_VERSION_OVERRIDE=${MESA_GLSL_VERSION_OVERRIDE-<unset>}"
+            dpkg-query -W -f='${binary:Package}=${Version}\n' mesa-utils libgl1-mesa-dri libglx-mesa0 xvfb
+            echo "=== DEFAULT_CONTEXT ==="
+            grep -E '^OpenGL (vendor|renderer|version) string:' "$WORK/glxinfo-default.txt"
+            echo "=== SOFTWARE_CONTEXT ==="
+            grep -E '^OpenGL (vendor|renderer|version) string:' "$WORK/glxinfo-software.txt"
+            echo "=== EXPLICIT_COMPATIBILITY_CONTEXT ==="
+            cat "$WORK/explicit-gl-context.txt"
+            echo "OPENGL_DIAGNOSTIC_RESULT=PASS"
+          } > "$WORK/diagnostic-summary.txt"
+          cat "$WORK/diagnostic-summary.txt"
+
+      - name: Upload safe text-only OpenGL diagnostic report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-opengl-diagnostic-report
+          path: ${{ runner.temp }}/naruto-opengl-diagnostic/diagnostic-summary.txt
+          if-no-files-found: ignore
+          retention-days: 3
