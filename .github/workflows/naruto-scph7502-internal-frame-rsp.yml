@@ -24,7 +24,7 @@ jobs:
         run: |
           set -eu
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils xdotool imagemagick tesseract-ocr tesseract-ocr-jpn python3 libgl1-mesa-dri mesa-utils
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils xdotool imagemagick tesseract-ocr tesseract-ocr-jpn python3 python3-pil libgl1-mesa-dri mesa-utils
 
       - name: Download and verify private BIOS, game disc and pinned PCSX-Redux
         env:
@@ -116,20 +116,28 @@ jobs:
           PCSX.SIO0.slots[1].pads[1].map()
           print("PAD_SETUP=Port 1 Analog connected/remapped")
           local frames = 0
-          local targets = {600,1800,3000,4200,5400}
+          local targets = {300,600,1800,3000,4200,5400}
           local saved = {}
           PCSX.Events.createEventListener('GPU::Vsync', function()
             frames = frames + 1
+            if frames == 1 then print("INTERNAL_VSYNC=seen") end
+            if frames == 300 then print("INTERNAL_VSYNC_PROGRESS frame=300") end
             for _,target in ipairs(targets) do
               if frames >= target and not saved[target] then
                 saved[target] = true
-                local ss = PCSX.GPU.takeScreenShot()
-                local path = "$WORK/internal-raw/frame-" .. tostring(target) .. ".raw"
-                local f = Support.File.open(path, 'TRUNCATE')
-                local written = f:write(ss.data)
-                f:close()
-                print(string.format("INTERNAL_CAPTURE frame=%d width=%d height=%d bpp=%d bytes=%d written=%d file=frame-%d.raw",
-                  frames, ss.width, ss.height, ss.bpp, ss.data.size, written, target))
+                local ok, err = pcall(function()
+                  local ss = PCSX.GPU.takeScreenShot()
+                  local nbytes = ss.data:size()
+                  local path = "$WORK/internal-raw/frame-" .. tostring(target) .. ".raw"
+                  local f = Support.File.open(path, 'TRUNCATE')
+                  f:writeMoveSlice(ss.data)
+                  f:close()
+                  print(string.format("INTERNAL_CAPTURE frame=%d width=%d height=%d bpp=%d bytes=%d written=%d file=frame-%d.raw",
+                    frames, ss.width, ss.height, ss.bpp, nbytes, nbytes, target))
+                end)
+                if not ok then
+                  print("INTERNAL_CAPTURE_ERROR target=" .. tostring(target) .. " detail=" .. tostring(err))
+                end
               end
             end
           end)
@@ -173,6 +181,7 @@ jobs:
               if pc is None: return "unavailable"
               if 0xbfc00000 <= pc <= 0xbfc7ffff or 0x9fc00000 <= pc <= 0x9fc7ffff: return "BIOS_ROM"
               if 0x80037000 <= pc <= 0x80038000: return "KNOWN_INVESTIGATED_RAM_BLOCK"
+              if 0x80010000 <= pc < 0x8006d800: return "MAIN_EXE_REGION"
               if 0x80000000 <= pc <= 0x807fffff or 0xa0000000 <= pc <= 0xa07fffff: return "RAM_OTHER"
               return "OTHER"
           s=None
@@ -196,13 +205,26 @@ jobs:
           finally: s.close()
           PY
           rsp_pid=$!
+          find_emulator_window() {
+            local root_hex
+            root_hex="$(xwininfo -root 2>/dev/null | awk '/Window id:/{print $4; exit}')"
+            [ -n "$root_hex" ] || return 1
+            xwininfo -root -tree 2>/dev/null | awk -v root="$root_hex" '
+              $1 ~ /^0x[[:xdigit:]]+$/ && $1 != root && /[Pp][Cc][Ss][Xx]|[Rr][Ee][Dd][Uu][Xx]/ {print $1; exit}'
+          }
           capture_window() {
             label="$1"
-            wid="$(xdotool search --onlyvisible --name 'PCSX-Redux|PCSX|pcsx|Redux|redux' 2>/dev/null | head -n 1 || true)"
-            if [ -z "$wid" ]; then echo "WINDOW_CAPTURE=$label unavailable"; return 1; fi
+            wid="$(find_emulator_window || true)"
+            if [ -z "$wid" ]; then
+              echo "WINDOW_CAPTURE=$label unavailable"
+              xwininfo -root -tree 2>/dev/null | grep -Ei 'PCSX|Redux' | head -5 | sed 's/^/WINDOW_TREE_HINT=/'
+              return 1
+            fi
+            root_hex="$(xwininfo -root 2>/dev/null | awk '/Window id:/{print $4; exit}')"
+            if [ "$wid" = "$root_hex" ]; then echo "WINDOW_CAPTURE=$label rejected_root"; return 1; fi
             import -window "$wid" "$WORK/captures/window-$label.png"
-            identify -format "WINDOW_FRAME label=%f width=%w height=%h colors=%k mean=%[mean] stddev=%[standard-deviation]\n" "$WORK/captures/window-$label.png"
-            echo "WINDOW_CAPTURE=$label saved"
+            identify -format "WINDOW_FRAME label=%f width=%w height=%h colors=%k mean=%[mean] stddev=%[standard-deviation]\\n" "$WORK/captures/window-$label.png"
+            echo "WINDOW_CAPTURE=$label saved xid=$wid"
           }
           sleep 12
           capture_window window-12s || true
@@ -210,7 +232,7 @@ jobs:
           capture_window window-30s || true
           sleep 20
           capture_window window-50s || true
-          if wid="$(xdotool search --onlyvisible --name 'PCSX-Redux|PCSX|pcsx|Redux|redux' 2>/dev/null | head -n 1 || true)" && [ -n "$wid" ]; then
+          if wid="$(find_emulator_window || true)" && [ -n "$wid" ]; then
             timeout 2s xdotool windowfocus "$wid" 2>/dev/null || true
             echo "INPUT_TEST_BEGIN checkpoint=around_50s keys=Return,Z"
             xdotool key --clearmodifiers Return
@@ -232,7 +254,7 @@ jobs:
           echo "EMU_EXIT=$emu_rc (124=observation cap)"
           echo "RSP_EXIT=$rsp_rc"
           echo "RUNTIME_MARKERS_BEGIN"
-          grep -E 'Loaded BIOS:|Known BIOS detected|OpenBIOS detected|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|INTERNAL_CAPTURE|PAD_SETUP=|ResetCallback|unknown GPU data word|FATAL|Exception|ERROR|Error|Failed|failed' "$WORK/pcsx.stdout" "$WORK/pcsx.log" 2>/dev/null | tail -100 || true
+          grep -E 'Loaded BIOS:|Known BIOS detected|OpenBIOS detected|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|INTERNAL_CAPTURE|INTERNAL_VSYNC|INTERNAL_CAPTURE_ERROR|WINDOW_CAPTURE|PAD_SETUP=|ResetCallback|unknown GPU data word|FATAL|Exception|ERROR|Error|Failed|failed' "$WORK/pcsx.stdout" "$WORK/pcsx.log" 2>/dev/null | tail -100 || true
           cat "$WORK/rsp-safe-summary.txt" || true
           echo "RUNTIME_MARKERS_END"
           python3 - <<'PY'
@@ -271,6 +293,35 @@ jobs:
               im.save(out,optimize=True)
               print(f"PNG_CONVERSION=PASS frame={frame} width={width} height={height} bpp={bpp} file={out.name}")
           PY
+          converted="$(find "$WORK/captures" -maxdepth 1 -name 'internal-frame-*.png' -type f | wc -l)"
+          echo "INTERNAL_PNG_COUNT=$converted"
+          if ! grep -q '^INTERNAL_VSYNC=seen
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-scph7502-internal-frame-rsp-private
+          path: |
+            ${{ runner.temp }}/naruto-scph7502-internal-rsp/captures/*.png
+            ${{ runner.temp }}/naruto-scph7502-internal-rsp/pcsx.stdout
+            ${{ runner.temp }}/naruto-scph7502-internal-rsp/pcsx.log
+            ${{ runner.temp }}/naruto-scph7502-internal-rsp/rsp-safe-summary.txt
+          if-no-files-found: warn
+          retention-days: 3
+
+      - name: Remove all private media and raw framebuffer captures
+        if: always()
+        run: |
+          if [ -n "${WORK:-}" ] && [ -d "$WORK" ]; then rm -rf "$WORK"; fi
+          echo "Cleanup complete; no BIOS, ROM, raw framebuffer, save state, memory dump or instruction trace was retained."
+ "$WORK/pcsx.stdout"; then
+            echo "::error::No GPU::Vsync callback was observed; internal capture has not been proven."
+            exit 1
+          fi
+          if [ "$converted" -eq 0 ]; then
+            echo "::error::No internal SoftGPU screenshot was converted; inspect INTERNAL_CAPTURE_ERROR and frame metadata."
+            exit 1
+          fi
+          echo "INTERNAL_FRAME_CAPTURE_RESULT=PASS count=$converted"
 
       - name: Upload private screenshot and safe runtime evidence for 3 days
         if: always()
