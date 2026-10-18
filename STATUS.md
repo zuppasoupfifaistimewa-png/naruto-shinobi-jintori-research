@@ -1,3 +1,17 @@
+## Hasil RSP memory-window control-flow summary — 2026-10-18 (Actions #39080987461)
+
+Run [#39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461) menyelesaikan target VSync 300 dan semua cleanup dengan conclusion workflow `success`; emulator exit code 0. RSP tersambung (`qSupported=ok`) dan mengumpulkan 75 sampel bulk register valid sampai sekitar t=98.62s. Marker yang dibaca dari `pcsx.log`: SYSTEM.CNF ~4.66s, BOOT path ~5.95s, EXEC header dan `Execute !` ~36.75s. PC kembali dominan di BIOS setelah ~t=40s sampai ~t=87.73s, lalu muncul lagi di executable mulai ~t=89.01s.
+
+Pembacaan empat jendela memori 64-byte di alamat executable berhasil, tetapi artifact hanya berisi kategori/count; tidak ada instruksi mentah, operand, atau dump memori:
+- `0x80050b00`: 0 conditional branch, 0 jump, 2 load, 6 store, 4 immediate arithmetic, 4 special arithmetic.
+- `0x8003c080`: 2 conditional branch (keduanya forward), 4 jump, 1 load, 5 immediate arithmetic, 4 special arithmetic.
+- `0x80037300`: 1 conditional branch dengan satu backward-branch pada jendela 64-byte, 3 jump, 2 load, 4 immediate arithmetic, 6 special arithmetic.
+- `0x800372c0`: 2 conditional branch (keduanya forward), 1 jump, 3 load, 2 store, 3 immediate arithmetic, 5 special arithmetic.
+Tidak ditemukan kategori syscall/break/COP0/COP2 dalam keempat jendela ini. Ini statistik isi jendela statis, bukan bukti bahwa branch tertentu pasti dieksekusi. Namun PC runtime mengulang `0x80037320` dan `0x800372d8` di akhir pengamatan, sehingga area `0x800372c0–0x8003733f` layak untuk sampling PC yang lebih rapat.
+
+GPUDump tetap lengkap (299 VSync live packets, 43 GP0 words; semua GP0 hanya pada bin VSync 200–299: 39 GPU-state-setting, 1 clear-cache, 1 monochrome rectangle, 1 NOP; tidak ada primitive triangle/quad/line/textured sprite). Screenshot Software GPU 320×240 dan capture window X11 1280×800 tetap hitam. Dump mentah dihapus; artifact privat hanya ringkasan/log.
+
+Langkah selanjutnya: ubah sampler RSP agar mengurangi interval jeda hanya ketika PC berada di `0x800372c0–0x800373ff` (tetap simpan hanya PC/CP0 dan histogram kategori) untuk menguji apakah PC mengulang pola yang konsisten; jangan menambah trace instruksi mentah. **RT-001 tetap Open / blocked**.
 ## Run CPU/GPU terbaru selesai — 2026-10-18 (Actions #39080987461)
 
 Run [#39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461) selesai dengan status success, mencapai target VSync 300 dan keluar normal (EMULATOR_EXIT_CODE=0). Artifact yang diunggah hanya ringkasan teks privat [artifact #12118148960](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461/artifacts/12118148960); raw GPUDump dihapus.
