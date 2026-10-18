@@ -109,7 +109,7 @@ jobs:
           echo "ROM/CUE/emulator hashes verified; BIOS=SCPH-7502"
           echo "EMULATOR_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
 
-      - name: Start at title then confirm はじめから with Circle; observe until VSync 3000
+      - name: Press Start only at Naruto title prompt; observe until VSync 3000
         env:
           GPU_BACKEND_PROBE: ${{ contains(github.event.head_commit.message, '[openglgpu-probe]') }}
         shell: bash
@@ -158,12 +158,10 @@ jobs:
           local pad = PCSX.SIO0.slots[1].pads[1]
           local buttons = PCSX.CONSTS.PAD.BUTTON
           local input_sequence = {
-              -- Each Actions run cold-boots the game; reproduce Start -> menu in this same session.
+              -- User explicitly requested Start only while the Naruto title prompt is shown.
+              -- Do not press Circle or any second button; leave the main menu open if it appears.
               {frame=2650, action="press", button=buttons.START, name="START"},
               {frame=2680, action="release", button=buttons.START, name="START"},
-              -- Previous run showed the arrow on はじめから after Start; confirm with Circle only after this state is reached.
-              {frame=2750, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=2780, action="release", button=buttons.CIRCLE, name="CIRCLE"},
           }
           local input_index = 1
           local capture_targets = { [299]=true, [450]=true, [600]=true, [750]=true, [899]=true, [1100]=true, [1300]=true, [1499]=true, [1600]=true, [1700]=true, [1799]=true, [1900]=true, [2000]=true, [2099]=true, [2199]=true, [2299]=true, [2399]=true, [2499]=true, [2599]=true, [2624]=true, [2649]=true, [2650]=true, [2660]=true, [2670]=true, [2680]=true, [2690]=true, [2700]=true, [2720]=true, [2749]=true, [2750]=true, [2760]=true, [2770]=true, [2780]=true, [2790]=true, [2800]=true, [2850]=true, [2900]=true, [2950]=true, [2999]=true }

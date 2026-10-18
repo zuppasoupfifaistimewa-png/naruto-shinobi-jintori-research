@@ -1,3 +1,11 @@
+## Instruksi terbaru — gunakan Start saja, tanpa Circle (2026-10-19)
+
+- Pengguna mengarahkan bahwa layar yang ingin diuji adalah judul Naruto dengan prompt Start dan input yang dipakai harus **Start, bukan Circle**.
+- Run #39149443247 mengirim Start pada 2.650–2.680 lalu Circle pada 2.750–2.780; sesudah Circle, menu menghilang/fade lalu framebuffer hitam pada 2.900–2.999 (320×240, satu warna). Tidak ada tulisan Mode Select yang dapat dibaca, jadi tidak boleh disebut Story Mode atau Mode Select.
+- Workflow berikutnya dikoreksi menjadi Start saja: tekan Start pada frame 2.650, release 2.680, tanpa Circle atau tombol lain. Checkpoint sekitar 2.649–2.800 dipakai untuk memastikan transisi dari prompt ke menu, lalu amati sampai VSync 3.000.
+- Start→menu sebelumnya sudah pernah terlihat pada #39145309203; eksperimen Start-only ini mengikuti instruksi pengguna dan memastikan layar dibiarkan di menu tanpa mengonfirmasi pilihan.
+- RT-001: layar judul terkonfirmasi; Start membuka menu terverifikasi pada run terdahulu; pemilihan `はじめから`, Mode Select, Story Mode, gameplay, dan tamat belum terbukti. Artifact harus tetap berisi screenshot/summary minimum; raw dump dan aset privat dihapus sebelum upload.
+
 ## Terbaru — Circle saja tidak mengonfirmasi menu karena run dimulai ulang (2026-10-18)
 
 - Run [#39147391100](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39147391100) selesai `success` dan mencapai 3.000 VSync pada commit `5f89389d3af1f3f6254057ae8b0162667bd5eaf0`. Runtime tetap memakai retail BIOS SCPH-7502 (EU), disc `SLPS03553`, executable `SLPS_035.53;1`, PCSX-Redux pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, SoftGPU, dan Port 1 Analog/Auto.

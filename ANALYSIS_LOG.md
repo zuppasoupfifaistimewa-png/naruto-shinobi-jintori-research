@@ -1,3 +1,9 @@
+## Follow-up terkoreksi — Start saja tanpa Circle (2026-10-19)
+
+Run [#39149443247](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39149443247) menekan Start pada 2.650–2.680 lalu Circle pada 2.750–2.780. Setelah Circle, screenshot frame 2.850 menampilkan fade/transisi; frame 2.900, 2.950, dan 2.999 adalah framebuffer 320×240 hitam seragam. Tidak ada teks Mode Select yang dikenali, sehingga frame hitam tidak cukup untuk menyimpulkan mode atau Story Mode.
+
+Arahan pengguna: **gunakan tombol Start, jangan Circle**, karena state target adalah title screen yang menampilkan prompt Start. Workflow berikutnya menekan Start saja pada 2.650–2.680, tanpa tombol susulan, lalu mencatat apakah menu tetap stabil sampai 3.000 VSync. Ini sengaja membiarkan menu terbuka agar transisi tidak terpengaruh input konfirmasi yang belum diminta. Tetap gunakan baseline runtime yang sama dan jangan unggah raw ROM/BIOS/dump.
+
 ## Hasil Run #39147391100 — Circle dikirim saat title screen (2026-10-18)
 
 Run [#39147391100](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39147391100) pada commit `5f89389d3af1f3f6254057ae8b0162667bd5eaf0` berhasil mencapai VSync 3.000 dan menyelesaikan cleanup. Konfigurasi emulator/BIOS/ROM sama dengan run sebelumnya, tetapi input sequence berisi Circle saja (press 2750, release 2780).

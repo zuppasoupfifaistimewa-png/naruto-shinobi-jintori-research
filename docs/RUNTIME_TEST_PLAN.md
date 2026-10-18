@@ -1,3 +1,11 @@
+## RT-001 — Start-only sesuai instruksi pengguna (2026-10-19)
+
+Setelah run #39149443247 menekan Start kemudian Circle, frame 2.900–2.999 berubah menjadi framebuffer hitam 320×240 seragam; tidak ada Mode Select yang terbaca. Pengguna menegaskan layar target adalah judul Naruto dengan prompt Start dan meminta Start digunakan, bukan Circle.
+
+**Eksperimen berikutnya:** hapus semua injeksi Circle. Tekan Start frame 2.650, lepaskan frame 2.680, lalu observasi sampai frame 3.000. Capture rapat sebelum/sesudah input. Jangan menekan tombol tambahan walau menu muncul; langkah ini khusus untuk menjaga state menu terbuka dan mengambil bukti stabil.
+
+Acceptance yang sudah terverifikasi tetap hanya: title screen tercapai dan pada run #39145309203 Start menyebabkan menu utama tampak. Belum terbukti bahwa `はじめから` telah dikonfirmasi, Mode Select / Story Mode muncul, gameplay berjalan, atau Story Mode tamat.
+
 ## RT-001 follow-up — Start dan Circle perlu diuji dalam satu boot (2026-10-18)
 
 Run [#39147391100](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39147391100) menyelesaikan 3.000 VSync dengan workflow `success`, tetapi tidak mengonfirmasi pilihan menu. Screenshot aktual frame 2.749/2.750 masih menunjukkan title prompt, dan layar tidak berubah ke menu atau Mode Select sampai frame 2.999. Penyebabnya: workflow melakukan boot bersih di setiap run; eksperimen ini hanya menyuntik Circle pada frame 2.750 tanpa mengulangi Start.

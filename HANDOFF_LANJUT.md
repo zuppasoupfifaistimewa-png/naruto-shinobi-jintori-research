@@ -1,3 +1,9 @@
+## Instruksi terbaru — Start saja, jangan tekan Circle (2026-10-19)
+
+Run #39149443247 menekan Start lalu Circle pada satu boot; setelah Circle, framebuffer memudar dan menjadi hitam sejak 2.900 hingga 2.999. Tidak ada tulisan `モードセレクト` yang teridentifikasi. Jangan lanjutkan dengan menebak state layar hitam.
+
+Instruksi pengguna sekarang eksplisit: layar judul dengan prompt Start → gunakan **Start saja, tanpa Circle**. Workflow dikembalikan ke input sequence tunggal Start press frame 2.650/release frame 2.680; semua variabel runtime tetap (SCPH-7502 EU, SLPS03553, PCSX-Redux pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, SoftGPU, Port 1 Analog/Auto). Ambil checkpoint rapat di sekitar input dan amati menu sampai VSync 3.000. Jangan mengirim tombol kedua setelah menu muncul.
+
 ## Handoff terbaru — gabungkan Start dan Circle dalam satu sesi boot (2026-10-18)
 
 Run [#39147391100](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39147391100) telah selesai workflow-success, namun **tidak mengonfirmasi** `はじめから`. Frame 2.750 dan checkpoint berikutnya memperlihatkan title screen/prompt Start, bukan kotak menu. Penyebabnya diketahui dari skrip eksperimen: setiap run melakukan cold boot, dan input sequence run ini hanya Circle pada 2.750–2.780, tanpa Start yang membuka menu pada run #39145309203.
