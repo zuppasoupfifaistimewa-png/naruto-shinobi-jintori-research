@@ -1,3 +1,11 @@
+## Terbaru — layar judul Naruto terkonfirmasi (2026-10-18)
+
+- Run [#39122631591](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39122631591) selesai dengan pipeline success dan menghentikan emulator sesuai target VSync 3.000. BIOS retail SCPH-7502 (EU), disc SLPS03553, dan executable SLPS_035.53;1 terdeteksi. Konfigurasi controller yang tercatat: connected=true, device_type=Analog, input_type=Auto.
+- Bukti visual privat: frame 2.399 = latar berpola/copyright; frame 2.499 = ilustrasi karakter/copyright; frame 2.599 = layar judul Naruto dengan logo dan prompt Jepang STARTボタンをおせってはよ! (meminta pemain menekan Start). Prompt terlihat pada frame 2.699, 2.799, dan 2.899; pada frame 2.999 prompt tidak tampak, mungkin karena berkedip, tetapi ilustrasi judul masih sama dan belum ada menu pilihan.
+- Start pada run ini dikirim pada frame 2.500, sedikit sebelum prompt judul terlihat di checkpoint 2.599. Circle/O ditekan pada frame 2.700, 2.850, 2.950, padahal prompt meminta Start. Karena itu, menu belum terbukti terbuka. Log PAD_INJECT status=PASS hanya membuktikan override API emulator terbaca kembali, bukan bahwa game memproses tombol.
+- Langkah berikut: ulangi dengan BIOS/ROM/emulator/pad yang sama, tetapi kirim Start sesudah prompt title-screen muncul—misalnya frame 2.650—dan ambil checkpoint visual sering sesudahnya. Jika menu dengan はじめから (From the beginning), ロード (Load), dan コンティニュー (Continue) tampak, tekan Circle/O untuk memilih はじめから. Identifikasi mode-select sebelum mencoba masuk Story Mode.
+- Status: title screen tercapai; start menu, mode select, dan Story Mode belum terbukti; Story Mode belum tamat. Raw ROM/BIOS/dump tidak diunggah; raw dump dibersihkan sebelum upload ringkasan dan checkpoint privat berumur singkat.
+
 ## Hasil terbaru — peringatan berubah menjadi layar hak cipta/latar (2026-10-18)
 
 - Run [#39120694338](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39120694338) selesai dengan pipeline `success`, mencapai 2.400 VSync; BIOS retail **SCPH-7502 (EU)** dan executable `SLPS_035.53;1` terdeteksi. Konfigurasi pad efektif dicatat `connected=true`, `device_type=Analog`, `input_type=Auto`.
