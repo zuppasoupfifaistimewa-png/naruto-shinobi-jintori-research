@@ -1,3 +1,7 @@
+## Aktif: klasifikasi wilayah load operand — 2026-10-18
+
+Run [#39084130154](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39084130154) pada commit [fbe766cf](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/fbe766cffdb4ee72c3765364e96a8a01b6678ec6) sudah melewati setup, instalasi, dan verifikasi aset; status saat dicek 00:50:22 UTC masih in_progress di langkah emulator. Probe ini menghitung kategori address region (RAM, scratchpad, BIOS, MMIO/I/O, expansion, unknown) untuk base+offset dari load yang terhubung ke operand BNE; hanya label wilayah dan hitungan yang boleh masuk artifact. Tidak ada effective address individual/register value yang diekspor. Hasil final belum tersedia; jangan menafsirkan status in_progress sebagai hasil.
+
 ## Follow-up source-category probe — 2026-10-18, run #39083850904
 
 Run [#39083850904](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083850904) sukses sampai VSync 300 dan mengeluarkan artifact teks privat [#12120191058](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083850904/artifacts/12120191058). Perbaikan [commit 8f75c3d5](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/8f75c3d558afd2261fb644e0fa192d5972ff3236) membuat CPU sampler flush statistik saat menerima SIGTERM; probe sebelumnya #39083701297 menyelesaikan emulator namun summary branch tidak sempat tertulis.
