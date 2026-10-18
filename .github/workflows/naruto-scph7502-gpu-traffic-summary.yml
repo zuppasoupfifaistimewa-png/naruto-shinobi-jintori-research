@@ -17,7 +17,7 @@ concurrency:
 jobs:
   gpu-traffic-summary:
     runs-on: ubuntu-26.04
-    timeout-minutes: 18
+    timeout-minutes: 20
     steps:
       - name: Install private runtime requirements
         shell: bash
@@ -109,14 +109,14 @@ jobs:
           echo "ROM/CUE/emulator hashes verified; BIOS=SCPH-7502"
           echo "EMULATOR_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
 
-      - name: Record emulated GPU traffic after Start input until VSync 2100
+      - name: Record emulated GPU traffic after visible advisory input until VSync 2400
         env:
           GPU_BACKEND_PROBE: ${{ contains(github.event.head_commit.message, '[openglgpu-probe]') }}
         shell: bash
         run: |
           set -euo pipefail
           GPU_BACKEND_FLAG="-softgpu"
-          GPU_BACKEND_TIMEOUT="900s"
+          GPU_BACKEND_TIMEOUT="1020s"
           if [[ "${GPU_BACKEND_PROBE:-false}" == "true" ]]; then
             GPU_BACKEND_FLAG="-openglgpu"
             GPU_BACKEND_TIMEOUT="170s"
@@ -146,21 +146,25 @@ jobs:
           PCSX.settings.pads[1].DeviceType = 'Analog'
           PCSX.settings.pads[1].Connected = true
           PCSX.SIO0.slots[1].pads[1].map()
-          print("PAD_SETUP=Port 1 Analog connected/remapped")
+          print(string.format("PAD_SETUP=Port 1 connected=%s device_type=%s input_type=%s",
+              tostring(PCSX.settings.pads[1].Connected),
+              tostring(PCSX.settings.pads[1].DeviceType),
+              tostring(PCSX.settings.pads[1].PadType)))
           LUA
           )
           cat > "$WORK/gpu-traffic.lua" <<'LUA'
           local frame_count = 0
-          local stop_frame = 2100
+          local stop_frame = 2400
           local pad = PCSX.SIO0.slots[1].pads[1]
           local buttons = PCSX.CONSTS.PAD.BUTTON
           local input_sequence = {
-              -- Frame 1600 shows the health advisory; test Start only after it is visible.
-              {frame=1650, action="press", button=buttons.START, name="START"},
-              {frame=1680, action="release", button=buttons.START, name="START"},
+              -- This run's screenshots show DIMPS at frame 1600 and the health advisory at 1799.
+              -- Press Start only after the advisory has been observed.
+              {frame=1900, action="press", button=buttons.START, name="START"},
+              {frame=1930, action="release", button=buttons.START, name="START"},
           }
           local input_index = 1
-          local capture_targets = { [299]=true, [450]=true, [600]=true, [750]=true, [899]=true, [1100]=true, [1300]=true, [1499]=true, [1600]=true, [1700]=true, [1799]=true, [1900]=true, [2000]=true, [2099]=true }
+          local capture_targets = { [299]=true, [450]=true, [600]=true, [750]=true, [899]=true, [1100]=true, [1300]=true, [1499]=true, [1600]=true, [1700]=true, [1799]=true, [1900]=true, [2000]=true, [2099]=true, [2199]=true, [2299]=true, [2399]=true }
 
           local function apply_input(action)
               local expected = action.action == "press"
@@ -228,7 +232,7 @@ jobs:
                   input_index = input_index + 1
               end
               if capture_targets[frame_count] then capture_frame(frame_count) end
-              if frame_count == 299 or frame_count == 1499 or frame_count == 2099 then capture_vram(frame_count) end
+              if frame_count == 299 or frame_count == 1499 or frame_count == 2399 then capture_vram(frame_count) end
               if frame_count % 100 == 0 then
                   print(string.format("GPU_TRAFFIC_VSYNC frame=%d guest_fps=%.4f dump_frames=%d",
                       frame_count, PCSX.GPU.getGuestFPS(), PCSX.GPU.getDumpFrames()))
@@ -246,7 +250,7 @@ jobs:
                   end)
               end
           end)
-          print("GPU_TRAFFIC_PROBE=armed target_vsync=2100; raw dump will be parsed then deleted")
+          print("GPU_TRAFFIC_PROBE=armed target_vsync=2400; raw dump will be parsed then deleted")
           LUA
 
           timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
@@ -261,7 +265,7 @@ jobs:
           # Screenshots remain in a private short-retention artifact.
           (
             previous=0
-            for second in 10 25 40 55 70 85 100 140 180 220 260 300 340 380 420 460 500 540 580 620 660 700 740 780 820 860; do
+            for second in 10 25 40 55 70 85 100 140 180 220 260 300 340 380 420 460 500 540 580 620 660 700 740 780 820 860 900 940 980 1000; do
               sleep "$((second - previous))"
               previous="$second"
               kill -0 "$emu_pid" 2>/dev/null || break
@@ -425,7 +429,7 @@ jobs:
                   print("RSP_QSUPPORTED=received" if caps else "RSP_QSUPPORTED=empty", flush=True)
               except Exception as exc:
                   print("RSP_QSUPPORTED=error:" + type(exc).__name__, flush=True)
-              for index in range(35):
+              for index in range(41):
                   if index:
                       time.sleep(25)
                   try:
