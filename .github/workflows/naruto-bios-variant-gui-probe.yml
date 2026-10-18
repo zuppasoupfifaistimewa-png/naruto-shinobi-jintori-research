@@ -53,11 +53,13 @@ jobs:
           fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage
           fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
           fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset openbios-shell.bin openbios-shell.bin
           fetch_asset openbios-chunked.bin openbios-chunked.bin
           fetch_asset openbios.bin openbios-fastboot.bin
           echo "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c  pcsx-redux.AppImage" | sha256sum --check -
           test "$(stat -c '%s' game.bin)" = "325989552"
           echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          echo "713ea2aed58606282b3ff5e91d77f8c5892ea36f5adcd279d2c7dd26604a625d  openbios-shell.bin" | sha256sum --check -
           echo "7644ab45db8519a3621ef9cb0283f0ced5258287f8105c0e9d7e784fef9362b7  openbios-chunked.bin" | sha256sum --check -
           echo "25c789eb66608847907217c367f04a3ec6e62c08530e97c437ce99d29f4c156d  openbios-fastboot.bin" | sha256sum --check -
           chmod +x pcsx-redux.AppImage
@@ -163,9 +165,11 @@ jobs:
               "$WORK/$label.stdout" "$WORK/$label.log" 2>/dev/null | tail -100 || true
             echo "BOOT_AND_PAD_MARKERS_END=$label"
           }
+          # The shell/menu BIOS is tested as a legal open-source fallback. It is not a retail BIOS and is not assumed compatible until the captures prove it.
+          run_variant shell openbios-shell.bin
           run_variant fastboot openbios-fastboot.bin
           run_variant chunked openbios-chunked.bin
-          echo "A/B complete. Workflow success is not a game-boot claim; title/menu and visible input response must be judged from captures."
+          echo "BIOS candidate comparison complete. Workflow success is not a game-boot claim; title/menu and visible input response must be judged from captures."
 
       - name: Upload private captures and filtered emulator stdout for 3 days
         if: always()
