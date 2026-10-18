@@ -1,3 +1,10 @@
+## BIOS compatibility investigation — 2026-10-18
+
+- Candidate retail BIOS identified from a game-specific working setup: SCPH-7502 at [PSX Data Center](https://psxdatacenter.com/games/J/N/SLPS-03553.html), documented there for ePSXe 2.0. This is not yet tested on our pinned PCSX-Redux build.
+- No retail BIOS binary is present in the current private release or Library inventory. Do not download a proprietary BIOS dump from unofficial sources or commit one.
+- Extended legal available-BIOS comparison: [Actions #39093727808](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39093727808) adds `openbios-shell.bin` to the existing fastboot/chunked OpenBIOS sequence, same emulator and ROM/CUE. Inspect screenshot/OCR and input-effect evidence after completion.
+- Full evidence and decisions: [docs/BIOS_COMPATIBILITY.md](BIOS_COMPATIBILITY.md). RT-001 remains Open / blocked until in-game visuals and responsive controller are verified.
+
 ## Status runtime terbaru — 2026-10-18
 
 - Retest mandiri Mesa/GLX [#39085422680](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39085422680) lulus: default dan software sama-sama Mesa/llvmpipe, OpenGL 4.5 Compatibility Profile; explicit 3.3 compatibility context PASS tanpa version override. Artifact teks aman: [#12120801333](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39085422680/artifacts/12120801333).
