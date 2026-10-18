@@ -17,7 +17,7 @@ concurrency:
 jobs:
   gpu-traffic-summary:
     runs-on: ubuntu-26.04
-    timeout-minutes: 25
+    timeout-minutes: 50
     steps:
       - name: Install private runtime requirements
         shell: bash
@@ -109,14 +109,14 @@ jobs:
           echo "ROM/CUE/emulator hashes verified; BIOS=SCPH-7502"
           echo "EMULATOR_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
 
-      - name: Press Start only at Naruto title prompt; observe until VSync 3000
+      - name: Select はじめから with Start and D-pad; observe until VSync 6000
         env:
           GPU_BACKEND_PROBE: ${{ contains(github.event.head_commit.message, '[openglgpu-probe]') }}
         shell: bash
         run: |
           set -euo pipefail
           GPU_BACKEND_FLAG="-softgpu"
-          GPU_BACKEND_TIMEOUT="1320s"
+          GPU_BACKEND_TIMEOUT="2700s"
           if [[ "${GPU_BACKEND_PROBE:-false}" == "true" ]]; then
             GPU_BACKEND_FLAG="-openglgpu"
             GPU_BACKEND_TIMEOUT="170s"
@@ -154,17 +154,24 @@ jobs:
           )
           cat > "$WORK/gpu-traffic.lua" <<'LUA'
           local frame_count = 0
-          local stop_frame = 3000
+          local stop_frame = 6000
           local pad = PCSX.SIO0.slots[1].pads[1]
           local buttons = PCSX.CONSTS.PAD.BUTTON
           local input_sequence = {
-              -- User explicitly requested Start only while the Naruto title prompt is shown.
-              -- Do not press Circle or any second button; leave the main menu open if it appears.
+              -- Start is sent only after the title prompt is known to be visible.
+              -- The menu is initially on はじめから; Down then Up tests D-pad navigation
+              -- and returns the selection to はじめから before Circle confirms it.
               {frame=2650, action="press", button=buttons.START, name="START"},
               {frame=2680, action="release", button=buttons.START, name="START"},
+              {frame=2710, action="press", button=buttons.DOWN, name="DOWN"},
+              {frame=2720, action="release", button=buttons.DOWN, name="DOWN"},
+              {frame=2740, action="press", button=buttons.UP, name="UP"},
+              {frame=2750, action="release", button=buttons.UP, name="UP"},
+              {frame=2780, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=2810, action="release", button=buttons.CIRCLE, name="CIRCLE"},
           }
           local input_index = 1
-          local capture_targets = { [299]=true, [450]=true, [600]=true, [750]=true, [899]=true, [1100]=true, [1300]=true, [1499]=true, [1600]=true, [1700]=true, [1799]=true, [1900]=true, [2000]=true, [2099]=true, [2199]=true, [2299]=true, [2399]=true, [2499]=true, [2599]=true, [2624]=true, [2649]=true, [2650]=true, [2660]=true, [2670]=true, [2680]=true, [2690]=true, [2700]=true, [2720]=true, [2749]=true, [2750]=true, [2760]=true, [2770]=true, [2780]=true, [2790]=true, [2800]=true, [2850]=true, [2900]=true, [2950]=true, [2999]=true }
+          local capture_targets = { [2599]=true, [2649]=true, [2650]=true, [2660]=true, [2670]=true, [2680]=true, [2690]=true, [2700]=true, [2709]=true, [2710]=true, [2715]=true, [2720]=true, [2730]=true, [2739]=true, [2740]=true, [2745]=true, [2749]=true, [2750]=true, [2760]=true, [2770]=true, [2779]=true, [2780]=true, [2790]=true, [2800]=true, [2809]=true, [2810]=true, [2820]=true, [2850]=true, [2900]=true, [2950]=true, [2999]=true, [3199]=true, [3399]=true, [3599]=true, [3999]=true, [4499]=true, [4999]=true, [5499]=true, [5999]=true }
 
           local function apply_input(action)
               local expected = action.action == "press"
@@ -232,7 +239,7 @@ jobs:
                   input_index = input_index + 1
               end
               if capture_targets[frame_count] then capture_frame(frame_count) end
-              if frame_count == 299 or frame_count == 1499 or frame_count == 2999 then capture_vram(frame_count) end
+              if frame_count == 299 or frame_count == 1499 or frame_count == 2999 or frame_count == 5999 then capture_vram(frame_count) end
               if frame_count % 100 == 0 then
                   print(string.format("GPU_TRAFFIC_VSYNC frame=%d guest_fps=%.4f dump_frames=%d",
                       frame_count, PCSX.GPU.getGuestFPS(), PCSX.GPU.getDumpFrames()))
@@ -250,7 +257,7 @@ jobs:
                   end)
               end
           end)
-          print("GPU_TRAFFIC_PROBE=armed target_vsync=3000; raw dump will be parsed then deleted")
+          print("GPU_TRAFFIC_PROBE=armed target_vsync=6000; raw dump will be parsed then deleted")
           LUA
 
           timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
@@ -769,7 +776,6 @@ jobs:
           path: |
             ${{ env.WORK }}/captures/gpu-traffic-summary.txt
             ${{ env.WORK }}/captures/important-log-lines.txt
-            ${{ env.WORK }}/captures/window-*.png
             ${{ env.WORK }}/captures/internal-frame-*.png
             ${{ env.WORK }}/rsp-progress-summary.txt
           if-no-files-found: warn
