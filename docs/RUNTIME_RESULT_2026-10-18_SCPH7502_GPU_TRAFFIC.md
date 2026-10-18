@@ -32,3 +32,18 @@ The valid non-root PCSX-Redux window captures progressed from mostly black to th
 ## Next experiment
 
 Run the same GPU/VRAM probe with only a low-rate external RSP PC sample added (roughly every 12 seconds, no breakpoints, no VSync callback register reads). Correlate coarse PC region / repeated-PC patterns with the 100/200/300-VSync summaries and the real window screenshots. Include boot/BIOS/CD-ROM markers in safe logs. The key distinction is whether the CPU remains in BIOS code or repeatedly executes the main executable while the Sony splash persists. Keep the retail BIOS, ROM and all raw dumps private; do not upload raw GPUDump/VRAM or instruction traces.
+
+
+## Follow-up: external PC and local control-flow categories
+
+Run [#39100743589](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39100743589) reused the same retail BIOS/ROM, emulator pin, GPU settings and controller setup. Eight samples approximately 12 seconds apart showed initial BIOS PC then the main executable RAM span at the majority of samples:
+
+- sample 0: BIOS ROM (`0xbfc02b68`)
+- samples 1–3: main EXE region near `0x80061cd0`
+- samples 4–7: main EXE region near `0x80067938` / `0x8006796c`
+
+One 64-byte code window was read per unique sampled PC window. Only family counts/control-flow summaries were exported, not raw instruction bytes or disassembly. The window around the `0x80061cd0` sample had 2 conditional branches and one backward edge whose target was inside that 64-byte window; the `0x8006796c` window had 3 conditional branches and one backward edge whose target was outside that window. These local structures are compatible with loops but do not prove that the main game is globally stalled; sampled PC addresses themselves are not necessarily branch instructions.
+
+**Important test-control correction:** run #39100743589 used interpreter mode, not the baseline dynarec mode, because of a workflow edit. Do not use its wall-clock performance as representative. Workflow commit [b4d849c4](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/b4d849c4d555f092e1d5b406bdd67c1aa5aa3205) restores `-dynarec` while retaining only low-rate PC samples and one read-only summary per unique sampled code window. Follow-up [#39101124484](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39101124484) is in progress at the time of writing.
+
+The BIOS-region-lock hypothesis is less likely as a complete blocker because the CPU samples enter the main EXE region and GP0 drawing traffic is present. PAL BIOS versus NTSC-J disc could still influence some startup path, but this has not been proven to be root cause. The screen remains at Sony Computer Entertainment logo/diamond; there is no Naruto menu/gameplay and no verified in-game controller response. RT-001 remains **BELUM KONKLUSIF**.
