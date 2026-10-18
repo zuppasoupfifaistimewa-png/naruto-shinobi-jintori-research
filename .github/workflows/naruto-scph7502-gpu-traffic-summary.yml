@@ -262,7 +262,7 @@ jobs:
             stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
               -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
-              "$GPU_BACKEND_FLAG" -gdb -gdb-port 3333 -interpreter -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+              "$GPU_BACKEND_FLAG" -gdb -gdb-port 3333 -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
               > "$WORK/pcsx.stdout" 2>&1 &
           emu_pid=$!
 
