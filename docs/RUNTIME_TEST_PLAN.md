@@ -471,3 +471,17 @@ Run #39080239541 mem-parse dump penuh/tidak terpotong sampai VSync 300. GP0 comm
 Dalam run yang sama, marker Execute ! ~38.01s; PC masuk main EXE sekitar 38.33–40.91s, kembali ke BIOS sekitar 42.20–87.09s, lalu kembali ke EXE pada 88.39–98.63s. Semua GP0 output berada di bucket VSync akhir 200–299, jadi timing ini konsisten dengan PC sampel akhir yang masuk EXE lagi. Jangan menyatakan akar sebab masih terbukti.
 
 Lanjutkan dengan sampling privat instruction window pada alamat PC executable yang sudah teramati, lalu ekspor hanya statistik kategori instruksi (branch/jump/syscall/load-store/COP0/backward branches), bukan bytes/instruction operands. Tujuan membedakan loop wait/kembali BIOS dari jalur yang meneruskan startup. RT-001 tetap blocked.
+
+
+## Hasil code-window summary dan target sampler CPU lebih rapat — 2026-10-18
+
+Run [#39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461) sukses sampai VSync300, RSP qSupported sukses, 75 bulk register samples valid. Sampel PC masuk EXE di sekitar t=37–38s, kembali ke BIOS t=40–87.73s, lalu PC berulang di 0x80037320 dan 0x800372d8 t=89–98.62s.
+
+Empat jendela 64-byte berhasil dibaca, hanya statistik kategori:
+- 0x80050b00: branches/jumps 0, loads 2, stores 6.
+- 0x8003c080: conditional branches 2 (forward=2), jumps 4.
+- 0x80037300: conditional branches 1, backward branches 1, jumps 3.
+- 0x800372c0: conditional branches 2 (forward=2), jumps 1.
+Tidak ada syscall/break/COP0/COP2 dalam empat jendela. Jangan simpulkan branch statis dieksekusi. GP0 tetap 43 words semua pada VSync bin 200–299; family hanya 39 GPU-state-setting, 1 clear-cache, 1 monochrome rectangle dan 1 NOP. Screenshot tetap hitam.
+
+Berikutnya, sampling PC/CP0 lebih rapat hanya selama PC berada di 0x800372c0–0x800373ff, mempertahankan keluaran statistik saja. Tujuan melihat apakah perpindahan antar-PC menunjukkan loop yang stabil atau transisi singkat. RT-001 tetap blocked.
