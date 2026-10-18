@@ -233,9 +233,16 @@ jobs:
           # sample, no instruction/operand tracing. It records only PC/CP0 summaries
           # and timestamps known loader markers from pcsx.stdout for correlation.
           python3 -u - <<'PY' > "$WORK/cpu-state-summary.txt" 2>&1 &
-          import pathlib, re, socket, time
+          import pathlib, re, signal, socket, time
           from collections import Counter
           HOST, PORT = "127.0.0.1", 3333
+          stop_requested = False
+
+          def request_graceful_stop(_signum, _frame):
+              global stop_requested
+              stop_requested = True
+
+          signal.signal(signal.SIGTERM, request_graceful_stop)
           stdout_path = pathlib.Path("pcsx.stdout")
           log_path = pathlib.Path("pcsx.log")
           start = time.monotonic()
@@ -535,7 +542,7 @@ jobs:
               idx = 0
               hot_lo, hot_hi = 0x800372c0, 0x800373ff
               hot_until = 0.0
-              while time.monotonic() - start < 120:
+              while time.monotonic() - start < 120 and not stop_requested:
                   read_markers()
                   try:
                       registers = request(sock, "g")
