@@ -1,10 +1,10 @@
 ## Status runtime terbaru — 2026-10-18
 
-- OpenGL standalone [#39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686): Mesa llvmpipe membuat konteks OpenGL aktual 4.5 dan compatibility yang meminta 3.3 tanpa version override.
-- OpenGL backend PCSX-Redux benar-benar diuji pada [#39083372634](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083372634): `GPU_BACKEND_SELECTED=-openglgpu`, Mesa/llvmpipe, VSync 300, emulator exit 0. GP0 hanya 43 kata/42 commands—39 GPU-state-setting, 1 clear-cache, 1 monochrome rectangle, 1 NOP; tidak ada primitive gambar. getVRAM pada frame 299 menghasilkan 1 warna RGB555 dan 0 piksel non-black dari 524.288. Screenshot API tidak tersedia pada backend OpenGL pin ini; raw data tidak diunggah.
-- Kontrol flow [#39082587807](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082587807): pada target BNE di 0x800372f0 dan 0x80037330, relasi terukur tetap unequal (masing-masing 16/11 sampel).
-- Input [#39081872155](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081872155): 12 pulsa tekan/lepas Cross/Start/Up readback PASS, tetapi GP0/VRAM tetap tidak menunjukkan gambar.
-- RT-001 tetap Open / blocked. Langkah berikutnya: telusuri sumber guest/I/O yang menjaga predicate BNE berbeda atau kondisi boot tidak maju; jangan mengulang diagnosis GLX atau mengganti emulator/pin.
+- Mesa/GLX host lulus di [#39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686): llvmpipe membuat konteks OpenGL 4.5 compatibility tanpa version override.
+- PCSX-Redux OpenGL backend nyata lulus sampai VSync 300 di [#39083372634](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083372634): -openglgpu, Mesa/llvmpipe, emulator exit 0. GP0 43 words/42 commands; VRAM frame299 satu warna RGB555, 0 non-black piksel dari 524.288.
+- Loop guest: [#39082587807](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082587807) mencatat kedua BNE tetap unequal pada target entry (16/11 sampel).
+- Source-category probe [#39083850904](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083850904) sukses: BNE 0x800372f0 → 0x80037320 (17 unequal), operand terakhir ditulis oleh load vs immediate arithmetic; BNE 0x80037330 → 0x800372d8 (15 unequal), special arithmetic vs constant-zero. Producer hanya “last write in 64-byte local window”, bukan provenance global.
+- Next: klasifikasi rentang efektif address dari load pada operand branch (hanya label area, tanpa alamat individual atau register values) untuk uji apakah yang dibaca RAM atau MMIO. RT-001 tetap Open / blocked sampai game gambar + title/menu + input-state response terverifikasi.
 
 
 # Addendum 2026-10-17 — RSP minimal dan GPU-watchpoint
