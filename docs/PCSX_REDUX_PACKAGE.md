@@ -333,3 +333,12 @@ Run [#39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 Keempat jendela tidak berisi kategori syscall/break/COP0/COP2. Ini statistik jendela, bukan bukti branch dieksekusi. PC runtime yang berulang di 0x80037320 dan 0x800372d8 menjadikan rentang 0x800372c0–0x800373ff kandidat terbaik untuk PC sampling lebih rapat berikutnya.
 
 GPU packet result konsisten: 299 VSync live packets, GP0 43 words seluruhnya pada bin 200–299; 39 GPU-state, 1 clear-cache, 1 monochrome rectangle, 1 NOP; tidak ada triangle/quad/line/textured sprite. Screenshot masih hitam. Dump mentah dihapus sebelum upload; artifact memuat ringkasan saja.
+
+
+## Lua pad override + screenshot API findings — 2026-10-18
+
+Pada source pin [src/core/pad.cc](https://github.com/grumpycoders/pcsx-redux/blob/0c3572c3db75f97542001e453ae80ba8c3f8acba/src/core/pad.cc), callback Lua untuk Port 1 memaparkan getButton(button), setOverride(button), clearOverride(button), serta konstanta tombol di PCSX.CONSTS.PAD.BUTTON. Run [#39081872155](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081872155) memverifikasi 12 pulsa tekan/lepas CROSS/START/UP, semuanya readback PASS. Artinya injeksi virtual sampai di lapisan pad PCSX-Redux, tetapi belum terbukti mengubah state guest.
+
+Pada pin yang sama, [src/core/pcsxlua.cc](https://github.com/grumpycoders/pcsx-redux/blob/0c3572c3db75f97542001e453ae80ba8c3f8acba/src/core/pcsxlua.cc) mengembalikan objek screenshot berisi Slice data, width, height, dan bpp. Dalam run tersebut frame 235/250/265 screenshot 0×0; frame 299 320×240 16-bpp tetapi satu warna RGB555 dan nol piksel non-black dari 76.800. Screenshot raw dan metadata hanya digunakan sementara pada runner dan dihapus sebelum artifact teks dibuat.
+
+Kesimpulan: Mesa/GLX host telah lolos tes mandiri; saat ini guest berada di siklus PC yang berulang dan tidak mengeluarkan perintah gambar yang bermakna. Selanjutnya klasifikasikan tipe branch (tanpa operand mentah) dan identifikasi kondisi runtime yang diuji; jangan menyimpulkan bahwa tombol telah membuat game maju hanya dari pad API readback.
