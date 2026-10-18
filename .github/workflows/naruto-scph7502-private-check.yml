@@ -1,0 +1,124 @@
+name: Naruto SCPH-7502 private BIOS identity check
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/naruto-scph7502-private-check.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: naruto-scph7502-private-check
+  cancel-in-progress: true
+
+jobs:
+  verify-private-bios:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 5
+    steps:
+      - name: Download private ZIP and verify archive integrity
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -eu
+          WORK="$RUNNER_TEMP/naruto-scph7502-private-check"
+          mkdir -p "$WORK"
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          count="$(jq '[.assets[]? | select(.name == "scph7502.zip")] | length' release.json)"
+          [ "$count" = "1" ] || { echo "::error::Expected exactly one scph7502.zip release asset; found $count"; exit 1; }
+          id="$(jq -r '.assets[]? | select(.name == "scph7502.zip") | .id' release.json)"
+          curl --fail --silent --show-error --location --retry 2 --max-time 120 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/octet-stream" \
+            "$API/releases/assets/$id" -o scph7502.zip
+          test "$(stat -c '%s' scph7502.zip)" = "283463"
+          echo "b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a  scph7502.zip" | sha256sum --check -
+          echo "ZIP_INTEGRITY=PASS"
+
+      - name: Safely inspect archive and fingerprint 512 KiB BIOS candidate
+        id: inspect
+        run: |
+          set -eu
+          cd "$WORK"
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import hashlib, os, stat, zipfile, zlib
+
+          archive = Path("scph7502.zip")
+          report = []
+          with zipfile.ZipFile(archive) as zf:
+              infos = zf.infolist()
+              if not infos:
+                  raise SystemExit("ERROR: archive is empty")
+              candidates = []
+              total = 0
+              for info in infos:
+                  p = PurePosixPath(info.filename)
+                  mode = (info.external_attr >> 16) & 0xFFFF
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)):
+                      raise SystemExit("ERROR: unsafe archive entry rejected")
+                  if info.file_size > 2 * 1024 * 1024:
+                      raise SystemExit("ERROR: archive member exceeds safety limit")
+                  total += info.file_size
+                  if total > 4 * 1024 * 1024:
+                      raise SystemExit("ERROR: expanded archive exceeds safety limit")
+                  report.append(f"ZIP_MEMBER name={info.filename!r} size={info.file_size} compressed={info.compress_size}")
+                  if not info.is_dir() and info.file_size == 524288:
+                      candidates.append(info)
+              if len(candidates) != 1:
+                  raise SystemExit(f"ERROR: expected exactly one 524288-byte file; found {len(candidates)}")
+              info = candidates[0]
+              target = Path("verified-bios.bin")
+              md5 = hashlib.md5()
+              sha1 = hashlib.sha1()
+              sha256 = hashlib.sha256()
+              crc = 0
+              size = 0
+              with zf.open(info, "r") as src, target.open("wb") as dst:
+                  while True:
+                      chunk = src.read(65536)
+                      if not chunk:
+                          break
+                      size += len(chunk)
+                      md5.update(chunk); sha1.update(chunk); sha256.update(chunk)
+                      crc = zlib.crc32(chunk, crc)
+                      dst.write(chunk)
+              report.extend([
+                  f"BIOS_MEMBER={info.filename}",
+                  f"BIOS_SIZE={size}",
+                  f"BIOS_MD5={md5.hexdigest()}",
+                  f"BIOS_SHA1={sha1.hexdigest()}",
+                  f"BIOS_SHA256={sha256.hexdigest()}",
+                  f"BIOS_CRC32={crc & 0xffffffff:08X}",
+              ])
+          md5_ok = report[-5].split("=", 1)[1] == "b9d9a0286c33dc6b7237bb13cd46fdee"
+          sha1_ok = report[-4].split("=", 1)[1] == "8d5de56a79954f29e9006929ba3fed9b6a418c1d"
+          crc_ok = report[-1].split("=", 1)[1] == "318178BF"
+          match = md5_ok and sha1_ok and crc_ok and size == 524288
+          report.append("SCPH7502_REFERENCE_IDENTITY=" + ("MATCH" if match else "MISMATCH"))
+          text = "\n".join(report) + "\n"
+          Path(os.environ["GITHUB_STEP_SUMMARY"]).write_text(
+              "# Private SCPH-7502 BIOS check\n\nThe private release ZIP was checked without publishing its contents.\n\n" + text,
+              encoding="utf-8"
+          )
+          print(text, end="")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"identity_match={'true' if match else 'false'}\n")
+          PY
+
+      - name: Remove private BIOS material from ephemeral runner
+        if: always()
+        run: |
+          if [ -n "${WORK:-}" ] && [ -d "$WORK" ]; then rm -rf "$WORK"; fi
+          echo "Cleanup complete; the archive and extracted BIOS were not uploaded as artifacts."
