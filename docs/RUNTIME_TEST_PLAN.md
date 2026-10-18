@@ -2,9 +2,9 @@
 
 - Mesa/GLX host lulus di [#39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686): llvmpipe membuat konteks OpenGL 4.5 compatibility tanpa version override.
 - PCSX-Redux OpenGL backend nyata lulus sampai VSync 300 di [#39083372634](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083372634): -openglgpu, Mesa/llvmpipe, emulator exit 0. GP0 43 words/42 commands; VRAM frame299 satu warna RGB555, 0 non-black piksel dari 524.288.
-- Loop guest: [#39082587807](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082587807) mencatat kedua BNE tetap unequal pada target entry (16/11 sampel).
-- Source-category probe [#39083850904](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083850904) sukses: BNE 0x800372f0 → 0x80037320 (17 unequal), operand terakhir ditulis oleh load vs immediate arithmetic; BNE 0x80037330 → 0x800372d8 (15 unequal), special arithmetic vs constant-zero. Producer hanya “last write in 64-byte local window”, bukan provenance global.
-- Next: klasifikasi rentang efektif address dari load pada operand branch (hanya label area, tanpa alamat individual atau register values) untuk uji apakah yang dibaca RAM atau MMIO. RT-001 tetap Open / blocked sampai game gambar + title/menu + input-state response terverifikasi.
+- Branch source categories [#39083850904](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083850904): BNE 0x800372f0→0x80037320 (17 unequal; latest local writer load vs immediate arithmetic), BNE 0x80037330→0x800372d8 (15 unequal; special arithmetic vs zero). Kategori writer lokal bukan full provenance.
+- Uji region alamat efektif load [#39084130154](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39084130154) in_progress pada pemeriksaan 00:50:22 UTC; akan melaporkan label region + counts saja, tanpa address/register mentah.
+- RT-001 tetap Open / blocked sampai gambar game/menu valid dan perubahan game state akibat input terverifikasi.
 
 
 # Addendum 2026-10-17 — RSP minimal dan GPU-watchpoint
