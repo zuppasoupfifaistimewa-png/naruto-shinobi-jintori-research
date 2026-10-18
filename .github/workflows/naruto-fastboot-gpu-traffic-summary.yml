@@ -76,6 +76,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          GPU_BACKEND_FLAG="-softgpu"
+          if git -C "$GITHUB_WORKSPACE" log -1 --pretty=%B | grep -Fq "[openglgpu-probe]"; then
+            GPU_BACKEND_FLAG="-openglgpu"
+          fi
+          echo "GPU_BACKEND_SELECTED=$GPU_BACKEND_FLAG"
           cd "$WORK"
           Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
           xvfb_pid=$!
@@ -208,14 +213,14 @@ jobs:
                   end)
               end
           end)
-          print("GPU_TRAFFIC_PROBE=armed target_vsync=300 backend=softgpu; raw dump will be parsed then deleted")
+          print("GPU_TRAFFIC_PROBE=armed target_vsync=300; raw dump will be parsed then deleted")
           LUA
 
           timeout --signal=TERM --kill-after=5s 125s \
             stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/openbios-fastboot.bin" -iso "$WORK/game-run.cue" \
               -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
-              -softgpu -gdb -gdb-port 3333 -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+              "$GPU_BACKEND_FLAG" -gdb -gdb-port 3333 -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
               > "$WORK/pcsx.stdout" 2>&1 &
           emu_pid=$!
 
@@ -564,7 +569,7 @@ jobs:
           echo "EMULATOR_EXIT_CODE=$emu_rc"
           if kill -0 "$sampler_pid" 2>/dev/null; then kill "$sampler_pid" 2>/dev/null || true; fi
           wait "$sampler_pid" 2>/dev/null || true
-          grep -E 'PAD_SETUP|PAD_INJECT|GPU_SCREENSHOT_CAPTURE|GPU_VRAM_CAPTURE|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|error|Error|ERROR' \
+          grep -E 'GPU_BACKEND_SELECTED|PAD_SETUP|PAD_INJECT|GPU_SCREENSHOT_CAPTURE|GPU_VRAM_CAPTURE|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|error|Error|ERROR' \
             "$WORK/pcsx.stdout" "$WORK/pcsx.log" > "$WORK/captures/important-log-lines.txt" || true
           cat "$WORK/captures/important-log-lines.txt" || true
           echo "GPU_TRAFFIC_EMULATOR_STEP_DONE=1"
