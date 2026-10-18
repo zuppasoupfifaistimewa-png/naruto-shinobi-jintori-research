@@ -1,3 +1,18 @@
+## Handoff terbaru — gabungkan Start dan Circle dalam satu sesi boot (2026-10-18)
+
+Run [#39147391100](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39147391100) telah selesai workflow-success, namun **tidak mengonfirmasi** `はじめから`. Frame 2.750 dan checkpoint berikutnya memperlihatkan title screen/prompt Start, bukan kotak menu. Penyebabnya diketahui dari skrip eksperimen: setiap run melakukan cold boot, dan input sequence run ini hanya Circle pada 2.750–2.780, tanpa Start yang membuka menu pada run #39145309203.
+
+Artifact privat #12144726606 (retensi tiga hari) sudah diperiksa; raw dump dan screenshot mentah dihapus sebelum upload. Jangan menganggap status `PAD_INJECT ... PASS` sebagai keberhasilan game merespons input.
+
+**Langkah selanjutnya:**
+- Pada satu sesi boot yang sama, tekan Start frame 2.650, lepaskan frame 2.680, kemudian tekan Circle/O frame 2.750 dan lepas frame 2.780.
+- Gunakan baseline tetap: BIOS SCPH-7502, disc SLPS03553/executable SLPS_035.53;1, PCSX-Redux source pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, SoftGPU, Port 1 Analog/Auto.
+- Capture 2.649, 2.650, 2.660, 2.670, 2.680, 2.700, 2.720, 2.749, 2.750, 2.760, 2.770, 2.780, 2.790, 2.800, 2.850, 2.900, 2.950, 2.999.
+- Jika Mode Select tampil, transkripsikan opsi Jepang yang benar-benar terlihat. Jangan menekan tombol tambahan atau mengasumsikan letak Story Mode sebelum screenshot dibaca.
+- Raw ROM/BIOS/GPU dump harus tetap privat; artifact hanya ringkasan dan screenshot minimum berumur tiga hari.
+
+**Status:** title screen dan transisi Start→menu sudah dibuktikan di run #39145309203. Pemilihan mulai dari awal dan Story Mode masih pending.
+
 ## Handoff terbaru — title Start membuka menu; konfirmasi はじめから adalah langkah aktif berikutnya (2026-10-18)
 
 Run [#39145309203](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39145309203), commit `43bab6c337693eff87d5fa996d450299adc31093`, telah selesai. Frame 2.649/2.650 menunjukkan prompt judul; frame 2.660 menunjukkan transisi kotak menu; frame 2.670 menunjukkan menu pilihan `はじめから` dan `ロード`, panah berada pada `はじめから`. Menu bertahan sampai frame 2.999. Input Start frame 2.650–2.680 adalah satu-satunya tombol yang diinjeksi, dan perubahan visual sesudahnya merupakan bukti runtime bahwa Start membuka menu.

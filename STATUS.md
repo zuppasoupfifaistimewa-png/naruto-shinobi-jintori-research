@@ -1,3 +1,12 @@
+## Terbaru — Circle saja tidak mengonfirmasi menu karena run dimulai ulang (2026-10-18)
+
+- Run [#39147391100](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39147391100) selesai `success` dan mencapai 3.000 VSync pada commit `5f89389d3af1f3f6254057ae8b0162667bd5eaf0`. Runtime tetap memakai retail BIOS SCPH-7502 (EU), disc `SLPS03553`, executable `SLPS_035.53;1`, PCSX-Redux pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, SoftGPU, dan Port 1 Analog/Auto.
+- Koreksi penting: setiap GitHub Actions run melakukan boot bersih. Run #39147391100 hanya mengirim Circle pada frame 2.750–2.780 dan **tidak** mengulangi Start. Screenshot frame 2.749–2.800 serta checkpoint sampai 2.999 tetap menampilkan ilustrasi title screen; prompt Start berkedip, tetapi tidak terlihat transisi ke menu atau Mode Select.
+- `PAD_INJECT frame=2750 button=CIRCLE ... status=PASS` hanya membuktikan readback API emulator. Karena tombol dikirim saat title screen, ini bukan pengujian konfirmasi `はじめから`; pilihan menu tidak pernah dibuka pada run itu.
+- Artifact privat [#12144726606](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39147391100/artifacts/12144726606) memuat bukti visual dan ringkasan saja. `RAW_GPU_DUMP_REMOVED=1`, `RAW_TEMP_SCREENSHOTS_REMOVED=1`, dan aset runtime dibersihkan dari runner.
+- Status RT-001: Start membuka menu pada run #39145309203 tetap **terverifikasi**. Memilih mulai dari awal, Mode Select, Story Mode, kontrol gameplay, dan tamat masih **belum terverifikasi**. #39147391100 tidak membantah hasil Start sebelumnya; sesi ini tidak pernah mengirim Start.
+- Eksperimen berikutnya wajib mengirim Start lalu Circle pada satu boot yang sama: Start press frame 2.650/release 2.680, Circle press 2.750/release 2.780, tanpa tombol lain; capture dekat kedua input dan amati sampai VSync 3.000.
+
 ## Terbaru — Start membuka menu utama; はじめから terpilih (2026-10-18)
 
 - Run [#39145309203](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39145309203) selesai dengan workflow `success`; commit eksperimen `43bab6c337693eff87d5fa996d450299adc31093`. Emulator mencapai target 3.000 VSync dengan BIOS retail SCPH-7502 (EU), disc `SLPS03553`, executable `SLPS_035.53;1`, source PCSX-Redux pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, SoftGPU, dan Port 1 Analog / Auto. Konfigurasi lain dipertahankan.

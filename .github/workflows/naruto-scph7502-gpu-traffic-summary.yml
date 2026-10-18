@@ -109,7 +109,7 @@ jobs:
           echo "ROM/CUE/emulator hashes verified; BIOS=SCPH-7502"
           echo "EMULATOR_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
 
-      - name: Confirm はじめから with Circle; observe until VSync 3000
+      - name: Start at title then confirm はじめから with Circle; observe until VSync 3000
         env:
           GPU_BACKEND_PROBE: ${{ contains(github.event.head_commit.message, '[openglgpu-probe]') }}
         shell: bash
@@ -158,8 +158,10 @@ jobs:
           local pad = PCSX.SIO0.slots[1].pads[1]
           local buttons = PCSX.CONSTS.PAD.BUTTON
           local input_sequence = {
-              -- Run #39145309203 confirmed the main menu by frame 2670.
-              -- The arrow visibly selects はじめから; confirm only that choice with Circle.
+              -- Each Actions run cold-boots the game; reproduce Start -> menu in this same session.
+              {frame=2650, action="press", button=buttons.START, name="START"},
+              {frame=2680, action="release", button=buttons.START, name="START"},
+              -- Previous run showed the arrow on はじめから after Start; confirm with Circle only after this state is reached.
               {frame=2750, action="press", button=buttons.CIRCLE, name="CIRCLE"},
               {frame=2780, action="release", button=buttons.CIRCLE, name="CIRCLE"},
           }

@@ -1,3 +1,19 @@
+## RT-001 follow-up — Start dan Circle perlu diuji dalam satu boot (2026-10-18)
+
+Run [#39147391100](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39147391100) menyelesaikan 3.000 VSync dengan workflow `success`, tetapi tidak mengonfirmasi pilihan menu. Screenshot aktual frame 2.749/2.750 masih menunjukkan title prompt, dan layar tidak berubah ke menu atau Mode Select sampai frame 2.999. Penyebabnya: workflow melakukan boot bersih di setiap run; eksperimen ini hanya menyuntik Circle pada frame 2.750 tanpa mengulangi Start.
+
+**Acceptance status terkini:**
+1. Start membuka menu pilihan — **PASS**, berdasarkan transisi screenshot run #39145309203.
+2. `はじめから` terkonfirmasi — **PENDING**.
+3. Mode Select / Story Mode dimulai — **PENDING**.
+4. Input mengubah state gameplay secara nyata — **PENDING**.
+5. Gameplay/mekanik diuji — **PENDING**.
+6. Story Mode tamat dengan bukti — **PENDING**.
+
+**Langkah berikutnya:** pada boot baru yang sama, tekan Start frame 2.650/release 2.680, kemudian Circle/O frame 2.750/release 2.780. Capture rapat 2.649, 2.650, 2.660, 2.670, 2.680, 2.700, 2.720, 2.749, 2.750, 2.760, 2.770, 2.780, 2.790, 2.800 serta 2.850/2.900/2.950/2.999. Jika Mode Select muncul, identifikasi judul dan opsi sebenarnya sebelum input baru.
+
+Pertahankan SCPH-7502 (EU), SLPS03553/`SLPS_035.53;1`, PCSX-Redux source pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, SoftGPU, Port 1 Analog/Auto. Raw BIOS/ROM/GPU dump tidak boleh diunggah; raw temporary files dihapus sebelum artifact privat tiga-hari diunggah.
+
 ## Pembaruan RT-001 — Start → menu terverifikasi; pilih mulai dari awal selanjutnya (2026-10-18)
 
 Run [#39145309203](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39145309203) menyelesaikan target 3.000 VSync dan mengunggah artifact privat #12143433923. Screenshot framebuffer 640×480 menunjukkan title prompt pada frame 2.649/2.650, transisi kotak menu pada 2.660, lalu pilihan `はじめから` (panah berada di pilihan ini) dan `ロード` pada frame 2.670. Menu tetap tampil sampai frame 2.999. Start dipulse pada frame 2.650–2.680; tidak ada Circle atau tombol lain pada run ini.

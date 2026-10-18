@@ -1,3 +1,15 @@
+## Hasil Run #39147391100 — Circle dikirim saat title screen (2026-10-18)
+
+Run [#39147391100](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39147391100) pada commit `5f89389d3af1f3f6254057ae8b0162667bd5eaf0` berhasil mencapai VSync 3.000 dan menyelesaikan cleanup. Konfigurasi emulator/BIOS/ROM sama dengan run sebelumnya, tetapi input sequence berisi Circle saja (press 2750, release 2780).
+
+**Bukti visual aktual:** frame 2.749–2.800 dan checkpoint 2.850/2.900/2.950/2.999 mempertahankan ilustrasi title screen. Prompt `STARTボタンをおせってばよ!` muncul dan hilang pada beberapa checkpoint, konsisten dengan prompt berkedip. Tidak ada kotak menu atau Mode Select pada frame ini. Log input menampilkan `PAD_INJECT frame=2750 button=CIRCLE action=press readback=true expected=true status=PASS` dan release sukses; readback itu tidak membuktikan game memproses Circle.
+
+**Interpretasi:** percobaan tidak mengonfirmasi `はじめから`, karena sesi Actions mulai dari boot baru dan Start tidak pernah ditekan di dalam run ini. Hasil tersebut juga tidak menguji apakah menu Start bekerja atau tidak; run #39145309203 sebelumnya mempunyai bukti menu yang jelas pada frame 2.670 dengan panah di `はじめから` dan `ロード` di bawahnya. Perbedaan ini menjelaskan mengapa input berikutnya wajib memainkan kedua tombol secara berurutan pada satu sesi.
+
+**Privasi:** artifact privat #12144726606 berisi screenshot/summary minimum; log menyatakan `RAW_GPU_DUMP_REMOVED=1` dan `RAW_TEMP_SCREENSHOTS_REMOVED=1`, kemudian aset runtime dihapus dari runner.
+
+**Eksperimen berikutnya:** Start press 2.650/release 2.680; Circle press 2.750/release 2.780 pada sesi boot sama; capture rapat di 2.649–2.800 lalu 2.850/2.900/2.950/2.999. Identifikasi Mode Select dari tampilan aktual, jangan mengasumsikan urutan mode.
+
 ## Hasil — Start menghasilkan transisi visual ke menu utama (run #39145309203, 2026-10-18)
 
 **Perubahan terkontrol:** setelah run [#39122631591](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39122631591) menekan Start terlalu dini dan tidak mengisolasi responsnya, run ini mempertahankan BIOS/ROM/emulator/SoftGPU/controller yang sama lalu hanya menekan Start pada frame 2.650 (release 2.680). Circle ditiadakan agar hanya satu tombol diuji.
