@@ -1,3 +1,13 @@
+## Runtime GPU terbaru yang sah dan probe CPU yang berjalan — 2026-10-18
+
+- Run penuh terakhir yang selesai: [#39080721606](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080721606), conclusion success, target VSync 300 / 299 live VSync packets, EMULATOR_EXIT_CODE=0. Setelah TraceBegin tercatat 43 GP0 words dalam 8 packet; parser mengonsumsi 43/43 words sebagai 42 commands: 39 GPU-state-setting, satu clear-cache, satu monochrome rectangle, satu NOP. Seluruh traffic GP0 berada pada bucket VSync 200–299. Tidak ada triangle, quad, line, atau textured-sprite command.
+- Run [#39080926618](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080926618) dibatalkan sebelum target: 172 live VSync packets, GP0 0 words/0 packets pada jendela yang sempat direkam. Artifact yang terunggah hanya ringkasan teks privat 1,348 byte. Hasil parsial itu bukan pengujian 300 VSync yang lengkap.
+- Probe terbaru [#39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461), pada commit [1edab836](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/1edab8366f250a1cb380b8a87e2f5fb2d7baaf62), masih berstatus in_progress pada pemeriksaan terakhir. Revisi mencoba menghasilkan kategori instruksi/cabang dari memory windows tanpa menerbitkan instruction bytes atau disassembly mentah. Jangan menganggap hasil final sebelum Actions selesai.
+
+Kesimpulan guest saat ini: meskipun host OpenGL sehat, traffic GPU guest yang terukur sampai VSync 300 nyaris tidak memiliki perintah gambar. Belum ada gambar game, title/menu, ataupun respons input yang terverifikasi. Fokus berikutnya ialah membaca ringkasan code-window dari run #39080987461 dan memutuskan apakah pola eksekusi membantu menjelaskan transisi CPU; jangan kembali ke diagnosis GLX dan jangan mengganti emulator/pin. **RT-001 tetap Open / blocked.**
+
+---
+
 ## Validasi ulang OpenGL host (mandiri) — 2026-10-18, Actions #39080977686
 
 Run [#39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686) selesai dengan status success setelah workflow naruto-opengl-diagnostic.yml menambahkan validasi field vendor, renderer, dan versi untuk laporan GLX default serta software. Commit: [cf16162c](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/cf16162c85001d1006fee32725ce01407843ac35).
