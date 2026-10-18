@@ -387,3 +387,11 @@ The exact pinned source at [`0c3572c3db75f97542001e453ae80ba8c3f8acba`](https://
 Runtime [#39083372634](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083372634) confirms the OpenGL backend itself starts and reaches VSync 300 on llvmpipe; however, the 1024×512 VRAM snapshot had one RGB555 color and zero non-black pixels, while live GP0 traffic was only 43 words/42 commands with no polygon, line, or textured-sprite families detected in the observed window. The guest still does not render a valid game frame.
 
 The later CPU-region probe [#39084130154](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39084130154) categorized the load feeding BNE `0x800372f0 → 0x80037320` as `ram-cached` in 14 target samples. That local heuristic does not prove global data-flow or the underlying boot cause. Next, safely trace the RAM value's nearby writer/initializer and compare its value-state across the executable-entry and BIOS-return window. Keep exports to category/count summaries; never upload raw VRAM, memory dumps, instruction records, ROM, BIOS, or private frames.
+
+
+## BIOS compatibility finding — 2026-10-18
+
+The game-specific [PSX Data Center SLPS-03553 record](https://psxdatacenter.com/games/J/N/SLPS-03553.html) lists SCPH7502 in a working ePSXe 2.0 setup. Treat SCPH-7502 as the strongest documented retail-BIOS candidate, not as proven in PCSX-Redux. The checked private release and Library have no retail BIOS file; the release notes explicitly exclude one. No proprietary BIOS was fetched or added.
+
+A controlled GUI comparison was extended to test `openbios-shell.bin` alongside the existing fastboot and chunked open-source builds in run [#39093727808](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39093727808). SHA-256 for the shell build: `713ea2aed58606282b3ff5e91d77f8c5892ea36f5adcd279d2c7dd26604a625d`. This can evaluate whether BIOS startup mode affects the result; it is not a substitute for a SCPH-7502 compatibility test. See [BIOS compatibility evidence](BIOS_COMPATIBILITY.md).
+
