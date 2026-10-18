@@ -1,25 +1,23 @@
-## Hasil input-injection + screen-metrics test — 2026-10-18 (Actions #39081872155)
+## Hasil akhir diagnosis OpenGL, loop guest, input, dan VRAM — 2026-10-18
 
-Run [#39081872155](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081872155) selesai success hingga VSync 300, exit code 0. Artifact privat teks [#12119101894](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081872155/artifacts/12119101894). Gambar raw hanya berada sebentar di runner ephemeral, statistik dihitung lokal dan screenshot mentah + metadata dihapus sebelum upload; artifact tidak memuat gambar.
+### Host OpenGL / Mesa
+Run mandiri [#39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686) sukses. Runner Ubuntu 26.04 dengan Xvfb menggunakan Mesa llvmpipe, vendor Mesa; GLX default/software melaporkan OpenGL 4.5 dan pembuatan konteks compatibility yang meminta 3.3 berhasil tanpa `MESA_GL_VERSION_OVERRIDE` atau `MESA_GLSL_VERSION_OVERRIDE`. Kesimpulan: host GLX/Mesa tidak terbukti sebagai penghalang; GPU fisik tidak diperlukan untuk konteks GL ini.
 
-Audit pin PCSX-Redux membuktikan API Lua controller memang tersedia: PCSX.SIO0.slots[1].pads[1].setOverride(button), clearOverride(button), getButton(button), dengan constants PCSX.CONSTS.PAD.BUTTON. Dalam run ini seluruh 12 aksi tekan/lepas CROSS, START, dan UP mencatat readback yang sesuai (status=PASS), menunjukkan virtual pad override bekerja di lapisan emulator.
+### Guest CPU/GPU dan control flow
+Run lengkap [#39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461) mencapai VSync 300, exit code 0. GP0 hanya 43 words/42 commands: 39 GPU-state-setting, satu clear-cache, satu monochrome rectangle, satu NOP; semua berada pada bucket VSync 200–299. Tidak ada triangle/quad/line/textured-sprite command.
 
-Ini bukan bukti game merespons input: saat pulsa tombol dijalankan, PC tetap berulang di rentang hotspot 0x800372c0–0x800373ff (56 sampel cepat, PC unik 0x80037320=29 dan 0x800372d8=27), GP0 tetap 43 words tanpa primitive gambar. GPU capture pada frame 235/250/265 memberi 0×0; frame 299 memberi 320×240 16-bpp tetapi cuma 1 warna RGB555 berbeda dan 0 piksel non-black dari 76.800. Jadi gambar game masih blank. Marker RSP qSupported timeout pada run ini; sampel PC yang lolos validasi tetap terkumpul, tetapi timeout handshake dicatat sebagai keterbatasan.
+Sampling adaptif [#39081346569](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081346569) menemukan PC runtime hanya berulang pada `0x80037320` dan `0x800372d8`. Run edge statis [#39082046438](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082046438) mengonfirmasi branch di `0x800372f0` bertipe BNE dengan target `0x80037320`, branch di `0x80037330` BNE dengan target `0x800372d8`, dan branch di `0x800372cc` BEQ dengan target `0x80037338`. Ini konsisten dengan siklus control-flow yang sangat berulang, tetapi predicate register yang membuat BNE terjadi belum ditetapkan.
 
-Probe berikutnya [Actions #39082046438](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082046438) mengklasifikasikan jenis dua branch utama secara statis (mis. BEQ/BNE/BLEZ/BGTZ) tanpa operand/byte mentah, guna membedakan loop kondisi yang diamati. **RT-001 tetap Open / blocked** karena input belum mengubah state game dan screenshot masih hitam.
+### Input virtual dan gambar
+Run input [#39081872155](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081872155) sukses pada VSync 300. Dua belas pulsa tekan/lepas Cross, Start, dan Up semuanya mendapat readback PASS dari API Lua Port 1 (`setOverride`, `clearOverride`, `getButton`). Ini membuktikan lapisan API controller menerima override, bukan bahwa game meresponsnya.
 
-## Hasil statis control-flow edge — 2026-10-18 (Actions #39081524928)
+Capture layar frame 235/250/265 berukuran 0×0; frame 299 berukuran 320×240 16-bpp tetapi hanya satu warna RGB555 dan nol piksel non-black dari 76.800. Run VRAM [#39082375609](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082375609) sukses mengambil 1.048.576 byte VRAM (1024×512×16-bit) sementara di runner; statistiknya juga satu warna RGB555 dan nol piksel non-black dari 524.288. Raw capture layar dan VRAM dihapus sebelum artifact hanya-teks dibuat. Jadi ini bukan sekadar kesalahan pemetaan screenshot dari VRAM berwarna: guest VRAM yang diambil pada frame itu juga hitam.
 
-Run [#39081524928](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081524928) sukses menyelesaikan target VSync 300 dan cleanup. Artifact privat teks [#12119460684](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081524928/artifacts/12119460684); hanya kategori/edge kontrol yang diekspor, tanpa byte instruksi atau disassembly.
+### Tes pembeda sedang berjalan
+Run [#39082587807](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082587807) sedang mengukur relasi register secara agregat saat PC memasuki target branch; hanya label relasi dan hitungan akan dicatat, tanpa nilai register/indeks mentah. Jangan menganggap hasil final sebelum job selesai.
 
-Hasil sampel cepat: 29 sampel, seluruhnya di hotspot 0x800372c0–0x800373ff; dua PC unik 0x80037320 (15) dan 0x800372d8 (14). Transisi tercatat 0x80037320→0x800372d8 sebanyak 7, dan 0x800372d8→0x80037320 sebanyak 6; sisanya berupa dua PC tetap berulang. Analisis static control-flow edges dari empat jendela 64-byte menghasilkan:
-- branch di 0x800372f0 → target 0x80037320
-- branch di 0x80037330 → target 0x800372d8
-- edge lain: 0x800372cc → 0x80037338; direct jumps 0x800372fc → 0x80037368, 0x80037304 → 0x80037348, 0x80037310 → 0x80037358, dan 0x80037318 → 0x80037338.
+**RT-001 tetap Open / blocked:** belum ada gambar game valid, title/menu dikenali, atau bukti perubahan state game akibat controller. Emulator/version pin tetap tidak berubah. Langkah selanjutnya bergantung hasil relation-sampler, setelah itu uji kondisi guest/I/O yang ditunjuk—bukan mengulang diagnosis GLX.
 
-Dua target branch utama sama persis dengan dua PC yang berulang pada sampling runtime. Ini bukti kuat bahwa jalur guest berputar pada siklus kontrol di area tersebut, tetapi pengamatan belum membuktikan predicate branch yang sebenarnya aktif atau apakah kondisi itu menunggu input, flag perangkat, atau kondisi runtime lainnya. GPUDump tetap identik: 299 live VSync, 43 GP0 words/42 commands seluruhnya dalam bucket 200–299; 39 GPU-state-setting, 1 clear-cache, 1 monochrome rectangle, 1 NOP; tanpa triangle/quad/line/textured-sprite command. Tidak ada screenshot game yang valid, menu yang dikenali, atau perubahan input yang terverifikasi.
-
-Langkah teknis berikutnya: klasifikasikan tipe branch (tanpa operand/register mentah) untuk dua cabang utama, lalu audit API input virtual pada pin PCSX-Redux agar dapat menguji tombol secara terkontrol saat emulator berjalan. Jangan mengubah emulator/pin atau mempublikasikan artefak sensitif. **RT-001 tetap Open / blocked.**
 
 ## Hasil PC sampling adaptif di hotspot — 2026-10-18 (Actions #39081346569)
 
