@@ -1,31 +1,11 @@
 ## Status runtime terbaru — 2026-10-18
 
-- OpenGL mandiri: [Actions #39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686) sukses; Mesa llvmpipe membuat konteks OpenGL aktual 4.5 tanpa version override dan konteks compatibility yang meminta 3.3 berhasil.
-- Probe CPU/GPU lengkap: [Actions #39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461) sukses pada VSync 300. GP0 hanya 43 words/42 commands di bucket 200–299.
-- Sampling PC adaptif: [Actions #39081346569](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081346569) sukses; 31 sampel cepat berpusat pada 0x80037320 dan 0x800372d8.
-- Edge control-flow statis: [Actions #39081524928](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081524928) sukses. Branch 0x800372f0 menargetkan 0x80037320; branch 0x80037330 menargetkan 0x800372d8—target yang sama dengan PC runtime yang berulang. Ini mendukung satu siklus kontrol guest, belum menyimpulkan apakah penyebabnya polling input atau flag perangkat.
-- Berikutnya: klasifikasikan jenis branch secara ringkas; audit API input virtual pada source pin supaya pengujian tombol bisa diinjeksikan di cloud tanpa laptop.
-- RT-001 tetap Open / blocked: belum ada screenshot game valid, title/menu dikenali, atau perubahan state akibat input controller yang terbukti.
-
-## Hasil Actions terbaru — 2026-10-17 (run #39021127913)
-
-Run [#39021127913](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39021127913) telah selesai dengan status GitHub Actions `success`; itu hanya menandakan langkah workflow dan cleanup selesai, bukan game berhasil boot sampai menu.
-
-Bukti runtime yang terkonfirmasi:
-- Klien RSP tersambung ke PCSX-Redux port 3333; `qSupported` sukses dan breakpoint `Z1,80011448,4` mendapat balasan `OK`.
-- Konfigurasi eksperimen sudah memasukkan upaya setup controller Port 1 Analog dan remap yang juga dipakai pada probe sebelumnya.
-- Log PCSX-Redux mencatat disc `SLPS-03553`, `SYSTEM.CNF`, `BOOT = cdrom:\\SLPS_035.53;1`, `EXEC:PC0(80011448) T_ADDR(80010000) T_SIZE(0005d800)`, dan `Execute !`.
-- Walaupun loader mencatat handoff executable, selama jendela tunggu 40 detik tidak ada stop event breakpoint yang sah. Ctrl-C RSP kemudian menghasilkan `T05`; sampel register sesudah interrupt menunjukkan PC `0x80000080`, CP0 Status `0x40000404`, BadVAddr `0x00000000`, Cause `0x00000400`. Nilai tersebut hanya snapshot ketika interrupt/handler, bukan diagnosis root cause.
-- Karena kondisi entry `PC == 0x80011448` tidak pernah diverifikasi, workflow dengan benar **tidak** meneruskan GPU GP0/GP1/DMA2 watchpoints. Jangan menyebut GPU watchpoint hit atau menyimpulkan bahwa game sudah menjalankan rendering.
-- Run ini tidak mengambil bukti visual baru. Hasil capture terdahulu tetap layar hitam; title/menu serta respons input belum terbukti.
-
-Artifact privat `naruto-fastboot-gpu-watchpoints-private` (ID `12096697815`) tersedia sampai sekitar 2026-10-20 09:28 UTC. ROM, BIOS, emulator, log dan file sementara telah dibersihkan dari runner.
-
-**Langkah berikutnya:** hentikan sementara eksperimen breakpoint/watchpoint karena breakpoint remote belum terbukti bisa menangkap entry meskipun balasan pemasangan `OK`. Gunakan command line baseline yang telah terbukti mencapai `Execute !` dengan `-exec` Port 1 Analog setup **dan** `-run`, lalu lakukan polling register PC/CP0 minimal dan rapat selama boot (tanpa GDB modern; gunakan klien RSP minimal yang sudah berhasil). Korelasikan sampel PC dengan marker loader untuk menentukan apakah CPU masuk ke kode EXE, tetap berputar di BIOS/exception vector, atau berpindah bolak-balik. Jangan mulai GPU watchpoint lagi sebelum mekanisme breakpoint diverifikasi terpisah dan jangan mengulang tes backend grafis.
-
-**RT-001 tetap Open / blocked.** Story Mode belum dimulai/tamat; jangan menetapkan aturan gameplay berdasarkan dugaan.
-
----
+- OpenGL mandiri: [Actions #39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686) sukses; Mesa llvmpipe menyediakan konteks aktual 4.5 tanpa version override dan konteks compatibility yang meminta 3.3 berhasil.
+- Probe CPU/GPU lengkap [#39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461): GP0 tetap hanya 43 words/42 commands dalam bucket VSync 200–299; tidak ada triangle/quad/line/textured sprite.
+- PC sampling [#39081346569](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081346569) dan edge statis [#39081524928](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081524928) menunjukkan PC berulang pada 0x80037320 dan 0x800372d8; branch statis dari 0x800372f0/0x80037330 menargetkan dua alamat itu.
+- Input test [#39081872155](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081872155) sukses: 12 pulsa tekan/lepas CROSS/START/UP semua readback PASS dari Lua pad API. Namun pola PC dan GP0 tidak berubah; screenshot frame 299 320×240, 16-bpp, hanya 1 warna RGB555 dan 0 piksel non-black (76.800 pixels total). Capture frame 235/250/265 masih 0×0. Jadi input API berfungsi, tetapi respons game belum terbukti.
+- Probe tipe branch [#39082046438](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082046438) terpicu untuk mengetahui jenis predicate branch statis tanpa operand/code mentah. Sesudah itu perlu tindak lanjut pada kondisi guest/hardware state yang ditunggu loop, bukan ulangi GLX.
+- RT-001 tetap Open / blocked: belum ada gambar game valid/title-menu dikenali, dan belum ada perubahan game state akibat input.
 
 # Koreksi RSP watchpoint — 2026-10-17
 
