@@ -105,6 +105,61 @@ jobs:
           cat > "$WORK/gpu-traffic.lua" <<'LUA'
           local frame_count = 0
           local stop_frame = 300
+          local pad = PCSX.SIO0.slots[1].pads[1]
+          local buttons = PCSX.CONSTS.PAD.BUTTON
+          local input_sequence = {
+              {frame=225, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=235, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=238, action="press", button=buttons.START, name="START"},
+              {frame=248, action="release", button=buttons.START, name="START"},
+              {frame=251, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=261, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=264, action="press", button=buttons.START, name="START"},
+              {frame=274, action="release", button=buttons.START, name="START"},
+              {frame=277, action="press", button=buttons.UP, name="UP"},
+              {frame=287, action="release", button=buttons.UP, name="UP"},
+              {frame=290, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=298, action="release", button=buttons.CROSS, name="CROSS"},
+          }
+          local input_index = 1
+          local capture_targets = { [235]=true, [250]=true, [265]=true, [299]=true }
+
+          local function apply_input(action)
+              local expected = action.action == "press"
+              local ok, readback = pcall(function()
+                  if expected then pad.setOverride(action.button) else pad.clearOverride(action.button) end
+                  return pad.getButton(action.button)
+              end)
+              if not ok then
+                  print(string.format("PAD_INJECT frame=%d button=%s action=%s status=ERROR", frame_count, action.name, action.action))
+                  return
+              end
+              local status = (readback == expected) and "PASS" or "FAIL"
+              print(string.format("PAD_INJECT frame=%d button=%s action=%s readback=%s expected=%s status=%s",
+                  frame_count, action.name, action.action, tostring(readback), tostring(expected), status))
+          end
+
+          local function capture_frame(n)
+              local ok, err = pcall(function()
+                  local shot = PCSX.GPU.takeScreenShot()
+                  local bpp = (shot.bpp == 0) and 16 or 24
+                  local raw_path = string.format("captures/raw/frame-%06d.raw", n)
+                  local raw = assert(Support.File.open(raw_path, "TRUNCATE"), "cannot create private temporary screenshot")
+                  raw:writeMoveSlice(shot.data)
+                  raw:close()
+                  local meta_path = string.format("captures/frame-%06d.json", n)
+                  local meta = assert(io.open(meta_path, "wb"), "cannot create temporary screenshot metadata")
+                  meta:write(string.format(
+                      '{"frame":%d,"width":%d,"height":%d,"bpp":%d,"expected_bytes":%d,"guest_fps":%.4f}\n',
+                      n, shot.width, shot.height, bpp, shot.width * shot.height * bpp / 8,
+                      PCSX.GPU.getGuestFPS()
+                  ))
+                  meta:close()
+                  print(string.format("GPU_SCREENSHOT_CAPTURE frame=%d width=%d height=%d bpp=%d",
+                      n, shot.width, shot.height, bpp))
+              end)
+              if not ok then print(string.format("GPU_SCREENSHOT_CAPTURE frame=%d status=ERROR", n)) end
+          end
 
           PCSX.GPU.startDump("captures/raw/runtime.gpudump")
           print(string.format("GPU_DUMP_ARMED=%s", tostring(PCSX.GPU.isDumpArmed())))
@@ -118,6 +173,11 @@ jobs:
 
           gpuTrafficListener = PCSX.Events.createEventListener("GPU::Vsync", function()
               frame_count = frame_count + 1
+              while input_index <= #input_sequence and input_sequence[input_index].frame == frame_count do
+                  apply_input(input_sequence[input_index])
+                  input_index = input_index + 1
+              end
+              if capture_targets[frame_count] then capture_frame(frame_count) end
               if frame_count % 100 == 0 then
                   print(string.format("GPU_TRAFFIC_VSYNC frame=%d guest_fps=%.4f dump_frames=%d",
                       frame_count, PCSX.GPU.getGuestFPS(), PCSX.GPU.getDumpFrames()))
@@ -402,7 +462,7 @@ jobs:
           echo "EMULATOR_EXIT_CODE=$emu_rc"
           if kill -0 "$sampler_pid" 2>/dev/null; then kill "$sampler_pid" 2>/dev/null || true; fi
           wait "$sampler_pid" 2>/dev/null || true
-          grep -E 'PAD_SETUP|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|error|Error|ERROR' \
+          grep -E 'PAD_SETUP|PAD_INJECT|GPU_SCREENSHOT_CAPTURE|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|error|Error|ERROR' \
             "$WORK/pcsx.stdout" "$WORK/pcsx.log" > "$WORK/captures/important-log-lines.txt" || true
           cat "$WORK/captures/important-log-lines.txt" || true
           echo "GPU_TRAFFIC_EMULATOR_STEP_DONE=1"
@@ -414,6 +474,7 @@ jobs:
           set -euo pipefail
           cd "$WORK"
           python3 - <<'PY'
+          import json
           import struct
           from collections import Counter
           from pathlib import Path
@@ -587,6 +648,56 @@ jobs:
                   output.append(f"GPU_DUMP_LIVE_GPU_TRAFFIC_PRESENT={str(words_live[0] > 0 or words_live[1] > 0).lower()}")
               path.unlink(missing_ok=True)
 
+          # Inspect screenshot pixel diversity in memory, then discard every
+          # temporary screenshot and metadata file before artifact upload.
+          for meta_path in sorted(Path("captures").glob("frame-*.json")):
+              try:
+                  meta = json.loads(meta_path.read_text())
+                  frame = int(meta["frame"])
+                  width, height, bpp = int(meta["width"]), int(meta["height"]), int(meta["bpp"])
+                  expected = int(meta["expected_bytes"])
+                  raw_path = Path("captures/raw") / f"frame-{frame:06d}.raw"
+                  raw = raw_path.read_bytes() if raw_path.exists() else b""
+                  prefix = f"GPU_SCREENSHOT_FRAME_{frame}"
+                  if width <= 0 or height <= 0 or expected <= 0:
+                      output.append(f"{prefix}_STATUS=invalid_dimensions")
+                      output.append(f"{prefix}_WIDTH={width}")
+                      output.append(f"{prefix}_HEIGHT={height}")
+                  elif len(raw) != expected:
+                      output.append(f"{prefix}_STATUS=byte_count_mismatch")
+                      output.append(f"{prefix}_EXPECTED_BYTES={expected}")
+                      output.append(f"{prefix}_ACTUAL_BYTES={len(raw)}")
+                  elif bpp == 16:
+                      words = [item[0] for item in struct.iter_unpack("<H", raw)]
+                      colors = [word & 0x7fff for word in words]
+                      output.extend([
+                          f"{prefix}_STATUS=parsed",
+                          f"{prefix}_WIDTH={width}",
+                          f"{prefix}_HEIGHT={height}",
+                          f"{prefix}_BPP={bpp}",
+                          f"{prefix}_DISTINCT_RGB555_COLORS={len(set(colors))}",
+                          f"{prefix}_NONBLACK_PIXELS={sum(color != 0 for color in colors)}",
+                          f"{prefix}_TOTAL_PIXELS={len(colors)}",
+                      ])
+                  elif bpp == 24:
+                      pixels = [raw[i:i+3] for i in range(0, expected, 3)]
+                      output.extend([
+                          f"{prefix}_STATUS=parsed",
+                          f"{prefix}_WIDTH={width}",
+                          f"{prefix}_HEIGHT={height}",
+                          f"{prefix}_BPP={bpp}",
+                          f"{prefix}_DISTINCT_RGB_COLORS={len(set(pixels))}",
+                          f"{prefix}_NONBLACK_PIXELS={sum(any(pixel) for pixel in pixels)}",
+                          f"{prefix}_TOTAL_PIXELS={len(pixels)}",
+                      ])
+                  else:
+                      output.append(f"{prefix}_STATUS=unsupported_bpp")
+                      output.append(f"{prefix}_BPP={bpp}")
+              except Exception as exc:
+                  output.append(f"GPU_SCREENSHOT_META_ERROR type={type(exc).__name__}")
+              finally:
+                  meta_path.unlink(missing_ok=True)
+
           raw_dir = Path("captures/raw")
           if raw_dir.exists():
               for item in raw_dir.iterdir():
@@ -597,6 +708,7 @@ jobs:
                       shutil.rmtree(item)
               raw_dir.rmdir()
           output.append("RAW_GPU_DUMP_REMOVED=1")
+          output.append("RAW_TEMP_SCREENSHOTS_REMOVED=1")
           Path("captures/gpu-traffic-summary.txt").write_text("\n".join(output) + "\n")
           cpu_path = Path("cpu-state-summary.txt")
           if cpu_path.exists():
