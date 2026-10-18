@@ -1,19 +1,10 @@
 ## Status runtime terbaru — 2026-10-18
 
 - OpenGL mandiri: [Actions #39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686) sukses; Mesa llvmpipe membuat konteks OpenGL aktual 4.5 tanpa version override dan konteks compatibility yang meminta 3.3 berhasil.
-- Probe penuh CPU/GPU: [Actions #39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461) selesai sukses pada VSync 300, 75 sampel bulk register valid. GP0 hanya 43 words/42 commands dan semuanya di VSync 200–299; tidak ada primitive gambar triangle/quad/line/textured sprite.
-- Probe sampling PC adaptif terbaru: [Actions #39081346569](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081346569) berjalan pada commit a8215c8f. Tujuannya mengambil sampel sekitar 10 Hz selama 8 detik setelah PC masuk 0x800372c0–0x800373ff, lalu menyimpan ringkasan frekuensi PC/transisi saja. Belum ada kesimpulan sampai run selesai.
-- RT-001 tetap Open / blocked: belum ada screenshot game yang valid, title/menu yang dikenali, atau perubahan state akibat input controller yang terbukti. Jangan tandai selesai dan jangan mengubah emulator/pin.
-
-## Gerbang grafis host terverifikasi — 2026-10-18
-
-Actions [#39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686) membuktikan GLX/Mesa software dapat membuat konteks valid tanpa version override: renderer llvmpipe, OpenGL 4.5, serta konteks compatibility yang diminta sebagai 3.3 berhasil dibuat (versi aktual 4.5). Jangan mengulangi instalasi/diagnosis GLX sebagai langkah pertama dan jangan menyimpulkan perlunya GPU fisik.
-
-Pada pin PCSX-Redux 0c3572c3db75f97542001e453ae80ba8c3f8acba, GPU::takeScreenShot() dasar tidak diimplementasikan pada semua backend; Software GPU menghitung ukuran capture dari register posisi/ujung display guest. Karena itu, saat capture 0×0, tentukan backend yang aktif dan baca sumber guest-display/VRAM secara aman. Gunakan PCSX.GPU.getVRAM() atau ringkasan statistik; jangan mengunggah raw VRAM, dump GPU, atau trace instruksi. Setelah gerbang host dipastikan, lanjutkan korelasi CPU/GP0 pada run terbaru. RT-001 tetap Open / blocked sampai gambar game yang valid, menu yang dikenali, serta perubahan state akibat controller terbukti.
-
-Run bukti: [#39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686).
-
----
+- Probe CPU/GPU lengkap: [Actions #39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461) sukses pada VSync 300. 75 sampel bulk register valid; GP0 hanya 43 words/42 commands di bucket 200–299.
+- PC sampling adaptif: [Actions #39081346569](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081346569) sukses pada VSync 300. Dari 31 sampel cepat pada 0,1 s, PC hanya bergantian di 0x80037320 (17) dan 0x800372d8 (14). Ini menguatkan dugaan loop/eksekusi berulang, belum bukti akar sebab.
+- Probe edge control-flow statis berikutnya: [Actions #39081524928](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081524928) terpicu setelah perubahan workflow, status awal queued. Ia akan merangkum target branch/jump pada rentang hotspot tanpa raw byte/disassembly.
+- RT-001 tetap Open / blocked: belum ada screenshot game valid, title/menu dikenali, atau perubahan state akibat input controller yang terbukti. Jangan menandai selesai dan jangan mengubah emulator/pin.
 
 ## Diagnosis CPU polling dan keputusan probe berikutnya — 2026-10-17 (Actions #39029860914)
 
