@@ -1,3 +1,7 @@
+## Catatan diagnostik runtime — 2026-10-18
+
+Build yang dipatok tetap PCSX-Redux AnyLinux commit 0c3572c3db75f97542001e453ae80ba8c3f8acba. Capture dari jendela PCSX-Redux valid secara teknis, tetapi menunjukkan logo Sony pada ~60 detik dan bentuk geometris oranye/kuning pada ~80 detik, bukan menu Naruto. Source src/core/gpu.cc pada commit tersebut mencatat 0008a16c sebagai kata GP0 yang tidak dikenali; penyebab dan dampaknya belum dibuktikan. GDB client modern mengirim paket RSP yang tidak didukung build ini, sehingga sampel PC run tersebut tidak sah. Jangan mengganti paket atau commit hanya berdasarkan bukti ini.
+
 # PCSX-Redux package inventory for Naruto research
 
 **Updated:** 2026-10-18  
