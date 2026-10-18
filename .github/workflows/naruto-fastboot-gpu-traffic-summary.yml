@@ -73,11 +73,13 @@ jobs:
           echo "ROM/CUE/BIOS/PCSX-Redux pin verified."
 
       - name: Record emulated GPU traffic until post-handoff VSync 300
+        env:
+          GPU_BACKEND_PROBE: ${{ contains(github.event.head_commit.message, '[openglgpu-probe]') }}
         shell: bash
         run: |
           set -euo pipefail
           GPU_BACKEND_FLAG="-softgpu"
-          if git -C "$GITHUB_WORKSPACE" log -1 --pretty=%B | grep -Fq "[openglgpu-probe]"; then
+          if [[ "${GPU_BACKEND_PROBE:-false}" == "true" ]]; then
             GPU_BACKEND_FLAG="-openglgpu"
           fi
           echo "GPU_BACKEND_SELECTED=$GPU_BACKEND_FLAG"
