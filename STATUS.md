@@ -1,3 +1,13 @@
+## Terbaru — Start membuka menu utama; はじめから terpilih (2026-10-18)
+
+- Run [#39145309203](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39145309203) selesai dengan workflow `success`; commit eksperimen `43bab6c337693eff87d5fa996d450299adc31093`. Emulator mencapai target 3.000 VSync dengan BIOS retail SCPH-7502 (EU), disc `SLPS03553`, executable `SLPS_035.53;1`, source PCSX-Redux pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, SoftGPU, dan Port 1 Analog / Auto. Konfigurasi lain dipertahankan.
+- Bukti framebuffer 640×480 aktual: frame 2.649 dan 2.650 masih menunjukkan title prompt; frame 2.660 mulai memperlihatkan kotak transisi; frame 2.670 sudah menampilkan menu dengan panah di `はじめから` dan pilihan kedua `ロード`. Menu tetap terlihat pada 2.680, 2.700, 2.750, 2.800, 2.900, 2.950, dan 2.999.
+- Start ditekan frame 2.650 dan dilepas frame 2.680. Readback API lulus, tetapi bukti game memprosesnya adalah perubahan visual sesudah input: prompt title berganti menjadi menu. Circle tidak dikirim dalam run ini.
+- Screenshot aktual menu hanya menunjukkan dua pilihan yang terbaca: `はじめから` dan `ロード`. Jangan menganggap `コンティニュー` tersedia pada layar ini hanya karena disebut referensi luar.
+- Artifact privat [#12143433923](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39145309203/artifacts/12143433923) berisi ringkasan dan screenshot pilihan; retensi 3 hari. Log menyatakan `RAW_GPU_DUMP_REMOVED=1` dan `RAW_TEMP_SCREENSHOTS_REMOVED=1`; ROM/BIOS/raw dump tidak diunggah.
+- **Kemajuan RT-001:** tujuan 1, Start membuka menu, sekarang **terverifikasi**. Tujuan 2–6 masih belum terbukti: memilih mulai dari awal, memasuki mode/story, respons gameplay yang terukur, mekanik, dan menamatkan Story Mode.
+- **Langkah berikut:** pertahankan runtime yang sama. Karena panah jelas berada di `はじめから`, kirim hanya Circle/O pada frame 2.750 dan lepas pada 2.780. Ambil checkpoint rapat sebelum/sesudahnya dan amati sampai VSync 3.000. Jika mode select muncul, baca pilihan aktual dari screenshot dan jangan menekan tombol lagi sebelum layar tersebut teridentifikasi.
+
 ## Terbaru — layar judul Naruto terkonfirmasi (2026-10-18)
 
 - Run [#39122631591](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39122631591) selesai dengan pipeline success dan menghentikan emulator sesuai target VSync 3.000. BIOS retail SCPH-7502 (EU), disc SLPS03553, dan executable SLPS_035.53;1 terdeteksi. Konfigurasi controller yang tercatat: connected=true, device_type=Analog, input_type=Auto.

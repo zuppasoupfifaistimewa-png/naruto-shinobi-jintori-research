@@ -1,3 +1,18 @@
+## Handoff terbaru — title Start membuka menu; konfirmasi はじめから adalah langkah aktif berikutnya (2026-10-18)
+
+Run [#39145309203](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39145309203), commit `43bab6c337693eff87d5fa996d450299adc31093`, telah selesai. Frame 2.649/2.650 menunjukkan prompt judul; frame 2.660 menunjukkan transisi kotak menu; frame 2.670 menunjukkan menu pilihan `はじめから` dan `ロード`, panah berada pada `はじめから`. Menu bertahan sampai frame 2.999. Input Start frame 2.650–2.680 adalah satu-satunya tombol yang diinjeksi, dan perubahan visual sesudahnya merupakan bukti runtime bahwa Start membuka menu.
+
+**Batas kesimpulan:** menu utama terbuka dan pilihan mulai dari awal terpilih. Belum ada Circle/confirm, layar Mode Select, Story Mode, atau gameplay. Screenshot yang diperiksa hanya memperlihatkan dua opsi; jangan menambahkan opsi ketiga berdasarkan asumsi atau referensi saja. Jangan menafsirkan status workflow `success` sebagai bukti game selesai dimainkan.
+
+**Eksperimen berikutnya yang dikonfigurasi:**
+- BIOS SCPH-7502, disc SLPS03553, PCSX-Redux pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, SoftGPU, Port 1 Analog/Auto, dan semua jalur aset privat dipertahankan.
+- Tidak kirim Start. Tekan Circle/O pada frame 2.750, lepas pada 2.780; itu mengonfirmasi opsi yang secara visual telah terpilih, tanpa input lain.
+- Capture sebelum/sesudah tekan: 2.749, 2.750, 2.760, 2.770, 2.780, 2.790, 2.800, lalu 2.850/2.900/2.950/2.999.
+- Jika Mode Select muncul, catat tulisan dan opsi sebenarnya dari screenshot; jangan menebak posisi Story Mode dan jangan kirim tombol berikutnya sampai layar baru dibaca. Sesudah itu, uji pemilihan Story Mode secara terpisah.
+- Artifact privat #12143433923 hanya berisi summary dan bukti visual minimum; cleanup raw dump dan raw screenshot berhasil. Pertahankan kebijakan ini untuk run selanjutnya.
+
+**Status:** Start → menu utama terbukti; konfirmasi `はじめから` dan mode/story masih pending.
+
 ## Hasil terbaru — peringatan berubah menjadi layar hak cipta/latar (2026-10-18)
 
 - Run [#39120694338](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39120694338) selesai dengan pipeline `success`, mencapai 2.400 VSync; BIOS retail **SCPH-7502 (EU)** dan executable `SLPS_035.53;1` terdeteksi. Konfigurasi pad efektif dicatat `connected=true`, `device_type=Analog`, `input_type=Auto`.

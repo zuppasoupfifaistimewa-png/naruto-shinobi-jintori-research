@@ -1,3 +1,19 @@
+## Pembaruan RT-001 — Start → menu terverifikasi; pilih mulai dari awal selanjutnya (2026-10-18)
+
+Run [#39145309203](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39145309203) menyelesaikan target 3.000 VSync dan mengunggah artifact privat #12143433923. Screenshot framebuffer 640×480 menunjukkan title prompt pada frame 2.649/2.650, transisi kotak menu pada 2.660, lalu pilihan `はじめから` (panah berada di pilihan ini) dan `ロード` pada frame 2.670. Menu tetap tampil sampai frame 2.999. Start dipulse pada frame 2.650–2.680; tidak ada Circle atau tombol lain pada run ini.
+
+**Acceptance status:**
+1. Start benar-benar membuka menu pilihan — **PASS**, berdasar perubahan screenshot yang terjadi setelah Start.
+2. `はじめから` berhasil dikonfirmasi — **PENDING**.
+3. Story Mode dimulai — **PENDING**.
+4. Input mengubah state gameplay di luar menu — **PENDING**.
+5. Gameplay/mekanik diuji — **PENDING**.
+6. Story Mode tamat dengan bukti — **PENDING**.
+
+**Langkah tes berikutnya:** pertahankan BIOS SCPH-7502 (EU), disc SLPS03553 / `SLPS_035.53;1`, PCSX-Redux source pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, SoftGPU, Port 1 Analog/Auto, dan target VSync 3.000. Tekan Circle/O di frame 2.750 dan lepas di frame 2.780 saja. Capture 2.749–2.800 dengan jarak rapat lalu checkpoint 2.850/2.900/2.950/2.999. Mode Select hanya dianggap teridentifikasi jika tulisan opsinya terbaca pada bukti visual aktual. Jangan menekan tombol tambahan sampai transisi dibaca.
+
+Bukti tetap privat dan minimum: hanya ringkasan teks dan screenshot; raw GPU dump/temp screenshot dihapus sebelum unggah. Artifact privat memiliki retensi 3 hari. RT-001 belum selesai dan Story Mode belum dimulai/tamat.
+
 ## Hasil terbaru — peringatan berubah menjadi layar hak cipta/latar (2026-10-18)
 
 - Run [#39120694338](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39120694338) selesai dengan pipeline `success`, mencapai 2.400 VSync; BIOS retail **SCPH-7502 (EU)** dan executable `SLPS_035.53;1` terdeteksi. Konfigurasi pad efektif dicatat `connected=true`, `device_type=Analog`, `input_type=Auto`.

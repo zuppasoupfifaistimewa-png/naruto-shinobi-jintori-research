@@ -1,3 +1,15 @@
+## Hasil — Start menghasilkan transisi visual ke menu utama (run #39145309203, 2026-10-18)
+
+**Perubahan terkontrol:** setelah run [#39122631591](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39122631591) menekan Start terlalu dini dan tidak mengisolasi responsnya, run ini mempertahankan BIOS/ROM/emulator/SoftGPU/controller yang sama lalu hanya menekan Start pada frame 2.650 (release 2.680). Circle ditiadakan agar hanya satu tombol diuji.
+
+**Bukti hasil:** log menegaskan input override dibaca kembali sesuai pada frame 2.650/2.680. Perbandingan screenshot frame 2.649, 2.650, 2.660, dan 2.670 memperlihatkan layar judul dengan prompt berubah menjadi kotak pilihan; pada 2.670 tertulis `はじめから` dengan panah penunjuk dan `ロード` di bawahnya. Pilihan tetap terlihat sampai 2.999. Oleh sebab itu, transisi ke menu merupakan respons game yang terlihat dan selaras waktu dengan Start. Ini tidak membuktikan Circle atau pilihan menu diproses.
+
+**Koreksi referensi:** jangan memaksakan `コンティニュー` sebagai pilihan ketiga. Pada framebuffer aktual yang didapat dalam run ini hanya dua opsi yang tampak jelas, `はじめから` dan `ロード`.
+
+**Keamanan bukti:** artifact privat #12143433923 berisi screenshot framebuffer 640×480 dan ringkasan teks. Parser log menyatakan `RAW_GPU_DUMP_REMOVED=1` serta `RAW_TEMP_SCREENSHOTS_REMOVED=1`. ROM, BIOS, dan GPU dump mentah tetap privat dan tidak masuk artifact.
+
+**Eksperimen berikutnya:** pada baseline yang sama, tekan hanya Circle/O pada frame 2.750 (menu dan panah pertama sudah stabil) lalu lepas pada 2.780; checkpoint 2.749, 2.750, 2.760, 2.770, 2.780, 2.790, 2.800, 2.850, 2.900, 2.950, 2.999. Cari transisi mode select; kalau terlihat, identifikasi opsi aktual sebelum input berikutnya.
+
 ## Hasil terbaru — peringatan berubah menjadi layar hak cipta/latar (2026-10-18)
 
 - Run [#39120694338](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39120694338) selesai dengan pipeline `success`, mencapai 2.400 VSync; BIOS retail **SCPH-7502 (EU)** dan executable `SLPS_035.53;1` terdeteksi. Konfigurasi pad efektif dicatat `connected=true`, `device_type=Analog`, `input_type=Auto`.
