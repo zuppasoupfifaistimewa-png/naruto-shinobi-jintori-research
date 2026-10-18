@@ -1,15 +1,13 @@
 ## Status runtime terbaru — 2026-10-18
 
-- OpenGL host [#39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686): llvmpipe bisa membuat OpenGL 4.5 compatibility tanpa version override; tes ini standalone.
+- OpenGL host [#39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686): llvmpipe membuat OpenGL 4.5 compatibility tanpa version override.
 - Guest CPU/GPU [#39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461): GP0 hanya 43 words/42 commands, tidak ada primitive gambar.
-- Branch loop: [#39082046438](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082046438) mengonfirmasi BNE 0x800372f0→0x80037320 dan BNE 0x80037330→0x800372d8. [#39082587807](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082587807) mencatat target-entry relation unequal pada masing-masing BNE sebanyak 16 dan 11 sampel.
-- Input [#39081872155](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081872155): 12 pulse readback PASS, tetapi tidak ada perubahan gambar/game-state.
-- VRAM/screen [#39082375609](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082375609): screenshot 320×240 dan VRAM 1024×512 sama-sama satu warna RGB555, nol piksel non-black. Raw capture dihapus sebelum upload.
-- Run [#39082912598](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082912598) ternyata memakai `-softgpu`; bukan hasil backend OpenGL. Selektor sudah diperbaiki pada commit [eb9cb4d2](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/eb9cb4d250c48a926f672b298cc51e2babf29a75). Probe OpenGL backend [#39083141057](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083141057) queued pada pemeriksaan terakhir.
-- RT-001 tetap Open / blocked sampai gambar game, title/menu, dan perubahan state controller dapat diverifikasi. Jangan mengganti emulator/pin.
-
-
----
+- Branch loop [#39082587807](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082587807): pada entry target branch, relasi dua BNE tetap unequal (16 dan 11 sampel).
+- Input [#39081872155](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081872155): 12 pulse Cross/Start/Up readback PASS, tetapi tidak mengubah game state.
+- VRAM software [#39082375609](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082375609): satu warna, nol piksel non-black baik screen 320×240 maupun VRAM 1024×512.
+- OpenGL backend run [#39083141057](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083141057) terkonfirmasi memilih `-openglgpu` dan berjalan di Mesa, namun timeout pada VSync 270; tidak ada GP0 traffic dan frame 299 belum tercapai. API screenshot tidak didukung oleh kelas OpenGL GPU pada pin ini.
+- Extended OpenGL probe [#39083372634](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083372634) queued, dengan timeout 170s hanya untuk commit marker `[openglgpu-probe]`; default selanjutnya tetap Software GPU.
+- RT-001 tetap Open / blocked sampai gambar game/title/menu dan perubahan state akibat input dapat diverifikasi.
 
 # Addendum 2026-10-17 — RSP minimal dan GPU-watchpoint
 
