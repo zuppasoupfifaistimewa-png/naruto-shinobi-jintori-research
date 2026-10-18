@@ -1,3 +1,11 @@
+## Terbaru — progres startup SCPH-7502, 2026-10-18
+
+- Run [#39102138479](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39102138479) membuktikan framebuffer maju melewati logo PlayStation: internal frame 1.100 menampilkan DIMPS, frame 1.300 menampilkan peringatan kesehatan Jepang. Screenshot jendela emulator pada ~660 detik juga menampilkan peringatan itu. Disc tetap terdeteksi sebagai `SLPS03553` / `SLPS_035.53;1`, retail BIOS SCPH-7502 terdeteksi, dan log berisi `EXEC:PC0` + `Execute !`.
+- Batas timeout 700 detik menghentikan run pada sekitar VSync 1.428 (marker VSync terakhir 1.400; sampel PC terakhir ~665 s di `0x800372d8`), sebelum checkpoint 1.500. Workflow success hanya berarti diagnostic pipeline dan cleanup selesai, bukan game boot sukses.
+- Start di frame 610/650/690 dilakukan saat layar masih splash PlayStation, jadi terlalu awal; Circle setelahnya tidak terbukti mengubah layar. Run berikutnya mengirim Start pada frame 1.450 setelah peringatan kesehatan muncul, Circle pada frame 1.550/1.650/1.750, observasi hingga VSync 1.800, serta screenshot/VRAM tambahan.
+- **Run aktif:** [#39117084569](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39117084569). Tunggu run ini sebelum memulai eksperimen paralel.
+- Status tetap **RT-001 OPEN; Story Mode belum terbukti dimulai atau tamat**. Semua raw dump / ROM / BIOS tetap privat dan dibersihkan dari artifact.
+
 ## Jendela observasi diperpanjang dan referensi timeline — 2026-10-18
 
 - Run [#39101435497](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39101435497) sedang menguji Start + Circle memakai SCPH-7502, pinned PCSX-Redux dan dynarec hingga VSync 900; screen captures tersebar sampai detik 410, PC-only sampling berjeda 25 detik. Input API readback hanya membuktikan injeksi, bukan respons game.
