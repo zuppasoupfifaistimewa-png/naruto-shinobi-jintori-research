@@ -321,3 +321,15 @@ Audit source persis pada pin PCSX-Redux 0c3572c3db75f97542001e453ae80ba8c3f8acba
 - [src/core/pcsxlua.cc](https://github.com/grumpycoders/pcsx-redux/blob/0c3572c3db75f97542001e453ae80ba8c3f8acba/src/core/pcsxlua.cc) meneruskan PCSX.GPU.takeScreenShot() ke backend GPU; binding getVRAM() tersedia untuk tes VRAM terpisah.
 
 Arah lanjutan: jangan mengulang diagnosis GLX atau mewajibkan GPU fisik. Fokus berikutnya adalah kondisi guest (GPU PS1 display/VRAM dan eksekusi CPU) serta pemeriksaan hasil runtime terakhir sebelum mengubah harness. RT-001 tetap Open / blocked.
+
+
+## Hasil baca jendela kode CPU (tanpa ekspor instruksi) — 2026-10-18
+
+Run [#39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461) RSP sampler tersambung, `qSupported` sukses, 75 sampel register valid; target VSync300 exit code 0. Empat jendela memori 64 byte dari executable dibaca dan dihitung secara lokal, tanpa byte mesin/disassembly/operand pada artifact:
+- base 0x80050b00: branch=0, jump=0, load=2, store=6, immediate arithmetic=4, special arithmetic=4.
+- base 0x8003c080: conditional branch=2 (forward 2), jump=4, load=1, immediate arithmetic=5, special arithmetic=4.
+- base 0x80037300: conditional branch=1, backward-branch=1, jump=3, load=2, immediate arithmetic=4, special arithmetic=6.
+- base 0x800372c0: conditional branch=2 (forward 2), jump=1, load=3, store=2, immediate arithmetic=3, special arithmetic=5.
+Keempat jendela tidak berisi kategori syscall/break/COP0/COP2. Ini statistik jendela, bukan bukti branch dieksekusi. PC runtime yang berulang di 0x80037320 dan 0x800372d8 menjadikan rentang 0x800372c0–0x800373ff kandidat terbaik untuk PC sampling lebih rapat berikutnya.
+
+GPU packet result konsisten: 299 VSync live packets, GP0 43 words seluruhnya pada bin 200–299; 39 GPU-state, 1 clear-cache, 1 monochrome rectangle, 1 NOP; tidak ada triangle/quad/line/textured sprite. Screenshot masih hitam. Dump mentah dihapus sebelum upload; artifact memuat ringkasan saja.
