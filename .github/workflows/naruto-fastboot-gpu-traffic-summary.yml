@@ -139,6 +139,18 @@ jobs:
                   frame_count, action.name, action.action, tostring(readback), tostring(expected), status))
           end
 
+          local function capture_vram(n)
+              local ok = pcall(function()
+                  local vram = PCSX.GPU.getVRAM()
+                  local raw_path = string.format("captures/raw/vram-frame-%06d.raw", n)
+                  local raw = assert(Support.File.open(raw_path, "TRUNCATE"), "cannot create private temporary VRAM capture")
+                  raw:writeMoveSlice(vram)
+                  raw:close()
+                  print(string.format("GPU_VRAM_CAPTURE frame=%d status=ok", n))
+              end)
+              if not ok then print(string.format("GPU_VRAM_CAPTURE frame=%d status=ERROR", n)) end
+          end
+
           local function capture_frame(n)
               local ok, err = pcall(function()
                   local shot = PCSX.GPU.takeScreenShot()
@@ -178,6 +190,7 @@ jobs:
                   input_index = input_index + 1
               end
               if capture_targets[frame_count] then capture_frame(frame_count) end
+              if frame_count == 299 then capture_vram(frame_count) end
               if frame_count % 100 == 0 then
                   print(string.format("GPU_TRAFFIC_VSYNC frame=%d guest_fps=%.4f dump_frames=%d",
                       frame_count, PCSX.GPU.getGuestFPS(), PCSX.GPU.getDumpFrames()))
@@ -473,7 +486,7 @@ jobs:
           echo "EMULATOR_EXIT_CODE=$emu_rc"
           if kill -0 "$sampler_pid" 2>/dev/null; then kill "$sampler_pid" 2>/dev/null || true; fi
           wait "$sampler_pid" 2>/dev/null || true
-          grep -E 'PAD_SETUP|PAD_INJECT|GPU_SCREENSHOT_CAPTURE|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|error|Error|ERROR' \
+          grep -E 'PAD_SETUP|PAD_INJECT|GPU_SCREENSHOT_CAPTURE|GPU_VRAM_CAPTURE|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|error|Error|ERROR' \
             "$WORK/pcsx.stdout" "$WORK/pcsx.log" > "$WORK/captures/important-log-lines.txt" || true
           cat "$WORK/captures/important-log-lines.txt" || true
           echo "GPU_TRAFFIC_EMULATOR_STEP_DONE=1"
@@ -658,6 +671,28 @@ jobs:
                           output.append(f"GPU_DUMP_GP0_VSYNC_BIN_{bucket}_FAMILY_{family}={count}")
                   output.append(f"GPU_DUMP_LIVE_GPU_TRAFFIC_PRESENT={str(words_live[0] > 0 or words_live[1] > 0).lower()}")
               path.unlink(missing_ok=True)
+
+          # Inspect the 1 MiB PlayStation VRAM snapshot in memory, then discard
+          # it with other raw captures before any artifact is uploaded.
+          vram_path = Path("captures/raw/vram-frame-000299.raw")
+          if vram_path.exists():
+              vram = vram_path.read_bytes()
+              expected_vram_bytes = 1024 * 512 * 2
+              if len(vram) != expected_vram_bytes:
+                  output.append("GPU_VRAM_FRAME_299_STATUS=byte_count_mismatch")
+                  output.append(f"GPU_VRAM_FRAME_299_BYTES={len(vram)}")
+              else:
+                  words = [item[0] for item in struct.iter_unpack("<H", vram)]
+                  colors = [word & 0x7fff for word in words]
+                  output.extend([
+                      "GPU_VRAM_FRAME_299_STATUS=parsed",
+                      f"GPU_VRAM_FRAME_299_BYTES={len(vram)}",
+                      f"GPU_VRAM_FRAME_299_DISTINCT_RGB555_COLORS={len(set(colors))}",
+                      f"GPU_VRAM_FRAME_299_NONBLACK_PIXELS={sum(color != 0 for color in colors)}",
+                      f"GPU_VRAM_FRAME_299_TOTAL_PIXELS={len(colors)}",
+                  ])
+          else:
+              output.append("GPU_VRAM_FRAME_299_STATUS=missing")
 
           # Inspect screenshot pixel diversity in memory, then discard every
           # temporary screenshot and metadata file before artifact upload.
