@@ -1,28 +1,11 @@
 ## Status runtime terbaru — 2026-10-18
 
 - OpenGL mandiri: [Actions #39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686) sukses; Mesa llvmpipe membuat konteks OpenGL aktual 4.5 tanpa version override dan konteks compatibility yang meminta 3.3 berhasil.
-- Probe CPU/GPU lengkap: [Actions #39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461) sukses pada VSync 300. 75 sampel bulk register valid; GP0 hanya 43 words/42 commands di bucket 200–299.
-- PC sampling adaptif: [Actions #39081346569](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081346569) sukses pada VSync 300. Dari 31 sampel cepat pada 0,1 s, PC hanya bergantian di 0x80037320 (17) dan 0x800372d8 (14). Ini menguatkan dugaan loop/eksekusi berulang, belum bukti akar sebab.
-- Probe edge control-flow statis berikutnya: [Actions #39081524928](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081524928) terpicu setelah perubahan workflow, status awal queued. Ia akan merangkum target branch/jump pada rentang hotspot tanpa raw byte/disassembly.
-- RT-001 tetap Open / blocked: belum ada screenshot game valid, title/menu dikenali, atau perubahan state akibat input controller yang terbukti. Jangan menandai selesai dan jangan mengubah emulator/pin.
-
-## Diagnosis CPU polling dan keputusan probe berikutnya — 2026-10-17 (Actions #39029860914)
-
-Run [#39029860914](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39029860914) menyelesaikan semua langkah workflow (`success`), termasuk unggah artefak privat dan cleanup. Emulator yang diuji adalah PCSX-Redux AnyLinux AppImage dengan OpenBIOS fastboot, ROM serta BIOS yang SHA-256-nya diverifikasi, setup Port 1 Analog/remap, dan command line `-exec ... -gdb -gdb-port 3333 -run`. Tidak ada breakpoint atau watchpoint pada eksperimen ini.
-
-Klien RSP minimal tersambung dan `qSupported` berhasil. Polling menghasilkan 41 sampel selama sekitar 65 detik, dengan 14 nilai PC unik. Distribusi: rentang BIOS 31 sampel; rentang executable utama `0x80010000–0x8006d7ff` sebanyak 2; alamat lain sebanyak 8. PC sempat terlihat di `0x8003c0a0` pada sekitar 36,3 detik dan `0x8003bff4` pada sekitar 37,9 detik sejak polling dimulai, kemudian sampel pada sekitar 39,5 detik dan seterusnya kembali berada di BIOS, banyak di `0xbfc075b0–0xbfc07608`. Marker loader `SYSTEM.CNF`, `BOOT = cdrom:\SLPS_035.53;1`, `EXEC:PC0(80011448)`, dan `Execute !` ada di log, tetapi waktu marker tidak direkam di dalam jendela polling. Korelasi waktunya adalah petunjuk, bukan bukti sebab-akibat yang tuntas.
-
-CP0 pada pembacaan bertahap: `BadVAddr=0`; `Status` biasanya `0x40000401` (satu sampel `0x40000000`); `Cause` biasanya `0x00000400`, dengan dua sampel `0x00000020`. Ini bukan snapshot atomik karena PC dan setiap CP0 dibaca melalui paket RSP terpisah. Query `?` menghasilkan `S00`; source GDB-server pada commit AppImage `0c3572c3db75f97542001e453ae80ba8c3f8acba` menyatakan `S00` adalah jawaban query ketika emulator masih running, **bukan stop event**. Jangan menyebut hasil ini sebagai exception loop yang sudah terbukti.
-
-Audit source yang sesuai build: [src/core/gdb-server.cc pada commit 0c3572c3](https://github.com/grumpycoders/pcsx-redux/blob/0c3572c3db75f97542001e453ae80ba8c3f8acba/src/core/gdb-server.cc) mendefinisikan urutan register RSP; `g` mengembalikan paket semua register, dengan indeks 32=Status, 35=BadVAddr, 36=Cause, dan 37=PC. Karena itulah langkah pembeda berikutnya adalah satu pembacaan bulk `g` per sampel (576 karakter hex untuk 72 register 32-bit), plus cap waktu marker loader yang diamati langsung dari log. Ini mengurangi ketidakselarasan waktu dari query bertahap dan menghubungkan transisi PC dengan `Execute !` tanpa mengulang breakpoint/GPU-watchpoint.
-
-Ringkasan bertanda `CPU_SAMPLER_EXIT=124` dalam log adalah salah label harness: heredoc Python polling berjalan di foreground, sedangkan `$!` masih merujuk proses emulator `timeout`; nilai 124 berasal dari batas observasi emulator 100 detik. Bukti bahwa sampler bekerja adalah 41 baris `CPU_SAMPLE`, diikuti `CPU_SUMMARY`; proses emulator terdeteksi selesai dan cleanup berhasil. Perbaiki label dan pengelolaan PID pada workflow berikutnya.
-
-Artefak privat: [#12100266232](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39029860914/artifacts/12100266232), retensi sampai 2026-10-20 11:46:41 UTC. ROM, BIOS, emulator dan log sementara telah dibersihkan dari runner.
-
-**RT-001 tetap Open / blocked.** Title/menu Naruto, respons input gameplay, dan Story Mode belum terbukti; belum ada aturan gameplay runtime yang boleh ditetapkan.
-
----
+- Probe CPU/GPU lengkap: [Actions #39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461) sukses pada VSync 300. GP0 hanya 43 words/42 commands di bucket 200–299.
+- Sampling PC adaptif: [Actions #39081346569](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081346569) sukses; 31 sampel cepat berpusat pada 0x80037320 dan 0x800372d8.
+- Edge control-flow statis: [Actions #39081524928](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081524928) sukses. Branch 0x800372f0 menargetkan 0x80037320; branch 0x80037330 menargetkan 0x800372d8—target yang sama dengan PC runtime yang berulang. Ini mendukung satu siklus kontrol guest, belum menyimpulkan apakah penyebabnya polling input atau flag perangkat.
+- Berikutnya: klasifikasikan jenis branch secara ringkas; audit API input virtual pada source pin supaya pengujian tombol bisa diinjeksikan di cloud tanpa laptop.
+- RT-001 tetap Open / blocked: belum ada screenshot game valid, title/menu dikenali, atau perubahan state akibat input controller yang terbukti.
 
 ## Hasil Actions terbaru — 2026-10-17 (run #39021127913)
 
