@@ -1,13 +1,11 @@
 ## Status runtime terbaru — 2026-10-18
 
-- OpenGL host [#39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686): llvmpipe membuat OpenGL 4.5 compatibility tanpa version override.
-- Guest CPU/GPU [#39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461): GP0 hanya 43 words/42 commands, tidak ada primitive gambar.
-- Branch loop [#39082587807](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082587807): pada entry target branch, relasi dua BNE tetap unequal (16 dan 11 sampel).
-- Input [#39081872155](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081872155): 12 pulse Cross/Start/Up readback PASS, tetapi tidak mengubah game state.
-- VRAM software [#39082375609](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082375609): satu warna, nol piksel non-black baik screen 320×240 maupun VRAM 1024×512.
-- OpenGL backend run [#39083141057](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083141057) terkonfirmasi memilih `-openglgpu` dan berjalan di Mesa, namun timeout pada VSync 270; tidak ada GP0 traffic dan frame 299 belum tercapai. API screenshot tidak didukung oleh kelas OpenGL GPU pada pin ini.
-- Extended OpenGL probe [#39083372634](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083372634) queued, dengan timeout 170s hanya untuk commit marker `[openglgpu-probe]`; default selanjutnya tetap Software GPU.
-- RT-001 tetap Open / blocked sampai gambar game/title/menu dan perubahan state akibat input dapat diverifikasi.
+- OpenGL standalone [#39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686): Mesa llvmpipe membuat konteks OpenGL aktual 4.5 dan compatibility yang meminta 3.3 tanpa version override.
+- OpenGL backend PCSX-Redux benar-benar diuji pada [#39083372634](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083372634): `GPU_BACKEND_SELECTED=-openglgpu`, Mesa/llvmpipe, VSync 300, emulator exit 0. GP0 hanya 43 kata/42 commands—39 GPU-state-setting, 1 clear-cache, 1 monochrome rectangle, 1 NOP; tidak ada primitive gambar. getVRAM pada frame 299 menghasilkan 1 warna RGB555 dan 0 piksel non-black dari 524.288. Screenshot API tidak tersedia pada backend OpenGL pin ini; raw data tidak diunggah.
+- Kontrol flow [#39082587807](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082587807): pada target BNE di 0x800372f0 dan 0x80037330, relasi terukur tetap unequal (masing-masing 16/11 sampel).
+- Input [#39081872155](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081872155): 12 pulsa tekan/lepas Cross/Start/Up readback PASS, tetapi GP0/VRAM tetap tidak menunjukkan gambar.
+- RT-001 tetap Open / blocked. Langkah berikutnya: telusuri sumber guest/I/O yang menjaga predicate BNE berbeda atau kondisi boot tidak maju; jangan mengulang diagnosis GLX atau mengganti emulator/pin.
+
 
 # Addendum 2026-10-17 — RSP minimal dan GPU-watchpoint
 
