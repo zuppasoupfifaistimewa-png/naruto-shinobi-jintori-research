@@ -285,6 +285,8 @@ jobs:
           code_windows = {}
           code_window_errors = {}
           code_edges = {}
+          branch_meta_by_target = {}
+          branch_compare_counts = Counter()
 
           def extract_control_edges(base, raw_bytes):
               edges = []
@@ -323,6 +325,59 @@ jobs:
                       continue
                   edges.append((pc, kind, target))
               return edges
+
+          def written_gpr(word):
+              op = (word >> 26) & 0x3f
+              rs = (word >> 21) & 0x1f
+              rt = (word >> 16) & 0x1f
+              rd = (word >> 11) & 0x1f
+              funct = word & 0x3f
+              dest = None
+              if op == 0:
+                  if funct not in (0x08, 0x0c, 0x0d):
+                      dest = rd
+              elif op == 0x03:
+                  dest = 31
+              elif op in (0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+                          0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x30, 0x32):
+                  dest = rt
+              elif op == 0x10 and rs in (0, 2):
+                  dest = rt
+              elif op == 0x12 and rs in (0, 2):
+                  dest = rt
+              return dest if dest else None
+
+          def extract_branch_meta(base, raw_bytes):
+              hot_lo, hot_hi = 0x800372c0, 0x800373ff
+              conditional_ops = (0x01, 0x04, 0x05, 0x06, 0x07, 0x14, 0x15, 0x16, 0x17)
+              names = {
+                  0x01: "regimm-branch", 0x04: "beq", 0x05: "bne",
+                  0x06: "blez", 0x07: "bgtz", 0x14: "beql",
+                  0x15: "bnel", 0x16: "blezl", 0x17: "bgtzl",
+              }
+              found = []
+              for offset in range(0, len(raw_bytes) - 7, 4):
+                  pc = base + offset
+                  if not (hot_lo <= pc <= hot_hi):
+                      continue
+                  word = int.from_bytes(raw_bytes[offset:offset + 4], "little")
+                  op = (word >> 26) & 0x3f
+                  if op not in conditional_ops:
+                      continue
+                  imm = word & 0xffff
+                  signed_imm = imm if imm < 0x8000 else imm - 0x10000
+                  target = pc + 4 + (signed_imm << 2)
+                  rs, rt = (word >> 21) & 0x1f, (word >> 16) & 0x1f
+                  delay_word = int.from_bytes(raw_bytes[offset + 4:offset + 8], "little")
+                  delay_dest = written_gpr(delay_word)
+                  operands = (rs,) if op in (0x06, 0x07, 0x16, 0x17) else (rs, rt)
+                  delay_writes_operand = delay_dest in operands if delay_dest is not None else False
+                  found.append({
+                      "source": pc, "kind": names[op], "target": target,
+                      "rs": rs, "rt": rt, "operands": operands,
+                      "delay_writes_operand": delay_writes_operand,
+                  })
+              return found
 
           def classify_window(base, raw_bytes):
               from collections import Counter
@@ -381,6 +436,8 @@ jobs:
                   result = classify_window(base, raw_bytes)
                   code_windows[base] = result
                   code_edges[base] = extract_control_edges(base, raw_bytes)
+                  for meta in extract_branch_meta(base, raw_bytes):
+                      branch_meta_by_target.setdefault(meta["target"], []).append(meta)
                   counts, backward, forward = result
                   fields = " ".join(f"{key}={counts[key]}" for key in (
                       "conditional_branch", "jr", "jalr", "jump", "syscall", "break",
@@ -446,6 +503,10 @@ jobs:
                           pc, status, badvaddr, cause = reg(37), reg(32), reg(35), reg(36)
                           print(f"CPU_BULK_SAMPLE index={idx} elapsed_s={time.monotonic()-start:.2f} pc={pc} cp0_status={status} cp0_badvaddr={badvaddr} cp0_cause={cause} bulk_valid=yes", flush=True)
                           pc_value = int(pc, 16)
+                          gpr_values = []
+                          for reg_index in range(32):
+                              reg_raw = bytes.fromhex(registers[reg_index*8:reg_index*8+8])
+                              gpr_values.append(int.from_bytes(reg_raw, "little"))
                           sample_now = time.monotonic()
                           in_hot_window = hot_lo <= pc_value <= hot_hi
                           if in_hot_window:
@@ -454,6 +515,20 @@ jobs:
                               area = "inside" if in_hot_window else "outside"
                               print(f"CPU_FAST_SAMPLE elapsed_s={sample_now-start:.2f} pc={pc} cp0_status={status} cp0_badvaddr={badvaddr} cp0_cause={cause} area={area}", flush=True)
                           inspect_code_window(sock, pc)
+                          for meta in branch_meta_by_target.get(pc_value, []):
+                              if meta["delay_writes_operand"]:
+                                  relation = "delay-slot-write"
+                              elif meta["kind"] in ("bne", "bnel", "beq", "beql"):
+                                  equal = gpr_values[meta["rs"]] == gpr_values[meta["rt"]]
+                                  relation = "equal" if equal else "unequal"
+                              elif meta["kind"] in ("blez", "blezl", "bgtz", "bgtzl"):
+                                  value = gpr_values[meta["rs"]]
+                                  signed = value if value < 0x80000000 else value - 0x100000000
+                                  relation = "zero" if signed == 0 else ("negative" if signed < 0 else "positive")
+                              else:
+                                  relation = "relation-not-modeled"
+                              key = (meta["source"], meta["kind"], meta["target"], relation)
+                              branch_compare_counts[key] += 1
                       else:
                           print(f"CPU_BULK_SAMPLE index={idx} elapsed_s={time.monotonic()-start:.2f} bulk_valid=no response_len={len(registers)} response_kind={registers[:8]}", flush=True)
                   except Exception as exc:
@@ -465,6 +540,8 @@ jobs:
               sock.close()
           print(f"CPU_CODE_WINDOWS_VALID={len(code_windows)}", flush=True)
           print(f"CPU_CODE_WINDOWS_UNAVAILABLE={len(code_window_errors)}", flush=True)
+          for (source, kind, target, relation), count in sorted(branch_compare_counts.items()):
+              print(f"CPU_BRANCH_COMPARE_SUMMARY source=0x{source:08x} kind={kind} target=0x{target:08x} target_entry_relation={relation} count={count}", flush=True)
           for base, (counts, backward, forward) in sorted(code_windows.items()):
               fields = " ".join(f"{key}={counts[key]}" for key in (
                   "conditional_branch", "jr", "jalr", "jump", "syscall", "break",
@@ -765,7 +842,7 @@ jobs:
                   if line.startswith((
                       "CPU_RSP_", "CPU_CORRELATION_MARKER",
                       "CPU_BULK_SAMPLE index=", "CPU_BULK_SAMPLE_ERROR",
-                      "CPU_CODE_WINDOWS_", "CPU_CODE_WINDOW base=", "CPU_CODE_WINDOW_UNAVAILABLE", "CPU_CODE_EDGE "
+                      "CPU_CODE_WINDOWS_", "CPU_CODE_WINDOW base=", "CPU_CODE_WINDOW_UNAVAILABLE", "CPU_CODE_EDGE ", "CPU_BRANCH_COMPARE_SUMMARY "
                   ))
               ]
               fast_samples = []
