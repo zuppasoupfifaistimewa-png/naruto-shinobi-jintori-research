@@ -1,3 +1,7 @@
+## Koreksi status BIOS — 2026-10-18
+
+Bagian lama di bawah yang menyatakan tidak ada binary retail tersedia sudah kedaluwarsa. Aset scph7502.zip sekarang tersedia pada release privat dan hash BIOS cocok dengan referensi. Run privat #39094530928 memuat SCPH-7502, tetapi belum membuktikan title/menu. A/B #39095269662 juga belum menunjukkan menu valid. Jangan mengulang klaim BIOS tidak tersedia; masalah kompatibilitas tetap belum terisolasi.
+
 # BIOS compatibility for Naruto — evidence and test status
 
 Updated: 2026-10-18
