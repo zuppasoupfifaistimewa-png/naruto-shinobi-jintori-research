@@ -1,3 +1,16 @@
+## Follow-up source-category probe — 2026-10-18, run #39083850904
+
+Run [#39083850904](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083850904) sukses sampai VSync 300 dan mengeluarkan artifact teks privat [#12120191058](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083850904/artifacts/12120191058). Perbaikan [commit 8f75c3d5](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/8f75c3d558afd2261fb644e0fa192d5972ff3236) membuat CPU sampler flush statistik saat menerima SIGTERM; probe sebelumnya #39083701297 menyelesaikan emulator namun summary branch tidak sempat tertulis.
+
+Satu sampel berkelompok pada setiap entry target:
+- BNE 0x800372f0 → 0x80037320: 17 sampel unequal; operand kiri terakhir ditulis oleh kategori load, operand kanan oleh immediate arithmetic.
+- BNE 0x80037330 → 0x800372d8: 15 sampel unequal; operand kiri terakhir ditulis oleh special arithmetic, operand kanan constant-zero.
+- “Terakhir ditulis” merujuk penulis paling dekat yang ditemukan sebelum branch dalam jendela kode 64-byte, bukan data-flow global lengkap. Nilai register mentah, register IDs, byte instruksi dan disassembly tidak diekspor.
+
+GP0 tetap 43 words/42 commands, dan getVRAM tetap satu warna RGB555/0 piksel non-black. Hasil ini menguatkan bahwa branch pertama membandingkan nilai yang baru dibaca oleh instruksi load, tetapi belum mengidentifikasi alamat efektif atau apakah itu RAM biasa maupun MMIO.
+
+Next: pada target branch, klasifikasikan wilayah efektif alamat load hanya sebagai label rentang (RAM, scratchpad, BIOS, MMIO/I/O, atau unknown) beserta counts. Jangan mengekspor effective address individual atau nilai/register mentah. Tujuan tes adalah memverifikasi apakah predicate berasal dari polling I/O/hardware. RT-001 tetap Open / blocked.
+
 ## Hasil akhir sampai branch-relation test — 2026-10-18
 
 ### Host OpenGL / Mesa
