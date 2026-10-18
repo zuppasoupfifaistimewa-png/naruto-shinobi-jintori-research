@@ -1,3 +1,13 @@
+## Hasil input-injection + screen-metrics test — 2026-10-18 (Actions #39081872155)
+
+Run [#39081872155](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081872155) selesai success hingga VSync 300, exit code 0. Artifact privat teks [#12119101894](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081872155/artifacts/12119101894). Gambar raw hanya berada sebentar di runner ephemeral, statistik dihitung lokal dan screenshot mentah + metadata dihapus sebelum upload; artifact tidak memuat gambar.
+
+Audit pin PCSX-Redux membuktikan API Lua controller memang tersedia: PCSX.SIO0.slots[1].pads[1].setOverride(button), clearOverride(button), getButton(button), dengan constants PCSX.CONSTS.PAD.BUTTON. Dalam run ini seluruh 12 aksi tekan/lepas CROSS, START, dan UP mencatat readback yang sesuai (status=PASS), menunjukkan virtual pad override bekerja di lapisan emulator.
+
+Ini bukan bukti game merespons input: saat pulsa tombol dijalankan, PC tetap berulang di rentang hotspot 0x800372c0–0x800373ff (56 sampel cepat, PC unik 0x80037320=29 dan 0x800372d8=27), GP0 tetap 43 words tanpa primitive gambar. GPU capture pada frame 235/250/265 memberi 0×0; frame 299 memberi 320×240 16-bpp tetapi cuma 1 warna RGB555 berbeda dan 0 piksel non-black dari 76.800. Jadi gambar game masih blank. Marker RSP qSupported timeout pada run ini; sampel PC yang lolos validasi tetap terkumpul, tetapi timeout handshake dicatat sebagai keterbatasan.
+
+Probe berikutnya [Actions #39082046438](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082046438) mengklasifikasikan jenis dua branch utama secara statis (mis. BEQ/BNE/BLEZ/BGTZ) tanpa operand/byte mentah, guna membedakan loop kondisi yang diamati. **RT-001 tetap Open / blocked** karena input belum mengubah state game dan screenshot masih hitam.
+
 ## Hasil statis control-flow edge — 2026-10-18 (Actions #39081524928)
 
 Run [#39081524928](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081524928) sukses menyelesaikan target VSync 300 dan cleanup. Artifact privat teks [#12119460684](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081524928/artifacts/12119460684); hanya kategori/edge kontrol yang diekspor, tanpa byte instruksi atau disassembly.
