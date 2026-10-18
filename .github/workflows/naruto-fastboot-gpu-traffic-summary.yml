@@ -79,10 +79,13 @@ jobs:
         run: |
           set -euo pipefail
           GPU_BACKEND_FLAG="-softgpu"
+          GPU_BACKEND_TIMEOUT="125s"
           if [[ "${GPU_BACKEND_PROBE:-false}" == "true" ]]; then
             GPU_BACKEND_FLAG="-openglgpu"
+            GPU_BACKEND_TIMEOUT="170s"
           fi
           echo "GPU_BACKEND_SELECTED=$GPU_BACKEND_FLAG"
+          echo "GPU_BACKEND_TIMEOUT=$GPU_BACKEND_TIMEOUT"
           cd "$WORK"
           Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
           xvfb_pid=$!
@@ -218,7 +221,7 @@ jobs:
           print("GPU_TRAFFIC_PROBE=armed target_vsync=300; raw dump will be parsed then deleted")
           LUA
 
-          timeout --signal=TERM --kill-after=5s 125s \
+          timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
             stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/openbios-fastboot.bin" -iso "$WORK/game-run.cue" \
               -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
