@@ -1,10 +1,9 @@
-## Status run kontrol CPU/GP0 terbaru — 2026-10-18
+## Status runtime terbaru — 2026-10-18
 
-Run lengkap [#39080721606](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080721606) mencapai target VSync 300 dan keluar normal, tetapi hanya mencatat 43 GP0 words / 42 commands; semua 43 words berada di bin 200–299 dan tidak ada triangle/quad/line/textured-sprite command. Run [#39080926618](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080926618) dibatalkan pada 172 VSync tanpa GP0 traffic, jadi jangan gunakan sebagai capture penuh.
-
-Probe code-window teranyar [#39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461) berstatus in_progress pada pemeriksaan terakhir. Tunggu hasil log/summary yang benar-benar tersedia sebelum menyimpulkan kategori instruksi atau akar masalah. Jangan unggah raw dump, byte instruksi, atau disassembly. RT-001 tetap Open / blocked.
-
----
+- OpenGL mandiri: [Actions #39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686) sukses; Mesa llvmpipe membuat konteks OpenGL aktual 4.5 tanpa version override dan konteks compatibility yang meminta 3.3 berhasil.
+- Probe penuh CPU/GPU: [Actions #39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461) selesai sukses pada VSync 300, 75 sampel bulk register valid. GP0 hanya 43 words/42 commands dan semuanya di VSync 200–299; tidak ada primitive gambar triangle/quad/line/textured sprite.
+- Probe sampling PC adaptif terbaru: [Actions #39081346569](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081346569) berjalan pada commit a8215c8f. Tujuannya mengambil sampel sekitar 10 Hz selama 8 detik setelah PC masuk 0x800372c0–0x800373ff, lalu menyimpan ringkasan frekuensi PC/transisi saja. Belum ada kesimpulan sampai run selesai.
+- RT-001 tetap Open / blocked: belum ada screenshot game yang valid, title/menu yang dikenali, atau perubahan state akibat input controller yang terbukti. Jangan tandai selesai dan jangan mengubah emulator/pin.
 
 ## Gerbang grafis host terverifikasi — 2026-10-18
 
