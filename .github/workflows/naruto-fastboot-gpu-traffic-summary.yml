@@ -288,7 +288,18 @@ jobs:
                   signed_imm = imm if imm < 0x8000 else imm - 0x10000
                   if op in conditional_ops:
                       target = pc + 4 + (signed_imm << 2)
-                      kind = "conditional"
+                      kind_by_op = {
+                          0x01: "regimm-branch",
+                          0x04: "beq",
+                          0x05: "bne",
+                          0x06: "blez",
+                          0x07: "bgtz",
+                          0x14: "beql",
+                          0x15: "bnel",
+                          0x16: "blezl",
+                          0x17: "bgtzl",
+                      }
+                      kind = kind_by_op[op]
                   elif op in (0x02, 0x03):
                       target = ((pc + 4) & 0xf0000000) | ((word & 0x03ffffff) << 2)
                       kind = "direct-jump"
