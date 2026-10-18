@@ -316,6 +316,8 @@ jobs:
                   print(f"CPU_RSP_QSUPPORTED=failed type={type(exc).__name__}", flush=True)
 
               idx = 0
+              hot_lo, hot_hi = 0x800372c0, 0x800373ff
+              hot_until = 0.0
               while time.monotonic() - start < 120:
                   read_markers()
                   try:
@@ -326,13 +328,21 @@ jobs:
                               return f"0x{int.from_bytes(raw,'little'):08x}"
                           pc, status, badvaddr, cause = reg(37), reg(32), reg(35), reg(36)
                           print(f"CPU_BULK_SAMPLE index={idx} elapsed_s={time.monotonic()-start:.2f} pc={pc} cp0_status={status} cp0_badvaddr={badvaddr} cp0_cause={cause} bulk_valid=yes", flush=True)
+                          pc_value = int(pc, 16)
+                          sample_now = time.monotonic()
+                          in_hot_window = hot_lo <= pc_value <= hot_hi
+                          if in_hot_window:
+                              hot_until = max(hot_until, sample_now + 8.0)
+                          if sample_now < hot_until:
+                              area = "inside" if in_hot_window else "outside"
+                              print(f"CPU_FAST_SAMPLE elapsed_s={sample_now-start:.2f} pc={pc} cp0_status={status} cp0_badvaddr={badvaddr} cp0_cause={cause} area={area}", flush=True)
                           inspect_code_window(sock, pc)
                       else:
                           print(f"CPU_BULK_SAMPLE index={idx} elapsed_s={time.monotonic()-start:.2f} bulk_valid=no response_len={len(registers)} response_kind={registers[:8]}", flush=True)
                   except Exception as exc:
                       print(f"CPU_BULK_SAMPLE_ERROR index={idx} elapsed_s={time.monotonic()-start:.2f} error_type={type(exc).__name__}", flush=True)
                   idx += 1
-                  time.sleep(1.0)
+                  time.sleep(0.1 if time.monotonic() < hot_until else 1.0)
               read_markers()
           finally:
               sock.close()
@@ -555,14 +565,42 @@ jobs:
           cpu_path = Path("cpu-state-summary.txt")
           if cpu_path.exists():
               cpu_text = cpu_path.read_text(errors="replace")
+              cpu_raw_lines = cpu_text.splitlines()
               cpu_lines = [
-                  line for line in cpu_text.splitlines()
+                  line for line in cpu_raw_lines
                   if line.startswith((
                       "CPU_RSP_", "CPU_CORRELATION_MARKER",
                       "CPU_BULK_SAMPLE index=", "CPU_BULK_SAMPLE_ERROR",
                       "CPU_CODE_WINDOWS_", "CPU_CODE_WINDOW base=", "CPU_CODE_WINDOW_UNAVAILABLE"
                   ))
               ]
+              fast_samples = []
+              for line in cpu_raw_lines:
+                  if not line.startswith("CPU_FAST_SAMPLE "):
+                      continue
+                  fields = dict(part.split("=", 1) for part in line.split() if "=" in part)
+                  if fields.get("pc"):
+                      fast_samples.append((fields["pc"], fields.get("area", "unknown")))
+              pc_counts = Counter(pc for pc, _area in fast_samples)
+              transition_counts = Counter(
+                  (fast_samples[i - 1][0], fast_samples[i][0])
+                  for i in range(1, len(fast_samples))
+              )
+              cpu_lines.extend([
+                  "CPU_HOTWINDOW_RANGE=0x800372c0-0x800373ff",
+                  "CPU_HOTWINDOW_INTERVAL_ACTIVE=0.1s",
+                  "CPU_HOTWINDOW_HOLD_SECONDS=8",
+                  f"CPU_HOTWINDOW_SAMPLES={len(fast_samples)}",
+                  f"CPU_HOTWINDOW_IN_RANGE_SAMPLES={sum(area == 'inside' for _pc, area in fast_samples)}",
+                  f"CPU_HOTWINDOW_OUTSIDE_SAMPLES={sum(area == 'outside' for _pc, area in fast_samples)}",
+                  f"CPU_HOTWINDOW_UNIQUE_PCS={len(pc_counts)}",
+              ])
+              for pc, count in sorted(pc_counts.items(), key=lambda item: (-item[1], item[0]))[:30]:
+                  cpu_lines.append(f"CPU_HOTWINDOW_PC pc={pc} count={count}")
+              for (source, target), count in sorted(
+                  transition_counts.items(), key=lambda item: (-item[1], item[0])
+              )[:40]:
+                  cpu_lines.append(f"CPU_HOTWINDOW_TRANSITION from={source} to={target} count={count}")
               Path("captures/cpu-state-summary.txt").write_text("\n".join(cpu_lines) + "\n")
           else:
               Path("captures/cpu-state-summary.txt").write_text("CPU_RSP_SUMMARY=missing\n")
