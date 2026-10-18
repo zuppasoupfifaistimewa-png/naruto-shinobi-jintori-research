@@ -1,3 +1,11 @@
+## Status run kontrol CPU/GP0 terbaru — 2026-10-18
+
+Run lengkap [#39080721606](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080721606) mencapai target VSync 300 dan keluar normal, tetapi hanya mencatat 43 GP0 words / 42 commands; semua 43 words berada di bin 200–299 dan tidak ada triangle/quad/line/textured-sprite command. Run [#39080926618](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080926618) dibatalkan pada 172 VSync tanpa GP0 traffic, jadi jangan gunakan sebagai capture penuh.
+
+Probe code-window teranyar [#39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461) berstatus in_progress pada pemeriksaan terakhir. Tunggu hasil log/summary yang benar-benar tersedia sebelum menyimpulkan kategori instruksi atau akar masalah. Jangan unggah raw dump, byte instruksi, atau disassembly. RT-001 tetap Open / blocked.
+
+---
+
 ## Gerbang grafis host terverifikasi — 2026-10-18
 
 Actions [#39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686) membuktikan GLX/Mesa software dapat membuat konteks valid tanpa version override: renderer llvmpipe, OpenGL 4.5, serta konteks compatibility yang diminta sebagai 3.3 berhasil dibuat (versi aktual 4.5). Jangan mengulangi instalasi/diagnosis GLX sebagai langkah pertama dan jangan menyimpulkan perlunya GPU fisik.
