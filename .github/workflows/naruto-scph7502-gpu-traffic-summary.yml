@@ -17,14 +17,14 @@ concurrency:
 jobs:
   gpu-traffic-summary:
     runs-on: ubuntu-26.04
-    timeout-minutes: 11
+    timeout-minutes: 16
     steps:
       - name: Install private runtime requirements
         shell: bash
         run: |
           set -euo pipefail
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils imagemagick mesa-utils libgl1-mesa-dri python3
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils imagemagick mesa-utils libgl1-mesa-dri python3 python3-pil
 
       - name: Download and verify private runtime assets
         shell: bash
@@ -109,14 +109,14 @@ jobs:
           echo "ROM/CUE/emulator hashes verified; BIOS=SCPH-7502"
           echo "EMULATOR_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
 
-      - name: Record emulated GPU traffic until post-handoff VSync 300
+      - name: Record emulated GPU traffic until post-handoff VSync 1500
         env:
           GPU_BACKEND_PROBE: ${{ contains(github.event.head_commit.message, '[openglgpu-probe]') }}
         shell: bash
         run: |
           set -euo pipefail
           GPU_BACKEND_FLAG="-softgpu"
-          GPU_BACKEND_TIMEOUT="420s"
+          GPU_BACKEND_TIMEOUT="700s"
           if [[ "${GPU_BACKEND_PROBE:-false}" == "true" ]]; then
             GPU_BACKEND_FLAG="-openglgpu"
             GPU_BACKEND_TIMEOUT="170s"
@@ -151,57 +151,73 @@ jobs:
           )
           cat > "$WORK/gpu-traffic.lua" <<'LUA'
           local frame_count = 0
-          local stop_frame = 900
+          local stop_frame = 1500
           local pad = PCSX.SIO0.slots[1].pads[1]
           local buttons = PCSX.CONSTS.PAD.BUTTON
           local input_sequence = {
-              -- Start key retries to handle the delayed startup prompt.
-              {frame=225, action="press", button=buttons.START, name="START"},
-              {frame=235, action="release", button=buttons.START, name="START"},
-              {frame=280, action="press", button=buttons.START, name="START"},
-              {frame=290, action="release", button=buttons.START, name="START"},
-              -- The game's menu guide identifies Circle/O as confirm and Cross/X as cancel.
-              {frame=320, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=328, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=350, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=358, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=380, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=388, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=410, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=418, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=440, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=448, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=470, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=478, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=500, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=508, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=530, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=538, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=560, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=568, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=590, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=598, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=620, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=628, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=650, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=658, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=680, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=688, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=710, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=718, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=740, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=748, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=770, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=778, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=800, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=808, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=830, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=838, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=860, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=868, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              -- Earlier attempts were before EXEC:PC0/Execute! handoff; press Start only after boot enters the game executable.
+              -- The game-specific menu reference says O/Circle is Confirm; X/Cross is Cancel.
+              {frame=610, action="press", button=buttons.START, name="START"},
+              {frame=618, action="release", button=buttons.START, name="START"},
+              {frame=650, action="press", button=buttons.START, name="START"},
+              {frame=658, action="release", button=buttons.START, name="START"},
+              {frame=690, action="press", button=buttons.START, name="START"},
+              {frame=698, action="release", button=buttons.START, name="START"},
+              {frame=730, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=738, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=760, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=768, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=790, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=798, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=820, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=828, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=850, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=858, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=880, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=888, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=910, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=918, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=940, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=948, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=970, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=978, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1000, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1008, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1030, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1038, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1060, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1068, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1090, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1098, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1120, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1128, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1150, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1158, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1180, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1188, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1210, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1218, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1240, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1248, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1270, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1278, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1300, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1308, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1330, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1338, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1360, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1368, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1390, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1398, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1420, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1428, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1450, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1458, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1480, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1488, action="release", button=buttons.CIRCLE, name="CIRCLE"},
           }
           local input_index = 1
-          local capture_targets = { [235]=true, [250]=true, [265]=true, [299]=true, [450]=true, [600]=true, [750]=true, [899]=true }
+          local capture_targets = { [299]=true, [450]=true, [600]=true, [750]=true, [899]=true, [1100]=true, [1300]=true, [1499]=true }
 
           local function apply_input(action)
               local expected = action.action == "press"
@@ -269,7 +285,7 @@ jobs:
                   input_index = input_index + 1
               end
               if capture_targets[frame_count] then capture_frame(frame_count) end
-              if frame_count == 299 then capture_vram(frame_count) end
+              if frame_count == 299 or frame_count == 1499 then capture_vram(frame_count) end
               if frame_count % 100 == 0 then
                   print(string.format("GPU_TRAFFIC_VSYNC frame=%d guest_fps=%.4f dump_frames=%d",
                       frame_count, PCSX.GPU.getGuestFPS(), PCSX.GPU.getDumpFrames()))
@@ -287,7 +303,7 @@ jobs:
                   end)
               end
           end)
-          print("GPU_TRAFFIC_PROBE=armed target_vsync=300; raw dump will be parsed then deleted")
+          print("GPU_TRAFFIC_PROBE=armed target_vsync=1500; raw dump will be parsed then deleted")
           LUA
 
           timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
@@ -302,7 +318,7 @@ jobs:
           # Screenshots remain in a private short-retention artifact.
           (
             previous=0
-            for second in 10 25 40 55 70 85 100 140 180 220 260 300 340 380 410; do
+            for second in 10 25 40 55 70 85 100 140 180 220 260 300 340 380 420 460 500 540 580 620 660; do
               sleep "$((second - previous))"
               previous="$second"
               kill -0 "$emu_pid" 2>/dev/null || break
@@ -466,7 +482,7 @@ jobs:
                   print("RSP_QSUPPORTED=received" if caps else "RSP_QSUPPORTED=empty", flush=True)
               except Exception as exc:
                   print("RSP_QSUPPORTED=error:" + type(exc).__name__, flush=True)
-              for index in range(15):
+              for index in range(27):
                   if index:
                       time.sleep(25)
                   try:
@@ -513,6 +529,7 @@ jobs:
           import struct
           from collections import Counter
           from pathlib import Path
+          from PIL import Image
 
           path = Path("captures/raw/runtime.gpudump")
           output = []
@@ -534,7 +551,8 @@ jobs:
                   live_gp0_words = []
                   live_gp0_words_by_bin = {
                       "000_049": [], "050_099": [], "100_199": [],
-                      "200_399": [], "400_599": [], "600_799": [], "800_899": []
+                      "200_399": [], "400_599": [], "600_799": [],
+                      "800_999": [], "1000_1199": [], "1200_1499": []
                   }
                   live_vsync_count = 0
                   trace_markers = 0
@@ -577,8 +595,12 @@ jobs:
                               bucket = "400_599"
                           elif live_vsync_count < 800:
                               bucket = "600_799"
+                          elif live_vsync_count < 1000:
+                              bucket = "800_999"
+                          elif live_vsync_count < 1200:
+                              bucket = "1000_1199"
                           else:
-                              bucket = "800_899"
+                              bucket = "1200_1499"
                           live_gp0_words_by_bin[bucket].extend(chunk_words)
                       pos += size
                   output += [
@@ -690,27 +712,29 @@ jobs:
                   output.append(f"GPU_DUMP_LIVE_GPU_TRAFFIC_PRESENT={str(words_live[0] > 0 or words_live[1] > 0).lower()}")
               path.unlink(missing_ok=True)
 
-          # Inspect the 1 MiB PlayStation VRAM snapshot in memory, then discard
-          # it with other raw captures before any artifact is uploaded.
-          vram_path = Path("captures/raw/vram-frame-000299.raw")
-          if vram_path.exists():
+          # Summarize early and late 1 MiB VRAM checkpoints in memory, then remove
+          # the raw data before artifacts are uploaded.
+          for frame in (299, 1499):
+              vram_path = Path(f"captures/raw/vram-frame-{frame:06d}.raw")
+              prefix = f"GPU_VRAM_FRAME_{frame}"
+              if not vram_path.exists():
+                  output.append(f"{prefix}_STATUS=missing")
+                  continue
               vram = vram_path.read_bytes()
               expected_vram_bytes = 1024 * 512 * 2
               if len(vram) != expected_vram_bytes:
-                  output.append("GPU_VRAM_FRAME_299_STATUS=byte_count_mismatch")
-                  output.append(f"GPU_VRAM_FRAME_299_BYTES={len(vram)}")
-              else:
-                  words = [item[0] for item in struct.iter_unpack("<H", vram)]
-                  colors = [word & 0x7fff for word in words]
-                  output.extend([
-                      "GPU_VRAM_FRAME_299_STATUS=parsed",
-                      f"GPU_VRAM_FRAME_299_BYTES={len(vram)}",
-                      f"GPU_VRAM_FRAME_299_DISTINCT_RGB555_COLORS={len(set(colors))}",
-                      f"GPU_VRAM_FRAME_299_NONBLACK_PIXELS={sum(color != 0 for color in colors)}",
-                      f"GPU_VRAM_FRAME_299_TOTAL_PIXELS={len(colors)}",
-                  ])
-          else:
-              output.append("GPU_VRAM_FRAME_299_STATUS=missing")
+                  output.append(f"{prefix}_STATUS=byte_count_mismatch")
+                  output.append(f"{prefix}_BYTES={len(vram)}")
+                  continue
+              words = [item[0] for item in struct.iter_unpack("<H", vram)]
+              colors = [word & 0x7fff for word in words]
+              output.extend([
+                  f"{prefix}_STATUS=parsed",
+                  f"{prefix}_BYTES={len(vram)}",
+                  f"{prefix}_DISTINCT_RGB555_COLORS={len(set(colors))}",
+                  f"{prefix}_NONBLACK_PIXELS={sum(color != 0 for color in colors)}",
+                  f"{prefix}_TOTAL_PIXELS={len(colors)}",
+              ])
 
           # Inspect screenshot pixel diversity in memory, then discard every
           # temporary screenshot and metadata file before artifact upload.
@@ -734,6 +758,13 @@ jobs:
                   elif bpp == 16:
                       words = [item[0] for item in struct.iter_unpack("<H", raw)]
                       colors = [word & 0x7fff for word in words]
+                      rgb = bytearray()
+                      for word in words:
+                          rgb.extend(((word & 31) * 255 // 31,
+                                      ((word >> 5) & 31) * 255 // 31,
+                                      ((word >> 10) & 31) * 255 // 31))
+                      png_path = Path("captures") / f"internal-frame-{frame}.png"
+                      Image.frombytes("RGB", (width, height), bytes(rgb)).save(png_path, optimize=True)
                       output.extend([
                           f"{prefix}_STATUS=parsed",
                           f"{prefix}_WIDTH={width}",
@@ -742,9 +773,12 @@ jobs:
                           f"{prefix}_DISTINCT_RGB555_COLORS={len(set(colors))}",
                           f"{prefix}_NONBLACK_PIXELS={sum(color != 0 for color in colors)}",
                           f"{prefix}_TOTAL_PIXELS={len(colors)}",
+                          f"{prefix}_PNG={png_path.name}",
                       ])
                   elif bpp == 24:
                       pixels = [raw[i:i+3] for i in range(0, expected, 3)]
+                      png_path = Path("captures") / f"internal-frame-{frame}.png"
+                      Image.frombytes("RGB", (width, height), raw).save(png_path, optimize=True)
                       output.extend([
                           f"{prefix}_STATUS=parsed",
                           f"{prefix}_WIDTH={width}",
@@ -753,6 +787,7 @@ jobs:
                           f"{prefix}_DISTINCT_RGB_COLORS={len(set(pixels))}",
                           f"{prefix}_NONBLACK_PIXELS={sum(any(pixel) for pixel in pixels)}",
                           f"{prefix}_TOTAL_PIXELS={len(pixels)}",
+                          f"{prefix}_PNG={png_path.name}",
                       ])
                   else:
                       output.append(f"{prefix}_STATUS=unsupported_bpp")
@@ -786,6 +821,7 @@ jobs:
             ${{ env.WORK }}/captures/gpu-traffic-summary.txt
             ${{ env.WORK }}/captures/important-log-lines.txt
             ${{ env.WORK }}/captures/window-*.png
+            ${{ env.WORK }}/captures/internal-frame-*.png
             ${{ env.WORK }}/rsp-progress-summary.txt
           if-no-files-found: warn
           retention-days: 3
