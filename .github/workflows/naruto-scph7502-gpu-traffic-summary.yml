@@ -17,7 +17,7 @@ concurrency:
 jobs:
   gpu-traffic-summary:
     runs-on: ubuntu-26.04
-    timeout-minutes: 16
+    timeout-minutes: 18
     steps:
       - name: Install private runtime requirements
         shell: bash
@@ -109,14 +109,14 @@ jobs:
           echo "ROM/CUE/emulator hashes verified; BIOS=SCPH-7502"
           echo "EMULATOR_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
 
-      - name: Record emulated GPU traffic until post-handoff VSync 1500
+      - name: Record emulated GPU traffic until post-warning VSync 1800
         env:
           GPU_BACKEND_PROBE: ${{ contains(github.event.head_commit.message, '[openglgpu-probe]') }}
         shell: bash
         run: |
           set -euo pipefail
           GPU_BACKEND_FLAG="-softgpu"
-          GPU_BACKEND_TIMEOUT="700s"
+          GPU_BACKEND_TIMEOUT="900s"
           if [[ "${GPU_BACKEND_PROBE:-false}" == "true" ]]; then
             GPU_BACKEND_FLAG="-openglgpu"
             GPU_BACKEND_TIMEOUT="170s"
@@ -151,73 +151,22 @@ jobs:
           )
           cat > "$WORK/gpu-traffic.lua" <<'LUA'
           local frame_count = 0
-          local stop_frame = 1500
+          local stop_frame = 1800
           local pad = PCSX.SIO0.slots[1].pads[1]
           local buttons = PCSX.CONSTS.PAD.BUTTON
           local input_sequence = {
-              -- Earlier attempts were before EXEC:PC0/Execute! handoff; press Start only after boot enters the game executable.
-              -- The game-specific menu reference says O/Circle is Confirm; X/Cross is Cancel.
-              {frame=610, action="press", button=buttons.START, name="START"},
-              {frame=618, action="release", button=buttons.START, name="START"},
-              {frame=650, action="press", button=buttons.START, name="START"},
-              {frame=658, action="release", button=buttons.START, name="START"},
-              {frame=690, action="press", button=buttons.START, name="START"},
-              {frame=698, action="release", button=buttons.START, name="START"},
-              {frame=730, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=738, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=760, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=768, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=790, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=798, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=820, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=828, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=850, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=858, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=880, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=888, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=910, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=918, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=940, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=948, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=970, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=978, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1000, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1008, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1030, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1038, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1060, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1068, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1090, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1098, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1120, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1128, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1150, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1158, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1180, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1188, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1210, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1218, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1240, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1248, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1270, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1278, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1300, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1308, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1330, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1338, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1360, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1368, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1390, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1398, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1420, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1428, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1450, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1458, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1480, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1488, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              -- Wait for the Japanese health advisory, then Start; later Circle/O confirms menu choices.
+              {frame=1450, action="press", button=buttons.START, name="START"},
+              {frame=1480, action="release", button=buttons.START, name="START"},
+              {frame=1550, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1574, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1650, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1674, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1750, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=1774, action="release", button=buttons.CIRCLE, name="CIRCLE"},
           }
           local input_index = 1
-          local capture_targets = { [299]=true, [450]=true, [600]=true, [750]=true, [899]=true, [1100]=true, [1300]=true, [1499]=true }
+          local capture_targets = { [299]=true, [450]=true, [600]=true, [750]=true, [899]=true, [1100]=true, [1300]=true, [1499]=true, [1600]=true, [1700]=true, [1799]=true }
 
           local function apply_input(action)
               local expected = action.action == "press"
@@ -285,7 +234,7 @@ jobs:
                   input_index = input_index + 1
               end
               if capture_targets[frame_count] then capture_frame(frame_count) end
-              if frame_count == 299 or frame_count == 1499 then capture_vram(frame_count) end
+              if frame_count == 299 or frame_count == 1499 or frame_count == 1799 then capture_vram(frame_count) end
               if frame_count % 100 == 0 then
                   print(string.format("GPU_TRAFFIC_VSYNC frame=%d guest_fps=%.4f dump_frames=%d",
                       frame_count, PCSX.GPU.getGuestFPS(), PCSX.GPU.getDumpFrames()))
@@ -303,7 +252,7 @@ jobs:
                   end)
               end
           end)
-          print("GPU_TRAFFIC_PROBE=armed target_vsync=1500; raw dump will be parsed then deleted")
+          print("GPU_TRAFFIC_PROBE=armed target_vsync=1800; raw dump will be parsed then deleted")
           LUA
 
           timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
@@ -318,7 +267,7 @@ jobs:
           # Screenshots remain in a private short-retention artifact.
           (
             previous=0
-            for second in 10 25 40 55 70 85 100 140 180 220 260 300 340 380 420 460 500 540 580 620 660; do
+            for second in 10 25 40 55 70 85 100 140 180 220 260 300 340 380 420 460 500 540 580 620 660 700 740 780 820 860; do
               sleep "$((second - previous))"
               previous="$second"
               kill -0 "$emu_pid" 2>/dev/null || break
@@ -482,7 +431,7 @@ jobs:
                   print("RSP_QSUPPORTED=received" if caps else "RSP_QSUPPORTED=empty", flush=True)
               except Exception as exc:
                   print("RSP_QSUPPORTED=error:" + type(exc).__name__, flush=True)
-              for index in range(27):
+              for index in range(35):
                   if index:
                       time.sleep(25)
                   try:
@@ -552,7 +501,7 @@ jobs:
                   live_gp0_words_by_bin = {
                       "000_049": [], "050_099": [], "100_199": [],
                       "200_399": [], "400_599": [], "600_799": [],
-                      "800_999": [], "1000_1199": [], "1200_1499": []
+                      "800_999": [], "1000_1199": [], "1200_1499": [], "1500_1799": []
                   }
                   live_vsync_count = 0
                   trace_markers = 0
@@ -599,8 +548,10 @@ jobs:
                               bucket = "800_999"
                           elif live_vsync_count < 1200:
                               bucket = "1000_1199"
-                          else:
+                          elif live_vsync_count < 1500:
                               bucket = "1200_1499"
+                          else:
+                              bucket = "1500_1799"
                           live_gp0_words_by_bin[bucket].extend(chunk_words)
                       pos += size
                   output += [
@@ -714,7 +665,7 @@ jobs:
 
           # Summarize early and late 1 MiB VRAM checkpoints in memory, then remove
           # the raw data before artifacts are uploaded.
-          for frame in (299, 1499):
+          for frame in (299, 1499, 1799):
               vram_path = Path(f"captures/raw/vram-frame-{frame:06d}.raw")
               prefix = f"GPU_VRAM_FRAME_{frame}"
               if not vram_path.exists():
