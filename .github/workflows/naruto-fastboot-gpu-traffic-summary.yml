@@ -358,6 +358,36 @@ jobs:
                   dest = rt
               return dest if dest else None
 
+          def instruction_family(word):
+              op = (word >> 26) & 0x3f
+              funct = word & 0x3f
+              if op == 0:
+                  return "control" if funct in (0x08, 0x09, 0x0c, 0x0d) else "special_arithmetic"
+              if op in (0x02, 0x03):
+                  return "jump"
+              if op in (0x01, 0x04, 0x05, 0x06, 0x07, 0x14, 0x15, 0x16, 0x17):
+                  return "conditional_branch"
+              if op == 0x10:
+                  return "cop0"
+              if op == 0x12:
+                  return "cop2"
+              if op in (0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x30, 0x32):
+                  return "load"
+              if op in (0x28, 0x29, 0x2a, 0x2b, 0x2e, 0x38, 0x3a):
+                  return "store"
+              if op in (0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f):
+                  return "immediate_arithmetic"
+              return "other"
+
+          def latest_prior_def_family(raw_bytes, branch_offset, reg):
+              if reg == 0:
+                  return "constant-zero"
+              for prev_offset in range(branch_offset - 4, -1, -4):
+                  prior_word = int.from_bytes(raw_bytes[prev_offset:prev_offset + 4], "little")
+                  if written_gpr(prior_word) == reg:
+                      return instruction_family(prior_word)
+              return "outside-window"
+
           def extract_branch_meta(base, raw_bytes):
               hot_lo, hot_hi = 0x800372c0, 0x800373ff
               conditional_ops = (0x01, 0x04, 0x05, 0x06, 0x07, 0x14, 0x15, 0x16, 0x17)
@@ -387,6 +417,8 @@ jobs:
                       "source": pc, "kind": names[op], "target": target,
                       "rs": rs, "rt": rt, "operands": operands,
                       "delay_writes_operand": delay_writes_operand,
+                      "lhs_latest_def": latest_prior_def_family(raw_bytes, offset, rs),
+                      "rhs_latest_def": latest_prior_def_family(raw_bytes, offset, rt) if op not in (0x06, 0x07, 0x16, 0x17) else "not-compared",
                   })
               return found
 
@@ -538,7 +570,10 @@ jobs:
                                   relation = "zero" if signed == 0 else ("negative" if signed < 0 else "positive")
                               else:
                                   relation = "relation-not-modeled"
-                              key = (meta["source"], meta["kind"], meta["target"], relation)
+                              key = (
+                                  meta["source"], meta["kind"], meta["target"], relation,
+                                  meta["lhs_latest_def"], meta["rhs_latest_def"]
+                              )
                               branch_compare_counts[key] += 1
                       else:
                           print(f"CPU_BULK_SAMPLE index={idx} elapsed_s={time.monotonic()-start:.2f} bulk_valid=no response_len={len(registers)} response_kind={registers[:8]}", flush=True)
@@ -551,8 +586,12 @@ jobs:
               sock.close()
           print(f"CPU_CODE_WINDOWS_VALID={len(code_windows)}", flush=True)
           print(f"CPU_CODE_WINDOWS_UNAVAILABLE={len(code_window_errors)}", flush=True)
-          for (source, kind, target, relation), count in sorted(branch_compare_counts.items()):
-              print(f"CPU_BRANCH_COMPARE_SUMMARY source=0x{source:08x} kind={kind} target=0x{target:08x} target_entry_relation={relation} count={count}", flush=True)
+          for (source, kind, target, relation, lhs_def, rhs_def), count in sorted(branch_compare_counts.items()):
+              print(
+                  f"CPU_BRANCH_COMPARE_SUMMARY source=0x{source:08x} kind={kind} target=0x{target:08x} "
+                  f"target_entry_relation={relation} lhs_latest_def={lhs_def} rhs_latest_def={rhs_def} count={count}",
+                  flush=True,
+              )
           for base, (counts, backward, forward) in sorted(code_windows.items()):
               fields = " ".join(f"{key}={counts[key]}" for key in (
                   "conditional_branch", "jr", "jalr", "jump", "syscall", "break",
