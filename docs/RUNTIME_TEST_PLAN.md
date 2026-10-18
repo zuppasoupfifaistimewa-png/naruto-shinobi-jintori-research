@@ -1,9 +1,9 @@
 ## Status runtime terbaru — 2026-10-18
 
-- Mesa/GLX host lulus di [#39080977686](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080977686): llvmpipe membuat konteks OpenGL 4.5 compatibility tanpa version override.
+- Retest mandiri Mesa/GLX [#39085422680](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39085422680) lulus: default dan software sama-sama Mesa/llvmpipe, OpenGL 4.5 Compatibility Profile; explicit 3.3 compatibility context PASS tanpa version override. Artifact teks aman: [#12120801333](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39085422680/artifacts/12120801333).
 - PCSX-Redux OpenGL backend nyata lulus sampai VSync 300 di [#39083372634](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083372634): -openglgpu, Mesa/llvmpipe, emulator exit 0. GP0 43 words/42 commands; VRAM frame299 satu warna RGB555, 0 non-black piksel dari 524.288.
 - Branch source categories [#39083850904](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083850904): BNE 0x800372f0→0x80037320 (17 unequal; latest local writer load vs immediate arithmetic), BNE 0x80037330→0x800372d8 (15 unequal; special arithmetic vs zero). Kategori writer lokal bukan full provenance.
-- Uji region alamat efektif load [#39084130154](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39084130154) in_progress pada pemeriksaan 00:50:22 UTC; akan melaporkan label region + counts saja, tanpa address/register mentah.
+- Uji region alamat efektif load [#39084130154](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39084130154) selesai: 14 sampel load operand terkait BNE pertama diklasifikasikan `ram-cached`; artifact [#12119189221](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39084130154/artifacts/12119189221) berisi ringkasan saja.
 - RT-001 tetap Open / blocked sampai gambar game/menu valid dan perubahan game state akibat input terverifikasi.
 
 
