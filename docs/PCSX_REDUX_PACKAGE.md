@@ -356,3 +356,8 @@ Pada source pin [src/main/main.cc](https://github.com/grumpycoders/pcsx-redux/bl
 
 Run [#39082912598](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082912598) memiliki marker log `GPU_BACKEND_SELECTED=-softgpu`, jadi bukan OpenGL meskipun commit message memuat marker probe. Selektor lama memakai `git log` namun checkout Git tak tersedia di runner. Sudah diperbaiki pada [commit eb9cb4d2](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/eb9cb4d250c48a926f672b298cc51e2babf29a75) dengan `github.event.head_commit.message`; run [#39083141057](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083141057) sedang menguji pilihan OpenGL yang eksplisit. Default selain commit marker tetap software.
 
+
+
+## Result of first true OpenGL-backend run — 2026-10-18
+
+Run [#39083141057](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083141057) explicitly logged `GPU_BACKEND_SELECTED=-openglgpu`; Mesa/llvmpipe was available. The emulator ran to the timeout with 270 VSync packets, 0 GP0 words, and 1 GP1 word; frame 299 was never reached. The capture log reported screenshot API errors, expected because the pinned `OpenGL_GPU` class does not implement `takeScreenShot()` (its header only overrides `getVRAM()`). This run proves the actual OpenGL backend starts on Mesa, not that it rendered the game or completed VSync 300. The follow-up [#39083372634](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083372634) extends only the marked OpenGL probe to 170 seconds; other commits keep `-softgpu` as default.
