@@ -1,3 +1,16 @@
+## Hasil statis control-flow edge — 2026-10-18 (Actions #39081524928)
+
+Run [#39081524928](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081524928) sukses menyelesaikan target VSync 300 dan cleanup. Artifact privat teks [#12119460684](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081524928/artifacts/12119460684); hanya kategori/edge kontrol yang diekspor, tanpa byte instruksi atau disassembly.
+
+Hasil sampel cepat: 29 sampel, seluruhnya di hotspot 0x800372c0–0x800373ff; dua PC unik 0x80037320 (15) dan 0x800372d8 (14). Transisi tercatat 0x80037320→0x800372d8 sebanyak 7, dan 0x800372d8→0x80037320 sebanyak 6; sisanya berupa dua PC tetap berulang. Analisis static control-flow edges dari empat jendela 64-byte menghasilkan:
+- branch di 0x800372f0 → target 0x80037320
+- branch di 0x80037330 → target 0x800372d8
+- edge lain: 0x800372cc → 0x80037338; direct jumps 0x800372fc → 0x80037368, 0x80037304 → 0x80037348, 0x80037310 → 0x80037358, dan 0x80037318 → 0x80037338.
+
+Dua target branch utama sama persis dengan dua PC yang berulang pada sampling runtime. Ini bukti kuat bahwa jalur guest berputar pada siklus kontrol di area tersebut, tetapi pengamatan belum membuktikan predicate branch yang sebenarnya aktif atau apakah kondisi itu menunggu input, flag perangkat, atau kondisi runtime lainnya. GPUDump tetap identik: 299 live VSync, 43 GP0 words/42 commands seluruhnya dalam bucket 200–299; 39 GPU-state-setting, 1 clear-cache, 1 monochrome rectangle, 1 NOP; tanpa triangle/quad/line/textured-sprite command. Tidak ada screenshot game yang valid, menu yang dikenali, atau perubahan input yang terverifikasi.
+
+Langkah teknis berikutnya: klasifikasikan tipe branch (tanpa operand/register mentah) untuk dua cabang utama, lalu audit API input virtual pada pin PCSX-Redux agar dapat menguji tombol secara terkontrol saat emulator berjalan. Jangan mengubah emulator/pin atau mempublikasikan artefak sensitif. **RT-001 tetap Open / blocked.**
+
 ## Hasil PC sampling adaptif di hotspot — 2026-10-18 (Actions #39081346569)
 
 Run [#39081346569](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081346569) selesai sukses sampai VSync 300, emulator exit code 0. Artifact privat teks [#12118099416](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081346569/artifacts/12118099416) hanya memuat statistik; raw GPUDump dihapus dan baris sampel cepat tidak disimpan.
