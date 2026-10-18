@@ -371,3 +371,8 @@ Run [#39083372634](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 ## Guest branch operand categories — 2026-10-18
 
 Run [#39083850904](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083850904) produced text-only source-category statistics. The BNE at 0x800372f0→0x80037320 remained unequal on 17 target-entry samples; within its 64-byte code window, its left operand's latest writer was a load and the right operand's latest writer was immediate arithmetic. The BNE at 0x80037330→0x800372d8 remained unequal on 15 samples; the left latest writer was special arithmetic and the right operand constant zero. These are local last-writer classifications only, not full dataflow provenance. Next, classify the load's effective address into memory-region categories in memory, exporting counts only and never raw address/register values.
+
+
+## Memory-region classification probe — 2026-10-18
+
+Run [#39084130154](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39084130154) is instrumented to compute effective addresses in memory using the load's base register plus signed offset, but only emits category labels and counts (RAM, scratchpad, BIOS, MMIO subregions, expansion, or unknown). It does not output individual addresses or register values. At the last check, the run was still in_progress; do not treat it as a result until the text summary artifact appears.
