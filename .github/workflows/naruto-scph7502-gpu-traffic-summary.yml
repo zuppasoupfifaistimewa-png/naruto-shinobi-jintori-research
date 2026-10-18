@@ -109,7 +109,7 @@ jobs:
           echo "ROM/CUE/emulator hashes verified; BIOS=SCPH-7502"
           echo "EMULATOR_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
 
-      - name: Record emulated GPU traffic until post-warning VSync 1800
+      - name: Record emulated GPU traffic after Start input until VSync 2100
         env:
           GPU_BACKEND_PROBE: ${{ contains(github.event.head_commit.message, '[openglgpu-probe]') }}
         shell: bash
@@ -151,22 +151,16 @@ jobs:
           )
           cat > "$WORK/gpu-traffic.lua" <<'LUA'
           local frame_count = 0
-          local stop_frame = 1800
+          local stop_frame = 2100
           local pad = PCSX.SIO0.slots[1].pads[1]
           local buttons = PCSX.CONSTS.PAD.BUTTON
           local input_sequence = {
-              -- Wait for the Japanese health advisory, then Start; later Circle/O confirms menu choices.
-              {frame=1450, action="press", button=buttons.START, name="START"},
-              {frame=1480, action="release", button=buttons.START, name="START"},
-              {frame=1550, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1574, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1650, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1674, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1750, action="press", button=buttons.CIRCLE, name="CIRCLE"},
-              {frame=1774, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              -- Frame 1600 shows the health advisory; test Start only after it is visible.
+              {frame=1650, action="press", button=buttons.START, name="START"},
+              {frame=1680, action="release", button=buttons.START, name="START"},
           }
           local input_index = 1
-          local capture_targets = { [299]=true, [450]=true, [600]=true, [750]=true, [899]=true, [1100]=true, [1300]=true, [1499]=true, [1600]=true, [1700]=true, [1799]=true }
+          local capture_targets = { [299]=true, [450]=true, [600]=true, [750]=true, [899]=true, [1100]=true, [1300]=true, [1499]=true, [1600]=true, [1700]=true, [1799]=true, [1900]=true, [2000]=true, [2099]=true }
 
           local function apply_input(action)
               local expected = action.action == "press"
@@ -234,7 +228,7 @@ jobs:
                   input_index = input_index + 1
               end
               if capture_targets[frame_count] then capture_frame(frame_count) end
-              if frame_count == 299 or frame_count == 1499 or frame_count == 1799 then capture_vram(frame_count) end
+              if frame_count == 299 or frame_count == 1499 or frame_count == 2099 then capture_vram(frame_count) end
               if frame_count % 100 == 0 then
                   print(string.format("GPU_TRAFFIC_VSYNC frame=%d guest_fps=%.4f dump_frames=%d",
                       frame_count, PCSX.GPU.getGuestFPS(), PCSX.GPU.getDumpFrames()))
@@ -252,7 +246,7 @@ jobs:
                   end)
               end
           end)
-          print("GPU_TRAFFIC_PROBE=armed target_vsync=1800; raw dump will be parsed then deleted")
+          print("GPU_TRAFFIC_PROBE=armed target_vsync=2100; raw dump will be parsed then deleted")
           LUA
 
           timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
