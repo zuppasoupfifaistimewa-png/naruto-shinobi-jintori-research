@@ -262,7 +262,7 @@ jobs:
             stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
               -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
-              "$GPU_BACKEND_FLAG" -interpreter -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+              "$GPU_BACKEND_FLAG" -gdb -gdb-port 3333 -interpreter -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
               > "$WORK/pcsx.stdout" 2>&1 &
           emu_pid=$!
 
@@ -304,6 +304,93 @@ jobs:
           ) &
           window_sampler_pid=$!
 
+          # External minimal RSP client: low-rate PC-only samples, no breakpoints,
+          # no memory reads and no debugger callbacks in GPU::Vsync.
+          python3 -u - <<'PY' > "$WORK/rsp-progress-summary.txt" 2>&1 &
+          import socket, time
+          HOST, PORT = "127.0.0.1", 3333
+          started = time.monotonic()
+          def packet(payload):
+              raw = payload.encode("ascii")
+              return b"$" + raw + b"#" + f"{sum(raw)&255:02x}".encode("ascii")
+          def receive_packet(sock, timeout=3.0):
+              deadline = time.monotonic() + timeout
+              buf = bytearray()
+              while time.monotonic() < deadline:
+                  sock.settimeout(max(0.1, deadline-time.monotonic()))
+                  try:
+                      chunk = sock.recv(4096)
+                  except socket.timeout:
+                      continue
+                  if not chunk:
+                      raise ConnectionError("peer closed")
+                  buf.extend(chunk)
+                  start = buf.find(b"$")
+                  if start >= 0:
+                      mark = buf.find(b"#", start + 1)
+                      if mark >= 0 and len(buf) >= mark + 3:
+                          body = bytes(buf[start+1:mark])
+                          got = buf[mark+1:mark+3]
+                          del buf[:mark+3]
+                          want = f"{sum(body)&255:02x}".encode("ascii")
+                          if got.lower() != want:
+                              raise ValueError("checksum mismatch")
+                          return body.decode("ascii", "replace")
+              raise TimeoutError("no packet before deadline")
+          def request(sock, payload):
+              sock.sendall(packet(payload))
+              return receive_packet(sock)
+          def reg_value(value):
+              if len(value) != 8:
+                  return None
+              try:
+                  return int.from_bytes(bytes.fromhex(value), "little")
+              except ValueError:
+                  return None
+          def region(pc):
+              if pc is None:
+                  return "unavailable"
+              if 0xBFC00000 <= pc < 0xBFC80000 or 0x9FC00000 <= pc < 0x9FC80000:
+                  return "BIOS_ROM"
+              if 0x80010000 <= pc < 0x8006D800:
+                  return "MAIN_EXE_REGION"
+              if 0x80000000 <= pc < 0x80800000:
+                  return "RAM_OTHER"
+              if 0xA0000000 <= pc < 0xA0800000:
+                  return "RAM_UNCACHED"
+              return "OTHER"
+          sock = None
+          for attempt in range(20):
+              try:
+                  sock = socket.create_connection((HOST, PORT), timeout=1.0)
+                  break
+              except OSError:
+                  time.sleep(0.5)
+          if sock is None:
+              print("RSP_CONNECT=failed port=3333", flush=True)
+              raise SystemExit(0)
+          sock.settimeout(3.0)
+          print("RSP_CONNECT=connected port=3333", flush=True)
+          try:
+              try:
+                  caps = request(sock, "qSupported:multiprocess+")
+                  print("RSP_QSUPPORTED=received" if caps else "RSP_QSUPPORTED=empty", flush=True)
+              except Exception as exc:
+                  print("RSP_QSUPPORTED=error:" + type(exc).__name__, flush=True)
+              for index in range(8):
+                  if index:
+                      time.sleep(12)
+                  try:
+                      pc = reg_value(request(sock, "p25"))
+                      pc_text = "unavailable" if pc is None else f"0x{pc:08x}"
+                      print(f"RSP_PC_SAMPLE index={index} elapsed_s={time.monotonic()-started:.1f} pc={pc_text} region={region(pc)}", flush=True)
+                  except Exception as exc:
+                      print(f"RSP_PC_SAMPLE index={index} elapsed_s={time.monotonic()-started:.1f} region=unavailable error={type(exc).__name__}", flush=True)
+          finally:
+              sock.close()
+          PY
+          rsp_sampler_pid=$!
+
           # CPU register polling is intentionally disabled for this GPU-focused run.
           echo "CPU_RSP_SAMPLER=disabled; no CPU register polling during GPU traffic capture"
 
@@ -314,10 +401,14 @@ jobs:
           set -e
           emu_pid=""
           echo "EMULATOR_EXIT_CODE=$emu_rc"
-          grep -E 'GPU_BACKEND_SELECTED|PAD_SETUP|PAD_INJECT|GPU_SCREENSHOT_CAPTURE|GPU_VRAM_CAPTURE|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|error|Error|ERROR' \
+          grep -E 'GPU_BACKEND_SELECTED|PAD_SETUP|PAD_INJECT|GPU_SCREENSHOT_CAPTURE|GPU_VRAM_CAPTURE|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|Loaded BIOS:|Known BIOS detected|OpenBIOS detected|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|ResetCallback|unknown GPU data word|FATAL|Exception|error|Error|ERROR|Failed|failed' \
             "$WORK/pcsx.stdout" "$WORK/pcsx.log" > "$WORK/captures/important-log-lines.txt" || true
           cat "$WORK/captures/important-log-lines.txt" || true
           wait "$window_sampler_pid" 2>/dev/null || true
+          wait "$rsp_sampler_pid" 2>/dev/null || true
+          echo "RSP_SUMMARY_BEGIN"
+          cat "$WORK/rsp-progress-summary.txt" || true
+          echo "RSP_SUMMARY_END"
           echo "GPU_TRAFFIC_EMULATOR_STEP_DONE=1"
 
       - name: Summarize GPU packet traffic and delete raw dump
@@ -597,6 +688,7 @@ jobs:
             ${{ env.WORK }}/captures/gpu-traffic-summary.txt
             ${{ env.WORK }}/captures/important-log-lines.txt
             ${{ env.WORK }}/captures/window-*.png
+            ${{ env.WORK }}/rsp-progress-summary.txt
           if-no-files-found: warn
           retention-days: 3
 
