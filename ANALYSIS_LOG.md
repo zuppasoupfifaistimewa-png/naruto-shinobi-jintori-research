@@ -1,3 +1,13 @@
+## Hasil PC sampling adaptif di hotspot — 2026-10-18 (Actions #39081346569)
+
+Run [#39081346569](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081346569) selesai sukses sampai VSync 300, emulator exit code 0. Artifact privat teks [#12118099416](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081346569/artifacts/12118099416) hanya memuat statistik; raw GPUDump dihapus dan baris sampel cepat tidak disimpan.
+
+Sampler menaikkan laju nominal ke 0,1 s setelah PC masuk rentang 0x800372c0–0x800373ff, menahan mode cepat selama 8 s sejak sampel terakhir di rentang tersebut. Hasil: 31 sampel cepat, seluruhnya di dalam rentang, hanya dua PC unik: 0x80037320 sebanyak 17 sampel dan 0x800372d8 sebanyak 14 sampel. Histogram transisi: 0x80037320→0x80037320 sebanyak 10; 0x800372d8→0x800372d8 sebanyak 7; 0x80037320→0x800372d8 sebanyak 7; 0x800372d8→0x80037320 sebanyak 6. Hasil ini mendukung pola eksekusi/loop yang sangat berulang di sekitar dua alamat itu, tetapi belum membuktikan branch mana yang dieksekusi atau penyebab game tidak maju.
+
+GPUDump tetap sama: 299 live VSync packets; 43 GP0 words / 42 commands, semuanya dalam bucket VSync 200–299; 39 GPU-state-setting, satu clear-cache, satu monochrome rectangle, satu NOP; tanpa triangle/quad/line/textured-sprite command. Jadi sampling lebih rapat belum menghasilkan gambar title/menu atau perubahan input yang terbukti.
+
+Probe pembeda berikutnya sudah terpicu: [Actions #39081524928](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39081524928), yang menghitung edge control-flow statis di jendela hotspot tanpa menerbitkan byte instruksi/disassembly. **RT-001 tetap Open / blocked.**
+
 ## Run CPU/GPU terbaru selesai — 2026-10-18 (Actions #39080987461)
 
 Run [#39080987461](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461) selesai dengan status success, mencapai target VSync 300 dan keluar normal (EMULATOR_EXIT_CODE=0). Artifact yang diunggah hanya ringkasan teks privat [artifact #12118148960](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39080987461/artifacts/12118148960); raw GPUDump dihapus.
