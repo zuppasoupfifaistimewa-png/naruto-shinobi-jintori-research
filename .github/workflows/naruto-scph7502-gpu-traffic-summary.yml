@@ -596,6 +596,7 @@ jobs:
           path: |
             ${{ env.WORK }}/captures/gpu-traffic-summary.txt
             ${{ env.WORK }}/captures/important-log-lines.txt
+            ${{ env.WORK }}/captures/window-*.png
           if-no-files-found: warn
           retention-days: 3
 
