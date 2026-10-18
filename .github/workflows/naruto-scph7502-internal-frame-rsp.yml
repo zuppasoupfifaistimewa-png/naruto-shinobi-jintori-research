@@ -295,25 +295,7 @@ jobs:
           PY
           converted="$(find "$WORK/captures" -maxdepth 1 -name 'internal-frame-*.png' -type f | wc -l)"
           echo "INTERNAL_PNG_COUNT=$converted"
-          if ! grep -q '^INTERNAL_VSYNC=seen
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: naruto-scph7502-internal-frame-rsp-private
-          path: |
-            ${{ runner.temp }}/naruto-scph7502-internal-rsp/captures/*.png
-            ${{ runner.temp }}/naruto-scph7502-internal-rsp/pcsx.stdout
-            ${{ runner.temp }}/naruto-scph7502-internal-rsp/pcsx.log
-            ${{ runner.temp }}/naruto-scph7502-internal-rsp/rsp-safe-summary.txt
-          if-no-files-found: warn
-          retention-days: 3
-
-      - name: Remove all private media and raw framebuffer captures
-        if: always()
-        run: |
-          if [ -n "${WORK:-}" ] && [ -d "$WORK" ]; then rm -rf "$WORK"; fi
-          echo "Cleanup complete; no BIOS, ROM, raw framebuffer, save state, memory dump or instruction trace was retained."
- "$WORK/pcsx.stdout"; then
+          if ! grep -q '^INTERNAL_VSYNC=seen$' "$WORK/pcsx.stdout"; then
             echo "::error::No GPU::Vsync callback was observed; internal capture has not been proven."
             exit 1
           fi
