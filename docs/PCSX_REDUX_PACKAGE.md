@@ -348,3 +348,11 @@ Kesimpulan: Mesa/GLX host telah lolos tes mandiri; saat ini guest berada di sikl
 
 Run [#39082375609](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082375609) memanggil `PCSX.GPU.getVRAM()` pada VSync 299 di pin emulator `0c3572c3db75f97542001e453ae80ba8c3f8acba`. Slice VRAM 1.048.576 byte diproses di runner sebagai 1024×512 word RGB555: hasil hanya 1 warna berbeda dan 0 piksel non-black dari 524.288. Snapshot VRAM sementara dihapus sebelum artifact. Pada frame yang sama, screenshot `takeScreenShot()` 320×240 16-bpp juga hanya 1 warna dan 0 piksel non-black. Ini mendukung diagnosis bahwa guest VRAM/framebuffer belum berisi konten game, bukan bahwa framebuffer berwarna gagal ditampilkan oleh Mesa.
 
+
+
+## OpenGL backend selection audit — 2026-10-18
+
+Pada source pin [src/main/main.cc](https://github.com/grumpycoders/pcsx-redux/blob/0c3572c3db75f97542001e453ae80ba8c3f8acba/src/main/main.cc), `-openglgpu` menetapkan `SettingHardwareRenderer=true`, dan `-softgpu` menetapkannya ke false. [OpenGL_GPU](https://github.com/grumpycoders/pcsx-redux/blob/0c3572c3db75f97542001e453ae80ba8c3f8acba/src/core/OpenGL_GPU/gpu_opengl.h) mengimplementasikan `getVRAM()`, tetapi tidak meng-override `takeScreenShot()`; pada build ini jalur screenshot umum tidak boleh diperlakukan sebagai bukti status backend OpenGL.
+
+Run [#39082912598](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39082912598) memiliki marker log `GPU_BACKEND_SELECTED=-softgpu`, jadi bukan OpenGL meskipun commit message memuat marker probe. Selektor lama memakai `git log` namun checkout Git tak tersedia di runner. Sudah diperbaiki pada [commit eb9cb4d2](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/eb9cb4d250c48a926f672b298cc51e2babf29a75) dengan `github.event.head_commit.message`; run [#39083141057](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39083141057) sedang menguji pilihan OpenGL yang eksplisit. Default selain commit marker tetap software.
+
