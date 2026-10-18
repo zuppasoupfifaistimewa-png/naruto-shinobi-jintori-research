@@ -1,3 +1,11 @@
+## BIOS investigation handoff — 2026-10-18
+
+Best documented game-specific retail BIOS candidate: **SCPH-7502**. PSX Data Center records it for an ePSXe 2.0 setup for Naruto serial SLPS-03553: https://psxdatacenter.com/games/J/N/SLPS-03553.html. This does not prove it works on PCSX-Redux. Inventory check: neither current private release assets nor ChatGPT Library contain the SCPH-7502 BIOS image. Do not fetch a copyrighted BIOS dump from unofficial sources or add one to the repo.
+
+Use current run [#39093727808](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39093727808) to compare available open-source `openbios-shell.bin`, `openbios.bin` fastboot, and `openbios-chunked.bin`, all with the pinned PCSX-Redux commit and same private disc. Wait only by checking the live run/artifacts in this working turn; do not infer game compatibility from Action conclusion alone. Inspect any private captures/OCR for a recognizable title/menu and visible effect of input. Full record: [docs/BIOS_COMPATIBILITY.md](docs/BIOS_COMPATIBILITY.md).
+
+**RT-001 remains Open / blocked** until title/menu and controller response are proven.
+
 ## Status terbaru — host OpenGL tervalidasi, masalah guest tetap terbuka — 2026-10-18
 
 Tes OpenGL mandiri terbaru [#39085422680](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39085422680) lulus pada runner `ubuntu-26.04`. `glxinfo -B` pada jalur default dan `LIBGL_ALWAYS_SOFTWARE=1` sama-sama melaporkan vendor Mesa, renderer `llvmpipe (LLVM 21.1.8, 256 bits)`, dan OpenGL 4.5 Compatibility Profile. Kedua override versi tidak disetel. Program GLX yang secara eksplisit meminta konteks compatibility 3.3 berhasil membuat dan mengaktifkan konteks; versi aktualnya 4.5. Log mencatat `OPENGL_33_COMPAT_CONTEXT=PASS` dan `OPENGL_DIAGNOSTIC_RESULT=PASS`. Artifact teks aman [#12120801333](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39085422680/artifacts/12120801333) menyimpan identitas renderer, versi paket, dan hasil konteks saja.
