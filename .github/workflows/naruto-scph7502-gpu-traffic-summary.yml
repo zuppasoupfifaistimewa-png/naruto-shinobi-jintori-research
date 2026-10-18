@@ -17,7 +17,7 @@ concurrency:
 jobs:
   gpu-traffic-summary:
     runs-on: ubuntu-26.04
-    timeout-minutes: 8
+    timeout-minutes: 11
     steps:
       - name: Install private runtime requirements
         shell: bash
@@ -116,7 +116,7 @@ jobs:
         run: |
           set -euo pipefail
           GPU_BACKEND_FLAG="-softgpu"
-          GPU_BACKEND_TIMEOUT="125s"
+          GPU_BACKEND_TIMEOUT="420s"
           if [[ "${GPU_BACKEND_PROBE:-false}" == "true" ]]; then
             GPU_BACKEND_FLAG="-openglgpu"
             GPU_BACKEND_TIMEOUT="170s"
@@ -151,7 +151,7 @@ jobs:
           )
           cat > "$WORK/gpu-traffic.lua" <<'LUA'
           local frame_count = 0
-          local stop_frame = 300
+          local stop_frame = 900
           local pad = PCSX.SIO0.slots[1].pads[1]
           local buttons = PCSX.CONSTS.PAD.BUTTON
           local input_sequence = {
@@ -167,9 +167,41 @@ jobs:
               {frame=287, action="release", button=buttons.UP, name="UP"},
               {frame=290, action="press", button=buttons.CROSS, name="CROSS"},
               {frame=298, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=400, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=408, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=430, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=438, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=460, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=468, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=490, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=498, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=520, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=528, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=550, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=558, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=580, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=588, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=610, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=618, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=640, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=648, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=670, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=678, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=700, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=708, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=730, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=738, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=760, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=768, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=790, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=798, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=820, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=828, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=850, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=858, action="release", button=buttons.CROSS, name="CROSS"},
           }
           local input_index = 1
-          local capture_targets = { [235]=true, [250]=true, [265]=true, [299]=true }
+          local capture_targets = { [235]=true, [250]=true, [265]=true, [299]=true, [450]=true, [600]=true, [750]=true, [899]=true }
 
           local function apply_input(action)
               local expected = action.action == "press"
@@ -270,7 +302,7 @@ jobs:
           # Screenshots remain in a private short-retention artifact.
           (
             previous=0
-            for second in 10 25 40 55 70 85 100; do
+            for second in 10 25 40 55 70 85 100 140 180 220 260 300 340 380 410; do
               sleep "$((second - previous))"
               previous="$second"
               kill -0 "$emu_pid" 2>/dev/null || break
@@ -434,9 +466,9 @@ jobs:
                   print("RSP_QSUPPORTED=received" if caps else "RSP_QSUPPORTED=empty", flush=True)
               except Exception as exc:
                   print("RSP_QSUPPORTED=error:" + type(exc).__name__, flush=True)
-              for index in range(8):
+              for index in range(15):
                   if index:
-                      time.sleep(12)
+                      time.sleep(25)
                   try:
                       pc = reg_value(request(sock, "p25"))
                       pc_text = "unavailable" if pc is None else f"0x{pc:08x}"
@@ -501,7 +533,8 @@ jobs:
                   words_live = Counter()
                   live_gp0_words = []
                   live_gp0_words_by_bin = {
-                      "000_049": [], "050_099": [], "100_199": [], "200_299": []
+                      "000_049": [], "050_099": [], "100_199": [],
+                      "200_399": [], "400_599": [], "600_799": [], "800_899": []
                   }
                   live_vsync_count = 0
                   trace_markers = 0
@@ -538,8 +571,14 @@ jobs:
                               bucket = "050_099"
                           elif live_vsync_count < 200:
                               bucket = "100_199"
+                          elif live_vsync_count < 400:
+                              bucket = "200_399"
+                          elif live_vsync_count < 600:
+                              bucket = "400_599"
+                          elif live_vsync_count < 800:
+                              bucket = "600_799"
                           else:
-                              bucket = "200_299"
+                              bucket = "800_899"
                           live_gp0_words_by_bin[bucket].extend(chunk_words)
                       pos += size
                   output += [
