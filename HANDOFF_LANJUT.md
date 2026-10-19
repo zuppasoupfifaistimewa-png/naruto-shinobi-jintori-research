@@ -1,3 +1,21 @@
+## Handoff terbaru — navigasi D-pad terbukti dan Mode Select terlihat (2026-10-19)
+
+Run [#39178662131](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39178662131) telah selesai; artifact privat [#12155879252](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39178662131/artifacts/12155879252) dan screenshot aslinya sudah diperiksa.
+
+**Pembacaan gambar:**
+- Frame 2.670 menampilkan menu `はじめから` (baris pertama) dan `ロード` (baris kedua), panah mengarah ke `はじめから`.
+- DOWN 2.710–2.720 memindahkan panah ke `ロード` (jelas pada screenshot 2.720). UP 2.740–2.750 mengembalikannya ke `はじめから` (jelas pada 2.749/2.750). Frame tepat ketika tombol ditekan bisa masih menampilkan state lama; gunakan checkpoint beberapa frame sesudah input.
+- Circle 2.780–2.810 diikuti hilangnya menu dan fade. Frame 2.950/2.999/3.199 hitam, namun ini **bukan** dasar kesimpulan. Pada frame 3.399, screenshot secara langsung menampilkan `モードセレクト` dan opsi `ストーリーモード` tersorot. Mode Select tetap tampak pada checkpoint sampai 5.999.
+- Hasilnya mendukung konfirmasi pilihan `はじめから` serta tercapainya Mode Select. Story Mode belum dimulai: opsi baru terpilih pada layar Mode Select; belum ada Circle kedua setelah layar itu muncul.
+
+Konfigurasi tidak berubah: SCPH-7502 (EU), `SLPS03553` / `SLPS_035.53;1`, PCSX-Redux pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, SoftGPU, Port 1 Analog/Auto.
+
+Cleanup: log mencatat raw GPU dump dan raw screenshot sementara dihapus; workspace runtime dihapus di akhir job. Artifact hanya berisi log/summary, screenshot PNG pilihan, dan RSP summary—tidak ada ROM, BIOS, save, atau raw GPU/VRAM dump.
+
+**Langkah berikutnya di eksperimen baru (cold boot):** ulangi Start 2.650–2.680, DOWN 2.710–2.720, UP 2.740–2.750, Circle 2.780–2.810. Tunggu sampai Mode Select tampak; berdasarkan run ini, layar sudah stabil pada 3.399–5.999 dan Story Mode menjadi pilihan tersorot. Kemudian kirim Circle kedua setelah layar itu telah dicapai (rencana awal frame 6.100–6.130), tambah checkpoint sebelum/sesudah, dan amati setidaknya sampai frame 9.000. Kesuksesan input harus dibuktikan dari screenshot setelah input, bukan readback saja. Jangan menyebut Story Mode dimulai tanpa bukti visual transisi/gameplay.
+
+---
+
 ## Handoff terbaru — Start-only kembali membuktikan menu dan dibiarkan terbuka (2026-10-19)
 
 Run [#39176328030](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39176328030) selesai dan artifact privat #12155370415 diperiksa. Pada frame 2.650 prompt Start terlihat; sesudah Start pulse 2.650–2.680, frame 2.670 menampilkan menu `はじめから` dan `ロード` dengan penunjuk pada pilihan pertama. Frame 2.999 masih menunjukkan menu, sehingga layar tidak berubah ke hitam seperti eksperimen yang menekan Circle setelah Start.
