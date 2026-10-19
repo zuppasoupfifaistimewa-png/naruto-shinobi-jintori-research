@@ -11,6 +11,12 @@ on:
         description: "Run ID containing naruto-storymode-checkpoint-private and its raw savestate manifest"
         required: true
         type: string
+  # TEMPORARY one-shot bridge because this GitHub connection cannot dispatch workflows.
+  # Remove this push trigger after the diagnostic run has been queued.
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/naruto-raw-storymode-restore.yml"
 
 permissions:
   contents: read
@@ -22,12 +28,12 @@ concurrency:
 
 jobs:
   raw-restore-and-continue:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.name == 'Naruto SCPH-7502 Story Mode playthrough' && github.event.workflow_run.conclusion != 'cancelled') }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.name == 'Naruto SCPH-7502 Story Mode playthrough' && github.event.workflow_run.conclusion != 'cancelled') || (github.event_name == 'push' && github.event.head_commit.message == 'DIAG: GDB raw restore receiver') }}
     runs-on: ubuntu-26.04
     timeout-minutes: 45
     env:
       WORK: /tmp/naruto-storymode-raw-resume
-      SOURCE_RUN_ID: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.source_run_id }}
+      SOURCE_RUN_ID: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.id) || (github.event_name == 'workflow_dispatch' && inputs.source_run_id) || (github.event_name == 'push' && github.event.head_commit.message == 'DIAG: GDB raw restore receiver' && '39262213468') }}
       RESEARCH_REPO: ${{ github.repository }}
     steps:
       - name: Install runtime dependencies
@@ -35,7 +41,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil gdb
 
       - name: Download raw checkpoint evidence from the source run
         uses: actions/download-artifact@v4
@@ -204,6 +210,68 @@ jobs:
           cp "$SOURCE/storymode-checkpoint-source.png" "$WORK/captures/storymode-previous-checkpoint-source.png"
           cp "$SOURCE/storymode-raw-manifest.txt" "$WORK/captures/storymode-previous-raw-manifest.txt"
           cp "$SOURCE/gpu-traffic.lua" "$WORK/gpu-traffic.lua"
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("gpu-traffic.lua")
+          s = p.read_text()
+          replacements = [
+              (
+                  "local frame_count = 0\n",
+                  """local frame_count = 0
+          local first_vsync_noted = false
+          local function restore_phase(stage)
+              local file = io.open("captures/restore-phase.log", "ab")
+              if file then
+                  file:write(string.format("RESTORE_PHASE=%s frame=%d\\n", stage, frame_count))
+                  file:flush()
+                  file:close()
+              end
+              print(string.format("RESTORE_PHASE=%s frame=%d", stage, frame_count))
+              io.stdout:flush()
+          end
+          restore_phase("LUA_SCRIPT_START")
+          """,
+                  "Lua script start",
+              ),
+              (
+                  "local input_sequence = {}\n",
+                  'restore_phase("LUA_RESUME_CONFIGURED")\nlocal input_sequence = {}\n',
+                  "Lua restore configuration",
+              ),
+              (
+                  'print("STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded")\n',
+                  'print("STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded")\n        restore_phase("SAVE_STATE_LOADED_EVENT")\n',
+                  "SaveStateLoaded event",
+              ),
+              (
+                  'gpuTrafficListener = PCSX.Events.createEventListener("GPU::Vsync", function()\n    if resume_pending then',
+                  'gpuTrafficListener = PCSX.Events.createEventListener("GPU::Vsync", function()\n    if not first_vsync_noted then\n        first_vsync_noted = true\n        restore_phase("FIRST_GPU_VSYNC_ENTERED")\n    end\n    if resume_pending then',
+                  "first VSync",
+              ),
+              (
+                  'print("STORY_SAVESTATE_RESTORE_PAUSE_REQUESTED=1")\n        PCSX.pauseEmulator()',
+                  'print("STORY_SAVESTATE_RESTORE_PAUSE_REQUESTED=1")\n        restore_phase("LOAD_REQUESTED_FROM_VSYNC")\n        PCSX.pauseEmulator()\n        restore_phase("EMULATOR_PAUSE_REQUESTED")',
+                  "pause request",
+              ),
+              (
+                  'PCSX.nextTick(function()\n            local file_ok, state_file = pcall(function()\n                return Support.File.open(resume_state_path)\n            end)',
+                  'PCSX.nextTick(function()\n            restore_phase("NEXT_TICK_ENTERED")\n            restore_phase("SAVESTATE_FILE_OPEN_BEGIN")\n            local file_ok, state_file = pcall(function()\n                return Support.File.open(resume_state_path)\n            end)',
+                  "nextTick and file open",
+              ),
+              (
+                  '            local load_ok, load_err = pcall(function() PCSX.loadSaveState(state_file) end)\n            state_file:close()',
+                  '            restore_phase("SAVESTATE_FILE_OPEN_OK")\n            restore_phase("PCSX_LOADSAVESTATE_BEGIN")\n            local load_ok, load_err = pcall(function() PCSX.loadSaveState(state_file) end)\n            restore_phase("PCSX_LOADSAVESTATE_PCALL_RETURNED")\n            state_file:close()',
+                  "load call boundaries",
+              ),
+          ]
+          for old, new, label in replacements:
+              count = s.count(old)
+              if count != 1:
+                  raise SystemExit(f"Expected exactly one replacement for {label}, found {count}")
+              s = s.replace(old, new, 1)
+          p.write_text(s)
+          print("RESTORE_PHASE_INSTRUMENTATION=PASS")
+          PY
           cp "$SOURCE/story-dialog-watch.py" "$WORK/story-dialog-watch.py"
           : > "$WORK/resume/raw-resume.flag"
           : > "$WORK/cards/memory-card-restored.flag"
@@ -237,6 +305,10 @@ jobs:
           for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
           xdpyinfo -display "$DISPLAY" >/dev/null
           PAD_SETUP=$(cat <<'LUA'
+          local phase_file = io.open("captures/restore-phase.log", "ab")
+          if phase_file then phase_file:write("RESTORE_PHASE=PAD_SETUP_EXEC_ENTER\\n"); phase_file:flush(); phase_file:close() end
+          print("RESTORE_PHASE=PAD_SETUP_EXEC_ENTER")
+          io.stdout:flush()
           PCSX.settings.pads[1].DeviceType = 'Analog'
           PCSX.settings.pads[1].Connected = true
           PCSX.SIO0.slots[1].pads[1].map()
@@ -246,11 +318,30 @@ jobs:
               tostring(PCSX.settings.pads[1].PadType)))
           LUA
           )
-          timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
-            stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/naruto-storymode.mcd" \
-              -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
-              -softgpu -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+          echo "STORY_DIAG_LAUNCH=GDB_STARTED"
+          timeout --signal=TERM --kill-after=10s "$GPU_BACKEND_TIMEOUT" \
+            gdb --batch --return-child-result \
+              -ex 'set pagination off' \
+              -ex 'set confirm off' \
+              -ex 'set print thread-events off' \
+              -ex 'set follow-fork-mode child' \
+              -ex 'set detach-on-fork on' \
+              -ex 'set follow-exec-mode new' \
+              -ex 'set debuginfod enabled off' \
+              -ex 'handle SIGSEGV stop print nopass' \
+              -ex "set logging file $WORK/gdb-console.txt" \
+              -ex 'set logging overwrite on' \
+              -ex 'set logging redirect on' \
+              -ex 'set logging enabled on' \
+              -ex 'echo GDB_INFERIOR_RUN_BEGIN\n' \
+              -ex run \
+              -ex 'echo GDB_BACKTRACE_BEGIN\n' \
+              -ex 'thread apply all bt full' \
+              -ex 'echo GDB_BACKTRACE_END\n' \
+              --args /usr/bin/stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+                -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/naruto-storymode.mcd" \
+                -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
+                -softgpu -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
             > "$WORK/pcsx.stdout" 2>&1 &
           emu_pid=$!
           RESUME_MODE=true RAW_RESUME_VERIFY=true EMU_PID="$emu_pid" python3 -u "$WORK/story-dialog-watch.py" > "$WORK/captures/story-dialog-watch-summary.txt" 2>&1 &
@@ -261,8 +352,26 @@ jobs:
           set -e
           emu_pid=""
           echo "EMULATOR_EXIT_CODE=$emu_rc"
-          grep -E 'STORY_|RESTORE_|PAD_SETUP|PAD_INJECT|GPU_SCREENSHOT_CAPTURE|ExecutionFlow|Loaded BIOS:|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|FATAL|Exception|error|Error|ERROR|Failed|failed' \
-            "$WORK/pcsx.stdout" "$WORK/pcsx.log" > "$WORK/captures/important-log-lines.txt" || true
+          if [ -f "$WORK/captures/restore-phase.log" ]; then
+            if grep -q 'RESTORE_PHASE=PCSX_LOADSAVESTATE_BEGIN' "$WORK/captures/restore-phase.log"; then
+              if grep -q 'RESTORE_PHASE=PCSX_LOADSAVESTATE_PCALL_RETURNED' "$WORK/captures/restore-phase.log"; then phase="load_call_returned_event_or_post-load"; else phase="native_crash_during_load_call"; fi
+            elif grep -q 'RESTORE_PHASE=NEXT_TICK_ENTERED' "$WORK/captures/restore-phase.log"; then phase="nextTick_before_load_call"
+            elif grep -q 'RESTORE_PHASE=FIRST_GPU_VSYNC_ENTERED' "$WORK/captures/restore-phase.log"; then phase="emulation_started_before_load_request"
+            elif grep -q 'RESTORE_PHASE=LUA_SCRIPT_START' "$WORK/captures/restore-phase.log"; then phase="lua_startup_before_first_vsync"
+            elif grep -q 'RESTORE_PHASE=PAD_SETUP_EXEC_ENTER' "$WORK/captures/restore-phase.log"; then phase="command_line_lua_before_dofile_or_vsync"
+            else phase="unknown_phase_marker"
+            fi
+          else
+            phase="native_startup_before_lua_phase_markers"
+          fi
+          {
+            echo "STORY_RESTORE_CRASH_PHASE=$phase"
+            if grep -Eqi 'Program received signal SIGSEGV|SIGSEGV, Segmentation fault' "$WORK/gdb-console.txt" 2>/dev/null; then echo "STORY_GDB_SIGSEGV_CAPTURED=1"; else echo "STORY_GDB_SIGSEGV_CAPTURED=0"; fi
+            echo "STORY_GDB_BACKTRACE_FRAMES=$(grep -Ec '^#[0-9]+[[:space:]]' "$WORK/gdb-console.txt" 2>/dev/null || true)"
+          } > "$WORK/captures/restore-phase-summary.txt"
+          cat "$WORK/captures/restore-phase-summary.txt"
+          grep -E 'STORY_|RESTORE_|PAD_SETUP|PAD_INJECT|GPU_SCREENSHOT_CAPTURE|ExecutionFlow|Loaded BIOS:|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|FATAL|Exception|error|Error|ERROR|Failed|failed|SIGSEGV|Backtrace|^#[0-9]+' \
+            "$WORK/pcsx.stdout" "$WORK/pcsx.log" "$WORK/gdb-console.txt" "$WORK/captures/restore-phase.log" > "$WORK/captures/important-log-lines.txt" || true
           cp "$WORK/pcsx.stdout" "$WORK/captures/pcsx.stdout.txt" || true
           cp "$WORK/pcsx.log" "$WORK/captures/pcsx.log.txt" || true
           cat "$WORK/captures/important-log-lines.txt" || true
@@ -441,6 +550,9 @@ jobs:
             ${{ env.WORK }}/captures/important-log-lines.txt
             ${{ env.WORK }}/captures/pcsx.stdout.txt
             ${{ env.WORK }}/captures/pcsx.log.txt
+            ${{ env.WORK }}/captures/restore-phase.log
+            ${{ env.WORK }}/captures/restore-phase-summary.txt
+            ${{ env.WORK }}/gdb-console.txt
             ${{ env.WORK }}/captures/story-dialog-watch-summary.txt
             ${{ env.WORK }}/captures/raw-restore-continuation-summary.txt
             ${{ env.WORK }}/captures/gpu-traffic.lua
