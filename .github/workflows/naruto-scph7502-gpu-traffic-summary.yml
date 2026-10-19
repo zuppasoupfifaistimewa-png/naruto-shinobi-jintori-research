@@ -174,20 +174,30 @@ jobs:
           local pad = PCSX.SIO0.slots[1].pads[1]
           local buttons = PCSX.CONSTS.PAD.BUTTON
           local resume_mode = false
-          local resume_open_ok, resume_file = pcall(function()
-              return Support.File.open("resume/storymode-checkpoint.sstate")
-          end)
-          if resume_open_ok and resume_file then
-              local load_ok, load_err = pcall(function() PCSX.loadSaveState(resume_file) end)
-              resume_file:close()
-              if load_ok then
-                  resume_mode = true
-                  print("STORY_SAVESTATE_LOAD_REQUESTED=1")
+          -- Do not hand a missing/failed File object to loadSaveState: PCSX's native
+          -- deserializer expects a valid serialized slice and may fail below Lua's
+          -- exception boundary. Probe with io.open first, and only then open via Support.
+          local resume_probe = io.open("resume/storymode-checkpoint.sstate", "rb")
+          if resume_probe then
+              resume_probe:close()
+              local resume_open_ok, resume_file = pcall(function()
+                  return Support.File.open("resume/storymode-checkpoint.sstate")
+              end)
+              if resume_open_ok and resume_file then
+                  local load_ok, load_err = pcall(function() PCSX.loadSaveState(resume_file) end)
+                  resume_file:close()
+                  if load_ok then
+                      resume_mode = true
+                      print("STORY_SAVESTATE_LOAD_REQUESTED=1")
+                  else
+                      print("STORY_SAVESTATE_LOAD_ERROR=" .. tostring(load_err))
+                      print("STORY_SAVESTATE_LOAD_REQUESTED=0; cold boot sequence enabled")
+                  end
               else
-                  print("STORY_SAVESTATE_LOAD_ERROR=" .. tostring(load_err))
+                  print("STORY_SAVESTATE_FILE_OPEN_ERROR; cold boot sequence enabled")
               end
           else
-              print("STORY_SAVESTATE_LOAD_REQUESTED=0; cold boot sequence enabled")
+              print("STORY_SAVESTATE_LOAD_REQUESTED=0; checkpoint file absent, cold boot sequence enabled")
           end
           local input_sequence = {}
           if not resume_mode then
