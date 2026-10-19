@@ -203,7 +203,56 @@ jobs:
           print("SAVESTATE_PROBE_ARMED=1 target_vsync=60; no controller buttons will be sent")
           LUA
 
+          cat > "$WORK/probe-listeners-only.lua" <<'LUA'
+          if io.stdout then io.stdout:setvbuf("no") end
+          print("SAVESTATE_PROBE_LISTENERS_SCRIPT_ENTERED=1")
+          local frame_count = 0
+          _G.savestateProbeRunListener = PCSX.Events.createEventListener("ExecutionFlow::Run", function()
+              print("SAVESTATE_PROBE_EXECUTION_RUN=1")
+          end)
+          print("SAVESTATE_PROBE_RUN_LISTENER_REGISTERED=1")
+          _G.savestateProbeLoadedListener = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
+              print("SAVESTATE_PROBE_LOAD_EVENT_LISTENER_FIRED=1")
+          end)
+          print("SAVESTATE_PROBE_LOAD_EVENT_LISTENER_REGISTERED=1")
+          local function capture(n)
+              local shot = PCSX.GPU.takeScreenShot()
+              local bpp = (shot.bpp == 0) and 16 or 24
+              local raw = assert(Support.File.open("captures/raw/probe-frame.raw", "TRUNCATE"))
+              raw:writeMoveSlice(shot.data)
+              raw:close()
+              local meta = assert(io.open("captures/raw/probe-frame.json", "wb"))
+              meta:write(string.format('{"frame":%d,"width":%d,"height":%d,"bpp":%d,"expected_bytes":%d}\\n',
+                  n, shot.width, shot.height, bpp, shot.width * shot.height * bpp / 8))
+              meta:close()
+              print("SAVESTATE_PROBE_LISTENER_CONTROL_SCREENSHOT=1")
+          end
+          local pending = false
+          _G.savestateProbeGpuListener = PCSX.Events.createEventListener("GPU::Vsync", function()
+              frame_count = frame_count + 1
+              if frame_count == 1 or frame_count % 30 == 0 then
+                  print("SAVESTATE_PROBE_LISTENERS_ONLY_VSYNC=" .. tostring(frame_count))
+              end
+              if frame_count == 60 and not pending then
+                  pending = true
+                  PCSX.pauseEmulator()
+                  PCSX.nextTick(function()
+                      local ok, err = pcall(function() capture(frame_count) end)
+                      if not ok then
+                          print("SAVESTATE_PROBE_LISTENERS_ONLY_SCREENSHOT_ERROR=" .. tostring(err))
+                          PCSX.quit(61)
+                          return
+                      end
+                      PCSX.quit(0)
+                  end)
+              end
+          end)
+          print("SAVESTATE_PROBE_LISTENER_ONLY_ARMED=1")
+          LUA
+
           cat > "$WORK/probe-load.lua" <<'LUA'
+          if io.stdout then io.stdout:setvbuf("no") end
+          print("SAVESTATE_PROBE_LOAD_SCRIPT_ENTERED=1")
           local frame_count = 0
           local first_vsync_seen = false
           local load_call_returned = false
@@ -224,14 +273,18 @@ jobs:
               print(string.format("SAVESTATE_PROBE_SCREENSHOT_CAPTURED=1 name=%s frame=%d", name, n))
           end
 
+          print("SAVESTATE_PROBE_RUN_LISTENER_REGISTERING=1")
           _G.savestateProbeRunListener = PCSX.Events.createEventListener("ExecutionFlow::Run", function()
               print("SAVESTATE_PROBE_EXECUTION_RUN=1")
           end)
+          print("SAVESTATE_PROBE_RUN_LISTENER_REGISTERED=1")
+          print("SAVESTATE_PROBE_LOAD_EVENT_LISTENER_REGISTERING=1")
           _G.savestateProbeLoadedListener = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
               state_loaded = true
               post_restore_frames = 0
               print("SAVESTATE_PROBE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded")
           end)
+          print("SAVESTATE_PROBE_LOAD_EVENT_LISTENER_REGISTERED=1")
 
           local function stop_at_safe_tick(name, n, final)
               if pause_pending then return end
@@ -256,6 +309,7 @@ jobs:
               end)
           end
 
+          print("SAVESTATE_PROBE_VSYNC_LISTENER_REGISTERING=1")
           _G.savestateProbeGpuListener = PCSX.Events.createEventListener("GPU::Vsync", function()
               if not first_vsync_seen then
                   first_vsync_seen = true
@@ -271,6 +325,7 @@ jobs:
                           PCSX.quit(50)
                           return
                       end
+                      print("SAVESTATE_PROBE_LOAD_CALL_BEGIN=1")
                       local ok, err = pcall(function() PCSX.loadSaveState(file) end)
                       file:close()
                       if not ok then
@@ -299,6 +354,7 @@ jobs:
                   PCSX.nextTick(function() PCSX.quit(53) end)
               end
           end)
+          print("SAVESTATE_PROBE_VSYNC_LISTENER_REGISTERED=1")
           print("SAVESTATE_PROBE_LUA_READY=1")
           print("SAVESTATE_PROBE_ARMED=1; load only at paused nextTick, observe SaveStateLoaded event, then 180 VSyncs")
           LUA
@@ -428,7 +484,11 @@ jobs:
           cp "$WORK/resume/storymode-checkpoint.sstate" "$WORK/checkpoint-source/rehydrated-checkpoint.sstate"
           run_probe C-rehydrated-file-present-no-load probe-no-load.lua
 
-          # D changes only one factor from C: call the real savestate loader at paused nextTick.
+          # C2 uses the same rehydrated state, but only registers the SaveStateLoaded listener; it never calls the loader.
+          cp "$WORK/checkpoint-source/rehydrated-checkpoint.sstate" "$WORK/resume/storymode-checkpoint.sstate"
+          run_probe C2-rehydrated-listeners-only probe-listeners-only.lua
+
+          # D changes only one factor from C2: call the real savestate loader at paused nextTick.
           cp "$WORK/checkpoint-source/rehydrated-checkpoint.sstate" "$WORK/resume/storymode-checkpoint.sstate"
           run_probe D-rehydrated-checkpoint-load probe-load.lua
           echo "SAVESTATE_PROBE_ALL_PHASES_COMPLETED=1" | tee -a "$WORK/captures/diagnostic-summary.txt"
@@ -481,6 +541,8 @@ jobs:
           path: |
             ${{ runner.temp }}/naruto-savestate-isolated-probe/captures/diagnostic-summary.txt
             ${{ runner.temp }}/naruto-savestate-isolated-probe/captures/*.png
+            ${{ runner.temp }}/naruto-savestate-isolated-probe/captures/*.raw
+            ${{ runner.temp }}/naruto-savestate-isolated-probe/captures/*.json
             ${{ runner.temp }}/naruto-savestate-isolated-probe/logs/*.log
             ${{ runner.temp }}/naruto-savestate-isolated-probe/xvfb.log
           if-no-files-found: warn
@@ -508,6 +570,10 @@ jobs:
           fi
           if ! grep -q 'SAVESTATE_PROBE_PHASE_RESULT=C-rehydrated-file-present-no-load:PASS' "$SUMMARY"; then
             echo "::error::SAVESTATE_PROBE_RESULT=FAIL reason=rehydrated_file_control_failed"
+            exit 1
+          fi
+          if ! grep -q 'SAVESTATE_PROBE_PHASE_RESULT=C2-rehydrated-listeners-only:PASS' "$SUMMARY"; then
+            echo "::error::SAVESTATE_PROBE_RESULT=FAIL reason=load_event_listener_control_failed"
             exit 1
           fi
           if ! grep -q 'SAVESTATE_PROBE_PHASE_RESULT=D-rehydrated-checkpoint-load:PASS' "$SUMMARY"; then
