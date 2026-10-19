@@ -528,7 +528,14 @@ jobs:
                 -ex "set detach-on-fork on" \
                 -ex "handle SIGSEGV stop print nopass" \
                 -ex run \
-                -ex "echo \\n--- RESTORE GDB BACKTRACE ---\\n" \
+                -ex "echo \\n--- RESTORE GDB CRASH CONTEXT ---\\n" \
+                -ex "info threads" \
+                -ex "info registers" \
+                -ex "info symbol \\$pc" \
+                -ex "x/16i \\$pc-16" \
+                -ex "info sharedlibrary" \
+                -ex "info proc mappings" \
+                -ex "echo \\n--- RESTORE GDB FULL BACKTRACE ---\\n" \
                 -ex "thread apply all bt full" \
                 --args "$WORK/squashfs-root/AppRun" \
                   -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
