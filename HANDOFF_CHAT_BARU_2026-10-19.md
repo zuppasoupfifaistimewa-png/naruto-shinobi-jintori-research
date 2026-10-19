@@ -1,3 +1,29 @@
+## Hasil terbaru menggantikan status eksperimen sebelumnya — run #39178662131 (2026-10-19)
+
+Run [#39178662131](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39178662131) **sudah selesai** dengan status success, jadi jangan menjalankan ulang run tersebut. Artifact privat [#12155879252](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39178662131/artifacts/12155879252) telah diunduh dan screenshot dibaca langsung.
+
+**Bukti visual yang baru terverifikasi:**
+- Frame 2.670: menu `はじめから` / `ロード`, panah di pilihan pertama.
+- DOWN 2.710–2.720: pada frame 2.720 panah berada di `ロード`.
+- UP 2.740–2.750: pada frame 2.749/2.750 panah kembali di `はじめから`.
+- Circle menu 2.780–2.810: overlay menu menghilang; sesudah beberapa frame gelap/hitam, frame 3.399 langsung memperlihatkan `モードセレクト` dengan `ストーリーモード` tersorot. Layar Mode Select stabil pada checkpoint hingga frame 5.999. Hitam pada frame 2.950–3.199 sendiri tidak dijadikan bukti mode.
+- Jadi Start → navigasi DOWN/UP → Circle pada `はじめから` secara visual membawa permainan ke Mode Select. **Story Mode belum dimulai** karena belum ada Circle kedua atau bukti layar gameplay.
+
+Baseline yang wajib dipertahankan: SCPH-7502 (EU); CD ID `SLPS03553`; EXE `SLPS_035.53;1`; PCSX-Redux source pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`; SoftGPU; Port 1 Analog/Auto.
+
+Cleanup run terverifikasi: `RAW_GPU_DUMP_REMOVED=1`, `RAW_TEMP_SCREENSHOTS_REMOVED=1`, dan perintah akhir menghapus workspace runtime. Isi ZIP artifact yang diperiksa hanyalah summary/log teks, screenshot PNG pilihan, dan RSP summary; tidak ada ROM, BIOS, save, atau raw GPU/VRAM dump. Artifact berumur tiga hari.
+
+## Rencana langkah berikutnya untuk chat baru
+
+1. Baca bagian hasil terbaru ini, lalu periksa workflow aktif dan dokumen RT-001 sebelum menyunting.
+2. Pada cold boot baru ulangi sequence yang telah terbukti: Start press/release 2.650–2.680; DOWN 2.710–2.720; UP 2.740–2.750; Circle pada menu 2.780–2.810.
+3. Terus ambil bukti sampai Mode Select terlihat (run ini: frame 3.399 dan stabil hingga 5.999). Karena `ストーリーモード` sudah tersorot pada layar tersebut, rencana Circle kedua pada frame 6.100–6.130, dengan screenshot tepat sebelum/sesudah dan observasi diperpanjang sampai frame 9.000 atau lebih.
+4. Klaim Story Mode dimulai hanya jika screenshot setelah Circle kedua menunjukkan transisi nyata ke layar Story Mode/gameplay; jangan membuat inferensi dari frame hitam, `PAD_INJECT PASS`, atau status workflow.
+5. Pertahankan SCPH-7502, SLPS03553 / `SLPS_035.53;1`, PCSX-Redux pin, SoftGPU dan Port 1 Analog/Auto. Jangan sentuh Tile Duel. Jangan commit/upload ROM, BIOS, save, raw GPU/VRAM dump atau file privat; cek cleanup sampai akhir.
+6. **Jangan membuat run duplikat** untuk #39178662131; run tersebut sudah selesai. Langkah berikutnya adalah eksperimen baru dengan sequence lengkap di atas.
+
+---
+
 # HANDOFF CHAT BARU — Naruto PS1 (2026-10-19)
 
 Dokumen ini dibuat sebagai handoff terbaru. Baca dokumen ini terlebih dahulu saat melanjutkan riset. Instruksi pengguna di sini **menggantikan** instruksi lebih lama yang meminta Start saja dan melarang Circle.
