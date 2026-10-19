@@ -1,3 +1,9 @@
+## Kebijakan gambar bukti — instruksi pengguna (2026-10-19)
+
+Untuk setiap gambar yang ditampilkan atau disebut sebagai tampilan di dalam game Naruto, gunakan **hanya screenshot aktual dari hasil eksperimen riset kita** (misalnya PNG dalam artifact GitHub Actions run yang telah diperiksa). Jangan mengganti, menghias, atau menyamarkan gambar hasil web/pencarian sebagai bukti game kita. Jika screenshot dari eksperimen belum tersedia atau tidak bisa diverifikasi, katakan dengan jelas bahwa bukti visual belum tersedia daripada mengambil gambar web. Jika memungkinkan, beri label run ID dan nomor frame agar asal bukti dapat ditelusuri. Setiap teks Jepang yang ditampilkan wajib disertai terjemahan Bahasa Indonesia di sebelahnya dalam tanda kurung.
+
+---
+
 ## Hasil terbaru menggantikan status eksperimen sebelumnya — run #39178662131 (2026-10-19)
 
 Run [#39178662131](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39178662131) **sudah selesai** dengan status success, jadi jangan menjalankan ulang run tersebut. Artifact privat [#12155879252](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39178662131/artifacts/12155879252) telah diunduh dan screenshot dibaca langsung.
