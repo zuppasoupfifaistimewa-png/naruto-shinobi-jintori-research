@@ -274,30 +274,18 @@ jobs:
           local pad = PCSX.SIO0.slots[1].pads[1]
           local buttons = PCSX.CONSTS.PAD.BUTTON
           local resume_mode = false
-          -- Do not hand a missing/failed File object to loadSaveState: PCSX's native
-          -- deserializer expects a valid serialized slice and may fail below Lua's
-          -- exception boundary. Probe with io.open first, and only then open via Support.
-          local resume_probe = io.open("resume/storymode-checkpoint.sstate", "rb")
+          local resume_pending = false
+          local resume_state_path = "resume/storymode-checkpoint.sstate"
+          -- A state must not be loaded during initial Lua script evaluation. Defer it
+          -- until the emulator reaches its first VSync, then pause and load on nextTick.
+          local resume_probe = io.open(resume_state_path, "rb")
           if resume_probe then
               resume_probe:close()
-              local resume_open_ok, resume_file = pcall(function()
-                  return Support.File.open("resume/storymode-checkpoint.sstate")
-              end)
-              if resume_open_ok and resume_file then
-                  local load_ok, load_err = pcall(function() PCSX.loadSaveState(resume_file) end)
-                  resume_file:close()
-                  if load_ok then
-                      resume_mode = true
-                      print("STORY_SAVESTATE_LOAD_REQUESTED=1")
-                  else
-                      print("STORY_SAVESTATE_LOAD_ERROR=" .. tostring(load_err))
-                      print("STORY_SAVESTATE_LOAD_REQUESTED=0; cold boot sequence enabled")
-                  end
-              else
-                  print("STORY_SAVESTATE_FILE_OPEN_ERROR; cold boot sequence enabled")
-              end
+              resume_mode = true
+              resume_pending = true
+              print("STORY_SAVESTATE_PRESENT=1; restore deferred to first VSync safe point")
           else
-              print("STORY_SAVESTATE_LOAD_REQUESTED=0; checkpoint file absent, cold boot sequence enabled")
+              print("STORY_SAVESTATE_PRESENT=0; cold boot sequence enabled")
           end
           local input_sequence = {}
           if not resume_mode then
@@ -411,6 +399,32 @@ jobs:
           end)
 
           gpuTrafficListener = PCSX.Events.createEventListener("GPU::Vsync", function()
+              if resume_pending then
+                  resume_pending = false
+                  print("STORY_SAVESTATE_RESTORE_PAUSE_REQUESTED=1")
+                  PCSX.pauseEmulator()
+                  PCSX.nextTick(function()
+                      local file_ok, state_file = pcall(function()
+                          return Support.File.open(resume_state_path)
+                      end)
+                      if not file_ok or not state_file then
+                          print("STORY_SAVESTATE_FILE_OPEN_ERROR; refusing cold-boot fallback")
+                          PCSX.quit(2)
+                          return
+                      end
+                      local load_ok, load_err = pcall(function() PCSX.loadSaveState(state_file) end)
+                      state_file:close()
+                      if not load_ok then
+                          print("STORY_SAVESTATE_LOAD_ERROR=" .. tostring(load_err))
+                          PCSX.quit(3)
+                          return
+                      end
+                      frame_count = 0
+                      print("STORY_SAVESTATE_LOAD_CALL_RETURNED=1; screenshot verification required")
+                      PCSX.resumeEmulator()
+                  end)
+                  return
+              end
               frame_count = frame_count + 1
               while input_index <= #input_sequence and input_sequence[input_index].frame == frame_count do
                   apply_input(input_sequence[input_index])
