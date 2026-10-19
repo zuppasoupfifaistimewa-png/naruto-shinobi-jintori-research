@@ -531,8 +531,8 @@ jobs:
                 -ex "echo \\n--- RESTORE GDB CRASH CONTEXT ---\\n" \
                 -ex "info threads" \
                 -ex "info registers" \
-                -ex "info symbol \\$pc" \
-                -ex "x/16i \\$pc-16" \
+                -ex "info symbol \$pc" \
+                -ex "x/16i \$pc-16" \
                 -ex "info sharedlibrary" \
                 -ex "info proc mappings" \
                 -ex "echo \\n--- RESTORE GDB FULL BACKTRACE ---\\n" \
