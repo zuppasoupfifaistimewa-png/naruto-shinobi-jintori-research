@@ -1,3 +1,15 @@
+## UPDATE OPERASIONAL — pemulihan savestate prioritas utama (19 Oktober 2026)
+
+- Run Story Mode #39242130783 gagal (exit 124) sebelum gerbang visual frame 5999; artifact checkpoint dari run tersebut tidak memuat file savestate. Jangan pakai sebagai checkpoint baru.
+- Run diagnostik #39248081546: kontrol A (cold boot), B (file tersanitasi tanpa load), C (rehidrasi BIOS tanpa load), dan C2 (listener load tanpa load) lulus. D crash exit 139 segera setelah `SAVESTATE_PROBE_LOAD_CALL_BEGIN=1`; restore **belum berhasil**.
+- Run GDB #39248501957 mengulang crash pada alamat `0x00007ffff0dd36d0`, thread `pcsx-redux`, dengan stack yang sama seperti trace run #39235079514. Binary stripped; fungsi penyebab belum teridentifikasi. Capture frame awal di diagnostik memiliki dimensi 0×0/data kosong dan bukan bukti visual.
+- Run berikutnya [#39249046252](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39249046252) menguji pembuatan savestate mentah via `PCSX.createSaveState()` lalu roundtrip load dari file mentah; periksa log akhir tahap E/F sebelum memilih tindakan berikutnya.
+- Checkpoint sumber privat artifact #12167524755 dari run #39205699071 tetap dipertahankan dan belum terverifikasi dapat dipulihkan. Memory Card 131072 byte dengan SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5` valid secara ukuran/hash, tetapi save nyata dalam game belum terverifikasi.
+- Jangan mulai ulang Story Mode atau mengubah prioritas Memory Card sebelum ada restore di tengah Story Mode yang tetap berjalan dan screenshot visual pascarestore yang sah. Dialog tetap dilewati dengan **START**, bukan Circle. Belum ada klaim game tamat.
+- Catatan lengkap dan eksperimen berikutnya: [docs/SAVESTATE_DIAGNOSTIC_2026-10-19.md](docs/SAVESTATE_DIAGNOSTIC_2026-10-19.md).
+
+---
+
 ## STATUS AKTUAL — MEMORY CARD + STORY MODE (19 Oktober 2026; snapshot 18.06 WIB)
 
 - Draft PR #1 telah di-merge ke `main` pada commit [9dc876f08d724b6f809c6da4e2dbea1b549b9d62](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/9dc876f08d724b6f809c6da4e2dbea1b549b9d62).
