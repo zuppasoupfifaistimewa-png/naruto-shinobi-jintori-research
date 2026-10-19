@@ -1,3 +1,23 @@
+# HANDOFF TERBARU — RAW SAVESTATE ANTAR-RUNNER (19 Oktober 2026)
+
+## Snapshot eksperimen terkini
+
+- **Jangan batalkan:** [run utama #39262213468](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39262213468), commit `e396eac00631001b7a0e68d7701c70aec10dec19`, status terakhir `in_progress`; verifikasi aset selesai, emulator sedang berjalan, artifact belum tersedia.
+- Run #39261524544 gagal di shell karena `raw_resume_verify: unbound variable` sebelum emulator mulai. Ini kesalahan orchestration, bukan tes savestate; tak ada checkpoint baru. Diperbaiki di commit `e396eac...`; jangan mengulang run gagal ini.
+- Workflow utama kini memberi waktu maksimal 90 menit ke proses emulator (job 100 menit), menyimpan salinan byte-asli hasil `PCSX.createSaveState()` sebelum langkah sanitizer diagnostik, menyiapkan manifest ukuran/SHA-256 dan screenshot checkpoint yang sama, serta retensi artifact privat 14 hari. Jangan edit file workflow utama saat runner aktif.
+- Workflow penerima `naruto-raw-storymode-restore.yml` (commit terakhir `ddcf1e0...`) otomatis berjalan pada event `workflow_run` setelah workflow utama selesai. Ia melakukan validasi ketat pada manifest/state/screenshot, menerima hanya raw state, menyalinnya tanpa transformasi, memeriksa ukuran/hash, memuat pada proses emulator baru tanpa sanitizer/rehidrasi BIOS, menangkap `ExecutionFlow::SaveStateLoaded`, menuntut ≥180 VSync, dan membandingkan screenshot pascarestore dengan screenshot dari safe point sumber. Hanya jika tes itu lulus emulator diizinkan melanjutkan.
+- Checkpoint sumber awal harus berupa layar stabil pascadialog dengan `reason=stable_non_dialog`, frame ≥9000, dan `STORY_DIALOG_VISUAL_GATE=PASS`. Sesudah raw restore valid, jalur penerima menunggu setidaknya 600 VSync sebelum memutuskan titik layar stabil berikutnya, membuat raw checkpoint baru, dan mengunggah state/manifest/screenshot untuk handoff berikutnya. Jika gate atau screenshot gagal, runner berhenti—jangan memakai savestate boot sebagai pengganti gameplay.
+- Push run #39262100556, #39262163072, #39262211513 untuk file workflow penerima adalah event `push` tanpa job restore dan **bukan** percobaan emulator. Workflow penerima baru relevan saat workflow utama selesai atau dispatch manual yang menyertakan run ID valid.
+- Bukti dasar tetap: raw savestate lintas-run boot berhasil pada #39255438457 → #39255549341; sanitizer positive-control #39257735369 juga pulih untuk state boot. Tidak satu pun bukti itu menunjukkan Story Mode sudah pulih. Memory Card 131.072 byte yang ada masih bertanda `UNVERIFIED_REQUIRES_IN_GAME_SAVE_AND_RELOAD`. **Story Mode belum terbukti tamat.**
+
+## Urutan tindak lanjut
+
+1. Periksa #39262213468 hingga terminal: exit code, `STORY_DIALOG_VISUAL_GATE`, event input START dan perubahan screenshot (bukan hanya input readback), `STORY_CHECKPOINT_SAFE_POINT`, serta manifest raw.
+2. Periksa artifact privat; cocokkan ukuran/hash raw dengan manifest serta screenshot checkpoint. Jangan unggah ROM/ISO atau BIOS.
+3. Periksa run workflow penerima yang dipicu otomatis; pastikan event restore, ≥180 VSync, dan perbandingan screenshot PASS. Bila run penerima tidak muncul setelah sumber selesai, selidiki trigger/action log terlebih dahulu.
+4. Baru setelah restore tengah Story Mode terbukti, lanjutkan stage berikutnya dan simpan raw state sebelum runner habis. Setelah itu uji Memory Card dari alur save/load di dalam game.
+5. Setiap aksi/dialog dituntun screenshot; dialog selalu **START**, bukan Circle. Label aturan sebagai **TERVERIFIKASI**, **HIPOTESIS**, atau **BELUM DIUJI**. Jangan mengubah fakta historis atau klaim progres berdasarkan kesimpulan workflow saja.
+
 ## HASIL BARU — raw savestate benar-benar pulih lintas-run (19 Oktober 2026)
 
 - **TERVERIFIKASI, terbatas pada boot awal:** [Run A #39255438457](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39255438457) membuat raw state melalui `PCSX.createSaveState()` pada VSync 60, tanpa sanitasi. File berukuran **21.124.144 byte**, SHA-256 `a4672dd49fbfa76ef60de410c50460d77e115181fc3e205a215ab9f5f1e601d7`. Artifact sumber privat #12187367829: [unduh dari GitHub](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39255438457/artifacts/12187367829).
