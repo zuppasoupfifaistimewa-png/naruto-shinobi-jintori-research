@@ -17,7 +17,7 @@ concurrency:
 jobs:
   gpu-traffic-summary:
     runs-on: ubuntu-26.04
-    timeout-minutes: 50
+    timeout-minutes: 100
     steps:
       - name: Install private runtime requirements
         shell: bash
@@ -109,14 +109,14 @@ jobs:
           echo "ROM/CUE/emulator hashes verified; BIOS=SCPH-7502"
           echo "EMULATOR_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
 
-      - name: Select はじめから with Start and D-pad; observe until VSync 6000
+      - name: Select はじめから (Mulai dari awal); verify モードセレクト (Pemilihan mode) visually, then observe to VSync 9000
         env:
           GPU_BACKEND_PROBE: ${{ contains(github.event.head_commit.message, '[openglgpu-probe]') }}
         shell: bash
         run: |
           set -euo pipefail
           GPU_BACKEND_FLAG="-softgpu"
-          GPU_BACKEND_TIMEOUT="2700s"
+          GPU_BACKEND_TIMEOUT="4800s"
           if [[ "${GPU_BACKEND_PROBE:-false}" == "true" ]]; then
             GPU_BACKEND_FLAG="-openglgpu"
             GPU_BACKEND_TIMEOUT="170s"
@@ -154,7 +154,7 @@ jobs:
           )
           cat > "$WORK/gpu-traffic.lua" <<'LUA'
           local frame_count = 0
-          local stop_frame = 6000
+          local stop_frame = 9000
           local pad = PCSX.SIO0.slots[1].pads[1]
           local buttons = PCSX.CONSTS.PAD.BUTTON
           local input_sequence = {
@@ -171,7 +171,8 @@ jobs:
               {frame=2810, action="release", button=buttons.CIRCLE, name="CIRCLE"},
           }
           local input_index = 1
-          local capture_targets = { [2599]=true, [2649]=true, [2650]=true, [2660]=true, [2670]=true, [2680]=true, [2690]=true, [2700]=true, [2709]=true, [2710]=true, [2715]=true, [2720]=true, [2730]=true, [2739]=true, [2740]=true, [2745]=true, [2749]=true, [2750]=true, [2760]=true, [2770]=true, [2779]=true, [2780]=true, [2790]=true, [2800]=true, [2809]=true, [2810]=true, [2820]=true, [2850]=true, [2900]=true, [2950]=true, [2999]=true, [3199]=true, [3399]=true, [3599]=true, [3999]=true, [4499]=true, [4999]=true, [5499]=true, [5999]=true }
+          local story_circle2_pressed = false
+          local capture_targets = { [2599]=true, [2649]=true, [2650]=true, [2660]=true, [2670]=true, [2680]=true, [2690]=true, [2700]=true, [2709]=true, [2710]=true, [2715]=true, [2720]=true, [2730]=true, [2739]=true, [2740]=true, [2745]=true, [2749]=true, [2750]=true, [2760]=true, [2770]=true, [2779]=true, [2780]=true, [2790]=true, [2800]=true, [2809]=true, [2810]=true, [2820]=true, [2850]=true, [2900]=true, [2950]=true, [2999]=true, [3199]=true, [3399]=true, [3599]=true, [3999]=true, [4499]=true, [4999]=true, [5499]=true, [5999]=true, [6099]=true, [6100]=true, [6110]=true, [6129]=true, [6130]=true, [6140]=true, [6200]=true, [6399]=true, [6799]=true, [7199]=true, [7599]=true, [7999]=true, [8499]=true, [8999]=true }
 
           local function apply_input(action)
               local expected = action.action == "press"
@@ -238,6 +239,26 @@ jobs:
                   apply_input(input_sequence[input_index])
                   input_index = input_index + 1
               end
+              -- Only confirm Story Mode after the frame-5999 screenshot matches
+              -- the previously verified Mode Select header and selected Story Mode crop.
+              if frame_count == 6100 then
+                  local gate_file = io.open("captures/story-select-visual-gate.flag", "rb")
+                  local gate_status = "MISSING"
+                  if gate_file then
+                      gate_status = gate_file:read("*a") or "EMPTY"
+                      gate_file:close()
+                  end
+                  if gate_status:match("^PASS") then
+                      apply_input({frame=6100, action="press", button=buttons.CIRCLE, name="CIRCLE2"})
+                      story_circle2_pressed = true
+                      print("STORY_CIRCLE2_VISUAL_GATE=PASS frame=5999; mode-select header and selected Story Mode fingerprint matched")
+                  else
+                      print(string.format("STORY_CIRCLE2_SKIPPED frame=6100 visual_gate=%s", gate_status:gsub("[\r\n]", "")))
+                  end
+              elseif frame_count == 6130 and story_circle2_pressed then
+                  apply_input({frame=6130, action="release", button=buttons.CIRCLE, name="CIRCLE2"})
+                  story_circle2_pressed = false
+              end
               if capture_targets[frame_count] then capture_frame(frame_count) end
               if frame_count == 299 or frame_count == 1499 or frame_count == 2999 or frame_count == 5999 then capture_vram(frame_count) end
               if frame_count % 100 == 0 then
@@ -257,7 +278,7 @@ jobs:
                   end)
               end
           end)
-          print("GPU_TRAFFIC_PROBE=armed target_vsync=6000; raw dump will be parsed then deleted")
+          print("GPU_TRAFFIC_PROBE=armed target_vsync=9000; Circle2 at frame 6100 requires screenshot visual gate from frame 5999")
           LUA
 
           timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
@@ -267,6 +288,73 @@ jobs:
               "$GPU_BACKEND_FLAG" -gdb -gdb-port 3333 -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
               > "$WORK/pcsx.stdout" 2>&1 &
           emu_pid=$!
+
+          # A small live screenshot classifier acts as a safety gate for Circle #2.
+          # It reads only the temporary frame-5999 screenshot and emits a yes/no flag.
+          EMU_PID="$emu_pid" python3 -u - <<'PY' > "$WORK/captures/story-select-visual-gate-summary.txt" 2>&1 &
+          import hashlib
+          import os
+          import time
+          from pathlib import Path
+
+          raw_path = Path("captures/raw/frame-005999.raw")
+          flag_path = Path("captures/story-select-visual-gate.flag")
+          flag_path.unlink(missing_ok=True)
+          emu_pid = int(os.environ["EMU_PID"])
+          expected_size = 320 * 240 * 2
+          deadline = time.monotonic() + 4700
+
+          def fail(reason):
+              flag_path.write_text("FAIL\n", encoding="ascii")
+              print("STORY_SELECT_VISUAL_GATE=FAIL reason=" + reason, flush=True)
+
+          while time.monotonic() < deadline:
+              if raw_path.exists() and raw_path.stat().st_size == expected_size:
+                  raw = raw_path.read_bytes()
+                  if len(raw) == expected_size:
+                      break
+              if not Path(f"/proc/{emu_pid}").exists():
+                  fail("emulator_exited_before_frame5999")
+                  raise SystemExit(0)
+              time.sleep(0.2)
+          else:
+              fail("timeout_waiting_for_frame5999")
+              raise SystemExit(0)
+
+          # Convert the captured little-endian RGB555 framebuffer exactly as the
+          # artifact PNG converter does, then hash two screenshot crops.
+          rgb = bytearray()
+          for pos in range(0, len(raw), 2):
+              word = raw[pos] | (raw[pos + 1] << 8)
+              rgb.extend(((word & 31) * 255 // 31,
+                          ((word >> 5) & 31) * 255 // 31,
+                          ((word >> 10) & 31) * 255 // 31))
+
+          def crop_hash(box):
+              x0, y0, x1, y1 = box
+              crop = bytearray()
+              for y in range(y0, y1):
+                  crop.extend(rgb[(y * 320 + x0) * 3:(y * 320 + x1) * 3])
+              return hashlib.sha256(crop).hexdigest()
+
+          header_hash = crop_hash((0, 10, 125, 44))
+          story_hash = crop_hash((90, 119, 232, 157))
+          expected_header = "300d704e0f1765f7aec4480d7994e91bdaaf8d161c9611ca0e3d78955fc9e9c2"
+          expected_story = {
+              "5ee1da16985ef0b15142e8ad3c69e86042bfa805e64568372fdf82254a2278d3",
+              "c50e86a84853a63d9ab15fbe2897774fb547c825dbc08560d924fd2e1bd81998",
+              "58e8b8487d2c9e361f893b93352a199660adcec3155ef56a6e016df4b1c82448",
+          }
+          header_ok = header_hash == expected_header
+          story_ok = story_hash in expected_story
+          passed = header_ok and story_ok
+          flag_path.write_text(("PASS" if passed else "FAIL") + "\n", encoding="ascii")
+          print("STORY_SELECT_VISUAL_GATE=" + ("PASS" if passed else "FAIL")
+                + " frame=5999 header_crop_match=" + str(header_ok).lower()
+                + " selected_story_crop_match=" + str(story_ok).lower()
+                + " screenshot_bytes=" + str(len(raw)), flush=True)
+          PY
+          visual_gate_pid=$!
 
           # Independently capture the actual non-root PCSX-Redux window.
           # Screenshots remain in a private short-retention artifact.
@@ -467,6 +555,10 @@ jobs:
           cat "$WORK/captures/important-log-lines.txt" || true
           wait "$window_sampler_pid" 2>/dev/null || true
           wait "$rsp_sampler_pid" 2>/dev/null || true
+          wait "$visual_gate_pid" 2>/dev/null || true
+          echo "STORY_SELECT_VISUAL_GATE_SUMMARY_BEGIN"
+          cat "$WORK/captures/story-select-visual-gate-summary.txt" || true
+          echo "STORY_SELECT_VISUAL_GATE_SUMMARY_END"
           echo "RSP_SUMMARY_BEGIN"
           cat "$WORK/rsp-progress-summary.txt" || true
           echo "RSP_SUMMARY_END"
@@ -506,7 +598,9 @@ jobs:
                   live_gp0_words_by_bin = {
                       "000_049": [], "050_099": [], "100_199": [],
                       "200_399": [], "400_599": [], "600_799": [],
-                      "800_999": [], "1000_1199": [], "1200_1499": [], "1500_1799": []
+                      "800_999": [], "1000_1199": [], "1200_1499": [],
+                      "1500_2999": [], "3000_4499": [], "4500_5999": [],
+                      "6000_7499": [], "7500_8999": []
                   }
                   live_vsync_count = 0
                   trace_markers = 0
@@ -555,8 +649,16 @@ jobs:
                               bucket = "1000_1199"
                           elif live_vsync_count < 1500:
                               bucket = "1200_1499"
+                          elif live_vsync_count < 3000:
+                              bucket = "1500_2999"
+                          elif live_vsync_count < 4500:
+                              bucket = "3000_4499"
+                          elif live_vsync_count < 6000:
+                              bucket = "4500_5999"
+                          elif live_vsync_count < 7500:
+                              bucket = "6000_7499"
                           else:
-                              bucket = "1500_1799"
+                              bucket = "7500_8999"
                           live_gp0_words_by_bin[bucket].extend(chunk_words)
                       pos += size
                   output += [
@@ -777,6 +879,7 @@ jobs:
             ${{ env.WORK }}/captures/gpu-traffic-summary.txt
             ${{ env.WORK }}/captures/important-log-lines.txt
             ${{ env.WORK }}/captures/internal-frame-*.png
+            ${{ env.WORK }}/captures/story-select-visual-gate-summary.txt
             ${{ env.WORK }}/rsp-progress-summary.txt
           if-no-files-found: warn
           retention-days: 3
