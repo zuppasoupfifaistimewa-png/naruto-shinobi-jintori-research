@@ -4,9 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       resume_run_id:
-        description: "Optional prior run ID containing a sanitized private Story Mode checkpoint"
+        description: "Prior run ID whose private Memory Card artifact must be restored when resuming"
         required: false
         type: string
+      load_savestate:
+        description: "Also load the savestate from resume_run_id; leave false to use the Memory Card path only"
+        required: false
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths:
@@ -23,7 +28,7 @@ concurrency:
 jobs:
   gpu-traffic-summary:
     runs-on: ubuntu-26.04
-    timeout-minutes: 360
+    timeout-minutes: 35
     steps:
       - name: Install private runtime requirements
         shell: bash
@@ -41,7 +46,7 @@ jobs:
           set -euo pipefail
           WORK="$RUNNER_TEMP/naruto-scph7502-gpu-traffic"
           echo "WORK=$WORK" >> "$GITHUB_ENV"
-          mkdir -p "$WORK/home" "$WORK/captures/raw"
+          mkdir -p "$WORK/home" "$WORK/captures/raw" "$WORK/cards"
           cd "$WORK"
           API="https://api.github.com/repos/$RESEARCH_REPO"
           curl --fail --silent --show-error --location --max-time 30 \
@@ -116,26 +121,69 @@ jobs:
           echo "EMULATOR_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
 
       - name: Restore private Story Mode checkpoint
-        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.resume_run_id != '') || (github.event_name == 'push' && contains(github.event.head_commit.message, '[resume-checkpoint]')) }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.resume_run_id != '' && inputs.load_savestate }}
         uses: actions/download-artifact@v4
         with:
           name: naruto-storymode-checkpoint-private
-          run-id: ${{ inputs.resume_run_id || '39205699071' }}
+          run-id: ${{ inputs.resume_run_id }}
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
           path: ${{ runner.temp }}/naruto-scph7502-gpu-traffic/resume
 
+      - name: Restore private Story Mode Memory Card
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.resume_run_id != '' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: ${{ inputs.resume_run_id }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: ${{ runner.temp }}/naruto-scph7502-gpu-traffic/resume-memory-card
+
       - name: Play Story Mode, skip detected dialogue with Start, checkpoint and observe up to VSync 50000
         env:
           RESTORE_GDB: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[restore-gdb]') }}
+          LOAD_SAVESTATE: ${{ github.event_name == 'workflow_dispatch' && inputs.load_savestate }}
+          CARD_RESTORE_EXPECTED: ${{ github.event_name == 'workflow_dispatch' && inputs.resume_run_id != '' }}
         shell: bash
         run: |
           set -euo pipefail
           GPU_BACKEND_FLAG="-softgpu"
-          GPU_BACKEND_TIMEOUT="20400s" # 5h40m; reserve remaining job time for sanitize/upload/cleanup
+          GPU_BACKEND_TIMEOUT="1500s" # 25m hard emulator limit; reserve up to 10m for packaging and cleanup
           echo "GPU_BACKEND_SELECTED=$GPU_BACKEND_FLAG"
           echo "GPU_BACKEND_TIMEOUT=$GPU_BACKEND_TIMEOUT"
           cd "$WORK"
+          mkdir -p "$WORK/resume" "$WORK/cards"
+          if [[ "${CARD_RESTORE_EXPECTED:-false}" == "true" ]]; then
+            source_card="$WORK/resume-memory-card/naruto-storymode.mcd"
+            source_manifest="$WORK/resume-memory-card/memory-card-manifest.txt"
+            if [[ ! -s "$source_card" || ! -s "$source_manifest" ]]; then
+              echo "::error::STORY_MEMORY_CARD_RESTORE=FAIL reason=card_or_manifest_missing"
+              exit 41
+            fi
+            expected_sha="$(awk -F= '$1 == "STORY_MEMORY_CARD_SHA256" {print $2; exit}' "$source_manifest")"
+            expected_bytes="$(awk -F= '$1 == "STORY_MEMORY_CARD_BYTES" {print $2; exit}' "$source_manifest")"
+            actual_sha="$(sha256sum "$source_card" | cut -d ' ' -f 1)"
+            actual_bytes="$(stat -c '%s' "$source_card")"
+            if [[ ! "$expected_sha" =~ ^[0-9a-f]{64}$ || "$actual_sha" != "$expected_sha" || "$actual_bytes" != "$expected_bytes" ]]; then
+              echo "::error::STORY_MEMORY_CARD_RESTORE=FAIL reason=manifest_mismatch bytes=$actual_bytes sha256=$actual_sha"
+              exit 42
+            fi
+            cp "$source_card" "$WORK/cards/naruto-storymode.mcd"
+            : > "$WORK/cards/memory-card-restored.flag"
+            echo "STORY_MEMORY_CARD_RESTORE=PASS bytes=$actual_bytes sha256=$actual_sha"
+          else
+            echo "STORY_MEMORY_CARD_RESTORE=not_requested; fresh run"
+          fi
+          if [ "${LOAD_SAVESTATE:-false}" = "true" ]; then
+            if [ ! -s "$WORK/resume/storymode-checkpoint.sstate" ]; then
+              echo "::error::STORY_SAVESTATE_RESTORE=FAIL reason=requested_state_missing"
+              exit 43
+            fi
+          else
+            rm -f "$WORK/resume/storymode-checkpoint.sstate"
+            echo "STORY_SAVESTATE_LOAD_DISABLED=1; Memory Card is the primary persistence path"
+          fi
           RESUME_MODE=false
           if [ -f "$WORK/resume/storymode-checkpoint.sstate" ]; then
             RESUME_MODE=true
@@ -290,7 +338,14 @@ jobs:
               print("STORY_SAVESTATE_PRESENT=0; cold boot sequence enabled")
           end
           local input_sequence = {}
-          if not resume_mode then
+          local memory_card_restored = false
+          local card_flag = io.open("cards/memory-card-restored.flag", "rb")
+          if card_flag then
+              card_flag:close()
+              memory_card_restored = true
+              print("STORY_MEMORY_CARD_RESTORED=1")
+          end
+          if not resume_mode and not memory_card_restored then
               input_sequence = {
               -- Start is sent only after the title prompt is known to be visible.
               -- The menu is initially on はじめから; Down then Up tests D-pad navigation
@@ -304,6 +359,9 @@ jobs:
               {frame=2780, action="press", button=buttons.CIRCLE, name="CIRCLE"},
               {frame=2810, action="release", button=buttons.CIRCLE, name="CIRCLE"},
               }
+          end
+          if memory_card_restored and not resume_mode then
+              print("STORY_MEMORY_CARD_AUTO_LOAD_UNTESTED=1; suppressing new-game inputs to protect existing card save")
           end
           local input_index = 1
           local story_circle2_pressed = false
@@ -559,7 +617,7 @@ jobs:
                 -ex "echo \\n--- RESTORE GDB FULL BACKTRACE ---\\n" \
                 -ex "thread apply all bt full" \
                 --args "$WORK/squashfs-root/AppRun" \
-                  -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+                  -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/naruto-storymode.mcd" \
                   -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
                   "$GPU_BACKEND_FLAG" -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
               > "$WORK/pcsx.stdout" 2>&1 &
@@ -567,7 +625,7 @@ jobs:
             echo "RESTORE_GDB=disabled"
             timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
               stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-                -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+                -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/naruto-storymode.mcd" \
                 -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
                 "$GPU_BACKEND_FLAG" -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
               > "$WORK/pcsx.stdout" 2>&1 &
@@ -1154,6 +1212,39 @@ jobs:
           print("\n".join(output))
           PY
 
+      - name: Fingerprint private Story Mode Memory Card
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          WORK="${WORK:-$RUNNER_TEMP/naruto-scph7502-gpu-traffic}"
+          mkdir -p "$WORK/captures" "$WORK/cards"
+          summary="$WORK/captures/memory-card-summary.txt"
+          manifest="$WORK/cards/memory-card-manifest.txt"
+          card="$WORK/cards/naruto-storymode.mcd"
+          if [ -s "$card" ]; then
+            bytes="$(stat -c '%s' "$card")"
+            sha="$(sha256sum "$card" | cut -d ' ' -f 1)"
+            {
+              echo "STORY_MEMORY_CARD_PRESENT=1"
+              echo "STORY_MEMORY_CARD_BYTES=$bytes"
+              echo "STORY_MEMORY_CARD_SHA256=$sha"
+              echo "STORY_MEMORY_CARD_GAME_SAVE_STATUS=UNVERIFIED_REQUIRES_IN_GAME_SAVE_AND_RELOAD"
+              if [ -f "$WORK/cards/memory-card-restored.flag" ]; then
+                echo "STORY_MEMORY_CARD_SOURCE=restored_private_artifact"
+              else
+                echo "STORY_MEMORY_CARD_SOURCE=emulator_workspace"
+              fi
+            } | tee "$summary" "$manifest"
+          else
+            {
+              echo "STORY_MEMORY_CARD_PRESENT=0"
+              echo "STORY_MEMORY_CARD_GAME_SAVE_STATUS=UNVERIFIED"
+            } | tee "$summary" "$manifest"
+            echo "::error::Memory Card file is missing after the emulator run; persistence cannot be claimed"
+            exit 44
+          fi
+
       - name: Upload private evidence and sanitized Story Mode checkpoint
         if: always()
         uses: actions/upload-artifact@v4
@@ -1164,11 +1255,23 @@ jobs:
             ${{ env.WORK }}/captures/important-log-lines.txt
             ${{ env.WORK }}/captures/internal-frame-*.png
             ${{ env.WORK }}/captures/story-dialog-watch-summary.txt
+            ${{ env.WORK }}/captures/memory-card-summary.txt
             ${{ env.WORK }}/captures/important-log-lines.txt
             ${{ env.WORK }}/captures/pcsx.stdout.txt
             ${{ env.WORK }}/captures/pcsx.log.txt
             ${{ env.WORK }}/captures/storymode-checkpoint.sstate
           if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload private Story Mode Memory Card candidate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          path: |
+            ${{ env.WORK }}/cards/naruto-storymode.mcd
+            ${{ env.WORK }}/cards/memory-card-manifest.txt
+          if-no-files-found: error
           retention-days: 7
 
       - name: Remove runtime assets from ephemeral runner
