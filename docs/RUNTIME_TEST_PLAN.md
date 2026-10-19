@@ -1,3 +1,16 @@
+## Gerbang uji aktual — Memory Card dan pemulihan lintas-run (19 Oktober 2026)
+
+1. **Run sumber kartu:** periksa [#39242130783](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39242130783) sampai terminal. Catat exit code emulator, status langkah fingerprint, file `.mcd`, artifact privat, dan manifest. Karena ini cold boot, jangan anggap sebagai bukti restore.
+2. **Integritas artifact:** pastikan artifact `naruto-storymode-memory-card-private` memuat `naruto-storymode.mcd` serta `memory-card-manifest.txt`. Cocokkan ukuran dan SHA-256 pada manifest dengan file hasil ekstraksi; simpan artifact run sumber dan jangan menimpa satu-satunya salinannya.
+3. **Restore lintas-run:** hanya bila artifact sumber memang ada, jalankan workflow_dispatch dengan `resume_run_id=39242130783` dan `load_savestate=false`. Wajib ada `STORY_MEMORY_CARD_RESTORE=PASS` dan hash/ukuran identik sebelum emulator mulai. Jika artifact hilang/manifest gagal, uji harus berhenti, bukan cold boot diam-diam.
+4. **Save game sebenarnya:** amati layar setelah boot dan temukan opsi save/load yang benar dari antarmuka game. Setiap dialog maju dengan START, bukan Circle; Circle hanya untuk pilihan menu yang telah terlihat memerlukannya. Catat screenshot sebelum/sesudah tiap aksi.
+5. **Cold-boot proof:** setelah save in-game yang nyata dilakukan, akhiri emulator bersih, jalankan emulator baru dengan kartu yang dipulihkan, dan buktikan save yang sama muncul/dapat dimuat. File kartu ada/hash cocok saja tidak memenuhi kriteria.
+6. **Aturan gameplay/tamat:** klasifikasikan setiap aturan sebagai TERVERIFIKASI, HIPOTESIS, atau BELUM DIUJI berdasarkan screenshot/eksperimen langsung. Tamat hanya setelah layar akhir/ending yang kuat ditinjau.
+
+Konfigurasi saat merge: job cap 35 menit, batas emulator 25 menit; savestate default nonaktif dan hanya alat bantu. Status run #39242130783 pada snapshot 18.06 WIB masih berjalan; periksa API GitHub terkini sebelum aksi berikut. Story Mode belum terbukti masuk gameplay aktif dan belum tamat.
+
+---
+
 ## TEMUAN GDB & UJI CHECKPOINT SAFE-POINT (2026-10-19)
 
 ### Temuan GDB run #39235079514
