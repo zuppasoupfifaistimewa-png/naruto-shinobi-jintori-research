@@ -1,3 +1,25 @@
+# HANDOFF TERBARU — 20 Oktober 2026: receiver raw Story Mode crash saat startup
+
+## Hasil terbaru untuk dilanjutkan
+
+- Source run [#39262213468](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39262213468) tetap menyediakan raw savestate frame 10055 dari layar papan permainan: ukuran 21.163.286 byte, SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d. Screenshot sumber 320×240, SHA-256 101b94a4d171d228e0224948872b65b88bf84fd0d92dc8ddd0b6cfeb21f790a8. Jangan transformasikan atau timpa file sumber.
+- Receiver [#39312125361](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39312125361) benar-benar berjalan pada runner baru. Validasi manifest/hash/screenshot PASS; pesan `STORY_RAW_STATE_STAGED_UNCHANGED=PASS` memastikan byte di staging sama dengan raw source. Emulator, game, BIOS dan memory card berhasil diunduh/diverifikasi.
+- **Receiver gagal exit 139 / segmentation fault** beberapa detik setelah emulator mulai. Log sampai pada retail BIOS SCPH-7502, CD ID SLPS03553, executable SLPS_035.53;1, `KERNEL SETUP!`, `BIOS Trace1: 0x07`. Tidak ada `STORY_SAVESTATE_RESTORE_PAUSE_REQUESTED`, `ExecutionFlow::SaveStateLoaded`, `STORY_SAVESTATE_LOAD_CALL_RETURNED=1`, atau screenshot immediate restore. Karena log load-event tidak ada, ini belum memastikan apakah save-state deserialization sudah dimulai atau crash terjadi pada startup sebelum callback. Jangan menyatakan raw file korup hanya dari hasil ini.
+- Artifact privat diagnostic #12216866405 sudah diunduh dan diperiksa. File penting: `pcsx.stdout.txt`, `pcsx.log.txt`, `important-log-lines.txt`, `story-dialog-watch-summary.txt`, `storymode-restore-comparison.txt`, manifest (state baru = 0), dan screenshot sumber. Tidak ada checkpoint lanjutan. Artifact Memory Card #12216691714 masih status kandidat; in-game save/load belum terbukti.
+- Perbaikan yang sudah permanen: kedua source artifact diunduh ke `$WORK/source-artifact` dan `$WORK/source-card`; runtime dependencies termasuk `python3-pil` dipasang **sebelum** source screenshot validator. Pemicu push khusus yang digunakan satu kali untuk meluncurkan receiver telah dihapus kembali di commit [d0b24b64fcc3c6d8d309252a53d0e291d1f2b36f](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/d0b24b64fcc3c6d8d309252a53d0e291d1f2b36f). Run #39311930637 adalah percobaan terdahulu yang masih gagal karena Pillow belum tersedia sebelum validator, bukan uji restore yang berhasil.
+- STATUS.md diperbarui dengan hasil dan tautan baru pada commit [4058fcadbd0b7f16d4f62900ce307a08e04d89eb](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/4058fcadbd0b7f16d4f62900ce307a08e04d89eb).
+
+## Langkah diagnostik selanjutnya
+
+1. Perbarui receiver workflow `.github/workflows/naruto-raw-storymode-restore.yml` untuk memasang GDB lalu jalankan AppRun melalui `gdb --batch` dengan `thread apply all bt` saat SIGSEGV. Tambahkan pesan debug Lua yang di-flush sebelum dan sesudah `PCSX.loadSaveState()` dan tepat pada awal `GPU::Vsync` callback.
+2. Picu receiver lagi dari sumber yang sama: run ID **39262213468**. Workflow_dispatch biasa tersedia di halaman [receiver workflow](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/workflows/naruto-raw-storymode-restore.yml), gunakan branch main dan `source_run_id=39262213468`. Koneksi di sesi ini sebelumnya tidak punya aksi dispatch langsung, jadi pemicu satu-kali pernah dilakukan melalui commit push yang digate pesan pasti; bila menggunakan cara itu lagi, hapus pemicu setelah run tercipta.
+3. Raw checkpoint hanya ditransfer melalui artifact privat, tanpa sanitasi/rehidrasi; tidak ada raw state atau Memory Card di Git. Pertahankan ROM/BIOS privat. Jangan jalankan ulang sumber 90 menit.
+4. Hanya beri status restore PASS bila hash cocok, event `ExecutionFlow::SaveStateLoaded` ada, loader kembali, ≥180 VSync pascarestore, screenshot source/pulih cocok, dan checkpoint lanjutan dihasilkan.
+
+**Kondisi game:** visual telah mencapai papan permainan pada frame 10055, tetapi belum ada bukti raw checkpoint tersebut bisa diload di runner lain. Game belum tamat; aturan kontrol karakter dan mekanik belum terverifikasi. Dialog dilewati dengan START, bukan Circle; jangan menambah input tanpa identifikasi screenshot.
+
+---
+
 # PEMBARUAN HANDOFF — 20 Oktober 2026: checkpoint board-screen dan fix receiver
 
 ## Fakta terbaru yang sudah diperiksa
