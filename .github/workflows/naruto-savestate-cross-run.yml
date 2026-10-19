@@ -15,7 +15,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: naruto-savestate-cross-run-${{ github.run_id }
+  group: naruto-savestate-cross-run
   cancel-in-progress: false
 
 jobs:
@@ -50,7 +50,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends xvfb x11-utils libgl1-mesa-dri python3 python3-pil
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil
 
       - name: Download and verify pinned emulator, game, and BIOS
         shell: bash
@@ -169,6 +169,28 @@ jobs:
             echo "SAVESTATE_SHA256=$actual_sha"
             echo "SOURCE_FILE_UNMODIFIED=1"
           } | tee -a "$WORK/captures/diagnostic-summary.txt"
+
+      - name: Download and verify reference Memory Card
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: 39242130783
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: ${{ runner.temp }}/naruto-savestate-cross-run/card-artifact
+
+      - name: Validate reference Memory Card artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          CARD_DIR="$RUNNER_TEMP/naruto-savestate-cross-run/card-artifact"
+          card="$(find "$CARD_DIR" -type f -name 'naruto-storymode.mcd' -print -quit)"
+          manifest="$(find "$CARD_DIR" -type f -name 'memory-card-manifest.txt' -print -quit)"
+          test -s "$card" && test -s "$manifest"
+          test "$(stat -c '%s' "$card")" = "131072"
+          echo "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5  $card" | sha256sum --check -
+          cp "$card" "$WORK/blank-reference.mcd"
+          echo "CROSS_RUN_REFERENCE_CARD=verified size=131072 sha256=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5" | tee -a "$WORK/captures/diagnostic-summary.txt"
 
       - name: Prepare and run emulator in a fresh process
         shell: bash
