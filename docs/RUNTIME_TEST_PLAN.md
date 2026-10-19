@@ -1,3 +1,24 @@
+## RT-001 — D-pad terverifikasi; Mode Select terlihat setelah Circle (2026-10-19, run #39178662131)
+
+Run [#39178662131](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39178662131) selesai sampai VSync 6.000. Screenshot pada artifact privat [#12155879252](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39178662131/artifacts/12155879252) diverifikasi secara visual.
+
+**Acceptance status setelah pemeriksaan gambar:**
+1. Title screen Naruto/prompt Start — **PASS**.
+2. Start membuka menu `はじめから` / `ロード` — **PASS**.
+3. D-pad DOWN memindahkan panah ke `ロード` — **PASS**, terlihat pada frame 2.720 (frame 2.710 terlalu dekat dengan press dan masih memperlihatkan pilihan lama).
+4. D-pad UP mengembalikan panah ke `はじめから` — **PASS**, terlihat pada frame 2.749–2.750.
+5. Circle saat `はじめから` terpilih lalu mencapai Mode Select — **PASS secara visual**: menu menghilang setelah Circle; frame 2.950–3.199 hitam tetapi tidak ditafsirkan; frame 3.399 menampilkan `モードセレクト` dan `ストーリーモード` yang sedang tersorot, tetap terlihat sampai 5.999.
+6. Story Mode benar-benar dimulai setelah konfirmasi di Mode Select — **PENDING**.
+7. Respons kontrol saat gameplay, mekanik, dan tamat Story Mode — **PENDING**.
+
+**Batas kesimpulan:** screenshot mengonfirmasi bahwa Story Mode sedang dipilih pada Mode Select; belum ada konfirmasi kedua atau layar gameplay. `PAD_INJECT ... PASS` bukan bukti game merespons, dan layar hitam bukan bukti Mode Select.
+
+Runtime harus tetap pada SCPH-7502 (EU), disc `SLPS03553` / EXE `SLPS_035.53;1`, PCSX-Redux pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, SoftGPU, Port 1 Analog/Auto. Raw dump, ROM, BIOS, save, serta file privat tidak boleh masuk commit/artifact. Run ini menyatakan `RAW_GPU_DUMP_REMOVED=1`, `RAW_TEMP_SCREENSHOTS_REMOVED=1`, dan pembersihan workspace berhasil; artifact berisi hanya summary/log teks dan PNG bukti.
+
+**Langkah selanjutnya:** boot bersih dan ulangi Start 2.650–2.680, DOWN 2.710–2.720, UP 2.740–2.750, Circle menu 2.780–2.810. Setelah Mode Select (sebelumnya terlihat dari frame 3.399), tekan Circle kedua sekitar 6.100–6.130 dan capture sebelum/sesudah; perluas observasi sampai ≥9.000 VSync. Tandai Story Mode dimulai hanya jika screenshot pasca-Circle menunjukkan transisi nyata ke Story Mode/gameplay.
+
+---
+
 ## RT-001 terbaru — Start-only sukses, menu stabil, Circle tidak dikirim (2026-10-19)
 
 Run [#39176328030](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39176328030) menyelesaikan 3.000 VSync dengan workflow `success`. Urutan input hanya Start press 2.650/release 2.680. Screenshot aktual menunjukkan title prompt pada 2.650, menu `はじめから` / `ロード` pada 2.670, dan menu yang sama pada 2.999. Tidak ada Circle yang dikirim.
