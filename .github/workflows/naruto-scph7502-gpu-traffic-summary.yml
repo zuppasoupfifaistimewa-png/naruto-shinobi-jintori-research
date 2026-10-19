@@ -524,13 +524,13 @@ jobs:
               gdb --batch --return-child-result \
                 -ex "set pagination off" \
                 -ex "set print thread-events off" \
-                -ex "set follow-fork-mode child" \
+                -ex "set follow-fork-mode parent" \
                 -ex "set detach-on-fork on" \
                 -ex "handle SIGSEGV stop print nopass" \
                 -ex run \
                 -ex "echo \\n--- RESTORE GDB BACKTRACE ---\\n" \
                 -ex "thread apply all bt full" \
-                --args stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+                --args "$WORK/squashfs-root/AppRun" \
                   -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
                   -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
                   "$GPU_BACKEND_FLAG" -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
@@ -708,9 +708,14 @@ jobs:
           emu_rc=$?
           set -e
           emu_pid=""
-          if [[ "${RESTORE_GDB:-false}" == "true" ]] && grep -q "Program received signal SIGSEGV" "$WORK/pcsx.stdout"; then
-            emu_rc=139
-            echo "RESTORE_GDB_DETECTED_SIGSEGV=1"
+          if [[ "${RESTORE_GDB:-false}" == "true" && "$RESUME_MODE" == "true" ]]; then
+            if grep -q "Program received signal SIGSEGV" "$WORK/pcsx.stdout"; then
+              emu_rc=139
+              echo "RESTORE_GDB_DETECTED_SIGSEGV=1"
+            elif ! grep -Eq "Loaded BIOS:|STORY_SAVESTATE_LOAD_CALL_RETURNED|STORY_SAVESTATE_LOAD_ERROR" "$WORK/pcsx.stdout"; then
+              emu_rc=125
+              echo "RESTORE_GDB_TRACE_INCOMPLETE=1; GDB did not reach emulator startup/load"
+            fi
           fi
           echo "EMULATOR_EXIT_CODE=$emu_rc"
           grep -E 'STORY_|RESTORE_|GPU_BACKEND_SELECTED|PAD_SETUP|PAD_INJECT|GPU_SCREENSHOT_CAPTURE|GPU_VRAM_CAPTURE|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|Program received signal|SIGSEGV|BACKTRACE|Backtrace|^#[0-9]+ |Loaded BIOS:|Known BIOS detected|OpenBIOS detected|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|ResetCallback|unknown GPU data word|FATAL|Exception|error|Error|ERROR|Failed|failed' \
