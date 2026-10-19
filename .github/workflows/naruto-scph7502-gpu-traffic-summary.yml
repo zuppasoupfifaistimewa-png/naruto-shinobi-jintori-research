@@ -28,7 +28,7 @@ concurrency:
 jobs:
   gpu-traffic-summary:
     runs-on: ubuntu-26.04
-    timeout-minutes: 35
+    timeout-minutes: 100
     steps:
       - name: Install private runtime requirements
         shell: bash
@@ -149,7 +149,7 @@ jobs:
         run: |
           set -euo pipefail
           GPU_BACKEND_FLAG="-softgpu"
-          GPU_BACKEND_TIMEOUT="1500s" # 25m hard emulator limit; reserve up to 10m for packaging and cleanup
+          GPU_BACKEND_TIMEOUT="5400s" # 90m hard emulator limit; reserve time for evidence packaging and cleanup
           echo "GPU_BACKEND_SELECTED=$GPU_BACKEND_FLAG"
           echo "GPU_BACKEND_TIMEOUT=$GPU_BACKEND_TIMEOUT"
           cd "$WORK"
@@ -326,6 +326,11 @@ jobs:
           local resume_mode = false
           local resume_pending = false
           local resume_state_path = "resume/storymode-checkpoint.sstate"
+          local raw_resume_verify = false
+          local restore_event_seen = false
+          local restore_post_frames = 0
+          local restore_verify_pending = false
+          local restore_verify_attempts = 0
           -- A state must not be loaded during initial Lua script evaluation. Defer it
           -- until the emulator reaches its first VSync, then pause and load on nextTick.
           local resume_probe = io.open(resume_state_path, "rb")
@@ -336,6 +341,12 @@ jobs:
               print("STORY_SAVESTATE_PRESENT=1; restore deferred to first VSync safe point")
           else
               print("STORY_SAVESTATE_PRESENT=0; cold boot sequence enabled")
+          end
+          local raw_marker = io.open("resume/raw-resume.flag", "rb")
+          if raw_marker then
+              raw_marker:close()
+              raw_resume_verify = true
+              print("STORY_RAW_RESUME_VERIFY=1; byte-exact raw state; BIOS rehydration disabled")
           end
           local input_sequence = {}
           local memory_card_restored = false
@@ -418,6 +429,23 @@ jobs:
               if not ok then print(string.format("GPU_SCREENSHOT_CAPTURE frame=%d status=ERROR", n)) end
           end
 
+          local function capture_restore_immediate()
+              local shot = PCSX.GPU.takeScreenShot()
+              local bpp = (shot.bpp == 0) and 16 or 24
+              local raw = assert(Support.File.open("captures/raw/storymode-restore-immediate.raw", "TRUNCATE"),
+                  "cannot create temporary immediate-restore screenshot")
+              raw:writeMoveSlice(shot.data)
+              raw:close()
+              local meta = assert(io.open("captures/storymode-restore-immediate.json", "wb"),
+                  "cannot create immediate-restore screenshot metadata")
+              meta:write(string.format(
+                  '{"frame":0,"width":%d,"height":%d,"bpp":%d,"expected_bytes":%d}\n',
+                  shot.width, shot.height, bpp, shot.width * shot.height * bpp / 8))
+              meta:close()
+              print(string.format("STORY_RAW_RESTORE_IMMEDIATE_SCREENSHOT=CAPTURED width=%d height=%d bpp=%d",
+                  shot.width, shot.height, bpp))
+          end
+
           -- Rolling screenshot for a lightweight visual dialogue detector.
           -- This raw frame is local-only and removed before artifact upload.
           local function capture_dialog_watch(n)
@@ -478,6 +506,13 @@ jobs:
           runListener = PCSX.Events.createEventListener("ExecutionFlow::Run", function()
               print("EXECUTION_EVENT=Run")
           end)
+          _G.storySavestateLoadedListener = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
+              if resume_mode then
+                  restore_event_seen = true
+                  restore_post_frames = 0
+                  print("STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded")
+              end
+          end)
 
           gpuTrafficListener = PCSX.Events.createEventListener("GPU::Vsync", function()
               if resume_pending then
@@ -501,12 +536,58 @@ jobs:
                           return
                       end
                       frame_count = 0
-                      print("STORY_SAVESTATE_LOAD_CALL_RETURNED=1; screenshot verification required")
+                      local shot_ok, shot_err = pcall(capture_restore_immediate)
+                      if not shot_ok then
+                          print("STORY_RAW_RESTORE_IMMEDIATE_SCREENSHOT=FAIL detail=" .. tostring(shot_err))
+                          PCSX.quit(72)
+                          return
+                      end
+                      print("STORY_SAVESTATE_LOAD_CALL_RETURNED=1; immediate screenshot captured")
                       PCSX.resumeEmulator()
                   end)
                   return
               end
               frame_count = frame_count + 1
+              if raw_resume_verify and not restore_event_seen and frame_count >= 300 then
+                  print("STORY_RAW_RESTORE_EVENT_MISSING=FAIL; refusing to continue")
+                  PCSX.pauseEmulator()
+                  PCSX.nextTick(function() PCSX.quit(73) end)
+                  return
+              end
+              if raw_resume_verify and restore_event_seen then
+                  restore_post_frames = restore_post_frames + 1
+                  if restore_post_frames >= 180 and not restore_verify_pending then
+                      restore_verify_pending = true
+                      PCSX.pauseEmulator()
+                      PCSX.nextTick(function()
+                          capture_frame(180)
+                          local function wait_for_screenshot_match()
+                              restore_verify_attempts = restore_verify_attempts + 1
+                              local gate = io.open("captures/raw/restore-screenshot-match.flag", "rb")
+                              if gate then
+                                  local result = gate:read("*a") or ""
+                                  gate:close()
+                                  if result:match("^PASS") then
+                                      print("STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180")
+                                      print("STORY_RAW_RESTORE_SCREENSHOT_MATCH=PASS")
+                                      print("STORY_RAW_RESTORE_CROSS_RUN=PASS")
+                                      PCSX.resumeEmulator()
+                                  else
+                                      print("STORY_RAW_RESTORE_SCREENSHOT_MATCH=FAIL detail=" .. result:gsub("[\r\n]", " "))
+                                      PCSX.quit(74)
+                                  end
+                              elseif restore_verify_attempts >= 120 then
+                                  print("STORY_RAW_RESTORE_SCREENSHOT_MATCH=FAIL reason=compare_timeout")
+                                  PCSX.quit(75)
+                              else
+                                  PCSX.nextTick(wait_for_screenshot_match)
+                              end
+                          end
+                          PCSX.nextTick(wait_for_screenshot_match)
+                      end)
+                      return
+                  end
+              end
               while input_index <= #input_sequence and input_sequence[input_index].frame == frame_count do
                   apply_input(input_sequence[input_index])
                   input_index = input_index + 1
@@ -596,6 +677,7 @@ jobs:
           end)
           print("STORY_PLAYTHROUGH=armed target_vsync=50000; SoftGPU; raw GPU dump, window capture, and GDB/RSP polling disabled")
           LUA
+          cp "$WORK/gpu-traffic.lua" "$WORK/captures/gpu-traffic.lua"
 
           if [[ "${RESTORE_GDB:-false}" == "true" && "$RESUME_MODE" == "true" ]]; then
             echo "RESTORE_GDB=enabled; capture native crash backtrace"
@@ -632,10 +714,10 @@ jobs:
           fi
           emu_pid=$!
 
-          RESUME_MODE="$RESUME_MODE" EMU_PID="$emu_pid" python3 -u - <<'PY' > "$WORK/captures/story-dialog-watch-summary.txt" 2>&1 &
+          cat > "$WORK/story-dialog-watch.py" <<'PY'
           import hashlib, json, os, time
           from pathlib import Path
-          from PIL import Image
+          from PIL import Image, ImageChops, ImageStat
           emu_pid = int(os.environ["EMU_PID"])
           resume_mode = os.environ.get("RESUME_MODE", "false").lower() == "true"
           root = Path("captures")
@@ -678,6 +760,54 @@ jobs:
 
           def crop_hash(image, box):
               return hashlib.sha256(image.crop(box).tobytes()).hexdigest()
+
+          raw_resume_verify = os.environ.get("RAW_RESUME_VERIFY", "false").lower() == "true"
+          # Compare immediately restored picture with the source PNG from the checkpoint.
+          if raw_resume_verify:
+              match_flag = raw_dir / "restore-screenshot-match.flag"
+              report_path = root / "storymode-restore-comparison.txt"
+              try:
+                  deadline = time.monotonic() + 120
+                  meta_path = root / "storymode-restore-immediate.json"
+                  restore_path = raw_dir / "storymode-restore-immediate.raw"
+                  while time.monotonic() < deadline:
+                      if meta_path.exists() and restore_path.exists():
+                          meta = json.loads(meta_path.read_text())
+                          expected = int(meta["expected_bytes"])
+                          if restore_path.stat().st_size == expected:
+                              break
+                      if not Path(f"/proc/{emu_pid}").exists():
+                          raise RuntimeError("emulator_exited_before_immediate_restore_screenshot")
+                      time.sleep(0.15)
+                  else:
+                      raise RuntimeError("timeout_waiting_for_immediate_restore_screenshot")
+                  restored = to_rgb(restore_path.read_bytes(), int(meta["width"]), int(meta["height"]), int(meta["bpp"]))
+                  source = Image.open(root / "storymode-checkpoint-source.png").convert("RGB")
+                  if source.size != restored.size:
+                      raise ValueError(f"image_dimensions_differ source={source.size} restored={restored.size}")
+                  delta = ImageChops.difference(source, restored)
+                  mean_abs_diff = sum(ImageStat.Stat(delta).mean) / 3.0
+                  source_pixels, restored_pixels = list(source.getdata()), list(restored.getdata())
+                  exact_fraction = sum(a == b for a, b in zip(source_pixels, restored_pixels)) / max(1, len(source_pixels))
+                  comparison_passed = mean_abs_diff <= 6.0 and exact_fraction >= 0.70
+                  restored.save(root / "storymode-checkpoint-restore-immediate.png")
+                  report = [
+                      f"STORY_RAW_RESTORE_SCREENSHOT_COMPARE={'PASS' if comparison_passed else 'FAIL'}",
+                      f"SOURCE_SCREENSHOT={source.width}x{source.height}",
+                      f"RESTORE_SCREENSHOT={restored.width}x{restored.height}",
+                      f"MEAN_ABSOLUTE_RGB_DIFF={mean_abs_diff:.5f}",
+                      f"EXACT_PIXEL_FRACTION={exact_fraction:.6f}",
+                      "THRESHOLD=mean_abs_rgb_diff<=6.0 and exact_pixel_fraction>=0.70",
+                      f"SOURCE_SCREENSHOT_SHA256={hashlib.sha256((root / 'storymode-checkpoint-source.png').read_bytes()).hexdigest()}",
+                      f"RESTORE_SCREENSHOT_SHA256={hashlib.sha256((root / 'storymode-checkpoint-restore-immediate.png').read_bytes()).hexdigest()}",
+                  ]
+                  report_path.write_text("\n".join(report) + "\n", encoding="utf-8")
+                  match_flag.write_text(("PASS" if comparison_passed else "FAIL") + "\n" + "\n".join(report) + "\n", encoding="ascii")
+                  print("\n".join(report), flush=True)
+              except Exception as exc:
+                  report_path.write_text(f"STORY_RAW_RESTORE_SCREENSHOT_COMPARE=FAIL reason={type(exc).__name__}:{exc}\n", encoding="utf-8")
+                  match_flag.write_text(f"FAIL reason={type(exc).__name__}:{exc}\n", encoding="ascii")
+                  print(f"STORY_RAW_RESTORE_SCREENSHOT_COMPARE=FAIL reason={type(exc).__name__}:{exc}", flush=True)
 
           passed, dialog_passed = resume_mode, resume_mode
           if resume_mode:
@@ -767,7 +897,7 @@ jobs:
                       # Fade-to-black is not proof of a non-dialog screen. Require
                       # stable picture detail AND enough brightness; the last run
                       # misclassified a darkened dialogue at mean RGB ~=67.
-                      if dialog_seen and mean_brightness > 90 and nonblack > width*height*0.30 and unique_sample > 12:
+                      if dialog_seen and (not resume_mode or frame >= 600) and mean_brightness > 90 and nonblack > width*height*0.30 and unique_sample > 12:
                           non_dialog_streak += 1
                           last_panel, same_panel_samples = None, 0
                           if non_dialog_streak >= 4:
@@ -787,6 +917,8 @@ jobs:
                 + " dialog_seen=" + str(dialog_seen).lower()
                 + " non_dialog_streak=" + str(non_dialog_streak), flush=True)
           PY
+          cp "$WORK/story-dialog-watch.py" "$WORK/captures/story-dialog-watch.py"
+          RESUME_MODE="$RESUME_MODE" RAW_RESUME_VERIFY="$raw_resume_verify" EMU_PID="$emu_pid" python3 -u "$WORK/story-dialog-watch.py" > "$WORK/captures/story-dialog-watch-summary.txt" 2>&1 &
           watcher_pid=$!
 
           set +e
@@ -826,7 +958,10 @@ jobs:
           set -euo pipefail
           cd "$WORK"
           python3 - <<'PY'
+          import hashlib
           import json
+          import os
+          import re
           import struct
           from collections import Counter
           from pathlib import Path
@@ -1172,6 +1307,9 @@ jobs:
           if raw_state.exists():
               try:
                   original = raw_state.read_bytes()
+                  # Preserve the exact bytes returned by PCSX.createSaveState before
+                  # generating the legacy sanitized copy used by older diagnostics.
+                  Path("captures/storymode-checkpoint.raw.sstate").write_bytes(original)
                   safe, memory_count, removed = bytearray(), 0, 0
                   for number, wire, start, payload_start, payload_end, end in parse_fields(original):
                       if number == 3 and wire == 2:
@@ -1209,6 +1347,52 @@ jobs:
           output.append("RAW_GPU_DUMP_REMOVED=1")
           output.append("RAW_TEMP_SCREENSHOTS_REMOVED=1")
           Path("captures/gpu-traffic-summary.txt").write_text("\n".join(output) + "\n")
+
+          # This state is copied unchanged from the exact PCSX.createSaveState output.
+          raw_copy = Path("captures/storymode-checkpoint.raw.sstate")
+          if raw_copy.is_file() and raw_copy.stat().st_size > 0:
+              log_parts = []
+              for log_path in (Path("captures/important-log-lines.txt"), Path("captures/story-dialog-watch-summary.txt")):
+                  if log_path.exists():
+                      log_parts.append(log_path.read_text(errors="replace"))
+              lines = "\n".join(log_parts)
+              checkpoints = re.findall(r"STORY_CHECKPOINT_SAFE_POINT frame=(\d+) save_ok=true reason=([A-Za-z0-9_-]+)", lines)
+              frame, reason = checkpoints[-1] if checkpoints else ("unknown", "unknown")
+              source_png = Path(f"captures/internal-frame-{frame}.png") if frame != "unknown" else Path("captures/missing-source.png")
+              source_bytes, source_sha, dimensions = 0, "missing", "unknown"
+              if source_png.is_file():
+                  try:
+                      image = Image.open(source_png).convert("RGB")
+                      if image.width >= 100 and image.height >= 100 and image.getbbox() is not None:
+                          source_bytes = source_png.stat().st_size
+                          source_sha = hashlib.sha256(source_png.read_bytes()).hexdigest()
+                          dimensions = f"{image.width}x{image.height}"
+                          Path("captures/storymode-checkpoint-source.png").write_bytes(source_png.read_bytes())
+                  except Exception:
+                      source_bytes, source_sha, dimensions = 0, "missing", "unknown"
+              dialog_gate = "PASS" if "STORY_DIALOG_VISUAL_GATE=PASS" in lines else "FAIL"
+              manifest_lines = [
+                  "STORY_RAW_STATE_PRESENT=1",
+                  "STORY_STATE_FORMAT=raw-pcsx-createSaveState",
+                  f"STORY_RAW_STATE_RUN_ID={os.environ.get('GITHUB_RUN_ID', 'unknown')}",
+                  f"STORY_RAW_STATE_COMMIT={os.environ.get('GITHUB_SHA', 'unknown')}",
+                  f"STORY_CHECKPOINT_FRAME={frame}",
+                  f"STORY_CHECKPOINT_REASON={reason}",
+                  f"STORY_DIALOG_VISUAL_GATE={dialog_gate}",
+                  f"STORY_RAW_STATE_BYTES={raw_copy.stat().st_size}",
+                  f"STORY_RAW_STATE_SHA256={hashlib.sha256(raw_copy.read_bytes()).hexdigest()}",
+                  f"STORY_SOURCE_SCREENSHOT_PRESENT={int(source_bytes > 0)}",
+                  "STORY_SOURCE_SCREENSHOT_FILE=storymode-checkpoint-source.png",
+                  f"STORY_SOURCE_SCREENSHOT_BYTES={source_bytes}",
+                  f"STORY_SOURCE_SCREENSHOT_SHA256={source_sha}",
+                  f"STORY_SOURCE_SCREENSHOT_DIMENSIONS={dimensions}",
+              ]
+              Path("captures/storymode-raw-manifest.txt").write_text("\n".join(manifest_lines) + "\n")
+              print("\n".join(manifest_lines))
+          else:
+              Path("captures/storymode-raw-manifest.txt").write_text("STORY_RAW_STATE_PRESENT=0\n")
+              print("STORY_RAW_STATE_PRESENT=0")
+
           print("\n".join(output))
           PY
 
@@ -1260,8 +1444,15 @@ jobs:
             ${{ env.WORK }}/captures/pcsx.stdout.txt
             ${{ env.WORK }}/captures/pcsx.log.txt
             ${{ env.WORK }}/captures/storymode-checkpoint.sstate
+            ${{ env.WORK }}/captures/storymode-checkpoint.raw.sstate
+            ${{ env.WORK }}/captures/storymode-raw-manifest.txt
+            ${{ env.WORK }}/captures/storymode-checkpoint-source.png
+            ${{ env.WORK }}/captures/storymode-checkpoint-restore-immediate.png
+            ${{ env.WORK }}/captures/storymode-restore-comparison.txt
+            ${{ env.WORK }}/captures/gpu-traffic.lua
+            ${{ env.WORK }}/captures/story-dialog-watch.py
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: 14
 
       - name: Upload private Story Mode Memory Card candidate
         if: always()
@@ -1272,7 +1463,7 @@ jobs:
             ${{ env.WORK }}/cards/naruto-storymode.mcd
             ${{ env.WORK }}/cards/memory-card-manifest.txt
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 14
 
       - name: Remove runtime assets from ephemeral runner
         if: always()
