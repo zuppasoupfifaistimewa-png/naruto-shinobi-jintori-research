@@ -11,6 +11,11 @@ on:
         description: "Run ID containing naruto-storymode-checkpoint-private and its raw savestate manifest"
         required: true
         type: string
+  # TEMPORARY one-shot bridge; removed immediately after diagnostic run is queued.
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/naruto-raw-storymode-restore.yml"
 
 permissions:
   contents: read
@@ -22,12 +27,12 @@ concurrency:
 
 jobs:
   raw-restore-and-continue:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.name == 'Naruto SCPH-7502 Story Mode playthrough' && github.event.workflow_run.conclusion != 'cancelled') }}
+    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.name == 'Naruto SCPH-7502 Story Mode playthrough' && github.event.workflow_run.conclusion != 'cancelled') }}
     runs-on: ubuntu-26.04
     timeout-minutes: 45
     env:
       WORK: /tmp/naruto-storymode-raw-resume
-      SOURCE_RUN_ID: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.source_run_id }}
+      SOURCE_RUN_ID: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.id) || (github.event_name == 'workflow_dispatch' && inputs.source_run_id) || (github.event_name == 'push' && '39262213468') }}
       RESEARCH_REPO: ${{ github.repository }}
     steps:
       - name: Install runtime dependencies
@@ -41,7 +46,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: naruto-storymode-checkpoint-private
-          run-id: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.source_run_id }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
           path: ${{ env.WORK }}/source-artifact
@@ -50,7 +55,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: naruto-storymode-memory-card-private
-          run-id: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.source_run_id }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
           path: ${{ env.WORK }}/source-card
