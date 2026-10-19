@@ -1,3 +1,11 @@
+## PEMBARUAN TERKINI — raw Story Mode checkpoint lintas-run dipersiapkan (19 Oktober 2026)
+
+- Raw state boot awal telah pulih lintas-run (Run A #39255438457 → Run B #39255549341); hasil tersebut bukan checkpoint Story Mode. Run #39257735369 juga membuktikan positive-control sanitizer untuk state boot saja. Restore checkpoint lama yang disanitasi masih pernah SIGSEGV/exit 139.
+- Run #39261524544 bukan eksperimen emulator yang sah: berhenti sebelum start karena variabel watcher Bash `raw_resume_verify` tidak ditentukan, exit 255. Perbaikan launcher ada pada commit `e396eac00631001b7a0e68d7701c70aec10dec19`.
+- Run aktif #39262213468: [Actions](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39262213468). Aset runtime terverifikasi, emulator sedang berjalan dan belum ada artifact. Jangan batalkan atau mengubah file workflow utama selama run aktif.
+- Workflow utama menyimpan salinan raw asli byte-per-byte, hash/ukuran dan screenshot sumber untuk checkpoint; retention 14 hari. Workflow penerima `.github/workflows/naruto-raw-storymode-restore.yml` (commit `ddcf1e0...`) menolak checkpoint yang bukan layar stabil pascadialog, memverifikasi hash sebelum load pada runner baru tanpa sanitizer/rehidrasi BIOS, lalu menuntut event restore, ≥180 VSync, dan perbandingan screenshot PASS sebelum melanjutkan.
+- Bila state raw atau screenshot pembanding tidak ada, atau source reason/frame/gate tidak cocok, restore mesti gagal-tertutup. Jangan sebut hasil ini progres Story Mode yang aman tanpa bukti aktual. Memory Card baru sebatas file 131.072 byte dengan status game save belum diverifikasi.
+
 ## HASIL BARU — raw savestate benar-benar pulih lintas-run (19 Oktober 2026)
 
 - **TERVERIFIKASI, terbatas pada boot awal:** [Run A #39255438457](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39255438457) membuat raw state melalui `PCSX.createSaveState()` pada VSync 60, tanpa sanitasi. File berukuran **21.124.144 byte**, SHA-256 `a4672dd49fbfa76ef60de410c50460d77e115181fc3e205a215ab9f5f1e601d7`. Artifact sumber privat #12187367829: [unduh dari GitHub](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39255438457/artifacts/12187367829).
