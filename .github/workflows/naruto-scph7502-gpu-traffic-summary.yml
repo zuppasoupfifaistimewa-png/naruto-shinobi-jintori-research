@@ -379,9 +379,9 @@ jobs:
               if frame_count > 0 and frame_count % 5000 == 0 and frame_count < stop_frame then
                   save_checkpoint(frame_count)
               end
-              if frame_count % 100 == 0 then
-                  print(string.format("GPU_TRAFFIC_VSYNC frame=%d guest_fps=%.4f dump_frames=%d",
-                      frame_count, PCSX.GPU.getGuestFPS(), PCSX.GPU.getDumpFrames()))
+              if frame_count % 1000 == 0 then
+                  print(string.format("STORY_VSYNC frame=%d guest_fps=%.4f",
+                      frame_count, PCSX.GPU.getGuestFPS()))
               end
               if frame_count == stop_frame then
                   save_checkpoint(frame_count)
@@ -563,6 +563,10 @@ jobs:
           cat "$WORK/captures/story-dialog-watch-summary.txt" || true
           echo "STORY_DIALOG_WATCH_SUMMARY_END"
           echo "STORY_PLAYTHROUGH_EMULATOR_STEP_DONE=1"
+          if [ "$emu_rc" -ne 0 ]; then
+            echo "::error::Emulator process exited with code $emu_rc"
+            exit "$emu_rc"
+          fi
 
       - name: Sanitize checkpoint and clean temporary runtime data
         if: always()
