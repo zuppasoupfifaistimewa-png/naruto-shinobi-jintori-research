@@ -1,4 +1,5 @@
 name: Naruto raw savestate cross-run restore
+# Deliberately separate from Run A so workflow_run targets another named workflow.
 
 on:
   workflow_run:
