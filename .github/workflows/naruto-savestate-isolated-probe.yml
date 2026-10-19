@@ -137,7 +137,9 @@ jobs:
           test -n "$state" && test -s "$state"
           test -n "$card" && test -s "$card"
           test -n "$manifest" && test -s "$manifest"
-          cp "$state" "$WORK/checkpoint-source/storymode-checkpoint.sstate"
+          if [ "$state" != "$WORK/checkpoint-source/storymode-checkpoint.sstate" ]; then
+            cp "$state" "$WORK/checkpoint-source/storymode-checkpoint.sstate"
+          fi
           cp "$card" "$WORK/cards/reference.mcd"
           bytes="$(stat -c '%s' "$WORK/cards/reference.mcd")"
           actual_sha="$(sha256sum "$WORK/cards/reference.mcd" | cut -d ' ' -f 1)"
