@@ -1,3 +1,22 @@
+## Analisis visual terbaru — DOWN/UP dan hasil Circle (run #39178662131, 2026-10-19)
+
+Run #39178662131 selesai dengan workflow success; artifact privat [#12155879252](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39178662131/artifacts/12155879252) berisi frame-frame PNG yang dibandingkan langsung.
+
+**Urutan yang tampak pada gambar:**
+1. Frame 2.670: kotak menu berisi `はじめから` dan `ロード`; panah di baris `はじめから`.
+2. DOWN 2.710–2.720: frame 2.710 diambil terlalu dekat dengan press dan masih menunjukkan pilihan atas; frame 2.720 jelas menunjukkan panah di baris `ロード`.
+3. UP 2.740–2.750: frame 2.740 masih memperlihatkan pilihan bawah; frame 2.749–2.750 menunjukkan panah kembali ke `はじめから`. Dengan demikian, input arah mengubah pilihan secara visual, dengan jeda beberapa frame sebelum checkpoint menampilkan state baru.
+4. Circle 2.780–2.810: frame 2.780 masih punya menu, 2.790 menunjukkan sisa garis overlay, 2.800 menu telah hilang, 2.900 gambar judul menggelap, dan 2.950/2.999/3.199 hitam.
+5. Bukti tujuan yang positif bukan layar hitam: frame 3.399 memperlihatkan judul Jepang `モードセレクト` dan `ストーリーモード` terpilih/disorot. Screenshot 3.599, 3.999, 4.499, 4.999, 5.499, dan 5.999 menunjukkan layar itu bertahan.
+
+**Interpretasi:** rangkaian ini konsisten dengan Circle mengonfirmasi `はじめから` dan game bertransisi ke Mode Select. Karena opsi Story Mode terlihat tersorot di Mode Select, itu baru membuktikan state pilihan, bukan Story Mode yang sudah dimulai. Perlu Circle kedua setelah layar ini dicapai, lalu bukti visual pasca-konfirmasi/gameplay. `PAD_INJECT status=PASS` hanya memverifikasi readback API.
+
+Runtime yang tercatat tetap retail SCPH-7502 (EU), CD ID `SLPS03553`, EXE `SLPS_035.53;1`, SoftGPU dan Port 1 Analog/Auto; pin PCSX-Redux tetap `0c3572c3db75f97542001e453ae80ba8c3f8acba`. Cleanup log: `RAW_GPU_DUMP_REMOVED=1`, `RAW_TEMP_SCREENSHOTS_REMOVED=1`; final removal step `rm -rf "$WORK"` selesai. Artifact yang diperiksa tidak memuat ROM/BIOS/save/raw GPU/VRAM dump.
+
+**Eksperimen berikutnya:** lakukan cold boot baru dan ulangi Start→DOWN→UP→Circle pada timing yang terbukti. Setelah Mode Select terlihat dan stabil (pada run ini sudah terlihat dari frame 3.399), kirim Circle kedua sekitar frame 6.100–6.130, ambil gambar di sisi input dan amati hingga sekurangnya frame 9.000. Jangan menginterpretasi black frame atau workflow success sebagai mode/gameplay.
+
+---
+
 ## Hasil Start-only — run #39176328030, 2026-10-19
 
 **Input:** Start press frame 2.650 dan release frame 2.680; tidak ada Circle. Emulator mencapai 3.000 VSync, exit code 0, cleanup berhasil.
