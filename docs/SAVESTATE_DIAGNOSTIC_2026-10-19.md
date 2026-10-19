@@ -13,7 +13,7 @@ Ini mengoreksi catatan sebelum tahap E/F selesai. Hasil sekarang menunjukkan keb
 
 **Hambatan utama:** perbedaan antara state mentah yang dibuat/dimuat oleh PCSX-Redux sendiri dan checkpoint tersanitasi yang disimpan sebagai artifact. Penyebab tepatnya belum diketahui. Hipotesis yang perlu diuji adalah field/struktur savestate berubah secara tidak kompatibel saat sanitizer menghapus/menyisipkan BIOS; hipotesis ini harus dibuktikan dengan diff schema dan eksperimen faktor tunggal.
 
-**Uji berikutnya:** jangan lagi mengulang roundtrip state mentah yang sama. Periksa sanitizer dan skema protobuf, diff state mentah vs state setelah sanitasi/rehidrasi, serta lokasi/nesting field BIOS. Jalankan tes yang hanya membandingkan parse dan struktur terlebih dahulu; hanya setelah struktur konsisten coba loader dengan GDB. Jangan ubah checkpoint sumber, jangan mulai ulang Story Mode, dan jangan menyimpulkan game tamat.
+**Uji berikutnya:** jangan ulangi roundtrip mentah dalam satu proses. Jalankan state mentah buatan emulator sebagai artifact lintas-run: run A membuat dan mengunggah file tanpa modifikasi; run B menjalankan emulator dalam proses bersih dan memuat file tersebut, dengan event, kemajuan VSync, dan screenshot valid sebagai gerbang. Ini memisahkan faktor portabilitas lintas-proses dari sanitasi. Jika raw lintas-run lulus, berikutnya bandingkan parse/schema state mentah versus checkpoint tersanitasi dan uji sanitasi sebagai satu-satunya faktor yang berubah. Jika raw lintas-run gagal, investigasi build/version atau komponen state yang bergantung proses. Jangan ubah checkpoint sumber dan jangan mulai ulang Story Mode.
 
 ---
 
