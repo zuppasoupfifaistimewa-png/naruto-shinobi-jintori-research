@@ -116,11 +116,11 @@ jobs:
           echo "EMULATOR_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
 
       - name: Restore private Story Mode checkpoint
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.resume_run_id != '' }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.resume_run_id != '') || (github.event_name == 'push' && contains(github.event.head_commit.message, '[resume-checkpoint]')) }}
         uses: actions/download-artifact@v4
         with:
           name: naruto-storymode-checkpoint-private
-          run-id: ${{ inputs.resume_run_id }}
+          run-id: ${{ inputs.resume_run_id || '39205699071' }}
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
           path: ${{ runner.temp }}/naruto-scph7502-gpu-traffic/resume
@@ -495,7 +495,9 @@ jobs:
 
           last_meta_frame, last_panel, last_stable_panel = -1, None, None
           same_panel_samples, non_dialog_streak = 0, 0
-          dialog_seen, previous_request_hash = False, None
+          # The resumed state was captured after the opening dialogue began, so a
+          # stable bright non-dialog scene may be the expected transition destination.
+          dialog_seen, previous_request_hash = resume_mode, None
           while Path(f"/proc/{emu_pid}").exists():
               try:
                   if not live_meta.exists() or not live_raw.exists():
@@ -521,7 +523,10 @@ jobs:
                   text_pixels = sum(1 for pix in image.crop(text_box).getdata() if max(pix) < 100)
                   has_dialog = border_hits >= 6 and 60 <= text_pixels <= 5000
                   nonblack = sum(1 for pix in image.getdata() if max(pix) > 12)
-                  unique_sample = len(set(image.resize((40,30)).getdata()))
+                  sample_image = image.resize((40,30))
+                  sample_pixels = list(sample_image.getdata())
+                  unique_sample = len(set(sample_pixels))
+                  mean_brightness = sum(sum(pix) for pix in sample_pixels) / (3 * len(sample_pixels))
                   if has_dialog and dialog_passed:
                       dialog_seen = True
                       non_dialog_streak = 0
@@ -537,13 +542,16 @@ jobs:
                           start_flag.write_text(f"START_RETRY frame={frame} panel={panel_hash}\n", encoding="ascii")
                           print(f"STORY_DIALOG_START_RETRY frame={frame} stable_samples={same_panel_samples} hash={panel_hash}", flush=True)
                   else:
-                      if dialog_seen and nonblack > width*height*0.30 and unique_sample > 12:
+                      # Fade-to-black is not proof of a non-dialog screen. Require
+                      # stable picture detail AND enough brightness; the last run
+                      # misclassified a darkened dialogue at mean RGB ~=67.
+                      if dialog_seen and mean_brightness > 90 and nonblack > width*height*0.30 and unique_sample > 12:
                           non_dialog_streak += 1
                           last_panel, same_panel_samples = None, 0
                           if non_dialog_streak >= 4:
                               note = f"frame={frame} stable_non_dialog_samples={non_dialog_streak} width={width} height={height}"
                               pause_flag.write_text(note + "\n", encoding="ascii")
-                              print("STORY_NON_DIALOG_STABLE=PASS " + note + "; pausing for visual inspection", flush=True)
+                              print("STORY_NON_DIALOG_STABLE=PASS " + note + f" mean_sample_brightness={mean_brightness:.1f}; pausing for visual inspection", flush=True)
                               break
                       else:
                           non_dialog_streak = 0
