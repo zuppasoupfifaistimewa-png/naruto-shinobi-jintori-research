@@ -18,7 +18,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: naruto-storymode-raw-resume-${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.source_run_id }}
+  group: naruto-storymode-raw-resume
   cancel-in-progress: false
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 45
     env:
-      WORK: ${{ runner.temp }}/naruto-storymode-raw-resume
+      WORK: /tmp/naruto-storymode-raw-resume
       SOURCE_RUN_ID: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.source_run_id }}
       RESEARCH_REPO: ${{ github.repository }}
     steps:
