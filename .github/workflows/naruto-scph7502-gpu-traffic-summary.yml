@@ -30,7 +30,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil gdb
 
       - name: Download and verify private runtime assets
         shell: bash
@@ -126,6 +126,8 @@ jobs:
           path: ${{ runner.temp }}/naruto-scph7502-gpu-traffic/resume
 
       - name: Play Story Mode, skip detected dialogue with Start, checkpoint and observe up to VSync 50000
+        env:
+          RESTORE_GDB: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[restore-gdb]') }}
         shell: bash
         run: |
           set -euo pipefail
@@ -516,12 +518,32 @@ jobs:
           print("STORY_PLAYTHROUGH=armed target_vsync=50000; SoftGPU; raw GPU dump, window capture, and GDB/RSP polling disabled")
           LUA
 
-          timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
-            stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
-              -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
-              "$GPU_BACKEND_FLAG" -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+          if [[ "${RESTORE_GDB:-false}" == "true" && "$RESUME_MODE" == "true" ]]; then
+            echo "RESTORE_GDB=enabled; capture native crash backtrace"
+            timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
+              gdb --batch --return-child-result \
+                -ex "set pagination off" \
+                -ex "set print thread-events off" \
+                -ex "set follow-fork-mode child" \
+                -ex "set detach-on-fork on" \
+                -ex "handle SIGSEGV stop print nopass" \
+                -ex run \
+                -ex "echo \\n--- RESTORE GDB BACKTRACE ---\\n" \
+                -ex "thread apply all bt full" \
+                --args stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+                  -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+                  -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
+                  "$GPU_BACKEND_FLAG" -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
               > "$WORK/pcsx.stdout" 2>&1 &
+          else
+            echo "RESTORE_GDB=disabled"
+            timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
+              stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+                -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+                -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
+                "$GPU_BACKEND_FLAG" -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+              > "$WORK/pcsx.stdout" 2>&1 &
+          fi
           emu_pid=$!
 
           RESUME_MODE="$RESUME_MODE" EMU_PID="$emu_pid" python3 -u - <<'PY' > "$WORK/captures/story-dialog-watch-summary.txt" 2>&1 &
@@ -686,9 +708,15 @@ jobs:
           emu_rc=$?
           set -e
           emu_pid=""
+          if [[ "${RESTORE_GDB:-false}" == "true" ]] && grep -q "Program received signal SIGSEGV" "$WORK/pcsx.stdout"; then
+            emu_rc=139
+            echo "RESTORE_GDB_DETECTED_SIGSEGV=1"
+          fi
           echo "EMULATOR_EXIT_CODE=$emu_rc"
-          grep -E 'GPU_BACKEND_SELECTED|PAD_SETUP|PAD_INJECT|GPU_SCREENSHOT_CAPTURE|GPU_VRAM_CAPTURE|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|Loaded BIOS:|Known BIOS detected|OpenBIOS detected|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|ResetCallback|unknown GPU data word|FATAL|Exception|error|Error|ERROR|Failed|failed' \
+          grep -E 'STORY_|RESTORE_|GPU_BACKEND_SELECTED|PAD_SETUP|PAD_INJECT|GPU_SCREENSHOT_CAPTURE|GPU_VRAM_CAPTURE|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|Program received signal|SIGSEGV|BACKTRACE|Backtrace|^#[0-9]+ |Loaded BIOS:|Known BIOS detected|OpenBIOS detected|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|ResetCallback|unknown GPU data word|FATAL|Exception|error|Error|ERROR|Failed|failed' \
             "$WORK/pcsx.stdout" "$WORK/pcsx.log" > "$WORK/captures/important-log-lines.txt" || true
+          cp "$WORK/pcsx.stdout" "$WORK/captures/pcsx.stdout.txt" || true
+          cp "$WORK/pcsx.log" "$WORK/captures/pcsx.log.txt" || true
           cat "$WORK/captures/important-log-lines.txt" || true
           wait "$watcher_pid" 2>/dev/null || true
           echo "STORY_DIALOG_WATCH_SUMMARY_BEGIN"
@@ -1103,6 +1131,9 @@ jobs:
             ${{ env.WORK }}/captures/important-log-lines.txt
             ${{ env.WORK }}/captures/internal-frame-*.png
             ${{ env.WORK }}/captures/story-dialog-watch-summary.txt
+            ${{ env.WORK }}/captures/important-log-lines.txt
+            ${{ env.WORK }}/captures/pcsx.stdout.txt
+            ${{ env.WORK }}/captures/pcsx.log.txt
             ${{ env.WORK }}/captures/storymode-checkpoint.sstate
           if-no-files-found: warn
           retention-days: 7
