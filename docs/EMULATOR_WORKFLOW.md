@@ -1,3 +1,12 @@
+
+## Status optimasi runner — crash awal dan guard restore checkpoint (2026-10-19)
+
+Timeout job saat ini 360 menit; SoftGPU tetap digunakan dan timeout proses emulator internal adalah 20.400 detik (5 jam 40 menit). Jalur bermain menonaktifkan raw GPU dump dan sampling GDB/RSP untuk mengurangi overhead. Namun dua run sebelumnya (`#39205262049` dan `#39205556772`) mengalami segmentation fault, masing-masing exit 139 sebelum frame 5.999; keduanya belum menghasilkan screenshot progres atau savestate valid. Run pertama sempat salah berstatus workflow success, lalu pemeriksaan exit code diperbaiki agar kegagalan emulator membuat step gagal.
+
+Penyebab crash belum dipastikan. Panggilan getDumpFrames tanpa GPU dump sudah dihapus tetapi run berikutnya tetap crash. Commit terbaru `88d5cfa8833ef39e286431f5e8bedf2584485804` menambahkan pemeriksaan `io.open` sebelum memanggil Support.File.open/loadSaveState untuk menghindari loader native menerima file checkpoint yang tidak ada.
+
+Run terbaru untuk menguji guard tersebut: [#39205699071](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39205699071). Pada pemeriksaan terakhir proses emulator masih berjalan; jangan klaim berhasil sampai screenshot dan log setelah run diperiksa. Save state baru boleh dipindahkan jika sanitizer mencatat PASS; artefak #12165850239 dan #12165635987 tidak berisi savestate dan tidak boleh dipakai sebagai checkpoint resume.
+
 # Alur penelitian runtime dengan emulator PS1
 
 Tanggal dibuat: 2026-10-15
