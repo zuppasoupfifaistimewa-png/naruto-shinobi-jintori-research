@@ -1,10 +1,29 @@
+## Hasil terbaru — run #39252214331 (19 Oktober 2026)
+
+Ini mengoreksi catatan sebelum tahap E/F selesai. Hasil sekarang menunjukkan keberhasilan *terbatas* pada savestate mentah di runner cloud, tetapi **belum** pada checkpoint tengah Story Mode.
+
+- Tahap A/B/C/C2 lulus.
+- Tahap D: checkpoint lama yang disanitasi lalu direhidrasi BIOS crash (SIGSEGV/exit 139) sesaat setelah `SAVESTATE_PROBE_LOAD_CALL_BEGIN=1`.
+- Tahap E: `PCSX.createSaveState()` pada emulator yang boot mencapai `KERNEL SETUP!` menghasilkan state mentah 21.124.150 byte.
+- Tahap F: state mentah dimuat lagi dalam lingkungan runner yang sama. Log mencatat `ExecutionFlow::SaveStateLoaded`, `LOAD_CALL_RETURNED=1`, `ExecutionFlow::Run`, dan `SAVESTATE_PROBE_POST_RESTORE_VSYNC=180`. Tidak terjadi crash dalam tahap ini.
+- Artifact #12186545059 menyediakan screenshot valid 640×508 (650.240 byte raw) yang menunjukkan logo boot Sony Computer Entertainment. Ini bukti visual emulator render setelah restore, tetapi bukan bukti Story Mode atau save/load lintas runner.
+- Keseluruhan workflow diberi conclusion failure karena gerbang akhirnya masih mensyaratkan tahap D checkpoint tersanitasi lulus. Tahap F lulus tidak menghapus kegagalan D.
+- Capture A/B/C/C2 masih menghasilkan dimensi 0×0; itu bukan screenshot valid.
+- Tidak ada runner aktif setelah run ini selesai pada pemeriksaan terakhir.
+
+**Hambatan utama:** perbedaan antara state mentah yang dibuat/dimuat oleh PCSX-Redux sendiri dan checkpoint tersanitasi yang disimpan sebagai artifact. Penyebab tepatnya belum diketahui. Hipotesis yang perlu diuji adalah field/struktur savestate berubah secara tidak kompatibel saat sanitizer menghapus/menyisipkan BIOS; hipotesis ini harus dibuktikan dengan diff schema dan eksperimen faktor tunggal.
+
+**Uji berikutnya:** jangan lagi mengulang roundtrip state mentah yang sama. Periksa sanitizer dan skema protobuf, diff state mentah vs state setelah sanitasi/rehidrasi, serta lokasi/nesting field BIOS. Jalankan tes yang hanya membandingkan parse dan struktur terlebih dahulu; hanya setelah struktur konsisten coba loader dengan GDB. Jangan ubah checkpoint sumber, jangan mulai ulang Story Mode, dan jangan menyimpulkan game tamat.
+
+---
+
 ## Update GDB dan roundtrip native — 19 Oktober 2026
 
 - [Run #39248501957](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39248501957) mengulang A/B/C/C2 dan menjalankan tahap D di bawah GDB. Log D membuktikan `SAVESTATE_PROBE_LOAD_CALL_BEGIN=1`, lalu thread 15 (`pcsx-redux`) menerima SIGSEGV pada PC `0x00007ffff0dd36d0`. Stack teratas `#0 0x00007ffff0dd36d0`, `#1 0x0000000001589a80`, `#2 0x00000000014f49f0`, `#3 0x00007ffff0de5870`. Nilai PC dan stack cocok dengan GDB lama #39235079514. Binary stripped; alamat ini belum bisa dipetakan ke nama fungsi.
 - Trace lama #39235079514 pada PC yang sama mencatat `RSI=0xffffffffddd13fff` dan instruksi `movzbl (%rsi),%ecx`, yaitu pembacaan byte dari alamat invalid. Ini memperkuat bahwa jalur native/JIT crash dengan pointer invalid, tetapi belum menentukan field state atau fungsi penyebab.
 - Artifak #12184890672 berisi log GDB dan ringkasan; retensi sampai 26 Oktober 2026.
 - Capture GPU pada VSync awal di A/B/C/C2 menghasilkan `width=0,height=0`, raw 0 byte; screenshot itu tidak valid sebagai bukti visual.
-- Run [#39249046252](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39249046252) menambahkan kontrol independen: buat savestate mentah dengan serializer emulator, lalu coba muat file mentah tanpa sanitasi/rehidrasi. Status terakhir yang diperiksa: masih berjalan pada langkah eksperimen. Periksa hasil A/B/C/C2/D/E/F setelah selesai sebelum menentukan langkah berikutnya.
+- Run [#39252214331](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39252214331) menyelesaikan kontrol independen E/F: savestate mentah buatan emulator (21.124.150 byte) berhasil dimuat, event `SaveStateLoaded` dan `ExecutionFlow::Run` muncul, emulator melewati 180 VSync pascarestore, dan screenshot valid 640×508 menunjukkan logo boot Sony. Ini belum menguji state di tengah Story Mode. Jalur D untuk checkpoint tersanitasi masih crash exit 139; workflow failure sesuai gerbang yang menuntut D lulus.
 
 ---
 
@@ -12,7 +31,7 @@
 
 ## Status ringkas
 
-Prioritas riset tetap memperbaiki savestate sampai terbukti memulihkan keadaan permainan di tengah Story Mode. Belum ada restore yang berhasil dibuktikan. Tidak ada input gameplay yang dikirim selama pengujian diagnostik ini.
+Prioritas riset tetap memperbaiki savestate sampai terbukti memulihkan keadaan permainan di tengah Story Mode. Sudah ada satu roundtrip mentah yang berhasil pada boot awal (run #39252214331), tetapi belum ada restore checkpoint tengah Story Mode yang terbukti. Tidak ada input gameplay yang dikirim selama pengujian diagnostik ini.
 
 Run Story Mode terbaru yang diperiksa, [#39242130783](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39242130783), berakhir gagal dengan exit 124 sebelum gerbang visual frame 5999. Artifact checkpoint dari run tersebut tidak berisi `storymode-checkpoint.sstate`; file itu tidak boleh dipakai sebagai checkpoint baru.
 
