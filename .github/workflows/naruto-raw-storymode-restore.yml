@@ -38,7 +38,7 @@ jobs:
           run-id: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.source_run_id }}
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          path: ${{ runner.temp }}/naruto-storymode-raw-resume/source-artifact
+          path: ${{ env.WORK }}/source-artifact
 
       - name: Download matching private Memory Card artifact
         uses: actions/download-artifact@v4
@@ -47,7 +47,7 @@ jobs:
           run-id: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.source_run_id }}
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          path: ${{ runner.temp }}/naruto-storymode-raw-resume/source-card
+          path: ${{ env.WORK }}/source-card
 
       - name: Verify source checkpoint is an identifiable post-dialog screen and verify raw bytes
         shell: bash
