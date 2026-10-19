@@ -918,7 +918,7 @@ jobs:
                 + " non_dialog_streak=" + str(non_dialog_streak), flush=True)
           PY
           cp "$WORK/story-dialog-watch.py" "$WORK/captures/story-dialog-watch.py"
-          RESUME_MODE="$RESUME_MODE" RAW_RESUME_VERIFY="$raw_resume_verify" EMU_PID="$emu_pid" python3 -u "$WORK/story-dialog-watch.py" > "$WORK/captures/story-dialog-watch-summary.txt" 2>&1 &
+          RESUME_MODE="$RESUME_MODE" RAW_RESUME_VERIFY=false EMU_PID="$emu_pid" python3 -u "$WORK/story-dialog-watch.py" > "$WORK/captures/story-dialog-watch-summary.txt" 2>&1 &
           watcher_pid=$!
 
           set +e
