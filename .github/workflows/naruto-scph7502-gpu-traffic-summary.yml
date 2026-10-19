@@ -272,7 +272,7 @@ jobs:
           )
           cat > "$WORK/gpu-traffic.lua" <<'LUA'
           local frame_count = 0
-          local stop_frame = 50000
+          local stop_frame = 12000
           local pad = PCSX.SIO0.slots[1].pads[1]
           local buttons = PCSX.CONSTS.PAD.BUTTON
           local resume_mode = false
@@ -308,6 +308,7 @@ jobs:
           local input_index = 1
           local story_circle2_pressed = false
           local auto_start_release_frame = nil
+          local checkpoint_pending = false
           local capture_targets = { [2599]=true, [2649]=true, [2650]=true, [2660]=true, [2670]=true, [2680]=true, [2690]=true, [2700]=true, [2709]=true, [2710]=true, [2715]=true, [2720]=true, [2730]=true, [2739]=true, [2740]=true, [2745]=true, [2749]=true, [2750]=true, [2760]=true, [2770]=true, [2779]=true, [2780]=true, [2790]=true, [2800]=true, [2809]=true, [2810]=true, [2820]=true, [2850]=true, [2900]=true, [2950]=true, [2999]=true, [3199]=true, [3399]=true, [3599]=true, [3999]=true, [4499]=true, [4999]=true, [5499]=true, [5999]=true, [6099]=true, [6100]=true, [6110]=true, [6129]=true, [6130]=true, [6140]=true, [6200]=true, [6399]=true, [6799]=true, [7199]=true, [7599]=true, [7999]=true, [8499]=true, [8999]=true, [9099]=true, [9199]=true, [9200]=true, [9229]=true, [9230]=true, [9240]=true, [9299]=true, [9499]=true, [9999]=true, [10099]=true, [10199]=true, [10200]=true, [10229]=true, [10230]=true, [10240]=true, [10299]=true, [10499]=true, [10999]=true }
 
           local function apply_input(action)
@@ -391,6 +392,26 @@ jobs:
               if not ok then
                   print(string.format("STORY_SAVESTATE_CAPTURE frame=%d status=ERROR detail=%s", n, tostring(err)))
               end
+              return ok
+          end
+
+          -- Defer the serializer to a paused nextTick safe point, outside GPU::Vsync.
+          local function checkpoint_at_safe_tick(n, quit_after, reason)
+              if checkpoint_pending then return end
+              checkpoint_pending = true
+              PCSX.pauseEmulator()
+              PCSX.nextTick(function()
+                  capture_frame(n)
+                  local saved = save_checkpoint(n)
+                  print(string.format("STORY_CHECKPOINT_SAFE_POINT frame=%d save_ok=%s reason=%s",
+                      n, tostring(saved), tostring(reason)))
+                  if quit_after then
+                      PCSX.quit(saved and 0 or 4)
+                  else
+                      checkpoint_pending = false
+                      PCSX.resumeEmulator()
+                  end
+              end)
           end
 
           shellReachedListener = PCSX.Events.createEventListener("ExecutionFlow::ShellReached", function()
@@ -480,11 +501,10 @@ jobs:
                   if pause_file then
                       local note = pause_file:read("*a") or ""
                       pause_file:close()
-                      capture_frame(frame_count)
-                      save_checkpoint(frame_count)
-                      print(string.format("STORY_PAUSE_FOR_INSPECTION frame=%d note=%s",
-                          frame_count, note:gsub("[\\r\n]", "")))
-                      PCSX.nextTick(function() PCSX.quit(0) end)
+                      os.remove("captures/raw/story-nondialog-stable.flag")
+                      print(string.format("STORY_PAUSE_FOR_INSPECTION_REQUEST frame=%d note=%s",
+                          frame_count, note:gsub("[\\r\\n]", "")))
+                      checkpoint_at_safe_tick(frame_count, true, "stable_non_dialog")
                       return
                   end
               end
@@ -503,16 +523,17 @@ jobs:
                   capture_frame(frame_count)
               end
               if frame_count > 0 and frame_count % 5000 == 0 and frame_count < stop_frame then
-                  save_checkpoint(frame_count)
+                  checkpoint_at_safe_tick(frame_count, false, "periodic")
+                  return
               end
               if frame_count % 1000 == 0 then
                   print(string.format("STORY_VSYNC frame=%d guest_fps=%.4f",
                       frame_count, PCSX.GPU.getGuestFPS()))
               end
               if frame_count == stop_frame then
-                  save_checkpoint(frame_count)
                   print(string.format("STORY_SESSION_FRAME_LIMIT_REACHED=%d", frame_count))
-                  PCSX.nextTick(function() PCSX.quit(0) end)
+                  checkpoint_at_safe_tick(frame_count, true, "frame_limit")
+                  return
               end
           end)
           print("STORY_PLAYTHROUGH=armed target_vsync=50000; SoftGPU; raw GPU dump, window capture, and GDB/RSP polling disabled")
