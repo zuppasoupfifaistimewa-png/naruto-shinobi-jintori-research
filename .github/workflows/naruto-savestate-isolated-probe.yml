@@ -405,6 +405,24 @@ jobs:
           LUA
           sed 's|resume/storymode-checkpoint.sstate|resume/native-roundtrip.sstate|g' \
             "$WORK/probe-load.lua" > "$WORK/probe-load-native.lua"
+          python3 - "$WORK/probe-load-native.lua" <<'PY'
+          import sys
+          from pathlib import Path
+          p = Path(sys.argv[1])
+          source = p.read_text()
+          old = '''                  if post_restore_frames == 60 then
+                      stop_at_safe_tick("restore-post-60", post_restore_frames, false)
+                  elseif post_restore_frames == 180 then
+                      stop_at_safe_tick("restore-post-180", post_restore_frames, true)
+          '''
+          new = '''                  if post_restore_frames == 180 then
+                      stop_at_safe_tick("restore-post-180", post_restore_frames, true)
+          '''
+          if old not in source:
+              raise SystemExit("Native roundtrip pause block not found")
+          p.write_text(source.replace(old, new, 1))
+          print("SAVESTATE_PROBE_NATIVE_ROUNDTRIP=continuous_to_180_vsync")
+          PY
           echo "PROBE_SCRIPTS_READY=1" | tee -a "$WORK/captures/diagnostic-summary.txt"
 
       - name: Run isolated one-factor-at-a-time emulator probes
@@ -452,7 +470,9 @@ jobs:
               rc=$?
               if grep -Eq "received signal SIGSEGV|Program received signal SIGSEGV" "$WORK/logs/$phase-stdout.log"; then rc=139; fi
             else
-              timeout --signal=TERM --kill-after=5s 60s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+              limit=60
+            if [ "$phase" = "F-load-native-roundtrip-state" ]; then limit=100; fi
+            timeout --signal=TERM --kill-after=5s "${limit}s" stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
                 -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
                 -memcard1 "$WORK/cards/naruto-storymode.mcd" -exec "$PAD_SETUP" \
                 -dofile "$WORK/$lua_file" -softgpu -dynarec -stdout -lua_stdout \
