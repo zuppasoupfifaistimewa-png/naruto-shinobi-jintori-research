@@ -154,7 +154,7 @@ jobs:
           )
           cat > "$WORK/gpu-traffic.lua" <<'LUA'
           local frame_count = 0
-          local stop_frame = 10000
+          local stop_frame = 11000
           local pad = PCSX.SIO0.slots[1].pads[1]
           local buttons = PCSX.CONSTS.PAD.BUTTON
           local input_sequence = {
@@ -173,7 +173,8 @@ jobs:
           local input_index = 1
           local story_circle2_pressed = false
           local story_circle3_pressed = false
-          local capture_targets = { [2599]=true, [2649]=true, [2650]=true, [2660]=true, [2670]=true, [2680]=true, [2690]=true, [2700]=true, [2709]=true, [2710]=true, [2715]=true, [2720]=true, [2730]=true, [2739]=true, [2740]=true, [2745]=true, [2749]=true, [2750]=true, [2760]=true, [2770]=true, [2779]=true, [2780]=true, [2790]=true, [2800]=true, [2809]=true, [2810]=true, [2820]=true, [2850]=true, [2900]=true, [2950]=true, [2999]=true, [3199]=true, [3399]=true, [3599]=true, [3999]=true, [4499]=true, [4999]=true, [5499]=true, [5999]=true, [6099]=true, [6100]=true, [6110]=true, [6129]=true, [6130]=true, [6140]=true, [6200]=true, [6399]=true, [6799]=true, [7199]=true, [7599]=true, [7999]=true, [8499]=true, [8999]=true, [9099]=true, [9199]=true, [9200]=true, [9229]=true, [9230]=true, [9240]=true, [9299]=true, [9499]=true, [9999]=true }
+          local story_circle4_pressed = false
+          local capture_targets = { [2599]=true, [2649]=true, [2650]=true, [2660]=true, [2670]=true, [2680]=true, [2690]=true, [2700]=true, [2709]=true, [2710]=true, [2715]=true, [2720]=true, [2730]=true, [2739]=true, [2740]=true, [2745]=true, [2749]=true, [2750]=true, [2760]=true, [2770]=true, [2779]=true, [2780]=true, [2790]=true, [2800]=true, [2809]=true, [2810]=true, [2820]=true, [2850]=true, [2900]=true, [2950]=true, [2999]=true, [3199]=true, [3399]=true, [3599]=true, [3999]=true, [4499]=true, [4999]=true, [5499]=true, [5999]=true, [6099]=true, [6100]=true, [6110]=true, [6129]=true, [6130]=true, [6140]=true, [6200]=true, [6399]=true, [6799]=true, [7199]=true, [7599]=true, [7999]=true, [8499]=true, [8999]=true, [9099]=true, [9199]=true, [9200]=true, [9229]=true, [9230]=true, [9240]=true, [9299]=true, [9499]=true, [9999]=true, [10099]=true, [10199]=true, [10200]=true, [10229]=true, [10230]=true, [10240]=true, [10299]=true, [10499]=true, [10999]=true }
 
           local function apply_input(action)
               local expected = action.action == "press"
@@ -280,6 +281,26 @@ jobs:
                   apply_input({frame=9230, action="release", button=buttons.CIRCLE, name="CIRCLE3"})
                   story_circle3_pressed = false
               end
+              -- Continue only when frame 9999 matches the newly verified complete
+              -- dialogue line. This remains one isolated Circle tap.
+              if frame_count == 10200 then
+                  local gate_file = io.open("captures/story-dialog2-visual-gate.flag", "rb")
+                  local gate_status = "MISSING"
+                  if gate_file then
+                      gate_status = gate_file:read("*a") or "EMPTY"
+                      gate_file:close()
+                  end
+                  if gate_status:match("^PASS") then
+                      apply_input({frame=10200, action="press", button=buttons.CIRCLE, name="CIRCLE4"})
+                      story_circle4_pressed = true
+                      print("STORY_CIRCLE4_VISUAL_GATE=PASS frame=9999; next dialogue fingerprint matched")
+                  else
+                      print(string.format("STORY_CIRCLE4_SKIPPED frame=10200 visual_gate=%s", gate_status:gsub("[\\r\\n]", "")))
+                  end
+              elseif frame_count == 10230 and story_circle4_pressed then
+                  apply_input({frame=10230, action="release", button=buttons.CIRCLE, name="CIRCLE4"})
+                  story_circle4_pressed = false
+              end
               if capture_targets[frame_count] then capture_frame(frame_count) end
               if frame_count == 299 or frame_count == 1499 or frame_count == 2999 or frame_count == 5999 then capture_vram(frame_count) end
               if frame_count % 100 == 0 then
@@ -299,7 +320,7 @@ jobs:
                   end)
               end
           end)
-          print("GPU_TRAFFIC_PROBE=armed target_vsync=10000; Circle2 requires verified Mode Select screenshot; Circle3 at frame 9200 requires the verified opening-dialogue crop from frame 8999")
+          print("GPU_TRAFFIC_PROBE=armed target_vsync=11000; Circle2/3 require verified visual gates; Circle4 at frame 10200 requires the verified next-dialogue crop from frame 9999")
           LUA
 
           timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
@@ -416,6 +437,46 @@ jobs:
                 + " frame=8999 mode_select_gate_passed=" + str(passed).lower()
                 + " stable_scene_crop_match=" + str(dialog_image_ok).lower()
                 + " crop_sha256=" + dialog_hash, flush=True)
+
+          # Gate one additional Circle on the full next-dialogue line verified at
+          # frame 9999 in the previous experiment. The animated Circle icon is excluded.
+          next_raw_path = Path("captures/raw/frame-009999.raw")
+          next_flag_path = Path("captures/story-dialog2-visual-gate.flag")
+          next_flag_path.unlink(missing_ok=True)
+          next_deadline = time.monotonic() + 3600
+          while time.monotonic() < next_deadline:
+              if next_raw_path.exists() and next_raw_path.stat().st_size == expected_size:
+                  next_raw = next_raw_path.read_bytes()
+                  if len(next_raw) == expected_size:
+                      break
+              if not Path(f"/proc/{emu_pid}").exists():
+                  next_flag_path.write_text("FAIL\\n", encoding="ascii")
+                  print("STORY_DIALOG2_VISUAL_GATE=FAIL reason=emulator_exited_before_frame9999", flush=True)
+                  raise SystemExit(0)
+              time.sleep(0.2)
+          else:
+              next_flag_path.write_text("FAIL\\n", encoding="ascii")
+              print("STORY_DIALOG2_VISUAL_GATE=FAIL reason=timeout_waiting_for_frame9999", flush=True)
+              raise SystemExit(0)
+
+          next_rgb = bytearray()
+          for pos in range(0, len(next_raw), 2):
+              word = next_raw[pos] | (next_raw[pos + 1] << 8)
+              next_rgb.extend(((word & 31) * 255 // 31,
+                               ((word >> 5) & 31) * 255 // 31,
+                               ((word >> 10) & 31) * 255 // 31))
+          next_crop = bytearray()
+          for y in range(240):
+              next_crop.extend(next_rgb[(y * 320) * 3:(y * 320 + 280) * 3])
+          next_hash = hashlib.sha256(next_crop).hexdigest()
+          expected_next_dialog = "5bd1980e664d03088841aefdb2841a282abbe42833f3d5ee9574f04acf29e66d"
+          next_image_ok = next_hash == expected_next_dialog
+          next_passed = dialog_passed and next_image_ok
+          next_flag_path.write_text(("PASS" if next_passed else "FAIL") + "\\n", encoding="ascii")
+          print("STORY_DIALOG2_VISUAL_GATE=" + ("PASS" if next_passed else "FAIL")
+                + " frame=9999 previous_dialog_gate_passed=" + str(dialog_passed).lower()
+                + " stable_next_dialog_crop_match=" + str(next_image_ok).lower()
+                + " crop_sha256=" + next_hash, flush=True)
           PY
           visual_gate_pid=$!
 
