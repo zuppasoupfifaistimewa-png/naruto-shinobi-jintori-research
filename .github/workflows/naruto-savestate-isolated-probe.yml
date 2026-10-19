@@ -173,7 +173,7 @@ jobs:
           end
 
           local pending = false
-          local vsync = PCSX.Events.createEventListener("GPU::Vsync", function()
+          _G.savestateProbeVsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
               frame_count = frame_count + 1
               if frame_count == 240 and not pending then
                   pending = true
@@ -218,7 +218,7 @@ jobs:
               print(string.format("SAVESTATE_PROBE_SCREENSHOT_CAPTURED=1 name=%s frame=%d", name, n))
           end
 
-          local loaded_listener = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
+          _G.savestateProbeLoadedListener = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
               state_loaded = true
               post_restore_frames = 0
               print("SAVESTATE_PROBE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded")
@@ -247,7 +247,7 @@ jobs:
               end)
           end
 
-          local gpu_listener = PCSX.Events.createEventListener("GPU::Vsync", function()
+          _G.savestateProbeGpuListener = PCSX.Events.createEventListener("GPU::Vsync", function()
               if not first_vsync_seen then
                   first_vsync_seen = true
                   frame_count = frame_count + 1
