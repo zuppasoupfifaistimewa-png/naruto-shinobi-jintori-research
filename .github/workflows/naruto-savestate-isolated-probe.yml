@@ -405,24 +405,13 @@ jobs:
           LUA
           sed 's|resume/storymode-checkpoint.sstate|resume/native-roundtrip.sstate|g' \
             "$WORK/probe-load.lua" > "$WORK/probe-load-native.lua"
-          python3 - "$WORK/probe-load-native.lua" <<'PY'
-          import sys
-          from pathlib import Path
-          p = Path(sys.argv[1])
-          source = p.read_text()
-          old = '''                  if post_restore_frames == 60 then
-                      stop_at_safe_tick("restore-post-60", post_restore_frames, false)
-                  elseif post_restore_frames == 180 then
-                      stop_at_safe_tick("restore-post-180", post_restore_frames, true)
-          '''
-          new = '''                  if post_restore_frames == 180 then
-                      stop_at_safe_tick("restore-post-180", post_restore_frames, true)
-          '''
-          if old not in source:
-              raise SystemExit("Native roundtrip pause block not found")
-          p.write_text(source.replace(old, new, 1))
-          print("SAVESTATE_PROBE_NATIVE_ROUNDTRIP=continuous_to_180_vsync")
-          PY
+          sed -i \
+            -e '/if post_restore_frames == 60 then/d' \
+            -e '/stop_at_safe_tick("restore-post-60"/d' \
+            -e 's/elseif post_restore_frames == 180 then/if post_restore_frames == 180 then/' \
+            "$WORK/probe-load-native.lua"
+          grep -q 'if post_restore_frames == 180 then' "$WORK/probe-load-native.lua"
+          ! grep -q 'restore-post-60' "$WORK/probe-load-native.lua"
           echo "PROBE_SCRIPTS_READY=1" | tee -a "$WORK/captures/diagnostic-summary.txt"
 
       - name: Run isolated one-factor-at-a-time emulator probes
