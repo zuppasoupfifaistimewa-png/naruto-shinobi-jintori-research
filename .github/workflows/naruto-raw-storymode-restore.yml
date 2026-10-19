@@ -354,7 +354,9 @@ jobs:
                   except Exception:
                       source_ok = False
               loaded = "PASS" if "STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded" in logs else "FAIL"
-              compare = "PASS" if "STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS" in (root / "storymode-restore-comparison.txt").read_text(errors="replace") if (root / "storymode-restore-comparison.txt").exists() else False else "FAIL"
+              compare_path = root / "storymode-restore-comparison.txt"
+              compare_text = compare_path.read_text(errors="replace") if compare_path.exists() else ""
+              compare = "PASS" if "STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS" in compare_text else "FAIL"
               post180 = "PASS" if "STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180" in logs else "FAIL"
               continuation = "PASS" if "STORY_RAW_RESTORE_CROSS_RUN=PASS" in logs else "FAIL"
               manifest = [
