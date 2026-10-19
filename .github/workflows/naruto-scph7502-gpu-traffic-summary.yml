@@ -1,7 +1,12 @@
-name: Naruto SCPH-7502 GPU traffic summary
+name: Naruto SCPH-7502 Story Mode playthrough
 
 on:
   workflow_dispatch:
+    inputs:
+      resume_run_id:
+        description: "Optional prior run ID containing a sanitized private Story Mode checkpoint"
+        required: false
+        type: string
   push:
     branches: [main]
     paths:
@@ -9,6 +14,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: naruto-scph7502-gpu-traffic-summary
@@ -17,14 +23,14 @@ concurrency:
 jobs:
   gpu-traffic-summary:
     runs-on: ubuntu-26.04
-    timeout-minutes: 100
+    timeout-minutes: 360
     steps:
       - name: Install private runtime requirements
         shell: bash
         run: |
           set -euo pipefail
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils imagemagick mesa-utils libgl1-mesa-dri python3 python3-pil
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil
 
       - name: Download and verify private runtime assets
         shell: bash
@@ -109,21 +115,32 @@ jobs:
           echo "ROM/CUE/emulator hashes verified; BIOS=SCPH-7502"
           echo "EMULATOR_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
 
-      - name: Skip each verified Story dialogue with Start and observe to VSync 11000
-        env:
-          GPU_BACKEND_PROBE: ${{ contains(github.event.head_commit.message, '[openglgpu-probe]') }}
+      - name: Restore private Story Mode checkpoint
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.resume_run_id != '' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-checkpoint-private
+          run-id: ${{ inputs.resume_run_id }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: ${{ runner.temp }}/naruto-scph7502-gpu-traffic/resume
+
+      - name: Play Story Mode, skip detected dialogue with Start, checkpoint and observe up to VSync 50000
         shell: bash
         run: |
           set -euo pipefail
           GPU_BACKEND_FLAG="-softgpu"
-          GPU_BACKEND_TIMEOUT="4800s"
-          if [[ "${GPU_BACKEND_PROBE:-false}" == "true" ]]; then
-            GPU_BACKEND_FLAG="-openglgpu"
-            GPU_BACKEND_TIMEOUT="170s"
-          fi
+          GPU_BACKEND_TIMEOUT="20400s" # 5h40m; reserve remaining job time for sanitize/upload/cleanup
           echo "GPU_BACKEND_SELECTED=$GPU_BACKEND_FLAG"
           echo "GPU_BACKEND_TIMEOUT=$GPU_BACKEND_TIMEOUT"
           cd "$WORK"
+          RESUME_MODE=false
+          if [ -f "$WORK/resume/storymode-checkpoint.sstate" ]; then
+            RESUME_MODE=true
+            echo "STORY_RESUME_ARTIFACT=present"
+          else
+            echo "STORY_RESUME_ARTIFACT=absent"
+          fi
           Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
           xvfb_pid=$!
           emu_pid=""
@@ -139,8 +156,7 @@ jobs:
           mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME"
           for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
           xdpyinfo -display "$DISPLAY" >/dev/null
-          echo "HOST_GL=software llvmpipe requested; no GL/GLSL version override"
-          glxinfo -B 2>/dev/null | grep -E 'OpenGL vendor string|OpenGL renderer string|OpenGL (core profile )?version string' || true
+          echo "HOST_DISPLAY_READY=1; emulator backend remains SoftGPU"
 
           PAD_SETUP=$(cat <<'LUA'
           PCSX.settings.pads[1].DeviceType = 'Analog'
@@ -154,10 +170,28 @@ jobs:
           )
           cat > "$WORK/gpu-traffic.lua" <<'LUA'
           local frame_count = 0
-          local stop_frame = 11000
+          local stop_frame = 50000
           local pad = PCSX.SIO0.slots[1].pads[1]
           local buttons = PCSX.CONSTS.PAD.BUTTON
-          local input_sequence = {
+          local resume_mode = false
+          local resume_open_ok, resume_file = pcall(function()
+              return Support.File.open("resume/storymode-checkpoint.sstate")
+          end)
+          if resume_open_ok and resume_file then
+              local load_ok, load_err = pcall(function() PCSX.loadSaveState(resume_file) end)
+              resume_file:close()
+              if load_ok then
+                  resume_mode = true
+                  print("STORY_SAVESTATE_LOAD_REQUESTED=1")
+              else
+                  print("STORY_SAVESTATE_LOAD_ERROR=" .. tostring(load_err))
+              end
+          else
+              print("STORY_SAVESTATE_LOAD_REQUESTED=0; cold boot sequence enabled")
+          end
+          local input_sequence = {}
+          if not resume_mode then
+              input_sequence = {
               -- Start is sent only after the title prompt is known to be visible.
               -- The menu is initially on はじめから; Down then Up tests D-pad navigation
               -- and returns the selection to はじめから before Circle confirms it.
@@ -169,11 +203,11 @@ jobs:
               {frame=2750, action="release", button=buttons.UP, name="UP"},
               {frame=2780, action="press", button=buttons.CIRCLE, name="CIRCLE"},
               {frame=2810, action="release", button=buttons.CIRCLE, name="CIRCLE"},
-          }
+              }
+          end
           local input_index = 1
           local story_circle2_pressed = false
-          local story_dialog1_start_pressed = false
-          local story_dialog2_start_pressed = false
+          local auto_start_release_frame = nil
           local capture_targets = { [2599]=true, [2649]=true, [2650]=true, [2660]=true, [2670]=true, [2680]=true, [2690]=true, [2700]=true, [2709]=true, [2710]=true, [2715]=true, [2720]=true, [2730]=true, [2739]=true, [2740]=true, [2745]=true, [2749]=true, [2750]=true, [2760]=true, [2770]=true, [2779]=true, [2780]=true, [2790]=true, [2800]=true, [2809]=true, [2810]=true, [2820]=true, [2850]=true, [2900]=true, [2950]=true, [2999]=true, [3199]=true, [3399]=true, [3599]=true, [3999]=true, [4499]=true, [4999]=true, [5499]=true, [5999]=true, [6099]=true, [6100]=true, [6110]=true, [6129]=true, [6130]=true, [6140]=true, [6200]=true, [6399]=true, [6799]=true, [7199]=true, [7599]=true, [7999]=true, [8499]=true, [8999]=true, [9099]=true, [9199]=true, [9200]=true, [9229]=true, [9230]=true, [9240]=true, [9299]=true, [9499]=true, [9999]=true, [10099]=true, [10199]=true, [10200]=true, [10229]=true, [10230]=true, [10240]=true, [10299]=true, [10499]=true, [10999]=true }
 
           local function apply_input(action)
@@ -225,8 +259,39 @@ jobs:
               if not ok then print(string.format("GPU_SCREENSHOT_CAPTURE frame=%d status=ERROR", n)) end
           end
 
-          PCSX.GPU.startDump("captures/raw/runtime.gpudump")
-          print(string.format("GPU_DUMP_ARMED=%s", tostring(PCSX.GPU.isDumpArmed())))
+          -- Rolling screenshot for a lightweight visual dialogue detector.
+          -- This raw frame is local-only and removed before artifact upload.
+          local function capture_dialog_watch(n)
+              local ok = pcall(function()
+                  local shot = PCSX.GPU.takeScreenShot()
+                  local bpp = (shot.bpp == 0) and 16 or 24
+                  local raw = assert(Support.File.open("captures/raw/dialog-watch.raw", "TRUNCATE"),
+                      "cannot create dialogue-watch frame")
+                  raw:writeMoveSlice(shot.data)
+                  raw:close()
+                  local meta = assert(io.open("captures/dialog-watch.json", "wb"),
+                      "cannot create dialogue-watch metadata")
+                  meta:write(string.format(
+                      '{"frame":%d,"width":%d,"height":%d,"bpp":%d,"expected_bytes":%d}\n',
+                      n, shot.width, shot.height, bpp, shot.width * shot.height * bpp / 8))
+                  meta:close()
+              end)
+              if not ok then print(string.format("STORY_DIALOG_WATCH_CAPTURE_ERROR frame=%d", n)) end
+          end
+
+          local function save_checkpoint(n)
+              local ok, err = pcall(function()
+                  local state = PCSX.createSaveState()
+                  local file = assert(Support.File.open("captures/raw/storymode-checkpoint.raw", "TRUNCATE"),
+                      "cannot create temporary savestate")
+                  file:writeMoveSlice(state)
+                  file:close()
+                  print(string.format("STORY_SAVESTATE_CAPTURE frame=%d status=ok", n))
+              end)
+              if not ok then
+                  print(string.format("STORY_SAVESTATE_CAPTURE frame=%d status=ERROR detail=%s", n, tostring(err)))
+              end
+          end
 
           shellReachedListener = PCSX.Events.createEventListener("ExecutionFlow::ShellReached", function()
               print("EXECUTION_EVENT=ShellReached")
@@ -243,7 +308,7 @@ jobs:
               end
               -- Only confirm Story Mode after the frame-5999 screenshot matches
               -- the previously verified Mode Select header and selected Story Mode crop.
-              if frame_count == 6100 then
+              if frame_count == 6100 and not resume_mode then
                   local gate_file = io.open("captures/story-select-visual-gate.flag", "rb")
                   local gate_status = "MISSING"
                   if gate_file then
@@ -261,412 +326,228 @@ jobs:
                   apply_input({frame=6130, action="release", button=buttons.CIRCLE, name="CIRCLE2"})
                   story_circle2_pressed = false
               end
-              -- The Circle tap that advances the opening dialogue is permitted only
-              -- after the live screenshot gate verifies frame 8999 against the known scene.
-              if frame_count == 9200 then
-                  local gate_file = io.open("captures/story-dialog-visual-gate.flag", "rb")
-                  local gate_status = "MISSING"
-                  if gate_file then
-                      gate_status = gate_file:read("*a") or "EMPTY"
-                      gate_file:close()
-                  end
-                  if gate_status:match("^PASS") then
-                      apply_input({frame=9200, action="press", button=buttons.START, name="START_DIALOG1"})
-                      story_dialog1_start_pressed = true
-                      print("STORY_DIALOG1_START_VISUAL_GATE=PASS frame=8999; opening-dialogue screenshot crop matched")
-                  else
-                      print(string.format("STORY_CIRCLE3_SKIPPED frame=9200 visual_gate=%s", gate_status:gsub("[\\r\\n]", "")))
-                  end
-              elseif frame_count == 9230 and story_dialog1_start_pressed then
-                  apply_input({frame=9230, action="release", button=buttons.START, name="START_DIALOG1"})
-                  story_dialog1_start_pressed = false
+              -- Skip every dialogue with START, never Circle. The visual watcher
+              -- requests a single tap only after a stable non-empty dialog panel appears.
+              if auto_start_release_frame and frame_count >= auto_start_release_frame then
+                  apply_input({frame=frame_count, action="release", button=buttons.START, name="START_DIALOG"})
+                  capture_frame(frame_count)
+                  print(string.format("STORY_DIALOG_START_RELEASE frame=%d", frame_count))
+                  auto_start_release_frame = nil
               end
-              -- Continue only when frame 9999 matches the newly verified complete
-              -- dialogue line. This remains one isolated Circle tap.
-              if frame_count == 10200 then
-                  local gate_file = io.open("captures/story-dialog2-visual-gate.flag", "rb")
-                  local gate_status = "MISSING"
-                  if gate_file then
-                      gate_status = gate_file:read("*a") or "EMPTY"
-                      gate_file:close()
+              if frame_count % 5 == 0 and not auto_start_release_frame then
+                  local request_file = io.open("captures/raw/dialog-start-request.flag", "rb")
+                  if request_file then
+                      local request = request_file:read("*a") or ""
+                      request_file:close()
+                      os.remove("captures/raw/dialog-start-request.flag")
+                      if request:match("^START") then
+                          capture_frame(frame_count)
+                          apply_input({frame=frame_count, action="press", button=buttons.START, name="START_DIALOG"})
+                          auto_start_release_frame = frame_count + 30
+                          print(string.format("STORY_DIALOG_START_PRESS frame=%d request=%s",
+                              frame_count, request:gsub("[\\r\n]", "")))
+                      end
                   end
-                  if gate_status:match("^PASS") then
-                      apply_input({frame=10200, action="press", button=buttons.START, name="START_DIALOG2"})
-                      story_dialog2_start_pressed = true
-                      print("STORY_DIALOG2_START_VISUAL_GATE=PASS frame=9999; next dialogue fingerprint matched")
-                  else
-                      print(string.format("STORY_CIRCLE4_SKIPPED frame=10200 visual_gate=%s", gate_status:gsub("[\\r\\n]", "")))
-                  end
-              elseif frame_count == 10230 and story_dialog2_start_pressed then
-                  apply_input({frame=10230, action="release", button=buttons.START, name="START_DIALOG2"})
-                  story_dialog2_start_pressed = false
               end
-              if capture_targets[frame_count] then capture_frame(frame_count) end
-              if frame_count == 299 or frame_count == 1499 or frame_count == 2999 or frame_count == 5999 then capture_vram(frame_count) end
+              if frame_count % 5 == 0 then
+                  local pause_file = io.open("captures/raw/story-nondialog-stable.flag", "rb")
+                  if pause_file then
+                      local note = pause_file:read("*a") or ""
+                      pause_file:close()
+                      capture_frame(frame_count)
+                      save_checkpoint(frame_count)
+                      print(string.format("STORY_PAUSE_FOR_INSPECTION frame=%d note=%s",
+                          frame_count, note:gsub("[\\r\n]", "")))
+                      PCSX.nextTick(function() PCSX.quit(0) end)
+                      return
+                  end
+              end
+              if frame_count >= (resume_mode and 1 or 9000) and frame_count % 15 == 0 then
+                  local dialog_ok = resume_mode
+                  if not dialog_ok then
+                      local gate_file = io.open("captures/story-dialog-visual-gate.flag", "rb")
+                      if gate_file then
+                          dialog_ok = (gate_file:read("*a") or ""):match("^PASS") ~= nil
+                          gate_file:close()
+                      end
+                  end
+                  if dialog_ok then capture_dialog_watch(frame_count) end
+              end
+              if capture_targets[frame_count] or (frame_count >= 10000 and frame_count % 1000 == 0) then
+                  capture_frame(frame_count)
+              end
+              if frame_count > 0 and frame_count % 5000 == 0 and frame_count < stop_frame then
+                  save_checkpoint(frame_count)
+              end
               if frame_count % 100 == 0 then
                   print(string.format("GPU_TRAFFIC_VSYNC frame=%d guest_fps=%.4f dump_frames=%d",
                       frame_count, PCSX.GPU.getGuestFPS(), PCSX.GPU.getDumpFrames()))
               end
               if frame_count == stop_frame then
-                  PCSX.nextTick(function()
-                      local frames = PCSX.GPU.getDumpFrames()
-                      local recording = PCSX.GPU.isDumping()
-                      local armed = PCSX.GPU.isDumpArmed()
-                      PCSX.GPU.stopDump()
-                      print(string.format(
-                          "GPU_DUMP_STOP requested_frame=%d observed_vsync_count=%d dump_frames=%d was_recording=%s was_armed=%s",
-                          stop_frame, frame_count, frames, tostring(recording), tostring(armed)))
-                      PCSX.quit(0)
-                  end)
+                  save_checkpoint(frame_count)
+                  print(string.format("STORY_SESSION_FRAME_LIMIT_REACHED=%d", frame_count))
+                  PCSX.nextTick(function() PCSX.quit(0) end)
               end
           end)
-          print("GPU_TRAFFIC_PROBE=armed target_vsync=11000; Circle2 confirms Story Mode; each dialogue is skipped with a single gated Start tap (9200, 10200)")
+          print("STORY_PLAYTHROUGH=armed target_vsync=50000; SoftGPU; raw GPU dump, window capture, and GDB/RSP polling disabled")
           LUA
 
           timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
             stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
               -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
-              "$GPU_BACKEND_FLAG" -gdb -gdb-port 3333 -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+              "$GPU_BACKEND_FLAG" -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
               > "$WORK/pcsx.stdout" 2>&1 &
           emu_pid=$!
 
-          # A small live screenshot classifier acts as a safety gate for Circle #2.
-          # It reads only the temporary frame-5999 screenshot and emits a yes/no flag.
-          EMU_PID="$emu_pid" python3 -u - <<'PY' > "$WORK/captures/story-select-visual-gate-summary.txt" 2>&1 &
-          import hashlib
-          import os
-          import time
+          RESUME_MODE="$RESUME_MODE" EMU_PID="$emu_pid" python3 -u - <<'PY' > "$WORK/captures/story-dialog-watch-summary.txt" 2>&1 &
+          import hashlib, json, os, time
           from pathlib import Path
-
-          raw_path = Path("captures/raw/frame-005999.raw")
-          flag_path = Path("captures/story-select-visual-gate.flag")
-          flag_path.unlink(missing_ok=True)
+          from PIL import Image
           emu_pid = int(os.environ["EMU_PID"])
-          expected_size = 320 * 240 * 2
-          deadline = time.monotonic() + 4700
+          resume_mode = os.environ.get("RESUME_MODE", "false").lower() == "true"
+          root = Path("captures")
+          raw_dir = root / "raw"
+          select_raw, select_flag = raw_dir / "frame-005999.raw", root / "story-select-visual-gate.flag"
+          intro_raw, intro_flag = raw_dir / "frame-008999.raw", root / "story-dialog-visual-gate.flag"
+          live_raw, live_meta = raw_dir / "dialog-watch.raw", root / "dialog-watch.json"
+          start_flag, pause_flag = raw_dir / "dialog-start-request.flag", raw_dir / "story-nondialog-stable.flag"
 
-          def fail(reason):
-              flag_path.write_text("FAIL\n", encoding="ascii")
-              print("STORY_SELECT_VISUAL_GATE=FAIL reason=" + reason, flush=True)
+          def fail(flag, label, reason):
+              flag.write_text("FAIL\n", encoding="ascii")
+              print(label + "=FAIL reason=" + reason, flush=True)
 
-          while time.monotonic() < deadline:
-              if raw_path.exists() and raw_path.stat().st_size == expected_size:
-                  raw = raw_path.read_bytes()
-                  if len(raw) == expected_size:
-                      break
-              if not Path(f"/proc/{emu_pid}").exists():
-                  fail("emulator_exited_before_frame5999")
-                  raise SystemExit(0)
-              time.sleep(0.2)
-          else:
-              fail("timeout_waiting_for_frame5999")
-              raise SystemExit(0)
-
-          # Convert the captured little-endian RGB555 framebuffer exactly as the
-          # artifact PNG converter does, then hash two screenshot crops.
-          rgb = bytearray()
-          for pos in range(0, len(raw), 2):
-              word = raw[pos] | (raw[pos + 1] << 8)
-              rgb.extend(((word & 31) * 255 // 31,
-                          ((word >> 5) & 31) * 255 // 31,
-                          ((word >> 10) & 31) * 255 // 31))
-
-          def crop_hash(box):
-              x0, y0, x1, y1 = box
-              crop = bytearray()
-              for y in range(y0, y1):
-                  crop.extend(rgb[(y * 320 + x0) * 3:(y * 320 + x1) * 3])
-              return hashlib.sha256(crop).hexdigest()
-
-          header_hash = crop_hash((0, 10, 125, 44))
-          story_hash = crop_hash((90, 119, 232, 157))
-          expected_header = "300d704e0f1765f7aec4480d7994e91bdaaf8d161c9611ca0e3d78955fc9e9c2"
-          expected_story = {
-              "5ee1da16985ef0b15142e8ad3c69e86042bfa805e64568372fdf82254a2278d3",
-              "c50e86a84853a63d9ab15fbe2897774fb547c825dbc08560d924fd2e1bd81998",
-              "58e8b8487d2c9e361f893b93352a199660adcec3155ef56a6e016df4b1c82448",
-          }
-          header_ok = header_hash == expected_header
-          story_ok = story_hash in expected_story
-          passed = header_ok and story_ok
-          flag_path.write_text(("PASS" if passed else "FAIL") + "\n", encoding="ascii")
-          print("STORY_SELECT_VISUAL_GATE=" + ("PASS" if passed else "FAIL")
-                + " frame=5999 header_crop_match=" + str(header_ok).lower()
-                + " selected_story_crop_match=" + str(story_ok).lower()
-                + " screenshot_bytes=" + str(len(raw)), flush=True)
-
-          # Gate the next Circle tap on the actual opening-dialogue screenshot, not
-          # on emulator input readback or the workflow result.
-          dialog_raw_path = Path("captures/raw/frame-008999.raw")
-          dialog_flag_path = Path("captures/story-dialog-visual-gate.flag")
-          dialog_flag_path.unlink(missing_ok=True)
-          dialog_deadline = time.monotonic() + 3600
-          while time.monotonic() < dialog_deadline:
-              if dialog_raw_path.exists() and dialog_raw_path.stat().st_size == expected_size:
-                  dialog_raw = dialog_raw_path.read_bytes()
-                  if len(dialog_raw) == expected_size:
-                      break
-              if not Path(f"/proc/{emu_pid}").exists():
-                  dialog_flag_path.write_text("FAIL\n", encoding="ascii")
-                  print("STORY_DIALOG_VISUAL_GATE=FAIL reason=emulator_exited_before_frame8999", flush=True)
-                  raise SystemExit(0)
-              time.sleep(0.2)
-          else:
-              dialog_flag_path.write_text("FAIL\n", encoding="ascii")
-              print("STORY_DIALOG_VISUAL_GATE=FAIL reason=timeout_waiting_for_frame8999", flush=True)
-              raise SystemExit(0)
-
-          dialog_rgb = bytearray()
-          for pos in range(0, len(dialog_raw), 2):
-              word = dialog_raw[pos] | (dialog_raw[pos + 1] << 8)
-              dialog_rgb.extend(((word & 31) * 255 // 31,
-                                 ((word >> 5) & 31) * 255 // 31,
-                                 ((word >> 10) & 31) * 255 // 31))
-          # Ignore the animated Circle icon at the lower-right; the remaining
-          # 280x240 scene and dialogue text are identical in verified frames 6799-8999.
-          crop = bytearray()
-          for y in range(240):
-              crop.extend(dialog_rgb[(y * 320) * 3:(y * 320 + 280) * 3])
-          dialog_hash = hashlib.sha256(crop).hexdigest()
-          expected_dialog = "0acf03aa8feba7130a39c8efd0cdad2666290aa5e99466a297495f3fb01f90eb"
-          dialog_image_ok = dialog_hash == expected_dialog
-          dialog_passed = passed and dialog_image_ok
-          dialog_flag_path.write_text(("PASS" if dialog_passed else "FAIL") + "\n", encoding="ascii")
-          print("STORY_DIALOG_VISUAL_GATE=" + ("PASS" if dialog_passed else "FAIL")
-                + " frame=8999 mode_select_gate_passed=" + str(passed).lower()
-                + " stable_scene_crop_match=" + str(dialog_image_ok).lower()
-                + " crop_sha256=" + dialog_hash, flush=True)
-
-          # Gate one additional Circle on the full next-dialogue line verified at
-          # frame 9999 in the previous experiment. The animated Circle icon is excluded.
-          next_raw_path = Path("captures/raw/frame-009999.raw")
-          next_flag_path = Path("captures/story-dialog2-visual-gate.flag")
-          next_flag_path.unlink(missing_ok=True)
-          next_deadline = time.monotonic() + 3600
-          while time.monotonic() < next_deadline:
-              if next_raw_path.exists() and next_raw_path.stat().st_size == expected_size:
-                  next_raw = next_raw_path.read_bytes()
-                  if len(next_raw) == expected_size:
-                      break
-              if not Path(f"/proc/{emu_pid}").exists():
-                  next_flag_path.write_text("FAIL\\n", encoding="ascii")
-                  print("STORY_DIALOG2_VISUAL_GATE=FAIL reason=emulator_exited_before_frame9999", flush=True)
-                  raise SystemExit(0)
-              time.sleep(0.2)
-          else:
-              next_flag_path.write_text("FAIL\\n", encoding="ascii")
-              print("STORY_DIALOG2_VISUAL_GATE=FAIL reason=timeout_waiting_for_frame9999", flush=True)
-              raise SystemExit(0)
-
-          next_rgb = bytearray()
-          for pos in range(0, len(next_raw), 2):
-              word = next_raw[pos] | (next_raw[pos + 1] << 8)
-              next_rgb.extend(((word & 31) * 255 // 31,
-                               ((word >> 5) & 31) * 255 // 31,
-                               ((word >> 10) & 31) * 255 // 31))
-          next_crop = bytearray()
-          for y in range(240):
-              next_crop.extend(next_rgb[(y * 320) * 3:(y * 320 + 280) * 3])
-          next_hash = hashlib.sha256(next_crop).hexdigest()
-          expected_next_dialog = "5bd1980e664d03088841aefdb2841a282abbe42833f3d5ee9574f04acf29e66d"
-          next_image_ok = next_hash == expected_next_dialog
-          next_passed = dialog_passed and next_image_ok
-          next_flag_path.write_text(("PASS" if next_passed else "FAIL") + "\\n", encoding="ascii")
-          print("STORY_DIALOG2_VISUAL_GATE=" + ("PASS" if next_passed else "FAIL")
-                + " frame=9999 previous_dialog_gate_passed=" + str(dialog_passed).lower()
-                + " stable_next_dialog_crop_match=" + str(next_image_ok).lower()
-                + " crop_sha256=" + next_hash, flush=True)
-          PY
-          visual_gate_pid=$!
-
-          # Independently capture the actual non-root PCSX-Redux window.
-          # Screenshots remain in a private short-retention artifact.
-          (
-            previous=0
-            for second in 10 25 40 55 70 85 100 140 180 220 260 300 340 380 420 460 500 540 580 620 660 700 740 780 820 860 900 940 980 1000 1040 1080 1120 1160 1200 1240; do
-              sleep "$((second - previous))"
-              previous="$second"
-              kill -0 "$emu_pid" 2>/dev/null || break
-              tree="$(xwininfo -root -tree 2>/dev/null || true)"
-              root_hex="$(xwininfo -root 2>/dev/null | awk '/Window id:/{print $4; exit}')"
-              [ -n "$root_hex" ] || continue
-              root_id=$((root_hex))
-              winid=""
-              best_area=0
-              while IFS= read -r id; do
-                [ -n "$id" ] || continue
-                id_num=$((id))
-                [ "$id_num" -ne "$root_id" ] || continue
-                stats="$(xwininfo -id "$id" 2>/dev/null || true)"
-                w="$(printf '%s\\n' "$stats" | awk '/Width:/{print $2; exit}')"
-                h="$(printf '%s\\n' "$stats" | awk '/Height:/{print $2; exit}')"
-                name="$(printf '%s\\n' "$stats" | sed -n 's/.*Window id: [^"]*"\\(.*\\)".*/\\1/p' | head -n 1)"
-                case "$w:$h" in *[!0-9:]*|:*) continue;; esac
-                area=$((w*h))
-                if [ "$w" -ge 400 ] && [ "$h" -ge 250 ] && [ "$area" -gt "$best_area" ]; then
-                  winid="$id_num"; best_area="$area"; best_name="$name"
-                fi
-              done < <(printf '%s\\n' "$tree" | awk '$1 ~ /^0x[[:xdigit:]]+$/ {print $1}')
-              if [ -n "$winid" ] && import -window "$winid" "$WORK/captures/window-$second.png" 2>/dev/null; then
-                identify -format "WINDOW_FRAME second=$second name=$best_name size=%wx%h colors=%k mean=%[mean] stddev=%[standard-deviation]\\n" "$WORK/captures/window-$second.png"
-                echo "WINDOW_CAPTURE=ok second=$second xid=$winid"
-              else
-                echo "WINDOW_CAPTURE=unavailable second=$second"
-              fi
-            done
-          ) &
-          window_sampler_pid=$!
-
-          # External minimal RSP client: low-rate PC-only samples, no breakpoints,
-          # no memory reads and no debugger callbacks in GPU::Vsync.
-          python3 -u - <<'PY' > "$WORK/rsp-progress-summary.txt" 2>&1 &
-          import socket, time
-          HOST, PORT = "127.0.0.1", 3333
-          started = time.monotonic()
-          def packet(payload):
-              raw = payload.encode("ascii")
-              return b"$" + raw + b"#" + f"{sum(raw)&255:02x}".encode("ascii")
-          def receive_packet(sock, timeout=3.0):
-              deadline = time.monotonic() + timeout
-              buf = bytearray()
+          def wait_raw(path, expected, label, seconds):
+              deadline = time.monotonic() + seconds
               while time.monotonic() < deadline:
-                  sock.settimeout(max(0.1, deadline-time.monotonic()))
-                  try:
-                      chunk = sock.recv(4096)
-                  except socket.timeout:
+                  if path.exists() and path.stat().st_size == expected:
+                      data = path.read_bytes()
+                      if len(data) == expected:
+                          return data
+                  if not Path(f"/proc/{emu_pid}").exists():
+                      raise RuntimeError("emulator_exited_before_" + label)
+                  time.sleep(0.15)
+              raise RuntimeError("timeout_waiting_for_" + label)
+
+          def to_rgb(raw, width, height, bpp):
+              if len(raw) != width * height * bpp // 8:
+                  raise ValueError("screenshot byte count mismatch")
+              if bpp == 16:
+                  rgb = bytearray()
+                  for pos in range(0, len(raw), 2):
+                      word = raw[pos] | (raw[pos+1] << 8)
+                      rgb.extend(((word & 31) * 255 // 31,
+                                  ((word >> 5) & 31) * 255 // 31,
+                                  ((word >> 10) & 31) * 255 // 31))
+                  return Image.frombytes("RGB", (width, height), bytes(rgb))
+              if bpp == 24:
+                  return Image.frombytes("RGB", (width, height), raw)
+              raise ValueError("unsupported screenshot depth")
+
+          def crop_hash(image, box):
+              return hashlib.sha256(image.crop(box).tobytes()).hexdigest()
+
+          passed, dialog_passed = resume_mode, resume_mode
+          if resume_mode:
+              select_flag.write_text("PASS\n", encoding="ascii")
+              intro_flag.write_text("PASS\n", encoding="ascii")
+              print("STORY_RESUME_STATE=present; startup visual gates bypassed", flush=True)
+          else:
+              try:
+                  raw = wait_raw(select_raw, 320*240*2, "frame5999", 4700)
+                  image = to_rgb(raw, 320, 240, 16)
+                  header_hash = crop_hash(image, (0, 10, 125, 44))
+                  story_hash = crop_hash(image, (90, 119, 232, 157))
+                  header_ok = header_hash == "300d704e0f1765f7aec4480d7994e91bdaaf8d161c9611ca0e3d78955fc9e9c2"
+                  story_ok = story_hash in {
+                      "5ee1da16985ef0b15142e8ad3c69e86042bfa805e64568372fdf82254a2278d3",
+                      "c50e86a84853a63d9ab15fbe2897774fb547c825dbc08560d924fd2e1bd81998",
+                      "58e8b8487d2c9e361f893b93352a199660adcec3155ef56a6e016df4b1c82448",
+                  }
+                  passed = header_ok and story_ok
+                  select_flag.write_text(("PASS" if passed else "FAIL") + "\n", encoding="ascii")
+                  print("STORY_SELECT_VISUAL_GATE=" + ("PASS" if passed else "FAIL")
+                        + " frame=5999 header_match=" + str(header_ok).lower()
+                        + " story_selection_match=" + str(story_ok).lower(), flush=True)
+                  raw2 = wait_raw(intro_raw, 320*240*2, "frame8999", 3600)
+                  image2 = to_rgb(raw2, 320, 240, 16)
+                  intro_hash = crop_hash(image2, (0, 0, 280, 240))
+                  intro_ok = intro_hash == "0acf03aa8feba7130a39c8efd0cdad2666290aa5e99466a297495f3fb01f90eb"
+                  dialog_passed = passed and intro_ok
+                  intro_flag.write_text(("PASS" if dialog_passed else "FAIL") + "\n", encoding="ascii")
+                  print("STORY_DIALOG_VISUAL_GATE=" + ("PASS" if dialog_passed else "FAIL")
+                        + " frame=8999 scene_match=" + str(intro_ok).lower()
+                        + " crop_sha256=" + intro_hash, flush=True)
+              except Exception as exc:
+                  fail(select_flag, "STORY_SELECT_VISUAL_GATE", str(exc))
+                  fail(intro_flag, "STORY_DIALOG_VISUAL_GATE", str(exc))
+                  raise SystemExit(0)
+
+          last_meta_frame, last_panel, last_stable_panel = -1, None, None
+          same_panel_samples, non_dialog_streak = 0, 0
+          dialog_seen, previous_request_hash = False, None
+          while Path(f"/proc/{emu_pid}").exists():
+              try:
+                  if not live_meta.exists() or not live_raw.exists():
+                      time.sleep(0.15)
                       continue
-                  if not chunk:
-                      raise ConnectionError("peer closed")
-                  buf.extend(chunk)
-                  start = buf.find(b"$")
-                  if start >= 0:
-                      mark = buf.find(b"#", start + 1)
-                      if mark >= 0 and len(buf) >= mark + 3:
-                          body = bytes(buf[start+1:mark])
-                          got = buf[mark+1:mark+3]
-                          del buf[:mark+3]
-                          want = f"{sum(body)&255:02x}".encode("ascii")
-                          if got.lower() != want:
-                              raise ValueError("checksum mismatch")
-                          return body.decode("ascii", "replace")
-              raise TimeoutError("no packet before deadline")
-          def request(sock, payload):
-              sock.sendall(packet(payload))
-              return receive_packet(sock)
-          def reg_value(value):
-              if len(value) != 8:
-                  return None
-              try:
-                  return int.from_bytes(bytes.fromhex(value), "little")
-              except ValueError:
-                  return None
-          decoded_windows = set()
-          def summarize_code_window(sock, pc):
-              if pc is None:
-                  return
-              base = pc & ~0x3f
-              if base in decoded_windows:
-                  return
-              decoded_windows.add(base)
-              try:
-                  payload = request(sock, f"m{base:x},40")
-                  if len(payload) != 128 or any(ch not in "0123456789abcdefABCDEF" for ch in payload):
-                      print("RSP_CODE_WINDOW status=invalid_memory_reply", flush=True)
-                      return
-                  data = bytes.fromhex(payload)
-                  families = {"branch":0, "conditional":0, "jump":0, "load":0, "store":0, "cop0":0, "cop2":0, "other":0}
-                  backward = 0
-                  backward_inside_window = 0
-                  sample_pc_is_control = False
-                  for offset in range(0, 64, 4):
-                      word = int.from_bytes(data[offset:offset+4], "little")
-                      op = (word >> 26) & 0x3f
-                      funct = word & 0x3f
-                      source = base + offset
-                      if op in (0x01,0x04,0x05,0x06,0x07,0x14,0x15,0x16,0x17):
-                          families["branch"] += 1
-                          families["conditional"] += 1
-                          imm = word & 0xffff
-                          signed_imm = imm if imm < 0x8000 else imm - 0x10000
-                          target = source + 4 + (signed_imm << 2)
-                          if target < source:
-                              backward += 1
-                              if base <= target < base + 64:
-                                  backward_inside_window += 1
-                          if source == pc:
-                              sample_pc_is_control = True
-                      elif op in (0x02,0x03):
-                          families["jump"] += 1
-                          if source == pc:
-                              sample_pc_is_control = True
-                      elif op == 0 and funct in (0x08,0x09):
-                          families["jump"] += 1
-                          if source == pc:
-                              sample_pc_is_control = True
-                      elif op in (0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x30,0x32):
-                          families["load"] += 1
-                      elif op in (0x28,0x29,0x2a,0x2b,0x2e,0x38,0x3a):
-                          families["store"] += 1
-                      elif op == 0x10:
-                          families["cop0"] += 1
-                      elif op == 0x12:
-                          families["cop2"] += 1
+                  meta = json.loads(live_meta.read_text())
+                  frame = int(meta["frame"])
+                  if frame == last_meta_frame:
+                      time.sleep(0.12)
+                      continue
+                  last_meta_frame = frame
+                  width, height, bpp = int(meta["width"]), int(meta["height"]), int(meta["bpp"])
+                  if live_raw.stat().st_size != int(meta["expected_bytes"]):
+                      time.sleep(0.1)
+                      continue
+                  image = to_rgb(live_raw.read_bytes(), width, height, bpp)
+                  sx, sy = width/320.0, height/240.0
+                  x = max(0, min(width-1, round(8*sx)))
+                  rows = [172,176,182,190,200,210,220,228]
+                  border_pixels = [image.getpixel((x,max(0,min(height-1,round(y*sy))))) for y in rows]
+                  border_hits = sum(1 for r,g,b in border_pixels if 30 < r < 120 and 10 < g < 80 and b < 35)
+                  text_box = (round(20*sx), round(178*sy), round(280*sx), round(210*sy))
+                  text_pixels = sum(1 for pix in image.crop(text_box).getdata() if max(pix) < 100)
+                  has_dialog = border_hits >= 6 and 60 <= text_pixels <= 5000
+                  nonblack = sum(1 for pix in image.getdata() if max(pix) > 12)
+                  unique_sample = len(set(image.resize((40,30)).getdata()))
+                  if has_dialog and dialog_passed:
+                      dialog_seen = True
+                      non_dialog_streak = 0
+                      panel_hash = crop_hash(image, (round(5*sx),round(166*sy),round(286*sx),round(233*sy)))
+                      same_panel_samples = same_panel_samples + 1 if panel_hash == last_panel else 1
+                      last_panel = panel_hash
+                      if same_panel_samples >= 3 and panel_hash != last_stable_panel and not start_flag.exists():
+                          last_stable_panel = panel_hash
+                          start_flag.write_text(f"START frame={frame} panel={panel_hash}\n", encoding="ascii")
+                          previous_request_hash = panel_hash
+                          print(f"STORY_DIALOG_DETECTED frame={frame} border_hits={border_hits} text_pixels={text_pixels} hash={panel_hash}; START requested", flush=True)
+                      elif same_panel_samples >= 8 and same_panel_samples % 8 == 0 and panel_hash == previous_request_hash and not start_flag.exists():
+                          start_flag.write_text(f"START_RETRY frame={frame} panel={panel_hash}\n", encoding="ascii")
+                          print(f"STORY_DIALOG_START_RETRY frame={frame} stable_samples={same_panel_samples} hash={panel_hash}", flush=True)
+                  else:
+                      if dialog_seen and nonblack > width*height*0.30 and unique_sample > 12:
+                          non_dialog_streak += 1
+                          last_panel, same_panel_samples = None, 0
+                          if non_dialog_streak >= 4:
+                              note = f"frame={frame} stable_non_dialog_samples={non_dialog_streak} width={width} height={height}"
+                              pause_flag.write_text(note + "\n", encoding="ascii")
+                              print("STORY_NON_DIALOG_STABLE=PASS " + note + "; pausing for visual inspection", flush=True)
+                              break
                       else:
-                          families["other"] += 1
-                  summary = " ".join(f"{k}={v}" for k,v in families.items())
-                  print(f"RSP_CODE_WINDOW bytes=64 region={region(pc)} backward_edges={backward} backward_edges_inside_window={backward_inside_window} sampled_pc_is_control_instruction={str(sample_pc_is_control).lower()} {summary}", flush=True)
+                          non_dialog_streak = 0
+                          if nonblack <= width*height*0.30:
+                              last_panel = None
+                          same_panel_samples = 0
               except Exception as exc:
-                  print(f"RSP_CODE_WINDOW status=unavailable error={type(exc).__name__}", flush=True)
-          def region(pc):
-              if pc is None:
-                  return "unavailable"
-              if 0xBFC00000 <= pc < 0xBFC80000 or 0x9FC00000 <= pc < 0x9FC80000:
-                  return "BIOS_ROM"
-              if 0x80010000 <= pc < 0x8006D800:
-                  return "MAIN_EXE_REGION"
-              if 0x80000000 <= pc < 0x80800000:
-                  return "RAM_OTHER"
-              if 0xA0000000 <= pc < 0xA0800000:
-                  return "RAM_UNCACHED"
-              return "OTHER"
-          sock = None
-          for attempt in range(20):
-              try:
-                  sock = socket.create_connection((HOST, PORT), timeout=1.0)
-                  break
-              except OSError:
-                  time.sleep(0.5)
-          if sock is None:
-              print("RSP_CONNECT=failed port=3333", flush=True)
-              raise SystemExit(0)
-          sock.settimeout(3.0)
-          print("RSP_CONNECT=connected port=3333", flush=True)
-          try:
-              try:
-                  caps = request(sock, "qSupported:multiprocess+")
-                  print("RSP_QSUPPORTED=received" if caps else "RSP_QSUPPORTED=empty", flush=True)
-              except Exception as exc:
-                  print("RSP_QSUPPORTED=error:" + type(exc).__name__, flush=True)
-              for index in range(50):
-                  if index:
-                      time.sleep(25)
-                  try:
-                      pc = reg_value(request(sock, "p25"))
-                      pc_text = "unavailable" if pc is None else f"0x{pc:08x}"
-                      print(f"RSP_PC_SAMPLE index={index} elapsed_s={time.monotonic()-started:.1f} pc={pc_text} region={region(pc)}", flush=True)
-                      if pc is not None:
-                          summarize_code_window(sock, pc)
-                  except Exception as exc:
-                      print(f"RSP_PC_SAMPLE index={index} elapsed_s={time.monotonic()-started:.1f} region=unavailable error={type(exc).__name__}", flush=True)
-          finally:
-              sock.close()
+                  print("STORY_DIALOG_WATCH_ERROR frame=" + str(last_meta_frame) + " type=" + type(exc).__name__, flush=True)
+              time.sleep(0.12)
+          print("STORY_DIALOG_WATCH_DONE last_frame=" + str(last_meta_frame)
+                + " dialog_seen=" + str(dialog_seen).lower()
+                + " non_dialog_streak=" + str(non_dialog_streak), flush=True)
           PY
-          rsp_sampler_pid=$!
-
-          # CPU register polling is intentionally disabled for this GPU-focused run.
-          echo "CPU_RSP_SAMPLER=disabled; no CPU register polling during GPU traffic capture"
-
+          watcher_pid=$!
 
           set +e
           wait "$emu_pid"
@@ -677,18 +558,13 @@ jobs:
           grep -E 'GPU_BACKEND_SELECTED|PAD_SETUP|PAD_INJECT|GPU_SCREENSHOT_CAPTURE|GPU_VRAM_CAPTURE|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|Loaded BIOS:|Known BIOS detected|OpenBIOS detected|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|ResetCallback|unknown GPU data word|FATAL|Exception|error|Error|ERROR|Failed|failed' \
             "$WORK/pcsx.stdout" "$WORK/pcsx.log" > "$WORK/captures/important-log-lines.txt" || true
           cat "$WORK/captures/important-log-lines.txt" || true
-          wait "$window_sampler_pid" 2>/dev/null || true
-          wait "$rsp_sampler_pid" 2>/dev/null || true
-          wait "$visual_gate_pid" 2>/dev/null || true
-          echo "STORY_SELECT_VISUAL_GATE_SUMMARY_BEGIN"
-          cat "$WORK/captures/story-select-visual-gate-summary.txt" || true
-          echo "STORY_SELECT_VISUAL_GATE_SUMMARY_END"
-          echo "RSP_SUMMARY_BEGIN"
-          cat "$WORK/rsp-progress-summary.txt" || true
-          echo "RSP_SUMMARY_END"
-          echo "GPU_TRAFFIC_EMULATOR_STEP_DONE=1"
+          wait "$watcher_pid" 2>/dev/null || true
+          echo "STORY_DIALOG_WATCH_SUMMARY_BEGIN"
+          cat "$WORK/captures/story-dialog-watch-summary.txt" || true
+          echo "STORY_DIALOG_WATCH_SUMMARY_END"
+          echo "STORY_PLAYTHROUGH_EMULATOR_STEP_DONE=1"
 
-      - name: Summarize GPU packet traffic and delete raw dump
+      - name: Sanitize checkpoint and clean temporary runtime data
         if: always()
         shell: bash
         run: |
@@ -706,7 +582,7 @@ jobs:
           packet_names = {0:"GP0", 1:"GP1", 2:"VSync", 3:"ThrowAway", 4:"Readback",
                           5:"TraceBegin", 6:"GPUVersion", 16:"GameID", 17:"VideoFormat", 18:"Comment"}
           if not path.exists():
-              output.append("GPU_DUMP_RESULT=missing")
+              output.append("GPU_DUMP_RESULT=disabled_for_fast_playthrough")
           else:
               data = path.read_bytes()
               output.append(f"GPU_DUMP_FILE_BYTES={len(data)}")
@@ -979,6 +855,93 @@ jobs:
               finally:
                   meta_path.unlink(missing_ok=True)
 
+          # Strip embedded retail BIOS bytes from the PCSX savestate before
+          # transfer. The next run independently loads the hash-verified SCPH-7502 BIOS.
+          def read_varint(data, pos):
+              value, shift = 0, 0
+              while pos < len(data):
+                  b = data[pos]
+                  pos += 1
+                  value |= (b & 0x7f) << shift
+                  if not b & 0x80:
+                      return value, pos
+                  shift += 7
+                  if shift > 70:
+                      raise ValueError("protobuf varint too long")
+              raise ValueError("truncated protobuf varint")
+          def encode_varint(value):
+              out = bytearray()
+              while value > 0x7f:
+                  out.append((value & 0x7f) | 0x80)
+                  value >>= 7
+              out.append(value)
+              return bytes(out)
+          def parse_fields(data):
+              fields, pos = [], 0
+              while pos < len(data):
+                  start = pos
+                  tag, pos = read_varint(data, pos)
+                  number, wire = tag >> 3, tag & 7
+                  payload_start = pos
+                  if wire == 0:
+                      _, pos = read_varint(data, pos)
+                      payload_end = pos
+                  elif wire == 1:
+                      pos += 8
+                      payload_end = pos
+                  elif wire == 2:
+                      length, pos = read_varint(data, pos)
+                      payload_start = pos
+                      pos += length
+                      payload_end = pos
+                  elif wire == 5:
+                      pos += 4
+                      payload_end = pos
+                  else:
+                      raise ValueError(f"unsupported protobuf wire type {wire}")
+                  if pos > len(data):
+                      raise ValueError("truncated protobuf field")
+                  fields.append((number, wire, start, payload_start, payload_end, pos))
+              return fields
+          def strip_memory_rom(data):
+              keep, removed = [], 0
+              for number, wire, start, payload_start, payload_end, end in parse_fields(data):
+                  if number == 2 and wire == 2:
+                      removed += 1
+                  else:
+                      keep.append(data[start:end])
+              if removed != 1:
+                  raise ValueError(f"expected one embedded BIOS ROM field; found {removed}")
+              return b"".join(keep)
+          raw_state = Path("captures/raw/storymode-checkpoint.raw")
+          if raw_state.exists():
+              try:
+                  original = raw_state.read_bytes()
+                  safe, memory_count, removed = bytearray(), 0, 0
+                  for number, wire, start, payload_start, payload_end, end in parse_fields(original):
+                      if number == 3 and wire == 2:
+                          memory_count += 1
+                          safe_memory = strip_memory_rom(original[payload_start:payload_end])
+                          removed += 1
+                          safe.extend(encode_varint((number << 3) | wire))
+                          safe.extend(encode_varint(len(safe_memory)))
+                          safe.extend(safe_memory)
+                      else:
+                          safe.extend(original[start:end])
+                  if memory_count != 1 or removed != 1:
+                      raise ValueError(f"unexpected savestate structure memory_count={memory_count} rom_fields_removed={removed}")
+                  Path("captures/storymode-checkpoint.sstate").write_bytes(safe)
+                  output.extend([
+                      "STORY_SAVESTATE_SANITIZE=PASS",
+                      f"STORY_SAVESTATE_RAW_BYTES={len(original)}",
+                      f"STORY_SAVESTATE_SAFE_BYTES={len(safe)}",
+                      "STORY_SAVESTATE_EMBEDDED_BIOS_FIELD_REMOVED=1",
+                      "STORY_SAVESTATE_TRANSFER=private_artifact",
+                  ])
+              except Exception as exc:
+                  output.append("STORY_SAVESTATE_SANITIZE=ERROR type=" + type(exc).__name__ + " detail=" + str(exc))
+          else:
+              output.append("STORY_SAVESTATE_SANITIZE=missing")
           raw_dir = Path("captures/raw")
           if raw_dir.exists():
               for item in raw_dir.iterdir():
@@ -994,19 +957,19 @@ jobs:
           print("\n".join(output))
           PY
 
-      - name: Upload only text summary (never upload raw GPU dump)
+      - name: Upload private evidence and sanitized Story Mode checkpoint
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: naruto-scph7502-gpu-traffic-summary-private
+          name: naruto-storymode-checkpoint-private
           path: |
             ${{ env.WORK }}/captures/gpu-traffic-summary.txt
             ${{ env.WORK }}/captures/important-log-lines.txt
             ${{ env.WORK }}/captures/internal-frame-*.png
-            ${{ env.WORK }}/captures/story-select-visual-gate-summary.txt
-            ${{ env.WORK }}/rsp-progress-summary.txt
+            ${{ env.WORK }}/captures/story-dialog-watch-summary.txt
+            ${{ env.WORK }}/captures/storymode-checkpoint.sstate
           if-no-files-found: warn
-          retention-days: 3
+          retention-days: 7
 
       - name: Remove runtime assets from ephemeral runner
         if: always()
