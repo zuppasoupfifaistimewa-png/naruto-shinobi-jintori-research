@@ -24,7 +24,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil
+          sudo apt-get install -y --no-install-recommends gdb jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil
 
       - name: Download and verify private runtime assets
         shell: bash
@@ -388,12 +388,30 @@ jobs:
             mkdir -p "$WORK/home/.config" "$WORK/home/.local/share" "$WORK/captures/raw" "$WORK/cards"
             cp "$WORK/cards/reference.mcd" "$WORK/cards/naruto-storymode.mcd"
             set +e
-            timeout --signal=TERM --kill-after=5s 60s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
-              -memcard1 "$WORK/cards/naruto-storymode.mcd" -exec "$PAD_SETUP" \
-              -dofile "$WORK/$lua_file" -softgpu -dynarec -stdout -lua_stdout \
-              -logfile "$WORK/logs/$phase-pcsx.log" -run > "$WORK/logs/$phase-stdout.log" 2>&1
-            rc=$?
+            if [ "$phase" = "D-rehydrated-checkpoint-load" ]; then
+              echo "SAVESTATE_PROBE_GDB=enabled for D only" | tee -a "$WORK/captures/diagnostic-summary.txt"
+              timeout --signal=TERM --kill-after=5s 60s gdb --batch --return-child-result \
+                -ex "set pagination off" \
+                -ex "set print thread-events off" \
+                -ex "handle SIGSEGV stop print nopass" \
+                -ex run \
+                -ex "echo \\n--- SAVESTATE RESTORE BACKTRACE ---\\n" \
+                -ex "thread apply all bt 20" \
+                --args "$WORK/squashfs-root/AppRun" \
+                -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+                -memcard1 "$WORK/cards/naruto-storymode.mcd" -exec "$PAD_SETUP" \
+                -dofile "$WORK/$lua_file" -softgpu -dynarec -stdout -lua_stdout \
+                -logfile "$WORK/logs/$phase-pcsx.log" -run > "$WORK/logs/$phase-stdout.log" 2>&1
+              rc=$?
+              if grep -q "Program received signal SIGSEGV" "$WORK/logs/$phase-stdout.log"; then rc=139; fi
+            else
+              timeout --signal=TERM --kill-after=5s 60s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+                -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+                -memcard1 "$WORK/cards/naruto-storymode.mcd" -exec "$PAD_SETUP" \
+                -dofile "$WORK/$lua_file" -softgpu -dynarec -stdout -lua_stdout \
+                -logfile "$WORK/logs/$phase-pcsx.log" -run > "$WORK/logs/$phase-stdout.log" 2>&1
+              rc=$?
+            fi
             set -e
             echo "SAVESTATE_PROBE_PHASE_EXIT=$phase:$rc" | tee -a "$WORK/captures/diagnostic-summary.txt"
             grep -E 'SAVESTATE_PROBE|Loaded BIOS:|CD-ROM Label:|CD-ROM ID:|Execute !|KERNEL SETUP|SIGSEGV|Segmentation fault|FATAL|ERROR' \
