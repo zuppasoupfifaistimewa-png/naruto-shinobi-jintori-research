@@ -1,3 +1,11 @@
+## IMPLEMENTASI MEMORY CARD DIPERSIAPKAN — BELUM DIGABUNGKAN (2026-10-19)
+
+Setelah menemukan workflow lama tidak memasang kartu memori secara eksplisit, implementasi awal disiapkan pada branch `feat/memory-card-persistence`, [Draft PR #1](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/pull/1). **Jangan merge sebelum run #39235643517 selesai**, karena workflow utama memakai `cancel-in-progress: true`; perubahan langsung di branch `main` bisa membatalkan run aktif.
+
+Isi PR: gunakan `-memcard1 "$WORK/cards/naruto-storymode.mcd"` pada kedua jalur emulator, coba pulihkan kartu dari private artifact, catat ukuran dan SHA-256, unggah kartu sebagai private artifact terpisah, dan tambahkan opsi untuk tidak memuat savestate. Jika kartu berhasil dipulihkan, input yang memilih game baru akan ditahan agar kita tidak berisiko menimpa save sebelum menu load game diketahui. **Ini baru plumbing persistensi; belum membuktikan game telah membuat save Story Mode di kartu atau bahwa save dapat diload.** Sesudah run aktif berhenti, review/merge PR, jalankan uji pembuatan kartu, temukan menu save/load yang benar, lalu buktikan pemulihan melalui cold boot baru.
+
+---
+
 ## KOREKSI PRIORITAS SAVE: MEMORY CARD EMULATOR (2026-10-19)
 
 **Kekurangan pendekatan yang harus diperbaiki:** workflow saat ini berfokus pada savestate PCSX-Redux. Pemeriksaan skrip menemukan argumen peluncur tidak menetapkan `-memcard1` atau `-memcard2`, dan daftar artifact tidak memasukkan berkas kartu memori. Workflow juga mengarahkan `HOME`, `XDG_CONFIG_HOME`, serta `XDG_DATA_HOME` ke direktori sementara runner. Maka, kita **belum membuktikan save Story Mode melalui Memory Card**, dan kartu memori default—jika dibuat/dipakai oleh emulator—belum punya jalur persistensi yang eksplisit antar-run.
