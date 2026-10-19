@@ -250,6 +250,51 @@ jobs:
           print("SAVESTATE_PROBE_LISTENER_ONLY_ARMED=1")
           LUA
 
+          cat > "$WORK/probe-create-native-state.lua" <<'LUA'
+          if io.stdout then io.stdout:setvbuf("no") end
+          print("SAVESTATE_PROBE_NATIVE_CREATE_SCRIPT_ENTERED=1")
+          local frame_count = 0
+          local pending = false
+          _G.savestateNativeCreateVsync = PCSX.Events.createEventListener("GPU::Vsync", function()
+              frame_count = frame_count + 1
+              if frame_count == 1 or frame_count % 30 == 0 then
+                  print("SAVESTATE_PROBE_NATIVE_CREATE_VSYNC=" .. tostring(frame_count))
+              end
+              if frame_count == 60 and not pending then
+                  pending = true
+                  print("SAVESTATE_PROBE_NATIVE_CREATE_SAFEPOINT=1")
+                  PCSX.pauseEmulator()
+                  PCSX.nextTick(function()
+                      local ok, state = pcall(function() return PCSX.createSaveState() end)
+                      if not ok or not state then
+                          print("SAVESTATE_PROBE_NATIVE_CREATE_ERROR=" .. tostring(state))
+                          PCSX.quit(71)
+                          return
+                      end
+                      local opened, file = pcall(function()
+                          return assert(Support.File.open("resume/native-roundtrip.sstate", "TRUNCATE"),
+                              "cannot create raw roundtrip state")
+                      end)
+                      if not opened or not file then
+                          print("SAVESTATE_PROBE_NATIVE_WRITE_OPEN_ERROR=" .. tostring(file))
+                          PCSX.quit(72)
+                          return
+                      end
+                      local wrote, err = pcall(function() file:writeMoveSlice(state) end)
+                      file:close()
+                      if not wrote then
+                          print("SAVESTATE_PROBE_NATIVE_WRITE_ERROR=" .. tostring(err))
+                          PCSX.quit(73)
+                          return
+                      end
+                      print("SAVESTATE_PROBE_NATIVE_CREATE_PASS=1")
+                      PCSX.quit(0)
+                  end)
+              end
+          end)
+          print("SAVESTATE_PROBE_NATIVE_CREATE_ARMED=1")
+          LUA
+
           cat > "$WORK/probe-load.lua" <<'LUA'
           if io.stdout then io.stdout:setvbuf("no") end
           print("SAVESTATE_PROBE_LOAD_SCRIPT_ENTERED=1")
@@ -358,6 +403,8 @@ jobs:
           print("SAVESTATE_PROBE_LUA_READY=1")
           print("SAVESTATE_PROBE_ARMED=1; load only at paused nextTick, observe SaveStateLoaded event, then 180 VSyncs")
           LUA
+          sed 's|resume/storymode-checkpoint.sstate|resume/native-roundtrip.sstate|g' \
+            "$WORK/probe-load.lua" > "$WORK/probe-load-native.lua"
           echo "PROBE_SCRIPTS_READY=1" | tee -a "$WORK/captures/diagnostic-summary.txt"
 
       - name: Run isolated one-factor-at-a-time emulator probes
@@ -403,7 +450,7 @@ jobs:
                 -dofile "$WORK/$lua_file" -softgpu -dynarec -stdout -lua_stdout \
                 -logfile "$WORK/logs/$phase-pcsx.log" -run > "$WORK/logs/$phase-stdout.log" 2>&1
               rc=$?
-              if grep -q "Program received signal SIGSEGV" "$WORK/logs/$phase-stdout.log"; then rc=139; fi
+              if grep -Eq "received signal SIGSEGV|Program received signal SIGSEGV" "$WORK/logs/$phase-stdout.log"; then rc=139; fi
             else
               timeout --signal=TERM --kill-after=5s 60s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
                 -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
@@ -508,7 +555,22 @@ jobs:
 
           # D changes only one factor from C2: call the real savestate loader at paused nextTick.
           cp "$WORK/checkpoint-source/rehydrated-checkpoint.sstate" "$WORK/resume/storymode-checkpoint.sstate"
-          run_probe D-rehydrated-checkpoint-load probe-load.lua
+          if ! run_probe D-rehydrated-checkpoint-load probe-load.lua; then
+            echo "SAVESTATE_PROBE_D_NATIVE_LOAD_FAILED=1; continue to fresh native roundtrip control" | tee -a "$WORK/captures/diagnostic-summary.txt"
+          fi
+
+          # E/F isolate checkpoint provenance: create a fresh unmodified state with PCSX itself, then load that exact file.
+          rm -f "$WORK/resume/native-roundtrip.sstate"
+          if ! run_probe E-create-native-roundtrip-state probe-create-native-state.lua; then
+            echo "SAVESTATE_PROBE_NATIVE_ROUNDTRIP_CREATE=FAIL" | tee -a "$WORK/captures/diagnostic-summary.txt"
+          elif [ -s "$WORK/resume/native-roundtrip.sstate" ]; then
+            echo "SAVESTATE_PROBE_NATIVE_ROUNDTRIP_BYTES=$(stat -c '%s' "$WORK/resume/native-roundtrip.sstate")" | tee -a "$WORK/captures/diagnostic-summary.txt"
+            if ! run_probe F-load-native-roundtrip-state probe-load-native.lua; then
+              echo "SAVESTATE_PROBE_NATIVE_ROUNDTRIP_LOAD=FAIL" | tee -a "$WORK/captures/diagnostic-summary.txt"
+            fi
+          else
+            echo "SAVESTATE_PROBE_NATIVE_ROUNDTRIP_CREATE=FAIL reason=state_file_missing" | tee -a "$WORK/captures/diagnostic-summary.txt"
+          fi
           echo "SAVESTATE_PROBE_ALL_PHASES_COMPLETED=1" | tee -a "$WORK/captures/diagnostic-summary.txt"
 
       - name: Convert captured emulator frames to PNG evidence
