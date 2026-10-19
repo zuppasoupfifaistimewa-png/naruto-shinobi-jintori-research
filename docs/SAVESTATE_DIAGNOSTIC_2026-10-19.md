@@ -1,3 +1,13 @@
+## Update GDB dan roundtrip native — 19 Oktober 2026
+
+- [Run #39248501957](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39248501957) mengulang A/B/C/C2 dan menjalankan tahap D di bawah GDB. Log D membuktikan `SAVESTATE_PROBE_LOAD_CALL_BEGIN=1`, lalu thread 15 (`pcsx-redux`) menerima SIGSEGV pada PC `0x00007ffff0dd36d0`. Stack teratas `#0 0x00007ffff0dd36d0`, `#1 0x0000000001589a80`, `#2 0x00000000014f49f0`, `#3 0x00007ffff0de5870`. Nilai PC dan stack cocok dengan GDB lama #39235079514. Binary stripped; alamat ini belum bisa dipetakan ke nama fungsi.
+- Trace lama #39235079514 pada PC yang sama mencatat `RSI=0xffffffffddd13fff` dan instruksi `movzbl (%rsi),%ecx`, yaitu pembacaan byte dari alamat invalid. Ini memperkuat bahwa jalur native/JIT crash dengan pointer invalid, tetapi belum menentukan field state atau fungsi penyebab.
+- Artifak #12184890672 berisi log GDB dan ringkasan; retensi sampai 26 Oktober 2026.
+- Capture GPU pada VSync awal di A/B/C/C2 menghasilkan `width=0,height=0`, raw 0 byte; screenshot itu tidak valid sebagai bukti visual.
+- Run [#39249046252](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39249046252) menambahkan kontrol independen: buat savestate mentah dengan serializer emulator, lalu coba muat file mentah tanpa sanitasi/rehidrasi. Status terakhir yang diperiksa: masih berjalan pada langkah eksperimen. Periksa hasil A/B/C/C2/D/E/F setelah selesai sebelum menentukan langkah berikutnya.
+
+---
+
 # Diagnostik pemulihan savestate — 19 Oktober 2026
 
 ## Status ringkas
