@@ -109,7 +109,7 @@ jobs:
           echo "ROM/CUE/emulator hashes verified; BIOS=SCPH-7502"
           echo "EMULATOR_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
 
-      - name: Select Story Mode, verify opening dialogue, tap Circle once, then observe to VSync 10000
+      - name: Skip each verified Story dialogue with Start and observe to VSync 11000
         env:
           GPU_BACKEND_PROBE: ${{ contains(github.event.head_commit.message, '[openglgpu-probe]') }}
         shell: bash
@@ -172,8 +172,8 @@ jobs:
           }
           local input_index = 1
           local story_circle2_pressed = false
-          local story_circle3_pressed = false
-          local story_circle4_pressed = false
+          local story_dialog1_start_pressed = false
+          local story_dialog2_start_pressed = false
           local capture_targets = { [2599]=true, [2649]=true, [2650]=true, [2660]=true, [2670]=true, [2680]=true, [2690]=true, [2700]=true, [2709]=true, [2710]=true, [2715]=true, [2720]=true, [2730]=true, [2739]=true, [2740]=true, [2745]=true, [2749]=true, [2750]=true, [2760]=true, [2770]=true, [2779]=true, [2780]=true, [2790]=true, [2800]=true, [2809]=true, [2810]=true, [2820]=true, [2850]=true, [2900]=true, [2950]=true, [2999]=true, [3199]=true, [3399]=true, [3599]=true, [3999]=true, [4499]=true, [4999]=true, [5499]=true, [5999]=true, [6099]=true, [6100]=true, [6110]=true, [6129]=true, [6130]=true, [6140]=true, [6200]=true, [6399]=true, [6799]=true, [7199]=true, [7599]=true, [7999]=true, [8499]=true, [8999]=true, [9099]=true, [9199]=true, [9200]=true, [9229]=true, [9230]=true, [9240]=true, [9299]=true, [9499]=true, [9999]=true, [10099]=true, [10199]=true, [10200]=true, [10229]=true, [10230]=true, [10240]=true, [10299]=true, [10499]=true, [10999]=true }
 
           local function apply_input(action)
@@ -271,15 +271,15 @@ jobs:
                       gate_file:close()
                   end
                   if gate_status:match("^PASS") then
-                      apply_input({frame=9200, action="press", button=buttons.CIRCLE, name="CIRCLE3"})
-                      story_circle3_pressed = true
-                      print("STORY_CIRCLE3_VISUAL_GATE=PASS frame=8999; opening-dialogue screenshot crop matched")
+                      apply_input({frame=9200, action="press", button=buttons.START, name="START_DIALOG1"})
+                      story_dialog1_start_pressed = true
+                      print("STORY_DIALOG1_START_VISUAL_GATE=PASS frame=8999; opening-dialogue screenshot crop matched")
                   else
                       print(string.format("STORY_CIRCLE3_SKIPPED frame=9200 visual_gate=%s", gate_status:gsub("[\\r\\n]", "")))
                   end
-              elseif frame_count == 9230 and story_circle3_pressed then
-                  apply_input({frame=9230, action="release", button=buttons.CIRCLE, name="CIRCLE3"})
-                  story_circle3_pressed = false
+              elseif frame_count == 9230 and story_dialog1_start_pressed then
+                  apply_input({frame=9230, action="release", button=buttons.START, name="START_DIALOG1"})
+                  story_dialog1_start_pressed = false
               end
               -- Continue only when frame 9999 matches the newly verified complete
               -- dialogue line. This remains one isolated Circle tap.
@@ -291,15 +291,15 @@ jobs:
                       gate_file:close()
                   end
                   if gate_status:match("^PASS") then
-                      apply_input({frame=10200, action="press", button=buttons.CIRCLE, name="CIRCLE4"})
-                      story_circle4_pressed = true
-                      print("STORY_CIRCLE4_VISUAL_GATE=PASS frame=9999; next dialogue fingerprint matched")
+                      apply_input({frame=10200, action="press", button=buttons.START, name="START_DIALOG2"})
+                      story_dialog2_start_pressed = true
+                      print("STORY_DIALOG2_START_VISUAL_GATE=PASS frame=9999; next dialogue fingerprint matched")
                   else
                       print(string.format("STORY_CIRCLE4_SKIPPED frame=10200 visual_gate=%s", gate_status:gsub("[\\r\\n]", "")))
                   end
-              elseif frame_count == 10230 and story_circle4_pressed then
-                  apply_input({frame=10230, action="release", button=buttons.CIRCLE, name="CIRCLE4"})
-                  story_circle4_pressed = false
+              elseif frame_count == 10230 and story_dialog2_start_pressed then
+                  apply_input({frame=10230, action="release", button=buttons.START, name="START_DIALOG2"})
+                  story_dialog2_start_pressed = false
               end
               if capture_targets[frame_count] then capture_frame(frame_count) end
               if frame_count == 299 or frame_count == 1499 or frame_count == 2999 or frame_count == 5999 then capture_vram(frame_count) end
@@ -320,7 +320,7 @@ jobs:
                   end)
               end
           end)
-          print("GPU_TRAFFIC_PROBE=armed target_vsync=11000; Circle2/3 require verified visual gates; Circle4 at frame 10200 requires the verified next-dialogue crop from frame 9999")
+          print("GPU_TRAFFIC_PROBE=armed target_vsync=11000; Circle2 confirms Story Mode; each dialogue is skipped with a single gated Start tap (9200, 10200)")
           LUA
 
           timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
