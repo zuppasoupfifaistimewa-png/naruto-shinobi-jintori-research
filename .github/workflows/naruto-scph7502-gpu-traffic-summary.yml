@@ -606,7 +606,7 @@ jobs:
             echo "RESTORE_GDB=disabled"
             timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
               stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-                -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+                -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/naruto-storymode.mcd" \
                 -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
                 "$GPU_BACKEND_FLAG" -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
               > "$WORK/pcsx.stdout" 2>&1 &
