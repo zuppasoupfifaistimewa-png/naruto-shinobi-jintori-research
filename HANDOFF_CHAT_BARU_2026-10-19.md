@@ -1,3 +1,20 @@
+# PEMBARUAN HANDOFF — 20 Oktober 2026: checkpoint board-screen dan fix receiver
+
+## Fakta terbaru yang sudah diperiksa
+
+- Run sumber [#39262213468](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39262213468) berakhir sukses. Dialog gate PASS pada frame 8999; setelah watcher meminta START, frame 10055 memperlihatkan scene papan dari sudut atas, tile bernomor, token biru/merah, dan UI karakter/statistik. Ini terverifikasi sebagai kemajuan visual keluar dari narasi pembuka ke papan permainan, tetapi kontrol, mekanik, menang/kalah, stage lanjutan, dan tamat belum terbukti.
+- Artifact privat #12196796917 memuat raw checkpoint yang dihasilkan langsung oleh PCSX.createSaveState() di frame 10055, reason=stable_non_dialog. Ukuran 21.163.286 byte; SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d. Hash dan byte diverifikasi dengan membaca file di ZIP, serta cocok dengan manifest.
+- Screenshot sumber frame 10055: 320×240; SHA-256 101b94a4d171d228e0224948872b65b88bf84fd0d92dc8ddd0b6cfeb21f790a8. Ini screenshot aktual dari artifact riset, bukan gambar web.
+- Receiver [#39274593965](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39274593965) gagal dua kali di validasi sumber sebelum emulator mulai, exit 41, error Missing raw-state manifest. Penyebab terbukti adalah folder tidak cocok: download artifact memakai runner.temp, sementara WORK menunjuk /tmp/naruto-storymode-raw-resume. Jadi hasil ini **bukan** bukti bahwa savestate Story Mode crash atau tidak dapat di-restore; loader tidak pernah dipanggil.
+- Fix telah di-commit ke main pada [4b0bbe0d838e42a688e907372dcb8682fa80c967](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/4b0bbe0d838e42a688e907372dcb8682fa80c967): download kedua artifact dipindahkan ke WORK. Retry attempt 2 pada run lama menggunakan revisi workflow lama dan mengulang error yang sama; fix belum diuji.
+- Untuk menjalankan kode yang telah diperbaiki, buka [workflow Naruto raw Story Mode restore and continuation](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/workflows/naruto-raw-storymode-restore.yml), klik **Run workflow** di branch main, masukkan source_run_id **39262213468**, lalu pantau run baru. Wajib mengonfirmasi validasi SHA/ukuran, SaveStateLoaded, screenshot post-restore yang cocok dengan sumber, ≥180 VSync, dan checkpoint lanjutan.
+- Memory Card artifact #12196517326 adalah file 131.072 byte, SHA-256 ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5, tetapi tetap UNVERIFIED_REQUIRES_IN_GAME_SAVE_AND_RELOAD. Jangan mengklaim save/load game telah berhasil.
+- Workflow fix dan catatan status terbaru ada di main; STATUS.md juga telah diperbarui di commit 7a7ff914c1803db6557bbf360f4656b8cac71505.
+
+**Prioritas berikutnya:** jalankan receiver dari UI GitHub dengan source_run_id=39262213468. Jangan menjalankan ulang run sumber 90 menit, jangan mengubah raw state, jangan mengunggah ROM/BIOS/savestate ke Git, jangan sentuh repo Tile Duel. Jika restore lolos, lanjutkan gameplay selangkah demi selangkah dan ambil raw checkpoint baru setelah progres nyata.
+
+---
+
 # HANDOFF TERBARU — RAW SAVESTATE ANTAR-RUNNER (19 Oktober 2026)
 
 ## Snapshot eksperimen terkini
