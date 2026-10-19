@@ -1,3 +1,14 @@
+# Current research state — 19 October 2026
+
+- Draft PR #1 was audited and merged as [`9dc876f`](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/9dc876f08d724b6f809c6da4e2dbea1b549b9d62).
+- [Run #39242130783](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39242130783) is the first bounded cold-boot run under the Memory Card workflow. Snapshot at 18:06 WIB: asset verification passed, emulator step in progress, no artifacts yet.
+- Maximum emulator execution is 25 minutes; job timeout is 35 minutes. Memory Card slot 1 is explicitly mounted, the `.mcd` plus SHA-256/size manifest are uploaded as a private artifact, and restore fails closed if the source card/manifest is missing or mismatched. Savestate is optional.
+- The previous cancelled run #39235643517 had only a savestate artifact; its last inspected screenshot showed Mode Select with Story Mode selected, not active gameplay.
+- Story Mode is not confirmed complete. A card artifact/checksum or successful workflow does not prove the game saved or can reload. Require a separate cold-boot restore and a visually confirmed in-game save/load before calling the save safe.
+- Dialogue: START, not Circle.
+
+---
+
 ## TEMUAN GDB & UJI CHECKPOINT SAFE-POINT (2026-10-19)
 
 ### Temuan GDB run #39235079514
