@@ -11,6 +11,11 @@ on:
         description: "Run ID containing naruto-storymode-checkpoint-private and its raw savestate manifest"
         required: true
         type: string
+  # Temporary one-shot launch, gated to this exact commit message.
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/naruto-raw-storymode-restore.yml"
 
 permissions:
   contents: read
@@ -22,19 +27,26 @@ concurrency:
 
 jobs:
   raw-restore-and-continue:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.name == 'Naruto SCPH-7502 Story Mode playthrough' && github.event.workflow_run.conclusion != 'cancelled') }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.name == 'Naruto SCPH-7502 Story Mode playthrough' && github.event.workflow_run.conclusion != 'cancelled') || (github.event_name == 'push' && github.event.head_commit.message == 'Launch raw Story Mode restore from source 39262213468') }}
     runs-on: ubuntu-26.04
     timeout-minutes: 45
     env:
       WORK: /tmp/naruto-storymode-raw-resume
-      SOURCE_RUN_ID: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.source_run_id }}
+      SOURCE_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.source_run_id || (github.event_name == 'workflow_run' && github.event.workflow_run.id || (github.event_name == 'push' && github.event.head_commit.message == 'Launch raw Story Mode restore from source 39262213468' && '39262213468')) }}
       RESEARCH_REPO: ${{ github.repository }}
     steps:
+      - name: Install runtime dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil
+
       - name: Download raw checkpoint evidence from the source run
         uses: actions/download-artifact@v4
         with:
           name: naruto-storymode-checkpoint-private
-          run-id: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.source_run_id }}
+          run-id: ${{ github.event.workflow_run.id || (github.event_name == 'workflow_dispatch' && inputs.source_run_id || (github.event_name == 'push' && github.event.head_commit.message == 'Launch raw Story Mode restore from source 39262213468' && '39262213468')) }}
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
           path: ${{ env.WORK }}/source-artifact
@@ -43,7 +55,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: naruto-storymode-memory-card-private
-          run-id: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.source_run_id }}
+          run-id: ${{ github.event.workflow_run.id || (github.event_name == 'workflow_dispatch' && inputs.source_run_id || (github.event_name == 'push' && github.event.head_commit.message == 'Launch raw Story Mode restore from source 39262213468' && '39262213468')) }}
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
           path: ${{ env.WORK }}/source-card
@@ -112,13 +124,6 @@ jobs:
           [[ "$(sha256sum "$CARD_FILE" | cut -d ' ' -f 1)" = "$(card_value STORY_MEMORY_CARD_SHA256)" ]] || { echo "::error::Memory Card hash mismatch"; exit 58; }
           echo "STORY_RAW_SOURCE_VALIDATION=PASS run=$SOURCE_RUN_ID frame=$frame reason=$reason bytes=$actual_bytes sha256=$actual_sha"
           echo "STORY_RAW_TRANSFER_POLICY=private_artifact; source state is raw; no sanitizer or BIOS rehydration is used"
-
-      - name: Install runtime dependencies
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil
 
       - name: Download and verify pinned emulator, game, and local BIOS
         shell: bash
