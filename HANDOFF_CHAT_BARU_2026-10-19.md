@@ -1,12 +1,12 @@
-## UPDATE OPERASIONAL — pemulihan savestate prioritas utama (19 Oktober 2026)
+## UPDATE TERBARU — hasil roundtrip savestate mentah (19 Oktober 2026)
 
-- Run Story Mode #39242130783 gagal (exit 124) sebelum gerbang visual frame 5999; artifact checkpoint dari run tersebut tidak memuat file savestate. Jangan pakai sebagai checkpoint baru.
-- Run diagnostik #39248081546: kontrol A (cold boot), B (file tersanitasi tanpa load), C (rehidrasi BIOS tanpa load), dan C2 (listener load tanpa load) lulus. D crash exit 139 segera setelah `SAVESTATE_PROBE_LOAD_CALL_BEGIN=1`; restore **belum berhasil**.
-- Run GDB #39248501957 mengulang crash pada alamat `0x00007ffff0dd36d0`, thread `pcsx-redux`, dengan stack yang sama seperti trace run #39235079514. Binary stripped; fungsi penyebab belum teridentifikasi. Capture frame awal di diagnostik memiliki dimensi 0×0/data kosong dan bukan bukti visual.
-- Run berikutnya [#39249046252](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39249046252) menguji pembuatan savestate mentah via `PCSX.createSaveState()` lalu roundtrip load dari file mentah; periksa log akhir tahap E/F sebelum memilih tindakan berikutnya.
-- Checkpoint sumber privat artifact #12167524755 dari run #39205699071 tetap dipertahankan dan belum terverifikasi dapat dipulihkan. Memory Card 131072 byte dengan SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5` valid secara ukuran/hash, tetapi save nyata dalam game belum terverifikasi.
-- Jangan mulai ulang Story Mode atau mengubah prioritas Memory Card sebelum ada restore di tengah Story Mode yang tetap berjalan dan screenshot visual pascarestore yang sah. Dialog tetap dilewati dengan **START**, bukan Circle. Belum ada klaim game tamat.
-- Catatan lengkap dan eksperimen berikutnya: [docs/SAVESTATE_DIAGNOSTIC_2026-10-19.md](docs/SAVESTATE_DIAGNOSTIC_2026-10-19.md).
+- [Run #39252214331](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39252214331) telah selesai. Tahap A/B/C/C2 lulus; tahap D pada checkpoint lama yang tersanitasi tetap SIGSEGV/exit 139 segera setelah `PCSX.loadSaveState()` dipanggil.
+- Tahap E membuat savestate mentah baru melalui `PCSX.createSaveState()` (21.124.150 byte); tahap F memuat file mentah tersebut di emulator yang sama. Terverifikasi: `SaveStateLoaded`, `LOAD_CALL_RETURNED=1`, event `ExecutionFlow::Run`, dan 180 VSync pascapemulihan tanpa crash.
+- Artifact privat #12186545059 memiliki screenshot pascapemulihan valid 640×508; isinya layar boot/logo Sony Computer Entertainment. State itu dibuat saat boot awal di sekitar `KERNEL SETUP!`, **bukan** di tengah Story Mode.
+- Kesimpulan: ada bukti bahwa roundtrip savestate mentah PCSX-Redux dapat bekerja pada GitHub Actions runner. **Belum ada bukti restore checkpoint tengah Story Mode.** Workflow keseluruhan gagal pada gerbang bukti karena tahap D (checkpoint tersanitasi) masih gagal; tahap F yang lulus tidak mengubah hasil D.
+- Hambatan utama yang diketahui: jalur checkpoint tersanitasi/rehidrasi crash saat loader native berjalan, sementara savestate mentah buatan emulator sendiri dapat dimuat. Penyebab tepat transformasi atau field yang memicu crash belum diketahui; perlakukan kerusakan struktur/semantik state sebagai hipotesis, bukan fakta.
+- Langkah selanjutnya: bandingkan struktur/field savestate mentah buatan emulator dengan checkpoint tersanitasi setelah rehidrasi, satu faktor per eksperimen. Pertahankan checkpoint lama, jangan restart Story Mode, jangan membatalkan runner lain. Memory Card tetap prioritas sesudah restore tengah Story Mode terverifikasi. Dialog Story Mode dilewati dengan **START**, bukan Circle. Game belum terbukti tamat.
+- Catatan lengkap: [docs/SAVESTATE_DIAGNOSTIC_2026-10-19.md](docs/SAVESTATE_DIAGNOSTIC_2026-10-19.md).
 
 ---
 
