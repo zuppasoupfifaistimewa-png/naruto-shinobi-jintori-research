@@ -1,3 +1,21 @@
+## Hasil terverifikasi terbaru — D-pad berpindah; Circle mencapai Mode Select (2026-10-19)
+
+Run [#39178662131](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39178662131) selesai dengan workflow success dan observasi mencapai VSync 6.000. Kesimpulan di bawah berasal dari screenshot aktual pada artifact privat [#12155879252](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39178662131/artifacts/12155879252), bukan dari status workflow.
+
+- Frame 2.649–2.650: layar judul dengan prompt Start. Frame 2.670: menu memuat `はじめから` (baris pertama) dan `ロード` (baris kedua), panah awal pada `はじめから`.
+- DOWN ditekan pada frame 2.710 dan dilepas 2.720. Screenshot 2.710 masih menampilkan baris pertama, tetapi pada frame 2.720 panah jelas menunjuk `ロード`: navigasi turun berhasil.
+- UP ditekan pada frame 2.740 dan dilepas 2.750. Screenshot 2.740 masih menunjukkan baris kedua, sedangkan frame 2.749–2.750 memperlihatkan panah kembali ke `はじめから`: navigasi naik berhasil.
+- Circle ditekan pada frame 2.780 dan dilepas 2.810. Frame 2.780 masih memperlihatkan menu; frame 2.790 overlay menu mulai menghilang, frame 2.800 overlay hilang, frame 2.900 gambar menggelap, dan frame 2.950/2.999/3.199 hitam. **Layar hitam tidak dipakai sebagai bukti mode apa pun.** Bukti visual langsung muncul pada frame 3.399: judul `モードセレクト` (“Mode Select”) terbaca, dengan `ストーリーモード` (“Story Mode”) sedang disorot/terpilih. Layar itu tetap terlihat pada checkpoint 3.599 sampai 5.999.
+- Hasil visual rangkaian Start → DOWN → UP → Circle konsisten dengan konfirmasi `はじめから` dan transisi ke Mode Select. Story Mode baru **terpilih**, belum dikonfirmasi/dimasuki; gameplay dan tamat belum terbukti. `PAD_INJECT ... PASS` hanya bukti readback API, bukan bukti respons game.
+- Baseline dipertahankan: BIOS retail SCPH-7502 (EU), disc `SLPS03553`, executable `SLPS_035.53;1`, PCSX-Redux pin `0c3572c3db75f97542001e453ae80ba8c3f8acba`, SoftGPU, Port 1 Analog/Auto.
+- Cleanup log mengonfirmasi `RAW_GPU_DUMP_REMOVED=1` dan `RAW_TEMP_SCREENSHOTS_REMOVED=1`; langkah `rm -rf "$WORK"` selesai. ZIP artifact berisi ringkasan/log teks dan screenshot PNG pilihan, tanpa ROM, BIOS, save, atau raw GPU/VRAM dump. Retensi artifact sampai sekitar 2026-10-22 00:43 UTC.
+
+**Status RT-001:** title screen PASS; Start membuka menu PASS; DOWN menuju `ロード` PASS; UP kembali ke `はじめから` PASS; Circle membawa ke layar Mode Select PASS secara visual; Story Mode dimulai PENDING; gameplay/mekanik dan tamat PENDING.
+
+**Langkah berikutnya:** eksperimen baru melakukan cold boot, ulangi Start 2.650–2.680 → DOWN 2.710–2.720 → UP 2.740–2.750 → Circle pada menu 2.780–2.810. Pertahankan observasi hingga Mode Select terlihat dan stabil (bukti sebelumnya dari frame 3.399 sampai 5.999). Setelah layar itu teridentifikasi, gunakan Circle kedua untuk mengonfirmasi Story Mode—misalnya press 6.100/release 6.130, dengan screenshot sebelum dan sesudah—dan perluas observasi hingga setidaknya frame 9.000. Jangan menyatakan Story Mode sudah dimulai sampai screenshot pasca-konfirmasi menunjukkan transisi nyata ke Story Mode/gameplay; jangan menyimpulkan dari layar hitam atau workflow success.
+
+---
+
 ## Hasil terbaru — Start saja membuka menu dan menu bertahan sampai VSync 3000 (2026-10-19)
 
 - Run [#39176328030](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39176328030) selesai `success` pada commit workflow `69ab7544ef7aaea40dc8af4ab12132e9997b3575`. Input sequence hanya Start press frame 2.650 dan release frame 2.680; tidak ada injeksi Circle atau tombol lain.
