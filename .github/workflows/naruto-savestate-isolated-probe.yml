@@ -173,11 +173,17 @@ jobs:
           end
 
           local pending = false
+          _G.savestateProbeRunListener = PCSX.Events.createEventListener("ExecutionFlow::Run", function()
+              print("SAVESTATE_PROBE_EXECUTION_RUN=1")
+          end)
           _G.savestateProbeVsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
               frame_count = frame_count + 1
-              if frame_count == 240 and not pending then
+              if frame_count == 1 or frame_count % 30 == 0 then
+                  print("SAVESTATE_PROBE_VSYNC_COUNT=" .. tostring(frame_count))
+              end
+              if frame_count == 60 and not pending then
                   pending = true
-                  print("SAVESTATE_PROBE_VSYNC_REACHED=240")
+                  print("SAVESTATE_PROBE_VSYNC_REACHED=60")
                   PCSX.pauseEmulator()
                   PCSX.nextTick(function()
                       local ok, err = pcall(function() capture("probe-frame", frame_count) end)
@@ -194,7 +200,7 @@ jobs:
                   PCSX.quit(62)
               end
           end)
-          print("SAVESTATE_PROBE_ARMED=1 target_vsync=240; no controller buttons will be sent")
+          print("SAVESTATE_PROBE_ARMED=1 target_vsync=60; no controller buttons will be sent")
           LUA
 
           cat > "$WORK/probe-load.lua" <<'LUA'
@@ -218,6 +224,9 @@ jobs:
               print(string.format("SAVESTATE_PROBE_SCREENSHOT_CAPTURED=1 name=%s frame=%d", name, n))
           end
 
+          _G.savestateProbeRunListener = PCSX.Events.createEventListener("ExecutionFlow::Run", function()
+              print("SAVESTATE_PROBE_EXECUTION_RUN=1")
+          end)
           _G.savestateProbeLoadedListener = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
               state_loaded = true
               post_restore_frames = 0
