@@ -1,3 +1,18 @@
+## KOREKSI PRIORITAS SAVE: MEMORY CARD EMULATOR (2026-10-19)
+
+**Kekurangan pendekatan yang harus diperbaiki:** workflow saat ini berfokus pada savestate PCSX-Redux. Pemeriksaan skrip menemukan argumen peluncur tidak menetapkan `-memcard1` atau `-memcard2`, dan daftar artifact tidak memasukkan berkas kartu memori. Workflow juga mengarahkan `HOME`, `XDG_CONFIG_HOME`, serta `XDG_DATA_HOME` ke direktori sementara runner. Maka, kita **belum membuktikan save Story Mode melalui Memory Card**, dan kartu memori default—jika dibuat/dipakai oleh emulator—belum punya jalur persistensi yang eksplisit antar-run.
+
+Dokumentasi resmi PCSX-Redux menyebut `-memcard1` dan `-memcard2` untuk menentukan berkas kartu pada slot 1/2; berkas yang belum ada dibuat saat dibutuhkan. Pengaturan/kartu biasanya berada di direktori konfigurasi pengguna, atau di direktori portable. Referensi: [Command-line flags dan lokasi data PCSX-Redux](https://pcsx-redux.consoledev.net/cli_flags/) serta [menu dan pengelola Memory Card](https://pcsx-redux.consoledev.net/menus/).
+
+### Tindakan wajib setelah run #39235643517 selesai
+1. Jangan memotong run validasi safe-point yang sedang aktif hanya demi menambahkan argumen baru.
+2. Revisi workflow agar memakai path eksplisit yang stabil di workspace, misalnya `$WORK/cards/naruto-storymode.mcd`, lewat `-memcard1`. Pastikan slot kartu memang terpasang/inserted.
+3. Jika ada kartu dari run sebelumnya, unduh salinan kartu itu dari private artifact sebelum emulator boot; jangan mulai ulang dengan kartu kosong ketika ada progres yang perlu dipertahankan.
+4. Setelah gameplay mencapai menu/titik yang menyediakan simpan di dalam game, jalankan prosedur save game yang benar-benar ditampilkan oleh game. Jangan menyamakan keberhasilan menulis file kartu dengan bukti bahwa game sudah menyimpan progres.
+5. Akhiri emulator dengan tertib, pastikan penulisan kartu selesai, catat ukuran dan SHA-256 berkas `.mcd`, kemudian unggah sebagai **private artifact** bersama screenshot/log bukti. Jangan menimpa satu-satunya salinan kartu yang diketahui baik.
+6. Uji persistensi pada sesi emulator baru: masukkan berkas kartu yang sama, boot game, dan periksa apakah save yang dibuat muncul/dapat dimuat. Hanya setelah hasil ini terlihat, tandai save Memory Card terverifikasi.
+7. Tetap gunakan savestate tersanitasi sebagai alat bantu checkpoint/debugging saja; jangan menganggapnya sebagai pengganti save game normal. Karena Story Mode terakhir yang teramati masih dialog pembuka yang meredup, keberadaan menu atau mekanisme save in-game **belum terkonfirmasi** dan perlu dicari saat progres gameplay berlanjut.
+
 ## TEMUAN GDB & UJI CHECKPOINT SAFE-POINT (2026-10-19)
 
 ### Temuan GDB run #39235079514
