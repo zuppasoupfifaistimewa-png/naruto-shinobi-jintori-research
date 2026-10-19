@@ -28,12 +28,12 @@ concurrency:
 
 jobs:
   raw-restore-and-continue:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.name == 'Naruto SCPH-7502 Story Mode playthrough' && github.event.workflow_run.conclusion != 'cancelled') || (github.event_name == 'push' && github.event.head_commit.message == 'DIAG: GDB raw restore receiver') }}
+    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.name == 'Naruto SCPH-7502 Story Mode playthrough' && github.event.workflow_run.conclusion != 'cancelled') }}
     runs-on: ubuntu-26.04
     timeout-minutes: 45
     env:
       WORK: /tmp/naruto-storymode-raw-resume
-      SOURCE_RUN_ID: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.id) || (github.event_name == 'workflow_dispatch' && inputs.source_run_id) || (github.event_name == 'push' && github.event.head_commit.message == 'DIAG: GDB raw restore receiver' && '39262213468') }}
+      SOURCE_RUN_ID: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.id) || (github.event_name == 'workflow_dispatch' && inputs.source_run_id) || (github.event_name == 'push' && '39262213468') }}
       RESEARCH_REPO: ${{ github.repository }}
     steps:
       - name: Install runtime dependencies
