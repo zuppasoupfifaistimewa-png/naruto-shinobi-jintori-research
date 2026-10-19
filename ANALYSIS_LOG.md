@@ -1,3 +1,13 @@
+## Catatan kronologis — merge Memory Card dan uji pertama (19 Oktober 2026)
+
+Draft PR #1 telah ditinjau, diperbaiki, dan di-merge sebagai [commit 9dc876f08d724b6f809c6da4e2dbea1b549b9d62](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/9dc876f08d724b6f809c6da4e2dbea1b549b9d62). Perubahan memasang Memory Card slot 1 lewat `-memcard1`, menyimpan file kartu dan manifest ukuran/SHA-256 dalam artifact privat 7 hari, gagal tertutup untuk pemulihan kartu yang hilang/tidak cocok, menjadikan savestate opsional, serta membatasi job 35 menit / proses emulator 25 menit.
+
+Runner #39235643517 dibatalkan pada 17.54 WIB; artifact-nya hanya memuat savestate tersanitasi dan bukti. Screenshot terakhir menunjukkan Mode Select dengan Story Mode disorot, bukan gameplay. Uji pasca-merge [#39242130783](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39242130783) dimulai 18.05 WIB. Snapshot 18.06 WIB: verifikasi aset sukses, restore di-skip karena ini cold boot, langkah emulator berjalan, belum ada artifact/log job final. Catatan ini wajib diperbarui setelah run selesai dengan hasil nyata.
+
+Gate penting: run awal hanya menguji pembuatan kartu/artifact. Jika tersedia, validasi file `.mcd` dan manifest; kemudian uji restore di run baru memakai `resume_run_id=39242130783`, `load_savestate=false`, dan pastikan ukuran/SHA-256 tetap cocok. Ini masih tidak membuktikan save Story Mode di dalam game. Save baru terverifikasi setelah opsi save/load nyata ditemukan, save bisa diload setelah cold boot, dan hasil terlihat pada screenshot. Story Mode belum tamat; semua dialog menggunakan START, bukan Circle.
+
+---
+
 ## TEMUAN GDB & UJI CHECKPOINT SAFE-POINT (2026-10-19)
 
 ### Temuan GDB run #39235079514
