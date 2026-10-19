@@ -109,7 +109,7 @@ jobs:
           echo "ROM/CUE/emulator hashes verified; BIOS=SCPH-7502"
           echo "EMULATOR_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
 
-      - name: Select はじめから (Mulai dari awal); verify モードセレクト (Pemilihan mode) visually, then observe to VSync 9000
+      - name: Select Story Mode, verify opening dialogue, tap Circle once, then observe to VSync 10000
         env:
           GPU_BACKEND_PROBE: ${{ contains(github.event.head_commit.message, '[openglgpu-probe]') }}
         shell: bash
@@ -154,7 +154,7 @@ jobs:
           )
           cat > "$WORK/gpu-traffic.lua" <<'LUA'
           local frame_count = 0
-          local stop_frame = 9000
+          local stop_frame = 10000
           local pad = PCSX.SIO0.slots[1].pads[1]
           local buttons = PCSX.CONSTS.PAD.BUTTON
           local input_sequence = {
@@ -172,7 +172,8 @@ jobs:
           }
           local input_index = 1
           local story_circle2_pressed = false
-          local capture_targets = { [2599]=true, [2649]=true, [2650]=true, [2660]=true, [2670]=true, [2680]=true, [2690]=true, [2700]=true, [2709]=true, [2710]=true, [2715]=true, [2720]=true, [2730]=true, [2739]=true, [2740]=true, [2745]=true, [2749]=true, [2750]=true, [2760]=true, [2770]=true, [2779]=true, [2780]=true, [2790]=true, [2800]=true, [2809]=true, [2810]=true, [2820]=true, [2850]=true, [2900]=true, [2950]=true, [2999]=true, [3199]=true, [3399]=true, [3599]=true, [3999]=true, [4499]=true, [4999]=true, [5499]=true, [5999]=true, [6099]=true, [6100]=true, [6110]=true, [6129]=true, [6130]=true, [6140]=true, [6200]=true, [6399]=true, [6799]=true, [7199]=true, [7599]=true, [7999]=true, [8499]=true, [8999]=true }
+          local story_circle3_pressed = false
+          local capture_targets = { [2599]=true, [2649]=true, [2650]=true, [2660]=true, [2670]=true, [2680]=true, [2690]=true, [2700]=true, [2709]=true, [2710]=true, [2715]=true, [2720]=true, [2730]=true, [2739]=true, [2740]=true, [2745]=true, [2749]=true, [2750]=true, [2760]=true, [2770]=true, [2779]=true, [2780]=true, [2790]=true, [2800]=true, [2809]=true, [2810]=true, [2820]=true, [2850]=true, [2900]=true, [2950]=true, [2999]=true, [3199]=true, [3399]=true, [3599]=true, [3999]=true, [4499]=true, [4999]=true, [5499]=true, [5999]=true, [6099]=true, [6100]=true, [6110]=true, [6129]=true, [6130]=true, [6140]=true, [6200]=true, [6399]=true, [6799]=true, [7199]=true, [7599]=true, [7999]=true, [8499]=true, [8999]=true, [9099]=true, [9199]=true, [9200]=true, [9229]=true, [9230]=true, [9240]=true, [9299]=true, [9499]=true, [9999]=true }
 
           local function apply_input(action)
               local expected = action.action == "press"
@@ -259,6 +260,26 @@ jobs:
                   apply_input({frame=6130, action="release", button=buttons.CIRCLE, name="CIRCLE2"})
                   story_circle2_pressed = false
               end
+              -- The Circle tap that advances the opening dialogue is permitted only
+              -- after the live screenshot gate verifies frame 8999 against the known scene.
+              if frame_count == 9200 then
+                  local gate_file = io.open("captures/story-dialog-visual-gate.flag", "rb")
+                  local gate_status = "MISSING"
+                  if gate_file then
+                      gate_status = gate_file:read("*a") or "EMPTY"
+                      gate_file:close()
+                  end
+                  if gate_status:match("^PASS") then
+                      apply_input({frame=9200, action="press", button=buttons.CIRCLE, name="CIRCLE3"})
+                      story_circle3_pressed = true
+                      print("STORY_CIRCLE3_VISUAL_GATE=PASS frame=8999; opening-dialogue screenshot crop matched")
+                  else
+                      print(string.format("STORY_CIRCLE3_SKIPPED frame=9200 visual_gate=%s", gate_status:gsub("[\\r\\n]", "")))
+                  end
+              elseif frame_count == 9230 and story_circle3_pressed then
+                  apply_input({frame=9230, action="release", button=buttons.CIRCLE, name="CIRCLE3"})
+                  story_circle3_pressed = false
+              end
               if capture_targets[frame_count] then capture_frame(frame_count) end
               if frame_count == 299 or frame_count == 1499 or frame_count == 2999 or frame_count == 5999 then capture_vram(frame_count) end
               if frame_count % 100 == 0 then
@@ -278,7 +299,7 @@ jobs:
                   end)
               end
           end)
-          print("GPU_TRAFFIC_PROBE=armed target_vsync=9000; Circle2 at frame 6100 requires screenshot visual gate from frame 5999")
+          print("GPU_TRAFFIC_PROBE=armed target_vsync=10000; Circle2 requires verified Mode Select screenshot; Circle3 at frame 9200 requires the verified opening-dialogue crop from frame 8999")
           LUA
 
           timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
@@ -353,6 +374,48 @@ jobs:
                 + " frame=5999 header_crop_match=" + str(header_ok).lower()
                 + " selected_story_crop_match=" + str(story_ok).lower()
                 + " screenshot_bytes=" + str(len(raw)), flush=True)
+
+          # Gate the next Circle tap on the actual opening-dialogue screenshot, not
+          # on emulator input readback or the workflow result.
+          dialog_raw_path = Path("captures/raw/frame-008999.raw")
+          dialog_flag_path = Path("captures/story-dialog-visual-gate.flag")
+          dialog_flag_path.unlink(missing_ok=True)
+          dialog_deadline = time.monotonic() + 3600
+          while time.monotonic() < dialog_deadline:
+              if dialog_raw_path.exists() and dialog_raw_path.stat().st_size == expected_size:
+                  dialog_raw = dialog_raw_path.read_bytes()
+                  if len(dialog_raw) == expected_size:
+                      break
+              if not Path(f"/proc/{emu_pid}").exists():
+                  dialog_flag_path.write_text("FAIL\n", encoding="ascii")
+                  print("STORY_DIALOG_VISUAL_GATE=FAIL reason=emulator_exited_before_frame8999", flush=True)
+                  raise SystemExit(0)
+              time.sleep(0.2)
+          else:
+              dialog_flag_path.write_text("FAIL\n", encoding="ascii")
+              print("STORY_DIALOG_VISUAL_GATE=FAIL reason=timeout_waiting_for_frame8999", flush=True)
+              raise SystemExit(0)
+
+          dialog_rgb = bytearray()
+          for pos in range(0, len(dialog_raw), 2):
+              word = dialog_raw[pos] | (dialog_raw[pos + 1] << 8)
+              dialog_rgb.extend(((word & 31) * 255 // 31,
+                                 ((word >> 5) & 31) * 255 // 31,
+                                 ((word >> 10) & 31) * 255 // 31))
+          # Ignore the animated Circle icon at the lower-right; the remaining
+          # 280x240 scene and dialogue text are identical in verified frames 6799-8999.
+          crop = bytearray()
+          for y in range(240):
+              crop.extend(dialog_rgb[(y * 320) * 3:(y * 320 + 280) * 3])
+          dialog_hash = hashlib.sha256(crop).hexdigest()
+          expected_dialog = "0acf03aa8feba7130a39c8efd0cdad2666290aa5e99466a297495f3fb01f90eb"
+          dialog_image_ok = dialog_hash == expected_dialog
+          dialog_passed = passed and dialog_image_ok
+          dialog_flag_path.write_text(("PASS" if dialog_passed else "FAIL") + "\n", encoding="ascii")
+          print("STORY_DIALOG_VISUAL_GATE=" + ("PASS" if dialog_passed else "FAIL")
+                + " frame=8999 mode_select_gate_passed=" + str(passed).lower()
+                + " stable_scene_crop_match=" + str(dialog_image_ok).lower()
+                + " crop_sha256=" + dialog_hash, flush=True)
           PY
           visual_gate_pid=$!
 
