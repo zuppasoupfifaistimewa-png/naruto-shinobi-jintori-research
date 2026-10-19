@@ -5,10 +5,15 @@ Repositori ini menyimpan catatan penelitian statis terhadap ROM PlayStation 1 Je
 ## Batasan dan keselamatan kerja
 
 - Repo ini terpisah dari proyek Tile Duel. Jangan menggabungkan keduanya.
-- ROM asli, ISO hasil ekstraksi, dump memori, save state, dan aset game berukuran besar **tidak disimpan di repo ini**.
+- ROM/ISO, executable game, BIOS retail tersendiri, raw RAM/VRAM/GPU dump, dan aset game besar tidak disimpan di repo. Save kartu memori dan savestate yang telah disanitasi boleh dipindahkan hanya lewat artifact/cache/repositori **private** sesuai docs/EMULATOR_WORKFLOW.md.
 - Temuan diberi label **terkonfirmasi dari kode**, **observasi struktur**, **sumber eksternal**, atau **belum terverifikasi**. Jangan mengubah dugaan menjadi fakta.
 - **Batas agen:** repo ini khusus ChatGPT atas izin berkelanjutan pemilik untuk melakukan perubahan penelitian secara otomatis. Claude tidak diizinkan mengakses repo Naruto; Claude hanya untuk repo Tile Duel. Jangan pernah menggabungkan kedua proyek.
 - Belum ada pengujian gameplay terinstrumentasi yang dilakukan dalam sesi analisis ini. Laporan emulator dari situs eksternal bukan pengganti pengujian aturan secara terkontrol.
+
+
+## Kebijakan save/checkpoint terbaru (2026-10-19)
+
+Atas instruksi pengguna, save kartu memori/game save dan savestate emulator yang telah disanitasi boleh ditransfer melalui private GitHub Actions artifact, Actions cache, atau repositori private untuk mempertahankan progres antar-job. Workflow saat ini menggunakan artifact private berumur 7 hari dan menyediakan input resume_run_id. Field BIOS yang tertanam harus dihapus dan keberhasilan sanitizer diverifikasi sebelum upload. Larangan atas ROM/ISO, BIOS retail tersendiri, serta raw GPU/VRAM/RAM dump tetap berlaku. Simpanan dalam cache/repositori diizinkan oleh aturan, tetapi hanya artifact yang saat ini aktif di workflow.
 
 ## Mulai membaca
 
