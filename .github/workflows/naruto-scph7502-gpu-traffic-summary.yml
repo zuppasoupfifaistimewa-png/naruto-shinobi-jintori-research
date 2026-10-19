@@ -138,6 +138,106 @@ jobs:
           if [ -f "$WORK/resume/storymode-checkpoint.sstate" ]; then
             RESUME_MODE=true
             echo "STORY_RESUME_ARTIFACT=present"
+            # The private artifact omits Memory.rom to avoid transferring the retail
+            # BIOS. Reconstruct it locally from the already verified BIOS file before
+            # PCSX-Redux commits the fixed-size ROM field while loading the state.
+            python3 - "$WORK/resume/storymode-checkpoint.sstate" "$WORK/scph7502.bin" <<'PY'
+          import sys
+          from pathlib import Path
+
+          state_path = Path(sys.argv[1])
+          bios = Path(sys.argv[2]).read_bytes()
+          state_data = state_path.read_bytes()
+          if len(bios) != 0x80000:
+              raise SystemExit(f"RESTORE_BIOS_REHYDRATE=FAIL wrong_bios_size={len(bios)}")
+
+          def read_varint(data, pos):
+              value = shift = 0
+              while pos < len(data):
+                  byte = data[pos]
+                  pos += 1
+                  value |= (byte & 0x7f) << shift
+                  if not byte & 0x80:
+                      return value, pos
+                  shift += 7
+                  if shift > 70:
+                      raise ValueError("protobuf varint too long")
+              raise ValueError("truncated protobuf varint")
+
+          def varint(value):
+              out = bytearray()
+              while value > 0x7f:
+                  out.append((value & 0x7f) | 0x80)
+                  value >>= 7
+              out.append(value)
+              return bytes(out)
+
+          def fields(data):
+              result, pos = [], 0
+              while pos < len(data):
+                  start = pos
+                  tag, pos = read_varint(data, pos)
+                  number, wire = tag >> 3, tag & 7
+                  if wire == 0:
+                      _, pos = read_varint(data, pos)
+                      payload_start = payload_end = pos
+                  elif wire == 1:
+                      payload_start, payload_end = pos, pos + 8
+                      pos += 8
+                  elif wire == 2:
+                      size, pos = read_varint(data, pos)
+                      payload_start = pos
+                      pos += size
+                      payload_end = pos
+                  elif wire == 5:
+                      payload_start, payload_end = pos, pos + 4
+                      pos += 4
+                  else:
+                      raise ValueError(f"unsupported protobuf wire type {wire}")
+                  if pos > len(data):
+                      raise ValueError("truncated protobuf field")
+                  result.append((number, wire, start, payload_start, payload_end, pos))
+              return result
+
+          top = fields(state_data)
+          memories = [entry for entry in top if entry[0] == 3 and entry[1] == 2]
+          if len(memories) != 1:
+              raise SystemExit(f"RESTORE_BIOS_REHYDRATE=FAIL memory_message_count={len(memories)}")
+          _, _, _, mem_start, mem_end, _ = memories[0]
+          memory = state_data[mem_start:mem_end]
+          nested = fields(memory)
+          if any(number == 2 and wire == 2 for number, wire, *_ in nested):
+              raise SystemExit("RESTORE_BIOS_REHYDRATE=FAIL checkpoint already has Memory.rom")
+          if not any(number == 1 and wire == 2 for number, wire, *_ in nested):
+              raise SystemExit("RESTORE_BIOS_REHYDRATE=FAIL Memory.ram field missing")
+
+          restored_memory = bytearray()
+          inserted = False
+          for number, wire, start, payload_start, payload_end, end in nested:
+              restored_memory.extend(memory[start:end])
+              if number == 1 and wire == 2:
+                  restored_memory.extend(varint((2 << 3) | 2))
+                  restored_memory.extend(varint(len(bios)))
+                  restored_memory.extend(bios)
+                  inserted = True
+          if not inserted:
+              raise SystemExit("RESTORE_BIOS_REHYDRATE=FAIL could not insert ROM field")
+
+          rebuilt = bytearray()
+          replaced = 0
+          for number, wire, start, payload_start, payload_end, end in top:
+              if number == 3 and wire == 2:
+                  rebuilt.extend(varint((3 << 3) | 2))
+                  rebuilt.extend(varint(len(restored_memory)))
+                  rebuilt.extend(restored_memory)
+                  replaced += 1
+              else:
+                  rebuilt.extend(state_data[start:end])
+          if replaced != 1:
+              raise SystemExit(f"RESTORE_BIOS_REHYDRATE=FAIL memory_rebuilt={replaced}")
+          state_path.write_bytes(rebuilt)
+          print(f"RESTORE_BIOS_REHYDRATE=PASS bios_bytes={len(bios)} state_bytes={len(rebuilt)}")
+          PY
           else
             echo "STORY_RESUME_ARTIFACT=absent"
           fi
