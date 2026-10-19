@@ -6,7 +6,7 @@ Tanggal dibuat: 2026-10-15
 
 Emulator/debugger merupakan jalur penelitian utama bersama analisis statis bila tujuan kita menetapkan aturan permainan. Analisis byte/dekompilasi menghasilkan hipotesis; emulator dipakai untuk memeriksa state nyata sebelum/sesudah aksi, mengamati jalur kode yang benar-benar dieksekusi, dan menguji apakah sebuah aturan punya pengecualian menurut mode/skenario.
 
-Jangan pernah menyebut aturan “terbukti runtime” kecuali ada log uji yang bisa diulang. Jangan mengunggah ROM, game assets, retail Sony BIOS, memory card, save state, screen capture aset besar, atau dump RAM ke GitHub. OpenBIOS adalah pengganti BIOS open-source yang terpisah dan boleh disimpan bersama checksum serta atribusi lisensinya. Catatan teks, hash, breakpoint, register relevan, dan hasil terukur boleh disimpan.
+Jangan pernah menyebut aturan “terbukti runtime” kecuali ada log uji yang bisa diulang. ROM/ISO, executable game, retail Sony BIOS tersendiri, raw RAM/VRAM/GPU dump, dan aset game privat tetap tidak boleh diunggah. Kebijakan terbaru mengizinkan memory-card/game save dan savestate yang telah disanitasi melalui private artifact, cache, atau repositori private; sanitizer wajib membuang BIOS tertanam dan log harus menunjukkan PASS sebelum transfer. Lihat README.md dan bagian revisi save/checkpoint di catatan handoff terbaru. OpenBIOS adalah pengganti BIOS open-source yang terpisah dan boleh disimpan bersama checksum serta atribusi lisensinya. Catatan teks, hash, breakpoint, register relevan, dan hasil terukur boleh disimpan.
 
 ## Status pemasangan emulator dalam sesi ini
 
@@ -61,7 +61,7 @@ Mode 2 berasal dari mode byte sector pertama yang diperiksa. Jangan menulis ulan
 
 ## Urutan uji aturan gameplay
 
-Setiap uji memakai state awal yang sama atau mencatat tepat bagaimana state awal diperoleh. Simpan save state di luar repo; untuk mencegah kerusakan save, lakukan tes pada salinan memory card atau jangan gunakan save state bersamaan dengan memory card game asli.
+Setiap uji memakai state awal yang sama atau mencatat tepat bagaimana state awal diperoleh. Save kartu memori dan savestate yang telah disanitasi boleh disimpan/ditransfer di artifact, cache, atau repositori private. Gunakan salinan memory card eksperimen dan jangan menimpa save asli; jangan gunakan savestate bersamaan dengan memory card asli yang tidak sinkron.
 
 ### RT-001 — boot dan kalibrasi address
 
@@ -111,7 +111,7 @@ Untuk setiap hasil, tulis:
 - Breakpoint PC; identitas executable/resource + offset file + base RAM; register relevan; call chain sejauh yang terpetakan.
 - Hasil yang diamati, pengulangan yang berhasil/gagal, confidence, serta hal yang belum diketahui.
 
-Simpan log atau ringkasan debugger sebagai teks. Jangan menyimpan save state, ROM, BIOS, atau dump memori ke repo.
+Simpan log atau ringkasan debugger sebagai teks. Save kartu memori dan savestate tersanitasi boleh disimpan di repositori private sesuai kebijakan baru. ROM/ISO, BIOS retail tersendiri, serta raw RAM/VRAM/GPU dumps tetap dilarang.
 
 ## Kriteria menaikkan status keyakinan
 
@@ -133,4 +133,4 @@ Status boot tetap belum berhasil diverifikasi secara visual. Gunakan catatan ini
 - Perintah kontroler `0x43` (Set Config Mode) terlihat berulang. Source PCSX-Redux hanya meneruskan perintah DualShock seperti ini di mode Analog, sedangkan tipe Digital mencatat `Unknown command for pad: 43`. Sumber: https://github.com/grumpycoders/pcsx-redux/blob/db9bc8af44e3c77424127b573c17f9583ee2ab95/src/core/pad.cc. **Ini hipotesis yang belum diuji:** ubah Port 1 ke Analog/DualShock, ulangi boot dan lihat apakah perintah 0x43 diproses.
 - ZIP alternatif dari pengguna, `PCSX-Redux-9c6f98a0-linux-x86_64.zip` (90.912.361 byte), belum diperiksa atau dijalankan karena runtime shell/file tool gagal pada sesi 2026-10-16. Jangan mengklaim build ini berfungsi; periksa kembali saat akses filesystem pulih.
 
-**Kriteria sukses tetap ketat:** log mencapai entry game, layar menunjukkan title/menu Naruto yang dikenali, lalu kontrol merespons. Jangan menganggap layar hitam atau entry executable saja sebagai boot sukses. Jangan mengunggah ROM, EXE game, Sony BIOS retail, save state atau dump RAM ke repo.
+**Kriteria sukses tetap ketat:** log mencapai entry game, layar menunjukkan title/menu Naruto yang dikenali, lalu kontrol merespons. Jangan menganggap layar hitam atau entry executable saja sebagai boot sukses. Jangan mengunggah ROM/ISO, EXE game, Sony BIOS retail tersendiri, atau raw RAM/VRAM/GPU dump. Savestate tersanitasi dan memory-card save boleh dipindahkan melalui penyimpanan private sesuai kebijakan baru.
