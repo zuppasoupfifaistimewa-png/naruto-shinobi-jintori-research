@@ -1,3 +1,24 @@
+# HANDOFF TERBARU — 20 Oktober 2026: GDB membuktikan SIGSEGV di dalam raw savestate loader
+
+## Fakta diagnostik terbaru
+
+- Source checkpoint tetap dari run [#39262213468](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39262213468), frame 10055 di board screen. Ukuran 21.163.286 byte; SHA-256 `00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d`. Screenshot sumber 320×240, SHA-256 `101b94a4d171d228e0224948872b65b88bf84fd0d92dc8ddd0b6cfeb21f790a8`.
+- Receiver terbaru [#39314115221](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39314115221) memvalidasi dan menyalin checkpoint **tanpa perubahan byte**: `STORY_RAW_SOURCE_VALIDATION=PASS` dan `STORY_RAW_STATE_STAGED_UNCHANGED=PASS`, keduanya melaporkan ukuran/hash yang sama.
+- Phase log yang di-flush menunjukkan `LUA_SCRIPT_START` → `FIRST_GPU_VSYNC_ENTERED` → `NEXT_TICK_ENTERED` → `SAVESTATE_FILE_OPEN_OK` → `PCSX_LOADSAVESTATE_BEGIN`. GDB kemudian menangkap SIGSEGV pada thread `pcsx-redux` selama panggilan loader; `PCSX_LOADSAVESTATE_PCALL_RETURNED` dan event `ExecutionFlow::SaveStateLoaded` tidak muncul.
+- Temuan native pada artifact diagnostik privat #12216519993 dari [run #39314115221](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39314115221): PC `0x7ffff0fad6d0` dipetakan ke `AppDir/shared/bin/pcsx-redux`; disassembly berhenti di `movzbl (%rsi),%ecx`; RSI=`0xffffffffd736a15f`, alamat tidak valid/tidak dipetakan. GDB merekam 72 frame, tetapi fungsi tidak bernama karena executable ter-strip. Kesimpulan yang didukung: dereferensi alamat tidak valid di jalur native selama pemuatan savestate. Fungsi penyebab dan alasan pointer tidak valid belum dapat dipastikan; jangan menyatakan state rusak tanpa pembanding yang lebih kuat.
+- Akibatnya screenshot pascarestore gagal karena emulator keluar sebelum capture; tidak ada bukti ≥180 VSync maupun checkpoint lanjutan. **Raw Story Mode restore belum berhasil; progres belum terbukti aman dipulihkan.** Run sumber 90 menit tidak dijalankan ulang, dan checkpoint sumber tidak dimodifikasi.
+- Run [#39313917935](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39313917935) juga menangkap SIGSEGV di dalam loader. #39313679196 bukan stack trace emulator yang valid (GDB mengikuti helper `mkdir`); #39313520942 gagal ketika path staging Lua salah; #39313409415 gagal mengunduh artifact karena run-id pada action belum memakai variabel `SOURCE_RUN_ID`. Kedua masalah itu telah diperbaiki.
+- Workflow receiver saat ini tidak mempunyai pemicu `push` sementara. Diagnostik permanen di `.github/workflows/naruto-raw-storymode-restore.yml` meliputi GDB dengan `follow-fork-mode parent`, penanda fase Lua, register, disassembly, pencarian simbol, dan memory mappings. Commit terakhir yang menghapus pemicu sementara: [68639076b5b6a971d62bd8a5a73c60a9ba406d11](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/68639076b5b6a971d62bd8a5a73c60a9ba406d11). Kedua langkah unduhan artifact kini memakai run ID yang diselesaikan dari variabel `SOURCE_RUN_ID`.
+- Jangan sentuh repositori Tile Duel. Jangan tambahkan ROM, BIOS, raw savestate, atau Memory Card ke Git. Memory Card kandidat 131.072 byte masih berstatus `UNVERIFIED_REQUIRES_IN_GAME_SAVE_AND_RELOAD`. Game belum terbukti tamat; dialog Story Mode dilewati dengan START, bukan Circle.
+
+## Langkah berikutnya
+
+1. Jangan langsung mengulangi receiver berkali-kali dengan setup yang identik: gejala native dan alamat fault kini terdokumentasi. Analisis read-only perbedaan raw checkpoint board-screen dengan raw boot checkpoint yang pernah pulih lintas-run, terutama format/isi state, tanpa mentransformasi checkpoint sumber.
+2. Bila melakukan kontrol eksperimen selanjutnya, gunakan checkpoint sumber #39262213468 dan validasi hash/ukuran sebelum serta sesudah staging; jangan jalankan ulang sumber 90 menit. Bedakan startup, fase sebelum loader, dan di dalam `PCSX.loadSaveState()` dengan phase log/GDB.
+3. Hanya tandai restore PASS setelah event `ExecutionFlow::SaveStateLoaded`, panggilan loader kembali normal, ≥180 VSync pascarestore, screenshot sama/masuk akal terhadap source, dan checkpoint lanjutan benar-benar diunggah. Jika salah satu hilang, status tetap gagal/belum terverifikasi.
+
+---
+
 # HANDOFF TERBARU — 20 Oktober 2026: receiver raw Story Mode crash saat startup
 
 ## Hasil terbaru untuk dilanjutkan
