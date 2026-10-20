@@ -35,7 +35,7 @@ jobs:
         run: |
           set -euo pipefail
           apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y jq python3-pil xvfb x11-utils curl git unzip zip
+          DEBIAN_FRONTEND=noninteractive apt-get install -y jq python3-pil xvfb x11-utils curl git unzip zip gdb
           mkdir -p "$WORK"/{source-state,source-card,resume,cards,captures/raw,pinned,variant,home,.config,.data}
           echo "PROBE_NO_SOURCE_PLAYTHROUGH=PASS"
           echo "PROBE_RAW_SOURCE_MODIFICATION=FORBIDDEN"
@@ -100,6 +100,8 @@ jobs:
           if test -s "$CARD_FILE" && test -s "$CARD_MANIFEST"; then
             CARD_BYTES="$(awk -F= '$1=="STORY_MEMORY_CARD_BYTES" {print $2;exit}' "$CARD_MANIFEST")"
             CARD_SHA="$(awk -F= '$1=="STORY_MEMORY_CARD_SHA256" {print $2;exit}' "$CARD_MANIFEST")"
+            test "$CARD_BYTES" = "131072"
+            test "$CARD_SHA" = "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5"
             test "$(stat -c '%s' "$CARD_FILE")" = "$CARD_BYTES"
             test "$(sha256sum "$CARD_FILE" | cut -d ' ' -f 1)" = "$CARD_SHA"
             cp "$CARD_FILE" "$WORK/cards/naruto-storymode.mcd"
@@ -189,15 +191,26 @@ jobs:
           assert(out:close())
           print("STORY_SCHEMA_API=PASS bytes=" .. #schema)
           io.stdout:flush()
-          PCSX.quit(0)
+          PCSX.Events.createEventListener("GPU::Vsync", function()
+              PCSX.nextTick(function()
+                  print("STORY_SCHEMA_PROBE_NO_LOADER=PASS")
+                  io.stdout:flush()
+                  PCSX.quit(0)
+              end)
+          end)
           LUA
           SCHEMA_SCRIPT="$(cat "$WORK/schema-probe.lua")"
           set +e
-          timeout --signal=TERM --kill-after=5s 45s "$WORK/pinned/squashfs-root/AppRun"             -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue"             -memcard1 "$WORK/cards/naruto-storymode.mcd" -exec "$SCHEMA_SCRIPT"             -softgpu -dynarec -stdout -lua_stdout -logfile "$WORK/schema-probe.log" -run             > "$WORK/schema-probe.stdout" 2>&1
+          timeout --signal=TERM --kill-after=5s 45s "$WORK/pinned/squashfs-root/AppRun" -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/naruto-storymode.mcd" -exec "$SCHEMA_SCRIPT" -softgpu -dynarec -stdout -lua_stdout -logfile "$WORK/schema-probe.log" -run > "$WORK/schema-probe.stdout" 2>&1
           rc=$?
           set -e
           cp "$WORK/schema-probe.stdout" "$WORK/captures/schema-probe.stdout.txt" || true
           cp "$WORK/schema-probe.log" "$WORK/captures/schema-probe.log.txt" || true
+          test -s "$WORK/captures/savestate-schema-pinned.proto"
+          grep -q "STORY_SCHEMA_API=PASS" "$WORK/schema-probe.stdout"
+          grep -q "STORY_SCHEMA_PROBE_NO_LOADER=PASS" "$WORK/schema-probe.stdout"
+          test "$rc" -eq 0
+          echo "PROBE_PINNED_SCHEMA_API_RUNTIME=PASS exit=$rc schema_sha256=$(sha256sum "$WORK/captures/savestate-schema-pinned.proto" | cut -d ' ' -f 1)"
           test -s "$WORK/captures/savestate-schema-pinned.proto"
           grep -q "STORY_SCHEMA_API=PASS" "$WORK/schema-probe.stdout" "$WORK/schema-probe.log"
           test "$rc" -ne 124
@@ -259,7 +272,7 @@ jobs:
           addition = r'''local frame_count = 0
           local function restore_phase(stage)
               local f = io.open("captures/restore-phase.log", "ab")
-              if f then f:write("RESTORE_PHASE=" .. stage .. "\\n"); f:flush(); f:close() end
+              if f then f:write("RESTORE_PHASE=" .. stage .. "\n"); f:flush(); f:close() end
               print("RESTORE_PHASE=" .. stage)
               io.stdout:flush()
           end
@@ -362,6 +375,7 @@ jobs:
           test "$emu_rc" -eq 0
           test "$compare_rc" -eq 0
           grep -q 'STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded' "$WORK/pcsx.stdout"
+          grep -q "RESTORE_PHASE=PCSX_LOADSAVESTATE_PCALL_RETURNED" "$WORK/pcsx.stdout"
           grep -q 'STORY_SAVESTATE_LOAD_CALL_RETURNED=1' "$WORK/pcsx.stdout"
           grep -q 'STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180' "$WORK/pcsx.stdout"
           grep -q 'STORY_RAW_RESTORE_CROSS_RUN=PASS' "$WORK/pcsx.stdout"
@@ -428,13 +442,14 @@ jobs:
               f"PROBE_VARIANT_SCHEMA_SHA256={sha(cap/'savestate-schema-variant.proto')}",
               f"PROBE_SCHEMA_TEXT_IDENTICAL={str((cap/'savestate-schema-pinned.proto').is_file() and (cap/'savestate-schema-variant.proto').is_file() and (cap/'savestate-schema-pinned.proto').read_bytes()==(cap/'savestate-schema-variant.proto').read_bytes()).upper()}",
               f"PROBE_VARIANT_APPIMAGE_SHA256={sha(root/'PCSX-Redux-spu-sentinel-probe-x86_64.AppImage')}",
-              f"PROBE_PATCH_SHA256={sha(root/'experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch')}",
+              f"PROBE_PATCH_SHA256={sha(Path(os.environ.get('GITHUB_WORKSPACE','.')/'experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch'))}",
               f"PROBE_NEXT_STATE_BYTES={size(newstate)}",
               f"PROBE_NEXT_STATE_SHA256={sha(newstate)}",
               f"PROBE_NEXT_SCREENSHOT_SHA256={sha(cap/'storymode-checkpoint-next.png')}",
               f"PROBE_IMMEDIATE_RESTORE_SCREENSHOT_SHA256={sha(cap/'storymode-checkpoint-restore-immediate.png')}",
               f"PROBE_COMPARE_REPORT_SHA256={sha(cap/'storymode-restore-comparison.txt')}",
               f"PROBE_LOAD_EVENT={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_LOADER_PCALL_RETURNED={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'RESTORE_PHASE=PCSX_LOADSAVESTATE_PCALL_RETURNED' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
               f"PROBE_LOADER_RETURNED={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'STORY_SAVESTATE_LOAD_CALL_RETURNED=1' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
               f"PROBE_POST180_VSYNC={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
               f"PROBE_SCREENSHOT_COMPARE={'PASS' if (cap/'storymode-restore-comparison.txt').is_file() and 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' in (cap/'storymode-restore-comparison.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
