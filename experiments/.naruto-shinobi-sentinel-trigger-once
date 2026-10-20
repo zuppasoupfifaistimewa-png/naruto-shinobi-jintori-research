@@ -1,1 +1,1 @@
-Temporary one-shot trigger for isolated savestate restore verification. No ROM, BIOS, savestate, or Memory Card contents.
+One-time trigger for the corrected isolated SPU save-state probe. No gameplay controls injected; original checkpoint remains unchanged.
