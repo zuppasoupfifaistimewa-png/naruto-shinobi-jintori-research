@@ -667,6 +667,7 @@ jobs:
             ${{ env.WORK }}/captures/screenshot-compare.log
             ${{ env.WORK }}/captures/schema-probe.stdout.txt
             ${{ env.WORK }}/captures/schema-probe.log.txt
+            ${{ env.WORK }}/captures/schema-xvfb.log.txt
             ${{ env.WORK }}/gdb-console.txt
             ${{ env.WORK }}/captures/pcsx-board-restore.stdout.txt
             ${{ env.WORK }}/captures/pcsx-board-restore.log.txt
