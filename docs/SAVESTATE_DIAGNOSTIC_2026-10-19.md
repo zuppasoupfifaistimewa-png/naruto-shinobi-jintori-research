@@ -5,7 +5,7 @@ Bagian lama di bawah adalah temuan historis. Setelah pemetaan schema dan pembaca
 - Receiver lama memastikan raw staging identik; PC fault membaca byte melalui movzbl (%rsi),%ecx pada RSI 0xffffffffd736a15f, loader tidak kembali dan event restore tidak terdeteksi.
 - API PCSX.getSaveStateProtoSchema() tersedia pada source yang dipatok dan menghasilkan schema protobuf. Workflow baru akan menguji pemanggilan runtime sebelum loader.
 - Top-level field 6 adalah spu; channel.data.current adalah field 8. Raw board memiliki 20 cursor out-of-range dan 18 di antaranya berflag stop=1; raw boot juga menyimpan cursor invalid tetapi channel tampak inactive.
-- Workflow [workflow probe perbaikan sentinel](.github/workflows/naruto-spu-sentinel-fix-probe.yml) membangun emulator dari commit basis sama dengan patch dua-file upstream #2218 serta raw state yang tidak diubah. Ia berhenti setelah gerbang restore dan checkpoint lanjutan; belum ada hasil run probe.
+- Workflow [workflow probe perbaikan sentinel](.github/workflows/naruto-spu-sentinel-fix-probe.yml) membangun emulator dari commit basis sama dengan patch dua-file upstream #2218 serta raw state yang tidak diubah. Setelah checkpoint baru disimpan, workflow memuatnya pada proses emulator baru dan mengulang gate restore; belum ada hasil run probe.
 
 **Status:** hipotesis berkeyakinan tinggi, bukan restore PASS. Story Mode belum terbukti dilanjutkan dari checkpoint dan game belum terbukti tamat.
 
