@@ -184,6 +184,22 @@ jobs:
         run: |
           set -euo pipefail
           cd "$WORK"
+          mkdir -p "$WORK/runtime"
+          chmod 700 "$WORK/runtime"
+          # PCSX-Redux initializes SDL even for this no-loader schema call.
+          # Provide a virtual X/GL display so the preflight tests the Lua API,
+          # rather than failing before Lua executes.
+          Xvfb :98 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/schema-xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          cleanup_schema_display() {
+            kill "$xvfb_pid" 2>/dev/null || true
+            wait "$xvfb_pid" 2>/dev/null || true
+          }
+          trap cleanup_schema_display EXIT
+          for i in $(seq 1 60); do xdpyinfo -display :98 >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display :98 >/dev/null
+          export DISPLAY=:98 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/.config" XDG_DATA_HOME="$WORK/.data"
+          export XDG_RUNTIME_DIR="$WORK/runtime" LIBGL_ALWAYS_SOFTWARE=1
           cat > "$WORK/schema-probe.lua" <<'LUA'
           local schema = PCSX.getSaveStateProtoSchema()
           assert(type(schema) == "string" and #schema > 100, "empty or unavailable save-state schema API")
@@ -202,17 +218,30 @@ jobs:
           LUA
           SCHEMA_SCRIPT="$(cat "$WORK/schema-probe.lua")"
           set +e
-          timeout --signal=TERM --kill-after=5s 45s "$WORK/pinned/squashfs-root/AppRun" -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/naruto-storymode.mcd" -exec "$SCHEMA_SCRIPT" -softgpu -dynarec -stdout -lua_stdout -logfile "$WORK/schema-probe.log" -run > "$WORK/schema-probe.stdout" 2>&1
+          timeout --signal=TERM --kill-after=5s 45s "$WORK/pinned/squashfs-root/AppRun" \
+            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+            -memcard1 "$WORK/cards/naruto-storymode.mcd" -exec "$SCHEMA_SCRIPT" \
+            -softgpu -dynarec -stdout -lua_stdout -logfile "$WORK/schema-probe.log" -run \
+            > "$WORK/schema-probe.stdout" 2>&1
           rc=$?
           set -e
           cp "$WORK/schema-probe.stdout" "$WORK/captures/schema-probe.stdout.txt" || true
           cp "$WORK/schema-probe.log" "$WORK/captures/schema-probe.log.txt" || true
-          test -s "$WORK/captures/savestate-schema-pinned.proto"
-          grep -q "STORY_SCHEMA_API=PASS" "$WORK/schema-probe.stdout"
-          grep -q "STORY_SCHEMA_PROBE_NO_LOADER=PASS" "$WORK/schema-probe.stdout"
-          test "$rc" -eq 0
+          cp "$WORK/schema-xvfb.log" "$WORK/captures/schema-xvfb.log.txt" || true
+          if [ ! -s "$WORK/captures/savestate-schema-pinned.proto" ] ||
+             ! grep -q "STORY_SCHEMA_API=PASS" "$WORK/schema-probe.stdout" "$WORK/schema-probe.log" ||
+             ! grep -q "STORY_SCHEMA_PROBE_NO_LOADER=PASS" "$WORK/schema-probe.stdout" "$WORK/schema-probe.log" ||
+             [ "$rc" -ne 0 ]; then
+            echo "::error::Pinned schema API runtime preflight failed (exit=$rc); no savestate loader was called."
+            echo "----- schema-probe stdout -----"
+            cat "$WORK/schema-probe.stdout" || true
+            echo "----- schema-probe emulator log -----"
+            cat "$WORK/schema-probe.log" || true
+            echo "----- virtual-display log -----"
+            cat "$WORK/schema-xvfb.log" || true
+            exit 42
+          fi
           echo "PROBE_PINNED_SCHEMA_API_RUNTIME=PASS exit=$rc schema_sha256=$(sha256sum "$WORK/captures/savestate-schema-pinned.proto" | cut -d ' ' -f 1)"
-
       - name: Build emulator variant from pinned source plus only the upstream SPU cursor fix
         shell: bash
         run: |
