@@ -458,3 +458,11 @@ Repo yang boleh diubah tetap hanya zuppasoupfifaistimewa-png/naruto-shinobi-jint
 
 Jangan sebut checkpoint #39373493482 sebagai checkpoint baru yang dapat dipakai: manifest mencatat ukuran next-state 0 dan SHA missing. Jangan menyimpulkan fix sudah sepenuhnya terverifikasi sampai run ulang melewati post-restore gate, menghasilkan checkpoint nonkosong, lalu memuat checkpoint itu sukses dalam proses emulator baru. Jangan mengirim input kontrol, memulai ulang 90 menit gameplay, atau mengubah file savestate sumber.
 
+## Handoff lanjutan — malam 20 Oktober 2026
+
+Run [#39383287999](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39383287999) gagal pada gerbang workflow setelah loader berhasil kembali dan screenshot pascarestore lulus tepat per piksel. Run mencatat state source/staging identik (21.163.286 byte; SHA-256 `00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d`), `ExecutionFlow::SaveStateLoaded`, loader-return=1, dan comparison PASS (mean RGB diff 0; exact pixels=1.0). Namun log tidak mengandung `STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180` / `STORY_RAW_RESTORE_CROSS_RUN=PASS`; emulator maju sampai frame 12000. Manifest menunjukkan checkpoint lanjutan 0 byte dan reload proses kedua dilewati.
+
+Percobaan setelahnya memperbaiki mekanisme kontrol: screenshot gate kini dibaca langsung dalam callback GPU::Vsync, bukan polling rekursif `PCSX.nextTick`; setelah PASS baru jadwalkan save pada safe tick dan berhenti. Batas tunggu flag 900 VSync menghindari loop tak berujung. Workflow file sudah diperbaiki dan pemicu sementara dibersihkan kembali. Run terbaru [#39426068247](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39426068247) berjalan; pada pemeriksaan terakhir baru memulai job, belum ada hasil runtime.
+
+Run #39425629341 dan #39425661897 berhenti tanpa jobs atau artifacts (perubahan harness/trigger perantara), jadi jangan perlakukan sebagai bukti emulator atau savestate. Tidak ada gameplay button yang dikirim, dan source savestate tidak diubah.
+
