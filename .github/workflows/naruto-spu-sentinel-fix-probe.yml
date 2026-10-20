@@ -93,6 +93,7 @@ jobs:
           echo "SOURCE_STATE_BYTES=$(stat -c '%s' "$RAW")"
           echo "SOURCE_STATE_SHA256=$(sha256sum "$RAW" | cut -d ' ' -f 1)"
           echo "STAGED_STATE_SHA256=$STAGED_SHA"
+          printf 'SOURCE_STAGED_STATE_BYTES=%s\nSOURCE_STAGED_STATE_SHA256=%s\n' "$(stat -c '%s' "$WORK/resume/storymode-checkpoint.sstate")" "$STAGED_SHA" > "$WORK/captures/source-staging-evidence.txt"
           echo "PROBE_RAW_SOURCE_STAGED_UNCHANGED=PASS"
           # Preserve the same Memory Card input and verify it when a manifest exists.
           CARD_FILE="$CARD/naruto-storymode.mcd"
@@ -293,11 +294,19 @@ jobs:
           s = s.replace(old_load, new_load, 1)
           old_gate = '                            print("STORY_RAW_RESTORE_CROSS_RUN=PASS")\n                            PCSX.resumeEmulator()'
           new_gate = '''                            print("STORY_RAW_RESTORE_CROSS_RUN=PASS")
-                            print("STORY_PROBE_NO_CONTROLLER_INPUT=PASS")
-                            local saved = save_checkpoint(frame_count)
-                            print(string.format("STORY_PROBE_NEXT_CHECKPOINT frame=%d save_ok=%s",
-                                frame_count, tostring(saved)))
-                            PCSX.quit(saved and 0 or 76)'''
+                            local validation = io.open("resume/validation-only.flag", "rb")
+                            if validation then
+                                validation:close()
+                                print("STORY_PROBE_NO_CONTROLLER_INPUT=PASS")
+                                print("STORY_PROBE_FRESH_RELOAD=PASS")
+                                PCSX.quit(0)
+                            else
+                                print("STORY_PROBE_NO_CONTROLLER_INPUT=PASS")
+                                local saved = save_checkpoint(frame_count)
+                                print(string.format("STORY_PROBE_NEXT_CHECKPOINT frame=%d save_ok=%s",
+                                    frame_count, tostring(saved)))
+                                PCSX.quit(saved and 0 or 76)
+                            end'''
           if s.count(old_gate) != 1:
               raise SystemExit("Expected exactly one successful restore continuation gate")
           s = s.replace(old_gate, new_gate, 1)
