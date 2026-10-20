@@ -8,6 +8,9 @@ on:
         required: true
         default: "39262213468"
         type: string
+  push:
+    paths:
+      - "experiments/.naruto-spu-sentinel-trigger-once"
 
 permissions:
   contents: read
@@ -321,29 +324,58 @@ jobs:
           if s.count(old_load) != 1:
               raise SystemExit("Expected exactly one loader call in Lua")
           s = s.replace(old_load, new_load, 1)
-          old_pause = '            PCSX.pauseEmulator()\n            PCSX.nextTick(function()\n                capture_frame(180)'
-          new_pause = '            -- Keep VSync running while screenshot comparison completes.\n            -- Pausing here blocks nextTick polling after the frame-180 capture.\n            PCSX.nextTick(function()\n                capture_frame(180)'
-          if s.count(old_pause) != 1:
-              raise SystemExit("Expected exactly one pause before screenshot-match polling")
-          s = s.replace(old_pause, new_pause, 1)
-          old_gate = '                            print("STORY_RAW_RESTORE_CROSS_RUN=PASS")\n                            PCSX.resumeEmulator()'
-          new_gate = '''                            print("STORY_RAW_RESTORE_CROSS_RUN=PASS")
-                            local validation = io.open("resume/validation-only.flag", "rb")
-                            if validation then
-                                validation:close()
-                                print("STORY_PROBE_NO_CONTROLLER_INPUT=PASS")
-                                print("STORY_PROBE_FRESH_RELOAD=PASS")
-                                PCSX.quit(0)
-                            else
-                                print("STORY_PROBE_NO_CONTROLLER_INPUT=PASS")
-                                local saved = save_checkpoint(frame_count)
-                                print(string.format("STORY_PROBE_NEXT_CHECKPOINT frame=%d save_ok=%s",
-                                    frame_count, tostring(saved)))
-                                PCSX.quit(saved and 0 or 76)
-                            end'''
-          if s.count(old_gate) != 1:
-              raise SystemExit("Expected exactly one successful restore continuation gate")
-          s = s.replace(old_gate, new_gate, 1)
+          old_restore_gate = r'''    if raw_resume_verify and restore_event_seen then
+        restore_post_frames = restore_post_frames + 1
+        if restore_post_frames >= 180 and not restore_verify_pending then
+            restore_verify_pending = true
+            capture_frame(180)
+            print("STORY_RAW_RESTORE_COMPARE_CAPTURE_READY=1")
+            return
+        elseif restore_verify_pending then
+            restore_verify_attempts = restore_verify_attempts + 1
+            local gate = io.open("captures/raw/restore-screenshot-match.flag", "rb")
+            if not gate then
+                if restore_verify_attempts >= 900 then
+                    print("STORY_RAW_RESTORE_SCREENSHOT_MATCH=FAIL reason=compare_timeout")
+                    PCSX.pauseEmulator()
+                    PCSX.nextTick(function() PCSX.quit(75) end)
+                end
+                return
+            end
+            local result = gate:read("*a") or ""
+            gate:close()
+            if not result:match("^PASS") then
+                print("STORY_RAW_RESTORE_SCREENSHOT_MATCH=FAIL detail=" .. result:gsub("[\r\n]", " "))
+                PCSX.pauseEmulator()
+                PCSX.nextTick(function() PCSX.quit(74) end)
+                return
+            end
+            print("STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180")
+            print("STORY_RAW_RESTORE_SCREENSHOT_MATCH=PASS")
+            print("STORY_RAW_RESTORE_CROSS_RUN=PASS")
+            PCSX.pauseEmulator()
+            PCSX.nextTick(function()
+                local validation = io.open("resume/validation-only.flag", "rb")
+                if validation then
+                    validation:close()
+                    print("STORY_PROBE_NO_CONTROLLER_INPUT=PASS")
+                    print("STORY_PROBE_FRESH_RELOAD=PASS")
+                    PCSX.quit(0)
+                else
+                    print("STORY_PROBE_NO_CONTROLLER_INPUT=PASS")
+                    local saved = save_checkpoint(frame_count)
+                    print(string.format("STORY_PROBE_NEXT_CHECKPOINT frame=%d save_ok=%s", frame_count, tostring(saved)))
+                    PCSX.quit(saved and 0 or 76)
+                end
+            end)
+            return
+        end
+    end
+'''
+          old_restore_gate = old_restore_gate.rstrip("\n")
+          if s.count(old_restore_gate) != 1:
+              raise SystemExit("Expected exactly one restore screenshot polling block")
+          s = s.replace(old_restore_gate, new_restore_gate, 1)
           p.write_text(s)
           # Reduce the existing watcher to screenshot comparison only; don't run its
           # dialogue detector and therefore never create a START input request.
