@@ -84,7 +84,8 @@ Status hanya boleh ditandai **RESTORE PASS** bila semua syarat ini terpenuhi pad
 2. `ExecutionFlow::SaveStateLoaded` terdeteksi dan pemanggilan loader tercatat kembali normal;
 3. sedikitnya 180 VSync terverifikasi setelah restore dan proses keluar dengan kode 0;
 4. screenshot pascarestore cocok dengan screenshot checkpoint sumber lewat ambang yang tercatat;
-5. checkpoint lanjutan nonkosong dibuat, ukurannya serta SHA-256 tercatat dan diverifikasi.
+5. checkpoint lanjutan nonkosong dibuat, ukuran serta SHA-256 tercatat;
+6. checkpoint lanjutan tersebut berhasil dimuat ulang dalam proses emulator baru, dengan event load, loader-return normal, minimal 180 VSync, screenshot yang cocok, dan exit code 0.
 
 Sebelum workflow manual dijalankan dan hasilnya diperiksa, status tetap **RESTORE BELUM TERBUKTI**. Bila lulus, lanjutkan Story Mode dari checkpoint valid dengan build yang memuat perbaikan yang sama, kemudian buat checkpoint berikut secara berkala.
 
