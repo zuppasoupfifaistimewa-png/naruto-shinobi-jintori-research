@@ -74,7 +74,7 @@ Workflow merekam dalam artifact privat:
 - hasil perbandingan screenshot dengan gate `mean_abs_rgb_diff <= 6.0` dan exact-pixel fraction `>= 0.70`;
 - SHA, ukuran, dan screenshot untuk checkpoint lanjutan yang dibuat setelah 180 VSync.
 
-Probe **tidak menekan tombol dan tidak melanjutkan gameplay** setelah gate 180 VSync. Pada pass, ia membuat satu checkpoint lanjutan lalu berhenti; pada fail, ia mengunggah log diagnostik tanpa mengubah raw sumber.
+Probe **tidak menekan tombol dan tidak melanjutkan gameplay**. Setelah restore board melewati event, loader-return, 180 VSync, dan screenshot gate, ia menyimpan checkpoint lanjutan. Proses emulator kedua yang baru kemudian memuat checkpoint itu lagi tanpa input dan harus melewati event, loader-return, 180 VSync, serta screenshot gate yang sama. Checkpoint baru hanya dinyatakan valid bila reload kedua ini juga lulus; eksperimen berhenti tanpa gameplay. Pada fail, artifact menyimpan diagnosis tanpa mengubah raw sumber.
 
 ### Kriteria penerimaan
 
