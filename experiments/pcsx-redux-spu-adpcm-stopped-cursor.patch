@@ -20,8 +20,7 @@ index dc097f5b6..c5dae65d0 100644
      storeOffset(m_curr, currOffset);
      storeOffset(m_loop, loopOffset);
 @@ -38,8 +46,13 @@ void PCSX::SPU::AdpcmDecoder::loadFrom(const Protobuf::Int32 &history1, const Pr
-                                        const Protobuf::Int32 &currOffset, const Protobuf::Int32 &loopOffset, uint8_t *ramBase,
-                                        const Protobuf::Int32 *sb, const Protobuf::Int32 &sbPos) {
+                                        const Protobuf::Int32 &sbPos) {
      m_s1 = history1.value;
      m_s2 = history2.value;
 +    // Anything outside sound RAM other than the null marker restores as stopped. That covers
@@ -56,8 +55,7 @@ index 4c7825026..0cc5723b2 100644
      // Decode cursor accessors (raw pointers into sound RAM).
      uint8_t *start() const { return m_start; }
 @@ -84,8 +85,7 @@ class AdpcmDecoder {
-     // the per-channel helper owns conversion between this runtime state and
-     // savestate mirror fields. The fields are passed in rather than the
+     // the per-channel savestate fields. The fields are passed in rather than the
      // whole channel message because adpcm.h cannot include types.h (it is
      // included by it). `ramBase` is spuRamBase; each cursor is stored as a byte
 -    // offset, with -1 standing in for a null pointer. The kStopped sentinel is
