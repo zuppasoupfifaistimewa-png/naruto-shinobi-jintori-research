@@ -1,5 +1,9 @@
 ## PEMBARUAN DIAGNOSIS — dugaan pointer sentinel SPU/ADPCM (20 Oktober 2026)
 
+## Catatan eksekusi terbaru — 20 Oktober 2026
+
+Run [#39373493482](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39373493482) sedang menguji hipotesis sentinel ADPCM pada source raw yang tetap tidak berubah. Percobaan push terdahulu [#39372712212](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39372712212) gagal sebelum staging karena fallback `source_run_id` tidak diterapkan pada unduhan Memory Card; ini adalah bug orkestrasi, bukan hasil uji restore. Run terbaru belum memiliki artifact final saat catatan ini diperbarui, jadi diagnosis kausal tetap hipotesis sampai log hasil patch diperiksa.
+
 Bagian lama di bawah adalah temuan historis. Setelah pemetaan schema dan pembacaan raw field, diagnosis paling mungkin untuk SIGSEGV receiver board kini adalah bug cursor ADPCM stopped yang dikenal di upstream PCSX-Redux [PR #2218](https://github.com/grumpycoders/pcsx-redux/pull/2218). Build pinned 0c3572c3db75f97542001e453ae80ba8c3f8acba lebih tua dari fix tersebut. Lihat [analisis akar dan probe](SAVESTATE_ADPCM_SENTINEL_ROOT_CAUSE_2026-10-20.md).
 
 - Receiver lama memastikan raw staging identik; PC fault membaca byte melalui movzbl (%rsi),%ecx pada RSI 0xffffffffd736a15f, loader tidak kembali dan event restore tidak terdeteksi.
