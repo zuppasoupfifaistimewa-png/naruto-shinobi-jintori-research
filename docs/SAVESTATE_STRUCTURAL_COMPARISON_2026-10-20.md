@@ -71,3 +71,24 @@ Artinya, menguji varian tersanitasi ini hanya mengisolasi ada/tidaknya field BIO
 4. Pertahankan raw board asli dan manifest/hash-nya tanpa perubahan. Jangan jalankan ulang sumber 90 menit; jangan commit ROM, BIOS, savestate, atau Memory Card.
 
 Game belum terbukti tamat. Aturan main tetap hanya dapat ditandai terverifikasi dari bukti gameplay langsung.
+
+
+## Pemetaan schema dan interpretasi cursor SPU (20 Oktober 2026)
+
+API schema tersedia pada source build pinned di src/core/pcsxlua.cc: PCSX.getSaveStateProtoSchema() memanggil SaveStates::ProtoFile::dumpSchema() dan mengembalikan teks schema. API dapat dipanggil sebelum loader, tanpa mengubah state. Eksekusi runtime pada binary pinned masih menunggu hasil workflow probe.
+
+Mapping field dari source build yang sama:
+- Top-level field 6 = spu.
+- Dalam SPU, field 6 = 24 record channel.
+- Dalam channel.data, field 7 = start, field 8 = current, field 9 = loop, field 10 = on, field 11 = stop.
+- SPU subfield 3 = xa; payload 32.781 byte ada di board tetapi tidak di boot.
+
+Pembacaan cursor dari salinan artifact read-only:
+- Raw boot: semua 24 field current berisi lower 32-bit 0xe9dfc75f (int32 -371210401), di luar rentang RAM suara [0, 524288). Semua channel punya SBPos=28, tanpa flag on=1 atau stop=1 terenkode. Boot ini sudah terbukti pulih.
+- Raw board: 20/24 field current memiliki lower 32-bit 0xd5e7578f (int32 -706259057) di luar RAM; 18 dari 20 berflag stop=1. Semua channel punya SBPos=28; ada empat channel on=1. Keadaan audio board lebih beragam dan memiliki XA yang tidak ada pada boot.
+- GDB pada receiver gagal menangkap dereference byte movzbl (%rsi),%ecx dengan RSI 0xffffffffd736a15f; ini kompatibel dengan cursor liar akibat offset sentinel yang terpotong ke int32.
+
+Upstream membahas bug ini pada issue #2175 dan memperbaikinya melalui [PR #2218](https://github.com/grumpycoders/pcsx-redux/pull/2218), merged 5 Oktober 2026. Pada build lama, AdpcmDecoder::saveTo menyimpan selisih pointer kStopped ke int32 dan loadFrom menjumlahkan offset itu ke base RAM. Fix menggunakan kNullOffset=-1, kStoppedOffset=-2, lalu memetakan offset di luar sound RAM kembali ke sentinel stopped agar state lama ikut tertangani.
+
+**Batas:** ini penyebab yang sangat masuk akal berdasarkan kecocokan source dan trace, tetapi belum terkonfirmasi kausal pada checkpoint Naruto. Probe faktor-tunggal menggunakan raw board dengan hash 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d; hanya build emulator yang diubah. Belum ada run patched yang lulus seluruh gerbang restore.
+
