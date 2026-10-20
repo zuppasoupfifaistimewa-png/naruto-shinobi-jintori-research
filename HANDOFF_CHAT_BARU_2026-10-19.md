@@ -8,7 +8,7 @@
 - API schema terdapat pada source build yang tepat: PCSX.getSaveStateProtoSchema(). Workflow probe akan memanggilnya dari pinned AppImage sebelum loader dan membandingkan teks schema dengan build varian.
 - Mapping: top-level field 6 = spu; di dalamnya 24 channel; channel.data.current = field 8. Raw board: 20 cursor current di luar RAM suara 512 KiB, 18 dari 20 berflag stop=1. Raw boot yang berhasil juga punya cursor invalid tetapi channel inactive. Ini mendukung hipotesis, belum membuktikan kausalitas.
 - Patch isolated: experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch. Workflow manual: [workflow probe perbaikan sentinel](.github/workflows/naruto-spu-sentinel-fix-probe.yml). Patch hanya mengubah src/spu/adpcm.cc dan src/spu/adpcm.h sesuai upstream PR #2218 pada basis commit pinned. Raw source state tidak ditransformasi.
-- Workflow belum dijalankan; restore board masih BELUM TERBUKTI. Artifact hasil akan memuat hash sumber/staging, hash patch/diff/binary, schema, event/loader marker, VSync, screenshot report, dan checkpoint baru. Probe tidak menekan tombol dan berhenti setelah save checkpoint pascarestore 180 VSync.
+- Workflow belum dijalankan; restore board masih BELUM TERBUKTI. Artifact hasil memuat hash sumber/staging, hash patch/diff/binary, schema, event/loader marker, VSync, screenshot report, dan checkpoint baru. Tanpa menekan tombol, probe menyimpan checkpoint setelah restore pertama lalu menguji ulang checkpoint itu pada proses emulator baru; checkpoint hanya valid bila reload kedua melewati semua gate.
 
 ## Langkah berikutnya
 
