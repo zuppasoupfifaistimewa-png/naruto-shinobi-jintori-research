@@ -125,3 +125,11 @@ Penghapusan `PCSX.pauseEmulator()` saja belum cukup karena poller `PCSX.nextTick
 
 Run terbaru [#39426068247](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39426068247) berjalan pada saat catatan dibuat. **Jangan ubah status menjadi RESTORE PASS** sampai log mengonfirmasi save state lanjutan nonkosong dan reload dalam proses emulator kedua sukses. Tidak ada input gameplay; state sumber tidak diubah.
 
+## Konfirmasi final eksperimen pemulihan — run #39426068247 (21 Oktober 2026)
+
+Run [#39426068247](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39426068247) menyelesaikan seluruh gerbang dan job berstatus `success`. Raw state sumber tetap byte-identik terhadap staging (21.163.286 byte; SHA-256 `00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d`). Build hanya menambahkan patch dua file SPU/ADPCM upstream PR #2218 pada base commit `0c3572c3db75f97542001e453ae80ba8c3f8acba`.
+
+Raw board restore menghasilkan event `ExecutionFlow::SaveStateLoaded`, loader kembali, 180 VSync dan screenshot gate PASS. Checkpoint baru berhasil dibuat dengan ukuran 21.162.405 byte, SHA-256 `b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a`; header v4 valid. Proses emulator kedua yang baru kemudian memuat checkpoint baru tersebut dengan event, loader-return, 180 VSync dan screenshot gate PASS, exit code emulator/comparator 0. Manifest mencatat `PROBE_NEXT_CHECKPOINT_VALID=PASS`.
+
+Dengan demikian, hipotesis sentinel stopped-cursor SPU/ADPCM kini didukung oleh eksperimen pemulihan yang lulus; untuk kondisi dan build ini, raw checkpoint dapat dipulihkan serta checkpoint lanjutan dapat di-reload. Gunakan patched build yang sama untuk meneruskan Story Mode. Jangan mengklaim Story Mode tamat atau Memory Card save/load in-game terbukti: run ini tidak memberikan input gameplay dan tidak menguji menu save.
+
