@@ -1,3 +1,7 @@
+## Catatan eksekusi terbaru — 20 Oktober 2026
+
+[Run #39373493482](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39373493482) diluncurkan memakai workflow dengan Xvfb serta `XDG_RUNTIME_DIR` valid. Percobaan pemicu sebelumnya [#39372712212](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39372712212) berhenti sebelum validasi savestate karena artifact Memory Card dicari di run yang salah: input `source_run_id` kosong pada event push. Fallback `39262213468` kini digunakan pada kedua langkah unduh. Run #39373493482 masih berjalan pada pemeriksaan terakhir; belum ada hasil schema, build, atau restore untuk dicatat. Jangan menyimpulkan akar SIGSEGV sudah terkonfirmasi sebelum hasil probe patch tersedia.
+
 # Analisis akar SIGSEGV: sentinel cursor SPU/ADPCM (20 Oktober 2026)
 
 ## Kesimpulan sementara
