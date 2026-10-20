@@ -116,3 +116,14 @@ Pada A/B/C/C2, `PCSX.GPU.takeScreenShot()` menghasilkan metadata `width=0`, `hei
 - **BELUM DIUJI:** pemulihan savestate berhasil; kelanjutan Story Mode dari pertengahan permainan; save/load nyata melalui Memory Card; Story Mode tamat.
 
 Untuk dialog Story Mode tetap gunakan **START**, bukan Circle. Jangan membatalkan runner lain dan jangan mengklaim game tamat tanpa bukti kuat.
+
+## Hasil diagnostik tambahan — run #39373493482 (2026-10-20)
+
+Run [#39373493482](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39373493482) selesai dengan exit 124 setelah batas observasi 1800 detik pada langkah restore. Ini bukan reproduksi SIGSEGV dari loader lama: log varian berisi STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded, RESTORE_PHASE=PCSX_LOADSAVESTATE_PCALL_RETURNED, dan STORY_SAVESTATE_LOAD_CALL_RETURNED=1. Screenshot immediate restore lulus dengan MEAN_ABSOLUTE_RGB_DIFF=0.00000 dan EXACT_PIXEL_FRACTION=1.000000.
+
+Integritas state terjaga: sumber dan staging masing-masing 21.163.286 byte dengan SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d. Schema baseline dan schema varian punya SHA-256 sama 6844fd668762b5dd38b6e4da58110599e786aa448bce5bff35109cc7f64abba1. Varian dibangun dari base 0c3572c3db75f97542001e453ae80ba8c3f8acba ditambah hanya patch dua file SPU/ADPCM PR #2218.
+
+Analisis artifact menemukan bahwa setelah frame 180, script memanggil PCSX.pauseEmulator() sebelum menunggu file captures/raw/restore-screenshot-match.flag melalui rekursi PCSX.nextTick. Karena pemrosesan polling macet ketika emulator dijeda, gate STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180 dan STORY_RAW_RESTORE_CROSS_RUN=PASS tidak keluar; proses terus berjalan sampai timeout. Pembanding Python tetap menulis laporan PASS untuk screenshot awal, tetapi itu tidak sama dengan bukti checkpoint lanjutan/reload kedua.
+
+Workflow diperbaiki pada commit 8bb5c0ed829cc2ff5e004612445c8fdb88836d04 dengan menghilangkan jeda di depan polling. Run ulang [#39383287999](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39383287999) sedang berjalan ketika catatan ini dibuat. Tunggu bukti final run ulang sebelum menetapkan RESTORE PASS; run pertama tidak menghasilkan savestate lanjutan nonkosong.
+
