@@ -446,3 +446,15 @@ Artifact #12155370415 (retensi tiga hari). Frame 2650 menampilkan judul Naruto d
 - Respons kontrol saat gameplay, pengujian mekanik, dan tamat Story Mode: **belum terbukti**.
 
 Instruksi pengguna terbaru (berlaku mulai handoff ini): gunakan panah arah untuk memilih opsi dan Circle untuk menjalankannya setelah menu dibuka. Instruksi lama “jangan tekan Circle” sudah tidak berlaku untuk eksperimen lanjutan ini.
+
+## Handoff terbaru — 20 Oktober 2026: raw board restore probe
+
+Repo yang boleh diubah tetap hanya zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research.
+
+- Run [#39373493482](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39373493482) selesai failure, tetapi sumber kegagalan bukan crash saat memanggil loader. Source dan staging checkpoint sama byte-per-byte (21.163.286 byte; SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d). Build patched PCSX-Redux selesai sukses; schema baseline dan patched build sama; ExecutionFlow::SaveStateLoaded terdeteksi; loader kembali; screenshot segera pascarestore sama persis dengan sumber (mean diff 0.00000, exact pixels 1.000000).
+- Tes berakhir pada timeout 1800 detik dengan exit code 124. Gerbang POST_RESTORE_VSYNC/cross-run tak tercatat, tidak ada checkpoint lanjutan tervalidasi, dan proses kedua tidak dijalankan.
+- Penyebab harness yang ditemukan: script Lua menjeda emulator pada frame 180 lalu melakukan polling restore-screenshot-match.flag lewat PCSX.nextTick; callback polling tidak maju saat emulasi dijeda. Workflow diperbaiki pada commit 8bb5c0ed829cc2ff5e004612445c8fdb88836d04 agar VSync tetap berjalan sambil menunggu flag. Pemicu push sementara sudah dihapus dan workflow hanya manual dispatch lagi.
+- Run ulang [#39383287999](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39383287999) sedang berlangsung pada pemeriksaan terakhir; build dan restore belum ada hasil final.
+
+Jangan sebut checkpoint #39373493482 sebagai checkpoint baru yang dapat dipakai: manifest mencatat ukuran next-state 0 dan SHA missing. Jangan menyimpulkan fix sudah sepenuhnya terverifikasi sampai run ulang melewati post-restore gate, menghasilkan checkpoint nonkosong, lalu memuat checkpoint itu sukses dalam proses emulator baru. Jangan mengirim input kontrol, memulai ulang 90 menit gameplay, atau mengubah file savestate sumber.
+
