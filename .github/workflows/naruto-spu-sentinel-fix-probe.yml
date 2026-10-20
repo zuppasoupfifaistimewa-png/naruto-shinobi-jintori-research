@@ -8,9 +8,6 @@ on:
         required: true
         default: "39262213468"
         type: string
-  push:
-    paths:
-      - "experiments/.naruto-shinobi-sentinel-trigger-once"
 
 permissions:
   contents: read
