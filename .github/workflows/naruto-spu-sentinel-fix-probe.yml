@@ -393,6 +393,136 @@ jobs:
           cp "$WORK/captures/raw/storymode-checkpoint.raw" "$WORK/captures/storymode-checkpoint-next.raw.sstate"
           echo "PROBE_RESTORE_AND_NEXT_CHECKPOINT=PASS"
 
+      - name: Validate the emitted checkpoint in a second fresh emulator process
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          cp captures/pcsx.stdout.txt captures/pcsx-board-restore.stdout.txt
+          cp captures/pcsx.log.txt captures/pcsx-board-restore.log.txt
+          cp gdb-console.txt captures/gdb-board-restore-console.txt
+          cp captures/restore-phase.log captures/restore-phase-board.txt
+          cp captures/storymode-restore-comparison.txt captures/storymode-restore-comparison-board.txt
+          cp captures/storymode-checkpoint-restore-immediate.png captures/storymode-checkpoint-board-restore-immediate.png
+          cp captures/storymode-checkpoint-source.png captures/storymode-checkpoint-source-original.png
+          test -s captures/storymode-checkpoint-next.raw.sstate
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          import json
+          cap=Path("captures")
+          raw=cap/"raw/frame-000180.raw"
+          meta=cap/"frame-000180.json"
+          if not raw.is_file() or not meta.is_file():
+              raise SystemExit("missing first restore frame-180 capture")
+          m=json.loads(meta.read_text())
+          data=raw.read_bytes()
+          w,h,bpp=int(m["width"]),int(m["height"]),int(m["bpp"])
+          if len(data)!=w*h*bpp//8 or w<100 or h<100:
+              raise SystemExit("invalid frame-180 screenshot byte count")
+          if bpp==16:
+              rgb=bytearray()
+              for j in range(0,len(data),2):
+                  v=data[j] | (data[j+1]<<8)
+                  rgb.extend(((v&31)*255//31,((v>>5)&31)*255//31,((v>>10)&31)*255//31))
+              image=Image.frombytes("RGB",(w,h),bytes(rgb))
+          elif bpp==24:
+              image=Image.frombytes("RGB",(w,h),data)
+          else:
+              raise SystemExit(f"unsupported bpp={bpp}")
+          image.save(cap/"storymode-checkpoint-next.png")
+          print(f"PROBE_NEXT_CHECKPOINT_SCREENSHOT={w}x{h}")
+          PY
+          cp captures/storymode-checkpoint-next.png captures/storymode-checkpoint-source.png
+          cp captures/storymode-checkpoint-next.raw.sstate resume/storymode-checkpoint.sstate
+          cmp --silent captures/storymode-checkpoint-next.raw.sstate resume/storymode-checkpoint.sstate
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("captures/storymode-checkpoint-next.raw.sstate")
+          data=p.read_bytes()
+          if len(data)<1024*1024 or b"PCSX-Redux SaveState v4" not in data[:64]:
+              raise SystemExit("next checkpoint failed basic raw savestate header/size validation")
+          print(f"PROBE_NEXT_CHECKPOINT_RAW_HEADER=PASS bytes={len(data)}")
+          PY
+          rm -f captures/raw/restore-screenshot-match.flag captures/raw/storymode-restore-immediate.raw
+          rm -f captures/storymode-restore-immediate.json captures/storymode-checkpoint-restore-immediate.png
+          rm -f captures/storymode-restore-comparison.txt captures/raw/frame-000180.raw
+          rm -f captures/frame-000180.json captures/raw/storymode-checkpoint.raw captures/restore-phase.log
+          touch resume/validation-only.flag
+          export DISPLAY=:100 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/.config" XDG_DATA_HOME="$WORK/.data"
+          export LIBGL_ALWAYS_SOFTWARE=1
+          Xvfb :100 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/xvfb-second.log" 2>&1 &
+          xvfb_pid=$!
+          emu_pid=""
+          compare_pid=""
+          cleanup() {
+            if [ -n "$emu_pid" ]; then kill "$emu_pid" 2>/dev/null || true; fi
+            if [ -n "$compare_pid" ]; then kill "$compare_pid" 2>/dev/null || true; fi
+            kill "$xvfb_pid" 2>/dev/null || true
+            wait "$xvfb_pid" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          for i in $(seq 1 60); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          PAD_SETUP=$(cat <<'LUA'
+          print("PROBE_PAD_SETUP=NO_BUTTONS_INJECTED")
+          io.stdout:flush()
+          LUA
+          )
+          set +e
+          timeout --signal=TERM --kill-after=10s 1800s gdb --batch --return-child-result \
+            -ex 'set pagination off' -ex 'set confirm off' -ex 'set print thread-events off' \
+            -ex 'set follow-fork-mode parent' -ex 'set detach-on-fork on' -ex 'set follow-exec-mode new' \
+            -ex 'set debuginfod enabled off' -ex 'handle SIGSEGV stop print nopass' \
+            -ex "set logging file $WORK/gdb-second-console.txt" -ex 'set logging overwrite on' \
+            -ex 'set logging redirect on' -ex 'set logging enabled on' \
+            -ex 'echo PROBE_SECOND_GDB_BEGIN\\n' -ex run \
+            -ex 'echo PROBE_SECOND_GDB_FAULT_CONTEXT_BEGIN\\n' -ex 'info registers' -ex 'x/16i $pc-32' \
+            -ex 'info symbol $pc' -ex 'info proc mappings' -ex 'thread apply all bt full' \
+            -ex 'echo PROBE_SECOND_GDB_END\\n' \
+            --args /usr/bin/stdbuf -oL -eL "$WORK/variant/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+              -memcard1 "$WORK/cards/naruto-storymode.mcd" \
+              -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
+              -softgpu -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx-second.log" -run \
+            > "$WORK/pcsx-second.stdout" 2>&1 &
+          emu_pid=$!
+          RESUME_MODE=true RAW_RESUME_VERIFY=true EMU_PID="$emu_pid" \
+            python3 -u "$WORK/story-dialog-watch.py" > "$WORK/captures/screenshot-compare-next.log" 2>&1 &
+          compare_pid=$!
+          wait "$emu_pid"
+          emu_rc=$?
+          emu_pid=""
+          wait "$compare_pid"
+          compare_rc=$?
+          compare_pid=""
+          set -e
+          echo "PROBE_SECOND_EMULATOR_EXIT_CODE=$emu_rc"
+          echo "PROBE_SECOND_SCREENSHOT_COMPARATOR_EXIT_CODE=$compare_rc"
+          cp "$WORK/pcsx-second.stdout" "$WORK/captures/pcsx-second.stdout.txt" || true
+          cp "$WORK/pcsx-second.log" "$WORK/captures/pcsx-second.log.txt" || true
+          cp "$WORK/gdb-second-console.txt" "$WORK/captures/gdb-second-console.txt" || true
+          cp "$WORK/captures/screenshot-compare-next.log" "$WORK/captures/screenshot-compare-next.log.txt" || true
+          cp "$WORK/captures/storymode-checkpoint-restore-immediate.png" "$WORK/captures/storymode-checkpoint-next-restore-immediate.png" || true
+          cp "$WORK/captures/storymode-restore-comparison.txt" "$WORK/captures/storymode-restore-comparison-next-checkpoint.txt" || true
+          grep -E 'PROBE_|STORY_SCHEMA_|RESTORE_PHASE=|STORY_RAW_|STORY_SAVESTATE_|ExecutionFlow|SIGSEGV|FATAL|error|Error|ERROR|failed|Failed|^#[0-9]+' \
+            "$WORK/pcsx-second.stdout" "$WORK/pcsx-second.log" "$WORK/gdb-second-console.txt" "$WORK/captures/restore-phase.log" \
+            > "$WORK/captures/important-log-lines-second.txt" || true
+          { echo "PROBE_SECOND_EMULATOR_EXIT_CODE=$emu_rc"; echo "PROBE_SECOND_SCREENSHOT_COMPARATOR_EXIT_CODE=$compare_rc"; } > "$WORK/captures/probe-second-run-summary.txt"
+          test "$emu_rc" -eq 0
+          test "$compare_rc" -eq 0
+          grep -q 'STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded' "$WORK/pcsx-second.stdout"
+          grep -q 'RESTORE_PHASE=PCSX_LOADSAVESTATE_PCALL_RETURNED' "$WORK/pcsx-second.stdout"
+          grep -q 'STORY_SAVESTATE_LOAD_CALL_RETURNED=1' "$WORK/pcsx-second.stdout"
+          grep -q 'STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180' "$WORK/pcsx-second.stdout"
+          grep -q 'STORY_RAW_RESTORE_CROSS_RUN=PASS' "$WORK/pcsx-second.stdout"
+          grep -q 'STORY_PROBE_FRESH_RELOAD=PASS' "$WORK/pcsx-second.stdout"
+          grep -q 'STORY_PROBE_NO_CONTROLLER_INPUT=PASS' "$WORK/pcsx-second.stdout"
+          grep -q 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' "$WORK/captures/storymode-restore-comparison-next-checkpoint.txt"
+          echo "PROBE_NEXT_CHECKPOINT_FRESH_PROCESS_VALIDATION=PASS"
+
+
       - name: Package hashes, screenshot evidence, and probe manifest
         if: always()
         shell: bash
