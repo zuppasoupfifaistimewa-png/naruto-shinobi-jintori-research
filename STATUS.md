@@ -1178,3 +1178,13 @@ Workflow diperbaiki pada commit 8bb5c0ed829cc2ff5e004612445c8fdb88836d04: emulat
 
 **Status savestate: pemulihan awal terbukti sampai event/load-return dan gambar awal, tetapi kelanjutan 180 VSync + checkpoint baru + reload dalam proses kedua belum lulus. Jangan lanjutkan Story Mode dulu.**
 
+## Pembaruan hasil run SPU probe — 20 Oktober 2026, malam
+
+Run ulang [#39383287999](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39383287999) selesai dengan `failure` setelah sekitar 49 menit. Bukan crash loader: log mencatat `ExecutionFlow::SaveStateLoaded`, `STORY_SAVESTATE_LOAD_CALL_RETURNED=1`, dan screenshot comparison `PASS` (mean RGB diff 0.00000; exact pixel fraction 1.000000). Namun gerbang `STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180` dan `STORY_RAW_RESTORE_CROSS_RUN=PASS` tidak pernah muncul; script melanjutkan VSync sampai frame 12000, lalu workflow gagal pada assertion gerbang. Manifest akhir menyatakan next checkpoint 0 byte/missing, sehingga checkpoint hasil tidak dapat digunakan dan reload kedua dilewati.
+
+Akar masalah tambahan pada harness: perbaikan sebelumnya hanya menghapus jeda emulator, tetapi tetap memakai rekursi `PCSX.nextTick(wait_for_screenshot_match)` untuk membaca file gate. Callback itu tidak menjalankan gerbang sukses pada run ini. Workflow kini diperbaiki lebih jauh agar membaca flag pembanding langsung pada callback `GPU::Vsync`, dengan timeout terbatas 900 VSync; sesudah PASS ia baru menjeda pada safe tick, menyimpan checkpoint, dan menghentikan proses. Jika mode validasi proses kedua aktif, callback yang sama hanya menyatakan reload PASS dan keluar.
+
+Run [#39426068247](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39426068247) sedang berjalan; runner dan job sudah mulai, belum ada artefak final. Dua pemicu perantara #39425629341/#39425661897 gagal tanpa job/artefak sehingga bukan hasil eksperimen emulator. Pemicu sementara telah dibersihkan dan workflow kembali hanya manual-dispatch.
+
+**Status:** checkpoint sumber mentah terjaga dan load awal pada patched build terlihat benar. Belum ada bukti checkpoint lanjutan dapat dimuat pada proses kedua. Jangan lanjut Story Mode dari checkpoint probe sampai proses kedua lulus.
+
