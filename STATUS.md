@@ -1,3 +1,15 @@
+## PEMBARUAN TERBARU — akar crash paling mungkin ditemukan; probe terisolasi disiapkan (20 Oktober 2026)
+
+**Diagnosis berkeyakinan tinggi, belum dikonfirmasi oleh run perbaikan:** SIGSEGV native saat memuat raw board kemungkinan berasal dari bug sentinel cursor SPU/ADPCM pada PCSX-Redux commit 0c3572c3db75f97542001e453ae80ba8c3f8acba. Upstream memperbaikinya lewat [PR #2218](https://github.com/grumpycoders/pcsx-redux/pull/2218), merged 5 Oktober 2026. Lihat [analisis akar dan rancangan probe](docs/SAVESTATE_ADPCM_SENTINEL_ROOT_CAUSE_2026-10-20.md) untuk bukti, pemetaan field, dan batas kesimpulan.
+
+- API schema yang diminta tersedia dalam source build pinned: PCSX.getSaveStateProtoSchema() mengembalikan schema tanpa memanggil loader. Runtime invocation dari AppImage yang sama akan diuji sebelum pemuatan savestate.
+- Mapping terverifikasi: top-level field 6 = spu; di dalamnya field 6 memuat 24 channel; channel.data.current = field 8. Pada raw board, 20/24 cursor berada di luar RAM suara 512 KiB, 18 di antaranya berflag stop=1. Raw boot yang berhasil juga memiliki cursor invalid tetapi channel tampak inactive. Ini mendukung hipotesis, belum menunjukkan channel spesifik penyebab crash.
+- Raw source board tidak berubah: 21.163.286 byte, SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d. Probe membangun varian dari commit emulator yang sama dengan hanya patch dua file SPU dari PR #2218; hash source dan staging harus identik. Hash patch, applied diff, AppImage varian, schema, dan checkpoint berikutnya dicatat.
+- Workflow baru [workflow probe perbaikan sentinel](.github/workflows/naruto-spu-sentinel-fix-probe.yml) bersifat workflow_dispatch saja, default source run 39262213468. Workflow ini belum dijalankan. Ia tidak mengulang source playthrough 90 menit, tidak mengubah raw state, tidak menyuntikkan tombol, dan berhenti setelah checkpoint pascarestore 180 VSync dibuat.
+- **Status belum menjadi restore PASS.** Tunggu workflow probe aktual dan periksa semua gerbang: event load, loader kembali normal, minimal 180 VSync, screenshot cocok, serta checkpoint lanjutan valid. Story Mode belum terbukti pulih lintas-run, game belum terbukti tamat, dan aturan gameplay belum boleh disebut terverifikasi.
+
+---
+
 ## PEMBARUAN TERBARU — perbandingan struktural raw boot vs raw board (20 Oktober 2026)
 
 Rincian diff read-only: [docs/SAVESTATE_STRUCTURAL_COMPARISON_2026-10-20.md](docs/SAVESTATE_STRUCTURAL_COMPARISON_2026-10-20.md), diperkenalkan pada commit [dbe20783f90971f69a1abc56fb492da736882661](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/dbe20783f90971f69a1abc56fb492da736882661). Ringkasan handoff juga diperbarui pada commit [1eff1e65ad4a18ff5f33e95b941c19e06efea21d](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/1eff1e65ad4a18ff5f33e95b941c19e06efea21d).
