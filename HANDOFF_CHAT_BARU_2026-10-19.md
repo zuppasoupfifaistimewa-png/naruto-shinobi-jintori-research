@@ -1,3 +1,15 @@
+## Operasional terbaru — checkpoint patched diverifikasi, kontrol gameplay sedang diprobe (21 Oktober 2026)
+
+- Artefak privat [#12268621845 dari run #39426068247](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39426068247) berhasil diunduh langsung. ZIP 2.367.857 byte; SHA-256 ZIP `dc701311a82855c61a95b37a99fd86e2580b0a475682cb7ad8fa9d5a33737358`, cocok dengan digest artifact GitHub.
+- Checkpoint lanjutan diekstrak dari `captures/storymode-checkpoint-next.raw.sstate`: 21.162.405 byte, SHA-256 `b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a`; cocok dengan `probe-manifest.txt`. Screenshot checkpoint menunjukkan papan permainan. Manifest juga mengonfirmasi probe lama tidak memberi input controller (`PROBE_CONTROLLER_INPUT=none`).
+- Artifact lama tidak berisi binary AppImage—hanya checkpoint, screenshot, log, schema, patch-diff, dan build manifest. Karena runner lama sudah dibersihkan, workflow baru akan membangun ulang PCSX-Redux dari base `0c3572c3db75f97542001e453ae80ba8c3f8acba` dengan patch dua-file SPU/ADPCM yang sama.
+- Workflow [.github/workflows/naruto-storymode-control-probe.yml](.github/workflows/naruto-storymode-control-probe.yml) ditambahkan pada commit [`fde550b`](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/fde550b37102d6bbf3890938cca03ce703718d38). Trigger sekali pakai dibuat lalu dihapus; file marker tidak tertinggal di repo.
+- Run [#39513285641](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39513285641) sedang berjalan. Rencana probe: pada proses baru, masing-masing cabang memuat ulang checkpoint induk yang sama dan menguji satu input saja (NONE/START/CIRCLE/CROSS/TRIANGLE/SQUARE/UP/DOWN/LEFT/RIGHT), mengambil screenshot sebelum dan sesudah, lalu membandingkan hasil. Tidak ada cabang yang menimpa checkpoint induk; masing-masing memakai salinan Memory Card sementara.
+- Run [#39513291249](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39513291249) berstatus `skipped` karena marker dihapus dan bukan eksperimen gameplay.
+- **Belum ada input gameplay yang diterapkan sebagai progres Story Mode kanonis.** Tunggu hasil screenshot per tombol sebelum memilih tindakan berikutnya. Game belum terbukti tamat; save/load Memory Card in-game tetap belum terverifikasi. ROM, BIOS, savestate, dan Memory Card tidak dimasukkan ke Git.
+
+---
+
 # HANDOFF TERBARU — 20 Oktober 2026: probe SPU/ADPCM sedang berjalan
 
 ## Run aktif dan hasil yang sudah diketahui
