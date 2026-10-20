@@ -466,3 +466,15 @@ Percobaan setelahnya memperbaiki mekanisme kontrol: screenshot gate kini dibaca 
 
 Run #39425629341 dan #39425661897 berhenti tanpa jobs atau artifacts (perubahan harness/trigger perantara), jadi jangan perlakukan sebagai bukti emulator atau savestate. Tidak ada gameplay button yang dikirim, dan source savestate tidak diubah.
 
+## Status terbaru — 21 Oktober 2026: restore savestate sudah PASS
+
+Run [#39426068247](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39426068247) final `success`. Ini hasil validasi penuh, bukan sekadar screenshot awal:
+- Checkpoint sumber #39262213468 tidak diubah: 21.163.286 byte, SHA-256 `00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d`; staging identik.
+- Patched emulator memuat raw board, event muncul, loader kembali, 180 VSync lolos, dan screenshot gate PASS.
+- Checkpoint baru frame probe 181 tersimpan: 21.162.405 byte, SHA-256 `b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a`.
+- Proses emulator kedua yang baru memuat checkpoint baru dan melewati event, loader-return, 180 VSync dan screenshot gate. Manifest menyatakan `PROBE_NEXT_CHECKPOINT_VALID=PASS`; kedua proses dan comparator exit code 0.
+- Build varian memakai base PCSX-Redux `0c3572c3db75f97542001e453ae80ba8c3f8acba` + hanya patch SPU/ADPCM upstream PR #2218. Hash AppImage `f4ffa4b00b7fd8c0966213872c0263ca8637601eb74da3f9523e7914ba93bd56`.
+- Artefak privat Actions #12268621845 dapat diakses lewat [run ini](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39426068247), kedaluwarsa 3 Nov 2026.
+
+**Langkah berikutnya:** lanjutkan Story Mode dari checkpoint lanjutan melalui build patched yang sama. Belum ada tombol gameplay yang dikirim oleh probe ini, dan belum ada bukti tamat game atau save/load Memory Card di dalam game. Jangan jalankan source emulator lama yang memicu crash untuk memuat state ini.
+
