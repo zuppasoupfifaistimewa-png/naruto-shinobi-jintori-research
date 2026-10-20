@@ -1167,3 +1167,14 @@ Run [#39004736399](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 **Interpretasi:** pengujian memperkuat bukti adanya loop PC berulang dalam sesi OpenBIOS/disc, tetapi tidak mengidentifikasi pemilik loop dan tidak membuktikan handoff ke executable utama. Jangan menyebutnya kode game, hang permanen, atau akar masalah spesifik sebelum mapping alamat dan jalur pemanggil diverifikasi.
 
 **RT-001 tetap Open / blocked.** Belum ada title/menu Naruto yang dikenali dan belum ada respons input terkontrol yang terbukti. Jangan mulai Story Mode. Log publik lama [#39001985849](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-runner/actions/runs/39001985849) masih perlu ditinjau karena memuat 80 record instruksi/operand; run baru ini tidak mengulangi keluaran mentah tersebut.
+
+## Status terbaru — SPU raw savestate probe, 20 Oktober 2026
+
+Run [#39373493482](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39373493482) selesai dengan workflow **failure**. Sumber checkpoint raw tetap utuh: 21.163.286 byte, SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d; hash staging cocok persis. Build emulator varian yang hanya menambahkan perbaikan upstream PR #2218 berhasil, dan schema save-state binary baseline vs varian sama persis. Event ExecutionFlow::SaveStateLoaded muncul, loader kembali normal, dan screenshot segera setelah restore identik dengan screenshot checkpoint (mean RGB diff 0.00000; exact pixel fraction 1.000000).
+
+Namun workflow mencapai batas observasi 1800 detik dengan exit code 124 saat menunggu pemeriksaan screenshot pasca-180 VSync/checkpoint berikutnya. Analisis skrip menemukan emulator dijeda sebelum polling nextTick membaca file gate dari pembanding; sehingga tahap lanjutan dapat tersendat walaupun pembanding screenshot awal sudah PASS. Ini kegagalan harness/pengujian lanjutan, bukan bukti bahwa state mentah rusak atau bahwa fix sudah lolos semua syarat.
+
+Workflow diperbaiki pada commit 8bb5c0ed829cc2ff5e004612445c8fdb88836d04: emulator tidak lagi dijeda saat loop nextTick menunggu gate screenshot. Pemicu push sementara sudah dibersihkan; workflow kini kembali hanya workflow_dispatch. Percobaan ulang [#39383287999](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39383287999) sedang berjalan pada pemeriksaan terakhir. Belum ada artefak hasil atau checkpoint baru.
+
+**Status savestate: pemulihan awal terbukti sampai event/load-return dan gambar awal, tetapi kelanjutan 180 VSync + checkpoint baru + reload dalam proses kedua belum lulus. Jangan lanjutkan Story Mode dulu.**
+
