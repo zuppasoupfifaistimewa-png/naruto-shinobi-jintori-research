@@ -1,0 +1,68 @@
+diff --git a/src/spu/adpcm.cc b/src/spu/adpcm.cc
+index dc097f5b6..c5dae65d0 100644
+--- a/src/spu/adpcm.cc
++++ b/src/spu/adpcm.cc
+@@ -24,7 +24,15 @@ void PCSX::SPU::AdpcmDecoder::saveTo(Protobuf::Int32 &history1, Protobuf::Int32
+                                      Protobuf::Int32 *sb, Protobuf::Int32 &sbPos) const {
+     history1.value = m_s1;
+     history2.value = m_s2;
+-    auto storeOffset = [ramBase](uint8_t *ptr, Protobuf::Int32 &offset) { offset.value = ptr ? ptr - ramBase : -1; };
++    auto storeOffset = [ramBase](uint8_t *ptr, Protobuf::Int32 &offset) {
++        if (!ptr) {
++            offset.value = kNullOffset;
++        } else if (ptr == kStopped) {
++            offset.value = kStoppedOffset;
++        } else {
++            offset.value = ptr - ramBase;
++        }
++    };
+     storeOffset(m_start, startOffset);
+     storeOffset(m_curr, currOffset);
+     storeOffset(m_loop, loopOffset);
+@@ -38,8 +46,13 @@ void PCSX::SPU::AdpcmDecoder::loadFrom(const Protobuf::Int32 &history1, const Pr
+                                        const Protobuf::Int32 &currOffset, const Protobuf::Int32 &loopOffset, uint8_t *ramBase,
+                                        const Protobuf::Int32 *sb, const Protobuf::Int32 &sbPos) {
+     m_s1 = history1.value;
+     m_s2 = history2.value;
++    // Anything outside sound RAM other than the null marker restores as stopped. That covers
++    // kStoppedOffset, and also states written before it existed, which stored kStopped as a
++    // truncated pointer difference.
+     auto restore = [ramBase](const Protobuf::Int32 &offset) -> uint8_t * {
+-        return offset.value == -1 ? nullptr : offset.value + ramBase;
++        if (offset.value == kNullOffset) return nullptr;
++        if (offset.value < 0 || offset.value >= kRamSize) return kStopped;
++        return offset.value + ramBase;
+     };
+     m_start = restore(startOffset);
+     m_curr = restore(currOffset);
+diff --git a/src/spu/adpcm.h b/src/spu/adpcm.h
+index 4c7825026..0cc5723b2 100644
+--- a/src/spu/adpcm.h
++++ b/src/spu/adpcm.h
+@@ -65,11 +65,12 @@ class AdpcmDecoder {
+     // Cursor sentinel for a voice that decoded a stop/loop-end block with no loop
+     // target: the next synthesis pass sees it in the cursor and turns the voice
+     // off. It is a deliberately invalid, non-null pointer, distinct from the
+-    // nullptr "wiped" state. Its exact all-ones bit pattern is what the savestate
+-    // pointer-offset bridge stores and restores by plain arithmetic, so it must
+-    // stay all-ones. (Was an inline (uint8_t *)-1 cast smuggled into the cursor.)
++    // nullptr "wiped" state. The savestate bridge stores it as kStoppedOffset.
+     inline static uint8_t *const kStopped = reinterpret_cast<uint8_t *>(~uintptr_t(0));
+     bool stopped() const { return m_curr == kStopped; }
++    static constexpr int32_t kNullOffset = -1;
++    static constexpr int32_t kStoppedOffset = -2;
++    static constexpr int32_t kRamSize = 512 * 1024;
+ 
+     // Decode cursor accessors (raw pointers into sound RAM).
+     uint8_t *start() const { return m_start; }
+@@ -84,8 +85,7 @@ class AdpcmDecoder {
+     // the per-channel helper owns conversion between this runtime state and
+     // savestate mirror fields. The fields are passed in rather than the
+     // whole channel message because adpcm.h cannot include types.h (it is
+     // included by it). `ramBase` is spuRamBase; each cursor is stored as a byte
+-    // offset, with -1 standing in for a null pointer. The kStopped sentinel is
+-    // an all-ones (non-null) pointer, so it round-trips as raw offset arithmetic.
++    // offset, with kNullOffset for a null pointer and kStoppedOffset for kStopped.
+     void saveTo(Protobuf::Int32 &history1, Protobuf::Int32 &history2, Protobuf::Int32 &startOffset,
+                 Protobuf::Int32 &currOffset, Protobuf::Int32 &loopOffset, uint8_t *ramBase, Protobuf::Int32 *sb,
+                 Protobuf::Int32 &sbPos) const;
