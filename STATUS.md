@@ -1,3 +1,16 @@
+## PEMBARUAN TERBARU — perbandingan struktural raw boot vs raw board (20 Oktober 2026)
+
+Rincian diff read-only: [docs/SAVESTATE_STRUCTURAL_COMPARISON_2026-10-20.md](docs/SAVESTATE_STRUCTURAL_COMPARISON_2026-10-20.md), diperkenalkan pada commit [dbe20783f90971f69a1abc56fb492da736882661](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/dbe20783f90971f69a1abc56fb492da736882661). Ringkasan handoff juga diperbarui pada commit [1eff1e65ad4a18ff5f33e95b941c19e06efea21d](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/1eff1e65ad4a18ff5f33e95b941c19e06efea21d).
+
+- Pembanding raw yang terverifikasi berhasil lintas-run hanya boot [#39255438457 → #39255549341](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39255549341); belum ada restore tengah Story Mode yang terbukti berhasil.
+- Raw boot: 21.124.144 byte, SHA-256 `a4672dd49fbfa76ef60de410c50460d77e115181fc3e205a215ab9f5f1e601d7`. Raw board frame 10055 dari [#39262213468](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39262213468): 21.163.286 byte, SHA-256 `00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d`. Header SaveState v4 sama, tetapi raw board +39.142 byte.
+- Perbedaan ukuran utama ada di top-level protobuf field `6` (+38.943 byte), dengan subfield `3`, `6), dan `9`–`13` yang memerlukan pemetaan schema. Nama semantik field dan hubungan kausal dengan SIGSEGV **belum terverifikasi**.
+- BIOS pada kedua raw state identik (512 KiB, SHA-256 `5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1`). Varian tersanitasi dari artifact board (20.638.994 byte, SHA-256 `b94e61502b63a81107f48153932ccbef21bede8c7f53d4b01e6e013ecb8979eb`) menghapus hanya field BIOS di memory message; payload top-level field `6` tidak berubah.
+- **Eksperimen berikutnya:** jangan ulangi receiver identik dan jangan mengubah raw source. Ekstrak schema dari build PCSX-Redux yang sama dengan `PCSX.getSaveStateProtoSchema()` tanpa memanggil loader; petakan field yang berubah sebelum merancang uji faktor tunggal. Jika kelak menguji varian, simpan sebagai eksperimen tersendiri dengan parent hash, transformasi tepat, dan hash varian; hentikan setelah bukti restore dan jangan meneruskan gameplay dari varian.
+- Pemeriksaan tidak mengubah file sumber atau memasukkan ROM/BIOS/savestate/Memory Card ke Git. Tidak ada Actions run aktif saat pemeriksaan. Story Mode belum terbukti dipulihkan lintas-run atau tamat; aturan gameplay belum terverifikasi.
+
+---
+
 ## HASIL TERBARU — GDB menangkap SIGSEGV di dalam pemuatan raw savestate (20 Oktober 2026)
 
 - **Eksperimen terbaru:** receiver [run #39314115221](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39314115221) menggunakan checkpoint dari source run #39262213468. Validasi sumber dan staging sama-sama PASS: frame 10055, reason=stable_non_dialog, ukuran 21.163.286 byte, SHA-256 `00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d`. Tidak ada modifikasi terhadap byte savestate.
