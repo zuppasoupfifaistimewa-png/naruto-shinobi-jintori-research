@@ -357,7 +357,7 @@ jobs:
                       end)
                       return
                   end
-              end
+              end'''
           old_restore_gate = old_restore_gate.rstrip("\n")
           new_restore_gate = r'''    if raw_resume_verify and restore_event_seen then
                   restore_post_frames = restore_post_frames + 1
@@ -405,7 +405,7 @@ jobs:
                       end)
                       return
                   end
-              end
+              end'''
           new_restore_gate = new_restore_gate.rstrip("\n")
           if s.count(old_restore_gate) != 1:
               raise SystemExit("Expected exactly one restore screenshot polling block")
