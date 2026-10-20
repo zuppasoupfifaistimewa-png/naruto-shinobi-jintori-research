@@ -1,11 +1,6 @@
 name: Naruto SPU stopped-cursor savestate probe
 
 on:
-  # Temporary, narrowly scoped self-trigger so the probe can be launched without a manual UI click.
-  push:
-    branches: [main]
-    paths:
-      - 'experiments/trigger-spu-sentinel-probe.txt'
   workflow_dispatch:
     inputs:
       source_run_id:
