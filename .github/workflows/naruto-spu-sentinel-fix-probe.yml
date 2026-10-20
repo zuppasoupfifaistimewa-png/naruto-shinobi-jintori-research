@@ -1,6 +1,11 @@
 name: Naruto SPU stopped-cursor savestate probe
 
 on:
+  # Temporary, narrowly scoped self-trigger so the probe can be launched without a manual UI click.
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/trigger-spu-sentinel-probe.txt'
   workflow_dispatch:
     inputs:
       source_run_id:
@@ -23,7 +28,7 @@ jobs:
     env:
       WORK: /tmp/naruto-spu-sentinel-probe
       BASE_COMMIT: 0c3572c3db75f97542001e453ae80ba8c3f8acba
-      SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+      SOURCE_RUN_ID: ${{ inputs.source_run_id || '39262213468' }}
       RESEARCH_REPO: ${{ github.repository }}
 
     steps:
@@ -44,7 +49,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: naruto-storymode-checkpoint-private
-          run-id: ${{ inputs.source_run_id }}
+          run-id: ${{ inputs.source_run_id || '39262213468' }}
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
           path: ${{ env.WORK }}/source-state
