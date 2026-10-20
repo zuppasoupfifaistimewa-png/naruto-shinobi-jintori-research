@@ -8,6 +8,9 @@ on:
         required: true
         default: "39262213468"
         type: string
+  push:
+    paths:
+      - "experiments/.naruto-spu-sentinel-trigger-once"
 
 permissions:
   contents: read
@@ -321,6 +324,11 @@ jobs:
           if s.count(old_load) != 1:
               raise SystemExit("Expected exactly one loader call in Lua")
           s = s.replace(old_load, new_load, 1)
+          old_pause = '            PCSX.pauseEmulator()\n            PCSX.nextTick(function()\n                capture_frame(180)'
+          new_pause = '            -- Keep VSync running while screenshot comparison completes.\n            -- Pausing here blocks nextTick polling after the frame-180 capture.\n            PCSX.nextTick(function()\n                capture_frame(180)'
+          if s.count(old_pause) != 1:
+              raise SystemExit("Expected exactly one pause before screenshot-match polling")
+          s = s.replace(old_pause, new_pause, 1)
           old_gate = '                            print("STORY_RAW_RESTORE_CROSS_RUN=PASS")\n                            PCSX.resumeEmulator()'
           new_gate = '''                            print("STORY_RAW_RESTORE_CROSS_RUN=PASS")
                             local validation = io.open("resume/validation-only.flag", "rb")
