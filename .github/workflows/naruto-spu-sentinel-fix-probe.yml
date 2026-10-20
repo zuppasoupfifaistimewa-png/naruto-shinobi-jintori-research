@@ -557,8 +557,14 @@ jobs:
                       Image.frombytes("RGB", (int(m["width"]),int(m["height"])), data).save(cap/"storymode-checkpoint-next.png")
           source = root/"source-state/storymode-checkpoint.raw.sstate"
           staged = root/"resume/storymode-checkpoint.sstate"
+          staging_evidence = cap/"source-staging-evidence.txt"
           newstate = cap/"storymode-checkpoint-next.raw.sstate"
           manifest = root/"source-state/storymode-raw-manifest.txt"
+          def evidence_value(key):
+              if not staging_evidence.is_file(): return "missing"
+              for line in staging_evidence.read_text(errors="replace").splitlines():
+                  if line.startswith(key+"="): return line.split("=",1)[1]
+              return "missing"
           def manifest_value(key):
               if not manifest.is_file(): return "missing"
               for line in manifest.read_text(errors="replace").splitlines():
@@ -569,8 +575,8 @@ jobs:
               f"PROBE_SOURCE_RUN_ID={os.environ.get('SOURCE_RUN_ID','unknown')}",
               f"PROBE_SOURCE_STATE_BYTES={size(source)}",
               f"PROBE_SOURCE_STATE_SHA256={sha(source)}",
-              f"PROBE_STAGED_STATE_BYTES={size(staged)}",
-              f"PROBE_STAGED_STATE_SHA256={sha(staged)}",
+              f"PROBE_STAGED_STATE_BYTES={evidence_value('SOURCE_STAGED_STATE_BYTES')}",
+              f"PROBE_STAGED_STATE_SHA256={evidence_value('SOURCE_STAGED_STATE_SHA256')}",
               f"PROBE_SOURCE_MANIFEST_SHA256={sha(manifest)}",
               f"PROBE_SOURCE_SCREENSHOT_SHA256={sha(root/'source-state/storymode-checkpoint-source.png')}",
               f"PROBE_PINNED_SCHEMA_SHA256={sha(cap/'savestate-schema-pinned.proto')}",
@@ -588,7 +594,7 @@ jobs:
               f"PROBE_LOADER_RETURNED={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'STORY_SAVESTATE_LOAD_CALL_RETURNED=1' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
               f"PROBE_POST180_VSYNC={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
               f"PROBE_SCREENSHOT_COMPARE={'PASS' if (cap/'storymode-restore-comparison.txt').is_file() and 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' in (cap/'storymode-restore-comparison.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
-              f"PROBE_NEXT_CHECKPOINT_VALID={'PASS' if newstate.is_file() and size(newstate)>0 and sha(newstate)!=(sha(source)) else 'FAIL_OR_MISSING'}",
+              f"PROBE_NEXT_CHECKPOINT_VALID={'PASS' if newstate.is_file() and size(newstate)>0 and b'PCSX-Redux SaveState v4' in newstate.read_bytes()[:64] and (cap/'pcsx-second.stdout.txt').is_file() and 'STORY_PROBE_FRESH_RELOAD=PASS' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') and (cap/'storymode-restore-comparison-next-checkpoint.txt').is_file() and 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' in (cap/'storymode-restore-comparison-next-checkpoint.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
               "PROBE_CONTROLLER_INPUT=none",
               "PROBE_SOURCE_STATE_TRANSFORM=none",
           ]
@@ -609,6 +615,7 @@ jobs:
           name: naruto-spu-sentinel-fix-probe-private
           path: |
             ${{ env.WORK }}/captures/probe-manifest.txt
+            ${{ env.WORK }}/captures/source-staging-evidence.txt
             ${{ env.WORK }}/captures/source-manifest.txt
             ${{ env.WORK }}/captures/variant-build-manifest.txt
             ${{ env.WORK }}/captures/savestate-schema-pinned.proto
@@ -627,6 +634,20 @@ jobs:
             ${{ env.WORK }}/captures/schema-probe.stdout.txt
             ${{ env.WORK }}/captures/schema-probe.log.txt
             ${{ env.WORK }}/gdb-console.txt
+            ${{ env.WORK }}/captures/pcsx-board-restore.stdout.txt
+            ${{ env.WORK }}/captures/pcsx-board-restore.log.txt
+            ${{ env.WORK }}/captures/gdb-board-restore-console.txt
+            ${{ env.WORK }}/captures/gdb-second-console.txt
+            ${{ env.WORK }}/captures/pcsx-second.stdout.txt
+            ${{ env.WORK }}/captures/pcsx-second.log.txt
+            ${{ env.WORK }}/captures/important-log-lines-second.txt
+            ${{ env.WORK }}/captures/probe-second-run-summary.txt
+            ${{ env.WORK }}/captures/screenshot-compare-next.log.txt
+            ${{ env.WORK }}/captures/storymode-checkpoint-source-original.png
+            ${{ env.WORK }}/captures/storymode-checkpoint-board-restore-immediate.png
+            ${{ env.WORK }}/captures/storymode-checkpoint-next-restore-immediate.png
+            ${{ env.WORK }}/captures/storymode-restore-comparison-board.txt
+            ${{ env.WORK }}/captures/storymode-restore-comparison-next-checkpoint.txt
             ${{ env.WORK }}/applied-fix.diff
           if-no-files-found: warn
           retention-days: 14
