@@ -117,3 +117,11 @@ Workflow .github/workflows/naruto-spu-sentinel-fix-probe.yml telah diperbaiki pa
 
 **Status:** hipotesis akar SIGSEGV SPU/ADPCM masih kuat, dan pemulihan awal pada patched build menunjukkan kemajuan; tetapi status RESTORE PASS tetap belum boleh diberikan sampai uji ulang menghasilkan checkpoint nonkosong dan memulihkannya dalam proses emulator kedua tanpa input kontrol.
 
+## Hasil run ulang #39383287999 dan perbaikan gerbang berikutnya — 20 Oktober 2026
+
+Run [#39383287999](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39383287999) kembali menunjukkan load awal yang berhasil pada build dengan fix SPU/ADPCM: event load hadir, loader kembali, dan screenshot immediate cocok tepat per piksel dengan sumber. Tetapi tidak terdapat marker pasca-180-VSync/cross-run; emulator berjalan sampai frame 12000 lalu step assertion workflow gagal. Artifact manifest menyatakan checkpoint lanjutan 0 byte, sehingga reload kedua belum bisa diuji.
+
+Penghapusan `PCSX.pauseEmulator()` saja belum cukup karena poller `PCSX.nextTick` tidak menjalankan pemeriksaan flag pada run ini. Workflow sekarang memakai polling file langsung per event `GPU::Vsync`, dengan batas 900 VSync, lalu melakukan operasi simpan pada safe tick setelah screenshot PASS. Perubahan ini adalah perbaikan harness, bukan perubahan ROM atau savestate.
+
+Run terbaru [#39426068247](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39426068247) berjalan pada saat catatan dibuat. **Jangan ubah status menjadi RESTORE PASS** sampai log mengonfirmasi save state lanjutan nonkosong dan reload dalam proses emulator kedua sukses. Tidak ada input gameplay; state sumber tidak diubah.
+
