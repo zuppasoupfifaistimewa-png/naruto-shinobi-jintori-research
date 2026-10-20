@@ -101,3 +101,19 @@ Status tetap **RESTORE BELUM TERBUKTI** sampai run perbaikan benar-benar lulus. 
 - **Hipotesis berkeyakinan tinggi:** sentinel ADPCM stopped yang salah dipulihkan menjadi pointer liar menyebabkan SIGSEGV board.
 - **Belum terverifikasi:** API schema berhasil dipanggil dari binary dalam runner; varian patched memulihkan board; checkpoint lanjutan aman dipakai; Memory Card save/load di dalam game; tamat Story Mode; aturan gameplay.
 - Tidak ada sumber 90 menit yang dijalankan ulang. Raw boot/board asli, BIOS, ROM dan Memory Card tidak dimodifikasi atau ditambahkan ke Git.
+
+## Hasil run pertama dan koreksi harness — 20 Oktober 2026
+
+Run [#39373493482](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39373493482) tidak mencapai kriteria penerimaan penuh. Temuan baru memperjelas batas hasil:
+
+- Raw source dan file staging tetap byte-identik (21.163.286 byte, SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d).
+- Build varian dari source base 0c3572c3db75f97542001e453ae80ba8c3f8acba dengan patch upstream PR #2218 berhasil; schema save-state baseline dan varian identik.
+- Pemulihan melewati ExecutionFlow::SaveStateLoaded dan pemanggilan loader kembali normal. Screenshot segera setelah load sama persis dengan screenshot source: MEAN_ABSOLUTE_RGB_DIFF=0.00000, EXACT_PIXEL_FRACTION=1.000000.
+- Pengujian lanjutan berhenti dengan timeout 1800s / exit 124. Next checkpoint tidak dihasilkan (0 byte), pembuktian reload proses kedua dilewati.
+
+Akar kegagalan run ini adalah harness: Lua menjeda emulator saat sudah mencapai tahap capture frame 180, kemudian mem-poll hasil komparasi yang ditulis proses Python dengan PCSX.nextTick. Loop polling tidak dapat berjalan terus saat emulasi dijeda, sehingga penanda post-restore/cross-run tidak keluar. Ini tidak membantah hipotesis bug ADPCM, tetapi juga tidak memenuhi kriteria restore pass. Hasil screenshot immediate yang cocok adalah bukti baik bahwa state berhasil dimuat ke layar yang diharapkan pada saat capture, bukan bukti bahwa checkpoint lanjutan bisa dipakai.
+
+Workflow .github/workflows/naruto-spu-sentinel-fix-probe.yml telah diperbaiki pada commit 8bb5c0ed829cc2ff5e004612445c8fdb88836d04 agar emulasi tetap berjalan selama polling gate. Satu kali trigger push yang dipakai untuk memulai uji ulang telah dihapus; workflow kembali manual-dispatch-only. Run uji ulang [#39383287999](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39383287999) sedang berjalan pada pemeriksaan terakhir.
+
+**Status:** hipotesis akar SIGSEGV SPU/ADPCM masih kuat, dan pemulihan awal pada patched build menunjukkan kemajuan; tetapi status RESTORE PASS tetap belum boleh diberikan sampai uji ulang menghasilkan checkpoint nonkosong dan memulihkannya dalam proses emulator kedua tanpa input kontrol.
+
