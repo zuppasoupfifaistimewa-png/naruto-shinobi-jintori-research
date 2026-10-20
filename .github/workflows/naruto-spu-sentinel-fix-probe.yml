@@ -451,6 +451,7 @@ jobs:
           PY
           rm -f captures/raw/restore-screenshot-match.flag captures/raw/storymode-restore-immediate.raw
           rm -f captures/storymode-restore-immediate.json captures/storymode-checkpoint-restore-immediate.png
+          rm -f storymode-restore-immediate.json storymode-checkpoint-restore-immediate.png storymode-restore-comparison.txt
           rm -f captures/storymode-restore-comparison.txt captures/raw/frame-000180.raw
           rm -f captures/frame-000180.json captures/raw/storymode-checkpoint.raw captures/restore-phase.log
           touch resume/validation-only.flag
@@ -600,7 +601,7 @@ jobs:
               f"PROBE_LOADER_RETURNED={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'STORY_SAVESTATE_LOAD_CALL_RETURNED=1' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
               f"PROBE_POST180_VSYNC={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
               f"PROBE_SCREENSHOT_COMPARE={'PASS' if (cap/'storymode-restore-comparison.txt').is_file() and 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' in (cap/'storymode-restore-comparison.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
-              f"PROBE_NEXT_CHECKPOINT_VALID={'PASS' if newstate.is_file() and size(newstate)>0 and b'PCSX-Redux SaveState v4' in newstate.read_bytes()[:64] and (cap/'pcsx-second.stdout.txt').is_file() and 'STORY_PROBE_FRESH_RELOAD=PASS' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') and (cap/'storymode-restore-comparison-next-checkpoint.txt').is_file() and 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' in (cap/'storymode-restore-comparison-next-checkpoint.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_NEXT_CHECKPOINT_VALID={'PASS' if newstate.is_file() and size(newstate)>0 and b'PCSX-Redux SaveState v4' in newstate.read_bytes()[:64] and (cap/'pcsx-second.stdout.txt').is_file() and 'STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') and 'STORY_SAVESTATE_LOAD_CALL_RETURNED=1' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') and 'STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') and 'STORY_PROBE_FRESH_RELOAD=PASS' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') and (cap/'storymode-restore-comparison-next-checkpoint.txt').is_file() and 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' in (cap/'storymode-restore-comparison-next-checkpoint.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
               "PROBE_CONTROLLER_INPUT=none",
               "PROBE_SOURCE_STATE_TRANSFORM=none",
           ]
