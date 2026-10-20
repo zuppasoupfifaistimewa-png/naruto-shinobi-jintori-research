@@ -1,3 +1,12 @@
+## CATATAN OPERASIONAL TERBARU — upaya pemicu probe dari sesi ini (20 Oktober 2026)
+
+- Karena tidak tersedia aksi workflow_dispatch langsung pada konektor, dicoba pemicu sementara melalui push yang sangat terbatas pada satu marker. Commit pemicu: [92c7044e9b4c428a9a4c9fa3a33d1913e4709574](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/92c7044e9b4c428a9a4c9fa3a33d1913e4709574).
+- Pemicu sementara telah dibersihkan: [workflow cleanup](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/ac1aab1874a022f6b00fde4fd32fa0a0d31cee5c) lalu [marker cleanup](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/723d7686146dde3968e72365a7d139deffb7d2d8). Workflow di main kini kembali hanya memakai workflow_dispatch; fallback source run 39262213468 tetap disiapkan.
+- **Penting:** dari konektor sesi ini aku belum dapat mengonfirmasi adanya run Actions baru atau nomor run-nya. Karena itu, pemicu tersebut bukan bukti bahwa probe telah dimulai, dan bukan bukti bahwa savestate berhasil direstore. Status restore tetap BELUM TERBUKTI. Jika tidak ada run baru di halaman Actions, keterbatasan berikutnya adalah perlu akses yang dapat menjalankan tombol Run workflow atau endpoint workflow-dispatch.
+- Semua perubahan dibatasi pada repositori riset Naruto. Marker telah dihapus; raw savestate sumber tidak diubah.
+
+---
+
 ## PEMBARUAN TERBARU — akar crash paling mungkin ditemukan; probe terisolasi disiapkan (20 Oktober 2026)
 
 **Diagnosis berkeyakinan tinggi, belum dikonfirmasi oleh run perbaikan:** SIGSEGV native saat memuat raw board kemungkinan berasal dari bug sentinel cursor SPU/ADPCM pada PCSX-Redux commit 0c3572c3db75f97542001e453ae80ba8c3f8acba. Upstream memperbaikinya lewat [PR #2218](https://github.com/grumpycoders/pcsx-redux/pull/2218), merged 5 Oktober 2026. Lihat [analisis akar dan rancangan probe](docs/SAVESTATE_ADPCM_SENTINEL_ROOT_CAUSE_2026-10-20.md) untuk bukti, pemetaan field, dan batas kesimpulan.
