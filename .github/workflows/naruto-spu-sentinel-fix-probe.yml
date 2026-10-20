@@ -84,6 +84,7 @@ jobs:
           test "$(sha256sum "$PNG" | cut -d ' ' -f 1)" = "$(value STORY_SOURCE_SCREENSHOT_SHA256)"
           cp "$RAW" "$WORK/resume/storymode-checkpoint.sstate"
           cp "$PNG" "$WORK/captures/storymode-checkpoint-source.png"
+          cp "$PNG" "$WORK/storymode-checkpoint-source.png"
           cp "$SOURCE/gpu-traffic.lua" "$WORK/gpu-traffic.lua"
           cp "$SOURCE/story-dialog-watch.py" "$WORK/story-dialog-watch.py"
           cp "$MANIFEST" "$WORK/captures/source-manifest.txt"
@@ -372,6 +373,8 @@ jobs:
           echo "PROBE_SCREENSHOT_COMPARATOR_EXIT_CODE=$compare_rc"
           cp "$WORK/pcsx.stdout" "$WORK/captures/pcsx.stdout.txt" || true
           cp "$WORK/pcsx.log" "$WORK/captures/pcsx.log.txt" || true
+          cp "$WORK/storymode-checkpoint-restore-immediate.png" "$WORK/captures/storymode-checkpoint-restore-immediate.png" || true
+          cp "$WORK/storymode-restore-comparison.txt" "$WORK/captures/storymode-restore-comparison.txt" || true
           grep -E 'PROBE_|STORY_SCHEMA_|RESTORE_PHASE=|STORY_RAW_|STORY_SAVESTATE_|ExecutionFlow|SIGSEGV|FATAL|error|Error|ERROR|failed|Failed|^#[0-9]+'             "$WORK/pcsx.stdout" "$WORK/pcsx.log" "$WORK/gdb-console.txt" "$WORK/captures/restore-phase.log"             > "$WORK/captures/important-log-lines.txt" || true
           {
             echo "PROBE_EMULATOR_EXIT_CODE=$emu_rc"
@@ -435,6 +438,7 @@ jobs:
           print(f"PROBE_NEXT_CHECKPOINT_SCREENSHOT={w}x{h}")
           PY
           cp captures/storymode-checkpoint-next.png captures/storymode-checkpoint-source.png
+          cp captures/storymode-checkpoint-next.png storymode-checkpoint-source.png
           cp captures/storymode-checkpoint-next.raw.sstate resume/storymode-checkpoint.sstate
           cmp --silent captures/storymode-checkpoint-next.raw.sstate resume/storymode-checkpoint.sstate
           python3 - <<'PY'
@@ -504,6 +508,8 @@ jobs:
           cp "$WORK/pcsx-second.log" "$WORK/captures/pcsx-second.log.txt" || true
           cp "$WORK/gdb-second-console.txt" "$WORK/captures/gdb-second-console.txt" || true
           cp "$WORK/captures/screenshot-compare-next.log" "$WORK/captures/screenshot-compare-next.log.txt" || true
+          cp "$WORK/storymode-checkpoint-restore-immediate.png" "$WORK/captures/storymode-checkpoint-restore-immediate.png" || true
+          cp "$WORK/storymode-restore-comparison.txt" "$WORK/captures/storymode-restore-comparison.txt" || true
           cp "$WORK/captures/storymode-checkpoint-restore-immediate.png" "$WORK/captures/storymode-checkpoint-next-restore-immediate.png" || true
           cp "$WORK/captures/storymode-restore-comparison.txt" "$WORK/captures/storymode-restore-comparison-next-checkpoint.txt" || true
           grep -E 'PROBE_|STORY_SCHEMA_|RESTORE_PHASE=|STORY_RAW_|STORY_SAVESTATE_|ExecutionFlow|SIGSEGV|FATAL|error|Error|ERROR|failed|Failed|^#[0-9]+' \
