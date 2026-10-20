@@ -84,7 +84,6 @@ jobs:
           test "$(sha256sum "$PNG" | cut -d ' ' -f 1)" = "$(value STORY_SOURCE_SCREENSHOT_SHA256)"
           cp "$RAW" "$WORK/resume/storymode-checkpoint.sstate"
           cp "$PNG" "$WORK/captures/storymode-checkpoint-source.png"
-          cp "$PNG" "$WORK/storymode-checkpoint-source.png"
           cp "$SOURCE/gpu-traffic.lua" "$WORK/gpu-traffic.lua"
           cp "$SOURCE/story-dialog-watch.py" "$WORK/story-dialog-watch.py"
           cp "$MANIFEST" "$WORK/captures/source-manifest.txt"
@@ -373,8 +372,6 @@ jobs:
           echo "PROBE_SCREENSHOT_COMPARATOR_EXIT_CODE=$compare_rc"
           cp "$WORK/pcsx.stdout" "$WORK/captures/pcsx.stdout.txt" || true
           cp "$WORK/pcsx.log" "$WORK/captures/pcsx.log.txt" || true
-          cp "$WORK/storymode-checkpoint-restore-immediate.png" "$WORK/captures/storymode-checkpoint-restore-immediate.png" || true
-          cp "$WORK/storymode-restore-comparison.txt" "$WORK/captures/storymode-restore-comparison.txt" || true
           grep -E 'PROBE_|STORY_SCHEMA_|RESTORE_PHASE=|STORY_RAW_|STORY_SAVESTATE_|ExecutionFlow|SIGSEGV|FATAL|error|Error|ERROR|failed|Failed|^#[0-9]+'             "$WORK/pcsx.stdout" "$WORK/pcsx.log" "$WORK/gdb-console.txt" "$WORK/captures/restore-phase.log"             > "$WORK/captures/important-log-lines.txt" || true
           {
             echo "PROBE_EMULATOR_EXIT_CODE=$emu_rc"
@@ -438,7 +435,6 @@ jobs:
           print(f"PROBE_NEXT_CHECKPOINT_SCREENSHOT={w}x{h}")
           PY
           cp captures/storymode-checkpoint-next.png captures/storymode-checkpoint-source.png
-          cp captures/storymode-checkpoint-next.png storymode-checkpoint-source.png
           cp captures/storymode-checkpoint-next.raw.sstate resume/storymode-checkpoint.sstate
           cmp --silent captures/storymode-checkpoint-next.raw.sstate resume/storymode-checkpoint.sstate
           python3 - <<'PY'
@@ -451,7 +447,6 @@ jobs:
           PY
           rm -f captures/raw/restore-screenshot-match.flag captures/raw/storymode-restore-immediate.raw
           rm -f captures/storymode-restore-immediate.json captures/storymode-checkpoint-restore-immediate.png
-          rm -f storymode-restore-immediate.json storymode-checkpoint-restore-immediate.png storymode-restore-comparison.txt
           rm -f captures/storymode-restore-comparison.txt captures/raw/frame-000180.raw
           rm -f captures/frame-000180.json captures/raw/storymode-checkpoint.raw captures/restore-phase.log
           touch resume/validation-only.flag
@@ -509,8 +504,6 @@ jobs:
           cp "$WORK/pcsx-second.log" "$WORK/captures/pcsx-second.log.txt" || true
           cp "$WORK/gdb-second-console.txt" "$WORK/captures/gdb-second-console.txt" || true
           cp "$WORK/captures/screenshot-compare-next.log" "$WORK/captures/screenshot-compare-next.log.txt" || true
-          cp "$WORK/storymode-checkpoint-restore-immediate.png" "$WORK/captures/storymode-checkpoint-restore-immediate.png" || true
-          cp "$WORK/storymode-restore-comparison.txt" "$WORK/captures/storymode-restore-comparison.txt" || true
           cp "$WORK/captures/storymode-checkpoint-restore-immediate.png" "$WORK/captures/storymode-checkpoint-next-restore-immediate.png" || true
           cp "$WORK/captures/storymode-restore-comparison.txt" "$WORK/captures/storymode-restore-comparison-next-checkpoint.txt" || true
           grep -E 'PROBE_|STORY_SCHEMA_|RESTORE_PHASE=|STORY_RAW_|STORY_SAVESTATE_|ExecutionFlow|SIGSEGV|FATAL|error|Error|ERROR|failed|Failed|^#[0-9]+' \
@@ -594,13 +587,17 @@ jobs:
               f"PROBE_NEXT_STATE_BYTES={size(newstate)}",
               f"PROBE_NEXT_STATE_SHA256={sha(newstate)}",
               f"PROBE_NEXT_SCREENSHOT_SHA256={sha(cap/'storymode-checkpoint-next.png')}",
-              f"PROBE_IMMEDIATE_RESTORE_SCREENSHOT_SHA256={sha(cap/'storymode-checkpoint-restore-immediate.png')}",
-              f"PROBE_COMPARE_REPORT_SHA256={sha(cap/'storymode-restore-comparison.txt')}",
+              f"PROBE_IMMEDIATE_RESTORE_SCREENSHOT_SHA256={sha(cap/'storymode-checkpoint-board-restore-immediate.png')}",
+              f"PROBE_COMPARE_REPORT_SHA256={sha(cap/'storymode-restore-comparison-board.txt')}",
               f"PROBE_LOAD_EVENT={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
               f"PROBE_LOADER_PCALL_RETURNED={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'RESTORE_PHASE=PCSX_LOADSAVESTATE_PCALL_RETURNED' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
               f"PROBE_LOADER_RETURNED={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'STORY_SAVESTATE_LOAD_CALL_RETURNED=1' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
               f"PROBE_POST180_VSYNC={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
-              f"PROBE_SCREENSHOT_COMPARE={'PASS' if (cap/'storymode-restore-comparison.txt').is_file() and 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' in (cap/'storymode-restore-comparison.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_SCREENSHOT_COMPARE={'PASS' if (cap/'storymode-restore-comparison-board.txt').is_file() and 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' in (cap/'storymode-restore-comparison.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_FRESH_RELOAD_EVENT={'PASS' if (cap/'pcsx-second.stdout.txt').is_file() and 'STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_FRESH_RELOAD_LOADER_RETURNED={'PASS' if (cap/'pcsx-second.stdout.txt').is_file() and 'STORY_SAVESTATE_LOAD_CALL_RETURNED=1' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_FRESH_RELOAD_POST180_VSYNC={'PASS' if (cap/'pcsx-second.stdout.txt').is_file() and 'STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_FRESH_RELOAD_SCREENSHOT_COMPARE={'PASS' if (cap/'storymode-restore-comparison-next-checkpoint.txt').is_file() and 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' in (cap/'storymode-restore-comparison-next-checkpoint.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
               f"PROBE_NEXT_CHECKPOINT_VALID={'PASS' if newstate.is_file() and size(newstate)>0 and b'PCSX-Redux SaveState v4' in newstate.read_bytes()[:64] and (cap/'pcsx-second.stdout.txt').is_file() and 'STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') and 'STORY_SAVESTATE_LOAD_CALL_RETURNED=1' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') and 'STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') and 'STORY_PROBE_FRESH_RELOAD=PASS' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') and (cap/'storymode-restore-comparison-next-checkpoint.txt').is_file() and 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' in (cap/'storymode-restore-comparison-next-checkpoint.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
               "PROBE_CONTROLLER_INPUT=none",
               "PROBE_SOURCE_STATE_TRANSFORM=none",
@@ -636,6 +633,7 @@ jobs:
             ${{ env.WORK }}/captures/pcsx.stdout.txt
             ${{ env.WORK }}/captures/pcsx.log.txt
             ${{ env.WORK }}/captures/restore-phase.log
+            ${{ env.WORK }}/captures/restore-phase-board.txt
             ${{ env.WORK }}/captures/probe-run-summary.txt
             ${{ env.WORK }}/captures/screenshot-compare.log
             ${{ env.WORK }}/captures/schema-probe.stdout.txt
