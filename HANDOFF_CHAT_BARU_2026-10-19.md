@@ -1,3 +1,28 @@
+# HANDOFF TERBARU — 20 Oktober 2026: probe perbaikan sentinel SPU/ADPCM
+
+**Mulai dari** [analisis akar dan rancangan probe](docs/SAVESTATE_ADPCM_SENTINEL_ROOT_CAUSE_2026-10-20.md). Temuan baru lebih spesifik dibanding diagnosis sebelumnya: bug upstream PCSX-Redux #2175/#2218 tentang pointer sentinel ADPCM stopped yang terpotong ke int32 pada host 64-bit sangat cocok dengan SIGSEGV dalam PCSX.loadSaveState(). Build pinned 0c3572c3db75f97542001e453ae80ba8c3f8acba lebih tua dari fix yang merged 5 Oktober 2026.
+
+## Status dan bukti
+
+- Raw board sumber dari run #39262213468: frame 10055, 21.163.286 byte, SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d; screenshot SHA-256 101b94a4d171d228e0224948872b65b88bf84fd0d92dc8ddd0b6cfeb21f790a8.
+- API schema terdapat pada source build yang tepat: PCSX.getSaveStateProtoSchema(). Workflow probe akan memanggilnya dari pinned AppImage sebelum loader dan membandingkan teks schema dengan build varian.
+- Mapping: top-level field 6 = spu; di dalamnya 24 channel; channel.data.current = field 8. Raw board: 20 cursor current di luar RAM suara 512 KiB, 18 dari 20 berflag stop=1. Raw boot yang berhasil juga punya cursor invalid tetapi channel inactive. Ini mendukung hipotesis, belum membuktikan kausalitas.
+- Patch isolated: experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch. Workflow manual: [workflow probe perbaikan sentinel](.github/workflows/naruto-spu-sentinel-fix-probe.yml). Patch hanya mengubah src/spu/adpcm.cc dan src/spu/adpcm.h sesuai upstream PR #2218 pada basis commit pinned. Raw source state tidak ditransformasi.
+- Workflow belum dijalankan; restore board masih BELUM TERBUKTI. Artifact hasil akan memuat hash sumber/staging, hash patch/diff/binary, schema, event/loader marker, VSync, screenshot report, dan checkpoint baru. Probe tidak menekan tombol dan berhenti setelah save checkpoint pascarestore 180 VSync.
+
+## Langkah berikutnya
+
+Jalankan workflow “Naruto SPU stopped-cursor savestate probe” secara manual dengan source run 39262213468. Periksa artifact naruto-spu-sentinel-fix-probe-private:
+1. Pastikan schema baseline dari pinned binary dan schema varian identik.
+2. Pastikan source/staging SHA sama dengan hash raw asli.
+3. Periksa event load, loader kembali normal, 180 VSync, screenshot report, dan hash checkpoint lanjutan.
+4. Bila ada gerbang gagal, jangan lanjutkan Story Mode dari state hasil eksperimen.
+5. Bila semua gerbang PASS, lanjutkan Story Mode menggunakan build dengan patch yang sama, simpan checkpoint berkala, dan catat aturan dari gameplay yang benar-benar diamati.
+
+Raw savestate asli, Memory Card, ROM, dan BIOS tidak dimodifikasi atau dimasukkan ke Git. Jangan campurkan repo ini dengan Tile Duel.
+
+---
+
 # HANDOFF TAMBAHAN — perbandingan struktural raw savestate (20 Oktober 2026)
 
 **Dokumen hasil analisis read-only:** [docs/SAVESTATE_STRUCTURAL_COMPARISON_2026-10-20.md](docs/SAVESTATE_STRUCTURAL_COMPARISON_2026-10-20.md) — commit [dbe20783f90971f69a1abc56fb492da736882661](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/dbe20783f90971f69a1abc56fb492da736882661).
