@@ -1,3 +1,16 @@
+## PEMBARUAN DIAGNOSIS — dugaan pointer sentinel SPU/ADPCM (20 Oktober 2026)
+
+Bagian lama di bawah adalah temuan historis. Setelah pemetaan schema dan pembacaan raw field, diagnosis paling mungkin untuk SIGSEGV receiver board kini adalah bug cursor ADPCM stopped yang dikenal di upstream PCSX-Redux [PR #2218](https://github.com/grumpycoders/pcsx-redux/pull/2218). Build pinned 0c3572c3db75f97542001e453ae80ba8c3f8acba lebih tua dari fix tersebut. Lihat [analisis akar dan probe](SAVESTATE_ADPCM_SENTINEL_ROOT_CAUSE_2026-10-20.md).
+
+- Receiver lama memastikan raw staging identik; PC fault membaca byte melalui movzbl (%rsi),%ecx pada RSI 0xffffffffd736a15f, loader tidak kembali dan event restore tidak terdeteksi.
+- API PCSX.getSaveStateProtoSchema() tersedia pada source yang dipatok dan menghasilkan schema protobuf. Workflow baru akan menguji pemanggilan runtime sebelum loader.
+- Top-level field 6 adalah spu; channel.data.current adalah field 8. Raw board memiliki 20 cursor out-of-range dan 18 di antaranya berflag stop=1; raw boot juga menyimpan cursor invalid tetapi channel tampak inactive.
+- Workflow [workflow probe perbaikan sentinel](.github/workflows/naruto-spu-sentinel-fix-probe.yml) membangun emulator dari commit basis sama dengan patch dua-file upstream #2218 serta raw state yang tidak diubah. Ia berhenti setelah gerbang restore dan checkpoint lanjutan; belum ada hasil run probe.
+
+**Status:** hipotesis berkeyakinan tinggi, bukan restore PASS. Story Mode belum terbukti dilanjutkan dari checkpoint dan game belum terbukti tamat.
+
+---
+
 ## PEMBARUAN TERKINI — raw Story Mode checkpoint lintas-run dipersiapkan (19 Oktober 2026)
 
 - Raw state boot awal telah pulih lintas-run (Run A #39255438457 → Run B #39255549341); hasil tersebut bukan checkpoint Story Mode. Run #39257735369 juga membuktikan positive-control sanitizer untuk state boot saja. Restore checkpoint lama yang disanitasi masih pernah SIGSEGV/exit 139.
