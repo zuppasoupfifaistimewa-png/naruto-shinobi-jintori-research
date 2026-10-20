@@ -1,3 +1,16 @@
+# HANDOFF TAMBAHAN — perbandingan struktural raw savestate (20 Oktober 2026)
+
+**Dokumen hasil analisis read-only:** [docs/SAVESTATE_STRUCTURAL_COMPARISON_2026-10-20.md](docs/SAVESTATE_STRUCTURAL_COMPARISON_2026-10-20.md) — commit [dbe20783f90971f69a1abc56fb492da736882661](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/dbe20783f90971f69a1abc56fb492da736882661).
+
+- Pembanding raw yang berhasil lintas-run masih hanya checkpoint boot dari [Run A #39255438457](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39255438457) ke [Run B #39255549341](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39255549341). Belum ditemukan bukti raw checkpoint Story Mode pulih lintas-run.
+- Raw boot: 21.124.144 byte, SHA-256 `a4672dd49fbfa76ef60de410c50460d77e115181fc3e205a215ab9f5f1e601d7`. Raw board frame 10055 dari [Run #39262213468](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39262213468): 21.163.286 byte, SHA-256 `00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d`.
+- Diff read-only: header `PCSX-Redux SaveState v4) sama; raw board +39.142 byte. Top-level field `6` berubah ukuran paling besar (+38.943); field ini berisi subfield/record yang berubah lebih kaya pada checkpoint board. Nama semantik field masih harus dipastikan dari schema build yang sama; jangan klaim field tersebut penyebab crash sebelum bukti.
+- BIOS pada kedua state raw sama byte-per-byte (512 KiB, SHA-256 `5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1`). Varian tersanitasi dari artifact board menghapus hanya field BIOS di top-level field `3): ukuran menjadi 20.638.994 byte, SHA-256 `b94e61502b63a81107f48153932ccbef21bede8c7f53d4b01e6e013ecb8979eb`. Payload top-level field `6) sama persis antara raw board dan varian tersanitasi.
+- Konsekuensi: jangan ulangi receiver raw board tanpa perubahan diagnosis dan jangan langsung menguji sanitizer sebagai pengganti. Eksperimen berikutnya adalah ekstrak schema melalui `PCSX.getSaveStateProtoSchema()` dari build emulator yang sama tanpa memanggil loader; petakan field yang berubah (utama field `6` dan subfield yang hanya muncul di board). Setelah itu, kalau ada subfield spesifik yang layak diuji, buat varian terpisah dengan satu transformasi yang terukur serta manifest parent hash/transformasi/hash varian. Uji diagnostik harus berhenti setelah gerbang restore; jangan lanjutkan gameplay dari varian eksperimen.
+- Pemeriksaan tidak mengubah savestate sumber, tidak mengubah hash artifact, tidak menjalankan ulang source 90 menit, dan tidak menaruh ROM/BIOS/state/Memory Card ke Git. Tidak ada Actions run aktif saat diperiksa. Game masih belum terbukti tamat; mekanik gameplay belum terverifikasi.
+
+---
+
 # HANDOFF TERBARU — 20 Oktober 2026: GDB membuktikan SIGSEGV di dalam raw savestate loader
 
 ## Fakta diagnostik terbaru
