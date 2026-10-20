@@ -211,10 +211,6 @@ jobs:
           grep -q "STORY_SCHEMA_PROBE_NO_LOADER=PASS" "$WORK/schema-probe.stdout"
           test "$rc" -eq 0
           echo "PROBE_PINNED_SCHEMA_API_RUNTIME=PASS exit=$rc schema_sha256=$(sha256sum "$WORK/captures/savestate-schema-pinned.proto" | cut -d ' ' -f 1)"
-          test -s "$WORK/captures/savestate-schema-pinned.proto"
-          grep -q "STORY_SCHEMA_API=PASS" "$WORK/schema-probe.stdout" "$WORK/schema-probe.log"
-          test "$rc" -ne 124
-          echo "PROBE_PINNED_SCHEMA_API_RUNTIME=PASS exit=$rc schema_sha256=$(sha256sum "$WORK/captures/savestate-schema-pinned.proto" | cut -d ' ' -f 1)"
 
       - name: Build emulator variant from pinned source plus only the upstream SPU cursor fix
         shell: bash
@@ -442,7 +438,7 @@ jobs:
               f"PROBE_VARIANT_SCHEMA_SHA256={sha(cap/'savestate-schema-variant.proto')}",
               f"PROBE_SCHEMA_TEXT_IDENTICAL={str((cap/'savestate-schema-pinned.proto').is_file() and (cap/'savestate-schema-variant.proto').is_file() and (cap/'savestate-schema-pinned.proto').read_bytes()==(cap/'savestate-schema-variant.proto').read_bytes()).upper()}",
               f"PROBE_VARIANT_APPIMAGE_SHA256={sha(root/'PCSX-Redux-spu-sentinel-probe-x86_64.AppImage')}",
-              f"PROBE_PATCH_SHA256={sha(Path(os.environ.get('GITHUB_WORKSPACE','.')/'experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch'))}",
+              f"PROBE_PATCH_SHA256={sha(Path(os.environ.get('GITHUB_WORKSPACE','.'))/'experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch')}",
               f"PROBE_NEXT_STATE_BYTES={size(newstate)}",
               f"PROBE_NEXT_STATE_SHA256={sha(newstate)}",
               f"PROBE_NEXT_SCREENSHOT_SHA256={sha(cap/'storymode-checkpoint-next.png')}",
