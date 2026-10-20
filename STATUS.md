@@ -1188,3 +1188,19 @@ Run [#39426068247](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 
 **Status:** checkpoint sumber mentah terjaga dan load awal pada patched build terlihat benar. Belum ada bukti checkpoint lanjutan dapat dimuat pada proses kedua. Jangan lanjut Story Mode dari checkpoint probe sampai proses kedua lulus.
 
+## Hasil final: SPU/ADPCM savestate restore PASS — diverifikasi 21 Oktober 2026
+
+Run [#39426068247](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39426068247) selesai `success`; semua 18 langkah job, termasuk pemulihan board dan validasi checkpoint pada proses emulator kedua, berhasil.
+
+Bukti:
+- Raw checkpoint sumber #39262213468 tetap tidak berubah: 21.163.286 byte, SHA-256 `00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d`. Hash staging sama persis.
+- Emulator varian dibangun dari base commit `0c3572c3db75f97542001e453ae80ba8c3f8acba` ditambah hanya patch upstream SPU/ADPCM PR #2218. Schema baseline/varian identik.
+- Restore menghasilkan event `ExecutionFlow::SaveStateLoaded`, loader kembali normal, lolos 180 VSync, dan screenshot cocok pada gerbang yang diwajibkan.
+- Checkpoint lanjutan berhasil disimpan pada frame probe 181. Ukuran 21.162.405 byte, SHA-256 `b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a`; header raw savestate v4 lulus validasi.
+- Proses emulator kedua yang baru memuat checkpoint lanjutan tersebut dan lulus event load, loader-return, 180 VSync, serta screenshot compare. Kedua proses dan kedua comparator keluar dengan kode 0.
+- `PROBE_NEXT_CHECKPOINT_VALID=PASS`; `PROBE_NEXT_CHECKPOINT_FRESH_PROCESS_VALIDATION=PASS`; tidak ada controller input atau transformasi state sumber.
+
+Artefak privat Actions #12268621845 (`naruto-spu-sentinel-fix-probe-private`) menyimpan checkpoint dan bukti; kedaluwarsa 3 November 2026. ROM, BIOS, dan Memory Card tidak diunggah sebagai artefak ini; tidak ada savestate mentah yang ditaruh di Git.
+
+**Kesimpulan yang diizinkan:** pemulihan raw Story Mode checkpoint dan pemuatan ulang checkpoint berikutnya dapat diandalkan pada build PCSX-Redux yang menyertakan fix SPU/ADPCM ini, menurut kriteria probe tersebut. Run ini tidak mengirim input gameplay; Story Mode belum dilanjutkan, Memory Card save/load di dalam game belum diverifikasi, dan tamat game belum terbukti. Langkah berikutnya ialah melanjutkan Story Mode dari checkpoint baru memakai varian emulator patched yang sama, sambil terus menyimpan checkpoint dan merekam aturan gameplay.
+
