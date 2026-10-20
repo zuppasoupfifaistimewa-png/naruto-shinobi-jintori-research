@@ -1,29 +1,19 @@
-> **Catatan operasional sesi 20 Oktober 2026:** Probe belum boleh dianggap berjalan atau PASS. Pemicu push satu kali dicoba lewat commit [92c7044](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/92c7044e9b4c428a9a4c9fa3a33d1913e4709574), lalu dibersihkan di [ac1aab1](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/ac1aab1874a022f6b00fde4fd32fa0a0d31cee5c) dan [723d768](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/723d7686146dde3968e72365a7d139deffb7d2d8). Konektor yang tersedia tidak dapat mengonfirmasi daftar run terbaru di repo privat. Cek Actions untuk run baru; jika tidak ada, workflow perlu dimulai lewat UI atau endpoint dispatch yang memiliki akses. Source run tetap 39262213468; raw checkpoint tidak disentuh.
+# HANDOFF TERBARU — 20 Oktober 2026: probe SPU/ADPCM sedang berjalan
 
-# HANDOFF TERBARU — 20 Oktober 2026: probe perbaikan sentinel SPU/ADPCM
+## Run aktif dan hasil yang sudah diketahui
 
-**Mulai dari** [analisis akar dan rancangan probe](docs/SAVESTATE_ADPCM_SENTINEL_ROOT_CAUSE_2026-10-20.md). Temuan baru lebih spesifik dibanding diagnosis sebelumnya: bug upstream PCSX-Redux #2175/#2218 tentang pointer sentinel ADPCM stopped yang terpotong ke int32 pada host 64-bit sangat cocok dengan SIGSEGV dalam PCSX.loadSaveState(). Build pinned 0c3572c3db75f97542001e453ae80ba8c3f8acba lebih tua dari fix yang merged 5 Oktober 2026.
+- [Run #39373493482](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39373493482) terkonfirmasi dibuat pada event `push`, dari commit marker [f1a0d7f0](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/f1a0d7f0c2a574c07b875e38a3c6f7ffa561daa6). Saat pemeriksaan terakhir job masih `in_progress`, mengerjakan pemasangan utilitas; artifact belum tersedia. Jangan menyatakan probe atau restore PASS sebelum log/manifest final tersedia.
+- [Run #39372712212](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39372712212) adalah percobaan pemicu terdahulu. Log membuktikan checkpoint berhasil diunduh, tetapi unduhan Memory Card gagal `Not Found` karena `run-id: ${{ inputs.source_run_id }}` kosong pada event push. Workflow tidak mencapai staging/schema/build/loader. Perbaikan fallback ada di [commit b44efaab](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/b44efaab64716db2c018212587989103c9ffa83b), diterapkan untuk kedua langkah unduh.
+- [Run manual #39372202653](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39372202653) gagal terpisah pada SDL display preflight; Xvfb dan `XDG_RUNTIME_DIR` sudah ditambahkan sebelum run terbaru. Kegagalan preflight bukan bukti state rusak.
+- Workflow sementara dibatasi hanya pada marker path, lalu trigger dibuang ([commit e925b438](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/e925b438b69bac29003dc73f0908bbc1dd0eae9a)) dan marker dihapus ([commit 192bf21](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/192bf21d05d1dfc559110d66080e25940354eb29)). Branch main bersih dari trigger/marker sementara; workflow kembali manual-only dengan perbaikan fallback.
 
-## Status dan bukti
+## Checkpoint dan kriteria lanjut
 
-- Raw board sumber dari run #39262213468: frame 10055, 21.163.286 byte, SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d; screenshot SHA-256 101b94a4d171d228e0224948872b65b88bf84fd0d92dc8ddd0b6cfeb21f790a8.
-- API schema terdapat pada source build yang tepat: PCSX.getSaveStateProtoSchema(). Workflow probe akan memanggilnya dari pinned AppImage sebelum loader dan membandingkan teks schema dengan build varian.
-- Mapping: top-level field 6 = spu; di dalamnya 24 channel; channel.data.current = field 8. Raw board: 20 cursor current di luar RAM suara 512 KiB, 18 dari 20 berflag stop=1. Raw boot yang berhasil juga punya cursor invalid tetapi channel inactive. Ini mendukung hipotesis, belum membuktikan kausalitas.
-- Patch isolated: experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch. Workflow manual: [workflow probe perbaikan sentinel](.github/workflows/naruto-spu-sentinel-fix-probe.yml). Patch hanya mengubah src/spu/adpcm.cc dan src/spu/adpcm.h sesuai upstream PR #2218 pada basis commit pinned. Raw source state tidak ditransformasi.
-- Run manual pertama #39372202653 gagal pada schema preflight karena SDL tidak menemukan display (`Failed to initialize SDL: No available video device`). Ini terjadi sebelum schema API terverifikasi, sebelum loader savestate, dan sebelum build varian; jangan tafsirkan sebagai bukti API tidak ada atau savestate rusak. Validasi awal raw/staging tetap PASS: 21.163.286 byte dan SHA-256 identik `00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d`. Artifact diagnostik #12242161565.
-- Workflow diperbaiki pada commit `b8ba2fa7586e83690c38c61ba290fcbb9c7fe836` untuk menjalankan preflight di Xvfb dengan `XDG_RUNTIME_DIR` yang valid dan mengunggah log display. **Jalankan workflow baru secara manual**, jangan hanya menekan re-run pada attempt lama karena attempt lama memakai definisi tanpa Xvfb. Restore board tetap BELUM TERBUKTI.
-- Setelah preflight lolos, workflow membangun varian dengan patch dua-file ADPCM, menguji restore board, menyimpan checkpoint, lalu menguji checkpoint itu di proses emulator baru. Tidak ada input gameplay dan tidak ada pengulangan source playthrough 90 menit.
+Raw source run `39262213468`: frame 10055; ukuran 21.163.286 byte; SHA-256 `00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d`; screenshot SHA-256 `101b94a4d171d228e0224948872b65b88bf84fd0d92dc8ddd0b6cfeb21f790a8`. Tidak boleh diubah atau disanitasi.
 
-## Langkah berikutnya
+Periksa run #39373493482 untuk semua gerbang: hash source/staging identik, schema API tanpa loader berhasil, schema pinned dan varian konsisten, patch dua-file SPU satu-satunya perubahan, event `ExecutionFlow::SaveStateLoaded`, loader kembali normal, sedikitnya 180 VSync, screenshot cocok, checkpoint lanjutan dibuat, lalu checkpoint dimuat di proses emulator baru dengan gerbang setara. Simpan log, manifest, screenshot, hash, dan alasan setiap kegagalan. Jika ada gerbang gagal, diagnosa dan perbaiki secara minimal sebelum mencoba lagi.
 
-Jalankan workflow “Naruto SPU stopped-cursor savestate probe” secara manual dengan source run 39262213468. Periksa artifact naruto-spu-sentinel-fix-probe-private:
-1. Pastikan schema baseline dari pinned binary dan schema varian identik.
-2. Pastikan source/staging SHA sama dengan hash raw asli.
-3. Periksa event load, loader kembali normal, 180 VSync, screenshot report, dan hash checkpoint lanjutan.
-4. Bila ada gerbang gagal, jangan lanjutkan Story Mode dari state hasil eksperimen.
-5. Bila semua gerbang PASS, lanjutkan Story Mode menggunakan build dengan patch yang sama, simpan checkpoint berkala, dan catat aturan dari gameplay yang benar-benar diamati.
-
-Raw savestate asli, Memory Card, ROM, dan BIOS tidak dimodifikasi atau dimasukkan ke Git. Jangan campurkan repo ini dengan Tile Duel.
+Story Mode belum terbukti dipulihkan lintas-proses atau tamat. Aturan gameplay masih harus dibuktikan dari observasi langsung; save/load Memory Card in-game belum diverifikasi. Tidak ada ROM, BIOS, savestate, atau Memory Card yang boleh masuk Git.
 
 ---
 
