@@ -127,3 +127,13 @@ Analisis artifact menemukan bahwa setelah frame 180, script memanggil PCSX.pause
 
 Workflow diperbaiki pada commit 8bb5c0ed829cc2ff5e004612445c8fdb88836d04 dengan menghilangkan jeda di depan polling. Run ulang [#39383287999](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39383287999) sedang berjalan ketika catatan ini dibuat. Tunggu bukti final run ulang sebelum menetapkan RESTORE PASS; run pertama tidak menghasilkan savestate lanjutan nonkosong.
 
+## Run #39383287999 — screenshot pass, verification gate still failed (2026-10-20)
+
+Artefak run #39383287999 membuktikan sumber dan staging raw identik pada ukuran 21.163.286 byte dan SHA-256 `00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d`. Log emulator memuat `ExecutionFlow::SaveStateLoaded` dan `STORY_SAVESTATE_LOAD_CALL_RETURNED=1`; pembanding screenshot immediate menulis `PASS`, `MEAN_ABSOLUTE_RGB_DIFF=0.00000`, `EXACT_PIXEL_FRACTION=1.000000`. Emulator exit code dan comparator exit code keduanya 0, tetapi step workflow tetap gagal karena marker gerbang post-restore dan cross-run tidak muncul.
+
+Berbeda dari run #39373493482 (timeout panjang ketika paused), run #39383287999 membiarkan emulator terus berjalan; log mencapai frame 12000 dan membuat checkpoint berkala sementara, tetapi jalur sukses yang akan mengemas checkpoint khusus tidak dipanggil. Manifest artifact akhirnya mencatat `PROBE_NEXT_STATE_BYTES=0`, dan tidak ada proses emulator kedua. Akar masalahnya masih di harness: recursive `PCSX.nextTick` polling tidak mengeksekusi pembacaan flag yang diperlukan, meski Python comparator berhasil menulis file PASS.
+
+Workflow diperbarui lagi agar handler GPU::Vsync memeriksa file gate pada setiap frame; pada PASS ia menandai verifikasi 180 frame, menjeda pada safe tick, menyimpan checkpoint berikutnya, lalu keluar. Pada validation-only reload proses kedua, gate sama hanya menandai reload PASS dan keluar. Jika flag tidak muncul setelah 900 VSync, probe kini berhenti dengan error eksplisit. Run pengujian baru [#39426068247](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39426068247) sedang berjalan saat catatan ini ditambahkan.
+
+Run perantara #39425629341 dan #39425661897 berakhir tanpa jobs/artefak, sehingga tidak menyatakan hasil uji runtime.
+
