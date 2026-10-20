@@ -137,3 +137,16 @@ Workflow diperbarui lagi agar handler GPU::Vsync memeriksa file gate pada setiap
 
 Run perantara #39425629341 dan #39425661897 berakhir tanpa jobs/artefak, sehingga tidak menyatakan hasil uji runtime.
 
+## Hasil final raw restore — run #39426068247 (20 Oktober 2026)
+
+Probe final berstatus `success` untuk restore checkpoint sumber dan validasi ulang checkpoint baru dalam proses emulator yang benar-benar baru.
+
+- Raw source dan staged copy: 21.163.286 byte; SHA-256 `00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d`, identik.
+- Event `ExecutionFlow::SaveStateLoaded`, loader return, 180 post-restore VSync dan screenshot gate semuanya PASS.
+- Checkpoint selanjutnya disimpan: 21.162.405 byte, SHA-256 `b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a`, header raw savestate v4 valid.
+- Proses kedua: event load, loader return, 180 VSync, screenshot gate PASS; emulator exit code 0 dan comparator exit code 0. Manifest `PROBE_NEXT_CHECKPOINT_VALID=PASS`.
+- Build patched AppImage SHA-256 `f4ffa4b00b7fd8c0966213872c0263ca8637601eb74da3f9523e7914ba93bd56`; hanya perubahan patch SPU/ADPCM dua file, schema baseline dan varian identik.
+- Artifact privat #12268621845 menyimpan checkpoint/bukti sampai 3 November 2026.
+
+Hasil ini membuktikan pemulihan dan satu siklus save-state/reload lintas proses pada build patched. Ini bukan bukti tamat Story Mode: probe tidak mengirim input gameplay, dan save/load Memory Card melalui menu game tetap belum diuji. Tahap berikutnya adalah melanjutkan gameplay dari checkpoint valid dengan varian patched yang sama.
+
