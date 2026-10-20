@@ -66,7 +66,7 @@ Artinya, menguji varian tersanitasi ini hanya mengisolasi ada/tidaknya field BIO
 
 **Langkah eksperimen yang dipilih**
 1. Jangan mengulangi receiver raw board dengan setup identik.
-2. Ambil schema savestate langsung dari **build PCSX-Redux yang sama** melalui API Lua `PCSX.getSaveStateProtoSchema()`, tanpa memanggil loader dan tanpa mengubah state. Gunakan schema tersebut untuk memberi nama subfield `6`, `3`, `9`–`13`, dan membandingkan boot vs board.
+2. Pertama verifikasi apakah **build PCSX-Redux yang sama** menyediakan API Lua `PCSX.getSaveStateProtoSchema()`. Jika tersedia, ambil schema tanpa memanggil loader dan tanpa mengubah state; jika tidak tersedia, cari sumber schema read-only yang cocok dengan build tersebut. Jangan menganggap API itu ada sebelum diverifikasi. Gunakan schema tersebut untuk memberi nama subfield `6`, `3`, `9`–`13`, dan membandingkan boot vs board.
 3. Setelah pemetaan schema diketahui, rancang satu eksperimen faktor-tunggal pada **salinan eksperimen** saja bila ada subfield spesifik yang layak diuji. Catat parent hash, transformasi field/path/byte yang tepat, dan hash varian. Uji diagnostik harus berhenti setelah bukti pemulihan (event, loader kembali, ≥180 VSync, screenshot) dan tidak melanjutkan gameplay dari varian.
 4. Pertahankan raw board asli dan manifest/hash-nya tanpa perubahan. Jangan jalankan ulang sumber 90 menit; jangan commit ROM, BIOS, savestate, atau Memory Card.
 
