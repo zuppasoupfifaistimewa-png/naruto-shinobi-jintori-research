@@ -87,7 +87,9 @@ Status hanya boleh ditandai **RESTORE PASS** bila semua syarat ini terpenuhi pad
 5. checkpoint lanjutan nonkosong dibuat, ukuran serta SHA-256 tercatat;
 6. checkpoint lanjutan tersebut berhasil dimuat ulang dalam proses emulator baru, dengan event load, loader-return normal, minimal 180 VSync, screenshot yang cocok, dan exit code 0.
 
-Sebelum workflow manual dijalankan dan hasilnya diperiksa, status tetap **RESTORE BELUM TERBUKTI**. Bila lulus, lanjutkan Story Mode dari checkpoint valid dengan build yang memuat perbaikan yang sama, kemudian buat checkpoint berikut secara berkala.
+Run manual pertama [#39372202653](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39372202653) gagal pada schema preflight sebelum loader dipanggil: SDL melaporkan `Failed to initialize SDL: No available video device`. Artifact #12242161565 menunjukkan source dan staging raw tetap punya ukuran/hash yang diharapkan, sementara schema output tidak dibuat. Ini adalah kegagalan lingkungan GUI, bukan eksperimen terhadap savestate dan bukan bukti API schema tidak tersedia. Workflow diperbaiki pada commit `b8ba2fa7586e83690c38c61ba290fcbb9c7fe836` untuk menjalankan schema preflight di Xvfb dan merekam log display; jalankan workflow baru, bukan rerun attempt lama.
+
+Status tetap **RESTORE BELUM TERBUKTI** sampai run perbaikan benar-benar lulus. Bila restore board dan pemuatan ulang checkpoint pada proses baru lulus semua gerbang, barulah lanjutkan Story Mode dengan build yang memuat fix yang sama.
 
 ## Batas kesimpulan saat ini
 
