@@ -266,8 +266,8 @@ jobs:
           local started=false
           local returned=false
           local loaded=false
-          local finalFrame=60
-          local captures={[1]=true,[10]=true,[30]=true,[40]=true,[44]=true,[45]=true,[46]=true,[47]=true,[48]=true,[50]=true,[52]=true,[53]=true,[54]=true,[55]=true,[60]=true}
+          local finalFrame=180
+          local captures={[1]=true,[10]=true,[30]=true,[40]=true,[60]=true,[75]=true,[89]=true,[90]=true,[91]=true,[92]=true,[97]=true,[98]=true,[99]=true,[100]=true,[120]=true,[150]=true,[180]=true}
           local pad=PCSX.SIO0.slots[1].pads[1]
           local buttons=PCSX.CONSTS.PAD.BUTTON
           local function log(s) print(s); io.stdout:flush() end
@@ -308,7 +308,7 @@ jobs:
               if not loaded or not returned then return end
               frame=frame+1
               if mode~="NONE" then
-                  if frame==45 then input(mode,"press") elseif frame==53 then input(mode,"release") end
+                  if frame==90 then input(mode,"press") elseif frame==98 then input(mode,"release") end
               end
               if captures[frame] then shot(frame) end
               if frame==finalFrame then
@@ -321,7 +321,7 @@ jobs:
           cp "$WORK/fresh-restore-controls.lua" "$WORK/captures/fresh-restore-controls.lua"
 
           branches_ok=1
-          for mode in NONE UP DOWN LEFT RIGHT; do
+          for mode in NONE UP DOWN LEFT RIGHT CIRCLE START; do
             cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-$mode.mcd"
             echo "POSTCONF_BRANCH_BEGIN=$mode"
             set +e
@@ -379,22 +379,22 @@ jobs:
                   images[m["label"]]=im
               except Exception as e:
                   malformed.append(mp.name+":"+str(e))
-          frames=[1,10,30,40,44,45,46,47,48,50,52,53,54,55,60]
+          frames=[1,10,30,40,60,75,89,90,91,92,97,98,99,100,120,150,180]
           out=[
-            "POSTCONF_EXPERIMENT=restore stable post-confirm checkpoint; compare NONE/UP/DOWN/LEFT/RIGHT with 8-VSync D-pad holds after panel animation at equal VSync counts",
+            "POSTCONF_EXPERIMENT=restore stable post-confirm checkpoint; compare NONE/UP/DOWN/LEFT/RIGHT/CIRCLE/START after the panel transition with input at f90 and 180 matched VSyncs",
             "POSTCONF_STABLE_CHECKPOINT_BYTES="+str(Path("captures/stable-postconfirm-checkpoint.sstate").stat().st_size if Path("captures/stable-postconfirm-checkpoint.sstate").exists() else 0),
             "POSTCONF_STABLE_CHECKPOINT_SHA256="+__import__("hashlib").sha256(Path("captures/stable-postconfirm-checkpoint.sstate").read_bytes()).hexdigest() if Path("captures/stable-postconfirm-checkpoint.sstate").exists() else "missing",
-            "POSTCONF_BRANCHES=NONE,UP,DOWN,LEFT,RIGHT; D-pad action input f45 press, f53 release (8 VSync hold) after panel animation; 60 VSync each",
+            "POSTCONF_BRANCHES=NONE,UP,DOWN,LEFT,RIGHT,CIRCLE,START; one action held f90-f98 (8 VSync) after panel transition; 180 VSync each",
             "POSTCONF_MALFORMED_SCREENSHOTS="+("; ".join(malformed) if malformed else "none")
           ]
           bad=False
-          for mode in ["NONE","UP","DOWN","LEFT","RIGHT"]:
+          for mode in ["NONE","UP","DOWN","LEFT","RIGHT","CIRCLE","START"]:
               if mode+"-f060" not in images:
                   out.append("POSTCONF_BRANCH_F60="+mode+":missing")
                   bad=True
           for f in frames:
               none=images.get("NONE-f"+str(f).zfill(3))
-              for mode in ["UP","DOWN","LEFT","RIGHT"]:
+              for mode in ["UP","DOWN","LEFT","RIGHT","CIRCLE","START"]:
                   other=images.get(mode+"-f"+str(f).zfill(3))
                   if none is None or other is None:
                       out.append(f"POSTCONF_COMPARE frame={f} NONE_vs_{mode}:missing")
