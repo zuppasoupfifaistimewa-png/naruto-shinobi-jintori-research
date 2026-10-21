@@ -81,3 +81,13 @@ Checkpoint setelah tap kedua sekarang dapat dipulihkan dalam proses baru. Kelanj
 - **Belum terverifikasi:** apakah Circle kedua pada prompt `けってい` memicu kemajuan Story Mode setelah frame 178; aturan gameplay lainnya; save/load Memory Card dari dalam game; dan tamat Story Mode.
 
 Jangan menganggap panel atau teks target sebagai bukti bahwa target Chakra telah tercapai. Jangan menyatakan Story Mode tamat tanpa bukti runtime yang kuat.
+
+
+## Follow-up kelanjutan checkpoint pascakonfirmasi — run #39546339666
+
+Eksperimen berikutnya selesai pada 21 Oktober 2026 pukul 11:53:02 WIB (mulai 11:51:43; durasi sekitar 1 menit 19 detik), status workflow `success`. Artefak privat [#12321752942](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39546339666/artifacts/12321752942) menyimpan bukti PNG/raw dan log. Laporan terperinci: [STORYMODE_POST178_CONTINUATION_2026-10-21.md](STORYMODE_POST178_CONTINUATION_2026-10-21.md).
+
+- Checkpoint turunan ini berhasil dipulihkan di proses baru dan menjalankan 62 VSync tanpa input; hash checkpoint induk dan turunan tetap tidak berubah.
+- Cabang kontrol tanpa Circle kedua crash kode 139 setelah screenshot f187. Cabang turunan berjalan normal sampai f62 lokal (kira-kira ekuivalen kontrol f240). Gambar identik sampai kontrol f181/turunan f3, lalu berubah mulai kontrol f182/turunan f4.
+- UI pascakonfirmasi menunjukkan panel `任務内容` masih ada, prompt `けってい` hilang dan cap merah mirip `決` muncul. Ini bukti visual respons atas konfirmasi, tetapi belum bukti masuk gameplay aktif. Workflow `success` menunjukkan harness/artefak sukses; emulator kontrol sendiri gagal dengan kode 139.
+- Tahap selanjutnya: checkpoint baru pada panel pascakonfirmasi yang stabil, validasi restore di proses baru, kemudian uji cabang input terisolasi. Story Mode belum terbukti tamat; save/load Memory Card dari dalam game belum diverifikasi.
