@@ -1,3 +1,34 @@
+## HASIL TERBARU — paired NONE vs START dengan cutoff screenshot f130 (21 Oktober 2026, 15:38:40 WIB)
+
+### Ringkasan run dan checkpoint
+
+- Run [#39570556284](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39570556284) selesai `success` pada 15:38:40 WIB; durasi sekitar 2 menit 11 detik. Keberhasilan Actions menandakan runner, pemeriksaan, pengunggahan, dan pembersihan berhasil, **bukan** kedua emulator menyelesaikan target frame.
+- Artefak privat #12331189717, `naruto-storymode-dialog-freeze-diagnostic-private`: 6.715.120 byte; digest ZIP `sha256:32c4a6313cbad378bf89a118a701b316552622ade57cb0687222c5d1f63c62c1`; kedaluwarsa 4 November 2026 sekitar 15:38 WIB. Digest dicocokkan kembali setelah unduh.
+- Checkpoint dialog pra-START yang dipakai dua cabang: 21.162.258 byte, SHA-256 `c47d2069ae9b1e589cce35df2dbaaa867b3365acfd501d2666a72ecd5fcc494c`. Checkpoint induk stabil: 21.163.483 byte, SHA-256 `b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee`; hash induk tetap cocok dan tidak ditimpa.
+
+### Desain serta hasil terukur
+
+Workflow [`.github/workflows/naruto-storymode-dialog-freeze-diagnostic.yml`](../.github/workflows/naruto-storymode-dialog-freeze-diagnostic.yml) diubah lewat commit `227c71808997d4dc94d69d4d483ed4ca77280b1d` dan `a2f3b20a7e85bfc106175d14cd155ed9d17aa99c`. Kedua cabang memakai checkpoint dan kartu memori sementara terpisah yang sama sumbernya. Screenshot internal emulator hanya diminta sampai f130; log VSync/frame berjalan sampai target f175; timeout per proses 30 detik.
+
+- Cabang `NONE`: frame terakhir tercatat f154; exit code 124 (timeout).
+- Cabang `START`: tap START satu VSync pada f120 dan release f121, readback press/release `PASS`; frame terakhir tercatat f151; exit code 124.
+- Kedua cabang tidak mencatat segmentation fault pada run paired dan tidak mencapai f175. Keduanya berhenti menghasilkan frame saat timeout, di area frame 151–154.
+- Screenshot asli dua cabang identik pixel-for-pixel pada f1–f125. Perbedaan mulai pada f126 (exact pixels 0,997943; MAD 0,108524), membesar di f128 (exact pixels 0,743594; MAD 15,380616) dan f130 (exact pixels 0,737878; MAD 15,748424). Pada f130 panel dialog Naruto masih terlihat bergerak ke kiri; karena gambar sengaja tidak diminta sesudah f130, eksperimen ini tidak menyaksikan sendiri kondisi visual persis pada f150.
+- Validasi menyatakan 56 screenshot valid, 28 per cabang, `DIAG_SCREENSHOT_PROBLEMS=none`. Validator menolak raw kosong, byte count/dimensi salah, PNG kosong, label frame di atas cutoff serta gambar satu-warna; f130 wajib ada di kedua cabang.
+- Run kontrol [#39570013344](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39570013344), dengan capture berhenti f130 dan tanpa cabang START, mencapai f151 lalu timeout 124; tidak terjadi segfault. Artefak #12331014609 berukuran 3.359.778 byte, digest `sha256:1fae303ee0bbc8cd2c7c816618b6db65f888f7e490eaac52a1e16f1b5fbcacb3`.
+
+### Interpretasi, batas, dan langkah berikutnya
+
+- **Terverifikasi:** checkpoint sumber dapat dipulihkan; hash induk stabil tidak berubah; screenshot asli sampai f130 lolos validasi; tap START memiliki readback benar; dua cabang berhenti menghasilkan log VSync pada kisaran f151–f154 dan timeout 124.
+- **Hipotesis:** permintaan `PCSX.GPU.takeScreenShot()` pada sekitar f150 mungkin berkaitan dengan segfault yang pernah terjadi pada #39565014834, karena tanpa permintaan screenshot terlambat run sekarang timeout tanpa segfault. Namun, belum ada bukti kausalitas. Stall VSync tampaknya tetap ada dan tap START tidak menghilangkannya.
+- **Belum diketahui:** apakah emulator benar-benar membekukan eksekusi inti atau berhenti hanya mengirim callback VSync; apakah fungsi screenshot internal memicu native segfault; dan apakah papan yang pernah tampak pada screenshot f150 setelah START merupakan gameplay misi aktif.
+- **Status misi:** tidak terbukti aktif. Tidak ada klaim penyelesaian misi ataupun tamat Story Mode.
+- **Langkah yang disarankan:** jangan ulang tap START yang sama. Tambahkan timestamp/watchdog untuk VSync atau uji tangkapan layar eksternal X11 setelah log VSync berhenti, agar keadaan visual dapat diamati tanpa memanggil screenshot internal pada frame bermasalah. Jangan mengubah/menimpa checkpoint terverifikasi, jangan gunakan Circle untuk dialog, dan tetap hanya memakai screenshot asli emulator.
+
+Trigger sekali-pakai sudah dihapus melalui commit `c7ff890e6ecc715712257f23c4c0072793c3c3d7`. Run cleanup #39571044132 selesai `skipped`; tidak ada run aktif pada pemeriksaan terakhir.
+
+---
+
 ## HASIL TERBARU — kontrol setara tanpa input vs START tertunda (21 Oktober 2026, selesai 14:53:39 WIB)
 
 - Run [#39565014834](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39565014834) selesai 14:53:39 WIB dengan conclusion workflow `failure`. Artefak privat [#12329546573](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39565014834/artifacts/12329546573), 7.101.006 byte, digest `sha256:f1052ba271d25e7668cc809455ef7ad59fb7ac84c05e081027f7c4fd4f6f2f45`. Tidak ada eksperimen aktif setelah pemeriksaan; marker pemicu satu-kali sudah dihapus.
