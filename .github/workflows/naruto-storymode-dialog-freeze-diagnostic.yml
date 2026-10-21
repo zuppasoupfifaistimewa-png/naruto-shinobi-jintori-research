@@ -32,7 +32,7 @@ jobs:
         run: |
           set -euo pipefail
           apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y jq python3-pil xvfb x11-utils x11-apps imagemagick curl unzip
+          DEBIAN_FRONTEND=noninteractive apt-get install -y jq python3-pil xvfb x11-utils x11-apps imagemagick curl unzip gdb file
           mkdir -p "$WORK"/{build-artifact,state-artifact,dialog-checkpoint-artifact,card-artifact,cards,resume,captures/raw,home,.config,.data,runtime}
           chmod 700 "$WORK/runtime"
 
@@ -224,6 +224,11 @@ jobs:
           echo "DIAG_NO_START_INPUT_SENT=YES" | tee -a "$WORK/captures/diagnostic-report.txt"
           echo "DIAG_SCREENSHOT_CUTOFF_FRAME=130; watchdog external-capture gate begins at frame 135; no internal screenshot request from frame 131 onward" | tee -a "$WORK/captures/diagnostic-report.txt"
           set +e
+          ulimit -c unlimited
+          echo "DIAG_CORE_SOFT_LIMIT=$(ulimit -Sc)" | tee -a "$WORK/captures/diagnostic-report.txt"
+          if [ -r /proc/sys/kernel/core_pattern ]; then echo "DIAG_KERNEL_CORE_PATTERN=$(cat /proc/sys/kernel/core_pattern)" | tee -a "$WORK/captures/diagnostic-report.txt"; else echo "DIAG_KERNEL_CORE_PATTERN=UNREADABLE" | tee -a "$WORK/captures/diagnostic-report.txt"; fi
+          echo "DIAG_LAUNCHER_FILE=$(file -b "$WORK/squashfs-root/AppRun")" | tee -a "$WORK/captures/diagnostic-report.txt"
+          echo "DIAG_LAUNCHER_REALPATH=$(readlink -f "$WORK/squashfs-root/AppRun" || true)" | tee -a "$WORK/captures/diagnostic-report.txt"
           timeout --signal=TERM --kill-after=3s 30s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
             -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd" \
             -exec "$PAD_SETUP" -dofile "$WORK/restore-no-input.lua" -softgpu -dynarec -stdout -lua_stdout \
@@ -330,6 +335,67 @@ jobs:
             echo "DIAG_NONE_RESULT=INCONCLUSIVE rc=$rc" | tee -a "$WORK/captures/diagnostic-report.txt"
           fi
 
+      - name: Analyze native core dump and collect backtrace without uploading memory image
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          mkdir -p "$WORK/captures"
+          cd "$WORK"
+          report="$WORK/captures/native-crash-backtrace.txt"
+          {
+            echo "DIAG_COREDUMP_ANALYSIS_BEGIN=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "DIAG_CORE_SOFT_LIMIT=$(ulimit -Sc)"
+            echo "DIAG_CORE_HARD_LIMIT=$(ulimit -Hc)"
+            if [ -r /proc/sys/kernel/core_pattern ]; then printf 'DIAG_KERNEL_CORE_PATTERN='; cat /proc/sys/kernel/core_pattern; fi
+            echo "DIAG_COREDUMP_FILTER=$(cat /proc/self/coredump_filter 2>/dev/null || echo unavailable)"
+          } > "$report"
+          exe="$WORK/squashfs-root/AppRun"
+          resolved="$(readlink -f "$exe" 2>/dev/null)"
+          if [ -n "$resolved" ] && file -b "$resolved" 2>/dev/null | grep -q 'ELF'; then
+            native="$resolved"
+          else
+            native=""
+            for candidate in "$WORK"/squashfs-root/usr/bin/*; do
+              [ -f "$candidate" ] || continue
+              case "$(basename "$candidate")" in *pcsx*|*PCSX*|*redux*|*Redux*) ;;
+                *) continue ;;
+              esac
+              if file -b "$candidate" 2>/dev/null | grep -q 'ELF'; then native="$candidate"; break; fi
+            done
+          fi
+          echo "DIAG_NATIVE_EXECUTABLE=${native:-NOT_FOUND}" >> "$report"
+          if [ -n "$native" ]; then echo "DIAG_NATIVE_EXECUTABLE_FILE=$(file -b "$native")" >> "$report"; fi
+          {
+            echo "DIAG_CORE_CANDIDATES_BEGIN"
+            find "$WORK" -maxdepth 4 -type f \( -name 'core' -o -name 'core.*' -o -name '*.core' \) -printf '%p bytes=%s\n' 2>/dev/null
+            echo "DIAG_CORE_CANDIDATES_END"
+          } >> "$report"
+          core="$(find "$WORK" -maxdepth 4 -type f \( -name 'core' -o -name 'core.*' -o -name '*.core' \) -size +1M -print -quit 2>/dev/null)"
+          if [ -n "$core" ]; then
+            echo "DIAG_CORE_FOUND=$core" >> "$report"
+            echo "DIAG_CORE_BYTES=$(stat -c %s "$core" 2>/dev/null)" >> "$report"
+            if [ -n "$native" ] && command -v gdb >/dev/null 2>&1; then
+              timeout 150s gdb -q -batch "$native" "$core" \
+                -ex 'set pagination off' \
+                -ex 'set print thread-events off' \
+                -ex 'info files' \
+                -ex 'info threads' \
+                -ex 'thread apply all bt 64' \
+                -ex 'info registers' \
+                -ex 'info proc mappings' >> "$report" 2>&1
+              echo "DIAG_GDB_POSTMORTEM_RC=$?" >> "$report"
+            else
+              echo "DIAG_GDB_POSTMORTEM=SKIPPED reason=native_executable_or_gdb_missing" >> "$report"
+            fi
+            rm -f "$core"
+            echo "DIAG_CORE_MEMORY_IMAGE_UPLOADED=NO deleted_after_local_analysis=YES" >> "$report"
+          else
+            echo "DIAG_CORE_FOUND=NO" >> "$report"
+            echo "DIAG_GDB_POSTMORTEM=NOT_RUN" >> "$report"
+          fi
+          cat "$report"
+          
       - name: Convert and verify original emulator screenshots
         if: always()
         shell: bash
