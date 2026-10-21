@@ -1,11 +1,11 @@
-name: Naruto Story Mode inspect post-Iruka board without input
+name: Naruto Story Mode confirm barrier prompt with one Circle tap
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - "experiments/.run-storymode-konoha-post-iruka-inspect"
+      - "experiments/.run-storymode-konoha-barrier-confirm"
 
 permissions:
   contents: read
@@ -13,14 +13,14 @@ permissions:
 
 jobs:
   probe:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-KONOHA-POST-IRUKA-INSPECT]')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-KONOHA-BARRIER-CONFIRM]')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     container:
       image: ghcr.io/grumpycoders/pcsx-redux-build:latest
       options: --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
     env:
-      WORK: /tmp/naruto-storymode-konoha-post-iruka-inspect
+      WORK: /tmp/naruto-storymode-konoha-barrier-confirm
       RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 
     steps:
