@@ -43,7 +43,7 @@ jobs:
           run-id: 39513285641
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-control-diff/build-artifact
+          path: /tmp/naruto-storymode-konoha-roulette-confirm/build-artifact
 
       - name: Download verified no-input Konoha f175 successor checkpoint
         uses: actions/download-artifact@v4
@@ -52,7 +52,7 @@ jobs:
           run-id: 39591032125
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-control-diff/state-artifact
+          path: /tmp/naruto-storymode-konoha-roulette-confirm/state-artifact
 
       - name: Download original private Memory Card
         uses: actions/download-artifact@v4
@@ -61,7 +61,7 @@ jobs:
           run-id: 39262213468
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-control-diff/card-artifact
+          path: /tmp/naruto-storymode-konoha-roulette-confirm/card-artifact
 
       - name: Validate inputs and stage isolated copies
         shell: bash
