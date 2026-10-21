@@ -243,14 +243,14 @@ jobs:
             -ex 'set disable-randomization off' \
             -ex 'handle SIGSEGV stop print nopass' \
             -ex 'run' \
-            -ex 'printf "\\nDIAG_GDB_POST_RUN_STOP_CAPTURE_BEGIN\\n"' \
+            -ex 'printf "\nDIAG_GDB_POST_RUN_STOP_CAPTURE_BEGIN\n"' \
             -ex 'info program' \
             -ex 'info threads' \
             -ex 'thread apply all bt 64' \
             -ex 'info registers' \
             -ex 'x/8i $pc' \
             -ex 'info proc mappings' \
-            -ex 'printf "\\nDIAG_GDB_POST_RUN_STOP_CAPTURE_END\\n"' \
+            -ex 'printf "\nDIAG_GDB_POST_RUN_STOP_CAPTURE_END\n"' \
             --args "$WORK/squashfs-root/AppRun" \
             -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd" \
             -exec "$PAD_SETUP" -dofile "$WORK/restore-no-input.lua" -softgpu -dynarec -stdout -lua_stdout \
