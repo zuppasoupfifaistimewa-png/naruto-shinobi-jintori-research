@@ -267,7 +267,7 @@ jobs:
           local returned=false
           local loaded=false
           local finalFrame=60
-          local captures={[1]=true,[10]=true,[15]=true,[19]=true,[20]=true,[21]=true,[22]=true,[23]=true,[24]=true,[25]=true,[30]=true,[40]=true,[60]=true}
+          local captures={[1]=true,[10]=true,[30]=true,[40]=true,[44]=true,[45]=true,[46]=true,[47]=true,[48]=true,[49]=true,[50]=true,[55]=true,[60]=true}
           local pad=PCSX.SIO0.slots[1].pads[1]
           local buttons=PCSX.CONSTS.PAD.BUTTON
           local function log(s) print(s); io.stdout:flush() end
@@ -307,7 +307,7 @@ jobs:
               if not loaded or not returned then return end
               frame=frame+1
               if mode~="NONE" then
-                  if frame==20 then input(mode,"press") elseif frame==23 then input(mode,"release") end
+                  if frame==45 then input(mode,"press") elseif frame==48 then input(mode,"release") end
               end
               if captures[frame] then shot(frame) end
               if frame==finalFrame then
@@ -378,12 +378,12 @@ jobs:
                   images[m["label"]]=im
               except Exception as e:
                   malformed.append(mp.name+":"+str(e))
-          frames=[1,10,15,19,20,21,23,24,25,30,40,60]
+          frames=[1,10,30,40,44,45,46,47,48,49,50,55,60]
           out=[
-            "POSTCONF_EXPERIMENT=stabilize post-confirm checkpoint then fresh-process restore with NONE/CIRCLE/START at equal VSync counts",
+            "POSTCONF_EXPERIMENT=restore stable post-confirm checkpoint; compare NONE/CIRCLE/START with button taps after panel animation at equal VSync counts",
             "POSTCONF_STABLE_CHECKPOINT_BYTES="+str(Path("captures/stable-postconfirm-checkpoint.sstate").stat().st_size if Path("captures/stable-postconfirm-checkpoint.sstate").exists() else 0),
             "POSTCONF_STABLE_CHECKPOINT_SHA256="+__import__("hashlib").sha256(Path("captures/stable-postconfirm-checkpoint.sstate").read_bytes()).hexdigest() if Path("captures/stable-postconfirm-checkpoint.sstate").exists() else "missing",
-            "POSTCONF_BRANCHES=NONE,CIRCLE,START; action input f20 press, f23 release; 60 VSync each",
+            "POSTCONF_BRANCHES=NONE,CIRCLE,START; action input f45 press, f48 release after panel animation; 60 VSync each",
             "POSTCONF_MALFORMED_SCREENSHOTS="+("; ".join(malformed) if malformed else "none")
           ]
           bad=False
