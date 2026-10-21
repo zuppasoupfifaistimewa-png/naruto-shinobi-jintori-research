@@ -298,9 +298,8 @@ jobs:
              "CIRCLE_FOLLOWUP_CONFIRMED_STATE_BYTES="+str((root/"confirmed-checkpoint.raw.sstate").stat().st_size if (root/"confirmed-checkpoint.raw.sstate").exists() else 0),
              "CIRCLE_FOLLOWUP_CONFIRMED_STATE_SHA256="+(hashlib.sha256((root/"confirmed-checkpoint.raw.sstate").read_bytes()).hexdigest() if (root/"confirmed-checkpoint.raw.sstate").exists() else "missing"),
              "CIRCLE_FOLLOWUP_FRESH_PROCESS_RESTORE="+("PASS" if (root/"pcsx-RELOAD_CONFIRM.stdout").is_file() and "CIRCLE_TIMELINE_LOAD_EVENT=PASS" in (root/"pcsx-RELOAD_CONFIRM.stdout").read_text(errors="replace") and "CIRCLE_TIMELINE_LOAD_RETURNED=1" in (root/"pcsx-RELOAD_CONFIRM.stdout").read_text(errors="replace") and "CIRCLE_TIMELINE_BRANCH_DONE mode=RELOAD_CONFIRM frame=180 load_event=true load_returned=true" in (root/"pcsx-RELOAD_CONFIRM.stdout").read_text(errors="replace") else "FAIL_OR_MISSING"),
-             ""
              "",
-             "Per-frame differences against NONE at the same VSync count:"
+             "Per-frame differences: CIRCLE_SECOND versus wait-only branch at the same VSync count:"
           ]
           for mode in modes:
               rows=[]
