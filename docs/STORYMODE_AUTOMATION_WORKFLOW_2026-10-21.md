@@ -1,5 +1,13 @@
 # Naruto Story Mode — Rencana Otomasi Berkelanjutan
 
+## Hasil uji navigasi menu dari f175
+
+- RIGHT vs NONE: [run #39606938717](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39606938717). Press/release readback passed, but post-frame-90 screenshot pixels were identical (mean RGB diff 0.0; exact fraction 1.0). The highlighted menu item did not change.
+- DOWN vs NONE: [run #39607704007](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39607704007). Press/release readback passed. External X11 screenshot showed highlight move from `ルーレット (Roulette)` to `忍術 (Ninjutsu/teknik ninja)`; post diff mean 1.049238, exact-pixel fraction 0.985733.
+- Source f175 remains immutable; do not promote experimental f120 children as baseline without deliberate selection and verification.
+- Next action: test CIRCLE confirmation when Roulette is highlighted, against NONE, using `ACTION=CIRCLE`. Circle here is menu confirmation; dialog-skip rule remains START.
+
+
 ## Implementasi pertama — harness input-versus-kontrol (21 Oktober 2026)
 
 Workflow `.github/workflows/naruto-storymode-f175-direction-diff.yml` kini menguji satu aksi navigasi per run dari checkpoint f175 yang tervalidasi. Ia membuat proses emulator baru untuk NONE dan satu lagi untuk satu arah yang dipilih marker, mengambil screenshot X11 eksternal pada frame relatif 20 dan 90, membandingkan gambar dengan Pillow, menyimpan savestate privat pada frame 120, dan membersihkan workspace ephemeral. Ia memvalidasi hash sumber checkpoint, binari emulator, BIOS, game, dan Memory Card; source checkpoint disalin read-only. Aksi yang diizinkan adalah UP/DOWN/LEFT/RIGHT.
