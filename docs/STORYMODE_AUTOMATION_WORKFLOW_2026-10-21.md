@@ -1,3 +1,24 @@
+## LATEST VERIFIED CONTINUATION — Mizuki dialogue discovered after barrier (21 October 2026)
+
+This supersedes earlier next-action notes above: the next operation is to skip Mizuki’s visible dialogue with START, not to send another direction press yet. Story Mode is still NOT complete and no ending evidence exists.
+
+### New controlled-probe results
+- After barrier placement, a DOWN-vs-NONE test [#39618670884](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39618670884) sent DOWN at relative f30–38 from the post-barrier checkpoint. Button readback passed, but the game viewport was identical to NONE at f100 and f120. Private artifact #12352978983 contains external X11 frames and distinct checkpoint successors.
+- A second matched probe [#39619671384](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39619671384) delayed DOWN until f50–58 from the post-barrier continuation. Readback again passed, yet DOWN and NONE stayed visually identical in the game viewport at f60/f100 and still matched at f120. This is not proof DOWN is generally ineffective; both experiments show the action was ineffective in this post-barrier transition context/timing.
+- The key visual finding is that both branches automatically reached Mizuki’s dialogue by f100–f120. The screenshot reads `ククク・・・やってやるよ！ (Kukuku… akan kuberi pelajaran!)`. Both branches show Naruto at the pink tile marked 60, enemy Mizuki token on the blue/yellow node, with HUD Naruto Chakra 1380 and Mizuki Chakra 1500. The dialogue is now the active state to resolve.
+- Validated source for the next operation comes from the no-input branch of run #39619671384: `barrier-result-delayed-down-none-f120.sstate`, **21,162,244 bytes**, SHA-256 `aeef171e16f99be11d8baebb965e03fa1d47543a0d927b37e4d8e194fc5ff775`. It is copied read-only before each run.
+- Current [run #39620432917](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39620432917), “START skips Mizuki dialogue after barrier”, restores this checkpoint and compares one START press/release (relative f30/f38) with a matched NONE branch. It captures authentic external X11 at f20/f60/f100/f120 and saves distinct private successors. At last check it was initializing its container; do not create a duplicate trigger. After completion inspect the job logs, screenshot hashes/visuals, comparison report and checkpoint successor before deciding another input.
+
+### Verified path prior to dialogue
+- Roulette source `7c8c8bfa4a15132a6c9a046aa842fc01d2f294d6e04d53262c20287566432222` plus controlled Circle at roulette returns to board with sector 2. Fresh-process map checkpoint `451c59b13ca1dbf93eb23afa94a096c7eb5721c5bb5108b45e9d2054289ffb53`.
+- DOWN from that map moved one route and counter 2→1, showing Iruka dialogue. START skipped it and exposed the barrier prompt `ここに結界をはりますか？ (Apakah akan memasang penghalang di sini?)`, `必要チャクラ 120 (Chakra yang dibutuhkan: 120)`, `はい (Ya)` highlighted.
+- Contextual Circle then visibly placed the barrier and changed Naruto Chakra 1500→1380 while Mizuki stayed 1500. Post-barrier checkpoint `a1053f965ad8520c1c7f6f59ae14433c5e1d0bb6bc933b65553597b187f65649`; the source has been kept immutable.
+
+### Hard constraints and maturity
+Use only `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`. Always use START to skip Story Mode dialogue; never use Circle for dialogue skipping. Circle is only appropriate for a visible contextual confirmation choice. All gameplay evidence images are authentic emulator X11 captures, never web images or the internal screenshot API. ROM, BIOS, savestates, Memory Card and images stay private, outside Git. Translate Japanese text directly in parentheses. The checkpoint/input/capture/save cycle works for controlled steps, but general state classification, adaptive policy, generic crash recovery and autonomous multi-session completion remain unverified. Never claim completion without original in-game ending evidence.
+
+---
+
 ## LATEST VERIFIED CONTINUATION — barrier placed and Chakra debit observed (21 October 2026)
 
 This supersedes the prior queued-next-action note below. Story Mode is still NOT complete; no original in-game ending has been verified.
