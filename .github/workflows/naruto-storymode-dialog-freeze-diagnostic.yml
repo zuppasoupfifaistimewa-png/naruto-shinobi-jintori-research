@@ -233,24 +233,28 @@ jobs:
           if [ -r /proc/sys/kernel/core_pattern ]; then echo "DIAG_KERNEL_CORE_PATTERN=$(cat /proc/sys/kernel/core_pattern)" | tee -a "$WORK/captures/diagnostic-report.txt"; else echo "DIAG_KERNEL_CORE_PATTERN=UNREADABLE" | tee -a "$WORK/captures/diagnostic-report.txt"; fi
           echo "DIAG_LAUNCHER_FILE=$(file -b "$WORK/squashfs-root/AppRun")" | tee -a "$WORK/captures/diagnostic-report.txt"
           echo "DIAG_LAUNCHER_REALPATH=$(readlink -f "$WORK/squashfs-root/AppRun" || true)" | tee -a "$WORK/captures/diagnostic-report.txt"
-          export SEGFAULT_SIGNALS=all SEGFAULT_USE_ALTSTACK=1
-          if command -v catchsegv >/dev/null 2>&1; then
-            echo "DIAG_NATIVE_TRACE_MODE=catchsegv path=$(command -v catchsegv)" | tee -a "$WORK/captures/diagnostic-report.txt"
-            signal_wrapper="$(command -v catchsegv)"
-            timeout --signal=TERM --kill-after=3s 60s "$signal_wrapper" "$WORK/squashfs-root/AppRun" \
-              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd" \
-              -exec "$PAD_SETUP" -dofile "$WORK/restore-no-input.lua" -softgpu -dynarec -stdout -lua_stdout \
-              -logfile "$WORK/captures/pcsx-DIAGNONE.log" -run > "$WORK/captures/pcsx-DIAGNONE.stdout" 2>&1 &
-          else
-            signal_library="$(find /lib /usr/lib -type f -name libSegFault.so -print -quit 2>/dev/null)"
-            test -n "$signal_library"
-            echo "DIAG_NATIVE_TRACE_MODE=LD_PRELOAD path=$signal_library" | tee -a "$WORK/captures/diagnostic-report.txt"
-            export LD_PRELOAD="$signal_library${LD_PRELOAD:+:$LD_PRELOAD}"
-            timeout --signal=TERM --kill-after=3s 60s "$WORK/squashfs-root/AppRun" \
-              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd" \
-              -exec "$PAD_SETUP" -dofile "$WORK/restore-no-input.lua" -softgpu -dynarec -stdout -lua_stdout \
-              -logfile "$WORK/captures/pcsx-DIAGNONE.log" -run > "$WORK/captures/pcsx-DIAGNONE.stdout" 2>&1 &
-          fi
+          echo "DIAG_NATIVE_TRACE_MODE=gdb-live-sigsegv-stop" | tee -a "$WORK/captures/diagnostic-report.txt"
+          echo "DIAG_GDB_POLICY=stop-on-natural-SIGSEGV; no controller input; no core memory image uploaded" | tee -a "$WORK/captures/diagnostic-report.txt"
+          timeout --signal=TERM --kill-after=3s 60s gdb -q -batch \
+            -ex 'set pagination off' \
+            -ex 'set confirm off' \
+            -ex 'set print thread-events off' \
+            -ex 'set print frame-arguments all' \
+            -ex 'set disable-randomization off' \
+            -ex 'handle SIGSEGV stop print nopass' \
+            -ex 'run' \
+            -ex 'printf "\\nDIAG_GDB_POST_RUN_STOP_CAPTURE_BEGIN\\n"' \
+            -ex 'info program' \
+            -ex 'info threads' \
+            -ex 'thread apply all bt 64' \
+            -ex 'info registers' \
+            -ex 'x/8i $pc' \
+            -ex 'info proc mappings' \
+            -ex 'printf "\\nDIAG_GDB_POST_RUN_STOP_CAPTURE_END\\n"' \
+            --args "$WORK/squashfs-root/AppRun" \
+            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd" \
+            -exec "$PAD_SETUP" -dofile "$WORK/restore-no-input.lua" -softgpu -dynarec -stdout -lua_stdout \
+            -logfile "$WORK/captures/pcsx-DIAGNONE.log" -run > "$WORK/captures/pcsx-DIAGNONE.stdout" 2>&1 &
           timeout_pid=$!
           python3 - "$timeout_pid" "$WORK/captures/pcsx-DIAGNONE.stdout" "$WORK/captures" <<'PY'
           import os, re, signal, sys, time, subprocess
@@ -312,7 +316,7 @@ jobs:
                   log(f"STALL_CONFIRMED last_frame={last_frame} no_new_frame_observed_s={now-last_progress:.3f}")
                   try:
                       ps=subprocess.run(["ps","-eo","pid,ppid,stat,pcpu,etime,wchan:32,comm,args"],capture_output=True,text=True)
-                      selected=[line for line in ps.stdout.splitlines() if ("AppRun" in line or "PCSX" in line or "timeout --signal=TERM" in line)]
+                      selected=[line for line in ps.stdout.splitlines() if ("AppRun" in line or "PCSX" in line or ("gdb" in line and "pcsx-redux" in line) or "timeout --signal=TERM" in line)]
                       (out/"process-state-at-stall.txt").write_text("\n".join(selected)+"\n",encoding="utf-8")
                       log("PROCESS_STATE_CAPTURED file=process-state-at-stall.txt rows="+str(len(selected)))
                   except Exception as e: log("PROCESS_STATE_CAPTURE_ERROR="+str(e))
@@ -347,20 +351,21 @@ jobs:
           frames="$( (grep -oE 'DIAG_NONE_FRAME=[0-9]+' "$WORK/captures/pcsx-DIAGNONE.stdout" || true) | sed 's/.*=//' | sort -n | tail -1)"
           if [ -z "$frames" ]; then frames=0; fi
           echo "DIAG_NONE_LAST_FRAME=$frames input=NONE" | tee -a "$WORK/captures/diagnostic-report.txt"
-          if grep -Eiq 'Segmentation fault|Backtrace:|signal SIGSEGV' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
-            echo "DIAG_NONE_RESULT=SIGSEGV_SIGNAL_HANDLER_TRACE_CAPTURED_NO_START" | tee -a "$WORK/captures/diagnostic-report.txt"
-          elif [ "$rc" -eq 139 ]; then
-            echo "DIAG_NONE_RESULT=SEGMENTATION_FAULT_NO_HANDLER_TRACE" | tee -a "$WORK/captures/diagnostic-report.txt"
-          elif [ "$rc" -eq 143 ] && [ "$frames" -ge 1 ]; then
-            echo "DIAG_NONE_RESULT=STALL_CAPTURED_NO_NATURAL_SIGSEGV_IN_OBSERVATION_WINDOW" | tee -a "$WORK/captures/diagnostic-report.txt"
-          elif [ "$rc" -eq 255 ] && [ "$frames" -ge 1 ] && ! grep -Eiq 'Segmentation fault|Backtrace:|signal SIGSEGV' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
-            echo "DIAG_NONE_RESULT=STALL_OR_TIMEOUT_WITHOUT_NATURAL_SIGSEGV_TRACE catchsegv_wrapper_rc=255" | tee -a "$WORK/captures/diagnostic-report.txt"
+          if grep -Eiq 'Program received signal SIGSEGV|received signal SIGSEGV' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
+            echo "DIAG_GDB_SIGSEGV_CAUGHT=YES" | tee -a "$WORK/captures/diagnostic-report.txt"
+            echo "DIAG_NONE_RESULT=GDB_CAUGHT_NATURAL_SIGSEGV_AND_CAPTURED_STACK_NO_START" | tee -a "$WORK/captures/diagnostic-report.txt"
           elif [ "$rc" -eq 0 ] && grep -q 'DIAG_NONE_BRANCH_DONE frame=175' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
-            echo "DIAG_NONE_RESULT=PASS_175_VSYNC_NO_INPUT" | tee -a "$WORK/captures/diagnostic-report.txt"
+            echo "DIAG_GDB_SIGSEGV_CAUGHT=NO" | tee -a "$WORK/captures/diagnostic-report.txt"
+            echo "DIAG_NONE_RESULT=PASS_175_VSYNC_NO_INPUT_NO_SIGSEGV" | tee -a "$WORK/captures/diagnostic-report.txt"
           elif [ "$rc" -eq 124 ] && [ "$frames" -ge 1 ]; then
-            echo "DIAG_NONE_RESULT=STALL_OR_TIMEOUT_WITHOUT_START" | tee -a "$WORK/captures/diagnostic-report.txt"
+            echo "DIAG_GDB_SIGSEGV_CAUGHT=NO_OBSERVED_BEFORE_TIMEOUT" | tee -a "$WORK/captures/diagnostic-report.txt"
+            echo "DIAG_NONE_RESULT=GDB_TIMEOUT_WITHOUT_NATURAL_SIGSEGV" | tee -a "$WORK/captures/diagnostic-report.txt"
+          elif [ "$rc" -eq 143 ] && [ "$frames" -ge 1 ]; then
+            echo "DIAG_GDB_SIGSEGV_CAUGHT=NO_OBSERVED_BEFORE_TERMINATION" | tee -a "$WORK/captures/diagnostic-report.txt"
+            echo "DIAG_NONE_RESULT=GDB_TERMINATED_WITHOUT_NATURAL_SIGSEGV" | tee -a "$WORK/captures/diagnostic-report.txt"
           else
-            echo "DIAG_NONE_RESULT=INCONCLUSIVE rc=$rc" | tee -a "$WORK/captures/diagnostic-report.txt"
+            echo "DIAG_GDB_SIGSEGV_CAUGHT=NO_OR_UNCLASSIFIED rc=$rc" | tee -a "$WORK/captures/diagnostic-report.txt"
+            echo "DIAG_NONE_RESULT=INCONCLUSIVE_GDB rc=$rc" | tee -a "$WORK/captures/diagnostic-report.txt"
           fi
 
       - name: Analyze native core dump and collect backtrace without uploading memory image
@@ -423,12 +428,14 @@ jobs:
             echo "DIAG_GDB_POSTMORTEM=NOT_RUN" >> "$report"
           fi
           session="$WORK/captures/pcsx-DIAGNONE.stdout"
-          if [ -s "$session" ] && grep -Eiq 'Segmentation fault|Backtrace:|signal SIGSEGV|stack trace' "$session"; then
+          if [ -s "$session" ] && grep -Eiq 'Program received signal SIGSEGV|received signal SIGSEGV' "$session"; then
+            echo "DIAG_GDB_SIGSEGV_CAUGHT=YES" >> "$report"
             echo "DIAG_NATIVE_SIGNAL_TRACE_CAPTURED=YES" >> "$report"
             echo "DIAG_NATIVE_SIGNAL_TRACE_BEGIN" >> "$report"
-            awk '/Segmentation fault|Backtrace:|signal SIGSEGV|Register dump|stack trace|Memory map:/{printing=1} printing {print}' "$session" >> "$report"
+            awk '/Program received signal SIGSEGV|received signal SIGSEGV|DIAG_GDB_POST_RUN_STOP_CAPTURE_BEGIN|Thread [0-9]+|^#0 /{printing=1} printing {print}' "$session" >> "$report"
             echo "DIAG_NATIVE_SIGNAL_TRACE_END" >> "$report"
           else
+            echo "DIAG_GDB_SIGSEGV_CAUGHT=NO" >> "$report"
             echo "DIAG_NATIVE_SIGNAL_TRACE_CAPTURED=NO" >> "$report"
           fi
           cat "$report"
