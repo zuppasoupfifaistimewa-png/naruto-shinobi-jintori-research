@@ -178,6 +178,7 @@ jobs:
           local started=false
           local returned=false
           local loaded=false
+          local captures={[1]=true,[8]=true,[16]=true,[24]=true,[32]=true,[40]=true,[48]=true,[56]=true,[64]=true,[72]=true,[80]=true,[88]=true,[96]=true,[104]=true,[112]=true,[116]=true,[117]=true,[118]=true,[119]=true,[120]=true,[121]=true,[122]=true,[123]=true,[124]=true,[125]=true,[126]=true,[128]=true,[130]=true,[140]=true,[150]=true,[160]=true,[170]=true,[178]=true,[179]=true,[180]=true,[181]=true,[182]=true,[190]=true,[200]=true,[210]=true}
           local function log(s) print(s); io.stdout:flush() end
           local function shot(f)
               local s=PCSX.GPU.takeScreenShot()
@@ -207,9 +208,9 @@ jobs:
               if not loaded or not returned then return end
               frame=frame+1
               log("DIAG_NONE_FRAME="..frame.." input=NONE")
-              shot(frame)
-              if frame==8 then
-                  log("DIAG_NONE_BRANCH_DONE frame=8 input=NONE")
+              if captures[frame] then shot(frame) end
+              if frame==210 then
+                  log("DIAG_NONE_BRANCH_DONE frame=210 input=NONE")
                   PCSX.pauseEmulator(); PCSX.nextTick(function() PCSX.quit(0) end)
                   return
               end
@@ -219,7 +220,7 @@ jobs:
           cp "$WORK/restore-no-input.lua" "$WORK/captures/restore-no-input.lua"
           cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-DIAGNONE.mcd"
           set +e
-          timeout --signal=TERM --kill-after=3s 12s stdbuf -oL -eL "$WORK/squashfs-root/AppRun"             -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd"             -exec "$PAD_SETUP" -dofile "$WORK/restore-no-input.lua" -softgpu -dynarec -stdout -lua_stdout             -logfile "$WORK/captures/pcsx-DIAGNONE.log" -run > "$WORK/captures/pcsx-DIAGNONE.stdout" 2>&1
+          timeout --signal=TERM --kill-after=3s 20s stdbuf -oL -eL "$WORK/squashfs-root/AppRun"             -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd"             -exec "$PAD_SETUP" -dofile "$WORK/restore-no-input.lua" -softgpu -dynarec -stdout -lua_stdout             -logfile "$WORK/captures/pcsx-DIAGNONE.log" -run > "$WORK/captures/pcsx-DIAGNONE.stdout" 2>&1
           rc=$?
           set -e
           echo "DIAG_NONE_PROCESS_EXIT_CODE=$rc" | tee -a "$WORK/captures/diagnostic-report.txt"
@@ -227,8 +228,8 @@ jobs:
           frames="$( (grep -oE 'DIAG_NONE_FRAME=[0-9]+' "$WORK/captures/pcsx-DIAGNONE.stdout" || true) | sed 's/.*=//' | sort -n | tail -1)"
           frames="${frames:-0}"
           echo "DIAG_NONE_LAST_FRAME=$frames input=NONE" | tee -a "$WORK/captures/diagnostic-report.txt"
-          if [ "$rc" -eq 0 ] && grep -q 'DIAG_NONE_BRANCH_DONE frame=8' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
-            echo "DIAG_NONE_RESULT=PASS_8_VSYNC_NO_INPUT" | tee -a "$WORK/captures/diagnostic-report.txt"
+          if [ "$rc" -eq 0 ] && grep -q 'DIAG_NONE_BRANCH_DONE frame=210' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
+            echo "DIAG_NONE_RESULT=PASS_210_VSYNC_NO_INPUT" | tee -a "$WORK/captures/diagnostic-report.txt"
           elif [ "$rc" -eq 124 ] && [ "$frames" -ge 1 ]; then
             echo "DIAG_NONE_RESULT=STALL_OR_TIMEOUT_WITHOUT_START" | tee -a "$WORK/captures/diagnostic-report.txt"
           elif [ "$rc" -eq 139 ]; then
