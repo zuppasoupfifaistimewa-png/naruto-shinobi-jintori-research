@@ -1,3 +1,13 @@
+## LATEST CONTROLLED INPUT RESULT — DOWN moved the vertical menu highlight (21 October 2026)
+
+- Run [#39607704007](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39607704007) completed with workflow conclusion `success`. It restored independently from the immutable f175 checkpoint into NONE and DOWN processes, both reached relative frame 120 and saved separate private derived states.
+- DOWN was pressed at relative frame 30 and released at frame 38; both input readbacks passed. NONE sent no input.
+- Genuine external X11 screenshot at relative frame 90 shows the highlight moved from `ルーレット (Roulette)` to `忍術 (Ninjutsu/teknik ninja)`. The post-screen comparison has mean absolute RGB difference 1.049238 and exact-pixel fraction 0.985733; the principal difference is localized to the vertical menu selection. This supports DOWN as a verified menu-navigation input in this screen context.
+- Private artifact #12348747349, 6,637,570 bytes, verified ZIP SHA-256 `340ff7064f4b4902122b9ecaeb926a4693716c41c21dc765461d989d34f15730`. All later-state screenshots were external X11 captures; PCSX internal screenshot API was not called.
+- DOWN f120 result state: 21,162,252 bytes, SHA-256 `f53d6dbb6890b3798a82864b4cb2b85bc122517b63ca8e7c40eb9daf85ce2aad`. NONE f120 state: 21,162,184 bytes, SHA-256 `95d7c57fa92f9a0c4e51f181f65c1a93a8fea142925175f7c927e21b944c867b`. Keep these as private branch artifacts, not a replacement for f175.
+- The earlier RIGHT probe (#39606938717) registered press/release but produced a pixel-identical post capture versus NONE. Do not use RIGHT to navigate this vertical menu.
+- Next controlled action: from the original f175 source checkpoint with Roulette still highlighted, test one CIRCLE press/release against a matched NONE control. This tests menu confirmation; it is not using Circle to skip dialog. On any Story Mode dialogue, press START, not Circle.
+
 ## LATEST AUTOMATION IMPLEMENTATION — one RIGHT tap compared with NONE from f175 (21 October 2026)
 
 - New workflow: [naruto-storymode-f175-direction-diff.yml](.github/workflows/naruto-storymode-f175-direction-diff.yml). It restores independent fresh emulator processes from the immutable verified f175 checkpoint; external X11 screenshots only; no internal PCSX screenshot API calls on this later state.
