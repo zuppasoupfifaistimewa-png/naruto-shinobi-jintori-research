@@ -1,1 +1,0 @@
-One-shot trigger: restore immutable post-Iruka RIGHT/DOWN branch checkpoints at f80 and continue with no controller input. Take external X11 screenshots only while paused at relative f20/f40, save independent f50 checkpoints, and do not call internal screenshot APIs or overwrite source checkpoints.
