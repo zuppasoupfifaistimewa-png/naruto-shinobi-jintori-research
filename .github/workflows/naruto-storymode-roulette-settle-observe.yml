@@ -1,30 +1,30 @@
-name: Naruto Story Mode START skips Mizuki dialogue after barrier
+name: Naruto Story Mode next roulette Circle-versus-no-input test
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - "experiments/.run-storymode-barrier-dialog-start"
+      - "experiments/.run-storymode-next-roulette-circle-diff"
 
 permissions:
   contents: read
   actions: read
 
 concurrency:
-  group: naruto-storymode-barrier-dialog-start
+  group: naruto-storymode-next-roulette-circle-diff
   cancel-in-progress: false
 
 jobs:
   observe:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-BARRIER-DIALOG-START]')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-NEXT-ROULETTE-CIRCLE-DIFF]')
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     container:
       image: ghcr.io/grumpycoders/pcsx-redux-build:latest
       options: --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
     env:
-      WORK: /tmp/naruto-storymode-barrier-dialog-start
+      WORK: /tmp/naruto-storymode-next-roulette-circle-diff
       RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 
     steps:
@@ -47,16 +47,16 @@ jobs:
           run-id: 39513285641
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-barrier-dialog-start/build-artifact
+          path: /tmp/naruto-storymode-next-roulette-circle-diff/build-artifact
 
-      - name: Download the verified Mizuki dialogue checkpoint from run 39619671384
+      - name: Download the verified START-result roulette checkpoint from run 39620432917
         uses: actions/download-artifact@v4
         with:
-          name: naruto-storymode-barrier-result-delayed-down-diff-private
-          run-id: 39619671384
+          name: naruto-storymode-barrier-dialog-start-private
+          run-id: 39620432917
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-barrier-dialog-start/state-artifact
+          path: /tmp/naruto-storymode-next-roulette-circle-diff/state-artifact
 
       - name: Download original private Memory Card
         uses: actions/download-artifact@v4
@@ -65,36 +65,37 @@ jobs:
           run-id: 39262213468
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-barrier-dialog-start/card-artifact
+          path: /tmp/naruto-storymode-next-roulette-circle-diff/card-artifact
 
-      - name: Validate immutable Mizuki-dialogue checkpoint and stage read-only copy
+      - name: Validate immutable START-result roulette checkpoint and stage read-only copy
         shell: bash
         run: |
           set -euo pipefail
           APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
-          SOURCE="$WORK/state-artifact/barrier-result-delayed-down-none-f120.sstate"
+          SOURCE="$WORK/state-artifact/barrier-dialog-start-result-start-f120.sstate"
           CARD="$WORK/card-artifact/naruto-storymode.mcd"
           test -f "$APP" && chmod +x "$APP"
           test "$(sha256sum "$APP" | cut -d ' ' -f1)" = 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99
-          test "$(stat -c %s "$SOURCE")" = 21162244
-          test "$(sha256sum "$SOURCE" | cut -d ' ' -f1)" = aeef171e16f99be11d8baebb965e03fa1d47543a0d927b37e4d8e194fc5ff775
+          test "$(stat -c %s "$SOURCE")" = 21162035
+          test "$(sha256sum "$SOURCE" | cut -d ' ' -f1)" = b124d2ce17f7c802208b893b93ab25758088f557a0e964aadb09c067968d9df1
           test "$(stat -c %s "$CARD")" = 131072
           test "$(sha256sum "$CARD" | cut -d ' ' -f1)" = ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
-          cp "$SOURCE" "$WORK/resume/mizuki-dialog-source-f120.sstate"
-          chmod 400 "$WORK/resume/mizuki-dialog-source-f120.sstate"
+          cp "$SOURCE" "$WORK/resume/next-roulette-source-f120.sstate"
+          chmod 400 "$WORK/resume/next-roulette-source-f120.sstate"
           cp "$CARD" "$WORK/cards/naruto-storymode-template.mcd"
           {
-            echo "SOURCE_RUN=39619671384"
-            echo "SOURCE_BYTES=21162244"
-            echo "SOURCE_SHA256=aeef171e16f99be11d8baebb965e03fa1d47543a0d927b37e4d8e194fc5ff775"
+            echo "SOURCE_RUN=39620432917"
+            echo "SOURCE_BYTES=21162035"
+            echo "SOURCE_SHA256=b124d2ce17f7c802208b893b93ab25758088f557a0e964aadb09c067968d9df1"
             echo "SOURCE_COPY_READ_ONLY=YES"
-            echo "SOURCE_SCREEN=Mizuki dialogue; same game view in DOWN and NONE branches through f120"
-            echo "DIALOGUE=ククク・・・やってやるよ！ (Kukuku… akan kuberi pelajaran!)"
-            echo "CONTROLLER_ACTION=START only to skip Story Mode dialogue"
-            echo "EXTERNAL_X11_CAPTURE_FRAMES=20,60,100,120"
+            echo "SOURCE_SCREEN=roulette wheel visible after START skipped Mizuki dialogue"
+            echo "BRANCHES=NONE,CIRCLE"
+            echo "CIRCLE_PRESS_RELATIVE_FRAME=30"
+            echo "CIRCLE_RELEASE_RELATIVE_FRAME=38"
+            echo "EXTERNAL_X11_CAPTURE_FRAMES=20,60,100,180"
             echo "INTERNAL_EMULATOR_SCREENSHOT_API=DISABLED"
           } | tee "$WORK/captures/source-validation.txt"
-          echo "MIZUKI_DIALOGUE_SOURCE_VALIDATION=PASS"
+          echo "NEXT_ROULETTE_SOURCE_VALIDATION=PASS"
 
       - name: Download game and SCPH-7502 BIOS from private runtime release
         shell: bash
@@ -141,7 +142,7 @@ jobs:
           Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
           PY
 
-      - name: Compare START dialogue skip against matched no-input control and save successor
+      - name: Compare one contextual Circle tap against matched no-input control on new roulette
         shell: bash
         run: |
           set -euo pipefail
@@ -158,19 +159,19 @@ jobs:
           PCSX.settings.pads[1].DeviceType='Analog'
           PCSX.settings.pads[1].Connected=true
           PCSX.SIO0.slots[1].pads[1].map()
-          print("MIZUKI_DIALOG_PAD_SETUP=PASS")
+          print("NEXT_ROULETTE_PAD_SETUP=PASS")
           LUA
           )
-          cat > "$WORK/mizuki-dialog-start.lua" <<'LUA'
+          cat > "$WORK/next-roulette-circle-diff.lua" <<'LUA'
           local mode=os.getenv("PROBE_MODE") or "NONE"
           local frame=0; local started=false; local returned=false; local loaded=false
           local pressed=false; local released=false
           local pad=PCSX.SIO0.slots[1].pads[1]
-          local button=PCSX.CONSTS.PAD.BUTTON.START
+          local button=PCSX.CONSTS.PAD.BUTTON.CIRCLE
           local function log(s) print(s); io.stdout:flush() end
           local function gateCapture(label)
               PCSX.pauseEmulator()
-              log("MDIALOG_CAPTURE_READY label="..label.." mode="..mode.." frame="..frame.." input="..(pressed and "START_SENT" or "NONE"))
+              log("NROULETTE_CAPTURE_READY label="..label.." mode="..mode.." frame="..frame)
               PCSX.nextTick(function()
                   local gate="captures/go-"..label:lower().."-"..mode:lower()
                   while true do
@@ -181,53 +182,53 @@ jobs:
                   PCSX.resumeEmulator()
               end)
           end
-          local function sendStart(phase)
+          local function sendCircle(phase)
               local ok,v=pcall(function()
                   if phase=="press" then pad.setOverride(button) else pad.clearOverride(button) end
                   return pad.getButton(button)
               end)
               local pass=ok and v==(phase=="press")
-              log("MDIALOG_INPUT mode="..mode.." action=START phase="..phase.." readback="..tostring(v).." status="..(pass and "PASS" or "FAIL"))
+              log("NROULETTE_INPUT mode="..mode.." action=CIRCLE phase="..phase.." readback="..tostring(v).." status="..(pass and "PASS" or "FAIL"))
               if not pass then PCSX.quit(83) end
               if phase=="press" then pressed=true else released=true end
           end
           local function saveFinal()
               local ok,state=pcall(function() return PCSX.createSaveState() end)
-              if not ok or not state then log("MDIALOG_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
-              local path="captures/barrier-dialog-start-result-"..mode:lower().."-f120.sstate"
+              if not ok or not state then log("NROULETTE_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
+              local path="captures/next-roulette-result-"..mode:lower().."-f180.sstate"
               local opened,file=pcall(function() return assert(Support.File.open(path,"TRUNCATE")) end)
-              if not opened or not file then log("MDIALOG_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
+              if not opened or not file then log("NROULETTE_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
               local wrote,err=pcall(function() file:writeMoveSlice(state); file:close() end)
-              if not wrote then log("MDIALOG_SAVE_WRITE_ERROR="..tostring(err)); PCSX.quit(73); return end
-              log("MDIALOG_SAVE_CREATED=PASS mode="..mode.." frame="..frame.." path="..path)
+              if not wrote then log("NROULETTE_SAVE_WRITE_ERROR="..tostring(err)); PCSX.quit(73); return end
+              log("NROULETTE_SAVE_CREATED=PASS mode="..mode.." frame="..frame.." path="..path)
               PCSX.quit(0)
           end
           PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
-              loaded=true; frame=0; log("MDIALOG_LOAD_EVENT=PASS mode="..mode)
+              loaded=true; frame=0; log("NROULETTE_LOAD_EVENT=PASS mode="..mode)
           end)
           PCSX.Events.createEventListener("GPU::Vsync",function()
               if not started then
-                  started=true; log("MDIALOG_LOAD_BEGIN=1 mode="..mode); PCSX.pauseEmulator()
+                  started=true; log("NROULETTE_LOAD_BEGIN=1 mode="..mode); PCSX.pauseEmulator()
                   PCSX.nextTick(function()
-                      local f=assert(Support.File.open("resume/mizuki-dialog-source-f120.sstate"))
+                      local f=assert(Support.File.open("resume/next-roulette-source-f120.sstate"))
                       local ok,err=pcall(function() PCSX.loadSaveState(f) end); f:close()
-                      if not ok then log("MDIALOG_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
-                      returned=true; log("MDIALOG_LOAD_CALL_RETURNED=1 mode="..mode); PCSX.resumeEmulator()
+                      if not ok then log("NROULETTE_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
+                      returned=true; log("NROULETTE_LOAD_CALL_RETURNED=1 mode="..mode); PCSX.resumeEmulator()
                   end)
                   return
               end
               if not loaded or not returned then return end
               frame=frame+1
               if frame==20 then gateCapture("F20")
-              elseif frame==30 and mode=="START" and not pressed then sendStart("press")
-              elseif frame==38 and mode=="START" and pressed and not released then sendStart("release")
+              elseif frame==30 and mode=="CIRCLE" and not pressed then sendCircle("press")
+              elseif frame==38 and mode=="CIRCLE" and pressed and not released then sendCircle("release")
               elseif frame==60 then gateCapture("F60")
               elseif frame==100 then gateCapture("F100")
-              elseif frame==120 then
+              elseif frame==180 then
                   PCSX.pauseEmulator()
-                  log("MDIALOG_CAPTURE_READY label=F120 mode="..mode.." frame=120")
+                  log("NROULETTE_CAPTURE_READY label=F180 mode="..mode.." frame=180")
                   PCSX.nextTick(function()
-                      local gate="captures/go-f120-"..mode:lower()
+                      local gate="captures/go-f180-"..mode:lower()
                       while true do
                           local f=io.open(gate,"r")
                           if f then f:close(); break end
@@ -237,19 +238,19 @@ jobs:
                   end)
                   return
               end
-              if frame%20==0 then log("MDIALOG_PROGRESS mode="..mode.." frame="..frame) end
+              if frame%20==0 then log("NROULETTE_PROGRESS mode="..mode.." frame="..frame) end
           end)
-          log("MDIALOG_SCRIPT_READY source=mizuki-dialog-f120 action=START only for START branch screenshots=EXTERNAL_X11_ONLY")
+          log("NROULETTE_SCRIPT_READY source=START-result-f120 mode="..mode.." CIRCLE only in CIRCLE branch screenshots=EXTERNAL_X11_ONLY")
           LUA
-          cp "$WORK/mizuki-dialog-start.lua" "$WORK/captures/mizuki-dialog-start.lua"
+          cp "$WORK/next-roulette-circle-diff.lua" "$WORK/captures/next-roulette-circle-diff.lua"
           failed=0
-          for mode in NONE START; do
+          for mode in NONE CIRCLE; do
             cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-$mode.mcd"
             stdout="$WORK/captures/pcsx-$mode.stdout"
-            echo "MDIALOG_BRANCH_BEGIN=$mode"
-            PROBE_MODE="$mode" timeout --signal=TERM --kill-after=4s 70s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+            echo "NROULETTE_BRANCH_BEGIN=$mode"
+            PROBE_MODE="$mode" timeout --signal=TERM --kill-after=4s 75s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-$mode.mcd" \
-              -exec "$PAD_SETUP" -dofile "$WORK/mizuki-dialog-start.lua" -softgpu -dynarec -stdout -lua_stdout \
+              -exec "$PAD_SETUP" -dofile "$WORK/next-roulette-circle-diff.lua" -softgpu -dynarec -stdout -lua_stdout \
               -logfile "$WORK/captures/pcsx-$mode.log" -run > "$stdout" 2>&1 &
             pid=$!
             python3 - "$pid" "$mode" "$stdout" "$WORK/captures" <<'PY'
@@ -264,93 +265,96 @@ jobs:
               xwd=out/(mode+"-"+label+".xwd"); png=out/(mode+"-"+label+".png")
               a=subprocess.run(["xwd","-root","-silent","-out",str(xwd)],capture_output=True,text=True)
               if a.returncode or not xwd.is_file() or not xwd.stat().st_size:
-                  print("MDIALOG_X11_FAILED mode="+mode+" label="+label+" error="+a.stderr,flush=True); return False
+                  print("NROULETTE_X11_FAILED mode="+mode+" label="+label+" error="+a.stderr,flush=True); return False
               b=subprocess.run(["convert",str(xwd),str(png)],capture_output=True,text=True)
               try: xwd.unlink()
               except FileNotFoundError: pass
               if b.returncode or not png.is_file():
-                  print("MDIALOG_X11_CONVERT_FAILED mode="+mode+" label="+label+" error="+b.stderr,flush=True); return False
+                  print("NROULETTE_X11_CONVERT_FAILED mode="+mode+" label="+label+" error="+b.stderr,flush=True); return False
               try:
                   with Image.open(png) as im:
                       colors=im.getcolors(maxcolors=1000000)
                       valid=im.size==(1280,800) and png.stat().st_size>1000 and not (colors is not None and len(colors)==1)
                       digest=hashlib.sha256(png.read_bytes()).hexdigest()
-                      print("MDIALOG_X11_CAPTURE mode={} label={} size={} bytes={} colors={} sha256={} valid={}".format(mode,label,im.size,png.stat().st_size,len(colors) if colors is not None else "many",digest,valid),flush=True)
+                      print("NROULETTE_X11_CAPTURE mode={} label={} size={} bytes={} colors={} sha256={} valid={}".format(mode,label,im.size,png.stat().st_size,len(colors) if colors is not None else "many",digest,valid),flush=True)
                       return bool(valid)
               except Exception as e:
-                  print("MDIALOG_X11_VERIFY_ERROR mode="+mode+" label="+label+" error="+str(e),flush=True); return False
+                  print("NROULETTE_X11_VERIFY_ERROR mode="+mode+" label="+label+" error="+str(e),flush=True); return False
           while alive():
               try: content=stdout.read_text(errors="replace")
               except FileNotFoundError: content=""
-              for label in ("F20","F60","F100","F120"):
-                  token="MDIALOG_CAPTURE_READY label="+label+" mode="+mode
+              for label in ("F20","F60","F100","F180"):
+                  token="NROULETTE_CAPTURE_READY label="+label+" mode="+mode
                   if label not in done and token in content:
                       ok=capture(label)
                       (out/("go-"+label.lower()+"-"+mode.lower())).write_text("validated\n" if ok else "invalid\n",encoding="utf-8")
                       if not ok: (out/("capture-failed-"+mode.lower()+"-"+label.lower()+".txt")).write_text("Invalid external X11 capture\n",encoding="utf-8")
                       done.add(label)
               time.sleep(.01)
-          print("MDIALOG_WATCHDOG_END mode="+mode+" captures="+",".join(sorted(done)),flush=True)
+          print("NROULETTE_WATCHDOG_END mode="+mode+" captures="+",".join(sorted(done)),flush=True)
           PY
             set +e
             wait "$pid"
             rc=$?
             set -e
-            echo "MDIALOG_BRANCH_EXIT mode=$mode rc=$rc"
-            grep -E 'MDIALOG_(LOAD_EVENT|LOAD_CALL_RETURNED|INPUT|CAPTURE_READY|PROGRESS|SAVE_CREATED|.*ERROR)|MDIALOG_X11_CAPTURE' "$stdout" || true
+            echo "NROULETTE_BRANCH_EXIT mode=$mode rc=$rc"
+            grep -E 'NROULETTE_(LOAD_EVENT|LOAD_CALL_RETURNED|INPUT|CAPTURE_READY|PROGRESS|SAVE_CREATED|.*ERROR)|NROULETTE_X11_CAPTURE' "$stdout" || true
             if [ "$rc" -ne 0 ]; then failed=$((failed+1)); fi
-            for label in F20 F60 F100 F120; do test -s "$WORK/captures/$mode-$label.png" || failed=$((failed+1)); done
+            for label in F20 F60 F100 F180; do test -s "$WORK/captures/$mode-$label.png" || failed=$((failed+1)); done
             localname="$(echo "$mode" | tr '[:upper:]' '[:lower:]')"
-            test -s "$WORK/captures/barrier-dialog-start-result-$localname-f120.sstate" || failed=$((failed+1))
-            if [ "$mode" = "START" ]; then
-              grep -q 'MDIALOG_INPUT mode=START action=START phase=press.*status=PASS' "$stdout" || failed=$((failed+1))
-              grep -q 'MDIALOG_INPUT mode=START action=START phase=release.*status=PASS' "$stdout" || failed=$((failed+1))
+            test -s "$WORK/captures/next-roulette-result-$localname-f180.sstate" || failed=$((failed+1))
+            if [ "$mode" = "CIRCLE" ]; then
+              grep -q 'NROULETTE_INPUT mode=CIRCLE action=CIRCLE phase=press.*status=PASS' "$stdout" || failed=$((failed+1))
+              grep -q 'NROULETTE_INPUT mode=CIRCLE action=CIRCLE phase=release.*status=PASS' "$stdout" || failed=$((failed+1))
             else
-              if grep -q 'MDIALOG_INPUT' "$stdout"; then failed=$((failed+1)); fi
+              if grep -q 'NROULETTE_INPUT' "$stdout"; then failed=$((failed+1)); fi
             fi
           done
-          python3 - "$WORK/captures" "$WORK/captures/mizuki-dialog-start-report.txt" <<'PY'
+          python3 - "$WORK/captures" "$WORK/captures/next-roulette-circle-diff-report.txt" <<'PY'
           import hashlib,sys
           from pathlib import Path
           from PIL import Image,ImageChops,ImageStat
-          root=Path(sys.argv[1]); report_path=Path(sys.argv[2]); labels=["F20","F60","F100","F120"]
+          root=Path(sys.argv[1]); report_path=Path(sys.argv[2]); labels=["F20","F60","F100","F180"]
           def load(name):
               p=root/name
               if not p.exists(): return None
               with Image.open(p) as im: return im.convert("RGB").copy()
           report=[
-            "MDIALOG_SOURCE_RUN=39619671384",
-            "MDIALOG_SOURCE_BYTES=21162244",
-            "MDIALOG_SOURCE_SHA256=aeef171e16f99be11d8baebb965e03fa1d47543a0d927b37e4d8e194fc5ff775",
-            "MDIALOG_TEXT=ククク・・・やってやるよ！ (Kukuku… akan kuberi pelajaran!)",
-            "MDIALOG_CONTROL=NONE",
-            "MDIALOG_TEST=START press frame 30, release frame 38; readback required PASS",
-            "MDIALOG_SCREENSHOTS=external X11 only; internal screenshot API disabled",
+            "NROULETTE_SOURCE_RUN=39620432917",
+            "NROULETTE_SOURCE_BYTES=21162035",
+            "NROULETTE_SOURCE_SHA256=b124d2ce17f7c802208b893b93ab25758088f557a0e964aadb09c067968d9df1",
+            "NROULETTE_CONTROL=NONE",
+            "NROULETTE_TEST=CIRCLE press frame 30, release frame 38; readback required PASS",
+            "NROULETTE_SCREENSHOTS=external X11 only; internal screenshot API disabled",
           ]
-          images={}
-          for mode in ("NONE","START"):
+          imgs={}
+          for mode in ("NONE","CIRCLE"):
               for label in labels:
                   name=mode+"-"+label+".png"; im=load(name)
-                  if im is None: report.append(name+"_MISSING=YES")
+                  if im is None:
+                      report.append(name+"_MISSING=YES")
                   else:
-                      images[(mode,label)]=im
+                      imgs[(mode,label)]=im
                       report.append(name+"_SHA256="+hashlib.sha256((root/name).read_bytes()).hexdigest())
               for prev,nxt in zip(labels,labels[1:]):
-                  a=images.get((mode,prev)); b=images.get((mode,nxt))
+                  a=imgs.get((mode,prev)); b=imgs.get((mode,nxt))
                   if a is None or b is None: continue
                   d=ImageChops.difference(a,b); mean=sum(ImageStat.Stat(d).mean)/3
                   exact=sum(1 for x,y in zip(a.getdata(),b.getdata()) if x==y)/(a.width*a.height)
                   report.append("{}_TO_{}_MEAN_ABS_RGB_DIFF={:.6f}".format(mode+"-"+prev,mode+"-"+nxt,mean))
                   report.append("{}_TO_{}_EXACT_PIXEL_FRACTION={:.6f}".format(mode+"-"+prev,mode+"-"+nxt,exact))
-          for label in ("F60","F100","F120"):
-              a=images.get(("NONE",label)); b=images.get(("START",label))
+          for label in ("F60","F100","F180"):
+              a=imgs.get(("NONE",label)); b=imgs.get(("CIRCLE",label))
               if a is not None and b is not None:
                   d=ImageChops.difference(a,b); mean=sum(ImageStat.Stat(d).mean)/3
+                  cropa,cropb=a.crop((100,60,680,740)),b.crop((100,60,680,740))
+                  cd=ImageChops.difference(cropa,cropb); cropmean=sum(ImageStat.Stat(cd).mean)/3
                   exact=sum(1 for x,y in zip(a.getdata(),b.getdata()) if x==y)/(a.width*a.height)
-                  report.append("NONE_VS_START_{}_MEAN_ABS_RGB_DIFF={:.6f}".format(label,mean))
-                  report.append("NONE_VS_START_{}_EXACT_PIXEL_FRACTION={:.6f}".format(label,exact))
-          for mode in ("NONE","START"):
-              p=root/("barrier-dialog-start-result-"+mode.lower()+"-f120.sstate")
+                  report.append("NONE_VS_CIRCLE_{}_FULL_MEAN_ABS_RGB_DIFF={:.6f}".format(label,mean))
+                  report.append("NONE_VS_CIRCLE_{}_WHEEL_CROP_MEAN_ABS_RGB_DIFF={:.6f}".format(label,cropmean))
+                  report.append("NONE_VS_CIRCLE_{}_FULL_EXACT_PIXEL_FRACTION={:.6f}".format(label,exact))
+          for mode in ("NONE","CIRCLE"):
+              p=root/("next-roulette-result-"+mode.lower()+"-f180.sstate")
               if p.exists():
                   report.append("SUCCESSOR_{}_BYTES={}".format(mode,p.stat().st_size))
                   report.append("SUCCESSOR_{}_SHA256={}".format(mode,hashlib.sha256(p.read_bytes()).hexdigest()))
@@ -363,13 +367,13 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: naruto-storymode-barrier-dialog-start-private
+          name: naruto-storymode-next-roulette-circle-diff-private
           path: |
-            /tmp/naruto-storymode-barrier-dialog-start/captures/*.png
-            /tmp/naruto-storymode-barrier-dialog-start/captures/*.txt
-            /tmp/naruto-storymode-barrier-dialog-start/captures/*.stdout
-            /tmp/naruto-storymode-barrier-dialog-start/captures/*.log
-            /tmp/naruto-storymode-barrier-dialog-start/captures/*.sstate
+            /tmp/naruto-storymode-next-roulette-circle-diff/captures/*.png
+            /tmp/naruto-storymode-next-roulette-circle-diff/captures/*.txt
+            /tmp/naruto-storymode-next-roulette-circle-diff/captures/*.stdout
+            /tmp/naruto-storymode-next-roulette-circle-diff/captures/*.log
+            /tmp/naruto-storymode-next-roulette-circle-diff/captures/*.sstate
           retention-days: 14
 
       - name: Remove private game assets and checkpoint copies
