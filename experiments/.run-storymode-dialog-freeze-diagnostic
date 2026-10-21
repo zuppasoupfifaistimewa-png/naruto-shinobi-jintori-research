@@ -1,1 +1,0 @@
-One-shot request: GDB live native run. After detecting VSync stall and taking two external X11 screenshots, allow 0.75s for a natural SIGSEGV before host SIGINT. Preserve stack report, no controller input, preserve checkpoint, no internal screenshots after f130.
