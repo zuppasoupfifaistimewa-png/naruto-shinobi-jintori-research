@@ -1,5 +1,57 @@
 # Eksperimen kelanjutan setelah konfirmasi Circle — 21 Oktober 2026
 
+## Pembaruan hasil kontrol pascakonfirmasi — 21 Oktober 2026, 13:16 WIB
+
+### Run dan checkpoint utama
+
+Run [#39553585285](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39553585285) berlangsung 13:08:16–13:10:14 WIB dan mengumpulkan screenshot sampai 180 VSync untuk cabang `NONE`, `UP`, `DOWN`, `LEFT`, `RIGHT`, `CIRCLE`, dan `START`. Status workflow akhir `failure` disebabkan assertion akhir yang masih mengharapkan `frame=60`; cabang sudah memakai target 180. Laporan perbandingan dan tangkapan layar menunjukkan semua cabang mencapai f180 dan sampel valid pada run tersebut.
+
+Checkpoint pascakonfirmasi yang dibuat oleh langkah stabilisasi, setelah restore checkpoint turunan lalu 62 VSync tanpa input:
+- Ukuran: 21.163.261 byte.
+- SHA-256: `1f9da9ca07fb95a8afda5016799852f4e0fdda2d589c8d11e99b0f8e8ade4875`.
+- Artefak privat [#12323544613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39553585285/artifacts/12323544613), `naruto-storymode-post178-advance-private`, 12.344.333 byte, digest ZIP `sha256:620d857a0e79aa4bec86da50a1c92f1f4563753b16a0fe6ae3935d25c6f50d13`.
+- Hash checkpoint induk tetap `b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a`; hash checkpoint turunan sumber tetap `a87529407736b1b7648785db8644d3c10f0b8d5d12f1557c63d9a3155b22fa83`. File induk tidak ditimpa.
+- ZIP dan hash checkpoint dicek ulang setelah unduh; artefak tidak mengandung ROM, BIOS, atau Memory Card.
+
+### Temuan input pada layar banner 「始め！」
+
+Semua cabang memulihkan checkpoint baru dalam proses emulator terpisah. Tombol cabang non-`NONE` ditahan selama delapan VSync dari f90 sampai f98; tiap cabang berjalan 180 VSync. Pada semua frame pembanding hingga f180, `UP`, `DOWN`, `LEFT`, `RIGHT`, dan `START` identik piksel dengan `NONE`. Ini hanya berlaku untuk konteks layar dan timing percobaan tersebut, bukan bukti universal bahwa tombol itu tidak memiliki fungsi.
+
+`CIRCLE` berbeda:
+- f97: MAD 1,913; proporsi piksel identik 0,69432.
+- f98–f100: perbedaan visual tumbuh saat banner mulai bergeser.
+- f120: MAD 56,297; proporsi piksel identik 0,07862. Cabang `NONE` masih menampilkan banner `始め！`; cabang Circle menampilkan papan tanpa banner.
+- f150: pemain/token terlihat berpindah ke bagian papan berikutnya.
+- f180: cabang Circle menampilkan tampilan dialog dengan potret dan nama Naruto; cabang `NONE` masih menampilkan banner `始め！` (MAD 70,194; piksel identik 0,06029).
+
+Kesimpulan terverifikasi: Circle menghasilkan perubahan visual konsisten dan memajukan layar dari banner `始め！` ke tampilan papan/dialog dalam eksperimen ini. Makna input sangat mungkin merupakan konfirmasi untuk memulai/lanjut dari banner tersebut, tetapi mekanik misi dan kondisi menang belum diverifikasi.
+
+Contoh screenshot asli dari artefak run:
+- [NONE f120](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39553585285/artifacts/12323544613) — gambar ada di artefak privat.
+- [CIRCLE f120 dan f180](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39553585285/artifacts/12323544613) — banner hilang lalu dialog Naruto terlihat.
+
+### Ketidakstabilan pada replikasi dan batas status
+
+Run [#39554130946](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39554130946), 13:13:44–13:16:08 WIB, mencoba checkpoint dialog setelah cabang Circle. Hasilnya tidak lengkap:
+- Cabang `RIGHT` mengalami segmentation fault, exit 139; metadata screenshot f180 tertulis tetapi buffer raw berukuran 0 byte.
+- Cabang `CIRCLE` berakhir timeout, exit 124 setelah f150; tidak ada screenshot f180 sehingga checkpoint dialog tidak dibuat.
+- Langkah pengumpulan artefak dan pembersihan runner berhasil, tetapi langkah eksperimen gagal karena screenshot tidak lengkap. Jangan menafsirkannya sebagai hasil kontrol setara sampai f180.
+
+Eksperimen yang lebih awal:
+- [#39552282942](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39552282942): checkpoint 21.163.482 byte, SHA-256 `fc17e5752a036ca3301c1d58de863af8105015f8bbb608bc4d87d4fa76244d90`; restore baru berhasil, 60 VSync pada NONE/CIRCLE/START, gambar sama.
+- [#39552697314](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39552697314): checkpoint 21.163.751 byte, SHA-256 `39ae2c2c719ab206946829b4fae67712cc52b0b72dd24b1ad46641b35db014c9`; input Circle/START sesudah panel bergeser, 60 VSync, gambar sama.
+- [#39552998498](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39552998498): checkpoint 21.163.570 byte, SHA-256 `11321efd96f5225d03613d2ae4f66e595b4cbd28c0ab6ba63057a1ff3e42b6d9`; Circle/START ditahan 8 VSync mulai f45, gambar sama hingga f60.
+- [#39553261685](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39553261685): checkpoint 21.163.366 byte, SHA-256 `b310f2ffb086e872b6166b729c0304122506a39270ec84812968c100ac001b99`; D-pad ditahan 8 VSync mulai f45, gambar sama hingga f60.
+
+Ukuran/hash checkpoint hasil create-save dapat bervariasi antar-run walau keadaan visual sumber serupa; catat masing-masing dengan run-nya dan jangan saling mengganti. Belum ada bukti tamat Story Mode atau save/load Memory Card in-game.
+
+### Workflow dan langkah berikutnya
+
+Workflow yang benar adalah [`.github/workflows/naruto-storymode-post178-advance.yml`](../.github/workflows/naruto-storymode-post178-advance.yml). Commit `544b96641518cbfc2fafdaa7c38e98ed521dd80b` menghapus percobaan save checkpoint dialog yang belum stabil serta memperbaiki assertion agar mencari f180, bukan f60. Belum ada run baru setelah perbaikan ini; semua run yang dipicu sudah berakhir dan marker satu-kali sudah dihapus.
+
+Langkah berikut: gunakan checkpoint stabil dari artefak #12323544613 sebagai rujukan, ambil state tepat sebelum transisi layar dialog pada jendela yang aman (sebelum titik timeout/crash), lalu uji START dibanding Circle dan tanpa input dalam proses baru dengan timeout per cabang pendek. Tetap simpan ROM/BIOS/savestate/Memory Card hanya di artefak privat/runner; jangan pernah commit berkas-berkas itu ke Git.
+
+
 ## Tujuan dan desain
 
 Eksperimen menguji apakah checkpoint turunan yang disimpan setelah Circle kedua ditekan pada f175 dan dilepas pada f178 bisa terus berjalan tanpa input, serta membandingkannya dengan cabang kontrol yang memuat checkpoint induk, menekan Circle pertama pada f30–f38, lalu menunggu tanpa Circle kedua.
