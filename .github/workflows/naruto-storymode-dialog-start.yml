@@ -45,11 +45,11 @@ jobs:
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
           path: /tmp/naruto-storymode-konoha-post-iruka-inspect/build-artifact
 
-      - name: Download isolated post-Iruka RIGHT/DOWN checkpoints at f80
+      - name: Download RIGHT/DOWN barrier prompt checkpoints at f50
         uses: actions/download-artifact@v4
         with:
-          name: naruto-storymode-konoha-iruka-dialog-skip-private
-          run-id: 39598292538
+          name: naruto-storymode-konoha-post-iruka-inspect-private
+          run-id: 39599001309
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
           path: /tmp/naruto-storymode-konoha-post-iruka-inspect/state-artifact
@@ -63,7 +63,7 @@ jobs:
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
           path: /tmp/naruto-storymode-konoha-post-iruka-inspect/card-artifact
 
-      - name: Validate immutable post-Iruka checkpoints
+      - name: Validate immutable barrier prompt source checkpoints
         shell: bash
         run: |
           set -euo pipefail
@@ -74,19 +74,17 @@ jobs:
           test "$(stat -c %s "$CARD")" = 131072
           test "$(sha256sum "$CARD" | cut -d ' ' -f1)" = ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
           for branch in right down; do
-            if [ "$branch" = right ]; then expected_size=21162136; expected_hash=62c0f6c8acd37656a3b211ff4af6626aa905dc0612fcece3df6a234b69b42f18
-            else expected_size=21162139; expected_hash=c3b6719b0d1e78786927a062e45d7f134fa84d6fc15e26c75bd1cefba102bebe; fi
-            source="$WORK/state-artifact/konoha-iruka-skipped-$branch-f80.sstate"
+            if [ "$branch" = right ]; then expected_size=21162352; expected_hash=0c9cba399af65f821bc472630405cd734f60b7b12e7e6e34a8999adb358b307d
+            else expected_size=21162404; expected_hash=8bc2b3cb86204ef9ad406b991d5764f910c99864de624f4a8694a5c81a331c5e; fi
+            source="$WORK/state-artifact/konoha-post-iruka-$branch-f50.sstate"
             test "$(stat -c %s "$source")" = "$expected_size"
             test "$(sha256sum "$source" | cut -d ' ' -f1)" = "$expected_hash"
-            cp "$source" "$WORK/resume/post-iruka-$branch-f80.sstate"
-            chmod 400 "$WORK/resume/post-iruka-$branch-f80.sstate"
-            echo "KONOHA_POST_IRUKA_SOURCE_VALID branch=$branch bytes=$expected_size sha256=$expected_hash"
+            cp "$source" "$WORK/resume/barrier-prompt-$branch-f50.sstate"
+            chmod 400 "$WORK/resume/barrier-prompt-$branch-f50.sstate"
+            echo "KONOHA_BARRIER_SOURCE_VALID branch=$branch bytes=$expected_size sha256=$expected_hash"
           done
           cp "$CARD" "$WORK/cards/naruto-storymode-template.mcd"
-          echo "KONOHA_POST_IRUKA_APPIMAGE_VALID=PASS"
-          echo "KONOHA_POST_IRUKA_MEMORY_CARD_VALID=PASS"
-          echo "KONOHA_POST_IRUKA_SOURCE_READ_ONLY=YES"
+          echo "KONOHA_BARRIER_SOURCE_CHECKPOINTS_READ_ONLY=YES"
       - name: Download game and BIOS from the private runtime release
         shell: bash
         env:
