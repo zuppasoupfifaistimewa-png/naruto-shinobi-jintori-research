@@ -1,4 +1,4 @@
-name: Naruto Story Mode paired no-input vs START VSync diagnostic (screenshots stop at frame 130)
+name: Naruto Story Mode VSync watchdog and external X11 capture (no START input)
 
 on:
   workflow_dispatch:
@@ -32,7 +32,7 @@ jobs:
         run: |
           set -euo pipefail
           apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y jq python3-pil xvfb x11-utils curl unzip
+          DEBIAN_FRONTEND=noninteractive apt-get install -y jq python3-pil xvfb x11-utils x11-apps imagemagick curl unzip
           mkdir -p "$WORK"/{build-artifact,state-artifact,dialog-checkpoint-artifact,card-artifact,cards,resume,captures/raw,home,.config,.data,runtime}
           chmod 700 "$WORK/runtime"
 
@@ -147,7 +147,7 @@ jobs:
           Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
           PY
 
-      - name: Restore the dialog-entry checkpoint with no input (matched control)
+      - name: Restore dialog checkpoint, timestamp VSync, and watch for a stall using external X11
         if: success()
         shell: bash
         run: |
@@ -166,6 +166,8 @@ jobs:
           export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/.config" XDG_DATA_HOME="$WORK/.data" XDG_RUNTIME_DIR="$WORK/runtime" LIBGL_ALWAYS_SOFTWARE=1
           for i in $(seq 1 60); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
           xdpyinfo -display "$DISPLAY" >/dev/null
+          command -v xwd >/dev/null
+          command -v convert >/dev/null
           PAD_SETUP=$(cat <<'LUA'
           PCSX.settings.pads[1].DeviceType='Analog'
           PCSX.settings.pads[1].Connected=true
@@ -179,7 +181,10 @@ jobs:
           local returned=false
           local loaded=false
           local captures={[1]=true,[8]=true,[16]=true,[24]=true,[32]=true,[40]=true,[48]=true,[56]=true,[64]=true,[72]=true,[80]=true,[88]=true,[96]=true,[104]=true,[112]=true,[116]=true,[117]=true,[118]=true,[119]=true,[120]=true,[121]=true,[122]=true,[123]=true,[124]=true,[125]=true,[126]=true,[128]=true,[130]=true}
-          local function log(s) print(s); io.stdout:flush() end
+          local function log(s)
+              print(string.format("wall_epoch=%d cpu_seconds=%.4f %s",os.time(),os.clock(),s))
+              io.stdout:flush()
+          end
           local function shot(f)
               local s=PCSX.GPU.takeScreenShot()
               assert(s and s.width>=100 and s.height>=100 and s.data,"invalid screenshot")
@@ -207,7 +212,7 @@ jobs:
               end
               if not loaded or not returned then return end
               frame=frame+1
-              log("DIAG_NONE_FRAME="..frame.." input=NONE")
+              log(string.format("DIAG_NONE_FRAME=%d input=NONE",frame))
               if captures[frame] then shot(frame) end
               if frame==175 then
                   log("DIAG_NONE_BRANCH_DONE frame=175 input=NONE")
@@ -219,16 +224,107 @@ jobs:
           LUA
           cp "$WORK/restore-no-input.lua" "$WORK/captures/restore-no-input.lua"
           cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-DIAGNONE.mcd"
+          echo "DIAG_NO_START_INPUT_SENT=YES" | tee -a "$WORK/captures/diagnostic-report.txt"
+          echo "DIAG_SCREENSHOT_CUTOFF_FRAME=130; no internal screenshot request from frame 131 onward" | tee -a "$WORK/captures/diagnostic-report.txt"
           set +e
-          timeout --signal=TERM --kill-after=3s 30s stdbuf -oL -eL "$WORK/squashfs-root/AppRun"             -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd"             -exec "$PAD_SETUP" -dofile "$WORK/restore-no-input.lua" -softgpu -dynarec -stdout -lua_stdout             -logfile "$WORK/captures/pcsx-DIAGNONE.log" -run > "$WORK/captures/pcsx-DIAGNONE.stdout" 2>&1
+          timeout --signal=TERM --kill-after=3s 30s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd" \
+            -exec "$PAD_SETUP" -dofile "$WORK/restore-no-input.lua" -softgpu -dynarec -stdout -lua_stdout \
+            -logfile "$WORK/captures/pcsx-DIAGNONE.log" -run > "$WORK/captures/pcsx-DIAGNONE.stdout" 2>&1 &
+          timeout_pid=$!
+          python3 - "$timeout_pid" "$WORK/captures/pcsx-DIAGNONE.stdout" "$WORK/captures" <<'PY'
+          import os, re, sys, time, subprocess
+          from datetime import datetime, timezone
+          from pathlib import Path
+          from PIL import Image, ImageChops
+          timeout_pid=int(sys.argv[1])
+          stdout=Path(sys.argv[2])
+          out=Path(sys.argv[3])
+          watchdog=out/"vsync-watchdog.log"
+          last_frame=0
+          last_progress=time.monotonic()
+          captured=False
+          def utc():
+              return datetime.now(timezone.utc).isoformat()
+          def log(message):
+              line=f"utc={utc()} monotonic_s={time.monotonic():.6f} {message}"
+              with watchdog.open("a",encoding="utf-8") as f: f.write(line+"\n")
+              print(line,flush=True)
+          def frame_now():
+              try: text=stdout.read_text(errors="replace")
+              except FileNotFoundError: return 0
+              frames=re.findall(r"DIAG_NONE_FRAME=(\d+)",text)
+              return int(frames[-1]) if frames else 0
+          def capture(label):
+              xwd=out/(label+".xwd")
+              png=out/(label+".png")
+              run=subprocess.run(["xwd","-root","-silent","-out",str(xwd)],capture_output=True,text=True)
+              log(f"X11_CAPTURE_BEGIN label={label} method=xwd-root-external xwd_rc={run.returncode}")
+              if run.returncode==0 and xwd.is_file() and xwd.stat().st_size>0:
+                  conv=subprocess.run(["convert",str(xwd),str(png)],capture_output=True,text=True)
+                  log(f"X11_CAPTURE_CONVERT label={label} rc={conv.returncode} bytes={png.stat().st_size if png.exists() else 0}")
+                  try:
+                      with Image.open(png) as im:
+                          colors=im.getcolors(maxcolors=1000000)
+                          valid=im.size==(1280,800) and im.width>=100 and im.height>=100 and png.stat().st_size>1000 and not (colors is not None and len(colors)==1)
+                          log(f"X11_CAPTURE_VERIFY label={label} size={im.size} colors={len(colors) if colors is not None else 'many'} valid={valid}")
+                  except Exception as e: log(f"X11_CAPTURE_VERIFY label={label} error={e}")
+              else:
+                  log(f"X11_CAPTURE_FAILED label={label} error={run.stderr.strip()}")
+              try: xwd.unlink()
+              except FileNotFoundError: pass
+          log("WATCHDOG_START source=stdout-frame-observer; clock=time.monotonic; input=NONE")
+          while True:
+              now=time.monotonic()
+              f=frame_now()
+              if f>last_frame:
+                  log(f"FRAME_OBSERVED frame={f} frames_since_previous={f-last_frame}")
+                  last_frame=f
+                  last_progress=now
+              try:
+                  os.kill(timeout_pid,0)
+                  alive=True
+              except OSError:
+                  alive=False
+              if not alive:
+                  log(f"PROCESS_WRAPPER_EXITED last_frame={last_frame}")
+                  break
+              if last_frame>=145 and not captured and now-last_progress>=2.5:
+                  captured=True
+                  log(f"STALL_CONFIRMED last_frame={last_frame} no_new_frame_observed_s={now-last_progress:.3f}")
+                  try:
+                      ps=subprocess.run(["ps","-eo","pid,ppid,stat,pcpu,etime,wchan:32,comm,args"],capture_output=True,text=True)
+                      selected=[line for line in ps.stdout.splitlines() if ("AppRun" in line or "PCSX" in line or "timeout --signal=TERM" in line)]
+                      (out/"process-state-at-stall.txt").write_text("\n".join(selected)+"\n",encoding="utf-8")
+                      log("PROCESS_STATE_CAPTURED file=process-state-at-stall.txt rows="+str(len(selected)))
+                  except Exception as e: log("PROCESS_STATE_CAPTURE_ERROR="+str(e))
+                  tree=subprocess.run(["xwininfo","-root","-tree"],capture_output=True,text=True)
+                  (out/"x11-window-tree-at-stall.txt").write_text(tree.stdout+tree.stderr,encoding="utf-8")
+                  log("X11_WINDOW_TREE_CAPTURED rc="+str(tree.returncode))
+                  capture("X11-stall-first")
+                  time.sleep(2.0)
+                  after=frame_now()
+                  log(f"SECOND_CAPTURE_CHECK frame_before={last_frame} frame_after={after} unchanged={after==last_frame}")
+                  if after==last_frame:
+                      capture("X11-stall-second")
+                      try:
+                          with Image.open(out/"X11-stall-first.png") as a, Image.open(out/"X11-stall-second.png") as b:
+                              same=a.size==b.size and ImageChops.difference(a.convert("RGB"),b.convert("RGB")).getbbox() is None
+                          log("X11_SCREEN_EQUAL_EXACT="+str(same))
+                      except Exception as e: log("X11_SCREEN_COMPARE_ERROR="+str(e))
+                  else:
+                      log("STALL_CONTINUED_CAPTURE_SKIPPED reason=frame_advanced")
+              time.sleep(0.1)
+          log(f"WATCHDOG_END last_frame={last_frame} external_pair_captured={captured}")
+          PY
+          wait "$timeout_pid"
           rc=$?
           set -e
           echo "DIAG_NONE_PROCESS_EXIT_CODE=$rc" | tee -a "$WORK/captures/diagnostic-report.txt"
           grep -E 'DIAG_NONE_(LOAD_EVENT|LOAD_RETURNED|FRAME=|SCREENSHOT|BRANCH_DONE|.*ERROR)' "$WORK/captures/pcsx-DIAGNONE.stdout" || true
           frames="$( (grep -oE 'DIAG_NONE_FRAME=[0-9]+' "$WORK/captures/pcsx-DIAGNONE.stdout" || true) | sed 's/.*=//' | sort -n | tail -1)"
-          frames="${frames:-0}"
+          if [ -z "$frames" ]; then frames=0; fi
           echo "DIAG_NONE_LAST_FRAME=$frames input=NONE" | tee -a "$WORK/captures/diagnostic-report.txt"
-          echo "DIAG_SCREENSHOT_CUTOFF_FRAME=130; no screenshot request from frame 131 onward" | tee -a "$WORK/captures/diagnostic-report.txt"
           if [ "$rc" -eq 0 ] && grep -q 'DIAG_NONE_BRANCH_DONE frame=175' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
             echo "DIAG_NONE_RESULT=PASS_175_VSYNC_NO_INPUT" | tee -a "$WORK/captures/diagnostic-report.txt"
           elif [ "$rc" -eq 124 ] && [ "$frames" -ge 1 ]; then
@@ -237,107 +333,6 @@ jobs:
             echo "DIAG_NONE_RESULT=SEGMENTATION_FAULT_WITHOUT_START" | tee -a "$WORK/captures/diagnostic-report.txt"
           else
             echo "DIAG_NONE_RESULT=INCONCLUSIVE rc=$rc" | tee -a "$WORK/captures/diagnostic-report.txt"
-          fi
-
-      - name: Restore the same dialog checkpoint and tap START once with late screenshots disabled
-        if: success()
-        shell: bash
-        run: |
-          set -u
-          cd "$WORK"
-          test -s "$WORK/resume/dialog-entry-f178.sstate"
-          test "$(sha256sum "$WORK/resume/dialog-entry-f178.sstate" | cut -d ' ' -f1)" = c47d2069ae9b1e589cce35df2dbaaa867b3365acfd501d2666a72ecd5fcc494c
-          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/captures/xvfb-start.log" 2>&1 &
-          xvfb_pid=$!
-          trap 'kill "$xvfb_pid" 2>/dev/null || true; wait "$xvfb_pid" 2>/dev/null || true' EXIT
-          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/.config" XDG_DATA_HOME="$WORK/.data" XDG_RUNTIME_DIR="$WORK/runtime" LIBGL_ALWAYS_SOFTWARE=1
-          for i in $(seq 1 60); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
-          xdpyinfo -display "$DISPLAY" >/dev/null
-          PAD_SETUP=$(cat <<'LUA'
-          PCSX.settings.pads[1].DeviceType='Analog'
-          PCSX.settings.pads[1].Connected=true
-          PCSX.SIO0.slots[1].pads[1].map()
-          print("DIAG_START_PAD_SETUP=PASS")
-          LUA
-          )
-          cat > "$WORK/restore-start-once.lua" <<'LUA'
-          local frame=0
-          local started=false
-          local returned=false
-          local loaded=false
-          local pad=PCSX.SIO0.slots[1].pads[1]
-          local buttons=PCSX.CONSTS.PAD.BUTTON
-          local captures={[1]=true,[8]=true,[16]=true,[24]=true,[32]=true,[40]=true,[48]=true,[56]=true,[64]=true,[72]=true,[80]=true,[88]=true,[96]=true,[104]=true,[112]=true,[116]=true,[117]=true,[118]=true,[119]=true,[120]=true,[121]=true,[122]=true,[123]=true,[124]=true,[125]=true,[126]=true,[128]=true,[130]=true}
-          local function log(s) print(s); io.stdout:flush() end
-          local function shot(f)
-              local s=PCSX.GPU.takeScreenShot()
-              assert(s and s.width>=100 and s.height>=100 and s.data,"invalid screenshot")
-              local bpp=(s.bpp==0) and 16 or 24
-              local label="DIAG-START-f"..string.format("%03d",f)
-              local rawpath="captures/raw/"..label..".raw"
-              local raw=assert(Support.File.open(rawpath,"TRUNCATE")); raw:writeMoveSlice(s.data); raw:close()
-              local m=assert(io.open("captures/"..label..".json","wb"))
-              m:write(string.format('{"label":"%s","raw":"%s","width":%d,"height":%d,"bpp":%d,"expected_bytes":%d}\n',label,rawpath,s.width,s.height,bpp,s.width*s.height*bpp/8)); m:close()
-              log(string.format("DIAG_START_SCREENSHOT label=%s width=%d height=%d",label,s.width,s.height))
-          end
-          local function input(phase)
-              local b=buttons.START
-              local ok,readback=pcall(function()
-                  if phase=="press" then pad.setOverride(b) else pad.clearOverride(b) end
-                  return pad.getButton(b)
-              end)
-              log(string.format("DIAG_START_INPUT action=START phase=%s readback=%s status=%s",phase,tostring(readback),(ok and readback==(phase=="press")) and "PASS" or "FAIL"))
-          end
-          PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
-              loaded=true; frame=0; log("DIAG_START_LOAD_EVENT=PASS")
-          end)
-          PCSX.Events.createEventListener("GPU::Vsync",function()
-              if not started then
-                  started=true; log("DIAG_START_LOAD_BEGIN"); PCSX.pauseEmulator()
-                  PCSX.nextTick(function()
-                      local f=assert(Support.File.open("resume/dialog-entry-f178.sstate"))
-                      local ok,err=pcall(function() PCSX.loadSaveState(f) end); f:close()
-                      if not ok then log("DIAG_START_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
-                      returned=true; log("DIAG_START_LOAD_RETURNED=1"); PCSX.resumeEmulator()
-                  end)
-                  return
-              end
-              if not loaded or not returned then return end
-              frame=frame+1
-              log("DIAG_START_FRAME="..frame.." input=START-ONE-VSYNC")
-              if captures[frame] then shot(frame) end
-              if frame==120 then input("press") elseif frame==121 then input("release") end
-              if frame==175 then
-                  log("DIAG_START_BRANCH_DONE frame=175 START_TAP=one-VSync-at-120")
-                  PCSX.pauseEmulator(); PCSX.nextTick(function() PCSX.quit(0) end)
-                  return
-              end
-          end)
-          log("DIAG_START_READY")
-          LUA
-          cp "$WORK/restore-start-once.lua" "$WORK/captures/restore-start-once.lua"
-          cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-DIAGSTART.mcd"
-          set +e
-          timeout --signal=TERM --kill-after=3s 30s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGSTART.mcd" \
-            -exec "$PAD_SETUP" -dofile "$WORK/restore-start-once.lua" -softgpu -dynarec -stdout -lua_stdout \
-            -logfile "$WORK/captures/pcsx-DIAGSTART.log" -run > "$WORK/captures/pcsx-DIAGSTART.stdout" 2>&1
-          rc=$?
-          set -e
-          echo "DIAG_START_PROCESS_EXIT_CODE=$rc" | tee -a "$WORK/captures/diagnostic-report.txt"
-          grep -E 'DIAG_START_(LOAD_EVENT|LOAD_RETURNED|INPUT|SCREENSHOT|BRANCH_DONE|.*ERROR)' "$WORK/captures/pcsx-DIAGSTART.stdout" || true
-          frames="$( (grep -oE 'DIAG_START_FRAME=[0-9]+' "$WORK/captures/pcsx-DIAGSTART.stdout" || true) | sed 's/.*=//' | sort -n | tail -1)"
-          frames="${frames:-0}"
-          echo "DIAG_START_LAST_FRAME=$frames input=START" | tee -a "$WORK/captures/diagnostic-report.txt"
-          echo "DIAG_SCREENSHOT_CUTOFF_FRAME=130; no screenshot request from frame 131 onward in either branch" | tee -a "$WORK/captures/diagnostic-report.txt"
-          if [ "$rc" -eq 0 ] && grep -q 'DIAG_START_BRANCH_DONE frame=175' "$WORK/captures/pcsx-DIAGSTART.stdout"; then
-            echo "DIAG_START_RESULT=PASS_175_VSYNC_AFTER_START" | tee -a "$WORK/captures/diagnostic-report.txt"
-          elif [ "$rc" -eq 124 ] && [ "$frames" -ge 1 ]; then
-            echo "DIAG_START_RESULT=STALL_OR_TIMEOUT_AFTER_START" | tee -a "$WORK/captures/diagnostic-report.txt"
-          elif [ "$rc" -eq 139 ]; then
-            echo "DIAG_START_RESULT=SEGMENTATION_FAULT_AFTER_START" | tee -a "$WORK/captures/diagnostic-report.txt"
-          else
-            echo "DIAG_START_RESULT=INCONCLUSIVE rc=$rc" | tee -a "$WORK/captures/diagnostic-report.txt"
           fi
 
       - name: Convert and verify original emulator screenshots
@@ -388,7 +383,7 @@ jobs:
                   converted.append(m["label"])
               except Exception as e:
                   problems.append(mp.name+":"+str(e))
-          for required in (root/"DIAG-NONE-f130.png",root/"DIAG-START-f130.png"):
+          for required in (root/"DIAG-NONE-f130.png",):
               if not required.is_file() or required.stat().st_size<=0:
                   problems.append("missing_required_pre-cutoff_capture_"+required.name)
           for mp in root.glob("DIAG-*.json"):
@@ -408,7 +403,7 @@ jobs:
           source_hash="$(sha256sum "$WORK/resume/source-stable-checkpoint.sstate" | cut -d ' ' -f1)"
           test "$source_hash" = b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee
           echo "DIAG_SOURCE_CHECKPOINT_HASH_UNCHANGED=PASS sha256=$source_hash" | tee -a "$WORK/captures/diagnostic-report.txt"
-          echo "DIAG_START_WAS_NOT_PRESSED_IN_CONTROL=YES" | tee -a "$WORK/captures/diagnostic-report.txt"
+          echo "DIAG_NO_START_INPUT_SENT=YES" | tee -a "$WORK/captures/diagnostic-report.txt"
           echo "DIAG_GAMEPLAY_PROGRESS_NOT_ASSERTED=YES" | tee -a "$WORK/captures/diagnostic-report.txt"
 
       - name: Upload private diagnostic screenshots and logs
