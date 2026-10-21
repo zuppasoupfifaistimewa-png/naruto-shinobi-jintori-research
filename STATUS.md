@@ -1,3 +1,13 @@
+## Probe ulang Circle — jendela lebih pendek (21 Oktober 2026, 08:00 WIB)
+
+- Run aktif: [#39524697802](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39524697802), dimulai 08:00:08 WIB. Workflow sekarang membatasi pengamatan tiap cabang sampai 90 VSync dan timeout tiap cabang 100 detik; binary patched dan checkpoint yang terverifikasi digunakan ulang. Tidak ada build ulang dan checkpoint induk tidak ditimpa.
+- Perkiraan praktis selesai 08:08–08:12 WIB jika cabang mencapai frame 90; batas maksimum workflow 35 menit berarti sekitar 08:35:08 WIB. Waktu ini estimasi, bukan jaminan.
+- Dasar retry: run [#39523066920](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39523066920) gagal pada langkah observasi. Lima cabang semuanya berhasil restore checkpoint, tetapi berhenti setelah snapshot frame 150 tanpa marker penutupan cabang; batas timeout per-cabang 120 detik tidak cukup untuk mencapai frame 300.
+- Hasil visual parsial yang tetap valid: Circle pada frame 30 berbeda dari no-input sejak frame 37 dan menunjukkan transisi papan/figur karakter pada screenshot frame 150. Circle pada frame 90 sebelumnya tidak menunjukkan perbedaan dalam window yang tersedia; input kiri juga tidak berbeda. Retry menekan Circle "lebih lambat" pada frame 60 agar efek masih bisa diamati sebelum frame 90.
+- Kesimpulan belum berubah: respons Circle awal mungkin memicu aksi atau transisi, tetapi fungsi kontrol sebenarnya belum pasti. Belum ada klaim progres Story Mode kanonis atau tamat; save/load Memory Card in-game masih belum teruji.
+
+---
+
 ## Koreksi hasil run Circle timeline — 21 Oktober 2026
 
 - Run [#39523066920](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39523066920) selesai `failure` pada 21 Oktober 2026 pukul 07:55:38 WIB; mulai 07:43:47 WIB; durasi 11 menit 51 detik. Kegagalan ada pada langkah perbandingan, bukan saat unduh aset atau pemulihan checkpoint. Batas workflow 35 menit tidak tercapai.
