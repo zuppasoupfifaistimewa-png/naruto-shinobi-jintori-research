@@ -1,3 +1,15 @@
+## PEMBARUAN RISET TERBARU — 21 Oktober 2026, 11:53 WIB
+
+- Run eksperimen [#39546339666](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39546339666) berstatus akhir `success`, mulai 11:51:43 WIB dan selesai 11:53:02 WIB (sekitar 1 menit 19 detik). Workflow berhasil mengumpulkan bukti, membandingkan gambar, mengunggah artefak privat, lalu membersihkan runner.
+- Artefak privat [#12321752942](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39546339666/artifacts/12321752942), `naruto-storymode-post178-advance-private`, 3.640.848 byte, digest ZIP `sha256:20df28b96b8e4613c9dd5f298be82443b84f80203c2c7166409d43a51a7f5221`. Laporan rinci: [docs/STORYMODE_POST178_CONTINUATION_2026-10-21.md](docs/STORYMODE_POST178_CONTINUATION_2026-10-21.md).
+- Checkpoint turunan privat [#12314982935] dipulihkan dari proses emulator baru dan berjalan 62 VSync tanpa input; proses turunan berakhir kode 0. Checkpoint turunan 21.162.838 byte SHA-256 `a87529407736b1b7648785db8644d3c10f0b8d5d12f1557c63d9a3155b22fa83`. Checkpoint induk 21.162.405 byte SHA-256 `b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a`; hash keduanya tetap sama setelah runtime.
+- Cabang kontrol yang memuat checkpoint induk dan hanya menekan Circle pertama f30–f38 mengambil screenshot sampai f187, lalu crash native kode `139`. Cabang turunan cocok tepat dengan kontrol sampai f181/turunan f3; perbedaan visual mulai f182/turunan f4 (`MAD=3.185, exact=0.96749`) dan membesar di f184/turunan f6 (`MAD=8.204, exact=0.91152`).
+- Screenshot turunan f62 memperlihatkan panel `任務内容` masih ada, target `3000チャクラためる` dan `ついか条件なし` tetap terlihat, tetapi prompt `けってい` sudah hilang serta ada cap merah mirip `決`. Ini memverifikasi perubahan UI pascakonfirmasi dan bahwa proses turunan bisa berjalan melewati titik crash kontrol pada jendela observasi; **belum membuktikan gameplay misi aktif atau tamat**.
+- Klasifikasi: **terverifikasi** — restore lintas-proses dan 62 VSync tanpa input, hash checkpoint tidak berubah, perbedaan visual pascakonfirmasi; **hipotesis** — konfirmasi mengalihkan UI/runtime dan terkait dengan perbedaan crash; **belum diketahui** — input lanjutan yang diperlukan, masuk gameplay aktif, save/load Memory Card in-game, serta tamat Story Mode.
+- Pemicu sekali-pakai sudah dihapus. Pemeriksaan setelah run: tidak ada run eksperimen yang masih aktif. Langkah berikutnya: simpan state baru ketika panel pascakonfirmasi stabil, verifikasi restore-nya, lalu uji Circle/START/tanpa input sebagai cabang terisolasi.
+
+---
+
 ## PEMBARUAN RISET TERBARU — 21 Oktober 2026, 09:01 WIB
 
 - Run terbaru [#39530526794](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39530526794) selesai `success` pukul 09:01:53 WIB; tidak ada workflow yang sedang `in_progress` pada pemeriksaan terakhir.
