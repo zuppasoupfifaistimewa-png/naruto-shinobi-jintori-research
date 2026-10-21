@@ -153,9 +153,9 @@ jobs:
           )
           cat > "$WORK/timeline.lua" <<'LUA'
           local mode=os.getenv("PROBE_MODE") or "NONE"
-          local frame=0; local start_seen=false; local load_returned=false; local load_event=false; local finalFrame=(mode=="RELOAD_CONFIRM") and 10 or (mode=="CIRCLE_WAIT" and 181 or 184)
+          local frame=0; local start_seen=false; local load_returned=false; local load_event=false; local finalFrame=(mode=="RELOAD_CONFIRM") and 10 or 178
           local pad=PCSX.SIO0.slots[1].pads[1]; local buttons=PCSX.CONSTS.PAD.BUTTON
-          local captures={[1]=true,[10]=true,[20]=true,[29]=true,[30]=true,[35]=true,[37]=true,[38]=true,[39]=true,[45]=true,[90]=true,[120]=true,[150]=true,[175]=true,[178]=true,[179]=true,[180]=true,[181]=true,[182]=true,[184]=true,[188]=true,[195]=true,[210]=true,[240]=true}
+          local captures={[1]=true,[10]=true,[20]=true,[29]=true,[30]=true,[35]=true,[37]=true,[38]=true,[39]=true,[45]=true,[90]=true,[120]=true,[150]=true,[175]=true,[178]=true}
           local function log(s) print(s); io.stdout:flush() end
           local function shot(f)
               local s=PCSX.GPU.takeScreenShot()
@@ -198,8 +198,8 @@ jobs:
               -- Panel/prompt is visible at f175. Capture before the press; release after three rendered frames at f178.
               if mode=="CIRCLE_SECOND" and frame==175 then input("CIRCLE","press")
               elseif mode=="CIRCLE_SECOND" and frame==178 then input("CIRCLE","release") end
-              if mode=="CIRCLE_SECOND" and frame==184 then
-                  log("CIRCLE_TIMELINE_CHECKPOINT_CREATE_BEGIN frame=184")
+              if mode=="CIRCLE_SECOND" and frame==178 then
+                  log("CIRCLE_TIMELINE_CHECKPOINT_CREATE_BEGIN frame=178")
                   PCSX.pauseEmulator()
                   PCSX.nextTick(function()
                       local ok,state=pcall(function() return PCSX.createSaveState() end)
@@ -294,13 +294,13 @@ jobs:
               else: raise SystemExit("unsupported bpp")
               im.save(root/(m["label"]+".png"),optimize=True); images[m["label"]]=im
           modes=["CIRCLE_WAIT","CIRCLE_SECOND"]
-          frames=[20,29,30,35,37,38,39,45,90,120,150,175,178,179,180,181,182,184,188,195,210,240]
+          frames=[20,29,30,35,37,38,39,45,90,120,150,175,178]
           baseline={f:images.get("CIRCLE_WAIT-f"+str(f).zfill(3)) for f in frames}
           out=[
              "CIRCLE_FOLLOWUP_PARENT_CHECKPOINT_SHA256=b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a",
              "CIRCLE_FOLLOWUP_PATCHED_APPIMAGE_SHA256=2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99",
              "CIRCLE_FOLLOWUP_BRANCHES=CIRCLE_WAIT,CIRCLE_SECOND",
-             "CIRCLE_FOLLOWUP_INPUT_PLAN=Circle@30-38 both; screenshot prompt f175, second Circle press at f175 and release at f178; save at f184; fresh-process restore for 10 VSync",
+             "CIRCLE_FOLLOWUP_INPUT_PLAN=Circle@30-38 both; screenshot prompt f175, second Circle press at f175 and release at f178; save immediately at f178; fresh-process restore for 10 VSync",
              "CIRCLE_FOLLOWUP_FRAMES="+",".join(map(str,frames)),
              "CIRCLE_FOLLOWUP_PARENT_STATE_MUTATION=NO",
              "CIRCLE_FOLLOWUP_CONFIRMED_STATE_BYTES="+str((root/"confirmed-checkpoint.raw.sstate").stat().st_size if (root/"confirmed-checkpoint.raw.sstate").exists() else 0),
