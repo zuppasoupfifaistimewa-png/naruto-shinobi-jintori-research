@@ -45,7 +45,7 @@ jobs:
         with:
           name: naruto-storymode-control-probe-private
           run-id: 39513285641
-          github-token: \${{ github.token }}
+          github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
           path: /tmp/naruto-storymode-circle-followthrough/build-artifact
 
@@ -54,7 +54,7 @@ jobs:
         with:
           name: naruto-storymode-konoha-f175-direction-diff-private
           run-id: 39608389644
-          github-token: \${{ github.token }}
+          github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
           path: /tmp/naruto-storymode-circle-followthrough/state-artifact
 
@@ -63,7 +63,7 @@ jobs:
         with:
           name: naruto-storymode-memory-card-private
           run-id: 39262213468
-          github-token: \${{ github.token }}
+          github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
           path: /tmp/naruto-storymode-circle-followthrough/card-artifact
 
@@ -97,7 +97,7 @@ jobs:
       - name: Download game and SCPH-7502 BIOS from private runtime release
         shell: bash
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           cd "$WORK"
