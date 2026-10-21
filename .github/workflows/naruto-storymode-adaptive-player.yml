@@ -52,7 +52,7 @@ jobs:
       - name: Download verified board checkpoint from run 39685868421
         uses: actions/download-artifact@v4
         with:
-          name: naruto-storymode-adaptive-player-private
+          name: naruto-storymode-next-roulette-circle-diff-private
           run-id: 39685868421
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
@@ -258,6 +258,9 @@ jobs:
           end)
           log("ADAPTIVE_SCRIPT_READY cycles="..maxCycles.." source=verified-board-f180 captures=EXTERNAL_X11_ONLY")
           LUA
+          mkdir -p "$WORK/tools"
+          cp "$GITHUB_WORKSPACE/tools/storymode_adaptive_agent.py" "$WORK/tools/storymode_adaptive_agent.py"
+          python3 -m unittest discover -s "$GITHUB_WORKSPACE/tests" -v
           cp "$WORK/storymode-adaptive.lua" "$WORK/captures/storymode-adaptive.lua"
           PROBE_MODE=ADAPTIVE timeout --signal=TERM --kill-after=5s 240s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
             -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/naruto-storymode-template.mcd" \
