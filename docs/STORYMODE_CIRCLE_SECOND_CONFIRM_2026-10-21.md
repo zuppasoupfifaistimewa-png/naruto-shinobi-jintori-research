@@ -56,22 +56,28 @@ Mulai 08:50:22 WIB; selesai 08:51:45 WIB. Status: `failure`.
 - Pada cabang konfirmasi, Circle kedua dikirim setelah screenshot f175 (`readback=true/PASS`) dan dilepas setelah screenshot f178 (`readback=false/PASS`). Screenshot f175–f179 pixel-identik dengan cabang tunggu untuk frame yang tersedia.
 - Screenshot f181 masih tampak seperti panel misi; f182 memperlihatkan perubahan visual kecil (MAD antarfame 3.413; 95.99% piksel sama); f183 sama dengan f182; f184 menunjukkan lingkaran merah besar di sisi kanan bawah (MAD f183→f184 7.786; 90.87% piksel sama). Panel `任務内容`, target `3000チャクラためる`, dan prompt `けってい` masih tampak. Tidak ada frame tunggu pembanding yang valid untuk f180 ke atas, jadi perubahan f182/f184 belum bisa diatribusikan dengan yakin kepada input kedua daripada animasi/masalah runtime.
 - Karena eksperimen versi ini menyimpan hanya pada f240 dan proses crash di f184, tidak ada checkpoint konfirmasi atau pemulihan lintas-proses. Checkpoint induk tetap utuh.
-- Artefak privat #12315236554, 4.882.885 byte, digest ZIP `sha256:da1f2ac778eab9ea1a9333d972b0ed8b72b8396b8f417436b2499bec8cf82221` (correct digest verified from Actions: `da1f2ac778eab9ea1a4633d972b0ed8b72b8396b8f417436b2499bec8cf82221`), disimpan privat. PNG/raw dipulihkan dan dianalisis lokal; tidak ada berkas game/BIOS/savestate dimasukkan ke Git.
+- Artefak privat #12315236554, 4.882.885 byte, digest ZIP `sha256:da1f2ac778eab9ea1a4633d972b0ed8b72b8396b8f417436b2499bec8cf82221`, disimpan privat. PNG/raw dipulihkan dan dianalisis lokal; tidak ada berkas game/BIOS/savestate dimasukkan ke Git.
 
-## Eksperimen aktif #39530038534
+## Run #39530038534 — checkpoint pada f178 dan pemulihan lintas-proses sukses
 
-Run [#39530038534](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39530038534) didaftarkan pukul 08:54:57 WIB; setelah marker dipasang status awalnya `queued`. Batas timeout job nominal 35 menit berarti sekitar 09:29:57 WIB sebagai batas maksimum, bukan janji selesai.
+Run: [#39530038534](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39530038534)  
+Mulai 09:00:08 WIB; selesai 09:01:53 WIB pada 21 Oktober 2026. Status workflow: `success`.
 
-Perubahan yang diuji:
-- Screenshot dipilih lebih jarang untuk mengurangi risiko segfault saat tangkapan rapat.
-- Cabang tunggu menargetkan f181; cabang Circle kedua memakai pulsa f175–f178 lalu mencoba menyimpan checkpoint privat segera setelah screenshot f184, saat perubahan visual pertama setelah input tampak.
-- Jika checkpoint f184 berhasil, proses emulator baru memuatnya dan berjalan 10 VSync dengan screenshot/log pemulihan. Jika gagal, screenshot/log parsial tetap diunggah privat.
-- ROM, BIOS, savestate, dan Memory Card tetap privat.
+- Kedua cabang memuat checkpoint induk dengan `CIRCLE_TIMELINE_LOAD_EVENT=PASS` dan `CIRCLE_TIMELINE_LOAD_RETURNED=1`. Cabang tunggu selesai normal pada frame 178. Cabang kedua mengirim tap Circle pertama pada f30–f38, kemudian tap Circle konfirmasi setelah screenshot f175 dan melepasnya pada f178; log pad menunjukkan press `readback=true status=PASS` dan release `readback=false status=PASS`.
+- Perbandingan screenshot yang cocok sampai f178 memberikan `mad=0.000, exact=1.00000` pada semua frame yang tersedia. Jadi tidak ada perubahan visual terukur antara cabang tunggu dan cabang Circle-kedua hingga f178. Ini **tidak** membuktikan Circle kedua tak bekerja; game belum diamati melewati panel/prompt setelah input tersebut.
+- Workflow menyimpan checkpoint privat segera setelah input release pada f178. Ukurannya **21.162.838 byte**; SHA-256 **`a87529407736b1b7648785db8644d3c10f0b8d5d12f1557c63d9a3155b22fa83`**.
+- Checkpoint tersebut disalin ke lingkungan kerja sementara dan diuji dalam proses emulator yang baru: `CIRCLE_FOLLOWUP_FRESH_PROCESS_RELOAD_EXIT=0`, load event PASS, loader-return PASS, screenshot f1 dan f10 tersedia, `BRANCH_DONE mode=RELOAD_CONFIRM frame=10`, serta `CIRCLE_FOLLOWUP_FRESH_PROCESS_RESTORE=PASS`. Ini memverifikasi pemulihan checkpoint ini pada build patched yang dipakai run; bukan bukti progres Story Mode.
+- Manifest melaporkan `CIRCLE_FOLLOWUP_PARENT_STATE_MUTATION=NO`. Checkpoint induk tetap 21.162.405 byte, SHA-256 `b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a`.
+- Artefak privat #12314982935, nama `naruto-storymode-circle-followup-private`, ukuran 6.032.044 byte, digest ZIP `sha256:e23112ce7a6c2a7b65b6cc8dfa15bf41e94528228b6896060337fac68a5d7033`. Artefak mengandung bukti PNG/log dan berkas savestate privat; tidak ada ROM, BIOS, savestate, atau isi Memory Card yang dimasukkan ke Git. Artefak kedaluwarsa setelah periode retensi Actions (14 hari).
+
+## Langkah berikutnya
+
+Checkpoint setelah tap kedua sekarang dapat dipulihkan dalam proses baru. Kelanjutan riset paling aman adalah memuat checkpoint privat itu dalam eksperimen terpisah dan menjalankan beberapa VSync tambahan tanpa input untuk melihat apakah game melanjutkan transisi setelah key release; bandingkan terhadap checkpoint cabang tunggu dengan jumlah VSync sama. Jangan menimpa checkpoint induk. Simpan checkpoint turunan serta bukti runtime di artefak privat dan verifikasi hash/restore setiap kali.
 
 ## Klasifikasi kesimpulan saat ini
 
-- **Terverifikasi:** checkpoint induk berhasil dimuat oleh emulator untuk kedua cabang pada run #39527646447; input Circle pertama diterima oleh API pad; cabang tunggu memiliki capture sampai frame 181; cabang kedua crash sebelum input kedua.
-- **Hipotesis:** UI/gameplay dapat berhenti memajukan VSync pada panel konfirmasi atau emulator mengalami jalur crash yang dipicu saat melanjutkan cabang tersebut. Data saat ini belum membedakan penyebabnya.
-- **Belum terverifikasi:** efek Circle kedua pada prompt `けってい`; apakah permainan maju ke tahap Story Mode berikutnya; apakah checkpoint setelah konfirmasi dapat dipulihkan; syarat/aturan gameplay lebih jauh; tamat Story Mode.
+- **Terverifikasi:** checkpoint induk dimuat di dua cabang terisolasi; input Circle kedua diterima controller override pada f175 dan dilepas pada f178; screenshot tunggu/konfirmasi identik sampai f178; checkpoint turunan f178 tersimpan dan lulus uji restore pada proses emulator baru selama 10 VSync.
+- **Hipotesis:** proses emulator pada beberapa run terdahulu berhenti memajukan VSync atau crash di sekitar panel konfirmasi; run #39530038534 dapat menyimpan dan memulihkan state f178 sebelum crash berikutnya, tetapi penyebab masalah VSync/segfault belum diketahui.
+- **Belum terverifikasi:** apakah Circle kedua pada prompt `けってい` memicu kemajuan Story Mode setelah frame 178; aturan gameplay lainnya; save/load Memory Card dari dalam game; dan tamat Story Mode.
 
 Jangan menganggap panel atau teks target sebagai bukti bahwa target Chakra telah tercapai. Jangan menyatakan Story Mode tamat tanpa bukti runtime yang kuat.
