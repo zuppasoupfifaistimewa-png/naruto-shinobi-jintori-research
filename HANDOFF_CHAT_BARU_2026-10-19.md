@@ -1,3 +1,17 @@
+## CHAT BARU — WAJIB LANJUTKAN DENGAN OTOMASI CHECKPOINT, BUKAN MULAI ULANG (21 Oktober 2026)
+
+Pengguna secara eksplisit menyetujui target membangun sistem otomatis yang memainkan Story Mode sampai tamat melalui siklus restore checkpoint → satu input terukur → observasi screenshot asli → verifikasi kemajuan → checkpoint turunan → lanjut lintas sesi. Tidak perlu meminta pengguna mengawasi setiap input/eksperimen. Namun otomasi penuh masih perlu dibangun dan diuji; jangan mengklaim sudah otomatis penuh atau tamat hanya karena sebuah workflow Actions sukses.
+
+**Baca dahulu** [rencana otomasi](docs/STORYMODE_AUTOMATION_WORKFLOW_2026-10-21.md), kemudian `STATUS.md`, `docs/STORYMODE_POST178_CONTINUATION_2026-10-21.md`, dan `docs/SIGSEGV_FORENSICS_2026-10-21.md`. Pastikan informasi ini masih paling baru, karena run terbaru bisa mengubah baseline/cabang uji.
+
+**Titik kelanjutan yang tercatat:** papan hutan Konoha checkpoint f175, SHA-256 `f8bd00074877ef583e35b8eaf2fc65b3877acda9bebd5f2d8e9a13abee094615` (21,163,375 byte). Pertahankan file sumber immutable. Lakukan eksperimen arah satu per satu dari salinan checkpoint f175 dan kontrol tanpa input berdurasi sama; setiap uji memakai proses emulator baru. Gunakan external X11 untuk screenshot pada state lanjut sesuai batasan workflow, bukan internal emulator screenshot API.
+
+Run #39599932467 adalah cabang eksperimen konfirmasi barrier RIGHT/DOWN yang terpisah: 100/140 Chakra terlihat sebagai biaya sebelum konfirmasi, tetapi potongan Chakra dan penempatan barrier belum terverifikasi. Jangan campur state cabang ini dengan baseline f175.
+
+**Aturan tetap:** untuk dialog Story Mode tekan START (bukan Circle); gameplay evidence hanya screenshot asli emulator yang diverifikasi; Jepang diberi terjemahan Indonesia dalam tanda kurung; tidak ada ROM/BIOS/savestate/Memory Card/screenshot gameplay privat di Git; root cause SIGSEGV #39574435847 masih belum diketahui; completion harus dibuktikan dari game. Sebelum trigger run baru, periksa queued/in-progress Actions dan hilangkan marker sekali pakai yang tertinggal. Hanya repo `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research` yang boleh diakses/diubah.
+
+---
+
 ## LATEST HANDOFF — Konoha board view reached and successor checkpoint saved (21 October 2026, 18:20 WIB)
 
 Run [#39591032125](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39591032125) restored the pre-START dialog checkpoint `c47d2069...`. One START tap at relative f120 and release at f121 passed controller readback; there was no Circle input. Internal screenshots were captured only through f130 (11 images, all valid). The first process saved a separate f140 checkpoint (21,162,630 bytes, SHA-256 `3a0bb3f37537f393bcb1479f9a478bf90367ae669418523f12a34cfa39984034`).
