@@ -163,8 +163,8 @@ jobs:
           Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/captures/xvfb-none.log" 2>&1 &
           xvfb_pid=$!
           trap 'kill "$xvfb_pid" 2>/dev/null || true; wait "$xvfb_pid" 2>/dev/null || true' EXIT
-          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/.config" XDG_DATA_HOME="$WORK/.data" XDG_RUNTIME_DIR="$WORK/runtime" LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=softpipe
-          echo "DIAG_GALLIUM_DRIVER_REQUESTED=softpipe" | tee -a "$WORK/captures/diagnostic-report.txt"
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/.config" XDG_DATA_HOME="$WORK/.data" XDG_RUNTIME_DIR="$WORK/runtime" LIBGL_ALWAYS_SOFTWARE=1
+          echo "DIAG_GALLIUM_DRIVER_REQUESTED=${GALLIUM_DRIVER:-default}" | tee -a "$WORK/captures/diagnostic-report.txt"
           for i in $(seq 1 60); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
           xdpyinfo -display "$DISPLAY" >/dev/null
           command -v xwd >/dev/null
