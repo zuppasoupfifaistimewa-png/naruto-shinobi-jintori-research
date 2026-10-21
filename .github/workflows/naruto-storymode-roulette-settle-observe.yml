@@ -52,7 +52,7 @@ jobs:
       - name: Download the verified post-roulette map checkpoint from run 39614665390
         uses: actions/download-artifact@v4
         with:
-          name: naruto-storymode-roulette-circle-stop-diff-private
+          name: naruto-storymode-roulette-post-result-observe-private
           run-id: 39614665390
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
