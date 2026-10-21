@@ -1,3 +1,13 @@
+## LATEST HANDOFF — Konoha board view reached and successor checkpoint saved (21 October 2026, 18:20 WIB)
+
+Run [#39591032125](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39591032125) restored the pre-START dialog checkpoint `c47d2069...`. One START tap at relative f120 and release at f121 passed controller readback; there was no Circle input. Internal screenshots were captured only through f130 (11 images, all valid). The first process saved a separate f140 checkpoint (21,162,630 bytes, SHA-256 `3a0bb3f37537f393bcb1479f9a478bf90367ae669418523f12a34cfa39984034`).
+
+A fresh emulator process restored the f140-derived checkpoint and advanced with no input to relative frame 175, creating `konoha-successor-checkpoint-f175.sstate` (21,163,375 bytes, SHA-256 `f8bd00074877ef583e35b8eaf2fc65b3877acda9bebd5f2d8e9a13abee094615`). The original external X11 capture (1280×800; 729,022 bytes / 93,474 colors) shows the Konoha forest board with the dialogue panel gone and HUD Naruto 1500–1500 vs Mizuki 1500–1500. This proves reaching the board/map view after the dialog transition; it does **not** prove story completion or a fully active objective loop.
+
+Source pre-START dialog checkpoint hash `c47d2069ae9b1e589cce35df2dbaaa867b3365acfd501d2666a72ecd5fcc494c` and stable parent hash `b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee` are unchanged. Private artifact #12342641041, ZIP digest `dbdea33e9b0e05a0ddf0a30242a8827959ca5b1e829f10e77d943d654bfb6009`. No screenshots or state files were committed to Git.
+
+Marker `.run-storymode-konoha-resume` was removed after the run. Next action: make one-input-vs-no-input controller differential runs from the f175 checkpoint, keeping it read-only and using **external X11 only** for later-state visuals. Internal screenshot API is disabled for this restored later state. If a dialogue appears, use START rather than Circle. Never use web images as gameplay evidence.
+
 ## LATEST HANDOFF — GDB launch stopped at f172 without natural SIGSEGV (21 October 2026, 17:59 WIB)
 
 Run [#39588281198](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39588281198) tested a live GDB launch with SIGSEGV configured to stop and not be passed through. No controller input was sent. The callback reached f172, then stalled for 2.549 seconds; the process snapshot was `Sl`, about 141% CPU, `wchan=futex_do_wait`. The 60-second outer timeout returned 124. No natural SIGSEGV, usable stack trace, or runner-local core was obtained. The core pattern redirects dumps to `systemd-coredump`.
