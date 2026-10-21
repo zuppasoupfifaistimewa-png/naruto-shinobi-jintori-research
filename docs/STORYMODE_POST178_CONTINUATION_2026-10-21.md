@@ -1,3 +1,16 @@
+## LATEST CONTINUATION — one START tap exits dialog; Konoha board view and f175 successor verified (21 October 2026, 18:20 WIB)
+
+Run [#39591032125](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39591032125) used the verified pre-START dialog checkpoint, made one START press at relative f120 and release at f121, and sent no Circle input. The f140 state was saved as a derived checkpoint; a **fresh emulator process** then restored it and reached frame 175 without controller input. A successor savestate was created successfully.
+
+The original external X11 capture after restoration shows the Konoha forest board/map, Naruto and Mizuki HUD each at 1500, and no dialogue panel. This confirms the transition from the dialog view to the board view, but not completion of a mission or Story Mode. There were 11 valid internal emulator screenshots up to f130 in phase 1, and phase 2 used external X11 only. No gameplay screenshots or savestates were committed to the repository.
+
+Checkpoint hashes:
+- Pre-START source (unchanged): `c47d2069ae9b1e589cce35df2dbaaa867b3365acfd501d2666a72ecd5fcc494c`
+- Derived after START f140: `3a0bb3f37537f393bcb1479f9a478bf90367ae669418523f12a34cfa39984034`
+- Successor f175: `f8bd00074877ef583e35b8eaf2fc65b3877acda9bebd5f2d8e9a13abee094615`
+
+Next: test controller directions one at a time from a read-only copy of f175 against a matched-duration no-input control. Use original X11 captures for later-state visuals; do not take internal emulator screenshots after resuming this later state. If dialog returns in any continued branch, press START, not Circle.
+
 ## POST-178 FORENSIC NOTE — dialog checkpoint preserved during GDB run #39588281198 (21 October 2026, 17:59 WIB)
 
 This was a no-input diagnostic restore of the already-verified pre-START dialog checkpoint, not a restart of Story Mode and not a verified transition into active gameplay. Run [#39588281198](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39588281198) reached f172 before the callback stalled; GDB did not observe a natural SIGSEGV before the 60-second timeout (exit 124). The two original X11 captures still show the dialogue and Circle prompt with HUD 1500–1500. There is no new evidence that a mission is active or that Story Mode is complete.
