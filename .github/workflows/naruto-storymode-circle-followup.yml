@@ -153,9 +153,9 @@ jobs:
           )
           cat > "$WORK/timeline.lua" <<'LUA'
           local mode=os.getenv("PROBE_MODE") or "NONE"
-          local frame=0; local start_seen=false; local load_returned=false; local load_event=false; local finalFrame=(mode=="NONE") and 150 or 180
+          local frame=0; local start_seen=false; local load_returned=false; local load_event=false; local finalFrame=(mode=="RELOAD_CONFIRM") and 180 or 600
           local pad=PCSX.SIO0.slots[1].pads[1]; local buttons=PCSX.CONSTS.PAD.BUTTON
-          local captures={[20]=true,[29]=true,[30]=true,[35]=true,[37]=true,[38]=true,[39]=true,[45]=true,[90]=true,[120]=true,[150]=true,[180]=true}
+          local captures={[1]=true,[20]=true,[29]=true,[30]=true,[35]=true,[37]=true,[38]=true,[39]=true,[45]=true,[90]=true,[120]=true,[150]=true,[175]=true,[179]=true,[180]=true,[181]=true,[184]=true,[185]=true,[186]=true,[188]=true,[193]=true,[194]=true,[195]=true,[200]=true,[210]=true,[240]=true,[300]=true,[360]=true,[600]=true}
           local function log(s) print(s); io.stdout:flush() end
           local function shot(f)
               local s=PCSX.GPU.takeScreenShot()
@@ -191,14 +191,37 @@ jobs:
               end
               if not load_event or not load_returned then return end
               frame=frame+1
-              if mode=="CIRCLE_TAP_EARLY" then
+              if mode=="CIRCLE_WAIT" or mode=="CIRCLE_SECOND" then
                   if frame==30 then input("CIRCLE","press") elseif frame==38 then input("CIRCLE","release") end
-              elseif mode=="START_TAP_EARLY" then
-                  if frame==30 then input("START","press") elseif frame==38 then input("START","release") end
+                  if mode=="CIRCLE_SECOND" and frame==185 then input("CIRCLE","press") elseif mode=="CIRCLE_SECOND" and frame==193 then input("CIRCLE","release") end
               end
               if captures[frame] then shot(frame) end
+              if mode=="CIRCLE_SECOND" and frame==600 then
+                  log("CIRCLE_TIMELINE_CHECKPOINT_CREATE_BEGIN frame=600")
+                  PCSX.pauseEmulator()
+                  PCSX.nextTick(function()
+                      local ok,state=pcall(function() return PCSX.createSaveState() end)
+                      if not ok or not state then
+                          log("CIRCLE_TIMELINE_CHECKPOINT_CREATE_ERROR="..tostring(state)); PCSX.quit(71); return
+                      end
+                      local opened,file=pcall(function()
+                          return assert(Support.File.open("captures/confirmed-checkpoint.raw.sstate","TRUNCATE"))
+                      end)
+                      if not opened or not file then
+                          log("CIRCLE_TIMELINE_CHECKPOINT_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return
+                      end
+                      local wrote,writeErr=pcall(function() file:writeMoveSlice(state); file:close() end)
+                      if not wrote then
+                          log("CIRCLE_TIMELINE_CHECKPOINT_WRITE_ERROR="..tostring(writeErr)); PCSX.quit(73); return
+                      end
+                      log("CIRCLE_TIMELINE_CHECKPOINT_CREATED=PASS")
+                      log("CIRCLE_TIMELINE_BRANCH_DONE mode="..mode.." frame="..frame.." load_event="..tostring(load_event).." load_returned="..tostring(load_returned))
+                      PCSX.quit(0)
+                  end)
+                  return
+              end
               if frame==finalFrame then
-                  log("CIRCLE_TIMELINE_BRANCH_DONE mode="..mode.." load_event="..tostring(load_event).." load_returned="..tostring(load_returned))
+                  log("CIRCLE_TIMELINE_BRANCH_DONE mode="..mode.." frame="..frame.." load_event="..tostring(load_event).." load_returned="..tostring(load_returned))
                   PCSX.pauseEmulator(); PCSX.nextTick(function() PCSX.quit(0) end); return
               end
           end)
@@ -207,7 +230,7 @@ jobs:
           cp "$WORK/timeline.lua" "$WORK/captures/timeline.lua"
 
           failed=0
-          for mode in NONE CIRCLE_TAP_EARLY START_TAP_EARLY; do
+          for mode in CIRCLE_WAIT CIRCLE_SECOND; do
             cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-$mode.mcd"
             echo "CIRCLE_TIMELINE_BRANCH_BEGIN=$mode"
             set +e
@@ -221,6 +244,29 @@ jobs:
             grep -E 'CIRCLE_TIMELINE_(LOAD_EVENT|LOAD_RETURNED|INPUT|SCREENSHOT|BRANCH_DONE|LOAD_ERROR)' "$WORK/captures/pcsx-$mode.stdout" || true
             if [ "$rc" -ne 0 ] || ! grep -q 'CIRCLE_TIMELINE_BRANCH_DONE' "$WORK/captures/pcsx-$mode.stdout"; then failed=$((failed+1)); fi
           done
+
+          test -s "$WORK/captures/confirmed-checkpoint.raw.sstate" || { echo "::error::confirmation branch did not create a checkpoint"; exit 74; }
+          state_bytes="$(stat -c '%s' "$WORK/captures/confirmed-checkpoint.raw.sstate")"
+          state_sha="$(sha256sum "$WORK/captures/confirmed-checkpoint.raw.sstate" | cut -d ' ' -f1)"
+          test "$state_bytes" -gt 0
+          printf 'CIRCLE_FOLLOWUP_CONFIRMED_STATE_BYTES=%s\nCIRCLE_FOLLOWUP_CONFIRMED_STATE_SHA256=%s\n' "$state_bytes" "$state_sha" | tee "$WORK/captures/confirmation-checkpoint-manifest.txt"
+          cp "$WORK/captures/confirmed-checkpoint.raw.sstate" "$WORK/resume/storymode-checkpoint.sstate"
+          cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-RELOAD_CONFIRM.mcd"
+          echo "CIRCLE_FOLLOWUP_FRESH_PROCESS_RELOAD_BEGIN=1"
+          set +e
+          PROBE_MODE=RELOAD_CONFIRM timeout --signal=TERM --kill-after=5s 240s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-RELOAD_CONFIRM.mcd" \
+            -exec "$PAD_SETUP" -dofile "$WORK/timeline.lua" -softgpu -dynarec -stdout -lua_stdout \
+            -logfile "$WORK/captures/pcsx-RELOAD_CONFIRM.log" -run > "$WORK/captures/pcsx-RELOAD_CONFIRM.stdout" 2>&1
+          reload_rc=$?
+          set -e
+          echo "CIRCLE_FOLLOWUP_FRESH_PROCESS_RELOAD_EXIT=$reload_rc"
+          grep -E 'CIRCLE_TIMELINE_(LOAD_EVENT|LOAD_RETURNED|SCREENSHOT|BRANCH_DONE|LOAD_ERROR)' "$WORK/captures/pcsx-RELOAD_CONFIRM.stdout" || true
+          if [ "$reload_rc" -ne 0 ] || ! grep -q 'CIRCLE_TIMELINE_LOAD_EVENT=PASS' "$WORK/captures/pcsx-RELOAD_CONFIRM.stdout" || ! grep -q 'CIRCLE_TIMELINE_LOAD_RETURNED=1' "$WORK/captures/pcsx-RELOAD_CONFIRM.stdout" || ! grep -q 'CIRCLE_TIMELINE_BRANCH_DONE mode=RELOAD_CONFIRM frame=180 load_event=true load_returned=true' "$WORK/captures/pcsx-RELOAD_CONFIRM.stdout"; then
+            failed=$((failed+1)); echo "::error::fresh-process restore gate failed"
+          else
+            echo "CIRCLE_FOLLOWUP_FRESH_PROCESS_RESTORE=PASS"
+          fi
 
           python3 - <<'PY'
           import hashlib,json
@@ -239,15 +285,20 @@ jobs:
               elif bpp==24: im=Image.frombytes("RGB",(w,h),raw)
               else: raise SystemExit("unsupported bpp")
               im.save(root/(m["label"]+".png"),optimize=True); images[m["label"]]=im
-          modes=["NONE","CIRCLE_TAP_EARLY","START_TAP_EARLY"]
-          frames=[20,29,30,35,37,38,39,45,90,120,150,180]
-          baseline={f:images.get("NONE-f"+str(f).zfill(3)) for f in frames}
+          modes=["CIRCLE_WAIT","CIRCLE_SECOND"]
+          frames=[20,29,30,35,37,38,39,45,90,120,150,175,179,180,181,184,185,186,188,193,194,195,200,210,240,300,360,600]
+          baseline={f:images.get("CIRCLE_WAIT-f"+str(f).zfill(3)) for f in frames}
           out=[
              "CIRCLE_FOLLOWUP_PARENT_CHECKPOINT_SHA256=b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a",
              "CIRCLE_FOLLOWUP_PATCHED_APPIMAGE_SHA256=2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99",
-             "CIRCLE_FOLLOWUP_BRANCHES=NONE,CIRCLE_TAP_EARLY,START_TAP_EARLY",
+             "CIRCLE_FOLLOWUP_BRANCHES=CIRCLE_WAIT,CIRCLE_SECOND",
+             "CIRCLE_FOLLOWUP_INPUT_PLAN=Circle@30-38 both; second Circle@185-193 in CIRCLE_SECOND; save at frame 600; fresh-process restore for 180 VSync",
              "CIRCLE_FOLLOWUP_FRAMES="+",".join(map(str,frames)),
              "CIRCLE_FOLLOWUP_PARENT_STATE_MUTATION=NO",
+             "CIRCLE_FOLLOWUP_CONFIRMED_STATE_BYTES="+str((root/"confirmed-checkpoint.raw.sstate").stat().st_size if (root/"confirmed-checkpoint.raw.sstate").exists() else 0),
+             "CIRCLE_FOLLOWUP_CONFIRMED_STATE_SHA256="+(hashlib.sha256((root/"confirmed-checkpoint.raw.sstate").read_bytes()).hexdigest() if (root/"confirmed-checkpoint.raw.sstate").exists() else "missing"),
+             "CIRCLE_FOLLOWUP_FRESH_PROCESS_RESTORE="+("PASS" if (root/"pcsx-RELOAD_CONFIRM.stdout").is_file() and "CIRCLE_TIMELINE_LOAD_EVENT=PASS" in (root/"pcsx-RELOAD_CONFIRM.stdout").read_text(errors="replace") and "CIRCLE_TIMELINE_LOAD_RETURNED=1" in (root/"pcsx-RELOAD_CONFIRM.stdout").read_text(errors="replace") and "CIRCLE_TIMELINE_BRANCH_DONE mode=RELOAD_CONFIRM frame=180 load_event=true load_returned=true" in (root/"pcsx-RELOAD_CONFIRM.stdout").read_text(errors="replace") else "FAIL_OR_MISSING"),
+             ""
              "",
              "Per-frame differences against NONE at the same VSync count:"
           ]
@@ -265,6 +316,7 @@ jobs:
           print("\n".join(out))
           PY
           cat "$WORK/captures/circle-followup-report.txt"
+          echo "CIRCLE_FOLLOWUP_RESTORE_CHECKPOINT_ARTIFACT=PRIVATE_ONLY"
           if [ "$failed" -ne 0 ]; then echo "::error::$failed timeline branches failed"; exit 44; fi
 
       - name: Upload private timeline evidence
@@ -278,6 +330,7 @@ jobs:
             /tmp/naruto-storymode-circle-followup/captures/*.stdout
             /tmp/naruto-storymode-circle-followup/captures/*.log
             /tmp/naruto-storymode-circle-followup/captures/*.json
+            /tmp/naruto-storymode-circle-followup/captures/*.sstate
           if-no-files-found: warn
           retention-days: 14
 
