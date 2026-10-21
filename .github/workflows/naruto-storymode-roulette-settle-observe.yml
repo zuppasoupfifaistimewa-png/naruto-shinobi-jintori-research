@@ -1,30 +1,30 @@
-name: Naruto Story Mode controlled roulette Circle stop versus no-input
+name: Naruto Story Mode post-roulette board follow-through observation
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - "experiments/.run-storymode-roulette-circle-stop-diff"
+      - "experiments/.run-storymode-roulette-post-result-observe"
 
 permissions:
   contents: read
   actions: read
 
 concurrency:
-  group: naruto-storymode-roulette-circle-stop-diff
+  group: naruto-storymode-roulette-post-result-observe
   cancel-in-progress: false
 
 jobs:
   observe:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-ROULETTE-CIRCLE-STOP-DIFF]')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-ROULETTE-POST-RESULT-OBSERVE]')
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     container:
       image: ghcr.io/grumpycoders/pcsx-redux-build:latest
       options: --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
     env:
-      WORK: /tmp/naruto-storymode-roulette-circle-stop-diff
+      WORK: /tmp/naruto-storymode-roulette-post-result-observe
       RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 
     steps:
@@ -47,16 +47,16 @@ jobs:
           run-id: 39513285641
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-roulette-circle-stop-diff/build-artifact
+          path: /tmp/naruto-storymode-roulette-post-result-observe/build-artifact
 
-      - name: Download the private Circle-branch checkpoint from run 39609425942
+      - name: Download the verified Circle result checkpoint from run 39613929898
         uses: actions/download-artifact@v4
         with:
-          name: naruto-storymode-circle-followthrough-private
-          run-id: 39609425942
+          name: naruto-storymode-roulette-circle-stop-diff-private
+          run-id: 39613929898
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-roulette-circle-stop-diff/state-artifact
+          path: /tmp/naruto-storymode-roulette-post-result-observe/state-artifact
 
       - name: Download original private Memory Card
         uses: actions/download-artifact@v4
@@ -65,34 +65,34 @@ jobs:
           run-id: 39262213468
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-roulette-circle-stop-diff/card-artifact
+          path: /tmp/naruto-storymode-roulette-post-result-observe/card-artifact
 
-      - name: Validate immutable roulette checkpoint and stage read-only copy
+      - name: Validate immutable Circle-result checkpoint and stage read-only copy
         shell: bash
         run: |
           set -euo pipefail
           APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
-          SOURCE="$WORK/state-artifact/wheel-after-noinput-f120.sstate"
+          SOURCE="$WORK/state-artifact/roulette-stop-result-circle-f180.sstate"
           CARD="$WORK/card-artifact/naruto-storymode.mcd"
           test -f "$APP" && chmod +x "$APP"
           test "$(sha256sum "$APP" | cut -d ' ' -f1)" = 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99
-          test "$(stat -c %s "$SOURCE")" = 21162475
-          test "$(sha256sum "$SOURCE" | cut -d ' ' -f1)" = 7c8c8bfa4a15132a6c9a046aa842fc01d2f294d6e04d53262c20287566432222
+          test "$(stat -c %s "$SOURCE")" = 21163057
+          test "$(sha256sum "$SOURCE" | cut -d ' ' -f1)" = 0570a687dd8ecc1449c8edaa436f21111e40433d59c6a21b0e64de6b71c07d5d
           test "$(stat -c %s "$CARD")" = 131072
           test "$(sha256sum "$CARD" | cut -d ' ' -f1)" = ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
-          cp "$SOURCE" "$WORK/resume/roulette-source-f120.sstate"
-          chmod 400 "$WORK/resume/roulette-source-f120.sstate"
+          cp "$SOURCE" "$WORK/resume/roulette-board-source-f180.sstate"
+          chmod 400 "$WORK/resume/roulette-board-source-f180.sstate"
           cp "$CARD" "$WORK/cards/naruto-storymode-template.mcd"
           {
-            echo "WHEEL_SOURCE_RUN=39609425942"
-            echo "WHEEL_SOURCE_BYTES=21162475"
-            echo "WHEEL_SOURCE_SHA256=7c8c8bfa4a15132a6c9a046aa842fc01d2f294d6e04d53262c20287566432222"
-            echo "WHEEL_SOURCE_COPY_READ_ONLY=YES"
-            echo "CONTROLLER_INPUT=NONE_AND_ONE_CIRCLE_BRANCH"
-            echo "EXTERNAL_X11_CAPTURE_FRAMES=20,60,100,180,240,300"
+            echo "SOURCE_RUN=39613929898"
+            echo "SOURCE_BYTES=21163057"
+            echo "SOURCE_SHA256=0570a687dd8ecc1449c8edaa436f21111e40433d59c6a21b0e64de6b71c07d5d"
+            echo "SOURCE_COPY_READ_ONLY=YES"
+            echo "CONTROLLER_INPUT=NONE"
+            echo "EXTERNAL_X11_CAPTURE_FRAMES=20,60,100,120"
             echo "INTERNAL_EMULATOR_SCREENSHOT_API=DISABLED"
-          } | tee "$WORK/captures/input-validation.txt"
-          echo "WHEEL_SOURCE_VALIDATION=PASS"
+          } | tee "$WORK/captures/source-validation.txt"
+          echo "ROULETTE_BOARD_SOURCE_VALIDATION=PASS"
 
       - name: Download game and SCPH-7502 BIOS from private runtime release
         shell: bash
@@ -139,7 +139,7 @@ jobs:
           Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
           PY
 
-      - name: Compare one Circle roulette tap against matched no-input control
+      - name: Observe post-roulette board in a fresh no-input process and save successor
         shell: bash
         run: |
           set -euo pipefail
@@ -156,21 +156,17 @@ jobs:
           PCSX.settings.pads[1].DeviceType='Analog'
           PCSX.settings.pads[1].Connected=true
           PCSX.SIO0.slots[1].pads[1].map()
-          print("ROULETTE_PAD_SETUP=PASS")
+          print("BOARD_PAD_SETUP=PASS")
           LUA
           )
-          cat > "$WORK/roulette-circle-diff.lua" <<'LUA'
-          local mode=os.getenv("PROBE_MODE") or "NONE"
+          cat > "$WORK/roulette-board-followthrough.lua" <<'LUA'
           local frame=0; local started=false; local returned=false; local loaded=false
-          local pressed=false; local released=false
-          local pad=PCSX.SIO0.slots[1].pads[1]
-          local buttons=PCSX.CONSTS.PAD.BUTTON
           local function log(s) print(s); io.stdout:flush() end
           local function gateCapture(label)
               PCSX.pauseEmulator()
-              log("WHEEL_CAPTURE_READY label="..label.." mode="..mode.." frame="..frame)
+              log("BOARD_CAPTURE_READY label="..label.." frame="..frame.." input=NONE")
               PCSX.nextTick(function()
-                  local gate="captures/go-"..label:lower().."-"..mode:lower()
+                  local gate="captures/go-"..label:lower()
                   while true do
                       local f=io.open(gate,"r")
                       if f then f:close(); break end
@@ -179,53 +175,40 @@ jobs:
                   PCSX.resumeEmulator()
               end)
           end
-          local function input(phase)
-              local ok,v=pcall(function()
-                  if phase=="press" then pad.setOverride(buttons.CIRCLE) else pad.clearOverride(buttons.CIRCLE) end
-                  return pad.getButton(buttons.CIRCLE)
-              end)
-              local pass=ok and v==(phase=="press")
-              log("WHEEL_INPUT mode="..mode.." action=CIRCLE phase="..phase.." readback="..tostring(v).." status="..(pass and "PASS" or "FAIL"))
-              if not pass then PCSX.quit(83) end
-              if phase=="press" then pressed=true else released=true end
-          end
           local function saveFinal()
               local ok,state=pcall(function() return PCSX.createSaveState() end)
-              if not ok or not state then log("WHEEL_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
-              local path="captures/roulette-stop-result-"..mode:lower().."-f180.sstate"
-              local opened,file=pcall(function() return assert(Support.File.open(path,"TRUNCATE")) end)
-              if not opened or not file then log("WHEEL_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
+              if not ok or not state then log("BOARD_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
+              local opened,file=pcall(function() return assert(Support.File.open("captures/board-after-roulette-noinput-f120.sstate","TRUNCATE")) end)
+              if not opened or not file then log("BOARD_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
               local wrote,err=pcall(function() file:writeMoveSlice(state); file:close() end)
-              if not wrote then log("WHEEL_SAVE_WRITE_ERROR="..tostring(err)); PCSX.quit(73); return end
-              log("WHEEL_SAVE_CREATED=PASS mode="..mode.." frame="..frame.." path="..path)
+              if not wrote then log("BOARD_SAVE_WRITE_ERROR="..tostring(err)); PCSX.quit(73); return end
+              log("BOARD_SAVE_CREATED=PASS frame="..frame)
               PCSX.quit(0)
           end
           PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
-              loaded=true; frame=0; log("WHEEL_LOAD_EVENT=PASS mode="..mode)
+              loaded=true; frame=0; log("BOARD_LOAD_EVENT=PASS")
           end)
           PCSX.Events.createEventListener("GPU::Vsync",function()
               if not started then
-                  started=true; log("WHEEL_LOAD_BEGIN=1 mode="..mode); PCSX.pauseEmulator()
+                  started=true; log("BOARD_LOAD_BEGIN=1"); PCSX.pauseEmulator()
                   PCSX.nextTick(function()
-                      local f=assert(Support.File.open("resume/roulette-source-f120.sstate"))
+                      local f=assert(Support.File.open("resume/roulette-board-source-f180.sstate"))
                       local ok,err=pcall(function() PCSX.loadSaveState(f) end); f:close()
-                      if not ok then log("WHEEL_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
-                      returned=true; log("WHEEL_LOAD_CALL_RETURNED=1 mode="..mode); PCSX.resumeEmulator()
+                      if not ok then log("BOARD_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
+                      returned=true; log("BOARD_LOAD_CALL_RETURNED=1"); PCSX.resumeEmulator()
                   end)
                   return
               end
               if not loaded or not returned then return end
               frame=frame+1
               if frame==20 then gateCapture("F20")
-              elseif frame==30 and mode=="CIRCLE" and not pressed then input("press")
-              elseif frame==38 and mode=="CIRCLE" and pressed and not released then input("release")
               elseif frame==60 then gateCapture("F60")
               elseif frame==100 then gateCapture("F100")
-              elseif frame==180 then
+              elseif frame==120 then
                   PCSX.pauseEmulator()
-                  log("WHEEL_CAPTURE_READY label=F180 mode="..mode.." frame="..frame)
+                  log("BOARD_CAPTURE_READY label=F120 frame="..frame.." input=NONE")
                   PCSX.nextTick(function()
-                      local gate="captures/go-f180-"..mode:lower()
+                      local gate="captures/go-f120"
                       while true do
                           local f=io.open(gate,"r")
                           if f then f:close(); break end
@@ -235,147 +218,115 @@ jobs:
                   end)
                   return
               end
-              if frame%20==0 then log("WHEEL_PROGRESS mode="..mode.." frame="..frame) end
+              if frame%20==0 then log("BOARD_PROGRESS frame="..frame.." input=NONE") end
           end)
-          log("WHEEL_SCRIPT_READY mode="..mode.." action=CIRCLE only for CIRCLE branch; source=f120 target=f180 screenshots=EXTERNAL_X11_ONLY")
+          log("BOARD_SCRIPT_READY source=roulette-circle-f180 target=f120 inputs=NONE screenshots=EXTERNAL_X11_ONLY")
           LUA
-          cp "$WORK/roulette-circle-diff.lua" "$WORK/captures/roulette-circle-diff.lua"
-          failed=0
-          for mode in NONE CIRCLE; do
-            cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-$mode.mcd"
-            stdout="$WORK/captures/pcsx-$mode.stdout"
-            echo "WHEEL_BRANCH_BEGIN=$mode"
-            PROBE_MODE="$mode" timeout --signal=TERM --kill-after=4s 70s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-$mode.mcd" \
-              -exec "$PAD_SETUP" -dofile "$WORK/roulette-circle-diff.lua" -softgpu -dynarec -stdout -lua_stdout \
-              -logfile "$WORK/captures/pcsx-$mode.log" -run > "$stdout" 2>&1 &
-            pid=$!
-            python3 - "$pid" "$mode" "$stdout" "$WORK/captures" <<'PY'
+          cp "$WORK/roulette-board-followthrough.lua" "$WORK/captures/roulette-board-followthrough.lua"
+          cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-BOARD.mcd"
+          stdout="$WORK/captures/pcsx-BOARD.stdout"
+          timeout --signal=TERM --kill-after=4s 90s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-BOARD.mcd" \
+            -exec "$PAD_SETUP" -dofile "$WORK/roulette-board-followthrough.lua" -softgpu -dynarec -stdout -lua_stdout \
+            -logfile "$WORK/captures/pcsx-BOARD.log" -run > "$stdout" 2>&1 &
+          pid=$!
+          python3 - "$pid" "$stdout" "$WORK/captures" <<'PY'
           import sys,time,subprocess,hashlib
           from pathlib import Path
           from PIL import Image
-          pid=int(sys.argv[1]); mode=sys.argv[2]; stdout=Path(sys.argv[3]); out=Path(sys.argv[4]); done=set()
+          pid=int(sys.argv[1]); stdout=Path(sys.argv[2]); out=Path(sys.argv[3]); done=set()
           def alive():
               r=subprocess.run(["ps","-o","stat=","-p",str(pid)],capture_output=True,text=True)
               s=r.stdout.strip(); return bool(s) and not s.startswith("Z")
           def capture(label):
-              xwd=out/(mode+"-"+label+".xwd"); png=out/(mode+"-"+label+".png")
+              xwd=out/(label+".xwd"); png=out/("BOARD-"+label+".png")
               a=subprocess.run(["xwd","-root","-silent","-out",str(xwd)],capture_output=True,text=True)
               if a.returncode or not xwd.is_file() or not xwd.stat().st_size:
-                  print("WHEEL_X11_FAILED mode="+mode+" label="+label+" error="+a.stderr,flush=True); return False
+                  print("BOARD_X11_FAILED label="+label+" error="+a.stderr,flush=True); return False
               b=subprocess.run(["convert",str(xwd),str(png)],capture_output=True,text=True)
               try: xwd.unlink()
               except FileNotFoundError: pass
               if b.returncode or not png.is_file():
-                  print("WHEEL_X11_CONVERT_FAILED mode="+mode+" label="+label+" error="+b.stderr,flush=True); return False
+                  print("BOARD_X11_CONVERT_FAILED label="+label+" error="+b.stderr,flush=True); return False
               try:
                   with Image.open(png) as im:
                       colors=im.getcolors(maxcolors=1000000)
                       valid=im.size==(1280,800) and png.stat().st_size>1000 and not (colors is not None and len(colors)==1)
                       digest=hashlib.sha256(png.read_bytes()).hexdigest()
-                      print("WHEEL_X11_CAPTURE mode={} label={} size={} bytes={} colors={} sha256={} valid={}".format(mode,label,im.size,png.stat().st_size,len(colors) if colors is not None else "many",digest,valid),flush=True)
+                      print("BOARD_X11_CAPTURE label={} size={} bytes={} colors={} sha256={} valid={}".format(label,im.size,png.stat().st_size,len(colors) if colors is not None else "many",digest,valid),flush=True)
                       return bool(valid)
               except Exception as e:
-                  print("WHEEL_X11_VERIFY_ERROR mode="+mode+" label="+label+" error="+str(e),flush=True); return False
+                  print("BOARD_X11_VERIFY_ERROR label="+label+" error="+str(e),flush=True); return False
           while alive():
               try: content=stdout.read_text(errors="replace")
               except FileNotFoundError: content=""
-              for label in ("F20","F60","F100","F180"):
-                  token="WHEEL_CAPTURE_READY label="+label+" mode="+mode
+              for label in ("F20","F60","F100","F120"):
+                  token="BOARD_CAPTURE_READY label="+label
                   if label not in done and token in content:
                       ok=capture(label)
-                      (out/("go-"+label.lower()+"-"+mode.lower())).write_text("validated\n" if ok else "invalid\n",encoding="utf-8")
-                      if not ok: (out/("capture-failed-"+mode.lower()+"-"+label.lower()+".txt")).write_text("Invalid external X11 capture\n",encoding="utf-8")
+                      (out/("go-"+label.lower())).write_text("validated\n" if ok else "invalid\n",encoding="utf-8")
+                      if not ok: (out/("capture-failed-"+label.lower()+".txt")).write_text("Invalid external X11 capture\n",encoding="utf-8")
                       done.add(label)
               time.sleep(.01)
-          print("WHEEL_WATCHDOG_END mode="+mode+" captures="+",".join(sorted(done)),flush=True)
+          print("BOARD_WATCHDOG_END captures="+",".join(sorted(done)),flush=True)
           PY
-            set +e
-            wait "$pid"
-            rc=$?
-            set -e
-            echo "WHEEL_BRANCH_EXIT mode=$mode rc=$rc"
-            grep -E 'WHEEL_(LOAD_EVENT|LOAD_CALL_RETURNED|INPUT|CAPTURE_READY|PROGRESS|SAVE_CREATED|.*ERROR)' "$stdout" || true
-            if [ "$rc" -ne 0 ]; then failed=$((failed+1)); fi
-            for label in F20 F60 F100 F180; do
-              test -s "$WORK/captures/$mode-$label.png" || failed=$((failed+1))
-            done
-            localname="$(echo "$mode" | tr '[:upper:]' '[:lower:]')"
-            if [ ! -s "$WORK/captures/roulette-stop-result-$localname-f180.sstate" ]; then failed=$((failed+1)); fi
-            if [ "$mode" = "CIRCLE" ]; then
-              grep -q 'WHEEL_INPUT mode=CIRCLE action=CIRCLE phase=press.*status=PASS' "$stdout" || failed=$((failed+1))
-              grep -q 'WHEEL_INPUT mode=CIRCLE action=CIRCLE phase=release.*status=PASS' "$stdout" || failed=$((failed+1))
-            else
-              if grep -q 'WHEEL_INPUT' "$stdout"; then failed=$((failed+1)); fi
-            fi
-          done
-          python3 - "$WORK/captures" "$WORK/captures/roulette-circle-diff-report.txt" <<'PY'
+          set +e
+          wait "$pid"
+          rc=$?
+          set -e
+          echo "BOARD_PROCESS_EXIT_CODE=$rc"
+          grep -E 'BOARD_(LOAD_EVENT|LOAD_CALL_RETURNED|CAPTURE_READY|PROGRESS|SAVE_CREATED|.*ERROR)' "$stdout" || true
+          python3 - "$WORK/captures" "$rc" <<'PY'
           import hashlib,sys
           from pathlib import Path
           from PIL import Image,ImageChops,ImageStat
-          root=Path(sys.argv[1]); report_path=Path(sys.argv[2])
-          labels=["F20","F60","F100","F180"]
-          def load(name):
-              p=root/name
-              if not p.exists(): return None
-              with Image.open(p) as im: return im.convert("RGB").copy()
+          root=Path(sys.argv[1]); rc=int(sys.argv[2]); labels=["F20","F60","F100","F120"]
           report=[
-            "WHEEL_SOURCE_RUN=39609425942",
-            "WHEEL_SOURCE_SHA256=7c8c8bfa4a15132a6c9a046aa842fc01d2f294d6e04d53262c20287566432222",
-            "WHEEL_CONTROL=NONE",
-            "WHEEL_TEST=CIRCLE press frame 30, release frame 38; readback required PASS",
-            "WHEEL_SCREENSHOTS=external X11 only; internal screenshot API disabled",
+            "BOARD_SOURCE_RUN=39613929898",
+            "BOARD_SOURCE_BYTES=21163057",
+            "BOARD_SOURCE_SHA256=0570a687dd8ecc1449c8edaa436f21111e40433d59c6a21b0e64de6b71c07d5d",
+            "BOARD_INPUT=NONE",
+            "BOARD_SCREENSHOTS=external X11 only; internal screenshot API disabled",
+            "BOARD_PROCESS_EXIT_CODE="+str(rc),
           ]
           imgs={}
-          for mode in ("NONE","CIRCLE"):
-              for label in labels:
-                  name=mode+"-"+label+".png"; im=load(name)
-                  if im is None:
-                      report.append(name+"_MISSING=YES")
-                  else:
-                      imgs[(mode,label)]=im
-                      report.append(name+"_SHA256="+hashlib.sha256((root/name).read_bytes()).hexdigest())
-              for prev,nxt in zip(labels,labels[1:]):
-                  a=imgs.get((mode,prev)); b=imgs.get((mode,nxt))
-                  if a is None or b is None: continue
-                  d=ImageChops.difference(a,b); mean=sum(ImageStat.Stat(d).mean)/3
-                  exact=sum(1 for x,y in zip(a.getdata(),b.getdata()) if x==y)/(a.width*a.height)
-                  ac,bc=a.crop((100,60,670,740)),b.crop((100,60,670,740))
-                  wd=ImageChops.difference(ac,bc); wheelmean=sum(ImageStat.Stat(wd).mean)/3
-                  wheelexact=sum(1 for x,y in zip(ac.getdata(),bc.getdata()) if x==y)/(ac.width*ac.height)
-                  report.append("{}_TO_{}_FULL_MEAN_ABS_RGB_DIFF={:.6f}".format(mode+"-"+prev,mode+"-"+nxt,mean))
-                  report.append("{}_TO_{}_FULL_EXACT_PIXEL_FRACTION={:.6f}".format(mode+"-"+prev,mode+"-"+nxt,exact))
-                  report.append("{}_TO_{}_WHEEL_CROP_MEAN_ABS_RGB_DIFF={:.6f}".format(mode+"-"+prev,mode+"-"+nxt,wheelmean))
-                  report.append("{}_TO_{}_WHEEL_CROP_EXACT_PIXEL_FRACTION={:.6f}".format(mode+"-"+prev,mode+"-"+nxt,wheelexact))
-          for label in ("F100","F180"):
-              a=imgs.get(("NONE",label)); b=imgs.get(("CIRCLE",label))
-              if a is not None and b is not None:
-                  d=ImageChops.difference(a,b); mean=sum(ImageStat.Stat(d).mean)/3
-                  cropd=ImageChops.difference(a.crop((100,60,670,740)),b.crop((100,60,670,740)))
-                  cropmean=sum(ImageStat.Stat(cropd).mean)/3
-                  report.append("NONE_VS_CIRCLE_{}_FULL_MEAN_ABS_RGB_DIFF={:.6f}".format(label,mean))
-                  report.append("NONE_VS_CIRCLE_{}_WHEEL_CROP_MEAN_ABS_RGB_DIFF={:.6f}".format(label,cropmean))
-          for mode in ("NONE","CIRCLE"):
-              p=root/("roulette-stop-result-"+mode.lower()+"-f180.sstate")
+          for label in labels:
+              p=root/("BOARD-"+label+".png")
               if p.exists():
-                  report.append("SUCCESSOR_{}_BYTES={}".format(mode,p.stat().st_size))
-                  report.append("SUCCESSOR_{}_SHA256={}".format(mode,hashlib.sha256(p.read_bytes()).hexdigest()))
-          report_path.write_text("\n".join(report)+"\n",encoding="utf-8")
+                  with Image.open(p) as im: imgs[label]=im.convert("RGB").copy()
+                  report.append("BOARD_"+label+"_SHA256="+hashlib.sha256(p.read_bytes()).hexdigest())
+              else: report.append("BOARD_"+label+"_MISSING=YES")
+          for prev,nxt in zip(labels,labels[1:]):
+              if prev not in imgs or nxt not in imgs: continue
+              a,b=imgs[prev],imgs[nxt]; d=ImageChops.difference(a,b)
+              mean=sum(ImageStat.Stat(d).mean)/3
+              exact=sum(1 for x,y in zip(a.getdata(),b.getdata()) if x==y)/(a.width*a.height)
+              report.append("BOARD_{}_TO_{}_MEAN_ABS_RGB_DIFF={:.6f}".format(prev,nxt,mean))
+              report.append("BOARD_{}_TO_{}_EXACT_PIXEL_FRACTION={:.6f}".format(prev,nxt,exact))
+          successor=root/"board-after-roulette-noinput-f120.sstate"
+          if successor.exists():
+              report.append("BOARD_SUCCESSOR_BYTES="+str(successor.stat().st_size))
+              report.append("BOARD_SUCCESSOR_SHA256="+hashlib.sha256(successor.read_bytes()).hexdigest())
+          (root/"post-roulette-board-report.txt").write_text("\n".join(report)+"\n",encoding="utf-8")
           print("\n".join(report))
           PY
-          if [ "$failed" -ne 0 ]; then echo "::error::$failed branch/capture/checkpoint checks failed; inspect private artifact"; exit 44; fi
+          if [ "$rc" -ne 0 ]; then echo "::error::Emulator exited $rc before no-input frame-120 checkpoint; inspect private artifact"; exit 44; fi
+          grep -q 'BOARD_SAVE_CREATED=PASS frame=120' "$stdout"
+          test -s "$WORK/captures/board-after-roulette-noinput-f120.sstate"
+          for label in F20 F60 F100 F120; do test -s "$WORK/captures/BOARD-$label.png"; done
+          test -s "$WORK/captures/post-roulette-board-report.txt"
 
       - name: Upload private X11 observations, logs and successor checkpoint
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: naruto-storymode-roulette-circle-stop-diff-private
+          name: naruto-storymode-roulette-post-result-observe-private
           path: |
-            /tmp/naruto-storymode-roulette-circle-stop-diff/captures/*.png
-            /tmp/naruto-storymode-roulette-circle-stop-diff/captures/*.txt
-            /tmp/naruto-storymode-roulette-circle-stop-diff/captures/*.stdout
-            /tmp/naruto-storymode-roulette-circle-stop-diff/captures/*.log
-            /tmp/naruto-storymode-roulette-circle-stop-diff/captures/*.sstate
+            /tmp/naruto-storymode-roulette-post-result-observe/captures/*.png
+            /tmp/naruto-storymode-roulette-post-result-observe/captures/*.txt
+            /tmp/naruto-storymode-roulette-post-result-observe/captures/*.stdout
+            /tmp/naruto-storymode-roulette-post-result-observe/captures/*.log
+            /tmp/naruto-storymode-roulette-post-result-observe/captures/*.sstate
           retention-days: 14
 
       - name: Remove private game assets and checkpoint copies
