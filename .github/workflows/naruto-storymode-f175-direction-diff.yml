@@ -1,4 +1,4 @@
-name: Naruto Story Mode f175 controlled RIGHT versus no-input probe
+name: Naruto Story Mode f175 controlled input versus no-input probe
 
 on:
   workflow_dispatch:
@@ -71,6 +71,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          ACTION="$(sed -n 's/^ACTION=//p' experiments/.run-storymode-konoha-f175-direction-diff | tail -n 1)"
+          case "$ACTION" in UP|DOWN|LEFT|RIGHT) ;; *) echo "::error::ACTION must be UP, DOWN, LEFT or RIGHT"; exit 2 ;; esac
+          echo "F175_ACTION=$ACTION" >> "$GITHUB_ENV"
           APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
           SOURCE="$WORK/state-artifact/konoha-successor-checkpoint-f175.sstate"
           CARD="$WORK/card-artifact/naruto-storymode.mcd"
@@ -87,8 +90,8 @@ jobs:
             echo "SOURCE_BYTES=21163375"
             echo "SOURCE_SHA256=f8bd00074877ef583e35b8eaf2fc65b3877acda9bebd5f2d8e9a13abee094615"
             echo "SOURCE_COPY_READ_ONLY=YES"
-            echo "BRANCHES=NONE,RIGHT"
-            echo "RIGHT_PRESS_FRAME=30; RELEASE_FRAME=38"
+            echo "BRANCHES=NONE,$ACTION"
+            echo "ACTION_PRESS_FRAME=30; RELEASE_FRAME=38"
             echo "SCREENSHOTS=external X11 only; internal emulator screenshot API forbidden"
           } | tee "$WORK/captures/input-validation.txt"
 
@@ -161,6 +164,7 @@ jobs:
           )
           cat > "$WORK/f175-probe.lua" <<'LUA'
           local mode=os.getenv("PROBE_MODE") or "NONE"
+          local action=os.getenv("PROBE_ACTION") or "DOWN"
           local frame=0; local started=false; local returned=false; local loaded=false; local pressed=false; local released=false
           local pad=PCSX.SIO0.slots[1].pads[1]
           local buttons=PCSX.CONSTS.PAD.BUTTON
@@ -180,11 +184,11 @@ jobs:
           end
           local function input(phase)
               local ok,v=pcall(function()
-                  if phase=="press" then pad.setOverride(buttons.RIGHT) else pad.clearOverride(buttons.RIGHT) end
-                  return pad.getButton(buttons.RIGHT)
+                  if phase=="press" then pad.setOverride(buttons[action]) else pad.clearOverride(buttons[action]) end
+                  return pad.getButton(buttons[action])
               end)
               local pass=ok and v==(phase=="press")
-              log("F175_INPUT mode="..mode.." action=RIGHT phase="..phase.." readback="..tostring(v).." status="..(pass and "PASS" or "FAIL"))
+              log("F175_INPUT mode="..mode.." action="..action.." phase="..phase.." readback="..tostring(v).." status="..(pass and "PASS" or "FAIL"))
               if not pass then PCSX.quit(83) end
               if phase=="press" then pressed=true else released=true end
           end
@@ -205,8 +209,8 @@ jobs:
               if not loaded or not returned then return end
               frame=frame+1
               if frame==20 then gateCapture("PRE")
-              elseif frame==30 and mode=="RIGHT" and not pressed then input("press")
-              elseif frame==38 and mode=="RIGHT" and pressed and not released then input("release")
+              elseif frame==30 and mode~="NONE" and not pressed then input("press")
+              elseif frame==38 and mode~="NONE" and pressed and not released then input("release")
               elseif frame==90 then gateCapture("POST")
               elseif frame==120 then
                   log("F175_FINAL_FRAME=120 mode="..mode.." input_pressed="..tostring(pressed).." input_released="..tostring(released))
@@ -225,15 +229,15 @@ jobs:
                   return
               end
           end)
-          log("F175_SCRIPT_READY mode="..mode.." screenshots=EXTERNAL_X11_ONLY")
+          log("F175_SCRIPT_READY mode="..mode.." action="..action.." screenshots=EXTERNAL_X11_ONLY")
           LUA
           cp "$WORK/f175-probe.lua" "$WORK/captures/f175-probe.lua"
           failed=0
-          for mode in NONE RIGHT; do
+          for mode in NONE "$F175_ACTION"; do
             cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-$mode.mcd"
             stdout="$WORK/captures/pcsx-$mode.stdout"
             echo "F175_BRANCH_BEGIN=$mode"
-            PROBE_MODE="$mode" timeout --signal=TERM --kill-after=4s 60s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+            PROBE_MODE="$mode" PROBE_ACTION="$F175_ACTION" timeout --signal=TERM --kill-after=4s 60s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-$mode.mcd" \
               -exec "$PAD_SETUP" -dofile "$WORK/f175-probe.lua" -softgpu -dynarec -stdout -lua_stdout \
               -logfile "$WORK/captures/pcsx-$mode.log" -run > "$stdout" 2>&1 &
@@ -286,23 +290,23 @@ jobs:
             done
             localname="$(echo "$mode" | tr '[:upper:]' '[:lower:]')"
             if [ ! -s "$WORK/captures/f175-probe-result-$localname-f120.sstate" ]; then failed=$((failed+1)); fi
-            if [ "$mode" = RIGHT ]; then
-              grep -q 'F175_INPUT mode=RIGHT action=RIGHT phase=press.*status=PASS' "$stdout" || failed=$((failed+1))
-              grep -q 'F175_INPUT mode=RIGHT action=RIGHT phase=release.*status=PASS' "$stdout" || failed=$((failed+1))
+            if [ "$mode" = "$F175_ACTION" ]; then
+              grep -q "F175_INPUT mode=$F175_ACTION action=$F175_ACTION phase=press.*status=PASS" "$stdout" || failed=$((failed+1))
+              grep -q "F175_INPUT mode=$F175_ACTION action=$F175_ACTION phase=release.*status=PASS" "$stdout" || failed=$((failed+1))
             else
               if grep -q 'F175_INPUT' "$stdout"; then failed=$((failed+1)); fi
             fi
           done
-          python3 - "$WORK/captures" <<'PY'
+          python3 - "$WORK/captures" "$F175_ACTION" <<'PY'
           import hashlib,sys
           from pathlib import Path
           from PIL import Image,ImageChops,ImageStat
-          root=Path(sys.argv[1])
+          root=Path(sys.argv[1]); action=sys.argv[2]
           def load(name):
               p=root/name
               if not p.exists(): return None
               with Image.open(p) as im: return im.convert("RGB").copy()
-          none=load("NONE-POST.png"); right=load("RIGHT-POST.png")
+          none=load("NONE-POST.png"); right=load(action+"-POST.png")
           if none is None or right is None: raise SystemExit("matched-frame X11 post captures missing")
           if none.size!=right.size: raise SystemExit("matched-frame dimensions differ")
           d=ImageChops.difference(none,right)
@@ -310,13 +314,13 @@ jobs:
           exact=sum(1 for a,b in zip(none.getdata(),right.getdata()) if a==b)/(none.width*none.height)
           report=[
             "F175_SOURCE_SHA256=f8bd00074877ef583e35b8eaf2fc65b3877acda9bebd5f2d8e9a13abee094615",
-            "F175_ACTION=RIGHT press f30; release f38",
+            f"F175_ACTION={action} press f30; release f38",
             "F175_CONTROL=NONE, same restored checkpoint and same relative frames",
             "F175_SCREENSHOTS=external X11 only; internal screenshot API not called",
             f"POST_MEAN_ABS_RGB_DIFF={mean:.6f}",
             f"POST_EXACT_PIXEL_FRACTION={exact:.6f}",
             f"NONE_POST_SHA256={hashlib.sha256((root/'NONE-POST.png').read_bytes()).hexdigest()}",
-            f"RIGHT_POST_SHA256={hashlib.sha256((root/'RIGHT-POST.png').read_bytes()).hexdigest()}",
+            f"INPUT_POST_SHA256={hashlib.sha256((root/(action+'-POST.png')).read_bytes()).hexdigest()}",
             "INTERPRETATION=visual divergence must be reviewed; image difference alone does not prove the intended game action succeeded."
           ]
           (root/"f175-direction-diff-report.txt").write_text("\n".join(report)+"\n",encoding="utf-8")
