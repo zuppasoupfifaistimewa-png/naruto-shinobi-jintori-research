@@ -1,3 +1,11 @@
+## LATEST HANDOFF — GDB launch stopped at f172 without natural SIGSEGV (21 October 2026, 17:59 WIB)
+
+Run [#39588281198](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39588281198) tested a live GDB launch with SIGSEGV configured to stop and not be passed through. No controller input was sent. The callback reached f172, then stalled for 2.549 seconds; the process snapshot was `Sl`, about 141% CPU, `wchan=futex_do_wait`. The 60-second outer timeout returned 124. No natural SIGSEGV, usable stack trace, or runner-local core was obtained. The core pattern redirects dumps to `systemd-coredump`.
+
+The artifact’s 28 internal screenshots are valid only through f130 (`DIAG_SCREENSHOT_PROBLEMS=none`). Two valid 1280×800 original X11 captures were not pixel-identical; they still show the Naruto dialogue, Circle prompt and 1500–1500 HUD, not proven active gameplay. Artifact #12340928025, 4,925,017 bytes, ZIP SHA-256 `0e56ef7b7fc1288ff232b75b2ca394b9f0a799688f8351b0bf4193d542c7951f`.
+
+Both verified checkpoints remain unchanged: parent hash `b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee`; pre-START dialog hash `c47d2069ae9b1e589cce35df2dbaaa867b3365acfd501d2666a72ecd5fcc494c`. GDB logged a fork-detach message for child PID 939, which should be considered before another debugger run. Do not repeat the same setup unchanged, do not overwrite checkpoints, and do not send Circle or any controller input during crash capture. If gameplay is deliberately resumed later and a dialogue appears, use START to skip it; use only actual emulator/X11 screenshots as visual evidence.
+
 ## LATEST FORENSIC UPDATE — extended natural-crash observation through outer timeout, run #39586201539 (21 October 2026, 17:42 WIB)
 
 - Run [#39586201539](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39586201539) completed with workflow conclusion `success` at 10:41:59 UTC. This continued the lightweight `catchsegv` test without GDB attached to the live emulator. No controller input was sent; the default renderer selection was retained.
