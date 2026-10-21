@@ -1,0 +1,300 @@
+name: Naruto Story Mode dialog START skip probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "experiments/.run-storymode-dialog-start"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  probe:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-DIALOG-START]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    container:
+      image: ghcr.io/grumpycoders/pcsx-redux-build:latest
+      options: --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
+    env:
+      WORK: /tmp/naruto-storymode-dialog-start
+      RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+
+    steps:
+      - name: Checkout research workflow
+        uses: actions/checkout@v4
+
+      - name: Install screenshot tools and prepare private workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y jq python3-pil xvfb x11-utils curl unzip
+          mkdir -p "$WORK"/{build-artifact,state-artifact,card-artifact,cards,resume,captures/raw,home,.config,.data,runtime}
+          chmod 700 "$WORK/runtime"
+
+      - name: Download already-built patched emulator
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-control-probe-private
+          run-id: 39513285641
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: /tmp/naruto-storymode-dialog-start/build-artifact
+
+      - name: Download verified stable post-confirm checkpoint
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-post178-advance-private
+          run-id: 39555023915
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: /tmp/naruto-storymode-dialog-start/state-artifact
+
+      - name: Download original private Memory Card
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: 39262213468
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: /tmp/naruto-storymode-dialog-start/card-artifact
+
+      - name: Validate inputs and stage isolated copies
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
+          CHECKPOINT="$WORK/state-artifact/stable-postconfirm-checkpoint.sstate"
+          MANIFEST="$WORK/state-artifact/stable-checkpoint-manifest.txt"
+          CARD="$WORK/card-artifact/naruto-storymode.mcd"
+          chmod +x "$APP"
+          test "$(sha256sum "$APP" | cut -d ' ' -f1)" = 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99
+          test "$(stat -c %s "$CHECKPOINT")" = 21163483
+          test "$(sha256sum "$CHECKPOINT" | cut -d ' ' -f1)" = b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee
+          grep -q '^POSTCONF_STABLE_CHECKPOINT_SHA256=b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee$' "$MANIFEST"
+          test "$(stat -c %s "$CARD")" = 131072
+          test "$(sha256sum "$CARD" | cut -d ' ' -f1)" = ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
+          cp "$CHECKPOINT" "$WORK/resume/dialog-entry-checkpoint.sstate"
+          cp "$CARD" "$WORK/cards/naruto-storymode-template.mcd"
+          echo "DIALOG_START_EMULATOR_VALID=PASS"
+          echo "DIALOG_START_SOURCE_CHECKPOINT_VALID=PASS bytes=21163483 sha256=b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee"
+          echo "DIALOG_START_MEMORY_CARD_VALID=PASS"
+          echo "DIALOG_START_SOURCE_CHECKPOINT_IS_READ_ONLY=YES"
+
+      - name: Download game and BIOS from the private runtime release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; out="$2"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            test -n "$id" && test "$id" != null
+            curl --fail --silent --show-error --location --retry 2 --max-time 300 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$API/releases/assets/$id" -o "$out"
+          }
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset scph7502.zip scph7502.zip
+          test "$(stat -c %s game.bin)" = 325989552
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          test "$(stat -c %s scph7502.zip)" = 283463
+          echo "b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a  scph7502.zip" | sha256sum --check -
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import stat, zipfile
+          with zipfile.ZipFile("scph7502.zip") as z:
+              members=[]; total=0
+              for i in z.infolist():
+                  p=PurePosixPath(i.filename); mode=(i.external_attr>>16)&0xffff
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)): raise SystemExit("unsafe BIOS archive")
+                  total += i.file_size
+                  if i.file_size > 2*1024*1024 or total > 4*1024*1024: raise SystemExit("BIOS expansion limit")
+                  if not i.is_dir() and i.file_size == 524288: members.append(i)
+              if len(members)!=1: raise SystemExit("expected one 512 KiB BIOS")
+              bios=z.read(members[0])
+              import hashlib
+              h=hashlib.sha256(bios).hexdigest()
+              if h!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1": raise SystemExit("BIOS hash mismatch")
+              Path("scph7502.bin").write_bytes(bios)
+              print("DIALOG_START_BIOS_SHA256="+h)
+          lines=Path("game.cue").read_bytes().decode("utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          ix=[i for i,x in enumerate(lines) if x.lstrip().upper().startswith("FILE ")]
+          if len(ix)!=1 or not any(x.lstrip().upper().startswith("TRACK ") for x in lines): raise SystemExit("invalid CUE")
+          lines[ix[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+
+      - name: Load checkpoint, reach Naruto dialogue, press START, and capture original gameplay frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          "$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage" --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/captures/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          trap 'kill "$xvfb_pid" 2>/dev/null || true; wait "$xvfb_pid" 2>/dev/null || true' EXIT
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/.config" XDG_DATA_HOME="$WORK/.data" XDG_RUNTIME_DIR="$WORK/runtime" LIBGL_ALWAYS_SOFTWARE=1
+          for i in $(seq 1 60); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+
+          PAD_SETUP=$(cat <<'LUA'
+          PCSX.settings.pads[1].DeviceType='Analog'
+          PCSX.settings.pads[1].Connected=true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("DIALOG_START_PAD_SETUP=PASS")
+          LUA
+          )
+
+          cat > "$WORK/dialog-start-probe.lua" <<'LUA'
+          local frame=0
+          local started=false
+          local returned=false
+          local loaded=false
+          local pad=PCSX.SIO0.slots[1].pads[1]
+          local buttons=PCSX.CONSTS.PAD.BUTTON
+          local captures={[1]=true,[10]=true,[30]=true,[60]=true,[89]=true,[90]=true,[98]=true,[120]=true,[150]=true,[174]=true,[175]=true,[176]=true,[177]=true,[178]=true,[179]=true,[180]=true,[181]=true,[182]=true,[185]=true,[187]=true,[188]=true,[189]=true,[190]=true,[195]=true,[200]=true,[210]=true,[225]=true,[240]=true,[270]=true,[300]=true}
+          local function log(s) print(s); io.stdout:flush() end
+          local function shot(f)
+              local s=PCSX.GPU.takeScreenShot()
+              assert(s and s.width>=100 and s.height>=100 and s.data,"invalid screenshot")
+              local bpp=(s.bpp==0) and 16 or 24
+              local label="DIALOGSTART-f"..string.format("%03d",f)
+              local rawpath="captures/raw/"..label..".raw"
+              local raw=assert(Support.File.open(rawpath,"TRUNCATE")); raw:writeMoveSlice(s.data); raw:close()
+              local m=assert(io.open("captures/"..label..".json","wb"))
+              m:write(string.format('{"label":"%s","raw":"%s","width":%d,"height":%d,"bpp":%d,"expected_bytes":%d}\n',label,rawpath,s.width,s.height,bpp,s.width*s.height*bpp/8)); m:close()
+              log(string.format("DIALOG_START_SCREENSHOT label=%s width=%d height=%d",label,s.width,s.height))
+          end
+          local function input(action,phase)
+              local b=buttons.START
+              if action=="CIRCLE" then b=buttons.CIRCLE end
+              local ok,readback=pcall(function()
+                  if phase=="press" then pad.setOverride(b) else pad.clearOverride(b) end
+                  return pad.getButton(b)
+              end)
+              log(string.format("DIALOG_START_INPUT action=%s phase=%s readback=%s status=%s",action,phase,tostring(readback),(ok and readback==(phase=="press")) and "PASS" or "FAIL"))
+          end
+          PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
+              loaded=true; frame=0; log("DIALOG_START_LOAD_EVENT=PASS")
+          end)
+          PCSX.Events.createEventListener("GPU::Vsync",function()
+              if not started then
+                  started=true
+                  log("DIALOG_START_LOAD_BEGIN")
+                  PCSX.pauseEmulator()
+                  PCSX.nextTick(function()
+                      local f=assert(Support.File.open("resume/dialog-entry-checkpoint.sstate"))
+                      local ok,err=pcall(function() PCSX.loadSaveState(f) end); f:close()
+                      if not ok then log("DIALOG_START_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
+                      returned=true; log("DIALOG_START_LOAD_RETURNED=1"); PCSX.resumeEmulator()
+                  end)
+                  return
+              end
+              if not loaded or not returned then return end
+              frame=frame+1
+              if frame==90 then input("CIRCLE","press") end
+              if frame==98 then input("CIRCLE","release") end
+              if captures[frame] then shot(frame) end
+              if frame==179 then
+                  log("DIALOG_START_NARUTO_DIALOG_SEEN=frame179; original screenshot captured before START")
+                  input("START","press")
+              end
+              if frame==187 then input("START","release") end
+              if frame==300 then
+                  log("DIALOG_START_BRANCH_DONE frame=300 load_event="..tostring(loaded).." load_returned="..tostring(returned))
+                  PCSX.pauseEmulator()
+                  PCSX.nextTick(function() PCSX.quit(0) end)
+                  return
+              end
+          end)
+          log("DIALOG_START_PROBE_READY")
+          LUA
+          cp "$WORK/dialog-start-probe.lua" "$WORK/captures/dialog-start-probe.lua"
+          cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-DIALOGSTART.mcd"
+          echo "DIALOG_START_PROCESS_BEGIN"
+          set +e
+          timeout --signal=TERM --kill-after=4s 60s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIALOGSTART.mcd" \
+            -exec "$PAD_SETUP" -dofile "$WORK/dialog-start-probe.lua" -softgpu -dynarec -stdout -lua_stdout \
+            -logfile "$WORK/captures/pcsx-DIALOGSTART.log" -run > "$WORK/captures/pcsx-DIALOGSTART.stdout" 2>&1
+          rc=$?
+          set -e
+          echo "DIALOG_START_PROCESS_EXIT_CODE=$rc"
+          grep -E 'DIALOG_START_(LOAD_EVENT|LOAD_RETURNED|INPUT|SCREENSHOT|DIALOG_CHECKPOINT|NARUTO_DIALOG|BRANCH_DONE|.*ERROR)' "$WORK/captures/pcsx-DIALOGSTART.stdout" || true
+
+          python3 - <<'PY'
+          import json, hashlib
+          from pathlib import Path
+          from PIL import Image
+          root=Path("captures")
+          problems=[]
+          for mp in sorted(root.glob("DIALOGSTART-f*.json")):
+              try:
+                  m=json.loads(mp.read_text())
+                  raw=(root/m["raw"].split("captures/",1)[-1]).read_bytes() if m["raw"].startswith("captures/") else Path(m["raw"]).read_bytes()
+                  if len(raw)!=int(m["expected_bytes"]):
+                      problems.append(mp.name+":wrong_bytes="+str(len(raw))); continue
+                  w,h,bpp=int(m["width"]),int(m["height"]),int(m["bpp"])
+                  if bpp==16:
+                      rgb=bytearray()
+                      for p in range(0,len(raw),2):
+                          v=raw[p] | (raw[p+1]<<8)
+                          rgb.extend(((v&31)*255//31,((v>>5)&31)*255//31,((v>>10)&31)*255//31))
+                      im=Image.frombytes("RGB",(w,h),bytes(rgb))
+                  elif bpp==24:
+                      im=Image.frombytes("RGB",(w,h),raw)
+                  else:
+                      problems.append(mp.name+":unsupported_bpp="+str(bpp)); continue
+                  im.save(root/(m["label"]+".png"),optimize=True)
+              except Exception as e:
+                  problems.append(mp.name+":"+str(e))
+          state=root/"dialog-before-start-checkpoint.sstate"
+          lines=[
+            "DIALOG_START_EXPERIMENT=load verified stable post-confirm checkpoint; Circle tap f90-f98; capture original dialog screen at f179 and immediately press START on that same emulator callback; observe through f300",
+            "SOURCE_CHECKPOINT_SHA256=b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee",
+            "START_PRESS_WINDOW=f179-f186; release=f187",
+            "SCREENSHOT_CONVERSION_PROBLEMS="+("; ".join(problems) if problems else "none"),
+            "GAMEPLAY_PROGRESS_NOT_ASSERTED=YES; classify from captured original emulator screenshots only"
+          ]
+          (root/"dialog-start-report.txt").write_text("\n".join(lines)+"\n")
+          print("\n".join(lines))
+          if problems: raise SystemExit("screenshot conversion problem")
+          PY
+          if [ "$rc" -ne 0 ]; then exit 1; fi
+          grep -q 'DIALOG_START_NARUTO_DIALOG_SEEN=frame179' "$WORK/captures/pcsx-DIALOGSTART.stdout"
+          grep -q 'DIALOG_START_INPUT action=START phase=press readback=true status=PASS' "$WORK/captures/pcsx-DIALOGSTART.stdout"
+          grep -q 'DIALOG_START_BRANCH_DONE frame=300' "$WORK/captures/pcsx-DIALOGSTART.stdout"
+          test -s "$WORK/captures/DIALOGSTART-f179.png"
+          test -s "$WORK/captures/DIALOGSTART-f180.png"
+          test -s "$WORK/captures/DIALOGSTART-f200.png"
+          test -s "$WORK/captures/DIALOGSTART-f300.png"
+
+      - name: Upload private original screenshots, logs, and dialog checkpoint
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-storymode-dialog-start-private
+          path: |
+            /tmp/naruto-storymode-dialog-start/captures/*.png
+            /tmp/naruto-storymode-dialog-start/captures/*.txt
+            /tmp/naruto-storymode-dialog-start/captures/*.stdout
+            /tmp/naruto-storymode-dialog-start/captures/*.log
+            /tmp/naruto-storymode-dialog-start/captures/*.json
+            /tmp/naruto-storymode-dialog-start/captures/raw/*.raw
+            /tmp/naruto-storymode-dialog-start/captures/*.sstate
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Remove checkpoint, Memory Card, ROM, and BIOS from ephemeral runner
+        if: always()
+        shell: bash
+        run: rm -rf "$WORK"
