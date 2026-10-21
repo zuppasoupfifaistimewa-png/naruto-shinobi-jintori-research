@@ -1,3 +1,13 @@
+## LATEST HANDOFF — DOWN is effective on menu navigation; next test CIRCLE confirmation
+
+Run [#39607704007](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39607704007) succeeded. The original f175 checkpoint was validated and used as a read-only source copy for independent NONE and DOWN processes. DOWN press f30 / release f38 passed readback; external X11 at f90 showed the highlight move from `ルーレット (Roulette)` to `忍術 (Ninjutsu/teknik ninja)`. Pixel comparison: mean RGB diff 1.049238; exact pixel fraction 0.985733, with difference concentrated in the menu selection region. This verifies DOWN navigation in this menu context. RIGHT readback passed in #39606938717 but its screenshot was pixel-identical to NONE and should not be treated as effective menu navigation.
+
+Private artifact #12348747349 ZIP SHA-256 `340ff7064f4b4902122b9ecaeb926a4693716c41c21dc765461d989d34f15730`. The f175 source hash remains `f8bd00074877ef583e35b8eaf2fc65b3877acda9bebd5f2d8e9a13abee094615`; do not replace it with the experimental f120 child states.
+
+Next: use `ACTION=CIRCLE` in `experiments/.run-storymode-konoha-f175-direction-diff` to test one Circle confirm press from the original f175 state (Roulette initially highlighted) against NONE. This is contextual menu confirmation, **not dialogue skipping**. If dialogue appears during Story Mode, START is the required skip input. Inspect external X11 screenshots/logs and verify checkpoint hashes before choosing further actions. Clean the one-shot marker once the run is complete; ensure no queued/in-progress run remains.
+
+---
+
 ## CHAT BARU — otomasi gameplay sudah diuji satu input; cek hasil DOWN berikutnya
 
 Run [#39606938717](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39606938717) menyelesaikan uji RIGHT vs NONE dari checkpoint f175. Checkpoint sumber valid/tidak ditimpa, proses terpisah berhasil restore ke papan, sampai frame relatif 120, dan membuat hasil savestate privat. Tekan/lepas RIGHT di frame 30/38 terbaca PASS, tetapi gambar external X11 pada f90 **identik piksel** dengan kontrol NONE. Tampilan game menunjukkan menu vertikal, Roulette masih tersorot; RIGHT belum terbukti memajukan menu.
