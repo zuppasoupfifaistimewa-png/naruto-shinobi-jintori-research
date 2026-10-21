@@ -52,7 +52,7 @@ jobs:
           run-id: 39563209277
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-dialog-start/state-artifact
+          path: /tmp/naruto-storymode-konoha-resume/state-artifact
 
       - name: Download original private Memory Card
         uses: actions/download-artifact@v4
@@ -61,7 +61,7 @@ jobs:
           run-id: 39262213468
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-dialog-start/card-artifact
+          path: /tmp/naruto-storymode-konoha-resume/card-artifact
 
       - name: Validate inputs and stage isolated copies
         shell: bash
@@ -463,13 +463,13 @@ jobs:
         with:
           name: naruto-storymode-konoha-resume-private
           path: |
-            /tmp/naruto-storymode-dialog-start/captures/*.png
-            /tmp/naruto-storymode-dialog-start/captures/*.txt
-            /tmp/naruto-storymode-dialog-start/captures/*.stdout
-            /tmp/naruto-storymode-dialog-start/captures/*.log
-            /tmp/naruto-storymode-dialog-start/captures/*.json
-            /tmp/naruto-storymode-dialog-start/captures/raw/*.raw
-            /tmp/naruto-storymode-dialog-start/captures/*.sstate
+            /tmp/naruto-storymode-konoha-resume/captures/*.png
+            /tmp/naruto-storymode-konoha-resume/captures/*.txt
+            /tmp/naruto-storymode-konoha-resume/captures/*.stdout
+            /tmp/naruto-storymode-konoha-resume/captures/*.log
+            /tmp/naruto-storymode-konoha-resume/captures/*.json
+            /tmp/naruto-storymode-konoha-resume/captures/raw/*.raw
+            /tmp/naruto-storymode-konoha-resume/captures/*.sstate
           if-no-files-found: warn
           retention-days: 14
 
