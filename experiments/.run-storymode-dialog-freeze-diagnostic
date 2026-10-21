@@ -1,0 +1,1 @@
+One-shot no-input renderer differential: request Mesa GALLIUM_DRIVER=softpipe to compare with the prior default llvmpipe stack at the same verified pre-START checkpoint. Preserve checkpoints; no controller input; internal screenshots stop after frame 130; capture original X11 and GDB traces.
