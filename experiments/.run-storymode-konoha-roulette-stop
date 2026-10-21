@@ -1,1 +1,0 @@
-One-shot trigger: restore the private post-Roulette f120 branch checkpoint, let the wheel spin through relative f119 with no input, send one Circle press at f120 and release at f121, capture external X11 while paused at f100/f150, then save an independent f160 branch checkpoint. No internal emulator screenshots, no other controller inputs, immutable source state.
