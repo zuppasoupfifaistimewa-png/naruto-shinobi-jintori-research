@@ -1,0 +1,329 @@
+name: Naruto Story Mode post-f178 continuation probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "experiments/.run-storymode-post178-advance"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  probe:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-POST178-ADVANCE]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    container:
+      image: ghcr.io/grumpycoders/pcsx-redux-build:latest
+      options: --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
+    env:
+      WORK: /tmp/naruto-storymode-post178
+      RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+
+    steps:
+      - name: Checkout research workflow
+        uses: actions/checkout@v4
+
+      - name: Install screenshot tools and prepare private workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y jq python3-pil xvfb x11-utils curl unzip
+          mkdir -p "$WORK"/{build-artifact,state-artifact,card-artifact,cards,resume,captures/raw,home,.config,.data,runtime,app}
+
+      - name: Download already-built patched emulator from control probe
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-control-probe-private
+          run-id: 39513285641
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: /tmp/naruto-storymode-post178/build-artifact
+
+      - name: Download verified parent checkpoint
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-spu-sentinel-fix-probe-private
+          run-id: 39426068247
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: /tmp/naruto-storymode-post178/state-artifact
+
+      - name: Download private derived checkpoint from the previous run
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-circle-followup-private
+          run-id: 39530526794
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: /tmp/naruto-storymode-post178/derived-artifact
+
+      - name: Download original private Memory Card
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: 39262213468
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: /tmp/naruto-storymode-post178/card-artifact
+
+      - name: Validate derived checkpoint, immutable parent, binary and card
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
+          PARENT="$WORK/state-artifact/captures/storymode-checkpoint-next.raw.sstate"
+          PARENT_MANIFEST="$WORK/state-artifact/captures/probe-manifest.txt"
+          DERIVED="$WORK/derived-artifact/confirmed-checkpoint.raw.sstate"
+          CARD="$WORK/card-artifact/naruto-storymode.mcd"
+          chmod +x "$APP"
+          test "$(sha256sum "$APP" | cut -d ' ' -f1)" = 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99
+          test "$(stat -c %s "$PARENT")" = 21162405
+          test "$(sha256sum "$PARENT" | cut -d ' ' -f1)" = b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a
+          grep -q '^PROBE_NEXT_CHECKPOINT_VALID=PASS$' "$PARENT_MANIFEST"
+          grep -q '^PROBE_CONTROLLER_INPUT=none$' "$PARENT_MANIFEST"
+          test "$(stat -c %s "$DERIVED")" = 21162838
+          test "$(sha256sum "$DERIVED" | cut -d ' ' -f1)" = a87529407736b1b7648785db8644d3c10f0b8d5d12f1557c63d9a3155b22fa83
+          grep -q '^CIRCLE_FOLLOWUP_CONFIRMED_STATE_BYTES=21162838$' "$WORK/derived-artifact/confirmation-checkpoint-manifest.txt"
+          grep -q '^CIRCLE_FOLLOWUP_CONFIRMED_STATE_SHA256=a87529407736b1b7648785db8644d3c10f0b8d5d12f1557c63d9a3155b22fa83$' "$WORK/derived-artifact/confirmation-checkpoint-manifest.txt"
+          test "$(stat -c %s "$CARD")" = 131072
+          test "$(sha256sum "$CARD" | cut -d ' ' -f1)" = ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
+          cp "$PARENT" "$WORK/resume/parent-checkpoint.sstate"
+          cp "$DERIVED" "$WORK/resume/derived-checkpoint.sstate"
+          sha256sum "$WORK/resume/parent-checkpoint.sstate" "$WORK/resume/derived-checkpoint.sstate" | tee "$WORK/captures/checkpoint-validation.txt"
+          cp "$CARD" "$WORK/cards/naruto-storymode-template.mcd"
+          echo "POST178_BINARY_VALID=PASS"
+          echo "POST178_PARENT_CHECKPOINT_VALID=PASS bytes=21162405 sha256=b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a"
+          echo "POST178_DERIVED_CHECKPOINT_VALID=PASS bytes=21162838 sha256=a87529407736b1b7648785db8644d3c10f0b8d5d12f1557c63d9a3155b22fa83"
+          echo "POST178_MEMORY_CARD_VALID=PASS"
+          echo "POST178_PARENT_AND_DERIVED_FILES_ARE_SEPARATE=PASS"
+
+      - name: Download game and BIOS from the private runtime release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; out="$2"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            test -n "$id" && test "$id" != null
+            curl --fail --silent --show-error --location --retry 2 --max-time 300 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$API/releases/assets/$id" -o "$out"
+          }
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset scph7502.zip scph7502.zip
+          test "$(stat -c %s game.bin)" = 325989552
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          test "$(stat -c %s scph7502.zip)" = 283463
+          echo "b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a  scph7502.zip" | sha256sum --check -
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import hashlib, stat, zipfile
+          with zipfile.ZipFile("scph7502.zip") as z:
+              members=[]; total=0
+              for i in z.infolist():
+                  p=PurePosixPath(i.filename); mode=(i.external_attr>>16)&0xffff
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)): raise SystemExit("unsafe BIOS archive")
+                  total += i.file_size
+                  if i.file_size > 2*1024*1024 or total > 4*1024*1024: raise SystemExit("BIOS expansion limit")
+                  if not i.is_dir() and i.file_size == 524288: members.append(i)
+              if len(members)!=1: raise SystemExit("expected one 512 KiB BIOS")
+              bios=z.read(members[0]); h=hashlib.sha256(bios).hexdigest()
+              if h!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1": raise SystemExit("BIOS hash mismatch")
+              Path("scph7502.bin").write_bytes(bios)
+              print("POST178_BIOS_SHA256="+h)
+          lines=Path("game.cue").read_bytes().decode("utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          ix=[i for i,x in enumerate(lines) if x.lstrip().upper().startswith("FILE ")]
+          if len(ix)!=1 or not any(x.lstrip().upper().startswith("TRACK ") for x in lines): raise SystemExit("invalid CUE")
+          lines[ix[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+
+      - name: Restore derived checkpoint and compare matched post-f178 VSyncs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          mkdir -p "$WORK/runtime"
+          chmod 700 "$WORK/runtime"
+          "$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage" --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/captures/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          trap 'kill "$xvfb_pid" 2>/dev/null || true; wait "$xvfb_pid" 2>/dev/null || true' EXIT
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/.config" XDG_DATA_HOME="$WORK/.data" XDG_RUNTIME_DIR="$WORK/runtime" LIBGL_ALWAYS_SOFTWARE=1
+          for i in $(seq 1 60); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          PAD_SETUP=$(cat <<'LUA'
+          PCSX.settings.pads[1].DeviceType='Analog'
+          PCSX.settings.pads[1].Connected=true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("POST178_PAD_SETUP=PASS")
+          LUA
+          )
+          cat > "$WORK/post178.lua" <<'LUA'
+          local mode=os.getenv("PROBE_MODE") or "CONTROL_WAIT"
+          local frame=0; local start_seen=false; local load_returned=false; local load_event=false
+          local finalFrame=(mode=="DERIVED_CONTINUE") and 62 or 240
+          local parentFrames={[1]=true,[10]=true,[30]=true,[175]=true,[178]=true,[179]=true,[180]=true,[181]=true,[182]=true,[183]=true,[184]=true,[185]=true,[186]=true,[187]=true,[188]=true,[189]=true,[190]=true,[193]=true,[198]=true,[203]=true,[208]=true,[218]=true,[240]=true}
+          local derivedFrames={[1]=true,[2]=true,[3]=true,[4]=true,[5]=true,[6]=true,[7]=true,[8]=true,[9]=true,[10]=true,[11]=true,[12]=true,[15]=true,[20]=true,[25]=true,[30]=true,[40]=true,[62]=true}
+          local captures=(mode=="DERIVED_CONTINUE") and derivedFrames or parentFrames
+          local pad=PCSX.SIO0.slots[1].pads[1]; local buttons=PCSX.CONSTS.PAD.BUTTON
+          local function log(s) print(s); io.stdout:flush() end
+          local function shot(f)
+              local s=PCSX.GPU.takeScreenShot()
+              assert(s and s.width>=100 and s.height>=100 and s.data,"invalid screenshot")
+              local bpp=(s.bpp==0) and 16 or 24
+              local label=mode.."-f"..string.format("%03d",f)
+              local rawpath="captures/raw/"..label..".raw"
+              local raw=assert(Support.File.open(rawpath,"TRUNCATE")); raw:writeMoveSlice(s.data); raw:close()
+              local m=assert(io.open("captures/"..label..".json","wb"))
+              m:write(string.format('{"label":"%s","raw":"%s","width":%d,"height":%d,"bpp":%d,"expected_bytes":%d}\n',label,rawpath,s.width,s.height,bpp,s.width*s.height*bpp/8)); m:close()
+              log(string.format("POST178_SCREENSHOT label=%s width=%d height=%d",label,s.width,s.height))
+          end
+          local function input(action,phase)
+              local b=buttons.CIRCLE
+              local ok,readback=pcall(function()
+                  if phase=="press" then pad.setOverride(b) else pad.clearOverride(b) end
+                  return pad.getButton(b)
+              end)
+              log(string.format("POST178_INPUT mode=%s action=%s phase=%s readback=%s status=%s",mode,action,phase,tostring(readback),(ok and readback==(phase=="press")) and "PASS" or "FAIL"))
+          end
+          PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function() load_event=true; frame=0; log("POST178_LOAD_EVENT=PASS") end)
+          PCSX.Events.createEventListener("GPU::Vsync",function()
+              if not start_seen then
+                  start_seen=true; log("POST178_LOAD_BEGIN=1"); PCSX.pauseEmulator()
+                  PCSX.nextTick(function()
+                      local path=(mode=="DERIVED_CONTINUE") and "resume/derived-checkpoint.sstate" or "resume/parent-checkpoint.sstate"
+                      local f=assert(Support.File.open(path))
+                      local ok,err=pcall(function() PCSX.loadSaveState(f) end); f:close()
+                      if not ok then log("POST178_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
+                      load_returned=true; log("POST178_LOAD_RETURNED=1"); PCSX.resumeEmulator()
+                  end)
+                  return
+              end
+              if not load_event or not load_returned then return end
+              frame=frame+1
+              if mode=="CONTROL_WAIT" then
+                  if frame==30 then input("CIRCLE","press") elseif frame==38 then input("CIRCLE","release") end
+              end
+              if captures[frame] then shot(frame) end
+              if frame==finalFrame then
+                  log("POST178_BRANCH_DONE mode="..mode.." frame="..frame.." load_event="..tostring(load_event).." load_returned="..tostring(load_returned))
+                  PCSX.pauseEmulator(); PCSX.nextTick(function() PCSX.quit(0) end); return
+              end
+          end)
+          log("POST178_READY mode="..mode)
+          LUA
+          cp "$WORK/post178.lua" "$WORK/captures/post178.lua"
+
+          for mode in CONTROL_WAIT DERIVED_CONTINUE; do
+            cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-$mode.mcd"
+            echo "POST178_BRANCH_BEGIN=$mode"
+            set +e
+            PROBE_MODE="$mode" timeout --signal=TERM --kill-after=5s 30s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-$mode.mcd" \
+              -exec "$PAD_SETUP" -dofile "$WORK/post178.lua" -softgpu -dynarec -stdout -lua_stdout \
+              -logfile "$WORK/captures/pcsx-$mode.log" -run > "$WORK/captures/pcsx-$mode.stdout" 2>&1
+            rc=$?
+            set -e
+            echo "POST178_BRANCH_EXIT mode=$mode code=$rc"
+            grep -E 'POST178_(LOAD_EVENT|LOAD_RETURNED|INPUT|SCREENSHOT|BRANCH_DONE|LOAD_ERROR)' "$WORK/captures/pcsx-$mode.stdout" || true
+            if grep -q "POST178_SCREENSHOT label=$mode-f010 " "$WORK/captures/pcsx-$mode.stdout"; then
+              echo "POST178_BRANCH_REACHED_F10 mode=$mode YES"
+            else
+              echo "POST178_BRANCH_REACHED_F10 mode=$mode NO"
+            fi
+          done
+
+          parent_after="$(sha256sum "$WORK/resume/parent-checkpoint.sstate" | cut -d ' ' -f1)"
+          derived_after="$(sha256sum "$WORK/resume/derived-checkpoint.sstate" | cut -d ' ' -f1)"
+          test "$parent_after" = b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a
+          test "$derived_after" = a87529407736b1b7648785db8644d3c10f0b8d5d12f1557c63d9a3155b22fa83
+          echo "POST178_PARENT_CHECKPOINT_UNCHANGED=PASS"
+          echo "POST178_DERIVED_CHECKPOINT_HASH_STABLE=PASS"
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image,ImageChops,ImageStat
+          root=Path("captures"); images={}; malformed=[]
+          for mp in sorted(root.glob("*.json")):
+              try:
+                  m=json.loads(mp.read_text()); rawpath=Path(m["raw"]); raw=rawpath.read_bytes()
+                  if len(raw)!=int(m["expected_bytes"]):
+                      malformed.append(mp.name+":wrong_bytes="+str(len(raw))); continue
+                  w,h,bpp=int(m["width"]),int(m["height"]),int(m["bpp"])
+                  if bpp==16:
+                      rgb=bytearray()
+                      for p in range(0,len(raw),2):
+                          v=raw[p] | (raw[p+1]<<8); rgb.extend(((v&31)*255//31,((v>>5)&31)*255//31,((v>>10)&31)*255//31))
+                      im=Image.frombytes("RGB",(w,h),bytes(rgb))
+                  elif bpp==24: im=Image.frombytes("RGB",(w,h),raw)
+                  else:
+                      malformed.append(mp.name+":unsupported_bpp="+str(bpp)); continue
+                  im.save(root/(m["label"]+".png"),optimize=True); images[m["label"]]=im
+              except Exception as e:
+                  malformed.append(mp.name+":"+str(e))
+          parent_frames=[179,180,181,182,183,184,185,186,187,188,189,190,193,198,203,208,218,240]
+          out=[
+              "POST178_EXPERIMENT=derived checkpoint continued without any input vs parent checkpoint circle-first wait-only control",
+              "POST178_PARENT_CHECKPOINT_BYTES=21162405",
+              "POST178_PARENT_CHECKPOINT_SHA256=b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a",
+              "POST178_DERIVED_CHECKPOINT_BYTES=21162838",
+              "POST178_DERIVED_CHECKPOINT_SHA256=a87529407736b1b7648785db8644d3c10f0b8d5d12f1557c63d9a3155b22fa83",
+              "POST178_INPUT_PLAN=control presses Circle f30-f38 then waits; derived restores post-second-Circle checkpoint and sends no buttons",
+              "POST178_CONTROL_EXIT="+(("unknown") if not (root/"pcsx-CONTROL_WAIT.stdout").exists() else next((line.split("code=")[-1] for line in (root/"pcsx-CONTROL_WAIT.stdout").read_text(errors="replace").splitlines() if "POST178_BRANCH_EXIT mode=CONTROL_WAIT" in line),"see job log")),
+              "POST178_DERIVED_EXIT="+(("unknown") if not (root/"pcsx-DERIVED_CONTINUE.stdout").exists() else next((line.split("code=")[-1] for line in (root/"pcsx-DERIVED_CONTINUE.stdout").read_text(errors="replace").splitlines() if "POST178_BRANCH_EXIT mode=DERIVED_CONTINUE" in line),"see job log")),
+              "POST178_PARENT_CHECKPOINT_UNCHANGED=verified by sha256 after runtime",
+              "POST178_DERIVED_CHECKPOINT_HASH_STABLE=verified by sha256 after runtime",
+              "POST178_SCREENSHOT_FILES="+str(len(images)),
+              "POST178_MALFORMED_OR_INCOMPLETE_SCREENSHOTS="+("; ".join(malformed) if malformed else "none"),
+              "",
+              "Matched post-f178 images (CONTROL_WAIT frame = 178 + DERIVED_CONTINUE local frame):"
+          ]
+          for f in parent_frames:
+              dframe=f-178
+              a=images.get("CONTROL_WAIT-f"+str(f).zfill(3)); b=images.get("DERIVED_CONTINUE-f"+str(dframe).zfill(3))
+              if a is None or b is None:
+                  out.append("control_f"+str(f)+" vs derived_f"+str(dframe)+":missing")
+              elif a.size!=b.size:
+                  out.append("control_f"+str(f)+" vs derived_f"+str(dframe)+":dimension_mismatch")
+              else:
+                  d=ImageChops.difference(a,b); mean=sum(ImageStat.Stat(d).mean)/3
+                  exact=sum(1 for x,y in zip(a.getdata(),b.getdata()) if x==y)/(a.width*a.height)
+                  out.append(f"control_f{f} vs derived_f{dframe}:mad={mean:.3f},exact={exact:.5f}")
+          (root/"post178-continuation-report.txt").write_text("\n".join(out)+"\n")
+          print("\n".join(out))
+          PY
+          cat "$WORK/captures/post178-continuation-report.txt"
+          echo "POST178_GAMEPLAY_PROGRESS_NOT_ASSERTED=YES"
+
+      - name: Upload private timeline evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-storymode-post178-advance-private
+          path: |
+            /tmp/naruto-storymode-post178/captures/*.png
+            /tmp/naruto-storymode-post178/captures/*.txt
+            /tmp/naruto-storymode-post178/captures/*.stdout
+            /tmp/naruto-storymode-post178/captures/*.log
+            /tmp/naruto-storymode-post178/captures/*.json
+            /tmp/naruto-storymode-post178/captures/raw/*.raw
+            /tmp/naruto-storymode-post178/captures/*.sstate
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Remove checkpoint, Memory Card, ROM and BIOS from ephemeral runner
+        if: always()
+        shell: bash
+        run: rm -rf "$WORK"
