@@ -225,7 +225,7 @@ jobs:
           cp "$WORK/restore-no-input.lua" "$WORK/captures/restore-no-input.lua"
           cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-DIAGNONE.mcd"
           echo "DIAG_NO_START_INPUT_SENT=YES" | tee -a "$WORK/captures/diagnostic-report.txt"
-          echo "DIAG_SCREENSHOT_CUTOFF_FRAME=130; no internal screenshot request from frame 131 onward" | tee -a "$WORK/captures/diagnostic-report.txt"
+          echo "DIAG_SCREENSHOT_CUTOFF_FRAME=130; watchdog external-capture gate begins at frame 135; no internal screenshot request from frame 131 onward" | tee -a "$WORK/captures/diagnostic-report.txt"
           set +e
           timeout --signal=TERM --kill-after=3s 30s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
             -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd" \
@@ -287,7 +287,7 @@ jobs:
               if not alive:
                   log(f"PROCESS_WRAPPER_EXITED last_frame={last_frame}")
                   break
-              if last_frame>=145 and not captured and now-last_progress>=2.5:
+              if last_frame>=135 and not captured and now-last_progress>=2.5:
                   captured=True
                   log(f"STALL_CONFIRMED last_frame={last_frame} no_new_frame_observed_s={now-last_progress:.3f}")
                   try:
