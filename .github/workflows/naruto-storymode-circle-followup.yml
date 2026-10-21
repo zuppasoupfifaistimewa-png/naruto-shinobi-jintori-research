@@ -240,14 +240,14 @@ jobs:
               else: raise SystemExit("unsupported bpp")
               im.save(root/(m["label"]+".png"),optimize=True); images[m["label"]]=im
           modes=["NONE","CIRCLE_TAP_EARLY","START_TAP_EARLY"]
-          frames=[20,29,30,32,35,37,38,39,45,60,68,70,89,90,120,150,180]
+          frames=[20,29,30,35,37,38,39,45,90,120,150,180]
           baseline={f:images.get("NONE-f"+str(f).zfill(3)) for f in frames}
           out=[
-             "CIRCLE_TIMELINE_PARENT_CHECKPOINT_SHA256=b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a",
-             "CIRCLE_TIMELINE_PATCHED_APPIMAGE_SHA256=2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99",
+             "CIRCLE_FOLLOWUP_PARENT_CHECKPOINT_SHA256=b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a",
+             "CIRCLE_FOLLOWUP_PATCHED_APPIMAGE_SHA256=2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99",
              "CIRCLE_FOLLOWUP_BRANCHES=NONE,CIRCLE_TAP_EARLY,START_TAP_EARLY",
              "CIRCLE_FOLLOWUP_FRAMES="+",".join(map(str,frames)),
-             "CIRCLE_TIMELINE_PARENT_STATE_MUTATION=NO",
+             "CIRCLE_FOLLOWUP_PARENT_STATE_MUTATION=NO",
              "",
              "Per-frame differences against NONE at the same VSync count:"
           ]
@@ -264,7 +264,7 @@ jobs:
           (root/"circle-followup-report.txt").write_text("\n".join(out)+"\n")
           print("\n".join(out))
           PY
-          cat "$WORK/captures/circle-timeline-report.txt"
+          cat "$WORK/captures/circle-followup-report.txt"
           if [ "$failed" -ne 0 ]; then echo "::error::$failed timeline branches failed"; exit 44; fi
 
       - name: Upload private timeline evidence
