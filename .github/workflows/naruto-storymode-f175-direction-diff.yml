@@ -95,7 +95,7 @@ jobs:
       - name: Download game and BIOS from private runtime release
         shell: bash
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           cd "$WORK"
