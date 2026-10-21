@@ -281,11 +281,9 @@ jobs:
                   log(f"FRAME_OBSERVED frame={f} frames_since_previous={f-last_frame}")
                   last_frame=f
                   last_progress=now
-              try:
-                  os.kill(timeout_pid,0)
-                  alive=True
-              except OSError:
-                  alive=False
+              state=subprocess.run(["ps","-o","stat=","-p",str(timeout_pid)],capture_output=True,text=True)
+              proc_state=state.stdout.strip()
+              alive=bool(proc_state) and not proc_state.startswith("Z")
               if not alive:
                   log(f"PROCESS_WRAPPER_EXITED last_frame={last_frame}")
                   break
