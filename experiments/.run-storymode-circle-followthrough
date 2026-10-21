@@ -1,0 +1,8 @@
+Observe the roulette wheel from the private Circle-confirmation branch with NO further controller input.
+
+Source artifact run: 39608389644
+Source savestate: f175-probe-result-circle-f120.sstate
+Source bytes: 21161990
+Source SHA-256: 2550b90ce717822b5f04dcb0df3202816a383ea1e2d1a1779737d5d4d175b953
+
+Restore that source into one fresh emulator process and send no buttons. Capture real external X11 screenshots at relative frames 20, 60 and 100. Save a successor state at frame 120. Do not use the internal emulator screenshot API for this later state. Do not commit screenshots, savestates, ROM, BIOS or Memory Card to Git. Delete this trigger marker after the run finishes.
