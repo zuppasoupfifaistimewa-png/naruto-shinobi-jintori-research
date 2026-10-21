@@ -1,0 +1,381 @@
+name: Naruto Story Mode dialog freeze diagnostic (no-input control)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "experiments/.run-storymode-dialog-freeze-diagnostic"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  diagnose:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    container:
+      image: ghcr.io/grumpycoders/pcsx-redux-build:latest
+      options: --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
+    env:
+      WORK: /tmp/naruto-dialog-freeze-diagnostic
+      RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+
+    steps:
+      - name: Checkout research workflow
+        uses: actions/checkout@v4
+
+      - name: Prepare private diagnostic workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y jq python3-pil xvfb x11-utils curl unzip
+          mkdir -p "$WORK"/{build-artifact,state-artifact,card-artifact,cards,resume,captures/raw,home,.config,.data,runtime}
+          chmod 700 "$WORK/runtime"
+
+      - name: Download already-built patched emulator
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-control-probe-private
+          run-id: 39513285641
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: /tmp/naruto-dialog-freeze-diagnostic/build-artifact
+
+      - name: Download and verify stable checkpoint
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-post178-advance-private
+          run-id: 39555023915
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: /tmp/naruto-dialog-freeze-diagnostic/state-artifact
+
+      - name: Download original private Memory Card
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: 39262213468
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: /tmp/naruto-dialog-freeze-diagnostic/card-artifact
+
+      - name: Validate inputs and stage read-only source copies
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
+          CHECKPOINT="$WORK/state-artifact/stable-postconfirm-checkpoint.sstate"
+          MANIFEST="$WORK/state-artifact/stable-checkpoint-manifest.txt"
+          CARD="$WORK/card-artifact/naruto-storymode.mcd"
+          chmod +x "$APP"
+          test "$(sha256sum "$APP" | cut -d ' ' -f1)" = 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99
+          test "$(stat -c %s "$CHECKPOINT")" = 21163483
+          test "$(sha256sum "$CHECKPOINT" | cut -d ' ' -f1)" = b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee
+          grep -q '^POSTCONF_STABLE_CHECKPOINT_SHA256=b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee$' "$MANIFEST"
+          test "$(stat -c %s "$CARD")" = 131072
+          test "$(sha256sum "$CARD" | cut -d ' ' -f1)" = ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
+          cp "$CHECKPOINT" "$WORK/resume/source-stable-checkpoint.sstate"
+          cp "$CARD" "$WORK/cards/naruto-storymode-template.mcd"
+          echo "DIAG_EMULATOR_VALID=PASS"
+          echo "DIAG_SOURCE_CHECKPOINT_VALID=PASS bytes=21163483 sha256=b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee"
+          echo "DIAG_SOURCE_CHECKPOINT_READ_ONLY=YES"
+          echo "DIAG_MEMORY_CARD_VALID=PASS"
+
+      - name: Download and verify private game and BIOS
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; out="$2"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            test -n "$id" && test "$id" != null
+            curl --fail --silent --show-error --location --retry 2 --max-time 300 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$API/releases/assets/$id" -o "$out"
+          }
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset scph7502.zip scph7502.zip
+          test "$(stat -c %s game.bin)" = 325989552
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          test "$(stat -c %s scph7502.zip)" = 283463
+          echo "b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a  scph7502.zip" | sha256sum --check -
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import hashlib, stat, zipfile
+          with zipfile.ZipFile("scph7502.zip") as z:
+              members=[]; total=0
+              for i in z.infolist():
+                  p=PurePosixPath(i.filename); mode=(i.external_attr>>16)&0xffff
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)): raise SystemExit("unsafe BIOS archive")
+                  total += i.file_size
+                  if i.file_size > 2*1024*1024 or total > 4*1024*1024: raise SystemExit("BIOS expansion limit")
+                  if not i.is_dir() and i.file_size == 524288: members.append(i)
+              if len(members)!=1: raise SystemExit("expected one 512 KiB BIOS")
+              bios=z.read(members[0]); h=hashlib.sha256(bios).hexdigest()
+              if h!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1": raise SystemExit("BIOS hash mismatch")
+              Path("scph7502.bin").write_bytes(bios)
+              print("DIAG_BIOS_SHA256="+h)
+          lines=Path("game.cue").read_bytes().decode("utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          ix=[i for i,x in enumerate(lines) if x.lstrip().upper().startswith("FILE ")]
+          if len(ix)!=1 or not any(x.lstrip().upper().startswith("TRACK ") for x in lines): raise SystemExit("invalid CUE")
+          lines[ix[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+
+      - name: Save a dialog-entry checkpoint without pressing START
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          "$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage" --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/captures/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          trap 'kill "$xvfb_pid" 2>/dev/null || true; wait "$xvfb_pid" 2>/dev/null || true' EXIT
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/.config" XDG_DATA_HOME="$WORK/.data" XDG_RUNTIME_DIR="$WORK/runtime" LIBGL_ALWAYS_SOFTWARE=1
+          for i in $(seq 1 60); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+
+          PAD_SETUP=$(cat <<'LUA'
+          PCSX.settings.pads[1].DeviceType='Analog'
+          PCSX.settings.pads[1].Connected=true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("DIAG_PAD_SETUP=PASS")
+          LUA
+          )
+
+          cat > "$WORK/save-dialog-entry.lua" <<'LUA'
+          local frame=0
+          local started=false
+          local returned=false
+          local loaded=false
+          local pad=PCSX.SIO0.slots[1].pads[1]
+          local buttons=PCSX.CONSTS.PAD.BUTTON
+          local captures={[90]=true,[98]=true,[174]=true,[175]=true,[176]=true,[177]=true,[178]=true}
+          local function log(s) print(s); io.stdout:flush() end
+          local function shot(f)
+              local s=PCSX.GPU.takeScreenShot()
+              assert(s and s.width>=100 and s.height>=100 and s.data,"invalid screenshot")
+              local bpp=(s.bpp==0) and 16 or 24
+              local label="DIAG-ENTRY-f"..string.format("%03d",f)
+              local rawpath="captures/raw/"..label..".raw"
+              local raw=assert(Support.File.open(rawpath,"TRUNCATE")); raw:writeMoveSlice(s.data); raw:close()
+              local m=assert(io.open("captures/"..label..".json","wb"))
+              m:write(string.format('{"label":"%s","raw":"%s","width":%d,"height":%d,"bpp":%d,"expected_bytes":%d}\n',label,rawpath,s.width,s.height,bpp,s.width*s.height*bpp/8)); m:close()
+              log(string.format("DIAG_ENTRY_SCREENSHOT label=%s width=%d height=%d",label,s.width,s.height))
+          end
+          local function input(phase)
+              local b=buttons.CIRCLE
+              local ok,readback=pcall(function()
+                  if phase=="press" then pad.setOverride(b) else pad.clearOverride(b) end
+                  return pad.getButton(b)
+              end)
+              log(string.format("DIAG_ENTRY_INPUT action=CIRCLE phase=%s readback=%s status=%s",phase,tostring(readback),(ok and readback==(phase=="press")) and "PASS" or "FAIL"))
+          end
+          PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
+              loaded=true; frame=0; log("DIAG_ENTRY_LOAD_EVENT=PASS")
+          end)
+          PCSX.Events.createEventListener("GPU::Vsync",function()
+              if not started then
+                  started=true; log("DIAG_ENTRY_LOAD_BEGIN"); PCSX.pauseEmulator()
+                  PCSX.nextTick(function()
+                      local f=assert(Support.File.open("resume/source-stable-checkpoint.sstate"))
+                      local ok,err=pcall(function() PCSX.loadSaveState(f) end); f:close()
+                      if not ok then log("DIAG_ENTRY_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
+                      returned=true; log("DIAG_ENTRY_LOAD_RETURNED=1"); PCSX.resumeEmulator()
+                  end)
+                  return
+              end
+              if not loaded or not returned then return end
+              frame=frame+1
+              if frame==90 then input("press") end
+              if frame==98 then input("release") end
+              if captures[frame] then shot(frame) end
+              if frame==178 then
+                  log("DIAG_ENTRY_SAVE_BEGIN frame=178 action=NONE")
+                  PCSX.pauseEmulator()
+                  PCSX.nextTick(function()
+                      local ok,state=pcall(function() return PCSX.createSaveState() end)
+                      if not ok or not state then log("DIAG_ENTRY_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
+                      local opened,file=pcall(function() return assert(Support.File.open("captures/dialog-entry-f178.sstate","TRUNCATE")) end)
+                      if not opened or not file then log("DIAG_ENTRY_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
+                      local wrote,err=pcall(function() file:writeMoveSlice(state); file:close() end)
+                      if not wrote then log("DIAG_ENTRY_SAVE_WRITE_ERROR="..tostring(err)); PCSX.quit(73); return end
+                      log("DIAG_ENTRY_SAVE_CREATED=PASS")
+                      log("DIAG_ENTRY_SOURCE_CHECKPOINT_READ_ONLY=YES")
+                      PCSX.quit(0)
+                  end)
+                  return
+              end
+          end)
+          log("DIAG_ENTRY_READY")
+          LUA
+          cp "$WORK/save-dialog-entry.lua" "$WORK/captures/save-dialog-entry.lua"
+          cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-DIAGENTRY.mcd"
+          set +e
+          timeout --signal=TERM --kill-after=4s 35s stdbuf -oL -eL "$WORK/squashfs-root/AppRun"             -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGENTRY.mcd"             -exec "$PAD_SETUP" -dofile "$WORK/save-dialog-entry.lua" -softgpu -dynarec -stdout -lua_stdout             -logfile "$WORK/captures/pcsx-DIAGENTRY.log" -run > "$WORK/captures/pcsx-DIAGENTRY.stdout" 2>&1
+          rc=$?
+          set -e
+          echo "DIAG_ENTRY_PROCESS_EXIT_CODE=$rc"
+          grep -E 'DIAG_ENTRY_(LOAD_EVENT|LOAD_RETURNED|INPUT|SCREENSHOT|SAVE|.*ERROR)' "$WORK/captures/pcsx-DIAGENTRY.stdout" || true
+          if [ "$rc" -eq 0 ] && grep -q 'DIAG_ENTRY_SAVE_CREATED=PASS' "$WORK/captures/pcsx-DIAGENTRY.stdout" && test -s "$WORK/captures/dialog-entry-f178.sstate"; then
+            bytes="$(stat -c %s "$WORK/captures/dialog-entry-f178.sstate")"
+            hash="$(sha256sum "$WORK/captures/dialog-entry-f178.sstate" | cut -d ' ' -f1)"
+            test "$bytes" -gt 20000000
+            cp "$WORK/captures/dialog-entry-f178.sstate" "$WORK/resume/dialog-entry-f178.sstate"
+            chmod 400 "$WORK/resume/dialog-entry-f178.sstate"
+            echo "DIAG_ENTRY_CHECKPOINT_BYTES=$bytes" | tee "$WORK/captures/diagnostic-report.txt"
+            echo "DIAG_ENTRY_CHECKPOINT_SHA256=$hash" | tee -a "$WORK/captures/diagnostic-report.txt"
+            echo "DIAG_ENTRY_CHECKPOINT_SOURCE_FRAME=178 after Circle context transition, before any START input" | tee -a "$WORK/captures/diagnostic-report.txt"
+          else
+            echo "DIAG_ENTRY_CHECKPOINT_CREATION=FAILED rc=$rc" | tee "$WORK/captures/diagnostic-report.txt"
+            exit 0
+          fi
+
+      - name: Restore the dialog-entry checkpoint with no input (matched control)
+        if: success()
+        shell: bash
+        run: |
+          set -u
+          cd "$WORK"
+          PAD_SETUP=$(cat <<'LUA'
+          PCSX.settings.pads[1].DeviceType='Analog'
+          PCSX.settings.pads[1].Connected=true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("DIAG_NONE_PAD_SETUP=PASS")
+          LUA
+          )
+          cat > "$WORK/restore-no-input.lua" <<'LUA'
+          local frame=0
+          local started=false
+          local returned=false
+          local loaded=false
+          local function log(s) print(s); io.stdout:flush() end
+          local function shot(f)
+              local s=PCSX.GPU.takeScreenShot()
+              assert(s and s.width>=100 and s.height>=100 and s.data,"invalid screenshot")
+              local bpp=(s.bpp==0) and 16 or 24
+              local label="DIAG-NONE-f"..string.format("%03d",f)
+              local rawpath="captures/raw/"..label..".raw"
+              local raw=assert(Support.File.open(rawpath,"TRUNCATE")); raw:writeMoveSlice(s.data); raw:close()
+              local m=assert(io.open("captures/"..label..".json","wb"))
+              m:write(string.format('{"label":"%s","raw":"%s","width":%d,"height":%d,"bpp":%d,"expected_bytes":%d}\n',label,rawpath,s.width,s.height,bpp,s.width*s.height*bpp/8)); m:close()
+              log(string.format("DIAG_NONE_SCREENSHOT label=%s width=%d height=%d",label,s.width,s.height))
+          end
+          PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
+              loaded=true; frame=0; log("DIAG_NONE_LOAD_EVENT=PASS")
+          end)
+          PCSX.Events.createEventListener("GPU::Vsync",function()
+              if not started then
+                  started=true; log("DIAG_NONE_LOAD_BEGIN"); PCSX.pauseEmulator()
+                  PCSX.nextTick(function()
+                      local f=assert(Support.File.open("resume/dialog-entry-f178.sstate"))
+                      local ok,err=pcall(function() PCSX.loadSaveState(f) end); f:close()
+                      if not ok then log("DIAG_NONE_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
+                      returned=true; log("DIAG_NONE_LOAD_RETURNED=1"); PCSX.resumeEmulator()
+                  end)
+                  return
+              end
+              if not loaded or not returned then return end
+              frame=frame+1
+              log("DIAG_NONE_FRAME="..frame.." input=NONE")
+              shot(frame)
+              if frame==8 then
+                  log("DIAG_NONE_BRANCH_DONE frame=8 input=NONE")
+                  PCSX.pauseEmulator(); PCSX.nextTick(function() PCSX.quit(0) end)
+                  return
+              end
+          end)
+          log("DIAG_NONE_READY")
+          LUA
+          cp "$WORK/restore-no-input.lua" "$WORK/captures/restore-no-input.lua"
+          cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-DIAGNONE.mcd"
+          timeout --signal=TERM --kill-after=3s 12s stdbuf -oL -eL "$WORK/squashfs-root/AppRun"             -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd"             -exec "$PAD_SETUP" -dofile "$WORK/restore-no-input.lua" -softgpu -dynarec -stdout -lua_stdout             -logfile "$WORK/captures/pcsx-DIAGNONE.log" -run > "$WORK/captures/pcsx-DIAGNONE.stdout" 2>&1
+          rc=$?
+          echo "DIAG_NONE_PROCESS_EXIT_CODE=$rc" | tee -a "$WORK/captures/diagnostic-report.txt"
+          grep -E 'DIAG_NONE_(LOAD_EVENT|LOAD_RETURNED|FRAME=|SCREENSHOT|BRANCH_DONE|.*ERROR)' "$WORK/captures/pcsx-DIAGNONE.stdout" || true
+          frames="$(grep -oE 'DIAG_NONE_FRAME=[0-9]+' "$WORK/captures/pcsx-DIAGNONE.stdout" | sed 's/.*=//' | sort -n | tail -1)"
+          frames="${frames:-0}"
+          echo "DIAG_NONE_LAST_FRAME=$frames input=NONE" | tee -a "$WORK/captures/diagnostic-report.txt"
+          if [ "$rc" -eq 0 ] && grep -q 'DIAG_NONE_BRANCH_DONE frame=8' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
+            echo "DIAG_NONE_RESULT=PASS_8_VSYNC_NO_INPUT" | tee -a "$WORK/captures/diagnostic-report.txt"
+          elif [ "$rc" -eq 124 ] && [ "$frames" -ge 1 ]; then
+            echo "DIAG_NONE_RESULT=STALL_OR_TIMEOUT_WITHOUT_START" | tee -a "$WORK/captures/diagnostic-report.txt"
+          elif [ "$rc" -eq 139 ]; then
+            echo "DIAG_NONE_RESULT=SEGMENTATION_FAULT_WITHOUT_START" | tee -a "$WORK/captures/diagnostic-report.txt"
+          else
+            echo "DIAG_NONE_RESULT=INCONCLUSIVE rc=$rc" | tee -a "$WORK/captures/diagnostic-report.txt"
+          fi
+
+      - name: Convert and verify original emulator screenshots
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image
+          root=Path("captures")
+          problems=[]
+          converted=[]
+          for mp in sorted(root.glob("DIAG-*.json")):
+              try:
+                  m=json.loads(mp.read_text())
+                  raw=(root/m["raw"].split("captures/",1)[-1]).read_bytes() if m["raw"].startswith("captures/") else Path(m["raw"]).read_bytes()
+                  if len(raw)!=int(m["expected_bytes"]):
+                      problems.append(mp.name+":wrong_bytes="+str(len(raw))); continue
+                  w,h,bpp=int(m["width"]),int(m["height"]),int(m["bpp"])
+                  if bpp==16:
+                      rgb=bytearray()
+                      for p in range(0,len(raw),2):
+                          v=raw[p] | (raw[p+1]<<8)
+                          rgb.extend(((v&31)*255//31,((v>>5)&31)*255//31,((v>>10)&31)*255//31))
+                      im=Image.frombytes("RGB",(w,h),bytes(rgb))
+                  elif bpp==24:
+                      im=Image.frombytes("RGB",(w,h),raw)
+                  else:
+                      problems.append(mp.name+":unsupported_bpp="+str(bpp)); continue
+                  im.save(root/(m["label"]+".png"),optimize=True)
+                  converted.append(m["label"])
+              except Exception as e:
+                  problems.append(mp.name+":"+str(e))
+          (root/"screenshot-verification.txt").write_text("\n".join(["DIAG_SCREENSHOT_COUNT="+str(len(converted)),"DIAG_SCREENSHOTS="+",".join(converted),"DIAG_SCREENSHOT_PROBLEMS="+("; ".join(problems) if problems else "none")])+"\n")
+          print((root/"screenshot-verification.txt").read_text(),end="")
+          if problems: raise SystemExit("invalid original screenshot buffer")
+          PY
+          source_hash="$(sha256sum "$WORK/resume/source-stable-checkpoint.sstate" | cut -d ' ' -f1)"
+          test "$source_hash" = b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee
+          echo "DIAG_SOURCE_CHECKPOINT_HASH_UNCHANGED=PASS sha256=$source_hash" | tee -a "$WORK/captures/diagnostic-report.txt"
+          echo "DIAG_START_WAS_NOT_PRESSED_IN_CONTROL=YES" | tee -a "$WORK/captures/diagnostic-report.txt"
+          echo "DIAG_GAMEPLAY_PROGRESS_NOT_ASSERTED=YES" | tee -a "$WORK/captures/diagnostic-report.txt"
+
+      - name: Upload private diagnostic screenshots and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-storymode-dialog-freeze-diagnostic-private
+          path: |
+            /tmp/naruto-dialog-freeze-diagnostic/captures/*.png
+            /tmp/naruto-dialog-freeze-diagnostic/captures/*.txt
+            /tmp/naruto-dialog-freeze-diagnostic/captures/*.stdout
+            /tmp/naruto-dialog-freeze-diagnostic/captures/*.log
+            /tmp/naruto-dialog-freeze-diagnostic/captures/*.json
+            /tmp/naruto-dialog-freeze-diagnostic/captures/raw/*.raw
+            /tmp/naruto-dialog-freeze-diagnostic/captures/*.sstate
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Remove source checkpoint, generated checkpoint, Memory Card, ROM, and BIOS from runner
+        if: always()
+        shell: bash
+        run: rm -rf "$WORK"
