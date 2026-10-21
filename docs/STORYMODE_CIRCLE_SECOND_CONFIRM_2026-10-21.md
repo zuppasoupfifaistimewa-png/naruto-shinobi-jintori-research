@@ -47,17 +47,26 @@ Mulai 08:46:27 WIB; selesai 08:47:46 WIB. Status: `failure`.
 - Tidak ada state baru; restore di proses emulator baru tidak dijalankan.
 - Artefak privat #12314327303, 4.659.232 byte, digest ZIP `sha256:f370dd9bbf5efe0903d21326d8dc5fe0638c08e35e15e2c91b156529b31ca975`, berisi PNG/raw RGB/log serta laporan. Artefak tetap privat dan tidak ada aset game yang ditambahkan ke Git.
 
-## Eksperimen ulang aktif #39529605910
+## Run #39529605910 — tap pendek, gambar berubah di f184 tetapi kontrol gagal
 
-Run [#39529605910](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39529605910) dimulai 08:50:22 WIB. Pemeriksaan awal pukul 08:50:25 WIB: `in_progress`, langkah container setup.
+Run: [#39529605910](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39529605910)  
+Mulai 08:50:22 WIB; selesai 08:51:45 WIB. Status: `failure`.
 
-Perbaikan yang diuji:
-- Circle kedua ditekan setelah screenshot f175, lalu dilepas setelah screenshot f178 (pulsa pendek sekitar tiga frame), bukan ditahan sampai f183.
-- Screenshot rapat f176–f180 tetap tersedia, dan screenshot f181–f187 serta f240 disiapkan untuk menangkap transisi atau checkpoint.
-- Proses emulator dibatasi 45 detik. Jika checkpoint f240 terbentuk, workflow mencoba restore pada proses baru; jika tidak, screenshot/log parsial tetap dipaketkan ke artefak privat.
-- Batas timeout job 35 menit berarti sekitar 09:25:22 WIB sebagai batas maksimum nominal, bukan janji selesai.
+- Kedua proses emulator mengalami segmentation fault (`code=139`): cabang tunggu sekitar f180; cabang Circle kedua setelah mengambil screenshot f184. Cabang tunggu menghasilkan screenshot yang bisa dipakai sampai f179; metadata untuk f180 ada tetapi berkas raw-nya berukuran 0, sehingga konverter berhenti dan laporan komparatif workflow tidak selesai.
+- Pada cabang konfirmasi, Circle kedua dikirim setelah screenshot f175 (`readback=true/PASS`) dan dilepas setelah screenshot f178 (`readback=false/PASS`). Screenshot f175–f179 pixel-identik dengan cabang tunggu untuk frame yang tersedia.
+- Screenshot f181 masih tampak seperti panel misi; f182 memperlihatkan perubahan visual kecil (MAD antarfame 3.413; 95.99% piksel sama); f183 sama dengan f182; f184 menunjukkan lingkaran merah besar di sisi kanan bawah (MAD f183→f184 7.786; 90.87% piksel sama). Panel `任務内容`, target `3000チャクラためる`, dan prompt `けってい` masih tampak. Tidak ada frame tunggu pembanding yang valid untuk f180 ke atas, jadi perubahan f182/f184 belum bisa diatribusikan dengan yakin kepada input kedua daripada animasi/masalah runtime.
+- Karena eksperimen versi ini menyimpan hanya pada f240 dan proses crash di f184, tidak ada checkpoint konfirmasi atau pemulihan lintas-proses. Checkpoint induk tetap utuh.
+- Artefak privat #12315236554, 4.882.885 byte, digest ZIP `sha256:da1f2ac778eab9ea1a9333d972b0ed8b72b8396b8f417436b2499bec8cf82221` (correct digest verified from Actions: `da1f2ac778eab9ea1a4633d972b0ed8b72b8396b8f417436b2499bec8cf82221`), disimpan privat. PNG/raw dipulihkan dan dianalisis lokal; tidak ada berkas game/BIOS/savestate dimasukkan ke Git.
 
-Hasil final run #39529605910 harus ditambahkan setelah status dan artefaknya diverifikasi.
+## Eksperimen aktif #39530038534
+
+Run [#39530038534](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39530038534) didaftarkan pukul 08:54:57 WIB; setelah marker dipasang status awalnya `queued`. Batas timeout job nominal 35 menit berarti sekitar 09:29:57 WIB sebagai batas maksimum, bukan janji selesai.
+
+Perubahan yang diuji:
+- Screenshot dipilih lebih jarang untuk mengurangi risiko segfault saat tangkapan rapat.
+- Cabang tunggu menargetkan f181; cabang Circle kedua memakai pulsa f175–f178 lalu mencoba menyimpan checkpoint privat segera setelah screenshot f184, saat perubahan visual pertama setelah input tampak.
+- Jika checkpoint f184 berhasil, proses emulator baru memuatnya dan berjalan 10 VSync dengan screenshot/log pemulihan. Jika gagal, screenshot/log parsial tetap diunggah privat.
+- ROM, BIOS, savestate, dan Memory Card tetap privat.
 
 ## Klasifikasi kesimpulan saat ini
 
