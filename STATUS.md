@@ -1,3 +1,17 @@
+## APPROVED LONG-TERM GOAL — otomatisasi Story Mode berbasis checkpoint (21 Oktober 2026)
+
+Pengguna menyetujui rencana membangun loop otomatis untuk meneruskan Story Mode sampai tamat tanpa keterlibatan manual di setiap tombol: pulihkan checkpoint tervalidasi sebagai salinan read-only → lakukan satu tindakan terukur → amati layar/game state lewat bukti emulator asli → verifikasi perubahan → simpan checkpoint turunan dan manifest privat → lanjutkan sesi berikutnya dari checkpoint paling baru yang tervalidasi. Jika crash/stall/timeout, pulihkan baseline tervalidasi dan lanjutkan dengan strategi yang terukur, bukan restart dari awal.
+
+Rencana lengkap dan instruksi lintas-chat ada di [docs/STORYMODE_AUTOMATION_WORKFLOW_2026-10-21.md](docs/STORYMODE_AUTOMATION_WORKFLOW_2026-10-21.md). Otomasi penuh belum tersedia/terbukti hanya dengan adanya dokumen atau Actions `success`; harness masih harus dibangun dan diuji. Jangan menyatakan Story Mode tamat tanpa bukti akhir asli dari game.
+
+**Baseline dan langkah berikutnya:**
+- Checkpoint papan Konoha f175 tetap baseline immutable untuk uji directional terkontrol: SHA-256 `f8bd00074877ef583e35b8eaf2fc65b3877acda9bebd5f2d8e9a13abee094615`, ukuran 21,163,375 byte.
+- Uji satu arah per proses emulator baru dari salinan read-only f175 dan bandingkan dengan kontrol tanpa input berdurasi setara. Capture visual state lanjut via X11 eksternal saja; jangan gunakan internal screenshot API pada state/frame yang dilarang.
+- Run #39599932467 menguji konfirmasi pilihan penghalang pada checkpoint cabang RIGHT/DOWN: angka 100 Chakra dan 140 Chakra terlihat sebelum confirm; belum terbukti Chakra terpotong atau barrier sukses diletakkan.
+- Jika dialog Story Mode muncul, gunakan START untuk melewati dialog, bukan Circle. Circle hanya untuk konfirmasi pilihan/menu ketika sesuai konteks.
+- Pastikan tidak ada marker satu-kali atau Actions run duplikat yang masih queued/in progress sebelum memulai run berikut.
+- Repo tetap satu-satunya yang diizinkan. ROM, BIOS, savestate, Memory Card, dan screenshot gameplay privat tidak boleh di-commit ke Git.
+
 ## LATEST STORY MODE CONTINUATION — START skipped the Konoha dialogue; fresh process reached f175 (21 October 2026, 18:20 WIB)
 
 - Run [#39591032125](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39591032125) completed with workflow conclusion `success`. It restored the verified pre-START dialog checkpoint, issued exactly one START press at relative VSync f120 and release at f121 (both controller readbacks PASS), then stopped internal screenshot requests after f130. No Circle input was sent.
