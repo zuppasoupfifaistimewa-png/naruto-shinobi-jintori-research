@@ -52,7 +52,7 @@ jobs:
       - name: Download the private Circle-branch checkpoint from run 39609425942
         uses: actions/download-artifact@v4
         with:
-          name: naruto-storymode-konoha-f175-direction-diff-private
+          name: naruto-storymode-circle-followthrough-private
           run-id: 39609425942
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
