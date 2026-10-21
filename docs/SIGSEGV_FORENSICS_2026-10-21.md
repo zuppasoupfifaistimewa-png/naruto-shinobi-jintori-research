@@ -30,7 +30,7 @@ Investigasi dilakukan hanya pada repositori `zuppasoupfifaistimewa-png/naruto-sh
 - Interpretasi: stack ini merupakan bukti langsung bahwa saat stall f153, thread utama sedang menunggu pada jalur sinkronisasi renderer/OpenGL berbasis Mesa/SDL. Ini petunjuk lokasi stall, bukan bukti bahwa Mesa/SDL menyebabkan SIGSEGV pada run #39574435847. Backtrace SIGSEGV belum diperoleh. Artefak privat #12335260015 (4.939.777 byte; digest ZIP `sha256:9e36749e6d9fda93598e75c3a7485daa7a8d4d22bb79df72419fec62d1fb2223`).
 - Kedua screenshot X11 dari run ini valid (1280×800); gambar menunjukkan dialog Naruto masih terbuka dengan prompt Circle. Tidak ada bukti visual misi aktif.
 
-## Run berikutnya dan kriteria penilaian
+## Hasil lanjutan dan rencana membuktikan SIGSEGV
 
 Run #39577470148 (https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39577470148) selesai `success` pada 16:31:52 WIB. Frame terakhir 153; stall terkonfirmasi setelah 2,595 detik. Dua screenshot X11 eksternal asli valid (masing-masing 779.646 byte/133.597 warna dan 779.635 byte/133.175 warna); tidak identik pixel-for-pixel. Proses tidak menghasilkan SIGSEGV; GDB menerima SIGINT dari watchdog setelah jendela 0,75 detik dan memperoleh stack stall. Hasil diklasifikasikan `GDB_BACKTRACE_CAPTURED_AFTER_VSYNC_STALL_NO_START`, exit GDB wrapper 0 bukan bukti target frame tercapai. Artefak privat #12335440453 berukuran 4.959.871 byte, digest ZIP `sha256:70f4cf603f2831025cb167e3260e89caf4c0699b911dfd85f69a8d393226ec1f`. Stack utama kembali melalui `pthread_cond_wait`, `libgallium`, `libGLX_mesa`, `SDL3`, lalu alamat tidak tersimbolkan di binary `pcsx-redux`.
 
