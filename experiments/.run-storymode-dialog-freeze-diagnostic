@@ -1,2 +1,0 @@
-One-shot trigger for live-GDB natural SIGSEGV diagnostic.
-No controller input is permitted. Internal screenshots must stop at frame 130; only external X11 captures may occur after that. Preserve all verified checkpoints.
