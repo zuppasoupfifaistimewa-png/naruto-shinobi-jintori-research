@@ -1,3 +1,13 @@
+## UPDATE — DOWN moves the highlighted menu item (21 October 2026)
+
+Run [#39607704007](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39607704007) restored the f175 source independently for NONE and DOWN. DOWN press/release passed controller readback at frames 30/38. The original external X11 capture at frame 90 shows selection changed from `ルーレット (Roulette)` to `忍術 (Ninjutsu/teknik ninja)`. Post screenshot: mean absolute RGB diff 1.049238 and exact-pixel fraction 0.985733 against NONE, concentrated on the selection region. Thus DOWN is verified for moving the highlight one row in this menu; RIGHT remained visually ineffective in the previous matched test.
+
+Private artifact #12348747349 digest: `sha256:340ff7064f4b4902122b9ecaeb926a4693716c41c21dc765461d989d34f15730`. No internal screenshot API was called and no private state or screenshot was committed to Git.
+
+Next test one Circle confirmation from the original f175 checkpoint with Roulette highlighted, against NONE; this is menu confirm, not dialogue skip. Dialogues must be skipped with START.
+
+---
+
 ## PEMBARUAN OTOMASI — uji RIGHT tidak mengubah menu; uji DOWN berikutnya (21 Oktober 2026)
 
 Run [#39606938717](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39606938717) memulihkan checkpoint f175 pada proses emulator NONE dan RIGHT terpisah. Kedua proses sampai frame relatif 120 dan menyimpan state privat. RIGHT press f30/release f38 terbaca PASS, tetapi screenshot X11 pada frame 90 identik piksel dengan kontrol tanpa input. Layar asli menunjukkan menu vertikal dengan Roulette tersorot; RIGHT belum terbukti sebagai aksi navigasi yang efektif. Artefak privat #12348274409, ZIP SHA-256 `8b095bbe8e8d20f9ca639b4c2f3be448339556376f193d7b7487c94830e33027`.
