@@ -162,18 +162,28 @@ jobs:
           local pad=PCSX.SIO0.slots[1].pads[1]
           local buttons=PCSX.CONSTS.PAD.BUTTON
           local function log(s) print(s); io.stdout:flush() end
-          local function pollForFile(path,callback)
+          local function waitForExternalRelease(path,callback)
+              -- nextTick runs once after pause; keep this callback alive while
+              -- the independent X11 watcher captures the frozen frame and writes
+              -- a marker. No VSync callback or internal screenshot is needed.
               PCSX.nextTick(function()
-                  local f=io.open(path,"r")
-                  if f then f:close(); log("KONOHA_DIFF_RESUME_GATE="..path); callback()
-                  else pollForFile(path,callback) end
+                  while true do
+                      local f=io.open(path,"r")
+                      if f then
+                          f:close()
+                          log("KONOHA_DIFF_RESUME_GATE="..path)
+                          break
+                      end
+                      os.execute("sleep 0.05")
+                  end
+                  callback()
               end)
           end
           local function pauseForExternalCapture(point)
               PCSX.pauseEmulator()
               local marker="captures/go-"..point:lower().."-"..mode
               log("KONOHA_DIFF_"..point.."_CAPTURE_READY mode="..mode.." frame="..frame)
-              pollForFile(marker,function() PCSX.resumeEmulator() end)
+              waitForExternalRelease(marker,function() PCSX.resumeEmulator() end)
           end
           local function input(phase)
               local b=buttons[mode]
