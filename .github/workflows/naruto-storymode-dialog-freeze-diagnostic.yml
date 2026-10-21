@@ -246,6 +246,10 @@ jobs:
         run: |
           set -u
           cd "$WORK"
+          if [ ! -s "$WORK/resume/dialog-entry-f178.sstate" ]; then
+            echo "DIAG_NONE_RESULT=SKIPPED_NO_DIALOG_CHECKPOINT" | tee -a "$WORK/captures/diagnostic-report.txt"
+            exit 0
+          fi
           PAD_SETUP=$(cat <<'LUA'
           PCSX.settings.pads[1].DeviceType='Analog'
           PCSX.settings.pads[1].Connected=true
@@ -298,8 +302,10 @@ jobs:
           LUA
           cp "$WORK/restore-no-input.lua" "$WORK/captures/restore-no-input.lua"
           cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-DIAGNONE.mcd"
+          set +e
           timeout --signal=TERM --kill-after=3s 12s stdbuf -oL -eL "$WORK/squashfs-root/AppRun"             -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd"             -exec "$PAD_SETUP" -dofile "$WORK/restore-no-input.lua" -softgpu -dynarec -stdout -lua_stdout             -logfile "$WORK/captures/pcsx-DIAGNONE.log" -run > "$WORK/captures/pcsx-DIAGNONE.stdout" 2>&1
           rc=$?
+          set -e
           echo "DIAG_NONE_PROCESS_EXIT_CODE=$rc" | tee -a "$WORK/captures/diagnostic-report.txt"
           grep -E 'DIAG_NONE_(LOAD_EVENT|LOAD_RETURNED|FRAME=|SCREENSHOT|BRANCH_DONE|.*ERROR)' "$WORK/captures/pcsx-DIAGNONE.stdout" || true
           frames="$(grep -oE 'DIAG_NONE_FRAME=[0-9]+' "$WORK/captures/pcsx-DIAGNONE.stdout" | sed 's/.*=//' | sort -n | tail -1)"
