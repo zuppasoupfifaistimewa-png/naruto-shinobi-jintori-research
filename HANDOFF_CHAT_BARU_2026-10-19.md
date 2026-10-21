@@ -1,3 +1,23 @@
+## HANDOFF TERBARU — hasil paired NONE vs START dan batas screenshot (21 Oktober 2026, 15:38:40 WIB)
+
+**Repositori tunggal:** `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`.
+
+Run [#39570556284](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39570556284) selesai `success` pada 15:38:40 WIB, tetapi dua proses emulator di dalamnya berakhir timeout kode 124. Artefak privat #12331189717 berukuran 6.715.120 byte dengan digest ZIP `sha256:32c4a6313cbad378bf89a118a701b316552622ade57cb0687222c5d1f63c62c1`. Tidak ada run aktif setelah marker dihapus melalui commit `c7ff890e6ecc715712257f23c4c0072793c3c3d7`; run cleanup #39571044132 berstatus `skipped`.
+
+Kedua cabang restore checkpoint dialog pra-START yang sama (21.162.258 byte, SHA-256 `c47d2069ae9b1e589cce35df2dbaaa867b3365acfd501d2666a72ecd5fcc494c`). Checkpoint induk 21.163.483 byte dengan SHA-256 `b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee` tidak berubah. Semua permintaan screenshot dihentikan setelah f130, sementara log frame/VSync diteruskan dengan target f175:
+- `NONE`: log sampai f154 lalu timeout 124.
+- `START`: tap satu VSync pada f120, release f121; readback keduanya PASS; log sampai f151 lalu timeout 124.
+- Screenshot asli identik sampai f125, berbeda mulai f126, dan berbeda jelas pada f128–f130 ketika panel dialog bergeser. Ini bukan bukti misi aktif.
+- Validasi: 56 screenshot, tidak ada masalah; buffer kosong, PNG kosong, dimensi/ukuran salah dan gambar satu-warna ditolak.
+
+Run kontrol sebelumnya [#39570013344](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39570013344) dengan screenshot dihentikan pada f130 mencatat f151 lalu timeout, bukan segfault. Hal itu membuat fungsi screenshot internal sekitar f150 sebagai pemicu segfault sebelumnya menjadi hipotesis yang masuk akal, **belum terbukti**; kedua run terbaru masih mengalami stall tanpa screenshot terlambat. Artefak #12331014609: 3.359.778 byte, digest `sha256:1fae303ee0bbc8cd2c7c816618b6db65f888f7e490eaac52a1e16f1b5fbcacb3`.
+
+Workflow terkait kini memuat cutoff f130, validasi screenshot lebih ketat, batas proses 30 detik dan perbandingan NONE vs START (commit `227c71808997d4dc94d69d4d483ed4ca77280b1d`, lalu `a2f3b20a7e85bfc106175d14cd155ed9d17aa99c`). **Jangan** mengulang tap START yang sama. Langkah berikut: selidiki stall VSync dengan timestamp/watchdog atau pengambilan gambar eksternal (di luar callback screenshot PCSX-Redux), tanpa mengubah checkpoint. Dialog harus dilewati dengan START; jangan memakai Circle tanpa bukti baru.
+
+**Status gameplay tetap belum pasti:** belum ada bukti visual bahwa misi sudah aktif, belum ada bukti penyelesaian misi atau Story Mode tamat.
+
+---
+
 ## HASIL TERBARU — kontrol setara tanpa input vs START tertunda (21 Oktober 2026, selesai 14:53:39 WIB)
 
 - Run [#39565014834](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39565014834) selesai 14:53:39 WIB dengan conclusion workflow `failure`. Artefak privat [#12329546573](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39565014834/artifacts/12329546573), 7.101.006 byte, digest `sha256:f1052ba271d25e7668cc809455ef7ad59fb7ac84c05e081027f7c4fd4f6f2f45`. Tidak ada eksperimen aktif setelah pemeriksaan; marker pemicu satu-kali sudah dihapus.
