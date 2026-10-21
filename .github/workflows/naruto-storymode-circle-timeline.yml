@@ -155,7 +155,7 @@ jobs:
           local mode=os.getenv("PROBE_MODE") or "NONE"
           local frame=0; local start_seen=false; local load_returned=false; local load_event=false
           local pad=PCSX.SIO0.slots[1].pads[1]; local buttons=PCSX.CONSTS.PAD.BUTTON
-          local captures={[20]=true,[29]=true,[30]=true,[32]=true,[35]=true,[37]=true,[38]=true,[39]=true,[45]=true,[60]=true,[70]=true,[89]=true,[90]=true,[92]=true,[97]=true,[98]=true,[99]=true,[120]=true,[150]=true,[180]=true,[240]=true,[300]=true}
+          local captures={[20]=true,[29]=true,[30]=true,[32]=true,[35]=true,[37]=true,[38]=true,[39]=true,[45]=true,[60]=true,[68]=true,[70]=true,[89]=true,[90]=true}
           local function log(s) print(s); io.stdout:flush() end
           local function shot(f)
               local s=PCSX.GPU.takeScreenShot()
@@ -201,7 +201,7 @@ jobs:
                   if frame==30 then input("LEFT","press") elseif frame==38 then input("LEFT","release") end
               end
               if captures[frame] then shot(frame) end
-              if frame==300 then
+              if frame==90 then
                   log("CIRCLE_TIMELINE_BRANCH_DONE mode="..mode.." load_event="..tostring(load_event).." load_returned="..tostring(load_returned))
                   PCSX.pauseEmulator(); PCSX.nextTick(function() PCSX.quit(0) end); return
               end
@@ -215,7 +215,7 @@ jobs:
             cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-$mode.mcd"
             echo "CIRCLE_TIMELINE_BRANCH_BEGIN=$mode"
             set +e
-            PROBE_MODE="$mode" timeout --signal=TERM --kill-after=5s 120s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+            PROBE_MODE="$mode" timeout --signal=TERM --kill-after=5s 100s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-$mode.mcd" \
               -exec "$PAD_SETUP" -dofile "$WORK/timeline.lua" -softgpu -dynarec -stdout -lua_stdout \
               -logfile "$WORK/captures/pcsx-$mode.log" -run > "$WORK/captures/pcsx-$mode.stdout" 2>&1
