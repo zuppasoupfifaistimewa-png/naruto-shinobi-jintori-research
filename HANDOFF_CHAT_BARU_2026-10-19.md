@@ -1,3 +1,24 @@
+## HANDOFF TERBARU — watchdog X11 menangkap frame 151 sebelum crash (21 Oktober 2026, 16:08:25 WIB)
+
+**Repo tunggal:** zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research.
+
+### Hasil paling baru
+- Run [#39574435847](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39574435847) berakhir pada 16:08:25 WIB; workflow success, tetapi emulator exit **139 (SIGSEGV)**.
+- Tanpa input kontrol, watchdog eksternal melihat frame 151 pada 16:08:10.907 WIB, lalu tidak ada frame baru selama 2,576 detik. Tangkapan X11 pertama valid (1280×800, 777.527 byte, 131.762 warna); gambar asli memperlihatkan dialog Naruto tetap terbuka dengan prompt Circle dan HUD 1500–1500. Bukan bukti misi aktif.
+- Tangkapan kedua setelah sekitar 2 detik adalah gambar hitam satu warna (458 byte, ditolak). Snapshot proses ketika stall memiliki wchan=vfs_coredump; exit 139 terjadi segera sesudahnya. Ini mengarah kuat ke crash fatal/core-dump path, tetapi belum ada backtrace untuk menemukan penyebab.
+- Screenshot internal dibatasi sampai f130; 28 screenshot f001–f130 valid, DIAG_SCREENSHOT_PROBLEMS=none. Tidak ada PCSX.GPU.takeScreenShot() yang dipanggil pada f131 ke atas.
+- Artefak privat [#12333511723](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39574435847/artifacts/12333511723), 4.139.742 byte, digest sha256:63497731a6e361aff98f9e0f2f0a895010987b87250aadfc72c82a74ba6ed23c. Bukti X11-stall-first.png adalah screenshot eksternal asli game; X11-stall-second.png mencatat keadaan layar hitam yang ditolak validator.
+- Cross-check [#39573924538](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39573924538): frame berhenti di 140, watchdog 2,549 detik, timeout 124, dua gambar X11 non-seragam berbeda 1,286% piksel namun teks dialog identik; process state futex_do_wait. Run [#39573533078](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39573533078) juga berhenti f140/timeout tetapi gate f145 mencegah capture eksternal.
+- Checkpoint dialog pra-START tetap 21.162.258 byte SHA-256 c47d2069ae9b1e589cce35df2dbaaa867b3365acfd501d2666a72ecd5fcc494c. Checkpoint induk tetap 21.163.483 byte SHA-256 b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee; kedua sumber tidak diganti/ditimpa.
+
+### Arahan langkah berikutnya untuk chat baru
+1. Mulai dari hasil terbaru ini, bukan dari eksperimen paired START. Jangan ulangi tap START satu-VSync yang sama.
+2. Fokus berikutnya: temukan akar SIGSEGV melalui log native, status thread, backtrace atau core dump yang dibatasi ukurannya. Run terbaru mereproduksi crash walaupun screenshot internal sesudah f130 dinonaktifkan; jadi pemanggilan screenshot internal terlambat bukan syarat yang diperlukan bagi crash ini.
+3. Jangan mengubah checkpoint atau menyatakan misi aktif/tamat. Screenshot yang terlihat tetap membuktikan dialog terbuka. Jika nanti melanjutkan permainan yang berjalan dan dialog muncul, gunakan START untuk melewatinya, jangan Circle. Bukti visual harus tetap screenshot asli emulator/X11; jangan mengambil gambar gameplay dari web.
+4. Workflow .github/workflows/naruto-storymode-dialog-freeze-diagnostic.yml saat ini hanya menjalankan kontrol tanpa input, mencatat timestamp lewat watchdog eksternal, memotret X11 setelah idle gate f135, dan menolak gambar satu warna. Pemicu satu-kali harus dihapus sesudah selesai; jangan meninggalkan marker pemicu aktif.
+
+---
+
 ## HANDOFF TERBARU — hasil paired NONE vs START dan batas screenshot (21 Oktober 2026, 15:38:40 WIB)
 
 **Repositori tunggal:** `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`.
