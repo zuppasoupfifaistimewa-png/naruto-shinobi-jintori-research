@@ -1,0 +1,1 @@
+One-shot diagnostic request: after external X11 captures at stall, leave native emulator uninterrupted until natural SIGSEGV/backtrace or the 60-second outer timeout. No controller input; internal screenshots capped at frame 130; verified checkpoints read-only. Remove trigger after run.
