@@ -25,18 +25,28 @@ Mulai 08:29:49 WIB; selesai 08:35:20 WIB pada 21 Oktober 2026. Status akhir: `fa
 - Akibatnya, run ini tidak membuktikan apakah prompt dikonfirmasi atau Story Mode maju. Tidak ada checkpoint lanjutan yang dibuat, dan pengujian pemulihan dalam proses emulator baru tidak dijalankan.
 - Artefak privat #12314525232, `naruto-storymode-circle-followup-private`, 11.542 byte, digest ZIP `sha256:92fc55004d23241c80cf6a7c76fcf24a5291747207fd2a2854723f3ed7477ca4`. Artefak tersebut berisi log/stdout dan metadata screenshot, tetapi tidak menyertakan berkas piksel mentah; penanganan gagal sebelum konversi screenshot dijalankan. Ini kekurangan harness, bukan bukti tentang makna tombol dalam game.
 
-## Perbaikan pada eksperimen ulang #39528879636
+## Run #39528879636 — input di frame 180 terkirim, tetapi game berhenti memajukan frame
 
-Run berikutnya mulai 08:42:32 WIB. Pada pemeriksaan awal, statusnya `in_progress` dan runner sedang menginisialisasi container.
+Run: [#39528879636](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39528879636)  
+Mulai 08:42:32 WIB; selesai 08:44:41 WIB pada 21 Oktober 2026. Status workflow: `failure`.
 
-Perbaikan metodologi yang diunggah sebelum run itu:
-- Cabang tunggu berhenti di frame 181 agar tidak menunggu tanpa batas setelah VSync tampak berhenti.
-- Pada cabang konfirmasi, screenshot frame 180 diambil lebih dahulu, lalu Circle kedua dikirim pada callback frame 180; pelepasan dijadwalkan pada frame 188.
-- Proses dibatasi 45 detik per cabang.
-- Jika proses crash/timeout atau checkpoint tidak terbentuk, langkah laporan tetap berlanjut agar screenshot yang sempat diambil dapat dikonversi dan log/report dapat diunggah. Berkas screenshot mentah kini ikut ke artefak privat untuk memungkinkan pemulihan.
-- Jika cabang konfirmasi mencapai frame 240 dan membuat checkpoint, workflow menyalin checkpoint itu (tanpa mengubah checkpoint induk), lalu mengujinya dari proses emulator baru. Jika frame 240 tidak tercapai, status pemulihan wajib dicatat sebagai tidak dijalankan karena checkpoint tidak tersedia.
+- Cabang `CIRCLE_WAIT` selesai normal di frame 181. Log menunjukkan checkpoint dimuat, event/load-return PASS, tap Circle awal di frame 30 dan release di 38 terdeteksi; screenshot ditangkap pada frame 1–181 yang dipilih.
+- Cabang `CIRCLE_SECOND` juga memuat checkpoint dan mendeteksi tap Circle awal. Screenshot frame 175 memperlihatkan panel misi serta prompt `けってい`; panel yang sama sudah jelas pada frame 180.
+- Setelah screenshot f180, skrip mengirim Circle kedua dan pembacaan pad mencatat `readback=true status=PASS`. Frame 181 masih identik secara piksel dengan cabang tunggu (`mad=0.000, exact=1.00000`). Cabang konfirmasi kemudian tidak menghasilkan frame 182 atau lebih jauh dan keluar dengan timeout 45 detik (`code=124`). Ini tidak membuktikan tombol kedua tidak bekerja; efek gameplay setelah input tetap tidak diketahui karena tidak ada frame lanjutan.
+- Karena frame 240 tidak tercapai, checkpoint baru tidak dibuat dan pemulihan dalam proses emulator baru tidak dijalankan. Checkpoint induk tidak berubah.
+- Artefak privat #12314526644 berisi 103 file, 4.105.985 byte, digest ZIP `sha256:dfbb9526dc4d14d81d46ed3c0acf676b299ea179aba47f17e8e6eef7dec66f05`, termasuk screenshot PNG, raw RGB dan log. Artefak bersifat privat dan tidak dimasukkan ke Git.
 
-Hasil akhir run #39528879636 harus ditambahkan ke dokumen ini setelah status dan artefaknya diverifikasi.
+## Eksperimen ulang #39529241370
+
+Run [#39529241370](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39529241370) dimulai pukul 08:46:27 WIB. Pada pemeriksaan 08:46:31 WIB, status `in_progress`, runner sedang menginisialisasi container.
+
+Perubahan eksperimen yang baru:
+- Screenshot frame 175 diambil terlebih dahulu (frame ini secara visual sudah memperlihatkan prompt), lalu Circle kedua dikirim pada callback frame 175; release dijadwalkan pada frame 183.
+- Screenshot tambahan frame 176–178 disiapkan agar respons langsung setelah input dapat diperiksa.
+- Batas 45 detik per proses tetap dipertahankan. Artefak menyimpan screenshot PNG, data mentah, log, dan laporan privat meskipun cabang gagal.
+- Checkpoint baru hanya akan dibuat bila cabang konfirmasi mencapai frame 240; jika dibuat, workflow mengujinya dalam proses emulator baru.
+
+Hasil #39529241370 perlu ditambahkan setelah run dan artefaknya diverifikasi.
 
 ## Klasifikasi kesimpulan saat ini
 
