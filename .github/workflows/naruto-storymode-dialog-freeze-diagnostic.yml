@@ -181,10 +181,7 @@ jobs:
           local returned=false
           local loaded=false
           local captures={[1]=true,[8]=true,[16]=true,[24]=true,[32]=true,[40]=true,[48]=true,[56]=true,[64]=true,[72]=true,[80]=true,[88]=true,[96]=true,[104]=true,[112]=true,[116]=true,[117]=true,[118]=true,[119]=true,[120]=true,[121]=true,[122]=true,[123]=true,[124]=true,[125]=true,[126]=true,[128]=true,[130]=true}
-          local function log(s)
-              print(string.format("wall_epoch=%d cpu_seconds=%.4f %s",os.time(),os.clock(),s))
-              io.stdout:flush()
-          end
+          local function log(s) print(s); io.stdout:flush() end
           local function shot(f)
               local s=PCSX.GPU.takeScreenShot()
               assert(s and s.width>=100 and s.height>=100 and s.data,"invalid screenshot")
