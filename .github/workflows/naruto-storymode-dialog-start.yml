@@ -43,7 +43,7 @@ jobs:
           run-id: 39513285641
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-roulette-confirm/build-artifact
+          path: /tmp/naruto-storymode-konoha-roulette-continue/build-artifact
 
       - name: Download verified post-Roulette f120 branch checkpoint
         uses: actions/download-artifact@v4
@@ -52,7 +52,7 @@ jobs:
           run-id: 39593536028
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-roulette-confirm/state-artifact
+          path: /tmp/naruto-storymode-konoha-roulette-continue/state-artifact
 
       - name: Download original private Memory Card
         uses: actions/download-artifact@v4
@@ -61,7 +61,7 @@ jobs:
           run-id: 39262213468
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-roulette-confirm/card-artifact
+          path: /tmp/naruto-storymode-konoha-roulette-continue/card-artifact
 
       - name: Validate inputs and stage isolated copies
         shell: bash
