@@ -1,9 +1,0 @@
-Controlled one-input-versus-no-input menu confirmation test from immutable Konoha f175 source checkpoint.
-
-ACTION=CIRCLE
-Source SHA-256: f8bd00074877ef583e35b8eaf2fc65b3877acda9bebd5f2d8e9a13abee094615
-Expected initial menu: Roulette is highlighted on the original f175 source.
-Test: restore independent fresh emulator processes from the same source; NONE sends no input; CIRCLE is pressed at relative frame 30 and released at frame 38.
-Purpose: test CIRCLE as contextual confirmation of the highlighted Roulette menu item, not as dialogue skipping.
-Capture: external X11 only for restored later state. Keep screenshots, savestates, ROM, BIOS and Memory Card private.
-This marker must be deleted after the workflow finishes.
