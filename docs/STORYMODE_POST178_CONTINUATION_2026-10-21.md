@@ -1,5 +1,24 @@
 # Eksperimen kelanjutan setelah konfirmasi Circle — 21 Oktober 2026
 
+## Follow-up terbaru — START pada dialog Naruto (14:01 WIB)
+
+## HASIL TERBARU — uji START pada dialog Naruto (21 Oktober 2026, 14:01 WIB)
+
+- Run terbaru [#39558959143](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39558959143) selesai `failure` pada 14:01:53 WIB. Tidak ada run workflow dialog START yang masih aktif pada pemeriksaan setelah selesai. Pemicu satu-kali sudah dihapus agar tidak memicu eksperimen duplikat.
+- Artefak screenshot/log privat [#12326872574](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39558959143/artifacts/12326872574), sekitar 1,96 MB; tangkapan asli diperiksa langsung setelah diunduh dari artefak.
+- **Terverifikasi:** checkpoint stabil terakhir dapat dipulihkan dalam proses emulator baru. Dialog dengan potret dan nama Naruto tampak pada screenshot asli f179. START ditekan dan dilepas sebagai tap satu-VSync; log readback menandai press f179 dan release f180 sebagai PASS. Screenshot f180 berbeda dari f179 (MAD RGB 16,637; sekitar 28,41% piksel berubah), tetapi f180 dan f181 identik tepat (MAD 0; 100% piksel identik).
+- **Kegagalan run:** emulator berhenti menghasilkan frame setelah f181 dan proses berakhir karena timeout (kode 124). Tap START kedua yang direncanakan setelah f182 **tidak pernah terkirim**. Run sebelumnya #39558656073 menunjukkan frame hingga f182 tetapi berakhir segmentation fault (kode 139). Run #39558242453 juga timeout setelah f181 ketika START ditahan lebih lama.
+- **Batas kesimpulan:** START memang dikirim sesuai aturan, tetapi perubahan f179→f180 belum membuktikan START menyebabkan transisi karena tidak tersedia kontrol tanpa input yang sepadan pada checkpoint dialog. Dialog tidak terbukti tertutup; belum ada screenshot yang membuktikan misi aktif. Belum ada bukti Story Mode tamat.
+- **Langkah berikutnya:** jangan mengulang eksperimen yang sama tanpa mengatasi freeze/crash sekitar frame 181. Pertahankan checkpoint induk dan checkpoint stabil; diagnosis runtime/frame scheduling terlebih dahulu atau ambil checkpoint dialog dari titik yang tidak mengalami crash, lalu uji START dalam cabang yang dipisahkan. Bukti visual gameplay hanya dari screenshot emulator asli.
+
+### Kronologi run dialog START
+
+- [Run #39557821644](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39557821644): segmentation fault kode 139 sebelum START pada f179; artefak [#12326123328](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39557821644/artifacts/12326123328).
+- [Run #39558242453](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39558242453): START press terbaca PASS pada f179, emulator timeout kode 124; screenshot tersedia sampai f181. Artefak [#12326777425](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39558242453/artifacts/12326777425).
+- [Run #39558656073](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39558656073): tap START satu-VSync terbaca; screenshot tersedia hingga f182, kemudian segmentation fault kode 139. Artefak [#12326946348](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39558656073/artifacts/12326946348).
+- [Run #39558959143](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39558959143): menguji tap kedua setelah f182, tetapi proses timeout pada tahap setelah f181; tap kedua tidak tercatat. Artefak [#12326872574](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39558959143/artifacts/12326872574).
+
+
 ## Validasi workflow setelah perbaikan assertion — 21 Oktober 2026, 13:25 WIB
 
 Run [#39555023915](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39555023915) dimulai 13:22:40 dan selesai 13:25:23 WIB dengan status `failure`. Perubahan assertion f180 bekerja; kali ini penyebabnya adalah cabang `NONE` timeout 25 detik (exit code 124) dan gagal menghasilkan baseline f180. Cabang `UP`, `DOWN`, `LEFT`, `RIGHT`, `CIRCLE`, dan `START` masing-masing mencapai frame 180 dengan exit code 0. Karena baseline `NONE` tidak lengkap, report dengan benar menandai perbandingan penuh sebagai tidak lengkap, walau sampel visual sampai f150 tersedia.
