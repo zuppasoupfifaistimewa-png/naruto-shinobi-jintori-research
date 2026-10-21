@@ -1,3 +1,9 @@
+## POST-178 FORENSIC NOTE — dialog checkpoint preserved during GDB run #39588281198 (21 October 2026, 17:59 WIB)
+
+This was a no-input diagnostic restore of the already-verified pre-START dialog checkpoint, not a restart of Story Mode and not a verified transition into active gameplay. Run [#39588281198](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39588281198) reached f172 before the callback stalled; GDB did not observe a natural SIGSEGV before the 60-second timeout (exit 124). The two original X11 captures still show the dialogue and Circle prompt with HUD 1500–1500. There is no new evidence that a mission is active or that Story Mode is complete.
+
+Internal screenshots remain limited to f130 and passed validation. No controller input was sent, and neither the stable parent checkpoint nor the pre-START dialog checkpoint was modified. See [the forensic report](SIGSEGV_FORENSICS_2026-10-21.md) for the GDB/core-dump result.
+
 ## LATEST FORENSIC UPDATE — extended natural-crash observation through outer timeout, run #39586201539 (21 October 2026, 17:42 WIB)
 
 - Run [#39586201539](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39586201539) completed with workflow conclusion `success` at 10:41:59 UTC. This continued the lightweight `catchsegv` test without GDB attached to the live emulator. No controller input was sent; the default renderer selection was retained.
