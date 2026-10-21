@@ -28,7 +28,7 @@ Battle and turn-result screens have not yet been calibrated with authentic examp
 
 Immutable source checkpoint came from run [#39685868421](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39685868421), private artifact `naruto-storymode-next-roulette-circle-diff-private`: `next-roulette-result-none-f180.sstate`, 21,162,945 bytes, SHA-256 `19388b5a9b59c77e443f47abdc7c6f98251ef4a1be1b512378faab217a658ae9`. The source is copied read-only before launch.
 
-Adaptive test run [#39687675432](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39687675432) was started with the initial eight-cycle runner. Check its conclusion and private artifact before treating any cycle as verified; update this document with observed results after review.
+Adaptive test run [#39687675432](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39687675432) completed **failure**. Tests passed 5/5; external X11 captures were valid for C01-F20/F60/F100/F180 and C02-F20. Cycle 1 chose DOWN and button readback passed, but the expected route/dialog transition was not detected and the repeated-cycle runner stopped advancing after C02-F20. It timed out with only 5/32 images and 1/8 checkpoints. Private artifact #12386984413 contains the partial evidence and expires 4 November 2026. Do not count this as an autonomous eight-cycle run or Story Mode progress. A scheduled monitor now exists at `.github/workflows/naruto-storymode-adaptive-monitor.yml`; it checks Actions health every 15 minutes and on player-run completion, but cannot by itself establish in-game progress or ending.
 
 ## Privacy and correctness constraints
 
