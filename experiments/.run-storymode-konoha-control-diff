@@ -1,1 +1,0 @@
-One-shot trigger: retry isolated directional differential from immutable Konoha f175 checkpoint after fixing the paused X11 capture handshake. Branches NONE, UP, DOWN, LEFT, RIGHT; no internal screenshot APIs; take external X11 captures only while paused; use fresh process and disposable Memory Card for each branch.
