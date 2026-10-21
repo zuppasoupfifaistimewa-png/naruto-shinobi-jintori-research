@@ -302,6 +302,7 @@ jobs:
               end
               if not loaded or not returned then return end
               frame=frame+1
+              log("DIAG_START_FRAME="..frame)
               if captures[frame] then shot(frame) end
               if frame==1 then input("press") end
               if frame==2 then input("release") end
