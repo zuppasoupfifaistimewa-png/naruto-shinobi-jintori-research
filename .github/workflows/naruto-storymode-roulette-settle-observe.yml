@@ -52,7 +52,7 @@ jobs:
       - name: Download the verified dialogue checkpoint from run 39615341661
         uses: actions/download-artifact@v4
         with:
-          name: naruto-storymode-roulette-post-result-observe-private
+          name: naruto-storymode-map-route-down-diff-private
           run-id: 39615341661
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
