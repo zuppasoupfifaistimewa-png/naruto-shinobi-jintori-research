@@ -229,13 +229,27 @@ jobs:
           if [ -r /proc/sys/kernel/core_pattern ]; then echo "DIAG_KERNEL_CORE_PATTERN=$(cat /proc/sys/kernel/core_pattern)" | tee -a "$WORK/captures/diagnostic-report.txt"; else echo "DIAG_KERNEL_CORE_PATTERN=UNREADABLE" | tee -a "$WORK/captures/diagnostic-report.txt"; fi
           echo "DIAG_LAUNCHER_FILE=$(file -b "$WORK/squashfs-root/AppRun")" | tee -a "$WORK/captures/diagnostic-report.txt"
           echo "DIAG_LAUNCHER_REALPATH=$(readlink -f "$WORK/squashfs-root/AppRun" || true)" | tee -a "$WORK/captures/diagnostic-report.txt"
-          timeout --signal=TERM --kill-after=3s 30s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+          timeout --signal=TERM --kill-after=3s 60s stdbuf -oL -eL gdb -q -batch \
+            -ex 'set pagination off' \
+            -ex 'set confirm off' \
+            -ex 'set debuginfod enabled off' \
+            -ex 'set print thread-events off' \
+            -ex 'handle SIGSEGV stop print nopass' \
+            -ex 'handle SIGINT stop print nopass' \
+            -ex run \
+            -ex 'echo \\n===DIAG_GDB_STACK_CAPTURE===\\n' \
+            -ex 'info program' \
+            -ex 'info threads' \
+            -ex 'thread apply all bt 64' \
+            -ex 'info registers' \
+            -ex 'info proc mappings' \
+            --args "$WORK/squashfs-root/AppRun" \
             -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd" \
             -exec "$PAD_SETUP" -dofile "$WORK/restore-no-input.lua" -softgpu -dynarec -stdout -lua_stdout \
             -logfile "$WORK/captures/pcsx-DIAGNONE.log" -run > "$WORK/captures/pcsx-DIAGNONE.stdout" 2>&1 &
           timeout_pid=$!
           python3 - "$timeout_pid" "$WORK/captures/pcsx-DIAGNONE.stdout" "$WORK/captures" <<'PY'
-          import os, re, sys, time, subprocess
+          import os, re, signal, sys, time, subprocess
           from datetime import datetime, timezone
           from pathlib import Path
           from PIL import Image, ImageChops
@@ -314,6 +328,25 @@ jobs:
                       except Exception as e: log("X11_SCREEN_COMPARE_ERROR="+str(e))
                   else:
                       log("STALL_CONTINUED_CAPTURE_SKIPPED reason=frame_advanced")
+                  # If GDB has not already caught SIGSEGV, interrupt only the
+                  # emulator inferior so GDB can print all-thread backtraces.
+                  try:
+                      ps2=subprocess.run(["ps","-eo","pid=,ppid=,comm=,args="],capture_output=True,text=True)
+                      rows=[]
+                      for line in ps2.stdout.splitlines():
+                          parts=line.strip().split(None,3)
+                          if len(parts)==4:
+                              try: rows.append((int(parts[0]),int(parts[1]),parts[2],parts[3]))
+                              except ValueError: pass
+                      gdb_pids={pid for pid,ppid,comm,args in rows if comm.lower().startswith("gdb") and "restore-no-input.lua" in args}
+                      inferior=next((pid for pid,ppid,comm,args in rows if ppid in gdb_pids and "restore-no-input.lua" in args and ("apprun" in args.lower() or "pcsx-redux" in args.lower())),None)
+                      if inferior is not None:
+                          os.kill(inferior,signal.SIGINT)
+                          log(f"GDB_INFERIOR_INTERRUPT_SENT pid={inferior} signal=SIGINT reason=VSync_stall")
+                      else:
+                          log("GDB_INFERIOR_INTERRUPT_SKIPPED reason=process_not_found")
+                  except Exception as e:
+                      log("GDB_INFERIOR_INTERRUPT_ERROR="+str(e))
               time.sleep(0.1)
           log(f"WATCHDOG_END last_frame={last_frame} external_pair_captured={captured}")
           PY
@@ -325,7 +358,11 @@ jobs:
           frames="$( (grep -oE 'DIAG_NONE_FRAME=[0-9]+' "$WORK/captures/pcsx-DIAGNONE.stdout" || true) | sed 's/.*=//' | sort -n | tail -1)"
           if [ -z "$frames" ]; then frames=0; fi
           echo "DIAG_NONE_LAST_FRAME=$frames input=NONE" | tee -a "$WORK/captures/diagnostic-report.txt"
-          if [ "$rc" -eq 0 ] && grep -q 'DIAG_NONE_BRANCH_DONE frame=175' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
+          if grep -q 'Program received signal SIGSEGV' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
+            echo "DIAG_NONE_RESULT=GDB_CAUGHT_SIGSEGV_WITHOUT_START" | tee -a "$WORK/captures/diagnostic-report.txt"
+          elif grep -q 'Program received signal SIGINT' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
+            echo "DIAG_NONE_RESULT=GDB_BACKTRACE_CAPTURED_AFTER_VSYNC_STALL_NO_START" | tee -a "$WORK/captures/diagnostic-report.txt"
+          elif [ "$rc" -eq 0 ] && grep -q 'DIAG_NONE_BRANCH_DONE frame=175' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
             echo "DIAG_NONE_RESULT=PASS_175_VSYNC_NO_INPUT" | tee -a "$WORK/captures/diagnostic-report.txt"
           elif [ "$rc" -eq 124 ] && [ "$frames" -ge 1 ]; then
             echo "DIAG_NONE_RESULT=STALL_OR_TIMEOUT_WITHOUT_START" | tee -a "$WORK/captures/diagnostic-report.txt"
@@ -393,6 +430,15 @@ jobs:
           else
             echo "DIAG_CORE_FOUND=NO" >> "$report"
             echo "DIAG_GDB_POSTMORTEM=NOT_RUN" >> "$report"
+          fi
+          session="$WORK/captures/pcsx-DIAGNONE.stdout"
+          if [ -s "$session" ] && grep -Eq 'Program received signal SIGSEGV|Program received signal SIGINT' "$session"; then
+            echo "DIAG_GDB_LIVE_SESSION_TRACE_CAPTURED=YES" >> "$report"
+            echo "DIAG_GDB_LIVE_SESSION_TRACE_BEGIN" >> "$report"
+            awk '/Program received signal SIGSEGV|Program received signal SIGINT|===DIAG_GDB_STACK_CAPTURE===/{printing=1} printing {print}' "$session" >> "$report"
+            echo "DIAG_GDB_LIVE_SESSION_TRACE_END" >> "$report"
+          else
+            echo "DIAG_GDB_LIVE_SESSION_TRACE_CAPTURED=NO" >> "$report"
           fi
           cat "$report"
           
