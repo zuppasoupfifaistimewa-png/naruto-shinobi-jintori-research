@@ -1,3 +1,35 @@
+## HASIL TERBARU — watchdog VSync eksternal mencapai frame 151, lalu SIGSEGV (21 Oktober 2026, 16:08:25 WIB)
+
+### Run, checkpoint, dan metode
+
+- Run [#39574435847](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39574435847) berakhir pada 16:08:25 WIB dengan conclusion workflow **success**. Step emulator mencatat exit code **139**; kesimpulan workflow tidak boleh disamakan dengan emulator mencapai target f175.
+- Tidak ada input kontrol selama run. Checkpoint dialog pra-START yang dipulihkan berukuran 21.162.258 byte, SHA-256 c47d2069ae9b1e589cce35df2dbaaa867b3365acfd501d2666a72ecd5fcc494c. Checkpoint induk 21.163.483 byte, SHA-256 b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee diverifikasi utuh dan tetap read-only.
+- Screenshot internal emulator dihentikan pada f130. Lua hanya melaporkan frame; timestamp presisi dan pengamatan stall berasal dari watchdog eksternal Python menggunakan time.monotonic() dan timestamp UTC. Capture luar dilakukan dengan xwd -root lalu konversi PNG, bukan melalui callback screenshot PCSX-Redux.
+
+### Pengamatan terukur
+
+- Watchdog mengamati frame 151 pada 16:08:10.907 WIB. Tidak ada frame baru selama 2,576 detik; stall dikonfirmasi pada 16:08:13.485 WIB.
+- Tangkapan X11 pertama dimulai pada 16:08:13.494 WIB dan lolos pemeriksaan: 1280×800, 777.527 byte, 131.762 warna unik. Screenshot asli menunjukkan latar papan game, HUD Naruto dan Mizuki masing-masing 1500, portrait/nama Naruto, dialog berbahasa Jepang yang tetap terbuka, dan ikon prompt Circle.
+- Tangkapan kedua dilakukan sekitar 16:08:15.782 WIB. Output hanya 458 byte dan satu warna hitam; validator eksternal menolaknya. Wrapper melaporkan emulator exit 139 sekitar 16:08:16.015 WIB.
+- Snapshot process-state-at-stall.txt menunjukkan proses AppRun dalam state Sl, wait channel vfs_coredump, %CPU=76.2 pada sampling tersebut. wchan=vfs_coredump konsisten dengan proses berada di jalur kernel untuk core dump setelah sinyal fatal. Bersama exit code 139 dan layar X11 yang berubah menjadi hitam, ini sangat mendukung bahwa penghentian frame f151 berkaitan dengan crash fatal; belum diketahui fungsi/native path mana yang menyebabkan crash.
+- Validasi screenshot internal menerima 28 gambar f001–f130 (DIAG_SCREENSHOT_PROBLEMS=none). Tidak ada permintaan screenshot internal setelah f130, sehingga bukti crash ini tidak bergantung pada screenshot internal pada f150.
+- Artefak privat [#12333511723](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39574435847/artifacts/12333511723), 4.139.742 byte, digest ZIP sha256:63497731a6e361aff98f9e0f2f0a895010987b87250aadfc72c82a74ba6ed23c. Screenshot eksternal pertama di artefak bernama X11-stall-first.png; X11-stall-second.png sengaja tetap disimpan untuk mendokumentasikan layar hitam yang ditolak.
+
+### Cross-check tanpa timestamp callback Lua
+
+- Run [#39573924538](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39573924538) menambahkan timestamp pada callback Lua serta watchdog eksternal. Frame terakhir 140, tidak ada frame baru selama 2,549 detik, lalu exit 124 (timeout). Kedua tangkapan eksternal 1280×800 tidak seragam; perbandingan mendapati 13.172 dari 1.024.000 piksel berbeda (1,286%), sementara area teks dialog identik. Snapshot proses mencatat futex_do_wait, bukan vfs_coredump.
+- Run [#39573533078](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39573533078) memakai gate awal f145. Frame terakhir yang diamati f140, sehingga watchdog tidak mengambil screenshot X11; timeout 124. Gate kemudian diturunkan ke f135.
+- Perubahan titik berhenti dari f140/timeout pada run dengan timestamp Lua ke f151/crash pada run tanpa timestamp Lua berarti instrumentasi dapat mengubah timing atau runtime memang tidak stabil. Data yang ada tidak mengisolasi penyebab pastinya.
+
+### Interpretasi dan langkah lanjut
+
+- **Terverifikasi:** checkpoint sumber tidak berubah; tidak ada input START; tidak ada screenshot internal setelah f130; frame 151 terlihat dari watchdog; screenshot X11 pertama adalah tangkapan layar game asli yang valid; proses berakhir 139 dan snapshot state menunjukkan vfs_coredump.
+- **Hipotesis kuat, belum akar sebab:** callback/log VSync berhenti karena jalur fatal crash; tangkapan eksternal kedua hitam karena display/renderer sudah hilang saat proses menuju exit. Belum ada backtrace atau core dump yang mengidentifikasi sumber native crash.
+- **Status gameplay:** tangkapan valid memperlihatkan dialog Naruto belum tertutup dan prompt Circle masih tampak. Jangan menyatakan misi aktif, penyelesaian misi, atau Story Mode tamat.
+- **Langkah berikutnya:** analisis crash dengan mengumpulkan informasi signal/thread/backtrace atau core dump yang dibatasi ukurannya sebelum eksperimen input baru. Jangan ulangi tap START satu-VSync yang sama. Jika dialog muncul saat permainan benar-benar dilanjutkan, aturan operasional tetap memakai START, bukan Circle. Jangan ganti checkpoint dan tetap gunakan screenshot asli dari emulator.
+
+---
+
 ## HASIL TERBARU — paired NONE vs START dengan cutoff screenshot f130 (21 Oktober 2026, 15:38:40 WIB)
 
 ### Ringkasan run dan checkpoint
