@@ -36,17 +36,28 @@ Mulai 08:42:32 WIB; selesai 08:44:41 WIB pada 21 Oktober 2026. Status workflow: 
 - Karena frame 240 tidak tercapai, checkpoint baru tidak dibuat dan pemulihan dalam proses emulator baru tidak dijalankan. Checkpoint induk tidak berubah.
 - Artefak privat #12314526644 berisi 103 file, 4.105.985 byte, digest ZIP `sha256:dfbb9526dc4d14d81d46ed3c0acf676b299ea179aba47f17e8e6eef7dec66f05`, termasuk screenshot PNG, raw RGB dan log. Artefak bersifat privat dan tidak dimasukkan ke Git.
 
-## Eksperimen ulang #39529241370
+## Run #39529241370 — tap kedua di frame 175, tetapi frame berhenti setelah f180
 
-Run [#39529241370](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39529241370) dimulai pukul 08:46:27 WIB. Pada pemeriksaan 08:46:31 WIB, status `in_progress`, runner sedang menginisialisasi container.
+Run: [#39529241370](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39529241370)  
+Mulai 08:46:27 WIB; selesai 08:47:46 WIB. Status: `failure`.
 
-Perubahan eksperimen yang baru:
-- Screenshot frame 175 diambil terlebih dahulu (frame ini secara visual sudah memperlihatkan prompt), lalu Circle kedua dikirim pada callback frame 175; release dijadwalkan pada frame 183.
-- Screenshot tambahan frame 176–178 disiapkan agar respons langsung setelah input dapat diperiksa.
-- Batas 45 detik per proses tetap dipertahankan. Artefak menyimpan screenshot PNG, data mentah, log, dan laporan privat meskipun cabang gagal.
-- Checkpoint baru hanya akan dibuat bila cabang konfirmasi mencapai frame 240; jika dibuat, workflow mengujinya dalam proses emulator baru.
+- Cabang `CIRCLE_WAIT` menuntaskan penangkapan sampai frame 181 dan keluar normal.
+- Cabang konfirmasi mengambil screenshot f175 lalu mengirim Circle kedua; pad-readback menyatakan `true/PASS`. Screenshot f176, f177, f178, f179, dan f180 masih pixel-identik dengan cabang tunggu. Tidak ada f181 pada cabang konfirmasi; proses berakhir setelah timeout 45 detik (`code=124`).
+- Jadi tap dikirim dan input pad berubah, tetapi tidak ada perubahan gambar yang terlihat dalam frame pasca-input yang tersedia. Frame/game emulasi berhenti sebelum release dijadwalkan pada f183. Ini membuat eksperimen tidak bisa membedakan apakah game menunggu pelepasan tombol, emulator macet, atau ada penyebab lain.
+- Tidak ada state baru; restore di proses emulator baru tidak dijalankan.
+- Artefak privat #12314327303, 4.659.232 byte, digest ZIP `sha256:f370dd9bbf5efe0903d21326d8dc5fe0638c08e35e15e2c91b156529b31ca975`, berisi PNG/raw RGB/log serta laporan. Artefak tetap privat dan tidak ada aset game yang ditambahkan ke Git.
 
-Hasil #39529241370 perlu ditambahkan setelah run dan artefaknya diverifikasi.
+## Eksperimen ulang aktif #39529605910
+
+Run [#39529605910](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39529605910) dimulai 08:50:22 WIB. Pemeriksaan awal pukul 08:50:25 WIB: `in_progress`, langkah container setup.
+
+Perbaikan yang diuji:
+- Circle kedua ditekan setelah screenshot f175, lalu dilepas setelah screenshot f178 (pulsa pendek sekitar tiga frame), bukan ditahan sampai f183.
+- Screenshot rapat f176–f180 tetap tersedia, dan screenshot f181–f187 serta f240 disiapkan untuk menangkap transisi atau checkpoint.
+- Proses emulator dibatasi 45 detik. Jika checkpoint f240 terbentuk, workflow mencoba restore pada proses baru; jika tidak, screenshot/log parsial tetap dipaketkan ke artefak privat.
+- Batas timeout job 35 menit berarti sekitar 09:25:22 WIB sebagai batas maksimum nominal, bukan janji selesai.
+
+Hasil final run #39529605910 harus ditambahkan setelah status dan artefaknya diverifikasi.
 
 ## Klasifikasi kesimpulan saat ini
 
