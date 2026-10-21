@@ -1,10 +1,15 @@
-## Probe ulang Circle — jendela lebih pendek (21 Oktober 2026, 08:00 WIB)
+## HASIL TERBARU — Circle timeline probe selesai (21 Oktober 2026, 08:01 WIB)
 
-- Run aktif: [#39524697802](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39524697802), dimulai 08:00:08 WIB. Workflow sekarang membatasi pengamatan tiap cabang sampai 90 VSync dan timeout tiap cabang 100 detik; binary patched dan checkpoint yang terverifikasi digunakan ulang. Tidak ada build ulang dan checkpoint induk tidak ditimpa.
-- Perkiraan praktis selesai 08:08–08:12 WIB jika cabang mencapai frame 90; batas maksimum workflow 35 menit berarti sekitar 08:35:08 WIB. Waktu ini estimasi, bukan jaminan.
-- Dasar retry: run [#39523066920](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39523066920) gagal pada langkah observasi. Lima cabang semuanya berhasil restore checkpoint, tetapi berhenti setelah snapshot frame 150 tanpa marker penutupan cabang; batas timeout per-cabang 120 detik tidak cukup untuk mencapai frame 300.
-- Hasil visual parsial yang tetap valid: Circle pada frame 30 berbeda dari no-input sejak frame 37 dan menunjukkan transisi papan/figur karakter pada screenshot frame 150. Circle pada frame 90 sebelumnya tidak menunjukkan perbedaan dalam window yang tersedia; input kiri juga tidak berbeda. Retry menekan Circle "lebih lambat" pada frame 60 agar efek masih bisa diamati sebelum frame 90.
-- Kesimpulan belum berubah: respons Circle awal mungkin memicu aksi atau transisi, tetapi fungsi kontrol sebenarnya belum pasti. Belum ada klaim progres Story Mode kanonis atau tamat; save/load Memory Card in-game masih belum teruji.
+- Run [#39524697802](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39524697802) berstatus `success`, mulai 08:00:08 WIB dan selesai 08:01:54 WIB (durasi 1 menit 46 detik). Tidak ada Actions run aktif yang perlu ditunggu untuk eksperimen ini.
+- Artifact privat [#12311254886](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39524697802) berisi screenshot/log lima cabang hingga frame 90. Digest ZIP: `sha256:b121b6df1037a4877f688a450b841cd9e1112fe753625b7132548468117269f4`; kedaluwarsa 4 November 2026 sekitar 08:01:48 WIB.
+- Semua cabang (NONE, CIRCLE_TAP_EARLY, CIRCLE_HOLD30, CIRCLE_TAP_LATE, LEFT_TAP_EARLY) sukses memuat checkpoint, menyelesaikan capture sampai frame 90, dan mencatat marker cabang selesai. Checkpoint induk 21.162.405 byte, SHA-256 `b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a`; laporan memastikan `CIRCLE_TIMELINE_PARENT_STATE_MUTATION=NO`. AppImage patched digunakan ulang tanpa rebuild, SHA-256 `2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99`.
+- Temuan visual: cabang Circle yang ditekan pada frame 30 identik dengan baseline sampai frame 35, berbeda mulai frame 37, dan tetap sangat berbeda pada frame 90. Menahan Circle 30 frame menghasilkan gambar identik dengan tap singkat di semua titik yang diukur. Circle yang ditekan pada frame 60 dan tombol LEFT pada frame 30 menghasilkan gambar identik dengan baseline sampai frame 90.
+- Kesimpulan yang dibolehkan: Circle awal menghasilkan respons visual yang berbeda pada timing ini. **Fungsi game yang tepat belum diketahui**; perubahan scene/camera juga terjadi tanpa input di baseline. Tombol kiri yang tidak mengubah gambar pada timing ini tidak membuktikan bahwa arah tidak bekerja dalam konteks lain.
+- Rincian metrik, hash, batas interpretasi, dan rencana lanjutan: [docs/STORYMODE_CIRCLE_TIMELINE_2026-10-21.md](docs/STORYMODE_CIRCLE_TIMELINE_2026-10-21.md).
+- Langkah berikut: buat cabang baru dari checkpoint parent yang sama dan perpanjang observasi untuk NONE, Circle awal, dan START awal melewati frame 90 (target sekurangnya frame 180), dengan screenshot rapat di sekitar perubahan frame 37 serta setelah frame 90. Jangan menimpa parent; jangan menamai aksi Circle atau menyatakan Story Mode maju/tamat tanpa bukti runtime.
+- **Status keseluruhan:** checkpoint patched dapat dipulihkan dan uji kontrol ini selesai; progres Story Mode kanonis, save/load Memory Card in-game, dan tamat Story Mode belum terbukti. ROM, BIOS, savestate, dan Memory Card tetap di luar Git.
+
+---
 
 ---
 
