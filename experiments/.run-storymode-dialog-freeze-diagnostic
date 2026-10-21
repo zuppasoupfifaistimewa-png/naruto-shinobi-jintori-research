@@ -1,0 +1,1 @@
+One-shot request: investigate SIGSEGV from run 39574435847 by preserving a local core dump long enough to generate a native backtrace. No controller input; do not alter checkpoint; no internal screenshots after frame 130.
