@@ -1,3 +1,20 @@
+## CURRENT STATUS — adaptive player prototype test failed; monitoring added (22 October 2026, 06:xx WIB)
+
+**Story Mode is NOT complete. An autonomous adaptive player capable of completing all Story Mode has NOT been finished or verified.** The first classifier and runner exist, but the eight-cycle emulator test timed out during cycle 2. No ending evidence exists.
+
+- Adaptive code: `tools/storymode_adaptive_agent.py`; synthetic unit tests passed 5/5 inside run #39687675432.
+- Private adaptive run [#39687675432](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39687675432) ended **failure**. External X11 captures were valid for C01-F20/F60/F100/F180 and C02-F20. The agent classified the map and chose DOWN in cycle 1; button press/release readback passed. It chose RIGHT in cycle 2, but the loop then stopped advancing and timed out with only 5/32 captures and 1/8 checkpoints. Treat cycle 1 as a harness test, not verified route progress, because the post-DOWN visuals remained classified as map and did not confirm the expected dialogue/route counter change.
+- Private artifact #12386984413 (`naruto-storymode-adaptive-player-private`) contains partial authentic X11 frames, decisions, logs and the cycle-1 checkpoint. It expires 4 November 2026. Do not commit or create public links to the screenshots or savestates.
+- New scheduled monitor: `.github/workflows/naruto-storymode-adaptive-monitor.yml`. It checks every 15 minutes and after player-run completion for run age (>15 minutes), failure status, and presence of the private evidence artifact. It monitors Actions/artefact health only; it does not prove emulator gameplay progress or Story Mode completion. Monitor runs are visible in GitHub Actions and report to its job summary; a failing check is not an external push notification.
+- Latest roulette A/B result remains: in run #39685868421, one Circle press and NONE were pixel-identical at F100 and F180; both returned to the board by F180. Do not spam Circle on a roulette that is already settling.
+- Next engineering step is to fix the repeated-cycle pause/hang by making every bounded cycle recoverable from a verified checkpoint and checking the emulator has actually advanced between captures. Add battle/turn-result signatures only from real private emulator frames; unknown states must remain WAIT.
+
+**Rule-evidence protocol:** use identical read-only parent checkpoint and cloned Memory Card in fresh emulator branches; capture authentic X11 before/after a single action; confirm emulator button readback; compare visual state, route position/counter, Chakra/barrier/ownership and subsequent transition against a matched no-input control; repeat on another checkpoint/context. Corroborate observations against static code/reverse engineering. Record rules as VERIFIED only after repeatable direct evidence; otherwise label HYPOTHESIS or UNKNOWN. Verify completion only with authentic in-game ending/results evidence.
+
+Constraints remain: only repo `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`; no Tile Duel or other repo; ROM/BIOS/Memory Card/savestates/screenshots remain private and out of Git. Use START for Story Mode dialogue; Circle only for a visibly highlighted contextual confirmation. Translate Japanese text immediately into Indonesian parentheses.
+
+---
+
 ## LATEST VERIFIED CONTINUATION — Mizuki dialogue discovered after barrier (21 October 2026)
 
 This supersedes earlier next-action notes above: the next operation is to skip Mizuki’s visible dialogue with START, not to send another direction press yet. Story Mode is still NOT complete and no ending evidence exists.
