@@ -43,7 +43,7 @@ jobs:
           run-id: 39513285641
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-roulette-stop/build-artifact
+          path: /tmp/naruto-storymode-konoha-roulette-result/build-artifact
 
       - name: Download verified post-Circle f160 checkpoint during Roulette animation
         uses: actions/download-artifact@v4
@@ -52,7 +52,7 @@ jobs:
           run-id: 39595042810
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-roulette-stop/state-artifact
+          path: /tmp/naruto-storymode-konoha-roulette-result/state-artifact
 
       - name: Download original private Memory Card
         uses: actions/download-artifact@v4
@@ -61,7 +61,7 @@ jobs:
           run-id: 39262213468
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-roulette-stop/card-artifact
+          path: /tmp/naruto-storymode-konoha-roulette-result/card-artifact
 
       - name: Validate inputs and stage isolated copies
         shell: bash
