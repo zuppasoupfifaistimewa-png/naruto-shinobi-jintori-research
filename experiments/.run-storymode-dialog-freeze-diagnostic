@@ -1,0 +1,1 @@
+One-shot trigger for evidence-based delayed START test. Reuse the verified pre-START checkpoint, leave dialogue untouched for 119 VSync frames, press/release START for one VSync, then observe original screenshots through frame 210.
