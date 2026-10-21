@@ -43,7 +43,7 @@ jobs:
           run-id: 39513285641
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-post-iruka-inspect/build-artifact
+          path: /tmp/naruto-storymode-konoha-barrier-confirm/build-artifact
 
       - name: Download RIGHT/DOWN barrier prompt checkpoints at f50
         uses: actions/download-artifact@v4
@@ -52,7 +52,7 @@ jobs:
           run-id: 39599001309
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-post-iruka-inspect/state-artifact
+          path: /tmp/naruto-storymode-konoha-barrier-confirm/state-artifact
 
       - name: Download original private Memory Card
         uses: actions/download-artifact@v4
@@ -61,7 +61,7 @@ jobs:
           run-id: 39262213468
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-post-iruka-inspect/card-artifact
+          path: /tmp/naruto-storymode-konoha-barrier-confirm/card-artifact
 
       - name: Validate immutable barrier prompt source checkpoints
         shell: bash
@@ -132,7 +132,7 @@ jobs:
           Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
           PY
 
-      - name: Observe post-Iruka board through short no-input continuation and external X11
+      - name: Confirm currently highlighted YES option with one Circle press/release; external X11 only
         shell: bash
         run: |
           set -euo pipefail
@@ -149,23 +149,21 @@ jobs:
           PCSX.settings.pads[1].DeviceType='Analog'
           PCSX.settings.pads[1].Connected=true
           PCSX.SIO0.slots[1].pads[1].map()
-          print("KONOHA_POST_IRUKA_PAD_SETUP=PASS")
+          print("KONOHA_BARRIER_PAD_SETUP=PASS")
           LUA
           )
-
-          cat > "$WORK/inspect-post-iruka-no-input.lua" <<'LUA'
-          local frame=0
-          local started=false
-          local returned=false
-          local loaded=false
+          cat > "$WORK/confirm-barrier-once.lua" <<'LUA'
+          local frame=0; local started=false; local returned=false; local loaded=false
           local mode=os.getenv("PROBE_BRANCH") or "RIGHT"
           local lower=os.getenv("PROBE_BRANCH_LOWER") or "right"
+          local pad=PCSX.SIO0.slots[1].pads[1]
+          local buttons=PCSX.CONSTS.PAD.BUTTON
           local function log(s) print(s); io.stdout:flush() end
-          local function waitForExternalRelease(path,callback)
+          local function waitForRelease(path,callback)
               PCSX.nextTick(function()
                   while true do
                       local f=io.open(path,"r")
-                      if f then f:close(); log("KONOHA_POST_IRUKA_RESUME_GATE="..path); break end
+                      if f then f:close(); log("KONOHA_BARRIER_RESUME_GATE="..path); break end
                       os.execute("sleep 0.05")
                   end
                   callback()
@@ -174,138 +172,136 @@ jobs:
           local function pauseCapture(point)
               PCSX.pauseEmulator()
               local marker="captures/go-"..point:lower().."-"..lower
-              log("KONOHA_POST_IRUKA_"..point.."_CAPTURE_READY branch="..mode.." frame="..frame)
-              waitForExternalRelease(marker,function() PCSX.resumeEmulator() end)
+              log("KONOHA_BARRIER_"..point.."_CAPTURE_READY branch="..mode.." frame="..frame)
+              waitForRelease(marker,function() PCSX.resumeEmulator() end)
+          end
+          local function circle(phase)
+              local b=buttons.CIRCLE
+              local ok,v=pcall(function()
+                  if phase=="press" then pad.setOverride(b) else pad.clearOverride(b) end
+                  return pad.getButton(b)
+              end)
+              local pass=ok and v==(phase=="press")
+              log(string.format("KONOHA_BARRIER_INPUT action=CIRCLE phase=%s readback=%s status=%s",phase,tostring(v),pass and "PASS" or "FAIL"))
+              if not pass then PCSX.quit(83) end
           end
           PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
-              loaded=true; frame=0; log("KONOHA_POST_IRUKA_LOAD_EVENT=PASS branch="..mode)
+              loaded=true; frame=0; log("KONOHA_BARRIER_LOAD_EVENT=PASS branch="..mode)
           end)
           PCSX.Events.createEventListener("GPU::Vsync",function()
               if not started then
-                  started=true; log("KONOHA_POST_IRUKA_LOAD_BEGIN branch="..mode)
+                  started=true; log("KONOHA_BARRIER_LOAD_BEGIN branch="..mode)
                   PCSX.pauseEmulator()
                   PCSX.nextTick(function()
-                      local path="resume/post-iruka-"..lower.."-f80.sstate"
-                      local f=assert(Support.File.open(path))
+                      local f=assert(Support.File.open("resume/barrier-prompt-"..lower.."-f50.sstate"))
                       local ok,err=pcall(function() PCSX.loadSaveState(f) end); f:close()
-                      if not ok then log("KONOHA_POST_IRUKA_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
-                      returned=true; log("KONOHA_POST_IRUKA_LOAD_RETURNED=1 input=NONE"); PCSX.resumeEmulator()
+                      if not ok then log("KONOHA_BARRIER_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
+                      returned=true; log("KONOHA_BARRIER_LOAD_RETURNED=1"); PCSX.resumeEmulator()
                   end)
                   return
               end
               if not loaded or not returned then return end
               frame=frame+1
-              log(string.format("KONOHA_POST_IRUKA_FRAME=%d branch=%s input=NONE internal_screenshot=DISABLED",frame,mode))
-              if frame==20 then pauseCapture("F20"); return
+              log(string.format("KONOHA_BARRIER_FRAME=%d branch=%s internal_screenshot=DISABLED",frame,mode))
+              if frame==15 then pauseCapture("PRE"); return
+              elseif frame==20 then log("KONOHA_BARRIER_SELECTED_OPTION=はい (Ya); one Circle confirm"); circle("press")
+              elseif frame==21 then circle("release")
               elseif frame==40 then pauseCapture("F40"); return
-              elseif frame==50 then
-                  log("KONOHA_POST_IRUKA_SAVE_BEGIN frame=50 no_input=true")
+              elseif frame==70 then pauseCapture("F70"); return
+              elseif frame==80 then
+                  log("KONOHA_BARRIER_SAVE_BEGIN frame=80 no_more_input=true")
                   PCSX.pauseEmulator()
                   PCSX.nextTick(function()
                       local ok,state=pcall(function() return PCSX.createSaveState() end)
-                      if not ok or not state then log("KONOHA_POST_IRUKA_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
-                      local output="captures/konoha-post-iruka-"..lower.."-f50.sstate"
-                      local opened,file=pcall(function() return assert(Support.File.open(output,"TRUNCATE")) end)
-                      if not opened or not file then log("KONOHA_POST_IRUKA_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
+                      if not ok or not state then log("KONOHA_BARRIER_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
+                      local out="captures/konoha-barrier-result-"..lower.."-f80.sstate"
+                      local opened,file=pcall(function() return assert(Support.File.open(out,"TRUNCATE")) end)
+                      if not opened or not file then log("KONOHA_BARRIER_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
                       local wrote,err=pcall(function() file:writeMoveSlice(state); file:close() end)
-                      if not wrote then log("KONOHA_POST_IRUKA_SAVE_WRITE_ERROR="..tostring(err)); PCSX.quit(73); return end
-                      log("KONOHA_POST_IRUKA_BRANCH_DONE branch="..mode.." frame=50 source_checkpoint_untouched=YES")
+                      if not wrote then log("KONOHA_BARRIER_SAVE_WRITE_ERROR="..tostring(err)); PCSX.quit(73); return end
+                      log("KONOHA_BARRIER_BRANCH_DONE branch="..mode.." frame=80 one_circle_tap=PASS source_checkpoint_untouched=YES")
                       PCSX.quit(0)
                   end)
                   return
               end
           end)
-          log("KONOHA_POST_IRUKA_READY branch="..mode.." input=NONE; X11 only at f20/f40; save f50")
+          log("KONOHA_BARRIER_READY branch="..mode.." one Circle press f20/release f21; external X11 at f15/f40/f70; save f80")
           LUA
-          cp "$WORK/inspect-post-iruka-no-input.lua" "$WORK/captures/inspect-post-iruka-no-input.lua"
+          cp "$WORK/confirm-barrier-once.lua" "$WORK/captures/confirm-barrier-once.lua"
           failed=0
           for mode in RIGHT DOWN; do
-            lower_mode="$(printf '%s' "$mode" | tr '[:upper:]' '[:lower:]')"
-            cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-KONOHA-POST-IRUKA-$mode.mcd"
-            stdout="$WORK/captures/pcsx-KONOHA-POST-IRUKA-$mode.stdout"
-            echo "KONOHA_POST_IRUKA_BRANCH_BEGIN=$mode"
-            set +e
-            PROBE_BRANCH="$mode" PROBE_BRANCH_LOWER="$lower_mode" timeout --signal=TERM --kill-after=3s 20s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-KONOHA-POST-IRUKA-$mode.mcd" \
-              -exec "$PAD_SETUP" -dofile "$WORK/inspect-post-iruka-no-input.lua" -softgpu -dynarec -stdout -lua_stdout \
-              -logfile "$WORK/captures/pcsx-KONOHA-POST-IRUKA-$mode.log" -run > "$stdout" 2>&1 &
+            lower="$(printf '%s' "$mode" | tr '[:upper:]' '[:lower:]')"
+            cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-BARRIER-$mode.mcd"
+            stdout="$WORK/captures/pcsx-BARRIER-$mode.stdout"
+            PROBE_BRANCH="$mode" PROBE_BRANCH_LOWER="$lower" timeout --signal=TERM --kill-after=3s 25s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-BARRIER-$mode.mcd" \
+              -exec "$PAD_SETUP" -dofile "$WORK/confirm-barrier-once.lua" -softgpu -dynarec -stdout -lua_stdout \
+              -logfile "$WORK/captures/pcsx-BARRIER-$mode.log" -run > "$stdout" 2>&1 &
             pid=$!
-            python3 - "$pid" "$mode" "$lower_mode" "$stdout" "$WORK/captures" <<'PY'
+            python3 - "$pid" "$mode" "$lower" "$stdout" "$WORK/captures" <<'PY'
           import sys,time,subprocess
           from datetime import datetime,timezone
           from pathlib import Path
           from PIL import Image
           pid=int(sys.argv[1]); mode=sys.argv[2]; lower=sys.argv[3]; stdout=Path(sys.argv[4]); out=Path(sys.argv[5])
-          done=set(); points=("F20","F40")
-          logpath=out/"konoha-post-iruka-x11-watchdog.log"
-          def log(s):
-              line=f"utc={datetime.now(timezone.utc).isoformat()} branch={mode} {s}"
-              with logpath.open("a",encoding="utf-8") as f: f.write(line+"\n")
-              print(line,flush=True)
+          done=set()
           def alive():
               r=subprocess.run(["ps","-o","stat=","-p",str(pid)],capture_output=True,text=True)
-              st=r.stdout.strip()
-              return bool(st) and not st.startswith("Z")
+              s=r.stdout.strip(); return bool(s) and not s.startswith("Z")
           def capture(point):
-              label=f"KONOHA-POST-IRUKA-{mode}-{point}"
+              label=f"KONOHA-BARRIER-{mode}-{point}"
               xwd=out/(label+".xwd"); png=out/(label+".png")
               a=subprocess.run(["xwd","-root","-silent","-out",str(xwd)],capture_output=True,text=True)
-              if a.returncode or not xwd.is_file() or xwd.stat().st_size==0:
-                  log(f"X11_CAPTURE_FAILED point={point} rc={a.returncode} error={a.stderr.strip()}"); return False
+              if a.returncode or not xwd.is_file() or xwd.stat().st_size==0: print("X11_CAPTURE_FAILED",label,a.stderr,flush=True); return False
               b=subprocess.run(["convert",str(xwd),str(png)],capture_output=True,text=True)
               try: xwd.unlink()
               except FileNotFoundError: pass
-              if b.returncode or not png.is_file():
-                  log(f"X11_CONVERT_FAILED point={point} rc={b.returncode}"); return False
+              if b.returncode or not png.is_file(): print("X11_CONVERT_FAILED",label,b.stderr,flush=True); return False
               try:
                   with Image.open(png) as im:
                       colors=im.getcolors(maxcolors=1000000)
                       valid=im.size==(1280,800) and png.stat().st_size>1000 and not (colors is not None and len(colors)==1)
-                      log(f"X11_CAPTURE_VERIFY point={point} path={png.name} size={im.size} bytes={png.stat().st_size} colors={len(colors) if colors is not None else 'many'} valid={valid}")
+                      print(f"X11_CAPTURE_VERIFY label={label} size={im.size} bytes={png.stat().st_size} colors={len(colors) if colors is not None else 'many'} valid={valid}",flush=True)
                       return bool(valid)
-              except Exception as e:
-                  log(f"X11_CAPTURE_VERIFY_ERROR point={point} error={e}"); return False
-          log("WATCHDOG_START input=NONE internal_screenshots=DISABLED")
+              except Exception as e: print("X11_CAPTURE_VERIFY_ERROR",label,e,flush=True); return False
           while True:
               try: content=stdout.read_text(errors="replace")
               except FileNotFoundError: content=""
-              for point in points:
-                  token=f"KONOHA_POST_IRUKA_{point}_CAPTURE_READY branch={mode}"
+              for point in ("PRE","F40","F70"):
+                  token=f"KONOHA_BARRIER_{point}_CAPTURE_READY branch={mode}"
                   if point not in done and token in content:
                       ok=capture(point)
                       (out/f"go-{point.lower()}-{lower}").write_text("captured="+str(ok)+"\n",encoding="utf-8")
                       done.add(point)
-              if not alive():
-                  log("PROCESS_EXITED captured="+",".join(sorted(done))); break
+              if not alive(): break
               time.sleep(0.01)
-          log("WATCHDOG_END captured="+",".join(sorted(done)))
+          print("X11_WATCHDOG_END branch="+mode+" captures="+",".join(sorted(done)),flush=True)
           PY
             wait "$pid"
             rc=$?
-            set -e
-            echo "KONOHA_POST_IRUKA_PROCESS_EXIT branch=$mode rc=$rc"
-            grep -E 'KONOHA_POST_IRUKA_(LOAD_EVENT|LOAD_RETURNED|F20_CAPTURE_READY|F40_CAPTURE_READY|BRANCH_DONE|.*ERROR)' "$stdout" || true
-            for p in F20 F40; do
-              if [ ! -s "$WORK/captures/KONOHA-POST-IRUKA-$mode-$p.png" ]; then failed=$((failed+1)); fi
-            done
-            if [ "$rc" -ne 0 ] || [ ! -s "$WORK/captures/konoha-post-iruka-$lower_mode-f50.sstate" ]; then failed=$((failed+1)); fi
+            echo "KONOHA_BARRIER_PROCESS_EXIT branch=$mode rc=$rc"
+            grep -E 'KONOHA_BARRIER_(LOAD_EVENT|LOAD_RETURNED|INPUT|PRE_CAPTURE_READY|F40_CAPTURE_READY|F70_CAPTURE_READY|BRANCH_DONE|.*ERROR)' "$stdout" || true
+            if [ "$rc" -ne 0 ]; then failed=$((failed+1)); fi
+            for p in PRE F40 F70; do if [ ! -s "$WORK/captures/KONOHA-BARRIER-$mode-$p.png" ]; then failed=$((failed+1)); fi; done
+            if [ ! -s "$WORK/captures/konoha-barrier-result-$lower-f80.sstate" ]; then failed=$((failed+1)); fi
+            if [ "$(grep -c 'KONOHA_BARRIER_INPUT action=CIRCLE phase=press readback=true status=PASS' "$stdout" || true)" -ne 1 ]; then failed=$((failed+1)); fi
           done
-          test "$(sha256sum "$WORK/resume/post-iruka-right-f80.sstate" | cut -d ' ' -f1)" = 62c0f6c8acd37656a3b211ff4af6626aa905dc0612fcece3df6a234b69b42f18
-          test "$(sha256sum "$WORK/resume/post-iruka-down-f80.sstate" | cut -d ' ' -f1)" = c3b6719b0d1e78786927a062e45d7f134fa84d6fc15e26c75bd1cefba102bebe
-          echo "KONOHA_POST_IRUKA_SOURCE_CHECKPOINTS_UNCHANGED=PASS"
-          if [ "$failed" -ne 0 ]; then echo "::error::$failed post-Iruka branches incomplete"; exit 44; fi
+          test "$(sha256sum "$WORK/resume/barrier-prompt-right-f50.sstate" | cut -d ' ' -f1)" = 0c9cba399af65f821bc472630405cd734f60b7b12e7e6e34a8999adb358b307d
+          test "$(sha256sum "$WORK/resume/barrier-prompt-down-f50.sstate" | cut -d ' ' -f1)" = 8bc2b3cb86204ef9ad406b991d5764f910c99864de624f4a8694a5c81a331c5e
+          echo "KONOHA_BARRIER_SOURCE_CHECKPOINTS_UNCHANGED=PASS"
+          if [ "$failed" -ne 0 ]; then echo "::error::$failed barrier branches incomplete"; exit 44; fi
 
-      - name: Upload private post-Iruka X11 observation and successor checkpoints
+      - name: Upload private barrier confirmation X11 evidence and checkpoints
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: naruto-storymode-konoha-post-iruka-inspect-private
+          name: naruto-storymode-konoha-barrier-confirm-private
           path: |
-            /tmp/naruto-storymode-konoha-post-iruka-inspect/captures/*.png
-            /tmp/naruto-storymode-konoha-post-iruka-inspect/captures/*.txt
-            /tmp/naruto-storymode-konoha-post-iruka-inspect/captures/*.stdout
-            /tmp/naruto-storymode-konoha-post-iruka-inspect/captures/*.log
-            /tmp/naruto-storymode-konoha-post-iruka-inspect/captures/*.sstate
+            /tmp/naruto-storymode-konoha-barrier-confirm/captures/*.png
+            /tmp/naruto-storymode-konoha-barrier-confirm/captures/*.txt
+            /tmp/naruto-storymode-konoha-barrier-confirm/captures/*.stdout
+            /tmp/naruto-storymode-konoha-barrier-confirm/captures/*.log
+            /tmp/naruto-storymode-konoha-barrier-confirm/captures/*.sstate
 
       - name: Remove read-only source checkpoint and disposable Memory Cards, ROM, and BIOS from ephemeral runner
         if: always()
