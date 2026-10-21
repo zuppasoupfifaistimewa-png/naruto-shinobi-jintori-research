@@ -1,1 +1,0 @@
-One-shot trigger: resume the verified pre-START Konoha dialog checkpoint; use one START tap at relative VSync 120, release at 121, save an independent f140 checkpoint, then test fresh-process no-input continuation. Internal screenshots only through callback frame 130; later visuals via external X11 only. Never use Circle for dialogue. Never modify the source checkpoint.
