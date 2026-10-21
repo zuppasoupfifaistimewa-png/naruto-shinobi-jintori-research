@@ -283,7 +283,8 @@ jobs:
               log(string.format("POSTCONF_SCREENSHOT label=%s width=%d height=%d",label,s.width,s.height))
           end
           local function input(action,phase)
-              local b=(action=="START") and buttons.START or buttons.CIRCLE
+              local b=buttons.CIRCLE
+              if action=="START" then b=buttons.START elseif action=="UP" then b=buttons.UP elseif action=="DOWN" then b=buttons.DOWN elseif action=="LEFT" then b=buttons.LEFT elseif action=="RIGHT" then b=buttons.RIGHT end
               local ok,readback=pcall(function()
                   if phase=="press" then pad.setOverride(b) else pad.clearOverride(b) end
                   return pad.getButton(b)
@@ -320,7 +321,7 @@ jobs:
           cp "$WORK/fresh-restore-controls.lua" "$WORK/captures/fresh-restore-controls.lua"
 
           branches_ok=1
-          for mode in NONE CIRCLE START; do
+          for mode in NONE UP DOWN LEFT RIGHT; do
             cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-$mode.mcd"
             echo "POSTCONF_BRANCH_BEGIN=$mode"
             set +e
@@ -380,20 +381,20 @@ jobs:
                   malformed.append(mp.name+":"+str(e))
           frames=[1,10,30,40,44,45,46,47,48,50,52,53,54,55,60]
           out=[
-            "POSTCONF_EXPERIMENT=restore stable post-confirm checkpoint; compare NONE/CIRCLE/START with 8-VSync button holds after panel animation at equal VSync counts",
+            "POSTCONF_EXPERIMENT=restore stable post-confirm checkpoint; compare NONE/UP/DOWN/LEFT/RIGHT with 8-VSync D-pad holds after panel animation at equal VSync counts",
             "POSTCONF_STABLE_CHECKPOINT_BYTES="+str(Path("captures/stable-postconfirm-checkpoint.sstate").stat().st_size if Path("captures/stable-postconfirm-checkpoint.sstate").exists() else 0),
             "POSTCONF_STABLE_CHECKPOINT_SHA256="+__import__("hashlib").sha256(Path("captures/stable-postconfirm-checkpoint.sstate").read_bytes()).hexdigest() if Path("captures/stable-postconfirm-checkpoint.sstate").exists() else "missing",
-            "POSTCONF_BRANCHES=NONE,CIRCLE,START; action input f45 press, f53 release (8 VSync hold) after panel animation; 60 VSync each",
+            "POSTCONF_BRANCHES=NONE,UP,DOWN,LEFT,RIGHT; D-pad action input f45 press, f53 release (8 VSync hold) after panel animation; 60 VSync each",
             "POSTCONF_MALFORMED_SCREENSHOTS="+("; ".join(malformed) if malformed else "none")
           ]
           bad=False
-          for mode in ["NONE","CIRCLE","START"]:
+          for mode in ["NONE","UP","DOWN","LEFT","RIGHT"]:
               if mode+"-f060" not in images:
                   out.append("POSTCONF_BRANCH_F60="+mode+":missing")
                   bad=True
           for f in frames:
               none=images.get("NONE-f"+str(f).zfill(3))
-              for mode in ["CIRCLE","START"]:
+              for mode in ["UP","DOWN","LEFT","RIGHT"]:
                   other=images.get(mode+"-f"+str(f).zfill(3))
                   if none is None or other is None:
                       out.append(f"POSTCONF_COMPARE frame={f} NONE_vs_{mode}:missing")
