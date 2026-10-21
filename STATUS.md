@@ -1,3 +1,13 @@
+## PEMBARUAN RISSET TERBARU — 21 Oktober 2026, 08:42 WIB
+
+- Eksperimen Circle kedua sebelumnya [run #39527646447](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39527646447) berakhir `failure` pukul 08:35:20 WIB. Cabang tunggu hanya menghasilkan frame sampai 181 lalu timeout; cabang kedua crash pada frame 175 sebelum Circle kedua dikirim. Jadi efek konfirmasi `けってい` **belum diuji**. Tidak ada checkpoint lanjutan dari run ini.
+- Detail dan klasifikasi bukti dicatat pada [docs/STORYMODE_CIRCLE_SECOND_CONFIRM_2026-10-21.md](docs/STORYMODE_CIRCLE_SECOND_CONFIRM_2026-10-21.md).
+- Eksperimen ulang [run #39528879636](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39528879636) dimulai pukul 08:42:32 WIB. Pemeriksaan pukul 08:42:36 WIB menunjukkan `in_progress`, sedang menyiapkan workspace privat; hasil gameplay dan artefak belum tersedia. Batas timeout job 35 menit berarti sekitar 09:17:32 WIB sebagai batas maksimum nominal, bukan waktu selesai yang dijanjikan.
+- Workflow ulang mengambil screenshot panel frame 180 sebelum mengirim Circle kedua pada callback yang sama, membatasi proses menjadi 45 detik per cabang, dan tetap mengolah serta mengunggah bukti parsial walau proses gagal. Checkpoint baru hanya akan dibuat bila cabang konfirmasi mencapai frame 240; bila berhasil, pemulihan diuji melalui proses emulator baru.
+- Checkpoint induk tidak berubah: 21.162.405 byte, SHA-256 `b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a`. ROM, BIOS, savestate dan Memory Card tetap privat dan tidak masuk Git. Story Mode belum terbukti maju melewati panel konfirmasi maupun tamat.
+
+---
+
 ## HASIL TERBARU — follow-up Circle/START tervalidasi (21 Oktober 2026, 08:21 WIB)
 
 - Run final [#39526690265](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39526690265) selesai `success` pada 08:21:22 WIB (durasi 1 menit 21 detik). Tidak ada Actions run yang masih aktif.
