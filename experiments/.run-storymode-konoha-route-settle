@@ -1,1 +1,0 @@
-One-shot trigger: restore the immutable NONE/RIGHT/DOWN checkpoints from run #39596338264, continue each with no controller input, take external X11 captures only while paused at relative f20/f60/f100, and save independent f120 successor checkpoints. Do not call internal screenshot APIs or modify source checkpoint files.
