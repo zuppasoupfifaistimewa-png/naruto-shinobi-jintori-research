@@ -1,3 +1,4 @@
 One-shot trigger: restore the verified post-confirm checkpoint, reach the Naruto dialogue through the previously observed Circle transition, capture the original dialog screen, then press START immediately and inspect subsequent frames. Do not include ROM, BIOS, Memory Card, or state files in Git.
 Retry: press START immediately after the verified frame-179 Naruto dialogue screenshot to avoid the unstable next-frame transition.
 Retry with START as a one-VSync tap: press immediately after frame-179 dialog screenshot and release after frame 180.
+Test a second START tap after frame 182 screenshot because the dialog panel remained visible after the first tap.
