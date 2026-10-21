@@ -161,7 +161,7 @@ jobs:
           local loaded=false
           local pad=PCSX.SIO0.slots[1].pads[1]
           local buttons=PCSX.CONSTS.PAD.BUTTON
-          local captures={[1]=true,[10]=true,[30]=true,[60]=true,[89]=true,[90]=true,[98]=true,[120]=true,[150]=true,[174]=true,[175]=true,[176]=true,[177]=true,[178]=true,[179]=true,[180]=true,[181]=true,[182]=true,[185]=true,[187]=true,[188]=true,[189]=true,[190]=true,[195]=true,[200]=true,[210]=true,[225]=true,[240]=true,[270]=true,[300]=true}
+          local captures={[1]=true,[10]=true,[30]=true,[60]=true,[89]=true,[90]=true,[98]=true,[120]=true,[150]=true,[174]=true,[175]=true,[176]=true,[177]=true,[178]=true,[179]=true,[180]=true,[181]=true,[182]=true,[183]=true,[184]=true,[185]=true,[187]=true,[188]=true,[189]=true,[190]=true,[195]=true,[200]=true,[210]=true,[225]=true,[240]=true,[270]=true,[300]=true}
           local function log(s) print(s); io.stdout:flush() end
           local function shot(f)
               local s=PCSX.GPU.takeScreenShot()
@@ -209,6 +209,11 @@ jobs:
                   input("START","press")
               end
               if frame==180 then input("START","release") end
+              if frame==182 then
+                  log("DIALOG_START_NARUTO_DIALOG_STILL_VISIBLE=frame182; issuing a second one-VSync START tap after screenshot")
+                  input("START","press")
+              end
+              if frame==183 then input("START","release") end
               if frame==300 then
                   log("DIALOG_START_BRANCH_DONE frame=300 load_event="..tostring(loaded).." load_returned="..tostring(returned))
                   PCSX.pauseEmulator()
@@ -261,7 +266,7 @@ jobs:
           lines=[
             "DIALOG_START_EXPERIMENT=load verified stable post-confirm checkpoint; Circle tap f90-f98; capture original dialog screen at f179 and immediately press START on that same emulator callback; observe through f300",
             "SOURCE_CHECKPOINT_SHA256=b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee",
-            "START_PRESS_WINDOW=f179 only; release=f180 (one-VSync tap)",
+            "START_TAPS=f179 and f182 (each one VSync); releases=f180 and f183",
             "SCREENSHOT_CONVERSION_PROBLEMS="+("; ".join(problems) if problems else "none"),
             "GAMEPLAY_PROGRESS_NOT_ASSERTED=YES; classify from captured original emulator screenshots only"
           ]
