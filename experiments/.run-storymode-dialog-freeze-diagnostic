@@ -1,5 +1,5 @@
-RUN=2026-10-21-no-input-vsync175
+RUN=2026-10-21-paired-no-input-vs-start-vsync175
 CHECKPOINT=dialog-entry-f178.sstate sha256:c47d2069ae9b1e589cce35df2dbaaa867b3365acfd501d2666a72ecd5fcc494c
-SCREENSHOTS=frame<=130 only
+INPUT=control NONE vs one-VSync START at frame 120
+SCREENSHOTS=frame<=130 only in both branches
 VSync_LOG=through frame 175 unless emulator stops
-START_BRANCH=disabled
