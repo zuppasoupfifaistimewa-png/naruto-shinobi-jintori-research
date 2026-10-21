@@ -332,33 +332,10 @@ jobs:
                       except Exception as e: log("X11_SCREEN_COMPARE_ERROR="+str(e))
                   else:
                       log("STALL_CONTINUED_CAPTURE_SKIPPED reason=frame_advanced")
-                  # Observe a bounded window for the signal-time handler's output.
-                  # Avoid GDB in this run so its instrumentation does not alter the
-                  # renderer timing before a possible natural SIGSEGV.
-                  time.sleep(3.0)
-                  try:
-                      current_output=stdout.read_text(errors="replace")
-                  except Exception:
-                      current_output=""
-                  if re.search(r'Segmentation fault|Backtrace:|signal SIGSEGV',current_output,re.I):
-                      log("NATIVE_SIGSEGV_TRACE_OBSERVED=YES; leaving fatal-signal path untouched")
-                  else:
-                      try:
-                          ps2=subprocess.run(["ps","-eo","pid=,ppid=,comm=,args="],capture_output=True,text=True)
-                          rows=[]
-                          for line in ps2.stdout.splitlines():
-                              parts=line.strip().split(None,3)
-                              if len(parts)==4:
-                                  try: rows.append((int(parts[0]),int(parts[1]),parts[2],parts[3]))
-                                  except ValueError: pass
-                          inferior=next((pid for pid,ppid,comm,args in rows if "restore-no-input.lua" in args and (comm.lower().startswith("apprun") or "pcsx-redux" in comm.lower())),None)
-                          if inferior is not None:
-                              os.kill(inferior,signal.SIGTERM)
-                              log(f"EMULATOR_STOP_SENT pid={inferior} signal=SIGTERM reason=no_natural_SIGSEGV_trace_after_stall_observation")
-                          else:
-                              log("EMULATOR_STOP_SKIPPED reason=process_not_found")
-                      except Exception as e:
-                          log("EMULATOR_STOP_ERROR="+str(e))
+                  # Do not interrupt the emulator after capturing the stalled display.
+                  # Leave the process untouched to allow a delayed natural SIGSEGV and
+                  # its catchsegv trace to occur. The outer timeout(60s) bounds the run.
+                  log("NATURAL_CRASH_OBSERVATION_CONTINUES_UNINTERRUPTED outer_timeout_s=60")
               time.sleep(0.1)
           log(f"WATCHDOG_END last_frame={last_frame} external_pair_captured={captured}")
           PY
@@ -376,8 +353,8 @@ jobs:
             echo "DIAG_NONE_RESULT=SEGMENTATION_FAULT_NO_HANDLER_TRACE" | tee -a "$WORK/captures/diagnostic-report.txt"
           elif [ "$rc" -eq 143 ] && [ "$frames" -ge 1 ]; then
             echo "DIAG_NONE_RESULT=STALL_CAPTURED_NO_NATURAL_SIGSEGV_IN_OBSERVATION_WINDOW" | tee -a "$WORK/captures/diagnostic-report.txt"
-          elif [ "$rc" -eq 255 ] && [ "$frames" -ge 1 ] && grep -q 'EMULATOR_STOP_SENT.*signal=SIGTERM' "$WORK/captures/vsync-watchdog.log"; then
-            echo "DIAG_NONE_RESULT=STALL_CAPTURED_NO_NATURAL_SIGSEGV_IN_OBSERVATION_WINDOW catchsegv_wrapper_rc=255 watchdog_stop=SIGTERM" | tee -a "$WORK/captures/diagnostic-report.txt"
+          elif [ "$rc" -eq 255 ] && [ "$frames" -ge 1 ] && ! grep -Eiq 'Segmentation fault|Backtrace:|signal SIGSEGV' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
+            echo "DIAG_NONE_RESULT=STALL_OR_TIMEOUT_WITHOUT_NATURAL_SIGSEGV_TRACE catchsegv_wrapper_rc=255" | tee -a "$WORK/captures/diagnostic-report.txt"
           elif [ "$rc" -eq 0 ] && grep -q 'DIAG_NONE_BRANCH_DONE frame=175' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
             echo "DIAG_NONE_RESULT=PASS_175_VSYNC_NO_INPUT" | tee -a "$WORK/captures/diagnostic-report.txt"
           elif [ "$rc" -eq 124 ] && [ "$frames" -ge 1 ]; then
