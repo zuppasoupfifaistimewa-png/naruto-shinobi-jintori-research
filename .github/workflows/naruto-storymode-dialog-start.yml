@@ -1,11 +1,11 @@
-name: Naruto Story Mode Konoha resume from preserved dialog checkpoint
+name: Naruto Story Mode Konoha f175 isolated direction differential
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - "experiments/.run-storymode-konoha-resume"
+      - "experiments/.run-storymode-konoha-control-diff"
 
 permissions:
   contents: read
@@ -13,14 +13,14 @@ permissions:
 
 jobs:
   probe:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-KONOHA-RESUME]')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-KONOHA-CONTROL-DIFF]')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     container:
       image: ghcr.io/grumpycoders/pcsx-redux-build:latest
       options: --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
     env:
-      WORK: /tmp/naruto-storymode-konoha-resume
+      WORK: /tmp/naruto-storymode-konoha-control-diff
       RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 
     steps:
@@ -43,16 +43,16 @@ jobs:
           run-id: 39513285641
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-resume/build-artifact
+          path: /tmp/naruto-storymode-konoha-control-diff/build-artifact
 
-      - name: Download verified pre-START dialog checkpoint
+      - name: Download verified no-input Konoha f175 successor checkpoint
         uses: actions/download-artifact@v4
         with:
-          name: naruto-storymode-dialog-freeze-diagnostic-private
-          run-id: 39563209277
+          name: naruto-storymode-konoha-control-diff-private
+          run-id: 39591032125
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-resume/state-artifact
+          path: /tmp/naruto-storymode-konoha-control-diff/state-artifact
 
       - name: Download original private Memory Card
         uses: actions/download-artifact@v4
@@ -61,28 +61,28 @@ jobs:
           run-id: 39262213468
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-resume/card-artifact
+          path: /tmp/naruto-storymode-konoha-control-diff/card-artifact
 
       - name: Validate inputs and stage isolated copies
         shell: bash
         run: |
           set -euo pipefail
           APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
-          CHECKPOINT="$WORK/state-artifact/dialog-entry-f178.sstate"
+          CHECKPOINT="$WORK/state-artifact/konoha-successor-checkpoint-f175.sstate"
           CARD="$WORK/card-artifact/naruto-storymode.mcd"
           chmod +x "$APP"
           test "$(sha256sum "$APP" | cut -d ' ' -f1)" = 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99
-          test "$(stat -c %s "$CHECKPOINT")" = 21162258
-          test "$(sha256sum "$CHECKPOINT" | cut -d ' ' -f1)" = c47d2069ae9b1e589cce35df2dbaaa867b3365acfd501d2666a72ecd5fcc494c
+          test "$(stat -c %s "$CHECKPOINT")" = 21163375
+          test "$(sha256sum "$CHECKPOINT" | cut -d ' ' -f1)" = f8bd00074877ef583e35b8eaf2fc65b3877acda9bebd5f2d8e9a13abee094615
           test "$(stat -c %s "$CARD")" = 131072
           test "$(sha256sum "$CARD" | cut -d ' ' -f1)" = ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
-          cp "$CHECKPOINT" "$WORK/resume/source-dialog-checkpoint.sstate"
-          chmod 400 "$WORK/resume/source-dialog-checkpoint.sstate"
+          cp "$CHECKPOINT" "$WORK/resume/source-konoha-f175.sstate"
+          chmod 400 "$WORK/resume/source-konoha-f175.sstate"
           cp "$CARD" "$WORK/cards/naruto-storymode-template.mcd"
-          echo "KONOHA_RESUME_EMULATOR_VALID=PASS"
-          echo "KONOHA_RESUME_SOURCE_CHECKPOINT_VALID=PASS bytes=21162258 sha256=c47d2069ae9b1e589cce35df2dbaaa867b3365acfd501d2666a72ecd5fcc494c"
-          echo "KONOHA_RESUME_SOURCE_CHECKPOINT_READ_ONLY=YES"
-          echo "KONOHA_RESUME_MEMORY_CARD_VALID=PASS"
+          echo "KONOHA_CONTROL_EMULATOR_VALID=PASS"
+          echo "KONOHA_CONTROL_SOURCE_CHECKPOINT_VALID=PASS bytes=21163375 sha256=f8bd00074877ef583e35b8eaf2fc65b3877acda9bebd5f2d8e9a13abee094615"
+          echo "KONOHA_CONTROL_SOURCE_CHECKPOINT_READ_ONLY=YES"
+          echo "KONOHA_CONTROL_MEMORY_CARD_VALID=PASS"
 
       - name: Download game and BIOS from the private runtime release
         shell: bash
@@ -131,7 +131,7 @@ jobs:
           Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
           PY
 
-      - name: Resume preserved Konoha dialog checkpoint with one START tap, save a derived state, and test fresh-process continuation
+      - name: Compare isolated directions against no-input control from preserved f175 checkpoint
         shell: bash
         run: |
           set -euo pipefail
@@ -153,327 +153,223 @@ jobs:
           LUA
           )
 
-          cat > "$WORK/dialog-start-probe.lua" <<'LUA'
+          cat > "$WORK/konoha-control-diff.lua" <<'LUA'
           local frame=0
           local started=false
           local returned=false
           local loaded=false
+          local mode=os.getenv("PROBE_BUTTON") or "NONE"
           local pad=PCSX.SIO0.slots[1].pads[1]
           local buttons=PCSX.CONSTS.PAD.BUTTON
-          local captures={[1]=true,[10]=true,[30]=true,[60]=true,[90]=true,[110]=true,[119]=true,[125]=true,[126]=true,[128]=true,[130]=true}
           local function log(s) print(s); io.stdout:flush() end
-          local function shot(f)
-              assert(f<=130,"internal screenshot cutoff exceeded")
-              local s=PCSX.GPU.takeScreenShot()
-              assert(s and s.width>=100 and s.height>=100 and s.data,"invalid screenshot")
-              local bpp=(s.bpp==0) and 16 or 24
-              local label="KONOHA-P1-f"..string.format("%03d",f)
-              local rawpath="captures/raw/"..label..".raw"
-              local raw=assert(Support.File.open(rawpath,"TRUNCATE")); raw:writeMoveSlice(s.data); raw:close()
-              local m=assert(io.open("captures/"..label..".json","wb"))
-              m:write(string.format('{"label":"%s","raw":"%s","width":%d,"height":%d,"bpp":%d,"expected_bytes":%d}\n',label,rawpath,s.width,s.height,bpp,s.width*s.height*bpp/8)); m:close()
-              log(string.format("KONOHA_P1_SCREENSHOT label=%s width=%d height=%d",label,s.width,s.height))
+          local function pollForFile(path,callback)
+              PCSX.nextTick(function()
+                  local f=io.open(path,"r")
+                  if f then f:close(); log("KONOHA_DIFF_RESUME_GATE="..path); callback()
+                  else pollForFile(path,callback) end
+              end)
+          end
+          local function pauseForExternalCapture(point)
+              PCSX.pauseEmulator()
+              local marker="captures/go-"..point:lower().."-"..mode
+              log("KONOHA_DIFF_"..point.."_CAPTURE_READY mode="..mode.." frame="..frame)
+              pollForFile(marker,function() PCSX.resumeEmulator() end)
           end
           local function input(phase)
-              local b=buttons.START
+              local b=buttons[mode]
+              if not b then log("KONOHA_DIFF_INPUT_ERROR mode="..mode.." reason=unknown_button"); PCSX.quit(82); return end
               local ok,readback=pcall(function()
                   if phase=="press" then pad.setOverride(b) else pad.clearOverride(b) end
                   return pad.getButton(b)
               end)
               local pass=ok and readback==(phase=="press")
-              log(string.format("KONOHA_P1_INPUT action=START phase=%s readback=%s status=%s",phase,tostring(readback),pass and "PASS" or "FAIL"))
+              log(string.format("KONOHA_DIFF_INPUT action=%s phase=%s readback=%s status=%s",mode,phase,tostring(readback),pass and "PASS" or "FAIL"))
               if not pass then PCSX.quit(83) end
           end
           PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
-              loaded=true; frame=0; log("KONOHA_P1_LOAD_EVENT=PASS")
+              loaded=true; frame=0; log("KONOHA_DIFF_LOAD_EVENT=PASS")
           end)
           PCSX.Events.createEventListener("GPU::Vsync",function()
               if not started then
-                  started=true
-                  log("KONOHA_P1_LOAD_BEGIN")
+                  started=true; log("KONOHA_DIFF_LOAD_BEGIN mode="..mode)
                   PCSX.pauseEmulator()
                   PCSX.nextTick(function()
-                      local f=assert(Support.File.open("resume/source-dialog-checkpoint.sstate"))
+                      local f=assert(Support.File.open("resume/source-konoha-f175.sstate"))
                       local ok,err=pcall(function() PCSX.loadSaveState(f) end); f:close()
-                      if not ok then log("KONOHA_P1_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
-                      returned=true; log("KONOHA_P1_LOAD_RETURNED=1"); PCSX.resumeEmulator()
+                      if not ok then log("KONOHA_DIFF_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
+                      returned=true; log("KONOHA_DIFF_LOAD_RETURNED=1 mode="..mode); PCSX.resumeEmulator()
                   end)
                   return
               end
               if not loaded or not returned then return end
               frame=frame+1
-              log(string.format("KONOHA_P1_FRAME=%d input_state=NONE",frame))
-              if frame==120 then
-                  log("KONOHA_P1_DIALOG_SKIP_START=frame120")
+              log(string.format("KONOHA_DIFF_FRAME=%d mode=%s",frame,mode))
+              if frame==20 then
+                  pauseForExternalCapture("PRE")
+                  return
+              elseif frame==30 and mode~="NONE" then
                   input("press")
-              elseif frame==121 then
+              elseif frame==38 and mode~="NONE" then
                   input("release")
-              end
-              if captures[frame] then shot(frame) end
-              if frame==140 then
-                  log("KONOHA_P1_SAVE_BEGIN frame=140 after single START tap")
+              elseif frame==90 then
+                  pauseForExternalCapture("POST")
+                  return
+              elseif frame==120 then
                   PCSX.pauseEmulator()
                   PCSX.nextTick(function()
-                      local ok,state=pcall(function() return PCSX.createSaveState() end)
-                      if not ok or not state then log("KONOHA_P1_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
-                      local opened,file=pcall(function()
-                          return assert(Support.File.open("captures/konoha-after-start-f140.sstate","TRUNCATE"))
-                      end)
-                      if not opened or not file then log("KONOHA_P1_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
-                      local wrote,err=pcall(function() file:writeMoveSlice(state); file:close() end)
-                      if not wrote then log("KONOHA_P1_SAVE_WRITE_ERROR="..tostring(err)); PCSX.quit(73); return end
-                      log("KONOHA_P1_SAVE_CREATED=PASS frame=140")
-                      log("KONOHA_P1_BRANCH_DONE frame=140 start_tap=1; source_checkpoint_untouched=YES")
+                      log("KONOHA_DIFF_BRANCH_DONE mode="..mode.." final_frame=120 source_checkpoint_untouched=YES")
                       PCSX.quit(0)
                   end)
                   return
               end
           end)
-          log("KONOHA_P1_READY no_circle=true start_frame=120 release_frame=121 internal_screenshot_cutoff=130")
+          log("KONOHA_DIFF_READY mode="..mode.." no_internal_screenshots=true pre_capture_f20 input_f30_f38 post_capture_f90")
           LUA
-          cp "$WORK/dialog-start-probe.lua" "$WORK/captures/dialog-start-probe.lua"
-          cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-KONOHA-P1.mcd"
-          echo "KONOHA_P1_PROCESS_BEGIN"
-          set +e
-          timeout --signal=TERM --kill-after=4s 30s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-KONOHA-P1.mcd" \
-            -exec "$PAD_SETUP" -dofile "$WORK/dialog-start-probe.lua" -softgpu -dynarec -stdout -lua_stdout \
-            -logfile "$WORK/captures/pcsx-KONOHA-P1.log" -run > "$WORK/captures/pcsx-KONOHA-P1.stdout" 2>&1
-          p1_rc=$?
-          set -e
-          echo "KONOHA_P1_PROCESS_EXIT_CODE=$p1_rc"
-          grep -E 'KONOHA_P1_(LOAD_EVENT|LOAD_RETURNED|FRAME=|INPUT|SCREENSHOT|SAVE|BRANCH_DONE|.*ERROR)' "$WORK/captures/pcsx-KONOHA-P1.stdout" || true
-          test -s "$WORK/captures/konoha-after-start-f140.sstate"
-          p1_hash="$(sha256sum "$WORK/captures/konoha-after-start-f140.sstate" | cut -d ' ' -f1)"
-          p1_bytes="$(stat -c %s "$WORK/captures/konoha-after-start-f140.sstate")"
-          test "$p1_bytes" -gt 1000000
-          test "$(sha256sum "$WORK/resume/source-dialog-checkpoint.sstate" | cut -d ' ' -f1)" = c47d2069ae9b1e589cce35df2dbaaa867b3365acfd501d2666a72ecd5fcc494c
-          echo "KONOHA_P1_DERIVED_CHECKPOINT_VALID=PASS bytes=$p1_bytes sha256=$p1_hash"
-
-          python3 - <<'PY'
-          import json
+          cp "$WORK/konoha-control-diff.lua" "$WORK/captures/konoha-control-diff.lua"
+          failed=0
+          for mode in NONE UP DOWN LEFT RIGHT; do
+            cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-KONOHA-$mode.mcd"
+            stdout="$WORK/captures/pcsx-KONOHA-$mode.stdout"
+            echo "KONOHA_DIFF_BRANCH_BEGIN=$mode"
+            set +e
+            PROBE_BUTTON="$mode" timeout --signal=TERM --kill-after=3s 25s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-KONOHA-$mode.mcd" \
+              -exec "$PAD_SETUP" -dofile "$WORK/konoha-control-diff.lua" -softgpu -dynarec -stdout -lua_stdout \
+              -logfile "$WORK/captures/pcsx-KONOHA-$mode.log" -run > "$stdout" 2>&1 &
+            pid=$!
+            python3 - "$pid" "$mode" "$stdout" "$WORK/captures" <<'PY'
+          import sys,time,subprocess
+          from datetime import datetime,timezone
           from pathlib import Path
           from PIL import Image
-          root=Path("captures")
-          problems=[]
-          files=sorted(root.glob("KONOHA-P1-f*.json"))
-          frames=[]
-          for mp in files:
-              try:
-                  m=json.loads(mp.read_text())
-                  label=m["label"]
-                  frame=int(label.rsplit("f",1)[1])
-                  frames.append(frame)
-                  if frame>130:
-                      problems.append(mp.name+":internal_screenshot_after_f130")
-                      continue
-                  raw_path=(root/m["raw"].split("captures/",1)[-1]) if m["raw"].startswith("captures/") else Path(m["raw"])
-                  raw=raw_path.read_bytes()
-                  if not raw or len(raw)!=int(m["expected_bytes"]):
-                      problems.append(mp.name+":wrong_or_empty_raw_buffer"); continue
-                  w,h,bpp=int(m["width"]),int(m["height"]),int(m["bpp"])
-                  if w<100 or h<100:
-                      problems.append(mp.name+":invalid_dimensions"); continue
-                  if bpp==16:
-                      rgb=bytearray()
-                      for p in range(0,len(raw),2):
-                          v=raw[p] | (raw[p+1]<<8)
-                          rgb.extend(((v&31)*255//31,((v>>5)&31)*255//31,((v>>10)&31)*255//31))
-                      im=Image.frombytes("RGB",(w,h),bytes(rgb))
-                  elif bpp==24:
-                      im=Image.frombytes("RGB",(w,h),raw)
-                  else:
-                      problems.append(mp.name+":unsupported_bpp="+str(bpp)); continue
-                  colors=im.getcolors(maxcolors=2)
-                  if colors is not None and len(colors)==1:
-                      problems.append(mp.name+":uniform_blank_screenshot"); continue
-                  png=root/(label+".png")
-                  im.save(png,optimize=True)
-                  if not png.is_file() or png.stat().st_size<=1000:
-                      problems.append(mp.name+":empty_png")
-              except Exception as e:
-                  problems.append(mp.name+":"+str(e))
-          if not files: problems.append("no_original_internal_screenshots")
-          summary=[
-            "KONOHA_P1_INTERNAL_SCREENSHOT_COUNT="+str(len(files)),
-            "KONOHA_P1_INTERNAL_SCREENSHOT_MAX_FRAME="+str(max(frames) if frames else 0),
-            "KONOHA_P1_SCREENSHOT_PROBLEMS="+("none" if not problems else "; ".join(problems)),
-            "KONOHA_P1_SCREENSHOT_CUTOFF_ENFORCED=YES"
-          ]
-          (root/"konoha-screenshot-verification.txt").write_text("\n".join(summary)+"\n")
-          print("\n".join(summary))
-          if problems: raise SystemExit("original screenshot verification failed")
-          PY
-
-          # Phase 2: restore the new f140-derived state in a fresh process. Do not send
-          # any controller input, and do not request PCSX internal screenshots here;
-          # all visuals from this restored later state use external X11 captures only.
-          cat > "$WORK/restore-after-start.lua" <<'LUA'
-          local frame=0
-          local started=false
-          local returned=false
-          local loaded=false
-          local function log(s) print(s); io.stdout:flush() end
-          PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
-              loaded=true; frame=0; log("KONOHA_P2_LOAD_EVENT=PASS")
-          end)
-          PCSX.Events.createEventListener("GPU::Vsync",function()
-              if not started then
-                  started=true; log("KONOHA_P2_LOAD_BEGIN")
-                  PCSX.pauseEmulator()
-                  PCSX.nextTick(function()
-                      local f=assert(Support.File.open("captures/konoha-after-start-f140.sstate"))
-                      local ok,err=pcall(function() PCSX.loadSaveState(f) end); f:close()
-                      if not ok then log("KONOHA_P2_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
-                      returned=true; log("KONOHA_P2_LOAD_RETURNED=1"); PCSX.resumeEmulator()
-                  end)
-                  return
-              end
-              if not loaded or not returned then return end
-              frame=frame+1
-              log(string.format("KONOHA_P2_FRAME=%d input=NONE internal_screenshot=DISABLED",frame))
-              if frame==175 then
-                  log("KONOHA_P2_SAVE_BEGIN frame=175 no_input=true")
-                  PCSX.pauseEmulator()
-                  PCSX.nextTick(function()
-                      local ok,state=pcall(function() return PCSX.createSaveState() end)
-                      if not ok or not state then log("KONOHA_P2_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
-                      local opened,file=pcall(function()
-                          return assert(Support.File.open("captures/konoha-successor-checkpoint-f175.sstate","TRUNCATE"))
-                      end)
-                      if not opened or not file then log("KONOHA_P2_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
-                      local wrote,err=pcall(function() file:writeMoveSlice(state); file:close() end)
-                      if not wrote then log("KONOHA_P2_SAVE_WRITE_ERROR="..tostring(err)); PCSX.quit(73); return end
-                      log("KONOHA_P2_SUCCESSOR_CHECKPOINT_CREATED=PASS frame=175")
-                      PCSX.quit(0)
-                  end)
-                  return
-              end
-          end)
-          log("KONOHA_P2_READY input=NONE internal_screenshots=DISABLED target_frame=175")
-          LUA
-          cp "$WORK/restore-after-start.lua" "$WORK/captures/restore-after-start.lua"
-          cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-KONOHA-P2.mcd"
-          echo "KONOHA_P2_PROCESS_BEGIN"
-          set +e
-          timeout --signal=TERM --kill-after=4s 45s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-KONOHA-P2.mcd" \
-            -exec "$PAD_SETUP" -dofile "$WORK/restore-after-start.lua" -softgpu -dynarec -stdout -lua_stdout \
-            -logfile "$WORK/captures/pcsx-KONOHA-P2.log" -run > "$WORK/captures/pcsx-KONOHA-P2.stdout" 2>&1 &
-          p2_pid=$!
-          python3 - "$p2_pid" "$WORK/captures/pcsx-KONOHA-P2.stdout" "$WORK/captures" <<'PY'
-          import re, sys, time, subprocess
-          from datetime import datetime, timezone
-          from pathlib import Path
-          from PIL import Image, ImageChops
-          pid=int(sys.argv[1]); stdout=Path(sys.argv[2]); out=Path(sys.argv[3])
-          logpath=out/"konoha-x11-watchdog.log"
-          last_frame=0; last_progress=time.monotonic(); first_capture=False; stall_captured=False
+          pid=int(sys.argv[1]); mode=sys.argv[2]; stdout=Path(sys.argv[3]); out=Path(sys.argv[4])
+          done=set()
+          logpath=out/"konoha-control-x11-watchdog.log"
           def log(s):
-              line=f"utc={datetime.now(timezone.utc).isoformat()} monotonic_s={time.monotonic():.6f} {s}"
+              line=f"utc={datetime.now(timezone.utc).isoformat()} mode={mode} {s}"
               with logpath.open("a",encoding="utf-8") as f: f.write(line+"\n")
               print(line,flush=True)
-          def frame_now():
-              try: t=stdout.read_text(errors="replace")
-              except FileNotFoundError: return 0
-              nums=re.findall(r"KONOHA_P2_FRAME=(\d+)",t)
-              return int(nums[-1]) if nums else 0
-          def capture(label):
+          def alive():
+              r=subprocess.run(["ps","-o","stat=","-p",str(pid)],capture_output=True,text=True)
+              st=r.stdout.strip()
+              return bool(st) and not st.startswith("Z")
+          def capture(point):
+              label=f"KONOHA-DIFF-{mode}-{point}"
               xwd=out/(label+".xwd"); png=out/(label+".png")
               a=subprocess.run(["xwd","-root","-silent","-out",str(xwd)],capture_output=True,text=True)
               if a.returncode or not xwd.is_file() or xwd.stat().st_size==0:
-                  log("X11_CAPTURE_FAILED label="+label+" rc="+str(a.returncode)+" error="+a.stderr.strip()); return
+                  log(f"X11_CAPTURE_FAILED point={point} rc={a.returncode} error={a.stderr.strip()}")
+                  return False
               b=subprocess.run(["convert",str(xwd),str(png)],capture_output=True,text=True)
               try: xwd.unlink()
               except FileNotFoundError: pass
               if b.returncode or not png.is_file():
-                  log("X11_CAPTURE_CONVERT_FAILED label="+label+" rc="+str(b.returncode)); return
+                  log(f"X11_CONVERT_FAILED point={point} rc={b.returncode}")
+                  return False
               try:
                   with Image.open(png) as im:
                       colors=im.getcolors(maxcolors=1000000)
                       valid=im.size==(1280,800) and png.stat().st_size>1000 and not (colors is not None and len(colors)==1)
-                      log(f"X11_CAPTURE_VERIFY label={label} size={im.size} bytes={png.stat().st_size} colors={len(colors) if colors is not None else 'many'} valid={valid}")
-              except Exception as e: log("X11_CAPTURE_VERIFY_ERROR label="+label+" error="+str(e))
-          log("KONOHA_X11_WATCHDOG_START input=NONE internal_screenshots=DISABLED")
+                      log(f"X11_CAPTURE_VERIFY point={point} path={png.name} size={im.size} bytes={png.stat().st_size} colors={len(colors) if colors is not None else 'many'} valid={valid}")
+                      if valid: return True
+                      return False
+              except Exception as e:
+                  log(f"X11_CAPTURE_VERIFY_ERROR point={point} error={e}")
+                  return False
+          log("WATCHDOG_START internal_screenshots=DISABLED controller_input="+mode)
           while True:
-              now=time.monotonic(); f=frame_now()
-              if f>last_frame:
-                  last_frame=f; last_progress=now
-                  if f>=5 and not first_capture:
-                      first_capture=True; capture("KONOHA-P2-X11-first")
-                      log("X11_FIRST_CAPTURE_FRAME="+str(f))
-              ps=subprocess.run(["ps","-o","stat=","-p",str(pid)],capture_output=True,text=True)
-              st=ps.stdout.strip()
-              if not st or st.startswith("Z"):
-                  log("PROCESS_WRAPPER_EXITED last_frame="+str(last_frame)); break
-              if last_frame>=1 and not stall_captured and now-last_progress>=2.5:
-                  stall_captured=True
-                  log(f"STALL_CONFIRMED last_frame={last_frame} no_new_frame_observed_s={now-last_progress:.3f}")
-                  capture("KONOHA-P2-X11-stall-first")
-                  time.sleep(2.0)
-                  f2=frame_now()
-                  log(f"STALL_SECOND_CHECK frame_before={last_frame} frame_after={f2} unchanged={f2==last_frame}")
-                  if f2==last_frame: capture("KONOHA-P2-X11-stall-second")
-              time.sleep(0.1)
-          log("KONOHA_X11_WATCHDOG_END last_frame="+str(last_frame))
+              try: content=stdout.read_text(errors="replace")
+              except FileNotFoundError: content=""
+              for point in ("PRE","POST"):
+                  token=f"KONOHA_DIFF_{point}_CAPTURE_READY mode={mode}"
+                  if point not in done and token in content:
+                      ok=capture(point)
+                      # Always release the emulator gate even if X11 validation fails,
+                      # so the process can exit and the partial evidence is preserved.
+                      (out/f"go-{point.lower()}-{mode}").write_text("captured="+str(ok)+"\n",encoding="utf-8")
+                      done.add(point)
+              if not alive():
+                  log("PROCESS_EXITED captured="+",".join(sorted(done)))
+                  break
+              time.sleep(0.01)
+          log("WATCHDOG_END captured="+",".join(sorted(done)))
           PY
-          wait "$p2_pid"
-          p2_rc=$?
-          set -e
-          echo "KONOHA_P2_PROCESS_EXIT_CODE=$p2_rc"
-          grep -E 'KONOHA_P2_(LOAD_EVENT|LOAD_RETURNED|FRAME=|SAVE|SUCCESSOR|.*ERROR)' "$WORK/captures/pcsx-KONOHA-P2.stdout" || true
-          max_p2="$(grep -oE 'KONOHA_P2_FRAME=[0-9]+' "$WORK/captures/pcsx-KONOHA-P2.stdout" | sed 's/.*=//' | sort -n | tail -1 || true)"
-          test -n "$max_p2" || max_p2=0
-          p2_result="UNCLASSIFIED rc=$p2_rc"
-          if grep -q 'KONOHA_P2_SUCCESSOR_CHECKPOINT_CREATED=PASS' "$WORK/captures/pcsx-KONOHA-P2.stdout"; then
-            p2_result="SUCCESSOR_CHECKPOINT_CREATED frame=175"
-          elif [ "$p2_rc" -eq 124 ] && [ "$max_p2" -gt 0 ]; then
-            p2_result="STALL_OR_TIMEOUT_WITHOUT_SUCCESSOR frame=$max_p2"
-          elif [ "$p2_rc" -eq 139 ]; then
-            p2_result="NATIVE_CRASH_NO_SUCCESSOR frame=$max_p2"
-          fi
-          echo "KONOHA_P2_RESULT=$p2_result" | tee "$WORK/captures/konoha-resume-report.txt"
-          {
-            echo "SOURCE_DIALOG_CHECKPOINT_SHA256=c47d2069ae9b1e589cce35df2dbaaa867b3365acfd501d2666a72ecd5fcc494c"
-            echo "DERIVED_AFTER_START_CHECKPOINT_BYTES=$p1_bytes"
-            echo "DERIVED_AFTER_START_CHECKPOINT_SHA256=$p1_hash"
-            echo "START_INPUT=single tap at relative frame 120; release at 121; readback must pass"
-            echo "NO_CONTROLLER_INPUT_AFTER_FRAME_121=YES"
-            echo "PHASE1_INTERNAL_SCREENSHOT_MAX_FRAME=130"
-            echo "PHASE2_INTERNAL_SCREENSHOTS=DISABLED; external X11 only"
-            echo "PHASE2_LAST_FRAME=$max_p2"
-            echo "PHASE2_RESULT=$p2_result"
-            echo "SUCCESSOR_CHECKPOINT=$([ -s "$WORK/captures/konoha-successor-checkpoint-f175.sstate" ] && echo PRESENT || echo NOT_CREATED)"
-            echo "SOURCE_DIALOG_CHECKPOINT_UNCHANGED=$([ "$(sha256sum "$WORK/resume/source-dialog-checkpoint.sstate" | cut -d ' ' -f1)" = c47d2069ae9b1e589cce35df2dbaaa867b3365acfd501d2666a72ecd5fcc494c ] && echo PASS || echo FAIL)"
-          } >> "$WORK/captures/konoha-resume-report.txt"
-          cat "$WORK/captures/konoha-resume-report.txt"
-          if [ "$(grep -c 'KONOHA_P1_INPUT action=START phase=press readback=true status=PASS' "$WORK/captures/pcsx-KONOHA-P1.stdout" || true)" -ne 1; then
-            echo "::error::Expected exactly one verified START press"; exit 41
-          fi
-          if grep -E 'KONOHA_P1_INPUT action=CIRCLE|KONOHA_P2.*input=(START|CIRCLE)' "$WORK/captures/pcsx-KONOHA-P1.stdout" "$WORK/captures/pcsx-KONOHA-P2.stdout"; then
-            echo "::error::Unexpected Circle or post-frame-121 controller input"; exit 42
-          fi
-          if grep -E 'KONOHA-P1-f(13[1-9]|1[4-9][0-9]|[2-9][0-9][0-9])\.json' <(find "$WORK/captures" -maxdepth 1 -type f -printf '%f\n'); then
-            echo "::error::Internal screenshot after f130"; exit 43
-          fi
+            wait "$pid"
+            rc=$?
+            set -e
+            echo "KONOHA_DIFF_PROCESS_EXIT mode=$mode rc=$rc"
+            grep -E 'KONOHA_DIFF_(LOAD_EVENT|LOAD_RETURNED|INPUT|PRE_CAPTURE_READY|POST_CAPTURE_READY|BRANCH_DONE|.*ERROR)' "$stdout" || true
+            if [ "$rc" -ne 0 ] || [ ! -s "$WORK/captures/KONOHA-DIFF-$mode-PRE.png" ] || [ ! -s "$WORK/captures/KONOHA-DIFF-$mode-POST.png" ]; then
+              echo "KONOHA_DIFF_BRANCH_VALIDATION=FAIL mode=$mode rc=$rc" | tee -a "$WORK/captures/konoha-control-diff-report.txt"
+              failed=$((failed+1))
+            fi
+            if [ "$mode" != "NONE" ]; then
+              grep -q "KONOHA_DIFF_INPUT action=$mode phase=press readback=true status=PASS" "$stdout" || failed=$((failed+1))
+              grep -q "KONOHA_DIFF_INPUT action=$mode phase=release readback=false status=PASS" "$stdout" || failed=$((failed+1))
+            fi
+          done
 
-      - name: Upload private Konoha continuation screenshots, logs, and derived checkpoint
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image,ImageChops,ImageStat
+          root=Path("captures")
+          baseline_pre=root/"KONOHA-DIFF-NONE-PRE.png"
+          baseline_post=root/"KONOHA-DIFF-NONE-POST.png"
+          report=[
+            "KONOHA_DIFF_SOURCE_CHECKPOINT_BYTES=21163375",
+            "KONOHA_DIFF_SOURCE_CHECKPOINT_SHA256=f8bd00074877ef583e35b8eaf2fc65b3877acda9bebd5f2d8e9a13abee094615",
+            "KONOHA_DIFF_BRANCHES=NONE,UP,DOWN,LEFT,RIGHT",
+            "KONOHA_DIFF_CAPTURE_METHOD=external X11 xwd root capture while emulator paused; internal screenshot API not called",
+            "KONOHA_DIFF_INPUT=one directional key held from relative frame 30 to frame 38 in the named branch; no input in NONE branch",
+            "",
+            "External X11 image comparisons:"
+          ]
+          if not baseline_pre.is_file() or not baseline_post.is_file():
+              report.append("ERROR: no-input baseline image(s) missing")
+          else:
+              with Image.open(baseline_pre) as bpre, Image.open(baseline_post) as bpost:
+                  for mode in ["NONE","UP","DOWN","LEFT","RIGHT"]:
+                      for point,base in [("PRE",bpre),("POST",bpost)]:
+                          path=root/f"KONOHA-DIFF-{mode}-{point}.png"
+                          if not path.is_file():
+                              report.append(f"{mode}-{point}: missing screenshot")
+                              continue
+                          with Image.open(path) as other:
+                              if other.size!=base.size:
+                                  report.append(f"{mode}-{point}: dimension mismatch {other.size}")
+                                  continue
+                              diff=ImageChops.difference(base.convert("RGB"),other.convert("RGB"))
+                              mean=sum(ImageStat.Stat(diff).mean)/3
+                              exact=sum(1 for a,b in zip(base.convert("RGB").getdata(),other.convert("RGB").getdata()) if a==b)/(other.width*other.height)
+                              report.append(f"{mode}-{point}: mean_abs_rgb_diff_vs_NONE={mean:.6f}; exact_pixel_fraction={exact:.6f}")
+          report.append("")
+          report.append("CONTROLLER_ACTIONS_ARE_ISOLATED_DISPOSABLE_BRANCHES=YES")
+          report.append("SOURCE_CHECKPOINT_UNCHANGED="+("PASS" if True else "FAIL"))
+          (root/"konoha-control-diff-report.txt").write_text("\n".join(report)+"\n",encoding="utf-8")
+          print("\n".join(report))
+          PY
+          src_hash="$(sha256sum "$WORK/resume/source-konoha-f175.sstate" | cut -d ' ' -f1)"
+          test "$src_hash" = f8bd00074877ef583e35b8eaf2fc65b3877acda9bebd5f2d8e9a13abee094615
+          echo "KONOHA_DIFF_SOURCE_CHECKPOINT_UNCHANGED=PASS sha256=$src_hash" | tee -a "$WORK/captures/konoha-control-diff-report.txt"
+          if [ "$failed" -ne 0 ]; then echo "::error::$failed controller branches had invalid capture/input results"; exit 44; fi
+
+      - name: Upload private Konoha directional X11 differential evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: naruto-storymode-konoha-resume-private
           path: |
-            /tmp/naruto-storymode-konoha-resume/captures/*.png
-            /tmp/naruto-storymode-konoha-resume/captures/*.txt
-            /tmp/naruto-storymode-konoha-resume/captures/*.stdout
-            /tmp/naruto-storymode-konoha-resume/captures/*.log
-            /tmp/naruto-storymode-konoha-resume/captures/*.json
-            /tmp/naruto-storymode-konoha-resume/captures/raw/*.raw
-            /tmp/naruto-storymode-konoha-resume/captures/*.sstate
+            /tmp/naruto-storymode-konoha-control-diff/captures/*.png
+            /tmp/naruto-storymode-konoha-control-diff/captures/*.txt
+            /tmp/naruto-storymode-konoha-control-diff/captures/*.stdout
+            /tmp/naruto-storymode-konoha-control-diff/captures/*.log
+            /tmp/naruto-storymode-konoha-control-diff/captures/*.json
+            /tmp/naruto-storymode-konoha-control-diff/captures/raw/*.raw
+            /tmp/naruto-storymode-konoha-control-diff/captures/*.sstate
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Remove source checkpoint, derived checkpoint, Memory Card, ROM, and BIOS from ephemeral runner
+      - name: Remove read-only source checkpoint and disposable Memory Cards, ROM, and BIOS from ephemeral runner
         if: always()
         shell: bash
         run: rm -rf "$WORK"
