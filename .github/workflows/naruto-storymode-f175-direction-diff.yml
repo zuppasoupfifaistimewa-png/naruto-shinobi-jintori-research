@@ -72,7 +72,7 @@ jobs:
         run: |
           set -euo pipefail
           ACTION="$(sed -n 's/^ACTION=//p' experiments/.run-storymode-konoha-f175-direction-diff | tail -n 1)"
-          case "$ACTION" in UP|DOWN|LEFT|RIGHT) ;; *) echo "::error::ACTION must be UP, DOWN, LEFT or RIGHT"; exit 2 ;; esac
+          case "$ACTION" in UP|DOWN|LEFT|RIGHT|CIRCLE) ;; *) echo "::error::ACTION must be UP, DOWN, LEFT, RIGHT or CIRCLE"; exit 2 ;; esac
           echo "F175_ACTION=$ACTION" >> "$GITHUB_ENV"
           APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
           SOURCE="$WORK/state-artifact/konoha-successor-checkpoint-f175.sstate"
