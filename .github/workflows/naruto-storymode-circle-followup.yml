@@ -42,7 +42,7 @@ jobs:
           run-id: 39513285641
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-circle-timeline/build-artifact
+          path: /tmp/naruto-storymode-circle-followup/build-artifact
 
       - name: Download verified next checkpoint
         uses: actions/download-artifact@v4
@@ -51,7 +51,7 @@ jobs:
           run-id: 39426068247
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-circle-timeline/state-artifact
+          path: /tmp/naruto-storymode-circle-followup/state-artifact
 
       - name: Download original private Memory Card
         uses: actions/download-artifact@v4
@@ -60,7 +60,7 @@ jobs:
           run-id: 39262213468
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-circle-timeline/card-artifact
+          path: /tmp/naruto-storymode-circle-followup/card-artifact
 
       - name: Verify reusable binary, checkpoint and card hashes
         shell: bash
@@ -273,11 +273,11 @@ jobs:
         with:
           name: naruto-storymode-circle-followup-private
           path: |
-            /tmp/naruto-storymode-circle-timeline/captures/*.png
-            /tmp/naruto-storymode-circle-timeline/captures/*.txt
-            /tmp/naruto-storymode-circle-timeline/captures/*.stdout
-            /tmp/naruto-storymode-circle-timeline/captures/*.log
-            /tmp/naruto-storymode-circle-timeline/captures/*.json
+            /tmp/naruto-storymode-circle-followup/captures/*.png
+            /tmp/naruto-storymode-circle-followup/captures/*.txt
+            /tmp/naruto-storymode-circle-followup/captures/*.stdout
+            /tmp/naruto-storymode-circle-followup/captures/*.log
+            /tmp/naruto-storymode-circle-followup/captures/*.json
           if-no-files-found: warn
           retention-days: 14
 
