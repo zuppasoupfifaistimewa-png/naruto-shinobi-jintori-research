@@ -1,0 +1,82 @@
+# Naruto Story Mode — Rencana Otomasi Berkelanjutan
+
+Tanggal dicatat: 21 Oktober 2026  
+Game: **Naruto - Shinobi no Sato no Jintori Gassen (Japan, PS1)**  
+Satu-satunya repo yang boleh dipakai untuk tugas ini: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+
+## Tujuan yang disepakati
+
+Bangun sistem yang memainkan Story Mode seotomatis mungkin dari checkpoint yang sudah diverifikasi, menyimpan checkpoint berikutnya secara berkala, dan pulih dari emulator macet/crash tanpa mengulang permainan dari awal. Setelah Story Mode benar-benar tamat dan buktinya diverifikasi, susun laporan aturan main berdasarkan bukti gameplay langsung.
+
+Otomasi penuh **belum boleh dianggap sudah tersedia** hanya karena rencana ini ditulis atau workflow Actions berstatus `success`. Sistem harus dibangun dan diuji bertahap; kemajuan permainan harus diverifikasi terpisah dari keberhasilan workflow.
+
+## Siklus operasi
+
+1. **Pulihkan checkpoint sumber secara read-only.** Verifikasi ukuran dan SHA-256. Jangan menimpa checkpoint sumber; gunakan salinan kerja untuk setiap eksperimen.
+2. **Jalankan satu percobaan terkontrol.** Kirim hanya input yang sedang diuji, dengan waktu tekan/lepas eksplisit dan pemeriksaan readback bila didukung. Untuk eksperimen kausal, bandingkan dengan kontrol tanpa input berdurasi setara.
+3. **Amati keadaan game.** Tangkap tampilan asli emulator melalui jalur yang aman. Untuk state lanjut hasil restore, ikuti batasan yang berlaku dan gunakan capture X11 eksternal; jangan panggil API screenshot internal pada frame lanjut jika workflow/dokumen melarangnya.
+4. **Klasifikasikan hasil.** Bedakan dialog, papan/map, pilihan tindakan, pertarungan, hasil misi, stall, timeout, dan crash. Perubahan tampilan saja belum tentu membuktikan objective tercapai.
+5. **Simpan checkpoint turunan dan catatan.** Catat parent dan hash, input persis, durasi/frame, hasil, validasi screenshot, ukuran/hash checkpoint baru, dan apakah perubahan permainan terverifikasi. Screenshot, savestate, Memory Card, ROM, dan BIOS hanya sebagai artefak privat; jangan commit ke Git.
+6. **Lanjutkan dari checkpoint tervalidasi.** Muat manifest/status progres paling baru. Jangan ulang tindakan yang gagal tanpa hipotesis atau perubahan metode beralasan. Setelah crash/timeout, jangan memajukan state yang belum divalidasi.
+7. **Berhenti hanya dengan kriteria jelas.** Story Mode hanya boleh ditandai tamat jika ada bukti asli dari game yang mendukung akhir Story Mode, dengan transisi/checkpoint/log terkait. Keberhasilan workflow, emulator berhenti, atau mencapai papan tertentu bukan bukti tamat.
+
+## Komponen yang harus dibangun
+
+- **Checkpoint manager:** katalog checkpoint sumber/turunan, checksum dan metadata; sumber selalu immutable.
+- **Input runner:** input satu per satu, durasi terkontrol, release tombol dijamin, readback, timeout, dan larangan input pada tes tanpa-input.
+- **Observer:** status frame/proses, screenshot X11 eksternal untuk state lanjut, validasi ukuran/resolusi/nonuniformitas, dan log timestamp.
+- **State/decision layer:** klasifikasi layar/transisi. Jika ragu, pilih tindakan konservatif. Saat dialog Story Mode muncul, gunakan **START** untuk skip dialog — jangan gunakan Circle untuk tujuan tersebut. Circle hanya untuk konfirmasi pilihan/menu ketika konteks layar mendukungnya.
+- **Recovery loop:** jika crash atau stall, tandai percobaan gagal/tidak konklusif, hentikan proses aman, periksa artefak dan checkpoint, pulihkan baseline valid, lalu coba strategi berbeda.
+- **Cross-session continuation:** simpan manifest progres dan langkah berikut di repo setiap sesi; gunakan mekanisme repo/Actions yang tersedia dan aman. Hindari loop tanpa batas, trigger duplikat, atau queued/in-progress run tak terpantau.
+- **Evidence/report builder:** tautkan temuan ke run, log, screenshot asli privat, dan hash checkpoint; pisahkan fakta terverifikasi, hipotesis, dan yang belum diketahui.
+
+## Urutan implementasi
+
+1. Audit workflow, script, artefak, marker trigger, dan batas Actions yang ada. Jangan membuat trigger baru sebelum mekanisme berjalan dipahami.
+2. Buat harness untuk restore salinan checkpoint, mengirim satu input, merekam screenshot eksternal, membandingkan hasil dengan kontrol tanpa input, dan menulis manifest artefak privat.
+3. Uji arah satu per satu dari baseline papan Konoha f175; setiap arah punya kontrol tanpa input berdurasi setara. Satu input per proses segar. Pertahankan f175 immutable.
+4. Analisis perbedaan frame/tampilan/state. Jika belum jelas, jangan menaikkan kompleksitas input.
+5. Implementasikan klasifikasi layar dan transisi berbasis bukti.
+6. Tambahkan checkpoint/recovery, manifest sesi, dan guardrail run ganda.
+7. Setelah siklus kecil konsisten, perpanjang aksi otomatis dengan checkpoint reguler hingga misi/Story Mode selesai.
+8. Verifikasi tamat dengan bukti game langsung, lalu tulis laporan aturan final.
+
+## Keadaan riset yang diketahui saat dokumen ini dibuat
+
+- Run [#39591032125](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39591032125) menekan START sekali dari checkpoint dialog, lalu memulihkan state turunan dalam proses emulator baru sampai f175. Screenshot X11 asli memperlihatkan papan hutan Konoha, HUD Naruto dan Mizuki masing-masing 1500, dan dialog tidak tampil. Ini membuktikan transisi ke papan/map, **bukan** penyelesaian misi atau tamat Story Mode.
+- Checkpoint successor `konoha-successor-checkpoint-f175.sstate`: SHA-256 `f8bd00074877ef583e35b8eaf2fc65b3877acda9bebd5f2d8e9a13abee094615`; ukuran 21,163,375 byte. Perlakukan baseline ini immutable.
+- Checkpoint sumber sebelum START tetap tidak berubah: SHA-256 `c47d2069ae9b1e589cce35df2dbaaa867b3365acfd501d2666a72ecd5fcc494c`.
+- Run [#39599932467](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39599932467) menguji konfirmasi Circle pada checkpoint cabang RIGHT dan DOWN. Biaya penghalang yang terlihat sebelum konfirmasi: 100 Chakra (RIGHT) dan 140 Chakra (DOWN). Sumber checkpoint tidak berubah dan workflow tidak crash, tetapi pengurangan Chakra/penempatan berhasil belum terverifikasi; jangan menyebut biaya sudah dibayar.
+- Akar SIGSEGV run #39574435847 masih belum diketahui. Pisahkan cabang diagnostik SIGSEGV dari gameplay bila masih bisa membuat kemajuan.
+- Workflow Actions `success` berarti workflow berhasil sesuai implementasinya, bukan otomatis input efektif, objective selesai, atau Story Mode tamat.
+
+## Aturan wajib
+
+- Hanya repo di atas boleh diakses/diubah untuk riset ini.
+- Jangan masukkan ROM, BIOS, savestate, Memory Card, atau screenshot gameplay privat ke Git.
+- Bukti gameplay hanya screenshot asli emulator/game yang benar-benar diverifikasi. Jangan gunakan gambar web sebagai bukti gameplay atau membuat link screenshot yang belum diverifikasi.
+- Pada dialog Story Mode, tekan START untuk skip; jangan gunakan Circle untuk skip dialog.
+- Teks Jepang yang dilaporkan harus langsung diikuti terjemahan Indonesia dalam tanda kurung.
+- Jangan menyatakan Story Mode tamat tanpa bukti final di dalam game yang tervalidasi.
+
+## Format laporan setelah tamat
+
+Untuk tiap topik, tulis **Status: Terverifikasi / Hipotesis / Belum diketahui**, uraian, bukti run/screenshot, kondisi sebelum-sesudah, serta batas kesimpulan:
+
+- Kontrol: fungsi tombol dan konteks penggunaan.
+- Giliran/fase: pemicu perpindahan giliran/fase.
+- Chakra: biaya tindakan dan perubahan angka aktual sebelum/sesudah.
+- Penghalang/wilayah: pemasangan, pertahanan, perebutan wilayah.
+- Kartu/roulette: pemilihan, efek, hasil teramati.
+- Pertarungan: urutan serang/bertahan dan kondisi keberhasilan.
+- Menang/kalah: syarat yang mengakhiri misi/papan.
+- Story Mode: urutan misi, syarat lanjut, bukti akhir permainan.
+
+## Instruksi pembuka untuk chat baru
+
+1. Akses hanya repo yang diizinkan di bagian atas.
+2. Baca versi terbaru `STATUS.md`, `HANDOFF_CHAT_BARU_2026-10-19.md`, dokumen ini, `docs/STORYMODE_POST178_CONTINUATION_2026-10-21.md`, dan `docs/SIGSEGV_FORENSICS_2026-10-21.md`.
+3. Periksa Actions runs terbaru dan pastikan tidak ada run duplikat/trigger tertinggal sebelum membuat run baru.
+4. Lanjutkan dari checkpoint tervalidasi terakhir, bukan dari awal. Untuk uji arah gunakan salinan read-only f175 dan kontrol tanpa input dengan durasi setara.
+5. Bangun dan uji harness otomatis satu input per run; jangan mengklaim Story Mode otomatis penuh atau tamat sebelum diverifikasi.
+6. Setelah perubahan repo, tulis status, handoff, hash/artefak, dan langkah berikut agar chat berikutnya tidak meminta pengguna mengulang konteks.
