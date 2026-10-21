@@ -1,11 +1,11 @@
-name: Naruto Story Mode settle Konoha route movement without further input
+name: Naruto Story Mode skip Iruka route dialog with one START tap
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - "experiments/.run-storymode-konoha-route-settle"
+      - "experiments/.run-storymode-konoha-iruka-dialog-skip"
 
 permissions:
   contents: read
@@ -13,14 +13,14 @@ permissions:
 
 jobs:
   probe:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-KONOHA-ROUTE-SETTLE]')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-KONOHA-IRUKA-DIALOG-SKIP]')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     container:
       image: ghcr.io/grumpycoders/pcsx-redux-build:latest
       options: --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
     env:
-      WORK: /tmp/naruto-storymode-konoha-route-settle
+      WORK: /tmp/naruto-storymode-konoha-iruka-skip
       RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 
     steps:
@@ -43,16 +43,16 @@ jobs:
           run-id: 39513285641
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-route-settle/build-artifact
+          path: /tmp/naruto-storymode-konoha-iruka-skip/build-artifact
 
-      - name: Download isolated Konoha route branch checkpoints at f80
+      - name: Download Konoha RIGHT/DOWN checkpoints with Iruka dialog at f120
         uses: actions/download-artifact@v4
         with:
-          name: naruto-storymode-konoha-map-direction-private
-          run-id: 39596338264
+          name: naruto-storymode-konoha-route-settle-private
+          run-id: 39597491313
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-route-settle/state-artifact
+          path: /tmp/naruto-storymode-konoha-iruka-skip/state-artifact
 
       - name: Download original private Memory Card
         uses: actions/download-artifact@v4
@@ -61,9 +61,9 @@ jobs:
           run-id: 39262213468
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-route-settle/card-artifact
+          path: /tmp/naruto-storymode-konoha-iruka-skip/card-artifact
 
-      - name: Validate inputs and stage immutable route source checkpoints
+      - name: Validate immutable RIGHT/DOWN dialogue checkpoints
         shell: bash
         run: |
           set -euo pipefail
@@ -73,21 +73,20 @@ jobs:
           test "$(sha256sum "$APP" | cut -d ' ' -f1)" = 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99
           test "$(stat -c %s "$CARD")" = 131072
           test "$(sha256sum "$CARD" | cut -d ' ' -f1)" = ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
-          for branch in none right down; do
-            if [ "$branch" = none ]; then expected_size=21163022; expected_hash=3dec2e9fd0cb2a7974579e58858f5c6d6fd038f62759413f376d6c26ed500295
-            elif [ "$branch" = right ]; then expected_size=21163220; expected_hash=0f267b65fd0ba12a658e12e763e16f511ee4eddac80b1457a44de98e192d3829
-            else expected_size=21163198; expected_hash=7bec71db8a307688370c9e822e2cddf47c99c0ad8f39ca76eec243f781f62427; fi
-            source="$WORK/state-artifact/konoha-map-direction-$branch-f80.sstate"
+          for branch in right down; do
+            if [ "$branch" = right ]; then expected_size=21161771; expected_hash=aabf706d0ffe968988762d821049f09682acde451634b5fb1e8e37fdd8c471a3
+            else expected_size=21161929; expected_hash=129ddf30a1bc0e95e95e138f04d32cbf5cdbd5ddde2d8fe830fa9e21311ad072; fi
+            source="$WORK/state-artifact/konoha-route-settled-$branch-f120.sstate"
             test "$(stat -c %s "$source")" = "$expected_size"
             test "$(sha256sum "$source" | cut -d ' ' -f1)" = "$expected_hash"
-            cp "$source" "$WORK/resume/route-$branch-f80.sstate"
-            chmod 400 "$WORK/resume/route-$branch-f80.sstate"
-            echo "KONOHA_ROUTE_SOURCE_VALID branch=$branch bytes=$expected_size sha256=$expected_hash"
+            cp "$source" "$WORK/resume/iruka-dialog-$branch-f120.sstate"
+            chmod 400 "$WORK/resume/iruka-dialog-$branch-f120.sstate"
+            echo "KONOHA_IRUKA_SOURCE_VALID branch=$branch bytes=$expected_size sha256=$expected_hash"
           done
           cp "$CARD" "$WORK/cards/naruto-storymode-template.mcd"
-          echo "KONOHA_ROUTE_APPIMAGE_VALID=PASS"
-          echo "KONOHA_ROUTE_MEMORY_CARD_VALID=PASS"
-          echo "KONOHA_ROUTE_SOURCE_CHECKPOINTS_READ_ONLY=YES"
+          echo "KONOHA_IRUKA_APPIMAGE_VALID=PASS"
+          echo "KONOHA_IRUKA_MEMORY_CARD_VALID=PASS"
+          echo "KONOHA_IRUKA_SOURCE_CHECKPOINTS_READ_ONLY=YES"
       - name: Download game and BIOS from the private runtime release
         shell: bash
         env:
@@ -135,7 +134,7 @@ jobs:
           Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
           PY
 
-      - name: Resume NONE/RIGHT/DOWN branch states without input and capture movement settlement via X11
+      - name: Skip Iruka dialogue in RIGHT/DOWN branches using START; capture with external X11 only
         shell: bash
         run: |
           set -euo pipefail
@@ -152,23 +151,25 @@ jobs:
           PCSX.settings.pads[1].DeviceType='Analog'
           PCSX.settings.pads[1].Connected=true
           PCSX.SIO0.slots[1].pads[1].map()
-          print("KONOHA_ROUTE_SETTLE_PAD_SETUP=PASS")
+          print("KONOHA_IRUKA_PAD_SETUP=PASS")
           LUA
           )
 
-          cat > "$WORK/settle-route-without-input.lua" <<'LUA'
+          cat > "$WORK/skip-iruka-dialog-start.lua" <<'LUA'
           local frame=0
           local started=false
           local returned=false
           local loaded=false
-          local mode=os.getenv("PROBE_BRANCH") or "NONE"
-          local lower=os.getenv("PROBE_BRANCH_LOWER") or "none"
+          local mode=os.getenv("PROBE_BRANCH") or "RIGHT"
+          local lower=os.getenv("PROBE_BRANCH_LOWER") or "right"
+          local pad=PCSX.SIO0.slots[1].pads[1]
+          local buttons=PCSX.CONSTS.PAD.BUTTON
           local function log(s) print(s); io.stdout:flush() end
           local function waitForExternalRelease(path,callback)
               PCSX.nextTick(function()
                   while true do
                       local f=io.open(path,"r")
-                      if f then f:close(); log("KONOHA_ROUTE_SETTLE_RESUME_GATE="..path); break end
+                      if f then f:close(); log("KONOHA_IRUKA_RESUME_GATE="..path); break end
                       os.execute("sleep 0.05")
                   end
                   callback()
@@ -177,71 +178,86 @@ jobs:
           local function pauseForExternalCapture(point)
               PCSX.pauseEmulator()
               local marker="captures/go-"..point:lower().."-"..lower
-              log("KONOHA_ROUTE_SETTLE_"..point.."_CAPTURE_READY branch="..mode.." frame="..frame)
+              log("KONOHA_IRUKA_"..point.."_CAPTURE_READY branch="..mode.." frame="..frame)
               waitForExternalRelease(marker,function() PCSX.resumeEmulator() end)
           end
+          local function startInput(phase)
+              local b=buttons.START
+              local ok,readback=pcall(function()
+                  if phase=="press" then pad.setOverride(b) else pad.clearOverride(b) end
+                  return pad.getButton(b)
+              end)
+              local pass=ok and readback==(phase=="press")
+              log(string.format("KONOHA_IRUKA_INPUT action=START phase=%s readback=%s status=%s",phase,tostring(readback),pass and "PASS" or "FAIL"))
+              if not pass then PCSX.quit(83) end
+          end
           PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
-              loaded=true; frame=0; log("KONOHA_ROUTE_SETTLE_LOAD_EVENT=PASS branch="..mode)
+              loaded=true; frame=0; log("KONOHA_IRUKA_LOAD_EVENT=PASS branch="..mode)
           end)
           PCSX.Events.createEventListener("GPU::Vsync",function()
               if not started then
-                  started=true; log("KONOHA_ROUTE_SETTLE_LOAD_BEGIN branch="..mode)
+                  started=true; log("KONOHA_IRUKA_LOAD_BEGIN branch="..mode)
                   PCSX.pauseEmulator()
                   PCSX.nextTick(function()
-                      local path="resume/route-"..lower.."-f80.sstate"
+                      local path="resume/iruka-dialog-"..lower.."-f120.sstate"
                       local f=assert(Support.File.open(path))
                       local ok,err=pcall(function() PCSX.loadSaveState(f) end); f:close()
-                      if not ok then log("KONOHA_ROUTE_SETTLE_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
-                      returned=true; log("KONOHA_ROUTE_SETTLE_LOAD_RETURNED=1 branch="..mode.." input=NONE"); PCSX.resumeEmulator()
+                      if not ok then log("KONOHA_IRUKA_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
+                      returned=true; log("KONOHA_IRUKA_LOAD_RETURNED=1 branch="..mode); PCSX.resumeEmulator()
                   end)
                   return
               end
               if not loaded or not returned then return end
               frame=frame+1
-              log(string.format("KONOHA_ROUTE_SETTLE_FRAME=%d branch=%s input=NONE internal_screenshot=DISABLED",frame,mode))
-              if frame==20 then pauseForExternalCapture("F20"); return
-              elseif frame==60 then pauseForExternalCapture("F60"); return
-              elseif frame==100 then pauseForExternalCapture("F100"); return
-              elseif frame==120 then
-                  log("KONOHA_ROUTE_SETTLE_SAVE_BEGIN frame=120 branch="..mode.." input=NONE")
+              log(string.format("KONOHA_IRUKA_FRAME=%d branch=%s internal_screenshot=DISABLED",frame,mode))
+              if frame==15 then pauseForExternalCapture("PRE"); return
+              elseif frame==20 then
+                  log("KONOHA_IRUKA_DIALOG_SKIP=single START tap at relative f20")
+                  startInput("press")
+              elseif frame==21 then
+                  startInput("release")
+              elseif frame==40 then pauseForExternalCapture("F40"); return
+              elseif frame==70 then pauseForExternalCapture("F70"); return
+              elseif frame==80 then
+                  log("KONOHA_IRUKA_SAVE_BEGIN frame=80 no_more_input=true")
                   PCSX.pauseEmulator()
                   PCSX.nextTick(function()
                       local ok,state=pcall(function() return PCSX.createSaveState() end)
-                      if not ok or not state then log("KONOHA_ROUTE_SETTLE_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
-                      local output="captures/konoha-route-settled-"..lower.."-f120.sstate"
+                      if not ok or not state then log("KONOHA_IRUKA_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
+                      local output="captures/konoha-iruka-skipped-"..lower.."-f80.sstate"
                       local opened,file=pcall(function() return assert(Support.File.open(output,"TRUNCATE")) end)
-                      if not opened or not file then log("KONOHA_ROUTE_SETTLE_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
+                      if not opened or not file then log("KONOHA_IRUKA_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
                       local wrote,err=pcall(function() file:writeMoveSlice(state); file:close() end)
-                      if not wrote then log("KONOHA_ROUTE_SETTLE_SAVE_WRITE_ERROR="..tostring(err)); PCSX.quit(73); return end
-                      log("KONOHA_ROUTE_SETTLE_BRANCH_DONE branch="..mode.." frame=120 source_checkpoint_untouched=YES")
+                      if not wrote then log("KONOHA_IRUKA_SAVE_WRITE_ERROR="..tostring(err)); PCSX.quit(73); return end
+                      log("KONOHA_IRUKA_BRANCH_DONE branch="..mode.." frame=80 one_START_tap=PASS source_checkpoint_untouched=YES")
                       PCSX.quit(0)
                   end)
                   return
               end
           end)
-          log("KONOHA_ROUTE_SETTLE_READY branch="..mode.." input=NONE frames20,60,100 external X11 only; successor frame120")
+          log("KONOHA_IRUKA_READY branch="..mode.." one START press f20/release f21; external X11 f15/f40/f70; save f80")
           LUA
-          cp "$WORK/settle-route-without-input.lua" "$WORK/captures/settle-route-without-input.lua"
+          cp "$WORK/skip-iruka-dialog-start.lua" "$WORK/captures/skip-iruka-dialog-start.lua"
           failed=0
-          for mode in NONE RIGHT DOWN; do
+          for mode in RIGHT DOWN; do
             lower_mode="$(printf '%s' "$mode" | tr '[:upper:]' '[:lower:]')"
-            cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-KONOHA-SETTLE-$mode.mcd"
-            stdout="$WORK/captures/pcsx-KONOHA-SETTLE-$mode.stdout"
-            echo "KONOHA_ROUTE_SETTLE_BRANCH_BEGIN=$mode"
+            cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-KONOHA-IRUKA-$mode.mcd"
+            stdout="$WORK/captures/pcsx-KONOHA-IRUKA-$mode.stdout"
+            echo "KONOHA_IRUKA_BRANCH_BEGIN=$mode"
             set +e
-            PROBE_BRANCH="$mode" PROBE_BRANCH_LOWER="$lower_mode" timeout --signal=TERM --kill-after=3s 30s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-KONOHA-SETTLE-$mode.mcd" \
-              -exec "$PAD_SETUP" -dofile "$WORK/settle-route-without-input.lua" -softgpu -dynarec -stdout -lua_stdout \
-              -logfile "$WORK/captures/pcsx-KONOHA-SETTLE-$mode.log" -run > "$stdout" 2>&1 &
+            PROBE_BRANCH="$mode" PROBE_BRANCH_LOWER="$lower_mode" timeout --signal=TERM --kill-after=3s 25s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-KONOHA-IRUKA-$mode.mcd" \
+              -exec "$PAD_SETUP" -dofile "$WORK/skip-iruka-dialog-start.lua" -softgpu -dynarec -stdout -lua_stdout \
+              -logfile "$WORK/captures/pcsx-KONOHA-IRUKA-$mode.log" -run > "$stdout" 2>&1 &
             pid=$!
             python3 - "$pid" "$mode" "$lower_mode" "$stdout" "$WORK/captures" <<'PY'
           import sys,time,subprocess
           from datetime import datetime,timezone
           from pathlib import Path
-          from PIL import Image,ImageChops,ImageStat
+          from PIL import Image
           pid=int(sys.argv[1]); mode=sys.argv[2]; lower=sys.argv[3]; stdout=Path(sys.argv[4]); out=Path(sys.argv[5])
-          done=set(); points=("F20","F60","F100")
-          logpath=out/"konoha-route-settle-x11-watchdog.log"
+          done=set(); points=("PRE","F40","F70")
+          logpath=out/"konoha-iruka-x11-watchdog.log"
           def log(s):
               line=f"utc={datetime.now(timezone.utc).isoformat()} branch={mode} {s}"
               with logpath.open("a",encoding="utf-8") as f: f.write(line+"\n")
@@ -251,7 +267,7 @@ jobs:
               st=r.stdout.strip()
               return bool(st) and not st.startswith("Z")
           def capture(point):
-              label=f"KONOHA-SETTLE-{mode}-{point}"
+              label=f"KONOHA-IRUKA-{mode}-{point}"
               xwd=out/(label+".xwd"); png=out/(label+".png")
               a=subprocess.run(["xwd","-root","-silent","-out",str(xwd)],capture_output=True,text=True)
               if a.returncode or not xwd.is_file() or xwd.stat().st_size==0:
@@ -269,12 +285,12 @@ jobs:
                       return bool(valid)
               except Exception as e:
                   log(f"X11_CAPTURE_VERIFY_ERROR point={point} error={e}"); return False
-          log("WATCHDOG_START controller_input=NONE internal_screenshots=DISABLED")
+          log("WATCHDOG_START one START tap per branch; no internal screenshot API")
           while True:
               try: content=stdout.read_text(errors="replace")
               except FileNotFoundError: content=""
               for point in points:
-                  token=f"KONOHA_ROUTE_SETTLE_{point}_CAPTURE_READY branch={mode}"
+                  token=f"KONOHA_IRUKA_{point}_CAPTURE_READY branch={mode}"
                   if point not in done and token in content:
                       ok=capture(point)
                       (out/f"go-{point.lower()}-{lower}").write_text("captured="+str(ok)+"\n",encoding="utf-8")
@@ -287,58 +303,35 @@ jobs:
             wait "$pid"
             rc=$?
             set -e
-            echo "KONOHA_ROUTE_SETTLE_PROCESS_EXIT branch=$mode rc=$rc"
-            grep -E 'KONOHA_ROUTE_SETTLE_(LOAD_EVENT|LOAD_RETURNED|F[0-9]+_CAPTURE_READY|BRANCH_DONE|.*ERROR)' "$stdout" || true
+            echo "KONOHA_IRUKA_PROCESS_EXIT branch=$mode rc=$rc"
+            grep -E 'KONOHA_IRUKA_(LOAD_EVENT|LOAD_RETURNED|INPUT|PRE_CAPTURE_READY|F40_CAPTURE_READY|F70_CAPTURE_READY|BRANCH_DONE|.*ERROR)' "$stdout" || true
             if [ "$rc" -ne 0 ]; then failed=$((failed+1)); fi
-            for p in F20 F60 F100; do
-              if [ ! -s "$WORK/captures/KONOHA-SETTLE-$mode-$p.png" ]; then failed=$((failed+1)); fi
+            for p in PRE F40 F70; do
+              if [ ! -s "$WORK/captures/KONOHA-IRUKA-$mode-$p.png" ]; then failed=$((failed+1)); fi
             done
-            if [ ! -s "$WORK/captures/konoha-route-settled-$lower_mode-f120.sstate" ]; then failed=$((failed+1)); fi
+            if [ ! -s "$WORK/captures/konoha-iruka-skipped-$lower_mode-f80.sstate" ]; then failed=$((failed+1)); fi
+            if [ "$(grep -c 'KONOHA_IRUKA_INPUT action=START phase=press readback=true status=PASS' "$stdout" || true)" -ne 1 ]; then failed=$((failed+1)); fi
           done
+          echo "KONOHA_IRUKA_SOURCE_RIGHT_UNCHANGED=$(sha256sum "$WORK/resume/iruka-dialog-right-f120.sstate" | cut -d ' ' -f1)" > "$WORK/captures/konoha-iruka-report.txt"
+          echo "KONOHA_IRUKA_SOURCE_DOWN_UNCHANGED=$(sha256sum "$WORK/resume/iruka-dialog-down-f120.sstate" | cut -d ' ' -f1)" >> "$WORK/captures/konoha-iruka-report.txt"
+          echo "KONOHA_IRUKA_INPUT=single START tap in each isolated branch; no Circle" >> "$WORK/captures/konoha-iruka-report.txt"
+          echo "KONOHA_IRUKA_INTERNAL_SCREENSHOTS=DISABLED; visuals via X11 only" >> "$WORK/captures/konoha-iruka-report.txt"
+          cat "$WORK/captures/konoha-iruka-report.txt"
+          test "$(sha256sum "$WORK/resume/iruka-dialog-right-f120.sstate" | cut -d ' ' -f1)" = aabf706d0ffe968988762d821049f09682acde451634b5fb1e8e37fdd8c471a3
+          test "$(sha256sum "$WORK/resume/iruka-dialog-down-f120.sstate" | cut -d ' ' -f1)" = 129ddf30a1bc0e95e95e138f04d32cbf5cdbd5ddde2d8fe830fa9e21311ad072
+          if [ "$failed" -ne 0 ]; then echo "::error::$failed Iruka dialog skip branches incomplete"; exit 44; fi
 
-          python3 - <<'PY'
-          from pathlib import Path
-          from PIL import Image,ImageChops,ImageStat
-          root=Path("captures")
-          report=[
-            "KONOHA_ROUTE_SETTLE_INPUT=NONE for all three continuation branches",
-            "KONOHA_ROUTE_SETTLE_INTERNAL_SCREENSHOTS=DISABLED",
-            "KONOHA_ROUTE_SETTLE_CAPTURE_METHOD=external X11 only while emulator paused",
-            "KONOHA_ROUTE_SETTLE_BRANCHES=NONE,RIGHT,DOWN",
-            "",
-            "X11 progression comparisons from each branch's own F20 baseline:"
-          ]
-          for mode in ["NONE","RIGHT","DOWN"]:
-              baseline=root/f"KONOHA-SETTLE-{mode}-F20.png"
-              for point in ["F60","F100"]:
-                  path=root/f"KONOHA-SETTLE-{mode}-{point}.png"
-                  if not baseline.is_file() or not path.is_file():
-                      report.append(f"{mode}-{point}: missing image"); continue
-                  with Image.open(baseline) as b, Image.open(path) as im:
-                      diff=ImageChops.difference(b.convert("RGB"),im.convert("RGB"))
-                      mean=sum(ImageStat.Stat(diff).mean)/3
-                      exact=sum(1 for a,b in zip(b.convert("RGB").getdata(),im.convert("RGB").getdata()) if a==b)/(im.width*im.height)
-                      report.append(f"{mode}-{point}: mean_abs_rgb_diff_from_{mode}_F20={mean:.6f}; exact_pixel_fraction={exact:.6f}")
-          (root/"konoha-route-settle-report.txt").write_text("\n".join(report)+"\n",encoding="utf-8")
-          print("\n".join(report))
-          PY
-          test "$(sha256sum "$WORK/resume/route-none-f80.sstate" | cut -d ' ' -f1)" = 3dec2e9fd0cb2a7974579e58858f5c6d6fd038f62759413f376d6c26ed500295
-          test "$(sha256sum "$WORK/resume/route-right-f80.sstate" | cut -d ' ' -f1)" = 0f267b65fd0ba12a658e12e763e16f511ee4eddac80b1457a44de98e192d3829
-          test "$(sha256sum "$WORK/resume/route-down-f80.sstate" | cut -d ' ' -f1)" = 7bec71db8a307688370c9e822e2cddf47c99c0ad8f39ca76eec243f781f62427
-          echo "KONOHA_ROUTE_SETTLE_SOURCE_CHECKPOINTS_UNCHANGED=PASS" | tee -a "$WORK/captures/konoha-route-settle-report.txt"
-          if [ "$failed" -ne 0 ]; then echo "::error::$failed route settle branches had incomplete results"; exit 44; fi
-
-      - name: Upload private Konoha route settle X11 captures, logs, and successor checkpoints
+      - name: Upload private Iruka dialog skip X11 captures and checkpoints
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: naruto-storymode-konoha-route-settle-private
+          name: naruto-storymode-konoha-iruka-dialog-skip-private
           path: |
-            /tmp/naruto-storymode-konoha-route-settle/captures/*.png
-            /tmp/naruto-storymode-konoha-route-settle/captures/*.txt
-            /tmp/naruto-storymode-konoha-route-settle/captures/*.stdout
-            /tmp/naruto-storymode-konoha-route-settle/captures/*.log
-            /tmp/naruto-storymode-konoha-route-settle/captures/*.sstate
+            /tmp/naruto-storymode-konoha-iruka-skip/captures/*.png
+            /tmp/naruto-storymode-konoha-iruka-skip/captures/*.txt
+            /tmp/naruto-storymode-konoha-iruka-skip/captures/*.stdout
+            /tmp/naruto-storymode-konoha-iruka-skip/captures/*.log
+            /tmp/naruto-storymode-konoha-iruka-skip/captures/*.sstate
 
       - name: Remove read-only source checkpoint and disposable Memory Cards, ROM, and BIOS from ephemeral runner
         if: always()
