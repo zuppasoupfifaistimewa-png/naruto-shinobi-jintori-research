@@ -1,1 +1,0 @@
-One-shot trigger: use the immutable post-Roulette result f140 checkpoint. Compare NONE vs a single RIGHT tap and a single DOWN tap, each in a fresh process with a disposable Memory Card. X11 captures only while paused at relative f20/f60; no internal screenshot API. Save independent branch states at f80; never overwrite source checkpoint.
