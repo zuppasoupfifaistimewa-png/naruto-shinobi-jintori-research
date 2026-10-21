@@ -239,7 +239,6 @@ jobs:
           end)
           log("WHEEL_SCRIPT_READY mode="..mode.." action=CIRCLE only for CIRCLE branch; source=f120 target=f180 screenshots=EXTERNAL_X11_ONLY")
           LUA
-          )
           cp "$WORK/roulette-circle-diff.lua" "$WORK/captures/roulette-circle-diff.lua"
           failed=0
           for mode in NONE CIRCLE; do
