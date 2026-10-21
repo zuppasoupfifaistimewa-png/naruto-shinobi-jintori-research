@@ -48,7 +48,7 @@ jobs:
       - name: Download verified no-input Konoha f175 successor checkpoint
         uses: actions/download-artifact@v4
         with:
-          name: naruto-storymode-konoha-control-diff-private
+          name: naruto-storymode-konoha-resume-private
           run-id: 39591032125
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
@@ -344,7 +344,6 @@ jobs:
                               report.append(f"{mode}-{point}: mean_abs_rgb_diff_vs_NONE={mean:.6f}; exact_pixel_fraction={exact:.6f}")
           report.append("")
           report.append("CONTROLLER_ACTIONS_ARE_ISOLATED_DISPOSABLE_BRANCHES=YES")
-          report.append("SOURCE_CHECKPOINT_UNCHANGED="+("PASS" if True else "FAIL"))
           (root/"konoha-control-diff-report.txt").write_text("\n".join(report)+"\n",encoding="utf-8")
           print("\n".join(report))
           PY
@@ -357,7 +356,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: naruto-storymode-konoha-resume-private
+          name: naruto-storymode-konoha-control-diff-private
           path: |
             /tmp/naruto-storymode-konoha-control-diff/captures/*.png
             /tmp/naruto-storymode-konoha-control-diff/captures/*.txt
