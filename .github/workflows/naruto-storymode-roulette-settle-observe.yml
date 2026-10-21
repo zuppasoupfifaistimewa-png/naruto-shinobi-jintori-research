@@ -1,30 +1,30 @@
-name: Naruto Story Mode map route DOWN versus no-input probe
+name: Naruto Story Mode skip live dialogue with START after map movement
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - "experiments/.run-storymode-map-route-down-diff"
+      - "experiments/.run-storymode-down-dialog-start"
 
 permissions:
   contents: read
   actions: read
 
 concurrency:
-  group: naruto-storymode-map-route-down-diff
+  group: naruto-storymode-down-dialog-start
   cancel-in-progress: false
 
 jobs:
   observe:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-MAP-ROUTE-DOWN-DIFF]')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-DOWN-DIALOG-START]')
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     container:
       image: ghcr.io/grumpycoders/pcsx-redux-build:latest
       options: --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
     env:
-      WORK: /tmp/naruto-storymode-map-route-down-diff
+      WORK: /tmp/naruto-storymode-down-dialog-start
       RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 
     steps:
@@ -47,16 +47,16 @@ jobs:
           run-id: 39513285641
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-map-route-down-diff/build-artifact
+          path: /tmp/naruto-storymode-down-dialog-start/build-artifact
 
-      - name: Download the verified post-roulette map checkpoint from run 39614665390
+      - name: Download the verified dialogue checkpoint from run 39615341661
         uses: actions/download-artifact@v4
         with:
           name: naruto-storymode-roulette-post-result-observe-private
-          run-id: 39614665390
+          run-id: 39615341661
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-map-route-down-diff/state-artifact
+          path: /tmp/naruto-storymode-down-dialog-start/state-artifact
 
       - name: Download original private Memory Card
         uses: actions/download-artifact@v4
@@ -65,36 +65,35 @@ jobs:
           run-id: 39262213468
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-map-route-down-diff/card-artifact
+          path: /tmp/naruto-storymode-down-dialog-start/card-artifact
 
-      - name: Validate immutable post-roulette map checkpoint and stage read-only copy
+      - name: Validate immutable dialogue checkpoint and stage read-only copy
         shell: bash
         run: |
           set -euo pipefail
           APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
-          SOURCE="$WORK/state-artifact/board-after-roulette-noinput-f120.sstate"
+          SOURCE="$WORK/state-artifact/map-route-result-down-f120.sstate"
           CARD="$WORK/card-artifact/naruto-storymode.mcd"
           test -f "$APP" && chmod +x "$APP"
           test "$(sha256sum "$APP" | cut -d ' ' -f1)" = 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99
-          test "$(stat -c %s "$SOURCE")" = 21162853
-          test "$(sha256sum "$SOURCE" | cut -d ' ' -f1)" = 451c59b13ca1dbf93eb23afa94a096c7eb5721c5bb5108b45e9d2054289ffb53
+          test "$(stat -c %s "$SOURCE")" = 21162042
+          test "$(sha256sum "$SOURCE" | cut -d ' ' -f1)" = 6d01243a2e2c4b47e13a58373216bda0117a8b6e04324f2a6c3fde9b811ae494
           test "$(stat -c %s "$CARD")" = 131072
           test "$(sha256sum "$CARD" | cut -d ' ' -f1)" = ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
-          cp "$SOURCE" "$WORK/resume/map-route-source-f120.sstate"
-          chmod 400 "$WORK/resume/map-route-source-f120.sstate"
+          cp "$SOURCE" "$WORK/resume/down-dialog-source-f120.sstate"
+          chmod 400 "$WORK/resume/down-dialog-source-f120.sstate"
           cp "$CARD" "$WORK/cards/naruto-storymode-template.mcd"
           {
-            echo "SOURCE_RUN=39614665390"
-            echo "SOURCE_BYTES=21162853"
-            echo "SOURCE_SHA256=451c59b13ca1dbf93eb23afa94a096c7eb5721c5bb5108b45e9d2054289ffb53"
+            echo "SOURCE_RUN=39615341661"
+            echo "SOURCE_BYTES=21162042"
+            echo "SOURCE_SHA256=6d01243a2e2c4b47e13a58373216bda0117a8b6e04324f2a6c3fde9b811ae494"
             echo "SOURCE_COPY_READ_ONLY=YES"
-            echo "BRANCHES=NONE,DOWN"
-            echo "ACTION_PRESS_RELATIVE_FRAME=30"
-            echo "ACTION_RELEASE_RELATIVE_FRAME=38"
+            echo "SOURCE_SCREEN=Iruka dialogue following DOWN movement"
+            echo "CONTROLLER_ACTION=START_ONLY"
             echo "EXTERNAL_X11_CAPTURE_FRAMES=20,60,100,120"
             echo "INTERNAL_EMULATOR_SCREENSHOT_API=DISABLED"
           } | tee "$WORK/captures/source-validation.txt"
-          echo "MAP_ROUTE_SOURCE_VALIDATION=PASS"
+          echo "DIALOGUE_SOURCE_VALIDATION=PASS"
 
       - name: Download game and SCPH-7502 BIOS from private runtime release
         shell: bash
@@ -141,7 +140,7 @@ jobs:
           Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
           PY
 
-      - name: Compare one DOWN route-selection tap against matched no-input control
+      - name: Skip the visible Story Mode dialogue with one START tap and save successor
         shell: bash
         run: |
           set -euo pipefail
@@ -158,22 +157,20 @@ jobs:
           PCSX.settings.pads[1].DeviceType='Analog'
           PCSX.settings.pads[1].Connected=true
           PCSX.SIO0.slots[1].pads[1].map()
-          print("MAP_ROUTE_PAD_SETUP=PASS")
+          print("DIALOG_PAD_SETUP=PASS")
           LUA
           )
-          cat > "$WORK/map-route-diff.lua" <<'LUA'
-          local mode=os.getenv("PROBE_MODE") or "NONE"
-          local action=os.getenv("PROBE_ACTION") or "DOWN"
+          cat > "$WORK/down-dialog-start.lua" <<'LUA'
           local frame=0; local started=false; local returned=false; local loaded=false
           local pressed=false; local released=false
           local pad=PCSX.SIO0.slots[1].pads[1]
-          local buttons=PCSX.CONSTS.PAD.BUTTON
+          local button=PCSX.CONSTS.PAD.BUTTON.START
           local function log(s) print(s); io.stdout:flush() end
           local function gateCapture(label)
               PCSX.pauseEmulator()
-              log("ROUTE_CAPTURE_READY label="..label.." mode="..mode.." frame="..frame)
+              log("DIALOG_CAPTURE_READY label="..label.." frame="..frame.." input="..(pressed and "START_SENT" or "NONE"))
               PCSX.nextTick(function()
-                  local gate="captures/go-"..label:lower().."-"..mode:lower()
+                  local gate="captures/go-"..label:lower()
                   while true do
                       local f=io.open(gate,"r")
                       if f then f:close(); break end
@@ -182,53 +179,52 @@ jobs:
                   PCSX.resumeEmulator()
               end)
           end
-          local function input(phase)
+          local function sendStart(phase)
               local ok,v=pcall(function()
-                  if phase=="press" then pad.setOverride(buttons[action]) else pad.clearOverride(buttons[action]) end
-                  return pad.getButton(buttons[action])
+                  if phase=="press" then pad.setOverride(button) else pad.clearOverride(button) end
+                  return pad.getButton(button)
               end)
               local pass=ok and v==(phase=="press")
-              log("ROUTE_INPUT mode="..mode.." action="..action.." phase="..phase.." readback="..tostring(v).." status="..(pass and "PASS" or "FAIL"))
+              log("DIALOG_INPUT action=START phase="..phase.." readback="..tostring(v).." status="..(pass and "PASS" or "FAIL"))
               if not pass then PCSX.quit(83) end
               if phase=="press" then pressed=true else released=true end
           end
           local function saveFinal()
               local ok,state=pcall(function() return PCSX.createSaveState() end)
-              if not ok or not state then log("ROUTE_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
-              local path="captures/map-route-result-"..mode:lower().."-f120.sstate"
-              local opened,file=pcall(function() return assert(Support.File.open(path,"TRUNCATE")) end)
-              if not opened or not file then log("ROUTE_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
+              if not ok or not state then log("DIALOG_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
+              local opened,file=pcall(function() return assert(Support.File.open("captures/after-start-dialog-f120.sstate","TRUNCATE")) end)
+              if not opened or not file then log("DIALOG_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
               local wrote,err=pcall(function() file:writeMoveSlice(state); file:close() end)
-              if not wrote then log("ROUTE_SAVE_WRITE_ERROR="..tostring(err)); PCSX.quit(73); return end
-              log("ROUTE_SAVE_CREATED=PASS mode="..mode.." frame="..frame.." path="..path)
+              if not wrote then log("DIALOG_SAVE_WRITE_ERROR="..tostring(err)); PCSX.quit(73); return end
+              log("DIALOG_SAVE_CREATED=PASS frame="..frame)
               PCSX.quit(0)
           end
           PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
-              loaded=true; frame=0; log("ROUTE_LOAD_EVENT=PASS mode="..mode)
+              loaded=true; frame=0; log("DIALOG_LOAD_EVENT=PASS")
           end)
           PCSX.Events.createEventListener("GPU::Vsync",function()
               if not started then
-                  started=true; log("ROUTE_LOAD_BEGIN=1 mode="..mode); PCSX.pauseEmulator()
+                  started=true; log("DIALOG_LOAD_BEGIN=1"); PCSX.pauseEmulator()
                   PCSX.nextTick(function()
-                      local f=assert(Support.File.open("resume/map-route-source-f120.sstate"))
+                      local f=assert(Support.File.open("resume/down-dialog-source-f120.sstate"))
                       local ok,err=pcall(function() PCSX.loadSaveState(f) end); f:close()
-                      if not ok then log("ROUTE_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
-                      returned=true; log("ROUTE_LOAD_CALL_RETURNED=1 mode="..mode); PCSX.resumeEmulator()
+                      if not ok then log("DIALOG_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
+                      returned=true; log("DIALOG_LOAD_CALL_RETURNED=1"); PCSX.resumeEmulator()
                   end)
                   return
               end
               if not loaded or not returned then return end
               frame=frame+1
               if frame==20 then gateCapture("F20")
-              elseif frame==30 and mode~="NONE" and not pressed then input("press")
-              elseif frame==38 and mode~="NONE" and pressed and not released then input("release")
+              elseif frame==30 and not pressed then sendStart("press")
+              elseif frame==38 and pressed and not released then sendStart("release")
               elseif frame==60 then gateCapture("F60")
               elseif frame==100 then gateCapture("F100")
               elseif frame==120 then
                   PCSX.pauseEmulator()
-                  log("ROUTE_CAPTURE_READY label=F120 mode="..mode.." frame="..frame)
+                  log("DIALOG_CAPTURE_READY label=F120 frame="..frame.." input=START_SENT")
                   PCSX.nextTick(function()
-                      local gate="captures/go-f120-"..mode:lower()
+                      local gate="captures/go-f120"
                       while true do
                           local f=io.open(gate,"r")
                           if f then f:close(); break end
@@ -238,143 +234,117 @@ jobs:
                   end)
                   return
               end
-              if frame%20==0 then log("ROUTE_PROGRESS mode="..mode.." frame="..frame) end
+              if frame%20==0 then log("DIALOG_PROGRESS frame="..frame) end
           end)
-          log("ROUTE_SCRIPT_READY mode="..mode.." action="..action.." source=f120 target=f120 screenshots=EXTERNAL_X11_ONLY")
+          log("DIALOG_SCRIPT_READY source=down-route-dialog-f120 action=START press=30 release=38 screenshots=EXTERNAL_X11_ONLY")
           LUA
-          cp "$WORK/map-route-diff.lua" "$WORK/captures/map-route-diff.lua"
-          failed=0
-          for mode in NONE DOWN; do
-            cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-$mode.mcd"
-            stdout="$WORK/captures/pcsx-$mode.stdout"
-            echo "ROUTE_BRANCH_BEGIN=$mode"
-            PROBE_MODE="$mode" PROBE_ACTION=DOWN timeout --signal=TERM --kill-after=4s 70s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-$mode.mcd" \
-              -exec "$PAD_SETUP" -dofile "$WORK/map-route-diff.lua" -softgpu -dynarec -stdout -lua_stdout \
-              -logfile "$WORK/captures/pcsx-$mode.log" -run > "$stdout" 2>&1 &
-            pid=$!
-            python3 - "$pid" "$mode" "$stdout" "$WORK/captures" <<'PY'
+          cp "$WORK/down-dialog-start.lua" "$WORK/captures/down-dialog-start.lua"
+          cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-DIALOG.mcd"
+          stdout="$WORK/captures/pcsx-DIALOG.stdout"
+          timeout --signal=TERM --kill-after=4s 90s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIALOG.mcd" \
+            -exec "$PAD_SETUP" -dofile "$WORK/down-dialog-start.lua" -softgpu -dynarec -stdout -lua_stdout \
+            -logfile "$WORK/captures/pcsx-DIALOG.log" -run > "$stdout" 2>&1 &
+          pid=$!
+          python3 - "$pid" "$stdout" "$WORK/captures" <<'PY'
           import sys,time,subprocess,hashlib
           from pathlib import Path
           from PIL import Image
-          pid=int(sys.argv[1]); mode=sys.argv[2]; stdout=Path(sys.argv[3]); out=Path(sys.argv[4]); done=set()
+          pid=int(sys.argv[1]); stdout=Path(sys.argv[2]); out=Path(sys.argv[3]); done=set()
           def alive():
               r=subprocess.run(["ps","-o","stat=","-p",str(pid)],capture_output=True,text=True)
               s=r.stdout.strip(); return bool(s) and not s.startswith("Z")
           def capture(label):
-              xwd=out/(mode+"-"+label+".xwd"); png=out/(mode+"-"+label+".png")
+              xwd=out/(label+".xwd"); png=out/("DIALOG-"+label+".png")
               a=subprocess.run(["xwd","-root","-silent","-out",str(xwd)],capture_output=True,text=True)
               if a.returncode or not xwd.is_file() or not xwd.stat().st_size:
-                  print("ROUTE_X11_FAILED mode="+mode+" label="+label+" error="+a.stderr,flush=True); return False
+                  print("DIALOG_X11_FAILED label="+label+" error="+a.stderr,flush=True); return False
               b=subprocess.run(["convert",str(xwd),str(png)],capture_output=True,text=True)
               try: xwd.unlink()
               except FileNotFoundError: pass
               if b.returncode or not png.is_file():
-                  print("ROUTE_X11_CONVERT_FAILED mode="+mode+" label="+label+" error="+b.stderr,flush=True); return False
+                  print("DIALOG_X11_CONVERT_FAILED label="+label+" error="+b.stderr,flush=True); return False
               try:
                   with Image.open(png) as im:
                       colors=im.getcolors(maxcolors=1000000)
                       valid=im.size==(1280,800) and png.stat().st_size>1000 and not (colors is not None and len(colors)==1)
                       digest=hashlib.sha256(png.read_bytes()).hexdigest()
-                      print("ROUTE_X11_CAPTURE mode={} label={} size={} bytes={} colors={} sha256={} valid={}".format(mode,label,im.size,png.stat().st_size,len(colors) if colors is not None else "many",digest,valid),flush=True)
+                      print("DIALOG_X11_CAPTURE label={} size={} bytes={} colors={} sha256={} valid={}".format(label,im.size,png.stat().st_size,len(colors) if colors is not None else "many",digest,valid),flush=True)
                       return bool(valid)
               except Exception as e:
-                  print("ROUTE_X11_VERIFY_ERROR mode="+mode+" label="+label+" error="+str(e),flush=True); return False
+                  print("DIALOG_X11_VERIFY_ERROR label="+label+" error="+str(e),flush=True); return False
           while alive():
               try: content=stdout.read_text(errors="replace")
               except FileNotFoundError: content=""
               for label in ("F20","F60","F100","F120"):
-                  token="ROUTE_CAPTURE_READY label="+label+" mode="+mode
+                  token="DIALOG_CAPTURE_READY label="+label
                   if label not in done and token in content:
                       ok=capture(label)
-                      (out/("go-"+label.lower()+"-"+mode.lower())).write_text("validated\n" if ok else "invalid\n",encoding="utf-8")
-                      if not ok: (out/("capture-failed-"+mode.lower()+"-"+label.lower()+".txt")).write_text("Invalid external X11 capture\n",encoding="utf-8")
+                      (out/("go-"+label.lower())).write_text("validated\n" if ok else "invalid\n",encoding="utf-8")
+                      if not ok: (out/("capture-failed-"+label.lower()+".txt")).write_text("Invalid external X11 capture\n",encoding="utf-8")
                       done.add(label)
               time.sleep(.01)
-          print("ROUTE_WATCHDOG_END mode="+mode+" captures="+",".join(sorted(done)),flush=True)
+          print("DIALOG_WATCHDOG_END captures="+",".join(sorted(done)),flush=True)
           PY
-            set +e
-            wait "$pid"
-            rc=$?
-            set -e
-            echo "ROUTE_BRANCH_EXIT mode=$mode rc=$rc"
-            grep -E 'ROUTE_(LOAD_EVENT|LOAD_CALL_RETURNED|INPUT|CAPTURE_READY|PROGRESS|SAVE_CREATED|.*ERROR)' "$stdout" || true
-            if [ "$rc" -ne 0 ]; then failed=$((failed+1)); fi
-            for label in F20 F60 F100 F120; do
-              test -s "$WORK/captures/$mode-$label.png" || failed=$((failed+1))
-            done
-            localname="$(echo "$mode" | tr '[:upper:]' '[:lower:]')"
-            if [ ! -s "$WORK/captures/map-route-result-$localname-f120.sstate" ]; then failed=$((failed+1)); fi
-            if [ "$mode" = "DOWN" ]; then
-              grep -q 'ROUTE_INPUT mode=DOWN action=DOWN phase=press.*status=PASS' "$stdout" || failed=$((failed+1))
-              grep -q 'ROUTE_INPUT mode=DOWN action=DOWN phase=release.*status=PASS' "$stdout" || failed=$((failed+1))
-            else
-              if grep -q 'ROUTE_INPUT' "$stdout"; then failed=$((failed+1)); fi
-            fi
-          done
-          python3 - "$WORK/captures" "$WORK/captures/map-route-diff-report.txt" <<'PY'
+          set +e
+          wait "$pid"
+          rc=$?
+          set -e
+          echo "DIALOG_PROCESS_EXIT_CODE=$rc"
+          grep -E 'DIALOG_(LOAD_EVENT|LOAD_CALL_RETURNED|INPUT|CAPTURE_READY|PROGRESS|SAVE_CREATED|.*ERROR)' "$stdout" || true
+          python3 - "$WORK/captures" "$rc" <<'PY'
           import hashlib,sys
           from pathlib import Path
           from PIL import Image,ImageChops,ImageStat
-          root=Path(sys.argv[1]); report_path=Path(sys.argv[2]); labels=["F20","F60","F100","F120"]
-          def load(name):
-              p=root/name
-              if not p.exists(): return None
-              with Image.open(p) as im: return im.convert("RGB").copy()
+          root=Path(sys.argv[1]); rc=int(sys.argv[2]); labels=["F20","F60","F100","F120"]
           report=[
-            "MAP_SOURCE_RUN=39614665390",
-            "MAP_SOURCE_SHA256=451c59b13ca1dbf93eb23afa94a096c7eb5721c5bb5108b45e9d2054289ffb53",
-            "MAP_CONTROL=NONE",
-            "MAP_TEST=DOWN press frame 30 release frame 38; readback required PASS",
-            "MAP_SCREENSHOTS=external X11 only; internal screenshot API disabled",
+            "DIALOG_SOURCE_RUN=39615341661",
+            "DIALOG_SOURCE_BYTES=21162042",
+            "DIALOG_SOURCE_SHA256=6d01243a2e2c4b47e13a58373216bda0117a8b6e04324f2a6c3fde9b811ae494",
+            "DIALOG_INPUT=one START press frame 30, release frame 38",
+            "DIALOG_SCREENSHOTS=external X11 only; internal screenshot API disabled",
+            "DIALOG_PROCESS_EXIT_CODE="+str(rc),
           ]
-          images={}
-          for mode in ("NONE","DOWN"):
-              for label in labels:
-                  name=mode+"-"+label+".png"; im=load(name)
-                  if im is None:
-                      report.append(name+"_MISSING=YES")
-                  else:
-                      images[(mode,label)]=im
-                      report.append(name+"_SHA256="+hashlib.sha256((root/name).read_bytes()).hexdigest())
-              for prev,nxt in zip(labels,labels[1:]):
-                  a=images.get((mode,prev)); b=images.get((mode,nxt))
-                  if a is None or b is None: continue
-                  d=ImageChops.difference(a,b); mean=sum(ImageStat.Stat(d).mean)/3
-                  exact=sum(1 for x,y in zip(a.getdata(),b.getdata()) if x==y)/(a.width*a.height)
-                  report.append("{}_TO_{}_MEAN_ABS_RGB_DIFF={:.6f}".format(mode+"-"+prev,mode+"-"+nxt,mean))
-                  report.append("{}_TO_{}_EXACT_PIXEL_FRACTION={:.6f}".format(mode+"-"+prev,mode+"-"+nxt,exact))
-          for label in ("F60","F100","F120"):
-              a=images.get(("NONE",label)); b=images.get(("DOWN",label))
-              if a is not None and b is not None:
-                  d=ImageChops.difference(a,b); mean=sum(ImageStat.Stat(d).mean)/3
-                  ac,bc=a.crop((100,60,1180,740)),b.crop((100,60,1180,740))
-                  cd=ImageChops.difference(ac,bc); cropmean=sum(ImageStat.Stat(cd).mean)/3
-                  exact=sum(1 for x,y in zip(a.getdata(),b.getdata()) if x==y)/(a.width*a.height)
-                  report.append("NONE_VS_DOWN_{}_FULL_MEAN_ABS_RGB_DIFF={:.6f}".format(label,mean))
-                  report.append("NONE_VS_DOWN_{}_CROP_MEAN_ABS_RGB_DIFF={:.6f}".format(label,cropmean))
-                  report.append("NONE_VS_DOWN_{}_FULL_EXACT_PIXEL_FRACTION={:.6f}".format(label,exact))
-          for mode in ("NONE","DOWN"):
-              p=root/("map-route-result-"+mode.lower()+"-f120.sstate")
+          imgs={}
+          for label in labels:
+              p=root/("DIALOG-"+label+".png")
               if p.exists():
-                  report.append("SUCCESSOR_{}_BYTES={}".format(mode,p.stat().st_size))
-                  report.append("SUCCESSOR_{}_SHA256={}".format(mode,hashlib.sha256(p.read_bytes()).hexdigest()))
-          report_path.write_text("\n".join(report)+"\n",encoding="utf-8")
+                  with Image.open(p) as im: imgs[label]=im.convert("RGB").copy()
+                  report.append("DIALOG_"+label+"_SHA256="+hashlib.sha256(p.read_bytes()).hexdigest())
+              else: report.append("DIALOG_"+label+"_MISSING=YES")
+          for prev,nxt in zip(labels,labels[1:]):
+              if prev not in imgs or nxt not in imgs: continue
+              a,b=imgs[prev],imgs[nxt]; d=ImageChops.difference(a,b)
+              mean=sum(ImageStat.Stat(d).mean)/3
+              exact=sum(1 for x,y in zip(a.getdata(),b.getdata()) if x==y)/(a.width*a.height)
+              report.append("DIALOG_{}_TO_{}_MEAN_ABS_RGB_DIFF={:.6f}".format(prev,nxt,mean))
+              report.append("DIALOG_{}_TO_{}_EXACT_PIXEL_FRACTION={:.6f}".format(prev,nxt,exact))
+          successor=root/"after-start-dialog-f120.sstate"
+          if successor.exists():
+              report.append("DIALOG_SUCCESSOR_BYTES="+str(successor.stat().st_size))
+              report.append("DIALOG_SUCCESSOR_SHA256="+hashlib.sha256(successor.read_bytes()).hexdigest())
+          (root/"start-dialog-report.txt").write_text("\n".join(report)+"\n",encoding="utf-8")
           print("\n".join(report))
           PY
-          if [ "$failed" -ne 0 ]; then echo "::error::$failed branch/capture/checkpoint checks failed; inspect private artifact"; exit 44; fi
+          if [ "$rc" -ne 0 ]; then echo "::error::Emulator exited $rc before dialogue-skip checkpoint; inspect private artifact"; exit 44; fi
+          grep -q 'DIALOG_SAVE_CREATED=PASS frame=120' "$stdout"
+          grep -q 'DIALOG_INPUT action=START phase=press.*status=PASS' "$stdout"
+          grep -q 'DIALOG_INPUT action=START phase=release.*status=PASS' "$stdout"
+          test -s "$WORK/captures/after-start-dialog-f120.sstate"
+          for label in F20 F60 F100 F120; do test -s "$WORK/captures/DIALOG-$label.png"; done
+          test -s "$WORK/captures/start-dialog-report.txt"
 
       - name: Upload private X11 observations, logs and successor checkpoint
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: naruto-storymode-map-route-down-diff-private
+          name: naruto-storymode-down-dialog-start-private
           path: |
-            /tmp/naruto-storymode-map-route-down-diff/captures/*.png
-            /tmp/naruto-storymode-map-route-down-diff/captures/*.txt
-            /tmp/naruto-storymode-map-route-down-diff/captures/*.stdout
-            /tmp/naruto-storymode-map-route-down-diff/captures/*.log
-            /tmp/naruto-storymode-map-route-down-diff/captures/*.sstate
+            /tmp/naruto-storymode-down-dialog-start/captures/*.png
+            /tmp/naruto-storymode-down-dialog-start/captures/*.txt
+            /tmp/naruto-storymode-down-dialog-start/captures/*.stdout
+            /tmp/naruto-storymode-down-dialog-start/captures/*.log
+            /tmp/naruto-storymode-down-dialog-start/captures/*.sstate
           retention-days: 14
 
       - name: Remove private game assets and checkpoint copies
