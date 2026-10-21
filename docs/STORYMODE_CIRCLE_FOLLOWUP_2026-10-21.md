@@ -29,15 +29,18 @@ Pada cabang Circle, perubahan visual yang dimulai di frame 37 bertahan melewati 
 
 Observasi tambahan yang hanya tersedia pada cabang input di frame 180: cabang Circle menampilkan panel Jepang berjudul “任務内容” (isi misi), dengan baris “3000チャクラためる” (mengumpulkan/menabung 3.000 Chakra) dan “ついか条件なし” (tanpa syarat tambahan), serta prompt konfirmasi “けってい”. Cabang START pada f180 masih memperlihatkan papan dan efek visual di petak, bukan panel yang sama. Karena baseline NONE tidak mempunyai f180, tampilan panel ini adalah petunjuk kuat adanya perbedaan jalur, tetapi tidak berdiri sendiri sebagai bukti kausal penuh terhadap baseline pada waktu yang sama.
 
-## Perbaikan follow-up selanjutnya
+## Validasi final dan kondisi workflow saat ini
 
-Run [#39526446924](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39526446924) sedang berjalan dengan konfigurasi yang dikoreksi pada workflow `.github/workflows/naruto-storymode-circle-followup.yml` commit `4551c1ab9de0334caea8c1aa2bea23bcdcacabab`:
+- Follow-up pertama [#39525735032](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39525735032) gagal pada verifikasi awal akibat path staging lama; emulator tidak dijalankan pada run tersebut.
+- Follow-up kedua [#39526446924](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39526446924) menjalankan ketiga cabang dan menghasilkan bukti lengkap. Status job gagal hanya karena langkah akhir `cat` membaca nama file laporan lama setelah laporan baru berhasil ditulis. Evidence-nya tetap valid.
+- Validasi final [#39526690265](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39526690265) selesai dengan status `success` pada 08:21:22 WIB, durasi sekitar 1 menit 21 detik. Artifact privat #12313342874 berukuran 2.755.974 byte, digest ZIP `sha256:9988b3d34c24441ad13c8453f2e41af60cde0698a2f7b30130a2fc46c5b02a8d`, kedaluwarsa 4 November 2026 sekitar 08:21:17 WIB.
+- Perbaikan workflow pada commit `fb1d3b779611cb7938370d018290b2e2be7b1328` menyelaraskan path laporan dan daftar frame metrik dengan screenshot yang benar-benar diambil. Report sekarang menampilkan frame terpilih: 20, 29, 30, 35, 37, 38, 39, 45, 90, 120, 150, 180.
+- Hasil pengamatan tidak berubah: perbandingan yang valid hingga frame 150 menunjukkan Circle awal berbeda mulai frame 37 dan masih berbeda pada frame 150; START awal identik dengan baseline pada semua frame cocok hingga 150. Panel misi yang tampak pada screenshot Circle f180 adalah observasi endpoint tambahan; NONE f180 tidak ada sehingga tidak dilakukan perbandingan langsung pada f180.
+- Parent checkpoint tidak berubah: 21.162.405 byte, SHA-256 `b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a`. AppImage patched: `2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99`.
 
-- Mengurangi snapshot yang diambil dari 17 menjadi 12 frame per cabang untuk menekan biaya capture.
-- Cabang `NONE` sekarang menghentikan proses setelah menangkap frame 150, supaya tidak menunggu ke frame 180 ketika output no-input sudah berhenti maju.
-- Cabang Circle dan START tetap diamati sampai frame 180. Perbandingan antar-cabang yang dijadikan dasar kesimpulan hanya dilakukan pada frame cocok sampai 150; frame 180 adalah observasi tambahan untuk kedua input, bukan perbandingan terhadap baseline.
-- Timeout tiap cabang dinaikkan dari 180 menjadi 240 detik.
-- Parent checkpoint tetap dipakai ulang pada proses baru untuk setiap cabang dan tidak ditimpa. ROM, BIOS, checkpoint, dan Memory Card tetap dibersihkan dari runner temporer dan tidak dikomit ke Git.
+## Langkah teknis berikutnya
+
+Gunakan kembali checkpoint parent yang sama pada cabang baru untuk menguji apakah input Circle kedua pada panel `任務内容` dengan prompt `けってい` mengonfirmasi/memasuki langkah Story Mode selanjutnya. Bandingkan cabang “tunggu tanpa input kedua” dengan cabang “tap Circle kedua”, ambil screenshot rapat sebelum/sesudah input, dan jika perlu simpan checkpoint baru lewat `PCSX.createSaveState()` hanya ke artifact privat lalu verifikasi restore dalam proses emulator kedua. Jangan menimpa checkpoint parent, jangan menganggap tujuan 3.000 Chakra sudah tercapai hanya karena teks target terlihat, dan gunakan START untuk dialog Story Mode hanya setelah dialog benar-benar teramati.
 
 ## Status riset
 
