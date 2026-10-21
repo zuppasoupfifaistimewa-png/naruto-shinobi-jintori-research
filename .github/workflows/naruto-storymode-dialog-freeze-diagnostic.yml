@@ -1,4 +1,4 @@
-name: Naruto Story Mode VSync watchdog and external X11 capture (no START input)
+name: Naruto Story Mode VSync watchdog and lightweight native SIGSEGV trace (no START input)
 
 on:
   workflow_dispatch:
@@ -33,6 +33,9 @@ jobs:
           set -euo pipefail
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y jq python3-pil xvfb x11-utils x11-apps imagemagick curl unzip gdb file
+          if ! command -v catchsegv >/dev/null 2>&1; then
+            DEBIAN_FRONTEND=noninteractive apt-get install -y glibc-tools || DEBIAN_FRONTEND=noninteractive apt-get install -y libc6-dbg
+          fi
           mkdir -p "$WORK"/{build-artifact,state-artifact,dialog-checkpoint-artifact,card-artifact,cards,resume,captures/raw,home,.config,.data,runtime}
           chmod 700 "$WORK/runtime"
 
@@ -230,24 +233,24 @@ jobs:
           if [ -r /proc/sys/kernel/core_pattern ]; then echo "DIAG_KERNEL_CORE_PATTERN=$(cat /proc/sys/kernel/core_pattern)" | tee -a "$WORK/captures/diagnostic-report.txt"; else echo "DIAG_KERNEL_CORE_PATTERN=UNREADABLE" | tee -a "$WORK/captures/diagnostic-report.txt"; fi
           echo "DIAG_LAUNCHER_FILE=$(file -b "$WORK/squashfs-root/AppRun")" | tee -a "$WORK/captures/diagnostic-report.txt"
           echo "DIAG_LAUNCHER_REALPATH=$(readlink -f "$WORK/squashfs-root/AppRun" || true)" | tee -a "$WORK/captures/diagnostic-report.txt"
-          timeout --signal=TERM --kill-after=3s 60s stdbuf -oL -eL gdb -q -batch \
-            -ex 'set pagination off' \
-            -ex 'set confirm off' \
-            -ex 'set debuginfod enabled off' \
-            -ex 'set print thread-events off' \
-            -ex 'handle SIGSEGV stop print nopass' \
-            -ex 'handle SIGINT stop print nopass' \
-            -ex run \
-            -ex 'echo \\n===DIAG_GDB_STACK_CAPTURE===\\n' \
-            -ex 'info program' \
-            -ex 'info threads' \
-            -ex 'thread apply all bt 64' \
-            -ex 'info registers' \
-            -ex 'info proc mappings' \
-            --args "$WORK/squashfs-root/AppRun" \
-            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd" \
-            -exec "$PAD_SETUP" -dofile "$WORK/restore-no-input.lua" -softgpu -dynarec -stdout -lua_stdout \
-            -logfile "$WORK/captures/pcsx-DIAGNONE.log" -run > "$WORK/captures/pcsx-DIAGNONE.stdout" 2>&1 &
+          export SEGFAULT_SIGNALS=all SEGFAULT_USE_ALTSTACK=1
+          if command -v catchsegv >/dev/null 2>&1; then
+            echo "DIAG_NATIVE_TRACE_MODE=catchsegv path=$(command -v catchsegv)" | tee -a "$WORK/captures/diagnostic-report.txt"
+            signal_wrapper="$(command -v catchsegv)"
+            timeout --signal=TERM --kill-after=3s 60s "$signal_wrapper" "$WORK/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd" \
+              -exec "$PAD_SETUP" -dofile "$WORK/restore-no-input.lua" -softgpu -dynarec -stdout -lua_stdout \
+              -logfile "$WORK/captures/pcsx-DIAGNONE.log" -run > "$WORK/captures/pcsx-DIAGNONE.stdout" 2>&1 &
+          else
+            signal_library="$(find /lib /usr/lib -type f -name libSegFault.so -print -quit 2>/dev/null)"
+            test -n "$signal_library"
+            echo "DIAG_NATIVE_TRACE_MODE=LD_PRELOAD path=$signal_library" | tee -a "$WORK/captures/diagnostic-report.txt"
+            export LD_PRELOAD="$signal_library${LD_PRELOAD:+:$LD_PRELOAD}"
+            timeout --signal=TERM --kill-after=3s 60s "$WORK/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIAGNONE.mcd" \
+              -exec "$PAD_SETUP" -dofile "$WORK/restore-no-input.lua" -softgpu -dynarec -stdout -lua_stdout \
+              -logfile "$WORK/captures/pcsx-DIAGNONE.log" -run > "$WORK/captures/pcsx-DIAGNONE.stdout" 2>&1 &
+          fi
           timeout_pid=$!
           python3 - "$timeout_pid" "$WORK/captures/pcsx-DIAGNONE.stdout" "$WORK/captures" <<'PY'
           import os, re, signal, sys, time, subprocess
@@ -329,17 +332,16 @@ jobs:
                       except Exception as e: log("X11_SCREEN_COMPARE_ERROR="+str(e))
                   else:
                       log("STALL_CONTINUED_CAPTURE_SKIPPED reason=frame_advanced")
-                  # If GDB has not already caught SIGSEGV, interrupt only the
-                  # emulator inferior so GDB can print all-thread backtraces.
-                  # Give the native process a short natural-crash window after the
-                  # external screenshots, before interrupting it for a stall backtrace.
-                  time.sleep(0.75)
+                  # Observe a bounded window for the signal-time handler's output.
+                  # Avoid GDB in this run so its instrumentation does not alter the
+                  # renderer timing before a possible natural SIGSEGV.
+                  time.sleep(3.0)
                   try:
                       current_output=stdout.read_text(errors="replace")
                   except Exception:
                       current_output=""
-                  if re.search(r'received signal SIGSEGV',current_output):
-                      log("GDB_INFERIOR_INTERRUPT_SKIPPED reason=SIGSEGV_already_caught")
+                  if re.search(r'Segmentation fault|Backtrace:|signal SIGSEGV',current_output,re.I):
+                      log("NATIVE_SIGSEGV_TRACE_OBSERVED=YES; leaving fatal-signal path untouched")
                   else:
                       try:
                           ps2=subprocess.run(["ps","-eo","pid=,ppid=,comm=,args="],capture_output=True,text=True)
@@ -349,15 +351,14 @@ jobs:
                               if len(parts)==4:
                                   try: rows.append((int(parts[0]),int(parts[1]),parts[2],parts[3]))
                                   except ValueError: pass
-                          gdb_pids={pid for pid,ppid,comm,args in rows if comm.lower().startswith("gdb") and "restore-no-input.lua" in args}
-                          inferior=next((pid for pid,ppid,comm,args in rows if ppid in gdb_pids and "restore-no-input.lua" in args and ("apprun" in args.lower() or "pcsx-redux" in args.lower())),None)
+                          inferior=next((pid for pid,ppid,comm,args in rows if "restore-no-input.lua" in args and (comm.lower().startswith("apprun") or "pcsx-redux" in comm.lower())),None)
                           if inferior is not None:
-                              os.kill(inferior,signal.SIGINT)
-                              log(f"GDB_INFERIOR_INTERRUPT_SENT pid={inferior} signal=SIGINT reason=VSync_stall_after_natural_crash_window_s=0.75")
+                              os.kill(inferior,signal.SIGTERM)
+                              log(f"EMULATOR_STOP_SENT pid={inferior} signal=SIGTERM reason=no_natural_SIGSEGV_trace_after_stall_observation")
                           else:
-                              log("GDB_INFERIOR_INTERRUPT_SKIPPED reason=process_not_found")
+                              log("EMULATOR_STOP_SKIPPED reason=process_not_found")
                       except Exception as e:
-                          log("GDB_INFERIOR_INTERRUPT_ERROR="+str(e))
+                          log("EMULATOR_STOP_ERROR="+str(e))
               time.sleep(0.1)
           log(f"WATCHDOG_END last_frame={last_frame} external_pair_captured={captured}")
           PY
@@ -369,16 +370,16 @@ jobs:
           frames="$( (grep -oE 'DIAG_NONE_FRAME=[0-9]+' "$WORK/captures/pcsx-DIAGNONE.stdout" || true) | sed 's/.*=//' | sort -n | tail -1)"
           if [ -z "$frames" ]; then frames=0; fi
           echo "DIAG_NONE_LAST_FRAME=$frames input=NONE" | tee -a "$WORK/captures/diagnostic-report.txt"
-          if grep -Eq 'received signal SIGSEGV|Program received signal SIGSEGV' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
-            echo "DIAG_NONE_RESULT=GDB_CAUGHT_SIGSEGV_WITHOUT_START" | tee -a "$WORK/captures/diagnostic-report.txt"
-          elif grep -Eq 'received signal SIGINT|Program received signal SIGINT' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
-            echo "DIAG_NONE_RESULT=GDB_BACKTRACE_CAPTURED_AFTER_VSYNC_STALL_NO_START" | tee -a "$WORK/captures/diagnostic-report.txt"
+          if grep -Eiq 'Segmentation fault|Backtrace:|signal SIGSEGV' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
+            echo "DIAG_NONE_RESULT=SIGSEGV_SIGNAL_HANDLER_TRACE_CAPTURED_NO_START" | tee -a "$WORK/captures/diagnostic-report.txt"
+          elif [ "$rc" -eq 139 ]; then
+            echo "DIAG_NONE_RESULT=SEGMENTATION_FAULT_NO_HANDLER_TRACE" | tee -a "$WORK/captures/diagnostic-report.txt"
+          elif [ "$rc" -eq 143 ] && [ "$frames" -ge 1 ]; then
+            echo "DIAG_NONE_RESULT=STALL_CAPTURED_NO_NATURAL_SIGSEGV_IN_OBSERVATION_WINDOW" | tee -a "$WORK/captures/diagnostic-report.txt"
           elif [ "$rc" -eq 0 ] && grep -q 'DIAG_NONE_BRANCH_DONE frame=175' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
             echo "DIAG_NONE_RESULT=PASS_175_VSYNC_NO_INPUT" | tee -a "$WORK/captures/diagnostic-report.txt"
           elif [ "$rc" -eq 124 ] && [ "$frames" -ge 1 ]; then
             echo "DIAG_NONE_RESULT=STALL_OR_TIMEOUT_WITHOUT_START" | tee -a "$WORK/captures/diagnostic-report.txt"
-          elif [ "$rc" -eq 139 ]; then
-            echo "DIAG_NONE_RESULT=SEGMENTATION_FAULT_WITHOUT_START" | tee -a "$WORK/captures/diagnostic-report.txt"
           else
             echo "DIAG_NONE_RESULT=INCONCLUSIVE rc=$rc" | tee -a "$WORK/captures/diagnostic-report.txt"
           fi
@@ -443,13 +444,13 @@ jobs:
             echo "DIAG_GDB_POSTMORTEM=NOT_RUN" >> "$report"
           fi
           session="$WORK/captures/pcsx-DIAGNONE.stdout"
-          if [ -s "$session" ] && grep -Eq 'received signal SIGSEGV|received signal SIGINT|Program received signal SIGSEGV|Program received signal SIGINT' "$session"; then
-            echo "DIAG_GDB_LIVE_SESSION_TRACE_CAPTURED=YES" >> "$report"
-            echo "DIAG_GDB_LIVE_SESSION_TRACE_BEGIN" >> "$report"
-            awk '/received signal SIGSEGV|received signal SIGINT|===DIAG_GDB_STACK_CAPTURE===/{printing=1} printing {print}' "$session" >> "$report"
-            echo "DIAG_GDB_LIVE_SESSION_TRACE_END" >> "$report"
+          if [ -s "$session" ] && grep -Eiq 'Segmentation fault|Backtrace:|signal SIGSEGV|stack trace' "$session"; then
+            echo "DIAG_NATIVE_SIGNAL_TRACE_CAPTURED=YES" >> "$report"
+            echo "DIAG_NATIVE_SIGNAL_TRACE_BEGIN" >> "$report"
+            awk '/Segmentation fault|Backtrace:|signal SIGSEGV|Register dump|stack trace|Memory map:/{printing=1} printing {print}' "$session" >> "$report"
+            echo "DIAG_NATIVE_SIGNAL_TRACE_END" >> "$report"
           else
-            echo "DIAG_GDB_LIVE_SESSION_TRACE_CAPTURED=NO" >> "$report"
+            echo "DIAG_NATIVE_SIGNAL_TRACE_CAPTURED=NO" >> "$report"
           fi
           cat "$report"
           
