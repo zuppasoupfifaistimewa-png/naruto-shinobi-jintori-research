@@ -1,30 +1,30 @@
-name: Naruto Story Mode barrier follow-through DOWN versus no-input
+name: Naruto Story Mode delayed DOWN after barrier animation versus no-input
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - "experiments/.run-storymode-barrier-result-down-diff"
+      - "experiments/.run-storymode-barrier-result-delayed-down-diff"
 
 permissions:
   contents: read
   actions: read
 
 concurrency:
-  group: naruto-storymode-barrier-result-down-diff
+  group: naruto-storymode-barrier-result-delayed-down-diff
   cancel-in-progress: false
 
 jobs:
   observe:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-BARRIER-RESULT-DOWN-DIFF]')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-BARRIER-RESULT-DELAYED-DOWN-DIFF]')
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     container:
       image: ghcr.io/grumpycoders/pcsx-redux-build:latest
       options: --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
     env:
-      WORK: /tmp/naruto-storymode-barrier-result-down-diff
+      WORK: /tmp/naruto-storymode-barrier-result-delayed-down-diff
       RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 
     steps:
@@ -47,16 +47,16 @@ jobs:
           run-id: 39513285641
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-barrier-result-down-diff/build-artifact
+          path: /tmp/naruto-storymode-barrier-result-delayed-down-diff/build-artifact
 
-      - name: Download the verified post-barrier checkpoint from run 39617444912
+      - name: Download the verified no-input continuation checkpoint from run 39618670884
         uses: actions/download-artifact@v4
         with:
-          name: naruto-storymode-barrier-circle-confirm-private
-          run-id: 39617444912
+          name: naruto-storymode-barrier-result-down-diff-private
+          run-id: 39618670884
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-barrier-result-down-diff/state-artifact
+          path: /tmp/naruto-storymode-barrier-result-delayed-down-diff/state-artifact
 
       - name: Download original private Memory Card
         uses: actions/download-artifact@v4
@@ -65,37 +65,36 @@ jobs:
           run-id: 39262213468
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-barrier-result-down-diff/card-artifact
+          path: /tmp/naruto-storymode-barrier-result-delayed-down-diff/card-artifact
 
-      - name: Validate immutable post-barrier checkpoint and stage read-only copy
+      - name: Validate immutable no-input continuation checkpoint and stage read-only copy
         shell: bash
         run: |
           set -euo pipefail
           APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
-          SOURCE="$WORK/state-artifact/after-barrier-circle-f120.sstate"
+          SOURCE="$WORK/state-artifact/barrier-result-route-none-f120.sstate"
           CARD="$WORK/card-artifact/naruto-storymode.mcd"
           test -f "$APP" && chmod +x "$APP"
           test "$(sha256sum "$APP" | cut -d ' ' -f1)" = 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99
-          test "$(stat -c %s "$SOURCE")" = 21162458
-          test "$(sha256sum "$SOURCE" | cut -d ' ' -f1)" = a1053f965ad8520c1c7f6f59ae14433c5e1d0bb6bc933b65553597b187f65649
+          test "$(stat -c %s "$SOURCE")" = 21162444
+          test "$(sha256sum "$SOURCE" | cut -d ' ' -f1)" = 37a79775163369e3f4236de630d18c2fa4d35b05e9237f98a4a03981c9875aa1
           test "$(stat -c %s "$CARD")" = 131072
           test "$(sha256sum "$CARD" | cut -d ' ' -f1)" = ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
-          cp "$SOURCE" "$WORK/resume/barrier-map-source-f120.sstate"
-          chmod 400 "$WORK/resume/barrier-map-source-f120.sstate"
+          cp "$SOURCE" "$WORK/resume/barrier-route-waited-f120.sstate"
+          chmod 400 "$WORK/resume/barrier-route-waited-f120.sstate"
           cp "$CARD" "$WORK/cards/naruto-storymode-template.mcd"
           {
-            echo "SOURCE_RUN=39617444912"
-            echo "SOURCE_BYTES=21162458"
-            echo "SOURCE_SHA256=a1053f965ad8520c1c7f6f59ae14433c5e1d0bb6bc933b65553597b187f65649"
+            echo "SOURCE_RUN=39618670884"
+            echo "SOURCE_BYTES=21162444"
+            echo "SOURCE_SHA256=37a79775163369e3f4236de630d18c2fa4d35b05e9237f98a4a03981c9875aa1"
             echo "SOURCE_COPY_READ_ONLY=YES"
-            echo "SOURCE_SCREEN=post-barrier map, Naruto Chakra 1380, Mizuki Chakra 1500"
-            echo "PREVIOUSLY_VERIFIED=Circle on highlighted YES placed barrier; 120 Chakra debit"
-            echo "BRANCHES=NONE,DOWN"
-            echo "ACTION=DOWN press at f30, release at f38"
+            echo "SOURCE_BRANCH=NONE continuation after barrier; gameplay viewport matches DOWN branch at f120"
+            echo "KNOWN_RESULT=barrier visible; Naruto Chakra 1380, Mizuki Chakra 1500"
+            echo "ACTION=DOWN press relative frame 50, release frame 58"
             echo "EXTERNAL_X11_CAPTURE_FRAMES=20,60,100,120"
             echo "INTERNAL_EMULATOR_SCREENSHOT_API=DISABLED"
           } | tee "$WORK/captures/source-validation.txt"
-          echo "POST_BARRIER_SOURCE_VALIDATION=PASS"
+          echo "DELAYED_DOWN_SOURCE_VALIDATION=PASS"
 
       - name: Download game and SCPH-7502 BIOS from private runtime release
         shell: bash
@@ -142,7 +141,7 @@ jobs:
           Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
           PY
 
-      - name: Compare one DOWN map movement against matched no-input control
+      - name: Compare one delayed DOWN map movement against matched no-input control
         shell: bash
         run: |
           set -euo pipefail
@@ -196,7 +195,7 @@ jobs:
           local function saveFinal()
               local ok,state=pcall(function() return PCSX.createSaveState() end)
               if not ok or not state then log("BMAP_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
-              local path="captures/barrier-result-route-"..mode:lower().."-f120.sstate"
+              local path="captures/barrier-result-delayed-down-"..mode:lower().."-f120.sstate"
               local opened,file=pcall(function() return assert(Support.File.open(path,"TRUNCATE")) end)
               if not opened or not file then log("BMAP_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
               local wrote,err=pcall(function() file:writeMoveSlice(state); file:close() end)
@@ -211,7 +210,7 @@ jobs:
               if not started then
                   started=true; log("BMAP_LOAD_BEGIN=1 mode="..mode); PCSX.pauseEmulator()
                   PCSX.nextTick(function()
-                      local f=assert(Support.File.open("resume/barrier-map-source-f120.sstate"))
+                      local f=assert(Support.File.open("resume/barrier-route-waited-f120.sstate"))
                       local ok,err=pcall(function() PCSX.loadSaveState(f) end); f:close()
                       if not ok then log("BMAP_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
                       returned=true; log("BMAP_LOAD_CALL_RETURNED=1 mode="..mode); PCSX.resumeEmulator()
@@ -221,8 +220,8 @@ jobs:
               if not loaded or not returned then return end
               frame=frame+1
               if frame==20 then gateCapture("F20")
-              elseif frame==30 and mode=="DOWN" and not pressed then input("press")
-              elseif frame==38 and mode=="DOWN" and pressed and not released then input("release")
+              elseif frame==50 and mode=="DOWN" and not pressed then input("press")
+              elseif frame==58 and mode=="DOWN" and pressed and not released then input("release")
               elseif frame==60 then gateCapture("F60")
               elseif frame==100 then gateCapture("F100")
               elseif frame==120 then
@@ -241,7 +240,7 @@ jobs:
               end
               if frame%20==0 then log("BMAP_PROGRESS mode="..mode.." frame="..frame) end
           end)
-          log("BMAP_SCRIPT_READY source=post-barrier-f120 action=DOWN mode="..mode.." target=f120 screenshots=EXTERNAL_X11_ONLY")
+          log("BMAP_SCRIPT_READY source=post-barrier-waited-f120 action=DOWN mode="..mode.." target=f120 screenshots=EXTERNAL_X11_ONLY")
           LUA
           cp "$WORK/barrier-map-down-diff.lua" "$WORK/captures/barrier-map-down-diff.lua"
           failed=0
@@ -305,7 +304,7 @@ jobs:
               test -s "$WORK/captures/$mode-$label.png" || failed=$((failed+1))
             done
             localname="$(echo "$mode" | tr '[:upper:]' '[:lower:]')"
-            if [ ! -s "$WORK/captures/barrier-result-route-$localname-f120.sstate" ]; then failed=$((failed+1)); fi
+            if [ ! -s "$WORK/captures/barrier-result-delayed-down-$localname-f120.sstate" ]; then failed=$((failed+1)); fi
             if [ "$mode" = "DOWN" ]; then
               grep -q 'BMAP_INPUT mode=DOWN action=DOWN phase=press.*status=PASS' "$stdout" || failed=$((failed+1))
               grep -q 'BMAP_INPUT mode=DOWN action=DOWN phase=release.*status=PASS' "$stdout" || failed=$((failed+1))
@@ -323,12 +322,12 @@ jobs:
               if not p.exists(): return None
               with Image.open(p) as im: return im.convert("RGB").copy()
           report=[
-            "BMAP_SOURCE_RUN=39617444912",
-            "BMAP_SOURCE_BYTES=21162458",
-            "BMAP_SOURCE_SHA256=a1053f965ad8520c1c7f6f59ae14433c5e1d0bb6bc933b65553597b187f65649",
+            "BMAP_SOURCE_RUN=39618670884",
+            "BMAP_SOURCE_BYTES=21162444",
+            "BMAP_SOURCE_SHA256=37a79775163369e3f4236de630d18c2fa4d35b05e9237f98a4a03981c9875aa1",
             "BMAP_KNOWN_RESULT=barrier visible; Naruto Chakra 1380, Mizuki Chakra 1500",
             "BMAP_CONTROL=NONE",
-            "BMAP_TEST=DOWN press frame 30, release frame 38; readback required PASS",
+            "BMAP_TEST=DOWN press frame 50, release frame 58; readback required PASS",
             "BMAP_SCREENSHOTS=external X11 only; internal screenshot API disabled",
           ]
           images={}
@@ -358,7 +357,7 @@ jobs:
                   report.append("NONE_VS_DOWN_{}_CROP_MEAN_ABS_RGB_DIFF={:.6f}".format(label,cropmean))
                   report.append("NONE_VS_DOWN_{}_FULL_EXACT_PIXEL_FRACTION={:.6f}".format(label,exact))
           for mode in ("NONE","DOWN"):
-              p=root/("barrier-result-route-"+mode.lower()+"-f120.sstate")
+              p=root/("barrier-result-delayed-down-"+mode.lower()+"-f120.sstate")
               if p.exists():
                   report.append("SUCCESSOR_{}_BYTES={}".format(mode,p.stat().st_size))
                   report.append("SUCCESSOR_{}_SHA256={}".format(mode,hashlib.sha256(p.read_bytes()).hexdigest()))
@@ -371,13 +370,13 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: naruto-storymode-barrier-result-down-diff-private
+          name: naruto-storymode-barrier-result-delayed-down-diff-private
           path: |
-            /tmp/naruto-storymode-barrier-result-down-diff/captures/*.png
-            /tmp/naruto-storymode-barrier-result-down-diff/captures/*.txt
-            /tmp/naruto-storymode-barrier-result-down-diff/captures/*.stdout
-            /tmp/naruto-storymode-barrier-result-down-diff/captures/*.log
-            /tmp/naruto-storymode-barrier-result-down-diff/captures/*.sstate
+            /tmp/naruto-storymode-barrier-result-delayed-down-diff/captures/*.png
+            /tmp/naruto-storymode-barrier-result-delayed-down-diff/captures/*.txt
+            /tmp/naruto-storymode-barrier-result-delayed-down-diff/captures/*.stdout
+            /tmp/naruto-storymode-barrier-result-delayed-down-diff/captures/*.log
+            /tmp/naruto-storymode-barrier-result-delayed-down-diff/captures/*.sstate
           retention-days: 14
 
       - name: Remove private game assets and checkpoint copies
