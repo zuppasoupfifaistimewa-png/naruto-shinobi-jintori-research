@@ -153,9 +153,9 @@ jobs:
           )
           cat > "$WORK/timeline.lua" <<'LUA'
           local mode=os.getenv("PROBE_MODE") or "NONE"
-          local frame=0; local start_seen=false; local load_returned=false; local load_event=false; local finalFrame=(mode=="RELOAD_CONFIRM") and 180 or 600
+          local frame=0; local start_seen=false; local load_returned=false; local load_event=false; local finalFrame=(mode=="RELOAD_CONFIRM") and 180 or (mode=="CIRCLE_WAIT" and 181 or 240)
           local pad=PCSX.SIO0.slots[1].pads[1]; local buttons=PCSX.CONSTS.PAD.BUTTON
-          local captures={[1]=true,[20]=true,[29]=true,[30]=true,[35]=true,[37]=true,[38]=true,[39]=true,[45]=true,[90]=true,[120]=true,[150]=true,[175]=true,[179]=true,[180]=true,[181]=true,[184]=true,[185]=true,[186]=true,[188]=true,[193]=true,[194]=true,[195]=true,[200]=true,[210]=true,[240]=true,[300]=true,[360]=true,[600]=true}
+          local captures={[1]=true,[20]=true,[29]=true,[30]=true,[35]=true,[37]=true,[38]=true,[39]=true,[45]=true,[90]=true,[120]=true,[150]=true,[175]=true,[179]=true,[180]=true,[181]=true,[182]=true,[184]=true,[185]=true,[188]=true,[189]=true,[190]=true,[195]=true,[210]=true,[240]=true}
           local function log(s) print(s); io.stdout:flush() end
           local function shot(f)
               local s=PCSX.GPU.takeScreenShot()
@@ -193,10 +193,12 @@ jobs:
               frame=frame+1
               if mode=="CIRCLE_WAIT" or mode=="CIRCLE_SECOND" then
                   if frame==30 then input("CIRCLE","press") elseif frame==38 then input("CIRCLE","release") end
-                  if mode=="CIRCLE_SECOND" and frame==185 then input("CIRCLE","press") elseif mode=="CIRCLE_SECOND" and frame==193 then input("CIRCLE","release") end
               end
               if captures[frame] then shot(frame) end
-              if mode=="CIRCLE_SECOND" and frame==600 then
+              -- Capture the known confirmation prompt at f180 before the second Circle is injected.
+              if mode=="CIRCLE_SECOND" and frame==180 then input("CIRCLE","press")
+              elseif mode=="CIRCLE_SECOND" and frame==188 then input("CIRCLE","release") end
+              if mode=="CIRCLE_SECOND" and frame==240 then
                   log("CIRCLE_TIMELINE_CHECKPOINT_CREATE_BEGIN frame=600")
                   PCSX.pauseEmulator()
                   PCSX.nextTick(function()
@@ -234,7 +236,7 @@ jobs:
             cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-$mode.mcd"
             echo "CIRCLE_TIMELINE_BRANCH_BEGIN=$mode"
             set +e
-            PROBE_MODE="$mode" timeout --signal=TERM --kill-after=5s 240s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+            PROBE_MODE="$mode" timeout --signal=TERM --kill-after=5s 45s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-$mode.mcd" \
               -exec "$PAD_SETUP" -dofile "$WORK/timeline.lua" -softgpu -dynarec -stdout -lua_stdout \
               -logfile "$WORK/captures/pcsx-$mode.log" -run > "$WORK/captures/pcsx-$mode.stdout" 2>&1
@@ -245,27 +247,33 @@ jobs:
             if [ "$rc" -ne 0 ] || ! grep -q 'CIRCLE_TIMELINE_BRANCH_DONE' "$WORK/captures/pcsx-$mode.stdout"; then failed=$((failed+1)); fi
           done
 
-          test -s "$WORK/captures/confirmed-checkpoint.raw.sstate" || { echo "::error::confirmation branch did not create a checkpoint"; exit 74; }
-          state_bytes="$(stat -c '%s' "$WORK/captures/confirmed-checkpoint.raw.sstate")"
-          state_sha="$(sha256sum "$WORK/captures/confirmed-checkpoint.raw.sstate" | cut -d ' ' -f1)"
-          test "$state_bytes" -gt 0
-          printf 'CIRCLE_FOLLOWUP_CONFIRMED_STATE_BYTES=%s\nCIRCLE_FOLLOWUP_CONFIRMED_STATE_SHA256=%s\n' "$state_bytes" "$state_sha" | tee "$WORK/captures/confirmation-checkpoint-manifest.txt"
-          cp "$WORK/captures/confirmed-checkpoint.raw.sstate" "$WORK/resume/storymode-checkpoint.sstate"
-          cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-RELOAD_CONFIRM.mcd"
-          echo "CIRCLE_FOLLOWUP_FRESH_PROCESS_RELOAD_BEGIN=1"
-          set +e
-          PROBE_MODE=RELOAD_CONFIRM timeout --signal=TERM --kill-after=5s 240s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-RELOAD_CONFIRM.mcd" \
-            -exec "$PAD_SETUP" -dofile "$WORK/timeline.lua" -softgpu -dynarec -stdout -lua_stdout \
-            -logfile "$WORK/captures/pcsx-RELOAD_CONFIRM.log" -run > "$WORK/captures/pcsx-RELOAD_CONFIRM.stdout" 2>&1
-          reload_rc=$?
-          set -e
-          echo "CIRCLE_FOLLOWUP_FRESH_PROCESS_RELOAD_EXIT=$reload_rc"
-          grep -E 'CIRCLE_TIMELINE_(LOAD_EVENT|LOAD_RETURNED|SCREENSHOT|BRANCH_DONE|LOAD_ERROR)' "$WORK/captures/pcsx-RELOAD_CONFIRM.stdout" || true
-          if [ "$reload_rc" -ne 0 ] || ! grep -q 'CIRCLE_TIMELINE_LOAD_EVENT=PASS' "$WORK/captures/pcsx-RELOAD_CONFIRM.stdout" || ! grep -q 'CIRCLE_TIMELINE_LOAD_RETURNED=1' "$WORK/captures/pcsx-RELOAD_CONFIRM.stdout" || ! grep -q 'CIRCLE_TIMELINE_BRANCH_DONE mode=RELOAD_CONFIRM frame=180 load_event=true load_returned=true' "$WORK/captures/pcsx-RELOAD_CONFIRM.stdout"; then
-            failed=$((failed+1)); echo "::error::fresh-process restore gate failed"
+          if [ -s "$WORK/captures/confirmed-checkpoint.raw.sstate" ]; then
+            state_bytes="$(stat -c '%s' "$WORK/captures/confirmed-checkpoint.raw.sstate")"
+            state_sha="$(sha256sum "$WORK/captures/confirmed-checkpoint.raw.sstate" | cut -d ' ' -f1)"
+            test "$state_bytes" -gt 0
+            printf 'CIRCLE_FOLLOWUP_CONFIRMED_STATE_BYTES=%s\nCIRCLE_FOLLOWUP_CONFIRMED_STATE_SHA256=%s\n' "$state_bytes" "$state_sha" | tee "$WORK/captures/confirmation-checkpoint-manifest.txt"
+            cp "$WORK/captures/confirmed-checkpoint.raw.sstate" "$WORK/resume/storymode-checkpoint.sstate"
+            cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-RELOAD_CONFIRM.mcd"
+            echo "CIRCLE_FOLLOWUP_FRESH_PROCESS_RELOAD_BEGIN=1"
+            set +e
+            PROBE_MODE=RELOAD_CONFIRM timeout --signal=TERM --kill-after=5s 45s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-RELOAD_CONFIRM.mcd" \
+              -exec "$PAD_SETUP" -dofile "$WORK/timeline.lua" -softgpu -dynarec -stdout -lua_stdout \
+              -logfile "$WORK/captures/pcsx-RELOAD_CONFIRM.log" -run > "$WORK/captures/pcsx-RELOAD_CONFIRM.stdout" 2>&1
+            reload_rc=$?
+            set -e
+            echo "CIRCLE_FOLLOWUP_FRESH_PROCESS_RELOAD_EXIT=$reload_rc"
+            grep -E 'CIRCLE_TIMELINE_(LOAD_EVENT|LOAD_RETURNED|SCREENSHOT|BRANCH_DONE|LOAD_ERROR)' "$WORK/captures/pcsx-RELOAD_CONFIRM.stdout" || true
+            if [ "$reload_rc" -ne 0 ] || ! grep -q 'CIRCLE_TIMELINE_LOAD_EVENT=PASS' "$WORK/captures/pcsx-RELOAD_CONFIRM.stdout" || ! grep -q 'CIRCLE_TIMELINE_LOAD_RETURNED=1' "$WORK/captures/pcsx-RELOAD_CONFIRM.stdout" || ! grep -q 'CIRCLE_TIMELINE_BRANCH_DONE mode=RELOAD_CONFIRM frame=180 load_event=true load_returned=true' "$WORK/captures/pcsx-RELOAD_CONFIRM.stdout"; then
+              failed=$((failed+1)); echo "::error::fresh-process restore gate failed"
+            else
+              echo "CIRCLE_FOLLOWUP_FRESH_PROCESS_RESTORE=PASS"
+            fi
           else
-            echo "CIRCLE_FOLLOWUP_FRESH_PROCESS_RESTORE=PASS"
+            failed=$((failed+1))
+            echo "CIRCLE_FOLLOWUP_CONFIRMED_STATE_BYTES=0" | tee "$WORK/captures/confirmation-checkpoint-manifest.txt"
+            echo "CIRCLE_FOLLOWUP_FRESH_PROCESS_RESTORE=NOT_RUN_NO_CHECKPOINT"
+            echo "::warning::confirmation branch did not reach f240; continuing to package partial screenshots/logs"
           fi
 
           python3 - <<'PY'
@@ -329,6 +337,7 @@ jobs:
             /tmp/naruto-storymode-circle-followup/captures/*.stdout
             /tmp/naruto-storymode-circle-followup/captures/*.log
             /tmp/naruto-storymode-circle-followup/captures/*.json
+            /tmp/naruto-storymode-circle-followup/captures/raw/*.raw
             /tmp/naruto-storymode-circle-followup/captures/*.sstate
           if-no-files-found: warn
           retention-days: 14
