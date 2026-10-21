@@ -1,3 +1,24 @@
+## LATEST VERIFIED CONTINUATION — barrier placed and Chakra debit observed (21 October 2026)
+
+This supersedes the prior queued-next-action note below. Story Mode is still NOT complete; no original in-game ending has been verified.
+
+### Confirmed barrier result
+- Run [#39617444912](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39617444912) restored the immutable post-START prompt checkpoint and sent one contextual Circle press/release at relative frames 30/38; both button readbacks passed. The prompt was `ここに結界をはりますか？ (Apakah akan memasang penghalang di sini?)`, with `必要チャクラ 120 (Chakra yang dibutuhkan: 120)` and `はい (Ya)` highlighted.
+- Genuine external X11 screenshots show the prompt gone at f60 and a blue barrier/orb and route marker visible on the board. Naruto’s HUD decreases from **1500 to 1380** while Mizuki stays at **1500**. The same barrier object and 1380/1500 HUD persist in f100 and f120 images. Thus barrier placement and a 120-Chakra debit are verified visually for this path; this does not establish other cost/rule cases.
+- Source checkpoint was read-only and unchanged: 21,162,246 bytes, SHA-256 `789585c7c7a6d5e9f5bb1601d0e277e7735380b88d91f882f36a265aff419e4a`.
+- Successor checkpoint `after-barrier-circle-f120.sstate`: **21,162,458 bytes**, SHA-256 `a1053f965ad8520c1c7f6f59ae14433c5e1d0bb6bc933b65553597b187f65649`. Private artifact #12354275022, ZIP SHA-256 `708d0225255a7a2419d465a2130279ed76a128ed759e38fd4446510bf8b541d4`. Its images were inspected from the private artifact; no gameplay screenshots or savestate were committed to Git.
+- The one-shot trigger was removed in cleanup commit `06a291b03334426d5216ac2a7a3c88a07b443d26`. The workflow job for #39617444912 reports all 15/15 steps completed successfully, though the run-level status endpoint has occasionally lagged behind completed job steps in this session. Trust the detailed job steps, logs, screenshot hashes and artifacts over the run summary alone.
+
+### Next controlled action
+- Continue from the successor checkpoint as a read-only source; compare one DOWN press/release (relative f30/f38) against a matched NONE branch in separate fresh emulator processes. Capture genuine external X11 at f20/f60/f100/f120 and save distinct private successors. This tests whether the next DOWN movement advances the board from the confirmed barrier state; it is not an assumption that it will work.
+- If a Story Mode dialogue appears, press START to skip it. Never use Circle to skip dialogue; Circle was used in #39617444912 only because `はい (Ya)` was visibly highlighted as the confirm choice.
+- Verify the resulting screenshot, position/counter, prompt/transition, log and checkpoint hashes before selecting another action. Keep the new parent checkpoint unchanged.
+
+### Permanent constraints and maturity
+Only `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research` is permitted. Keep ROM, BIOS, savestates, Memory Card and gameplay captures private. Use external X11 only for post-checkpoint gameplay evidence, not web images or the internal PCSX screenshot API. Japanese text must be followed immediately by Indonesian translation in parentheses. The validated checkpoint/observe/input/save cycle is working for controlled steps, but general screen classification, robust adaptive decisions, generic crash recovery, a multi-session autonomous loop through all missions, and Story Mode ending detection remain unverified. Never claim completion without original in-game ending evidence.
+
+---
+
 ## LATEST VERIFIED CONTINUATION — roulette result, map movement, START dialogue skip (21 October 2026)
 
 This update supersedes earlier “roulette behavior unknown / next test Circle on Roulette menu” guidance below. Story Mode is still NOT complete; there is no verified ending evidence.
