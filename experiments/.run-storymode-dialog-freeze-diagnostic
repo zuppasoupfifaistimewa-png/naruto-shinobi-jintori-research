@@ -1,1 +1,0 @@
-One-shot trigger for the matched no-input dialog-freeze diagnostic. This marker must be removed after the Actions run starts; do not alter existing checkpoint artifacts.
