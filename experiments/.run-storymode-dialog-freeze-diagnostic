@@ -1,1 +1,0 @@
-One-shot request: use live GDB to catch SIGSEGV or capture all-thread native backtraces when VSync reporting stalls. No controller input; preserve checkpoint; no internal screenshot requests after frame 130.
