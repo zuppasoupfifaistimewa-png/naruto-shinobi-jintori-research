@@ -1,3 +1,29 @@
+## LATEST VERIFIED CONTINUATION — roulette result, map movement, START dialogue skip (21 October 2026)
+
+This update supersedes earlier “roulette behavior unknown / next test Circle on Roulette menu” guidance below. Story Mode is still NOT complete; there is no verified ending evidence.
+
+### Verified gameplay path
+- Run [#39609425942](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39609425942) preserved the roulette wheel checkpoint f120 (21,162,475 bytes; SHA-256 `7c8c8bfa4a15132a6c9a046aa842fc01d2f294d6e04d53262c20287566432222`). A longer no-input observation [#39612126429](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39612126429) reached external X11 f180 with the wheel still moving, then timed out before f300. It is not evidence the wheel stops by itself.
+- Controlled branch experiment [#39613929898](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39613929898) compared NONE with one Circle press/release (relative f30/f38). Button readback passed. Circle branch visually showed sector 2 aligned under the pointer at f60/f100 and returned to the board by f180; NONE still showed the wheel at f180. Circle-result checkpoint: 21,163,057 bytes, SHA-256 `0570a687dd8ecc1449c8edaa436f21111e40433d59c6a21b0e64de6b71c07d5d`.
+- Fresh-process no-input continuation [#39614665390](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39614665390) confirmed the board and roulette result 2 remained visible through f120. Map checkpoint: 21,162,853 bytes, SHA-256 `451c59b13ca1dbf93eb23afa94a096c7eb5721c5bb5108b45e9d2054289ffb53`.
+- Map route experiment [#39615341661](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39615341661) compared NONE with one DOWN press/release (f30/f38). DOWN moved the token down one route and the visible move counter changed from 2 to 1; the subsequent scene/dialogue showed `イルカ (Iruka)` and text beginning `ナルトよく聞け、… (Naruto, dengarkan baik-baik, …; screenshot text is incomplete)`. DOWN branch checkpoint: 21,162,042 bytes, SHA-256 `6d01243a2e2c4b47e13a58373216bda0117a8b6e04324f2a6c3fde9b811ae494`.
+- Dialogue skip [#39616129634](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39616129634) restored that checkpoint, sent START only at relative f30–f38 (press/release readback PASS), and captured external X11 screenshots through f120. The dialogue was skipped; the prompt now reads `ここに結界をはりますか？ (Apakah akan memasang penghalang di sini?)`, `必要チャクラ 120 (Chakra yang dibutuhkan: 120)`, with `はい (Ya)` highlighted and `いいえ (Tidak)` available. This only shows a required cost/prompt; it does not yet prove the cost is deducted or the barrier is placed. Current prompt checkpoint: 21,162,246 bytes, SHA-256 `789585c7c7a6d5e9f5bb1601d0e277e7735380b88d91f882f36a265aff419e4a`.
+
+### Next action already queued
+- Run [#39617444912](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39617444912), “confirm highlighted barrier YES with Circle”, is queued. It is prepared to restore the read-only prompt checkpoint, send one contextual Circle press/release, capture external X11 at f20/f60/f100/f120, and save a distinct private successor. At last check it had not started a job; there is no reliable completion ETA and no duplicate run should be launched.
+- After it terminates, inspect job steps/logs, all four authentic X11 images, result report, source hash, and successor size/hash. Verify whether the prompt disappears, a barrier becomes visible, and the HUD Chakra actually changes from 1500. Do not infer barrier placement or Chakra debit from workflow success alone.
+- The source checkpoint `789585c7…aff419e4a` must remain unchanged. The marker `experiments/.run-storymode-barrier-circle-confirm` is intentionally retained until this run is inspected, then must be deleted.
+
+### Permanent constraints / current maturity
+- Only this research repo is permitted. Never use Tile Duel or any other repo.
+- All post-checkpoint gameplay proof is captured by real external X11 from the emulator; no web images and no internal PCSX screenshot API for these later states.
+- Use START for all Story Mode dialogue; never use Circle to skip dialogue. Circle is permitted here only because the in-game YES option `はい (Ya)` is highlighted.
+- Japanese text must immediately include Indonesian translation in parentheses.
+- ROM, BIOS, savestates, Memory Card and gameplay images stay private; do not commit them to Git.
+- The reusable checkpoint/input/X11/successor cycle is working for controlled steps, but an all-screen classifier, resilient adaptive gameplay policy, generic crash recovery and cross-session autonomous loop through all missions are not yet verified. Do not claim Story Mode completion without original in-game ending evidence.
+
+---
+
 ## LATEST CONTROLLED INPUT RESULT — DOWN moved the vertical menu highlight (21 October 2026)
 
 - Run [#39607704007](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39607704007) completed with workflow conclusion `success`. It restored independently from the immutable f175 checkpoint into NONE and DOWN processes, both reached relative frame 120 and saved separate private derived states.
