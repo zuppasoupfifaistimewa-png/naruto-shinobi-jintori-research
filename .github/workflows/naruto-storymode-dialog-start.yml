@@ -208,7 +208,7 @@ jobs:
                   log("DIALOG_START_NARUTO_DIALOG_SEEN=frame179; original screenshot captured before START")
                   input("START","press")
               end
-              if frame==187 then input("START","release") end
+              if frame==180 then input("START","release") end
               if frame==300 then
                   log("DIALOG_START_BRANCH_DONE frame=300 load_event="..tostring(loaded).." load_returned="..tostring(returned))
                   PCSX.pauseEmulator()
@@ -222,7 +222,7 @@ jobs:
           cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-DIALOGSTART.mcd"
           echo "DIALOG_START_PROCESS_BEGIN"
           set +e
-          timeout --signal=TERM --kill-after=4s 60s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+          timeout --signal=TERM --kill-after=4s 25s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
             -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-DIALOGSTART.mcd" \
             -exec "$PAD_SETUP" -dofile "$WORK/dialog-start-probe.lua" -softgpu -dynarec -stdout -lua_stdout \
             -logfile "$WORK/captures/pcsx-DIALOGSTART.log" -run > "$WORK/captures/pcsx-DIALOGSTART.stdout" 2>&1
@@ -261,7 +261,7 @@ jobs:
           lines=[
             "DIALOG_START_EXPERIMENT=load verified stable post-confirm checkpoint; Circle tap f90-f98; capture original dialog screen at f179 and immediately press START on that same emulator callback; observe through f300",
             "SOURCE_CHECKPOINT_SHA256=b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee",
-            "START_PRESS_WINDOW=f179-f186; release=f187",
+            "START_PRESS_WINDOW=f179 only; release=f180 (one-VSync tap)",
             "SCREENSHOT_CONVERSION_PROBLEMS="+("; ".join(problems) if problems else "none"),
             "GAMEPLAY_PROGRESS_NOT_ASSERTED=YES; classify from captured original emulator screenshots only"
           ]
