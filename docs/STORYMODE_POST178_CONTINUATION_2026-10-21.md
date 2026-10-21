@@ -1,5 +1,14 @@
 # Eksperimen kelanjutan setelah konfirmasi Circle — 21 Oktober 2026
 
+## Validasi workflow setelah perbaikan assertion — 21 Oktober 2026, 13:25 WIB
+
+Run [#39555023915](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39555023915) dimulai 13:22:40 dan selesai 13:25:23 WIB dengan status `failure`. Perubahan assertion f180 bekerja; kali ini penyebabnya adalah cabang `NONE` timeout 25 detik (exit code 124) dan gagal menghasilkan baseline f180. Cabang `UP`, `DOWN`, `LEFT`, `RIGHT`, `CIRCLE`, dan `START` masing-masing mencapai frame 180 dengan exit code 0. Karena baseline `NONE` tidak lengkap, report dengan benar menandai perbandingan penuh sebagai tidak lengkap, walau sampel visual sampai f150 tersedia.
+
+Artefak privat [#12324829071](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39555023915/artifacts/12324829071) berukuran 12.288.355 byte, digest ZIP `sha256:04a010dc88d6b40b8fc7ce1339bff7e03d56d4ad03035682670c749a6254312d`. Checkpoint terbaru: 21.163.483 byte, SHA-256 `b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee`. ZIP dan manifest cocok; artefak tidak menyertakan ROM, BIOS, atau Memory Card.
+
+Workflow terkini tetap [`.github/workflows/naruto-storymode-post178-advance.yml`](../.github/workflows/naruto-storymode-post178-advance.yml), dengan assertion f180 serta tanpa langkah simpan dialog yang belum stabil. Validasi #39555023915 merupakan run pertama sesudah perbaikan ini. Tidak ada run aktif; trigger marker sekali-pakai telah dihapus. Hasil visual utama tetap dirujuk ke run #39553585285, karena semua cabangnya mencapai f180 dan report-nya lengkap meski conclusion workflow gagal pada assertion lama.
+
+
 ## Pembaruan hasil kontrol pascakonfirmasi — 21 Oktober 2026, 13:16 WIB
 
 ### Run dan checkpoint utama
@@ -47,7 +56,7 @@ Ukuran/hash checkpoint hasil create-save dapat bervariasi antar-run walau keadaa
 
 ### Workflow dan langkah berikutnya
 
-Workflow yang benar adalah [`.github/workflows/naruto-storymode-post178-advance.yml`](../.github/workflows/naruto-storymode-post178-advance.yml). Commit `544b96641518cbfc2fafdaa7c38e98ed521dd80b` menghapus percobaan save checkpoint dialog yang belum stabil serta memperbaiki assertion agar mencari f180, bukan f60. Belum ada run baru setelah perbaikan ini; semua run yang dipicu sudah berakhir dan marker satu-kali sudah dihapus.
+Workflow yang benar adalah [`.github/workflows/naruto-storymode-post178-advance.yml`](../.github/workflows/naruto-storymode-post178-advance.yml). Commit `544b96641518cbfc2fafdaa7c38e98ed521dd80b` menghapus percobaan save checkpoint dialog yang belum stabil serta memperbaiki assertion agar mencari f180, bukan f60. Setelah perbaikan, run #39555023915 dijalankan dan berakhir failure karena cabang NONE timeout; tidak ada run aktif dan marker satu-kali sudah dihapus.
 
 Langkah berikut: gunakan checkpoint stabil dari artefak #12323544613 sebagai rujukan, ambil state tepat sebelum transisi layar dialog pada jendela yang aman (sebelum titik timeout/crash), lalu uji START dibanding Circle dan tanpa input dalam proses baru dengan timeout per cabang pendek. Tetap simpan ROM/BIOS/savestate/Memory Card hanya di artefak privat/runner; jangan pernah commit berkas-berkas itu ke Git.
 
