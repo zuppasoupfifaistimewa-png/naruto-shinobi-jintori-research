@@ -153,6 +153,8 @@ jobs:
         run: |
           set -u
           cd "$WORK"
+          "$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage" --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
           if [ ! -s "$WORK/resume/dialog-entry-f178.sstate" ]; then
             echo "DIAG_NONE_RESULT=SKIPPED_NO_DIALOG_CHECKPOINT" | tee -a "$WORK/captures/diagnostic-report.txt"
             exit 0
