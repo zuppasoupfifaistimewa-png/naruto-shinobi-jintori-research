@@ -376,6 +376,8 @@ jobs:
             echo "DIAG_NONE_RESULT=SEGMENTATION_FAULT_NO_HANDLER_TRACE" | tee -a "$WORK/captures/diagnostic-report.txt"
           elif [ "$rc" -eq 143 ] && [ "$frames" -ge 1 ]; then
             echo "DIAG_NONE_RESULT=STALL_CAPTURED_NO_NATURAL_SIGSEGV_IN_OBSERVATION_WINDOW" | tee -a "$WORK/captures/diagnostic-report.txt"
+          elif [ "$rc" -eq 255 ] && [ "$frames" -ge 1 ] && grep -q 'EMULATOR_STOP_SENT.*signal=SIGTERM' "$WORK/captures/vsync-watchdog.log"; then
+            echo "DIAG_NONE_RESULT=STALL_CAPTURED_NO_NATURAL_SIGSEGV_IN_OBSERVATION_WINDOW catchsegv_wrapper_rc=255 watchdog_stop=SIGTERM" | tee -a "$WORK/captures/diagnostic-report.txt"
           elif [ "$rc" -eq 0 ] && grep -q 'DIAG_NONE_BRANCH_DONE frame=175' "$WORK/captures/pcsx-DIAGNONE.stdout"; then
             echo "DIAG_NONE_RESULT=PASS_175_VSYNC_NO_INPUT" | tee -a "$WORK/captures/diagnostic-report.txt"
           elif [ "$rc" -eq 124 ] && [ "$frames" -ge 1 ]; then
