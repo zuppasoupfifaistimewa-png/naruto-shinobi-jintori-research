@@ -1,3 +1,17 @@
+## HANDOFF TERBARU — 21 Oktober 2026, 11:53 WIB
+
+Run [#39546339666](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39546339666) selesai `success` (11:51:43–11:53:02 WIB). Artefak privat #12321752942 menyimpan screenshot, log dan laporan perbandingan. Hasil dan batas kesimpulan lengkap: [docs/STORYMODE_POST178_CONTINUATION_2026-10-21.md](docs/STORYMODE_POST178_CONTINUATION_2026-10-21.md).
+
+- Checkpoint turunan setelah Circle kedua (21.162.838 byte, SHA-256 `a87529407736b1b7648785db8644d3c10f0b8d5d12f1557c63d9a3155b22fa83`) dipulihkan di proses emulator baru lalu berjalan 62 VSync tanpa input. Hash checkpoint induk tetap `b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a`.
+- Kontrol (checkpoint induk, Circle pertama f30–f38 saja) menangkap sampai f187 lalu mengalami segmentation fault kode 139. Cabang turunan berjalan normal hingga f62; gambar cocok sampai f181/turunan f3, lalu berbeda mulai f182/turunan f4.
+- Pada screenshot akhir turunan, panel misi masih terlihat, prompt `けってい` hilang, dan cap merah muncul. Ada bukti perubahan UI setelah konfirmasi, tetapi belum ada bukti gameplay misi aktif atau Story Mode tamat.
+- Jangan menganggap workflow `success` sebagai emulator kedua cabang sama-sama normal: kontrol memang crash; hanya runner eksperimen/pengemasan bukti yang sukses.
+- Run sudah selesai; tidak ada run aktif pada pemeriksaan terakhir. Pemicu sekali-pakai sudah dibuang.
+
+Langkah berikutnya: simpan state baru ketika UI pascakonfirmasi stabil dan uji restore-nya; setelah itu bandingkan satu input per cabang (Circle, START, tanpa input) dengan screenshot sepadan. ROM, BIOS, savestate dan Memory Card tetap privat di luar Git.
+
+---
+
 ## PEMBARUAN RISET TERBARU — 21 Oktober 2026, 09:01 WIB
 
 - Run terbaru [#39530526794](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39530526794) selesai `success` pukul 09:01:53 WIB; tidak ada workflow yang sedang `in_progress` pada pemeriksaan terakhir.
