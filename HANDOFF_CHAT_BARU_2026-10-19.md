@@ -1,3 +1,15 @@
+## CHAT BARU — otomasi gameplay sudah diuji satu input; cek hasil DOWN berikutnya
+
+Run [#39606938717](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39606938717) menyelesaikan uji RIGHT vs NONE dari checkpoint f175. Checkpoint sumber valid/tidak ditimpa, proses terpisah berhasil restore ke papan, sampai frame relatif 120, dan membuat hasil savestate privat. Tekan/lepas RIGHT di frame 30/38 terbaca PASS, tetapi gambar external X11 pada f90 **identik piksel** dengan kontrol NONE. Tampilan game menunjukkan menu vertikal, Roulette masih tersorot; RIGHT belum terbukti memajukan menu.
+
+Artefak privat #12348274409 di run tersebut: ZIP 6,680,465 byte, SHA-256 `8b095bbe8e8d20f9ca639b4c2f3be448339556376f193d7b7487c94830e33027`. Screenshot berasal dari X11 eksternal; internal screenshot API tidak dipanggil pada state lanjut.
+
+Run berikutnya [#39607704007](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39607704007) sedang menguji DOWN vs NONE dari checkpoint sumber f175 yang sama. Baca status run, job steps, artefak privat, dan screenshot asli sebelum menyimpulkan hasil. Setelah selesai, hapus marker one-shot `experiments/.run-storymode-konoha-f175-direction-diff` agar repo bersih dan cek queued/in-progress tidak tersisa.
+
+Baca rencana lengkap `docs/STORYMODE_AUTOMATION_WORKFLOW_2026-10-21.md`, lalu `STATUS.md`, dokumen ini, `docs/STORYMODE_POST178_CONTINUATION_2026-10-21.md`, dan `docs/SIGSEGV_FORENSICS_2026-10-21.md`. Pertahankan hanya repo ini. Baseline f175 harus selalu immutable; untuk menu vertikal, DOWN adalah pengujian terukur berikutnya, bukan asumsi bahwa ia pasti berhasil. Jangan mengklaim gameplay otomatis penuh atau Story Mode tamat hanya karena workflow sukses.
+
+---
+
 ## CHAT BARU — WAJIB LANJUTKAN DENGAN OTOMASI CHECKPOINT, BUKAN MULAI ULANG (21 Oktober 2026)
 
 Pengguna secara eksplisit menyetujui target membangun sistem otomatis yang memainkan Story Mode sampai tamat melalui siklus restore checkpoint → satu input terukur → observasi screenshot asli → verifikasi kemajuan → checkpoint turunan → lanjut lintas sesi. Tidak perlu meminta pengguna mengawasi setiap input/eksperimen. Namun otomasi penuh masih perlu dibangun dan diuji; jangan mengklaim sudah otomatis penuh atau tamat hanya karena sebuah workflow Actions sukses.
