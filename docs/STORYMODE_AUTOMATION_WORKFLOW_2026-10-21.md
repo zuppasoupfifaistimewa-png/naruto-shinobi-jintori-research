@@ -1,5 +1,12 @@
 # Naruto Story Mode — Rencana Otomasi Berkelanjutan
 
+## Implementasi pertama — harness input-versus-kontrol (21 Oktober 2026)
+
+Workflow `.github/workflows/naruto-storymode-f175-direction-diff.yml` kini menguji satu aksi navigasi per run dari checkpoint f175 yang tervalidasi. Ia membuat proses emulator baru untuk NONE dan satu lagi untuk satu arah yang dipilih marker, mengambil screenshot X11 eksternal pada frame relatif 20 dan 90, membandingkan gambar dengan Pillow, menyimpan savestate privat pada frame 120, dan membersihkan workspace ephemeral. Ia memvalidasi hash sumber checkpoint, binari emulator, BIOS, game, dan Memory Card; source checkpoint disalin read-only. Aksi yang diizinkan adalah UP/DOWN/LEFT/RIGHT.
+
+Run #39606938717 menguji RIGHT. Readback press/release lulus, tetapi piksel screenshot f90 NONE dan RIGHT sama persis (mean RGB diff 0 dan exact pixel fraction 1), jadi RIGHT tidak memengaruhi tampilan menu yang teramati. Run #39607704007 sedang menguji DOWN dari baseline sumber yang sama pada waktu pencatatan ini. Prototype berhasil restore, mengamati X11 eksternal, dan menghasilkan turunan checkpoint, tetapi belum otomatis menginterpretasi semua state game, mengambil keputusan adaptif atau menjalankan loop pemulihan lintas sesi secara penuh.
+
+
 Tanggal dicatat: 21 Oktober 2026  
 Game: **Naruto - Shinobi no Sato no Jintori Gassen (Japan, PS1)**  
 Satu-satunya repo yang boleh dipakai untuk tugas ini: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
