@@ -1,3 +1,11 @@
+## PEMBARUAN OTOMASI — uji RIGHT tidak mengubah menu; uji DOWN berikutnya (21 Oktober 2026)
+
+Run [#39606938717](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39606938717) memulihkan checkpoint f175 pada proses emulator NONE dan RIGHT terpisah. Kedua proses sampai frame relatif 120 dan menyimpan state privat. RIGHT press f30/release f38 terbaca PASS, tetapi screenshot X11 pada frame 90 identik piksel dengan kontrol tanpa input. Layar asli menunjukkan menu vertikal dengan Roulette tersorot; RIGHT belum terbukti sebagai aksi navigasi yang efektif. Artefak privat #12348274409, ZIP SHA-256 `8b095bbe8e8d20f9ca639b4c2f3be448339556376f193d7b7487c94830e33027`.
+
+Run [#39607704007](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39607704007) sedang menguji DOWN terhadap NONE dari checkpoint sumber f175 yang sama. Tunggu hasil dan periksa capture X11 asli sebelum memutuskan transisi berikutnya. Tidak ada screenshot/savestate yang ditambahkan ke Git.
+
+---
+
 ## LATEST CONTINUATION — one START tap exits dialog; Konoha board view and f175 successor verified (21 October 2026, 18:20 WIB)
 
 Run [#39591032125](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39591032125) used the verified pre-START dialog checkpoint, made one START press at relative f120 and release at f121, and sent no Circle input. The f140 state was saved as a derived checkpoint; a **fresh emulator process** then restored it and reached frame 175 without controller input. A successor savestate was created successfully.
