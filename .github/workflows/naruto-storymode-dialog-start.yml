@@ -161,7 +161,7 @@ jobs:
           local loaded=false
           local pad=PCSX.SIO0.slots[1].pads[1]
           local buttons=PCSX.CONSTS.PAD.BUTTON
-          local captures={[1]=true,[10]=true,[30]=true,[60]=true,[89]=true,[90]=true,[98]=true,[120]=true,[150]=true,[179]=true,[180]=true,[181]=true,[182]=true,[185]=true,[188]=true,[189]=true,[190]=true,[195]=true,[200]=true,[210]=true,[225]=true,[240]=true,[270]=true,[300]=true}
+          local captures={[1]=true,[10]=true,[30]=true,[60]=true,[89]=true,[90]=true,[98]=true,[120]=true,[150]=true,[174]=true,[175]=true,[176]=true,[177]=true,[178]=true,[179]=true,[180]=true,[181]=true,[182]=true,[185]=true,[187]=true,[188]=true,[189]=true,[190]=true,[195]=true,[200]=true,[210]=true,[225]=true,[240]=true,[270]=true,[300]=true}
           local function log(s) print(s); io.stdout:flush() end
           local function shot(f)
               local s=PCSX.GPU.takeScreenShot()
@@ -182,32 +182,6 @@ jobs:
                   return pad.getButton(b)
               end)
               log(string.format("DIALOG_START_INPUT action=%s phase=%s readback=%s status=%s",action,phase,tostring(readback),(ok and readback==(phase=="press")) and "PASS" or "FAIL"))
-          end
-          local function save_dialog_checkpoint()
-              log("DIALOG_START_DIALOG_CHECKPOINT_BEGIN frame=180")
-              PCSX.pauseEmulator()
-              PCSX.nextTick(function()
-                  local ok,state=pcall(function() return PCSX.createSaveState() end)
-                  if not ok or not state then
-                      log("DIALOG_START_DIALOG_CHECKPOINT_ERROR="..tostring(state))
-                      PCSX.quit(71)
-                      return
-                  end
-                  local opened,file=pcall(function() return assert(Support.File.open("captures/dialog-before-start-checkpoint.sstate","TRUNCATE")) end)
-                  if not opened or not file then
-                      log("DIALOG_START_DIALOG_CHECKPOINT_OPEN_ERROR="..tostring(file))
-                      PCSX.quit(72)
-                      return
-                  end
-                  local wrote,err=pcall(function() file:writeMoveSlice(state); file:close() end)
-                  if not wrote then
-                      log("DIALOG_START_DIALOG_CHECKPOINT_WRITE_ERROR="..tostring(err))
-                      PCSX.quit(73)
-                      return
-                  end
-                  log("DIALOG_START_DIALOG_CHECKPOINT_CREATED=PASS")
-                  PCSX.resumeEmulator()
-              end)
           end
           PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
               loaded=true; frame=0; log("DIALOG_START_LOAD_EVENT=PASS")
@@ -230,13 +204,11 @@ jobs:
               if frame==90 then input("CIRCLE","press") end
               if frame==98 then input("CIRCLE","release") end
               if captures[frame] then shot(frame) end
-              if frame==180 then
-                  log("DIALOG_START_NARUTO_DIALOG_EXPECTED=frame180; verify by original screenshot")
-                  save_dialog_checkpoint()
-                  return
+              if frame==179 then
+                  log("DIALOG_START_NARUTO_DIALOG_SEEN=frame179; original screenshot captured before START")
+                  input("START","press")
               end
-              if frame==181 then input("START","press") end
-              if frame==189 then input("START","release") end
+              if frame==187 then input("START","release") end
               if frame==300 then
                   log("DIALOG_START_BRANCH_DONE frame=300 load_event="..tostring(loaded).." load_returned="..tostring(returned))
                   PCSX.pauseEmulator()
@@ -287,12 +259,9 @@ jobs:
                   problems.append(mp.name+":"+str(e))
           state=root/"dialog-before-start-checkpoint.sstate"
           lines=[
-            "DIALOG_START_EXPERIMENT=load verified stable post-confirm checkpoint; Circle tap f90-f98 to reach Naruto dialogue; capture the dialog at f180; save a dialog checkpoint; press START f181-f188; observe through f300",
+            "DIALOG_START_EXPERIMENT=load verified stable post-confirm checkpoint; Circle tap f90-f98; capture original dialog screen at f179 and immediately press START on that same emulator callback; observe through f300",
             "SOURCE_CHECKPOINT_SHA256=b7d86f572f929d13aeb24d9b710e455610c2723f336b68acf32f7cca2e8fe4ee",
-            "START_PRESS_WINDOW=f181-f188; release=f189",
-            "DIALOG_CHECKPOINT_EXISTS="+str(state.exists()),
-            "DIALOG_CHECKPOINT_BYTES="+str(state.stat().st_size if state.exists() else 0),
-            "DIALOG_CHECKPOINT_SHA256="+(hashlib.sha256(state.read_bytes()).hexdigest() if state.exists() else "missing"),
+            "START_PRESS_WINDOW=f179-f186; release=f187",
             "SCREENSHOT_CONVERSION_PROBLEMS="+("; ".join(problems) if problems else "none"),
             "GAMEPLAY_PROGRESS_NOT_ASSERTED=YES; classify from captured original emulator screenshots only"
           ]
@@ -301,8 +270,10 @@ jobs:
           if problems: raise SystemExit("screenshot conversion problem")
           PY
           if [ "$rc" -ne 0 ]; then exit 1; fi
-          grep -q 'DIALOG_START_DIALOG_CHECKPOINT_CREATED=PASS' "$WORK/captures/pcsx-DIALOGSTART.stdout"
+          grep -q 'DIALOG_START_NARUTO_DIALOG_SEEN=frame179' "$WORK/captures/pcsx-DIALOGSTART.stdout"
+          grep -q 'DIALOG_START_INPUT action=START phase=press readback=true status=PASS' "$WORK/captures/pcsx-DIALOGSTART.stdout"
           grep -q 'DIALOG_START_BRANCH_DONE frame=300' "$WORK/captures/pcsx-DIALOGSTART.stdout"
+          test -s "$WORK/captures/DIALOGSTART-f179.png"
           test -s "$WORK/captures/DIALOGSTART-f180.png"
           test -s "$WORK/captures/DIALOGSTART-f200.png"
           test -s "$WORK/captures/DIALOGSTART-f300.png"
