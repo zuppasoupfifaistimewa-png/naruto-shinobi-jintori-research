@@ -1,6 +1,7 @@
-Controlled one-input-vs-no-input test from the immutable Konoha f175 successor checkpoint.
+Controlled one-input-versus-no-input test from the immutable Konoha f175 checkpoint.
 
+ACTION=DOWN
 Source SHA-256: f8bd00074877ef583e35b8eaf2fc65b3877acda9bebd5f2d8e9a13abee094615
-Test: restore separate fresh emulator processes from the same checkpoint; NONE sends no controller input; RIGHT presses RIGHT at relative frame 30 and releases at frame 38.
-Capture: external X11 only for the restored later state. Keep screenshots, states, ROM, BIOS and Memory Card private.
+Test: restore independent fresh emulator processes from the same checkpoint; NONE sends no controller input; DOWN presses DOWN at relative frame 30 and releases at frame 38.
+Capture: external X11 only for the restored later state. Keep screenshots, savestates, ROM, BIOS and Memory Card private.
 This marker must be deleted after the workflow finishes.
