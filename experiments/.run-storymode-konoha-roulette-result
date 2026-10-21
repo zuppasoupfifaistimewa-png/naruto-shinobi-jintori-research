@@ -1,0 +1,1 @@
+One-shot trigger: restore immutable post-Circle Roulette checkpoint f160; no controller input; external X11 only at relative f20,50,80,110,135; save successor f140 if reached. Internal emulator screenshots disabled. Keep source checkpoint read-only.
