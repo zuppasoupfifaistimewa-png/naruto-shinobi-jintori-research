@@ -1,0 +1,1 @@
+One-shot trigger: restore verified post-Roulette branch checkpoint f120, send no controller input, capture the live screen only via external X11 while paused at relative frames 20,60,120,180,220, and save a separate successor checkpoint at frame 240. Internal emulator screenshots remain disabled. Do not alter either source checkpoint.
