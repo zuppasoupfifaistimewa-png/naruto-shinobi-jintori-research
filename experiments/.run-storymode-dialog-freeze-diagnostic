@@ -1,1 +1,0 @@
-One-shot diagnostic request: observe the natural renderer SIGSEGV with a lightweight native signal-time backtrace; no controller input; screenshot callback cutoff remains frame 130. Remove this marker immediately after the run.
