@@ -27,6 +27,8 @@ Screenshot pada frame yang sama tersedia untuk ketiga cabang hingga frame 150. C
 
 Pada cabang Circle, perubahan visual yang dimulai di frame 37 bertahan melewati frame 150. Cabang START tidak menghasilkan perubahan yang terlihat di frame-frame cocok sampai 150. Ini bukti respons visual yang terkait dengan Circle pada timing awal, tetapi bukan bukti fungsi spesifik tombol atau progres Story Mode kanonis. Perubahan kamera/scene juga terjadi tanpa input; screenshot saja tidak cukup untuk menamai aksi.
 
+Observasi tambahan yang hanya tersedia pada cabang input di frame 180: cabang Circle menampilkan panel Jepang berjudul “任務内容” (isi misi), dengan baris “3000チャクラためる” (mengumpulkan/menabung 3.000 Chakra) dan “ついか条件なし” (tanpa syarat tambahan), serta prompt konfirmasi “けってい”. Cabang START pada f180 masih memperlihatkan papan dan efek visual di petak, bukan panel yang sama. Karena baseline NONE tidak mempunyai f180, tampilan panel ini adalah petunjuk kuat adanya perbedaan jalur, tetapi tidak berdiri sendiri sebagai bukti kausal penuh terhadap baseline pada waktu yang sama.
+
 ## Perbaikan follow-up selanjutnya
 
 Run [#39526446924](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39526446924) sedang berjalan dengan konfigurasi yang dikoreksi pada workflow `.github/workflows/naruto-storymode-circle-followup.yml` commit `4551c1ab9de0334caea8c1aa2bea23bcdcacabab`:
