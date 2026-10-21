@@ -1,1 +1,3 @@
 One-shot request: restore the verified dialog-entry checkpoint, send no controller input, record observer-side monotonic timestamps for VSync/frame output, and use external X11 root captures only after a watchdog confirms no new frame at/after frame 145. Do not request internal emulator screenshots after frame 130. Do not modify checkpoints or claim gameplay is active without visual evidence.
+
+Retry after watchdog gate correction: no controller input, cutoff remains f130, external X11 only after a 2.5-second no-frame interval at/after f135.
