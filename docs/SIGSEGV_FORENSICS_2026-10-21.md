@@ -1,3 +1,11 @@
+## SEPARATE GAMEPLAY CONTINUATION — Konoha board view reached; no-input f175 restore succeeded (21 October 2026, 18:20 WIB)
+
+The latest run [#39591032125](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39591032125) was a Story Mode continuation, **not** another SIGSEGV experiment. One START tap from the verified dialog checkpoint saved an independent state at relative f140. A fresh process restored it and reached f175 with no input, then saved a new successor checkpoint. No SIGSEGV or timeout was reported in this workflow.
+
+This result does not resolve the fatal SIGSEGV from run #39574435847. It establishes a practical route to a later reproducible gameplay checkpoint while preserving the original state. For the later state, controller differential probes should be done one action per fresh process and later-state visuals must come from external X11 only; internal PCSX screenshot APIs must not be called. No game screenshots/savestates were added to Git.
+
+Successor `konoha-successor-checkpoint-f175.sstate`: 21,163,375 bytes, SHA-256 `f8bd00074877ef583e35b8eaf2fc65b3877acda9bebd5f2d8e9a13abee094615`. The source pre-START checkpoint remains unchanged. Private artifact #12342641041 has ZIP digest `sha256:dbdea33e9b0e05a0ddf0a30242a8827959ca5b1e829f10e77d943d654bfb6009`.
+
 ## LATEST GDB FORENSICS — run #39588281198 timed out without natural SIGSEGV (21 October 2026, 17:59 WIB)
 
 - [Run #39588281198](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39588281198) launched the emulator under GDB with `handle SIGSEGV stop print nopass`; renderer default was retained and controller input was NONE. The workflow concluded `success`, meaning collection/validation/cleanup steps completed.
