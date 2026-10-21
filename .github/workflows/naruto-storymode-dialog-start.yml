@@ -1,11 +1,11 @@
-name: Naruto Story Mode observe Roulette result after Circle stop
+name: Naruto Story Mode test route direction from Konoha Roulette result
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - "experiments/.run-storymode-konoha-roulette-result"
+      - "experiments/.run-storymode-konoha-map-direction-diff"
 
 permissions:
   contents: read
@@ -13,14 +13,14 @@ permissions:
 
 jobs:
   probe:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-KONOHA-ROULETTE-RESULT]')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-NARUTO-STORYMODE-KONOHA-MAP-DIRECTION-DIFF]')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     container:
       image: ghcr.io/grumpycoders/pcsx-redux-build:latest
       options: --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
     env:
-      WORK: /tmp/naruto-storymode-konoha-roulette-result
+      WORK: /tmp/naruto-storymode-konoha-map-direction-diff
       RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 
     steps:
@@ -43,16 +43,16 @@ jobs:
           run-id: 39513285641
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-roulette-result/build-artifact
+          path: /tmp/naruto-storymode-konoha-map-direction-diff/build-artifact
 
-      - name: Download verified post-Circle f160 checkpoint during Roulette animation
+      - name: Download verified post-Roulette board checkpoint f140
         uses: actions/download-artifact@v4
         with:
-          name: naruto-storymode-konoha-roulette-stop-private
-          run-id: 39595042810
+          name: naruto-storymode-konoha-roulette-result-private
+          run-id: 39595608648
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-roulette-result/state-artifact
+          path: /tmp/naruto-storymode-konoha-map-direction-diff/state-artifact
 
       - name: Download original private Memory Card
         uses: actions/download-artifact@v4
@@ -61,26 +61,26 @@ jobs:
           run-id: 39262213468
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: /tmp/naruto-storymode-konoha-roulette-result/card-artifact
+          path: /tmp/naruto-storymode-konoha-map-direction-diff/card-artifact
 
       - name: Validate inputs and stage isolated copies
         shell: bash
         run: |
           set -euo pipefail
           APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
-          CHECKPOINT="$WORK/state-artifact/konoha-after-roulette-stop-f160.sstate"
+          CHECKPOINT="$WORK/state-artifact/konoha-after-roulette-result-f140.sstate"
           CARD="$WORK/card-artifact/naruto-storymode.mcd"
           chmod +x "$APP"
           test "$(sha256sum "$APP" | cut -d ' ' -f1)" = 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99
-          test "$(stat -c %s "$CHECKPOINT")" = 21162812
-          test "$(sha256sum "$CHECKPOINT" | cut -d ' ' -f1)" = 42a5fe8cc5fdeeb80750c7de1f7da65c1d33fdf76b5809823042cf9f695a63e1
+          test "$(stat -c %s "$CHECKPOINT")" = 21163097
+          test "$(sha256sum "$CHECKPOINT" | cut -d ' ' -f1)" = 239067d26f32e96816b1b335ea8ced0002f707896ec23edae643e2358a2b7858
           test "$(stat -c %s "$CARD")" = 131072
           test "$(sha256sum "$CARD" | cut -d ' ' -f1)" = ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
-          cp "$CHECKPOINT" "$WORK/resume/source-roulette-stop-f160.sstate"
-          chmod 400 "$WORK/resume/source-roulette-stop-f160.sstate"
+          cp "$CHECKPOINT" "$WORK/resume/source-roulette-result-f140.sstate"
+          chmod 400 "$WORK/resume/source-roulette-result-f140.sstate"
           cp "$CARD" "$WORK/cards/naruto-storymode-template.mcd"
           echo "KONOHA_CONTROL_EMULATOR_VALID=PASS"
-          echo "KONOHA_ROULETTE_RESULT_SOURCE_CHECKPOINT_VALID=PASS bytes=21162812 sha256=42a5fe8cc5fdeeb80750c7de1f7da65c1d33fdf76b5809823042cf9f695a63e1"
+          echo "KONOHA_MAPDIR_SOURCE_CHECKPOINT_VALID=PASS bytes=21163097 sha256=239067d26f32e96816b1b335ea8ced0002f707896ec23edae643e2358a2b7858"
           echo "KONOHA_CONTROL_SOURCE_CHECKPOINT_READ_ONLY=YES"
           echo "KONOHA_CONTROL_MEMORY_CARD_VALID=PASS"
 
@@ -131,7 +131,7 @@ jobs:
           Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
           PY
 
-      - name: Observe post-Circle Roulette state with no input, external X11 only, and successor checkpoint
+      - name: Compare NONE, RIGHT, and DOWN from the same Roulette-result map checkpoint
         shell: bash
         run: |
           set -euo pipefail
@@ -149,25 +149,24 @@ jobs:
           PCSX.settings.pads[1].DeviceType='Analog'
           PCSX.settings.pads[1].Connected=true
           PCSX.SIO0.slots[1].pads[1].map()
-          print("KONOHA_ROULETTE_RESULT_PAD_SETUP=PASS")
+          print("KONOHA_MAPDIR_PAD_SETUP=PASS")
           LUA
           )
 
-          cat > "$WORK/continue-roulette-result-no-input.lua" <<'LUA'
+          cat > "$WORK/konoha-map-direction.lua" <<'LUA'
           local frame=0
           local started=false
           local returned=false
           local loaded=false
+          local mode=os.getenv("PROBE_BUTTON") or "NONE"
+          local pad=PCSX.SIO0.slots[1].pads[1]
+          local buttons=PCSX.CONSTS.PAD.BUTTON
           local function log(s) print(s); io.stdout:flush() end
           local function waitForExternalRelease(path,callback)
               PCSX.nextTick(function()
                   while true do
                       local f=io.open(path,"r")
-                      if f then
-                          f:close()
-                          log("KONOHA_ROULETTE_RESULT_RESUME_GATE="..path)
-                          break
-                      end
+                      if f then f:close(); log("KONOHA_MAPDIR_RESUME_GATE="..path); break end
                       os.execute("sleep 0.05")
                   end
                   callback()
@@ -175,84 +174,84 @@ jobs:
           end
           local function pauseForExternalCapture(point)
               PCSX.pauseEmulator()
-              local marker="captures/go-"..point:lower()
-              log("KONOHA_ROULETTE_RESULT_"..point.."_CAPTURE_READY frame="..frame)
+              local marker="captures/go-"..point:lower().."-"..mode
+              log("KONOHA_MAPDIR_"..point.."_CAPTURE_READY mode="..mode.." frame="..frame)
               waitForExternalRelease(marker,function() PCSX.resumeEmulator() end)
           end
+          local function input(phase)
+              local b=buttons[mode]
+              if not b then log("KONOHA_MAPDIR_INPUT_ERROR mode="..mode); PCSX.quit(82); return end
+              local ok,readback=pcall(function()
+                  if phase=="press" then pad.setOverride(b) else pad.clearOverride(b) end
+                  return pad.getButton(b)
+              end)
+              local pass=ok and readback==(phase=="press")
+              log(string.format("KONOHA_MAPDIR_INPUT action=%s phase=%s readback=%s status=%s",mode,phase,tostring(readback),pass and "PASS" or "FAIL"))
+              if not pass then PCSX.quit(83) end
+          end
           PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
-              loaded=true; frame=0; log("KONOHA_ROULETTE_RESULT_LOAD_EVENT=PASS")
+              loaded=true; frame=0; log("KONOHA_MAPDIR_LOAD_EVENT=PASS")
           end)
           PCSX.Events.createEventListener("GPU::Vsync",function()
               if not started then
-                  started=true; log("KONOHA_ROULETTE_RESULT_LOAD_BEGIN")
+                  started=true; log("KONOHA_MAPDIR_LOAD_BEGIN mode="..mode)
                   PCSX.pauseEmulator()
                   PCSX.nextTick(function()
-                      local f=assert(Support.File.open("resume/source-roulette-stop-f160.sstate"))
+                      local f=assert(Support.File.open("resume/source-roulette-result-f140.sstate"))
                       local ok,err=pcall(function() PCSX.loadSaveState(f) end); f:close()
-                      if not ok then log("KONOHA_ROULETTE_RESULT_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
-                      returned=true; log("KONOHA_ROULETTE_RESULT_LOAD_RETURNED=1 input=NONE"); PCSX.resumeEmulator()
+                      if not ok then log("KONOHA_MAPDIR_LOAD_ERROR="..tostring(err)); PCSX.quit(32); return end
+                      returned=true; log("KONOHA_MAPDIR_LOAD_RETURNED=1 mode="..mode); PCSX.resumeEmulator()
                   end)
                   return
               end
               if not loaded or not returned then return end
               frame=frame+1
-              log(string.format("KONOHA_ROULETTE_RESULT_FRAME=%d input=NONE internal_screenshot=DISABLED",frame))
-              if frame==20 then
-                  pauseForExternalCapture("F20")
-                  return
-              elseif frame==50 then
-                  pauseForExternalCapture("F50")
-                  return
+              log(string.format("KONOHA_MAPDIR_FRAME=%d mode=%s",frame,mode))
+              if frame==20 then pauseForExternalCapture("PRE"); return
+              elseif frame==30 and mode~="NONE" then input("press")
+              elseif frame==31 and mode~="NONE" then input("release")
+              elseif frame==60 then pauseForExternalCapture("POST"); return
               elseif frame==80 then
-                  pauseForExternalCapture("F80")
-                  return
-              elseif frame==110 then
-                  pauseForExternalCapture("F110")
-                  return
-              elseif frame==135 then
-                  pauseForExternalCapture("F135")
-                  return
-              elseif frame==140 then
-                  log("KONOHA_ROULETTE_RESULT_SAVE_BEGIN frame=140 input=NONE")
+                  log("KONOHA_MAPDIR_SAVE_BEGIN frame=80 mode="..mode.." no_more_input=true")
                   PCSX.pauseEmulator()
                   PCSX.nextTick(function()
                       local ok,state=pcall(function() return PCSX.createSaveState() end)
-                      if not ok or not state then log("KONOHA_ROULETTE_RESULT_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
-                      local opened,file=pcall(function()
-                          return assert(Support.File.open("captures/konoha-after-roulette-result-f140.sstate","TRUNCATE"))
-                      end)
-                      if not opened or not file then log("KONOHA_ROULETTE_RESULT_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
+                      if not ok or not state then log("KONOHA_MAPDIR_SAVE_ERROR="..tostring(state)); PCSX.quit(71); return end
+                      local output="captures/konoha-map-direction-"..mode:lower().."-f80.sstate"
+                      local opened,file=pcall(function() return assert(Support.File.open(output,"TRUNCATE")) end)
+                      if not opened or not file then log("KONOHA_MAPDIR_SAVE_OPEN_ERROR="..tostring(file)); PCSX.quit(72); return end
                       local wrote,err=pcall(function() file:writeMoveSlice(state); file:close() end)
-                      if not wrote then log("KONOHA_ROULETTE_RESULT_SAVE_WRITE_ERROR="..tostring(err)); PCSX.quit(73); return end
-                      log("KONOHA_ROULETTE_RESULT_CHECKPOINT_CREATED=PASS frame=140 input=NONE")
-                      log("KONOHA_ROULETTE_RESULT_BRANCH_DONE frame=140 source_checkpoint_untouched=YES")
+                      if not wrote then log("KONOHA_MAPDIR_SAVE_WRITE_ERROR="..tostring(err)); PCSX.quit(73); return end
+                      log("KONOHA_MAPDIR_BRANCH_DONE mode="..mode.." frame=80 source_checkpoint_untouched=YES")
                       PCSX.quit(0)
                   end)
                   return
               end
           end)
-          log("KONOHA_ROULETTE_RESULT_READY no_controller_input=true internal_screenshots=DISABLED external_x11_frames=20,50,80,110,135 save_frame=140")
+          log("KONOHA_MAPDIR_READY mode="..mode.." one direction tap at frame30/release31; X11 pre f20/post f60; save f80; internal screenshots disabled")
           LUA
-          cp "$WORK/continue-roulette-result-no-input.lua" "$WORK/captures/continue-roulette-result-no-input.lua"
-          cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-KONOHA-ROULETTE-RESULT.mcd"
-          echo "KONOHA_ROULETTE_RESULT_PROCESS_BEGIN"
-          set +e
-          timeout --signal=TERM --kill-after=3s 35s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-KONOHA-ROULETTE-RESULT.mcd" \
-            -exec "$PAD_SETUP" -dofile "$WORK/continue-roulette-result-no-input.lua" -softgpu -dynarec -stdout -lua_stdout \
-            -logfile "$WORK/captures/pcsx-KONOHA-ROULETTE-RESULT.log" -run > "$WORK/captures/pcsx-KONOHA-ROULETTE-RESULT.stdout" 2>&1 &
-          pid=$!
-          python3 - "$pid" "$WORK/captures/pcsx-KONOHA-ROULETTE-RESULT.stdout" "$WORK/captures" <<'PY'
+          cp "$WORK/konoha-map-direction.lua" "$WORK/captures/konoha-map-direction.lua"
+          failed=0
+          for mode in NONE RIGHT DOWN; do
+            cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/card-KONOHA-MAPDIR-$mode.mcd"
+            stdout="$WORK/captures/pcsx-KONOHA-MAPDIR-$mode.stdout"
+            echo "KONOHA_MAPDIR_BRANCH_BEGIN=$mode"
+            set +e
+            PROBE_BUTTON="$mode" timeout --signal=TERM --kill-after=3s 25s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/card-KONOHA-MAPDIR-$mode.mcd" \
+              -exec "$PAD_SETUP" -dofile "$WORK/konoha-map-direction.lua" -softgpu -dynarec -stdout -lua_stdout \
+              -logfile "$WORK/captures/pcsx-KONOHA-MAPDIR-$mode.log" -run > "$stdout" 2>&1 &
+            pid=$!
+            python3 - "$pid" "$mode" "$stdout" "$WORK/captures" <<'PY'
           import sys,time,subprocess
           from datetime import datetime,timezone
           from pathlib import Path
           from PIL import Image
-          pid=int(sys.argv[1]); stdout=Path(sys.argv[2]); out=Path(sys.argv[3])
-          done=set()
-          logpath=out/"konoha-roulette-result-x11-watchdog.log"
-          points=("F20","F50","F80","F110","F135")
+          pid=int(sys.argv[1]); mode=sys.argv[2]; stdout=Path(sys.argv[3]); out=Path(sys.argv[4])
+          done=set(); points=("PRE","POST")
+          logpath=out/"konoha-map-direction-x11-watchdog.log"
           def log(s):
-              line=f"utc={datetime.now(timezone.utc).isoformat()} {s}"
+              line=f"utc={datetime.now(timezone.utc).isoformat()} mode={mode} {s}"
               with logpath.open("a",encoding="utf-8") as f: f.write(line+"\n")
               print(line,flush=True)
           def alive():
@@ -260,18 +259,16 @@ jobs:
               st=r.stdout.strip()
               return bool(st) and not st.startswith("Z")
           def capture(point):
-              label="KONOHA-ROULETTE-RESULT-"+point
+              label=f"KONOHA-MAPDIR-{mode}-{point}"
               xwd=out/(label+".xwd"); png=out/(label+".png")
               a=subprocess.run(["xwd","-root","-silent","-out",str(xwd)],capture_output=True,text=True)
               if a.returncode or not xwd.is_file() or xwd.stat().st_size==0:
-                  log(f"X11_CAPTURE_FAILED point={point} rc={a.returncode} error={a.stderr.strip()}")
-                  return False
+                  log(f"X11_CAPTURE_FAILED point={point} rc={a.returncode} error={a.stderr.strip()}"); return False
               b=subprocess.run(["convert",str(xwd),str(png)],capture_output=True,text=True)
               try: xwd.unlink()
               except FileNotFoundError: pass
               if b.returncode or not png.is_file():
-                  log(f"X11_CONVERT_FAILED point={point} rc={b.returncode}")
-                  return False
+                  log(f"X11_CONVERT_FAILED point={point} rc={b.returncode}"); return False
               try:
                   with Image.open(png) as im:
                       colors=im.getcolors(maxcolors=1000000)
@@ -279,60 +276,83 @@ jobs:
                       log(f"X11_CAPTURE_VERIFY point={point} path={png.name} size={im.size} bytes={png.stat().st_size} colors={len(colors) if colors is not None else 'many'} valid={valid}")
                       return bool(valid)
               except Exception as e:
-                  log(f"X11_CAPTURE_VERIFY_ERROR point={point} error={e}")
-                  return False
-          log("WATCHDOG_START controller_input=NONE internal_screenshots=DISABLED")
+                  log(f"X11_CAPTURE_VERIFY_ERROR point={point} error={e}"); return False
+          log("WATCHDOG_START input="+mode+" internal_screenshots=DISABLED")
           while True:
               try: content=stdout.read_text(errors="replace")
               except FileNotFoundError: content=""
               for point in points:
-                  token=f"KONOHA_ROULETTE_RESULT_{point}_CAPTURE_READY"
+                  token=f"KONOHA_MAPDIR_{point}_CAPTURE_READY mode={mode}"
                   if point not in done and token in content:
                       ok=capture(point)
-                      (out/f"go-{point.lower()}").write_text("captured="+str(ok)+"\n",encoding="utf-8")
+                      (out/f"go-{point.lower()}-{mode}").write_text("captured="+str(ok)+"\n",encoding="utf-8")
                       done.add(point)
               if not alive():
-                  log("PROCESS_EXITED captured="+",".join(sorted(done)))
-                  break
+                  log("PROCESS_EXITED captured="+",".join(sorted(done))); break
               time.sleep(0.01)
           log("WATCHDOG_END captured="+",".join(sorted(done)))
           PY
-          wait "$pid"
-          p_rc=$?
-          set -e
-          echo "KONOHA_ROULETTE_RESULT_PROCESS_EXIT_CODE=$p_rc"
-          grep -E 'KONOHA_ROULETTE_RESULT_(LOAD_EVENT|LOAD_RETURNED|FRAME=|F[0-9]+_CAPTURE_READY|SAVE|CHECKPOINT_CREATED|BRANCH_DONE|.*ERROR)' "$WORK/captures/pcsx-KONOHA-ROULETTE-RESULT.stdout" || true
-          test "$p_rc" -eq 0
-          test -s "$WORK/captures/konoha-after-roulette-result-f140.sstate"
-          for p in F20 F50 F80 F110 F135; do test -s "$WORK/captures/KONOHA-ROULETTE-RESULT-$p.png"; done
-          source_hash="$(sha256sum "$WORK/resume/source-roulette-stop-f160.sstate" | cut -d ' ' -f1)"
-          test "$source_hash" = 42a5fe8cc5fdeeb80750c7de1f7da65c1d33fdf76b5809823042cf9f695a63e1
-          derived_hash="$(sha256sum "$WORK/captures/konoha-after-roulette-result-f140.sstate" | cut -d ' ' -f1)"
-          derived_bytes="$(stat -c %s "$WORK/captures/konoha-after-roulette-result-f140.sstate")"
-          {
-            echo "KONOHA_ROULETTE_RESULT_SOURCE_CHECKPOINT_SHA256=$source_hash"
-            echo "KONOHA_ROULETTE_RESULT_SOURCE_CHECKPOINT_UNCHANGED=PASS"
-            echo "KONOHA_ROULETTE_RESULT_DERIVED_CHECKPOINT_BYTES=$derived_bytes"
-            echo "KONOHA_ROULETTE_RESULT_DERIVED_CHECKPOINT_SHA256=$derived_hash"
-            echo "KONOHA_ROULETTE_RESULT_INPUT=NONE through relative f140"
-            echo "KONOHA_ROULETTE_RESULT_INTERNAL_SCREENSHOTS=DISABLED"
-            echo "KONOHA_ROULETTE_RESULT_VISUALS=external X11 only while paused"
-          } > "$WORK/captures/konoha-roulette-result-report.txt"
-          cat "$WORK/captures/konoha-roulette-result-report.txt"
+            wait "$pid"
+            rc=$?
+            set -e
+            echo "KONOHA_MAPDIR_PROCESS_EXIT mode=$mode rc=$rc"
+            grep -E 'KONOHA_MAPDIR_(LOAD_EVENT|LOAD_RETURNED|INPUT|PRE_CAPTURE_READY|POST_CAPTURE_READY|BRANCH_DONE|.*ERROR)' "$stdout" || true
+            lower_mode="$(printf '%s' "$mode" | tr '[:upper:]' '[:lower:]')"
+            if [ "$rc" -ne 0 ] || [ ! -s "$WORK/captures/KONOHA-MAPDIR-$mode-PRE.png" ] || [ ! -s "$WORK/captures/KONOHA-MAPDIR-$mode-POST.png" ] || [ ! -s "$WORK/captures/konoha-map-direction-$lower_mode-f80.sstate" ]; then
+              echo "KONOHA_MAPDIR_BRANCH_VALIDATION=FAIL mode=$mode rc=$rc" | tee -a "$WORK/captures/konoha-map-direction-report.txt"
+              failed=$((failed+1))
+            fi
+            if [ "$mode" != "NONE" ]; then
+              grep -q "KONOHA_MAPDIR_INPUT action=$mode phase=press readback=true status=PASS" "$stdout" || failed=$((failed+1))
+              grep -q "KONOHA_MAPDIR_INPUT action=$mode phase=release readback=false status=PASS" "$stdout" || failed=$((failed+1))
+            fi
+          done
 
-      - name: Upload private Konoha Roulette result X11 captures, logs, and successor checkpoint
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image,ImageChops,ImageStat
+          root=Path("captures")
+          report=[
+            "KONOHA_MAPDIR_SOURCE_CHECKPOINT_BYTES=21163097",
+            "KONOHA_MAPDIR_SOURCE_CHECKPOINT_SHA256=239067d26f32e96816b1b335ea8ced0002f707896ec23edae643e2358a2b7858",
+            "KONOHA_MAPDIR_BRANCHES=NONE,RIGHT,DOWN",
+            "KONOHA_MAPDIR_INPUT=one direction tap at frame30/release31; otherwise NONE",
+            "KONOHA_MAPDIR_SCREENSHOTS=external X11 only while emulator paused; internal screenshot API disabled",
+            "",
+            "Post-capture comparison against NONE baseline:"
+          ]
+          for mode in ["NONE","RIGHT","DOWN"]:
+              for point in ["PRE","POST"]:
+                  p=root/f"KONOHA-MAPDIR-{mode}-{point}.png"
+                  b=root/f"KONOHA-MAPDIR-NONE-{point}.png"
+                  if not p.is_file() or not b.is_file():
+                      report.append(f"{mode}-{point}: missing screenshot"); continue
+                  with Image.open(p) as other, Image.open(b) as base:
+                      if other.size!=base.size:
+                          report.append(f"{mode}-{point}: dimension mismatch"); continue
+                      diff=ImageChops.difference(base.convert("RGB"),other.convert("RGB"))
+                      mean=sum(ImageStat.Stat(diff).mean)/3
+                      exact=sum(1 for a,b in zip(base.convert("RGB").getdata(),other.convert("RGB").getdata()) if a==b)/(other.width*other.height)
+                      report.append(f"{mode}-{point}: mean_abs_rgb_diff_vs_NONE={mean:.6f}; exact_pixel_fraction={exact:.6f}")
+          (root/"konoha-map-direction-report.txt").write_text("\n".join(report)+"\n",encoding="utf-8")
+          print("\n".join(report))
+          PY
+          source_hash="$(sha256sum "$WORK/resume/source-roulette-result-f140.sstate" | cut -d ' ' -f1)"
+          test "$source_hash" = 239067d26f32e96816b1b335ea8ced0002f707896ec23edae643e2358a2b7858
+          echo "KONOHA_MAPDIR_SOURCE_CHECKPOINT_UNCHANGED=PASS sha256=$source_hash" | tee -a "$WORK/captures/konoha-map-direction-report.txt"
+          if [ "$failed" -ne 0 ]; then echo "::error::$failed map direction branches had invalid captures/input results"; exit 44; fi
+
+      - name: Upload private Konoha route-direction X11 captures, logs, and disposable branch checkpoints
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: naruto-storymode-konoha-roulette-result-private
+          name: naruto-storymode-konoha-map-direction-private
           path: |
-            /tmp/naruto-storymode-konoha-roulette-result/captures/*.png
-            /tmp/naruto-storymode-konoha-roulette-result/captures/*.txt
-            /tmp/naruto-storymode-konoha-roulette-result/captures/*.stdout
-            /tmp/naruto-storymode-konoha-roulette-result/captures/*.log
-            /tmp/naruto-storymode-konoha-roulette-result/captures/*.json
-            /tmp/naruto-storymode-konoha-roulette-result/captures/raw/*.raw
-            /tmp/naruto-storymode-konoha-roulette-result/captures/*.sstate
+            /tmp/naruto-storymode-konoha-map-direction-diff/captures/*.png
+            /tmp/naruto-storymode-konoha-map-direction-diff/captures/*.txt
+            /tmp/naruto-storymode-konoha-map-direction-diff/captures/*.stdout
+            /tmp/naruto-storymode-konoha-map-direction-diff/captures/*.log
+            /tmp/naruto-storymode-konoha-map-direction-diff/captures/*.sstate
 
       - name: Remove read-only source checkpoint and disposable Memory Cards, ROM, and BIOS from ephemeral runner
         if: always()
