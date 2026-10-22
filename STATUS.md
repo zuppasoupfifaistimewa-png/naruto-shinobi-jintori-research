@@ -1,3 +1,15 @@
+## DIAGNOSTIC UPDATE — VSync drain stalled; nextTick-based shutdown retry prepared (22 October 2026, 18:31 WIB)
+
+The second attempt at the Information-menu DOWN/NONE experiment, [run #39770465538](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39770465538), also failed to complete its matched comparison. The 12-VSync drain did not advance: the emulator process remained alive until its 120-second timeout, exiting 124. The uploaded private artifact #12422367156 has a complete-looking checkpoint (21,162,494 bytes, header v4, SHA-256 `0c33a47cb9e6f2dfb09c568410ca125acbae6f46f84692b8589a5c903442f564`) after timeout, and its authentic ACTION screenshots show DOWN moved the red highlight from `情報` (Informasi) to `マップを見る` (Lihat peta). But there was no control branch and the normal external workflow validator was bypassed by timeout exit, so this remains **HYPOTHESIS, not VERIFIED**; do not use that timeout-produced state as the official continuation source.
+
+The VSync countdown was removed in workflow commit `3e052b8e77cfcd966f5e5e05a2f7341ed2ff0374`. It now pauses after a completed write/close and chains 12 `PCSX.nextTick` callbacks before calling `PCSX.quit(0)`, to drain the host event loop without relying on more GPU frames. This is an unverified engineering hypothesis.
+
+Next retry is marker revision 26 from the same known-restorable Information parent: source run #39768787669, artifact `naruto-storymode-adaptive-player-private`, checkpoint `adaptive-cycle-01-f180.sstate`, SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`. Require ACTION=DOWN vs NONE/WAIT, equal F20 frames/states, press/release readback, two full X11 branches, clean/allowed exits and shell validation of both checkpoint outputs. If shutdown again times out or either output is truncated, stop and diagnose; do not assert the Information→Map-view rule.
+
+Story Mode remains NOT COMPLETE.
+
+---
+
 ## DIAGNOSTIC UPDATE — checkpoint structurally complete, but shutdown timed out; nextTick drain retry prepared (22 October 2026, 18:31 WIB)
 
 **Story Mode remains NOT COMPLETE.** Do not promote a checkpoint from the failed A/B run.
