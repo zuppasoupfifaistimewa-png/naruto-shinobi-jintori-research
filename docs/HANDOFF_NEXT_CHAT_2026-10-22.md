@@ -1,3 +1,24 @@
+## NEWEST HANDOFF UPDATE — matched menu action test passed; Triangle/Map probe is next (22 October 2026, 18:06 WIB)
+
+Story Mode remains **NOT complete**.
+
+### Verified A/B test
+- Run [#39767790829](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39767790829) passed from parent checkpoint `adaptive-cycle-02-f180.sstate` from run #39765193287, SHA-256 `7679cfbd3576c3202abcc299b907939ab4e4529e3a0aa260e780806b1e21cc92`.
+- Two fresh emulator processes loaded the exact same parent; F20 images matched pixel-for-pixel (1,024,000 pixels). Both began in `menu_or_unknown_choice`.
+- Memory Cards were independent disposable clones with matching SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`.
+- Branch ACTION pressed/released DOWN with true/false readback; branch CONTROL sent no button. At F60/F100/F110/F180, visual differences were consistently 14,609 pixels (mean absolute RGB difference 1.04924). Visual review shows the red selection marker moved from `ルーレット` (Roulette) to `忍術` (Ninjutsu) only in the DOWN arm; control stayed on `ルーレット` (Roulette).
+- Both outputs passed post-exit size/header/SHA checks. Action checkpoint SHA `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`; control checkpoint SHA `3da0a41d55e988550ef1a9368652fa909ae06da34c2b4b7bf315f5a820f76aeb`. Keep private artifact #12420204586 private.
+
+### Narrow conclusion
+`VERIFIED`: one DOWN moves the menu selection from Roulette to Ninjutsu from this exact parent state. `HYPOTHESIS`: the same exact directional behavior generalizes to all menus. This does not prove a gameplay turn was committed; no confirm button was sent.
+
+### Next action
+At the same menu screenshot, footer `△ マップ` means (Triangle: Map). If continuing automatically, test one Triangle press/release versus NONE from the same pinned menu checkpoint, same cloned disposable Memory Cards, two fresh processes and ten external-X11 captures. Require exact F20 pixel parity and compare the displayed state/selection. Do not use Circle; the user allows it only when a contextually valid YES is visibly highlighted. If Triangle opens a map view, capture and inspect that screen before selecting anything.
+
+All assets/evidence remain private/out of Git. Only this repository is allowed. No Story Mode completion claim without authentic ending/results evidence.
+
+---
+
 ## NEWEST HANDOFF UPDATE — matched A/B baseline confirmed; path-format bug fixed, rerun active (22 October 2026, 17:59 WIB)
 
 Story Mode is still **NOT COMPLETE**.
