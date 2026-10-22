@@ -408,23 +408,12 @@ jobs:
                       return
                   end
                   log("ADAPTIVE_SESSION_FINISHED cycle="..cycle)
-                  -- Do not quit immediately after writeMoveSlice: native shutdown
-                  -- sometimes left a 2 MiB partial state despite successful Lua
-                  -- write/close returns. Pause gameplay, then drain the host event
-                  -- loop through bounded nextTick callbacks (not VSync) before quit.
+                  -- Schedule shutdown outside GPU::Vsync after write/close.
+                  -- Chained nextTick callbacks do not advance while paused in this
+                  -- build and caused a watchdog timeout; use the established single
+                  -- nextTick shutdown, then validate the completed file from shell.
                   PCSX.pauseEmulator()
-                  local ticksRemaining=12
-                  local function drainAndQuit()
-                      if ticksRemaining<=0 then
-                          log("ADAPTIVE_SHUTDOWN_DRAIN=PASS ticks=12")
-                          PCSX.quit(0)
-                          return
-                      end
-                      ticksRemaining=ticksRemaining-1
-                      PCSX.nextTick(drainAndQuit)
-                  end
-                  log("ADAPTIVE_SHUTDOWN_DRAIN_BEGIN=PASS cycle="..cycle.." ticks=12 reason=event_loop_flush_after_pause")
-                  PCSX.nextTick(drainAndQuit)
+                  PCSX.nextTick(function() PCSX.quit(0) end)
                   return
               end
           end)
