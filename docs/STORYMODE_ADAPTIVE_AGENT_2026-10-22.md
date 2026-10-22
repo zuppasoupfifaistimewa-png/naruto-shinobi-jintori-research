@@ -1,3 +1,9 @@
+## ACTIVE PROBE — next DOWN transition from Ninjutsu versus NONE (22 October 2026, 18:12 WIB)
+
+Run [#39768787669](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768787669) is configured from the already restored parent SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`, one-action branch DOWN and NONE/WAIT control, separate identical Memory Cards, two cycles. It is intended to test whether the next menu selection after `忍術` (Ninjutsu) is `情報` (Informasi). Do not conclude until the X11 evidence, input readback, parent parity, two fresh-process load events and output checkpoint validation pass. Run was active at container initialization.
+
+---
+
 ## VERIFIED UPDATE — fresh-process restore of menu-DOWN checkpoint passed (22 October 2026, 18:10 WIB)
 
 - Run [#39768371975](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768371975) restored action checkpoint SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28` in a new process and logged `ExecutionFlow::SaveStateLoaded`.
