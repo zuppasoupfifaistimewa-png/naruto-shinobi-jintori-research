@@ -1,3 +1,13 @@
+## ACTIVE PLAYER — revision39 UP versus WAIT from known empty-land state
+
+Run [#39784493293](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39784493293) is active, started 20:10:11 WIB; hard timeout about 20:30:11 WIB. Marker/head SHA `4893e1e0eb6cdcaf9fff052c9c794ae62327858a` is verified; workflow commit `b3c78426f8c11b406f0fedbffb01bd667e7ffb5e` supports map directions. Exact marker pins the independently restored cell140 state from run #39779256427/artifact #12425858092/file adaptive-cycle-01-f180.sstate/SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a` and sets AB_ACTION=UP, AB_EXPECTED_STATE=map_after_move, AB_TEST=1, two cycles, restore/continuation tests off, revision39.
+
+Do not start parallel player. When done, check load events, exact source hashes, pixel-equal F20 / map_after_move, identical memory-card clones, UP readback true/false, WAIT control, 10 authentic 1280×800 captures, two exits0, output checkpoints validated, and report. Manually inspect if UP returns to Naruto tile60 instead of empty land140. No Circle or tile confirmation. Story Mode remains NOT COMPLETE.
+
+Revision38 audit caveat: the second-DOWN candidate was technically loaded but its apparent near-100 F20 visual settled back near 140 by F60; do not treat it as persistent selected-cell change.
+
+---
+
 ## REVISION38 AUDIT — load passed, but later frames return to the 140-value board state (22 October 2026, 20:05 WIB)
 
 Run [#39783158903](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39783158903) succeeded. Artifact #12427598163: source hash `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`, 21,162,960 bytes/v4; explicit SaveStateLoaded + restore PASS; 5 genuine 1280×800 screenshots; exit0; new output `c4acb2b62a9891b597c1195a2dead7ccce902abddf0c5ec9b4c50b76142a7a33`, 21,162,978 bytes/v4, externally validated. The F20 screenshot after restore shows a transient scrolled view/number near 100; F60/F100/F110/F180 settle back near the tile value140. All classifier results remain `map_after_move`, so the classifier can't resolve the exact selected tile.
