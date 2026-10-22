@@ -1,3 +1,15 @@
+## VERIFIED UPDATE — second DOWN navigation step passed matched test (22 October 2026, 18:14 WIB)
+
+- Run [#39768787669](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768787669) passed with identical F20 parent images (1,024,000/1,024,000 pixels), separate but byte-identical Memory Cards, two explicit `ExecutionFlow::SaveStateLoaded` events, ten authentic external-X11 frames and two clean emulator exits.
+- ACTION branch pressed/released DOWN with readback true/false; NONE branch sent no input. Visual review shows ACTION moving the selection from `忍術` (Ninjutsu) to `情報` (Information), while NONE stayed on Ninjutsu. Visual delta: 14,606 pixels and mean absolute RGB difference 1.04012 at F60/F100/F110/F180.
+- Narrow rule: **VERIFIED** one DOWN moves the current right-side menu highlight Ninjutsu→Information from this exact tested state. Generalizing to other menus remains UNKNOWN/HYPOTHESIS; keep rules scoped.
+- Neither output savestate from this run should be promoted to a continuation source before fresh-process restoration. The already restored checkpoint #39768371975 is the approved source for the next experiment: 21,162,575 bytes; SHA-256 `fa03a1840612749810453566a25805e89a4aa21ad64664695e09ed7222b77a9e`; it displays Ninjutsu highlighted and `△ マップ` (Triangle: Map).
+- Next action is Triangle-versus-NONE from that immutable source. Stop at the map view if opened and inspect before any further action. Do not confirm or select map targets with Circle.
+
+Story Mode remains NOT COMPLETE; no authentic ending/results screenshot exists.
+
+---
+
 ## VERIFIED RULE UPDATE — DOWN from Ninjutsu highlights Information (22 October 2026, 18:14 WIB)
 
 Successful matched test [#39768787669](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768787669) used the already restore-validated Ninjutsu checkpoint SHA `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`.
