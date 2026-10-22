@@ -1,3 +1,20 @@
+## NEWEST HANDOFF UPDATE — menu DOWN effect VERIFIED; validate action checkpoint restore next (22 October 2026, 18:06 WIB)
+
+Story Mode is still **NOT COMPLETE**; there is no authentic ending/results image.
+
+### Matched A/B test result
+- Successful corrected run [#39767790829](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39767790829) restored the same immutable parent hash `7679cfbd3576c3202abcc299b907939ab4e4529e3a0aa260e780806b1e21cc92` in two fresh processes, with separate action/control Memory Cards copied from an identical baseline.
+- F20 parent screenshots matched pixel-for-pixel (0 mismatches / 1,024,000 pixels); both state classifiers returned `menu_or_unknown_choice`. All ten external-X11 images passed PNG/resolution validation; both emulator sessions logged `ExecutionFlow::SaveStateLoaded` and exited 0. Both checkpoints passed external shell size/header/SHA validation.
+- One DOWN press/release was verified in the action branch; NONE/WAIT was used in the control branch. The action branch selection moved from `ルーレット` (Roulette) to `忍術` (Ninjutsu) between F20 and F60, while the control remained on Roulette through F180. F60/F100/F110/F180 each had 14,609 differing pixels and mean absolute RGB difference 1.04924. Private screenshot artifact #12420204586 was visually reviewed.
+- Record as **VERIFIED only for this exact menu and context**: DOWN moves selected row one step down from Roulette to Ninjutsu. Do not generalize to other states.
+- Action checkpoint in private artifact #12420204586: 21,163,486 bytes, SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`. Control checkpoint: 21,163,324 bytes, SHA-256 `3da0a41d55e988550ef1a9368652fa909ae06da34c2b4b7bf315f5a820f76aeb`. Neither is a trusted resume point until fresh-process restoration is independently verified.
+- The earlier failed #39767083708 completed the paired comparison but failed a final dialogue guard that incorrectly applied to the A/B mode. It did not invalidate the visual finding. The guard was fixed and #39767790829 passed.
+
+### Exact next action
+Trigger a one-cycle restore-only run using run #39767790829's private artifact `naruto-storymode-adaptive-player-private`, checkpoint `adaptive-cycle-01-f180.sstate`, and exact SHA above; set `RESTORE_TEST=1`, `CONTINUATION_TEST=0`, `AB_TEST=0`, `LOOP_CYCLES=1`, increment the marker revision. Audit explicit `ExecutionFlow::SaveStateLoaded`, five post-load X11 images, exit result, and the new checkpoint's post-exit size/header/SHA. If it passes, continue from the verified Ninjutsu-highlight state using controlled direction probes; do not confirm non-YES menu items with Circle. Keep all screenshots/savestates private/out of Git.
+
+---
+
 ## NEWEST HANDOFF UPDATE — matched menu action test passed; Triangle/Map probe is next (22 October 2026, 18:06 WIB)
 
 Story Mode remains **NOT complete**.
