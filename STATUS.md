@@ -1,3 +1,11 @@
+## ACTIVE PLAYER — revision 34 restore-only map focus checkpoint (22 October 2026, 19:39 WIB)
+
+Run [#39780143613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780143613) is `in_progress`, created 19:39:28 WIB. This restore-only test loads the revision-33 ACTION output SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a` from run #39779256427/private artifact #12425858092. Deadline is approximately 19:59:28 WIB if the 20-minute job limit is reached. No result/artifact yet. Do not launch a parallel player.
+
+Expected checks: exact source validation; `ExecutionFlow::SaveStateLoaded`; `ADAPTIVE_RESTORE_TEST=PASS`; five authentic 1280×800 X11 captures; emulator exit 0; external validation of the new output; visual confirmation that F20 retains `空き地` (Tanah kosong) / barrier value 140 selected. No input should be sent. Do not promote the newly emitted output until it is independently restored.
+
+---
+
 ## VERIFIED RESULT — DOWN changes focused tile on board (revision 33, 22 October 2026, 19:38 WIB)
 
 Run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) completed with Actions success at 19:37:15 WIB. Private artifact #12425858092 was fully downloaded and audited after upload completed.
