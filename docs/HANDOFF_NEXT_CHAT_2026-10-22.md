@@ -1,3 +1,13 @@
+## CURRENT RUN — revision 32 is active (22 October 2026, 19:23 WIB)
+
+Exact run to inspect first: [#39777917775](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777917775). It started at 19:23:17 WIB; latest state is `in_progress`, with `Install X11 tools and prepare private workspace` active. Hard job timeout: 20 minutes from runner start, approximate deadline 19:43:17 WIB. Wait for this player run to finish; do not trigger a parallel run.
+
+Revision 32 config: source run #39776518701, artifact `naruto-storymode-adaptive-player-private`, checkpoint `adaptive-cycle-01-f180.sstate`, SHA-256 `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`; `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `AB_TEST=1`, `AB_ACTION=DOWN`, `LOOP_CYCLES=2`, `REVISION=32`. ACTION DOWN versus control NONE/WAIT from map view. Workflow commit `5f8ae63b4374cb730ef197d797dffd0e823db141` extends the starting precondition to accept `map_after_move` with classifier action WAIT.
+
+When complete, audit raw logs and artifact: ensure exact source SHA both branches; F20 images/state match; one DOWN press/release is read back `true`/`false`; both `ExecutionFlow::SaveStateLoaded` events; 10 authentic 1280×800 X11 screenshots; both process exits accepted; both output states externally validate size, v4 header and SHA-256. Visually inspect F60/F100/F110/F180 action and control images to classify the map response. Never confirm a destination. No result is available yet; Story Mode remains NOT COMPLETE.
+
+---
+
 ## LATEST CHECKPOINT — map view restores cleanly; next run revision 32 (22 October 2026, 19:20 WIB)
 
 Run [#39777301626](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777301626) restore-only completed with success at 19:20:11 WIB. Private artifact #12423949987 was audited and C01-F20 visually opened. It proves the map view is restored in a fresh emulator process:
