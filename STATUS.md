@@ -1,3 +1,18 @@
+## ACTIVE RUN — revision40 UP vs WAIT after revision39 guard fix (22 October 2026, 20:21 WIB)
+
+Run [#39786019434](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786019434) was triggered with the corrected marker:
+- source run #39779256427, private artifact naruto-storymode-adaptive-player-private, file adaptive-cycle-01-f180.sstate
+- source SHA-256 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a
+- AB_TEST=1; AB_ACTION=UP; AB_EXPECTED_STATE=map_after_move; RESTORE_TEST=0; CONTINUATION_TEST=0; LOOP_CYCLES=2; REVISION=40.
+
+Revision39 run #39784493293 failed before emulator launch: selector and Lua policy permitted UP, but a later shell gate still hard-coded DOWN/TRIANGLE. Artifact #12427839381 is only a tiny setup dump (4,504 bytes); no screenshots or gameplay evidence exist, so no rule about UP can be inferred. Workflow fix commit #d62a04e831ea185f13efafc5e061d5a8dbb945ce changed the runtime guard to allow UP/DOWN/LEFT/RIGHT/TRIANGLE. Main workflow blob is 73c864d2eba5579be26da732832a467be876b2d1.
+
+Run #39786019434 is queued as of 20:21 WIB; do not launch another player. Once it starts, use the current run status and job step list; audit only after it completes. Required evidence remains strict: exact source hash in both arms, 2 SaveStateLoaded events, F20 map_after_move state and pixel parity, equal card clones, UP press/release true/false, WAIT control, 10 genuine 1280×800 X11 screenshots, both exit0, both output checkpoints validated size/v4-header/SHA, comparison report. Manually inspect whether UP changes focus relative to WAIT. No tile confirmation.
+
+Story Mode remains NOT COMPLETE. No movement/capture/ownership or ending is proven by the current probe series.
+
+---
+
 ## ACTIVE RUN — revision39 UP vs WAIT (22 October 2026, 20:11 WIB)
 
 Run [#39784493293](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39784493293) is the only active player. Its checkout was verified at commit 4893e1e0eb6cdcaf9fff052c9c794ae62327858a. Marker: source run #39779256427, artifact naruto-storymode-adaptive-player-private, checkpoint adaptive-cycle-01-f180.sstate, SHA-256 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a; AB_TEST=1; AB_ACTION=UP; AB_EXPECTED_STATE=map_after_move; two cycles; revision39. The checked workflow supports UP/DOWN/LEFT/RIGHT for map-state A/B.
