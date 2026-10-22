@@ -1,3 +1,11 @@
+## ACTIVE PLAYER — revision49 final retry of roulette Circle-vs-WAIT
+
+Run [#39870243073](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39870243073) active, started 06:12:25 WIB; hard timeout about 06:32:25 WIB. Exact marker pins source run #39867730674 / artifact #12464258211 / `adaptive-cycle-01-f180.sstate` / SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; AB_TEST=1; AB_ACTION=CIRCLE; AB_EXPECTED_STATE=roulette; two cycles; revision49.
+
+Run47/48 screenshots suggest Circle transitions roulette to board by F180 while WAIT leaves roulette spinning, but each prior attempt failed workflow acceptance at shutdown: run47 CONTROL file truncated; run48 CONTROL file valid but exit124 wasn't recoverable. Workflow commit `ef82beb99096e6fd939ce5ebc4f80eedc1158546` now accepts post-session exit124 as well as 134/139 only after a session-finished marker and external checkpoint size/v4-header/SHA verification; per-process timeout is 60s. Require final A/B report plus all gates and manually inspect screenshots. Do not run another player in parallel. No Story Mode completion claim.
+
+---
+
 ## REVISION48 AUDIT — screenshots complete; workflow failed at timeout after a valid save
 
 Run #39869536734 ended failure at 23:09:34 UTC / 06:09:34 WIB. Artifact #12466086061 passes ZIP integrity. It contains all ten genuine 1280×800 screenshots. Exact source SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492` was restored in both fresh processes, F20 parity exact, state `roulette` both, cards identical, Circle input true/false, control WAIT, and screenshot validation passed. The actual pictures continue to suggest Circle from roulette transitions back to map by F180 while WAIT remains wheel, but the rule stays HYPOTHESIS because the workflow did not reach report generation.
