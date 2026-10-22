@@ -1,3 +1,11 @@
+## ACTIVE — revision39 UP-vs-WAIT probes reverse navigation from empty land
+
+Run #39784493293 active, started 20:10:11 WIB; timeout about 20:30:11 WIB. Marker HEAD `4893e1e0eb6cdcaf9fff052c9c794ae62327858a` verified. Source: run #39779256427/artifact #12425858092/adaptive-cycle-01-f180.sstate/SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`; AB_ACTION=UP, AB_EXPECTED_STATE=map_after_move, AB_TEST=1, LOOP_CYCLES=2, revision39. Only this player active.
+
+Require same parent SHA, 2 load events, F20 exact image/state parity, byte-equal card clones, UP readback true/false, WAIT control, 10 authentic X11 captures, exits0, both checkpoint structural/hash validation and report. Inspect whether UP highlights Naruto tile60; only verify what actual images demonstrate. Do not confirm/select any tile. Story Mode remains not complete.
+
+---
+
 ## REVISION38 RESTORE CAVEAT — second-DOWN cursor target not stable across resumed frames
 
 Run #39783158903 passed technical restore of revision37 ACTION output hash `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`, logged SaveStateLoaded/restore PASS, produced 5 genuine 1280×800 screenshots, exited0, and validated new output SHA `c4acb2b62a9891b597c1195a2dead7ccce902abddf0c5ec9b4c50b76142a7a33` (21,162,978 bytes/v4). However C01-F20 looks temporarily like a scrolled view with a number near 100 while F60-F180 settle back near the 140-value area. The generic classifier stays map_after_move, so no exact cursor claim. Treat 4989… as technically loadable but not a stable semantic cursor checkpoint. Output c4ac… is also not promoted until independently restored.
