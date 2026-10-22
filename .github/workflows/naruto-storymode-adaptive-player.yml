@@ -53,12 +53,14 @@ jobs:
           source_sha256="$(get_value SOURCE_SHA256)"
           loop_cycles="$(get_value LOOP_CYCLES)"
           restore_test="$(get_value RESTORE_TEST)"
+          continuation_test="$(get_value CONTINUATION_TEST)"
           [[ "$source_run" =~ ^[0-9]+$ ]]
           [[ "$source_artifact" =~ ^[A-Za-z0-9._-]+$ ]]
           [[ "$source_checkpoint" =~ ^[A-Za-z0-9._-]+$ ]]
           [[ "$source_sha256" =~ ^[0-9a-f]{64}$ ]]
           [[ "$loop_cycles" == "1" || "$loop_cycles" == "2" ]]
           [[ "$restore_test" == "0" || "$restore_test" == "1" ]]
+          [[ "$continuation_test" == "0" || "$continuation_test" == "1" ]]
           {
             echo "run_id=$source_run"
             echo "artifact_name=$source_artifact"
@@ -66,6 +68,7 @@ jobs:
             echo "sha256=$source_sha256"
             echo "loop_cycles=$loop_cycles"
             echo "restore_test=$restore_test"
+            echo "continuation_test=$continuation_test"
           } >> "$GITHUB_OUTPUT"
 
       - name: Download previously built patched PCSX-Redux
@@ -104,6 +107,7 @@ jobs:
           SOURCE_SHA256: ${{ steps.source.outputs.sha256 }}
           LOOP_CYCLES: ${{ steps.source.outputs.loop_cycles }}
           RESTORE_TEST: ${{ steps.source.outputs.restore_test }}
+          CONTINUATION_TEST: ${{ steps.source.outputs.continuation_test }}
         run: |
           set -euo pipefail
           APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
@@ -128,6 +132,7 @@ jobs:
             echo "SOURCE_COPY_READ_ONLY=YES"
             echo "LOOP_CYCLES=$LOOP_CYCLES"
             echo "RESTORE_TEST=$RESTORE_TEST"
+            echo "CONTINUATION_TEST=$CONTINUATION_TEST"
             echo "CYCLE=observe external X11 at F20 -> decide -> input F30-F38 -> verify F60/F100 -> checkpoint F180"
             echo "POLICY=START on calibrated dialogue; wait roulette then Circle only if it persists; Circle only when calibrated YES is visibly highlighted; route directions rotate after repeated map state; unknown states WAIT"
             echo "INTERNAL_EMULATOR_SCREENSHOT_API=DISABLED"
@@ -183,6 +188,7 @@ jobs:
         shell: bash
         env:
           RESTORE_TEST: ${{ steps.source.outputs.restore_test }}
+          CONTINUATION_TEST: ${{ steps.source.outputs.continuation_test }}
           SOURCE_SHA256: ${{ steps.source.outputs.sha256 }}
         run: |
           set -euo pipefail
@@ -377,9 +383,10 @@ jobs:
           CYCLES="$(awk -F= '$1=="LOOP_CYCLES" {print $2}' "$GITHUB_WORKSPACE/experiments/.run-storymode-adaptive-player")"
           [[ "$CYCLES" == "1" || "$CYCLES" == "2" ]]
           [[ "$RESTORE_TEST" == "0" || "$RESTORE_TEST" == "1" ]]
+          [[ "$CONTINUATION_TEST" == "0" || "$CONTINUATION_TEST" == "1" ]]
           export PAD_SETUP
           export LOOP_CYCLES="$CYCLES"
-          export RESTORE_TEST SOURCE_SHA256
+          export RESTORE_TEST CONTINUATION_TEST SOURCE_SHA256
           cat > "$WORK/run-bounded-cycles.sh" <<'SH'
           #!/usr/bin/env bash
           set -euo pipefail
@@ -448,12 +455,12 @@ jobs:
           chmod +x "$WORK/run-bounded-cycles.sh"
           PAD_SETUP="$PAD_SETUP" LOOP_CYCLES="$CYCLES" bash "$WORK/run-bounded-cycles.sh" > "$WORK/captures/pcsx-adaptive-orchestrator.stdout" 2>&1 &
           pid=$!
-          python3 - "$pid" "$WORK/captures/pcsx-adaptive.stdout" "$WORK/captures" "$WORK" "$CYCLES" "$RESTORE_TEST" <<'PY'
+          python3 - "$pid" "$WORK/captures/pcsx-adaptive.stdout" "$WORK/captures" "$WORK" "$CYCLES" "$RESTORE_TEST" "$CONTINUATION_TEST" <<'PY'
           import sys,time,subprocess,hashlib,json
           from pathlib import Path
           from PIL import Image
           pid=int(sys.argv[1]); stdout=Path(sys.argv[2]); out=Path(sys.argv[3])
-          cycles=int(sys.argv[5]); restore_test=(sys.argv[6]=="1"); phases=(20,60,100,110,180)
+          cycles=int(sys.argv[5]); restore_test=(sys.argv[6]=="1"); continuation_test=(sys.argv[7]=="1"); phases=(20,60,100,110,180)
           labels=["C%02d-F%d"%(c,p) for c in range(1,cycles+1) for p in phases]
           done=set(); deadline=time.monotonic()+240
           def alive():
@@ -505,7 +512,7 @@ jobs:
           summary=[{"file":p.name,"bytes":p.stat().st_size,"sha256":hashlib.sha256(p.read_bytes()).hexdigest()} for p in cps]
           print("ADAPTIVE_WATCHDOG_END captures={}/{} checkpoints={} hashes={}".format(len(done),len(labels),len(cps),json.dumps(summary)),flush=True)
           if len(cps)!=cycles: raise SystemExit("ADAPTIVE_CHECKPOINT_COUNT_FAIL")
-          if not restore_test and not (out/"progress-report.txt").is_file(): raise SystemExit("ADAPTIVE_GAMEPLAY_PROGRESS_FAIL")
+          if not restore_test and not continuation_test and not (out/"progress-report.txt").is_file(): raise SystemExit("ADAPTIVE_GAMEPLAY_PROGRESS_FAIL")
           if cycles>=2:
               rpt=out/"policy-guard-report.txt"
               if not rpt.is_file() or "ADAPTIVE_POLICY_GUARD=PASS cycle=2" not in rpt.read_text():
@@ -545,11 +552,28 @@ jobs:
             grep -q 'ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded' "$WORK/captures/pcsx-adaptive.stdout"
             grep -q 'ADAPTIVE_X11_CAPTURE label=C01-F20 .*source=external_xwd' "$WORK/captures/pcsx-adaptive.stdout"
             echo "ADAPTIVE_RESTORE_TEST=PASS source_sha256=$SOURCE_SHA256 event=ExecutionFlow::SaveStateLoaded post_restore_frame=C01-F20" >> "$WORK/captures/pcsx-adaptive.stdout"
+          elif [ "$CONTINUATION_TEST" = "1" ]; then
+            test "$CYCLES" -eq 2
+            grep -q 'ADAPTIVE_POLICY_GUARD=PASS cycle=2' "$WORK/captures/policy-guard-report.txt"
+            for cycle in 1 2; do
+              first="$WORK/captures/C$(printf '%02d' "$cycle")-F20.png"
+              last="$WORK/captures/C$(printf '%02d' "$cycle")-F180.png"
+              first_sha="$(sha256sum "$first" | cut -d ' ' -f1)"
+              last_sha="$(sha256sum "$last" | cut -d ' ' -f1)"
+              if [ "$first_sha" = "$last_sha" ]; then
+                echo "ADAPTIVE_CONTINUATION_VISUAL_DELTA=FAIL cycle=$cycle identical_frame_sha256=$first_sha"
+                exit 1
+              fi
+              echo "ADAPTIVE_CONTINUATION_VISUAL_DELTA=PASS cycle=$cycle f20_sha256=$first_sha f180_sha256=$last_sha"
+            done
+            grep -q 'ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded' "$WORK/captures/pcsx-adaptive.stdout"
+            test "$(grep -c 'ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded' "$WORK/captures/pcsx-adaptive.stdout")" -eq 2
+            echo "ADAPTIVE_CONTINUATION_TEST=PASS parent_sha256=$SOURCE_SHA256 cycles=2 fresh_processes=2 captures=10 checkpoint_chain=validated policy_guard=PASS"
           else
             grep -q 'ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=' "$WORK/captures/progress-report.txt"
           fi
-          if [ "$CYCLES" -ge 2 ]; then grep -q 'ADAPTIVE_DIALOGUE_SKIP=PASS cycle=1' "$WORK/captures/pcsx-adaptive.stdout"; fi
-          echo "ADAPTIVE_LOOP_TEST=PASS cycles=$CYCLES captures=$((CYCLES * 5)) checkpoints=$CYCLES fresh_process_checkpoint_resume=checked restore_test=$RESTORE_TEST dialogue_start_policy=checked"
+          if [ "$CYCLES" -ge 2 ] && [ "$RESTORE_TEST" != "1" ]; then grep -q 'ADAPTIVE_DIALOGUE_SKIP=PASS cycle=1' "$WORK/captures/pcsx-adaptive.stdout"; fi
+          echo "ADAPTIVE_LOOP_TEST=PASS cycles=$CYCLES captures=$((CYCLES * 5)) checkpoints=$CYCLES fresh_process_checkpoint_resume=checked restore_test=$RESTORE_TEST continuation_test=$CONTINUATION_TEST dialogue_start_policy=checked"
 
       - name: Upload private adaptive screenshots, decisions, logs and checkpoints
         if: always()
