@@ -1,3 +1,17 @@
+## RESTORE GATE PASSED — current map-view source is independently restorable (22 October 2026, 19:21 WIB)
+
+Restore-only run [#39777301626](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777301626) independently restored the revision-30 ACTION/map-view checkpoint from run #39776518701, SHA-256 b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc, size 21,163,227, v4. Five genuine external-X11 captures passed at 1280×800; ExecutionFlow::SaveStateLoaded and ADAPTIVE_RESTORE_TEST=PASS were explicit; all captured frames remain map_after_move; emulator exit 0; new output checkpoint externally validated. Artifact #12423949987 is private. This exact source is promoted as a trusted restorable continuation checkpoint.
+
+The newly produced output SHA a2a3c36918155dc4356da2664bfa7880c9605c62260389b85f85262c942b2fe7 (21,162,251 bytes, v4) is not promoted until another fresh-process restore.
+
+Workflow commit 4c074472e885c75ce618e4e0f5aefd6a8833a0c9 updates matched A/B preconditions to use explicit AB_EXPECTED_STATE; it permits map_after_move only for AB_ACTION=DOWN and validates frame-state parity against the configured state. This must be proven by revision 32 before treating this new branch as reliable.
+
+### Revision 32: directional DOWN probe on map board
+Source must remain b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc, run #39776518701 / private artifact #12425305517 / adaptive-cycle-01-f180.sstate. Set RESTORE_TEST=0, CONTINUATION_TEST=0, AB_TEST=1, AB_ACTION=DOWN, AB_EXPECTED_STATE=map_after_move, LOOP_CYCLES=2, REVISION=32. ACTION issues only one DOWN; control WAIT. Hard gates: both F20 states map_after_move, pixel-identical images, same exact parent hash, two load events, byte-identical card clones, button readback press true/release false, ten genuine X11 captures, exit code 0, both checkpoints post-exit validated. Do not make another run while this player is active. Inspect screenshots and stop before confirming any tile.
+Story Mode remains NOT COMPLETE. Use START to skip any actual dialogue. Never use web images as gameplay evidence; keep ROM/BIOS/state/cards/screenshots outside Git. Translate Japanese labels immediately into Indonesian.
+
+---
+
 ## ACTIVE RUN — map navigation probe in revision 32 (22 October 2026, 19:23 WIB)
 
 Run [#39777917775](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777917775) is currently in progress, started 19:23:17 WIB; the latest step is installing X11 tools/private workspace. Timeout at ~19:43:17 WIB if not completed earlier. No player run may be launched in parallel.
