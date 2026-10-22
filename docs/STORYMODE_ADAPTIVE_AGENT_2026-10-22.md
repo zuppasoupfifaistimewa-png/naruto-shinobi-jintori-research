@@ -1,3 +1,13 @@
+## RESTORE VERIFIED — roulette state from revision45 survives a fresh process (revision46)
+
+Run #39868354205 passed restore-only. Private artifact #12465131490 passed ZIP integrity. The source from run #39867730674 / artifact #12464258211 / `adaptive-cycle-01-f180.sstate` was 21,162,546 bytes/v4, SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`. Fresh process logged SaveStateLoaded and restore PASS; five valid authentic 1280×800 screenshots all show the wheel; exit0; new output externally validated.
+
+Input SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492` is promoted as independently restorable roulette-state checkpoint. New output `6d76dbd23d5d01dc1f145d6837b987ae3232fff383ad23eb5262c375ca4828ea`, 21,162,423 bytes/v4, not promoted until another independent restore.
+
+Next revision47: paired CIRCLE vs WAIT from this exact roulette input, using `AB_EXPECTED_STATE=roulette`, `AB_ACTION=CIRCLE`, source run #39867730674 / artifact #12464258211 / checkpoint adaptive-cycle-01-f180.sstate / hash above, AB_TEST=1, two cycles, restore/continuation off. Preserve all paired acceptance gates. Visual target: determine if Circle stops/commits roulette result while WAIT keeps wheel moving. Workflow commit `11b308f162aa1ef2f5b5167cd17b4340718a03de` adds state-specific Circle gate and the strictly gated native-exit 134 recovery. Do not use Circle to skip dialogue; START only. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision46 restore-only for wheel checkpoint after Circle
 
 Run #39868354205 is active at head `096a5cdc411e3ce26fd44f9bde8ff4ed909313c7`; started 05:55:24 WIB; timeout about 06:15:24 WIB. Source run #39867730674 / artifact #12464258211 / `adaptive-cycle-01-f180.sstate` / SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`, size 21,162,546, v4. Marker has RESTORE_TEST=1, one cycle, REVISION=46.
