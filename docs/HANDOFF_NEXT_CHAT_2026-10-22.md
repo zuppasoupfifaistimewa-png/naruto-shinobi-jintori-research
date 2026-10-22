@@ -1,3 +1,31 @@
+## LATEST RESTORE PASS — map view checkpoint is usable (22 October 2026, 19:21 WIB)
+
+Run [#39777301626](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777301626) passed a fresh-process restore of the Triangle/ACTION map-view candidate from #39776518701. Exact source: 21,163,227 bytes, PCSX-Redux SaveState v4, SHA-256 b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc. Evidence in private artifact #12423949987: explicit ExecutionFlow::SaveStateLoaded, ADAPTIVE_RESTORE_TEST=PASS, five validated authentic 1280×800 X11 captures, F20 through F180 remain in map_after_move, emulator exit 0, and output size/header/SHA validation. The exact source hash is now promoted as an independently restored continuation checkpoint.
+
+New unpromoted output from restore run #39777301626: 21,162,251 bytes, v4, SHA-256 a2a3c36918155dc4356da2664bfa7880c9605c62260389b85f85262c942b2fe7.
+
+The workflow A/B precondition now takes AB_EXPECTED_STATE. Commit 4c074472e885c75ce618e4e0f5aefd6a8833a0c9 allows the verified map_after_move state only with a DOWN probe, and dynamically checks both branches' expected start state rather than assuming a menu. This new workflow logic remains untested until revision 32 completes.
+
+Exact next marker:
+MODE=ADAPTIVE
+SOURCE_RUN=39776518701
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=DOWN
+AB_EXPECTED_STATE=map_after_move
+LOOP_CYCLES=2
+REVISION=32
+
+Require F20 map_after_move state in both arms, pixel-exact parity, two explicit load events, identical disposable Memory Cards, DOWN press/release readback, ten authentic 1280×800 frames, accepted exit 0 and both output checkpoint external validations. Compare F60/F100/F110/F180 from ACTION vs WAIT. Do not confirm/select a destination; stop at the first changed selection/state. No parallel player runs.
+
+Story Mode remains NOT COMPLETE. Existing VERIFIED scope: menu DOWN advances the observed row; Triangle from View map opens the board view. Rules for board navigation/territory capture/combat remain unknown until paired evidence. Use START for dialogue skipping and keep gameplay assets private/out of Git.
+
+---
+
 ## CURRENT RUN — revision 32 is active (22 October 2026, 19:23 WIB)
 
 Exact run to inspect first: [#39777917775](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777917775). It started at 19:23:17 WIB; latest state is `in_progress`, with `Install X11 tools and prepare private workspace` active. Hard job timeout: 20 minutes from runner start, approximate deadline 19:43:17 WIB. Wait for this player run to finish; do not trigger a parallel run.
