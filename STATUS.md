@@ -1,3 +1,29 @@
+## VERIFIED RESULT — second DOWN shifts focus from empty land toward Naruto-marked cell (revision37, 22 October 2026, 19:56 WIB)
+
+Run [#39782011370](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39782011370) completed with Actions success at 19:54:29 WIB. Private artifact #12426797521 was downloaded and audited, including actual screenshot pairs and all run logs.
+
+All A/B gates passed:
+- Both fresh emulator processes loaded exact source SHA-256 `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`, with `ExecutionFlow::SaveStateLoaded` in both sessions.
+- Identical source-state frame F20 pixel parity: 1,024,000 of 1,024,000 pixels; both state classifiers `map_after_move`.
+- Separate disposable Memory Card copies were byte-identical (SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`).
+- ACTION sent one DOWN, press readback `true`, release `false`; CONTROL used WAIT.
+- All ten authentic external-X11 captures passed validation at 1280×800. Both emulator sessions exited 0. Both output states passed post-exit size, `PCSX-Redux SaveState v4` header and SHA-256 validation. `ab-comparison-report.txt` was generated.
+
+**VERIFIED, narrow visual effect:** from the scrolled map state with the empty-land tile value 140 selected, a second DOWN changes the board focus/view again. ACTION frames show the viewport shifted upward and the cursor now aligned toward the adjacent lower cell near the red Naruto-marked board position; CONTROL WAIT retains the pink 60 tile above and gray 140 tile under the cursor in the original framing. This supports a change in focused tile/view, not movement of Naruto or capture/ownership. The classifier still reports `map_after_move` for both; classification is based on direct screenshot comparison. Comparison: F60 780,637 differing pixels / mean absolute RGB 22.66488; F100 780,562 / 22.68538; F110 781,298 / 22.66071; F180 780,622 / 22.62887.
+
+Output checkpoints in private artifact #12426797521, structurally validated but not promoted:
+- ACTION after second DOWN, `adaptive-cycle-01-f180.sstate`: 21,162,960 bytes, v4 header, SHA-256 `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`.
+- CONTROL WAIT, `adaptive-cycle-02-f180.sstate`: 21,163,049 bytes, v4 header, SHA-256 `cd7a70d67001e67177333df0c332e745e28c01c92851f92c21445250d108c63c`.
+
+### Next — revision 38 restore-only checkpoint gate
+Independently restore ACTION output SHA `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177` from run #39782011370 / private artifact `naruto-storymode-adaptive-player-private` / file `adaptive-cycle-01-f180.sstate`. Require `ExecutionFlow::SaveStateLoaded`, five authentic 1280×800 captures visibly retaining post-second-DOWN focus/view, emulator exit 0, and external output size/v4 header/SHA validation. The output newly emitted by this restore smoke remains unpromoted until it too is restored.
+
+After promotion, begin actual gameplay interaction cautiously from the Naruto-marked cell. Add only one supported input at a time with paired controls; the current workflow only supports DOWN and TRIANGLE, so inspect `sendAction`/button mapping before adding other directions or any confirm input. Do not use Circle to skip dialogue; START only. Do not confirm a territory while semantics of selection vs movement are unresolved.
+
+Story Mode remains **NOT COMPLETE**; no character movement/capture/ownership or ending is verified. Keep gameplay files private and out of Git.
+
+---
+
 ## ACTIVE RUN — revision38 restore-only for second-DOWN board view (22 October 2026, 20:01 WIB)
 
 Run [#39783158903](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39783158903) is the only active player. Its marker was verified:
