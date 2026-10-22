@@ -1,3 +1,16 @@
+## LATEST VERIFIED CHECKPOINT — menu-DOWN state restored (22 October 2026, 18:10 WIB)
+
+Story Mode is **NOT COMPLETE**.
+
+- Restore run [#39768371975](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768371975) passed in a fresh emulator process. It used the exact ACTION checkpoint from #39767790829 (21,163,486 bytes, SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`) and explicitly logged `ExecutionFlow::SaveStateLoaded`.
+- Five real external-X11 captures at 1280x800 passed and were visually checked. All show the right-side menu with `忍術` (Ninjutsu) highlighted. Other labels: `ルーレット` (Roulette), `情報` (Information), `マップを見る` (View map). Footer `△ マップ` means (Triangle: Map).
+- Emulator session-finished marker and exit 0 were verified. New checkpoint was externally validated after process exit: `adaptive-cycle-01-f180.sstate`, 21,162,575 bytes, SHA-256 `fa03a1840612749810453566a25805e89a4aa21ad64664695e09ed7222b77a9e`, private artifact #12421326531.
+- Next bounded probe: Triangle-versus-NONE from this exact parent checkpoint, separate equal-hash disposable Memory Cards, new emulator process for each arm, five authentic X11 captures per arm. Require pixel-identical F20, Triangle press/release readback and compare whether the menu opens a map. Stop after a map view appears; do not select any map target or use Circle.
+
+Keep all ROM/BIOS/Memory Cards/savestates/screenshots out of Git. No completion claim without authentic ending/results evidence.
+
+---
+
 ## LATEST VERIFIED UPDATE — matched DOWN successor can be restored; repeat direction probe next (22 October 2026, 18:10 WIB)
 
 - Restore run [#39768371975](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768371975) passed. It used the ACTION branch checkpoint from A/B run #39767790829, exact source SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`, and logged `ExecutionFlow::SaveStateLoaded`. Five external X11 images passed 1280x800 validation; F20 visually showed the `忍術` (Ninjutsu) row selected, and the process exited 0. Post-exit size/header/SHA checks on the new output state also passed.
