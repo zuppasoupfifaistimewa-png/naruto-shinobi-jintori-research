@@ -639,7 +639,7 @@ jobs:
           lines=["ADAPTIVE_AB_INITIAL_PARITY=PASS phase=F20 identical_pixels={} parent_sha256={}".format(a.shape[0]*a.shape[1],parent)]
           states=[]
           for cyc in (1,2):
-              v=json.loads((p/"verification-C%02d-F20.json"%cyc).read_text())
+              v=json.loads((p/("verification-C%02d-F20.json"%cyc)).read_text())
               states.append(v.get("state"))
           if states != ["menu_or_unknown_choice","menu_or_unknown_choice"]:
               raise SystemExit("ADAPTIVE_AB_STATE_PARITY_FAIL states="+repr(states))
