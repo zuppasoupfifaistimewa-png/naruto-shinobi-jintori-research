@@ -1,3 +1,13 @@
+## VERIFIED BOARD VIEW RESPONSE — second DOWN shifts view again (revision37, 22 October 2026)
+
+Matched run #39782011370 passed all technical gates from parent hash `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`. Artifact #12426797521 shows two explicit restore events, exact F20 image parity, identical Memory Card clones, DOWN true/false readback, WAIT control, ten authentic external 1280×800 images, exit0 twice, both outputs externally validated, comparison report present.
+
+**VERIFIED, scoped:** another DOWN from the prior scrolled map state produces another upward viewport/focus response, with panel hidden and cursor near the lower board area by Naruto's marker; WAIT lets the viewport settle back and restores `空き地` (Tanah kosong), value140 info pane. Diff: F60 780637 pixels/MAD22.66488; F100 780562/22.68538; F110 781298/22.66071; F180 780622/22.62887. Does not identify exact target tile or prove actual movement/capture/ownership.
+
+Next restore-only revision38 source: run #39782011370 private artifact #12426797521 / adaptive-cycle-01-f180.sstate / SHA `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`, RESTORE_TEST=1, one cycle. Pass only with load event, five authentic frames retaining second-DOWN board view, exit0 and external output checkpoint validation. New output remains unpromoted without its own restore. Story Mode not complete.
+
+---
+
 ## ACTIVE — revision37 second DOWN probe from scrolled map state
 
 Run #39782011370 active; started 19:52:49 WIB, timeout about 20:12:49 WIB. It uses independently restore-proven source run #39780755350 / artifact #12426786721 / checkpoint adaptive-cycle-01-f180.sstate / SHA `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`. Marker is AB_TEST=1, DOWN, expected map_after_move, two cycles, revision37. Do not start another player while active.
