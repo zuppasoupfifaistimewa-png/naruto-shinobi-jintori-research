@@ -1,3 +1,33 @@
+## LATEST VERIFIED RESULT / EXACT NEXT ACTION — revision 28 completed (22 October 2026, 19:05 WIB)
+
+Run [#39775176728](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39775176728) has completed successfully. I inspected the actual private artifact #12424660712 (not just the Actions conclusion). Source for both arms was the exact restorable parent SHA-256 `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`; separate fresh processes logged `ExecutionFlow::SaveStateLoaded`; Memory Card clones had identical SHA; F20 screenshots matched across 1,024,000 pixels; DOWN press/release readback was true/false; all 10 external-X11 captures validated at 1280×800; both emulator processes exited 0; both output checkpoints passed external size/v4-header/SHA validation.
+
+Actual screenshot review proves the narrow menu rule **VERIFIED**: from `情報` (Informasi), one DOWN moves selection to `マップを見る` (Lihat peta) by F60; the NONE/WAIT control stays on Information through F180. Reported post-action difference is 14,636 pixels / mean absolute RGB difference 1.05798 at F60, F100, F110, F180. Classifier labels remain generic `menu_or_unknown_choice`; do not claim semantic classifier recognition.
+
+Outputs:
+- ACTION source candidate from run #39775176728, artifact #12424660712, `adaptive-cycle-01-f180.sstate`: 21,162,344 bytes, SHA-256 `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`, v4 header, externally validated. **Not promoted yet** until restored in a new process.
+- NONE control `adaptive-cycle-02-f180.sstate`: 21,162,426 bytes, SHA-256 `30b062df8985fa79f8c9f79e076cb464f1ff73143103e249dba5d35ca94324d5`, v4 header, externally validated; not a preferred continuation source.
+
+Next exact step: launch one non-parallel restore smoke using the ACTION candidate above:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39775176728
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7
+RESTORE_TEST=1
+CONTINUATION_TEST=0
+AB_TEST=0
+AB_ACTION=DOWN
+LOOP_CYCLES=1
+REVISION=29
+```
+After the fresh-process restore, verify load event, five authentic X11 captures, that the Information menu remains with `マップを見る` (Lihat peta) highlighted, accepted emulator exit, and external output size/header/SHA. The exact INPUT source SHA is promoted only if that test proves it was loaded in the new process and visually retains state. Then run a separate matched `TRIANGLE` versus `WAIT` probe from this restored map-row selection (new revision 30 only after revision 29 finishes); capture F20/F60/F100/F110/F180 in both arms, check parity/input readback/two load events/exits/checkpoints, and stop at the map screen without selecting a destination.
+
+Story Mode remains NOT COMPLETE. No ending/results screenshot verified; never claim completion. Keep all gameplay artifacts private/out of Git; use START for dialogue skipping; add Indonesian translations alongside Japanese text.
+
+---
+
 ## CURRENT ACTION — revision 28 matched DOWN/NONE run queued (22 October 2026, 19:02 WIB)
 
 Marker revision 28 was committed at `e31ebb2afbe1145746e480e9a0f020854621a82f`, triggering [run #39775176728](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39775176728). At the latest check it is **in progress**, with the step `Install X11 tools and prepare private workspace` active. It started at 19:02:38 WIB; the workflow job has a 20-minute hard timeout (around 19:22:38 WIB if not completed earlier). It tests ACTION=DOWN against NONE/WAIT from the known-restorable Information parent `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`; 2 cycles, `AB_TEST=1`. Do not start another player run. Next chat must check this exact run, its latest job steps and artifacts/logs, then apply the strict paired-evidence gates documented here. Job timeout is 20 minutes after a runner starts; queued wait has no reliable ETA. Story Mode remains NOT COMPLETE.
