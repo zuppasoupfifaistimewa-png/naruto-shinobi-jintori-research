@@ -1,3 +1,13 @@
+## ACTIVE — revision39 directional UP probe from map cell140
+
+Run #39784493293 is active, started 20:10:11 WIB; timeout about 20:30:11 WIB. At its checkout, the marker was verified: source run #39779256427 / artifact naruto-storymode-adaptive-player-private / checkpoint adaptive-cycle-01-f180.sstate / SHA-256 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a; AB_TEST=1; AB_ACTION=UP; AB_EXPECTED_STATE=map_after_move; two cycles; revision39. Workflow supports UP/DOWN/LEFT/RIGHT on the map state. Do not launch another player.
+
+After completion require: exact parent SHA both arms; explicit load events; identical F20/state map_after_move; cloned cards identical; UP true/false readback; WAIT control; ten authentic 1280×800 images; two exit0s; both checkpoints external size/v4-header/SHA validation; comparison report. Review screenshots for focus change versus WAIT. No confirm input.
+
+Preferred source checkpoint is the independently restored value-140 state from run #39779256427, SHA 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a. Revision38's alternative output loads technically but first restored frame differs transiently from later stable frames. Story Mode remains NOT COMPLETE; no movement/capture/ending claimed.
+
+---
+
 ## ACTIVE — revision39 UP vs WAIT (map-state directional test)
 
 Run #39784493293 is active; started 20:10:11 WIB, timeout about 20:30:11 WIB. At the run's checkout, marker and workflow were checked: source run #39779256427/artifact #124258055? checkpoint adaptive-cycle-01-f180.sstate/SHA `58d8f551cc4cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e` (use the actual full source below, not the abbreviated typo in this note): source SHA `58d8f551ccf3a3af9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e` — see exact committed marker for definitive value. Settings: AB_TEST=1; AB_ACTION=UP; AB_EXPECTED_STATE=map_after_move; two cycles.
