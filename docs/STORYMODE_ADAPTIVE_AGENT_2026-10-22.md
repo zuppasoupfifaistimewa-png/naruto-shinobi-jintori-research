@@ -1,3 +1,11 @@
+## ACTIVE — revision38 restore-only checkpoint for post-second-DOWN view
+
+Run #39783158903 active at 20:00:55 WIB; timeout about 20:20:55 WIB. Marker pins the revision37 ACTION output from run #39782011370 / artifact #12426797521 / checkpoint adaptive-cycle-01-f180.sstate / SHA `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`. RESTORE_TEST=1, one cycle, rev38. Only one player may run.
+
+Accept source after `ExecutionFlow::SaveStateLoaded`, `ADAPTIVE_RESTORE_TEST=PASS`, five authentic 1280×800 images retaining post-second-DOWN map view, exit0 and external output state size/v4-header/SHA verification. New state emitted is unpromoted until its own independent restore. Story Mode still incomplete; focus/scroll is not movement/capture.
+
+---
+
 ## VERIFIED BOARD VIEW RESPONSE — second DOWN shifts view again (revision37, 22 October 2026)
 
 Matched run #39782011370 passed all technical gates from parent hash `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`. Artifact #12426797521 shows two explicit restore events, exact F20 image parity, identical Memory Card clones, DOWN true/false readback, WAIT control, ten authentic external 1280×800 images, exit0 twice, both outputs externally validated, comparison report present.
