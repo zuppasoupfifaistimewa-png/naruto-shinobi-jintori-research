@@ -322,6 +322,9 @@ jobs:
           CYCLES="$(awk -F= '$1=="LOOP_CYCLES" {print $2}' "$GITHUB_WORKSPACE/experiments/.run-storymode-adaptive-player")"
           [[ "$CYCLES" == "1" || "$CYCLES" == "2" ]]
           cat > "$WORK/run-bounded-cycles.sh" <<'SH'
+          # Export the controller setup for the subprocess that launches each emulator session.
+          export PAD_SETUP
+
           #!/usr/bin/env bash
           set -euo pipefail
           cycles="${LOOP_CYCLES:-2}"
