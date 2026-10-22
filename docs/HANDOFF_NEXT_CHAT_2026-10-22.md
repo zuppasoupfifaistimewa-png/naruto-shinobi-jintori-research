@@ -1,3 +1,28 @@
+## REVISION44 RESTORE PASSED — Roulette menu selection is preserved
+
+Run [#39867381637](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39867381637) succeeded at 22:48:12 UTC / 05:48:12 WIB. Private artifact #12464118614 passed ZIP integrity; the authentic F20 screenshot shows the command menu with `ルーレット` (Roulette) highlighted. The fresh emulator process logged `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five valid 1280×800 X11 captures, exit0, external output checkpoint validation all passed.
+
+Promoted input source from run #39866820866 / artifact #12463489344 / `adaptive-cycle-01-f180.sstate`: 21,162,920 bytes, v4, SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`. It is independently restore-proven. The new output from run44 is not promoted: 21,163,308 bytes/v4/SHA `0499c0f73799ac18f53a08bfd2c63a45738d8b56fcd32f157d6b0b7b596c19e3`.
+
+Next revision45 Circle-vs-WAIT from the known Roulette-highlighted menu:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39866820866
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=CIRCLE
+AB_EXPECTED_STATE=menu_or_unknown_choice
+LOOP_CYCLES=2
+REVISION=45
+```
+Workflow commit `2ec5011c5c81f00e686690570bf4349f9124c531` permits Circle only for the menu-state A/B guard; map-state guard excludes it. Require all strict paired gates and directly inspect screenshots to verify that Circle enters roulette while WAIT leaves the menu. This is a visible menu confirmation, never a dialogue skip. Any dialogue is skipped with START. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE PLAYER — revision44 restore-only of Roulette-highlighted command menu
 
 Run [#39867381637](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39867381637) active; started 05:46:45 WIB and hard timeout about 06:06:45 WIB. Exact source: run #39866820866 / artifact #12463489344 / adaptive-cycle-01-f180.sstate / SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`, size 21,162,920, v4. RESTORE_TEST=1, one cycle, revision44. Do not start another player.
