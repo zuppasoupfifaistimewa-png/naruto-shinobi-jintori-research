@@ -1,3 +1,16 @@
+## ACTIVE RUN / CONFIGURATION BLOCKER — revision 32 fail-closed audit (22 October 2026, 19:24 WIB)
+
+Run [#39777917775](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777917775) is the only active player run. Its marker revision 32 was committed without AB_EXPECTED_STATE=map_after_move, even though its source SHA is the board/map checkpoint. The workflow default for missing AB_EXPECTED_STATE is menu_or_unknown_choice. Therefore the map-view F20 precondition should fail closed and the action branch should be reduced to WAIT rather than sending DOWN; expected final outcome is validator failure. This is an observed configuration mismatch, not a gameplay result. Do not start another player while run #39777917775 is active.
+
+- Source intended by marker: run #39776518701, artifact naruto-storymode-adaptive-player-private, checkpoint adaptive-cycle-01-f180.sstate, SHA-256 b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc.
+- Current latest check: run still in progress at Install X11 tools and prepare private workspace; no artifact yet. Started 19:23:17 WIB; hard timeout about 19:43:17 WIB.
+- After it terminates, audit its logs/artifact. If it fails at the precondition as expected, retain the source checkpoint as the trusted input. Then correct marker to a new revision (revision 33, not 32) including AB_EXPECTED_STATE=map_after_move. The workflow update commit 4c074472e885c75ce618e4e0f5aefd6a8833a0c9 supports the explicit state gate; do not rerun until the missing marker field is confirmed from the actual committed marker.
+- Keep the exact source pinned; no parallel player. Map navigation remains HYPOTHESIS until a corrected, fully paired DOWN-vs-WAIT test completes.
+
+Story Mode remains NOT COMPLETE. Use START to skip dialogue, preserve real emulator screenshots only, translate Japanese labels alongside them, and keep ROM/BIOS/state/cards/screenshots out of Git.
+
+---
+
 ## RESTORE VERIFIED — board/map checkpoint independently loaded (22 October 2026, 19:21 WIB)
 
 Run [#39777301626](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777301626) completed with Actions success. It restored the exact TRIANGLE/ACTION map-view checkpoint from run #39776518701: 21,163,227 bytes, v4 header, SHA-256  b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc. The log explicitly records ExecutionFlow::SaveStateLoaded and ADAPTIVE_RESTORE_TEST=PASS; five authentic external-X11 captures at 1280×800 were validated; the F20/F60/F100/F110/F180 visual sequence retained the board/map view; emulator exit was 0; and the output file passed external size/header/SHA validation. Private artifact #12423949987 contains the screenshots/logs.
