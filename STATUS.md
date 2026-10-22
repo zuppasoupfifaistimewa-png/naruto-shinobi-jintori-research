@@ -1,3 +1,45 @@
+## CHAT-TRANSFER CHECKPOINT — adaptive Story Mode player is NOT complete (23 October 2026)
+
+**Direct answer:** the automated adaptive player has made verified partial progress, but it has NOT autonomously completed Story Mode. No authentic game-ending/ending-results screenshot has been verified. No player Actions run is currently active.
+
+### Latest player run: revision50, partial gameplay progress
+Run [#39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049) ended with success; its private artifact #12467281563 was audited. The adaptive policy restored the roulette→board checkpoint, observed the board at F20, sent one DOWN (button press/release readback passed), and the visible move counter changed from 3 to 1 by F60. At F100/F110 an Iruka (`イルカ`) dialogue appeared and the agent skipped it with START, as required. At F180 three card backs overlapped the board. This is partial progression, not a finished Story Mode.
+
+Output candidate from #39872449049: 21,162,772 bytes; header `PCSX-Redux SaveState v4`; SHA-256 `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`. It has NOT been independently restored. Do not promote it yet.
+
+### Latest classifier regression: passed, but semantic limitation remains
+Regression run [#39873273913](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39873273913) completed success at commit `d8082dcdfa8997df65cddf9e6d0d8d806c8da927`. It ran 9 unit tests (including synthetic three-card overlay → `card_selection` / WAIT) and checked 10 authentic screenshots successfully.
+
+Important nuance: the authentic run50 F180 card-overlay screenshot is still labeled `map_after_move` by the offline classifier, with action WAIT, rather than `card_selection`. Thus the synthetic guard test passes and the authentic current frame did not authorize a button press, but semantic recognition of this real overlay is NOT yet VERIFIED. Do not state that the real card screen is correctly classified just because regression succeeded.
+
+### Critical next task before run51
+The workflow code still allows normal policy to act at later frames when `RESTORE_TEST=1`; run50 itself continued from F20, so the marker name “restore-only” was not a guarantee of no-input behavior. Before starting a new player:
+1. Modify `.github/workflows/naruto-storymode-adaptive-player.yml` so `RESTORE_TEST=1` suppresses all inputs throughout the session—including normal frame-30 policy actions and the frame-110 START dialogue path—while still taking the five screenshots and writing/validating an output checkpoint.
+2. Add a regression test proving restore-only never calls any button input even if the classifier recommends DOWN/START/CIRCLE.
+3. Re-run regression tests. Do not launch the player until these tests pass.
+4. Then set the marker to revision51 restore-only from run #39872449049 / artifact `naruto-storymode-adaptive-player-private` / `adaptive-cycle-01-f180.sstate` / SHA `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`. Require F20 card-overlay screenshot, explicit `ExecutionFlow::SaveStateLoaded`, five authentic 1280×800 captures, exit accepted, and external output checkpoint size/header/SHA validation. Keep that new output unpromoted until independently restored.
+5. After successful restore-only test, determine reliable card overlay behavior on actual image before selecting/confirming any card. Never use Circle to skip dialogue; START only.
+
+Workflow marker currently remains revision50 restore-only:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39870243073
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea
+RESTORE_TEST=1
+CONTINUATION_TEST=0
+AB_TEST=0
+AB_ACTION=CIRCLE
+LOOP_CYCLES=1
+REVISION=50
+```
+Do not trigger it as-is because restore-only input suppression needs fixing first.
+
+Permanent constraints: only repository `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`; never touch runner/Tile Duel or other repos. ROM, BIOS, savestates, Memory Card, and genuine X11 gameplay images stay private/out of Git. Any Japanese text must be immediately followed by Indonesian translation in parentheses. Story Mode remains **NOT COMPLETE**.
+
+---
+
 ## CHAT-TRANSFER CHECKPOINT — classifier fix in regression, no active player run (23 October 2026, latest check ~06:46 WIB)
 
 No Story Mode player run is active. The latest player run is revision50, [#39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049), completed success; private artifact #12467281563. It restored the roulette→board candidate checkpoint and, because RESTORE_TEST still permits policy input after the F20 observation, continued gameplay: observed board at F20, policy sent DOWN (true/false readback), visible counter moved from 3 to 1 by F60, Iruka (`イルカ`) dialogue at F100/F110 with START dialogue skip verified, and three card backs overlaying the board at F180. The output candidate from the run is size 21,162,772 bytes, PCSX-Redux SaveState v4, SHA-256 `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`. It has not been independently restored; do not promote it yet. The F180 card overlay was misclassified as `map`, risking an unwanted DOWN input.
