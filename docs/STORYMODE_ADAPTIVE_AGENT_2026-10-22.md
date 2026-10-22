@@ -1,3 +1,12 @@
+## ACTIVE — revision42 CROSS-vs-WAIT on map return UI
+
+Run #39866476856 is active. Started 22:39 UTC on 22 October / 05:39 WIB 23 October; hard timeout about 05:59 WIB. Exact source run #39786019434 / artifact #12428777970 / checkpoint adaptive-cycle-01-f180.sstate / SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`. Marker AB_TEST=1, AB_ACTION=CROSS, AB_EXPECTED_STATE=map_after_move, LOOP_CYCLES=2, revision42. Workflow blob `494baab78b7237fa80674526c583e0fdfc74c140` allows CROSS only for map-state A/B. The source screenshot has `× もどる` (Cross: Kembali), so this probes back-navigation without confirming any tile.
+
+Do not start a parallel player. Require all existing matched A/B gates and manually inspect screenshots: CROSS should only be classified as return-to-menu if ACTION actually leaves the map while WAIT remains there. All source SHA/load event/button readback/screenshot parity/capture/exit/checkpoint/report gates must pass. Story Mode remains NOT COMPLETE.
+ 
+
+---
+
 ## RESTORE VERIFIED — Naruto-cell focus checkpoint is independently loadable (revision41)
 
 Run #39786899480 passed all restore-only gates. Private artifact #12428873919 ZIP integrity passed; actual F20 screenshot shows Naruto cell panel `レベル` (Level)1, `結界価値` (Nilai penghalang)60, `耐久値` (Daya tahan)2/2. Explicit `ExecutionFlow::SaveStateLoaded`, restore PASS, five external 1280×800 screenshots, exit0 and post-exit output size/v4-header/SHA validation observed.
