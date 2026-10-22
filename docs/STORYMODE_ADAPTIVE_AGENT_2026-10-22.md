@@ -1,3 +1,19 @@
+## CHAT-TRANSFER — finish restore-only safety guard before the next player (23 Oct 2026)
+
+No player run is active. Story Mode is NOT complete. Revision50 [run #39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049) succeeded as a bounded run and produced genuine partial progress: restored the board state from roulette, policy sent DOWN with true/false readback, counter changed 3→1 by F60, Iruka (`イルカ`) dialogue appeared at F100/F110 and START skipped it, then three card backs overlaid the board by F180. Output candidate is 21,162,772 bytes, PCSX-Redux v4, SHA-256 `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`. Not independently restored; don't promote.
+
+Regression [#39873273913](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39873273913) completed success at commit `d8082dcdfa8997df65cddf9e6d0d8d806c8da927`: 9 unit tests passed and all 10 authentic X11 frames were checked. Synthetic card-overlay test returns `card_selection`/WAIT, but authentic run50 F180 still returns `map_after_move`/WAIT. That's currently fail-closed for that image but does not establish proper semantic classification of real card overlay.
+
+**Critical bug to fix before the next run:** `RESTORE_TEST=1` still allows ordinary actions later in the Lua loop. Phase30 sends `plannedAction` (which may be DOWN/CIRCLE), and phase110 may send START for dialogue. Run50 named restore-only nevertheless changed gameplay beyond F20. In the workflow add a hard invariant: when RESTORE_TEST is 1, set all planned actions WAIT, guard every `sendAction` call so no pad override can be set, and guard the dialogue-skip branch. Add regression test proving no input for restore mode under states that normally recommend DOWN, START, or CIRCLE. Keep standard gameplay/AB and continuation policies unchanged. Run the regression workflow, confirm checkout contains this guard+test, and inspect its full logs before triggering a player.
+
+After the guard regression passes, run revision51 restore-only from run #39872449049 / artifact `naruto-storymode-adaptive-player-private` / `adaptive-cycle-01-f180.sstate` / SHA-256 `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`. Required: verified source hash, SaveStateLoaded event, five authentic 1280×800 X11 captures, F20 retains card overlay, no input press event anywhere, accepted exit, output state size/v4-header/SHA validation. Keep run51 output unpromoted until its own fresh-process restore. Do not confirm a card.
+
+Marker currently remains revision50 and points at an older roulette checkpoint; do not re-trigger it as-is. There are no active player runs.
+
+Rules and constraints: use START for dialogue skip, never Circle for dialogue. Circle can be used only for a contextually verified non-dialogue action (e.g. roulette input when tested). Japanese labels must be followed immediately with Indonesian translation. Never commit ROM/BIOS/savestate/Memory Card/gameplay screenshots; only repo naruto-shinobi-jintori-research is allowed. Do not declare completion without authentic in-game ending/results evidence.
+
+---
+
 ## CHAT-TRANSFER CHECKPOINT — classifier regression still running; do not launch player yet (23 Oct 2026, ~06:46 WIB)
 
 No active player run. Revision50 run #39872449049 succeeded with observed progression: board at F20; policy sent DOWN, counter 3→1 by F60; Iruka (`イルカ`) dialogue appeared at F100/F110 and was skipped by START; three card backs appeared by F180. Candidate output state size 21,162,772 bytes, v4, SHA-256 `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`; not independently restored, do not promote. Policy still acted during RESTORE_TEST, which must be accounted for.
