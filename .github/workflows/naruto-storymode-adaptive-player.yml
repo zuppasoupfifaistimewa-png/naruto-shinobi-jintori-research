@@ -371,7 +371,7 @@ jobs:
           echo "ADAPTIVE_SEQUENTIAL_FRESH_PROCESS_RESUME=PASS cycles=$cycles" >> "$WORK/captures/pcsx-adaptive.stdout"
           SH
           chmod +x "$WORK/run-bounded-cycles.sh"
-          LOOP_CYCLES="$CYCLES" bash "$WORK/run-bounded-cycles.sh" > "$WORK/captures/pcsx-adaptive-orchestrator.stdout" 2>&1 &
+          PAD_SETUP="$PAD_SETUP" LOOP_CYCLES="$CYCLES" bash "$WORK/run-bounded-cycles.sh" > "$WORK/captures/pcsx-adaptive-orchestrator.stdout" 2>&1 &
           pid=$!
           python3 - "$pid" "$WORK/captures/pcsx-adaptive.stdout" "$WORK/captures" "$WORK" "$CYCLES" <<'PY'
           import sys,time,subprocess,hashlib,json
