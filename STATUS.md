@@ -1,3 +1,19 @@
+## EXPERIMENT UPDATE — A/B first attempt reached matched branches; report bug fixed and rerun active (22 October 2026, 17:59 WIB)
+
+Story Mode remains **NOT COMPLETE**. Run #39766331759 failed after gameplay and checkpoint steps, but it did not fail on gameplay evidence: the final comparison script raised `TypeError: unsupported operand type(s) for %: 'PosixPath' and 'int'` while building the path to the F20 verification JSON. The private artifact #12419789546 contains 10 valid authentic X11 frames and two structurally validated output checkpoints, but because the final paired audit did not finish, do not promote either output checkpoint as a trusted continuation.
+
+Direct private-artifact audit independently established:
+- Both Memory Card clones and the template were byte-identical, SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`.
+- Both branches loaded the identical immutable parent `7679cfbd3576c3202abcc299b907939ab4e4529e3a0aa260e780806b1e21cc92`, and logged `ExecutionFlow::SaveStateLoaded`.
+- Both F20 state classifications were `menu_or_unknown_choice`, and pixel-wise comparison found **0 differing pixels out of 1,024,000**; initial parity is therefore supported.
+- The ACTION arm's DOWN press/release readback passed. The NONE/WAIT control sent no input. Both arms met the visual precondition and each produced a checkpoint with valid v4 header/size/SHA, but the report builder errored before completing the final paired comparison.
+
+The Python path expression was corrected in workflow commit [0041262a4c83edbabdbfb658ff3c572ad9e3a30c](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/0041262a4c83edbabdbfb658ff3c572ad9e3a30c). The identical-parent A/B experiment was re-triggered as run [#39767083708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39767083708), revision 19, using the same immutable parent and fresh identical Memory Card clones. It was active at this update; no rerun result is yet verified.
+
+Keep rule conclusions conservative until the rerun report has been audited. All screenshots/savestates remain private and out of Git.
+
+---
+
 ## VERIFIED UPDATE — bounded two-cycle checkpoint continuation passed (22 October 2026, 17:47 WIB)
 
 **Story Mode is NOT complete.** No authentic ending/results screenshot exists.
