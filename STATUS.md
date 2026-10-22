@@ -1,3 +1,14 @@
+## ACTIVE — revision48 retries roulette Circle-vs-WAIT after post-save settle fix (23 October 2026, 06:06 WIB)
+
+Run [#39869536734](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39869536734) is the only active player, started 06:05:59 WIB; hard timeout about 06:25:59 WIB. Committed marker at head `eb12d63e0daf45179c30f12d525b43cea90390a4` was re-read:
+SOURCE_RUN=39867730674; source artifact `naruto-storymode-adaptive-player-private`; checkpoint `adaptive-cycle-01-f180.sstate`; SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; AB_TEST=1; AB_ACTION=CIRCLE; AB_EXPECTED_STATE=roulette; two cycles; revision48.
+
+Revision47 passed all visual capture/input parity gates but failed final workflow because the CONTROL savestate was only 2 MiB and invalid (exit139 after session-finished). It strongly suggested Circle transitions back to the map by F180 while WAIT retains the spinning wheel, but the rule stays HYPOTHESIS. Workflow blob `ae6aa7e4f945da4322bb08880a38836fa1a3039a` now waits 12 VSync callbacks after the F180 checkpoint is written before native shutdown; state still represents F180, and both output checkpoints must still pass full external validation. Gated recovery of exit 134/139 remains fail-closed.
+
+Do not run another player in parallel. After run completes inspect both checkpoint sizes/headers/SHA and report as well as actual paired frames. The wheel result number must not be claimed unless it is stable and legible. Story Mode NOT COMPLETE.
+
+---
+
 ## REVISION47 PARTIAL VISUAL RESULT — Circle appears to leave roulette, but control checkpoint truncated
 
 Run [#39868722262](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39868722262) completed with failure at 23:00:30 UTC / 06:00:30 WIB. Private artifact #12464698050 passed ZIP integrity and all 10 genuine screenshots were reviewed. Both processes loaded the exact trusted roulette parent `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`, each logged `ExecutionFlow::SaveStateLoaded`; F20 pixel parity was exact; Memory Card clones matched; Circle input press/release readback passed true/false; ten 1280×800 X11 captures passed; both branch capture sequences completed and checkpoint files were present.
