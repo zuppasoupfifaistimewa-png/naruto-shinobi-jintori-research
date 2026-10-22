@@ -22,6 +22,14 @@ class AdaptiveAgentTests(unittest.TestCase):
             d.rectangle((130,515,1150,740),fill=(100,100,85))
             d.rectangle((130,515,1150,540),fill=(190,110,20))
             d.rectangle((200,580,800,600),fill=(245,245,245))
+        elif state=="sparse_dialogue":
+            # Authentic C01-F100 has a visible gold dialogue box before
+            # readable white Japanese glyphs appear; use START, never Circle.
+            d.rectangle((130,515,1150,740),fill=(30,45,40))
+            d.rectangle((130,515,1150,540),fill=(190,110,20))
+            d.rectangle((130,715,1150,740),fill=(190,110,20))
+            d.rectangle((130,540,155,715),fill=(190,110,20))
+            d.rectangle((1125,540,1150,715),fill=(190,110,20))
         elif state=="barrier_choice":
             d.rectangle((400,180,900,680),fill=(20,105,70))
             d.rectangle((920,550,1130,690),fill=(20,30,100))
@@ -52,6 +60,11 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertEqual(out["action"],"WAIT")
     def test_dialogue_uses_start(self):
         self.assertEqual(self.classify("dialogue")["action"],"START")
+
+    def test_sparse_dialogue_box_uses_start_before_text_renders(self):
+        out=self.classify("sparse_dialogue")
+        self.assertEqual(out["state"],"dialogue")
+        self.assertEqual(out["action"],"START")
     def test_yes_highlight_uses_contextual_circle(self):
         out=self.classify("barrier_choice")
         self.assertTrue(out["features"]["yes_selected_visual"])
