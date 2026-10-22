@@ -1,3 +1,28 @@
+## REVISION46 RESTORE PASSED — roulette checkpoint is now independently loadable
+
+Run [#39868354205](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39868354205) completed success at 22:56:40 UTC / 05:56:40 WIB. Private artifact #12465131490 passed ZIP integrity. Fresh process logs `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five genuine 1280×800 X11 screenshots all visibly show the roulette wheel; exit0; external output state size/header/SHA checks passed.
+
+Source file from run #39867730674 / artifact #12464258211 / `adaptive-cycle-01-f180.sstate`: 21,162,546 bytes, v4, SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`. This exact input is now promoted as a trusted, independently restorable roulette state. The new output from run46 (`adaptive-cycle-01-f180.sstate`, 21,162,423 bytes, v4, SHA-256 `6d76dbd23d5d01dc1f145d6837b987ae3232fff383ad23eb5262c375ca4828ea`) remains unpromoted pending its own restore.
+
+Next revision47 tests CIRCLE vs WAIT **from the roulette screen**, not the menu:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39867730674
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=CIRCLE
+AB_EXPECTED_STATE=roulette
+LOOP_CYCLES=2
+REVISION=47
+```
+Workflow commit `11b308f162aa1ef2f5b5167cd17b4340718a03de` allows this expected state only with Circle. Require full paired A/B gates, ten authentic screenshots, button true/false readback, two load events, exits0 or gated post-session recovery, externally validated output checkpoints, and report. Inspect if Circle settles the roulette wheel / displays result while WAIT keeps it spinning. Story Mode not complete; START for all dialogue, never Circle for dialogue.
+
+---
+
 ## ACTIVE PLAYER — revision46 restore-only tests the roulette checkpoint saved before exit134
 
 Run [#39868354205](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39868354205) active; started 05:55:24 WIB, hard timeout about 06:15:24 WIB. Marker verified at checkout commit `096a5cdc411e3ce26fd44f9bde8ff4ed909313c7`: source run #39867730674 / artifact #12464258211 / `adaptive-cycle-01-f180.sstate` / SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; RESTORE_TEST=1, one cycle, revision46.
