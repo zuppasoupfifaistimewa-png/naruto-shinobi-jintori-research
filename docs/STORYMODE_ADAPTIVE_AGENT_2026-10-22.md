@@ -1,3 +1,13 @@
+## ACTIVE — revision41 restore-only validates Naruto-cell focus state
+
+Run #39786899480 is active; started 20:26:48 WIB, timeout around 20:46:48 WIB. Source run #39786019434 / private artifact #12428777970 / adaptive-cycle-01-f180.sstate / SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`, size21,163,100, v4. Settings RESTORE_TEST=1, one cycle, revision41. Do not launch parallel player.
+
+Required: explicit SaveStateLoaded and restore PASS; five real 1280×800 captures; F20 retains Naruto cell panel Level1/barrier60/durability2/2; exit0; external validation of new output size/header/SHA. Promote only input hash 73947… if restore passes; new output remains unpromoted until its own restore.
+
+Revision40 verified only focus: UP from empty land140 returns focus to Naruto cell60; WAIT retains empty-land140 panel. No character movement/capture/ownership inference. Story Mode remains NOT COMPLETE.
+
+---
+
 ## VERIFIED INPUT RULE — UP returns board focus to Naruto cell (revision40)
 
 Run #39786019434 passed paired UP versus WAIT from the independently restored source SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Artifact #12428777970 confirms two fresh loads; exact F20 pixel parity; identical cards; UP press/release true/false; WAIT control; ten authentic 1280×800 images; exits0; output state external checks and comparison report.
