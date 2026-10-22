@@ -1,3 +1,29 @@
+## CHAT-TRANSFER — first task is audit classifier regression run #39873273913 (23 Oct 2026, latest check ~06:46 WIB)
+
+No player run is active. Latest player run #39872449049/revision50 finished success. It restored run49 ACTION state (source SHA `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`, 21,163,504 bytes/v4) and then the adaptive policy still acted after F20. It sent DOWN from the board (press/release passed), counter visually changed 3→1 by F60, Iruka (`イルカ`) dialogue appeared F100/F110 and was skipped with START, and a three-card overlay appeared by F180. New output candidate is 21,162,772 bytes/v4, SHA `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`. This candidate is NOT promoted pending a fresh-process restore. Classifier erroneously saw the card overlay as `map` and could send DOWN, so fix/regression must be completed before another player run.
+
+Classifier update commit `02f39ca3cdf21120e574923a4e8706d66dd16333`: add central-card ROI x=370..930,y=220..530, classify high white + gray ratios as `card_selection`, action WAIT/fail closed. Tests updated at commit `d8082dcdfa8997df65cddf9e6d0d8d806c8da927` with synthetic card-back overlay and assertion for `card_selection`/WAIT. Regression run #39873268266 passed (8 tests) but was based on the classifier-only commit and not the new test. Latest regression run [#39873273913](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39873273913) was triggered at test commit `d8082dcdfa8997df65cddf9e6d0d8d806c8da927`; latest status: `in_progress` at `Install image dependencies`, start 23:39:57Z / 06:39:57 WIB, no artifact. First, poll it to completion, inspect its job logs and confirm checkout has BOTH the classifier change and the synthetic test; if passed, do not launch player until offline-testing the classifier on the authentic private F180 screenshot. There is currently no active player run.
+
+Workflow marker is still revision50 restore-only from SHA `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`. After the classifier+tests pass and real private image is confirmed as card_selection/WAIT, change marker to revision51 restore-only:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39872449049
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7
+RESTORE_TEST=1
+CONTINUATION_TEST=0
+AB_TEST=0
+AB_ACTION=DOWN
+LOOP_CYCLES=1
+REVISION=51
+```
+Validate exact committed marker and only one player. Run51 must demonstrate that F20 visibly retains all three cards and classifier returns card_selection/WAIT; require load event, five authentic 1280×800 X11 captures, accepted shutdown, external state size/v4-header/SHA. Its output remains unpromoted until independently restored. Don't select/confirm cards while semantics are unknown.
+
+Revision49 VERIFIED: Circle from roulette returns to board by F180 while WAIT leaves roulette through F180. This is never a dialogue skip. Story Mode remains NOT COMPLETE. Use START for dialogue, translate Japanese text into Indonesian beside it, and keep ROM/BIOS/savestates/Memory Cards/screenshots private/out of Git.
+
+---
+
 ## LATEST CHECKPOINT — revision50 advanced to the three-card overlay (23 Oct 2026, 06:35 WIB)
 
 Run [#39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049) succeeded at 06:34:41 WIB; private artifact #12467281563 passed ZIP integrity. It restored source checkpoint from run #39870243073/artifact #12466141660, SHA-256 `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`, size21,163,504/v4. Fresh process logged SaveStateLoaded and RESTORE_TEST=PASS; five real external-X11 1280×800 frames; effective exit0 after native exit124 was recovered only with session-finished + output checkpoint validation. New output validated at 21,162,772 bytes/v4, SHA `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`, but it is not yet independently restored/promoted.
