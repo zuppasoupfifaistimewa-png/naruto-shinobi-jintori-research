@@ -1,3 +1,29 @@
+## RESTORE SMOKE PASSED — exact next step revision 30 (22 October 2026, 19:11 WIB)
+
+Run [#39776089816](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776089816) completed with Actions success. Audited its private artifact #12425065836: source from run #39775176728, SHA-256 `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`, size 21,162,344, header v4; `ExecutionFlow::SaveStateLoaded` plus `ADAPTIVE_RESTORE_TEST=PASS`; five authentic 1280×800 external-X11 screenshots; exit 0; external post-exit checkpoint validation. C01-F20 was opened and visibly shows `マップを見る` (Lihat peta) selected. Thus the revision-28 ACTION output is now an independently restored, trusted source checkpoint.
+
+The restore run emitted a new output state, 21,163,104 bytes, v4, SHA-256 `9d1ed105227c095c42396595bccd51ecf06f564ae5342f01377dec1f3aa94292` in private artifact #12425065836. Do not promote this *new* output until it is independently restored.
+
+Next, revision 30 is a matched TRIANGLE-vs-WAIT test from the original, now proven-restorable checkpoint in run #39775176728/artifact #12424660712:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39775176728
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=TRIANGLE
+LOOP_CYCLES=2
+REVISION=30
+```
+ACTION sends Triangle at the F30-F38 input window; CONTROL sends WAIT. Required gates: both arms load this exact source SHA in separate processes; identical F20 pixels and menu state; Triangle press/release readback; both load events; 10 authentic X11 captures; accepted exits; external post-exit size/header/SHA for both output states. Inspect actual paired screenshots for map-screen entry; classifier `menu_or_unknown_choice` alone is not sufficient. If the map opens, stop and inspect it; do not choose a destination. Do not start a parallel run.
+
+Revision 28 VERIFIED DOWN rule remains narrow: Information→`マップを見る` (Lihat peta) highlight. Story Mode remains NOT COMPLETE; keep gameplay artifacts private/out of Git, use START to skip Story Mode dialogue, translate Japanese text alongside it.
+
+---
+
 ## LATEST VERIFIED RESULT / EXACT NEXT ACTION — revision 28 completed (22 October 2026, 19:05 WIB)
 
 Run [#39775176728](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39775176728) has completed successfully. I inspected the actual private artifact #12424660712 (not just the Actions conclusion). Source for both arms was the exact restorable parent SHA-256 `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`; separate fresh processes logged `ExecutionFlow::SaveStateLoaded`; Memory Card clones had identical SHA; F20 screenshots matched across 1,024,000 pixels; DOWN press/release readback was true/false; all 10 external-X11 captures validated at 1280×800; both emulator processes exited 0; both output checkpoints passed external size/v4-header/SHA validation.
