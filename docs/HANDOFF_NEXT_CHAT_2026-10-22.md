@@ -1,3 +1,31 @@
+## REVISION45 AUDIT — Circle reached roulette, but the A/B failed at shutdown
+
+Run #39867730674 failed after capturing the ACTION branch and before starting the WAIT branch. Artifact #12464258211 passed ZIP integrity; real screenshots C01-F20/F60/F100/F110/F180 were inspected. F20 showed `ルーレット` (Roulette) highlighted in the source command menu; Circle input readback true/false passed. F60 through F180 display the roulette wheel.
+
+After `ADAPTIVE_SESSION_FINISHED cycle=1`, PCSX-Redux aborted with `corrupted size vs. prev_size`, exit 134. Thus there are no C02 control captures and no A/B report. Classify “Circle from Roulette row opens wheel” as HYPOTHESIS / partial observation only until a matched A/B passes.
+
+The artifact contains ACTION checkpoint `adaptive-cycle-01-f180.sstate`, size 21,162,546, v4 header, SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`. It has only local structural validation and is not promoted until independently restored.
+
+Workflow fix commit `11b308f162aa1ef2f5b5167cd17b4340718a03de` accepts native exit134 only after the session-finished marker exists and the post-exit checkpoint passes external validation; this should allow valid private evidence to survive the known shutdown abort without masking earlier failures. The workflow also now accepts expected state `roulette` only paired with `AB_ACTION=CIRCLE`.
+
+Next revision46 restore-only:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39867730674
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492
+RESTORE_TEST=1
+CONTINUATION_TEST=0
+AB_TEST=0
+AB_ACTION=CIRCLE
+LOOP_CYCLES=1
+REVISION=46
+```
+Require SaveStateLoaded/restore PASS, five authentic 1280×800 screens with wheel visible, exit0 or session-finished+external checkpoint validation, and new output size/v4-header/SHA validation. Don't promote new output before it too restores. Once input verified, revision47 Circle-vs-WAIT from `roulette` state should test stopping/selecting the wheel result. Do not use Circle to skip dialogue; START only. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE PLAYER — revision45 Circle vs WAIT on visibly highlighted Roulette menu
 
 Run [#39867730674](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39867730674) active, started 05:49:51 WIB, hard timeout about 06:09:51 WIB. Exact source is run #39866820866 / artifact #12463489344 / `adaptive-cycle-01-f180.sstate` / SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`, independently restored in run44 and visually showing `ルーレット` (Roulette) highlighted. Marker: AB_TEST=1; AB_ACTION=CIRCLE; AB_EXPECTED_STATE=menu_or_unknown_choice; two cycles, restore/continuation off; revision45. Current workflow blob `4021462372a7573132783b21285d35b0da25eab8` permits Circle only in the menu-state A/B branch.
