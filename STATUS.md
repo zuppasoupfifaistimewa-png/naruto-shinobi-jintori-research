@@ -1,3 +1,14 @@
+## ACTIVE RUN — revision37 second DOWN from the scrolled board state (22 October 2026, 19:53 WIB)
+
+Run [#39782011370](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39782011370) is the only active player. Its committed marker was verified:
+SOURCE_RUN=39780755350; SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private; SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate; SHA-256 `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`; RESTORE_TEST=0; CONTINUATION_TEST=0; AB_TEST=1; AB_ACTION=DOWN; AB_EXPECTED_STATE=map_after_move; LOOP_CYCLES=2; REVISION=37.
+
+Run started at 19:52:49 WIB; hard timeout about 20:12:49 WIB. Do not start another player while active. Audit only after completion: exact input hash in both fresh processes, two explicit load events, F20 expected state and exact screenshot parity, cloned cards identical, DOWN press/release true/false, WAIT control, ten genuine 1280×800 external-X11 captures, exit0 for both, both output states external size/v4 header/SHA validated, comparison report generated. Directly inspect paired screenshots at F60/F100/F110/F180 to see if a second DOWN changes board focus/view beyond the previous scroll. No tile confirmation, no actual movement/capture/ownership inference.
+
+Story Mode remains NOT COMPLETE. Use START for dialogue, keep all gameplay assets/screenshots private and out of Git.
+
+---
+
 ## RESTORE VERIFIED — post-DOWN scrolled board state survives fresh-process load (revision36, 22 October 2026, 19:51 WIB)
 
 Run [#39781495023](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39781495023) completed successfully at 19:50:35 WIB. Its private artifact #12426677790 was downloaded and inspected. It loaded the exact ACTION checkpoint from revision35/run #39780755350: SHA-256 `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`, 21,162,766 bytes, v4. Log explicitly records `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`. Five genuine external-X11 images are 1280×800 and valid. Direct review of C01-F20 confirms the post-DOWN scrolled board framing persists; the previous empty-land info panel is still hidden while the cursor remains near the lower cell/Naruto marker. Emulator exit 0. Its output checkpoint passes external validation: 21,163,103 bytes, header `PCSX-Redux SaveState v4`, SHA-256 `4fd72504031c7aaa73bd7fa18e2f7a8d79b428643cea3c588ea4596ad5e90777`. This new output itself remains unpromoted until a fresh-process restore.
