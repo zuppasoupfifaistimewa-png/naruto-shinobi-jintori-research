@@ -241,6 +241,7 @@ jobs:
           local abTest=os.getenv("AB_TEST")=="1"
           local abAction=os.getenv("AB_ACTION") or "DOWN"
           local frame=0; local loadStarted=false; local loadReturned=false; local loaded=false
+          local shutdownCountdown=nil
           local activeButton=nil
           local pad=PCSX.SIO0.slots[1].pads[1]
           local buttons=PCSX.CONSTS.PAD.BUTTON
@@ -320,6 +321,19 @@ jobs:
           local plannedState={}
           local plannedDecision={}
           PCSX.Events.createEventListener("GPU::Vsync",function()
+              -- Support.File may finish exposing multi-slice save-state data after
+              -- writeMoveSlice/close return. Let the emulator service 12 extra
+              -- VSync events with no further inputs before shutdown.
+              if shutdownCountdown then
+                  shutdownCountdown=shutdownCountdown-1
+                  if shutdownCountdown<=0 then
+                      log("ADAPTIVE_SHUTDOWN_DRAIN=PASS frames=12")
+                      PCSX.pauseEmulator()
+                      PCSX.nextTick(function() PCSX.quit(0) end)
+                      shutdownCountdown=nil
+                  end
+                  return
+              end
               if not loadStarted then
                   loadStarted=true; log("ADAPTIVE_LOAD_BEGIN=1"); PCSX.pauseEmulator()
                   PCSX.nextTick(function()
@@ -408,10 +422,12 @@ jobs:
                       return
                   end
                   log("ADAPTIVE_SESSION_FINISHED cycle="..cycle)
-                  -- Quit outside GPU::Vsync. Immediate quit in the VSync callback
-                  -- has produced a native SIGSEGV and, sometimes, a truncated 2 MiB state.
-                  PCSX.pauseEmulator()
-                  PCSX.nextTick(function() PCSX.quit(0) end)
+                  -- Do not quit immediately after writeMoveSlice: intermittent
+                  -- native shutdown SIGSEGVs left a 2 MiB partial state despite
+                  -- successful Lua write/close returns. Keep advancing VSync only
+                  -- for a bounded drain window; suppress all further gameplay I/O.
+                  shutdownCountdown=12
+                  log("ADAPTIVE_SHUTDOWN_DRAIN_BEGIN=PASS cycle="..cycle.." frames=12 reason=allow_checkpoint_slices_to_flush")
                   return
               end
           end)
