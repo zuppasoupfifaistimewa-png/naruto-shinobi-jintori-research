@@ -1,3 +1,18 @@
+## RESTORE-VERIFIED MAP VIEW — controlled DOWN probe is next (22 October 2026, 19:20 WIB)
+
+Run [#39777301626](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777301626) passed. Actual private artifact #12423949987 was inspected, including C01-F20. The original revision-30 ACTION checkpoint from run #39776518701 / artifact #12425305517, `adaptive-cycle-01-f180.sstate`, SHA-256 `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`, size 21,163,227 and v4 header, was loaded in a fresh process and remained on the tile/map screen. Logs show `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five 1280×800 external-X11 captures validate; emulator exit 0; external new-output verification passes.
+
+**Promoted trusted source:** `b5715ba7...` is now restore-proven map-view state.
+**Do not promote the new restore-run output:** 21,162,251 bytes, SHA-256 `a2a3c36918155dc4356da2664bfa7880c9605c62260389b85f85262c942b2fe7`, v4. It must be restored independently before use.
+
+Workflow commit `5f8ae63b4374cb730ef197d797dffd0e823db141` extends the matched-test starting-state guard from only `menu_or_unknown_choice` to (`menu_or_unknown_choice` OR `map_after_move`), still requiring action WAIT. This allows a safe action-vs-WAIT probe from the screenshot-confirmed map screen. The control cycle's safety guard already allows `map_after_move` + WAIT.
+
+### Next run — revision 32
+Source run #39776518701, artifact `naruto-storymode-adaptive-player-private`, checkpoint `adaptive-cycle-01-f180.sstate`, SHA-256 `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`; settings `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `AB_TEST=1`, `AB_ACTION=DOWN`, `LOOP_CYCLES=2`, `REVISION=32`. Run it only when no other player run is active. Pair DOWN vs WAIT, check same F20 pixels/state, exact parent source both arms, readback press/release, two load events, 10 authentic 1280×800 screenshots, accepted exits, both post-exit state validations. Visually review all post-action screenshots for map cursor movement. No Circle, no destination confirmation. Keep ambiguous rules HYPOTHESIS/UNKNOWN.
+Story Mode remains NOT COMPLETE and must not be reported as completed without genuine ending/results evidence. Dialogue skipping is START.
+
+---
+
 ## VERIFIED RULE — Triangle opens the board/map view from the View-map row (22 October 2026, 19:15 WIB)
 
 Run [#39776518701](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776518701) fully passed matched TRIANGLE versus WAIT from the verified-restorable menu parent `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`. Both arms logged `ExecutionFlow::SaveStateLoaded`, identical Memory Card clones, identical 1,024,000-pixel F20 screenshots, input true/false readback, ten authentic external 1280×800 X11 captures, exit code 0, and external post-exit checkpoint validation.
