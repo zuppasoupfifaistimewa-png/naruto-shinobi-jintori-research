@@ -1,3 +1,38 @@
+## LATEST CHECKPOINT — map view restores cleanly; next run revision 32 (22 October 2026, 19:20 WIB)
+
+Run [#39777301626](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777301626) restore-only completed with success at 19:20:11 WIB. Private artifact #12423949987 was audited and C01-F20 visually opened. It proves the map view is restored in a fresh emulator process:
+- Source from run #39776518701 / artifact #12425305517 / `adaptive-cycle-01-f180.sstate`; 21,163,227 bytes; v4 header; SHA-256 `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`.
+- `ExecutionFlow::SaveStateLoaded`, `ADAPTIVE_RESTORE_TEST=PASS`, five authentic external-X11 images at 1280×800, exit 0, source and output integrity checks passed. Manually reviewed F20 shows the same map/tile view, status panel and footer `× もどる` (X: Kembali), with no input issued by the restore run.
+- Therefore promote source SHA `b5715ba7...` as the trusted map-view state.
+- New output SHA `a2a3c36918155dc4356da2664bfa7880c9605c62260389b85f85262c942b2fe7`, 21,162,251 bytes, v4, emitted by the restore process is still not trusted until a separate restore test.
+
+Workflow commit `5f8ae63b4374cb730ef197d797dffd0e823db141` now allows the A/B initial precondition from `map_after_move` with classifier action WAIT (or the former right-menu state). The prior precondition blocked a map-origin action probe despite the source being visually calibrated. This change only edits the workflow path; it does not start a player run.
+
+### Next run — revision 32, map DOWN vs WAIT
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39776518701
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=DOWN
+LOOP_CYCLES=2
+REVISION=32
+```
+ACTION will send exactly one DOWN at the established input window; CONTROL waits. This is a navigation observation only: no Circle/confirmation and no map destination selection. Require same source SHA in both arms, same F20 pixels and state, both load events, input true/false readback, ten authentic 1280×800 X11 captures, exits, and external validation of both outputs. Manually compare screenshots at F60/F100/F110/F180; do not treat `map_after_move` label alone as a proven cursor movement. Keep classification scoped to what the screenshots directly establish.
+
+Rule table in brief:
+- **VERIFIED:** DOWN from `情報` (Informasi) highlights `マップを見る` (Lihat peta).
+- **VERIFIED:** TRIANGLE with `マップを見る` (Lihat peta) highlighted opens tile/map view; WAIT stays in menu.
+- **VERIFIED:** map checkpoint SHA `b5715ba7...` restores and keeps the map view visible.
+- **UNKNOWN:** what DOWN does from the map/tile view; movement, costs, territory/barrier behavior and combat are not yet established.
+Story Mode is NOT COMPLETE; no authentic ending/results image. Keep all artifacts private/out of Git; use START to skip dialogue.
+
+---
+
 ## LATEST VERIFIED RULE — TRIANGLE from View map opens the board (22 October 2026, 19:15 WIB)
 
 Run [#39776518701](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776518701) successfully completed the paired TRIANGLE-vs-WAIT experiment. Private artifact #12425305517 inspected. Same source parent in both arms: SHA `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`; separate fresh emulator processes, two explicit `ExecutionFlow::SaveStateLoaded` logs, equal cloned Memory Cards, pixel-identical F20 parent frames, Triangle press true / release false readback, ten valid 1280×800 external-X11 captures, exit 0 for both sessions, and both checkpoint output files passed external size/header/SHA validation.
