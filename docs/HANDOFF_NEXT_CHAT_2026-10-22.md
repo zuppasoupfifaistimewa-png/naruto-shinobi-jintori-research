@@ -1,3 +1,30 @@
+## REVISION41 RESTORE PASSED — Naruto-cell focus state is independently restorable
+
+Run [#39786899480](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786899480) success. Private artifact #12428873919 passed ZIP integrity and was visually inspected. The actual F20 screenshot shows Naruto's panel: `レベル` (Level) 1, `結界価値` (Nilai penghalang) 60, `耐久値` (Daya tahan) 2/2. New process logs `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five authentic 1280×800 captures, exit0, and output size/header/SHA checks all passed.
+
+Promoted input source: run #39786019434 / artifact #12428777970 / `adaptive-cycle-01-f180.sstate`, 21,163,100 bytes, v4 header, SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`. The new output from #39786899480 is unpromoted: 21,162,593 bytes, v4, SHA-256 `93bd0c3e401bd7b8c96bc8b405bd46b13fef2afaf317c2ec47af5412c1b52595`; restore it independently before reuse.
+
+Workflow commit `7ac1b2371b7d0ce48b87b59130a8560db771a962` permits CROSS only as a map-state A/B action (it is not permitted for menu state). The screen footer `× もどる` (Cross: Kembali) supports a minimal matched test that CROSS backs out of the map while WAIT stays on the map.
+
+Next marker revision42:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39786019434
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=CROSS
+AB_EXPECTED_STATE=map_after_move
+LOOP_CYCLES=2
+REVISION=42
+```
+Require exact source hash both processes, 2 load events, identical F20 pixels/map state, identical cloned cards, CROSS press/release true/false, WAIT control, ten genuine 1280×800 X11 captures, exit0 twice, both output savestates externally validated, comparison report, and screenshot review. This is only a return-menu probe. No Circle/confirmation. Story Mode remains NOT COMPLETE; use START for dialogue skips.
+
+---
+
 ## ACTIVE PLAYER — revision41 restore-only for verified Naruto-tile focus (22 October 2026, 20:27 WIB)
 
 Run [#39786899480](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786899480) is active, started 20:26:48 WIB, timeout around 20:46:48 WIB. Exact committed marker uses source run #39786019434 / private artifact #12428777970 / adaptive-cycle-01-f180.sstate / SHA `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`, RESTORE_TEST=1, one cycle, revision41. Do not start another player.
