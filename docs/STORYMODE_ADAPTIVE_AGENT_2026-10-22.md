@@ -1,3 +1,18 @@
+## VERIFIED UPDATE — single DOWN changed the menu selection in a matched test (22 October 2026, 18:06 WIB)
+
+This is a narrow, controlled observation—not proof that a gameplay turn was committed.
+
+- Run [#39767790829](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39767790829) passed using the same parent SHA in two fresh processes, `7679cfbd3576c3202abcc299b907939ab4e4529e3a0aa260e780806b1e21cc92`.
+- Both F20 images were exactly pixel-identical; both states were `menu_or_unknown_choice`. Separate Memory Card clones matched at SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`.
+- DOWN arm input readback passed (press=true, release=false); NONE arm sent no buttons. F60 through F180 consistently showed 14,609 pixels differing, and real screenshot review identifies the difference as menu selection moving from `ルーレット` (Roulette) to `忍術` (Ninjutsu). NONE stayed on Roulette.
+- Action output checkpoint: 21,163,486 bytes, SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`. Control output checkpoint: 21,163,324 bytes, SHA-256 `3da0a41d55e988550ef1a9368652fa909ae06da34c2b4b7bf315f5a820f76aeb`. Both were externally validated after process exit.
+- Use **VERIFIED** only for the exact tested menu behavior; keep cross-menu generalization **HYPOTHESIS**.
+- Visible footer `△ マップ` translates to (Triangle: Map). Suggested next safe test: Triangle versus NONE from the same immutable menu parent. Require same F20 pixels, separate identical Memory Card clones, two load events, actual press/release readback, 10 X11 frames and post-exit validation. Do not press Circle unless a valid YES is visibly highlighted. If a map view opens, stop to inspect the map screen before any further input.
+
+Story Mode is not complete, and no ending/results screenshot exists. Artifacts remain private and out of Git.
+
+---
+
 ## EXPERIMENT UPDATE — matched menu A/B branches are now reproducible; initial run hit report bug (22 October 2026, 17:59 WIB)
 
 The first one-DOWN-versus-NONE run #39766331759 did not finish its comparison report because Python applied `%` formatting to a `Path` object. This was an audit-code failure, not evidence that DOWN had no effect. Do not promote that run's output checkpoint chain.
