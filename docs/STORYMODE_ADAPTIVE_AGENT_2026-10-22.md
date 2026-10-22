@@ -1,3 +1,20 @@
+## LATEST OBSERVED CONTINUATION — revision50 board → dialogue → three-card overlay
+
+Run #39872449049 succeeded. Private artifact #12467281563 passed ZIP integrity. It restored source checkpoint SHA `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea` (21,163,504 bytes/v4) in a fresh process, logged SaveStateLoaded and restore pass, captured five authentic 1280×800 X11 frames, and produced externally validated output SHA `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7` (21,162,772 bytes/v4). Native emulator shutdown exit124 was accepted through the strict post-session gate; effective exit0.
+
+Important correction: restore mode currently still applies the adaptive policy after F20. At C01-F20 classifier identified `map` and sent DOWN (input press/release true/false); counter visually moved from 3 to 1 by F60. At F100/F110 the game showed Iruka (`イルカ`) dialogue: `ナルト、ここは「札所」といって。` (Naruto, tempat ini disebut “札所”/fudasho; working translation “pos jimat/segel”, not finalized). Agent sent START, button readback passed, dialogue skip logged. C01-F180 shows three card backs over the board. This sequence is visually verified as observed; the exact causal rule for DOWN needs a matched WAIT from the same source and remains HYPOTHESIS. The new F180 checkpoint is not promoted until restored separately.
+
+Output candidate: run #39872449049 / artifact #12467281563 / `adaptive-cycle-01-f180.sstate` / SHA `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`.
+
+### Next task: classify card selection before another run
+Current `tools/storymode_adaptive_agent.py` mislabels the three-card overlay as `map`, which would trigger a new DOWN unexpectedly. Actual private C01-F180 in artifact #12467281563 has central crop x=370..930,y=220..530 white ratio .1974 and gray ratio .1822; map/dialogue captures are much lower. Add a guarded `card_selection` class with action WAIT before map logic. Add unit test in `tests/test_storymode_adaptive_agent.py` creating synthetic three-card panels and assert classification card_selection / WAIT. Run full tests and manually/offline validate the private real F180 screenshot. Do not commit any gameplay image/state.
+
+Then use revision51 as a restore-check of candidate SHA `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7` from run #39872449049 artifact naruto-storymode-adaptive-player-private. Require C01-F20 card_selection, visual three-card overlay retained, SaveStateLoaded, five real 1280×800 X11 images, accepted shutdown, external output checkpoint size/v4-header/SHA. No Circle/confirm until input semantics are understood. No player run is active currently.
+
+Revision49 remains the latest clean A/B: Circle from roulette returns to board by F180 while WAIT keeps roulette through F180. This is VERIFIED only for that context, not a dialogue skip. Story Mode is NOT COMPLETE. Keep ROM/BIOS/savestates/cards/screenshots private/out of Git; START for dialogue.
+
+---
+
 ## ACTIVE — revision50 restore-only, emulator loop in progress (23 October 2026, 06:35 WIB)
 
 Only player run is [#39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049), started 06:32:21 WIB, timeout about 06:52:21 WIB. Marker at run checkout `1c30215c9a4b6035b5c24d1bf0befc4819110642` points to source run #39870243073 / artifact naruto-storymode-adaptive-player-private / adaptive-cycle-01-f180.sstate / SHA-256 `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`. Restore-only, one cycle, revision50. Latest job state: source/assets checks passed, emulator observe/decide/verify/checkpoint loop active, no artifact yet. No parallel player.
