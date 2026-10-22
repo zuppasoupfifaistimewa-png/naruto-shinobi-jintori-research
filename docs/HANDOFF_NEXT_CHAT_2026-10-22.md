@@ -1,3 +1,31 @@
+## REVISION48 AUDIT — screenshots complete; workflow failed at timeout after a valid save
+
+Run #39869536734 ended failure at 23:09:34 UTC / 06:09:34 WIB. Artifact #12466086061 passes ZIP integrity. It contains all ten genuine 1280×800 screenshots. Exact source SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492` was restored in both fresh processes, F20 parity exact, state `roulette` both, cards identical, Circle input true/false, control WAIT, and screenshot validation passed. The actual pictures continue to suggest Circle from roulette transitions back to map by F180 while WAIT remains wheel, but the rule stays HYPOTHESIS because the workflow did not reach report generation.
+
+Both output checkpoint files pass external validation from the downloaded artifact:
+- ACTION 21,163,075 bytes, v4, SHA `7e0a021342f3cf15db2070c5b9512ff0154a4a1adeeb4e14837b930884656e3a`.
+- CONTROL 21,162,748 bytes, v4, SHA `75098aea814f531a714d7aade45e9802bb44167a122ada4aad6d19e728f4256f`.
+
+At shutdown cycle2 the emulator writes `ADAPTIVE_SESSION_FINISHED`, then logs `corrupted size vs. prev_size`; the 12-frame settle never reaches `SHUTDOWN_SETTLE_COMPLETE`, inner timeout exits124. Workflow fix commit `ef82beb99096e6fd939ce5ebc4f80eedc1158546` accepts exit124 only alongside 134/139 and only if the session-finished marker and external checkpoint validation pass; inner timeout now 60s. Invalid checkpoint or missing marker still fails closed.
+
+Next revision49 repeats Circle vs WAIT from the same trusted source:
+```
+SOURCE_RUN=39867730674
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=CIRCLE
+AB_EXPECTED_STATE=roulette
+LOOP_CYCLES=2
+REVISION=49
+```
+Keep all A/B evidence gates. Do not run anything in parallel. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE PLAYER — revision48 repeats roulette Circle vs WAIT with checkpoint settle delay
 
 Run [#39869536734](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39869536734) active, started 06:05:59 WIB; hard timeout about 06:25:59 WIB. Marker pins source run #39867730674/artifact #12464258211/`adaptive-cycle-01-f180.sstate`/SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`, with AB_TEST=1, AB_ACTION=CIRCLE, AB_EXPECTED_STATE=roulette, two cycles, revision48.
