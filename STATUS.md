@@ -1,3 +1,28 @@
+## VERIFIED RESULT — DOWN changes focused tile on board (revision 33, 22 October 2026, 19:38 WIB)
+
+Run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) completed with Actions success at 19:37:15 WIB. Private artifact #12425858092 was fully downloaded and audited after upload completed.
+
+All paired A/B gates passed:
+- Both fresh processes restored the identical source checkpoint SHA-256 b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc, each with ExecutionFlow::SaveStateLoaded.
+- Separate disposable Memory Card clones were byte-identical. Both F20 screenshots classify map_after_move and were pixel-identical across 1,024,000 pixels.
+- ACTION sent one DOWN with readback true on press and false on release; CONTROL sent WAIT/no input.
+- All 10 genuine external-X11 captures passed 1280×800 validation. Both emulator processes exited 0. Both output state files passed post-exit size, PCSX-Redux SaveState v4 header, and SHA-256 checks. The comparison report was generated.
+
+**Rule: VERIFIED, scoped to this tested board state.** A single DOWN from the selected Naruto tile changes the focused tile to the adjacent empty land tile; WAIT leaves focus on the Naruto tile. ACTION C01-F60 visually shows 空き地 (Tanah kosong), レベル (Level) --- , 結界価値 (Nilai penghalang) 140, and 耐久値 (Daya tahan) -/-. CONTROL C02-F60 remains on Naruto with レベル (Level) 1, 結界価値 (Nilai penghalang) 60, and 耐久値 (Daya tahan) 2/2. This verifies focus/selection movement only; it does NOT prove that Naruto moved, captured the tile, or changed territory ownership. Classifier remains map_after_move in both arms, so direct screenshot review is the visual basis.
+
+Image comparison: F60 719,192 differing pixels / mean absolute RGB 26.80650; F100 719,200 / 26.89202; F110 719,631 / 26.85752; F180 718,997 / 26.84018.
+
+Private checkpoint outputs in artifact #12425858092 (valid structure, not yet promoted):
+- ACTION focus-on-empty-land candidate: 21,162,559 bytes, SHA-256 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a.
+- CONTROL focus-on-Naruto: 21,162,390 bytes, SHA-256 3796ff4ba91fef93ddf1078daa1785e043c3d5b5424a03c8cb53a62c6d3858a4.
+
+### Next gate — restore ACTION focus checkpoint
+Run one restore-only smoke from run #39779256427/artifact naruto-storymode-adaptive-player-private/checkpoint adaptive-cycle-01-f180.sstate/SHA 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a. Require ExecutionFlow::SaveStateLoaded, five authentic X11 frames with 空き地 (Tanah kosong) / value 140 still focused, exit 0, and external output checkpoint size/header/SHA validation. Promote only that exact source once it restores successfully; the output produced by the restore-only run would require its own fresh-process restore before promotion. Do not select/confirm the tile yet.
+
+Story Mode remains NOT COMPLETE; no ending/result evidence exists. Keep ROM/BIOS/savestates/Memory Cards/screenshots private and out of Git. Use START for dialogue skipping.
+
+---
+
 ## VERIFIED — DOWN changes map focus to the adjacent empty land tile (22 October 2026, 19:37 WIB)
 
 Run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427), revision 33, completed with `success`. Private artifact #12425858092 was audited (logs, screenshots, comparison report, card clones, and both state files). All required matched A/B gates passed:
