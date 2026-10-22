@@ -1,3 +1,13 @@
+## ACTIVE — revision45 Circle-vs-WAIT from the restored Roulette-highlighted menu
+
+Run [#39867730674](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39867730674) is the only active player. Its committed marker was verified at SHA `c9b1438292041f972b712f248fb7052032635b59`: source run #39866820866 / artifact `naruto-storymode-adaptive-player-private` / checkpoint `adaptive-cycle-01-f180.sstate` / SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`; `AB_TEST=1`, `AB_ACTION=CIRCLE`, `AB_EXPECTED_STATE=menu_or_unknown_choice`, two cycles, revision45. Workflow blob `4021462372a7573132783b21285d35b0da25eab8` allows Circle only for menu-state A/B; map-state branch excludes it.
+
+Started 05:49:51 WIB; hard timeout about 06:09:51 WIB. No artifact/results audited yet. Do not launch another player.
+
+Required gates: exact source hash in both fresh processes, two load events, pixel-identical F20 and expected menu state, identical cloned Memory Cards, Circle press/release true/false, WAIT control, ten authentic 1280×800 X11 captures, both emulator exits0, both output checkpoint size/v4-header/SHA validations, and comparison report. Review F60/F100/F110/F180 screenshots: does Circle open roulette while WAIT remains on the menu? Circle is used only because the source F20 was independently restored and visibly has Roulette highlighted; if a dialogue appears, START only. No claiming Story Mode completion.
+
+---
+
 ## RESTORE VERIFIED — command menu with Roulette highlighted survives fresh process (revision44)
 
 Run [#39867381637](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39867381637) completed with success at 22:48:12 UTC / 05:48:12 WIB. Private artifact #12464118614 passed ZIP integrity and authentic C01-F20 screenshot was inspected. It clearly shows the command menu with `ルーレット` (Roulette) highlighted in red. The fresh process logged `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five external-X11 captures validated at 1280×800; emulator exit 0; output checkpoint passed external size/v4-header/SHA validation.
