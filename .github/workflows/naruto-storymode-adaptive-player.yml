@@ -179,7 +179,7 @@ jobs:
           end
           local function captureExternal(label,cycle)
               local xwd="captures/"..label..".xwd"
-              local tmp="captures/."..label..".png.tmp"
+              local tmp="captures/."..label..".tmp.png"
               local png="captures/"..label..".png"
               os.remove(xwd); os.remove(tmp); os.remove(png)
               -- External X11 capture runs synchronously inside this VSync callback.
