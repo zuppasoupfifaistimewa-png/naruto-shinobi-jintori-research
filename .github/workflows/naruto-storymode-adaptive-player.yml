@@ -174,19 +174,14 @@ jobs:
               local path=string.format("captures/adaptive-cycle-%02d-f180.sstate",cycle)
               local opened,file=pcall(function() return assert(Support.File.open(path,"TRUNCATE")) end)
               if not opened or not file then log("ADAPTIVE_CHECKPOINT_OPEN_ERROR cycle="..cycle.." err="..tostring(file)); return false end
-              local wrote,err=pcall(function() file:writeMoveSlice(state); file:close() end)
+              local wrote,err=pcall(function() file:writeMoveSlice(state) end)
+              local closed,closeErr=pcall(function() file:close() end)
               if not wrote then log("ADAPTIVE_CHECKPOINT_WRITE_ERROR cycle="..cycle.." err="..tostring(err)); return false end
-              local probe=io.open(path,"rb")
-              if not probe then log("ADAPTIVE_CHECKPOINT_REOPEN_ERROR cycle="..cycle); return false end
-              local bytes=probe:seek("end")
-              probe:seek("set",0)
-              local head=probe:read(96) or ""
-              probe:close()
-              if not bytes or bytes<=21000000 or not head:find("PCSX-Redux SaveState v4",1,true) then
-                  log("ADAPTIVE_CHECKPOINT_VALIDATION_FAIL cycle="..cycle.." bytes="..tostring(bytes).." header="..tostring(head:find("PCSX-Redux SaveState v4",1,true)~=nil))
-                  return false
-              end
-              log("ADAPTIVE_CHECKPOINT_CREATED=PASS cycle="..cycle.." path="..path.." bytes="..bytes)
+              if not closed then log("ADAPTIVE_CHECKPOINT_CLOSE_ERROR cycle="..cycle.." err="..tostring(closeErr)); return false end
+              -- Do not read file length/header in the GPU::Vsync callback:
+              -- Support.File may finalize visibility after this callback returns.
+              -- Shell validates size, v4 header and SHA-256 after emulator exit.
+              log("ADAPTIVE_CHECKPOINT_WRITE_RETURNED=PASS cycle="..cycle.." path="..path.." validation=deferred_to_shell_after_emulator_exit")
               return true
           end
           local function captureExternal(label,cycle)
@@ -345,6 +340,26 @@ jobs:
           #!/usr/bin/env bash
           set -euo pipefail
           cycles="${LOOP_CYCLES:-2}"
+          validate_checkpoint() {
+            local state="$1"
+            if [ ! -f "$state" ]; then
+              echo "ADAPTIVE_CHECKPOINT_EXTERNAL_VALIDATION=FAIL file=$(basename "$state") reason=missing"
+              return 1
+            fi
+            local bytes
+            bytes="$(stat -c %s "$state")"
+            if [ "$bytes" -le 21000000 ]; then
+              echo "ADAPTIVE_CHECKPOINT_EXTERNAL_VALIDATION=FAIL file=$(basename "$state") bytes=$bytes reason=size"
+              return 1
+            fi
+            if ! head -c 96 "$state" | grep -Fq 'PCSX-Redux SaveState v4'; then
+              echo "ADAPTIVE_CHECKPOINT_EXTERNAL_VALIDATION=FAIL file=$(basename "$state") bytes=$bytes reason=header"
+              return 1
+            fi
+            local sha
+            sha="$(sha256sum "$state" | cut -d ' ' -f1)"
+            echo "ADAPTIVE_CHECKPOINT_EXTERNAL_VALIDATION=PASS file=$(basename "$state") bytes=$bytes header='PCSX-Redux SaveState v4' sha256=$sha"
+          }
           run_cycle() {
             local cycle="$1"
             local logfile="$WORK/captures/pcsx-adaptive-cycle-${cycle}.log"
@@ -358,17 +373,11 @@ jobs:
             local rc=$?
             set -e
             local cp="$WORK/captures/adaptive-cycle-$(printf '%02d' "$cycle")-f180.sstate"
-            if [ "$rc" -eq 139 ] && grep -q "ADAPTIVE_SESSION_FINISHED cycle=${cycle}" "$stdout" && [ -s "$cp" ]; then
-              if python3 - "$cp" <<'PY'
-          import sys
-          from pathlib import Path
-          p=Path(sys.argv[1])
-          with p.open("rb") as f: head=f.read(96)
-          if p.stat().st_size <= 21000000 or b"PCSX-Redux SaveState v4" not in head:
-              raise SystemExit("checkpoint not structurally valid after emulator SIGSEGV")
-          PY
-              then
-                echo "ADAPTIVE_SESSION_SHUTDOWN_RECOVERED=PASS cycle=$cycle native_exit=139 structurally_valid_checkpoint=$(sha256sum "$cp" | cut -d ' ' -f1)" >> "$WORK/captures/pcsx-adaptive.stdout"
+            # If native shutdown still exits 139, only tolerate it when the
+            # session-finished marker exists and external post-exit validation passes.
+            if [ "$rc" -eq 139 ] && grep -q "ADAPTIVE_SESSION_FINISHED cycle=${cycle}" "$stdout"; then
+              if validate_checkpoint "$cp" >> "$WORK/captures/pcsx-adaptive.stdout" 2>&1; then
+                echo "ADAPTIVE_SESSION_SHUTDOWN_RECOVERED=PASS cycle=$cycle native_exit=139" >> "$WORK/captures/pcsx-adaptive.stdout"
                 rc=0
               fi
             fi
@@ -376,19 +385,9 @@ jobs:
             echo "ADAPTIVE_SESSION_EXIT cycle=${cycle} code=$rc" >> "$WORK/captures/pcsx-adaptive.stdout"
             test "$rc" -eq 0
             grep -q "ADAPTIVE_SESSION_FINISHED cycle=${cycle}" "$stdout"
+            # This check is deliberately after the emulator process has exited.
+            validate_checkpoint "$cp" >> "$WORK/captures/pcsx-adaptive.stdout"
             if [ "$cycle" -eq 1 ]; then
-              local cp="$WORK/captures/adaptive-cycle-01-f180.sstate"
-              test -s "$cp"
-              test "$(stat -c %s "$cp")" -gt 21000000
-              python3 - "$cp" <<'PY'
-          import sys
-          from pathlib import Path
-          p=Path(sys.argv[1])
-          with p.open("rb") as f: head=f.read(96)
-          if b"PCSX-Redux SaveState v4" not in head or p.stat().st_size<=21000000:
-              raise SystemExit("cycle-1 checkpoint failed structural preflight")
-          print("ADAPTIVE_CYCLE1_CHECKPOINT_PREFLIGHT=PASS")
-          PY
               local sha
               sha="$(sha256sum "$cp" | cut -d ' ' -f1)"
               echo "ADAPTIVE_CYCLE2_RESUME_SOURCE=$sha" >> "$WORK/captures/pcsx-adaptive.stdout"
