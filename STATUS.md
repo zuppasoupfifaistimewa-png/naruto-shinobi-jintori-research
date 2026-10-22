@@ -1,3 +1,16 @@
+## ACTIVE RUN — revision 34 restore-only for empty-land focus (22 October 2026, 19:40 WIB)
+
+Run [#39780143613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780143613) is the only active player. The committed marker is verified and correct:
+SOURCE_RUN=39779256427; artifact naruto-storymode-adaptive-player-private; checkpoint adaptive-cycle-01-f180.sstate; source SHA-256 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a; RESTORE_TEST=1; LOOP_CYCLES=1; REVISION=34.
+
+It started at 19:39:28 WIB; hard timeout about 19:59:28 WIB. At the last check it was in Install X11 tools and prepare private workspace; no artifact is yet audited. Do not launch another player.
+
+Acceptance: exact source checksum accepted, explicit ExecutionFlow::SaveStateLoaded, five authentic 1280×800 X11 images, F20 visibly shows 空き地 (Tanah kosong) focus / barrier value 140, emulator exit 0, and external validation of newly emitted checkpoint size, v4 header, SHA. The source candidate 58d8f551… is not promoted until this independent restoration succeeds. The new output from this restore run will itself remain unpromoted until restored again.
+
+Verified board rule remains narrow: DOWN changes focus from Naruto's tile (value 60) to adjacent 空き地 (Tanah kosong, value 140); WAIT retains the Naruto tile. Does not prove a capture or actual character movement. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE PLAYER — revision 34 restore-only map focus checkpoint (22 October 2026, 19:39 WIB)
 
 Run [#39780143613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780143613) is `in_progress`, created 19:39:28 WIB. This restore-only test loads the revision-33 ACTION output SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a` from run #39779256427/private artifact #12425858092. Deadline is approximately 19:59:28 WIB if the 20-minute job limit is reached. No result/artifact yet. Do not launch a parallel player.
