@@ -1,3 +1,13 @@
+## ACTIVE — revision49 final Circle-vs-WAIT retry with gated timeout recovery
+
+Run [#39870243073](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39870243073) is the only active player, started 06:12:25 WIB; hard timeout about 06:32:25 WIB. Marker at commit `04102a5f79e81a0f91586af3f348b6f2fb3183fe` was verified: source run #39867730674 / artifact `naruto-storymode-adaptive-player-private` / `adaptive-cycle-01-f180.sstate` / SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; AB_TEST=1, AB_ACTION=CIRCLE, AB_EXPECTED_STATE=roulette, two cycles, revision49.
+
+Run48 produced all screenshots and both output files were externally valid after artifact download, but CONTROL shutdown fault yielded exit124 and workflow didn't accept it. New workflow commit `ef82beb99096e6fd939ce5ebc4f80eedc1158546` adds that narrowly gated path: exit124/134/139 is accepted only when the session-finished marker exists and checkpoint size/v4 header/SHA all validate; the process timeout is 60s. The saved checkpoints still must pass in-workflow external validation and the paired comparison report must be generated.
+
+Expected visual pattern from two prior partial attempts: ACTION Circle on the roulette wheel shows roulette at F60/F100/F110 then returns to board at F180; WAIT stays roulette through F180. This remains HYPOTHESIS until #39870243073 passes every acceptance gate. Do not start another player in parallel.
+
+---
+
 ## REVISION48 PARTIAL RESULT — both output states are valid, but the control process timed out after shutdown fault
 
 Run [#39869536734](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39869536734) failed at 23:09:34 UTC / 06:09:34 WIB. Its artifact #12466086061 passes ZIP integrity and contains all 10 authentic 1280×800 screenshots. Both fresh processes loaded the exact roulette parent `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; both F20 screenshots are pixel-identical, both classify `roulette`; matching disposable Memory Cards; Circle press/release true/false; WAIT control; all captures and input gates passed.
