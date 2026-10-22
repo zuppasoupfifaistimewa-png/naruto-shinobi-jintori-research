@@ -1,3 +1,16 @@
+## ACTIVE — revision46 fresh-process restore of Circle-opened roulette state (23 October 2026, 05:55 WIB)
+
+Run [#39868354205](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39868354205) is the only active player. Exact committed marker at head `096a5cdc411e3ce26fd44f9bde8ff4ed909313c7`:
+SOURCE_RUN=39867730674; artifact `naruto-storymode-adaptive-player-private`; checkpoint `adaptive-cycle-01-f180.sstate`; SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; RESTORE_TEST=1; CONTINUATION_TEST=0; AB_TEST=0; LOOP_CYCLES=1; REVISION=46.
+
+Input checkpoint locally audited from artifact #12464258211: 21,162,546 bytes, header `PCSX-Redux SaveState v4`, SHA-256 matches the marker. Revision45 original emulator had logged `ADAPTIVE_SESSION_FINISHED` but aborted at native shutdown (exit134), after saving this state. No A/B control was run, so the Circle-to-roulette effect remains HYPOTHESIS.
+
+Workflow now (commit `11b308f162aa1ef2f5b5167cd17b4340718a03de`) accepts exit134 only when the session-finished marker is present and the newly saved checkpoint passes external size/header/SHA validation. It also supports expected state `roulette` restricted to Circle A/B. Revision46 will test whether this checkpoint actually restores and retains the roulette wheel. At last check the run was initializing containers; started 05:55:24 WIB; hard timeout about 06:15:24 WIB. Do not launch another player.
+
+Pass requires explicit SaveStateLoaded and `ADAPTIVE_RESTORE_TEST=PASS`, five authentic 1280×800 X11 captures visually showing roulette, accepted process exit or gated shutdown recovery, and external output checkpoint validation. Do not promote the output emitted by revision46 until independently restored. Story Mode remains NOT COMPLETE.
+
+---
+
 ## REVISION45 PARTIAL EVIDENCE — Circle opens roulette, but paired A/B failed during native shutdown
 
 Run [#39867730674](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39867730674) completed with failure. Private artifact #12464258211 was downloaded; ZIP integrity passed and authentic screenshots C01-F20/F60/F100/F180 were inspected. ACTION source was the independently restored command menu, source SHA `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`, F20 showing `ルーレット` (Roulette) highlighted. Circle press/release readback true/false passed. F60/F100/F110/F180 all display the roulette wheel and the classifier reports `roulette`.
