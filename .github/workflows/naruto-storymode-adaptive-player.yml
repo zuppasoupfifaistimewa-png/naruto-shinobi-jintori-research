@@ -338,7 +338,7 @@ jobs:
                   if not state then return end
                   plannedState[cycle]=state; plannedAction[cycle]=action; plannedDecision[cycle]=result
                   if abTest then
-                      local precondition=(state=="menu_or_unknown_choice" and action=="WAIT")
+                      local precondition=((state=="menu_or_unknown_choice" or state=="map_after_move") and action=="WAIT")
                       local branch=(cycle==1) and "ACTION" or "NONE"
                       local selected=(cycle==1) and abAction or "WAIT"
                       if not precondition then selected="WAIT" end
