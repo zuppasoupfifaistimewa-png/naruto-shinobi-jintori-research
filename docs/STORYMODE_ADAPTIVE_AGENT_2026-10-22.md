@@ -1,3 +1,11 @@
+## ACTIVE — revision37 second DOWN probe from scrolled map state
+
+Run #39782011370 active; started 19:52:49 WIB, timeout about 20:12:49 WIB. It uses independently restore-proven source run #39780755350 / artifact #12426786721 / checkpoint adaptive-cycle-01-f180.sstate / SHA `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`. Marker is AB_TEST=1, DOWN, expected map_after_move, two cycles, revision37. Do not start another player while active.
+
+Require exact source hashes, two load events, F20 map-state pixel parity, identical cards, DOWN readback true/false, WAIT control, ten authentic 1280×800 screenshots, both exit0, both output state validation, comparison report. Review all paired post-input images to see whether second DOWN advances the board again. No tile confirmation and no claim of character movement/capture. Story Mode is NOT COMPLETE.
+
+---
+
 ## RESTORE VERIFIED — scrolled board state from revision35 is restorable (revision36)
 
 Run #39781495023 passed restore-only from revision35 ACTION output, source SHA `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`, 21,162,766 bytes, v4, from private artifact #12426786721. Private restore artifact #12426677790 shows explicit load event and restore PASS, five valid authentic 1280×800 X11 screenshots, post-DOWN scrolled board retained at F20, exit0, new output checkpoint externally validated. Thus source b971… is promoted as independently restorable.
