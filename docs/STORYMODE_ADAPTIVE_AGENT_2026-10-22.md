@@ -1,3 +1,13 @@
+## ACTIVE RESTORE-ONLY — verify the map empty-land focus checkpoint (revision34)
+
+Run #39780143613 is active, started 19:39:28 WIB; timeout about 19:59:28 WIB. Marker was verified at its committed head and uses source run #39779256427 / artifact naruto-storymode-adaptive-player-private / checkpoint adaptive-cycle-01-f180.sstate / SHA-256 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a, RESTORE_TEST=1, LOOP_CYCLES=1, REVISION=34. Last status showed X11/tool installation active, no artifact yet. Do not start other player.
+
+Accept source only after new emulator process logs ExecutionFlow::SaveStateLoaded; five authentic external X11 captures are 1280×800 and F20 visibly retains 空き地 (Tanah kosong), value 140 focus; exit code 0; emitted new checkpoint passes size/v4-header/SHA validation. The emitted output of run34 remains unpromoted until that output gets its own fresh-process restore.
+
+Revision33 board focus rule is VERIFIED narrowly: DOWN on the verified Naruto tile focuses neighboring empty land; WAIT leaves Naruto tile focused. It does not prove movement/capture/ownership change. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE RUN — revision 34 restore-only checkpoint validation (22 October 2026, 19:39 WIB)
 
 Run [#39780143613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780143613) is in progress, started 19:39:28 WIB; timeout at approx 19:59:28 WIB. It is restore-only and must send no gameplay input.
