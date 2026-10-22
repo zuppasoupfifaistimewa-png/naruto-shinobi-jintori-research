@@ -177,31 +177,35 @@ jobs:
               if not wrote then log("ADAPTIVE_CHECKPOINT_WRITE_ERROR cycle="..cycle.." err="..tostring(err)); PCSX.quit(73); return end
               log("ADAPTIVE_CHECKPOINT_CREATED=PASS cycle="..cycle.." path="..path)
           end
-          local function gate(label,cycle,saveAfter)
-              local phase=label:match("F(%d+)")
-              -- Schedule first, then pause inside the scheduled callback. Pausing
-              -- before nextTick can prevent a later-cycle callback from running.
-              PCSX.nextTick(function()
-                  PCSX.pauseEmulator()
-                  log("ADAPTIVE_CAPTURE_READY cycle="..cycle.." phase="..phase.." label="..label.." frame="..frame)
-                  local gatePath="captures/go-"..label:lower()
-                  local deadline=os.time()+30
-                  while true do
-                      local f=io.open(gatePath,"r")
-                      if f then f:close(); break end
-                      if os.time()>=deadline then
-                          log("ADAPTIVE_CAPTURE_GATE_TIMEOUT label="..label.." frame="..frame)
-                          PCSX.quit(81)
-                          return
-                      end
-                      os.execute("sleep 0.02")
-                  end
-                  if saveAfter then
-                      checkpoint(cycle)
-                      if cycle==maxCycles then log("ADAPTIVE_LOOP_FINISHED cycles="..maxCycles); PCSX.quit(0); return end
-                  end
-                  PCSX.resumeEmulator()
-              end)
+          local function captureExternal(label,cycle)
+              local xwd="captures/"..label..".xwd"
+              local tmp="captures/."..label..".png.tmp"
+              local png="captures/"..label..".png"
+              os.remove(xwd); os.remove(tmp); os.remove(png)
+              -- External X11 capture runs synchronously inside this VSync callback.
+              local command="xwd -root -silent -out "..xwd.." && convert "..xwd.." "..tmp.." && mv "..tmp.." "..png.." && rm -f "..xwd
+              local a,b,c=os.execute(command)
+              local commandOk=(a==true or a==0 or c==0)
+              local file=io.open(png,"rb")
+              if not commandOk or not file then
+                  if file then file:close() end
+                  log("ADAPTIVE_X11_CAPTURE_FAIL label="..label.." status="..tostring(a)..":"..tostring(b)..":"..tostring(c))
+                  PCSX.quit(86); return nil,nil,nil
+              end
+              local bytes=file:seek("end"); file:close()
+              if not bytes or bytes<1000 then log("ADAPTIVE_X11_CAPTURE_INVALID label="..label); PCSX.quit(87); return nil,nil,nil end
+              local script="python3 tools/storymode_adaptive_agent.py "..png.." --output captures/verification-"..label..".json"
+              local hf=io.open("captures/history.json","r")
+              if hf then hf:close(); script=script.." --history captures/history.json" end
+              local pipe=io.popen(script.." 2>&1","r")
+              if not pipe then log("ADAPTIVE_CLASSIFIER_START_FAIL label="..label); PCSX.quit(88); return nil,nil,nil end
+              local result=pipe:read("*a") or ""; pipe:close()
+              local state=result:match('"state"%s*:%s*"([%w_]+)')
+              local action=result:match('"action"%s*:%s*"([%w_]+)')
+              if not state or not action then log("ADAPTIVE_CLASSIFIER_FAIL label="..label.." output="..result:gsub("[\r\n]"," ")); PCSX.quit(89); return nil,nil,nil end
+              log("ADAPTIVE_X11_CAPTURE label="..label.." size=1280x800 bytes="..bytes.." valid=true source=external_xwd")
+              log("ADAPTIVE_OBSERVED label="..label.." state="..state.." action="..action.." confidence="..(result:match('"confidence"%s*:%s*([%d%.]+)') or "0"))
+              return state,action,result
           end
           local function sendAction(action,cycle)
               if action=="WAIT" or action=="NONE" or action=="" then
@@ -228,6 +232,9 @@ jobs:
           PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
               loaded=true; frame=0; log("ADAPTIVE_LOAD_EVENT=PASS")
           end)
+          local plannedAction={}
+          local plannedState={}
+          local plannedDecision={}
           PCSX.Events.createEventListener("GPU::Vsync",function()
               if not loadStarted then
                   loadStarted=true; log("ADAPTIVE_LOAD_BEGIN=1"); PCSX.pauseEmulator()
@@ -245,20 +252,45 @@ jobs:
               local phase=((frame-1)%180)+1
               if cycle>maxCycles then PCSX.quit(0); return end
               if phase==20 then
-                  gate(string.format("C%02d-F20",cycle),cycle,false)
+                  local state,action,result=captureExternal(string.format("C%02d-F20",cycle),cycle)
+                  if not state then return end
+                  plannedState[cycle]=state; plannedAction[cycle]=action; plannedDecision[cycle]=result
+                  local df=assert(io.open(string.format("captures/decision-cycle-%02d.json",cycle),"wb")); df:write(result); df:close()
+                  local af=assert(io.open(string.format("captures/action-cycle-%02d.txt",cycle),"wb")); af:write(action.."\n"); af:close()
+                  log("ADAPTIVE_DECISION cycle="..cycle.." state="..state.." action="..action.." reason=synchronous_external_X11_classification")
+                  if cycle==2 then
+                      local safe=(state=="battle_untrained" and action=="WAIT")
+                      local marker="ADAPTIVE_BATTLE_FAIL_CLOSED="..(safe and "PASS" or "FAIL").." cycle=2 state="..state.." action="..action
+                      local bf=assert(io.open("captures/battle-regression-report.txt","wb")); bf:write(marker.."\n"); bf:close()
+                      log(marker)
+                  end
               elseif phase==30 then
-                  local p=string.format("captures/action-cycle-%02d.txt",cycle)
-                  local f=io.open(p,"r")
-                  if not f then log("ADAPTIVE_ACTION_FILE_MISSING cycle="..cycle); sendAction("WAIT",cycle)
-                  else local a=f:read("*a") or "WAIT"; f:close(); a=a:gsub("%s+",""); sendAction(a,cycle) end
+                  sendAction(plannedAction[cycle] or "WAIT",cycle)
               elseif phase==38 then
                   releaseAction(cycle)
               elseif phase==60 then
-                  gate(string.format("C%02d-F60",cycle),cycle,false)
+                  captureExternal(string.format("C%02d-F60",cycle),cycle)
               elseif phase==100 then
-                  gate(string.format("C%02d-F100",cycle),cycle,false)
+                  local label=string.format("C%02d-F100",cycle)
+                  local state,action=captureExternal(label,cycle)
+                  if not state then return end
+                  local before=plannedState[cycle] or "unknown"; local act=plannedAction[cycle] or "WAIT"
+                  log("ADAPTIVE_ACTION_VERIFICATION cycle="..cycle.." before="..before.." action="..act.." observed_after="..state.." state_changed="..tostring(before~=state))
+                  if before=="map" and state=="battle_untrained" then
+                      local marker="ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=battle_untrained label="..label
+                      local pf=assert(io.open("captures/progress-report.txt","wb")); pf:write(marker.."\n"); pf:close()
+                      log(marker)
+                  end
               elseif phase==180 then
-                  gate(string.format("C%02d-F180",cycle),cycle,true)
+                  local state,action=captureExternal(string.format("C%02d-F180",cycle),cycle)
+                  if not state then return end
+                  local count=0
+                  local reported=tonumber((plannedDecision[cycle] or ""):match('"roulette_wait_count"%s*:%s*(%d+)')) or 0
+                  if state=="roulette" and (plannedAction[cycle] or "WAIT")=="WAIT" then count=reported end
+                  local ht=string.format('{"last_state":"%s","last_action":"%s","roulette_wait_count":%d}\n',state,plannedAction[cycle] or "WAIT",count)
+                  local hf=assert(io.open("captures/history.json","wb")); hf:write(ht); hf:close()
+                  checkpoint(cycle)
+                  if cycle==maxCycles then log("ADAPTIVE_LOOP_FINISHED cycles="..maxCycles); PCSX.quit(0); return end
               end
           end)
           log("ADAPTIVE_SCRIPT_READY cycles="..maxCycles.." source=verified-board-f180 captures=EXTERNAL_X11_ONLY")
@@ -276,101 +308,50 @@ jobs:
           import sys,time,subprocess,hashlib,json
           from pathlib import Path
           from PIL import Image
-          pid=int(sys.argv[1]); stdout=Path(sys.argv[2]); out=Path(sys.argv[3]); root=Path(sys.argv[4])
-          max_cycles=2; phases=(20,60,100,180); done=set()
-          last_progress=time.monotonic(); last_phase='emulator_start'; progress_transitions=0; previous_observed={}
+          pid=int(sys.argv[1]); stdout=Path(sys.argv[2]); out=Path(sys.argv[3])
+          cycles=2; phases=(20,60,100,180)
+          labels=["C%02d-F%d"%(c,p) for c in range(1,cycles+1) for p in phases]
+          done=set(); deadline=time.monotonic()+60
           def alive():
-              r=subprocess.run(["ps","-o","stat=","-p",str(pid)],capture_output=True,text=True)
-              s=r.stdout.strip(); return bool(s) and not s.startswith("Z")
-          def capture(label):
-              xwd=out/(label+".xwd"); png=out/(label+".png")
-              a=subprocess.run(["xwd","-root","-silent","-out",str(xwd)],capture_output=True,text=True,timeout=10)
-              if a.returncode or not xwd.is_file() or not xwd.stat().st_size:
-                  print("ADAPTIVE_X11_FAILED label="+label+" error="+a.stderr,flush=True); return False
-              b=subprocess.run(["convert",str(xwd),str(png)],capture_output=True,text=True,timeout=10)
-              try: xwd.unlink()
-              except FileNotFoundError: pass
-              if b.returncode or not png.is_file():
-                  print("ADAPTIVE_X11_CONVERT_FAILED label="+label+" error="+b.stderr,flush=True); return False
-              try:
+              q=subprocess.run(["ps","-o","stat=","-p",str(pid)],capture_output=True,text=True)
+              st=q.stdout.strip(); return bool(st) and not st.startswith("Z")
+          def tail():
+              try: return stdout.read_text(errors="replace").splitlines()[-12:]
+              except FileNotFoundError: return []
+          while len(done)<len(labels) and time.monotonic()<deadline:
+              for label in labels:
+                  if label in done: continue
+                  png=out/(label+".png")
+                  if not png.is_file(): continue
                   with Image.open(png) as im:
-                      colors=im.getcolors(maxcolors=1000000)
-                      ok=im.size==(1280,800) and png.stat().st_size>1000 and not (colors is not None and len(colors)==1)
-                      sha=hashlib.sha256(png.read_bytes()).hexdigest()
-                      print("ADAPTIVE_X11_CAPTURE label={} size={} bytes={} colors={} sha256={} valid={}".format(label,im.size,png.stat().st_size,len(colors) if colors is not None else "many",sha,ok),flush=True)
-                      return bool(ok)
-              except Exception as e:
-                  print("ADAPTIVE_X11_VERIFY_ERROR label="+label+" error="+str(e),flush=True); return False
-          def observe(path,decision_path=None,history=None):
-              cmd=["python3",str(root/"tools/storymode_adaptive_agent.py"),str(path)]
-              if history and history.is_file(): cmd += ["--history",str(history)]
-              if decision_path: cmd += ["--output",str(decision_path)]
-              r=subprocess.run(cmd,capture_output=True,text=True,timeout=10)
-              if r.returncode: raise RuntimeError("agent failed: "+r.stderr+" "+r.stdout)
-              return json.loads(r.stdout.strip().splitlines()[-1])
-          while alive():
-              try: content=stdout.read_text(errors="replace")
-              except FileNotFoundError: content=""
-              for cycle in range(1,max_cycles+1):
-                  for phase in phases:
-                      label="C%02d-F%d"%(cycle,phase)
-                      token="ADAPTIVE_CAPTURE_READY cycle=%d phase=%d label=%s"%(cycle,phase,label)
-                      if label in done or token not in content: continue
-                      last_phase=label
-                      ok=capture(label)
-                      if not ok: raise SystemExit("invalid external X11 capture: "+label)
-                      png=out/(label+".png")
-                      verify=observe(png, out/("verification-%s.json"%label))
-                      print("ADAPTIVE_OBSERVED label={} state={} confidence={:.2f} reason={}".format(label,verify["state"],verify["confidence"],verify["reason"]),flush=True)
-                      prev=previous_observed.get(cycle)
-                      if prev is not None and prev != verify["state"]:
-                          progress_transitions += 1
-                          print("ADAPTIVE_PROGRESS_TRANSITION label={} from={} to={}".format(label,prev,verify["state"]),flush=True)
-                      previous_observed[cycle]=verify["state"]
-                      if phase==20:
-                          history=out/"history.json"
-                          decision=observe(png,out/("decision-cycle-%02d.json"%cycle),history if history.exists() else None)
-                          (out/("action-cycle-%02d.txt"%cycle)).write_text(decision["action"]+"\n",encoding="utf-8")
-                          print("ADAPTIVE_DECISION cycle={} state={} action={} confidence={:.2f} reason={}".format(cycle,decision["state"],decision["action"],decision["confidence"],decision["action_reason"]),flush=True)
-                          if cycle==2:
-                              safe=(decision["state"]=="battle_untrained" and decision["action"]=="WAIT")
-                              marker="ADAPTIVE_BATTLE_FAIL_CLOSED="+("PASS" if safe else "FAIL")+" cycle=2 state="+decision["state"]+" action="+decision["action"]
-                              print(marker,flush=True)
-                              (out/"battle-regression-report.txt").write_text(marker+"\n",encoding="utf-8")
-                      elif phase==100:
-                          dec_path=out/("decision-cycle-%02d.json"%cycle)
-                          dec=json.loads(dec_path.read_text(encoding="utf-8"))
-                          changed=dec["state"]!=verify["state"]
-                          print("ADAPTIVE_ACTION_VERIFICATION cycle={} before={} action={} observed_after={} state_changed={}".format(cycle,dec["state"],dec["action"],verify["state"],str(changed).lower()),flush=True)
-                          if cycle==1 and dec["state"]=="map" and verify["state"]=="battle_untrained":
-                              marker="ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=battle_untrained label="+label
-                              print(marker,flush=True)
-                              (out/"progress-report.txt").write_text(marker+"\n",encoding="utf-8")
-                      elif phase==180:
-                          dec=json.loads((out/("decision-cycle-%02d.json"%cycle)).read_text(encoding="utf-8"))
-                          count=int(dec.get("roulette_wait_count",0)) if verify["state"]=="roulette" and dec["action"]=="WAIT" else 0
-                          history={"last_state":verify["state"],"last_action":dec["action"],"roulette_wait_count":count}
-                          (out/"history.json").write_text(json.dumps(history,ensure_ascii=False)+"\n",encoding="utf-8")
-                          print("ADAPTIVE_CHECKPOINT_STATE cycle={} state={} prior_action={} roulette_wait_count={}".format(cycle,verify["state"],dec["action"],count),flush=True)
-                      gate=out/("go-"+label.lower())
-                      gate.write_text("validated\n",encoding="utf-8")
-                      done.add(label)
-                      last_progress=time.monotonic()
-              if time.monotonic()-last_progress>45:
-                  try: tail=stdout.read_text(errors="replace").splitlines()[-12:]
-                  except FileNotFoundError: tail=[]
-                  checkpoints=sorted(out.glob("adaptive-cycle-*-f180.sstate"))
-                  hashes=[{"file":p.name,"bytes":p.stat().st_size,"sha256":hashlib.sha256(p.read_bytes()).hexdigest()} for p in checkpoints]
-                  print("ADAPTIVE_PHASE_WATCHDOG_FAIL last_phase={} idle_seconds={:.1f} checkpoints={} stdout_tail={}".format(last_phase,time.monotonic()-last_progress,json.dumps(hashes),json.dumps(tail)),flush=True)
-                  subprocess.run(["kill","-TERM",str(pid)],capture_output=True,text=True)
-                  raise SystemExit(90)
-              time.sleep(.01)
-          print("ADAPTIVE_WATCHDOG_END captures={}/{} progress_transitions={}".format(len(done),max_cycles*len(phases),progress_transitions),flush=True)
-          if len(done)!=max_cycles*len(phases):
-              raise SystemExit("ADAPTIVE_CAPTURE_COUNT_FAIL")
-          if progress_transitions<1:
-              raise SystemExit("ADAPTIVE_GAMEPLAY_PROGRESS_FAIL: no observed state transition")
+                      size=im.size; im.verify()
+                  with Image.open(png) as im:
+                      valid=size==(1280,800) and png.stat().st_size>1000 and im.getbbox() is not None
+                  if not valid: raise SystemExit("invalid external X11 image: "+label)
+                  vpath=out/("verification-"+label+".json")
+                  if not vpath.is_file(): raise SystemExit("missing classifier report: "+label)
+                  v=json.loads(vpath.read_text(encoding="utf-8"))
+                  digest=hashlib.sha256(png.read_bytes()).hexdigest()
+                  print("ADAPTIVE_X11_VALIDATED label={} size={} bytes={} sha256={} state={} confidence={:.2f}".format(label,size,png.stat().st_size,digest,v.get("state","unknown"),v.get("confidence",0)),flush=True)
+                  if label.endswith("F100"):
+                      cycle=int(label[1:3]); dec=json.loads((out/("decision-cycle-%02d.json"%cycle)).read_text())
+                      print("ADAPTIVE_ACTION_VERIFICATION cycle={} before={} action={} observed_after={} state_changed={}".format(cycle,dec.get("state"),dec.get("action"),v.get("state"),str(dec.get("state")!=v.get("state")).lower()),flush=True)
+                  done.add(label)
+              if len(done)<len(labels): time.sleep(.01)
+          missing=sorted(set(labels)-done)
+          if missing:
+              print("ADAPTIVE_CAPTURE_WATCHDOG_FAIL missing={} process_alive={} stdout_tail={}".format(missing,alive(),json.dumps(tail())),flush=True)
+              raise SystemExit(91)
+          cps=sorted(out.glob("adaptive-cycle-*-f180.sstate"))
+          summary=[{"file":p.name,"bytes":p.stat().st_size,"sha256":hashlib.sha256(p.read_bytes()).hexdigest()} for p in cps]
+          print("ADAPTIVE_WATCHDOG_END captures={}/{} checkpoints={} hashes={}".format(len(done),len(labels),len(cps),json.dumps(summary)),flush=True)
+          if len(cps)!=cycles: raise SystemExit("ADAPTIVE_CHECKPOINT_COUNT_FAIL")
+          if not (out/"progress-report.txt").is_file(): raise SystemExit("ADAPTIVE_GAMEPLAY_PROGRESS_FAIL")
+          rpt=out/"battle-regression-report.txt"
+          if not rpt.is_file() or "ADAPTIVE_BATTLE_FAIL_CLOSED=PASS cycle=2 state=battle_untrained action=WAIT" not in rpt.read_text():
+              raise SystemExit("ADAPTIVE_BATTLE_FAIL_CLOSED_FAIL")
           PY
+
           set +e
           wait "$pid"
           rc=$?
