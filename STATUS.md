@@ -1,3 +1,23 @@
+## VERIFIED UPDATE — one-cycle smoke checkpoint validated; restore test pending (22 October 2026, 17:35 WIB)
+
+**Story Mode is NOT complete.** No authentic in-game ending/results screenshot exists. The new smoke checkpoint is structurally validated but is not yet trusted as a continuation source until a fresh emulator process restores it.
+
+- Player smoke run [#39763526377](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39763526377) completed **success** on workflow revision 15 with `LOOP_CYCLES=1`.
+- All 8 adaptive-agent tests passed; all five authentic external-X11 captures C01-F20/F60/F100/F110/F180 were valid 1280x800 PNGs and visually inspected from private artifact #12419631005. They show board → visible dialogue → board. DOWN and START press/release readbacks passed; the Japanese dialogue `ここに結界をはります` means (Aku akan memasang penghalang di sini). START was used to skip it.
+- The run recorded `ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=dialogue`, emitted the session-finished marker, and the emulator exited normally with code 0.
+- Shell validation **after emulator exit** passed the checkpoint length threshold, PCSX-Redux SaveState v4 header, and SHA-256. Private checkpoint `adaptive-cycle-01-f180.sstate` is 21,162,617 bytes, SHA-256 `b55495934f9ba98165268627b35904918a4dd3983e6d90bb66e2662dfa059e17`. It is in private artifact #12419631005 only; do not commit or publish it.
+- A fresh-process restore test was then triggered as run [#39764239171](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39764239171) with marker revision 16: `SOURCE_RUN=39763526377`, source artifact `naruto-storymode-adaptive-player-private`, source file and exact SHA above, `RESTORE_TEST=1`, `LOOP_CYCLES=1`. Its success requires an explicit `ExecutionFlow::SaveStateLoaded` event and authentic post-restore external-X11 frame in addition to structural validation of the new checkpoint. At the latest status check it was starting; no restore result was verified yet.
+- Chakra/barrier causation remains HYPOTHESIS: the one action branch alone cannot establish a universal cost or Mizuki rule. Do not infer combat outcome from these images.
+
+### Next steps
+1. Inspect run #39764239171 logs, all five X11 frames, and private artifact. Verify the named `ExecutionFlow::SaveStateLoaded` event, post-restore frame, exit result, and new checkpoint's external size/header/SHA validation.
+2. Only if that restore test passes, set the next marker to the newest validated restore-run checkpoint, `RESTORE_TEST=0`, `LOOP_CYCLES=2`, and a new revision; then audit the bounded continuation.
+3. After reliable restoration, do a matched one-action-versus-NONE experiment from the same immutable parent with separate disposable Memory Card copies. Keep every rule VERIFIED/HYPOTHESIS/UNKNOWN based on direct evidence.
+
+All existing boundaries remain: only this repository; gameplay images must be authentic external X11 captures; screenshots, savestates, ROM, BIOS and Memory Cards stay out of Git and private artifacts remain private; START skips dialogue; Circle only when a contextually valid YES is visibly highlighted. Translate Japanese into Indonesian immediately in parentheses. Never claim Story Mode is complete without authentic in-game ending/results evidence.
+
+---
+
 ## LATEST VERIFIED RUN STATE — checkpoint visibility race; no two-cycle pass (22 October 2026, 17:20 WIB)
 
 **Story Mode is NOT complete.** No authentic in-game ending/results screen exists. Both latest adaptive-player runs have ended; none is still running or queued.
