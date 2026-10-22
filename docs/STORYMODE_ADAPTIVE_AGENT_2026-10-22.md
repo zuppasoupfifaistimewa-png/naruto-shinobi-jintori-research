@@ -1,3 +1,13 @@
+## RESTORE VERIFIED — roulette-highlighted menu checkpoint is independently loadable (revision44)
+
+Run #39867381637 passed restore-only. Private artifact #12464118614 passed ZIP integrity. Actual C01-F20 image displays `ルーレット` (Roulette) highlighted in the command menu. New process logged `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five real 1280×800 screenshots, exit0, external output size/v4-header/SHA validation passed.
+
+Input checkpoint from run #39866820866 / artifact #12463489344 / adaptive-cycle-01-f180.sstate: size 21,162,920, v4, SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`. This exact source is promoted as restorable. New output `0499c0f73799ac18f53a08bfd2c63a45738d8b56fcd32f157d6b0b7b596c19e3`, 21,163,308 bytes/v4, remains unpromoted until its own restore.
+
+Next revision45, Circle vs WAIT on that menu source. Marker: source run 39866820866/artifact naruto-storymode-adaptive-player-private/checkpoint adaptive-cycle-01-f180.sstate/SHA 609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7; AB_TEST=1; AB_ACTION=CIRCLE; AB_EXPECTED_STATE=menu_or_unknown_choice; two cycles; restore/continuation off. Workflow commit `2ec5011c5c81f00e686690570bf4349f9124c531` adds CIRCLE to the menu-state allowlist only, not the map-state list. Require all A/B acceptance gates and screenshot proof. Circle is used for the visibly highlighted Roulette selection only, never for dialogue; use START for dialogue. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision44 independently restores CROSS-returned Roulette menu
 
 Run #39867381637 is active, started 05:46:45 WIB; timeout about 06:06:45 WIB. It loads run #39866820866 / private artifact #12463489344 / checkpoint adaptive-cycle-01-f180.sstate / SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`, RESTORE_TEST=1, one cycle.
