@@ -1,3 +1,15 @@
+## NEWEST HANDOFF UPDATE — matched A/B baseline confirmed; path-format bug fixed, rerun active (22 October 2026, 17:59 WIB)
+
+Story Mode is still **NOT COMPLETE**.
+
+- A/B run #39766331759 got through both emulator branches: 10/10 genuine X11 captures, both branch Memory Cards cloned byte-identically, both fresh processes logged `ExecutionFlow::SaveStateLoaded`, DOWN press/release readback passed for the ACTION arm, NONE/WAIT sent no input, and both output states passed external post-exit size/header/SHA validation. But it failed at final comparison with `TypeError: unsupported operand type(s) for %: 'PosixPath' and 'int'`; do not count its paired report as completed, and do not promote its output checkpoints.
+- Reviewing its private artifact #12419789546 established both F20 classifications were `menu_or_unknown_choice` and the two frame arrays were pixel-identical (0 mismatching pixels out of 1,024,000). The Memory Card baseline/clones share SHA `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`; the exact immutable parent SHA for both arms was `7679cfbd3576c3202abcc299b907939ab4e4529e3a0aa260e780806b1e21cc92`.
+- Workflow path formatting was fixed in commit [0041262a4c83edbabdbfb658ff3c572ad9e3a30c](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/0041262a4c83edbabdbfb658ff3c572ad9e3a30c). Run [#39767083708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39767083708) repeats the same bounded test on revision 19 and was active at this update.
+
+Next: audit run #39767083708 and its private 10-frame artifact. Require same initial F20 pixels/state, exact same source hash, byte-identical independent Memory Card clones, DOWN press/release readback, WAIT-only control, both checkpoint validations, and a completed visual-difference report. If the menu remains unchanged and the report is completed, classify DOWN's effect only in this particular menu/timing context—not as a global rule. Keep the artifact private; don't commit frames/savestates.
+
+---
+
 ## NEWEST HANDOFF UPDATE — two-cycle continuation passed; paired menu-action experiment next (22 October 2026, 17:47 WIB)
 
 Story Mode is **NOT complete**.
