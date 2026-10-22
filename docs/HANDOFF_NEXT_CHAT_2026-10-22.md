@@ -1,3 +1,16 @@
+## LATEST DIAGNOSTIC — paused nextTick drain stalled; single-nextTick restored and smoke test next (22 October 2026, 18:39 WIB)
+
+- A/B retry #39771377339 did not complete. It captured five genuine ACTION-arm X11 frames; source Information checkpoint hash remained `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`, identical Memory Card clones, and DOWN press/release readbacks were valid. The output checkpoint in private artifact #12423430123 is 21,162,276 bytes with v4 header and SHA-256 `a2d055634da951b8c9703ac1d30ac0981d4508404527604ddf4e803fe08935b5`; however, a chained 12-callback `nextTick` drain while paused did not progress, so watchdog rc=124 killed the session before the control branch. Do not promote this output, and do not mark the Information→Map item behavior VERIFIED.
+- Previous VSync drain test #39770465538 also timed out rc=124. Its output file was full-size with v4 header in its private artifact, but clean process completion was not achieved.
+- Workflow commit `df6e3d5afab0a9efeac89aa8bcb0be2e273ef631` restores the known established single quit callback outside VSync: pause then `PCSX.nextTick(function() PCSX.quit(0) end)`. Shell validation still happens after the emulator exits. Native exit 139 is accepted only if session finished and the state validates externally.
+- Visual review of the one-arm #39771377339 frames suggests DOWN moved the selection from `情報` (Informasi) to `マップを見る` (Lihat peta), but the NONE control was not run; classify this as HYPOTHESIS only.
+
+Next trigger revision 27 with `RESTORE_TEST=1`, `LOOP_CYCLES=1`, source the already restore-validated checkpoint `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e` from run #39768787669. Require explicit `ExecutionFlow::SaveStateLoaded`, five authentic post-load X11 images, end-of-process result and externally validated output state. Only then retry A/B.
+
+Story Mode remains NOT COMPLETE; private gameplay assets remain out of Git.
+
+---
+
 ## LATEST DIAGNOSTIC — second Information-down A/B attempt timed out; nextTick-drain retry next (22 October 2026, 18:31 WIB)
 
 - Run [#39770465538](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39770465538) timed out (exit 124) before the control branch. It had five valid authentic ACTION frames, DOWN press/release readback, identical cloned Memory Card hashes and exact parent source `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`. The 12-VSync drain did not progress after save; emulator did not exit before 120s. Private artifact #12422367156 contains an apparently full-size checkpoint (21,162,494 bytes, v4 header, SHA-256 `0c33a47cb9e6f2dfb09c568410ca125acbae6f46f84692b8589a5c903442f564`) and authentic screenshots showing the ACTION branch highlight on `マップを見る` (Lihat peta) from F60 onward, but no NONE control branch was produced and exit 124 means the official post-exit workflow guard did not pass. Keep the action result HYPOTHESIS and do not use its output as a trusted source.
