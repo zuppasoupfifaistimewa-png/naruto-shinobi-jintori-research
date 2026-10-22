@@ -1,3 +1,41 @@
+## RESTORE VERIFIED — map-view checkpoint promoted; next probe map navigation (22 October 2026, 19:20 WIB)
+
+Run [#39777301626](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777301626) completed with Actions success at 19:20:11 WIB. Private artifact #12423949987 was audited; the actual C01-F20 image was opened and visually confirms the map/tile screen remains visible after restore.
+
+- Source checkpoint from run #39776518701, artifact #12425305517: `adaptive-cycle-01-f180.sstate`, source SHA-256 `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`, size 21,163,227 bytes, `PCSX-Redux SaveState v4` header.
+- New emulator process logged `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS` for the exact source SHA. Five authentic external-X11 screenshots validated at 1280×800; F20, F60, F100, F110 and F180 consistently classify as `map_after_move` and manually inspected F20 shows the map, tile values, Naruto panel (`レベル` (Level) 1, `結界価値` (Nilai penghalang) 60, `耐久値` (Daya tahan) 2/2) and `× もどる` (X: Kembali). No gameplay input was sent during restore-only testing.
+- Emulator exit code 0. New output checkpoint passed external validation: 21,162,251 bytes, v4 header, SHA-256 `a2a3c36918155dc4356da2664bfa7880c9605c62260389b85f85262c942b2fe7`. **This new output is not promoted** until it itself passes an independent fresh-process restore.
+- Promote source `b5715ba7...` as the trusted, restorable map-view checkpoint (not the new `a2a3...` output).
+
+### Agent safety adjustment
+The workflow's A/B initial precondition previously accepted only `menu_or_unknown_choice`, which blocked a controlled experiment from this calibrated map screen even though the screenshot classifier reliably returns `map_after_move` with action WAIT. Workflow commit `5f8ae63b4374cb730ef197d797dffd0e823db141` changes the precondition to accept either `menu_or_unknown_choice` or `map_after_move` only when the classifier action is WAIT. The control policy guard already permits `map_after_move` + WAIT. No emulator run was triggered by this workflow-only change.
+
+### Next exact controlled experiment — revision 32: DOWN versus WAIT on the map
+Use the promoted map checkpoint from run #39776518701:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39776518701
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=DOWN
+LOOP_CYCLES=2
+REVISION=32
+```
+The next test compares one DOWN press against NONE/WAIT from two fresh processes with the exact same source and identical cloned Memory Cards. Require two `ExecutionFlow::SaveStateLoaded` events, pixel-identical/state-identical F20 frames, DOWN press/readback true and release/readback false, ten authentic 1280×800 X11 screenshots, accepted exits and both post-exit checkpoint size/header/SHA validations. Manually inspect F60/F100/F110/F180 to determine whether DOWN moves the map cursor/selection, changes the current tile/position, or does something else. Do not press Circle or confirm any map destination. If the screen response is ambiguous, preserve HYPOTHESIS/UNKNOWN.
+
+Rules now VERIFIED, only in the tested contexts:
+1. DOWN from `情報` (Informasi) highlights `マップを見る` (Lihat peta).
+2. TRIANGLE while `マップを見る` (Lihat peta) is highlighted opens the tile/map view; WAIT leaves the menu open.
+3. Checkpoint SHA `b5715ba7...` restores in a new process and visually retains that map view.
+
+Story Mode remains **NOT COMPLETE**; no ending/result evidence has been observed. Keep all gameplay files private/out of Git and skip Story Mode dialogue with START.
+
+---
+
 ## VERIFIED RESULT — revision 30 Triangle opens map view (22 October 2026, 19:15 WIB)
 
 Run [#39776518701](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776518701) completed with Actions `success`; raw logs and private artifact #12425305517 were audited. Both arms restored the same independently restorable parent SHA-256 `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7` in separate fresh emulator processes. Both logged `ExecutionFlow::SaveStateLoaded`, used equal cloned Memory Cards (SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`), and started with identical F20 pixels (1,024,000/1,024,000) and matched generic classifier state. Triangle press/release readback passed true/false. Ten authentic external-X11 captures were validated at 1280×800; both emulator processes exited 0; both output checkpoints passed external post-exit size/header/SHA verification.
