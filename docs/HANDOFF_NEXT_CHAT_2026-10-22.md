@@ -1,3 +1,13 @@
+## LATEST RESULT — smoke completed successfully; next paired DOWN test (22 October 2026, 18:48 WIB)
+
+Run [#39772650469](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39772650469) completed successfully (run #27 / revision 27). It restored source checkpoint SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e` from #39768787669, logged `ExecutionFlow::SaveStateLoaded`, captured five authentic 1280×800 external-X11 frames, exited 0, and validated its new output after exit. Output hash: `cb53613ffa09e57d0f6d927d9e82bf603937871a07a9ed24c0955735cf258fdc`; size 21,162,547 bytes; v4 header; private artifact #12422499045. F20 visibly retains `情報` (Informasi) selected. This passes the shutdown smoke, but the new output file remains **unpromoted until that output itself is restored in a fresh process**.
+
+The next marker revision 28 has been prepared to run a matched A/B from the exact same known-restorable parent SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`: ACTION=DOWN vs control NONE/WAIT; `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `AB_TEST=1`, `LOOP_CYCLES=2`. Check the current run before launching anything else. Required evidence: identical F20 pixels/state, DOWN press/release readback, two `ExecutionFlow::SaveStateLoaded` logs, ten valid authentic X11 screenshots, both process exits accepted, and both output savestates externally passing size/header/SHA checks. Do not promote either new output until each is restored in a fresh process. If push has not created a run, inspect the commit/Actions state before retrying; never create parallel player runs.
+
+Verified menu facts remain narrowly scoped: from the exact parent menu, DOWN moves Roulette→Ninjutsu and then Ninjutsu→Information with paired control evidence. Information→`マップを見る` (Lihat peta) remains HYPOTHESIS pending the matched DOWN/NONE result. Story Mode remains NOT COMPLETE. Follow all privacy/input constraints in the existing handoff below.
+
+---
+
 ## ACTIVE RUN — revision 27 restore smoke using single-nextTick shutdown (22 October 2026, 18:45 WIB)
 
 Run [#39772650469](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39772650469) is in progress with `RESTORE_TEST=1`, one cycle, pinned source SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e` from #39768787669's already-restored Information-selection checkpoint. It started 18:42:49 WIB; at 18:45 WIB it was still installing X11 tools (that step started 18:43:28 WIB). No new frames/artifact yet; don't start a parallel run.
