@@ -1,3 +1,26 @@
+## VERIFIED UPDATE — state classifier and checkpoint shutdown safeguards (22 October 2026, 17:12 WIB)
+
+The adaptive agent remains a prototype; Story Mode completion is not verified.
+
+- Latest classifier regression [#39759649670](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39759649670) passed 8 synthetic tests plus 10 authentic private X11 frames.
+- The former dual-HUD-only `battle_untrained` rule was too broad. The tested green board with route/tile symbols and both player HUDs is now `map_after_move`, with action WAIT. Only non-board dual-HUD screens fall through to `battle_untrained`, also WAIT. The exact checked frames are in private artifact #12416489109, not Git.
+- Fresh process two-session run #39758737690 created two states and logged a load event in session 2, but failed because the outer watchdog checked before the second state/marker appeared. Both states in the private artifact had full raw size:
+  - cycle 1: 21,162,838 bytes, SHA-256 `81487394b180a47c59165b49bae21f4d278b600d9fbf83c14086a9629da1c2b4`;
+  - cycle 2: 21,162,485 bytes, SHA-256 `42c4ad60397ade407508c4393fac21c21db6f12c88c5efc77deb05a2daa827f5`.
+- The next attempt #39759822818 captured all five cycle-1 frames and correctly detected map -> dialogue -> map_after_move, including a START tap at F110. It then terminated with native exit 139 and its checkpoint was only 2,097,152 bytes: **structurally invalid and unsafe to resume**. No cycle 2 ran. Treat the capture/decision portion as evidence, not a successful checkpoint run.
+- Current engineering changes in workflow commit `6bca6f80853292b5ebe7033ea0e1a0d2d58be569`:
+  1. Validate raw checkpoint size (>21,000,000 bytes) and PCSX-Redux SaveState v4 header immediately after writing.
+  2. Defer emulator quit outside the GPU::Vsync callback using a nextTick callback.
+  3. Permit recovery from exit 139 only when the session-finished marker and raw checkpoint size/header validation both pass.
+  4. Make the external watcher wait for all captures, all checkpoints, and the fresh-process completion marker; fail quickly if the orchestrator dies with missing evidence.
+- Player run #39760914530 was triggered on the prior workflow revision before these latest safeguards and was still in progress on last check. The updated revision-14 run #39761094445 is queued behind the existing concurrency lock. Do not launch a third run; inspect these in order and check the version/commit associated with each.
+- One controlled sequence shows DOWN changing the route counter 4 -> 3, followed by dialogue `ここに結界をはります` (Aku akan memasang penghalang di sini), START to skip the dialogue, and by F180 a red barrier/seal graphic with Mizuki Chakra 1380 vs 1500 at the earlier F110 image while Naruto remained 1380. This remains HYPOTHESIS without a matched NONE branch at the same parent; do not declare a universal NPC barrier rule/cost from it.
+
+### Operational rule
+Never treat a checkpoint as valid merely because the API created a file or the log says CREATED. Require raw size, v4 header, SHA-256, and successful restore in a fresh process before promoting it to the next resume point. Do not broaden the autonomous policy beyond calibrated visual states. Story Mode stays NOT COMPLETE until an original in-game ending/results screenshot is verified.
+
+---
+
 # Story Mode adaptive agent — 22 October 2026
 
 ## Purpose and maturity
