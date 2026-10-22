@@ -1,3 +1,13 @@
+## ACTIVE — revision46 restore-only for wheel checkpoint after Circle
+
+Run #39868354205 is active at head `096a5cdc411e3ce26fd44f9bde8ff4ed909313c7`; started 05:55:24 WIB; timeout about 06:15:24 WIB. Source run #39867730674 / artifact #12464258211 / `adaptive-cycle-01-f180.sstate` / SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`, size 21,162,546, v4. Marker has RESTORE_TEST=1, one cycle, REVISION=46.
+
+Revision45's genuine images show Circle changed Roulette menu to a spinning wheel at F60/F100/F110/F180 and its button readback passed, but native shutdown aborted at exit134 after session finished; no control branch ran. Keep Circle-to-wheel HYPOTHESIS until matched A/B passes. Checkpoint header/hash/size passed local file inspection. Workflow commit `11b308f162aa1ef2f5b5167cd17b4340718a03de` now only recovers exit134 when session-finished marker and external checkpoint validation pass, and permits `AB_EXPECTED_STATE=roulette` only with Circle.
+
+Require revision46 fresh-process load event, restore PASS, five authentic 1280×800 X11 images with roulette visible, accepted exit, external output checkpoint validation. Do not run another player in parallel; do not promote revision46 output until its own independent restore. Story Mode NOT COMPLETE. Use START for dialogue.
+
+---
+
 ## REVISION45 PARTIAL — Circle opened the roulette wheel; shutdown aborted before control
 
 Run #39867730674 failed after the ACTION session. Private artifact #12464258211 passed ZIP integrity; direct inspection of authentic C01 screenshots shows the command menu with `ルーレット` (Roulette) highlighted at F20, then roulette wheel by F60/F100/F110/F180 after one Circle press/release (readback true/false). The emulator then logged session finished but aborted with `corrupted size vs. prev_size`, exit134 before control cycle; no paired control images/report. Keep the gameplay interpretation as **HYPOTHESIS** until A/B is complete.
