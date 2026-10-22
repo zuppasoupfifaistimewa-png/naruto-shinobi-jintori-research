@@ -1,3 +1,13 @@
+## RESTORE VERIFIED — scrolled board state from revision35 is restorable (revision36)
+
+Run #39781495023 passed restore-only from revision35 ACTION output, source SHA `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`, 21,162,766 bytes, v4, from private artifact #12426786721. Private restore artifact #12426677790 shows explicit load event and restore PASS, five valid authentic 1280×800 X11 screenshots, post-DOWN scrolled board retained at F20, exit0, new output checkpoint externally validated. Thus source b971… is promoted as independently restorable.
+
+New emitted output SHA `4fd72504031c7aaa73bd7fa18e2f7a8d79b428643cea3c588ea4596ad5e90777` (21,163,103, v4) remains unpromoted until its own fresh process restore.
+
+Next revision37: matched DOWN versus WAIT from source run #39780755350 / artifact #12426786721 / `adaptive-cycle-01-f180.sstate` / SHA b9717348…; set AB_TEST=1, AB_ACTION=DOWN, AB_EXPECTED_STATE=map_after_move, LOOP_CYCLES=2, RESTORE_TEST=0, CONTINUATION_TEST=0. Require all paired gates; inspect whether view/focus shifts further. No tile confirmation and no inference of character movement/capture. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision36 restore-only of board after DOWN (22 October 2026, 19:49 WIB)
 
 Only active player is #39781495023; start 19:49:08 WIB and timeout about 20:09:08 WIB. The marker's source is the revision35 ACTION output in run #39780755350 / private artifact #12426786721 / adaptive-cycle-01-f180.sstate / SHA-256 `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`. RESTORE_TEST=1, one cycle. Don't run a player in parallel.
