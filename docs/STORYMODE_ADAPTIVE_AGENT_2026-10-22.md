@@ -1,3 +1,20 @@
+## VERIFIED UPDATE — smoke checkpoint saved and externally validated (22 October 2026, 17:35 WIB)
+
+This is a successful one-cycle harness result, **not** proof Story Mode is complete and not yet proof the resulting checkpoint can be restored.
+
+- Run [#39763526377](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39763526377) passed 8 tests and 5/5 authentic 1280x800 external-X11 captures. Input DOWN and START press/release checks passed, with map → dialogue → map_after_move observed; START skipped the visible Japanese dialogue `ここに結界をはります` (Aku akan memasang penghalang di sini).
+- Emulator exit code was 0 with `ADAPTIVE_SESSION_FINISHED cycle=1`. The post-exit shell check passed the raw checkpoint length, SaveState v4 header, and SHA-256:
+  - `adaptive-cycle-01-f180.sstate`
+  - 21,162,617 bytes
+  - SHA-256 `b55495934f9ba98165268627b35904918a4dd3983e6d90bb66e2662dfa059e17`
+  - private artifact #12419631005 only.
+- Workflow source selection is now driven by validated marker fields `SOURCE_RUN`, `SOURCE_ARTIFACT`, `SOURCE_CHECKPOINT`, `SOURCE_SHA256`, `LOOP_CYCLES`, and `RESTORE_TEST`. The restore-test mode must verify the actual `ExecutionFlow::SaveStateLoaded` event plus an external X11 frame after restoration; file size/header/hash is necessary, not sufficient.
+- Run [#39764239171](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39764239171) uses the smoke run's exact checkpoint as source with `RESTORE_TEST=1` and `LOOP_CYCLES=1`. Its result is not yet verified.
+
+Do not advance to two cycles unless run #39764239171 proves fresh-process restoration. If it passes, use the newest validated checkpoint from that restore run for a bounded two-cycle continuation. If it fails, stay at restore-only diagnosis. Keep all artifacts private/out of Git; no gameplay image/state is to be publicly linked.
+
+---
+
 ## LATEST RUN OUTCOME — checkpoint visibility race remains unresolved (22 October 2026, 17:20 WIB)
 
 The adaptive player is still a prototype. Story Mode is NOT complete; no authentic ending/result capture exists.
