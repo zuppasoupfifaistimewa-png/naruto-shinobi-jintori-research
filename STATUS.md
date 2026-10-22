@@ -1,3 +1,14 @@
+## VERIFIED UPDATE — Information-highlight checkpoint restored in a fresh emulator (22 October 2026, 18:18 WIB)
+
+Story Mode remains **NOT COMPLETE**. The restore-only test succeeded; five authentic X11 frames from the new process visibly retain the selection on `情報` (Informasi).
+
+- Run [#39769265269](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39769265269) completed success using the ACTION checkpoint from A/B run #39768787669, exact source hash `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`, 21,162,009 bytes.
+- Private source-validation evidence confirms immutable read-only source copy and exact hash. Log explicitly includes `ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS` with that hash. Five authentic external-X11 images C01-F20/F60/F100/F110/F180 are 1280x800, valid, and were visually inspected. The selected row is `情報` (Informasi) in the right-side menu.
+- Emulator exited normally with code 0. New output checkpoint `adaptive-cycle-01-f180.sstate`, 21,162,446 bytes, SHA-256 `6159214a9006127c70f190f0d64b2ed3fb7f9e58ffddd5e4546a0a18820114c6`, passed external post-exit size/header/SHA validation. It remains a new, unpromoted output because the new output itself has not yet been restored. Source `aa399bd...` has now been proven restorable.
+- The next bounded test is a matched DOWN vs NONE/WAIT from that exact source checkpoint with independent identical Memory Card clones. It asks whether DOWN from `情報` (Informasi) moves highlight to `マップを見る` (Lihat peta), with F20 pixel parity and readback required. Circle is not permitted for this menu action. Story Mode remains incomplete.
+
+---
+
 ## VERIFIED UPDATE — second DOWN moves Ninjutsu highlight to Information (22 October 2026, 18:14 WIB)
 
 Story Mode remains **NOT COMPLETE**; no authentic ending/results screenshot exists.
