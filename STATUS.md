@@ -1,3 +1,13 @@
+## DIAGNOSTIC UPDATE — Information-down A/B halted safely on truncated checkpoint; shutdown drain added (22 October 2026, 18:23 WIB)
+
+Run [#39769826213](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39769826213) did **not** complete the matched A/B experiment. Authentic X11 captures C01-F20/F60/F100/F110/F180 were valid, ACTION/CONTROL Memory Cards cloned with identical SHA, source hash stayed pinned to `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`, and the action branch DOWN press/release readbacks passed. However, emulator shutdown exited 139 and its output checkpoint was only 2,097,152 bytes; shell validation explicitly logged `ADAPTIVE_CHECKPOINT_EXTERNAL_VALIDATION=FAIL ... reason=size`. The runner stopped before cycle 2 (watchdog exit 92). Do not infer the menu transition from this run and do not promote its checkpoint. The authentic C01-F20 capture confirms the menu parent still shows `情報` (Informasi) selected.
+- To address possible delayed save-slice flush before process exit, workflow commit `13da48ab08ef40d0be8c8bbc850b7babbb9b107e` adds a bounded 12-VSync drain window after checkpoint write/close returns. During the drain, no new input, capture, or cycle action is allowed; then it pauses and schedules quit outside VSync. This is a diagnostic safeguard, not yet proven to fix truncation.
+- Next smoke retry remains on the same immutable Information parent SHA above and requires 10 valid frames, parent parity, DOWN readback, two completed branches, normal/allowed exits, and externally valid (>21 MB) v4 checkpoints. If either checkpoint is 2 MB/truncated again, keep the experiment UNKNOWN and diagnose further.
+
+Story Mode remains **NOT COMPLETE**. No authentic ending/results evidence exists.
+
+---
+
 ## ACTIVE RUN — DOWN from Information versus NONE/WAIT (22 October 2026, 18:20 WIB)
 
 Run [#39769826213](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39769826213) is active on marker revision 24. Parent checkpoint is the exact, independently restored Information-selection state from run #39768787669: source file `adaptive-cycle-01-f180.sstate`, SHA-256 `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`. Test arms are ACTION=DOWN and control=NONE/WAIT, each with an independent clone of the same Memory Card. This tests whether DOWN from `情報` (Informasi) highlights `マップを見る` (Lihat peta). At last check it had initialized its container; no outcome yet.
