@@ -1,3 +1,15 @@
+## REVISION 38 PASSED — source checkpoint independently restorable (22 October 2026, 20:04 WIB)
+
+Run #39783158903 succeeded. Private artifact #12427598163 was re-downloaded and passed ZIP integrity. The fresh process logged ExecutionFlow::SaveStateLoaded and ADAPTIVE_RESTORE_TEST=PASS; five authentic external-X11 screenshots (1280×800), exit code 0, and external output-state size/v4-header/SHA validation all passed. Images retain the board/cursor arrangement after the second DOWN. Early tile digits are partly obscured by animated foliage; later captures clearly show 140.
+
+Restored source from run #39782011370 / artifact #12426797521 / adaptive-cycle-01-f180.sstate: 21,162,960 bytes, v4, SHA-256 `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`. This exact source is promoted as restorable.
+
+New output from #39783158903: 21,162,978 bytes, v4, SHA-256 `c4acb2b62a9891b597c1195a2dead7ccce902abddf0c5ec9b4c50b76142a7a33`. Do not use as a source until independently restored.
+
+Next: make bounded map A/B allow only UP/DOWN/LEFT/RIGHT for directional probes and exclude confirm buttons. Then do RIGHT vs WAIT from the promoted source. Keep all previous paired gates and inspect genuine screenshots; do not confirm any tile. Story Mode remains NOT COMPLETE. No movement/capture/ownership or ending is established. All game assets stay private and out of Git; START skips dialogue.
+
+---
+
 ## RESTORE PASS — revision37 ACTION checkpoint independently restored (revision38, 22 October 2026, 20:04 WIB)
 
 Run [#39783158903](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39783158903) success. After an initial corrupted download, a retry of private artifact #12427598163 passed ZIP integrity. Reviewed actual emulator frames C01-F20/F60/F100/F110/F180: post-second-DOWN board/cursor arrangement persists. In F20 the tile digits look like 100 and in F60 142 due transient leaves covering the digits; F100/F110/F180 clearly show 140. Do not treat this as a state-value change.
