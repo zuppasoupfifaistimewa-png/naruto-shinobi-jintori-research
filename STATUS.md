@@ -1,3 +1,15 @@
+## ACTIVE RUN — revision39 UP versus WAIT from trusted value-140 map state (22 October 2026, 20:11 WIB)
+
+Run [#39784493293](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39784493293) is the only active player. Its checkout was verified at commit `4893e1e0eb6cdcaf9fff052c9c794ae62327858a`: marker sets `AB_ACTION=UP`, `AB_EXPECTED_STATE=map_after_move`, and source SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`; workflow at blob `5a9b4697b0f19c1c5e8015852f5a90c57261ae9f` supports UP/DOWN/LEFT/RIGHT only for map-state A/B tests. The source is run #39779256427 / private artifact #12425858092 / `adaptive-cycle-01-f180.sstate`, previously restored independently by #39780143613 and visually identified as the map state with `空き地` (Tanah kosong), value 140.
+
+Run started at 20:10:11 WIB; hard timeout about 20:30:11 WIB. No outcome/artifact audited yet; do not launch another player in parallel.
+
+Required gates after completion: both fresh processes load exact source SHA and log SaveStateLoaded; F20 screenshots pixel-identical and both classify `map_after_move`; disposable cards identical; ACTION UP press/release readback true/false; control WAIT; ten authentic external X11 frames at 1280×800; both processes exit0; both output states externally validated for size, v4 header and SHA; report generated. Manually inspect whether UP moves focus toward the Naruto tile (`結界価値` (Nilai penghalang) 60) while WAIT remains at empty land140. Do not confirm a cell. Only classify the narrow focus change as VERIFIED if all gates and screenshots support it.
+
+Revision38 is technically loadable but is not treated as a semantically stable focus checkpoint because F20 after restore transiently looked shifted before later frames settled. Use the stronger source SHA 58d8… for this experiment. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE RUN — revision39 UP from empty-land140 versus WAIT (22 October 2026, 20:11 WIB)
 
 Run [#39784493293](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39784493293) is the only active player. Its committed marker is verified at head SHA `4893e1e0eb6cdcaf9fff052c9c794ae62327858a` and the checked-out workflow supports map-state UP direction. Exact configuration:
