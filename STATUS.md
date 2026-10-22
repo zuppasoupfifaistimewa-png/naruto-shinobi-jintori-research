@@ -1,3 +1,11 @@
+## ACTIVE RUN — revision 35 DOWN versus WAIT from empty-land focus (22 October 2026, 19:44 WIB)
+
+Run [#39780755350](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780755350) is currently `in_progress`, created at 19:43:50 WIB. Latest check: job is checking out the repository; there are no artifacts yet. The 20-minute deadline is approximately 20:03:50 WIB. Do not launch another player run.
+
+Config is the verified/restorable map source run #39779256427 / artifact #12425858092 / `adaptive-cycle-01-f180.sstate`, source SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`; `AB_TEST=1`, `AB_ACTION=DOWN`, `AB_EXPECTED_STATE=map_after_move`, `LOOP_CYCLES=2`, `REVISION=35`. Audit source SHA equality, F20 pixel parity, both load events, actual DOWN press/release true/false and WAIT control, all 10 external-X11 1280×800 captures, exit0 for both processes, and both output state validations. Then manually inspect screenshots and decide the next tile focus only. No tile confirmation. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE RUN — revision 35 DOWN from empty-land focus versus WAIT (22 October 2026, 19:44 WIB)
 
 Run [#39780755350](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780755350) is the only active player. Marker revision 35 was verified at main: source run #39779256427 / private artifact naruto-storymode-adaptive-player-private / adaptive-cycle-01-f180.sstate / source SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`; `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `AB_TEST=1`, `AB_ACTION=DOWN`, `AB_EXPECTED_STATE=map_after_move`, `LOOP_CYCLES=2`, `REVISION=35`. The checked-out workflow blob `2f3d82359ebbbfeeb705005287c8af7ee3855df0` supports this map-state gate.
