@@ -1,3 +1,9 @@
+## CURRENT ACTION — revision 28 matched DOWN/NONE run queued (22 October 2026, 19:02 WIB)
+
+Marker revision 28 was committed at `e31ebb2afbe1145746e480e9a0f020854621a82f`, triggering [run #39775176728](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39775176728). At the latest check it is **queued** (not yet running). It tests ACTION=DOWN against NONE/WAIT from the known-restorable Information parent `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`; 2 cycles, `AB_TEST=1`. Do not start another player run. Next chat must check this exact run, its latest job steps and artifacts/logs, then apply the strict paired-evidence gates documented here. Job timeout is 20 minutes after a runner starts; queued wait has no reliable ETA. Story Mode remains NOT COMPLETE.
+
+---
+
 ## LATEST RESULT — smoke completed successfully; next paired DOWN test (22 October 2026, 18:48 WIB)
 
 Run [#39772650469](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39772650469) completed successfully (run #27 / revision 27). It restored source checkpoint SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e` from #39768787669, logged `ExecutionFlow::SaveStateLoaded`, captured five authentic 1280×800 external-X11 frames, exited 0, and validated its new output after exit. Output hash: `cb53613ffa09e57d0f6d927d9e82bf603937871a07a9ed24c0955735cf258fdc`; size 21,162,547 bytes; v4 header; private artifact #12422499045. F20 visibly retains `情報` (Informasi) selected. This passes the shutdown smoke, but the new output file remains **unpromoted until that output itself is restored in a fresh process**.
