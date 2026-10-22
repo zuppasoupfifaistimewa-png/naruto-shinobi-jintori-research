@@ -1,3 +1,19 @@
+## VERIFIED UPDATE — DOWN from Ninjutsu selects Information (22 October 2026, 18:14 WIB)
+
+**Story Mode remains NOT COMPLETE.** No authentic ending/results image exists.
+
+- Matched ACTION-vs-NONE run [#39768787669](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768787669) succeeded from previously restored immutable parent hash `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`, whose menu highlight was `忍術` (Ninjutsu).
+- Both branches loaded that same source in separate fresh processes and logged `ExecutionFlow::SaveStateLoaded`; their Memory Cards were separate byte-identical clones (SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`). Ten authentic external-X11 captures passed validation, and both processes exited 0.
+- F20 parent parity passed: the screenshots were pixel-identical across 1,024,000 pixels, with both classifiers on `menu_or_unknown_choice`. The ACTION branch's DOWN press/release readbacks passed, while the control branch sent no action.
+- Visually, the red selection highlight moves from `忍術` (Ninjutsu) to `情報` (Informasi) by F60 in the action branch. The control branch stays on Ninjutsu through F180. Cross-branch visual differences were 14,606 pixels with mean absolute RGB difference 1.04012 at F60/F100/F110/F180.
+- **Rule classification: VERIFIED, scoped to this menu:** DOWN moves the highlighted row one step from Ninjutsu to Information. Combined with the previous A/B result, the observed menu navigation is Roulette → Ninjutsu → Information for successive DOWN presses from those tested parent states. It does not establish what those menu entries do when confirmed.
+- Action checkpoint, private artifact #12421302756: 21,162,009 bytes; SHA-256 `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`. Control checkpoint: 21,162,184 bytes; SHA-256 `06cea778aaaf838271fafa58734c3e236e7d5aa3f63d578a786012640fbbde52`. Both passed post-exit structural validation, but neither new output may be promoted until fresh-process restoration is verified.
+
+### Next
+Restore-only test the ACTION checkpoint above from private artifact #12421302756. Require an explicit `ExecutionFlow::SaveStateLoaded`, five authentic post-restore X11 frames showing the Information row still selected, normal/allowed exit, and external post-exit size/header/SHA checks. Do not assume the output checkpoint is a trusted resume point until then. Do not confirm any non-YES menu item with Circle.
+
+---
+
 ## ACTIVE RUN — test DOWN from Ninjutsu to the next menu row (22 October 2026, 18:12 WIB)
 
 Run [#39768787669](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768787669) was triggered at marker revision 22. It uses the verified/restored parent checkpoint from run #39767790829, file `adaptive-cycle-01-f180.sstate`, SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`, in ACTION=DOWN and NONE/WAIT branches with cloned identical Memory Cards. `LOOP_CYCLES=2`, `AB_TEST=1`, `RESTORE_TEST=0`, `CONTINUATION_TEST=0`. Latest status: in progress, at container initialization. This test asks whether DOWN from `忍術` (Ninjutsu) advances to `情報` (Informasi); only authentic matched X11 evidence can decide.
