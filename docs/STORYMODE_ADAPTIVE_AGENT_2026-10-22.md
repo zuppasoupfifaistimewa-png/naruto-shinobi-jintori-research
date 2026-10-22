@@ -1,3 +1,11 @@
+## NEXT VALIDATION — restore the matched DOWN successor before further gameplay (22 October 2026, 18:08 WIB)
+
+Run [#39768371975](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768371975) is queued to restore the ACTION-branch checkpoint from A/B run #39767790829. Source SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`, size 21,163,486 bytes, private artifact #12420204586 only. Marker revision 21: one cycle, `RESTORE_TEST=1`, other experiment modes disabled.
+
+Do not promote this state to trusted continuation until the fresh process records `ExecutionFlow::SaveStateLoaded`, five authentic post-load X11 frames, process exit, and post-exit size/header/SHA validation for its newly created state. Then use the restored menu selection to design the next bounded directional probe. Story Mode remains not complete.
+
+---
+
 ## VERIFIED RULE UPDATE — DOWN advances the current right-side menu highlight one row (22 October 2026, 18:06 WIB)
 
 The matched ACTION-vs-NONE experiment completed successfully in run [#39767790829](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39767790829).
