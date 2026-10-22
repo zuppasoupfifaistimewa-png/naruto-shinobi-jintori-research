@@ -1,3 +1,16 @@
+## RESTORE VERIFIED — post-DOWN scrolled board state survives fresh-process load (revision36, 22 October 2026, 19:51 WIB)
+
+Run [#39781495023](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39781495023) completed successfully at 19:50:35 WIB. Its private artifact #12426677790 was downloaded and inspected. It loaded the exact ACTION checkpoint from revision35/run #39780755350: SHA-256 `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`, 21,162,766 bytes, v4. Log explicitly records `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`. Five genuine external-X11 images are 1280×800 and valid. Direct review of C01-F20 confirms the post-DOWN scrolled board framing persists; the previous empty-land info panel is still hidden while the cursor remains near the lower cell/Naruto marker. Emulator exit 0. Its output checkpoint passes external validation: 21,163,103 bytes, header `PCSX-Redux SaveState v4`, SHA-256 `4fd72504031c7aaa73bd7fa18e2f7a8d79b428643cea3c588ea4596ad5e90777`. This new output itself remains unpromoted until a fresh-process restore.
+
+**Promoted source:** exact input checkpoint `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff` is now independently restore-proven and can be used for continuing experiments.
+
+### Next — revision37: a second DOWN vs WAIT from scrolled board state
+Use the same trusted input source checkpoint from run #39780755350, artifact `naruto-storymode-adaptive-player-private`, `adaptive-cycle-01-f180.sstate`, SHA above. Set `AB_TEST=1`, `AB_ACTION=DOWN`, `AB_EXPECTED_STATE=map_after_move`, `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `LOOP_CYCLES=2`, `REVISION=37`. Require all prior paired gates: source hash equality, two load events, exact F20 parity, same expected classifier state, identical card clones, DOWN press/release readback, ten authentic captures, both exits0, two external checkpoint validations, and generated comparison report. Inspect whether the board cursor/view advances again or the tile info changes. No Circle, no confirmation/selection; do not infer actual character movement/capture from scrolling or focus alone.
+
+Story Mode remains **NOT COMPLETE**. Only board focus/view movement is established; no capture/territory ownership/ending proof. Keep all gameplay artifacts private/out of Git and use START for actual dialogue.
+
+---
+
 ## ACTIVE RUN — revision36 restore-only test of post-DOWN scrolled map focus (22 October 2026, 19:49 WIB)
 
 Run [#39781495023](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39781495023) is the only active player. Its committed marker was re-read and is correct: source run #39780755350, private artifact naruto-storymode-adaptive-player-private, checkpoint adaptive-cycle-01-f180.sstate, source SHA-256 `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`; RESTORE_TEST=1, CONTINUATION_TEST=0, AB_TEST=0, LOOP_CYCLES=1, REVISION=36.
