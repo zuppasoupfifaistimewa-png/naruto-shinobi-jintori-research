@@ -1,3 +1,18 @@
+## LATEST RUN STATE — invalid checkpoint rejected; fresh-session fix in progress (22 October 2026, 17:12 WIB)
+
+**Story Mode is NOT complete.** The latest authentic screenshots are board/dialogue transitions, not an ending/results screen.
+
+- Regression [#39759649670](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39759649670) passed 8 synthetic tests and 10 authentic X11 frame expectations. The board with two HUDs is now classified as map_after_move/WAIT rather than battle_untrained.
+- Player run [#39759822818](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39759822818) failed after cycle 1. Its external X11 frames show DOWN -> dialogue, START tap on visible dialogue, then a board scene with a red barrier/seal object. However, the saved state file was only 2,097,152 bytes and therefore invalid; no cycle 2 was attempted. Artifact #12417747322 remains private.
+- Checkpoint code now checks the raw file size (>21,000,000 bytes) and PCSX-Redux SaveState v4 header immediately after writing. It defers emulator quit outside the GPU VSync callback; exit code 139 is recoverable only when the session-finished marker and a structurally valid raw checkpoint both exist. This prevents truncated data from being mistakenly passed to a new emulator.
+- Watcher code also exits quickly if the session orchestrator dies before emitting required evidence. Player run [#39760914530](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39760914530) was still in progress at last check; it uses the checkpoint-validation/deferred-quit fix but predates the fast-fail watcher. Its outer watcher window is about 240 seconds. Updated run [#39761094445](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39761094445) is queued behind the concurrency lock and includes fast-fail logic; do not add another trigger. Inspect both runs in order.
+- Single-run observation remains HYPOTHESIS: route counter 4 -> 3 after DOWN; dialogue ここに結界をはります (Aku akan memasang penghalang di sini); START sent to skip; at F180, a red barrier/seal graphic and Mizuki's displayed Chakra 1380 were visible versus 1500 at F110. No matched NONE branch has confirmed causation or a universal cost rule.
+- If a valid two-session pass occurs, take the newest valid checkpoint as a read-only source for a matched one-action-versus-NONE experiment. Until then do not expand cycles. Story Mode completion still requires an authentic in-game ending/results screen.
+
+Privacy boundaries remain unchanged: only this research repo; no ROM, BIOS, Memory Card, savestate, or gameplay screenshot in Git; authentic external X11 only; START skips dialogue; Circle only for visibly highlighted contextual confirmation; Japanese immediately translated to Indonesian parentheses.
+
+---
+
 ## VERIFIED UPDATE — checkpoint continuity and map-transition classifier (22 October 2026, 17:03 WIB)
 
 **Story Mode is NOT complete.** No authentic in-game ending/results screen has been captured. No ROM, BIOS, Memory Card, savestate, or gameplay screenshot was committed.
