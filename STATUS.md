@@ -1,3 +1,13 @@
+## LATEST RESULT — restore smoke passed; next matched comparison is prepared (22 October 2026, 18:48 WIB)
+
+Run [#39772650469](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39772650469) completed with **success** at 18:48:23 WIB. Revision 27 loaded the pinned, previously restore-validated source checkpoint from run #39768787669, SHA-256 `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`. The log explicitly records `ExecutionFlow::SaveStateLoaded`; five genuine external-X11 screenshots at 1280×800 were validated; F20 shows `情報` (Informasi) selected; the test correctly chose WAIT/no input. The automated classifier remains `menu_or_unknown_choice`, so do not infer another rule from this smoke.
+
+The emulator exited 0. The output checkpoint was validated after process exit: 21,162,547 bytes, `PCSX-Redux SaveState v4` header, SHA-256 `cb53613ffa09e57d0f6d927d9e82bf603937871a07a9ed24c0955735cf258fdc`, private artifact #12422499045. This confirms the pinned source restore and established single-nextTick shutdown path work in this run. **Do not promote the newly emitted output hash as a source checkpoint yet**; it must itself be restored in a new process before promotion.
+
+Next experiment is marker revision 28: matched ACTION=DOWN versus control NONE/WAIT from the same verified source SHA above, `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `AB_TEST=1`, `LOOP_CYCLES=2`. Audit F20 pixel/state parity, input press/release readback, two explicit load events, ten authentic images, emulator exits and external post-exit validation of both output checkpoint files. Only then may Information→Map view be classified. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE SMOKE — restore-only run #39772650469 (22 October 2026, 18:45 WIB)
 
 The established single-nextTick shutdown is now being smoke-tested. Run [#39772650469](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39772650469) is revision 27 with `RESTORE_TEST=1`, `LOOP_CYCLES=1`, source pinned to the known-restorable Information checkpoint SHA-256 `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e` from run #39768787669. At 18:45 WIB its job remained in `Install X11 tools and prepare private workspace` (started 18:43:28 WIB); no emulator frames/artifact are available yet. Do not trigger a parallel player run.
