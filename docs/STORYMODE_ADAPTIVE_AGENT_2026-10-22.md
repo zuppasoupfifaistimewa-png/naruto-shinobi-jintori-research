@@ -1,3 +1,13 @@
+## REVISION 38 RESTORE PASSED — verified input is usable
+
+Run #39783158903 succeeded. Private retry artifact #12427598163 passed ZIP integrity. It shows explicit ExecutionFlow::SaveStateLoaded, ADAPTIVE_RESTORE_TEST=PASS, five authentic 1280×800 X11 captures, accepted emulator exit 0, and output checkpoint validation. The restored board/cursor arrangement matches the post-second-DOWN state. Early tile digits are obscured by leaves; later frames show 140, so do not treat that variation as a tile-value change.
+
+Promoted input checkpoint from run #39782011370 / artifact #12426797521 / adaptive-cycle-01-f180.sstate: size 21,162,960; v4; SHA-256 `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`. Newly emitted output from run38 (21,162,978 bytes, v4, SHA-256 `c4acb2b62a9891b597c1195a2dead7ccce902abddf0c5ec9b4c50b76142a7a33`) stays unpromoted pending its own fresh-process restore.
+
+Next change workflow validation to allow UP/DOWN/LEFT/RIGHT only for map A/B directional probes; exclude confirm buttons. Run RIGHT-versus-WAIT from source 4989fc1f… with all existing evidence gates. Story Mode remains NOT COMPLETE, and no movement/capture/ownership rule or ending is established. Use START for dialogue; keep gameplay files private/out of Git.
+
+---
+
 ## RESTORE VERIFIED — revision37 post-second-DOWN source is restorable (revision38)
 
 Run #39783158903 passed restore-only from run #39782011370 / artifact #12426797521 / checkpoint adaptive-cycle-01-f180.sstate / SHA-256 `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`, size 21,162,960, v4. Valid retry artifact #12427598163 confirms load event, `ADAPTIVE_RESTORE_TEST=PASS`, five real 1280×800 X11 screenshots retaining map/cursor post-second-DOWN state, exit0 and external output checkpoint validation. Apparent 100/142 in early frames is foliage occluding digits; later frames show 140. Exact input SHA 4989… promoted.
