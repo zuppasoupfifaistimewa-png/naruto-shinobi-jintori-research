@@ -1,3 +1,17 @@
+## LATEST VERIFIED MENU RESULT — second DOWN reaches Information (22 October 2026, 18:14 WIB)
+
+Story Mode is **NOT COMPLETE**.
+
+- Run [#39768787669](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768787669) completed successfully. Two fresh processes used the same parent checkpoint SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`, separate byte-identical Memory Card clones SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`, and each logged `ExecutionFlow::SaveStateLoaded`.
+- Ten authentic X11 frames passed 1280x800 validation. Parent F20 images matched pixel-for-pixel; the ACTION branch sent one DOWN with true/false press/release readback and the NONE branch sent no input. ACTION changed the highlight from `忍術` (Ninjutsu) to `情報` (Information) by F60; control retained Ninjutsu. Difference: 14,606 pixels at F60/F100/F110/F180 (mean absolute RGB difference 1.04012). Both emulator processes exited 0.
+- Output states passed post-exit structural validation but are **not** trusted restore sources until independently loaded in a fresh emulator process: ACTION 21,162,009 bytes, SHA-256 `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`; NONE 21,162,184 bytes, SHA-256 `06cea778aaaf838271fafa58734c3e236e7d5aa3f63d578a786012640fbbde52`. Evidence artifact #12421302756 remains private.
+- **VERIFIED, narrow scope:** one DOWN moves selection from Ninjutsu to Information from that exact checkpoint/menu state.
+
+### Next step — Triangle vs NONE
+Use the already restored menu checkpoint from run #39768371975, artifact #12421326531, `adaptive-cycle-01-f180.sstate`, 21,162,575 bytes, SHA-256 `fa03a1840612749810453566a25805e89a4aa21ad64664695e09ed7222b77a9e`. It displays Ninjutsu highlighted and the footer `△ マップ` (Triangle: Map). Use two fresh emulator processes and independent identical disposable Memory Card clones; compare 10 authentic external-X11 captures, require exact F20 pixel parity, Triangle press/release readback, post-exit checkpoint size/header/SHA, and stop at the map view without selecting anything. Do not press Circle.
+
+---
+
 ## LATEST VERIFIED UPDATE — DOWN advances Ninjutsu to Information; new action checkpoint needs restore test (22 October 2026, 18:14 WIB)
 
 - Successful run [#39768787669](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768787669) performed a matched DOWN-vs-NONE test from previously restore-validated Ninjutsu checkpoint SHA `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`.
