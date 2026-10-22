@@ -1,3 +1,15 @@
+## REVISION 32 DIAGNOSTIC — old state-parity gate rejected correct map baseline (22 October 2026, 19:30 WIB)
+
+Run #39777917775 failed the workflow's final semantic-state gate, not the emulator session. Artifact #12426395775 shows both arms loaded source SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc in fresh processes; F20 was pixel-identical (0 mismatch/1,024,000 pixels); two load events; ACTION DOWN readback true then false; control WAIT; 10 authentic 1280×800 captures; both emulator exits 0; and both output checkpoint structure/hash validations passed. Failure: old checkout SHA b77f74af5b258dfcd7d8bfbeeeca0c685c5fc7b7 hard-coded Python states to menu_or_unknown_choice, while both actual F20 states correctly classify as map_after_move. No ab-comparison-report.txt was written. Neither output state is promoted.
+
+Manual paired screenshot inspection suggests (HYPOTHESIS only) DOWN moved focus away from Naruto's board tile (Level 1, barrier value 60, durability 2/2) to an adjacent empty tile labeled 空き地 (Tanah kosong), barrier value 140. ACTION/control differ by over 719,000 pixels after input, but only a corrected run should promote the rule to VERIFIED.
+
+Revision 33 must set AB_EXPECTED_STATE=map_after_move and run the current workflow with source pinned to run #39776518701 / private artifact #12425305517 / adaptive-cycle-01-f180.sstate / SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc. Use AB_TEST=1, AB_ACTION=DOWN, LOOP_CYCLES=2, RESTORE_TEST=0, CONTINUATION_TEST=0, REVISION=33. Verify the actual marker after commit. Accept only if source hashes, map F20 parity, input readback, two load events, 10 images, exits, output checkpoint validation, and comparison report all pass. Keep the inferred tile-focus effect HYPOTHESIS until then.
+
+Story Mode remains NOT COMPLETE. No confirmed ending/result evidence. Use START for dialogue skipping and keep gameplay assets private/out of Git.
+
+---
+
 ## CORRECTION — active revision32 may execute DOWN; only later validator is stale (22 October 2026, 19:25 WIB)
 
 At run #39777917775's checkout SHA b77f74af5b258dfcd7d8bfbeeeca0c685c5fc7b7, Lua precondition accepts map_after_move and classifier WAIT, so the ACTION arm may send DOWN. The later shell/Python state gate still insists menu_or_unknown_choice, however, making workflow failure likely after evidence capture. This corrects the prior note that asserted the run would not send DOWN. The actual result must be decided from run logs and its private artifact, not assumed from configuration.
