@@ -1,3 +1,27 @@
+## ACTIVE PLAYER — revision42 CROSS vs WAIT, map return prompt
+
+Run [#39866476856](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39866476856) is active, started 22:39 UTC on 22 October (05:39 WIB on 23 October); hard timeout about 05:59 WIB if still running. Marker checkout verified:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39786019434
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=CROSS
+AB_EXPECTED_STATE=map_after_move
+LOOP_CYCLES=2
+REVISION=42
+```
+Workflow blob `494baab78b7237fa80674526c583e0fdfc74c140` allows CROSS for map-state only; menu actions remain DOWN/TRIANGLE. It tests the authentic footer `× もどる` (Cross: Kembali), comparing a one-press CROSS with WAIT. At last check the job was in container initialization and had no artifact. Do not launch another player.
+
+Audit every paired gate after completion: exact source hash both arms, 2 load events, identical F20/state map_after_move, identical cloned cards, CROSS press/release true/false, WAIT control, 10 authentic 1280×800 frames, both exits0, both output checkpoints external size/v4-header/SHA verified, comparison report generated. Directly inspect screenshots: does ACTION return to the prior menu while WAIT stays on the map? This is not a tile-confirmation action. Story Mode remains NOT COMPLETE.
+ 
+
+---
+
 ## REVISION41 RESTORE PASSED — Naruto-cell focus state is independently restorable
 
 Run [#39786899480](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786899480) success. Private artifact #12428873919 passed ZIP integrity and was visually inspected. The actual F20 screenshot shows Naruto's panel: `レベル` (Level) 1, `結界価値` (Nilai penghalang) 60, `耐久値` (Daya tahan) 2/2. New process logs `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five authentic 1280×800 captures, exit0, and output size/header/SHA checks all passed.
