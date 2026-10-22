@@ -1,3 +1,30 @@
+## REVISION47 AUDIT — Circle returns to board visually, but control checkpoint failed validation
+
+Run #39868722262 completed failure. Artifact #12464698050 passed ZIP integrity. Its 10 authentic 1280×800 screenshots were validated. Both fresh processes restored source SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; two load events, F20 pixel parity, matching disposable Memory Cards, Circle true/false readback, and all capture gates passed.
+
+Actual screenshots show ACTION Circle on roulette at F60/F100/F110, then back on the board at F180 with the roulette wheel moving out of view. WAIT remains on the wheel through F180. This is strong **HYPOTHESIS** that Circle stops/exits roulette, but the A/B is not accepted: the ACTION checkpoint was valid (21,163,242 bytes/v4/SHA `6abeb30642c9e8c6474b207e7de725619ff858ae9203c24e532e28410e8a31cd`) while CONTROL checkpoint was only 2,097,152 bytes and failed size validation; control emulator exit was 139. There is no comparison report. Do not mark the rule VERIFIED yet.
+
+Workflow commit `32f9e4172a670cdd14b92992f62a2e6fc970aba5` now delays shutdown for 12 additional VSync callbacks after the checkpoint is frozen at F180 to let file output flush. It does not weaken the gate: exits 134/139 require a session-finished marker and an externally valid checkpoint.
+
+Next revision48 repeats from the same trusted roulette source:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39867730674
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=CIRCLE
+AB_EXPECTED_STATE=roulette
+LOOP_CYCLES=2
+REVISION=48
+```
+Audit exact inputs, load events, F20 parity/state, button readback, 10 screenshots, exits or gated recovery, two valid output states and report. Inspect stable result before labeling roulette behavior. Story Mode NOT COMPLETE; START for dialogue.
+
+---
+
 ## ACTIVE PLAYER — revision47 Circle vs WAIT on the roulette wheel
 
 Run [#39868722262](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39868722262) active; started 05:58:51 WIB, hard timeout about 06:18:51 WIB. The exact source is run #39867730674 / artifact #12464258211 / `adaptive-cycle-01-f180.sstate` / SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`, independently restored by #39868354205 (wheel visible through five authentic captures). Marker: AB_TEST=1, AB_ACTION=CIRCLE, AB_EXPECTED_STATE=roulette, two cycles, revision47. Workflow commit `11b308f162aa1ef2f5b5167cd17b4340718a03de` permits Circle only for roulette-state A/B and has strict native-exit134 recovery based on session-finished + external state validation.
