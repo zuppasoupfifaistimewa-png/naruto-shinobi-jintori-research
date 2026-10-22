@@ -443,10 +443,15 @@ jobs:
                   done.add(label)
               cps=sorted(out.glob("adaptive-cycle-*-f180.sstate"))
               # Images are emitted just before checkpointing; do not finish
-              # the watchdog until all checkpoints and the fresh-process
-              # resume completion marker are present.
+              # until all checkpoints and the fresh-process resume marker exist.
               if len(done)==len(labels) and len(cps)==cycles and sequential_complete():
                   break
+              # If the orchestrator died, no later session can emit missing files.
+              # Fail fast and upload partial private evidence instead of burning
+              # the entire watchdog window.
+              if not alive() and not sequential_complete():
+                  print("ADAPTIVE_ORCHESTRATOR_EARLY_EXIT missing={} checkpoints={}/{} stdout_tail={}".format(sorted(set(labels)-done),len(cps),cycles,json.dumps(tail())),flush=True)
+                  raise SystemExit(92)
               time.sleep(.02)
           missing=sorted(set(labels)-done)
           cps=sorted(out.glob("adaptive-cycle-*-f180.sstate"))
