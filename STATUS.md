@@ -1,3 +1,12 @@
+## ACTIVE RUN — revision50 restore-only board checkpoint after roulette Circle (23 October 2026, 06:35 WIB)
+
+Run [#39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049) remains the only active player. Marker at checkout `1c30215c9a4b6035b5c24d1bf0befc4819110642` is verified: source run #39870243073 / private artifact naruto-storymode-adaptive-player-private / adaptive-cycle-01-f180.sstate / SHA-256 `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`; restore-only, one cycle, revision50. Started 06:32:21 WIB; hard timeout about 06:52:21 WIB. Most recent status: source and assets validated; `Run adaptive observe-decide-act-verify-checkpoint loop` is active; no artifact yet. Do not launch a parallel player.
+
+Audit run50 after it ends: source checksum, `ExecutionFlow::SaveStateLoaded`, `ADAPTIVE_RESTORE_TEST=PASS`, five authentic external-X11 screenshots at 1280×800 showing board retained after Circle, accepted shutdown recovery only after session-finished marker + checkpoint validation, and output checkpoint size/v4-header/SHA validation. Promote the exact input SHA only if the independent restore proves the board state. The output of run50 itself stays unpromoted until that output gets its own restore.
+
+Revision49 run #39870243073 is fully verified: Circle from roulette keeps roulette visible through F110 and returns to board at F180; WAIT leaves roulette through F180. Ten authentic captures, matching parent/F20, load events, input true/false, and both valid checkpoints. Story Mode remains NOT COMPLETE.
+---
+
 ## ACTIVE RUN — revision50 restore-only for the board-after-Circle checkpoint (23 October 2026, 06:32 WIB)
 
 Run [#39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049) is the only active player. It uses the committed revision50 marker at head `1c30215c9a4b6035b5c24d1bf0befc4819110642`: source run #39870243073 / artifact `naruto-storymode-adaptive-player-private` / checkpoint `adaptive-cycle-01-f180.sstate` / source SHA-256 `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`; `RESTORE_TEST=1`, one cycle, no A/B inputs. Run started at 06:32:21 WIB; hard timeout about 06:52:21 WIB. At last check it was initializing containers; no artifact yet. Do not start another player in parallel.
