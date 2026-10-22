@@ -1,3 +1,28 @@
+## ACTIVE QUEUE — revision40 UP vs WAIT; revision39 was a setup-only failure (22 October 2026, 20:21 WIB)
+
+Run [#39786019434](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786019434) is queued with the corrected marker:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39779256427
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=UP
+AB_EXPECTED_STATE=map_after_move
+LOOP_CYCLES=2
+REVISION=40
+```
+Source SHA is from revision33's known map state where `空き地` (Tanah kosong), value140, is focused and which revision34 independently restored. Do not start other player runs concurrently.
+
+Revision39 #39784493293 failed before emulator launch because shell guard still accepted only DOWN/TRIANGLE even though selector/Lua policy allowed UP. Its artifact #12427839381 is only 4,504 bytes with setup information and has no gameplay screenshots; no gameplay conclusion. Workflow corrected in commit #d62a04e831ea185f13efafc5e061d5a8dbb945ce (current workflow blob 73c864d2eba5579be26da732832a467be876b2d1), runtime guard now allows four directions and Triangle.
+
+After revision40 terminates, require: source hash exact per arm, two load events, both F20 map_after_move and pixel-identical, same cloned Memory Cards, UP readback pressed true/released false, WAIT control, ten authentic 1280×800 X11 shots, both exit0, both output checkpoints external validated for size/header/SHA, comparison report. Inspect paired frames before classify. No Circle/confirm, no tile selection. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE PLAYER — revision39 UP vs WAIT from verified cell-140 state (22 October 2026, 20:11 WIB)
 
 Run #39784493293 is active, started 20:10:11 WIB, timeout about 20:30:11 WIB. Exact committed marker is verified at its checkout: SOURCE_RUN=39779256427; SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private; SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate; SOURCE_SHA256=58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a; RESTORE_TEST=0; CONTINUATION_TEST=0; AB_TEST=1; AB_ACTION=UP; AB_EXPECTED_STATE=map_after_move; LOOP_CYCLES=2; REVISION=39. Workflow blob 5a9b4697b0f19c1c5e8015852f5a90c57261ae9f supports the directional map probe. Do not launch another player.
