@@ -1,3 +1,11 @@
+## LATEST RESULT — restore smoke passed; run paired action/control next (22 October 2026, 18:48 WIB)
+
+Run [#39772650469](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39772650469) completed with success. Revision 27/source SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e` restored in a fresh emulator process; explicit `ExecutionFlow::SaveStateLoaded`, five genuine 1280×800 X11 captures, exit code 0 and post-exit size/header/hash verification all passed. New output: 21,162,547 bytes, v4, SHA-256 `cb53613ffa09e57d0f6d927d9e82bf603937871a07a9ed24c0955735cf258fdc`, private artifact #12422499045. It is a valid emitted checkpoint but **not a promoted continuation source** until a fresh process restores it.
+
+Next: revision 28 paired A/B from the known source #39768787669 / SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`, ACTION DOWN versus NONE/WAIT, two cycles. Require parent frame/state parity; action press/release readback; two load events; all 10 external-X11 frames; accepted exits; and external output checkpoint size/header/SHA checks. The previous action-only observation that DOWN from `情報` (Informasi) may move to `マップを見る` (Lihat peta) remains HYPOTHESIS, not a verified rule. Story Mode is not complete.
+
+---
+
 ## ACTIVE SMOKE — validate single-nextTick shutdown with a restore-only run (22 October 2026, 18:45 WIB)
 
 Run [#39772650469](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39772650469) uses the known-restorable Information state SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`, `RESTORE_TEST=1`, `LOOP_CYCLES=1`, revision 27. It was still installing X11 tools at the last check (active since 18:43:28 WIB). Current workflow has the established single out-of-VSync nextTick quit; both prior drain approaches timed out while paused. Check load event, five external X11 frames, exit and external size/header/SHA validation before any new gameplay probe. Do not fire a parallel run or promote untested checkpoints.
