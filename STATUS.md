@@ -1,3 +1,12 @@
+## ACTIVE PLAYER — revision 32 map DOWN versus WAIT (22 October 2026, 19:23 WIB)
+
+Run [#39777917775](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777917775) was triggered from marker revision 32 and is currently `in_progress`. It started at 19:23:17 WIB. Latest Actions check shows the `Install X11 tools and prepare private workspace` step active; workflow timeout is 20 minutes (deadline approximately 19:43:17 WIB from start). No artifact or experiment result exists yet. Do not start any other player run.
+
+This is a matched A/B using the trusted map-view checkpoint from run #39776518701 / artifact #12425305517, SHA-256 `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`, with ACTION=DOWN vs control WAIT, two fresh processes. Workflow commit `5f8ae63b4374cb730ef197d797dffd0e823db141` allows the calibrated starting state `map_after_move` only when classifier action is WAIT. Audit the exact run after it completes: F20 image/state parity, press/release true/false readback, two load events, all 10 authentic X11 captures, accepted exits and both post-exit output checkpoint validations. Inspect actual screenshots for what DOWN changes on the map; do not confirm any destination.
+
+
+---
+
 ## RESTORE VERIFIED — map-view checkpoint promoted; next probe map navigation (22 October 2026, 19:20 WIB)
 
 Run [#39777301626](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777301626) completed with Actions success at 19:20:11 WIB. Private artifact #12423949987 was audited; the actual C01-F20 image was opened and visually confirms the map/tile screen remains visible after restore.
