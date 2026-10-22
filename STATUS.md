@@ -1,3 +1,16 @@
+## RESTORE AUDIT — revision38 loads, but second-DOWN focus is not stable across frames (22 October 2026, 20:05 WIB)
+
+Run [#39783158903](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39783158903) completed with success at 20:03:51 WIB. Private artifact #12427598163 was downloaded and audited. It restored the revision37 ACTION output SHA-256 `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177` (21,162,960 bytes, v4), explicitly logged `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`, captured five genuine 1280×800 X11 screenshots, exited 0, and produced a new output checkpoint passing external size/header/SHA validation: `c4acb2b62a9891b597c1195a2dead7ccce902abddf0c5ec9b4c50b76142a7a33`, 21,162,978 bytes, v4.
+
+**Do not promote the source as a semantically stable cursor checkpoint.** The actual C01-F20 screenshot temporarily shows the board scrolled with a visible cell number that appears to be 100; by F60/F100/F110/F180, the scene settles back to the value-140 area. The generic classifier remains `map_after_move` throughout, so it cannot disambiguate the focus. This fresh-process restore proves technical loadability but does not prove the second-DOWN tile/focus persists; the output produced by run38 is also unpromoted until its own separate restore, and it is not the preferred source.
+
+### Next controlled test — revision39 UP vs WAIT from known cell-140 selection
+Use the earlier ACTION checkpoint from run #39779256427 / artifact #12425858092 / `adaptive-cycle-01-f180.sstate`, SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. It was independently restored by run #39780143613; its F20 displays the `空き地` (Tanah kosong) tile value140. Current workflow commit `b3c78426f8c11b406f0fedbffb01bd667e7ffb5e` expands map-state A/B to allow UP/DOWN/LEFT/RIGHT while retaining menu-state guards. Revision39 sets `AB_ACTION=UP`, `AB_EXPECTED_STATE=map_after_move`, `AB_TEST=1`, two cycles, restore/continuation tests off. Require exact source SHA both arms, two load events, F20 parity/state, equal cloned cards, UP press/release readback, WAIT control, ten authentic frames, both exits0, both output checkpoint validations and comparison report. Inspect whether UP returns the focus/panel to Naruto's tile value60 versus WAIT retaining value140. Do not confirm any tile.
+
+Rules: the matched revision33 test remains VERIFIED for one DOWN from Naruto tile60 to `空き地` (Tanah kosong), barrier value140. Later repeated DOWN probes establish viewport/focus animation but not stable second-step selection; keep that semantics HYPOTHESIS/UNKNOWN until UP-vs-WAIT offers stronger paired evidence. Story Mode remains NOT COMPLETE.
+
+---
+
 ## REVISION 38 RESTORE VERIFIED — 22 October 2026, 20:04 WIB
 
 Run [#39783158903](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39783158903) completed with success. Private artifact #12427598163 was downloaded again; the retry passed ZIP integrity. Five authentic external-X11 screenshots at 1280×800 were validated, the load event and ADAPTIVE_RESTORE_TEST=PASS were logged, emulator exit was 0, and the new output checkpoint passed size/header/SHA validation.
