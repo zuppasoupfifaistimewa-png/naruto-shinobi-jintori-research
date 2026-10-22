@@ -1,3 +1,13 @@
+## VERIFIED MAP FOCUS — revision37 second DOWN (22 October 2026)
+
+Run #39782011370 passed the matched DOWN-vs-WAIT experiment with source SHA `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`. Artifact #12426797521 verified: two explicit SaveStateLoaded events, exact F20 parity, same disposable cards, DOWN press/release true/false, WAIT control, ten authentic 1280×800 captures, exits0, both checkpoint external validations and comparison report.
+
+Narrow VERIFIED observation: a second DOWN from empty land value140 shifts the map viewport upward and places cursor/focus toward the adjacent lower tile near the Naruto-marked board position; WAIT keeps the previous frame with tile140 under cursor and pink tile60 above. Focus/view change only. Do not claim the character moved or captured territory.
+
+Action output candidate hash `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`, 21,162,960 bytes, v4, artifact #12426797521. Must be independently restored in revision38 before promotion. Then inspect workflow input mappings and safely identify how to enter real gameplay; only DOWN and TRIANGLE are currently permitted in A/B validation. No confirm input until selection vs move semantics are clear. Story Mode NOT COMPLETE; use START for dialogue, no Circle, gameplay files remain private/out of Git.
+
+---
+
 ## ACTIVE — revision38 restore-only checkpoint for post-second-DOWN view
 
 Run #39783158903 active at 20:00:55 WIB; timeout about 20:20:55 WIB. Marker pins the revision37 ACTION output from run #39782011370 / artifact #12426797521 / checkpoint adaptive-cycle-01-f180.sstate / SHA `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`. RESTORE_TEST=1, one cycle, rev38. Only one player may run.
