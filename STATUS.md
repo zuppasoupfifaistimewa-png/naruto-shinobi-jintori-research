@@ -1,3 +1,18 @@
+## REVISION47 PARTIAL VISUAL RESULT — Circle appears to leave roulette, but control checkpoint truncated
+
+Run [#39868722262](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39868722262) completed with failure at 23:00:30 UTC / 06:00:30 WIB. Private artifact #12464698050 passed ZIP integrity and all 10 genuine screenshots were reviewed. Both processes loaded the exact trusted roulette parent `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`, each logged `ExecutionFlow::SaveStateLoaded`; F20 pixel parity was exact; Memory Card clones matched; Circle input press/release readback passed true/false; ten 1280×800 X11 captures passed; both branch capture sequences completed and checkpoint files were present.
+
+**Partial visual finding (HYPOTHESIS until a full gate passes):** ACTION Circle remains on the roulette wheel at F60/F100/F110, then at F180 has transitioned back to the board, with part of the wheel sliding out of view. WAIT remains on the roulette wheel through F180. This strongly suggests Circle settles/exits the wheel after the animation, but no selected number is claimed.
+
+Why the workflow correctly failed: ACTION output `adaptive-cycle-01-f180.sstate` passed external validation (21,163,242 bytes, v4, SHA-256 `6abeb30642c9e8c6474b207e7de725619ff858ae9203c24e532e28410e8a31cd`). CONTROL output `adaptive-cycle-02-f180.sstate` was only 2,097,152 bytes and failed size validation; process exit was 139 after the session-finished marker. Hence no `ab-comparison-report.txt` and the A/B experiment is not counted as complete. The source checkpoint remains the independently restored roulette checkpoint `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492` from #39867730674.
+
+Workflow commit `32f9e4172a670cdd14b92992f62a2e6fc970aba5` now keeps the emulator alive for 12 more VSync callbacks after writing the F180 checkpoint, then shuts down. The saved state is still an F180 snapshot; the extra frames allow any deferred file I/O to settle. Existing recovery remains strict: exit 134/139 is tolerated only if the session-finished marker exists and the state passes external size/v4-header/SHA validation.
+
+### Next — revision48 repeat Circle vs WAIT from the same roulette source
+Use run #39867730674 / artifact #12464258211 / file `adaptive-cycle-01-f180.sstate` / source SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`. Set `AB_TEST=1`, `AB_ACTION=CIRCLE`, `AB_EXPECTED_STATE=roulette`, `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `LOOP_CYCLES=2`, `REVISION=48`. Require every A/B gate including valid external size/header/SHA on both outputs and the report. Inspect whether Circle returns to map with wheel gone while WAIT wheel stays. Do not choose a roulette number claim unless it is stable and legible; no Circle for dialogue (START only). Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision47 Circle versus WAIT from the restored roulette wheel (23 October 2026, 05:59 WIB)
 
 Run [#39868722262](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39868722262) is the only active player, started 05:58:51 WIB with hard timeout about 06:18:51 WIB. Its exact committed marker:
