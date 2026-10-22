@@ -1,3 +1,13 @@
+## ACTIVE RUN — revision39 UP vs WAIT (22 October 2026, 20:11 WIB)
+
+Run [#39784493293](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39784493293) is the only active player. Its checkout was verified at commit 4893e1e0eb6cdcaf9fff052c9c794ae62327858a. Marker: source run #39779256427, artifact naruto-storymode-adaptive-player-private, checkpoint adaptive-cycle-01-f180.sstate, SHA-256 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a; AB_TEST=1; AB_ACTION=UP; AB_EXPECTED_STATE=map_after_move; two cycles; revision39. The checked workflow supports UP/DOWN/LEFT/RIGHT for map-state A/B.
+
+Run started at 20:10:11 WIB; timeout approximately 20:30:11 WIB. Do not launch another player. After completion require two load events, exact source SHA per arm, F20 pixel parity and map state, identical disposable cards, UP press/release true/false, WAIT control, 10 authentic 1280×800 X11 captures, both exits 0, both output checkpoints size/v4-header/SHA validated, and comparison report. Review screenshots to see whether UP changes focus versus WAIT; no tile confirmation.
+
+Source checkpoint was independently restored in run #39780143613 and displayed 空き地 (Tanah kosong) value 140. Revision38's source loads technically but its first restored frame differs transiently from settled frames, so do not promote its output as a stable semantic checkpoint. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE RUN — revision39 UP versus WAIT from trusted value-140 map state (22 October 2026, 20:11 WIB)
 
 Run [#39784493293](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39784493293) is the only active player. Its checkout was verified at commit `4893e1e0eb6cdcaf9fff052c9c794ae62327858a`: marker sets `AB_ACTION=UP`, `AB_EXPECTED_STATE=map_after_move`, and source SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`; workflow at blob `5a9b4697b0f19c1c5e8015852f5a90c57261ae9f` supports UP/DOWN/LEFT/RIGHT only for map-state A/B tests. The source is run #39779256427 / private artifact #12425858092 / `adaptive-cycle-01-f180.sstate`, previously restored independently by #39780143613 and visually identified as the map state with `空き地` (Tanah kosong), value 140.
