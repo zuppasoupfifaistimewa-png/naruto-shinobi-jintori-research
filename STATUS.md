@@ -1,3 +1,15 @@
+## VERIFIED RESULT — UP selects Naruto's cell from empty-land140 focus (revision40, 22 Oct 2026)
+
+Run [#39786019434](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786019434) success. Private artifact #12428777970 audited. Matched A/B gates all passed: both fresh processes loaded exact source SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`; SaveStateLoaded event in each; disposable Memory Card copies identical; F20 frames identical across 1,024,000 pixels; both classifier state `map_after_move`; UP input readback true/false; WAIT control; ten authentic X11 screenshots 1280×800; exit0 in both; both output states externally validated; comparison report generated.
+
+**VERIFIED, focus only:** from `空き地` (Tanah kosong), value 140, one UP changes focus/panel to Naruto's occupied cell: `レベル` (Level) 1, `結界価値` (Nilai penghalang) 60, `耐久値` (Daya tahan) 2/2. WAIT preserves the empty-land140 panel. This does not prove actual character movement, capture or ownership.
+
+ACTION candidate: `adaptive-cycle-01-f180.sstate`, 21,163,100 bytes, v4, SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`. CONTROL output: 21,162,751 bytes, SHA `eb182a883b1666a7a9badbbf06fda2de960fc84ec4b040799791a174134714a3`. Neither promoted yet.
+
+Next revision41: independently restore the ACTION candidate in a fresh process. Require load event, five authentic 1280×800 captures retaining Naruto's value60 panel, exit0 and external output size/v4-header/SHA checks. Story Mode remains NOT COMPLETE; no ending evidence.
+
+---
+
 ## ACTIVE RUN — revision40 UP vs WAIT after revision39 guard fix (22 October 2026, 20:21 WIB)
 
 Run [#39786019434](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786019434) was triggered with the corrected marker:
