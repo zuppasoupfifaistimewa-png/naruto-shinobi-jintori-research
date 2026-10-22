@@ -35,8 +35,15 @@ class AdaptiveAgentTests(unittest.TestCase):
             d.rectangle((920,550,1130,690),fill=(20,30,100))
             d.ellipse((935,560,1115,620),fill=(220,20,30))
             d.rectangle((590,395,685,460),fill=(20,100,230))
-        elif state=="battle":
+        elif state=="map_after_move":
             d.rectangle((100,40,1180,780),fill=(20,105,70))
+            d.rectangle((400,180,900,680),fill=(20,105,70))
+            d.rectangle((430,50,650,190),fill=(190,20,20))
+            d.rectangle((650,50,900,190),fill=(15,60,210))
+            d.rectangle((500,90,590,155),fill=(245,245,245))
+        elif state=="battle":
+            # Untrained non-board encounter shape: dual HUD over a dark arena.
+            d.rectangle((100,40,1180,780),fill=(45,45,48))
             d.rectangle((430,50,650,190),fill=(190,20,20))
             d.rectangle((650,50,900,190),fill=(15,60,210))
             d.rectangle((500,90,590,155),fill=(245,245,245))
@@ -46,9 +53,14 @@ class AdaptiveAgentTests(unittest.TestCase):
             self.make_image(state).save(f.name)
             return agent.observe(f.name)
     def test_known_state_classes(self):
-        for state in ("map","roulette","dialogue","barrier_choice"):
+        for state in ("map","roulette","dialogue","barrier_choice","map_after_move"):
             with self.subTest(state=state):
                 self.assertEqual(self.classify(state)["state"],state)
+    def test_board_with_dual_hud_is_transition_not_battle(self):
+        out=self.classify("map_after_move")
+        self.assertEqual(out["state"],"map_after_move")
+        self.assertEqual(out["action"],"WAIT")
+
     def test_battle_screen_fails_closed_until_policy_calibrated(self):
         out=self.classify("battle")
         self.assertEqual(out["state"],"battle_untrained")
