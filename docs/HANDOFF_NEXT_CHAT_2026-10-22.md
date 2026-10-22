@@ -1,3 +1,13 @@
+## LATEST VERIFIED UPDATE — matched DOWN successor can be restored; repeat direction probe next (22 October 2026, 18:10 WIB)
+
+- Restore run [#39768371975](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768371975) passed. It used the ACTION branch checkpoint from A/B run #39767790829, exact source SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`, and logged `ExecutionFlow::SaveStateLoaded`. Five external X11 images passed 1280x800 validation; F20 visually showed the `忍術` (Ninjutsu) row selected, and the process exited 0. Post-exit size/header/SHA checks on the new output state also passed.
+- The new output checkpoint itself (21,162,575 bytes; SHA-256 `fa03a1840612749810453566a25805e89a4aa21ad64664695e09ed7222b77a9e`) remains an unpromoted private artifact (#12421326531), because no fresh process has restored that output file yet. Keep the previously tested source `76b5962f...` as the immutable test parent.
+- Next trigger revision 22 as a matched ACTION=DOWN vs NONE/WAIT test from run #39767790829's `adaptive-cycle-01-f180.sstate`, SHA above, `AB_TEST=1`, `LOOP_CYCLES=2`. Audit whether DOWN moves Ninjutsu to `情報` (Informasi), with exact F20 pixel parity, input press/release readback, independent matching Memory Cards, two successful loads, and both output size/header/SHA checks. No Circle; no assumption about what a menu item does.
+
+Story Mode remains NOT COMPLETE. Only this Naruto research repo is permitted; keep screenshots, savestates, Memory Cards, ROM and BIOS out of Git and artifact contents private.
+
+---
+
 ## LATEST ACTIVE STEP — restore menu-DOWN output checkpoint (22 October 2026, 18:08 WIB)
 
 Restore-only run [#39768371975](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768371975) is queued with marker revision 21. Source is the ACTION-branch output from successful A/B run #39767790829, artifact #12420204586, file `adaptive-cycle-01-f180.sstate`, 21,163,486 bytes, SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`. It uses `RESTORE_TEST=1` and one cycle.
