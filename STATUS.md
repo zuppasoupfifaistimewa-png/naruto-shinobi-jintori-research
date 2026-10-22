@@ -1,3 +1,14 @@
+## VERIFIED UPDATE — menu-DOWN checkpoint restored in a fresh process (22 October 2026, 18:10 WIB)
+
+Story Mode remains **NOT COMPLETE**; there is no authentic ending/results screenshot.
+
+- Restore-only run [#39768371975](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768371975) succeeded from the ACTION branch checkpoint of #39767790829. Its source was 21,163,486 bytes with SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`.
+- The fresh emulator logged `ExecutionFlow::SaveStateLoaded`; five authentic X11 frames at F20/F60/F100/F110/F180 were validated at 1280x800 and visually inspected. The red selector remained on `忍術` (Ninjutsu); the menu also shows `ルーレット` (Roulette), `情報` (Information), and `マップを見る` (View map). Footer `△ マップ` means (Triangle: Map).
+- The emulator emitted its session-finished marker and exited 0. The resulting private checkpoint passed post-exit size/header/SHA validation: `adaptive-cycle-01-f180.sstate`, 21,162,575 bytes, SHA-256 `fa03a1840612749810453566a25805e89a4aa21ad64664695e09ed7222b77a9e`. Private artifact #12421326531 only.
+- This output is now a trusted checkpoint for the next bounded probe. The next planned run is a matched Triangle-versus-NONE experiment from this exact parent, two new emulator processes and separate byte-identical disposable Memory Cards. It must confirm F20 pixel parity and inspect all ten authentic X11 frames. Do not press Circle; if Triangle opens the map view, stop at that view and inspect before any other action.
+
+---
+
 ## VERIFIED UPDATE — menu-DOWN checkpoint restored successfully; second DOWN probe next (22 October 2026, 18:10 WIB)
 
 The ACTION branch checkpoint from the matched DOWN/NONE test has now passed fresh-process restoration and is a valid continuation source.
