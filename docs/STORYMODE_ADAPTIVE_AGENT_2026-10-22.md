@@ -1,3 +1,14 @@
+## VERIFIED UPDATE — fresh-process restore of menu-DOWN checkpoint passed (22 October 2026, 18:10 WIB)
+
+- Run [#39768371975](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768371975) restored action checkpoint SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28` in a new process and logged `ExecutionFlow::SaveStateLoaded`.
+- Five genuine external-X11 images at F20/F60/F100/F110/F180 passed 1280x800 integrity checks. The visible selection remains `忍術` (Ninjutsu). Footer `△ マップ` means (Triangle: Map).
+- Emulator exit code 0; new post-exit-validated checkpoint is 21,162,575 bytes, SHA-256 `fa03a1840612749810453566a25805e89a4aa21ad64664695e09ed7222b77a9e`, in private artifact #12421326531 only.
+- **Next:** matched Triangle-versus-NONE test from this immutable checkpoint. Verify identical F20, separate identical disposable Memory Cards, Triangle input press/release readback, ten authentic external-X11 frames, and both output state hashes. If the map view opens, stop to inspect before any further input. Circle remains unavailable unless a contextually valid YES is visibly highlighted.
+
+Story Mode remains NOT COMPLETE.
+
+---
+
 ## VERIFIED UPDATE — fresh-process restore of Ninjutsu-highlight state passed (22 October 2026, 18:10 WIB)
 
 - Restore run [#39768371975](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768371975) loaded the matched DOWN/ACTION checkpoint from run #39767790829. Exact source SHA-256: `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`.
