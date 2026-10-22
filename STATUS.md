@@ -1,3 +1,9 @@
+## ACTIVE RUN — test DOWN from Ninjutsu to the next menu row (22 October 2026, 18:12 WIB)
+
+Run [#39768787669](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768787669) was triggered at marker revision 22. It uses the verified/restored parent checkpoint from run #39767790829, file `adaptive-cycle-01-f180.sstate`, SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`, in ACTION=DOWN and NONE/WAIT branches with cloned identical Memory Cards. `LOOP_CYCLES=2`, `AB_TEST=1`, `RESTORE_TEST=0`, `CONTINUATION_TEST=0`. Latest status: in progress, at container initialization. This test asks whether DOWN from `忍術` (Ninjutsu) advances to `情報` (Informasi); only authentic matched X11 evidence can decide.
+
+---
+
 ## VERIFIED UPDATE — menu-DOWN checkpoint restored in a fresh process (22 October 2026, 18:10 WIB)
 
 Story Mode remains **NOT COMPLETE**; there is no authentic ending/results screenshot.
