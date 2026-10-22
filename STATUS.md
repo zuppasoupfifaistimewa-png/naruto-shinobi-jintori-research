@@ -1,3 +1,14 @@
+## RESTORE VERIFIED — Naruto-cell focus persists across a fresh emulator process (revision41, 22 October 2026)
+
+Run [#39786899480](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786899480) completed with Actions success. Private artifact #12428873919 was downloaded, ZIP integrity passed, and the authentic C01-F20 screenshot was inspected. It visibly shows Naruto's tile panel: `レベル` (Level) 1, `結界価値` (Nilai penghalang) 60, `耐久値` (Daya tahan) 2/2. The fresh emulator process logged `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five X11 screenshots of 1280×800 were validated; process exit 0; output checkpoint passed external validation.
+
+Input source now independently restore-proven: run #39786019434 / artifact #12428777970 / file `adaptive-cycle-01-f180.sstate`, 21,163,100 bytes, v4 header, SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`. The output from restore run #39786899480 is not promoted: 21,162,593 bytes, v4, SHA-256 `93bd0c3e401bd7b8c96bc8b405bd46b13fef2afaf317c2ec47af5412c1b52595`; this output requires its own restore before reuse.
+
+### Next experiment — revision42 CROSS vs WAIT on map screen
+The visible map footer is `× もどる` (Cross: Kembali). Workflow commit `7ac1b2371b7d0ce48b87b59130a8560db771a962` adds CROSS only to map-state A/B allowlist; menu-state A/B still permits only DOWN or TRIANGLE. This is a guarded test of a visibly labelled return action, not tile confirmation. Use source run #39786019434 / artifact `naruto-storymode-adaptive-player-private` / checkpoint `adaptive-cycle-01-f180.sstate` / SHA `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`. Marker should set `AB_TEST=1`, `AB_ACTION=CROSS`, `AB_EXPECTED_STATE=map_after_move`, `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `LOOP_CYCLES=2`, `REVISION=42`. Keep strict A/B gates; manually inspect whether CROSS exits to prior menu while WAIT remains on map. Never use Circle for dialogue, only START to skip dialogue. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision41 restore-only for Naruto-cell focus checkpoint (22 October 2026, 20:27 WIB)
 
 Run [#39786899480](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786899480) is the only active player. It loads the revision40 ACTION output from run #39786019434, private artifact #12428777970, checkpoint adaptive-cycle-01-f180.sstate, SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`, size 21,163,100 bytes, v4. Marker: RESTORE_TEST=1, CONTINUATION_TEST=0, AB_TEST=0, LOOP_CYCLES=1, REVISION=41.
