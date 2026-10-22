@@ -338,7 +338,9 @@ jobs:
                           changed=dec["state"]!=verify["state"]
                           print("ADAPTIVE_ACTION_VERIFICATION cycle={} before={} action={} observed_after={} state_changed={}".format(cycle,dec["state"],dec["action"],verify["state"],str(changed).lower()),flush=True)
                           if cycle==1 and dec["state"]=="map" and verify["state"]=="battle_untrained":
-                              print("ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=battle_untrained label="+label,flush=True)
+                              marker="ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=battle_untrained label="+label
+                              print(marker,flush=True)
+                              (out/"progress-report.txt").write_text(marker+"\n",encoding="utf-8")
                       elif phase==180:
                           dec=json.loads((out/("decision-cycle-%02d.json"%cycle)).read_text(encoding="utf-8"))
                           count=int(dec.get("roulette_wait_count",0)) if verify["state"]=="roulette" and dec["action"]=="WAIT" else 0
@@ -377,10 +379,20 @@ jobs:
             sha="$(sha256sum "$state" | cut -d ' ' -f1)"
             echo "ADAPTIVE_CHECKPOINT_FILE=$(basename "$state") BYTES=$bytes SHA256=$sha"
             test "$bytes" -gt 21000000
-            head -c 96 "$state" | grep -a -q 'PCSX-Redux SaveState v4'
+            python3 - "$state" <<'PY'
+          import sys
+          from pathlib import Path
+          p=Path(sys.argv[1])
+          with p.open("rb") as f: header=f.read(96)
+          if b"PCSX-Redux SaveState v4" not in header:
+              raise SystemExit("invalid PCSX savestate v4 header: "+p.name)
+          if p.stat().st_size <= 21000000:
+              raise SystemExit("checkpoint size below expected raw range: "+p.name)
+          print("ADAPTIVE_CHECKPOINT_HEADER=PASS file="+p.name)
+          PY
             echo "ADAPTIVE_CHECKPOINT_STRUCTURAL_VALIDATION=PASS file=$(basename "$state") bytes=$bytes sha256=$sha"
           done
-          grep -q 'ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=battle_untrained' "$WORK/captures/pcsx-adaptive.stdout"
+          grep -q 'ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=battle_untrained' "$WORK/captures/progress-report.txt"
           echo "ADAPTIVE_LOOP_TEST=PASS cycles=1 captures=4 checkpoints=1 gameplay_state_transition=verified"
 
       - name: Upload private adaptive screenshots, decisions, logs and checkpoints
