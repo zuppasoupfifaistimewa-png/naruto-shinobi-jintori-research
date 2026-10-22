@@ -1,3 +1,19 @@
+## LATEST VERIFIED RESULT — DOWN moves Information highlight to View map (22 October 2026, 19:05 WIB)
+
+Run [#39775176728](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39775176728) fully passed the required paired experiment. Private artifact #12424660712 was reviewed. Source parent SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e) was identical for both fresh processes; each logged `ExecutionFlow::SaveStateLoaded`; cloned Memory Cards were hash-identical; F20 images were pixel-identical; DOWN press/release readback passed; ten 1280×800 external-X11 images passed; both emulator exits were 0; and both output states passed external size/header/SHA validation.
+
+**VERIFIED, scoped rule:** from the right-hand menu row `情報` (Informasi), one DOWN shifts the red selection marker to `マップを見る` (Lihat peta); NONE/WAIT leaves Information selected. Paired images show this transition, with 14,636 differing pixels / mean absolute RGB difference 1.05798 in all post-action comparisons. The vision classifier remains at `menu_or_unknown_choice`; visually verify the highlighted Japanese row rather than trusting its generic state label. This does not yet show that the map itself is open.
+
+ACTION checkpoint candidate: run #39775176728, private artifact #12424660712, `adaptive-cycle-01-f180.sstate`, size 21,162,344, v4 header, SHA-256 `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`. It remains unpromoted until an independent fresh-process restore succeeds. Control output `adaptive-cycle-02-f180.sstate`: 21,162,426 bytes, SHA-256 `30b062df8985fa79f8c9f79e076cb464f1ff73143103e249dba5d35ca94324d5`; not promoted either.
+
+### Next controlled cycle
+1. Run revision 29 as restore-only from source run 39775176728 / artifact `naruto-storymode-adaptive-player-private` / checkpoint `adaptive-cycle-01-f180.sstate` / SHA `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`, with `RESTORE_TEST=1`, `AB_TEST=0`, `CONTINUATION_TEST=0`, `LOOP_CYCLES=1`. Require load-event log, five authentic 1280×800 captures, visible retained map-row highlight, accepted exit, and external output state validation.
+2. Only after that run completes, start revision 30 as matched TRIANGLE-versus-WAIT from the now independently restore-proven candidate; require all existing pair gates. Inspect the resulting screens; stop at map view, no destination selection.
+3. Keep screenshots/states/card/ROM/BIOS out of Git. START skips dialogue in Story Mode. Story Mode remains NOT COMPLETE; final completion requires genuine in-game ending/result evidence.
+
+
+---
+
 ## CURRENT ACTION — revision 28 matched DOWN/NONE run queued (22 October 2026, 19:02 WIB)
 
 Marker revision 28 was committed at `e31ebb2afbe1145746e480e9a0f020854621a82f`, triggering [run #39775176728](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39775176728). At the latest check it is **in progress**, with the step `Install X11 tools and prepare private workspace` active. It started at 19:02:38 WIB; the workflow job has a 20-minute hard timeout (around 19:22:38 WIB if not completed earlier). It tests ACTION=DOWN against NONE/WAIT from the known-restorable Information parent `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`; 2 cycles, `AB_TEST=1`. Do not start another player run. Next chat must check this exact run, its latest job steps and artifacts/logs, then apply the strict paired-evidence gates documented here. Job timeout is 20 minutes after a runner starts; queued wait has no reliable ETA. Story Mode remains NOT COMPLETE.
