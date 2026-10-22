@@ -1,3 +1,13 @@
+## CORRECTION — revision 32 is not guaranteed to fail closed (22 October 2026, 19:25 WIB)
+
+Inspection of the exact workflow file at run #39777917775's checkout SHA b77f74af5b258dfcd7d8bfbeeeca0c685c5fc7b7 shows the old Lua precondition accepts either menu_or_unknown_choice or map_after_move when the classifier's policy action is WAIT. Thus when this run reaches the known map_after_move F20 state, the ACTION arm may send its configured DOWN. The bug is in later shell validation: it still insists both F20 classifier states are menu_or_unknown_choice, which is inconsistent with this run's map-view source. Therefore this run may collect useful paired screenshots and checkpoints but still fail the final workflow gate. This exact outcome is not known until logs/artifact are audited.
+
+The current player run remains #39777917775, the only active player. Do not launch another run until it finishes. Keep the source pinned to map-view checkpoint SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc. After completion, examine actual input press/release readback, both load events, all 10 real captures, parity, exit codes and checkpoint validation. Classify the directional rule no higher than HYPOTHESIS if the final pair gate fails, even if images suggest a transition. The corrected workflow at commit 4c074472e885c75ce618e4e0f5aefd6a8833a0c9 has explicit AB_EXPECTED_STATE handling; a clean rerun requires a new marker with AB_EXPECTED_STATE=map_after_move after the current run ends.
+
+Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE RUN / CONFIGURATION BLOCKER — revision 32 fail-closed audit (22 October 2026, 19:24 WIB)
 
 Run [#39777917775](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777917775) is the only active player run. Its marker revision 32 was committed without AB_EXPECTED_STATE=map_after_move, even though its source SHA is the board/map checkpoint. The workflow default for missing AB_EXPECTED_STATE is menu_or_unknown_choice. Therefore the map-view F20 precondition should fail closed and the action branch should be reduced to WAIT rather than sending DOWN; expected final outcome is validator failure. This is an observed configuration mismatch, not a gameplay result. Do not start another player while run #39777917775 is active.
