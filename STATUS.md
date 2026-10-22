@@ -1,3 +1,15 @@
+## ACTIVE RUN — revision 33 map DOWN versus WAIT (22 October 2026, 19:33 WIB)
+
+Run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) is the only active player. It uses the corrected marker with AB_EXPECTED_STATE=map_after_move and the proven board checkpoint SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc. The prior revision 32 run #39777917775 completed with failure only because its old checkout hard-coded menu state; its actual DOWN input and captures are diagnostic, not accepted A/B.
+
+Run #39779256427 started at 19:32:59 WIB; hard timeout about 19:52:59 WIB. Do not start a parallel player. When it completes, audit current job steps/logs/artifact and enforce all gates: same source SHA in both processes, two explicit load events, both F20 states exactly map_after_move, pixel-identical F20 screenshots, identical cloned Memory Cards, DOWN press/release readback true/false, 10 genuine X11 screenshots at 1280×800, emulator exits 0, both output checkpoints validated for size/v4 header/SHA, and generated ab-comparison-report.txt. Manually inspect C01/C02 frames F60/F100/F110/F180.
+
+Hypothesis to test (not yet verified): DOWN shifts the board focus from Naruto's tile (Level 1, barrier value 60, durability 2/2) to adjacent 空き地 (Tanah kosong) with barrier value 140, while WAIT preserves the original selection. Only upgrade to VERIFIED if revision 33 passes every required gate and authentic paired images support it. Do not confirm/select a tile.
+
+Story Mode remains NOT COMPLETE. Keep all gameplay images/ROM/BIOS/states/cards private and out of Git; use START for dialogue.
+
+---
+
 ## LATEST DIAGNOSTIC — revision 32 captured map DOWN effect, but stale validator rejected it (22 October 2026, 19:30 WIB)
 
 Run [#39777917775](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777917775) finished with conclusion failure at 19:29:26 WIB. This is a validator/configuration failure, not a failed emulator session: both fresh processes loaded the same known-restorable map parent SHA-256 b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc and each logged ExecutionFlow::SaveStateLoaded. Ten authentic external-X11 screenshots (five per branch) passed 1280×800 validation; F20 images were manually compared and are pixel-identical (0 differing / 1,024,000 pixels); DOWN press/release readbacks were true/false; both emulator processes exited 0; both output checkpoints passed external post-exit size/header/SHA validation. Private artifact #12426395775 contains evidence.
