@@ -1,3 +1,31 @@
+## LATEST VERIFIED RULE — TRIANGLE from View map opens the board (22 October 2026, 19:15 WIB)
+
+Run [#39776518701](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776518701) successfully completed the paired TRIANGLE-vs-WAIT experiment. Private artifact #12425305517 inspected. Same source parent in both arms: SHA `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`; separate fresh emulator processes, two explicit `ExecutionFlow::SaveStateLoaded` logs, equal cloned Memory Cards, pixel-identical F20 parent frames, Triangle press true / release false readback, ten valid 1280×800 external-X11 captures, exit 0 for both sessions, and both checkpoint output files passed external size/header/SHA validation.
+
+Visual rule classification: **VERIFIED, scoped to this menu state** — with `マップを見る` (Lihat peta) highlighted, one TRIANGLE opens the board/map view; control WAIT leaves the selection menu open. Actual ACTION screenshot C01-F60 shows the forest board, Naruto marker/status panel (`レベル` (Level) 1, `結界価値` (Barrier value) 60, `耐久値` (Durability) 2/2) and footer `△ マップ` (Triangle: Map); control C02-F60 shows the same menu rows and red highlight at View map. Differences: 286,259 pixels (mean abs RGB 21.80974) at F60; 282,661/21.70455 at F100; 279,162/21.18977 at F110; 286,921/21.80548 at F180. The agent classifier reports `map_after_move` in ACTION and `menu_or_unknown_choice` in control. No map destination was selected.
+
+ACTION output candidate from run #39776518701 / private artifact #12425305517: `adaptive-cycle-01-f180.sstate`, 21,163,227 bytes, v4 header, SHA-256 `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`. Control output is 21,163,215 bytes, hash `dc91b2756581456e75dee8cd836dc7b3c1e43fde88978dbf15545f231a6c0f98`. Neither output is promoted yet.
+
+Exact next step: configure revision 31 as a restore-only smoke of the ACTION/map-view candidate:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39776518701
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc
+RESTORE_TEST=1
+CONTINUATION_TEST=0
+AB_TEST=0
+AB_ACTION=DOWN
+LOOP_CYCLES=1
+REVISION=31
+```
+Require explicit load event, five authentic X11 screenshots showing map view retained at F20, successful exit and external validation of its new output checkpoint. Do not trigger parallel player runs. Once revision31 is verified, use the restored map state for a single DOWN-vs-WAIT probe in two fresh processes; inspect tile highlight/state first and do not confirm/choose a destination unless the intended item is visibly clear.
+
+Story Mode still NOT COMPLETE. Never claim ending without authentic in-game ending/results evidence. Use START to skip dialogue; Japanese text must include adjacent Indonesian translations; all gameplay artifacts remain private/out of Git.
+
+---
+
 ## LATEST VERIFIED RESULT — Triangle opened the map view; next restore-only (22 October 2026, 19:15 WIB)
 
 Run [#39776518701](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776518701), revision 30, completed with success at 19:14:34 WIB. Private artifact #12425305517 was audited.
