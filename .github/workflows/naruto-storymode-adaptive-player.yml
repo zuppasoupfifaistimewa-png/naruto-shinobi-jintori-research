@@ -88,7 +88,7 @@ jobs:
             echo "SOURCE_BYTES=21162945"
             echo "SOURCE_SHA256=19388b5a9b59c77e443f47abdc7c6f98251ef4a1be1b512378faab217a658ae9"
             echo "SOURCE_COPY_READ_ONLY=YES"
-            echo "LOOP_CYCLES=8"
+            echo "LOOP_CYCLES=2"
             echo "CYCLE=observe external X11 at F20 -> decide -> input F30-F38 -> verify F60/F100 -> checkpoint F180"
             echo "POLICY=START on calibrated dialogue; wait roulette then Circle only if it persists; Circle only when calibrated YES is visibly highlighted; route directions rotate after repeated map state; unknown states WAIT"
             echo "INTERNAL_EMULATOR_SCREENSHOT_API=DISABLED"
@@ -161,7 +161,7 @@ jobs:
           LUA
           )
           cat > "$WORK/storymode-adaptive.lua" <<'LUA'
-          local maxCycles=1 -- smoke test only; expand after verified pass
+          local maxCycles=2 -- multi-cycle regression after one-cycle smoke passed
           local frame=0; local loadStarted=false; local loadReturned=false; local loaded=false
           local activeButton=nil
           local pad=PCSX.SIO0.slots[1].pads[1]
@@ -277,7 +277,7 @@ jobs:
           from pathlib import Path
           from PIL import Image
           pid=int(sys.argv[1]); stdout=Path(sys.argv[2]); out=Path(sys.argv[3]); root=Path(sys.argv[4])
-          max_cycles=1; phases=(20,60,100,180); done=set()
+          max_cycles=2; phases=(20,60,100,180); done=set()
           last_progress=time.monotonic(); last_phase='emulator_start'; progress_transitions=0; previous_observed={}
           def alive():
               r=subprocess.run(["ps","-o","stat=","-p",str(pid)],capture_output=True,text=True)
@@ -332,6 +332,11 @@ jobs:
                           decision=observe(png,out/("decision-cycle-%02d.json"%cycle),history if history.exists() else None)
                           (out/("action-cycle-%02d.txt"%cycle)).write_text(decision["action"]+"\n",encoding="utf-8")
                           print("ADAPTIVE_DECISION cycle={} state={} action={} confidence={:.2f} reason={}".format(cycle,decision["state"],decision["action"],decision["confidence"],decision["action_reason"]),flush=True)
+                          if cycle==2:
+                              safe=(decision["state"]=="battle_untrained" and decision["action"]=="WAIT")
+                              marker="ADAPTIVE_BATTLE_FAIL_CLOSED="+("PASS" if safe else "FAIL")+" cycle=2 state="+decision["state"]+" action="+decision["action"]
+                              print(marker,flush=True)
+                              (out/"battle-regression-report.txt").write_text(marker+"\n",encoding="utf-8")
                       elif phase==100:
                           dec_path=out/("decision-cycle-%02d.json"%cycle)
                           dec=json.loads(dec_path.read_text(encoding="utf-8"))
@@ -372,8 +377,10 @@ jobs:
           set -e
           echo "ADAPTIVE_EMULATOR_EXIT=$rc"
           test "$rc" -eq 0
-          test "$(find "$WORK/captures" -maxdepth 1 -name 'C*-F*.png' | wc -l)" -eq 4
-          test "$(find "$WORK/captures" -maxdepth 1 -name 'adaptive-cycle-*-f180.sstate' | wc -l)" -eq 1
+          test "$(find "$WORK/captures" -maxdepth 1 -name 'C*-F*.png' | wc -l)" -eq 8
+          test "$(find "$WORK/captures" -maxdepth 1 -name 'adaptive-cycle-*-f180.sstate' | wc -l)" -eq 2
+          grep -q 'ADAPTIVE_BATTLE_FAIL_CLOSED=PASS cycle=2 state=battle_untrained action=WAIT' "$WORK/captures/battle-regression-report.txt"
+          grep -q 'ADAPTIVE_INPUT cycle=2 action=WAIT status=PASS' "$WORK/captures/pcsx-adaptive.stdout"
           for state in "$WORK"/captures/adaptive-cycle-*-f180.sstate; do
             bytes="$(stat -c %s "$state")"
             sha="$(sha256sum "$state" | cut -d ' ' -f1)"
@@ -393,7 +400,7 @@ jobs:
             echo "ADAPTIVE_CHECKPOINT_STRUCTURAL_VALIDATION=PASS file=$(basename "$state") bytes=$bytes sha256=$sha"
           done
           grep -q 'ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=battle_untrained' "$WORK/captures/progress-report.txt"
-          echo "ADAPTIVE_LOOP_TEST=PASS cycles=1 captures=4 checkpoints=1 gameplay_state_transition=verified"
+          echo "ADAPTIVE_LOOP_TEST=PASS cycles=2 captures=8 checkpoints=2 gameplay_state_transition=verified battle_fail_closed=verified"
 
       - name: Upload private adaptive screenshots, decisions, logs and checkpoints
         if: always()
