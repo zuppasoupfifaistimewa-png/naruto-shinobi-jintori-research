@@ -1,3 +1,15 @@
+## REVISION47 PARTIAL — Circle seems to return to board from roulette, but A/B gate failed
+
+Run #39868722262 artifact #12464698050 contains all 10 authentic 1280×800 screenshots and exact F20 parity. Both processes restored source `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; two load events, matched cards, Circle true/false readback, and captures pass. ACTION F60/F100/F110 show spinning roulette; F180 returns to map with wheel sliding off view. WAIT remains roulette through F180.
+
+Classify “Circle settles/exits roulette” as **HYPOTHESIS only** because CONTROL checkpoint is 2,097,152 bytes and failed external size validation after exit139; ACTION state validates (21,163,242 bytes/v4/SHA `6abeb30642c9e8c6474b207e7de725619ff858ae9203c24e532e28410e8a31cd`). No comparison report; cannot accept A/B.
+
+Workflow commit `32f9e4172a670cdd14b92992f62a2e6fc970aba5` adds 12 VSync settle frames after F180 state is saved, before native shutdown, to allow deferred file I/O to finish. Recovery of exit 134/139 still requires session-finished marker plus externally validated checkpoint.
+
+Retry revision48 with source run #39867730674/artifact #12464258211/`adaptive-cycle-01-f180.sstate`/SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`, AB_TEST=1, AB_ACTION=CIRCLE, AB_EXPECTED_STATE=roulette, two cycles. Require all paired gates and manually inspect screenshot result. Use START, not Circle, for dialogue. Story Mode not complete.
+
+---
+
 ## ACTIVE — revision47 Circle-versus-WAIT from restored roulette state
 
 Run #39868722262 active, started 05:58:51 WIB; timeout about 06:18:51 WIB. It uses source run #39867730674 / artifact #12464258211 / `adaptive-cycle-01-f180.sstate` / SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; this exact source was independently restored by #39868354205 and five screenshots show the wheel.
