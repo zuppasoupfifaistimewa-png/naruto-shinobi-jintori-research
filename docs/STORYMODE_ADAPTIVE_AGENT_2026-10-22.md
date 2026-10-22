@@ -1,3 +1,13 @@
+## CHAT-TRANSFER CHECKPOINT — classifier regression still running; do not launch player yet (23 Oct 2026, ~06:46 WIB)
+
+No active player run. Revision50 run #39872449049 succeeded with observed progression: board at F20; policy sent DOWN, counter 3→1 by F60; Iruka (`イルカ`) dialogue appeared at F100/F110 and was skipped by START; three card backs appeared by F180. Candidate output state size 21,162,772 bytes, v4, SHA-256 `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`; not independently restored, do not promote. Policy still acted during RESTORE_TEST, which must be accounted for.
+
+Agent commit `02f39ca3cdf21120e574923a4e8706d66dd16333` adds `card_selection` classification using central ROI x=370..930,y=220..530 white/gray ratios with WAIT/fail-closed behavior. Synthetic test landed in commit `d8082dcdfa8997df65cddf9e6d0d8d806c8da927`. Run #39873268266 passed 8 tests but did not include the new test. Regression #39873273913 at commit d8082... remains `in_progress`, active at `Install image dependencies`, no artifact, start 23:39:57Z. First audit this run and confirm its checkout contains both commits/change+test. Offline-test the real private F180 screen before changing marker/starting player.
+
+Once regression passes and private F180 classified card_selection/WAIT, set revision51 restore-only from run #39872449049/artifact naruto-storymode-adaptive-player-private/adaptive-cycle-01-f180.sstate/SHA `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`; require card overlay remains at F20, load event, 5 authentic 1280×800 captures, accepted shutdown and external output size/v4-header/SHA validation. Keep run51 output unpromoted until its own restore. Do not confirm a card. No Story Mode completion claim.
+
+---
+
 ## LATEST OBSERVED CONTINUATION — revision50 board → dialogue → three-card overlay
 
 Run #39872449049 succeeded. Private artifact #12467281563 passed ZIP integrity. It restored source checkpoint SHA `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea` (21,163,504 bytes/v4) in a fresh process, logged SaveStateLoaded and restore pass, captured five authentic 1280×800 X11 frames, and produced externally validated output SHA `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7` (21,162,772 bytes/v4). Native emulator shutdown exit124 was accepted through the strict post-session gate; effective exit0.
