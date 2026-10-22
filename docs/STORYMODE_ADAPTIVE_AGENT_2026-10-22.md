@@ -1,3 +1,12 @@
+## ACTIVE — revision50 restore-only, emulator loop in progress (23 October 2026, 06:35 WIB)
+
+Only player run is [#39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049), started 06:32:21 WIB, timeout about 06:52:21 WIB. Marker at run checkout `1c30215c9a4b6035b5c24d1bf0befc4819110642` points to source run #39870243073 / artifact naruto-storymode-adaptive-player-private / adaptive-cycle-01-f180.sstate / SHA-256 `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`. Restore-only, one cycle, revision50. Latest job state: source/assets checks passed, emulator observe/decide/verify/checkpoint loop active, no artifact yet. No parallel player.
+
+Audit after completion: explicit SaveStateLoaded, restore PASS, five authentic 1280×800 screenshots showing board retained, accepted shutdown gate only after session-finished marker plus external checkpoint validation, and output state size/v4-header/SHA validation. Only then promote input; run50's output remains unpromoted until independently restored.
+
+Revision49 is now VERIFIED in context: CIRCLE from roulette produces board by F180, while WAIT leaves roulette spinning at F180. Story Mode remains NOT COMPLETE. Use START for dialogue; no gameplay assets in Git.
+---
+
 ## ACTIVE — revision50 restore-only board-after-Circle checkpoint
 
 Run [#39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049) is active at 06:32:21 WIB 23 Oct 2026; timeout about 06:52:21 WIB. Marker is pinned to run #39870243073, artifact `naruto-storymode-adaptive-player-private`, file `adaptive-cycle-01-f180.sstate`, SHA-256 `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`, `RESTORE_TEST=1`, one cycle. Do not start parallel player.
