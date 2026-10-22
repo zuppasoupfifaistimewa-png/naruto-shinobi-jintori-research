@@ -1,3 +1,13 @@
+## ACTIVE SMOKE — restore-only run #39772650469 (22 October 2026, 18:45 WIB)
+
+The established single-nextTick shutdown is now being smoke-tested. Run [#39772650469](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39772650469) is revision 27 with `RESTORE_TEST=1`, `LOOP_CYCLES=1`, source pinned to the known-restorable Information checkpoint SHA-256 `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e` from run #39768787669. At 18:45 WIB its job remained in `Install X11 tools and prepare private workspace` (started 18:43:28 WIB); no emulator frames/artifact are available yet. Do not trigger a parallel player run.
+- Current workflow uses single `PCSX.pauseEmulator(); PCSX.nextTick(function() PCSX.quit(0) end)` outside VSync, and the shell must validate the emitted file after the emulator ends. The previous VSync and recursive nextTick drains both stalled with timeout 124.
+- Audit this run when it completes: explicit `ExecutionFlow::SaveStateLoaded`, five authentic post-load X11 images, process exit, and external output checkpoint size/v4-header/SHA validation. If it succeeds, repeat paired DOWN-vs-NONE from the same original source SHA. If the job continues to stall during installation or times out, document that result without marking the checkpoint as promoted.
+
+Story Mode remains NOT COMPLETE. The Information→`マップを見る` (Lihat peta) transition is only a HYPOTHESIS because the action-only branch has no completed control comparison.
+
+---
+
 ## DIAGNOSTIC UPDATE — chained nextTick drain also timed out; restore established single nextTick and run a one-cycle smoke (22 October 2026, 18:39 WIB)
 
 Run [#39771377339](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39771377339) failed in the second attempted Information-down A/B. The emulator produced all five ACTION-branch X11 frames and the ACTION checkpoint was 21,162,276 bytes with v4 header, SHA-256 `a2d055634da951b8c9703ac1d30ac0981d4508404527604ddf4e803fe08935b5` (inspected in private artifact #12423430123 after the run ended). The output bytes appear structurally complete, but the emulator did not exit because a chain of 12 `PCSX.nextTick` callbacks after pausing did not advance; the watchdog reported rc=124 and the paired run terminated before branch 2. It is not a trusted continuation source and no paired rule result is recorded from this run.
