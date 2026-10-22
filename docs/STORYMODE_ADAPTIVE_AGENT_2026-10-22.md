@@ -1,3 +1,19 @@
+## VERIFIED RULE UPDATE — DOWN advances the current right-side menu highlight one row (22 October 2026, 18:06 WIB)
+
+The matched ACTION-vs-NONE experiment completed successfully in run [#39767790829](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39767790829).
+
+- Parent source checkpoint hash: `7679cfbd3576c3202abcc299b907939ab4e4529e3a0aa260e780806b1e21cc92`.
+- Both independent fresh emulator processes logged `ExecutionFlow::SaveStateLoaded`, and each captured 5 authentic external-X11 frames. Both used byte-identical separate Memory Card clones (SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`).
+- Both F20 frames were pixel-identical (1,024,000/1,024,000 pixels), with `menu_or_unknown_choice` at the right-side menu. ACTION branch sent one DOWN; press and release readbacks passed. NONE branch sent no button at the action window.
+- Visual comparison of authentic captures shows ACTION branch changes selection from `ルーレット` (Roulette) at F20 to `忍術` (Ninjutsu) at F60; NONE branch remains on Roulette through F180. Persistent comparison from F60 onwards found 14,609 differing pixels and mean absolute RGB difference 1.04924.
+- **VERIFIED, scoped to this specific menu:** DOWN advances the current menu highlight by one row from Roulette to Ninjutsu. This is not a universal direction/control map for all screens.
+- ACTION output checkpoint is structurally valid (21,163,486 bytes, SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`) but is not yet trusted as a continuation source until independently restored in a fresh emulator process. The control state is 21,163,324 bytes, SHA-256 `3da0a41d55e988550ef1a9368652fa909ae06da34c2b4b7bf315f5a820f76aeb`. Private artifact #12420204586 only.
+- The next action is a bounded `RESTORE_TEST=1` run from the ACTION checkpoint. Verify the actual `ExecutionFlow::SaveStateLoaded` event and post-load external X11 frames before continuing menu exploration. Keep Circle disallowed for non-YES menu confirmation under the existing conservative policy.
+
+Story Mode remains NOT COMPLETE without authentic ending/results evidence.
+
+---
+
 ## VERIFIED UPDATE — single DOWN changed the menu selection in a matched test (22 October 2026, 18:06 WIB)
 
 This is a narrow, controlled observation—not proof that a gameplay turn was committed.
