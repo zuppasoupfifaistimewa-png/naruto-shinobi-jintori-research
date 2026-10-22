@@ -1,3 +1,13 @@
+## ACTIVE PLAYER — revision48 repeats roulette Circle vs WAIT with checkpoint settle delay
+
+Run [#39869536734](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39869536734) active, started 06:05:59 WIB; hard timeout about 06:25:59 WIB. Marker pins source run #39867730674/artifact #12464258211/`adaptive-cycle-01-f180.sstate`/SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`, with AB_TEST=1, AB_ACTION=CIRCLE, AB_EXPECTED_STATE=roulette, two cycles, revision48.
+
+Revision47 had all ten screenshots and valid ACTION state but invalid CONTROL state (2,097,152 bytes, failed external size check) after exit139, so no comparison report. Genuine F180 screenshots suggested Circle returns to board while WAIT remains wheel; classify this as HYPOTHESIS only. Workflow blob `ae6aa7e4f945da4322bb08880a38836fa1a3039a` now waits 12 more VSyncs after writing the F180 snapshot before shutdown to let file I/O settle. Does not weaken external size/header/SHA gates; exit 134/139 is accepted only if session-finished marker and checkpoint validates.
+
+No parallel player. Audit after completion all source/parent/load/card/input/screenshot/exit/checkpoint/report gates. If screenshot is stable, document only what is actually visible; do not name roulette result unless pointer/number is stable. Story Mode NOT COMPLETE.
+
+---
+
 ## REVISION47 AUDIT — Circle returns to board visually, but control checkpoint failed validation
 
 Run #39868722262 completed failure. Artifact #12464698050 passed ZIP integrity. Its 10 authentic 1280×800 screenshots were validated. Both fresh processes restored source SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; two load events, F20 pixel parity, matching disposable Memory Cards, Circle true/false readback, and all capture gates passed.
