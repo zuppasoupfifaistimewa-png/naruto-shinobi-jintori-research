@@ -1,3 +1,9 @@
+## CURRENT NEXT RUN — restore the verified menu-DOWN successor (22 October 2026, 18:08 WIB)
+
+The matched A/B rule above is VERIFIED for this menu state, but its output checkpoint is not yet a trusted resume source. Restore-only run [#39768371975](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768371975) was triggered from private artifact #12420204586, file `adaptive-cycle-01-f180.sstate`, size 21,163,486 bytes, SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`; marker revision 21 sets `RESTORE_TEST=1`, `AB_TEST=0`, `CONTINUATION_TEST=0`, and `LOOP_CYCLES=1`. At the latest check it was queued. Do not continue from that checkpoint until the new process logs `ExecutionFlow::SaveStateLoaded`, produces five post-restore authentic X11 frames, exits normally/under an explicitly allowed condition, and externally validates its output checkpoint after emulator exit.
+
+---
+
 ## VERIFIED UPDATE — matched DOWN-versus-NONE menu test passed (22 October 2026, 18:06 WIB)
 
 Story Mode remains **NOT COMPLETE**; no authentic ending/results screenshot exists.
