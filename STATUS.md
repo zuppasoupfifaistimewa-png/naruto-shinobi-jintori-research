@@ -1,3 +1,21 @@
+## VERIFIED UPDATE — checkpoint continuity and map-transition classifier (22 October 2026, 17:03 WIB)
+
+**Story Mode is NOT complete.** No authentic in-game ending/results screen has been captured. No ROM, BIOS, Memory Card, savestate, or gameplay screenshot was committed.
+
+- Classifier regression [#39759649670](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39759649670) completed **success**: 8 synthetic unit tests passed and 10/10 authentic external-X11 frames from private player artifact #12416489109 matched their expected classes.
+- The classifier now separates `map_after_move` (green board, route/tile symbols and dual player HUD) from `battle_untrained`. The tested board-transition frames choose `WAIT`; a dual HUD alone no longer implies battle. This is validated only for the specific authentic frames listed in the regression, not for all battle/result variants.
+- Fresh-process experiment [#39758737690](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39758737690) captured 10/10 external-X11 images. Both checkpoint files were created and the cycle-2 log shows a successful save-state load event, but the run failed because the outer watcher counted checkpoints before the cycle-2 file and completion marker had appeared. It is not a verified successful run-level continuation.
+  - Cycle 1 checkpoint: 21,162,838 bytes, SHA-256 `81487394b180a47c59165b49bae21f4d278b600d9fbf83c14086a9629da1c2b4`.
+  - Cycle 2 checkpoint: 21,162,485 bytes, SHA-256 `42c4ad60397ade407508c4393fac21c21db6f12c88c5efc77deb05a2daa827f5`.
+  - These are private artifact data only; do not commit or link individual screenshots/savestates publicly.
+- Latest bounded player retry [#39759822818](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39759822818) is testing the corrected watcher, which now waits for all screenshots, both structurally valid checkpoints, and the fresh-process completion marker before finishing. Do not duplicate-trigger while it is in progress.
+- New direct screenshot observation from #39758737690: at C01-F20 the board counter shows 4; at C01-F60 it shows 3 after DOWN was read back pressed/released. At C01-F100/F110 the game displays `ここに結界をはります` (Aku akan memasang penghalang di sini). START was sent while the dialogue was visible. By C01-F180, the red barrier/seal symbol is on the board, and Mizuki's displayed Chakra changed from 1500 at F100/F110 to 1380 at F180 while Naruto remained at 1380. This is a **single observed sequence**, not yet a confirmed general cost/action rule: preserve as HYPOTHESIS until a matched no-input branch from the same parent checkpoint verifies causation.
+- Cycle 2 restored cycle 1's checkpoint hash `81487394b180a47c59165b49bae21f4d278b600d9fbf83c14086a9629da1c2b4`; it showed the same board-transition layout and selected `WAIT`. Do not expand beyond bounded sessions until the corrected run verifies clean exit and both checkpoints together.
+
+**Next:** wait for the current run's final job logs; if it passes, branch from the newest validated checkpoint and run a matched one-action-vs-NONE experiment to test the next board action. Unknown states remain `WAIT`; use START for dialogue; Circle only for visible contextual confirmation. Keep artifacts private and translate Japanese immediately into Indonesian parentheses.
+
+---
+
 ## CURRENT STATUS — adaptive player prototype test failed; monitoring added (22 October 2026, 06:xx WIB)
 
 **Story Mode is NOT complete. An autonomous adaptive player capable of completing all Story Mode has NOT been finished or verified.** The first classifier and runner exist, but the eight-cycle emulator test timed out during cycle 2. No ending evidence exists.
