@@ -1,3 +1,21 @@
+## VERIFIED RESULT — revision 30 Triangle opens map view (22 October 2026, 19:15 WIB)
+
+Run [#39776518701](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776518701) completed with Actions `success`; raw logs and private artifact #12425305517 were audited. Both arms restored the same independently restorable parent SHA-256 `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7` in separate fresh emulator processes. Both logged `ExecutionFlow::SaveStateLoaded`, used equal cloned Memory Cards (SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`), and started with identical F20 pixels (1,024,000/1,024,000) and matched generic classifier state. Triangle press/release readback passed true/false. Ten authentic external-X11 captures were validated at 1280×800; both emulator processes exited 0; both output checkpoints passed external post-exit size/header/SHA verification.
+
+Visual review of the actual screenshot files establishes a narrow **VERIFIED rule**: when `マップを見る` (Lihat peta) is highlighted, one `TRIANGLE` input opens the board/map view; NONE/WAIT leaves the right-side menu open with `マップを見る` (Lihat peta) still highlighted. ACTION F60/F100/F110/F180 are recognized as `map_after_move` by the existing image classifier; control frames remain `menu_or_unknown_choice`. The action/control visual comparisons report: F60 286,259 pixels / mean abs RGB 21.80974; F100 282,661 / 21.70455; F110 279,162 / 21.18977; F180 286,921 / 21.80548. Screenshot details include Naruto's board-marker panel with `レベル` (Level) 1, `結界価値` (Barrier value) 60 and `耐久値` (Durability) 2/2, and the footer `△ マップ` (Triangle: Map). No map destination was selected.
+
+Outputs in private artifact #12425305517:
+- ACTION/map-view candidate `adaptive-cycle-01-f180.sstate`: 21,163,227 bytes; header `PCSX-Redux SaveState v4`; SHA-256 `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`.
+- CONTROL/menu `adaptive-cycle-02-f180.sstate`: 21,163,215 bytes; v4 header; SHA-256 `dc91b2756581456e75dee8cd836dc7b3c1e43fde88978dbf15545f231a6c0f98`.
+
+**Promotion gate:** the ACTION map-view checkpoint is still a candidate, not yet trusted for continuation. Next run #31 must restore that exact ACTION output in a separate fresh emulator process and verify `ExecutionFlow::SaveStateLoaded`, five authentic X11 captures showing map view, accepted exit, and external output size/header/SHA validation. Do not start a further player experiment until this restore-only run finishes. If restore passes, this checkpoint becomes the next continuation source. Then cautiously test one DOWN from map view versus WAIT only after the restored state is confirmed; do not pick/select tiles without inspecting each result.
+
+Rules verified to date remain narrowly scoped: from the observed menu states, successive DOWN inputs moved Roulette→Ninjutsu, Ninjutsu→Information, and Information→View map; from View map, TRIANGLE opens the board/map view. No territory-selection, tile movement, capture, combat, Chakra cost, turn order, win/loss or ending rule is established by these menu probes.
+
+Story Mode remains **NOT COMPLETE**. No verified ending/results screen exists. Continue START-only dialogue skipping, translate Japanese terms beside them, keep game files/BIOS/savestates/Memory Cards/screenshots private and out of Git.
+
+---
+
 ## VERIFIED — TRIANGLE opens the map view from the selected Map row (22 October 2026, 19:15 WIB)
 
 Run [#39776518701](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776518701) completed with success at 19:14:34 WIB. I audited private artifact #12425305517 including the actual X11 screenshots, branch logs, comparison report, input readback, and output checkpoint validation.
