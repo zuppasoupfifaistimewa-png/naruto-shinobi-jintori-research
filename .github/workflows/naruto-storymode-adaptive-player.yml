@@ -498,7 +498,7 @@ jobs:
             card_sha="$(sha256sum "$card" | cut -d ' ' -f1)"
             echo "ADAPTIVE_SESSION_START cycle=${cycle} source=$resume_sha card=$(basename "$card") card_sha256=$card_sha" >> "$WORK/captures/pcsx-adaptive.stdout"
             set +e
-            ADAPTIVE_CYCLE="$cycle" AB_TEST="$AB_TEST" AB_ACTION="$AB_ACTION" PROBE_MODE=ADAPTIVE timeout --signal=TERM --kill-after=5s 120s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+            ADAPTIVE_CYCLE="$cycle" AB_TEST="$AB_TEST" AB_ACTION="$AB_ACTION" PROBE_MODE=ADAPTIVE timeout --signal=TERM --kill-after=5s 60s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$card" \
               -exec "$PAD_SETUP" -dofile "$WORK/storymode-adaptive.lua" -softgpu -dynarec -stdout -lua_stdout \
               -logfile "$logfile" -run > "$stdout" 2>&1
@@ -506,9 +506,10 @@ jobs:
             set -e
             local cp="$WORK/captures/adaptive-cycle-$(printf '%02d' "$cycle")-f180.sstate"
             # Some sessions report a native shutdown fault after the Lua session-finished marker.
-            # Accept only exit 139 or 134 when the marker exists and the newly written checkpoint
-            # passes external post-exit size/header/SHA validation. This does not mask earlier failures.
-            if { [ "$rc" -eq 139 ] || [ "$rc" -eq 134 ]; } && grep -q "ADAPTIVE_SESSION_FINISHED cycle=${cycle}" "$stdout"; then
+            # Accept only post-session native fault/timeout exits (139, 134, or 124) if the
+            # session-finished marker exists and the newly written checkpoint passes external
+            # size/header/SHA validation. Never mask failures before the marker or an invalid state.
+            if { [ "$rc" -eq 139 ] || [ "$rc" -eq 134 ] || [ "$rc" -eq 124 ]; } && grep -q "ADAPTIVE_SESSION_FINISHED cycle=${cycle}" "$stdout"; then
               if validate_checkpoint "$cp" >> "$WORK/captures/pcsx-adaptive.stdout" 2>&1; then
                 echo "ADAPTIVE_SESSION_SHUTDOWN_RECOVERED=PASS cycle=$cycle native_exit=$rc" >> "$WORK/captures/pcsx-adaptive.stdout"
                 rc=0
