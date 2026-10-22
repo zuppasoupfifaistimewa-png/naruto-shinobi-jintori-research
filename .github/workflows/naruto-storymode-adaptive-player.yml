@@ -66,7 +66,7 @@ jobs:
           [[ "$restore_test" == "0" || "$restore_test" == "1" ]]
           [[ "$continuation_test" == "0" || "$continuation_test" == "1" ]]
           [[ "$ab_test" == "0" || "$ab_test" == "1" ]]
-          [[ "$ab_action" == "DOWN" ]]
+          [[ "$ab_action" == "DOWN" || "$ab_action" == "TRIANGLE" ]]
           if [ "$ab_test" = "1" ]; then
             [[ "$loop_cycles" == "2" && "$restore_test" == "0" && "$continuation_test" == "0" ]]
           fi
@@ -426,7 +426,7 @@ jobs:
           [[ "$RESTORE_TEST" == "0" || "$RESTORE_TEST" == "1" ]]
           [[ "$CONTINUATION_TEST" == "0" || "$CONTINUATION_TEST" == "1" ]]
           [[ "$AB_TEST" == "0" || "$AB_TEST" == "1" ]]
-          [[ "$AB_ACTION" == "DOWN" ]]
+          [[ "$AB_ACTION" == "DOWN" || "$AB_ACTION" == "TRIANGLE" ]]
           if [ "$AB_TEST" = "1" ]; then [[ "$CYCLES" == "2" && "$RESTORE_TEST" == "0" && "$CONTINUATION_TEST" == "0" ]]; fi
           export PAD_SETUP
           export LOOP_CYCLES="$CYCLES"
@@ -616,16 +616,16 @@ jobs:
             test "$CYCLES" -eq 2
             grep -q 'ADAPTIVE_AB_CARD_CLONES=PASS' "$WORK/captures/ab-card-clones.txt"
             for cycle in 1 2; do grep -q "ADAPTIVE_AB_PRECONDITION=PASS cycle=$cycle" "$WORK/captures/ab-precondition-cycle-$(printf '%02d' "$cycle").txt"; done
-            grep -q 'ADAPTIVE_DECISION cycle=1 state=menu_or_unknown_choice action=DOWN classifier_action=WAIT' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
+            grep -q "ADAPTIVE_DECISION cycle=1 state=menu_or_unknown_choice action=$AB_ACTION classifier_action=WAIT" "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
             grep -q 'ADAPTIVE_DECISION cycle=2 state=menu_or_unknown_choice action=WAIT classifier_action=WAIT' "$WORK/captures/pcsx-adaptive-cycle-2.stdout"
-            grep -q 'ADAPTIVE_INPUT cycle=1 action=DOWN phase=press readback=true status=PASS' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
+            grep -q "ADAPTIVE_INPUT cycle=1 action=$AB_ACTION phase=press readback=true status=PASS" "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
             grep -q 'ADAPTIVE_INPUT cycle=1 phase=release readback=false status=PASS' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
             grep -q 'ADAPTIVE_INPUT cycle=2 action=WAIT status=PASS reason=no_input_policy' "$WORK/captures/pcsx-adaptive-cycle-2.stdout"
             source1="$(sed -n 's/.*ADAPTIVE_SESSION_START cycle=1 source=\([0-9a-f]*\).*/\1/p' "$WORK/captures/pcsx-adaptive.stdout" | head -n1)"
             source2="$(sed -n 's/.*ADAPTIVE_SESSION_START cycle=2 source=\([0-9a-f]*\).*/\1/p' "$WORK/captures/pcsx-adaptive.stdout" | head -n1)"
             test "$source1" = "$SOURCE_SHA256" && test "$source2" = "$SOURCE_SHA256"
             python3 - "$WORK/captures" "$SOURCE_SHA256" <<'PY'
-          import sys, json, hashlib
+          import sys, json, hashlib, os
           from pathlib import Path
           import numpy as np
           from PIL import Image, ImageChops
@@ -648,7 +648,7 @@ jobs:
               x=img("C01-F%d.png"%phase); y=img("C02-F%d.png"%phase)
               diff=np.abs(x-y); pixels=int(np.any(diff!=0,axis=2).sum()); mad=float(diff.mean())
               lines.append("ADAPTIVE_AB_VISUAL_COMPARE phase=F{} differing_pixels={} mean_abs_rgb_diff={:.5f}".format(phase,pixels,mad))
-          lines.append("ADAPTIVE_AB_ACTION=DOWN;CONTROL=NONE/WAIT")
+          lines.append("ADAPTIVE_AB_ACTION={};CONTROL=NONE/WAIT".format(os.environ.get("AB_ACTION","DOWN")))
           (p/"ab-comparison-report.txt").write_text("\n".join(lines)+"\n")
           print("\n".join(lines))
           PY
@@ -657,7 +657,7 @@ jobs:
             test "$skip1" = "$skip2"
             grep -q 'ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded' "$WORK/captures/pcsx-adaptive.stdout"
             test "$(grep -c 'ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded' "$WORK/captures/pcsx-adaptive.stdout")" -eq 2
-            echo "ADAPTIVE_AB_TEST=PASS parent_sha256=$SOURCE_SHA256 action=DOWN control=NONE memory_card_clones=identical parent_frame_parity=PASS fresh_processes=2 captures=10 checkpoint_outputs_validated=true" >> "$WORK/captures/pcsx-adaptive.stdout"
+            echo "ADAPTIVE_AB_TEST=PASS parent_sha256=$SOURCE_SHA256 action=$AB_ACTION control=NONE memory_card_clones=identical parent_frame_parity=PASS fresh_processes=2 captures=10 checkpoint_outputs_validated=true" >> "$WORK/captures/pcsx-adaptive.stdout"
           elif [ "$RESTORE_TEST" = "1" ]; then
             grep -q 'ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded' "$WORK/captures/pcsx-adaptive.stdout"
             grep -q 'ADAPTIVE_X11_CAPTURE label=C01-F20 .*source=external_xwd' "$WORK/captures/pcsx-adaptive.stdout"
