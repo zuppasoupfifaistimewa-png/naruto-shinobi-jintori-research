@@ -1,3 +1,13 @@
+## ACTIVE RUN — map navigation probe in revision 32 (22 October 2026, 19:23 WIB)
+
+Run [#39777917775](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777917775) is currently in progress, started 19:23:17 WIB; the latest step is installing X11 tools/private workspace. Timeout at ~19:43:17 WIB if not completed earlier. No player run may be launched in parallel.
+
+Config is source run #39776518701 / artifact `naruto-storymode-adaptive-player-private` / checkpoint `adaptive-cycle-01-f180.sstate` / SHA `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`; ACTION=DOWN versus NONE/WAIT, AB_TEST=1, 2 cycles, revision32. The workflow's starting-state precondition was changed in commit `5f8ae63b4374cb730ef197d797dffd0e823db141` to allow either `menu_or_unknown_choice` or `map_after_move` only with WAIT classification.
+
+Await completion, then verify exact parent hash, F20 parity, actual input readback, 2 load events, 10 authentic X11 images, clean/accepted exits and external post-exit checkpoint checks. Inspect pixels before describing effects; never confirm the highlighted map tile. Story Mode remains NOT COMPLETE.
+
+---
+
 ## RESTORE-VERIFIED MAP VIEW — controlled DOWN probe is next (22 October 2026, 19:20 WIB)
 
 Run [#39777301626](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777301626) passed. Actual private artifact #12423949987 was inspected, including C01-F20. The original revision-30 ACTION checkpoint from run #39776518701 / artifact #12425305517, `adaptive-cycle-01-f180.sstate`, SHA-256 `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`, size 21,163,227 and v4 header, was loaded in a fresh process and remained on the tile/map screen. Logs show `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five 1280×800 external-X11 captures validate; emulator exit 0; external new-output verification passes.
