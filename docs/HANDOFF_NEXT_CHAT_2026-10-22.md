@@ -1,3 +1,30 @@
+## LATEST VERIFIED RESULT — board DOWN moves focus to adjacent empty land (22 October 2026, 19:38 WIB)
+
+Run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) fully passed the corrected matched A/B experiment with AB_EXPECTED_STATE=map_after_move. Private artifact #12425858092 was downloaded after upload completed and audited. Both arms restored source SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc in two fresh processes; two load events; identical card clones; exact F20 parity (0/1,024,000 differing pixels); DOWN input readback true/false; WAIT control; 10 valid authentic 1280×800 X11 captures; exits 0; both output checkpoints externally validated for size/v4 header/SHA; comparison report exists.
+
+**VERIFIED (narrow):** on the map board with the Naruto tile focused, one DOWN changes the focused tile to adjacent 空き地 (Tanah kosong) valued 140; WAIT retains Naruto's tile. ACTION C01-F60 shows 空き地 (Tanah kosong), レベル (Level) ---, 結界価値 (Nilai penghalang) 140, 耐久値 (Daya tahan) -/-. CONTROL C02-F60 shows Naruto, レベル (Level) 1, 結界価値 (Nilai penghalang) 60, 耐久値 (Daya tahan) 2/2. This only verifies tile focus; no character movement/capture/ownership change is claimed. Pixel differences: F60 719,192 / mean abs RGB 26.80650; F100 719,200 / 26.89202; F110 719,631 / 26.85752; F180 718,997 / 26.84018. Classifier remains map_after_move for both, so manually inspect screenshots.
+
+ACTION checkpoint candidate from #39779256427, artifact #12425858092: adaptive-cycle-01-f180.sstate, 21,162,559 bytes, v4 header, SHA-256 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a. CONTROL output 21,162,390 bytes SHA-256 3796ff4ba91fef93ddf1078daa1785e043c3d5b5424a03c8cb53a62c6d3858a4. Neither output promoted yet.
+
+Exact next marker, revision 34 restore-only:
+MODE=ADAPTIVE
+SOURCE_RUN=39779256427
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a
+RESTORE_TEST=1
+CONTINUATION_TEST=0
+AB_TEST=0
+AB_ACTION=DOWN
+LOOP_CYCLES=1
+REVISION=34
+
+Require load event, five authentic X11 frames showing 空き地 (Tanah kosong) / tile value 140 still focused, exit 0, and external output size/header/SHA validation. If successful, promote the source checkpoint. Do not start another player concurrently; then plan the next controlled tile-navigation/selection probe without confirming any destination.
+
+Story Mode remains NOT COMPLETE. No authenticated ending/results evidence. All gameplay assets remain private/out of Git, and dialogue must be skipped with START.
+
+---
+
 ## VERIFIED RESULT — map DOWN selection and revision 34 restore gate (22 October 2026, 19:37 WIB)
 
 Run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427), revision 33, completed success. Private artifact #12425858092 was audited end-to-end.
