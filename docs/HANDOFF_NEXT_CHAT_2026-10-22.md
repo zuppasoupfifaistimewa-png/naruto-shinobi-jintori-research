@@ -1,3 +1,26 @@
+## NEWEST HANDOFF UPDATE — one-cycle smoke checkpoint validated; fresh-process restore underway (22 October 2026, 17:35 WIB)
+
+Story Mode is **NOT complete**. No authentic ending/results screenshot exists. The smoke checkpoint passed external structural validation but has not yet been restored by a fresh process.
+
+### Verified smoke run
+- Run [#39763526377](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39763526377) succeeded with `LOOP_CYCLES=1`, workflow revision 15. Eight adaptive unit tests passed.
+- Authentic external-X11 frames C01-F20, F60, F100, F110 and F180 all passed 1280x800 PNG integrity checks; all five were reviewed from private artifact #12419631005. They show map → dialogue → map_after_move. DOWN and START button readback passed on press and release. START skipped visible dialogue `ここに結界をはります` (Aku akan memasang penghalang di sini).
+- Run finished with session marker and emulator exit 0. Shell, only after emulator exit, validated the resulting checkpoint size/header/SHA-256:
+  - file: `adaptive-cycle-01-f180.sstate`
+  - size: 21,162,617 bytes
+  - SHA-256: `b55495934f9ba98165268627b35904918a4dd3983e6d90bb66e2662dfa059e17`
+  - artifact #12419631005 (private, 14-day retention). Never commit or publicly link the checkpoint or gameplay frames.
+- The workflow was generalized to read a validated source artifact/run/checkpoint/hash from the marker. It records the exact `ExecutionFlow::SaveStateLoaded` event and supports a one-cycle restore test without demanding a new map→dialogue transition from a post-move map.
+- Current marker revision 16 is set to `SOURCE_RUN=39763526377`, `SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private`, `SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate`, the SHA above, `RESTORE_TEST=1`, `LOOP_CYCLES=1`.
+- Restore run [#39764239171](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39764239171) was triggered. At last inspection it had started but had no verified result yet.
+
+### Exact next action
+Audit run #39764239171 plus its private artifact. Require all five authentic X11 images, a clear `ExecutionFlow::SaveStateLoaded` log line, a post-restore capture at C01-F20, clean/allowed shutdown, and external post-exit size/header/SHA validation of the newly generated checkpoint. If it passes, use that run's checkpoint as the source for the next bounded two-cycle continuation. If it fails, do not run two cycles; diagnose and retry a bounded restore-only test.
+
+Keep prior conclusions conservative: single-sequence barrier/Chakra effects remain HYPOTHESIS pending matched NONE control; Story Mode has not ended. All repo/privacy/input/Japanese-translation constraints remain in force.
+
+---
+
 ## NEWEST HANDOFF UPDATE — both adaptive retries failed on checkpoint visibility race (22 October 2026, 17:20 WIB)
 
 This section supersedes any older wording below that says runs #39760914530 or #39761094445 are still running/queued. Both have ended in **failure**; no player run is active or waiting for the concurrency lock. Story Mode is **NOT complete**, and no authentic ending/results screenshot exists.
