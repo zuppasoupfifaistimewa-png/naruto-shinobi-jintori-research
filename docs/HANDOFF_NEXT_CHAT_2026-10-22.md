@@ -1,3 +1,17 @@
+## LATEST VERIFIED RESULT — repeat DOWN triggers another board-view shift (revision37)
+
+Run [#39782011370](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39782011370) completed success at 19:54:29 WIB. Private artifact #12426797521 audited. Both fresh processes loaded exact parent SHA `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`; two load events; identical cloned cards; F20 exact pixel parity; DOWN press/release true/false; WAIT control; 10 authentic 1280×800 X11 images; exits0 twice; both output savestates externally validated; comparison report generated.
+
+**VERIFIED, narrow:** second DOWN from the post-DOWN scrolled board triggers another upward viewport scroll, keeps the cell information panel hidden, and puts the cursor visually over the lower area near Naruto's marker. WAIT lets the screen settle back to the prior board framing and restores `空き地` (Tanah kosong), value140 panel. Diff metrics F60 780637/MAD22.66488; F100 780562/22.68538; F110 781298/22.66071; F180 780622/22.62887. This is board focus/view response only; target tile semantics, movement, capture and ownership remain unknown.
+
+ACTION candidate from #39782011370 / artifact #12426797521: `adaptive-cycle-01-f180.sstate`, 21,162,960 bytes, v4, SHA-256 `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`. CONTROL output: 21,163,049 bytes, v4, SHA `cd7a70d67001e67177333df0c332e745e28c01c92851f92c21445250d108c63c`. Neither is promoted yet.
+
+Exact revision38: restore-only from run #39782011370/artifact `naruto-storymode-adaptive-player-private`/file `adaptive-cycle-01-f180.sstate`/hash `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`; RESTORE_TEST=1, CONTINUATION_TEST=0, AB_TEST=0, AB_ACTION=DOWN, LOOP_CYCLES=1, REVISION=38. Require load event, five authentic external 1280×800 images retaining post-second-DOWN view, exit0, output checkpoint post-exit external validation. Do not start parallel players; the new revision38 output remains unpromoted until restored separately.
+
+Story Mode remains NOT COMPLETE. Keep all gameplay assets private/out of Git; use START for dialogue.
+
+---
+
 ## ACTIVE PLAYER — revision37 tests repeat DOWN from the post-DOWN board view
 
 Only active player is run [#39782011370](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39782011370), started 19:52:49 WIB, hard timeout about 20:12:49 WIB. Marker is verified and pins the independently restored state SHA `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff` from run #39780755350/artifact #12426786721; AB_TEST=1; AB_ACTION=DOWN; AB_EXPECTED_STATE=map_after_move; two cycles; RESTORE_TEST=0; CONTINUATION_TEST=0; revision37. Do not launch another player in parallel.
