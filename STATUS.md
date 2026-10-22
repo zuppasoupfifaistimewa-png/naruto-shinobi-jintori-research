@@ -1,3 +1,25 @@
+## LATEST DIAGNOSTIC — revision 32 captured map DOWN effect, but stale validator rejected it (22 October 2026, 19:30 WIB)
+
+Run [#39777917775](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777917775) finished with conclusion failure at 19:29:26 WIB. This is a validator/configuration failure, not a failed emulator session: both fresh processes loaded the same known-restorable map parent SHA-256 b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc and each logged ExecutionFlow::SaveStateLoaded. Ten authentic external-X11 screenshots (five per branch) passed 1280×800 validation; F20 images were manually compared and are pixel-identical (0 differing / 1,024,000 pixels); DOWN press/release readbacks were true/false; both emulator processes exited 0; both output checkpoints passed external post-exit size/header/SHA validation. Private artifact #12426395775 contains evidence.
+
+The exact cause of the action workflow failure is that checkout SHA b77f74af5b258dfcd7d8bfbeeeca0c685c5fc7b7 has a state-parity validator hard-coded to expect menu_or_unknown_choice. Actual paired F20 states were both map_after_move, which is correct for the pinned source; its strict Python gate therefore stopped before writing ab-comparison-report.txt. The action branch did send DOWN, logged in pcsx-adaptive-cycle-1.stdout; control sent WAIT. The run must not be counted as a clean A/B workflow pass, and its output checkpoints are not promoted.
+
+Manual inspection of private artifact screenshots suggests this directional effect, still **HYPOTHESIS pending corrected paired run**:
+- ACTION C01-F60: panel shows 空き地 (Tanah kosong), レベル (Level) ---, 結界価値 (Nilai penghalang) 140, 耐久値 (Daya tahan) -/-.
+- CONTROL C02-F60: panel remains on Naruto with レベル (Level) 1, 結界価値 (Nilai penghalang) 60 and 耐久値 (Daya tahan) 2/2.
+The paired image differences are large and consistent (F60 719,192 pixels / mean absolute RGB 26.806502; F100 719,200 / 26.892019; F110 719,631 / 26.857518; F180 718,997 / 26.840178). This appears consistent with DOWN changing the focused tile from Naruto's tile to the neighboring empty land marked 140, but the semantic rule remains a HYPOTHESIS until a rerun passes the corrected workflow's explicit map-state acceptance gate.
+
+Output checkpoint hashes (valid structure, but neither promoted):
+- ACTION: 21,162,270 bytes, SHA-256 927d87eb775f375deb47af348d837319ceb65d4baa58c8523042090f377b2efa.
+- CONTROL: 21,162,320 bytes, SHA-256 7aaf5fc780748fee27a84669a942c598e8340e9952234e47bab47795755d67a1.
+
+### Corrected revision 33
+The current main workflow now supports AB_EXPECTED_STATE; the run above used an older workflow checkout and did not consume that field. Launch exactly one corrected rerun from the unchanged known-restorable parent, with AB_EXPECTED_STATE=map_after_move, AB_ACTION=DOWN, AB_TEST=1, LOOP_CYCLES=2, RESTORE_TEST=0, CONTINUATION_TEST=0, REVISION=33. Require the same strict gates and the comparison report to be generated successfully. Do not promote either revision-32 output checkpoint. Inspect the actual screenshots; do not use Circle/confirm, and do not claim tile movement VERIFIED before the corrected experiment passes.
+
+Story Mode remains NOT COMPLETE. No authenticated ending/results evidence exists. Keep ROM, BIOS, savestates, Memory Card, and gameplay screenshots private and out of Git; use START for dialogue skips.
+
+---
+
 ## CORRECTION — revision 32 is not guaranteed to fail closed (22 October 2026, 19:25 WIB)
 
 Inspection of the exact workflow file at run #39777917775's checkout SHA b77f74af5b258dfcd7d8bfbeeeca0c685c5fc7b7 shows the old Lua precondition accepts either menu_or_unknown_choice or map_after_move when the classifier's policy action is WAIT. Thus when this run reaches the known map_after_move F20 state, the ACTION arm may send its configured DOWN. The bug is in later shell validation: it still insists both F20 classifier states are menu_or_unknown_choice, which is inconsistent with this run's map-view source. Therefore this run may collect useful paired screenshots and checkpoints but still fail the final workflow gate. This exact outcome is not known until logs/artifact are audited.
