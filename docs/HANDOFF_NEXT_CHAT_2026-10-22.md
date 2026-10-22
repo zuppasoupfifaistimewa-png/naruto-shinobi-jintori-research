@@ -1,3 +1,28 @@
+## CURRENT RUN — revision 33 explicit map-state A/B (22 October 2026, 19:33 WIB)
+
+Inspect [run #39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) first. It is `in_progress`, created 19:32:59 WIB, with X11 tool preparation currently active. Job timeout: 20 minutes, approximate deadline 19:52:59 WIB. No player run may be launched in parallel.
+
+Marker is explicitly configured:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39776518701
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=DOWN
+AB_EXPECTED_STATE=map_after_move
+LOOP_CYCLES=2
+REVISION=33
+```
+This uses the already fresh-process-restored map checkpoint. Required acceptance gates: both branches use the exact parent SHA, cloned Memory Cards hash-identical, F20 state `map_after_move` and pixel-perfect images, separate `ExecutionFlow::SaveStateLoaded` events, DOWN press/release readback true/false, ten authentic external 1280×800 X11 captures, accepted exit code 0, both output states pass external size/header/SHA validation, and the comparison report completes. Afterward inspect actual paired F60/F100/F110/F180 images.
+
+Run #39777917775 remains a failed workflow execution due its obsolete F20 semantic state expectation (menu) even though both branches loaded the exact map parent, F20 images were pixel-identical, DOWN input was sent/read back, ten authentic captures existed, both exits were zero and both outputs passed structural validation. Screenshots suggest (HYPOTHESIS pending clean run33) DOWN moves focus from the Naruto tile, `結界価値` (Nilai penghalang) 60 / `耐久値` (Daya tahan) 2/2, to the adjacent empty tile `空き地` (Tanah kosong), value 140. Neither failed-run output is promoted. Do not confirm any tile or use Circle to skip dialogue.
+
+---
+
 ## ACTIVE PLAYER — revision 33 corrected map DOWN/WAIT experiment (22 October 2026, 19:33 WIB)
 
 Player run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) is active; it started 19:32:59 WIB and has hard timeout about 19:52:59 WIB. Do not start another player until it finishes. The committed marker now includes AB_EXPECTED_STATE=map_after_move, AB_ACTION=DOWN, AB_TEST=1, LOOP_CYCLES=2, RESTORE_TEST=0, CONTINUATION_TEST=0, source run #39776518701 / artifact naruto-storymode-adaptive-player-private / file adaptive-cycle-01-f180.sstate / SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc.
