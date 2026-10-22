@@ -1,3 +1,11 @@
+## REVISION38 RESTORE CAVEAT — second-DOWN cursor target not stable across resumed frames
+
+Run #39783158903 passed technical restore of revision37 ACTION output hash `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`, logged SaveStateLoaded/restore PASS, produced 5 genuine 1280×800 screenshots, exited0, and validated new output SHA `c4acb2b62a9891b597c1195a2dead7ccce902abddf0c5ec9b4c50b76142a7a33` (21,162,978 bytes/v4). However C01-F20 looks temporarily like a scrolled view with a number near 100 while F60-F180 settle back near the 140-value area. The generic classifier stays map_after_move, so no exact cursor claim. Treat 4989… as technically loadable but not a stable semantic cursor checkpoint. Output c4ac… is also not promoted until independently restored.
+
+Revision39 next tests UP vs WAIT from trusted checkpoint hash `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a` from run #39779256427/artifact #12425858092. Restored separately in run #39780143613. It showed `空き地` (Tanah kosong), value140 at F20. Use AB_TEST=1, AB_ACTION=UP, AB_EXPECTED_STATE=map_after_move, RESTORE_TEST=0, CONTINUATION_TEST=0, two cycles, revision39. Workflow commit b3c78426f8c11b406f0fedbffb01bd667e7ffb5 expands map A/B directional inputs UP/DOWN/LEFT/RIGHT while constraining menu inputs. Require all A/B gates; inspect whether UP returns to Naruto tile60. No tile confirmation. Story Mode not complete.
+
+---
+
 ## REVISION 38 RESTORE PASSED — verified input is usable
 
 Run #39783158903 succeeded. Private retry artifact #12427598163 passed ZIP integrity. It shows explicit ExecutionFlow::SaveStateLoaded, ADAPTIVE_RESTORE_TEST=PASS, five authentic 1280×800 X11 captures, accepted emulator exit 0, and output checkpoint validation. The restored board/cursor arrangement matches the post-second-DOWN state. Early tile digits are obscured by leaves; later frames show 140, so do not treat that variation as a tile-value change.
