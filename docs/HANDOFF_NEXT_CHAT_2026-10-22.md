@@ -1,3 +1,13 @@
+## ACTIVE PLAYER — revision39 UP vs WAIT from verified cell-140 state (22 October 2026, 20:11 WIB)
+
+Run #39784493293 is active, started 20:10:11 WIB, timeout about 20:30:11 WIB. Exact committed marker is verified at its checkout: SOURCE_RUN=39779256427; SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private; SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate; SOURCE_SHA256=58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a; RESTORE_TEST=0; CONTINUATION_TEST=0; AB_TEST=1; AB_ACTION=UP; AB_EXPECTED_STATE=map_after_move; LOOP_CYCLES=2; REVISION=39. Workflow blob 5a9b4697b0f19c1c5e8015852f5a90c57261ae9f supports the directional map probe. Do not launch another player.
+
+After completion audit exact source SHA both arms, two SaveStateLoaded events, F20 pixel parity/state, identical cloned Memory Cards, UP press/release readback true/false, WAIT control, ten authentic 1280×800 captures, exits0, both output checkpoints validated for size/v4-header/SHA and comparison report generated. Inspect whether UP changes focus from 空き地 (Tanah kosong), value140, compared with WAIT. Do not confirm a tile.
+
+Source was independently restored in #39780143613. Revision38 output was loadable but its first post-load frame temporarily differed before later frames settled; it is not the preferred continuation source. Story Mode remains NOT COMPLETE, with no confirmed movement/capture/ownership/ending evidence.
+
+---
+
 ## ACTIVE PLAYER — revision39 UP versus WAIT from known empty-land state
 
 Run [#39784493293](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39784493293) is active, started 20:10:11 WIB; hard timeout about 20:30:11 WIB. Marker/head SHA `4893e1e0eb6cdcaf9fff052c9c794ae62327858a` is verified; workflow commit `b3c78426f8c11b406f0fedbffb01bd667e7ffb5e` supports map directions. Exact marker pins the independently restored cell140 state from run #39779256427/artifact #12425858092/file adaptive-cycle-01-f180.sstate/SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a` and sets AB_ACTION=UP, AB_EXPECTED_STATE=map_after_move, AB_TEST=1, two cycles, restore/continuation tests off, revision39.
