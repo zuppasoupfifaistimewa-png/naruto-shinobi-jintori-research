@@ -1,3 +1,15 @@
+## ACTIVE RUN — revision50 restore-only for board-after-Circle checkpoint (23 October 2026, 06:32 WIB)
+
+Run [#39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049) is active, started 06:32:21 WIB, hard timeout around 06:52:21 WIB. Marker/head `1c30215c9a4b6035b5c24d1bf0befc4819110642` was verified and pins run #39870243073 / artifact `naruto-storymode-adaptive-player-private` / `adaptive-cycle-01-f180.sstate` / SHA-256 `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`, `RESTORE_TEST=1`, `AB_TEST=0`, `LOOP_CYCLES=1`, revision50. Last check had container initialization active and no artifact. Do not run another player in parallel.
+
+After completion, require source checksum, `ExecutionFlow::SaveStateLoaded`, restore PASS, five authentic external-X11 screenshots at 1280×800 confirming board visible, accepted shutdown path, and external output checkpoint validation (size/v4 header/SHA). Only promote input SHA 7f877… after fresh-process restore passes. The new output emitted by this restore run remains unpromoted until it itself gets a separate restore.
+
+Revision49 A/B now verified: Circle from roulette (not dialogue) results in the board visible by F180, while WAIT leaves roulette spinning through F180. Run #39870243073 success with 10 valid authentic screenshots, matched source hash `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`, two load events, input press/release readback, accepted shutdown recovery only after checkpoint validation, and both valid output states. Private artifact #12466141660. ACTION checkpoint SHA 7f877… is being tested by run50; wait and audit before selecting it as a continuation source.
+
+Story Mode is NOT COMPLETE. Use START for all dialogue skipping. Keep ROM/BIOS/savestates/cards/screenshots private and out of Git.
+
+---
+
 ## LATEST VERIFIED RESULT — revision49 Circle stops roulette's visible phase and returns to board (23 October 2026, 06:14 WIB)
 
 Run [#39870243073](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39870243073) completed success at 06:14:50 WIB. Private artifact #12466141660 downloaded and ZIP integrity passed. All ten actual external-X11 screenshots validated 1280×800. Both fresh processes loaded source parent SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`, with `ExecutionFlow::SaveStateLoaded` logged twice; initial F20 images exact-pixel parity; both states classified roulette; disposable Memory Cards identical. ACTION Circle input pressed/released readback true/false, control WAIT. Both processes emitted session-finished markers; native exits124/139 were accepted only by the new strict post-session recovery path after checkpoint validation; effective session exit codes 0. Both output checkpoint files passed size/v4-header/SHA checks and the paired comparison report exists.
