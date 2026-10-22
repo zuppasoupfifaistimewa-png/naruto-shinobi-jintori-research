@@ -1,3 +1,16 @@
+## RESTORE VERIFIED — ACTION checkpoint from revision 28 (22 October 2026, 19:11 WIB)
+
+Restore-only run [#39776089816](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776089816) completed with success at 19:10:59 WIB. Artifact #12425065836 was audited. It loaded the exact revision-28 ACTION output from #39775176728: SHA-256 `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`, size 21,162,344 bytes, v4 header. The log records `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five authentic external-X11 screenshots at 1280×800 passed validation, exit code was 0, and F20 visibly retains `マップを見る` (Lihat peta) highlighted. Its source is now proven restorable and is promoted as the trusted menu-selection checkpoint.
+
+The restore run's newly emitted output is structurally valid but not promoted: 21,163,104 bytes, header `PCSX-Redux SaveState v4`, SHA-256 `9d1ed105227c095c42396595bccd51ecf06f564ae5342f01377dec1f3aa94292`. This new output would itself require a fresh-process restore before use.
+
+### Next controlled experiment — revision 30: TRIANGLE vs WAIT
+Now perform one matched A/B from the independently restored map-row selection, using the trusted original source checkpoint from run #39775176728 (source SHA above). Run only after revision 29 is complete; it is complete. Set the marker to `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `AB_TEST=1`, `AB_ACTION=TRIANGLE`, `LOOP_CYCLES=2`, `REVISION=30`. ACTION sends one Triangle input; CONTROL waits. Require same source SHA per arm, exact F20 parity, input true/false readback, two load events, ten authentic 1280×800 X11 captures, accepted exits, and post-exit size/header/SHA validation for both outputs. Visually determine whether Triangle opens the map screen. Stop at the map screen, do not choose any destination, and do not use Circle for dialogue skipping. Only classify as VERIFIED if paired evidence clearly shows a map screen in ACTION and not in WAIT.
+
+The narrow rule from revision 28 remains **VERIFIED**: DOWN from `情報` (Informasi) moves the highlight to `マップを見る` (Lihat peta); NONE/WAIT leaves Information highlighted. Story Mode remains **NOT COMPLETE**; no verified ending/results evidence exists.
+
+---
+
 ## LATEST VERIFIED RESULT — revision 28 DOWN versus NONE from Information (22 October 2026, 19:05 WIB)
 
 Run [#39775176728](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39775176728) completed with Actions conclusion `success` at 19:04:52 WIB. The raw job log and private artifact #12424660712 were audited; this conclusion is based on the artifact and acceptance evidence, not the Actions badge alone.
