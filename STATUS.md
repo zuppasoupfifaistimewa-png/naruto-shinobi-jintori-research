@@ -1,3 +1,14 @@
+## ACTIVE — revision47 Circle versus WAIT from the restored roulette wheel (23 October 2026, 05:59 WIB)
+
+Run [#39868722262](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39868722262) is the only active player, started 05:58:51 WIB with hard timeout about 06:18:51 WIB. Its exact committed marker:
+SOURCE_RUN=39867730674; source artifact `naruto-storymode-adaptive-player-private`; checkpoint `adaptive-cycle-01-f180.sstate`; source SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; AB_TEST=1; AB_ACTION=CIRCLE; AB_EXPECTED_STATE=roulette; two cycles; revision47.
+
+This source checkpoint was independently restored by run #39868354205: fresh load event and restore PASS, five authentic 1280×800 screenshots all showing the wheel, exit0, and output checkpoint validation. No parallel player may run while #39868722262 is active.
+
+Required A/B gates: exact source hash on both branches, two load events, F20 pixel-perfect parity and both states `roulette`, identical disposable Memory Cards, Circle press/release readback true/false, WAIT control, ten authentic 1280×800 X11 screenshots, both branch processes complete via normal exit or strictly gated session-finished+external-checkpoint recovery, output state files externally validated, comparison report generated. Inspect C01/C02 F60/F100/F110/F180 to decide whether Circle stops the wheel/returns a result while WAIT remains spinning. Do not infer final roulette result without stable UI evidence. Story Mode remains NOT COMPLETE.
+
+---
+
 ## RESTORE VERIFIED — Circle-opened roulette wheel is persistent across a new emulator process (revision46, 23 October 2026)
 
 Run [#39868354205](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39868354205) completed with success at 22:56:40 UTC / 05:56:40 WIB. Private artifact #12465131490 passed ZIP integrity. The source checkpoint was from revision45/run #39867730674/artifact #12464258211: `adaptive-cycle-01-f180.sstate`, 21,162,546 bytes, PCSX-Redux SaveState v4 header, SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`.
