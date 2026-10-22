@@ -1,3 +1,20 @@
+## REVISION48 PARTIAL RESULT — both output states are valid, but the control process timed out after shutdown fault
+
+Run [#39869536734](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39869536734) failed at 23:09:34 UTC / 06:09:34 WIB. Its artifact #12466086061 passes ZIP integrity and contains all 10 authentic 1280×800 screenshots. Both fresh processes loaded the exact roulette parent `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; both F20 screenshots are pixel-identical, both classify `roulette`; matching disposable Memory Cards; Circle press/release true/false; WAIT control; all captures and input gates passed.
+
+Visual outcome matches revision47: ACTION Circle is roulette at F60/F100/F110, then the wheel slides away and the board is visible at F180; WAIT remains on the spinning wheel at F180. This remains **HYPOTHESIS** until the full workflow run passes all gates.
+
+Unlike revision47, both output checkpoints from this run are externally checked after download and valid:
+- ACTION `adaptive-cycle-01-f180.sstate`: 21,163,075 bytes, v4, SHA-256 `7e0a021342f3cf15db2070c5b9512ff0154a4a1adeeb4e14837b930884656e3a`.
+- CONTROL `adaptive-cycle-02-f180.sstate`: 21,162,748 bytes, v4, SHA-256 `75098aea814f531a714d7aade45e9802bb44167a122ada4aad6d19e728f4256f`.
+
+The failure is now bounded to process shutdown: after F180, the Lua session-finished marker is logged, then `corrupted size vs. prev_size`; settle-complete does not fire for cycle2 and the inner timeout yields exit124. Workflow commit `ef82beb99096e6fd939ce5ebc4f80eedc1158546` makes the shutdown recovery stricter but more complete: only exits 134/139/124 after a session-finished marker and successful external size/header/SHA validation are accepted, and per-process timeout is reduced to 60 seconds. It still rejects invalid/missing checkpoints and any failure before the session-finished marker.
+
+### Next — revision49 repeat with corrected timeout recovery
+Reuse the immutable, independently restored roulette source from run #39867730674/artifact #12464258211/checkpoint `adaptive-cycle-01-f180.sstate`/SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`. Set `AB_TEST=1`, `AB_ACTION=CIRCLE`, `AB_EXPECTED_STATE=roulette`, `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `LOOP_CYCLES=2`, `REVISION=49`. Require the complete report and all source/input/state/checkpoint gates. No parallel runs. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision48 retries roulette Circle-vs-WAIT after post-save settle fix (23 October 2026, 06:06 WIB)
 
 Run [#39869536734](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39869536734) is the only active player, started 06:05:59 WIB; hard timeout about 06:25:59 WIB. Committed marker at head `eb12d63e0daf45179c30f12d525b43cea90390a4` was re-read:
