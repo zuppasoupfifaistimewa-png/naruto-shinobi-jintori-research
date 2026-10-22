@@ -322,14 +322,13 @@ jobs:
               for label in labels:
                   if label in done: continue
                   png=out/(label+".png")
-                  if not png.is_file(): continue
+                  vpath=out/("verification-"+label+".json")
+                  if not png.is_file() or not vpath.is_file(): continue
                   with Image.open(png) as im:
                       size=im.size; im.verify()
                   with Image.open(png) as im:
                       valid=size==(1280,800) and png.stat().st_size>1000 and im.getbbox() is not None
                   if not valid: raise SystemExit("invalid external X11 image: "+label)
-                  vpath=out/("verification-"+label+".json")
-                  if not vpath.is_file(): raise SystemExit("missing classifier report: "+label)
                   v=json.loads(vpath.read_text(encoding="utf-8"))
                   digest=hashlib.sha256(png.read_bytes()).hexdigest()
                   print("ADAPTIVE_X11_VALIDATED label={} size={} bytes={} sha256={} state={} confidence={:.2f}".format(label,size,png.stat().st_size,digest,v.get("state","unknown"),v.get("confidence",0)),flush=True)
