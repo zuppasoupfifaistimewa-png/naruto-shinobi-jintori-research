@@ -1,3 +1,11 @@
+## ACTIVE RUN — DOWN from Information versus NONE/WAIT (22 October 2026, 18:20 WIB)
+
+Run [#39769826213](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39769826213) is active on marker revision 24. Parent checkpoint is the exact, independently restored Information-selection state from run #39768787669: source file `adaptive-cycle-01-f180.sstate`, SHA-256 `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`. Test arms are ACTION=DOWN and control=NONE/WAIT, each with an independent clone of the same Memory Card. This tests whether DOWN from `情報` (Informasi) highlights `マップを見る` (Lihat peta). At last check it had initialized its container; no outcome yet.
+
+Audit exact F20 pixel parity, menu-state match, DOWN press/release readback, both `ExecutionFlow::SaveStateLoaded` events, all 10 real external-X11 frames, normal/allowed exits, and external size/header/SHA checks for both outputs. Keep unknown results UNKNOWN; do not use Circle to confirm a menu row.
+
+---
+
 ## VERIFIED UPDATE — Information-highlight checkpoint restored in a fresh emulator (22 October 2026, 18:18 WIB)
 
 Story Mode remains **NOT COMPLETE**. The restore-only test succeeded; five authentic X11 frames from the new process visibly retain the selection on `情報` (Informasi).
