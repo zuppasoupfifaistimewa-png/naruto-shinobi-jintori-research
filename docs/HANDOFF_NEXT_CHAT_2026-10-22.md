@@ -1,3 +1,13 @@
+## ACTIVE RUN — revision 27 restore smoke using single-nextTick shutdown (22 October 2026, 18:45 WIB)
+
+Run [#39772650469](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39772650469) is in progress with `RESTORE_TEST=1`, one cycle, pinned source SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e` from #39768787669's already-restored Information-selection checkpoint. It started 18:42:49 WIB; at 18:45 WIB it was still installing X11 tools (that step started 18:43:28 WIB). No new frames/artifact yet; don't start a parallel run.
+
+Workflow commit `df6e3d5afab0a9efeac89aa8bcb0be2e273ef631` uses single pause + `PCSX.nextTick(function() PCSX.quit(0) end)` outside VSync; recursive drains are removed because they stalled under pause. Await audit of load event, five authentic X11 frames, emulator exit and external post-exit state size/header/SHA. Only then retry A/B on the same pinned source.
+
+Story Mode remains NOT COMPLETE; DOWN from `情報` (Informasi) to `マップを見る` (Lihat peta) remains HYPOTHESIS without a completed NONE branch.
+
+---
+
 ## LATEST DIAGNOSTIC — paused nextTick drain stalled; single-nextTick restored and smoke test next (22 October 2026, 18:39 WIB)
 
 - A/B retry #39771377339 did not complete. It captured five genuine ACTION-arm X11 frames; source Information checkpoint hash remained `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`, identical Memory Card clones, and DOWN press/release readbacks were valid. The output checkpoint in private artifact #12423430123 is 21,162,276 bytes with v4 header and SHA-256 `a2d055634da951b8c9703ac1d30ac0981d4508404527604ddf4e803fe08935b5`; however, a chained 12-callback `nextTick` drain while paused did not progress, so watchdog rc=124 killed the session before the control branch. Do not promote this output, and do not mark the Information→Map item behavior VERIFIED.
