@@ -1,3 +1,17 @@
+## REVISION40 VERIFIED — UP returns focus to Naruto's tile (22 October 2026)
+
+Run [#39786019434](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786019434) passed paired UP-vs-WAIT from source SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Artifact #12428777970 inspected. Two load events; exact F20 parity; identical disposable cards; UP true/false input readback; WAIT control; ten authentic 1280×800 captures; both exits0; both outputs external validated; comparison report.
+
+**VERIFIED, focus only:** UP from `空き地` (Tanah kosong) value140 changes the focused tile/panel to Naruto's cell, showing `レベル` (Level)1, `結界価値` (Nilai penghalang)60, `耐久値` (Daya tahan)2/2. WAIT stays on empty land140. No claim of character movement/capture/ownership.
+
+ACTION output candidate from run #39786019434 / artifact #12428777970 / `adaptive-cycle-01-f180.sstate`: 21,163,100 bytes, v4, SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`; control SHA `eb182a883b1666a7a9badbbf06fda2de960fc84ec4b040799791a174134714a3`. Neither promoted pending restore.
+
+Next revision41: restore-only fresh process from run #39786019434 / artifact `naruto-storymode-adaptive-player-private` / `adaptive-cycle-01-f180.sstate` / SHA `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`. Require load event, five authentic frames retaining Naruto-cell value60 panel, exit0 and external output validation. Do not promote new restore output until that file itself is restored.
+
+Story Mode remains NOT COMPLETE. All assets private/out of Git; use START for dialogue, never Circle for dialogue.
+
+---
+
 ## LATEST VERIFIED MAP RULE — UP returns focus to Naruto cell (revision40, 22 October 2026)
 
 Run [#39786019434](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786019434) fully passed matched UP-versus-WAIT from the independently restored revision33 source SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Artifact #12428777970 was inspected. Both processes logged `ExecutionFlow::SaveStateLoaded`; cloned Memory Cards matched; F20 images were pixel-identical (1,024,000 pixels); both F20 states `map_after_move`; UP press/release readback true/false; control WAIT; ten authentic 1280×800 screenshots; both exits0; both output checkpoints externally validated for size/v4-header/SHA; comparison report exists.
