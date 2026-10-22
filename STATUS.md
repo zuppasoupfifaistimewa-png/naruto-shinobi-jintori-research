@@ -1,3 +1,18 @@
+## RESTORE VERIFIED — command menu with Roulette highlighted survives fresh process (revision44)
+
+Run [#39867381637](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39867381637) completed with success at 22:48:12 UTC / 05:48:12 WIB. Private artifact #12464118614 passed ZIP integrity and authentic C01-F20 screenshot was inspected. It clearly shows the command menu with `ルーレット` (Roulette) highlighted in red. The fresh process logged `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five external-X11 captures validated at 1280×800; emulator exit 0; output checkpoint passed external size/v4-header/SHA validation.
+
+**Promoted input checkpoint:** run #39866820866 / artifact #12463489344 / `adaptive-cycle-01-f180.sstate`, 21,162,920 bytes, v4 header, SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`. This exact hash is independently restore-proven and remains the source for next experiment.
+
+New output from run #39867381637 is not promoted: 21,163,308 bytes, v4 header, SHA-256 `0499c0f73799ac18f53a08bfd2c63a45738d8b56fcd32f157d6b0b7b596c19e3`. It needs its own independent restore.
+
+### Next — revision45 Circle vs WAIT on visibly selected Roulette
+Workflow commit `2ec5011c5c81f00e686690570bf4349f9124c531` permits `CIRCLE` only in the `menu_or_unknown_choice` state guard; the map-state guard does not permit Circle. Source is run #39866820866 / artifact `naruto-storymode-adaptive-player-private` / `adaptive-cycle-01-f180.sstate` / SHA above. Marker: `AB_TEST=1`, `AB_ACTION=CIRCLE`, `AB_EXPECTED_STATE=menu_or_unknown_choice`, `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `LOOP_CYCLES=2`, `REVISION=45`.
+
+Require all A/B gates: exact source hashes per branch, two load events, identical F20 pixels and menu state, cloned cards identical, Circle press/release true/false, WAIT control, ten authentic 1280×800 captures, both exit0, both output state size/v4-header/SHA checks, comparison report, and direct image review. If ACTION enters roulette/wheel and WAIT stays on menu, classify only that contextual response VERIFIED. If dialogue appears, START is the only skip action; do not use Circle for dialogue. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision44 restore-only validates Roulette-highlighted menu checkpoint
 
 Run [#39867381637](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39867381637) is the only active player. Marker at its checkout verified:
