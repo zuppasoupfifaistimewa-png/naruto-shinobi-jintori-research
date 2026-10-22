@@ -1,3 +1,35 @@
+## CHAT-TRANSFER — adaptive player made partial progress, Story Mode NOT complete (23 Oct 2026)
+
+No active player run. Direct answer: the adaptive player is not yet capable of being declared a successful Story Mode finisher. It has automated several real inputs/transitions but has not proven full Story Mode completion or an in-game ending.
+
+Latest player run #39872449049/revision50 succeeded. Private artifact #12467281563 was inspected: restored the roulette→board state; at F20 classifier saw the board; one DOWN was sent with true/false input readback; visible counter changed 3→1 by F60; Iruka (`イルカ`) dialogue appeared at F100/F110 and was skipped via START; a three-card-back overlay appeared on the board at F180. New output checkpoint: 21,162,772 bytes, v4, SHA-256 `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`. It is not independently restored and must not be promoted yet.
+
+Classifier regression #39873273913 succeeded at commit `d8082dcdfa8997df65cddf9e6d0d8d806c8da927`: 9 tests pass, including synthetic three-card overlay → `card_selection`/WAIT; all 10 authentic X11 screenshots pass the offline policy check. Caveat: the authentic F180 screenshot from run50 still classifies as `map_after_move`/WAIT, not `card_selection`. So the actual screen currently leads to WAIT (fail closed), but the real-overlay semantic classification is not established.
+
+**First task in the new chat:** repair and test a workflow safety gap before any new player run. In `.github/workflows/naruto-storymode-adaptive-player.yml`, `RESTORE_TEST=1` does not currently suppress all later policy inputs: Lua still sends the selected action at phase30 and may send START at phase110. Run50 named restore-only nevertheless moved gameplay after F20. Add a hard invariant that restore-test runs do not call `sendAction` for any action at any frame (e.g. explicitly force plannedAction WAIT and guard dialogue START), and add a regression test for this. Keep normal AB/continuation/player policy unchanged. Run regression workflow and inspect its logs; don't trigger a player until this passes.
+
+Then set marker revision51 (only after safety regression passes):
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39872449049
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7
+RESTORE_TEST=1
+CONTINUATION_TEST=0
+AB_TEST=0
+AB_ACTION=CIRCLE
+LOOP_CYCLES=1
+REVISION=51
+```
+Restore-only gates: source hash verified; explicit `ExecutionFlow::SaveStateLoaded`; five authentic external-X11 screenshots at 1280×800; output retained card overlay at F20; no input-press log across entire session; accepted shutdown; output size/header/SHA verified. Do not promote run51 output until independently restored in another process. No Circle/confirm on the cards.
+
+Current marker still revision50 pointing to the older roulette checkpoint; do not trigger it again as-is. There are no player runs active. Regression run #39873273913 completed success, so update this handoff rather than waiting/polling it.
+
+Permanent constraints: only repository `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`; don't access the Naruto runner or Tile Duel repos. Keep ROM/BIOS/states/cards/screenshots private and out of Git. Use START for Story Mode dialogue (not Circle). Translate Japanese text into Indonesian beside it. Never claim Story Mode complete without authentic ending/results evidence.
+
+---
+
 ## CHAT-TRANSFER — first task is audit classifier regression run #39873273913 (23 Oct 2026, latest check ~06:46 WIB)
 
 No player run is active. Latest player run #39872449049/revision50 finished success. It restored run49 ACTION state (source SHA `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`, 21,163,504 bytes/v4) and then the adaptive policy still acted after F20. It sent DOWN from the board (press/release passed), counter visually changed 3→1 by F60, Iruka (`イルカ`) dialogue appeared F100/F110 and was skipped with START, and a three-card overlay appeared by F180. New output candidate is 21,162,772 bytes/v4, SHA `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`. This candidate is NOT promoted pending a fresh-process restore. Classifier erroneously saw the card overlay as `map` and could send DOWN, so fix/regression must be completed before another player run.
