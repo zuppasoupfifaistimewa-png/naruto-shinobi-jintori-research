@@ -1,3 +1,12 @@
+## ACTIVE RUN — revision50 restore-only (current latest status 23 Oct 2026, 06:35 WIB)
+
+Run [#39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049) is active; started 06:32:21 WIB, hard timeout about 06:52:21 WIB. Exact committed marker at head `1c30215c9a4b6035b5c24d1bf0befc4819110642`: source run #39870243073 / artifact naruto-storymode-adaptive-player-private / checkpoint adaptive-cycle-01-f180.sstate / SHA-256 `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`; RESTORE_TEST=1, one cycle, AB_TEST=0, revision50. Latest status shows source and game assets validated, with `Run adaptive observe-decide-act-verify-checkpoint loop` active; no artifact yet. Don't start another player in parallel.
+
+When run50 completes, inspect the actual log and private artifact. Require `ExecutionFlow::SaveStateLoaded`, `ADAPTIVE_RESTORE_TEST=PASS`, five real external-X11 screenshots at 1280×800 that visibly retain the board from the Circle ACTION branch, accepted shutdown recovery only with session-finished marker and external checkpoint validation, and the output checkpoint passing size/v4-header/SHA checks. Promote source SHA 7f877… only after these gates. Do not promote run50's newly created output until it is independently restored.
+
+Latest verified run #39870243073/revision49: Circle from roulette shows the roulette through F110 then board by F180; WAIT retains roulette through F180. This narrow input transition is VERIFIED; it is not dialogue skip. Story Mode still NOT COMPLETE. Keep all gameplay assets private/out of Git and use START to skip dialogue.
+---
+
 ## ACTIVE RUN — revision50 restore-only for board-after-Circle checkpoint (23 October 2026, 06:32 WIB)
 
 Run [#39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049) is active, started 06:32:21 WIB, hard timeout around 06:52:21 WIB. Marker/head `1c30215c9a4b6035b5c24d1bf0befc4819110642` was verified and pins run #39870243073 / artifact `naruto-storymode-adaptive-player-private` / `adaptive-cycle-01-f180.sstate` / SHA-256 `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`, `RESTORE_TEST=1`, `AB_TEST=0`, `LOOP_CYCLES=1`, revision50. Last check had container initialization active and no artifact. Do not run another player in parallel.
