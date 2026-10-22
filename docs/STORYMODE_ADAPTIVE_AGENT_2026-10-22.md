@@ -1,3 +1,12 @@
+## DIAGNOSTIC UPDATE — VSync drain stalled after a full-sized write (22 October 2026, 18:31 WIB)
+
+- Run #39770465538 captured all five authentic X11 frames for the ACTION arm and read DOWN press/release correctly. Its checkpoint file was 21,162,494 bytes, v4 header, SHA-256 `0c33a47cb9e6f2dfb09c568410ca125acbae6f46f84692b8589a5c903442f564`, but the process timed out (exit 124) after `ADAPTIVE_SHUTDOWN_DRAIN_BEGIN` without `ADAPTIVE_SHUTDOWN_DRAIN=PASS`. No control arm ran, so no matched rule conclusion is allowed.
+- First drain implementation relied on more `GPU::Vsync` callbacks; none arrived after F180. Commit [`3e052b8`](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/3e052b8e77cfcd966f5e5e05a2f7341ed2ff0374) changes to pause + 12 bounded `PCSX.nextTick` callbacks before quit outside VSync. Treat this as unverified until a fresh retry exits cleanly and both outputs pass post-exit validation.
+- Source parent remains independently restored run #39768787669 action state: SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`. Keep marker as rev25 until explicitly triggering one revision26 retry with ACTION=DOWN, control=NONE. Never promote the timeout checkpoint.
+- Story Mode is still NOT COMPLETE; no ending/results image exists.
+
+---
+
 ## DIAGNOSTIC UPDATE — Information-down matched test stopped on invalid checkpoint (22 October 2026, 18:23 WIB)
 
 Run [#39769826213](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39769826213) produced five valid authentic X11 captures for the ACTION arm, with F20 showing `情報` (Informasi) selected. The source SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e` and identical Memory Card clones were verified; DOWN press/release readbacks passed. However, the emulator exited 139 and the new savestate file was only 2,097,152 bytes; external size validation rejected it, so no control branch ran and no rule result can be claimed.
