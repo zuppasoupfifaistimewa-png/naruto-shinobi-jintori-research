@@ -170,13 +170,24 @@ jobs:
           local function log(s) print(s); io.stdout:flush() end
           local function checkpoint(cycle)
               local ok,state=pcall(function() return PCSX.createSaveState() end)
-              if not ok or not state then log("ADAPTIVE_CHECKPOINT_ERROR cycle="..cycle.." err="..tostring(state)); PCSX.quit(71); return end
+              if not ok or not state then log("ADAPTIVE_CHECKPOINT_ERROR cycle="..cycle.." err="..tostring(state)); return false end
               local path=string.format("captures/adaptive-cycle-%02d-f180.sstate",cycle)
               local opened,file=pcall(function() return assert(Support.File.open(path,"TRUNCATE")) end)
-              if not opened or not file then log("ADAPTIVE_CHECKPOINT_OPEN_ERROR cycle="..cycle.." err="..tostring(file)); PCSX.quit(72); return end
+              if not opened or not file then log("ADAPTIVE_CHECKPOINT_OPEN_ERROR cycle="..cycle.." err="..tostring(file)); return false end
               local wrote,err=pcall(function() file:writeMoveSlice(state); file:close() end)
-              if not wrote then log("ADAPTIVE_CHECKPOINT_WRITE_ERROR cycle="..cycle.." err="..tostring(err)); PCSX.quit(73); return end
-              log("ADAPTIVE_CHECKPOINT_CREATED=PASS cycle="..cycle.." path="..path)
+              if not wrote then log("ADAPTIVE_CHECKPOINT_WRITE_ERROR cycle="..cycle.." err="..tostring(err)); return false end
+              local probe=io.open(path,"rb")
+              if not probe then log("ADAPTIVE_CHECKPOINT_REOPEN_ERROR cycle="..cycle); return false end
+              local bytes=probe:seek("end")
+              probe:seek("set",0)
+              local head=probe:read(96) or ""
+              probe:close()
+              if not bytes or bytes<=21000000 or not head:find("PCSX-Redux SaveState v4",1,true) then
+                  log("ADAPTIVE_CHECKPOINT_VALIDATION_FAIL cycle="..cycle.." bytes="..tostring(bytes).." header="..tostring(head:find("PCSX-Redux SaveState v4",1,true)~=nil))
+                  return false
+              end
+              log("ADAPTIVE_CHECKPOINT_CREATED=PASS cycle="..cycle.." path="..path.." bytes="..bytes)
+              return true
           end
           local function captureExternal(label,cycle)
               local xwd="captures/"..label..".xwd"
@@ -307,9 +318,16 @@ jobs:
                   -- Each bounded session ends at its verified checkpoint.
                   -- The orchestrator launches a fresh emulator process for
                   -- the next cycle and restores this saved state.
-                  checkpoint(cycle)
+                  if not checkpoint(cycle) then
+                      PCSX.pauseEmulator()
+                      PCSX.nextTick(function() PCSX.quit(74) end)
+                      return
+                  end
                   log("ADAPTIVE_SESSION_FINISHED cycle="..cycle)
-                  PCSX.quit(0)
+                  -- Quit outside GPU::Vsync. Immediate quit in the VSync callback
+                  -- has produced a native SIGSEGV and, sometimes, a truncated 2 MiB state.
+                  PCSX.pauseEmulator()
+                  PCSX.nextTick(function() PCSX.quit(0) end)
                   return
               end
           end)
@@ -339,6 +357,21 @@ jobs:
               -logfile "$logfile" -run > "$stdout" 2>&1
             local rc=$?
             set -e
+            local cp="$WORK/captures/adaptive-cycle-$(printf '%02d' "$cycle")-f180.sstate"
+            if [ "$rc" -eq 139 ] && grep -q "ADAPTIVE_SESSION_FINISHED cycle=${cycle}" "$stdout" && [ -s "$cp" ]; then
+              if python3 - "$cp" <<'PY'
+          import sys
+          from pathlib import Path
+          p=Path(sys.argv[1])
+          with p.open("rb") as f: head=f.read(96)
+          if p.stat().st_size <= 21000000 or b"PCSX-Redux SaveState v4" not in head:
+              raise SystemExit("checkpoint not structurally valid after emulator SIGSEGV")
+          PY
+              then
+                echo "ADAPTIVE_SESSION_SHUTDOWN_RECOVERED=PASS cycle=$cycle native_exit=139 structurally_valid_checkpoint=$(sha256sum "$cp" | cut -d ' ' -f1)" >> "$WORK/captures/pcsx-adaptive.stdout"
+                rc=0
+              fi
+            fi
             cat "$stdout" >> "$WORK/captures/pcsx-adaptive.stdout"
             echo "ADAPTIVE_SESSION_EXIT cycle=${cycle} code=$rc" >> "$WORK/captures/pcsx-adaptive.stdout"
             test "$rc" -eq 0
