@@ -1,3 +1,13 @@
+## ACTIVE — revision39 UP vs WAIT (map-state directional test)
+
+Run #39784493293 is active; started 20:10:11 WIB, timeout about 20:30:11 WIB. At the run's checkout, marker and workflow were checked: source run #39779256427/artifact #124258055? checkpoint adaptive-cycle-01-f180.sstate/SHA `58d8f551cc4cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e` (use the actual full source below, not the abbreviated typo in this note): source SHA `58d8f551ccf3a3af9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e` — see exact committed marker for definitive value. Settings: AB_TEST=1; AB_ACTION=UP; AB_EXPECTED_STATE=map_after_move; two cycles.
+
+[Correction for source identity: the exact verified marker SHA is `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Use that exact value.]
+
+After completion, require identical F20s/state, two load events, equal Memory Cards, UP input true/false readback, WAIT, ten genuine 1280×800 images, exit0, two external output validations and comparison report. Directly review whether UP transitions focus from `空き地` (Tanah kosong) value140 to Naruto tile/value60. Do not confirm a tile. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision39 UP-vs-WAIT probes reverse navigation from empty land
 
 Run #39784493293 active, started 20:10:11 WIB; timeout about 20:30:11 WIB. Marker HEAD `4893e1e0eb6cdcaf9fff052c9c794ae62327858a` verified. Source: run #39779256427/artifact #12425858092/adaptive-cycle-01-f180.sstate/SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`; AB_ACTION=UP, AB_EXPECTED_STATE=map_after_move, AB_TEST=1, LOOP_CYCLES=2, revision39. Only this player active.
