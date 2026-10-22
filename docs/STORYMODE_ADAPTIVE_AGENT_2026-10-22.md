@@ -1,3 +1,30 @@
+## VERIFIED RULE — Triangle opens the board/map view from the View-map row (22 October 2026, 19:15 WIB)
+
+Run [#39776518701](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776518701) fully passed matched TRIANGLE versus WAIT from the verified-restorable menu parent `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`. Both arms logged `ExecutionFlow::SaveStateLoaded`, identical Memory Card clones, identical 1,024,000-pixel F20 screenshots, input true/false readback, ten authentic external 1280×800 X11 captures, exit code 0, and external post-exit checkpoint validation.
+
+**VERIFIED, exact tested context:** with `マップを見る` (Lihat peta) highlighted, TRIANGLE opens the board/map screen by F60; WAIT keeps the menu open. Verified by direct inspection of C01-F60 against C02-F60 in private artifact #12425305517; classifier agrees with ACTION `map_after_move` and control `menu_or_unknown_choice`. The board screenshot includes status `レベル` (Level) 1, `結界価値` (Barrier value) 60, `耐久値` (Durability) 2/2, and footer `△ マップ` (Triangle: Map). No tile/destination chosen.
+
+ACTION output state `adaptive-cycle-01-f180.sstate`: 21,163,227 bytes, v4 header, SHA-256 `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`; private artifact #12425305517. Must not use as continuation until an independent fresh-process restore proves it.
+
+Next use revision31 restore-only:
+```
+SOURCE_RUN=39776518701
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc
+RESTORE_TEST=1
+CONTINUATION_TEST=0
+AB_TEST=0
+AB_ACTION=DOWN
+LOOP_CYCLES=1
+REVISION=31
+```
+Require fresh process `ExecutionFlow::SaveStateLoaded`, five authentic captures confirming the map view, accepted exit and external size/header/SHA validation. Only after this run completes, one DOWN-versus-WAIT probe can test map movement; keep the experiment short, paired and fail-closed. Do not confirm a tile without clear visual grounding.
+
+Story Mode remains NOT COMPLETE. Continue START dialogue skip; keep all ROM/BIOS/savestate/Memory Card/screenshots out of Git. Translate Japanese labels into Indonesian immediately beside each occurrence.
+
+---
+
 ## VERIFIED — Triangle opens tile/map view; validate that output before further input (22 October 2026, 19:15 WIB)
 
 Matched experiment [run #39776518701](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776518701) passed every evidence gate. Private artifact #12425305517 was manually reviewed. Same source SHA `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7` in both new processes; both log `ExecutionFlow::SaveStateLoaded`; Memory Card clones identical; F20 pixel parity (1,024,000 pixels); TRIANGLE press/release true/false; ten authentic external-X11 captures 1280×800; exit 0 in both arms; both outputs externally validated.
