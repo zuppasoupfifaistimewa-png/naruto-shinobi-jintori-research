@@ -1,3 +1,13 @@
+## DIAGNOSTIC UPDATE — VSync drain did not advance after checkpoint; retest with host nextTick chain (22 October 2026, 18:31 WIB)
+
+Run [#39770465538](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39770465538) stopped at the ACTION branch. Its 12-VSync drain did not receive further frame events after save and the emulator hit the 120-second timeout (exit 124). Private artifact #12422367156 contains 5 valid genuine X11 frames and a file measured at 21,162,494 bytes with the expected v4 header and SHA-256 `0c33a47cb9e6f2dfb09c568410ca125acbae6f46f84692b8589a5c903442f564`. The images suggest DOWN selected `マップを見る` (Lihat peta) from `情報` (Informasi), but the NONE branch did not run and allowed shutdown plus output validation did not finish. Record this only as HYPOTHESIS, not a verified rule.
+
+Workflow commit `3e052b8e77cfcd966f5e5e05a2f7341ed2ff0374` now pauses after save and calls quit only after a chain of 12 `PCSX.nextTick` callbacks, instead of a VSync-dependent drain. Retest from the immutable, known-restorable parent SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`; only trust output after two-branch parity/input evidence, allowed process exit, and external size/header/hash checks.
+
+Story Mode is not complete.
+
+---
+
 ## DIAGNOSTIC UPDATE — VSync drain stalled after a full-sized write (22 October 2026, 18:31 WIB)
 
 - Run #39770465538 captured all five authentic X11 frames for the ACTION arm and read DOWN press/release correctly. Its checkpoint file was 21,162,494 bytes, v4 header, SHA-256 `0c33a47cb9e6f2dfb09c568410ca125acbae6f46f84692b8589a5c903442f564`, but the process timed out (exit 124) after `ADAPTIVE_SHUTDOWN_DRAIN_BEGIN` without `ADAPTIVE_SHUTDOWN_DRAIN=PASS`. No control arm ran, so no matched rule conclusion is allowed.
