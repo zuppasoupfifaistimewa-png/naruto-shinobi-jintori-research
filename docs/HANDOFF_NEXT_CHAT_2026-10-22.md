@@ -1,3 +1,26 @@
+## REVISION42 BLOCKER — workflow final allowlist still omitted CROSS
+
+Run #39866476856 failed before emulator launch. Artifact #12463119868 is only 4,505 bytes of setup/log data; there are no screenshots or gameplay evidence. Selector and Lua accepted CROSS, but a later shell validation still allowed only UP/DOWN/LEFT/RIGHT/TRIANGLE. Workflow fix commit `417663b21ce0cd9218ef8c312913a90d65381788` added CROSS to that final allowlist. CROSS remains permitted only for `map_after_move`; menu state still only allows DOWN/TRIANGLE.
+
+Next revision43 retries from the unchanged restorable Naruto-cell/map checkpoint:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39786019434
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=CROSS
+AB_EXPECTED_STATE=map_after_move
+LOOP_CYCLES=2
+REVISION=43
+```
+Require exact source hash in both processes, two load events, F20 pixel parity and map state, identical cloned cards, CROSS press/release true/false, WAIT control, ten authentic 1280×800 X11 captures, both exit0, both output checkpoints post-exit size/v4-header/SHA verified, comparison report, manual screenshot review. The screen footer is `× もどる` (Cross: Kembali), so the hypothesis is return-to-menu versus WAIT staying in map; do not claim it until the A/B screenshots prove it. No Circle/confirm. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE PLAYER — revision42 CROSS vs WAIT, map return prompt
 
 Run [#39866476856](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39866476856) is active, started 22:39 UTC on 22 October (05:39 WIB on 23 October); hard timeout about 05:59 WIB if still running. Marker checkout verified:
