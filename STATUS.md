@@ -1,3 +1,13 @@
+## REVISION42 DIAGNOSTIC — CROSS probe rejected by one stale shell allowlist
+
+Run [#39866476856](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39866476856) failed before emulator launch. Its artifact #12463119868 is only a 4,505-byte setup dump; there are no gameplay screenshots and no conclusion about CROSS behavior is allowed.
+
+The exact failure was the final runtime shell whitelist still restricting `AB_ACTION` to UP/DOWN/LEFT/RIGHT/TRIANGLE after the selector and Lua guard had already accepted CROSS. Workflow fix commit `417663b21ce0cd9218ef8c312913a90d65381788` updates that last allowlist. The other guardrails remain: CROSS allowed only with `AB_EXPECTED_STATE=map_after_move`; menu state still only allows DOWN/TRIANGLE; Circle is not allowed for this navigation test.
+
+Retry as revision43 using the unchanged, restore-proven map checkpoint from run #39786019434 / artifact #12428777970 / file `adaptive-cycle-01-f180.sstate` / SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`. Settings: `AB_TEST=1`, `AB_ACTION=CROSS`, `AB_EXPECTED_STATE=map_after_move`, `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `LOOP_CYCLES=2`, `REVISION=43`. Do not start a parallel player. Require the complete paired A/B evidence gate and inspect actual screenshots to determine whether CROSS exits map to the previous menu. Until then CROSS behavior is UNKNOWN.
+
+---
+
 ## ACTIVE — revision42 CROSS-vs-WAIT on map return prompt
 
 Run [#39866476856](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39866476856) is the only active player run. The marker at commit `0fb5636106edc03073517335417db7bf24be2284` was re-read and matches:
