@@ -1,3 +1,13 @@
+## RESTORE PASSED — empty-land focus checkpoint is trusted (revision34, 22 October 2026, 19:42 WIB)
+
+Run [#39780143613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780143613) passed independent restoration of the ACTION output produced by revision33. Source run #39779256427 / artifact #12425858092 / `adaptive-cycle-01-f180.sstate`, SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`, size 21,162,559, v4. The private restore artifact #12425913759 verifies explicit `ExecutionFlow::SaveStateLoaded`, `ADAPTIVE_RESTORE_TEST=PASS`, five valid 1280×800 external-X11 screenshots, fresh process exit0, external post-exit source output size/header/SHA validation. C01-F20 actual screenshot is board state with `空き地` (Tanah kosong), barrier value140 selected. This exact input source is now promoted/restorable.
+
+New output from the restore smoke is not promoted: 21,163,018 bytes, v4, SHA-256 `75f0752616695e0d6d141e3cc051774f5e84defe6944371fb0bc34840c83ce9f`.
+
+Next revision35: paired DOWN vs WAIT from that trusted map checkpoint. Marker fields: SOURCE_RUN=39779256427; SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private; SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate; SOURCE_SHA256=58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a; RESTORE_TEST=0; CONTINUATION_TEST=0; AB_TEST=1; AB_ACTION=DOWN; AB_EXPECTED_STATE=map_after_move; LOOP_CYCLES=2; REVISION=35. Require all paired gates and visual review; observe next tile focus only; do not confirm/select. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE RESTORE-ONLY — verify the map empty-land focus checkpoint (revision34)
 
 Run #39780143613 is active, started 19:39:28 WIB; timeout about 19:59:28 WIB. Marker was verified at its committed head and uses source run #39779256427 / artifact naruto-storymode-adaptive-player-private / checkpoint adaptive-cycle-01-f180.sstate / SHA-256 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a, RESTORE_TEST=1, LOOP_CYCLES=1, REVISION=34. Last status showed X11/tool installation active, no artifact yet. Do not start other player.
