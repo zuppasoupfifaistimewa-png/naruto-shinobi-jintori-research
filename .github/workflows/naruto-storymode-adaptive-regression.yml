@@ -1,0 +1,75 @@
+name: Naruto adaptive classifier regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/storymode_adaptive_agent.py"
+      - "tests/test_storymode_adaptive_agent.py"
+      - ".github/workflows/naruto-storymode-adaptive-regression.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout research repo
+        uses: actions/checkout@v4
+
+      - name: Install image dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-numpy python3-pil
+
+      - name: Download private, authentic emulator evidence from adaptive failure
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: 39687675432
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: ${{ runner.temp }}/private-evidence
+
+      - name: Run synthetic regression tests
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Verify policy against authentic external X11 screenshots
+        env:
+          EVIDENCE: ${{ runner.temp }}/private-evidence
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, subprocess, sys
+          from pathlib import Path
+          root = Path(os.environ["EVIDENCE"])
+          agent = Path("tools/storymode_adaptive_agent.py")
+          expected = {
+              "C01-F20.png": ("map", "DOWN"),
+              "C01-F60.png": ("map", "DOWN"),
+              "C01-F100.png": ("battle_untrained", "WAIT"),
+              "C01-F180.png": ("battle_untrained", "WAIT"),
+              "C02-F20.png": ("battle_untrained", "WAIT"),
+          }
+          for filename, want in expected.items():
+              path = root / filename
+              if not path.is_file():
+                  raise SystemExit("missing authentic private evidence: " + filename)
+              p = subprocess.run(
+                  [sys.executable, str(agent), str(path)],
+                  check=True, capture_output=True, text=True, timeout=10
+              )
+              got = json.loads(p.stdout.strip().splitlines()[-1])
+              observed = (got.get("state"), got.get("action"))
+              print(json.dumps({
+                  "file": filename, "state": observed[0], "action": observed[1],
+                  "confidence": got.get("confidence"), "reason": got.get("reason")
+              }, sort_keys=True))
+              if observed != want:
+                  raise SystemExit(f"classification mismatch for {filename}: got={observed}, expected={want}")
+          print("AUTHENTIC_X11_REGRESSION=PASS checked=5")
+          PY
