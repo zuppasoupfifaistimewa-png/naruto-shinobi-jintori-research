@@ -90,7 +90,7 @@ def observe(path: str | Path) -> dict[str, Any]:
         features["yes_selected_visual"]=bool(yes)
         features["chakra_ocr_best_effort"]=chakra
         features["required_chakra_calibrated"]=120
-    elif dialogue_box["orange"] >= .05 and dialogue_box["white"] >= .0015:
+    elif dialogue_box["orange"] >= .05:
         state,conf,reason="dialogue",.91,"calibrated_bottom_dialog_box_signature"
     elif menu["white"] >= .06 and menu["orange"] >= .025:
         state,conf,reason="menu_or_unknown_choice",.78,"right_side_menu_requires_context"
