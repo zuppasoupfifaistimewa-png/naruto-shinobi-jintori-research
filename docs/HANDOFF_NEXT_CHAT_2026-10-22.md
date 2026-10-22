@@ -1,3 +1,28 @@
+## ACTIVE PLAYER — revision35 second board-focus probe (22 October 2026, 19:44 WIB)
+
+Run #39780755350 is active, started 19:43:50 WIB; hard timeout about 20:03:50 WIB. Exact pinned source is now independently restored: run #39779256427, private artifact #12425858092, adaptive-cycle-01-f180.sstate, SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`, representing the map with `空き地` (Tanah kosong, barrier value140) focused. Marker verified:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39779256427
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=DOWN
+AB_EXPECTED_STATE=map_after_move
+LOOP_CYCLES=2
+REVISION=35
+```
+Workflow currently contains expected map-state gate. Do not run another player in parallel.
+
+Audit after completion: same parent hash in both fresh processes, two `ExecutionFlow::SaveStateLoaded` events, map_after_move F20 exact pixel parity, same cloned Memory Cards, DOWN readback pressed/released true/false, WAIT control, 10 authentic 1280×800 X11 captures, exits0, both output checkpoint external size/header/SHA validators and comparison report. Inspect whether ACTION shifts focus from empty-land140 to the adjacent cell. Until actual images verify, do not classify. No destination confirmation.
+
+Story Mode still NOT COMPLETE. Keep private artifact files out of Git, and use START for dialogue.
+
+---
+
 ## LATEST RESTORE VERIFIED — current source is the focused empty-land cell (22 October 2026, 19:42 WIB)
 
 Restore-only run [#39780143613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780143613) passed. It independently loaded run #39779256427 / private artifact #12425858092 / `adaptive-cycle-01-f180.sstate`, input SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`, 21,162,559 bytes, v4. Artifact #12425913759 log contains `ExecutionFlow::SaveStateLoaded`, `ADAPTIVE_RESTORE_TEST=PASS`, five valid authentic 1280×800 X11 images, emulator exit0, and output state post-exit structural/hash validation. C01-F20 was visually inspected and shows `空き地` (Tanah kosong), barrier value 140, Level ---, durability -/-. The exact input source SHA is now independently restore-proven and promoted.
