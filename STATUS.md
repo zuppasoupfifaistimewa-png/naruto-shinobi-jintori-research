@@ -1,3 +1,22 @@
+## VERIFIED UPDATE — bounded two-cycle checkpoint continuation passed (22 October 2026, 17:47 WIB)
+
+**Story Mode is NOT complete.** No authentic ending/results screenshot exists.
+
+- Continuation run [#39765193287](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39765193287) completed **success** from the exact immutable source checkpoint from restore run #39764239171: 21,162,934 bytes, SHA-256 `16f697fa95c16661a639ad46b55f90008e60200d1ee860058b12d7b1110d073b`.
+- Ten authentic external-X11 captures passed integrity checks at 1280x800 and were visually reviewed from private artifact #12419528763. The images show cycle 1 opening an Iruka dialogue and START skipping it; the visible phrase `いいかナルト。` translates as (Dengarkan baik-baik, Naruto). By C01-F180 a right-side choice/menu appeared. Cycle 2 classified it as `menu_or_unknown_choice` and correctly chose `WAIT`, not an uncalibrated confirmation.
+- Both fresh emulator processes logged `ExecutionFlow::SaveStateLoaded`; cycle 1's source was the pinned restored checkpoint, and cycle 2's source was the exact SHA of cycle 1's new checkpoint. Both processes exited 0.
+- Both output checkpoints passed external post-exit size/header/SHA verification:
+  - cycle 1, 21,163,161 bytes, SHA-256 `fd46af37af86b0843651ee6baa5d10bd6cb75123d68c87e8319a647130d6b512`;
+  - cycle 2, 21,163,013 bytes, SHA-256 `7679cfbd3576c3202abcc299b907939ab4e4529e3a0aa260e780806b1e21cc92`.
+- Evidence summary logged `ADAPTIVE_CONTINUATION_TEST=PASS parent_sha256=16f697fa... cycles=2 fresh_processes=2 captures=10 checkpoint_chain=validated policy_guard=PASS`. All states and images remain private; no gameplay image/state is in Git.
+
+### Next controlled experiment
+The next safe diagnostic is a matched `DOWN` versus `NONE/WAIT` branch from the same immutable cycle-2 menu checkpoint, using separately cloned disposable Memory Cards. At F20 require both branches to show the same parent state; press/release DOWN only in the action branch; never press Circle or START unless the respective calibrated visual condition requires it. Capture F20/F60/F100/F110/F180 from both branches and compare actual screen, selection highlight and subsequent transition. If pre-action states disagree or the menu state differs from the pinned source, fail the experiment closed. Do not infer a universal rule from a single branch pair.
+
+Only this repository is permitted. Story Mode remains incomplete without authentic ending/results evidence.
+
+---
+
 ## VERIFIED UPDATE — fresh-process restore passed; bounded two-cycle continuation active (22 October 2026, 17:43 WIB)
 
 **Story Mode is NOT complete.** No authentic ending/results screen has been captured.
