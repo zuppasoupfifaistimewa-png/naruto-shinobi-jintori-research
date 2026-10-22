@@ -1,3 +1,11 @@
+## ACTIVE PLAYER — revision47 Circle vs WAIT on the roulette wheel
+
+Run [#39868722262](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39868722262) active; started 05:58:51 WIB, hard timeout about 06:18:51 WIB. The exact source is run #39867730674 / artifact #12464258211 / `adaptive-cycle-01-f180.sstate` / SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`, independently restored by #39868354205 (wheel visible through five authentic captures). Marker: AB_TEST=1, AB_ACTION=CIRCLE, AB_EXPECTED_STATE=roulette, two cycles, revision47. Workflow commit `11b308f162aa1ef2f5b5167cd17b4340718a03de` permits Circle only for roulette-state A/B and has strict native-exit134 recovery based on session-finished + external state validation.
+
+Do not start another player while this run is active. After completion require both exact source hashes, two load events, F20 pixel parity/state roulette, cloned cards identical, Circle press/release true/false, WAIT control, ten authentic 1280×800 X11 captures, both exits normal or gated checkpoint recovery, both output state validations, and comparison report. Manually inspect whether ACTION stops/settles the roulette while control wheel keeps spinning. Do not claim a particular number unless the pointer/result UI is stable and readable. Story Mode remains NOT COMPLETE.
+
+---
+
 ## REVISION46 RESTORE PASSED — roulette checkpoint is now independently loadable
 
 Run [#39868354205](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39868354205) completed success at 22:56:40 UTC / 05:56:40 WIB. Private artifact #12465131490 passed ZIP integrity. Fresh process logs `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five genuine 1280×800 X11 screenshots all visibly show the roulette wheel; exit0; external output state size/header/SHA checks passed.
