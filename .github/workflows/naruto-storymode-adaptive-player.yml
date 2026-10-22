@@ -69,11 +69,11 @@ jobs:
           [[ "$restore_test" == "0" || "$restore_test" == "1" ]]
           [[ "$continuation_test" == "0" || "$continuation_test" == "1" ]]
           [[ "$ab_test" == "0" || "$ab_test" == "1" ]]
-          [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "TRIANGLE" ]]
+          [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "TRIANGLE" || "$ab_action" == "CROSS" ]]
           [[ "$ab_expected_state" == "menu_or_unknown_choice" || "$ab_expected_state" == "map_after_move" ]]
           if [ "$ab_test" = "1" ]; then
             if [ "$ab_expected_state" = "map_after_move" ]; then
-              [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" ]]
+              [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "CROSS" ]]
             else
               [[ "$ab_action" == "DOWN" || "$ab_action" == "TRIANGLE" ]]
             fi
@@ -352,9 +352,9 @@ jobs:
                   if not state then return end
                   plannedState[cycle]=state; plannedAction[cycle]=action; plannedDecision[cycle]=result
                   if abTest then
-                      local mapDirection=(abAction=="UP" or abAction=="DOWN" or abAction=="LEFT" or abAction=="RIGHT")
+                      local mapAction=(abAction=="UP" or abAction=="DOWN" or abAction=="LEFT" or abAction=="RIGHT" or abAction=="CROSS")
                       local menuAction=(abAction=="DOWN" or abAction=="TRIANGLE")
-                      local safeAction=(abExpectedState=="menu_or_unknown_choice" and menuAction) or (abExpectedState=="map_after_move" and mapDirection)
+                      local safeAction=(abExpectedState=="menu_or_unknown_choice" and menuAction) or (abExpectedState=="map_after_move" and mapAction)
                       local precondition=(state==abExpectedState and action=="WAIT" and safeAction)
                       local branch=(cycle==1) and "ACTION" or "NONE"
                       local selected=(cycle==1) and abAction or "WAIT"
