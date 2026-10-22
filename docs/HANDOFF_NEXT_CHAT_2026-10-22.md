@@ -1,3 +1,33 @@
+## LATEST CHECKPOINT — revision50 advanced to the three-card overlay (23 Oct 2026, 06:35 WIB)
+
+Run [#39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049) succeeded at 06:34:41 WIB; private artifact #12467281563 passed ZIP integrity. It restored source checkpoint from run #39870243073/artifact #12466141660, SHA-256 `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`, size21,163,504/v4. Fresh process logged SaveStateLoaded and RESTORE_TEST=PASS; five real external-X11 1280×800 frames; effective exit0 after native exit124 was recovered only with session-finished + output checkpoint validation. New output validated at 21,162,772 bytes/v4, SHA `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`, but it is not yet independently restored/promoted.
+
+Critical nuance: `RESTORE_TEST=1` does not suppress policy inputs after the F20 capture. On the restored board at F20, classifier chose DOWN and input press/release both passed. At F60 the visible move counter is 1 versus 3 at F20. At F100/F110, screenshot shows Iruka (`イルカ`) dialogue `ナルト、ここは「札所」といって。` (Naruto, tempat ini disebut “札所”/fudasho; working translation “pos jimat/segel”, not finalized). Classifier chose START; input readback and dialogue skip passed. At F180, three card-back panels appear. This exact sequence is directly observed; no matched WAIT control was done from this board parent, so causal interpretation of DOWN remains **HYPOTHESIS**. Story Mode not complete.
+
+### Next action, before launching run51
+Fix classifier first. `tools/storymode_adaptive_agent.py` currently misclassifies the three-card overlay as `map` and recommends DOWN. The actual private screenshot from run50 has in ROI x=370..930, y=220..530 a white ratio 0.1974 and gray ratio 0.1822; map/dialogue comparison frames are much lower. Add a conservative `card_selection` signature ahead of map-classification and keep its action WAIT (fail closed). Add a synthetic overlay test to `tests/test_storymode_adaptive_agent.py`; run the tests and offline-check the actual private F180 screenshot. Do not place private screenshots/state files in Git.
+
+Then revision51 restore-test candidate:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39872449049
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7
+RESTORE_TEST=1
+CONTINUATION_TEST=0
+AB_TEST=0
+AB_ACTION=DOWN
+LOOP_CYCLES=1
+REVISION=51
+```
+Do not launch until classifier/tests are ready. Check the committed marker, then run one player only. Require F20 state `card_selection`, three-card overlay visually present, SaveStateLoaded, five authentic 1280×800 captures, accepted shutdown and output checkpoint size/v4-header/SHA validation. Output from run51 remains unpromoted until its own independent restore. Do not press Circle/confirm until card selection controls and semantics are understood. No player currently active.
+
+### Latest verified A/B rule before run50
+Run #39870243073/revision49 compared CIRCLE to WAIT from roulette. Both processes loaded exact source SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`, matched F20, cards identical, input true/false, ten authentic screenshots, outputs valid. ACTION shows roulette F60/F100/F110 and board at F180; WAIT remains roulette through F180. Pixel differences F60 328885/MAD18.11568, F100 337474/19.18342, F110 344330/17.23071, F180 842364/39.31341. **VERIFIED, context-limited**: Circle from roulette returns to board by F180. Never use Circle to skip dialogue; use START.
+
+---
+
 ## ACTIVE RUN — revision50 restore-only (current latest status 23 Oct 2026, 06:35 WIB)
 
 Run [#39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049) is active; started 06:32:21 WIB, hard timeout about 06:52:21 WIB. Exact committed marker at head `1c30215c9a4b6035b5c24d1bf0befc4819110642`: source run #39870243073 / artifact naruto-storymode-adaptive-player-private / checkpoint adaptive-cycle-01-f180.sstate / SHA-256 `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`; RESTORE_TEST=1, one cycle, AB_TEST=0, revision50. Latest status shows source and game assets validated, with `Run adaptive observe-decide-act-verify-checkpoint loop` active; no artifact yet. Don't start another player in parallel.
