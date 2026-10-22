@@ -1,3 +1,11 @@
+## ACTIVE PLAYER — revision37 tests repeat DOWN from the post-DOWN board view
+
+Only active player is run [#39782011370](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39782011370), started 19:52:49 WIB, hard timeout about 20:12:49 WIB. Marker is verified and pins the independently restored state SHA `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff` from run #39780755350/artifact #12426786721; AB_TEST=1; AB_ACTION=DOWN; AB_EXPECTED_STATE=map_after_move; two cycles; RESTORE_TEST=0; CONTINUATION_TEST=0; revision37. Do not launch another player in parallel.
+
+After the run completes, require both exact source hashes, load events, F20 exact pixel parity plus map_after_move state, identical card clones, true/false DOWN readback, WAIT control, ten authentic X11 screenshots at 1280×800, exits0, both output states post-exit validated, and comparison report. Visually determine whether one more DOWN changes focus/scroll further. No Circle/confirmation. Distinguish tile focus from actual movement or capture; Story Mode remains NOT COMPLETE.
+
+---
+
 ## RESTORE PASS — post-DOWN board scroll is a proven restorable checkpoint state (22 October 2026, 19:51 WIB)
 
 Run [#39781495023](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39781495023) success. Inspected private artifact #12426677790. It restored revision35 ACTION output from run #39780755350, source SHA-256 `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff` (21,162,766 bytes, v4); explicit `ExecutionFlow::SaveStateLoaded`, `ADAPTIVE_RESTORE_TEST=PASS`, five real 1280×800 X11 captures, visually retained post-DOWN scrolled board, exit0, and externally validated new output state. Exact input hash b971… is now promoted as independently restorable.
