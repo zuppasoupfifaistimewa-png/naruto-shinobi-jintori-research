@@ -1,3 +1,15 @@
+## LATEST DIAGNOSTIC — checkpoint full-sized, but drain stalled and process timed out (22 October 2026, 18:31 WIB)
+
+Story Mode is **NOT COMPLETE**. No ending/results screenshot exists.
+
+- Run [#39770465538](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39770465538) failed in the first ACTION branch before control/NONE ran. It captured five authentic 1280x800 X11 frames and DOWN readback passed. It logged session finished and drain begin but not drain pass; emulator timeout exit was 124.
+- The private artifact #12422367156 contains the full-sized checkpoint, 21,162,494 bytes, v4 header, SHA-256 `0c33a47cb9e6f2dfb09c568410ca125acbae6f46f84692b8589a5c903442f564`. Though structurally full-sized, it came from a timeout session and is **not trusted**; do not use it as a source. The NONE branch did not run, so no matched A/B conclusion.
+- Root cause of the first drain strategy: waiting for additional GPU::Vsync callbacks stalled after F180. Workflow commit [`3e052b8`](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/3e052b8e77cfcd966f5e5e05a2f7341ed2ff0374) now pauses gameplay and recursively schedules 12 bounded `PCSX.nextTick` callbacks before `PCSX.quit(0)`; this needs a bounded run to verify it.
+- Current marker is still revision25, pinned to the independently restore-verified Information parent from run #39768787669: SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`. Next: set revision26 (same source, two cycles, AB_ACTION=DOWN), observe only one run and audit all 10 X11 frames, parent parity, inputs, two load events, normal exits and both externally verified output checkpoint files.
+- Do not infer Information→`マップを見る` (Lihat peta) from run #39770465538. The source-only parent remains the last trusted state. Do not use Circle.
+
+---
+
 ## LATEST DIAGNOSTIC — Information-down experiment blocked by truncated checkpoint; retry with drain window (22 October 2026, 18:23 WIB)
 
 - Run [#39769826213](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39769826213) failed before branch 2. C01-F20/F60/F100/F110/F180 authentic X11 screenshots validated; baseline/source hash was `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`; Memory Card clones were identical; DOWN readback press/release passed. Process exited 139 and checkpoint was truncated at 2,097,152 bytes, so validator failed and watcher stopped with code 92. This is not a gameplay result, and no checkpoint from this run is trusted.
