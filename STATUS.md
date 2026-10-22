@@ -1,3 +1,15 @@
+## ACTIVE RUN — revision 35 DOWN from empty-land focus versus WAIT (22 October 2026, 19:44 WIB)
+
+Run [#39780755350](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780755350) is the only active player. Marker revision 35 was verified at main: source run #39779256427 / private artifact naruto-storymode-adaptive-player-private / adaptive-cycle-01-f180.sstate / source SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`; `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `AB_TEST=1`, `AB_ACTION=DOWN`, `AB_EXPECTED_STATE=map_after_move`, `LOOP_CYCLES=2`, `REVISION=35`. The checked-out workflow blob `2f3d82359ebbbfeeb705005287c8af7ee3855df0` supports this map-state gate.
+
+Started at 19:43:50 WIB; hard timeout about 20:03:50 WIB. At latest check, no outcome has been audited. Do not trigger a parallel player run.
+
+Goal is only to observe whether DOWN from focused `空き地` (Tanah kosong, barrier value 140) changes which board cell is focused compared with WAIT. Require same source SHA in two fresh processes, explicit load events, exact F20 `map_after_move` visual/state parity, byte-identical Memory Cards, DOWN press/release true/false readback, ten authentic X11 images at 1280×800, both exits 0, external size/v4-header/SHA validation of both output states, and generated comparison report. Manually inspect C01/C02 F60/F100/F110/F180. Never claim movement/capture; no tile confirmation.
+
+Story Mode remains NOT COMPLETE. Preserve privacy; no gameplay assets in Git; use START for dialogue.
+
+---
+
 ## RESTORE VERIFIED — focus on empty-land tile 140 survives fresh process (revision 34, 22 October 2026, 19:42 WIB)
 
 Run [#39780143613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780143613) completed with success at 19:41:31 WIB. Private artifact #12425913759 was downloaded after completion and audited. It restored exact ACTION checkpoint from run #39779256427: 21,162,559 bytes, v4, SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Log explicitly states `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`. Five authentic external X11 screenshots were validated at 1280×800; the actual C01-F20 image visibly preserves `空き地` (Tanah kosong), `レベル` (Level) ---, `結界価値` (Nilai penghalang) 140, `耐久値` (Daya tahan) -/-. Emulator exited 0. Newly emitted state passed external validation: 21,163,018 bytes, v4 header, SHA-256 `75f0752616695e0d6d141e3cc051774f5e84defe6944371fb0bc34840c83ce9f`. The new output remains unpromoted because it has not itself been restored.
