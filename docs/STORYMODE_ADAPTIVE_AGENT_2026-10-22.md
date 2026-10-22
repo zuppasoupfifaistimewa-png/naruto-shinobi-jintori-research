@@ -1,3 +1,11 @@
+## ACTIVE RUN — revision 35 DOWN from empty-land tile versus WAIT (22 October 2026, 19:44 WIB)
+
+Run [#39780755350](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780755350) is `in_progress` from 19:43:50 WIB; latest active step is repository checkout, no artifact yet, 20-minute timeout about 20:03:50 WIB. Do not run players in parallel.
+
+Source run #39779256427 / artifact #12425858092 / `adaptive-cycle-01-f180.sstate`, SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Revision 35 runs A/B DOWN against NONE/WAIT, expected state `map_after_move`. Inspect exact logs, image parity, input true/false, two load events, ten 1280×800 external captures, exits, and output validations. Only infer focused-tile change if screenshots prove it. Never confirm a destination. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision35 probes DOWN from empty-land focus (22 October 2026, 19:44 WIB)
 
 Only active player is run #39780755350 (started 19:43:50 WIB; timeout about 20:03:50 WIB). The exact committed marker uses source run #39779256427 / artifact #12425858092 / adaptive-cycle-01-f180.sstate / SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`; AB_TEST=1, AB_ACTION=DOWN, AB_EXPECTED_STATE=map_after_move, two cycles. Source was restored in a new process in run34, preserving the empty-land focus; this source is trusted.
