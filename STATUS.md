@@ -1,3 +1,16 @@
+## ACTIVE — revision44 restore-only validates Roulette-highlighted menu checkpoint
+
+Run [#39867381637](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39867381637) is the only active player. Marker at its checkout verified:
+SOURCE_RUN=39866820866; SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private; SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate; SOURCE_SHA256=`609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`; RESTORE_TEST=1; CONTINUATION_TEST=0; AB_TEST=0; LOOP_CYCLES=1; REVISION=44. Workflow blob `4021462372a7573132783b21285d35b0da25eab8` allows CIRCLE only for map-state A/B? Correction: current workflow permits CIRCLE for menu-state A/B, not the restore test.
+
+Run started at 05:46:45 WIB; hard timeout about 06:06:45 WIB. At last check it was newly in progress; no artifact yet. Do not start another player.
+
+Accept only after explicit `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`, five authentic 1280×800 X11 captures with F20 showing the command menu and `ルーレット` (Roulette) highlighted, exit0, and external output size/v4-header/SHA validation. If F20 retains the expected menu highlight, promote the input source SHA `609823…52bbffb7` as restorable. New output from this restore run remains unpromoted pending its own independent restore.
+
+Next step after this run finishes: revision45 matched CIRCLE vs WAIT from the same source checkpoint. CIRCLE is permitted only under menu-state guard; the selected Roulette row is visually documented by source C01-F100/F180 in run #39866820866. It must not be used on dialogue. Story Mode remains NOT COMPLETE.
+
+---
+
 ## VERIFIED — CROSS returns from board map to command menu (revision43, 23 October 2026)
 
 Run [#39866820866](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39866820866) completed with success at 22:43:31 UTC / 05:43:31 WIB. The private artifact #12463489344 passed ZIP integrity and was visually inspected.
