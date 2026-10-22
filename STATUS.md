@@ -1,3 +1,29 @@
+## VERIFIED RESULT — DOWN from empty-land focus advances board focus and scrolls viewport (revision 35, 22 October 2026, 19:46 WIB)
+
+Run [#39780755350](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780755350) completed successfully at 19:45:25 WIB. Raw logs and private artifact #12426786721 were audited, including direct inspection of authentic screenshots.
+
+All matched A/B gates passed:
+- Both fresh processes restore exact parent SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a` and explicitly log `ExecutionFlow::SaveStateLoaded`.
+- Two Memory Card clones are byte-identical, hash `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`.
+- F20 states both classify `map_after_move`, and initial screenshots match pixel-for-pixel (1,024,000/1,024,000).
+- ACTION sent one DOWN; press readback true, release false. CONTROL sends WAIT only.
+- Ten authentic external-X11 captures validate at 1280×800, both processes exit 0, both checkpoint outputs pass size/header/SHA post-exit validation, and the comparison report was emitted.
+
+**VERIFIED, narrow visual rule:** from the board state with `空き地` (Tanah kosong) value 140 focused, a single DOWN changes the observed board focus/view: the map scrolls upward and the empty-land information panel disappears, with the cursor now visually aligned toward the lower tile near Naruto's marker. WAIT preserves the empty-land panel/focus and the original board framing. This verifies a navigation/focus/view change only, not Naruto's movement, tile capture, ownership, or turn progress. Because the post-DOWN panel does not name the focused tile, do not assert more than the observed shift.
+
+Comparison data: F60 783,594 differing pixels / mean absolute RGB 27.28084; F100 783,324 / 27.36300; F110 783,287 / 27.31514; F180 783,630 / 27.39113.
+
+Output checkpoints (valid structure, not yet promoted):
+- ACTION, run #39780755350 artifact #12426786721 `adaptive-cycle-01-f180.sstate`: 21,162,766 bytes, v4 header, SHA-256 `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`.
+- CONTROL `adaptive-cycle-02-f180.sstate`: 21,162,804 bytes, v4 header, SHA-256 `e333d408701dcafb40a4d8489a88492fd772a5dc02bdd0fa7b3775bfc1ddc212`.
+
+### Next gate — independently restore ACTION output
+Run one restore-only fresh process against the exact ACTION output above. Require `ExecutionFlow::SaveStateLoaded`, five authentic 1280×800 captures; F20 should visually retain the post-DOWN scrolled/focused state (empty-land panel stays hidden / lower tile near Naruto's marker remains focused); exit 0; and external output size/v4-header/SHA validation. Only then promote the exact input hash `b9717348...` as restorable. The new output from that restore smoke will itself stay unpromoted until a separate restore succeeds.
+
+Story Mode remains **NOT COMPLETE**. No actual capture/movement/ownership or ending is established. Keep ROM, BIOS, state, cards and screenshots private/out of Git. Use START for dialogue skipping.
+
+---
+
 ## ACTIVE RUN — revision 35 DOWN versus WAIT from empty-land focus (22 October 2026, 19:44 WIB)
 
 Run [#39780755350](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780755350) is currently `in_progress`, created at 19:43:50 WIB. Latest check: job is checking out the repository; there are no artifacts yet. The 20-minute deadline is approximately 20:03:50 WIB. Do not launch another player run.
