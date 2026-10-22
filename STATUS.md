@@ -1,3 +1,14 @@
+## ACTIVE RUN — revision38 restore-only for second-DOWN board view (22 October 2026, 20:01 WIB)
+
+Run [#39783158903](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39783158903) is the only active player. Its marker was verified:
+SOURCE_RUN=39782011370; SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private; SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate; SHA-256 `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`; RESTORE_TEST=1; CONTINUATION_TEST=0; AB_TEST=0; LOOP_CYCLES=1; REVISION=38.
+
+Run started at 20:00:55 WIB; workflow timeout about 20:20:55 WIB. Current outcome not yet available. Do not trigger another player run while active. Required: exact source checksum validation; `ExecutionFlow::SaveStateLoaded`; `ADAPTIVE_RESTORE_TEST=PASS`; five authentic external X11 images at 1280×800; visually confirm the second-DOWN viewport state at F20; exit0; and external output checkpoint size/v4-header/SHA validation. The source hash is promoted only if this restore succeeds. New output remains unpromoted until an additional independent restore.
+
+Story Mode remains NOT COMPLETE. No character movement, capture, territory ownership, or ending is proven by the directional scroll probes. Keep all gameplay assets private and out of Git; skip dialogue with START.
+
+---
+
 ## VERIFIED RESULT — second DOWN advances the board view again (revision37, 22 October 2026, 19:55 WIB)
 
 Run [#39782011370](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39782011370) completed with success at 19:54:29 WIB. Private artifact #12426797521 was downloaded and all primary evidence checked.
