@@ -1,3 +1,12 @@
+## CORRECTION — current revision 32 checkout has a late A/B validator mismatch (22 October 2026, 19:25 WIB)
+
+Run #39777917775 is still the only active player; do not start another. Important correction to the previous section: workflow checkout SHA b77f74af5b258dfcd7d8bfbeeeca0c685c5fc7b7 does NOT use AB_EXPECTED_STATE. Its Lua precondition accepts either menu_or_unknown_choice or map_after_move when the classifier action is WAIT, so the ACTION arm may indeed send DOWN from the board. But a later shell gate and the Python state-parity validator hard-code menu_or_unknown_choice; the run can therefore fail after valid captures, input readback and state-file checks. Do not assume no input was sent; audit the actual branch stdout and screenshot artifact.
+
+After the run terminates, check all 10 authentic screenshots, source hashes, F20 parity, explicit load events, DOWN press/release true/false, exits and output-state validation. Even if visual movement appears, treat it as HYPOTHESIS unless the required paired gates pass. Corrected workflow commit 4c074472e885c75ce618e4e0f5aefd6a8833a0c9 adds AB_EXPECTED_STATE; a clean rerun needs a fresh marker including AB_EXPECTED_STATE=map_after_move, only after this run ends.
+
+
+---
+
 ## ACTIVE BLOCKER — revision 32 did not include its expected map state (22 October 2026, 19:24 WIB)
 
 Run [#39777917775](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777917775) is the only active player; last check had X11 workspace installation in progress, started 19:23:17 WIB, timeout at about 19:43:17 WIB. Marker content at the current committed blob has no AB_EXPECTED_STATE field, so workflow defaults it to menu_or_unknown_choice while source SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc is map_after_move. The input precondition should fail closed, selecting WAIT rather than DOWN, then likely fail final assertions. This is a configuration bug, not a gameplay finding. Do not run another player until #39777917775 completes and is audited.
