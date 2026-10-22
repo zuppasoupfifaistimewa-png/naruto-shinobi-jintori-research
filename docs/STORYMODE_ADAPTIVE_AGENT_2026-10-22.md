@@ -1,3 +1,17 @@
+## VERIFIED RULE UPDATE — DOWN from Ninjutsu highlights Information (22 October 2026, 18:14 WIB)
+
+Successful matched test [#39768787669](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768787669) used the already restore-validated Ninjutsu checkpoint SHA `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`.
+
+- Parent F20 frames were pixel-identical (1,024,000/1,024,000 pixels); both branches classified `menu_or_unknown_choice`.
+- ACTION branch DOWN readback passed press and release; control branch sent NONE/WAIT. Both processes logged `ExecutionFlow::SaveStateLoaded`, used identical-but-separate Memory Cards, produced five validated external X11 captures each, exited 0, and passed post-exit checkpoint size/header/SHA checks.
+- In the action branch, the red highlight moved from `忍術` (Ninjutsu) to `情報` (Informasi) by F60. The control branch remained on Ninjutsu until F180. Comparison reported 14,606 different pixels and mean absolute RGB difference 1.04012 at F60/F100/F110/F180.
+- **VERIFIED for the tested context:** DOWN advances the highlighted row from Ninjutsu to Information. Combined with the prior Roulette → Ninjutsu test, two successive DOWN presses have been shown to advance one row at each respective menu parent.
+- Action checkpoint (#12421302756, private) is 21,162,009 bytes, SHA-256 `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`. It is not a trusted resume point until restored in a fresh process. Next step is `RESTORE_TEST=1` from this exact file; require the load event and post-load images before further menu exploration.
+
+No Circle confirmation on this menu; the existing restriction allows Circle only for a contextual choice with visibly highlighted YES. Story Mode remains not complete.
+
+---
+
 ## ACTIVE PROBE — next DOWN transition from Ninjutsu versus NONE (22 October 2026, 18:12 WIB)
 
 Run [#39768787669](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768787669) is configured from the already restored parent SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`, one-action branch DOWN and NONE/WAIT control, separate identical Memory Cards, two cycles. It is intended to test whether the next menu selection after `忍術` (Ninjutsu) is `情報` (Informasi). Do not conclude until the X11 evidence, input readback, parent parity, two fresh-process load events and output checkpoint validation pass. Run was active at container initialization.
