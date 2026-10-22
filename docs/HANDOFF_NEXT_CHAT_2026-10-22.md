@@ -1,3 +1,31 @@
+## LATEST VERIFIED RESULT — revision49 Circle stops roulette's visible phase and returns to board (23 October 2026, 06:14 WIB)
+
+Run [#39870243073](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39870243073) completed success at 06:14:50 WIB. Private artifact #12466141660 downloaded and ZIP integrity passed. All ten actual external-X11 screenshots validated 1280×800. Both fresh processes loaded source parent SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`, with `ExecutionFlow::SaveStateLoaded` logged twice; initial F20 images exact-pixel parity; both states classified roulette; disposable Memory Cards identical. ACTION Circle input pressed/released readback true/false, control WAIT. Both processes emitted session-finished markers; native exits124/139 were accepted only by the new strict post-session recovery path after checkpoint validation; effective session exit codes 0. Both output checkpoint files passed size/v4-header/SHA checks and the paired comparison report exists.
+
+Actual screenshots show CIRCLE action still on roulette at F60/F100/F110, then board visible at F180. WAIT control stays on roulette at F180. Differences: F60 328,885 pixels / MAD18.11568; F100 337,474 / 19.18342; F110 344,330 / 17.23071; F180 842,364 / 39.31341. **VERIFIED only for this context:** one Circle press/release while the roulette wheel is visible causes a transition back to the board by F180; WAIT leaves the roulette visible through F180. This is not dialogue skipping and does not verify the roulette value itself.
+
+Candidate states in artifact #12466141660, not yet promoted:
+- ACTION `adaptive-cycle-01-f180.sstate`: 21,163,504 bytes, v4, SHA-256 `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`.
+- CONTROL `adaptive-cycle-02-f180.sstate`: 21,162,411 bytes, SHA-256 `7780743d6f99e5534cd53095bd1fd68126d409ada21fe73993d2100030e4f029`.
+
+Next exact marker is revision50 restore-only from ACTION candidate:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39870243073
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea
+RESTORE_TEST=1
+CONTINUATION_TEST=0
+AB_TEST=0
+AB_ACTION=CIRCLE
+LOOP_CYCLES=1
+REVISION=50
+```
+Require fresh-process load event, five authentic 1280×800 screenshots confirming board return, accepted shutdown and post-exit size/v4-header/SHA validation. Only promote this exact input after restore succeeds; the output produced by run50 stays unpromoted until it too is restored independently. Story Mode remains NOT COMPLETE. Use START for all dialogue skipping, never Circle for dialogue. Keep gameplay assets private/out of Git.
+
+---
+
 ## ACTIVE PLAYER — revision49 final retry of roulette Circle-vs-WAIT
 
 Run [#39870243073](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39870243073) active, started 06:12:25 WIB; hard timeout about 06:32:25 WIB. Exact marker pins source run #39867730674 / artifact #12464258211 / `adaptive-cycle-01-f180.sstate` / SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; AB_TEST=1; AB_ACTION=CIRCLE; AB_EXPECTED_STATE=roulette; two cycles; revision49.
