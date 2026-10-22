@@ -1,3 +1,39 @@
+## VERIFIED — TRIANGLE opens the map view from the selected Map row (22 October 2026, 19:15 WIB)
+
+Run [#39776518701](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776518701) completed with success at 19:14:34 WIB. I audited private artifact #12425305517 including the actual X11 screenshots, branch logs, comparison report, input readback, and output checkpoint validation.
+
+- Both fresh emulator processes loaded the exact independently restored source SHA-256 `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`, with `ExecutionFlow::SaveStateLoaded` in each. The separate ACTION/CONTROL Memory Cards were hash-identical.
+- F20 images matched exactly across 1,024,000 pixels and showed `マップを見る` (Lihat peta) selected. ACTION sent TRIANGLE with press/release readback `true`/`false`; CONTROL sent WAIT. Ten authentic external-X11 captures (five per arm) were validated at 1280×800. Both emulator processes exited 0.
+- Actual screenshots show that ACTION enters a tile/map view by F60 and remains there through F180. The screen displays hex/tile positions, visible values such as 60, 100 and 140, and a character panel with `レベル` (Level) 1, `結界価値` (Nilai penghalang) 60, and `耐久値` (Daya tahan) 2/2. Its footer is `× もどる` (X: Kembali). The control stays in the prior right-hand menu with `マップを見る` (Lihat peta) highlighted. No map destination/tile was selected after opening the map.
+- Paired image comparison: F60 286,259 differing pixels / mean absolute RGB difference 21.80974; F100 282,661 / 21.70455; F110 279,162 / 21.18977; F180 286,921 / 21.80548. In ACTION the generic classifier changes to `map_after_move`; control remains `menu_or_unknown_choice`. The conclusion is grounded in manual visual review of the genuine paired screenshots, not just the classifier label.
+- Output checkpoint validations passed after process exit:
+  - ACTION `adaptive-cycle-01-f180.sstate`: 21,163,227 bytes, v4 header, SHA-256 `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`.
+  - CONTROL `adaptive-cycle-02-f180.sstate`: 21,163,215 bytes, v4 header, SHA-256 `dc91b2756581456e75dee8cd836dc7b3c1e43fde88978dbf15545f231a6c0f98`.
+  Both outputs remain unpromoted until individually restored in a new process.
+
+**Rule: VERIFIED, limited to this exact menu/checkpoint state.** With `マップを見る` (Lihat peta) highlighted, one TRIANGLE input opens the tile/map view; WAIT leaves the menu open. This establishes map-view entry, not navigation/selection mechanics or battle rules.
+
+### Immediate next step — revision 31 restore-only
+Test the ACTION output itself in a new process (do not send gameplay input):
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39776518701
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc
+RESTORE_TEST=1
+CONTINUATION_TEST=0
+AB_TEST=0
+AB_ACTION=DOWN
+LOOP_CYCLES=1
+REVISION=31
+```
+Require the load event, five valid authentic 1280×800 X11 captures, exit 0/accepted exit, and external output checkpoint validation. Verify F20 still shows the map/tile view and no input was sent. Only then promote the source state as the trusted map-view checkpoint. Do not start a map-movement probe until this inspection/restore step is complete.
+
+Story Mode remains **NOT COMPLETE**. The game-ending/result screen has not been observed. Keep all gameplay files private/out of Git; use START for dialogue skipping, never Circle for dialogue.
+
+---
+
 ## RESTORE VERIFIED — ACTION checkpoint from revision 28 (22 October 2026, 19:11 WIB)
 
 Restore-only run [#39776089816](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776089816) completed with success at 19:10:59 WIB. Artifact #12425065836 was audited. It loaded the exact revision-28 ACTION output from #39775176728: SHA-256 `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`, size 21,162,344 bytes, v4 header. The log records `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five authentic external-X11 screenshots at 1280×800 passed validation, exit code was 0, and F20 visibly retains `マップを見る` (Lihat peta) highlighted. Its source is now proven restorable and is promoted as the trusted menu-selection checkpoint.
