@@ -1,3 +1,15 @@
+## ACTIVE — revision43 retries CROSS-vs-WAIT with all gates fixed (23 October 2026, 05:42 WIB)
+
+Run [#39866820866](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39866820866) is the only active player. Revision42 (#39866476856) failed before emulator launch with a 4,505-byte setup-only artifact because the last shell whitelist had not included CROSS. Workflow commit `417663b21ce0cd9218ef8c312913a90d65381788` now includes CROSS in the final allowlist as well as in the selector and Lua map-state gate.
+
+Revision43 checkout marker verified: source run #39786019434 / artifact `naruto-storymode-adaptive-player-private` / checkpoint `adaptive-cycle-01-f180.sstate` / SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`; `AB_TEST=1`, `AB_ACTION=CROSS`, `AB_EXPECTED_STATE=map_after_move`, two cycles, `REVISION=43`. Started 05:41:57 WIB; hard timeout about 06:01:57 WIB. At last check it was initializing containers. Do not launch a parallel player.
+
+Audit the actual artifact and logs after run termination: exact parent SHA both arms, two explicit load events, F20 pixel parity and state, same disposable cards, CROSS press/release true/false, WAIT control, ten genuine 1280×800 X11 captures, both exits0, two post-exit checkpoint validations, comparison report, and direct screenshot review. The observed footer `× もどる` (Cross: Kembali) motivates—but does not prove—the hypothesis that CROSS exits the map. Until that paired test passes, CROSS effect is UNKNOWN.
+
+Story Mode remains NOT COMPLETE.
+
+---
+
 ## REVISION42 DIAGNOSTIC — CROSS probe rejected by one stale shell allowlist
 
 Run [#39866476856](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39866476856) failed before emulator launch. Its artifact #12463119868 is only a 4,505-byte setup dump; there are no gameplay screenshots and no conclusion about CROSS behavior is allowed.
