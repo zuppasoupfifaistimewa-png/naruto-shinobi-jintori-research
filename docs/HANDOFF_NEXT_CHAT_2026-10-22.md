@@ -1,3 +1,17 @@
+## LATEST VERIFIED BOARD NAVIGATION — DOWN scrolls board view from empty-land focus (revision35)
+
+Run [#39780755350](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780755350) fully passed corrected DOWN-vs-WAIT A/B from the independently restored source SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Private artifact #12426786721 was inspected. Exact parent source on both fresh processes; two load events; identical cards; F20 state map_after_move and pixel-identical images; DOWN press/release true/false; WAIT control; 10 authentic 1280×800 X11 images; both exits0; both output checkpoints validated for size/v4 header/SHA; comparison report present.
+
+**VERIFIED, strict scope:** when `空き地` (Tanah kosong) value140 is focused on the board, one DOWN changes the observed focus/view: the map scrolls upward and the empty-land information pane disappears, cursor aligns toward the lower tile near Naruto's marker. WAIT retains the empty-land pane and original framing. Since action-state panel doesn't label the new focus, claim only a focus/view change; no assertion that Naruto moved or captured a tile. Visual differences: F60 783594 pixels/MAD27.28084; F100 783324/27.36300; F110 783287/27.31514; F180 783630/27.39113.
+
+ACTION output from run #39780755350, artifact #12426786721, `adaptive-cycle-01-f180.sstate`, 21,162,766 bytes, v4, SHA-256 `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`. CONTROL output 21,162,804 bytes, v4, SHA `e333d408701dcafb40a4d8489a88492fd772a5dc02bdd0fa7b3775bfc1ddc212`. Neither promoted yet.
+
+Exact next step revision36: restore-only fresh process from run #39780755350 / artifact naruto-storymode-adaptive-player-private / checkpoint adaptive-cycle-01-f180.sstate / SHA `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`, with RESTORE_TEST=1, CONTINUATION_TEST=0, AB_TEST=0, LOOP_CYCLES=1, REVISION=36. Require load event, five authentic external 1280×800 frames retaining post-DOWN board state, exit0, external output state validation. Do not launch any player until prior finishes. Newly emitted restore output remains unpromoted until its own fresh-process restore.
+
+Story Mode still NOT COMPLETE. Keep game artifacts private/out of Git; START dialogue skip; no claim of capture or completion without direct evidence.
+
+---
+
 ## ACTIVE RUN — revision 35 map DOWN versus WAIT (22 October 2026, 19:44 WIB)
 
 Inspect [run #39780755350](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780755350) first. Current Actions state is `in_progress`, created 19:43:50 WIB; its job is checking out the research repo; no artifact is available yet. Approximate 20-minute timeout: 20:03:50 WIB. Do not run a second player in parallel.
