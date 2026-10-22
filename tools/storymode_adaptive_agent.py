@@ -11,7 +11,7 @@ from typing import Any
 import numpy as np
 from PIL import Image
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 
 def _ratios(image: np.ndarray, box: tuple[int,int,int,int]) -> dict[str, float]:
     x1,y1,x2,y2=box
@@ -25,6 +25,8 @@ def _ratios(image: np.ndarray, box: tuple[int,int,int,int]) -> dict[str, float]:
         "blue":(b>90)&(b>r*1.25)&(b>g*1.1),
         "white":(r>190)&(g>190)&(b>190),
         "orange":(r>100)&(g>45)&(r>g*1.18)&(g>b*1.15)&(b<140),
+        # Card backs have a substantial low-chroma gray lattice plus bright frame.
+        "gray":(np.max(c,axis=2)-np.min(c,axis=2)<24)&(np.mean(c,axis=2)>35)&(np.mean(c,axis=2)<180),
     }
     return {k:float(np.count_nonzero(v)/total) for k,v in masks.items()}
 
@@ -68,6 +70,7 @@ def observe(path: str | Path) -> dict[str, Any]:
     # Calibrated against authentic encounter frames from adaptive run 39687675432.
     top_hud=_ratios(arr,(380,30,920,225))
     menu=_ratios(arr,(1000,220,1275,560))
+    card_overlay=_ratios(arr,(370,220,930,530))
     features={
         "wheel_red":round(wheel["red"],4),"wheel_gold":round(wheel["gold"],4),
         "dialogue_orange":round(dialogue_box["orange"],4),"dialogue_white":round(dialogue_box["white"],4),
@@ -77,6 +80,8 @@ def observe(path: str | Path) -> dict[str, Any]:
         "menu_white":round(menu["white"],4),"menu_orange":round(menu["orange"],4),
         "top_hud_red":round(top_hud["red"],4),"top_hud_blue":round(top_hud["blue"],4),
         "top_hud_white":round(top_hud["white"],4),
+        "card_overlay_white":round(card_overlay["white"],4),
+        "card_overlay_gray":round(card_overlay["gray"],4),
     }
 
     # Priority matters: the wheel can cover a map, and a real dialogue frame may have a
@@ -92,6 +97,9 @@ def observe(path: str | Path) -> dict[str, Any]:
         features["required_chakra_calibrated"]=120
     elif dialogue_box["orange"] >= .05:
         state,conf,reason="dialogue",.91,"calibrated_bottom_dialog_box_signature"
+    elif card_overlay["white"] >= .12 and card_overlay["gray"] >= .16:
+        # Three card backs cover the board; do not mistake green edges for an actionable map.
+        state,conf,reason="card_selection",.97,"three_card_back_overlay_white_frame_gray_lattice"
     elif menu["white"] >= .06 and menu["orange"] >= .025:
         state,conf,reason="menu_or_unknown_choice",.78,"right_side_menu_requires_context"
     elif center["green"] >= .42 and wheel["red"] < .10 and top_hud["red"] >= .05 and top_hud["blue"] >= .05 and top_hud["white"] >= .035:
