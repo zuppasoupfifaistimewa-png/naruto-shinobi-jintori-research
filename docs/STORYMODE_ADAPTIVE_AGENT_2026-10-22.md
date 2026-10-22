@@ -1,3 +1,11 @@
+## ACTIVE — revision47 Circle-versus-WAIT from restored roulette state
+
+Run #39868722262 active, started 05:58:51 WIB; timeout about 06:18:51 WIB. It uses source run #39867730674 / artifact #12464258211 / `adaptive-cycle-01-f180.sstate` / SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; this exact source was independently restored by #39868354205 and five screenshots show the wheel.
+
+Marker is AB_TEST=1, AB_ACTION=CIRCLE, AB_EXPECTED_STATE=roulette, two cycles, revision47. No parallel player. Require all A/B gates including same parent hashes, load events, F20 pixel parity/state, same Memory Cards, Circle press/release true/false, WAIT control, ten genuine 1280×800 screenshots, both state outputs externally validated, report. Native exit134 can be recovered only after session-finished marker and external checkpoint validation. Review whether Circle stops the wheel vs WAIT continuing to spin; result number must be stable and readable before noting it. START only for dialogue; Story Mode NOT COMPLETE.
+
+---
+
 ## RESTORE VERIFIED — roulette state from revision45 survives a fresh process (revision46)
 
 Run #39868354205 passed restore-only. Private artifact #12465131490 passed ZIP integrity. The source from run #39867730674 / artifact #12464258211 / `adaptive-cycle-01-f180.sstate` was 21,162,546 bytes/v4, SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`. Fresh process logged SaveStateLoaded and restore PASS; five valid authentic 1280×800 screenshots all show the wheel; exit0; new output externally validated.
