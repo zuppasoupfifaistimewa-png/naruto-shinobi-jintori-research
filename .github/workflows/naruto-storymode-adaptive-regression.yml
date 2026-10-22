@@ -30,7 +30,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: naruto-storymode-adaptive-player-private
-          run-id: 39687675432
+          run-id: 39758737690
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
           path: ${{ runner.temp }}/private-evidence
@@ -51,10 +51,14 @@ jobs:
           expected = {
               "C01-F20.png": ("map", "DOWN"),
               "C01-F60.png": ("map", "DOWN"),
-              # Gold-bordered dialogue panel appears even before white glyphs are readable.
               "C01-F100.png": ("dialogue", "START"),
-              "C01-F180.png": ("battle_untrained", "WAIT"),
-              "C02-F20.png": ("battle_untrained", "WAIT"),
+              "C01-F110.png": ("dialogue", "START"),
+              "C01-F180.png": ("map_after_move", "WAIT"),
+              "C02-F20.png": ("map_after_move", "WAIT"),
+              "C02-F60.png": ("map_after_move", "WAIT"),
+              "C02-F100.png": ("map_after_move", "WAIT"),
+              "C02-F110.png": ("map_after_move", "WAIT"),
+              "C02-F180.png": ("map_after_move", "WAIT"),
           }
           for filename, want in expected.items():
               path = root / filename
@@ -72,5 +76,5 @@ jobs:
               }, sort_keys=True))
               if observed != want:
                   raise SystemExit(f"classification mismatch for {filename}: got={observed}, expected={want}")
-          print("AUTHENTIC_X11_REGRESSION=PASS checked=5")
+          print("AUTHENTIC_X11_REGRESSION=PASS checked=10")
           PY
