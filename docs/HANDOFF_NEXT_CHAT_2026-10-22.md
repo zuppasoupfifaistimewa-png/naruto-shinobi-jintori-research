@@ -1,3 +1,14 @@
+## ACTIVE RUN — revision38 restore second-DOWN viewport checkpoint
+
+Run [#39783158903](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39783158903) active, started 20:00:55 WIB, hard timeout about 20:20:55 WIB. Marker verified:
+MODE=ADAPTIVE; SOURCE_RUN=39782011370; SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private; SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate; SOURCE_SHA256=4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177; RESTORE_TEST=1; CONTINUATION_TEST=0; AB_TEST=0; LOOP_CYCLES=1; REVISION=38. Do not start any parallel player.
+
+Upon completion, audit source validation, explicit SaveStateLoaded event, restore PASS, five genuine 1280×800 frames, F20 visual showing the second-DOWN board viewport state, exit0 and new output external size/v4-header/SHA. Only then promote the exact input source hash. New restore output remains unpromoted until a separate fresh-process load succeeds.
+
+Story Mode remains NOT COMPLETE. Directional probes establish view/focus response only, not movement or territory capture. Use START to skip dialogue and keep all game assets out of Git.
+
+---
+
 ## LATEST VERIFIED RESULT — repeat DOWN triggers another board-view shift (revision37)
 
 Run [#39782011370](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39782011370) completed success at 19:54:29 WIB. Private artifact #12426797521 audited. Both fresh processes loaded exact parent SHA `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`; two load events; identical cloned cards; F20 exact pixel parity; DOWN press/release true/false; WAIT control; 10 authentic 1280×800 X11 images; exits0 twice; both output savestates externally validated; comparison report generated.
