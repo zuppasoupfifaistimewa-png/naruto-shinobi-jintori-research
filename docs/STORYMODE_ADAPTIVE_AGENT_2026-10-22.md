@@ -1,3 +1,16 @@
+## ACTIVE CONFIGURATION BLOCKER — map A/B expected-state field missing (22 October 2026, 19:24 WIB)
+
+Only player run #39777917775 is active (started 19:23:17 WIB; timeout about 19:43:17 WIB). The committed marker for revision32 omitted AB_EXPECTED_STATE=map_after_move. Because the source checkpoint is a board/map state SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc but workflow defaults the missing expected state to menu_or_unknown_choice, the Lua precondition should fail closed and choose WAIT. Expect the shell's strict gates to reject this run. Do not launch parallel player or infer any map-direction rule from it.
+
+After completion, audit its actual logs and private artifact. For the corrected run, create revision 33 with all of:
+- SOURCE_RUN=39776518701; SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private; SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate; SOURCE_SHA256=b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc
+- RESTORE_TEST=0; CONTINUATION_TEST=0; AB_TEST=1; AB_ACTION=DOWN; AB_EXPECTED_STATE=map_after_move; LOOP_CYCLES=2; REVISION=33
+Verify the committed marker's literal content before launch. Existing workflow commit 4c074472e885c75ce618e4e0f5aefd6a8833a0c9 has the expected-state support; this missing field is the current blocker.
+
+Story Mode remains NOT COMPLETE. The map-view source is independently restored and trusted; directional movement is still unverified. Keep all gameplay screenshots/ROM/BIOS/savestates/Memory Cards out of Git and use START for dialogue.
+
+---
+
 ## RESTORE GATE PASSED — current map-view source is independently restorable (22 October 2026, 19:21 WIB)
 
 Restore-only run [#39777301626](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777301626) independently restored the revision-30 ACTION/map-view checkpoint from run #39776518701, SHA-256 b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc, size 21,163,227, v4. Five genuine external-X11 captures passed at 1280×800; ExecutionFlow::SaveStateLoaded and ADAPTIVE_RESTORE_TEST=PASS were explicit; all captured frames remain map_after_move; emulator exit 0; new output checkpoint externally validated. Artifact #12423949987 is private. This exact source is promoted as a trusted restorable continuation checkpoint.
