@@ -1,3 +1,16 @@
+## RESTORE VERIFIED — focus on empty-land tile 140 survives fresh process (revision 34, 22 October 2026, 19:42 WIB)
+
+Run [#39780143613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780143613) completed with success at 19:41:31 WIB. Private artifact #12425913759 was downloaded after completion and audited. It restored exact ACTION checkpoint from run #39779256427: 21,162,559 bytes, v4, SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Log explicitly states `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`. Five authentic external X11 screenshots were validated at 1280×800; the actual C01-F20 image visibly preserves `空き地` (Tanah kosong), `レベル` (Level) ---, `結界価値` (Nilai penghalang) 140, `耐久値` (Daya tahan) -/-. Emulator exited 0. Newly emitted state passed external validation: 21,163,018 bytes, v4 header, SHA-256 `75f0752616695e0d6d141e3cc051774f5e84defe6944371fb0bc34840c83ce9f`. The new output remains unpromoted because it has not itself been restored.
+
+**Promoted source:** the exact input hash `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a) is now a trusted continuation source due to this fresh-process restore. It represents the board with empty-land tile value 140 focused.
+
+### Next — revision 35: DOWN from empty land versus WAIT
+Run one paired experiment from the same known-restorable source above. Use `AB_TEST=1`, `AB_ACTION=DOWN`, `AB_EXPECTED_STATE=map_after_move`, `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `LOOP_CYCLES=2`, `REVISION=35`. Required gates stay strict: exact input hash per arm, both F20 states `map_after_move`, pixel-identical F20 images, two load events, cloned Memory Cards identical, DOWN press/release readback true/false, 10 authentic 1280×800 screenshots, both emulator exits 0, both output checkpoint size/v4-header/SHA checks, and comparison report. Goal is only to observe the next focused tile and its information compared to WAIT. Do not press Circle or confirm/select a tile. If the result is visually clear, document focus movement only; do not infer actual character movement, capture, territory ownership or turn progress.
+
+Story Mode remains NOT COMPLETE. Evidence must remain emulator-authentic and private; all ROM/BIOS/savestate/card/screenshot assets stay out of Git. Use START to skip dialogue.
+
+---
+
 ## ACTIVE RUN — revision 34 restore-only for empty-land focus (22 October 2026, 19:40 WIB)
 
 Run [#39780143613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780143613) is the only active player. The committed marker is verified and correct:
