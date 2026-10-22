@@ -1,3 +1,11 @@
+## ACTIVE — revision49 Circle-vs-WAIT from roulette with timeout recovery
+
+Run #39870243073 active, started 06:12:25 WIB, timeout about 06:32:25 WIB. Marker verified: source run #39867730674 / artifact #12464258211 / checkpoint adaptive-cycle-01-f180.sstate / SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; AB_TEST=1; CIRCLE; expected roulette; two cycles.
+
+Previous runs #47/#48 screenshots suggest Circle brings map back by F180 while WAIT remains roulette, but no workflow pass. Run48 had two locally valid checkpoint outputs but shell failed on shutdown exit124. Workflow commit `ef82beb99096e6fd939ce5ebc4f80eedc1158546` now accepts exit 124/134/139 only when session-finished marker and external checkpoint validation pass; timeout 60s. Do not start parallel players. Need all acceptance gates plus comparison report before promoting rule. Story Mode remains NOT COMPLETE.
+
+---
+
 ## REVISION48 PARTIAL — valid checkpoints but shutdown timeout blocked workflow report
 
 Run #39869536734 failed because cycle2 printed `ADAPTIVE_SESSION_FINISHED`, then `corrupted size vs. prev_size`; `SHUTDOWN_SETTLE_COMPLETE` never appeared and inner timeout ended code124. However private artifact #12466086061 passes ZIP integrity, all 10 screenshots valid, and both savestate outputs externally checked:
