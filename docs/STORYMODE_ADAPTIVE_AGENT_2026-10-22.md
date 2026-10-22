@@ -1,3 +1,13 @@
+## VERIFIED MAP INPUT — UP changes focus from empty land140 to Naruto tile60 (revision40)
+
+Run #39786019434 passed all matched UP-vs-WAIT gates from source SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Artifact #12428777970: 2 fresh processes, 2 load events, identical F20 frames, map_after_move in both, same Memory Card clones, UP press/release true/false, WAIT control, ten authentic 1280×800 X11 frames, exit0 in both, output savestate size/v4/SHA validations, comparison report.
+
+**VERIFIED, narrow:** UP from focused `空き地` (Tanah kosong), value140, changes board focus/panel to Naruto cell, showing `レベル` (Level) 1, `結界価値` (Nilai penghalang)60 and `耐久値` (Daya tahan)2/2; WAIT retains empty-land140 panel. No actual Naruto movement or capture/ownership is inferred. Paired difference F60 719585 px/MAD26.80691; F100 719273/26.76006; F110 719213/26.75687; F180 719644/26.93719.
+
+ACTION candidate output from run #39786019434 / artifact #12428777970: `adaptive-cycle-01-f180.sstate`, 21,163,100 bytes, v4, SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`. Not promoted before fresh-process restore. Next revision41 restore-only from this source; require load event, five authentic screenshots retaining Naruto-cell panel, exit0 and external output size/header/SHA validation. The output emitted by restore run remains unpromoted until its own fresh restore. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE QUEUE — revision40 tests UP vs WAIT; fixed runtime action guard
 
 Run [#39786019434](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786019434) is queued. Marker revision40 uses source run #39779256427 / artifact naruto-storymode-adaptive-player-private / adaptive-cycle-01-f180.sstate / SHA-256 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a; AB_TEST=1; AB_ACTION=UP; AB_EXPECTED_STATE=map_after_move; two cycles. Do not launch another player.
