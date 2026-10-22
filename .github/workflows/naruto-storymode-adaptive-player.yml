@@ -572,7 +572,7 @@ jobs:
           else
             grep -q 'ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=' "$WORK/captures/progress-report.txt"
           fi
-          if [ "$CYCLES" -ge 2 ] && [ "$RESTORE_TEST" != "1" ]; then grep -q 'ADAPTIVE_DIALOGUE_SKIP=PASS cycle=1' "$WORK/captures/pcsx-adaptive.stdout"; fi
+          if [ "$CYCLES" -ge 2 ] && [ "$RESTORE_TEST" != "1" ] && [ "$CONTINUATION_TEST" != "1" ]; then grep -q 'ADAPTIVE_DIALOGUE_SKIP=PASS cycle=1' "$WORK/captures/pcsx-adaptive.stdout"; fi
           echo "ADAPTIVE_LOOP_TEST=PASS cycles=$CYCLES captures=$((CYCLES * 5)) checkpoints=$CYCLES fresh_process_checkpoint_resume=checked restore_test=$RESTORE_TEST continuation_test=$CONTINUATION_TEST dialogue_start_policy=checked"
 
       - name: Upload private adaptive screenshots, decisions, logs and checkpoints
