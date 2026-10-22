@@ -1,3 +1,13 @@
+## DIAGNOSTIC UPDATE — use single deferred quit after paused drain loops stalled (22 October 2026, 18:39 WIB)
+
+Run #39771377339 failed before the control branch. It did capture five authentic external-X11 frames and its output state was full-size (21,162,276 bytes), had PCSX-Redux SaveState v4 header, and SHA-256 `a2d055634da951b8c9703ac1d30ac0981d4508404527604ddf4e803fe08935b5` in private artifact #12423430123. But the 12 chained nextTick loop did not advance after pausing, leading to watchdog rc=124. The file is not promoted as a resume source because clean emulator completion and the paired test did not happen.
+- The preceding 12-VSync drain (#39770465538) had the same watchdog timeout. Both artifacts' savestates were full-sized/headered on inspection, but neither drain implementation proved clean completion.
+- Workflow commit `df6e3d5afab0a9efeac89aa8bcb0be2e273ef631` returns to single `pauseEmulator()` then `PCSX.nextTick(function() PCSX.quit(0) end)`, with only shell-side external validation post-exit. Accept native exit 139 only if checkpoint passes validation and the session-finished sentinel is present.
+- The visual sequence suggests DOWN from `情報` (Informasi) may highlight `マップを見る` (Lihat peta), but without the control arm this is HYPOTHESIS, not a verified game rule.
+
+Next run should be a one-cycle `RESTORE_TEST=1` smoke using pinned known-restorable source SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`. Require the load event, five post-load external-X11 images, process completion, and external checkpoint validation before resuming paired gameplay.
+
+---
 ## DIAGNOSTIC UPDATE — VSync drain did not advance after checkpoint; retest with host nextTick chain (22 October 2026, 18:31 WIB)
 
 Run [#39770465538](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39770465538) stopped at the ACTION branch. Its 12-VSync drain did not receive further frame events after save and the emulator hit the 120-second timeout (exit 124). Private artifact #12422367156 contains 5 valid genuine X11 frames and a file measured at 21,162,494 bytes with the expected v4 header and SHA-256 `0c33a47cb9e6f2dfb09c568410ca125acbae6f46f84692b8589a5c903442f564`. The images suggest DOWN selected `マップを見る` (Lihat peta) from `情報` (Informasi), but the NONE branch did not run and allowed shutdown plus output validation did not finish. Record this only as HYPOTHESIS, not a verified rule.
