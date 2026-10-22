@@ -1,3 +1,11 @@
+## CORRECTION — active revision32 may execute DOWN; only later validator is stale (22 October 2026, 19:25 WIB)
+
+At run #39777917775's checkout SHA b77f74af5b258dfcd7d8bfbeeeca0c685c5fc7b7, Lua precondition accepts map_after_move and classifier WAIT, so the ACTION arm may send DOWN. The later shell/Python state gate still insists menu_or_unknown_choice, however, making workflow failure likely after evidence capture. This corrects the prior note that asserted the run would not send DOWN. The actual result must be decided from run logs and its private artifact, not assumed from configuration.
+
+Only this run is active. Do not trigger another player. After completion, audit exact action input/readback, two restore events, F20 parity, ten authentic X11 captures, both exits and state validation. If the late gate fails, store the failure and retain the directional effect as HYPOTHESIS only. For the corrected next probe, require a new marker with AB_EXPECTED_STATE=map_after_move using workflow commit 4c074472e885c75ce618e4e0f5aefd6a8833a0c9.
+
+---
+
 ## ACTIVE CONFIGURATION BLOCKER — map A/B expected-state field missing (22 October 2026, 19:24 WIB)
 
 Only player run #39777917775 is active (started 19:23:17 WIB; timeout about 19:43:17 WIB). The committed marker for revision32 omitted AB_EXPECTED_STATE=map_after_move. Because the source checkpoint is a board/map state SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc but workflow defaults the missing expected state to menu_or_unknown_choice, the Lua precondition should fail closed and choose WAIT. Expect the shell's strict gates to reject this run. Do not launch parallel player or infer any map-direction rule from it.
