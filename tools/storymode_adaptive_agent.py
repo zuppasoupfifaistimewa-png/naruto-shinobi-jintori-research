@@ -94,10 +94,13 @@ def observe(path: str | Path) -> dict[str, Any]:
         state,conf,reason="dialogue",.91,"calibrated_bottom_dialog_box_signature"
     elif menu["white"] >= .06 and menu["orange"] >= .025:
         state,conf,reason="menu_or_unknown_choice",.78,"right_side_menu_requires_context"
+    elif center["green"] >= .42 and wheel["red"] < .10 and top_hud["red"] >= .05 and top_hud["blue"] >= .05 and top_hud["white"] >= .035:
+        # Authentic frames show the board, route/tile objects and both HUDs after a move.
+        # This is a board-transition signature, not sufficient evidence of a battle.
+        state,conf,reason="map_after_move",.90,"green_board_with_dual_HUD_transition_signature"
     elif top_hud["red"] >= .05 and top_hud["blue"] >= .05 and top_hud["white"] >= .035:
-        # Encounter HUD recognized, but attack/defense policy is not calibrated.
-        # Fail closed to WAIT rather than issuing a route direction in battle.
-        state,conf,reason="battle_untrained",.93,"calibrated_dual_character_status_hud_signature"
+        # A dual HUD alone is not enough to infer combat mechanics.
+        state,conf,reason="battle_untrained",.80,"dual_character_HUD_without_calibrated_board_signature"
     elif center["green"] >= .42 and wheel["red"] < .10:
         state,conf,reason="map",.88,"calibrated_green_map_and_no_wheel_signature"
     else:
