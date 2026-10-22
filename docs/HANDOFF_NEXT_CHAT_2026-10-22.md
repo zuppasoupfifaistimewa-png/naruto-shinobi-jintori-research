@@ -1,3 +1,30 @@
+## VERIFIED UPDATE — fresh-session adaptive experiment and classifier correction (22 October 2026, 17:05 WIB)
+
+**Story Mode is NOT complete.** There is no authenticated in-game ending/result screenshot. All current work is bounded automation engineering and rule observation, not a completed full Story Mode run.
+
+### Latest evidence
+- Adaptive classifier regression [#39759649670](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39759649670) succeeded: 8 synthetic tests and 10 authentic private external-X11 frames passed their expected classifications.
+- The regression proved the old battle_untrained signature was a false positive on this board state. The screenshot shows a green board, route/tile symbols and two character HUDs. The agent now labels this tested signature map_after_move and chooses WAIT; a dual HUD alone is not enough to infer combat. This calibration applies only to the 10 verified frames, not every battle or result screen.
+- Player run [#39758737690](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39758737690) produced 10/10 valid external-X11 screenshots and two checkpoint files; its failure was a watchdog race because the watcher checked the checkpoint count before the second checkpoint and fresh-process completion marker appeared. The private artifact is #12416489109, digest sha256:89feb663fd76b514f574a195302551d72928e08256d330ff39a4def4a66fcfc2.
+  - Cycle 1: adaptive-cycle-01-f180.sstate, 21,162,838 bytes, SHA-256 81487394b180a47c59165b49bae21f4d278b600d9fbf83c14086a9629da1c2b4.
+  - Cycle 2: adaptive-cycle-02-f180.sstate, 21,162,485 bytes, SHA-256 42c4ad60397ade407508c4393fac21c21db6f12c88c5efc77deb05a2daa827f5.
+  - Cycle 2's session log showed a successful save-state load event, with the cycle-1 hash as its resume source. The workflow conclusion is nevertheless failure; do not represent it as a run-level success.
+- In this single observed sequence, DOWN input was read back press/release, the route counter changed 4 to 3, and a visible dialogue appeared. The Japanese phrase ここに結界をはります (Aku akan memasang penghalang di sini) was visible at F100/F110; START was sent as the dialogue action. At F180, a red barrier/seal symbol was visible, with Mizuki's displayed Chakra 1380 versus 1500 at F100/F110, while Naruto showed 1380. This is a **single-run hypothesis only** until a matched no-input branch from the same parent confirms causality; do not assert it as a universal NPC rule or cost.
+- Current bounded retry [#39759822818](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39759822818) is testing the next version. The watcher was changed to wait until all 10 screenshots, two structurally validated checkpoints, and ADAPTIVE_SEQUENTIAL_FRESH_PROCESS_RESUME=PASS cycles=2 exist. At the last check, the player step was still marked in progress and no artifact had been published for that run. Check its final job logs and artifact before deciding whether it passed; do not launch a duplicate while it remains active.
+- Recent relevant commits: classifier 358f6b69384c6933754677a2bc9ecde83c4c1100; synthetic test update b25e5270028ba40ccd3a0742418c88697545e30f; authentic 10-frame regression 4116fd8922022a1f32cb090fcf802c3095ee6daf; player watcher synchronization c72fa9955392fe3b27faab319be8acdb80449b47; this handoff/status must be kept synchronized after the current run resolves.
+
+### Next actions, in order
+1. Inspect run #39759822818 to conclusion and confirm checkpoint count, both hashes, load events for both fresh sessions, external X11 validations and exit code. Do not expand past two cycles unless all pass.
+2. After a clean two-session pass, use the newest validated board-transition checkpoint as an immutable parent; run a matched one-action-versus-NONE experiment on separate fresh emulator processes and cloned disposable Memory Cards. Capture external X11 before/after; compare route counter, token position, HUD Chakra, barrier objects and next screen.
+3. If the counter advances into dialogue, press START only. If a barrier-confirmation prompt is visible, Circle is permitted only when the YES choice is visibly highlighted. Keep unknown states at WAIT.
+4. Do not infer attack, defense, battle outcome, or universal Chakra costs from the current board HUD. Record rules as VERIFIED only after repeatable controlled evidence; single sequence remains HYPOTHESIS.
+5. Only declare Story Mode complete after authentic original in-game ending/results evidence.
+
+### Fixed boundaries
+Only zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research may be accessed or modified. Never use other repos. ROM, BIOS, Memory Card, savestates and gameplay screenshots remain private runtime/Actions artifacts and never enter Git. Use authentic external X11 screenshots, never web images or the PCSX internal screenshot API for gameplay proof. Translate Japanese phrases immediately in Indonesian parentheses. Use START to skip dialogue; never Circle for dialogue skipping.
+
+---
+
 # Handoff — Naruto Story Mode autonomous continuation (22 October 2026)
 
 ## Objective
