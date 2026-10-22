@@ -51,7 +51,8 @@ jobs:
           expected = {
               "C01-F20.png": ("map", "DOWN"),
               "C01-F60.png": ("map", "DOWN"),
-              "C01-F100.png": ("battle_untrained", "WAIT"),
+              # Gold-bordered dialogue panel appears even before white glyphs are readable.
+              "C01-F100.png": ("dialogue", "START"),
               "C01-F180.png": ("battle_untrained", "WAIT"),
               "C02-F20.png": ("battle_untrained", "WAIT"),
           }
