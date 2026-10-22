@@ -65,6 +65,8 @@ def observe(path: str | Path) -> dict[str, Any]:
     choice_bottom=_ratios(arr,(920,625,1130,690))
     center_number=_ratios(arr,(550,375,730,480))
     center=_ratios(arr,(400,180,900,680))
+    # Calibrated against authentic encounter frames from adaptive run 39687675432.
+    top_hud=_ratios(arr,(380,30,920,225))
     menu=_ratios(arr,(1000,220,1275,560))
     features={
         "wheel_red":round(wheel["red"],4),"wheel_gold":round(wheel["gold"],4),
@@ -73,6 +75,8 @@ def observe(path: str | Path) -> dict[str, Any]:
         "choice_top_red":round(choice_top["red"],4),"choice_bottom_red":round(choice_bottom["red"],4),
         "center_number_blue":round(center_number["blue"],4),"center_green":round(center["green"],4),
         "menu_white":round(menu["white"],4),"menu_orange":round(menu["orange"],4),
+        "top_hud_red":round(top_hud["red"],4),"top_hud_blue":round(top_hud["blue"],4),
+        "top_hud_white":round(top_hud["white"],4),
     }
 
     # Priority matters: the wheel can cover a map and dialogue may coexist with a
@@ -90,6 +94,10 @@ def observe(path: str | Path) -> dict[str, Any]:
         state,conf,reason="dialogue",.91,"calibrated_bottom_dialog_box_signature"
     elif menu["white"] >= .06 and menu["orange"] >= .025:
         state,conf,reason="menu_or_unknown_choice",.78,"right_side_menu_requires_context"
+    elif top_hud["red"] >= .05 and top_hud["blue"] >= .05 and top_hud["white"] >= .035:
+        # Encounter HUD recognized, but attack/defense policy is not calibrated.
+        # Fail closed to WAIT rather than issuing a route direction in battle.
+        state,conf,reason="battle_untrained",.93,"calibrated_dual_character_status_hud_signature"
     elif center["green"] >= .42 and wheel["red"] < .10:
         state,conf,reason="map",.88,"calibrated_green_map_and_no_wheel_signature"
     else:
