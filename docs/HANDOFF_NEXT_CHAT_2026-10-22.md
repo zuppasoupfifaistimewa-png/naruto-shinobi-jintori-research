@@ -1,3 +1,11 @@
+## ULTIMATE OBJECTIVE — unattended adaptive Story Mode finisher (23 October 2026)
+
+The project goal is not to keep asking ChatGPT for individual inputs or to leave this conversation open. Build a durable player/orchestrator in this repository that can continue across bounded GitHub Actions sessions from independently verified private checkpoints, adapt to observed screens, safely handle dialogs/menus/cards/board/battle, record progress, recover from job/emulator termination, and keep chaining sessions until authentic Story Mode ending evidence is observed. Closing the chat must not stop an already-running Actions job; after the current safety fixes, implement automatic bounded continuation in Actions rather than depending on a human or an active chat to start each segment.
+
+Current maturity: the policy/checkpoint/capture cycle is partly working and revision50 has made partial progress, but the autonomous finisher is NOT done. Do not confuse single-run success with full Story Mode completion. The next immediate blocker is the restore-only no-input safety invariant below; only after that is tested should gameplay resume. Then validate the card overlay on the real screenshot, restore the revision50 output, identify card-screen semantics conservatively, and implement/verify a persistent state machine plus automatic sequential continuation. Use actual emulator images, checkpoint SHA manifests and ending detection. Keep ROM/BIOS/savestates/Memory Cards/gameplay screenshots private and out of Git. Story Mode dialogue is skipped using START only. The only permitted repository is this research repo.
+
+---
+
 ## CHAT-TRANSFER — adaptive player made partial progress, Story Mode NOT complete (23 Oct 2026)
 
 No active player run. Direct answer: the adaptive player is not yet capable of being declared a successful Story Mode finisher. It has automated several real inputs/transitions but has not proven full Story Mode completion or an in-game ending.
