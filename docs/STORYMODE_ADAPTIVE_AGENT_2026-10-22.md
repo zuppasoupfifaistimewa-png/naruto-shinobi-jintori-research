@@ -1,3 +1,13 @@
+## ACTIVE — revision35 probes DOWN from empty-land focus (22 October 2026, 19:44 WIB)
+
+Only active player is run #39780755350 (started 19:43:50 WIB; timeout about 20:03:50 WIB). The exact committed marker uses source run #39779256427 / artifact #12425858092 / adaptive-cycle-01-f180.sstate / SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`; AB_TEST=1, AB_ACTION=DOWN, AB_EXPECTED_STATE=map_after_move, two cycles. Source was restored in a new process in run34, preserving the empty-land focus; this source is trusted.
+
+After run35 ends, require all paired gates: exact input SHA both arms, two restore events, F20 image parity and map_after_move state, identical disposable Memory Cards, DOWN true/false readback, ten actual 1280×800 X11 frames, exit 0 both arms, both checkpoint validations, comparison report; inspect actual screenshots. This tests focus only. Do not confirm/select a tile or infer capture/territory change.
+
+Story Mode not complete. Use START for dialogue; keep assets private/out of Git.
+
+---
+
 ## RESTORE PASSED — empty-land focus checkpoint is trusted (revision34, 22 October 2026, 19:42 WIB)
 
 Run [#39780143613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780143613) passed independent restoration of the ACTION output produced by revision33. Source run #39779256427 / artifact #12425858092 / `adaptive-cycle-01-f180.sstate`, SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`, size 21,162,559, v4. The private restore artifact #12425913759 verifies explicit `ExecutionFlow::SaveStateLoaded`, `ADAPTIVE_RESTORE_TEST=PASS`, five valid 1280×800 external-X11 screenshots, fresh process exit0, external post-exit source output size/header/SHA validation. C01-F20 actual screenshot is board state with `空き地` (Tanah kosong), barrier value140 selected. This exact input source is now promoted/restorable.
