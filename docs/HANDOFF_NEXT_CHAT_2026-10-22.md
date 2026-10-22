@@ -1,3 +1,11 @@
+## LATEST ACTIVE STEP — restore menu-DOWN output checkpoint (22 October 2026, 18:08 WIB)
+
+Restore-only run [#39768371975](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768371975) is queued with marker revision 21. Source is the ACTION-branch output from successful A/B run #39767790829, artifact #12420204586, file `adaptive-cycle-01-f180.sstate`, 21,163,486 bytes, SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`. It uses `RESTORE_TEST=1` and one cycle.
+
+Audit explicit `ExecutionFlow::SaveStateLoaded`, five authentic X11 post-load images, process exit, and the new checkpoint's external post-exit size/header/SHA checks. The successful A/B result established that DOWN moved the highlighted menu row from `ルーレット` (Roulette) to `忍術` (Ninjutsu), versus NONE remaining on Roulette; do not continue gameplay from the action checkpoint unless this restore test passes. Story Mode is still NOT COMPLETE.
+
+---
+
 ## NEWEST HANDOFF UPDATE — menu DOWN effect VERIFIED; validate action checkpoint restore next (22 October 2026, 18:06 WIB)
 
 Story Mode is still **NOT COMPLETE**; there is no authentic ending/results image.
