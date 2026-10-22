@@ -1,3 +1,15 @@
+## ACTIVE — revision41 restore-only for Naruto-cell focus checkpoint (22 October 2026, 20:27 WIB)
+
+Run [#39786899480](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786899480) is the only active player. It loads the revision40 ACTION output from run #39786019434, private artifact #12428777970, checkpoint adaptive-cycle-01-f180.sstate, SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`, size 21,163,100 bytes, v4. Marker: RESTORE_TEST=1, CONTINUATION_TEST=0, AB_TEST=0, LOOP_CYCLES=1, REVISION=41.
+
+Started 20:26:48 WIB; hard timeout around 20:46:48 WIB. At last check the run was in progress but detailed job steps had not populated; no artifact yet. Do not launch another player.
+
+Acceptance: exact source hash validation, explicit `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`, five authentic external-X11 captures at 1280×800, F20 visibly retains Naruto panel `レベル` (Level) 1 / `結界価値` (Nilai penghalang) 60 / `耐久値` (Daya tahan) 2/2, accepted exit0, and post-exit external checkpoint size/v4-header/SHA validation. Only then promote the input SHA 73947…; the new output from this restore run remains unpromoted until it too is restored.
+
+Story Mode remains NOT COMPLETE.
+
+---
+
 ## VERIFIED RESULT — UP selects Naruto's cell from empty-land140 focus (revision40, 22 Oct 2026)
 
 Run [#39786019434](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786019434) success. Private artifact #12428777970 audited. Matched A/B gates all passed: both fresh processes loaded exact source SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`; SaveStateLoaded event in each; disposable Memory Card copies identical; F20 frames identical across 1,024,000 pixels; both classifier state `map_after_move`; UP input readback true/false; WAIT control; ten authentic X11 screenshots 1280×800; exit0 in both; both output states externally validated; comparison report generated.
