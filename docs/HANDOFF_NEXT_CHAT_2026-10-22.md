@@ -1,3 +1,13 @@
+## ACTIVE BLOCKER — revision 32 did not include its expected map state (22 October 2026, 19:24 WIB)
+
+Run [#39777917775](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777917775) is the only active player; last check had X11 workspace installation in progress, started 19:23:17 WIB, timeout at about 19:43:17 WIB. Marker content at the current committed blob has no AB_EXPECTED_STATE field, so workflow defaults it to menu_or_unknown_choice while source SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc is map_after_move. The input precondition should fail closed, selecting WAIT rather than DOWN, then likely fail final assertions. This is a configuration bug, not a gameplay finding. Do not run another player until #39777917775 completes and is audited.
+
+When run finishes, inspect log/artifact. If precondition failed, set a fresh marker revision 33 with exact source run #39776518701/artifact naruto-storymode-adaptive-player-private/checkpoint adaptive-cycle-01-f180.sstate/SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc and add AB_EXPECTED_STATE=map_after_move, AB_TEST=1, AB_ACTION=DOWN, LOOP_CYCLES=2, RESTORE_TEST=0, CONTINUATION_TEST=0. Re-read the committed marker to verify the field exists before treating the run as ready. Workflow commit 4c074472e885c75ce618e4e0f5aefd6a8833a0c9 added support for the expected state but this marker omission prevents using that support.
+
+Previously verified: revision 30 Triangle opens the board view; revision 31 restores that map-view checkpoint in a fresh process. Board directional behavior remains unknown until corrected A/B succeeds. Story Mode remains NOT COMPLETE.
+
+---
+
 ## LATEST RESTORE PASS — map view checkpoint is usable (22 October 2026, 19:21 WIB)
 
 Run [#39777301626](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777301626) passed a fresh-process restore of the Triangle/ACTION map-view candidate from #39776518701. Exact source: 21,163,227 bytes, PCSX-Redux SaveState v4, SHA-256 b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc. Evidence in private artifact #12423949987: explicit ExecutionFlow::SaveStateLoaded, ADAPTIVE_RESTORE_TEST=PASS, five validated authentic 1280×800 X11 captures, F20 through F180 remain in map_after_move, emulator exit 0, and output size/header/SHA validation. The exact source hash is now promoted as an independently restored continuation checkpoint.
