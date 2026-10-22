@@ -161,7 +161,8 @@ jobs:
           LUA
           )
           cat > "$WORK/storymode-adaptive.lua" <<'LUA'
-          local maxCycles=2 -- multi-cycle regression after one-cycle smoke passed
+          local cycle=tonumber(os.getenv("ADAPTIVE_CYCLE") or "1")
+          if cycle<1 or cycle>2 then error("ADAPTIVE_CYCLE must be 1 or 2") end
           local frame=0; local loadStarted=false; local loadReturned=false; local loaded=false
           local activeButton=nil
           local pad=PCSX.SIO0.slots[1].pads[1]
@@ -248,9 +249,7 @@ jobs:
               end
               if not loaded or not loadReturned then return end
               frame=frame+1
-              local cycle=math.floor((frame-1)/180)+1
               local phase=((frame-1)%180)+1
-              if cycle>maxCycles then PCSX.quit(0); return end
               if phase==20 then
                   local state,action,result=captureExternal(string.format("C%02d-F20",cycle),cycle)
                   if not state then return end
@@ -289,24 +288,68 @@ jobs:
                   if state=="roulette" and (plannedAction[cycle] or "WAIT")=="WAIT" then count=reported end
                   local ht=string.format('{"last_state":"%s","last_action":"%s","roulette_wait_count":%d}\n',state,plannedAction[cycle] or "WAIT",count)
                   local hf=assert(io.open("captures/history.json","wb")); hf:write(ht); hf:close()
-                  -- Keep checkpoint creation at a paused VSync boundary and
-                  -- explicitly resume after non-final checkpoints.
-                  PCSX.pauseEmulator()
+                  -- Each bounded session ends at its verified checkpoint.
+                  -- The orchestrator launches a fresh emulator process for
+                  -- the next cycle and restores this saved state.
                   checkpoint(cycle)
-                  if cycle==maxCycles then log("ADAPTIVE_LOOP_FINISHED cycles="..maxCycles); PCSX.quit(0); return end
-                  PCSX.resumeEmulator()
+                  log("ADAPTIVE_SESSION_FINISHED cycle="..cycle)
+                  PCSX.quit(0)
+                  return
               end
           end)
-          log("ADAPTIVE_SCRIPT_READY cycles="..maxCycles.." source=verified-board-f180 captures=EXTERNAL_X11_ONLY")
+          log("ADAPTIVE_SCRIPT_READY cycle="..cycle.." source=verified-checkpoint captures=EXTERNAL_X11_ONLY")
           LUA
           mkdir -p "$WORK/tools"
           cp "$GITHUB_WORKSPACE/tools/storymode_adaptive_agent.py" "$WORK/tools/storymode_adaptive_agent.py"
           python3 -m unittest discover -s "$GITHUB_WORKSPACE/tests" -v
           cp "$WORK/storymode-adaptive.lua" "$WORK/captures/storymode-adaptive.lua"
-          PROBE_MODE=ADAPTIVE timeout --signal=TERM --kill-after=5s 240s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/naruto-storymode-template.mcd" \
-            -exec "$PAD_SETUP" -dofile "$WORK/storymode-adaptive.lua" -softgpu -dynarec -stdout -lua_stdout \
-            -logfile "$WORK/captures/pcsx-adaptive.log" -run > "$WORK/captures/pcsx-adaptive.stdout" 2>&1 &
+          cat > "$WORK/run-bounded-cycles.sh" <<'SH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          run_cycle() {
+            local cycle="$1"
+            local logfile="$WORK/captures/pcsx-adaptive-cycle-${cycle}.log"
+            local stdout="$WORK/captures/pcsx-adaptive-cycle-${cycle}.stdout"
+            echo "ADAPTIVE_SESSION_START cycle=${cycle} source=$(sha256sum "$WORK/resume/storymode-adaptive-source-f180.sstate" | cut -d ' ' -f1)" >> "$WORK/captures/pcsx-adaptive.stdout"
+            set +e
+            ADAPTIVE_CYCLE="$cycle" PROBE_MODE=ADAPTIVE timeout --signal=TERM --kill-after=5s 120s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/naruto-storymode-template.mcd" \
+              -exec "$PAD_SETUP" -dofile "$WORK/storymode-adaptive.lua" -softgpu -dynarec -stdout -lua_stdout \
+              -logfile "$logfile" -run > "$stdout" 2>&1
+            local rc=$?
+            set -e
+            cat "$stdout" >> "$WORK/captures/pcsx-adaptive.stdout"
+            echo "ADAPTIVE_SESSION_EXIT cycle=${cycle} code=$rc" >> "$WORK/captures/pcsx-adaptive.stdout"
+            test "$rc" -eq 0
+            grep -q "ADAPTIVE_SESSION_FINISHED cycle=${cycle}" "$stdout"
+            if [ "$cycle" -eq 1 ]; then
+              local cp="$WORK/captures/adaptive-cycle-01-f180.sstate"
+              test -s "$cp"
+              test "$(stat -c %s "$cp")" -gt 21000000
+              python3 - "$cp" <<'PY'
+          import sys
+          from pathlib import Path
+          p=Path(sys.argv[1])
+          with p.open("rb") as f: head=f.read(96)
+          if b"PCSX-Redux SaveState v4" not in head or p.stat().st_size<=21000000:
+              raise SystemExit("cycle-1 checkpoint failed structural preflight")
+          print("ADAPTIVE_CYCLE1_CHECKPOINT_PREFLIGHT=PASS")
+          PY
+              local sha
+              sha="$(sha256sum "$cp" | cut -d ' ' -f1)"
+              echo "ADAPTIVE_CYCLE2_RESUME_SOURCE=$sha" >> "$WORK/captures/pcsx-adaptive.stdout"
+              rm -f "$WORK/resume/storymode-adaptive-source-f180.sstate"
+              cp "$cp" "$WORK/resume/storymode-adaptive-source-f180.sstate"
+              chmod 400 "$WORK/resume/storymode-adaptive-source-f180.sstate"
+            fi
+          }
+          : > "$WORK/captures/pcsx-adaptive.stdout"
+          run_cycle 1
+          run_cycle 2
+          echo "ADAPTIVE_SEQUENTIAL_FRESH_PROCESS_RESUME=PASS cycles=2" >> "$WORK/captures/pcsx-adaptive.stdout"
+          SH
+          chmod +x "$WORK/run-bounded-cycles.sh"
+          bash "$WORK/run-bounded-cycles.sh" > "$WORK/captures/pcsx-adaptive-orchestrator.stdout" 2>&1 &
           pid=$!
           python3 - "$pid" "$WORK/captures/pcsx-adaptive.stdout" "$WORK/captures" "$WORK" <<'PY'
           import sys,time,subprocess,hashlib,json
