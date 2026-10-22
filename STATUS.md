@@ -1,3 +1,22 @@
+## ACTIVE RUN — revision50 restore-only for the board-after-Circle checkpoint (23 October 2026, 06:32 WIB)
+
+Run [#39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049) is the only active player. It uses the committed revision50 marker at head `1c30215c9a4b6035b5c24d1bf0befc4819110642`: source run #39870243073 / artifact `naruto-storymode-adaptive-player-private` / checkpoint `adaptive-cycle-01-f180.sstate` / source SHA-256 `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`; `RESTORE_TEST=1`, one cycle, no A/B inputs. Run started at 06:32:21 WIB; hard timeout about 06:52:21 WIB. At last check it was initializing containers; no artifact yet. Do not start another player in parallel.
+
+After completion audit the source validation, explicit `ExecutionFlow::SaveStateLoaded`, restore PASS, five authentic 1280×800 X11 captures, board state visually retained at F20, accepted shutdown path, and external output checkpoint validation (size, v4 header and SHA-256). Promote only the exact input source after independent restore passes. The new checkpoint emitted by run50 remains unpromoted until it is itself restored in another new emulator process.
+
+### Latest rule already VERIFIED — revision49 CIRCLE vs WAIT from roulette
+Run #39870243073 completed success at 06:14:50 WIB; private artifact #12466141660 passed ZIP integrity. Ten authentic 1280×800 X11 captures passed. Both fresh emulator processes restored the same source SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; explicit load events in both; F20 pixels identical; roulette state matched; cloned Memory Cards identical. Circle input readback true/false; WAIT control no input. Both sessions-finished markers existed. Native exits 124/139 were accepted only through the new narrow recovery after external checkpoint validation, then recorded as effective exit 0. Both output checkpoints passed size/v4-header/SHA validation and the comparison report was generated.
+
+Actual screenshots show ACTION on roulette at F60/F100/F110 then back at the board by F180; WAIT still shows roulette at F180. Pixel differences: F60 328,885 (MAD 18.11568); F100 337,474 (19.18342); F110 344,330 (17.23071); F180 842,364 (39.31341). **VERIFIED, context limited:** a Circle press/release from the roulette screen causes a transition to the board by F180, while WAIT leaves the roulette visible through F180. It is not dialogue skipping; use START for all Story Mode dialogue.
+
+Candidate output hashes from private artifact #12466141660:
+- ACTION board-after-Circle: 21,163,504 bytes, v4, SHA-256 `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea` — currently under restore test #39872449049.
+- WAIT control: 21,162,411 bytes, v4, SHA-256 `7780743d6f99e5534cd53095bd1fd68126d409ada21fe73993d2100030e4f029`; not promoted.
+
+Story Mode remains **NOT COMPLETE**. No ending, capture or ownership result was established in this test. Keep ROM, BIOS, savestates, Memory Cards and gameplay screenshots private/out of Git.
+
+---
+
 ## VERIFIED RESULT — revision49 CIRCLE vs WAIT from roulette (23 October 2026, 06:14 WIB)
 
 Run [#39870243073](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39870243073) completed with Actions success at 06:14:50 WIB. Private artifact #12466141660 was downloaded; ZIP passed `unzip -t`. All ten genuine external-X11 screenshots are 1280×800 and passed image validation. Both fresh emulator processes loaded the same parent checkpoint SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`, and both logged `ExecutionFlow::SaveStateLoaded`. F20 screenshots match pixel-for-pixel (1,024,000 pixels), both classify `roulette`, and disposable Memory Cards are hash-identical. ACTION CIRCLE press/release readback was true/false; control WAIT sent no input. Both emulator branches reached their session-finished marker; native shutdown returned 124 and 139 but the new gated recovery accepted them only after post-session checkpoint validation; normalized session exit codes were 0. Both checkpoint outputs passed size, v4 header and SHA-256 checks. The paired comparison report was generated.
