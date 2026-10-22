@@ -1,3 +1,13 @@
+## ACTIVE RUN — revision 33 checks DOWN on map with explicit expected-state validator (22 October 2026, 19:33 WIB)
+
+Run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) is in progress from 19:32:59 WIB; X11 tools/workspace prep is the latest active step. Timeout deadline approximately 19:52:59 WIB. Wait for this single player to finish; do not start parallel runs.
+
+Config: source run #39776518701 / private artifact #12425305517 / `adaptive-cycle-01-f180.sstate` / source SHA-256 `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`; `AB_TEST=1`, `AB_ACTION=DOWN`, `AB_EXPECTED_STATE=map_after_move`, `LOOP_CYCLES=2`, restore/continuation tests disabled, revision 33. This explicit state repairs revision 32's failure, where an older workflow checkout erroneously expected `menu_or_unknown_choice` on F20.
+
+After completion audit every evidence gate and manually inspect the private artifact. Revision32 screenshots tentatively show DOWN focuses the empty land `空き地` (Tanah kosong) / value 140 instead of Naruto's value-60 tile, but its run must remain HYPOTHESIS due final validation failure. Only revision33's clean corrected A/B evidence may promote that rule to VERIFIED. No confirmation input and no destination selection. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision 33 map directional A/B uses explicit expected state (22 October 2026, 19:33 WIB)
 
 Run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) is active, started 19:32:59 WIB; timeout about 19:52:59 WIB. Do not start a parallel player. Its marker explicitly sets AB_EXPECTED_STATE=map_after_move and pins the independently restored source SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc from run #39776518701.
