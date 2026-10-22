@@ -1,3 +1,13 @@
+## VERIFIED INPUT RULE — UP returns board focus to Naruto cell (revision40)
+
+Run #39786019434 passed paired UP versus WAIT from the independently restored source SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Artifact #12428777970 confirms two fresh loads; exact F20 pixel parity; identical cards; UP press/release true/false; WAIT control; ten authentic 1280×800 images; exits0; output state external checks and comparison report.
+
+**VERIFIED, cursor only:** UP from `空き地` (Tanah kosong) value140 changes focus/panel to Naruto's cell with `レベル` (Level)1, `結界価値` (Nilai penghalang)60, `耐久値` (Daya tahan)2/2; WAIT retains empty land140. No actual character movement, capture or ownership change is verified.
+
+ACTION output candidate `adaptive-cycle-01-f180.sstate`, 21,163,100 bytes/v4, SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8` in private artifact #12428777970 remains unpromoted pending a fresh-process restore. Next revision41 restore-only must log SaveStateLoaded, capture five authentic 1280×800 screens retaining Naruto cell60, exit0, and output size/v4-header/SHA checks. Story Mode remains NOT COMPLETE.
+
+---
+
 ## VERIFIED MAP INPUT — UP changes focus from empty land140 to Naruto tile60 (revision40)
 
 Run #39786019434 passed all matched UP-vs-WAIT gates from source SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Artifact #12428777970: 2 fresh processes, 2 load events, identical F20 frames, map_after_move in both, same Memory Card clones, UP press/release true/false, WAIT control, ten authentic 1280×800 X11 frames, exit0 in both, output savestate size/v4/SHA validations, comparison report.
