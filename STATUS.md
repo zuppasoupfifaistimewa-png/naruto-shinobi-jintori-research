@@ -1,3 +1,18 @@
+## RESTORE VERIFIED — Circle-opened roulette wheel is persistent across a new emulator process (revision46, 23 October 2026)
+
+Run [#39868354205](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39868354205) completed with success at 22:56:40 UTC / 05:56:40 WIB. Private artifact #12465131490 passed ZIP integrity. The source checkpoint was from revision45/run #39867730674/artifact #12464258211: `adaptive-cycle-01-f180.sstate`, 21,162,546 bytes, PCSX-Redux SaveState v4 header, SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`.
+
+The new process logged `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five authentic external-X11 captures validated at 1280×800. Direct screenshot review confirms the roulette wheel is visible at F20, F60, F100, F110, and F180. Emulator exit was 0; the new output checkpoint passed external validation: 21,162,423 bytes, v4 header, SHA-256 `6d76dbd23d5d01dc1f145d6837b987ae3232fff383ad23eb5262c375ca4828ea`.
+
+**Promoted input checkpoint:** SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492` is now independently restore-proven and is the trusted roulette-state source. The new output SHA `6d76dbd2…ca4828ea` is **not** promoted until it is independently restored.
+
+### Next controlled action — revision47 CIRCLE vs WAIT from roulette state
+Workflow commit `11b308f162aa1ef2f5b5167cd17b4340718a03de` permits `AB_EXPECTED_STATE=roulette` only with `AB_ACTION=CIRCLE`. Set source run #39867730674 / artifact `naruto-storymode-adaptive-player-private` / file `adaptive-cycle-01-f180.sstate` / source SHA above, `AB_TEST=1`, `AB_ACTION=CIRCLE`, `AB_EXPECTED_STATE=roulette`, `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `LOOP_CYCLES=2`, `REVISION=47`.
+
+Keep all A/B gates: exact same source SHA in both processes, two SaveStateLoaded events, F20 image parity and `roulette` state, identical Memory Card clones, Circle press/release true/false, WAIT control, ten authentic 1280×800 captures, both processes exit0 or gated session-finished checkpoint recovery, both output checkpoints externally validated, comparison report generated. Inspect whether Circle stops the wheel/returns a result or whether it keeps moving; WAIT should provide the spinning baseline. If Circle results in a dialogue, press START only. No Circle for dialogue. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision46 fresh-process restore of Circle-opened roulette state (23 October 2026, 05:55 WIB)
 
 Run [#39868354205](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39868354205) is the only active player. Exact committed marker at head `096a5cdc411e3ce26fd44f9bde8ff4ed909313c7`:
