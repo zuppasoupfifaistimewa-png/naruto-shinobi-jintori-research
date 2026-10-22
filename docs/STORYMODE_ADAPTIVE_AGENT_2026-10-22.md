@@ -1,3 +1,12 @@
+## VERIFIED UPDATE — Information-highlight checkpoint restored (22 October 2026, 18:18 WIB)
+
+- Run [#39769265269](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39769265269) successfully restored the ACTION checkpoint from #39768787669 with exact source SHA-256 `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`.
+- The emulator logged `ExecutionFlow::SaveStateLoaded`, produced five authentic external-X11 captures with F20 visually retaining `情報` (Informasi) selected, and exited 0.
+- New restore-run output checkpoint is 21,162,446 bytes with SHA-256 `6159214a9006127c70f190f0d64b2ed3fb7f9e58ffddd5e4546a0a18820114c6` and passed external size/header/SHA validation after exit. It remains unpromoted until it is itself restored in a fresh process. Continue from the proven-reloadable pinned source `aa399bd...`.
+- Next: matched DOWN-versus-NONE test from Information parent to test if DOWN highlights `マップを見る` (Lihat peta). Circle is forbidden unless a contextual choice visibly highlights YES. Story Mode not complete.
+
+---
+
 ## VERIFIED UPDATE — second DOWN navigation step passed matched test (22 October 2026, 18:14 WIB)
 
 - Run [#39768787669](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768787669) passed with identical F20 parent images (1,024,000/1,024,000 pixels), separate but byte-identical Memory Cards, two explicit `ExecutionFlow::SaveStateLoaded` events, ten authentic external-X11 frames and two clean emulator exits.
