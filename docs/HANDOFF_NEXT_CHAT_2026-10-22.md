@@ -1,3 +1,33 @@
+## VERIFIED RESULT — map DOWN selection and revision 34 restore gate (22 October 2026, 19:37 WIB)
+
+Run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427), revision 33, completed success. Private artifact #12425858092 was audited end-to-end.
+
+Matched gates passed: same source SHA in two fresh processes (`b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`); two `ExecutionFlow::SaveStateLoaded` events; identical cloned Memory Cards (`ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`); F20 pixels identical over 1,024,000 pixels and both states `map_after_move`; DOWN press/readback true and release/readback false; control WAIT; ten authentic 1280×800 external-X11 captures; both emulator exits 0; both output checkpoint states passed post-exit size/v4-header/SHA validation. A/B report generated successfully. Pixel differences: F60 719,192 / MAD 26.80650; F100 719,200 / 26.89202; F110 719,631 / 26.85752; F180 718,997 / 26.84018.
+
+**VERIFIED (scoped):** one DOWN from map state switches the focused tile from Naruto's tile (level 1, barrier value 60, durability 2/2) to the adjacent empty land `空き地` (Tanah kosong) with value 140, level --- and durability -/-. WAIT stays on the original tile. This proves focus/selection changes only—not avatar movement, ownership, capture, or turn rules. Actual screenshots were manually compared; classifier label remains `map_after_move` for both branches.
+
+Do not promote either revision33 output before restore. ACTION candidate: source run #39779256427 / private artifact #12425858092 / `adaptive-cycle-01-f180.sstate` / 21,162,559 bytes / SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`, v4. CONTROL output SHA `3796ff4ba91fef93ddf1078daa1785e043c3d5b5424a03c8cb53a62c6d3858a4`, 21,162,390 bytes, v4. Neither is promoted.
+
+Next, revision 34 restore-only using ACTION candidate:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39779256427
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a
+RESTORE_TEST=1
+CONTINUATION_TEST=0
+AB_TEST=0
+AB_ACTION=DOWN
+LOOP_CYCLES=1
+REVISION=34
+```
+No input is allowed. Require fresh-process load event, five real 1280×800 external-X11 captures, accepted exit, external output validation, and manual visual confirmation that F20 still focuses the empty-land 140 tile. Only then promote the input checkpoint. New output from the restore-only process remains unpromoted until that output itself is restored.
+
+Story Mode is NOT COMPLETE; no authentic ending/result evidence. Do not confirm map destination or use Circle to skip dialogue; use START.
+
+---
+
 ## CURRENT RUN — revision 33 explicit map-state A/B (22 October 2026, 19:33 WIB)
 
 Inspect [run #39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) first. It is `in_progress`, created 19:32:59 WIB, with X11 tool preparation currently active. Job timeout: 20 minutes, approximate deadline 19:52:59 WIB. No player run may be launched in parallel.
