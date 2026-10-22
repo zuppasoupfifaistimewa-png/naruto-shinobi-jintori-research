@@ -1,5 +1,25 @@
 ## VERIFIED UPDATE — matched DOWN-versus-NONE menu test passed (22 October 2026, 18:06 WIB)
 
+Story Mode remains **NOT COMPLETE**; no authentic ending/results screenshot exists.
+
+- Corrected matched experiment [#39767790829](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39767790829) completed successfully. It used immutable parent checkpoint SHA-256 `7679cfbd3576c3202abcc299b907939ab4e4529e3a0aa260e780806b1e21cc92` in two fresh emulator processes.
+- The action and control branches each logged `ExecutionFlow::SaveStateLoaded`, each produced 5/5 valid authentic external-X11 captures, both exited with code 0, and both output states passed post-exit shell size/header/SHA validation.
+- Parent-frame parity passed: the F20 screenshots are pixel-identical (0 mismatches across 1,024,000 pixels), both classify as `menu_or_unknown_choice`, and the Memory Card template/action/control clone SHA-256 is identical: `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`.
+- The ACTION branch sent exactly one DOWN at the scheduled action window; press readback `true` and release readback `false` both passed. The NONE/WAIT control sent no action at that window.
+- Authentic frames in private artifact #12420204586 show the selection highlight moving from `ルーレット` (Roulette) at F20 to `忍術` (Ninjutsu) by F60 in the DOWN branch, while the control remained on Roulette through F180. Cross-branch pixel comparison showed 14,609 differing pixels (mean absolute RGB difference 1.04924) at F60/F100/F110/F180, consistent with the persistent highlighted-row change.
+- **Rule classification: VERIFIED, narrowly scoped:** in this specific Story Mode right-side menu, one DOWN press moves the selected row down from `ルーレット` (Roulette) to `忍術` (Ninjutsu). Do not generalize to all menus/states.
+- Action branch checkpoint: 21,163,486 bytes, SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`. Control branch checkpoint: 21,163,324 bytes, SHA-256 `3da0a41d55e988550ef1a9368652fa909ae06da34c2b4b7bf315f5a820f76aeb`. Both are in private artifact #12420204586 only. Neither is yet a trusted continuation source until one is restored in a fresh emulator process and the load event/post-load frame are verified.
+- Two earlier A/B failures were harness/report-guard defects, not contradictory gameplay results: #39766331759 hit a Python Path-format TypeError; #39767083708 generated the complete comparison but failed on an unrelated dialogue-required guard. Workflow fixes now allow A/B mode to complete.
+
+### Next step
+Run a one-cycle fresh-process restore test from the ACTION branch checkpoint above. Require exact source checksum, explicit `ExecutionFlow::SaveStateLoaded`, five authentic post-load X11 captures, normal/allowed exit, and external post-exit validation of its new checkpoint. Only then use it to explore subsequent menu inputs. Do not use Circle to confirm a non-YES menu item; keep unknown choice state fail-closed.
+
+All private gameplay evidence remains outside Git; Story Mode is not complete without authentic ending/results evidence.
+
+---
+
+## VERIFIED UPDATE — matched DOWN-versus-NONE menu test passed (22 October 2026, 18:06 WIB)
+
 **Story Mode is NOT complete.** No authentic ending/results screenshot exists.
 
 - Run [#39767790829](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39767790829) passed. It used the same immutable parent checkpoint in two separate emulator processes: run #39765193287's cycle-2 checkpoint, 21,163,013 bytes, SHA-256 `7679cfbd3576c3202abcc299b907939ab4e4529e3a0aa260e780806b1e21cc92`.
