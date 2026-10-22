@@ -1,3 +1,30 @@
+## LATEST RESTORE VERIFIED — current source is the focused empty-land cell (22 October 2026, 19:42 WIB)
+
+Restore-only run [#39780143613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780143613) passed. It independently loaded run #39779256427 / private artifact #12425858092 / `adaptive-cycle-01-f180.sstate`, input SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`, 21,162,559 bytes, v4. Artifact #12425913759 log contains `ExecutionFlow::SaveStateLoaded`, `ADAPTIVE_RESTORE_TEST=PASS`, five valid authentic 1280×800 X11 images, emulator exit0, and output state post-exit structural/hash validation. C01-F20 was visually inspected and shows `空き地` (Tanah kosong), barrier value 140, Level ---, durability -/-. The exact input source SHA is now independently restore-proven and promoted.
+
+Restore run's newly generated output is not promoted: `adaptive-cycle-01-f180.sstate`, 21,163,018 bytes, v4, SHA-256 `75f0752616695e0d6d141e3cc051774f5e84defe6944371fb0bc34840c83ce9f`.
+
+Exact next marker revision35:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39779256427
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=DOWN
+AB_EXPECTED_STATE=map_after_move
+LOOP_CYCLES=2
+REVISION=35
+```
+Use workflow with expected-state support (main workflow blob SHA `2f3d82359ebbbfeeb705005287c8af7ee3855df0`). Before running verify the committed marker has every field. No player runs concurrently. Required evidence: exact source hash both arms, 2 load events, map_after_move state and pixel-identical F20s, equal card clones, DOWN press/release readback, 10 external X11 images, both exits0, both output checkpoints validated, and comparison report. Inspect the focused cell after DOWN vs WAIT; do not select/confirm any tile.
+
+Previously VERIFIED: menu DOWN row advances in tested states; TRIANGLE from `マップを見る` (Lihat peta) opens board; DOWN on Naruto's focused tile moves focus to adjacent empty land value 140. This does not prove movement/capture/ownership. Story Mode remains NOT COMPLETE. Keep all gameplay artifacts private and out of Git; use START for dialogue.
+
+---
+
 ## ACTIVE RUN — restore-test the verified map-direction result (revision34)
 
 Run [#39780143613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780143613) has been triggered from the correct committed marker, revision34. It restores the ACTION output from revision33, run #39779256427, artifact naruto-storymode-adaptive-player-private, checkpoint adaptive-cycle-01-f180.sstate, SHA-256 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a. Settings are RESTORE_TEST=1, CONTINUATION_TEST=0, AB_TEST=0, LOOP_CYCLES=1.
