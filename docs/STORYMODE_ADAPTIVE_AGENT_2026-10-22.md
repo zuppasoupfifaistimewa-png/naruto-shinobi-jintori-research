@@ -1,3 +1,11 @@
+## ACTIVE RUN — revision 34 restore-only checkpoint validation (22 October 2026, 19:39 WIB)
+
+Run [#39780143613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780143613) is in progress, started 19:39:28 WIB; timeout at approx 19:59:28 WIB. It is restore-only and must send no gameplay input.
+
+Source is run #39779256427 / private artifact #12425858092 / checkpoint `adaptive-cycle-01-f180.sstate` / SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`, a revision-33 ACTION output with map focus changed by DOWN to `空き地` (Tanah kosong), barrier value 140. After the process finishes, check source SHA, explicit SaveStateLoaded event, restore PASS, five authentic 1280×800 X11 captures, exit 0, output checkpoint integrity, and actual C01-F20 image. Only promote the source if this independent restore visibly preserves the focus. Do not promote the newly emitted output until it is restored in another process.
+
+---
+
 ## VERIFIED BOARD RULE — one DOWN changes focused tile to empty land (revision 33, 22 October 2026, 19:38 WIB)
 
 Matched A/B run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) fully passed the explicit map-view state gate. Private artifact #12425858092: both arms loaded the same source SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc in separate processes; two SaveStateLoaded events; same cloned Memory Cards; pixel-identical F20; DOWN press/release true/false; WAIT control; ten authentic external-X11 frames at 1280×800; exit 0 twice; both checkpoint outputs validated; comparison report generated.
