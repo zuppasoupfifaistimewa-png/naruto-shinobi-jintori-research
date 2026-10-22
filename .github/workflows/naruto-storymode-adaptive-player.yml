@@ -445,7 +445,7 @@ jobs:
           [[ "$RESTORE_TEST" == "0" || "$RESTORE_TEST" == "1" ]]
           [[ "$CONTINUATION_TEST" == "0" || "$CONTINUATION_TEST" == "1" ]]
           [[ "$AB_TEST" == "0" || "$AB_TEST" == "1" ]]
-          [[ "$AB_ACTION" == "DOWN" || "$AB_ACTION" == "TRIANGLE" ]]
+          [[ "$AB_ACTION" == "UP" || "$AB_ACTION" == "DOWN" || "$AB_ACTION" == "LEFT" || "$AB_ACTION" == "RIGHT" || "$AB_ACTION" == "TRIANGLE" ]]
           if [ "$AB_TEST" = "1" ]; then [[ "$CYCLES" == "2" && "$RESTORE_TEST" == "0" && "$CONTINUATION_TEST" == "0" ]]; fi
           export PAD_SETUP
           export LOOP_CYCLES="$CYCLES"
