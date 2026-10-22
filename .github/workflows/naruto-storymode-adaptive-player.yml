@@ -40,6 +40,34 @@ jobs:
           mkdir -p "$WORK"/{build-artifact,state-artifact,card-artifact,cards,resume,captures,home,.config,.data,runtime}
           chmod 700 "$WORK/runtime"
 
+      - name: Read and validate source checkpoint selector
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          marker="experiments/.run-storymode-adaptive-player"
+          get_value() { awk -F= -v key="$1" '$1==key {print $2; exit}' "$marker"; }
+          source_run="$(get_value SOURCE_RUN)"
+          source_artifact="$(get_value SOURCE_ARTIFACT)"
+          source_checkpoint="$(get_value SOURCE_CHECKPOINT)"
+          source_sha256="$(get_value SOURCE_SHA256)"
+          loop_cycles="$(get_value LOOP_CYCLES)"
+          restore_test="$(get_value RESTORE_TEST)"
+          [[ "$source_run" =~ ^[0-9]+$ ]]
+          [[ "$source_artifact" =~ ^[A-Za-z0-9._-]+$ ]]
+          [[ "$source_checkpoint" =~ ^[A-Za-z0-9._-]+$ ]]
+          [[ "$source_sha256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$loop_cycles" == "1" || "$loop_cycles" == "2" ]]
+          [[ "$restore_test" == "0" || "$restore_test" == "1" ]]
+          {
+            echo "run_id=$source_run"
+            echo "artifact_name=$source_artifact"
+            echo "checkpoint=$source_checkpoint"
+            echo "sha256=$source_sha256"
+            echo "loop_cycles=$loop_cycles"
+            echo "restore_test=$restore_test"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Download previously built patched PCSX-Redux
         uses: actions/download-artifact@v4
         with:
@@ -49,11 +77,11 @@ jobs:
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
           path: /tmp/naruto-storymode-adaptive-player/build-artifact
 
-      - name: Download verified board checkpoint from run 39685868421
+      - name: Download selected private source checkpoint artifact
         uses: actions/download-artifact@v4
         with:
-          name: naruto-storymode-next-roulette-circle-diff-private
-          run-id: 39685868421
+          name: ${{ steps.source.outputs.artifact_name }}
+          run-id: ${{ steps.source.outputs.run_id }}
           github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
           path: /tmp/naruto-storymode-adaptive-player/state-artifact
@@ -67,28 +95,39 @@ jobs:
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
           path: /tmp/naruto-storymode-adaptive-player/card-artifact
 
-      - name: Validate immutable board checkpoint and stage read-only copy
+      - name: Validate immutable source checkpoint and stage read-only copy
         shell: bash
+        env:
+          SOURCE_RUN: ${{ steps.source.outputs.run_id }}
+          SOURCE_ARTIFACT: ${{ steps.source.outputs.artifact_name }}
+          SOURCE_CHECKPOINT: ${{ steps.source.outputs.checkpoint }}
+          SOURCE_SHA256: ${{ steps.source.outputs.sha256 }}
+          LOOP_CYCLES: ${{ steps.source.outputs.loop_cycles }}
+          RESTORE_TEST: ${{ steps.source.outputs.restore_test }}
         run: |
           set -euo pipefail
           APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
-          SOURCE="$WORK/state-artifact/next-roulette-result-none-f180.sstate"
+          SOURCE="$WORK/state-artifact/$SOURCE_CHECKPOINT"
           CARD="$WORK/card-artifact/naruto-storymode.mcd"
           test -f "$APP" && chmod +x "$APP"
           test "$(sha256sum "$APP" | cut -d ' ' -f1)" = 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99
-          test "$(stat -c %s "$SOURCE")" = 21162945
-          test "$(sha256sum "$SOURCE" | cut -d ' ' -f1)" = 19388b5a9b59c77e443f47abdc7c6f98251ef4a1be1b512378faab217a658ae9
+          test "$(stat -c %s "$SOURCE")" -gt 21000000
+          echo "$SOURCE_SHA256  $SOURCE" | sha256sum --check -
+          head -c 96 "$SOURCE" | grep -Fq 'PCSX-Redux SaveState v4'
           test "$(stat -c %s "$CARD")" = 131072
           test "$(sha256sum "$CARD" | cut -d ' ' -f1)" = ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
           cp "$SOURCE" "$WORK/resume/storymode-adaptive-source-f180.sstate"
           chmod 400 "$WORK/resume/storymode-adaptive-source-f180.sstate"
           cp "$CARD" "$WORK/cards/naruto-storymode-template.mcd"
           {
-            echo "SOURCE_RUN=39685868421"
-            echo "SOURCE_BYTES=21162945"
-            echo "SOURCE_SHA256=19388b5a9b59c77e443f47abdc7c6f98251ef4a1be1b512378faab217a658ae9"
+            echo "SOURCE_RUN=$SOURCE_RUN"
+            echo "SOURCE_ARTIFACT=$SOURCE_ARTIFACT"
+            echo "SOURCE_CHECKPOINT=$SOURCE_CHECKPOINT"
+            echo "SOURCE_BYTES=$(stat -c %s "$SOURCE")"
+            echo "SOURCE_SHA256=$SOURCE_SHA256"
             echo "SOURCE_COPY_READ_ONLY=YES"
-            echo "LOOP_CYCLES=2"
+            echo "LOOP_CYCLES=$LOOP_CYCLES"
+            echo "RESTORE_TEST=$RESTORE_TEST"
             echo "CYCLE=observe external X11 at F20 -> decide -> input F30-F38 -> verify F60/F100 -> checkpoint F180"
             echo "POLICY=START on calibrated dialogue; wait roulette then Circle only if it persists; Circle only when calibrated YES is visibly highlighted; route directions rotate after repeated map state; unknown states WAIT"
             echo "INTERNAL_EMULATOR_SCREENSHOT_API=DISABLED"
@@ -142,6 +181,9 @@ jobs:
 
       - name: Run adaptive observe-decide-act-verify-checkpoint loop
         shell: bash
+        env:
+          RESTORE_TEST: ${{ steps.source.outputs.restore_test }}
+          SOURCE_SHA256: ${{ steps.source.outputs.sha256 }}
         run: |
           set -euo pipefail
           cd "$WORK"
@@ -237,7 +279,7 @@ jobs:
               if not pass then PCSX.quit(85) end
           end
           PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
-              loaded=true; frame=0; log("ADAPTIVE_LOAD_EVENT=PASS")
+              loaded=true; frame=0; log("ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded")
           end)
           local plannedAction={}
           local plannedState={}
@@ -334,8 +376,10 @@ jobs:
           cp "$WORK/storymode-adaptive.lua" "$WORK/captures/storymode-adaptive.lua"
           CYCLES="$(awk -F= '$1=="LOOP_CYCLES" {print $2}' "$GITHUB_WORKSPACE/experiments/.run-storymode-adaptive-player")"
           [[ "$CYCLES" == "1" || "$CYCLES" == "2" ]]
+          [[ "$RESTORE_TEST" == "0" || "$RESTORE_TEST" == "1" ]]
           export PAD_SETUP
           export LOOP_CYCLES="$CYCLES"
+          export RESTORE_TEST SOURCE_SHA256
           cat > "$WORK/run-bounded-cycles.sh" <<'SH'
           #!/usr/bin/env bash
           set -euo pipefail
@@ -404,12 +448,12 @@ jobs:
           chmod +x "$WORK/run-bounded-cycles.sh"
           PAD_SETUP="$PAD_SETUP" LOOP_CYCLES="$CYCLES" bash "$WORK/run-bounded-cycles.sh" > "$WORK/captures/pcsx-adaptive-orchestrator.stdout" 2>&1 &
           pid=$!
-          python3 - "$pid" "$WORK/captures/pcsx-adaptive.stdout" "$WORK/captures" "$WORK" "$CYCLES" <<'PY'
+          python3 - "$pid" "$WORK/captures/pcsx-adaptive.stdout" "$WORK/captures" "$WORK" "$CYCLES" "$RESTORE_TEST" <<'PY'
           import sys,time,subprocess,hashlib,json
           from pathlib import Path
           from PIL import Image
           pid=int(sys.argv[1]); stdout=Path(sys.argv[2]); out=Path(sys.argv[3])
-          cycles=int(sys.argv[5]); phases=(20,60,100,110,180)
+          cycles=int(sys.argv[5]); restore_test=(sys.argv[6]=="1"); phases=(20,60,100,110,180)
           labels=["C%02d-F%d"%(c,p) for c in range(1,cycles+1) for p in phases]
           done=set(); deadline=time.monotonic()+240
           def alive():
@@ -461,7 +505,7 @@ jobs:
           summary=[{"file":p.name,"bytes":p.stat().st_size,"sha256":hashlib.sha256(p.read_bytes()).hexdigest()} for p in cps]
           print("ADAPTIVE_WATCHDOG_END captures={}/{} checkpoints={} hashes={}".format(len(done),len(labels),len(cps),json.dumps(summary)),flush=True)
           if len(cps)!=cycles: raise SystemExit("ADAPTIVE_CHECKPOINT_COUNT_FAIL")
-          if not (out/"progress-report.txt").is_file(): raise SystemExit("ADAPTIVE_GAMEPLAY_PROGRESS_FAIL")
+          if not restore_test and not (out/"progress-report.txt").is_file(): raise SystemExit("ADAPTIVE_GAMEPLAY_PROGRESS_FAIL")
           if cycles>=2:
               rpt=out/"policy-guard-report.txt"
               if not rpt.is_file() or "ADAPTIVE_POLICY_GUARD=PASS cycle=2" not in rpt.read_text():
@@ -497,9 +541,15 @@ jobs:
           PY
             echo "ADAPTIVE_CHECKPOINT_STRUCTURAL_VALIDATION=PASS file=$(basename "$state") bytes=$bytes sha256=$sha"
           done
-          grep -q 'ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=' "$WORK/captures/progress-report.txt"
+          if [ "$RESTORE_TEST" = "1" ]; then
+            grep -q 'ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded' "$WORK/captures/pcsx-adaptive.stdout"
+            grep -q 'ADAPTIVE_X11_CAPTURE label=C01-F20 .*source=external_xwd' "$WORK/captures/pcsx-adaptive.stdout"
+            echo "ADAPTIVE_RESTORE_TEST=PASS source_sha256=$SOURCE_SHA256 event=ExecutionFlow::SaveStateLoaded post_restore_frame=C01-F20" >> "$WORK/captures/pcsx-adaptive.stdout"
+          else
+            grep -q 'ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=' "$WORK/captures/progress-report.txt"
+          fi
           if [ "$CYCLES" -ge 2 ]; then grep -q 'ADAPTIVE_DIALOGUE_SKIP=PASS cycle=1' "$WORK/captures/pcsx-adaptive.stdout"; fi
-          echo "ADAPTIVE_LOOP_TEST=PASS cycles=$CYCLES captures=$((CYCLES * 5)) checkpoints=$CYCLES fresh_process_checkpoint_resume=verified dialogue_start_policy=checked"
+          echo "ADAPTIVE_LOOP_TEST=PASS cycles=$CYCLES captures=$((CYCLES * 5)) checkpoints=$CYCLES fresh_process_checkpoint_resume=checked restore_test=$RESTORE_TEST dialogue_start_policy=checked"
 
       - name: Upload private adaptive screenshots, decisions, logs and checkpoints
         if: always()
