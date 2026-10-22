@@ -1,3 +1,11 @@
+## ACTIVE — revision43 corrected CROSS-vs-WAIT probe
+
+Run #39866820866 active, started 05:41:57 WIB, timeout about 06:01:57 WIB. Run42 failed before gameplay because the final shell whitelist omitted CROSS; artifact #12463119868 was setup-only. Workflow commit `417663b21ce0cd9218ef8c312913a90d65381788` fixes it. Revision43 marker is verified and source checkpoint is exact SHA `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8` from run #39786019434, independently restored in #39786899480. AB_TEST=1, CROSS, expected map_after_move, 2 cycles.
+
+No parallel player. Accept only when all paired gates pass (load events, source SHA, F20 parity, identical cards, CROSS true/false readback, WAIT, ten genuine 1280×800 frames, exit0 both, checkpoint validations, comparison report) and screenshots show whether CROSS returns to menu. Footer `× もどる` (Cross: Kembali) gives a hypothesis only. Story Mode remains NOT COMPLETE.
+
+---
+
 ## REVISION42 FAILS BEFORE GAMEPLAY — CROSS late shell gate fixed
 
 Run #39866476856 failed before the emulator was launched. Artifact #12463119868 contains only a 4,505-byte setup dump; no screenshot evidence exists. Cause: selector/Lua accepted CROSS for map-state A/B, but final shell whitelist still omitted CROSS. Workflow commit `417663b21ce0cd9218ef8c312913a90d65381788` adds it. Menu-state gate is unchanged and does not allow CROSS.
