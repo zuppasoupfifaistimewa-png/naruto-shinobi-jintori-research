@@ -1,3 +1,19 @@
+## ACTIVE — revision42 CROSS-vs-WAIT on map return prompt
+
+Run [#39866476856](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39866476856) is the only active player run. The marker at commit `0fb5636106edc03073517335417db7bf24be2284` was re-read and matches:
+- Source run #39786019434, artifact `naruto-storymode-adaptive-player-private`, checkpoint `adaptive-cycle-01-f180.sstate`, SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`.
+- `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `AB_TEST=1`, `AB_ACTION=CROSS`, `AB_EXPECTED_STATE=map_after_move`, `LOOP_CYCLES=2`, `REVISION=42`.
+- Workflow blob `494baab78b7237fa80674526c583e0fdfc74c140` allows CROSS only in the map-state directional A/B branch; menu-state actions remain constrained to DOWN/TRIANGLE.
+
+Actions reports the run started 22:39 UTC on 22 October (05:39 WIB on 23 October); 20-minute hard timeout is about 05:59 WIB if not completed earlier. At last check it was initializing containers; no artifact yet. Do not start another player.
+
+The screen's verified footer `× もどる` (Cross: Kembali) motivates this matched experiment. Require identical F20 screenshots/state, same source SHA in both new processes, two SaveStateLoaded events, identical disposable cards, CROSS press/release readback true/false, WAIT control, ten authentic 1280×800 X11 captures, exit0 in both, both output checkpoint size/v4-header/SHA validations, and comparison report. Inspect whether ACTION returns to the prior menu while WAIT remains on the map. This is only a return-navigation probe, not a tile confirm. Story Mode remains NOT COMPLETE.
+
+---
+
+
+---
+
 ## RESTORE VERIFIED — Naruto-cell focus persists across a fresh emulator process (revision41, 22 October 2026)
 
 Run [#39786899480](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786899480) completed with Actions success. Private artifact #12428873919 was downloaded, ZIP integrity passed, and the authentic C01-F20 screenshot was inspected. It visibly shows Naruto's tile panel: `レベル` (Level) 1, `結界価値` (Nilai penghalang) 60, `耐久値` (Daya tahan) 2/2. The fresh emulator process logged `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five X11 screenshots of 1280×800 were validated; process exit 0; output checkpoint passed external validation.
