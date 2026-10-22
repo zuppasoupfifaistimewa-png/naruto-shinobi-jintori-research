@@ -1,3 +1,11 @@
+## ACTIVE — revision45 contextual Circle on Roulette menu
+
+Run #39867730674 active; started 05:49:51 WIB, timeout about 06:09:51 WIB. Source run #39866820866 / artifact #12463489344 / checkpoint adaptive-cycle-01-f180.sstate / SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`. Restore run #39867381637 independently confirmed F20 with `ルーレット` (Roulette) highlighted. Marker: AB_TEST=1, AB_ACTION=CIRCLE, AB_EXPECTED_STATE=menu_or_unknown_choice, two cycles. Workflow permits Circle only under menu-state guard.
+
+Audit strict A/B gates and screenshot pair after run termination. Confirm actual Circle input readback true/false and whether action opens roulette; WAIT should remain menu. No Circle for dialogue; START only. Story Mode remains NOT COMPLETE.
+
+---
+
 ## RESTORE VERIFIED — roulette-highlighted menu checkpoint is independently loadable (revision44)
 
 Run #39867381637 passed restore-only. Private artifact #12464118614 passed ZIP integrity. Actual C01-F20 image displays `ルーレット` (Roulette) highlighted in the command menu. New process logged `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five real 1280×800 screenshots, exit0, external output size/v4-header/SHA validation passed.
