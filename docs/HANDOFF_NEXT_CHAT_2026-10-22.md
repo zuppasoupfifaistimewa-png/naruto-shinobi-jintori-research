@@ -1,3 +1,30 @@
+## LATEST VERIFIED RESULT — revision37 second DOWN changes board focus/view (22 October 2026, 19:56 WIB)
+
+Run [#39782011370](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39782011370) success at 19:54:29 WIB. Private artifact #12426797521 inspected. Both fresh processes restored source SHA `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`; both logged `ExecutionFlow::SaveStateLoaded`; same Memory Card clones; F20 pixels identical 1,024,000/1,024,000; state map_after_move both; DOWN true/false readback; WAIT control; ten authentic 1280×800 X11 captures; exits0; both outputs validated size/v4 header/SHA; comparison report generated.
+
+**VERIFIED, limited to focus/view:** when the empty-land tile value140 is selected, another DOWN shifts the board viewport upward and cursor focus appears toward the adjacent lower cell at the Naruto-marked position. WAIT keeps the pink value60 tile visible above the gray value140 tile and leaves the original framing/cursor. Visual comparison differences F60 780637/MAD22.66488; F100 780562/22.68538; F110 781298/22.66071; F180 780622/22.62887. The classifier reports map_after_move for both; conclusion from authentic paired image inspection. Do not claim actual character movement, territory capture or ownership change.
+
+Checkpoint outputs remain unpromoted:
+- ACTION source candidate run #39782011370 artifact #12426797521: `adaptive-cycle-01-f180.sstate`, 21,162,960 bytes, v4, SHA-256 `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`.
+- WAIT control: `adaptive-cycle-02-f180.sstate`, 21,163,049 bytes, SHA `cd7a70d67001e67177333df0c332e745e28c01c92851f92c21445250d108c63c`.
+
+Next revision38 restore-only:
+MODE=ADAPTIVE
+SOURCE_RUN=39782011370
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177
+RESTORE_TEST=1
+CONTINUATION_TEST=0
+AB_TEST=0
+AB_ACTION=DOWN
+LOOP_CYCLES=1
+REVISION=38
+
+Require fresh load event, five genuine external-X11 captures retaining post-second-DOWN view/focus, exit0, external output state size/header/SHA. Promote only that exact input after success. The next restore output itself remains unpromoted pending another independent restore. Then inspect input mapping and design a next one-variable action to transition from selected map cell toward real Story Mode play. No Circle for dialogue; START only. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE RUN — revision38 restore second-DOWN viewport checkpoint
 
 Run [#39783158903](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39783158903) active, started 20:00:55 WIB, hard timeout about 20:20:55 WIB. Marker verified:
