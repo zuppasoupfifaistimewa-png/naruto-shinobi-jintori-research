@@ -1,3 +1,11 @@
+## REVISION42 FAILS BEFORE GAMEPLAY — CROSS late shell gate fixed
+
+Run #39866476856 failed before the emulator was launched. Artifact #12463119868 contains only a 4,505-byte setup dump; no screenshot evidence exists. Cause: selector/Lua accepted CROSS for map-state A/B, but final shell whitelist still omitted CROSS. Workflow commit `417663b21ce0cd9218ef8c312913a90d65381788` adds it. Menu-state gate is unchanged and does not allow CROSS.
+
+Retry revision43 using the exact stable source checkpoint from run #39786019434 / artifact #12428777970 / adaptive-cycle-01-f180.sstate / SHA `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`, with AB_TEST=1, AB_ACTION=CROSS, AB_EXPECTED_STATE=map_after_move, 2 cycles, RESTORE_TEST=0, CONTINUATION_TEST=0. Require all paired gates and visual evidence before classifying. Hypothesis: the visible footer `× もどる` (Cross: Kembali) returns from map view; WAIT keeps the map. Circle is not used. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision42 CROSS-vs-WAIT on map return UI
 
 Run #39866476856 is active. Started 22:39 UTC on 22 October / 05:39 WIB 23 October; hard timeout about 05:59 WIB. Exact source run #39786019434 / artifact #12428777970 / checkpoint adaptive-cycle-01-f180.sstate / SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`. Marker AB_TEST=1, AB_ACTION=CROSS, AB_EXPECTED_STATE=map_after_move, LOOP_CYCLES=2, revision42. Workflow blob `494baab78b7237fa80674526c583e0fdfc74c140` allows CROSS only for map-state A/B. The source screenshot has `× もどる` (Cross: Kembali), so this probes back-navigation without confirming any tile.
