@@ -1,3 +1,15 @@
+## LATEST VERIFIED UPDATE — DOWN advances Ninjutsu to Information; new action checkpoint needs restore test (22 October 2026, 18:14 WIB)
+
+- Successful run [#39768787669](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768787669) performed a matched DOWN-vs-NONE test from previously restore-validated Ninjutsu checkpoint SHA `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`.
+- Both initial F20 frames were pixel-identical (0 mismatch/1,024,000 pixels); action/control states both classify `menu_or_unknown_choice`; cloned Memory Cards were byte-identical; two `ExecutionFlow::SaveStateLoaded` events logged; DOWN readback press/release passed; control sent WAIT only; both processes exited 0; both output checkpoints passed size/header/SHA validation.
+- Authentic external-X11 frames show the red highlight move from `忍術` (Ninjutsu) to `情報` (Informasi) by F60 only in the DOWN branch, while NONE remains on Ninjutsu. F60/F100/F110/F180 comparisons: 14,606 differing pixels, mean absolute RGB difference 1.04012. Record **VERIFIED only for these tested menu states**: a DOWN press advances the highlighted row one step.
+- Action checkpoint in private artifact #12421302756: `adaptive-cycle-01-f180.sstate`, 21,162,009 bytes, SHA-256 `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`. Control checkpoint: 21,162,184 bytes, SHA-256 `06cea778aaaf838271fafa58734c3e236e7d5aa3f63d578a786012640fbbde52`. Do not promote either until a fresh process restores it.
+- Next: revision 23 restore-only from ACTION checkpoint (run #39768787669/artifact #12421302756), `RESTORE_TEST=1`, one cycle. Require `ExecutionFlow::SaveStateLoaded`, five valid post-load external-X11 frames with Information highlighted, allowed exit and external output checkpoint verification. Circle remains prohibited for menu confirmation without a visible YES.
+
+Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE RUN — matched test of DOWN from Ninjutsu (22 October 2026, 18:12 WIB)
 
 Run [#39768787669](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768787669) is active, marker revision 22. Both fresh-process branches use the same verified parent checkpoint from #39767790829 (`adaptive-cycle-01-f180.sstate`, SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28)) and separate identical Memory Card clones. ACTION=DOWN, control=NONE/WAIT. Require pixel-identical F20 frames and `menu_or_unknown_choice` state in both branches, input press/release readback, two load events, and external output checkpoint checks. Inspect the frames to see whether the red selection moves from `忍術` (Ninjutsu) to `情報` (Informasi). The run was in progress at container initialization at last status check.
