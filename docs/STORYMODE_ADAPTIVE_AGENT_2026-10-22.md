@@ -1,3 +1,15 @@
+## RESTORE VERIFIED — Naruto-cell focus checkpoint is independently loadable (revision41)
+
+Run #39786899480 passed all restore-only gates. Private artifact #12428873919 ZIP integrity passed; actual F20 screenshot shows Naruto cell panel `レベル` (Level)1, `結界価値` (Nilai penghalang)60, `耐久値` (Daya tahan)2/2. Explicit `ExecutionFlow::SaveStateLoaded`, restore PASS, five external 1280×800 screenshots, exit0 and post-exit output size/v4-header/SHA validation observed.
+
+Input source from run #39786019434 / artifact #12428777970 / `adaptive-cycle-01-f180.sstate`: size 21,163,100, v4, SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`. It is now independently restore-proven. New output from run41, SHA-256 `93bd0c3e401bd7b8c96bc8b405bd46b13fef2afaf317c2ec47af5412c1b52595`, 21,162,593 bytes/v4, remains unpromoted until its own restore.
+
+Workflow change commit `7ac1b2371b7d0ce48b87b59130a8560db771a962` adds CROSS to map-state-only actions. Screen footer `× もどる` (Cross: Kembali) makes a CROSS-vs-WAIT matched test appropriate as the safest route back from the map. Menu-state gate still restricts actions to DOWN/TRIANGLE.
+
+Next revision42 from source run #39786019434/artifact #12428777970/file `adaptive-cycle-01-f180.sstate`/SHA `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`: AB_TEST=1, AB_ACTION=CROSS, AB_EXPECTED_STATE=map_after_move, 2 cycles, restore and continuation off. Require all paired gates. Inspect if CROSS goes to prior menu while WAIT remains map. Don't use Circle for dialogue; START only. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision41 restore-only validates Naruto-cell focus state
 
 Run #39786899480 is active; started 20:26:48 WIB, timeout around 20:46:48 WIB. Source run #39786019434 / private artifact #12428777970 / adaptive-cycle-01-f180.sstate / SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`, size21,163,100, v4. Settings RESTORE_TEST=1, one cycle, revision41. Do not launch parallel player.
