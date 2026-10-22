@@ -1,3 +1,14 @@
+## LATEST DIAGNOSTIC — Information-down experiment blocked by truncated checkpoint; retry with drain window (22 October 2026, 18:23 WIB)
+
+- Run [#39769826213](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39769826213) failed before branch 2. C01-F20/F60/F100/F110/F180 authentic X11 screenshots validated; baseline/source hash was `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`; Memory Card clones were identical; DOWN readback press/release passed. Process exited 139 and checkpoint was truncated at 2,097,152 bytes, so validator failed and watcher stopped with code 92. This is not a gameplay result, and no checkpoint from this run is trusted.
+- The authentic F20 screenshot shows `情報` (Informasi) selected in the right menu; no conclusion is made about DOWN from this run.
+- Workflow commit `13da48ab08ef40d0be8c8bbc850b7babbb9b107e` adds a 12-VSync no-input drain period after write/close before pausing and scheduling quit outside VSync. This is intended to allow a delayed save-slice flush; it is not yet proven.
+- Retry revision 25 is expected to rerun the same matched DOWN/NONE test using the exact same immutable, restore-verified Information parent above. Verify ten frames, equal F20, both inputs/load events, and both external post-exit checkpoint checks. Do not use the 2 MiB checkpoint.
+
+Story Mode not complete; keep evidence private and out of Git.
+
+---
+
 ## ACTIVE RUN — test DOWN from Information to the next row (22 October 2026, 18:20 WIB)
 
 Run [#39769826213](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39769826213) is active (marker revision 24): exact parent source from #39768787669, `adaptive-cycle-01-f180.sstate`, SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`; ACTION=DOWN vs NONE/WAIT; two identical-bytes but separate Memory Card copies; two fresh emulator processes. The question is whether DOWN from `情報` (Informasi) moves highlight to `マップを見る` (Lihat peta).
