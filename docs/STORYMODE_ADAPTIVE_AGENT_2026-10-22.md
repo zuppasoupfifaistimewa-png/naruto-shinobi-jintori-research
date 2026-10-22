@@ -1,3 +1,16 @@
+## VERIFIED — DOWN changes focused map tile; restore output before continuation (22 October 2026, 19:37 WIB)
+
+Run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) revision 33 passed every paired acceptance gate. Private artifact #12425858092 was audited. Two independent emulator processes loaded the identical map source SHA `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`; each logged SaveStateLoaded; cloned Memory Cards were identical; F20 states matched pixel-for-pixel (1,024,000 px) and both classify `map_after_move`; DOWN press/release readback true/false; WAIT control; ten authentic external 1280×800 frames; both exits 0; both output checkpoints passed external post-exit validation. Comparison report generated.
+
+**VERIFIED, scoped to this exact board:** one DOWN changes the focused tile from Naruto's tile (`レベル` (Level) 1, `結界価値` (Nilai penghalang) 60, `耐久値` (Daya tahan) 2/2) to adjacent `空き地` (Tanah kosong), barrier value 140, level ---, durability -/-. WAIT keeps original tile focused. This is focus/selection movement only; do not infer actual Naruto movement, capture, ownership change, or battle progression. Classifier state stays `map_after_move`; manual authentic screenshot comparison is decisive.
+
+ACTION output candidate: run #39779256427 / private artifact #12425858092 / `adaptive-cycle-01-f180.sstate`, 21,162,559 bytes, header v4, SHA-256 `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. CONTROL output: 21,162,390 bytes, v4, SHA `3796ff4ba91fef93ddf1078daa1785e043c3d5b5424a03c8cb53a62c6d3858a4`. Neither is promoted until independently restored.
+
+### Revision 34 — restore-only
+Use source run #39779256427, artifact `naruto-storymode-adaptive-player-private`, file `adaptive-cycle-01-f180.sstate`, SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`; set `RESTORE_TEST=1`, `CONTINUATION_TEST=0`, `AB_TEST=0`, `LOOP_CYCLES=1`, `REVISION=34`. No button input. Require load event, five genuine X11 captures, exit 0, external size/header/SHA validation; manually inspect F20 for retained empty-land focus. If passes, promote this exact source candidate as a restorable state. Keep the new restore-run output unpromoted until another fresh-process restore validates it. Story Mode remains NOT COMPLETE; START skips dialogue.
+
+---
+
 ## ACTIVE RUN — revision 33 checks DOWN on map with explicit expected-state validator (22 October 2026, 19:33 WIB)
 
 Run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) is in progress from 19:32:59 WIB; X11 tools/workspace prep is the latest active step. Timeout deadline approximately 19:52:59 WIB. Wait for this single player to finish; do not start parallel runs.
