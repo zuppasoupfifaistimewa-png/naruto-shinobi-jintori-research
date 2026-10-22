@@ -1,3 +1,17 @@
+## LATEST VERIFIED MENU NAVIGATION — CROSS returns from map to command menu (revision43)
+
+Run [#39866820866](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39866820866) success at 22:43:31 UTC / 05:43:31 WIB. Private artifact #12463489344 passed ZIP integrity and actual paired screenshots were inspected. Both processes loaded source SHA `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`, two load events, exact F20 pixel parity, identical disposable cards, CROSS true/false input readback, WAIT control, ten valid authentic X11 images, exit0 both, two validated output states, and comparison report.
+
+**VERIFIED in this exact state:** CROSS exits the map view back to the right-side command menu. C01-F60 shows a two-option transition UI; C01-F100/F180 visibly show `ルーレット` (Roulette) highlighted. WAIT remains on the board map and Naruto cell panel. No character move/capture claim.
+
+ACTION output candidate in artifact #12463489344 / run #39866820866 / adaptive-cycle-01-f180.sstate: 21,162,920 bytes, v4, SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`. CONTROL output: 21,162,981 bytes, SHA `57fd76c4f133dc485e5bbfc49f8cb6e0e86593780812827bee1a43668ae80e84`. Both are structure-validated but unpromoted pending restore.
+
+Next revision44: restore-only ACTION/menu checkpoint from run #39866820866/artifact naruto-storymode-adaptive-player-private/file adaptive-cycle-01-f180.sstate/SHA `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`. Require load event, five authentic 1280×800 X11 images retaining Roulette highlight at F20, exit0, external output validation. Only then promote the input source.
+
+Then revision45 Circle-vs-WAIT from that exact restored command-menu state: source screenshot demonstrates Roulette highlighted, and Circle is the known contextual menu confirm, not dialogue skip. Extend workflow menu guard to permit Circle only when state is `menu_or_unknown_choice`; dialogue classification must fail the precondition. Require all A/B gates and manually inspect Roulette entry. Use START for any Story Mode dialogue; never Circle for dialogue. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE PLAYER — revision43 retry of CROSS vs WAIT (23 October 2026)
 
 Run [#39866820866](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39866820866) active, started 05:41:57 WIB, hard timeout about 06:01:57 WIB. Revision42 failed before emulator because a final shell whitelist omitted CROSS; artifact #12463119868 had only 4,505 bytes and no gameplay screenshots. Workflow commit `417663b21ce0cd9218ef8c312913a90d65381788` fixes the remaining allowlist. The new run checkout uses this correction.
