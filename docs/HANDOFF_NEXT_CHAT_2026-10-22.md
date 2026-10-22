@@ -1,3 +1,13 @@
+## RESTORE PASS — post-DOWN board scroll is a proven restorable checkpoint state (22 October 2026, 19:51 WIB)
+
+Run [#39781495023](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39781495023) success. Inspected private artifact #12426677790. It restored revision35 ACTION output from run #39780755350, source SHA-256 `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff` (21,162,766 bytes, v4); explicit `ExecutionFlow::SaveStateLoaded`, `ADAPTIVE_RESTORE_TEST=PASS`, five real 1280×800 X11 captures, visually retained post-DOWN scrolled board, exit0, and externally validated new output state. Exact input hash b971… is now promoted as independently restorable.
+
+New restore output is not promoted: `adaptive-cycle-01-f180.sstate`, size 21,163,103, v4, SHA-256 `4fd72504031c7aaa73bd7fa18e2f7a8d79b428643cea3c588ea4596ad5e90777`.
+
+Next revision37 is a second DOWN-vs-WAIT probe from trusted post-DOWN view, with source run #39780755350 / private artifact #12426786721 / `adaptive-cycle-01-f180.sstate` / SHA `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`; AB_TEST=1, AB_ACTION=DOWN, AB_EXPECTED_STATE=map_after_move, two cycles, RESTORE_TEST=0, CONTINUATION_TEST=0. Inspect view and tile panel after input. Keep every previous paired acceptance gate. No parallel player, no Circle/confirm. Story Mode NOT COMPLETE.
+
+---
+
 ## ACTIVE RUN — revision36 restore-only checkpoint gate (22 October 2026, 19:49 WIB)
 
 Run [#39781495023](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39781495023) is active, started 19:49:08 WIB; hard timeout approximately 20:09:08 WIB. Exact committed marker:
