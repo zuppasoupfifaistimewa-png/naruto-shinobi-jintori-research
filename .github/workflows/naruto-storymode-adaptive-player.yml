@@ -54,6 +54,10 @@ jobs:
           loop_cycles="$(get_value LOOP_CYCLES)"
           restore_test="$(get_value RESTORE_TEST)"
           continuation_test="$(get_value CONTINUATION_TEST)"
+          ab_test="$(get_value AB_TEST)"
+          ab_action="$(get_value AB_ACTION)"
+          ab_test="${ab_test:-0}"
+          ab_action="${ab_action:-DOWN}"
           [[ "$source_run" =~ ^[0-9]+$ ]]
           [[ "$source_artifact" =~ ^[A-Za-z0-9._-]+$ ]]
           [[ "$source_checkpoint" =~ ^[A-Za-z0-9._-]+$ ]]
@@ -61,6 +65,11 @@ jobs:
           [[ "$loop_cycles" == "1" || "$loop_cycles" == "2" ]]
           [[ "$restore_test" == "0" || "$restore_test" == "1" ]]
           [[ "$continuation_test" == "0" || "$continuation_test" == "1" ]]
+          [[ "$ab_test" == "0" || "$ab_test" == "1" ]]
+          [[ "$ab_action" == "DOWN" ]]
+          if [ "$ab_test" = "1" ]; then
+            [[ "$loop_cycles" == "2" && "$restore_test" == "0" && "$continuation_test" == "0" ]]
+          fi
           {
             echo "run_id=$source_run"
             echo "artifact_name=$source_artifact"
@@ -69,6 +78,8 @@ jobs:
             echo "loop_cycles=$loop_cycles"
             echo "restore_test=$restore_test"
             echo "continuation_test=$continuation_test"
+            echo "ab_test=$ab_test"
+            echo "ab_action=$ab_action"
           } >> "$GITHUB_OUTPUT"
 
       - name: Download previously built patched PCSX-Redux
@@ -108,6 +119,8 @@ jobs:
           LOOP_CYCLES: ${{ steps.source.outputs.loop_cycles }}
           RESTORE_TEST: ${{ steps.source.outputs.restore_test }}
           CONTINUATION_TEST: ${{ steps.source.outputs.continuation_test }}
+          AB_TEST: ${{ steps.source.outputs.ab_test }}
+          AB_ACTION: ${{ steps.source.outputs.ab_action }}
         run: |
           set -euo pipefail
           APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
@@ -123,6 +136,16 @@ jobs:
           cp "$SOURCE" "$WORK/resume/storymode-adaptive-source-f180.sstate"
           chmod 400 "$WORK/resume/storymode-adaptive-source-f180.sstate"
           cp "$CARD" "$WORK/cards/naruto-storymode-template.mcd"
+          if [ "$AB_TEST" = "1" ]; then
+            cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/naruto-storymode-ab-action.mcd"
+            cp "$WORK/cards/naruto-storymode-template.mcd" "$WORK/cards/naruto-storymode-ab-none.mcd"
+            cmp -s "$WORK/cards/naruto-storymode-ab-action.mcd" "$WORK/cards/naruto-storymode-ab-none.mcd"
+            baseline_card_sha="$(sha256sum "$WORK/cards/naruto-storymode-template.mcd" | cut -d ' ' -f1)"
+            action_card_sha="$(sha256sum "$WORK/cards/naruto-storymode-ab-action.mcd" | cut -d ' ' -f1)"
+            none_card_sha="$(sha256sum "$WORK/cards/naruto-storymode-ab-none.mcd" | cut -d ' ' -f1)"
+            test "$baseline_card_sha" = "$action_card_sha" && test "$action_card_sha" = "$none_card_sha"
+            echo "ADAPTIVE_AB_CARD_CLONES=PASS baseline_sha256=$baseline_card_sha action_sha256=$action_card_sha none_sha256=$none_card_sha" | tee "$WORK/captures/ab-card-clones.txt"
+          fi
           {
             echo "SOURCE_RUN=$SOURCE_RUN"
             echo "SOURCE_ARTIFACT=$SOURCE_ARTIFACT"
@@ -133,6 +156,8 @@ jobs:
             echo "LOOP_CYCLES=$LOOP_CYCLES"
             echo "RESTORE_TEST=$RESTORE_TEST"
             echo "CONTINUATION_TEST=$CONTINUATION_TEST"
+            echo "AB_TEST=$AB_TEST"
+            echo "AB_ACTION=$AB_ACTION"
             echo "CYCLE=observe external X11 at F20 -> decide -> input F30-F38 -> verify F60/F100 -> checkpoint F180"
             echo "POLICY=START on calibrated dialogue; wait roulette then Circle only if it persists; Circle only when calibrated YES is visibly highlighted; route directions rotate after repeated map state; unknown states WAIT"
             echo "INTERNAL_EMULATOR_SCREENSHOT_API=DISABLED"
@@ -189,6 +214,8 @@ jobs:
         env:
           RESTORE_TEST: ${{ steps.source.outputs.restore_test }}
           CONTINUATION_TEST: ${{ steps.source.outputs.continuation_test }}
+          AB_TEST: ${{ steps.source.outputs.ab_test }}
+          AB_ACTION: ${{ steps.source.outputs.ab_action }}
           SOURCE_SHA256: ${{ steps.source.outputs.sha256 }}
         run: |
           set -euo pipefail
@@ -211,6 +238,8 @@ jobs:
           cat > "$WORK/storymode-adaptive.lua" <<'LUA'
           local cycle=tonumber(os.getenv("ADAPTIVE_CYCLE") or "1")
           if cycle<1 or cycle>2 then error("ADAPTIVE_CYCLE must be 1 or 2") end
+          local abTest=os.getenv("AB_TEST")=="1"
+          local abAction=os.getenv("AB_ACTION") or "DOWN"
           local frame=0; local loadStarted=false; local loadReturned=false; local loaded=false
           local activeButton=nil
           local pad=PCSX.SIO0.slots[1].pads[1]
@@ -308,9 +337,21 @@ jobs:
                   local state,action,result=captureExternal(string.format("C%02d-F20",cycle),cycle)
                   if not state then return end
                   plannedState[cycle]=state; plannedAction[cycle]=action; plannedDecision[cycle]=result
+                  if abTest then
+                      local precondition=(state=="menu_or_unknown_choice" and action=="WAIT")
+                      local branch=(cycle==1) and "ACTION" or "NONE"
+                      local selected=(cycle==1) and abAction or "WAIT"
+                      if not precondition then selected="WAIT" end
+                      plannedAction[cycle]=selected
+                      local marker="ADAPTIVE_AB_PRECONDITION="..(precondition and "PASS" or "FAIL")..
+                          " cycle="..cycle.." branch="..branch.." state="..state..
+                          " classifier_action="..action.." selected_action="..selected
+                      local pf=assert(io.open(string.format("captures/ab-precondition-cycle-%02d.txt",cycle),"wb")); pf:write(marker.."\n"); pf:close()
+                      log(marker)
+                  end
                   local df=assert(io.open(string.format("captures/decision-cycle-%02d.json",cycle),"wb")); df:write(result); df:close()
-                  local af=assert(io.open(string.format("captures/action-cycle-%02d.txt",cycle),"wb")); af:write(action.."\n"); af:close()
-                  log("ADAPTIVE_DECISION cycle="..cycle.." state="..state.." action="..action.." reason=synchronous_external_X11_classification")
+                  local af=assert(io.open(string.format("captures/action-cycle-%02d.txt",cycle),"wb")); af:write(plannedAction[cycle].."\n"); af:close()
+                  log("ADAPTIVE_DECISION cycle="..cycle.." state="..state.." action="..plannedAction[cycle].." classifier_action="..action.." reason=synchronous_external_X11_classification")
                   if cycle==2 then
                       local safe=((state=="battle_untrained" or state=="map_after_move" or state=="unknown" or state=="menu_or_unknown_choice") and action=="WAIT")
                           or (state=="dialogue" and action=="START")
@@ -384,9 +425,12 @@ jobs:
           [[ "$CYCLES" == "1" || "$CYCLES" == "2" ]]
           [[ "$RESTORE_TEST" == "0" || "$RESTORE_TEST" == "1" ]]
           [[ "$CONTINUATION_TEST" == "0" || "$CONTINUATION_TEST" == "1" ]]
+          [[ "$AB_TEST" == "0" || "$AB_TEST" == "1" ]]
+          [[ "$AB_ACTION" == "DOWN" ]]
+          if [ "$AB_TEST" = "1" ]; then [[ "$CYCLES" == "2" && "$RESTORE_TEST" == "0" && "$CONTINUATION_TEST" == "0" ]]; fi
           export PAD_SETUP
           export LOOP_CYCLES="$CYCLES"
-          export RESTORE_TEST CONTINUATION_TEST SOURCE_SHA256
+          export RESTORE_TEST CONTINUATION_TEST AB_TEST AB_ACTION SOURCE_SHA256
           cat > "$WORK/run-bounded-cycles.sh" <<'SH'
           #!/usr/bin/env bash
           set -euo pipefail
@@ -415,10 +459,18 @@ jobs:
             local cycle="$1"
             local logfile="$WORK/captures/pcsx-adaptive-cycle-${cycle}.log"
             local stdout="$WORK/captures/pcsx-adaptive-cycle-${cycle}.stdout"
-            echo "ADAPTIVE_SESSION_START cycle=${cycle} source=$(sha256sum "$WORK/resume/storymode-adaptive-source-f180.sstate" | cut -d ' ' -f1)" >> "$WORK/captures/pcsx-adaptive.stdout"
+            local card="$WORK/cards/naruto-storymode-template.mcd"
+            if [ "$AB_TEST" = "1" ]; then
+              if [ "$cycle" -eq 1 ]; then card="$WORK/cards/naruto-storymode-ab-action.mcd"; else card="$WORK/cards/naruto-storymode-ab-none.mcd"; fi
+            fi
+            local resume_sha
+            resume_sha="$(sha256sum "$WORK/resume/storymode-adaptive-source-f180.sstate" | cut -d ' ' -f1)"
+            local card_sha
+            card_sha="$(sha256sum "$card" | cut -d ' ' -f1)"
+            echo "ADAPTIVE_SESSION_START cycle=${cycle} source=$resume_sha card=$(basename "$card") card_sha256=$card_sha" >> "$WORK/captures/pcsx-adaptive.stdout"
             set +e
-            ADAPTIVE_CYCLE="$cycle" PROBE_MODE=ADAPTIVE timeout --signal=TERM --kill-after=5s 120s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/naruto-storymode-template.mcd" \
+            ADAPTIVE_CYCLE="$cycle" AB_TEST="$AB_TEST" AB_ACTION="$AB_ACTION" PROBE_MODE=ADAPTIVE timeout --signal=TERM --kill-after=5s 120s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$card" \
               -exec "$PAD_SETUP" -dofile "$WORK/storymode-adaptive.lua" -softgpu -dynarec -stdout -lua_stdout \
               -logfile "$logfile" -run > "$stdout" 2>&1
             local rc=$?
@@ -438,29 +490,35 @@ jobs:
             grep -q "ADAPTIVE_SESSION_FINISHED cycle=${cycle}" "$stdout"
             # This check is deliberately after the emulator process has exited.
             validate_checkpoint "$cp" >> "$WORK/captures/pcsx-adaptive.stdout"
-            if [ "$cycle" -eq 1 ]; then
+            if [ "$cycle" -eq 1 ] && [ "$AB_TEST" != "1" ]; then
               local sha
               sha="$(sha256sum "$cp" | cut -d ' ' -f1)"
               echo "ADAPTIVE_CYCLE2_RESUME_SOURCE=$sha" >> "$WORK/captures/pcsx-adaptive.stdout"
               rm -f "$WORK/resume/storymode-adaptive-source-f180.sstate"
               cp "$cp" "$WORK/resume/storymode-adaptive-source-f180.sstate"
               chmod 400 "$WORK/resume/storymode-adaptive-source-f180.sstate"
+            elif [ "$cycle" -eq 1 ] && [ "$AB_TEST" = "1" ]; then
+              echo "ADAPTIVE_AB_PARENT_PRESERVED=PASS sha256=$resume_sha" >> "$WORK/captures/pcsx-adaptive.stdout"
             fi
           }
           : > "$WORK/captures/pcsx-adaptive.stdout"
           run_cycle 1
           if [ "$cycles" -ge 2 ]; then run_cycle 2; fi
-          echo "ADAPTIVE_SEQUENTIAL_FRESH_PROCESS_RESUME=PASS cycles=$cycles" >> "$WORK/captures/pcsx-adaptive.stdout"
+          if [ "$AB_TEST" = "1" ]; then
+            echo "ADAPTIVE_AB_BRANCHES_COMPLETE=PASS cycles=$cycles parent_sha256=$SOURCE_SHA256" >> "$WORK/captures/pcsx-adaptive.stdout"
+          else
+            echo "ADAPTIVE_SEQUENTIAL_FRESH_PROCESS_RESUME=PASS cycles=$cycles" >> "$WORK/captures/pcsx-adaptive.stdout"
+          fi
           SH
           chmod +x "$WORK/run-bounded-cycles.sh"
           PAD_SETUP="$PAD_SETUP" LOOP_CYCLES="$CYCLES" bash "$WORK/run-bounded-cycles.sh" > "$WORK/captures/pcsx-adaptive-orchestrator.stdout" 2>&1 &
           pid=$!
-          python3 - "$pid" "$WORK/captures/pcsx-adaptive.stdout" "$WORK/captures" "$WORK" "$CYCLES" "$RESTORE_TEST" "$CONTINUATION_TEST" <<'PY'
+          python3 - "$pid" "$WORK/captures/pcsx-adaptive.stdout" "$WORK/captures" "$WORK" "$CYCLES" "$RESTORE_TEST" "$CONTINUATION_TEST" "$AB_TEST" <<'PY'
           import sys,time,subprocess,hashlib,json
           from pathlib import Path
           from PIL import Image
           pid=int(sys.argv[1]); stdout=Path(sys.argv[2]); out=Path(sys.argv[3])
-          cycles=int(sys.argv[5]); restore_test=(sys.argv[6]=="1"); continuation_test=(sys.argv[7]=="1"); phases=(20,60,100,110,180)
+          cycles=int(sys.argv[5]); restore_test=(sys.argv[6]=="1"); continuation_test=(sys.argv[7]=="1"); ab_test=(sys.argv[8]=="1"); phases=(20,60,100,110,180)
           labels=["C%02d-F%d"%(c,p) for c in range(1,cycles+1) for p in phases]
           done=set(); deadline=time.monotonic()+240
           def alive():
@@ -472,6 +530,8 @@ jobs:
           def sequential_complete():
               try: content=stdout.read_text(errors="replace")
               except FileNotFoundError: content=""
+              if ab_test:
+                  return "ADAPTIVE_AB_BRANCHES_COMPLETE=PASS cycles=2 parent_sha256=" in content
               return "ADAPTIVE_SEQUENTIAL_FRESH_PROCESS_RESUME=PASS cycles={}".format(cycles) in content
           while time.monotonic()<deadline:
               for label in labels:
@@ -512,7 +572,7 @@ jobs:
           summary=[{"file":p.name,"bytes":p.stat().st_size,"sha256":hashlib.sha256(p.read_bytes()).hexdigest()} for p in cps]
           print("ADAPTIVE_WATCHDOG_END captures={}/{} checkpoints={} hashes={}".format(len(done),len(labels),len(cps),json.dumps(summary)),flush=True)
           if len(cps)!=cycles: raise SystemExit("ADAPTIVE_CHECKPOINT_COUNT_FAIL")
-          if not restore_test and not continuation_test and not (out/"progress-report.txt").is_file(): raise SystemExit("ADAPTIVE_GAMEPLAY_PROGRESS_FAIL")
+          if not restore_test and not continuation_test and not ab_test and not (out/"progress-report.txt").is_file(): raise SystemExit("ADAPTIVE_GAMEPLAY_PROGRESS_FAIL")
           if cycles>=2:
               rpt=out/"policy-guard-report.txt"
               if not rpt.is_file() or "ADAPTIVE_POLICY_GUARD=PASS cycle=2" not in rpt.read_text():
@@ -528,7 +588,11 @@ jobs:
           test "$(find "$WORK/captures" -maxdepth 1 -name 'C*-F*.png' | wc -l)" -eq "$((CYCLES * 5))"
           test "$(find "$WORK/captures" -maxdepth 1 -name 'adaptive-cycle-*-f180.sstate' | wc -l)" -eq "$CYCLES"
           test "$(grep -c 'ADAPTIVE_LOAD_EVENT=PASS' "$WORK/captures/pcsx-adaptive.stdout")" -eq "$CYCLES"
-          grep -q "ADAPTIVE_SEQUENTIAL_FRESH_PROCESS_RESUME=PASS cycles=$CYCLES" "$WORK/captures/pcsx-adaptive.stdout"
+          if [ "$AB_TEST" = "1" ]; then
+            grep -q "ADAPTIVE_AB_BRANCHES_COMPLETE=PASS cycles=$CYCLES parent_sha256=$SOURCE_SHA256" "$WORK/captures/pcsx-adaptive.stdout"
+          else
+            grep -q "ADAPTIVE_SEQUENTIAL_FRESH_PROCESS_RESUME=PASS cycles=$CYCLES" "$WORK/captures/pcsx-adaptive.stdout"
+          fi
           if [ "$CYCLES" -ge 2 ]; then grep -q 'ADAPTIVE_POLICY_GUARD=PASS cycle=2' "$WORK/captures/policy-guard-report.txt"; fi
           for state in "$WORK"/captures/adaptive-cycle-*-f180.sstate; do
             bytes="$(stat -c %s "$state")"
@@ -548,7 +612,53 @@ jobs:
           PY
             echo "ADAPTIVE_CHECKPOINT_STRUCTURAL_VALIDATION=PASS file=$(basename "$state") bytes=$bytes sha256=$sha"
           done
-          if [ "$RESTORE_TEST" = "1" ]; then
+          if [ "$AB_TEST" = "1" ]; then
+            test "$CYCLES" -eq 2
+            grep -q 'ADAPTIVE_AB_CARD_CLONES=PASS' "$WORK/captures/ab-card-clones.txt"
+            for cycle in 1 2; do grep -q "ADAPTIVE_AB_PRECONDITION=PASS cycle=$cycle" "$WORK/captures/ab-precondition-cycle-$(printf '%02d' "$cycle").txt"; done
+            grep -q 'ADAPTIVE_DECISION cycle=1 state=menu_or_unknown_choice action=DOWN classifier_action=WAIT' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
+            grep -q 'ADAPTIVE_DECISION cycle=2 state=menu_or_unknown_choice action=WAIT classifier_action=WAIT' "$WORK/captures/pcsx-adaptive-cycle-2.stdout"
+            grep -q 'ADAPTIVE_INPUT cycle=1 action=DOWN phase=press readback=true status=PASS' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
+            grep -q 'ADAPTIVE_INPUT cycle=1 phase=release readback=false status=PASS' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
+            grep -q 'ADAPTIVE_INPUT cycle=2 action=WAIT status=PASS reason=no_input_policy' "$WORK/captures/pcsx-adaptive-cycle-2.stdout"
+            source1="$(sed -n 's/.*ADAPTIVE_SESSION_START cycle=1 source=\([0-9a-f]*\).*/\1/p' "$WORK/captures/pcsx-adaptive.stdout" | head -n1)"
+            source2="$(sed -n 's/.*ADAPTIVE_SESSION_START cycle=2 source=\([0-9a-f]*\).*/\1/p' "$WORK/captures/pcsx-adaptive.stdout" | head -n1)"
+            test "$source1" = "$SOURCE_SHA256" && test "$source2" = "$SOURCE_SHA256"
+            python3 - "$WORK/captures" "$SOURCE_SHA256" <<'PY'
+          import sys, json, hashlib
+          from pathlib import Path
+          import numpy as np
+          from PIL import Image, ImageChops
+          p=Path(sys.argv[1]); parent=sys.argv[2]
+          def img(name):
+              return np.asarray(Image.open(p/name).convert("RGB"), dtype=np.int16)
+          a=img("C01-F20.png"); b=img("C02-F20.png")
+          if a.shape != b.shape or not np.array_equal(a,b):
+              diff=np.any(a!=b,axis=2)
+              raise SystemExit("ADAPTIVE_AB_INITIAL_PARITY_FAIL differing_pixels={} parent_sha256={}".format(int(diff.sum()),parent))
+          lines=["ADAPTIVE_AB_INITIAL_PARITY=PASS phase=F20 identical_pixels={} parent_sha256={}".format(a.shape[0]*a.shape[1],parent)]
+          states=[]
+          for cyc in (1,2):
+              v=json.loads((p/"verification-C%02d-F20.json"%cyc).read_text())
+              states.append(v.get("state"))
+          if states != ["menu_or_unknown_choice","menu_or_unknown_choice"]:
+              raise SystemExit("ADAPTIVE_AB_STATE_PARITY_FAIL states="+repr(states))
+          lines.append("ADAPTIVE_AB_INITIAL_STATE=PASS branch_states="+repr(states))
+          for phase in (60,100,110,180):
+              x=img("C01-F%d.png"%phase); y=img("C02-F%d.png"%phase)
+              diff=np.abs(x-y); pixels=int(np.any(diff!=0,axis=2).sum()); mad=float(diff.mean())
+              lines.append("ADAPTIVE_AB_VISUAL_COMPARE phase=F{} differing_pixels={} mean_abs_rgb_diff={:.5f}".format(phase,pixels,mad))
+          lines.append("ADAPTIVE_AB_ACTION=DOWN;CONTROL=NONE/WAIT")
+          (p/"ab-comparison-report.txt").write_text("\n".join(lines)+"\n")
+          print("\n".join(lines))
+          PY
+            skip1="$(grep -c 'ADAPTIVE_DIALOGUE_SKIP=PASS cycle=1' "$WORK/captures/pcsx-adaptive.stdout" || true)"
+            skip2="$(grep -c 'ADAPTIVE_DIALOGUE_SKIP=PASS cycle=2' "$WORK/captures/pcsx-adaptive.stdout" || true)"
+            test "$skip1" = "$skip2"
+            grep -q 'ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded' "$WORK/captures/pcsx-adaptive.stdout"
+            test "$(grep -c 'ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded' "$WORK/captures/pcsx-adaptive.stdout")" -eq 2
+            echo "ADAPTIVE_AB_TEST=PASS parent_sha256=$SOURCE_SHA256 action=DOWN control=NONE memory_card_clones=identical parent_frame_parity=PASS fresh_processes=2 captures=10 checkpoint_outputs_validated=true" >> "$WORK/captures/pcsx-adaptive.stdout"
+          elif [ "$RESTORE_TEST" = "1" ]; then
             grep -q 'ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded' "$WORK/captures/pcsx-adaptive.stdout"
             grep -q 'ADAPTIVE_X11_CAPTURE label=C01-F20 .*source=external_xwd' "$WORK/captures/pcsx-adaptive.stdout"
             echo "ADAPTIVE_RESTORE_TEST=PASS source_sha256=$SOURCE_SHA256 event=ExecutionFlow::SaveStateLoaded post_restore_frame=C01-F20" >> "$WORK/captures/pcsx-adaptive.stdout"
@@ -573,7 +683,7 @@ jobs:
             grep -q 'ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=' "$WORK/captures/progress-report.txt"
           fi
           if [ "$CYCLES" -ge 2 ] && [ "$RESTORE_TEST" != "1" ] && [ "$CONTINUATION_TEST" != "1" ]; then grep -q 'ADAPTIVE_DIALOGUE_SKIP=PASS cycle=1' "$WORK/captures/pcsx-adaptive.stdout"; fi
-          echo "ADAPTIVE_LOOP_TEST=PASS cycles=$CYCLES captures=$((CYCLES * 5)) checkpoints=$CYCLES fresh_process_checkpoint_resume=checked restore_test=$RESTORE_TEST continuation_test=$CONTINUATION_TEST dialogue_start_policy=checked"
+          echo "ADAPTIVE_LOOP_TEST=PASS cycles=$CYCLES captures=$((CYCLES * 5)) checkpoints=$CYCLES fresh_process_checkpoint_resume=checked restore_test=$RESTORE_TEST continuation_test=$CONTINUATION_TEST ab_test=$AB_TEST dialogue_start_policy=checked"
 
       - name: Upload private adaptive screenshots, decisions, logs and checkpoints
         if: always()
