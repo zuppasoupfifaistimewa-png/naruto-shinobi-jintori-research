@@ -1,3 +1,9 @@
+## ACTIVE SMOKE — validate single-nextTick shutdown with a restore-only run (22 October 2026, 18:45 WIB)
+
+Run [#39772650469](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39772650469) uses the known-restorable Information state SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`, `RESTORE_TEST=1`, `LOOP_CYCLES=1`, revision 27. It was still installing X11 tools at the last check (active since 18:43:28 WIB). Current workflow has the established single out-of-VSync nextTick quit; both prior drain approaches timed out while paused. Check load event, five external X11 frames, exit and external size/header/SHA validation before any new gameplay probe. Do not fire a parallel run or promote untested checkpoints.
+
+---
+
 ## DIAGNOSTIC UPDATE — use single deferred quit after paused drain loops stalled (22 October 2026, 18:39 WIB)
 
 Run #39771377339 failed before the control branch. It did capture five authentic external-X11 frames and its output state was full-size (21,162,276 bytes), had PCSX-Redux SaveState v4 header, and SHA-256 `a2d055634da951b8c9703ac1d30ac0981d4508404527604ddf4e803fe08935b5` in private artifact #12423430123. But the 12 chained nextTick loop did not advance after pausing, leading to watchdog rc=124. The file is not promoted as a resume source because clean emulator completion and the paired test did not happen.
