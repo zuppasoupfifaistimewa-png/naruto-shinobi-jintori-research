@@ -1,3 +1,16 @@
+## VERIFIED UPDATE — saved checkpoint was restored in a fresh emulator process (22 October 2026, 17:43 WIB)
+
+The checkpoint continuation mechanism has now passed an actual bounded restore test, but the Story Mode agent is not yet proven capable of multi-stage autonomous completion. Story Mode remains **NOT complete**.
+
+- Smoke run #39763526377 created and externally validated checkpoint `adaptive-cycle-01-f180.sstate` (21,162,617 bytes; SHA-256 `b55495934f9ba98165268627b35904918a4dd3983e6d90bb66e2662dfa059e17`) in private artifact #12419631005.
+- Restore run [#39764239171](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39764239171) used that exact hash in a fresh process. Logs recorded `ExecutionFlow::SaveStateLoaded`; five post-restore authentic external-X11 captures passed validation; the emulator exited 0; the checkpoint created by that process passed shell size/header/SHA checks after exit.
+- The restored checkpoint (private artifact #12419357425) is 21,162,934 bytes, SHA-256 `16f697fa95c16661a639ad46b55f90008e60200d1ee860058b12d7b1110d073b`.
+- The bounded two-cycle continuation test [#39765193287](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39765193287) is active with this exact source checkpoint, `CONTINUATION_TEST=1`, `LOOP_CYCLES=2`. Passing its workflow summary alone is not sufficient: audit its 10 authentic images, two fresh-process load events, checkpoint chain and external post-exit hashes.
+
+Only allow calibrated inputs. The restored board state is `map_after_move` with conservative `WAIT`; it must not blindly input Down/Circle. Keep unknown states fail-closed. No private gameplay images or savestates are committed/publicly linked.
+
+---
+
 ## VERIFIED UPDATE — smoke checkpoint saved and externally validated (22 October 2026, 17:35 WIB)
 
 This is a successful one-cycle harness result, **not** proof Story Mode is complete and not yet proof the resulting checkpoint can be restored.
