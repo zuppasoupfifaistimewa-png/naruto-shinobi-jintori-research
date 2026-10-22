@@ -1,3 +1,17 @@
+## EXPERIMENT UPDATE — matched menu A/B branches are now reproducible; initial run hit report bug (22 October 2026, 17:59 WIB)
+
+The first one-DOWN-versus-NONE run #39766331759 did not finish its comparison report because Python applied `%` formatting to a `Path` object. This was an audit-code failure, not evidence that DOWN had no effect. Do not promote that run's output checkpoint chain.
+
+Its private evidence showed:
+- identical parent checkpoint SHA-256 `7679cfbd3576c3202abcc299b907939ab4e4529e3a0aa260e780806b1e21cc92` for both branches;
+- identical independent baseline/action/control Memory Card hashes `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`;
+- 0 pixel differences at F20 across 1,024,000 pixels, both states classified `menu_or_unknown_choice`;
+- DOWN input readback passed in the action branch; the control branch remained WAIT; each branch output passed size/header/SHA structural validation.
+
+The path-format bug is fixed in commit [0041262a4c83edbabdbfb658ff3c572ad9e3a30c](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/0041262a4c83edbabdbfb658ff3c572ad9e3a30c). Rerun [#39767083708](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39767083708) is active. Its outcome must be audited before recording any new rule. Story Mode remains NOT COMPLETE.
+
+---
+
 ## VERIFIED UPDATE — two bounded fresh-process cycles passed (22 October 2026, 17:47 WIB)
 
 This verifies resumable bounded sessions, not autonomous completion of Story Mode.
