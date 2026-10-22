@@ -1,3 +1,13 @@
+## ACTIVE — revision 33 map directional A/B uses explicit expected state (22 October 2026, 19:33 WIB)
+
+Run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) is active, started 19:32:59 WIB; timeout about 19:52:59 WIB. Do not start a parallel player. Its marker explicitly sets AB_EXPECTED_STATE=map_after_move and pins the independently restored source SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc from run #39776518701.
+
+After it ends, require exact parent SHA / two load events, F20 map_after_move state and pixel parity, byte-identical Memory Card clones, DOWN press/release readback true/false, WAIT control, ten authentic 1280×800 frames, two exit 0s, post-exit checkpoint validation for both outputs and the generated comparison report. Review screenshots. The candidate effect (DOWN moves board focus from Naruto's tile to adjacent empty land 空き地 (Tanah kosong), value 140) remains HYPOTHESIS until corrected run passes.
+
+Revision32 (#39777917775) had the right input and screenshots but failed because its old checkout forced menu_or_unknown_choice in the final A/B state gate; do not promote its outputs. Story Mode remains NOT COMPLETE. Keep gameplay evidence private/out of Git; use START to skip dialogue.
+
+---
+
 ## REVISION 32 DIAGNOSTIC — old state-parity gate rejected correct map baseline (22 October 2026, 19:30 WIB)
 
 Run #39777917775 failed the workflow's final semantic-state gate, not the emulator session. Artifact #12426395775 shows both arms loaded source SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc in fresh processes; F20 was pixel-identical (0 mismatch/1,024,000 pixels); two load events; ACTION DOWN readback true then false; control WAIT; 10 authentic 1280×800 captures; both emulator exits 0; and both output checkpoint structure/hash validations passed. Failure: old checkout SHA b77f74af5b258dfcd7d8bfbeeeca0c685c5fc7b7 hard-coded Python states to menu_or_unknown_choice, while both actual F20 states correctly classify as map_after_move. No ab-comparison-report.txt was written. Neither output state is promoted.
