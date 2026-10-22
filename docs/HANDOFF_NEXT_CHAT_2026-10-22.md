@@ -1,3 +1,13 @@
+## ACTIVE PLAYER — revision44 restore-only of Roulette-highlighted command menu
+
+Run [#39867381637](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39867381637) active; started 05:46:45 WIB and hard timeout about 06:06:45 WIB. Exact source: run #39866820866 / artifact #12463489344 / adaptive-cycle-01-f180.sstate / SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`, size 21,162,920, v4. RESTORE_TEST=1, one cycle, revision44. Do not start another player.
+
+Revision43 VERIFIED that CROSS from map returns to command menu: ACTION F100/F180 show `ルーレット` (Roulette) highlighted; WAIT remains map. Revision44 must confirm this menu state survives a fresh emulator process: SaveStateLoaded/restore PASS, five real 1280×800 screenshots, F20 Roulette highlight, exit0, external output checkpoint size/v4-header/SHA validation. Promote only input hash 609823…52bbffb7 upon success; the restore run's output itself remains unpromoted until an independent restore.
+
+After pass, run revision45 CIRCLE vs WAIT from the proven menu checkpoint. Workflow permits CIRCLE only for menu-state A/B, never map or dialogue. Source screenshots already show Roulette selected. Inspect new captures to confirm wheel entry; Circle must never be used for dialogue skipping—use START. Story Mode remains NOT COMPLETE.
+
+---
+
 ## LATEST VERIFIED MENU NAVIGATION — CROSS returns from map to command menu (revision43)
 
 Run [#39866820866](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39866820866) success at 22:43:31 UTC / 05:43:31 WIB. Private artifact #12463489344 passed ZIP integrity and actual paired screenshots were inspected. Both processes loaded source SHA `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`, two load events, exact F20 pixel parity, identical disposable cards, CROSS true/false input readback, WAIT control, ten valid authentic X11 images, exit0 both, two validated output states, and comparison report.
