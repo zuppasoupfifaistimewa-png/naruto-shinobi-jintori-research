@@ -1,3 +1,14 @@
+## VERIFIED UPDATE — fresh-process restore of Ninjutsu-highlight state passed (22 October 2026, 18:10 WIB)
+
+- Restore run [#39768371975](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768371975) loaded the matched DOWN/ACTION checkpoint from run #39767790829. Exact source SHA-256: `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`.
+- The log explicitly verified `ExecutionFlow::SaveStateLoaded`; five genuine external-X11 frames were valid, F20 visibly showed the selected `忍術` (Ninjutsu) row, and emulator exit was 0.
+- The new state produced by the restore-test process is 21,162,575 bytes, SHA-256 `fa03a1840612749810453566a25805e89a4aa21ad64664695e09ed7222b77a9e`. Its structural checks passed after exit, but do not promote it until another fresh-process restore. Continue to use the source checkpoint above as the pinned parent for the next paired test.
+- Next: paired ACTION=DOWN vs NONE/WAIT from the same source and cloned Memory Cards, to test whether DOWN from Ninjutsu moves to `情報` (Informasi). Require identical F20 pixels, matching source hash, input readback, both fresh-process load events and external validation of output checkpoint structure. Do not confirm any menu entry with Circle under the current guard.
+
+Story Mode remains not complete.
+
+---
+
 ## NEXT VALIDATION — restore the matched DOWN successor before further gameplay (22 October 2026, 18:08 WIB)
 
 Run [#39768371975](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768371975) is queued to restore the ACTION-branch checkpoint from A/B run #39767790829. Source SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`, size 21,163,486 bytes, private artifact #12420204586 only. Marker revision 21: one cycle, `RESTORE_TEST=1`, other experiment modes disabled.
