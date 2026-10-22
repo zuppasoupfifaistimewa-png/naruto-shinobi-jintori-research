@@ -1,3 +1,11 @@
+## DIAGNOSTIC UPDATE — Information-down matched test stopped on invalid checkpoint (22 October 2026, 18:23 WIB)
+
+Run [#39769826213](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39769826213) produced five valid authentic X11 captures for the ACTION arm, with F20 showing `情報` (Informasi) selected. The source SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e` and identical Memory Card clones were verified; DOWN press/release readbacks passed. However, the emulator exited 139 and the new savestate file was only 2,097,152 bytes; external size validation rejected it, so no control branch ran and no rule result can be claimed.
+
+Workflow commit `13da48ab08ef40d0be8c8bbc850b7babbb9b107e` adds a controlled 12-VSync no-input drain after write/close and before pause/quit. This is a best-effort flush safeguard; retry output must still pass external size/header/SHA and matched-state guards. Never trust a checkpoint only from the successful write/close log. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE PROBE — next row after Information menu item (22 October 2026, 18:20 WIB)
 
 Run [#39769826213](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39769826213) is active from the proven-restorable Information-selection parent checkpoint `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`. ACTION sends one DOWN; control sends NONE/WAIT; Memory Cards are cloned from the same baseline but stored separately. This tests whether the highlight moves from `情報` (Informasi) to `マップを見る` (Lihat peta). Do not claim until matching F20 frames, input readback, both load events and checkpoint validation are audited. Run was starting at the last check.
