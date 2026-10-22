@@ -1,3 +1,11 @@
+## ACTIVE PLAYER — revision45 Circle vs WAIT on visibly highlighted Roulette menu
+
+Run [#39867730674](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39867730674) active, started 05:49:51 WIB, hard timeout about 06:09:51 WIB. Exact source is run #39866820866 / artifact #12463489344 / `adaptive-cycle-01-f180.sstate` / SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`, independently restored in run44 and visually showing `ルーレット` (Roulette) highlighted. Marker: AB_TEST=1; AB_ACTION=CIRCLE; AB_EXPECTED_STATE=menu_or_unknown_choice; two cycles, restore/continuation off; revision45. Current workflow blob `4021462372a7573132783b21285d35b0da25eab8` permits Circle only in the menu-state A/B branch.
+
+Do not launch parallel player. Require all paired gates after completion: exact source SHA, two load events, F20 parity, menu state both arms, cloned cards identical, Circle true/false readback, WAIT control, ten authentic 1280×800 X11 frames, both exits0, both checkpoint validations, comparison report. Visually inspect whether Circle opens roulette; WAIT should leave highlighted menu. This is contextual menu confirmation, not dialogue skip. Use START for any dialogue. Story Mode remains NOT COMPLETE.
+
+---
+
 ## REVISION44 RESTORE PASSED — Roulette menu selection is preserved
 
 Run [#39867381637](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39867381637) succeeded at 22:48:12 UTC / 05:48:12 WIB. Private artifact #12464118614 passed ZIP integrity; the authentic F20 screenshot shows the command menu with `ルーレット` (Roulette) highlighted. The fresh emulator process logged `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five valid 1280×800 X11 captures, exit0, external output checkpoint validation all passed.
