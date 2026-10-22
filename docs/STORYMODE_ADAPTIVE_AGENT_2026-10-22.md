@@ -1,3 +1,16 @@
+## VERIFIED UPDATE — two bounded fresh-process cycles passed (22 October 2026, 17:47 WIB)
+
+This verifies resumable bounded sessions, not autonomous completion of Story Mode.
+
+- Run [#39765193287](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39765193287) passed with 10/10 authentic external X11 frames. Both emulator processes logged `ExecutionFlow::SaveStateLoaded`, used sequentially linked checkpoints, and exited with code 0.
+- The starting checkpoint was restored in run #39764239171 (21,162,934 bytes, SHA-256 `16f697fa95c16661a639ad46b55f90008e60200d1ee860058b12d7b1110d073b`). New cycle-1 checkpoint: 21,163,161 bytes, SHA-256 `fd46af37af86b0843651ee6baa5d10bd6cb75123d68c87e8319a647130d6b512`. New cycle-2 checkpoint: 21,163,013 bytes, SHA-256 `7679cfbd3576c3202abcc299b907939ab4e4529e3a0aa260e780806b1e21cc92`. Both passed raw size, v4 header and SHA-256 checks in shell after process exit; artifacts remain private (#12419528763).
+- Authentic frames show the board transition to Iruka's dialogue `いいかナルト。` (Dengarkan baik-baik, Naruto), START used for skip, then a menu of choices. Because the menu choice isn't calibrated for action beyond conservative waiting, cycle 2 stays `menu_or_unknown_choice/WAIT`.
+- Next: paired one-action-versus-NONE menu test from the immutable cycle-2 parent with identical but separate disposable Memory Cards. Press DOWN only when the initial menu screen is confirmed identically in both arms; never use Circle for this probe. The comparison should inspect visible menu selection and subsequent transition; the single pair is experimental evidence, not a general rule.
+
+Story Mode stays NOT COMPLETE pending authentic in-game ending/results evidence.
+
+---
+
 ## VERIFIED UPDATE — saved checkpoint was restored in a fresh emulator process (22 October 2026, 17:43 WIB)
 
 The checkpoint continuation mechanism has now passed an actual bounded restore test, but the Story Mode agent is not yet proven capable of multi-stage autonomous completion. Story Mode remains **NOT complete**.
