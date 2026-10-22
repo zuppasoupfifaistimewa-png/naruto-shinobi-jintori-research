@@ -1,3 +1,13 @@
+## ACTIVE PLAYER — revision46 restore-only tests the roulette checkpoint saved before exit134
+
+Run [#39868354205](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39868354205) active; started 05:55:24 WIB, hard timeout about 06:15:24 WIB. Marker verified at checkout commit `096a5cdc411e3ce26fd44f9bde8ff4ed909313c7`: source run #39867730674 / artifact #12464258211 / `adaptive-cycle-01-f180.sstate` / SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; RESTORE_TEST=1, one cycle, revision46.
+
+The partial source file was locally validated: 21,162,546 bytes, `PCSX-Redux SaveState v4` header and matching SHA. Revision45 had authentic screenshots showing Roulette wheel after Circle, then a post-session heap abort (exit134) before control branch; no A/B result yet. Workflow commit `11b308f162aa1ef2f5b5167cd17b4340718a03de` accepts that shutdown status only with the session-finished marker and external output checkpoint validation. It also adds a guarded `roulette` expected-state branch for Circle-vs-WAIT.
+
+Do not start another player. Revision46 must log load/restore PASS, capture 5 authentic 1280×800 frames with the wheel visible, complete the gated exit, and externally validate the new output checkpoint. Keep revision46 output unpromoted until another fresh-process restore. If it passes, next is revision47 Circle-vs-WAIT from `roulette` state to test wheel stop/result vs continued spinning. START only for dialogues. Story Mode remains NOT COMPLETE.
+
+---
+
 ## REVISION45 AUDIT — Circle reached roulette, but the A/B failed at shutdown
 
 Run #39867730674 failed after capturing the ACTION branch and before starting the WAIT branch. Artifact #12464258211 passed ZIP integrity; real screenshots C01-F20/F60/F100/F110/F180 were inspected. F20 showed `ルーレット` (Roulette) highlighted in the source command menu; Circle input readback true/false passed. F60 through F180 display the roulette wheel.
