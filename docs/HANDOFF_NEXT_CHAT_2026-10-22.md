@@ -1,3 +1,13 @@
+## LATEST DIAGNOSTIC — second Information-down A/B attempt timed out; nextTick-drain retry next (22 October 2026, 18:31 WIB)
+
+- Run [#39770465538](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39770465538) timed out (exit 124) before the control branch. It had five valid authentic ACTION frames, DOWN press/release readback, identical cloned Memory Card hashes and exact parent source `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`. The 12-VSync drain did not progress after save; emulator did not exit before 120s. Private artifact #12422367156 contains an apparently full-size checkpoint (21,162,494 bytes, v4 header, SHA-256 `0c33a47cb9e6f2dfb09c568410ca125acbae6f46f84692b8589a5c903442f564`) and authentic screenshots showing the ACTION branch highlight on `マップを見る` (Lihat peta) from F60 onward, but no NONE control branch was produced and exit 124 means the official post-exit workflow guard did not pass. Keep the action result HYPOTHESIS and do not use its output as a trusted source.
+- Workflow commit `3e052b8e77cfcd966f5e5e05a2f7341ed2ff0374` removes the VSync countdown and uses a paused recursive chain of 12 `PCSX.nextTick` callbacks before quit; not yet validated.
+- Next run is marker revision 26, same known-restorable Information parent SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`, ACTION=DOWN versus NONE/WAIT, two cycles. Require the whole matched audit and structural/hash validation for both checkpoint outputs before making a rule VERIFIED. No Circle confirmation.
+
+Story Mode remains NOT COMPLETE.
+
+---
+
 ## LATEST DIAGNOSTIC — checkpoint full-sized, but drain stalled and process timed out (22 October 2026, 18:31 WIB)
 
 Story Mode is **NOT COMPLETE**. No ending/results screenshot exists.
