@@ -1,3 +1,17 @@
+## NEWEST HANDOFF UPDATE — two-cycle continuation passed; paired menu-action experiment next (22 October 2026, 17:47 WIB)
+
+Story Mode is **NOT complete**.
+
+- Run [#39765193287](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39765193287) passed the bounded two-cycle continuation test. Ten authentic external-X11 screenshots passed 1280x800 validation and were visually checked from private artifact #12419528763. Both emulator sessions logged `ExecutionFlow::SaveStateLoaded`; cycle 2 resumed the precise SHA of cycle 1's externally validated checkpoint; both sessions exited 0.
+- Cycle 1 checkpoint: 21,163,161 bytes; SHA-256 `fd46af37af86b0843651ee6baa5d10bd6cb75123d68c87e8319a647130d6b512`.
+- Cycle 2 checkpoint: 21,163,013 bytes; SHA-256 `7679cfbd3576c3202abcc299b907939ab4e4529e3a0aa260e780806b1e21cc92`.
+- Both states passed shell validation after their emulator processes ended. The screenshot sequence showed map_after_move → Iruka dialogue → START skip → right-side menu. The Japanese text `いいかナルト。` means (Dengarkan baik-baik, Naruto). On the cycle-2 menu, classifier chose `WAIT` because the menu choice semantics are not yet fully calibrated. This is correct fail-closed behavior, not a game completion.
+- Next experiment should be a paired `DOWN` versus `NONE/WAIT` test starting from the exact immutable cycle-2 checkpoint above. Clone the same baseline Memory Card into two separate disposable files, fresh emulator process per branch, capture five external X11 frames each, require same F20 parent screen before applying DOWN only in the action branch, then compare highlight/visual transition. Keep Circle out of the experiment and START only for visible dialogue. Record only directly supported observations; do not generalize beyond the test.
+
+Story Mode not complete. Keep ROM, BIOS, Memory Cards, savestates and all X11 images out of Git; private artifact stays private. Only the permitted research repo may be accessed or changed.
+
+---
+
 ## NEWEST HANDOFF UPDATE — checkpoint restore verified; two-cycle continuation active (22 October 2026, 17:43 WIB)
 
 Story Mode is **NOT complete**; no authentic ending/results screenshot exists.
