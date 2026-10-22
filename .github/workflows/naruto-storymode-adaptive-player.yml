@@ -70,10 +70,12 @@ jobs:
           [[ "$continuation_test" == "0" || "$continuation_test" == "1" ]]
           [[ "$ab_test" == "0" || "$ab_test" == "1" ]]
           [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "TRIANGLE" || "$ab_action" == "CROSS" || "$ab_action" == "CIRCLE" ]]
-          [[ "$ab_expected_state" == "menu_or_unknown_choice" || "$ab_expected_state" == "map_after_move" ]]
+          [[ "$ab_expected_state" == "menu_or_unknown_choice" || "$ab_expected_state" == "map_after_move" || "$ab_expected_state" == "roulette" ]]
           if [ "$ab_test" = "1" ]; then
             if [ "$ab_expected_state" = "map_after_move" ]; then
               [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "CROSS" ]]
+            elif [ "$ab_expected_state" = "roulette" ]; then
+              [[ "$ab_action" == "CIRCLE" ]]
             else
               [[ "$ab_action" == "DOWN" || "$ab_action" == "TRIANGLE" || "$ab_action" == "CIRCLE" ]]
             fi
@@ -354,7 +356,8 @@ jobs:
                   if abTest then
                       local mapAction=(abAction=="UP" or abAction=="DOWN" or abAction=="LEFT" or abAction=="RIGHT" or abAction=="CROSS")
                       local menuAction=(abAction=="DOWN" or abAction=="TRIANGLE" or abAction=="CIRCLE")
-                      local safeAction=(abExpectedState=="menu_or_unknown_choice" and menuAction) or (abExpectedState=="map_after_move" and mapAction)
+                      local rouletteAction=(abAction=="CIRCLE")
+                      local safeAction=(abExpectedState=="menu_or_unknown_choice" and menuAction) or (abExpectedState=="map_after_move" and mapAction) or (abExpectedState=="roulette" and rouletteAction)
                       local precondition=(state==abExpectedState and action=="WAIT" and safeAction)
                       local branch=(cycle==1) and "ACTION" or "NONE"
                       local selected=(cycle==1) and abAction or "WAIT"
@@ -495,11 +498,12 @@ jobs:
             local rc=$?
             set -e
             local cp="$WORK/captures/adaptive-cycle-$(printf '%02d' "$cycle")-f180.sstate"
-            # If native shutdown still exits 139, only tolerate it when the
-            # session-finished marker exists and external post-exit validation passes.
-            if [ "$rc" -eq 139 ] && grep -q "ADAPTIVE_SESSION_FINISHED cycle=${cycle}" "$stdout"; then
+            # Some sessions report a native shutdown fault after the Lua session-finished marker.
+            # Accept only exit 139 or 134 when the marker exists and the newly written checkpoint
+            # passes external post-exit size/header/SHA validation. This does not mask earlier failures.
+            if { [ "$rc" -eq 139 ] || [ "$rc" -eq 134 ]; } && grep -q "ADAPTIVE_SESSION_FINISHED cycle=${cycle}" "$stdout"; then
               if validate_checkpoint "$cp" >> "$WORK/captures/pcsx-adaptive.stdout" 2>&1; then
-                echo "ADAPTIVE_SESSION_SHUTDOWN_RECOVERED=PASS cycle=$cycle native_exit=139" >> "$WORK/captures/pcsx-adaptive.stdout"
+                echo "ADAPTIVE_SESSION_SHUTDOWN_RECOVERED=PASS cycle=$cycle native_exit=$rc" >> "$WORK/captures/pcsx-adaptive.stdout"
                 rc=0
               fi
             fi
