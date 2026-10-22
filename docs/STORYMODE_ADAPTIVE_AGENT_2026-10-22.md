@@ -1,3 +1,13 @@
+## ACTIVE — revision50 restore-only board-after-Circle checkpoint
+
+Run [#39872449049](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39872449049) is active at 06:32:21 WIB 23 Oct 2026; timeout about 06:52:21 WIB. Marker is pinned to run #39870243073, artifact `naruto-storymode-adaptive-player-private`, file `adaptive-cycle-01-f180.sstate`, SHA-256 `7f8771873b075830b3dadf14ef47a343ceb0f026790b9beba2af0bfb614debea`, `RESTORE_TEST=1`, one cycle. Do not start parallel player.
+
+Run49 is now a complete verified A/B: exact common source SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; two fresh processes loaded it, F20 exact parity and roulette state, cloned cards identical, Circle press/release true/false, control WAIT, ten actual 1280×800 captures; both session-finished and externally validated outputs. Native exit124/139 were accepted only by gated recovery after marker+checkpoint validation. Screenshots: Circle still roulette at F60/F100/F110 and board by F180; WAIT still roulette at F180. Rule VERIFIED in this context: Circle from roulette transitions back to board by F180; it is not dialogue skip. Private artifact #12466141660.
+
+Run50 must prove the ACTION checkpoint independently restorable via explicit load event, restore PASS, five authentic screenshots with board visible, accepted shutdown and external output size/v4-header/SHA validation. Keep the new output unpromoted pending another restore. Story Mode remains NOT COMPLETE; START-only dialogue skipping, no private game assets in Git.
+
+---
+
 ## VERIFIED RULE — CIRCLE from roulette transitions to board by F180 (revision49, 23 October 2026, 06:14 WIB)
 
 Run #39870243073 success. Private artifact #12466141660 passes ZIP integrity. Ten genuine external-X11 screenshots validated at 1280×800. Two independent fresh emulator processes loaded identical parent SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`, logged two `ExecutionFlow::SaveStateLoaded` events, started with pixel-identical F20 and roulette classification, and used byte-identical temporary Memory Cards. ACTION CIRCLE press/release reads true/false; CONTROL WAIT sent no input. Both branches emitted session-finished markers. Native emulator shutdown exits were 124/139; the revised gate recovered them only after the session-finished marker and output checkpoint validations, and recorded effective exit0. Both outputs passed size, PCSX-Redux SaveState v4 header and SHA-256 validation; `ab-comparison-report.txt` was generated.
