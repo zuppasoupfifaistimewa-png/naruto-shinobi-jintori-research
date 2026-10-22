@@ -1,3 +1,15 @@
+## REVISION45 PARTIAL — Circle opened the roulette wheel; shutdown aborted before control
+
+Run #39867730674 failed after the ACTION session. Private artifact #12464258211 passed ZIP integrity; direct inspection of authentic C01 screenshots shows the command menu with `ルーレット` (Roulette) highlighted at F20, then roulette wheel by F60/F100/F110/F180 after one Circle press/release (readback true/false). The emulator then logged session finished but aborted with `corrupted size vs. prev_size`, exit134 before control cycle; no paired control images/report. Keep the gameplay interpretation as **HYPOTHESIS** until A/B is complete.
+
+ACTION state candidate in that artifact: `adaptive-cycle-01-f180.sstate`, 21,162,546 bytes, v4, SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`. Only local structural validation so far; not promoted until fresh-process restore.
+
+Workflow commit `11b308f162aa1ef2f5b5167cd17b4340718a03de` adds a narrowly gated recovery of exit134 only if a session-finished marker and external post-exit checkpoint validation pass, and permits `AB_EXPECTED_STATE=roulette` only with Circle.
+
+Next revision46 restore-only from run #39867730674/artifact #12464258211/file adaptive-cycle-01-f180.sstate/SHA `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`. Verify wheel in five authentic screenshots, load event, exit/checkpoint gates, and new output validation. Then revision47 Circle vs WAIT from roulette-state source to test wheel stopping/selection. START remains the only dialogue-skip input. Story Mode NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision45 contextual Circle on Roulette menu
 
 Run #39867730674 active; started 05:49:51 WIB, timeout about 06:09:51 WIB. Source run #39866820866 / artifact #12463489344 / checkpoint adaptive-cycle-01-f180.sstate / SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`. Restore run #39867381637 independently confirmed F20 with `ルーレット` (Roulette) highlighted. Marker: AB_TEST=1, AB_ACTION=CIRCLE, AB_EXPECTED_STATE=menu_or_unknown_choice, two cycles. Workflow permits Circle only under menu-state guard.
