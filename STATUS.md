@@ -1,3 +1,15 @@
+## ACTIVE RUN — revision36 restore-only test of post-DOWN scrolled map focus (22 October 2026, 19:49 WIB)
+
+Run [#39781495023](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39781495023) is the only active player. Its committed marker was re-read and is correct: source run #39780755350, private artifact naruto-storymode-adaptive-player-private, checkpoint adaptive-cycle-01-f180.sstate, source SHA-256 `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`; RESTORE_TEST=1, CONTINUATION_TEST=0, AB_TEST=0, LOOP_CYCLES=1, REVISION=36.
+
+Run started at 19:49:08 WIB; hard timeout about 20:09:08 WIB. Current outcome has not yet been audited. Do not launch any other player concurrently.
+
+Acceptance gates: exact source checksum; `ExecutionFlow::SaveStateLoaded` plus `ADAPTIVE_RESTORE_TEST=PASS`; five genuine external-X11 screenshots at 1280×800; F20 visibly retains post-DOWN scrolled/focused map state (empty-land panel hidden, pointer toward lower cell); emulator exit0; newly emitted output checkpoint passes external size, `PCSX-Redux SaveState v4` header and SHA-256 check. Only if these pass is input hash b9717348… promoted to restorable. New output emitted by this restore run remains unpromoted until its own fresh-process restore.
+
+Story Mode remains NOT COMPLETE. Verified board navigation currently means DOWN changes view/focus from empty-land140 and WAIT preserves it; do not infer capture/territory ownership. Keep all game assets private/out of Git, use START for dialogue.
+
+---
+
 ## VERIFIED RESULT — DOWN from empty-land focus advances board focus and scrolls viewport (revision 35, 22 October 2026, 19:46 WIB)
 
 Run [#39780755350](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780755350) completed successfully at 19:45:25 WIB. Raw logs and private artifact #12426786721 were audited, including direct inspection of authentic screenshots.
