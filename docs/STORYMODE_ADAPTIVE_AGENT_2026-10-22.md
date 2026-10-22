@@ -1,3 +1,13 @@
+## RESTORE VERIFIED — revision37 post-second-DOWN source is restorable (revision38)
+
+Run #39783158903 passed restore-only from run #39782011370 / artifact #12426797521 / checkpoint adaptive-cycle-01-f180.sstate / SHA-256 `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`, size 21,162,960, v4. Valid retry artifact #12427598163 confirms load event, `ADAPTIVE_RESTORE_TEST=PASS`, five real 1280×800 X11 screenshots retaining map/cursor post-second-DOWN state, exit0 and external output checkpoint validation. Apparent 100/142 in early frames is foliage occluding digits; later frames show 140. Exact input SHA 4989… promoted.
+
+New output SHA `c4acb2b62a9891b597c1195a2dead7ccce902abddf0c5ec9b4c50b76142a7a33`, size21,162,978,v4 remains unpromoted pending its own fresh-process restore.
+
+Next revision39: extend bounded map A/B valid inputs to the four directions only (UP/DOWN/LEFT/RIGHT). Exclude Triangle and all confirm buttons from the map-direction whitelist. Probe RIGHT vs WAIT from source #39782011370/artifact #12426797521/checkpoint adaptive-cycle-01-f180.sstate/SHA 4989fc1f…; AB_EXPECTED_STATE=map_after_move, two cycles. Require all existing pair gates and manually inspect cursor/viewport. No confirming a tile. Story Mode remains NOT COMPLETE.
+
+---
+
 ## VERIFIED MAP FOCUS — revision37 second DOWN (22 October 2026)
 
 Run #39782011370 passed the matched DOWN-vs-WAIT experiment with source SHA `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`. Artifact #12426797521 verified: two explicit SaveStateLoaded events, exact F20 parity, same disposable cards, DOWN press/release true/false, WAIT control, ten authentic 1280×800 captures, exits0, both checkpoint external validations and comparison report.
