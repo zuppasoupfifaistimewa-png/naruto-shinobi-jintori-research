@@ -1,3 +1,24 @@
+## NEWEST HANDOFF UPDATE — checkpoint restore verified; two-cycle continuation active (22 October 2026, 17:43 WIB)
+
+Story Mode is **NOT complete**; no authentic ending/results screenshot exists.
+
+### Verified checkpoint chain
+- Smoke run #39763526377 succeeded; private checkpoint #12419631005: `adaptive-cycle-01-f180.sstate`, 21,162,617 bytes, SHA-256 `b55495934f9ba98165268627b35904918a4dd3983e6d90bb66e2662dfa059e17`.
+- Fresh-process restore run [#39764239171](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39764239171) succeeded and was audited. It explicitly logged `ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded`, validated five authentic external-X11 captures after load, exited 0, and shell validation after exit confirmed its checkpoint size/header/SHA-256:
+  - artifact #12419357425 (private)
+  - `adaptive-cycle-01-f180.sstate`
+  - 21,162,934 bytes
+  - SHA-256 `16f697fa95c16661a639ad46b55f90008e60200d1ee860058b12d7b1110d073b`
+- Workflow commits now allow an immutable source selector and a continuation-test mode. Continuation mode has a two-cycle-only guard, requires 10 authentic captures, two fresh-process load events, external post-exit checkpoint validation, a passing cycle-2 policy guard and differing F20/F180 screenshot hashes within each cycle.
+- Run [#39765193287](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39765193287) has been triggered at marker revision 17 from run #39764239171's exact checkpoint hash, `RESTORE_TEST=0`, `CONTINUATION_TEST=1`, `LOOP_CYCLES=2`. It was in progress during this update (container initialization); no result is yet verified.
+
+### Exact next action
+Inspect run #39765193287 after completion: confirm ten 1280x800 authentic external X11 frames and inspect them privately; both sessions must log `ExecutionFlow::SaveStateLoaded`; ensure session 2 resumes the hash of session 1's validated checkpoint; both new savestates must pass shell size/header/SHA checks after process exit; verify cycle-2 policy guard, visual-delta checks, and normal process exit. If any condition fails, do not promote its checkpoint or begin the matched one-action-versus-NONE gameplay experiment.
+
+Keep ROM, BIOS, Memory Cards, savestates and gameplay screenshots out of Git and keep artifacts private. Use START for visible Story Mode dialogue; Circle only when the contextually valid YES choice is visibly highlighted. Translate Japanese directly into Indonesian parentheses. Never claim completion without authentic ending/results evidence.
+
+---
+
 ## NEWEST HANDOFF UPDATE — one-cycle smoke checkpoint validated; fresh-process restore underway (22 October 2026, 17:35 WIB)
 
 Story Mode is **NOT complete**. No authentic ending/results screenshot exists. The smoke checkpoint passed external structural validation but has not yet been restored by a fresh process.
