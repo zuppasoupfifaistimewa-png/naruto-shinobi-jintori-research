@@ -1,3 +1,14 @@
+## ACTIVE RUN — revision39 UP from empty-land140 versus WAIT (22 October 2026, 20:11 WIB)
+
+Run [#39784493293](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39784493293) is the only active player. Its committed marker is verified at head SHA `4893e1e0eb6cdcaf9fff052c9c794ae62327858a` and the checked-out workflow supports map-state UP direction. Exact configuration:
+SOURCE_RUN=39779256427; SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private; SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate; SOURCE_SHA256=`58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`; RESTORE_TEST=0; CONTINUATION_TEST=0; AB_TEST=1; AB_ACTION=UP; AB_EXPECTED_STATE=map_after_move; LOOP_CYCLES=2; REVISION=39.
+
+Run started at 20:10:11 WIB; timeout approximately 20:30:11 WIB. Do not launch another player while active. Audit after completion: same source SHA for both processes, two explicit load events, F20 map-state pixel parity, identical cloned Memory Cards, UP press/release true/false, WAIT control, all 10 authentic 1280×800 captures, both exit0, both output checkpoint external size/v4-header/SHA validation, and comparison report. Inspect actual screens to see whether UP returns selection from `空き地` (Tanah kosong) value140 to Naruto's red tile value60. No confirmation input.
+
+Caveat from revision38: post-second-DOWN candidate loads, but its F20 transient view (cell number near 100) settles back near the 140 area by F60. Do not use it as stable cursor source. Story Mode remains NOT COMPLETE.
+
+---
+
 ## RESTORE AUDIT — revision38 loads, but second-DOWN focus is not stable across frames (22 October 2026, 20:05 WIB)
 
 Run [#39783158903](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39783158903) completed with success at 20:03:51 WIB. Private artifact #12427598163 was downloaded and audited. It restored the revision37 ACTION output SHA-256 `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177` (21,162,960 bytes, v4), explicitly logged `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`, captured five genuine 1280×800 X11 screenshots, exited 0, and produced a new output checkpoint passing external size/header/SHA validation: `c4acb2b62a9891b597c1195a2dead7ccce902abddf0c5ec9b4c50b76142a7a33`, 21,162,978 bytes, v4.
