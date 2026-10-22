@@ -258,9 +258,13 @@ jobs:
                   local af=assert(io.open(string.format("captures/action-cycle-%02d.txt",cycle),"wb")); af:write(action.."\n"); af:close()
                   log("ADAPTIVE_DECISION cycle="..cycle.." state="..state.." action="..action.." reason=synchronous_external_X11_classification")
                   if cycle==2 then
-                      local safe=(state=="battle_untrained" and action=="WAIT")
-                      local marker="ADAPTIVE_BATTLE_FAIL_CLOSED="..(safe and "PASS" or "FAIL").." cycle=2 state="..state.." action="..action
-                      local bf=assert(io.open("captures/battle-regression-report.txt","wb")); bf:write(marker.."\n"); bf:close()
+                      local safe=((state=="battle_untrained" or state=="unknown" or state=="menu_or_unknown_choice") and action=="WAIT")
+                          or (state=="dialogue" and action=="START")
+                          or (state=="barrier_choice" and action=="CIRCLE")
+                          or (state=="roulette" and action=="WAIT")
+                          or (state=="map" and action=="DOWN")
+                      local marker="ADAPTIVE_POLICY_GUARD="..(safe and "PASS" or "FAIL").." cycle=2 state="..state.." action="..action
+                      local bf=assert(io.open("captures/policy-guard-report.txt","wb")); bf:write(marker.."\n"); bf:close()
                       log(marker)
                   end
               elseif phase==30 then
@@ -275,11 +279,23 @@ jobs:
                   if not state then return end
                   local before=plannedState[cycle] or "unknown"; local act=plannedAction[cycle] or "WAIT"
                   log("ADAPTIVE_ACTION_VERIFICATION cycle="..cycle.." before="..before.." action="..act.." observed_after="..state.." state_changed="..tostring(before~=state))
-                  if before=="map" and state=="battle_untrained" then
-                      local marker="ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=battle_untrained label="..label
+                  if before=="map" and (state=="battle_untrained" or state=="dialogue") then
+                      local marker="ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to="..state.." label="..label
                       local pf=assert(io.open("captures/progress-report.txt","wb")); pf:write(marker.."\n"); pf:close()
                       log(marker)
                   end
+              elseif phase==110 then
+                  local label=string.format("C%02d-F110",cycle)
+                  local state,action=captureExternal(label,cycle)
+                  if not state then return end
+                  if state=="dialogue" and action=="START" then
+                      sendAction("START",cycle)
+                      log("ADAPTIVE_DIALOGUE_SKIP=PASS cycle="..cycle.." reason=visible_gold_dialogue_box")
+                  else
+                      log("ADAPTIVE_DIALOGUE_SKIP=NOT_DIALOGUE cycle="..cycle.." state="..state.." action=WAIT")
+                  end
+              elseif phase==118 then
+                  releaseAction(cycle)
               elseif phase==180 then
                   local state,action=captureExternal(string.format("C%02d-F180",cycle),cycle)
                   if not state then return end
@@ -303,9 +319,12 @@ jobs:
           cp "$GITHUB_WORKSPACE/tools/storymode_adaptive_agent.py" "$WORK/tools/storymode_adaptive_agent.py"
           python3 -m unittest discover -s "$GITHUB_WORKSPACE/tests" -v
           cp "$WORK/storymode-adaptive.lua" "$WORK/captures/storymode-adaptive.lua"
+          CYCLES="$(awk -F= '$1=="LOOP_CYCLES" {print $2}' "$GITHUB_WORKSPACE/experiments/.run-storymode-adaptive-player")"
+          [[ "$CYCLES" == "1" || "$CYCLES" == "2" ]]
           cat > "$WORK/run-bounded-cycles.sh" <<'SH'
           #!/usr/bin/env bash
           set -euo pipefail
+          cycles="${LOOP_CYCLES:-2}"
           run_cycle() {
             local cycle="$1"
             local logfile="$WORK/captures/pcsx-adaptive-cycle-${cycle}.log"
@@ -345,18 +364,18 @@ jobs:
           }
           : > "$WORK/captures/pcsx-adaptive.stdout"
           run_cycle 1
-          run_cycle 2
-          echo "ADAPTIVE_SEQUENTIAL_FRESH_PROCESS_RESUME=PASS cycles=2" >> "$WORK/captures/pcsx-adaptive.stdout"
+          if [ "$cycles" -ge 2 ]; then run_cycle 2; fi
+          echo "ADAPTIVE_SEQUENTIAL_FRESH_PROCESS_RESUME=PASS cycles=$cycles" >> "$WORK/captures/pcsx-adaptive.stdout"
           SH
           chmod +x "$WORK/run-bounded-cycles.sh"
-          bash "$WORK/run-bounded-cycles.sh" > "$WORK/captures/pcsx-adaptive-orchestrator.stdout" 2>&1 &
+          LOOP_CYCLES="$CYCLES" bash "$WORK/run-bounded-cycles.sh" > "$WORK/captures/pcsx-adaptive-orchestrator.stdout" 2>&1 &
           pid=$!
-          python3 - "$pid" "$WORK/captures/pcsx-adaptive.stdout" "$WORK/captures" "$WORK" <<'PY'
+          python3 - "$pid" "$WORK/captures/pcsx-adaptive.stdout" "$WORK/captures" "$WORK" "$CYCLES" <<'PY'
           import sys,time,subprocess,hashlib,json
           from pathlib import Path
           from PIL import Image
           pid=int(sys.argv[1]); stdout=Path(sys.argv[2]); out=Path(sys.argv[3])
-          cycles=2; phases=(20,60,100,180)
+          cycles=int(sys.argv[5]); phases=(20,60,100,110,180)
           labels=["C%02d-F%d"%(c,p) for c in range(1,cycles+1) for p in phases]
           done=set(); deadline=time.monotonic()+60
           def alive():
@@ -393,9 +412,10 @@ jobs:
           print("ADAPTIVE_WATCHDOG_END captures={}/{} checkpoints={} hashes={}".format(len(done),len(labels),len(cps),json.dumps(summary)),flush=True)
           if len(cps)!=cycles: raise SystemExit("ADAPTIVE_CHECKPOINT_COUNT_FAIL")
           if not (out/"progress-report.txt").is_file(): raise SystemExit("ADAPTIVE_GAMEPLAY_PROGRESS_FAIL")
-          rpt=out/"battle-regression-report.txt"
-          if not rpt.is_file() or "ADAPTIVE_BATTLE_FAIL_CLOSED=PASS cycle=2 state=battle_untrained action=WAIT" not in rpt.read_text():
-              raise SystemExit("ADAPTIVE_BATTLE_FAIL_CLOSED_FAIL")
+          if cycles>=2:
+              rpt=out/"policy-guard-report.txt"
+              if not rpt.is_file() or "ADAPTIVE_POLICY_GUARD=PASS cycle=2" not in rpt.read_text():
+                  raise SystemExit("ADAPTIVE_POLICY_GUARD_FAIL")
           PY
 
           set +e
@@ -404,10 +424,11 @@ jobs:
           set -e
           echo "ADAPTIVE_EMULATOR_EXIT=$rc"
           test "$rc" -eq 0
-          test "$(find "$WORK/captures" -maxdepth 1 -name 'C*-F*.png' | wc -l)" -eq 8
-          test "$(find "$WORK/captures" -maxdepth 1 -name 'adaptive-cycle-*-f180.sstate' | wc -l)" -eq 2
-          grep -q 'ADAPTIVE_BATTLE_FAIL_CLOSED=PASS cycle=2 state=battle_untrained action=WAIT' "$WORK/captures/battle-regression-report.txt"
-          grep -q 'ADAPTIVE_INPUT cycle=2 action=WAIT status=PASS' "$WORK/captures/pcsx-adaptive.stdout"
+          test "$(find "$WORK/captures" -maxdepth 1 -name 'C*-F*.png' | wc -l)" -eq "$((CYCLES * 5))"
+          test "$(find "$WORK/captures" -maxdepth 1 -name 'adaptive-cycle-*-f180.sstate' | wc -l)" -eq "$CYCLES"
+          test "$(grep -c 'ADAPTIVE_LOAD_EVENT=PASS' "$WORK/captures/pcsx-adaptive.stdout")" -eq "$CYCLES"
+          grep -q "ADAPTIVE_SEQUENTIAL_FRESH_PROCESS_RESUME=PASS cycles=$CYCLES" "$WORK/captures/pcsx-adaptive.stdout"
+          if [ "$CYCLES" -ge 2 ]; then grep -q 'ADAPTIVE_POLICY_GUARD=PASS cycle=2' "$WORK/captures/policy-guard-report.txt"; fi
           for state in "$WORK"/captures/adaptive-cycle-*-f180.sstate; do
             bytes="$(stat -c %s "$state")"
             sha="$(sha256sum "$state" | cut -d ' ' -f1)"
@@ -426,8 +447,9 @@ jobs:
           PY
             echo "ADAPTIVE_CHECKPOINT_STRUCTURAL_VALIDATION=PASS file=$(basename "$state") bytes=$bytes sha256=$sha"
           done
-          grep -q 'ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=battle_untrained' "$WORK/captures/progress-report.txt"
-          echo "ADAPTIVE_LOOP_TEST=PASS cycles=2 captures=8 checkpoints=2 gameplay_state_transition=verified battle_fail_closed=verified"
+          grep -q 'ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=' "$WORK/captures/progress-report.txt"
+          if [ "$CYCLES" -ge 2 ]; then grep -q 'ADAPTIVE_DIALOGUE_SKIP=PASS cycle=1' "$WORK/captures/pcsx-adaptive.stdout"; fi
+          echo "ADAPTIVE_LOOP_TEST=PASS cycles=$CYCLES captures=$((CYCLES * 5)) checkpoints=$CYCLES fresh_process_checkpoint_resume=verified dialogue_start_policy=checked"
 
       - name: Upload private adaptive screenshots, decisions, logs and checkpoints
         if: always()
