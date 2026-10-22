@@ -1,3 +1,27 @@
+## LATEST VERIFIED RUN STATE — checkpoint visibility race; no two-cycle pass (22 October 2026, 17:20 WIB)
+
+**Story Mode is NOT complete.** No authentic in-game ending/results screen exists. Both latest adaptive-player runs have ended; none is still running or queued.
+
+- Regression [#39759649670](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39759649670) remains **success**: 8 synthetic tests and 10 authentic private external-X11 frame expectations passed.
+- Updated player run [#39760914530](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39760914530) ended **failure**. The new fast-fail player run [#39761094445](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39761094445) also ended **failure**. Each passed all 8 agent tests and captured/validated 5/5 authentic external-X11 frames for cycle 1. Input readback passed for DOWN and START; the classifier observed map → dialogue and then map_after_move; START skipped the visible dialogue.
+- In both live Lua logs, checkpoint preflight ran immediately after `Support.File:writeMoveSlice(state)` and reported `ADAPTIVE_CHECKPOINT_VALIDATION_FAIL ... bytes=0 header=false`. It then ended the session with code 74 before emitting the session-finished marker. The new watcher correctly failed fast; cycle 2 did not begin.
+- Crucial artifact cross-check: after each failed run completed and the private artifact was uploaded, its checkpoint file was full-size and began with the expected PCSX-Redux SaveState v4 header:
+  - #39760914530: 21,162,914 bytes; SHA-256 `f1e04a97452d675d6c6a955acd1a3aa6341a13402ca87895d61d29a6edd11124`; private artifact #12417638677.
+  - #39761094445: 21,163,014 bytes; SHA-256 `64941480e4ff5eebb8497e7458ec83090d3aa2bf533d5290ac18ae882c5ab5e5`; private artifact #12417554193.
+- This mismatch strongly suggests a **checkpoint write/visibility timing race**: the immediate in-emulator read sees a zero-length file, although the later uploaded artifact contains a full-length state. This is a working diagnosis, not a proven root cause. Neither state was resumed in a fresh emulator process; do not promote either to a trusted continuation point merely because its artifact size/header look plausible.
+- Current marker revision 14 still requests `LOOP_CYCLES=2`; do not trigger another two-cycle run before correcting the validation timing. The source checkpoint for these experiments remains immutable: run #39685868421, 21,162,945 bytes, SHA-256 `19388b5a9b59c77e443f47abdc7c6f98251ef4a1be1b512378faab217a658ae9`.
+
+### Next actions (strict order)
+
+1. Repair `.github/workflows/naruto-storymode-adaptive-player.yml`: do not reject a checkpoint based on `io.open(...):seek("end")` immediately in the GPU::Vsync save callback. Record that the write/close call returned, schedule emulator shutdown outside VSync as already done, and let the shell orchestrator validate the finished file after the emulator process exits (size >21,000,000, v4 header, SHA-256). Keep failure closed: only promote the file after this external validation.
+2. Change the marker to `LOOP_CYCLES=1` for the next run. This push auto-triggers the player workflow; use it as the first smoke test after the code change. Do not start a two-cycle run at the same time.
+3. Inspect the run’s 5 authentic X11 captures, input readbacks, clean/allowed shutdown, checkpoint size/header/hash, and progress report. A full-size file alone does not prove savestate restore; after one-cycle smoke succeeds, run a bounded fresh-process restore/two-cycle test and require a LoadState event.
+4. Only after checkpoint creation plus fresh-process restore pass, run a matched one-action-versus-NONE gameplay experiment from an immutable validated parent checkpoint and disposable cloned Memory Card.
+
+Privacy and gameplay rules remain fixed: only `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`; no ROM, BIOS, Memory Card, savestate, or gameplay screenshot in Git. Gameplay proof must be genuine external X11 captures, not web images or PCSX’s internal screenshot API. Use START for Story Mode dialogue; Circle only for a visibly highlighted contextual confirmation. Translate Japanese immediately in Indonesian parentheses. Label findings VERIFIED/HYPOTHESIS/UNKNOWN. Never claim completion without authentic in-game ending/results evidence.
+
+---
+
 ## LATEST RUN STATE — invalid checkpoint rejected; fresh-session fix in progress (22 October 2026, 17:12 WIB)
 
 **Story Mode is NOT complete.** The latest authentic screenshots are board/dialogue transitions, not an ending/results screen.
