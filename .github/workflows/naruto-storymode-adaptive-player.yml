@@ -289,8 +289,12 @@ jobs:
                   if state=="roulette" and (plannedAction[cycle] or "WAIT")=="WAIT" then count=reported end
                   local ht=string.format('{"last_state":"%s","last_action":"%s","roulette_wait_count":%d}\n',state,plannedAction[cycle] or "WAIT",count)
                   local hf=assert(io.open("captures/history.json","wb")); hf:write(ht); hf:close()
+                  -- Keep checkpoint creation at a paused VSync boundary and
+                  -- explicitly resume after non-final checkpoints.
+                  PCSX.pauseEmulator()
                   checkpoint(cycle)
                   if cycle==maxCycles then log("ADAPTIVE_LOOP_FINISHED cycles="..maxCycles); PCSX.quit(0); return end
+                  PCSX.resumeEmulator()
               end
           end)
           log("ADAPTIVE_SCRIPT_READY cycles="..maxCycles.." source=verified-board-f180 captures=EXTERNAL_X11_ONLY")
