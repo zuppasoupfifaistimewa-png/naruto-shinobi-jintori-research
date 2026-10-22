@@ -1,3 +1,13 @@
+## ACTIVE PLAYER — revision 33 corrected map DOWN/WAIT experiment (22 October 2026, 19:33 WIB)
+
+Player run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) is active; it started 19:32:59 WIB and has hard timeout about 19:52:59 WIB. Do not start another player until it finishes. The committed marker now includes AB_EXPECTED_STATE=map_after_move, AB_ACTION=DOWN, AB_TEST=1, LOOP_CYCLES=2, RESTORE_TEST=0, CONTINUATION_TEST=0, source run #39776518701 / artifact naruto-storymode-adaptive-player-private / file adaptive-cycle-01-f180.sstate / SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc.
+
+Audit run #39779256427 after completion. Required: both fresh processes load the exact parent hash and log SaveStateLoaded; F20 state in both arms exactly map_after_move and images pixel-identical; cloned disposable Memory Cards identical; ACTION DOWN input readback true/false; control WAIT; all ten authentic 1280×800 X11 captures; both emulator exit codes 0; output states post-exit validated for size, v4 header and SHA; and ab-comparison-report.txt generated. Inspect actual images before classifying any result.
+
+Revision 32 (#39777917775) ran the same input but its workflow checkout hard-coded F20 states to menu_or_unknown_choice, so the workflow failed at that late gate despite valid captures, exits and checkpoint structures. Its images suggest DOWN moved focus from Naruto's tile to empty land (空き地, Tanah kosong) with barrier value 140; control remains on Naruto's tile value 60. This stays HYPOTHESIS until the corrected revision33 gate fully passes. Do not select/confirm a tile. Story Mode remains NOT COMPLETE.
+
+---
+
 ## REVISION 32 RESULT — evidence captured; corrected run needed because validator expected menu (22 October 2026, 19:30 WIB)
 
 Run [#39777917775](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777917775) finished failure. The emulator work itself completed: both fresh processes loaded source SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc and logged SaveStateLoaded; C01/C02 F20 images were pixel-identical; DOWN press/release was true/false; WAIT control sent no button; all 10 authentic external-X11 captures passed at 1280×800; both emulator exits were 0; both output checkpoints passed size/v4-header/SHA validation. Artifact #12426395775 is private.
