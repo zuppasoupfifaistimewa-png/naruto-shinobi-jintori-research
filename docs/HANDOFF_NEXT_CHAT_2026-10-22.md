@@ -1,3 +1,15 @@
+## RESTORE PASS — revision37 ACTION checkpoint independently restored (revision38, 22 October 2026, 20:04 WIB)
+
+Run [#39783158903](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39783158903) success. After an initial corrupted download, a retry of private artifact #12427598163 passed ZIP integrity. Reviewed actual emulator frames C01-F20/F60/F100/F110/F180: post-second-DOWN board/cursor arrangement persists. In F20 the tile digits look like 100 and in F60 142 due transient leaves covering the digits; F100/F110/F180 clearly show 140. Do not treat this as a state-value change.
+
+Source from run #39782011370 / artifact #12426797521 / `adaptive-cycle-01-f180.sstate`: 21,162,960 bytes, v4, SHA-256 `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`. Fresh process logs `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`; five 1280×800 authentic captures; exit0; external output size/header/SHA validation. Exact input SHA 4989… is now promoted as restorable. New output from #39783158903, 21,162,978 bytes, v4, SHA `c4acb2b62a9891b597c1195a2dead7ccce902abddf0c5ec9b4c50b76142a7a33`, not promoted pending its own restore.
+
+Next, modify only the bounded workflow input gate to permit UP/DOWN/LEFT/RIGHT for map A/B probes while still excluding confirm buttons, then revision39 RIGHT vs WAIT from the promoted map checkpoint. Require all paired gates, exact source SHA, 2 load events, pixel-identical F20 state/map_after_move, identical disposable cards, RIGHT true/false input readback, WAIT control, ten real X11 screenshots, exit0 both, checkpoint size/v4-header/SHA validations for both, report generated. Inspect focus change; no confirmation. No parallel player.
+
+Story Mode remains NOT COMPLETE. No evidence of actual movement/capture/ownership. Use START for actual dialogue, keep game files private/out of Git.
+
+---
+
 ## LATEST VERIFIED RESULT — revision37 second DOWN changes board focus/view (22 October 2026, 19:56 WIB)
 
 Run [#39782011370](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39782011370) success at 19:54:29 WIB. Private artifact #12426797521 inspected. Both fresh processes restored source SHA `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`; both logged `ExecutionFlow::SaveStateLoaded`; same Memory Card clones; F20 pixels identical 1,024,000/1,024,000; state map_after_move both; DOWN true/false readback; WAIT control; ten authentic 1280×800 X11 captures; exits0; both outputs validated size/v4 header/SHA; comparison report generated.
