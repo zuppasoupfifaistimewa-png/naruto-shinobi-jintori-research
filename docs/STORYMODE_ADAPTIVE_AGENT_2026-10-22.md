@@ -1,3 +1,15 @@
+## VERIFIED BOARD RULE — one DOWN changes focused tile to empty land (revision 33, 22 October 2026, 19:38 WIB)
+
+Matched A/B run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) fully passed the explicit map-view state gate. Private artifact #12425858092: both arms loaded the same source SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc in separate processes; two SaveStateLoaded events; same cloned Memory Cards; pixel-identical F20; DOWN press/release true/false; WAIT control; ten authentic external-X11 frames at 1280×800; exit 0 twice; both checkpoint outputs validated; comparison report generated.
+
+**VERIFIED, scoped to this exact board state:** one DOWN changes focused tile from Naruto's tile (Level 1, barrier value 60, durability 2/2) to adjacent 空き地 (Tanah kosong) with barrier value 140; WAIT leaves Naruto's tile focused. No actual player move/capture/ownership change is established. Both classifier labels stay map_after_move; visual manual review of C01/C02 screenshots establishes the focus change.
+
+Next: fresh-process restore of ACTION output SHA 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a from run #39779256427, artifact #12425858092, file adaptive-cycle-01-f180.sstate, revision34 restore-only. Require load event, five genuine screenshots that retain empty land value 140 focus, exit 0 and external size/header/SHA validation. Do not promote the new output produced by that restore until it itself is restored. Stop before confirming/selecting a tile.
+
+Story Mode remains NOT COMPLETE. All gameplay artifacts remain private and out of Git. Use START for dialogue.
+
+---
+
 ## VERIFIED — DOWN changes focused map tile; restore output before continuation (22 October 2026, 19:37 WIB)
 
 Run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) revision 33 passed every paired acceptance gate. Private artifact #12425858092 was audited. Two independent emulator processes loaded the identical map source SHA `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`; each logged SaveStateLoaded; cloned Memory Cards were identical; F20 states matched pixel-for-pixel (1,024,000 px) and both classify `map_after_move`; DOWN press/release readback true/false; WAIT control; ten authentic external 1280×800 frames; both exits 0; both output checkpoints passed external post-exit validation. Comparison report generated.
