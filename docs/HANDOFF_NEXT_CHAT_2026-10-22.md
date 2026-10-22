@@ -1,3 +1,13 @@
+## ACTIVE RUN — test DOWN from Information to the next row (22 October 2026, 18:20 WIB)
+
+Run [#39769826213](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39769826213) is active (marker revision 24): exact parent source from #39768787669, `adaptive-cycle-01-f180.sstate`, SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`; ACTION=DOWN vs NONE/WAIT; two identical-bytes but separate Memory Card copies; two fresh emulator processes. The question is whether DOWN from `情報` (Informasi) moves highlight to `マップを見る` (Lihat peta).
+
+Audit after completion: exact parent hash on both branches, F20 pixel-identical screenshots and matched menu state, press/release input readback, 10 authentic external-X11 captures, two load events, both post-exit size/header/SHA checkpoint validations, and normal/allowed exits. Do not infer item semantics or use Circle. The run was initializing at the last status check.
+
+Story Mode remains NOT COMPLETE; continue keeping screenshot/savestate/Memory Card/ROM/BIOS artifacts private and out of Git.
+
+---
+
 ## LATEST VERIFIED UPDATE — Information state restored; next matched menu probe active/next (22 October 2026, 18:18 WIB)
 
 - Fresh-process restore run [#39769265269](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39769265269) succeeded. Source from A/B run #39768787669: `adaptive-cycle-01-f180.sstate`, 21,162,009 bytes, SHA-256 `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`.
