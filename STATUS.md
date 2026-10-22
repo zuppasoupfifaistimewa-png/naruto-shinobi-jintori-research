@@ -1,3 +1,15 @@
+## REVISION 38 RESTORE VERIFIED — 22 October 2026, 20:04 WIB
+
+Run [#39783158903](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39783158903) completed with success. Private artifact #12427598163 was downloaded again; the retry passed ZIP integrity. Five authentic external-X11 screenshots at 1280×800 were validated, the load event and ADAPTIVE_RESTORE_TEST=PASS were logged, emulator exit was 0, and the new output checkpoint passed size/header/SHA validation.
+
+The input source from run #39782011370, artifact #12426797521, file adaptive-cycle-01-f180.sstate, SHA-256 `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`, size 21,162,960 bytes, v4 header, is now independently restore-proven. Screenshots retain the board/cursor arrangement after the second DOWN. The number over the Naruto-marked cell is partly obscured by foliage in early frames; later frames clearly show 140, so the early apparent 100/142 is not treated as a value change.
+
+The restore run's new output is not promoted: 21,162,978 bytes; v4; SHA-256 `c4acb2b62a9891b597c1195a2dead7ccce902abddf0c5ec9b4c50b76142a7a33`. It needs its own fresh-process restore.
+
+Next: extend the bounded A/B workflow to permit UP, DOWN, LEFT and RIGHT only for map-navigation probes, excluding confirm buttons. Then run RIGHT versus WAIT from the proven source above, require all paired gates, and inspect authentic screenshots before classifying the result. Story Mode is NOT COMPLETE. No character movement, territory capture, ownership change or ending is established.
+
+---
+
 ## VERIFIED RESULT — second DOWN shifts focus from empty land toward Naruto-marked cell (revision37, 22 October 2026, 19:56 WIB)
 
 Run [#39782011370](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39782011370) completed with Actions success at 19:54:29 WIB. Private artifact #12426797521 was downloaded and audited, including actual screenshot pairs and all run logs.
