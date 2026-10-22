@@ -257,6 +257,7 @@ jobs:
           local abAction=os.getenv("AB_ACTION") or "DOWN"
           local abExpectedState=os.getenv("AB_EXPECTED_STATE") or "menu_or_unknown_choice"
           local frame=0; local loadStarted=false; local loadReturned=false; local loaded=false
+          local shutdownFrame=nil
           local activeButton=nil
           local pad=PCSX.SIO0.slots[1].pads[1]
           local buttons=PCSX.CONSTS.PAD.BUTTON
@@ -348,6 +349,14 @@ jobs:
               end
               if not loaded or not loadReturned then return end
               frame=frame+1
+              -- Let the F180 save-state writer settle before shutdown.
+              -- The checkpoint remains the frozen F180 state; no additional inputs are sent.
+              if shutdownFrame and frame>=shutdownFrame then
+                  log("ADAPTIVE_SHUTDOWN_SETTLE_COMPLETE cycle="..cycle.." frame="..frame)
+                  PCSX.pauseEmulator()
+                  PCSX.nextTick(function() PCSX.quit(0) end)
+                  return
+              end
               local phase=((frame-1)%180)+1
               if phase==20 then
                   local state,action,result=captureExternal(string.format("C%02d-F20",cycle),cycle)
@@ -428,12 +437,10 @@ jobs:
                       return
                   end
                   log("ADAPTIVE_SESSION_FINISHED cycle="..cycle)
-                  -- Schedule shutdown outside GPU::Vsync after write/close.
-                  -- Chained nextTick callbacks do not advance while paused in this
-                  -- build and caused a watchdog timeout; use the established single
-                  -- nextTick shutdown, then validate the completed file from shell.
-                  PCSX.pauseEmulator()
-                  PCSX.nextTick(function() PCSX.quit(0) end)
+                  -- Let post-checkpoint I/O settle across 12 further VSync callbacks.
+                  -- The file remains a snapshot of F180; no additional input is sent.
+                  shutdownFrame=frame+12
+                  log("ADAPTIVE_SHUTDOWN_SETTLE_BEGIN cycle="..cycle.." checkpoint_frame="..frame.." quit_frame="..shutdownFrame)
                   return
               end
           end)
