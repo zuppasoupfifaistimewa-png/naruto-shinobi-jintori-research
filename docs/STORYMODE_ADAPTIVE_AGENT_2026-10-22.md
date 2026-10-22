@@ -1,3 +1,15 @@
+## VERIFIED — CROSS exits map view to command menu (revision43)
+
+Run #39866820866 passed the matched CROSS-vs-WAIT A/B. Private artifact #12463489344 was audited. Same source SHA `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8` in both fresh processes; two load events, exact F20 parity, identical cards, CROSS input true/false, WAIT control, ten authentic 1280×800 frames, exit0 both, output checkpoints externally validated and comparison report.
+
+**VERIFIED, narrow:** one CROSS from the map screen exits to the command menu; ACTION C01-F100/F180 shows `ルーレット` (Roulette) highlighted. WAIT leaves the map open with Naruto's cell panel. This is return/menu navigation only.
+
+ACTION state candidate: 21,162,920 bytes, v4, SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`; CONTROL hash `57fd76c4f133dc485e5bbfc49f8cb6e0e86593780812827bee1a43668ae80e84`. Both unpromoted until independently restored.
+
+Next revision44 restore-only the ACTION output; manually verify the F20 Roulette highlight survives a fresh load, five real captures, exit0 and output checkpoint validation. Then revision45 Circle-vs-WAIT from that verified command-menu state after adding Circle to menu-only A/B allowlist. It is justified by the visually highlighted Roulette row and is not dialogue skipping; dialogue always uses START. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision43 corrected CROSS-vs-WAIT probe
 
 Run #39866820866 active, started 05:41:57 WIB, timeout about 06:01:57 WIB. Run42 failed before gameplay because the final shell whitelist omitted CROSS; artifact #12463119868 was setup-only. Workflow commit `417663b21ce0cd9218ef8c312913a90d65381788` fixes it. Revision43 marker is verified and source checkpoint is exact SHA `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8` from run #39786019434, independently restored in #39786899480. AB_TEST=1, CROSS, expected map_after_move, 2 cycles.
