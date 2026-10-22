@@ -1,3 +1,14 @@
+## VERIFIED BOARD INPUT — DOWN from empty-land focus changes view/selection (revision35, 22 October 2026)
+
+Matched run #39780755350 passed every paired A/B gate using source hash `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Private artifact #12426786721 was downloaded after run completed. Two fresh processes and load events; exact F20 parity 1,024,000 pixels; same disposable cards; DOWN input true/false; WAIT control; ten authentic X11 captures 1280×800; exits0; both savestate outputs externally checked; comparison report generated.
+
+**VERIFIED, narrow:** one DOWN from focused `空き地` (Tanah kosong), barrier value140, changes observed board focus/view: viewport scrolls upward and the empty-land panel disappears; cursor appears aligned toward a lower tile near Naruto's board marker. WAIT retains empty-land panel and initial framing. Do not claim the character moved, captured a tile or changed ownership, because the post-action panel does not name its focus. F60 diff 783594 pixels/MAD27.28084; F100 783324/27.36300; F110 783287/27.31514; F180 783630/27.39113.
+
+Next restore-only revision36 tests ACTION output run #39780755350/artifact #12426786721/file adaptive-cycle-01-f180.sstate/SHA `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff` (21,162,766 bytes/v4). Require new-process load event, five authentic frames preserving post-DOWN view, exit0, external output state size/header/SHA. Do not promote the output emitted by the restore run until that output itself restores.
+Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE RUN — revision 35 DOWN from empty-land tile versus WAIT (22 October 2026, 19:44 WIB)
 
 Run [#39780755350](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780755350) is `in_progress` from 19:43:50 WIB; latest active step is repository checkout, no artifact yet, 20-minute timeout about 20:03:50 WIB. Do not run players in parallel.
