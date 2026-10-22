@@ -1,3 +1,14 @@
+## LATEST RUN OUTCOME — checkpoint visibility race remains unresolved (22 October 2026, 17:20 WIB)
+
+The adaptive player is still a prototype. Story Mode is NOT complete; no authentic ending/result capture exists.
+
+- Runs [#39760914530](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39760914530) and [#39761094445](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39761094445) both failed during cycle 1 after 5/5 authentic external-X11 captures and 8/8 synthetic tests passed. DOWN and START press/release readback passed; map→dialogue progression was visible; START skipped the dialogue; F180 returned to map_after_move.
+- Immediate Lua validation right after `Support.File:writeMoveSlice(state)` reported a zero-byte file and no v4 header, then the script exited 74. No session-finished marker and no cycle 2.
+- Contradiction discovered in the uploaded private artifacts: the saved file had size 21,162,914 bytes (run #39760914530, SHA-256 `f1e04a97452d675d6c6a955acd1a3aa6341a13402ca87895d61d29a6edd11124`) and 21,163,014 bytes (run #39761094445, SHA-256 `64941480e4ff5eebb8497e7458ec83090d3aa2bf533d5290ac18ae882c5ab5e5`) and each begins with the PCSX-Redux SaveState v4 header. This points to a likely write/visibility race, but does not prove a successfully restorable state. Neither file has been validated in a fresh process.
+- Next code change should shift size/header/hash validation out of the in-emulator VSync callback. Keep the checkpoint writing call, log only that it returned, defer emulator shutdown outside VSync, and validate/checksum the checkpoint from shell after the emulator process has exited. Fail closed; promote only a checkpoint that passes external checks. The next player run should be configured to one cycle first, then a separate fresh-process restore test.
+
+---
+
 ## VERIFIED UPDATE — state classifier and checkpoint shutdown safeguards (22 October 2026, 17:12 WIB)
 
 The adaptive agent remains a prototype; Story Mode completion is not verified.
