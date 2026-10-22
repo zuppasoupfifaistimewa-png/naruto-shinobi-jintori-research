@@ -1,3 +1,16 @@
+## REVISION48 PARTIAL — valid checkpoints but shutdown timeout blocked workflow report
+
+Run #39869536734 failed because cycle2 printed `ADAPTIVE_SESSION_FINISHED`, then `corrupted size vs. prev_size`; `SHUTDOWN_SETTLE_COMPLETE` never appeared and inner timeout ended code124. However private artifact #12466086061 passes ZIP integrity, all 10 screenshots valid, and both savestate outputs externally checked:
+- ACTION: 21,163,075 bytes/v4/SHA-256 `7e0a021342f3cf15db2070c5b9512ff0154a4a1adeeb4e14837b930884656e3a`.
+- CONTROL: 21,162,748 bytes/v4/SHA-256 `75098aea814f531a714d7aade45e9802bb44167a122ada4aad6d19e728f4256f`.
+Both source hashes/F20 parity/load events/cards/Circle true-false/read/control WAIT/capture gates passed. Actual C01-F180 shows map after Circle; C02-F180 remains spinning roulette. Keep as HYPOTHESIS until the A/B report is generated and run passes.
+
+Workflow commit `ef82beb99096e6fd939ce5ebc4f80eedc1158546` accepts post-session rc124, 134 or139 only with session-finished marker plus external checkpoint validation; timeout is shortened to60s. It still fails invalid state files or missing marker.
+
+Next revision49 repeats from independently restorable roulette source hash `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`: AB_TEST=1; CIRCLE; AB_EXPECTED_STATE=roulette; two cycles; restore/continuation off. Need all A/B gates/report. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision48 roulette Circle versus WAIT after save settle change
 
 Run #39869536734 active, started 06:05:59 WIB; timeout about 06:25:59 WIB. Source run #39867730674/artifact #12464258211/file adaptive-cycle-01-f180.sstate/hash `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`. Marker AB_TEST=1, CIRCLE, expected state roulette, two cycles, revision48.
