@@ -1,3 +1,13 @@
+## ACTIVE — revision44 independently restores CROSS-returned Roulette menu
+
+Run #39867381637 is active, started 05:46:45 WIB; timeout about 06:06:45 WIB. It loads run #39866820866 / private artifact #12463489344 / checkpoint adaptive-cycle-01-f180.sstate / SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`, RESTORE_TEST=1, one cycle.
+
+Require explicit SaveStateLoaded and restore PASS, five authentic 1280×800 X11 captures with F20 displaying command menu and `ルーレット` (Roulette) highlighted, exit0, external output state size/v4-header/SHA. Promote only input 609823… after all pass. Do not run parallel player.
+
+Revision43 established that CROSS returns from the map to the command menu and leaves Roulette highlighted at F100/F180, while WAIT stays in map. Next revision45 tests one CIRCLE versus WAIT in this visually verified menu context; CIRCLE is forbidden on dialogue and cannot serve as dialogue skip. Use START. Story Mode remains NOT COMPLETE.
+
+---
+
 ## VERIFIED — CROSS exits map view to command menu (revision43)
 
 Run #39866820866 passed the matched CROSS-vs-WAIT A/B. Private artifact #12463489344 was audited. Same source SHA `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8` in both fresh processes; two load events, exact F20 parity, identical cards, CROSS input true/false, WAIT control, ten authentic 1280×800 frames, exit0 both, output checkpoints externally validated and comparison report.
