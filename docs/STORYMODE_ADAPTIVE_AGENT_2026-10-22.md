@@ -1,3 +1,18 @@
+## VERIFIED — Triangle opens tile/map view; validate that output before further input (22 October 2026, 19:15 WIB)
+
+Matched experiment [run #39776518701](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776518701) passed every evidence gate. Private artifact #12425305517 was manually reviewed. Same source SHA `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7` in both new processes; both log `ExecutionFlow::SaveStateLoaded`; Memory Card clones identical; F20 pixel parity (1,024,000 pixels); TRIANGLE press/release true/false; ten authentic external-X11 captures 1280×800; exit 0 in both arms; both outputs externally validated.
+
+**VERIFIED, scoped to the tested state:** a TRIANGLE input while `マップを見る` (Lihat peta) is highlighted opens a tile/map view by F60. NONE/WAIT stays in the prior menu. Actual ACTION F60/F180 screens show hex/tile positions, tile values and a character panel; footer `× もどる` translates as (X: Kembali). Do not select a destination during this test. This does not prove any movement, capture, attack, defense, territory or battle rule.
+
+ACTION output candidate: source run #39776518701, private artifact #12425305517, file `adaptive-cycle-01-f180.sstate`, size 21,163,227, v4 header, SHA-256 `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`. Not yet promoted: it must be loaded in a separate new emulator process and visually retain the map view. CONTROL output hash `dc91b2756581456e75dee8cd836dc7b3c1e43fde88978dbf15545f231a6c0f98`, 21,163,215 bytes, also unpromoted.
+
+### Revision 31 restore-only test
+Use source run #39776518701 / artifact `naruto-storymode-adaptive-player-private` / `adaptive-cycle-01-f180.sstate` / SHA `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`; set `RESTORE_TEST=1`, `CONTINUATION_TEST=0`, `AB_TEST=0`, `LOOP_CYCLES=1`, `REVISION=31`. No input is allowed. Require `ExecutionFlow::SaveStateLoaded`, five genuine 1280×800 X11 screenshots, an accepted exit and post-exit output size/header/SHA validation; inspect F20 for the same tile/map view. Only after success promote the revision-30 ACTION input checkpoint as trusted. Keep the new output unpromoted until it is itself restored.
+
+Next later-stage research, after the restore gate passes: inspect the tile layout and displayed values in the map view before planning a single-variable direction probe. Story Mode remains NOT COMPLETE; the finish screen has not been observed. Keep all gameplay assets private/out of Git; START is the only dialogue skip.
+
+---
+
 ## RESTORE-VERIFIED CHECKPOINT — next A/B should probe Triangle (22 October 2026, 19:11 WIB)
 
 Restore-only run [#39776089816](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776089816) passed. Private artifact #12425065836 confirms `ExecutionFlow::SaveStateLoaded`, `ADAPTIVE_RESTORE_TEST=PASS`, five external-X11 captures at 1280×800, exit code 0, and post-exit external checkpoint validation. It restored the revision-28 ACTION checkpoint (run #39775176728) with exact SHA-256 `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`, 21,162,344 bytes, v4 header; inspected F20 visibly retains `マップを見る` (Lihat peta) as the selected row. **This exact original checkpoint is promoted as restorable.**
