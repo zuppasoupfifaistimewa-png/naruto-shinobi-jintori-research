@@ -1,3 +1,17 @@
+## LATEST VERIFIED MAP RULE — UP returns focus to Naruto cell (revision40, 22 October 2026)
+
+Run [#39786019434](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786019434) fully passed matched UP-versus-WAIT from the independently restored revision33 source SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Artifact #12428777970 was inspected. Both processes logged `ExecutionFlow::SaveStateLoaded`; cloned Memory Cards matched; F20 images were pixel-identical (1,024,000 pixels); both F20 states `map_after_move`; UP press/release readback true/false; control WAIT; ten authentic 1280×800 screenshots; both exits0; both output checkpoints externally validated for size/v4-header/SHA; comparison report exists.
+
+**VERIFIED, only focus/selection:** one UP with `空き地` (Tanah kosong) value140 focused changes the visible tile focus/panel to Naruto's cell, where the panel shows `レベル` (Level) 1, `結界価値` (Nilai penghalang) 60, `耐久値` (Daya tahan) 2/2. WAIT preserves empty-land140 focus. This proves cursor/board selection only, not actual movement/capture/ownership. Image difference: F60 719,585 pixels/MAD 26.80691; F100 719,273/26.76006; F110 719,213/26.75687; F180 719,644/26.93719.
+
+ACTION output candidate from run #39786019434/artifact #12428777970: `adaptive-cycle-01-f180.sstate`, 21,163,100 bytes, v4, SHA-256 `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`. CONTROL output: 21,162,751 bytes, SHA `eb182a883b1666a7a9badbbf06fda2de960fc84ec4b040799791a174134714a3`. Do not promote either until independently restored.
+
+Next revision41: restore-only from source run #39786019434 / artifact `naruto-storymode-adaptive-player-private` / `adaptive-cycle-01-f180.sstate` / SHA `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`; RESTORE_TEST=1, CONTINUATION_TEST=0, AB_TEST=0, LOOP_CYCLES=1. Require fresh-process load event, five genuine 1280×800 captures retaining Naruto panel/value60, exit0 and external output checkpoint validation. Only if successful promote that input checkpoint; new output remains unpromoted until its own restore. Do not launch another player until prior run ends.
+
+Story Mode remains NOT COMPLETE. Avoid confirm inputs until semantics are clear; all gameplay assets must stay private/out of Git. Use START for dialogue skipping.
+
+---
+
 ## ACTIVE QUEUE — revision40 UP vs WAIT; revision39 was a setup-only failure (22 October 2026, 20:21 WIB)
 
 Run [#39786019434](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786019434) is queued with the corrected marker:
