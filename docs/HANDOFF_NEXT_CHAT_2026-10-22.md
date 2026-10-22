@@ -1,3 +1,14 @@
+## ACTIVE RUN — revision36 restore-only checkpoint gate (22 October 2026, 19:49 WIB)
+
+Run [#39781495023](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39781495023) is active, started 19:49:08 WIB; hard timeout approximately 20:09:08 WIB. Exact committed marker:
+MODE=ADAPTIVE; SOURCE_RUN=39780755350; SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private; SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate; SOURCE_SHA256=b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff; RESTORE_TEST=1; CONTINUATION_TEST=0; AB_TEST=0; LOOP_CYCLES=1; REVISION=36. Do not start parallel players.
+
+Restore source is ACTION output from revision35 DOWN/WAIT A/B, private artifact #12426786721. Required: explicit SaveStateLoaded / ADAPTIVE_RESTORE_TEST, 5 authentic 1280×800 captures with post-DOWN scrolled/focused board view retained, emulator exit0, external size/v4-header/SHA check for the newly emitted output. Promote only the exact input b9717348… upon success; do not promote restore output until that output itself is freshly restored.
+
+Revision35 passed matched A/B and visually showed DOWN causing map viewport/focus movement; WAIT retained empty-land panel. This verifies focus/view response only, not character move or capture. Story Mode remains NOT COMPLETE; use START for dialogue; private game assets never enter Git.
+
+---
+
 ## LATEST VERIFIED BOARD NAVIGATION — DOWN scrolls board view from empty-land focus (revision35)
 
 Run [#39780755350](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780755350) fully passed corrected DOWN-vs-WAIT A/B from the independently restored source SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Private artifact #12426786721 was inspected. Exact parent source on both fresh processes; two load events; identical cards; F20 state map_after_move and pixel-identical images; DOWN press/release true/false; WAIT control; 10 authentic 1280×800 X11 images; both exits0; both output checkpoints validated for size/v4 header/SHA; comparison report present.
