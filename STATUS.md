@@ -1,3 +1,26 @@
+## VERIFIED — CROSS returns from board map to command menu (revision43, 23 October 2026)
+
+Run [#39866820866](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39866820866) completed with success at 22:43:31 UTC / 05:43:31 WIB. The private artifact #12463489344 passed ZIP integrity and was visually inspected.
+
+Matched A/B gates passed:
+- Both new processes restored the exact parent SHA `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`; each logged `ExecutionFlow::SaveStateLoaded`.
+- F20 screenshots matched all 1,024,000 pixels; both classified `map_after_move`.
+- Disposable Memory Card copies were identical; CROSS press/release readback was true/false; WAIT control sent no input.
+- Ten authentic external-X11 captures validated at 1280×800. Both emulator processes exited 0, both output checkpoints passed external size/v4-header/SHA checks, and `ab-comparison-report.txt` was generated.
+
+**Rule: VERIFIED, exact context only.** With the map view open and Naruto's cell selected, one CROSS returns to the command menu. The actual ACTION screenshot C01-F60 shows the two-option transition UI; C01-F100 and C01-F180 show the full menu with `ルーレット` (Roulette) highlighted. The WAIT branch stays in map view with Naruto's panel (`レベル` (Level)1, `結界価値` (Nilai penghalang)60, `耐久値` (Daya tahan)2/2). This proves return navigation, not a gameplay move or capture.
+
+Output states, validated but not promoted until independently restored:
+- ACTION/menu candidate: run #39866820866 artifact #12463489344, `adaptive-cycle-01-f180.sstate`, 21,162,920 bytes, v4, SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`.
+- CONTROL/map state: `adaptive-cycle-02-f180.sstate`, 21,162,981 bytes, v4, SHA-256 `57fd76c4f133dc485e5bbfc49f8cb6e0e86593780812827bee1a43668ae80e84`.
+
+### Next gate — revision44 restore the menu checkpoint
+Restore ACTION output above in a fresh process. Require load event and restore PASS, five authentic 1280×800 X11 captures, F20 visibly in the command menu with `ルーレット` (Roulette) highlighted, exit0, and new output state externally validated. Only then promote the input source SHA `609823…52bbffb7`.
+
+After this restore succeeds, conduct revision45 Circle-vs-WAIT from that exact menu checkpoint. The reason is the source F100/F180 screenshot visibly highlights Roulette. The workflow must allow Circle only under the `menu_or_unknown_choice` state guard (dialogue classifier has priority and should fail this precondition); visually verify the restored F20 before running. This is contextual Roulette menu confirmation, not dialogue skipping. If a dialogue appears, press START only. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision43 retries CROSS-vs-WAIT with all gates fixed (23 October 2026, 05:42 WIB)
 
 Run [#39866820866](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39866820866) is the only active player. Revision42 (#39866476856) failed before emulator launch with a 4,505-byte setup-only artifact because the last shell whitelist had not included CROSS. Workflow commit `417663b21ce0cd9218ef8c312913a90d65381788` now includes CROSS in the final allowlist as well as in the selector and Lua map-state gate.
