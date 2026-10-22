@@ -1,3 +1,13 @@
+## ACTIVE PLAYER — revision41 restore-only for verified Naruto-tile focus (22 October 2026, 20:27 WIB)
+
+Run [#39786899480](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786899480) is active, started 20:26:48 WIB, timeout around 20:46:48 WIB. Exact committed marker uses source run #39786019434 / private artifact #12428777970 / adaptive-cycle-01-f180.sstate / SHA `73947ce73a321600d7d1850b4f888889675f0e75c47fb05c7ae010e62ccaa7f8`, RESTORE_TEST=1, one cycle, revision41. Do not start another player.
+
+Source checkpoint is ACTION output from revision40 UP/WAIT A/B and visually shows Naruto's cell focused (Level1, barrier value60, durability2/2). Run must log SaveStateLoaded + restore PASS, have five authentic 1280×800 X11 captures retaining that panel at F20, exit0 and externally validate output size/v4-header/SHA. Promote only the exact input hash 73947… after success; new output stays unpromoted until an independent restore.
+
+Revision40 verified narrow focus rule: UP from empty land140 returns focus/panel to Naruto's cell60; WAIT preserves empty land140. No actual Naruto movement or capture/ownership proven. Story Mode remains NOT COMPLETE.
+
+---
+
 ## REVISION40 VERIFIED — UP returns focus to Naruto's tile (22 October 2026)
 
 Run [#39786019434](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786019434) passed paired UP-vs-WAIT from source SHA `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Artifact #12428777970 inspected. Two load events; exact F20 parity; identical disposable cards; UP true/false input readback; WAIT control; ten authentic 1280×800 captures; both exits0; both outputs external validated; comparison report.
