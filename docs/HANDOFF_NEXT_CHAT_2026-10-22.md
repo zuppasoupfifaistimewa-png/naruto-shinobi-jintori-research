@@ -1,3 +1,31 @@
+## REVISION 32 RESULT — evidence captured; corrected run needed because validator expected menu (22 October 2026, 19:30 WIB)
+
+Run [#39777917775](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777917775) finished failure. The emulator work itself completed: both fresh processes loaded source SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc and logged SaveStateLoaded; C01/C02 F20 images were pixel-identical; DOWN press/release was true/false; WAIT control sent no button; all 10 authentic external-X11 captures passed at 1280×800; both emulator exits were 0; both output checkpoints passed size/v4-header/SHA validation. Artifact #12426395775 is private.
+
+Why workflow failed: run checkout SHA b77f74af5b258dfcd7d8bfbeeeca0c685c5fc7b7 did not include AB_EXPECTED_STATE support and its Python validation explicitly required both F20 states to equal menu_or_unknown_choice. Actual states were map_after_move/map_after_move, as expected from the source, so the gate failed and no ab-comparison-report.txt was written. Treat run #39777917775 as **not a clean A/B pass**.
+
+Actual screenshots were manually inspected and suggest that DOWN changes focus from the Naruto tile (Level 1, barrier value 60, durability 2/2) to an adjacent empty-land tile marked 空き地 (Tanah kosong), barrier value 140, with action/control image difference >719,000 pixels after input. This is currently HYPOTHESIS, not VERIFIED. Output states ACTION SHA 927d87eb775f375deb47af348d837319ceb65d4baa58c8523042090f377b2efa (21,162,270 bytes) and CONTROL SHA 7aaf5fc780748fee27a84669a942c598e8340e9952234e47bab47795755d67a1 (21,162,320 bytes) passed structure validation but are not promoted.
+
+Latest main workflow commit 4c074472e885c75ce618e4e0f5aefd6a8833a0c9 adds explicit AB_EXPECTED_STATE. Now rerun as revision 33 with this exact marker:
+MODE=ADAPTIVE
+SOURCE_RUN=39776518701
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=DOWN
+AB_EXPECTED_STATE=map_after_move
+LOOP_CYCLES=2
+REVISION=33
+
+Re-read the committed marker literal before launch. Require 2 load events, exact source SHA per arm, matched map_after_move F20 state and pixel parity, input readback, ten authentic captures, exit code 0, both checkpoint validations, and a generated ab-comparison-report.txt. Do not start parallel player runs. If DOWN again changes the focused empty land from Naruto's tile without confirmation, that can be classified narrowly as VERIFIED; don't use Circle and don't select a destination.
+
+Story Mode remains NOT COMPLETE. Use START for actual dialogue; keep private artifacts outside Git.
+
+---
+
 ## CORRECTION — current revision 32 checkout has a late A/B validator mismatch (22 October 2026, 19:25 WIB)
 
 Run #39777917775 is still the only active player; do not start another. Important correction to the previous section: workflow checkout SHA b77f74af5b258dfcd7d8bfbeeeca0c685c5fc7b7 does NOT use AB_EXPECTED_STATE. Its Lua precondition accepts either menu_or_unknown_choice or map_after_move when the classifier action is WAIT, so the ACTION arm may indeed send DOWN from the board. But a later shell gate and the Python state-parity validator hard-code menu_or_unknown_choice; the run can therefore fail after valid captures, input readback and state-file checks. Do not assume no input was sent; audit the actual branch stdout and screenshot artifact.
