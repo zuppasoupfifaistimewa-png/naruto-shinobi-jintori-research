@@ -1,3 +1,13 @@
+## ACTIVE PLAYER — revision 33 corrected map DOWN A/B (22 October 2026, 19:33 WIB)
+
+Run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) is currently `in_progress`, started at 19:32:59 WIB. Latest step: `Install X11 tools and prepare private workspace`. 20-minute deadline is approximately 19:52:59 WIB. No artifact/result is available yet; do not start any parallel player run.
+
+This is the corrected A/B rerun of revision 32 from the trusted map-view source run #39776518701 / artifact #12425305517 / `adaptive-cycle-01-f180.sstate` / SHA-256 `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`. Marker explicitly has `AB_EXPECTED_STATE=map_after_move`, `AB_TEST=1`, `AB_ACTION=DOWN`, `LOOP_CYCLES=2`, `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `REVISION=33`.
+
+Revision 32's raw screenshots suggested DOWN focuses the empty-land tile `空き地` (Tanah kosong) with displayed barrier value 140 instead of the Naruto tile with value 60, but run32 conclusion was failure because its old checkout hard-coded expected menu state. Do not upgrade this tentative map-navigation rule until run33 completes every expected-state/parity, load/input/capture/exit/checkpoint gate and its private screenshots are visually audited.
+
+---
+
 ## ACTIVE RUN — revision 33 map DOWN versus WAIT (22 October 2026, 19:33 WIB)
 
 Run [#39779256427](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39779256427) is the only active player. It uses the corrected marker with AB_EXPECTED_STATE=map_after_move and the proven board checkpoint SHA b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc. The prior revision 32 run #39777917775 completed with failure only because its old checkout hard-coded menu state; its actual DOWN input and captures are diagnostic, not accepted A/B.
