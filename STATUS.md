@@ -1,3 +1,24 @@
+## LATEST VERIFIED RESULT — revision 28 DOWN versus NONE from Information (22 October 2026, 19:05 WIB)
+
+Run [#39775176728](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39775176728) completed with Actions conclusion `success` at 19:04:52 WIB. The raw job log and private artifact #12424660712 were audited; this conclusion is based on the artifact and acceptance evidence, not the Actions badge alone.
+
+- Configuration matched the planned experiment: `SOURCE_RUN=39768787669`, parent SHA-256 `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`, `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `AB_TEST=1`, `AB_ACTION=DOWN`, `LOOP_CYCLES=2`, `REVISION=28`.
+- Both branches restored the exact same parent hash in separate fresh emulator processes and logged `ExecutionFlow::SaveStateLoaded`. Separate ACTION/CONTROL Memory Card copies had identical SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`.
+- Parent screenshots C01-F20 and C02-F20 were identical pixel-for-pixel (1,024,000 pixels); both showed the right-side menu with `情報` (Informasi) highlighted. DOWN input readback passed on press (`true`) and release (`false); control branch executed WAIT/no input.
+- All 10 authentic external-X11 captures were validated as 1280×800, with 5 screenshots per branch. Visual review of the actual images confirms that ACTION C01-F60/F100/F110/F180 highlights `マップを見る` (Lihat peta), while control C02-F60/F100/F110/F180 remains on `情報` (Informasi). The comparison report records 14,636 differing pixels and mean absolute RGB difference 1.05798 at each post-action phase.
+- Both emulator processes completed with exit code 0. External post-exit checkpoint validation passed:
+  - ACTION `adaptive-cycle-01-f180.sstate`: 21,162,344 bytes, header `PCSX-Redux SaveState v4`, SHA-256 `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`.
+  - CONTROL `adaptive-cycle-02-f180.sstate`: 21,162,426 bytes, header `PCSX-Redux SaveState v4`, SHA-256 `30b062df8985fa79f8c9f79e076cb464f1ff73143103e249dba5d35ca94324d5`.
+- Private artifact: [run artifact #12424660712](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39775176728). Gameplay images, savestates and Memory Cards remain private and are not committed to Git.
+
+**Rule: VERIFIED, limited to this exact menu/checkpoint state.** One DOWN from `情報` (Informasi) moves the highlight to `マップを見る` (Lihat peta); NONE/WAIT leaves it at Informasi. This proves selection movement only, not that the map screen has opened. The automated classifier still reports `menu_or_unknown_choice`, so evidence for the row change is the manually inspected paired authentic screenshots plus pixel comparison, not a semantic classifier label.
+
+**Checkpoint promotion gate:** do not use either output checkpoint as the trusted continuation source until that exact output has been loaded and inspected in a separate fresh emulator process. Next run is a single-cycle `RESTORE_TEST=1` from the ACTION checkpoint SHA `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7` in run #39775176728. If the five post-load captures, explicit load event, accepted exit and external output validation pass, the ACTION checkpoint is proven restorable. Then use that restored selection state for a short matched Triangle-versus-WAIT experiment to establish what opens the map; do not select any map destination before inspecting the map screen. Do not start parallel player runs.
+
+Story Mode remains **NOT COMPLETE**. There is no verified ending/results evidence. Continue using START to skip actual Story Mode dialogue and classify every game rule VERIFIED/HYPOTHESIS/UNKNOWN.
+
+---
+
 ## CURRENT ACTION — revision 28 matched DOWN/NONE run queued (22 October 2026, 19:02 WIB)
 
 Marker revision 28 was committed at `e31ebb2afbe1145746e480e9a0f020854621a82f`, triggering [run #39775176728](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39775176728). At the latest check it is **in progress**, with the step `Install X11 tools and prepare private workspace` active. It started at 19:02:38 WIB; the workflow job has a 20-minute hard timeout (around 19:22:38 WIB if not completed earlier). It tests ACTION=DOWN against NONE/WAIT from the known-restorable Information parent `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`; 2 cycles, `AB_TEST=1`. Do not start another player run. Next chat must check this exact run, its latest job steps and artifacts/logs, then apply the strict paired-evidence gates documented here. Job timeout is 20 minutes after a runner starts; queued wait has no reliable ETA. Story Mode remains NOT COMPLETE.
