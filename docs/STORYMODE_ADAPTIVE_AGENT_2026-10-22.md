@@ -1,3 +1,16 @@
+## RESTORE-VERIFIED CHECKPOINT — next A/B should probe Triangle (22 October 2026, 19:11 WIB)
+
+Restore-only run [#39776089816](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776089816) passed. Private artifact #12425065836 confirms `ExecutionFlow::SaveStateLoaded`, `ADAPTIVE_RESTORE_TEST=PASS`, five external-X11 captures at 1280×800, exit code 0, and post-exit external checkpoint validation. It restored the revision-28 ACTION checkpoint (run #39775176728) with exact SHA-256 `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`, 21,162,344 bytes, v4 header; inspected F20 visibly retains `マップを見る` (Lihat peta) as the selected row. **This exact original checkpoint is promoted as restorable.**
+
+New output checkpoint from restore-only run: 21,163,104 bytes, SHA-256 `9d1ed105227c095c42396595bccd51ecf06f564ae5342f01377dec1f3aa94292`, v4; not promoted until that output itself is independently restored.
+
+### Revision 30 — matched Triangle versus WAIT
+Use source run #39775176728, artifact `naruto-storymode-adaptive-player-private`, file `adaptive-cycle-01-f180.sstate`, source SHA `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`, `RESTORE_TEST=0`, `CONTINUATION_TEST=0`, `AB_TEST=1`, `AB_ACTION=TRIANGLE`, `LOOP_CYCLES=2`, `REVISION=30`. Do not start another run until the prior player run has terminated. Require all paired evidence gates (same exact parent, byte-identical F20 screenshots/states, Triangle press/release true/false readback, two `ExecutionFlow::SaveStateLoaded` events, ten external 1280×800 X11 captures, accepted exits, both output checkpoint external validations). Manually review screenshots to decide if Triangle opens the map; don't rely on the generic classifier. Stop at map view without selecting a destination.
+
+The revision-28 rule stays VERIFIED only for the observed state: DOWN moves the selected row from `情報` (Informasi) to `マップを見る` (Lihat peta). Story Mode remains NOT COMPLETE. Keep all gameplay assets private and out of Git; START is the dialogue-skip input.
+
+---
+
 ## LATEST VERIFIED RESULT — DOWN moves Information highlight to View map (22 October 2026, 19:05 WIB)
 
 Run [#39775176728](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39775176728) fully passed the required paired experiment. Private artifact #12424660712 was reviewed. Source parent SHA `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e) was identical for both fresh processes; each logged `ExecutionFlow::SaveStateLoaded`; cloned Memory Cards were hash-identical; F20 images were pixel-identical; DOWN press/release readback passed; ten 1280×800 external-X11 images passed; both emulator exits were 0; and both output states passed external size/header/SHA validation.
