@@ -1,3 +1,13 @@
+## ACTIVE RUN — restore-test the verified map-direction result (revision34)
+
+Run [#39780143613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780143613) has been triggered from the correct committed marker, revision34. It restores the ACTION output from revision33, run #39779256427, artifact naruto-storymode-adaptive-player-private, checkpoint adaptive-cycle-01-f180.sstate, SHA-256 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a. Settings are RESTORE_TEST=1, CONTINUATION_TEST=0, AB_TEST=0, LOOP_CYCLES=1.
+
+Started 19:39:28 WIB; timeout about 19:59:28 WIB. At last check, X11/tools installation was active and artifact not yet available. Do not start parallel player. Confirm explicit ExecutionFlow::SaveStateLoaded, five authentic external 1280×800 captures with empty land 空き地 (Tanah kosong)/value 140 visibly focused, exit 0 and external size/header/SHA validation. Only then promote that exact source. New output from this restore test is not promoted until it too is restored in a further fresh process.
+
+Revision33 rule is VERIFIED in narrow scope: one DOWN changes board focus from Naruto's tile (barrier value 60; Level 1, durability 2/2) to adjacent empty land (空き地 (Tanah kosong), value 140); WAIT preserves Naruto's tile. Does not establish capture, territory ownership or character movement. Story Mode remains NOT COMPLETE.
+
+---
+
 ## CURRENT RUN — revision 34 restores the map-focus checkpoint (22 October 2026, 19:39 WIB)
 
 First inspect [run #39780143613](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39780143613). It is in progress, started 19:39:28 WIB, with a 20-minute timeout (approx deadline 19:59:28 WIB). This is restore-only; no input is sent. Do not start another player while this run is active.
