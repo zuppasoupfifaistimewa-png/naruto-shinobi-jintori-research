@@ -1,3 +1,28 @@
+## NEWEST HANDOFF UPDATE — both adaptive retries failed on checkpoint visibility race (22 October 2026, 17:20 WIB)
+
+This section supersedes any older wording below that says runs #39760914530 or #39761094445 are still running/queued. Both have ended in **failure**; no player run is active or waiting for the concurrency lock. Story Mode is **NOT complete**, and no authentic ending/results screenshot exists.
+
+### What was actually verified
+- Regression [#39759649670](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39759649670) is successful: 8 synthetic tests and 10/10 expected classes on authentic private external-X11 frames.
+- Run [#39760914530](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39760914530) and run [#39761094445](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39761094445) each passed 8 synthetic tests, validated all 5 cycle-1 external-X11 captures, and read back DOWN and START press/release correctly. The actual visible sequence remained board → dialogue → board; dialogue was skipped with START. Neither run entered cycle 2.
+- Both Lua sessions reported the immediate checkpoint probe as `bytes=0 header=false` and ended with exit code 74 before the session-finished marker. Fast-fail watcher in #39761094445 worked as intended rather than wasting the full watchdog.
+- But each uploaded private artifact later contained a 21 MB savestate with the PCSX-Redux SaveState v4 header:
+  - run #39760914530, artifact #12417638677: 21,162,914 bytes, SHA-256 `f1e04a97452d675d6c6a955acd1a3aa6341a13402ca87895d61d29a6edd11124`.
+  - run #39761094445, artifact #12417554193: 21,163,014 bytes, SHA-256 `64941480e4ff5eebb8497e7458ec83090d3aa2bf533d5290ac18ae882c5ab5e5`.
+- Most plausible working diagnosis is that the checkpoint’s file length/header are not readable immediately during the VSync callback, while the file is finalized later. This is **not proven**. Neither checkpoint has been restored in a fresh emulator process; do not call it trusted just because the artifact has a header and expected length.
+- The C01-F180 authentic X11 view shows the green Konoha board, a red barrier/seal marker, Naruto and Mizuki both displaying 1380 Chakra, and the Mizuki token on the board. This repeats the observed screen only; the barrier/cost/NPC-causation question remains a hypothesis until matched against NONE from the same parent. No screenshot/state is committed or publicly linked.
+
+### Exact next-step sequence
+1. Patch `.github/workflows/naruto-storymode-adaptive-player.yml` first. Remove the in-VSync immediate length/header rejection after `Support.File:writeMoveSlice(state)`; log only that the write/close call returned. Keep the existing deferred quit outside VSync. Let the shell orchestrator, **after the emulator process exits**, decide whether the checkpoint is usable by checking file size >21,000,000, the v4 header and SHA-256. The shell must still fail closed if any check fails.
+2. Set `experiments/.run-storymode-adaptive-player` to `LOOP_CYCLES=1` and increment REVISION. That marker push triggers the player workflow. This should be the next smoke run; do not run two cycles at once.
+3. Audit the one-cycle result: 5 valid real X11 captures, input press/release readback, correct START handling, observed map→dialogue progression, completed session marker, shutdown result, raw checkpoint length/header/hash, and progress-report. Full size/header by itself is not restore proof.
+4. Once that smoke run passes, test a bounded fresh-process restore using the resulting immutable checkpoint; require a real `ExecutionFlow::SaveStateLoaded` log and post-restore frame capture. Only then run the next two-cycle continuation.
+5. After a successful restore, branch into the matched one-action-versus-NONE experiment from the same immutable checkpoint and disposable cloned Memory Card. Unknown visual states remain WAIT; Circle only for a visibly highlighted YES prompt; START skips dialogue.
+
+Do not trigger an additional workflow run until step 1 is committed. The source parent for current runs remains the immutable board/roulette checkpoint from #39685868421 (21,162,945 bytes; SHA-256 `19388b5a9b59c77e443f47abdc7c6f98251ef4a1be1b512378faab217a658ae9`). Only repo `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research` is allowed; keep ROM, BIOS, Memory Card, savestates and gameplay screenshots out of Git, and private artifacts private. Translate Japanese immediately to Indonesian in parentheses. Never claim Story Mode is complete without authentic ending/result evidence.
+
+---
+
 ## VERIFIED UPDATE — fresh-session adaptive experiment and classifier correction (22 October 2026, 17:05 WIB)
 
 **Story Mode is NOT complete.** There is no authenticated in-game ending/result screenshot. All current work is bounded automation engineering and rule observation, not a completed full Story Mode run.
