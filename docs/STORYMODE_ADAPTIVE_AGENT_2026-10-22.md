@@ -1,3 +1,13 @@
+## ACTIVE QUEUE — revision40 tests UP vs WAIT; fixed runtime action guard
+
+Run [#39786019434](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39786019434) is queued. Marker revision40 uses source run #39779256427 / artifact naruto-storymode-adaptive-player-private / adaptive-cycle-01-f180.sstate / SHA-256 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a; AB_TEST=1; AB_ACTION=UP; AB_EXPECTED_STATE=map_after_move; two cycles. Do not launch another player.
+
+Run39 #39784493293 failed before emulator due to runtime shell gate still requiring DOWN/TRIANGLE; selector and Lua accepted UP. Tiny artifact #12427839381 contains no screenshots, so there is no gameplay result. Fixed at commit d62a04e831ea185f13efafc5e061d5a8dbb945ce (workflow blob 73c864d2eba5579be26da732832a467be876b2d1).
+
+Required gates after completion: exact input source SHA both arms; two load events; F20 identical pixels/map_after_move state; identical Memory Card clones; UP true/false readback; WAIT control; ten authentic 1280×800 shots; exit0 both; external state size/v4/SHA checks both; report. Review screenshots for focus change. Never confirm/select a tile. Story Mode is NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision39 directional UP probe from map cell140
 
 Run #39784493293 is active, started 20:10:11 WIB; timeout about 20:30:11 WIB. At its checkout, the marker was verified: source run #39779256427 / artifact naruto-storymode-adaptive-player-private / checkpoint adaptive-cycle-01-f180.sstate / SHA-256 58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a; AB_TEST=1; AB_ACTION=UP; AB_EXPECTED_STATE=map_after_move; two cycles; revision39. Workflow supports UP/DOWN/LEFT/RIGHT on the map state. Do not launch another player.
