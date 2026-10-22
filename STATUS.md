@@ -1,3 +1,27 @@
+## VERIFIED RESULT — second DOWN advances the board view again (revision37, 22 October 2026, 19:55 WIB)
+
+Run [#39782011370](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39782011370) completed with success at 19:54:29 WIB. Private artifact #12426797521 was downloaded and all primary evidence checked.
+
+Paired gates passed:
+- Both fresh processes loaded identical input SHA-256 `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff` and each logged `ExecutionFlow::SaveStateLoaded`.
+- Identical disposable Memory Card copies (SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`).
+- Both F20 classifier state `map_after_move`; images exactly pixel-identical (1,024,000/1,024,000).
+- ACTION DOWN press/release readback true/false; CONTROL WAIT/no input.
+- Ten authentic external-X11 captures passed 1280×800; both emulator processes exited0; both output checkpoints passed post-exit size/header/SHA validation; A/B comparison report was generated.
+
+**VERIFIED, narrow visual observation:** from the post-DOWN scrolled map state, a second DOWN triggers another upward viewport scroll and keeps the cell-information panel hidden, with the cursor over a lower area near the Naruto marker. WAIT allows the viewport to settle back to the prior board framing and the `空き地` (Tanah kosong) panel/value140 returns. The ACTION/control difference is substantial and consistent: F60 780,637 pixels / mean absolute RGB 22.66488; F100 780,562 / 22.68538; F110 781,298 / 22.66071; F180 780,622 / 22.62887. This verifies the input-dependent board focus/view response, but **not** the precise name/value of the lower target, player movement, capture, ownership change, or turn progression.
+
+Output states in private artifact #12426797521, structurally valid but not yet promoted:
+- ACTION after second DOWN: `adaptive-cycle-01-f180.sstate`, 21,162,960 bytes, v4, SHA-256 `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177`.
+- CONTROL WAIT: `adaptive-cycle-02-f180.sstate`, 21,163,049 bytes, v4, SHA-256 `cd7a70d67001e67177333df0c332e745e28c01c92851f92c21445250d108c63c`.
+
+### Next gate — revision38 restore-only
+Restore the exact ACTION output from run #39782011370 / artifact #12426797521 / SHA `4989fc1f372f82d99e78b17f99b4af75c7bd0565b1aa93e9324b036431db9177` in a fresh emulator process. Require the load event, five authentic 1280×800 screenshots verifying its post-second-DOWN board view, exit0, and external output size/v4-header/SHA checks. Promote only the input source after this restore passes. The new output from revision38 stays unpromoted until its own fresh-process restore.
+
+Story Mode remains **NOT COMPLETE**. No tile-confirmation, capture, ownership or ending is verified. Keep private game artifacts out of Git and use START for dialogue skipping.
+
+---
+
 ## ACTIVE RUN — revision37 second DOWN from the scrolled board state (22 October 2026, 19:53 WIB)
 
 Run [#39782011370](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39782011370) is the only active player. Its committed marker was verified:
