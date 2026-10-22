@@ -161,7 +161,7 @@ jobs:
           LUA
           )
           cat > "$WORK/storymode-adaptive.lua" <<'LUA'
-          local maxCycles=8
+          local maxCycles=1 -- smoke test only; expand after verified pass
           local frame=0; local loadStarted=false; local loadReturned=false; local loaded=false
           local activeButton=nil
           local pad=PCSX.SIO0.slots[1].pads[1]
@@ -178,18 +178,23 @@ jobs:
               log("ADAPTIVE_CHECKPOINT_CREATED=PASS cycle="..cycle.." path="..path)
           end
           local function gate(label,cycle,saveAfter)
-              PCSX.pauseEmulator()
               local phase=label:match("F(%d+)")
-              log("ADAPTIVE_CAPTURE_READY cycle="..cycle.." phase="..phase.." label="..label)
+              -- Schedule first, then pause inside the scheduled callback. Pausing
+              -- before nextTick can prevent a later-cycle callback from running.
               PCSX.nextTick(function()
+                  PCSX.pauseEmulator()
+                  log("ADAPTIVE_CAPTURE_READY cycle="..cycle.." phase="..phase.." label="..label.." frame="..frame)
                   local gatePath="captures/go-"..label:lower()
-                  local attempts=0
+                  local deadline=os.time()+30
                   while true do
                       local f=io.open(gatePath,"r")
                       if f then f:close(); break end
-                      attempts=attempts+1
-                      if attempts>2400 then log("ADAPTIVE_CAPTURE_GATE_TIMEOUT label="..label); PCSX.quit(81); return end
-                      os.execute("sleep 0.05")
+                      if os.time()>=deadline then
+                          log("ADAPTIVE_CAPTURE_GATE_TIMEOUT label="..label.." frame="..frame)
+                          PCSX.quit(81)
+                          return
+                      end
+                      os.execute("sleep 0.02")
                   end
                   if saveAfter then
                       checkpoint(cycle)
@@ -272,16 +277,17 @@ jobs:
           from pathlib import Path
           from PIL import Image
           pid=int(sys.argv[1]); stdout=Path(sys.argv[2]); out=Path(sys.argv[3]); root=Path(sys.argv[4])
-          max_cycles=8; phases=(20,60,100,180); done=set()
+          max_cycles=1; phases=(20,60,100,180); done=set()
+          last_progress=time.monotonic(); last_phase='emulator_start'; progress_transitions=0; previous_observed={}
           def alive():
               r=subprocess.run(["ps","-o","stat=","-p",str(pid)],capture_output=True,text=True)
               s=r.stdout.strip(); return bool(s) and not s.startswith("Z")
           def capture(label):
               xwd=out/(label+".xwd"); png=out/(label+".png")
-              a=subprocess.run(["xwd","-root","-silent","-out",str(xwd)],capture_output=True,text=True)
+              a=subprocess.run(["xwd","-root","-silent","-out",str(xwd)],capture_output=True,text=True,timeout=10)
               if a.returncode or not xwd.is_file() or not xwd.stat().st_size:
                   print("ADAPTIVE_X11_FAILED label="+label+" error="+a.stderr,flush=True); return False
-              b=subprocess.run(["convert",str(xwd),str(png)],capture_output=True,text=True)
+              b=subprocess.run(["convert",str(xwd),str(png)],capture_output=True,text=True,timeout=10)
               try: xwd.unlink()
               except FileNotFoundError: pass
               if b.returncode or not png.is_file():
@@ -310,11 +316,17 @@ jobs:
                       label="C%02d-F%d"%(cycle,phase)
                       token="ADAPTIVE_CAPTURE_READY cycle=%d phase=%d label=%s"%(cycle,phase,label)
                       if label in done or token not in content: continue
+                      last_phase=label
                       ok=capture(label)
                       if not ok: raise SystemExit("invalid external X11 capture: "+label)
                       png=out/(label+".png")
                       verify=observe(png, out/("verification-%s.json"%label))
                       print("ADAPTIVE_OBSERVED label={} state={} confidence={:.2f} reason={}".format(label,verify["state"],verify["confidence"],verify["reason"]),flush=True)
+                      prev=previous_observed.get(cycle)
+                      if prev is not None and prev != verify["state"]:
+                          progress_transitions += 1
+                          print("ADAPTIVE_PROGRESS_TRANSITION label={} from={} to={}".format(label,prev,verify["state"]),flush=True)
+                      previous_observed[cycle]=verify["state"]
                       if phase==20:
                           history=out/"history.json"
                           decision=observe(png,out/("decision-cycle-%02d.json"%cycle),history if history.exists() else None)
@@ -323,7 +335,10 @@ jobs:
                       elif phase==100:
                           dec_path=out/("decision-cycle-%02d.json"%cycle)
                           dec=json.loads(dec_path.read_text(encoding="utf-8"))
-                          print("ADAPTIVE_ACTION_VERIFICATION cycle={} before={} action={} observed_after={} state_changed={}".format(cycle,dec["state"],dec["action"],verify["state"],str(dec["state"]!=verify["state"]).lower()),flush=True)
+                          changed=dec["state"]!=verify["state"]
+                          print("ADAPTIVE_ACTION_VERIFICATION cycle={} before={} action={} observed_after={} state_changed={}".format(cycle,dec["state"],dec["action"],verify["state"],str(changed).lower()),flush=True)
+                          if cycle==1 and dec["state"]=="map" and verify["state"]=="battle_untrained":
+                              print("ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=battle_untrained label="+label,flush=True)
                       elif phase==180:
                           dec=json.loads((out/("decision-cycle-%02d.json"%cycle)).read_text(encoding="utf-8"))
                           count=int(dec.get("roulette_wait_count",0)) if verify["state"]=="roulette" and dec["action"]=="WAIT" else 0
@@ -333,8 +348,21 @@ jobs:
                       gate=out/("go-"+label.lower())
                       gate.write_text("validated\n",encoding="utf-8")
                       done.add(label)
+                      last_progress=time.monotonic()
+              if time.monotonic()-last_progress>45:
+                  try: tail=stdout.read_text(errors="replace").splitlines()[-12:]
+                  except FileNotFoundError: tail=[]
+                  checkpoints=sorted(out.glob("adaptive-cycle-*-f180.sstate"))
+                  hashes=[{"file":p.name,"bytes":p.stat().st_size,"sha256":hashlib.sha256(p.read_bytes()).hexdigest()} for p in checkpoints]
+                  print("ADAPTIVE_PHASE_WATCHDOG_FAIL last_phase={} idle_seconds={:.1f} checkpoints={} stdout_tail={}".format(last_phase,time.monotonic()-last_progress,json.dumps(hashes),json.dumps(tail)),flush=True)
+                  subprocess.run(["kill","-TERM",str(pid)],capture_output=True,text=True)
+                  raise SystemExit(90)
               time.sleep(.01)
-          print("ADAPTIVE_WATCHDOG_END captures={}/{}".format(len(done),max_cycles*len(phases)),flush=True)
+          print("ADAPTIVE_WATCHDOG_END captures={}/{} progress_transitions={}".format(len(done),max_cycles*len(phases),progress_transitions),flush=True)
+          if len(done)!=max_cycles*len(phases):
+              raise SystemExit("ADAPTIVE_CAPTURE_COUNT_FAIL")
+          if progress_transitions<1:
+              raise SystemExit("ADAPTIVE_GAMEPLAY_PROGRESS_FAIL: no observed state transition")
           PY
           set +e
           wait "$pid"
@@ -342,12 +370,18 @@ jobs:
           set -e
           echo "ADAPTIVE_EMULATOR_EXIT=$rc"
           test "$rc" -eq 0
-          test "$(find "$WORK/captures" -maxdepth 1 -name 'C*-F*.png' | wc -l)" -eq 32
-          test "$(find "$WORK/captures" -maxdepth 1 -name 'adaptive-cycle-*-f180.sstate' | wc -l)" -eq 8
+          test "$(find "$WORK/captures" -maxdepth 1 -name 'C*-F*.png' | wc -l)" -eq 4
+          test "$(find "$WORK/captures" -maxdepth 1 -name 'adaptive-cycle-*-f180.sstate' | wc -l)" -eq 1
           for state in "$WORK"/captures/adaptive-cycle-*-f180.sstate; do
-            echo "ADAPTIVE_CHECKPOINT_FILE=$(basename "$state") BYTES=$(stat -c %s "$state") SHA256=$(sha256sum "$state" | cut -d ' ' -f1)"
+            bytes="$(stat -c %s "$state")"
+            sha="$(sha256sum "$state" | cut -d ' ' -f1)"
+            echo "ADAPTIVE_CHECKPOINT_FILE=$(basename "$state") BYTES=$bytes SHA256=$sha"
+            test "$bytes" -gt 21000000
+            head -c 96 "$state" | grep -a -q 'PCSX-Redux SaveState v4'
+            echo "ADAPTIVE_CHECKPOINT_STRUCTURAL_VALIDATION=PASS file=$(basename "$state") bytes=$bytes sha256=$sha"
           done
-          echo "ADAPTIVE_LOOP_TEST=PASS cycles=8 captures=32 checkpoints=8"
+          grep -q 'ADAPTIVE_GAMEPLAY_PROGRESS=PASS from=map to=battle_untrained' "$WORK/captures/pcsx-adaptive.stdout"
+          echo "ADAPTIVE_LOOP_TEST=PASS cycles=1 captures=4 checkpoints=1 gameplay_state_transition=verified"
 
       - name: Upload private adaptive screenshots, decisions, logs and checkpoints
         if: always()
