@@ -79,8 +79,8 @@ def observe(path: str | Path) -> dict[str, Any]:
         "top_hud_white":round(top_hud["white"],4),
     }
 
-    # Priority matters: the wheel can cover a map and dialogue may coexist with a
-    # small edge of wheel art. These cutoffs were checked against authentic X11 frames.
+    # Priority matters: the wheel can cover a map, and a real dialogue frame may have a
+    # visible gold box before Japanese text has finished rendering. Cutoffs are checked against authentic X11 frames.
     if wheel["red"] >= .22 and wheel["gold"] >= .10:
         state,conf,reason="roulette",.98,"calibrated_wheel_color_signature"
     elif choice["red"] >= .12 and choice["blue"] >= .04 and center_number["blue"] >= .14:
@@ -90,7 +90,7 @@ def observe(path: str | Path) -> dict[str, Any]:
         features["yes_selected_visual"]=bool(yes)
         features["chakra_ocr_best_effort"]=chakra
         features["required_chakra_calibrated"]=120
-    elif dialogue_box["orange"] >= .075 and dialogue_box["white"] >= .015:
+    elif dialogue_box["orange"] >= .05 and dialogue_box["white"] >= .0015:
         state,conf,reason="dialogue",.91,"calibrated_bottom_dialog_box_signature"
     elif menu["white"] >= .06 and menu["orange"] >= .025:
         state,conf,reason="menu_or_unknown_choice",.78,"right_side_menu_requires_context"
