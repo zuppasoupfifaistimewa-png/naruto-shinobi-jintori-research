@@ -1,3 +1,16 @@
+## RESTORE VERIFIED — board/map checkpoint independently loaded (22 October 2026, 19:21 WIB)
+
+Run [#39777301626](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777301626) completed with Actions success. It restored the exact TRIANGLE/ACTION map-view checkpoint from run #39776518701: 21,163,227 bytes, v4 header, SHA-256  b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc. The log explicitly records ExecutionFlow::SaveStateLoaded and ADAPTIVE_RESTORE_TEST=PASS; five authentic external-X11 captures at 1280×800 were validated; the F20/F60/F100/F110/F180 visual sequence retained the board/map view; emulator exit was 0; and the output file passed external size/header/SHA validation. Private artifact #12423949987 contains the screenshots/logs.
+
+The new output from the restore smoke is NOT promoted until it too is independently restored: 21,162,251 bytes, v4 header, SHA-256 a2a3c36918155dc4356da2664bfa7880c9605c62260389b85f85262c942b2fe7.
+
+### Next experiment — revision 32, map DOWN vs WAIT
+The adaptive workflow validator previously hard-coded A/B frame-state parity to the right-side menu. Workflow update commit 4c074472e885c75ce618e4e0f5aefd6a8833a0c9 now introduces explicit AB_EXPECTED_STATE, allowing map_after_move A/B only with AB_ACTION=DOWN. Revision 32 tests one DOWN on the map board against a WAIT control, both restoring the already-proven source b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc in independent processes. Required gates: both F20 captures classify exactly map_after_move; pixel parity; two load events; press/release true/false; 10 authentic X11 captures; exit 0; and external validation of both output checkpoints. Inspect screenshots at F60/F100/F110/F180 to see whether the map selection/board state changes. This is a directional probe only: do not use Circle or confirm/select a destination. If a tile or new state appears, stop and inspect before another input.
+
+Story Mode remains NOT COMPLETE. No verified ending/results evidence exists. Continue to classify each rule VERIFIED/HYPOTHESIS/UNKNOWN and keep all game assets/screenshots/savestates/Memory Cards private and out of Git.
+
+---
+
 ## ACTIVE PLAYER — revision 32 map DOWN versus WAIT (22 October 2026, 19:23 WIB)
 
 Run [#39777917775](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39777917775) was triggered from marker revision 32 and is currently `in_progress`. It started at 19:23:17 WIB. Latest Actions check shows the `Install X11 tools and prepare private workspace` step active; workflow timeout is 20 minutes (deadline approximately 19:43:17 WIB from start). No artifact or experiment result exists yet. Do not start any other player run.
