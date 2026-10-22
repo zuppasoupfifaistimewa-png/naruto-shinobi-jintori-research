@@ -1,3 +1,16 @@
+## VERIFIED UPDATE — fresh-process restore passed; bounded two-cycle continuation active (22 October 2026, 17:43 WIB)
+
+**Story Mode is NOT complete.** No authentic ending/results screen has been captured.
+
+- Smoke run [#39763526377](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39763526377) passed 8 tests and 5/5 authentic X11 frames. Its checkpoint was 21,162,617 bytes, v4 header valid, SHA-256 `b55495934f9ba98165268627b35904918a4dd3983e6d90bb66e2662dfa059e17`.
+- Fresh-process restore run [#39764239171](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39764239171) passed. The log explicitly recorded `ExecutionFlow::SaveStateLoaded`; 5 authentic external-X11 post-load frames were validated; emulator exit was 0; the newly produced checkpoint passed post-exit size/header/SHA validation.
+- Verified restored-session checkpoint, private artifact #12419357425 only: `adaptive-cycle-01-f180.sstate`, 21,162,934 bytes, SHA-256 `16f697fa95c16661a639ad46b55f90008e60200d1ee860058b12d7b1110d073b`. Never commit or publicly link it.
+- Two-cycle continuation run [#39765193287](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39765193287) is active, revision 17, with this exact artifact/file/hash as immutable source, `RESTORE_TEST=0`, `CONTINUATION_TEST=1`, `LOOP_CYCLES=2`. Current status at this update: initializing. It must prove 10/10 X11 captures, two `ExecutionFlow::SaveStateLoaded` events, post-exit structural/SHA checks on both outputs, cycle-2 policy guard, and differing F20/F180 visual hashes per cycle. Do not consider it passed before audit.
+
+Only the allowed research repo has been accessed. Screenshots/states remain private artifacts and out of Git. Keep action/state conclusions conservative; Story Mode remains incomplete absent authentic ending/results evidence.
+
+---
+
 ## VERIFIED UPDATE — one-cycle smoke checkpoint validated; restore test pending (22 October 2026, 17:35 WIB)
 
 **Story Mode is NOT complete.** No authentic in-game ending/results screenshot exists. The new smoke checkpoint is structurally validated but is not yet trusted as a continuation source until a fresh emulator process restores it.
