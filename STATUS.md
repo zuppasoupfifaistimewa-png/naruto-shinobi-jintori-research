@@ -1,3 +1,21 @@
+## VERIFIED UPDATE — matched DOWN-versus-NONE menu test passed (22 October 2026, 18:06 WIB)
+
+**Story Mode is NOT complete.** No authentic ending/results screenshot exists.
+
+- Run [#39767790829](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39767790829) passed. It used the same immutable parent checkpoint in two separate emulator processes: run #39765193287's cycle-2 checkpoint, 21,163,013 bytes, SHA-256 `7679cfbd3576c3202abcc299b907939ab4e4529e3a0aa260e780806b1e21cc92`.
+- Both arms passed the F20 initial-frame parity test: 1,024,000/1,024,000 pixels identical. Both classified `menu_or_unknown_choice`.
+- Two separate disposable Memory Cards were cloned from the same baseline and passed byte-hash equality: `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`. Each arm logged `ExecutionFlow::SaveStateLoaded`; source SHA was identical in both processes; both exited 0.
+- Action arm: DOWN press readback true and release readback false. Control: NONE/WAIT, no button press.
+- 10 authentic external-X11 images were validated at 1280x800 and inspected from private artifact #12420204586. F20 matches exactly; F60/F100/F110/F180 each differ at 14,609 pixels (mean absolute RGB difference 1.04924). Visual inspection confirms the red menu selection mark moved from `ルーレット` (Roulette) to `忍術` (Ninjutsu) after one DOWN; the NONE branch remained on `ルーレット` (Roulette).
+- Both branch checkpoints passed post-exit file size/header/SHA checks:
+  - action/DOWN: 21,163,486 bytes, SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`;
+  - control/NONE: 21,163,324 bytes, SHA-256 `3da0a41d55e988550ef1a9368652fa909ae06da34c2b4b7bf315f5a820f76aeb`.
+- Rule status: **VERIFIED (narrow scope):** in this exact right-side menu and checkpoint, one DOWN moves the highlight from Roulette to Ninjutsu; no-input leaves Roulette selected. **HYPOTHESIS:** the same one-row behavior generalizes across other menus/screens.
+
+The menu footer visibly includes `△ マップ` (Triangle: Map). The next safe exploratory action may test Triangle versus NONE from the exact same menu checkpoint, still without Circle. Keep results scoped to directly observed behavior. Artifacts stay private; no ROM, BIOS, Memory Card, savestate or screenshot is committed.
+
+---
+
 ## EXPERIMENT UPDATE — A/B first attempt reached matched branches; report bug fixed and rerun active (22 October 2026, 17:59 WIB)
 
 Story Mode remains **NOT COMPLETE**. Run #39766331759 failed after gameplay and checkpoint steps, but it did not fail on gameplay evidence: the final comparison script raised `TypeError: unsupported operand type(s) for %: 'PosixPath' and 'int'` while building the path to the F20 verification JSON. The private artifact #12419789546 contains 10 valid authentic X11 frames and two structurally validated output checkpoints, but because the final paired audit did not finish, do not promote either output checkpoint as a trusted continuation.
