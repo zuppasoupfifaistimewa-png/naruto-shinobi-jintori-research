@@ -1,3 +1,19 @@
+## VERIFIED UPDATE — second DOWN moves Ninjutsu highlight to Information (22 October 2026, 18:14 WIB)
+
+Story Mode remains **NOT COMPLETE**; no authentic ending/results screenshot exists.
+
+- Matched A/B run [#39768787669](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39768787669) succeeded from the same parent checkpoint in two fresh processes: 21,163,486 bytes, SHA-256 `76b5962f49c351248fbbcf7cfae5a633597908debfe5eb15b24cb9eb931adf28`. F20 frames were pixel-identical across 1,024,000 pixels and both branches classified `menu_or_unknown_choice`.
+- Separate cloned Memory Cards were identical at SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`. ACTION sent one DOWN (press readback true, release false); NONE/WAIT sent no button. Both load events and exits 0 were verified.
+- Ten authentic external-X11 captures at 1280x800 were reviewed from private artifact #12421302756. In ACTION, the red highlight moved from `忍術` (Ninjutsu) at F20 to `情報` (Information) at F60; NONE remained on `忍術` (Ninjutsu) through F180. F60/F100/F110/F180 differ consistently in 14,606 pixels (mean absolute RGB difference 1.04012).
+- Both outputs passed post-exit checkpoint structure/hash validation, but neither output is promoted for continuation because no fresh-process restore of those two outputs has been done:
+  - ACTION: 21,162,009 bytes; SHA-256 `aa399bd8004cf3aaf9010ee435dbe7dd45d0b514193ec89e8d4cd4e4b4053f9e`;
+  - NONE: 21,162,184 bytes; SHA-256 `06cea778aaaf838271fafa58734c3e236e7d5aa3f63d578a786012640fbbde52`.
+- **VERIFIED, narrow scope:** in this exact right-side menu at the Ninjutsu row, one DOWN moves the highlight to Information; NONE leaves Ninjutsu selected. Do not generalize outside the observed menu.
+
+The clean source for the next Triangle probe is already independently restored checkpoint #39768371975: 21,162,575 bytes, SHA-256 `fa03a1840612749810453566a25805e89a4aa21ad64664695e09ed7222b77a9e`, menu showing `忍術` (Ninjutsu) highlighted and footer `△ マップ` (Triangle: Map). After confirming the Triangle branch starts from that same F20 image as NONE, compare the map view. Stop at map view; do not select a map target, and do not use Circle.
+
+---
+
 ## VERIFIED UPDATE — DOWN from Ninjutsu selects Information (22 October 2026, 18:14 WIB)
 
 **Story Mode remains NOT COMPLETE.** No authentic ending/results image exists.
