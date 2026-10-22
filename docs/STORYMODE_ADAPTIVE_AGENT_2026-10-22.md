@@ -1,3 +1,13 @@
+## ACTIVE — revision36 restore-only of board after DOWN (22 October 2026, 19:49 WIB)
+
+Only active player is #39781495023; start 19:49:08 WIB and timeout about 20:09:08 WIB. The marker's source is the revision35 ACTION output in run #39780755350 / private artifact #12426786721 / adaptive-cycle-01-f180.sstate / SHA-256 `b9717348a478e63660784c9060beee84844fd30f739db5e331f78df12bf846ff`. RESTORE_TEST=1, one cycle. Don't run a player in parallel.
+
+Pass only if the fresh process logs `ExecutionFlow::SaveStateLoaded` and `ADAPTIVE_RESTORE_TEST=PASS`, 5 real 1280×800 X11 captures retain the scrolled post-DOWN board focus, exit0, and output savestate passes size/v4-header/SHA external checks. Input checkpoint b9717348… can be promoted upon that evidence. New output remains unpromoted until its own restore.
+
+Story Mode not complete. DOWN from empty-land changes focus/view; don't infer move or territory capture. Keep game assets private/out of Git and use START for dialogue.
+
+---
+
 ## VERIFIED BOARD INPUT — DOWN from empty-land focus changes view/selection (revision35, 22 October 2026)
 
 Matched run #39780755350 passed every paired A/B gate using source hash `58d8f551ccf3a93fff21bb2cb9ae4930e1e1db033591082597ba4dfb47b20f7a`. Private artifact #12426786721 was downloaded after run completed. Two fresh processes and load events; exact F20 parity 1,024,000 pixels; same disposable cards; DOWN input true/false; WAIT control; ten authentic X11 captures 1280×800; exits0; both savestate outputs externally checked; comparison report generated.
