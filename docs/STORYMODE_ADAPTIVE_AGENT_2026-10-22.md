@@ -1,3 +1,11 @@
+## ACTIVE — revision48 roulette Circle versus WAIT after save settle change
+
+Run #39869536734 active, started 06:05:59 WIB; timeout about 06:25:59 WIB. Source run #39867730674/artifact #12464258211/file adaptive-cycle-01-f180.sstate/hash `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`. Marker AB_TEST=1, CIRCLE, expected state roulette, two cycles, revision48.
+
+Revision47 captures suggest Circle returns to map by F180 while WAIT keeps roulette spinning. But CONTROL output state was only 2 MiB and failed checkpoint validation after exit139, so no A/B report and the rule remains HYPOTHESIS. Workflow commit `32f9e4172a670cdd14b92992f62a2e6fc970aba5` adds 12 VSync settle callbacks after F180 save before exit; both state outputs must still pass external validation and all A/B gates. No player parallel. Story Mode NOT COMPLETE.
+
+---
+
 ## REVISION47 PARTIAL — Circle seems to return to board from roulette, but A/B gate failed
 
 Run #39868722262 artifact #12464698050 contains all 10 authentic 1280×800 screenshots and exact F20 parity. Both processes restored source `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`; two load events, matched cards, Circle true/false readback, and captures pass. ACTION F60/F100/F110 show spinning roulette; F180 returns to map with wheel sliding off view. WAIT remains roulette through F180.
