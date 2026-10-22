@@ -1,3 +1,31 @@
+## LATEST VERIFIED RESULT — Triangle opened the map view; next restore-only (22 October 2026, 19:15 WIB)
+
+Run [#39776518701](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776518701), revision 30, completed with success at 19:14:34 WIB. Private artifact #12425305517 was audited.
+
+**VERIFIED in this exact state:** The matched ACTION TRIANGLE branch enters a map/tile view from the right-side menu with `マップを見る` (Lihat peta) highlighted; the NONE/WAIT control remains in the prior menu. Parent SHA for both: `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`. F20 images were pixel-identical across 1,024,000 pixels; each process logged `ExecutionFlow::SaveStateLoaded`; Triangle press/release readback passed true/false; ten authentic external-X11 captures validated at 1280×800; both processes exited 0 and both outputs passed external post-exit size/header/SHA validation. Paired differences: F60 286,259 pixels (MAD 21.80974), F100 282,661 (21.70455), F110 279,162 (21.18977), F180 286,921 (21.80548). Screenshot F60 and F180 in ACTION clearly show the hex/tile view and footer `× もどる` (X: Kembali), while CONTROL remains in menu. No map target was selected.
+
+ACTION candidate output from run #39776518701, artifact #12425305517: `adaptive-cycle-01-f180.sstate`, 21,163,227 bytes, v4, SHA-256 `b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc`. This new output is still not promoted until it is independently restored. CONTROL output: 21,163,215 bytes, SHA-256 `dc91b2756581456e75dee8cd836dc7b3c1e43fde88978dbf15545f231a6c0f98`; also not promoted.
+
+Next is revision 31 restore-only from the ACTION candidate:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39776518701
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
+SOURCE_SHA256=b5715ba7af58abb8e9e32d32cb489cbf37979d7fd56a2221ad15f39a0cd2a8fc
+RESTORE_TEST=1
+CONTINUATION_TEST=0
+AB_TEST=0
+AB_ACTION=DOWN
+LOOP_CYCLES=1
+REVISION=31
+```
+This must send no gameplay input. Require the explicit load event, five authentic 1280×800 post-load X11 captures, accepted exit and external output validation; manually verify that F20 retains the map view. On success, source run #39776518701's ACTION output is a trusted map-view checkpoint. After that, begin one-variable map movement probes from the inspected state. Do not choose a target until the actual map layout and on-screen costs are understood.
+
+Story Mode is NOT COMPLETE; no ending/results evidence exists. Keep all gameplay files out of Git and private; use START for Story Mode dialogue skipping.
+
+---
+
 ## RESTORE SMOKE PASSED — exact next step revision 30 (22 October 2026, 19:11 WIB)
 
 Run [#39776089816](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39776089816) completed with Actions success. Audited its private artifact #12425065836: source from run #39775176728, SHA-256 `0f0ea089fb9f3cdad32bf0d04de399ffa24dd927d3f2bb2731a401ec3bf783b7`, size 21,162,344, header v4; `ExecutionFlow::SaveStateLoaded` plus `ADAPTIVE_RESTORE_TEST=PASS`; five authentic 1280×800 external-X11 screenshots; exit 0; external post-exit checkpoint validation. C01-F20 was opened and visibly shows `マップを見る` (Lihat peta) selected. Thus the revision-28 ACTION output is now an independently restored, trusted source checkpoint.
