@@ -1,3 +1,25 @@
+## REVISION45 PARTIAL EVIDENCE — Circle opens roulette, but paired A/B failed during native shutdown
+
+Run [#39867730674](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39867730674) completed with failure. Private artifact #12464258211 was downloaded; ZIP integrity passed and authentic screenshots C01-F20/F60/F100/F180 were inspected. ACTION source was the independently restored command menu, source SHA `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`, F20 showing `ルーレット` (Roulette) highlighted. Circle press/release readback true/false passed. F60/F100/F110/F180 all display the roulette wheel and the classifier reports `roulette`.
+
+However, after the ACTION branch logged `ADAPTIVE_SESSION_FINISHED cycle=1`, the PCSX-Redux process aborted on `corrupted size vs. prev_size`, native exit 134. The WAIT/control branch never ran, no C02 screenshots or A/B comparison report exist. Therefore this is only **partial evidence / HYPOTHESIS**, not a completed A/B gate: contextual Circle appears to open the roulette wheel from the highlighted Roulette menu, but the matched control still needs to be run.
+
+Partial ACTION checkpoint from the private artifact is present and locally validated:
+- file `adaptive-cycle-01-f180.sstate`, 21,162,546 bytes
+- header `PCSX-Redux SaveState v4`
+- SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`
+- Artifact #12464258211, run #39867730674.
+This is **not promoted** until independently restored in a fresh emulator process and visually confirmed.
+
+Workflow commit `11b308f162aa1ef2f5b5167cd17b4340718a03de` now tolerates post-session exit 134 only when `ADAPTIVE_SESSION_FINISHED` exists and the output checkpoint passes external size/v4-header/SHA validation; it also adds expected state `roulette` guarded to `AB_ACTION=CIRCLE`. This preserves fail-closed checks before any recovered exit is accepted.
+
+### Next — revision46 restore-only of partial roulette checkpoint
+Source run #39867730674 / artifact `naruto-storymode-adaptive-player-private` / `adaptive-cycle-01-f180.sstate` / SHA-256 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`. Set `RESTORE_TEST=1`, `CONTINUATION_TEST=0`, `AB_TEST=0`, `LOOP_CYCLES=1`, `REVISION=46`. Require load event and restore PASS, five authentic 1280×800 screenshots showing the wheel remains open, accepted process shutdown only via normal exit or session-finished + validated checkpoint, and external validation of the new output state. Keep the new restore output unpromoted pending its own restore.
+
+After revision46 verifies the input, use revision47 Circle vs WAIT from explicit `roulette` state, `AB_ACTION=CIRCLE`, all paired gates; inspect whether Circle stops the wheel/chooses a result versus WAIT keeping it spinning. No dialogue skipping with Circle; use START. Story Mode remains NOT COMPLETE.
+
+---
+
 ## ACTIVE — revision45 Circle-vs-WAIT from the restored Roulette-highlighted menu
 
 Run [#39867730674](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39867730674) is the only active player. Its committed marker was verified at SHA `c9b1438292041f972b712f248fb7052032635b59`: source run #39866820866 / artifact `naruto-storymode-adaptive-player-private` / checkpoint `adaptive-cycle-01-f180.sstate` / SHA-256 `609823871cc2cb7827404fecb1a5b98aa0c8446df405679932eb083d52bbffb7`; `AB_TEST=1`, `AB_ACTION=CIRCLE`, `AB_EXPECTED_STATE=menu_or_unknown_choice`, two cycles, revision45. Workflow blob `4021462372a7573132783b21285d35b0da25eab8` allows Circle only for menu-state A/B; map-state branch excludes it.
