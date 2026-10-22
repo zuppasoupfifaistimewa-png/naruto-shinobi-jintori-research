@@ -38,7 +38,7 @@ class AdaptiveAgentTests(unittest.TestCase):
             self.make_image(state).save(f.name)
             return agent.observe(f.name)
     def test_known_state_classes(self):
-        for state in ("map","roulette","dialogue","barrier_choice","battle"):
+        for state in ("map","roulette","dialogue","barrier_choice"):
             with self.subTest(state=state):
                 self.assertEqual(self.classify(state)["state"],state)
     def test_battle_screen_fails_closed_until_policy_calibrated(self):
