@@ -608,7 +608,7 @@ jobs:
             card_sha="$(sha256sum "$card" | cut -d ' ' -f1)"
             echo "ADAPTIVE_SESSION_START cycle=${cycle} source=$resume_sha card=$(basename "$card") card_sha256=$card_sha" >> "$WORK/captures/pcsx-adaptive.stdout"
             set +e
-            ADAPTIVE_CYCLE="$cycle" AB_TEST="$AB_TEST" AB_ACTION="$AB_ACTION" AB_SEQUENCE="$AB_SEQUENCE" AB_SECOND_ACTION="$AB_SECOND_ACTION" PROBE_MODE=ADAPTIVE timeout --signal=TERM --kill-after=5s 60s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+            ADAPTIVE_CYCLE="$cycle" AB_TEST="$AB_TEST" AB_ACTION="$AB_ACTION" AB_SEQUENCE="$AB_SEQUENCE" AB_SECOND_ACTION="$AB_SECOND_ACTION" PROBE_MODE=ADAPTIVE timeout --signal=TERM --kill-after=5s 90s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$card" \
               -exec "$PAD_SETUP" -dofile "$WORK/storymode-adaptive.lua" -softgpu -dynarec -stdout -lua_stdout \
               -logfile "$logfile" -run > "$stdout" 2>&1
