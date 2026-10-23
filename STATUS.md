@@ -1,3 +1,18 @@
+# Latest checkpoint — cross-context target-cue regression PASS (23 October 2026)
+
+Regression [#39954571305](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39954571305) finished with `success` against code commit `61fd13189de5496631ca7a37900b64f4e50330ee`. It passed 24 unit/source tests, 10 authentic X11 policy checks, 5 authentic card-overlay checks, 10 authentic revealed-card-detail checks, all ten private Revision65 frame checks, and the new cross-context evidence assertions. The immediately preceding run `#39954326794` failed only due to a Python heredoc indentation defect, which was corrected before this successful run.
+
+Measured private screenshot assertions:
+- Revision65 F20 had 142 pink-mask pixels in the under-HUD partial-badge ROI; after UP the fixed exposure ROI contained 2,681 pink-mask pixels; WAIT control contained 0. This supports camera-pan/unocclusion as a real confound, not proof of a selected target.
+- In map UP-vs-WAIT, the information panel changed 16,239 pixels in the UP branch and 94 in WAIT control; the pink-60 tile ROI contained 1,893 pink-mask pixels in UP and 75 in the same control ROI. Visual reference shows red directional arrows around the selected pink-60 tile and a matching panel: Level 1, barrier value 60, durability 2/2. WAIT retained empty-land / value-140 information.
+- Revision65 instruction-panel and confirm/back footer ROIs remain pixel-identical F60→F100 after Circle on both branches.
+
+**Decision:** meaning of pink 60 as a barrier-value symbol in map context is corroborated; role as the level-up target cursor remains **UNKNOWN**. The camera-pan/unocclusion hypothesis is plausible and remains **not conclusively proven**. Keep policy `WAIT` in `barrier_level_selection`, keep `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` absent from the marker, do not rerun Revision65, do not start another player run, and do not authorize random directional input.
+
+HEAD at audit-run completion was `61fd13189de5496631ca7a37900b64f4e50330ee`; this documentation update records the result only. Marker revision65 remains unchanged. Readiness remains **NO-GO** and Story Mode remains **NOT COMPLETE**. Next action: offline visual/ROI registration around map landmarks and the arrow-plus-panel selection cue; define an independently distinguishable target observation before any new input trial. Keep all authentic images and save-state artifacts private/out of Git.
+
+---
+
 ## Regression workflow repair — 23 October 2026
 
 The first run with the new cross-context assertions, [#39954326794](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39954326794), failed at the final Python report line because that line had one extra indentation level in the workflow heredoc. The run reached the new cross-context step, and earlier synthetic/authentic checks passed, but the final cross-context assertions did not finish. This was a workflow-source formatting defect, not new gameplay evidence.
