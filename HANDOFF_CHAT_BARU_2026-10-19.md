@@ -1,8 +1,8 @@
-## AUTHORITATIVE CURRENT CHECKPOINT — 23 October 2026, 07:03 WIB
+## AUTHORITATIVE CURRENT CHECKPOINT — 23 October 2026, 07:09 WIB
 
-Use [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md) as the source of truth for the current adaptive-player state, the passing regression run, revision51 restore-only marker values and acceptance gates. This current handoff supersedes older next-step notes below.
+Use [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md) as the source of truth. Revision51 run [#39875714125](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39875714125) passed the real restore-only runtime gate: five authentic captures, explicit SaveStateLoaded, zero button-press events and two suppressed requests. Its output checkpoint candidate SHA-256 is `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e`, 21,163,043 bytes, v4, not independently restored yet.
 
-Safety guard implementation is in player workflow commit `0ddc5fb879ea20e575a640fa2207f8fc10c9bdce`; its source regression test is in `da728ffd7b9b80da7dbbdefb712d8b0be8ced81a`. Regression [#39875557447](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39875557447) passed, but actual emulator runtime verification of the no-input invariant remains the next step. The candidate checkpoint from revision50 is unpromoted. Story Mode is **NOT COMPLETE**.
+Classifier-priority fix commit `3f65ba64510783663fb253aa74f554d557d60d42` passed regression [#39876294837](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876294837); five actual revision51 screenshots now classify `card_selection` / `WAIT`. Next operation is revision52 restore-only using run #39875714125 as defined in the canonical handoff. Do not confirm a card until the restored card-screen behavior has been compared against a matched no-input control. The autonomous multi-run finisher is still incomplete; Story Mode is **NOT COMPLETE**.
 
 ---
 
