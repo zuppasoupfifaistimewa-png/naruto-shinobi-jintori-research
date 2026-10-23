@@ -306,5 +306,5 @@ jobs:
                       raise SystemExit(f"{label} changed after Circle in branch {branch}; investigate semantics")
           print("MAP_CONTEXT_PANEL_REGRESSION=PASS up_panel_changes_to_level1_value60_durability2of2 wait_panel_stays_empty_land_value140 known_map_cue=red_focus_arrows_plus_matching_tile_panel")
           print("REV65_CAMERA_PAN_CONFOUND_REGRESSION=PASS baseline_pink60_partly_visible=true post_UP_badge_exposed=true exposure_is_not_selection_proof=true target_role=UNKNOWN")
-                    print("REV65_PINK60_MARKER_REGRESSION=PASS action_badge_visible=true control_badge_absent=true prompt_unchanged_after_circle=true target_semantics=UNKNOWN input_policy=WAIT")
+          print("REV65_PINK60_MARKER_REGRESSION=PASS action_badge_visible=true control_badge_absent=true prompt_unchanged_after_circle=true target_semantics=UNKNOWN input_policy=WAIT")
           PY

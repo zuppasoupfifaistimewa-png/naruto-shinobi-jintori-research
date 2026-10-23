@@ -1,3 +1,12 @@
+## Regression workflow repair — 23 October 2026
+
+The first run with the new cross-context assertions, [#39954326794](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39954326794), failed at the final Python report line because that line had one extra indentation level in the workflow heredoc. The run reached the new cross-context step, and earlier synthetic/authentic checks passed, but the final cross-context assertions did not finish. This was a workflow-source formatting defect, not new gameplay evidence.
+
+The report-line indentation is corrected in the follow-up commit. A fresh regression must finish with `success` before any input experiment is considered. No player workflow or marker was changed; Revision65 remains consumed, target role remains UNKNOWN, barrier submenu policy remains WAIT, readiness remains NO-GO, and Story Mode remains NOT COMPLETE.
+
+
+---
+
 # Latest checkpoint — cross-context pink-60 / target-cue audit (23 October 2026, WIB)
 
 **Scope:** private authenticated screenshots only; no gameplay run was started. HEAD at the start of this audit was `4b8e9f60cf72354238a98bca32cf7a40baf905b1`. Latest regression [#39952866478](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39952866478) was `success`; Revision65 player run [#39947481094](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39947481094) was `success` and its marker is consumed. The 10 most recent Actions entries checked were completed; no player run is active in that checked set.
