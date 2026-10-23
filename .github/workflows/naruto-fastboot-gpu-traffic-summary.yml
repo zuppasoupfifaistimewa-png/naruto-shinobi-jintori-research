@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   gpu-traffic-summary:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-26.04
     timeout-minutes: 8
     steps:
