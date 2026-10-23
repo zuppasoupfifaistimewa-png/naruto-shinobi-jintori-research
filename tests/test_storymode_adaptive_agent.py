@@ -323,6 +323,25 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertIn("submenu_target_selection_role_UNKNOWN",regression)
         self.assertIn('("barrier_level_selection", "WAIT")',regression)
 
+    def test_cross_context_target_cue_regression_keeps_marker_fail_closed(self):
+        repo = Path(__file__).resolve().parents[1]
+        regression = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-regression.yml").read_text(encoding="utf-8")
+        player_workflow = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-player.yml").read_text(encoding="utf-8")
+        marker = (repo / "experiments" / ".run-storymode-adaptive-player").read_text(encoding="utf-8")
+        # The cross-context reference must be downloaded from the previously verified,
+        # private map UP-vs-WAIT run and its panel/ROI assertions must stay in CI.
+        self.assertIn("run-id: 39786019434", regression)
+        self.assertIn("MAP_EVIDENCE:", regression)
+        self.assertIn("MAP_CONTEXT_PANEL_REGRESSION=PASS", regression)
+        self.assertIn("REV65_CAMERA_PAN_CONFOUND_REGRESSION=PASS", regression)
+        # Do not authorize another barrier-level input based on the ambiguous pink 60 badge.
+        self.assertNotIn("AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1", marker)
+        gate = player_workflow.index('AB_BARRIER_TARGET_GATE=BLOCKED cue=$ab_barrier_target_cue')
+        source_download = player_workflow.index("- name: Download selected private source checkpoint artifact")
+        pad_mutation = player_workflow.index("pad.setOverride(b)")
+        self.assertLess(gate, source_download)
+        self.assertLess(gate, pad_mutation)
+
     def test_persistent_map_rotates_direction(self):
         with tempfile.TemporaryDirectory() as td:
             h=Path(td)/"history.json"

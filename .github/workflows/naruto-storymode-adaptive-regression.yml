@@ -177,9 +177,19 @@ jobs:
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
           path: ${{ runner.temp }}/revision65-barrier-evidence
 
+      - name: Download authentic map-selection UP-vs-WAIT comparison evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: 39786019434
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: ${{ runner.temp }}/map-up-wait-evidence
+
       - name: Regression-gate pink 60 marker without treating it as a selected target
         env:
           EVIDENCE: ${{ runner.temp }}/revision65-barrier-evidence
+          MAP_EVIDENCE: ${{ runner.temp }}/map-up-wait-evidence
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -211,6 +221,56 @@ jobs:
                                 "reason": got.get("reason")}, sort_keys=True))
               if observed != want:
                   raise SystemExit(f"Revision65 state/action mismatch: {filename}: {observed} != {want}")
+          def pink_mask(arr):
+              arr = arr.astype(np.int16)
+              r, g, b = arr[:,:,0], arr[:,:,1], arr[:,:,2]
+              return (r > 180) & (g < 110) & (b > 100) & ((r-g) > 75)
+
+          def pink_pixel_count(arr, box):
+              x1, y1, x2, y2 = box
+              return int(pink_mask(arr)[y1:y2, x1:x2].sum())
+
+          # The same pink-60 tile is partly visible beneath the fixed HUD before UP,
+          # then exposed in a different ROI after the scene/camera composition shifts.
+          # This is a confound: badge visibility alone cannot establish selection.
+          baseline_partly_occluded = pink_pixel_count(images["C01-F20.png"], (480,145,560,220))
+          action_exposed = pink_pixel_count(images["C01-F60.png"], (430,210,570,340))
+          control_same_roi = pink_pixel_count(images["C02-F60.png"], (430,210,570,340))
+          print(f"REV65_BADGE_EXPOSURE baseline_partial={baseline_partly_occluded} action_post_UP={action_exposed} control={control_same_roi}")
+          if baseline_partly_occluded < 80 or action_exposed < 1000 or control_same_roi > 50:
+              raise SystemExit("Revision65 pink-60 baseline/exposure signature changed; re-audit camera-pan confound")
+
+          # Reference action/control on the authenticated map-selection experiment:
+          # the panel follows the selected tile only in the UP branch. The changed
+          # panel is paired visually with red directional focus arrows surrounding
+          # the pink-60 tile; WAIT retains the empty-land / value-140 information.
+          map_root = Path(os.environ["MAP_EVIDENCE"])
+          map_images = {}
+          for filename in ("C01-F20.png", "C01-F60.png", "C02-F20.png", "C02-F60.png"):
+              path = map_root / filename
+              if not path.is_file():
+                  raise SystemExit("missing authentic map UP-vs-WAIT frame: " + filename)
+              with Image.open(path) as im:
+                  if im.size != (1280,800):
+                      raise SystemExit(f"bad map screenshot dimensions for {filename}: {im.size}")
+                  map_images[filename] = np.asarray(im.convert("RGB"))
+
+          def changed_pixels(a, b, box):
+              x1, y1, x2, y2 = box
+              aa, bb = a[y1:y2,x1:x2], b[y1:y2,x1:x2]
+              return int(np.any(aa != bb, axis=2).sum())
+
+          panel_box = (150,340,545,540)
+          action_panel_delta = changed_pixels(map_images["C01-F20.png"], map_images["C01-F60.png"], panel_box)
+          control_panel_delta = changed_pixels(map_images["C02-F20.png"], map_images["C02-F60.png"], panel_box)
+          map_selected_tile_pixels = pink_pixel_count(map_images["C01-F60.png"], (585,360,685,460))
+          map_control_tile_pixels = pink_pixel_count(map_images["C02-F60.png"], (585,360,685,460))
+          print(f"MAP_SELECTED_TILE_PANEL action_delta={action_panel_delta} control_delta={control_panel_delta} action_pink60_pixels={map_selected_tile_pixels} control_same_ROI={map_control_tile_pixels}")
+          if action_panel_delta < 8000 or control_panel_delta > 500:
+              raise SystemExit("map target-information panel did not discriminate UP from WAIT as calibrated")
+          if map_selected_tile_pixels < 1200 or map_control_tile_pixels > 250:
+              raise SystemExit("map pink-60 tile ROI no longer distinguishes the UP target from WAIT")
+
           def pink_marker_ratio(arr):
               # Fixed ROI around the pink hexagon and its 60 label in the authentic F60 frame.
               crop = arr[175:260, 420:540].astype(np.int16)
@@ -244,5 +304,7 @@ jobs:
                   print(f"{branch=} {label=} changed_pixels_F60_to_F100={changed}")
                   if changed != 0:
                       raise SystemExit(f"{label} changed after Circle in branch {branch}; investigate semantics")
-          print("REV65_PINK60_MARKER_REGRESSION=PASS action_badge_visible=true control_badge_absent=true prompt_unchanged_after_circle=true target_semantics=UNKNOWN input_policy=WAIT")
+          print("MAP_CONTEXT_PANEL_REGRESSION=PASS up_panel_changes_to_level1_value60_durability2of2 wait_panel_stays_empty_land_value140 known_map_cue=red_focus_arrows_plus_matching_tile_panel")
+          print("REV65_CAMERA_PAN_CONFOUND_REGRESSION=PASS baseline_pink60_partly_visible=true post_UP_badge_exposed=true exposure_is_not_selection_proof=true target_role=UNKNOWN")
+                    print("REV65_PINK60_MARKER_REGRESSION=PASS action_badge_visible=true control_badge_absent=true prompt_unchanged_after_circle=true target_semantics=UNKNOWN input_policy=WAIT")
           PY

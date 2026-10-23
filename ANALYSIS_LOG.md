@@ -1,3 +1,25 @@
+# Latest checkpoint — cross-context pink-60 / target-cue audit (23 October 2026, WIB)
+
+**Scope:** private authenticated screenshots only; no gameplay run was started. HEAD at the start of this audit was `4b8e9f60cf72354238a98bca32cf7a40baf905b1`. Latest regression [#39952866478](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39952866478) was `success`; Revision65 player run [#39947481094](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39947481094) was `success` and its marker is consumed. The 10 most recent Actions entries checked were completed; no player run is active in that checked set.
+
+## Cross-context evidence
+
+- Private Revision65 artifact `#12498688466` (run `#39947481094`) and earlier map UP-vs-WAIT artifact `#12428777970` (run `#39786019434`) were downloaded for local inspection only. Neither artifact nor any image/save-state was added to Git.
+- **Known map-selection reference:** at C01-F20, the map selection panel describes empty land: `空き地` (tanah kosong), `レベル ---` (Level ---), `結界価値 140` (Nilai penghalang 140), `耐久値 -/-` (Daya tahan -/-). A pink hex tile labelled 60 is already visible above the selected tile; red directional arrows surround the selected blue 140 tile. After UP, C01-F60 shows those arrows around the pink 60 tile and the panel changes to `レベル 1` (Level 1), `結界価値 60` (Nilai penghalang 60), `耐久値 2/2` (Daya tahan 2/2). In the WAIT control, the panel remains on empty land / value 140. This cross-reference defines a *known map-selection cue combination*: focus arrows around one tile plus matching tile-information panel—not pink color/number alone.
+- **Revision65 submenu:** the pink 60 badge is partially visible beneath/behind the fixed HUD at F20, before UP. After UP, the terrain/character composition shifts and the badge is exposed in a different screen region. There are no visible red focus arrows around that badge, and no tile-specific Level / barrier-value / durability panel; the instruction remains `「レベルアップする結界をえらんでください」` (Pilih penghalang yang akan dinaikkan levelnya). The footer remains `けってい` (konfirmasi/pilih, Circle) and `もどる` (kembali, X). From F60 to F100, the instruction/footer ROIs have exactly zero changed pixels in both A/B branches after Circle.
+- **Interpretation:** the badge matches a barrier-value tile in the map context, but its role as a selected level-up target remains **UNKNOWN**. The presence of a pre-input, partly occluded badge plus the camera/scene shift makes camera-pan/unocclusion a concrete alternative hypothesis to cursor selection; it is not yet proven either way. The Revision65 success does not authorize a target-selection claim.
+
+## Safety decision and next steps
+
+- Classifier policy remains `WAIT` in `barrier_level_selection`; readiness remains **NO-GO**; Story Mode remains **NOT COMPLETE**.
+- Marker `experiments/.run-storymode-adaptive-player` is intentionally unchanged at Revision65 and contains no `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1`. Do not add that token, dispatch the player, repeat Revision65, or issue random-direction input.
+- Add an authentic cross-context regression that loads the old private map UP-vs-WAIT artifact, asserts the map information-panel delta is present only in the action branch, asserts the pre-input pink badge / post-UP exposure pattern in Revision65, and keeps WAIT plus the token gate fail-closed. Run regression only; do not run the player.
+- After regression passes, next research is offline screenshot/ROI registration: compare map landmarks across F20/F60 to model pan/pose change and keep focus-cue evidence separate from badge visibility. Any later input experiment requires an independently identified target cue and a new marker revision; the current marker remains consumed.
+
+Do not promote either Revision65 output checkpoint. Keep ROM, BIOS, Memory Card, savestates, and authentic screenshots private/out of Git. For actual dialogue only, use START—not Circle—and translate Japanese text beside it in Indonesian.
+
+---
+
 ## Revision57 result — chained gameplay progress, 23 October 2026
 
 Run [#39904672868](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39904672868) completed successfully. It restored revision56's CIRCLE-action checkpoint and ran two bounded sessions in fresh emulator processes, capturing ten authentic 1280x800 external-X11 frames and validating both output savestates. Logs confirm:
