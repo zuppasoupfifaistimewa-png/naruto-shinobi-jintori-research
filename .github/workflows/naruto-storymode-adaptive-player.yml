@@ -61,6 +61,7 @@ jobs:
           ab_sequence="$(get_value AB_SEQUENCE)"
           ab_second_action="$(get_value AB_SECOND_ACTION)"
           ab_barrier_target_cue="$(get_value AB_BARRIER_TARGET_CUE)"
+          # Marker syntax: AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1 may be used only after independent visual proof.
           ab_test="${ab_test:-0}"
           ab_action="${ab_action:-DOWN}"
           ab_expected_state="${ab_expected_state:-menu_or_unknown_choice}"

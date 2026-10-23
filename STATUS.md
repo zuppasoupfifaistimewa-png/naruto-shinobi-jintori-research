@@ -1,3 +1,7 @@
+## Follow-up — regression repair after first Revision65 visual gate commit (23 October 2026)
+
+Regression run [#39950014349](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39950014349) failed at the synthetic unit-test stage before any authentic-image checks ran. The failure is a static test expecting the documented cue token spelling in the player workflow; the actual fail-closed source gate exists. I also found an escaped GitHub Actions expression in the newly added artifact-download step. Both are implementation defects, not gameplay evidence. Correcting them in a follow-up commit; keep all gameplay runs blocked until regression passes. The player workflow only listens for pushes to the marker, which remains unchanged, so no player run is started by this repair.
+
 ## Revision65 indicator audit and new NO-GO gate — 23 October 2026
 
 - HEAD verified after Revision65: `80267c92a413ed6c346bff09b28e018a22e279ff`. The latest gameplay run at audit start was #39947481094 (success) with private artifact #12498688466; regression #39947302492 (20 tests plus authentic screenshot checks) and monitor #39948007642 (success) were complete. No player run was active in the latest Actions page checked.

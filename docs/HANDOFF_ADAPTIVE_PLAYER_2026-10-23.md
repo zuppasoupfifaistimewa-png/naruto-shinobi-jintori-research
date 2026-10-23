@@ -347,3 +347,9 @@ Current verified CI: regression #39947302492 passed 20 tests plus authentic X11/
 - The player workflow now blocks any future A/B experiment in `barrier_level_selection` unless the marker explicitly declares `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1`. Leave the token absent until a distinct target cue is supported by new authentic visual evidence and control-path evidence; do not add it as a workaround.
 - After the commit, verify the regression Action actually runs and passes before planning any experiment. Do not launch a new player run from this checkpoint. Continue reading only this repository. Maintain NO-GO until every readiness gate is evidenced; Story Mode ending is not a readiness prerequisite.
 
+
+## Follow-up handoff — repair first pink-60 regression commit (23 October 2026)
+
+At commit `76f7b9a5475a4b721d62c988dda576d25f5206b1`, Actions regression #39950014349 failed because a static unit test required literal `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` spelling to be present as marker documentation in the player workflow. The fail-closed gate code itself is present. The run stopped at unit tests; the Revision65 screenshot replay and private-artifact assertions were skipped. Additionally, the new artifact download had backslashes before the two Actions expressions, preventing normal interpolation. A follow-up commit removes those backslashes and documents the exact marker token in a workflow comment, then Actions should rerun the regression.
+
+Do not rerun or modify marker Revision65. Do not start any player run. Leave the marker cue token absent. The pink `60` indicator semantics remain UNKNOWN, and the normal state policy remains WAIT. The next acceptance point is the regression run on the repair commit; only after it succeeds should another controlled research step be considered. All game assets and authentic evidence remain private.

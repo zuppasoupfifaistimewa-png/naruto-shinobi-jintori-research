@@ -173,13 +173,13 @@ jobs:
         with:
           name: naruto-storymode-adaptive-player-private
           run-id: 39947481094
-          github-token: \${{ github.token }}
+          github-token: ${{ github.token }}
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          path: \${{ runner.temp }}/revision65-barrier-evidence
+          path: ${{ runner.temp }}/revision65-barrier-evidence
 
       - name: Regression-gate pink 60 marker without treating it as a selected target
         env:
-          EVIDENCE: \${{ runner.temp }}/revision65-barrier-evidence
+          EVIDENCE: ${{ runner.temp }}/revision65-barrier-evidence
         run: |
           set -euo pipefail
           python3 - <<'PY'
