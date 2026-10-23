@@ -169,3 +169,31 @@ The selected source was Revision59 run #39907655833 artifact naruto-storymode-ad
 **Result:** the LEFT→CIRCLE sequence has not proven barrier selection. Both branches remain barrier_level_selection; 「レベルアップする結界をえらんでください」 (Pilih penghalang yang akan dinaikkan levelnya) remains unchanged, and no selected-target highlight/state transition is verifiable. The LEFT branch visibly changes pose/scene composition, but that is not target-selection evidence. The incremental C01 F60→F100 difference is approximately the same as the no-input idle animation, and the prompt crop is pixel-identical. Therefore the default action policy remains WAIT in this submenu.
 
 Do not rerun Revision62's consumed marker. Next work is a bounded, matched test to discover a target-selection visual cue/valid direction, with exact allowlist, source hash, screenshots, press/release readbacks, and checkpoint validation. Read the latest STATUS.md and ANALYSIS_LOG.md before proceeding. Do not require Story Mode completion for readiness, but also do not state the player is ready for unattended Story Mode yet.
+
+## Current handoff — Revision63 UP vs WAIT result (23 October 2026)
+
+**Current readiness: NO-GO.** The player can restore and run bounded, logged experiments with input readback/checkpoint assertions. The barrier-selection target is still not identified, so normal policy must remain WAIT in `barrier_level_selection`. Story Mode completion is neither this experiment's goal nor a readiness prerequisite; no completion claim is supported.
+
+### Completed run and private evidence
+
+- Regression: [#39939979616](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39939979616), success, 18 unit/source tests.
+- Player: [#39942178665](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39942178665), success, protocol commit `91b9bbffb3c1a7c8a51ae944f229a29583c021e3`, private evidence artifact #12496637328.
+- Marker `experiments/.run-storymode-adaptive-player` is consumed revision 63 and must not be rerun. It used source checkpoint from Revision59 run #39907655833, `adaptive-cycle-02-f180.sstate`, 21,162,799 bytes, v4, SHA-256 `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35`. The immutable-source gate passed; no source checkpoint was changed.
+- A/B preconditions all passed: each fresh process emitted `ExecutionFlow::SaveStateLoaded`; both F20 frames were identical across 1,024,000 pixels; Memory Card baseline/action/control clones had identical SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`. C01 had exactly one UP press at F30 and release at F38 with successful true/false readbacks; C02 had zero input. Ten authentic 1280×800 external-X11 captures were validated.
+- Output checkpoints: C01 21,163,397 bytes, v4, SHA-256 `5557188cfa2ce12a70030b8bd650c181a2172f2934185290eb7352faa9754e40`; C02 21,163,426 bytes, v4, SHA-256 `80782b47cf17e8d5bdc414af468c63eb098916c50235f98c092a676cca53b71e`. Both passed external header/size/SHA checks. Native emulator exit values 139/124 were only accepted by the wrapper after its session-finished and checkpoint-validation conditions were met.
+- Visual result: UP changes the board/view composition and exposes other colored map markers, but the prompt `「レベルアップする結界をえらんでください」` (Pilih penghalang yang akan dinaikkan levelnya) remains. The classifier still reports `barrier_level_selection` in every captured observation; no reliable target highlight or confirmed selection was verified. Action and control differ strongly at F60, but the target-selection semantics remain UNKNOWN. Do not encode UP as a target-selection rule; regular policy remains WAIT.
+
+### Recommended next work
+
+To test whether navigation followed by confirmation does anything, implement an explicitly allowlisted `UP_THEN_CIRCLE` vs no-input A/B from the same validated Revision59 parent. The existing workflow only accepts `NONE` or the earlier consumed `LEFT_THEN_CIRCLE` sequence, so **do not edit the marker to UP_THEN_CIRCLE yet**.
+
+First:
+1. Extend the player workflow's shell/Lua validation and timed sequence to accept only `AB_TEST=1`, expected state `barrier_level_selection`, first action UP, second action CIRCLE, two cycles, and restore/continuation flags zero. Keep all other sequences rejected.
+2. Press UP at F30 and release at F38; require F60 to still be the calibrated submenu with WAIT classifier action and no dialogue/unknown result before allowing CIRCLE at F70, released at F78. On any state mismatch, stop and fail closed.
+3. Add regression assertions for allowlist, timing, F60 gate, exact press/release counts, zero control input, and private checkpoint validation. Wait for regression to pass before changing the marker.
+4. Use the same immutable Revision59 source SHA unless there is a clear reason otherwise. Require matched F20 pixels, identical Memory Card clones, explicit load events, ten authentic captures, exact input readbacks and v4/header/size/SHA checks for both new outputs. Keep screenshots and savestates in private Actions artifacts; never add them to Git.
+5. Inspect the private output evidence visually and compare the instruction-panel crop before inferring that Circle selected a target. If there is still no clear state change, keep WAIT and choose a new probe based on the actual screen rather than cycling arbitrary input.
+
+### Transfer notes
+
+Latest durable result is recorded at the end of `STATUS.md` and `ANALYSIS_LOG.md`. The only permitted repo remains this research repository. START is for genuine dialogue only, Circle is not a dialogue skip, Japanese text gets immediate Indonesian translation in parentheses, unknown states fail safely, and Story Mode completion is not a present qualification requirement.
