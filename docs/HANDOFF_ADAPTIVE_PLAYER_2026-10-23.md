@@ -116,3 +116,14 @@ Next, run Revision59 from the last valid Revision57 checkpoint (not Revision58, 
 The regression dataset contains authentic empty/full-width dialogue frames whose orange-border ratio is only about 0.079 (but the top-border ROI is about 0.108). The dialogue threshold was therefore adjusted from 0.10 to 0.07 while retaining the full-width header threshold of 0.08; the real Revision58 submenu has header orange about 0.020 and remains distinguishable. Updated commit: `59abbb758a1ed0dfe813746afee75e9d68f240e5`.
 
 Classifier regression run [#39907832073](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39907832073) completed **success** after the synthetic regressions and authentic external-X11 policy checks, including legacy dialogue frames, card overlay frames, and revealed-card frames. Revision59 gameplay run [#39907655833](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39907655833) was still in progress at the last check; inspect its actual conclusion and private screenshots/checkpoints before promoting anything.
+
+### Revision60 — controlled barrier-target direction probe launched
+
+The classifier policy now returns WAIT for `barrier_level_selection` by default because the selected target is not yet visually verified. This avoids repeating Circle while the submenu remains unchanged. Commit `40fc562f4c4d0913381fc2dc24b1fda88ff01493`; the added safety regressions are in `10c1b5b29bf5cc7c4e34bbffd70ad94b5dd7122c`.
+
+The final regression run before the gameplay probe, [#39908408445](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39908408445), passed after tests validated the workflow source that adds a one-direction-vs-WAIT A/B branch. The first earlier regression failures were stale concurrent runs on commits that predated the workflow change; the latest applicable run is green.
+
+Revision60 [#39908484177](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39908484177) has been triggered with:
+- source: revision59 run #39907655833, private artifact `naruto-storymode-adaptive-player-private`, checkpoint `adaptive-cycle-02-f180.sstate`, SHA-256 `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35`;
+- `AB_TEST=1`, `AB_ACTION=LEFT`, `AB_EXPECTED_STATE=barrier_level_selection`, two independent emulator processes from identical parent state, one LEFT input on action branch and zero inputs on control branch.
+The target is not to finish Story Mode. Inspect private authentic frames and logs to see whether LEFT changes the selected barrier; if it does not, retain WAIT as the default and probe another direction only when warranted by evidence.
