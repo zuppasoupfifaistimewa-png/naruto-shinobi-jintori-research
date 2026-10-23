@@ -1,0 +1,762 @@
+name: Naruto SPU stopped-cursor savestate probe
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: "Run containing the raw Story Mode board checkpoint (default: 39262213468)"
+        required: true
+        default: "39262213468"
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    container:
+      image: ghcr.io/grumpycoders/pcsx-redux-build:latest
+      options: --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
+    env:
+      WORK: /tmp/naruto-spu-sentinel-probe
+      BASE_COMMIT: 0c3572c3db75f97542001e453ae80ba8c3f8acba
+      SOURCE_RUN_ID: ${{ inputs.source_run_id || '39262213468' }}
+      RESEARCH_REPO: ${{ github.repository }}
+
+    steps:
+      - name: Checkout research scripts and experiment patch
+        uses: actions/checkout@v4
+
+      - name: Install probe utilities and prepare isolated directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y jq python3-pil xvfb x11-utils curl git unzip zip gdb
+          mkdir -p "$WORK"/{source-state,source-card,resume,cards,captures/raw,pinned,variant,home,.config,.data}
+          echo "PROBE_NO_SOURCE_PLAYTHROUGH=PASS"
+          echo "PROBE_RAW_SOURCE_MODIFICATION=FORBIDDEN"
+
+      - name: Download original private checkpoint and matching Memory Card artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-checkpoint-private
+          run-id: ${{ inputs.source_run_id || '39262213468' }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: ${{ env.WORK }}/source-state
+
+      - name: Download matching Memory Card artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: ${{ inputs.source_run_id || '39262213468' }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: ${{ env.WORK }}/source-card
+
+      - name: Validate source evidence and stage raw bytes unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE="$WORK/source-state"
+          CARD="$WORK/source-card"
+          MANIFEST="$SOURCE/storymode-raw-manifest.txt"
+          RAW="$SOURCE/storymode-checkpoint.raw.sstate"
+          PNG="$SOURCE/storymode-checkpoint-source.png"
+          value() { awk -F= -v k="$1" '$1==k {sub(/^[^=]*=/,""); print; exit}' "$MANIFEST"; }
+          test -s "$RAW" && test -s "$PNG" && test -s "$MANIFEST"
+          test "$(value STORY_RAW_STATE_PRESENT)" = "1"
+          test "$(value STORY_STATE_FORMAT)" = "raw-pcsx-createSaveState"
+          test "$(value STORY_RAW_STATE_RUN_ID)" = "$SOURCE_RUN_ID"
+          test "$(value STORY_CHECKPOINT_FRAME)" = "10055"
+          test "$(value STORY_CHECKPOINT_REASON)" = "stable_non_dialog"
+          test "$(value STORY_DIALOG_VISUAL_GATE)" = "PASS"
+          test "$(value STORY_RAW_STATE_BYTES)" = "21163286"
+          test "$(value STORY_RAW_STATE_SHA256)" = "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
+          test "$(value STORY_SOURCE_SCREENSHOT_SHA256)" = "101b94a4d171d228e0224948872b65b88bf84fd0d92dc8ddd0b6cfeb21f790a8"
+          test "$(stat -c '%s' "$RAW")" = "$(value STORY_RAW_STATE_BYTES)"
+          test "$(sha256sum "$RAW" | cut -d ' ' -f 1)" = "$(value STORY_RAW_STATE_SHA256)"
+          test "$(stat -c '%s' "$PNG")" = "$(value STORY_SOURCE_SCREENSHOT_BYTES)"
+          test "$(sha256sum "$PNG" | cut -d ' ' -f 1)" = "$(value STORY_SOURCE_SCREENSHOT_SHA256)"
+          cp "$RAW" "$WORK/resume/storymode-checkpoint.sstate"
+          cp "$PNG" "$WORK/captures/storymode-checkpoint-source.png"
+          cp "$SOURCE/gpu-traffic.lua" "$WORK/gpu-traffic.lua"
+          cp "$SOURCE/story-dialog-watch.py" "$WORK/story-dialog-watch.py"
+          cp "$MANIFEST" "$WORK/captures/source-manifest.txt"
+          cmp --silent "$RAW" "$WORK/resume/storymode-checkpoint.sstate"
+          STAGED_SHA="$(sha256sum "$WORK/resume/storymode-checkpoint.sstate" | cut -d ' ' -f 1)"
+          test "$STAGED_SHA" = "$(value STORY_RAW_STATE_SHA256)"
+          echo "SOURCE_STATE_BYTES=$(stat -c '%s' "$RAW")"
+          echo "SOURCE_STATE_SHA256=$(sha256sum "$RAW" | cut -d ' ' -f 1)"
+          echo "STAGED_STATE_SHA256=$STAGED_SHA"
+          printf 'SOURCE_STAGED_STATE_BYTES=%s\nSOURCE_STAGED_STATE_SHA256=%s\n' "$(stat -c '%s' "$WORK/resume/storymode-checkpoint.sstate")" "$STAGED_SHA" > "$WORK/captures/source-staging-evidence.txt"
+          echo "PROBE_RAW_SOURCE_STAGED_UNCHANGED=PASS"
+          # Preserve the same Memory Card input and verify it when a manifest exists.
+          CARD_FILE="$CARD/naruto-storymode.mcd"
+          CARD_MANIFEST="$CARD/memory-card-manifest.txt"
+          if test -s "$CARD_FILE" && test -s "$CARD_MANIFEST"; then
+            CARD_BYTES="$(awk -F= '$1=="STORY_MEMORY_CARD_BYTES" {print $2;exit}' "$CARD_MANIFEST")"
+            CARD_SHA="$(awk -F= '$1=="STORY_MEMORY_CARD_SHA256" {print $2;exit}' "$CARD_MANIFEST")"
+            test "$CARD_BYTES" = "131072"
+            test "$CARD_SHA" = "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5"
+            test "$(stat -c '%s' "$CARD_FILE")" = "$CARD_BYTES"
+            test "$(sha256sum "$CARD_FILE" | cut -d ' ' -f 1)" = "$CARD_SHA"
+            cp "$CARD_FILE" "$WORK/cards/naruto-storymode.mcd"
+            echo "PROBE_MEMORY_CARD_STAGED=PASS sha256=$CARD_SHA"
+          else
+            echo "::error::Matching source Memory Card artifact/manifest missing"
+            exit 41
+          fi
+          touch "$WORK/resume/raw-resume.flag"
+
+      - name: Download and verify pinned runtime assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30             -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json"             "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; output="$2"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            if [ -z "$id" ] || [ "$id" = "null" ]; then echo "::error::Missing private runtime asset: $name"; exit 61; fi
+            curl --fail --silent --show-error --location --retry 2 --max-time 300               -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream"               "$API/releases/assets/$id" -o "$output"
+          }
+          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pinned-pcsx-redux.AppImage
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset scph7502.zip scph7502.zip
+          echo "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c  pinned-pcsx-redux.AppImage" | sha256sum --check -
+          test "$(stat -c '%s' game.bin)" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          test "$(stat -c '%s' scph7502.zip)" = "283463"
+          echo "b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a  scph7502.zip" | sha256sum --check -
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import hashlib, stat, zipfile
+          with zipfile.ZipFile("scph7502.zip") as zf:
+              candidates = []
+              expanded = 0
+              for info in zf.infolist():
+                  p = PurePosixPath(info.filename)
+                  mode = (info.external_attr >> 16) & 0xffff
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)):
+                      raise SystemExit("Unsafe BIOS archive entry")
+                  if info.file_size > 2*1024*1024:
+                      raise SystemExit("BIOS member too large")
+                  expanded += info.file_size
+                  if expanded > 4*1024*1024:
+                      raise SystemExit("BIOS expansion too large")
+                  if not info.is_dir() and info.file_size == 524288:
+                      candidates.append(info)
+              if len(candidates) != 1:
+                  raise SystemExit(f"Expected one 512 KiB BIOS entry, got {len(candidates)}")
+              with zf.open(candidates[0]) as f:
+                  bios = f.read()
+              digest = hashlib.sha256(bios).hexdigest()
+              expected = "5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1"
+              if len(bios) != 524288 or digest != expected:
+                  raise SystemExit("BIOS verification failed")
+              Path("scph7502.bin").write_bytes(bios)
+              print(f"PROBE_BIOS_SHA256={digest}")
+          p = Path("game.cue")
+          lines = p.read_bytes().decode("utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          idx = [i for i,line in enumerate(lines) if line.lstrip().upper().startswith("FILE ")]
+          if len(idx) != 1 or not any(line.lstrip().upper().startswith("TRACK ") for line in lines):
+              raise SystemExit("Invalid CUE")
+          lines[idx[0]] = 'FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines) + "\n", encoding="ascii")
+          PY
+          chmod +x pinned-pcsx-redux.AppImage
+          cd "$WORK/pinned"
+          ../pinned-pcsx-redux.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          echo "PROBE_PINNED_RUNTIME_ASSETS=PASS"
+
+      - name: Verify schema Lua API in the exact pinned binary before loading any savestate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          mkdir -p "$WORK/runtime"
+          chmod 700 "$WORK/runtime"
+          # PCSX-Redux initializes SDL even for this no-loader schema call.
+          # Provide a virtual X/GL display so the preflight tests the Lua API,
+          # rather than failing before Lua executes.
+          Xvfb :98 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/schema-xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          cleanup_schema_display() {
+            kill "$xvfb_pid" 2>/dev/null || true
+            wait "$xvfb_pid" 2>/dev/null || true
+          }
+          trap cleanup_schema_display EXIT
+          for i in $(seq 1 60); do xdpyinfo -display :98 >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display :98 >/dev/null
+          export DISPLAY=:98 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/.config" XDG_DATA_HOME="$WORK/.data"
+          export XDG_RUNTIME_DIR="$WORK/runtime" LIBGL_ALWAYS_SOFTWARE=1
+          cat > "$WORK/schema-probe.lua" <<'LUA'
+          local schema = PCSX.getSaveStateProtoSchema()
+          assert(type(schema) == "string" and #schema > 100, "empty or unavailable save-state schema API")
+          local out = assert(io.open("captures/savestate-schema-pinned.proto", "wb"))
+          assert(out:write(schema))
+          assert(out:close())
+          print("STORY_SCHEMA_API=PASS bytes=" .. #schema)
+          io.stdout:flush()
+          PCSX.Events.createEventListener("GPU::Vsync", function()
+              PCSX.nextTick(function()
+                  print("STORY_SCHEMA_PROBE_NO_LOADER=PASS")
+                  io.stdout:flush()
+                  PCSX.quit(0)
+              end)
+          end)
+          LUA
+          SCHEMA_SCRIPT="$(cat "$WORK/schema-probe.lua")"
+          set +e
+          timeout --signal=TERM --kill-after=5s 45s "$WORK/pinned/squashfs-root/AppRun" \
+            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+            -memcard1 "$WORK/cards/naruto-storymode.mcd" -exec "$SCHEMA_SCRIPT" \
+            -softgpu -dynarec -stdout -lua_stdout -logfile "$WORK/schema-probe.log" -run \
+            > "$WORK/schema-probe.stdout" 2>&1
+          rc=$?
+          set -e
+          cp "$WORK/schema-probe.stdout" "$WORK/captures/schema-probe.stdout.txt" || true
+          cp "$WORK/schema-probe.log" "$WORK/captures/schema-probe.log.txt" || true
+          cp "$WORK/schema-xvfb.log" "$WORK/captures/schema-xvfb.log.txt" || true
+          if [ ! -s "$WORK/captures/savestate-schema-pinned.proto" ] ||
+             ! grep -q "STORY_SCHEMA_API=PASS" "$WORK/schema-probe.stdout" "$WORK/schema-probe.log" ||
+             ! grep -q "STORY_SCHEMA_PROBE_NO_LOADER=PASS" "$WORK/schema-probe.stdout" "$WORK/schema-probe.log" ||
+             [ "$rc" -ne 0 ]; then
+            echo "::error::Pinned schema API runtime preflight failed (exit=$rc); no savestate loader was called."
+            echo "----- schema-probe stdout -----"
+            cat "$WORK/schema-probe.stdout" || true
+            echo "----- schema-probe emulator log -----"
+            cat "$WORK/schema-probe.log" || true
+            echo "----- virtual-display log -----"
+            cat "$WORK/schema-xvfb.log" || true
+            exit 42
+          fi
+          echo "PROBE_PINNED_SCHEMA_API_RUNTIME=PASS exit=$rc schema_sha256=$(sha256sum "$WORK/captures/savestate-schema-pinned.proto" | cut -d ' ' -f 1)"
+      - name: Build emulator variant from pinned source plus only the upstream SPU cursor fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          git clone --no-checkout https://github.com/grumpycoders/pcsx-redux.git pcsx-src
+          cd pcsx-src
+          git checkout --detach "$BASE_COMMIT"
+          test "$(git rev-parse HEAD)" = "$BASE_COMMIT"
+          ./.github/scripts/update-submodules.sh
+          git apply "$GITHUB_WORKSPACE/experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch"
+          git diff --check
+          git diff --binary -- src/spu/adpcm.cc src/spu/adpcm.h > "$WORK/applied-fix.diff"
+          PATCH_SHA="$(sha256sum "$GITHUB_WORKSPACE/experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch" | cut -d ' ' -f 1)"
+          DIFF_SHA="$(sha256sum "$WORK/applied-fix.diff" | cut -d ' ' -f 1)"
+          test -s "$WORK/applied-fix.diff"
+          {
+            echo "PROBE_EMULATOR_BASE_COMMIT=$BASE_COMMIT"
+            echo "PROBE_EMULATOR_SOURCE_VARIANT=base_commit_plus_upstream_PR_2218_two_file_SPu_ADPCM_fix"
+            echo "PROBE_PATCH_FILE=experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch"
+            echo "PROBE_PATCH_SHA256=$PATCH_SHA"
+            echo "PROBE_APPLIED_SOURCE_DIFF_SHA256=$DIFF_SHA"
+          } > "$WORK/variant-build-manifest.txt"
+          make -j 2 all pcsx-redux-tests tools
+          make -C src/mips/tests -j 2 PCSX_TESTS=true
+          make -C src/mips/openbios clean
+          make -C src/mips/openbios -j 2 all
+          export GTEST_OUTPUT=xml:"$WORK/test-results/"
+          mkdir -p "$WORK/test-results"
+          xvfb-run catchsegv ./pcsx-redux-tests
+          make install install-openbios DESTDIR=AppDir/usr
+          sed -i 's:/usr/bin/::' AppDir/usr/share/applications/pcsx-redux.desktop
+          linuxdeploy -v 3 --appdir=AppDir -e AppDir/usr/bin/pcsx-redux             -d AppDir/usr/share/applications/pcsx-redux.desktop             -i AppDir/usr/share/icons/hicolor/256x256/apps/pcsx-redux.png -o appimage
+          mv PCSX-Redux-x86_64.AppImage "$WORK/PCSX-Redux-spu-sentinel-probe-x86_64.AppImage"
+          VARIANT_SHA="$(sha256sum "$WORK/PCSX-Redux-spu-sentinel-probe-x86_64.AppImage" | cut -d ' ' -f 1)"
+          echo "PROBE_VARIANT_APPIMAGE_SHA256=$VARIANT_SHA" >> "$WORK/variant-build-manifest.txt"
+          cp "$WORK/variant-build-manifest.txt" "$WORK/captures/variant-build-manifest.txt"
+          cd "$WORK/variant"
+          ../PCSX-Redux-spu-sentinel-probe-x86_64.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          echo "PROBE_PATCHED_BUILD_AND_TESTS=PASS variant_sha256=$VARIANT_SHA"
+
+      - name: Configure a restore-only probe, capture variant schema, and suppress all gameplay input
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          root = Path(os.environ["WORK"])
+          p = root / "gpu-traffic.lua"
+          s = p.read_text()
+          old = "local frame_count = 0\n"
+          addition = r'''local frame_count = 0
+          local function restore_phase(stage)
+              local f = io.open("captures/restore-phase.log", "ab")
+              if f then f:write("RESTORE_PHASE=" .. stage .. "\n"); f:flush(); f:close() end
+              print("RESTORE_PHASE=" .. stage)
+              io.stdout:flush()
+          end
+          restore_phase("LUA_SCRIPT_START")
+          local schema_ok, schema_text = pcall(function() return PCSX.getSaveStateProtoSchema() end)
+          if schema_ok and type(schema_text) == "string" and #schema_text > 100 then
+              local f = assert(io.open("captures/savestate-schema-variant.proto", "wb"))
+              assert(f:write(schema_text)); assert(f:close())
+              print("STORY_SCHEMA_VARIANT_API=PASS bytes=" .. #schema_text)
+          else
+              print("STORY_SCHEMA_VARIANT_API=FAIL detail=" .. tostring(schema_text))
+          end
+          io.stdout:flush()
+          '''
+          if s.count(old) != 1:
+              raise SystemExit("Expected exactly one Lua frame-count insertion point")
+          s = s.replace(old, addition, 1)
+          old_load = '            local load_ok, load_err = pcall(function() PCSX.loadSaveState(state_file) end)\n            state_file:close()'
+          new_load = '            restore_phase("SAVESTATE_FILE_OPEN_OK")\n            restore_phase("PCSX_LOADSAVESTATE_BEGIN")\n            local load_ok, load_err = pcall(function() PCSX.loadSaveState(state_file) end)\n            restore_phase("PCSX_LOADSAVESTATE_PCALL_RETURNED")\n            state_file:close()'
+          if s.count(old_load) != 1:
+              raise SystemExit("Expected exactly one loader call in Lua")
+          s = s.replace(old_load, new_load, 1)
+          old_restore_gate = r'''    if raw_resume_verify and restore_event_seen then
+                  restore_post_frames = restore_post_frames + 1
+                  if restore_post_frames >= 180 and not restore_verify_pending then
+                      restore_verify_pending = true
+                      PCSX.pauseEmulator()
+                      PCSX.nextTick(function()
+                          capture_frame(180)
+                          local function wait_for_screenshot_match()
+                              restore_verify_attempts = restore_verify_attempts + 1
+                              local gate = io.open("captures/raw/restore-screenshot-match.flag", "rb")
+                              if gate then
+                                  local result = gate:read("*a") or ""
+                                  gate:close()
+                                  if result:match("^PASS") then
+                                      print("STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180")
+                                      print("STORY_RAW_RESTORE_SCREENSHOT_MATCH=PASS")
+                                      print("STORY_RAW_RESTORE_CROSS_RUN=PASS")
+                                      PCSX.resumeEmulator()
+                                  else
+                                      print("STORY_RAW_RESTORE_SCREENSHOT_MATCH=FAIL detail=" .. result:gsub("[\r\n]", " "))
+                                      PCSX.quit(74)
+                                  end
+                              elseif restore_verify_attempts >= 120 then
+                                  print("STORY_RAW_RESTORE_SCREENSHOT_MATCH=FAIL reason=compare_timeout")
+                                  PCSX.quit(75)
+                              else
+                                  PCSX.nextTick(wait_for_screenshot_match)
+                              end
+                          end
+                          PCSX.nextTick(wait_for_screenshot_match)
+                      end)
+                      return
+                  end
+              end'''
+          old_restore_gate = old_restore_gate.rstrip("\n")
+          new_restore_gate = r'''    if raw_resume_verify and restore_event_seen then
+                  restore_post_frames = restore_post_frames + 1
+                  if restore_post_frames >= 180 and not restore_verify_pending then
+                      restore_verify_pending = true
+                      capture_frame(180)
+                      print("STORY_RAW_RESTORE_COMPARE_CAPTURE_READY=1")
+                      return
+                  elseif restore_verify_pending then
+                      restore_verify_attempts = restore_verify_attempts + 1
+                      local gate = io.open("captures/raw/restore-screenshot-match.flag", "rb")
+                      if not gate then
+                          if restore_verify_attempts >= 900 then
+                              print("STORY_RAW_RESTORE_SCREENSHOT_MATCH=FAIL reason=compare_timeout")
+                              PCSX.pauseEmulator()
+                              PCSX.nextTick(function() PCSX.quit(75) end)
+                          end
+                          return
+                      end
+                      local result = gate:read("*a") or ""
+                      gate:close()
+                      if not result:match("^PASS") then
+                          print("STORY_RAW_RESTORE_SCREENSHOT_MATCH=FAIL detail=" .. result:gsub("[\r\n]", " "))
+                          PCSX.pauseEmulator()
+                          PCSX.nextTick(function() PCSX.quit(74) end)
+                          return
+                      end
+                      print("STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180")
+                      print("STORY_RAW_RESTORE_SCREENSHOT_MATCH=PASS")
+                      print("STORY_RAW_RESTORE_CROSS_RUN=PASS")
+                      PCSX.pauseEmulator()
+                      PCSX.nextTick(function()
+                          local validation = io.open("resume/validation-only.flag", "rb")
+                          if validation then
+                              validation:close()
+                              print("STORY_PROBE_NO_CONTROLLER_INPUT=PASS")
+                              print("STORY_PROBE_FRESH_RELOAD=PASS")
+                              PCSX.quit(0)
+                          else
+                              print("STORY_PROBE_NO_CONTROLLER_INPUT=PASS")
+                              local saved = save_checkpoint(frame_count)
+                              print(string.format("STORY_PROBE_NEXT_CHECKPOINT frame=%d save_ok=%s", frame_count, tostring(saved)))
+                              PCSX.quit(saved and 0 or 76)
+                          end
+                      end)
+                      return
+                  end
+              end'''
+          new_restore_gate = new_restore_gate.rstrip("\n")
+          if s.count(old_restore_gate) != 1:
+              raise SystemExit("Expected exactly one restore screenshot polling block")
+          s = s.replace(old_restore_gate, new_restore_gate, 1)
+          p.write_text(s)
+          # Reduce the existing watcher to screenshot comparison only; don't run its
+          # dialogue detector and therefore never create a START input request.
+          w = root / "story-dialog-watch.py"
+          ws = w.read_text()
+          marker = "\npassed, dialog_passed = resume_mode, resume_mode\n"
+          if ws.count(marker) != 1:
+              raise SystemExit("Could not isolate screenshot-only part of watcher")
+          ws = ws.split(marker, 1)[0] + '\nprint("PROBE_SCREENSHOT_COMPARATOR_ONLY=PASS", flush=True)\n'
+          w.write_text(ws)
+          print("PROBE_LUA_PATCH=PASS")
+          print("PROBE_INPUT_WATCHER=SCREENSHOT_COMPARISON_ONLY")
+          PY
+          cp "$WORK/gpu-traffic.lua" "$WORK/captures/probe-gpu-traffic.lua"
+          cp "$WORK/story-dialog-watch.py" "$WORK/captures/probe-screenshot-comparator.py"
+          cmp --silent "$WORK/source-state/storymode-checkpoint.raw.sstate" "$WORK/resume/storymode-checkpoint.sstate"
+          echo "PROBE_RAW_STATE_TRANSFORM=none"
+          echo "PROBE_STAGED_STATE_SHA256=$(sha256sum "$WORK/resume/storymode-checkpoint.sstate" | cut -d ' ' -f 1)"
+
+      - name: Restore raw board on patched emulator, require all gates, then stop before gameplay
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/.config" XDG_DATA_HOME="$WORK/.data"
+          export LIBGL_ALWAYS_SOFTWARE=1
+          unset MESA_GL_VERSION_OVERRIDE MESA_GLSL_VERSION_OVERRIDE
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          emu_pid=""
+          compare_pid=""
+          cleanup() {
+            if [ -n "$emu_pid" ]; then kill "$emu_pid" 2>/dev/null || true; fi
+            if [ -n "$compare_pid" ]; then kill "$compare_pid" 2>/dev/null || true; fi
+            kill "$xvfb_pid" 2>/dev/null || true
+            wait "$xvfb_pid" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          for i in $(seq 1 60); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          PAD_SETUP=$(cat <<'LUA'
+          print("PROBE_PAD_SETUP=NO_BUTTONS_INJECTED")
+          io.stdout:flush()
+          LUA
+          )
+          echo "PROBE_RESTORE_LAUNCH=PATCHED_VARIANT"
+          set +e
+          timeout --signal=TERM --kill-after=10s 1800s             gdb --batch --return-child-result               -ex 'set pagination off' -ex 'set confirm off' -ex 'set print thread-events off'               -ex 'set follow-fork-mode parent' -ex 'set detach-on-fork on' -ex 'set follow-exec-mode new'               -ex 'set debuginfod enabled off' -ex 'handle SIGSEGV stop print nopass'               -ex "set logging file $WORK/gdb-console.txt" -ex 'set logging overwrite on'               -ex 'set logging redirect on' -ex 'set logging enabled on'               -ex 'echo PROBE_GDB_INFERIOR_BEGIN\\n' -ex run               -ex 'echo PROBE_GDB_FAULT_CONTEXT_BEGIN\\n' -ex 'info registers' -ex 'x/16i $pc-32'               -ex 'info symbol $pc' -ex 'info proc mappings' -ex 'thread apply all bt full'               -ex 'echo PROBE_GDB_BACKTRACE_END\\n'               --args /usr/bin/stdbuf -oL -eL "$WORK/variant/squashfs-root/AppRun"                 -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue"                 -memcard1 "$WORK/cards/naruto-storymode.mcd"                 -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua"                 -softgpu -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run             > "$WORK/pcsx.stdout" 2>&1 &
+          emu_pid=$!
+          RESUME_MODE=true RAW_RESUME_VERIFY=true EMU_PID="$emu_pid"             python3 -u "$WORK/story-dialog-watch.py" > "$WORK/captures/screenshot-compare.log" 2>&1 &
+          compare_pid=$!
+          wait "$emu_pid"
+          emu_rc=$?
+          emu_pid=""
+          wait "$compare_pid"
+          compare_rc=$?
+          compare_pid=""
+          set -e
+          echo "PROBE_EMULATOR_EXIT_CODE=$emu_rc"
+          echo "PROBE_SCREENSHOT_COMPARATOR_EXIT_CODE=$compare_rc"
+          cp "$WORK/pcsx.stdout" "$WORK/captures/pcsx.stdout.txt" || true
+          cp "$WORK/pcsx.log" "$WORK/captures/pcsx.log.txt" || true
+          grep -E 'PROBE_|STORY_SCHEMA_|RESTORE_PHASE=|STORY_RAW_|STORY_SAVESTATE_|ExecutionFlow|SIGSEGV|FATAL|error|Error|ERROR|failed|Failed|^#[0-9]+'             "$WORK/pcsx.stdout" "$WORK/pcsx.log" "$WORK/gdb-console.txt" "$WORK/captures/restore-phase.log"             > "$WORK/captures/important-log-lines.txt" || true
+          {
+            echo "PROBE_EMULATOR_EXIT_CODE=$emu_rc"
+            echo "PROBE_SCREENSHOT_COMPARATOR_EXIT_CODE=$compare_rc"
+          } > "$WORK/captures/probe-run-summary.txt"
+          test "$emu_rc" -eq 0
+          test "$compare_rc" -eq 0
+          grep -q 'STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded' "$WORK/pcsx.stdout"
+          grep -q "RESTORE_PHASE=PCSX_LOADSAVESTATE_PCALL_RETURNED" "$WORK/pcsx.stdout"
+          grep -q 'STORY_SAVESTATE_LOAD_CALL_RETURNED=1' "$WORK/pcsx.stdout"
+          grep -q 'STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180' "$WORK/pcsx.stdout"
+          grep -q 'STORY_RAW_RESTORE_CROSS_RUN=PASS' "$WORK/pcsx.stdout"
+          grep -q 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' "$WORK/captures/storymode-restore-comparison.txt"
+          grep -q 'STORY_PROBE_NO_CONTROLLER_INPUT=PASS' "$WORK/pcsx.stdout"
+          grep -q 'STORY_PROBE_NEXT_CHECKPOINT .*save_ok=true' "$WORK/pcsx.stdout"
+          test -s "$WORK/captures/raw/storymode-checkpoint.raw"
+          test -s "$WORK/captures/savestate-schema-variant.proto"
+          cmp --silent "$WORK/captures/savestate-schema-pinned.proto" "$WORK/captures/savestate-schema-variant.proto"
+          cp "$WORK/captures/raw/storymode-checkpoint.raw" "$WORK/captures/storymode-checkpoint-next.raw.sstate"
+          echo "PROBE_RESTORE_AND_NEXT_CHECKPOINT=PASS"
+
+      - name: Validate the emitted checkpoint in a second fresh emulator process
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          cp captures/pcsx.stdout.txt captures/pcsx-board-restore.stdout.txt
+          cp captures/pcsx.log.txt captures/pcsx-board-restore.log.txt
+          cp gdb-console.txt captures/gdb-board-restore-console.txt
+          cp captures/restore-phase.log captures/restore-phase-board.txt
+          cp captures/storymode-restore-comparison.txt captures/storymode-restore-comparison-board.txt
+          cp captures/storymode-checkpoint-restore-immediate.png captures/storymode-checkpoint-board-restore-immediate.png
+          cp captures/storymode-checkpoint-source.png captures/storymode-checkpoint-source-original.png
+          test -s captures/storymode-checkpoint-next.raw.sstate
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          import json
+          cap=Path("captures")
+          raw=cap/"raw/frame-000180.raw"
+          meta=cap/"frame-000180.json"
+          if not raw.is_file() or not meta.is_file():
+              raise SystemExit("missing first restore frame-180 capture")
+          m=json.loads(meta.read_text())
+          data=raw.read_bytes()
+          w,h,bpp=int(m["width"]),int(m["height"]),int(m["bpp"])
+          if len(data)!=w*h*bpp//8 or w<100 or h<100:
+              raise SystemExit("invalid frame-180 screenshot byte count")
+          if bpp==16:
+              rgb=bytearray()
+              for j in range(0,len(data),2):
+                  v=data[j] | (data[j+1]<<8)
+                  rgb.extend(((v&31)*255//31,((v>>5)&31)*255//31,((v>>10)&31)*255//31))
+              image=Image.frombytes("RGB",(w,h),bytes(rgb))
+          elif bpp==24:
+              image=Image.frombytes("RGB",(w,h),data)
+          else:
+              raise SystemExit(f"unsupported bpp={bpp}")
+          image.save(cap/"storymode-checkpoint-next.png")
+          print(f"PROBE_NEXT_CHECKPOINT_SCREENSHOT={w}x{h}")
+          PY
+          cp captures/storymode-checkpoint-next.png captures/storymode-checkpoint-source.png
+          cp captures/storymode-checkpoint-next.raw.sstate resume/storymode-checkpoint.sstate
+          cmp --silent captures/storymode-checkpoint-next.raw.sstate resume/storymode-checkpoint.sstate
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("captures/storymode-checkpoint-next.raw.sstate")
+          data=p.read_bytes()
+          if len(data)<1024*1024 or b"PCSX-Redux SaveState v4" not in data[:64]:
+              raise SystemExit("next checkpoint failed basic raw savestate header/size validation")
+          print(f"PROBE_NEXT_CHECKPOINT_RAW_HEADER=PASS bytes={len(data)}")
+          PY
+          rm -f captures/raw/restore-screenshot-match.flag captures/raw/storymode-restore-immediate.raw
+          rm -f captures/storymode-restore-immediate.json captures/storymode-checkpoint-restore-immediate.png
+          rm -f captures/storymode-restore-comparison.txt captures/raw/frame-000180.raw
+          rm -f captures/frame-000180.json captures/raw/storymode-checkpoint.raw captures/restore-phase.log
+          touch resume/validation-only.flag
+          export DISPLAY=:100 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/.config" XDG_DATA_HOME="$WORK/.data"
+          export LIBGL_ALWAYS_SOFTWARE=1
+          Xvfb :100 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/xvfb-second.log" 2>&1 &
+          xvfb_pid=$!
+          emu_pid=""
+          compare_pid=""
+          cleanup() {
+            if [ -n "$emu_pid" ]; then kill "$emu_pid" 2>/dev/null || true; fi
+            if [ -n "$compare_pid" ]; then kill "$compare_pid" 2>/dev/null || true; fi
+            kill "$xvfb_pid" 2>/dev/null || true
+            wait "$xvfb_pid" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          for i in $(seq 1 60); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          PAD_SETUP=$(cat <<'LUA'
+          print("PROBE_PAD_SETUP=NO_BUTTONS_INJECTED")
+          io.stdout:flush()
+          LUA
+          )
+          set +e
+          timeout --signal=TERM --kill-after=10s 1800s gdb --batch --return-child-result \
+            -ex 'set pagination off' -ex 'set confirm off' -ex 'set print thread-events off' \
+            -ex 'set follow-fork-mode parent' -ex 'set detach-on-fork on' -ex 'set follow-exec-mode new' \
+            -ex 'set debuginfod enabled off' -ex 'handle SIGSEGV stop print nopass' \
+            -ex "set logging file $WORK/gdb-second-console.txt" -ex 'set logging overwrite on' \
+            -ex 'set logging redirect on' -ex 'set logging enabled on' \
+            -ex 'echo PROBE_SECOND_GDB_BEGIN\\n' -ex run \
+            -ex 'echo PROBE_SECOND_GDB_FAULT_CONTEXT_BEGIN\\n' -ex 'info registers' -ex 'x/16i $pc-32' \
+            -ex 'info symbol $pc' -ex 'info proc mappings' -ex 'thread apply all bt full' \
+            -ex 'echo PROBE_SECOND_GDB_END\\n' \
+            --args /usr/bin/stdbuf -oL -eL "$WORK/variant/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+              -memcard1 "$WORK/cards/naruto-storymode.mcd" \
+              -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
+              -softgpu -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx-second.log" -run \
+            > "$WORK/pcsx-second.stdout" 2>&1 &
+          emu_pid=$!
+          RESUME_MODE=true RAW_RESUME_VERIFY=true EMU_PID="$emu_pid" \
+            python3 -u "$WORK/story-dialog-watch.py" > "$WORK/captures/screenshot-compare-next.log" 2>&1 &
+          compare_pid=$!
+          wait "$emu_pid"
+          emu_rc=$?
+          emu_pid=""
+          wait "$compare_pid"
+          compare_rc=$?
+          compare_pid=""
+          set -e
+          echo "PROBE_SECOND_EMULATOR_EXIT_CODE=$emu_rc"
+          echo "PROBE_SECOND_SCREENSHOT_COMPARATOR_EXIT_CODE=$compare_rc"
+          cp "$WORK/pcsx-second.stdout" "$WORK/captures/pcsx-second.stdout.txt" || true
+          cp "$WORK/pcsx-second.log" "$WORK/captures/pcsx-second.log.txt" || true
+          cp "$WORK/gdb-second-console.txt" "$WORK/captures/gdb-second-console.txt" || true
+          cp "$WORK/captures/screenshot-compare-next.log" "$WORK/captures/screenshot-compare-next.log.txt" || true
+          cp "$WORK/captures/storymode-checkpoint-restore-immediate.png" "$WORK/captures/storymode-checkpoint-next-restore-immediate.png" || true
+          cp "$WORK/captures/storymode-restore-comparison.txt" "$WORK/captures/storymode-restore-comparison-next-checkpoint.txt" || true
+          grep -E 'PROBE_|STORY_SCHEMA_|RESTORE_PHASE=|STORY_RAW_|STORY_SAVESTATE_|ExecutionFlow|SIGSEGV|FATAL|error|Error|ERROR|failed|Failed|^#[0-9]+' \
+            "$WORK/pcsx-second.stdout" "$WORK/pcsx-second.log" "$WORK/gdb-second-console.txt" "$WORK/captures/restore-phase.log" \
+            > "$WORK/captures/important-log-lines-second.txt" || true
+          { echo "PROBE_SECOND_EMULATOR_EXIT_CODE=$emu_rc"; echo "PROBE_SECOND_SCREENSHOT_COMPARATOR_EXIT_CODE=$compare_rc"; } > "$WORK/captures/probe-second-run-summary.txt"
+          test "$emu_rc" -eq 0
+          test "$compare_rc" -eq 0
+          grep -q 'STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded' "$WORK/pcsx-second.stdout"
+          grep -q 'RESTORE_PHASE=PCSX_LOADSAVESTATE_PCALL_RETURNED' "$WORK/pcsx-second.stdout"
+          grep -q 'STORY_SAVESTATE_LOAD_CALL_RETURNED=1' "$WORK/pcsx-second.stdout"
+          grep -q 'STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180' "$WORK/pcsx-second.stdout"
+          grep -q 'STORY_RAW_RESTORE_CROSS_RUN=PASS' "$WORK/pcsx-second.stdout"
+          grep -q 'STORY_PROBE_FRESH_RELOAD=PASS' "$WORK/pcsx-second.stdout"
+          grep -q 'STORY_PROBE_NO_CONTROLLER_INPUT=PASS' "$WORK/pcsx-second.stdout"
+          grep -q 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' "$WORK/captures/storymode-restore-comparison-next-checkpoint.txt"
+          echo "PROBE_NEXT_CHECKPOINT_FRESH_PROCESS_VALIDATION=PASS"
+
+
+      - name: Package hashes, screenshot evidence, and probe manifest
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$WORK/captures"
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          import hashlib, json, os
+          root = Path(os.environ["WORK"])
+          cap = root / "captures"
+          def sha(p):
+              return hashlib.sha256(p.read_bytes()).hexdigest() if p.is_file() else "missing"
+          def size(p):
+              return p.stat().st_size if p.is_file() else 0
+          # Convert the verified frame-180 guest capture to a PNG when present.
+          raw = cap / "raw/frame-000180.raw"
+          meta = cap / "frame-000180.json"
+          if raw.is_file() and meta.is_file():
+              m = json.loads(meta.read_text())
+              data = raw.read_bytes()
+              expected = int(m["width"]) * int(m["height"]) * int(m["bpp"]) // 8
+              if len(data) == expected and m["width"] >= 100 and m["height"] >= 100:
+                  if int(m["bpp"]) == 16:
+                      rgb = bytearray()
+                      for i in range(0, len(data), 2):
+                          w = data[i] | (data[i+1] << 8)
+                          rgb.extend(((w & 31)*255//31, ((w>>5)&31)*255//31, ((w>>10)&31)*255//31))
+                      Image.frombytes("RGB", (int(m["width"]),int(m["height"])), bytes(rgb)).save(cap/"storymode-checkpoint-next.png")
+                  elif int(m["bpp"]) == 24:
+                      Image.frombytes("RGB", (int(m["width"]),int(m["height"])), data).save(cap/"storymode-checkpoint-next.png")
+          source = root/"source-state/storymode-checkpoint.raw.sstate"
+          staged = root/"resume/storymode-checkpoint.sstate"
+          staging_evidence = cap/"source-staging-evidence.txt"
+          newstate = cap/"storymode-checkpoint-next.raw.sstate"
+          manifest = root/"source-state/storymode-raw-manifest.txt"
+          def evidence_value(key):
+              if not staging_evidence.is_file(): return "missing"
+              for line in staging_evidence.read_text(errors="replace").splitlines():
+                  if line.startswith(key+"="): return line.split("=",1)[1]
+              return "missing"
+          def manifest_value(key):
+              if not manifest.is_file(): return "missing"
+              for line in manifest.read_text(errors="replace").splitlines():
+                  if line.startswith(key+"="): return line.split("=",1)[1]
+              return "missing"
+          records = [
+              "PROBE_KIND=upstream_SPu_ADPCM_stopped_cursor_fix_only",
+              f"PROBE_SOURCE_RUN_ID={os.environ.get('SOURCE_RUN_ID','unknown')}",
+              f"PROBE_SOURCE_STATE_BYTES={size(source)}",
+              f"PROBE_SOURCE_STATE_SHA256={sha(source)}",
+              f"PROBE_STAGED_STATE_BYTES={evidence_value('SOURCE_STAGED_STATE_BYTES')}",
+              f"PROBE_STAGED_STATE_SHA256={evidence_value('SOURCE_STAGED_STATE_SHA256')}",
+              f"PROBE_SOURCE_MANIFEST_SHA256={sha(manifest)}",
+              f"PROBE_SOURCE_SCREENSHOT_SHA256={sha(root/'source-state/storymode-checkpoint-source.png')}",
+              f"PROBE_PINNED_SCHEMA_SHA256={sha(cap/'savestate-schema-pinned.proto')}",
+              f"PROBE_VARIANT_SCHEMA_SHA256={sha(cap/'savestate-schema-variant.proto')}",
+              f"PROBE_SCHEMA_TEXT_IDENTICAL={str((cap/'savestate-schema-pinned.proto').is_file() and (cap/'savestate-schema-variant.proto').is_file() and (cap/'savestate-schema-pinned.proto').read_bytes()==(cap/'savestate-schema-variant.proto').read_bytes()).upper()}",
+              f"PROBE_VARIANT_APPIMAGE_SHA256={sha(root/'PCSX-Redux-spu-sentinel-probe-x86_64.AppImage')}",
+              f"PROBE_PATCH_SHA256={sha(Path(os.environ.get('GITHUB_WORKSPACE','.'))/'experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch')}",
+              f"PROBE_NEXT_STATE_BYTES={size(newstate)}",
+              f"PROBE_NEXT_STATE_SHA256={sha(newstate)}",
+              f"PROBE_NEXT_SCREENSHOT_SHA256={sha(cap/'storymode-checkpoint-next.png')}",
+              f"PROBE_IMMEDIATE_RESTORE_SCREENSHOT_SHA256={sha(cap/'storymode-checkpoint-board-restore-immediate.png')}",
+              f"PROBE_COMPARE_REPORT_SHA256={sha(cap/'storymode-restore-comparison-board.txt')}",
+              f"PROBE_LOAD_EVENT={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_LOADER_PCALL_RETURNED={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'RESTORE_PHASE=PCSX_LOADSAVESTATE_PCALL_RETURNED' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_LOADER_RETURNED={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'STORY_SAVESTATE_LOAD_CALL_RETURNED=1' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_POST180_VSYNC={'PASS' if (cap/'pcsx.stdout.txt').is_file() and 'STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180' in (cap/'pcsx.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_SCREENSHOT_COMPARE={'PASS' if (cap/'storymode-restore-comparison-board.txt').is_file() and 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' in (cap/'storymode-restore-comparison-board.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_FRESH_RELOAD_EVENT={'PASS' if (cap/'pcsx-second.stdout.txt').is_file() and 'STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_FRESH_RELOAD_LOADER_RETURNED={'PASS' if (cap/'pcsx-second.stdout.txt').is_file() and 'STORY_SAVESTATE_LOAD_CALL_RETURNED=1' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_FRESH_RELOAD_POST180_VSYNC={'PASS' if (cap/'pcsx-second.stdout.txt').is_file() and 'STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_FRESH_RELOAD_SCREENSHOT_COMPARE={'PASS' if (cap/'storymode-restore-comparison-next-checkpoint.txt').is_file() and 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' in (cap/'storymode-restore-comparison-next-checkpoint.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              f"PROBE_NEXT_CHECKPOINT_VALID={'PASS' if newstate.is_file() and size(newstate)>0 and b'PCSX-Redux SaveState v4' in newstate.read_bytes()[:64] and (cap/'pcsx-second.stdout.txt').is_file() and 'STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') and 'STORY_SAVESTATE_LOAD_CALL_RETURNED=1' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') and 'STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') and 'STORY_PROBE_FRESH_RELOAD=PASS' in (cap/'pcsx-second.stdout.txt').read_text(errors='replace') and (cap/'storymode-restore-comparison-next-checkpoint.txt').is_file() and 'STORY_RAW_RESTORE_SCREENSHOT_COMPARE=PASS' in (cap/'storymode-restore-comparison-next-checkpoint.txt').read_text(errors='replace') else 'FAIL_OR_MISSING'}",
+              "PROBE_CONTROLLER_INPUT=none",
+              "PROBE_SOURCE_STATE_TRANSFORM=none",
+          ]
+          # Persist the exact applied-source/build manifest if build reached that stage.
+          build_manifest = root/"variant-build-manifest.txt"
+          if build_manifest.is_file():
+              (cap/"variant-build-manifest.txt").write_text(build_manifest.read_text(errors="replace"))
+              records.extend(build_manifest.read_text(errors="replace").splitlines())
+          (cap/"probe-manifest.txt").write_text("\n".join(records)+"\n")
+          print("\n".join(records))
+          PY
+          cp "$WORK/captures/probe-manifest.txt" "$WORK/probe-manifest.txt" 2>/dev/null || true
+
+      - name: Upload private probe evidence and next checkpoint (never upload ROM/BIOS/Memory Card)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-spu-sentinel-fix-probe-private
+          path: |
+            ${{ env.WORK }}/captures/probe-manifest.txt
+            ${{ env.WORK }}/captures/source-staging-evidence.txt
+            ${{ env.WORK }}/captures/source-manifest.txt
+            ${{ env.WORK }}/captures/variant-build-manifest.txt
+            ${{ env.WORK }}/captures/savestate-schema-pinned.proto
+            ${{ env.WORK }}/captures/savestate-schema-variant.proto
+            ${{ env.WORK }}/captures/storymode-checkpoint-source.png
+            ${{ env.WORK }}/captures/storymode-checkpoint-restore-immediate.png
+            ${{ env.WORK }}/captures/storymode-checkpoint-next.png
+            ${{ env.WORK }}/captures/storymode-checkpoint-next.raw.sstate
+            ${{ env.WORK }}/captures/storymode-restore-comparison.txt
+            ${{ env.WORK }}/captures/important-log-lines.txt
+            ${{ env.WORK }}/captures/pcsx.stdout.txt
+            ${{ env.WORK }}/captures/pcsx.log.txt
+            ${{ env.WORK }}/captures/restore-phase.log
+            ${{ env.WORK }}/captures/restore-phase-board.txt
+            ${{ env.WORK }}/captures/probe-run-summary.txt
+            ${{ env.WORK }}/captures/screenshot-compare.log
+            ${{ env.WORK }}/captures/schema-probe.stdout.txt
+            ${{ env.WORK }}/captures/schema-probe.log.txt
+            ${{ env.WORK }}/captures/schema-xvfb.log.txt
+            ${{ env.WORK }}/gdb-console.txt
+            ${{ env.WORK }}/captures/pcsx-board-restore.stdout.txt
+            ${{ env.WORK }}/captures/pcsx-board-restore.log.txt
+            ${{ env.WORK }}/captures/gdb-board-restore-console.txt
+            ${{ env.WORK }}/captures/gdb-second-console.txt
+            ${{ env.WORK }}/captures/pcsx-second.stdout.txt
+            ${{ env.WORK }}/captures/pcsx-second.log.txt
+            ${{ env.WORK }}/captures/important-log-lines-second.txt
+            ${{ env.WORK }}/captures/probe-second-run-summary.txt
+            ${{ env.WORK }}/captures/screenshot-compare-next.log.txt
+            ${{ env.WORK }}/captures/storymode-checkpoint-source-original.png
+            ${{ env.WORK }}/captures/storymode-checkpoint-board-restore-immediate.png
+            ${{ env.WORK }}/captures/storymode-checkpoint-next-restore-immediate.png
+            ${{ env.WORK }}/captures/storymode-restore-comparison-board.txt
+            ${{ env.WORK }}/captures/storymode-restore-comparison-next-checkpoint.txt
+            ${{ env.WORK }}/applied-fix.diff
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Remove private runtime state and game assets from ephemeral runner
+        if: always()
+        shell: bash
+        run: |
+          rm -rf "$WORK"

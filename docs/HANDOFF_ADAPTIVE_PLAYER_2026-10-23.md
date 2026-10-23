@@ -1,6 +1,6 @@
 # Latest handoff — terrain-registration / focus-cue regression (23 October 2026)
 
-Current code checkpoint: `563e34562f4bea0423557755a5c03b4b60077894` adds authenticated-screen assertions only; it changes the adaptive-regression workflow and its tests, not the player workflow or marker. Regression [#39973978654](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39973978654) was **in progress** at handoff documentation time, so its final CI result must be inspected before considering any next phase.
+Current code checkpoint: `563e34562f4bea0423557755a5c03b4b60077894` adds authenticated-screen assertions only; it changes the adaptive-regression workflow and its tests, not the player workflow or marker. Regression [#39973978654](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39973978654) completed with `success` at 15:00:04Z: 25 tests, all authentic evidence steps, and the new pan/arrow-cue assertions passed.
 
 Private evidence inspected offline: Revision65 artifact #12498688466 (run #39947481094) and map UP-vs-WAIT artifact #12428777970 (run #39786019434). Both remain private/out of Git; no new emulator run/input happened.
 
@@ -10,7 +10,7 @@ Known map target-cue composite: red arrow ring around pink-60 tile **and** match
 
 **Decision:** target-cue meaning is **UNKNOWN**; policy remains `WAIT` at `barrier_level_selection`. Keep Revision65 consumed and unchanged, keep `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` absent, and keep player readiness **NO-GO** / Story Mode **NOT COMPLETE**. Regression asserts centroid follows scene pan within tolerance, the authentic map UP ring is distinct and paired with its panel, and the revision65 ring remains absent. Inspect the final result of #39973978654 and check its two new output markers before any further consideration. Never use random direction input; no player workflow dispatch is authorized.
 
-Detailed measurements, thresholds, and rationale are in the new top section of `STATUS.md` and the appended entry in `ANALYSIS_LOG.md`.
+Regression #39973978654 is now verified green: 25 tests, every workflow step passed, and both new regression output markers are present. Exact output and thresholds are recorded in `STATUS.md` and `ANALYSIS_LOG.md`. No player workflow was launched.
 
 
 ---

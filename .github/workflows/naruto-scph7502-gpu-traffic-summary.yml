@@ -1,0 +1,1472 @@
+name: Naruto SCPH-7502 Story Mode playthrough
+
+on:
+  workflow_dispatch:
+    inputs:
+      resume_run_id:
+        description: "Prior run ID whose private Memory Card artifact must be restored when resuming"
+        required: false
+        type: string
+      load_savestate:
+        description: "Also load the savestate from resume_run_id; leave false to use the Memory Card path only"
+        required: false
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/naruto-scph7502-gpu-traffic-summary.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: naruto-scph7502-gpu-traffic-summary
+  cancel-in-progress: true
+
+jobs:
+  gpu-traffic-summary:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 100
+    steps:
+      - name: Install private runtime requirements
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil gdb
+
+      - name: Download and verify private runtime assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          WORK="$RUNNER_TEMP/naruto-scph7502-gpu-traffic"
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+          mkdir -p "$WORK/home" "$WORK/captures/raw" "$WORK/cards"
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; output="$2"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            if [ -z "$id" ] || [ "$id" = "null" ]; then echo "::error::Missing private release asset: $name"; exit 1; fi
+            curl --fail --silent --show-error --location --retry 2 --max-time 300 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$id" -o "$output"
+          }
+          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset scph7502.zip scph7502.zip
+          echo "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c  pcsx-redux.AppImage" | sha256sum --check -
+          test "$(stat -c '%s' game.bin)" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          test "$(stat -c '%s' scph7502.zip)" = "283463"
+          echo "b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a  scph7502.zip" | sha256sum --check -
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import hashlib, stat, zipfile
+          with zipfile.ZipFile("scph7502.zip") as zf:
+              members = []
+              expanded = 0
+              for info in zf.infolist():
+                  p = PurePosixPath(info.filename)
+                  mode = (info.external_attr >> 16) & 0xffff
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)):
+                      raise SystemExit("Unsafe BIOS archive entry")
+                  if info.file_size > 2*1024*1024:
+                      raise SystemExit("BIOS archive member exceeds safety limit")
+                  expanded += info.file_size
+                  if expanded > 4*1024*1024:
+                      raise SystemExit("BIOS archive expansion exceeds safety limit")
+                  if not info.is_dir() and info.file_size == 524288:
+                      members.append(info)
+              if len(members) != 1:
+                  raise SystemExit(f"Expected one BIOS-sized member, found {len(members)}")
+              out = Path("scph7502.bin")
+              digest = hashlib.sha256()
+              with zf.open(members[0]) as src, out.open("wb") as dst:
+                  while True:
+                      chunk = src.read(65536)
+                      if not chunk: break
+                      digest.update(chunk)
+                      dst.write(chunk)
+              actual = digest.hexdigest()
+              expected = "5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1"
+              print("RETAIL_BIOS_SHA256=" + actual)
+              print("RETAIL_BIOS_REFERENCE_MATCH=" + str(actual == expected).upper())
+              if actual != expected:
+                  raise SystemExit("Retail BIOS reference mismatch")
+          PY
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("game.cue")
+          lines = p.read_bytes().decode("utf-8-sig").replace("\r\n", "\n").replace("\r", "\n").splitlines()
+          ids = [i for i, line in enumerate(lines) if line.lstrip().upper().startswith("FILE ")]
+          if len(ids) != 1 or not any(line.lstrip().upper().startswith("TRACK ") for line in lines):
+              raise SystemExit("Invalid CUE")
+          lines[ids[0]] = 'FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines) + "\n", encoding="ascii")
+          PY
+          echo "ROM/CUE/emulator hashes verified; BIOS=SCPH-7502"
+          echo "EMULATOR_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
+
+      - name: Restore private Story Mode checkpoint
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.resume_run_id != '' && inputs.load_savestate }}
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-checkpoint-private
+          run-id: ${{ inputs.resume_run_id }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: ${{ runner.temp }}/naruto-scph7502-gpu-traffic/resume
+
+      - name: Restore private Story Mode Memory Card
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.resume_run_id != '' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: ${{ inputs.resume_run_id }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: ${{ runner.temp }}/naruto-scph7502-gpu-traffic/resume-memory-card
+
+      - name: Play Story Mode, skip detected dialogue with Start, checkpoint and observe up to VSync 50000
+        env:
+          RESTORE_GDB: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[restore-gdb]') }}
+          LOAD_SAVESTATE: ${{ github.event_name == 'workflow_dispatch' && inputs.load_savestate }}
+          CARD_RESTORE_EXPECTED: ${{ github.event_name == 'workflow_dispatch' && inputs.resume_run_id != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          GPU_BACKEND_FLAG="-softgpu"
+          GPU_BACKEND_TIMEOUT="5400s" # 90m hard emulator limit; reserve time for evidence packaging and cleanup
+          echo "GPU_BACKEND_SELECTED=$GPU_BACKEND_FLAG"
+          echo "GPU_BACKEND_TIMEOUT=$GPU_BACKEND_TIMEOUT"
+          cd "$WORK"
+          mkdir -p "$WORK/resume" "$WORK/cards"
+          if [[ "${CARD_RESTORE_EXPECTED:-false}" == "true" ]]; then
+            source_card="$WORK/resume-memory-card/naruto-storymode.mcd"
+            source_manifest="$WORK/resume-memory-card/memory-card-manifest.txt"
+            if [[ ! -s "$source_card" || ! -s "$source_manifest" ]]; then
+              echo "::error::STORY_MEMORY_CARD_RESTORE=FAIL reason=card_or_manifest_missing"
+              exit 41
+            fi
+            expected_sha="$(awk -F= '$1 == "STORY_MEMORY_CARD_SHA256" {print $2; exit}' "$source_manifest")"
+            expected_bytes="$(awk -F= '$1 == "STORY_MEMORY_CARD_BYTES" {print $2; exit}' "$source_manifest")"
+            actual_sha="$(sha256sum "$source_card" | cut -d ' ' -f 1)"
+            actual_bytes="$(stat -c '%s' "$source_card")"
+            if [[ ! "$expected_sha" =~ ^[0-9a-f]{64}$ || "$actual_sha" != "$expected_sha" || "$actual_bytes" != "$expected_bytes" ]]; then
+              echo "::error::STORY_MEMORY_CARD_RESTORE=FAIL reason=manifest_mismatch bytes=$actual_bytes sha256=$actual_sha"
+              exit 42
+            fi
+            cp "$source_card" "$WORK/cards/naruto-storymode.mcd"
+            : > "$WORK/cards/memory-card-restored.flag"
+            echo "STORY_MEMORY_CARD_RESTORE=PASS bytes=$actual_bytes sha256=$actual_sha"
+          else
+            echo "STORY_MEMORY_CARD_RESTORE=not_requested; fresh run"
+          fi
+          if [ "${LOAD_SAVESTATE:-false}" = "true" ]; then
+            if [ ! -s "$WORK/resume/storymode-checkpoint.sstate" ]; then
+              echo "::error::STORY_SAVESTATE_RESTORE=FAIL reason=requested_state_missing"
+              exit 43
+            fi
+          else
+            rm -f "$WORK/resume/storymode-checkpoint.sstate"
+            echo "STORY_SAVESTATE_LOAD_DISABLED=1; Memory Card is the primary persistence path"
+          fi
+          RESUME_MODE=false
+          if [ -f "$WORK/resume/storymode-checkpoint.sstate" ]; then
+            RESUME_MODE=true
+            echo "STORY_RESUME_ARTIFACT=present"
+            # The private artifact omits Memory.rom to avoid transferring the retail
+            # BIOS. Reconstruct it locally from the already verified BIOS file before
+            # PCSX-Redux commits the fixed-size ROM field while loading the state.
+            python3 - "$WORK/resume/storymode-checkpoint.sstate" "$WORK/scph7502.bin" <<'PY'
+          import sys
+          from pathlib import Path
+
+          state_path = Path(sys.argv[1])
+          bios = Path(sys.argv[2]).read_bytes()
+          state_data = state_path.read_bytes()
+          if len(bios) != 0x80000:
+              raise SystemExit(f"RESTORE_BIOS_REHYDRATE=FAIL wrong_bios_size={len(bios)}")
+
+          def read_varint(data, pos):
+              value = shift = 0
+              while pos < len(data):
+                  byte = data[pos]
+                  pos += 1
+                  value |= (byte & 0x7f) << shift
+                  if not byte & 0x80:
+                      return value, pos
+                  shift += 7
+                  if shift > 70:
+                      raise ValueError("protobuf varint too long")
+              raise ValueError("truncated protobuf varint")
+
+          def varint(value):
+              out = bytearray()
+              while value > 0x7f:
+                  out.append((value & 0x7f) | 0x80)
+                  value >>= 7
+              out.append(value)
+              return bytes(out)
+
+          def fields(data):
+              result, pos = [], 0
+              while pos < len(data):
+                  start = pos
+                  tag, pos = read_varint(data, pos)
+                  number, wire = tag >> 3, tag & 7
+                  if wire == 0:
+                      _, pos = read_varint(data, pos)
+                      payload_start = payload_end = pos
+                  elif wire == 1:
+                      payload_start, payload_end = pos, pos + 8
+                      pos += 8
+                  elif wire == 2:
+                      size, pos = read_varint(data, pos)
+                      payload_start = pos
+                      pos += size
+                      payload_end = pos
+                  elif wire == 5:
+                      payload_start, payload_end = pos, pos + 4
+                      pos += 4
+                  else:
+                      raise ValueError(f"unsupported protobuf wire type {wire}")
+                  if pos > len(data):
+                      raise ValueError("truncated protobuf field")
+                  result.append((number, wire, start, payload_start, payload_end, pos))
+              return result
+
+          top = fields(state_data)
+          memories = [entry for entry in top if entry[0] == 3 and entry[1] == 2]
+          if len(memories) != 1:
+              raise SystemExit(f"RESTORE_BIOS_REHYDRATE=FAIL memory_message_count={len(memories)}")
+          _, _, _, mem_start, mem_end, _ = memories[0]
+          memory = state_data[mem_start:mem_end]
+          nested = fields(memory)
+          if any(number == 2 and wire == 2 for number, wire, *_ in nested):
+              raise SystemExit("RESTORE_BIOS_REHYDRATE=FAIL checkpoint already has Memory.rom")
+          if not any(number == 1 and wire == 2 for number, wire, *_ in nested):
+              raise SystemExit("RESTORE_BIOS_REHYDRATE=FAIL Memory.ram field missing")
+
+          restored_memory = bytearray()
+          inserted = False
+          for number, wire, start, payload_start, payload_end, end in nested:
+              restored_memory.extend(memory[start:end])
+              if number == 1 and wire == 2:
+                  restored_memory.extend(varint((2 << 3) | 2))
+                  restored_memory.extend(varint(len(bios)))
+                  restored_memory.extend(bios)
+                  inserted = True
+          if not inserted:
+              raise SystemExit("RESTORE_BIOS_REHYDRATE=FAIL could not insert ROM field")
+
+          rebuilt = bytearray()
+          replaced = 0
+          for number, wire, start, payload_start, payload_end, end in top:
+              if number == 3 and wire == 2:
+                  rebuilt.extend(varint((3 << 3) | 2))
+                  rebuilt.extend(varint(len(restored_memory)))
+                  rebuilt.extend(restored_memory)
+                  replaced += 1
+              else:
+                  rebuilt.extend(state_data[start:end])
+          if replaced != 1:
+              raise SystemExit(f"RESTORE_BIOS_REHYDRATE=FAIL memory_rebuilt={replaced}")
+          state_path.write_bytes(rebuilt)
+          print(f"RESTORE_BIOS_REHYDRATE=PASS bios_bytes={len(bios)} state_bytes={len(rebuilt)}")
+          PY
+          else
+            echo "STORY_RESUME_ARTIFACT=absent"
+          fi
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          emu_pid=""
+          cleanup() {
+            if [ -n "$emu_pid" ]; then kill "$emu_pid" 2>/dev/null || true; fi
+            kill "$xvfb_pid" 2>/dev/null || true
+            wait "$xvfb_pid" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/home/.config" XDG_DATA_HOME="$WORK/home/.local/share"
+          export LIBGL_ALWAYS_SOFTWARE=1
+          unset MESA_GL_VERSION_OVERRIDE MESA_GLSL_VERSION_OVERRIDE
+          mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME"
+          for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          echo "HOST_DISPLAY_READY=1; emulator backend remains SoftGPU"
+
+          PAD_SETUP=$(cat <<'LUA'
+          PCSX.settings.pads[1].DeviceType = 'Analog'
+          PCSX.settings.pads[1].Connected = true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print(string.format("PAD_SETUP=Port 1 connected=%s device_type=%s input_type=%s",
+              tostring(PCSX.settings.pads[1].Connected),
+              tostring(PCSX.settings.pads[1].DeviceType),
+              tostring(PCSX.settings.pads[1].PadType)))
+          LUA
+          )
+          cat > "$WORK/gpu-traffic.lua" <<'LUA'
+          local frame_count = 0
+          local stop_frame = 12000
+          local pad = PCSX.SIO0.slots[1].pads[1]
+          local buttons = PCSX.CONSTS.PAD.BUTTON
+          local resume_mode = false
+          local resume_pending = false
+          local resume_state_path = "resume/storymode-checkpoint.sstate"
+          local raw_resume_verify = false
+          local restore_event_seen = false
+          local restore_post_frames = 0
+          local restore_verify_pending = false
+          local restore_verify_attempts = 0
+          -- A state must not be loaded during initial Lua script evaluation. Defer it
+          -- until the emulator reaches its first VSync, then pause and load on nextTick.
+          local resume_probe = io.open(resume_state_path, "rb")
+          if resume_probe then
+              resume_probe:close()
+              resume_mode = true
+              resume_pending = true
+              print("STORY_SAVESTATE_PRESENT=1; restore deferred to first VSync safe point")
+          else
+              print("STORY_SAVESTATE_PRESENT=0; cold boot sequence enabled")
+          end
+          local raw_marker = io.open("resume/raw-resume.flag", "rb")
+          if raw_marker then
+              raw_marker:close()
+              raw_resume_verify = true
+              print("STORY_RAW_RESUME_VERIFY=1; byte-exact raw state; BIOS rehydration disabled")
+          end
+          local input_sequence = {}
+          local memory_card_restored = false
+          local card_flag = io.open("cards/memory-card-restored.flag", "rb")
+          if card_flag then
+              card_flag:close()
+              memory_card_restored = true
+              print("STORY_MEMORY_CARD_RESTORED=1")
+          end
+          if not resume_mode and not memory_card_restored then
+              input_sequence = {
+              -- Start is sent only after the title prompt is known to be visible.
+              -- The menu is initially on はじめから; Down then Up tests D-pad navigation
+              -- and returns the selection to はじめから before Circle confirms it.
+              {frame=2650, action="press", button=buttons.START, name="START"},
+              {frame=2680, action="release", button=buttons.START, name="START"},
+              {frame=2710, action="press", button=buttons.DOWN, name="DOWN"},
+              {frame=2720, action="release", button=buttons.DOWN, name="DOWN"},
+              {frame=2740, action="press", button=buttons.UP, name="UP"},
+              {frame=2750, action="release", button=buttons.UP, name="UP"},
+              {frame=2780, action="press", button=buttons.CIRCLE, name="CIRCLE"},
+              {frame=2810, action="release", button=buttons.CIRCLE, name="CIRCLE"},
+              }
+          end
+          if memory_card_restored and not resume_mode then
+              print("STORY_MEMORY_CARD_AUTO_LOAD_UNTESTED=1; suppressing new-game inputs to protect existing card save")
+          end
+          local input_index = 1
+          local story_circle2_pressed = false
+          local auto_start_release_frame = nil
+          local checkpoint_pending = false
+          local capture_targets = { [2599]=true, [2649]=true, [2650]=true, [2660]=true, [2670]=true, [2680]=true, [2690]=true, [2700]=true, [2709]=true, [2710]=true, [2715]=true, [2720]=true, [2730]=true, [2739]=true, [2740]=true, [2745]=true, [2749]=true, [2750]=true, [2760]=true, [2770]=true, [2779]=true, [2780]=true, [2790]=true, [2800]=true, [2809]=true, [2810]=true, [2820]=true, [2850]=true, [2900]=true, [2950]=true, [2999]=true, [3199]=true, [3399]=true, [3599]=true, [3999]=true, [4499]=true, [4999]=true, [5499]=true, [5999]=true, [6099]=true, [6100]=true, [6110]=true, [6129]=true, [6130]=true, [6140]=true, [6200]=true, [6399]=true, [6799]=true, [7199]=true, [7599]=true, [7999]=true, [8499]=true, [8999]=true, [9099]=true, [9199]=true, [9200]=true, [9229]=true, [9230]=true, [9240]=true, [9299]=true, [9499]=true, [9999]=true, [10099]=true, [10199]=true, [10200]=true, [10229]=true, [10230]=true, [10240]=true, [10299]=true, [10499]=true, [10999]=true }
+
+          local function apply_input(action)
+              local expected = action.action == "press"
+              local ok, readback = pcall(function()
+                  if expected then pad.setOverride(action.button) else pad.clearOverride(action.button) end
+                  return pad.getButton(action.button)
+              end)
+              if not ok then
+                  print(string.format("PAD_INJECT frame=%d button=%s action=%s status=ERROR", frame_count, action.name, action.action))
+                  return
+              end
+              local status = (readback == expected) and "PASS" or "FAIL"
+              print(string.format("PAD_INJECT frame=%d button=%s action=%s readback=%s expected=%s status=%s",
+                  frame_count, action.name, action.action, tostring(readback), tostring(expected), status))
+          end
+
+          local function capture_vram(n)
+              local ok = pcall(function()
+                  local vram = PCSX.GPU.getVRAM()
+                  local raw_path = string.format("captures/raw/vram-frame-%06d.raw", n)
+                  local raw = assert(Support.File.open(raw_path, "TRUNCATE"), "cannot create private temporary VRAM capture")
+                  raw:writeMoveSlice(vram)
+                  raw:close()
+                  print(string.format("GPU_VRAM_CAPTURE frame=%d status=ok", n))
+              end)
+              if not ok then print(string.format("GPU_VRAM_CAPTURE frame=%d status=ERROR", n)) end
+          end
+
+          local function capture_frame(n)
+              local ok, err = pcall(function()
+                  local shot = PCSX.GPU.takeScreenShot()
+                  local bpp = (shot.bpp == 0) and 16 or 24
+                  local raw_path = string.format("captures/raw/frame-%06d.raw", n)
+                  local raw = assert(Support.File.open(raw_path, "TRUNCATE"), "cannot create private temporary screenshot")
+                  raw:writeMoveSlice(shot.data)
+                  raw:close()
+                  local meta_path = string.format("captures/frame-%06d.json", n)
+                  local meta = assert(io.open(meta_path, "wb"), "cannot create temporary screenshot metadata")
+                  meta:write(string.format(
+                      '{"frame":%d,"width":%d,"height":%d,"bpp":%d,"expected_bytes":%d,"guest_fps":%.4f}\n',
+                      n, shot.width, shot.height, bpp, shot.width * shot.height * bpp / 8,
+                      PCSX.GPU.getGuestFPS()
+                  ))
+                  meta:close()
+                  print(string.format("GPU_SCREENSHOT_CAPTURE frame=%d width=%d height=%d bpp=%d",
+                      n, shot.width, shot.height, bpp))
+              end)
+              if not ok then print(string.format("GPU_SCREENSHOT_CAPTURE frame=%d status=ERROR", n)) end
+          end
+
+          local function capture_restore_immediate()
+              local shot = PCSX.GPU.takeScreenShot()
+              local bpp = (shot.bpp == 0) and 16 or 24
+              local raw = assert(Support.File.open("captures/raw/storymode-restore-immediate.raw", "TRUNCATE"),
+                  "cannot create temporary immediate-restore screenshot")
+              raw:writeMoveSlice(shot.data)
+              raw:close()
+              local meta = assert(io.open("captures/storymode-restore-immediate.json", "wb"),
+                  "cannot create immediate-restore screenshot metadata")
+              meta:write(string.format(
+                  '{"frame":0,"width":%d,"height":%d,"bpp":%d,"expected_bytes":%d}\n',
+                  shot.width, shot.height, bpp, shot.width * shot.height * bpp / 8))
+              meta:close()
+              print(string.format("STORY_RAW_RESTORE_IMMEDIATE_SCREENSHOT=CAPTURED width=%d height=%d bpp=%d",
+                  shot.width, shot.height, bpp))
+          end
+
+          -- Rolling screenshot for a lightweight visual dialogue detector.
+          -- This raw frame is local-only and removed before artifact upload.
+          local function capture_dialog_watch(n)
+              local ok = pcall(function()
+                  local shot = PCSX.GPU.takeScreenShot()
+                  local bpp = (shot.bpp == 0) and 16 or 24
+                  local raw = assert(Support.File.open("captures/raw/dialog-watch.raw", "TRUNCATE"),
+                      "cannot create dialogue-watch frame")
+                  raw:writeMoveSlice(shot.data)
+                  raw:close()
+                  local meta = assert(io.open("captures/dialog-watch.json", "wb"),
+                      "cannot create dialogue-watch metadata")
+                  meta:write(string.format(
+                      '{"frame":%d,"width":%d,"height":%d,"bpp":%d,"expected_bytes":%d}\n',
+                      n, shot.width, shot.height, bpp, shot.width * shot.height * bpp / 8))
+                  meta:close()
+              end)
+              if not ok then print(string.format("STORY_DIALOG_WATCH_CAPTURE_ERROR frame=%d", n)) end
+          end
+
+          local function save_checkpoint(n)
+              local ok, err = pcall(function()
+                  local state = PCSX.createSaveState()
+                  local file = assert(Support.File.open("captures/raw/storymode-checkpoint.raw", "TRUNCATE"),
+                      "cannot create temporary savestate")
+                  file:writeMoveSlice(state)
+                  file:close()
+                  print(string.format("STORY_SAVESTATE_CAPTURE frame=%d status=ok", n))
+              end)
+              if not ok then
+                  print(string.format("STORY_SAVESTATE_CAPTURE frame=%d status=ERROR detail=%s", n, tostring(err)))
+              end
+              return ok
+          end
+
+          -- Defer the serializer to a paused nextTick safe point, outside GPU::Vsync.
+          local function checkpoint_at_safe_tick(n, quit_after, reason)
+              if checkpoint_pending then return end
+              checkpoint_pending = true
+              PCSX.pauseEmulator()
+              PCSX.nextTick(function()
+                  capture_frame(n)
+                  local saved = save_checkpoint(n)
+                  print(string.format("STORY_CHECKPOINT_SAFE_POINT frame=%d save_ok=%s reason=%s",
+                      n, tostring(saved), tostring(reason)))
+                  if quit_after then
+                      PCSX.quit(saved and 0 or 4)
+                  else
+                      checkpoint_pending = false
+                      PCSX.resumeEmulator()
+                  end
+              end)
+          end
+
+          shellReachedListener = PCSX.Events.createEventListener("ExecutionFlow::ShellReached", function()
+              print("EXECUTION_EVENT=ShellReached")
+          end)
+          runListener = PCSX.Events.createEventListener("ExecutionFlow::Run", function()
+              print("EXECUTION_EVENT=Run")
+          end)
+          _G.storySavestateLoadedListener = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
+              if resume_mode then
+                  restore_event_seen = true
+                  restore_post_frames = 0
+                  print("STORY_SAVESTATE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded")
+              end
+          end)
+
+          gpuTrafficListener = PCSX.Events.createEventListener("GPU::Vsync", function()
+              if resume_pending then
+                  resume_pending = false
+                  print("STORY_SAVESTATE_RESTORE_PAUSE_REQUESTED=1")
+                  PCSX.pauseEmulator()
+                  PCSX.nextTick(function()
+                      local file_ok, state_file = pcall(function()
+                          return Support.File.open(resume_state_path)
+                      end)
+                      if not file_ok or not state_file then
+                          print("STORY_SAVESTATE_FILE_OPEN_ERROR; refusing cold-boot fallback")
+                          PCSX.quit(2)
+                          return
+                      end
+                      local load_ok, load_err = pcall(function() PCSX.loadSaveState(state_file) end)
+                      state_file:close()
+                      if not load_ok then
+                          print("STORY_SAVESTATE_LOAD_ERROR=" .. tostring(load_err))
+                          PCSX.quit(3)
+                          return
+                      end
+                      frame_count = 0
+                      local shot_ok, shot_err = pcall(capture_restore_immediate)
+                      if not shot_ok then
+                          print("STORY_RAW_RESTORE_IMMEDIATE_SCREENSHOT=FAIL detail=" .. tostring(shot_err))
+                          PCSX.quit(72)
+                          return
+                      end
+                      print("STORY_SAVESTATE_LOAD_CALL_RETURNED=1; immediate screenshot captured")
+                      PCSX.resumeEmulator()
+                  end)
+                  return
+              end
+              frame_count = frame_count + 1
+              if raw_resume_verify and not restore_event_seen and frame_count >= 300 then
+                  print("STORY_RAW_RESTORE_EVENT_MISSING=FAIL; refusing to continue")
+                  PCSX.pauseEmulator()
+                  PCSX.nextTick(function() PCSX.quit(73) end)
+                  return
+              end
+              if raw_resume_verify and restore_event_seen then
+                  restore_post_frames = restore_post_frames + 1
+                  if restore_post_frames >= 180 and not restore_verify_pending then
+                      restore_verify_pending = true
+                      PCSX.pauseEmulator()
+                      PCSX.nextTick(function()
+                          capture_frame(180)
+                          local function wait_for_screenshot_match()
+                              restore_verify_attempts = restore_verify_attempts + 1
+                              local gate = io.open("captures/raw/restore-screenshot-match.flag", "rb")
+                              if gate then
+                                  local result = gate:read("*a") or ""
+                                  gate:close()
+                                  if result:match("^PASS") then
+                                      print("STORY_RAW_RESTORE_POST_RESTORE_VSYNC=180")
+                                      print("STORY_RAW_RESTORE_SCREENSHOT_MATCH=PASS")
+                                      print("STORY_RAW_RESTORE_CROSS_RUN=PASS")
+                                      PCSX.resumeEmulator()
+                                  else
+                                      print("STORY_RAW_RESTORE_SCREENSHOT_MATCH=FAIL detail=" .. result:gsub("[\r\n]", " "))
+                                      PCSX.quit(74)
+                                  end
+                              elseif restore_verify_attempts >= 120 then
+                                  print("STORY_RAW_RESTORE_SCREENSHOT_MATCH=FAIL reason=compare_timeout")
+                                  PCSX.quit(75)
+                              else
+                                  PCSX.nextTick(wait_for_screenshot_match)
+                              end
+                          end
+                          PCSX.nextTick(wait_for_screenshot_match)
+                      end)
+                      return
+                  end
+              end
+              while input_index <= #input_sequence and input_sequence[input_index].frame == frame_count do
+                  apply_input(input_sequence[input_index])
+                  input_index = input_index + 1
+              end
+              -- Only confirm Story Mode after the frame-5999 screenshot matches
+              -- the previously verified Mode Select header and selected Story Mode crop.
+              if frame_count == 6100 and not resume_mode then
+                  local gate_file = io.open("captures/story-select-visual-gate.flag", "rb")
+                  local gate_status = "MISSING"
+                  if gate_file then
+                      gate_status = gate_file:read("*a") or "EMPTY"
+                      gate_file:close()
+                  end
+                  if gate_status:match("^PASS") then
+                      apply_input({frame=6100, action="press", button=buttons.CIRCLE, name="CIRCLE2"})
+                      story_circle2_pressed = true
+                      print("STORY_CIRCLE2_VISUAL_GATE=PASS frame=5999; mode-select header and selected Story Mode fingerprint matched")
+                  else
+                      print(string.format("STORY_CIRCLE2_SKIPPED frame=6100 visual_gate=%s", gate_status:gsub("[\r\n]", "")))
+                  end
+              elseif frame_count == 6130 and story_circle2_pressed then
+                  apply_input({frame=6130, action="release", button=buttons.CIRCLE, name="CIRCLE2"})
+                  story_circle2_pressed = false
+              end
+              -- Skip every dialogue with START, never Circle. The visual watcher
+              -- requests a single tap only after a stable non-empty dialog panel appears.
+              if auto_start_release_frame and frame_count >= auto_start_release_frame then
+                  apply_input({frame=frame_count, action="release", button=buttons.START, name="START_DIALOG"})
+                  capture_frame(frame_count)
+                  print(string.format("STORY_DIALOG_START_RELEASE frame=%d", frame_count))
+                  auto_start_release_frame = nil
+              end
+              if frame_count % 5 == 0 and not auto_start_release_frame then
+                  local request_file = io.open("captures/raw/dialog-start-request.flag", "rb")
+                  if request_file then
+                      local request = request_file:read("*a") or ""
+                      request_file:close()
+                      os.remove("captures/raw/dialog-start-request.flag")
+                      if request:match("^START") then
+                          capture_frame(frame_count)
+                          apply_input({frame=frame_count, action="press", button=buttons.START, name="START_DIALOG"})
+                          auto_start_release_frame = frame_count + 30
+                          print(string.format("STORY_DIALOG_START_PRESS frame=%d request=%s",
+                              frame_count, request:gsub("[\\r\n]", "")))
+                      end
+                  end
+              end
+              if frame_count % 5 == 0 then
+                  local pause_file = io.open("captures/raw/story-nondialog-stable.flag", "rb")
+                  if pause_file then
+                      local note = pause_file:read("*a") or ""
+                      pause_file:close()
+                      os.remove("captures/raw/story-nondialog-stable.flag")
+                      print(string.format("STORY_PAUSE_FOR_INSPECTION_REQUEST frame=%d note=%s",
+                          frame_count, note:gsub("[\\r\\n]", "")))
+                      checkpoint_at_safe_tick(frame_count, true, "stable_non_dialog")
+                      return
+                  end
+              end
+              if frame_count >= (resume_mode and 1 or 9000) and frame_count % 15 == 0 then
+                  local dialog_ok = resume_mode
+                  if not dialog_ok then
+                      local gate_file = io.open("captures/story-dialog-visual-gate.flag", "rb")
+                      if gate_file then
+                          dialog_ok = (gate_file:read("*a") or ""):match("^PASS") ~= nil
+                          gate_file:close()
+                      end
+                  end
+                  if dialog_ok then capture_dialog_watch(frame_count) end
+              end
+              if capture_targets[frame_count] or (frame_count >= 10000 and frame_count % 1000 == 0) then
+                  capture_frame(frame_count)
+              end
+              if frame_count > 0 and frame_count % 5000 == 0 and frame_count < stop_frame then
+                  checkpoint_at_safe_tick(frame_count, false, "periodic")
+                  return
+              end
+              if frame_count % 1000 == 0 then
+                  print(string.format("STORY_VSYNC frame=%d guest_fps=%.4f",
+                      frame_count, PCSX.GPU.getGuestFPS()))
+              end
+              if frame_count == stop_frame then
+                  print(string.format("STORY_SESSION_FRAME_LIMIT_REACHED=%d", frame_count))
+                  checkpoint_at_safe_tick(frame_count, true, "frame_limit")
+                  return
+              end
+          end)
+          print("STORY_PLAYTHROUGH=armed target_vsync=50000; SoftGPU; raw GPU dump, window capture, and GDB/RSP polling disabled")
+          LUA
+          cp "$WORK/gpu-traffic.lua" "$WORK/captures/gpu-traffic.lua"
+
+          if [[ "${RESTORE_GDB:-false}" == "true" && "$RESUME_MODE" == "true" ]]; then
+            echo "RESTORE_GDB=enabled; capture native crash backtrace"
+            timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
+              gdb --batch --return-child-result \
+                -ex "set pagination off" \
+                -ex "set print thread-events off" \
+                -ex "set follow-fork-mode parent" \
+                -ex "set detach-on-fork on" \
+                -ex "handle SIGSEGV stop print nopass" \
+                -ex run \
+                -ex "echo \\n--- RESTORE GDB CRASH CONTEXT ---\\n" \
+                -ex "info threads" \
+                -ex "info registers" \
+                -ex "info symbol \$pc" \
+                -ex "x/16i \$pc-16" \
+                -ex "info sharedlibrary" \
+                -ex "info proc mappings" \
+                -ex "echo \\n--- RESTORE GDB FULL BACKTRACE ---\\n" \
+                -ex "thread apply all bt full" \
+                --args "$WORK/squashfs-root/AppRun" \
+                  -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/naruto-storymode.mcd" \
+                  -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
+                  "$GPU_BACKEND_FLAG" -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+              > "$WORK/pcsx.stdout" 2>&1 &
+          else
+            echo "RESTORE_GDB=disabled"
+            timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
+              stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+                -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$WORK/cards/naruto-storymode.mcd" \
+                -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
+                "$GPU_BACKEND_FLAG" -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+              > "$WORK/pcsx.stdout" 2>&1 &
+          fi
+          emu_pid=$!
+
+          cat > "$WORK/story-dialog-watch.py" <<'PY'
+          import hashlib, json, os, time
+          from pathlib import Path
+          from PIL import Image, ImageChops, ImageStat
+          emu_pid = int(os.environ["EMU_PID"])
+          resume_mode = os.environ.get("RESUME_MODE", "false").lower() == "true"
+          root = Path("captures")
+          raw_dir = root / "raw"
+          select_raw, select_flag = raw_dir / "frame-005999.raw", root / "story-select-visual-gate.flag"
+          intro_raw, intro_flag = raw_dir / "frame-008999.raw", root / "story-dialog-visual-gate.flag"
+          live_raw, live_meta = raw_dir / "dialog-watch.raw", root / "dialog-watch.json"
+          start_flag, pause_flag = raw_dir / "dialog-start-request.flag", raw_dir / "story-nondialog-stable.flag"
+
+          def fail(flag, label, reason):
+              flag.write_text("FAIL\n", encoding="ascii")
+              print(label + "=FAIL reason=" + reason, flush=True)
+
+          def wait_raw(path, expected, label, seconds):
+              deadline = time.monotonic() + seconds
+              while time.monotonic() < deadline:
+                  if path.exists() and path.stat().st_size == expected:
+                      data = path.read_bytes()
+                      if len(data) == expected:
+                          return data
+                  if not Path(f"/proc/{emu_pid}").exists():
+                      raise RuntimeError("emulator_exited_before_" + label)
+                  time.sleep(0.15)
+              raise RuntimeError("timeout_waiting_for_" + label)
+
+          def to_rgb(raw, width, height, bpp):
+              if len(raw) != width * height * bpp // 8:
+                  raise ValueError("screenshot byte count mismatch")
+              if bpp == 16:
+                  rgb = bytearray()
+                  for pos in range(0, len(raw), 2):
+                      word = raw[pos] | (raw[pos+1] << 8)
+                      rgb.extend(((word & 31) * 255 // 31,
+                                  ((word >> 5) & 31) * 255 // 31,
+                                  ((word >> 10) & 31) * 255 // 31))
+                  return Image.frombytes("RGB", (width, height), bytes(rgb))
+              if bpp == 24:
+                  return Image.frombytes("RGB", (width, height), raw)
+              raise ValueError("unsupported screenshot depth")
+
+          def crop_hash(image, box):
+              return hashlib.sha256(image.crop(box).tobytes()).hexdigest()
+
+          raw_resume_verify = os.environ.get("RAW_RESUME_VERIFY", "false").lower() == "true"
+          # Compare immediately restored picture with the source PNG from the checkpoint.
+          if raw_resume_verify:
+              match_flag = raw_dir / "restore-screenshot-match.flag"
+              report_path = root / "storymode-restore-comparison.txt"
+              try:
+                  deadline = time.monotonic() + 120
+                  meta_path = root / "storymode-restore-immediate.json"
+                  restore_path = raw_dir / "storymode-restore-immediate.raw"
+                  while time.monotonic() < deadline:
+                      if meta_path.exists() and restore_path.exists():
+                          meta = json.loads(meta_path.read_text())
+                          expected = int(meta["expected_bytes"])
+                          if restore_path.stat().st_size == expected:
+                              break
+                      if not Path(f"/proc/{emu_pid}").exists():
+                          raise RuntimeError("emulator_exited_before_immediate_restore_screenshot")
+                      time.sleep(0.15)
+                  else:
+                      raise RuntimeError("timeout_waiting_for_immediate_restore_screenshot")
+                  restored = to_rgb(restore_path.read_bytes(), int(meta["width"]), int(meta["height"]), int(meta["bpp"]))
+                  source = Image.open(root / "storymode-checkpoint-source.png").convert("RGB")
+                  if source.size != restored.size:
+                      raise ValueError(f"image_dimensions_differ source={source.size} restored={restored.size}")
+                  delta = ImageChops.difference(source, restored)
+                  mean_abs_diff = sum(ImageStat.Stat(delta).mean) / 3.0
+                  source_pixels, restored_pixels = list(source.getdata()), list(restored.getdata())
+                  exact_fraction = sum(a == b for a, b in zip(source_pixels, restored_pixels)) / max(1, len(source_pixels))
+                  comparison_passed = mean_abs_diff <= 6.0 and exact_fraction >= 0.70
+                  restored.save(root / "storymode-checkpoint-restore-immediate.png")
+                  report = [
+                      f"STORY_RAW_RESTORE_SCREENSHOT_COMPARE={'PASS' if comparison_passed else 'FAIL'}",
+                      f"SOURCE_SCREENSHOT={source.width}x{source.height}",
+                      f"RESTORE_SCREENSHOT={restored.width}x{restored.height}",
+                      f"MEAN_ABSOLUTE_RGB_DIFF={mean_abs_diff:.5f}",
+                      f"EXACT_PIXEL_FRACTION={exact_fraction:.6f}",
+                      "THRESHOLD=mean_abs_rgb_diff<=6.0 and exact_pixel_fraction>=0.70",
+                      f"SOURCE_SCREENSHOT_SHA256={hashlib.sha256((root / 'storymode-checkpoint-source.png').read_bytes()).hexdigest()}",
+                      f"RESTORE_SCREENSHOT_SHA256={hashlib.sha256((root / 'storymode-checkpoint-restore-immediate.png').read_bytes()).hexdigest()}",
+                  ]
+                  report_path.write_text("\n".join(report) + "\n", encoding="utf-8")
+                  match_flag.write_text(("PASS" if comparison_passed else "FAIL") + "\n" + "\n".join(report) + "\n", encoding="ascii")
+                  print("\n".join(report), flush=True)
+              except Exception as exc:
+                  report_path.write_text(f"STORY_RAW_RESTORE_SCREENSHOT_COMPARE=FAIL reason={type(exc).__name__}:{exc}\n", encoding="utf-8")
+                  match_flag.write_text(f"FAIL reason={type(exc).__name__}:{exc}\n", encoding="ascii")
+                  print(f"STORY_RAW_RESTORE_SCREENSHOT_COMPARE=FAIL reason={type(exc).__name__}:{exc}", flush=True)
+
+          passed, dialog_passed = resume_mode, resume_mode
+          if resume_mode:
+              select_flag.write_text("PASS\n", encoding="ascii")
+              intro_flag.write_text("PASS\n", encoding="ascii")
+              print("STORY_RESUME_STATE=present; startup visual gates bypassed", flush=True)
+          else:
+              try:
+                  raw = wait_raw(select_raw, 320*240*2, "frame5999", 4700)
+                  image = to_rgb(raw, 320, 240, 16)
+                  header_hash = crop_hash(image, (0, 10, 125, 44))
+                  story_hash = crop_hash(image, (90, 119, 232, 157))
+                  header_ok = header_hash == "300d704e0f1765f7aec4480d7994e91bdaaf8d161c9611ca0e3d78955fc9e9c2"
+                  story_ok = story_hash in {
+                      "5ee1da16985ef0b15142e8ad3c69e86042bfa805e64568372fdf82254a2278d3",
+                      "c50e86a84853a63d9ab15fbe2897774fb547c825dbc08560d924fd2e1bd81998",
+                      "58e8b8487d2c9e361f893b93352a199660adcec3155ef56a6e016df4b1c82448",
+                  }
+                  passed = header_ok and story_ok
+                  select_flag.write_text(("PASS" if passed else "FAIL") + "\n", encoding="ascii")
+                  print("STORY_SELECT_VISUAL_GATE=" + ("PASS" if passed else "FAIL")
+                        + " frame=5999 header_match=" + str(header_ok).lower()
+                        + " story_selection_match=" + str(story_ok).lower(), flush=True)
+                  raw2 = wait_raw(intro_raw, 320*240*2, "frame8999", 3600)
+                  image2 = to_rgb(raw2, 320, 240, 16)
+                  intro_hash = crop_hash(image2, (0, 0, 280, 240))
+                  intro_ok = intro_hash == "0acf03aa8feba7130a39c8efd0cdad2666290aa5e99466a297495f3fb01f90eb"
+                  dialog_passed = passed and intro_ok
+                  intro_flag.write_text(("PASS" if dialog_passed else "FAIL") + "\n", encoding="ascii")
+                  print("STORY_DIALOG_VISUAL_GATE=" + ("PASS" if dialog_passed else "FAIL")
+                        + " frame=8999 scene_match=" + str(intro_ok).lower()
+                        + " crop_sha256=" + intro_hash, flush=True)
+              except Exception as exc:
+                  fail(select_flag, "STORY_SELECT_VISUAL_GATE", str(exc))
+                  fail(intro_flag, "STORY_DIALOG_VISUAL_GATE", str(exc))
+                  raise SystemExit(0)
+
+          last_meta_frame, last_panel, last_stable_panel = -1, None, None
+          same_panel_samples, non_dialog_streak = 0, 0
+          # The resumed state was captured after the opening dialogue began, so a
+          # stable bright non-dialog scene may be the expected transition destination.
+          dialog_seen, previous_request_hash = resume_mode, None
+          while Path(f"/proc/{emu_pid}").exists():
+              try:
+                  if not live_meta.exists() or not live_raw.exists():
+                      time.sleep(0.15)
+                      continue
+                  meta = json.loads(live_meta.read_text())
+                  frame = int(meta["frame"])
+                  if frame == last_meta_frame:
+                      time.sleep(0.12)
+                      continue
+                  last_meta_frame = frame
+                  width, height, bpp = int(meta["width"]), int(meta["height"]), int(meta["bpp"])
+                  if live_raw.stat().st_size != int(meta["expected_bytes"]):
+                      time.sleep(0.1)
+                      continue
+                  image = to_rgb(live_raw.read_bytes(), width, height, bpp)
+                  sx, sy = width/320.0, height/240.0
+                  x = max(0, min(width-1, round(8*sx)))
+                  rows = [172,176,182,190,200,210,220,228]
+                  border_pixels = [image.getpixel((x,max(0,min(height-1,round(y*sy))))) for y in rows]
+                  border_hits = sum(1 for r,g,b in border_pixels if 30 < r < 120 and 10 < g < 80 and b < 35)
+                  text_box = (round(20*sx), round(178*sy), round(280*sx), round(210*sy))
+                  text_pixels = sum(1 for pix in image.crop(text_box).getdata() if max(pix) < 100)
+                  has_dialog = border_hits >= 6 and 60 <= text_pixels <= 5000
+                  nonblack = sum(1 for pix in image.getdata() if max(pix) > 12)
+                  sample_image = image.resize((40,30))
+                  sample_pixels = list(sample_image.getdata())
+                  unique_sample = len(set(sample_pixels))
+                  mean_brightness = sum(sum(pix) for pix in sample_pixels) / (3 * len(sample_pixels))
+                  if has_dialog and dialog_passed:
+                      dialog_seen = True
+                      non_dialog_streak = 0
+                      panel_hash = crop_hash(image, (round(5*sx),round(166*sy),round(286*sx),round(233*sy)))
+                      same_panel_samples = same_panel_samples + 1 if panel_hash == last_panel else 1
+                      last_panel = panel_hash
+                      if same_panel_samples >= 3 and panel_hash != last_stable_panel and not start_flag.exists():
+                          last_stable_panel = panel_hash
+                          start_flag.write_text(f"START frame={frame} panel={panel_hash}\n", encoding="ascii")
+                          previous_request_hash = panel_hash
+                          print(f"STORY_DIALOG_DETECTED frame={frame} border_hits={border_hits} text_pixels={text_pixels} hash={panel_hash}; START requested", flush=True)
+                      elif same_panel_samples >= 8 and same_panel_samples % 8 == 0 and panel_hash == previous_request_hash and not start_flag.exists():
+                          start_flag.write_text(f"START_RETRY frame={frame} panel={panel_hash}\n", encoding="ascii")
+                          print(f"STORY_DIALOG_START_RETRY frame={frame} stable_samples={same_panel_samples} hash={panel_hash}", flush=True)
+                  else:
+                      # Fade-to-black is not proof of a non-dialog screen. Require
+                      # stable picture detail AND enough brightness; the last run
+                      # misclassified a darkened dialogue at mean RGB ~=67.
+                      if dialog_seen and (not resume_mode or frame >= 600) and mean_brightness > 90 and nonblack > width*height*0.30 and unique_sample > 12:
+                          non_dialog_streak += 1
+                          last_panel, same_panel_samples = None, 0
+                          if non_dialog_streak >= 4:
+                              note = f"frame={frame} stable_non_dialog_samples={non_dialog_streak} width={width} height={height}"
+                              pause_flag.write_text(note + "\n", encoding="ascii")
+                              print("STORY_NON_DIALOG_STABLE=PASS " + note + f" mean_sample_brightness={mean_brightness:.1f}; pausing for visual inspection", flush=True)
+                              break
+                      else:
+                          non_dialog_streak = 0
+                          if nonblack <= width*height*0.30:
+                              last_panel = None
+                          same_panel_samples = 0
+              except Exception as exc:
+                  print("STORY_DIALOG_WATCH_ERROR frame=" + str(last_meta_frame) + " type=" + type(exc).__name__, flush=True)
+              time.sleep(0.12)
+          print("STORY_DIALOG_WATCH_DONE last_frame=" + str(last_meta_frame)
+                + " dialog_seen=" + str(dialog_seen).lower()
+                + " non_dialog_streak=" + str(non_dialog_streak), flush=True)
+          PY
+          cp "$WORK/story-dialog-watch.py" "$WORK/captures/story-dialog-watch.py"
+          RESUME_MODE="$RESUME_MODE" RAW_RESUME_VERIFY=false EMU_PID="$emu_pid" python3 -u "$WORK/story-dialog-watch.py" > "$WORK/captures/story-dialog-watch-summary.txt" 2>&1 &
+          watcher_pid=$!
+
+          set +e
+          wait "$emu_pid"
+          emu_rc=$?
+          set -e
+          emu_pid=""
+          if [[ "${RESTORE_GDB:-false}" == "true" && "$RESUME_MODE" == "true" ]]; then
+            if grep -q "Program received signal SIGSEGV" "$WORK/pcsx.stdout"; then
+              emu_rc=139
+              echo "RESTORE_GDB_DETECTED_SIGSEGV=1"
+            elif ! grep -Eq "Loaded BIOS:|STORY_SAVESTATE_LOAD_CALL_RETURNED|STORY_SAVESTATE_LOAD_ERROR" "$WORK/pcsx.stdout"; then
+              emu_rc=125
+              echo "RESTORE_GDB_TRACE_INCOMPLETE=1; GDB did not reach emulator startup/load"
+            fi
+          fi
+          echo "EMULATOR_EXIT_CODE=$emu_rc"
+          grep -E 'STORY_|RESTORE_|GPU_BACKEND_SELECTED|PAD_SETUP|PAD_INJECT|GPU_SCREENSHOT_CAPTURE|GPU_VRAM_CAPTURE|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|Program received signal|SIGSEGV|BACKTRACE|Backtrace|^#[0-9]+ |Loaded BIOS:|Known BIOS detected|OpenBIOS detected|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|ResetCallback|unknown GPU data word|FATAL|Exception|error|Error|ERROR|Failed|failed' \
+            "$WORK/pcsx.stdout" "$WORK/pcsx.log" > "$WORK/captures/important-log-lines.txt" || true
+          cp "$WORK/pcsx.stdout" "$WORK/captures/pcsx.stdout.txt" || true
+          cp "$WORK/pcsx.log" "$WORK/captures/pcsx.log.txt" || true
+          cat "$WORK/captures/important-log-lines.txt" || true
+          wait "$watcher_pid" 2>/dev/null || true
+          echo "STORY_DIALOG_WATCH_SUMMARY_BEGIN"
+          cat "$WORK/captures/story-dialog-watch-summary.txt" || true
+          echo "STORY_DIALOG_WATCH_SUMMARY_END"
+          echo "STORY_PLAYTHROUGH_EMULATOR_STEP_DONE=1"
+          if [ "$emu_rc" -ne 0 ]; then
+            echo "::error::Emulator process exited with code $emu_rc"
+            exit "$emu_rc"
+          fi
+
+      - name: Sanitize checkpoint and clean temporary runtime data
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import struct
+          from collections import Counter
+          from pathlib import Path
+          from PIL import Image
+
+          path = Path("captures/raw/runtime.gpudump")
+          output = []
+          packet_names = {0:"GP0", 1:"GP1", 2:"VSync", 3:"ThrowAway", 4:"Readback",
+                          5:"TraceBegin", 6:"GPUVersion", 16:"GameID", 17:"VideoFormat", 18:"Comment"}
+          if not path.exists():
+              output.append("GPU_DUMP_RESULT=disabled_for_fast_playthrough")
+          else:
+              data = path.read_bytes()
+              output.append(f"GPU_DUMP_FILE_BYTES={len(data)}")
+              if len(data) < 16 or data[:16] != b"PSXGPUDUMPv1r1\0\0":
+                  output.append("GPU_DUMP_RESULT=invalid_magic_or_too_short")
+              else:
+                  pos = 16
+                  packets_before = Counter()
+                  packets_live = Counter()
+                  words_before = Counter()
+                  words_live = Counter()
+                  live_gp0_words = []
+                  live_gp0_words_by_bin = {
+                      "000_049": [], "050_099": [], "100_199": [],
+                      "200_399": [], "400_599": [], "600_799": [],
+                      "800_999": [], "1000_1199": [], "1200_1499": [],
+                      "1500_2999": [], "3000_4499": [], "4500_5999": [],
+                      "6000_7499": [], "7500_8999": []
+                  }
+                  live_vsync_count = 0
+                  trace_markers = 0
+                  truncated = False
+                  packet_count = 0
+                  live = False
+                  while pos + 4 <= len(data):
+                      header = struct.unpack_from("<I", data, pos)[0]
+                      pos += 4
+                      kind = (header >> 24) & 0xff
+                      count = header & 0xffffff
+                      size = count * 4
+                      if pos + size > len(data):
+                          truncated = True
+                          break
+                      packet_count += 1
+                      if kind == 5:
+                          trace_markers += 1
+                          live = True
+                      elif live:
+                          packets_live[kind] += 1
+                          words_live[kind] += count
+                          if kind == 2:
+                              live_vsync_count += 1
+                      else:
+                          packets_before[kind] += 1
+                          words_before[kind] += count
+                      if live and kind == 0 and count:
+                          chunk_words = list(struct.unpack_from(f"<{count}I", data, pos))
+                          live_gp0_words.extend(chunk_words)
+                          if live_vsync_count < 50:
+                              bucket = "000_049"
+                          elif live_vsync_count < 100:
+                              bucket = "050_099"
+                          elif live_vsync_count < 200:
+                              bucket = "100_199"
+                          elif live_vsync_count < 400:
+                              bucket = "200_399"
+                          elif live_vsync_count < 600:
+                              bucket = "400_599"
+                          elif live_vsync_count < 800:
+                              bucket = "600_799"
+                          elif live_vsync_count < 1000:
+                              bucket = "800_999"
+                          elif live_vsync_count < 1200:
+                              bucket = "1000_1199"
+                          elif live_vsync_count < 1500:
+                              bucket = "1200_1499"
+                          elif live_vsync_count < 3000:
+                              bucket = "1500_2999"
+                          elif live_vsync_count < 4500:
+                              bucket = "3000_4499"
+                          elif live_vsync_count < 6000:
+                              bucket = "4500_5999"
+                          elif live_vsync_count < 7500:
+                              bucket = "6000_7499"
+                          else:
+                              bucket = "7500_8999"
+                          live_gp0_words_by_bin[bucket].extend(chunk_words)
+                      pos += size
+                  output += [
+                      f"GPU_DUMP_RESULT=parsed",
+                      f"GPU_DUMP_PACKETS_TOTAL={packet_count}",
+                      f"GPU_DUMP_TRACE_BEGIN_MARKERS={trace_markers}",
+                      f"GPU_DUMP_TRUNCATED={str(truncated).lower()}",
+                  ]
+                  for kind in (0,1,2,3,4):
+                      name = packet_names[kind]
+                      output.append(f"GPU_DUMP_PRETRACE_{name}_PACKETS={packets_before[kind]}")
+                      output.append(f"GPU_DUMP_PRETRACE_{name}_WORDS={words_before[kind]}")
+                      output.append(f"GPU_DUMP_LIVE_{name}_PACKETS={packets_live[kind]}")
+                      output.append(f"GPU_DUMP_LIVE_{name}_WORDS={words_live[kind]}")
+                  # Decode only command-family names and counts; never export command/operand words.
+                  def decode_gp0(words):
+                      families = Counter()
+                      cursor = 0
+                      stop = "end_of_stream"
+                      while cursor < len(words):
+                          word = words[cursor]
+                          op = (word >> 24) & 0xff
+                          remaining = len(words) - cursor
+                          length = None
+                          family = None
+                          if op == 0x00:
+                              family, length = "nop", 1
+                          elif op == 0x01:
+                              family, length = "clear-cache", 1
+                          elif op == 0x02:
+                              family, length = "fill-vram", 3
+                          elif 0x20 <= op <= 0x23:
+                              family, length = "flat-triangle", 4
+                          elif 0x24 <= op <= 0x27:
+                              family, length = "textured-triangle", 7
+                          elif 0x28 <= op <= 0x2b:
+                              family, length = "flat-quad", 5
+                          elif 0x2c <= op <= 0x2f:
+                              family, length = "textured-quad", 9
+                          elif 0x30 <= op <= 0x33:
+                              family, length = "gouraud-triangle", 6
+                          elif 0x34 <= op <= 0x37:
+                              family, length = "gouraud-textured-triangle", 9
+                          elif 0x38 <= op <= 0x3b:
+                              family, length = "gouraud-quad", 8
+                          elif 0x3c <= op <= 0x3f:
+                              family, length = "gouraud-textured-quad", 12
+                          elif 0x40 <= op <= 0x47:
+                              family, length = "flat-line", 3
+                          elif 0x48 <= op <= 0x4f:
+                              stop = "variable-polyline-unparsed"
+                              break
+                          elif 0x50 <= op <= 0x57:
+                              family, length = "gouraud-line", 4
+                          elif 0x58 <= op <= 0x5f:
+                              stop = "variable-gouraud-polyline-unparsed"
+                              break
+                          elif 0x60 <= op <= 0x63:
+                              family, length = "monochrome-rectangle", 2
+                          elif 0x64 <= op <= 0x67:
+                              family, length = "textured-rectangle", 3
+                          elif 0x68 <= op <= 0x6b:
+                              family, length = "monochrome-dot-rectangle", 2
+                          elif 0x70 <= op <= 0x73:
+                              family, length = "texture-sprite-8x8", 3
+                          elif 0x74 <= op <= 0x77:
+                              family, length = "texture-sprite-16x16", 3
+                          elif 0x78 <= op <= 0x7f:
+                              family, length = "texture-rectangle-variable", 4
+                          elif 0x80 <= op <= 0x9f:
+                              family, length = "vram-to-vram-copy", 4
+                          elif 0xa0 <= op <= 0xbf:
+                              if remaining < 3:
+                                  stop = "short-load-image-header"
+                                  break
+                              size_word = words[cursor + 2]
+                              width = (size_word & 0x3ff) or 1024
+                              height = ((size_word >> 16) & 0x1ff) or 512
+                              family = "load-image-to-vram"
+                              length = 3 + (width * height + 1) // 2
+                          elif 0xc0 <= op <= 0xdf:
+                              family, length = "store-image-from-vram", 3
+                          elif 0xe0 <= op <= 0xe6:
+                              family, length = "gpu-state-setting", 1
+                          else:
+                              stop = "unknown-or-reserved-opcode"
+                              break
+                          if length is None or length > remaining:
+                              stop = "command-incomplete-at-end-of-capture"
+                              break
+                          families[family] += 1
+                          cursor += length
+                      return families, cursor, stop
+
+                  overall_families, overall_decoded, overall_stop = decode_gp0(live_gp0_words)
+                  output.append(f"GPU_DUMP_LIVE_GP0_DECODED_WORDS={overall_decoded}")
+                  output.append(f"GPU_DUMP_LIVE_GP0_DECODE_STOP={overall_stop}")
+                  output.append(f"GPU_DUMP_LIVE_GP0_DECODED_COMMANDS={sum(overall_families.values())}")
+                  for family, count in sorted(overall_families.items()):
+                      output.append(f"GPU_DUMP_LIVE_GP0_COMMAND_FAMILY_{family}={count}")
+                  for bucket, words in live_gp0_words_by_bin.items():
+                      families, decoded, stop = decode_gp0(words)
+                      output.append(f"GPU_DUMP_GP0_VSYNC_BIN_{bucket}_WORDS={len(words)}")
+                      output.append(f"GPU_DUMP_GP0_VSYNC_BIN_{bucket}_DECODED_WORDS={decoded}")
+                      output.append(f"GPU_DUMP_GP0_VSYNC_BIN_{bucket}_DECODE_STOP={stop}")
+                      output.append(f"GPU_DUMP_GP0_VSYNC_BIN_{bucket}_COMMANDS={sum(families.values())}")
+                      for family, count in sorted(families.items()):
+                          output.append(f"GPU_DUMP_GP0_VSYNC_BIN_{bucket}_FAMILY_{family}={count}")
+                  output.append(f"GPU_DUMP_LIVE_GPU_TRAFFIC_PRESENT={str(words_live[0] > 0 or words_live[1] > 0).lower()}")
+              path.unlink(missing_ok=True)
+
+          # Summarize early and late 1 MiB VRAM checkpoints in memory, then remove
+          # the raw data before artifacts are uploaded.
+          for frame in (299, 1499, 1799):
+              vram_path = Path(f"captures/raw/vram-frame-{frame:06d}.raw")
+              prefix = f"GPU_VRAM_FRAME_{frame}"
+              if not vram_path.exists():
+                  output.append(f"{prefix}_STATUS=missing")
+                  continue
+              vram = vram_path.read_bytes()
+              expected_vram_bytes = 1024 * 512 * 2
+              if len(vram) != expected_vram_bytes:
+                  output.append(f"{prefix}_STATUS=byte_count_mismatch")
+                  output.append(f"{prefix}_BYTES={len(vram)}")
+                  continue
+              words = [item[0] for item in struct.iter_unpack("<H", vram)]
+              colors = [word & 0x7fff for word in words]
+              output.extend([
+                  f"{prefix}_STATUS=parsed",
+                  f"{prefix}_BYTES={len(vram)}",
+                  f"{prefix}_DISTINCT_RGB555_COLORS={len(set(colors))}",
+                  f"{prefix}_NONBLACK_PIXELS={sum(color != 0 for color in colors)}",
+                  f"{prefix}_TOTAL_PIXELS={len(colors)}",
+              ])
+
+          # Inspect screenshot pixel diversity in memory, then discard every
+          # temporary screenshot and metadata file before artifact upload.
+          for meta_path in sorted(Path("captures").glob("frame-*.json")):
+              try:
+                  meta = json.loads(meta_path.read_text())
+                  frame = int(meta["frame"])
+                  width, height, bpp = int(meta["width"]), int(meta["height"]), int(meta["bpp"])
+                  expected = int(meta["expected_bytes"])
+                  raw_path = Path("captures/raw") / f"frame-{frame:06d}.raw"
+                  raw = raw_path.read_bytes() if raw_path.exists() else b""
+                  prefix = f"GPU_SCREENSHOT_FRAME_{frame}"
+                  if width <= 0 or height <= 0 or expected <= 0:
+                      output.append(f"{prefix}_STATUS=invalid_dimensions")
+                      output.append(f"{prefix}_WIDTH={width}")
+                      output.append(f"{prefix}_HEIGHT={height}")
+                  elif len(raw) != expected:
+                      output.append(f"{prefix}_STATUS=byte_count_mismatch")
+                      output.append(f"{prefix}_EXPECTED_BYTES={expected}")
+                      output.append(f"{prefix}_ACTUAL_BYTES={len(raw)}")
+                  elif bpp == 16:
+                      words = [item[0] for item in struct.iter_unpack("<H", raw)]
+                      colors = [word & 0x7fff for word in words]
+                      rgb = bytearray()
+                      for word in words:
+                          rgb.extend(((word & 31) * 255 // 31,
+                                      ((word >> 5) & 31) * 255 // 31,
+                                      ((word >> 10) & 31) * 255 // 31))
+                      png_path = Path("captures") / f"internal-frame-{frame}.png"
+                      Image.frombytes("RGB", (width, height), bytes(rgb)).save(png_path, optimize=True)
+                      output.extend([
+                          f"{prefix}_STATUS=parsed",
+                          f"{prefix}_WIDTH={width}",
+                          f"{prefix}_HEIGHT={height}",
+                          f"{prefix}_BPP={bpp}",
+                          f"{prefix}_DISTINCT_RGB555_COLORS={len(set(colors))}",
+                          f"{prefix}_NONBLACK_PIXELS={sum(color != 0 for color in colors)}",
+                          f"{prefix}_TOTAL_PIXELS={len(colors)}",
+                          f"{prefix}_PNG={png_path.name}",
+                      ])
+                  elif bpp == 24:
+                      pixels = [raw[i:i+3] for i in range(0, expected, 3)]
+                      png_path = Path("captures") / f"internal-frame-{frame}.png"
+                      Image.frombytes("RGB", (width, height), raw).save(png_path, optimize=True)
+                      output.extend([
+                          f"{prefix}_STATUS=parsed",
+                          f"{prefix}_WIDTH={width}",
+                          f"{prefix}_HEIGHT={height}",
+                          f"{prefix}_BPP={bpp}",
+                          f"{prefix}_DISTINCT_RGB_COLORS={len(set(pixels))}",
+                          f"{prefix}_NONBLACK_PIXELS={sum(any(pixel) for pixel in pixels)}",
+                          f"{prefix}_TOTAL_PIXELS={len(pixels)}",
+                          f"{prefix}_PNG={png_path.name}",
+                      ])
+                  else:
+                      output.append(f"{prefix}_STATUS=unsupported_bpp")
+                      output.append(f"{prefix}_BPP={bpp}")
+              except Exception as exc:
+                  output.append(f"GPU_SCREENSHOT_META_ERROR type={type(exc).__name__}")
+              finally:
+                  meta_path.unlink(missing_ok=True)
+
+          # Strip embedded retail BIOS bytes from the PCSX savestate before
+          # transfer. The next run independently loads the hash-verified SCPH-7502 BIOS.
+          def read_varint(data, pos):
+              value, shift = 0, 0
+              while pos < len(data):
+                  b = data[pos]
+                  pos += 1
+                  value |= (b & 0x7f) << shift
+                  if not b & 0x80:
+                      return value, pos
+                  shift += 7
+                  if shift > 70:
+                      raise ValueError("protobuf varint too long")
+              raise ValueError("truncated protobuf varint")
+          def encode_varint(value):
+              out = bytearray()
+              while value > 0x7f:
+                  out.append((value & 0x7f) | 0x80)
+                  value >>= 7
+              out.append(value)
+              return bytes(out)
+          def parse_fields(data):
+              fields, pos = [], 0
+              while pos < len(data):
+                  start = pos
+                  tag, pos = read_varint(data, pos)
+                  number, wire = tag >> 3, tag & 7
+                  payload_start = pos
+                  if wire == 0:
+                      _, pos = read_varint(data, pos)
+                      payload_end = pos
+                  elif wire == 1:
+                      pos += 8
+                      payload_end = pos
+                  elif wire == 2:
+                      length, pos = read_varint(data, pos)
+                      payload_start = pos
+                      pos += length
+                      payload_end = pos
+                  elif wire == 5:
+                      pos += 4
+                      payload_end = pos
+                  else:
+                      raise ValueError(f"unsupported protobuf wire type {wire}")
+                  if pos > len(data):
+                      raise ValueError("truncated protobuf field")
+                  fields.append((number, wire, start, payload_start, payload_end, pos))
+              return fields
+          def strip_memory_rom(data):
+              keep, removed = [], 0
+              for number, wire, start, payload_start, payload_end, end in parse_fields(data):
+                  if number == 2 and wire == 2:
+                      removed += 1
+                  else:
+                      keep.append(data[start:end])
+              if removed != 1:
+                  raise ValueError(f"expected one embedded BIOS ROM field; found {removed}")
+              return b"".join(keep)
+          raw_state = Path("captures/raw/storymode-checkpoint.raw")
+          if raw_state.exists():
+              try:
+                  original = raw_state.read_bytes()
+                  # Preserve the exact bytes returned by PCSX.createSaveState before
+                  # generating the legacy sanitized copy used by older diagnostics.
+                  Path("captures/storymode-checkpoint.raw.sstate").write_bytes(original)
+                  safe, memory_count, removed = bytearray(), 0, 0
+                  for number, wire, start, payload_start, payload_end, end in parse_fields(original):
+                      if number == 3 and wire == 2:
+                          memory_count += 1
+                          safe_memory = strip_memory_rom(original[payload_start:payload_end])
+                          removed += 1
+                          safe.extend(encode_varint((number << 3) | wire))
+                          safe.extend(encode_varint(len(safe_memory)))
+                          safe.extend(safe_memory)
+                      else:
+                          safe.extend(original[start:end])
+                  if memory_count != 1 or removed != 1:
+                      raise ValueError(f"unexpected savestate structure memory_count={memory_count} rom_fields_removed={removed}")
+                  Path("captures/storymode-checkpoint.sstate").write_bytes(safe)
+                  output.extend([
+                      "STORY_SAVESTATE_SANITIZE=PASS",
+                      f"STORY_SAVESTATE_RAW_BYTES={len(original)}",
+                      f"STORY_SAVESTATE_SAFE_BYTES={len(safe)}",
+                      "STORY_SAVESTATE_EMBEDDED_BIOS_FIELD_REMOVED=1",
+                      "STORY_SAVESTATE_TRANSFER=private_artifact",
+                  ])
+              except Exception as exc:
+                  output.append("STORY_SAVESTATE_SANITIZE=ERROR type=" + type(exc).__name__ + " detail=" + str(exc))
+          else:
+              output.append("STORY_SAVESTATE_SANITIZE=missing")
+          raw_dir = Path("captures/raw")
+          if raw_dir.exists():
+              for item in raw_dir.iterdir():
+                  if item.is_file():
+                      item.unlink(missing_ok=True)
+                  elif item.is_dir():
+                      import shutil
+                      shutil.rmtree(item)
+              raw_dir.rmdir()
+          output.append("RAW_GPU_DUMP_REMOVED=1")
+          output.append("RAW_TEMP_SCREENSHOTS_REMOVED=1")
+          Path("captures/gpu-traffic-summary.txt").write_text("\n".join(output) + "\n")
+
+          # This state is copied unchanged from the exact PCSX.createSaveState output.
+          raw_copy = Path("captures/storymode-checkpoint.raw.sstate")
+          if raw_copy.is_file() and raw_copy.stat().st_size > 0:
+              log_parts = []
+              for log_path in (Path("captures/important-log-lines.txt"), Path("captures/story-dialog-watch-summary.txt")):
+                  if log_path.exists():
+                      log_parts.append(log_path.read_text(errors="replace"))
+              lines = "\n".join(log_parts)
+              checkpoints = re.findall(r"STORY_CHECKPOINT_SAFE_POINT frame=(\d+) save_ok=true reason=([A-Za-z0-9_-]+)", lines)
+              frame, reason = checkpoints[-1] if checkpoints else ("unknown", "unknown")
+              source_png = Path(f"captures/internal-frame-{frame}.png") if frame != "unknown" else Path("captures/missing-source.png")
+              source_bytes, source_sha, dimensions = 0, "missing", "unknown"
+              if source_png.is_file():
+                  try:
+                      image = Image.open(source_png).convert("RGB")
+                      if image.width >= 100 and image.height >= 100 and image.getbbox() is not None:
+                          source_bytes = source_png.stat().st_size
+                          source_sha = hashlib.sha256(source_png.read_bytes()).hexdigest()
+                          dimensions = f"{image.width}x{image.height}"
+                          Path("captures/storymode-checkpoint-source.png").write_bytes(source_png.read_bytes())
+                  except Exception:
+                      source_bytes, source_sha, dimensions = 0, "missing", "unknown"
+              dialog_gate = "PASS" if "STORY_DIALOG_VISUAL_GATE=PASS" in lines else "FAIL"
+              manifest_lines = [
+                  "STORY_RAW_STATE_PRESENT=1",
+                  "STORY_STATE_FORMAT=raw-pcsx-createSaveState",
+                  f"STORY_RAW_STATE_RUN_ID={os.environ.get('GITHUB_RUN_ID', 'unknown')}",
+                  f"STORY_RAW_STATE_COMMIT={os.environ.get('GITHUB_SHA', 'unknown')}",
+                  f"STORY_CHECKPOINT_FRAME={frame}",
+                  f"STORY_CHECKPOINT_REASON={reason}",
+                  f"STORY_DIALOG_VISUAL_GATE={dialog_gate}",
+                  f"STORY_RAW_STATE_BYTES={raw_copy.stat().st_size}",
+                  f"STORY_RAW_STATE_SHA256={hashlib.sha256(raw_copy.read_bytes()).hexdigest()}",
+                  f"STORY_SOURCE_SCREENSHOT_PRESENT={int(source_bytes > 0)}",
+                  "STORY_SOURCE_SCREENSHOT_FILE=storymode-checkpoint-source.png",
+                  f"STORY_SOURCE_SCREENSHOT_BYTES={source_bytes}",
+                  f"STORY_SOURCE_SCREENSHOT_SHA256={source_sha}",
+                  f"STORY_SOURCE_SCREENSHOT_DIMENSIONS={dimensions}",
+              ]
+              Path("captures/storymode-raw-manifest.txt").write_text("\n".join(manifest_lines) + "\n")
+              print("\n".join(manifest_lines))
+          else:
+              Path("captures/storymode-raw-manifest.txt").write_text("STORY_RAW_STATE_PRESENT=0\n")
+              print("STORY_RAW_STATE_PRESENT=0")
+
+          print("\n".join(output))
+          PY
+
+      - name: Fingerprint private Story Mode Memory Card
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          WORK="${WORK:-$RUNNER_TEMP/naruto-scph7502-gpu-traffic}"
+          mkdir -p "$WORK/captures" "$WORK/cards"
+          summary="$WORK/captures/memory-card-summary.txt"
+          manifest="$WORK/cards/memory-card-manifest.txt"
+          card="$WORK/cards/naruto-storymode.mcd"
+          if [ -s "$card" ]; then
+            bytes="$(stat -c '%s' "$card")"
+            sha="$(sha256sum "$card" | cut -d ' ' -f 1)"
+            {
+              echo "STORY_MEMORY_CARD_PRESENT=1"
+              echo "STORY_MEMORY_CARD_BYTES=$bytes"
+              echo "STORY_MEMORY_CARD_SHA256=$sha"
+              echo "STORY_MEMORY_CARD_GAME_SAVE_STATUS=UNVERIFIED_REQUIRES_IN_GAME_SAVE_AND_RELOAD"
+              if [ -f "$WORK/cards/memory-card-restored.flag" ]; then
+                echo "STORY_MEMORY_CARD_SOURCE=restored_private_artifact"
+              else
+                echo "STORY_MEMORY_CARD_SOURCE=emulator_workspace"
+              fi
+            } | tee "$summary" "$manifest"
+          else
+            {
+              echo "STORY_MEMORY_CARD_PRESENT=0"
+              echo "STORY_MEMORY_CARD_GAME_SAVE_STATUS=UNVERIFIED"
+            } | tee "$summary" "$manifest"
+            echo "::error::Memory Card file is missing after the emulator run; persistence cannot be claimed"
+            exit 44
+          fi
+
+      - name: Upload private evidence and sanitized Story Mode checkpoint
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-storymode-checkpoint-private
+          path: |
+            ${{ env.WORK }}/captures/gpu-traffic-summary.txt
+            ${{ env.WORK }}/captures/important-log-lines.txt
+            ${{ env.WORK }}/captures/internal-frame-*.png
+            ${{ env.WORK }}/captures/story-dialog-watch-summary.txt
+            ${{ env.WORK }}/captures/memory-card-summary.txt
+            ${{ env.WORK }}/captures/important-log-lines.txt
+            ${{ env.WORK }}/captures/pcsx.stdout.txt
+            ${{ env.WORK }}/captures/pcsx.log.txt
+            ${{ env.WORK }}/captures/storymode-checkpoint.sstate
+            ${{ env.WORK }}/captures/storymode-checkpoint.raw.sstate
+            ${{ env.WORK }}/captures/storymode-raw-manifest.txt
+            ${{ env.WORK }}/captures/storymode-checkpoint-source.png
+            ${{ env.WORK }}/captures/storymode-checkpoint-restore-immediate.png
+            ${{ env.WORK }}/captures/storymode-restore-comparison.txt
+            ${{ env.WORK }}/captures/gpu-traffic.lua
+            ${{ env.WORK }}/captures/story-dialog-watch.py
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload private Story Mode Memory Card candidate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          path: |
+            ${{ env.WORK }}/cards/naruto-storymode.mcd
+            ${{ env.WORK }}/cards/memory-card-manifest.txt
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Remove runtime assets from ephemeral runner
+        if: always()
+        shell: bash
+        run: |
+          rm -rf "$WORK"

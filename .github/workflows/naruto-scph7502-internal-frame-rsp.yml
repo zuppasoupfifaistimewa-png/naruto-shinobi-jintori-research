@@ -1,0 +1,325 @@
+name: Naruto SCPH-7502 internal framebuffer and minimal RSP probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/naruto-scph7502-internal-frame-rsp.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: naruto-scph7502-internal-frame-rsp
+  cancel-in-progress: true
+
+jobs:
+  retail-frame-runtime:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 12
+    steps:
+      - name: Install private runtime and framebuffer conversion tools
+        run: |
+          set -eu
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils xdotool imagemagick tesseract-ocr tesseract-ocr-jpn python3 python3-pil libgl1-mesa-dri mesa-utils
+
+      - name: Download and verify private BIOS, game disc and pinned PCSX-Redux
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -eu
+          WORK="$RUNNER_TEMP/naruto-scph7502-internal-rsp"
+          mkdir -p "$WORK/captures" "$WORK/internal-raw" "$WORK/home/.config" "$WORK/home/.local/share"
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; output="$2"
+            ids="$(jq -r --arg name "$name" '[.assets[]? | select(.name == $name) | .id] | .[]' release.json)"
+            if [ "$(printf '%s\n' "$ids" | sed '/^$/d' | wc -l)" -ne 1 ]; then
+              echo "::error::Expected exactly one release asset named $name"
+              exit 1
+            fi
+            curl --fail --silent --show-error --location --retry 2 --max-time 300 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$ids" -o "$output"
+          }
+          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset scph7502.zip scph7502.zip
+          echo "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c  pcsx-redux.AppImage" | sha256sum --check -
+          test "$(stat -c '%s' game.bin)" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          test "$(stat -c '%s' scph7502.zip)" = "283463"
+          echo "b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a  scph7502.zip" | sha256sum --check -
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import hashlib, stat, zipfile
+          with zipfile.ZipFile("scph7502.zip") as zf:
+              members=[]
+              for info in zf.infolist():
+                  p=PurePosixPath(info.filename)
+                  mode=(info.external_attr >> 16) & 0xffff
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)):
+                      raise SystemExit("Unsafe BIOS archive entry")
+                  if info.file_size > 2*1024*1024: raise SystemExit("Archive member exceeds safety limit")
+                  if not info.is_dir() and info.file_size == 524288: members.append(info)
+              if len(members) != 1: raise SystemExit(f"Expected one BIOS member, got {len(members)}")
+              digest=hashlib.sha256()
+              with zf.open(members[0]) as src, Path("scph7502.bin").open("wb") as dst:
+                  while True:
+                      data=src.read(65536)
+                      if not data: break
+                      digest.update(data); dst.write(data)
+              actual=digest.hexdigest()
+              expected="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1"
+              print("RETAIL_BIOS_SHA256="+actual)
+              print("RETAIL_BIOS_REFERENCE_MATCH="+str(actual == expected).upper())
+              if actual != expected: raise SystemExit("Retail BIOS identity mismatch")
+          PY
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("game.cue")
+          lines=p.read_bytes().decode("utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          files=[i for i,line in enumerate(lines) if line.lstrip().upper().startswith("FILE ")]
+          if len(files)!=1 or not any(line.lstrip().upper().startswith("TRACK ") for line in lines):
+              raise SystemExit("Invalid CUE")
+          lines[files[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+          echo "ASSET_CHECKS=PASS BIOS=SCPH-7502 EMULATOR_COMMIT=0c3572c3db75f97542001e453ae80ba8c3f8acba"
+
+      - name: Run retail BIOS with internal SoftGPU screenshots and non-invasive minimal RSP PC samples
+        run: |
+          set -eu
+          cd "$WORK"
+          Xvfb :99 -ac -screen 0 1280x800x24 -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          trap 'kill "$xvfb_pid" 2>/dev/null || true' EXIT
+          export DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/home/.config" XDG_DATA_HOME="$WORK/home/.local/share"
+          for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          PAD_SETUP=$(cat <<LUA
+          PCSX.settings.pads[1].DeviceType = 'Analog'
+          PCSX.settings.pads[1].Connected = true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("PAD_SETUP=Port 1 Analog connected/remapped")
+          local frames = 0
+          local targets = {300,600,1800,3000,4200,5400}
+          local saved = {}
+          PCSX.Events.createEventListener('GPU::Vsync', function()
+            frames = frames + 1
+            if frames == 1 then print("INTERNAL_VSYNC=seen") end
+            if frames == 300 then print("INTERNAL_VSYNC_PROGRESS frame=300") end
+            for _,target in ipairs(targets) do
+              if frames >= target and not saved[target] then
+                saved[target] = true
+                local ok, err = pcall(function()
+                  local ss = PCSX.GPU.takeScreenShot()
+                  local nbytes = ss.data:size()
+                  local path = "$WORK/internal-raw/frame-" .. tostring(target) .. ".raw"
+                  local f = Support.File.open(path, 'TRUNCATE')
+                  f:writeMoveSlice(ss.data)
+                  f:close()
+                  print(string.format("INTERNAL_CAPTURE frame=%d width=%d height=%d bpp=%d bytes=%d written=%d file=frame-%d.raw",
+                    frames, ss.width, ss.height, ss.bpp, nbytes, nbytes, target))
+                end)
+                if not ok then
+                  print("INTERNAL_CAPTURE_ERROR target=" .. tostring(target) .. " detail=" .. tostring(err))
+                end
+              end
+            end
+          end)
+          LUA
+          )
+          timeout --signal=TERM --kill-after=5s 112s \
+            "$WORK/squashfs-root/AppRun" -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+            -exec "$PAD_SETUP" -gdb -run -softgpu -stdout -lua_stdout -logfile "$WORK/pcsx.log" \
+            > "$WORK/pcsx.stdout" 2>&1 &
+          emu_pid=$!
+          python3 - <<'PY' > "$WORK/rsp-safe-summary.txt" 2>&1 &
+          import socket, time
+          HOST, PORT = "127.0.0.1", 3333
+          def packet(payload):
+              b=payload.encode("ascii")
+              return b"$"+b+b"#"+f"{sum(b)&255:02x}".encode("ascii")
+          def recv_packet(sock, timeout=2.5):
+              deadline=time.monotonic()+timeout
+              buf=bytearray()
+              while time.monotonic()<deadline:
+                  sock.settimeout(max(.1,deadline-time.monotonic()))
+                  try: chunk=sock.recv(4096)
+                  except socket.timeout: continue
+                  if not chunk: raise ConnectionError("peer closed")
+                  buf.extend(chunk)
+                  start=buf.find(b"$")
+                  if start>=0:
+                      mark=buf.find(b"#",start+1)
+                      if mark>=0 and len(buf)>=mark+3:
+                          body=bytes(buf[start+1:mark]); checksum=buf[mark+1:mark+3]
+                          if checksum.lower()!=f"{sum(body)&255:02x}".encode(): raise ValueError("checksum mismatch")
+                          del buf[:mark+3]
+                          return body.decode("ascii","replace")
+              raise TimeoutError("no packet before deadline")
+          def request(sock, payload): sock.sendall(packet(payload)); return recv_packet(sock)
+          def read_pc(sock):
+              raw=request(sock,"p25")
+              if len(raw)!=8: return None
+              return int.from_bytes(bytes.fromhex(raw),"little")
+          def region(pc):
+              if pc is None: return "unavailable"
+              if 0xbfc00000 <= pc <= 0xbfc7ffff or 0x9fc00000 <= pc <= 0x9fc7ffff: return "BIOS_ROM"
+              if 0x80037000 <= pc <= 0x80038000: return "KNOWN_INVESTIGATED_RAM_BLOCK"
+              if 0x80010000 <= pc < 0x8006d800: return "MAIN_EXE_REGION"
+              if 0x80000000 <= pc <= 0x807fffff or 0xa0000000 <= pc <= 0xa07fffff: return "RAM_OTHER"
+              return "OTHER"
+          s=None
+          for _ in range(20):
+              try: s=socket.create_connection((HOST,PORT),timeout=1); break
+              except OSError: time.sleep(.5)
+          if s is None:
+              print("RSP_CONNECT=failed port=3333",flush=True); raise SystemExit(0)
+          s.settimeout(2.5)
+          print("RSP_CONNECT=connected port=3333",flush=True)
+          try:
+              try: print("RSP_QSUPPORTED=received" if request(s,"qSupported:multiprocess+") else "RSP_QSUPPORTED=empty",flush=True)
+              except Exception as e: print("RSP_QSUPPORTED=error:"+type(e).__name__,flush=True)
+              for i in range(12):
+                  try:
+                      pc=read_pc(s)
+                      print(f"RSP_PC_SAMPLE index={i} region={region(pc)}",flush=True)
+                  except Exception as e:
+                      print(f"RSP_PC_SAMPLE index={i} region=unavailable error={type(e).__name__}",flush=True)
+                  time.sleep(5)
+          finally: s.close()
+          PY
+          rsp_pid=$!
+          find_emulator_window() {
+            local root_hex
+            root_hex="$(xwininfo -root 2>/dev/null | awk '/Window id:/{print $4; exit}')"
+            [ -n "$root_hex" ] || return 1
+            xwininfo -root -tree 2>/dev/null | awk -v root="$root_hex" '
+              $1 ~ /^0x[[:xdigit:]]+$/ && $1 != root && /[Pp][Cc][Ss][Xx]|[Rr][Ee][Dd][Uu][Xx]/ {print $1; exit}'
+          }
+          capture_window() {
+            label="$1"
+            wid="$(find_emulator_window || true)"
+            if [ -z "$wid" ]; then
+              echo "WINDOW_CAPTURE=$label unavailable"
+              xwininfo -root -tree 2>/dev/null | grep -Ei 'PCSX|Redux' | head -5 | sed 's/^/WINDOW_TREE_HINT=/'
+              return 1
+            fi
+            root_hex="$(xwininfo -root 2>/dev/null | awk '/Window id:/{print $4; exit}')"
+            if [ "$wid" = "$root_hex" ]; then echo "WINDOW_CAPTURE=$label rejected_root"; return 1; fi
+            import -window "$wid" "$WORK/captures/window-$label.png"
+            identify -format "WINDOW_FRAME label=%f width=%w height=%h colors=%k mean=%[mean] stddev=%[standard-deviation]\\n" "$WORK/captures/window-$label.png"
+            echo "WINDOW_CAPTURE=$label saved xid=$wid"
+          }
+          sleep 12
+          capture_window window-12s || true
+          sleep 18
+          capture_window window-30s || true
+          sleep 20
+          capture_window window-50s || true
+          if wid="$(find_emulator_window || true)" && [ -n "$wid" ]; then
+            timeout 2s xdotool windowfocus "$wid" 2>/dev/null || true
+            echo "INPUT_TEST_BEGIN checkpoint=around_50s keys=Return,Z"
+            xdotool key --clearmodifiers Return
+            sleep 2
+            capture_window after-return || true
+            xdotool key --clearmodifiers z
+            sleep 2
+            capture_window after-cross || true
+            echo "INPUT_TEST_END"
+          fi
+          sleep 20
+          capture_window window-75s || true
+          sleep 22
+          capture_window window-97s || true
+          set +e
+          wait "$emu_pid"; emu_rc=$?
+          wait "$rsp_pid"; rsp_rc=$?
+          set -e
+          echo "EMU_EXIT=$emu_rc (124=observation cap)"
+          echo "RSP_EXIT=$rsp_rc"
+          echo "RUNTIME_MARKERS_BEGIN"
+          grep -E 'Loaded BIOS:|Known BIOS detected|OpenBIOS detected|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|INTERNAL_CAPTURE|INTERNAL_VSYNC|INTERNAL_CAPTURE_ERROR|WINDOW_CAPTURE|PAD_SETUP=|ResetCallback|unknown GPU data word|FATAL|Exception|ERROR|Error|Failed|failed' "$WORK/pcsx.stdout" "$WORK/pcsx.log" 2>/dev/null | tail -100 || true
+          cat "$WORK/rsp-safe-summary.txt" || true
+          echo "RUNTIME_MARKERS_END"
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, struct
+          from PIL import Image
+          work=Path("$WORK")
+          lines=(work/"pcsx.stdout").read_text(errors="replace").splitlines()
+          captures=[]
+          pat=re.compile(r"INTERNAL_CAPTURE frame=(\d+) width=(\d+) height=(\d+) bpp=(\d+) bytes=(\d+) written=(\d+) file=(frame-\d+\.raw)")
+          for line in lines:
+              m=pat.search(line)
+              if not m: continue
+              frame,width,height,bpp,nbytes,written,name=m.groups()
+              width,height,bpp,nbytes,written=map(int,(width,height,bpp,nbytes,written))
+              p=work/"internal-raw"/name
+              if not p.exists() or p.stat().st_size != written or written != nbytes or width<1 or height<1:
+                  print(f"PNG_CONVERSION=failed frame={frame} reason=dimension_or_byte_count_mismatch")
+                  continue
+              raw=p.read_bytes()
+              if bpp==1:
+                  expected=width*height*3
+                  if len(raw)!=expected: print(f"PNG_CONVERSION=failed frame={frame} reason=rgb24_length"); continue
+                  im=Image.frombytes("RGB",(width,height),raw)
+              elif bpp==0:
+                  expected=width*height*2
+                  if len(raw)!=expected: print(f"PNG_CONVERSION=failed frame={frame} reason=rgb555_length"); continue
+                  vals=struct.unpack("<"+"H"*(width*height),raw)
+                  rgb=bytearray()
+                  for px in vals:
+                      rgb.extend((((px&31)*255+15)//31,(((px>>5)&31)*255+15)//31,(((px>>10)&31)*255+15)//31))
+                  im=Image.frombytes("RGB",(width,height),bytes(rgb))
+              else:
+                  print(f"PNG_CONVERSION=failed frame={frame} reason=unknown_bpp"); continue
+              out=work/"captures"/f"internal-frame-{frame}.png"
+              im.save(out,optimize=True)
+              print(f"PNG_CONVERSION=PASS frame={frame} width={width} height={height} bpp={bpp} file={out.name}")
+          PY
+          converted="$(find "$WORK/captures" -maxdepth 1 -name 'internal-frame-*.png' -type f | wc -l)"
+          echo "INTERNAL_PNG_COUNT=$converted"
+          if ! grep -q '^INTERNAL_VSYNC=seen$' "$WORK/pcsx.stdout"; then
+            echo "::error::No GPU::Vsync callback was observed; internal capture has not been proven."
+            exit 1
+          fi
+          if [ "$converted" -eq 0 ]; then
+            echo "::error::No internal SoftGPU screenshot was converted; inspect INTERNAL_CAPTURE_ERROR and frame metadata."
+            exit 1
+          fi
+          echo "INTERNAL_FRAME_CAPTURE_RESULT=PASS count=$converted"
+
+      - name: Upload private screenshot and safe runtime evidence for 3 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-scph7502-internal-frame-rsp-private
+          path: |
+            ${{ runner.temp }}/naruto-scph7502-internal-rsp/captures/*.png
+            ${{ runner.temp }}/naruto-scph7502-internal-rsp/pcsx.stdout
+            ${{ runner.temp }}/naruto-scph7502-internal-rsp/pcsx.log
+            ${{ runner.temp }}/naruto-scph7502-internal-rsp/rsp-safe-summary.txt
+          if-no-files-found: warn
+          retention-days: 3
+
+      - name: Remove all private media and raw framebuffer captures
+        if: always()
+        run: |
+          if [ -n "${WORK:-}" ] && [ -d "$WORK" ]; then rm -rf "$WORK"; fi
+          echo "Cleanup complete; no BIOS, ROM, raw framebuffer, save state, memory dump or instruction trace was retained."

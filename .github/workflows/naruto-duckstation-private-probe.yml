@@ -1,0 +1,220 @@
+name: Naruto DuckStation private BIOS compatibility probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/naruto-duckstation-private-probe.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: naruto-duckstation-private-probe
+  cancel-in-progress: true
+
+jobs:
+  duckstation-probe:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 18
+    env:
+      DUCKSTATION_APPIMAGE_URL: https://github.com/stenzek/duckstation/releases/download/latest/DuckStation-x64.AppImage
+      DUCKSTATION_APPIMAGE_SHA256: c5e6f045f6a242082fcafa9f02d56ad895e233b942728788d232ad0c0c765c24
+    steps:
+      - name: Install private window capture and OCR tools
+        run: |
+          set -eu
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils xdotool imagemagick tesseract-ocr tesseract-ocr-jpn libopengl0 libglx0 libgl1 libegl1
+
+      - name: Download and verify private game files plus signed-upstream emulator package
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -eu
+          WORK="$RUNNER_TEMP/naruto-duckstation-probe"
+          mkdir -p "$WORK/captures" "$WORK/home/.local/share/duckstation/bios" "$WORK/home/.config/duckstation"
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; output="$2"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            if [ -z "$id" ] || [ "$id" = "null" ]; then echo "::error::Missing private release asset: $name"; exit 1; fi
+            curl --fail --silent --show-error --location --retry 2 --max-time 300 \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$id" -o "$output"
+          }
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset openbios.bin openbios.bin
+          test "$(stat -c '%s' game.bin)" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          curl --fail --location --retry 2 --max-time 240 "$DUCKSTATION_APPIMAGE_URL" -o duckstation.AppImage
+          echo "$DUCKSTATION_APPIMAGE_SHA256  duckstation.AppImage" | sha256sum --check -
+          chmod +x duckstation.AppImage
+          ./duckstation.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          cp openbios.bin "$WORK/home/.local/share/duckstation/bios/openbios.bin"
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("game.cue")
+          text=p.read_bytes().decode("utf-8-sig").replace("\r\n","\n").replace("\r","\n")
+          lines=text.splitlines()
+          files=[i for i,line in enumerate(lines) if line.lstrip().upper().startswith("FILE ")]
+          if len(files)!=1 or not any(line.lstrip().upper().startswith("TRACK ") for line in lines):
+              raise SystemExit("Invalid CUE")
+          lines[files[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
+          settings = """[Main]
+          StartPaused = false
+          StartFullscreen = false
+          PauseOnFocusLoss = false
+          SaveStateOnExit = false
+
+          [Console]
+          Region = Auto
+
+          [BIOS]
+          SearchDirectory = {bios}
+          PathNTSCJ = openbios.bin
+          PathNTSCU = openbios.bin
+          PathPAL = openbios.bin
+          PatchTTYEnable = false
+          PatchFastBoot = false
+
+          [GPU]
+          Renderer = OpenGL
+          UseThread = false
+          ThreadedPresentation = false
+
+          [CDROM]
+          RegionCheck = false
+          ReadaheadSectors = 8
+
+          [Pad1]
+          Type = AnalogController
+          Up = Keyboard/Up
+          Right = Keyboard/Right
+          Down = Keyboard/Down
+          Left = Keyboard/Left
+          Triangle = Keyboard/S
+          Circle = Keyboard/X
+          Cross = Keyboard/Z
+          Square = Keyboard/A
+          Select = Keyboard/Backspace
+          Start = Keyboard/Return
+          L1 = Keyboard/Q
+          R1 = Keyboard/W
+          Analog = Keyboard/F6
+
+          [Pad2]
+          Type = None
+
+          [Logging]
+          LogLevel = Info
+          LogToConsole = true
+          LogToFile = true
+          LogToWindow = false
+          """.format(bios=str(Path("home/.local/share/duckstation/bios").resolve()))
+          for target in [
+              Path("home/.local/share/duckstation/settings.ini"),
+              Path("home/.config/duckstation/settings.ini"),
+          ]:
+              target.write_text(settings,encoding="utf-8")
+          print("CUE validated and temporary controller key mappings configured.")
+          PY
+          echo "DuckStation package hash, private ROM size/hash verified; OpenBIOS staged in isolated user directory."
+
+      - name: Boot the private disc, capture screens, and send controlled keyboard-mapped pad taps
+        run: |
+          set -eu
+          cd "$WORK"
+          Xvfb :99 -ac -screen 0 1280x800x24 -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          trap 'kill "$xvfb_pid" 2>/dev/null || true' EXIT
+          export DISPLAY=:99 HOME="$WORK/home" XDG_DATA_HOME="$WORK/home/.local/share" XDG_CONFIG_HOME="$WORK/home/.config"
+          for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          set +e
+          timeout --signal=TERM --kill-after=5s 115s \
+            "$WORK/squashfs-root/AppRun" -earlyconsole "$WORK/game-run.cue" \
+            > "$WORK/duckstation.stdout" 2>&1 &
+          emu_pid=$!
+          set -e
+          capture_window() {
+            label="$1"
+            window_id="$(xdotool search --onlyvisible --name 'DuckStation|duckstation' 2>/dev/null | tail -n 1 || true)"
+            if [ -z "$window_id" ]; then
+              echo "CAPTURE_RESULT=$label no DuckStation window found"
+              xwininfo -root -tree 2>&1 | head -35 || true
+              return 1
+            fi
+            echo "CAPTURE_WINDOW=$label id=$window_id"
+            import -window "$window_id" "$WORK/captures/$label.png"
+            identify -format 'FRAME_METRICS label=%f width=%w height=%h mean=%[mean] stddev=%[standard-deviation] colors=%k\n' "$WORK/captures/$label.png"
+            echo "OCR_BEGIN=$label"
+            tesseract "$WORK/captures/$label.png" stdout -l jpn+eng 2>/dev/null | head -16 || true
+            echo "OCR_END=$label"
+            return 0
+          }
+          last_t=0
+          for t in 20 35; do
+            sleep $(( t - last_t )); last_t="$t"
+            capture_window "pre-input-$t-sec" || true
+          done
+          window_id="$(xdotool search --onlyvisible --name 'DuckStation|duckstation' 2>/dev/null | tail -n 1 || true)"
+          if [ -n "$window_id" ]; then
+            xdotool windowactivate --sync "$window_id" 2>/dev/null || true
+            echo "INPUT_SEQUENCE_BEGIN: synthetic Return and Z/Cross taps using temporary Pad1 keyboard bindings"
+            xdotool key --clearmodifiers Return
+            sleep 2
+            capture_window "after-return" || true
+            xdotool key --clearmodifiers z
+            sleep 2
+            capture_window "after-cross" || true
+            xdotool key --clearmodifiers Return
+            sleep 2
+            capture_window "after-second-return" || true
+            echo "INPUT_SEQUENCE_END"
+          else
+            echo "INPUT_SEQUENCE_SKIPPED=no visible window"
+          fi
+          for t in 55 75 95; do
+            sleep $(( t - last_t )); last_t="$t"
+            capture_window "post-input-$t-sec" || true
+          done
+          set +e
+          wait "$emu_pid"
+          rc=$?
+          set -e
+          echo "DUCKSTATION_EXIT=$rc (124 is the bounded observation limit)"
+          echo "DUCKSTATION_DIAGNOSTICS_BEGIN"
+          grep -iE 'openbios|bios|cdrom|CD-ROM|disc|SLPS|error|failed|warning|region|controller|boot|reset|exception' "$WORK/duckstation.stdout" 2>/dev/null | tail -140 || true
+          echo "DUCKSTATION_DIAGNOSTICS_END"
+          echo "Screens, BIOS recognition and input response must be inspected independently; this workflow does not declare gameplay success."
+
+      - name: Upload only screen captures to private artifact for 3 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-duckstation-private-captures
+          path: |
+            ${{ runner.temp }}/naruto-duckstation-probe/captures/*.png
+            ${{ runner.temp }}/naruto-duckstation-probe/duckstation.stdout
+          if-no-files-found: warn
+          retention-days: 3
+
+      - name: Remove private ROM, BIOS, DuckStation, frames and logs
+        if: always()
+        run: |
+          if [ -n "${WORK:-}" ] && [ -d "$WORK" ]; then rm -rf "$WORK"; fi
+          echo "Cleanup complete; private media and captured images removed from the ephemeral runner."

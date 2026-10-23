@@ -1,0 +1,1036 @@
+name: Naruto fastboot GPU traffic summary
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/naruto-fastboot-gpu-traffic-summary.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: naruto-fastboot-gpu-traffic-summary
+  cancel-in-progress: true
+
+jobs:
+  gpu-traffic-summary:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 8
+    steps:
+      - name: Install private runtime requirements
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils mesa-utils libgl1-mesa-dri python3
+
+      - name: Download and verify private runtime assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          WORK="$RUNNER_TEMP/naruto-fastboot-gpu-traffic"
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+          mkdir -p "$WORK/home" "$WORK/captures/raw"
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; output="$2"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            if [ -z "$id" ] || [ "$id" = "null" ]; then echo "::error::Missing private release asset: $name"; exit 1; fi
+            curl --fail --silent --show-error --location --retry 2 --max-time 300 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$id" -o "$output"
+          }
+          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset openbios.bin openbios-fastboot.bin
+          echo "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c  pcsx-redux.AppImage" | sha256sum --check -
+          test "$(stat -c '%s' game.bin)" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          echo "25c789eb66608847907217c367f04a3ec6e62c08530e97c437ce99d29f4c156d  openbios-fastboot.bin" | sha256sum --check -
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("game.cue")
+          lines = p.read_bytes().decode("utf-8-sig").replace("\r\n", "\n").replace("\r", "\n").splitlines()
+          ids = [i for i, line in enumerate(lines) if line.lstrip().upper().startswith("FILE ")]
+          if len(ids) != 1 or not any(line.lstrip().upper().startswith("TRACK ") for line in lines):
+              raise SystemExit("Invalid CUE")
+          lines[ids[0]] = 'FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines) + "\n", encoding="ascii")
+          PY
+          echo "ROM/CUE/BIOS/PCSX-Redux pin verified."
+
+      - name: Record emulated GPU traffic until post-handoff VSync 300
+        env:
+          GPU_BACKEND_PROBE: ${{ contains(github.event.head_commit.message, '[openglgpu-probe]') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          GPU_BACKEND_FLAG="-softgpu"
+          GPU_BACKEND_TIMEOUT="125s"
+          if [[ "${GPU_BACKEND_PROBE:-false}" == "true" ]]; then
+            GPU_BACKEND_FLAG="-openglgpu"
+            GPU_BACKEND_TIMEOUT="170s"
+          fi
+          echo "GPU_BACKEND_SELECTED=$GPU_BACKEND_FLAG"
+          echo "GPU_BACKEND_TIMEOUT=$GPU_BACKEND_TIMEOUT"
+          cd "$WORK"
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          emu_pid=""
+          cleanup() {
+            if [ -n "$emu_pid" ]; then kill "$emu_pid" 2>/dev/null || true; fi
+            kill "$xvfb_pid" 2>/dev/null || true
+            wait "$xvfb_pid" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/home/.config" XDG_DATA_HOME="$WORK/home/.local/share"
+          export LIBGL_ALWAYS_SOFTWARE=1
+          unset MESA_GL_VERSION_OVERRIDE MESA_GLSL_VERSION_OVERRIDE
+          mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME"
+          for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          echo "HOST_GL=software llvmpipe requested; no GL/GLSL version override"
+          glxinfo -B 2>/dev/null | grep -E 'OpenGL vendor string|OpenGL renderer string|OpenGL (core profile )?version string' || true
+
+          PAD_SETUP=$(cat <<'LUA'
+          PCSX.settings.pads[1].DeviceType = 'Analog'
+          PCSX.settings.pads[1].Connected = true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("PAD_SETUP=Port 1 Analog connected/remapped")
+          LUA
+          )
+          cat > "$WORK/gpu-traffic.lua" <<'LUA'
+          local frame_count = 0
+          local stop_frame = 300
+          local pad = PCSX.SIO0.slots[1].pads[1]
+          local buttons = PCSX.CONSTS.PAD.BUTTON
+          local input_sequence = {
+              {frame=225, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=235, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=238, action="press", button=buttons.START, name="START"},
+              {frame=248, action="release", button=buttons.START, name="START"},
+              {frame=251, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=261, action="release", button=buttons.CROSS, name="CROSS"},
+              {frame=264, action="press", button=buttons.START, name="START"},
+              {frame=274, action="release", button=buttons.START, name="START"},
+              {frame=277, action="press", button=buttons.UP, name="UP"},
+              {frame=287, action="release", button=buttons.UP, name="UP"},
+              {frame=290, action="press", button=buttons.CROSS, name="CROSS"},
+              {frame=298, action="release", button=buttons.CROSS, name="CROSS"},
+          }
+          local input_index = 1
+          local capture_targets = { [235]=true, [250]=true, [265]=true, [299]=true }
+
+          local function apply_input(action)
+              local expected = action.action == "press"
+              local ok, readback = pcall(function()
+                  if expected then pad.setOverride(action.button) else pad.clearOverride(action.button) end
+                  return pad.getButton(action.button)
+              end)
+              if not ok then
+                  print(string.format("PAD_INJECT frame=%d button=%s action=%s status=ERROR", frame_count, action.name, action.action))
+                  return
+              end
+              local status = (readback == expected) and "PASS" or "FAIL"
+              print(string.format("PAD_INJECT frame=%d button=%s action=%s readback=%s expected=%s status=%s",
+                  frame_count, action.name, action.action, tostring(readback), tostring(expected), status))
+          end
+
+          local function capture_vram(n)
+              local ok = pcall(function()
+                  local vram = PCSX.GPU.getVRAM()
+                  local raw_path = string.format("captures/raw/vram-frame-%06d.raw", n)
+                  local raw = assert(Support.File.open(raw_path, "TRUNCATE"), "cannot create private temporary VRAM capture")
+                  raw:writeMoveSlice(vram)
+                  raw:close()
+                  print(string.format("GPU_VRAM_CAPTURE frame=%d status=ok", n))
+              end)
+              if not ok then print(string.format("GPU_VRAM_CAPTURE frame=%d status=ERROR", n)) end
+          end
+
+          local function capture_frame(n)
+              local ok, err = pcall(function()
+                  local shot = PCSX.GPU.takeScreenShot()
+                  local bpp = (shot.bpp == 0) and 16 or 24
+                  local raw_path = string.format("captures/raw/frame-%06d.raw", n)
+                  local raw = assert(Support.File.open(raw_path, "TRUNCATE"), "cannot create private temporary screenshot")
+                  raw:writeMoveSlice(shot.data)
+                  raw:close()
+                  local meta_path = string.format("captures/frame-%06d.json", n)
+                  local meta = assert(io.open(meta_path, "wb"), "cannot create temporary screenshot metadata")
+                  meta:write(string.format(
+                      '{"frame":%d,"width":%d,"height":%d,"bpp":%d,"expected_bytes":%d,"guest_fps":%.4f}\n',
+                      n, shot.width, shot.height, bpp, shot.width * shot.height * bpp / 8,
+                      PCSX.GPU.getGuestFPS()
+                  ))
+                  meta:close()
+                  print(string.format("GPU_SCREENSHOT_CAPTURE frame=%d width=%d height=%d bpp=%d",
+                      n, shot.width, shot.height, bpp))
+              end)
+              if not ok then print(string.format("GPU_SCREENSHOT_CAPTURE frame=%d status=ERROR", n)) end
+          end
+
+          PCSX.GPU.startDump("captures/raw/runtime.gpudump")
+          print(string.format("GPU_DUMP_ARMED=%s", tostring(PCSX.GPU.isDumpArmed())))
+
+          shellReachedListener = PCSX.Events.createEventListener("ExecutionFlow::ShellReached", function()
+              print("EXECUTION_EVENT=ShellReached")
+          end)
+          runListener = PCSX.Events.createEventListener("ExecutionFlow::Run", function()
+              print("EXECUTION_EVENT=Run")
+          end)
+
+          gpuTrafficListener = PCSX.Events.createEventListener("GPU::Vsync", function()
+              frame_count = frame_count + 1
+              while input_index <= #input_sequence and input_sequence[input_index].frame == frame_count do
+                  apply_input(input_sequence[input_index])
+                  input_index = input_index + 1
+              end
+              if capture_targets[frame_count] then capture_frame(frame_count) end
+              if frame_count == 299 then capture_vram(frame_count) end
+              if frame_count % 100 == 0 then
+                  print(string.format("GPU_TRAFFIC_VSYNC frame=%d guest_fps=%.4f dump_frames=%d",
+                      frame_count, PCSX.GPU.getGuestFPS(), PCSX.GPU.getDumpFrames()))
+              end
+              if frame_count == stop_frame then
+                  PCSX.nextTick(function()
+                      local frames = PCSX.GPU.getDumpFrames()
+                      local recording = PCSX.GPU.isDumping()
+                      local armed = PCSX.GPU.isDumpArmed()
+                      PCSX.GPU.stopDump()
+                      print(string.format(
+                          "GPU_DUMP_STOP requested_frame=%d observed_vsync_count=%d dump_frames=%d was_recording=%s was_armed=%s",
+                          stop_frame, frame_count, frames, tostring(recording), tostring(armed)))
+                      PCSX.quit(0)
+                  end)
+              end
+          end)
+          print("GPU_TRAFFIC_PROBE=armed target_vsync=300; raw dump will be parsed then deleted")
+          LUA
+
+          timeout --signal=TERM --kill-after=5s "$GPU_BACKEND_TIMEOUT" \
+            stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+              -noupdate -bios "$WORK/openbios-fastboot.bin" -iso "$WORK/game-run.cue" \
+              -exec "$PAD_SETUP" -dofile "$WORK/gpu-traffic.lua" \
+              "$GPU_BACKEND_FLAG" -gdb -gdb-port 3333 -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+              > "$WORK/pcsx.stdout" 2>&1 &
+          emu_pid=$!
+
+          # Concurrent minimal RSP sampler: one atomic-ish bulk register packet per
+          # sample, no instruction/operand tracing. It records only PC/CP0 summaries
+          # and timestamps known loader markers from pcsx.stdout for correlation.
+          python3 -u - <<'PY' > "$WORK/cpu-state-summary.txt" 2>&1 &
+          import pathlib, re, signal, socket, time
+          from collections import Counter
+          HOST, PORT = "127.0.0.1", 3333
+          stop_requested = False
+
+          def request_graceful_stop(_signum, _frame):
+              global stop_requested
+              stop_requested = True
+
+          signal.signal(signal.SIGTERM, request_graceful_stop)
+          stdout_path = pathlib.Path("pcsx.stdout")
+          log_path = pathlib.Path("pcsx.log")
+          start = time.monotonic()
+          buf = bytearray()
+          marker_patterns = [
+              ("SYSTEM_CNF", "SYSTEM.CNF"),
+              ("BOOT_PATH", "BOOT ="),
+              ("EXEC_HEADER", "EXEC:PC0("),
+              ("EXECUTE_HANDOFF", "Execute !"),
+          ]
+          seen = set()
+          offsets = {str(stdout_path): 0, str(log_path): 0}
+
+          def packet(payload):
+              raw = payload.encode("ascii")
+              return b"$" + raw + b"#" + f"{sum(raw) & 255:02x}".encode("ascii")
+
+          def receive_response(sock, timeout=2.0):
+              deadline = time.monotonic() + timeout
+              global buf
+              while time.monotonic() < deadline:
+                  start_idx = buf.find(b"$")
+                  if start_idx >= 0:
+                      hash_idx = buf.find(b"#", start_idx + 1)
+                      if hash_idx >= 0 and len(buf) >= hash_idx + 3:
+                          body = bytes(buf[start_idx + 1:hash_idx])
+                          checksum = bytes(buf[hash_idx + 1:hash_idx + 3])
+                          del buf[:hash_idx + 3]
+                          expected = f"{sum(body) & 255:02x}".encode("ascii")
+                          if checksum.lower() != expected:
+                              raise ValueError("RSP checksum mismatch")
+                          try:
+                              sock.sendall(b"+")
+                          except OSError:
+                              pass
+                          # Ignore the PCSX console's O<hex> packets; they are not
+                          # stop replies or register payloads.
+                          if body.startswith(b"O") and len(body) > 1 and all(c in b"0123456789abcdefABCDEF" for c in body[1:]):
+                              continue
+                          return body.decode("ascii", "replace")
+                  remaining = deadline - time.monotonic()
+                  if remaining <= 0:
+                      break
+                  sock.settimeout(max(0.1, remaining))
+                  try:
+                      chunk = sock.recv(4096)
+                  except socket.timeout:
+                      continue
+                  if not chunk:
+                      raise ConnectionError("RSP peer closed")
+                  buf.extend(chunk)
+              raise TimeoutError("no RSP response")
+
+          def request(sock, payload):
+              sock.sendall(packet(payload))
+              return receive_response(sock)
+
+          code_windows = {}
+          code_window_errors = {}
+          code_edges = {}
+          branch_meta_by_target = {}
+          branch_compare_counts = Counter()
+          branch_load_region_counts = Counter()
+
+          def extract_control_edges(base, raw_bytes):
+              edges = []
+              hot_lo, hot_hi = 0x800372c0, 0x800373ff
+              conditional_ops = (0x01, 0x04, 0x05, 0x06, 0x07, 0x14, 0x15, 0x16, 0x17)
+              for offset in range(0, len(raw_bytes) - 3, 4):
+                  pc = base + offset
+                  if not (hot_lo <= pc <= hot_hi):
+                      continue
+                  word = int.from_bytes(raw_bytes[offset:offset + 4], "little")
+                  op = (word >> 26) & 0x3f
+                  funct = word & 0x3f
+                  imm = word & 0xffff
+                  signed_imm = imm if imm < 0x8000 else imm - 0x10000
+                  if op in conditional_ops:
+                      target = pc + 4 + (signed_imm << 2)
+                      kind_by_op = {
+                          0x01: "regimm-branch",
+                          0x04: "beq",
+                          0x05: "bne",
+                          0x06: "blez",
+                          0x07: "bgtz",
+                          0x14: "beql",
+                          0x15: "bnel",
+                          0x16: "blezl",
+                          0x17: "bgtzl",
+                      }
+                      kind = kind_by_op[op]
+                  elif op in (0x02, 0x03):
+                      target = ((pc + 4) & 0xf0000000) | ((word & 0x03ffffff) << 2)
+                      kind = "direct-jump"
+                  elif op == 0 and funct in (0x08, 0x09):
+                      target = None
+                      kind = "register-jump"
+                  else:
+                      continue
+                  edges.append((pc, kind, target))
+              return edges
+
+          def written_gpr(word):
+              op = (word >> 26) & 0x3f
+              rs = (word >> 21) & 0x1f
+              rt = (word >> 16) & 0x1f
+              rd = (word >> 11) & 0x1f
+              funct = word & 0x3f
+              dest = None
+              if op == 0:
+                  if funct not in (0x08, 0x0c, 0x0d):
+                      dest = rd
+              elif op == 0x03:
+                  dest = 31
+              elif op in (0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+                          0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26):
+                  dest = rt
+              elif op == 0x10 and rs in (0, 2):
+                  dest = rt
+              elif op == 0x12 and rs in (0, 2):
+                  dest = rt
+              return dest if dest else None
+
+          def instruction_family(word):
+              op = (word >> 26) & 0x3f
+              funct = word & 0x3f
+              if op == 0:
+                  return "control" if funct in (0x08, 0x09, 0x0c, 0x0d) else "special_arithmetic"
+              if op in (0x02, 0x03):
+                  return "jump"
+              if op in (0x01, 0x04, 0x05, 0x06, 0x07, 0x14, 0x15, 0x16, 0x17):
+                  return "conditional_branch"
+              if op == 0x10:
+                  return "cop0"
+              if op == 0x12:
+                  return "cop2"
+              if op in (0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x30, 0x32):
+                  return "load"
+              if op in (0x28, 0x29, 0x2a, 0x2b, 0x2e, 0x38, 0x3a):
+                  return "store"
+              if op in (0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f):
+                  return "immediate_arithmetic"
+              return "other"
+
+          def latest_prior_def_family(raw_bytes, branch_offset, reg):
+              if reg == 0:
+                  return "constant-zero"
+              for prev_offset in range(branch_offset - 4, -1, -4):
+                  prior_word = int.from_bytes(raw_bytes[prev_offset:prev_offset + 4], "little")
+                  if written_gpr(prior_word) == reg:
+                      return instruction_family(prior_word)
+              return "outside-window"
+
+          def latest_prior_load_info(raw_bytes, branch_offset, reg):
+              if reg == 0:
+                  return {"family": "constant-zero"}
+              for prev_offset in range(branch_offset - 4, -1, -4):
+                  prior_word = int.from_bytes(raw_bytes[prev_offset:prev_offset + 4], "little")
+                  if written_gpr(prior_word) != reg:
+                      continue
+                  family = instruction_family(prior_word)
+                  info = {"family": family}
+                  if family != "load":
+                      return info
+                  base_reg = (prior_word >> 21) & 0x1f
+                  imm = prior_word & 0xffff
+                  signed_offset = imm if imm < 0x8000 else imm - 0x10000
+                  base_stable = True
+                  for later_offset in range(prev_offset + 4, branch_offset + 8, 4):
+                      if later_offset + 4 > len(raw_bytes):
+                          break
+                      later_word = int.from_bytes(raw_bytes[later_offset:later_offset + 4], "little")
+                      if written_gpr(later_word) == base_reg:
+                          base_stable = False
+                          break
+                  info.update({
+                      "base_reg": base_reg,
+                      "signed_offset": signed_offset,
+                      "base_stable": base_stable,
+                  })
+                  return info
+              return {"family": "outside-window"}
+
+          def classify_effective_region(address):
+              if 0xbfc00000 <= address < 0xbfc80000 or 0x1fc00000 <= address < 0x1fc80000:
+                  return "bios"
+              if 0x1f800000 <= address < 0x1f800400:
+                  return "scratchpad"
+              if 0x1f801000 <= address < 0x1f802000:
+                  if 0x1f801800 <= address < 0x1f801810:
+                      return "mmio-cdrom"
+                  if 0x1f801810 <= address < 0x1f801820:
+                      return "mmio-gpu"
+                  if 0x1f801c00 <= address < 0x1f801e00:
+                      return "mmio-spu"
+                  if 0x1f801070 <= address < 0x1f801080:
+                      return "mmio-interrupt"
+                  if 0x1f801040 <= address < 0x1f801060:
+                      return "mmio-serial"
+                  if 0x1f801080 <= address < 0x1f801100:
+                      return "mmio-dma"
+                  return "mmio-other"
+              if 0x80000000 <= address < 0x80800000:
+                  return "ram-cached"
+              if 0xa0000000 <= address < 0xa0800000:
+                  return "ram-uncached"
+              if address < 0x00800000:
+                  return "ram-physical"
+              if 0x1f000000 <= address < 0x1f800000:
+                  return "expansion"
+              return "unknown"
+
+          def extract_branch_meta(base, raw_bytes):
+              hot_lo, hot_hi = 0x800372c0, 0x800373ff
+              conditional_ops = (0x01, 0x04, 0x05, 0x06, 0x07, 0x14, 0x15, 0x16, 0x17)
+              names = {
+                  0x01: "regimm-branch", 0x04: "beq", 0x05: "bne",
+                  0x06: "blez", 0x07: "bgtz", 0x14: "beql",
+                  0x15: "bnel", 0x16: "blezl", 0x17: "bgtzl",
+              }
+              found = []
+              for offset in range(0, len(raw_bytes) - 7, 4):
+                  pc = base + offset
+                  if not (hot_lo <= pc <= hot_hi):
+                      continue
+                  word = int.from_bytes(raw_bytes[offset:offset + 4], "little")
+                  op = (word >> 26) & 0x3f
+                  if op not in conditional_ops:
+                      continue
+                  imm = word & 0xffff
+                  signed_imm = imm if imm < 0x8000 else imm - 0x10000
+                  target = pc + 4 + (signed_imm << 2)
+                  rs, rt = (word >> 21) & 0x1f, (word >> 16) & 0x1f
+                  delay_word = int.from_bytes(raw_bytes[offset + 4:offset + 8], "little")
+                  delay_dest = written_gpr(delay_word)
+                  operands = (rs,) if op in (0x06, 0x07, 0x16, 0x17) else (rs, rt)
+                  delay_writes_operand = delay_dest in operands if delay_dest is not None else False
+                  found.append({
+                      "source": pc, "kind": names[op], "target": target,
+                      "rs": rs, "rt": rt, "operands": operands,
+                      "delay_writes_operand": delay_writes_operand,
+                      "lhs_latest_def": latest_prior_def_family(raw_bytes, offset, rs),
+                      "rhs_latest_def": latest_prior_def_family(raw_bytes, offset, rt) if op not in (0x06, 0x07, 0x16, 0x17) else "not-compared",
+                      "lhs_load_info": latest_prior_load_info(raw_bytes, offset, rs),
+                      "rhs_load_info": latest_prior_load_info(raw_bytes, offset, rt) if op not in (0x06, 0x07, 0x16, 0x17) else {"family": "not-compared"},
+                  })
+              return found
+
+          def classify_window(base, raw_bytes):
+              from collections import Counter
+              counts = Counter()
+              backward = 0
+              forward = 0
+              for offset in range(0, len(raw_bytes) - 3, 4):
+                  pc = base + offset
+                  word = int.from_bytes(raw_bytes[offset:offset + 4], 'little')
+                  op = (word >> 26) & 0x3f
+                  funct = word & 0x3f
+                  imm = word & 0xffff
+                  signed_imm = imm if imm < 0x8000 else imm - 0x10000
+                  if op == 0:
+                      if funct == 0x08: counts['jr'] += 1
+                      elif funct == 0x09: counts['jalr'] += 1
+                      elif funct == 0x0c: counts['syscall'] += 1
+                      elif funct == 0x0d: counts['break'] += 1
+                      else: counts['special_arithmetic'] += 1
+                  elif op in (0x02, 0x03):
+                      counts['jump'] += 1
+                  elif op in (0x01, 0x04, 0x05, 0x06, 0x07, 0x14, 0x15, 0x16, 0x17):
+                      counts['conditional_branch'] += 1
+                      target = pc + 4 + (signed_imm << 2)
+                      if target < pc: backward += 1
+                      elif target > pc: forward += 1
+                  elif op == 0x10: counts['cop0'] += 1
+                  elif op == 0x12: counts['cop2'] += 1
+                  elif op in (0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x30, 0x32):
+                      counts['load'] += 1
+                  elif op in (0x28, 0x29, 0x2a, 0x2b, 0x2e, 0x38, 0x3a):
+                      counts['store'] += 1
+                  elif op in (0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f):
+                      counts['immediate_arithmetic'] += 1
+                  else:
+                      counts['other'] += 1
+              return counts, backward, forward
+
+          def inspect_code_window(sock, pc_text):
+              try:
+                  pc = int(pc_text, 16)
+              except ValueError:
+                  return
+              if not (0x80010000 <= pc <= 0x8006d7ff):
+                  return
+              base = pc & ~0x3f
+              if base in code_windows or base in code_window_errors:
+                  return
+              try:
+                  payload = request(sock, f'm{base:x},40')
+                  if len(payload) != 128 or any(ch not in '0123456789abcdefABCDEF' for ch in payload):
+                      code_window_errors[base] = 'invalid_response'
+                      print(f"CPU_CODE_WINDOW_UNAVAILABLE base=0x{base:08x} reason=invalid_response", flush=True)
+                      return
+                  raw_bytes = bytes.fromhex(payload)
+                  result = classify_window(base, raw_bytes)
+                  code_windows[base] = result
+                  code_edges[base] = extract_control_edges(base, raw_bytes)
+                  for meta in extract_branch_meta(base, raw_bytes):
+                      branch_meta_by_target.setdefault(meta["target"], []).append(meta)
+                  counts, backward, forward = result
+                  fields = " ".join(f"{key}={counts[key]}" for key in (
+                      "conditional_branch", "jr", "jalr", "jump", "syscall", "break",
+                      "cop0", "cop2", "load", "store", "immediate_arithmetic",
+                      "special_arithmetic", "other"
+                  ))
+                  print(f"CPU_CODE_WINDOW base=0x{base:08x} bytes=64 backward_branches={backward} forward_branches={forward} {fields}", flush=True)
+                  for source, kind, target in code_edges.get(base, []):
+                      target_text = f"0x{target:08x}" if target is not None else "dynamic-register"
+                      print(f"CPU_CODE_EDGE from=0x{source:08x} kind={kind} target={target_text}", flush=True)
+              except Exception as exc:
+                  code_window_errors[base] = type(exc).__name__
+                  print(f"CPU_CODE_WINDOW_UNAVAILABLE base=0x{base:08x} error_type={type(exc).__name__}", flush=True)
+
+
+          def read_markers():
+              for path in (stdout_path, log_path):
+                  key = str(path)
+                  try:
+                      with path.open("rb") as file:
+                          file.seek(offsets[key])
+                          chunk = file.read()
+                          offsets[key] = file.tell()
+                  except FileNotFoundError:
+                      continue
+                  for line in chunk.decode("utf-8", "replace").splitlines():
+                      for label, marker in marker_patterns:
+                          if label not in seen and marker in line:
+                              seen.add(label)
+                              print(f"CPU_CORRELATION_MARKER elapsed_s={time.monotonic()-start:.2f} marker={label} source={path.name}", flush=True)
+
+          sock = None
+          for _ in range(30):
+              try:
+                  sock = socket.create_connection((HOST, PORT), timeout=1.0)
+                  break
+              except OSError:
+                  time.sleep(0.5)
+          if sock is None:
+              print("CPU_RSP_CONNECT=failed", flush=True)
+              raise SystemExit(0)
+
+          sock.settimeout(2.0)
+          print("CPU_RSP_CONNECT=connected", flush=True)
+          try:
+              try:
+                  caps = request(sock, "qSupported:multiprocess+")
+                  print("CPU_RSP_QSUPPORTED=ok" if caps else "CPU_RSP_QSUPPORTED=empty", flush=True)
+              except Exception as exc:
+                  print(f"CPU_RSP_QSUPPORTED=failed type={type(exc).__name__}", flush=True)
+
+              idx = 0
+              hot_lo, hot_hi = 0x800372c0, 0x800373ff
+              hot_until = 0.0
+              while time.monotonic() - start < 120 and not stop_requested:
+                  read_markers()
+                  try:
+                      registers = request(sock, "g")
+                      if len(registers) == 576 and all(c in "0123456789abcdefABCDEF" for c in registers):
+                          def reg(number):
+                              raw = bytes.fromhex(registers[number*8:number*8+8])
+                              return f"0x{int.from_bytes(raw,'little'):08x}"
+                          pc, status, badvaddr, cause = reg(37), reg(32), reg(35), reg(36)
+                          print(f"CPU_BULK_SAMPLE index={idx} elapsed_s={time.monotonic()-start:.2f} pc={pc} cp0_status={status} cp0_badvaddr={badvaddr} cp0_cause={cause} bulk_valid=yes", flush=True)
+                          pc_value = int(pc, 16)
+                          gpr_values = []
+                          for reg_index in range(32):
+                              reg_raw = bytes.fromhex(registers[reg_index*8:reg_index*8+8])
+                              gpr_values.append(int.from_bytes(reg_raw, "little"))
+                          sample_now = time.monotonic()
+                          in_hot_window = hot_lo <= pc_value <= hot_hi
+                          if in_hot_window:
+                              hot_until = max(hot_until, sample_now + 8.0)
+                          if sample_now < hot_until:
+                              area = "inside" if in_hot_window else "outside"
+                              print(f"CPU_FAST_SAMPLE elapsed_s={sample_now-start:.2f} pc={pc} cp0_status={status} cp0_badvaddr={badvaddr} cp0_cause={cause} area={area}", flush=True)
+                          inspect_code_window(sock, pc)
+                          for meta in branch_meta_by_target.get(pc_value, []):
+                              if meta["delay_writes_operand"]:
+                                  relation = "delay-slot-write"
+                              elif meta["kind"] in ("bne", "bnel", "beq", "beql"):
+                                  equal = gpr_values[meta["rs"]] == gpr_values[meta["rt"]]
+                                  relation = "equal" if equal else "unequal"
+                              elif meta["kind"] in ("blez", "blezl", "bgtz", "bgtzl"):
+                                  value = gpr_values[meta["rs"]]
+                                  signed = value if value < 0x80000000 else value - 0x100000000
+                                  relation = "zero" if signed == 0 else ("negative" if signed < 0 else "positive")
+                              else:
+                                  relation = "relation-not-modeled"
+                              key = (
+                                  meta["source"], meta["kind"], meta["target"], relation,
+                                  meta["lhs_latest_def"], meta["rhs_latest_def"]
+                              )
+                              branch_compare_counts[key] += 1
+                              for side in ("lhs", "rhs"):
+                                  load_info = meta.get(f"{side}_load_info", {})
+                                  if load_info.get("family") != "load":
+                                      continue
+                                  if not load_info.get("base_stable", False):
+                                      region = "base-changed-after-load"
+                                  elif "base_reg" not in load_info or "signed_offset" not in load_info:
+                                      region = "load-address-unresolved"
+                                  else:
+                                      effective_address = (
+                                          gpr_values[load_info["base_reg"]] + load_info["signed_offset"]
+                                      ) & 0xffffffff
+                                      region = classify_effective_region(effective_address)
+                                  region_key = (meta["source"], meta["target"], side, region)
+                                  branch_load_region_counts[region_key] += 1
+                      else:
+                          print(f"CPU_BULK_SAMPLE index={idx} elapsed_s={time.monotonic()-start:.2f} bulk_valid=no response_len={len(registers)} response_kind={registers[:8]}", flush=True)
+                  except Exception as exc:
+                      print(f"CPU_BULK_SAMPLE_ERROR index={idx} elapsed_s={time.monotonic()-start:.2f} error_type={type(exc).__name__}", flush=True)
+                  idx += 1
+                  time.sleep(0.1 if time.monotonic() < hot_until else 1.0)
+              read_markers()
+          finally:
+              sock.close()
+          print(f"CPU_CODE_WINDOWS_VALID={len(code_windows)}", flush=True)
+          print(f"CPU_CODE_WINDOWS_UNAVAILABLE={len(code_window_errors)}", flush=True)
+          for (source, kind, target, relation, lhs_def, rhs_def), count in sorted(branch_compare_counts.items()):
+              print(
+                  f"CPU_BRANCH_COMPARE_SUMMARY source=0x{source:08x} kind={kind} target=0x{target:08x} "
+                  f"target_entry_relation={relation} lhs_latest_def={lhs_def} rhs_latest_def={rhs_def} count={count}",
+                  flush=True,
+              )
+          for (source, target, side, region), count in sorted(branch_load_region_counts.items()):
+              print(
+                  f"CPU_BRANCH_LOAD_REGION source=0x{source:08x} target=0x{target:08x} side={side} region={region} count={count}",
+                  flush=True,
+              )
+          for base, (counts, backward, forward) in sorted(code_windows.items()):
+              fields = " ".join(f"{key}={counts[key]}" for key in (
+                  "conditional_branch", "jr", "jalr", "jump", "syscall", "break",
+                  "cop0", "cop2", "load", "store", "immediate_arithmetic",
+                  "special_arithmetic", "other"
+              ))
+              print(f"CPU_CODE_WINDOW base=0x{base:08x} bytes=64 backward_branches={backward} forward_branches={forward} {fields}", flush=True)
+              for source, kind, target in code_edges.get(base, []):
+                  target_text = f"0x{target:08x}" if target is not None else "dynamic-register"
+                  print(f"CPU_CODE_EDGE from=0x{source:08x} kind={kind} target={target_text}", flush=True)
+          PY
+          sampler_pid=$!
+
+          set +e
+          wait "$emu_pid"
+          emu_rc=$?
+          set -e
+          emu_pid=""
+          echo "EMULATOR_EXIT_CODE=$emu_rc"
+          if kill -0 "$sampler_pid" 2>/dev/null; then kill "$sampler_pid" 2>/dev/null || true; fi
+          wait "$sampler_pid" 2>/dev/null || true
+          grep -E 'GPU_BACKEND_SELECTED|PAD_SETUP|PAD_INJECT|GPU_SCREENSHOT_CAPTURE|GPU_VRAM_CAPTURE|GPU_DUMP|GPU_TRAFFIC|EXECUTION_EVENT|SYSTEM.CNF|BOOT =|EXEC:PC0|Execute !|error|Error|ERROR' \
+            "$WORK/pcsx.stdout" "$WORK/pcsx.log" > "$WORK/captures/important-log-lines.txt" || true
+          cat "$WORK/captures/important-log-lines.txt" || true
+          echo "GPU_TRAFFIC_EMULATOR_STEP_DONE=1"
+
+      - name: Summarize GPU packet traffic and delete raw dump
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          python3 - <<'PY'
+          import json
+          import struct
+          from collections import Counter
+          from pathlib import Path
+
+          path = Path("captures/raw/runtime.gpudump")
+          output = []
+          packet_names = {0:"GP0", 1:"GP1", 2:"VSync", 3:"ThrowAway", 4:"Readback",
+                          5:"TraceBegin", 6:"GPUVersion", 16:"GameID", 17:"VideoFormat", 18:"Comment"}
+          if not path.exists():
+              output.append("GPU_DUMP_RESULT=missing")
+          else:
+              data = path.read_bytes()
+              output.append(f"GPU_DUMP_FILE_BYTES={len(data)}")
+              if len(data) < 16 or data[:16] != b"PSXGPUDUMPv1r1\0\0":
+                  output.append("GPU_DUMP_RESULT=invalid_magic_or_too_short")
+              else:
+                  pos = 16
+                  packets_before = Counter()
+                  packets_live = Counter()
+                  words_before = Counter()
+                  words_live = Counter()
+                  live_gp0_words = []
+                  live_gp0_words_by_bin = {
+                      "000_049": [], "050_099": [], "100_199": [], "200_299": []
+                  }
+                  live_vsync_count = 0
+                  trace_markers = 0
+                  truncated = False
+                  packet_count = 0
+                  live = False
+                  while pos + 4 <= len(data):
+                      header = struct.unpack_from("<I", data, pos)[0]
+                      pos += 4
+                      kind = (header >> 24) & 0xff
+                      count = header & 0xffffff
+                      size = count * 4
+                      if pos + size > len(data):
+                          truncated = True
+                          break
+                      packet_count += 1
+                      if kind == 5:
+                          trace_markers += 1
+                          live = True
+                      elif live:
+                          packets_live[kind] += 1
+                          words_live[kind] += count
+                          if kind == 2:
+                              live_vsync_count += 1
+                      else:
+                          packets_before[kind] += 1
+                          words_before[kind] += count
+                      if live and kind == 0 and count:
+                          chunk_words = list(struct.unpack_from(f"<{count}I", data, pos))
+                          live_gp0_words.extend(chunk_words)
+                          if live_vsync_count < 50:
+                              bucket = "000_049"
+                          elif live_vsync_count < 100:
+                              bucket = "050_099"
+                          elif live_vsync_count < 200:
+                              bucket = "100_199"
+                          else:
+                              bucket = "200_299"
+                          live_gp0_words_by_bin[bucket].extend(chunk_words)
+                      pos += size
+                  output += [
+                      f"GPU_DUMP_RESULT=parsed",
+                      f"GPU_DUMP_PACKETS_TOTAL={packet_count}",
+                      f"GPU_DUMP_TRACE_BEGIN_MARKERS={trace_markers}",
+                      f"GPU_DUMP_TRUNCATED={str(truncated).lower()}",
+                  ]
+                  for kind in (0,1,2,3,4):
+                      name = packet_names[kind]
+                      output.append(f"GPU_DUMP_PRETRACE_{name}_PACKETS={packets_before[kind]}")
+                      output.append(f"GPU_DUMP_PRETRACE_{name}_WORDS={words_before[kind]}")
+                      output.append(f"GPU_DUMP_LIVE_{name}_PACKETS={packets_live[kind]}")
+                      output.append(f"GPU_DUMP_LIVE_{name}_WORDS={words_live[kind]}")
+                  # Decode only command-family names and counts; never export command/operand words.
+                  def decode_gp0(words):
+                      families = Counter()
+                      cursor = 0
+                      stop = "end_of_stream"
+                      while cursor < len(words):
+                          word = words[cursor]
+                          op = (word >> 24) & 0xff
+                          remaining = len(words) - cursor
+                          length = None
+                          family = None
+                          if op == 0x00:
+                              family, length = "nop", 1
+                          elif op == 0x01:
+                              family, length = "clear-cache", 1
+                          elif op == 0x02:
+                              family, length = "fill-vram", 3
+                          elif 0x20 <= op <= 0x23:
+                              family, length = "flat-triangle", 4
+                          elif 0x24 <= op <= 0x27:
+                              family, length = "textured-triangle", 7
+                          elif 0x28 <= op <= 0x2b:
+                              family, length = "flat-quad", 5
+                          elif 0x2c <= op <= 0x2f:
+                              family, length = "textured-quad", 9
+                          elif 0x30 <= op <= 0x33:
+                              family, length = "gouraud-triangle", 6
+                          elif 0x34 <= op <= 0x37:
+                              family, length = "gouraud-textured-triangle", 9
+                          elif 0x38 <= op <= 0x3b:
+                              family, length = "gouraud-quad", 8
+                          elif 0x3c <= op <= 0x3f:
+                              family, length = "gouraud-textured-quad", 12
+                          elif 0x40 <= op <= 0x47:
+                              family, length = "flat-line", 3
+                          elif 0x48 <= op <= 0x4f:
+                              stop = "variable-polyline-unparsed"
+                              break
+                          elif 0x50 <= op <= 0x57:
+                              family, length = "gouraud-line", 4
+                          elif 0x58 <= op <= 0x5f:
+                              stop = "variable-gouraud-polyline-unparsed"
+                              break
+                          elif 0x60 <= op <= 0x63:
+                              family, length = "monochrome-rectangle", 2
+                          elif 0x64 <= op <= 0x67:
+                              family, length = "textured-rectangle", 3
+                          elif 0x68 <= op <= 0x6b:
+                              family, length = "monochrome-dot-rectangle", 2
+                          elif 0x70 <= op <= 0x73:
+                              family, length = "texture-sprite-8x8", 3
+                          elif 0x74 <= op <= 0x77:
+                              family, length = "texture-sprite-16x16", 3
+                          elif 0x78 <= op <= 0x7f:
+                              family, length = "texture-rectangle-variable", 4
+                          elif 0x80 <= op <= 0x9f:
+                              family, length = "vram-to-vram-copy", 4
+                          elif 0xa0 <= op <= 0xbf:
+                              if remaining < 3:
+                                  stop = "short-load-image-header"
+                                  break
+                              size_word = words[cursor + 2]
+                              width = (size_word & 0x3ff) or 1024
+                              height = ((size_word >> 16) & 0x1ff) or 512
+                              family = "load-image-to-vram"
+                              length = 3 + (width * height + 1) // 2
+                          elif 0xc0 <= op <= 0xdf:
+                              family, length = "store-image-from-vram", 3
+                          elif 0xe0 <= op <= 0xe6:
+                              family, length = "gpu-state-setting", 1
+                          else:
+                              stop = "unknown-or-reserved-opcode"
+                              break
+                          if length is None or length > remaining:
+                              stop = "command-incomplete-at-end-of-capture"
+                              break
+                          families[family] += 1
+                          cursor += length
+                      return families, cursor, stop
+
+                  overall_families, overall_decoded, overall_stop = decode_gp0(live_gp0_words)
+                  output.append(f"GPU_DUMP_LIVE_GP0_DECODED_WORDS={overall_decoded}")
+                  output.append(f"GPU_DUMP_LIVE_GP0_DECODE_STOP={overall_stop}")
+                  output.append(f"GPU_DUMP_LIVE_GP0_DECODED_COMMANDS={sum(overall_families.values())}")
+                  for family, count in sorted(overall_families.items()):
+                      output.append(f"GPU_DUMP_LIVE_GP0_COMMAND_FAMILY_{family}={count}")
+                  for bucket, words in live_gp0_words_by_bin.items():
+                      families, decoded, stop = decode_gp0(words)
+                      output.append(f"GPU_DUMP_GP0_VSYNC_BIN_{bucket}_WORDS={len(words)}")
+                      output.append(f"GPU_DUMP_GP0_VSYNC_BIN_{bucket}_DECODED_WORDS={decoded}")
+                      output.append(f"GPU_DUMP_GP0_VSYNC_BIN_{bucket}_DECODE_STOP={stop}")
+                      output.append(f"GPU_DUMP_GP0_VSYNC_BIN_{bucket}_COMMANDS={sum(families.values())}")
+                      for family, count in sorted(families.items()):
+                          output.append(f"GPU_DUMP_GP0_VSYNC_BIN_{bucket}_FAMILY_{family}={count}")
+                  output.append(f"GPU_DUMP_LIVE_GPU_TRAFFIC_PRESENT={str(words_live[0] > 0 or words_live[1] > 0).lower()}")
+              path.unlink(missing_ok=True)
+
+          # Inspect the 1 MiB PlayStation VRAM snapshot in memory, then discard
+          # it with other raw captures before any artifact is uploaded.
+          vram_path = Path("captures/raw/vram-frame-000299.raw")
+          if vram_path.exists():
+              vram = vram_path.read_bytes()
+              expected_vram_bytes = 1024 * 512 * 2
+              if len(vram) != expected_vram_bytes:
+                  output.append("GPU_VRAM_FRAME_299_STATUS=byte_count_mismatch")
+                  output.append(f"GPU_VRAM_FRAME_299_BYTES={len(vram)}")
+              else:
+                  words = [item[0] for item in struct.iter_unpack("<H", vram)]
+                  colors = [word & 0x7fff for word in words]
+                  output.extend([
+                      "GPU_VRAM_FRAME_299_STATUS=parsed",
+                      f"GPU_VRAM_FRAME_299_BYTES={len(vram)}",
+                      f"GPU_VRAM_FRAME_299_DISTINCT_RGB555_COLORS={len(set(colors))}",
+                      f"GPU_VRAM_FRAME_299_NONBLACK_PIXELS={sum(color != 0 for color in colors)}",
+                      f"GPU_VRAM_FRAME_299_TOTAL_PIXELS={len(colors)}",
+                  ])
+          else:
+              output.append("GPU_VRAM_FRAME_299_STATUS=missing")
+
+          # Inspect screenshot pixel diversity in memory, then discard every
+          # temporary screenshot and metadata file before artifact upload.
+          for meta_path in sorted(Path("captures").glob("frame-*.json")):
+              try:
+                  meta = json.loads(meta_path.read_text())
+                  frame = int(meta["frame"])
+                  width, height, bpp = int(meta["width"]), int(meta["height"]), int(meta["bpp"])
+                  expected = int(meta["expected_bytes"])
+                  raw_path = Path("captures/raw") / f"frame-{frame:06d}.raw"
+                  raw = raw_path.read_bytes() if raw_path.exists() else b""
+                  prefix = f"GPU_SCREENSHOT_FRAME_{frame}"
+                  if width <= 0 or height <= 0 or expected <= 0:
+                      output.append(f"{prefix}_STATUS=invalid_dimensions")
+                      output.append(f"{prefix}_WIDTH={width}")
+                      output.append(f"{prefix}_HEIGHT={height}")
+                  elif len(raw) != expected:
+                      output.append(f"{prefix}_STATUS=byte_count_mismatch")
+                      output.append(f"{prefix}_EXPECTED_BYTES={expected}")
+                      output.append(f"{prefix}_ACTUAL_BYTES={len(raw)}")
+                  elif bpp == 16:
+                      words = [item[0] for item in struct.iter_unpack("<H", raw)]
+                      colors = [word & 0x7fff for word in words]
+                      output.extend([
+                          f"{prefix}_STATUS=parsed",
+                          f"{prefix}_WIDTH={width}",
+                          f"{prefix}_HEIGHT={height}",
+                          f"{prefix}_BPP={bpp}",
+                          f"{prefix}_DISTINCT_RGB555_COLORS={len(set(colors))}",
+                          f"{prefix}_NONBLACK_PIXELS={sum(color != 0 for color in colors)}",
+                          f"{prefix}_TOTAL_PIXELS={len(colors)}",
+                      ])
+                  elif bpp == 24:
+                      pixels = [raw[i:i+3] for i in range(0, expected, 3)]
+                      output.extend([
+                          f"{prefix}_STATUS=parsed",
+                          f"{prefix}_WIDTH={width}",
+                          f"{prefix}_HEIGHT={height}",
+                          f"{prefix}_BPP={bpp}",
+                          f"{prefix}_DISTINCT_RGB_COLORS={len(set(pixels))}",
+                          f"{prefix}_NONBLACK_PIXELS={sum(any(pixel) for pixel in pixels)}",
+                          f"{prefix}_TOTAL_PIXELS={len(pixels)}",
+                      ])
+                  else:
+                      output.append(f"{prefix}_STATUS=unsupported_bpp")
+                      output.append(f"{prefix}_BPP={bpp}")
+              except Exception as exc:
+                  output.append(f"GPU_SCREENSHOT_META_ERROR type={type(exc).__name__}")
+              finally:
+                  meta_path.unlink(missing_ok=True)
+
+          raw_dir = Path("captures/raw")
+          if raw_dir.exists():
+              for item in raw_dir.iterdir():
+                  if item.is_file():
+                      item.unlink(missing_ok=True)
+                  elif item.is_dir():
+                      import shutil
+                      shutil.rmtree(item)
+              raw_dir.rmdir()
+          output.append("RAW_GPU_DUMP_REMOVED=1")
+          output.append("RAW_TEMP_SCREENSHOTS_REMOVED=1")
+          Path("captures/gpu-traffic-summary.txt").write_text("\n".join(output) + "\n")
+          cpu_path = Path("cpu-state-summary.txt")
+          if cpu_path.exists():
+              cpu_text = cpu_path.read_text(errors="replace")
+              cpu_raw_lines = cpu_text.splitlines()
+              cpu_lines = [
+                  line for line in cpu_raw_lines
+                  if line.startswith((
+                      "CPU_RSP_", "CPU_CORRELATION_MARKER",
+                      "CPU_BULK_SAMPLE index=", "CPU_BULK_SAMPLE_ERROR",
+                      "CPU_CODE_WINDOWS_", "CPU_CODE_WINDOW base=", "CPU_CODE_WINDOW_UNAVAILABLE", "CPU_CODE_EDGE ", "CPU_BRANCH_COMPARE_SUMMARY ", "CPU_BRANCH_LOAD_REGION "
+                  ))
+              ]
+              fast_samples = []
+              for line in cpu_raw_lines:
+                  if not line.startswith("CPU_FAST_SAMPLE "):
+                      continue
+                  fields = dict(part.split("=", 1) for part in line.split() if "=" in part)
+                  if fields.get("pc"):
+                      fast_samples.append((fields["pc"], fields.get("area", "unknown")))
+              pc_counts = Counter(pc for pc, _area in fast_samples)
+              transition_counts = Counter(
+                  (fast_samples[i - 1][0], fast_samples[i][0])
+                  for i in range(1, len(fast_samples))
+              )
+              cpu_lines.extend([
+                  "CPU_HOTWINDOW_RANGE=0x800372c0-0x800373ff",
+                  "CPU_HOTWINDOW_INTERVAL_ACTIVE=0.1s",
+                  "CPU_HOTWINDOW_HOLD_SECONDS=8",
+                  f"CPU_HOTWINDOW_SAMPLES={len(fast_samples)}",
+                  f"CPU_HOTWINDOW_IN_RANGE_SAMPLES={sum(area == 'inside' for _pc, area in fast_samples)}",
+                  f"CPU_HOTWINDOW_OUTSIDE_SAMPLES={sum(area == 'outside' for _pc, area in fast_samples)}",
+                  f"CPU_HOTWINDOW_UNIQUE_PCS={len(pc_counts)}",
+              ])
+              for pc, count in sorted(pc_counts.items(), key=lambda item: (-item[1], item[0]))[:30]:
+                  cpu_lines.append(f"CPU_HOTWINDOW_PC pc={pc} count={count}")
+              for (source, target), count in sorted(
+                  transition_counts.items(), key=lambda item: (-item[1], item[0])
+              )[:40]:
+                  cpu_lines.append(f"CPU_HOTWINDOW_TRANSITION from={source} to={target} count={count}")
+              Path("captures/cpu-state-summary.txt").write_text("\n".join(cpu_lines) + "\n")
+          else:
+              Path("captures/cpu-state-summary.txt").write_text("CPU_RSP_SUMMARY=missing\n")
+          print("\n".join(output))
+          PY
+
+      - name: Upload only text summary (never upload raw GPU dump)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-private-gpu-traffic-summary
+          path: |
+            ${{ env.WORK }}/captures/gpu-traffic-summary.txt
+            ${{ env.WORK }}/captures/cpu-state-summary.txt
+            ${{ env.WORK }}/captures/important-log-lines.txt
+          if-no-files-found: warn
+          retention-days: 1
+
+      - name: Remove runtime assets from ephemeral runner
+        if: always()
+        shell: bash
+        run: |
+          rm -rf "$WORK"

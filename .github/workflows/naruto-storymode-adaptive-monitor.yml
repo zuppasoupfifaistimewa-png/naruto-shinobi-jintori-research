@@ -1,0 +1,101 @@
+name: Naruto Story Mode adaptive player monitor
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Naruto Story Mode adaptive checkpoint player
+    types:
+      - completed
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Inspect recent adaptive player run, duration and private evidence artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          TRIGGER_RUN_ID: ${{ github.event.workflow_run.id }}
+          TRIGGER_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          EVENT_NAME: ${{ github.event_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          API="https://api.github.com/repos/$REPOSITORY"
+          curl --fail --silent --show-error --location \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$API/actions/runs?per_page=50" -o /tmp/runs.json
+          if [ -n "${TRIGGER_RUN_ID:-}" ] && [ "$TRIGGER_RUN_ID" != "null" ]; then
+            RUN_ID="$TRIGGER_RUN_ID"
+          else
+            RUN_ID="$(jq -r '[.workflow_runs[] | select(.name == "Naruto Story Mode adaptive checkpoint player")] | sort_by(.created_at) | last | .id // empty' /tmp/runs.json)"
+          fi
+          if [ -z "$RUN_ID" ]; then
+            {
+              echo "# Naruto Story Mode adaptive player monitor"
+              echo "- Result: no adaptive player run is visible in the latest 50 Actions runs."
+              echo "- This does not indicate success or Story Mode completion."
+            } | tee "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          curl --fail --silent --show-error --location \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$API/actions/runs/$RUN_ID" -o /tmp/run.json
+          curl --fail --silent --show-error --location \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$API/actions/runs/$RUN_ID/artifacts?per_page=100" -o /tmp/artifacts.json
+          NOW="$(date -u +%s)"
+          CREATED="$(date -u -d "$(jq -r .created_at /tmp/run.json)" +%s)"
+          AGE="$((NOW-CREATED))"
+          STATUS="$(jq -r .status /tmp/run.json)"
+          CONCLUSION="$(jq -r '.conclusion // "none"' /tmp/run.json)"
+          NAME="$(jq -r .name /tmp/run.json)"
+          ARTIFACT="$(jq -r '[.artifacts[] | select(.name == "naruto-storymode-adaptive-player-private" and .expired == false)] | length' /tmp/artifacts.json)"
+          ACTIVE_WARN=0
+          FAILURE_WARN=0
+          ARTIFACT_WARN=0
+          if [ "$STATUS" = "in_progress" ] || [ "$STATUS" = "queued" ]; then
+            if [ "$AGE" -gt 900 ]; then ACTIVE_WARN=1; fi
+          elif [ "$CONCLUSION" != "success" ]; then
+            FAILURE_WARN=1
+          fi
+          if [ "$STATUS" = "completed" ] && [ "$ARTIFACT" -lt 1 ]; then ARTIFACT_WARN=1; fi
+          {
+            echo "# Naruto Story Mode adaptive player monitor"
+            echo "- Checked (UTC): $(date -u +%FT%TZ)"
+            echo "- Run: [#$RUN_ID]($API/actions/runs/$RUN_ID)"
+            echo "- Workflow: $NAME"
+            echo "- Status: **$STATUS**"
+            echo "- Conclusion: **$CONCLUSION**"
+            echo "- Age since creation: $((AGE/60)) minutes"
+            echo "- Valid private evidence artifact present: $([ "$ARTIFACT" -gt 0 ] && echo yes || echo no)"
+            if [ "$ACTIVE_WARN" -eq 1 ]; then echo "- WARNING: run is queued/running for more than 15 minutes; inspect job step progress and timeout."; fi
+            if [ "$FAILURE_WARN" -eq 1 ]; then echo "- WARNING: latest observed player run did not succeed."; fi
+            if [ "$ARTIFACT_WARN" -eq 1 ]; then echo "- WARNING: completed run has no unexpired adaptive evidence artifact."; fi
+            echo "- This monitor checks Actions health and artifact availability; it does not prove the emulator is making game progress or that Story Mode is complete."
+          } | tee "$GITHUB_STEP_SUMMARY"
+          printf 'run_id=%s\nstatus=%s\nconclusion=%s\nage_seconds=%s\nartifact=%s\n' "$RUN_ID" "$STATUS" "$CONCLUSION" "$AGE" "$ARTIFACT" > monitoring-report.txt
+          if [ "$ACTIVE_WARN" -eq 1 ] || [ "$FAILURE_WARN" -eq 1 ] || [ "$ARTIFACT_WARN" -eq 1 ]; then
+            echo "::error::Adaptive Story Mode player needs inspection: run #$RUN_ID status=$STATUS conclusion=$CONCLUSION age_seconds=$AGE artifact=$ARTIFACT"
+            exit 1
+          fi
+
+      - name: Upload monitoring report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-storymode-monitor-report
+          path: monitoring-report.txt
+          retention-days: 30
+          if-no-files-found: ignore

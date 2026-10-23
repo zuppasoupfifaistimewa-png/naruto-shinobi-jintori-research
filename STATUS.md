@@ -1,6 +1,6 @@
 # Latest checkpoint — terrain registration separates camera pan from target cue (23 October 2026)
 
-Regression-only source commit: `563e34562f4bea0423557755a5c03b4b60077894`. Regression [#39973978654](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39973978654) was in progress when this checkpoint was written; final conclusion remains unverified until Actions finishes.
+Regression-only source commit: `563e34562f4bea0423557755a5c03b4b60077894`. Regression [#39973978654](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39973978654) completed with `success` at 15:00:04Z; run log confirms 25/25 tests and every workflow step passed.
 
 ## Offline screenshot registration and target-cue discrimination — 23 October 2026
 
@@ -8,7 +8,24 @@ Regression-only source commit: `563e34562f4bea0423557755a5c03b4b60077894`. Regre
 
 The only repository read/modified is `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`. The analysis used existing private Actions artifacts #12498688466 (Revision65, run #39947481094) and #12428777970 (map UP-vs-WAIT, run #39786019434); authentic PNGs were extracted to temporary local storage for inspection and kept out of Git. No ROM, BIOS, Memory Card, savestate, screenshot, or private artifact was committed. The marker `experiments/.run-storymode-adaptive-player` remains Revision65, consumed, unchanged, and without `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1`. No gameplay run or emulator input was launched in this analysis.
 
-The safety/regression-only source commit is `563e34562f4bea0423557755a5c03b4b60077894`. Actions regression [#39973978654](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39973978654) was observed as **in progress** when this entry was recorded; do not treat this as a pass until the final conclusion and its screenshot-validation step are verified.
+The safety/regression-only source commit is `563e34562f4bea0423557755a5c03b4b60077894`. Actions regression [#39973978654](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39973978654) completed with `success`; the final screenshot-validation step passed. Verified measurements are recorded below.
+
+
+
+### Regression run #39973978654 — VERIFIED PASS
+
+Workflow run: [#39973978654](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39973978654), source code commit `563e34562f4bea0423557755a5c03b4b60077894`, conclusion `success`, completed 23 October 2026 at 15:00:04 UTC. Job `regression` and every step completed successfully. Log reports **25 tests in 4.542s**; authentic classifier checks passed for 10 X11 screenshots, 5 card-overlay frames, and 10 revealed-card-detail frames, then both private Revision65 and map UP-vs-WAIT artifacts were downloaded and verified.
+
+The new authentic-screen outputs are exact:
+
+- `REV65_BADGE_CENTROID pre_count=142 pre_y=164.25 post_count=2681 post_y=261.71 delta_y=97.46 scene_shift_y=100`
+- `FOCUS_ARROW_RING_PIXELS map_UP_around_pink60=811 map_WAIT_around_pink60=62 Revision65_around_badge=66`
+- `MAP_FOCUS_ARROW_RING_REGRESSION=PASS known_map_ring_plus_matching_panel=true Revision65_ring_absent=true target_role=UNKNOWN`
+- `CAMERA_SHIFT_ESTIMATE revision65_UP=100px revision65_WAIT=0px map_UP=100px map_WAIT=0px`
+- `CAMERA_SHIFT_REGRESSION=PASS UP_scene_shift_approx_100px WAIT_scene_shift_approx_0px target_selection_not_inferred=true`
+- `REV65_BADGE_SHIFT_FOLLOWS_SCENE=PASS badge_delta_y=97.46px registered_scene_delta_y=100px within_tolerance=true camera_pan_confounds_exposure=true selection_not_proven=true`
+
+This proves the new regression reproduces the competing camera-pan/exposure explanation and distinguishes the known map selection's arrow-ring-plus-panel composite. It still does **not** prove a target is selected in the level-up submenu. Code changed only in the regression workflow/test; the player workflow, marker, and inputs remain untouched. Current readiness remains **NO-GO**, barrier-level-selection policy remains **WAIT**, and Story Mode remains **NOT COMPLETE**.
 
 ### Independent terrain registration, with foreground pose excluded
 

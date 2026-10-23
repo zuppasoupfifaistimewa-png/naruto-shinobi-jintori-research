@@ -1,0 +1,175 @@
+name: Naruto current-source PCSX GUI probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/naruto-current-source-gui-probe.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: naruto-current-source-gui-probe
+  cancel-in-progress: true
+
+jobs:
+  gui-probe:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 50
+    env:
+      PCSX_SOURCE_COMMIT: 1525a93676dbece9fe70f10ff129aeaa14eec30d
+      PCSX_BUILD_IMAGE: ghcr.io/grumpycoders/pcsx-redux-build@sha256:d9ae6cbb23a5d0d98d8c3702cc6f512698ee1670bf8d59b236b2baabe99a66e4
+    steps:
+      - name: Install window-capture dependencies
+        run: |
+          set -eu
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils xdotool imagemagick tesseract-ocr tesseract-ocr-jpn
+
+      - name: Download and verify private game files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -eu
+          WORK="$RUNNER_TEMP/naruto-current-source"
+          mkdir -p "$WORK/captures" "$WORK/home"
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; output="$2"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            if [ -z "$id" ] || [ "$id" = "null" ]; then echo "::error::Missing private release asset: $name"; exit 1; fi
+            curl --fail --silent --show-error --location --retry 2 --max-time 300 \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$id" -o "$output"
+          }
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset openbios-chunked.bin openbios-chunked.bin
+          test "$(stat -c '%s' game.bin)" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("game.cue")
+          text=p.read_bytes().decode("utf-8-sig").replace("\r\n","\n").replace("\r","\n")
+          lines=text.splitlines()
+          files=[i for i,line in enumerate(lines) if line.lstrip().upper().startswith("FILE ")]
+          if len(files)!=1 or not any(line.lstrip().upper().startswith("TRACK ") for line in lines):
+              raise SystemExit("Invalid CUE")
+          lines[files[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+          echo "Private ROM size/SHA-256 verified; CUE normalized only in temporary workspace."
+
+      - name: Build current upstream source at verified commit
+        run: |
+          set -eu
+          WORKSPACE="$WORK"
+          git clone --filter=blob:none --no-checkout https://github.com/grumpycoders/pcsx-redux.git "$WORKSPACE/pcsx-redux"
+          git -C "$WORKSPACE/pcsx-redux" checkout --detach "$PCSX_SOURCE_COMMIT"
+          git -C "$WORKSPACE/pcsx-redux" submodule update --init --recursive
+          echo "PCSX_SOURCE_BUILT=$(git -C "$WORKSPACE/pcsx-redux" rev-parse HEAD)"
+          docker pull "$PCSX_BUILD_IMAGE"
+          docker run --rm -i -u "$(id -u):$(id -g)" -w /project \
+            -v "$WORKSPACE/pcsx-redux:/project" "$PCSX_BUILD_IMAGE" make -j2
+          test -x "$WORKSPACE/pcsx-redux/pcsx-redux"
+          docker run --rm -u "$(id -u):$(id -g)" -w /project \
+            -v "$WORKSPACE/pcsx-redux:/project" "$PCSX_BUILD_IMAGE" \
+            sh -lc 'ldd /project/pcsx-redux | tee /project/runtime-deps.txt; ! grep -q "not found" /project/runtime-deps.txt'
+          echo "BUILD_RESULT=current upstream source built and linked dependencies checked."
+
+      - name: Run same private ROM with current-source GUI and capture actual emulator window
+        run: |
+          set -eu
+          cd "$WORK"
+          Xvfb :99 -ac -screen 0 1280x800x24 -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          trap 'kill "$xvfb_pid" 2>/dev/null || true' EXIT
+          export DISPLAY=:99
+          for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          PAD_SETUP=$(cat <<'LUA'
+          PCSX.settings.pads[1].DeviceType = 'Analog'
+          PCSX.settings.pads[1].Connected = true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("PAD_SETUP=current source: Port 1 Analog connected/remapped")
+          local frames = 0
+          PCSX.Events.createEventListener('GPU::Vsync', function()
+            frames = frames + 1
+            if frames % 300 == 0 then
+              local regs = PCSX.getRegisters()
+              if regs ~= nil then print(string.format("GUEST_PC_SAMPLE frame=%d pc=0x%08x", frames, tonumber(regs.pc)))
+              else print("GUEST_PC_SAMPLE frame=" .. tostring(frames) .. " pc=unavailable") end
+            end
+          end)
+          LUA
+          )
+          set +e
+          timeout --signal=TERM --kill-after=5s 110s \
+            docker run --rm -i -u "$(id -u):$(id -g)" \
+            -e DISPLAY=:99 -e HOME=/work/home -e LIBGL_ALWAYS_SOFTWARE=1 -e MESA_GL_VERSION_OVERRIDE=3.3 \
+            -v /tmp/.X11-unix:/tmp/.X11-unix -v "$WORK:/work" -w /work \
+            "$PCSX_BUILD_IMAGE" /work/pcsx-redux/pcsx-redux \
+            -bios /work/openbios-chunked.bin -iso /work/game-run.cue \
+            -exec "$PAD_SETUP" -run -interpreter -softgpu -stdout -lua_stdout \
+            -logfile /work/pcsx-gui.log > "$WORK/pcsx-gui.stdout" 2>&1 &
+          emu_pid=$!
+          set -e
+          capture_window() {
+            label="$1"
+            window_id="$(xdotool search --onlyvisible --name 'PCSX-Redux|PCSX|pcsx|Redux|redux' 2>/dev/null | head -n 1 || true)"
+            if [ -z "$window_id" ]; then
+              echo "CAPTURE_RESULT=$label no emulator window found"
+              xwininfo -root -tree 2>&1 | head -35 || true
+              return 1
+            fi
+            echo "CAPTURE_WINDOW=$label id=$window_id"
+            import -window "$window_id" "$WORK/captures/$label.png"
+            identify -format 'FRAME_METRICS label=%f width=%w height=%h mean=%[mean] stddev=%[standard-deviation] colors=%k\n' "$WORK/captures/$label.png"
+            echo "OCR_BEGIN=$label"
+            tesseract "$WORK/captures/$label.png" stdout -l jpn+eng 2>/dev/null | head -16 || true
+            echo "OCR_END=$label"
+            return 0
+          }
+          last_t=0
+          for t in 20 40 60 80 95; do
+            sleep $(( t - last_t ))
+            last_t="$t"
+            capture_window "frame-$t-sec" || true
+          done
+          set +e
+          wait "$emu_pid"
+          rc=$?
+          set -e
+          echo "GUI_PROCESS_EXIT=$rc (124 means bounded observation cap)"
+          echo "BOOT_AND_CPU_MARKERS_BEGIN"
+          grep -E 'Loaded BIOS:|OpenBIOS detected|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|SYSTEM\.CNF|BOOT =|\[CHUNK1\].*(after|done)|EXEC:PC0|Execute !|PAD_SETUP=|GUEST_PC_SAMPLE|Unknown command for pad|FATAL|Exception|ERROR|Error|Failed|failed' "$WORK/pcsx-gui.stdout" "$WORK/pcsx-gui.log" 2>/dev/null | tail -140 || true
+          echo "BOOT_AND_CPU_MARKERS_END"
+          echo "This is a source-version A/B test. EXEC:PC0 alone is not title-screen/gameplay evidence."
+
+      - name: Upload private GUI frames and stdout for 3 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-current-source-gui-frames
+          path: |
+            ${{ runner.temp }}/naruto-current-source/captures/frame-*.png
+            ${{ runner.temp }}/naruto-current-source/pcsx-gui.stdout
+          if-no-files-found: warn
+          retention-days: 3
+
+      - name: Remove private ROM, BIOS, emulator source, window frames and logs
+        if: always()
+        run: |
+          if [ -n "${WORK:-}" ] && [ -d "$WORK" ]; then rm -rf "$WORK"; fi
+          echo "Cleanup complete; private media and capture frames removed from ephemeral runner."

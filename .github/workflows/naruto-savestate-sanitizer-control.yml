@@ -1,0 +1,503 @@
+name: Naruto savestate sanitizer positive-control experiment
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/naruto-savestate-sanitizer-control.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: naruto-savestate-sanitizer-control
+  cancel-in-progress: false
+
+jobs:
+  sanitized-raw-restore:
+    name: Sanitize known-good raw state, rehydrate BIOS, and restore
+    runs-on: ubuntu-26.04
+    timeout-minutes: 25
+    steps:
+      - name: Prepare workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          WORK="$RUNNER_TEMP/naruto-sanitizer-control"
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+          mkdir -p "$WORK/home" "$WORK/logs" "$WORK/resume" "$WORK/captures/raw"
+
+      - name: Install runtime dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil
+
+      - name: Download and verify pinned emulator, game, and BIOS
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; output="$2"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            if [ -z "$id" ] || [ "$id" = "null" ]; then echo "::error::Missing private release asset: $name"; exit 1; fi
+            curl --fail --silent --show-error --location --retry 2 --max-time 300 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$id" -o "$output"
+          }
+          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset scph7502.zip scph7502.zip
+          echo "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c  pcsx-redux.AppImage" | sha256sum --check -
+          test "$(stat -c '%s' game.bin)" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          test "$(stat -c '%s' scph7502.zip)" = "283463"
+          echo "b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a  scph7502.zip" | sha256sum --check -
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import hashlib, stat, zipfile
+          with zipfile.ZipFile("scph7502.zip") as zf:
+              members = []
+              expanded = 0
+              for info in zf.infolist():
+                  p = PurePosixPath(info.filename)
+                  mode = (info.external_attr >> 16) & 0xffff
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)):
+                      raise SystemExit("Unsafe BIOS archive entry")
+                  if info.file_size > 2*1024*1024:
+                      raise SystemExit("BIOS archive member exceeds safety limit")
+                  expanded += info.file_size
+                  if expanded > 4*1024*1024:
+                      raise SystemExit("BIOS archive too large")
+                  if not info.is_dir() and info.file_size == 524288:
+                      members.append(info)
+              if len(members) != 1:
+                  raise SystemExit(f"Expected one BIOS-sized member, found {len(members)}")
+              out = Path("scph7502.bin")
+              with zf.open(members[0]) as src, out.open("wb") as dst:
+                  while True:
+                      chunk = src.read(65536)
+                      if not chunk:
+                          break
+                      dst.write(chunk)
+              actual = hashlib.sha256(out.read_bytes()).hexdigest()
+              expected = "5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1"
+              print("RETAIL_BIOS_SHA256=" + actual)
+              if actual != expected:
+                  raise SystemExit("Retail BIOS reference mismatch")
+          PY
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("game.cue")
+          lines = p.read_bytes().decode("utf-8-sig").replace("\r\n", "\n").replace("\r", "\n").splitlines()
+          ids = [i for i, line in enumerate(lines) if line.lstrip().upper().startswith("FILE ")]
+          if len(ids) != 1 or not any(line.lstrip().upper().startswith("TRACK ") for line in lines):
+              raise SystemExit("Invalid CUE")
+          lines[ids[0]] = 'FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines) + "\n", encoding="ascii")
+          PY
+          echo "SANITIZER_CONTROL_RUNTIME=verified"
+
+      - name: Download the proven raw savestate from Run A
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-raw-savestate-cross-run-source
+          run-id: "39255438457"
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: ${{ runner.temp }}/naruto-sanitizer-control/source-artifact
+
+      - name: Download the same reference Memory Card used by the positive control
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: "39242130783"
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: ${{ runner.temp }}/naruto-sanitizer-control/card-artifact
+
+      - name: Verify source artifacts and run the existing sanitizer plus BIOS rehydration
+        shell: bash
+        env:
+          EXPECTED_SOURCE_RUN_ID: "39255438457"
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          SOURCE="$WORK/source-artifact"
+          CARD_DIR="$WORK/card-artifact"
+          RAW="$SOURCE/raw-cross-run.sstate"
+          SOURCE_MANIFEST="$SOURCE/raw-cross-run-manifest.txt"
+          CARD="$(find "$CARD_DIR" -type f -name 'naruto-storymode.mcd' -print -quit)"
+          CARD_MANIFEST="$(find "$CARD_DIR" -type f -name 'memory-card-manifest.txt' -print -quit)"
+          test -s "$RAW" && test -s "$SOURCE_MANIFEST"
+          test -s "$CARD" && test -s "$CARD_MANIFEST"
+          test "$(awk -F= '$1=="SOURCE_RUN_ID"{print $2;exit}' "$SOURCE_MANIFEST")" = "$EXPECTED_SOURCE_RUN_ID"
+          test "$(stat -c '%s' "$RAW")" = "21124144"
+          echo "a4672dd49fbfa76ef60de410c50460d77e115181fc3e205a215ab9f5f1e601d7  $RAW" | sha256sum --check -
+          test "$(stat -c '%s' "$CARD")" = "131072"
+          echo "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5  $CARD" | sha256sum --check -
+          cp "$RAW" "$WORK/resume/raw-control.sstate"
+          cp "$CARD" "$WORK/blank-reference.mcd"
+          cat > "$WORK/captures/diagnostic-summary.txt" <<EOF
+          EXPERIMENT=apply_existing_embedded_ROM_sanitizer_to_proven_raw_state
+          SOURCE_RUN_ID=39255438457
+          SOURCE_RAW_BYTES=$(stat -c '%s' "$RAW")
+          SOURCE_RAW_SHA256=$(sha256sum "$RAW" | cut -d ' ' -f 1)
+          SOURCE_RAW_FILE_UNMODIFIED=1
+          REFERENCE_CARD_BYTES=$(stat -c '%s' "$CARD")
+          REFERENCE_CARD_SHA256=$(sha256sum "$CARD" | cut -d ' ' -f 1)
+          CONTROL_POSITIVE_RUN_B=39255549341
+          EOF
+          python3 - "$WORK/resume/raw-control.sstate" "$WORK/scph7502.bin" "$WORK/resume/sanitized-raw-no-bios.sstate" "$WORK/resume/sanitized-rehydrated.sstate" "$WORK/captures/sanitizer-roundtrip-manifest.txt" <<'PY'
+          import hashlib, sys
+          from pathlib import Path
+
+          raw_path, bios_path, safe_path, candidate_path, manifest_path = map(Path, sys.argv[1:])
+          original = raw_path.read_bytes()
+          bios = bios_path.read_bytes()
+          if len(bios) != 0x80000:
+              raise SystemExit(f"RESTORE_BIOS_REHYDRATE=FAIL wrong_bios_size={len(bios)}")
+
+          def read_varint(data, pos):
+              value, shift = 0, 0
+              while pos < len(data):
+                  b = data[pos]
+                  pos += 1
+                  value |= (b & 0x7f) << shift
+                  if not b & 0x80:
+                      return value, pos
+                  shift += 7
+                  if shift > 70:
+                      raise ValueError("protobuf varint too long")
+              raise ValueError("truncated protobuf varint")
+
+          def varint(value):
+              out = bytearray()
+              while value > 0x7f:
+                  out.append((value & 0x7f) | 0x80)
+                  value >>= 7
+              out.append(value)
+              return bytes(out)
+
+          def fields(data):
+              result, pos = [], 0
+              while pos < len(data):
+                  start = pos
+                  tag, pos = read_varint(data, pos)
+                  number, wire = tag >> 3, tag & 7
+                  if number == 0:
+                      raise ValueError("invalid protobuf field number 0")
+                  payload_start = pos
+                  if wire == 0:
+                      _, pos = read_varint(data, pos)
+                      payload_end = pos
+                  elif wire == 1:
+                      pos += 8
+                      payload_end = pos
+                  elif wire == 2:
+                      length, pos = read_varint(data, pos)
+                      payload_start = pos
+                      pos += length
+                      payload_end = pos
+                  elif wire == 5:
+                      pos += 4
+                      payload_end = pos
+                  else:
+                      raise ValueError(f"unsupported protobuf wire type {wire}")
+                  if pos > len(data):
+                      raise ValueError("truncated protobuf field")
+                  result.append((number, wire, start, payload_start, payload_end, pos))
+              return result
+
+          top = fields(original)
+          memory_entries = [x for x in top if x[0] == 3 and x[1] == 2]
+          if len(memory_entries) != 1:
+              raise SystemExit(f"SANITIZER_CONTROL=FAIL memory_message_count={len(memory_entries)}")
+          _, _, _, mem_start, mem_end, _ = memory_entries[0]
+          memory = original[mem_start:mem_end]
+          nested = fields(memory)
+          rom_entries = [x for x in nested if x[0] == 2 and x[1] == 2]
+          if len(rom_entries) != 1:
+              raise SystemExit(f"SANITIZER_CONTROL=FAIL embedded_rom_field_count={len(rom_entries)}")
+          safe_memory = b"".join(memory[s:e] for number, wire, s, ps, pe, e in nested
+                                 if not (number == 2 and wire == 2))
+          safe = bytearray()
+          for number, wire, start, payload_start, payload_end, end in top:
+              if number == 3 and wire == 2:
+                  safe.extend(varint((3 << 3) | 2))
+                  safe.extend(varint(len(safe_memory)))
+                  safe.extend(safe_memory)
+              else:
+                  safe.extend(original[start:end])
+          safe_bytes = bytes(safe)
+          safe_path.write_bytes(safe_bytes)
+          print(f"STORY_SAVESTATE_SANITIZE=PASS raw_bytes={len(original)} safe_bytes={len(safe_bytes)} rom_fields_removed=1")
+          print(f"STORY_SAVESTATE_RAW_SHA256={hashlib.sha256(original).hexdigest()}")
+          print(f"STORY_SAVESTATE_SAFE_SHA256={hashlib.sha256(safe_bytes).hexdigest()}")
+
+          safe_top = fields(safe_bytes)
+          safe_memories = [x for x in safe_top if x[0] == 3 and x[1] == 2]
+          if len(safe_memories) != 1:
+              raise SystemExit(f"RESTORE_BIOS_REHYDRATE=FAIL memory_message_count={len(safe_memories)}")
+          _, _, _, sm_start, sm_end, _ = safe_memories[0]
+          safe_memory_payload = safe_bytes[sm_start:sm_end]
+          safe_nested = fields(safe_memory_payload)
+          if any(n == 2 and w == 2 for n, w, *_ in safe_nested):
+              raise SystemExit("RESTORE_BIOS_REHYDRATE=FAIL checkpoint already has Memory.rom")
+          if not any(n == 1 and w == 2 for n, w, *_ in safe_nested):
+              raise SystemExit("RESTORE_BIOS_REHYDRATE=FAIL Memory.ram field missing")
+          restored_memory = bytearray()
+          inserted = False
+          for number, wire, start, payload_start, payload_end, end in safe_nested:
+              restored_memory.extend(safe_memory_payload[start:end])
+              if number == 1 and wire == 2:
+                  restored_memory.extend(varint((2 << 3) | 2))
+                  restored_memory.extend(varint(len(bios)))
+                  restored_memory.extend(bios)
+                  inserted = True
+          if not inserted:
+              raise SystemExit("RESTORE_BIOS_REHYDRATE=FAIL could not insert ROM field")
+          rebuilt = bytearray()
+          replaced = 0
+          for number, wire, start, payload_start, payload_end, end in safe_top:
+              if number == 3 and wire == 2:
+                  rebuilt.extend(varint((3 << 3) | 2))
+                  rebuilt.extend(varint(len(restored_memory)))
+                  rebuilt.extend(restored_memory)
+                  replaced += 1
+              else:
+                  rebuilt.extend(safe_bytes[start:end])
+          if replaced != 1:
+              raise SystemExit(f"RESTORE_BIOS_REHYDRATE=FAIL memory_rebuilt={replaced}")
+          candidate = bytes(rebuilt)
+          candidate_path.write_bytes(candidate)
+          raw_sha = hashlib.sha256(original).hexdigest()
+          safe_sha = hashlib.sha256(safe_bytes).hexdigest()
+          candidate_sha = hashlib.sha256(candidate).hexdigest()
+          same = candidate == original
+          mismatch = next((i for i, (a, b) in enumerate(zip(original, candidate)) if a != b), None)
+          if mismatch is None and len(original) != len(candidate):
+              mismatch = min(len(original), len(candidate))
+          lines = [
+              "SANITIZER_CONTROL=PASS",
+              f"RAW_BYTES={len(original)}",
+              f"RAW_SHA256={raw_sha}",
+              f"SANITIZED_NO_BIOS_BYTES={len(safe_bytes)}",
+              f"SANITIZED_NO_BIOS_SHA256={safe_sha}",
+              f"REHYDRATED_CANDIDATE_BYTES={len(candidate)}",
+              f"REHYDRATED_CANDIDATE_SHA256={candidate_sha}",
+              f"REHYDRATED_CANDIDATE_BYTE_IDENTICAL_TO_RAW={int(same)}",
+              f"FIRST_DIFFERING_OFFSET={('none' if mismatch is None else mismatch)}",
+              "BIOS_FIELD_REMOVED=1",
+              "BIOS_REHYDRATED_FROM_HASH_VERIFIED_LOCAL_FILE=1",
+          ]
+          manifest_path.write_text("\n".join(lines) + "\n")
+          print("\n".join(lines))
+          print(f"RESTORE_BIOS_REHYDRATE=PASS bios_bytes={len(bios)} state_bytes={len(candidate)}")
+          PY
+          cat "$WORK/captures/sanitizer-roundtrip-manifest.txt" >> "$WORK/captures/diagnostic-summary.txt"
+
+      - name: Prepare emulator restore script
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          cat > "$WORK/load-sanitized-state.lua" <<'LUA'
+          if io.stdout then io.stdout:setvbuf("no") end
+          print("SANITIZER_CONTROL_RESTORE_SCRIPT_ENTERED=1")
+          local first_vsync_seen = false
+          local state_loaded = false
+          local load_call_returned = false
+          local post_restore_frames = 0
+          local frame_count = 0
+          local pause_pending = false
+
+          _G.sanitizerControlRunListener = PCSX.Events.createEventListener("ExecutionFlow::Run", function()
+              print("SANITIZER_CONTROL_EXECUTION_RUN=1")
+          end)
+          _G.sanitizerControlLoadedListener = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
+              state_loaded = true
+              post_restore_frames = 0
+              print("SANITIZER_CONTROL_LOAD_EVENT=ExecutionFlow::SaveStateLoaded")
+          end)
+          local function capture_screenshot()
+              local shot = PCSX.GPU.takeScreenShot()
+              local bpp = (shot.bpp == 0) and 16 or 24
+              local raw = assert(Support.File.open("captures/raw/sanitized-post-restore-180.raw", "TRUNCATE"))
+              raw:writeMoveSlice(shot.data)
+              raw:close()
+              local meta = assert(io.open("captures/raw/sanitized-post-restore-180.json", "wb"))
+              meta:write(string.format('{"frame":%d,"width":%d,"height":%d,"bpp":%d,"expected_bytes":%d}\n',
+                  post_restore_frames, shot.width, shot.height, bpp, shot.width * shot.height * bpp / 8))
+              meta:close()
+              print(string.format("SANITIZER_CONTROL_SCREENSHOT_CAPTURED=1 frame=%d width=%d height=%d",
+                  post_restore_frames, shot.width, shot.height))
+          end
+          _G.sanitizerControlGpuListener = PCSX.Events.createEventListener("GPU::Vsync", function()
+              frame_count = frame_count + 1
+              if not first_vsync_seen then
+                  first_vsync_seen = true
+                  print("SANITIZER_CONTROL_FIRST_VSYNC=1; schedule restore after callback unwinds")
+                  PCSX.pauseEmulator()
+                  PCSX.nextTick(function()
+                      local opened, file = pcall(function()
+                          return assert(Support.File.open("resume/sanitized-rehydrated.sstate"), "cannot open sanitized candidate")
+                      end)
+                      if not opened or not file then
+                          print("SANITIZER_CONTROL_LOAD_OPEN_ERROR=" .. tostring(file))
+                          PCSX.quit(50)
+                          return
+                      end
+                      print("SANITIZER_CONTROL_LOAD_CALL_BEGIN=1")
+                      local ok, err = pcall(function() PCSX.loadSaveState(file) end)
+                      file:close()
+                      if not ok then
+                          print("SANITIZER_CONTROL_LOAD_CALL_ERROR=" .. tostring(err))
+                          PCSX.quit(51)
+                          return
+                      end
+                      load_call_returned = true
+                      print("SANITIZER_CONTROL_LOAD_CALL_RETURNED=1")
+                      PCSX.resumeEmulator()
+                  end)
+                  return
+              end
+              if state_loaded then
+                  post_restore_frames = post_restore_frames + 1
+                  if post_restore_frames == 180 and not pause_pending then
+                      pause_pending = true
+                      PCSX.pauseEmulator()
+                      PCSX.nextTick(function()
+                          local ok, err = pcall(capture_screenshot)
+                          if not ok then
+                              print("SANITIZER_CONTROL_SCREENSHOT_ERROR=" .. tostring(err))
+                              PCSX.quit(61)
+                              return
+                          end
+                          local proof_ok = state_loaded and load_call_returned and post_restore_frames >= 180
+                          print("SANITIZER_CONTROL_POST_RESTORE_VSYNC=" .. tostring(post_restore_frames))
+                          print("SANITIZER_CONTROL_RESTORE_PROOF=" .. (proof_ok and "PASS" or "FAIL"))
+                          PCSX.quit(proof_ok and 0 or 52)
+                      end)
+                  end
+              elseif frame_count >= 1500 and not pause_pending then
+                  print("SANITIZER_CONTROL_LOAD_EVENT_TIMEOUT=1")
+                  PCSX.pauseEmulator()
+                  PCSX.nextTick(function() PCSX.quit(53) end)
+              end
+          end)
+          print("SANITIZER_CONTROL_RESTORE_ARMED=1; sanitized-and-rehydrated candidate; require 180 post-restore VSync")
+          LUA
+          PAD_SETUP=$(cat <<'PADLUA'
+          PCSX.settings.pads[1].DeviceType = 'Analog'
+          PCSX.settings.pads[1].Connected = true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("SANITIZER_CONTROL_PAD_SETUP=1")
+          PADLUA
+          )
+          echo "$PAD_SETUP" > "$WORK/pad-setup.lua"
+
+      - name: Run emulator in a fresh process and verify restore proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          export DISPLAY=:99
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          trap 'kill "$xvfb_pid" 2>/dev/null || true; wait "$xvfb_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          PAD_SETUP="$(cat "$WORK/pad-setup.lua")"
+          set +e
+          timeout --signal=TERM --kill-after=5s 180s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+            -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+            -memcard1 "$WORK/blank-reference.mcd" -exec "$PAD_SETUP" \
+            -dofile "$WORK/load-sanitized-state.lua" -softgpu -dynarec -stdout -lua_stdout \
+            -logfile "$WORK/logs/restore-pcsx.log" -run > "$WORK/logs/restore-stdout.log" 2>&1
+          rc=$?
+          set -e
+          grep -E 'SANITIZER_CONTROL_|RESTORE_BIOS_REHYDRATE=|Loaded BIOS:|CD-ROM Label:|CD-ROM ID:|KERNEL SETUP|FATAL|ERROR' "$WORK/logs/restore-stdout.log" "$WORK/logs/restore-pcsx.log" >> "$WORK/captures/diagnostic-summary.txt" || true
+          echo "SANITIZER_CONTROL_EMULATOR_EXIT=$rc" | tee -a "$WORK/captures/diagnostic-summary.txt"
+          test "$rc" -eq 0
+          grep -q 'SANITIZER_CONTROL_LOAD_EVENT=ExecutionFlow::SaveStateLoaded' "$WORK/captures/diagnostic-summary.txt"
+          grep -q 'SANITIZER_CONTROL_LOAD_CALL_RETURNED=1' "$WORK/captures/diagnostic-summary.txt"
+          grep -q 'SANITIZER_CONTROL_POST_RESTORE_VSYNC=180' "$WORK/captures/diagnostic-summary.txt"
+          grep -q 'SANITIZER_CONTROL_RESTORE_PROOF=PASS' "$WORK/captures/diagnostic-summary.txt"
+
+      - name: Convert and validate post-restore screenshot
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          test -s "$WORK/captures/raw/sanitized-post-restore-180.json"
+          test -s "$WORK/captures/raw/sanitized-post-restore-180.raw"
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          from PIL import Image
+          root = Path("captures/raw")
+          meta = json.loads((root / "sanitized-post-restore-180.json").read_text())
+          raw_path = root / "sanitized-post-restore-180.raw"
+          raw = raw_path.read_bytes()
+          width, height, bpp = int(meta["width"]), int(meta["height"]), int(meta["bpp"])
+          if width < 100 or height < 100:
+              raise SystemExit(f"Invalid screenshot dimensions: {width}x{height}")
+          if len(raw) != width * height * bpp // 8:
+              raise SystemExit(f"Screenshot byte count mismatch: {len(raw)}")
+          if bpp == 16:
+              rgb = bytearray()
+              for i in range(0, len(raw), 2):
+                  word = raw[i] | (raw[i+1] << 8)
+                  rgb.extend(((word & 31)*255//31, ((word>>5)&31)*255//31, ((word>>10)&31)*255//31))
+              image = Image.frombytes("RGB", (width, height), bytes(rgb))
+          elif bpp == 24:
+              image = Image.frombytes("RGB", (width, height), raw)
+          else:
+              raise SystemExit(f"Unsupported screenshot bpp: {bpp}")
+          output = Path("captures/sanitized-post-restore-180.png")
+          image.save(output)
+          check = Image.open(output).convert("RGB")
+          if not any(high > low for low, high in check.getextrema()):
+              raise SystemExit("Screenshot is visually blank/constant")
+          sha = hashlib.sha256(output.read_bytes()).hexdigest()
+          print(f"SANITIZER_CONTROL_SCREENSHOT_VALID=PASS file={output.name} dimensions={width}x{height} bytes={output.stat().st_size}")
+          print(f"SANITIZER_CONTROL_SCREENSHOT_SHA256={sha}")
+          with (Path("captures/diagnostic-summary.txt")).open("a") as log:
+              log.write(f"SANITIZER_CONTROL_SCREENSHOT_VALID=PASS dimensions={width}x{height} bytes={output.stat().st_size}\n")
+              log.write(f"SANITIZER_CONTROL_SCREENSHOT_SHA256={sha}\n")
+          PY
+          grep -q 'SANITIZER_CONTROL_RESTORE_PROOF=PASS' "$WORK/captures/diagnostic-summary.txt"
+          echo "SANITIZER_CONTROL_FINAL_GATE=PASS" | tee -a "$WORK/captures/diagnostic-summary.txt"
+
+      - name: Upload sanitized variant and experiment evidence (no BIOS-containing state)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-savestate-sanitizer-control-evidence
+          path: |
+            ${{ runner.temp }}/naruto-sanitizer-control/resume/sanitized-raw-no-bios.sstate
+            ${{ runner.temp }}/naruto-sanitizer-control/captures/sanitizer-roundtrip-manifest.txt
+            ${{ runner.temp }}/naruto-sanitizer-control/captures/diagnostic-summary.txt
+            ${{ runner.temp }}/naruto-sanitizer-control/captures/sanitized-post-restore-180.png
+            ${{ runner.temp }}/naruto-sanitizer-control/captures/raw/sanitized-post-restore-180.json
+            ${{ runner.temp }}/naruto-sanitizer-control/logs/*.log
+            ${{ runner.temp }}/naruto-sanitizer-control/xvfb.log
+          if-no-files-found: warn
+          retention-days: 7
+          compression-level: 0

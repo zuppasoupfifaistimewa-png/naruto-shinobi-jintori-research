@@ -1,0 +1,192 @@
+name: Naruto OpenBIOS variant GUI A/B probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/naruto-bios-variant-gui-probe.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: naruto-bios-variant-gui-probe
+  cancel-in-progress: true
+
+jobs:
+  bios-variant-probe:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 14
+    steps:
+      - name: Install private GUI capture tools
+        run: |
+          set -eu
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends jq xvfb x11-utils xdotool imagemagick tesseract-ocr tesseract-ocr-jpn libgl1-mesa-dri mesa-utils
+
+      - name: Download and verify same emulator, private ROM and two OpenBIOS variants
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -eu
+          WORK="$RUNNER_TEMP/naruto-bios-variant-probe"
+          mkdir -p "$WORK/captures"
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; output="$2"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            if [ -z "$id" ] || [ "$id" = "null" ]; then echo "::error::Missing private release asset: $name"; exit 1; fi
+            curl --fail --silent --show-error --location --retry 2 --max-time 300 \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$id" -o "$output"
+          }
+          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset openbios-shell.bin openbios-shell.bin
+          fetch_asset openbios-chunked.bin openbios-chunked.bin
+          fetch_asset openbios.bin openbios-fastboot.bin
+          echo "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c  pcsx-redux.AppImage" | sha256sum --check -
+          test "$(stat -c '%s' game.bin)" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          echo "713ea2aed58606282b3ff5e91d77f8c5892ea36f5adcd279d2c7dd26604a625d  openbios-shell.bin" | sha256sum --check -
+          echo "7644ab45db8519a3621ef9cb0283f0ced5258287f8105c0e9d7e784fef9362b7  openbios-chunked.bin" | sha256sum --check -
+          echo "25c789eb66608847907217c367f04a3ec6e62c08530e97c437ce99d29f4c156d  openbios-fastboot.bin" | sha256sum --check -
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("game.cue")
+          text = p.read_bytes().decode("utf-8-sig").replace("\r\n", "\n").replace("\r", "\n")
+          lines = text.splitlines()
+          files = [i for i, line in enumerate(lines) if line.lstrip().upper().startswith("FILE ")]
+          if len(files) != 1 or not any(line.lstrip().upper().startswith("TRACK ") for line in lines):
+              raise SystemExit("Invalid CUE")
+          lines[files[0]] = 'FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines) + "\n", encoding="ascii")
+          PY
+          echo "All package, ROM and BIOS SHA-256 checks passed; only private temporary copies were created."
+
+      - name: Compare fastboot and chunked OpenBIOS in the actual GUI window
+        run: |
+          set -eu
+          cd "$WORK"
+          Xvfb :99 -ac -screen 0 1280x800x24 -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          trap 'kill "$xvfb_pid" 2>/dev/null || true' EXIT
+          export DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1 MESA_GL_VERSION_OVERRIDE=3.3
+          for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          run_variant() {
+            label="$1"
+            bios="$2"
+            variant_home="$WORK/home-$label"
+            mkdir -p "$variant_home"
+            export HOME="$variant_home" XDG_CONFIG_HOME="$variant_home/.config" XDG_DATA_HOME="$variant_home/.local/share"
+            PAD_SETUP=$(cat <<'LUA'
+          PCSX.settings.pads[1].DeviceType = 'Analog'
+          PCSX.settings.pads[1].Connected = true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("PAD_SETUP=Port 1 Analog connected and remapped")
+          local frames = 0
+          PCSX.Events.createEventListener('GPU::Vsync', function()
+            frames = frames + 1
+            if frames % 300 == 0 then
+              local regs = PCSX.getRegisters()
+              if regs ~= nil then print(string.format("GUEST_PC_SAMPLE frame=%d pc=0x%08x", frames, tonumber(regs.pc)))
+              else print("GUEST_PC_SAMPLE frame=" .. tostring(frames) .. " pc=unavailable") end
+            end
+          end)
+          LUA
+          )
+            echo "===== BIOS_VARIANT=$label ====="
+            timeout --signal=TERM --kill-after=5s 100s \
+              "$WORK/squashfs-root/AppRun" -bios "$WORK/$bios" -iso "$WORK/game-run.cue" \
+              -exec "$PAD_SETUP" -run -interpreter -softgpu -stdout -lua_stdout \
+              -logfile "$WORK/$label.log" > "$WORK/$label.stdout" 2>&1 &
+            emu_pid=$!
+            capture_window() {
+              capture_label="$1"
+              window_id="$(xdotool search --onlyvisible --name 'PCSX-Redux|PCSX|pcsx|Redux|redux' 2>/dev/null | head -n 1 || true)"
+              if [ -z "$window_id" ]; then
+                echo "CAPTURE_RESULT=$label/$capture_label no visible emulator window"
+                return 1
+              fi
+              echo "CAPTURE_WINDOW=$label/$capture_label id=$window_id"
+              import -window "$window_id" "$WORK/captures/$label-$capture_label.png"
+              identify -format 'FRAME_METRICS label=%f width=%w height=%h mean=%[mean] stddev=%[standard-deviation] colors=%k\n' "$WORK/captures/$label-$capture_label.png"
+              echo "OCR_BEGIN=$label/$capture_label"
+              tesseract "$WORK/captures/$label-$capture_label.png" stdout -l jpn+eng 2>/dev/null | head -16 || true
+              echo "OCR_END=$label/$capture_label"
+              return 0
+            }
+            sleep 20
+            capture_window pre-input-20s || true
+            window_id="$(xdotool search --onlyvisible --name 'PCSX-Redux|PCSX|pcsx|Redux|redux' 2>/dev/null | head -n 1 || true)"
+            if [ -n "$window_id" ]; then
+              xdotool windowactivate --sync "$window_id" 2>/dev/null || true
+              echo "INPUT_TEST=$label synthetic Return then Z taps; interpretation depends on visible game state"
+              xdotool key --clearmodifiers Return
+              sleep 2
+              capture_window after-return || true
+              xdotool key --clearmodifiers z
+              sleep 2
+              capture_window after-cross || true
+              echo "INPUT_TEST_END=$label"
+            else
+              echo "INPUT_TEST_SKIPPED=$label no visible emulator window"
+            fi
+            sleep 16
+            capture_window frame-40s || true
+            sleep 20
+            capture_window frame-60s || true
+            sleep 20
+            capture_window frame-80s || true
+            sleep 15
+            capture_window frame-95s || true
+            set +e
+            wait "$emu_pid"
+            rc=$?
+            set -e
+            echo "GUI_PROCESS_EXIT=$label/$rc (124 is the bounded observation cap)"
+            echo "BOOT_AND_PAD_MARKERS_BEGIN=$label"
+            grep -E 'Loaded BIOS:|OpenBIOS detected|CD-ROM Label:|CD-ROM ID:|CD-ROM EXE Name:|SYSTEM\.CNF|BOOT =|\[CHUNK1\].*(after|done)|EXEC:PC0|Execute !|PAD_SETUP=|GUEST_PC_SAMPLE|Unknown command for pad|FATAL|Exception|ERROR|Error|Failed|failed' \
+              "$WORK/$label.stdout" "$WORK/$label.log" 2>/dev/null | tail -100 || true
+            echo "BOOT_AND_PAD_MARKERS_END=$label"
+          }
+          # The shell/menu BIOS is tested as a legal open-source fallback. It is not a retail BIOS and is not assumed compatible until the captures prove it.
+          run_variant shell openbios-shell.bin
+          run_variant fastboot openbios-fastboot.bin
+          run_variant chunked openbios-chunked.bin
+          echo "BIOS candidate comparison complete. Workflow success is not a game-boot claim; title/menu and visible input response must be judged from captures."
+
+      - name: Upload private captures and filtered emulator stdout for 3 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-openbios-variant-private-captures
+          path: |
+            ${{ runner.temp }}/naruto-bios-variant-probe/captures/*.png
+            ${{ runner.temp }}/naruto-bios-variant-probe/fastboot.stdout
+            ${{ runner.temp }}/naruto-bios-variant-probe/chunked.stdout
+            ${{ runner.temp }}/naruto-bios-variant-probe/fastboot.log
+            ${{ runner.temp }}/naruto-bios-variant-probe/chunked.log
+          if-no-files-found: warn
+          retention-days: 3
+
+      - name: Remove private ROM, BIOS, emulator, screenshots and logs
+        if: always()
+        run: |
+          if [ -n "${WORK:-}" ] && [ -d "$WORK" ]; then rm -rf "$WORK"; fi
+          echo "Cleanup complete; private media, OpenBIOS variants, screenshots and logs removed from ephemeral runner."
