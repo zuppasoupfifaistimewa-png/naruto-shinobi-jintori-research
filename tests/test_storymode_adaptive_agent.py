@@ -159,7 +159,10 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertIn('elseif abTest then', phase110)
         self.assertIn('reason=ab_test_single_input_isolation', phase110)
         # START must be called only in the regular mode and restore mode; the A/B branch does not call sendAction.
-        ab_branch = phase110[phase110.index("elseif abTest then"):phase110.index("else", phase110.index("elseif abTest then"))]
+        ab_start = phase110.index("elseif abTest then")
+        ab_end = phase110.index("\\n                      else\\n", ab_start)
+        ab_branch = phase110[ab_start:ab_end]
+        self.assertIn('log("ADAPTIVE_DIALOGUE_SKIP=SUPPRESSED cycle="..cycle.." reason=ab_test_single_input_isolation")', ab_branch)
         self.assertNotIn('sendAction("START",cycle)', ab_branch)
         self.assertIn("ADAPTIVE_AB_SINGLE_INPUT_ISOLATION=PASS", workflow)
 
