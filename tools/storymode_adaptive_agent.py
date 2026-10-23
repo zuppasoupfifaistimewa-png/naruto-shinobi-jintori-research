@@ -11,7 +11,7 @@ from typing import Any
 import numpy as np
 from PIL import Image
 
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 
 def _ratios(image: np.ndarray, box: tuple[int,int,int,int]) -> dict[str, float]:
     x1,y1,x2,y2=box
@@ -62,6 +62,10 @@ def observe(path: str | Path) -> dict[str, Any]:
         arr=np.asarray(im)
     wheel=_ratios(arr,(100,70,700,730))
     dialogue_box=_ratios(arr,(130,515,1150,740))
+    # Genuine spoken-dialogue panels use a full-width ornate top border/portrait;
+    # the barrier-upgrade submenu uses a smaller left panel and footer controls.
+    dialogue_header=_ratios(arr,(130,510,1150,580))
+    prompt_footer=_ratios(arr,(650,680,1140,770))
     choice=_ratios(arr,(920,550,1130,690))
     choice_top=_ratios(arr,(920,555,1130,625))
     choice_bottom=_ratios(arr,(920,625,1130,690))
@@ -76,6 +80,8 @@ def observe(path: str | Path) -> dict[str, Any]:
     features={
         "wheel_red":round(wheel["red"],4),"wheel_gold":round(wheel["gold"],4),
         "dialogue_orange":round(dialogue_box["orange"],4),"dialogue_white":round(dialogue_box["white"],4),
+        "dialogue_header_orange":round(dialogue_header["orange"],4),
+        "prompt_footer_red":round(prompt_footer["red"],4),"prompt_footer_blue":round(prompt_footer["blue"],4),
         "choice_red":round(choice["red"],4),"choice_blue":round(choice["blue"],4),
         "choice_top_red":round(choice_top["red"],4),"choice_bottom_red":round(choice_bottom["red"],4),
         "center_number_blue":round(center_number["blue"],4),"center_green":round(center["green"],4),
@@ -108,8 +114,17 @@ def observe(path: str | Path) -> dict[str, Any]:
     elif card_overlay["white"] >= .12 and card_overlay["gray"] >= .16:
         # Card backs and card prompts outrank generic dialogue; START would bypass them.
         state,conf,reason="card_selection",.97,"three_card_back_overlay_white_frame_gray_lattice"
-    elif dialogue_box["orange"] >= .05:
-        state,conf,reason="dialogue",.91,"calibrated_bottom_dialog_box_signature"
+    elif (dialogue_box["orange"] >= .04 and dialogue_box["orange"] < .10
+          and dialogue_header["orange"] < .05
+          and center["green"] >= .42
+          and top_hud["red"] >= .05 and top_hud["blue"] >= .05 and top_hud["white"] >= .035
+          and prompt_footer["red"] >= .05 and prompt_footer["blue"] >= .008):
+        # Revision58 authentic F60/F100/F110 frames show a smaller lower-left
+        # instruction panel and explicit Circle-confirm / X-back glyphs. This is
+        # not story dialogue; treating it as dialogue incorrectly presses START.
+        state,conf,reason="barrier_level_selection",.93,"calibrated_small_barrier_selection_panel_with_circle_x_footer"
+    elif dialogue_box["orange"] >= .10 and dialogue_header["orange"] >= .08:
+        state,conf,reason="dialogue",.93,"full_width_ornate_dialogue_panel_signature"
     elif menu["white"] >= .06 and menu["orange"] >= .025:
         state,conf,reason="menu_or_unknown_choice",.78,"right_side_menu_requires_context"
     elif center["green"] >= .42 and wheel["red"] < .10 and top_hud["red"] >= .05 and top_hud["blue"] >= .05 and top_hud["white"] >= .035:
@@ -132,6 +147,8 @@ def observe(path: str | Path) -> dict[str, Any]:
             action,action_reason="CIRCLE","calibrated_barrier_prompt_with_YES_visibly_highlighted_and_120_cost"
         else:
             action_reason="choice_not_verified_as_YES_highlighted"
+    elif state=="barrier_level_selection":
+        action,action_reason="CIRCLE","submenu_explicitly_shows_circle_confirm; verify_result_on_next_observation"
     elif state=="roulette":
         action,action_reason="WAIT","let_wheel_settle_before_input"
     elif state=="map":
