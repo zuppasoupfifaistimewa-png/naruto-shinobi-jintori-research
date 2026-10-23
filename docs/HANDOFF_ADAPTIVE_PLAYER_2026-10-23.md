@@ -137,3 +137,22 @@ Run [#39908484177](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 Classifier state remained `barrier_level_selection` throughout both branches. Visual inspection of real screenshots shows the character sprite/pose differs between LEFT branch and no-input control, while the prompt 「レベルアップする結界をえらんでください」 (Pilih penghalang yang akan dinaikkan levelnya) remains. This is a **verified response to LEFT input**, but it is only a **hypothesis** that the pose/facing indicates the intended target; no target marker or successful barrier-level change is yet verified. Normal adaptive policy should remain WAIT in this submenu until the next action has been calibrated.
 
 Next probe: use action checkpoint C01 above as source and compare one CIRCLE confirm against zero-input control. This tests whether the current left-facing/LEFT-action checkpoint actually commits a target selection and advances. It is a short state-transition test, not a requirement to finish Story Mode.
+
+### Revision61 — Circle did not commit the barrier choice
+
+Run [#39909132189](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39909132189) succeeded as a matched Circle-versus-WAIT experiment from Revision60's LEFT-action checkpoint. Its private artifact #12481644668 was reviewed; it remains private, alongside the savestates.
+
+Verified facts:
+- Source checkpoint was Revision60 run #39908484177, action branch C01 at F180: `adaptive-cycle-01-f180.sstate`, 21,163,471 bytes, SHA-256 `702e2f28c28fe78b4732d1876617d19489b27394c24f98ffd4ea2e8259ec30de`.
+- Both branches loaded the exact parent; F20 pixel parity passed (1,024,000 pixels) and Memory Card clones had identical SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`.
+- C01 action input CIRCLE press readback=true and release readback=false both passed; C02 control had no button press.
+- Output checkpoints passed v4 header/size validation: C01 action 21,162,761 bytes, SHA-256 `9d3ae8dd94348d3cd45c149cae619d08fcdd7c185eeca8a656a3856beba064cf`; C02 control 21,162,868 bytes, SHA-256 `70283b676653717788cb4a31d7540a0a369f14f977228e7d4b12cf0791fc44a7`.
+- Across F60, F100, F110 and F180, action and control frames had **exactly zero differing pixels**. Both remained classified `barrier_level_selection`. Therefore Circle was sent successfully but did not produce any visible gameplay effect in this state.
+
+**Interpretation:** LEFT caused a reproducible visible pose/facing difference in Revision60, but that pose did not establish a verified target selection. A subsequent isolated Circle on the left-action checkpoint had no effect. Keep normal policy at WAIT for this submenu.
+
+### Next task for the new chat: one-session LEFT → CIRCLE vs no-input control
+
+Do not run another unmodified Revision61-style probe. Implement a bounded A/B sequence in the existing workflow: from the untouched pre-LEFT checkpoint (Revision59 run #39907655833, `adaptive-cycle-02-f180.sstate`, SHA-256 `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35`), action branch should press LEFT at F30, release at F38, capture/inspect F60, then press CIRCLE at F70 and release at F78; control branch gets no input. Keep captures at F20/F60/F100/F110/F180 and compare pixels/states. Add explicit environment variables and tight allowlists; A/B may issue exactly the two configured presses on C01 and zero on C02. Test releases, exact source SHA, F20 pixel parity, state verification, checkpoint validation and private evidence upload. Add unit/source regression for the two-action protocol before triggering the run. Do not press START unless dialogue is actually detected; do not use Circle to skip dialogue. The aim is to verify a short barrier-target transition only, not complete Story Mode.
+
+Current marker remains Revision61 (already executed); do not accidentally rerun it. Only the research repository may be touched. ROM, BIOS, Memory Card, screenshots and savestates must remain private artifacts and must never be committed. Story Mode completion remains unverified and is not a readiness acceptance requirement.
