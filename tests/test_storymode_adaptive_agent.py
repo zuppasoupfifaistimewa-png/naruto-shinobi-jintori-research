@@ -298,5 +298,13 @@ class AdaptiveAgentTests(unittest.TestCase):
                 self.make_image("map").save(f.name)
                 self.assertEqual(agent.decide(f.name,h)["action"],"RIGHT")
 
+
+    def test_bounded_emulator_timeout_allows_capture_cycle_to_finish(self):
+        repo=Path(__file__).resolve().parents[1]
+        workflow=(repo/".github"/"workflows"/"naruto-storymode-adaptive-player.yml").read_text(encoding="utf-8")
+        self.assertIn("timeout-minutes: 20",workflow)
+        self.assertIn("timeout --signal=TERM --kill-after=5s 90s stdbuf -oL -eL",workflow)
+        self.assertNotIn("timeout --signal=TERM --kill-after=5s 60s stdbuf -oL -eL",workflow)
+
 if __name__=="__main__":
     unittest.main()
