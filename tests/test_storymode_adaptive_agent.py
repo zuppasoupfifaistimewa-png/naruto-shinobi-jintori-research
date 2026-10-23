@@ -269,7 +269,8 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertIn('if [ "$AB_SEQUENCE" = "LEFT_THEN_CIRCLE" ] || [ "$AB_SEQUENCE" = "UP_THEN_CIRCLE" ]; then',workflow)
         self.assertIn('[[ "$AB_TEST" == "1" && "$AB_EXPECTED_STATE" == "barrier_level_selection" && "$AB_ACTION" == "UP" && "$AB_SECOND_ACTION" == "CIRCLE" && "$CYCLES" == "2" && "$RESTORE_TEST" == "0" && "$CONTINUATION_TEST" == "0" ]]',workflow)
         # UP is the only allowed initial input; CIRCLE remains conditional on the F60 observation.
-        self.assertIn('local sequenceAction=(abSequence=="LEFT_THEN_CIRCLE" and "LEFT") or (abSequence=="UP_THEN_CIRCLE" and "UP")',workflow)
+        self.assertIn('local sequenceAction=nil\n                      if abSequence=="LEFT_THEN_CIRCLE" then sequenceAction="LEFT"\n                      elseif abSequence=="UP_THEN_CIRCLE" then sequenceAction="UP" end',workflow)
+        self.assertIn('sequenceArmed[cycle]=(cycle==1 and sequenceAction~=nil and precondition)',workflow)
         gate_start=workflow.index("elseif phase==60 then")
         gate_end=workflow.index("elseif phase==70 then",gate_start)
         gate=workflow[gate_start:gate_end]
