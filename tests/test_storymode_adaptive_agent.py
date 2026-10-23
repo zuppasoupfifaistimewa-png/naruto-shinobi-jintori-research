@@ -176,8 +176,8 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertIn('(abExpectedState=="card_selection_detail" and cardAction)', workflow)
         self.assertIn('(state=="card_selection" and action=="WAIT")', workflow)
         self.assertIn('(state=="card_selection_detail" and action=="WAIT")', workflow)
-        self.assertIn("ADAPTIVE_POLICY_GUARD=PASS cycle=2 state=card_selection action=WAIT", workflow)
-        self.assertIn("ADAPTIVE_POLICY_GUARD=PASS cycle=2 state=card_selection_detail action=WAIT", workflow)
+        self.assertIn('grep -q "ADAPTIVE_POLICY_GUARD=PASS cycle=2 state=$AB_EXPECTED_STATE action=WAIT"', workflow)
+        self.assertIn('(state=="card_selection_detail" and action=="WAIT")', workflow)
         # The A/B workflow must also check the no-input branch and button readback;
         # no gameplay experiment can rely only on the action branch's result.
         self.assertIn('grep -q "ADAPTIVE_INPUT cycle=1 action=$AB_ACTION phase=press readback=true status=PASS"', workflow)
