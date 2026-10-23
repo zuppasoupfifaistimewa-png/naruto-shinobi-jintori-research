@@ -1,10 +1,10 @@
-## CURRENT CHECKPOINT — adaptive player safety gate updated (23 October 2026, 07:03 WIB)
+## CURRENT CHECKPOINT — revision51 restored safely; classifier correction passed regression (23 October 2026, 07:09 WIB)
 
-The authoritative and detailed next-step handoff is now [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md). The latest regression, [run #39875557447](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39875557447), passed after adding a source regression check for the restore-only gate. The runtime emulator guard still needs its own test.
+Use [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md) as the authoritative next-step guide. Run [#39875714125](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39875714125) independently restored the revision50 output SHA-256 `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`; five authentic frames, SaveStateLoaded, zero press events, two suppressed requests and external output checkpoint validation all passed. Its output candidate SHA-256 is `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e`, 21,163,043 bytes, v4; **not yet independently restored or promoted**.
 
-The next player test is revision51 restore-only from run #39872449049 output checkpoint SHA-256 `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`. Do not promote it until a fresh process visibly restores the card overlay, five authentic captures pass, no button-press event occurs, and the output checkpoint passes external size/header/SHA validation. Real card-screen classification remains unverified. Story Mode remains **NOT COMPLETE**; no ending evidence exists.
+The real card overlay had been mistaken for dialogue because of its lower instruction box. Code commit `3f65ba64510783663fb253aa74f554d557d60d42` moved card detection ahead of dialogue and added synthetic mixed-state tests plus classification checks against five actual revision51 screenshots. Regression [#39876294837](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876294837) passed. Next is revision52 restore-only from run #39875714125 candidate SHA above; only promote after another fresh-process restore passes. Story Mode remains **NOT COMPLETE**; no ending evidence exists.
 
-Permanent rules continue: only `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`; no other repository; gameplay assets stay private and out of Git; START alone skips dialogue.
+Permanent boundaries: only `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`; no other repo; game assets/evidence stay private and out of Git; START is only for actual Story Mode dialogue.
 
 ---
 
