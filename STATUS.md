@@ -2806,3 +2806,15 @@ Artefak privat Actions #12268621845 (`naruto-spu-sentinel-fix-probe-private`) me
 
 **Kesimpulan yang diizinkan:** pemulihan raw Story Mode checkpoint dan pemuatan ulang checkpoint berikutnya dapat diandalkan pada build PCSX-Redux yang menyertakan fix SPU/ADPCM ini, menurut kriteria probe tersebut. Run ini tidak mengirim input gameplay; Story Mode belum dilanjutkan, Memory Card save/load di dalam game belum diverifikasi, dan tamat game belum terbukti. Langkah berikutnya ialah melanjutkan Story Mode dari checkpoint baru memakai varian emulator patched yang sama, sambil terus menyimpan checkpoint dan merekam aturan gameplay.
 
+## Adaptive player readiness update — 23 October 2026 (Revision61)
+
+**Readiness: NO-GO.** This is not a Story Mode completion test and completion is not a prerequisite. The short-run checkpoint mechanism passes structural validation, but the agent is not yet ready to play unattended because it still cannot resolve a barrier-selection submenu.
+
+Latest verified runs:
+- Regression [#39909012516](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39909012516): success; 17 unit/source regression tests passed.
+- Revision60 [#39908484177](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39908484177): matched LEFT-vs-WAIT test, same source checkpoint and identical Memory Card clones. LEFT input readback was verified and visibly changed the character pose, but state stayed `barrier_level_selection`; target selection remains unverified.
+- Revision61 [#39909132189](https://github.com/zuppasoupfivaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39909132189): Circle-vs-WAIT using Revision60's LEFT branch output checkpoint. Circle press/release readbacks passed, but frames F60/F100/F110/F180 were pixel-identical in both branches (zero differing pixels), and state stayed `barrier_level_selection`. Thus Circle did not visibly confirm a target from that state.
+
+Next bounded test: implement and test a one-session sequence A/B from pre-LEFT parent checkpoint (run #39907655833, `adaptive-cycle-02-f180.sstate`, SHA-256 `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35`). Action branch: LEFT press/release, capture at F60, then CIRCLE press/release in same emulator process; control branch: no inputs. Require identical initial F20, exactly two configured action presses in C01 and none in C02, explicit press/release readbacks, authentic screenshots, and validated private output checkpoints. Add regression tests before triggering the run. Keep normal policy WAIT until the submenu's target/confirm transition is visually verified.
+
+All work stays in this repository. ROM, BIOS, Memory Card, savestates and screenshots stay in private Actions artifacts, never Git. Japanese labels should be followed immediately by Indonesian translation. Use START to skip dialogue only when dialogue is detected. Do not claim Story Mode completed.
