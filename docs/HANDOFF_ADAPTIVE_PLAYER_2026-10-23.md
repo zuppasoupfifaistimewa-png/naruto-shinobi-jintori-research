@@ -1,3 +1,20 @@
+# Latest handoff — terrain-registration / focus-cue regression (23 October 2026)
+
+Current code checkpoint: `563e34562f4bea0423557755a5c03b4b60077894` adds authenticated-screen assertions only; it changes the adaptive-regression workflow and its tests, not the player workflow or marker. Regression [#39973978654](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39973978654) was **in progress** at handoff documentation time, so its final CI result must be inspected before considering any next phase.
+
+Private evidence inspected offline: Revision65 artifact #12498688466 (run #39947481094) and map UP-vs-WAIT artifact #12428777970 (run #39786019434). Both remain private/out of Git; no new emulator run/input happened.
+
+Independent ORB/RANSAC registration excludes the central foreground character and fixed panel: Revision65 UP maps F20→F60 as translation (+0.03,+100.30) px with 1,854/1,971 inliers (94.1%) and 0.457 px median residual; map UP is (+0.10,+100.26) px with 1,068/1,121 inliers (95.3%) and 0.426 px median residual. Both WAIT controls are near-zero translation with >=99.8% inliers. Revision65 badge visible-pixel centroid y shifts +97.46 px, very close to the scene's +100.30 px pan, while the mask count rises from 142 to 2,681 as it becomes unoccluded; treat this as a camera-pan confound, not selection evidence.
+
+Known map target-cue composite: red arrow ring around pink-60 tile **and** matching panel (Level 1 / value 60 / durability 2/2). Authentic mask count outside the tile body: map UP ring 811, map WAIT around the pink tile 62, Revision65 submenu around badge 66. Map panel delta is 16,239 pixels for UP versus 94 for WAIT. Level-up prompt `レベルアップする結界をえらんでください` (Pilih penghalang yang akan dinaikkan levelnya) and Circle/X footer are unchanged F60→F100 in both Revision65 branches.
+
+**Decision:** target-cue meaning is **UNKNOWN**; policy remains `WAIT` at `barrier_level_selection`. Keep Revision65 consumed and unchanged, keep `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` absent, and keep player readiness **NO-GO** / Story Mode **NOT COMPLETE**. Regression asserts centroid follows scene pan within tolerance, the authentic map UP ring is distinct and paired with its panel, and the revision65 ring remains absent. Inspect the final result of #39973978654 and check its two new output markers before any further consideration. Never use random direction input; no player workflow dispatch is authorized.
+
+Detailed measurements, thresholds, and rationale are in the new top section of `STATUS.md` and the appended entry in `ANALYSIS_LOG.md`.
+
+
+---
+
 # Latest checkpoint — measured camera-pan confound regression PASS (23 October 2026)
 
 Run [#39955066779](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39955066779) completed with `success` against code commit `6ac013fc76c8d82417305bfbfabeac4c6a73876a`. The expanded regression passed 24 tests, 10 authentic X11 policy checks, 5 authentic card-overlay checks, 10 authentic revealed-card-detail checks, ten Revision65 frame validations, the map UP-vs-WAIT panel/marker assertions, and the new NumPy scene-shift assertion.

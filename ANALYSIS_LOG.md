@@ -1483,3 +1483,41 @@ The final regression output will use `60_matches_known_barrier_value_symbol_from
 ## Regression confirmation — run #39952866478 (23 October 2026)
 
 The wording refinement was validated by Actions run #39952866478 at commit d210e75d17591c1ad03a50d539c3746bc1bd53fe; conclusion success. The run completed all steps: 23 tests, authentic X11 classifier regression (10), card-overlay priority (5), opened card-detail validation (10), and Revision65 private A/B replay. In the Revision65 replay, action-branch pink candidate ratios measured 0.1301 / 0.0948 / 0.0288 / 0.1334 at F60/F100/F110/F180; no-input control stayed 0.0044 / 0.0053 / 0.0011 / 0.0077; both F20 baselines approximately 0.0021. Instruction-panel and confirm/back footer crops changed by exactly zero pixels from F60 to F100 in both arms. Current mainline has only analysis/test/doc/workflow guard updates; no marker change or new gameplay run.
+
+
+---
+
+## Offline screenshot registration and target-cue discrimination — 23 October 2026
+
+### Provenance and safety
+
+The only repository read/modified is `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`. The analysis used existing private Actions artifacts #12498688466 (Revision65, run #39947481094) and #12428777970 (map UP-vs-WAIT, run #39786019434); authentic PNGs were extracted to temporary local storage for inspection and kept out of Git. No ROM, BIOS, Memory Card, savestate, screenshot, or private artifact was committed. The marker `experiments/.run-storymode-adaptive-player` remains Revision65, consumed, unchanged, and without `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1`. No gameplay run or emulator input was launched in this analysis.
+
+The safety/regression-only source commit is `563e34562f4bea0423557755a5c03b4b60077894`. Actions regression [#39973978654](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39973978654) was observed as **in progress** when this entry was recorded; do not treat this as a pass until the final conclusion and its screenshot-validation step are verified.
+
+### Independent terrain registration, with foreground pose excluded
+
+ORB descriptors were matched between authentic F20/F60 pairs, using terrain/background areas and excluding the central character/target region and fixed panel area where applicable. BFMatcher ratio filtering and RANSAC partial-affine fitting yielded:
+
+| Authenticated pair | Matches | Inliers | Translation (x, y) | Scale | Rotation | Median inlier residual |
+|---|---:|---:|---:|---:|---:|---:|
+| Revision65 UP | 1,971 | 1,854 (94.1%) | (+0.03, +100.30) px | 1.00005 | +0.009° | 0.457 px |
+| Revision65 WAIT | 4,596 | 4,586 (99.8%) | (−0.00, −0.00) px | 1.00000 | −0.000° | 0.001 px |
+| Map UP | 1,121 | 1,068 (95.3%) | (+0.10, +100.26) px | 0.99994 | +0.010° | 0.426 px |
+| Map WAIT | 4,699 | 4,696 (99.9%) | (−0.00, −0.00) px | 1.00000 | +0.000° | 0.000 px |
+
+This independently confirms a near-pure vertical viewport/scene pan of approximately 100 px after UP in both contexts, while WAIT is stable. The registration excludes the central foreground character, so character pose/placement does not drive this terrain estimate. The tree roots, foliage, and building/roof landmarks align under the same transform; scale and rotation are effectively unchanged.
+
+### Pink badge relative to scene and the known focus cue
+
+Using the established RGB pink mask `R>180, G<110, B>100, R-G>75`, the Revision65 partially visible F20 badge ROI contained 142 pixels, with a visible-pixel centroid near (508.27, 164.25). At F60 after UP the fixed exposure ROI contained 2,681 pixels and centroid near (487.23, 261.71); visible-pixel centroid vertical change was +97.46 px versus the registered terrain shift +100.30 px. The matched WAIT control had 0 pink-mask pixels in the post-UP ROI. The count increased because the badge became exposed from behind the fixed HUD; the close vertical agreement makes viewport pan/unocclusion a sufficient competing explanation. Since the baseline is partially occluded and the centroid is computed from visible pixels, this metric is **not** treated as proof that the object is selected or as an exact world-coordinate track.
+
+The already-authenticated map reference discriminates a target cue with multiple simultaneous signals: red directional arrows around the pink-60 tile and a matching information panel. The same threshold, counting red pixels outside the tile body, measured 811 ring pixels around the pink-60 map tile after UP, versus 62 around the pink-60 tile in map WAIT and 66 around the Revision65 submenu badge. Existing panel differential was 16,239 changed pixels in map UP versus 94 in map WAIT; the map-UP panel displays `レベル 1` (Level 1), `結界価値 60` (Nilai penghalang 60), and `耐久値 2/2` (Daya tahan 2/2). WAIT retains `空き地` (tanah kosong), barrier value 140, and no durability. The level-up submenu instead shows `レベルアップする結界をえらんでください` (Pilih penghalang yang akan dinaikkan levelnya), without the distinctive arrow ring or matching tile-information panel. Its instruction and Circle/X footer ROIs are pixel-identical from F60 to F100 in both branches (zero changed pixels).
+
+### Decision and CI regression added
+
+**Conclusion:** terrain/camera pan and HUD unocclusion remain the supported explanation for badge exposure; the pink 60 object is consistent with the known barrier-value symbol from map context, but its role as the selected upgrade target remains **UNKNOWN**. Keep classifier action `WAIT` at `barrier_level_selection`, keep the target-cue token absent, and prohibit all new gameplay input until a unique target cue is independently established.
+
+The regression workflow now recomputes the badge centroid-versus-scene displacement and the red focus-ring pixel count on those same authenticated private frames. It requires the known map-UP arrow ring plus panel differential, rejects a comparable ring around the map-WAIT/Revision65 pink badge, keeps WAIT controls and prompt/footer invariance, and fails closed if the new signatures drift. A source test protects these assertions and verifies the token gate remains before private source-checkpoint download and PAD mutation. The player workflow and marker were not modified.
+
+**Next:** verify regression #39973978654 reaches `success`, inspect the `MAP_FOCUS_ARROW_RING_REGRESSION` and `REV65_BADGE_SHIFT_FOLLOWS_SCENE` output, then proceed only with offline cue analysis if anything is still ambiguous. Do not dispatch or rerun the player, do not reuse Revision65, and do not promote its output savestates without fresh-process restore tests. Readiness remains **NO-GO**; Story Mode remains **NOT COMPLETE**.
