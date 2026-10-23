@@ -1,12 +1,12 @@
-## CURRENT CHECKPOINT — card-detail classifier passed real-frame regression; revision54 restore-only started next (23 October 2026, 07:34 WIB)
+## CURRENT CHECKPOINT — revision54 restored card-detail source; revision55 independent restore next (23 October 2026, 07:38 WIB)
 
 Canonical handoff: [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md).
 
-Revision53 A/B run [#39877412316](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39877412316) proved one CIRCLE reveals the face-up `防御集中` card details compared with no-input control, from identical F20 frames and cloned Memory Cards. Whether the card is acquired remains UNKNOWN.
+Regression #39878572840 is green: 13 unit tests and all 10 authentic revision53 screenshots correctly classify `card_selection` vs `card_selection_detail`, always WAIT. Revision54 run [#39878936772](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39878936772) independently restored revision53 action checkpoint; five 1280×800 captures show `card_selection_detail` / WAIT, SaveStateLoaded and zero button presses. New output candidate SHA-256 `219d03ab90b594c27430f91460319c6a4c9a3b05b6463871406ac777873bedf8`, 21,162,165 bytes, v4.
 
-The classifier change in commit `331e2317cc51e386af51dc2d2d0117d459a42391` adds `card_selection_detail` / WAIT. Latest regression [#39878572840](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39878572840) succeeded: 13 unit tests plus checks against all 10 authentic revision53 screenshots. Next is revision54 restore-only from run #39877412316 action checkpoint SHA `bd2c4b7f187b21350e5157a11a7b6ab99cf2124a67be11b669f93c982bc25fae`; only continue to revision55 second-CIRCLE A/B after independent restore passes. Story Mode remains **NOT COMPLETE**.
+Next run revision55 restore-only from #39878936772 with the hash above. Only after that independent restore passes may the result be used as parent for revision56 second-CIRCLE vs WAIT A/B. One CIRCLE is verified to reveal card details; whether the second acquires the card remains UNKNOWN. Full unattended chaining and Story Mode completion are not yet verified.
 
-Permanent rules: research repo only; no other repo; ROM/BIOS/states/cards/images stay private and out of Git; START only for true dialogue.
+Permanent boundaries: research repo only; no other repo; ROM/BIOS/states/cards/screenshots stay private/out of Git; START only for real dialogue.
 
 ---
 
