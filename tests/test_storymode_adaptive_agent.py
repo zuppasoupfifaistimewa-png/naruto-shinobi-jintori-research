@@ -65,6 +65,22 @@ class AdaptiveAgentTests(unittest.TestCase):
             d.rectangle((920,550,1130,690),fill=(20,30,100))
             d.ellipse((935,560,1115,620),fill=(220,20,30))
             d.rectangle((590,395,685,460),fill=(20,100,230))
+        elif state=="barrier_level_selection":
+            # Mimic revision58's authentic nested prompt: board/HUD remains visible,
+            # the instruction box is small and left-aligned, with Circle and X footer glyphs.
+            d.rectangle((100,40,1180,780),fill=(20,105,70))
+            d.rectangle((400,180,900,680),fill=(20,105,70))
+            d.rectangle((390,50,640,190),fill=(190,20,20))
+            d.rectangle((640,50,900,190),fill=(15,60,210))
+            d.rectangle((500,90,590,155),fill=(245,245,245))
+            d.rectangle((150,580,675,720),fill=(65,70,65))
+            d.rectangle((150,580,675,588),fill=(190,110,20))
+            d.rectangle((150,712,675,720),fill=(190,110,20))
+            d.rectangle((150,588,158,712),fill=(190,110,20))
+            d.rectangle((667,588,675,712),fill=(190,110,20))
+            d.ellipse((750,700,790,740),fill=(220,20,30))
+            d.line((870,700,910,740),fill=(15,60,210),width=14)
+            d.line((870,740,910,700),fill=(15,60,210),width=14)
         elif state=="map_after_move":
             d.rectangle((100,40,1180,780),fill=(20,105,70))
             d.rectangle((400,180,900,680),fill=(20,105,70))
@@ -83,7 +99,7 @@ class AdaptiveAgentTests(unittest.TestCase):
             self.make_image(state).save(f.name)
             return agent.observe(f.name)
     def test_known_state_classes(self):
-        for state in ("map","roulette","dialogue","barrier_choice","map_after_move"):
+        for state in ("map","roulette","dialogue","barrier_choice","barrier_level_selection","map_after_move"):
             with self.subTest(state=state):
                 self.assertEqual(self.classify(state)["state"],state)
     def test_board_with_dual_hud_is_transition_not_battle(self):
@@ -135,6 +151,20 @@ class AdaptiveAgentTests(unittest.TestCase):
         out=self.classify("barrier_choice")
         self.assertTrue(out["features"]["yes_selected_visual"])
         self.assertEqual(out["action"],"CIRCLE")
+
+    def test_barrier_level_selection_is_not_dialogue(self):
+        out=self.classify("barrier_level_selection")
+        self.assertLess(out["features"]["dialogue_header_orange"],.05)
+        self.assertGreaterEqual(out["features"]["prompt_footer_red"],.05)
+        self.assertGreaterEqual(out["features"]["prompt_footer_blue"],.008)
+        self.assertEqual(out["state"],"barrier_level_selection")
+        self.assertEqual(out["action"],"CIRCLE")
+
+    def test_dialogue_requires_full_width_dialogue_signature(self):
+        out=self.classify("dialogue")
+        self.assertGreaterEqual(out["features"]["dialogue_header_orange"],.08)
+        self.assertEqual(out["state"],"dialogue")
+        self.assertEqual(out["action"],"START")
 
     def test_restore_only_gate_precedes_any_button_mutation(self):
         # This is an integration-level source regression for the Lua input path:
