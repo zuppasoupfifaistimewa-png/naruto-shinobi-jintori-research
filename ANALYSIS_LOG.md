@@ -1388,3 +1388,15 @@ The instruction `「レベルアップする結界をえらんでください」
 The matched A/B harness now completes all structural and capture requirements after the 90-second bound repair. Readiness nevertheless remains **NO-GO** because the target-selection/confirmation semantics are unresolved. Story Mode completion is still unverified and not a prerequisite for this qualification milestone. Revision65 is consumed; do not rerun its marker. Keep both output checkpoints and all evidence private/out of Git.
 
 **Experiment classification:** harness/gate/instrumentation result = PASS; target-selection outcome = INCONCLUSIVE/UNKNOWN; readiness decision = NO-GO.
+
+## Revision65 visual/control audit — pink `60` remains semantically unknown (23 October 2026)
+
+Reviewed the private artifact from Actions run #39947481094 (artifact #12498688466) rather than relying only on the handoff summary. The action arm has authentic screenshots C01-F20/F60/F100/F110/F180; the matched no-input arm has C02 equivalents. All ten screenshots are 1280x800 and the offline classifier labels every one `barrier_level_selection` / `WAIT`.
+
+Observed visual deltas:
+- After UP@F30, C01-F60 shows a large pink hexagonal badge with numeric `60` in ROI x=420..540,y=175..260. It persists in later C01 screenshots. The same ROI in C02 no-input screenshots has no comparable large badge; its candidate saturated-pink RGB ratios stay below 0.01. Both F20 baselines are approximately 0.0021. This establishes a correlated visible change after UP, not what the badge means.
+- `「レベルアップする結界をえらんでください」 (Pilih penghalang yang akan dinaikkan levelnya)` remains on screen. The footer's `けってい` (konfirmasi/pilih) paired with Circle and `もどる` (kembali) paired with X documents confirm/back semantics. It does not reveal how a barrier target is selected.
+- The prompt-panel ROI (x=140..685,y=565..715) and confirm/back footer ROI (x=660..1130,y=685..770) have exactly zero changed pixels from C01-F60 to C01-F100, and likewise in the control. The Circle press/release is confirmed by PCSX-Redux PAD override readback (true/false), but there is no visible confirm transition or unique target highlight. The emulator input API's symbol-to-PAD mapping proves button delivery, not game-level target semantics.
+- Revision65 outputs: C01 21,163,502 bytes, v4, SHA-256 `ee8c768b81e69cc0096045ed05ab57ea7a1e73cb62c26c16894d1c18e584d14c`; C02 21,163,270 bytes, v4, SHA-256 `8b94ef0047ddf64b36cabc4fe70a210b1787f7946adb4384e5eb1b2126d8a325`. Both remain unpromoted until independent restore. The runtime emitted `corrupted size vs. prev_size` during cycle-2 shutdown, a residual reliability concern despite accepted wrapper exit and checkpoint validation.
+
+Decision: **target cue UNKNOWN; keep WAIT; no-go for autonomous Story Mode attempts.** Added a synthetic pink-badge WAIT regression, a private authentic-image regression against all ten Revision65 screenshots, and a source-validation gate that blocks future barrier A/B input until the marker includes the explicit verified-cue token. No new gameplay run was started. Private game assets and evidence stay out of Git.

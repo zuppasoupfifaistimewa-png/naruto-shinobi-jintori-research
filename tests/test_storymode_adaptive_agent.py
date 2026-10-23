@@ -65,7 +65,7 @@ class AdaptiveAgentTests(unittest.TestCase):
             d.rectangle((920,550,1130,690),fill=(20,30,100))
             d.ellipse((935,560,1115,620),fill=(220,20,30))
             d.rectangle((590,395,685,460),fill=(20,100,230))
-        elif state=="barrier_level_selection":
+        elif state in ("barrier_level_selection","barrier_level_selection_with_pink_60"):
             # Mimic revision58's authentic nested prompt: board/HUD remains visible,
             # the instruction box is small and left-aligned, with Circle and X footer glyphs.
             d.rectangle((100,40,1180,780),fill=(20,105,70))
@@ -81,6 +81,11 @@ class AdaptiveAgentTests(unittest.TestCase):
             d.ellipse((735,690,805,760),fill=(220,20,30))
             d.line((870,700,910,740),fill=(15,60,210),width=14)
             d.line((870,740,910,700),fill=(15,60,210),width=14)
+            if state=="barrier_level_selection_with_pink_60":
+                # Revision65 authentic frames show a vivid pink hexagon marked 60 after UP.
+                # It is deliberately not a verified focus/cursor cue, so classification must stay fail-closed.
+                d.regular_polygon((475,230,43),n_sides=6,rotation=0,fill=(245,20,145),outline=(190,130,20),width=5)
+                d.text((452,236),"60",fill=(245,245,245),stroke_width=2,stroke_fill=(0,0,0))
         elif state=="map_after_move":
             d.rectangle((100,40,1180,780),fill=(20,105,70))
             d.rectangle((400,180,900,680),fill=(20,105,70))
@@ -168,6 +173,12 @@ class AdaptiveAgentTests(unittest.TestCase):
 
     def test_barrier_level_selection_waits_until_target_is_identified(self):
         out=self.classify("barrier_level_selection")
+        self.assertEqual(out["state"],"barrier_level_selection")
+        self.assertEqual(out["action"],"WAIT")
+        self.assertIn("target_not_identified",out["action_reason"])
+
+    def test_pink_60_badge_does_not_count_as_verified_target_selection(self):
+        out=self.classify("barrier_level_selection_with_pink_60")
         self.assertEqual(out["state"],"barrier_level_selection")
         self.assertEqual(out["action"],"WAIT")
         self.assertIn("target_not_identified",out["action_reason"])
@@ -290,6 +301,27 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertIn('grep -Ec',workflow)
         self.assertIn('ADAPTIVE_INPUT_RELEASE cycle=1 ',workflow)
         self.assertIn('action_presses=UP@30,CIRCLE@70 action_releases=UP@38,CIRCLE@78 control_presses=0 unexpected_presses=0',workflow)
+    def test_barrier_target_probe_requires_verified_visual_cue_before_download_or_input(self):
+        repo=Path(__file__).resolve().parents[1]
+        workflow=(repo/".github"/"workflows"/"naruto-storymode-adaptive-player.yml").read_text(encoding="utf-8")
+        self.assertIn('ab_barrier_target_cue="$(get_value AB_BARRIER_TARGET_CUE)"',workflow)
+        self.assertIn('ab_barrier_target_cue="${ab_barrier_target_cue:-UNKNOWN}"',workflow)
+        self.assertIn('AB_BARRIER_TARGET_GATE=BLOCKED cue=$ab_barrier_target_cue reason=target_cue_not_verified input_authorized=false',workflow)
+        self.assertIn('AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1',workflow)
+        gate=workflow.index('AB_BARRIER_TARGET_GATE=BLOCKED cue=$ab_barrier_target_cue')
+        source_download=workflow.index("- name: Download selected private source checkpoint artifact")
+        pad_mutation=workflow.index("pad.setOverride(b)")
+        self.assertLess(gate,source_download)
+        self.assertLess(gate,pad_mutation)
+
+    def test_revision65_authentic_pink60_regression_is_kept_in_workflow(self):
+        repo=Path(__file__).resolve().parents[1]
+        regression=(repo/".github"/"workflows"/"naruto-storymode-adaptive-regression.yml").read_text(encoding="utf-8")
+        self.assertIn("run-id: 39947481094",regression)
+        self.assertIn("REV65_PINK60_MARKER_REGRESSION=PASS",regression)
+        self.assertIn("pink_marker_ratio",regression)
+        self.assertIn('("barrier_level_selection", "WAIT")',regression)
+
     def test_persistent_map_rotates_direction(self):
         with tempfile.TemporaryDirectory() as td:
             h=Path(td)/"history.json"

@@ -60,11 +60,13 @@ jobs:
           ab_expected_state="$(get_value AB_EXPECTED_STATE)"
           ab_sequence="$(get_value AB_SEQUENCE)"
           ab_second_action="$(get_value AB_SECOND_ACTION)"
+          ab_barrier_target_cue="$(get_value AB_BARRIER_TARGET_CUE)"
           ab_test="${ab_test:-0}"
           ab_action="${ab_action:-DOWN}"
           ab_expected_state="${ab_expected_state:-menu_or_unknown_choice}"
           ab_sequence="${ab_sequence:-NONE}"
           ab_second_action="${ab_second_action:-NONE}"
+          ab_barrier_target_cue="${ab_barrier_target_cue:-UNKNOWN}"
           [[ "$source_run" =~ ^[0-9]+$ ]]
           [[ "$source_artifact" =~ ^[A-Za-z0-9._-]+$ ]]
           [[ "$source_checkpoint" =~ ^[A-Za-z0-9._-]+$ ]]
@@ -84,6 +86,13 @@ jobs:
           fi
           [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "TRIANGLE" || "$ab_action" == "CROSS" || "$ab_action" == "CIRCLE" ]]
           [[ "$ab_expected_state" == "menu_or_unknown_choice" || "$ab_expected_state" == "map_after_move" || "$ab_expected_state" == "roulette" || "$ab_expected_state" == "card_selection" || "$ab_expected_state" == "card_selection_detail" || "$ab_expected_state" == "barrier_level_selection" ]]
+          if [ "$ab_test" = "1" ] && [ "$ab_expected_state" = "barrier_level_selection" ]; then
+            if [ "$ab_barrier_target_cue" != "VERIFIED_BARRIER_TARGET_CUE_V1" ]; then
+              echo "AB_BARRIER_TARGET_GATE=BLOCKED cue=$ab_barrier_target_cue reason=target_cue_not_verified input_authorized=false"
+              exit 1
+            fi
+            echo "AB_BARRIER_TARGET_GATE=PASS cue=$ab_barrier_target_cue"
+          fi
           if [ "$ab_test" = "1" ]; then
             if [ "$ab_expected_state" = "map_after_move" ]; then
               [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "CROSS" ]]

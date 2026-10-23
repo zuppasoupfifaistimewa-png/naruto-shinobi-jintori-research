@@ -168,3 +168,81 @@ jobs:
                   raise SystemExit(f"revealed-card classification mismatch for {filename}: {observed} != {want}")
           print("AUTHENTIC_REVEALED_CARD_DETAIL=PASS checked=10")
           PY
+      - name: Download authentic Revision65 barrier-selection A/B evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: 39947481094
+          github-token: \${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: \${{ runner.temp }}/revision65-barrier-evidence
+
+      - name: Regression-gate pink 60 marker without treating it as a selected target
+        env:
+          EVIDENCE: \${{ runner.temp }}/revision65-barrier-evidence
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, subprocess, sys
+          from pathlib import Path
+          import numpy as np
+          from PIL import Image
+
+          root = Path(os.environ["EVIDENCE"])
+          agent = "tools/storymode_adaptive_agent.py"
+          expected = {f"C{branch:02d}-F{frame}.png": ("barrier_level_selection", "WAIT")
+                      for branch in (1, 2) for frame in (20, 60, 100, 110, 180)}
+          images = {}
+          for filename, want in expected.items():
+              path = root / filename
+              if not path.is_file():
+                  raise SystemExit("missing authentic Revision65 frame: " + filename)
+              with Image.open(path) as im:
+                  if im.size != (1280, 800):
+                      raise SystemExit(f"bad screenshot dimensions for {filename}: {im.size}")
+                  images[filename] = np.asarray(im.convert("RGB"))
+              proc = subprocess.run(
+                  [sys.executable, agent, str(path)], check=True,
+                  capture_output=True, text=True, timeout=10
+              )
+              got = json.loads(proc.stdout.strip().splitlines()[-1])
+              observed = (got.get("state"), got.get("action"))
+              print(json.dumps({"file": filename, "state": observed[0], "action": observed[1],
+                                "reason": got.get("reason")}, sort_keys=True))
+              if observed != want:
+                  raise SystemExit(f"Revision65 state/action mismatch: {filename}: {observed} != {want}")
+          def pink_marker_ratio(arr):
+              # Fixed ROI around the pink hexagon and its 60 label in the authentic F60 frame.
+              crop = arr[175:260, 420:540].astype(np.int16)
+              r, g, b = crop[:,:,0], crop[:,:,1], crop[:,:,2]
+              mask = (r > 180) & (g < 110) & (b > 100) & ((r-g) > 75)
+              return float(mask.mean())
+          baseline = {}
+          for branch in (1, 2):
+              baseline[f"C{branch:02d}-F20.png"] = pink_marker_ratio(images[f"C{branch:02d}-F20.png"])
+          if any(v > 0.01 for v in baseline.values()):
+              raise SystemExit("pink marker ROI did not match pre-input baseline: " + repr(baseline))
+          action_ratios = {f"C01-F{f}.png": pink_marker_ratio(images[f"C01-F{f}.png"])
+                           for f in (60, 100, 110, 180)}
+          control_ratios = {f"C02-F{f}.png": pink_marker_ratio(images[f"C02-F{f}.png"])
+                            for f in (60, 100, 110, 180)}
+          print(json.dumps({"pink_marker_ratio": action_ratios, "control_roi_ratio": control_ratios,
+                            "meaning": "UNKNOWN_not_verified_as_target_cursor_or_resource"}, sort_keys=True))
+          if any(v < 0.02 for v in action_ratios.values()):
+              raise SystemExit("expected pink 60 badge signature missing from an action-branch frame")
+          if any(v > 0.01 for v in control_ratios.values()):
+              raise SystemExit("control branch unexpectedly has the calibrated pink-badge signature")
+          for branch in (1, 2):
+              first = images[f"C{branch:02d}-F60.png"]
+              after_circle = images[f"C{branch:02d}-F100.png"]
+              for label, box in (("instruction_panel", (140,565,685,715)),
+                                 ("confirm_back_footer", (660,685,1130,770))):
+                  x1,y1,x2,y2 = box
+                  before_roi = first[y1:y2,x1:x2]
+                  after_roi = after_circle[y1:y2,x1:x2]
+                  changed = int(np.any(before_roi != after_roi, axis=2).sum())
+                  print(f"{branch=} {label=} changed_pixels_F60_to_F100={changed}")
+                  if changed != 0:
+                      raise SystemExit(f"{label} changed after Circle in branch {branch}; investigate semantics")
+          print("REV65_PINK60_MARKER_REGRESSION=PASS action_badge_visible=true control_badge_absent=true prompt_unchanged_after_circle=true target_semantics=UNKNOWN input_policy=WAIT")
+          PY

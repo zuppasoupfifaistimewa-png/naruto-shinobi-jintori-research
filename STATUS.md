@@ -1,3 +1,15 @@
+## Revision65 indicator audit and new NO-GO gate — 23 October 2026
+
+- HEAD verified after Revision65: `80267c92a413ed6c346bff09b28e018a22e279ff`. The latest gameplay run at audit start was #39947481094 (success) with private artifact #12498688466; regression #39947302492 (20 tests plus authentic screenshot checks) and monitor #39948007642 (success) were complete. No player run was active in the latest Actions page checked.
+- Revision65 remains consumed. Do not rerun or repurpose its marker. The immutable source is Revision59 run #39907655833 checkpoint SHA-256 `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35`. Neither Revision65 output checkpoint is promoted; independent fresh-process restore is still required.
+- Authentic private images were inspected directly. C01's UP@F30 causes a conspicuous pink hexagonal badge labelled `60` to appear in a fixed ROI (x=420..540, y=175..260); it is still present in C01 F60/F100/F110/F180. The calibrated pink-pixel candidate ratio is approximately 0.1301, 0.0948, 0.0288 and 0.1334 respectively. C02 WAIT-control ratios remain below 0.01 and both F20 baselines are about 0.0021.
+- The prompt `「レベルアップする結界をえらんでください」 (Pilih penghalang yang akan dinaikkan levelnya)` remains visible. The footer reads `けってい` (konfirmasi/pilih) and `もどる` (kembali), with Circle and X glyphs respectively. The instruction-panel and footer crops have exactly zero changed pixels from F60 to F100 in each branch after the Circle input.
+- Runtime mapping proves delivery only: UP was pressed at F30/readback true and released at F38/readback false; Circle was pressed at F70/readback true and released at F78/readback false. It does not map the in-game target cursor or explain the numeric badge. The pink `60` meaning remains UNKNOWN (target marker, resource, or other overlay not distinguished); do not call it a selection highlight.
+- Action policy remains WAIT at `barrier_level_selection`. The classifier synthetic suite now includes a pink-`60` scene that must still yield WAIT. The regression workflow replays all ten authentic Revision65 screenshots privately, checks the indicator-vs-control region, and asserts the prompt/footer remain pixel-identical after Circle. A preflight gate blocks any future barrier-selection A/B unless the marker explicitly declares `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1`; this token must not be used until a unique target cue has independent visual evidence.
+- Readiness is **NO-GO**; Story Mode completion is unverified and is not a readiness prerequisite. No new gameplay experiment is launched by this checkpoint. Keep ROM, BIOS, Memory Cards, savestates, screenshots and private artifacts out of Git.
+
+---
+
 ## Revision57 result — chained gameplay progress, 23 October 2026
 
 Run [#39904672868](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39904672868) completed successfully. It restored revision56's CIRCLE-action checkpoint and ran two bounded sessions in fresh emulator processes, capturing ten authentic 1280x800 external-X11 frames and validating both output savestates. Logs confirm:
