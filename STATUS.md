@@ -1,12 +1,12 @@
-## CURRENT CHECKPOINT — revision54 restored card-detail source; revision55 independent restore next (23 October 2026, 07:38 WIB)
+## CURRENT CHECKPOINT — revision55 restore-only currently running (23 October 2026, 07:40 WIB)
 
-Canonical handoff: [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md).
+See [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md) for detailed evidence and continuation.
 
-Regression #39878572840 is green: 13 unit tests and all 10 authentic revision53 screenshots correctly classify `card_selection` vs `card_selection_detail`, always WAIT. Revision54 run [#39878936772](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39878936772) independently restored revision53 action checkpoint; five 1280×800 captures show `card_selection_detail` / WAIT, SaveStateLoaded and zero button presses. New output candidate SHA-256 `219d03ab90b594c27430f91460319c6a4c9a3b05b6463871406ac777873bedf8`, 21,162,165 bytes, v4.
+Revision54 [#39878936772](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39878936772) independently restored the revision53 face-up card-detail state; SHA `219d03ab90b594c27430f91460319c6a4c9a3b05b6463871406ac777873bedf8`, 21,162,165 bytes, v4. Revision55 restore-only run [#39879445016](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39879445016) is **in progress** and must finish before any card-input A/B is launched. Do not change the marker or start concurrent player runs. The A/B question remains whether a second CIRCLE confirms/acquires the `防御集中` card; this is UNKNOWN.
 
-Next run revision55 restore-only from #39878936772 with the hash above. Only after that independent restore passes may the result be used as parent for revision56 second-CIRCLE vs WAIT A/B. One CIRCLE is verified to reveal card details; whether the second acquires the card remains UNKNOWN. Full unattended chaining and Story Mode completion are not yet verified.
+If run #39879445016 remains stuck, its 20-minute job timeout implies a stop by about 07:59 WIB. Verify the actual five private screenshots, zero-press guard, source load event, and output checkpoint size/header/SHA when it finishes. Story Mode remains **NOT COMPLETE**.
 
-Permanent boundaries: research repo only; no other repo; ROM/BIOS/states/cards/screenshots stay private/out of Git; START only for real dialogue.
+Permanent boundaries: only the Naruto research repository; no other repos; game assets and genuine screenshots remain private/out of Git; START only for true Story Mode dialogue.
 
 ---
 
