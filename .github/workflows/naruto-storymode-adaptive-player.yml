@@ -81,7 +81,7 @@ jobs:
             elif [ "$ab_expected_state" = "card_selection_detail" ]; then
               [[ "$ab_action" == "CIRCLE" ]]
             elif [ "$ab_expected_state" = "barrier_level_selection" ]; then
-              [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" ]]
+              [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "CIRCLE" ]]
             else
               [[ "$ab_action" == "DOWN" || "$ab_action" == "TRIANGLE" || "$ab_action" == "CIRCLE" ]]
             fi
@@ -380,7 +380,7 @@ jobs:
                       local menuAction=(abAction=="DOWN" or abAction=="TRIANGLE" or abAction=="CIRCLE")
                       local rouletteAction=(abAction=="CIRCLE")
                       local cardAction=(abAction=="CIRCLE")
-                      local barrierSelectionAction=(abAction=="UP" or abAction=="DOWN" or abAction=="LEFT" or abAction=="RIGHT")
+                      local barrierSelectionAction=(abAction=="UP" or abAction=="DOWN" or abAction=="LEFT" or abAction=="RIGHT" or abAction=="CIRCLE")
                       local safeAction=(abExpectedState=="menu_or_unknown_choice" and menuAction) or (abExpectedState=="map_after_move" and mapAction) or (abExpectedState=="roulette" and rouletteAction) or (abExpectedState=="card_selection" and cardAction) or (abExpectedState=="card_selection_detail" and cardAction) or (abExpectedState=="barrier_level_selection" and barrierSelectionAction)
                       local precondition=(state==abExpectedState and action=="WAIT" and safeAction)
                       local branch=(cycle==1) and "ACTION" or "NONE"
