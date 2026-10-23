@@ -743,7 +743,8 @@ jobs:
           name: naruto-storymode-adaptive-player-private
           path: |
             /tmp/naruto-storymode-adaptive-player/captures/*
-          retention-days: 14
+          # Preserve private emulator checkpoints long enough for multi-run continuation.
+          retention-days: 90
           if-no-files-found: warn
 
       - name: Remove private game assets and checkpoint copies

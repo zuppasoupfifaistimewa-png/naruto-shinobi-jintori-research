@@ -95,11 +95,12 @@ def observe(path: str | Path) -> dict[str, Any]:
         features["yes_selected_visual"]=bool(yes)
         features["chakra_ocr_best_effort"]=chakra
         features["required_chakra_calibrated"]=120
+    elif card_overlay["white"] >= .12 and card_overlay["gray"] >= .16:
+        # Card overlays outrank generic dialogue: the card prompt itself can include
+        # a bottom instruction box, and START would bypass card selection.
+        state,conf,reason="card_selection",.97,"three_card_back_overlay_white_frame_gray_lattice"
     elif dialogue_box["orange"] >= .05:
         state,conf,reason="dialogue",.91,"calibrated_bottom_dialog_box_signature"
-    elif card_overlay["white"] >= .12 and card_overlay["gray"] >= .16:
-        # Three card backs cover the board; do not mistake green edges for an actionable map.
-        state,conf,reason="card_selection",.97,"three_card_back_overlay_white_frame_gray_lattice"
     elif menu["white"] >= .06 and menu["orange"] >= .025:
         state,conf,reason="menu_or_unknown_choice",.78,"right_side_menu_requires_context"
     elif center["green"] >= .42 and wheel["red"] < .10 and top_hud["red"] >= .05 and top_hud["blue"] >= .05 and top_hud["white"] >= .035:

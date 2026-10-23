@@ -78,3 +78,44 @@ jobs:
                   raise SystemExit(f"classification mismatch for {filename}: got={observed}, expected={want}")
           print("AUTHENTIC_X11_REGRESSION=PASS checked=10")
           PY
+
+      - name: Download authentic revision51 card-overlay evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: 39875714125
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: ${{ runner.temp }}/card-overlay-evidence
+
+      - name: Verify card overlay dominates dialogue on authentic X11 frames
+        env:
+          EVIDENCE: ${{ runner.temp }}/card-overlay-evidence
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, subprocess, sys
+          from pathlib import Path
+          from PIL import Image
+          root = Path(os.environ["EVIDENCE"])
+          expected = {name: ("card_selection", "WAIT") for name in (
+              "C01-F20.png", "C01-F60.png", "C01-F100.png", "C01-F110.png", "C01-F180.png"
+          )}
+          for filename, want in expected.items():
+              path = root / filename
+              if not path.is_file():
+                  raise SystemExit("missing authentic card-overlay frame: " + filename)
+              with Image.open(path) as im:
+                  if im.size != (1280, 800):
+                      raise SystemExit(f"bad screenshot dimensions for {filename}: {im.size}")
+              proc = subprocess.run(
+                  [sys.executable, "tools/storymode_adaptive_agent.py", str(path)],
+                  check=True, capture_output=True, text=True, timeout=10,
+              )
+              got = json.loads(proc.stdout.strip().splitlines()[-1])
+              observed = (got.get("state"), got.get("action"))
+              print(json.dumps({"file": filename, "observed": observed, "reason": got.get("reason")}, sort_keys=True))
+              if observed != want:
+                  raise SystemExit(f"card overlay/dialogue priority mismatch for {filename}: {observed} != {want}")
+          print("AUTHENTIC_CARD_OVERLAY_DIALOGUE_PRIORITY=PASS checked=5")
+          PY

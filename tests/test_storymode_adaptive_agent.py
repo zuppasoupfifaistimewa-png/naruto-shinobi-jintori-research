@@ -30,7 +30,7 @@ class AdaptiveAgentTests(unittest.TestCase):
             d.rectangle((130,715,1150,740),fill=(190,110,20))
             d.rectangle((130,540,155,715),fill=(190,110,20))
             d.rectangle((1125,540,1150,715),fill=(190,110,20))
-        elif state=="card_selection":
+        elif state in ("card_selection","card_selection_with_dialogue"):
             d.rectangle((100,40,1180,780),fill=(20,105,70))
             d.rectangle((400,180,900,680),fill=(20,105,70))
             # Mimic the authentic three-card overlay: pale frames and low-chroma patterned backs.
@@ -39,6 +39,14 @@ class AdaptiveAgentTests(unittest.TestCase):
                 x1,y1,x2,y2=rect
                 d.line((x1+18,y1+40,x2-18,y2-40),fill=(200,200,200),width=5)
                 d.line((x1+18,y2-40,x2-18,y1+40),fill=(200,200,200),width=5)
+            if state=="card_selection_with_dialogue":
+                # The authentic card chooser overlays the same bottom box that normally
+                # signals dialogue, so the specific card signature must win classifier priority.
+                d.rectangle((130,515,1150,740),fill=(100,100,85))
+                d.rectangle((130,515,1150,540),fill=(190,110,20))
+                d.rectangle((130,715,1150,740),fill=(190,110,20))
+                d.rectangle((130,540,155,715),fill=(190,110,20))
+                d.rectangle((1125,540,1150,715),fill=(190,110,20))
         elif state=="barrier_choice":
             d.rectangle((400,180,900,680),fill=(20,105,70))
             d.rectangle((920,550,1130,690),fill=(20,30,100))
@@ -76,6 +84,14 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertEqual(out["action"],"WAIT")
         self.assertGreaterEqual(out["features"]["card_overlay_white"],.12)
         self.assertGreaterEqual(out["features"]["card_overlay_gray"],.16)
+
+    def test_card_overlay_with_dialogue_prompt_stays_card_selection(self):
+        out=self.classify("card_selection_with_dialogue")
+        self.assertGreaterEqual(out["features"]["dialogue_orange"],.05)
+        self.assertGreaterEqual(out["features"]["card_overlay_white"],.12)
+        self.assertGreaterEqual(out["features"]["card_overlay_gray"],.16)
+        self.assertEqual(out["state"],"card_selection")
+        self.assertEqual(out["action"],"WAIT")
 
     def test_battle_screen_fails_closed_until_policy_calibrated(self):
         out=self.classify("battle")
