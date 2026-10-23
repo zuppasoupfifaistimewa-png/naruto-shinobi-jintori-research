@@ -237,7 +237,7 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertIn('|| "$ab_action" == "CIRCLE" ]]' ,workflow)
         self.assertIn('(abExpectedState=="barrier_level_selection" and barrierSelectionAction)',workflow)
         self.assertIn('(state=="barrier_level_selection" and action=="WAIT")',workflow)
-        self.assertIn('[[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" ]]',workflow)
+        self.assertIn('[[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "CIRCLE" ]]',workflow)
 
     def test_persistent_map_rotates_direction(self):
         with tempfile.TemporaryDirectory() as td:
