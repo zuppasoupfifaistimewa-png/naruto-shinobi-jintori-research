@@ -219,3 +219,33 @@ A source-level audit caught and fixed two regression-compatibility details befor
 Latest workflow commit: `a7e59dee93de44b7958f317a6239eda048e7951d`. Latest test commit: `123efe8480d50a1589d00dc3dd87e003b310e1bb`. A source-level sweep checked 54 literal `assertIn(..., workflow)` expectations in the test module against the current workflow; all 54 matched. This is only a static consistency check, **not a substitute for the actual regression workflow**. The Actions run conclusion still has not been independently retrieved, and the latest test commit should trigger the regression workflow again.
 
 Keep marker `experiments/.run-storymode-adaptive-player` unchanged at consumed Revision63; do not rerun it and do not launch Revision64 until a green regression run is explicitly verified. All private evidence/source-checkpoint constraints above remain in force.
+
+## Revision64 preflight audit — 23 October 2026
+
+- Latest regression run [#39944753664](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39944753664), workflow run 33, completed **success** on test commit `123efe8480d50a1589d00dc3dd87e003b310e1bb`. The completed job log independently records **19 tests / OK**, `AUTHENTIC_X11_REGRESSION=PASS checked=10`, `AUTHENTIC_CARD_OVERLAY_DIALOGUE_PRIORITY=PASS checked=5`, and `AUTHENTIC_REVEALED_CARD_DETAIL=PASS checked=10`; all job steps passed. Main's workflow and test blob SHAs match the regression checkout (`60b613d2d6c7efde32452b16399814962308e541` and `5b60db1a22646a9b4176169462c193ae243b2a66`), so the result covers the current source files.
+- The Revision63 player marker was read before any edit and is consumed; it remains unchanged in this preflight record. No concurrent player run was found in the recent Actions run list.
+- Downloaded the source artifact for run [#39907655833](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39907655833), private artifact `#12482055310`. Inside it, `adaptive-cycle-02-f180.sstate` was independently rechecked: **21,162,799 bytes**, `PCSX-Redux SaveState v4` header, SHA-256 `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35`. This matched checkpoint has not been modified. Authentic private screenshot `C02-F180.png` displays `「レベルアップする結界をえらんでください」 (Pilih penghalang yang akan dinaikkan levelnya)`, consistent with the intended `barrier_level_selection` parent.
+- Audited the current player workflow's shell and Lua guards. Only the exact `AB_TEST=1`, `AB_EXPECTED_STATE=barrier_level_selection`, `AB_ACTION=UP`, `AB_SEQUENCE=UP_THEN_CIRCLE`, `AB_SECOND_ACTION=CIRCLE`, two-cycle tuple, with restore/continuation flags 0, is accepted. Lua independently validates the same sequence; C01 requires F20 state `barrier_level_selection` plus classifier action `WAIT`, presses UP at F30 and releases at F38, then requires the real F60 observation to remain `barrier_level_selection` / `WAIT` before authorizing Circle at F70/release F78. Any F20/F60 mismatch or unarmed sequence quits before the second input. Shell assertions enforce exactly two C01 press/release pairs, no unexpected C01 presses, zero control presses, equal initial F20 pixels, equal Memory Card clones (expected SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`), two `ExecutionFlow::SaveStateLoaded` events, ten authentic external-X11 1280×800 screenshots, and structural/header/size/SHA validation for both private output checkpoints.
+- Regression is green and the Revision64 preflight is technically qualified. This is a **bounded qualification experiment only**, not proof that the player is ready for unattended Story Mode completion. If F60 is not the calibrated submenu with WAIT, do not send Circle. Keep all ROM, BIOS, Memory Card, savestate, and gameplay screenshots private and out of Git.
+
+### Exact next marker (prepare only after this preflight record)
+
+Do not reuse Revision63. Revision64 marker values are:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39907655833
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-02-f180.sstate
+SOURCE_SHA256=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=UP
+AB_EXPECTED_STATE=barrier_level_selection
+AB_SEQUENCE=UP_THEN_CIRCLE
+AB_SECOND_ACTION=CIRCLE
+LOOP_CYCLES=2
+REVISION=64
+```
+
+The marker push must use commit message containing `[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER]` because the workflow job checks for that token. After the run, inspect its private artifact/logs and all ten screenshots before interpreting any apparent screen change. Verify checkpoint outputs and then append the result to `STATUS.md`, `ANALYSIS_LOG.md`, and this handoff.
