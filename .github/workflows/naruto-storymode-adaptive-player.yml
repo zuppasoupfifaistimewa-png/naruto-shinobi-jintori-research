@@ -423,7 +423,9 @@ jobs:
                       local barrierSelectionAction=(abAction=="UP" or abAction=="DOWN" or abAction=="LEFT" or abAction=="RIGHT" or abAction=="CIRCLE")
                       local safeAction=(abExpectedState=="menu_or_unknown_choice" and menuAction) or (abExpectedState=="map_after_move" and mapAction) or (abExpectedState=="roulette" and rouletteAction) or (abExpectedState=="card_selection" and cardAction) or (abExpectedState=="card_selection_detail" and cardAction) or (abExpectedState=="barrier_level_selection" and barrierSelectionAction)
                       local precondition=(state==abExpectedState and action=="WAIT" and safeAction)
-                      local sequenceAction=(abSequence=="LEFT_THEN_CIRCLE" and "LEFT") or (abSequence=="UP_THEN_CIRCLE" and "UP")
+                      local sequenceAction=nil
+                      if abSequence=="LEFT_THEN_CIRCLE" then sequenceAction="LEFT"
+                      elseif abSequence=="UP_THEN_CIRCLE" then sequenceAction="UP" end
                       if sequenceAction and cycle==1 and not precondition then
                           log("ADAPTIVE_AB_SEQUENCE_PRECONDITION=FAIL state="..state.." classifier_action="..action)
                           PCSX.quit(90); return
