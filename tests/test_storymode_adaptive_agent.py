@@ -344,6 +344,24 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertLess(gate, source_download)
         self.assertLess(gate, pad_mutation)
 
+    def test_authenticated_focus_ring_and_scene_relative_badge_regression_stays_fail_closed(self):
+        repo = Path(__file__).resolve().parents[1]
+        regression = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-regression.yml").read_text(encoding="utf-8")
+        player_workflow = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-player.yml").read_text(encoding="utf-8")
+        marker = (repo / "experiments" / ".run-storymode-adaptive-player").read_text(encoding="utf-8")
+        self.assertIn("def pink_centroid(", regression)
+        self.assertIn("def red_focus_ring_pixels(", regression)
+        self.assertIn("MAP_FOCUS_ARROW_RING_REGRESSION=PASS", regression)
+        self.assertIn("REV65_BADGE_SHIFT_FOLLOWS_SCENE=PASS", regression)
+        self.assertIn("selection_not_proven=true", regression)
+        self.assertNotIn("AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1", marker)
+        self.assertIn('action,action_reason="WAIT","barrier_target_not_identified; fail_closed_until_controlled_probe"', (repo / "tools" / "storymode_adaptive_agent.py").read_text(encoding="utf-8"))
+        gate = player_workflow.index('AB_BARRIER_TARGET_GATE=BLOCKED cue=$ab_barrier_target_cue')
+        source_download = player_workflow.index("- name: Download selected private source checkpoint artifact")
+        pad_mutation = player_workflow.index("pad.setOverride(b)")
+        self.assertLess(gate, source_download)
+        self.assertLess(gate, pad_mutation)
+
     def test_persistent_map_rotates_direction(self):
         with tempfile.TemporaryDirectory() as td:
             h=Path(td)/"history.json"
