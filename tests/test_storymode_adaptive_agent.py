@@ -380,11 +380,11 @@ class AdaptiveAgentTests(unittest.TestCase):
         for relative_path, job_name in manual_only.items():
             workflow = (repo / relative_path).read_text(encoding="utf-8")
             expected = f"jobs:\n  {job_name}:\n    if: github.event_name == 'workflow_dispatch'\n"
-            self.assertIn(expected.replace("\\\n", "\n"), workflow, relative_path)
+            self.assertIn(expected, workflow, relative_path)
         # The legacy fixed-sequence Story Mode loop remains fully disabled until
         # the independently verified barrier-target cue/readiness gate changes.
         legacy = (repo / ".github" / "workflows" / "naruto-scph7502-gpu-traffic-summary.yml").read_text(encoding="utf-8")
-        self.assertIn("gpu-traffic-summary:\n    if: false\n", legacy.replace("\\\n", "\n"))
+        self.assertIn("gpu-traffic-summary:\n    if: false\n", legacy)
         marker = (repo / "experiments" / ".run-storymode-adaptive-player").read_text(encoding="utf-8")
         self.assertIn("REVISION=65", marker)
         self.assertNotIn("AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1", marker)
