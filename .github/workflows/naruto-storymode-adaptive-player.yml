@@ -254,6 +254,7 @@ jobs:
           local cycle=tonumber(os.getenv("ADAPTIVE_CYCLE") or "1")
           if cycle<1 or cycle>2 then error("ADAPTIVE_CYCLE must be 1 or 2") end
           local abTest=os.getenv("AB_TEST")=="1"
+          local restoreTest=os.getenv("RESTORE_TEST")=="1"
           local abAction=os.getenv("AB_ACTION") or "DOWN"
           local abExpectedState=os.getenv("AB_EXPECTED_STATE") or "menu_or_unknown_choice"
           local frame=0; local loadStarted=false; local loadReturned=false; local loaded=false
@@ -309,6 +310,12 @@ jobs:
               return state,action,result
           end
           local function sendAction(action,cycle)
+              -- Central hard gate: restore-only must never mutate pad state, regardless
+              -- of which action the classifier or dialogue policy requests.
+              if restoreTest then
+                  log("ADAPTIVE_RESTORE_ONLY_INPUT_SUPPRESSED cycle="..cycle.." requested_action="..tostring(action))
+                  return
+              end
               if action=="WAIT" or action=="NONE" or action=="" then
                   log("ADAPTIVE_INPUT cycle="..cycle.." action=WAIT status=PASS reason=no_input_policy")
                   return
@@ -414,7 +421,11 @@ jobs:
                   if not state then return end
                   if state=="dialogue" and action=="START" then
                       sendAction("START",cycle)
-                      log("ADAPTIVE_DIALOGUE_SKIP=PASS cycle="..cycle.." reason=visible_gold_dialogue_box")
+                      if restoreTest then
+                          log("ADAPTIVE_DIALOGUE_SKIP=SUPPRESSED cycle="..cycle.." reason=restore_only_no_input")
+                      else
+                          log("ADAPTIVE_DIALOGUE_SKIP=PASS cycle="..cycle.." reason=visible_gold_dialogue_box")
+                      end
                   else
                       log("ADAPTIVE_DIALOGUE_SKIP=NOT_DIALOGUE cycle="..cycle.." state="..state.." action=WAIT")
                   end
@@ -691,8 +702,17 @@ jobs:
             echo "ADAPTIVE_AB_TEST=PASS parent_sha256=$SOURCE_SHA256 action=$AB_ACTION control=NONE memory_card_clones=identical parent_frame_parity=PASS fresh_processes=2 captures=10 checkpoint_outputs_validated=true" >> "$WORK/captures/pcsx-adaptive.stdout"
           elif [ "$RESTORE_TEST" = "1" ]; then
             grep -q 'ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded' "$WORK/captures/pcsx-adaptive.stdout"
-            grep -q 'ADAPTIVE_X11_CAPTURE label=C01-F20 .*source=external_xwd' "$WORK/captures/pcsx-adaptive.stdout"
-            echo "ADAPTIVE_RESTORE_TEST=PASS source_sha256=$SOURCE_SHA256 event=ExecutionFlow::SaveStateLoaded post_restore_frame=C01-F20" >> "$WORK/captures/pcsx-adaptive.stdout"
+            for label in C01-F20 C01-F60 C01-F100 C01-F110 C01-F180; do
+              grep -q "ADAPTIVE_X11_CAPTURE label=$label .*source=external_xwd" "$WORK/captures/pcsx-adaptive.stdout"
+            done
+            if grep -Eq 'ADAPTIVE_INPUT cycle=[0-9]+ .*phase=press' "$WORK/captures/pcsx-adaptive.stdout"; then
+              echo "ADAPTIVE_RESTORE_ONLY_NO_INPUT_ASSERT=FAIL press_event_found" >> "$WORK/captures/pcsx-adaptive.stdout"
+              exit 1
+            fi
+            suppressed_count="$(grep -c 'ADAPTIVE_RESTORE_ONLY_INPUT_SUPPRESSED' "$WORK/captures/pcsx-adaptive.stdout" || true)"
+            test "$suppressed_count" -ge 1
+            echo "ADAPTIVE_RESTORE_ONLY_NO_INPUT_ASSERT=PASS press_events=0 suppressed_input_calls=$suppressed_count" >> "$WORK/captures/pcsx-adaptive.stdout"
+            echo "ADAPTIVE_RESTORE_TEST=PASS source_sha256=$SOURCE_SHA256 event=ExecutionFlow::SaveStateLoaded post_restore_frame=C01-F20 captures=5 no_input=true" >> "$WORK/captures/pcsx-adaptive.stdout"
           elif [ "$CONTINUATION_TEST" = "1" ]; then
             test "$CYCLES" -eq 2
             grep -q 'ADAPTIVE_POLICY_GUARD=PASS cycle=2' "$WORK/captures/policy-guard-report.txt"
