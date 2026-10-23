@@ -17,6 +17,7 @@ concurrency:
 
 jobs:
   bios-variant-probe:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-26.04
     timeout-minutes: 14
     steps:
