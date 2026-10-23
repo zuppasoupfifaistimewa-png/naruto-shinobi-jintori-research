@@ -25,6 +25,7 @@ concurrency:
   group: naruto-scph7502-gpu-traffic-summary
   cancel-in-progress: true
 
+# Deliberately hard-disabled until the adaptive-player readiness and unique target-cue gates pass.
 jobs:
   gpu-traffic-summary:
     if: false

@@ -18,11 +18,11 @@ permissions:
 
 concurrency:
   group: naruto-storymode-raw-resume
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   raw-restore-and-continue:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.name == 'Naruto SCPH-7502 Story Mode playthrough' && github.event.workflow_run.conclusion != 'cancelled') }}
+    if: false
     runs-on: ubuntu-26.04
     timeout-minutes: 45
     env:
