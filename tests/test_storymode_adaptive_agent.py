@@ -155,6 +155,13 @@ class AdaptiveAgentTests(unittest.TestCase):
         # no gameplay experiment can rely only on the action branch's result.
         self.assertIn('grep -q "ADAPTIVE_INPUT cycle=1 action=$AB_ACTION phase=press readback=true status=PASS"', workflow)
         self.assertIn('grep -q \'ADAPTIVE_INPUT cycle=2 action=WAIT status=PASS reason=no_input_policy\'', workflow)
+        phase110 = workflow[workflow.index("elseif phase==110 then"):workflow.index("elseif phase==118 then")]
+        self.assertIn('elseif abTest then', phase110)
+        self.assertIn('reason=ab_test_single_input_isolation', phase110)
+        # START must be called only in the regular mode and restore mode; the A/B branch does not call sendAction.
+        ab_branch = phase110[phase110.index("elseif abTest then"):phase110.index("else", phase110.index("elseif abTest then"))]
+        self.assertNotIn('sendAction("START",cycle)', ab_branch)
+        self.assertIn("ADAPTIVE_AB_SINGLE_INPUT_ISOLATION=PASS", workflow)
 
     def test_persistent_map_rotates_direction(self):
         with tempfile.TemporaryDirectory() as td:

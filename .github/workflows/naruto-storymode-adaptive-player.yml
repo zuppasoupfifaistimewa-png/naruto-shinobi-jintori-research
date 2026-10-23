@@ -424,10 +424,15 @@ jobs:
                   local state,action=captureExternal(label,cycle)
                   if not state then return end
                   if state=="dialogue" and action=="START" then
-                      sendAction("START",cycle)
                       if restoreTest then
+                          sendAction("START",cycle)
                           log("ADAPTIVE_DIALOGUE_SKIP=SUPPRESSED cycle="..cycle.." reason=restore_only_no_input")
+                      elseif abTest then
+                          -- A/B isolation: compare exactly one configured action with NONE.
+                          -- Never add an automatic dialogue START to either branch.
+                          log("ADAPTIVE_DIALOGUE_SKIP=SUPPRESSED cycle="..cycle.." reason=ab_test_single_input_isolation")
                       else
+                          sendAction("START",cycle)
                           log("ADAPTIVE_DIALOGUE_SKIP=PASS cycle="..cycle.." reason=visible_gold_dialogue_box")
                       end
                   else
@@ -672,6 +677,16 @@ jobs:
             grep -q "ADAPTIVE_INPUT cycle=1 action=$AB_ACTION phase=press readback=true status=PASS" "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
             grep -q 'ADAPTIVE_INPUT cycle=1 phase=release readback=false status=PASS' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
             grep -q 'ADAPTIVE_INPUT cycle=2 action=WAIT status=PASS reason=no_input_policy' "$WORK/captures/pcsx-adaptive-cycle-2.stdout"
+            test "$(grep -Ec 'ADAPTIVE_INPUT cycle=1 .*phase=press' "$WORK/captures/pcsx-adaptive-cycle-1.stdout")" -eq 1
+            if grep -Eq 'ADAPTIVE_INPUT cycle=1 action=START phase=press|ADAPTIVE_INPUT cycle=1 action=DOWN phase=press|ADAPTIVE_INPUT cycle=1 action=UP phase=press|ADAPTIVE_INPUT cycle=1 action=LEFT phase=press|ADAPTIVE_INPUT cycle=1 action=RIGHT phase=press|ADAPTIVE_INPUT cycle=1 action=TRIANGLE phase=press|ADAPTIVE_INPUT cycle=1 action=CROSS phase=press' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"; then
+              echo "ADAPTIVE_AB_SINGLE_INPUT_ISOLATION=FAIL extra_action_in_action_branch" >> "$WORK/captures/pcsx-adaptive.stdout"
+              exit 1
+            fi
+            if grep -Eq 'ADAPTIVE_INPUT cycle=2 .*phase=press' "$WORK/captures/pcsx-adaptive-cycle-2.stdout"; then
+              echo "ADAPTIVE_AB_SINGLE_INPUT_ISOLATION=FAIL control_branch_pressed_button" >> "$WORK/captures/pcsx-adaptive.stdout"
+              exit 1
+            fi
+            echo "ADAPTIVE_AB_SINGLE_INPUT_ISOLATION=PASS action_branch_presses=1 control_branch_presses=0" >> "$WORK/captures/pcsx-adaptive.stdout"
             source1="$(sed -n 's/.*ADAPTIVE_SESSION_START cycle=1 source=\([0-9a-f]*\).*/\1/p' "$WORK/captures/pcsx-adaptive.stdout" | head -n1)"
             source2="$(sed -n 's/.*ADAPTIVE_SESSION_START cycle=2 source=\([0-9a-f]*\).*/\1/p' "$WORK/captures/pcsx-adaptive.stdout" | head -n1)"
             test "$source1" = "$SOURCE_SHA256" && test "$source2" = "$SOURCE_SHA256"
