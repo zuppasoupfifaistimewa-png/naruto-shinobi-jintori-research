@@ -872,3 +872,20 @@ Run [#39426068247](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 
 **Langkah berikutnya:** lanjutkan Story Mode dari checkpoint lanjutan melalui build patched yang sama. Belum ada tombol gameplay yang dikirim oleh probe ini, dan belum ada bukti tamat game atau save/load Memory Card di dalam game. Jangan jalankan source emulator lama yang memicu crash untuk memuat state ini.
 
+## CHAT HANDOFF — adaptive player readiness update, 23 October 2026, Revision61
+
+Continue only in this repo: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research. Read `STATUS.md`, `ANALYSIS_LOG.md`, `docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md`, `HANDOFF_CHAT_BARU_2026-10-19.md`, and `experiments/.run-storymode-adaptive-player` before work. Use current repo files rather than relying only on this paragraph.
+
+**Goal for next chat:** qualify the automatic adaptive player for short bounded autonomous gameplay sessions. Do not make finishing Story Mode a goal or prerequisite.
+
+**Latest state**
+- Regression run #39909012516: success, 17 unit/source tests.
+- Revision60 run #39908484177 (LEFT vs WAIT) succeeded from pre-LEFT checkpoint #39904672868 cycle2, SHA-256 `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35`. LEFT input press/release verified; sprite pose visibly changed but classifier remained `barrier_level_selection`. Action C01 checkpoint: 21,163,471 bytes, SHA-256 `702e2f28c28fe78b4732d1876617d19489b27394c24f98ffd4ea2e8259ec30de`.
+- Revision61 run #39909132189 succeeded, CIRCLE vs WAIT from the action checkpoint above. CIRCLE press/release verified, but all F60/F100/F110/F180 comparisons showed zero different pixels. State remained `barrier_level_selection`. Therefore a standalone Circle after restoring the post-LEFT checkpoint did not commit a visible barrier target.
+- Revision61 action output SHA `9d3ae8dd94348d3cd45c149cae619d08fcdd7c185eeca8a656a3856beba064cf`; control output SHA `70283b676653717788cb4a31d7540a0a369f14f977228e7d4b12cf0791fc44a7`. Both are private Action artifacts only.
+- Current marker is Revision61 and has already run; do not rerun it or blindly bump marker before improving workflow.
+
+**Next bounded experiment**
+Implement a two-action A/B branch in `.github/workflows/naruto-storymode-adaptive-player.yml`: use pristine pre-LEFT checkpoint from run #39907655833, artifact `naruto-storymode-adaptive-player-private`, checkpoint `adaptive-cycle-02-f180.sstate`, SHA-256 `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35`. In action branch C01, press LEFT at F30, release F38, capture F60, then press CIRCLE at F70, release F78, capture F100/F110/F180. Control branch C02 uses no inputs. Keep F20 initial-state pixel parity, one parent state for both branches, identical Memory Card clones, strict button allowlists, press/release readback assertions, exact press count (two on action branch and zero on control), state/image comparisons, external-X11 screenshots, and v4 header/size/SHA checkpoint validation. Add unit/source regressions first and wait for them to pass before triggering. Then analyze the authentic private artifact to decide whether the two-input sequence changes the selected barrier or advances.
+
+**Hard constraints:** only this research repo may be accessed/changed. Never commit ROM, BIOS, Memory Card, savestates or gameplay screenshots; use private Actions artifacts. Do not use web images as gameplay evidence. Japanese text should immediately include Indonesian translation in parentheses. In Story Mode, use START to skip dialogue only when dialogue is detected; never use Circle to skip dialogue. Unknown/unverified states fail closed to WAIT. Do not claim the agent ready until the readiness gates are truly satisfied, and do not claim Story Mode completed.
