@@ -320,6 +320,7 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertIn("run-id: 39947481094",regression)
         self.assertIn("REV65_PINK60_MARKER_REGRESSION=PASS",regression)
         self.assertIn("pink_marker_ratio",regression)
+        self.assertIn("submenu_target_selection_role_UNKNOWN",regression)
         self.assertIn('("barrier_level_selection", "WAIT")',regression)
 
     def test_persistent_map_rotates_direction(self):

@@ -353,3 +353,16 @@ Current verified CI: regression #39947302492 passed 20 tests plus authentic X11/
 At commit `76f7b9a5475a4b721d62c988dda576d25f5206b1`, Actions regression #39950014349 failed because a static unit test required literal `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` spelling to be present as marker documentation in the player workflow. The fail-closed gate code itself is present. The run stopped at unit tests; the Revision65 screenshot replay and private-artifact assertions were skipped. Additionally, the new artifact download had backslashes before the two Actions expressions, preventing normal interpolation. A follow-up commit removes those backslashes and documents the exact marker token in a workflow comment, then Actions should rerun the regression.
 
 Do not rerun or modify marker Revision65. Do not start any player run. Leave the marker cue token absent. The pink `60` indicator semantics remain UNKNOWN, and the normal state policy remains WAIT. The next acceptance point is the regression run on the repair commit; only after it succeeds should another controlled research step be considered. All game assets and authentic evidence remain private.
+
+## Final handoff after authentic cross-context review — 23 October 2026
+
+### Latest regression before semantic wording refinement
+Regression #39950309113 passed at commit `7735abe065a33bbb67c40c719530055f06971974`: 23 tests and all authentic screenshot checks, including Revision65's ten private frames. It verified the action branch's pink-badge pixel signature versus the no-input control, and exactly zero changes in the instruction/footer crops from F60 to F100 in both branches. The player marker Revision65 remains consumed and untouched.
+
+### What the pink `60` indicates
+Cross-inspected the actual images in private artifact #12498688466 (Revision65 UP-then-Circle A/B) and older verified map-direction artifact #12428777970 (run #39786019434). In the older map context, the same pink hexagon carrying `60` appears with red arrows around it, and its adjoining panel explicitly labels `結界価値` (Nilai penghalang) as 60; the panel also shows `レベル` (Level) 1 and `耐久値` (Daya tahan) 2/2. So the visual form/number is a verified barrier-value symbol in the map context. Revision65's submenu image has a matching pink hexagon and number, but no equivalent visible red arrow surround or tile-info panel. UP correlates with the badge and altered view; Circle did not change the prompt, footer, or their pixels from F60 to F100. The role of the badge in this special level-up submenu—especially whether it means the target is selected—remains UNKNOWN.
+
+A tiny wording update now describes `60` as matching the known barrier-value symbol from map context, while preserving target-selection role UNKNOWN. It will trigger another regression run only, not gameplay. Verify that final run on current HEAD before next experiment.
+
+### Strict next step
+Do not set `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` in the marker. First compare the authentic red focus-arrow signature and panel across the map and level-up states, and identify whether the target cue exists at all in this submenu. No random direction probing. Keep the normal action WAIT, keep Story Mode completion unclaimed, and do not promote Revision65 outputs until independent fresh-process restores pass.

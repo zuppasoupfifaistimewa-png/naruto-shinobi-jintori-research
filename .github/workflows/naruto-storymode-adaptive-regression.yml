@@ -227,7 +227,7 @@ jobs:
           control_ratios = {f"C02-F{f}.png": pink_marker_ratio(images[f"C02-F{f}.png"])
                             for f in (60, 100, 110, 180)}
           print(json.dumps({"pink_marker_ratio": action_ratios, "control_roi_ratio": control_ratios,
-                            "meaning": "UNKNOWN_not_verified_as_target_cursor_or_resource"}, sort_keys=True))
+                            "meaning": "60_matches_known_barrier_value_symbol_from_map_context; submenu_target_selection_role_UNKNOWN"}, sort_keys=True))
           if any(v < 0.02 for v in action_ratios.values()):
               raise SystemExit("expected pink 60 badge signature missing from an action-branch frame")
           if any(v > 0.01 for v in control_ratios.values()):
