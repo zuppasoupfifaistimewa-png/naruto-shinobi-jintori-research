@@ -304,6 +304,50 @@ jobs:
                   print(f"{branch=} {label=} changed_pixels_F60_to_F100={changed}")
                   if changed != 0:
                       raise SystemExit(f"{label} changed after Circle in branch {branch}; investigate semantics")
+          def estimate_scene_vertical_shift(before, after, kind):
+              # Pixel-only vertical registration of the map background; no extra dependency.
+              # Ignore the fixed HUD/foreground/description panels, then find the shift with
+              # minimum mean absolute grayscale error over a 4-pixel sampling grid.
+              def gray(arr):
+                  return arr.astype(np.float32).mean(axis=2)[200:560:4, 16:1264:4]
+              a, b = gray(before), gray(after)
+              h, w = a.shape
+              yy, xx = np.mgrid[200:560:4, 16:1264:4]
+              valid = np.ones((h,w), dtype=bool)
+              valid &= ~((xx >= 500) & (xx < 800) & (yy >= 230) & (yy < 560))
+              if kind == "map":
+                  valid &= ~((xx >= 140) & (xx < 550) & (yy >= 320) & (yy < 550))
+              candidates = []
+              for dy in range(-35, 36):
+                  if dy >= 0:
+                      aa, bb = a[:h-dy], b[dy:]
+                      mm = valid[:h-dy]
+                  else:
+                      aa, bb = a[-dy:], b[:h+dy]
+                      mm = valid[-dy:]
+                  if int(mm.sum()) < 500:
+                      continue
+                  error = float(np.abs(aa-bb)[mm].mean())
+                  candidates.append((error, dy*4, int(mm.sum())))
+              candidates.sort()
+              if not candidates:
+                  raise SystemExit("camera shift estimation had no valid overlap")
+              return candidates[0][1], candidates[0][0]
+
+          rev65_up_shift, rev65_up_error = estimate_scene_vertical_shift(
+              images["C01-F20.png"], images["C01-F60.png"], "rev65")
+          rev65_wait_shift, rev65_wait_error = estimate_scene_vertical_shift(
+              images["C02-F20.png"], images["C02-F60.png"], "rev65")
+          map_up_shift, map_up_error = estimate_scene_vertical_shift(
+              map_images["C01-F20.png"], map_images["C01-F60.png"], "map")
+          map_wait_shift, map_wait_error = estimate_scene_vertical_shift(
+              map_images["C02-F20.png"], map_images["C02-F60.png"], "map")
+          print(f"CAMERA_SHIFT_ESTIMATE revision65_UP={rev65_up_shift}px revision65_WAIT={rev65_wait_shift}px map_UP={map_up_shift}px map_WAIT={map_wait_shift}px")
+          if not (92 <= rev65_up_shift <= 108 and 92 <= map_up_shift <= 108):
+              raise SystemExit("expected ~100px scene shift did not reproduce in both UP branches")
+          if abs(rev65_wait_shift) > 4 or abs(map_wait_shift) > 4:
+              raise SystemExit("WAIT control unexpectedly showed a comparable scene shift")
+          print("CAMERA_SHIFT_REGRESSION=PASS UP_scene_shift_approx_100px WAIT_scene_shift_approx_0px target_selection_not_inferred=true")
           print("MAP_CONTEXT_PANEL_REGRESSION=PASS up_panel_changes_to_level1_value60_durability2of2 wait_panel_stays_empty_land_value140 known_map_cue=red_focus_arrows_plus_matching_tile_panel")
           print("REV65_CAMERA_PAN_CONFOUND_REGRESSION=PASS baseline_pink60_partly_visible=true post_UP_badge_exposed=true exposure_is_not_selection_proof=true target_role=UNKNOWN")
           print("REV65_PINK60_MARKER_REGRESSION=PASS action_badge_visible=true control_badge_absent=true prompt_unchanged_after_circle=true target_semantics=UNKNOWN input_policy=WAIT")

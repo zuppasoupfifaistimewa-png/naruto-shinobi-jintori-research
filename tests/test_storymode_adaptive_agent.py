@@ -334,6 +334,8 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertIn("MAP_EVIDENCE:", regression)
         self.assertIn("MAP_CONTEXT_PANEL_REGRESSION=PASS", regression)
         self.assertIn("REV65_CAMERA_PAN_CONFOUND_REGRESSION=PASS", regression)
+        self.assertIn("estimate_scene_vertical_shift", regression)
+        self.assertIn("CAMERA_SHIFT_REGRESSION=PASS UP_scene_shift_approx_100px WAIT_scene_shift_approx_0px target_selection_not_inferred=true", regression)
         # Do not authorize another barrier-level input based on the ambiguous pink 60 badge.
         self.assertNotIn("AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1", marker)
         gate = player_workflow.index('AB_BARRIER_TARGET_GATE=BLOCKED cue=$ab_barrier_target_cue')
