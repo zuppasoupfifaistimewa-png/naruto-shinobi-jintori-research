@@ -1,12 +1,12 @@
-## CURRENT CHECKPOINT — revision52 restore verified; single-input card A/B gate pending (23 October 2026, 07:14 WIB)
+## CURRENT CHECKPOINT — revision52 restored; regression gate passed for revision53 card A/B (23 October 2026, 07:18 WIB)
 
-Canonical handoff: [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md).
+Authoritative handoff: [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md).
 
-Run [#39876534507](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876534507) restored revision51 output SHA-256 `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e` in a fresh process; five real X11 captures, SaveStateLoaded, zero press events and `RESTORE_TEST=PASS` were verified. All five screenshots classify `card_selection` / `WAIT`. Revision52 emitted an unpromoted output candidate SHA `df73f3414c7838d22611a2592d5f2516f903e3e43a1d05911d1964ac07c61265`, 21,163,194 bytes, v4.
+Revision52 run [#39876534507](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876534507) independently restored checkpoint SHA `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e`, captured five authentic frames, classified all as `card_selection` / `WAIT`, and verified no button press. Its own output candidate SHA `df73f3414c7838d22611a2592d5f2516f903e3e43a1d05911d1964ac07c61265` is structural-only and not promoted.
 
-Classifier fix commit `3f65ba64510783663fb253aa74f554d557d60d42` passed regression #39876294837; card-selection A/B preconditions passed #39876658165. A final isolation patch in `f3801c86552a9de6dd28c8836bb5e59b02454f43` suppresses direct START during A/B and enforces one CIRCLE press versus zero control presses; regression #39876847536 is pending. Do not start revision53 until it passes. Story Mode remains **NOT COMPLETE**.
+Regression [#39877110916](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39877110916) passed on latest A/B isolation test commit `25141c41a77b55340d4a8cc077cec76a4589f502`. Revision53 is next: two identical fresh-process branches from independently verified run #39875714125 output; one CIRCLE press vs no input. Never include auto START in the A/B branch; require exactly one press in action branch and zero in control. Story Mode remains **NOT COMPLETE**.
 
-Permanent boundaries: this research repository only; no other repo; ROM/BIOS/savestates/cards/screenshots remain private/out of Git; START only skips true Story Mode dialogue.
+Permanent boundaries: research repo only; no other repository; ROM/BIOS/states/cards/screenshots stay private/out of Git; START only for true Story Mode dialogue.
 
 ---
 
