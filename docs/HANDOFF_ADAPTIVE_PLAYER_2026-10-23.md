@@ -249,3 +249,24 @@ REVISION=64
 ```
 
 The marker push must use commit message containing `[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER]` because the workflow job checks for that token. After the run, inspect its private artifact/logs and all ten screenshots before interpreting any apparent screen change. Verify checkpoint outputs and then append the result to `STATUS.md`, `ANALYSIS_LOG.md`, and this handoff.
+ 
+## Revision64 runtime audit — 23 October 2026
+
+Run [#39946344909](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39946344909) failed in the adaptive loop after the private artifact upload succeeded; private artifact #12498880615 is available. This is a harness timeout failure, **not** an F60 safety-gate rejection.
+
+- The immutable Revision59 source was re-verified at SHA-256 `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35`. Both fresh emulator processes logged `ExecutionFlow::SaveStateLoaded`; their F20 images were identical across 1,024,000 pixels. Memory Card clones matched SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`.
+- C01 classified F20 and F60 as `barrier_level_selection` / `WAIT`; the F60 authorization gate passed. C01 sent exactly UP at F30/released F38 and Circle at F70/released F78, with successful true/false readbacks. The C02 control branch sent zero input through F110.
+- C01 reached F180 and its checkpoint passed external validation: `adaptive-cycle-01-f180.sstate`, 21,163,031 bytes, header `PCSX-Redux SaveState v4`, SHA-256 `35cb550a62732cc6ed757e21914b46c1c0f1b2266182e2ea7761a6d401046014`. **Do not promote this checkpoint**: it has not been independently restored.
+- The private artifact has only nine authentic 1280×800 external-X11 screenshots: C01 F20/F60/F100/F110/F180 and C02 F20/F60/F100/F110. C02's emulator hit the 60-second wrapper timeout (exit 124) at F110, so C02 F180 and its output checkpoint are missing. The orchestrator reported `ADAPTIVE_ORCHESTRATOR_EARLY_EXIT missing=['C02-F180'] checkpoints=1/2` and the job failed with exit code 92. Full A/B acceptance therefore failed.
+- At C01 F60/F100/F180, `「レベルアップする結界をえらんでください」 (Pilih penghalang yang akan dinaikkan levelnya)` remained visible. From C01 F60 to F100, the instruction-panel ROI (x=140..685,y=565..715) and footer ROI (x=660..1130,y=685..770) each had zero differing pixels; both corresponding control ROIs were also stable. Whole-screen action/control differences mostly reflect the UP-induced view composition change and are not evidence that a target was selected. **Target/confirmation semantics remain UNKNOWN.**
+- Required repair: increase only the per-emulator wrapper timeout from 60 to 90 seconds. Keep the Actions job capped at 20 minutes, preserve all shell/Lua allowlists and the F60 fail-closed gate, and add a source regression that verifies this bounded timeout. Do not launch the next player run until the resulting regression workflow is independently verified green. Revision64 is consumed; never rerun it. Use a fresh Revision65 marker against the same immutable Revision59 source only after regression passes.
+
+Readiness remains **NO-GO**. Story Mode completion has not been proved and is not this qualification test's acceptance criterion. ROM, BIOS, Memory Card, savestates, and screenshots remain private and out of Git.
+
+### Revision65 retry gate
+
+1. Change the emulator wrapper timeout from 60s to 90s, keeping the 20-minute job timeout and the exact existing UP_THEN_CIRCLE allowlists/state gate/input timings intact.
+2. Add a regression requiring the 90s bound and retaining the 20-minute job cap. The test-file push triggers regression; verify a green run with synthetic and authentic-screen checks before touching the marker.
+3. After green regression only, set a new Revision65 marker with the exact Revision59 source and the same `UP_THEN_CIRCLE` A/B tuple. Use commit message token `[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER]`.
+4. Inspect the new private artifact: require ten authentic 1280×800 captures, two explicit `ExecutionFlow::SaveStateLoaded` events, identical F20 pixels, matching Memory Card clones, exact press/release readbacks/counts, passing F60 WAIT-state guard, and two external checkpoint header/size/SHA validations.
+5. Do not promote a checkpoint without independently restoring it. If the prompt remains unchanged after Circle, keep target/confirmation UNKNOWN and select the next probe only from grounded visual evidence.
