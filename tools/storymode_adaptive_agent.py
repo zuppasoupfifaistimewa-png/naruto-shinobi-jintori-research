@@ -123,7 +123,7 @@ def observe(path: str | Path) -> dict[str, Any]:
         # instruction panel and explicit Circle-confirm / X-back glyphs. This is
         # not story dialogue; treating it as dialogue incorrectly presses START.
         state,conf,reason="barrier_level_selection",.93,"calibrated_small_barrier_selection_panel_with_circle_x_footer"
-    elif dialogue_box["orange"] >= .10 and dialogue_header["orange"] >= .08:
+    elif dialogue_box["orange"] >= .07 and dialogue_header["orange"] >= .08:
         state,conf,reason="dialogue",.93,"full_width_ornate_dialogue_panel_signature"
     elif menu["white"] >= .06 and menu["orange"] >= .025:
         state,conf,reason="menu_or_unknown_choice",.78,"right_side_menu_requires_context"
