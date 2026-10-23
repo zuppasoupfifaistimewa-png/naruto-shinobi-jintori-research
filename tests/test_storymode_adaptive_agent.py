@@ -141,6 +141,21 @@ class AdaptiveAgentTests(unittest.TestCase):
                 self.assertNotIn(f'action=="{action}"', guard_block)
         self.assertIn("ADAPTIVE_RESTORE_ONLY_NO_INPUT_ASSERT=PASS", workflow)
 
+
+    def test_card_selection_ab_probe_accepts_only_circle_and_wait_control(self):
+        repo = Path(__file__).resolve().parents[1]
+        workflow = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-player.yml").read_text(encoding="utf-8")
+        self.assertIn('|| "$ab_expected_state" == "card_selection"', workflow)
+        self.assertIn('elif [ "$ab_expected_state" = "card_selection" ]; then\n              [[ "$ab_action" == "CIRCLE" ]]', workflow)
+        self.assertIn('local cardAction=(abAction=="CIRCLE")', workflow)
+        self.assertIn('(abExpectedState=="card_selection" and cardAction)', workflow)
+        self.assertIn('(state=="card_selection" and action=="WAIT")', workflow)
+        self.assertIn("ADAPTIVE_POLICY_GUARD=PASS cycle=2 state=card_selection action=WAIT", workflow)
+        # The A/B workflow must also check the no-input branch and button readback;
+        # no gameplay experiment can rely only on the action branch's result.
+        self.assertIn('grep -q "ADAPTIVE_INPUT cycle=1 action=$AB_ACTION phase=press readback=true status=PASS"', workflow)
+        self.assertIn('grep -q \'ADAPTIVE_INPUT cycle=2 action=WAIT status=PASS reason=no_input_policy\'', workflow)
+
     def test_persistent_map_rotates_direction(self):
         with tempfile.TemporaryDirectory() as td:
             h=Path(td)/"history.json"

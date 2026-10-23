@@ -70,11 +70,13 @@ jobs:
           [[ "$continuation_test" == "0" || "$continuation_test" == "1" ]]
           [[ "$ab_test" == "0" || "$ab_test" == "1" ]]
           [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "TRIANGLE" || "$ab_action" == "CROSS" || "$ab_action" == "CIRCLE" ]]
-          [[ "$ab_expected_state" == "menu_or_unknown_choice" || "$ab_expected_state" == "map_after_move" || "$ab_expected_state" == "roulette" ]]
+          [[ "$ab_expected_state" == "menu_or_unknown_choice" || "$ab_expected_state" == "map_after_move" || "$ab_expected_state" == "roulette" || "$ab_expected_state" == "card_selection" ]]
           if [ "$ab_test" = "1" ]; then
             if [ "$ab_expected_state" = "map_after_move" ]; then
               [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "CROSS" ]]
             elif [ "$ab_expected_state" = "roulette" ]; then
+              [[ "$ab_action" == "CIRCLE" ]]
+            elif [ "$ab_expected_state" = "card_selection" ]; then
               [[ "$ab_action" == "CIRCLE" ]]
             else
               [[ "$ab_action" == "DOWN" || "$ab_action" == "TRIANGLE" || "$ab_action" == "CIRCLE" ]]
@@ -373,7 +375,8 @@ jobs:
                       local mapAction=(abAction=="UP" or abAction=="DOWN" or abAction=="LEFT" or abAction=="RIGHT" or abAction=="CROSS")
                       local menuAction=(abAction=="DOWN" or abAction=="TRIANGLE" or abAction=="CIRCLE")
                       local rouletteAction=(abAction=="CIRCLE")
-                      local safeAction=(abExpectedState=="menu_or_unknown_choice" and menuAction) or (abExpectedState=="map_after_move" and mapAction) or (abExpectedState=="roulette" and rouletteAction)
+                      local cardAction=(abAction=="CIRCLE")
+                      local safeAction=(abExpectedState=="menu_or_unknown_choice" and menuAction) or (abExpectedState=="map_after_move" and mapAction) or (abExpectedState=="roulette" and rouletteAction) or (abExpectedState=="card_selection" and cardAction)
                       local precondition=(state==abExpectedState and action=="WAIT" and safeAction)
                       local branch=(cycle==1) and "ACTION" or "NONE"
                       local selected=(cycle==1) and abAction or "WAIT"
@@ -393,6 +396,7 @@ jobs:
                           or (state=="dialogue" and action=="START")
                           or (state=="barrier_choice" and action=="CIRCLE")
                           or (state=="roulette" and action=="WAIT")
+                          or (state=="card_selection" and action=="WAIT")
                           or (state=="map" and action=="DOWN")
                       local marker="ADAPTIVE_POLICY_GUARD="..(safe and "PASS" or "FAIL").." cycle=2 state="..state.." action="..action
                       local bf=assert(io.open("captures/policy-guard-report.txt","wb")); bf:write(marker.."\n"); bf:close()
@@ -660,6 +664,11 @@ jobs:
             for cycle in 1 2; do grep -q "ADAPTIVE_AB_PRECONDITION=PASS cycle=$cycle" "$WORK/captures/ab-precondition-cycle-$(printf '%02d' "$cycle").txt"; done
             grep -q "ADAPTIVE_DECISION cycle=1 state=$AB_EXPECTED_STATE action=$AB_ACTION classifier_action=WAIT" "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
             grep -q "ADAPTIVE_DECISION cycle=2 state=$AB_EXPECTED_STATE action=WAIT classifier_action=WAIT" "$WORK/captures/pcsx-adaptive-cycle-2.stdout"
+            if [ "$AB_EXPECTED_STATE" = "card_selection" ]; then
+              grep -q 'ADAPTIVE_POLICY_GUARD=PASS cycle=2 state=card_selection action=WAIT' "$WORK/captures/policy-guard-report.txt"
+              grep -q 'ADAPTIVE_DECISION cycle=1 state=card_selection action=CIRCLE classifier_action=WAIT' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
+              grep -q 'ADAPTIVE_INPUT cycle=1 action=CIRCLE phase=press readback=true status=PASS' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
+            fi
             grep -q "ADAPTIVE_INPUT cycle=1 action=$AB_ACTION phase=press readback=true status=PASS" "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
             grep -q 'ADAPTIVE_INPUT cycle=1 phase=release readback=false status=PASS' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
             grep -q 'ADAPTIVE_INPUT cycle=2 action=WAIT status=PASS reason=no_input_policy' "$WORK/captures/pcsx-adaptive-cycle-2.stdout"
