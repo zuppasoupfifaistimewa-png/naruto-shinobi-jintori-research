@@ -1,8 +1,14 @@
-## AUTHORITATIVE CURRENT CHECKPOINT — 23 October 2026, 07:38 WIB
+## AUTHORITATIVE CURRENT CHECKPOINT — 23 October 2026, 07:40 WIB
 
-Use [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md). Regression [#39878572840](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39878572840) passed 13 tests and all 10 authentic revision53 frames. Revision54 [#39878936772](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39878936772) successfully restored the revealed-card state, produced five valid captures, classified all as `card_selection_detail` / WAIT and had zero press events.
+Mulai dari [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md), jangan mengulang audit lama.
 
-Output SHA `219d03ab90b594c27430f91460319c6a4c9a3b05b6463871406ac777873bedf8` is the next candidate. Revision55 must restore it independently before it can be the parent for revision56 second-CIRCLE vs WAIT A/B. One CIRCLE reveals card details; acquisition semantics remain UNKNOWN. Story Mode is **NOT COMPLETE**.
+Revision54 run [#39878936772](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39878936772) berhasil memulihkan checkpoint kartu terbuka SHA-256 `219d03ab90b594c27430f91460319c6a4c9a3b05b6463871406ac777873bedf8` (21,162,165 bytes, v4), menghasilkan lima screenshot emulator autentik yang semuanya dikenali `card_selection_detail` / WAIT, serta memverifikasi nol penekanan tombol.
+
+Revision55 restore-only run [#39879445016](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39879445016) **masih berjalan** (terakhir dicek 07:40 WIB). Jangan ubah marker atau jalankan eksperimen paralel. Setelah run selesai, cek event SaveStateLoaded, kelima screenshot privat, nol event press, dan validasi SHA/header/ukuran output. Batas job 20 menit dari 07:39 WIB; bila macet, harap berhenti sekitar 07:59 WIB.
+
+Jika revision55 lulus, tahap gameplay berikutnya adalah revision56 second-CIRCLE-vs-WAIT A/B dari checkpoint hasil revision55. Tujuannya menentukan apakah CIRCLE kedua menerima kartu `防御集中` (fokus pertahanan) atau melakukan transisi lain. Belum ada bukti Story Mode tamat; status tetap **NOT COMPLETE**.
+
+Batas permanen: hanya repo `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`; jangan akses repo lain atau Tile Duel; ROM/BIOS/savestate/Memory Card/screenshot gameplay tetap privat dan tidak masuk Git; START untuk dialog Story Mode yang benar saja.
 
 ---
 
