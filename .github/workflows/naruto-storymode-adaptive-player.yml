@@ -70,7 +70,7 @@ jobs:
           [[ "$continuation_test" == "0" || "$continuation_test" == "1" ]]
           [[ "$ab_test" == "0" || "$ab_test" == "1" ]]
           [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "TRIANGLE" || "$ab_action" == "CROSS" || "$ab_action" == "CIRCLE" ]]
-          [[ "$ab_expected_state" == "menu_or_unknown_choice" || "$ab_expected_state" == "map_after_move" || "$ab_expected_state" == "roulette" || "$ab_expected_state" == "card_selection" || "$ab_expected_state" == "card_selection_detail" ]]
+          [[ "$ab_expected_state" == "menu_or_unknown_choice" || "$ab_expected_state" == "map_after_move" || "$ab_expected_state" == "roulette" || "$ab_expected_state" == "card_selection" || "$ab_expected_state" == "card_selection_detail" || "$ab_expected_state" == "barrier_level_selection" ]]
           if [ "$ab_test" = "1" ]; then
             if [ "$ab_expected_state" = "map_after_move" ]; then
               [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "CROSS" ]]
@@ -80,6 +80,8 @@ jobs:
               [[ "$ab_action" == "CIRCLE" ]]
             elif [ "$ab_expected_state" = "card_selection_detail" ]; then
               [[ "$ab_action" == "CIRCLE" ]]
+            elif [ "$ab_expected_state" = "barrier_level_selection" ]; then
+              [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" ]]
             else
               [[ "$ab_action" == "DOWN" || "$ab_action" == "TRIANGLE" || "$ab_action" == "CIRCLE" ]]
             fi
@@ -378,7 +380,8 @@ jobs:
                       local menuAction=(abAction=="DOWN" or abAction=="TRIANGLE" or abAction=="CIRCLE")
                       local rouletteAction=(abAction=="CIRCLE")
                       local cardAction=(abAction=="CIRCLE")
-                      local safeAction=(abExpectedState=="menu_or_unknown_choice" and menuAction) or (abExpectedState=="map_after_move" and mapAction) or (abExpectedState=="roulette" and rouletteAction) or (abExpectedState=="card_selection" and cardAction) or (abExpectedState=="card_selection_detail" and cardAction)
+                      local barrierSelectionAction=(abAction=="UP" or abAction=="DOWN" or abAction=="LEFT" or abAction=="RIGHT")
+                      local safeAction=(abExpectedState=="menu_or_unknown_choice" and menuAction) or (abExpectedState=="map_after_move" and mapAction) or (abExpectedState=="roulette" and rouletteAction) or (abExpectedState=="card_selection" and cardAction) or (abExpectedState=="card_selection_detail" and cardAction) or (abExpectedState=="barrier_level_selection" and barrierSelectionAction)
                       local precondition=(state==abExpectedState and action=="WAIT" and safeAction)
                       local branch=(cycle==1) and "ACTION" or "NONE"
                       local selected=(cycle==1) and abAction or "WAIT"
@@ -397,7 +400,7 @@ jobs:
                       local safe=((state=="battle_untrained" or state=="map_after_move" or state=="unknown" or state=="menu_or_unknown_choice") and action=="WAIT")
                           or (state=="dialogue" and action=="START")
                           or (state=="barrier_choice" and action=="CIRCLE")
-                          or (state=="barrier_level_selection" and action=="CIRCLE")
+                          or (state=="barrier_level_selection" and action=="WAIT")
                           or (state=="roulette" and action=="WAIT")
                           or (state=="card_selection" and action=="WAIT")
                           or (state=="card_selection_detail" and action=="WAIT")
@@ -682,7 +685,7 @@ jobs:
             grep -q 'ADAPTIVE_INPUT cycle=1 phase=release readback=false status=PASS' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
             grep -q 'ADAPTIVE_INPUT cycle=2 action=WAIT status=PASS reason=no_input_policy' "$WORK/captures/pcsx-adaptive-cycle-2.stdout"
             test "$(grep -Ec 'ADAPTIVE_INPUT cycle=1 .*phase=press' "$WORK/captures/pcsx-adaptive-cycle-1.stdout")" -eq 1
-            if grep -Eq 'ADAPTIVE_INPUT cycle=1 action=START phase=press|ADAPTIVE_INPUT cycle=1 action=DOWN phase=press|ADAPTIVE_INPUT cycle=1 action=UP phase=press|ADAPTIVE_INPUT cycle=1 action=LEFT phase=press|ADAPTIVE_INPUT cycle=1 action=RIGHT phase=press|ADAPTIVE_INPUT cycle=1 action=TRIANGLE phase=press|ADAPTIVE_INPUT cycle=1 action=CROSS phase=press' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"; then
+            if [ "$AB_EXPECTED_STATE" != "barrier_level_selection" ] && grep -Eq 'ADAPTIVE_INPUT cycle=1 action=START phase=press|ADAPTIVE_INPUT cycle=1 action=DOWN phase=press|ADAPTIVE_INPUT cycle=1 action=UP phase=press|ADAPTIVE_INPUT cycle=1 action=LEFT phase=press|ADAPTIVE_INPUT cycle=1 action=RIGHT phase=press|ADAPTIVE_INPUT cycle=1 action=TRIANGLE phase=press|ADAPTIVE_INPUT cycle=1 action=CROSS phase=press' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"; then
               echo "ADAPTIVE_AB_SINGLE_INPUT_ISOLATION=FAIL extra_action_in_action_branch" >> "$WORK/captures/pcsx-adaptive.stdout"
               exit 1
             fi
