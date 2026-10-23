@@ -239,6 +239,25 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertIn('(state=="barrier_level_selection" and action=="WAIT")',workflow)
         self.assertIn('[[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "CIRCLE" ]]',workflow)
 
+    def test_barrier_left_then_circle_sequence_is_tightly_allowlisted_and_timed(self):
+        repo=Path(__file__).resolve().parents[1]
+        workflow=(repo/".github"/"workflows"/"naruto-storymode-adaptive-player.yml").read_text(encoding="utf-8")
+        self.assertIn('[[ "$ab_sequence" == "NONE" || "$ab_sequence" == "LEFT_THEN_CIRCLE" ]]',workflow)
+        self.assertIn('[[ "$ab_second_action" == "NONE" || "$ab_second_action" == "CIRCLE" ]]',workflow)
+        self.assertIn('[[ "$ab_test" == "1" && "$ab_expected_state" == "barrier_level_selection" && "$ab_action" == "LEFT" && "$ab_second_action" == "CIRCLE" && "$loop_cycles" == "2" && "$restore_test" == "0" && "$continuation_test" == "0" ]]',workflow)
+        self.assertIn('local abSequence=os.getenv("AB_SEQUENCE") or "NONE"',workflow)
+        self.assertIn('local abSecondAction=os.getenv("AB_SECOND_ACTION") or "NONE"',workflow)
+        self.assertIn('elseif phase==70 then',workflow)
+        self.assertIn('elseif phase==78 then',workflow)
+        self.assertIn('ADAPTIVE_AB_SECOND_ACTION_GUARD=PASS cycle=1 state=barrier_level_selection action=CIRCLE scheduled_frame=70',workflow)
+        self.assertIn('ADAPTIVE_INPUT cycle=1 action=LEFT phase=press readback=true status=PASS frame=30',workflow)
+        self.assertIn('ADAPTIVE_INPUT_RELEASE cycle=1 action=LEFT frame=38 readback=false status=PASS',workflow)
+        self.assertIn('ADAPTIVE_INPUT cycle=1 action=CIRCLE phase=press readback=true status=PASS frame=70',workflow)
+        self.assertIn('ADAPTIVE_INPUT_RELEASE cycle=1 action=CIRCLE frame=78 readback=false status=PASS',workflow)
+        self.assertIn('ADAPTIVE_AB_SEQUENCE_ISOLATION=PASS action_presses=LEFT@30,CIRCLE@70 action_releases=LEFT@38,CIRCLE@78 control_presses=0 unexpected_presses=0',workflow)
+        self.assertIn('test "$(grep -Ec',workflow)
+        self.assertIn('ADAPTIVE_INPUT cycle=2 .*phase=press',workflow)
+
     def test_persistent_map_rotates_direction(self):
         with tempfile.TemporaryDirectory() as td:
             h=Path(td)/"history.json"

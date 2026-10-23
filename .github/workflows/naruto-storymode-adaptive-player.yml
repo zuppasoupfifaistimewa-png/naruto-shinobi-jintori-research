@@ -58,9 +58,13 @@ jobs:
           ab_test="$(get_value AB_TEST)"
           ab_action="$(get_value AB_ACTION)"
           ab_expected_state="$(get_value AB_EXPECTED_STATE)"
+          ab_sequence="$(get_value AB_SEQUENCE)"
+          ab_second_action="$(get_value AB_SECOND_ACTION)"
           ab_test="${ab_test:-0}"
           ab_action="${ab_action:-DOWN}"
           ab_expected_state="${ab_expected_state:-menu_or_unknown_choice}"
+          ab_sequence="${ab_sequence:-NONE}"
+          ab_second_action="${ab_second_action:-NONE}"
           [[ "$source_run" =~ ^[0-9]+$ ]]
           [[ "$source_artifact" =~ ^[A-Za-z0-9._-]+$ ]]
           [[ "$source_checkpoint" =~ ^[A-Za-z0-9._-]+$ ]]
@@ -69,6 +73,13 @@ jobs:
           [[ "$restore_test" == "0" || "$restore_test" == "1" ]]
           [[ "$continuation_test" == "0" || "$continuation_test" == "1" ]]
           [[ "$ab_test" == "0" || "$ab_test" == "1" ]]
+          [[ "$ab_sequence" == "NONE" || "$ab_sequence" == "LEFT_THEN_CIRCLE" ]]
+          [[ "$ab_second_action" == "NONE" || "$ab_second_action" == "CIRCLE" ]]
+          if [ "$ab_sequence" = "LEFT_THEN_CIRCLE" ]; then
+            [[ "$ab_test" == "1" && "$ab_expected_state" == "barrier_level_selection" && "$ab_action" == "LEFT" && "$ab_second_action" == "CIRCLE" && "$loop_cycles" == "2" && "$restore_test" == "0" && "$continuation_test" == "0" ]]
+          else
+            [[ "$ab_second_action" == "NONE" ]]
+          fi
           [[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "TRIANGLE" || "$ab_action" == "CROSS" || "$ab_action" == "CIRCLE" ]]
           [[ "$ab_expected_state" == "menu_or_unknown_choice" || "$ab_expected_state" == "map_after_move" || "$ab_expected_state" == "roulette" || "$ab_expected_state" == "card_selection" || "$ab_expected_state" == "card_selection_detail" || "$ab_expected_state" == "barrier_level_selection" ]]
           if [ "$ab_test" = "1" ]; then
@@ -98,6 +109,8 @@ jobs:
             echo "ab_test=$ab_test"
             echo "ab_action=$ab_action"
             echo "ab_expected_state=$ab_expected_state"
+            echo "ab_sequence=$ab_sequence"
+            echo "ab_second_action=$ab_second_action"
           } >> "$GITHUB_OUTPUT"
 
       - name: Download previously built patched PCSX-Redux
@@ -140,6 +153,8 @@ jobs:
           AB_TEST: ${{ steps.source.outputs.ab_test }}
           AB_ACTION: ${{ steps.source.outputs.ab_action }}
           AB_EXPECTED_STATE: ${{ steps.source.outputs.ab_expected_state }}
+          AB_SEQUENCE: ${{ steps.source.outputs.ab_sequence }}
+          AB_SECOND_ACTION: ${{ steps.source.outputs.ab_second_action }}
         run: |
           set -euo pipefail
           APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
@@ -178,6 +193,8 @@ jobs:
             echo "AB_TEST=$AB_TEST"
             echo "AB_ACTION=$AB_ACTION"
             echo "AB_EXPECTED_STATE=$AB_EXPECTED_STATE"
+             echo "AB_SEQUENCE=$AB_SEQUENCE"
+             echo "AB_SECOND_ACTION=$AB_SECOND_ACTION"
             echo "CYCLE=observe external X11 at F20 -> decide -> input F30-F38 -> verify F60/F100 -> checkpoint F180"
             echo "POLICY=START on calibrated dialogue; wait roulette then Circle only if it persists; Circle only when calibrated YES is visibly highlighted; route directions rotate after repeated map state; unknown states WAIT"
             echo "INTERNAL_EMULATOR_SCREENSHOT_API=DISABLED"
@@ -237,6 +254,8 @@ jobs:
           AB_TEST: ${{ steps.source.outputs.ab_test }}
           AB_ACTION: ${{ steps.source.outputs.ab_action }}
           AB_EXPECTED_STATE: ${{ steps.source.outputs.ab_expected_state }}
+          AB_SEQUENCE: ${{ steps.source.outputs.ab_sequence }}
+          AB_SECOND_ACTION: ${{ steps.source.outputs.ab_second_action }}
           SOURCE_SHA256: ${{ steps.source.outputs.sha256 }}
         run: |
           set -euo pipefail
@@ -263,6 +282,13 @@ jobs:
           local restoreTest=os.getenv("RESTORE_TEST")=="1"
           local abAction=os.getenv("AB_ACTION") or "DOWN"
           local abExpectedState=os.getenv("AB_EXPECTED_STATE") or "menu_or_unknown_choice"
+          local abSequence=os.getenv("AB_SEQUENCE") or "NONE"
+          local abSecondAction=os.getenv("AB_SECOND_ACTION") or "NONE"
+          if abSequence=="LEFT_THEN_CIRCLE" then
+              if not (abTest and abExpectedState=="barrier_level_selection" and abAction=="LEFT" and abSecondAction=="CIRCLE") then error("invalid LEFT_THEN_CIRCLE protocol") end
+          elseif abSequence~="NONE" or abSecondAction~="NONE" then
+              error("unsupported adaptive A/B sequence")
+          end
           local frame=0; local loadStarted=false; local loadReturned=false; local loaded=false
           local shutdownFrame=nil
           local activeButton=nil
@@ -326,21 +352,29 @@ jobs:
                   log("ADAPTIVE_INPUT cycle="..cycle.." action=WAIT status=PASS reason=no_input_policy")
                   return
               end
+              if activeButton then
+                  log("ADAPTIVE_INPUT_ERROR cycle="..cycle.." reason=previous_button_not_released action="..tostring(activeAction))
+                  PCSX.quit(86); return
+              end
               local b=buttons[action]
               if not b then log("ADAPTIVE_INPUT_ERROR cycle="..cycle.." invalid_action="..tostring(action)); PCSX.quit(83); return end
               local ok,v=pcall(function() pad.setOverride(b); return pad.getButton(b) end)
               local pass=ok and v==true
-              log("ADAPTIVE_INPUT cycle="..cycle.." action="..action.." phase=press readback="..tostring(v).." status="..(pass and "PASS" or "FAIL"))
+              log("ADAPTIVE_INPUT cycle="..cycle.." action="..action.." phase=press readback="..tostring(v).." status="..(pass and "PASS" or "FAIL").." frame="..frame)
               if not pass then PCSX.quit(84); return end
               activeButton=b
+              activeAction=action
           end
           local function releaseAction(cycle)
               if not activeButton then return end
               local b=activeButton
+              local action=activeAction or "UNKNOWN"
               local ok,v=pcall(function() pad.clearOverride(b); return pad.getButton(b) end)
               local pass=ok and v==false
-              log("ADAPTIVE_INPUT cycle="..cycle.." phase=release readback="..tostring(v).." status="..(pass and "PASS" or "FAIL"))
+              log("ADAPTIVE_INPUT cycle="..cycle.." phase=release readback="..tostring(v).." status="..(pass and "PASS" or "FAIL").." frame="..frame)
+              log("ADAPTIVE_INPUT_RELEASE cycle="..cycle.." action="..action.." frame="..frame.." readback="..tostring(v).." status="..(pass and "PASS" or "FAIL"))
               activeButton=nil
+              activeAction=nil
               if not pass then PCSX.quit(85) end
           end
           PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
@@ -349,6 +383,8 @@ jobs:
           local plannedAction={}
           local plannedState={}
           local plannedDecision={}
+          local sequenceArmed={}
+          local secondActionAuthorized={}
           PCSX.Events.createEventListener("GPU::Vsync",function()
               if not loadStarted then
                   loadStarted=true; log("ADAPTIVE_LOAD_BEGIN=1"); PCSX.pauseEmulator()
@@ -383,6 +419,11 @@ jobs:
                       local barrierSelectionAction=(abAction=="UP" or abAction=="DOWN" or abAction=="LEFT" or abAction=="RIGHT" or abAction=="CIRCLE")
                       local safeAction=(abExpectedState=="menu_or_unknown_choice" and menuAction) or (abExpectedState=="map_after_move" and mapAction) or (abExpectedState=="roulette" and rouletteAction) or (abExpectedState=="card_selection" and cardAction) or (abExpectedState=="card_selection_detail" and cardAction) or (abExpectedState=="barrier_level_selection" and barrierSelectionAction)
                       local precondition=(state==abExpectedState and action=="WAIT" and safeAction)
+                      if abSequence=="LEFT_THEN_CIRCLE" and cycle==1 and not precondition then
+                          log("ADAPTIVE_AB_SEQUENCE_PRECONDITION=FAIL state="..state.." classifier_action="..action)
+                          PCSX.quit(90); return
+                      end
+                      sequenceArmed[cycle]=(cycle==1 and abSequence=="LEFT_THEN_CIRCLE" and precondition)
                       local branch=(cycle==1) and "ACTION" or "NONE"
                       local selected=(cycle==1) and abAction or "WAIT"
                       if not precondition then selected="WAIT" end
@@ -392,6 +433,9 @@ jobs:
                           " classifier_action="..action.." selected_action="..selected
                       local pf=assert(io.open(string.format("captures/ab-precondition-cycle-%02d.txt",cycle),"wb")); pf:write(marker.."\n"); pf:close()
                       log(marker)
+                       if sequenceArmed[cycle] then
+                           log("ADAPTIVE_AB_SEQUENCE_ARMED=PASS action=LEFT frame=30 second=CIRCLE frame=70")
+                       end
                   end
                   local df=assert(io.open(string.format("captures/decision-cycle-%02d.json",cycle),"wb")); df:write(result); df:close()
                   local af=assert(io.open(string.format("captures/action-cycle-%02d.txt",cycle),"wb")); af:write(plannedAction[cycle].."\n"); af:close()
@@ -414,7 +458,22 @@ jobs:
               elseif phase==38 then
                   releaseAction(cycle)
               elseif phase==60 then
-                  captureExternal(string.format("C%02d-F60",cycle),cycle)
+                  local state,action=captureExternal(string.format("C%02d-F60",cycle),cycle)
+                  if abTest and abSequence=="LEFT_THEN_CIRCLE" and cycle==1 then
+                      if state~="barrier_level_selection" or action~="WAIT" or not sequenceArmed[cycle] then
+                          log("ADAPTIVE_AB_SECOND_ACTION_GUARD=FAIL cycle=1 state="..tostring(state).." classifier_action="..tostring(action))
+                          PCSX.quit(91); return
+                      end
+                      secondActionAuthorized[cycle]=true
+                      log("ADAPTIVE_AB_SECOND_ACTION_GUARD=PASS cycle=1 state=barrier_level_selection action=CIRCLE scheduled_frame=70")
+                  end
+              elseif phase==70 then
+                  if sequenceArmed[cycle] then
+                      if secondActionAuthorized[cycle] then sendAction(abSecondAction,cycle)
+                      else log("ADAPTIVE_AB_SECOND_ACTION_GUARD=FAIL cycle=1 reason=F60_state_not_authorized"); PCSX.quit(91); return end
+                  end
+              elseif phase==78 then
+                  if sequenceArmed[cycle] then releaseAction(cycle) end
               elseif phase==100 then
                   local label=string.format("C%02d-F100",cycle)
                   local state,action=captureExternal(label,cycle)
@@ -483,10 +542,17 @@ jobs:
           [[ "$CONTINUATION_TEST" == "0" || "$CONTINUATION_TEST" == "1" ]]
           [[ "$AB_TEST" == "0" || "$AB_TEST" == "1" ]]
           [[ "$AB_ACTION" == "UP" || "$AB_ACTION" == "DOWN" || "$AB_ACTION" == "LEFT" || "$AB_ACTION" == "RIGHT" || "$AB_ACTION" == "TRIANGLE" || "$AB_ACTION" == "CROSS" || "$AB_ACTION" == "CIRCLE" ]]
+          [[ "$AB_SEQUENCE" == "NONE" || "$AB_SEQUENCE" == "LEFT_THEN_CIRCLE" ]]
+          [[ "$AB_SECOND_ACTION" == "NONE" || "$AB_SECOND_ACTION" == "CIRCLE" ]]
+          if [ "$AB_SEQUENCE" = "LEFT_THEN_CIRCLE" ]; then
+            [[ "$AB_TEST" == "1" && "$AB_EXPECTED_STATE" == "barrier_level_selection" && "$AB_ACTION" == "LEFT" && "$AB_SECOND_ACTION" == "CIRCLE" && "$CYCLES" == "2" && "$RESTORE_TEST" == "0" && "$CONTINUATION_TEST" == "0" ]]
+          else
+            [[ "$AB_SECOND_ACTION" == "NONE" ]]
+          fi
           if [ "$AB_TEST" = "1" ]; then [[ "$CYCLES" == "2" && "$RESTORE_TEST" == "0" && "$CONTINUATION_TEST" == "0" ]]; fi
           export PAD_SETUP
           export LOOP_CYCLES="$CYCLES"
-          export RESTORE_TEST CONTINUATION_TEST AB_TEST AB_ACTION AB_EXPECTED_STATE SOURCE_SHA256
+          export RESTORE_TEST CONTINUATION_TEST AB_TEST AB_ACTION AB_EXPECTED_STATE AB_SEQUENCE AB_SECOND_ACTION SOURCE_SHA256
           cat > "$WORK/run-bounded-cycles.sh" <<'SH'
           #!/usr/bin/env bash
           set -euo pipefail
@@ -525,7 +591,7 @@ jobs:
             card_sha="$(sha256sum "$card" | cut -d ' ' -f1)"
             echo "ADAPTIVE_SESSION_START cycle=${cycle} source=$resume_sha card=$(basename "$card") card_sha256=$card_sha" >> "$WORK/captures/pcsx-adaptive.stdout"
             set +e
-            ADAPTIVE_CYCLE="$cycle" AB_TEST="$AB_TEST" AB_ACTION="$AB_ACTION" PROBE_MODE=ADAPTIVE timeout --signal=TERM --kill-after=5s 60s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+            ADAPTIVE_CYCLE="$cycle" AB_TEST="$AB_TEST" AB_ACTION="$AB_ACTION" AB_SEQUENCE="$AB_SEQUENCE" AB_SECOND_ACTION="$AB_SECOND_ACTION" PROBE_MODE=ADAPTIVE timeout --signal=TERM --kill-after=5s 60s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
               -noupdate -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" -memcard1 "$card" \
               -exec "$PAD_SETUP" -dofile "$WORK/storymode-adaptive.lua" -softgpu -dynarec -stdout -lua_stdout \
               -logfile "$logfile" -run > "$stdout" 2>&1
@@ -684,16 +750,36 @@ jobs:
             grep -q "ADAPTIVE_INPUT cycle=1 action=$AB_ACTION phase=press readback=true status=PASS" "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
             grep -q 'ADAPTIVE_INPUT cycle=1 phase=release readback=false status=PASS' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
             grep -q 'ADAPTIVE_INPUT cycle=2 action=WAIT status=PASS reason=no_input_policy' "$WORK/captures/pcsx-adaptive-cycle-2.stdout"
-            test "$(grep -Ec 'ADAPTIVE_INPUT cycle=1 .*phase=press' "$WORK/captures/pcsx-adaptive-cycle-1.stdout")" -eq 1
-            if [ "$AB_EXPECTED_STATE" != "barrier_level_selection" ] && grep -Eq 'ADAPTIVE_INPUT cycle=1 action=START phase=press|ADAPTIVE_INPUT cycle=1 action=DOWN phase=press|ADAPTIVE_INPUT cycle=1 action=UP phase=press|ADAPTIVE_INPUT cycle=1 action=LEFT phase=press|ADAPTIVE_INPUT cycle=1 action=RIGHT phase=press|ADAPTIVE_INPUT cycle=1 action=TRIANGLE phase=press|ADAPTIVE_INPUT cycle=1 action=CROSS phase=press' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"; then
-              echo "ADAPTIVE_AB_SINGLE_INPUT_ISOLATION=FAIL extra_action_in_action_branch" >> "$WORK/captures/pcsx-adaptive.stdout"
-              exit 1
+            if [ "$AB_SEQUENCE" = "LEFT_THEN_CIRCLE" ]; then
+              grep -q 'ADAPTIVE_AB_SEQUENCE_ARMED=PASS action=LEFT frame=30 second=CIRCLE frame=70' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
+              grep -q 'ADAPTIVE_AB_SECOND_ACTION_GUARD=PASS cycle=1 state=barrier_level_selection action=CIRCLE scheduled_frame=70' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
+              grep -q 'ADAPTIVE_INPUT cycle=1 action=LEFT phase=press readback=true status=PASS frame=30' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
+              grep -q 'ADAPTIVE_INPUT_RELEASE cycle=1 action=LEFT frame=38 readback=false status=PASS' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
+              grep -q 'ADAPTIVE_INPUT cycle=1 action=CIRCLE phase=press readback=true status=PASS frame=70' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
+              grep -q 'ADAPTIVE_INPUT_RELEASE cycle=1 action=CIRCLE frame=78 readback=false status=PASS' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"
+              test "$(grep -Ec 'ADAPTIVE_INPUT cycle=1 .*phase=press' "$WORK/captures/pcsx-adaptive-cycle-1.stdout")" -eq 2
+              test "$(grep -c 'ADAPTIVE_INPUT_RELEASE cycle=1 ' "$WORK/captures/pcsx-adaptive-cycle-1.stdout")" -eq 2
+              if grep -Eq 'ADAPTIVE_INPUT cycle=1 action=(START|DOWN|UP|RIGHT|TRIANGLE|CROSS) phase=press' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"; then
+                echo "ADAPTIVE_AB_SEQUENCE_ISOLATION=FAIL unexpected_action_in_C01" >> "$WORK/captures/pcsx-adaptive.stdout"
+                exit 1
+              fi
+              if grep -Eq 'ADAPTIVE_INPUT cycle=2 .*phase=press' "$WORK/captures/pcsx-adaptive-cycle-2.stdout"; then
+                echo "ADAPTIVE_AB_SEQUENCE_ISOLATION=FAIL control_branch_pressed_button" >> "$WORK/captures/pcsx-adaptive.stdout"
+                exit 1
+              fi
+              echo "ADAPTIVE_AB_SEQUENCE_ISOLATION=PASS action_presses=LEFT@30,CIRCLE@70 action_releases=LEFT@38,CIRCLE@78 control_presses=0 unexpected_presses=0" >> "$WORK/captures/pcsx-adaptive.stdout"
+            else
+              test "$(grep -Ec 'ADAPTIVE_INPUT cycle=1 .*phase=press' "$WORK/captures/pcsx-adaptive-cycle-1.stdout")" -eq 1
+              if [ "$AB_EXPECTED_STATE" != "barrier_level_selection" ] && grep -Eq 'ADAPTIVE_INPUT cycle=1 action=START phase=press|ADAPTIVE_INPUT cycle=1 action=DOWN phase=press|ADAPTIVE_INPUT cycle=1 action=UP phase=press|ADAPTIVE_INPUT cycle=1 action=LEFT phase=press|ADAPTIVE_INPUT cycle=1 action=RIGHT phase=press|ADAPTIVE_INPUT cycle=1 action=TRIANGLE phase=press|ADAPTIVE_INPUT cycle=1 action=CROSS phase=press' "$WORK/captures/pcsx-adaptive-cycle-1.stdout"; then
+                echo "ADAPTIVE_AB_SINGLE_INPUT_ISOLATION=FAIL extra_action_in_action_branch" >> "$WORK/captures/pcsx-adaptive.stdout"
+                exit 1
+              fi
+              echo "ADAPTIVE_AB_SINGLE_INPUT_ISOLATION=PASS action_branch_presses=1 control_branch_presses=0" >> "$WORK/captures/pcsx-adaptive.stdout"
             fi
             if grep -Eq 'ADAPTIVE_INPUT cycle=2 .*phase=press' "$WORK/captures/pcsx-adaptive-cycle-2.stdout"; then
               echo "ADAPTIVE_AB_SINGLE_INPUT_ISOLATION=FAIL control_branch_pressed_button" >> "$WORK/captures/pcsx-adaptive.stdout"
               exit 1
             fi
-            echo "ADAPTIVE_AB_SINGLE_INPUT_ISOLATION=PASS action_branch_presses=1 control_branch_presses=0" >> "$WORK/captures/pcsx-adaptive.stdout"
             source1="$(sed -n 's/.*ADAPTIVE_SESSION_START cycle=1 source=\([0-9a-f]*\).*/\1/p' "$WORK/captures/pcsx-adaptive.stdout" | head -n1)"
             source2="$(sed -n 's/.*ADAPTIVE_SESSION_START cycle=2 source=\([0-9a-f]*\).*/\1/p' "$WORK/captures/pcsx-adaptive.stdout" | head -n1)"
             test "$source1" = "$SOURCE_SHA256" && test "$source2" = "$SOURCE_SHA256"
@@ -721,7 +807,7 @@ jobs:
               x=img("C01-F%d.png"%phase); y=img("C02-F%d.png"%phase)
               diff=np.abs(x-y); pixels=int(np.any(diff!=0,axis=2).sum()); mad=float(diff.mean())
               lines.append("ADAPTIVE_AB_VISUAL_COMPARE phase=F{} differing_pixels={} mean_abs_rgb_diff={:.5f}".format(phase,pixels,mad))
-          lines.append("ADAPTIVE_AB_ACTION={};CONTROL=NONE/WAIT".format(os.environ.get("AB_ACTION","DOWN")))
+          lines.append("ADAPTIVE_AB_ACTION={};SEQUENCE={};SECOND_ACTION={};CONTROL=NONE/WAIT".format(os.environ.get("AB_ACTION","DOWN"),os.environ.get("AB_SEQUENCE","NONE"),os.environ.get("AB_SECOND_ACTION","NONE")))
           (p/"ab-comparison-report.txt").write_text("\n".join(lines)+"\n")
           print("\n".join(lines))
           PY
@@ -730,7 +816,7 @@ jobs:
             test "$skip1" = "$skip2"
             grep -q 'ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded' "$WORK/captures/pcsx-adaptive.stdout"
             test "$(grep -c 'ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded' "$WORK/captures/pcsx-adaptive.stdout")" -eq 2
-            echo "ADAPTIVE_AB_TEST=PASS parent_sha256=$SOURCE_SHA256 action=$AB_ACTION control=NONE memory_card_clones=identical parent_frame_parity=PASS fresh_processes=2 captures=10 checkpoint_outputs_validated=true" >> "$WORK/captures/pcsx-adaptive.stdout"
+            echo "ADAPTIVE_AB_TEST=PASS parent_sha256=$SOURCE_SHA256 action=$AB_ACTION control=NONE sequence=$AB_SEQUENCE second_action=$AB_SECOND_ACTION memory_card_clones=identical parent_frame_parity=PASS fresh_processes=2 captures=10 checkpoint_outputs_validated=true" >> "$WORK/captures/pcsx-adaptive.stdout"
           elif [ "$RESTORE_TEST" = "1" ]; then
             grep -q 'ADAPTIVE_LOAD_EVENT=PASS event=ExecutionFlow::SaveStateLoaded' "$WORK/captures/pcsx-adaptive.stdout"
             for label in C01-F20 C01-F60 C01-F100 C01-F110 C01-F180; do
