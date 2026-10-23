@@ -95,3 +95,18 @@ After this action is understood and other menu/route actions are calibrated, imp
 - ROM, BIOS, savestates, Memory Cards and authentic screenshots remain private and never enter Git.
 - Translate Japanese text immediately into Indonesian in parentheses.
 - Mark rules VERIFIED / HYPOTHESIS / UNKNOWN from direct evidence.
+
+---
+
+## Revision58 diagnosis and Revision59 readiness test — 23 October 2026
+
+Run [#39905240818](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39905240818) failed before producing checkpoints. Its private artifact #12480856146 was inspected. Authentic frames C01-F60/F100/F110 show a small lower-left instruction panel reading 「レベルアップする結界をえらんでください」 (Pilih penghalang yang akan dinaikkan levelnya), with Circle confirm and X back controls. These frames were misclassified as `dialogue` solely because the panel has an orange/gold border; the agent then sent START even though this was not dialogue. The process timed out before F180; checkpoints were 0/2. This is a classifier/harness policy failure, not proof that the parent checkpoint is corrupt.
+
+Fix committed to this research repo:
+- `tools/storymode_adaptive_agent.py` — v0.3.0 distinguishes the calibrated smaller nested barrier-selection panel from the full-width ornate story-dialogue panel; the nested selection action follows its explicit Circle-confirm prompt and must be verified by the next observation.
+- `tests/test_storymode_adaptive_agent.py` — adds synthetic regressions for this submenu and for the full-width dialogue signature.
+- `.github/workflows/naruto-storymode-adaptive-player.yml` — continuation policy guard recognizes the new calibrated state.
+
+Commits: `afdbfad5c87bd8d0a1a029f70e668919e5c0e08f`, `a00026dca5a7be60f78b35d642fa0d954912df82`, `ae93fc15a2238ccbf608fcae785b56f1293ad0e8`.
+
+Next, run Revision59 from the last valid Revision57 checkpoint (not Revision58, which emitted no checkpoint), using two bounded fresh-process segments. Success means the new classifier passes unit tests against regression fixtures, no START is issued on the barrier-selection submenu, each segment reaches F180, both checkpoint files pass v4 header/size/SHA validation, and the second segment really reloads the first segment's checkpoint. This is only a short readiness test; **do not treat story completion as a prerequisite**. If this passes, extend the unattended-session readiness tests and implement/validate self-chaining separately. Story Mode is not confirmed complete.
