@@ -1,8 +1,8 @@
-## AUTHORITATIVE CURRENT CHECKPOINT — 23 October 2026, 07:18 WIB
+## AUTHORITATIVE CURRENT CHECKPOINT — 23 October 2026, 07:30 WIB
 
-Use [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md) as the source of truth. Revision52 [#39876534507](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876534507) independently restored the previous candidate; all five authentic frames now classify `card_selection` / `WAIT` and zero press events occurred. Its output SHA `df73f3414c7838d22611a2592d5f2516f903e3e43a1d05911d1964ac07c61265` remains unpromoted.
+Use [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md). Revision53 [#39877412316](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39877412316) verified that one CIRCLE reveals a face-up `防御集中` (fokus pertahanan) card, in a matched fresh-process A/B against no input. It did not establish whether the card is acquired. Action checkpoint candidate SHA `bd2c4b7f187b21350e5157a11a7b6ab99cf2124a67be11b669f93c982bc25fae` is structurally valid but not yet independently restored.
 
-A/B safeguards passed latest regression [#39877110916](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39877110916). Next is revision53 CIRCLE-vs-WAIT on the independently verified revision51 output checkpoint SHA `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e`; wait for actual screenshots to infer the card action. End-to-end automatic chaining and Story Mode completion remain unverified.
+Commit `331e2317cc51e386af51dc2d2d0117d459a42391` adds a fail-closed `card_selection_detail` state and checks 10 actual revision53 screenshots. Regression #39878204502 is pending at dependency setup. Wait for its success before revision54 restore-only. Automatic full Story Mode chaining remains incomplete; Story Mode is **NOT COMPLETE**.
 
 ---
 
