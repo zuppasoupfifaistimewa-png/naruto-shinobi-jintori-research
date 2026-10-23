@@ -1,3 +1,24 @@
+# Latest checkpoint — measured camera-pan confound regression PASS (23 October 2026)
+
+Run [#39955066779](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39955066779) completed with `success` against code commit `6ac013fc76c8d82417305bfbfabeac4c6a73876a`. The expanded regression passed 24 tests, 10 authentic X11 policy checks, 5 authentic card-overlay checks, 10 authentic revealed-card-detail checks, ten Revision65 frame validations, the map UP-vs-WAIT panel/marker assertions, and the new NumPy scene-shift assertion.
+
+## Measured screenshot findings
+
+- Pixel-only regression estimates: Revision65 UP `+100px`, Revision65 WAIT `0px`, map UP `+100px`, map WAIT `0px`. It passes with `CAMERA_SHIFT_REGRESSION=PASS`.
+- Independent offline ORB/RANSAC registration: Revision65 UP estimated translation (x=+0.03,y=+100.40) px, scale 1.0000, 0.01° rotation, 1,372/1,433 inliers (95.7%), median residual 0.49 px. Revision65 WAIT: (x=+0.01,y=+0.01) px, 3,289/3,301 inliers (99.6%), median residual 0.00 px. Map UP: (x=+0.10,y=+100.58) px, scale 0.9999, 682/918 inliers (74.3%), median residual 0.50 px. Map WAIT: (x=+0.01,y=+0.01) px, 2,715/2,738 inliers (99.2%), median residual 0.01 px.
+- Registration from Revision65 F60→F100, F100→F110, and F110→F180 estimates no material scene translation in either branch. Separately, instruction-panel and confirm/back-footer crops remain exactly pixel-identical F60→F100 after Circle (zero changed pixels on both branches).
+- Cross-context panel assertion remains: map UP panel delta 16,239 pixels versus WAIT delta 94; pink-60 ROI pixels 1,893 in UP versus 75 in control. The Revision65 badge was partly present in the baseline under the HUD (142 pink-mask pixels), then exposed in the UP scene ROI (2,681); WAIT had 0 there.
+
+## Interpretation and gate
+
+This shows that the scene-pan confound is real and reproducible: both UP runs move the visible map scene about 100 px vertically, and both WAIT controls do not. The badge is a barrier-value symbol in known map context, but **its role as a selected target in the level-up submenu is still UNKNOWN**. A camera pan can explain its appearance in the fixed ROI; the measurements do not prove whether a target selection also occurred. The stable scene after F60 and the unchanged prompt/footer after Circle provide no visual confirmation of target selection or level-up confirmation.
+
+Keep classifier action `WAIT` for `barrier_level_selection`; keep `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` absent; do not rerun consumed Revision65 or dispatch another player run. Readiness remains **NO-GO** and Story Mode remains **NOT COMPLETE**. Next work stays offline: register background/terrain landmarks and compare the pink tile's relation to the game cursor separately from viewport movement. Any new input trial requires an independently established, unique target cue plus a pre-tested marker/state gate.
+
+The regression and documentation updates did not modify the player workflow or Revision65 marker. All authentic screenshots/save-state artifacts remain private and out of Git.
+
+---
+
 # Latest checkpoint — cross-context target-cue regression PASS (23 October 2026)
 
 Regression [#39954571305](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39954571305) finished with `success` against code commit `61fd13189de5496631ca7a37900b64f4e50330ee`. It passed 24 unit/source tests, 10 authentic X11 policy checks, 5 authentic card-overlay checks, 10 authentic revealed-card-detail checks, all ten private Revision65 frame checks, and the new cross-context evidence assertions. The immediately preceding run `#39954326794` failed only due to a Python heredoc indentation defect, which was corrected before this successful run.
