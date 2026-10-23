@@ -389,8 +389,8 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertIn("REVISION=65", marker)
         self.assertNotIn("AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1", marker)
         raw_restore = (repo / ".github" / "workflows" / "naruto-raw-storymode-restore.yml").read_text(encoding="utf-8")
-        self.assertIn("raw-restore-and-continue:\\n    if: false\\n".replace("\\\\n", "\\n"), raw_restore)
-        self.assertIn("group: naruto-storymode-raw-resume\\n  cancel-in-progress: true".replace("\\\\n", "\\n"), raw_restore)
+        self.assertIn("raw-restore-and-continue:\n    if: false\n", raw_restore)
+        self.assertIn("group: naruto-storymode-raw-resume\n  cancel-in-progress: true", raw_restore)
 
     def test_persistent_map_rotates_direction(self):
         with tempfile.TemporaryDirectory() as td:
