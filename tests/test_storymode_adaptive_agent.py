@@ -158,13 +158,19 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertGreaterEqual(out["features"]["prompt_footer_red"],.05)
         self.assertGreaterEqual(out["features"]["prompt_footer_blue"],.008)
         self.assertEqual(out["state"],"barrier_level_selection")
-        self.assertEqual(out["action"],"CIRCLE")
+        self.assertEqual(out["action"],"WAIT")
 
     def test_dialogue_requires_full_width_dialogue_signature(self):
         out=self.classify("dialogue")
         self.assertGreaterEqual(out["features"]["dialogue_header_orange"],.08)
         self.assertEqual(out["state"],"dialogue")
         self.assertEqual(out["action"],"START")
+
+    def test_barrier_level_selection_waits_until_target_is_identified(self):
+        out=self.classify("barrier_level_selection")
+        self.assertEqual(out["state"],"barrier_level_selection")
+        self.assertEqual(out["action"],"WAIT")
+        self.assertIn("target_not_identified",out["action_reason"])
 
     def test_restore_only_gate_precedes_any_button_mutation(self):
         # This is an integration-level source regression for the Lua input path:
@@ -221,6 +227,15 @@ class AdaptiveAgentTests(unittest.TestCase):
         ab_branch = phase110[ab_start:ab_end]
         self.assertNotIn('sendAction("START",cycle)', ab_branch)
         self.assertIn("ADAPTIVE_AB_SINGLE_INPUT_ISOLATION=PASS", workflow)
+
+    def test_barrier_level_ab_probe_can_test_a_direction_with_wait_control(self):
+        repo=Path(__file__).resolve().parents[1]
+        workflow=(repo/".github"/"workflows"/"naruto-storymode-adaptive-player.yml").read_text(encoding="utf-8")
+        self.assertIn('"barrier_level_selection"',workflow)
+        self.assertIn('elif [ "$ab_expected_state" = "barrier_level_selection" ]; then',workflow)
+        self.assertIn('local barrierSelectionAction=(abAction=="UP" or abAction=="DOWN" or abAction=="LEFT" or abAction=="RIGHT")',workflow)
+        self.assertIn('(abExpectedState=="barrier_level_selection" and barrierSelectionAction)',workflow)
+        self.assertIn('(state=="barrier_level_selection" and action=="WAIT")',workflow)
 
     def test_persistent_map_rotates_direction(self):
         with tempfile.TemporaryDirectory() as td:
