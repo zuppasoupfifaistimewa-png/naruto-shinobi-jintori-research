@@ -270,3 +270,33 @@ Readiness remains **NO-GO**. Story Mode completion has not been proved and is no
 3. After green regression only, set a new Revision65 marker with the exact Revision59 source and the same `UP_THEN_CIRCLE` A/B tuple. Use commit message token `[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER]`.
 4. Inspect the new private artifact: require ten authentic 1280×800 captures, two explicit `ExecutionFlow::SaveStateLoaded` events, identical F20 pixels, matching Memory Card clones, exact press/release readbacks/counts, passing F60 WAIT-state guard, and two external checkpoint header/size/SHA validations.
 5. Do not promote a checkpoint without independently restoring it. If the prompt remains unchanged after Circle, keep target/confirmation UNKNOWN and select the next probe only from grounded visual evidence.
+
+## Timeout repair regression passed — 23 October 2026
+
+The bounded emulator timeout was raised from 60 to 90 seconds, with the Actions job timeout kept at 20 minutes. The change is guarded by `test_bounded_emulator_timeout_allows_capture_cycle_to_finish` in `tests/test_storymode_adaptive_agent.py`; no gameplay actions, UP_THEN_CIRCLE timing, shell/Lua allowlists, or F60 state gate were changed.
+
+Regression run [#39947302492](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39947302492) completed **success** on test commit `23b03a440363cff80f3b718f5fd07c26b67a2e30`. Its log proves **20 tests / OK**, `AUTHENTIC_X11_REGRESSION=PASS checked=10`, `AUTHENTIC_CARD_OVERLAY_DIALOGUE_PRIORITY=PASS checked=5`, and `AUTHENTIC_REVEALED_CARD_DETAIL=PASS checked=10`; every job step passed.
+
+This regression qualifies a bounded retry. It does not alter Revision64's incomplete result: action branch's verified checkpoint is not promoted; its visual change did not prove target selection; target semantics remain UNKNOWN. Next step is a new Revision65 matched A/B from the immutable Revision59 source. Keep all gameplay assets private/out of Git, and keep readiness NO-GO until the new runtime evidence is examined.
+
+### Revision65 launch tuple
+
+Use the same immutable Revision59 source and exact allowlisted UP_THEN_CIRCLE protocol. Revision64 has been consumed and must not be replayed. The new marker must contain:
+```
+MODE=ADAPTIVE
+SOURCE_RUN=39907655833
+SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
+SOURCE_CHECKPOINT=adaptive-cycle-02-f180.sstate
+SOURCE_SHA256=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
+RESTORE_TEST=0
+CONTINUATION_TEST=0
+AB_TEST=1
+AB_ACTION=UP
+AB_EXPECTED_STATE=barrier_level_selection
+AB_SEQUENCE=UP_THEN_CIRCLE
+AB_SECOND_ACTION=CIRCLE
+LOOP_CYCLES=2
+REVISION=65
+```
+
+The green regression at #39947302492 is a prerequisite now met. After launch, verify both branches reach F180 and produce valid checkpoints, ten authentic 1280×800 frames, identical F20 images, identical Memory Card clones, explicit load events, correct UP/Circle press/release readbacks and zero control presses. At F60, require `barrier_level_selection` plus WAIT before Circle. Inspect the prompt/target highlight visually; do not assume a composition change is target selection.
