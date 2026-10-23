@@ -1,8 +1,8 @@
-## AUTHORITATIVE CURRENT CHECKPOINT — 23 October 2026, 07:34 WIB
+## AUTHORITATIVE CURRENT CHECKPOINT — 23 October 2026, 07:38 WIB
 
-Use [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md). Regression [#39878572840](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39878572840) passed 13 unit tests and classifications for all 10 authentic revision53 A/B frames. State `card_selection_detail` returns WAIT and beats the lower dialogue-like instruction panel.
+Use [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md). Regression [#39878572840](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39878572840) passed 13 tests and all 10 authentic revision53 frames. Revision54 [#39878936772](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39878936772) successfully restored the revealed-card state, produced five valid captures, classified all as `card_selection_detail` / WAIT and had zero press events.
 
-Revision53 run [#39877412316](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39877412316) shows one CIRCLE reveals `防御集中` card details versus no-input control; whether it is acquired is UNKNOWN. The next step is revision54 restore-only using action checkpoint SHA `bd2c4b7f187b21350e5157a11a7b6ab99cf2124a67be11b669f93c982bc25fae`. Follow it with revision55 CIRCLE-vs-WAIT only after independent restore passes. Full Story Mode remains NOT COMPLETE.
+Output SHA `219d03ab90b594c27430f91460319c6a4c9a3b05b6463871406ac777873bedf8` is the next candidate. Revision55 must restore it independently before it can be the parent for revision56 second-CIRCLE vs WAIT A/B. One CIRCLE reveals card details; acquisition semantics remain UNKNOWN. Story Mode is **NOT COMPLETE**.
 
 ---
 
