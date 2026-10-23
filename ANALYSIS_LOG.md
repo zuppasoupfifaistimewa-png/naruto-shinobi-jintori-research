@@ -1307,3 +1307,17 @@ The exact comparison report has: F60 C01-vs-C02 699,552 differing pixels / mean 
 A useful follow-up is a narrowly allowlisted `UP_THEN_CIRCLE` vs no-input A/B from the same immutable Revision59 parent. It must be implemented first because the existing harness supports `NONE` and the consumed `LEFT_THEN_CIRCLE` protocol only. Add shell/Lua allowlists, state-gated F60 authorization for the second Circle, exact frame/readback/zero-control assertions, and a unit/source regression. Only trigger the player after the regression passes. Circle must never be sent if dialogue or an unrecognized screen is detected. Do not reuse Revision63 outputs as a source unless one has been independently restored and promoted. This remains a small qualification test, not a Story Mode completion attempt.
 
 Revision63 marker is consumed; do not rerun it. Keep ROM, BIOS, Memory Card, raw savestates and gameplay images private/out of Git.
+
+
+## Revision64 protocol implementation checkpoint — 23 October 2026
+
+**Do not launch Revision64 yet.** Private Revision63 evidence was downloaded and visually audited before making code changes. The ten external-X11 screenshots are authentic 1280×800 captures. C01's F60 view differs substantially from C02, but the prompt 「レベルアップする結界をえらんでください」 (Pilih penghalang yang akan dinaikkan levelnya) remains; no target highlight/selection is verified. Keep normal barrier_level_selection policy at WAIT.
+
+Implemented in the only permitted repository:
+- Player workflow commit 0073b9be0a541f52173a58dd68a32814fdacb625 adds UP_THEN_CIRCLE to the strict shell/Lua allowlists. Only AB_TEST=1, AB_EXPECTED_STATE=barrier_level_selection, AB_ACTION=UP, AB_SECOND_ACTION=CIRCLE, two cycles, RESTORE_TEST=0, and CONTINUATION_TEST=0 are accepted for this sequence.
+- Action branch schedules UP press F30/release F38. The external screenshot at F60 must classify as barrier_level_selection with action WAIT; dialogue, unknown, another state, or an unarmed sequence terminates the emulator safely before Circle. Circle at F70 is allowed only after that gate and is released at F78. Post-run checks require exactly these two press/release pairs, no unexpected action, zero control-branch presses, identical F20 pixels, identical Memory Card clones, two SaveStateLoaded events, ten authentic captures, and structurally/hash-validated v4 output checkpoints.
+- Regression test commit 813cc644f9898fd58a09f5678d6619c6f610df8f adds assertions for the new allowlist, F60 fail-closed state gate, timing, release counts, and zero-input control.
+
+The regression workflow is configured to run on pushes touching the test file. Its status/conclusion has **not yet been independently verified** through the GitHub Actions run-inspection capability available in this session. Therefore the consumed marker experiments/.run-storymode-adaptive-player remains Revision63 and unchanged; do not edit it or run a player experiment until a green regression result is confirmed.
+
+Immutable source remains Revision59 run #39907655833 artifact naruto-storymode-adaptive-player-private, checkpoint adaptive-cycle-02-f180.sstate, 21,162,799 bytes, v4, SHA-256 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35. Revision63 marker remains consumed; never rerun it. ROM, BIOS, Memory Card, savestates, and gameplay screenshots remain private and out of Git. Story Mode completion is not this qualification goal.
