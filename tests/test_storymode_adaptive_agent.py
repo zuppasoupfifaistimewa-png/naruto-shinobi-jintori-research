@@ -97,6 +97,34 @@ class AdaptiveAgentTests(unittest.TestCase):
         out=self.classify("barrier_choice")
         self.assertTrue(out["features"]["yes_selected_visual"])
         self.assertEqual(out["action"],"CIRCLE")
+
+    def test_restore_only_gate_precedes_any_button_mutation(self):
+        # This is an integration-level source regression for the Lua input path:
+        # the guard must cover both ordinary frame-30 policy actions and the
+        # direct START dialogue path, before button lookup or pad.setOverride.
+        repo = Path(__file__).resolve().parents[1]
+        workflow = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-player.yml").read_text(encoding="utf-8")
+        self.assertIn('local restoreTest=os.getenv("RESTORE_TEST")=="1"', workflow)
+        self.assertIn('sendAction(plannedAction[cycle] or "WAIT",cycle)', workflow)
+        self.assertIn('sendAction("START",cycle)', workflow)
+        start = workflow.index("local function sendAction(action,cycle)")
+        end = workflow.index("local function releaseAction(cycle)", start)
+        send_action = workflow[start:end]
+        guard = send_action.index("if restoreTest then")
+        button_lookup = send_action.index("local b=buttons[action]")
+        pad_mutation = send_action.index("pad.setOverride(b)")
+        self.assertLess(guard, button_lookup)
+        self.assertLess(guard, pad_mutation)
+        guard_block = send_action[guard:button_lookup]
+        self.assertIn("ADAPTIVE_RESTORE_ONLY_INPUT_SUPPRESSED", guard_block)
+        self.assertIn("return", guard_block)
+        # The guard is action-agnostic, so all three calibrated action families
+        # (route movement, dialogue START, and contextual CIRCLE) are suppressed.
+        for action in ("DOWN", "START", "CIRCLE"):
+            with self.subTest(action=action):
+                self.assertNotIn(f'action=="{action}"', guard_block)
+        self.assertIn("ADAPTIVE_RESTORE_ONLY_NO_INPUT_ASSERT=PASS", workflow)
+
     def test_persistent_map_rotates_direction(self):
         with tempfile.TemporaryDirectory() as td:
             h=Path(td)/"history.json"
