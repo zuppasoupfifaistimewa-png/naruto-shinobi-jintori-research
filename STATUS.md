@@ -2864,3 +2864,14 @@ Implemented in the only permitted repository:
 The regression workflow is configured to run on pushes touching the test file. Its status/conclusion has **not yet been independently verified** through the GitHub Actions run-inspection capability available in this session. Therefore the consumed marker experiments/.run-storymode-adaptive-player remains Revision63 and unchanged; do not edit it or run a player experiment until a green regression result is confirmed.
 
 Immutable source remains Revision59 run #39907655833 artifact naruto-storymode-adaptive-player-private, checkpoint adaptive-cycle-02-f180.sstate, 21,162,799 bytes, v4, SHA-256 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35. Revision63 marker remains consumed; never rerun it. ROM, BIOS, Memory Card, savestates, and gameplay screenshots remain private and out of Git. Story Mode completion is not this qualification goal.
+
+
+### Revision64 final regression hardening — 23 October 2026
+
+A source-level audit caught and fixed two regression-compatibility details before any player run:
+- The workflow now sets `sequenceAction=nil` and assigns LEFT/UP only for the two explicitly recognized sequence names. This prevents the ordinary `AB_SEQUENCE=NONE` single-action A/B protocol from being mistakenly treated as an armed two-action sequence in Lua.
+- The existing LEFT_THEN_CIRCLE source regression now checks the shared `AB_ACTION` timed assertion used by both sequences, while retaining the exact allowlist tuple and explicit LEFT outcome assertions.
+
+Latest workflow commit: `a7e59dee93de44b7958f317a6239eda048e7951d`. Latest test commit: `123efe8480d50a1589d00dc3dd87e003b310e1bb`. A source-level sweep checked 54 literal `assertIn(..., workflow)` expectations in the test module against the current workflow; all 54 matched. This is only a static consistency check, **not a substitute for the actual regression workflow**. The Actions run conclusion still has not been independently retrieved, and the latest test commit should trigger the regression workflow again.
+
+Keep marker `experiments/.run-storymode-adaptive-player` unchanged at consumed Revision63; do not rerun it and do not launch Revision64 until a green regression run is explicitly verified. All private evidence/source-checkpoint constraints above remain in force.
