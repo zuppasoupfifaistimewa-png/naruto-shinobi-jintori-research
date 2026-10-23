@@ -1357,3 +1357,12 @@ Run [#39946344909](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 Readiness remains **NO-GO**. Story Mode completion has not been proved and is not this qualification test's acceptance criterion. ROM, BIOS, Memory Card, savestates, and screenshots remain private and out of Git.
 
 **Interpretation:** the current evidence does not confirm that Circle selected any target; do not change normal policy from WAIT based on this run.
+
+## Timeout repair regression passed — 23 October 2026
+
+The bounded emulator timeout was raised from 60 to 90 seconds, with the Actions job timeout kept at 20 minutes. The change is guarded by `test_bounded_emulator_timeout_allows_capture_cycle_to_finish` in `tests/test_storymode_adaptive_agent.py`; no gameplay actions, UP_THEN_CIRCLE timing, shell/Lua allowlists, or F60 state gate were changed.
+
+Regression run [#39947302492](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39947302492) completed **success** on test commit `23b03a440363cff80f3b718f5fd07c26b67a2e30`. Its log proves **20 tests / OK**, `AUTHENTIC_X11_REGRESSION=PASS checked=10`, `AUTHENTIC_CARD_OVERLAY_DIALOGUE_PRIORITY=PASS checked=5`, and `AUTHENTIC_REVEALED_CARD_DETAIL=PASS checked=10`; every job step passed.
+
+This regression qualifies a bounded retry. It does not alter Revision64's incomplete result: action branch's verified checkpoint is not promoted; its visual change did not prove target selection; target semantics remain UNKNOWN. Next step is a new Revision65 matched A/B from the immutable Revision59 source. Keep all gameplay assets private/out of Git, and keep readiness NO-GO until the new runtime evidence is examined.
+
