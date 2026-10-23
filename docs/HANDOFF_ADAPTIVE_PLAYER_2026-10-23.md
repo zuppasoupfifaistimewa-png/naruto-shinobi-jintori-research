@@ -366,3 +366,9 @@ A tiny wording update now describes `60` as matching the known barrier-value sym
 
 ### Strict next step
 Do not set `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` in the marker. First compare the authentic red focus-arrow signature and panel across the map and level-up states, and identify whether the target cue exists at all in this submenu. No random direction probing. Keep the normal action WAIT, keep Story Mode completion unclaimed, and do not promote Revision65 outputs until independent fresh-process restores pass.
+
+## Regression result confirmation — current continuation point (23 October 2026)
+
+Final wording/refinement regression #39952866478 completed `success` at commit d210e75d17591c1ad03a50d539c3746bc1bd53fe. It passed all 23 unit/source tests and every authentic screenshot stage, including 10 Revision65 private frames. The matched action/control image metrics support a visible badge correlated with UP, while both instruction/footer regions remain pixel-identical after Circle. The historical map image shows the same pink hexagon/60 as a barrier-value symbol, but its target-cursor meaning in the level-up submenu remains unverified.
+
+Next chat must first re-verify HEAD and latest Actions, then compare the exact focus-arrow signature across already-authenticated map and submenu screenshots. Do not change or run marker revision65. Do not set the `AB_BARRIER_TARGET_CUE` marker token without independent visual proof. No player run was started; readiness stays NO-GO and Story Mode remains unverified.

@@ -1,3 +1,10 @@
+## Final result — cross-context pink-60 audit regression passed (23 October 2026)
+
+Regression run [#39952866478](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39952866478) finished with `success` at the cross-context audit commit. It passed 23 synthetic/source tests, 10 authentic X11 policy checks, 5 real card-overlay checks, 10 real revealed-card-detail checks, and the ten private Revision65 barrier-submenu frame validations. The Revision65 replay verifies C01 pink-badge ratio above threshold at F60/F100/F110/F180, C02 WAIT controls below threshold, both F20 baselines absent, and zero prompt/footer crop pixel changes F60→F100 in either branch. The report wording now distinguishes the verified barrier-value symbol in prior map context from the still-unknown role of the badge as a level-up target cursor.
+
+This was a regression/analysis-only run. No player workflow was launched. Marker Revision65 is unchanged and consumed. Current policy remains WAIT in barrier_level_selection; readiness NO-GO; Story Mode NOT COMPLETE.
+
+
 ## Final checkpoint for next chat — Revision65 pink-60 meaning narrowed; readiness remains NO-GO (23 October 2026)
 
 - Current HEAD at this note's start: `7735abe065a33bbb67c40c719530055f06971974`. Regression [#39950309113](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39950309113) finished `success`: 23 synthetic/source tests, 10 authentic X11 policy cases, 5 authentic card-overlay cases, 10 authentic card-detail cases, and 10 Revision65 barrier-submenu screenshot checks. Private screenshot replay measured action-branch badge signature versus WAIT control and found exactly zero changed pixels in prompt/footer ROIs from F60 to F100 in both branches.
