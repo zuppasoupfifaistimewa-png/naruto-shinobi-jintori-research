@@ -8,6 +8,10 @@
 
 Input-bearing diagnostic workflows are now guarded so push events skip them. The legacy fixed-sequence Story Mode workflow is disabled with `if: false` until the target cue/readiness gate passes. The regression suite now has a unit test for these fail-closed protections. All private assets remain outside Git.
 
+
+
+**Restore-chain containment:** run [#39977472612](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39977472612) failed to download source checkpoint evidence and was cancelled before emulator restore; follow-up [#39977746401](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39977746401) was skipped. The raw restore workflow is now `if: false` with concurrency cancellation enabled; no candidate from the incident is a valid checkpoint.
+
 Continue by verifying the current `main` tree and the next regression run, then remain offline until a unique target cue is independently proven. Do not rerun marker Revision65 or start any player/gameplay workflow. Keep the UI rule: identifiable Story Mode dialogue uses START, not Circle; translate Japanese text in parentheses.
 
 ---
