@@ -197,3 +197,14 @@ First:
 ### Transfer notes
 
 Latest durable result is recorded at the end of `STATUS.md` and `ANALYSIS_LOG.md`. The only permitted repo remains this research repository. START is for genuine dialogue only, Circle is not a dialogue skip, Japanese text gets immediate Indonesian translation in parentheses, unknown states fail safely, and Story Mode completion is not a present qualification requirement.
+
+
+## Revision64 — UP_THEN_CIRCLE protocol implemented; regression gate pending (23 October 2026)
+
+The private Revision63 artifact #12496637328 was downloaded and all ten F20/F60/F100/F110/F180 screenshots were visually reviewed. UP changes the visible composition at F60, while the instruction 「レベルアップする結界をえらんでください」 (Pilih penghalang yang akan dinaikkan levelnya) remains; target selection is still UNKNOWN and normal policy remains WAIT.
+
+Workflow changes are on commit 0073b9be0a541f52173a58dd68a32814fdacb625; regression assertions are on 813cc644f9898fd58a09f5678d6619c6f610df8f. The allowlisted protocol requires exactly UP press/release at F30/F38, then an F60 external screenshot classified barrier_level_selection + WAIT, before Circle press/release at F70/F78. If F60 is dialogue, unknown, or any other state, the workflow exits safely before Circle. Both shell and Lua validators restrict the sequence to AB_TEST=1, expected state barrier_level_selection, AB_ACTION=UP, AB_SECOND_ACTION=CIRCLE, LOOP_CYCLES=2, and restore/continuation flags 0. Regressions also enforce input counts, releases, zero control presses, matched F20 pixels, Memory Card equality, SaveStateLoaded events, ten captures, and checkpoint structural/hash checks.
+
+The test-file push should trigger the configured regression workflow, but its run ID and final conclusion could not be independently retrieved using the currently available Actions inspection methods. Thus **regression is not yet confirmed PASS**. Do not change the marker or start Revision64 until a green run is verified. Current marker still contains consumed Revision63 settings and must not be rerun.
+
+Source checkpoint remains unchanged: Revision59 run #39907655833, artifact naruto-storymode-adaptive-player-private, adaptive-cycle-02-f180.sstate, 21,162,799 bytes, v4, SHA-256 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35. Keep ROM, BIOS, Memory Card, savestates and screenshots private/out of Git. Story Mode completion is not a qualification prerequisite.
