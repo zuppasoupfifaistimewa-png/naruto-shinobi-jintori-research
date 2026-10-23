@@ -1279,3 +1279,31 @@ A/B gates passed: identical F20 frames (1,024,000 pixels), identical Memory Card
 Evidence does not verify barrier selection. Classifier remained barrier_level_selection at every captured phase in both branches. The prompt 「レベルアップする結界をえらんでください」 (Pilih penghalang yang akan dinaikkan levelnya) did not change and no target highlight or state transition was visible. LEFT changes pose/screen composition relative to the control, but Circle after that has no added verified effect: C01 F60→F100 differed by 22,741 pixels (MAE 0.74667), close to the no-input C02 idle change of 22,679 pixels (MAE 0.80236); the prompt region itself was pixel-identical. Keep barrier_level_selection policy at WAIT.
 
 Next: verify target focus/selection from visual evidence before permitting confirm inputs; use a fresh validated parent and bounded matched A/B, with unit/source regressions first. No Story Mode completion claim or prerequisite.
+
+## Revision63 — matched UP vs WAIT barrier-navigation probe (23 October 2026)
+
+**Question:** Does one UP press visibly identify/select a barrier in `barrier_level_selection`, or produce only navigation/animation?
+
+### Before run and isolation
+
+Regression run [#39939979616](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39939979616) passed 18 unit/source tests at commit `11ea522ef63e0d90f96ff3aabb8ae3f7ccf5451c`. The consumed Revision63 marker pointed to Revision59 run #39907655833, artifact `naruto-storymode-adaptive-player-private`, checkpoint `adaptive-cycle-02-f180.sstate`, immutable SHA-256 `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35`, 21,162,799 bytes. Source header/size/hash validation passed; a read-only staged copy was used. The baseline/action/control Memory Card SHA values were identical: `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`.
+
+Player run [#39942178665](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39942178665), commit `91b9bbffb3c1a7c8a51ae944f229a29583c021e3`, finished with conclusion success; private evidence artifact #12496637328 was inspected. C01/C02 each loaded the parent in a fresh emulator process with explicit `ExecutionFlow::SaveStateLoaded`. The F20 images were exactly identical (1,024,000 pixels), and both classifiers returned `barrier_level_selection` with WAIT as the normal policy. C01 emitted only UP at F30, readback `true`, and released at F38, readback `false`. C02 emitted zero button presses. Ten actual external-X11 screenshots (C01/C02 × F20/F60/F100/F110/F180) passed image validation at 1280×800.
+
+### Result
+
+The operational A/B assertions passed:
+- `ADAPTIVE_AB_INITIAL_PARITY=PASS`, `ADAPTIVE_AB_INITIAL_STATE=PASS`.
+- `ADAPTIVE_AB_SINGLE_INPUT_ISOLATION=PASS action_branch_presses=1 control_branch_presses=0`.
+- `ADAPTIVE_AB_TEST=PASS`, with two independent processes, identical Memory Card clones, 10 captures, and validated output checkpoints.
+- Checkpoints: C01 `adaptive-cycle-01-f180.sstate`, 21,163,397 bytes, header `PCSX-Redux SaveState v4`, SHA-256 `5557188cfa2ce12a70030b8bd650c181a2172f2934185290eb7352faa9754e40`; C02 `adaptive-cycle-02-f180.sstate`, 21,163,426 bytes, same v4 header, SHA-256 `80782b47cf17e8d5bdc414af468c63eb098916c50235f98c092a676cca53b71e`. Both passed external size/header/SHA validation. The runner's native shutdown codes were 139 for C01 and 124 for C02, but the wrapper accepted each only after session completion markers and external checkpoint validation; the Actions job and assertions concluded successfully.
+
+External screenshot inspection shows a clear UP-vs-WAIT view delta by F60: C01's map/scene composition changes and additional coloured node icons, including “60”, become visible, while the game character remains near the central blue barrier. The Japanese prompt remains `「レベルアップする結界をえらんでください」` (Pilih penghalang yang akan dinaikkan levelnya). No unambiguous focus outline/selected-target marker, accepted-level change, or screen-state transition appears; the classifier stays `barrier_level_selection` at F20/F60/F100/F110/F180.
+
+The exact comparison report has: F60 C01-vs-C02 699,552 differing pixels / mean absolute RGB difference 22.48990; F100 699,578 / 22.42131; F110 699,232 / 22.25882; F180 699,873 / 22.34115. Within C01, F60→F100 has 27,531 differing pixels / MAE 0.97250, compared with idle control C02 F60→F100 of 22,679 / MAE 0.80236. The instruction panel ROI (x=140..685, y=565..715) and footer ROI (x=660..1130, y=685..770) each have exactly zero differing pixels from F60 to F100 in both branches. Interpretation: UP provokes a visible navigation/view response; it does **not** establish that a target was selected. Treat target semantics as UNKNOWN and keep the regular policy at WAIT.
+
+### Next bounded experiment to consider
+
+A useful follow-up is a narrowly allowlisted `UP_THEN_CIRCLE` vs no-input A/B from the same immutable Revision59 parent. It must be implemented first because the existing harness supports `NONE` and the consumed `LEFT_THEN_CIRCLE` protocol only. Add shell/Lua allowlists, state-gated F60 authorization for the second Circle, exact frame/readback/zero-control assertions, and a unit/source regression. Only trigger the player after the regression passes. Circle must never be sent if dialogue or an unrecognized screen is detected. Do not reuse Revision63 outputs as a source unless one has been independently restored and promoted. This remains a small qualification test, not a Story Mode completion attempt.
+
+Revision63 marker is consumed; do not rerun it. Keep ROM, BIOS, Memory Card, raw savestates and gameplay images private/out of Git.
