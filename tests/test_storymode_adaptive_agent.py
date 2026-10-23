@@ -30,6 +30,19 @@ class AdaptiveAgentTests(unittest.TestCase):
             d.rectangle((130,715,1150,740),fill=(190,110,20))
             d.rectangle((130,540,155,715),fill=(190,110,20))
             d.rectangle((1125,540,1150,715),fill=(190,110,20))
+        elif state=="card_selection_detail":
+            d.rectangle((100,40,1180,780),fill=(20,105,70))
+            d.rectangle((400,180,900,680),fill=(20,105,70))
+            # Revealed card illustration: calibrated blue/white art within the center ROI.
+            d.rectangle((520,215,755,525),fill=(245,245,245),outline=(220,220,220),width=8)
+            d.rectangle((545,245,730,380),fill=(15,65,230))
+            d.rectangle((545,245,645,380),fill=(245,245,245))
+            # Same lower orange instruction panel that otherwise resembles dialogue.
+            d.rectangle((130,515,1150,740),fill=(100,100,85))
+            d.rectangle((130,515,1150,540),fill=(190,110,20))
+            d.rectangle((130,715,1150,740),fill=(190,110,20))
+            d.rectangle((130,540,155,715),fill=(190,110,20))
+            d.rectangle((1125,540,1150,715),fill=(190,110,20))
         elif state in ("card_selection","card_selection_with_dialogue"):
             d.rectangle((100,40,1180,780),fill=(20,105,70))
             d.rectangle((400,180,900,680),fill=(20,105,70))
@@ -76,6 +89,15 @@ class AdaptiveAgentTests(unittest.TestCase):
     def test_board_with_dual_hud_is_transition_not_battle(self):
         out=self.classify("map_after_move")
         self.assertEqual(out["state"],"map_after_move")
+        self.assertEqual(out["action"],"WAIT")
+
+    def test_revealed_card_detail_is_wait_not_dialogue(self):
+        out=self.classify("card_selection_detail")
+        self.assertGreaterEqual(out["features"]["dialogue_orange"],.05)
+        self.assertGreaterEqual(out["features"]["card_art_blue"],.25)
+        self.assertGreaterEqual(out["features"]["card_art_white"],.40)
+        self.assertLessEqual(out["features"]["central_card_gray"],.12)
+        self.assertEqual(out["state"],"card_selection_detail")
         self.assertEqual(out["action"],"WAIT")
 
     def test_three_card_overlay_is_card_selection_and_fails_closed(self):
@@ -146,11 +168,16 @@ class AdaptiveAgentTests(unittest.TestCase):
         repo = Path(__file__).resolve().parents[1]
         workflow = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-player.yml").read_text(encoding="utf-8")
         self.assertIn('|| "$ab_expected_state" == "card_selection"', workflow)
+        self.assertIn('|| "$ab_expected_state" == "card_selection_detail"', workflow)
         self.assertIn('elif [ "$ab_expected_state" = "card_selection" ]; then\n              [[ "$ab_action" == "CIRCLE" ]]', workflow)
+        self.assertIn('elif [ "$ab_expected_state" = "card_selection_detail" ]; then\n              [[ "$ab_action" == "CIRCLE" ]]', workflow)
         self.assertIn('local cardAction=(abAction=="CIRCLE")', workflow)
         self.assertIn('(abExpectedState=="card_selection" and cardAction)', workflow)
+        self.assertIn('(abExpectedState=="card_selection_detail" and cardAction)', workflow)
         self.assertIn('(state=="card_selection" and action=="WAIT")', workflow)
+        self.assertIn('(state=="card_selection_detail" and action=="WAIT")', workflow)
         self.assertIn("ADAPTIVE_POLICY_GUARD=PASS cycle=2 state=card_selection action=WAIT", workflow)
+        self.assertIn("ADAPTIVE_POLICY_GUARD=PASS cycle=2 state=card_selection_detail action=WAIT", workflow)
         # The A/B workflow must also check the no-input branch and button readback;
         # no gameplay experiment can rely only on the action branch's result.
         self.assertIn('grep -q "ADAPTIVE_INPUT cycle=1 action=$AB_ACTION phase=press readback=true status=PASS"', workflow)

@@ -119,3 +119,52 @@ jobs:
                   raise SystemExit(f"card overlay/dialogue priority mismatch for {filename}: {observed} != {want}")
           print("AUTHENTIC_CARD_OVERLAY_DIALOGUE_PRIORITY=PASS checked=5")
           PY
+      - name: Download authentic revision53 card action-versus-control evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: 39877412316
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: ${{ runner.temp }}/revealed-card-evidence
+
+      - name: Verify opened card detail state on authentic revision53 X11 frames
+        env:
+          EVIDENCE: ${{ runner.temp }}/revealed-card-evidence
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, subprocess, sys
+          from pathlib import Path
+          from PIL import Image
+          root = Path(os.environ["EVIDENCE"])
+          expected = {
+              "C01-F20.png": ("card_selection", "WAIT"),
+              "C01-F60.png": ("card_selection_detail", "WAIT"),
+              "C01-F100.png": ("card_selection_detail", "WAIT"),
+              "C01-F110.png": ("card_selection_detail", "WAIT"),
+              "C01-F180.png": ("card_selection_detail", "WAIT"),
+              "C02-F20.png": ("card_selection", "WAIT"),
+              "C02-F60.png": ("card_selection", "WAIT"),
+              "C02-F100.png": ("card_selection", "WAIT"),
+              "C02-F110.png": ("card_selection", "WAIT"),
+              "C02-F180.png": ("card_selection", "WAIT"),
+          }
+          for filename, want in expected.items():
+              path = root / filename
+              if not path.is_file():
+                  raise SystemExit("missing authentic revision53 screenshot: " + filename)
+              with Image.open(path) as im:
+                  if im.size != (1280, 800):
+                      raise SystemExit(f"bad screenshot dimensions for {filename}: {im.size}")
+              proc = subprocess.run(
+                  [sys.executable, "tools/storymode_adaptive_agent.py", str(path)],
+                  check=True, capture_output=True, text=True, timeout=10,
+              )
+              got = json.loads(proc.stdout.strip().splitlines()[-1])
+              observed = (got.get("state"), got.get("action"))
+              print(json.dumps({"file": filename, "observed": observed, "reason": got.get("reason")}, sort_keys=True))
+              if observed != want:
+                  raise SystemExit(f"revealed-card classification mismatch for {filename}: {observed} != {want}")
+          print("AUTHENTIC_REVEALED_CARD_DETAIL=PASS checked=10")
+          PY

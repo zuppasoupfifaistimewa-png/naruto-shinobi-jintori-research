@@ -71,6 +71,8 @@ def observe(path: str | Path) -> dict[str, Any]:
     top_hud=_ratios(arr,(380,30,920,225))
     menu=_ratios(arr,(1000,220,1275,560))
     card_overlay=_ratios(arr,(370,220,930,530))
+    central_card=_ratios(arr,(500,220,780,535))
+    card_art=_ratios(arr,(545,245,730,380))
     features={
         "wheel_red":round(wheel["red"],4),"wheel_gold":round(wheel["gold"],4),
         "dialogue_orange":round(dialogue_box["orange"],4),"dialogue_white":round(dialogue_box["white"],4),
@@ -82,6 +84,9 @@ def observe(path: str | Path) -> dict[str, Any]:
         "top_hud_white":round(top_hud["white"],4),
         "card_overlay_white":round(card_overlay["white"],4),
         "card_overlay_gray":round(card_overlay["gray"],4),
+        "central_card_gray":round(central_card["gray"],4),
+        "card_art_blue":round(card_art["blue"],4),
+        "card_art_white":round(card_art["white"],4),
     }
 
     # Priority matters: the wheel can cover a map, and a real dialogue frame may have a
@@ -95,9 +100,13 @@ def observe(path: str | Path) -> dict[str, Any]:
         features["yes_selected_visual"]=bool(yes)
         features["chakra_ocr_best_effort"]=chakra
         features["required_chakra_calibrated"]=120
+    elif card_art["blue"] >= .25 and card_art["white"] >= .40 and central_card["gray"] <= .12:
+        # An opened card has a distinctive blue/white illustration inside the
+        # central card and can retain the same orange instruction panel as dialogue.
+        # Keep this state separate from unopened backs and fail closed (WAIT).
+        state,conf,reason="card_selection_detail",.97,"revealed_center_card_blue_art_low_gray_frame"
     elif card_overlay["white"] >= .12 and card_overlay["gray"] >= .16:
-        # Card overlays outrank generic dialogue: the card prompt itself can include
-        # a bottom instruction box, and START would bypass card selection.
+        # Card backs and card prompts outrank generic dialogue; START would bypass them.
         state,conf,reason="card_selection",.97,"three_card_back_overlay_white_frame_gray_lattice"
     elif dialogue_box["orange"] >= .05:
         state,conf,reason="dialogue",.91,"calibrated_bottom_dialog_box_signature"
