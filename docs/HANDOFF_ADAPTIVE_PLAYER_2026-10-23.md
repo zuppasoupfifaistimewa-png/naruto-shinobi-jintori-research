@@ -1,34 +1,33 @@
-# Adaptive Story Mode player — checkpoint and next steps (23 October 2026, 07:09 WIB)
+# Adaptive Story Mode player — checkpoint and next steps (23 October 2026, 07:14 WIB)
 
-## Current verified state
+## Current result — Story Mode remains NOT COMPLETE
 
-**Story Mode is NOT complete.** No authentic in-game ending/results screen has been verified. The fully unattended multi-session finisher is not yet implemented or demonstrated.
+There is still no authentic in-game ending/results screenshot. A robust, unattended multi-session player is not yet implemented or verified; this work is still a controlled adaptive-player research prototype.
 
-### Revision 51 — independently restored source; restore-only invariant passed
-Player run [#39875714125](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39875714125) completed successfully at 07:05 WIB. It independently restored the revision50 output from run #39872449049 in a fresh emulator process:
-- Input checkpoint SHA-256: `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`, 21,162,772 bytes, header `PCSX-Redux SaveState v4`.
-- `ExecutionFlow::SaveStateLoaded` was logged.
-- Five authentic external-X11 frames were captured (1280×800).
-- The central `sendAction` guard suppressed both the F30 action call and the direct F110 START dialogue call; no `ADAPTIVE_INPUT ... phase=press` event exists.
-- The workflow reported `ADAPTIVE_RESTORE_ONLY_NO_INPUT_ASSERT=PASS press_events=0 suppressed_input_calls=2` and `ADAPTIVE_RESTORE_TEST=PASS`.
-- Output candidate from run #39875714125: artifact ID `12468331788`, file `adaptive-cycle-01-f180.sstate`, size 21,163,043 bytes, v4 header, SHA-256 `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e`. It passes external structural validation, **but is not yet independently restored and must not yet be promoted**.
+### Revision 51: no-input restore gate passed
+Run [#39875714125](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39875714125) independently restored source SHA-256 `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7` (21,162,772 bytes; PCSX-Redux SaveState v4) in a fresh emulator process. It emitted five authentic 1280×800 external-X11 captures, logged `ExecutionFlow::SaveStateLoaded`, and proved no button was pressed in `RESTORE_TEST=1`: `ADAPTIVE_RESTORE_ONLY_NO_INPUT_ASSERT=PASS press_events=0 suppressed_input_calls=2`. It output candidate state SHA-256 `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e`, 21,163,043 bytes, v4.
 
-### Authentic card overlay and classifier correction
-The private authentic frames show a three-card selection overlay over the board, with prompts:
+### Revision 52: candidate from revision51 restored and card state recognized
+Run [#39876534507](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876534507) completed success. The input checkpoint `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e` was independently restored; explicit load event and five real 1280×800 captures passed. No press event occurred; the workflow logged `ADAPTIVE_RESTORE_ONLY_NO_INPUT_ASSERT=PASS press_events=0 suppressed_input_calls=1`. The authentic revision52 frames at F20/F60/F100/F110/F180 all classify as `card_selection` / `WAIT` with confidence 0.97, despite a gold/orange lower instruction panel.
+
+Revision52 output candidate: artifact ID `12468413789`, `adaptive-cycle-01-f180.sstate`, 21,163,194 bytes, v4 header, SHA-256 `df73f3414c7838d22611a2592d5f2516f903e3e43a1d05911d1964ac07c61265`. It passes external structural validation, but is **not yet independently restored or promoted**.
+
+### Card overlay rule and A/B preparation
+Actual private screenshots show the board overlain by three card backs and instructions:
 - `ゲットする札をえらべ!` (Pilih kartu yang ingin didapat!)
 - `もらうチャンス札をえらんでね。` (Silakan pilih kartu kesempatan yang akan diterima.)
 - `けってい` (konfirmasi)
-- `忍` (shinobi/ninja) appears on the card backs; the pink Chakra indicator shows `60`.
+- `忍` (shinobi/ninja); pink Chakra indicator `60`.
 
-The previous policy misclassified F60/F100/F110/F180 as generic `dialogue` / START because the bottom instruction panel resembles a dialogue box. START was blocked in restore-only mode, so it did not mutate the game. In commit `3f65ba64510783663fb253aa74f554d557d60d42`, card-overlay detection was moved ahead of generic dialogue and a mixed card+dialog synthetic regression was added. The regression also checks all five authentic revision51 screenshots.
+The previous classifier let a generic dialogue box win and suggested START, but restore-only suppressed it, so no input occurred. Commit `3f65ba64510783663fb253aa74f554d557d60d42` moved card-overlay recognition above generic dialogue. [Regression #39876294837](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876294837) passed 11 synthetic tests, 10 earlier authentic-frame checks and all five authentic revision51 card-overlay frames; the latter all classified `card_selection` / `WAIT`.
 
-Regression [#39876294837](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876294837) completed successfully at 07:09 WIB. Synthetic tests, ten earlier private authentic frames, and five actual revision51 card-overlay frames all passed. The five actual frames were classified `card_selection` / `WAIT`. This verifies classifier behavior on the available screenshots; it does **not** establish that any card selection/confirm action has the intended game effect.
+Commit `f7e89824cfb644f0f2e2a33b12f487c10811d815` added card-selection A/B support: if the declared expected state is `card_selection`, only `CIRCLE` is accepted for the action branch; control is WAIT. Its regression, [#39876658165](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876658165), passed.
 
-The player artifact retention has also been raised from 14 to 90 days in the same commit to preserve private checkpoints for the longer multi-run investigation.
+A further A/B isolation hardening was added in commit `f3801c86552a9de6dd28c8836bb5e59b02454f43`: A/B mode suppresses the otherwise automatic START at F110, and asserts that the action branch has exactly one press and the control branch has none. Regression [#39876847536](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876847536) is pending its final checks at the time of this handoff. Do not trigger the A/B player until it is green.
 
-## Immediate next operation — revision 52 restore-only
+## Next operation — revision 53 card confirmation vs WAIT
 
-Regression #39876294837 is green. Update marker `experiments/.run-storymode-adaptive-player` to:
+Use the already independently restored checkpoint from revision51 as the common parent—not the unverified revision52 output—so both branches start from a known checkpoint:
 
 ```
 MODE=ADAPTIVE
@@ -36,27 +35,22 @@ SOURCE_RUN=39875714125
 SOURCE_ARTIFACT=naruto-storymode-adaptive-player-private
 SOURCE_CHECKPOINT=adaptive-cycle-01-f180.sstate
 SOURCE_SHA256=36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e
-RESTORE_TEST=1
+RESTORE_TEST=0
 CONTINUATION_TEST=0
-AB_TEST=0
+AB_TEST=1
 AB_ACTION=CIRCLE
-LOOP_CYCLES=1
-REVISION=52
+AB_EXPECTED_STATE=card_selection
+LOOP_CYCLES=2
+REVISION=53
 ```
 
-Commit the marker with a message containing `[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER]` to start Actions. Do not promote or reuse the output until this fresh-process restore proves that it restores.
+Only write this marker with commit message containing `[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER]` after regression #39876847536 succeeds. The AB runner creates identical cloned Memory Cards and restores the same parent checkpoint in two separate processes. It must fail closed unless F20 in both branches is classified `card_selection` / `WAIT`. Action branch may press CIRCLE once at F30; it must not send START or any other input later in the AB session. Control branch must record zero press events. Compare the two real screenshot sequences, the card cursor/selection/result, Chakra and post-action transition. Do not claim that CIRCLE selects/accepts a card unless the paired visual difference establishes this. Keep both outputs as candidates until each is independently restored.
 
-Accept revision52 only if input SHA/size/v4 header validate, explicit `ExecutionFlow::SaveStateLoaded` occurs, five authentic 1280×800 X11 frames exist, the card overlay consistently classifies `card_selection` / `WAIT`, no button press occurs, restore-only assertion passes, shutdown is accepted only through existing strict finished-marker and checkpoint-validation conditions, and the output state passes external size/header/SHA validation. Keep the revision52 output unpromoted until another independent fresh-process restore confirms it.
-
-## After revision52
-
-Card-selection A/B support is implemented in player workflow/test commit `f7e89824cfb644f0f2e2a33b12f487c10811d815`: marker validation accepts `card_selection`, the ACTION branch only permits CIRCLE, the matched control stays WAIT, and cycle-2 policy guard accepts `card_selection` / WAIT. Regression [#39876658165](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876658165) was triggered and is awaiting result. Do not change the marker to A/B until revision52 restore-only and this regression both pass. Then run two fresh emulator processes from an identical parent checkpoint and cloned identical Memory Cards: branch A sends one CIRCLE only if F20 is `card_selection` / `WAIT`; branch B sends no input. Capture authentic before/after frames and compare screen, card cursor, Chakra and subsequent transition. Do not infer the confirm result without this matched control. Unknown states stay WAIT. Use START only for true Story Mode dialogue, never to skip a card-selection prompt.
-
-After the card transition is understood, build a persistent state machine / checkpoint manifest and verified bounded-session continuation in Actions. The existing monitor is only an Actions/artifact-health monitor, not a gameplay driver. Do not claim unattended chaining until it completes multiple sequential sessions from verified checkpoints automatically. Do not claim game completion until an authentic ending/results frame exists.
+If the A/B proves an appropriate card transition, build a persistent state machine/checkpoint manifest and automatic bounded-session continuation in Actions. The scheduled monitor only checks run/artifact health; it does not drive gameplay. Keep continuation behind verified state/action preconditions, output checkpoint structural checks, no-progress/crash recovery and ending detection. Do not claim autonomous end-to-end completion until multiple sessions are chained without chat/manual relaunch and authentic ending/results evidence appears.
 
 ## Permanent constraints
 
-- Only repository: `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`. No runner repo, Tile Duel, or any other repository.
-- ROM, BIOS, savestates, Memory Cards and real gameplay screenshots stay private and never go into Git.
+- Only `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`; do not access or change other repos, runner repo, or Tile Duel.
+- ROM, BIOS, savestates, Memory Cards and real gameplay screenshots stay private and out of Git.
 - Translate Japanese text immediately into Indonesian in parentheses.
 - Mark mechanics VERIFIED / HYPOTHESIS / UNKNOWN according to direct evidence. Story Mode remains **NOT COMPLETE**.
