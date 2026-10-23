@@ -127,3 +127,13 @@ Revision60 [#39908484177](https://github.com/zuppasoupfifaistimewa-png/naruto-sh
 - source: revision59 run #39907655833, private artifact `naruto-storymode-adaptive-player-private`, checkpoint `adaptive-cycle-02-f180.sstate`, SHA-256 `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35`;
 - `AB_TEST=1`, `AB_ACTION=LEFT`, `AB_EXPECTED_STATE=barrier_level_selection`, two independent emulator processes from identical parent state, one LEFT input on action branch and zero inputs on control branch.
 The target is not to finish Story Mode. Inspect private authentic frames and logs to see whether LEFT changes the selected barrier; if it does not, retain WAIT as the default and probe another direction only when warranted by evidence.
+
+### Revision60 — LEFT changed character pose; target semantics still unknown
+
+Run [#39908484177](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39908484177) succeeded as a matched A/B on the revision59 checkpoint. Regression run #39908408445 passed (17 unit tests). Source checkpoint SHA-256 was `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35`. Identical F20 screenshots and identical Memory Card clone hashes satisfied the A/B precondition. Exactly one LEFT press/release occurred on action branch C01; control C02 had zero presses. Both branches produced valid v4 output checkpoints:
+- C01 action output: 21,163,471 bytes, SHA-256 `702e2f28c28fe78b4732d1876617d19489b27394c24f98ffd4ea2e8259ec30de`
+- C02 control output: 21,163,489 bytes, SHA-256 `2e17f143a03ad507ae68d2e06f5f5871a1e3674eb7b6e843125ac3efd5882a36`
+
+Classifier state remained `barrier_level_selection` throughout both branches. Visual inspection of real screenshots shows the character sprite/pose differs between LEFT branch and no-input control, while the prompt 「レベルアップする結界をえらんでください」 (Pilih penghalang yang akan dinaikkan levelnya) remains. This is a **verified response to LEFT input**, but it is only a **hypothesis** that the pose/facing indicates the intended target; no target marker or successful barrier-level change is yet verified. Normal adaptive policy should remain WAIT in this submenu until the next action has been calibrated.
+
+Next probe: use action checkpoint C01 above as source and compare one CIRCLE confirm against zero-input control. This tests whether the current left-facing/LEFT-action checkpoint actually commits a target selection and advances. It is a short state-transition test, not a requirement to finish Story Mode.
