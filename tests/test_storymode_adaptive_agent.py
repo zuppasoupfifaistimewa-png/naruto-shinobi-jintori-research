@@ -78,7 +78,7 @@ class AdaptiveAgentTests(unittest.TestCase):
             d.rectangle((150,712,675,720),fill=(190,110,20))
             d.rectangle((150,588,158,712),fill=(190,110,20))
             d.rectangle((667,588,675,712),fill=(190,110,20))
-            d.ellipse((750,700,790,740),fill=(220,20,30))
+            d.ellipse((735,690,805,760),fill=(220,20,30))
             d.line((870,700,910,740),fill=(15,60,210),width=14)
             d.line((870,740,910,700),fill=(15,60,210),width=14)
         elif state=="map_after_move":
