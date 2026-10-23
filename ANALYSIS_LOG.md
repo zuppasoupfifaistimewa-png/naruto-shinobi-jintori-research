@@ -1366,3 +1366,25 @@ Regression run [#39947302492](https://github.com/zuppasoupfifaistimewa-png/narut
 
 This regression qualifies a bounded retry. It does not alter Revision64's incomplete result: action branch's verified checkpoint is not promoted; its visual change did not prove target selection; target semantics remain UNKNOWN. Next step is a new Revision65 matched A/B from the immutable Revision59 source. Keep all gameplay assets private/out of Git, and keep readiness NO-GO until the new runtime evidence is examined.
 
+## Revision65 UP_THEN_CIRCLE A/B result — 23 October 2026
+
+Player run [#39947481094](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39947481094) completed **success** at marker commit `76387b12c560310937e3f7c468e571317d5bcbac`; private artifact #12498688466 (`naruto-storymode-adaptive-player-private`) was downloaded and audited. This run used the repaired 90-second per-emulator bound and did not rerun Revision64.
+
+### Runtime and safety gates — PASS
+
+- Immutable source remained Revision59 run #39907655833 / private artifact `naruto-storymode-adaptive-player-private` / `adaptive-cycle-02-f180.sstate`, 21,162,799 bytes, PCSX-Redux SaveState v4, SHA-256 `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35`. The runtime staged a read-only copy and logged the same source SHA in both branches.
+- Both fresh emulator processes logged `ExecutionFlow::SaveStateLoaded`. Initial F20 images were pixel-identical across 1,024,000 pixels and both classifiers reported `barrier_level_selection` / `WAIT`.
+- Memory Card baseline/action/control clones matched exactly at SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`.
+- C01 action branch registered exactly UP press at F30 and release at F38 (true/false readbacks passed), then Circle at F70 and release at F78 (true/false readbacks passed). The F60 capture stayed `barrier_level_selection` / `WAIT`, so the Circle authorization gate passed. C02 had zero button presses; both branches produced all five external-X11 screenshots.
+- All **10 authentic screenshots** are 1280×800. Both output checkpoints passed external file-size/header/SHA-256 validation:
+  - C01 `adaptive-cycle-01-f180.sstate`: 21,163,502 bytes; header `PCSX-Redux SaveState v4`; SHA-256 `ee8c768b81e69cc0096045ed05ab57ea7a1e73cb62c26c16894d1c18e584d14c`.
+  - C02 `adaptive-cycle-02-f180.sstate`: 21,163,270 bytes; header `PCSX-Redux SaveState v4`; SHA-256 `8b94ef0047ddf64b36cabc4fe70a210b1787f7946adb4384e5eb1b2126d8a325`.
+- The runtime wrapper recovered native emulator exit 124 only after the session-finished marker and output checkpoint validation had succeeded; cycle 2 also logged a `corrupted size vs. prev_size` allocator diagnostic during shutdown. The run's declared checkpoint/capture assertions all passed, but treat that shutdown diagnostic as a residual reliability concern. Neither output is promoted as a source because neither has been independently restored.
+
+### Gameplay interpretation — target remains UNKNOWN
+
+The instruction `「レベルアップする結界をえらんでください」 (Pilih penghalang yang akan dinaikkan levelnya)` stays on screen at C01 F20/F60/F100/F110/F180 and throughout the control branch. UP moves the visible composition and reveals a pink marker labelled `60`; however, no reliable selected-target outline, target-state classification, instruction-panel change, or confirmation transition is observed after Circle. The instruction-panel ROI (x=140..685,y=565..715) and footer ROI (x=660..1130,y=685..770) each have zero changed pixels from F60 to F100 in both branches. The action/control full-frame differences at later frames largely reflect the UP-induced view difference, so they are **not** causal proof of target selection. The current evidence verifies input delivery and a view response, but **does not verify that UP selected a barrier or that Circle confirmed one**. Normal policy must remain WAIT for `barrier_level_selection`; do not infer selection from pose or camera movement.
+
+The matched A/B harness now completes all structural and capture requirements after the 90-second bound repair. Readiness nevertheless remains **NO-GO** because the target-selection/confirmation semantics are unresolved. Story Mode completion is still unverified and not a prerequisite for this qualification milestone. Revision65 is consumed; do not rerun its marker. Keep both output checkpoints and all evidence private/out of Git.
+
+**Experiment classification:** harness/gate/instrumentation result = PASS; target-selection outcome = INCONCLUSIVE/UNKNOWN; readiness decision = NO-GO.
