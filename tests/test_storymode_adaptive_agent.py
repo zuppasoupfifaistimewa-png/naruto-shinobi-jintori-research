@@ -162,7 +162,6 @@ class AdaptiveAgentTests(unittest.TestCase):
         ab_start = phase110.index("elseif abTest then")
         ab_end = phase110.index('log("ADAPTIVE_DIALOGUE_SKIP=SUPPRESSED cycle="..cycle.." reason=ab_test_single_input_isolation")', ab_start)
         ab_branch = phase110[ab_start:ab_end]
-        self.assertIn('log("ADAPTIVE_DIALOGUE_SKIP=SUPPRESSED cycle="..cycle.." reason=ab_test_single_input_isolation")', ab_branch)
         self.assertNotIn('sendAction("START",cycle)', ab_branch)
         self.assertIn("ADAPTIVE_AB_SINGLE_INPUT_ISOLATION=PASS", workflow)
 
