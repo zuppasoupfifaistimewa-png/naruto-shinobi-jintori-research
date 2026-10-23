@@ -1,3 +1,16 @@
+# Latest handoff — offline target-cue gate and Actions safety incident (23 October 2026)
+
+**Current research finding:** the authenticated red-arrow-ring plus matching panel exists in map context, but is absent around the Revision65 submenu badge. Badge centroid moves +97.46 px while scene registration measures +100 px; the pink-60 target role is still `UNKNOWN`. Keep `WAIT` at `barrier_level_selection`, keep the marker cue token absent, keep readiness **NO-GO**, and do not claim Story Mode complete.
+
+**Regression:** [#39973978654](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39973978654) passed 25 tests and every screenshot stage. The same assertions also passed in [#39975090590](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39975090590) against the restored complete tree.
+
+**Safety incident:** restoring the full 82-file tree after the erroneous incomplete-tree commit `ed5de512...` caused GitHub to see workflow files as newly added, automatically firing path-filtered push experiments. Fastboot GPU run #39975090633 logged `CROSS/START/UP/CROSS` controller injections; RSP probes #39975090681 and #39975090632 logged Return/Z input tests; legacy Story Mode run #39975090240 started unexpectedly and ended `cancelled`, producing only an unverified private Memory Card candidate (131,072 bytes; raw savestate absent). Do not use any of these as accepted gameplay/checkpoint evidence.
+
+Input-bearing diagnostic workflows are now guarded so push events skip them. The legacy fixed-sequence Story Mode workflow is disabled with `if: false` until the target cue/readiness gate passes. The regression suite now has a unit test for these fail-closed protections. All private assets remain outside Git.
+
+Continue by verifying the current `main` tree and the next regression run, then remain offline until a unique target cue is independently proven. Do not rerun marker Revision65 or start any player/gameplay workflow. Keep the UI rule: identifiable Story Mode dialogue uses START, not Circle; translate Japanese text in parentheses.
+
+---
 # Latest handoff — terrain-registration / focus-cue regression (23 October 2026)
 
 Current code checkpoint: `563e34562f4bea0423557755a5c03b4b60077894` adds authenticated-screen assertions only; it changes the adaptive-regression workflow and its tests, not the player workflow or marker. Regression [#39973978654](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39973978654) completed with `success` at 15:00:04Z: 25 tests, all authentic evidence steps, and the new pan/arrow-cue assertions passed.

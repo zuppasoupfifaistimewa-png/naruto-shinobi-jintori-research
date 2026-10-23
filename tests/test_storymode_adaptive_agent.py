@@ -362,6 +362,33 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertLess(gate, source_download)
         self.assertLess(gate, pad_mutation)
 
+    def test_push_cannot_launch_unapproved_input_diagnostics_or_legacy_storymode(self):
+        repo = Path(__file__).resolve().parents[1]
+        manual_only = {
+            ".github/workflows/naruto-current-source-gui-probe.yml": "gui-probe",
+            ".github/workflows/naruto-fastboot-rsp-probe.yml": "rsp-probe",
+            ".github/workflows/naruto-fastboot-gpu-traffic-summary.yml": "gpu-traffic-summary",
+            ".github/workflows/naruto-scph7502-rsp-progress-probe.yml": "retail-bios-progress",
+            ".github/workflows/naruto-fastboot-window-detect.yml": "fastboot-window",
+            ".github/workflows/naruto-bios-variant-gui-probe.yml": "bios-variant-probe",
+            ".github/workflows/naruto-duckstation-private-probe.yml": "duckstation-probe",
+            ".github/workflows/naruto-fastboot-gdb-snapshot.yml": "pc-snapshot",
+            ".github/workflows/naruto-retail-scph7502-gui-probe.yml": "retail-bios-probe",
+            ".github/workflows/naruto-scph7502-internal-frame-rsp.yml": "retail-frame-runtime",
+            ".github/workflows/naruto-scph7502-softgpu-controlled-ab.yml": "controlled-bios-ab",
+        }
+        for relative_path, job_name in manual_only.items():
+            workflow = (repo / relative_path).read_text(encoding="utf-8")
+            expected = f"jobs:\n  {job_name}:\n    if: github.event_name == 'workflow_dispatch'\n"
+            self.assertIn(expected.replace("\\\n", "\n"), workflow, relative_path)
+        # The legacy fixed-sequence Story Mode loop remains fully disabled until
+        # the independently verified barrier-target cue/readiness gate changes.
+        legacy = (repo / ".github" / "workflows" / "naruto-scph7502-gpu-traffic-summary.yml").read_text(encoding="utf-8")
+        self.assertIn("gpu-traffic-summary:\n    if: false\n", legacy.replace("\\\n", "\n"))
+        marker = (repo / "experiments" / ".run-storymode-adaptive-player").read_text(encoding="utf-8")
+        self.assertIn("REVISION=65", marker)
+        self.assertNotIn("AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1", marker)
+
     def test_persistent_map_rotates_direction(self):
         with tempfile.TemporaryDirectory() as td:
             h=Path(td)/"history.json"

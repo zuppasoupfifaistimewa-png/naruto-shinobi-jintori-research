@@ -1,3 +1,22 @@
+## Safety incident — unintended Actions launches from repository-tree recovery (23 October 2026)
+
+This is an operational incident, not new gameplay evidence. An earlier documentation commit `ed5de51263ee0266c196a2630d122092e4bad314` had an incomplete tree. Recovery commit `98c0577cf7ca026edf861ac307c380745a225d25` restored the complete 82-file tree, but GitHub compared it to the incomplete parent and treated many existing `.github/workflows/*` paths as newly added. Their path-filtered `push` triggers fired automatically. This was caused by my commit-construction error; it was not an intended gameplay experiment.
+
+**Confirmed unintended inputs / runs:**
+
+- Fastboot GPU traffic run [#39975090633](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39975090633) logged controller override readback PASS for `CROSS` at frames 225–235, `START` 238–248, `CROSS` 251–261, `START` 264–274, `UP` 277–287, and `CROSS` 290–298. Game-state effect was not independently established.
+- Fastboot GDB/RSP run [#39975090681](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39975090681) logged a `Return then Z/Cross` input test and captured after-input window frames. Its pre-input window was all black; gameplay effect is unknown.
+- Retail-BIOS progress run [#39975090632](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39975090632) logged the `Return,Z` keyboard-test begin/end markers and captures; game-state effect is unknown.
+- The legacy Story Mode playthrough [#39975090240](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39975090240) was unexpectedly started by the push event and later ended `cancelled`; its script was configured for a fixed START/DOWN/UP/CIRCLE sequence and a visual-gated follow-up, plus START for identified dialogue. Do not use this run as an accepted experiment or progress checkpoint. It emitted a private Memory Card candidate of 131,072 bytes with status `UNVERIFIED_REQUIRES_IN_GAME_SAVE_AND_RELOAD`; its log reported `STORY_RAW_STATE_PRESENT=0`. These artifacts remain outside Git and must not be promoted.
+- Window-identification run [#39975090175](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39975090175) and current-source GUI run [#39975090570](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39975090570) were cancelled using their workflow concurrency groups. The adaptive player push run [#39975090690](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39975090690) was `skipped`.
+- Additional BIOS/GUI/controller diagnostic workflows also received the accidental push event. Their output is excluded from target-cue classification and must not be promoted as an authorized Story Mode checkpoint.
+
+**Mitigation:** the identified input-bearing diagnostics now have a job-level `if: github.event_name == 'workflow_dispatch'` guard so pushes skip them; their latest replacement push runs are `skipped`. The legacy fixed-sequence Story Mode workflow is being set to `if: false` until the target cue/readiness gate is independently passed. A unit test protects these guards. No ROM, BIOS, screenshot, Memory Card, savestate, or private evidence was added to Git.
+
+**Research decision remains unchanged:** `barrier_level_selection` action `WAIT`; cue token absent; adaptive-player readiness **NO-GO**; Story Mode **NOT COMPLETE**. Nothing from the accidental runs changes those statuses.
+
+---
+
 # Latest checkpoint — terrain registration separates camera pan from target cue (23 October 2026)
 
 Regression-only source commit: `563e34562f4bea0423557755a5c03b4b60077894`. Regression [#39973978654](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39973978654) completed with `success` at 15:00:04Z; run log confirms 25/25 tests and every workflow step passed.
