@@ -1,3 +1,13 @@
+## CURRENT CHECKPOINT — adaptive player safety gate updated (23 October 2026, 07:03 WIB)
+
+The authoritative and detailed next-step handoff is now [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md). The latest regression, [run #39875557447](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39875557447), passed after adding a source regression check for the restore-only gate. The runtime emulator guard still needs its own test.
+
+The next player test is revision51 restore-only from run #39872449049 output checkpoint SHA-256 `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`. Do not promote it until a fresh process visibly restores the card overlay, five authentic captures pass, no button-press event occurs, and the output checkpoint passes external size/header/SHA validation. Real card-screen classification remains unverified. Story Mode remains **NOT COMPLETE**; no ending evidence exists.
+
+Permanent rules continue: only `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`; no other repository; gameplay assets stay private and out of Git; START alone skips dialogue.
+
+---
+
 ## ULTIMATE OBJECTIVE — unattended adaptive Story Mode finisher (23 October 2026)
 
 The project goal is not to keep asking ChatGPT for individual inputs or to leave this conversation open. Build a durable player/orchestrator in this repository that can continue across bounded GitHub Actions sessions from independently verified private checkpoints, adapt to observed screens, safely handle dialogs/menus/cards/board/battle, record progress, recover from job/emulator termination, and keep chaining sessions until authentic Story Mode ending evidence is observed. Closing the chat must not stop an already-running Actions job; after the current safety fixes, implement automatic bounded continuation in Actions rather than depending on a human or an active chat to start each segment.
