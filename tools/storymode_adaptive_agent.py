@@ -148,7 +148,9 @@ def observe(path: str | Path) -> dict[str, Any]:
         else:
             action_reason="choice_not_verified_as_YES_highlighted"
     elif state=="barrier_level_selection":
-        action,action_reason="CIRCLE","submenu_explicitly_shows_circle_confirm; verify_result_on_next_observation"
+        # The prompt documents Circle as confirm, but no selected target is yet
+        # visually identified. Wait for a controlled direction/selection probe.
+        action,action_reason="WAIT","barrier_target_not_identified; fail_closed_until_controlled_probe"
     elif state=="roulette":
         action,action_reason="WAIT","let_wheel_settle_before_input"
     elif state=="map":
