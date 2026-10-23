@@ -1,10 +1,12 @@
-## CURRENT CHECKPOINT — revision52 restore-only pending; card classifier and A/B guard regression in flight (23 October 2026, 07:12 WIB)
+## CURRENT CHECKPOINT — revision52 restore verified; single-input card A/B gate pending (23 October 2026, 07:14 WIB)
 
-Use [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md) as the authoritative next-step guide. Revision51 [#39875714125](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39875714125) passed restore-only runtime checks from source SHA `017c6601ad71f7e420cc5406f20c68367497c416663f07065a862f1484b2c9f7`: five authentic captures, SaveStateLoaded, zero press events, two suppressed inputs. Its output candidate `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e` (21,163,043 bytes, v4) is being independently tested in revision52 run [#39876534507](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876534507); currently in progress at container initialization.
+Canonical handoff: [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md).
 
-Classifier priority fix [commit `3f65ba64510783663fb253aa74f554d557d60d42`](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/3f65ba64510783663fb253aa74f554d557d60d42) passed regression #39876294837 against synthetic and five authentic card-overlay frames. Card A/B preconditions now accept only one CIRCLE in the action branch, with WAIT control and cycle2 safe guard, in commit `f7e89824cfb644f0f2e2a33b12f487c10811d815`; regression [#39876658165](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876658165) is pending. No A/B run may start before both gates pass. Story Mode remains **NOT COMPLETE**.
+Run [#39876534507](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876534507) restored revision51 output SHA-256 `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e` in a fresh process; five real X11 captures, SaveStateLoaded, zero press events and `RESTORE_TEST=PASS` were verified. All five screenshots classify `card_selection` / `WAIT`. Revision52 emitted an unpromoted output candidate SHA `df73f3414c7838d22611a2592d5f2516f903e3e43a1d05911d1964ac07c61265`, 21,163,194 bytes, v4.
 
-Permanent constraints: only `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`; no other repo; ROM/BIOS/states/cards/screenshots stay private/out of Git; START only for real Story Mode dialogue.
+Classifier fix commit `3f65ba64510783663fb253aa74f554d557d60d42` passed regression #39876294837; card-selection A/B preconditions passed #39876658165. A final isolation patch in `f3801c86552a9de6dd28c8836bb5e59b02454f43` suppresses direct START during A/B and enforces one CIRCLE press versus zero control presses; regression #39876847536 is pending. Do not start revision53 until it passes. Story Mode remains **NOT COMPLETE**.
+
+Permanent boundaries: this research repository only; no other repo; ROM/BIOS/savestates/cards/screenshots remain private/out of Git; START only skips true Story Mode dialogue.
 
 ---
 
