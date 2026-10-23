@@ -1,8 +1,8 @@
-## AUTHORITATIVE CURRENT CHECKPOINT — 23 October 2026, 07:14 WIB
+## AUTHORITATIVE CURRENT CHECKPOINT — 23 October 2026, 07:18 WIB
 
-Use [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md). Revision52 run [#39876534507](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876534507) independently restored revision51 output SHA `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e`; five authentic captures classify `card_selection` / `WAIT`, and no press events occurred. Output #52 SHA `df73f3414c7838d22611a2592d5f2516f903e3e43a1d05911d1964ac07c61265` is not independently restored or promoted.
+Use [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md) as the source of truth. Revision52 [#39876534507](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876534507) independently restored the previous candidate; all five authentic frames now classify `card_selection` / `WAIT` and zero press events occurred. Its output SHA `df73f3414c7838d22611a2592d5f2516f903e3e43a1d05911d1964ac07c61265` remains unpromoted.
 
-Card selection versus dialogue classifier now passes regression #39876294837. Card A/B support has one final isolation fix (no automatic START after CIRCLE); regression #39876847536 is pending. Only after that passes may revision53 compare one CIRCLE against WAIT from common restored checkpoint #51. Multi-run unattended finisher remains incomplete; Story Mode is **NOT COMPLETE**.
+A/B safeguards passed latest regression [#39877110916](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39877110916). Next is revision53 CIRCLE-vs-WAIT on the independently verified revision51 output checkpoint SHA `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e`; wait for actual screenshots to infer the card action. End-to-end automatic chaining and Story Mode completion remain unverified.
 
 ---
 
