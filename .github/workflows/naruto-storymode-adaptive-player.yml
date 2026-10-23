@@ -397,6 +397,7 @@ jobs:
                       local safe=((state=="battle_untrained" or state=="map_after_move" or state=="unknown" or state=="menu_or_unknown_choice") and action=="WAIT")
                           or (state=="dialogue" and action=="START")
                           or (state=="barrier_choice" and action=="CIRCLE")
+                          or (state=="barrier_level_selection" and action=="CIRCLE")
                           or (state=="roulette" and action=="WAIT")
                           or (state=="card_selection" and action=="WAIT")
                           or (state=="card_selection_detail" and action=="WAIT")
