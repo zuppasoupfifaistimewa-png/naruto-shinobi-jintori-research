@@ -1,8 +1,8 @@
-## AUTHORITATIVE CURRENT CHECKPOINT — 23 October 2026, 07:09 WIB
+## AUTHORITATIVE CURRENT CHECKPOINT — 23 October 2026, 07:12 WIB
 
-Use [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md) as the source of truth. Revision51 run [#39875714125](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39875714125) passed the real restore-only runtime gate: five authentic captures, explicit SaveStateLoaded, zero button-press events and two suppressed requests. Its output checkpoint candidate SHA-256 is `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e`, 21,163,043 bytes, v4, not independently restored yet.
+Use [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md) as the current source of truth. Revision52 restore-only run [#39876534507](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876534507) is still at container initialization, so no output yet. Its source is revision51 output SHA `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e`; don't promote that checkpoint until revision52 independently restores it.
 
-Classifier-priority fix commit `3f65ba64510783663fb253aa74f554d557d60d42` passed regression [#39876294837](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876294837); five actual revision51 screenshots now classify `card_selection` / `WAIT`. Next operation is revision52 restore-only using run #39875714125 as defined in the canonical handoff. Do not confirm a card until the restored card-screen behavior has been compared against a matched no-input control. The autonomous multi-run finisher is still incomplete; Story Mode is **NOT COMPLETE**.
+Card-overlay-over-dialogue fix commit `3f65ba64510783663fb253aa74f554d557d60d42` passed regression #39876294837 against five real frames. Card selection A/B support now exists in commit `f7e89824cfb644f0f2e2a33b12f487c10811d815`, but its regression #39876658165 is pending and A/B gameplay must not be started yet. The autonomous full Story Mode chain remains incomplete; Story Mode is **NOT COMPLETE**.
 
 ---
 
