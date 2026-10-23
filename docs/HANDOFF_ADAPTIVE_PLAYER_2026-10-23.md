@@ -1,3 +1,15 @@
+# Handoff checkpoint — 23 October 2026, latest regression green
+
+Latest passing source commit: `1e22c1b37d0233455a5a6cf49ddf98e6e555c93c`; regression [#39978745505](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39978745505) **success**, all 15 job steps, 26/26 tests. The source test now covers input-bearing workflow push guards and hard-disabled raw Story Mode restore.
+
+The scene pan remains the competing explanation for the Revision65 pink-60 badge: visible centroid Δy=+97.46 px versus registered terrain shift +100 px. The known map selection cue is red arrow ring plus matching information panel; authentic ring counts were map UP 811, map WAIT 62, Revision65 submenu 66. Hence upgrade-target semantics remain **UNKNOWN**; do not add the verified cue token. Keep `WAIT` at `barrier_level_selection`, player readiness **NO-GO**, Story Mode **NOT COMPLETE**.
+
+Safety incident and mitigation are detailed in `STATUS.md` and `ANALYSIS_LOG.md`. An incomplete-tree commit accidentally triggered multiple path-filtered Actions workflows; the old Story Mode run #39975090240 injected a fixed sequence and was cancelled, but its Memory Card candidate is unverified and its raw savestate is absent. Do not use any accidental-run output as accepted gameplay/checkpoint evidence. Story Mode playthrough and raw restore/continuation are now both `if: false`; 11 input-bearing diagnostics only run via manual dispatch. All guard replacement push runs are `skipped`. A superseded regression #39978693381 is still stalled at dependency installation on the intermediate commit; it is regression-only. The latest final revision has its own successful run #39978745505.
+
+Next step: continue offline screenshot/cue analysis and static policy tests only. Do not rerun marker Revision65, do not dispatch a player or restore workflow, and do not inject new game input until an independent unique barrier-target cue is established. For identifiable Story Mode dialogue later, use START, not Circle; put Indonesian translations beside Japanese text in parentheses.
+
+---
+
 # Latest handoff — offline target-cue gate and Actions safety incident (23 October 2026)
 
 **Current research finding:** the authenticated red-arrow-ring plus matching panel exists in map context, but is absent around the Revision65 submenu badge. Badge centroid moves +97.46 px while scene registration measures +100 px; the pink-60 target role is still `UNKNOWN`. Keep `WAIT` at `barrier_level_selection`, keep the marker cue token absent, keep readiness **NO-GO**, and do not claim Story Mode complete.

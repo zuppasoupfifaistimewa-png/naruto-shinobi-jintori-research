@@ -1,3 +1,17 @@
+# Current verified checkpoint — 23 October 2026
+
+## Offline target-cue regression
+
+The latest verified regression is [run #39978745505](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39978745505), source commit `1e22c1b37d0233455a5a6cf49ddf98e6e555c93c`, conclusion **success**, all 15 job steps passed. The source tests report **26 tests in 3.189 s; OK**. Authentic screenshot checks include `MAP_FOCUS_ARROW_RING_REGRESSION=PASS`, `CAMERA_SHIFT_REGRESSION=PASS`, and `REV65_BADGE_SHIFT_FOLLOWS_SCENE=PASS` with badge displacement +97.46 px versus scene shift +100 px. The known map-UP cue has 811 red-arrow-ring pixels plus a matching tile panel; map-WAIT and Revision65 submenu regions have only 62 and 66. This preserves the ambiguity decision: target role in the upgrade submenu remains **UNKNOWN**.
+
+## Safety containment
+
+The consumed marker remains Revision65 (blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`), and the cue token remains absent. `barrier_level_selection` stays `WAIT`; readiness **NO-GO**; Story Mode **NOT COMPLETE**. The fixed-sequence Story Mode workflow and raw restore/continuation workflow are both hard-disabled with `if: false`; 11 input-bearing diagnostic jobs are manual-dispatch-only. Replacement push runs for these guarded workflows were all `skipped`.
+
+One superseded regression, [#39978693381](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39978693381), was started on intermediate source commit `79a7fb720d2d828afa2b761c9ae66884aa8e0b8b` while fixing the literal-newline assertions; at the last API check it remained stuck at “Install image dependencies.” It performs regression checks only—no emulator/gameplay input. Latest source commit `1e22c1b...` has its own successful run #39978745505. No player or restore workflow is active.
+
+---
+
 ## Safety incident — unintended Actions launches from repository-tree recovery (23 October 2026)
 
 This is an operational incident, not new gameplay evidence. An earlier documentation commit `ed5de51263ee0266c196a2630d122092e4bad314` had an incomplete tree. Recovery commit `98c0577cf7ca026edf861ac307c380745a225d25` restored the complete 82-file tree, but GitHub compared it to the incomplete parent and treated many existing `.github/workflows/*` paths as newly added. Their path-filtered `push` triggers fired automatically. This was caused by my commit-construction error; it was not an intended gameplay experiment.
