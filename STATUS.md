@@ -1,12 +1,14 @@
-## CURRENT CHECKPOINT — revision52 restored; regression gate passed for revision53 card A/B (23 October 2026, 07:18 WIB)
+## CURRENT CHECKPOINT — revision53 verified card reveal; detail-classifier regression pending (23 October 2026, 07:30 WIB)
 
-Authoritative handoff: [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md).
+Canonical handoff: [docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md](docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md).
 
-Revision52 run [#39876534507](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39876534507) independently restored checkpoint SHA `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e`, captured five authentic frames, classified all as `card_selection` / `WAIT`, and verified no button press. Its own output candidate SHA `df73f3414c7838d22611a2592d5f2516f903e3e43a1d05911d1964ac07c61265` is structural-only and not promoted.
+Revision53 run [#39877412316](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39877412316) passed matched CIRCLE-vs-WAIT A/B: same verified parent SHA `36f58e705db5db5272ea0ed31fad07cff588fe1adf817fe795dc8d56ffe0e69e`, identical F20, identical Memory Card clones, exactly one CIRCLE press vs zero in control. Action branch showed a face-up card titled `防御集中` (fokus pertahanan), with description that defense-technique Chakra cost becomes zero. Thus one CIRCLE reveals card detail on this checkpoint; acquisition/second-confirm semantics remain UNKNOWN.
 
-Regression [#39877110916](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39877110916) passed on latest A/B isolation test commit `25141c41a77b55340d4a8cc077cec76a4589f502`. Revision53 is next: two identical fresh-process branches from independently verified run #39875714125 output; one CIRCLE press vs no input. Never include auto START in the A/B branch; require exactly one press in action branch and zero in control. Story Mode remains **NOT COMPLETE**.
+Action candidate SHA `bd2c4b7f187b21350e5157a11a7b6ab99cf2124a67be11b669f93c982bc25fae` (21,163,007 bytes, v4) is the selected next restore-only source; it is not independently restored yet. Control candidate SHA `6c90ef08511bda6f5329e2ac65c6af6a542fe3c0884918a33f0f35125a19b135` is not promoted.
 
-Permanent boundaries: research repo only; no other repository; ROM/BIOS/states/cards/screenshots stay private/out of Git; START only for true Story Mode dialogue.
+Commit `331e2317cc51e386af51dc2d2d0117d459a42391` adds `card_selection_detail` detection (blue/white central card art) with fail-closed WAIT, tests and real-frame assertions over all 10 screenshots from run53. Regression #39878204502 is pending at dependency setup as of this checkpoint. Do not start revision54 until that run is green. Story Mode remains **NOT COMPLETE**.
+
+Permanent constraints: research repo only, no other repository; ROM/BIOS/states/cards/screenshots stay private/out of Git; START only for genuine dialogue.
 
 ---
 
