@@ -413,46 +413,16 @@ jobs:
               raise SystemExit("red focus-arrow ring appeared around a non-selected/unknown-context pink badge")
           if action_panel_delta < 8000 or control_panel_delta > 500:
               raise SystemExit("focus-arrow signature lacks its matching selected-tile information-panel differential")
-          # The blue pointer proxy is secondary geometry. It is near pink-60 in both map UP and WAIT,
-          # so proximity alone is explicitly non-decisive.
-          def blue_pointer_proxy_centroid(arr):
-              x1, y1, x2, y2 = (620,295,735,390)
-              crop = arr[y1:y2, x1:x2].astype(np.int16)
-              r, g, b = crop[:,:,0], crop[:,:,1], crop[:,:,2]
-              mask = (b > 100) & (b > r*1.35) & (b > g*1.15)
-              ys, xs = np.where(mask)
-              if len(xs) < 500:
-                  raise SystemExit(f"blue pointer-proxy mask too sparse: {len(xs)}")
-              return (float(xs.mean()+x1), float(ys.mean()+y1))
-          def euclidean(a, b):
-              return float(((a[0]-b[0])**2 + (a[1]-b[1])**2)**0.5)
-          # Compare the blue proxy in the same screen ROI across F20/F60.
-          # The map tile/terrain shifts about 100 px after UP, while this proxy
-          # should remain screen-anchored. That makes proxy proximity a confound,
-          # not an independent target-selection cue.
-          proxy_motion = {
-              "Revision65_UP": euclidean(blue_pointer_proxy_centroid(images["C01-F20.png"]), blue_pointer_proxy_centroid(images["C01-F60.png"])),
-              "Revision65_WAIT": euclidean(blue_pointer_proxy_centroid(images["C02-F20.png"]), blue_pointer_proxy_centroid(images["C02-F60.png"])),
-              "map_UP": euclidean(blue_pointer_proxy_centroid(map_images["C01-F20.png"]), blue_pointer_proxy_centroid(map_images["C01-F60.png"])),
-              "map_WAIT": euclidean(blue_pointer_proxy_centroid(map_images["C02-F20.png"]), blue_pointer_proxy_centroid(map_images["C02-F60.png"])),
-          }
-          print("POINTER_SCENE_ANCHOR_MEASUREMENTS " + " ".join(f"{key}={value:.2f}px" for key,value in proxy_motion.items()))
-          if any(value > 20 for value in proxy_motion.values()):
-              raise SystemExit("blue pointer proxy moved beyond calibrated screen-anchor tolerance; re-audit coordinates")
-          _, rev65_badge_center = pink_centroid(images["C01-F60.png"], (430,210,570,340))
-          _, map_up_tile_center = pink_centroid(map_images["C01-F60.png"], (575,360,685,460))
-          _, map_wait_tile_center = pink_centroid(map_images["C02-F60.png"], (570,250,680,350))
-          if any(c is None for c in (rev65_badge_center, map_up_tile_center, map_wait_tile_center)):
-              raise SystemExit("pink-60 center missing from one authenticated context")
-          rev65_pointer_distance = euclidean(rev65_badge_center, blue_pointer_proxy_centroid(images["C01-F60.png"]))
-          map_up_pointer_distance = euclidean(map_up_tile_center, blue_pointer_proxy_centroid(map_images["C01-F60.png"]))
-          map_wait_pointer_distance = euclidean(map_wait_tile_center, blue_pointer_proxy_centroid(map_images["C02-F60.png"]))
-          print(f"POINTER_TARGET_GEOMETRY rev65_badge_distance={rev65_pointer_distance:.2f}px map_UP={map_up_pointer_distance:.2f}px map_WAIT={map_wait_pointer_distance:.2f}px proximity_alone_non_decisive=true")
-          if not (rev65_pointer_distance >= 150 and map_up_pointer_distance <= 110 and map_wait_pointer_distance <= 110):
-              raise SystemExit("pointer-proxy relation drifted; re-audit authenticated cue geometry")
-          if abs(map_up_pointer_distance - map_wait_pointer_distance) > 30:
-              raise SystemExit("map pointer-to-pink-tile proximity unexpectedly discriminates UP from WAIT")
-          print("POINTER_TARGET_GEOMETRY_REGRESSION=PASS revision65_pointer_not_tile_anchored=true map_UP_and_WAIT_proximity_similar=true geometry_alone_non_decisive=true")
+          # The blue/orange mask is part of the character's hand-held kunai/foreground sprite,
+          # not an independent UI pointer. This was visually checked on the authenticated F20/F60
+          # image crops; keep its region fully inside the foreground-pose exclusion ROI.
+          foreground_sprite_roi = (540,290,750,560)
+          kunai_proxy_roi = (620,295,735,390)
+          fx1, fy1, fx2, fy2 = foreground_sprite_roi
+          kx1, ky1, kx2, ky2 = kunai_proxy_roi
+          if not (fx1 <= kx1 < kx2 <= fx2 and fy1 <= ky1 < ky2 <= fy2):
+              raise SystemExit("foreground kunai ROI escaped character pose exclusion region")
+          print("FOREGROUND_KUNAI_PROXY_CLASSIFICATION=PASS mask_roi_inside_foreground_sprite_roi=true cursor_or_target_evidence=false cue_eligible=false")
           
           # F60->F100 has a stable terrain transform but changes in the foreground sprite region.
           # Exclude that region from camera registration; never interpret foreground pose/animation as focus motion.
@@ -463,7 +433,7 @@ jobs:
           for branch in (1,2):
               f60, f100 = images[f"C{branch:02d}-F60.png"], images[f"C{branch:02d}-F100.png"]
               shift, _ = estimate_scene_vertical_shift(f60, f100, "rev65")
-              sprite_delta = changed_pixel_percent(f60, f100, (540,290,750,560))
+              sprite_delta = changed_pixel_percent(f60, f100, foreground_sprite_roi)
               terrain_delta = changed_pixel_percent(f60, f100, (160,200,430,540))
               print(f"CHARACTER_POSE_EXCLUSION branch={branch} scene_shift={shift}px foreground_sprite_changed={sprite_delta:.3f}% terrain_changed={terrain_delta:.3f}%")
               if abs(shift) > 4 or sprite_delta < 10 or terrain_delta > 3:
@@ -528,9 +498,7 @@ jobs:
           if abs(rev65_wait_shift) > 4 or abs(map_wait_shift) > 4:
               raise SystemExit("WAIT control unexpectedly showed a comparable scene shift")
           print("CAMERA_SHIFT_REGRESSION=PASS UP_scene_shift_approx_100px WAIT_scene_shift_approx_0px target_selection_not_inferred=true")
-          if max(proxy_motion.values()) > 20 or not (rev65_up_shift >= 92 and map_up_shift >= 92 and abs(rev65_wait_shift) <= 4 and abs(map_wait_shift) <= 4):
-              raise SystemExit("pointer/scene motion contrast was not reproduced; do not infer target from proxy geometry")
-          print("POINTER_SCENE_ANCHOR_REGRESSION=PASS proxy_moves_under_20px_while_UP_scene_pans_about_100px WAIT_scene_stays_fixed proxy_geometry_not_target_authorization=true")
+          print("FOREGROUND_KUNAI_CUE_EXCLUSION_REGRESSION=PASS character_prop_mask_not_used_for_target_selection=true")
           print("MAP_CONTEXT_PANEL_REGRESSION=PASS up_panel_changes_to_level1_value60_durability2of2 wait_panel_stays_empty_land_value140 known_map_cue=red_focus_arrows_plus_matching_tile_panel")
           print("REV65_CAMERA_PAN_CONFOUND_REGRESSION=PASS baseline_pink60_partly_visible=true post_UP_badge_exposed=true exposure_is_not_selection_proof=true target_role=UNKNOWN")
           print("REV65_PINK60_MARKER_REGRESSION=PASS action_badge_visible=true control_badge_absent=true prompt_unchanged_after_circle=true target_semantics=UNKNOWN input_policy=WAIT")

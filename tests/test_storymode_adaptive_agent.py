@@ -364,19 +364,28 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertLess(gate, source_download)
         self.assertLess(gate, pad_mutation)
 
-    def test_pointer_geometry_and_character_pose_do_not_authorize_barrier_target(self):
+    def test_foreground_kunai_proxy_is_not_a_target_pointer(self):
         repo = Path(__file__).resolve().parents[1]
         regression = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-regression.yml").read_text(encoding="utf-8")
         player = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-player.yml").read_text(encoding="utf-8")
         marker = (repo / "experiments" / ".run-storymode-adaptive-player").read_text(encoding="utf-8")
         agent_source = (repo / "tools" / "storymode_adaptive_agent.py").read_text(encoding="utf-8")
-        self.assertIn("POINTER_TARGET_GEOMETRY_REGRESSION=PASS", regression)
-        self.assertIn("POINTER_SCENE_ANCHOR_MEASUREMENTS", regression)
-        self.assertIn("POINTER_SCENE_ANCHOR_REGRESSION=PASS", regression)
-        self.assertIn("proximity_alone_non_decisive=true", regression)
+        # The apparent blue "pointer" mask is inside the visible character/kunai ROI and
+        # must never be treated as an independent cursor or a level-up target cue.
+        self.assertIn("foreground_sprite_roi = (540,290,750,560)", regression)
+        self.assertIn("kunai_proxy_roi = (620,295,735,390)", regression)
+        self.assertIn("FOREGROUND_KUNAI_PROXY_CLASSIFICATION=PASS", regression)
+        self.assertIn("cursor_or_target_evidence=false cue_eligible=false", regression)
+        self.assertNotIn("blue_pointer_proxy_centroid", regression)
+        self.assertNotIn("POINTER_SCENE_ANCHOR_REGRESSION=PASS", regression)
+        self.assertNotIn("POINTER_TARGET_GEOMETRY_REGRESSION=PASS", regression)
+        self.assertIn("FOREGROUND_KUNAI_CUE_EXCLUSION_REGRESSION=PASS", regression)
         self.assertIn("CHARACTER_POSE_EXCLUSION_REGRESSION=PASS", regression)
         self.assertIn("REV65_RING_PERSISTENCE", regression)
         self.assertIn('action,action_reason="WAIT","barrier_target_not_identified; fail_closed_until_controlled_probe"', agent_source)
+        out = self.classify("barrier_level_selection_with_pink_60")
+        self.assertEqual(out["state"], "barrier_level_selection")
+        self.assertEqual(out["action"], "WAIT")
         self.assertIn('[[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "CIRCLE" ]]', player)
         self.assertNotIn("AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1", marker)
         gate = player.index('AB_BARRIER_TARGET_GATE=BLOCKED cue=$ab_barrier_target_cue')
@@ -384,9 +393,6 @@ class AdaptiveAgentTests(unittest.TestCase):
         pad_mutation = player.index("pad.setOverride(b)")
         self.assertLess(gate, source_download)
         self.assertLess(gate, pad_mutation)
-        out = self.classify("barrier_level_selection_with_pink_60")
-        self.assertEqual(out["state"], "barrier_level_selection")
-        self.assertEqual(out["action"], "WAIT")
 
     def test_levelup_target_cue_requires_ring_stats_panel_and_text_transition(self):
         # Values below are measured from existing authenticated private PNGs; the
