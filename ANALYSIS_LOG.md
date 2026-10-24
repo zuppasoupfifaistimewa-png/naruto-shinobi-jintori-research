@@ -1,4 +1,17 @@
-# Offline cross-run level-up target-cue audit — 24 October 2026
+# Historical LEFT→Circle evidence regression — 24 October 2026
+
+**Workflow/test commit:** `e0f3c49f735a7a518399cef1457e8233affec43e`. **Actions #40069923244:** `success`; 34 tests in 5.114 seconds; new authenticated frame step passed.
+
+Added a regression-only download of private artifact `12495906030` from historical run [#39940196133](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39940196133), whose A branch used LEFT then Circle and whose C02 branch was the no-input control. All ten authentic screenshots are classified by the current agent as `barrier_level_selection` / `WAIT`; output: `AUTHENTIC_HISTORICAL_LEFT_CIRCLE_BARRIER_POLICY=PASS checked=10 all_wait=true`. This reduces the chance of an unintended input from that historical submenu composition, but it does not reveal target semantics.
+
+Offline pixel inspection also notes that the separate UP action artifact (#39942178665 / artifact `12496637328`) exposes the pink `60` badge fully; however, the current calibrated red focus-ring metric remains only 66, 58, 66, and 80 pixels at F60/F100/F110/F180. The known map-UP reference is 811 ring pixels plus the corresponding tile-information panel. The fully exposed submenu badge has no matching arrow ring nor a tile-specific stats panel. In the LEFT branch, the badge remains partly behind the fixed HUD. Neither action view establishes a unique selected target.
+
+Decision remains `barrier_level_selection = WAIT`, cue `UNKNOWN`, adaptive readiness `NO-GO`, Story Mode `NOT COMPLETE`. The Revision65 marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` stays unchanged, and the cue token stays absent. Regression only; no gameplay input/emulator/restore/continuation was launched. Do not use the new test pass as authority to run the player.
+
+**Next:** inspect a truly new authenticated observation or analyze source-level rendering/UI logic to locate a cue unique to the candidate tile. If not found, preserve UNKNOWN/WAIT. START remains the only dialogue skip button; never use Circle to skip dialogue.
+
+---
+## Previous analysis — Revision64/65 cross-run duplicate audit (24 October 2026)
 
 Private authenticated screenshot artifacts from Revision64 (run #39942178665, artifact #12496637328) and Revision65 (run #39947481094, artifact #12498688466) were downloaded to temporary analysis storage and compared. No screenshot or save-state file was added to Git.
 

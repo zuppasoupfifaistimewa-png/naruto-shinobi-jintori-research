@@ -1,4 +1,19 @@
-# Latest verified checkpoint — Revision64/65 visual duplicate; submenu target cue remains UNKNOWN (24 October 2026)
+# Latest verified checkpoint — historical LEFT→Circle regression green; readiness still NO-GO (24 October 2026)
+
+## Additional authenticated regression — verified pass
+
+**Workflow/test commit:** `e0f3c49f735a7a518399cef1457e8233affec43e`. **Actions:** [#40069923244](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40069923244) — `success`; 34 unit tests in 5.114 seconds and all workflow steps passed.
+
+The regression now downloads historical private artifact `12495906030` from run [#39940196133](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39940196133), an independent LEFT→Circle A/B. Its ten authentic frames (C01/C02 at F20/F60/F100/F110/F180) all classify as `barrier_level_selection` / `WAIT`: `AUTHENTIC_HISTORICAL_LEFT_CIRCLE_BARRIER_POLICY=PASS checked=10 all_wait=true`. This is classifier safety coverage, not proof of target selection.
+
+Across the UP action artifact from run #39942178665 / artifact `12496637328`, the pink `60` badge is fully visible at F60, but candidate ring counts remain **66 / 58 / 66 / 80** at F60/F100/F110/F180, below the red-ring rejection ceiling 100 and far below the known map-UP cue count 811. The left-action artifact has the badge partly occluded by the fixed HUD. Neither context supplies a unique tile-selection indicator or a tile-specific stats panel.
+
+**Safety state unchanged:** `barrier_level_selection = WAIT`; target cue **UNKNOWN**; adaptive readiness **NO-GO**; Story Mode **NOT COMPLETE**. Marker Revision65 remains consumed and unchanged; cue token remains absent. This was a regression-only change—no emulator, restore, continuation, or gameplay input was run.
+
+**Next:** continue only with distinct existing authenticated evidence or source-level UI analysis that can prove an independently unique submenu target cue. Do not relax the cue gate, alter the consumed marker, or launch gameplay while it remains unknown.
+
+---
+## Previous checkpoint — Revision64/65 visual duplicate; submenu target cue remains UNKNOWN (24 October 2026)
 
 ## Offline cross-run comparison
 

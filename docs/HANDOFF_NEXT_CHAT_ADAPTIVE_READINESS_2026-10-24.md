@@ -1,4 +1,23 @@
-# Latest continuation checkpoint — Revision64/65 duplicate images; submenu cue remains UNKNOWN (24 October 2026)
+# Latest continuation checkpoint — historical LEFT→Circle policy regression green; cue still UNKNOWN (24 October 2026)
+
+## Verified update
+
+Current code/workflow checkpoint `e0f3c49f735a7a518399cef1457e8233affec43e` is green in Actions [#40069923244](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40069923244): 34 tests in 5.114 seconds; all workflow steps passed.
+
+New authentic regression fixture: artifact `12495906030`, run [#39940196133](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39940196133), historical LEFT→Circle A/B. All ten C01/C02 frames at F20/F60/F100/F110/F180 classify as `barrier_level_selection` / `WAIT`; `AUTHENTIC_HISTORICAL_LEFT_CIRCLE_BARRIER_POLICY=PASS checked=10 all_wait=true`. The workflow change is regression-only and does not modify the player classifier, marker, or input gate.
+
+The UP action artifact shows the pink `60` badge fully exposed but lacks the known map-UP red arrow ring + matching stats panel: ring counts across F60/F100/F110/F180 remain 66/58/66/80 versus 811 in the positive map reference. The LEFT artifact's badge is partly occluded by the fixed HUD. The new regression confirms fail-closed behavior but does not solve target semantics.
+
+## Required state
+
+- `barrier_level_selection = WAIT`; unique submenu target cue **UNKNOWN**.
+- Adaptive-player readiness **NO-GO**; Story Mode **NOT COMPLETE**.
+- Do not edit consumed marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` or add `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1`.
+- No emulator/gameplay/restore/continuation was launched for this new work. Preserve private artifacts outside Git.
+- Next: seek source-level UI rendering evidence or a distinct existing authenticated capture with a uniquely identifying tile cue. Do not authorize input until the cue and fail-closed gate are independently reviewed. For future dialogue, use START, not Circle; translate Japanese beside the text in Indonesian parentheses.
+
+---
+## Previous continuation checkpoint — Revision64/65 duplicate images; submenu cue remains UNKNOWN (24 October 2026)
 
 ## What changed in this turn
 

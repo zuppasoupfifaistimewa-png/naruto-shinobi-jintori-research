@@ -29,6 +29,14 @@ The private runtime logs distinguish the input protocols, even though the render
 
 **Interpretation:** the delivered Circle input in Revision65 produced no visible screen-state change in the captured F60–F180 observations compared with Revision64. This does not prove Circle can never have an effect in another game state, but it is not evidence that a target was selected or confirmed. Revision64 and Revision65 must not be counted as independent visual confirmations.
 
+## Additional independent context — historical LEFT→Circle A/B
+
+Actions run [#39940196133](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39940196133), artifact `12495906030`, contains the earlier LEFT→Circle A/B. The updated regression downloads this authentic evidence and checks all ten frames at F20/F60/F100/F110/F180 for C01 and C02. Result from Actions [#40069923244](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40069923244): `AUTHENTIC_HISTORICAL_LEFT_CIRCLE_BARRIER_POLICY=PASS checked=10 all_wait=true` (34 unit tests passed; workflow success). This is a new policy-coverage fixture, not evidence that either LEFT or Circle selected the intended barrier.
+
+The LEFT branch badge remains partly hidden by the fixed HUD. A distinct UP branch from run #39942178665 exposes the pink badge at roughly `(455,234)-(533,301)` in F60, yet red focus-ring counts remain 66/58/66/80 at F60/F100/F110/F180. Those values remain below the calibrated unknown-context ceiling 100 and far below the positive map-UP count 811. The matching stats-panel footprint and panel-text transition are also absent. Thus improved visibility still does not uniquely identify a selected target.
+
+The new workflow step asserts only the current safe state (`barrier_level_selection` / `WAIT`) on historical screenshots. It makes no gameplay, emulator, restore, or PAD calls and does not relax the existing fail-closed gate.
+
 ## Cue candidates and disposition
 
 | Candidate cue | Offline finding | Decision |
