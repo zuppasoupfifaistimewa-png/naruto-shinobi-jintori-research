@@ -213,7 +213,7 @@ jobs:
                   local label=branch.."-F"..phase
                   local state,action=capture(label); if not state then return end
                   if phase==60 then log("POST_F60_STATE="..state.." action="..action) end
-                  if phase==180 then done=true; log("DIAGNOSTIC_BRANCH_FINISHED="..branch) end
+                  if phase==180 then done=true; log("DIAGNOSTIC_BRANCH_FINISHED="..branch); PCSX.pauseEmulator(); PCSX.nextTick(function() PCSX.quit(0) end) end
               end
           end)
           log("DIAGNOSTIC_SCRIPT_READY branch="..branch.." action=RIGHT frames=30-38 control=NONE")
