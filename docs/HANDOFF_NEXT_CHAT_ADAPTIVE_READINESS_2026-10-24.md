@@ -1,3 +1,11 @@
+# Corrected runner inspection complete — candidate does not qualify (25 October 2026)
+
+Actions run [#40141018663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40141018663) inspected artifact #12308661246 entirely on the runner. Same-checkpoint pre screenshots are pixel-identical. All direction press/release readbacks pass, but UP/DOWN/LEFT/RIGHT post screenshots are pixel-identical to NONE; CIRCLE changes the full frame. Captures are 320×240 and OCR was too garbled to establish the checkpoint state or a selection cue. Treat this artifact as non-qualifying for the nested submenu A/B. The previous corrected attempt #40140914545 hit a Pillow diff-stat bug; it was fixed and the successful run completed. No savestate was opened, and no emulator, gameplay input, restore, player workflow, or tests ran. Temporary inspection workflow and selector have been removed.
+
+Do not promote the classifier from this result. Preserve cue UNKNOWN, `barrier_level_selection = WAIT`, readiness NO-GO, Story Mode NOT COMPLETE, Revision65 blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`, and cue token absent. Full evidence is in [the triage report](docs/NON_PLAYER_ACTIONS_ARTIFACT_METADATA_TRIAGE_2026-10-24.md).
+
+---
+
 # Runner-only inspection result — control-probe artifact is inconclusive (25 October 2026)
 
 One authorized runner job [#40110571330](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40110571330) inspected artifact #12308661246. It verified the artifact digest, ten same-checkpoint input/no-input branches, identical pre screenshot hashes, and 320×240 captures. The report shows only CIRCLE differs from NONE after input; it does not label the checkpoint state. OCR and image diffs were skipped because the script rejected 320×240. Therefore, this artifact does not establish the nested submenu or target cue. No savestate was present/opened, and no emulator, gameplay input, restore, or player workflow ran during inspection. Artifact processing stayed on GitHub Actions runner.
