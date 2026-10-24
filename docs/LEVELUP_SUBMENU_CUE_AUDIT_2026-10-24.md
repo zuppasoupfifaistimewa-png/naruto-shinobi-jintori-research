@@ -1,3 +1,25 @@
+## Offline follow-up — previously undocumented Revision58 artifact triage (24 October 2026)
+
+### Scope and artifact provenance
+- Audit-start `main` HEAD: `6b0a32f6c3e9bd791b701cb5d90adee9ecb0e058`. Only this repository was read or changed.
+- Historical run [#39905240818](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39905240818) failed on 23 October 2026 and has private artifact [#12480856146](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39905240818). API artifact metadata: 3,075,304 bytes, digest `sha256:ca829197c7be852580e0527f071d2fc3711ff2433d17ed020f000fb52dbc4acf`.
+- The ZIP manifest includes only one branch: `C01-F20.png`, `C01-F60.png`, `C01-F100.png`, `C01-F110.png`, plus text logs and JSON. There is no `C02` branch, no `C01-F180.png`, no A/B comparison report and no savestate file. The only recorded input file is `action-cycle-01.txt` with `CIRCLE`.
+- Inspection used only these four authentic emulator screenshot PNGs and textual/JSON records. No savestate was opened or restored. No emulator was launched and no gameplay input was issued during this audit.
+
+### What the authentic screenshots establish
+- At F20, `decision-cycle-01.json` identifies `barrier_choice` and CIRCLE with `YES` visibly highlighted and a calibrated 120-Chakra cost. The visible Japanese prompt is `結界をレベルアップしますか?` (Apakah ingin menaikkan level penghalang?), with `はい` (Ya) and `いいえ` (Tidak).
+- At F60/F100/F110, the screenshots visibly show the submenu prompt `レベルアップする結界をえらんでください` (Pilih penghalang yang akan dinaikkan levelnya), with footer hints `けってい` (konfirmasi) and `もどる` (kembali). Thus, this run authenticates the transition from the upgrade confirmation prompt to the level-up submenu by F60.
+- The older frozen decision JSON misclassifies the F60/F100/F110 screenshots as `dialogue` and predicts `START`, despite the smaller submenu panel and its confirm/back footer. `action-cycle-01.txt` records only CIRCLE; this audit found no record that START was actually pressed in those later frames. This is evidence of a prior classifier-state error, not proof of a selected tile.
+- Descriptive image comparison (all screenshots are 1280×800): F60↔F100 differs at 47,940 pixels (mean absolute RGB difference 1.72836); F100↔F110 differs at 43,590 pixels (1.00860); F60↔F110 differs at 53,358 pixels (2.07506). The character/tile ROI `(555,270,700,455)` changes at 14,375 of 26,825 pixels between F100 and F110, whereas the prompt-panel ROI `(120,560,700,730)` is pixel-identical between those two frames. These are descriptive animation measurements only, not classifier thresholds. The changing character/kunai/scene pixels cannot be attributed to a tile-selection cue without a matched control branch.
+
+### Evidence classification and disposition
+- **VERIFIED:** the authentic run displays `barrier_level_selection` prompt by F60 after the CIRCLE confirmation action; the captured prompt asks the player to choose a barrier to level up.
+- **NOT ESTABLISHED:** which tile is targeted, whether Naruto's sprite/blue tile/nearby red-orange mark denotes focus, or whether a unique focus cue changes with target selection. This artifact is a single continuation path, not a matched-start-state action/control A/B.
+- **UNKNOWN remains UNKNOWN:** keep `barrier_level_selection = WAIT`, target cue **UNKNOWN**, adaptive-player readiness **NO-GO**, and Story Mode **NOT COMPLETE**. Do not edit consumed Revision65 marker `3754a6ddf45a7570c053d9c149b6d80b0862a127`; do not add `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1`; do not start a player workflow just to bypass the gate.
+- This review found no qualifying new target-cue evidence. Required evidence remains a distinct authenticated A/B from the same submenu start state, same candidate tile clearly unobstructed in both branches, and repeatable tile-anchored focus change (preferably corroborated by a tile-specific information-panel change), with matching runtime input/readback and no-input control records.
+
+---
+
 ## Follow-up audit — distinct historical LEFT/CIRCLE A/B checks; no unique target cue (24 October 2026)
 
 ### Authenticated runs examined offline

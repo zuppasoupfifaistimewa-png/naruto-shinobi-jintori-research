@@ -1,3 +1,14 @@
+# Latest verified checkpoint — Revision58 artifact triaged; target cue remains UNKNOWN / WAIT (24 October 2026)
+
+- Audit started from live `main` HEAD `6b0a32f6c3e9bd791b701cb5d90adee9ecb0e058`; result is documented in commit created by this update.
+- Newly reviewed offline: [historical player run #39905240818](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39905240818), private artifact #12480856146. Its one CIRCLE branch authentically reaches the level-up submenu by F60, but has only C01 frames F20/F60/F100/F110: no C02 control, no F180, no A/B report, and no savestate in the artifact.
+- The screenshots verify the prompt `レベルアップする結界をえらんでください` (Pilih penghalang yang akan dinaikkan levelnya), not a selected tile. Frame changes concentrate in character/tile animation; they do not prove a tile-anchored selection cue. This is a new negative triage result, not a gameplay advance.
+- No emulator, savestate restore, gameplay input, marker change, or adaptive-player workflow was run. No private evidence was added to Git.
+- Preserve `barrier_level_selection = WAIT`, target cue **UNKNOWN**, adaptive-player readiness **NO-GO**, Story Mode **NOT COMPLETE**. Keep Revision65 marker at blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`; keep the cue token absent.
+- Next step: continue offline-only search for already-existing, authenticated, same-start-state A/B artifact data. If no such artifact remains, stop rather than invent a cue or bypass the gate.
+
+---
+
 # Latest verified checkpoint — additional authenticated submenu A/B audit; target cue remains UNKNOWN (24 October 2026)
 
 ## Live repository and Actions state

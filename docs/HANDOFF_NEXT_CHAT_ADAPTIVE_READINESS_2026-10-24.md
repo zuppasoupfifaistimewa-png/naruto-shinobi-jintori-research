@@ -1,3 +1,15 @@
+# Handoff update — Revision58 artifact audited offline; cue gate still closed (24 October 2026)
+
+- Only permitted repository: `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`.
+- Audit-start HEAD: `6b0a32f6c3e9bd791b701cb5d90adee9ecb0e058`; next session must verify live `main` and Actions again.
+- New offline result: run [#39905240818](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39905240818), private artifact #12480856146, was missing from the latest cue-audit note. PNG/text-only inspection confirms the level-up prompt is visible at F60/F100/F110, but the artifact is a single CIRCLE continuation (C01 only), with no control branch or comparison report. It verifies submenu presence/translation only—not target selection.
+- Older frame classifier labels the submenu as dialogue in F60/F100/F110 decision JSON, but the action log records only CIRCLE. Treat this as a stale state-classification error; do not infer that START was sent or that the tile is selected.
+- No savestate was opened/restored; no emulator or gameplay input was run; private screenshots remain outside Git.
+- **Policy:** `barrier_level_selection = WAIT`, cue **UNKNOWN**, adaptive readiness **NO-GO**, Story Mode **NOT COMPLETE**. Do not modify consumed Revision65 marker, add `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1`, or launch gameplay through the closed cue gate.
+- Next action: audit only any remaining existing authenticated artifacts that could provide same-start-state A/B evidence; no more single-branch prompt frames count as target-cue proof.
+
+---
+
 # Latest handoff — extra historical A/B inspected; no independent submenu target cue yet (24 October 2026)
 
 ## Checkpoint and Actions

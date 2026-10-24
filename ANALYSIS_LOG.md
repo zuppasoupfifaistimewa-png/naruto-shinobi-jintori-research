@@ -1,3 +1,15 @@
+# Offline follow-up — Revision58 single-branch submenu artifact does not identify target tile (24 October 2026)
+
+Run [#39905240818](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39905240818), artifact #12480856146 (3,075,304 bytes; API digest `sha256:ca829197c7be852580e0527f071d2fc3711ff2433d17ed020f000fb52dbc4acf`) was newly triaged offline from its authentic screenshots and text/JSON only.
+
+The artifact contains one branch, C01, with F20/F60/F100/F110 images only. `action-cycle-01.txt` records CIRCLE; there is no C02, no A/B report, no F180 frame, and no savestate. F20 shows `結界をレベルアップしますか?` (Apakah ingin menaikkan level penghalang?) with `はい` (Ya) selected. F60/F100/F110 show `レベルアップする結界をえらんでください` (Pilih penghalang yang akan dinaikkan levelnya), with `けってい` (konfirmasi) and `もどる` (kembali) footer hints.
+
+The F60/F100/F110 decision JSON incorrectly classifies these screenshots as `dialogue` and predicts START, while the screenshot is the small submenu panel; the actual action file records only CIRCLE, so no subsequent START input is evidenced. Descriptive RGB diff counts are F60↔F100 47,940 changed pixels (mean absolute RGB 1.72836), F100↔F110 43,590 (1.00860), F60↔F110 53,358 (2.07506). The character/tile ROI `(555,270,700,455)` has 14,375/26,825 pixels changed between F100/F110; prompt panel ROI `(120,560,700,730)` has zero changed pixels over that pair. These measurements capture temporal animation, not a unique target cue.
+
+**Classification:** VERIFIED — this single run reaches the submenu prompt by F60. UNKNOWN — the intended target tile and its unique selection cue. It is not a matched-start-state A/B, so do not promote the sprite, blue tile, or red-orange mark to a verified focus signal. Keep WAIT/UNKNOWN, readiness NO-GO and Story Mode NOT COMPLETE; keep the Revision65 marker and cue token unchanged. No emulator/input/restore action was performed and no evidence files were committed.
+
+---
+
 # Offline follow-up — matched-state historical submenu A/B artifacts examined (24 October 2026)
 
 After verifying live HEAD `ed683f21f856a5def2f4a5ab9d0db09028b78500`, the latest Actions monitor [#40087271642](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40087271642) was confirmed `success`, but its report classifies player run #39975090690 as `EXPECTED_GATED_SKIP_NO_GO` (`completed/skipped`, no player artifact). The latest regression #40071317759 remains green with 35 tests; no test rerun was warranted.
