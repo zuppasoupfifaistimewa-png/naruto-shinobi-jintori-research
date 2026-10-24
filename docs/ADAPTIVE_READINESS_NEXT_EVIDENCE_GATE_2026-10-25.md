@@ -1,3 +1,11 @@
+## One-shot diagnostic outcome and blocker
+
+- A bounded RIGHT-versus-NONE runner diagnostic was attempted from the authenticated submenu checkpoint. Source checkpoint SHA, emulator build SHA, and matched memory-card clone checks passed.
+- Run #40142291858 failed before emulator launch because the runner AppImage was not executable. Run #40142411378 also failed before emulator launch because the working directory for the classifier was missing. Neither sent gameplay input.
+- Run #40142559635 reached the emulator step but failed the A/B analysis. Runner-only result analysis #40142939830 found only a 52-byte ACTION stdout, an empty emulator log, and no screenshot captures. Therefore there is no verifiable F20 precondition, input readback, matched-start parity, or cue result from this run.
+- Auto-review rejected a proposed workflow correction/retry because it could restore private state and send gameplay input, conflicting with the retained no-gameplay instruction. No workaround was attempted. All temporary diagnostic and result-inspection workflows and selectors were removed.
+- This result is **inconclusive**; it does not change UNKNOWN/WAIT or readiness. A new runner gameplay experiment requires explicit approval for that side effect after the rejection.
+
 ## Latest continuation refresh
 
 - After the prior documentation commit, `main` is `04b7d6d9a47e1332ec1c360fb7a77e280bf0d729`.
