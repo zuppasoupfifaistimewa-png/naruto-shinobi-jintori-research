@@ -1,3 +1,13 @@
+# Next continuation — runner-only non-player artifact lead (24 October 2026)
+
+Session-start `main` HEAD was `77f8da107236155b48ffa523c1c47dbb92311131`; latest 10 Actions completed. Usage was 39% used / 61% remaining on the primary 30-day window; secondary unavailable. See [metadata triage](docs/NON_PLAYER_ACTIONS_ARTIFACT_METADATA_TRIAGE_2026-10-24.md) and the latest top entry in `STATUS.md`.
+
+One possible remaining lead is run #39513285641 / artifact #12308661246 (`naruto-storymode-control-probe-private`): checked-in workflow text says ten button/no-input branches share a checkpoint, but its state is unknown from metadata. The already documented barrier DOWN/confirmation and roulette artifacts were excluded from repeat review. There is no active runner or repository-declared existing safe runner-side artifact inspection path; the available download connector would return bytes locally. Do not download contents, dispatch/rerun a workflow to inspect them, or infer submenu state from the artifact/run title. If a compliant runner path later exists, inspect text/JSON state labels only first; never open or restore savestates.
+
+Preserve cue UNKNOWN, `barrier_level_selection = WAIT`, readiness NO-GO, Story Mode NOT COMPLETE, Revision65 marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`, and cue token absent.
+
+---
+
 # Prepared continuation prompt — runner-only artifact review (24 October 2026)
 
 Current `main` before this note: `463e94c9c6a9840226b5fa8cc3fe48645376d2b1`. The 12 newest Actions are completed; latest monitor #40102319836 succeeded on older source `2a5fa920...`, and latest regression #40071317759 passed 35 tests on `c0b7d489...`. Usage at preparation: 30-day window 38% used / 62% remaining; secondary unavailable.
