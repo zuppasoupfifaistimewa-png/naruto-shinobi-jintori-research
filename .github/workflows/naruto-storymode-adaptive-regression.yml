@@ -533,3 +533,52 @@ jobs:
           print("REV65_PINK60_MARKER_REGRESSION=PASS action_badge_visible=true control_badge_absent=true prompt_unchanged_after_circle=true target_semantics=UNKNOWN input_policy=WAIT")
           print(f"REV65_BADGE_SHIFT_FOLLOWS_SCENE=PASS badge_delta_y={badge_dy:.2f}px registered_scene_delta_y={rev65_up_shift}px within_tolerance=true camera_pan_confounds_exposure=true selection_not_proven=true")
           PY
+
+      - name: Download authentic historical LEFT-then-Circle barrier submenu evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: 39940196133
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: ${{ runner.temp }}/historical-left-circle-evidence
+
+      - name: Verify fail-closed classifier on historical LEFT-then-Circle submenu frames
+        env:
+          EVIDENCE: ${{ runner.temp }}/historical-left-circle-evidence
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, subprocess, sys
+          from pathlib import Path
+          from PIL import Image
+
+          root = Path(os.environ["EVIDENCE"])
+          agent = "tools/storymode_adaptive_agent.py"
+          expected = {
+              f"C{branch:02d}-F{frame}.png": ("barrier_level_selection", "WAIT")
+              for branch in (1, 2) for frame in (20, 60, 100, 110, 180)
+          }
+          for filename, want in expected.items():
+              path = root / filename
+              if not path.is_file():
+                  raise SystemExit("missing authentic historical submenu frame: " + filename)
+              with Image.open(path) as im:
+                  if im.size != (1280, 800):
+                      raise SystemExit(f"bad screenshot dimensions for {filename}: {im.size}")
+              proc = subprocess.run(
+                  [sys.executable, agent, str(path)],
+                  check=True, capture_output=True, text=True, timeout=10,
+              )
+              got = json.loads(proc.stdout.strip().splitlines()[-1])
+              observed = (got.get("state"), got.get("action"))
+              print(json.dumps({
+                  "file": filename, "state": observed[0], "action": observed[1],
+                  "reason": got.get("action_reason"),
+              }, sort_keys=True))
+              if observed != want:
+                  raise SystemExit(
+                      f"historical submenu policy mismatch: {filename}: {observed} != {want}"
+                  )
+          print("AUTHENTIC_HISTORICAL_LEFT_CIRCLE_BARRIER_POLICY=PASS checked=10 all_wait=true")
+          PY
