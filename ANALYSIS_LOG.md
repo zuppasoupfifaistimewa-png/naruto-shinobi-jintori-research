@@ -1,3 +1,15 @@
+# Metadata-only follow-up — non-player Actions artifacts (24 October 2026)
+
+See [non-player artifact metadata triage](docs/NON_PLAYER_ACTIONS_ARTIFACT_METADATA_TRIAGE_2026-10-24.md). Verified session-start HEAD `77f8da107236155b48ffa523c1c47dbb92311131`; latest ten Actions completed. Usage: 39% used / 61% remaining on the primary 30-day window; secondary unavailable.
+
+- Possible lead: control-probe run #39513285641 / artifact #12308661246. Its workflow describes ten input/no-input branches from a shared checkpoint, but available metadata does not identify the state. It is not verified as a same-start submenu A/B.
+- Already-documented and excluded from repeat inspection: barrier probes #39618670884 and #39619671384; single barrier confirmation #39617444912; roulette artifacts #12351098551, #12352271884, #12386841383.
+- No active runner or existing safe runner-side inspection path was available. No artifact contents were fetched. Continue metadata-only unless an already-available compliant runner path exists; do not launch a workflow for artifact retrieval.
+
+State preserved: cue UNKNOWN; `barrier_level_selection = WAIT`; adaptive readiness NO-GO; Story Mode NOT COMPLETE; Revision65 blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` unchanged; cue token absent. No gameplay/emulator/restore/player workflow or tests ran.
+
+---
+
 # Offline follow-up — remaining adaptive-player artifacts (24 October 2026)
 
 Seventeen artifact IDs not referenced in the four current continuity documents were screened from the Actions inventory. The full report, artifact sizes/digests, and decision are in `docs/REMAINING_PLAYER_ARTIFACT_TRIAGE_2026-10-24.md`.
