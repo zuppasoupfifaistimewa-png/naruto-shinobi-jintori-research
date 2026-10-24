@@ -1,14 +1,17 @@
 # Latest continuation checkpoint — 24 October 2026
 
-The handoff was refreshed after offline evidence analysis and regression-only monitor hardening.
+This checkpoint supersedes the older status bullets below. It was refreshed after the offline submenu cue-composite regression passed.
 
-- **Latest tested source HEAD before this documentation refresh:** 6d2fdc4553f5eacabf2607c19ebf69bc012c2c51.
-- **Latest regression:** [run #40061967694](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40061967694), success; 32/32 tests, authentic screenshot checks and all workflow steps passed. Monitor policy regression from the current source lineage also passed in [run #40061712532](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40061712532).
-- New measured F20→F60 blue-proxy motion: Revision65 UP 8.38 px, WAIT 7.17 px, map UP 5.01 px, map WAIT 5.03 px; scene shifts +100 px for both UP branches, 0 px for WAIT. This rules out proxy proximity as an independent target cue. The pink badge still tracks the scene pan (+97.46 px), not a verified focus-ring/panel change.
-- Monitor now treats only known, unmarked push skips with no evidence artifact as EXPECTED_GATED_SKIP_NO_GO. Other skips/failures/missing artifacts/stale runs still alert. A gated skip is **not** gameplay success.
-- **Readiness remains NO-GO; Story Mode remains NOT COMPLETE.** barrier_level_selection remains WAIT; consumed Revision65 marker/blob 3754a6ddf45a7570c053d9c149b6d80b0862a127 is unchanged and cue token remains absent. No player, restore, or gameplay-input workflow was launched. Keep all private evidence/game assets outside Git.
+- **Current tested code/test HEAD:** `d1c0428381581b80814bebf6557f5579594bb9da`.
+- **Latest regression:** [Actions run #40064182088](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40064182088) — `success`, 33/33 unit tests in 4.872 seconds; all workflow steps passed, including existing authenticated screenshot policy checks and the new level-up cue composite.
+- **New cue audit:** map-UP reference ring/frame/text = 811 / 8,312 / 635; map-WAIT = 62 / 8,629 / 15; Revision65 submenu-UP = 66 / 2,452 / 3,221; submenu-WAIT = 67 / 2,566 / 39. Require ring + statistics-panel footprint + panel-text transition together. The large submenu text delta is rejected because the ring and expected panel footprint are absent. Four prompt-text comparisons return zero bright-text-mask changes.
+- These are offline measurements on existing authentic private evidence from runs #39947481094 and #39786019434. They do **not** establish a unique level-up target cue.
+- `barrier_level_selection` remains **WAIT**; target cue remains **UNKNOWN**; readiness remains **NO-GO**; Story Mode remains **NOT COMPLETE**.
+- Consumed marker `experiments/.run-storymode-adaptive-player` remains Revision65, blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`, unchanged. `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` remains absent. All pre-download/PAD checks and legacy workflow containment remain in force.
+- No player, emulator, restore, or gameplay-input workflow was run. Private evidence and all game assets stay outside Git.
+- Monitor failures #40048510714, #40034304421 and #40010286618 still refer to the intentionally gated/skipped historical player run #39975090690 without a valid evidence artifact. Do not start gameplay just to clear monitor warnings; a gated skip is neither gameplay success nor game failure.
 
-**Next action:** continue offline analysis from this tested checkpoint only. Do not change the consumed marker or authorize any input until an independently unique submenu target cue is demonstrated from authentic evidence and the fail-closed gate/new marker are explicitly reviewed. Read current STATUS.md and ANALYSIS_LOG.md before continuing. Check actual HEAD again before any write; this documentation refresh is expected to create a separate documentation-only commit.
+**Next action:** continue offline with the existing authenticated submenu screenshots. Search for a unique, tile-anchored cue independent of camera pan, HUD unocclusion, and character pose. Do not replace the marker, set the cue token, or inject input until that submenu-specific cue is independently demonstrated and a new marker, allowlist, pre-download/PAD gate, and regression are reviewed. Then record the specific evidence rather than inferring from the map-only reference.
 
 ---
 
@@ -23,8 +26,8 @@ Membuat pemain adaptif yang aman, terukur, dan akhirnya dapat menjalankan Story 
 ## Titik awal yang wajib dipakai
 
 - Repo yang boleh diakses/diubah: `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research` saja.
-- HEAD terverifikasi saat handoff dibuat: `1c1e1a7c0aa292ec50c10a1064ca794b58802305`.
-- Regresi terakhir: [run #40059425253](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40059425253), **success**, 15/15 langkah, 27 tes lulus.
+- HEAD terverifikasi untuk kelanjutan ini: `d1c0428381581b80814bebf6557f5579594bb9da`.
+- Regresi terakhir: [run #40064182088](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40064182088), **success**, 33/33 tes, semua langkah workflow lulus.
 - Baca dahulu `STATUS.md`, `ANALYSIS_LOG.md`, `docs/HANDOFF_ADAPTIVE_PLAYER_2026-10-23.md`, serta dokumen diagnostik/struktural savestate dan Story Mode yang relevan. Gunakan hasil di sana sebagai fakta yang sudah ada, bukan pekerjaan baru.
 
 ## Status dan keputusan yang tidak boleh diabaikan

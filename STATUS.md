@@ -1,3 +1,24 @@
+# Offline level-up target-cue regression checkpoint — 24 October 2026
+
+**Code/test HEAD:** `d1c0428381581b80814bebf6557f5579594bb9da`. **Regression:** [GitHub Actions #40064182088](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40064182088) — `success`, 33/33 unit tests in 4.872 seconds; all workflow steps passed, including the existing authentic screenshot checks and the new cue-composite audit.
+
+The audit uses only existing private/authenticated screenshots from Revision65 A/B run #39947481094 and map UP-vs-WAIT run #39786019434. No player, emulator, restore/continuation, or gameplay-input workflow was launched.
+
+| Authenticated screenshot context | Red focus-ring pixels | Stats-panel gold-frame pixels | Bright-text mask delta F20→F60 | Composite |
+|---|---:|---:|---:|---|
+| Map UP reference | 811 | 8,312 | 635 | Match |
+| Map WAIT control | 62 | 8,629 | 15 | Reject |
+| Revision65 submenu UP | 66 | 2,452 | 3,221 | Reject |
+| Revision65 submenu WAIT | 67 | 2,566 | 39 | Reject |
+
+The new conservative regression requires all three signals at once: a focus ring around the candidate tile, the expected statistics-panel footprint, and a text-mask transition inside that panel. It rejects the submenu UP false-positive: 3,221 bright-text mask changes occur in the registered ROI without the matching panel footprint or focus ring. Prompt text masks were stable (zero changed pixels) for all four F20→F60/F60→F100 UP/WAIT comparisons.
+
+**Safety decision unchanged:** `barrier_level_selection = WAIT`; target cue in the nested level-up submenu remains **UNKNOWN**; `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` remains absent; consumed marker `experiments/.run-storymode-adaptive-player` remains Revision65, blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`, unmodified. Adaptive-player readiness is **NO-GO** and Story Mode is **NOT COMPLETE**. Fixed-sequence Story Mode and raw restore/continuation remain disabled. Private screenshots and game assets remain outside Git.
+
+**Next step:** continue offline on existing authentic screenshots, focusing on registered tile boundaries and any independent submenu-specific target indicator. Do not replace the marker, add the cue token, or launch gameplay until the submenu cue is independently verified and the marker, allowlist, pre-download/PAD fail-closed gate, and regression are reviewed.
+ 
+---
+
 # Adaptive readiness checkpoint — 24 October 2026
 
 Latest source/test checkpoint: **6d2fdc4553f5eacabf2607c19ebf69bc012c2c51**. Latest regression: [Actions run #40061967694](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40061967694), **success**, 32/32 unit tests and all workflow steps passed, including all ten authentic X11 observations and the private Revision65/map UP-vs-WAIT screenshot regression. The monitor policy hardening is included in this tested source tree; [run #40061712532](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40061712532) also passed on its then-current source.

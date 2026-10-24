@@ -1,3 +1,38 @@
+# Offline submenu cue composite audit — 24 October 2026
+
+**Code/test commit:** `d1c0428381581b80814bebf6557f5579594bb9da`. **Regression:** [#40064182088](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40064182088) completed `success` at 04:55:20 UTC / 11:55:20 WIB. All 33 tests passed in 4.872 seconds; all 15 workflow steps and existing authenticated screenshot checks passed.
+
+## New measured discriminator
+
+All image measurements are offline, using existing private PNGs only: Revision65 A/B from run #39947481094 and the known map UP-vs-WAIT reference from run #39786019434. The regression computes three features around a candidate target and its expected stats panel:
+
+- red directional focus-ring pixels, with candidate tile body masked out (minimum 500);
+- gold-frame pixels in the registered stats-panel ROI `(150,340,545,540)` (minimum 5,000);
+- XOR count for a bright-text mask (minimum 100) inside that panel between F20 and F60.
+
+| Context | Ring | Stats-panel frame | Panel bright-text mask delta | Composite outcome |
+|---|---:|---:|---:|---|
+| Map UP | 811 | 8,312 | 635 | positive reference |
+| Map WAIT | 62 | 8,629 | 15 | reject: no ring/text transition |
+| Revision65 submenu UP | 66 | 2,452 | 3,221 | reject: ring and panel footprint absent |
+| Revision65 submenu WAIT | 67 | 2,566 | 39 | reject |
+
+The stats-panel footprint is a required precondition. The submenu UP bright-text mask changes by 3,221 pixels in the same broad registered ROI, but the expected gold panel frame is only 2,452 pixels and the focus ring is 66; this is a strong false-positive demonstration for text/pixel deltas alone. The four lower-left prompt comparisons (UP F20→F60, UP F60→F100, WAIT F20→F60, WAIT F60→F100) all have zero changed bright-text mask pixels, so the instruction text itself did not change according to this mask. This does not prove what every unmasked pixel means; it establishes that the new composite rejects the known ambiguous submenu frames.
+
+The pure helper `tools/levelup_target_cue_audit.py` applies thresholds fail-closed, rejects missing/malformed/negative inputs, and is not imported into the gameplay agent. Its unit test covers positive map reference, map WAIT, submenu false-positive, missing panel transition, missing footprint, and missing data. The workflow adds `LEVELUP_TARGET_CUE_REGRESSION=PASS` only after verifying map UP matches while map WAIT and both submenu branches do not.
+
+## Decision and operational containment
+
+- `barrier_level_selection` remains **WAIT**; submenu target semantics remain **UNKNOWN**.
+- Marker `experiments/.run-storymode-adaptive-player` stays consumed at Revision65 (blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`); cue token stays absent.
+- Readiness **NO-GO**; Story Mode **NOT COMPLETE**.
+- No player, emulator, restore/continuation, or gameplay-input run was launched. The current run was regression-only and consumed existing screenshot artifacts. No screenshot or game asset was committed.
+- Known monitor failures #40048510714, #40034304421 and #40010286618 are from stale gated player run #39975090690 (`skipped`, no valid evidence artifact); they are monitor alerts, not proof of gameplay failure or progress. The monitor-policy regression #40061712532 passed. Do not run gameplay to make the monitor green.
+
+**Next offline work:** inspect existing authenticated submenu screenshots for a unique indicator spatially registered to a candidate tile and independent of scene pan, HUD exposure, and sprite pose. A cue in the map context is not enough to authorize the submenu. Require an independently verified submenu cue, explicit new marker review, full allowlist review, the pre-download/pre-PAD gate, and passing regression before any future bounded input trial.
+
+---
+
 # Offline pointer screen-anchor regression + monitor fail-closed policy — 24 October 2026
 
 **Source/test commit:** 6d2fdc4553f5eacabf2607c19ebf69bc012c2c51.  
