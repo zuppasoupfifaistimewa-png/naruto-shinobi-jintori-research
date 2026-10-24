@@ -1,3 +1,19 @@
+# Screenshot crop correction: foreground kunai is not a target cursor — 24 October 2026
+
+## Verified crop correction — 24 October 2026
+
+**Source/test commit:** `96e9c22089e257facf2be3359ead33deed117583`. **Regression:** [GitHub Actions #40065597290](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40065597290) — `success`; 33 unit tests passed in 4.297 seconds and all 15 workflow steps passed, including authentic screenshot checks for the prior X11/card/Revision65/map evidence.
+
+Visual inspection of the existing private/authenticated crops from Revision65 artifact `12498688466` (run #39947481094) and map UP-vs-WAIT artifact `12428777970` (run #39786019434) identified a classification error in the previous analysis: the blue/orange mask ROI `(620,295,735,390)` is part of the character's hand-held kunai/foreground sprite ROI `(540,290,750,560)`, not an independent UI pointer. Therefore the old 8.38/7.17/5.01/5.03 px motion values and pointer-to-tile distances must **not** be interpreted as cursor evidence. They are superseded as a pointer hypothesis; no target-selection signal can be inferred from this ROI.
+
+The regression now asserts that the former proxy ROI is contained inside the foreground-sprite exclusion ROI, labels it `cursor_or_target_evidence=false` and `cue_eligible=false`, and removes the misleading pointer-centroid and screen-anchor claims. The authentic terrain/camera-pan and ring/panel audit remains unchanged: Map UP ring/panel/text = 811/8312/635; Map WAIT = 62/8629/15; Revision65 submenu UP = 66/2452/3221; submenu WAIT = 67/2566/39. The composite still rejects both submenu branches. The pink badge's +97.46 px visible-centroid shift against a +100 px scene shift remains consistent with camera pan/HUD unocclusion, not proof of target selection.
+
+**Decision remains fail-closed:** `barrier_level_selection = WAIT`; the submenu target cue remains **UNKNOWN**; adaptive-player readiness **NO-GO**; Story Mode **NOT COMPLETE**. Consumed marker `experiments/.run-storymode-adaptive-player` is unchanged at Revision65, blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`; the cue token remains absent. No player, emulator, restore/continuation, or gameplay-input workflow was launched; all screenshots, ROM/BIOS, Memory Cards, savestates, and private evidence remain outside Git.
+
+**Next:** continue offline with the existing authentic screenshots, examining a cue spatially attached to the actual candidate tile and independent of background motion, HUD exposure, and foreground pose. Do not add the cue token, change the consumed marker, or run gameplay before independent verification and explicit review of marker/allowlist/fail-closed gates.
+
+---
+
 # Offline submenu cue composite audit — 24 October 2026
 
 **Code/test commit:** `d1c0428381581b80814bebf6557f5579594bb9da`. **Regression:** [#40064182088](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40064182088) completed `success` at 04:55:20 UTC / 11:55:20 WIB. All 33 tests passed in 4.872 seconds; all 15 workflow steps and existing authenticated screenshot checks passed.
