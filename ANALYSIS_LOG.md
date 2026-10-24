@@ -1,3 +1,13 @@
+# Corrected runner-only control-probe inspection (25 October 2026)
+
+Actions run [#40141018663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40141018663) completed the corrected inspection of artifact #12308661246 on the GitHub runner. The artifact digest matched GitHub metadata. It records ten same-checkpoint branches with identical pre captures; press/release readbacks pass for each input branch. The directional post captures are pixel-identical to NONE, while CIRCLE changes the full 320×240 frame. OCR over the three unique images was too garbled to establish state. Thus it is not authenticated as a `barrier_level_selection` A/B and provides no target-cue evidence. Details: [triage report](docs/NON_PLAYER_ACTIONS_ARTIFACT_METADATA_TRIAGE_2026-10-24.md).
+
+First corrected run #40140914545 failed only at a Pillow diff-stat computation; fixed and completed in #40141018663. No savestate was present/opened; no emulator, gameplay input, restore, player workflow, tests, local artifact download, or private evidence commit occurred. The temporary runner-only workflow and selector were removed.
+
+Preserve UNKNOWN cue, `barrier_level_selection = WAIT`, readiness NO-GO, Story Mode NOT COMPLETE, Revision65 blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`, and cue token absent.
+
+---
+
 # Runner-only inspection — existing control-probe artifact (25 October 2026)
 
 Authorized one-job Actions inspection [#40110571330](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40110571330) completed successfully. Artifact #12308661246 size and SHA-256 matched its authenticated GitHub metadata. The report describes ten button/no-input branches from a common checkpoint and identical pre-frame hashes; all non-CIRCLE post frames match NONE, while CIRCLE differs. Captures are 320×240. The checkpoint state is unknown, and OCR/image diffs were skipped because the inspection code only accepted 1280×800; no submenu cue conclusion follows. See [full triage](docs/NON_PLAYER_ACTIONS_ARTIFACT_METADATA_TRIAGE_2026-10-24.md).
