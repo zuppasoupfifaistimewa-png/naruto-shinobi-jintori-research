@@ -1,3 +1,14 @@
+# Session continuation — next evidence gate (25 October 2026)
+
+- Reverified main before this note at `74c99a62616c2c4a52332dd10f18bb8747706f35`; latest Actions #40141018663 was completed/success. This is runner-inspection success, not gameplay progress.
+- Usage checker: primary 30-day window 73% used / 27% remaining; secondary unavailable.
+- The authorized runner-only inspection of artifact #12308661246 is complete and non-qualifying. Do not repeat it.
+- The known submenu source run #39907655833 / artifact #12482055310 and checkpoint SHA `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35` have already supported audited A/B evidence. Replaying through the adaptive-player workflow or repeating this checkpoint does not add qualifying evidence. No new workflow, emulator, gameplay input, restore, player run, or test was started here.
+- New decision and exact next gate: [Adaptive readiness next evidence gate](ADAPTIVE_READINESS_NEXT_EVIDENCE_GATE_2026-10-25.md). It specifies the distinct, same-start, unobstructed tile A/B needed and the remaining battle/ending/restore reliability gates.
+- Current invariants were verified: cue UNKNOWN, `barrier_level_selection = WAIT`, NO-GO, NOT COMPLETE, Revision65 blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` unchanged, cue token absent.
+
+---
+
 # Corrected runner inspection complete — candidate does not qualify (25 October 2026)
 
 Actions run [#40141018663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40141018663) inspected artifact #12308661246 entirely on the runner. Same-checkpoint pre screenshots are pixel-identical. All direction press/release readbacks pass, but UP/DOWN/LEFT/RIGHT post screenshots are pixel-identical to NONE; CIRCLE changes the full frame. Captures are 320×240 and OCR was too garbled to establish the checkpoint state or a selection cue. Treat this artifact as non-qualifying for the nested submenu A/B. The previous corrected attempt #40140914545 hit a Pillow diff-stat bug; it was fixed and the successful run completed. No savestate was opened, and no emulator, gameplay input, restore, player workflow, or tests ran. Temporary inspection workflow and selector have been removed.
