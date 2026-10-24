@@ -1,7 +1,7 @@
 # Latest verified checkpoint — distinct Revision59 offline audit remains negative for barrier target cue (24 October 2026)
 
 ## Current repository and Actions verification
-- Current documentation HEAD: `ef4d24e4ca3f77010c1e2fd009ee1d9235462a62`; main audit entry commit: `15cd1fb8bed5dffa104c64243c91ce18409bcf7f`. The audit began at prior `main` HEAD `d253a0f8ef8c7eb5b5acc618314c03acc70c86f1`; the code/test checkpoint preserved is `c0b7d48933d37f59914d82a4bfeab4100d836a1e`.
+- Audit baseline: `main` HEAD `d253a0f8ef8c7eb5b5acc618314c03acc70c86f1`; code/test checkpoint preserved: `c0b7d48933d37f59914d82a4bfeab4100d836a1e`. The Revision59 audit result was first recorded in [commit `15cd1fb8bed5dffa104c64243c91ce18409bcf7f`](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/15cd1fb8bed5dffa104c64243c91ce18409bcf7f). Verify the live `main` HEAD and latest Actions before further work.
 - Latest relevant regression remains [GitHub Actions #40071317759](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40071317759), success: 35 unit tests and all workflow steps passed. No regression rerun was needed for this documentation-only audit.
 - The ten most recent workflow runs returned by the Actions API were all completed; no active run appeared in that latest-run window.
 
