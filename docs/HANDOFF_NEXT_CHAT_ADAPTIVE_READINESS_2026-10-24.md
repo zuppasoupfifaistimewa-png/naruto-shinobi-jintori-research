@@ -1,3 +1,15 @@
+# ChatGPT continuation — ordered readiness work queue (25 October 2026)
+
+Use this ordered checklist first: [Adaptive readiness next evidence gate](ADAPTIVE_READINESS_NEXT_EVIDENCE_GATE_2026-10-25.md).
+
+Current state at handoff: main before this documentation update `b2b2793936bd2799ef444c519a078cd019db123d`; usage primary 30-day window 83% used / 17% remaining, secondary unavailable; latest Actions #40142939830 (runner-only analysis success) and #40142559635 (diagnostic failure). No usable A/B frames were produced. Auto-review rejected a retry that could restore private state and send gameplay input; do not work around it. Ask the user for explicit approval for exactly one such bounded runner-only experiment before any restore/input.
+
+Next work order: verify repo/current gates → preserve UNKNOWN/WAIT/NO-GO/NOT COMPLETE and Revision65 → resolve approval boundary → if approved, fix Xvfb lifetime and runner setup then run RIGHT-vs-NONE only with exact F20 state/parity gates → assess unobscured tile-attached cue → calibrate battle and result/ending states → harden checkpoint restore/watchdog/retry controls → run bounded integration pilot → assess GO separately from authentic Story Mode completion.
+
+Artifact contents stay on GitHub Actions runners. Never run the adaptive-player workflow to bypass cue uncertainty. Full criteria and the prior diagnostic result are in the linked work queue.
+
+---
+
 # Session continuation — bounded diagnostic blocked (25 October 2026)
 
 - Session-start usage: primary 30-day window 75% used / 25% remaining; secondary unavailable.
