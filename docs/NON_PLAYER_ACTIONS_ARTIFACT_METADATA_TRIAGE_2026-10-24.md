@@ -1,0 +1,23 @@
+# Non-player Actions artifact metadata triage — 24 October 2026
+
+## Verified scope
+- The only repository queried was `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`.
+- At session start, `main` HEAD was `77f8da107236155b48ffa523c1c47dbb92311131`, matching the supplied checkpoint.
+- The ten newest Actions runs were completed. Latest overall is monitor #40102319836 (`success`, older source `2a5fa920...`); latest classifier regression is #40071317759 (`success`, source `c0b7d489...`). Neither supplies new gameplay evidence.
+- Usage checker: primary 30-day window 39% used / 61% remaining; secondary window unavailable.
+- Reviewed requested continuity documents and Actions/workflow/artifact metadata. No artifact bytes, screenshots, ZIP manifests, or savestates were fetched or opened.
+
+## Candidate inventory
+- **Possible unresolved metadata lead:** run [#39513285641](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39513285641), artifact #12308661246 (`naruto-storymode-control-probe-private`, 91,334,642 bytes, SHA-256 `e21f8adad3b5d66ee9afba7a8488775b7932c2a6d71c51412ea39c34398acf3f`, not expired at metadata check). The checked-in workflow at the run's source revision says it independently restores one shared checkpoint and samples NONE plus START/CIRCLE/CROSS/TRIANGLE/SQUARE/UP/DOWN/LEFT/RIGHT. This makes it a metadata-only lead for matched-start input/control observations; GitHub run/artifact metadata does not identify the checkpoint's game state, so it does **not** establish that any branch starts in `barrier_level_selection`. Its source run #39426068247 is titled “Naruto SPU stopped-cursor savestate probe”; that title also does not establish submenu state.
+- Run #39618670884 / artifact #12352978983 and run #39619671384 / artifact #12353768685 are already documented in `ANALYSIS_LOG.md` and the cue-audit history. They are post-barrier DOWN-versus-no-input observations and were visually identical at the recorded comparison frames; do not re-audit.
+- Run #39617444912 / artifact #12354275022 is the already documented single Circle confirmation of the highlighted barrier YES prompt, not a matched-start submenu A/B.
+- Runs #39613929898 / artifact #12351098551, #39614665390 / artifact #12352271884, and #39685868421 / artifact #12386841383 are already documented roulette action/settling observations; they are outside the target submenu question.
+- The 66-run adaptive-player inventory and its 17 uncited-artifact screen remain covered by `docs/REMAINING_PLAYER_ARTIFACT_TRIAGE_2026-10-24.md`; no adaptive-player artifact was repeated.
+
+## Runner-only boundary and decision
+No active Actions run was available as a runner session. The inspected existing workflows are finite emulator/probe jobs that have already completed; the available GitHub artifact-download connector returns artifact bytes to the caller, which would violate the user's runner-only rule. No existing safe runner-side artifact-inspection process was found in the repository text. Therefore inspection stops at metadata. Do not dispatch or rerun a workflow solely to inspect the artifact, and do not use the local workspace for its contents.
+
+The #39513285641 artifact is the only remaining metadata lead worth considering for a later runner-only review, but its target-state relevance is unknown. If an already available, approved runner-side processing path becomes available, first inspect only its text/JSON manifest and state labels to determine whether it contains a same-start `barrier_level_selection` A/B; avoid opening savestates. Otherwise leave it uninspected and wait for a separately authorized path.
+
+## Required state
+Target cue **UNKNOWN**; `barrier_level_selection = WAIT`; adaptive readiness **NO-GO**; Story Mode **NOT COMPLETE**. Keep Revision65 marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` unchanged and cue token absent. No emulator, restore, player workflow, gameplay input, or tests ran. No private evidence was added to Git.
