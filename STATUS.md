@@ -1,4 +1,19 @@
-# Latest verified checkpoint — pink badge pulse excluded as a unique cue (24 October 2026)
+# Latest verified checkpoint — Revision64/65 visual duplicate; submenu target cue remains UNKNOWN (24 October 2026)
+
+## Offline cross-run comparison
+
+New audit: `docs/LEVELUP_SUBMENU_CUE_AUDIT_2026-10-24.md`.
+
+Private, authenticated emulator artifacts from Revision64 run #39942178665 (artifact 12496637328) and Revision65 run #39947481094 (artifact 12498688466) were compared offline. All ten corresponding C01/C02 frames at F20/F60/F100/F110/F180 are pixel-identical across the two artifacts: zero differing pixels and zero mean absolute RGB difference in each pair. Revision64 logs only UP@F30; Revision65 logs UP@F30 plus Circle@F70 with successful PAD readback, but its captured frames show no rendered difference from Revision64. Thus these artifacts are not independent visual confirmations, and Circle delivery did not visibly select/confirm a target in the sampled observations.
+
+The badge/pulse, camera/HUD exposure, character pose, kunai sprite, and the map-only ring-plus-stats-panel signature still do not uniquely identify the nested submenu target. Japanese prompt: `レベルアップする結界をえらんでください` (Pilih penghalang yang akan dinaikkan levelnya); footer: `けってい` (konfirmasi/pilih, Circle), `もどる` (kembali, X).
+
+**Decision unchanged:** `barrier_level_selection = WAIT`; target cue **UNKNOWN**; adaptive readiness **NO-GO**; Story Mode **NOT COMPLETE**. Revision65 marker remains consumed and unchanged; cue token remains absent. No player/emulator/input/restore run was launched in this audit. No private assets were committed.
+
+**Next:** inspect only a distinct existing authenticated artifact where the candidate tile is visible in action and control without fixed-HUD occlusion. Do not reuse Revision64/65 as independent evidence, add the cue token, alter the marker, or launch gameplay before the existing gate is independently satisfied.
+
+---
+## Previous verified checkpoint — pink badge pulse excluded as a unique cue (24 October 2026)
 
 ## Offline authentic screenshot regression — 24 October 2026
 

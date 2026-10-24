@@ -1,4 +1,23 @@
-# Latest continuation checkpoint — pink badge pulse is not a unique cue (24 October 2026)
+# Latest continuation checkpoint — Revision64/65 duplicate images; submenu cue remains UNKNOWN (24 October 2026)
+
+## What changed in this turn
+
+Read current `main` first: HEAD was `0806d00735c9e1594a8a862e38f7055ac27bc605`, with code/test parent `885d9889215a4fdca6b276daadd8a431f8177c51`. The latest code regression remains Actions #40066679351, success: 34 tests and all 15 steps passed.
+
+Offline analysis compared private authenticated Revision64 artifact #12496637328 / run #39942178665 and Revision65 artifact #12498688466 / run #39947481094. All ten corresponding C01/C02 PNGs at F20/F60/F100/F110/F180 are pixel-identical (0 changed pixels; mean absolute RGB delta 0). Revision64 logs only UP@F30; Revision65 logs UP@F30 and Circle@F70 with successful PAD readback, yet the rendered observations are unchanged. Do not count these artifacts as independent visual confirmations. The historical Circle input did not produce a visible target-selection/confirmation transition in these captured observations.
+
+Full measurements and cue decisions are in `docs/LEVELUP_SUBMENU_CUE_AUDIT_2026-10-24.md`. No screenshots, ROM/BIOS, Memory Card, savestate, or private artifact was added to Git. No player/emulator/restore/input run was launched during this audit.
+
+## Required state and next action
+
+- `barrier_level_selection = WAIT`; submenu target cue remains **UNKNOWN**.
+- Adaptive-player readiness remains **NO-GO**; Story Mode remains **NOT COMPLETE**.
+- Do not modify the consumed Revision65 marker (`3754a6ddf45a7570c053d9c149b6d80b0862a127`) or add `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1`.
+- Continue offline only with a distinct existing authenticated artifact where the candidate tile is visible in both action and control without fixed-HUD occlusion. Do not rerun or double-count Revision64/65, and do not launch gameplay or restore a checkpoint before the cue and fail-closed gate are independently reviewed.
+- If dialogue appears in a future authorized Story Mode run, use START to skip it, not Circle. Translate Japanese strings immediately into Indonesian in parentheses.
+
+---
+## Previous continuation checkpoint — pink badge pulse is not a unique cue (24 October 2026)
 
 ## New verified offline regression
 

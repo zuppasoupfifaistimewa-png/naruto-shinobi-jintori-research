@@ -1,4 +1,23 @@
-# Offline badge-pulse cue exclusion — 24 October 2026
+# Offline cross-run level-up target-cue audit — 24 October 2026
+
+Private authenticated screenshot artifacts from Revision64 (run #39942178665, artifact #12496637328) and Revision65 (run #39947481094, artifact #12498688466) were downloaded to temporary analysis storage and compared. No screenshot or save-state file was added to Git.
+
+## Cross-run duplicate check
+
+All ten same-branch/same-frame PNG pairs (`C01` and `C02` at F20/F60/F100/F110/F180) are pixel-identical across the two artifacts. Each pair has 0 differing pixels and mean absolute RGB difference 0.000000. Revision64 logs one UP@F30 press/release in C01 and no input in C02. Revision65 logs UP@F30 and Circle@F70, with PAD readback true/false, but renders the same ten screenshots as Revision64. Both artifacts classify every capture `barrier_level_selection` / `WAIT`.
+
+This strengthens the negative finding: Circle was delivered in the historical Revision65 experiment but created no visible change in the captured frames. It does not establish that the button is universally ineffective; it establishes only that this evidence does not verify target selection or confirmation. Revision64/65 are duplicate visual observations and must not be treated as independent trials.
+
+## Cue review and disposition
+
+Badge color/pulse and screen position remain non-unique due the existing UP/WAIT shared pulse and the camera/HUD-occlusion confound. The known map-only positive cue remains a red directional arrow ring together with a matching information panel and panel-text transition; the nested submenu does not meet that composite. The blue/orange proxy is within the foreground kunai sprite exclusion area. Character pose is not cursor evidence. The instruction/footer do not change in the captured observations and no tile-specific information panel appears.
+
+Japanese text seen in the authentic submenu: `レベルアップする結界をえらんでください` (Pilih penghalang yang akan dinaikkan levelnya); `けってい` (konfirmasi/pilih, Circle); `もどる` (kembali, X).
+
+Decision remains `barrier_level_selection = WAIT`, unique submenu cue `UNKNOWN`, adaptive readiness `NO-GO`, Story Mode `NOT COMPLETE`. Consumed marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` is unchanged and the cue token remains absent. No gameplay input, emulator, restore, or continuation was launched for this analysis. The existing regression run #40066679351 remains the latest verified code test: 34 tests and all 15 steps passed; this evidence update is documentation-only and did not warrant rerunning it.
+
+**Next offline action:** use only a distinct existing authentic artifact that reveals the candidate tile in both action and control without fixed-HUD obstruction. Do not count Revision64 and Revision65 twice. If no suitable artifact is already available, preserve UNKNOWN/WAIT and do not bypass the fail-closed gate.
+## Previous analysis — offline badge-pulse cue exclusion (24 October 2026)
 
 **Code/test commit:** `885d9889215a4fdca6b276daadd8a431f8177c51`. **Regression:** [GitHub Actions #40066679351](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40066679351) — `success`, 34 tests in 3.176 s, all 15 workflow steps passed. Inputs were the already-authenticated private screenshot artifacts from runs #39947481094 and #39786019434. No gameplay/emulator/restore workflow ran.
 
