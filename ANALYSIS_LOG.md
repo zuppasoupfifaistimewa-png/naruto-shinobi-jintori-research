@@ -1,3 +1,11 @@
+# Runner-only inspection — existing control-probe artifact (25 October 2026)
+
+Authorized one-job Actions inspection [#40110571330](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40110571330) completed successfully. Artifact #12308661246 size and SHA-256 matched its authenticated GitHub metadata. The report describes ten button/no-input branches from a common checkpoint and identical pre-frame hashes; all non-CIRCLE post frames match NONE, while CIRCLE differs. Captures are 320×240. The checkpoint state is unknown, and OCR/image diffs were skipped because the inspection code only accepted 1280×800; no submenu cue conclusion follows. See [full triage](docs/NON_PLAYER_ACTIONS_ARTIFACT_METADATA_TRIAGE_2026-10-24.md).
+
+Artifact was downloaded and processed only on GitHub Actions runner. No savestate was present/opened; no emulator, gameplay input, restore, player workflow, tests, local artifact download, or private-evidence commit occurred. Do not run another inspection without separate authorization. Preserve cue UNKNOWN, `barrier_level_selection = WAIT`, readiness NO-GO, Story Mode NOT COMPLETE, Revision65 blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`, and cue token absent.
+
+---
+
 # Metadata-only follow-up — non-player Actions artifacts (24 October 2026)
 
 See [non-player artifact metadata triage](docs/NON_PLAYER_ACTIONS_ARTIFACT_METADATA_TRIAGE_2026-10-24.md). Verified session-start HEAD `77f8da107236155b48ffa523c1c47dbb92311131`; latest ten Actions completed. Usage: 39% used / 61% remaining on the primary 30-day window; secondary unavailable.
