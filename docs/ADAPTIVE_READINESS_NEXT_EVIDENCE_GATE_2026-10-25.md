@@ -1,3 +1,13 @@
+## Latest diagnostic outcome — stopped before input (25 October 2026)
+
+- One explicitly authorized run [#40144220503](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40144220503) restored the selected state (`LOAD_EVENT=PASS`) but failed at first capture: `sh: 1: xwd: not found`. No F20 screenshot, preflight pixel-parity result, or RIGHT input occurred. Runner-only artifact analysis [#40144439400](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40144439400) confirmed the missing utility and absence of input records.
+- Temporary diagnostic and analysis workflows/selectors have been removed. **Do not retry restore/input without fresh explicit user approval.**
+- Fix needed before any new approved attempt: install the package providing `xwd` (Ubuntu package `x11-apps`), check `command -v xwd` and `command -v convert`, and verify a bounded root-screen capture before loading private state.
+- Full result: [`docs/ONE_SHOT_SUBMENU_RIGHT_AB_RESULT_2026-10-25.md`](ONE_SHOT_SUBMENU_RIGHT_AB_RESULT_2026-10-25.md).
+- Invariants remain cue UNKNOWN, `barrier_level_selection = WAIT`, readiness NO-GO, Story Mode NOT COMPLETE, Revision65 marker unchanged at `3754a6ddf45a7570c053d9c149b6d80b0862a127`, cue token absent.
+
+---
+
 ## Ordered ChatGPT work queue — continue here first (25 October 2026)
 
 Verified continuation point before this update: `main` = `b2b2793936bd2799ef444c519a078cd019db123d`; primary 30-day usage 83% used / 17% remaining; secondary window unavailable. Latest Actions: runner-only result analysis #40142939830 succeeded, diagnostic #40142559635 failed. This is technical handoff context, not gameplay progress.
