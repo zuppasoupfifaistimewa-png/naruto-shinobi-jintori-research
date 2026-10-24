@@ -1,3 +1,14 @@
+# One-shot RIGHT-vs-NONE diagnostic outcome (25 October 2026) (25 October 2026)
+
+- The one authorized diagnostic [#40144220503](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40144220503) failed during the first preflight capture. Checkpoint restore event passed, but capture failed with `sh: 1: xwd: not found`; no screenshot frames or F20 parity result exist.
+- Runner-only artifact analyses [#40144372685](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40144372685) and [#40144439400](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40144439400) verified the failure text. They report no RIGHT press/release record. No gameplay input was sent and no A/B outcome was observed.
+- The failed capture environment omitted the package providing `xwd` (install `x11-apps` in a future runner setup and preflight `command -v xwd`, `command -v convert`, and a bounded root capture before restoring state).
+- Temporary diagnostic/analysis workflows and selectors were removed. No gameplay retry was started; another restore/input attempt needs fresh explicit user approval.
+- Full runner-only audit: [docs/ONE_SHOT_SUBMENU_RIGHT_AB_RESULT_2026-10-25.md](docs/ONE_SHOT_SUBMENU_RIGHT_AB_RESULT_2026-10-25.md).
+- Preserve cue UNKNOWN; `barrier_level_selection = WAIT`; readiness NO-GO; Story Mode NOT COMPLETE; Revision65 marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` unchanged; cue token absent.
+
+---
+
 # Corrected runner-only control-probe inspection (25 October 2026)
 
 Actions run [#40141018663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40141018663) completed the corrected inspection of artifact #12308661246 on the GitHub runner. The artifact digest matched GitHub metadata. It records ten same-checkpoint branches with identical pre captures; press/release readbacks pass for each input branch. The directional post captures are pixel-identical to NONE, while CIRCLE changes the full 320×240 frame. OCR over the three unique images was too garbled to establish state. Thus it is not authenticated as a `barrier_level_selection` A/B and provides no target-cue evidence. Details: [triage report](docs/NON_PLAYER_ACTIONS_ARTIFACT_METADATA_TRIAGE_2026-10-24.md).
