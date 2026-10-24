@@ -1,0 +1,6 @@
+SOURCE_RUN=40144220503
+SOURCE_ARTIFACT=12580165346
+PROCESSING=runner-only
+OUTPUT=log-text-and-numeric-frame-metrics
+NO_EMULATOR=true
+NO_INPUT=true
