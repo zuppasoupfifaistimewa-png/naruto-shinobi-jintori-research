@@ -1,3 +1,17 @@
+# Offline follow-up — remaining adaptive-player artifacts (24 October 2026)
+
+Seventeen artifact IDs not referenced in the four current continuity documents were screened from the Actions inventory. The full report, artifact sizes/digests, and decision are in `docs/REMAINING_PLAYER_ARTIFACT_TRIAGE_2026-10-24.md`.
+
+- Run #39767083708 / artifact 12420512625: exact F20 parity; DOWN vs WAIT starts in `menu_or_unknown_choice`, not the nested barrier submenu.
+- Run #39877412316 / artifact 12469530414: exact F20 parity; CIRCLE vs WAIT starts in `card_selection`; action reaches dialogue while control remains on card selection.
+- Run #39904672868 / artifact 12479814966: sequential checkpoint resume, not matched-start action/control.
+- Other 14 manifests lack a complete matched-start submenu A/B.
+- Candidate artifact sizes and SHA-256 digests match GitHub metadata. No savestate contents were opened. No emulator, restore, continuation, gameplay input, player workflow, or test ran.
+
+Decision unchanged: target cue UNKNOWN; `barrier_level_selection = WAIT`; adaptive readiness NO-GO; Story Mode NOT COMPLETE; Revision65 marker unchanged and cue token absent. Usage at session start: 30-day window 19% used / 81% remaining; secondary unavailable.
+
+---
+
 # Offline system review — autonomous Story Mode readiness blockers (24 October 2026)
 
 ## Scope
