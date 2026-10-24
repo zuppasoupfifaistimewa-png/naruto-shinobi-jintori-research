@@ -32,7 +32,7 @@ class AdaptiveAgentTests(unittest.TestCase):
             d.rectangle((130,715,1150,740),fill=(190,110,20))
             d.rectangle((130,540,155,715),fill=(190,110,20))
             d.rectangle((1125,540,1150,715),fill=(190,110,20))
-        elif state=="card_selection_detail":
+        elif state in ("card_selection_detail","card_selection_detail_unconfirmed"):
             d.rectangle((100,40,1180,780),fill=(20,105,70))
             d.rectangle((400,180,900,680),fill=(20,105,70))
             # Revealed card illustration: calibrated blue/white art within the center ROI.
@@ -45,6 +45,9 @@ class AdaptiveAgentTests(unittest.TestCase):
             d.rectangle((130,715,1150,740),fill=(190,110,20))
             d.rectangle((130,540,155,715),fill=(190,110,20))
             d.rectangle((1125,540,1150,715),fill=(190,110,20))
+            if state=="card_selection_detail":
+                # Isolated confirm cue calibrated from authentic Revision56 F20.
+                d.ellipse((1045,668,1095,718),outline=(240,35,40),width=8)
         elif state in ("card_selection","card_selection_with_dialogue"):
             d.rectangle((100,40,1180,780),fill=(20,105,70))
             d.rectangle((400,180,900,680),fill=(20,105,70))
@@ -114,13 +117,23 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertEqual(out["state"],"map_after_move")
         self.assertEqual(out["action"],"WAIT")
 
-    def test_revealed_card_detail_is_wait_not_dialogue(self):
+    def test_revealed_card_detail_with_circle_confirm_is_circle_not_dialogue(self):
         out=self.classify("card_selection_detail")
         self.assertGreaterEqual(out["features"]["dialogue_orange"],.05)
         self.assertGreaterEqual(out["features"]["card_art_blue"],.25)
         self.assertGreaterEqual(out["features"]["card_art_white"],.40)
         self.assertLessEqual(out["features"]["central_card_gray"],.12)
+        self.assertGreaterEqual(out["features"]["card_confirm_glyph_red"],.12)
         self.assertEqual(out["state"],"card_selection_detail")
+        self.assertEqual(out["action"],"CIRCLE")
+        self.assertEqual(out["action_reason"],"verified_revealed_card_detail_with_circle_confirm_glyph")
+
+    def test_revealed_card_without_circle_confirm_fails_closed(self):
+        out=self.classify("card_selection_detail_unconfirmed")
+        self.assertGreaterEqual(out["features"]["card_art_blue"],.25)
+        self.assertGreaterEqual(out["features"]["card_art_white"],.40)
+        self.assertLessEqual(out["features"]["card_confirm_glyph_red"],.12)
+        self.assertEqual(out["state"],"card_selection_detail_unconfirmed")
         self.assertEqual(out["action"],"WAIT")
 
     def test_three_card_overlay_is_card_selection_and_fails_closed(self):

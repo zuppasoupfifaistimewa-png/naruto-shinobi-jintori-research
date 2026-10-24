@@ -11,7 +11,7 @@ from typing import Any
 import numpy as np
 from PIL import Image
 
-VERSION = "0.3.0"
+VERSION = "0.4.0"
 
 def _ratios(image: np.ndarray, box: tuple[int,int,int,int]) -> dict[str, float]:
     x1,y1,x2,y2=box
@@ -77,6 +77,9 @@ def observe(path: str | Path) -> dict[str, Any]:
     card_overlay=_ratios(arr,(370,220,930,530))
     central_card=_ratios(arr,(500,220,780,535))
     card_art=_ratios(arr,(545,245,730,380))
+    # This small footer ROI isolates the Circle confirm glyph shown when a
+    # revealed card is actionable; the broader instruction panel is not enough.
+    card_confirm_glyph=_ratios(arr,(1020,660,1115,745))
     features={
         "wheel_red":round(wheel["red"],4),"wheel_gold":round(wheel["gold"],4),
         "dialogue_orange":round(dialogue_box["orange"],4),"dialogue_white":round(dialogue_box["white"],4),
@@ -93,6 +96,7 @@ def observe(path: str | Path) -> dict[str, Any]:
         "central_card_gray":round(central_card["gray"],4),
         "card_art_blue":round(card_art["blue"],4),
         "card_art_white":round(card_art["white"],4),
+        "card_confirm_glyph_red":round(card_confirm_glyph["red"],4),
     }
 
     # Priority matters: the wheel can cover a map, and a real dialogue frame may have a
@@ -107,10 +111,14 @@ def observe(path: str | Path) -> dict[str, Any]:
         features["chakra_ocr_best_effort"]=chakra
         features["required_chakra_calibrated"]=120
     elif card_art["blue"] >= .25 and card_art["white"] >= .40 and central_card["gray"] <= .12:
-        # An opened card has a distinctive blue/white illustration inside the
-        # central card and can retain the same orange instruction panel as dialogue.
-        # Keep this state separate from unopened backs and fail closed (WAIT).
-        state,conf,reason="card_selection_detail",.97,"revealed_center_card_blue_art_low_gray_frame"
+        # The revealed card alone is not sufficient: intermediate reveal animation
+        # can show similar art without the lower-right Circle confirm glyph.
+        # Only the independently A/B-verified stable card-detail + Circle cue can
+        # authorize a confirmation; otherwise retain a distinct WAIT state.
+        if card_confirm_glyph["red"] >= .12:
+            state,conf,reason="card_selection_detail",.97,"revealed_card_art_with_circle_confirm_glyph"
+        else:
+            state,conf,reason="card_selection_detail_unconfirmed",.90,"revealed_card_art_without_clear_circle_confirm_glyph"
     elif card_overlay["white"] >= .12 and card_overlay["gray"] >= .16:
         # Card backs and card prompts outrank generic dialogue; START would bypass them.
         state,conf,reason="card_selection",.97,"three_card_back_overlay_white_frame_gray_lattice"
@@ -147,6 +155,12 @@ def observe(path: str | Path) -> dict[str, Any]:
             action,action_reason="CIRCLE","calibrated_barrier_prompt_with_YES_visibly_highlighted_and_120_cost"
         else:
             action_reason="choice_not_verified_as_YES_highlighted"
+    elif state=="card_selection_detail":
+        # Authentic Circle-vs-WAIT A/B: a stable revealed card with the Circle
+        # confirm glyph advanced to dialogue/map; the no-input control did not.
+        action,action_reason="CIRCLE","verified_revealed_card_detail_with_circle_confirm_glyph"
+    elif state=="card_selection_detail_unconfirmed":
+        action,action_reason="WAIT","revealed_card_confirmation_glyph_not_verified"
     elif state=="barrier_level_selection":
         # The prompt documents Circle as confirm, but no selected target is yet
         # visually identified. Wait for a controlled direction/selection probe.
