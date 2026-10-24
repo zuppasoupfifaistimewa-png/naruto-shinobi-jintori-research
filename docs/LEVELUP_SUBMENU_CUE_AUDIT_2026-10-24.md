@@ -1,3 +1,25 @@
+## Supplemental visual audit — Revision62 matched-state LEFT→Circle A/B (24 October 2026)
+
+### Artifact provenance and controlled start
+- Run [#39940196133](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39940196133), private artifact `12495906030`; ZIP size `11,441,461` bytes and SHA-256 `b07efa5e448a78ce9f81392a094e645d9089a50baabadbca64646615cff83270`, matching GitHub artifact metadata.
+- The report records F20 action/control parity (`1,024,000` identical pixels), the same parent checkpoint SHA-256 `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35`, and both branches in `barrier_level_selection`. Both card clones match at SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`.
+- C01 sent LEFT at F30/F38, then Circle at F70/F78; all press/release readbacks passed. C02 remained no-input/WAIT. The artifact has authentic 1280×800 C01/C02 captures at F20/F60/F100/F110/F180.
+
+### Cue-specific observations
+- The prompt `レベルアップする結界をえらんでください` (Pilih penghalang yang akan dinaikkan levelnya), plus `けってい` (konfirmasi/pilih) and `もどる` (kembali), remains on the captured submenu. The visual audit found no selected-tile outline, unique focus ring, or corresponding tile-specific statistics/panel transition.
+- The pink `60` badge is more exposed in the LEFT branch while the candidate remains more covered by the fixed HUD in control. This unequal visibility makes badge presence/visibility unsuitable as a controlled target cue. The action frames also change the board composition and Naruto pose.
+- Artifact comparison reports `693755/693655/693270/693882` differing pixels at F60/F100/F110/F180. These broad deltas and the logged `WAIT` observations do not isolate a tile-attached selection effect; Circle produced no sampled submenu/panel transition.
+
+### Disposition
+- **VERIFIED:** matched initial submenu state and input trace. **HYPOTHESIS:** camera/view movement, animation, and fixed-HUD unocclusion explain the large image deltas and badge exposure. **UNKNOWN:** the target tile and its unique selection cue.
+- This is a visual supplement to the already passing historical-frame policy fixture, not new proof of target semantics. The adjacent Revision47 artifact/run #39868722262 is a documented `roulette` A/B, not a submenu candidate.
+- Keep `barrier_level_selection = WAIT`, target cue **UNKNOWN**, adaptive readiness **NO-GO**, Story Mode **NOT COMPLETE**, Revision65 marker unchanged at blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`, and cue token absent. No `.sstate` was opened/restored; no emulator/input/player workflow ran; no private evidence was committed.
+
+### Next minimum evidence
+Continue only with a distinct authenticated same-start-state A/B where the same candidate tile is clearly unobstructed in both branches and a repeatable cue physically attached to that tile changes with selection, preferably with a matching tile-specific information-panel change. Otherwise preserve UNKNOWN/WAIT and keep the cue gate closed.
+
+---
+
 ## Offline follow-up — previously undocumented Revision58 artifact triage (24 October 2026)
 
 ### Scope and artifact provenance

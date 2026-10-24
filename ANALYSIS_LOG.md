@@ -1,3 +1,32 @@
+# Offline follow-up — Revision62 matched-state submenu A/B still does not identify the target (24 October 2026)
+
+## Provenance and scope
+- Audit baseline `main` HEAD: `2a5fa920ab544f125041f3fefd8f202ab702601b`.
+- Private artifact: run [#39940196133](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39940196133), artifact `12495906030` (11,441,461 bytes; downloaded ZIP SHA-256 `b07efa5e448a78ce9f81392a094e645d9089a50baabadbca64646615cff83270`, matching the GitHub API digest). The artifact contains C01/C02 PNG captures at F20/F60/F100/F110/F180, comparison/precondition/action reports, JSON observations, and `.sstate` outputs. Only PNGs and text/JSON were read; the `.sstate` members were not opened or restored.
+- This artifact was already used by the passing historical-frame policy regression in Actions #40069923244/#40071317759. The present pass is limited to visual discrimination of a selected tile and does not rerun the classifier test.
+
+## Matched start and input trace
+- `ab-comparison-report.txt` records F20 parity PASS with `1,024,000` identical pixels and parent SHA-256 `705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35`; both branch states are `barrier_level_selection`.
+- C01 is LEFT then Circle: LEFT press/release at F30/F38 and Circle press/release at F70/F78; each readback passed. C02 is WAIT with zero button presses. Both Memory Card clones match at SHA-256 `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`.
+
+## Visual result
+- The submenu prompt remains `レベルアップする結界をえらんでください` (Pilih penghalang yang akan dinaikkan levelnya), with footer `けってい` (konfirmasi/pilih) and `もどる` (kembali). The action frames do not show a new tile-specific information panel, a clearly selected-tile outline, or another cue that remains attached to one candidate tile.
+- The pink `60` badge is partially obscured by the fixed HUD, with more of it exposed in the LEFT branch than in control. The candidate is therefore not equally unobstructed across the A/B pair. Naruto/foreground pose and scene composition also shift; these broad changes cannot be attributed to target selection.
+- The report gives action/control differing-pixel counts of `693755`, `693655`, `693270`, and `693882` at F60/F100/F110/F180. It also records `barrier_level_selection` / `WAIT` across the observed frames. The large whole-frame deltas are not a tile-anchored measurement.
+- Revision47 run #39868722262 / artifact `12464698050` was screened as a candidate but is already documented as starting in `roulette`; it cannot answer the submenu question. No screenshot re-audit of that known result was undertaken.
+
+## Classification and decision
+- **VERIFIED:** Revision62 has pixel-identical F20 starts, matching submenu classifications, matched card clones, logged action/control inputs, and visible submenu prompts in the sampled captures.
+- **HYPOTHESIS:** the observed image deltas are consistent with scene/view movement, animation, and HUD occlusion.
+- **UNKNOWN:** which barrier is targeted and what unique visual cue marks it. The prompt/footer, pink-badge visibility, character pose, and broad frame differences do not meet the gate.
+- Keep `barrier_level_selection = WAIT`, target cue **UNKNOWN**, readiness **NO-GO**, and Story Mode **NOT COMPLETE**. The Revision65 marker was read at blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` and left unchanged; the cue-token gate remains closed.
+- No emulator, restore, continuation, gameplay input, tests, or player workflow was run for this audit. No private artifact or evidence file was added to Git.
+
+## Next offline step
+Search only remaining, distinct authenticated artifacts for a same-start-state A/B where the same candidate tile is unobstructed in both branches and a reproducible cue is physically anchored to that tile, preferably corroborated by a matching tile-specific panel change. If none exists, preserve UNKNOWN/WAIT and document that the repo lacks qualifying evidence; do not infer a cue or bypass the gate.
+
+---
+
 # Offline follow-up — Revision58 single-branch submenu artifact does not identify target tile (24 October 2026)
 
 Run [#39905240818](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39905240818), artifact #12480856146 (3,075,304 bytes; API digest `sha256:ca829197c7be852580e0527f071d2fc3711ff2433d17ed020f000fb52dbc4acf`) was newly triaged offline from its authentic screenshots and text/JSON only.

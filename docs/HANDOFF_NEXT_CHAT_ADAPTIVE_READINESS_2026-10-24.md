@@ -1,3 +1,24 @@
+# Handoff update — Revision62 visual A/B audited; target cue remains UNKNOWN / WAIT (24 October 2026)
+
+## Checkpoint and Actions
+- Audit source HEAD: `2a5fa920ab544f125041f3fefd8f202ab702601b` on the only permitted repo, `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`.
+- Latest Actions run [#40102319836](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40102319836) is the scheduled monitor, `success`; its report says player run #39975090690 was skipped with no player artifact (`EXPECTED_GATED_SKIP_NO_GO`). Latest code regression [#40071317759](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40071317759) remains `success` (35 unit tests and all steps). This documentation-only audit did not rerun tests.
+
+## Newly completed offline work
+- Visually audited already-authenticated Revision62 artifact `12495906030` from run #39940196133. GitHub metadata size/digest match the downloaded ZIP. F20 action/control images are identical; both begin in `barrier_level_selection` from the same parent and matching card clones. C01 logged LEFT F30–F38 and Circle F70–F78; C02 stayed WAIT/no-input.
+- The prompt `レベルアップする結界をえらんでください` (Pilih penghalang yang akan dinaikkan levelnya) persists. LEFT changes the view and exposes more of the pink `60` badge, but the fixed HUD occludes the branches unequally. No unique tile-attached cue or matching tile-specific panel transition appears. The broad frame deltas do not establish selection.
+- Revision62 was already used as a fail-closed regression fixture; this update adds the visual target-cue assessment only. Revision47 is excluded because its documented matched A/B starts at `roulette`, not the level-up submenu. No `.sstate` was opened or restored; no emulator/input/player workflow ran.
+
+## Required unchanged state
+- `barrier_level_selection = WAIT`; target cue **UNKNOWN**; adaptive readiness **NO-GO**; Story Mode **NOT COMPLETE**.
+- Preserve consumed marker Revision65/blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`; keep the verified-cue token absent. Do not open the gameplay gate.
+- No private screenshots, ROM/BIOS, Memory Card, savestate, or private evidence artifact was added to Git.
+
+## Next step
+Continue offline only with another distinct authenticated same-start-state action/control artifact where the same candidate tile is unobstructed in both branches and a repeatable tile-attached selection cue changes with the action, preferably alongside matching tile-specific panel information. If no such artifact remains, preserve UNKNOWN/WAIT and state the evidence blocker explicitly. Do not run emulator, restore, continuation, or gameplay input to resolve the cue.
+
+---
+
 # Handoff update — Revision58 artifact audited offline; cue gate still closed (24 October 2026)
 
 - Only permitted repository: `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`.
