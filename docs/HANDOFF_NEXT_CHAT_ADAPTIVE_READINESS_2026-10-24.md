@@ -1,3 +1,29 @@
+# Latest handoff — Revision59 offline audit done; barrier target remains UNKNOWN / NO-GO (24 October 2026)
+
+## Latest verified checkpoint
+- Repository: `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research` only.
+- Audited starting HEAD: `d253a0f8ef8c7eb5b5acc618314c03acc70c86f1`; tested code parent: `c0b7d48933d37f59914d82a4bfeab4100d836a1e`.
+- Latest regression remains [Actions #40071317759](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40071317759): success, 35 unit tests, all steps passed. No active run appeared among the ten most recent Actions runs. Do not rerun the suite just for a docs-only change.
+
+## New work completed
+Offline review of distinct private/authenticated Revision59 artifact `12482055310` from run [#39907655833](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39907655833). Only screenshot PNGs and textual logs/decision JSON were inspected; savestates were not opened or restored, and no emulator or gameplay-input workflow was launched.
+
+Important design flaw: C01 starts at `barrier_choice` and the Circle action transitions to the submenu; C02 starts already in the submenu and Circle produces no observed state transition. This is not a matched-start-state A/B for selecting a tile. In the submenu, `レベルアップする結界をえらんでください` (Pilih penghalang yang akan dinaikkan levelnya), `けってい` (Konfirmasi/pilih, Circle), and `もどる` (Kembali, X) still identify only task/controls, not target identity.
+
+The offline candidate-ring measurements (C01 `0/67/59/0`; C02 `52/67/67/64`, F60/F100/F110/F180) remain below the 100-pixel unknown-context ceiling, and the broad ROI gold-mask remains near 2,559–2,566, below the 5,000-pixel map-positive footprint. Submenu instruction-panel bright-text mask has zero within-branch change at sampled transitions. These are negative checks against the map-calibrated composite, not a universal proof about all possible visual cues. They provide no new unique target evidence.
+
+## Required state
+- `barrier_level_selection = WAIT`; target cue = **UNKNOWN**.
+- Adaptive-player readiness = **NO-GO**; Story Mode = **NOT COMPLETE**.
+- Keep consumed Revision65 marker `experiments/.run-storymode-adaptive-player` unchanged (blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`); keep `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` absent.
+- Do not count Revision64/65 as independent because their screenshot sets are pixel-identical.
+- No emulator, restore, continuation, or gameplay input in this work; no ROM/BIOS/Memory Card/savestate/screenshots/private evidence was added to Git.
+
+## Next step
+Continue offline by searching only in-repo records and existing authenticated private artifacts for a true same-start-state A/B where a candidate tile is visible/action-vs-control without HUD obstruction, or identify any available disassembly/UI-rendering implementation in this repo. Current tree contains classifier/audit scripts but not a game renderer source or executable; do not fetch other repositories or start a new gameplay experiment to get around the cue gate. If no suitable source/evidence exists, preserve UNKNOWN/WAIT and make the blocker explicit. For known Story Mode dialogue, press START to skip, never Circle; translate Japanese strings next to the original in Indonesian parentheses.
+
+---
+
 # Latest handoff — card-detail confirmation improved; barrier submenu still NO-GO (24 October 2026)
 
 ## Verified source checkpoint

@@ -1,3 +1,33 @@
+# Offline audit log — Revision59 adds no unique barrier-target discriminator (24 October 2026)
+
+## Checkpoint verified
+HEAD `main` at audit start: `d253a0f8ef8c7eb5b5acc618314c03acc70c86f1`; code/test checkpoint `c0b7d48933d37f59914d82a4bfeab4100d836a1e`. Current relevant Actions #40071317759 passed 35 tests and all steps. No active run appeared among the ten newest Actions API results.
+
+## Distinct artifact reviewed offline
+Run [#39907655833](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39907655833), artifact `12482055310` (Revision59). Inspected only its authentic screenshot PNGs and text logs/decision JSON; no savestate was opened, and no emulator, restore, continuation, or gameplay input was run.
+
+The A/B branches do not begin in the same state:
+- C01 begins at `barrier_choice`, where the historical decision was Circle. The prompt `結界をレベルアップしますか?` (Apakah penghalang akan dinaikkan levelnya?) presents `はい` (Ya), `いいえ` (Tidak), and `マップ` (Peta); C01 is in `barrier_level_selection` by F60.
+- C02 begins in `barrier_level_selection`; its historical Circle press did not change the observed state by F100.
+- Both branches’ submenu prompt is `レベルアップする結界をえらんでください` (Pilih penghalang yang akan dinaikkan levelnya); footer `けってい` (Konfirmasi/pilih, Circle), `もどる` (Kembali, X). These are instructions, not an identifier of the selected tile.
+
+## New offline measurements (negative only)
+Using the calibrated mask approach already present in the regression workflow, candidate badge-ring counts around the pink-60 object at F60/F100/F110/F180 were C01 `0, 67, 59, 0` and C02 `52, 67, 67, 64`. No sample exceeds the unknown-context ceiling 100; the known map-UP positive reference is 811. The broad statistics-panel ROI’s gold-mask count stayed around 2,559–2,566 pixels, below the 5,000-pixel map-positive threshold. The bright-text mask in the lower submenu instruction-panel ROI had zero changed pixels across sampled within-branch submenu transitions (F60→F100, F100→F110, F110→F180). Footer-region changes are not treated as a cue because the area includes changing footer/glyph content and is not tile-specific.
+
+Interpretation limits: the thresholds were calibrated in map context; their absence is useful negative evidence, not proof that no other cue exists. Since C01/C02 initial states are mismatched, the artifact cannot establish a controlled action-versus-WAIT selection delta. No unique tile-attached ring + corresponding tile-information panel + panel-text transition was found. The result therefore does not satisfy the target-cue gate.
+
+## Code/source check
+`tools/storymode_adaptive_agent.py` v0.4.0 uses screenshot color/ROI features; in `barrier_level_selection` it returns WAIT with reason `barrier_target_not_identified; fail_closed_until_controlled_probe`. `tools/levelup_target_cue_audit.py` explicitly validates only a known map-context signature and is not used to authorize gameplay input. No game UI renderer implementation or game executable is checked into the inspected tree, so repository-local source-rendering analysis cannot currently establish the missing cue.
+
+## Result
+**VERIFIED:** Revision59 is a distinct historical artifact; it contains a state transition into the submenu in C01.  
+**UNKNOWN:** whether the candidate pink-60 tile is the selected target in the nested submenu.  
+**Policy:** `barrier_level_selection = WAIT`; readiness **NO-GO**; Story Mode **NOT COMPLETE**. Keep the Revision65 marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` unchanged and keep the cue token absent. No private artifacts were added to Git. The prior successful regression was not rerun because this update is documentation-only.
+
+Next: search existing authenticated evidence for a same-start-state action/control pair with the candidate tile visible and unobscured. If none exists, retain UNKNOWN/WAIT and require explicit review/authorization before any new experiment. Known Story Mode dialogue must be skipped with START, not Circle; Japanese text must carry Indonesian translations inline.
+
+---
+
 # Verified card-detail Circle confirmation from historical authenticated A/B — 24 October 2026
 
 **Policy/test commit:** `c0b7d48933d37f59914d82a4bfeab4100d836a1e`. **Actions #40071317759:** `success`; 35 tests in 5.370 seconds; all workflow steps passed.

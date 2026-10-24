@@ -1,3 +1,28 @@
+# Latest verified checkpoint — distinct Revision59 offline audit remains negative for barrier target cue (24 October 2026)
+
+## Current repository and Actions verification
+- Audited branch: `main`, HEAD `d253a0f8ef8c7eb5b5acc618314c03acc70c86f1`; its parent/code-test checkpoint is `c0b7d48933d37f59914d82a4bfeab4100d836a1e`.
+- Latest relevant regression remains [GitHub Actions #40071317759](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40071317759), success: 35 unit tests and all workflow steps passed. No regression rerun was needed for this documentation-only audit.
+- The ten most recent workflow runs returned by the Actions API were all completed; no active run appeared in that latest-run window.
+
+## New offline evidence examined
+- Distinct historical source: adaptive-player run [#39907655833](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39907655833), private artifact `12482055310` (Revision59). Screenshot PNGs, decision JSON, and textual run logs were examined offline. Files with savestate extensions were not opened or used; no emulator, restore, continuation, or gameplay-input workflow was launched.
+- This run is not an equivalent-state A/B: C01 starts at `barrier_choice` and a Circle confirmation at F20 transitions it to `barrier_level_selection` by F60; C02 starts already at `barrier_level_selection`, and its Circle press did not yield an observed state transition. Therefore cross-branch differences cannot be treated as target-selection evidence.
+- In the same calibrated red-mask style as the prior audit, the candidate badge-ring counts at F60/F100/F110/F180 were C01 = `0/67/59/0`, C02 = `52/67/67/64`. All stay below the unknown-context ceiling of 100 and are far below the known positive map-UP reference of 811. The statistics-panel gold-mask footprint around the comparison ROI remained approximately 2,559–2,566 pixels, below the 5,000-pixel map-positive threshold. The bright-text mask in the submenu instruction-panel ROI changed by zero pixels across sampled within-branch submenu frame transitions.
+- These are offline negative checks using a map-calibrated reference, not a new universal detector. Combined with the mismatched C01/C02 starting states, generic unchanged submenu prompt/footer, and absence of a matching tile-specific stats-panel composite, they do not identify a unique selected barrier.
+
+## Decision and guardrails
+- `barrier_level_selection = WAIT`; independent submenu target cue = **UNKNOWN**.
+- Adaptive-player readiness = **NO-GO**; Story Mode = **NOT COMPLETE**.
+- Keep `experiments/.run-storymode-adaptive-player` untouched at consumed Revision65 blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`; keep `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` absent.
+- Revision64/65 remain pixel-identical duplicate visual evidence and were not counted independently. Revision56 card-confirm A/B supports only the card-detail state, not this submenu.
+- No ROM, BIOS, Memory Card, savestate, screenshot, or private evidence was added to Git. The inspected repository contains the screenshot classifier and cue-audit code, not the game’s UI-rendering source or a checked-in game executable suitable for renderer/source-level analysis.
+
+## Next offline action
+Search only existing authenticated artifacts for a matched-starting-state action/control comparison where the same candidate barrier remains visible without HUD occlusion. If no such historical evidence exists in the allowed repository artifacts, retain UNKNOWN/WAIT and document that obtaining a new observation would require a separately authorized, gate-reviewed experiment. Do not alter the Revision65 marker, add the cue token, or launch gameplay. For future Story Mode dialog, use START—not Circle—to skip. Translate every Japanese string beside the original in Indonesian.
+
+---
+
 # Latest verified checkpoint — revealed-card Circle policy passes authenticated A/B; barrier cue still UNKNOWN (24 October 2026)
 
 ## Code, tests, and authentic evidence

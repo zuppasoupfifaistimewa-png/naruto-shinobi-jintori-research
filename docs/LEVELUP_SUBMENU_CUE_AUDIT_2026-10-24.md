@@ -1,3 +1,22 @@
+# Addendum — distinct Revision59 evidence checked (24 October 2026)
+
+### Source and scope
+- Run [#39907655833](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39907655833), private artifact `12482055310`, Revision59.
+- This is separate from the Revision64/65 artifacts already compared; it is **not** an independent matched-state A/B for target selection. C01 begins at the upgrade confirmation prompt and transitions into the submenu following Circle; C02 begins already in the submenu and remains there after Circle.
+- Inspected PNG screenshots plus decision/log text only. Savestate files in the artifact were not opened, read, or used; no emulator or input was executed.
+
+### Offline measurements
+F60/F100/F110/F180 candidate-ring counts: C01 `0/67/59/0`, C02 `52/67/67/64`. The broad ROI gold-panel mask stays near 2,559–2,566 pixels versus the calibrated map-positive threshold 5,000. Bright-text mask changes inside the submenu prompt region were zero for sampled within-branch frame transitions. These map-context thresholds are negative checks, not a general proof that the cue cannot exist.
+
+The submenu prompt `レベルアップする結界をえらんでください` (Pilih penghalang yang akan dinaikkan levelnya), footer `けってい` (Konfirmasi/pilih, Circle), `もどる` (Kembali, X), badge pulse/visibility, character/kunai motion, and broad pixel deltas do not uniquely identify which barrier is selected. Current agent returns `WAIT` for the state, and current audit helper only accepts the calibrated map ring + matching statistics panel + text transition composite.
+
+### Disposition
+No unique cue found. Keep `barrier_level_selection = WAIT`, target cue **UNKNOWN**, readiness **NO-GO**, Story Mode **NOT COMPLETE**. Keep Revision65 marker `3754a6ddf45a7570c053d9c149b6d80b0862a127` untouched and cue token absent. No private evidence files added to Git. No code tests rerun: documentation-only update.
+
+Next: find only an existing authenticated, same-start-state action/control artifact with an unobstructed tile cue, or continue available source-level work inside this repo. If there is no available evidence/source, do not guess or inject input; preserve UNKNOWN/WAIT.
+
+---
+
 # Level-up submenu target-cue audit — 24 October 2026
 
 ## Purpose and evidence scope
