@@ -63,7 +63,7 @@ jobs:
           if total > 150 * 1024 * 1024:
               raise SystemExit("uncompressed-size safety limit exceeded")
           branches = ("NONE","START","CIRCLE","CROSS","TRIANGLE","SQUARE","UP","DOWN","LEFT","RIGHT")
-          image_re = re.compile(r"(NONE|START|CIRCLE|CROSS|TRIANGLE|SQUARE|UP|DOWN|LEFT|RIGHT)-(pre|post)\\.png$", re.I)
+          image_re = re.compile(r"(NONE|START|CIRCLE|CROSS|TRIANGLE|SQUARE|UP|DOWN|LEFT|RIGHT)-(pre|post)\.png$", re.I)
           for i in infos:
               print(f"ENTRY name={i.filename} bytes={i.file_size}")
           for i in infos:
