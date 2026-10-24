@@ -73,6 +73,7 @@ jobs:
           test "$(sha256sum "$STATE" | cut -d ' ' -f1)" = 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
           head -c 96 "$STATE" | grep -Fq 'PCSX-Redux SaveState v4'
           test "$(sha256sum "$APP" | cut -d ' ' -f1)" = 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99
+          chmod +x "$APP"
           test "$(sha256sum "$CARD" | cut -d ' ' -f1)" = ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
           cp "$STATE" "$WORK/state/source.sstate"
           chmod 400 "$WORK/state/source.sstate"
