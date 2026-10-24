@@ -1,3 +1,16 @@
+## Corrected runner-only inspection — control-probe artifact is not qualifying submenu evidence (25 October 2026)
+
+- Session-start `main` HEAD was `9c74d01ae8a65d259bd8eac0ab00314cbac9d755`. Usage: primary 30-day window 55% used / 45% remaining; secondary unavailable.
+- Corrected inspection Actions run [#40141018663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40141018663) completed successfully on runner. It downloaded the same authenticated artifact #12308661246 (91,334,642 bytes; SHA-256 `e21f8adad3b5d66ee9afba7a8488775b7932c2a6d71c51412ea39c34398acf3f`). The prior corrected attempt #40140914545 failed only in the Python image-diff calculation after completing OCR and text/log processing; the calculation was fixed and the one authorized correction completed in #40141018663.
+- The report and runtime logs confirm all ten branches restore checkpoint from run #39426068247 (checkpoint SHA-256 `b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a`). Pre capture occurs at VSync 20; one button tap at 30–38; post capture at 90; parent checkpoint unchanged. All ten pre PNGs are pixel-identical (320×240). Each directional/button branch reports successful press and release readbacks.
+- All directional post captures (UP/DOWN/LEFT/RIGHT) are pixel-identical to NONE. CIRCLE differs across 71,082/76,800 pixels (MAE 52.710417; difference bbox is the full 320×240 frame). This is a broad transition, not a tile-attached selection cue. No explicit game-state label exists in the report or JSON metadata.
+- Tesseract was run with Japanese/English and two page modes on all three unique screenshots after grayscale/autocontrast/4× scaling. Output was too garbled to identify a prompt or state. Therefore the checkpoint cannot be authenticated as `barrier_level_selection`, and the artifact is **not** a qualifying same-start submenu target A/B.
+- No `.sstate` entry was present or opened; the AppImage was not read or executed. Artifact processing stayed on GitHub Actions runner; no screenshot/artifact bytes were downloaded locally or uploaded elsewhere. No emulator, gameplay input, restore, player workflow, tests, or private-evidence commit occurred during either inspection.
+- The temporary inspection workflow and selector were removed after the corrected run. No reusable trigger remains.
+- Required state unchanged: cue UNKNOWN; `barrier_level_selection = WAIT`; readiness NO-GO; Story Mode NOT COMPLETE; Revision65 marker `3754a6ddf45a7570c053d9c149b6d80b0862a127` unchanged; cue token absent.
+
+---
+
 ## Runner-only inspection of artifact 12308661246 (24 October 2026)
 - With the user's explicit one-job approval, inspection run [#40110571330](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40110571330) completed successfully on runner at source `a8c258f297680b690aa0e61f9ab9f4a2d2ee9871`.
 - Runner download verified against GitHub metadata: artifact #12308661246, 91,334,642 bytes, SHA-256 `e21f8adad3b5d66ee9afba7a8488775b7932c2a6d71c51412ea39c34398acf3f`. Its 65 extracted entries included a 90,216,952-byte PCSX AppImage, screenshot PNGs, JSON metadata, and reports/logs. No `.sstate` entry was present/opened. No artifact bytes or images were transferred to the local workspace or re-uploaded.
