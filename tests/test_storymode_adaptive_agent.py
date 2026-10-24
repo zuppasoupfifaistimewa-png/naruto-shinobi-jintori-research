@@ -8,6 +8,7 @@ from PIL import Image, ImageDraw
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 import storymode_adaptive_agent as agent
 import adaptive_monitor_policy as monitor_policy
+import levelup_target_cue_audit as cue_audit
 
 class AdaptiveAgentTests(unittest.TestCase):
     def make_image(self, state):
@@ -386,6 +387,34 @@ class AdaptiveAgentTests(unittest.TestCase):
         out = self.classify("barrier_level_selection_with_pink_60")
         self.assertEqual(out["state"], "barrier_level_selection")
         self.assertEqual(out["action"], "WAIT")
+
+    def test_levelup_target_cue_requires_ring_stats_panel_and_text_transition(self):
+        # Values below are measured from existing authenticated private PNGs; the
+        # map-UP signature is a reference only, not authorization for the submenu.
+        self.assertTrue(cue_audit.matches_map_selection_reference(811, 8312, 635))
+        self.assertFalse(cue_audit.matches_map_selection_reference(62, 8629, 15))
+        # This reproduces the camera-pan false positive: text-mask changes are large,
+        # but the registered statistics-panel footprint and the target ring are absent.
+        self.assertFalse(cue_audit.matches_map_selection_reference(66, 2452, 3221))
+        self.assertFalse(cue_audit.matches_map_selection_reference(811, 8312, 15))
+        self.assertFalse(cue_audit.matches_map_selection_reference(811, 2452, 635))
+        self.assertFalse(cue_audit.matches_map_selection_reference(None, 8312, 635))
+
+        repo = Path(__file__).resolve().parents[1]
+        regression = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-regression.yml").read_text(encoding="utf-8")
+        player = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-player.yml").read_text(encoding="utf-8")
+        marker = (repo / "experiments" / ".run-storymode-adaptive-player").read_text(encoding="utf-8")
+        out = self.classify("barrier_level_selection_with_pink_60")
+        self.assertIn("LEVELUP_TARGET_CUE_REGRESSION=PASS", regression)
+        self.assertIn("stats_panel_gold_pixels", regression)
+        self.assertEqual(out["state"], "barrier_level_selection")
+        self.assertEqual(out["action"], "WAIT")
+        self.assertNotIn("AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1", marker)
+        gate = player.index('AB_BARRIER_TARGET_GATE=BLOCKED cue=$ab_barrier_target_cue')
+        source_download = player.index("- name: Download selected private source checkpoint artifact")
+        pad_mutation = player.index("pad.setOverride(b)")
+        self.assertLess(gate, source_download)
+        self.assertLess(gate, pad_mutation)
 
     def test_push_cannot_launch_unapproved_input_diagnostics_or_legacy_storymode(self):
         repo = Path(__file__).resolve().parents[1]
