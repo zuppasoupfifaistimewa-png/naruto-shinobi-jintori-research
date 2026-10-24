@@ -1,4 +1,39 @@
-# Latest verified checkpoint — kunai proxy excluded from target cues (24 October 2026)
+# Latest verified checkpoint — pink badge pulse excluded as a unique cue (24 October 2026)
+
+## Offline authentic screenshot regression — 24 October 2026
+
+**Code/test commit:** `885d9889215a4fdca6b276daadd8a431f8177c51`. **GitHub Actions:** [run #40066679351](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40066679351), completed `success`; **34 unit tests / 3.176 seconds**, all 15 workflow steps passed. It used only existing private/authenticated screenshots from Revision65 A/B (artifact `12498688466`, source run #39947481094) and map UP-vs-WAIT (artifact `12428777970`, source run #39786019434). No gameplay, emulator, restore, or continuation was run.
+
+### New negative discriminator: badge pulse is not selection
+
+A regression measures the mean RGB of the pink badge's interior in same-phase frames and compares map UP with map WAIT. The same animation/pulse appears in both states, so color/brightness alone cannot uniquely identify a selected target.
+
+| Frame | UP mean RGB | WAIT mean RGB | Euclidean RGB distance |
+|---|---|---|---:|
+| F60 | (237.5, 39.2, 140.7) | (235.1, 37.5, 138.4) | 3.74 |
+| F100 | (215.6, 69.1, 118.5) | (213.4, 65.6, 116.2) | 4.79 |
+| F110 | (206.7, 65.1, 103.4) | (202.3, 62.8, 101.0) | 5.48 |
+| F180 | (238.2, 39.4, 141.1) | (237.7, 39.5, 140.8) | 0.62 |
+
+The largest same-frame distance is only **5.48 RGB units**, below the fail-closed regression ceiling of 12.0. The helper `same_badge_pulse_across_contexts` rejects missing, malformed, non-finite, mismatched-frame, or changed-pulse data; a test also proves the pink color change cannot bypass the ring/panel composite. Workflow output: `PINK_BADGE_PULSE_REGRESSION=PASS`.
+
+The previously calibrated context remains unchanged: map UP red focus-ring/panel/text = **811 / 8,312 / 635**; map WAIT = **62 / 8,629 / 15**; Revision65 submenu UP = **66 / 2,452 / 3,221**; submenu WAIT = **67 / 2,566 / 39**. The map-UP reference matches the conservative ring + matching stats-panel footprint + panel-text-change composite; map WAIT and both submenu branches are rejected.
+
+The first implementation run, [#40066588970](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40066588970), failed because the workflow had loaded only F20/F60 map frames while the new pulse check also read F100/F110/F180. Commit `885d988` corrected the loader to read the full ten authentic map A/B frames; the corrected run #40066679351 passed. This was a regression-fixture defect, not a gameplay run.
+
+## Safety decision — unchanged
+
+- `barrier_level_selection = WAIT`; target cue in the nested upgrade submenu remains **UNKNOWN**.
+- Adaptive-player readiness remains **NO-GO**; Story Mode remains **NOT COMPLETE**.
+- Consumed marker `experiments/.run-storymode-adaptive-player` remains Revision65, blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`; `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` remains absent.
+- The cue gate still precedes source-artifact download and PAD mutation. No player, emulator, restore/continuation, or gameplay input was launched. ROM, BIOS, Memory Cards, savestates, screenshots, and private evidence remain outside Git.
+- The apparent kunai mask remains excluded from cursor/target evidence. The pink badge pulse, tile visibility after camera pan, pixel changes, and character pose are not sufficient to change the state.
+
+**Next:** continue offline against the existing authenticated screenshots, seeking a unique submenu cue spatially attached to the candidate tile and independent of camera movement, HUD exposure, sprite pose, and badge animation. Do not change the consumed marker, add the cue token, or run gameplay until the cue is independently demonstrated and the marker, allowlist, pre-download/PAD gate, and regression are reviewed.
+
+---
+
+# Previous verified checkpoint — kunai proxy excluded from target cues (24 October 2026)
 
 ## Verified crop correction — 24 October 2026
 

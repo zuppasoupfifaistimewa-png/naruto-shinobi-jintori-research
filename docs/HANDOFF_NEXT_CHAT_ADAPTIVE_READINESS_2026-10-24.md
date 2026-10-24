@@ -1,4 +1,30 @@
-# Latest continuation checkpoint — 24 October 2026
+# Latest continuation checkpoint — pink badge pulse is not a unique cue (24 October 2026)
+
+## New verified offline regression
+
+- **Code/test HEAD:** `885d9889215a4fdca6b276daadd8a431f8177c51`.
+- **Actions:** [#40066679351](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40066679351) — `success`; 34/34 tests in 3.176 seconds and all 15 workflow steps passed.
+- **Evidence:** existing private authenticated Revision65 A/B and map UP-vs-WAIT screenshot artifacts only; no gameplay or emulator/restore/continuation run was started.
+
+The new negative test measures badge-interior RGB in same-phase map UP and map WAIT frames. The max Euclidean distance is **5.48** (ceiling 12.0), with F60/F100/F110/F180 distances **3.74 / 4.79 / 5.48 / 0.62**. The pulse appears almost identically in both UP and WAIT contexts; color/brightness alone is not a unique selection cue. The known map signature still requires the focus-arrow ring plus its matching stats-panel footprint and text transition: map UP 811/8,312/635; map WAIT 62/8,629/15; nested submenu UP 66/2,452/3,221; submenu WAIT 67/2,566/39. Both submenu branches still fail the composite.
+
+The first implementation run [#40066588970](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40066588970) failed on a missing in-memory map frame key because the loader used only F20/F60. Commit `885d988` changed it to load the full ten frames present in the artifact; corrected run #40066679351 is green. Do not use the failed run as gameplay evidence.
+
+## Fixed safety state
+
+- `barrier_level_selection = WAIT`; submenu target cue = **UNKNOWN**.
+- Adaptive readiness = **NO-GO**; Story Mode = **NOT COMPLETE**.
+- Consumed marker `experiments/.run-storymode-adaptive-player` remains Revision65, blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`, unchanged.
+- `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` remains absent. The pre-download/PAD fail-closed gate and workflow containment remain intact.
+- No player, emulator, restore/continuation or gameplay-input run was launched. No ROM/BIOS/Memory Card/savestate/screenshot/private evidence was committed.
+
+## Next work
+
+Continue offline with authentic existing images only. Search for a unique cue physically/spatially attached to a candidate tile in the **nested level-up submenu** and independent of camera pan, HUD exposure, sprite pose and badge pulse. Keep START for recognized Story Mode dialogue; never use Circle as a dialogue skip. Do not change the marker, add the cue token, or run gameplay until the cue is independently verified, then require explicit review of marker, input allowlist and pre-download/PAD gate plus passing regression. Story Mode is not complete until authentic completion evidence is independently verified.
+
+---
+
+# Previous continuation checkpoint — 24 October 2026
 
 ## Verified crop correction — 24 October 2026
 

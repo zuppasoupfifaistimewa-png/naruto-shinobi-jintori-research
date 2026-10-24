@@ -1,4 +1,37 @@
-# Screenshot crop correction: foreground kunai is not a target cursor — 24 October 2026
+# Offline badge-pulse cue exclusion — 24 October 2026
+
+**Code/test commit:** `885d9889215a4fdca6b276daadd8a431f8177c51`. **Regression:** [GitHub Actions #40066679351](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40066679351) — `success`, 34 tests in 3.176 s, all 15 workflow steps passed. Inputs were the already-authenticated private screenshot artifacts from runs #39947481094 and #39786019434. No gameplay/emulator/restore workflow ran.
+
+## Finding: pink badge animation is shared across UP and WAIT
+
+The new offline regression samples the interior pink badge at the same frames in map UP and map WAIT, separately from terrain, HUD and the character sprite:
+
+| Frame | Map UP mean RGB | Map WAIT mean RGB | Distance |
+|---|---|---|---:|
+| F60 | (237.5, 39.2, 140.7) | (235.1, 37.5, 138.4) | 3.74 |
+| F100 | (215.6, 69.1, 118.5) | (213.4, 65.6, 116.2) | 4.79 |
+| F110 | (206.7, 65.1, 103.4) | (202.3, 62.8, 101.0) | 5.48 |
+| F180 | (238.2, 39.4, 141.1) | (237.7, 39.5, 140.8) | 0.62 |
+
+All four frame-pairs differ by at most 5.48 RGB units. This validates the new negative discriminator: the badge's pulse/color alone does not distinguish selected from WAIT in the known map context. The pure helper `same_badge_pulse_across_contexts` validates aligned frames and finite channel values, fails closed on malformed/missing samples, and is kept in the offline audit module rather than the gameplay action policy. Its dedicated test checks shared pulse, malformed/missing samples, stricter thresholds, and a deliberately changed phase.
+
+Regression output from the corrected Actions run:
+
+- `PINK_BADGE_PULSE_REGRESSION=PASS frames=4 max_rgb_distance=5.48 same_phase_across_UP_WAIT=true pulse_alone_is_not_a_unique_selection_cue=true`.
+- Existing composite: `map_UP=ring:811,panel_gold:8312,text_delta:635`; `map_WAIT=ring:62,panel_gold:8629,text_delta:15`; `submenu_UP=ring:66,panel_gold:2452,text_delta:3221`; `submenu_WAIT=ring:67,panel_gold:2566,text_delta:39`.
+- `LEVELUP_TARGET_CUE_REGRESSION=PASS`, which rejects both submenu branches and retains `target_role=UNKNOWN input_policy=WAIT`. Terrain movement remains +100 px for UP and 0 px for WAIT; kunai mask excluded from cursor evidence.
+
+The earlier run [#40066588970](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40066588970) failed in the new screenshot step because only four map frame filenames had been loaded, despite all ten being present in the private artifact. The loop was corrected in `885d988` to load both branches at F20/F60/F100/F110/F180; run #40066679351 validates the corrected workflow. The earlier failure is a test-fixture issue only.
+
+## Gate remains closed
+
+`barrier_level_selection` remains **WAIT**; submenu cue remains **UNKNOWN**; readiness is **NO-GO** and Story Mode **NOT COMPLETE**. Revision65 marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` remains consumed and unchanged. `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` remains absent. The player gate is still before private source-checkpoint download and PAD override. No gameplay input, player, emulator, restore or continuation was launched, and no private screenshot or game asset was committed.
+
+**Next offline task:** seek a unique cue registered to the candidate tile in the nested upgrade submenu. Require the red focus ring plus the corresponding changing tile-information panel in that submenu itself; neither badge pulse nor map-only evidence is sufficient. Retain the full marker/allowlist/fail-closed review before any future input.
+
+---
+
+# Prior checkpoint: screenshot crop correction — foreground kunai is not a target cursor (24 October 2026)
 
 ## Verified crop correction — 24 October 2026
 
