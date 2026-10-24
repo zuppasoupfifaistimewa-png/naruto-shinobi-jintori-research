@@ -51,6 +51,17 @@ jobs:
               for line in p.read_text(errors="replace").splitlines():
                   if any(m in line for m in markers):
                       print(line[:500])
+          # This artifact is only a few KB; inspect the failed launch text, not image payloads.
+          for p in sorted(root.glob("*.log")):
+              if p.name == "xvfb.log":
+                  continue
+              print("RUNTIME_LOG_BEGIN="+p.name)
+              for line in p.read_text(errors="replace").splitlines()[:160]:
+                  print("RUNTIME_LOG_LINE="+line[:600])
+          for p in sorted(root.glob("*.stdout")):
+              print("FULL_STDOUT_BEGIN="+p.name)
+              for line in p.read_text(errors="replace").splitlines()[:120]:
+                  print("FULL_STDOUT_LINE="+line[:600])
           xvfb=root/"xvfb.log"
           if xvfb.is_file():
               for line in xvfb.read_text(errors="replace").splitlines()[-20:]:
