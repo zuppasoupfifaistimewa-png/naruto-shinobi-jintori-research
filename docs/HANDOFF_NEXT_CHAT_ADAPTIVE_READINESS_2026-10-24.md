@@ -1,3 +1,9 @@
+# Execution environment boundary (user instruction, 24 October 2026)
+
+For this research, process or inspect artifact contents only in a GitHub Actions runner. Do not download or extract repository artifacts onto the user's laptop or local Codex workspace. If no suitable runner execution is available, limit work to GitHub metadata/repository text and report that artifact-content inspection is unavailable. Do not launch a workflow merely to inspect artifacts unless the user authorizes that run. This is a user-imposed work boundary; do not assume local shell is an Actions runner.
+
+---
+
 # Latest handoff — remaining artifact screen found no qualifying submenu evidence (24 October 2026)
 
 ## Verified checkpoint
