@@ -1,3 +1,15 @@
+# Latest checkpoint — remaining offline artifact triage (24 October 2026)
+
+- Audit-start `main` HEAD verified at `8fa1b66314dc717e769899bd94a699c2039c3743`, matching the supplied checkpoint.
+- Latest Actions at audit start: monitor #40102319836 succeeded on older source `2a5fa920...`; latest classifier regression #40071317759 passed 35 tests on `c0b7d489...`. Neither indicates player progress.
+- Usage at session start: primary 30-day window 19% used / 81% remaining; secondary window unavailable.
+- Screened 66 adaptive checkpoint-player runs; 64 had artifact metadata and 17 artifacts were not cited in the four continuity docs. The three candidate pairs/sequences are all out of scope for the target submenu: #39767083708 / artifact 12420512625 starts in `menu_or_unknown_choice`; #39877412316 / artifact 12469530414 starts in `card_selection`; #39904672868 / artifact 12479814966 is sequential checkpoint continuation. Other 14 manifests do not contain a complete matched-start submenu A/B. Details: [remaining artifact triage](docs/REMAINING_PLAYER_ARTIFACT_TRIAGE_2026-10-24.md).
+- No emulator, restore, continuation, player workflow, gameplay input, or tests ran. Savestate contents/screenshots were not opened. No private evidence was added to Git.
+- **Required state unchanged:** target cue UNKNOWN; `barrier_level_selection = WAIT`; adaptive readiness NO-GO; Story Mode NOT COMPLETE; Revision65 marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` unchanged; cue token absent.
+- Next: retain UNKNOWN/WAIT unless a distinct already-authenticated artifact outside this screened set provides same-start submenu evidence. Do not bypass the cue gate. Consider a new chat at the next work-stage boundary to conserve tokens and monthly usage.
+
+---
+
 # Latest checkpoint — adaptive Story Mode autonomy gap review (24 October 2026)
 
 - Repo boundary: only `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research` was accessed or changed.
