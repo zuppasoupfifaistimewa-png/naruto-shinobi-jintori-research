@@ -1,3 +1,13 @@
+# Latest continuation — one-shot diagnostic failed before gameplay input (25 October 2026)
+
+- Run [#40144220503](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40144220503) passed checkpoint/build/card/BIOS validation and fired the save-state load event, but then stopped at the first preflight capture with `sh: 1: xwd: not found`. No screenshot frames, F20 parity, or RIGHT input were produced.
+- Runner-only artifact inspection [#40144439400](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40144439400) confirmed `xwd` missing. The diagnostic and inspection workflows/selectors were removed; no gameplay retry was run.
+- Do not start another checkpoint restore/input attempt without fresh explicit user approval. Before a later approved attempt, install `x11-apps`, verify `xwd` and `convert` exist, and validate capture before loading state.
+- Report: [`docs/ONE_SHOT_SUBMENU_RIGHT_AB_RESULT_2026-10-25.md`](ONE_SHOT_SUBMENU_RIGHT_AB_RESULT_2026-10-25.md).
+- Keep cue UNKNOWN, `barrier_level_selection = WAIT`, readiness NO-GO, Story Mode NOT COMPLETE, Revision65 marker unchanged, and cue token absent.
+
+---
+
 # ChatGPT continuation — ordered readiness work queue (25 October 2026)
 
 Use this ordered checklist first: [Adaptive readiness next evidence gate](ADAPTIVE_READINESS_NEXT_EVIDENCE_GATE_2026-10-25.md).
