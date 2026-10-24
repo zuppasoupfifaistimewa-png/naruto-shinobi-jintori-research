@@ -1,3 +1,13 @@
+## Runner-only inspection of artifact 12308661246 (24 October 2026)
+- With the user's explicit one-job approval, inspection run [#40110571330](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40110571330) completed successfully on runner at source `a8c258f297680b690aa0e61f9ab9f4a2d2ee9871`.
+- Runner download verified against GitHub metadata: artifact #12308661246, 91,334,642 bytes, SHA-256 `e21f8adad3b5d66ee9afba7a8488775b7932c2a6d71c51412ea39c34398acf3f`. Its 65 extracted entries included a 90,216,952-byte PCSX AppImage, screenshot PNGs, JSON metadata, and reports/logs. No `.sstate` entry was present/opened. No artifact bytes or images were transferred to the local workspace or re-uploaded.
+- Report text says branches NONE/START/CIRCLE/CROSS/TRIANGLE/SQUARE/UP/DOWN/LEFT/RIGHT all restored checkpoint run #39426068247, checkpoint SHA-256 `b23668dd295dc2db7e8e21cd66e663f8055418e794b393434562b9119d41ad8a`, with pre at VSync 20 and one tap at 30–38, post at 90; it records `CONTROL_PROBE_PARENT_CHECKPOINT_CHANGED=NO`.
+- All ten pre screenshots have the same SHA-256. At post, START/CROSS/TRIANGLE/SQUARE/UP/DOWN/LEFT/RIGHT are pixel-identical to NONE; CIRCLE differs (mean absolute RGB 52.71042; 7.4453% exact-pixel fraction). These are 320×240 PNGs. The inspection script expected 1280×800 for OCR and image diffs, so it skipped visual text recognition and did not determine the checkpoint state. The one run therefore does **not** establish a same-start `barrier_level_selection` A/B or identify a target cue.
+- Do not rerun/dispatch a corrected inspection job without separate user authorization. A corrected runner-side pass would need to accept the authenticated 320×240 frames and OCR/analyze them in the runner; still no emulator, gameplay input, restore, or player workflow.
+- State remains target cue UNKNOWN; `barrier_level_selection = WAIT`; adaptive readiness NO-GO; Story Mode NOT COMPLETE; Revision65 marker unchanged; cue token absent.
+
+---
+
 # Non-player Actions artifact metadata triage — 24 October 2026
 
 ## Verified scope
