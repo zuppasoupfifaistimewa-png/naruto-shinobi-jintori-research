@@ -427,7 +427,8 @@ class AdaptiveAgentTests(unittest.TestCase):
 
     def test_monitor_classifies_gated_skip_as_explicit_no_go_without_failure(self):
         result = monitor_policy.assess_monitor(
-            status="completed", conclusion="skipped", age_seconds=1800, artifact_count=0
+            status="completed", conclusion="skipped", age_seconds=1800, artifact_count=0,
+            event_name="push", head_message_known=True, trigger_marker_present=False
         )
         self.assertEqual(result["classification"], "EXPECTED_GATED_SKIP_NO_GO")
         self.assertTrue(result["expected_gated_skip"])
@@ -437,37 +438,65 @@ class AdaptiveAgentTests(unittest.TestCase):
 
     def test_monitor_preserves_failure_and_missing_artifact_alerts(self):
         failed = monitor_policy.assess_monitor(
-            status="completed", conclusion="failure", age_seconds=120, artifact_count=1
+            status="completed", conclusion="failure", age_seconds=120, artifact_count=1,
+            event_name="workflow_dispatch", head_message_known=True, trigger_marker_present=False
         )
         self.assertEqual(failed["classification"], "WARNING")
         self.assertTrue(failed["failure_warn"])
         missing = monitor_policy.assess_monitor(
-            status="completed", conclusion="success", age_seconds=120, artifact_count=0
+            status="completed", conclusion="success", age_seconds=120, artifact_count=0,
+            event_name="push", head_message_known=True, trigger_marker_present=False
         )
         self.assertTrue(missing["artifact_warn"])
         self.assertFalse(missing["failure_warn"])
         skipped_with_artifact = monitor_policy.assess_monitor(
-            status="completed", conclusion="skipped", age_seconds=120, artifact_count=1
+            status="completed", conclusion="skipped", age_seconds=120, artifact_count=1,
+            event_name="push", head_message_known=True, trigger_marker_present=False
         )
         self.assertEqual(skipped_with_artifact["classification"], "WARNING")
         self.assertTrue(skipped_with_artifact["failure_warn"])
 
     def test_monitor_warns_only_when_active_run_exceeds_bound(self):
         within_bound = monitor_policy.assess_monitor(
-            status="in_progress", conclusion=None, age_seconds=900, artifact_count=0
+            status="in_progress", conclusion=None, age_seconds=900, artifact_count=0,
+            event_name="push", head_message_known=True, trigger_marker_present=False
         )
         self.assertFalse(within_bound["active_warn"])
         stale = monitor_policy.assess_monitor(
-            status="queued", conclusion=None, age_seconds=901, artifact_count=0
+            status="queued", conclusion=None, age_seconds=901, artifact_count=0,
+            event_name="push", head_message_known=True, trigger_marker_present=False
         )
         self.assertTrue(stale["active_warn"])
         self.assertEqual(stale["classification"], "WARNING")
+
+
+    def test_monitor_requires_known_unmarked_push_before_excusing_skip(self):
+        manual_skip = monitor_policy.assess_monitor(
+            status="completed", conclusion="skipped", age_seconds=10, artifact_count=0,
+            event_name="workflow_dispatch", head_message_known=True, trigger_marker_present=False
+        )
+        self.assertFalse(manual_skip["expected_gated_skip"])
+        self.assertTrue(manual_skip["failure_warn"])
+        unknown_message = monitor_policy.assess_monitor(
+            status="completed", conclusion="skipped", age_seconds=10, artifact_count=0,
+            event_name="push", head_message_known=False, trigger_marker_present=False
+        )
+        self.assertFalse(unknown_message["expected_gated_skip"])
+        marked_push = monitor_policy.assess_monitor(
+            status="completed", conclusion="skipped", age_seconds=10, artifact_count=0,
+            event_name="push", head_message_known=True, trigger_marker_present=True
+        )
+        self.assertFalse(marked_push["expected_gated_skip"])
+        self.assertTrue(marked_push["failure_warn"])
 
     def test_monitor_workflow_uses_tested_policy_and_explains_no_go_skip(self):
         repo = Path(__file__).resolve().parents[1]
         workflow = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-monitor.yml").read_text(encoding="utf-8")
         self.assertIn("actions/checkout@v4", workflow)
         self.assertIn("python3 tools/adaptive_monitor_policy.py", workflow)
+        self.assertIn("--event-name \"$PLAYER_EVENT\"", workflow)
+        self.assertIn("--head-message-known \"$HEAD_MESSAGE_KNOWN\"", workflow)
+        self.assertIn("--trigger-marker-present \"$TRIGGER_MARKER_PRESENT\"", workflow)
         self.assertIn('EXPECTED_GATED_SKIP="$(jq -r .expected_gated_skip', workflow)
         self.assertIn('if [ "$EXPECTED_GATED_SKIP" = "true" ]', workflow)
         self.assertNotIn('if [ "$ACTIVE_WARN" -eq 1 ]', workflow)

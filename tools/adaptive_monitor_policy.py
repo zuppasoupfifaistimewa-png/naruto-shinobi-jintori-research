@@ -13,17 +13,33 @@ from typing import Any
 
 
 def assess_monitor(
-    *, status: str, conclusion: str | None, age_seconds: int, artifact_count: int
+    *,
+    status: str,
+    conclusion: str | None,
+    age_seconds: int,
+    artifact_count: int,
+    event_name: str,
+    head_message_known: bool,
+    trigger_marker_present: bool,
 ) -> dict[str, Any]:
     """Return an auditable monitor classification without conflating skip with success."""
     status = (status or "").strip().lower()
     conclusion = (conclusion or "").strip().lower() or None
+    event_name = (event_name or "").strip().lower()
     age_seconds = max(0, int(age_seconds))
     artifact_count = max(0, int(artifact_count))
 
     active = status in {"queued", "in_progress"}
+    # Only the known workflow gate is an expected skip: a push with a known
+    # commit message that lacks the explicit player-run marker. Missing
+    # metadata, workflow_dispatch skips, and marker-bearing pushes stay alerts.
     expected_gated_skip = (
-        status == "completed" and conclusion == "skipped" and artifact_count == 0
+        status == "completed"
+        and conclusion == "skipped"
+        and artifact_count == 0
+        and event_name == "push"
+        and head_message_known
+        and not trigger_marker_present
     )
     active_warn = active and age_seconds > 900
     failure_warn = not active and not expected_gated_skip and conclusion != "success"
@@ -53,12 +69,18 @@ def main() -> int:
     parser.add_argument("--conclusion", default=None)
     parser.add_argument("--age-seconds", required=True, type=int)
     parser.add_argument("--artifact-count", required=True, type=int)
+    parser.add_argument("--event-name", required=True)
+    parser.add_argument("--head-message-known", choices=("0", "1"), required=True)
+    parser.add_argument("--trigger-marker-present", choices=("0", "1"), required=True)
     args = parser.parse_args()
     print(json.dumps(assess_monitor(
         status=args.status,
         conclusion=args.conclusion,
         age_seconds=args.age_seconds,
         artifact_count=args.artifact_count,
+        event_name=args.event_name,
+        head_message_known=args.head_message_known == "1",
+        trigger_marker_present=args.trigger_marker_present == "1",
     ), sort_keys=True))
     return 0
 

@@ -28,7 +28,6 @@ jobs:
           REPOSITORY: ${{ github.repository }}
           TRIGGER_RUN_ID: ${{ github.event.workflow_run.id }}
           TRIGGER_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
-          EVENT_NAME: ${{ github.event_name }}
         shell: bash
         run: |
           set -euo pipefail
@@ -64,8 +63,11 @@ jobs:
           STATUS="$(jq -r .status /tmp/run.json)"
           CONCLUSION="$(jq -r '.conclusion // "none"' /tmp/run.json)"
           NAME="$(jq -r .name /tmp/run.json)"
+          PLAYER_EVENT="$(jq -r .event /tmp/run.json)"
+          HEAD_MESSAGE_KNOWN="$(jq -r 'if (.head_commit.message // "") == "" then 0 else 1 end' /tmp/run.json)"
+          TRIGGER_MARKER_PRESENT="$(jq -r 'if ((.head_commit.message // "") | contains("[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER]")) then 1 else 0 end' /tmp/run.json)"
           ARTIFACT="$(jq -r '[.artifacts[] | select(.name == "naruto-storymode-adaptive-player-private" and .expired == false)] | length' /tmp/artifacts.json)"
-          POLICY="$(python3 tools/adaptive_monitor_policy.py --status "$STATUS" --conclusion "$CONCLUSION" --age-seconds "$AGE" --artifact-count "$ARTIFACT")"
+          POLICY="$(python3 tools/adaptive_monitor_policy.py --status "$STATUS" --conclusion "$CONCLUSION" --age-seconds "$AGE" --artifact-count "$ARTIFACT" --event-name "$PLAYER_EVENT" --head-message-known "$HEAD_MESSAGE_KNOWN" --trigger-marker-present "$TRIGGER_MARKER_PRESENT")"
           ACTIVE_WARN="$(jq -r .active_warn <<< "$POLICY")"
           FAILURE_WARN="$(jq -r .failure_warn <<< "$POLICY")"
           ARTIFACT_WARN="$(jq -r .artifact_warn <<< "$POLICY")"
@@ -76,13 +78,14 @@ jobs:
             echo "- Checked (UTC): $(date -u +%FT%TZ)"
             echo "- Run: [#$RUN_ID]($API/actions/runs/$RUN_ID)"
             echo "- Workflow: $NAME"
+            echo "- Player event: **$PLAYER_EVENT**"
             echo "- Status: **$STATUS**"
             echo "- Conclusion: **$CONCLUSION**"
             echo "- Monitor classification: **$CLASSIFICATION**"
             echo "- Age since creation: $((AGE/60)) minutes"
             echo "- Valid private evidence artifact present: $([ "$ARTIFACT" -gt 0 ] && echo yes || echo no)"
             if [ "$EXPECTED_GATED_SKIP" = "true" ]; then
-              echo "- This player run was skipped by its gate; no emulator session or evidence artifact is expected. Readiness remains **NO-GO**."
+              echo "- This was a push with a known commit message lacking the player-run marker; the workflow gate skipped it. No emulator session or evidence artifact is expected. Readiness remains **NO-GO**."
               echo "- A gated skip is not gameplay success and does not establish Story Mode progress."
             fi
             if [ "$ACTIVE_WARN" = "true" ]; then echo "- WARNING: run is queued/running for more than 15 minutes; inspect job step progress and timeout."; fi
@@ -90,7 +93,7 @@ jobs:
             if [ "$ARTIFACT_WARN" = "true" ]; then echo "- WARNING: completed run has no unexpired adaptive evidence artifact."; fi
             echo "- This monitor checks Actions health and artifact availability; it does not prove the emulator is making game progress or that Story Mode is complete."
           } | tee "$GITHUB_STEP_SUMMARY"
-          printf 'run_id=%s\nstatus=%s\nconclusion=%s\nage_seconds=%s\nartifact=%s\nclassification=%s\nexpected_gated_skip=%s\n' "$RUN_ID" "$STATUS" "$CONCLUSION" "$AGE" "$ARTIFACT" "$CLASSIFICATION" "$EXPECTED_GATED_SKIP" > monitoring-report.txt
+          printf 'run_id=%s\nstatus=%s\nconclusion=%s\nage_seconds=%s\nartifact=%s\nclassification=%s\nexpected_gated_skip=%s\nplayer_event=%s\nhead_message_known=%s\ntrigger_marker_present=%s\n' "$RUN_ID" "$STATUS" "$CONCLUSION" "$AGE" "$ARTIFACT" "$CLASSIFICATION" "$EXPECTED_GATED_SKIP" "$PLAYER_EVENT" "$HEAD_MESSAGE_KNOWN" "$TRIGGER_MARKER_PRESENT" > monitoring-report.txt
           if [ "$ACTIVE_WARN" = "true" ] || [ "$FAILURE_WARN" = "true" ] || [ "$ARTIFACT_WARN" = "true" ]; then
             echo "::error::Adaptive Story Mode player needs inspection: run #$RUN_ID status=$STATUS conclusion=$CONCLUSION age_seconds=$AGE artifact=$ARTIFACT"
             exit 1
