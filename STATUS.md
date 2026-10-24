@@ -1,3 +1,16 @@
+# Prepared handoff checkpoint — runner-only artifact continuation (24 October 2026)
+
+- Current `main` HEAD before this documentation refresh: `463e94c9c6a9840226b5fa8cc3fe48645376d2b1`.
+- Latest Actions checked: 12 newest runs all completed. Latest monitor #40102319836 is `success` on older source `2a5fa920...`; latest classifier regression #40071317759 is `success` (35 tests) on `c0b7d489...`. No recent active run; neither result is new gameplay evidence.
+- Usage checker at handoff preparation: 30-day window 38% used / 62% remaining; secondary window unavailable.
+- Durable user boundary: process artifact contents **only on a GitHub Actions runner**. Do not download or extract artifact contents onto the user's laptop/local Codex workspace. If runner-side processing is unavailable, use metadata/repository text only and state the limitation.
+- The adaptive-player artifact inventory/triage is complete for 66 runs (64 with artifacts); no qualifying same-start submenu A/B was found among 17 previously uncited artifacts. See `docs/REMAINING_PLAYER_ARTIFACT_TRIAGE_2026-10-24.md`.
+- State remains target cue UNKNOWN; `barrier_level_selection = WAIT`; adaptive readiness NO-GO; Story Mode NOT COMPLETE. Revision65 marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` is unchanged and cue token absent.
+- No emulator, gameplay input, player workflow, or tests ran during this preparation.
+
+## Next chat task
+Read `STATUS.md`, `ANALYSIS_LOG.md`, `docs/LEVELUP_SUBMENU_CUE_AUDIT_2026-10-24.md`, this handoff, and the remaining-artifact triage report. Verify HEAD and Actions again. Then use GitHub metadata/repository text to identify any **existing** authenticated non-player Actions artifacts that could contain a same-start submenu A/B. Inspect actual artifact contents only through an already available safe runner-side process; do not run a gameplay workflow or dispatch a new workflow just to download evidence. If no suitable runner-side path exists, stop at metadata and report the exact limitation. Never fetch artifact bytes to the laptop. Preserve all cue/readiness/completion/marker gates.
+
 # Latest checkpoint — remaining offline artifact triage (24 October 2026)
 
 - Audit-start `main` HEAD verified at `8fa1b66314dc717e769899bd94a699c2039c3743`, matching the supplied checkpoint.
