@@ -2,7 +2,7 @@
 
 ## Latest verified checkpoint
 - Repository: `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research` only.
-- Audited starting HEAD: `d253a0f8ef8c7eb5b5acc618314c03acc70c86f1`; tested code parent: `c0b7d48933d37f59914d82a4bfeab4100d836a1e`.
+- Current handoff/documentation HEAD: `15cd1fb8bed5dffa104c64243c91ce18409bcf7f`. Audit starting HEAD was `d253a0f8ef8c7eb5b5acc618314c03acc70c86f1`; tested code parent remains `c0b7d48933d37f59914d82a4bfeab4100d836a1e`.
 - Latest regression remains [Actions #40071317759](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40071317759): success, 35 unit tests, all steps passed. No active run appeared among the ten most recent Actions runs. Do not rerun the suite just for a docs-only change.
 
 ## New work completed
