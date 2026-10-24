@@ -7,6 +7,7 @@ from PIL import Image, ImageDraw
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 import storymode_adaptive_agent as agent
+import adaptive_monitor_policy as monitor_policy
 
 class AdaptiveAgentTests(unittest.TestCase):
     def make_image(self, state):
@@ -422,6 +423,53 @@ class AdaptiveAgentTests(unittest.TestCase):
                 self.make_image("map").save(f.name)
                 self.assertEqual(agent.decide(f.name,h)["action"],"RIGHT")
 
+
+
+    def test_monitor_classifies_gated_skip_as_explicit_no_go_without_failure(self):
+        result = monitor_policy.assess_monitor(
+            status="completed", conclusion="skipped", age_seconds=1800, artifact_count=0
+        )
+        self.assertEqual(result["classification"], "EXPECTED_GATED_SKIP_NO_GO")
+        self.assertTrue(result["expected_gated_skip"])
+        self.assertFalse(result["failure_warn"])
+        self.assertFalse(result["artifact_warn"])
+        self.assertFalse(result["active_warn"])
+
+    def test_monitor_preserves_failure_and_missing_artifact_alerts(self):
+        failed = monitor_policy.assess_monitor(
+            status="completed", conclusion="failure", age_seconds=120, artifact_count=1
+        )
+        self.assertEqual(failed["classification"], "WARNING")
+        self.assertTrue(failed["failure_warn"])
+        missing = monitor_policy.assess_monitor(
+            status="completed", conclusion="success", age_seconds=120, artifact_count=0
+        )
+        self.assertTrue(missing["artifact_warn"])
+        self.assertFalse(missing["failure_warn"])
+        skipped_with_artifact = monitor_policy.assess_monitor(
+            status="completed", conclusion="skipped", age_seconds=120, artifact_count=1
+        )
+        self.assertEqual(skipped_with_artifact["classification"], "WARNING")
+        self.assertTrue(skipped_with_artifact["failure_warn"])
+
+    def test_monitor_warns_only_when_active_run_exceeds_bound(self):
+        within_bound = monitor_policy.assess_monitor(
+            status="in_progress", conclusion=None, age_seconds=900, artifact_count=0
+        )
+        self.assertFalse(within_bound["active_warn"])
+        stale = monitor_policy.assess_monitor(
+            status="queued", conclusion=None, age_seconds=901, artifact_count=0
+        )
+        self.assertTrue(stale["active_warn"])
+        self.assertEqual(stale["classification"], "WARNING")
+
+    def test_monitor_workflow_uses_tested_policy_and_explains_no_go_skip(self):
+        repo = Path(__file__).resolve().parents[1]
+        workflow = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-monitor.yml").read_text(encoding="utf-8")
+        self.assertIn("actions/checkout@v4", workflow)
+        self.assertIn("python3 tools/adaptive_monitor_policy.py", workflow)
+        self.assertIn("EXPECTED_GATED_SKIP_NO_GO", workflow)
+        self.assertIn("Readiness remains **NO-GO**", workflow)
 
     def test_bounded_emulator_timeout_allows_capture_cycle_to_finish(self):
         repo=Path(__file__).resolve().parents[1]
