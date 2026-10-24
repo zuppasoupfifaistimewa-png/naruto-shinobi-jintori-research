@@ -393,6 +393,56 @@ jobs:
               raise SystemExit("red focus-arrow ring appeared around a non-selected/unknown-context pink badge")
           if action_panel_delta < 8000 or control_panel_delta > 500:
               raise SystemExit("focus-arrow signature lacks its matching selected-tile information-panel differential")
+          # The blue pointer proxy is secondary geometry. It is near pink-60 in both map UP and WAIT,
+          # so proximity alone is explicitly non-decisive.
+          def blue_pointer_proxy_centroid(arr):
+              x1, y1, x2, y2 = (620,295,735,390)
+              crop = arr[y1:y2, x1:x2].astype(np.int16)
+              r, g, b = crop[:,:,0], crop[:,:,1], crop[:,:,2]
+              mask = (b > 100) & (b > r*1.35) & (b > g*1.15)
+              ys, xs = np.where(mask)
+              if len(xs) < 500:
+                  raise SystemExit(f"blue pointer-proxy mask too sparse: {len(xs)}")
+              return (float(xs.mean()+x1), float(ys.mean()+y1))
+          def euclidean(a, b):
+              return float(((a[0]-b[0])**2 + (a[1]-b[1])**2)**0.5)
+          _, rev65_badge_center = pink_centroid(images["C01-F60.png"], (430,210,570,340))
+          _, map_up_tile_center = pink_centroid(map_images["C01-F60.png"], (575,360,685,460))
+          _, map_wait_tile_center = pink_centroid(map_images["C02-F60.png"], (570,250,680,350))
+          if any(c is None for c in (rev65_badge_center, map_up_tile_center, map_wait_tile_center)):
+              raise SystemExit("pink-60 center missing from one authenticated context")
+          rev65_pointer_distance = euclidean(rev65_badge_center, blue_pointer_proxy_centroid(images["C01-F60.png"]))
+          map_up_pointer_distance = euclidean(map_up_tile_center, blue_pointer_proxy_centroid(map_images["C01-F60.png"]))
+          map_wait_pointer_distance = euclidean(map_wait_tile_center, blue_pointer_proxy_centroid(map_images["C02-F60.png"]))
+          print(f"POINTER_TARGET_GEOMETRY rev65_badge_distance={rev65_pointer_distance:.2f}px map_UP={map_up_pointer_distance:.2f}px map_WAIT={map_wait_pointer_distance:.2f}px proximity_alone_non_decisive=true")
+          if not (rev65_pointer_distance >= 150 and map_up_pointer_distance <= 110 and map_wait_pointer_distance <= 110):
+              raise SystemExit("pointer-proxy relation drifted; re-audit authenticated cue geometry")
+          if abs(map_up_pointer_distance - map_wait_pointer_distance) > 30:
+              raise SystemExit("map pointer-to-pink-tile proximity unexpectedly discriminates UP from WAIT")
+          print("POINTER_TARGET_GEOMETRY_REGRESSION=PASS revision65_pointer_not_tile_anchored=true map_UP_and_WAIT_proximity_similar=true geometry_alone_non_decisive=true")
+          
+          # F60->F100 has a stable terrain transform but changes in the foreground sprite region.
+          # Exclude that region from camera registration; never interpret foreground pose/animation as focus motion.
+          def changed_pixel_percent(a, b, box):
+              x1, y1, x2, y2 = box
+              aa, bb = a[y1:y2,x1:x2], b[y1:y2,x1:x2]
+              return float(np.any(aa != bb, axis=2).mean() * 100.0)
+          for branch in (1,2):
+              f60, f100 = images[f"C{branch:02d}-F60.png"], images[f"C{branch:02d}-F100.png"]
+              shift, _ = estimate_scene_vertical_shift(f60, f100, "rev65")
+              sprite_delta = changed_pixel_percent(f60, f100, (540,290,750,560))
+              terrain_delta = changed_pixel_percent(f60, f100, (160,200,430,540))
+              print(f"CHARACTER_POSE_EXCLUSION branch={branch} scene_shift={shift}px foreground_sprite_changed={sprite_delta:.3f}% terrain_changed={terrain_delta:.3f}%")
+              if abs(shift) > 4 or sprite_delta < 10 or terrain_delta > 3:
+                  raise SystemExit("foreground sprite / scene-registration control fell outside calibrated bounds")
+          rev65_ring_counts = {
+              frame: red_focus_ring_pixels(images[f"C01-F{frame}.png"], (420,210,575,330), (445,225,540,310))
+              for frame in (60,100,110,180)
+          }
+          print(f"REV65_RING_PERSISTENCE frames={rev65_ring_counts}")
+          if any(value > 100 for value in rev65_ring_counts.values()):
+              raise SystemExit("a map-like target ring appeared around the Revision65 submenu badge")
+          print("CHARACTER_POSE_EXCLUSION_REGRESSION=PASS terrain_transform_stable=true foreground_changes_are_not_target_evidence=true panel_footer_unchanged=true target_role=UNKNOWN")
           print("MAP_FOCUS_ARROW_RING_REGRESSION=PASS known_map_ring_plus_matching_panel=true Revision65_ring_absent=true target_role=UNKNOWN")
 
           print(f"CAMERA_SHIFT_ESTIMATE revision65_UP={rev65_up_shift}px revision65_WAIT={rev65_wait_shift}px map_UP={map_up_shift}px map_WAIT={map_wait_shift}px")

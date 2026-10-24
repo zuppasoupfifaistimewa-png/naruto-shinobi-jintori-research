@@ -362,6 +362,28 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertLess(gate, source_download)
         self.assertLess(gate, pad_mutation)
 
+    def test_pointer_geometry_and_character_pose_do_not_authorize_barrier_target(self):
+        repo = Path(__file__).resolve().parents[1]
+        regression = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-regression.yml").read_text(encoding="utf-8")
+        player = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-player.yml").read_text(encoding="utf-8")
+        marker = (repo / "experiments" / ".run-storymode-adaptive-player").read_text(encoding="utf-8")
+        agent_source = (repo / "tools" / "storymode_adaptive_agent.py").read_text(encoding="utf-8")
+        self.assertIn("POINTER_TARGET_GEOMETRY_REGRESSION=PASS", regression)
+        self.assertIn("proximity_alone_non_decisive=true", regression)
+        self.assertIn("CHARACTER_POSE_EXCLUSION_REGRESSION=PASS", regression)
+        self.assertIn("REV65_RING_PERSISTENCE", regression)
+        self.assertIn('action,action_reason="WAIT","barrier_target_not_identified; fail_closed_until_controlled_probe"', agent_source)
+        self.assertIn('[[ "$ab_action" == "UP" || "$ab_action" == "DOWN" || "$ab_action" == "LEFT" || "$ab_action" == "RIGHT" || "$ab_action" == "CIRCLE" ]]', player)
+        self.assertNotIn("AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1", marker)
+        gate = player.index('AB_BARRIER_TARGET_GATE=BLOCKED cue=$ab_barrier_target_cue')
+        source_download = player.index("- name: Download selected private source checkpoint artifact")
+        pad_mutation = player.index("pad.setOverride(b)")
+        self.assertLess(gate, source_download)
+        self.assertLess(gate, pad_mutation)
+        out = self.classify("barrier_level_selection_with_pink_60")
+        self.assertEqual(out["state"], "barrier_level_selection")
+        self.assertEqual(out["action"], "WAIT")
+
     def test_push_cannot_launch_unapproved_input_diagnostics_or_legacy_storymode(self):
         repo = Path(__file__).resolve().parents[1]
         manual_only = {
