@@ -370,6 +370,8 @@ class AdaptiveAgentTests(unittest.TestCase):
         marker = (repo / "experiments" / ".run-storymode-adaptive-player").read_text(encoding="utf-8")
         agent_source = (repo / "tools" / "storymode_adaptive_agent.py").read_text(encoding="utf-8")
         self.assertIn("POINTER_TARGET_GEOMETRY_REGRESSION=PASS", regression)
+        self.assertIn("POINTER_SCENE_ANCHOR_MEASUREMENTS", regression)
+        self.assertIn("POINTER_SCENE_ANCHOR_REGRESSION=PASS", regression)
         self.assertIn("proximity_alone_non_decisive=true", regression)
         self.assertIn("CHARACTER_POSE_EXCLUSION_REGRESSION=PASS", regression)
         self.assertIn("REV65_RING_PERSISTENCE", regression)
