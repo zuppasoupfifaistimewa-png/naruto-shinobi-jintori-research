@@ -1,3 +1,17 @@
+# Latest checkpoint — adaptive Story Mode autonomy gap review (24 October 2026)
+
+- Repo boundary: only `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research` was accessed or changed.
+- Audit baseline: `main` HEAD `9acbd5eed24bdc81165358d63ed594600dae488c`, a documentation-only child of the prior verified checkpoint `2a5fa920ab544f125041f3fefd8f202ab702601b`.
+- Latest code policy remains classifier v0.4.0. Calibrated actions are scoped: dialogue → START; barrier choice → CIRCLE only when YES is visibly highlighted; stable revealed-card detail → CIRCLE only with its confirm glyph; map directions are bounded; roulette waits one window before a contextual CIRCLE. `barrier_level_selection` stays WAIT. Battle, unknown menu, map transition, and unknown states stay WAIT.
+- The player workflow is a bounded experiment runner: at most two 180-frame cycles per invocation, five external X11 observations per cycle, press/release readback, and post-exit checkpoint validation. Its progress report only records a map-to-dialogue/battle transition. The current classifier/runner does not establish Story Mode ending or completion.
+- Hard blockers to autonomous completion: target cue in the nested barrier submenu is still UNKNOWN; battle policy and result/win/loss classification are untrained; no authenticated ending/results evidence or completion detector exists. More cycles would extend a run without resolving these blockers.
+- Actions: latest monitor [#40102319836](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40102319836) succeeded on older source `2a5fa920...` and reports player #39975090690 as `EXPECTED_GATED_SKIP_NO_GO` with no player artifact. Latest classifier regression [#40071317759](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40071317759) passed 35 tests on code checkpoint `c0b7d489...`; it is not a Story Mode completion run. All 12 newest runs were completed when inspected.
+- This turn was a static source/workflow review. No emulator, restore, player workflow, gameplay input, marker change, private artifact, or test run occurred. Revision65 marker remains blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`.
+- **Required state remains:** target cue UNKNOWN; `barrier_level_selection = WAIT`; adaptive readiness NO-GO; Story Mode NOT COMPLETE; cue token absent.
+- Next: inspect only distinct existing authenticated artifacts not already documented for same-start-state target A/B or battle/result evidence. Add policy only when authenticated action/control evidence distinguishes an action from WAIT. Keep unsupported battle/result/ending states fail-closed. Do not enlarge the runner or enable Story Mode until the cue, combat/terminal states, checkpoint path, and stop-on-unknown behavior have evidence.
+
+---
+
 # Latest verified checkpoint — Revision62 matched-state submenu audit remains inconclusive (24 October 2026)
 
 - Audit baseline: live `main` HEAD `2a5fa920ab544f125041f3fefd8f202ab702601b`. The latest 12 Actions runs were completed. Latest run [#40102319836](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40102319836), the scheduled monitor, succeeded; its report identifies player run #39975090690 as `EXPECTED_GATED_SKIP_NO_GO`, with no player evidence artifact. Monitor success is not player progress.

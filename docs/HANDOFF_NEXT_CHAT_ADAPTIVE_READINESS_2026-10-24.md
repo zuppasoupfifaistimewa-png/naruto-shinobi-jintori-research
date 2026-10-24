@@ -1,3 +1,22 @@
+# Handoff — autonomous Story Mode system gap review (24 October 2026)
+
+- Start from live `main` and latest Actions; this review began at HEAD `9acbd5eed24bdc81165358d63ed594600dae488c`.
+- System source is classifier v0.4.0 plus a bounded Actions runner. It is not yet an autonomous Story Mode finisher.
+- Blocking facts: `barrier_level_selection` still returns WAIT; `battle_untrained`, unknown menu/result states also return WAIT; the runner is capped at two 180-frame cycles and checks progress only as map→dialogue/battle. No authenticated ending/results evidence or completion detector is present.
+- Keep target cue UNKNOWN, adaptive readiness NO-GO, Story Mode NOT COMPLETE. Preserve the consumed Revision65 marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`; leave the cue token absent.
+- Latest Actions checked: monitor #40102319836 succeeded but reports player #39975090690 as gated skip/no player artifact; classifier regression #40071317759 passed 35 tests on code checkpoint `c0b7d489...`. Neither establishes gameplay progress.
+- No emulator, restore, gameplay input, marker change, or test was performed for this review. Private evidence stays outside Git.
+
+## Next session
+1. Verify actual HEAD, Actions, and this handoff; do not rely on the recorded SHA if main moved.
+2. Search only distinct existing authenticated private artifacts for a not-yet-audited matched-start submenu A/B or battle/result action/control evidence. Skip duplicates and known incomplete/mismatched artifacts.
+3. Improve policy from verified evidence only; preserve WAIT on missing/ambiguous state. Do not expand run length before battle, terminal-state, and target-cue rules are supported.
+4. Add an ending/result classifier only after authentic ending evidence exists. Story Mode remains NOT COMPLETE until that evidence is independently verified.
+5. After all readiness gates pass, use a reviewed new run selector and a short bounded session with validated checkpoint chaining and stop-on-unknown behavior. Never modify the consumed Revision65 marker or bypass its cue gate.
+
+Read the existing Revision62 cue audit before cue work. This session was a static source/workflow review and did not repeat the screenshot audit.
+---
+
 # Handoff update — Revision62 visual A/B audited; target cue remains UNKNOWN / WAIT (24 October 2026)
 
 ## Checkpoint and Actions

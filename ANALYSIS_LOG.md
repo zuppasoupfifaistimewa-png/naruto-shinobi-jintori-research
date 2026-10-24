@@ -1,3 +1,27 @@
+# Offline system review — autonomous Story Mode readiness blockers (24 October 2026)
+
+## Scope
+Static review from `main` HEAD `9acbd5eed24bdc81165358d63ed594600dae488c` of `tools/storymode_adaptive_agent.py`, `.github/workflows/naruto-storymode-adaptive-player.yml`, its regression workflow/tests, the consumed player marker, and the current status/handoff. No screenshot or private artifact was re-audited in this review.
+
+## Findings
+- The agent already has a conservative observe/decide policy for selected menu, map, dialogue, roulette, card, and barrier-choice states. It intentionally returns WAIT at `barrier_level_selection` because the target tile is not identified.
+- `battle_untrained` returns WAIT. There is no learned battle action/turn policy for the game’s encounter states, and result/win/loss states are not calibrated.
+- The player workflow is a bounded tool for experiments/checkpoint continuation, capped at one or two cycles of 180 emulator frames. It captures external X11 observations, verifies input press/release, and validates each checkpoint after process exit. The progress signal it writes is only map→dialogue/battle; it does not detect authentic Story Mode completion.
+- Increasing cycle count cannot safely produce autonomous completion: the submenu cue gate still blocks a required state, and the agent has no supported battle or terminal-state policy.
+- Current Actions do not add gameplay evidence: monitor #40102319836 is successful monitoring of a skipped/no-artifact player run; classifier regression #40071317759 is a code-policy result, not game progress.
+
+## Decision
+The current repository contains an adaptive-player prototype and reliable bounded experiment/checkpoint machinery, but not a ready Story Mode finisher. No gameplay action is justified by this static review. Preserve target UNKNOWN, `barrier_level_selection = WAIT`, adaptive readiness NO-GO, Story Mode NOT COMPLETE, Revision65 consumed marker unchanged, and cue token absent.
+
+## Fastest compliant work order
+1. Inventory only already-existing authenticated private artifacts for an unreviewed matched-start submenu A/B and for matched battle/result outcomes; do not repeat documented artifacts or open savestates.
+2. Add classifier/action rules only where paired authentic action/control evidence isolates a repeatable state transition; every other state remains WAIT.
+3. Require distinct authentic ending/results captures before implementing a completion detector. Completion must not be inferred from workflow success, a checkpoint, or a map transition.
+4. Only after target cue, battle/result policy, terminal detection, checkpoint restore, and stop-on-unknown behavior are independently qualified, continue with short bounded sessions that chain verified checkpoints and stop on any unrecognized state.
+
+No tests were run and no emulator/gameplay input was used. The next session must verify live HEAD and Actions again.
+---
+
 # Offline follow-up — Revision62 matched-state submenu A/B still does not identify the target (24 October 2026)
 
 ## Provenance and scope
