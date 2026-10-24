@@ -15,7 +15,11 @@ All gates must have recorded passes before readiness becomes GO. GO means ready 
 
 ## Efficient continuation and usage
 
-Use `STATUS.md` and this handoff as the compact checkpoint. Read the top/current entry first and open historical audit sections only for a specific unresolved question. Batch independent metadata reads; do not re-download or remeasure already audited evidence; do not launch workflows or repeat regressions for documentation-only changes. Work one offline objective at a time and write its conclusion once. Resume from the latest handoff instead of repeating discovery. Account usage limits cannot be bypassed; pace work in bounded sessions and leave a concise continuation checkpoint if a limit is near.
+Use `STATUS.md` and this handoff as the compact checkpoint. Read the top/current entry first and open historical audit sections only for a specific unresolved question. Batch independent metadata reads; do not re-download or remeasure already audited evidence; do not launch workflows or repeat regressions for documentation-only changes. Work one offline objective at a time and write its conclusion once. Resume from the latest handoff instead of repeating discovery.
+
+At the start of each substantial work session, and before a long or resource-intensive task, check Codex's available `get_usage_limits` checker when it is available. Record its current primary 30-day window as used and remaining percentages. If a 5-hour or weekly field is absent or null, report it as unavailable rather than zero. Avoid repeated checks during a short task and do not run background polling unless a recurring monitor is explicitly requested; keep the check cadence low to conserve usage. Do not attempt to bypass limits. Current snapshot (24 October 2026): 17% used / 83% remaining on the 30-day primary window; secondary window unavailable. This snapshot is time-sensitive and must be refreshed at the next substantial session.
+
+This conversation has a long history. A new chat is optional for small follow-ups; for the next distinct research phase, a fresh chat is recommended after saving the checkpoint, with this handoff and the live `main` HEAD as its starting context. Re-read the compact status/current handoff rather than carrying the full transcript. Longer conversations and tasks can count toward Codex usage, so keep each phase scoped and its handoff concise.
 
 ---
 
