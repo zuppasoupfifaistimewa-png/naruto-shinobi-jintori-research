@@ -1,3 +1,32 @@
+# Offline pointer geometry and character-pose exclusion — 24 October 2026
+
+Regression-only source commit: `1ec34ac934ee62ba69fe3fe43705de1221a17196`. GitHub Actions [run #40059425253](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40059425253) completed **success** at 03:43:44 UTC / 10:43:44 WIB. All 15 workflow steps passed, including **27 tests in 2.978 s**, authentic external-X11 policy checks, card overlay/detail checks, and the existing Revision65 versus map UP-vs-WAIT screenshot regression plus the new geometry/pose checks. This commit changes only the adaptive regression workflow and its source tests. No emulator, player, restore, or gameplay-input workflow was started.
+
+## Offline measurements on existing private screenshots
+
+Sources are the previously stored private artifacts from Revision65 run #39947481094 and map UP-vs-WAIT run #39786019434. They were downloaded into ephemeral analysis space only; screenshot/save-state assets remain outside Git.
+
+- The secondary blue-pointer proxy is **206.01 px** from the exposed Revision65 pink-60 badge, **76.56 px** from the pink-60 map tile in UP, and **82.83 px** from the same tile in WAIT. The map UP/WAIT distance difference is only **6.27 px**, so pointer proximity alone is not a discriminating target-active feature.
+- Between Revision65 F60 and F100, terrain registration estimates **0 px** scene shift in both action and control branches. The foreground-character ROI changed **22.312%** in the action branch and **18.891%** in control, whereas a terrain-only ROI changed **1.467%** and **1.468%** respectively. Treat foreground variation as pose/animation/appearance, not evidence of target focus.
+- The instruction panel and Circle/X footer remain pixel-identical from F60 to F100 in both branches (zero changed pixels each).
+- Red focus-ring counts surrounding the Revision65 pink badge at frames F60/F100/F110/F180 are **66/58/66/80**, all below the calibrated rejection threshold 100. The known map selection composite remains discriminating: **811** red directional-ring pixels and a matching tile-information panel in map UP, versus **62** pixels in map WAIT and **66** around the Revision65 badge.
+- Previously registered F20→F60 terrain motion remains approximately +100 px for both UP contexts and near zero for WAIT. The Revision65 badge visible centroid moves +97.46 px while the background moves approximately +100 px, consistent with camera pan and HUD unocclusion as a confound.
+
+The current best falsifiable visual hypothesis is that an active map tile has a directional focus-arrow ring **and** the corresponding tile-information panel changes to its stats. Neither pink colour/number, a nearby blue icon, isolated pixel changes, nor foreground pose is sufficient. The map-context signature is not yet demonstrated in the nested level-up submenu, so the pink-60 badge's role as the selected upgrade target remains **UNKNOWN**.
+
+## Gate and operational status
+
+- Marker `experiments/.run-storymode-adaptive-player` remains Revision65, blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`, consumed and unchanged; `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` remains absent.
+- Classifier policy at `barrier_level_selection` remains **WAIT**. The token gate still blocks before source-checkpoint download and before PAD mutation. Adaptive-player readiness remains **NO-GO**; Story Mode remains **NOT COMPLETE**.
+- Legacy fixed-sequence Story Mode and raw restore/continuation jobs remain hard-disabled with `if: false`; input-bearing diagnostics remain manual-dispatch-only. All authentic screenshots, ROM/BIOS, Memory Cards, savestates, and private artifacts remain outside Git.
+- Scheduled monitor runs #40010286618, #40034304421, and #40048510714 failed because the monitor inspects stale player run #39975090690, whose conclusion is `skipped` and which has no valid unexpired player evidence artifact. These are monitor/health alerts caused by the intentional no-go/skipped player, not evidence of new gameplay failure or progress. Do not start a player run merely to make the monitor green.
+
+## Next step
+
+Continue offline analysis only: use terrain-registered map coordinates, explicit tile boundaries and the existing arrow-ring/panel reference to distinguish the game pointer from scene motion; keep character/foreground masks separate from terrain registration. Add additional assertions only when grounded in the current private authenticated screenshots. Before any future input, require an independently unique submenu target cue, an explicitly revised marker, successful regression, and the existing fail-closed allowlist/gate. Do not rerun Revision65 or inject input now. For identifiable Story Mode dialogue later, use START—not Circle—and include Indonesian translation immediately beside Japanese text in parentheses.
+
+---
+
 # Current verified checkpoint — 23 October 2026
 
 ## Offline target-cue regression

@@ -1,3 +1,20 @@
+# Handoff update — 24 October 2026, pointer geometry regression passed
+
+Current tested code commit: `1ec34ac934ee62ba69fe3fe43705de1221a17196`. Regression [#40059425253](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40059425253) **success**, all 15 steps, **27/27 tests**. The added offline checks validate pointer-to-pink-60 geometry, separate foreground character pose from registered terrain, verify target-ring absence across Revision65 frames, and preserve the existing fail-closed cue gate.
+
+New authenticated-screen results:
+- Blue-pointer proxy distance: Revision65 badge **206.01 px**; map UP tile **76.56 px**; map WAIT tile **82.83 px**. Similar UP/WAIT distances mean proximity alone is not a unique target cue.
+- F60→F100 scene shift **0 px** in both branches, while the foreground sprite ROI changes **22.312%** in action and **18.891%** in WAIT control; terrain ROI changes about **1.47%** in both. Panel/footer crops change **0 px**.
+- Revision65 ring counts F60/F100/F110/F180: **66/58/66/80**; all below threshold. Positive map UP reference remains **811** red ring pixels plus a matching panel; map WAIT is **62** and Revision65 is **66**.
+
+**Conclusion:** camera pan/unocclusion explains the initial F20→F60 badge exposure sufficiently; foreground pose does not prove focus motion. The upgrade-target role of pink `60` remains **UNKNOWN**. Keep classifier `WAIT` at `barrier_level_selection`, marker Revision65 consumed and unchanged, cue token absent, readiness **NO-GO**, Story Mode **NOT COMPLETE**. Do not rerun the player or restore chain and do not inject gameplay input. Story Mode and raw restore remain `if: false`; authentic private screenshots and checkpoints stay outside Git.
+
+Operational note: scheduled monitor runs #40010286618, #40034304421 and #40048510714 failed because they flagged the deliberately skipped player run #39975090690 (no valid player artifact). This is a monitoring-state issue under NO-GO, not new gameplay evidence.
+
+**Next:** continue only offline screenshot analysis, compare registered terrain/tile/pointer geometry and the known arrow-ring + matching-panel composite, and retain separate foreground/HUD masks. A future input test requires an independently unique submenu cue, a revised marker, a green regression and the pre-input gates. For identified dialogue, use START (never Circle); translate Japanese text into Indonesian in parentheses.
+
+---
+
 # Handoff checkpoint — 23 October 2026, latest regression green
 
 Latest passing source commit: `1e22c1b37d0233455a5a6cf49ddf98e6e555c93c`; regression [#39978745505](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39978745505) **success**, all 15 job steps, 26/26 tests. The source test now covers input-bearing workflow push guards and hard-disabled raw Story Mode restore.

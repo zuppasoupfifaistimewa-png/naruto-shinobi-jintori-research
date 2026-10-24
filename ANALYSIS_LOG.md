@@ -1,3 +1,44 @@
+# Offline pointer geometry + foreground-pose audit (24 October 2026)
+
+**Scope:** offline analysis of previously authenticated private screenshots and regression/source-test changes only. No gameplay input, emulator run, save-state restore, or Story Mode player run was launched.
+
+**Source code commit:** `1ec34ac934ee62ba69fe3fe43705de1221a17196`.
+**Regression:** [#40059425253](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40059425253) — `success`; all 15 workflow steps passed, 27 unit tests passed in 2.978 seconds. Its screenshot evidence stages revalidated the earlier policy, card-overlay, card-detail, Revision65 and map UP-vs-WAIT datasets. The new source-only assertions passed.
+
+## New geometry / pose results
+
+The regression computes a secondary blue-pointer proxy from the authenticated frame ROI and measures Euclidean distance from the pink-60 marker/tile:
+- Revision65 F60 badge-to-proxy: 206.01 px.
+- Map UP F60 tile-to-proxy: 76.56 px.
+- Map WAIT F60 tile-to-proxy: 82.83 px.
+- The UP-versus-WAIT difference is 6.27 px, so this proximity feature does not independently identify a selected tile. It cannot be promoted to a verified cue.
+
+The F60→F100 foreground-versus-background control uses separate ROIs and the terrain-shift estimator:
+- Branch 1: scene shift 0 px; foreground sprite changed 22.312%; terrain ROI changed 1.467%.
+- Branch 2 / WAIT control: scene shift 0 px; foreground sprite changed 18.891%; terrain ROI changed 1.468%.
+- Instruction-panel and confirm/back footer crops remain pixel-identical (0 changed pixels) F60→F100 on both branches.
+- Revision65 red-ring counts across F60/F100/F110/F180 are 66, 58, 66, 80. None reaches the ring threshold of 100. The positive map reference remains 811 ring pixels plus matching panel in UP, compared with 62 ring pixels in map WAIT.
+
+Together with the already independently registered +100 px F20→F60 terrain shift and +97.46 px visible badge-centroid shift, this supports camera pan/unocclusion as a sufficient alternative explanation for the badge becoming visible. Foreground changes after F60 are not evidence of selection. The geometry assertions and pose-exclusion assertions are now in the workflow and source unit tests.
+
+## Decision — unchanged
+
+The pink `60` badge is associated with a barrier-value tile in map context, but its role as the selected target in the upgrade submenu is still **UNKNOWN**. The testable hypothesis remains: a target cue requires an arrow-ring signal spatially surrounding the candidate tile **and** a matching information-panel transition. The positive map example has both; Revision65 submenu frames do not.
+
+Keep `WAIT` for `barrier_level_selection`; keep the marker at consumed Revision65 with no `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1`; do not launch the player, restore chain, or new gameplay input. Readiness remains **NO-GO**, Story Mode remains **NOT COMPLETE**.
+
+## Repo / workflow validation
+
+The tested code commit is `1ec34ac934ee62ba69fe3fe43705de1221a17196`, and the current run #40059425253 reports success. The only code paths changed by that commit are `.github/workflows/naruto-storymode-adaptive-regression.yml` and `tests/test_storymode_adaptive_agent.py`. The three checkpoint docs are being updated separately after the regression passed. The marker blob remains `3754a6ddf45a7570c053d9c149b6d80b0862a127`.
+
+The scheduled monitor still fails on runs #40010286618, #40034304421 and #40048510714 because it treats the intentional player run #39975090690 (`skipped`, no valid player artifact) as an alert. This is an automation-monitor issue and not an indication of new game progress. The player monitor should eventually understand the deliberate NO-GO state, but modifying that is separate from resolving target semantics.
+
+## Next offline task
+
+Use a registered coordinate system to compare candidate tile boundaries, the blue-pointer proxy and the known red-arrow-ring/panel composite across the existing map UP/WAIT reference and the submenu frames. Keep terrain, fixed HUD/panel and foreground character as separate masks. Only change UNKNOWN if a visually unique cue is supported by independent evidence and an authentic regression. Any later gameplay trial requires a new marker revision, the existing pre-download/pre-PAD cue gate, a tested allowlist, and successful regression. Identifiable dialogue uses START rather than Circle; Japanese text must be followed immediately by its Indonesian translation in parentheses.
+
+---
+
 # Latest checkpoint — measured camera-pan confound regression PASS (23 October 2026)
 
 Run [#39955066779](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39955066779) completed with `success` against code commit `6ac013fc76c8d82417305bfbfabeac4c6a73876a`. The expanded regression passed 24 tests, 10 authentic X11 policy checks, 5 authentic card-overlay checks, 10 authentic revealed-card-detail checks, ten Revision65 frame validations, the map UP-vs-WAIT panel/marker assertions, and the new NumPy scene-shift assertion.
