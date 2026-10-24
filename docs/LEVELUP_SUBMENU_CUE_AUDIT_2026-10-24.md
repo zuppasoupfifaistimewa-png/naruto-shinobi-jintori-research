@@ -1,3 +1,18 @@
+## Supplemental triage — remaining adaptive-player artifacts (24 October 2026)
+
+The 17 artifact IDs not cited in the current continuity docs were screened. No candidate supplies same-start `barrier_level_selection` action/control evidence:
+
+- Run #39767083708 / artifact 12420512625: exact F20 parity; both branches `menu_or_unknown_choice`; DOWN vs WAIT.
+- Run #39877412316 / artifact 12469530414: exact F20 parity; both branches `card_selection`; CIRCLE vs WAIT.
+- Run #39904672868 / artifact 12479814966: sequential checkpoint continuation, not a matched-start control pair.
+- The other 14 manifests lack a full matched-start submenu A/B.
+
+For these three candidates, ZIP sizes and SHA-256 digests match GitHub artifact metadata. Only manifest data, text/JSON reports and selected runtime log lines were read; savestate contents and screenshots were not opened. Full details are in `docs/REMAINING_PLAYER_ARTIFACT_TRIAGE_2026-10-24.md`.
+
+Decision unchanged: target cue UNKNOWN; `barrier_level_selection = WAIT`; adaptive readiness NO-GO; Story Mode NOT COMPLETE; Revision65 marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` unchanged; cue token absent. No emulator, restore, continuation, gameplay input, player workflow, or test ran.
+
+---
+
 ## Supplemental visual audit — Revision62 matched-state LEFT→Circle A/B (24 October 2026)
 
 ### Artifact provenance and controlled start
