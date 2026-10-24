@@ -27,7 +27,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(cat experiments/.inspect-control-probe-artifact-12308661246)" = "ARTIFACT_ID=12308661246 RUN_ID=39513285641"
+          test "$(cat experiments/.inspect-control-probe-artifact-12308661246)" = "ARTIFACT_ID=12308661246 RUN_ID=39513285641 RETRY=1"
           echo "INSPECTION_SCOPE=artifact 12308661246; run 39513285641; no emulator/input/restore"
       - name: Download existing artifact to runner temp
         uses: actions/download-artifact@v4
@@ -53,7 +53,7 @@ jobs:
           import hashlib, json, os, re, subprocess, tempfile
           from pathlib import Path
           from types import SimpleNamespace
-          from PIL import Image, ImageChops, ImageEnhance, ImageOps
+          from PIL import Image, ImageChops, ImageEnhance, ImageOps, ImageStat
 
           root=Path(os.environ["ARTIFACT_DIR"])
           files=sorted(p for p in root.rglob("*") if p.is_file())
@@ -125,10 +125,8 @@ jobs:
                   differing=sum(hist[1:])
                   channels=diff.getextrema()
                   bbox=diff.getbbox()
-                  # Mean absolute error calculated directly per channel.
-                  import statistics
-                  vals=[sum(ch)/len(ch) for ch in diff.split()]
-                  mae=sum(vals)/3
+                  # Mean absolute error per RGB channel.
+                  mae=sum(ImageStat.Stat(diff).mean)/3
                   print(f"PAIR_DIFF branch={branch} phase={phase} dims={a.width}x{a.height} differing_pixels={differing} total_pixels={a.width*a.height} mean_abs_rgb={mae:.6f} bbox={bbox} extrema={channels}")
           print("ARTIFACT_CONTENT_PROCESSING=RUNNER_ONLY")
           print("NO_EMULATOR=1 NO_GAMEPLAY_INPUT=1 NO_RESTORE=1 NO_PLAYER_WORKFLOW=1")
