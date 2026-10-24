@@ -79,7 +79,7 @@ def observe(path: str | Path) -> dict[str, Any]:
     card_art=_ratios(arr,(545,245,730,380))
     # This small footer ROI isolates the Circle confirm glyph shown when a
     # revealed card is actionable; the broader instruction panel is not enough.
-    card_confirm_glyph=_ratios(arr,(1020,660,1115,745))
+    card_confirm_glyph=_ratios(arr,(1030,665,1105,712))
     features={
         "wheel_red":round(wheel["red"],4),"wheel_gold":round(wheel["gold"],4),
         "dialogue_orange":round(dialogue_box["orange"],4),"dialogue_white":round(dialogue_box["white"],4),
