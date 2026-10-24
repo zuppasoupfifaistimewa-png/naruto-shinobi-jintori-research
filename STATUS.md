@@ -1,3 +1,31 @@
+# Latest verified checkpoint — revealed-card Circle policy passes authenticated A/B; barrier cue still UNKNOWN (24 October 2026)
+
+## Code, tests, and authentic evidence
+
+- **Code/test checkpoint:** `c0b7d48933d37f59914d82a4bfeab4100d836a1e`; classifier version **0.4.0**.
+- **GitHub Actions:** [#40071317759](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40071317759) — **success**; 35 unit tests in 5.370 seconds; all workflow steps passed, including prior authentic screenshot regressions and the new Revision56 action/control verifier.
+- The new regression uses only previously authenticated private artifact **12480355608**, source run [#39904097181](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39904097181). It does not run an emulator or send gameplay input.
+- At F20 the CIRCLE-action and no-input-control screenshots are pixel-identical. At F60 the action/control images differ in **127,598 pixels**, with mean absolute RGB difference **9.04858**. The historical runtime log confirms a CIRCLE press/readback on the action branch and zero input on the control branch. The action branch proceeds from the card-detail screen to a dialogue and then the map; the no-input branch stays on the card-detail screen through F180.
+- The first implementation attempt [#40071223499](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40071223499) failed one synthetic test because its confirm-glyph region included the orange/gold bottom-panel border. The ROI was narrowed to `(1030,665,1105,712)`; the corrected regression above passes.
+
+## Policy change supported by that A/B
+
+The agent now emits `card_selection_detail` and recommends **CIRCLE** only when the blue/white revealed-card artwork meets its calibrated conditions **and** the small lower-right red Circle-confirm glyph region is present (red-mask ratio ≥ 0.12). Similar card artwork without a clear glyph is classified separately as `card_selection_detail_unconfirmed` and returns **WAIT**. Revision53 authentic action/control evidence also passes this updated boundary: the intermediate F60 reveal without a clear confirm glyph remains WAIT, while the stable detail frames with the glyph can recommend CIRCLE.
+
+Japanese text in the authentic card evidence: `ゲットする札をえらべ!` (Pilih kartu yang akan didapatkan!); `守` (Lindungi/Bertahan); `防御集中` (Konsentrasi Pertahanan); `気合いをいれて守る。防御技の消費チャクラが0になります。` (Bertahan dengan penuh semangat. Konsumsi chakra untuk teknik pertahanan menjadi 0.).
+
+## Safety boundary unchanged
+
+- `barrier_level_selection = WAIT`; unique nested-submenu target cue remains **UNKNOWN**.
+- Adaptive-player readiness remains **NO-GO**; Story Mode remains **NOT COMPLETE**.
+- The marker `experiments/.run-storymode-adaptive-player` remains the consumed Revision65 blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`; do not change or replace it. `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` remains absent.
+- The regression continues to report `LEVELUP_TARGET_CUE_REGRESSION=PASS` only as a fail-closed policy test: map UP ring/panel/text = 811/8,312/635; map WAIT = 62/8,629/15; submenu UP = 66/2,452/3,221; submenu WAIT = 67/2,566/39. Neither submenu context passes the map-only ring/panel/text composite.
+- No emulator, restore/continuation, or gameplay-input run was launched during this session. Historical private artifacts were analyzed temporarily; no ROM, BIOS, Memory Card, savestate, screenshot, or private evidence was added to Git.
+
+**Next:** continue offline toward a unique tile-anchored target cue in the level-up submenu, or source-level analysis of UI rendering. Do not reuse duplicate Revision64/65 frames or infer selection from the pink badge, camera movement, the character/kunai sprite, or the generic Circle footer. Do not authorize barrier-selection input until independent cue evidence and the marker/allowlist/pre-download gate have been reviewed. For Story Mode dialogue, use **START**, not Circle.
+
+---
+
 # Latest verified checkpoint — historical LEFT→Circle regression green; readiness still NO-GO (24 October 2026)
 
 ## Additional authenticated regression — verified pass

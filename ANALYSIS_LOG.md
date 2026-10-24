@@ -1,3 +1,41 @@
+# Verified card-detail Circle confirmation from historical authenticated A/B — 24 October 2026
+
+**Policy/test commit:** `c0b7d48933d37f59914d82a4bfeab4100d836a1e`. **Actions #40071317759:** `success`; 35 tests in 5.370 seconds; all workflow steps passed.
+
+## New offline finding
+
+Inspected the authenticated private artifact `12480355608` from historical adaptive run [#39904097181](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39904097181), Revision56, whose explicit A branch presses CIRCLE and whose control branch sends no input. The F20 action/control captures are pixel-identical (1,024,000 identical RGB pixels). At F60, they diverge by 127,598 pixels with mean absolute RGB difference 9.04858. Historical logs confirm CIRCLE press readback `true`, a single action-branch press, zero control-branch presses, and a valid A/B report. The action branch then renders a dialogue at F60 / reaches `map_after_move` by F100; the no-input branch remains on `card_selection_detail` through F180.
+
+This is a verified state transition for the **revealed-card confirmation state**, not for the level-up barrier submenu.
+
+## Policy and regression implementation
+
+The screenshot classifier was advanced to version 0.4.0. `card_selection_detail` is actionable only when the blue/white revealed-card conditions remain true and the narrowed lower-right Circle-glyph ROI `(1030,665,1105,712)` meets red-mask ratio `>= 0.12`. A visually similar reveal without a clearly visible confirm glyph is now classified as `card_selection_detail_unconfirmed` / `WAIT`. Stable, glyph-confirmed `card_selection_detail` recommends `CIRCLE`. The new decision is scoped to this state only; the barrier-submenu branch still always returns `WAIT`.
+
+Updated regression workflow step downloads the already-existing historical Revision56 artifact temporarily and checks:
+- all ten expected state/action classifications from C01 action and C02 control frames;
+- identical C01/C02 source frames at F20 and a sufficiently large action/control difference at F60;
+- historical log evidence for CIRCLE press/readback and a no-input control;
+- all prior card-overlay, Revision53, pink-badge, map-vs-submenu composite, and historic LEFT→Circle fail-closed checks.
+
+The first implementation regression [#40071223499](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40071223499) stopped at one synthetic-test failure: the initial glyph ROI overlapped the bottom orange/gold border, so a no-glyph fixture incorrectly exceeded the threshold. The ROI was narrowed to the glyph interior area and the complete corrected suite passed in [#40071317759](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40071317759).
+
+Japanese strings from the authentic card screen:
+- `ゲットする札をえらべ!` (Pilih kartu yang akan didapatkan!)
+- `守` (Lindungi/Bertahan)
+- `防御集中` (Konsentrasi Pertahanan)
+- `気合いをいれて守る。防御技の消費チャクラが0になります。` (Bertahan dengan penuh semangat. Konsumsi chakra untuk teknik pertahanan menjadi 0.)
+
+## Decision boundaries
+
+`card_selection_detail` may now recommend Circle only with the specific revealed-card art plus confirm glyph. `card_selection_detail_unconfirmed` is WAIT. The nested barrier level-up target remains `UNKNOWN` / `WAIT`; the map-only focus ring + matching statistics panel + panel-text-change composite still fails in both submenu branches. Pink badge pulse/exposure and the kunai/foreground sprite remain excluded as target cues.
+
+No emulator, restore, continuation, or gameplay input was started in this session; this was an offline review of historical private artifacts and a CI regression. ROM/BIOS/Memory Card/savestates/screenshots/private evidence remain outside Git.
+
+**Next:** find independent evidence for a cue physically tied to the selected barrier tile in the nested level-up submenu, or inspect UI rendering/source-level behavior. Do not alter the consumed marker, add the cue token, or run gameplay before that gate is independently satisfied. Dialogue must use START to skip; translate Japanese inline in Indonesian parentheses.
+
+---
+
 # Historical LEFT→Circle evidence regression — 24 October 2026
 
 **Workflow/test commit:** `e0f3c49f735a7a518399cef1457e8233affec43e`. **Actions #40069923244:** `success`; 34 tests in 5.114 seconds; new authenticated frame step passed.

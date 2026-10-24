@@ -1,3 +1,34 @@
+# Latest handoff — card-detail confirmation improved; barrier submenu still NO-GO (24 October 2026)
+
+## Verified source checkpoint
+
+- Code/test checkpoint: `c0b7d48933d37f59914d82a4bfeab4100d836a1e` (classifier version 0.4.0). This SHA is the exact tree tested by [Actions #40071317759](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40071317759): **success**, 35 unit tests, 5.370 seconds, all workflow steps passed.
+- The preceding implementation attempt, [#40071223499](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40071223499), failed one synthetic test because the red confirm-glyph ROI overlapped the orange/gold footer border. Commit `c0b7d489` narrowed that ROI to `(1030,665,1105,712)`; the corrected suite now passes.
+- The most recent authenticated card A/B is historic run [#39904097181](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39904097181), artifact `12480355608`. Do not rerun it: it is already checked as a regression fixture.
+
+## Policy learned from the authentic card A/B
+
+- Stable `card_selection_detail`: recommend CIRCLE only when the blue/white revealed-card conditions and the lower-right Circle-confirm glyph ratio ≥0.12 are both present.
+- Similar/intermediate reveal without a clear glyph: `card_selection_detail_unconfirmed` / WAIT.
+- The authentic CIRCLE action branch and no-input control had identical F20 images; F60 diverged by 127,598 pixels (mean absolute RGB difference 9.04858). Runtime logs showed one CIRCLE press/readback true in action and zero presses in control; action moved to dialogue/map while control remained in card detail. This is sufficient for the **card-detail confirm** policy, not proof of other states.
+- Japanese strings: `ゲットする札をえらべ!` (Pilih kartu yang akan didapatkan!); `守` (Lindungi/Bertahan); `防御集中` (Konsentrasi Pertahanan); `気合いをいれて守る。防御技の消費チャクラが0になります。` (Bertahan dengan penuh semangat. Konsumsi chakra untuk teknik pertahanan menjadi 0.).
+
+## Required unresolved state and safety limits
+
+- `barrier_level_selection = WAIT`; unique target cue remains **UNKNOWN**.
+- Adaptive readiness stays **NO-GO**; Story Mode stays **NOT COMPLETE**.
+- Keep consumed marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` untouched; do not add `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1`.
+- Preserve the map-only positive cue composite (focus ring + expected panel footprint + text transition). It still rejects submenu UP/WAIT; pink 60, movement/visibility, and foreground kunai/pose are not target cues.
+- No emulator, restore, continuation, or gameplay input was launched in this session. Private authentic artifacts were inspected temporarily and remain outside Git.
+
+## Next concrete work
+
+Continue offline using a **distinct already-authenticated artifact** or source-level rendering/UI analysis to prove a unique cue attached to the candidate barrier tile in the nested level-up submenu. Do not double-count Revision64/65, do not infer selection from the generic Circle footer, and do not update the consumed marker or token. After a distinct cue is established, review the marker, input allowlist, pre-download/PAD gate, and regression before considering an isolated input run.
+
+For future Story Mode dialogue, use **START** to skip, never Circle. Provide an Indonesian translation beside every Japanese string. Verify HEAD and the latest Actions before work in a new chat; the repo remains the continuity record.
+
+---
+
 # Latest continuation checkpoint — historical LEFT→Circle policy regression green; cue still UNKNOWN (24 October 2026)
 
 ## Verified update
