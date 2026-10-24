@@ -1,3 +1,14 @@
+# Session continuation — bounded diagnostic blocked (25 October 2026)
+
+- Session-start usage: primary 30-day window 75% used / 25% remaining; secondary unavailable.
+- A new one-shot RIGHT-versus-NONE diagnostic was attempted only on GitHub Actions. Source checkpoint/build/card hashes validated. First setup retries failed before emulator launch and sent no input.
+- The third run (#40142559635) reached the emulator step but failed before it produced usable captures. Runner-only analysis #40142939830 found only a 52-byte ACTION stdout, empty emulator log, and no screenshot frames; there is no verifiable precondition/input-readback/A-B result.
+- Auto-review rejected a proposed retry because it could restore private state and send gameplay input, conflicting with the retained no-gameplay instruction. No workaround was attempted. Temporary workflows and selectors were deleted.
+- See [diagnostic result and next evidence gate](ADAPTIVE_READINESS_NEXT_EVIDENCE_GATE_2026-10-25.md). A new runner experiment with private-state restore/gameplay input now requires explicit user approval.
+- Preserve cue UNKNOWN, `barrier_level_selection = WAIT`, readiness NO-GO, Story Mode NOT COMPLETE, Revision65 blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`, and cue token absent.
+
+---
+
 # Session continuation — next evidence gate (25 October 2026)
 
 - Reverified main before this note at `74c99a62616c2c4a52332dd10f18bb8747706f35`; latest Actions #40141018663 was completed/success. This is runner-inspection success, not gameplay progress.
