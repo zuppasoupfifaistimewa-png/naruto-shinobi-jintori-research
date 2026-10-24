@@ -1,3 +1,15 @@
+# Latest checkpoint — non-player Actions artifact metadata screen (24 October 2026)
+
+- Session-start `main` HEAD verified at `77f8da107236155b48ffa523c1c47dbb92311131`; ten newest Actions were completed. Latest overall monitor #40102319836 succeeded on older source `2a5fa920...`; latest classifier regression #40071317759 succeeded on `c0b7d489...`. Neither is gameplay evidence.
+- Usage: primary 30-day window 39% used / 61% remaining; secondary window unavailable.
+- Metadata identified one unconfirmed lead outside the adaptive-player set: control-probe run #39513285641 / artifact #12308661246. Its workflow samples ten button/no-input branches from a shared checkpoint, but run metadata does not reveal that checkpoint's game state. Do not treat it as submenu evidence.
+- Neighboring barrier DOWN probes (#39618670884 / artifact #12352978983 and #39619671384 / artifact #12353768685), the single barrier-confirm run #39617444912 / artifact #12354275022, and roulette artifacts #12351098551, #12352271884, #12386841383 were already documented; not re-audited.
+- No Actions runner session or existing safe runner-side artifact inspection path is available. The artifact-download connector returns bytes to the caller, so contents were not fetched. Do not dispatch/rerun a workflow solely for inspection.
+- Full metadata and exact continuation gate: [docs/NON_PLAYER_ACTIONS_ARTIFACT_METADATA_TRIAGE_2026-10-24.md](docs/NON_PLAYER_ACTIONS_ARTIFACT_METADATA_TRIAGE_2026-10-24.md).
+- Required state unchanged: target cue UNKNOWN; `barrier_level_selection = WAIT`; readiness NO-GO; Story Mode NOT COMPLETE; Revision65 marker `3754a6ddf45a7570c053d9c149b6d80b0862a127` unchanged; cue token absent. No emulator, restore, player workflow, gameplay input, tests, or private evidence commit.
+
+---
+
 # Prepared handoff checkpoint — runner-only artifact continuation (24 October 2026)
 
 - Current `main` HEAD before this documentation refresh: `463e94c9c6a9840226b5fa8cc3fe48645376d2b1`.
