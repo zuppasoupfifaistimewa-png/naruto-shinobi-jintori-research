@@ -1,3 +1,13 @@
+## Latest continuation refresh
+
+- After the prior documentation commit, `main` is `04b7d6d9a47e1332ec1c360fb7a77e280bf0d729`.
+- Usage checker: primary 30-day window 75% used / 25% remaining; secondary unavailable.
+- Metadata screen of the 100 newest Actions runs found no newer gameplay/A-B artifact outside the already triaged set. The latest run is still corrected runner inspection #40141018663; neighboring entries are monitors and regression runs, not Story Mode completion evidence.
+- No fresh same-start, unobstructed submenu source was identified. The existing cue gate and all invariants remain unchanged.
+- No workflow was dispatched, and no emulator, input, restore, player workflow, artifact contents, or tests were run in this refresh.
+
+---
+
 # Adaptive readiness continuation — next evidence gate (25 October 2026)
 
 ## Session verification
