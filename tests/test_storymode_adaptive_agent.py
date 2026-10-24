@@ -422,6 +422,36 @@ class AdaptiveAgentTests(unittest.TestCase):
         self.assertLess(gate, source_download)
         self.assertLess(gate, pad_mutation)
 
+    def test_pink_badge_color_pulse_is_shared_by_map_up_and_wait(self):
+        # Means measured offline from the authenticated map UP-vs-WAIT PNGs.
+        # The same-frame pulse is almost identical despite different selection contexts.
+        up = {
+            "F60": (237.5, 39.2, 140.7),
+            "F100": (215.6, 69.1, 118.5),
+            "F110": (206.7, 65.1, 103.4),
+            "F180": (238.2, 39.4, 141.1),
+        }
+        wait = {
+            "F60": (235.1, 37.5, 138.4),
+            "F100": (213.4, 65.6, 116.2),
+            "F110": (202.3, 62.8, 101.0),
+            "F180": (237.7, 39.5, 140.8),
+        }
+        self.assertTrue(cue_audit.same_badge_pulse_across_contexts(up, wait))
+        self.assertFalse(cue_audit.same_badge_pulse_across_contexts(up, None))
+        self.assertFalse(cue_audit.same_badge_pulse_across_contexts({}, {}))
+        self.assertFalse(cue_audit.same_badge_pulse_across_contexts(up, wait, max_distance=2.0))
+        changed = dict(wait)
+        changed["F110"] = (170.0, 120.0, 50.0)
+        self.assertFalse(cue_audit.same_badge_pulse_across_contexts(up, changed))
+        # Badge color change alone cannot bypass the known ring-plus-panel composite.
+        self.assertFalse(cue_audit.matches_map_selection_reference(66, 2452, 156))
+        out = self.classify("barrier_level_selection_with_pink_60")
+        self.assertEqual(out["state"], "barrier_level_selection")
+        self.assertEqual(out["action"], "WAIT")
+        regression = (Path(__file__).resolve().parents[1] / ".github/workflows/naruto-storymode-adaptive-regression.yml").read_text(encoding="utf-8")
+        self.assertIn("PINK_BADGE_PULSE_REGRESSION=PASS", regression)
+
     def test_push_cannot_launch_unapproved_input_diagnostics_or_legacy_storymode(self):
         repo = Path(__file__).resolve().parents[1]
         manual_only = {

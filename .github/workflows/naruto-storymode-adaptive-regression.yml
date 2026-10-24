@@ -199,7 +199,7 @@ jobs:
           import numpy as np
           from PIL import Image
           sys.path.insert(0, str(Path.cwd() / "tools"))
-          from levelup_target_cue_audit import matches_map_selection_reference
+          from levelup_target_cue_audit import matches_map_selection_reference, same_badge_pulse_across_contexts
 
           root = Path(os.environ["EVIDENCE"])
           agent = "tools/storymode_adaptive_agent.py"
@@ -471,6 +471,35 @@ jobs:
               "WAIT_F20_F60": bright_text_mask_delta(images["C02-F20.png"], images["C02-F60.png"], prompt_box),
               "WAIT_F60_F100": bright_text_mask_delta(images["C02-F60.png"], images["C02-F100.png"], prompt_box),
           }
+          # Pink badge chroma changes with animation phase in the authentic frames.
+          # Sample a badge-interior ROI away from the foreground kunai and arrow ring;
+          # compare the same frame phases in the map-UP and map-WAIT contexts.
+          # A shared pulse is not a discriminating selection signal.
+          def pink_badge_core_rgb_mean(arr, box):
+              x1, y1, x2, y2 = box
+              crop = arr[y1:y2, x1:x2].astype(np.int16)
+              r, g, b = crop[:,:,0], crop[:,:,1], crop[:,:,2]
+              mask = (r > 150) & (r > g*1.25) & (b > 80) & ((r-g) > 50)
+              values = crop[mask]
+              if len(values) < 300:
+                  raise SystemExit(f"pink badge core mask too sparse in {box}: {len(values)}")
+              return tuple(float(value) for value in values.mean(axis=0)), int(len(values))
+
+          pulse_frames = (60, 100, 110, 180)
+          map_up_pulse_rgb, map_wait_pulse_rgb = {}, {}
+          pulse_distances = {}
+          for frame in pulse_frames:
+              key = f"F{frame}"
+              up_rgb, up_pixels = pink_badge_core_rgb_mean(map_images[f"C01-{key}.png"], (590,385,625,423))
+              wait_rgb, wait_pixels = pink_badge_core_rgb_mean(map_images[f"C02-{key}.png"], (590,280,625,318))
+              map_up_pulse_rgb[key], map_wait_pulse_rgb[key] = up_rgb, wait_rgb
+              distance = float(np.linalg.norm(np.asarray(up_rgb) - np.asarray(wait_rgb)))
+              pulse_distances[key] = distance
+              print(f"PINK_BADGE_PULSE_PHASE {key} map_UP_rgb={tuple(round(x,1) for x in up_rgb)} map_WAIT_rgb={tuple(round(x,1) for x in wait_rgb)} rgb_distance={distance:.2f} UP_pixels={up_pixels} WAIT_pixels={wait_pixels}")
+          if not same_badge_pulse_across_contexts(map_up_pulse_rgb, map_wait_pulse_rgb):
+              raise SystemExit("pink badge pulse diverged between matched map UP/WAIT frames; re-audit cue semantics")
+          print(f"PINK_BADGE_PULSE_REGRESSION=PASS frames={len(pulse_frames)} max_rgb_distance={max(pulse_distances.values()):.2f} same_phase_across_UP_WAIT=true pulse_alone_is_not_a_unique_selection_cue=true")
+
           cue_metrics = {
               "map_UP": (map_focus_ring_pixels, map_up_panel_gold, map_up_text_delta),
               "map_WAIT": (map_wait_pink_ring_pixels, map_wait_panel_gold, map_wait_text_delta),
