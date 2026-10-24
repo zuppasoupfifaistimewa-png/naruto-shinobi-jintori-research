@@ -1,3 +1,14 @@
+# Latest checkpoint — corrected runner-only control-probe inspection (25 October 2026)
+
+- Corrected runner inspection [Actions run #40141018663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40141018663) completed successfully. Artifact #12308661246 digest matched GitHub metadata. All ten same-checkpoint pre frames are identical; UP/DOWN/LEFT/RIGHT post frames are identical to NONE despite successful input readbacks. CIRCLE changes the whole frame, but no explicit state label is present.
+- Captures are 320×240. Japanese/English OCR on the three unique images was garbled; the checkpoint state and any submenu cue remain unverified. This artifact does not qualify as a same-start `barrier_level_selection` target A/B.
+- A first corrected run #40140914545 stopped at a Pillow diff-statistics bug; fixed and completed in #40141018663. No emulator, gameplay input, restore, player workflow, tests, savestate access, local artifact download, or private-evidence commit occurred. All artifact content processing happened on the Actions runner.
+- Temporary workflow and selector removed after the run. Full details: [triage report](docs/NON_PLAYER_ACTIONS_ARTIFACT_METADATA_TRIAGE_2026-10-24.md).
+- Session-start usage: primary 30-day window 55% used / 45% remaining; secondary unavailable.
+- Preserve cue UNKNOWN; `barrier_level_selection = WAIT`; readiness NO-GO; Story Mode NOT COMPLETE; Revision65 blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` unchanged; cue token absent.
+
+---
+
 # Latest checkpoint — one runner-only control-probe artifact inspection (25 October 2026)
 
 - One explicitly authorized runner inspection completed successfully: [Actions run #40110571330](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40110571330). Artifact #12308661246 was downloaded only to the runner; size/digest matched GitHub metadata.
