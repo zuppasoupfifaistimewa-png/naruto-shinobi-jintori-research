@@ -249,7 +249,7 @@ jobs:
           # the pink-60 tile; WAIT retains the empty-land / value-140 information.
           map_root = Path(os.environ["MAP_EVIDENCE"])
           map_images = {}
-          for filename in ("C01-F20.png", "C01-F60.png", "C02-F20.png", "C02-F60.png"):
+          for filename in (f"C{branch:02d}-F{frame}.png" for branch in (1, 2) for frame in (20, 60, 100, 110, 180)):
               path = map_root / filename
               if not path.is_file():
                   raise SystemExit("missing authentic map UP-vs-WAIT frame: " + filename)
