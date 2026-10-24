@@ -1,3 +1,17 @@
+# Prepared continuation prompt — runner-only artifact review (24 October 2026)
+
+Current `main` before this note: `463e94c9c6a9840226b5fa8cc3fe48645376d2b1`. The 12 newest Actions are completed; latest monitor #40102319836 succeeded on older source `2a5fa920...`, and latest regression #40071317759 passed 35 tests on `c0b7d489...`. Usage at preparation: 30-day window 38% used / 62% remaining; secondary unavailable.
+
+The adaptive-player artifact screening is complete: 17 previously uncited artifacts yielded no qualifying same-start `barrier_level_selection` A/B. See `docs/REMAINING_PLAYER_ARTIFACT_TRIAGE_2026-10-24.md`.
+
+User's durable execution boundary: artifact contents may be processed only on a GitHub Actions runner. Never download or extract private artifacts to the laptop/local Codex workspace. If no safe runner-side process is available, limit work to GitHub metadata and repository text; do not launch a gameplay workflow or a new workflow solely to fetch artifact contents.
+
+Next chat: read `STATUS.md`, `ANALYSIS_LOG.md`, `docs/LEVELUP_SUBMENU_CUE_AUDIT_2026-10-24.md`, this handoff, and the triage report; verify live main HEAD and Actions; identify from metadata any existing authenticated non-player Actions artifact that could contain same-start submenu A/B evidence. Only inspect content if an existing safe runner-side path is available. Preserve cue UNKNOWN, `barrier_level_selection = WAIT`, readiness NO-GO, Story Mode NOT COMPLETE, Revision65 marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`, and cue token absent.
+
+No emulator, gameplay input, player workflow, or tests ran during handoff preparation.
+
+---
+
 # Execution environment boundary (user instruction, 24 October 2026)
 
 For this research, process or inspect artifact contents only in a GitHub Actions runner. Do not download or extract repository artifacts onto the user's laptop or local Codex workspace. If no suitable runner execution is available, limit work to GitHub metadata/repository text and report that artifact-content inspection is unavailable. Do not launch a workflow merely to inspect artifacts unless the user authorizes that run. This is a user-imposed work boundary; do not assume local shell is an Actions runner.
