@@ -219,6 +219,7 @@ jobs:
           end)
           log("DIAGNOSTIC_SCRIPT_READY branch="..branch.." action=RIGHT frames=30-38 control=NONE")
           LUA
+          mkdir -p "$WORK/tools"
           cp "$GITHUB_WORKSPACE/tools/storymode_adaptive_agent.py" "$WORK/tools/storymode_adaptive_agent.py"
           cd "$WORK"
 
