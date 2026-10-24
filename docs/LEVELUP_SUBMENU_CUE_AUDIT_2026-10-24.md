@@ -1,3 +1,25 @@
+## Follow-up audit — distinct historical LEFT/CIRCLE A/B checks; no unique target cue (24 October 2026)
+
+### Authenticated runs examined offline
+
+- Run [#39908484177](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39908484177), artifact `12481932174`: LEFT action versus no-input control. F20 begins from matched `barrier_level_selection` decisions and all 1,024,000 pixels are identical. At F60/F100/F110/F180 the pairwise differing-pixel counts are 693,755/693,655/693,270/693,882 (mean absolute RGB difference 17.71671/17.62710/17.54281/17.62892). Runtime log confirms LEFT press/release readback but reports `state_changed=false`; the classifier stays `WAIT` through F180.
+- In #39908484177, an exploratory mask inside `(525,145,660,225)` (`R>150`, `R>1.3×G`, `B>100`, `|R−B|<100`) counts pinkish pixels action/control as `146/146` at F20, `1160/172` at F60, `1076/162` at F100, `852/146` at F110. This diagnostic is not a target detector. The rise corresponds to the badge becoming more exposed under the HUD in the action branch; the control badge is still partly occluded. In instruction glyph ROI `(170,595,660,690)`, bright-pixel mask (`R,G,B>190`) counts are 1,658 in each branch with XOR 0 at F20/F60/F100/F110. The prompt remains `レベルアップする結界をえらんでください` (Pilih penghalang yang akan dinaikkan levelnya); the image difference does not establish a selected target because the target is not equally unobstructed across branches.
+- Run [#39909132189](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39909132189), artifact `12481644668`: CIRCLE action versus WAIT control. Runtime logs record press/release readback but no state transition. C01/C02 pairs at F20/F60/F100/F110/F180 are all pixel-identical (zero differing pixels; mean absolute RGB difference 0). The badge is still partly covered by the HUD in both branches. This is limited to the observed frames and does not prove Circle is ineffective in every possible state.
+- Run [#39946344909](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/39946344909), artifact `12498880615`, was rejected as an independent cue result: `C02-F180.png` and `ab-comparison-report.txt` are missing, and its UP/camera-pan context overlaps already documented Revision64/65 evidence.
+
+### Source/resource check
+
+The current tracked tree has the screenshot classifier and an offline calibration helper, not the game renderer. `docs/ROM_STRUCTURE.md` and `docs/RESOURCE_CATALOG.md` document `SLPS_035.53`, `DATA.BIN`, `DATA2.BIN` and other extracted ROM files as local/off-repo inputs. The checked-in tree contains no game executable, extracted resource binary, or source implementation that maps submenu tile geometry or selected-target rendering. That avenue cannot presently resolve the cue from this repository alone.
+
+### Classification and disposition
+
+- **VERIFIED:** matched initial states for #39908484177 and #39909132189; the LEFT action has no observed classifier state change, while the sampled CIRCLE branch is pixel-identical to control. The current monitor report says player run #39975090690 is `skipped` with no player artifact.
+- **HYPOTHESIS:** viewport movement/HUD unocclusion explains the pink badge's changed visibility in LEFT action branch; it is not verified from renderer source.
+- **UNKNOWN:** which barrier tile, if any, is uniquely selected in the level-up submenu.
+
+Keep `barrier_level_selection = WAIT`, target cue **UNKNOWN**, adaptive readiness **NO-GO**, Story Mode **NOT COMPLETE**. Keep consumed marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` and keep `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1` absent. Required next evidence: a distinct authenticated matched-state A/B with the same candidate tile unobstructed in both branches and a reproducible cue anchored to that tile, preferably plus a matching tile-specific stats-panel change. No emulator, restore, continuation or gameplay input was run; only PNGs and text/JSON were examined, and no private evidence was committed.
+
+---
 # Addendum — distinct Revision59 evidence checked (24 October 2026)
 
 ### Source and scope

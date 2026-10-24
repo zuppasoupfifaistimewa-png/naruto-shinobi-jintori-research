@@ -1,3 +1,26 @@
+# Latest handoff — extra historical A/B inspected; no independent submenu target cue yet (24 October 2026)
+
+## Checkpoint and Actions
+- Only permitted repo: `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`.
+- HEAD checked before documentation update: `ed683f21f856a5def2f4a5ab9d0db09028b78500`.
+- Latest run [#40087271642](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40087271642) is the monitor workflow and completed `success`; its report artifact `12557651205` says player run #39975090690 was skipped, had zero player artifacts, and classifies it `EXPECTED_GATED_SKIP_NO_GO`. Do not confuse monitor success with player progress.
+- Latest code regression remains [#40071317759](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40071317759), success (35 tests). This continuation is documentation-only; don't rerun it without code changes.
+
+## New evidence examined offline
+- Run #39908484177 / artifact `12481932174`: same starting screenshot at F20; LEFT-vs-WAIT branches diverge broadly from F60, but runtime log says `state_changed=false` and classifier stays WAIT. Pink-badge pixels in the fixed HUD-overlap ROI increase in action while control remains partly occluded; prompt glyph mask is unchanged. Visibility is not equivalent across branches, so this does not meet the cue criterion.
+- Run #39909132189 / artifact `12481644668`: CIRCLE-vs-WAIT branch/control PNGs are pixel-identical at all five sampled frames despite historical press/release readback. The candidate badge is partly hidden by the HUD in both branches.
+- Auxiliary run #39946344909 / artifact `12498880615` is incomplete (missing `C02-F180.png` and comparison report) and overlaps the already-known UP/camera-pan context. It is not independent proof.
+- Screenshot PNGs and text/JSON logs only were inspected; no savestate was opened/restored, and no emulator or gameplay input was run. `docs/ROM_STRUCTURE.md` and `docs/RESOURCE_CATALOG.md` confirm analyzed game binaries remain outside this repo; no game renderer or executable/resource binary is checked in.
+
+## Required unchanged policy
+- `barrier_level_selection = WAIT`, cue **UNKNOWN**, adaptive readiness **NO-GO**, Story Mode **NOT COMPLETE**.
+- Do not edit the consumed Revision65 marker (`3754a6ddf45a7570c053d9c149b6d80b0862a127`) or add `AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1`.
+- Revision64/65 remain visual duplicates; Revision56 card A/B supports only revealed-card confirmation. No private screenshots, savestates, Memory Card, ROM or BIOS were added to Git.
+
+## Next step
+Continue the offline search only within this repo's existing authenticated Actions artifacts. Accept evidence only when action/control start states match and the same candidate tile is clearly unobstructed in both branches, with a reproducible tile-anchored focus cue and preferably a matching tile-specific information panel. If remaining artifacts do not meet that minimum, preserve `UNKNOWN`/`WAIT`; do not launch gameplay or bypass the cue gate. Translate Japanese beside the original text; the submenu prompt is `レベルアップする結界をえらんでください` (Pilih penghalang yang akan dinaikkan levelnya). For any separately authorized future Story Mode dialogue, use START, not Circle.
+
+---
 # Latest handoff — Revision59 offline audit done; barrier target remains UNKNOWN / NO-GO (24 October 2026)
 
 ## Latest verified checkpoint

@@ -1,3 +1,26 @@
+# Offline follow-up — matched-state historical submenu A/B artifacts examined (24 October 2026)
+
+After verifying live HEAD `ed683f21f856a5def2f4a5ab9d0db09028b78500`, the latest Actions monitor [#40087271642](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40087271642) was confirmed `success`, but its report classifies player run #39975090690 as `EXPECTED_GATED_SKIP_NO_GO` (`completed/skipped`, no player artifact). The latest regression #40071317759 remains green with 35 tests; no test rerun was warranted.
+
+## Run #39908484177 — LEFT vs WAIT
+
+Artifact `12481932174` has a matched F20 initial screenshot (1,024,000 identical pixels); both decisions classify `barrier_level_selection` / `WAIT`. Historical runtime log records LEFT press `readback=true`, release `readback=false`; F60/F100/F110/F180 broad screenshot differences versus control are 693,755/693,655/693,270/693,882 pixels, with mean absolute RGB differences 17.71671/17.62710/17.54281/17.62892. Yet action verification says `state_changed=false`; the state remains WAIT.
+
+The pink badge is more exposed under the HUD in action than control. In diagnostic ROI `(525,145,660,225)`, the explicit exploratory color mask (`R>150`, `R>1.3×G`, `B>100`, `|R−B|<100`) counted action/control `146/146` at F20, `1160/172` at F60, `1076/162` at F100, and `852/146` at F110. These are not classifier thresholds and cannot imply selection. In prompt glyph ROI `(170,595,660,690)`, a `R,G,B>190` mask had 1,658 bright pixels per branch and zero XOR at F20, F60, F100 and F110, so the Japanese instruction panel did not acquire a distinct target identity in these samples.
+
+## Run #39909132189 — CIRCLE vs WAIT
+
+Artifact `12481644668` starts from the same observed submenu state on both branches. Logs confirm the historical CIRCLE press/release readback, but `state_changed=false`. For F20/F60/F100/F110/F180, each action/control pair has zero differing pixels and mean absolute RGB difference 0. The pink badge remains partly obscured by the fixed HUD in both branches. This is a negative observation for these sampled frames, not a universal claim about Circle.
+
+## Auxiliary UP artifact and source availability
+
+Run #39946344909 / artifact `12498880615` lacks `C02-F180.png` and `ab-comparison-report.txt`; it overlaps the already-known UP/camera-pan context and cannot add independent target-cue evidence. Files ending `.sstate` were not opened or restored; only screenshot PNGs and textual logs/JSON were used.
+
+The repo tree has the agent and audit helper, unit tests, workflows, and static-analysis documents. `docs/ROM_STRUCTURE.md` and `docs/RESOURCE_CATALOG.md` state that the analyzed ROM/extracted binaries remain outside Git. No game executable, extracted resource binary, or UI-renderer implementation is available in the allowed repo; the image classifier is not source for the game's renderer.
+
+**Classification:** `VERIFIED` — matched initial states and the observed differences/no-differences described above; latest monitor player result is gated skip/no-go. `HYPOTHESIS` — LEFT-induced viewport movement/HUD unocclusion explains badge exposure. `UNKNOWN` — unique submenu target cue. Maintain `barrier_level_selection=WAIT`, readiness `NO-GO`, Story Mode `NOT COMPLETE`; leave Revision65 marker and cue token unchanged. Minimum acceptable next evidence is a distinct authenticated A/B with the same candidate tile unobstructed in both branches and a repeatable tile-anchored selection cue, ideally accompanied by matching tile-specific stats-panel change.
+
+---
 # Offline audit log — Revision59 adds no unique barrier-target discriminator (24 October 2026)
 
 ## Checkpoint verified
