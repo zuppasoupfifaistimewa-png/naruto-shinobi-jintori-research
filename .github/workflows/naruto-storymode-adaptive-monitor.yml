@@ -86,8 +86,8 @@ jobs:
               echo "- A gated skip is not gameplay success and does not establish Story Mode progress."
             fi
             if [ "$ACTIVE_WARN" = "true" ]; then echo "- WARNING: run is queued/running for more than 15 minutes; inspect job step progress and timeout."; fi
-            if [ "$FAILURE_WARN" -eq 1 ]; then echo "- WARNING: latest observed player run did not succeed."; fi
-            if [ "$ARTIFACT_WARN" -eq 1 ]; then echo "- WARNING: completed run has no unexpired adaptive evidence artifact."; fi
+            if [ "$FAILURE_WARN" = "true" ]; then echo "- WARNING: latest observed player run did not succeed."; fi
+            if [ "$ARTIFACT_WARN" = "true" ]; then echo "- WARNING: completed run has no unexpired adaptive evidence artifact."; fi
             echo "- This monitor checks Actions health and artifact availability; it does not prove the emulator is making game progress or that Story Mode is complete."
           } | tee "$GITHUB_STEP_SUMMARY"
           printf 'run_id=%s\nstatus=%s\nconclusion=%s\nage_seconds=%s\nartifact=%s\nclassification=%s\nexpected_gated_skip=%s\n' "$RUN_ID" "$STATUS" "$CONCLUSION" "$AGE" "$ARTIFACT" "$CLASSIFICATION" "$EXPECTED_GATED_SKIP" > monitoring-report.txt
