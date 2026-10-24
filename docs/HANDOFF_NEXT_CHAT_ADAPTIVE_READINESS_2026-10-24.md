@@ -1,3 +1,11 @@
+# Runner-only inspection result — control-probe artifact is inconclusive (25 October 2026)
+
+One authorized runner job [#40110571330](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40110571330) inspected artifact #12308661246. It verified the artifact digest, ten same-checkpoint input/no-input branches, identical pre screenshot hashes, and 320×240 captures. The report shows only CIRCLE differs from NONE after input; it does not label the checkpoint state. OCR and image diffs were skipped because the script rejected 320×240. Therefore, this artifact does not establish the nested submenu or target cue. No savestate was present/opened, and no emulator, gameplay input, restore, or player workflow ran during inspection. Artifact processing stayed on GitHub Actions runner.
+
+Do not rerun a corrected inspection without separate user authorization. If later approved, handle the authenticated 320×240 captures in a narrowly scoped runner job and report only text/measurements. Preserve UNKNOWN/WAIT, readiness NO-GO, Story Mode NOT COMPLETE, Revision65 blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`, and cue token absent. See [full triage](docs/NON_PLAYER_ACTIONS_ARTIFACT_METADATA_TRIAGE_2026-10-24.md).
+
+---
+
 # Next continuation — runner-only non-player artifact lead (24 October 2026)
 
 Session-start `main` HEAD was `77f8da107236155b48ffa523c1c47dbb92311131`; latest 10 Actions completed. Usage was 39% used / 61% remaining on the primary 30-day window; secondary unavailable. See [metadata triage](docs/NON_PLAYER_ACTIONS_ARTIFACT_METADATA_TRIAGE_2026-10-24.md) and the latest top entry in `STATUS.md`.
