@@ -1,3 +1,24 @@
+# Durable GO criteria and efficient continuation (24 October 2026)
+
+Readiness does **not** require a full Story Mode completion first. It requires passing component and bounded integration gates before the first full autonomous attempt. Completion evidence is a separate status: mark Story Mode COMPLETE only after authentic ending evidence from an actual run.
+
+Before declaring GO, require:
+- Representative authentic-frame coverage for the expected menu/map/dialogue/roulette/card/barrier/battle/result/ending states; unknown or low-confidence states always WAIT and stop.
+- Matched-start action/control evidence for every progress-changing action and verified expected state transition. The submenu target needs a unique unobscured tile-attached cue, preferably plus matching tile-specific panel data.
+- A bounded battle policy supported by authentic encounters; unmeasured branches WAIT.
+- Central input allowlist, bounded press, verified release, and fail-closed gates before any PAD mutation.
+- Post-exit checkpoint integrity validation, fresh-process restore, state/frame verification, and preservation of last known-good checkpoint.
+- Bounded batch chaining with watchdog, retry/time budgets, regression detection, audit logs, and automatic stop on unknown/failed verification. The pilot should cover route, dialogue, one resolved encounter, and fresh-process resume; it need not cover the whole game.
+- An ending detector qualified on authentic ending and non-ending frames. This does not require the system itself to have completed the game.
+
+All gates must have recorded passes before readiness becomes GO. GO means ready for a first full attempt, not guaranteed success or completed Story Mode.
+
+## Efficient continuation and usage
+
+Use `STATUS.md` and this handoff as the compact checkpoint. Read the top/current entry first and open historical audit sections only for a specific unresolved question. Batch independent metadata reads; do not re-download or remeasure already audited evidence; do not launch workflows or repeat regressions for documentation-only changes. Work one offline objective at a time and write its conclusion once. Resume from the latest handoff instead of repeating discovery. Account usage limits cannot be bypassed; pace work in bounded sessions and leave a concise continuation checkpoint if a limit is near.
+
+---
+
 # Handoff — autonomous Story Mode system gap review (24 October 2026)
 
 - Start from live `main` and latest Actions; this review began at HEAD `9acbd5eed24bdc81165358d63ed594600dae488c`.

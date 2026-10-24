@@ -1,3 +1,23 @@
+## Persisted readiness gates — GO before the first full autonomous attempt
+
+A complete Story Mode run is **not** required to declare readiness. Readiness means the system has passed component and bounded integration checks that justify a first full autonomous attempt. It does not guarantee success. Story Mode may be marked COMPLETE only after authentic ending evidence from an actual run.
+
+1. **State coverage:** authenticate the expected path's menus, map, dialogue, roulette, card/barrier choices, battle phases, results, and ending. Validate on representative authentic frames, including difficult transitions and negative lookalikes. Low-confidence or unknown state always maps to WAIT and a safe stop.
+2. **Evidence-backed actions:** every progress-changing action has matched-start action/control evidence and a repeatable expected result. Confirm the observed state before acting again. The barrier-submenu target must have a unique tile-attached cue, unobscured in both branches and preferably corroborated by tile-specific panel data.
+3. **Battle policy:** qualify turn, attack, defense, confirmation, and aftermath decisions in bounded authentic encounters. Unmeasured branches remain WAIT; the agent must stop safely when it cannot choose.
+4. **Input safety:** central allowlist; bounded press duration; verified press and release; no held input on errors, timeout, or shutdown; the cue and state gates run before any PAD mutation. Regression evidence must include blocked/unknown cases.
+5. **Checkpoint and recovery:** validate checkpoint size/header/hash after emulator exit, restore it in a fresh process, verify the loaded state and external frame, and preserve the last known-good checkpoint through a failed session.
+6. **Autonomous loop:** bounded batches can chain verified checkpoints without repeated chat decisions. Add watchdogs, retry/time budgets, state-regression detection, private audit logs/artifacts, and automatic stop on unknown state or failed verification. A bounded pilot should cover a route transition, dialogue, and at least one resolved encounter across fresh-process sessions; the whole story need not be played first.
+7. **Ending detection:** validate a terminal-state detector against authentic ending frames and hard non-ending examples. This can be qualified from existing authentic evidence; it does not require a prior full autonomous completion. The actual run still needs authentic ending evidence before Story Mode is declared complete.
+
+Set readiness GO only after each applicable gate above has a recorded pass. Do not convert a regression/workflow pass into Story Mode progress. Current blockers remain: cue UNKNOWN, `barrier_level_selection = WAIT`, battle policy untrained, and no ending detector.
+
+## Token- and quota-conscious continuation
+
+Use the repository checkpoint and this checklist as durable memory. Read the current top status and this handoff first; open older audit sections only for a concrete unresolved question. Batch independent metadata reads, do not download or remeasure evidence already audited, and avoid running Actions for documentation-only updates. Keep each session to one concrete offline objective and record its result once. Resume later from the latest handoff rather than repeating exploratory work. Usage limits are account-enforced; do not attempt to bypass them.
+
+---
+
 # Offline readiness audit — autonomous Story Mode (24 October 2026)
 
 ## Audit baseline and scope
