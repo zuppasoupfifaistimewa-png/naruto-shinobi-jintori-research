@@ -1,3 +1,25 @@
+# Latest handoff — remaining artifact screen found no qualifying submenu evidence (24 October 2026)
+
+## Verified checkpoint
+- Audit-start `main` HEAD: `8fa1b66314dc717e769899bd94a699c2039c3743`.
+- Latest Actions at audit start: monitor #40102319836 succeeded on older source `2a5fa920...`; classifier regression #40071317759 passed 35 tests on `c0b7d489...`. Neither is gameplay progress. No workflow was launched for this audit.
+- Usage checker: 30-day primary 19% used / 81% remaining; secondary window unavailable.
+- New report: `docs/REMAINING_PLAYER_ARTIFACT_TRIAGE_2026-10-24.md`.
+
+## Work and decision
+Seventeen previously uncited adaptive checkpoint-player artifacts were screened. The paired candidates start in `menu_or_unknown_choice` (#39767083708 / artifact 12420512625) or `card_selection` (#39877412316 / artifact 12469530414). Artifact 12479814966 / run #39904672868 is sequential checkpoint resume rather than matched-start A/B. The other 14 manifests lack a complete matched-start action/control pair. None identifies the nested submenu target cue.
+
+## Required state
+- Target cue remains **UNKNOWN**; `barrier_level_selection = WAIT`.
+- Adaptive readiness **NO-GO**; Story Mode **NOT COMPLETE**.
+- Preserve Revision65 marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127`; keep cue token absent.
+- No emulator, restore/continuation, gameplay input, player workflow, or tests ran. No savestate contents or screenshots were opened. No private evidence was added to Git.
+
+## Next action
+No unreviewed artifact in the screened adaptive-player set qualifies. Continue only if another existing authenticated source outside that set is identified; otherwise retain UNKNOWN/WAIT until separately reviewed evidence becomes available. Do not bypass the gate. Consider a new chat at the next work-stage boundary to conserve tokens and monthly usage.
+
+---
+
 # Durable GO criteria and efficient continuation (24 October 2026)
 
 Readiness does **not** require a full Story Mode completion first. It requires passing component and bounded integration gates before the first full autonomous attempt. Completion evidence is a separate status: mark Story Mode COMPLETE only after authentic ending evidence from an actual run.
