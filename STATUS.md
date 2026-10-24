@@ -1,3 +1,14 @@
+# Latest checkpoint — one runner-only control-probe artifact inspection (25 October 2026)
+
+- One explicitly authorized runner inspection completed successfully: [Actions run #40110571330](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40110571330). Artifact #12308661246 was downloaded only to the runner; size/digest matched GitHub metadata.
+- The artifact describes ten branches from one checkpoint, with identical pre-frame hashes. Captures are 320×240. Every non-CIRCLE post frame matched NONE; CIRCLE differed. The checkpoint state remains unknown. The OCR/image-analysis code skipped the captures because it only accepted 1280×800, so the result is inconclusive for the submenu cue.
+- No savestate was present/opened. No emulator, gameplay input, restore, player workflow, tests, local artifact download, or private-evidence commit occurred in the inspection.
+- Do not run a corrected inspection without separate authorization. Details: [triage report](docs/NON_PLAYER_ACTIONS_ARTIFACT_METADATA_TRIAGE_2026-10-24.md).
+- Usage at this session start: primary 30-day window 42% used / 58% remaining; secondary unavailable.
+- Preserve cue UNKNOWN; `barrier_level_selection = WAIT`; readiness NO-GO; Story Mode NOT COMPLETE; Revision65 blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` unchanged; cue token absent.
+
+---
+
 # Latest checkpoint — non-player Actions artifact metadata screen (24 October 2026)
 
 - Session-start `main` HEAD verified at `77f8da107236155b48ffa523c1c47dbb92311131`; ten newest Actions were completed. Latest overall monitor #40102319836 succeeded on older source `2a5fa920...`; latest classifier regression #40071317759 succeeded on `c0b7d489...`. Neither is gameplay evidence.
