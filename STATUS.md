@@ -1,3 +1,14 @@
+# Latest checkpoint — one-shot submenu diagnostic stopped before input (25 October 2026)
+
+- The one authorized diagnostic [#40144220503](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40144220503) failed during the first preflight capture. Checkpoint restore event passed, but capture failed with `sh: 1: xwd: not found`; no screenshot frames or F20 parity result exist.
+- Runner-only artifact analyses [#40144372685](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40144372685) and [#40144439400](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40144439400) verified the failure text. They report no RIGHT press/release record. No gameplay input was sent and no A/B outcome was observed.
+- The failed capture environment omitted the package providing `xwd` (install `x11-apps` in a future runner setup and preflight `command -v xwd`, `command -v convert`, and a bounded root capture before restoring state).
+- Temporary diagnostic/analysis workflows and selectors were removed. No gameplay retry was started; another restore/input attempt needs fresh explicit user approval.
+- Full runner-only audit: [docs/ONE_SHOT_SUBMENU_RIGHT_AB_RESULT_2026-10-25.md](docs/ONE_SHOT_SUBMENU_RIGHT_AB_RESULT_2026-10-25.md).
+- Preserve cue UNKNOWN; `barrier_level_selection = WAIT`; readiness NO-GO; Story Mode NOT COMPLETE; Revision65 marker blob `3754a6ddf45a7570c053d9c149b6d80b0862a127` unchanged; cue token absent.
+
+---
+
 # Latest checkpoint — corrected runner-only control-probe inspection (25 October 2026)
 
 - Corrected runner inspection [Actions run #40141018663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40141018663) completed successfully. Artifact #12308661246 digest matched GitHub metadata. All ten same-checkpoint pre frames are identical; UP/DOWN/LEFT/RIGHT post frames are identical to NONE despite successful input readbacks. CIRCLE changes the whole frame, but no explicit state label is present.
