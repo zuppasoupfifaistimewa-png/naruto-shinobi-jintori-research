@@ -1,3 +1,34 @@
+# Offline pointer screen-anchor regression + monitor fail-closed policy — 24 October 2026
+
+**Source/test commit:** 6d2fdc4553f5eacabf2607c19ebf69bc012c2c51.  
+**Regression:** [#40061967694](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40061967694) — success; 32 tests passed in 4.630 s, authentic X11 regression passed for 10 observations, and all 15 final job steps completed successfully.  
+**Monitor policy hardening:** [#40061712532](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40061712532) — success on its source checkpoint; the current regression re-tests the same helper and integration along with the new screen-anchor check.
+
+## New independent proxy-motion measurement
+
+Existing private/authenticated PNG sources only: Revision65 A/B run #39947481094 and map UP-vs-WAIT run #39786019434. No emulator or player was launched. The blue-pointer proxy uses the regression workflow's exact ROI (620,295,735,390) and mask b > 100, b > 1.35*r, b > 1.15*g. F20-to-F60 centroid displacement:
+
+- Revision65 UP: 8.38 px; Revision65 WAIT: 7.17 px.
+- Map UP: 5.01 px; Map WAIT: 5.03 px.
+
+Corresponding independently registered terrain shifts are +100 px for both UP branches and 0 px for both WAIT branches. In Revision65, the pink badge's visible centroid moves +97.46 px while the scene shifts +100 px. The screen-space proxy moves less than the new 20 px ceiling in all four branches while the scene moves by about 100 px in UP branches. New CI label: POINTER_SCENE_ANCHOR_REGRESSION=PASS.
+
+**Interpretation:** the blue proxy stays almost screen-anchored and cannot independently mark the pink tile as selected. The already measured proxy-to-tile distances (Revision65 206.01 px; map UP 76.56 px; map WAIT 82.83 px) likewise fail to discriminate target selection. The calibrated map cue remains a red directional arrow ring **plus** a matching tile-information panel: map UP ring count 811 and panel changes to level 1/value 60/durability 2/2; map WAIT ring count 62 and panel remains empty land/value 140; Revision65 badge region ring count 66. Its prompt/footer remain pixel-identical F60→F100 in both action/control branches. Submenu target role stays **UNKNOWN**.
+
+## Monitor correction
+
+Added a pure-tested fail-closed health policy. Only a completed, no-artifact skipped run from a known push commit that lacks [RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] becomes EXPECTED_GATED_SKIP_NO_GO. Manual-dispatch skips, unknown commit message, marker-bearing push, actual failures, successful run missing artifact, and overdue active runs remain warnings. This fixes the monitor's repeated false alerts on intentionally gated run #39975090690, without altering readiness or gameplay policy.
+
+## Gate / status
+
+- barrier_level_selection action remains **WAIT**.
+- Marker experiments/.run-storymode-adaptive-player remains consumed Revision65, blob 3754a6ddf45a7570c053d9c149b6d80b0862a127; cue token remains absent.
+- Readiness **NO-GO**; Story Mode **NOT COMPLETE**.
+- No gameplay input, player run or restore/continuation was launched; private evidence and game assets remain outside Git.
+- Next: offline terrain-registered analysis only. Do not promote the proxy or pink badge as a cue. A future trial requires independently unique submenu evidence, a reviewed new marker and the existing gate/regression.
+
+---
+
 # Offline pointer geometry + foreground-pose audit (24 October 2026)
 
 **Scope:** offline analysis of previously authenticated private screenshots and regression/source-test changes only. No gameplay input, emulator run, save-state restore, or Story Mode player run was launched.

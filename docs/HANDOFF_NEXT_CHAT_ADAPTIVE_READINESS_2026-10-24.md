@@ -1,3 +1,17 @@
+# Latest continuation checkpoint — 24 October 2026
+
+The handoff was refreshed after offline evidence analysis and regression-only monitor hardening.
+
+- **Latest tested source HEAD before this documentation refresh:** 6d2fdc4553f5eacabf2607c19ebf69bc012c2c51.
+- **Latest regression:** [run #40061967694](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40061967694), success; 32/32 tests, authentic screenshot checks and all workflow steps passed. Monitor policy regression from the current source lineage also passed in [run #40061712532](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40061712532).
+- New measured F20→F60 blue-proxy motion: Revision65 UP 8.38 px, WAIT 7.17 px, map UP 5.01 px, map WAIT 5.03 px; scene shifts +100 px for both UP branches, 0 px for WAIT. This rules out proxy proximity as an independent target cue. The pink badge still tracks the scene pan (+97.46 px), not a verified focus-ring/panel change.
+- Monitor now treats only known, unmarked push skips with no evidence artifact as EXPECTED_GATED_SKIP_NO_GO. Other skips/failures/missing artifacts/stale runs still alert. A gated skip is **not** gameplay success.
+- **Readiness remains NO-GO; Story Mode remains NOT COMPLETE.** barrier_level_selection remains WAIT; consumed Revision65 marker/blob 3754a6ddf45a7570c053d9c149b6d80b0862a127 is unchanged and cue token remains absent. No player, restore, or gameplay-input workflow was launched. Keep all private evidence/game assets outside Git.
+
+**Next action:** continue offline analysis from this tested checkpoint only. Do not change the consumed marker or authorize any input until an independently unique submenu target cue is demonstrated from authentic evidence and the fail-closed gate/new marker are explicitly reviewed. Read current STATUS.md and ANALYSIS_LOG.md before continuing. Check actual HEAD again before any write; this documentation refresh is expected to create a separate documentation-only commit.
+
+---
+
 # Handoff target kerja berikutnya — pemain adaptif Story Mode (24 Oktober 2026)
 
 Dokumen ini adalah target kerja yang harus dibaca dari chat baru sebelum mengubah apa pun. Jangan mengulang validasi yang sudah lulus dan jangan menganggap pekerjaan selesai hanya karena regresi teknis hijau.

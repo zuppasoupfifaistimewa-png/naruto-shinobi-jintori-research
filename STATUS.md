@@ -1,3 +1,35 @@
+# Adaptive readiness checkpoint — 24 October 2026
+
+Latest source/test checkpoint: **6d2fdc4553f5eacabf2607c19ebf69bc012c2c51**. Latest regression: [Actions run #40061967694](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40061967694), **success**, 32/32 unit tests and all workflow steps passed, including all ten authentic X11 observations and the private Revision65/map UP-vs-WAIT screenshot regression. The monitor policy hardening is included in this tested source tree; [run #40061712532](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40061712532) also passed on its then-current source.
+
+## New offline pointer-motion discriminator
+
+Using only the existing authenticated private PNGs from Revision65 A/B (run #39947481094) and map UP-vs-WAIT (run #39786019434), regression now measures the blue-pointer proxy's F20-to-F60 screen displacement with the same ROI and color mask used by the workflow:
+
+- Revision65 UP: **8.38 px**
+- Revision65 WAIT: **7.17 px**
+- Map UP: **5.01 px**
+- Map WAIT: **5.03 px**
+
+On the same frames, UP scene registration is **+100 px** in both contexts while WAIT is **0 px**. The pink badge centroid in Revision65 moves **+97.46 px**, close to the scene shift. The proxy therefore stays nearly screen-anchored while the scene/tile pans under it. POINTER_SCENE_ANCHOR_REGRESSION=PASS verifies this motion contrast, and POINTER_TARGET_GEOMETRY_REGRESSION=PASS still shows that proxy-to-tile proximity is not discriminating. This is evidence against treating the blue proxy or pink badge exposure as a target-active cue; it is **not** proof of selection.
+
+## Monitoring health fix
+
+Added tools/adaptive_monitor_policy.py and integrated it into .github/workflows/naruto-storymode-adaptive-monitor.yml. The monitor only classifies a no-artifact skipped run as EXPECTED_GATED_SKIP_NO_GO when its event is a push, the commit message is known, and the message lacks [RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER]. A skipped manual dispatch, unknown commit message, marker-bearing push, completed failure, successful run without a valid evidence artifact, or overdue queued/running session remains a warning. Unit tests cover those distinctions. This prevents the known stale, intentionally gated run #39975090690 from being mistaken for gameplay failure, without misreporting it as gameplay success.
+
+## Safety decision — unchanged
+
+- barrier_level_selection remains **WAIT**; the submenu still has no independently demonstrated unique target cue.
+- Marker experiments/.run-storymode-adaptive-player remains consumed Revision65, blob 3754a6ddf45a7570c053d9c149b6d80b0862a127, unmodified; AB_BARRIER_TARGET_CUE=VERIFIED_BARRIER_TARGET_CUE_V1 is absent.
+- Adaptive-player readiness remains **NO-GO** and Story Mode remains **NOT COMPLETE**.
+- No player, restore/continuation, or gameplay-input workflow was launched for this work. Legacy fixed-sequence Story Mode and raw restore/continuation remain disabled. No ROM, BIOS, Memory Card, savestate, screenshot, or private evidence artifact was committed.
+
+## Next step
+
+Continue offline using terrain-registered candidate tile boundaries and the ring-plus-matching-information-panel cue. Do not edit the consumed marker or run gameplay. Only permit a new bounded experiment after a unique cue is independently demonstrated in the submenu with authentic evidence, the allowlist/fail-closed pre-download gate is explicitly reviewed, and a new marker revision is deliberately approved. Keep START for recognized dialogue, not Circle.
+
+---
+
 # Offline pointer geometry and character-pose exclusion — 24 October 2026
 
 Regression-only source commit: `1ec34ac934ee62ba69fe3fe43705de1221a17196`. GitHub Actions [run #40059425253](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40059425253) completed **success** at 03:43:44 UTC / 10:43:44 WIB. All 15 workflow steps passed, including **27 tests in 2.978 s**, authentic external-X11 policy checks, card overlay/detail checks, and the existing Revision65 versus map UP-vs-WAIT screenshot regression plus the new geometry/pose checks. This commit changes only the adaptive regression workflow and its source tests. No emulator, player, restore, or gameplay-input workflow was started.
