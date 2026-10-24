@@ -468,7 +468,11 @@ class AdaptiveAgentTests(unittest.TestCase):
         workflow = (repo / ".github" / "workflows" / "naruto-storymode-adaptive-monitor.yml").read_text(encoding="utf-8")
         self.assertIn("actions/checkout@v4", workflow)
         self.assertIn("python3 tools/adaptive_monitor_policy.py", workflow)
-        self.assertIn("EXPECTED_GATED_SKIP_NO_GO", workflow)
+        self.assertIn('EXPECTED_GATED_SKIP="$(jq -r .expected_gated_skip', workflow)
+        self.assertIn('if [ "$EXPECTED_GATED_SKIP" = "true" ]', workflow)
+        self.assertNotIn('if [ "$ACTIVE_WARN" -eq 1 ]', workflow)
+        self.assertNotIn('if [ "$FAILURE_WARN" -eq 1 ]', workflow)
+        self.assertNotIn('if [ "$ARTIFACT_WARN" -eq 1 ]', workflow)
         self.assertIn("Readiness remains **NO-GO**", workflow)
 
     def test_bounded_emulator_timeout_allows_capture_cycle_to_finish(self):
