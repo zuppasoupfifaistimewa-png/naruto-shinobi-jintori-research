@@ -42,3 +42,23 @@ Review tambahan ini memakai raw job log dari runner-only review [#40473737136](h
 
 Temuan #1–#3 memperbaiki aliran data yang telah diketahui namun **tidak menutup** kriteria Langkah 6. Tetap **SEBAGIAN**: base RAM resource, sumber/pemakai seluruh field/delta, boundary MIPS yang rusak, dan kaitan dengan efek permainan masih belum tersedia. Langkah berikutnya yang benar-benar membedakan hipotesis adalah menelusuri instruksi MIPS mentah dan semua operand/store untuk field yang belum terpetakan; jangan menurunkan makna gameplay dari nilai konstanta atau nama default Ghidra.
 
+## Addendum — raw MIPS verification of target-gated stores (27 Oktober 2026)
+
+**Bukti primer:** artifact teks #12719587873 dari review runner-only [Actions #40473737136](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40473737136), ZIP SHA-256 e1ea68c92bcbf645fde3c991c8a47192b815987d8044f2d599c163c1f3ec9fb9, ukuran 13.977 byte. Analisis ini membaca teks/disassembly yang telah ada; tidak menjalankan game. DATA.BIN entry 1: offset file 0x10BB000, ukuran 596.412 byte, SHA-256 9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a. Seluruh interpretasi alamat entry 1 tetap bersyarat pada base hipotetis 0x800D0000, bukan mapping RAM runtime.
+
+### Instruksi, operand, branch, dan delay slot
+
+Pola sll v0,v1,3; addu v0,v0,v1; sll v0,v0,4 menghitung indeks × 0x90. Instruksi addiu s0,s0,4 dan delay slot addu s0,s0,v0 membentuk alamat word record +0x04. Setelah jal 0x80012A70 (getter target Chakra), instruksi lw v1,0(s0); slt v1,v1,v0; bne v1,zero,0x8011253C; nop mengarahkan nilai record yang lebih kecil dari target ke cabang failure. Ini fakta statis tentang operand dan alur kontrol; bukan bukti bahwa target merupakan kondisi menang universal.
+
+| Site | Instruksi/cabang yang diamati | Store atau kelanjutan pada jalur diterima | Batas bukti |
+|---|---|---|---|
+| 0x80111228 | Hitung record stride 0x90 dan cabang record_word < target ke 0x8011253C. | Raw window mencakup byte store +0x58B, +0x2E9=0x3F, +0x2E5=0 dan clear global byte efektif 0x80139F3B. Dekompilasi melaporkan +0x5D2=0x200 lalu 0x800EF98C; raw window berhenti sebelum store +0x5D2. | Nilai 0x200 didukung dekompilasi terpilih, bukan raw window tersebut; arti transisi tidak diketahui. |
+| 0x801112CC | Sebelum getter: lhu record+0x0A; andi 0x200; beq zero ke 0x8011253C. Delay slot beq adalah addiu s0,s0,4 dan tetap dieksekusi. Lalu ada tes record_word < target. | Store byte +0x58B, +0x2E9=0x3F, +0x2E5=0; dekompilasi menyebut +0x5D2=8 sebelum 0x800EF98C. | Arti flag 0x200 dan kode 8 UNKNOWN. |
+| 0x801113B4 | Hitung indeks × 0x90, panggil getter dengan alamat field tersusun pada delay slot, lalu branch jika record_word < target. | Store +0x58B, +0x2E9=0x3F, +0x2E5=0, clear global 0x80139F3B; dekompilasi menyebut +0x5D2=4 dan call 0x800EF98C. | Makna byte dan kode 4 UNKNOWN. |
+| 0x801114F0 | Setelah tes target, jal 0x800BDBFC dengan delay slot li a0,0x20; hasil v0 dibandingkan dengan global efektif 0x8013EBB0; mismatch menuju 0x8011253C. | Setelah kedua tes lolos, store +0x58B, +0x2E9=0x3F, +0x2E5=0; dekompilasi menyebut +0x5D2=0x20 lalu 0x800EF98C. | Arti hasil helper/gate UNKNOWN. |
+| 0x80111588 | Cabang record_word < target memiliki delay slot lui v0,0x8014. Byte untuk +0x58B dibaca dari alamat efektif 0x8013EA8A. Call 0x80012AD0 diikuti delay slot yang membersihkan byte global 0x80139F3B. | Store +0x2E9=0x3F, +0x2E5=0; dekompilasi melaporkan +0x5D2=0 atau 0x1000 berdasarkan bit 0x1000 dari hasil helper. | Tidak menetapkan arti state atau aksi. |
+| 0x80112418 | Pada jalur accepted, jal 0x80100D14 memiliki delay slot li a0,1; jal berikutnya 0x80100DCC memiliki delay slot li a0,0xDF. | Jendela menunjukkan store +0x2E5=0 dan +0x2E9=0x18 pada jalur lanjutan tertentu. | Batas fungsi/control-flow transisi bermasalah; outcome gameplay UNKNOWN. |
+
+Field +0x2E9 dan +0x2E5 terbukti ditulis pada jalur-jalur terpilih, tetapi semua pembaca, inisialisasi lintas jalur, dan makna field belum dipetakan tuntas. Field +0xB30, +0xB38, +0xB40, +0xB44 tidak muncul dalam artifact terarah ini; itu BELUM TERUJI pada cakupan artifact, bukan bukti tidak ada pemakaian di seluruh resource. Kandidat transisi 0x800EF98C, 0x80100D14, 0x80100DCC masih memiliki masalah batas fungsi/control-flow.
+
+**Keputusan Step 6 tetap SEBAGIAN.** Bukti baru memperjelas operand, kondisi, cabang dan delay slot; base runtime, dataflow pending lengkap, serta efek gameplay tetap belum dibuktikan.
