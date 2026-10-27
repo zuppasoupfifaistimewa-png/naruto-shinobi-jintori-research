@@ -1,3 +1,13 @@
+# Research checkpoint update — 27 October 2026, after Step 7 observability A/B
+
+- Verified main checkpoint before this note: a3b1e5c814fda26e5e722ed83966432964c68311; retrieve the actual latest main HEAD again before work.
+- Run [#40479865235](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40479865235) completed workflow success in 157 seconds. Step 7 runtime evidence remains inconclusive: preflight/no-breakpoint reached VSync frame 50, debugger-only VSync control reached frame 40, and four-target breakpoint probe reached only frames 1–3 before exit 124. No target hit accepted. Artifact #12722187784 has ZIP SHA-256 b9537035eb6ffed66a0aadd5ab48db88715ed2e2128bcf46a48f374c7306ac26; cleanup PASS.
+- The report generator regex emits DEBUGGER_CONTROL_MAX_VSYNC_FRAME=0 incorrectly. Raw log is authoritative; observed control frames were 1,2,3,10,20,30,40. Fix the regex on next diagnostic iteration.
+- Step 7 remains SEBAGIAN; do not repeat four-breakpoint identical cold boot. Preferred next diagnostic: one breakpoint per bounded cold boot, no restore or input, record exact VSync progression/hit count/exit; test breakpoint callback without log if a single breakpoint still stalls.
+- Overall statuses: Step 4 SEBAGIAN for official criteria 4(a–e), Step 5 TUNTAS for four selected functions, Step 6 SEBAGIAN, Step 7 SEBAGIAN, Step 8 SEBAGIAN, Step 9 TUNTAS for isolated RNG function 0x80035D78 only (7/7; run #40474891838), Step 10 TUNTAS as index only. Story Mode is NOT PROVEN COMPLETE.
+- No adaptive player/Story Mode workflow, gameplay inputs, savestate restore, classifier/policy/Revision65/readiness-gate changes. Private ROM/disc, BIOS, Memory Card, savestate, RAM dump, gameplay screenshots must stay out of Git.
+
+---
 # One-shot RIGHT-vs-NONE diagnostic outcome (25 October 2026) (25 October 2026)
 
 - The one authorized diagnostic [#40144220503](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40144220503) failed during the first preflight capture. Checkpoint restore event passed, but capture failed with `sh: 1: xwd: not found`; no screenshot frames or F20 parity result exist.
