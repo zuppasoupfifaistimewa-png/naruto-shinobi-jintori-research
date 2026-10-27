@@ -1,3 +1,11 @@
+## CORRECTION — raw MIPS clarifies global-pointer dereference, 27 Oktober 2026 21:43 WIB
+
+Cross-check on the emitted MIPS body resolves one important distinction and limits how the two C outputs should be compared. At `0x800ED920), code executes `lui v1, %hi(D_8013EA74)`; at `0x800ED924), `lw a0, %lo(D_8013EA74)(v1)` loads a 32-bit value from the global slot at `0x8013EA74). It then computes `index * 0x90`, adds that offset to the **loaded value**, and reads one byte at offset `0x29` from that derived record address.
+
+Ghidra C represents the value read from the global as `iRam8013ea74`. The m2c C output renders `D_8013EA74` as a static symbol in pointer arithmetic without expressing the same dereference as clearly. Therefore, call tokens/body boundary/control-flow offer a useful structural cross-check, but the C outputs are **not fully equivalent evidence for pointer typing or effective address**. The raw MIPS load is the authoritative basis for this operation-level statement. The actual value stored at `0x8013EA74`, the mapped record table and runtime resource base remain unverified; do not assume the global slot's link-time address is itself the record table.
+
+---
+
 # LIVE ADDENDUM — Same-boundary function analysis, 27 Oktober 2026 21:41 WIB
 
 Run [#40523020556](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40523020556) completed/success, artifact #12742268706 (1.367.605 B; ZIP SHA-256 `5f3f767667444f7c956c36fc59cf75b6bb90a5a1dde8ddb92fb69f9e0f797e81`). Entry 1 hash confirmed: file offset `0x10BB000`, 596.412 B, SHA-256 `9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a`. Private slice stayed in runner temp and was cleaned; artifact is text/C/disassembly/log only.
