@@ -1,3 +1,9 @@
+## Additional boundary caution from the entry-0 artifact
+
+The raw context around `0x800BDBFC` shows a function-like stack prologue and preceding control-flow instructions at `0x800BDBE4)–`0x800BDBF8`, followed by `j 0x800BE11C` at `0x800BDBFC`. Thus `0x800BDBFC` is visibly inside an instruction sequence that already has a stack-frame setup; treating that jump as an independently validated function entry is unsupported. Combined with `reference_count=0` and Ghidra body-overlap errors, this candidate cannot currently be used as the setter's caller/helper or as proof of loader reachability. This observation is bounded to the emitted raw window; it does not automatically validate `0x800BDBE4` as a formal Ghidra function boundary.
+
+---
+
 ## Actions output audit — entry-0 timeout, 27 Oktober 2026 21:54:52 WIB
 
 Downloaded text artifact #12743796502 from [run #40520635663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40520635663) and verified ZIP SHA-256 `e2d5b496b2310c17110c59710212f7605bf8b3d90b798abb438c1224bf3d0549` (2.299.302 bytes). The report confirms DATA.BIN entry 0 offset `0x5F800`, 110.536 bytes, SHA-256 `56ee7d3b195b0708bd5f9163d354f0173a828430c9467d410e822b1793d316d4`, hypothetical base `0x800AD000), and 36 exported function rows. But `entry0-ghidra-headless.log` explicitly says analysis timed out after 1,800 seconds, with repeated function body overlap/repair errors. Candidate `0x800BDBFC` is labelled user-defined/candidate and has zero recorded references. Therefore this output does not establish caller boundaries or connect that candidate to the RNG setter.
