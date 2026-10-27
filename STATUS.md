@@ -1,11 +1,21 @@
-# Latest checkpoint — Step 4 Ghidra run completed, 27 October 2026
+# Checkpoint terbaru — reverse engineering Langkah 4–10 (27 Oktober 2026)
 
-**GitHub Actions #40455975408 selesai dengan `success`** (sekitar 39 menit 43 detik). [Laporan penutupan yang diperbarui](docs/STEP4_CLOSURE_2026-10-27.md) memuat hasil artefak final dan batas validasi caller: 4 caller RNG tervalidasi pada main EXE; DATA.BIN entry 0 punya 2 caller RNG tervalidasi Ghidra plus 2 raw-only RNG candidates; entry 1 punya 108 caller tervalidasi Ghidra dan 36 raw-only candidates. Total 152 tetap hit mentah, bukan semuanya tervalidasi Ghidra. Entry 0 juga punya 1 direct call setter tervalidasi. Runtime mapping, indirect/dispatch caller, dan kode hasil dekompresi/dekripsi tetap `UNKNOWN`.
+**Main sudah maju melewati checkpoint lama cd3827b95e58829dde0ff3da280b603b62f9f45d.** Sebelum sinkronisasi laporan ini, HEAD terverifikasi a3b1e5c814fda26e5e722ed83966432964c68311; selalu periksa ulang SHA terbaru dan working tree dengan GitHub sebelum melanjutkan.
 
-- [Run Ghidra final #40455975408](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455975408)
-- [Artefak teks-only #12713583805](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455975408/artifacts/12713583805)
-- Tidak ada emulator/gameplay/input/savestate; pemain adaptif tetap dijeda; ROM/BIOS/Memory Card/savestate/screenshot privat tidak dimasukkan ke Git.
+- Run Step 7 terbaru [#40479865235](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40479865235) selesai success pada 09:21:48 UTC (durasi 157 detik), tetapi probe breakpoint tidak konklusif. Pra-uji tanpa breakpoint mencapai frame 50, kontrol debugger tanpa breakpoint mencapai frame 40, probe empat breakpoint hanya frame 1–3 lalu timeout 124. Artefak teks-only [#12722187784](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40479865235/artifacts/12722187784), SHA-256 ZIP b9537035eb6ffed66a0aadd5ab48db88715ed2e2128bcf46a48f374c7306ac26, cleanup PASS. Parser artifact salah menulis max control frame 0; gunakan raw log (1,2,3,10,20,30,40).
+- Tidak ada loader/seed/RNG target breakpoint hit yang diterima. Step 7 tetap SEBAGIAN. Berikutnya: satu breakpoint per cold boot, timer pendek, no restore/input, perbaiki regex parser; jangan ulang empat-breakpoint identik.
+- Langkah 4 keseluruhan SEBAGIAN; inventaris statis bukan penutupan semua subkriteria (4a–e). Langkah 5 TUNTAS untuk empat fungsi terpilih. Langkah 6 SEBAGIAN. Langkah 7 SEBAGIAN. Langkah 8 SEBAGIAN. Langkah 9 TUNTAS hanya untuk RNG 0x80035D78 (7/7 vector). Langkah 10 TUNTAS sebagai indeks audit saja.
+- Telah diperbaiki: laporan Step 4 tidak lagi memberi status TUNTAS keseluruhan; Step 8/OVERLAY_MAP menahan klaim jalur kemenangan yang belum tervalidasi; audit utama mengakui Step 9 RNG yang lulus; laporan Step 7 terbaru dan laporan penutupan diperbarui.
+- Tidak ada workflow pemain adaptif, Story Mode otomatis, input gameplay, savestate restore, atau perubahan classifier/policy/Revision65/readiness gate. Story Mode TIDAK TERBUKTI TAMAT.
+- ROM/disc, BIOS, Memory Card, savestate, RAM dump, dan bukti screenshot gameplay privat dilarang masuk Git. Hanya repositori ini yang diizinkan.
 
+Laporan utama/handoff:
+- [Laporan penutupan Step 4–10](docs/STEP4_10_CLOSURE_REPORT_2026-10-27.md)
+- [Kriteria resmi audit langkah 1–10](docs/REVERSE_ENGINEERING_AUDIT_STEPS_1_10_2026-10-27.md)
+- [Laporan runtime Step 7](docs/STEP7_RUNTIME_COLD_BOOT_RESULT_2026-10-27.md)
+- [Handoff chat berikutnya](docs/HANDOFF_REVERSE_ENGINEERING_STEPS4_10_2026-10-27.md)
+
+---
 ---
 
 # Current checkpoint — Step 0 toolchain verified, 27 October 2026
