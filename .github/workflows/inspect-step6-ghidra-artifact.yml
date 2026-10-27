@@ -26,7 +26,7 @@ jobs:
     timeout-minutes: 10
     env:
       SOURCE_RUN_ID: ${{ github.event.inputs.source_run_id || '40455975408' }}
-      EXPECTED_ARTIFACT_ID: ${{ github.event.inputs.artifact_id || '12705957966' }}
+      EXPECTED_ARTIFACT_ID: ${{ github.event.inputs.artifact_id || '12713583805' }}
       ARTIFACT_NAME: ghidra-slps-03553-function-index
       EXPECTED_DIGEST: sha256:56266b0e5e5ae8407574914bdd2da4e1e6d7783115f6355aa0349a775c63faed
     steps:
