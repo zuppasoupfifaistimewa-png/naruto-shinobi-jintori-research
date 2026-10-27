@@ -34,6 +34,11 @@ def u32(data: bytes, off: int) -> int:
     return struct.unpack_from("<I", data, off)[0]
 
 
+def jal_word(target: int) -> int:
+    """Encode MIPS JAL to a target in the same 256 MiB region."""
+    return 0x0C000000 | ((target >> 2) & 0x03FFFFFF)
+
+
 def all_aligned_occurrences(data: bytes, pattern: bytes) -> list[int]:
     hits: list[int] = []
     off = data.find(pattern)
@@ -166,8 +171,8 @@ def main() -> int:
         "rng_target=0x80035D78",
         "rng_state=0x800A3118",
         "seed_setter_candidate=0x80035DA8",
-        "direct_jal_rng_word=0x0C0D75DE",
-        "direct_jal_seed_setter_word=0x0C0D76EA",
+        f"direct_jal_rng_word=0x{jal_word(RNG):08X}",
+        f"direct_jal_seed_setter_word=0x{jal_word(SEED_SETTER):08X}",
         "mapping=DATA.BIN directory indices only when LBN-derived intervals validate",
         "warning=Raw hits may be data/compressed bytes; only aligned MIPS code-context hits can be promoted after disassembly",
         "emulator_or_gameplay_executed=no",
@@ -198,8 +203,8 @@ def main() -> int:
             lines.append(f"data_bin_validated_directory_entries={len(entries)}")
             if not entries:
                 lines.append("data_bin_entry_mapping=UNAVAILABLE_DIRECTORY_RANGES_DID_NOT_VALIDATE")
-        rng_jal = all_aligned_occurrences(data, struct.pack("<I", 0x0C0D75DE))
-        seed_jal = all_aligned_occurrences(data, struct.pack("<I", 0x0C0D76EA))
+        rng_jal = all_aligned_occurrences(data, struct.pack("<I", jal_word(RNG)))
+        seed_jal = all_aligned_occurrences(data, struct.pack("<I", jal_word(SEED_SETTER)))
         rng_literal = all_aligned_occurrences(data, struct.pack("<I", RNG))
         seed_literal = all_aligned_occurrences(data, struct.pack("<I", SEED_SETTER))
         state_literal = all_aligned_occurrences(data, struct.pack("<I", RNG_STATE))
