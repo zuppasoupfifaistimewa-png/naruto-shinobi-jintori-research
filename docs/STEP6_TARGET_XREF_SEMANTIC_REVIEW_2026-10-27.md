@@ -27,3 +27,18 @@ Status: **SEBAGIAN**. Hasil Ghidra pada base resource kandidat menunjukkan alur 
 ## Keputusan
 
 **Langkah 6 = SEBAGIAN.** Kemajuan ini memperbaiki inventaris xref dan menghindari penafsiran berlebihan terhadap fungsi UI. Bukti yang tersedia belum memenuhi kriteria mapping RAM dan semantik gameplay runtime. Lanjutkan analisis statis/call-chain yang dapat ditutup terlebih dahulu; setiap nama mekanik tetap HIPOTESIS atau UNKNOWN sampai ada bukti yang berdiri sendiri.
+
+## Addendum — penelusuran dataflow statis atas output runner yang sudah ada (27 Oktober 2026)
+
+Review tambahan ini memakai raw job log dari runner-only review [#40473737136](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40473737136), job `122086773431`, yang menampilkan potongan dekompilasi dan xref dari artefak teks yang sudah ada. Ini bukan run game dan bukan bukti runtime. Base DATA.BIN entry 1 `0x800D0000` tetap HIPOTESIS.
+
+1. **Dataflow yang dapat ditulis tanpa menamai mekanik:** pseudocode `0x8011C0D0` membandingkan argumen dengan sebuah global lalu berhenti bila sama. Pada cabang argumen nonzero, ia mengubah field global dan field byte pada record peserta ber-stride `0x90`; loop membaca word pada offset record `+0x04`, menghitung negasinya, menjepit nilai di bawah `-9999` ke `-9999`, menyimpannya kembali, kemudian memanggil setter main EXE `0x8001387C(index, nilai)`. Itu mendukung operasi negasi/clamp dan aliran ke setter, bukan arti “biaya”, “pengembalian”, “barrier”, atau “level-up”.
+2. Cabang nilai nol/nonzero di routine yang sama juga menguji jumlah dua field pendek pada struktur lain terhadap `0x101` dan memanggil helper berbeda. Identitas struktur, makna parameter, serta alasan threshold `0x101` belum diketahui. Jangan menyamakan threshold ini dengan nilai Chakra.
+3. Dalam pseudocode di sekitar kandidat `0x80111228`, `0x801112CC`, `0x801113B4`, `0x801114F0`, dan `0x80111588`, jalur bersyarat membandingkan getter target `0x80012A70` dengan field record yang dihitung menggunakan stride `0x90`; setelah pemeriksaan flag/helper yang berbeda, jalur tersebut menulis byte global-relative `+0x58B` dan nilai 16-bit di `+0x5D2` (nilai yang terlihat mencakup `0`, `4`, `8`, `0x20`, `0x200`, dan `0x1000`) sebelum memanggil `0x800EF98C`. Ini bukti urutan statis bersyarat pada peta kandidat; arti selector, kode, dan routine transisi masih UNKNOWN.
+4. Hasil dekompilasi untuk `0x800E1188` secara eksplisit memperingatkan adanya data instruksi/kontrol alur buruk. Ia tidak boleh dipakai untuk menafsirkan semua branch, delay slot, atau efek akhir tanpa disassembly instruksi mentah yang tervalidasi dan batas fungsi yang diperbaiki. `0x80100D14` dan `0x80100DCC` juga belum layak diperlakukan sebagai pseudocode transisi final.
+5. Pencarian terarah atas **ekstrak output yang diperiksa** tidak memuat sumber/store untuk `+0xB30`, `+0xB38`, `+0xB40`, `+0xB44`, `+0x2E9`, atau `+0x2E5`. Ini hanya batas artefak/ekstrak review tersebut; bukan bukti bahwa offset-offset itu tidak digunakan di seluruh program.
+
+### Keputusan setelah tracing tambahan
+
+Temuan #1–#3 memperbaiki aliran data yang telah diketahui namun **tidak menutup** kriteria Langkah 6. Tetap **SEBAGIAN**: base RAM resource, sumber/pemakai seluruh field/delta, boundary MIPS yang rusak, dan kaitan dengan efek permainan masih belum tersedia. Langkah berikutnya yang benar-benar membedakan hipotesis adalah menelusuri instruksi MIPS mentah dan semua operand/store untuk field yang belum terpetakan; jangan menurunkan makna gameplay dari nilai konstanta atau nama default Ghidra.
+
