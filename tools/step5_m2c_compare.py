@@ -72,6 +72,34 @@ def find_asm_function_label(asm: str, address: int) -> str | None:
     return None
 
 
+
+def inject_missing_function_boundaries(asm: str) -> tuple[str, list[str]]:
+    """Inject only boundaries Ghidra found but spimdisasm's heuristics missed."""
+    inserted: list[str] = []
+    specs: list[tuple[int, str]] = []
+    for address, (_, body_bytes) in FUNCTIONS.items():
+        specs.append((address, f"func_{address:08x}"))
+        specs.append((address + body_bytes, f"func_{address + body_bytes:08x}"))
+    # Process in descending address order so line insertion never invalidates a
+    # later insertion address lookup. Labels are added only where no address
+    # label was emitted by spimdisasm.
+    for address, label in sorted(set(specs), reverse=True):
+        if find_asm_function_label(asm, address):
+            continue
+        insn = re.compile(
+            rf"/\\*\\s*[0-9a-fA-F]+\\s+{address:08X}\\s+[0-9a-fA-F]+\\s+\\*/",
+            re.IGNORECASE,
+        )
+        lines = asm.splitlines()
+        match_index = next((i for i, line in enumerate(lines) if insn.search(line)), None)
+        if match_index is None:
+            continue
+        lines.insert(match_index, f"glabel {label} # Ghidra boundary 0x{address:08X}")
+        asm = "\\n".join(lines) + "\\n"
+        inserted.append(f"0x{address:08X}={label}")
+    return asm, inserted
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--exe", required=True, help="verified SLPS_035.53 extracted by the workflow")
@@ -159,11 +187,14 @@ def main() -> int:
 
     asm_path = assembly_files[0]
     asm = asm_path.read_text(encoding="utf-8", errors="replace")
+    asm, injected_labels = inject_missing_function_boundaries(asm)
+    asm_path.write_text(asm, encoding="utf-8")
     lines += [
         f"spimdisasm_exit_code={dis.returncode}",
         f"assembly_file={asm_path.relative_to(out).as_posix()}",
         f"assembly_bytes={asm_path.stat().st_size}",
         f"assembly_file_count={len(assembly_files)}",
+        "injected_function_boundaries=" + (",".join(injected_labels) or "none"),
         "",
     ]
     all_ok = True

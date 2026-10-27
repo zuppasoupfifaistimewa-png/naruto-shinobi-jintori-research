@@ -196,7 +196,8 @@ jobs:
           set -euo pipefail
           report="$RUNNER_TEMP/step5-output/step5-m2c-comparison.md"
           test -s "$report"
-          grep -q '^status=SUCCESS$' "$report"
+          last_status="$(grep '^status=' "$report" | tail -n 1)"
+          test "$last_status" = 'status=SUCCESS'
 
       - name: Delete executable and temporary projects
         if: always()
