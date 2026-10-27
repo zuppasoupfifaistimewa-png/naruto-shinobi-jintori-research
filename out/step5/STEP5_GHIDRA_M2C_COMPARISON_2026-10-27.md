@@ -1,5 +1,14 @@
 # Langkah 5 — perbandingan dekompilasi Ghidra dan m2c (27 Oktober 2026)
 
+## Step 5 live status — expanded static comparison attempt (27 Oktober 2026, 20:48 WIB)
+
+- First expanded attempt [#40512956924](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40512956924) failed at its final acceptance step because the report parser correctly refused to claim same-function equivalence for target `0x80012A70`: Ghidra output recorded `function_status=NOT_FOUND_AT_ENTRY`, with no `body_address_count`. The run's parser fixture itself reported `metadata_parser_fixture=PASS`. This was a scope/target mismatch, not a game or emulator test failure.
+- Corrective source commit [`2b16e67bfafde873c95b577bc030f6e0c9f84c58`](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/2b16e67bfafde873c95b577bc030f6e0c9f84c58) removes `0x80012A70` from the list of functions claimed as matching Ghidra/m2c function bodies. The target is retained in the Ghidra text export for separate investigation, but is not counted as a successful same-function comparison.
+- Retry [#40515356524](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524) is **in progress**, started at 20:48:41 WIB. Prior same-workflow run #40449144521 took 3m 06s from start to completion; a rough comparable estimate is ~20:52 WIB, not guaranteed.
+- Separate Ghidra static-analysis run [#40512917437](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40512917437) is also **in progress**, started at 20:32:30 WIB and currently analyzing DATA.BIN entry 0 for the external helper. Prior comparable Ghidra run #40498208067 took 31m 47s; using that only as a rough reference gives about 21:04 WIB, but the stage may differ and the API has not provided a firm ETA.
+- Until retry artefacts verify all requested function sections and actual m2c results, Step 5 remains **TUNTAS only for the four originally verified functions**. No other step status is promoted by this experiment.
+
+
 Status: **SELESAI untuk perbandingan statis empat caller RNG pada executable utama**. Ini bukan pemulihan kode sumber asli dan bukan verifikasi runtime.
 
 ## Provenance dan reproduksi
