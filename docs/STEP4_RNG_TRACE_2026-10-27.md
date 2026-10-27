@@ -124,3 +124,15 @@ Untuk input negatif, cabang `bgez a0,0x800371a8` tidak diambil; delay slot `andi
 Fungsi helper juga mempunyai jalur nonnegatif yang menghitung selisih `*DAT_80065d38 - DAT_80065d3c` yang dimask 16 bit dan memanggil helper `0x800372B0`; karena itu helper tidak boleh digeneralisasi sebagai stub konstan. Xrefs/initializer semua data global `0x80066E7C` dan lifecycle nilainya masih perlu ditelusuri.
 
 Run helper [#40493608676](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40493608676) gagal pada pengecekan marker saja: teks target di Ghidra tanpa prefiks `0x` dan alamat setter lowercase. Raw log tetap menunjukkan cleanup PASS dan artefak teks #12730020903 (8.395 byte, digest ZIP `00b54f4e8c059f81d0f4d75aea04f2deccece564edff73378096b369e4fd7c79`). Fragmen YAML duplikat pada akhir workflow kemudian ditemukan dan dibuang pada `029fdfab8df55dd16001916f0f53b7abd073c334`; run koreksi #40497723766 perlu diverifikasi live.
+
+## Addendum — reference audit global helper-return 0x80066E7C (27 Oktober 2026, 18:44 WIB)
+
+Ekspor xref baru lewat run helper statis [#40498231825](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40498231825) menunjukkan 8 referensi langsung ke global 0x80066E7C dalam view executable utama. Loaded-image bytes adalah 00 00 00 00 (word LE 0), sedangkan fungsi yang ditunjuk instruksi adalah:
+- WRITE 0x80037B7C: sw zero,0x6e7c(at), di fungsi 0x80037B58.
+- READ 0x80037BB4 dan WRITE 0x80037BDC dalam fungsi 0x80037BB0; write didahului addiu v0,v0,1 pada 0x80037BD4.
+- READ 0x8003719C, 0x80037204, 0x80037260 dalam fungsi 0x80037138.
+- READ 0x800372C0 dan 0x80037324 dalam fungsi 0x800372B0.
+
+Runner-only inspection [#40498386273](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40498386273) selesai success 18:44:35 WIB, artifact #12731327556 9.727 byte, ZIP SHA-256 7826480f41372d68ddf3f4b1dfe6d99f51bbbb5cd124eb5c3c6169870150ba5c, cleanup PASS. Metadata/digest artifact helper terbaru #12732006381 (run #40498231825, 9.058 byte, SHA-256 adfdb608af96dd95a7c7e74d9f8b117767aaffa817d0c7eb860757ead868d9ba) cocok.
+
+Data awal 0 dan pola store-nol/increment membuat global ini COUNTER-LIKE sebagai deskripsi operasi statis saja; belum terbukti sebagai jenis penghitung tertentu atau seed aktual pada boot. Harus telusuri caller fungsi 0x80037B58/0x80037BB0 dan urutannya terhadap callsite candidate 0x800AF2AC. Indirect references/overlay/runtime writers belum dicakup lengkap. Step 4 tetap SEBAGIAN.
