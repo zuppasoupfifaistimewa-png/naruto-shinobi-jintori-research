@@ -164,3 +164,13 @@ The new Step 6 detail for candidate `0x8011C0D0` is bounded decompiler evidence:
 ## Addendum penutupan — hasil bounded field-offset scan Step 6
 
 Run statis [#40488847927](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40488847927) memindai 98.357 instruksi terdekode dari DATA.BIN entry-1 dengan base hipotesis `0x800D0000`. Tidak ada exact-immediate scalar hits untuk target offsets; ini terbatas pada klasifikasi scalar immediates dan bukan complete scan atas memory displacement/effective address atau pointer aliases. Hasil no-hit tersebut tidak membatalkan dekompilasi yang sudah menunjukkan `+0x2E9/+0x2E5/+0x58B/+0x5D2` stores, dan tidak cukup untuk menyatakan `+0xB30/+0xB38/+0xB40/+0xB44` tidak dipakai. Status Step 6 tetap SEBAGIAN.
+
+## Addendum penutupan — helper return dan pending-field static dataflow (27 Oktober 2026, bukti sampai 18:38 WIB)
+
+Runner-only audit [#40497668341](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40497668341) sukses pada 18:38:45 WIB; artifact #12730957210 9.014 byte, ZIP SHA-256 `695e36bf70237913c0f80c94f0d4100732c92dd8b78155da2ace90d189c5ee24`, raw cleanup PASS.
+
+**Langkah 4:** raw MIPS dan dekompilasi fungsi `0x80037138` menyelesaikan sumber return untuk argumen `-1`: cabang negatif mengembalikan nilai global `0x80066E7C`. Delay slot `move a0,v0` pada callsite setter meneruskan nilai itu ke kandidat `0x80035DA8`. Ini kemajuan pada sumber dataflow, bukan bukti bahwa global diisi nilai tertentu saat boot atau bahwa caller benar-benar dipanggil di runtime. Step 4 tetap **SEBAGIAN**.
+
+**Langkah 6:** `+0xB30) dan `+0xB38` dibaca dan ditambahkan sebelum store ke `+0xB40); `+0xB44` diinisialisasi nol pada satu jalur, kemudian dibaca sebagai argumen `a2` bagi `0x8001B364`. Semua adalah fakta statis bersyarat pada entry-1 base `0x800D0000), yang masih HIPOTESIS. Mapping runtime, alias/object identity, writer/source lengkap dan semantic effects belum ditutup. Step 6 tetap **SEBAGIAN**; Step 8 juga tetap **SEBAGIAN**.
+
+Artefak sumber pemindaian Step 6: run #40493556711, artifact #12729156734, 180.128 byte, ZIP SHA-256 `c9ea5ef0552a0c80a70f0d3a758622a358509de2079e5954dac3ce0032426e93`. Run koreksi helper #40497723766 telah dimulai setelah fragmen duplikat pada workflow YAML dihapus pada commit `029fdfab8df55dd16001916f0f53b7abd073c334`; hasil akhirnya harus diperiksa terpisah.
