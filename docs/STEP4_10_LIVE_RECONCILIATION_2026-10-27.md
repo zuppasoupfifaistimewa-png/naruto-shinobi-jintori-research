@@ -1,6 +1,6 @@
 # Rekonsiliasi live reverse engineering Langkah 4–10 — 27 Oktober 2026
 
-## Snapshot kerja terbaru — 27 Oktober 2026, 20:59 WIB
+## Snapshot kerja terbaru — 27 Oktober 2026, 21:02 WIB
 
 ### Langkah 5 — cross-check dekompilasi
 
@@ -20,16 +20,16 @@ Cross-check 13 fungsi mendukung bahwa `0x80037138` dapat mengembalikan global `0
 
 Setter `0x8001387C` menerima indeks 0–3, membatasi nilai ke −9999…99999, dan menulis per-peserta slot; getter `0x800138EC` membaca slot tersebut dan mengembalikan 0 untuk indeks invalid. Ini belum membuktikan formula biaya/refund atau efek mekanika tertentu. **Step 4 dan Step 8 tetap SEBAGIAN**; seed/runtime reachability, cost/barrier/upgrade, battle/roulette/turn, efek kartu, dan syarat menang/kalah tetap HIPOTESIS/UNKNOWN sesuai bukti.
 
-### Langkah 9 — uji isolasi diperluas
+### Langkah 9 — hasil terisolasi final
 
-Artifact [#12740305973](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810/artifacts/12740305973) dari run [#40516755810](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810) sudah ada dan telah diperiksa: 4.567 byte, SHA-256 ZIP lokal/API cocok `bf1a702074849b2592bfc5555a0d493b5ed86d3de0b9895a192db7fdf9f80cd4`, empat file teks/log saja. Laporan aktual memuat `ISOLATED_RNG_FUNCTION_EXECUTION=PASS` (7/7), `ISOLATED_PLAYER_VALUE_ACCESSOR_TESTS=PASS` (16/16), `STEP9_ALL_TESTS=PASS`, serta `stage=isolated_function_pass`. Sepuluh kasus setter menguji nilai normal, clamp bawah/atas, nilai ekstrem, batas, dan indeks invalid; enam kasus getter menguji keempat slot, nilai negatif/maximum/all-bits-one dan indeks invalid.
+Run [#40516755810](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810) berstatus **completed/success** pada 21:02:36 WIB. Job #122232466902 menyelesaikan semua 11 langkah dengan success; log terkonfirmasi berisi `STEP9_ALL_TESTS=PASS`, `STEP9_PRIVATE_CLEANUP=PASS` dan artefak teks [#12740305973](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810/artifacts/12740305973). Artefak 4.567 byte, SHA-256 ZIP `bf1a702074849b2592bfc5555a0d493b5ed86d3de0b9895a192db7fdf9f80cd4`; empat anggota hanya teks/log. Metadata sempat stale pada snapshot 21:00 tetapi kemudian terbarui; **tidak ada lagi caveat run status**.
 
-Ada keterlambatan/ketidaksesuaian status API yang dicatat jujur: snapshot 21:00 WIB menampilkan `queued` walaupun artefak sudah berisi hasil PASS. Pemeriksaan berikutnya pada 21:02 WIB menemukan semua 11 langkah job `success` dan raw log `STEP9_PRIVATE_CLEANUP=PASS`; jadi hasil tes dan cleanup diverifikasi. Pada snapshot yang sama, aggregate run masih `in_progress`, sehingga hanya kesimpulan run-level yang belum ditandai `completed/success`. Tidak ada gameplay, PS1 emulator, BIOS, input atau savestate yang digunakan. Rincian dan tabel hasil: [laporan Step 9](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/out/step9/STEP9_UNICORN_RESULT_2026-10-27.md).
+Hasil: RNG `0x80035D78` 7/7 vektor dan setter/getter numeric accessors `0x8001387C`/`0x800138EC` 16/16. Setter mengembalikan 1 dan menulis slot valid setelah clamp ([-9999,99999]); indeks 4/`0xFFFFFFFF` mengembalikan 0 tanpa perubahan. Getter membaca 4 slot yang disiapkan dan mengembalikan 0 untuk indeks invalid. Setiap kasus kembali ke sentinel dalam ≤128 instruksi. Ini uji CPU/RAM terisolasi, bukan emulasi PS1 atau bukti biaya/barrier/turn/aturan gameplay.
 
 ### GitHub Actions yang aktif pada snapshot 20:59 WIB
 
 - [Ghidra statis #40512917437](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40512917437): `in_progress`, mulai 20:32:30 WIB; langkah aktif “Extract and analyze DATA.BIN entry 0 for external helper”. API terakhir diperbarui 20:34:49 WIB, jadi tahap itu belum memberi indikasi progres baru selama sekitar 24 menit. Run Ghidra pembanding #40498208067 pernah memerlukan 31 menit 47 detik; perkiraan kasar berdasar durasi tersebut sekitar 21:04 WIB, tetapi **bukan ETA terjamin** karena tahapan saat ini dan aktivitas job berbeda.
-- [Uji Step 9 #40516755810](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810): dimulai 20:58:10 WIB. Pada 21:02, semua 11 langkah job tercatat selesai success dan cleanup PASS, namun aggregate run API masih `in_progress`; tunggu pembaruan metadata, tanpa memicu ulang tes duplikat. Tes inti selesai sekitar 32 detik setelah job mulai; itu tidak memprediksi saat metadata aggregate akan diperbarui.
+- [Uji Step 9 #40516755810](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810): **completed/success** pada 21:02:36 WIB; semua 11 langkah job success, cleanup PASS. Tidak perlu memicu ulang tes.
 - Tidak ada run adaptif/gameplay yang dijalankan dalam pekerjaan ini. Status Story Mode: **TIDAK TERBUKTI TAMAT**.
 
 ## Checkpoint dan Actions historis — sebelum perluasan terbaru
