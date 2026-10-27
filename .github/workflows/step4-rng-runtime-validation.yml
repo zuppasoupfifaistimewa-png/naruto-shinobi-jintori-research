@@ -31,6 +31,25 @@ jobs:
         with:
           persist-credentials: true
 
+      - name: Publish current Actions run ID and RUNNING status
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p out/step4
+          {
+            echo "# Langkah 4 — runtime RNG + roulette"
+            echo
+            echo "- Status: RUNNING; belum ada hasil eksperimen."
+            echo "- Actions run: [$GITHUB_RUN_ID]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
+            echo "- Checkpoint privat tidak disalin ke Git. Adaptive player tetap dijeda."
+          } > out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md
+          git commit -m "Record Step 4 RNG runtime test start [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
       - name: Install runner tools
         run: |
           set -euo pipefail
@@ -159,21 +178,27 @@ jobs:
           end
           local function stateHex() return string.format("%08X",rngState()) end
           _G.step4RngBreakpoint=PCSX.addBreakpoint(0x80035D78,"Exec",4,"Step 4 RNG entry",function()
-            if not loaded then return end
-            calls=calls+1
-            local r=PCSX.getRegisters()
-            local ra=tonumber(r.GPR.n.ra) or 0
-            if calls<=250 then
-              log(string.format("STEP4_RNG_CALL mode=%s frame=%d seq=%d ra=0x%08X caller=0x%08X state_before=0x%s",mode,frame,calls,ra,(ra>=8) and (ra-8) or 0,stateHex()))
-            end
+            local ok,err=pcall(function()
+              if not loaded then return end
+              calls=calls+1
+              local r=PCSX.getRegisters()
+              local ra=tonumber(r.GPR.n.ra) or 0
+              if calls<=250 then
+                log(string.format("STEP4_RNG_CALL mode=%s frame=%d seq=%d ra=0x%08X caller=0x%08X state_before=0x%s",mode,frame,calls,ra,(ra>=8) and (ra-8) or 0,stateHex()))
+              end
+            end)
+            if not ok then log("STEP4_RNG_BREAKPOINT_ERROR mode="..mode.." error="..tostring(err)) end
           end)
           _G.step4SeedBreakpoint=PCSX.addBreakpoint(0x80035DA8,"Exec",4,"Step 4 RNG seed setter",function()
-            if not loaded then return end
-            setters=setters+1
-            local r=PCSX.getRegisters()
-            local a0=tonumber(r.GPR.n.a0) or 0
-            local ra=tonumber(r.GPR.n.ra) or 0
-            if setters<=20 then log(string.format("STEP4_SEED_SETTER mode=%s frame=%d seq=%d a0=0x%08X caller=0x%08X",mode,frame,setters,a0,(ra>=8) and (ra-8) or 0)) end
+            local ok,err=pcall(function()
+              if not loaded then return end
+              setters=setters+1
+              local r=PCSX.getRegisters()
+              local a0=tonumber(r.GPR.n.a0) or 0
+              local ra=tonumber(r.GPR.n.ra) or 0
+              if setters<=20 then log(string.format("STEP4_SEED_SETTER mode=%s frame=%d seq=%d a0=0x%08X caller=0x%08X",mode,frame,setters,a0,(ra>=8) and (ra-8) or 0)) end
+            end)
+            if not ok then log("STEP4_SEED_BREAKPOINT_ERROR mode="..mode.." error="..tostring(err)) end
           end)
           local function input(phase)
             local ok,v=pcall(function()
