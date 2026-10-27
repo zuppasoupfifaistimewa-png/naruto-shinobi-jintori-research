@@ -168,44 +168,6 @@ jobs:
             echo "Cached Ghidra installation found; download skipped."
           fi
 
-      - name: Download and validate SLPS_035.53
-        shell: bash
-        env:
-          PSX_EXE_DOWNLOAD_URL: ${{ secrets.PSX_EXE_DOWNLOAD_URL }}
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/ghidra-input" "$RUNNER_TEMP/ghidra-output"
-          exe="$RUNNER_TEMP/ghidra-input/SLPS_035.53"
-          printf '%s\n' "status=validating private PS-X EXE source" > "$RUNNER_TEMP/ghidra-output/run-status.txt"
-          if ! curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 --max-time 180 "$PSX_EXE_DOWNLOAD_URL" --output "$exe" 2>/dev/null; then
-            echo "::error::Private executable download failed. Confirm the secret URL is valid and supports a direct HTTPS download."
-            exit 1
-          fi
-          actual_bytes="$(stat -c '%s' "$exe")"
-          if [[ "$actual_bytes" != "$EXPECTED_EXE_BYTES" ]]; then
-            rm -f "$exe"
-            echo "::error::Executable size mismatch; expected 385024 bytes. Downloaded file was discarded."
-            exit 1
-          fi
-          if ! echo "$EXPECTED_EXE_SHA256  $exe" | sha256sum --check --status; then
-            rm -f "$exe"
-            echo "::error::Executable SHA-256 mismatch; downloaded file was discarded."
-            exit 1
-          fi
-          if [[ "$(head -c 8 "$exe")" != "PS-X EXE" ]]; then
-            rm -f "$exe"
-            echo "::error::PS-X EXE signature validation failed; file was discarded."
-            exit 1
-          fi
-          {
-            echo "status=source verified"
-            echo "filename=SLPS_035.53"
-            echo "bytes=$actual_bytes"
-            echo "sha256=$EXPECTED_EXE_SHA256"
-            echo "game_binary_committed_to_git=no"
-          } > "$RUNNER_TEMP/ghidra-output/input-validation.txt"
-          echo "PS-X EXE size, signature and SHA-256 verified."
-
       - name: Scan RNG signature and direct callers
         shell: bash
         run: |
