@@ -2,6 +2,9 @@ name: Ghidra static analysis — SLPS_035.53
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/ghidra-static-analyze-psx-exe.yml"
 
 permissions:
   contents: read
