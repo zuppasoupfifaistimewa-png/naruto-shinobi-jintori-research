@@ -22,9 +22,9 @@ Call site `0x800AF2AC` didekode Ghidra sebagai `jal 0x80035DA8`. Konteks terdeka
 800af2b0  move a0,v0
 ~~~
 
-MIPS menjalankan instruksi delay-slot `0x800AF2B0` setelah fungsi dipanggil; maka nilai argumen saat memasuki `0x80035DA8` adalah `$a0 = -1`. Badan kandidat setter menyimpan `$a0` ke global RNG `0x800A3118` melalui store pada delay slot `jr $ra`.
+Koreksi penting: instruksi delay-slot `0x800AF2B0` adalah bagian dari `jal 0x80035DA8` dan dijalankan **sebelum** kontrol masuk ke setter. Karena instruksinya `move a0,v0`, nilai `$a0` pada entry setter berasal dari `$v0` yang dikembalikan oleh panggilan sebelumnya ke `0x80037138`. Instruksi `li a0,-1` di `0x800AF2A8` adalah delay slot dari `jal 0x80037138`, sehingga argumen `-1` diberikan kepada helper `0x80037138`, bukan langsung kepada setter. Badan kandidat setter menyimpan nilai `$a0` masuk ke global RNG `0x800A3118` melalui store pada delay slot `jr $ra`.
 
-**Kesimpulan statis:** jika jalur ini berjalan dan entry 0 dimuat pada base kandidat, ia mengatur state RNG menjadi `0xFFFFFFFF` sebelum berpindah ke `0x800AF710`. Ini merupakan bukti lebih kuat daripada sekadar tebakan seed; namun tidak membuktikan kapan/ apakah jalur ini dieksekusi di runtime atau bahwa tidak ada reseed melalui pointer/overlay lain. Scan mentah seluruh file yang dipilih menemukan hanya satu kata JAL menuju `0x80035DA8`, di lokasi ini.
+**Kesimpulan statis yang direvisi:** jika jalur ini berjalan dan entry 0 berada pada base kandidat, ia memanggil setter state RNG dengan nilai balik `$v0` dari `0x80037138`. Nilai itu belum ditelusuri; state menjadi `0xFFFFFFFF` hanya jika nilai balik helper tersebut memang `-1`, hal yang belum dibuktikan. Waktu eksekusi runtime dan reseed melalui pointer/overlay lain juga belum diketahui. Scan mentah pada resource entry 0 yang dipilih menemukan satu kata JAL menuju `0x80035DA8`.
 
 ## Empat kandidat JAL entry 0 yang menuju RNG
 
@@ -39,6 +39,6 @@ Batas fungsi caller tidak diberikan oleh analisis `-noanalysis`, sehingga nama c
 
 ## Dampak pada seed dan caller inventory
 
-- Ada **satu** direct call seed setter yang teridentifikasi secara statis pada base kandidat entry 0; argumennya `-1`.
+- Ada **satu** direct JAL ke kandidat setter state yang teridentifikasi secara statis pada base kandidat entry 0. Argumen setter berasal dari `$v0` return helper `0x80037138`; argumen helper itu sendiri adalah `-1`. Nilai balik helper dan nilai state yang akhirnya disimpan masih UNKNOWN.
 - Ada **empat** direct JAL instruction sites di entry 0 yang targetnya RNG. Tiga memiliki incoming conditional branch pada konteks lokal; satu (0x800BB748) masih perlu xref/reachability lebih luas.
 - Base entry 0 dan waktu eksekusinya tetap provisional. Tidak ada runtime execution.
