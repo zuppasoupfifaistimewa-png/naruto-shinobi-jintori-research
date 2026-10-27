@@ -1,47 +1,40 @@
-# Private handoff for Ghidra analysis of SLPS_035.53
+# Handoff for Ghidra analysis of SLPS_035.53
 
 ## Purpose and current state
 
 Workflow: [Ghidra static analysis — SLPS_035.53](../.github/workflows/ghidra-static-analyze-psx-exe.yml).
 
-Ghidra 12.2 setup has already been verified in Actions run [#40434733043](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40434733043). This workflow is the next stage: securely download the main PS-X EXE, validate it, run the reproducible RNG-signature scan, run Ghidra headless, and export a **text-only function index**. The workflow does not launch the game or an emulator.
+Ghidra 12.2 setup was verified in Actions run [#40434733043](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40434733043). The analysis workflow now uses the existing BIN/CUE assets in the repository's [research-tool release](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/research-emulator-pcsx-redux-2026-10-15). **No `PSX_EXE_DOWNLOAD_URL` repository secret is required.**
 
-The runner needs a direct-download URL configured by the repository owner. The ChatGPT/GitHub connector cannot create repository Actions secrets or transfer the private Library binary directly to a runner, so the analysis cannot start until this one-time configuration is done.
+The workflow downloads the release disc image and CUE file to the temporary GitHub Actions runner, verifies both using their recorded size and SHA-256, extracts `SLPS_035.53`, and independently verifies the extracted executable before Ghidra imports it. It runs static analysis only; it does not launch the game or an emulator.
 
-## Required secret
+## Pinned source and executable checks
 
-Create a **repository Actions secret** named:
+Release assets used by the workflow:
 
-- `PSX_EXE_DOWNLOAD_URL` — an HTTPS URL that serves the exact binary `SLPS_035.53` as a direct download. The secret must remain valid when the workflow runs.
+- `Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin` — 325,989,552 bytes; SHA-256 `58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88`.
+- `Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue` — 116 bytes; SHA-256 `be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8`.
 
-On GitHub, open this repository, then **Settings → Secrets and variables → Actions → New repository secret**. Enter the name exactly as above and put the URL only in the secret value.
+Extracted executable checks:
 
-Use a private file host or a private storage object with access-controlled HTTPS download. A short-lived signed URL is acceptable only while it remains valid; rotate the secret if it expires. Do not paste the URL in a chat, issue, commit, workflow input, or log. Do not make the executable public merely to automate analysis.
-
-## Validation performed by the workflow
-
-The downloaded file is rejected and deleted unless all checks pass:
-
-- File name used locally: `SLPS_035.53`
+- File name: `SLPS_035.53`
 - Exact size: `385024` bytes
-- PS-X EXE magic: `PS-X EXE`
+- PS-X EXE signature: `PS-X EXE`
 - Expected SHA-256: `a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569`
 
-These are the executable values recorded in the existing local-header verification. The workflow does not trust the URL alone.
+If any source or executable check fails, the workflow stops rather than importing an unverified input.
 
 ## Run the analysis
 
-After the secret is configured:
-
-1. Open the repository **Actions** tab.
+1. Open the repository's **Actions** tab.
 2. Select **Ghidra static analysis — SLPS_035.53**.
 3. Choose **Run workflow** on branch `main`.
 
-Expected text-only artifact: `ghidra-slps-03553-function-index`, retained for 14 days. It contains the function TSV, the RNG-signature scan/caller list, analysis configuration, validation report, and text logs. It never includes the executable or Ghidra project. The workflow deletes the private input and temporary Ghidra project before the runner exits.
+Expected text-only artifact: `ghidra-slps-03553-function-index`, retained for 14 days. It contains the function TSV, RNG-signature scan/caller list, analysis configuration, validation report, and text logs. The disc image, CUE, extracted executable, and Ghidra project are not uploaded as artifacts or committed to the Git tree. The temporary disc extraction is deleted after the executable is verified; the executable and temporary project are deleted by the final cleanup step.
 
-## Boundaries
+## Boundaries and interpretation
 
-- Only static analysis of `SLPS_035.53`; no emulator, gameplay, ROM, BIOS, savestate, Memory Card or screenshot is run/uploaded.
-- The function TSV is an initial index, not proof that a candidate function controls RNG, Chakra transactions, roulette, barrier selection or victory rules.
-- The binary is never added to Git or to the Actions artifact.
+- Static analysis only; no emulator, gameplay input, ROM boot, BIOS, savestate, Memory Card, or screenshot evidence is used.
+- The function TSV is an initial index, not proof that a candidate function controls RNG, Chakra transactions, roulette, barrier selection, or victory rules.
+- If Ghidra succeeds, step 3 can be marked complete only after checking that `functions.tsv` is non-empty and its analysis-result report records SUCCESS.
 - The independent adaptive-player gates remain unchanged: cue UNKNOWN, `barrier_level_selection = WAIT`, readiness NO-GO, Story Mode NOT COMPLETE; Revision65 remains untouched.
