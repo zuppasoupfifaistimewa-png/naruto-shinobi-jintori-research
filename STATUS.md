@@ -1,3 +1,14 @@
+# STATUS LIVE UPDATE — Step 6 bounded register provenance, 27 Oktober 2026 20:25 WIB
+
+**Checkpoint terbaru Step 6 (27 Oktober 2026, 20:25 WIB):** scanner provenance di https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/0afc0eec4a5c12e4df5a17c771c8b0d28d7a99dd dijalankan oleh [Actions #40511758146](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40511758146) — completed/success pada 20:25:48 WIB. Artifact [#12737611770](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40511758146/artifacts/12737611770), 229.233 byte, SHA-256 ZIP `b84ff017cdbefb8ece6d04a7c8bef66b3fdc27b61412e91e10cc01485225b126`; digest API sama dengan SHA lokal. Enam anggota ZIP hanya teks/log; `text_only_output_count=6`, `private_binary_in_artifact=no`, `STEP6_PRIVATE_CLEANUP=PASS`. Fixture parser operand dan fixture pembentukan alamat `lui/ori/addiu/sign-extension` benar-benar mengeluarkan PASS. Laporan: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP6_REGISTER_PROVENANCE_AUDIT_2026-10-27.md.
+
+- Tool source commit: `0afc0eec4a5c12e4df5a17c771c8b0d28d7a99dd`. Two static fixtures passed: displacement parser and address-construction/sign-extension.
+- Scan coverage remains 98,357 decoded instructions. +B30/+B38/+B40/+B44 access counts are unchanged. The new trace narrows the reason aliases remain unresolved: `a0) comes from stack-relative `lw a0,-0x5AAC(s0)` at 0x8012C628, but the preceding `s0) chain reaches a control-flow boundary; +B44 read's `v1) chain stops at branch 0x8012CAF8. This is not whole-program pointer/dataflow analysis.
+- Status: Step 4 SEBAGIAN; Step 5 TUNTAS for four functions only; Step 6 SEBAGIAN (6b BLOCKED, 6d UNKNOWN); Step 7 SEBAGIAN/7b BLOCKED; Step 8 SEBAGIAN/8b UNKNOWN; Step 9 TUNTAS only for isolated RNG 0x80035D78; Step 10 TUNTAS as audit matrix only. Story Mode TIDAK TERBUKTI TAMAT.
+- All steps in #40511758146 completed success; cleanup PASS and artifact validation was text-only. No emulator/game, gameplay input, savestate restore, adaptive-player source or player workflow was used. No private ROM/BIOS/executable/Memory Card/savestate/RAM dump/screenshot was committed or included in the artifact.
+
+---
+
 # STATUS LIVE UPDATE — 27 Oktober 2026: Step 6 inventory audit and criteria reconciliation
 
 - HEAD pra-audit: cc81319cc00037a92a93a3e76552245dd9a9ebf7.
