@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: step4-ghidra-rng-caller-validation
+  group: step4-ghidra-rng-caller-validation-v2
   cancel-in-progress: false
 
 jobs:
