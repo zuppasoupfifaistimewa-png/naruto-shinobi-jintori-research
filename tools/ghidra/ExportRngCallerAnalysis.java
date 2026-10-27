@@ -184,6 +184,10 @@ public class ExportRngCallerAnalysis extends GhidraScript {
             dumpSimpleFunction(decompiler, 0x80020D48L);
             dumpSimpleFunction(decompiler, 0x80018300L);
             dumpSimpleFunction(decompiler, 0x80018468L);
+            // Step 4 delay-slot audit: determine the main-EXE helper return forwarded by
+            // DATA.BIN entry-0's candidate setter callsite (0x800AF2AC). This helper's
+            // return value, not its input argument, feeds setter argument register $a0.
+            dumpSimpleFunction(decompiler, 0x80037138L);
 
             // Xrefs to RNG and candidate/global table locations (some may be outside loaded text).
             dumpReferences(0x8006D794L, "bounded_candidate_limit_DAT_8006D794");
@@ -191,6 +195,7 @@ public class ExportRngCallerAnalysis extends GhidraScript {
             dumpReferences(0x800A3118L, "rng_state_global");
             dumpReferences(0x80035D78L, "lcg_candidate");
             dumpReferences(0x80035DA8L, "seed_setter_candidate");
+            dumpReferences(0x80037138L, "seed_callsite_helper_return_candidate");
             dumpReferences(0x80070D02L, "shuffled_table_count_DAT_80070D02");
             dumpReferences(0x80070D0AL, "shuffled_table_base_DAT_80070D0A");
             dumpReferences(0x80089DA9L, "candidate_choice_DAT_80089DA9");
