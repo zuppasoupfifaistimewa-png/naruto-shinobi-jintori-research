@@ -1,3 +1,14 @@
+# Checkpoint terkini — 27 Oktober 2026 17:26 WIB
+
+- Main HEAD yang diverifikasi tepat sebelum checkpoint handoff ini: `2ad2c8dcdcaeee718d656e8696d6853f48ec54a8`. Riwayat commit setelah SHA handoff sebelumnya mencakup tracing statis tambahan Step 6 pada `0x8011C0D0`, penegasan batas bukti untuk field `+0xB30/+0xB38/+0xB40/+0xB44`, dan pencatatan lanjutan ke `ANALYSIS_LOG.md` serta `STATUS.md`. Ini SHA remote branch `main), bukan hasil pemeriksaan working tree lokal; konektor tidak menyediakan status lokal.
+- Pemeriksaan langsung Actions: run Ghidra static #40487406384 masih `in_progress), satu job `122132544196`; step DATA.BIN entry 0 untuk helper `0x80037138` sedang berjalan. Tahap main EXE dan entry 1 sudah `success`; upload artefak teks, cleanup, dan post-steps masih pending. Tidak ada artefak pada run itu saat pemeriksaan. Run #40486315324 validator tetap `success`; tidak ada run queued pada daftar terbaru.
+- Belum ada hasil baru untuk menyimpulkan nilai return `0x80037138` atau seed runtime. Jangan ulangi probe breakpoint `0x800AD454` (#40484548650) atau `0x80035DA8` (#40485987817), dan jangan memulai runtime baru saat Ghidra run aktif.
+- Pekerjaan statis Step 6 yang sudah tersimpan: dekompilasi terarah kandidat `0x8011C0D0` menunjukkan byte-mask/compare/update, loop record stride `0x90`, operasi negate/clamp word `+0x04), dan panggilan setter `0x8001387C`; karena loop lengkap tidak tersedia sebagai raw MIPS dan caller/field semantics tidak diketahui, jangan menyebutnya biaya atau transaksi gameplay. Offset `+0xB30/+0xB38/+0xB40/+0xB44` belum ditelusuri menyeluruh.
+- Status keseluruhan tidak berubah: Step 4 SEBAGIAN; Step 5 TUNTAS untuk empat fungsi terpilih; Step 6 SEBAGIAN; Step 7 SEBAGIAN; Step 8 SEBAGIAN; Step 9 TUNTAS hanya untuk RNG `0x80035D78`; Step 10 TUNTAS sebagai indeks audit. Story Mode tetap TIDAK TERBUKTI TAMAT.
+- Tidak ada akses/ubah repo lain, pemain adaptif, input gameplay, pemulihan savestate, perubahan classifier/policy/Revision65/readiness gate, atau aset privat masuk Git.
+
+---
+
 # Handoff — reverse engineering Naruto PS1, Langkah 4–10
 
 Pembaruan: 27 Oktober 2026, setelah parser Step 7 diperbaiki, hasil single-breakpoint diperiksa dari raw log, dan tracing statis Step 6/8 ditambahkan.
