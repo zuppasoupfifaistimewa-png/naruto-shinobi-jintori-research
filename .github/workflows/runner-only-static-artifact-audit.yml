@@ -209,13 +209,14 @@ jobs:
           else:
               detail_lines=detail.splitlines()
               for target in ("80037138","80035DA8"):
-                  marker=f"=== TARGET {target} ==="
-                  rows.append(f"target={target} marker_present={marker in detail}")
-                  if marker not in detail:
+                  marker_match=re.search(r"(?im)^=== TARGET (?:0x)?"+re.escape(target)+r" ===$",detail)
+                  rows.append(f"target={target} marker_present={marker_match is not None}")
+                  if marker_match is None:
                       continue
-                  start=detail.find(marker)
-                  end=detail.find("=== TARGET ",start+len(marker))
-                  section=detail[start:end if end!=-1 else None].splitlines()
+                  start=marker_match.start()
+                  next_match=re.search(r"(?im)^=== TARGET ",detail[marker_match.end():])
+                  end=(marker_match.end()+next_match.start()) if next_match else len(detail)
+                  section=detail[start:end].splitlines()
                   rows.extend(section[:18])
                   raw_begin=next((i for i,line in enumerate(section) if line.strip()=="--- RAW_FUNCTION_BODY_BEGIN ---"),-1)
                   raw_end=next((i for i,line in enumerate(section) if line.strip()=="--- RAW_FUNCTION_BODY_END ---"),-1)
@@ -224,7 +225,7 @@ jobs:
                       rows.extend(section[raw_begin:raw_end+1])
                       # Make every return path auditable without requiring the reader to infer it from a truncated excerpt.
                       body=section[raw_begin+1:raw_end]
-                      return_lines=[i for i,line in enumerate(body) if re.search(r"(?i)\\b(jr|j|bgez|bltz|beq|bne|blez|bgtz)\\b",line)]
+                      return_lines=[i for i,line in enumerate(body) if re.search(r"(?i)\b(jr|j|bgez|bltz|beq|bne|blez|bgtz)\b",line)]
                       rows.append(f"CONTROL_FLOW_AND_RETURN_INSTRUCTIONS target={target} count={len(return_lines)}")
                       for i in return_lines:
                           lo=max(0,i-2); hi=min(len(body),i+3)
