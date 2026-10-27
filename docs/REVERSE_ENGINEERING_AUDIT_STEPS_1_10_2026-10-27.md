@@ -1,5 +1,15 @@
 # LIVE CRITERION RECONCILIATION — 27 Oktober 2026
 
+## Update terbaru — Step 6 address provenance tool audit, 27 Oktober 2026 20:25 WIB
+
+**Checkpoint terbaru Step 6 (27 Oktober 2026, 20:25 WIB):** scanner provenance di https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/0afc0eec4a5c12e4df5a17c771c8b0d28d7a99dd dijalankan oleh [Actions #40511758146](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40511758146) — completed/success pada 20:25:48 WIB. Artifact [#12737611770](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40511758146/artifacts/12737611770), 229.233 byte, SHA-256 ZIP `b84ff017cdbefb8ece6d04a7c8bef66b3fdc27b61412e91e10cc01485225b126`; digest API sama dengan SHA lokal. Enam anggota ZIP hanya teks/log; `text_only_output_count=6`, `private_binary_in_artifact=no`, `STEP6_PRIVATE_CLEANUP=PASS`. Fixture parser operand dan fixture pembentukan alamat `lui/ori/addiu/sign-extension` benar-benar mengeluarkan PASS. Laporan: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP6_REGISTER_PROVENANCE_AUDIT_2026-10-27.md.
+
+Cakupan trace pointer meningkat, tetapi bukti baru menunjukkan batas konkret alih-alih menutup alias penuh: `a0) pada group +B30/+B38/+B40 didapat dari stack-relative load 0x8012C628 dan trace source `s0) berhenti di control-flow boundary; +B44 read tracing berhenti di branch 0x8012CAF8. Matriks tidak dipromosikan: 6(a) SEBAGIAN, 6(b) BLOCKED, 6(c) SEBAGIAN, 6(d) UNKNOWN. Step 4, 7, 8, 9 dan 10 juga tetap pada status dan cakupan sebelumnya.
+
+---
+
+
+
 The latest aggregate Step 6 direct-operand census is complete only for recognized integer/coprocessor load-store operands decoded by Ghidra and rendered as displacement(base) in the hypothetical entry-1 view; per-instance contexts remain capped at 200 for common offsets. This does not validate the entry base at runtime or complete pointer/alias analysis. See the 17-item matrix with status, artifact hashes, acceptance gaps and Actions URLs in [live reconciliation](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP4_10_LIVE_RECONCILIATION_2026-10-27.md).
 
 Use criterion-level status rather than overall workflow success. Current high-level statuses: Step 4 SEBAGIAN; Step 5 complete for four named functions only; Step 6 SEBAGIAN with alias BLOCKED and field semantics UNKNOWN; Step 7 SEBAGIAN with runtime mapping BLOCKED; Step 8 SEBAGIAN with game-rule semantics UNKNOWN; Step 9 complete only for RNG routine 0x80035D78, broader coverage UNKNOWN; Step 10 TUNTAS only as an audit matrix. Story Mode TIDAK TERBUKTI TAMAT.
