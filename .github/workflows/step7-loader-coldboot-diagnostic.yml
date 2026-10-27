@@ -123,7 +123,7 @@ jobs:
           cat > "$WORK/step7-vsync-preflight.lua" <<'LUA'
           local frame=0
           local function log(s) print(s); pcall(function() io.stdout:flush() end) end
-          PCSX.Events.createEventListener("GPU::Vsync",function()
+          step7PreflightListener = PCSX.Events.createEventListener("GPU::Vsync",function()
             frame=frame+1
             if frame<=3 or frame%50==0 then log("STEP7_PREFLIGHT_VSYNC frame="..frame) end
             if frame>=300 then PCSX.quit(0) end
@@ -132,7 +132,7 @@ jobs:
           LUA
 
           set +e
-          timeout --signal=TERM --kill-after=3s 15s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+          timeout --signal=TERM --kill-after=3s 25s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
             -noupdate -no-debugger -no-gdb -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
             -exec "$PAD_SETUP" -dofile "$WORK/step7-vsync-preflight.lua" -dynarec -softgpu -stdout -lua_stdout -logfile "$WORK/pcsx-preflight.log" -run \
             > "$OUT/preflight.stdout" 2>&1
@@ -146,7 +146,7 @@ jobs:
             cat "$OUT/preflight.stdout"
           } >> "$OUT/step7-loader.stdout"
           if [ "$max_frame" -lt 10 ]; then
-            echo "STEP7_PREFLIGHT_STALLED=YES; instrumented probe skipped to avoid repeating an unproductive 70-second wait" >> "$OUT/step7-loader.stdout"
+            echo "STEP7_PREFLIGHT_STALLED=YES; instrumented probe skipped after bounded 25-second preflight" >> "$OUT/step7-loader.stdout"
             printf 'stage=preflight_stalled\n' > "$OUT/stage.txt"
             exit 0
           fi
@@ -227,7 +227,7 @@ jobs:
             log(string.format("STEP4_COLD_BOOT_RNG frame=%d seq=%d ra=0x%08X caller=0x%08X state_before=0x%08X",frame,rngHits,ra,(ra>=8) and (ra-8) or 0,state))
           end)
 
-          PCSX.Events.createEventListener("GPU::Vsync",function()
+          step7ColdBootProgressListener = PCSX.Events.createEventListener("GPU::Vsync",function()
             frame=frame+1
             if frame==1 or frame%250==0 then
               log("STEP7_COLD_BOOT_PROGRESS frame="..frame)
