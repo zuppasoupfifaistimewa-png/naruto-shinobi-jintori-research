@@ -361,7 +361,7 @@ def main() -> int:
     all_tests_pass = all_pass and helper_pass and accessors_pass
     exe_hash = hashlib.sha256(data).hexdigest()
     lines = [
-        "# Step 9 — validasi fungsi RNG dan accessor nilai pemain secara terisolasi dengan Unicorn",
+        "# Step 9 — validasi RNG, helper counter, dan accessor nilai peserta secara terisolasi dengan Unicorn",
         "",
         "- Scope: hanya menjalankan rutin main EXE 0x80035D78 (RNG), jalur a0 negatif helper 0x80037138, dan accessor 0x8001387C/0x800138EC di RAM CPU terisolasi; tidak menjalankan emulator PS1/game, BIOS, event loop, atau input gameplay.",
         "- RAM model: 2 MiB virtual RAM PS1 pada 0x80000000–0x801FFFFF, text EXE dimuat pada alamat header 0x80010000; seluruh RAM lain nol kecuali state RNG dan register awal yang dicatat.",
@@ -397,7 +397,6 @@ def main() -> int:
             f"{'PASS' if r['return_to_sentinel'] else 'NO'} | {'PASS' if r['pass'] else 'FAIL'} |"
         )
     lines += [
-    lines += [
         "",
         "## Test terisolasi tambahan — setter/getter nilai peserta",
         "",
@@ -427,7 +426,7 @@ def main() -> int:
         f"- accessor_cases_passed={sum(1 for r in accessor_rows if r['pass'])}/{len(accessor_rows)}",
         f"- STEP9_ALL_TESTS={'PASS' if all_tests_pass else 'FAIL'}",
         f"- vectors_passed={sum(1 for r in rows if r['pass'])}/{len(rows)}",
-        "- Status scope: verifikasi dinamis satu rutin RNG dan dua accessor nilai per-peserta saja. Ini tidak memverifikasi seluruh pemanggil, helper RNG/timer di perangkat nyata, caller resource, semua delay-slot/path, atau gameplay.",
+        "- Status scope: tes terisolasi mencakup satu rutin RNG, jalur argumen-negatif helper counter, dan dua accessor nilai peserta; tidak memverifikasi caller lengkap, seed runtime, perangkat keras PS1 atau gameplay.",
         "- Limitasi: Unicorn memodelkan instruksi CPU dan RAM yang disediakan, bukan perangkat keras PS1, BIOS, DMA, GPU, audio, loader game, atau jadwal frame. Tidak ada kesimpulan tentang hasil roulette/battle.",
         "- Data privat: executable hanya dibaca di runner, tidak disimpan pada repo maupun artefak; hanya laporan teks yang boleh diunggah.",
         "",
