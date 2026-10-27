@@ -1,3 +1,11 @@
+## CORRECTION — raw MIPS clarifies global-pointer dereference, 27 Oktober 2026 21:43 WIB
+
+Cross-check on the emitted MIPS body resolves one important distinction and limits how the two C outputs should be compared. At `0x800ED920), code executes `lui v1, %hi(D_8013EA74)`; at `0x800ED924), `lw a0, %lo(D_8013EA74)(v1)` loads a 32-bit value from the global slot at `0x8013EA74). It then computes `index * 0x90`, adds that offset to the **loaded value**, and reads one byte at offset `0x29` from that derived record address.
+
+Ghidra C represents the value read from the global as `iRam8013ea74`. The m2c C output renders `D_8013EA74` as a static symbol in pointer arithmetic without expressing the same dereference as clearly. Therefore, call tokens/body boundary/control-flow offer a useful structural cross-check, but the C outputs are **not fully equivalent evidence for pointer typing or effective address**. The raw MIPS load is the authoritative basis for this operation-level statement. The actual value stored at `0x8013EA74`, the mapped record table and runtime resource base remain unverified; do not assume the global slot's link-time address is itself the record table.
+
+---
+
 # LIVE ADDENDUM — function behavior versus game rules, 27 Oktober 2026 21:41 WIB
 
 The same-boundary Ghidra/m2c result [#40523020556](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40523020556) makes one additional function-level control path trustworthy under the hypothetical entry-1 base. Function `0x800ED8C8` masks its index to 16-bit, gets a byte from helper `0x800CB4B4), obtains the RNG output modulo 250, compares that value with a byte at `pointer + index*0x90 + 0x29), and returns `0xFF` if remainder >= threshold or helper byte otherwise. The exact function boundary is 160 bytes, ending at `0x800ED968`; m2c exit 0 and Ghidra/m2c show matching helper/RNG call tokens.
