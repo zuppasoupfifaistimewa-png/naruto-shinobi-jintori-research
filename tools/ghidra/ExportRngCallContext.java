@@ -33,6 +33,7 @@ public class ExportRngCallContext extends GhidraScript {
     protected void run() throws Exception {
         String[] args=getScriptArgs();
         if (args.length<2) throw new IllegalArgumentException("Args: output-path callsite:target [callsite:target ...]");
+        List<Address> candidateSites = new ArrayList<>();
         try (PrintWriter writer=new PrintWriter(new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(args[0]), StandardCharsets.UTF_8)))) {
             out=writer;
@@ -48,6 +49,7 @@ public class ExportRngCallContext extends GhidraScript {
                 if (pair.length!=2) throw new IllegalArgumentException("Expected callsite:target: "+args[i]);
                 Address site=toAddr(Long.decode(pair[0]));
                 Address target=toAddr(Long.decode(pair[1]));
+                candidateSites.add(site);
                 line("");
                 line("=== CANDIDATE site="+site+" target="+target+" ===");
                 if (!currentProgram.getMemory().contains(site)) {
@@ -102,6 +104,23 @@ public class ExportRngCallContext extends GhidraScript {
                 }
                 line("--- END_CONTEXT_WINDOW ---");
             }
+            line("");
+            line("=== INCOMING_CONTROL_FLOW_FROM_DECODED_LOCAL_WINDOWS ===");
+            InstructionIterator all=currentProgram.getListing().getInstructions(true);
+            while(all.hasNext()) {
+                monitor.checkCancelled();
+                Instruction source=all.next();
+                Address[] flows=source.getFlows();
+                if(flows==null || flows.length==0) continue;
+                for(Address candidate:candidateSites) {
+                    if(source.getAddress().equals(candidate)) continue;
+                    for(Address flow:flows) if(candidate.equals(flow)) {
+                        line("candidate_site="+candidate+" incoming_source="+source.getAddress()
+                            +" source_instruction="+source+" source_flow_type="+source.getFlowType());
+                    }
+                }
+            }
+            line("incoming_flow_scan_scope=only instructions decoded in candidate context windows; absence is not whole-resource proof");
             out.flush();
             if(out.checkError()) throw new IllegalStateException("Failed writing call context report.");
         }
