@@ -79,3 +79,9 @@ Review [Actions #40473737136 / artifact #12719587873](https://github.com/zuppaso
 - **BELUM TERUJI:** sumber dan seluruh pembaca/penulis pending fields +0xB30/+0xB38/+0xB40/+0xB44. Ketiadaan dari artifact terarah tidak membuktikan tidak ada pemakaian di kode lainnya.
 
 Step 8 tetap **SEBAGIAN**. Tidak ada dasar untuk menyatakan formula biaya universal, mekanika battle/roulette/turn, efek kartu atau syarat menang semua mode.
+
+## Addendum — status rinci jalur perubahan Chakra (27 Oktober 2026)
+
+Dekomposisi statis kandidat 0x8011C0D0 pada DATA.BIN entry 1 (base 0x800D0000, masih HIPOTESIS) menunjukkan bahwa input byte dibandingkan dengan global 0x80139F70; nilai yang sama menyebabkan return dini, sementara nilai berbeda disimpan ke global dan ke field +0x618 dari pointer record global. Pada argumen nonzero, fungsi menulis 8 ke +0x22 pada record terpilih, mengiterasi peserta ber-stride 0x90, menegasikan word field +0x04, menjepit minimum -9999, menyimpan hasil, lalu memanggil setter 0x8001387C untuk tiap indeks. Sebuah pemeriksaan (signed short)[base+0x10] + (unsigned short)[base+0x14] < 0x101 memilih antara panggilan 0x8003F5D0 dan jalur yang menulis 1 ke +0x94A; 0x800F96A4 juga dipanggil pada jalur tertentu.
+
+Ini adalah urutan operasi yang didukung dekompilasi statis 408-byte function body. Raw window yang tersimpan hanya menunjukkan bagian awal fungsi; source caller, nilai runtime, makna argumen 0/nonzero, dan efek helper tidak diketahui. Oleh sebab itu, pola negasi/clamp tidak boleh dinamai sebagai harga barrier, level-up, refund, atau transaksi final Chakra. Field +0xB30/+0xB38/+0xB40/+0xB44 tetap BELUM TERUJI secara whole-program. Status Langkah 8 tetap SEBAGIAN.
