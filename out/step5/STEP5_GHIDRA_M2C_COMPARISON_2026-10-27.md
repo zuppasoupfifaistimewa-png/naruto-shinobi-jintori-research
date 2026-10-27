@@ -1,3 +1,11 @@
+## LIVE ADDENDUM — Selected DATA.BIN function validated, 27 Oktober 2026 21:41 WIB
+
+Run [#40523020556](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40523020556), artifact #12742268706, ZIP SHA-256 `5f3f767667444f7c956c36fc59cf75b6bb90a5a1dde8ddb92fb69f9e0f797e81`, extended the successful 13-function main-EXE comparison with one entry-1 candidate function at `0x800ED8C8`. Validated body 160 B, end-exclusive `0x800ED968`; Ghidra C nonempty, m2c exit 0 / 17 C lines, shared call tokens `0x800CB4B4` and `0x80035D78`. This is structural agreement across two decompilation paths, not original-source equivalence.
+
+The selected function masks index to 16-bit, retains the low byte from helper `0x800CB4B4`, gets RNG, takes remainder modulo 250, and compares with byte at `index*0x90+0x29) relative to an unresolved pointer. It returns `0xFF` when remainder >= byte, otherwise helper byte. Runtime base and feature semantics remain hypothesis/unknown. Step 5 overall remains **SEBAGIAN**.
+
+---
+
 # Langkah 5 — perbandingan dekompilasi Ghidra dan m2c (27 Oktober 2026)
 
 ## Step 5 — hasil perluasan terverifikasi (27 Oktober 2026, 20:50 WIB)
