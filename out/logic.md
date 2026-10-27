@@ -290,3 +290,11 @@ Step status remains Step4 SEBAGIAN; Step5 TUNTAS for four chosen functions only;
 Static decompilation of a 408-byte candidate function at the hypothetical DATA.BIN entry-1 base 0x800D0000 shows: byte-mask and comparison with global 0x80139F70; early return if equal; otherwise update of that global and field +0x618 from the global record pointer. On nonzero input, the selected record gets byte 8 at +0x22, then all participants (count from effective global 0x8013EA71, stride 0x90) have their word +0x04 negated, clamped to -9999, stored, and passed with index to setter 0x8001387C. A sum check of signed short +0x10 and unsigned short +0x14 against 0x101 selects helper 0x8003F5D0 or alternative state byte +0x94A=1; 0x800F96A4 is called on certain paths.
 
 These operations are static decompilation, not proven cost/level-up rules. Only the initial raw window is in the artifact; loop detail is from the decompiler. Input source, caller, runtime values, and semantics are UNKNOWN. Whole-program access tracing for +0xB30/+0xB38/+0xB40/+0xB44 remains unfinished.
+
+
+## Live checkpoint — 27 Oktober 2026 17:26 WIB
+
+- Remote `main` sebelum refresh handoff diverifikasi pada `2ad2c8dcdcaeee718d656e8696d6853f48ec54a8`; handoff kemudian diperbarui lewat commit `e128fe86da6dbd3848813a376aa5b63f53e39977`. Periksa ulang HEAD live pada kelanjutan berikutnya.
+- Ghidra static run #40487406384 masih `in_progress`; DATA.BIN entry 0/helper `0x80037138` belum selesai, belum ada artefak untuk menilai return helper. Seed lifecycle tetap UNKNOWN. Jangan mengulang probe `0x800AD454` atau `0x80035DA8` tanpa hipotesis baru.
+- Step 6 trace `0x8011C0D0` hanya mendukung alur statis/dekompilasi negate-clamp-store dan panggilan setter; bukan bukti formula biaya. Field `+0xB30/+0xB38/+0xB40/+0xB44` belum dipetakan menyeluruh. Step 4/6/7/8 tetap SEBAGIAN; Step 5 terbatas empat fungsi; Step 9 terbatas RNG utama; Step 10 indeks saja.
+- Pemain adaptif dan Story Mode otomatis tetap dijeda. Story Mode TIDAK TERBUKTI TAMAT; tidak ada input gameplay atau restore savestate pada checkpoint ini.
