@@ -196,7 +196,8 @@ jobs:
           out="$RUNNER_TEMP/ghidra-output"
           exe="$RUNNER_TEMP/ghidra-input/SLPS_035.53"
           project="$RUNNER_TEMP/ghidra-project"
-          mkdir -p "$out"
+          # analyzeHeadless requires the project-location directory to exist.
+          mkdir -p "$out" "$project"
           {
             echo "analysis=Ghidra headless"
             echo "ghidra_version=$GHIDRA_VERSION"
