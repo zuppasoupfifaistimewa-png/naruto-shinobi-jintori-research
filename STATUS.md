@@ -1,3 +1,17 @@
+# Current checkpoint — Step 0 toolchain verified, 27 October 2026
+
+**Langkah 0 berhasil diverifikasi pada GitHub Actions run [#40457860945](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40457860945).** Daftar pin beserta hasil uji dan catatan opsi CLI ada di [out/versions.txt](out/versions.txt); workflow reproduksibel ada di [.github/workflows/toolchain-audit.yml](.github/workflows/toolchain-audit.yml).
+
+- Runtime yang teruji: Ubuntu 24.04, Python 3.13.18, pip 26.2.2, Eclipse Temurin JDK 25.0.4.1, Ghidra 12.2 (checksum arsip resmi terverifikasi dan `analyzeHeadless` tersedia).
+- Alat yang teruji: mkpsxiso + dumpsxiso 2.30 (arsip SHA-256 diverifikasi); m2c dipin ke commit `c632946b8cfbe8fce442b522dba92dfa72f1f317`; splat 0.50.1; Unicorn 2.1.4; spimdisasm 1.42.4; binutils-mipsel-linux-gnu 2.42-2ubuntu1cross5.
+- Uji Unicorn hanya smoke test membuat engine MIPS32 little-endian. Ini **bukan** pelaksanaan/verifikasi fungsi isolasi pada Langkah 9.
+- Artefak run hanya laporan teks (#12712863298). Tidak ada disc image, executable game, BIOS, memory card, savestate, dump RAM atau screenshot privat dalam artefak/Git.
+- Workflow adaptive player tetap dijeda. Tidak ada emulator, gameplay atau input yang dijalankan dalam putaran ini.
+
+Catatan kompatibilitas CLI: `splat --version` berhasil; mkpsxiso/dumpsxiso mencantumkan versi lewat header `--help` (flag `--version` tidak didukung); m2c membutuhkan nama file input dan `m2c --help` dipakai sebagai verifikasi CLI; help `analyzeHeadless` mengembalikan exit 1 tetapi menghasilkan usage yang valid.
+
+---
+
 # Current checkpoint — static reverse-engineering audit, 27 October 2026
 
 **This dated section supersedes older “latest checkpoint” headings below.** It records documentation/static-analysis progress only; it does not resume the adaptive player.
