@@ -79,7 +79,7 @@ Pencarian pola LUI + akses memori ke state menemukan tiga kandidat hanya dalam e
 ## Pekerjaan validasi berikutnya untuk Langkah 4
 
 1. Gunakan Ghidra pada entry 0 dan entry 1 dengan base yang ditandai hipotesis untuk memeriksa target flow nyata dari semua kandidat JAL.
-2. Prioritaskan kandidat 0x800AF2AC untuk menemukan argumen $a0 yang dikirim ke 0x80035DA8 dan apakah ia benar-benar instruksi kode.
+2. Pemetaan instruksi kandidat `0x800AF2AC` sudah mengidentifikasi delay-slot `move a0,v0`: hal yang masih perlu dibuktikan adalah nilai return helper `0x80037138` yang diteruskan ke `0x80035DA8`, batas fungsi/cabang yang valid, dan apakah base entry-0 cocok dengan runtime.
 3. Laporkan semua call-site yang dikonfirmasi beserta fungsi pemanggil; pisahkan raw hit, verified direct call, dan unresolved indirect/compressed paths.
 
 
