@@ -90,3 +90,8 @@ Artinya, inventory direct-JAL yang ditemukan sudah ditutup dan semua raw hits pe
 Pemindaian tambahan membentuk pola `LUI 0x41C6` + `ORI/ADDIU 0x4E6D` diikuti MULT/MULTU, serta memeriksa immediate `0x3039` pada word MIPS sejajar. Hanya `SLPS_035.53` yang memiliki satu kecocokan pengali + MULT (file offsets `0x26578`, `0x26584`, `0x26588`, yang map ke `0x80035D78`, `0x80035D84`, `0x80035D88`); addend instruction ada pada file offset `0x26590` → `0x80035D90`. Tidak ditemukan konstruksi pengali yang sama dalam raw `DATA.BIN`, `DATA2.BIN`, `DUMMY.BIN`, `XASECT.BIN`. Laporan: [out/step4_rng_signature_scan_2026-10-27.md](../out/step4_rng_signature_scan_2026-10-27.md).
 
 29 immediate `0x3039` di DATA.BIN dan dua di DATA2.BIN tidak cukup untuk menyatakan generator RNG karena tidak disertai pengali yang sama. Ini memperkuat bukti bahwa LCG yang ditemukan adalah generator dengan signature tersebut pada executable utama, tetapi tidak menyingkirkan RNG lain dengan rumus berbeda atau kode terkompresi/decrypted.
+
+
+## Penutupan akhir Langkah 4 — 27 Oktober 2026
+
+Keputusan status final dan batas bukti disatukan pada [docs/STEP4_CLOSURE_2026-10-27.md](STEP4_CLOSURE_2026-10-27.md). Langkah 4 **SELESAI dalam cakupan inventaris statis yang didefinisikan**: main EXE, seluruh raw direct-JAL hit yang ditemukan, konteks Ghidra entry 0/1, signature LCG, dan pola konstruksi alamat/JALR sempit. Status ini tidak menyatakan semua caller runtime telah ditemukan. Base resource, satu reachability entry 0, 36 boundary fungsi entry 1, caller berbasis pointer/dispatch, serta kode hasil dekompresi/dekripsi tetap UNKNOWN dan tidak boleh dipromosikan menjadi VERIFIED tanpa bukti baru.
