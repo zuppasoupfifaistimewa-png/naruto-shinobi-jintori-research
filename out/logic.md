@@ -112,3 +112,12 @@ Artefak teks kandidat lokal `main_exe_function_candidates.tsv` berisi 898 kandid
 - Story Mode dan pemain adaptif tetap **NOT COMPLETE / dijeda**, tidak ada emulator atau input gameplay dijalankan.
 
 Skrip scan yang dapat diulang pada salinan executable lokal: [`tools/psx_exe_call_target_scan.py`](../tools/psx_exe_call_target_scan.py). Skrip menulis indeks target/caller sebagai teks ke folder `out/`; biner tetap lokal. Hasil fallback dan batas interpretasinya dicatat di [`out/main_exe_callscan.md`](main_exe_callscan.md).
+
+
+## Pembaruan jalur Ghidra — 27 Oktober 2026
+
+Pipeline analisis statis kini disiapkan di workflow [`ghidra-static-analyze-psx-exe.yml`](../.github/workflows/ghidra-static-analyze-psx-exe.yml), dengan skrip [`PreparePsxExe.java`](../tools/ghidra/PreparePsxExe.java) dan [`ExportFunctionIndex.java`](../tools/ghidra/ExportFunctionIndex.java). Workflow mengimpor hanya rentang text dari offset file `0x800`, memakai bahasa `MIPS:LE:32:default` di `0x80010000`, membuat entrypoint `0x80011448`, lalu menulis indeks fungsi dalam TSV.
+
+**Status: pipeline sudah ditambahkan, eksekusi analisis belum dimulai.** Runner membutuhkan repository Actions secret `PSX_EXE_DOWNLOAD_URL` yang mengarah ke unduhan HTTPS privat executable tepat 385.024 byte. Ukuran, magic `PS-X EXE`, dan SHA-256 `a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569` diverifikasi sebelum Ghidra dijalankan. Jika tidak cocok, file ditolak dan dihapus.
+
+Panduan setelan satu kali: [`docs/GHIDRA_PRIVATE_EXE_HANDOFF.md`](../docs/GHIDRA_PRIVATE_EXE_HANDOFF.md). Konektor yang tersedia tidak dapat membuat secret Actions atau menyalin biner Library langsung ke runner; karena itu run belum bisa dipicu sebelum secret dibuat oleh pemilik repo. Biner tidak masuk Git maupun artefak; yang diunggah hanya laporan/log teks. Tidak ada emulator atau input gameplay dijalankan.
