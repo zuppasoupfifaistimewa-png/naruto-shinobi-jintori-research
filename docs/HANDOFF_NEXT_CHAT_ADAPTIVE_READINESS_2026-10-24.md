@@ -410,3 +410,15 @@ Membuat pemain adaptif yang aman, terukur, dan akhirnya dapat menjalankan Story 
 ## Format laporan setiap sesi
 
 Laporkan singkat: (1) checkpoint/commit yang benar-benar diperiksa, (2) pekerjaan yang berubah, (3) tes/Actions yang benar-benar dijalankan beserta hasilnya, (4) dampak pada kesiapan dengan alasan bukti, (5) blocker yang tersisa, dan (6) langkah berikutnya. Jangan menyamakan regresi sukses dengan kesiapan pemain atau keberhasilan menyelesaikan permainan.
+
+## New static reverse-engineering checkpoint — 27 October 2026
+
+Step 4 was completed within the main-executable static scope and Step 5 completed as an initial static survey of DATA.BIN entry index 1. Read these reports before continuing:
+- [Step 4 RNG caller/helper trace](STEP4_RNG_TRACE_2026-10-27.md)
+- [Step 5 DATA.BIN entry 1 survey](STEP5_DATABIN_ENTRY1_ANALYSIS_2026-10-27.md)
+
+Reference Actions run #40439763833 succeeded and produced text-only artifact 12705072941. At provisional base 0x800D0000, entry 1 contains multiple call sites to the main executable's Chakra target getter at 0x80012A70; record threshold branches and state updates are statically observed, but the runtime base and exact event semantics are not verified.
+
+Next, continue Step 6 from Actions run [#40440237256](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40440237256): inspect FUN_8012A9C4, FUN_80137AD8, FUN_800EF98C, FUN_80100D14, FUN_80100DCC, FUN_8011253C, and the main Chakra-setter callers. Keep facts separate from hypotheses. Do not run emulator/gameplay or bypass the adaptive-player gate.
+
+Player status unchanged: target cue UNKNOWN; barrier_level_selection = WAIT; readiness NO-GO; Story Mode NOT COMPLETE; Revision65 unchanged.
