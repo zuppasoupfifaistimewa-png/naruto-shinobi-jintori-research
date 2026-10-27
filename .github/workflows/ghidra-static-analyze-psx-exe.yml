@@ -7,6 +7,7 @@ on:
       - ".github/workflows/ghidra-static-analyze-psx-exe.yml"
       - "tools/ghidra/**"
       - "tools/psx_rng_signature_scan.py"
+      - "tools/psx_rng_resource_scan.py"
 
 permissions:
   contents: read
@@ -192,6 +193,23 @@ jobs:
             echo "data_bin_temporary_runner_only=yes"
             echo "data_bin_uploaded_as_artifact=no"
           } >> "$out/input-validation.txt"
+
+          # Scan all executable/resource files for raw direct-JAL and computed-address
+          # references to the main-EXE RNG/seed setter. Outputs are text only.
+          find_named_file() {
+            local want="$1"
+            find "$source_dir/extracted-root" -type f -iname "$want" -print -quit
+          }
+          data2_candidate="$(find_named_file 'DATA2.BIN')"
+          dummy_candidate="$(find_named_file 'DUMMY.BIN')"
+          xasect_candidate="$(find_named_file 'XASECT.BIN')"
+          if [[ -z "$data2_candidate" || -z "$dummy_candidate" || -z "$xasect_candidate" ]]; then
+            echo "::error::One or more expected disc files were not found for the static RNG reference scan."
+            exit 1
+          fi
+          python3 "$GITHUB_WORKSPACE/tools/psx_rng_resource_scan.py" \
+            --output "$out/rng-resource-reference-scan.txt" \
+            "$exe" "$data_bin" "$data2_candidate" "$dummy_candidate" "$xasect_candidate"
 
           # Keep the verified executable and DATA.BIN temporarily; discard disc image and extraction tree.
           rm -rf "$source_dir"
