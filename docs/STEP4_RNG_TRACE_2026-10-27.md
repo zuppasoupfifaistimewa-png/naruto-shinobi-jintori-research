@@ -40,7 +40,7 @@ Di `0x80035DA8` ada urutan instruksi yang cocok dengan setter state berbasis arg
 **Keyakinan tinggi:** perilaku aritmetika LCG, empat call site langsung, insertion/shuffle daftar byte, bit-test, dan pemilihan dari daftar kandidat sebagaimana dekompilasi Ghidra.  
 **Belum diketahui:** nama/arti gameplay tabel `DAT_8005603C`, kode yang disimpan pada `DAT_80089DA9`, seed runtime, pengaruh helper tambahan pada gameplay, serta pemanggil di modul/overlay lain.
 
-Dengan demikian Langkah 4 selesai sebagai **pemetaan teknis statis atas RNG + helper daftar yang terlihat pada executable utama**. Pemetaan runtime dan semantik gameplay dilanjutkan di Langkah 5 dan 6, bukan ditebak dari label `FUN_...`.
+Dengan demikian subcakupan **pemetaan teknis statis atas RNG dan helper daftar yang terlihat pada executable utama** selesai. Ini bukan penutupan Langkah 4 secara keseluruhan: seed/lifecycle, caller roulette/battle, dispatch/pointer menyeluruh, kode yang baru tampak sesudah decoding, dan randomness alternatif tetap UNKNOWN/SEBAGIAN. Semantik gameplay tidak boleh ditebak dari label `FUN_...`.
 
 
 ## Pembaruan cakupan lintas resource — 27 Oktober 2026
