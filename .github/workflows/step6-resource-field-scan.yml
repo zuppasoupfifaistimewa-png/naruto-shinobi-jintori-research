@@ -1,0 +1,225 @@
+name: Step 6/7 — static field-offset and resource profile scan
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/step6-resource-field-scan.yml"
+      - "tools/step6/**"
+      - "tools/psx_resource_profile_scan.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: step6-resource-field-scan
+  cancel-in-progress: false
+
+jobs:
+  static-field-and-resource-scan:
+    name: Verify release inputs, profile data files, scan entry-1 field immediates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      GHIDRA_ASSET: "ghidra_12.2_PUBLIC_20261016.zip"
+      GHIDRA_SHA256: "2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67"
+      GHIDRA_CACHE_DIR: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+    steps:
+      - name: Checkout research scripts and documentation
+        uses: actions/checkout@v4
+
+      - name: Install disc extraction tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes bchunk xorriso
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+          java-package: jdk
+
+      - name: Download and verify release assets; extract disc files and entry 1
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/step6-field-scan"
+          source_dir="$root/source"
+          extracted="$root/extracted-root"
+          input="$root/input"
+          out="$RUNNER_TEMP/step6-field-scan-output"
+          mkdir -p "$source_dir" "$extracted" "$input" "$out"
+
+          bin="$source_dir/naruto-disc.bin"
+          cue_raw="$source_dir/original.cue"
+          cue="$source_dir/naruto-disc.cue"
+          bin_url="https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/647346873"
+          cue_url="https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/647354760"
+
+          curl --fail --location --silent --show-error \
+            --header "Authorization: Bearer $GITHUB_TOKEN" --header "Accept: application/octet-stream" \
+            --header "X-GitHub-Api-Version: 2022-11-28" --proto '=https' --proto-redir '=https' \
+            --retry 2 --retry-delay 2 --max-time 600 "$bin_url" --output "$bin"
+          [[ "$(stat -c '%s' "$bin")" == "325989552" ]]
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $bin" | sha256sum --check --status
+
+          curl --fail --location --silent --show-error \
+            --header "Authorization: Bearer $GITHUB_TOKEN" --header "Accept: application/octet-stream" \
+            --header "X-GitHub-Api-Version: 2022-11-28" --proto '=https' --proto-redir '=https' \
+            --retry 2 --retry-delay 2 --max-time 60 "$cue_url" --output "$cue_raw"
+          [[ "$(stat -c '%s' "$cue_raw")" == "116" ]]
+          echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $cue_raw" | sha256sum --check --status
+
+          python3 - "$cue_raw" "$cue" <<'PY'
+          from pathlib import Path
+          import re, sys
+          source, destination = map(Path, sys.argv[1:3])
+          lines = source.read_text(encoding="utf-8").splitlines()
+          rewritten, replaced = [], 0
+          for line in lines:
+              if line.lstrip().upper().startswith("FILE "):
+                  match = re.match(r'^(s*FILEs+)(?:"[^"]*"|S+)(s+S+s*)$', line, re.I)
+                  if not match:
+                      raise SystemExit("Unrecognized CUE FILE directive")
+                  line = match.group(1) + '"naruto-disc.bin"' + match.group(2)
+                  replaced += 1
+              rewritten.append(line)
+          if replaced != 1:
+              raise SystemExit(f"Expected one CUE FILE directive, got {replaced}")
+          destination.write_text("\n".join(rewritten) + "\n", encoding="utf-8")
+          PY
+
+          bchunk "$bin" "$cue" "$source_dir/track"
+          iso="$(find "$source_dir" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          [[ -n "$iso" ]]
+          xorriso -osirrox on -indev "$iso" -extract / "$extracted" > "$out/disc-extraction.log" 2>&1
+
+          python3 tools/psx_resource_profile_scan.py "$extracted" "$out/resource-profile.txt"
+          data="$(find "$extracted" -type f -iname 'DATA.BIN' -print -quit)"
+          [[ -n "$data" && -f "$data" && "$(stat -c '%s' "$data")" == "66015232" ]]
+          echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $data" | sha256sum --check --status
+
+          python3 - "$data" "$input/DATA_BIN_ENTRY_0001.bin" "$out/input-identity.txt" <<'PY'
+          from pathlib import Path
+          import hashlib, sys
+          src, dst, identity = map(Path, sys.argv[1:4])
+          entry = src.read_bytes()[0x10BB000:0x10BB000 + 596412]
+          digest = hashlib.sha256(entry).hexdigest()
+          expected = "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a"
+          if len(entry) != 596412 or digest != expected:
+              raise SystemExit(f"Entry 1 identity mismatch bytes={len(entry)} sha256={digest}")
+          dst.write_bytes(entry)
+          identity.write_text(
+              "disc_bytes=325989552\ndisc_sha256=58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88\n"
+              "DATA.BIN_bytes=66015232\nDATA.BIN_sha256=69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822\n"
+              "entry1_offset=0x10BB000\nentry1_bytes=596412\nentry1_sha256=" + digest +
+              "\nentry1_slice_identity=PASS\n", encoding="utf-8")
+          print(identity.read_text(), end="")
+          PY
+
+          rm -rf "$source_dir" "$extracted"
+          test ! -e "$source_dir" && test ! -e "$extracted"
+          echo "source_assets_removed_before_ghidra=PASS" >> "$out/input-identity.txt"
+
+      - name: Restore cached Ghidra
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+          key: ghidra-12.2-linux-x64-2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+
+      - name: Install Ghidra if cache is missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$GHIDRA_CACHE_DIR"
+          if ! find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit | grep -q .; then
+            archive="$RUNNER_TEMP/$GHIDRA_ASSET"
+            url="https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.2_build/$GHIDRA_ASSET"
+            curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' \
+              --retry 3 --retry-delay 2 "$url" --output "$archive"
+            echo "$GHIDRA_SHA256  $archive" | sha256sum --check --status
+            unzip -q "$archive" -d "$GHIDRA_CACHE_DIR"
+            rm -f "$archive"
+          fi
+
+      - name: Analyze DATA.BIN entry 1 and scan field immediates
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/step6-field-scan"
+          out="$RUNNER_TEMP/step6-field-scan-output"
+          mkdir -p "$root/project" "$out"
+          headless="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
+          [[ -n "$headless" && -x "$headless" ]]
+          "$headless" "$root/project" DATA_BIN_entry_0001_field_scan \
+            -import "$root/input/DATA_BIN_ENTRY_0001.bin" \
+            -loader BinaryLoader -loader-baseAddr 0x800D0000 -loader-length 0x919BC \
+            -loader-blockName DATA_BIN_ENTRY_0001 -processor "MIPS:LE:32:default" \
+            -scriptPath "$GITHUB_WORKSPACE/tools/step6" \
+            -preScript PrepareStep6Resource.java \
+            -postScript ExportStructOffsetAccesses.java "$out/field-offset-scan.txt" \
+            -analysisTimeoutPerFile 1200 -max-cpu 2 -deleteProject \
+            > "$out/ghidra-headless.log" 2>&1
+          grep -q "^analysis=Ghidra decoded-instruction scan" "$out/field-offset-scan.txt"
+          grep -q "^=== SUMMARY ===" "$out/field-offset-scan.txt"
+          {
+            echo "field_offset_scan=PASS"
+            echo "static_base=0x800D0000 HYPOTHESIS_ONLY"
+            echo "game_or_emulator_executed=no"
+            echo "gameplay_input_sent=no"
+            echo "savestate_restored=no"
+            echo "private_binary_uploaded=no"
+          } > "$out/scan-result.txt"
+
+      - name: Remove private working files
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/step6-field-scan"
+          out="$RUNNER_TEMP/step6-field-scan-output"
+          rm -rf "$root"
+          if [[ ! -e "$root" ]]; then
+            echo "STEP6_PRIVATE_CLEANUP=PASS"
+          else
+            echo "STEP6_PRIVATE_CLEANUP=FAIL"
+            exit 1
+          fi
+          echo "game_or_emulator_executed=no" >> "$out/scan-result.txt"
+          echo "gameplay_input_sent=no" >> "$out/scan-result.txt"
+          echo "private_binary_uploaded=no" >> "$out/scan-result.txt"
+
+      - name: Validate text-only outputs
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/step6-field-scan-output"
+          mkdir -p "$out"
+          python3 - "$out" <<'PY'
+          from pathlib import Path
+          import sys
+          root=Path(sys.argv[1])
+          files=[p for p in root.rglob("*") if p.is_file()]
+          bad=[str(p) for p in files if p.suffix.lower() not in {".txt", ".log"}]
+          if bad: raise SystemExit("NON_TEXT_OUTPUTS: " + ", ".join(bad))
+          for p in files:
+              if p.stat().st_size > 20_000_000: raise SystemExit(f"OVERSIZE_TEXT_OUTPUT: {p}")
+          print(f"text_only_output_count={len(files)}")
+          print("private_binary_in_artifact=no")
+          PY
+
+      - name: Upload text-only reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: step6-resource-field-static-scan
+          path: ${{ runner.temp }}/step6-field-scan-output/
+          if-no-files-found: warn
+          retention-days: 14
