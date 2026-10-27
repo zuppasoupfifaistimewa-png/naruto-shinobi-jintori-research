@@ -4,6 +4,10 @@ Artifact [#12740305973](https://github.com/zuppasoupfifaistimewa-png/naruto-shin
 
 **Important metadata caveat:** when checked at 21:00 WIB, the GitHub API still reported the run and job as `queued` despite the artifact already being present and containing actual output for all tests. Therefore this report treats the test output as verified from the artifact contents but does **not** infer a run-level conclusion or claim cleanup success from the stale API status. Recheck the run/job metadata later before marking the whole Actions workflow completed. This inconsistency does not alter the test assertions visible in the artifact.
 
+### Updated workflow/cleanup status — 27 Oktober 2026, 21:02 WIB
+
+A subsequent read of the GitHub job summary and decoded job log for [#40516755810](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810), job `122232466902`, shows all 11 job steps completed with `success`, including “Remove all private runner files”. The raw job log contains `STEP9_PRIVATE_CLEANUP=PASS`. So the earlier 21:00 observation (run/job API showing queued) is stale/inconsistent; the latest API now shows the aggregate run `in_progress` while the job steps and output artifact already show completion. Cleanup is confirmed by the job log. Do not describe the aggregate run as `completed/success` until that final API field updates.
+
 ## Additional test set — player value setter/getter
 
 Functions are executed in fresh RAM-only Unicorn instances using the verified main EXE text, 2 MiB RAM, GP from the verified header, SP `0x001FE000`, RA sentinel `0x001FF000), and a 128-instruction budget. No PS1 emulator, BIOS, game loop, gameplay input or savestate is used. The tested slot base is `0x80070EB8`, stride `0xB4`, four slots. The address/stride/field relationship comes from Ghidra/m2c cross-check of `0x8001387C` and `0x800138EC); field meaning is not independently renamed by this test.
