@@ -2,7 +2,7 @@
 
 [Run #40520635663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40520635663) is completed/success overall, but the downloaded artifact #12743796502 (2.299.302 B, ZIP SHA-256 `e2d5b496b2310c17110c59710212f7605bf8b3d90b798abb438c1224bf3d0549`) shows **Ghidra resource entry-0 analysis timed out at 1,800 seconds**. It exported 36 index rows while logging many function-body overlap/repair errors; candidate `0x800BDBFC` has zero recorded xrefs. Overall workflow success means outputs/cleanup completed, not that entry-0 analysis fully completed.
 
-Run [#40521141039](https://github.com/zuppasoupfivaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521141039) is still in progress at the latest poll. Entry1 step completed, entry0 analysis active, artifact/upload pending. Previous same-workflow run took 31m27s and entry0 hit the 1,800-second timeout; estimate for the active run is roughly 22:25–22:35 WIB only if the stage duration is similar. This is not guaranteed. Do not start another concurrent scan.
+Run [#40521141039](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521141039) is still in progress at the latest poll. Entry1 step completed, entry0 analysis active, artifact/upload pending. Previous same-workflow run took 31m27s and entry0 hit the 1,800-second timeout; estimate for the active run is roughly 22:25–22:35 WIB only if the stage duration is similar. This is not guaranteed. Do not start another concurrent scan.
 
 ---
 
