@@ -1,3 +1,18 @@
+# LIVE ADDENDUM — loader mapping status, 27 Oktober 2026 21:41 WIB
+
+The new entry-1 CFG/SSA work (#40522772847) improves static understanding of candidate resource functions but does not establish the runtime load base. `0x800D0000` (entry 1) and `0x800AD000` (entry 0) remain Ghidra import hypotheses.
+
+| Loader subquestion | Current status | Evidence limit |
+|---|---|---|
+| DATA.BIN directory / entry boundaries | **Static evidence available** | Catalog/slice checks verify bytes and file offsets, not RAM placement. |
+| Bootstrap directory/copy structure | **Partially statically supported** | Does not establish actual overlay copy destination or final runtime length. |
+| Runtime destination / length / checksum | **UNKNOWN/BLOCKED** | No validated runtime register sample or end-to-end copy evidence. |
+| Relocations, lifecycle, decompression, DATA2.BIN/DUMMY.BIN | **UNKNOWN** | No complete static + runtime chain has closed these questions. |
+
+Do not rerun the earlier no-hit probe at `0x800AD454` without new static reachability evidence. Step 7 remains **SEBAGIAN**.
+
+---
+
 # Langkah 7 — peta loader/overlay berbasis bukti statis (27 Oktober 2026)
 
 Status: **SEBAGIAN**. Struktur direktori dan salah satu jalur salin bootstrap terverifikasi secara statis, tetapi pemuatan resource ke RAM, base runtime, relokasi, dan lifecycle belum tervalidasi menggunakan bukti runtime.
