@@ -69,3 +69,12 @@ python3 tools/psx_rng_signature_scan.py /path/to/SLPS_035.53
 ```
 
 Skrip memvalidasi header, SHA-256, dan urutan instruksi; tidak menjalankan executable game.
+
+
+## Pembaruan Langkah 4 — scan caller lintas resource (27 Oktober 2026)
+
+Scan byte mentah lintas executable dan resource selesai pada GitHub Actions [run #40454059515](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40454059515). Hasil permanen: [out/rng_resource_reference_scan_2026-10-27.md](rng_resource_reference_scan_2026-10-27.md).
+
+Temuan scan: 4 hit JAL RNG pada SLPS_035.53 yang cocok dengan empat call site Ghidra yang diketahui; 148 hit kata JAL yang mengarah ke RNG pada DATA.BIN; satu hit kata JAL menuju kandidat seed setter 0x80035DA8 pada DATA.BIN entry 0. Dari 148 kandidat RNG DATA.BIN, empat berada di entry 0 dan 144 di entry 1. Base resource 0x800AD000 dan 0x800D0000 masih hipotesis.
+
+**Penting:** hit byte mentah bukan caller tervalidasi. Ghidra sedang dijalankan pada entry 0/1 untuk membandingkan pola mentah dengan direct flow yang benar-benar didekode dan memeriksa pemanggil kandidat seed setter. Sampai laporan itu tersedia, inventaris seluruh resource tetap **SELESAI SEBAGIAN**. Tidak ada emulator/gameplay atau pemulihan savestate.
