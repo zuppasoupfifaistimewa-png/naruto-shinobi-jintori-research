@@ -39,6 +39,58 @@ def jal_word(target: int) -> int:
     return 0x0C000000 | ((target >> 2) & 0x03FFFFFF)
 
 
+def lcg_multiplier_candidates(data: bytes, max_gap: int = 6) -> list[tuple[int, int, int | None]]:
+    """Find MIPS LUI+ORI/ADDIU materializations of 0x41C64E6D.
+
+    This is a raw-pattern candidate detector, not proof that the code is RNG.
+    """
+    out: list[tuple[int, int, int | None]] = []
+    seen: set[tuple[int, int, int | None]] = set()
+    for lui_off in range(0, len(data) - 4, 4):
+        lui = u32(data, lui_off)
+        if (lui >> 26) != 0x0F or (lui & 0xFFFF) != 0x41C6:
+            continue
+        reg = (lui >> 16) & 0x1F
+        for gap in range(1, max_gap + 1):
+            low_off = lui_off + gap * 4
+            if low_off + 4 > len(data):
+                break
+            low = u32(data, low_off)
+            op = low >> 26
+            rs = (low >> 21) & 0x1F
+            imm = low & 0xFFFF
+            if op not in (0x09, 0x0D) or rs != reg or imm != 0x4E6D:
+                continue
+            dest = (low >> 16) & 0x1F
+            mult_off = None
+            for step in range(1, 9):
+                candidate_off = low_off + step * 4
+                if candidate_off + 4 > len(data):
+                    break
+                word = u32(data, candidate_off)
+                if (word >> 26) == 0 and (word & 0x3F) in (0x18, 0x19):
+                    rs_mult = (word >> 21) & 0x1F
+                    rt_mult = (word >> 16) & 0x1F
+                    if dest in (rs_mult, rt_mult):
+                        mult_off = candidate_off
+                        break
+            item = (lui_off, low_off, mult_off)
+            if item not in seen:
+                seen.add(item)
+                out.append(item)
+    return sorted(out)
+
+
+def mips_addend_hits(data: bytes) -> list[int]:
+    """Find aligned ADDIU/ORI instruction words carrying immediate 0x3039."""
+    hits: list[int] = []
+    for off in range(0, len(data) - 3, 4):
+        word = u32(data, off)
+        if (word >> 26) in (0x09, 0x0D) and (word & 0xFFFF) == 0x3039:
+            hits.append(off)
+    return hits
+
+
 def all_aligned_occurrences(data: bytes, pattern: bytes) -> list[int]:
     hits: list[int] = []
     off = data.find(pattern)
@@ -179,7 +231,7 @@ def main() -> int:
         "binary_uploaded_as_artifact=no",
         "",
     ]
-    totals = {"rng_jal": 0, "seed_jal": 0, "rng_literal": 0, "seed_literal": 0, "state_literal": 0, "rng_address_pair": 0, "seed_address_pair": 0, "state_address_pair": 0}
+    totals = {"rng_jal": 0, "seed_jal": 0, "rng_literal": 0, "seed_literal": 0, "state_literal": 0, "rng_address_pair": 0, "seed_address_pair": 0, "state_address_pair": 0, "lcg_multiplier_pair": 0, "lcg_addend_instruction": 0}
     for path in args.files:
         name = path.name.upper()
         data = path.read_bytes()
@@ -212,6 +264,8 @@ def main() -> int:
         seed_pairs = mips_address_pairs(data, SEED_SETTER)
         state_pairs = mips_address_pairs(data, RNG_STATE)
         state_memory_pairs = mips_memory_pairs(data, RNG_STATE)
+        lcg_pairs = lcg_multiplier_candidates(data)
+        lcg_addends = mips_addend_hits(data)
         lines.append(f"direct_jal_rng_raw_hits={len(rng_jal)}")
         for off in rng_jal:
             extra = " " + entry_for_offset(entries, off) if name == "DATA.BIN" else ""
@@ -259,6 +313,19 @@ def main() -> int:
             lines.append(f"  rng_state_addr_pair lui_file_offset=0x{lui_off:X} low_file_offset=0x{low_off:X}{call}{extra}")
         if len(state_pairs) > 100:
             lines.append("  rng_state_addr_pair_output_truncated_after=100")
+        lines.append(f"lcg_multiplier_materialization_candidates={len(lcg_pairs)}")
+        for lui_off, low_off, mult_off in lcg_pairs[:100]:
+            extra = " " + entry_for_offset(entries, lui_off) if name == "DATA.BIN" else ""
+            mult = f" mult_file_offset=0x{mult_off:X}" if mult_off is not None else " mult=NOT_MATCHED_WITHIN_8_WORDS"
+            lines.append(f"  lcg_multiplier_candidate lui_file_offset=0x{lui_off:X} low_file_offset=0x{low_off:X}{mult}{extra}")
+        if len(lcg_pairs) > 100:
+            lines.append("  lcg_multiplier_candidate_output_truncated_after=100")
+        lines.append(f"lcg_addend_immediate_instruction_hits={len(lcg_addends)}")
+        for off in lcg_addends[:100]:
+            extra = " " + entry_for_offset(entries, off) if name == "DATA.BIN" else ""
+            lines.append(f"  lcg_addend_candidate file_offset=0x{off:X}{extra}")
+        if len(lcg_addends) > 100:
+            lines.append("  lcg_addend_output_truncated_after=100")
         lines.append(f"rng_state_lui_memory_access_pairs={len(state_memory_pairs)}")
         for lui_off, mem_off, op in state_memory_pairs[:200]:
             extra = " " + entry_for_offset(entries, lui_off) if name == "DATA.BIN" else ""
@@ -273,6 +340,8 @@ def main() -> int:
         totals["rng_address_pair"] += len(rng_pairs)
         totals["seed_address_pair"] += len(seed_pairs)
         totals["state_address_pair"] += len(state_pairs)
+        totals["lcg_multiplier_pair"] += len(lcg_pairs)
+        totals["lcg_addend_instruction"] += len(lcg_addends)
         lines.append("scan_status=COMPLETE")
         lines.append("")
     lines.extend([
@@ -283,7 +352,7 @@ def main() -> int:
     ])
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text("\n".join(lines), encoding="utf-8")
-    print("\n".join(line for line in lines if line.startswith(("analysis=", "=== FILE", "bytes=", "sha256=", "known_identity_check=", "direct_jal_rng_raw_hits=", "direct_jal_seed_setter_raw_hits=", "rng_address_literal_aligned_hits=", "seed_setter_literal_aligned_hits=", "rng_state_literal_aligned_hits=", "rng_lui_low_address_pairs=", "seed_setter_lui_low_address_pairs=", "rng_state_lui_low_address_pairs=", "rng_state_lui_memory_access_pairs=", "=== TOTALS ===", "rng_jal=", "seed_jal=", "rng_literal=", "seed_literal=", "state_literal=", "rng_address_pair=", "seed_address_pair=", "state_address_pair="))))
+    print("\n".join(line for line in lines if line.startswith(("analysis=", "=== FILE", "bytes=", "sha256=", "known_identity_check=", "direct_jal_rng_raw_hits=", "direct_jal_seed_setter_raw_hits=", "rng_address_literal_aligned_hits=", "seed_setter_literal_aligned_hits=", "rng_state_literal_aligned_hits=", "rng_lui_low_address_pairs=", "seed_setter_lui_low_address_pairs=", "rng_state_lui_low_address_pairs=", "lcg_multiplier_materialization_candidates=", "lcg_addend_immediate_instruction_hits=", "rng_state_lui_memory_access_pairs=", "=== TOTALS ===", "rng_jal=", "seed_jal=", "rng_literal=", "seed_literal=", "state_literal=", "rng_address_pair=", "seed_address_pair=", "state_address_pair=", "lcg_multiplier_pair=", "lcg_addend_instruction="))))
     return 0
 
 
