@@ -1,5 +1,17 @@
 # STEP 6 ADDENDUM — direct operand census and B44 consumer cross-check (27 Oktober 2026)
 
+# LIVE UPDATE — bounded register provenance run #40511758146 (27 Oktober 2026, 20:25 WIB)
+
+**Checkpoint terbaru Step 6 (27 Oktober 2026, 20:25 WIB):** scanner provenance di https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/0afc0eec4a5c12e4df5a17c771c8b0d28d7a99dd dijalankan oleh [Actions #40511758146](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40511758146) — completed/success pada 20:25:48 WIB. Artifact [#12737611770](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40511758146/artifacts/12737611770), 229.233 byte, SHA-256 ZIP `b84ff017cdbefb8ece6d04a7c8bef66b3fdc27b61412e91e10cc01485225b126`; digest API sama dengan SHA lokal. Enam anggota ZIP hanya teks/log; `text_only_output_count=6`, `private_binary_in_artifact=no`, `STEP6_PRIVATE_CLEANUP=PASS`. Fixture parser operand dan fixture pembentukan alamat `lui/ori/addiu/sign-extension` benar-benar mengeluarkan PASS. Laporan: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP6_REGISTER_PROVENANCE_AUDIT_2026-10-27.md.
+
+- New scanner emits bounded base-register value provenance for the recognized memory operands. Actual run fixtures: `memory_displacement_parser_fixture=PASS` and `register_provenance_address_constructor_fixtures=PASS cases=lui_ori_addiu_sign-extension`. The fixture confirms constant arithmetic in the tool, not a runtime memory base.
+- For +B30/+B38/+B40, the access base `a0` is loaded by `lw a0,-0x5AAC(s0)` at `0x8012C628`; the trace cannot establish the prior value of `s0) because it hits a control-flow boundary. For the +B44 read, the `v1` trace stops at the branch at `0x8012CAF8`. This is new evidence about where the pointer audit currently stops, not proof of object identity or alias closure.
+- The scan retained 98.357 decoded instructions and the same direct-operand counts: +B30 1R/0W, +B38 1R/0W, +B40 0R/1W, +B44 1R/1W. The candidate base `0x800D0000) remains **HIPOTESIS**. Step 6(b) stays **BLOCKED** and Step 6 overall stays **SEBAGIAN**; no gameplay rule/field meaning was added.
+
+---
+
+
+
 Artifact #12733854252 from run #40504640855 was checked by local ZIP SHA-256 and member listing; it contains six text/log members. Inventory parser counted 2.104 unique displacements and 31.081 accesses (19.366 reads / 11.715 writes) from 98.357 decoded instructions. The full aggregate is between BEGIN/END markers and below the emitter cap, but per-offset context is separately capped at 200 for common offsets: +0x2E9 total 257/contexts 200; +0x22 total 275/contexts 200. Priority offsets +0xB30/+0xB38/+0xB40/+0xB44 have no per-offset context cap.
 
 Under hypothetical entry-1 base 0x800D0000, raw MIPS bytes support: lw +0xB30 (30 0B 82 8C), lw +0xB38 (38 0B 83 8C), addu (21 10 43 00), sw +0xB40 (40 0B 82 AC). Separate candidate routine 0x8012C544 zeroes +0xB44 at 0x8012C604 (44 0B 40 AC); candidate 0x8012CACC reads +0xB44 to a2 at 0x8012CB14 (44 0B 66 8C) before calling 0x8001B364. These facts prove only static operations and value transfer.
