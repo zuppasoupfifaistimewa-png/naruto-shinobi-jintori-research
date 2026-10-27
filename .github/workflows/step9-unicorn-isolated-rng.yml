@@ -1,0 +1,180 @@
+name: Step 9 — isolated MIPS RNG function verification (Unicorn)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/step9-unicorn-isolated-rng.yml"
+      - "tools/step9_unicorn_rng_probe.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: step9-unicorn-isolated-rng
+  cancel-in-progress: false
+
+jobs:
+  isolated-rng-function:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[RUN-STEP9-UNICORN]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHON_VERSION: "3.13.18"
+      UNICORN_VERSION: "2.1.4"
+      EXPECTED_DISC_BYTES: "325989552"
+      EXPECTED_DISC_SHA256: "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88"
+      EXPECTED_CUE_BYTES: "116"
+      EXPECTED_CUE_SHA256: "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8"
+      EXPECTED_EXE_BYTES: "385024"
+      EXPECTED_EXE_SHA256: "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569"
+    steps:
+      - name: Checkout permitted research source
+        uses: actions/checkout@v7.0.1
+
+      - name: Set up pinned Python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          check-latest: true
+
+      - name: Install bounded disc extraction tools and pinned Unicorn
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes bchunk xorriso curl
+          python -m pip install --upgrade "pip==26.2.2"
+          python -m pip install "unicorn==${UNICORN_VERSION}"
+          python - <<'PY'
+          import unicorn
+          from unicorn import Uc, UC_ARCH_MIPS, UC_MODE_MIPS32, UC_MODE_LITTLE_ENDIAN
+          assert unicorn.__version__ == "2.1.4", unicorn.__version__
+          Uc(UC_ARCH_MIPS, UC_MODE_MIPS32 | UC_MODE_LITTLE_ENDIAN)
+          print("PYTHON_PIN=3.13.18")
+          print("UNICORN_VERSION=" + unicorn.__version__)
+          print("MIPS32_LE_ENGINE=CREATED")
+          PY
+          mkdir -p "$RUNNER_TEMP/step9-private" "$RUNNER_TEMP/step9-output"
+          printf '# Step 9 — isolated MIPS RNG verification\n\n- STATUS=NOT_RUN\n- Reason: source extraction or execution has not completed.\n' > "$RUNNER_TEMP/step9-output/STEP9_UNICORN_RESULT.md"
+          printf 'stage=toolchain_installed\n' > "$RUNNER_TEMP/step9-output/stage.txt"
+
+      - name: Download and verify private BIN/CUE and extract PS-X EXE
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          source_dir="$RUNNER_TEMP/step9-private/disc"
+          root="$source_dir/extracted-root"
+          exe_dir="$RUNNER_TEMP/step9-private/exe"
+          out="$RUNNER_TEMP/step9-output"
+          mkdir -p "$source_dir" "$root" "$exe_dir"
+          printf 'stage=disc_download\n' > "$out/stage.txt"
+          bin_url="https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/647346873"
+          cue_url="https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/647354760"
+          disc="$source_dir/naruto-disc.bin"
+          cue_raw="$source_dir/original.cue"
+          cue="$source_dir/naruto-disc.cue"
+          curl --fail --location --silent --show-error --header "Authorization: Bearer $GH_TOKEN" --header "Accept: application/octet-stream" --header "X-GitHub-Api-Version: 2022-11-28" --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 --max-time 600 "$bin_url" --output "$disc"
+          test "$(stat -c '%s' "$disc")" = "$EXPECTED_DISC_BYTES"
+          echo "$EXPECTED_DISC_SHA256  $disc" | sha256sum --check --status
+          curl --fail --location --silent --show-error --header "Authorization: Bearer $GH_TOKEN" --header "Accept: application/octet-stream" --header "X-GitHub-Api-Version: 2022-11-28" --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 --max-time 60 "$cue_url" --output "$cue_raw"
+          test "$(stat -c '%s' "$cue_raw")" = "$EXPECTED_CUE_BYTES"
+          echo "$EXPECTED_CUE_SHA256  $cue_raw" | sha256sum --check --status
+          python - "$cue_raw" "$cue" <<'PY'
+          from pathlib import Path
+          import re, sys
+          src, dst = map(Path, sys.argv[1:3])
+          lines = src.read_text(encoding="utf-8").splitlines()
+          out, replaced = [], 0
+          for line in lines:
+              if line.lstrip().upper().startswith("FILE "):
+                  m = re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$', line, re.I)
+                  if not m:
+                      raise SystemExit("Unrecognized CUE FILE directive; refusing extraction")
+                  line = m.group(1) + '"naruto-disc.bin"' + m.group(2)
+                  replaced += 1
+              out.append(line)
+          if replaced != 1:
+              raise SystemExit(f"Expected one FILE directive, found {replaced}")
+          dst.write_text("\n".join(out) + "\n", encoding="utf-8")
+          PY
+          printf 'stage=verified_disc_extract\n' > "$out/stage.txt"
+          bchunk "$disc" "$cue" "$source_dir/track"
+          iso="$(find "$source_dir" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          test -n "$iso"
+          xorriso -osirrox on -indev "$iso" -extract / "$root" > "$out/disc-extraction.log" 2>&1
+          candidate="$(find "$root" -type f -iname 'SLPS_035.53*' -print -quit)"
+          test -n "$candidate"
+          exe="$exe_dir/SLPS_035.53"
+          cp "$candidate" "$exe"
+          test "$(stat -c '%s' "$exe")" = "$EXPECTED_EXE_BYTES"
+          echo "$EXPECTED_EXE_SHA256  $exe" | sha256sum --check --status
+          test "$(head -c 8 "$exe")" = "PS-X EXE"
+          python - "$exe" <<'PY'
+          from pathlib import Path
+          import struct, sys
+          d = Path(sys.argv[1]).read_bytes()
+          u32 = lambda o: struct.unpack_from("<I", d, o)[0]
+          assert len(d) == 385024 and d[:8] == b"PS-X EXE"
+          assert u32(0x10) == 0x80011448
+          assert u32(0x18) == 0x80010000
+          assert u32(0x1C) == 0x5D800
+          print(f"EXE_SIZE={len(d)}")
+          print(f"EXE_SHA256_EXPECTED=a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569")
+          print(f"EXE_ENTRY_PC=0x{u32(0x10):08X}")
+          print(f"EXE_LOAD=0x{u32(0x18):08X}")
+          print(f"EXE_TEXT_SIZE=0x{u32(0x1C):X}")
+          PY
+          {
+            echo "# Step 9 — validasi fungsi RNG terisolasi"
+            echo
+            echo "- STATUS=SOURCE_VALIDATED; isolasi fungsi belum dijalankan."
+            echo "- Disc BIN: $EXPECTED_DISC_BYTES bytes; SHA-256=$EXPECTED_DISC_SHA256 (runner privat, tidak diartefak)."
+            echo "- EXE SLPS_035.53: $EXPECTED_EXE_BYTES bytes; SHA-256=$EXPECTED_EXE_SHA256 (runner privat, tidak diartefak)."
+            echo "- PS-X EXE header: load=0x80010000; entry=0x80011448; text=0x5D800."
+            echo "- Disc/BIOS/ROM tidak dimasukkan ke Git atau artefak."
+          } > "$out/STEP9_UNICORN_RESULT.md"
+          printf 'stage=source_validated\n' > "$out/stage.txt"
+          # Delete the 326 MB disc and ISO/extraction tree as soon as the verified EXE is staged.
+          rm -rf "$source_dir"
+          test -f "$exe"
+
+      - name: Execute only the RNG routine with recorded vectors
+        shell: bash
+        run: |
+          set -euo pipefail
+          exe="$RUNNER_TEMP/step9-private/exe/SLPS_035.53"
+          out="$RUNNER_TEMP/step9-output/STEP9_UNICORN_RESULT.md"
+          printf 'stage=isolated_function_execution\n' > "$RUNNER_TEMP/step9-output/stage.txt"
+          python tools/step9_unicorn_rng_probe.py "$exe" "$out" > "$RUNNER_TEMP/step9-output/probe.log" 2>&1 || {
+            cat "$RUNNER_TEMP/step9-output/probe.log"
+            exit 1
+          }
+          cat "$RUNNER_TEMP/step9-output/probe.log"
+          grep -q 'ISOLATED_RNG_FUNCTION_EXECUTION=PASS' "$out"
+          printf 'stage=isolated_function_pass\n' > "$RUNNER_TEMP/step9-output/stage.txt"
+
+      - name: Upload text-only report
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: step9-unicorn-rng-text-only
+          path: |
+            ${{ runner.temp }}/step9-output/STEP9_UNICORN_RESULT.md
+            ${{ runner.temp }}/step9-output/stage.txt
+            ${{ runner.temp }}/step9-output/probe.log
+            ${{ runner.temp }}/step9-output/disc-extraction.log
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Remove all private runner files
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          rm -rf "$RUNNER_TEMP/step9-private" "$RUNNER_TEMP/step9-output"
+          test ! -e "$RUNNER_TEMP/step9-private" && test ! -e "$RUNNER_TEMP/step9-output"
+          echo "STEP9_PRIVATE_CLEANUP=PASS"
