@@ -1,3 +1,11 @@
+## LIVE ACTIONS REVISION — 27 Oktober 2026 21:54:52 WIB
+
+[Run #40520635663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40520635663) is completed/success overall, but the downloaded artifact #12743796502 (2.299.302 B, ZIP SHA-256 `e2d5b496b2310c17110c59710212f7605bf8b3d90b798abb438c1224bf3d0549`) shows **Ghidra resource entry-0 analysis timed out at 1,800 seconds**. It exported 36 index rows while logging many function-body overlap/repair errors; candidate `0x800BDBFC` has zero recorded xrefs. Overall workflow success means outputs/cleanup completed, not that entry-0 analysis fully completed.
+
+Run [#40521141039](https://github.com/zuppasoupfivaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521141039) is still in progress at the latest poll. Entry1 step completed, entry0 analysis active, artifact/upload pending. Previous same-workflow run took 31m27s and entry0 hit the 1,800-second timeout; estimate for the active run is roughly 22:25–22:35 WIB only if the stage duration is similar. This is not guaranteed. Do not start another concurrent scan.
+
+---
+
 ## CORRECTION — pointer load cross-check from raw MIPS, 27 Oktober 2026 21:43 WIB
 
 The raw body at `0x800ED920–0x800ED924` executes `lui v1,%hi(D_8013EA74)` then `lw a0,%lo(D_8013EA74)(v1)`: it loads a value from the global slot at `0x8013EA74`, and uses that loaded value as the base after adding `index * 0x90`. Ghidra C reflects the dereference as `iRam8013ea74`; m2c renders the symbol in pointer arithmetic without the same dereference clearly expressed. Thus the boundary and call-structure comparison passes, but exact global pointer typing/effective-address agreement does not. The loaded pointer value, runtime resource base and the meaning of the record remain unknown.
