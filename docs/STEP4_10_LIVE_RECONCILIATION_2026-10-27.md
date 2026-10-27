@@ -65,8 +65,8 @@ API metadata checked IDs, names, run mapping, sizes, digests and expiry for the 
 
 ## Hitungan status (17 baris kriteria)
 
-- **TUNTAS: 4** — 5) dalam cakupan empat fungsi, 6(a) inventory decoded-view direct operands, 9(a) fungsi RNG terisolasi, 10) matriks audit saja.
-- **SEBAGIAN: 8** — 4(a–e), 6(c), 7(a), 8(a).
+- **TUNTAS: 3** — 5) dalam cakupan empat fungsi, 9(a) fungsi RNG terisolasi, dan 10) matriks audit saja.
+- **SEBAGIAN: 9** — 4(a–e), 6(a), 6(c), 7(a), 8(a).
 - **UNKNOWN: 3** — 6(d), 8(b), 9(b).
 - **BLOCKED: 2** — 6(b), 7(b).
 - **HIPOTESIS: 0** — hipotesis dicantumkan pada klaim/base tertentu, bukan dipromosikan menjadi penutupan kriteria.
