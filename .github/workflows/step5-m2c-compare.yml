@@ -184,7 +184,7 @@ jobs:
             ${{ runner.temp }}/step5-tool-versions.txt
             ${{ runner.temp }}/step5-output/compare/*.c
             ${{ runner.temp }}/step5-output/compare/*.log
-            ${{ runner.temp }}/step5-output/compare/*.s
+            ${{ runner.temp }}/step5-output/compare/spimdisasm-output/**/*.s
             ${{ runner.temp }}/step5-output/compare/*.csv
           if-no-files-found: warn
           retention-days: 14
@@ -202,4 +202,4 @@ jobs:
         if: always()
         shell: bash
         run: |
-          rm -rf "$RUNNER_TEMP/step5-input" "$RUNNER_TEMP/step5-ghidra-project" "$RUNNER_TEMP/psx-disc-source"
+          rm -rf "$RUNNER_TEMP/step5-input" "$RUNNER_TEMP/step5-ghidra-project" "$RUNNER_TEMP/psx-disc-source" "$RUNNER_TEMP/step5-output" "$RUNNER_TEMP/step5-tool-versions.txt" "$RUNNER_TEMP/m2c-commit.txt"

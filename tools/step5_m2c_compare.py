@@ -120,29 +120,52 @@ def main() -> int:
         report_path.write_text("\n".join(lines), encoding="utf-8")
         return 2
 
-    asm_path = out / "main_text.s"
-    function_info = out / "spimdisasm-function-info.csv"
+    asm_dir = out / "spimdisasm-output"
+    asm_dir.mkdir(parents=True, exist_ok=True)
     dis_cmd = [
-        "singleFileDisasm", str(work_text), str(asm_path),
+        "singleFileDisasm", str(work_text), str(asm_dir),
         "--start", "0x0", "--end", "0x5D800", "--vram", "0x80010000",
         "--endian", "little", "--compiler", "PSYQ", "--instr-category", "cpu",
-        "--function-info", str(function_info), "--no-write-binary",
+        "--no-write-binary",
     ]
     dis = run_cmd(dis_cmd, timeout=180)
     (out / "spimdisasm.log").write_text(dis.stdout or "", encoding="utf-8")
-    if dis.returncode != 0 or not asm_path.exists() or asm_path.stat().st_size == 0:
-        lines += ["status=PARTIAL", f"spimdisasm_exit_code={dis.returncode}",
-                  "error=spimdisasm did not produce a non-empty assembly file",
-                  f"spimdisasm_log={(dis.stdout or '')[-2000:]}", ""]
-        report_path.write_text("\n".join(lines), encoding="utf-8")
+    # Delete the temporary machine-code slice immediately after disassembly;
+    # it is never part of the text artifact, even if later parsing fails.
+    try:
+        work_text.unlink()
+    except OSError:
+        pass
+    assembly_files = sorted(
+        (p for p in asm_dir.rglob("*.s") if p.is_file()),
+        key=lambda p: p.stat().st_size,
+        reverse=True,
+    )
+    if dis.returncode != 0 or not assembly_files:
+        inventory = [
+            f"{p.relative_to(out).as_posix()}:{p.stat().st_size}"
+            for p in out.rglob("*") if p.is_file()
+        ]
+        lines += [
+            "status=PARTIAL",
+            f"spimdisasm_exit_code={dis.returncode}",
+            "error=spimdisasm did not produce a .s text file",
+            "output_inventory=" + ",".join(inventory),
+            f"spimdisasm_log={(dis.stdout or '')[-2000:]}",
+            "",
+        ]
+        report_path.write_text("\\n".join(lines), encoding="utf-8")
         return 0
 
+    asm_path = assembly_files[0]
     asm = asm_path.read_text(encoding="utf-8", errors="replace")
-    lines += [f"spimdisasm_exit_code={dis.returncode}",
-              f"assembly_bytes={asm_path.stat().st_size}",
-              f"function_info_csv_present={str(function_info.exists()).lower()}",
-              f"function_info_rows={max(0, len(function_info.read_text(encoding='utf-8',errors='replace').splitlines())-1) if function_info.exists() else 0}",
-              ""]
+    lines += [
+        f"spimdisasm_exit_code={dis.returncode}",
+        f"assembly_file={asm_path.relative_to(out).as_posix()}",
+        f"assembly_bytes={asm_path.stat().st_size}",
+        f"assembly_file_count={len(assembly_files)}",
+        "",
+    ]
     all_ok = True
     for address, (ghidra_name, expected_size) in FUNCTIONS.items():
         stem = f"{address:08x}"
