@@ -1,3 +1,40 @@
+<!-- verified-live-checkpoint-2026-10-28 -->
+# VERIFIED LIVE CHECKPOINT — 28 Oktober 2026, 04:22 WIB
+
+This addendum supersedes earlier snapshots in this file if they conflict. Repository HEAD at inspection: `985a328446295f4b8e526abd9eac9c6f86e70a6e` on `main`. Latest Actions status inspection: **0 queued and 0 in progress**. The most recent unrelated run, [#40561735718](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40561735718), is named “Naruto Story Mode adaptive player monitor”; its success is a monitor result, not evidence that a player ran or that Story Mode completed.
+
+## Step 4 / broad Ghidra run — completed workflow, partial internal analysis
+
+[Run #40521141039](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521141039) completed with workflow conclusion **success** at 22:26:43 WIB on 27 October. Artifact [#12744894595](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521141039/artifacts/12744894595) is 1,694,938 bytes; validated ZIP SHA-256 `a8e10655e5e6145c3b72edd030cfaa991c6cbfb2300c35b232fb458f4028eec6`. However, the raw artifact log `entry0-ghidra-headless.log` explicitly records **analysis timeout at 1,800 seconds** for DATA.BIN entry 0 and repeated function-body overlap/repair failures. The output still exported 38 entry-0 function rows, but this is not successful complete auto-analysis of that resource. Candidate `0x800BDBFC` is decoded as `j 0x800BE11C`, has `reference_count=0`, and does not constitute a validated caller/helper boundary. Entry-0 base `0x800AD000` remains a static hypothesis. Keep Step 4 partial; seed lifecycle, validated caller boundary, runtime reachability and gameplay effect remain unknown.
+
+The successful bounded context runs [#40521136060](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521136060) and [#40521136038](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521136038) added raw instruction bytes/context. At entry-0 candidate `0x800AF2AC`, `-1` is the argument to helper `0x80037138`; its return value is moved to the argument for candidate setter `0x80035DA8`. This is static control/data-flow evidence under the hypothetical mapping, not proof of a runtime boot seed. Three direct JALs were decoded in entry 0, but **zero** caller functions had validated boundaries; two other sites (`0x800BB748`, `0x800BB770`) remain raw-word matches whose instructions did not decode.
+
+## Step 5 — one additional resource function compared
+
+[Run #40523020556](https://github.com/zuppasoupfivaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40523020556) completed success at 21:40:45 WIB. Artifact [#12742268706](https://github.com/zuppasoupfivaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40523020556/artifacts/12742268706), 1,367,605 bytes, validated ZIP SHA-256 `5f3f767667444f7c956c36fc59cf75b6bb90a5a1dde8ddb92fb69f9e0f797e81`. Entry-1 candidate `0x800ED8C8` is a Ghidra function boundary of 160 bytes ending exclusively at `0x800ED968`; Ghidra decompilation and m2c completed, exit code 0, and both outputs show a direct RNG call at `0x800ED8E4`. Together with the 13 main-EXE functions, **14 selected functions** now have structural Ghidra/m2c comparison. Step 5 remains partial overall.
+
+Static behavior of the candidate function: it masks the input index to 16 bits, calls helper `0x800CB4B4`, calls RNG `0x80035D78`, computes a value modulo 250, loads a pointer/value from global slot `0x8013EA74`, uses `index * 0x90` to locate a record and reads byte `+0x29). It returns the helper byte unless the RNG-derived value is greater than or equal to that byte, in which case it returns `0xFF`. The entry-1 base `0x800D0000`, pointer value/table mapping and gameplay feature identity are not runtime verified. This does not prove a card, battle, roulette or victory rule.
+
+## Step 6 — CFG/SSA evidence improves local dataflow, not full pointer closure
+
+[Run #40522772847](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40522772847) completed success at 21:38:32 WIB. Artifact [#12741234990](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40522772847/artifacts/12741234990) is 234,210 bytes; validated ZIP SHA-256 `7ee636b8e687c5163873cdd40c82a02e8c8617885a0863b1e5a196b6eed1eac9`. CFG-aware high-level SSA/P-code and raw body output were emitted for functions `0x8012C544` (292 body bytes) and `0x8012CACC` (152 body bytes) within the candidate entry-1 view.
+
+In `0x8012C544`, static instructions show loads from `+0xB30` and `+0xB38`, addition and store to `+0xB40`; the initialization branch also zeros `+0xB44). In `0x8012CACC`, a read of `+0xB44` at `0x8012CB14` is passed as an argument to `0x8001B364) on the branch where byte `+0xB2A > 5). SSA makes these intra-function def/use relationships across decoded basic blocks more explicit, but the base derives from the unknown value in global slot `0x8013A554`; traces terminate at unknown/address-tied input or depth limits. Runtime object identity/base, global pointer writers, aliases across all functions and gameplay field semantics remain unresolved. Keep 6(a) partial, 6(b) blocked, 6(c) partial and 6(d) unknown.
+
+## Overall acceptance snapshot
+
+- Step 4 **SEBAGIAN**: LCG formula and isolated test are verified; seed lifecycle/caller boundaries/runtime effect remain unknown.
+- Step 5 **SEBAGIAN**: 13 main-EXE plus one entry-1 candidate function compared; broad resource and transition/caller coverage remains incomplete.
+- Step 6 **SEBAGIAN**: local CFG/SSA evidence improved; global pointer/alias and semantic field closure remain blocked/unknown.
+- Step 7 **SEBAGIAN**: disc directory/bootstrap copy structure is static evidence; runtime loader destination, relocation, lifecycle, DATA2/DUMMY mapping remain unknown.
+- Step 8 **SEBAGIAN**: function behavior can be described where shown by instructions; costs, barrier/upgrade, cards, turn/battle/roulette and victory/loss rules remain unknown.
+- Step 9 **SEBAGIAN overall**: RNG 7/7 and player-value accessors 16/16 isolated assertions pass; this is not full PS1 gameplay.
+- Step 10 **TUNTAS only as a criterion reconciliation/index**, not as global game reverse-engineering completion.
+
+Safety boundary for this research session: no adaptive player or Story Mode runner was run by this work; no gameplay input or savestate restore occurred; no emulator gameplay session was performed. The monitor-only Actions run is not a completion proof. Private ROM/BIN/CUE/EXE, BIOS, Memory Card, savestate, RAM dump, screenshots or gameplay-private evidence were not committed or uploaded by these static runs. **Story Mode is not verified complete.**
+
+---
+
 ## Additional boundary caution from the entry-0 artifact
 
 The raw context around `0x800BDBFC` shows a function-like stack prologue and preceding control-flow instructions at `0x800BDBE4`–`0x800BDBF8``, followed by `j 0x800BE11C` at `0x800BDBFC`. Thus `0x800BDBFC` is visibly inside an instruction sequence that already has a stack-frame setup; treating that jump as an independently validated function entry is unsupported. Combined with `reference_count=0` and Ghidra body-overlap errors, this candidate cannot currently be used as the setter's caller/helper or as proof of loader reachability. This observation is bounded to the emitted raw window; it does not automatically validate `0x800BDBE4` as a formal Ghidra function boundary.
