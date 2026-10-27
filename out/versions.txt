@@ -1,0 +1,65 @@
+# Reverse-engineering toolchain pins — Step 0
+# Reviewed: 2026-10-27
+# Source-of-truth workflow: .github/workflows/toolchain-audit.yml
+# The workflow verifies versions at runtime. Do not interpret a pin as VERIFIED until a successful run records its output.
+# Private disc images, ROMs, BIOS, memory cards, savestates and screenshots are never toolchain artifacts.
+
+platform:
+  runner: ubuntu-24.04
+  python: 3.13.18
+  jdk: Eclipse Temurin 25 (Ghidra 12.2 requirement)
+
+reverse_engineering:
+  ghidra:
+    version: 12.2
+    release_asset: ghidra_12.2_PUBLIC_20261016.zip
+    sha256: 2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+    url: https://github.com/NationalSecurityAgency/ghidra/releases/tag/Ghidra_12.2_build
+  mkpsxiso:
+    version: 2.30
+    components: mkpsxiso, dumpsxiso
+    archive: mkpsxiso-2.30-Linux.zip
+    url: https://github.com/Lameguy64/mkpsxiso/releases/tag/v2.30
+    archive_sha256: PENDING_STEP0_RUN
+  m2c:
+    version: git-commit
+    commit: c632946b8cfbe8fce442b522dba92dfa72f1f317
+    url: https://github.com/matt-kempster/m2c/commit/c632946b8cfbe8fce442b522dba92dfa72f1f317
+  splat:
+    distribution: splat64[mips]
+    version: 0.50.1
+    url: https://pypi.org/project/splat64/0.50.1/
+    wheel_sha256: 0d9694b3534f3b1bd6b335ca9f9f34d5abea47fca4e86020727b9b24ad6e9de4
+  unicorn:
+    distribution: unicorn
+    version: 2.1.4
+    url: https://pypi.org/project/unicorn/2.1.4/
+  spimdisasm:
+    distribution: spimdisasm
+    version: 1.42.4
+    purpose: GNU-as-style MIPS disassembly input for m2c
+    pin_source: Existing successful Step 5 comparison workflow
+  objdump:
+    package: binutils-mipsel-linux-gnu
+    version: 2.42-2ubuntu1cross5
+    executable: mipsel-linux-gnu-objdump
+    package_source: Ubuntu 24.04 (noble) package archive
+    url: https://packages.ubuntu.com/noble/binutils-mipsel-linux-gnu
+
+github_actions:
+  checkout: actions/checkout@v7.0.1
+  setup_python: actions/setup-python@v7.1.0
+  setup_java: actions/setup-java@v6.1.0
+  cache: actions/cache@v6.1.0
+  upload_artifact: actions/upload-artifact@v7.0.2
+
+verification_policy:
+  - Pin application versions or immutable commit IDs; log package/runtime versions.
+  - Verify Ghidra archive SHA-256 before extraction.
+  - Verify m2c commit is exact, not the moving master branch.
+  - Verify Unicorn creates a MIPS32 little-endian engine; this is a smoke test only, not Step 9 function validation.
+  - Run --version where supported; for tools without a version flag, capture help output plus installed package/release identity.
+  - Only upload text-only toolchain report; never upload any game disc/executable, BIOS, memory card, savestate, RAM dump, or private screenshot.
+  - Step 9 Unicorn function tests remain NOT RUN in this setup workflow.
+
+initial_status: PINS_RESEARCHED; RUNTIME_VERIFICATION_PENDING
