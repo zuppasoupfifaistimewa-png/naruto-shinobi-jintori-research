@@ -69,3 +69,13 @@ Review terhadap raw job log runner-only Step 6 [#40473737136](https://github.com
 - **BELUM TERUJI:** penelusuran seluruh source operand dan final store untuk `+0xB30`, `+0xB38`, `+0xB40`, `+0xB44`, `+0x2E9`, dan `+0x2E5`. Offset ini tidak muncul dalam ekstrak dekompilasi terarah yang diperiksa; itu bukan bukti bahwa tak ada pemakainya di bagian kode lainnya.
 
 Status Langkah 8 tetap **SEBAGIAN**. Temuan statis ini memperjelas bentuk beberapa operasi dan field yang ditulis, tetapi tidak memenuhi aturan gameplay universal, rumus biaya barrier/level-up, atau syarat kemenangan setiap mode.
+
+## Addendum — penajaman status berdasarkan raw MIPS (27 Oktober 2026)
+
+Review [Actions #40473737136 / artifact #12719587873](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40473737136) mendukung rincian control-flow statis, bersyarat pada base entry-1 hipotetis 0x800D0000: enam site 0x80111228, 0x801112CC, 0x801113B4, 0x801114F0, 0x80111588 dan 0x80112418 membandingkan word record +0x04 (stride record 0x90) dengan getter target 0x80012A70. Jalur tertentu mengarah ke 0x8011253C saat record lebih kecil daripada target. Site 0x801112CC memiliki gate bit 0x200 pada halfword record +0x0A; site 0x801114F0 menambahkan gate hasil helper 0x800BDBFC(0x20) terhadap global 0x8013EBB0; site 0x80111588 menggunakan byte sumber berbeda dan menguji bit 0x1000 dari helper 0x80012AD0. Cabang diterima menulis byte +0x58B, +0x2E9, +0x2E5 dan kode halfword +0x5D2 sesuai jalur.
+
+- **TERVERIFIKASI-STATIS (bersyarat base hipotetis):** operand/pembandingan/cabang serta store yang dirinci di report Step 6. Ini bukan mapping runtime atau bukti menang.
+- **HIPOTESIS/UNKNOWN:** arti kode 0x200, 8, 4, 0x20, 0 dan 0x1000; arti byte/state; hubungan dengan Chakra, barrier, level-up, turn atau victory.
+- **BELUM TERUJI:** sumber dan seluruh pembaca/penulis pending fields +0xB30/+0xB38/+0xB40/+0xB44. Ketiadaan dari artifact terarah tidak membuktikan tidak ada pemakaian di kode lainnya.
+
+Step 8 tetap **SEBAGIAN**. Tidak ada dasar untuk menyatakan formula biaya universal, mekanika battle/roulette/turn, efek kartu atau syarat menang semua mode.
