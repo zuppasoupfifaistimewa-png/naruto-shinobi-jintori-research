@@ -83,3 +83,10 @@ Run lokal entry 0 [#40455557190](https://github.com/zuppasoupfifaistimewa-png/na
 - Tidak ditemukan kata direct-JAL target sama pada raw DATA2.BIN, DUMMY.BIN, XASECT.BIN; keterbatasan scan raw/non-decompressed tetap UNKNOWN.
 
 Artinya, inventory direct-JAL yang ditemukan sudah ditutup dan semua raw hits penting sudah diperiksa. **Yang tidak boleh diklaim tuntas** adalah panggilan tak langsung/berbasis pointer, kode sesudah dekompresi, base/lifecycle runtime sebenarnya, reachability `0x800BB748`, 36 boundary fungsi yang belum diketahui, atau semantik gameplay caller. Ini batas bukti statis, bukan alasan untuk mengarang kesimpulan.
+
+
+## Scan signature LCG di raw resource — run #40455975609
+
+Pemindaian tambahan membentuk pola `LUI 0x41C6` + `ORI/ADDIU 0x4E6D` diikuti MULT/MULTU, serta memeriksa immediate `0x3039` pada word MIPS sejajar. Hanya `SLPS_035.53` yang memiliki satu kecocokan pengali + MULT (file offsets `0x26578`, `0x26584`, `0x26588`, yang map ke `0x80035D78`, `0x80035D84`, `0x80035D88`); addend instruction ada pada file offset `0x26590` → `0x80035D90`. Tidak ditemukan konstruksi pengali yang sama dalam raw `DATA.BIN`, `DATA2.BIN`, `DUMMY.BIN`, `XASECT.BIN`. Laporan: [out/step4_rng_signature_scan_2026-10-27.md](../out/step4_rng_signature_scan_2026-10-27.md).
+
+29 immediate `0x3039` di DATA.BIN dan dua di DATA2.BIN tidak cukup untuk menyatakan generator RNG karena tidak disertai pengali yang sama. Ini memperkuat bukti bahwa LCG yang ditemukan adalah generator dengan signature tersebut pada executable utama, tetapi tidak menyingkirkan RNG lain dengan rumus berbeda atau kode terkompresi/decrypted.
