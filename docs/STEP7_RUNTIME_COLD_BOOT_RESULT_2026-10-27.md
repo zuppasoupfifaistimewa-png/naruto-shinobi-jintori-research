@@ -48,4 +48,13 @@ Story Mode tetap **TIDAK TERBUKTI TAMAT**.
 
 ### Interpretasi dan batas
 
-Temuan awal mendukung bahwa empat breakpoint dapat memperburuk observabilitas dan satu breakpoint ber-callback minimal tetap membiarkan progress hingga frame 120 pada run koreksi. Namun tak ada hit pada kandidat `0x800AD454`, PC/register/copy size/checksum source/destination tidak tersampel, dan base entry 0/1 masih HIPOTESIS. Tidak dapat disimpulkan bahwa loader tidak berjalan atau base RAM sudah dipetakan. **Langkah 7 tetap SEBAGIAN.** Jangan mengulang probe empat breakpoint; bila run koreksi tetap valid dengan no-hit, langkah berikutnya yang berbeda ialah uji satu target seed setter `0x80035DA8` hanya jika tujuan teknisnya boot seed lifecycle dan jendela cold boot/observability cukup informatif.
+Temuan historis mendukung bahwa empat breakpoint dapat memperburuk observabilitas dan satu breakpoint ber-callback minimal tetap membiarkan progress hingga frame 120. Tidak ada hit pada kandidat `0x800AD454`, sehingga PC/register/copy size/checksum source/destination tidak tersampel; base entry 0/1 tetap HIPOTESIS. **Langkah 7 tetap SEBAGIAN.** Probe kandidat seed setter `0x80035DA8` telah dilakukan terpisah untuk Step 4(a); hasil no-hit dan bug fallback report dicatat pada addendum berikutnya.
+
+
+## Addendum — probe terpisah kandidat seed setter (Step 4(a), 27 Oktober 2026)
+
+Probe runtime [#40485987817](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40485987817) menguji **satu** breakpoint pada kandidat `0x80035DA8`, cold boot tanpa input/restore, batas target 35 detik. Source assets lolos checksum. Preflight frame 50, kontrol listener-only maksimum frame 60, target progress sampai frame 120 tanpa `STEP7_SINGLE_BP_HIT`, lalu exit 124 akibat timeout bounded. Cleanup privat `PASS`. Artefak teks #12724933081 berukuran 4.003 byte, ZIP SHA-256 `74fcb5b8958ce26ab7fd1091bd7c2ee8dbfc073bb09ac9c4ca70d1a6e2a204c6`.
+
+Report artefak dari run ini memiliki bug fallback: field `SINGLE_BREAKPOINT_PC` menyebut `0x800AD454` saat tidak ada hit. Baris raw log `STEP7_SINGLE_BP_READY targets=1 target=0x80035DA8` adalah bukti konfigurasi target yang benar. Source fallback diperbaiki pada `a6734d7fc57ff6dfab9b8135cd5661bf0278c437`; validator [#40486315324](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40486315324) lulus fixture no-hit fallback dan parser callback sintetis. Karena tidak ada hit, runtime `$a0/$ra/caller` tetap UNKNOWN. Hasil ini tidak memvalidasi base/resource loader ataupun membuktikan kandidat setter tidak pernah berjalan pada jalur lain.
+
+Keputusan: **Step 7 tetap SEBAGIAN**. Kandidat seed setter adalah pemeriksaan tambahan yang relevan terutama ke Step 4(a); hasil no-hit bounded tidak menaikkan atau menurunkan status mapping runtime. Jangan ulangi kedua target single-breakpoint tanpa hipotesis baru.
