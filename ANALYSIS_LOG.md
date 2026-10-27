@@ -1,3 +1,11 @@
+## Actions output audit — entry-0 timeout, 27 Oktober 2026 21:54:52 WIB
+
+Downloaded text artifact #12743796502 from [run #40520635663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40520635663) and verified ZIP SHA-256 `e2d5b496b2310c17110c59710212f7605bf8b3d90b798abb438c1224bf3d0549` (2.299.302 bytes). The report confirms DATA.BIN entry 0 offset `0x5F800`, 110.536 bytes, SHA-256 `56ee7d3b195b0708bd5f9163d354f0173a828430c9467d410e822b1793d316d4`, hypothetical base `0x800AD000), and 36 exported function rows. But `entry0-ghidra-headless.log` explicitly says analysis timed out after 1,800 seconds, with repeated function body overlap/repair errors. Candidate `0x800BDBFC` is labelled user-defined/candidate and has zero recorded references. Therefore this output does not establish caller boundaries or connect that candidate to the RNG setter.
+
+At last poll [run #40521141039](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521141039) is still in progress at entry-0 analysis; entry1 step succeeded, artifact not yet uploaded. Previous same-workflow run took 31m27s, rough end estimate around 22:25–22:35 WIB for a similar 1,800-second stage; uncertainty remains.
+
+---
+
 ## Correction from raw MIPS re-read — 27 Oktober 2026 21:43 WIB
 
 Re-read of the actual emitted body for `0x800ED8C8` confirmed the table addressing operation more precisely than the initial summary: `0x800ED920` builds the global symbol high half and `0x800ED924 lw a0,%lo(D_8013EA74)(v1)` **loads the pointer/value stored in global slot `0x8013EA74`**. The code adds `index*0x90` to the loaded value and reads the byte at `+0x29`. Ghidra C represents the loaded value as `iRam8013ea74`; m2c renders the global symbol differently and does not expose this dereference as clearly. Consequently, treat the successful run #40523020556 as validation of exact function boundary, successful outputs, and structural call/control-flow cross-check—not full pointer-type/effective-address equivalence. Runtime value, table mapping and gameplay feature identity remain unknown.
