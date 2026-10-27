@@ -1,3 +1,25 @@
+# CHECKPOINT LIVE — reverse engineering Steps 4–10 — 27 Oktober 2026, verifikasi 19:22–19:24 WIB
+
+Current source repo is the only repo used. Latest substantive verified commit before these document updates: runner audit workflow commit 555b84a4d178b41e4d04705e1700104bd41ed1d3. Ghidra analysis #40498208067 completed success at 19:14:42 WIB. Step 6 field scan #40500058788 completed success at 18:59:18 WIB. Runner-only artifact audit [#40503223693](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40503223693) completed success at 19:22:30 WIB and produced text-only artifact #12733512950 (13,079 bytes, ZIP SHA-256 382773f9a421835bc97c448c630a2ea5d3891309bb34094f5a67027548c03414).
+
+Verified artefact identity/digest on runner:
+- Ghidra artifact #12732952776 from #40498208067: 2,255,170 bytes; SHA-256 6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6.
+- Step6 artifact #12731474756 from #40500058788: 180,174 bytes; SHA-256 4aea20e1420292505666f15898ba2db57a875a4fc67fbe2c65336af0a16fc9f4.
+- Helper audit #12731593532 from #40499270568: 11,672 bytes; SHA-256 8567a5cad2a00823302ea7b361dd9b6eaab736bce6b77cf51ea136d6bee454b3.
+Audit log passed metadata id/run/name/size/digest/expiry checks, verified ZIP hashes before reading, kept processing runner-side, did not upload private binaries, and reported RUNNER_ARTIFACT_CLEANUP=PASS. The 346,593,927-byte Ghidra entry0 raw log was hashed, not read/materialized; it remains a large-log inspection limit.
+
+CURRENT STATUS:
+- Step 4: SEBAGIAN. Main-EXE raw MIPS statically proves reset of global 0x80066E7C at 0x80037B58 and increment/store at 0x80037BB0. Helper 0x80037138 may return that global for negative a0. Candidate entry0 sequence 0x800AF2A4–0x800AF2B0 sends helper return to setter 0x80035DA8 under hypothetical base 0x800AD000. No runtime seed value/order or proof of base; battle caller, roulette-to-visible-result causality, indirect/JT/decompressed paths, RNG alternatives remain open.
+- Step 5: TUNTAS only for four chosen functions 0x80015ADC, 0x80015B7C, 0x8001A328, 0x80020BF4 (run #40449144521; artifact #12710000931, SHA-256 b2fdb6dc3213137e98e0ed298402e1d4b02198ed5310f264780bd8e965246b08). No all-functions claim.
+- Step 6: SEBAGIAN. Artifact #12731474756 raw operand context includes +0xB30/+0xB38 loads, add and +0xB40 store, plus +0xB44 zero-store/load. Exact immediate scanner covered 98,357 decoded instructions but does not close memory aliases, effective-address construction, pointer arithmetic, alternative bases, or undecoded code. Runtime base and meanings UNKNOWN.
+- Step 7: SEBAGIAN. Static resource-directory/copy candidate available; coldboot breakpoint #40484548650 at 0x800AD454 had no hit through frame120, bounded exit124/timebox35s. Runtime copy source/destination/size/checksum/base/relocation unknown. Do not repeat same target without new static reachability evidence.
+- Step 8: SEBAGIAN. Code behaviour is described only where raw instructions/dataflow support it. Costs, barrier/upgrade, battle/roulette/turn, card effects and victory conditions remain UNKNOWN/BLOCKED without independent corroboration.
+- Step 9: TUNTAS for 0x80035D78 only (run #40474891838, artifact #12720127454, SHA-256 bcbfcd77a532ce34334ed60f720fdeaac566308bf2e6e4d54a7e60f28a5f083b; 7/7 vectors; state/v0 match, sentinel at 12 instructions, bound128, 2MiB PS1 RAM).
+- Step 10: TUNTAS only as a criterion-level audit matrix, now in docs/STEP4_10_CLOSURE_REPORT_2026-10-27.md, with artifacts/digests, tests, limits and named gaps. This is not whole-game completion.
+- Story Mode: TIDAK TERBUKTI TAMAT.
+
+Next minimum work from this checkpoint: inspect reports already updated at the top first; do not rerun Ghidra or identical no-hit probes. For Step6, first expand a static memory-operand/effective-address + alias inventory without match truncation. For Step7, choose any future runtime probe only from a newly statically justified reachable PC, with a bounded coldboot/no input/no savestate and text-only register/copy/checksum results. For Step4, statically reconcile loader/initializer/callsite order and raw-only/indirect caller candidates; runtime seed claims require actual captured register values. Do not touch adaptive player, Story Mode runner, classifier/policy/readiness gate, and do not commit private game/BIOS/memory-card/savestate/screenshot material.
+
 # Checkpoint terbaru — reverse engineering Langkah 4–10 (27 Oktober 2026)
 
 Checkpoint utama sebelum update ini: `main` SHA `6d4f2b06a586528cb6c43494359e9e172a6ff080`. Pembaruan status ini memajukan HEAD; ambil ulang SHA live untuk kelanjutan. Status working tree lokal tidak tersedia melalui konektor.
