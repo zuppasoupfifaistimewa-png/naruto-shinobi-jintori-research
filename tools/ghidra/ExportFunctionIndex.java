@@ -39,7 +39,7 @@ public class ExportFunctionIndex extends GhidraScript {
                 out.print("\t"); out.print(clean(namespace));
                 out.print("\t"); out.print(bodyBytes);
                 out.print("\t"); out.print(function.isThunk());
-                out.print("\t"); out.println(function.getSource().name());
+                out.print("\t"); out.println(function.getSymbol().getSource().name());
                 count++;
             }
             out.flush();
