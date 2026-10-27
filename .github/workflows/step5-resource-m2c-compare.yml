@@ -146,7 +146,7 @@ jobs:
           root="$RUNNER_TEMP/step5-resource"
           input="$root/input/DATA_BIN_ENTRY_0001.bin"
           output="$root/output"
-          mkdir -p "$output"
+          mkdir -p "$output" "$RUNNER_TEMP/step5-resource-ghidra-project"
           headless="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
           [[ -n "$headless" && -x "$headless" ]]
           "$headless" "$RUNNER_TEMP/step5-resource-ghidra-project" DATA_BIN_entry1_target_audit \
