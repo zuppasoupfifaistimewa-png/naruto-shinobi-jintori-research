@@ -32,7 +32,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check --no-input "spimdisasm==1.42.4" "m2c==0.1.0"
+          python -m pip install --disable-pip-version-check --no-input "spimdisasm==1.42.4" "m2c @ git+https://github.com/matt-kempster/m2c.git@master"
           python -m pip show spimdisasm m2c > "$RUNNER_TEMP/step5-tool-versions.txt"
 
       - name: Capture CLI options for reproducible same-function pipeline
