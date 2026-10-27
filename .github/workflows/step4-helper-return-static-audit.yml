@@ -122,8 +122,8 @@ jobs:
           headless="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
           [[ -n "$headless" && -x "$headless" ]]
           "$headless" "$project" Naruto_seed_helper_audit             -import "$exe"             -loader BinaryLoader -loader-baseAddr 0x80010000 -loader-fileOffset 0x800             -loader-length 0x5D800 -loader-blockName MAIN_TEXT             -processor "MIPS:LE:32:default"             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra"             -preScript PreparePsxExe.java             -postScript ExportFunctionDetail.java "$out/seed-helper-detail.txt" 0x80037138 0x80035DA8             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject             > "$out/ghidra-headless.log" 2>&1
-          grep -q "=== TARGET 0x80037138 ===" "$out/seed-helper-detail.txt"
-          grep -q "=== TARGET 0x80035DA8 ===" "$out/seed-helper-detail.txt"
+          grep -Eq "^=== TARGET (0x)?80037138 ===$" "$out/seed-helper-detail.txt"
+          grep -Eq "^=== TARGET (0x)?80035DA8 ===$" "$out/seed-helper-detail.txt"
           echo "helper_function_and_setter_detail=PASS"
           echo "runtime_call_contract=NOT_PROVEN"
           echo "hypothetical_DATA_BIN_entry0_base=0x800AD000"
