@@ -144,3 +144,23 @@ Indeks out/logic.md diperbarui agar menautkan checkpoint terkini, laporan audit 
 Status Langkah 4 pada tabel di atas diperbarui setelah pemindaian lintas resource dan konteks Ghidra. Ringkasan terotorisasi yang terbaru ada di [docs/STEP4_RNG_TRACE_2026-10-27.md](STEP4_RNG_TRACE_2026-10-27.md) dan [out/logic.md](../out/logic.md). Daftar caller resource: [144 call site entry 1](../out/rng_resource_entry1_ghidra_callers_2026-10-27.md), [36 local decode tanpa boundary fungsi](../out/rng_resource_entry1_unmapped_context_2026-10-27.md), dan [entry 0 plus seed setter](../out/rng_resource_entry0_ghidra_context_2026-10-27.md). Scan signature pengali LCG yang diketahui hanya menemukan kecocokan main EXE: [out/step4_rng_signature_scan_2026-10-27.md](../out/step4_rng_signature_scan_2026-10-27.md).
 
 **Batas penting:** “SELESAI” di sini berarti inventaris instruksi direct-JAL yang ditemukan dalam aset raw yang di-scan telah dipetakan/didekode sejauh bukti memungkinkan. Ini bukan bukti absolut bahwa caller tidak langsung, code hasil dekompresi/dekripsi, alternative RNG dengan konstanta lain, atau pemuatan resource runtime tidak ada. Base `0x800AD000` dan `0x800D0000` tetap hipotesis. Tidak ada emulator/gameplay/savestate yang dijalankan.
+
+
+## Addendum Langkah 0 — toolchain versioned dan terverifikasi (27 Oktober 2026)
+
+Workflow [Step 0 #40457860945](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40457860945) selesai dengan **SUCCESS**. Pin versi, hash, dan hasil pengujian rinci dicatat di [out/versions.txt](../out/versions.txt); workflow ada di [.github/workflows/toolchain-audit.yml](../.github/workflows/toolchain-audit.yml).
+
+| Komponen | Hasil |
+|---|---|
+| Python + pip | Python 3.13.18 dan pip 26.2.2 terpasang dan terverifikasi |
+| Ghidra + Java | Ghidra 12.2 dengan hash arsip resmi tervalidasi; JDK Temurin 25.0.4.1; `support/analyzeHeadless` terdeteksi dan help/usage diverifikasi |
+| dumpsxiso + mkpsxiso | Versi 2.30 terverifikasi dari banner `--help`; SHA-256 arsip Linux dicatat dan diverifikasi dalam workflow |
+| m2c | Commit `c632946b8cfbe8fce442b522dba92dfa72f1f317` dipin; `m2c --help` berhasil |
+| splat64 | 0.50.1; `splat --version` berhasil |
+| Unicorn | 2.1.4; import berhasil dan engine MIPS32 little-endian berhasil dibuat |
+| spimdisasm | 1.42.4 |
+| objdump MIPS little-endian | Paket Ubuntu 24.04 `binutils-mipsel-linux-gnu=2.42-2ubuntu1cross5`; GNU objdump melaporkan versi 2.42 |
+
+Catatan: beberapa CLI tidak menggunakan `--version` sebagai opsi versi mandiri. mkpsxiso/dumpsxiso mencetak versi di banner help, m2c meminta argumen berkas masukan, dan `analyzeHeadless -help` mengembalikan kode keluar 1 walaupun menghasilkan usage yang valid; semua fallback ini ditulis eksplisit di `out/versions.txt`.
+
+**Batas:** ini menyelesaikan setup toolchain Langkah 0, bukan Langkah 9. Unicorn belum menjalankan satu fungsi game secara terisolasi dan tidak ada perbandingan terhadap save state. Run hanya mengunggah artefak teks; tidak ada emulator/gameplay, disc image, executable game, BIOS, memory card, savestate, RAM dump atau screenshot privat yang diunggah atau dimasukkan ke Git.
