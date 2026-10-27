@@ -61,7 +61,7 @@ jobs:
             printf '%s\t%s\t%s\t%s\n' "$label" "$run_id" "$artifact_id" "$zip" >> "$root/verified.tsv"
           }
           download_one ghidra 40487406384 12728867894 ghidra-slps-03553-function-index sha256:5b37df744236d5ba87d85c8a74657cc207c569ab7e42229d51768c5ea05752c1 1724229
-          download_one step6 40489410897 12729000075 step6-resource-field-static-scan sha256:c057d73f6fd6822103e1221cbd60a69a1034031a5f29fb810cec58398d0dec0a 22669
+          download_one step6 40493453951 12730305491 step6-resource-field-static-scan sha256:2cb6592100c4d89f5508a35c4fae0a87f63e47d140091f2a81d746b3c3ba0ac8 180120
 
           python3 - "$root" "$report" <<'PY'
           from pathlib import Path
@@ -167,8 +167,25 @@ jobs:
               blocks=[b for b in matches if re.search(r"(?i)^MEMORY_MATCH field=\+"+re.escape(target)+r"\b",b)]
               rows.append(f"field=+{target} memory_match_blocks={len(blocks)}")
               for block in blocks[:6]:
-                  rows.extend(block.strip().splitlines()[:4])
+                  rows.extend(block.strip().splitlines()[:60])
           emit("Step 6 pending-field memory operand samples (bounded)",rows,130)
+          decomp_rows=[]
+          decomp_pattern=r"=== FIELD_ACCESS_FUNCTION_DECOMPILATION_BEGIN entry=([^ ]+) ===(.*?)=== FIELD_ACCESS_FUNCTION_DECOMPILATION_END entry=([^ ]+) ==="
+          for match in re.finditer(decomp_pattern,scan,re.S):
+              entry,body,end_entry=match.groups()
+              decomp_rows.append(f"function_entry={entry} matching_end={end_entry}")
+              body_lines=body.splitlines()
+              field_line=re.compile(r"(?i)0xb30|0xb38|0xb40|0xb44|B30|B38|B40|B44")
+              hits=[i for i,line in enumerate(body_lines) if field_line.search(line)]
+              selected=set()
+              for i in hits:
+                  selected.update(range(max(0,i-2),min(len(body_lines),i+3)))
+              if not selected:
+                  selected.update(range(min(70,len(body_lines))))
+              for i in sorted(selected):
+                  decomp_rows.append(f"{i+1}: {body_lines[i]}")
+              decomp_rows.append(f"decompile_source_lines={len(body_lines)} matched_lines={len(hits)}")
+          emit("Step 6 field-access containing-function decompilation (targeted)",decomp_rows,220)
           out.write_text("\n".join(lines)+"\n",encoding="utf-8")
           print("STATIC_ARTIFACT_AUDIT_BEGIN")
           print(out.read_text(encoding="utf-8"))
