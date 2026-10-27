@@ -1,0 +1,188 @@
+name: Runner-only audit of latest Ghidra and Step 6 text artifacts
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/runner-only-static-artifact-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: runner-only-static-artifact-audit
+  cancel-in-progress: false
+
+jobs:
+  inspect-text-artifacts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout research scripts and docs
+        uses: actions/checkout@v4
+
+      - name: Verify metadata, download ZIPs to runner, and inspect text only
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/naruto-static-artifact-audit"
+          mkdir -p "$root"
+          report="$RUNNER_TEMP/naruto-static-artifact-audit.txt"
+          : > "$report"
+          api="https://api.github.com/repos/$GITHUB_REPOSITORY"
+          download_one() {
+            local label="$1" run_id="$2" artifact_id="$3" expected_name="$4" expected_digest="$5" expected_bytes="$6"
+            local meta="$root/$label.metadata.json" zip="$root/$label.zip"
+            curl --fail --silent --show-error --proto '=https' --retry 2               -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"               -H "X-GitHub-Api-Version: 2022-11-28" "$api/actions/artifacts/$artifact_id" -o "$meta"
+            python3 - "$meta" "$run_id" "$artifact_id" "$expected_name" "$expected_digest" "$expected_bytes" <<'PY'
+          import json,sys
+          from pathlib import Path
+          p=Path(sys.argv[1]); j=json.loads(p.read_text())
+          run_id, artifact_id, name, digest, size = sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5], int(sys.argv[6])
+          checks = {
+            "artifact_id": j.get("id")==artifact_id,
+            "workflow_run_id": j.get("workflow_run",{}).get("id")==int(run_id),
+            "artifact_name": j.get("name")==name,
+            "digest": j.get("digest")==digest,
+            "size_bytes": j.get("size_in_bytes")==size,
+            "not_expired": j.get("expired") is False,
+          }
+          print("METADATA " + " ".join(f"{k}={'PASS' if v else 'FAIL'}" for k,v in checks.items()))
+          if not all(checks.values()): raise SystemExit("Artifact metadata validation failed.")
+          print(f"ARTIFACT_META run={run_id} id={artifact_id} name={name} size={size} digest={digest}")
+          PY
+            curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 2               -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json"               -H "X-GitHub-Api-Version: 2022-11-28" "$api/actions/artifacts/$artifact_id/zip" -o "$zip"
+            echo "${expected_digest#sha256:}  $zip" | sha256sum --check
+            printf '%s\t%s\t%s\t%s\n' "$label" "$run_id" "$artifact_id" "$zip" >> "$root/verified.tsv"
+          }
+          download_one ghidra 40487406384 12728867894 ghidra-slps-03553-function-index sha256:5b37df744236d5ba87d85c8a74657cc207c569ab7e42229d51768c5ea05752c1 1724229
+          download_one step6 40489410897 12729000075 step6-resource-field-static-scan sha256:c057d73f6fd6822103e1221cbd60a69a1034031a5f29fb810cec58398d0dec0a 22669
+
+          python3 - "$root" "$report" <<'PY'
+          from pathlib import Path
+          import hashlib, re, sys, zipfile
+          root, out = Path(sys.argv[1]), Path(sys.argv[2])
+          allowed={".txt",".tsv",".log",".md",".csv"}
+          inputs={}
+          lines=[
+            "# Runner-only static artifact audit",
+            "processing_location=GitHub Actions runner",
+            "game_or_emulator_executed=no",
+            "gameplay_input_sent=no",
+            "savestate_restored=no",
+            "raw_artifacts_or_game_binaries_uploaded=no",
+            "zip_sha256_verified_before_read=yes",
+            "",
+            "## Artifact file inventory"
+          ]
+          for name,run_id,aid,zpath in (row.split("\t") for row in (root/"verified.tsv").read_text().splitlines()):
+              zp=Path(zpath)
+              lines += [f"\n### {name}: source run {run_id}, artifact {aid}",
+                        f"zip_bytes={zp.stat().st_size}",
+                        f"zip_sha256={hashlib.sha256(zp.read_bytes()).hexdigest()}"]
+              content={}
+              with zipfile.ZipFile(zp) as z:
+                  members=[i for i in z.infolist() if not i.is_dir()]
+                  if not members: raise SystemExit(f"EMPTY_ARTIFACT: {name}")
+                  if sum(i.file_size for i in members)>30_000_000: raise SystemExit("TOTAL_TEXT_SIZE_LIMIT")
+                  for info in members:
+                      p=Path(info.filename)
+                      if p.suffix.lower() not in allowed: raise SystemExit(f"NON_TEXT_MEMBER: {info.filename}")
+                      if info.file_size>20_000_000: raise SystemExit(f"OVERSIZE_MEMBER: {info.filename}")
+                      data=z.read(info)
+                      try: value=data.decode("utf-8")
+                      except UnicodeDecodeError: raise SystemExit(f"NON_UTF8_MEMBER: {info.filename}")
+                      content[p.name]=value
+                      lines.append(f"file={info.filename} bytes={len(data)} sha256={hashlib.sha256(data).hexdigest()}")
+              inputs[name]=content
+          def emit(label, rows, cap=90):
+              lines.extend(["",f"## {label}"])
+              lines.extend(rows[:cap])
+              if len(rows)>cap: lines.append(f"... truncated {len(rows)-cap} additional matched lines")
+          g=inputs["ghidra"]
+          rows=[]
+          for fn,txt in sorted(g.items()):
+              if fn in {"analysis-result.txt","data-bin-entry0-analysis-result.txt","data-bin-entry0-validation.txt",
+                        "data-bin-entry1-analysis-result.txt","data-bin-entry1-validation.txt","rng-signature-scan.txt"}:
+                  rows.append(f"[{fn}]")
+                  rows.extend(x for x in txt.splitlines() if x.strip() and not x.startswith(("warning=","note=")) )
+          emit("Ghidra validations",rows,100)
+          # Main executable function index: exact row for helper and seed setter, if present.
+          rows=[]
+          for fn,txt in g.items():
+              if fn.endswith(".tsv") and fn=="functions.tsv":
+                  for row in txt.splitlines():
+                      if re.search(r"(?i)0x80037138|0x80035DA8",row):
+                          rows.append(f"[{fn}] {row}")
+          emit("Main-executable function-index rows for helper/setter",rows,20)
+          # Entry-0 target-call report should show raw-JAL and decoded target status.
+          rows=[]
+          for fn in ("data-bin-entry0-rng-callers.txt","data-bin-entry0-helper.txt"):
+              txt=g.get(fn)
+              if not txt: continue
+              src=txt.splitlines()
+              for i,line in enumerate(src):
+                  if re.search(r"(?i)800AF2A4|800AF2A8|800AF2AC|800AF2B0|80037138|80035DA8",line):
+                      rows.append(f"[{fn}]")
+                      rows.extend(f"{j+1}: {src[j]}" for j in range(max(0,i-1),min(len(src),i+3)))
+          emit("Entry-0 helper / seed-setter callsite evidence",rows,100)
+          # Targeted entry-0 helper decompilation metadata and instruction window.
+          txt=g.get("data-bin-entry0-helper.txt","")
+          rows=[]
+          if txt:
+              for line in txt.splitlines():
+                  if re.match(r"^(analysis=|resource=|entry_file_offset=|entry_bytes=|hypothetical_ram_base=|runtime_mapping=|target=|target_file_offset_under_hypothesis=|instruction=|function=|function_entry=|function_body_bytes=|decompile_status=|reference_count=|interpretation=)",line):
+                      rows.append(line)
+              rows.extend(line for line in txt.splitlines() if line.startswith("=== REFERENCES_TO_HELPER ==="))
+          else: rows=["MISSING: data-bin-entry0-helper.txt"]
+          emit("Entry-0 decompilation report scope",rows,50)
+          s=inputs["step6"]
+          scan=s.get("field-offset-scan.txt","")
+          rows=[]
+          for line in scan.splitlines():
+              if line.startswith(("analysis=","program=","processor=","static_base=","decoded_instructions_","match_output_cap","limitation=","=== SUMMARY ===","offset=+0xb30","offset=+0xb38","offset=+0xb40","offset=+0xb44","memory_displacement_parser_fixture=")):
+                  rows.append(line)
+          emit("Step 6 displacement/immediate scan summary",rows,100)
+          # Include a bounded sample of actual memory operands for each pending offset.
+          rows=[]
+          targets=("0xb30","0xb38","0xb40","0xb44")
+          for target in targets:
+              matches=re.split(r"(?=^MEMORY_MATCH field=\+)",scan,flags=re.M)
+              blocks=[b for b in matches if re.search(r"(?i)^MEMORY_MATCH field=\+"+re.escape(target)+r"\b",b)]
+              rows.append(f"field=+{target} memory_match_blocks={len(blocks)}")
+              for block in blocks[:6]:
+                  rows.extend(block.strip().splitlines()[:4])
+          emit("Step 6 pending-field memory operand samples (bounded)",rows,130)
+          out.write_text("\n".join(lines)+"\n",encoding="utf-8")
+          print("STATIC_ARTIFACT_AUDIT_BEGIN")
+          print(out.read_text(encoding="utf-8"))
+          print("STATIC_ARTIFACT_AUDIT_END")
+          PY
+
+      - name: Remove downloaded artifact ZIPs and metadata
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/naruto-static-artifact-audit"
+          rm -rf "$root"
+          if [[ ! -e "$root" ]]; then
+            echo "RUNNER_ARTIFACT_CLEANUP=PASS"
+          else
+            echo "RUNNER_ARTIFACT_CLEANUP=FAIL"
+            exit 1
+          fi
+          test -s "$RUNNER_TEMP/naruto-static-artifact-audit.txt"
+
+      - name: Validate and upload text-only audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runner-only-static-artifact-audit
+          path: ${{ runner.temp }}/naruto-static-artifact-audit.txt
+          if-no-files-found: error
+          retention-days: 14
