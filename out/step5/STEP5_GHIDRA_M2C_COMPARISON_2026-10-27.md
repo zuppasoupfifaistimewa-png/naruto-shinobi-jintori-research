@@ -1,3 +1,11 @@
+## CORRECTION — raw MIPS clarifies global-pointer dereference, 27 Oktober 2026 21:43 WIB
+
+Cross-check on the emitted MIPS body resolves one important distinction and limits how the two C outputs should be compared. At `0x800ED920), code executes `lui v1, %hi(D_8013EA74)`; at `0x800ED924), `lw a0, %lo(D_8013EA74)(v1)` loads a 32-bit value from the global slot at `0x8013EA74). It then computes `index * 0x90`, adds that offset to the **loaded value**, and reads one byte at offset `0x29` from that derived record address.
+
+Ghidra C represents the value read from the global as `iRam8013ea74`. The m2c C output renders `D_8013EA74` as a static symbol in pointer arithmetic without expressing the same dereference as clearly. Therefore, call tokens/body boundary/control-flow offer a useful structural cross-check, but the C outputs are **not fully equivalent evidence for pointer typing or effective address**. The raw MIPS load is the authoritative basis for this operation-level statement. The actual value stored at `0x8013EA74`, the mapped record table and runtime resource base remain unverified; do not assume the global slot's link-time address is itself the record table.
+
+---
+
 ## LIVE ADDENDUM — Selected DATA.BIN function validated, 27 Oktober 2026 21:41 WIB
 
 Run [#40523020556](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40523020556), artifact #12742268706, ZIP SHA-256 `5f3f767667444f7c956c36fc59cf75b6bb90a5a1dde8ddb92fb69f9e0f797e81`, extended the successful 13-function main-EXE comparison with one entry-1 candidate function at `0x800ED8C8`. Validated body 160 B, end-exclusive `0x800ED968`; Ghidra C nonempty, m2c exit 0 / 17 C lines, shared call tokens `0x800CB4B4` and `0x80035D78`. This is structural agreement across two decompilation paths, not original-source equivalence.
