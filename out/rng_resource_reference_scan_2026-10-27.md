@@ -81,3 +81,10 @@ Pencarian pola LUI + akses memori ke state menemukan tiga kandidat hanya dalam e
 1. Gunakan Ghidra pada entry 0 dan entry 1 dengan base yang ditandai hipotesis untuk memeriksa target flow nyata dari semua kandidat JAL.
 2. Prioritaskan kandidat 0x800AF2AC untuk menemukan argumen $a0 yang dikirim ke 0x80035DA8 dan apakah ia benar-benar instruksi kode.
 3. Laporkan semua call-site yang dikonfirmasi beserta fungsi pemanggil; pisahkan raw hit, verified direct call, dan unresolved indirect/compressed paths.
+
+
+## Pembaruan — hasil Ghidra untuk entry 1
+
+Run [#40454881770](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40454881770) berhasil: 144 kandidat JAL mentah → 108 direct-flow terdekode Ghidra, 50 fungsi pemanggil dikenali, 1 call site tanpa batas fungsi, 36 kandidat mentah tetap tidak terdekode. Lihat [inventaris lengkap entry 1](rng_resource_entry1_ghidra_callers_2026-10-27.md).
+
+Run konteks entry 0 [#40455197588](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455197588) mengonfirmasi pada base hipotesis: `0x800AF2AC → 0x80035DA8` dengan `$a0=-1), dan `0x800BB2D8 → 0x80035D78`. Kandidat di `0x800BB2FC`, `0x800BB748`, `0x800BB770` masih perlu diperiksa lebih lanjut.
