@@ -50,7 +50,7 @@ public class ExportRngCallContext extends GhidraScript {
 
     // Heuristic only: this signature is not itself proof of a function boundary.
     // It looks for addiu sp,sp,-N immediately followed by sw ra,offset(sp).
-    private void emitStackFrameSignatureCandidates(Address site) throws MemoryAccessException {
+    private void emitStackFrameSignatureCandidates(Address site) throws Exception {
         MemoryBlock block = currentProgram.getMemory().getBlock(site);
         if (block == null) {
             line("stack_frame_signature_scan=NO_MEMORY_BLOCK");
