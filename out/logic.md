@@ -94,7 +94,7 @@ Status langkah: **SELESAI — header dibaca langsung dari salinan Library** pada
 
 ## Langkah 3 — pemetaan awal fungsi (status parsial)
 
-Ghidra headless **belum dijalankan** karena `ghidraRun`/`analyzeHeadless` tidak terpasang di lingkungan kerja. Ghidra terbaru yang diperiksa berukuran sekitar 570 MB dan mensyaratkan JDK 25, sedangkan lingkungan ini menyediakan JDK 21. Tidak ada klaim bahwa daftar fungsi Ghidra telah diekspor.
+Ghidra 12.2 dan Temurin JDK 25 **sudah dipasang serta launcher `support/analyzeHeadless` telah diverifikasi pada GitHub Actions** di run [#40434733043](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40434733043). Eksekusi Ghidra untuk mengimpor dan menganalisis `SLPS_035.53` **belum dilakukan**, sehingga daftar fungsi Ghidra belum diekspor.
 
 Fallback LLVM/heuristik disimpan pada [`out/main_exe_callscan.md`](main_exe_callscan.md):
 - 95.744 kata 32-bit dalam text block dipindai untuk pola `jal`.
@@ -108,7 +108,7 @@ Artefak teks kandidat lokal `main_exe_function_candidates.tsv` berisi 898 kandid
 
 - Langkah 1 — inventaris disc: **SELESAI berdasarkan catatan ekstraksi terdahulu**.
 - Langkah 2 — validasi header PS-X EXE: **SELESAI dan diverifikasi langsung**.
-- Langkah 3 — Ghidra headless: **BELUM SELESAI**; fallback statis awal tersedia.
+- Langkah 3 — penyiapan Ghidra headless di Actions: **SELESAI**; analisis executable dan ekspor fungsi Ghidra: **BELUM SELESAI**.
 - Story Mode dan pemain adaptif tetap **NOT COMPLETE / dijeda**, tidak ada emulator atau input gameplay dijalankan.
 
 Skrip scan yang dapat diulang pada salinan executable lokal: [`tools/psx_exe_call_target_scan.py`](../tools/psx_exe_call_target_scan.py). Skrip menulis indeks target/caller sebagai teks ke folder `out/`; biner tetap lokal. Hasil fallback dan batas interpretasinya dicatat di [`out/main_exe_callscan.md`](main_exe_callscan.md).
