@@ -261,7 +261,7 @@ def main() -> int:
     ])
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text("\n".join(lines), encoding="utf-8")
-    print("\n".join(line for line in lines if line.startswith(("analysis=", "=== FILE", "bytes=", "sha256=", "known_identity_check=", "direct_jal_rng_raw_hits=", "direct_jal_seed_setter_raw_hits=", "rng_address_literal_aligned_hits=", "rng_state_literal_aligned_hits=", "rng_lui_low_address_pairs=", "rng_state_lui_low_address_pairs=", "rng_state_lui_memory_access_pairs=", "=== TOTALS ===", "rng_jal=", "seed_jal=", "rng_literal=", "state_literal=", "rng_address_pair=", "state_address_pair=")))
+    print("\n".join(line for line in lines if line.startswith(("analysis=", "=== FILE", "bytes=", "sha256=", "known_identity_check=", "direct_jal_rng_raw_hits=", "direct_jal_seed_setter_raw_hits=", "rng_address_literal_aligned_hits=", "rng_state_literal_aligned_hits=", "rng_lui_low_address_pairs=", "rng_state_lui_low_address_pairs=", "rng_state_lui_memory_access_pairs=", "=== TOTALS ===", "rng_jal=", "seed_jal=", "rng_literal=", "state_literal=", "rng_address_pair=", "state_address_pair="))))
     return 0
 
 
