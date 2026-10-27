@@ -146,3 +146,11 @@ Sebelum setiap run baru: ambil HEAD main dan Actions active/queued terbaru, konf
 3. Preserve raw caller window for `0x800AF2A4..0x800AF2B0`; no claim about seed actual runtime value without value/lifecycle evidence.
 4. Continue full field read/write/alias tracing for `+0xB30/+0xB38/+0xB40/+0xB44`, including nondecoded code and alternate bases where feasible. Keep Steps 6/8 SEBAGIAN until source, alias and semantics are adequately evidenced.
 5. Keep Steps 5 and 9 closed only in their stated scopes; Step 10 is only the audit index. Do not run adaptive player, gameplay, savestate or emulator experiments.
+
+## Handoff tambahan — xref global helper-return selesai diperiksa (27 Oktober 2026, 18:44 WIB)
+
+- Helper Ghidra run [#40498231825](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40498231825) success at 18:43:58 WIB; text artifact #12732006381, 9.058 bytes, ZIP SHA-256 adfdb608af96dd95a7c7e74d9f8b117767aaffa817d0c7eb860757ead868d9ba; cleanup PASS.
+- Latest runner-only inspection [#40498386273](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40498386273) success at 18:44:35 WIB; artifact #12731327556, 9,727 bytes, ZIP SHA-256 7826480f41372d68ddf3f4b1dfe6d99f51bbbb5cd124eb5c3c6169870150ba5c; metadata/digest/contents validated on runner and cleanup PASS.
+- Direct xrefs to 0x80066E7C: initial loaded-image bytes 00 00 00 00 (LE word 0); WRITE at 0x80037B7C (sw zero, owner 0x80037B58); READ at 0x80037BB4 (owner 0x80037BB0); WRITE at 0x80037BDC (sw v0, preceded by addiu v0,v0,1 at 0x80037BD4, owner 0x80037BB0); READ at 0x8003719C, 0x80037204, 0x80037260 (owner 0x80037138); READ at 0x800372C0 and 0x80037324 (owner 0x800372B0). Direct xref count 8.
+- This global is “counter-like” by the visible zero-store/increment pattern, not confirmed as a timer/random seed field by semantic name. The helper input -1 returns its value; callsite ordering relative to global reset/increments, and actual runtime value when the candidate setter executes, are still unknown.
+- Next: inspect call references to functions 0x80037B58 and 0x80037BB0, compare them with caller path 0x800AF2A4..0x800AF2B0, and use raw MIPS if Ghidra function boundaries are missing. Check the full Ghidra run #40498208067 and runner-only re-audit output. Keep Step 4 SEBAGIAN; no gameplay/emulator run.
