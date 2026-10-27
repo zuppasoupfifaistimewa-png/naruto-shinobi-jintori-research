@@ -284,3 +284,9 @@ Static artifact #12719587873 from [Actions #40473737136](https://github.com/zupp
 Step 4 callsite correction: 0x800AF2AC calls 0x80035DA8 with $a0 set in the JAL delay slot by move a0,v0, forwarding helper 0x80037138’s return. The -1 literal was the helper argument, not a verified setter value. Return and runtime seed lifecycle remain UNKNOWN.
 
 Step status remains Step4 SEBAGIAN; Step5 TUNTAS for four chosen functions only; Step6 SEBAGIAN; Step7 SEBAGIAN; Step8 SEBAGIAN; Step9 TUNTAS only for RNG 0x80035D78; Step10 TUNTAS as audit index only. Story Mode remains TIDAK TERBUKTI TAMAT. No adaptive-player workflow, savestate restore, or gameplay input was used in this continuation.
+
+## Dataflow addendum — candidate 0x8011C0D0 (27 Oktober 2026)
+
+Static decompilation of a 408-byte candidate function at the hypothetical DATA.BIN entry-1 base 0x800D0000 shows: byte-mask and comparison with global 0x80139F70; early return if equal; otherwise update of that global and field +0x618 from the global record pointer. On nonzero input, the selected record gets byte 8 at +0x22, then all participants (count from effective global 0x8013EA71, stride 0x90) have their word +0x04 negated, clamped to -9999, stored, and passed with index to setter 0x8001387C. A sum check of signed short +0x10 and unsigned short +0x14 against 0x101 selects helper 0x8003F5D0 or alternative state byte +0x94A=1; 0x800F96A4 is called on certain paths.
+
+These operations are static decompilation, not proven cost/level-up rules. Only the initial raw window is in the artifact; loop detail is from the decompiler. Input source, caller, runtime values, and semantics are UNKNOWN. Whole-program access tracing for +0xB30/+0xB38/+0xB40/+0xB44 remains unfinished.
