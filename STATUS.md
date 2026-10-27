@@ -3575,3 +3575,13 @@ Status yang didukung bukti:
 HEAD riset saat catatan ini disiapkan: `1076072f69d83546ecf70923e26304e7af4ac057`; perubahan status ini sendiri akan menghasilkan commit baru. Setelah cold-boot selesai, perbarui status Step 7 dan SHA HEAD secara berurutan.
 
 Story Mode: **TIDAK TERBUKTI TAMAT**. Tidak ada ending autentik pada riset ini. Pengembangan pemain adaptif tetap dijeda; tidak ada classifier, kebijakan input, marker Revision65, atau readiness gate yang diubah. Disc/ROM, BIOS, Memory Card, savestate, RAM dump dan screenshot gameplay privat tidak di-commit ke Git.
+
+## Checkpoint audit tambahan — 27 Oktober 2026
+
+HEAD remote yang diperiksa sebelum entri ini: 52f077114c01de00cac52527af92e38a1d4a1e3e. Status local working tree tidak dapat diperiksa melalui konektor GitHub; tidak ada klaim bersih/kotor.
+
+Bukti baru yang dapat ditautkan: review runner-only [#40473737136](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40473737136), artifact teks #12719587873, ZIP SHA-256 e1ea68c92bcbf645fde3c991c8a47192b815987d8044f2d599c163c1f3ec9fb9. Raw MIPS terpilih memperjelas cabang target-gated pada enam site entry 1 dan urutan negasi/clamp/store pada 0x8011C0D0, dengan base 0x800D0000 yang masih HIPOTESIS. Tidak ada run game atau input di pekerjaan ini.
+
+Status akhir per ruang lingkup: Step 4 SEBAGIAN (seed caller return dan lifecycle masih UNKNOWN); Step 5 TUNTAS untuk empat fungsi terpilih; Step 6 SEBAGIAN (operand/branch/delay slot terpilih sekarang terdokumentasi; field pending/runtime base/transition semantics belum lengkap); Step 7 SEBAGIAN (no-hit bounded bukan bukti loader/base); Step 8 SEBAGIAN (aturan permainan belum dibuktikan); Step 9 TUNTAS untuk RNG 0x80035D78 saja; Step 10 TUNTAS sebagai indeks audit. Step 4 correction terbaru: 0x800AF2AC memasukkan return helper 0x80037138 melalui move a0,v0; -1 adalah input helper. Tidak ada bukti Story Mode tamat.
+
+Tidak ada aksi pemain adaptif, restore savestate atau input gameplay dilakukan. Jangan ulangi eksperimen roulette #40474262267, breakpoint tunggal 0x800AD454 (#40484548650), atau seed kandidat 0x80035DA8 (#40485987817) tanpa hipotesis teknis baru.
