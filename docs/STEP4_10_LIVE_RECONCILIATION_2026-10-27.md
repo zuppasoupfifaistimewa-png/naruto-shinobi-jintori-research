@@ -43,11 +43,17 @@ Operasi ini mendukung hubungan dataflow terbatas saja. Tidak membuktikan object 
 
 Tooling sudah berubah sebelum audit ini: commit `486e2590b45efaedd7972accb4561cd647f8a711` menormalisasi mnemonic delay-slot `_` serta mengenali integer/coprocessor load-store; `4ab16073f770233edffcb13ad8b489361604b64c` menaikkan output emitter menjadi 30.001 baris. Scan terbaru sukses dan fixture parser lulus; tidak ditemukan alasan berbukti untuk patch scanner berikutnya hanya demi menambah perubahan.
 
+## Dampak terbaru untuk semantik (Step 4 dan Step 8, 20:50 WIB)
+
+Cross-check Ghidra/m2c [#40515356524](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524), artifact #12739676233, mendukung bahwa `0x80037138` pada argumen negatif mengembalikan `0x80066E7C`, pada argumen 1 mengembalikan delta timer 16-bit, dan pada argumen lain dapat memanggil `0x800372B0`. `0x80037B58` mereset global dan delapan callback slot; `0x80037BB0` menaikkan global serta menjalankan callback nonzero. Callsite entry-0 ke helper/setter masih memakai base `0x800AD000` hipotetis dan belum terbukti runtime, jadi tidak mengubah Step 4 dari SEBAGIAN atau membuktikan RNG seed boot.
+
+Pasangan `0x8001387C`/`0x800138EC` berhasil dibandingkan: setter/g getter menyentuh slot nilai yang sama, setter membatasi indeks 0–3 dan nilai −9999…99999. Interpretasi konteks sebagai nilai Chakra tetap terpisah dari formula biaya/refund. Target `0x80012A70` tidak ditemukan sebagai function entry/body pada view Ghidra perluasan; label fungsi getter-target di alamat persis tersebut ditahan sebagai provisional sampai raw boundary/reference direkonsiliasi. Step 8 tetap SEBAGIAN dan aturan biaya/barrier/battle/turn/kartu/kemenangan masih UNKNOWN.
+
 ## Matriks kriteria Langkah 4–10
 
 | Kriteria | Status | Bukti utama | Celah dan syarat penerimaan yang belum dipenuhi |
 |---|---|---|---|
-| 4(a) Generator/state/origin dan lifecycle seed | **SEBAGIAN** | MIPS RNG `0x80035D78`, state `0x800A3118`, `(old×0x41C64E6D+0x3039) mod 2^32`, output `(new>>16)&0x7FFF`; main EXE reset/increment global `0x80066E7C\); helper `0x80037138`; Ghidra #40498208067/artifact #12732952776. | Nilai seed runtime, urutan initializer/callsite, nilai register setter dan semua re-seed/indirect paths belum terbukti. Pada candidate entry-0, `li a0,-1` adalah argumen helper, sedangkan delay-slot `move a0,v0` meneruskan helper return ke candidate setter `0x80035DA8`; tidak ada runtime hit pada #40485987817 sampai frame 120. |
+
 | 4(b) Determinisme dan hasil roulette tampak | **SEBAGIAN** | #40474262267, artifact #12719024236, SHA-256 ZIP `cec3404b38afbedbae151fc15e9ec66d9c019ff853e4703f8813acac7793bdf4`: 127 observasi caller/state-before ternormalisasi, final state `0xA99DC6E7\), crop viewport sama pada window itu. | Terminal capture frame 167/169/171 berbeda; belum ada hubungan kausal independen antara caller/state dan hasil roulette visual. |
 | 4(c) Direct/indirect callers, JT, decompressed paths | **SEBAGIAN** | Ghidra #40498208067, audit #40503223693; 5 raw JAL entry-0 (3 decoded); 144 raw candidates entry-1 (108 decoded/50 fungsi, 36 raw-only). | Indirect/JALR/JT menyeluruh, base runtime/reachability, raw-only boundaries, dan code setelah decompress/decrypt belum tersingkir. |
 | 4(d) Caller roulette dan battle | **SEBAGIAN** | Observasi roulette dan static RNG trace di laporan Step 4. | Kaitan caller-ke-hasil roulette tidak kausal; battle checkpoint/caller autentik belum ditelusuri. |
