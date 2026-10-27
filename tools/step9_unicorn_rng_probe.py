@@ -22,6 +22,8 @@ from unicorn.mips_const import (
     UC_MIPS_REG_SP,
     UC_MIPS_REG_GP,
     UC_MIPS_REG_V0,
+    UC_MIPS_REG_A0,
+    UC_MIPS_REG_A1,
 )
 
 EXE_BYTES = 385_024
@@ -40,6 +42,12 @@ RAM_SIZE = 0x200000
 STACK = 0x001FE000
 RETURN_SENTINEL = 0x001FF000
 MAX_INSTRUCTIONS = 128
+SETTER_VIRTUAL = 0x8001387C
+GETTER_VIRTUAL = 0x800138EC
+PLAYER_VALUE_SLOT_VIRTUAL = 0x80070EB8
+PLAYER_VALUE_SLOT = PLAYER_VALUE_SLOT_VIRTUAL & 0x1FFFFFFF
+PLAYER_VALUE_STRIDE = 0xB4
+PLAYER_COUNT = 4
 MULT = 0x41C64E6D
 ADD = 0x3039
 MASK32 = 0xFFFFFFFF
@@ -57,6 +65,149 @@ TEST_STATES = (
 def expected(old: int) -> tuple[int, int]:
     new = (old * MULT + ADD) & MASK32
     return new, (new >> 16) & 0x7FFF
+
+
+def run_simple_function(
+    code: bytes,
+    gp: int,
+    entry_virtual: int,
+    a0: int,
+    a1: int,
+    initial_slots: list[int],
+) -> dict[str, object]:
+    """Run one main-EXE numeric accessor in a fresh RAM-only MIPS machine."""
+    if len(initial_slots) != PLAYER_COUNT:
+        raise ValueError("expected four initialized participant numeric slots")
+    emu = Uc(UC_ARCH_MIPS, UC_MODE_MIPS32 | UC_MODE_LITTLE_ENDIAN)
+    emu.mem_map(RAM_BASE, RAM_SIZE)
+    emu.mem_write(TEXT_BASE, code)
+    for index, value in enumerate(initial_slots):
+        emu.mem_write(
+            PLAYER_VALUE_SLOT + index * PLAYER_VALUE_STRIDE,
+            struct.pack("<I", value & MASK32),
+        )
+    emu.reg_write(UC_MIPS_REG_GP, gp)
+    emu.reg_write(UC_MIPS_REG_SP, STACK)
+    emu.reg_write(UC_MIPS_REG_RA, RETURN_SENTINEL)
+    emu.reg_write(UC_MIPS_REG_A0, a0 & MASK32)
+    emu.reg_write(UC_MIPS_REG_A1, a1 & MASK32)
+    entry = entry_virtual & 0x1FFFFFFF
+    emu.reg_write(UC_MIPS_REG_PC, entry)
+    state: dict[str, object] = {"instructions": 0, "returned": False, "budget_exceeded": False}
+
+    def on_instruction(machine: Uc, address: int, size: int, user_data: dict[str, object]) -> None:
+        if address == RETURN_SENTINEL:
+            user_data["returned"] = True
+            machine.emu_stop()
+            return
+        user_data["instructions"] = int(user_data["instructions"]) + 1
+        if int(user_data["instructions"]) > MAX_INSTRUCTIONS:
+            user_data["budget_exceeded"] = True
+            machine.emu_stop()
+
+    emu.hook_add(UC_HOOK_CODE, on_instruction, state)
+    error = ""
+    try:
+        emu.emu_start(entry, RAM_BASE + RAM_SIZE, count=MAX_INSTRUCTIONS + 1)
+    except UcError as exc:
+        error = str(exc)
+    actual_pc = emu.reg_read(UC_MIPS_REG_PC) & MASK32
+    actual_v0 = emu.reg_read(UC_MIPS_REG_V0) & MASK32
+    actual_slots = [
+        struct.unpack("<I", emu.mem_read(PLAYER_VALUE_SLOT + i * PLAYER_VALUE_STRIDE, 4))[0]
+        for i in range(PLAYER_COUNT)
+    ]
+    return {
+        "entry_virtual": f"0x{entry_virtual:08X}",
+        "a0": f"0x{a0 & MASK32:08X}",
+        "a1": f"0x{a1 & MASK32:08X}",
+        "actual_v0": f"0x{actual_v0:08X}",
+        "actual_pc": f"0x{actual_pc:08X}",
+        "return_to_sentinel": bool(state["returned"]),
+        "instructions": int(state["instructions"]),
+        "budget_exceeded": bool(state["budget_exceeded"]),
+        "emulator_error": error or None,
+        "actual_slots": actual_slots,
+    }
+
+
+def run_player_value_accessor_tests(code: bytes, gp: int) -> list[dict[str, object]]:
+    """Check index guards, signed clamping, and shared getter/setter storage."""
+    original = [0x11111111, 0x22222222, 0x33333333, 0x44444444]
+    setter_inputs = [
+        ("setter_normal", 0, 1234),
+        ("setter_clamp_min", 1, -12000),
+        ("setter_clamp_max", 2, 100000),
+        ("setter_min_boundary", 3, -9999),
+        ("setter_max_boundary", 0, 99999),
+        ("setter_negative_boundary", 1, -9999),
+        ("setter_large_positive", 2, 0x7FFFFFFF),
+        ("setter_large_negative", 3, -0x80000000),
+        ("setter_invalid_index_4", 4, 88),
+        ("setter_invalid_unsigned_index", 0xFFFFFFFF, 88),
+    ]
+    rows: list[dict[str, object]] = []
+    for label, index, value in setter_inputs:
+        expected_slots = original.copy()
+        if index < PLAYER_COUNT:
+            clamped = 99999 if value >= 100000 else (-9999 if value < -9999 else value)
+            expected_slots[index] = clamped & MASK32
+            expected_v0 = 1
+        else:
+            expected_v0 = 0
+        result = run_simple_function(code, gp, SETTER_VIRTUAL, index, value, original)
+        actual_slots = result["actual_slots"]
+        actual_v0 = int(str(result["actual_v0"]), 16)
+        ok = (
+            result["emulator_error"] is None
+            and result["return_to_sentinel"]
+            and not result["budget_exceeded"]
+            and result["actual_pc"] == f"0x{RETURN_SENTINEL:08X}"
+            and actual_v0 == expected_v0
+            and actual_slots == expected_slots
+        )
+        rows.append({
+            "label": label,
+            "entry": f"0x{SETTER_VIRTUAL:08X}",
+            "a0": f"0x{index & MASK32:08X}",
+            "a1": f"0x{value & MASK32:08X}",
+            "expected_v0": f"0x{expected_v0:08X}",
+            "expected_slots": expected_slots,
+            **result,
+            "pass": ok,
+        })
+
+    initial_getter_slots = [1234 & MASK32, -9999 & MASK32, 99999 & MASK32, -1 & MASK32]
+    getter_inputs = [
+        ("getter_slot_0", 0, initial_getter_slots[0]),
+        ("getter_slot_1_negative", 1, initial_getter_slots[1]),
+        ("getter_slot_2_max", 2, initial_getter_slots[2]),
+        ("getter_slot_3_minus_one", 3, initial_getter_slots[3]),
+        ("getter_invalid_index_4", 4, 0),
+        ("getter_invalid_unsigned_index", 0xFFFFFFFF, 0),
+    ]
+    for label, index, expected_v0 in getter_inputs:
+        result = run_simple_function(code, gp, GETTER_VIRTUAL, index, 0, initial_getter_slots)
+        actual_v0 = int(str(result["actual_v0"]), 16)
+        ok = (
+            result["emulator_error"] is None
+            and result["return_to_sentinel"]
+            and not result["budget_exceeded"]
+            and result["actual_pc"] == f"0x{RETURN_SENTINEL:08X}"
+            and actual_v0 == expected_v0
+            and result["actual_slots"] == initial_getter_slots
+        )
+        rows.append({
+            "label": label,
+            "entry": f"0x{GETTER_VIRTUAL:08X}",
+            "a0": f"0x{index & MASK32:08X}",
+            "a1": "0x00000000",
+            "expected_v0": f"0x{expected_v0:08X}",
+            "expected_slots": initial_getter_slots,
+            **result,
+            "pass": ok,
+        })
+    return rows
 
 
 def main() -> int:
@@ -132,9 +283,12 @@ def main() -> int:
         })
 
     all_pass = all(bool(row["pass"]) for row in rows)
+    accessor_rows = run_player_value_accessor_tests(code, gp)
+    accessors_pass = all(bool(row["pass"]) for row in accessor_rows)
+    all_tests_pass = all_pass and accessors_pass
     exe_hash = hashlib.sha256(data).hexdigest()
     lines = [
-        "# Step 9 — validasi fungsi RNG terisolasi dengan Unicorn",
+        "# Step 9 — validasi fungsi RNG dan accessor nilai pemain secara terisolasi dengan Unicorn",
         "",
         "- Scope: hanya menjalankan fungsi MIPS di 0x80035D78 pada executable text yang telah diverifikasi; tidak menjalankan emulator PS1/game, BIOS, event loop, atau input gameplay.",
         "- RAM model: 2 MiB virtual RAM PS1 pada 0x80000000–0x801FFFFF, text EXE dimuat pada alamat header 0x80010000; seluruh RAM lain nol kecuali state RNG dan register awal yang dicatat.",
@@ -155,11 +309,33 @@ def main() -> int:
         )
     lines += [
         "",
+        "## Test terisolasi tambahan — setter/getter nilai peserta",
+        "",
+        "- Scope: hanya fungsi main EXE 0x8001387C dan 0x800138EC dalam RAM 2 MiB; tidak memuat BIOS atau menjalankan game/emulator PS1.",
+        "- Expected setter: indeks 0..3 valid, nilai diklem ke -9999..99999, nilai slot lain tidak berubah; indeks 4/0xFFFFFFFF harus mengembalikan 0 tanpa mengubah tabel.",
+        "- Expected getter: baca word dari slot nilai yang sama untuk indeks 0..3; indeks 4/0xFFFFFFFF harus mengembalikan 0.",
+        "",
+        "| Kasus | Entry | a0 | a1 | v0 harapan | v0 aktual | Slot peserta aktual (hex) | Instruksi | Return | Status |",
+        "|---|---|---|---|---|---|---|---:|---|---|",
+    ]
+    for r in accessor_rows:
+        actual_slots = ",".join(f"0x{int(v):08X}" for v in r["actual_slots"])
+        lines.append(
+            f"| {r['label']} | {r['entry']} | {r['a0']} | {r['a1']} | {r['expected_v0']} | "
+            f"{r['actual_v0']} | {actual_slots} | {r['instructions']} | "
+            f"{'PASS' if r['return_to_sentinel'] else 'NO'} | {'PASS' if r['pass'] else 'FAIL'} |"
+        )
+    lines += [
+        "",
         "## Penilaian",
+
         "",
         f"- ISOLATED_RNG_FUNCTION_EXECUTION={'PASS' if all_pass else 'FAIL'}",
+        f"- ISOLATED_PLAYER_VALUE_ACCESSOR_TESTS={'PASS' if accessors_pass else 'FAIL'}",
+        f"- accessor_cases_passed={sum(1 for r in accessor_rows if r['pass'])}/{len(accessor_rows)}",
+        f"- STEP9_ALL_TESTS={'PASS' if all_tests_pass else 'FAIL'}",
         f"- vectors_passed={sum(1 for r in rows if r['pass'])}/{len(rows)}",
-        "- Status scope: verifikasi dinamis satu fungsi rutin RNG saja. Ini tidak memverifikasi seluruh pemanggil, helper RNG, caller resource, delay-slot semantics di semua jalur, atau gameplay.",
+        "- Status scope: verifikasi dinamis satu rutin RNG dan dua accessor nilai per-peserta saja. Ini tidak memverifikasi seluruh pemanggil, helper RNG/timer di perangkat nyata, caller resource, semua delay-slot/path, atau gameplay.",
         "- Limitasi: Unicorn memodelkan instruksi CPU dan RAM yang disediakan, bukan perangkat keras PS1, BIOS, DMA, GPU, audio, loader game, atau jadwal frame. Tidak ada kesimpulan tentang hasil roulette/battle.",
         "- Data privat: executable hanya dibaca di runner, tidak disimpan pada repo maupun artefak; hanya laporan teks yang boleh diunggah.",
         "",
@@ -167,10 +343,12 @@ def main() -> int:
     report = "\n".join(lines)
     output_path.write_text(report, encoding="utf-8")
     print(report, end="")
-    if not all_pass:
-        print("STEP9_ISOLATED_RNG=FAIL", file=sys.stderr)
+    if not all_tests_pass:
+        print("STEP9_TESTS=FAIL", file=sys.stderr)
         return 1
     print("STEP9_ISOLATED_RNG=PASS")
+    print("STEP9_PLAYER_VALUE_ACCESSORS=PASS")
+    print("STEP9_TESTS=PASS")
     return 0
 
 
