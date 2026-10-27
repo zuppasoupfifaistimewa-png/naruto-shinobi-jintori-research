@@ -426,12 +426,22 @@ jobs:
             printf '# Step 4 RNG runtime result\\n\\n- Actions run: %s\\n- Status: BLOCKIR — no valid runtime summary was produced.\\n- Private assets were not added to Git.\\n' "$GITHUB_RUN_ID" > "$REPORT"
           fi
           API="https://api.github.com/repos/$RESEARCH_REPO/contents/out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md"
-          curl --fail --silent --show-error --location -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API?ref=main" -o "$WORK/current-report.json"
-          SHA="$(jq -r '.sha // empty' "$WORK/current-report.json")"
-          test -n "$SHA"
           CONTENT="$(base64 -w0 "$REPORT")"
-          PAYLOAD="$(jq -n --arg message "Record Step 4 RNG runtime test results [skip ci]" --arg content "$CONTENT" --arg sha "$SHA" '{message:$message,content:$content,sha:$sha,branch:"main"}')"
-          curl --fail --silent --show-error --location -X PUT -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" --data "$PAYLOAD" "$API" -o "$WORK/report-update-response.json"
+          committed=0
+          for attempt in 1 2 3 4; do
+            curl --fail --silent --show-error --location -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API?ref=main" -o "$WORK/current-report.json"
+            SHA="$(jq -r '.sha // empty' "$WORK/current-report.json")"
+            test -n "$SHA"
+            PAYLOAD="$(jq -n --arg message "Record Step 4 RNG runtime test results [skip ci]" --arg content "$CONTENT" --arg sha "$SHA" '{message:$message,content:$content,sha:$sha,branch:"main"}')"
+            set +e
+            curl --fail --silent --show-error --location -X PUT -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" --data "$PAYLOAD" "$API" -o "$WORK/report-update-response.json"
+            rc=$?
+            set -e
+            if [ "$rc" -eq 0 ]; then committed=1; break; fi
+            echo "STEP4_REPORT_COMMIT_RETRY attempt=$attempt curl_rc=$rc"
+            sleep 2
+          done
+          test "$committed" -eq 1
           echo "STEP4_REPORT_COMMIT=PASS"
 
       - name: Remove private files from ephemeral runner
