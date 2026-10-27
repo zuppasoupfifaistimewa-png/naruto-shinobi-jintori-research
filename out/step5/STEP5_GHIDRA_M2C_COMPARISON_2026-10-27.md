@@ -24,7 +24,7 @@ Kecocokan struktur/call token membantu memeriksa bahwa kedua decompiler membahas
 
 ## Keluaran dekompilasi yang disimpan permanen
 
-Kode berikut disalin dari artefak text-only run #40449144521; nama variabel, tipe, dan pseudocode adalah hasil decompiler otomatis. Jangan menganggapnya source code asli.
+Kode berikut adalah rendering yang dirapikan dari keluaran C dalam artefak text-only run #40449144521; beberapa pemenggalan baris/formatasi diringkas, sehingga bukan salinan byte-per-byte dari berkas .c asli. Nama variabel, tipe, dan pseudocode adalah hasil decompiler otomatis; jangan menganggapnya source code asli.
 
 ### `FUN_80015adc` — Ghidra
 
