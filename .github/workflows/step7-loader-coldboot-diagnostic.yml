@@ -152,6 +152,37 @@ jobs:
           fi
           echo "STEP7_PREFLIGHT_STALLED=NO" >> "$OUT/step7-loader.stdout"
 
+          # A/B control: prior -debugger mode with VSync only; no breakpoints,
+          # savestate restore, or button input. This isolates debugger mode.
+          cat > "$WORK/step7-debugger-vsync-control.lua" <<'LUA'
+          local frame=0
+          local function log(s) print(s); pcall(function() io.stdout:flush() end) end
+          step7DebuggerControlListener = PCSX.Events.createEventListener("GPU::Vsync",function()
+            frame=frame+1
+            if frame<=3 or frame%10==0 then log("STEP7_DEBUGGER_CONTROL_VSYNC frame="..frame) end
+            if frame>=80 then
+              log("STEP7_DEBUGGER_CONTROL_DONE frames="..frame)
+              PCSX.quit(0)
+            end
+          end)
+          log("STEP7_DEBUGGER_CONTROL_READY debugger=yes breakpoints=no no_input=no_restore limit_frames=80")
+          LUA
+          printf 'stage=debugger_mode_control\n' > "$OUT/stage.txt"
+          set +e
+          timeout --signal=TERM --kill-after=2s 18s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+            -noupdate -debugger -no-gdb -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+            -exec "$PAD_SETUP" -dofile "$WORK/step7-debugger-vsync-control.lua" -dynarec -softgpu -stdout -lua_stdout -logfile "$WORK/pcsx-control.log" -run \
+            > "$OUT/debugger-control.stdout" 2>&1
+          control_rc=$?
+          set -e
+          control_max="$(sed -n 's/.*STEP7_DEBUGGER_CONTROL_VSYNC frame=\\([0-9][0-9]*\\).*/\\1/p' "$OUT/debugger-control.stdout" | sort -n | tail -n 1)"
+          control_max="${control_max:-0}"
+          {
+            echo "STEP7_DEBUGGER_CONTROL_EXIT=$control_rc"
+            echo "STEP7_DEBUGGER_CONTROL_MAX_FRAME=$control_max"
+            cat "$OUT/debugger-control.stdout"
+          } >> "$OUT/step7-loader.stdout"
+
           cat > "$WORK/step7-loader-probe.lua" <<'LUA'
           local ffi=require("ffi")
           local frame=0
@@ -229,7 +260,7 @@ jobs:
 
           step7ColdBootProgressListener = PCSX.Events.createEventListener("GPU::Vsync",function()
             frame=frame+1
-            if frame==1 or frame%250==0 then
+            if frame<=3 or frame%250==0 then
               log("STEP7_COLD_BOOT_PROGRESS frame="..frame)
             end
             if frame>=3000 then endProbe("BOUNDED_NO_TARGET_HIT") end
@@ -240,7 +271,7 @@ jobs:
           printf 'stage=coldboot_observation\n' > "$OUT/stage.txt"
           set +e
           timeout --signal=TERM --kill-after=5s 70s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-            -noupdate -debugger -no-gdb -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+            -noupdate -no-debugger -no-gdb -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
             -exec "$PAD_SETUP" -dofile "$WORK/step7-loader-probe.lua" -dynarec -softgpu -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
             >> "$OUT/step7-loader.stdout" 2>&1
           rc=$?
@@ -275,7 +306,8 @@ jobs:
           lines=[
             "# Step 7 / Step 4 — cold-boot loader and seed diagnostic",
             "",
-            "- Scope: bounded cold boot of the game using the verified PS-X disc and BIOS; no savestate restore, no gameplay input, no adaptive player, no Story Mode completion attempt.",
+            "- Scope: bounded cold boot using verified PS-X disc/BIOS; no savestate restore, no gameplay input, no adaptive player or Story Mode completion attempt.",
+            "- Observability A/B: 18-second -debugger control with only a VSync listener, then 70-second -no-debugger run with target breakpoints; both cold boots are input-free and restore-free.",
             "- Targets: candidate bootstrap/copy call 0x800AD454 and its return 0x800AD45C; RNG setter candidate 0x80035DA8; RNG entry 0x80035D78.",
             "- Instrumentation emits registers and Adler-32 checksums for the 0x2F00-byte source/destination directory buffers; no RAM dump or private screenshot is produced.",
             "- Script raw log is included below verbatim for audit.",
@@ -288,12 +320,20 @@ jobs:
           after=any("STEP7_LOADER_AFTER" in x for x in useful)
           seed=any("STEP4_COLD_BOOT_SEED_SETTER" in x for x in useful)
           progress=any("STEP7_COLD_BOOT_PROGRESS" in x for x in useful)
+          control_frames=[]
+          for x in useful:
+              m=re.search(r"STEP7_DEBUGGER_CONTROL_VSYNC frame=(\\d+)",x)
+              if m: control_frames.append(int(m.group(1)))
+          control_exit=next((x.split("=",1)[1] for x in useful if x.startswith("STEP7_DEBUGGER_CONTROL_EXIT=")),"UNKNOWN")
           lines += [
             f"- TARGET_LOADER_BEFORE_HIT={'YES' if before else 'NO'}",
             f"- TARGET_LOADER_AFTER_HIT={'YES' if after else 'NO'}",
             f"- COLD_BOOT_SEED_SETTER_HIT={'YES' if seed else 'NO'}",
             f"- VSYNC_PROGRESS_SEEN={'YES' if progress else 'NO'}",
-            "- No-hit is only a negative result within the 3000-frame/70-second observation window; it does not prove the target is absent or unreachable.",
+            f"- DEBUGGER_CONTROL_MAX_VSYNC_FRAME={max(control_frames) if control_frames else 0}",
+            f"- DEBUGGER_CONTROL_EXIT={control_exit}",
+            "- The target probe uses -no-debugger while retaining bounded breakpoint callbacks, to distinguish debugger mode from instrumentation behavior.",
+            "- A no-hit or timeout is only a negative result within the bounded observation window; it does not prove the target is absent or unreachable.",
             "",
             "## Raw evidence lines",
             "",
