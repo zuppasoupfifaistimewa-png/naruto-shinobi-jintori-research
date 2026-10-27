@@ -1,3 +1,14 @@
+# LIVE UPDATE — Step 6 extended field inventory audited, 27 Oktober 2026 19:35 WIB
+
+- Extended static scan [#40504640855](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504640855) completed success at 19:34:31 WIB. Artifact #12733854252: 220,128 bytes; SHA-256 ZIP `90288a1c8b454cbdc45c75e0244d26508628ecf88bfe8e73ed88524c8cb80891`.
+- Runner-only audit [#40504977322](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504977322) completed success at 19:35:51 WIB; artifact #12734840847: 25,756 bytes; SHA-256 ZIP `d022b23548fe95eb34bfbb7a7fb0dd190a498ca54fff11516818138701920398`. Metadata/digest checks passed, cleanup PASS.
+- In the entry-1 hypothetical base view, direct memory inventory counts for `+0xB30`: 1 read/0 write; `+0xB38`: 1 read/0 write; `+0xB40`: 0 read/1 write; `+0xB44`: 1 read/1 write. These are statically verified operand observations, not verified field semantics.
+- Direct displacement inventory emitted completely between delimiters and below the runner report’s 30,001-line output cap; priority offsets have no per-offset report cap. Still not a whole-program alias/pointer analysis; base `0x800D0000` remains hypothesis. Step 6 SEBAGIAN.
+- Overall status stays Step 4 SEBAGIAN; Step 5 TUNTAS for four functions only; Step 6 SEBAGIAN; Step 7 SEBAGIAN; Step 8 SEBAGIAN; Step 9 TUNTAS only for `0x80035D78`; Step 10 TUNTAS as criteria matrix only. Story Mode TIDAK TERBUKTI TAMAT.
+- No gameplay, input, savestate restore, adaptive-player changes or private game assets in artifacts/Git.
+
+Detailed evidence and limits: docs/STEP6_TARGET_XREF_SEMANTIC_REVIEW_2026-10-27.md and docs/STEP4_10_CLOSURE_REPORT_2026-10-27.md.
+
 # CHECKPOINT LIVE — reverse engineering Steps 4–10 — 27 Oktober 2026, verifikasi 19:22–19:24 WIB
 
 Current source repo is the only repo used. Latest substantive verified commit before these document updates: runner audit workflow commit 555b84a4d178b41e4d04705e1700104bd41ed1d3. Ghidra analysis #40498208067 completed success at 19:14:42 WIB. Step 6 field scan #40500058788 completed success at 18:59:18 WIB. Runner-only artifact audit [#40503223693](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40503223693) completed success at 19:22:30 WIB and produced text-only artifact #12733512950 (13,079 bytes, ZIP SHA-256 382773f9a421835bc97c448c630a2ea5d3891309bb34094f5a67027548c03414).
