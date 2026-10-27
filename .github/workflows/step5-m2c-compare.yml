@@ -1,0 +1,54 @@
+name: Step 5 — Ghidra/m2c same-function comparison
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/step5-m2c-compare.yml"
+      - "tools/step5_m2c_compare.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: step5-m2c-comparison
+  cancel-in-progress: false
+
+jobs:
+  toolchain-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout research repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install pinned MIPS disassembler and m2c
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-input "spimdisasm==1.42.4" "m2c==0.1.0"
+          python -m pip show spimdisasm m2c > "$RUNNER_TEMP/step5-tool-versions.txt"
+
+      - name: Capture CLI options for reproducible same-function pipeline
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/step5_m2c_compare.py --probe "$RUNNER_TEMP/step5-tool-probe.txt"
+          cat "$RUNNER_TEMP/step5-tool-versions.txt" "$RUNNER_TEMP/step5-tool-probe.txt"
+
+      - name: Upload text-only toolchain probe
+        uses: actions/upload-artifact@v4
+        with:
+          name: step5-m2c-tool-probe
+          path: |
+            ${{ runner.temp }}/step5-tool-versions.txt
+            ${{ runner.temp }}/step5-tool-probe.txt
+          if-no-files-found: error
+          retention-days: 14
