@@ -136,9 +136,29 @@ jobs:
             echo "game_binary_committed_to_git=no"
             echo "game_binary_uploaded_as_artifact=no"
           } > "$out/input-validation.txt"
-          # Keep only the verified executable for Ghidra; discard the disc image and extracted filesystem.
+          # Also retain one verified data file temporarily so Step 5 can extract a single catalogued resource.
+          data_candidate="$source_dir/extracted-root/DATA.BIN"
+          data_bin="$exe_dir/DATA.BIN"
+          if [[ ! -f "$data_candidate" ]]; then
+            echo "::error::DATA.BIN was not found in the verified disc filesystem."
+            exit 1
+          fi
+          cp "$data_candidate" "$data_bin"
+          if [[ "$(stat -c '%s' "$data_bin")" != "66015232" ]] || ! echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $data_bin" | sha256sum --check --status; then
+            rm -f "$data_bin"
+            echo "::error::Extracted DATA.BIN size or SHA-256 mismatch; data file discarded."
+            exit 1
+          fi
+          {
+            echo "data_bin_bytes=66015232"
+            echo "data_bin_sha256=69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822"
+            echo "data_bin_temporary_runner_only=yes"
+            echo "data_bin_uploaded_as_artifact=no"
+          } >> "$out/input-validation.txt"
+
+          # Keep the verified executable and DATA.BIN temporarily; discard disc image and extraction tree.
           rm -rf "$source_dir"
-          echo "Release BIN/CUE validated and SLPS_035.53 extracted and verified."
+          echo "Release BIN/CUE validated; SLPS_035.53 and DATA.BIN verified."
           
       - name: Set up Java runtime
         uses: actions/setup-java@v6
@@ -262,6 +282,81 @@ jobs:
             echo "binary_uploaded_as_artifact=no"
           } > "$out/analysis-result.txt"
           echo "Ghidra analysis succeeded; exported $count function rows."
+
+      - name: Extract and statically analyze DATA.BIN resource entry 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/ghidra-output"
+          databin="$RUNNER_TEMP/ghidra-input/DATA.BIN"
+          resource="$RUNNER_TEMP/ghidra-input/DATA_BIN_ENTRY_0001.bin"
+          python3 - "$databin" "$resource" <<'PY'
+          from pathlib import Path
+          import hashlib
+          import sys
+
+          source, destination = map(Path, sys.argv[1:3])
+          offset = 0x10BB000
+          size = 596412
+          data = source.read_bytes()
+          if len(data) != 66015232:
+              raise SystemExit(f"Unexpected DATA.BIN size: {len(data)}")
+          if hashlib.sha256(data).hexdigest() != "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822":
+              raise SystemExit("DATA.BIN SHA-256 mismatch; refusing to extract resource.")
+          entry = data[offset:offset + size]
+          if len(entry) != size:
+              raise SystemExit(f"Unexpected resource slice length: {len(entry)}")
+          destination.write_bytes(entry)
+          print(f"resource_index=1")
+          print(f"file_offset=0x{offset:X}")
+          print(f"bytes={len(entry)}")
+          print(f"sha256={hashlib.sha256(entry).hexdigest()}")
+          PY
+
+          headless="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
+          if [[ -z "$headless" || ! -x "$headless" ]]; then
+            echo "::error::Ghidra headless launcher unavailable for overlay survey."
+            exit 1
+          fi
+          project="$RUNNER_TEMP/ghidra-overlay-project"
+          mkdir -p "$project"
+          {
+            echo "resource=DATA.BIN entry index 1"
+            echo "file_offset=0x10BB000"
+            echo "bytes=596412 (0x919BC)"
+            echo "input_sha256=$(sha256sum "$resource" | awk '{print $1}')"
+            echo "hypothetical_load_address=0x800D0000"
+            echo "load_address_status=STATIC_HYPOTHESIS_NOT_RUNTIME_VALIDATED"
+            echo "main_game_or_emulator_executed=no"
+            echo "resource_binary_uploaded_as_artifact=no"
+          } > "$out/data-bin-entry1-validation.txt"
+          set +e
+          "$headless" "$project" DATA_BIN_entry_0001             -import "$resource"             -loader BinaryLoader             -loader-baseAddr 0x800D0000             -loader-length 0x919BC             -loader-blockName DATA_BIN_ENTRY_0001             -processor "MIPS:LE:32:default"             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra"             -preScript PrepareOverlayResource.java             -postScript ExportFunctionIndex.java "$out/data-bin-entry1-functions.tsv"             -postScript ExportOverlaySurvey.java "$out/data-bin-entry1-overlay-survey.txt"             -analysisTimeoutPerFile 1800             -max-cpu 2             -deleteProject > "$out/overlay-ghidra-headless.log" 2>&1
+          status=$?
+          set -e
+          if [[ "$status" -ne 0 ]]; then
+            echo "status=FAILED" > "$out/data-bin-entry1-analysis-result.txt"
+            echo "exit_code=$status" >> "$out/data-bin-entry1-analysis-result.txt"
+            tail -n 100 "$out/overlay-ghidra-headless.log" || true
+            exit "$status"
+          fi
+          if [[ ! -s "$out/data-bin-entry1-functions.tsv" || ! -s "$out/data-bin-entry1-overlay-survey.txt" ]]; then
+            echo "status=FAILED; missing or empty text-only survey output" > "$out/data-bin-entry1-analysis-result.txt"
+            echo "::error::Overlay analysis outputs missing or empty."
+            exit 1
+          fi
+          count="$(awk 'END { if (NR > 1) print NR - 1; else print 0 }' "$out/data-bin-entry1-functions.tsv")"
+          {
+            echo "status=SUCCESS"
+            echo "resource=DATA.BIN entry index 1"
+            echo "resource_sha256=$(sha256sum "$resource" | awk '{print $1}')"
+            echo "resource_bytes=596412"
+            echo "hypothetical_load_address=0x800D0000"
+            echo "function_rows=$count"
+            echo "interpretation=static candidate mapping only; runtime loader and entry point not yet proven"
+            echo "resource_binary_uploaded_as_artifact=no"
+          } > "$out/data-bin-entry1-analysis-result.txt"
+          echo "Static overlay survey exported $count function rows."
 
       - name: Upload text-only Ghidra results
         if: always()
