@@ -17,7 +17,13 @@ jobs:
     steps:
       - name: Checkout permitted research repository
         uses: actions/checkout@v4
-      - name: Run actionlint on the Step 7 workflow
-        uses: rhysd/actionlint@v1.7.7
-        with:
-          files: .github/workflows/step7-loader-coldboot-diagnostic.yml
+      - name: Install pinned actionlint and validate the Step 7 workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=1.7.7
+          curl --fail --location --silent --show-error --retry 2 --max-time 60 \
+            "https://github.com/rhysd/actionlint/releases/download/v${version}/actionlint_${version}_linux_amd64.tar.gz" \
+            --output "$RUNNER_TEMP/actionlint.tar.gz"
+          tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
+          "$RUNNER_TEMP/actionlint" -color .github/workflows/step7-loader-coldboot-diagnostic.yml
