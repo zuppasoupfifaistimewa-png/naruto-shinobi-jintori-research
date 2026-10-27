@@ -1,3 +1,17 @@
+## LIVE ADDENDUM — arti fungsi yang makin jelas, aturan gameplay tetap terbuka (27 Oktober 2026, 20:50 WIB)
+
+Run [#40515356524](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524) / artifact [#12739676233](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524/artifacts/12739676233) menambah cross-check same-address Ghidra/m2c untuk 13 fungsi inti main EXE; metadata parser PASS, output C nonempty 13/13, dan m2c exit 0 pada seluruh target. Digest ZIP yang diverifikasi lokal: `94d866f9c991b323a64f283da93359620c04ff8859d4c8fb53f4eb857c745f5d`. Ini memvalidasi struktur pseudocode lintas decompiler, bukan source asli atau aturan game lengkap.
+
+- **TERVERIFIKASI-STATIS:** `0x8001387C` menerima indeks 0–3, menjepit nilai ke −9999…99999, lalu menulis nilai ke per-peserta record; `0x800138EC` membaca slot yang sama dan mengembalikan 0 untuk indeks tidak valid. Konteks lebih luas mengidentifikasi pasangan ini sebagai jalur pengelolaan nilai Chakra, tetapi aturan biaya/refund dan alasan caller memperbarui nilai belum terbukti.
+- **TERVERIFIKASI-STATIS:** `0x80037138` tidak hanya mengembalikan counter: pada `a0<0` ia mengembalikan `0x80066E7C`; pada `a0==1` ia mengembalikan delta timer 16-bit; jalur argumen lain berinteraksi dengan `0x800372B0` dan state timer. `0x80037B58` mereset counter dan membersihkan delapan slot callback; `0x80037BB0` menaikkan counter dan mengirim panggilan tidak langsung ke callback nonzero.
+- **HIPOTESIS:** entry-0 kandidat pada base `0x800AD000` dapat meneruskan nilai balik helper-counter ke setter kandidat RNG `0x80035DA8`. Karena base/reachability/callsite runtime belum tertangkap, belum terverifikasi sebagai seed boot atau sumber yang menyebabkan hasil roulette.
+- **UNKNOWN:** fungsi yang dituju `0x80012A70` tidak ditemukan sebagai function entry/body dalam output Ghidra yang dipakai pada run awal perluasan #40512956924. Oleh sebab itu, klaim getter-target di alamat persis ini belum mendapat cross-check fungsi independen pada percobaan tersebut; verifikasi raw instruction/function boundary masih diperlukan.
+- **UNKNOWN:** biaya resource, formula barrier/upgrade, giliran/battle/roulette, efek kartu, syarat menang/kalah, dan arti field resource `+0xB30/+0xB38/+0xB40/+0xB44`. Tidak ada status aturan yang naik hanya karena 13 fungsi selesai dibandingkan.
+
+**Status Langkah 8 tetap SEBAGIAN.** Uraian fungsi internal makin kuat, tetapi belum ada rantai bukti penuh yang menghubungkan kondisi state → pemeriksaan biaya/target → perubahan state → transisi hasil pada mekanika gameplay.
+
+---
+
 # STEP 8 ADDENDUM — new static dataflow, semantics unchanged (27 Oktober 2026)
 
 # UPDATE — Step 6 provenance scan did not change gameplay semantics (27 Oktober 2026, 20:25 WIB)
