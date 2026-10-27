@@ -1,5 +1,15 @@
 # STEP 8 ADDENDUM — new static dataflow, semantics unchanged (27 Oktober 2026)
 
+# UPDATE — Step 6 provenance scan did not change gameplay semantics (27 Oktober 2026, 20:25 WIB)
+
+**Checkpoint terbaru Step 6 (27 Oktober 2026, 20:25 WIB):** scanner provenance di https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/0afc0eec4a5c12e4df5a17c771c8b0d28d7a99dd dijalankan oleh [Actions #40511758146](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40511758146) — completed/success pada 20:25:48 WIB. Artifact [#12737611770](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40511758146/artifacts/12737611770), 229.233 byte, SHA-256 ZIP `b84ff017cdbefb8ece6d04a7c8bef66b3fdc27b61412e91e10cc01485225b126`; digest API sama dengan SHA lokal. Enam anggota ZIP hanya teks/log; `text_only_output_count=6`, `private_binary_in_artifact=no`, `STEP6_PRIVATE_CLEANUP=PASS`. Fixture parser operand dan fixture pembentukan alamat `lui/ori/addiu/sign-extension` benar-benar mengeluarkan PASS. Laporan: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP6_REGISTER_PROVENANCE_AUDIT_2026-10-27.md.
+
+The new bounded backwards register trace helps identify where direct memory-operand base provenance becomes unresolved, but did not add an independent corroborating source for any gameplay rule. The `+0xB30/+0xB38 → addu → +0xB40` operation and the `+0xB44` store/read remain static operation/data-transfer facts only. **Step 8 remains SEBAGIAN**; costs, barrier/upgrade, battle, roulette/turn rules, card effects and win/loss conditions remain UNKNOWN. No field is newly named Chakra, cost, turn, barrier or level-up.
+
+---
+
+
+
 Step 6 scan cross-check adds a limited static chain: B30 and B38 are loaded, summed, and stored to B40; B44 is zeroed in one candidate initialization branch and read to argument a2 before candidate call 0x8001B364. This is under hypothetical DATA.BIN entry-1 base 0x800D0000; it does not establish runtime mapping, object identity, or semantics. No field has enough independent evidence to be labelled cost, Chakra, barrier, turn or level-up.
 
 Step 8 remains SEBAGIAN. Rule table for resource cost, barrier/upgrade, battle/roulette/turn order, cards and victory/loss remains UNKNOWN; several function boundaries/decompilations are still unreliable. Do not infer rules from offsets or UI text alone. See [live reconciliation](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP4_10_LIVE_RECONCILIATION_2026-10-27.md).
