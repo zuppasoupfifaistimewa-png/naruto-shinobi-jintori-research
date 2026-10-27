@@ -1,3 +1,48 @@
+# LIVE ADDENDUM — setter/getter CPU-isolated tests, 27 Oktober 2026 21:00 WIB
+
+Artifact [#12740305973](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810/artifacts/12740305973) was created by run [#40516755810](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810). Artifact size 4,567 bytes; API digest and local SHA-256 match `bf1a702074849b2592bfc5555a0d493b5ed86d3de0b9895a192db7fdf9f80cd4`. It contains four text/log files only: the report, stage marker, probe log and disc extraction log. The report's observed result markers are `ISOLATED_RNG_FUNCTION_EXECUTION=PASS`, `ISOLATED_PLAYER_VALUE_ACCESSOR_TESTS=PASS`, `accessor_cases_passed=16/16`, `vectors_passed=7/7`, `STEP9_ALL_TESTS=PASS`, and `stage=isolated_function_pass`.
+
+**Important metadata caveat:** when checked at 21:00 WIB, the GitHub API still reported the run and job as `queued` despite the artifact already being present and containing actual output for all tests. Therefore this report treats the test output as verified from the artifact contents but does **not** infer a run-level conclusion or claim cleanup success from the stale API status. Recheck the run/job metadata later before marking the whole Actions workflow completed. This inconsistency does not alter the test assertions visible in the artifact.
+
+## Additional test set — player value setter/getter
+
+Functions are executed in fresh RAM-only Unicorn instances using the verified main EXE text, 2 MiB RAM, GP from the verified header, SP `0x001FE000`, RA sentinel `0x001FF000), and a 128-instruction budget. No PS1 emulator, BIOS, game loop, gameplay input or savestate is used. The tested slot base is `0x80070EB8`, stride `0xB4`, four slots. The address/stride/field relationship comes from Ghidra/m2c cross-check of `0x8001387C` and `0x800138EC); field meaning is not independently renamed by this test.
+
+### Setter `0x8001387C` — 10/10 assertions passed
+
+| Case | Index (`a0`) | Input (`a1`) | Expected return `v0` | Expected slot result | Actual | Status |
+|---|---:|---:|---:|---|---|---|
+| Normal value | 0 | 1234 | 1 | slot 0 = 1234; other slots unchanged | Return/slots match | PASS |
+| Clamp minimum | 1 | −12000 | 1 | slot 1 = −9999 | Return/slots match | PASS |
+| Clamp maximum | 2 | 100000 | 1 | slot 2 = 99999 | Return/slots match | PASS |
+| Minimum boundary | 3 | −9999 | 1 | slot 3 = −9999 | Return/slots match | PASS |
+| Maximum boundary | 0 | 99999 | 1 | slot 0 = 99999 | Return/slots match | PASS |
+| Negative boundary repeat | 1 | −9999 | 1 | slot 1 = −9999 | Return/slots match | PASS |
+| Extreme positive | 2 | 2147483647 | 1 | slot 2 = 99999 | Return/slots match | PASS |
+| Extreme negative | 3 | −2147483648 | 1 | slot 3 = −9999 | Return/slots match | PASS |
+| Invalid index | 4 | 88 | 0 | no slots change | Return/slots match | PASS |
+| Unsigned invalid index | `0xFFFFFFFF` | 88 | 0 | no slots change | Return/slots match | PASS |
+
+### Getter `0x800138EC` — 6/6 assertions passed
+
+| Case | Index (`a0`) | Slot contents prepared | Expected `v0` | Actual | Status |
+|---|---:|---|---:|---:|---|
+| Slot 0 | 0 | 1234 | 1234 | 1234 | PASS |
+| Slot 1 negative | 1 | −9999 | −9999 | −9999 | PASS |
+| Slot 2 maximum | 2 | 99999 | 99999 | 99999 | PASS |
+| Slot 3 all-bits-one | 3 | `0xFFFFFFFF` | `0xFFFFFFFF` | `0xFFFFFFFF` | PASS |
+| Invalid index | 4 | — | 0 | 0 | PASS |
+| Unsigned invalid index | `0xFFFFFFFF` | — | 0 | 0 | PASS |
+
+## Acceptance change and remaining coverage
+
+- **VERIFIED (isolated function execution):** the seven RNG vectors remain 7/7; the setter clamps to signed bounds ([-9999,99999]), returns 1 for indices 0–3, and returns 0 without mutation for invalid indices; the getter returns the contents of the same slot for valid indices and returns 0 for invalid indices. All 16 setter/getter cases returned to the sentinel with no instruction-budget overflow and matched expected register/memory values.
+- **SCOPE LIMIT:** this proves the two routines' behavior under the tested register/memory setup. It does not prove which gameplay event calls them, whether the slot is charged/refunded in a specific rule, runtime resource mapping, all caller contexts, or PS1 hardware/runtime behavior. Do not derive barrier/upgrade/turn/victory rules from this test alone.
+- **Step 9(b) changes from UNKNOWN to SEBAGIAN**, because meaningful additional functions and boundary conditions now have test oracles and assertions. It is not TUNTAS: other required helper, target-compare, transition and failure paths have not been enumerated/tested completely. Step 9 overall therefore remains **SEBAGIAN**; only 9(a) (RNG routine) is TUNTAS and the new accessor subset is verified.
+- The original RNG-only report below is retained as historical provenance for run #40474891838; this addendum supplements it rather than replacing its input vectors/results.
+
+---
+
 # Langkah 9 — eksekusi fungsi RNG MIPS secara terisolasi
 
 Tanggal: 27 Oktober 2026  
