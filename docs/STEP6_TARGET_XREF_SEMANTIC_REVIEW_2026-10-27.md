@@ -1,3 +1,11 @@
+# LIVE ADDENDUM — CFG/SSA cross-check, 27 Oktober 2026 21:41 WIB
+
+Run #40522772847 succeeded with text artifact #12741234990 (234.210 B; SHA-256 ZIP `7ee636b8e687c5163873cdd40c82a02e8c8617885a0863b1e5a196b6eed1eac9`). New report: [STEP6_CFG_SSA_DATAFLOW_AUDIT_2026-10-27.md](STEP6_CFG_SSA_DATAFLOW_AUDIT_2026-10-27.md).
+
+The Ghidra view validates function entries `0x8012C544` and `0x8012CACC` on assumed entry-1 base `0x800D0000`. High-level P-code records 88 ops / 7 field-offset matches for the init/aggregate function and 47 ops / 2 matches for the separate `+0xB44) consumer. The first function's init path reads `+0xB30/+0xB38), adds and writes `+0xB40`; the next function has a `CBRANCH` at `0x8012CAF8` and a `MULTIEQUAL` merge at `0x8012CB20`. This is improved control-flow evidence, but pointer slot `0x8013A554` still has no validated runtime value and the alias path does not close across functions. Do not assign game-semantic names to offsets. Step 6 remains **SEBAGIAN**, with 6(b) **BLOCKED** and 6(d) **UNKNOWN**.
+
+---
+
 # STEP 6 ADDENDUM — direct operand census and B44 consumer cross-check (27 Oktober 2026)
 
 # LIVE UPDATE — bounded register provenance run #40511758146 (27 Oktober 2026, 20:25 WIB)
