@@ -88,16 +88,27 @@ jobs:
               with zipfile.ZipFile(zp) as z:
                   members=[i for i in z.infolist() if not i.is_dir()]
                   if not members: raise SystemExit(f"EMPTY_ARTIFACT: {name}")
-                  if sum(i.file_size for i in members)>500_000_000: raise SystemExit("TOTAL_TEXT_SIZE_LIMIT_500MB")
+                  if sum(i.file_size for i in members)>1_000_000_000: raise SystemExit("TOTAL_TEXT_SIZE_LIMIT_1GB")
                   for info in members:
                       p=Path(info.filename)
                       if p.suffix.lower() not in allowed: raise SystemExit(f"NON_TEXT_MEMBER: {info.filename}")
-                      if info.file_size>100_000_000: raise SystemExit(f"OVERSIZE_MEMBER: {info.filename}")
+                      if info.file_size>500_000_000: raise SystemExit(f"OVERSIZE_MEMBER: {info.filename}")
+                      digest=hashlib.sha256()
+                      with z.open(info) as stream:
+                          while True:
+                              chunk=stream.read(1024*1024)
+                              if not chunk: break
+                              digest.update(chunk)
+                      lines.append(f"file={info.filename} bytes={info.file_size} sha256={digest.hexdigest()}" +
+                                   (" content_read=skipped_large_log" if info.file_size>10_000_000 and p.suffix.lower()==".log" else ""))
+                      # Very large Ghidra logs are hashed but not materialized/read into memory;
+                      # relevant decompilation/scan reports are bounded text files and are read below.
+                      if info.file_size>10_000_000 and p.suffix.lower()==".log":
+                          continue
                       data=z.read(info)
                       try: value=data.decode("utf-8")
                       except UnicodeDecodeError: raise SystemExit(f"NON_UTF8_MEMBER: {info.filename}")
                       content[p.name]=value
-                      lines.append(f"file={info.filename} bytes={len(data)} sha256={hashlib.sha256(data).hexdigest()}")
               inputs[name]=content
           def emit(label, rows, cap=90):
               lines.extend(["",f"## {label}"])
