@@ -279,7 +279,7 @@ jobs:
           control_exit=next((x.split("=",1)[1] for x in useful if x.startswith("STEP7_DEBUGGER_CONTROL_EXIT=")),"UNKNOWN")
           lines += [
             f"- SINGLE_BREAKPOINT_HIT={'YES' if hit_match else 'NO'}",
-            f"- SINGLE_BREAKPOINT_PC=0x{hit_match.group(1) if hit_match else '800AD454'}",
+            f"- SINGLE_BREAKPOINT_PC=0x{hit_match.group(1) if hit_match else '80035DA8'}",
             f"- SINGLE_BREAKPOINT_FIRST_HIT_FRAME={hit_match.group(2) if hit_match else 'UNKNOWN'}",
             f"- SINGLE_BREAKPOINT_FIRST_HIT_COUNT={hit_match.group(3) if hit_match else '0'}",
             f"- SINGLE_BREAKPOINT_A0={'0x'+hit_match.group(4) if hit_match and hit_match.group(4) else 'UNKNOWN'}",
