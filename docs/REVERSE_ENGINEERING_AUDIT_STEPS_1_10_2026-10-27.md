@@ -72,6 +72,8 @@ Instruksi di 0x80035DA8 cocok dengan penulisan argumen pertama ke state yang sam
 - Pemanggilan setter di resource tidak otomatis berarti transaksi biaya; caller bisa menyalin, menyinkronkan, atau memulihkan nilai.
 - Survei entry 1 mencatat sembilan call sites menuju 0x8001387C pada base hipotetis: 0x800D6D60, 0x800D6E04, 0x800D7AB0, 0x800D7B14, 0x800D8DE8, 0x800E1848, 0x8011C198, 0x80104790, dan 0x801016E8. Alamat runtime resource belum terverifikasi.
 
+Dekompilasi statis kandidat entry 1 pada 0x8011C0D0 menunjukkan cabang yang membandingkan argumen dengan global state; jika nilainya berbeda, ia memperbarui global dan sebuah field pada struktur. Pada cabang argumen nonzero, ia mengiterasi peserta dengan stride 0x90, membalik tanda word pada field +0x04, menjepit hasil minimum ke -9999, lalu mengirim nilai itu ke setter main EXE 0x8001387C untuk setiap peserta. Jalur dapat memanggil helper 0x8003F5D0 dan FUN_800F96A4. **VERIFIED hanya sebagai urutan instruksi/dekompilasi pada base kandidat**; pemicu/makna mode dan alamat runtime resource tetap provisional. Ini tidak membuktikan biaya barrier atau nama aturan seperti "red debt".
+
 ### Cabang perbandingan target di entry 1
 
 Pada base analisis **hipotetis** 0x800D0000, enam kandidat 0x80111228, 0x801112CC, 0x801113B4, 0x801114F0, 0x80111588, dan 0x80112418 memanggil getter target 0x80012A70. Dua referensi tambahan berada di call sites 0x8012AA2C dan 0x80137C34; referensi itu sendiri tidak menetapkan jalur kemenangan.
