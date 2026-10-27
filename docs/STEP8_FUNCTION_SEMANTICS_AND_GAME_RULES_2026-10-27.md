@@ -33,7 +33,7 @@ Status: **SEBAGIAN**. Beberapa operasi data dapat dijelaskan dengan keyakinan ti
 
 ## Data konfigurasi dan resource
 
-- Tabel main EXE pada `0x80057798` (record stride `0x54)) memuat nilai seperti 1500, 3000, dan 400 pada posisi field awal dari sejumlah record. Nilai tersebut **TERVERIFIKASI-STATIS sebagai isi record**, tetapi arti semua kolom dan pemetaan ID ke mode/stage belum ditetapkan seluruhnya.
+- Tabel konfigurasi main EXE pada `0x80057798` (stride record `0x54`) memuat nilai seperti 1500, 3000, dan 400 pada sejumlah record. Aliran statis di [peta loader/overlay](OVERLAY_MAP.md) menghubungkan field `+0x04` ke global `0x80070C80` yang dipakai pada inisialisasi Chakra, dan field `+0x08` ke getter target `0x80012A70`; hubungan ini berlaku untuk jalur pemuatan konfigurasi yang dianalisis, bukan label semantik semua record. Field `+0x0C` mengalir ke getter `0x80012A90`, tetapi artinya tetap **UNKNOWN**. Pemetaan ID mentah ke mode/stage masih belum lengkap; ini tidak membuktikan formula biaya atau aturan gameplay universal.
 - Direktori bootstrap DATA.BIN memiliki 1.504 entry (1.500 aktif). Struktur direktorinya didukung bukti byte-level; makna seluruh resource dan alamat muat runtime belum terbukti.
 - Base entry 0 `0x800AD000` dan entry 1 `0x800D0000` tetap **HIPOTESIS**. Peta statis tidak boleh diperlakukan sebagai peta memori aktual game berjalan.
 
