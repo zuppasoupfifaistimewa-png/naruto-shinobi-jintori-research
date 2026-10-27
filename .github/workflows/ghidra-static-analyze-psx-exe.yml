@@ -386,7 +386,7 @@ jobs:
             echo "resource_binary_uploaded_as_artifact=no"
           } > "$out/data-bin-entry1-validation.txt"
           set +e
-          "$headless" "$project" DATA_BIN_entry_0001             -import "$resource"             -loader BinaryLoader             -loader-baseAddr 0x800D0000             -loader-length 0x919BC             -loader-blockName DATA_BIN_ENTRY_0001             -processor "MIPS:LE:32:default"             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra"             -preScript PrepareOverlayResource.java             -postScript ExportFunctionIndex.java "$out/data-bin-entry1-functions.tsv"             -postScript ExportOverlaySurvey.java "$out/data-bin-entry1-overlay-survey.txt"             -analysisTimeoutPerFile 1800             -max-cpu 2             -deleteProject > "$out/overlay-ghidra-headless.log" 2>&1
+          "$headless" "$project" DATA_BIN_entry_0001             -import "$resource"             -loader BinaryLoader             -loader-baseAddr 0x800D0000             -loader-length 0x919BC             -loader-blockName DATA_BIN_ENTRY_0001             -processor "MIPS:LE:32:default"             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra"             -preScript PrepareOverlayResource.java             -postScript ExportFunctionIndex.java "$out/data-bin-entry1-functions.tsv"             -postScript ExportOverlaySurvey.java "$out/data-bin-entry1-overlay-survey.txt"             -postScript ExportTargetCallers.java "$out/data-bin-entry1-rng-callers.txt" 0x80035D78 0x80035DA8             -analysisTimeoutPerFile 1800             -max-cpu 2             -deleteProject > "$out/overlay-ghidra-headless.log" 2>&1
           status=$?
           set -e
           if [[ "$status" -ne 0 ]]; then
@@ -395,7 +395,7 @@ jobs:
             tail -n 100 "$out/overlay-ghidra-headless.log" || true
             exit "$status"
           fi
-          if [[ ! -s "$out/data-bin-entry1-functions.tsv" || ! -s "$out/data-bin-entry1-overlay-survey.txt" ]]; then
+          if [[ ! -s "$out/data-bin-entry1-functions.tsv" || ! -s "$out/data-bin-entry1-overlay-survey.txt" || ! -s "$out/data-bin-entry1-rng-callers.txt" ]]; then
             echo "status=FAILED; missing or empty text-only survey output" > "$out/data-bin-entry1-analysis-result.txt"
             echo "::error::Overlay analysis outputs missing or empty."
             exit 1
@@ -464,6 +464,7 @@ jobs:
             -preScript PrepareEntry0Helper.java \
             -postScript ExportFunctionIndex.java "$out/data-bin-entry0-functions.tsv" \
             -postScript ExportEntry0Helper.java "$out/data-bin-entry0-helper.txt" \
+            -postScript ExportTargetCallers.java "$out/data-bin-entry0-rng-callers.txt" 0x80035D78 0x80035DA8 \
             -analysisTimeoutPerFile 1800 \
             -max-cpu 2 \
             -deleteProject > "$out/entry0-ghidra-headless.log" 2>&1
@@ -475,7 +476,7 @@ jobs:
             tail -n 100 "$out/entry0-ghidra-headless.log" || true
             exit "$status"
           fi
-          if [[ ! -s "$out/data-bin-entry0-functions.tsv" || ! -s "$out/data-bin-entry0-helper.txt" ]]; then
+          if [[ ! -s "$out/data-bin-entry0-functions.tsv" || ! -s "$out/data-bin-entry0-helper.txt" || ! -s "$out/data-bin-entry0-rng-callers.txt" ]]; then
             echo "::error::Entry 0 function index or helper decompilation is missing."
             exit 1
           fi
