@@ -5,6 +5,8 @@ on:
   push:
     paths:
       - ".github/workflows/ghidra-static-analyze-psx-exe.yml"
+      - "tools/ghidra/**"
+      - "tools/psx_rng_signature_scan.py"
 
 permissions:
   contents: read
