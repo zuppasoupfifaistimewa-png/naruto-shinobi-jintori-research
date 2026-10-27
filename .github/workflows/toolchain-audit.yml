@@ -27,6 +27,7 @@ jobs:
       GHIDRA_CACHE_DIR: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
       MKPSXISO_VERSION: "2.30"
       MKPSXISO_ARCHIVE: "mkpsxiso-2.30-Linux.zip"
+      MKPSXISO_SHA256: "8e387e6db51dee3eb7cb08f4d59293a24c48f58bd541631acf9301d78015a1fc"
       M2C_COMMIT: "c632946b8cfbe8fce442b522dba92dfa72f1f317"
       SPLAT64_VERSION: "0.50.1"
       UNICORN_VERSION: "2.1.4"
@@ -106,6 +107,7 @@ jobs:
           archive="$RUNNER_TEMP/$MKPSXISO_ARCHIVE"
           url="https://github.com/Lameguy64/mkpsxiso/releases/download/v$MKPSXISO_VERSION/$MKPSXISO_ARCHIVE"
           curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 3 --retry-delay 2 "$url" --output "$archive"
+          echo "$MKPSXISO_SHA256  $archive" | sha256sum --check --status
           echo "mkpsxiso_archive_sha256=$(sha256sum "$archive" | awk '{print $1}')"
           install_dir="$RUNNER_TEMP/mkpsxiso"
           mkdir -p "$install_dir"
@@ -197,6 +199,7 @@ jobs:
             echo "ghidra_asset_sha256=$GHIDRA_SHA256"
             echo "ghidra_cache_hit=${{ steps.ghidra-cache.outputs.cache-hit }}"
             echo "mkpsxiso_expected=$MKPSXISO_VERSION"
+            echo "mkpsxiso_expected_sha256=$MKPSXISO_SHA256"
             echo "mkpsxiso_archive_sha256=$(sha256sum "$RUNNER_TEMP/$MKPSXISO_ARCHIVE" 2>/dev/null | awk '{print $1}' || echo archive-removed-after-install)"
             echo "m2c_pinned_commit=$M2C_COMMIT"
             echo "splat64_expected=$SPLAT64_VERSION"
