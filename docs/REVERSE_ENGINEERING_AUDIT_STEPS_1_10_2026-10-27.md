@@ -30,7 +30,7 @@ Checkpoint awal remote main: 62a4c114b7ac7a55ae9eb6d91bc4c9bfaef1c2ef.
 | 7 — Loader dan overlay | **SELESAI SEBAGIAN** | Direktori DATA.BIN dan jalur copy bootstrap didukung statis. Loader probe #40484548650 mencapai frame 120 tanpa hit pada `0x800AD454`; seed-setter probe terpisah #40485987817 mencapai frame 120 tanpa hit pada `0x80035DA8`. Yang kedua terutama menambah bukti batas Step 4(a), bukan pemetaan loader. Kedua run exit 124 pada batas 35 detik dan cleanup PASS. Artefak #12724961702 (ZIP SHA-256 `27376e9b78eca7e686843034d8d6e44587e1e2969bf6fcc93dc98d3c6cc0bc71`) dan #12724933081 (ZIP SHA-256 `74fcb5b8958ce26ab7fd1091bd7c2ee8dbfc073bb09ac9c4ca70d1a6e2a204c6`). Base/lifecycle/register/copy-size/checksum runtime belum tervalidasi; DATA2.BIN/DUMMY.BIN belum dipetakan menyeluruh. |
 | 8 — Penjelasan fungsi | **SELESAI SEBAGIAN** | Raw MIPS clarifies selected branch/gate/store sequences; branch-code meaning, costs, battle/roulette/turn, cards and victory conditions remain UNKNOWN. Details: Step 8 addendum. |
 | 9 — Verifikasi terisolasi | **TUNTAS untuk satu fungsi RNG utama** | Probe Unicorn MIPS32 menjalankan rutin 0x80035D78 pada 7 vektor dengan memory map fisik PS1, return sentinel, pembandingan state/v0, dan batas instruksi. Run #40474891838 sukses; lihat [laporan uji isolasi](../out/step9/STEP9_UNICORN_RESULT_2026-10-27.md). Tidak menggeneralisasi ke fungsi lain atau emulator PS1 penuh. |
-| 10 — Indeks out/logic.md | **TUNTAS sebagai indeks audit** | Indeks dan laporan penutupan kini menunjuk ke report per-langkah terkini serta memisahkan TERVERIFIKASI/HIPOTESIS/UNKNOWN. Status ini hanya menutup kebutuhan indeks/dokumentasi, bukan seluruh reverse engineering game. |
+| 10 — Indeks out/logic.md | **TUNTAS sebagai matriks closure audit per-kriteria** | Indeks dan laporan penutupan kini menunjuk ke report per-langkah terkini serta memisahkan TERVERIFIKASI/HIPOTESIS/UNKNOWN. Status ini hanya menutup kebutuhan indeks/dokumentasi, bukan seluruh reverse engineering game. |
 
 ## Langkah 1 — struktur disc
 
@@ -201,7 +201,7 @@ Run pertama [#40474699863](https://github.com/zuppasoupfifaistimewa-png/naruto-s
 - Langkah 7 — **SEBAGIAN** (directory/bootstrap copy static; loader runtime and broad resource map UNKNOWN).
 - Langkah 8 — **SEBAGIAN** (semantics evidence-backed; general game rules UNKNOWN).
 - Langkah 9 — **TUNTAS untuk satu fungsi RNG utama** (7 isolated vectors; not a full PS1 emulator or all-game function test).
-- Langkah 10 — **TUNTAS sebagai indeks audit**; this does not mean the game is fully reverse-engineered.
+- Langkah 10 — **TUNTAS sebagai matriks closure audit per-kriteria**; this does not mean the game is fully reverse-engineered.
 
 Story Mode remains **TIDAK TERBUKTI TAMAT**: no authentic ending was produced or reviewed in this work. Adaptive-player development and Story Mode automation remain paused; no classifier, input policy, readiness gate, or consumed player marker was changed.
 
