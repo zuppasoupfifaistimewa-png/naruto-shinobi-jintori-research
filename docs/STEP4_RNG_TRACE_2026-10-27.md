@@ -58,7 +58,7 @@ Workflow [Ghidra entry 1 #40454881770](https://github.com/zuppasoupfifaistimewa-
 
 Workflow konteks lokal [#40455197588](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455197588) dengan `-noanalysis` memeriksa lima lokasi, tanpa menjalankan emulator/gameplay. Pada base **hipotetis** `0x800AD000`:
 
-- `0x800AF2AC` didekode sebagai `jal 0x80035DA8`. Instruksi sebelum pemanggilan mengisi `$a0 = -1`; delay slot `move a0,v0` berlaku selepas fungsi yang dipanggil. Dengan demikian, jika jalur resource ini memang dijalankan pada base tersebut, ia menyimpan `0xFFFFFFFF` ke state RNG. Ini adalah bukti statis jalur pemanggilan seed, **bukan bukti runtime tentang kapan atau apakah jalur tersebut berjalan**.
+- `0x800AF2AC` didekode sebagai `jal 0x80035DA8`, tetapi delay slot harus ditafsirkan tepat: `0x800AF2B0 move a0,v0` dieksekusi sebelum masuk ke setter dan meneruskan `$v0` dari helper sebelumnya (`0x80037138`). Instruksi `li a0,-1` pada `0x800AF2A8` adalah delay slot dari panggilan helper tersebut, jadi `-1` adalah input helper, bukan terbukti input setter. Tanpa menelusuri nilai balik `0x80037138`, nilai yang disimpan ke state RNG tetap UNKNOWN. Jalur ini juga belum terverifikasi runtime.
 - `0x800BB2D8` didekode sebagai `jal 0x80035D78`; konteks berikutnya memanggil helper dan melakukan pembagian unsigned terhadap hasil, konsisten dengan pemilihan modulo berbatas.
 - `0x800BB2FC`, `0x800BB748`, dan `0x800BB770` belum dikonfirmasi sebagai instruksi caller pada pass lokal awal. Ketiganya tetap UNKNOWN sampai disassembly tepat di lokasi dan analisis jalur kontrol selesai.
 
@@ -72,13 +72,13 @@ Rujukan hasil entry 1: [inventaris caller Ghidra](../out/rng_resource_entry1_ghi
 
 Run Ghidra [#40455582988](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455582988) memeriksa ulang 36 alamat entry 1 yang tidak didekode oleh auto-analysis. **36/36** kini didekode secara terarah sebagai `jal 0x80035D78`, menutup status “belum didekode” pada instruksi tersebut. Laporan rinci: [out/rng_resource_entry1_unmapped_context_2026-10-27.md](../out/rng_resource_entry1_unmapped_context_2026-10-27.md). Caller function boundary untuk 36 lokasi tetap UNKNOWN.
 
-Run lokal entry 0 [#40455557190](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455557190) menunjukkan empat instruksi `jal 0x80035D78` di peta alamat kandidat. Tiga memiliki branch masuk eksplisit di jendela lokal; `0x800BB748` tidak, dan terletak selepas `j 0x800BBDE4`, sehingga reachability-nya tetap UNKNOWN. Lokasi setter `0x800AF2AC` memanggil `0x80035DA8` dengan `$a0=-1`, yang secara statis menulis `0xFFFFFFFF` ke state RNG jika jalur tersebut berjalan. Laporan: [out/rng_resource_entry0_ghidra_context_2026-10-27.md](../out/rng_resource_entry0_ghidra_context_2026-10-27.md).
+Run lokal entry 0 [#40455557190](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455557190) menunjukkan empat instruksi `jal 0x80035D78` di peta alamat kandidat. Tiga memiliki branch masuk eksplisit di jendela lokal; `0x800BB748` tidak, dan terletak selepas `j 0x800BBDE4`, sehingga reachability-nya tetap UNKNOWN. Lokasi `0x800AF2AC` secara statis memanggil kandidat setter `0x80035DA8`; karena `move a0,v0` di `0x800AF2B0` adalah delay slot-nya, argumen setter adalah hasil `$v0` dari helper `0x80037138`. Input `-1` diberikan kepada helper sebelumnya. Nilai return helper dan state akhir masih UNKNOWN. Laporan: [out/rng_resource_entry0_ghidra_context_2026-10-27.md](../out/rng_resource_entry0_ghidra_context_2026-10-27.md).
 
 ### Kesimpulan Langkah 4 (versi terkini)
 
 **SELESAI untuk inventaris instruksi direct-JAL pada executable utama dan raw code candidates DATA.BIN yang dipetakan secara statis**, dengan base resource entry 0 (`0x800AD000`) dan entry 1 (`0x800D0000`) tetap hipotesis:
 - Main EXE: 4 call site pada fungsi yang batasnya diketahui.
-- DATA.BIN entry 0: 4 instruksi JAL langsung ke RNG pada konteks lokal (3 memiliki incoming conditional branch lokal; 1 masih belum terbukti reachable) dan satu panggilan seed setter dengan argumen -1.
+- DATA.BIN entry 0: empat instruksi JAL langsung ke RNG pada konteks lokal (tiga memiliki incoming conditional branch lokal; satu belum terbukti reachable) dan satu direct JAL ke kandidat setter state RNG. Argumen setter belum diketahui: ia meneruskan return helper `0x80037138`.
 - DATA.BIN entry 1: 144 instruksi JAL langsung ke RNG; 108 dikelompokkan oleh auto-analysis menjadi 50 fungsi + 1 call site tanpa boundary, 36 lainnya didekode lokal tapi nama fungsi caller belum teridentifikasi.
 - Tidak ditemukan kata direct-JAL target sama pada raw DATA2.BIN, DUMMY.BIN, XASECT.BIN; keterbatasan scan raw/non-decompressed tetap UNKNOWN.
 
