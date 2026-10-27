@@ -1,6 +1,6 @@
 ## Additional boundary caution from the entry-0 artifact
 
-The raw context around `0x800BDBFC` shows a function-like stack prologue and preceding control-flow instructions at `0x800BDBE4)–`0x800BDBF8`, followed by `j 0x800BE11C` at `0x800BDBFC`. Thus `0x800BDBFC` is visibly inside an instruction sequence that already has a stack-frame setup; treating that jump as an independently validated function entry is unsupported. Combined with `reference_count=0` and Ghidra body-overlap errors, this candidate cannot currently be used as the setter's caller/helper or as proof of loader reachability. This observation is bounded to the emitted raw window; it does not automatically validate `0x800BDBE4` as a formal Ghidra function boundary.
+The raw context around `0x800BDBFC` shows a function-like stack prologue and preceding control-flow instructions at `0x800BDBE4`–`0x800BDBF8``, followed by `j 0x800BE11C` at `0x800BDBFC`. Thus `0x800BDBFC` is visibly inside an instruction sequence that already has a stack-frame setup; treating that jump as an independently validated function entry is unsupported. Combined with `reference_count=0` and Ghidra body-overlap errors, this candidate cannot currently be used as the setter's caller/helper or as proof of loader reachability. This observation is bounded to the emitted raw window; it does not automatically validate `0x800BDBE4` as a formal Ghidra function boundary.
 
 ---
 
