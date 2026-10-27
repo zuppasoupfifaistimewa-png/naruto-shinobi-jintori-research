@@ -1,28 +1,36 @@
 # Handoff — reverse engineering Naruto PS1, Langkah 4–10
 
-Pembaruan: 27 Oktober 2026, setelah run Step 9 #40474891838.  
+Pembaruan: 27 Oktober 2026, setelah parser Step 7 diperbaiki, hasil single-breakpoint diperiksa dari raw log, dan tracing statis Step 6/8 ditambahkan.
 Repo yang diizinkan: `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research` saja. Jangan akses atau ubah repo lain.
 
-## Checkpoint terbaru — Step 7 observability A/B (27 Oktober 2026)
+## Checkpoint dan run aktif
 
-Checkpoint remote yang diverifikasi sebelum pembaruan handoff ini: main HEAD 1513f0d3265707a1ef27c39644b9376b910b7c91. Selalu fetch main HEAD/commit dan cek Actions lagi; commit yang memperbarui handoff ini sendiri akan memajukan HEAD.
+Main HEAD terakhir yang diperiksa sebelum pembaruan handoff ini: `34b5c15d0375f169a8f06ede2efb4c7fc3ce6c2c`. Pembaruan handoff ini memajukan HEAD; ambil ulang SHA main ketika chat berikutnya dimulai. Konektor tidak memaparkan local working tree sehingga jangan menyebutnya bersih atau kotor.
 
-- Run terbaru [#40479865235](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40479865235) completed/success, 157 detik, pada source commit 51cce7fe07ce5b73b83a5296b4a1d1d86b424ce6. Artefak teks #12722187784, SHA-256 ZIP b9537035eb6ffed66a0aadd5ab48db88715ed2e2128bcf46a48f374c7306ac26, ukuran 3801 byte, retensi belum kedaluwarsa saat audit.
-- Run memasukkan kontrol cold-boot -debugger dengan VSync listener saja, lalu probe empat breakpoint memakai -no-debugger. Pra-uji tanpa breakpoint mencapai frame 50; kontrol debugger tanpa breakpoint mencatat frame 1,2,3,10,20,30,40; probe empat breakpoint hanya frame 1–3 lalu timeout 124 pada batas 70 detik. Tidak ada hit loader/seed/RNG yang diterima; job dan private cleanup PASS. Ini bukan bukti target tidak pernah berjalan.
-- Bug pelaporan: metrik DEBUGGER_CONTROL_MAX_VSYNC_FRAME otomatis bernilai 0 karena regex salah escaping; raw log adalah sumber benar. Perbaiki parser pada run berikutnya.
-- Langkah 4 secara keseluruhan SEBAGIAN untuk resmi subkriteria 4(a–e); laporan STEP4_CLOSURE kini sudah dikoreksi dari TUNTAS keseluruhan menjadi SEBAGIAN. Inventaris statis tertentu selesai, tetapi seed/lifecycle runtime, kausalitas roulette, caller battle, dispatch indirect penuh, randomness alternatif masih UNKNOWN/terbuka.
-- Langkah 5 TUNTAS untuk empat fungsi terpilih; Step 6 SEBAGIAN; Step 7 SEBAGIAN; Step 8 SEBAGIAN; Step 9 TUNTAS hanya untuk RNG 0x80035D78 (7/7 state vector, 12 instruksi/vektor, sentinel return, physical RAM alias); Step 10 TUNTAS sebagai indeks audit, bukan keseluruhan logika game.
-- Perubahan dokumentasi terbaru: laporan Step 7 runtime, peta Step 7, laporan closure gabungan, STATUS.md, ANALYSIS_LOG.md, out/logic.md telah diperbarui. OVERLAY_MAP/Step 8 menahan klaim pemenang yang belum tervalidasi; audit utama tidak lagi menyebut Step 9 terblokir untuk RNG yang sudah lulus.
+- **Run aktif:** [Step 7 cold-boot correction #40484548650](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40484548650), source SHA `8326c07f71caeab12924133b0812ec7e86b8b1f7`, mulai 2026-10-27 09:55:56 UTC (16:55:56 WIB). Pada pemeriksaan terbaru 10:00:36 UTC (17:00:36 WIB), status `in_progress`; job coldboot-loader sudah melewati setup, checkout, dependensi dan validasi/download source asset, tetapi tahap cold-boot belum selesai dalam ringkasan job yang terbaca. Raw job log belum tersedia selagi run aktif. Durasi kini melampaui run Step 7 sebelumnya yang 157 detik, jadi ETA akhir tidak dapat dipercaya; jangan jalankan eksperimen runtime lain yang tumpang tindih.
+- Run awal [#40484519812](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40484519812) pada SHA `9edbcb3063a41588ca739e644b9dc9b29c585b3f` menjalankan eksperimen, lalu gagal pada report assembler (`SyntaxError: [ was never closed`). Raw job log tetap menjadi bukti metrik yang tercatat: checksum disc/CUE/BIOS/emulator lulus; no-breakpoint cold boot frame 50; listener-only debugger frame 50; satu breakpoint `0x800AD454` mencapai frame 100 tanpa hit; exit 124 pada batas 35 detik; cleanup `STEP7_PRIVATE_CLEANUP=PASS`. Artefak #12723834084 berukuran 1.894 byte, ZIP SHA-256 `6188c32e73a0984133c5c1f4ac3a37dcacde677458ec56c7fdf100ba25c73968`; artefak bukan ringkasan yang valid karena report assembler gagal.
+- Parser shell/Python diperbaiki dan regression validator [#40484417534](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40484417534) lulus dengan `STEP7_FRAME_PARSER_FIXTURE_PASS frames=1,2,3,10,20,30,40 max=40`. Commit koreksi report assembler `8326c07f71caeab12924133b0812ec7e86b8b1f7` memulai run koreksi #40484548650. Periksa status akhir, raw result, artifact, metadata dan cleanup sebelum menyatakan pemeriksaan selesai.
+- Review statis atas log runner-only [#40473737136](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40473737136) memperjelas bahwa kandidat `0x8011C0D0` menegasikan word record peserta `+0x04`, menjepit minimum ke `-9999`, lalu memanggil setter `0x8001387C`. Candidate threshold branches menulis `+0x58B` dan `+0x5D2` sebelum memanggil `0x800EF98C`. Ini statis dan base entry-1 `0x800D0000` masih hipotesis; jangan menyebut operasi itu biaya, barrier, level-up atau win check.
 
-### Aksi berikutnya — jangan ulangi run identik
+## Status langkah pada handoff
 
-1. Ambil lagi main HEAD, status semua Actions (terutama queued/in_progress) dan artefak terbaru. Jangan jalankan workflow pemain adaptif.
-2. Perbaiki parser metrik frame dalam workflow Step 7 dan tambahkan pemeriksaan sederhana yang membuktikan regex mengekstrak angka dari sample log. Lakukan sebagai perubahan kode yang terarah, bukan pengulangan cold boot identik.
-3. Uji satu breakpoint per cold boot, tanpa savestate restore dan tanpa input gameplay, dengan batas waktu yang singkat dan sumber (disc/CUE/BIOS/emulator) diverifikasi. Mulai dari satu target paling informatif, rekam VSync per-frame awal, PC/hit count, exit code, screenshot hanya jika diperlukan dan harus autentik X11. Bila callback breakpoint tunggal pun menghentikan progress, lakukan kontrol listener-only dan uji breakpoint tanpa log; jangan menambah target sampai penyebab observabilitas dipahami.
-4. Perbarui docs/STEP7_RUNTIME_COLD_BOOT_RESULT_2026-10-27.md dan closure hanya berdasarkan log/artefak terverifikasi. Tidak boleh mengubah status Step 7 ke TUNTAS tanpa bukti loader/base/lifecycle yang benar.
-5. Lanjutkan kerja independen statis Step 6/8: telusuri operand → branch → store → caller untuk offset +0xB30/+0xB38/+0xB40/+0xB44 dan +0x58B/+0x2E9/+0x2E5/+0x5D2; jangan menganggap getter target sebagai win check atau setter sebagai transaksi biaya. Gunakan hanya output Ghidra statis yang sudah ada bila belum ada pertanyaan baru; jangan menjalankan ulang analisis setara.
-6. Tidak perlu mengulang Step 4 roulette determinism #40474262267 maupun Step 9 RNG Unicorn #40474891838. Tidak ada kewajiban otomatis menguji tiap fungsi secara terisolasi kecuali kriteria resminya menuntutnya atau klaim baru memerlukan bukti eksekusi; jangan generalisasi hasil RNG ke fungsi lain.
-7. Setelah seluruh pekerjaan independen yang aman dikerjakan, perbarui laporan penutupan, STATUS.md, ANALYSIS_LOG.md, out/logic.md, dan handoff; gunakan TUNTAS/SEBAGIAN/BLOKIR secara tepat. Story Mode tidak boleh dinyatakan tamat tanpa bukti ending autentik.
+| Langkah | Status | Kekurangan utama |
+|---|---|---|
+| 4 — RNG | **SEBAGIAN** | Official criteria 4(a–e): seed boot/lifecycle, causal roulette result, battle caller, indirect/jump-table/decompressed paths, dan RNG alternatif. Jangan ulangi #40474262267 tanpa hipotesis baru. |
+| 5 — Ghidra/m2c | **TUNTAS untuk empat fungsi terpilih** | Empat fungsi dan delapan output C tersimpan; jangan ulangi tanpa pertanyaan teknis baru. |
+| 6 — xref/call chain | **SEBAGIAN** | Runtime base, control flow transisi, seluruh penulis/sumber delta, semantik field dan efek akhir. |
+| 7 — loader/overlay | **SEBAGIAN** | Satu breakpoint mencapai frame 100 tapi no-hit; loader/base/relokasi/register/copy-size/checksum/lifecycle belum tervalidasi. Periksa #40484548650. |
+| 8 — aturan game | **SEBAGIAN** | Semantik delta dan biaya barrier/level-up, battle/roulette/turn, efek kartu serta syarat menang tiap mode. |
+| 9 — MIPS terisolasi | **TUNTAS hanya untuk `0x80035D78`** | #40474891838 lulus 7/7 vektor; jangan generalisasi ke fungsi lain atau emulator PS1 penuh. |
+| 10 — indeks | **TUNTAS sebagai indeks audit saja** | Pertahankan tautan bukti dan semua UNKNOWN. |
+
+## Aksi berikutnya
+
+1. Periksa run #40484548650 sampai selesai; periksa raw logs, artefak, checksum sumber, exit code dan cleanup. Jika masih aktif, jangan memulai eksperimen runtime lain.
+2. Sinkronkan laporan Step 7, laporan penutupan, STATUS.md, ANALYSIS_LOG.md, out/logic.md dan handoff dengan outcome yang benar-benar teramati. Verifikasi main HEAD live di akhir.
+3. Lanjutkan instruction-level tracing hanya saat raw disassembly atau sumber yang sesuai tersedia: operand → branch → store → caller/callee → writer final untuk +0xB30/+0xB38/+0xB40/+0xB44, +0x2E9/+0x2E5 dan control flow 0x800EF98C/0x80100D14/0x80100DCC. Jangan menamai mekanik berdasarkan konstanta/offset.
+4. Jangan menjalankan pemain adaptif atau Story Mode otomatis; jangan mengubah classifier/policy/Revision65/readiness gate; jangan memberi input gameplay atau memulihkan savestate. ROM/disc, BIOS, Memory Card, savestate, RAM dump dan screenshot privat tetap di luar Git.
+5. Story Mode tetap **TIDAK TERBUKTI TAMAT** sampai bukti ending autentik diverifikasi.
 
 ## Aturan utama untuk chat berikutnya
 
