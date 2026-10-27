@@ -87,3 +87,11 @@ Workflow scan mentah [#40454059515](https://github.com/zuppasoupfifaistimewa-png
 Kandidat seed setter di DATA.BIN entry 0 pada alamat hipotetis `0x800AF2AC` telah didekode sebagai `jal 0x80035DA8`; nilai `$a0) sebelumnya adalah -1, sehingga jalur itu mengatur state ke `0xFFFFFFFF` jika dijalankan. Bukti ini tetap bersyarat pada base/lifecycle entry 0 yang belum divalidasi runtime.
 
 **Status:** RNG dan empat caller main EXE pasti; entry 1 punya 108 call-flow Ghidra-terkonfirmasi; 36 raw candidate entry 1 dan tiga candidate entry 0 tetap UNKNOWN. Seed value di jalur resource diketahui secara statis, tetapi seed runtime pertama yang benar-benar digunakan belum dibuktikan. Tidak ada emulator/gameplay/savestate yang dijalankan.
+
+## Koreksi final Step 4 — hasil Ghidra terarah
+
+Entri 1: run [#40455582988](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455582988) berhasil mendekode seluruh 36 lokasi yang sebelumnya masih “raw-only”. Hasilnya 144/144 lokasi entry 1 terbaca sebagai instruksi `jal 0x80035D78` pada base kandidat; 108 sudah punya fungsi caller yang dikenali auto-analysis, sedangkan 36 memiliki fungsi caller UNKNOWN. Daftar: [out/rng_resource_entry1_unmapped_context_2026-10-27.md](rng_resource_entry1_unmapped_context_2026-10-27.md).
+
+Entri 0: run [#40455557190](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455557190) menunjukkan empat instruksi JAL ke RNG; tiga memiliki incoming branch pada jendela lokal, satu `0x800BB748` tetap belum terbukti reachable. Satu pemanggil langsung kandidat seed setter pada `0x800AF2AC` memasukkan `$a0=-1`; kalau jalur ini dijalankan, state diset ke `0xFFFFFFFF`. Detail: [entry0 context](rng_resource_entry0_ghidra_context_2026-10-27.md).
+
+**Status:** inventaris direct-JAL untuk main EXE dan raw code candidates DATA.BIN selesai dalam cakupan statis yang tercatat. Caller tak langsung, kode terkompresi/tidak terdekode dalam DATA2/DUMMY, load base runtime, serta reachability satu call site masih UNKNOWN; tidak ada claim semua caller runtime secara mutlak telah tersingkirkan.
