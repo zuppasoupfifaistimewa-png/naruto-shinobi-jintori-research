@@ -6,7 +6,7 @@ Tanggal pemeriksaan: 27 Oktober 2026. Biner tidak dimasukkan ke Git.
 - SHA-256 terverifikasi: `a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569`.
 - Header: PC `0x80011448`, base `0x80010000`, text `0x5D800`.
 - **Ghidra langkah 3 selesai:** run [#40438574949](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40438574949) berhasil menggunakan Ghidra 12.2, bahasa `MIPS:LE:32:default`, dan mengekspor 1.206 fungsi.
-- **Langkah 4 selesai pada cakupan statis executable utama:** analisis RNG/helper daftar lengkap dan cross-reference tercatat di [laporan Langkah 4](../docs/STEP4_RNG_TRACE_2026-10-27.md), berdasarkan run [#40439763833](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40439763833).
+- **Subcakupan statis executable utama selesai; Langkah 4 secara keseluruhan tetap SEBAGIAN:** analisis RNG/helper daftar serta cross-reference yang terlihat di main EXE terdokumentasi pada [laporan Langkah 4](../docs/STEP4_RNG_TRACE_2026-10-27.md) berdasarkan run [#40439763833](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40439763833). Seed/lifecycle, semua dispatch, caller roulette/battle, dan randomness alternatif belum tertutup.
 - Artefak teks untuk analisis caller: [ghidra-slps-03553-function-index (run #40438911181)](https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/artifacts/12705950866). Artefak ini berisi TSV/log/dekompilasi teks saja, bukan executable atau proyek Ghidra.
 
 ## Temuan RNG
