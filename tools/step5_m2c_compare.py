@@ -27,7 +27,6 @@ FUNCTIONS = {
     0x80020BF4: ("FUN_80020bf4", 156),
     # Expanded same-address checks of core RNG/state/callback/Chakra functions.
     # Actual function size/end are read from the current Ghidra report.
-    0x80012A70: ("FUN_80012a70", None),
     0x8001387C: ("FUN_8001387c", None),
     0x800138EC: ("FUN_800138ec", None),
     0x80035D78: ("FUN_80035d78", None),
@@ -190,13 +189,13 @@ def main() -> int:
     lines: list[str] = [
         "# Step 5 — Same-function Ghidra/m2c comparison",
         "",
-        "scope=main executable; 14 core RNG/state/callback/Chakra functions are compared at matching addresses in Ghidra and m2c",
+        "scope=main executable; 13 core RNG/state/callback/Chakra functions are compared at matching addresses in Ghidra and m2c",
         "game_or_emulator_executed=no",
         "gameplay_input_sent=no",
         "source_binary_committed=no",
         "source_binary_uploaded_as_artifact=no",
         "artifact_policy=text_only",
-        "expanded_function_scope=4 original RNG callers plus 10 RNG/state/callback/Chakra core functions",
+        "expanded_function_scope=4 original RNG callers plus 9 RNG/state/callback/Chakra core functions",
         f"m2c_commit={Path(args.m2c_commit).read_text(encoding='utf-8').strip()}",
         "m2c_target=mips-ido-c (tool backend selection only; not a claim about the original game compiler)",
         "",
