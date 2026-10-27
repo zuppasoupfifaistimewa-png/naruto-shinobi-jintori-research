@@ -52,6 +52,11 @@ jobs:
           sed_frames = [int(value) for value in sed.stdout.splitlines()]
           assert sed_frames == [1, 2, 3, 10, 20, 30, 40], sed_frames
           assert max(sed_frames) == 40, max(sed_frames)
+          from pathlib import Path
+          workflow = Path(".github/workflows/step7-loader-coldboot-diagnostic.yml").read_text()
+          assert "else '80035DA8'" in workflow
+          assert "else '800AD454'" not in workflow
+          print('STEP4_SEED_BP_NO_HIT_FALLBACK_PASS target=0x80035DA8')
           seed_hit = "STEP7_SINGLE_BP_HIT pc=0x80035DA8 frame=23 count=1 a0=0xFFFFFFFF ra=0x800AF2B4 caller=0x800AF2AC"
           hit = re.search(
               r"STEP7_SINGLE_BP_HIT pc=0x([0-9A-Fa-f]+) frame=(\d+) count=(\d+)(?: a0=0x([0-9A-Fa-f]+) ra=0x([0-9A-Fa-f]+) caller=0x([0-9A-Fa-f]+))?",
