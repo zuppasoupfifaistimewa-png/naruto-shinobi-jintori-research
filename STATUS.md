@@ -1,6 +1,6 @@
 # Checkpoint terbaru — reverse engineering Langkah 4–10 (27 Oktober 2026)
 
-Checkpoint utama sebelum pembaruan final ini: `main` SHA `39d395f1a480401e8c68e816c77758c8650a368f`. Update dokumen ini akan memajukan HEAD; sesi berikutnya wajib mengambil ulang SHA live. Konektor tidak memaparkan working tree lokal.
+Checkpoint utama sebelum pembaruan status ini: `main` SHA `41e6e42cca2db743f84af718bc90b7295f8d04d2`. Perubahan status ini memajukan HEAD; sesi berikutnya wajib mengambil ulang SHA live. Konektor tidak memaparkan working tree lokal.
 
 ## Bukti/pekerjaan terbaru
 
