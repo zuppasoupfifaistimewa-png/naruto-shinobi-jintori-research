@@ -1,3 +1,13 @@
+# Live checkpoint addendum — Step 7 status reconciled (27 Oktober 2026, 19:22 WIB)
+
+The later Ghidra workflow [#40498208067](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40498208067) completed success at 19:14:42 WIB, producing artifact #12732952776 (2,255,170 bytes; ZIP SHA-256 6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6). Runner-only verification #40503223693, artifact #12733512950 (13,079 bytes; ZIP SHA-256 382773f9a421835bc97c448c630a2ea5d3891309bb34094f5a67027548c03414), validated metadata/digests, processed only text, and passed cleanup.
+
+This does not close runtime loader mapping. The existing no-gameplay single-breakpoint probe [#40484548650](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40484548650), artifact #12724961702 (3,960 bytes; ZIP SHA-256 27376e9b78eca7e686843034d8d6e44587e1e2969bf6fcc93dc98d3c6cc0bc71), observed no hit at 0x800AD454 through frame 120, exit 124 at 35-second timebox, cleanup PASS. It produced no runtime register snapshot, source/destination pointer, copy size, or buffer checksum. Treat as bounded no-hit only.
+
+Step 7 remains SEBAGIAN. Minimum future diagnostic is not a repeat of 0x800AD454: first use static raw-MIPS evidence to select a plausibly reachable copy instruction, then a single breakpoint under coldboot with no gameplay input and no savestate restoration, explicit frame/time stop limits, text-only register/copy-length/checksum output, and verified deletion of private files. If that target cannot be justified statically, keep runtime mapping BLOCKED and document it rather than rerunning a generic probe.
+
+---
+
 # Langkah 7 — hasil runtime cold-boot (27 Oktober 2026)
 
 Status: **SEBAGIAN**. Struktur DATA.BIN dan alur salin bootstrap didukung bukti statis, tetapi pemetaan loader/resource saat runtime, base RAM, relokasi, dan lifecycle belum dikonfirmasi.
