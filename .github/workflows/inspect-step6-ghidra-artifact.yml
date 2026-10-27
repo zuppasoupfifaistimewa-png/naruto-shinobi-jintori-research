@@ -6,11 +6,11 @@ on:
       source_run_id:
         description: "Completed static Ghidra run ID"
         required: true
-        default: "40440237256"
+        default: "40455975408"
       artifact_id:
         description: "Expected artifact ID from that run"
         required: true
-        default: "12705957966"
+        default: "12713583805"
   push:
     branches: [main]
     paths:
@@ -25,10 +25,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      SOURCE_RUN_ID: ${{ github.event.inputs.source_run_id || '40440237256' }}
+      SOURCE_RUN_ID: ${{ github.event.inputs.source_run_id || '40455975408' }}
       EXPECTED_ARTIFACT_ID: ${{ github.event.inputs.artifact_id || '12705957966' }}
       ARTIFACT_NAME: ghidra-slps-03553-function-index
-      EXPECTED_DIGEST: sha256:85208033e419adceadc7f983872ecbf8605819985735fa46452b53d37e2f40ac
+      EXPECTED_DIGEST: sha256:56266b0e5e5ae8407574914bdd2da4e1e6d7783115f6355aa0349a775c63faed
     steps:
       - name: Checkout research scripts and docs
         uses: actions/checkout@v4
@@ -71,6 +71,7 @@ jobs:
           python3 - "$RUNNER_TEMP/step6-source" "$RUNNER_TEMP/step6-review.txt" <<'PY'
           from pathlib import Path
           import hashlib
+          import os
           import re
           import sys
 
@@ -88,7 +89,7 @@ jobs:
               raise SystemExit("FAIL: unexpected oversized file")
           lines = []
           lines += ["# Runner-only review of Step 6 source artifact", "",
-                    "source_run_id=40440237256", "expected_artifact_id=12705957966",
+                    f"source_run_id={os.environ.get('SOURCE_RUN_ID')}", f"expected_artifact_id={os.environ.get('EXPECTED_ARTIFACT_ID')}",
                     "artifact_name=ghidra-slps-03553-function-index",
                     "processing_location=GitHub Actions runner",
                     "game_or_emulator_executed=no", "gameplay_input_sent=no",
