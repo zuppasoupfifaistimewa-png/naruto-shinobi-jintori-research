@@ -1,3 +1,17 @@
+# HANDOFF TERBARU — Step 6 provenance scan verified (27 Oktober 2026, 20:25 WIB)
+
+**Checkpoint terbaru Step 6 (27 Oktober 2026, 20:25 WIB):** scanner provenance di https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/0afc0eec4a5c12e4df5a17c771c8b0d28d7a99dd dijalankan oleh [Actions #40511758146](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40511758146) — completed/success pada 20:25:48 WIB. Artifact [#12737611770](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40511758146/artifacts/12737611770), 229.233 byte, SHA-256 ZIP `b84ff017cdbefb8ece6d04a7c8bef66b3fdc27b61412e91e10cc01485225b126`; digest API sama dengan SHA lokal. Enam anggota ZIP hanya teks/log; `text_only_output_count=6`, `private_binary_in_artifact=no`, `STEP6_PRIVATE_CLEANUP=PASS`. Fixture parser operand dan fixture pembentukan alamat `lui/ori/addiu/sign-extension` benar-benar mengeluarkan PASS. Laporan: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP6_REGISTER_PROVENANCE_AUDIT_2026-10-27.md.
+
+## Keadaan aktual dan aturan kelanjutan
+
+1. Source code scanner berada pada commit `0afc0eec4a5c12e4df5a17c771c8b0d28d7a99dd`. Laporan run dan hasil fixture: [`docs/STEP6_REGISTER_PROVENANCE_AUDIT_2026-10-27.md`](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP6_REGISTER_PROVENANCE_AUDIT_2026-10-27.md). Jangan mengulang scan yang sama tanpa perubahan sumber atau hipotesis baru.
+2. Resolver baru hanya melakukan backwards linear trace terbatas dan ekspresi konstanta terbatas; fixture LUI/ORI/ADDIU/sign-extension PASS. Untuk +B30/B38/B40, `a0) berasal dari stack-relative load at 0x8012C628; trace `s0) terhenti di control-flow boundary. +B44 read's `v1) berhenti di branch 0x8012CAF8. Step 6(b) tetap BLOCKED dan base 0x800D0000 tetap HIPOTESIS.
+3. Lanjutkan hanya dengan analisis luring yang menambah coverage nyata: trace address construction/def-use dengan control-flow-aware dataflow atau audit raw MIPS yang melaporkan seluruh batas/coverage. Jangan menamai field Chakra/cost/turn/barrier/level-up.
+4. Jangan ulang breakpoint no-hit 0x800AD454 atau seed-setter no-hit tanpa bukti reachability statis baru. Jangan menjalankan game/emulator, input, restore savestate, adaptive player, classifier/policy/readiness gate, atau workflow `.run-storymode-adaptive-player`.
+5. Reconcile setiap perubahan pada `docs/STEP4_10_LIVE_RECONCILIATION_2026-10-27.md`, `docs/STEP4_10_CLOSURE_REPORT_2026-10-27.md`, `STATUS.md`, `ANALYSIS_LOG.md`, dan `out/logic.md`. Story Mode TIDAK TERBUKTI TAMAT.
+
+---
+
 # HANDOFF UPDATE — offline Step 6 scan reconciled, 27 Oktober 2026
 
 Mulai dari [live reconciliation](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP4_10_LIVE_RECONCILIATION_2026-10-27.md) dan matrix 17 kriteria di dalamnya. HEAD pra-audit adalah cc81319cc00037a92a93a3e76552245dd9a9ebf7. Scan terbaru (#40504640855) sudah menghasilkan inventory agregat lengkap pada instruksi direct base+displacement yang dikenali dan didekode; jangan mengulang scan sama. Inventaris independen: 2.104 offsets, 31.081 direct operands, 19.366 read/11.715 write dari 98.357 instruksi terdekode. Konteks per-access untuk offset umum dibatasi 200; B30/B38/B40/B44 tidak terkena cap konteks.
