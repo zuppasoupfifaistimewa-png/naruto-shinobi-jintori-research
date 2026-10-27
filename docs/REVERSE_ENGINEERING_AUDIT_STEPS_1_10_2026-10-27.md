@@ -16,7 +16,7 @@ Checkpoint awal remote main: 62a4c114b7ac7a55ae9eb6d91bc4c9bfaef1c2ef.
 | 1 — Struktur disc dan inventaris | **SELESAI** | Inventaris ekstraksi terdahulu terdokumentasi dan source BIN/CUE/EXE divalidasi pada runner. Tidak dibongkar ulang hanya demi mengganti alat. |
 | 2 — Header PS-X EXE | **SELESAI** | Ukuran, hash, header, entry point, load base, text length, dan panjang file konsisten; validasi header pada run terbaru lulus. |
 | 3 — Ghidra headless | **SELESAI** | Ghidra 12.2, Temurin JDK 25, MIPS little-endian 32-bit; analisis berhasil dan ekspor indeks berisi 1.206 baris fungsi main EXE. |
-| 4 — RNG | **SELESAI untuk inventaris direct-JAL statis; runtime scope terbatas** | Empat caller main EXE, 4 kandidat direct JAL pada DATA.BIN entry 0, 144 pada entry 1, serta kandidat seed setter diperiksa. 36 call site entry 1 terdekode lokal; base resource/function boundary tertentu serta caller tak langsung/kode terkompresi tetap UNKNOWN. |
+| 4 — RNG | **SELESAI dalam cakupan inventaris statis; batas runtime terdokumentasi** | LCG dan 4 caller main EXE diverifikasi; 4 call site entry 0 dan 144 entry 1 diperiksa melalui Ghidra pada base hipotetis; scan signature/pola pointer sempit lintas berkas selesai. Base/lifecycle runtime, satu reachability entry 0, 36 boundary fungsi entry 1, caller pointer/dispatch, dan kode hasil dekompresi/dekripsi tetap UNKNOWN. Lihat [penutupan Langkah 4](STEP4_CLOSURE_2026-10-27.md). |
 | 5 — Caller RNG dan m2c | **SELESAI untuk empat caller yang dipilih** | Keempat entry fungsi dibandingkan oleh Ghidra dan m2c; semua output ada, perbandingan berhasil. Delapan keluaran C dan ringkasan disimpan permanen di [laporan Step 5](../out/step5/STEP5_GHIDRA_M2C_COMPARISON_2026-10-27.md). |
 | 6 — Alamat, penulis memori, dan call chain | **SELESAI SEBAGIAN** | Setter Chakra utama dan beberapa cabang perbandingan target dapat dipetakan statis. Base resource hipotesis; beberapa dekompilasi gagal; sumber nilai dan semantik field penting belum terbukti. |
 | 7 — Loader dan overlay | **SELESAI SEBAGIAN** | Direktori DATA.BIN dikenal; entry 0 dan 1 dianalisis statis. Base/lifecycle/runtime loader belum tervalidasi; DATA2.BIN dan DUMMY.BIN belum dipetakan menyeluruh sebagai kode executable. |
@@ -164,3 +164,8 @@ Workflow [Step 0 #40457860945](https://github.com/zuppasoupfifaistimewa-png/naru
 Catatan: beberapa CLI tidak menggunakan `--version` sebagai opsi versi mandiri. mkpsxiso/dumpsxiso mencetak versi di banner help, m2c meminta argumen berkas masukan, dan `analyzeHeadless -help` mengembalikan kode keluar 1 walaupun menghasilkan usage yang valid; semua fallback ini ditulis eksplisit di `out/versions.txt`.
 
 **Batas:** ini menyelesaikan setup toolchain Langkah 0, bukan Langkah 9. Unicorn belum menjalankan satu fungsi game secara terisolasi dan tidak ada perbandingan terhadap save state. Run hanya mengunggah artefak teks; tidak ada emulator/gameplay, disc image, executable game, BIOS, memory card, savestate, RAM dump atau screenshot privat yang diunggah atau dimasukkan ke Git.
+
+
+## Penutupan Langkah 4 — 27 Oktober 2026
+
+Langkah 4 ditutup sebagai **SELESAI dalam cakupan inventaris statis yang dapat direproduksi**, bukan sebagai bukti kelengkapan runtime absolut. Laporan penutupan mengklasifikasikan semua hasil dan UNKNOWN tersisa: [STEP4_CLOSURE_2026-10-27.md](STEP4_CLOSURE_2026-10-27.md).
