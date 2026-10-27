@@ -16,6 +16,15 @@
 - Fix and regression validation: fallback corrected on commit `a6734d7fc57ff6dfab9b8135cd5661bf0278c437`; validator [#40486315324](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40486315324) completed `success` with `STEP4_SEED_BP_NO_HIT_FALLBACK_PASS target=0x80035DA8`, `STEP4_SEED_BP_PARSER_FIXTURE_PASS`, and `STEP7_FRAME_PARSER_FIXTURE_PASS`. The parser fixtures are synthetic, not emulator evidence. Step 4(a) and Step 7 remain SEBAGIAN/UNKNOWN for seed lifecycle and runtime mapping.
 
 
+
+## Incremental checkpoint — delay-slot correction and helper-return trace (27 Oktober 2026)
+
+- MIPS delay-slot review corrected the previous assumption that the entry-0 callsite `0x800AF2AC → 0x80035DA8` directly passes `$a0=-1`. At `0x800AF2A8`, `li a0,-1` is the delay slot of the prior call to `0x80037138`. At `0x800AF2B0`, `move a0,v0` is the delay slot of the setter JAL and forwards helper return `$v0` to `0x80035DA8`. The setter's actual argument and resulting state are UNKNOWN until helper semantics are established.
+- Corrected static source reports: `out/rng_resource_entry0_ghidra_context_2026-10-27.md`, `out/rng_resource_reference_scan_2026-10-27.md`, `out/rng_candidate.md`, `docs/STEP4_RNG_TRACE_2026-10-27.md`, `docs/STEP4_CLOSURE_2026-10-27.md`, `out/logic.md`. The reference scan now asks for helper return analysis, not merely the already-known argument register transfer.
+- Added `dumpSimpleFunction(0x80037138)` and reference inventory to `tools/ghidra/ExportRngCallerAnalysis.java` in commit `b92aa084aba62182ed4edc436cf20d68581be984`.
+- Run [#40487406384](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40487406384) is `in_progress`; main executable analysis has completed and DATA.BIN entry 1 is in progress; entry 0/helper result not yet available at this checkpoint. No gameplay or emulator execution is part of this Ghidra workflow.
+- Step 4 remains **SEBAGIAN**; do not claim seed `0xFFFFFFFF` until return value evidence supports it. Step 7 remains **SEBAGIAN** with both loader and seed-setter probes bounded/no-hit. Story Mode remains **TIDAK TERBUKTI TAMAT**.
+
 ---
 # One-shot RIGHT-vs-NONE diagnostic outcome (25 October 2026) (25 October 2026)
 
