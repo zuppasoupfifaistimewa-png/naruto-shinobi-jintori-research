@@ -1,0 +1,225 @@
+name: Step 0 — pinned reverse-engineering toolchain audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/toolchain-audit.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pinned-toolchain-audit
+  cancel-in-progress: false
+
+jobs:
+  toolchain:
+    name: Install and verify pinned RE tools
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHON_VERSION: "3.13.18"
+      GHIDRA_VERSION: "12.2"
+      GHIDRA_ASSET: "ghidra_12.2_PUBLIC_20261016.zip"
+      GHIDRA_SHA256: "2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67"
+      GHIDRA_CACHE_DIR: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+      MKPSXISO_VERSION: "2.30"
+      MKPSXISO_ARCHIVE: "mkpsxiso-2.30-Linux.zip"
+      M2C_COMMIT: "c632946b8cfbe8fce442b522dba92dfa72f1f317"
+      SPLAT64_VERSION: "0.50.1"
+      UNICORN_VERSION: "2.1.4"
+      SPIMDISASM_VERSION: "1.42.4"
+      BINUTILS_VERSION: "2.42-2ubuntu1cross5"
+    steps:
+      - name: Checkout research repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Set up pinned Python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          check-latest: true
+          cache: pip
+
+      - name: Set up JDK required by Ghidra
+        uses: actions/setup-java@v6.1.0
+        with:
+          distribution: temurin
+          java-version: "25"
+          java-package: jdk
+
+      - name: Install pinned cross-binutils
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          apt-cache policy binutils-mipsel-linux-gnu
+          sudo apt-get install --yes "binutils-mipsel-linux-gnu=$BINUTILS_VERSION" unzip curl git
+          actual="$(dpkg-query -W -f='${Version}' binutils-mipsel-linux-gnu)"
+          [[ "$actual" == "$BINUTILS_VERSION" ]]
+          mipsel-linux-gnu-objdump --version | head -n 2
+          mipsel-linux-gnu-objdump --version | grep -F "$BINUTILS_VERSION" || true
+
+      - name: Restore Ghidra 12.2 cache
+        id: ghidra-cache
+        uses: actions/cache@v6.1.0
+        with:
+          path: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+          key: ghidra-12.2-linux-x64-2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+
+      - name: Install and verify Ghidra 12.2 if cache misses
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$GHIDRA_CACHE_DIR"
+          if ! find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit | grep -q .; then
+            archive="$RUNNER_TEMP/$GHIDRA_ASSET"
+            url="https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.2_build/$GHIDRA_ASSET"
+            curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 3 --retry-delay 2 "$url" --output "$archive"
+            echo "$GHIDRA_SHA256  $archive" | sha256sum --check --status
+            unzip -q "$archive" -d "$GHIDRA_CACHE_DIR"
+            rm -f "$archive"
+          fi
+          headless="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
+          [[ -n "$headless" && -x "$headless" ]]
+          help="$RUNNER_TEMP/analyzeHeadless-help.txt"
+          set +e
+          "$headless" -help >"$help" 2>&1
+          rc=$?
+          set -e
+          if [[ $rc -ne 0 ]] && ! grep -Eiq 'Usage:|analyzeHeadless|Ghidra' "$help"; then
+            cat "$help"
+            exit "$rc"
+          fi
+          grep -Eiq 'Usage:|analyzeHeadless|Ghidra' "$help"
+          echo "Ghidra=$GHIDRA_VERSION"
+          echo "Ghidra_asset_sha256=$GHIDRA_SHA256"
+          echo "analyzeHeadless_path=$headless"
+          echo "analyzeHeadless_help_exit=$rc"
+          head -n 20 "$help"
+
+      - name: Install mkpsxiso 2.30 including dumpsxiso
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/$MKPSXISO_ARCHIVE"
+          url="https://github.com/Lameguy64/mkpsxiso/releases/download/v$MKPSXISO_VERSION/$MKPSXISO_ARCHIVE"
+          curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 3 --retry-delay 2 "$url" --output "$archive"
+          echo "mkpsxiso_archive_sha256=$(sha256sum "$archive" | awk '{print $1}')"
+          install_dir="$RUNNER_TEMP/mkpsxiso"
+          mkdir -p "$install_dir"
+          unzip -q "$archive" -d "$install_dir"
+          mkpsxiso="$(find "$install_dir" -type f -name mkpsxiso -print -quit)"
+          dumpsxiso="$(find "$install_dir" -type f -name dumpsxiso -print -quit)"
+          [[ -n "$mkpsxiso" && -n "$dumpsxiso" ]]
+          chmod +x "$mkpsxiso" "$dumpsxiso"
+          for tool in "$mkpsxiso" "$dumpsxiso"; do
+            echo "tool=$tool"
+            set +e
+            "$tool" --version >"$RUNNER_TEMP/$(basename "$tool")-version.txt" 2>&1
+            version_rc=$?
+            set -e
+            echo "version_flag_exit=$version_rc"
+            if [[ $version_rc -ne 0 ]]; then
+              "$tool" --help >"$RUNNER_TEMP/$(basename "$tool")-help.txt" 2>&1 || true
+              head -n 24 "$RUNNER_TEMP/$(basename "$tool")-help.txt"
+            else
+              head -n 12 "$RUNNER_TEMP/$(basename "$tool")-version.txt"
+            fi
+          done
+          echo "MKPSXISO_VERSION=$MKPSXISO_VERSION" >> "$GITHUB_ENV"
+          echo "MKPSXISO_DIR=$install_dir" >> "$GITHUB_ENV"
+
+      - name: Install pinned Python RE packages and m2c commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install --disable-pip-version-check --no-input \
+            "splat64[mips]==$SPLAT64_VERSION" \
+            "unicorn==$UNICORN_VERSION" \
+            "spimdisasm==$SPIMDISASM_VERSION" \
+            "m2c @ git+https://github.com/matt-kempster/m2c.git@$M2C_COMMIT"
+          python --version
+          python -m pip --version
+          python -m pip show splat64 unicorn spimdisasm m2c
+          m2c --help > "$RUNNER_TEMP/m2c-help.txt"
+          head -n 20 "$RUNNER_TEMP/m2c-help.txt"
+          set +e
+          splat --version > "$RUNNER_TEMP/splat-version.txt" 2>&1
+          splat_rc=$?
+          set -e
+          echo "splat_version_flag_exit=$splat_rc"
+          if [[ "$splat_rc" -ne 0 ]]; then
+            splat --help > "$RUNNER_TEMP/splat-help.txt" 2>&1
+            head -n 20 "$RUNNER_TEMP/splat-help.txt"
+          else
+            head -n 10 "$RUNNER_TEMP/splat-version.txt"
+          fi
+          python - <<'PY'
+          import sys
+          import unicorn
+          from unicorn import Uc, UC_ARCH_MIPS, UC_MODE_MIPS32, UC_MODE_LITTLE_ENDIAN
+          print(f"python_full_version={sys.version}")
+          print(f"unicorn_import_version={unicorn.__version__}")
+          uc = Uc(UC_ARCH_MIPS, UC_MODE_MIPS32 | UC_MODE_LITTLE_ENDIAN)
+          print(f"unicorn_mips32_little_endian_engine={type(uc).__name__}")
+          PY
+
+      - name: Generate text-only version verification report
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/toolchain-report"
+          out="$RUNNER_TEMP/toolchain-report/toolchain-verification.txt"
+          {
+            echo "date_utc=$(date -u +%FT%TZ)"
+            echo "repository_commit=$(git rev-parse HEAD)"
+            echo "runner_image=ubuntu-24.04"
+            echo "python_expected=$PYTHON_VERSION"
+            python --version
+            python -m pip --version
+            echo "jdk_expected=Eclipse Temurin 25"
+            java --version
+            echo "ghidra_expected=$GHIDRA_VERSION"
+            echo "ghidra_asset=$GHIDRA_ASSET"
+            echo "ghidra_asset_sha256=$GHIDRA_SHA256"
+            echo "ghidra_cache_hit=${{ steps.ghidra-cache.outputs.cache-hit }}"
+            echo "mkpsxiso_expected=$MKPSXISO_VERSION"
+            echo "mkpsxiso_archive_sha256=$(sha256sum "$RUNNER_TEMP/$MKPSXISO_ARCHIVE" 2>/dev/null | awk '{print $1}' || echo archive-removed-after-install)"
+            echo "m2c_pinned_commit=$M2C_COMMIT"
+            echo "splat64_expected=$SPLAT64_VERSION"
+            echo "unicorn_expected=$UNICORN_VERSION"
+            echo "spimdisasm_expected=$SPIMDISASM_VERSION"
+            echo "binutils_mipsel_expected=$BINUTILS_VERSION"
+            echo "binutils_mipsel_installed=$(dpkg-query -W -f='${Version}' binutils-mipsel-linux-gnu)"
+            mipsel-linux-gnu-objdump --version | head -n 2
+            echo "--- Python packages ---"
+            python -m pip show splat64 unicorn spimdisasm m2c
+            echo "--- m2c --help first lines ---"
+            head -n 20 "$RUNNER_TEMP/m2c-help.txt"
+            echo "--- Ghidra launcher verification ---"
+            echo "analyzeHeadless_present=yes"
+            echo "--- tool availability ---"
+            find "$RUNNER_TEMP/mkpsxiso" -type f \( -name mkpsxiso -o -name dumpsxiso \) -printf '%f\n' | sort -u
+            echo "gameplay_or_emulator_executed=no"
+            echo "disc_or_game_binary_uploaded_as_artifact=no"
+          } > "$out"
+          cat "$out"
+
+      - name: Upload text-only toolchain verification
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: step0-toolchain-verification
+          path: ${{ runner.temp }}/toolchain-report/toolchain-verification.txt
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Remove downloaded tool archives
+        if: always()
+        shell: bash
+        run: |
+          rm -f "$RUNNER_TEMP/$GHIDRA_ASSET" "$RUNNER_TEMP/$MKPSXISO_ARCHIVE"
+          rm -rf "$RUNNER_TEMP/mkpsxiso"
