@@ -84,10 +84,21 @@ jobs:
           rewritten, replaced = [], 0
           for line in lines:
               if line.lstrip().upper().startswith("FILE "):
-                  match = re.match(r'^([ \t]*FILE[ \t]+)(?:"[^"]*"|[^ \t]+)(.*)$', line, re.I)
-                  if not match:
-                      raise SystemExit("Unrecognized CUE FILE directive")
-                  line = match.group(1) + '"naruto-disc.bin"' + match.group(2)
+                  prefix = line[:len(line) - len(line.lstrip())]
+                  rest = line.lstrip()[5:].strip()
+                  if rest.startswith('"'):
+                      closing = rest.find('"', 1)
+                      if closing < 0:
+                          raise SystemExit("Unterminated quoted CUE filename")
+                      suffix = rest[closing + 1:].strip()
+                  else:
+                      parts = rest.split(maxsplit=1)
+                      if len(parts) != 2:
+                          raise SystemExit("Unrecognized CUE FILE directive")
+                      suffix = parts[1]
+                  if not suffix:
+                      raise SystemExit("CUE FILE directive has no file type")
+                  line = prefix + 'FILE "naruto-disc.bin" ' + suffix
                   replaced += 1
               rewritten.append(line)
           if replaced != 1:
