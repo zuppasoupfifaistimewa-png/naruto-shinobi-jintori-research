@@ -145,6 +145,16 @@ jobs:
           python --version
           python -m pip --version
           python -m pip show splat64 unicorn spimdisasm m2c
+          set +e
+          m2c --version > "$RUNNER_TEMP/m2c-version.txt" 2>&1
+          m2c_version_rc=$?
+          set -e
+          echo "m2c_version_flag_exit=$m2c_version_rc"
+          if [[ "$m2c_version_rc" -eq 0 ]]; then
+            head -n 10 "$RUNNER_TEMP/m2c-version.txt"
+          else
+            head -n 10 "$RUNNER_TEMP/m2c-version.txt"
+          fi
           m2c --help > "$RUNNER_TEMP/m2c-help.txt"
           head -n 20 "$RUNNER_TEMP/m2c-help.txt"
           set +e
