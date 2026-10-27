@@ -1,3 +1,9 @@
+## CORRECTION — pointer load cross-check from raw MIPS, 27 Oktober 2026 21:43 WIB
+
+The raw body at `0x800ED920–0x800ED924` executes `lui v1,%hi(D_8013EA74)` then `lw a0,%lo(D_8013EA74)(v1)`: it loads a value from the global slot at `0x8013EA74`, and uses that loaded value as the base after adding `index * 0x90`. Ghidra C reflects the dereference as `iRam8013ea74`; m2c renders the symbol in pointer arithmetic without the same dereference clearly expressed. Thus the boundary and call-structure comparison passes, but exact global pointer typing/effective-address agreement does not. The loaded pointer value, runtime resource base and the meaning of the record remain unknown.
+
+---
+
 ## LIVE RECONCILIATION ADDENDUM — 27 Oktober 2026, 21:41 WIB
 
 HEAD sebelum update dokumentasi: `c36b7407631291afd2a4d303f49a8b03392e2bbc`. Snapshot historis di bawah bagian ini tidak boleh mengalahkan run/artifact berikut.
