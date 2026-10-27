@@ -239,3 +239,22 @@ Run [#40455975609](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 ## Topik 1 — Langkah 4 RNG + roulette (27 Oktober 2026)
 
 Status topik ini **SEBAGIAN**, bukan TUNTAS: LCG dan peta caller statis tersedia, tetapi seed runtime, determinisme save-state, pemanggil roulette/battle dinamis, dan pemeriksaan menyeluruh terhadap sumber randomness alternatif belum dibuktikan. Laporan terperinci dan kriteria satu per satu: [out/step4/STEP4_RNG_ROULETTE_TOPIC_2026-10-27.md](step4/STEP4_RNG_ROULETTE_TOPIC_2026-10-27.md). Pemanggil yang tersedia belum boleh dilabeli sebagai roulette hanya berdasarkan operasi indeks/shuffle/pemilihan kandidat. Langkah 5 topik ini belum dimulai ulang; pemain adaptif tetap dijeda.
+
+
+## Checkpoint penutupan reverse engineering Langkah 4–10 — 27 Oktober 2026
+
+Laporan otoritatif terbaru:
+- Matriks penutupan Step 4–10: [docs/STEP4_10_CLOSURE_REPORT_2026-10-27.md](../docs/STEP4_10_CLOSURE_REPORT_2026-10-27.md).
+- Status/kriteria audit: [docs/REVERSE_ENGINEERING_AUDIT_STEPS_1_10_2026-10-27.md](../docs/REVERSE_ENGINEERING_AUDIT_STEPS_1_10_2026-10-27.md).
+- Handoff untuk chat berikutnya: [docs/HANDOFF_REVERSE_ENGINEERING_STEPS4_10_2026-10-27.md](../docs/HANDOFF_REVERSE_ENGINEERING_STEPS4_10_2026-10-27.md).
+
+Status terbaru:
+- Step 4 — **SEBAGIAN**. Runtime checkpoint roulette menghasilkan 127 hit/cabang, sequence caller-state yang cocok setelah normalisasi frame, final state 0xA99DC6E7, dan viewport crop pixel-identical pada dua repeat jeda 30 dan satu jeda 60. Run #40474262267 overall failure hanya pada commit report; bukti runtime tetap direkonstruksi dari artifact/log. Seed boot, battle caller, link caller ke hasil roulette, indirect dispatch dan RNG alternatif tetap UNKNOWN. Detail [runtime report](step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md).
+- Step 5 — **TUNTAS dalam cakupan empat fungsi terpilih**. Empat output Ghidra C + empat output m2c C tersimpan di [laporan Step 5](step5/STEP5_GHIDRA_M2C_COMPARISON_2026-10-27.md).
+- Step 6 — **SEBAGIAN**. Xref getter/setter dan cabang threshold terdokumentasi, tapi base resource runtime, semantics field/delta, dan hasil call target/transisi belum terbukti. [Review Step 6](../docs/STEP6_TARGET_XREF_SEMANTIC_REVIEW_2026-10-27.md).
+- Step 7 — **SEBAGIAN**. Struktur directory DATA.BIN dan bootstrap copy didukung statis; loader base/lifecycle runtime/relocation serta pemetaan DATA2/DUMMY belum lengkap. [Review Step 7](../docs/STEP7_LOADER_OVERLAY_MAPPING_2026-10-27.md).
+- Step 8 — **SEBAGIAN**. Hanya perilaku fungsi didukung kode yang diberi label statis; aturan biaya, barrier, battle/roulette/turn, efek kartu, dan victory conditions umum tetap UNKNOWN. [Review Step 8](../docs/STEP8_FUNCTION_SEMANTICS_AND_GAME_RULES_2026-10-27.md).
+- Step 9 — **TUNTAS untuk fungsi RNG 0x80035D78 saja**. Run #40474891838 sukses; 7/7 initial-state vectors cocok untuk state baru, v0 dan return sentinel; 12 instruksi tiap vektor; physical RAM map PS1 2 MiB; runner cleanup PASS. [Laporan Step 9](step9/STEP9_UNICORN_RESULT_2026-10-27.md).
+- Step 10 — **TUNTAS sebagai indeks audit**; ini bukan klaim bahwa seluruh game telah selesai direverse-engineer.
+
+Story Mode tetap **TIDAK TERBUKTI TAMAT**. Tidak ada ending autentik yang diverifikasi. Sistem pemain adaptif tetap dijeda; tidak ada classifier, input policy, readiness gate, atau marker Revision65 diubah pada pekerjaan ini. ROM/disc, BIOS, Memory Card, savestate, RAM dump, dan screenshot privat tetap di luar Git.
