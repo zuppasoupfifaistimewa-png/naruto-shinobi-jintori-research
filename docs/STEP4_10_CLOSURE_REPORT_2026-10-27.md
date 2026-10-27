@@ -12,7 +12,7 @@ Batas: laporan ini menutup hanya hal yang benar-benar didukung bukti. Status tia
 | 4 — RNG, seed, caller, determinisme | **SEBAGIAN** | Formula/state RNG diverifikasi statis dan fungsi utamanya lulus eksekusi terisolasi. Perbandingan runtime pada satu checkpoint roulette menunjukkan stream caller/state serta viewport sama untuk dua pengulangan dan satu jeda berbeda. Seed boot, hubungan caller ke hasil roulette, caller battle, dispatch menyeluruh, dan RNG alternatif tetap terbuka. |
 | 5 — perbandingan Ghidra/m2c | **TUNTAS (empat fungsi terpilih)** | Empat fungsi yang sama mempunyai output Ghidra dan m2c; kedelapan output C disimpan permanen. Tidak mengklaim merekonstruksi kode sumber asli atau semua fungsi. |
 | 6 — alamat, setter, xref dan call chain | **SEBAGIAN** | Getter/setter utama, xref statis, sejumlah cabang pembanding target, dan batas interpretasi tercatat. Base runtime resource, field/delta, serta semantik transisi masih UNKNOWN. |
-| 7 — loader dan overlay | **SEBAGIAN** | Struktur direktori DATA.BIN dan satu alur salin bootstrap terdukung statis. Base/lifecycle loader runtime, relokasi, dan pemetaan menyeluruh DATA2.BIN/DUMMY.BIN belum terbukti. |
+| 7 — loader dan overlay | **SEBAGIAN** | Struktur direktori DATA.BIN dan salin bootstrap terdukung statis. Run #40479865235: pra-uji frame 50, kontrol debugger listener-only frame 40, tetapi probe empat-breakpoint hanya frame 1–3 lalu timeout 124; tanpa hit loader/seed yang diterima. Report parser metrik frame kontrol keliru mencetak 0; raw log lebih berwenang. Base/lifecycle, relokasi, serta pemetaan menyeluruh DATA2.BIN/DUMMY.BIN belum terbukti. [Laporan](STEP7_RUNTIME_COLD_BOOT_RESULT_2026-10-27.md), [run](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40479865235), [artifact #12722187784](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40479865235/artifacts/12722187784). |
 | 8 — penjelasan fungsi dan aturan game | **SEBAGIAN** | Penjelasan berbasis kode tersedia dengan label keyakinan. Aturan biaya/barrier, battle/roulette/turn, efek kartu, dan syarat menang per mode belum diverifikasi lengkap. |
 | 9 — eksekusi fungsi terisolasi | **TUNTAS untuk fungsi RNG `0x80035D78` saja** | Eksekusi MIPS32 terisolasi berhasil pada tujuh state; state baru, register `v0`, dan return sentinel cocok. Bukan pengganti emulator PS1 dan tidak menggeneralisasi ke fungsi lain. |
 | 10 — indeks dokumentasi `out/logic.md` | **TUNTAS sebagai indeks audit** | Indeks mengacu ke laporan dan bukti terkini serta mencantumkan UNKNOWN. Status ini tidak berarti semua aturan permainan telah selesai direverse-engineer. |
@@ -48,6 +48,8 @@ Batas: laporan ini menutup hanya hal yang benar-benar didukung bukti. Status tia
 - Instruksi sekitar kandidat `0x800AD454` mendukung salinan tabel direktori dari `0x800AD494` menuju `0x8006D830`, tetapi ini bukti statis.
 - Base entry 0 `0x800AD000` dan entry 1 `0x800D0000` tetap HIPOTESIS; alamat muat nyata, relokasi, urutan load/unload, dan kontribusi executable DATA2.BIN/DUMMY.BIN belum dipetakan menyeluruh.
 
+
+Catatan runtime terbaru (run #40479865235) dan bug parser metrik dicatat pada [laporan Step 7](STEP7_RUNTIME_COLD_BOOT_RESULT_2026-10-27.md). Run selesai sukses secara workflow, tetapi bukti runtime tidak konklusif; jangan anggap no-hit sebagai ketidakberjalanan target.
 ### Langkah 8 — penjelasan fungsi dan aturan game
 
 **SEBAGIAN.** Sumber: [laporan fungsi/aturan](STEP8_FUNCTION_SEMANTICS_AND_GAME_RULES_2026-10-27.md).
