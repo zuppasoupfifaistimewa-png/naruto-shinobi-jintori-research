@@ -162,3 +162,21 @@ Detail dan link artefak: [out/rng_candidate.md](rng_candidate.md), [out/main_exe
 ### Langkah berikutnya
 
 Lanjutkan Langkah 4 secara terfokus: dekompilasi terbatas empat fungsi pemanggil, kumpulkan xref load/store untuk global `0x800A3118`, dan inspeksi instruksi tepat pada setter `0x80035DA8`. Jangan menyebut caller sebagai roulette, battle, AI, atau mekanik gameplay sebelum flow, tabel, dan efek samping menunjukkan hubungan itu. Status adaptive player tetap dijeda: target cue UNKNOWN, `barrier_level_selection = WAIT`, readiness NO-GO, Story Mode NOT COMPLETE, Revision65 tidak diubah.
+
+
+## Hasil lanjutan Langkah 4 — dekompilasi empat caller RNG (27 Oktober 2026)
+
+Pembaruan ini menggantikan daftar pekerjaan Langkah 4 sebelumnya yang menyebut dekompilasi empat caller sebagai langkah berikutnya. Hasil bersumber dari artefak teks [run #40438911181](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40438911181); tidak ada emulator atau input gameplay.
+
+1. `FUN_80015b7c` (entry `0x80015B7C`, 240 byte) mengulang hingga `4 * DAT_80070d02` iterasi ketika jumlah elemen bukan nol. Pada setiap iterasi ia mengambil RNG, menghitung indeks modulo jumlah elemen dan menukar dua byte dalam tabel mulai `DAT_80070d0a`. **Keyakinan tinggi:** shuffle/permutasi byte; domain tabel belum diketahui.
+2. `FUN_8001a328` (entry `0x8001A328`, 376 byte) membuat daftar kandidat dari pemeriksaan `FUN_80016c68(0x7F..0x86)`, lalu memilih elemen dengan `RNG % jumlah_kandidat` dan menyimpannya ke `DAT_80089DA9`. **Keyakinan tinggi:** pemilih acak atas daftar kandidat yang difilter. Arti kode/state belum diketahui; label gameplay tidak ditebak.
+3. `FUN_80015adc` (entry `0x80015ADC`, 160 byte) memeriksa batas dari helper `FUN_800154d4`, lalu menghitung indeks/offset dengan nilai `FUN_800158d8` dan RNG sebelum memanggil `FUN_800159bc`. **Keyakinan menengah:** pilihan indeks terbatas; makna semantik membutuhkan penelusuran helper/tabel.
+4. `FUN_80020bf4` (entry `0x80020BF4`, 156 byte) menginisialisasi struktur kalau pointer valid dan field pertama belum bernilai 1, mengambil nilai RNG, menyimpan nilai 12-bit (`RNG % 0x1000`) ke `param_1[0xD]`, kemudian memanggil tiga helper. **Keyakinan menengah:** inisialisasi struktur dengan nilai pseudo-acak; hubungan dengan gameplay belum dibuktikan.
+
+Ghidra hanya menemukan dua referensi langsung ke state global `0x800A3118` pada text utama: baca di `0x80035D80` dan tulis di `0x80035D98`, keduanya dalam LCG. Empat direct-JAL callers terpetakan pada tabel di [out/rng_candidate.md](rng_candidate.md). Query untuk reference langsung ke setter kandidat `0x80035DA8` menghasilkan nol; ini belum menyingkirkan caller tak langsung, alias atau kode overlay.
+
+### Status Langkah 4
+
+**SELESAI sebagai inventaris awal RNG + empat caller langsung dan dekompilasi tingkat pertama; BELUM SELESAI sebagai pemetaan RNG gameplay penuh.** Hal yang masih harus dikerjakan adalah menelusuri helper, sumber dan isi tabel `DAT_80070d02/DAT_80070d0a`, pemanggil `FUN_8001a328`, semua referensi ke `DAT_80089DA9`, pengguna `FUN_80020bf4`, serta seed setter/overlay. Jangan menyimpulkan aturan roulette, turn, battle, AI, hadiah atau kemenangan sebelum hubungan itu dibuktikan.
+
+Adaptive player masih dijeda: target cue UNKNOWN, `barrier_level_selection = WAIT`, readiness NO-GO, Story Mode NOT COMPLETE, Revision65 tidak diubah.
