@@ -1,3 +1,17 @@
+# Live addendum — completed full displacement inventory audit (27 October 2026, 19:35 WIB)
+
+Latest scan [#40504640855](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504640855) succeeded and created [artifact #12733854252](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504640855/artifacts/12733854252), 220,128 bytes, ZIP SHA-256 `90288a1c8b454cbdc45c75e0244d26508628ecf88bfe8e73ed88524c8cb80891`. Runner-only audit [#40504977322](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504977322) confirmed artifact ID/run/name/size/digest/lifetime and cleaned runner files; audit artifact #12734840847, 25,756 bytes, ZIP SHA-256 `d022b23548fe95eb34bfbb7a7fb0dd190a498ca54fff11516818138701920398`; `RUNNER_ARTIFACT_CLEANUP=PASS`.
+
+Direct base+displacement results, only in the candidate view with `0x800D0000` base:
+- `+0xB30`: 1 access, read only.
+- `+0xB38`: 1 access, read only.
+- `+0xB40`: 1 access, write only.
+- `+0xB44`: 2 accesses: one read and one write.
+
+The output contains the full aggregated displacement inventory between BEGIN/END markers; the runner audit's output block is smaller than 30,001 rows. The direct priority-offset entries are uncapped. However the base-register trace remains a bounded, linear 24-instruction lookback and simple-move alias hint; it does not resolve arbitrary pointer arithmetic, all indirect references, code Ghidra did not decode, other base hypotheses or object identity. Some decompiles fail due to malformed P-code/bad instruction boundaries. Keep Step6 SEBAGIAN; never infer gameplay field names from these offsets alone.
+
+---
+
 # Latest Step 6 audit addendum — runner-verified field access context (27 October 2026, 19:22 WIB)
 
 Artifact #12731474756 from run [#40500058788](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40500058788) was validated by runner-only audit [#40503223693](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40503223693), artifact #12733512950 (13.079 bytes; ZIP SHA-256 382773f9a421835bc97c448c630a2ea5d3891309bb34094f5a67027548c03414). Step6 ZIP is 180.174 bytes, SHA-256 4aea20e1420292505666f15898ba2db57a875a4fc67fbe2c65336af0a16fc9f4. Source job confirmed disc/DATA.BIN/slice identity checks, STEP6_PRIVATE_CLEANUP=PASS, text_only_output_count=6, private_binary_in_artifact=no.
