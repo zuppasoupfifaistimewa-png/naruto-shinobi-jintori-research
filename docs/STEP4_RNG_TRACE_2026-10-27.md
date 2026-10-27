@@ -41,3 +41,29 @@ Di `0x80035DA8` ada urutan instruksi yang cocok dengan setter state berbasis arg
 **Belum diketahui:** nama/arti gameplay tabel `DAT_8005603C`, kode yang disimpan pada `DAT_80089DA9`, seed runtime, pengaruh helper tambahan pada gameplay, serta pemanggil di modul/overlay lain.
 
 Dengan demikian Langkah 4 selesai sebagai **pemetaan teknis statis atas RNG + helper daftar yang terlihat pada executable utama**. Pemetaan runtime dan semantik gameplay dilanjutkan di Langkah 5 dan 6, bukan ditebak dari label `FUN_...`.
+
+
+## Pembaruan cakupan lintas resource — 27 Oktober 2026
+
+### Hasil baru yang terverifikasi secara statis
+
+Workflow [Ghidra entry 1 #40454881770](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40454881770) memeriksa DATA.BIN entry 1 (596.412 byte; SHA-256 `9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a`) sebagai program MIPS little-endian pada base analisis kandidat `0x800D0000`.
+
+- Dari 144 kata JAL mentah ke target `0x80035D78`, **108** menjadi direct-call flow yang benar-benar didekode Ghidra pada address map kandidat.
+- 108 call site itu berada pada **50 fungsi pemanggil dengan batas fungsi dikenali**, ditambah satu call site `0x80128AF8` yang tidak memiliki batas fungsi pada pass tersebut.
+- **36** kandidat kata JAL tetap tidak terdekode; dicatat terpisah dalam [inventaris caller entry 1](../out/rng_resource_entry1_ghidra_callers_2026-10-27.md), bukan dianggap caller terkonfirmasi atau otomatis dianggap data.
+- Tidak ada JAL mentah ke kandidat seed setter `0x80035DA8` dalam entry 1.
+
+### Konteks entry 0
+
+Workflow konteks lokal [#40455197588](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455197588) dengan `-noanalysis` memeriksa lima lokasi, tanpa menjalankan emulator/gameplay. Pada base **hipotetis** `0x800AD000`:
+
+- `0x800AF2AC` didekode sebagai `jal 0x80035DA8`. Instruksi sebelum pemanggilan mengisi `$a0 = -1`; delay slot `move a0,v0` berlaku selepas fungsi yang dipanggil. Dengan demikian, jika jalur resource ini memang dijalankan pada base tersebut, ia menyimpan `0xFFFFFFFF` ke state RNG. Ini adalah bukti statis jalur pemanggilan seed, **bukan bukti runtime tentang kapan atau apakah jalur tersebut berjalan**.
+- `0x800BB2D8` didekode sebagai `jal 0x80035D78`; konteks berikutnya memanggil helper dan melakukan pembagian unsigned terhadap hasil, konsisten dengan pemilihan modulo berbatas.
+- `0x800BB2FC`, `0x800BB748`, dan `0x800BB770` belum dikonfirmasi sebagai instruksi caller pada pass lokal awal. Ketiganya tetap UNKNOWN sampai disassembly tepat di lokasi dan analisis jalur kontrol selesai.
+
+### Status Langkah 4
+
+RNG main EXE dan empat caller langsungnya **SELESAI**. Inventaris statis silang resource sudah jauh lebih lengkap, namun **Langkah 4 keseluruhan masih SELESAI SEBAGIAN**: 36 kecocokan mentah entry 1 belum diklasifikasikan, tiga kandidat entry 0 belum terdekode sebagai call, base resource masih hipotesis, dan caller tak langsung/ruang kode hasil dekompresi tidak bisa disingkirkan dari scan byte mentah saja. Label gameplay (roulette/battle/turn/AI) belum diberikan tanpa bukti call chain/tabel.
+
+Rujukan hasil entry 1: [inventaris caller Ghidra](../out/rng_resource_entry1_ghidra_callers_2026-10-27.md).
