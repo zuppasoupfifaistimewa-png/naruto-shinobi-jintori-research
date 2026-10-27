@@ -1,0 +1,165 @@
+name: Step 4 — static seed helper return audit (runner-only)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/step4-helper-return-audit-v2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: step4-helper-return-audit-v2
+  cancel-in-progress: false
+
+jobs:
+  helper-return-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      GHIDRA_ASSET: "ghidra_12.2_PUBLIC_20261016.zip"
+      GHIDRA_SHA256: "2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67"
+      GHIDRA_CACHE_DIR: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+    steps:
+      - name: Checkout research scripts
+        uses: actions/checkout@v4
+
+      - name: Install disc extraction utilities
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes bchunk xorriso
+          mkdir -p "$RUNNER_TEMP/step4-helper-audit-output"
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+          java-package: jdk
+
+      - name: Fetch, verify, extract, then discard the disc image
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/step4-helper-audit"
+          src="$root/source"
+          tree="$root/extracted-root"
+          out="$RUNNER_TEMP/step4-helper-audit-output"
+          mkdir -p "$src" "$tree" "$out"
+          bin="$src/naruto-disc.bin"
+          cue_raw="$src/original.cue"
+          cue="$src/naruto-disc.cue"
+          curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 2 --max-time 600             -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/octet-stream"             "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/assets/647346873" -o "$bin"
+          [[ "$(stat -c '%s' "$bin")" == "325989552" ]]
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $bin" | sha256sum --check
+          curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 2 --max-time 60             -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/octet-stream"             "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/assets/647354760" -o "$cue_raw"
+          [[ "$(stat -c '%s' "$cue_raw")" == "116" ]]
+          echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $cue_raw" | sha256sum --check
+          file_count="$(grep -ic '^[[:space:]]*FILE[[:space:]]' "$cue_raw")"
+          [[ "$file_count" == "1" ]]
+          sed -E 's/^[[:space:]]*FILE[[:space:]].*$/FILE "naruto-disc.bin" BINARY/I' "$cue_raw" > "$cue"
+          bchunk "$bin" "$cue" "$src/track"
+          iso="$(find "$src" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          [[ -n "$iso" ]]
+          xorriso -osirrox on -indev "$iso" -extract / "$tree" > "$out/disc-extraction.log" 2>&1
+          candidate="$(find "$tree" -type f -iname 'SLPS_035.53*' -print -quit)"
+          [[ -n "$candidate" ]]
+          exe="$root/SLPS_035.53"
+          cp "$candidate" "$exe"
+          [[ "$(stat -c '%s' "$exe")" == "385024" ]]
+          echo "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569  $exe" | sha256sum --check
+          [[ "$(head -c 8 "$exe")" == "PS-X EXE" ]]
+          printf 'source=release BIN/CUE verified\nexe_bytes=385024\nexe_sha256=a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569\nprivate_input_artifact=no\n' > "$out/input-identity.txt"
+          rm -rf "$src" "$tree"
+          [[ ! -e "$src" && ! -e "$tree" ]]
+          echo "disc_image_and_extraction_tree_removed_before_Ghidra=PASS"
+
+      - name: Restore cached Ghidra
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+          key: ghidra-12.2-linux-x64-2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+
+      - name: Install Ghidra when cache is missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$GHIDRA_CACHE_DIR"
+          if ! find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit | grep -q .; then
+            archive="$RUNNER_TEMP/$GHIDRA_ASSET"
+            curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 3               "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.2_build/$GHIDRA_ASSET" -o "$archive"
+            echo "$GHIDRA_SHA256  $archive" | sha256sum --check
+            unzip -q "$archive" -d "$GHIDRA_CACHE_DIR"
+            rm -f "$archive"
+          fi
+
+      - name: Decompile helper and seed setter with raw instruction windows
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/step4-helper-audit-output"
+          exe="$RUNNER_TEMP/step4-helper-audit/SLPS_035.53"
+          project="$RUNNER_TEMP/step4-helper-ghidra-project"
+          mkdir -p "$project" "$out"
+          headless="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
+          [[ -n "$headless" && -x "$headless" ]]
+          "$headless" "$project" Naruto_seed_helper_audit             -import "$exe"             -loader BinaryLoader -loader-baseAddr 0x80010000 -loader-fileOffset 0x800             -loader-length 0x5D800 -loader-blockName MAIN_TEXT             -processor "MIPS:LE:32:default"             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra"             -preScript PreparePsxExe.java             -postScript ExportFunctionDetail.java "$out/seed-helper-detail.txt" 0x80037138 0x80035DA8             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject             > "$out/ghidra-headless.log" 2>&1
+          grep -q "=== TARGET 0x80037138 ===" "$out/seed-helper-detail.txt"
+          grep -q "=== TARGET 0x80035DA8 ===" "$out/seed-helper-detail.txt"
+          {
+            echo "status=SUCCESS"
+            echo "helper=0x80037138"
+            echo "seed_setter=0x80035DA8"
+            echo "static_analysis_only=yes"
+            echo "runtime_call_contract=NOT_PROVEN"
+          } > "$out/analysis-result.txt"
+
+      - name: Cleanup private inputs and project
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/step4-helper-audit"
+          project="$RUNNER_TEMP/step4-helper-ghidra-project"
+          out="$RUNNER_TEMP/step4-helper-audit-output"
+          mkdir -p "$out"
+          rm -rf "$root" "$project"
+          if [[ ! -e "$root" && ! -e "$project" ]]; then
+            echo "STEP4_HELPER_PRIVATE_CLEANUP=PASS" | tee "$out/cleanup-status.txt"
+          else
+            echo "STEP4_HELPER_PRIVATE_CLEANUP=FAIL" | tee "$out/cleanup-status.txt"
+            exit 1
+          fi
+
+      - name: Validate text-only reports
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/step4-helper-audit-output"
+          mkdir -p "$out"
+          python3 - "$out" <<'PY'
+          from pathlib import Path
+          import sys
+          root=Path(sys.argv[1])
+          allowed={".txt",".log"}
+          bad=[p.name for p in root.iterdir() if p.is_file() and p.suffix.lower() not in allowed]
+          if bad: raise SystemExit("NON_TEXT_OUTPUT: "+", ".join(bad))
+          print("text_only_output_validation=PASS")
+          print("raw_binary_uploaded=no")
+          PY
+
+      - name: Upload text-only helper report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: step4-helper-return-audit-v2
+          path: ${{ runner.temp }}/step4-helper-audit-output/
+          if-no-files-found: warn
+          retention-days: 14
