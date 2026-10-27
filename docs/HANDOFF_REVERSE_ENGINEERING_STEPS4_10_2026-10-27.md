@@ -3,6 +3,27 @@
 Pembaruan: 27 Oktober 2026, setelah run Step 9 #40474891838.  
 Repo yang diizinkan: `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research` saja. Jangan akses atau ubah repo lain.
 
+## Checkpoint terbaru — Step 7 observability A/B (27 Oktober 2026)
+
+Checkpoint remote yang diverifikasi sebelum pembaruan handoff ini: main HEAD 1513f0d3265707a1ef27c39644b9376b910b7c91. Selalu fetch main HEAD/commit dan cek Actions lagi; commit yang memperbarui handoff ini sendiri akan memajukan HEAD.
+
+- Run terbaru [#40479865235](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40479865235) completed/success, 157 detik, pada source commit 51cce7fe07ce5b73b83a5296b4a1d1d86b424ce6. Artefak teks #12722187784, SHA-256 ZIP b9537035eb6ffed66a0aadd5ab48db88715ed2e2128bcf46a48f374c7306ac26, ukuran 3801 byte, retensi belum kedaluwarsa saat audit.
+- Run memasukkan kontrol cold-boot -debugger dengan VSync listener saja, lalu probe empat breakpoint memakai -no-debugger. Pra-uji tanpa breakpoint mencapai frame 50; kontrol debugger tanpa breakpoint mencatat frame 1,2,3,10,20,30,40; probe empat breakpoint hanya frame 1–3 lalu timeout 124 pada batas 70 detik. Tidak ada hit loader/seed/RNG yang diterima; job dan private cleanup PASS. Ini bukan bukti target tidak pernah berjalan.
+- Bug pelaporan: metrik DEBUGGER_CONTROL_MAX_VSYNC_FRAME otomatis bernilai 0 karena regex salah escaping; raw log adalah sumber benar. Perbaiki parser pada run berikutnya.
+- Langkah 4 secara keseluruhan SEBAGIAN untuk resmi subkriteria 4(a–e); laporan STEP4_CLOSURE kini sudah dikoreksi dari TUNTAS keseluruhan menjadi SEBAGIAN. Inventaris statis tertentu selesai, tetapi seed/lifecycle runtime, kausalitas roulette, caller battle, dispatch indirect penuh, randomness alternatif masih UNKNOWN/terbuka.
+- Langkah 5 TUNTAS untuk empat fungsi terpilih; Step 6 SEBAGIAN; Step 7 SEBAGIAN; Step 8 SEBAGIAN; Step 9 TUNTAS hanya untuk RNG 0x80035D78 (7/7 state vector, 12 instruksi/vektor, sentinel return, physical RAM alias); Step 10 TUNTAS sebagai indeks audit, bukan keseluruhan logika game.
+- Perubahan dokumentasi terbaru: laporan Step 7 runtime, peta Step 7, laporan closure gabungan, STATUS.md, ANALYSIS_LOG.md, out/logic.md telah diperbarui. OVERLAY_MAP/Step 8 menahan klaim pemenang yang belum tervalidasi; audit utama tidak lagi menyebut Step 9 terblokir untuk RNG yang sudah lulus.
+
+### Aksi berikutnya — jangan ulangi run identik
+
+1. Ambil lagi main HEAD, status semua Actions (terutama queued/in_progress) dan artefak terbaru. Jangan jalankan workflow pemain adaptif.
+2. Perbaiki parser metrik frame dalam workflow Step 7 dan tambahkan pemeriksaan sederhana yang membuktikan regex mengekstrak angka dari sample log. Lakukan sebagai perubahan kode yang terarah, bukan pengulangan cold boot identik.
+3. Uji satu breakpoint per cold boot, tanpa savestate restore dan tanpa input gameplay, dengan batas waktu yang singkat dan sumber (disc/CUE/BIOS/emulator) diverifikasi. Mulai dari satu target paling informatif, rekam VSync per-frame awal, PC/hit count, exit code, screenshot hanya jika diperlukan dan harus autentik X11. Bila callback breakpoint tunggal pun menghentikan progress, lakukan kontrol listener-only dan uji breakpoint tanpa log; jangan menambah target sampai penyebab observabilitas dipahami.
+4. Perbarui docs/STEP7_RUNTIME_COLD_BOOT_RESULT_2026-10-27.md dan closure hanya berdasarkan log/artefak terverifikasi. Tidak boleh mengubah status Step 7 ke TUNTAS tanpa bukti loader/base/lifecycle yang benar.
+5. Lanjutkan kerja independen statis Step 6/8: telusuri operand → branch → store → caller untuk offset +0xB30/+0xB38/+0xB40/+0xB44 dan +0x58B/+0x2E9/+0x2E5/+0x5D2; jangan menganggap getter target sebagai win check atau setter sebagai transaksi biaya. Gunakan hanya output Ghidra statis yang sudah ada bila belum ada pertanyaan baru; jangan menjalankan ulang analisis setara.
+6. Tidak perlu mengulang Step 4 roulette determinism #40474262267 maupun Step 9 RNG Unicorn #40474891838. Tidak ada kewajiban otomatis menguji tiap fungsi secara terisolasi kecuali kriteria resminya menuntutnya atau klaim baru memerlukan bukti eksekusi; jangan generalisasi hasil RNG ke fungsi lain.
+7. Setelah seluruh pekerjaan independen yang aman dikerjakan, perbarui laporan penutupan, STATUS.md, ANALYSIS_LOG.md, out/logic.md, dan handoff; gunakan TUNTAS/SEBAGIAN/BLOKIR secara tepat. Story Mode tidak boleh dinyatakan tamat tanpa bukti ending autentik.
+
 ## Aturan utama untuk chat berikutnya
 
 - Jangan mengembangkan atau menjalankan pemain adaptif. Jangan jalankan Story Mode otomatis, jangan ubah classifier/input policy/readiness gate, jangan mengubah marker Revision65, dan jangan menafsirkan WAIT/UNKNOWN/NO-GO sebagai izin input.
