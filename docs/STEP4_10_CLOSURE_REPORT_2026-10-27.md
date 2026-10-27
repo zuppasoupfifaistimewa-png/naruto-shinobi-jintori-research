@@ -1,3 +1,24 @@
+# CHECKPOINT TERBARU — Step 6 extended scan, 27 Oktober 2026 19:35 WIB
+
+Latest audited field scan: [Actions #40504640855](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504640855), completed success 19:34:31 WIB. Text-only artifact [#12733854252](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504640855/artifacts/12733854252), 220,128 bytes, ZIP SHA-256 `90288a1c8b454cbdc45c75e0244d26508628ecf88bfe8e73ed88524c8cb80891`. Latest runner-only audit [#40504977322](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504977322) succeeded 19:35:51 WIB and validated its artifact metadata/digest; artifact [#12734840847](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504977322/artifacts/12734840847), 25,756 bytes, ZIP SHA-256 `d022b23548fe95eb34bfbb7a7fb0dd190a498ca54fff11516818138701920398`; `RUNNER_ARTIFACT_CLEANUP=PASS`.
+
+## Step 6 direct operand findings — verified statically in hypothetical entry-1 view
+
+The scan covers 98,357 Ghidra-decoded instructions with direct base-plus-displacement load/store syntax in the candidate DATA.BIN entry-1 view. The inventory of recognized direct-memory displacements was emitted between explicit BEGIN/END markers; the runner audit shows the full inventory output stayed below its 30,001-line cap. For the four priority displacements, output cap is explicitly NONE.
+
+- `+0xB30`: total 1 direct-memory access, 1 read, 0 writes.
+- `+0xB38`: total 1 direct-memory access, 1 read, 0 writes.
+- `+0xB40`: total 1 direct-memory access, 0 reads, 1 write.
+- `+0xB44`: total 2 direct-memory accesses, 1 read and 1 write.
+
+The previously inspected instruction window is consistent: `0x8012C634 lw v0,0xB30(a0)` bytes `30 0B 82 8C`; `0x8012C638 lw v1,0xB38(a0)` bytes `38 0B 83 8C`; `0x8012C640 addu v0,v0,v1` bytes `21 10 43 00`; `0x8012C644 sw v0,0xB40(a0)` bytes `40 0B 82 AC`. The +0xB44 write/read include `0x8012C604 sw zero,0xB44(v0)` and `0x8012CB14 lw a2,0xB44(v1)`, with the read value forwarded to call `0x8001B364`.
+
+**Batas penting:** base `0x800D0000` is still HIPOTESIS, not runtime-validated. This closes the direct base+displacement inventory only for recognized instructions decoded by Ghidra in this candidate view. The bounded base-register trace follows a linear window up to 24 prior instructions per link and only simple `move` aliases, stopping at control flow; it is not whole-program pointer analysis. Computed addresses, aliases beyond the bounded trace, split immediates, indirect writes, undecoded code and alternate bases remain UNKNOWN. Do not map these offsets to Chakra, cost, turn, barrier or level-up. Some Ghidra function decompilations still fail from bad instruction/P-code boundaries. Therefore Step 6 remains SEBAGIAN; field semantics/full alias closure are not complete.
+
+No gameplay/emulator run, gameplay input, savestate restore or private binary upload was performed in these scan/audit runs.
+
+---
+
 # REKONSILIASI LIVE DAN MATRIKS CLOSURE PER-KRITERIA — 27 Oktober 2026, 19:22–19:24 WIB
 
 Bagian ini merupakan checkpoint otoritatif terbaru dan menggantikan status operasional historis di bawah bila bertentangan. Branch main pada checkpoint audit sebelum pembaruan laporan adalah commit 555b84a4d178b41e4d04705e1700104bd41ed1d3. Tidak ada gameplay/emulator dijalankan, input gameplay dikirim, savestate dipulihkan, atau sistem pemain adaptif disentuh selama audit ini.
