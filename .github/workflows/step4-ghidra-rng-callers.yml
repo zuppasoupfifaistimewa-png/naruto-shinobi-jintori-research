@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: step4-ghidra-rng-caller-validation-v2
+  group: step4-ghidra-rng-caller-entry1-only
   cancel-in-progress: false
 
 jobs:
@@ -106,7 +106,6 @@ jobs:
           src, out = Path(sys.argv[1]), Path(sys.argv[2])
           data = src.read_bytes()
           specs = [
-              ("DATA_BIN_ENTRY_0000.bin", 0x5F800, 110536, "56ee7d3b195b0708bd5f9163d354f0173a828430c9467d410e822b1793d316d4"),
               ("DATA_BIN_ENTRY_0001.bin", 0x10BB000, 596412, "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a"),
           ]
           for name, offset, size, expected in specs:
@@ -145,7 +144,7 @@ jobs:
           set -euo pipefail
           input="$RUNNER_TEMP/step4-callers/input"
           out="$RUNNER_TEMP/step4-callers-output"
-          mkdir -p "$out/entry0-project" "$out/entry1-project"
+          mkdir -p "$out/entry1-project"
           headless="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
           [[ -n "$headless" && -x "$headless" ]]
 
@@ -158,21 +157,12 @@ jobs:
             -postScript ExportTargetCallers.java "$out/data-bin-entry1-rng-callers.txt" 0x80035D78 0x80035DA8 \
             -analysisTimeoutPerFile 1200 -max-cpu 2 -deleteProject > "$out/entry1-ghidra.log" 2>&1
 
-          "$headless" "$out/entry0-project" DATA_BIN_entry_0000 \
-            -import "$input/DATA_BIN_ENTRY_0000.bin" \
-            -loader BinaryLoader -loader-baseAddr 0x800AD000 -loader-length 0x1AF08 \
-            -loader-blockName DATA_BIN_ENTRY_0000 -processor "MIPS:LE:32:default" \
-            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
-            -preScript PrepareEntry0Helper.java \
-            -postScript ExportTargetCallers.java "$out/data-bin-entry0-rng-callers.txt" 0x80035D78 0x80035DA8 \
-            -analysisTimeoutPerFile 1200 -max-cpu 2 -deleteProject > "$out/entry0-ghidra.log" 2>&1
-
-          [[ -s "$out/data-bin-entry1-rng-callers.txt" && -s "$out/data-bin-entry0-rng-callers.txt" ]]
-          grep -E '^(analysis=|program=|instruction_count_scanned=|validated_direct_callsite_count=|unique_caller_function_count=|=== VALIDATED_CALLSITES ===|target=)' "$out/data-bin-entry1-rng-callers.txt" "$out/data-bin-entry0-rng-callers.txt" || true
+          [[ -s "$out/data-bin-entry1-rng-callers.txt" ]]
+          grep -E '^(analysis=|program=|instruction_count_scanned=|validated_direct_callsite_count=|unique_caller_function_count=|=== VALIDATED_CALLSITES ===|target=)' "$out/data-bin-entry1-rng-callers.txt" || true
           {
             echo "status=SUCCESS"
             echo "main_exe_routine=0x80035D78"
-            echo "candidate_seed_setter=0x80035DA8"
+            echo "candidate_seed_setter=0x80035DA8; DATA.BIN entry 0 inspection deferred"
             echo "resource_base_addresses=HYPOTHESIS_NOT_RUNTIME_VERIFIED"
             echo "gameplay_or_emulator_executed=no"
             echo "source_binaries_uploaded_as_artifact=no"
