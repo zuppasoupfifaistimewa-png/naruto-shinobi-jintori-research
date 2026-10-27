@@ -1,5 +1,5 @@
 name: Runner-only audit of latest Ghidra and Step 6 text artifacts
-# RUNNER_ONLY_AUDIT_REVIEW_WIB=2026-10-27 19:32; refresh to Step6 run 40504141727 and expose uncapped direct-memory inventory; large raw logs are hashed only.
+# RUNNER_ONLY_AUDIT_REVIEW_WIB=2026-10-27 19:36; target normalized delay-slot memory scan #40504640855; retain full direct-displacement inventory; large raw logs are hashed only.
 
 on:
   push:
@@ -61,7 +61,7 @@ jobs:
             printf '%s\t%s\t%s\t%s\n' "$label" "$run_id" "$artifact_id" "$zip" >> "$root/verified.tsv"
           }
           download_one ghidra 40498208067 12732952776 ghidra-slps-03553-function-index sha256:6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6 2255170
-          download_one step6 40504141727 12733399759 step6-resource-field-static-scan sha256:4dfaabd652694f829cb85d1dee747da4d2924f177b8bc3cbe8c7cbb4eb157ef7 220357
+          download_one step6 40504640855 12733854252 step6-resource-field-static-scan sha256:90288a1c8b454cbdc45c75e0244d26508628ecf88bfe8e73ed88524c8cb80891 220128
           download_one helper 40499270568 12731593532 step4-helper-return-static-audit sha256:8567a5cad2a00823302ea7b361dd9b6eaab736bce6b77cf51ea136d6bee454b3 11672
 
           python3 - "$root" "$report" <<'PY'
@@ -173,7 +173,7 @@ jobs:
                   continue
               if inside_inventory and line.startswith("direct_displacement="):
                   inventory_rows.append(line)
-          emit("Step 6 all decoded direct-memory displacement inventory",inventory_rows,10000)
+          emit("Step 6 all decoded direct-memory displacement inventory",inventory_rows,30000)
           # Include a bounded sample of actual memory operands for each pending offset.
           rows=[]
           targets=("0xb30","0xb38","0xb40","0xb44")
