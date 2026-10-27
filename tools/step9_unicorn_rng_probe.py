@@ -33,6 +33,9 @@ TEXT_BASE = TEXT_VIRTUAL_BASE & 0x1FFFFFFF
 TEXT_SIZE = 0x5D800
 ENTRY_VIRTUAL = 0x80035D78
 ENTRY = ENTRY_VIRTUAL & 0x1FFFFFFF
+COUNTER_HELPER_VIRTUAL = 0x80037138
+COUNTER_GLOBAL_VIRTUAL = 0x80066E7C
+COUNTER_GLOBAL = COUNTER_GLOBAL_VIRTUAL & 0x1FFFFFFF
 STATE_VIRTUAL = 0x800A3118
 STATE = STATE_VIRTUAL & 0x1FFFFFFF
 # PS1 KSEG0 addresses 0x80000000–0x801FFFFF alias physical RAM 0x00000000–0x001FFFFF.
@@ -214,6 +217,70 @@ def run_player_value_accessor_tests(code: bytes, gp: int) -> list[dict[str, obje
     return rows
 
 
+def run_counter_helper_tests(code: bytes, gp: int) -> list[dict[str, object]]:
+    """Verify the negative-argument helper path against a controlled global word."""
+    global_values = [0x00000000, 0x00000001, 0x12345678, 0xFFFFFFFF]
+    negative_args = [0xFFFFFFFF, 0x80000000]
+    rows: list[dict[str, object]] = []
+    for global_value in global_values:
+        for a0 in negative_args:
+            emu = Uc(UC_ARCH_MIPS, UC_MODE_MIPS32 | UC_MODE_LITTLE_ENDIAN)
+            emu.mem_map(RAM_BASE, RAM_SIZE)
+            emu.mem_write(TEXT_BASE, code)
+            emu.mem_write(COUNTER_GLOBAL, struct.pack("<I", global_value))
+            emu.reg_write(UC_MIPS_REG_GP, gp)
+            emu.reg_write(UC_MIPS_REG_SP, STACK)
+            emu.reg_write(UC_MIPS_REG_RA, RETURN_SENTINEL)
+            emu.reg_write(UC_MIPS_REG_A0, a0 & MASK32)
+            emu.reg_write(UC_MIPS_REG_A1, 0)
+            entry = COUNTER_HELPER_VIRTUAL & 0x1FFFFFFF
+            emu.reg_write(UC_MIPS_REG_PC, entry)
+            state: dict[str, object] = {"instructions": 0, "returned": False, "budget_exceeded": False}
+
+            def on_instruction(machine: Uc, address: int, size: int, user_data: dict[str, object]) -> None:
+                if address == RETURN_SENTINEL:
+                    user_data["returned"] = True
+                    machine.emu_stop()
+                    return
+                user_data["instructions"] = int(user_data["instructions"]) + 1
+                if int(user_data["instructions"]) > MAX_INSTRUCTIONS:
+                    user_data["budget_exceeded"] = True
+                    machine.emu_stop()
+
+            emu.hook_add(UC_HOOK_CODE, on_instruction, state)
+            error = ""
+            try:
+                emu.emu_start(entry, RAM_BASE + RAM_SIZE, count=MAX_INSTRUCTIONS + 1)
+            except UcError as exc:
+                error = str(exc)
+            actual_v0 = emu.reg_read(UC_MIPS_REG_V0) & MASK32
+            actual_pc = emu.reg_read(UC_MIPS_REG_PC) & MASK32
+            actual_global = struct.unpack("<I", emu.mem_read(COUNTER_GLOBAL, 4))[0]
+            ok = (
+                not error
+                and bool(state["returned"])
+                and not bool(state["budget_exceeded"])
+                and actual_pc == RETURN_SENTINEL
+                and actual_v0 == global_value
+                and actual_global == global_value
+            )
+            rows.append({
+                "label": f"helper_negative_a0_{a0:08X}_global_{global_value:08X}",
+                "entry": f"0x{COUNTER_HELPER_VIRTUAL:08X}",
+                "a0": f"0x{a0:08X}",
+                "expected_v0": f"0x{global_value:08X}",
+                "actual_v0": f"0x{actual_v0:08X}",
+                "expected_global": f"0x{global_value:08X}",
+                "actual_global": f"0x{actual_global:08X}",
+                "return_to_sentinel": bool(state["returned"]),
+                "instructions": int(state["instructions"]),
+                "budget_exceeded": bool(state["budget_exceeded"]),
+                "emulator_error": error or None,
+                "pass": ok,
+            })
+    return rows
+
+
 def main() -> int:
     if len(sys.argv) != 3:
         raise SystemExit("usage: step9_unicorn_rng_probe.py VERIFIED_EXE OUTPUT_MD")
@@ -287,14 +354,16 @@ def main() -> int:
         })
 
     all_pass = all(bool(row["pass"]) for row in rows)
+    helper_rows = run_counter_helper_tests(code, gp)
+    helper_pass = all(bool(row["pass"]) for row in helper_rows)
     accessor_rows = run_player_value_accessor_tests(code, gp)
     accessors_pass = all(bool(row["pass"]) for row in accessor_rows)
-    all_tests_pass = all_pass and accessors_pass
+    all_tests_pass = all_pass and helper_pass and accessors_pass
     exe_hash = hashlib.sha256(data).hexdigest()
     lines = [
         "# Step 9 — validasi fungsi RNG dan accessor nilai pemain secara terisolasi dengan Unicorn",
         "",
-        "- Scope: hanya menjalankan fungsi MIPS di 0x80035D78 pada executable text yang telah diverifikasi; tidak menjalankan emulator PS1/game, BIOS, event loop, atau input gameplay.",
+        "- Scope: hanya menjalankan rutin main EXE 0x80035D78 (RNG), jalur a0 negatif helper 0x80037138, dan accessor 0x8001387C/0x800138EC di RAM CPU terisolasi; tidak menjalankan emulator PS1/game, BIOS, event loop, atau input gameplay.",
         "- RAM model: 2 MiB virtual RAM PS1 pada 0x80000000–0x801FFFFF, text EXE dimuat pada alamat header 0x80010000; seluruh RAM lain nol kecuali state RNG dan register awal yang dicatat.",
         "- Alamat CPU virtual fungsi/state adalah `0x80035D78`/`0x800A3118`; fungsi dipanggil pada alias fisik `0x00035D78`, state ditulis di physical `0x000A3118`. Register awal: PC=0x00035D78, RA=0x001FF000 (physical sentinel return), SP=0x001FE000; GP diambil dari header PS-X EXE.",
         f"- Executable: bytes={len(data)}; SHA-256={exe_hash}; teks={len(code)} bytes; rentang=0x{TEXT_BASE:08X}–0x{TEXT_BASE + TEXT_SIZE:08X}.",
@@ -311,6 +380,23 @@ def main() -> int:
             f"{r['expected_v0']} | {r['actual_v0']} | {r['instructions']} | "
             f"{'PASS' if r['return_to_sentinel'] else 'NO'} | {'PASS' if r['pass'] else 'FAIL'} |"
         )
+    lines += [
+        "",
+        "## Test terisolasi tambahan — helper counter dengan argumen negatif",
+        "",
+        "- Scope: hanya menguji helper main EXE 0x80037138 dengan a0 bertanda negatif sambil menetapkan global 0x80066E7C ke empat word uji di RAM terisolasi.",
+        "- Expected: v0 mengembalikan word global yang disuntikkan dan global tidak berubah; input a0 diuji pada 0xFFFFFFFF dan 0x80000000.",
+        "",
+        "| Kasus | Entry | a0 | Global harapan | v0 aktual | Global aktual | Instruksi | Return | Status |",
+        "|---|---|---|---|---|---|---:|---|---|",
+    ]
+    for r in helper_rows:
+        lines.append(
+            f"| {r['label']} | {r['entry']} | {r['a0']} | {r['expected_v0']} | "
+            f"{r['actual_v0']} | {r['actual_global']} | {r['instructions']} | "
+            f"{'PASS' if r['return_to_sentinel'] else 'NO'} | {'PASS' if r['pass'] else 'FAIL'} |"
+        )
+    lines += [
     lines += [
         "",
         "## Test terisolasi tambahan — setter/getter nilai peserta",
@@ -335,6 +421,8 @@ def main() -> int:
 
         "",
         f"- ISOLATED_RNG_FUNCTION_EXECUTION={'PASS' if all_pass else 'FAIL'}",
+        f"- ISOLATED_HELPER_RETURN_TESTS={'PASS' if helper_pass else 'FAIL'}",
+        f"- helper_cases_passed={sum(1 for r in helper_rows if r['pass'])}/{len(helper_rows)}",
         f"- ISOLATED_PLAYER_VALUE_ACCESSOR_TESTS={'PASS' if accessors_pass else 'FAIL'}",
         f"- accessor_cases_passed={sum(1 for r in accessor_rows if r['pass'])}/{len(accessor_rows)}",
         f"- STEP9_ALL_TESTS={'PASS' if all_tests_pass else 'FAIL'}",
@@ -351,6 +439,7 @@ def main() -> int:
         print("STEP9_TESTS=FAIL", file=sys.stderr)
         return 1
     print("STEP9_ISOLATED_RNG=PASS")
+    print("STEP9_HELPER_NEGATIVE_RETURN=PASS")
     print("STEP9_PLAYER_VALUE_ACCESSORS=PASS")
     print("STEP9_TESTS=PASS")
     return 0
