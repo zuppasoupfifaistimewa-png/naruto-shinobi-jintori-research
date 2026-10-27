@@ -1,10 +1,22 @@
+# LIVE ADDENDUM — Full Ghidra entry-0 pass timed out, 27 Oktober 2026 21:56 WIB
+
+Run [#40520635663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40520635663) is now **completed/success** overall; text artifact #12743796502, 2,299,302 bytes, ZIP SHA-256 `e2d5b496b2310c17110c59710212f7605bf8b3d90b798abb438c1224bf3d0549`. The artifact was downloaded and its digest verified locally before reading.
+
+The artifact adds 36 function-index rows for entry 0 and records the resource hash/size (`0x5F800`, 110,536 bytes, SHA-256 `56ee7d3b195b0708bd5f9163d354f0173a828430c9467d410e822b1793d316d4`) under hypothetical base `0x800AD000`. However, `entry0-ghidra-headless.log` says analysis timed out at 1,800 seconds for `DATA_BIN_ENTRY_0000.bin`. It contains numerous function-body repair/overlap errors. The nominated `candidate_800bdbfc` is 36 bytes in the exported index, but the helper report states `reference_count=0`; the listing/decompilation is not evidence that it is called from the RNG setter path. Treat this resource pass as **PARTIAL / TIMEOUT**, despite the overall workflow conclusion `success`.
+
+This does not replace the bounded caller-window evidence above: at `0x800AF2AC), `move a0,v0` in the delay slot passes the return of `0x80037138` to `0x80035DA8`. It still does not validate caller function boundaries, seed value/lifecycle, runtime base, or gameplay effects. Do not label `0x800BDBFC` as a verified caller/helper for that path.
+
+At the most recent live check, [#40521141039](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521141039) remained in progress: main executable analysis and setup steps completed, DATA.BIN entry 1 analysis was active; entry 0 step and artifact upload were pending. Do not duplicate that run.
+
+---
+
 ## LIVE ADDENDUM — entry-0 helper return versus setter argument, 27 Oktober 2026 21:53 WIB
 
 Run [#40521136060](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521136060) and entry-1 context run [#40521136038](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521136038) succeeded. Their local disassembly windows show:
 - `0x800AF2A4 jal 0x80037138`, with delay slot `0x800AF2A8 li a0,-1`: the helper receives `-1`.
 - `0x800AF2AC jal 0x80035DA8`, with delay slot `0x800AF2B0 move a0,v0`: the seed-setter candidate receives the helper's return value, not literal `-1`.
 
-This tightens instruction-level interpretation of candidate 4(a); it does not close the formal criterion. The caller boundary remains UNMAPPED; entry-0 base `0x800AD000) is hypothetical; helper return, value of global counter `0x80066E7C` at this site, actual setter execution during boot and downstream RNG/gameplay effects remain UNKNOWN. Historical cold-boot probe did not hit the setter through its bounded observation window, which is not proof the setter never runs elsewhere.
+This tightens instruction-level interpretation of candidate 4(a); it does not close the formal criterion. The caller boundary remains UNMAPPED; entry-0 base `0x800AD000` is hypothetical; helper return, value of global counter `0x80066E7C` at this site, actual setter execution during boot and downstream RNG/gameplay effects remain UNKNOWN. Historical cold-boot probe did not hit the setter through its bounded observation window, which is not proof the setter never runs elsewhere.
 
 [Live reconciliation](STEP4_10_LIVE_RECONCILIATION_2026-10-27.md) · [Context Actions #40521136060](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521136060).
 
