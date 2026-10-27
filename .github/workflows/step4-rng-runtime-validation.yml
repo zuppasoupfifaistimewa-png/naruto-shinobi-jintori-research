@@ -146,9 +146,13 @@ jobs:
           cat > "$WORK/step4-rng-trace.lua" <<'LUA'
           local ffi=require("ffi")
           local mode=os.getenv("STEP4_MODE") or "UNKNOWN"
-          local circleAt=(mode=="DELAY35") and 35 or 30
+          local circleAt=(mode=="DELAY60") and 60 or 30
           local frame,started,loaded,returned,calls,setters=0,false,false,false,0,0
           local pressed,released=false,false
+          local finalCapture
+          local finalCaptureStarted=false
+          local lateCaptureScheduled=false
+          local seenCallers={}
           local pad=PCSX.SIO0.slots[1].pads[1]
           local circle=PCSX.CONSTS.PAD.BUTTON.CIRCLE
           local function log(s) print(s); pcall(function() io.stdout:flush() end) end
@@ -156,6 +160,18 @@ jobs:
             return tonumber(ffi.cast("uint32_t*",PCSX.getMemPtr()+0xA3118)[0])
           end
           local function stateHex() return string.format("%08X",rngState()) end
+          local function logCallerWords(caller)
+            if seenCallers[caller] or caller<0x80000000 or caller>=0x80200000 then return end
+            seenCallers[caller]=true
+            local words={}
+            for delta=-12,12,4 do
+              local addr=caller+delta
+              local off=addr-0x80000000
+              local word=tonumber(ffi.cast("uint32_t*",PCSX.getMemPtr()+off)[0])
+              words[#words+1]=string.format("%08X:%08X",addr,word)
+            end
+            log("STEP4_CALLSITE_WORDS mode="..mode.." caller=0x"..string.format("%08X",caller).." "..table.concat(words,","))
+          end
           _G.step4RngBreakpoint=PCSX.addBreakpoint(0x80035D78,"Exec",4,"Step 4 RNG entry",function()
             local ok,err=pcall(function()
               if not loaded then return end
@@ -163,7 +179,14 @@ jobs:
               local r=PCSX.getRegisters()
               local ra=tonumber(r.GPR.n.ra) or 0
               if calls<=250 then
-                log(string.format("STEP4_RNG_CALL mode=%s frame=%d seq=%d ra=0x%08X caller=0x%08X state_before=0x%s",mode,frame,calls,ra,(ra>=8) and (ra-8) or 0,stateHex()))
+                local caller=(ra>=8) and (ra-8) or 0
+                log(string.format("STEP4_RNG_CALL mode=%s frame=%d seq=%d ra=0x%08X caller=0x%08X state_before=0x%s",mode,frame,calls,ra,caller,stateHex()))
+                logCallerWords(caller)
+                if frame>=170 and caller==0x80105F48 and not lateCaptureScheduled then
+                  lateCaptureScheduled=true
+                  log("STEP4_LATE_CALL_CAPTURE_TRIGGER mode="..mode.." frame="..frame.." caller=0x80105F48")
+                  PCSX.nextTick(function() if finalCapture then finalCapture() end end)
+                end
               end
             end)
             if not ok then log("STEP4_RNG_BREAKPOINT_ERROR mode="..mode.." error="..tostring(err)) end
@@ -189,7 +212,9 @@ jobs:
             if not pass then PCSX.quit(83); return end
             if phase=="press" then pressed=true else released=true end
           end
-          local function finalCapture()
+          finalCapture=function()
+            if finalCaptureStarted then return end
+            finalCaptureStarted=true
             PCSX.pauseEmulator()
             log("STEP4_CAPTURE_READY mode="..mode.." frame="..frame)
             PCSX.nextTick(function()
@@ -220,17 +245,17 @@ jobs:
             end
             if not loaded or not returned then return end
             frame=frame+1
-            if frame==1 or frame==20 or frame==30 or frame==38 or frame==60 or frame==80 or frame==100 then
+            if frame==1 or frame==20 or frame==30 or frame==38 or frame==60 or frame==80 or frame==100 or frame==150 or frame==160 or frame==170 or frame==177 then
               log(string.format("STEP4_RNG_STATE_SAMPLE mode=%s frame=%d state=0x%s rng_calls=%d",mode,frame,stateHex(),calls))
             end
             if frame==circleAt and not pressed then input("press")
             elseif frame==circleAt+8 and pressed and not released then input("release") end
-            if frame==100 then finalCapture() end
+            if frame==177 then finalCapture() end
           end)
           log("STEP4_SCRIPT_READY mode="..mode.." circle_frame="..circleAt.." source=verified-roulette-f120")
           LUA
           failures=0
-          for mode in R30A R30B DELAY35; do
+          for mode in R30A R30B DELAY60; do
             cp "$WORK/cards/reference.mcd" "$WORK/cards/card-$mode.mcd"
             stdout="$WORK/captures/pcsx-$mode.stdout"
             log="$WORK/captures/pcsx-$mode.log"
@@ -252,8 +277,8 @@ jobs:
           while alive() and not captured:
               try: s=sp.read_text(errors="replace")
               except FileNotFoundError: s=""
-              if "STEP4_CAPTURE_READY mode="+mode+" frame=100" in s:
-                  xwd=out/(mode+"-F100.xwd"); png=out/(mode+"-F100.png")
+              if "STEP4_CAPTURE_READY mode="+mode+" frame=177" in s:
+                  xwd=out/(mode+"-F177.xwd"); png=out/(mode+"-F177.png")
                   a=subprocess.run(["xwd","-root","-silent","-out",str(xwd)],capture_output=True,text=True)
                   if a.returncode==0 and xwd.is_file() and xwd.stat().st_size:
                       b=subprocess.run(["convert",str(xwd),str(png)],capture_output=True,text=True)
@@ -263,7 +288,7 @@ jobs:
                           with Image.open(png) as im:
                               cs=im.getcolors(maxcolors=1000000)
                               valid=im.size==(1280,800) and png.stat().st_size>1000 and not (cs is not None and len(cs)==1)
-                              digest=hashlib.sha256(png.read_bytes()).hexdigest()
+                              digest=hashlib.sha256(im.convert("RGB").crop((105,22,1175,760)).tobytes()).hexdigest()
                               line="STEP4_CAPTURE_VALID mode={} width={} height={} bytes={} colors={} sha256={} valid={}".format(mode,im.size[0],im.size[1],png.stat().st_size,len(cs) if cs is not None else "many",digest,valid)
                               print(line,flush=True)
                               with (out/(mode+"-capture.txt")).open("a",encoding="utf-8") as meta: meta.write(line+"\n")
@@ -280,7 +305,7 @@ jobs:
             grep -E 'STEP4_(LOAD_EVENT|LOAD_CALL_RETURNED|RNG_STATE_SAMPLE|RNG_CALL|SEED_SETTER|INPUT|CAPTURE_READY|BRANCH_FINISH|.*ERROR|.*TIMEOUT|CAPTURE_VALID|CAPTURE_FAIL)' "$stdout" || true
             test "$rc" -eq 0 || failures=$((failures+1))
             grep -q "STEP4_LOAD_EVENT=PASS mode=$mode" "$stdout" || failures=$((failures+1))
-            grep -q "STEP4_BRANCH_FINISH mode=$mode frame=100" "$stdout" || failures=$((failures+1))
+            grep -q "STEP4_BRANCH_FINISH mode=$mode frame=177" "$stdout" || failures=$((failures+1))
             grep -q "STEP4_INPUT mode=$mode .*phase=press .*status=PASS" "$stdout" || failures=$((failures+1))
             grep -q "STEP4_INPUT mode=$mode .*phase=release .*status=PASS" "$stdout" || failures=$((failures+1))
             grep -q "STEP4_CAPTURE_VALID mode=$mode .*valid=True" "$WORK/captures/$mode-capture.txt" || failures=$((failures+1))
@@ -290,13 +315,13 @@ jobs:
           from pathlib import Path
           from PIL import Image
           root=Path(sys.argv[1]); rid=sys.argv[2]; server=sys.argv[3]; repo=sys.argv[4]
-          modes=("R30A","R30B","DELAY35"); data={}
+          modes=("R30A","R30B","DELAY60"); data={}
           for mode in modes:
               p=root/("pcsx-"+mode+".stdout"); t=p.read_text(errors="replace") if p.exists() else ""
               samples=re.findall(r"STEP4_RNG_STATE_SAMPLE mode=\S+ frame=(\d+) state=0x([0-9A-Fa-f]{8}) rng_calls=(\d+)",t)
               calls=re.findall(r"STEP4_RNG_CALL mode=\S+ frame=(\d+) seq=(\d+) ra=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8}) state_before=0x([0-9A-Fa-f]{8})",t)
               setters=re.findall(r"STEP4_SEED_SETTER mode=\S+ frame=(\d+) seq=(\d+) a0=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8})",t)
-              png=root/(mode+"-F100.png")
+              png=root/(mode+"-F177.png")
               try:
                   with Image.open(png) as im:
                       view=im.convert("RGB").crop((105,22,1175,760))
@@ -304,7 +329,7 @@ jobs:
               except Exception:
                   cap=None
               loaded="STEP4_LOAD_EVENT=PASS mode="+mode in t
-              finish="STEP4_BRANCH_FINISH mode="+mode+" frame=100" in t
+              finish="STEP4_BRANCH_FINISH mode="+mode+" frame=177" in t
               state_samples=[(int(f),v.lower(),int(n)) for f,v,n in samples]
               parsed_calls=[(int(f),c.lower(),s.lower()) for f,_,_,c,s in calls]
               data[mode]={"t":t,"samples":state_samples,"calls":parsed_calls,"framefree":[(c,s) for _,c,s in parsed_calls],"setters":setters,"cap":cap,"loaded":loaded,"finish":finish}
@@ -315,15 +340,15 @@ jobs:
           screenshot_match=bool(a["cap"]) and a["cap"]==b["cap"]
           det="PASS" if complete and sample_match and caller_match and screenshot_match else ("FAIL" if complete else "UNKNOWN")
           same_delay_viewport_sha=a["cap"]==b["cap"] and bool(a["cap"])
-          delay_framefree_trace_match=a["framefree"]==d["framefree"]
-          delay_state_samples_match=a["samples"]==d["samples"]
+          delay_framefree_trace_match=[(c,s) for f,c,s in a["calls"] if f<=100]==[(c,s) for f,c,s in d["calls"] if f<=100]
+          delay_state_samples_match=[(f,v,n) for f,v,n in a["samples"] if f<=100]==[(f,v,n) for f,v,n in d["samples"] if f<=100]
           delay_viewport_match=a["cap"]==d["cap"] and bool(a["cap"])
           delay_effect=not (delay_framefree_trace_match and delay_state_samples_match and delay_viewport_match)
           callers=sorted({c for x in data.values() for _,c,_ in x["calls"]})
           out=[
            "# Langkah 4 — hasil runtime RNG + roulette","",
            "- Actions run: "+server+"/"+repo+"/actions/runs/"+rid,
-           "- Uji: checkpoint roulette f120 yang sama; dua cabang Circle f30; satu cabang Circle f35 (jeda berbeda); tiap cabang memakai proses emulator baru, CPU interpreter, breakpoint eksekusi RNG dan pembacaan RAM state.",
+           "- Uji: checkpoint roulette f120 yang sama; dua cabang Circle f30; satu cabang Circle f60; target capture semua cabang F177; tiap cabang memakai proses emulator baru, CPU interpreter, breakpoint eksekusi RNG dan pembacaan RAM state.",
            "- Screenshot X11 dibandingkan pada viewport game ter-normalisasi crop (105,22)-(1175,760) untuk mengecualikan chrome/menu emulator yang berubah antarproses.",
            "- Sumber checkpoint read-only; ROM/BIOS/Memory Card/savestate hanya di ruang privat runner. Screenshot eksternal X11 hanya disimpan pada artefak Actions, tidak di Git.","",
            "## Hasil",
@@ -341,7 +366,7 @@ jobs:
            "## Log hasil per cabang"]
           for mode in modes:
               x=data[mode]
-              out.append("- "+mode+": load="+str(x["loaded"])+", finished="+str(x["finish"])+", RNG hits="+str(len(x["calls"]))+", samples="+(", ".join("F"+str(f)+"=0x"+s+" (calls="+str(n)+")" for f,s,n in x["samples"]) if x["samples"] else "NONE")+", seed setter hits post-load="+str(len(x["setters"]))+", F100 viewport SHA256="+str(x["cap"] or "MISSING")+".")
+              out.append("- "+mode+": load="+str(x["loaded"])+", finished="+str(x["finish"])+", RNG hits="+str(len(x["calls"]))+", samples="+(", ".join("F"+str(f)+"=0x"+s+" (calls="+str(n)+")" for f,s,n in x["samples"]) if x["samples"] else "NONE")+", seed setter hits post-load="+str(len(x["setters"]))+", F177 viewport SHA256="+str(x["cap"] or "MISSING")+".")
               if x["calls"]: out.append("  Caller hits: "+", ".join("F"+str(f)+" "+c+" state="+s for f,c,s in x["calls"][:30])+".")
               if x["setters"]: out.append("  Seed setter: "+", ".join("frame "+s[0]+" a0=0x"+s[2]+" caller=0x"+s[3] for s in x["setters"])+".")
           out.extend([
