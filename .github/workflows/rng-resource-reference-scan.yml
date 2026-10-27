@@ -1,0 +1,131 @@
+name: Step 4 — cross-resource RNG reference scan
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/rng-resource-reference-scan.yml"
+      - "tools/psx_rng_resource_scan.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: step4-rng-resource-reference-scan
+  cancel-in-progress: false
+
+jobs:
+  scan-rng-references:
+    name: Scan private disc files for RNG references
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout research repository
+        uses: actions/checkout@v4
+
+      - name: Install disc extraction tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes bchunk xorriso
+
+      - name: Download, validate, extract, and scan private disc assets
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tmp="$RUNNER_TEMP/step4-rng-scan"
+          source_dir="$tmp/source"
+          root="$source_dir/extracted-root"
+          out="$RUNNER_TEMP/step4-rng-output"
+          mkdir -p "$source_dir" "$root" "$out"
+
+          bin="$source_dir/naruto-disc.bin"
+          cue_raw="$source_dir/original.cue"
+          cue="$source_dir/naruto-disc.cue"
+          bin_url="https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/647346873"
+          cue_url="https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/647354760"
+
+          curl --fail --location --silent --show-error \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Accept: application/octet-stream" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 --max-time 600 \
+            "$bin_url" --output "$bin"
+          [[ "$(stat -c '%s' "$bin")" == "325989552" ]]
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $bin" | sha256sum --check --status
+
+          curl --fail --location --silent --show-error \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Accept: application/octet-stream" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 --max-time 60 \
+            "$cue_url" --output "$cue_raw"
+          [[ "$(stat -c '%s' "$cue_raw")" == "116" ]]
+          echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $cue_raw" | sha256sum --check --status
+
+          python3 - "$cue_raw" "$cue" <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+          source, destination = map(Path, sys.argv[1:3])
+          lines = source.read_text(encoding="utf-8").splitlines()
+          rewritten, replaced = [], 0
+          for line in lines:
+              if line.lstrip().upper().startswith("FILE "):
+                  match = re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$', line, re.IGNORECASE)
+                  if not match:
+                      raise SystemExit("Unrecognized CUE FILE directive.")
+                  line = match.group(1) + '"naruto-disc.bin"' + match.group(2)
+                  replaced += 1
+              rewritten.append(line)
+          if replaced != 1:
+              raise SystemExit(f"Expected one FILE directive; found {replaced}.")
+          destination.write_text("\n".join(rewritten) + "\n", encoding="utf-8")
+          PY
+
+          bchunk "$bin" "$cue" "$source_dir/track"
+          iso="$(find "$source_dir" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          [[ -n "$iso" ]]
+          xorriso -osirrox on -indev "$iso" -extract / "$root" > "$out/disc-extraction.log" 2>&1
+
+          find_named_file() { find "$root" -type f -iname "$1" -print -quit; }
+          exe="$(find_named_file 'SLPS_035.53')"
+          data="$(find_named_file 'DATA.BIN')"
+          data2="$(find_named_file 'DATA2.BIN')"
+          dummy="$(find_named_file 'DUMMY.BIN')"
+          xasect="$(find_named_file 'XASECT.BIN')"
+          for file in "$exe" "$data" "$data2" "$dummy" "$xasect"; do
+            [[ -n "$file" && -f "$file" ]] || { echo "::error::Missing expected disc file."; exit 1; }
+          done
+
+          python3 tools/psx_rng_resource_scan.py \
+            --output "$out/rng-resource-reference-scan.txt" \
+            "$exe" "$data" "$data2" "$dummy" "$xasect"
+
+          {
+            echo "status=SUCCESS"
+            echo "scope=static aligned-word and narrow MIPS address-reference scan"
+            echo "inputs=SLPS_035.53, DATA.BIN, DATA2.BIN, DUMMY.BIN, XASECT.BIN"
+            echo "disc_bin_sha256=58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88"
+            echo "source_binaries_uploaded_as_artifact=no"
+            echo "emulator_or_gameplay_executed=no"
+          } > "$out/scan-result.txt"
+
+          grep -E '^(analysis=|=== FILE|bytes=|sha256=|known_identity_check=|direct_jal_rng_raw_hits=|direct_jal_seed_setter_raw_hits=|rng_address_literal_aligned_hits=|rng_state_literal_aligned_hits=|rng_lui_low_address_pairs=|rng_state_lui_low_address_pairs=|rng_state_lui_memory_access_pairs=|=== TOTALS ===|rng_jal=|seed_jal=|rng_literal=|state_literal=|rng_address_pair=|state_address_pair=)' "$out/rng-resource-reference-scan.txt" || true
+
+      - name: Upload text-only scan results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: step4-rng-resource-reference-scan
+          path: ${{ runner.temp }}/step4-rng-output/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Remove temporary disc files
+        if: always()
+        shell: bash
+        run: rm -rf "$RUNNER_TEMP/step4-rng-scan"
