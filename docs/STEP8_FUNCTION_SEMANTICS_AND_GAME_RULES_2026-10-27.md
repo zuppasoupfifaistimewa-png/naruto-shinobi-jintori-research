@@ -99,3 +99,9 @@ Bukti statis yang diperiksa dalam runner-only audit [#40497668341](https://githu
 2. **Field entry 1:** raw MIPS menunjukkan `+0xB30 + +0xB38 -> +0xB40`, `+0xB44` diset nol pada satu jalur inisialisasi, dan `+0xB44` kemudian dibaca sebagai argumen `a2` untuk `0x8001B364`. Base `0x800D0000` adalah HIPOTESIS; label cost/turn/barrier/level-up dan makna helper tidak dibuktikan.
 
 Audit runner #40497668341 selesai success 18:38:45 WIB, artifact #12730957210 (9.014 byte, ZIP SHA-256 `695e36bf70237913c0f80c94f0d4100732c92dd8b78155da2ace90d189c5ee24`), cleanup PASS. Step 8 tetap **SEBAGIAN**; hasil ini memetakan operasi statis, bukan aturan gameplay universal atau hasil kemenangan.
+
+## Addendum — referensi global return helper (27 Oktober 2026)
+
+Ghidra direct-xref export untuk global 0x80066E7C mencatat image word awal 0 dan delapan referensi: writer nol pada 0x80037B7C, writer v0 pada 0x80037BDC setelah increment, serta reads di 0x80037BB4, 0x8003719C, 0x80037204, 0x80037260, 0x800372C0, dan 0x80037324. Ini cukup untuk menyebut pola operasi “counter-like” secara deskriptif, bukan untuk menamai makna game. Sumber return statis helper 0x80037138 pada input -1 adalah nilai global tersebut; value saat boot dan callsite runtime belum dibuktikan.
+
+Audit runner-only [#40498386273](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40498386273) selesai success 18:44:35 WIB, artifact #12731327556, ZIP SHA-256 7826480f41372d68ddf3f4b1dfe6d99f51bbbb5cd124eb5c3c6169870150ba5c; cleanup PASS. Step 8 tetap SEBAGIAN; tidak ada nama mekanik, formula biaya, aturan battle/roulette/turn, efek kartu, atau syarat menang yang disimpulkan dari xrefs saja.
