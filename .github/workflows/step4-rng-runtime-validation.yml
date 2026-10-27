@@ -293,9 +293,9 @@ jobs:
           modes=("R30A","R30B","DELAY35"); data={}
           for mode in modes:
               p=root/("pcsx-"+mode+".stdout"); t=p.read_text(errors="replace") if p.exists() else ""
-              samples=re.findall(r"STEP4_RNG_STATE_SAMPLE mode=\\S+ frame=(\\d+) state=0x([0-9A-Fa-f]{8}) rng_calls=(\\d+)",t)
-              calls=re.findall(r"STEP4_RNG_CALL mode=\\S+ frame=(\\d+) seq=(\\d+) ra=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8}) state_before=0x([0-9A-Fa-f]{8})",t)
-              setters=re.findall(r"STEP4_SEED_SETTER mode=\\S+ frame=(\\d+) seq=(\\d+) a0=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8})",t)
+              samples=re.findall(r"STEP4_RNG_STATE_SAMPLE mode=\S+ frame=(\d+) state=0x([0-9A-Fa-f]{8}) rng_calls=(\d+)",t)
+              calls=re.findall(r"STEP4_RNG_CALL mode=\S+ frame=(\d+) seq=(\d+) ra=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8}) state_before=0x([0-9A-Fa-f]{8})",t)
+              setters=re.findall(r"STEP4_SEED_SETTER mode=\S+ frame=(\d+) seq=(\d+) a0=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8})",t)
               png=root/(mode+"-F100.png")
               try:
                   with Image.open(png) as im:
@@ -353,8 +353,8 @@ jobs:
            "- Alternative RNG/non-function randomness: static signature scan does not exclude other algorithms, tables, frame-derived values or code decoded only at runtime.",
            "- STEP 4 OVERALL: SEBAGIAN until the battle caller, runtime seed lifecycle and alternative-randomness scope are proved.",
            ""])
-          (root/"step4-runtime-outcome.txt").write_text("\\n".join(out),encoding="utf-8")
-          print("\\n".join(out))
+          (root/"step4-runtime-outcome.txt").write_text("\n".join(out),encoding="utf-8")
+          print("\n".join(out))
           PY
           cp "$WORK/captures/step4-runtime-outcome.txt" "$WORK/captures/STEP4_RNG_RUNTIME_RESULT.md"
           if [ "$failures" -ne 0 ]; then echo "STEP4_RUNTIME_INFRA_STATUS=FAIL failed_checks=$failures"; exit 44; fi
