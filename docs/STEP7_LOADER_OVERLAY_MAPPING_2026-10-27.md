@@ -43,3 +43,8 @@ Status: **SEBAGIAN**. Struktur direktori dan salah satu jalur salin bootstrap te
 ## Kesimpulan
 
 **Langkah 7 = SEBAGIAN.** Struktur direktori dan jalur penyalinan bootstrap memiliki dukungan statis yang kuat. Klaim overlay runtime final ditahan sampai base/lifecycle loader didukung pengamatan langsung. Tidak ada ROM, BIOS, Memory Card, savestate, RAM dump, atau screenshot privat yang disimpan pada repo.
+
+
+## Addendum runtime #40479865235 — 27 Oktober 2026
+
+Run [#40479865235](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40479865235) selesai sukses sebagai workflow dalam 157 detik, tetapi tidak menghasilkan breakpoint hit yang dapat diterima. Pra-uji tanpa breakpoint mencapai frame 50; kontrol `-debugger` listener-only mencapai frame 40; probe empat-breakpoint memakai `-no-debugger` hanya mencapai frame 1–3 lalu timeout 124. Artefak teks-only #12722187784 berukuran 3.801 byte dengan SHA-256 ZIP `b9537035eb6ffed66a0aadd5ab48db88715ed2e2128bcf46a48f374c7306ac26`; cleanup privat PASS. Report otomatis memiliki bug regex pada metrik maksimal frame kontrol (mencetak 0, padahal raw log berisi 1,2,3,10,20,30,40); raw log adalah sumber yang lebih berwenang untuk angka ini. Hasil ini membuat Step 7 tetap **SEBAGIAN** dan menyarankan pengujian satu breakpoint per cold boot, tanpa input atau savestate restore. Detail lengkap: [hasil runtime Step 7](STEP7_RUNTIME_COLD_BOOT_RESULT_2026-10-27.md).
