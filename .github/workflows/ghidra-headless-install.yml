@@ -22,7 +22,7 @@ jobs:
       GHIDRA_VERSION: "12.2"
       GHIDRA_ASSET: "ghidra_12.2_PUBLIC_20261016.zip"
       GHIDRA_SHA256: "2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67"
-      GHIDRA_CACHE_DIR: ${{ runner.temp }}/ghidra-cache/ghidra_12.2_PUBLIC_20261016
+      GHIDRA_CACHE_DIR: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
     steps:
       - name: Checkout research repository
         uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
         id: ghidra-cache
         uses: actions/cache@v4
         with:
-          path: ${{ runner.temp }}/ghidra-cache/ghidra_12.2_PUBLIC_20261016
+          path: ~/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
           key: ghidra-12.2-linux-x64-2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
 
       - name: Download and install Ghidra when cache is missing
