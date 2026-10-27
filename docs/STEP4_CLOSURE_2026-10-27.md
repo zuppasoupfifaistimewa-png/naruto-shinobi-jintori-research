@@ -1,3 +1,15 @@
+## LIVE ADDENDUM — entry-0 helper return versus setter argument, 27 Oktober 2026 21:53 WIB
+
+Run [#40521136060](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521136060) and entry-1 context run [#40521136038](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521136038) succeeded. Their local disassembly windows show:
+- `0x800AF2A4 jal 0x80037138`, with delay slot `0x800AF2A8 li a0,-1`: the helper receives `-1`.
+- `0x800AF2AC jal 0x80035DA8`, with delay slot `0x800AF2B0 move a0,v0`: the seed-setter candidate receives the helper's return value, not literal `-1`.
+
+This tightens instruction-level interpretation of candidate 4(a); it does not close the formal criterion. The caller boundary remains UNMAPPED; entry-0 base `0x800AD000) is hypothetical; helper return, value of global counter `0x80066E7C` at this site, actual setter execution during boot and downstream RNG/gameplay effects remain UNKNOWN. Historical cold-boot probe did not hit the setter through its bounded observation window, which is not proof the setter never runs elsewhere.
+
+[Live reconciliation](STEP4_10_LIVE_RECONCILIATION_2026-10-27.md) · [Context Actions #40521136060](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521136060).
+
+---
+
 # Penutupan Langkah 4 — RNG dan caller statis, 27 Oktober 2026
 
 ## Keputusan status
