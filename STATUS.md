@@ -1,3 +1,13 @@
+# Latest checkpoint — Step 4 RNG static inventory closed, 27 October 2026
+
+**Langkah 4 ditutup sebagai SELESAI dalam cakupan inventaris statis yang dapat direproduksi.** Ringkasan bukti dan batas UNKNOWN: [docs/STEP4_CLOSURE_2026-10-27.md](docs/STEP4_CLOSURE_2026-10-27.md). Laporan utama dan audit langkah 1–10 juga diperbarui. Hasil: LCG utama `0x80035D78`; 4 caller main EXE; 4 instruksi direct-JAL pada DATA.BIN entry 0; 144 pada entry 1; 152 raw direct-JAL hits total; signature LCG dan pola konstruksi alamat/JALR sempit dipindai lintas berkas. Base resource/runtime, reachability `0x800BB748`, 36 boundary fungsi entry 1, pointer/dispatch callers, serta kode hasil dekompresi/dekripsi tetap UNKNOWN—tidak diklaim sebagai ketiadaan.
+
+- [Laporan Langkah 4](docs/STEP4_RNG_TRACE_2026-10-27.md)
+- [Inventaris referensi resource](out/rng_resource_reference_scan_2026-10-27.md)
+- Tidak ada emulator/gameplay/input/savestate; pemain adaptif tetap dijeda; ROM/BIOS/Memory Card/savestate/screenshot privat tidak dimasukkan ke Git.
+
+---
+
 # Current checkpoint — Step 0 toolchain verified, 27 October 2026
 
 **Langkah 0 berhasil diverifikasi pada GitHub Actions run [#40457860945](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40457860945).** Daftar pin beserta hasil uji dan catatan opsi CLI ada di [out/versions.txt](out/versions.txt); workflow reproduksibel ada di [.github/workflows/toolchain-audit.yml](.github/workflows/toolchain-audit.yml).
