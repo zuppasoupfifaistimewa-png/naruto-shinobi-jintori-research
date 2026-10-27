@@ -1,7 +1,7 @@
 # Langkah 4 — penelusuran statis RNG dan pemanggil langsung
 
 Tanggal: 27 Oktober 2026  
-Status: **SELESAI untuk cakupan executable utama dan helper daftar yang dapat ditelusuri statis**. Arti gameplay daftar/kandidat, seed runtime, dan kode overlay tidak dianggap selesai oleh laporan ini.
+Cakupan laporan ini: **SELESAI untuk cakupan executable utama dan helper daftar yang dapat ditelusuri statis**. Status keseluruhan Step 4 tetap **SEBAGIAN** karena seed/lifecycle, caller-to-roulette causality, battle caller, dispatch tidak langsung/decompressed code, dan randomness alternatif belum terpenuhi.
 
 ## Sumber dan reproduksi
 
@@ -108,3 +108,9 @@ Eksperimen baru ini ditujukan khusus untuk kandidat setter state RNG `0x80035DA8
 **Peringatan integritas report:** artefak/run ini dibuat sebelum koreksi fallback alamat. Ringkasan no-hit yang diunggah salah menampilkan `SINGLE_BREAKPOINT_PC=0x800AD454`, alamat target run loader sebelumnya. Ini kesalahan fallback report, **bukan** alamat target yang terdaftar pada run ini: baris raw `STEP7_SINGLE_BP_READY` menyebut persis `target=0x80035DA8`, dan seluruh event progress menampilkan hit 0. Source fallback diperbaiki pada commit `a6734d7fc57ff6dfab9b8135cd5661bf0278c437`; validator [#40486315324](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40486315324) lulus dengan `STEP4_SEED_BP_NO_HIT_FALLBACK_PASS target=0x80035DA8`, `STEP4_SEED_BP_PARSER_FIXTURE_PASS`, dan `STEP7_FRAME_PARSER_FIXTURE_PASS`. Fixture parser sintetis menguji ekstraksi field; bukan bukti hit emulator.
 
 Kesimpulan: probe bounded ini **tidak membuktikan** bahwa setter seed dipanggil pada jendela cold boot yang diuji. Karena PC runtime target tidak tercapai/teramati, hasil itu juga tidak membuktikan bahwa setter tidak pernah dipanggil di jalur lain atau boot yang lebih lambat. Callsite statis `0x800AF2AC → 0x80035DA8` tetap kandidat berdasarkan base entry-0 `0x800AD000`; argumen setter berasal dari nilai return helper `0x80037138`, bukan langsung dari `li a0,-1`. Nilai return helper dan seed boot/lifecycle pada subkriteria 4(a) tetap UNKNOWN/SEBAGIAN. Tidak ada probe runtime tambahan yang diperlukan tanpa hipotesis baru.
+
+## Addendum — audit return helper setter masih berjalan (27 Oktober 2026)
+
+Audit delay slot memisahkan input helper dari input setter: `0x800AF2A8 li a0,-1` adalah delay slot milik `jal 0x80037138`; `0x800AF2B0 move a0,v0` adalah delay slot milik `jal 0x80035DA8`. Maka setter menerima return `$v0` dari `0x80037138`, bukan nilai `-1` yang diterapkan ke helper. Fungsi setter menyimpan `$a0` ke global state, tetapi nilai spesifik yang sampai ke sana belum dibuktikan.
+
+Untuk menjawab celah tersebut, `tools/ghidra/ExportRngCallerAnalysis.java` menambahkan `dumpSimpleFunction(0x80037138)` dan xref helper. Run statis [#40487406384](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40487406384) pada source commit `b92aa084aba62182ed4edc436cf20d68581be984` masih `in_progress`; executable utama dan DATA.BIN entry 1 selesai, DATA.BIN entry 0 sedang dianalisis saat pembaruan ini. Belum ada artefak final. Nilai return helper tetap UNKNOWN hingga output itu diperiksa. Seed-setter probe runtime #40485987817 tidak memperoleh hit; itu tidak menggantikan pembuktian statis.
