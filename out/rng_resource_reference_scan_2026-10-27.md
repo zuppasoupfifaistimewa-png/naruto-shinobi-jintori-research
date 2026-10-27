@@ -87,13 +87,13 @@ Pencarian pola LUI + akses memori ke state menemukan tiga kandidat hanya dalam e
 
 Run [#40454881770](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40454881770) berhasil: 144 kandidat JAL mentah → 108 direct-flow terdekode Ghidra, 50 fungsi pemanggil dikenali, 1 call site tanpa batas fungsi, 36 kandidat mentah tetap tidak terdekode. Lihat [inventaris lengkap entry 1](rng_resource_entry1_ghidra_callers_2026-10-27.md).
 
-Run konteks entry 0 [#40455197588](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455197588) mengonfirmasi pada base hipotesis: `0x800AF2AC → 0x80035DA8` dengan `$a0=-1), dan `0x800BB2D8 → 0x80035D78`. Kandidat di `0x800BB2FC`, `0x800BB748`, `0x800BB770` masih perlu diperiksa lebih lanjut.
+Run konteks entry 0 [#40455197588](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455197588) memverifikasi direct JAL pada base hipotetis `0x800AF2AC → 0x80035DA8` serta `0x800BB2D8 → 0x80035D78`. Koreksi delay slot: `0x800AF2B0 move a0,v0` berjalan sebelum setter dan meneruskan return dari `0x80037138`; `li a0,-1` di slot sebelumnya adalah argumen untuk helper `0x80037138`. Nilai balik helper belum diketahui. Kandidat RNG lain `0x800BB2FC`, `0x800BB748`, `0x800BB770` tetap dibatasi sebagaimana di bawah.
 
 ## Koreksi hasil Langkah 4 — 27 Oktober 2026
 
 Run Ghidra entry 1 [#40455582988](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455582988) mendekode 36/36 kandidat yang sebelumnya belum terdekode; kini seluruh 144 lokasi entry 1 terbaca sebagai JAL langsung ke RNG pada base kandidat. Fungsi caller untuk 36 itu belum dipetakan. [Daftar 36 call site dan konteks](rng_resource_entry1_unmapped_context_2026-10-27.md).
 
-Konteks entry 0 [#40455557190](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455557190): empat instruksi JAL RNG terdekode; tiga punya branch masuk lokal, `0x800BB748` reachability belum terbukti. Direct call seed setter `0x800AF2AC → 0x80035DA8` memasukkan `$a0=-1`; state menjadi `0xFFFFFFFF` jika jalur dijalankan. [Laporan entry 0](rng_resource_entry0_ghidra_context_2026-10-27.md).
+Konteks entry 0 [#40455557190](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455557190): empat instruksi JAL RNG terdekode; tiga memiliki branch masuk lokal, sedangkan reachability `0x800BB748` belum terbukti. Pada kandidat setter `0x800AF2AC → 0x80035DA8`, setter menerima nilai `$v0` return helper `0x80037138` karena `move a0,v0` adalah delay slot JAL setter; helper sebelumnya menerima argumen `-1`. Nilai return/state tetap UNKNOWN. [Laporan entry 0](rng_resource_entry0_ghidra_context_2026-10-27.md).
 
 Status diperbarui: direct-JAL inventory statis pada main EXE + DATA.BIN entry0/entry1 selesai dengan base resource bersifat hipotesis. Indirect/pointer callers, kode terkompresi/hasil dekompresi, runtime loading, caller boundary entry1 yang belum dikenal, dan satu reachability entry0 tetap UNKNOWN.
 
