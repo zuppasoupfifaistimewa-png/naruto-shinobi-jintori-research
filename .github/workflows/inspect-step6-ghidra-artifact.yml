@@ -1,0 +1,188 @@
+name: Inspect Step 6 Ghidra text artifact (runner-only)
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: "Completed static Ghidra run ID"
+        required: true
+        default: "40440237256"
+      artifact_id:
+        description: "Expected artifact ID from that run"
+        required: true
+        default: "12705957966"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/inspect-step6-ghidra-artifact.yml"
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  inspect-text-artifact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SOURCE_RUN_ID: ${{ github.event.inputs.source_run_id || '40440237256' }}
+      EXPECTED_ARTIFACT_ID: ${{ github.event.inputs.artifact_id || '12705957966' }}
+      ARTIFACT_NAME: ghidra-slps-03553-function-index
+      EXPECTED_DIGEST: sha256:85208033e419adceadc7f983872ecbf8605819985735fa46452b53d37e2f40ac
+    steps:
+      - name: Checkout research scripts and docs
+        uses: actions/checkout@v4
+
+      - name: Verify source artifact metadata
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          meta="$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$EXPECTED_ARTIFACT_ID")"
+          test "$(jq -r '.id' <<<"$meta")" = "$EXPECTED_ARTIFACT_ID"
+          test "$(jq -r '.workflow_run.id' <<<"$meta")" = "$SOURCE_RUN_ID"
+          test "$(jq -r '.name' <<<"$meta")" = "$ARTIFACT_NAME"
+          test "$(jq -r '.expired' <<<"$meta")" = "false"
+          digest="$(jq -r '.digest' <<<"$meta")"
+          test "$digest" = "$EXPECTED_DIGEST"
+          {
+            echo "source_run_id=$SOURCE_RUN_ID"
+            echo "artifact_id=$EXPECTED_ARTIFACT_ID"
+            echo "artifact_name=$ARTIFACT_NAME"
+            echo "artifact_digest=$digest"
+            echo "artifact_size_bytes=$(jq -r '.size_in_bytes' <<<"$meta")"
+            echo "artifact_expired=false"
+          } | tee "$RUNNER_TEMP/source-artifact-metadata.txt"
+
+      - name: Download text-only artifact onto runner
+        uses: actions/download-artifact@v4
+        with:
+          name: ghidra-slps-03553-function-index
+          path: ${{ runner.temp }}/step6-source
+          repository: ${{ github.repository }}
+          run-id: 40440237256
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate inventory and summarize decompilation on runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "$RUNNER_TEMP/step6-source" "$RUNNER_TEMP/step6-review.txt" <<'PY'
+          from pathlib import Path
+          import hashlib
+          import re
+          import sys
+
+          root, output = Path(sys.argv[1]), Path(sys.argv[2])
+          if not root.is_dir():
+              raise SystemExit("FAIL: artifact directory missing")
+          files = sorted(p for p in root.rglob("*") if p.is_file())
+          if not files:
+              raise SystemExit("FAIL: source artifact is empty")
+          allowed = {".txt", ".tsv", ".log", ".md"}
+          bad = [p.relative_to(root).as_posix() for p in files if p.suffix.lower() not in allowed]
+          if bad:
+              raise SystemExit("FAIL: unexpected non-text artifact files: " + ", ".join(bad))
+          if any(p.stat().st_size > 50_000_000 for p in files):
+              raise SystemExit("FAIL: unexpected oversized file")
+          lines = []
+          lines += ["# Runner-only review of Step 6 source artifact", "",
+                    "source_run_id=40440237256", "expected_artifact_id=12705957966",
+                    "artifact_name=ghidra-slps-03553-function-index",
+                    "processing_location=GitHub Actions runner",
+                    "game_or_emulator_executed=no", "gameplay_input_sent=no",
+                    "private_asset_or_screenshot_uploaded=no", "",
+                    "## File inventory"]
+          for p in files:
+              data = p.read_bytes()
+              lines.append(f"- {p.relative_to(root).as_posix()}: {len(data)} bytes; sha256={hashlib.sha256(data).hexdigest()}")
+          def read_named(name):
+              matches = [p for p in files if p.name == name]
+              return matches[0].read_text(errors="replace") if matches else None
+          lines += ["", "## Validation files"]
+          for name in ("analysis-result.txt", "data-bin-entry1-validation.txt", "data-bin-entry1-analysis-result.txt"):
+              value = read_named(name)
+              lines += [f"### {name}", value.strip() if value else "MISSING"]
+          survey = read_named("data-bin-entry1-overlay-survey.txt")
+          if survey is None:
+              lines += ["", "FAIL: data-bin-entry1-overlay-survey.txt missing"]
+          else:
+              lines += ["", "## Targeted Step 6 decompilation and xrefs"]
+              # Preserve exact target sections for all Step 6 candidates, without copying unrelated full function indexes.
+              blocks = re.split(r"(?=^=== CANDIDATE )", survey, flags=re.M)
+              targets = {
+                  "800ef98c", "80100d14", "80100dcc", "8011253c",
+                  "800d5608", "800e1188", "800d8918", "8011c0d0",
+                  "8010478c", "80101814", "8012a9c4", "80137ad8",
+                  "80111198", "8012aafc", "800bdbfc",
+                  "80111228", "801112cc", "801113b4", "801114f0",
+                  "80111588", "80112418"
+              }
+              picked = 0
+              for block in blocks:
+                  m = re.match(r"^=== CANDIDATE (.*?) ===", block)
+                  if not m:
+                      continue
+                  addr = re.sub(r"[^0-9a-f]", "", m.group(1).lower())
+                  if addr not in targets:
+                      continue
+                  lines.append("")
+                  lines.append(block.strip())
+                  picked += 1
+              ref_blocks = re.split(r"(?=^=== REFERENCES_TO )", survey, flags=re.M)
+              lines += ["", "## Reference counts"]
+              for block in ref_blocks:
+                  if block.startswith("=== REFERENCES_TO "):
+                      lines.append(block.splitlines()[0])
+                      for ln in block.splitlines()[1:]:
+                          if ln.startswith(("from=", "reference_count=")):
+                              lines.append(ln)
+              lines += ["", f"target_sections_exported={picked}", "static_base=0x800D0000 (hypothesis only)"]
+          # Keep the audit machine-readable and text-only.
+          output.write_text("\n".join(lines) + "\n")
+          print("STEP6_ARTIFACT_REVIEW_BEGIN")
+          print(f"source_files={len(files)}")
+          for p in files:
+              print(f"FILE {p.relative_to(root).as_posix()} {p.stat().st_size} bytes")
+          for name in ("analysis-result.txt", "data-bin-entry1-validation.txt", "data-bin-entry1-analysis-result.txt"):
+              val = read_named(name)
+              print(f"VALIDATION {name}: {'MISSING' if val is None else '; '.join(x.strip() for x in val.splitlines() if x.strip())}")
+          if survey is None:
+              print("SURVEY_MISSING")
+          else:
+              blocks = re.split(r"(?=^=== CANDIDATE )", survey, flags=re.M)
+              for block in blocks:
+                  m = re.match(r"^=== CANDIDATE (.*?) ===", block)
+                  if not m:
+                      continue
+                  addr = re.sub(r"[^0-9a-f]", "", m.group(1).lower())
+                  if addr not in targets:
+                      continue
+                  head = [x.strip() for x in block.splitlines() if x.strip() and not x.startswith("---")]
+                  print("SECTION " + " | ".join(head[:5]))
+                  # Print exact decompiler lines relevant to target, setter/getter, thresholds, and transition calls.
+                  code_match = re.search(r"--- C_DECOMPILATION_BEGIN ---\n(.*?)\n--- C_DECOMPILATION_END ---", block, re.S)
+                  if code_match:
+                      code = code_match.group(1).splitlines()
+                      keep = set()
+                      keywords = re.compile(r"80012a70|8001387c|800138ec|800ef98c|80100d14|80100dcc|800bdbfc|0x90|0x200|0x1000|0xdf|chakra|target|winner|state|\*\s*0x90", re.I)
+                      for i, ln in enumerate(code):
+                          if keywords.search(ln):
+                              keep.update(range(max(0, i-1), min(len(code), i+2)))
+                      chosen = sorted(keep)
+                      for i in chosen[:80]:
+                          print("  C " + code[i].rstrip())
+          print("STEP6_ARTIFACT_REVIEW_END")
+          print(f"REPORT_BYTES={output.stat().st_size}")
+          PY
+          cat "$RUNNER_TEMP/step6-source-metadata.txt" "$RUNNER_TEMP/step6-review.txt" > "$RUNNER_TEMP/step6-audit-artifact.txt"
+          grep -q "target_sections_exported=" "$RUNNER_TEMP/step6-review.txt"
+
+      - name: Upload text-only audit summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: step6-runner-artifact-review
+          path: ${{ runner.temp }}/step6-audit-artifact.txt
+          if-no-files-found: error
+          retention-days: 14
