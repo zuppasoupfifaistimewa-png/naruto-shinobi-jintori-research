@@ -62,3 +62,23 @@ Pola sll v0,v1,3; addu v0,v0,v1; sll v0,v0,4 menghitung indeks × 0x90. Instruks
 Field +0x2E9 dan +0x2E5 terbukti ditulis pada jalur-jalur terpilih, tetapi semua pembaca, inisialisasi lintas jalur, dan makna field belum dipetakan tuntas. Field +0xB30, +0xB38, +0xB40, +0xB44 tidak muncul dalam artifact terarah ini; itu BELUM TERUJI pada cakupan artifact, bukan bukti tidak ada pemakaian di seluruh resource. Kandidat transisi 0x800EF98C, 0x80100D14, 0x80100DCC masih memiliki masalah batas fungsi/control-flow.
 
 **Keputusan Step 6 tetap SEBAGIAN.** Bukti baru memperjelas operand, kondisi, cabang dan delay slot; base runtime, dataflow pending lengkap, serta efek gameplay tetap belum dibuktikan.
+
+## Addendum — jalur perubahan record/Chakra pada 0x8011C0D0 (27 Oktober 2026)
+
+Sumber tetap artifact runner-only #12719587873 dari [Actions #40473737136](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40473737136), SHA-256 ZIP e1ea68c92bcbf645fde3c991c8a47192b815987d8044f2d599c163c1f3ec9fb9. Body Ghidra yang tersedia untuk kandidat 0x8011C0D0 berukuran 408 byte; raw instruction window yang diarsipkan hanya mencakup prolog sampai sekitar 0x8011C118, sehingga rincian loop berikut didukung dekompilasi terarah, bukan seluruh urutan instruksi mentah.
+
+### Dataflow yang didukung dekompilasi terarah
+
+1. Argumen masuk dinormalisasi ke byte (andi a0,a0,0xFF). Nilai dibandingkan dengan byte global efektif 0x80139F70; jika sama, fungsi kembali tanpa perubahan.
+2. Jika nilainya berbeda, fungsi memperbarui global 0x80139F70 dan menulis byte argumen ke pointer_global_0x8013EA74 + 0x618. Pemanggil yang memasok argumen dan arti field +0x618 belum diidentifikasi.
+3. Jika argumen nol, fungsi tidak menjalankan loop negasi Chakra; ia menguji (signed short)[base+0x10] + (unsigned short)[base+0x14] < 0x101. Pada jalur yang lolos, ia memanggil 0x8003F5D0(base+0x10, word[base+0x18]); jika tidak, ia menulis byte 1 ke base+0x94A lalu memanggil 0x800F96A4.
+4. Jika argumen nonzero, fungsi memilih record dengan indeks global efektif 0x8013EA88, menghitung record stride 0x90, lalu menulis byte 8 di record+0x22. Ia kemudian mengiterasi jumlah peserta dari byte global efektif 0x8013EA71. Untuk setiap indeks i, word pada table + i*0x90 + 0x04 dibaca, dinegasikan, dijepit agar tidak kurang dari -9999, disimpan ke field yang sama, lalu nilai baru dan indeks diteruskan ke setter main EXE 0x8001387C.
+5. Sesudah loop, pemeriksaan sum yang sama terhadap 0x101 memilih call 0x8003F5D0 dan 0x800F96A4, atau jalur yang menulis byte 1 ke base+0x94A dan memanggil 0x800F96A4. Parameter kedua 0x8003F5D0 pada cabang nonzero berasal dari word base+0x61C, berbeda dari cabang zero yang membaca base+0x18.
+
+### Batas interpretasi
+
+TERVERIFIKASI-STATIS (pada model base hipotetis): mask argumen byte, compare/update ke global 0x80139F70, write +0x618, pemilihan record stride 0x90, operasi negasi/clamp/store pada word +0x04, pemanggilan setter per peserta, syarat sum <0x101, dan store alternatif +0x94A=1 sebagaimana didekompilasi.
+
+UNKNOWN: siapa yang memanggil fungsi dengan nilai 0/nonzero; arti state byte global; apakah negasi/clamp mewakili biaya, refund, normalisasi atau pembaruan transaksi sementara; makna +0x22, +0x618, +0x61C, +0x94A, +0x10, +0x14, +0x18; efek 0x8003F5D0 dan 0x800F96A4. Tidak tersedia nilai sebelum/sesudah runtime yang dapat dipakai untuk memberi label gameplay.
+
+Kriteria pending +0xB30/+0xB38/+0xB40/+0xB44 tetap BELUM TERUJI pada cakupan artifact. Site 0x8011C0D0 tidak mengakses offset tersebut dalam dekompilasi yang tersedia; ini tidak membuktikan bahwa offset tersebut tidak digunakan oleh fungsi lain. Status Step 6 tetap SEBAGIAN.
