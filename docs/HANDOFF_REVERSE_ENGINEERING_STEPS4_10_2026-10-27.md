@@ -8,7 +8,7 @@ The raw context around `0x800BDBFC` shows a function-like stack prologue and pre
 
 Newest run state supersedes older snapshots inside this handoff:
 - [#40520635663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40520635663): overall completed/success, artifact #12743796502, 2.299.302 bytes, ZIP SHA-256 `e2d5b496b2310c17110c59710212f7605bf8b3d90b798abb438c1224bf3d0549`. Actual `entry0-ghidra-headless.log` says analysis timed out after 1,800 seconds; the export has 36 function rows but many body-overlap/repair errors. Candidate `0x800BDBFC` has zero recorded references. This is not a validated helper/caller result.
-- [#40521141039](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521141039) was still in progress at the last API update (21:54:52 WIB): entry1 completed, entry0 analysis in progress, no artifact yet. Based on the previous same-workflow run taking 31m27s and hitting the 1,800-second analysis timeout, a rough ETA is 22:25–22:35 WIB, not guaranteed. Do not launch a duplicate.
+- [#40521141039](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521141039) was still in progress at the last API update (21:54:52 WIB): entry1 completed, entry0 analysis in progress, no artifact yet. Based on the previous same-workflow run taking 31m27s and hitting the 1,800-second analysis timeout, a rough ETA is 21:58–22:05 WIB, not guaranteed. Do not launch a duplicate.
 
 The entry-0 delay-slot context remains valid local instruction evidence; caller boundary, helper return at runtime, seed lifecycle, actual resource base, and gameplay effect remain UNKNOWN.
 
