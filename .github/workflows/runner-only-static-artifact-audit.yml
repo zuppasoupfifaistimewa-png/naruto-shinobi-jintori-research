@@ -207,15 +207,34 @@ jobs:
           if not detail:
               rows.append("MISSING_OR_EMPTY: seed-helper-detail.txt")
           else:
-              for target in ("0x80037138","0x80035DA8"):
+              detail_lines=detail.splitlines()
+              for target in ("80037138","80035DA8"):
                   marker=f"=== TARGET {target} ==="
                   rows.append(f"target={target} marker_present={marker in detail}")
-                  if marker in detail:
-                      start=detail.find(marker)
-                      end=detail.find("=== TARGET ",start+len(marker))
-                      snippet=detail[start:end if end!=-1 else None].splitlines()
-                      rows.extend(snippet[:80])
-          emit("Step 4 helper and setter decompilation excerpts",rows,150)
+                  if marker not in detail:
+                      continue
+                  start=detail.find(marker)
+                  end=detail.find("=== TARGET ",start+len(marker))
+                  section=detail[start:end if end!=-1 else None].splitlines()
+                  rows.extend(section[:18])
+                  raw_begin=next((i for i,line in enumerate(section) if line.strip()=="--- RAW_FUNCTION_BODY_BEGIN ---"),-1)
+                  raw_end=next((i for i,line in enumerate(section) if line.strip()=="--- RAW_FUNCTION_BODY_END ---"),-1)
+                  if raw_begin>=0 and raw_end>raw_begin:
+                      rows.append(f"FULL_RAW_FUNCTION_BODY target={target} line_count={raw_end-raw_begin-1}")
+                      rows.extend(section[raw_begin:raw_end+1])
+                      # Make every return path auditable without requiring the reader to infer it from a truncated excerpt.
+                      body=section[raw_begin+1:raw_end]
+                      return_lines=[i for i,line in enumerate(body) if re.search(r"(?i)\\b(jr|j|bgez|bltz|beq|bne|blez|bgtz)\\b",line)]
+                      rows.append(f"CONTROL_FLOW_AND_RETURN_INSTRUCTIONS target={target} count={len(return_lines)}")
+                      for i in return_lines:
+                          lo=max(0,i-2); hi=min(len(body),i+3)
+                          rows.extend(f"  {body[k]}" for k in range(lo,hi))
+                  c_begin=next((i for i,line in enumerate(section) if line.strip()=="--- C_DECOMPILATION_BEGIN ---"),-1)
+                  c_end=next((i for i,line in enumerate(section) if line.strip()=="--- C_DECOMPILATION_END ---"),-1)
+                  if c_begin>=0 and c_end>c_begin:
+                      rows.append(f"FULL_C_DECOMPILATION target={target} line_count={c_end-c_begin-1}")
+                      rows.extend(section[c_begin:c_end+1])
+          emit("Step 4 helper and setter decompilation excerpts",rows,420)
           out.write_text("\n".join(lines)+"\n",encoding="utf-8")
           print("STATIC_ARTIFACT_AUDIT_BEGIN")
           print(out.read_text(encoding="utf-8"))
