@@ -67,3 +67,19 @@ Workflow konteks lokal [#40455197588](https://github.com/zuppasoupfifaistimewa-p
 RNG main EXE dan empat caller langsungnya **SELESAI**. Inventaris statis silang resource sudah jauh lebih lengkap, namun **Langkah 4 keseluruhan masih SELESAI SEBAGIAN**: 36 kecocokan mentah entry 1 belum diklasifikasikan, tiga kandidat entry 0 belum terdekode sebagai call, base resource masih hipotesis, dan caller tak langsung/ruang kode hasil dekompresi tidak bisa disingkirkan dari scan byte mentah saja. Label gameplay (roulette/battle/turn/AI) belum diberikan tanpa bukti call chain/tabel.
 
 Rujukan hasil entry 1: [inventaris caller Ghidra](../out/rng_resource_entry1_ghidra_callers_2026-10-27.md).
+
+## Koreksi final cakupan caller statis — 27 Oktober 2026
+
+Run Ghidra [#40455582988](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455582988) memeriksa ulang 36 alamat entry 1 yang tidak didekode oleh auto-analysis. **36/36** kini didekode secara terarah sebagai `jal 0x80035D78`, menutup status “belum didekode” pada instruksi tersebut. Laporan rinci: [out/rng_resource_entry1_unmapped_context_2026-10-27.md](../out/rng_resource_entry1_unmapped_context_2026-10-27.md). Caller function boundary untuk 36 lokasi tetap UNKNOWN.
+
+Run lokal entry 0 [#40455557190](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455557190) menunjukkan empat instruksi `jal 0x80035D78` di peta alamat kandidat. Tiga memiliki branch masuk eksplisit di jendela lokal; `0x800BB748` tidak, dan terletak selepas `j 0x800BBDE4`, sehingga reachability-nya tetap UNKNOWN. Lokasi setter `0x800AF2AC` memanggil `0x80035DA8` dengan `$a0=-1`, yang secara statis menulis `0xFFFFFFFF` ke state RNG jika jalur tersebut berjalan. Laporan: [out/rng_resource_entry0_ghidra_context_2026-10-27.md](../out/rng_resource_entry0_ghidra_context_2026-10-27.md).
+
+### Kesimpulan Langkah 4 (versi terkini)
+
+**SELESAI untuk inventaris instruksi direct-JAL pada executable utama dan raw code candidates DATA.BIN yang dipetakan secara statis**, dengan base resource entry 0 (`0x800AD000`) dan entry 1 (`0x800D0000`) tetap hipotesis:
+- Main EXE: 4 call site pada fungsi yang batasnya diketahui.
+- DATA.BIN entry 0: 4 instruksi JAL langsung ke RNG pada konteks lokal (3 memiliki incoming conditional branch lokal; 1 masih belum terbukti reachable) dan satu panggilan seed setter dengan argumen -1.
+- DATA.BIN entry 1: 144 instruksi JAL langsung ke RNG; 108 dikelompokkan oleh auto-analysis menjadi 50 fungsi + 1 call site tanpa boundary, 36 lainnya didekode lokal tapi nama fungsi caller belum teridentifikasi.
+- Tidak ditemukan kata direct-JAL target sama pada raw DATA2.BIN, DUMMY.BIN, XASECT.BIN; keterbatasan scan raw/non-decompressed tetap UNKNOWN.
+
+Artinya, inventory direct-JAL yang ditemukan sudah ditutup dan semua raw hits penting sudah diperiksa. **Yang tidak boleh diklaim tuntas** adalah panggilan tak langsung/berbasis pointer, kode sesudah dekompresi, base/lifecycle runtime sebenarnya, reachability `0x800BB748`, 36 boundary fungsi yang belum diketahui, atau semantik gameplay caller. Ini batas bukti statis, bukan alasan untuk mengarang kesimpulan.
