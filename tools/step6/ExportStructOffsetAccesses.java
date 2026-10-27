@@ -50,20 +50,28 @@ public class ExportStructOffsetAccesses extends GhidraScript {
     }
     private static final Pattern DESTINATION_REGISTER = Pattern.compile("^\\S+\\s+([a-z][a-z0-9]*)\\s*,", Pattern.CASE_INSENSITIVE);
     private static final Pattern REGISTER_TOKEN = Pattern.compile("(?i)^(?:zero|at|v[01]|a[0-3]|t[0-9]|s[0-7]|k[01]|gp|sp|fp|ra)$");
-    private static final Pattern MEMORY_DISPLACEMENT = Pattern.compile("(?i)^_?(lb|lbu|lh|lhu|lw|lwl|lwr|lwu|sb|sh|sw|swl|swr|sc)\\s+[^,]+,\\s*(-?(?:0x[0-9a-f]+|[0-9]+))\\(([^)]+)\\)");
+    private static final Pattern MEMORY_DISPLACEMENT = Pattern.compile("(?i)^_?(lb|lbu|lh|lhu|lw|lwl|lwr|lwu|ld|lwc[0-3]|ldc[0-3]|sb|sh|sw|swl|swr|sc|sd|sdl|sdr|swc[0-3]|sdc[0-3])\\s+[^,]+,\\s*(-?(?:0x[0-9a-f]+|[0-9]+))\\(([^)]+)\\)");
 
     private void line(String s) { out.println(s); }
 
     private String hex(long value) { return String.format("0x%X", value); }
 
-    private boolean isStoreMnemonic(String mnemonic) {
+    private String normalizeMnemonic(String mnemonic) {
         String m = mnemonic.toLowerCase();
-        return m.matches("sb|sh|sw|sd|swl|swr|sdl|sdr|sc|scd");
+        while (m.startsWith("_")) m = m.substring(1); // Ghidra prefixes delay-slot instructions with "_"
+        return m;
+    }
+
+    private boolean isLoadMnemonic(String mnemonic) {
+        return normalizeMnemonic(mnemonic).matches("lb|lbu|lh|lhu|lw|lwl|lwr|lwu|ld|lwc[0-3]|ldc[0-3]");
+    }
+
+    private boolean isStoreMnemonic(String mnemonic) {
+        return normalizeMnemonic(mnemonic).matches("sb|sh|sw|sd|swl|swr|sdl|sdr|sc|scd|swc[0-3]|sdc[0-3]");
     }
 
     private boolean isMemoryMnemonic(String mnemonic) {
-        String m = mnemonic.toLowerCase();
-        return m.matches("l[bhdwq]|lbu|lhu|lwu|lwl|lwr|sb|sh|sw|sd|swl|swr|sdl|sdr|sc|scd");
+        return isLoadMnemonic(mnemonic) || isStoreMnemonic(mnemonic);
     }
 
     private String bytes(Instruction ins) {
@@ -272,7 +280,7 @@ public class ExportStructOffsetAccesses extends GhidraScript {
             line("private_binary_uploaded=no");
             line("field_semantics=UNASSIGNED; every hit requires instruction-context review");
             line("extended_operand_context=8 instructions before and after each memory-displacement match");
-            line("direct_memory_operand_inventory=ALL decoded base-plus-displacement operands in candidate entry view");
+            line("direct_memory_operand_inventory=ALL recognized integer/coproc load-store base-plus-displacement operands in candidate entry view");
             line("direct_memory_operand_match_cap_for_B30_B38_B40_B44=NONE");
             line("base_register_trace=up to 24 prior linear instructions per alias; stops at branch/call/return and is not whole-program pointer analysis");
             decompiler = new DecompInterface();
@@ -316,16 +324,16 @@ public class ExportStructOffsetAccesses extends GhidraScript {
                     try { displacement = Long.decode(memory.group(2)); }
                     catch (NumberFormatException e) { displacement = Long.MIN_VALUE; }
                     String baseRegister = memory.group(3).trim();
-                    String mnemonic = ins.getMnemonicString().toLowerCase();
+                    String mnemonic = normalizeMnemonic(ins.getMnemonicString());
                     int[] histogram = displacementInventory.get(displacement);
                     if (histogram == null) {
                         histogram = new int[3]; // total direct operands, reads, writes
                         displacementInventory.put(displacement, histogram);
                     }
                     histogram[0]++;
-                    if (mnemonic.startsWith("l")) histogram[1]++;
+                    if (isLoadMnemonic(mnemonic)) histogram[1]++;
                     else if (isStoreMnemonic(mnemonic)) histogram[2]++;
-                    String direction = mnemonic.startsWith("l") ? "READ" : (isStoreMnemonic(mnemonic) ? "WRITE" : "UNKNOWN");
+                    String direction = isLoadMnemonic(mnemonic) ? "READ" : (isStoreMnemonic(mnemonic) ? "WRITE" : "UNKNOWN");
                     for (long target : TARGETS) {
                         if (displacement != target) continue;
                         int now = memoryCounts.get(target) + 1;
@@ -352,7 +360,7 @@ public class ExportStructOffsetAccesses extends GhidraScript {
                 line("direct_displacement=" + hex(item.getKey()) + " total=" + v[0] + " reads=" + v[1] + " writes=" + v[2]);
             }
             line("=== DIRECT_MEMORY_DISPLACEMENT_INVENTORY_END ===");
-            line("limitation=Inventory covers only Ghidra-decoded direct displacement(base) instructions in candidate base view. Base-register trace is linear and bounded. It does not prove object identity or capture pointer arithmetic, split immediates, aliases beyond trace window, undecoded code or alternate structure bases.");
+            line("limitation=Inventory covers recognized integer/coprocessor load-store opcodes decoded by Ghidra with direct displacement(base) syntax in candidate base view. Base-register trace is linear and bounded. It does not prove object identity or capture pointer arithmetic, split immediates, aliases beyond trace window, undecoded code or alternate structure bases.");
             out.flush();
             if (out.checkError()) throw new IllegalStateException("Failed writing offset-access report.");
             decompiler.dispose();
