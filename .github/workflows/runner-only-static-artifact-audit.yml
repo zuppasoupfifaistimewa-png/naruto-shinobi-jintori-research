@@ -1,5 +1,5 @@
 name: Runner-only audit of latest Ghidra and Step 6 text artifacts
-# RUNNER_ONLY_AUDIT_REVIEW_WIB=2026-10-27 19:36; target normalized delay-slot memory scan #40504640855; retain full direct-displacement inventory; large raw logs are hashed only.
+# RUNNER_ONLY_AUDIT_REVIEW_WIB=2026-10-27 19:39; inventory cap 30001 rows to retain all Step6 direct-displacement counts from scan #40504640855; large raw logs hashed only.
 
 on:
   push:
@@ -173,7 +173,7 @@ jobs:
                   continue
               if inside_inventory and line.startswith("direct_displacement="):
                   inventory_rows.append(line)
-          emit("Step 6 all decoded direct-memory displacement inventory",inventory_rows,30000)
+          emit("Step 6 all decoded direct-memory displacement inventory",inventory_rows,30001)
           # Include a bounded sample of actual memory operands for each pending offset.
           rows=[]
           targets=("0xb30","0xb38","0xb40","0xb44")
