@@ -2,6 +2,8 @@
 // Search already-decoded instructions for exact immediate offsets of the Step 6 candidate fields.
 // Hits are candidates only: an immediate constant alone does not establish a struct-field semantic.
 import ghidra.app.script.GhidraScript;
+import ghidra.app.decompiler.DecompInterface;
+import ghidra.app.decompiler.DecompileResults;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
@@ -15,11 +17,15 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ExportStructOffsetAccesses extends GhidraScript {
     private PrintWriter out;
+    private DecompInterface decompiler;
+    private final Set<String> dumpedFunctions = new HashSet<>();
     private static final long BASE = 0x800D0000L;
     private static final long LENGTH = 0x919BCL;
     private static final int MAX_REPORTED_PER_OFFSET = 200;
@@ -88,6 +94,37 @@ public class ExportStructOffsetAccesses extends GhidraScript {
         line("  references_from_instruction=" + refTargets(ins.getAddress()));
     }
 
+    private void dumpContextAndFunction(Instruction ins, Function f) {
+        Instruction first = ins;
+        for (int i = 0; i < 8 && first.getPrevious() != null; i++) first = first.getPrevious();
+        line("=== MEMORY_ACCESS_CONTEXT_BEGIN address=" + ins.getAddress() + " ===");
+        Instruction current = first;
+        for (int i = 0; current != null && i < 17; i++, current = current.getNext()) {
+            line("  " + current.getAddress() + " bytes=[" + bytes(current) + "] "
+                + current.getMnemonicString() + " " + current.toString());
+            if (current.getAddress().equals(ins.getAddress()) && current.getNext() == null) break;
+        }
+        line("=== MEMORY_ACCESS_CONTEXT_END ===");
+        if (f == null) {
+            line("decompiled_function=NO_FUNCTION_BOUNDARY");
+            return;
+        }
+        String entry = f.getEntryPoint().toString();
+        line("function_entry_for_memory_access=" + entry + " function_name=" + f.getName()
+            + " body_bytes=" + f.getBody().getNumAddresses());
+        if (!dumpedFunctions.add(entry)) return;
+        line("=== FIELD_ACCESS_FUNCTION_DECOMPILATION_BEGIN entry=" + entry + " ===");
+        DecompileResults result = decompiler.decompileFunction(f, 90, monitor);
+        if (result != null && result.decompileCompleted() && result.getDecompiledFunction() != null) {
+            line(result.getDecompiledFunction().getC());
+            line("decompile_status=SUCCESS");
+        } else {
+            line("decompile_status=FAILED");
+            line("decompile_message=" + (result == null ? "null result" : result.getErrorMessage()));
+        }
+        line("=== FIELD_ACCESS_FUNCTION_DECOMPILATION_END entry=" + entry + " ===");
+    }
+
     private void dumpMemoryMatch(Instruction ins, long target, long displacement, long count) {
         int shown = memoryEmitted.getOrDefault(target, 0);
         if (shown >= MAX_REPORTED_PER_OFFSET) return;
@@ -101,6 +138,7 @@ public class ExportStructOffsetAccesses extends GhidraScript {
         line("  parsed_memory_displacement=" + hex(displacement) + " access_class=LOAD_STORE_OPCODE_CANDIDATE");
         line("  function=" + (f == null ? "NONE_OR_UNMAPPED" : f.getName()) + " function_entry=" + (f == null ? "NONE" : f.getEntryPoint()));
         line("  references_from_instruction=" + refTargets(ins.getAddress()));
+        dumpContextAndFunction(ins, f);
     }
 
     @Override
@@ -119,6 +157,12 @@ public class ExportStructOffsetAccesses extends GhidraScript {
             line("game_or_emulator_executed=no");
             line("private_binary_uploaded=no");
             line("field_semantics=UNASSIGNED; every hit requires instruction-context review");
+            line("extended_operand_context=8 instructions before and after each memory-displacement match");
+            decompiler = new DecompInterface();
+            decompiler.toggleCCode(true);
+            decompiler.toggleSyntaxTree(false);
+            if (!decompiler.openProgram(currentProgram))
+                throw new IllegalStateException("Could not initialize decompiler for memory-field context.");
             for (long t : TARGETS) { counts.put(t, 0); emitted.put(t, 0); memoryCounts.put(t, 0); memoryEmitted.put(t, 0); }
             // Self-test against known MIPS memory-operand syntax before scanning the program.
             Matcher fixture = MEMORY_DISPLACEMENT.matcher("sb v0,0x2e9(v1)");
@@ -176,6 +220,7 @@ public class ExportStructOffsetAccesses extends GhidraScript {
             line("limitation=This pass searches exact 16-bit immediate values in Ghidra-decoded instructions only. It may include non-field constants and will miss pointer arithmetic, split immediates, aliases, undisassembled code and alternate structure bases.");
             out.flush();
             if (out.checkError()) throw new IllegalStateException("Failed writing offset-access report.");
+            decompiler.dispose();
         }
     }
 }
