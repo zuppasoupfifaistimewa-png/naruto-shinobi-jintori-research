@@ -45,7 +45,7 @@ Disassembly berasal dari wrapper ELF sementara yang alamat text-nya dipasang pad
 
 ## Artefak kandidat
 
-Indeks lengkap berisi 898 alamat target `jal` internal, jumlah caller, dua indikator prologue heuristik, dan satu caller contoh disimpan sebagai artefak kerja lokal `main_exe_function_candidates.tsv`. Artefak ini tidak berisi biner game. Versi file tersebut belum dimasukkan ke Git; ringkasan yang dapat ditinjau di repo ada dalam dokumen ini.
+Indeks lengkap berisi 898 alamat target `jal` internal, jumlah caller, dua indikator prologue heuristik, dan satu caller contoh disimpan sebagai artefak kerja lokal `main_exe_function_candidates.tsv`. Artefak ini tidak berisi biner game. Versi file lengkap tersebut belum dimasukkan ke Git; ringkasan yang dapat ditinjau di repo ada dalam dokumen ini. Untuk mengulang scan pada salinan executable lokal, gunakan [tools/psx_exe_call_target_scan.py](../tools/psx_exe_call_target_scan.py); skrip menghasilkan TSV ke folder `out/` dan tidak memerlukan paket Python eksternal.
 
 ## Kesimpulan dan langkah lanjutan
 
