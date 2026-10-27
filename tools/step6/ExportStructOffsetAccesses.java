@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +39,18 @@ public class ExportStructOffsetAccesses extends GhidraScript {
     private final Map<Long, Integer> emitted = new LinkedHashMap<>();
     private final Map<Long, Integer> memoryCounts = new LinkedHashMap<>();
     private final Map<Long, Integer> memoryEmitted = new LinkedHashMap<>();
-    private static final Pattern MEMORY_DISPLACEMENT = Pattern.compile("(?i)^_?(lb|lbu|lh|lhu|lw|lwl|lwr|lwu|sb|sh|sw|swl|swr|sc)\\s+[^,]+,\\s*(-?(?:0x[0-9a-f]+|[0-9]+))\\(");
+    // Inventory every decoded direct base+displacement memory operand, not only named candidates.
+    private final Map<Long, int[]> displacementInventory = new TreeMap<>();
+    private static final Set<Long> UNBOUNDED_FIELD_OFFSETS = new HashSet<>();
+    static {
+        UNBOUNDED_FIELD_OFFSETS.add(0xB30L);
+        UNBOUNDED_FIELD_OFFSETS.add(0xB38L);
+        UNBOUNDED_FIELD_OFFSETS.add(0xB40L);
+        UNBOUNDED_FIELD_OFFSETS.add(0xB44L);
+    }
+    private static final Pattern DESTINATION_REGISTER = Pattern.compile("^\\S+\\s+([a-z][a-z0-9]*)\\s*,", Pattern.CASE_INSENSITIVE);
+    private static final Pattern REGISTER_TOKEN = Pattern.compile("(?i)^(?:zero|at|v[01]|a[0-3]|t[0-9]|s[0-7]|k[01]|gp|sp|fp|ra)$");
+    private static final Pattern MEMORY_DISPLACEMENT = Pattern.compile("(?i)^_?(lb|lbu|lh|lhu|lw|lwl|lwr|lwu|sb|sh|sw|swl|swr|sc)\\s+[^,]+,\\s*(-?(?:0x[0-9a-f]+|[0-9]+))\\(([^)]+)\\)");
 
     private void line(String s) { out.println(s); }
 
@@ -166,9 +178,63 @@ public class ExportStructOffsetAccesses extends GhidraScript {
         line("=== FUNCTION_ENTRY_REFERENCES_END ===");
     }
 
-    private void dumpMemoryMatch(Instruction ins, long target, long displacement, long count) {
+    private void dumpBaseRegisterDefinitionTrace(Instruction ins, String initialRegister) {
+        line("=== BASE_REGISTER_TRACE_BEGIN access=" + ins.getAddress() + " initial=" + initialRegister + " ===");
+        Function accessFunction = getFunctionContaining(ins.getAddress());
+        String currentRegister = initialRegister.trim();
+        int definitions = 0;
+        for (int link = 0; link < 6 && REGISTER_TOKEN.matcher(currentRegister).matches(); link++) {
+            Instruction cursor = ins.getPrevious();
+            boolean found = false;
+            for (int i = 0; cursor != null && i < 24; i++, cursor = cursor.getPrevious()) {
+                Function owner = getFunctionContaining(cursor.getAddress());
+                if (accessFunction != null && (owner == null || !owner.getEntryPoint().equals(accessFunction.getEntryPoint()))) {
+                    line("  trace_stop=function_boundary_or_unknown at=" + cursor.getAddress());
+                    break;
+                }
+                String mnemonic = cursor.getMnemonicString().toLowerCase();
+                if (mnemonic.startsWith("b") || mnemonic.equals("j") || mnemonic.equals("jal")
+                        || mnemonic.equals("jalr") || mnemonic.equals("jr")) {
+                    line("  trace_stop=control_flow at=" + cursor.getAddress() + " instruction=" + cursor.toString());
+                    break;
+                }
+                if (mnemonic.startsWith("s")) continue; // stores do not define the first operand register
+                Matcher def = DESTINATION_REGISTER.matcher(cursor.toString().trim());
+                if (!def.find() || !def.group(1).equalsIgnoreCase(currentRegister)) continue;
+                found = true;
+                definitions++;
+                line("  definition_" + definitions + " register=" + currentRegister + " address=" + cursor.getAddress()
+                        + " bytes=" + bytes(cursor) + " instruction=" + cursor.toString());
+                String[] split = cursor.toString().trim().split("\\s+", 2);
+                if (split.length < 2 || !split[0].equalsIgnoreCase("move")) {
+                    line("  alias_trace_stop=definition_not_simple_move");
+                    break;
+                }
+                String[] operands = split[1].split(",");
+                if (operands.length < 2) {
+                    line("  alias_trace_stop=unparsed_move_operands");
+                    break;
+                }
+                String sourceRegister = operands[1].trim();
+                if (!REGISTER_TOKEN.matcher(sourceRegister).matches()) {
+                    line("  alias_trace_stop=move_source_not_register source=" + sourceRegister);
+                    break;
+                }
+                currentRegister = sourceRegister;
+                break;
+            }
+            if (!found) {
+                line("  alias_trace_stop=no_destination_definition_within_linear_window register=" + currentRegister);
+                break;
+            }
+        }
+        line("  traced_move_definitions=" + definitions + " interpretation=bounded linear alias hints only");
+        line("=== BASE_REGISTER_TRACE_END ===");
+    }
+
+    private void dumpMemoryMatch(Instruction ins, long target, long displacement, long count, String baseRegister, String accessDirection) {
         int shown = memoryEmitted.getOrDefault(target, 0);
-        if (shown >= MAX_REPORTED_PER_OFFSET) return;
+        if (shown >= MAX_REPORTED_PER_OFFSET && !UNBOUNDED_FIELD_OFFSETS.contains(target)) return;
         memoryEmitted.put(target, shown + 1);
         Function f = getFunctionContaining(ins.getAddress());
         long rawAddress = ins.getAddress().getOffset();
@@ -177,9 +243,11 @@ public class ExportStructOffsetAccesses extends GhidraScript {
         line("  address=" + ins.getAddress() + " entry1_file_offset=" + (fileOffset >= 0 && fileOffset < LENGTH ? hex(fileOffset) : "OUTSIDE_HYPOTHETICAL_ENTRY1"));
         line("  instruction_bytes=" + bytes(ins) + " mnemonic=" + ins.getMnemonicString() + " text=" + ins.toString());
         line("  parsed_memory_displacement=" + hex(displacement) + " access_class=LOAD_STORE_OPCODE_CANDIDATE");
+        line("  base_register=" + baseRegister + " access_direction=" + accessDirection);
         line("  function=" + (f == null ? "NONE_OR_UNMAPPED" : f.getName()) + " function_entry=" + (f == null ? "NONE" : f.getEntryPoint()));
         line("  references_from_instruction=" + refTargets(ins.getAddress()));
         dumpContextAndFunction(ins, f, target);
+        dumpBaseRegisterDefinitionTrace(ins, baseRegister);
     }
 
     @Override
@@ -199,6 +267,9 @@ public class ExportStructOffsetAccesses extends GhidraScript {
             line("private_binary_uploaded=no");
             line("field_semantics=UNASSIGNED; every hit requires instruction-context review");
             line("extended_operand_context=8 instructions before and after each memory-displacement match");
+            line("direct_memory_operand_inventory=ALL decoded base-plus-displacement operands in candidate entry view");
+            line("direct_memory_operand_match_cap_for_B30_B38_B40_B44=NONE");
+            line("base_register_trace=up to 24 prior linear instructions per alias; stops at branch/call/return and is not whole-program pointer analysis");
             decompiler = new DecompInterface();
             decompiler.toggleCCode(true);
             decompiler.toggleSyntaxTree(false);
@@ -239,11 +310,22 @@ public class ExportStructOffsetAccesses extends GhidraScript {
                     long displacement;
                     try { displacement = Long.decode(memory.group(2)); }
                     catch (NumberFormatException e) { displacement = Long.MIN_VALUE; }
+                    String baseRegister = memory.group(3).trim();
+                    String mnemonic = ins.getMnemonicString().toLowerCase();
+                    int[] histogram = displacementInventory.get(displacement);
+                    if (histogram == null) {
+                        histogram = new int[3]; // total direct operands, reads, writes
+                        displacementInventory.put(displacement, histogram);
+                    }
+                    histogram[0]++;
+                    if (mnemonic.startsWith("l")) histogram[1]++;
+                    else if (mnemonic.startsWith("s")) histogram[2]++;
+                    String direction = mnemonic.startsWith("l") ? "READ" : (mnemonic.startsWith("s") ? "WRITE" : "UNKNOWN");
                     for (long target : TARGETS) {
                         if (displacement != target) continue;
                         int now = memoryCounts.get(target) + 1;
                         memoryCounts.put(target, now);
-                        dumpMemoryMatch(ins, target, displacement, now);
+                        dumpMemoryMatch(ins, target, displacement, now, baseRegister, direction);
                     }
                 }
             }
@@ -258,7 +340,14 @@ public class ExportStructOffsetAccesses extends GhidraScript {
                     + " memory_displacement_hits=" + memoryCounts.get(t)
                     + " memory_emitted=" + memoryEmitted.get(t)
                     + (counts.get(t) > MAX_REPORTED_PER_OFFSET || memoryCounts.get(t) > MAX_REPORTED_PER_OFFSET ? " CAP_REACHED; additional hits omitted" : ""));
-            line("limitation=This pass searches exact 16-bit immediate values in Ghidra-decoded instructions only. It may include non-field constants and will miss pointer arithmetic, split immediates, aliases, undisassembled code and alternate structure bases.");
+            line("=== DIRECT_MEMORY_DISPLACEMENT_INVENTORY_BEGIN ===");
+            line("format=disp total_direct_operands reads writes");
+            for (Map.Entry<Long, int[]> item : displacementInventory.entrySet()) {
+                int[] v = item.getValue();
+                line("direct_displacement=" + hex(item.getKey()) + " total=" + v[0] + " reads=" + v[1] + " writes=" + v[2]);
+            }
+            line("=== DIRECT_MEMORY_DISPLACEMENT_INVENTORY_END ===");
+            line("limitation=Inventory covers only Ghidra-decoded direct displacement(base) instructions in candidate base view. Base-register trace is linear and bounded. It does not prove object identity or capture pointer arithmetic, split immediates, aliases beyond trace window, undecoded code or alternate structure bases.");
             out.flush();
             if (out.checkError()) throw new IllegalStateException("Failed writing offset-access report.");
             decompiler.dispose();
