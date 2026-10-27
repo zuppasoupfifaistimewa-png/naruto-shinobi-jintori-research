@@ -68,9 +68,20 @@ public class ExportRngCallContext extends GhidraScript {
                 boolean disassembled=cmd.applyTo(currentProgram,monitor);
                 line("bounded_disassemble_command_success="+disassembled);
                 Instruction instruction=currentProgram.getListing().getInstructionAt(site);
+                boolean forcedSiteDisassembly=false;
+                if (instruction==null) {
+                    forcedSiteDisassembly=disassemble(site);
+                    instruction=currentProgram.getListing().getInstructionAt(site);
+                }
+                line("forced_disassembly_at_candidate_site="+forcedSiteDisassembly);
                 boolean flow=flowsTo(instruction,target);
                 line("ghidra_instruction_at_site="+(instruction==null?"NONE":instruction.toString()));
                 line("ghidra_decoded_flow_to_target="+(flow?"yes":"no"));
+                if (instruction!=null && instruction.getFlowType().isCall()) {
+                    line("decoded_instruction_is_call=yes");
+                    Address[] callFlows=instruction.getFlows();
+                    line("decoded_instruction_flows="+java.util.Arrays.toString(callFlows));
+                } else line("decoded_instruction_is_call=no");
                 Function f=getFunctionContaining(site);
                 if(f==null) line("caller_function_boundary=UNMAPPED_WITHOUT_AUTOANALYSIS");
                 else line("caller_function_entry="+f.getEntryPoint()+" name="+f.getName()
