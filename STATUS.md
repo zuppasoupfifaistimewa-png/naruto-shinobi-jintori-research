@@ -1,3 +1,21 @@
+# STATUS LIVE UPDATE — Langkah 4–10, 27 Oktober 2026 21:03 WIB
+
+**Ringkasan ini adalah status otoritatif terbaru; status historis pada bagian berikutnya dipertahankan untuk audit tetapi sudah superseded jika berbeda.**
+
+- **Step 4: SEBAGIAN.** RNG LCG/state and four original callers remain statically identified; 0x80066E7C is a callback/timer-like counter in static flow, but runtime seed, resource base/reachability, roulette causality, battle path and alternative randomness remain unproven.
+- **Step 5: SEBAGIAN overall.** [Actions #40515356524](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524) completed success. 13/13 same-address main-EXE Ghidra/m2c pairs produced nonempty outputs, all m2c exit codes 0. Candidate functions in DATA.BIN entries 0/1 and wider compare/transition/callgraph coverage remain incomplete.
+- **Step 6: SEBAGIAN.** Static scan #40511758146 succeeded; address-construction fixtures PASS, but pointer/alias closure is BLOCKED, semantic field labels remain UNKNOWN, and 0x800D0000 is only a hypothetical resource base.
+- **Step 7: SEBAGIAN.** DATA.BIN directory/copy structure has static evidence, but runtime RAM mapping, relocation/lifecycle and verified copy-length/checksum remain BLOCKED/UNKNOWN.
+- **Step 8: SEBAGIAN.** Function-level operations are increasingly clear, but costs, barrier/upgrade, battle/roulette/turn, card effects and victory/loss rules remain UNKNOWN.
+- **Step 9: SEBAGIAN overall.** [Actions #40516755810](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810) completed success at 21:02:36 WIB. RNG 7/7 + setter/getter 16/16 passed; all 11 job steps success and STEP9_PRIVATE_CLEANUP=PASS. Artifact #12740305973 SHA-256 ZIP bf1a702074849b2592bfc5555a0d493b5ed86d3de0b9895a192db7fdf9f80cd4. Step 9(a) TUNTAS; 9(b) SEBAGIAN only for accessor subset; broader oracle/case coverage is still open.
+- **Step 10: TUNTAS only as a criterion-level audit matrix**, not blanket completion of all reverse engineering.
+- **Open Actions:** Ghidra static analysis [#40512917437](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40512917437) remains in progress at last check; active stage is static analysis of DATA.BIN entry 0/external helper. Started at 20:32:30 WIB. A previous comparable Ghidra run took about 31m47, so ~21:04–21:06 WIB is a rough reference only; the current stage's API update is stale and no exact ETA is available.
+- No adaptive-player, Story Mode runner, gameplay input, savestate restore, classifier/policy/readiness-gate edit or emulator/gameplay session was used. No private ROM/BIN/CUE, BIOS, executable, memory card, savestate, RAM dump or screenshot was committed. **Story Mode TIDAK TERBUKTI TAMAT.**
+
+[Langkah 4–10 live reconciliation](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP4_10_LIVE_RECONCILIATION_2026-10-27.md) · [Step 9 test report](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/out/step9/STEP9_UNICORN_RESULT_2026-10-27.md)
+
+---
+
 # STATUS LIVE UPDATE — Step 6 bounded register provenance, 27 Oktober 2026 20:25 WIB
 
 ## Step 5 — hasil perluasan terverifikasi (27 Oktober 2026, 20:50 WIB)
