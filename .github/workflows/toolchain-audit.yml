@@ -135,7 +135,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade "pip==26.2.2"
           python -m pip install --disable-pip-version-check --no-input \
             "splat64[mips]==$SPLAT64_VERSION" \
             "unicorn==$UNICORN_VERSION" \
