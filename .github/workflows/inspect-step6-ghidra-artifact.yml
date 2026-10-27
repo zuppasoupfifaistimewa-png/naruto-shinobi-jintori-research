@@ -61,7 +61,7 @@ jobs:
           name: ghidra-slps-03553-function-index
           path: ${{ runner.temp }}/step6-source
           repository: ${{ github.repository }}
-          run-id: 40440237256
+          run-id: ${{ github.event.inputs.source_run_id || '40440237256' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Validate inventory and summarize decompilation on runner
@@ -176,7 +176,7 @@ jobs:
           print("STEP6_ARTIFACT_REVIEW_END")
           print(f"REPORT_BYTES={output.stat().st_size}")
           PY
-          cat "$RUNNER_TEMP/step6-source-metadata.txt" "$RUNNER_TEMP/step6-review.txt" > "$RUNNER_TEMP/step6-audit-artifact.txt"
+          cat "$RUNNER_TEMP/source-artifact-metadata.txt" "$RUNNER_TEMP/step6-review.txt" > "$RUNNER_TEMP/step6-audit-artifact.txt"
           grep -q "target_sections_exported=" "$RUNNER_TEMP/step6-review.txt"
 
       - name: Upload text-only audit summary
