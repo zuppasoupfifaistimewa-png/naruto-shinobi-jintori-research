@@ -165,14 +165,27 @@ jobs:
                   code_match = re.search(r"--- C_DECOMPILATION_BEGIN ---\n(.*?)\n--- C_DECOMPILATION_END ---", block, re.S)
                   if code_match:
                       code = code_match.group(1).splitlines()
+                      full_targets = {"800ef98c", "80100d14", "80100dcc", "800e1188", "800d8918", "8011c0d0", "8012a9c4", "80137ad8", "80112418"}
+                      if addr in full_targets:
+                          print("FULL_C_BEGIN " + addr)
+                          for ln in code:
+                              print("  FULLC " + ln.rstrip())
+                          print("FULL_C_END " + addr)
                       keep = set()
-                      keywords = re.compile(r"80012a70|8001387c|800138ec|800ef98c|80100d14|80100dcc|800bdbfc|0x90|0x200|0x1000|0xdf|chakra|target|winner|state|\*\s*0x90", re.I)
+                      keywords = re.compile(r"80012a70|8001387c|800138ec|800ef98c|80100d14|80100dcc|800bdbfc|0x90|0x200|0x1000|0xdf|chakra|target|winner|state|\\*\\s*0x90", re.I)
                       for i, ln in enumerate(code):
                           if keywords.search(ln):
                               keep.update(range(max(0, i-1), min(len(code), i+2)))
                       chosen = sorted(keep)
                       for i in chosen[:80]:
                           print("  C " + code[i].rstrip())
+              ref_blocks = re.split(r"(?=^=== REFERENCES_TO )", survey, flags=re.M)
+              for block in ref_blocks:
+                  if block.startswith("=== REFERENCES_TO "):
+                      print("REFERENCE " + block.splitlines()[0])
+                      for ln in block.splitlines()[1:]:
+                          if ln.startswith(("from=", "reference_count=")):
+                              print("  XREF " + ln)
           print("STEP6_ARTIFACT_REVIEW_END")
           print(f"REPORT_BYTES={output.stat().st_size}")
           PY
