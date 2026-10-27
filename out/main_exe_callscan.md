@@ -4,9 +4,13 @@ Tanggal pemeriksaan: 2026-10-27
 Sumber lokal: `SLPS_035.53`, ukuran 385.024 byte, SHA-256 `a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569`.  
 Cakupan kode dari header: file offset `0x800..0x5DFFF`, alamat muat `0x80010000`, ukuran text `0x5D800`. Biner tetap di luar Git.
 
-## Status Langkah 3
+## Status Langkah 3 — selesai
 
-**Ghidra tersedia di GitHub Actions, tetapi analisis executable masih BELUM SELESAI.** Run [#40434733043](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40434733043) sukses memasang Ghidra 12.2 dengan Temurin JDK 25 dan memverifikasi launcher `support/analyzeHeadless`; cache instalasi disimpan untuk run berikutnya. Lingkungan kerja lokal sebelumnya tidak memiliki `ghidraRun` atau `analyzeHeadless`. Karena analisis executable game belum dijalankan dengan Ghidra, hasil di bawah tetap merupakan fallback LLVM/heuristik, bukan daftar fungsi hasil Ghidra.
+Ghidra 12.2 headless analysis **berhasil dijalankan atas executable itu sendiri** pada Actions run [#40438574949](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40438574949). File `SLPS_035.53` diekstrak sementara dari BIN/CUE Release, lalu lolos pemeriksaan ukuran 385.024 byte, signature `PS-X EXE`, dan SHA-256 `a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569`.
+
+Ghidra memakai `MIPS:LE:32:default`, load base `0x80010000`, file offset `0x800`, panjang text `0x5D800`, dan entry point `0x80011448`. Analisis dan post-script sukses; `functions.tsv` berisi **1.206 fungsi** (1.207 baris termasuk header). Hasil teks tersedia di [artefak run #40438574949](https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/artifacts/12704922603), dengan retensi hingga 10 November 2026. Tidak ada executable atau proyek Ghidra yang dimasukkan ke artefak atau Git, dan tidak ada emulator/gameplay dijalankan.
+
+Indeks ini adalah output Ghidra terverifikasi; hasil fallback di bawah tetap hanya heuristik panggilan dan bukan jumlah fungsi.
 
 ## Metode fallback
 
@@ -55,15 +59,17 @@ Indeks lengkap berisi 898 alamat target `jal` internal, jumlah caller, dua indik
 - Langkah berikutnya: sediakan salinan `SLPS_035.53` ke runner melalui mekanisme privat yang aman (bukan Git), jalankan `analyzeHeadless` dengan bahasa MIPS little-endian 32-bit pada `0x80010000`, lalu ekspor symbol/function entry ke artefak teks. Jangan mengklaim fallback ini sebagai output Ghidra.
 
 
-## Pembaruan pipeline Ghidra — 27 Oktober 2026
+## Pembaruan Ghidra terverifikasi — 27 Oktober 2026
 
-Pipeline untuk tahap berikutnya sudah dibuat: [workflow Ghidra statis](../.github/workflows/ghidra-static-analyze-psx-exe.yml), skrip persiapan entrypoint, dan skrip ekspor TSV [`tools/ghidra/ExportFunctionIndex.java`](../tools/ghidra/ExportFunctionIndex.java). Namun ini baru **pipeline siap konfigurasi**, bukan hasil analisis Ghidra.
+Run [#40438574949](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40438574949) menyelesaikan pipeline Ghidra: source BIN/CUE tervalidasi, executable diekstrak dan hash cocok, pemindaian RNG berhasil, Ghidra auto-analysis sukses, dan ekspor fungsi sukses (1.206 fungsi). Tidak diperlukan repository secret; workflow menggunakan release-asset API yang tersedia di repo. Artefak teks: [ghidra-slps-03553-function-index](https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/artifacts/12704922603).
 
-Run memerlukan Actions secret `PSX_EXE_DOWNLOAD_URL` berisi direct-download HTTPS privat. Biner divalidasi terhadap ukuran 385.024 byte, magic `PS-X EXE`, dan SHA-256 `a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569`. Tanpa secret tersebut, belum ada fungsi hasil Ghidra dan fallback di atas tetap satu-satunya indeks yang tersedia. Panduan: [`docs/GHIDRA_PRIVATE_EXE_HANDOFF.md`](../docs/GHIDRA_PRIVATE_EXE_HANDOFF.md). Workflow menyimpan hanya teks sebagai artefak; executable dan project sementara dibersihkan dari runner.
+Indeks Ghidra mengidentifikasi fungsi yang memuat empat call-site RNG:
 
+- `0x80015B14` berada dalam `FUN_80015adc` (entry `0x80015ADC`, 160 byte).
+- `0x80015BF0` berada dalam `FUN_80015b7c` (entry `0x80015B7C`, 240 byte).
+- `0x8001A460` berada dalam `FUN_8001a328` (entry `0x8001A328`, 376 byte).
+- `0x80020C24` berada dalam `FUN_80020bf4` (entry `0x80020BF4`, 156 byte).
 
-## Kandidat RNG yang ditemukan setelah scan awal
+Label `FUN_...` adalah nama default dari Ghidra, bukan fungsi semantik yang sudah diketahui. Rutinitas LCG ada pada `0x80035D78`; setter yang diduga seed setter berada pada `0x80035DA8`, tetapi indeks tidak mendeteksi entry terpisah pada alamat setter dan tidak ada direct-JAL caller setter yang terdeteksi di main text. Langkah 4 sekarang dapat dilanjutkan dengan memeriksa dekompilasi terbatas keempat caller, xref global `0x800A3118`, dan kode/overlay tanpa menyatakan fitur gameplay sebelum efek samping membuktikannya. Detail: [out/rng_candidate.md](rng_candidate.md).
 
-Pemeriksaan signature dan disassembly lebih rinci menemukan urutan LCG eksak di `0x80035D78` serta setter state di `0x80035DA8`. State tersimpan di `0x800A3118`; formula yang terbaca adalah `state = state * 0x41C64E6D + 0x3039` lalu return `(state >> 16) & 0x7FFF`. Empat direct-JAL callers text utama: `0x80015B14`, `0x80015BF0`, `0x8001A460`, `0x80020C24`. Lihat [`out/rng_candidate.md`](rng_candidate.md) dan skrip lokal [`tools/psx_rng_signature_scan.py`](../tools/psx_rng_signature_scan.py).
-
-Ini belum hasil Ghidra. Caller via pointer, seed awal, dan overlay masih belum terpetakan; jangan menyimpulkan fungsi gameplay hanya dari pola modulo atau field yang ditulis.
+Batas: keberhasilan analisis kode statis bukan bukti bahwa aturan roulette, battle, biaya Chakra, barrier atau kemenangan telah dipahami. Status Story Mode/adaptive player tetap NOT COMPLETE / paused; cue UNKNOWN, `barrier_level_selection = WAIT`, readiness NO-GO, Revision65 unchanged.
