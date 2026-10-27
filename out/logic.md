@@ -180,3 +180,15 @@ Ghidra hanya menemukan dua referensi langsung ke state global `0x800A3118` pada 
 **SELESAI sebagai inventaris awal RNG + empat caller langsung dan dekompilasi tingkat pertama; BELUM SELESAI sebagai pemetaan RNG gameplay penuh.** Hal yang masih harus dikerjakan adalah menelusuri helper, sumber dan isi tabel `DAT_80070d02/DAT_80070d0a`, pemanggil `FUN_8001a328`, semua referensi ke `DAT_80089DA9`, pengguna `FUN_80020bf4`, serta seed setter/overlay. Jangan menyimpulkan aturan roulette, turn, battle, AI, hadiah atau kemenangan sebelum hubungan itu dibuktikan.
 
 Adaptive player masih dijeda: target cue UNKNOWN, `barrier_level_selection = WAIT`, readiness NO-GO, Story Mode NOT COMPLETE, Revision65 tidak diubah.
+
+## Langkah 4 selesai — helper RNG dan daftar kandidat (27 Oktober 2026)
+
+Run Ghidra [#40439763833](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40439763833) berhasil. Helper yang ditelusuri menunjukkan FUN_800154d4 membaca batas DAT_8006D794; FUN_800158d8 membaca jumlah di DAT_80070D02; FUN_800159bc menyisipkan byte kandidat ke daftar mulai DAT_80070D0A dengan batas maksimum 64 elemen; FUN_80015610 mengisi daftar dari tabel DAT_8005603C dengan sentinel 0xFF; FUN_80015b7c mengacak urutan; dan FUN_80016c68 menguji bit kandidat pada bitset DAT_80070770. FUN_8001a328 memilih acak dari nilai 0,1,2,3,4,5,8,9,0xB setelah pemeriksaan bit untuk kode 0x7F–0x86. Arti gameplay tabel dan nilai pilihan masih UNKNOWN. Laporan: [STEP4_RNG_TRACE_2026-10-27.md](../docs/STEP4_RNG_TRACE_2026-10-27.md).
+
+## Langkah 5 selesai — survei entry resource DATA.BIN (27 Oktober 2026)
+
+Ghidra menganalisis entry 1 pada offset 0x10BB000 (596.412 byte, SHA-256 potongan 9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a) dengan base hipotesis 0x800D0000. Enam lokasi kandidat memanggil getter target Chakra 0x80012A70, membandingkan field record dengan nilai target, lalu mengubah field state/memanggil transisi pada jalur yang lolos. Dua call sites lain menuju getter berada di FUN_8012A9C4 dan FUN_80137AD8. Laporan lengkap: [STEP5_DATABIN_ENTRY1_ANALYSIS_2026-10-27.md](../docs/STEP5_DATABIN_ENTRY1_ANALYSIS_2026-10-27.md).
+
+## Langkah 6 — antrean analisis statis berikutnya
+
+Dekompilasi FUN_800EF98C, FUN_80100D14, FUN_80100DCC, FUN_8012A9C4, FUN_80137AD8, dan konsumen setter Chakra. Tujuannya mengenali transisi state/event, tabel record dan field terkait, bukan mengklaim hasil permainan. Base overlay 0x800D0000 tetap hipotesis. Status pemain adaptif tidak berubah: cue UNKNOWN, barrier_level_selection = WAIT, readiness NO-GO, Story Mode NOT COMPLETE, Revision65 tidak diubah.
