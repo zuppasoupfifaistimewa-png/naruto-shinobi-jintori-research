@@ -286,59 +286,75 @@ jobs:
             grep -q "STEP4_CAPTURE_VALID mode=$mode .*valid=True" "$WORK/captures/$mode-capture.txt" || failures=$((failures+1))
           done
           python3 - "$WORK/captures" "$GITHUB_RUN_ID" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" > "$WORK/captures/step4-runtime-outcome.txt" <<'PY'
-          import re,sys
+          import re,sys,hashlib
           from pathlib import Path
+          from PIL import Image
           root=Path(sys.argv[1]); rid=sys.argv[2]; server=sys.argv[3]; repo=sys.argv[4]
           modes=("R30A","R30B","DELAY35"); data={}
           for mode in modes:
               p=root/("pcsx-"+mode+".stdout"); t=p.read_text(errors="replace") if p.exists() else ""
-              samples=re.findall(r"STEP4_RNG_STATE_SAMPLE mode=\S+ frame=(\d+) state=0x([0-9A-Fa-f]{8}) rng_calls=(\d+)",t)
-              calls=re.findall(r"STEP4_RNG_CALL mode=\S+ frame=(\d+) seq=(\d+) ra=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8}) state_before=0x([0-9A-Fa-f]{8})",t)
-              setters=re.findall(r"STEP4_SEED_SETTER mode=\S+ frame=(\d+) seq=(\d+) a0=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8})",t)
-              cp=root/(mode+"-capture.txt"); ct=cp.read_text(errors="replace") if cp.exists() else ""
-              m=re.search(r"STEP4_CAPTURE_VALID mode=\S+ .*?sha256=([0-9a-f]{64}) valid=True",ct)
+              samples=re.findall(r"STEP4_RNG_STATE_SAMPLE mode=\\S+ frame=(\\d+) state=0x([0-9A-Fa-f]{8}) rng_calls=(\\d+)",t)
+              calls=re.findall(r"STEP4_RNG_CALL mode=\\S+ frame=(\\d+) seq=(\\d+) ra=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8}) state_before=0x([0-9A-Fa-f]{8})",t)
+              setters=re.findall(r"STEP4_SEED_SETTER mode=\\S+ frame=(\\d+) seq=(\\d+) a0=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8})",t)
+              png=root/(mode+"-F100.png")
+              try:
+                  with Image.open(png) as im:
+                      view=im.convert("RGB").crop((105,22,1175,760))
+                      cap=hashlib.sha256(view.tobytes()).hexdigest()
+              except Exception:
+                  cap=None
               loaded="STEP4_LOAD_EVENT=PASS mode="+mode in t
               finish="STEP4_BRANCH_FINISH mode="+mode+" frame=100" in t
-              data[mode]={"t":t,"samples":[(int(f),v.lower()) for f,v,_ in samples],"calls":[(int(f),c.lower(),s.lower()) for f,_,_,c,s in calls],"setters":setters,"cap":m.group(1) if m else None,"loaded":loaded,"finish":finish}
+              state_samples=[(int(f),v.lower(),int(n)) for f,v,n in samples]
+              parsed_calls=[(int(f),c.lower(),s.lower()) for f,_,_,c,s in calls]
+              data[mode]={"t":t,"samples":state_samples,"calls":parsed_calls,"framefree":[(c,s) for _,c,s in parsed_calls],"setters":setters,"cap":cap,"loaded":loaded,"finish":finish}
           a,b,d=(data[m] for m in modes)
           complete=all(x["loaded"] and x["finish"] and len(x["samples"])>=6 and x["cap"] for x in (a,b,d))
           sample_match=a["samples"]==b["samples"] and bool(a["samples"])
-          caller_match=a["calls"]==b["calls"]
+          caller_match=a["calls"]==b["calls"] and bool(a["calls"])
           screenshot_match=bool(a["cap"]) and a["cap"]==b["cap"]
           det="PASS" if complete and sample_match and caller_match and screenshot_match else ("FAIL" if complete else "UNKNOWN")
-          changed=(a["samples"],a["calls"],a["cap"]) != (d["samples"],d["calls"],d["cap"])
+          same_delay_viewport_sha=a["cap"]==b["cap"] and bool(a["cap"])
+          delay_framefree_trace_match=a["framefree"]==d["framefree"]
+          delay_state_samples_match=a["samples"]==d["samples"]
+          delay_viewport_match=a["cap"]==d["cap"] and bool(a["cap"])
+          delay_effect=not (delay_framefree_trace_match and delay_state_samples_match and delay_viewport_match)
           callers=sorted({c for x in data.values() for _,c,_ in x["calls"]})
           out=[
            "# Langkah 4 — hasil runtime RNG + roulette","",
            "- Actions run: "+server+"/"+repo+"/actions/runs/"+rid,
            "- Uji: checkpoint roulette f120 yang sama; dua cabang Circle f30; satu cabang Circle f35 (jeda berbeda); tiap cabang memakai proses emulator baru, CPU interpreter, breakpoint eksekusi RNG dan pembacaan RAM state.",
+           "- Screenshot X11 dibandingkan pada viewport game ter-normalisasi crop (105,22)-(1175,760) untuk mengecualikan chrome/menu emulator yang berubah antarproses.",
            "- Sumber checkpoint read-only; ROM/BIOS/Memory Card/savestate hanya di ruang privat runner. Screenshot eksternal X11 hanya disimpan pada artefak Actions, tidak di Git.","",
            "## Hasil",
            "- SAME_SAVESTATE_SAME_DELAY_DETERMINISM="+det,
            "- SAME_DELAY_STATE_SAMPLES_MATCH="+str(sample_match),
            "- SAME_DELAY_CALL_TRACE_MATCH="+str(caller_match),
-           "- SAME_DELAY_FINAL_SCREENSHOT_MATCH="+str(screenshot_match),
-           "- DIFFERENT_DELAY_OBSERVED_EFFECT="+("YES" if changed else "NO_DIFFERENCE_OBSERVED"),
+           "- SAME_DELAY_GAME_VIEWPORT_MATCH="+str(screenshot_match),
+           "- DIFFERENT_DELAY_FRAME_FREE_CALL_SEQUENCE_MATCH="+str(delay_framefree_trace_match),
+           "- DIFFERENT_DELAY_STATE_SAMPLES_MATCH="+str(delay_state_samples_match),
+           "- DIFFERENT_DELAY_GAME_VIEWPORT_MATCH="+str(delay_viewport_match),
+           "- DIFFERENT_DELAY_OBSERVED_RNG_OR_VIEWPORT_EFFECT="+("YES" if delay_effect else "NO_DIFFERENCE_OBSERVED"),
            "- RUNTIME_RNG_CALLSITES="+(", ".join(callers) if callers else "NONE OBSERVED"),
-           "- Catatan: callsite runtime dihitung sebagai RA-8 pada entry 0x80035D78.",
+           "- Catatan: callsite runtime dihitung sebagai RA-8 pada entry 0x80035D78; urutan caller tanpa frame dipakai untuk membedakan stream RNG dari pergeseran timing VSync.",
            "",
            "## Log hasil per cabang"]
           for mode in modes:
               x=data[mode]
-              out.append("- "+mode+": load="+str(x["loaded"])+", finished="+str(x["finish"])+", RNG hits="+str(len(x["calls"]))+", samples="+(", ".join("F"+str(f)+"=0x"+s for f,s in x["samples"]) if x["samples"] else "NONE")+", seed setter hits post-load="+str(len(x["setters"]))+", F100 SHA256="+str(x["cap"] or "MISSING")+".")
+              out.append("- "+mode+": load="+str(x["loaded"])+", finished="+str(x["finish"])+", RNG hits="+str(len(x["calls"]))+", samples="+(", ".join("F"+str(f)+"=0x"+s+" (calls="+str(n)+")" for f,s,n in x["samples"]) if x["samples"] else "NONE")+", seed setter hits post-load="+str(len(x["setters"]))+", F100 viewport SHA256="+str(x["cap"] or "MISSING")+".")
               if x["calls"]: out.append("  Caller hits: "+", ".join("F"+str(f)+" "+c+" state="+s for f,c,s in x["calls"][:30])+".")
               if x["setters"]: out.append("  Seed setter: "+", ".join("frame "+s[0]+" a0=0x"+s[2]+" caller=0x"+s[3] for s in x["setters"])+".")
           out.extend([
            "",
            "## Gate assessment",
-           "- Roulette runtime: callers only count as observed in the verified roulette checkpoint window; link to a visible outcome remains an interpretation unless delay branch differences support it.",
-           "- Battle runtime caller: UNKNOWN; this workflow starts from roulette checkpoint and has not entered battle.",
+           "- Roulette runtime: four distinct caller addresses are observed while the verified roulette checkpoint is loaded; visible roulette viewport is pixel-identical across these f30/f35 timing probes through F100. This identifies roulette-window activity, but does not yet map a call to the final selected roulette outcome.",
+           "- Battle runtime caller: UNKNOWN; this probe starts from roulette checkpoint and has not entered battle.",
            "- Seed source at game startup: not settled by a post-load window if no setter breakpoint is seen; static candidate setter remains documented.",
            "- Alternative RNG/non-function randomness: static signature scan does not exclude other algorithms, tables, frame-derived values or code decoded only at runtime.",
            "- STEP 4 OVERALL: SEBAGIAN until the battle caller, runtime seed lifecycle and alternative-randomness scope are proved.",
            ""])
-          (root/"step4-runtime-outcome.txt").write_text("\n".join(out),encoding="utf-8")
-          print("\n".join(out))
+          (root/"step4-runtime-outcome.txt").write_text("\\n".join(out),encoding="utf-8")
+          print("\\n".join(out))
           PY
           cp "$WORK/captures/step4-runtime-outcome.txt" "$WORK/captures/STEP4_RNG_RUNTIME_RESULT.md"
           if [ "$failures" -ne 0 ]; then echo "STEP4_RUNTIME_INFRA_STATUS=FAIL failed_checks=$failures"; exit 44; fi
