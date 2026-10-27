@@ -1,3 +1,20 @@
+## LIVE LOG — Ghidra/m2c entry-1 dan CFG/SSA Step 6 (27 Oktober 2026, 21:41 WIB)
+
+### Step 5 — resource function cross-check lulus
+Run [#40523020556](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40523020556) completed/success pada 21:40:45 WIB. Artifact #12742268706 (1.367.605 B; ZIP SHA-256 `5f3f767667444f7c956c36fc59cf75b6bb90a5a1dde8ddb92fb69f9e0f797e81`). Entry 1 size/hash verified; Ghidra function `0x800ED8C8` boundary 160 B, end-exclusive `0x800ED968`; Ghidra C and m2c comparison SUCCESS, m2c exit 0. Static behavior: input index mask 16 bit, helper byte default, RNG % 250 compared with byte indexed `index*0x90+0x29`, result `0xFF` when remainder >= byte, otherwise helper byte. Runtime base/table identity/feature meaning UNKNOWN.
+
+Percobaan #40521830977 failed because temp Ghidra project directory did not exist; #40522317571 parsed decimal size as hex and #40522919529 failed to match size regex. These are superseded by corrected #40523020556 and not counted as successes.
+
+### Step 6 — CFG/SSA evidence
+Run [#40522772847](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40522772847) completed/success pada 21:38:32 WIB, artifact #12741234990 (234.210 B; ZIP SHA-256 `7ee636b8e687c5163873cdd40c82a02e8c8617885a0863b1e5a196b6eed1eac9`). New script `tools/step6/ExportFieldCfgDefUse.java` emits high-level SSA/P-code, block IDs, branch/phi nodes and depth-bounded def-use for `0x8012C544` (88 ops, 7 constant-field matches) and `0x8012CACC` (47 ops, 2 matches). Evidence of read `+B30/+B38` → addition → write `+B40`; `+B44` consumer is in a separate branch/merge path. Global pointer slot `0x8013A554` still has unresolved runtime value/alias. Full audit: [STEP6_CFG_SSA_DATAFLOW_AUDIT_2026-10-27.md](docs/STEP6_CFG_SSA_DATAFLOW_AUDIT_2026-10-27.md). Step 6 remains SEBAGIAN.
+
+### Langkah 4 context window
+Runs #40521136060 and #40521136038 completed success. Entry0 at `0x800AF2A4` calls helper `0x80037138`, with delay-slot `li a0,-1`; next `0x800AF2AC` calls setter `0x80035DA8` and delay-slot `move a0,v0` forwards helper return. This resolves the instruction-level question but not the value at runtime, function boundary, base load mapping, or gameplay effect. Caller signatures are only heuristics.
+
+### Batas konsisten
+No adaptive player or Story Mode runner was run or changed; no gameplay input, emulator session, or savestate restore; no private binary/gameplay assets uploaded. Story Mode TIDAK TERBUKTI TAMAT. Current status and live Actions must be checked before continuing.
+---
+
 ## Step 9 — hasil isolasi diperluas final (27 Oktober 2026, 21:02 WIB)
 
 Run [#40516755810](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810) **completed/success** pada 21:02:36 WIB. Artifact teks #12740305973: 4.567 byte, SHA-256 ZIP bf1a702074849b2592bfc5555a0d493b5ed86d3de0b9895a192db7fdf9f80cd4. Raw job log/job summary memastikan semua 11 langkah success, termasuk STEP9_PRIVATE_CLEANUP=PASS. Hasil aktual: RNG 0x80035D78 7/7 vektor dan setter/getter 0x8001387C/0x800138EC 16/16 kasus PASS. Setter membatasi nilai [-9999,99999], valid index 0–3 return 1, invalid 4/0xFFFFFFFF return 0 tanpa perubahan slot; getter membaca slot yang sama untuk indeks valid dan return 0 untuk indeks invalid. Setiap tes memeriksa v0/memory, return sentinel dan batas ≤128 instruksi.
