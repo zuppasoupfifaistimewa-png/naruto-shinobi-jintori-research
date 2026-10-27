@@ -174,3 +174,11 @@ Runner-only audit [#40497668341](https://github.com/zuppasoupfifaistimewa-png/na
 **Langkah 6:** `+0xB30` dan `+0xB38` dibaca dan ditambahkan sebelum store ke `+0xB40`; `+0xB44` diinisialisasi nol pada satu jalur, kemudian dibaca sebagai argumen `a2` bagi `0x8001B364`. Semua adalah fakta statis bersyarat pada entry-1 base `0x800D0000`, yang masih HIPOTESIS. Mapping runtime, alias/object identity, writer/source lengkap dan semantic effects belum ditutup. Step 6 tetap **SEBAGIAN**; Step 8 juga tetap **SEBAGIAN**.
 
 Artefak sumber pemindaian Step 6: run #40493556711, artifact #12729156734, 180.128 byte, ZIP SHA-256 `c9ea5ef0552a0c80a70f0d3a758622a358509de2079e5954dac3ce0032426e93`. Run koreksi helper #40497723766 telah dimulai setelah fragmen duplikat pada workflow YAML dihapus pada commit `029fdfab8df55dd16001916f0f53b7abd073c334`; hasil akhirnya harus diperiksa terpisah.
+
+## Addendum — sumber global return helper dan batas kriteria Step 4 (27 Oktober 2026)
+
+Run helper statis [#40498231825](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40498231825) success pada 18:43:58 WIB; artifact #12732006381 berukuran 9.058 byte, ZIP SHA-256 adfdb608af96dd95a7c7e74d9f8b117767aaffa817d0c7eb860757ead868d9ba; raw cleanup PASS dan text-only validation PASS. Runner-only audit terbaru [#40498386273](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40498386273) success pada 18:44:35 WIB, artifact #12731327556 9.727 byte, ZIP SHA-256 7826480f41372d68ddf3f4b1dfe6d99f51bbbb5cd124eb5c3c6169870150ba5c, cleanup PASS. Artefak helper dan scan Step 6 diperiksa di runner.
+
+Data xref memperluas fakta statis untuk global 0x80066E7C: loaded-image word 0, store nol di 0x80037B7C, increment-store di 0x80037BDC (preceded by addiu v0,v0,1 at 0x80037BD4), dan reads di 0x80037BB4, 0x8003719C, 0x80037204, 0x80037260, 0x800372C0, 0x80037324. Ini memperkuat bahwa helper return untuk input -1 berasal dari global yang diinisialisasi nol di image dan memiliki pola writer nol/increment. Tidak membuktikan urutan init atau nilai pada saat setter dipanggil.
+
+Keputusan status: Step 4 tetap SEBAGIAN karena caller/initialization ordering dan runtime seed lifecycle; Step 6 tetap SEBAGIAN karena field semantics/base mapping; Step 7 dan Step 8 tetap SEBAGIAN. Step 5/9/10 tidak diubah.
