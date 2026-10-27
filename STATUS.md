@@ -1,3 +1,11 @@
+# ACTIONS LIVE CORRECTION — 27 Oktober 2026, pemeriksaan 21:54:52 WIB
+
+Run [#40520635663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40520635663) kini **completed/success** dengan artifact teks #12743796502 (2.299.302 byte; ZIP SHA-256 `e2d5b496b2310c17110c59710212f7605bf8b3d90b798abb438c1224bf3d0549`). Baca artifact menunjukkan bahwa Ghidra entry-0 analysis mencapai **timeout internal 1.800 detik** dan memunculkan banyak error function-body overlap/repair. Export tetap memberi 36 function-index rows, tetapi kandidat `0x800BDBFC` memiliki `reference_count=0`; ini bukan validasi caller/helper RNG. Perlakukan Step 4/5 pada resource entry 0 tetap parsial.
+
+Run [#40521141039](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521141039) masih `in_progress` pada pemeriksaan terakhir, mulai 21:26:36 WIB; tahap entry 1 selesai dan tahap Ghidra entry 0 sedang berjalan; artifact belum tersedia. Pembanding yang sama #40520635663 selesai setelah 31m27s, dengan timeout analysis entry 0 1.800s. Perkiraan kasar untuk run aktif: sekitar **22:25–22:35 WIB**, dengan ketidakpastian karena status log hanya diperbarui berkala. Jangan duplikasi run ini.
+
+---
+
 # STATUS LIVE UPDATE — Langkah 4–10, 27 Oktober 2026 21:41 WIB
 
 **Ringkasan otoritatif terbaru;** snapshot lama di bagian bawah adalah riwayat dan disupersede jika berbeda. HEAD sebelum commit dokumentasi ini: `c36b7407631291afd2a4d303f49a8b03392e2bbc`.
