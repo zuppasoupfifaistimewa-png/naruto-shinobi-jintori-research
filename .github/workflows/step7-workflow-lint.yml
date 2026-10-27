@@ -65,5 +65,16 @@ jobs:
           expected = ("80035DA8", "23", "1", "FFFFFFFF", "800AF2B4", "800AF2AC")
           assert hit and hit.groups() == expected, hit.groups() if hit else None
           print("STEP4_SEED_BP_PARSER_FIXTURE_PASS pc=80035DA8 frame=23 count=1 a0=FFFFFFFF ra=800AF2B4 caller=800AF2AC")
+          from pathlib import Path
+          field_workflow = Path('.github/workflows/step6-resource-field-scan.yml').read_text()
+          cue_match_line = next(x for x in field_workflow.splitlines() if 'match = re.match(' in x)
+          cue_pattern_literal = cue_match_line.split('re.match(', 1)[1].split(', line,', 1)[0].strip()
+          cue_pattern = eval(cue_pattern_literal, {'__builtins__': {}})
+          cue_line = '  FILE "disc image.bin" BINARY'
+          cue_match = re.match(cue_pattern, cue_line, re.I)
+          assert cue_match and cue_match.group(1) == '  FILE ' and cue_match.group(2) == ' BINARY', (cue_match.groups() if cue_match else None, cue_pattern_literal)
+          cue_rewritten = cue_match.group(1) + '"naruto-disc.bin"' + cue_match.group(2)
+          assert cue_rewritten == '  FILE "naruto-disc.bin" BINARY', cue_rewritten
+          print('STEP6_CUE_FILE_PARSER_FIXTURE_PASS quoted_filename=yes')
           print("STEP7_FRAME_PARSER_FIXTURE_PASS frames=1,2,3,10,20,30,40 max=40")
           PY
