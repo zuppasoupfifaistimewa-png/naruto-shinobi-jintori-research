@@ -280,6 +280,7 @@ jobs:
             f"- VSYNC_PROGRESS_SEEN={'YES' if progress else 'NO'}",
             f"- DEBUGGER_CONTROL_MAX_VSYNC_FRAME={max(control_frames) if control_frames else 0}",
             f"- DEBUGGER_CONTROL_EXIT={control_exit}",
+          ]
           lines += [
             "- The target probe uses -no-debugger while retaining bounded breakpoint callbacks, to distinguish debugger mode from instrumentation behavior.",
             "- A no-hit or timeout is only a negative result within the bounded observation window; it does not prove the target is absent or unreachable.",
@@ -295,7 +296,7 @@ jobs:
                   lines += ["    "+x for x in pcsxlog.read_text(errors="replace").splitlines()[-100:]]
               else:
                   lines += ["    Logfile was not created."]
-          lines += ["", "## Privacy and cleanup", "", "- Binary game/BIOS and extracted AppImage remain under runner-private /tmp and are deleted after the job. Artifact contains only report/log text, stage metadata, register values and checksums; no RAM dump, savestate, Memory Card or screenshot.", "- Private cleanup is recorded in the job log.", ""]
+          lines += ["", "## Privacy and cleanup", "", "- Binary game/BIOS and extracted AppImage remain under runner-private /tmp and are deleted after the job. Artifact contains only report/log text, stage metadata, frame/hit records and emulator log tails; no RAM dump, savestate, Memory Card or screenshot.", "- Private cleanup is recorded in the job log.", ""]
           (root/"STEP7_COLD_BOOT_RESULT.md").write_text("\n".join(lines),encoding="utf-8")
           print("\n".join(lines))
           PY
