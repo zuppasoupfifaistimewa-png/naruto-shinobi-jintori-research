@@ -146,7 +146,7 @@ jobs:
           cat > "$WORK/step4-rng-trace.lua" <<'LUA'
           local ffi=require("ffi")
           local mode=os.getenv("STEP4_MODE") or "UNKNOWN"
-          local circleAt=(mode=="DELAY60") and 60 or 30
+          local circleAt=(mode=="DELAY35") and 35 or 30
           local frame,started,loaded,returned,calls,setters=0,false,false,false,0,0
           local pressed,released=false,false
           local pad=PCSX.SIO0.slots[1].pads[1]
@@ -220,17 +220,17 @@ jobs:
             end
             if not loaded or not returned then return end
             frame=frame+1
-            if frame==1 or frame==20 or frame==30 or frame==38 or frame==60 or frame==100 or frame==180 then
+            if frame==1 or frame==20 or frame==30 or frame==38 or frame==60 or frame==80 or frame==100 then
               log(string.format("STEP4_RNG_STATE_SAMPLE mode=%s frame=%d state=0x%s rng_calls=%d",mode,frame,stateHex(),calls))
             end
             if frame==circleAt and not pressed then input("press")
             elseif frame==circleAt+8 and pressed and not released then input("release") end
-            if frame==180 then finalCapture() end
+            if frame==100 then finalCapture() end
           end)
           log("STEP4_SCRIPT_READY mode="..mode.." circle_frame="..circleAt.." source=verified-roulette-f120")
           LUA
           failures=0
-          for mode in R30A R30B DELAY60; do
+          for mode in R30A R30B DELAY35; do
             cp "$WORK/cards/reference.mcd" "$WORK/cards/card-$mode.mcd"
             stdout="$WORK/captures/pcsx-$mode.stdout"
             log="$WORK/captures/pcsx-$mode.log"
@@ -252,8 +252,8 @@ jobs:
           while alive() and not captured:
               try: s=sp.read_text(errors="replace")
               except FileNotFoundError: s=""
-              if "STEP4_CAPTURE_READY mode="+mode+" frame=180" in s:
-                  xwd=out/(mode+"-F180.xwd"); png=out/(mode+"-F180.png")
+              if "STEP4_CAPTURE_READY mode="+mode+" frame=100" in s:
+                  xwd=out/(mode+"-F100.xwd"); png=out/(mode+"-F100.png")
                   a=subprocess.run(["xwd","-root","-silent","-out",str(xwd)],capture_output=True,text=True)
                   if a.returncode==0 and xwd.is_file() and xwd.stat().st_size:
                       b=subprocess.run(["convert",str(xwd),str(png)],capture_output=True,text=True)
@@ -280,7 +280,7 @@ jobs:
             grep -E 'STEP4_(LOAD_EVENT|LOAD_CALL_RETURNED|RNG_STATE_SAMPLE|RNG_CALL|SEED_SETTER|INPUT|CAPTURE_READY|BRANCH_FINISH|.*ERROR|.*TIMEOUT|CAPTURE_VALID|CAPTURE_FAIL)' "$stdout" || true
             test "$rc" -eq 0 || failures=$((failures+1))
             grep -q "STEP4_LOAD_EVENT=PASS mode=$mode" "$stdout" || failures=$((failures+1))
-            grep -q "STEP4_BRANCH_FINISH mode=$mode frame=180" "$stdout" || failures=$((failures+1))
+            grep -q "STEP4_BRANCH_FINISH mode=$mode frame=100" "$stdout" || failures=$((failures+1))
             grep -q "STEP4_INPUT mode=$mode .*phase=press .*status=PASS" "$stdout" || failures=$((failures+1))
             grep -q "STEP4_INPUT mode=$mode .*phase=release .*status=PASS" "$stdout" || failures=$((failures+1))
             grep -q "STEP4_CAPTURE_VALID mode=$mode .*valid=True" "$WORK/captures/$mode-capture.txt" || failures=$((failures+1))
@@ -289,7 +289,7 @@ jobs:
           import re,sys
           from pathlib import Path
           root=Path(sys.argv[1]); rid=sys.argv[2]; server=sys.argv[3]; repo=sys.argv[4]
-          modes=("R30A","R30B","DELAY60"); data={}
+          modes=("R30A","R30B","DELAY35"); data={}
           for mode in modes:
               p=root/("pcsx-"+mode+".stdout"); t=p.read_text(errors="replace") if p.exists() else ""
               samples=re.findall(r"STEP4_RNG_STATE_SAMPLE mode=\S+ frame=(\d+) state=0x([0-9A-Fa-f]{8}) rng_calls=(\d+)",t)
@@ -298,7 +298,7 @@ jobs:
               cp=root/(mode+"-capture.txt"); ct=cp.read_text(errors="replace") if cp.exists() else ""
               m=re.search(r"STEP4_CAPTURE_VALID mode=\S+ .*?sha256=([0-9a-f]{64}) valid=True",ct)
               loaded="STEP4_LOAD_EVENT=PASS mode="+mode in t
-              finish="STEP4_BRANCH_FINISH mode="+mode+" frame=180" in t
+              finish="STEP4_BRANCH_FINISH mode="+mode+" frame=100" in t
               data[mode]={"t":t,"samples":[(int(f),v.lower()) for f,v,_ in samples],"calls":[(int(f),c.lower(),s.lower()) for f,_,_,c,s in calls],"setters":setters,"cap":m.group(1) if m else None,"loaded":loaded,"finish":finish}
           a,b,d=(data[m] for m in modes)
           complete=all(x["loaded"] and x["finish"] and len(x["samples"])>=6 and x["cap"] for x in (a,b,d))
@@ -311,7 +311,7 @@ jobs:
           out=[
            "# Langkah 4 — hasil runtime RNG + roulette","",
            "- Actions run: "+server+"/"+repo+"/actions/runs/"+rid,
-           "- Uji: checkpoint roulette f120 yang sama; dua cabang Circle f30; satu cabang Circle f60; tiap cabang memakai proses emulator baru, CPU interpreter, breakpoint eksekusi RNG dan pembacaan RAM state.",
+           "- Uji: checkpoint roulette f120 yang sama; dua cabang Circle f30; satu cabang Circle f35 (jeda berbeda); tiap cabang memakai proses emulator baru, CPU interpreter, breakpoint eksekusi RNG dan pembacaan RAM state.",
            "- Sumber checkpoint read-only; ROM/BIOS/Memory Card/savestate hanya di ruang privat runner. Screenshot eksternal X11 hanya disimpan pada artefak Actions, tidak di Git.","",
            "## Hasil",
            "- SAME_SAVESTATE_SAME_DELAY_DETERMINISM="+det,
@@ -325,7 +325,7 @@ jobs:
            "## Log hasil per cabang"]
           for mode in modes:
               x=data[mode]
-              out.append("- "+mode+": load="+str(x["loaded"])+", finished="+str(x["finish"])+", RNG hits="+str(len(x["calls"]))+", samples="+(", ".join("F"+str(f)+"=0x"+s for f,s in x["samples"]) if x["samples"] else "NONE")+", seed setter hits post-load="+str(len(x["setters"]))+", F180 SHA256="+str(x["cap"] or "MISSING")+".")
+              out.append("- "+mode+": load="+str(x["loaded"])+", finished="+str(x["finish"])+", RNG hits="+str(len(x["calls"]))+", samples="+(", ".join("F"+str(f)+"=0x"+s for f,s in x["samples"]) if x["samples"] else "NONE")+", seed setter hits post-load="+str(len(x["setters"]))+", F100 SHA256="+str(x["cap"] or "MISSING")+".")
               if x["calls"]: out.append("  Caller hits: "+", ".join("F"+str(f)+" "+c+" state="+s for f,c,s in x["calls"][:30])+".")
               if x["setters"]: out.append("  Seed setter: "+", ".join("frame "+s[0]+" a0=0x"+s[2]+" caller=0x"+s[3] for s in x["setters"])+".")
           out.extend([
@@ -355,7 +355,7 @@ jobs:
             /tmp/step4-rng-runtime/captures/pcsx-*.stdout
             /tmp/step4-rng-runtime/captures/pcsx-*.log
             /tmp/step4-rng-runtime/captures/*-capture.txt
-            /tmp/step4-rng-runtime/captures/*-F180.png
+            /tmp/step4-rng-runtime/captures/*-F100.png
             /tmp/step4-rng-runtime/captures/xvfb.log
           if-no-files-found: warn
           retention-days: 14
@@ -363,31 +363,22 @@ jobs:
       - name: Record text-only runtime result in repository
         if: always()
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          mkdir -p out/step4
-          if [ -s "$WORK/captures/step4-runtime-outcome.txt" ]; then
-            cp "$WORK/captures/step4-runtime-outcome.txt" out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md
-          else
-            printf '# Step 4 RNG runtime result\n\n- Actions run: %s\n- Status: BLOCKIR — no valid runtime summary was produced.\n- Private assets were not added to Git.\n' "$GITHUB_RUN_ID" > out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md
+          REPORT="$WORK/captures/step4-runtime-outcome.txt"
+          if [ ! -s "$REPORT" ]; then
+            printf '# Step 4 RNG runtime result\\n\\n- Actions run: %s\\n- Status: BLOCKIR — no valid runtime summary was produced.\\n- Private assets were not added to Git.\\n' "$GITHUB_RUN_ID" > "$REPORT"
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # Rebase/reset to the latest main BEFORE modifying the report, avoiding add/add conflicts.
-          git fetch origin main
-          git reset --hard origin/main
-          if [ -s "$WORK/captures/step4-runtime-outcome.txt" ]; then
-            cp "$WORK/captures/step4-runtime-outcome.txt" out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md
-          else
-            printf '# Step 4 RNG runtime result\n\n- Actions run: %s\n- Status: BLOCKIR — no valid runtime summary was produced.\n- Private assets were not added to Git.\n' "$GITHUB_RUN_ID" > out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md
-          fi
-          git add out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md
-          if git diff --cached --quiet; then
-            echo "STEP4_REPORT_COMMIT=NO_CHANGE"
-          else
-            git commit -m "Record Step 4 RNG runtime test results [skip ci]"
-            git push origin HEAD:main
-          fi
+          API="https://api.github.com/repos/$RESEARCH_REPO/contents/out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md"
+          curl --fail --silent --show-error --location -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API?ref=main" -o "$WORK/current-report.json"
+          SHA="$(jq -r '.sha // empty' "$WORK/current-report.json")"
+          test -n "$SHA"
+          CONTENT="$(base64 -w0 "$REPORT")"
+          PAYLOAD="$(jq -n --arg message "Record Step 4 RNG runtime test results [skip ci]" --arg content "$CONTENT" --arg sha "$SHA" '{message:$message,content:$content,sha:$sha,branch:"main"}')"
+          curl --fail --silent --show-error --location -X PUT -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" --data "$PAYLOAD" "$API" -o "$WORK/report-update-response.json"
+          echo "STEP4_REPORT_COMMIT=PASS"
 
       - name: Remove private files from ephemeral runner
         if: always()
