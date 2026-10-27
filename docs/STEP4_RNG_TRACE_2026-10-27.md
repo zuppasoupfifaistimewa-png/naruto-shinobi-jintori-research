@@ -1,3 +1,13 @@
+# LIVE ADDENDUM — helper/callback cross-check di Langkah 5 (27 Oktober 2026, 20:50 WIB)
+
+Run [#40515356524](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524) membandingkan Ghidra/m2c pada 13 fungsi main EXE; artefak [#12739676233](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524/artifacts/12739676233), 941.176 byte, SHA-256 ZIP `94d866f9c991b323a64f283da93359620c04ff8859d4c8fb53f4eb857c745f5d). Semua 13 pasangan C nonempty, m2c exit 0 dan parser body/end fixture PASS; cleanup selesai. Ini bukti struktur statis lintas decompiler, bukan observasi game runtime.
+
+Cross-check fungsi `0x80037138` kini mendukung detail tambahan: ketika argumen pertama negatif, fungsi mengembalikan `DAT_80066E7C`; ketika argumennya 1, ia mengembalikan selisih timer 16-bit; argumen lain dapat memanggil `0x800372B0` dan memperbarui state timer. Bersama `0x80037B58` yang mereset `0x80066E7C` dan delapan callback slot, serta `0x80037BB0` yang menaikkan global dan memanggil callback nonzero, ini memperkuat interpretasi **callback/tick-counter internal** pada alur statis. Ia belum membuktikan penghitung giliran gameplay.
+
+Dalam callsite entry-0 kandidat pada base hipotetis `0x800AD000`, argumen `-1` dikirim ke helper `0x80037138`, dan nilai balik helper diteruskan ke kandidat setter state RNG `0x80035DA8`. Jadi jika callsite tersebut benar-benar berjalan, nilai yang diteruskan adalah global `0x80066E7C`, bukan literal `-1`. Namun target base/lifecycle entry-0 dan reachability runtime belum terbukti, sementara probe setter terdahulu tidak mendapat hit sampai frame 120. **Status Step 4 tetap SEBAGIAN**; jangan menyebut ini sebagai seed awal yang sudah terverifikasi atau sebagai RNG yang pasti menentukan roulette/menang.
+
+---
+
 # Latest checkpoint — helper-return/callback counter statically traced (27 October 2026, 19:22 WIB)
 
 Run #40498208067 completed success at 19:14:42 WIB. Text-only artifact #12732952776 is 2,255,170 bytes, SHA-256 ZIP 6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6. Runner audit [#40503223693](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40503223693), artifact #12733512950 (13.079 bytes, ZIP SHA-256 382773f9a421835bc97c448c630a2ea5d3891309bb34094f5a67027548c03414), validated artifact id/run id/name/size/digest/expiry for the latest Ghidra, Step 6, and helper artifacts. The audit log confirms ZIP digest verification before reading and RUNNER_ARTIFACT_CLEANUP=PASS.
