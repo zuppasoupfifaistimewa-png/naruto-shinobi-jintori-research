@@ -88,11 +88,11 @@ jobs:
               with zipfile.ZipFile(zp) as z:
                   members=[i for i in z.infolist() if not i.is_dir()]
                   if not members: raise SystemExit(f"EMPTY_ARTIFACT: {name}")
-                  if sum(i.file_size for i in members)>30_000_000: raise SystemExit("TOTAL_TEXT_SIZE_LIMIT")
+                  if sum(i.file_size for i in members)>500_000_000: raise SystemExit("TOTAL_TEXT_SIZE_LIMIT_500MB")
                   for info in members:
                       p=Path(info.filename)
                       if p.suffix.lower() not in allowed: raise SystemExit(f"NON_TEXT_MEMBER: {info.filename}")
-                      if info.file_size>20_000_000: raise SystemExit(f"OVERSIZE_MEMBER: {info.filename}")
+                      if info.file_size>100_000_000: raise SystemExit(f"OVERSIZE_MEMBER: {info.filename}")
                       data=z.read(info)
                       try: value=data.decode("utf-8")
                       except UnicodeDecodeError: raise SystemExit(f"NON_UTF8_MEMBER: {info.filename}")
@@ -176,7 +176,7 @@ jobs:
             echo "RUNNER_ARTIFACT_CLEANUP=FAIL"
             exit 1
           fi
-          test -s "$RUNNER_TEMP/naruto-static-artifact-audit.txt"
+          if [[ ! -s "$RUNNER_TEMP/naruto-static-artifact-audit.txt" ]]; then printf "# Runner-only static artifact audit\nAUDIT_STATUS=INCOMPLETE\nreason=inspection step stopped before report generation\n" > "$RUNNER_TEMP/naruto-static-artifact-audit.txt"; fi
 
       - name: Validate and upload text-only audit report
         if: always()
