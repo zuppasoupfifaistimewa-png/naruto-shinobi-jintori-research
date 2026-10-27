@@ -8,7 +8,7 @@ The raw context around `0x800BDBFC` shows a function-like stack prologue and pre
 
 Run [#40520635663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40520635663) completed/success, artifact #12743796502 (2.299.302 B, ZIP SHA-256 `e2d5b496b2310c17110c59710212f7605bf8b3d90b798abb438c1224bf3d0549`). Raw artifact audit verified **the entry-0 Ghidra analysis timed out at 1,800 seconds**; 36 function rows were emitted, but many overlapping function-body repair errors occurred. Candidate `0x800BDBFC` records zero references and must not be treated as an established caller/helper. The workflow success reflects report/cleanup completion, not successful full entry-0 analysis.
 
-Run [#40521141039](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521141039) was still `in_progress` at the latest API check: entry 1 complete, entry 0 analysis active, artifact not yet available. The same workflow run #40520635663 took 31m27s overall and hit its 1,800-second analysis timeout. Rough ETA for this run is around 22:25–22:35 WIB if the same timeout applies; not guaranteed. Do not duplicate.
+Run [#40521141039](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521141039) was still `in_progress` at the latest API check: entry 1 complete, entry 0 analysis active, artifact not yet available. The same workflow run #40520635663 took 31m27s overall and hit its 1,800-second analysis timeout. Rough ETA for this run is around 21:58–22:05 WIB if the same timeout applies; not guaranteed. Do not duplicate.
 
 ---
 
