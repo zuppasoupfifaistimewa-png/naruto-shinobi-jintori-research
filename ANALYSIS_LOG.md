@@ -8,6 +8,14 @@
 - Status matrix remains: Step 4 **SEBAGIAN** for official criteria 4(a–e); Step 5 **TUNTAS for four chosen functions only**; Step 6 **SEBAGIAN**; Step 7 **SEBAGIAN**; Step 8 **SEBAGIAN**; Step 9 **TUNTAS for isolated RNG `0x80035D78` only**; Step 10 **TUNTAS as audit index only**.
 - No adaptive-player/Story Mode workflow, gameplay input, savestate restore, classifier/policy, Revision65 marker, or readiness-gate modification. **Story Mode is NOT PROVEN COMPLETE**. Private disc/BIOS/Memory Card/savestate/RAM dump/private gameplay screenshot assets stay out of Git.
 
+## Incremental checkpoint — seed-setter cold boot in progress (27 Oktober 2026, 17:08 WIB)
+
+- Main HEAD before this incremental note: `b22a320c0cc2bfc52084aaa3b2c3a9e4ac23d12b`; this update advances HEAD. Take live main SHA in the next session. The GitHub connector does not expose a local working tree.
+- New bounded experiment: [#40485987817](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40485987817), source workflow commit `e1e346e707254ad617a6cccad43689df908801a6`, started 10:07:04 UTC (17:07:04 WIB). Target is only candidate RNG seed setter `0x80035DA8`; one breakpoint, no gameplay input, no savestate restore, 35-second target timeout, private asset cleanup. Latest poll: job remains in the cold-boot observation step after asset verification. Do not infer a hit/no-hit before raw log is available.
+- The callback captures only `PC`, frame, count, and if available registers `a0`, `ra`, and derived callsite `ra-8`; it does not read RAM state after the candidate store. Therefore a hit with `a0=FFFFFFFF` and caller `0x800AF2AC` would support that the candidate call path ran with seed argument -1, but would not independently verify the state-after value or entire boot lifecycle.
+- Parser fixture for this hit format passed at [#40486017081](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40486017081): `STEP4_SEED_BP_PARSER_FIXTURE_PASS pc=80035DA8 frame=23 count=1 a0=FFFFFFFF ra=800AF2B4 caller=800AF2AC`. This is synthetic parser validation, not an emulator hit.
+
+
 ---
 # One-shot RIGHT-vs-NONE diagnostic outcome (25 October 2026) (25 October 2026)
 
