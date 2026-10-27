@@ -1,3 +1,15 @@
+# LIVE ADDENDUM — Same-boundary function analysis, 27 Oktober 2026 21:41 WIB
+
+Run [#40523020556](https://github.com/zuppasoupfivaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40523020556) completed/success, artifact #12742268706 (1.367.605 B; ZIP SHA-256 `5f3f767667444f7c956c36fc59cf75b6bb90a5a1dde8ddb92fb69f9e0f797e81`). Entry 1 hash confirmed: file offset `0x10BB000`, 596.412 B, SHA-256 `9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a`. Private slice stayed in runner temp and was cleaned; artifact is text/C/disassembly/log only.
+
+Ghidra validates `0x800ED8C8` as entry in the candidate resource view; body size 160 B and end-exclusive `0x800ED968). Direct RNG call is `0x800ED8E4 → 0x80035D78`; the delay slot at `0x800ED8E8` masks and preserves the helper result byte before RNG returns. m2c exit 0. Ghidra and m2c C outputs agree structurally on calls to `0x800CB4B4` and `0x80035D78`.
+
+Decoded static behavior: argument index is truncated to 16 bits; low byte from helper `0x800CB4B4(index)` is default result. RNG output modulo 250 is compared to a table byte at decompiled address `pointer + index*0x90 + 0x29`. If remainder >= table byte, output is `0xFF`; otherwise output is the helper byte. This is verified candidate-function behavior, not a verified name such as roulette/battle/AI, and not a statement about runtime mapping or how game logic consumes its output.
+
+Earlier retries #40521830977, #40522317571 and #40522919529 had setup/parser problems; they are not the successful evidence. Run #40523020556 is the valid same-boundary result. Overall Step 5 stays **SEBAGIAN**.
+
+---
+
 # Langkah 5 — survei statis resource kode DATA.BIN entry 1
 
 Tanggal: 27 Oktober 2026  
