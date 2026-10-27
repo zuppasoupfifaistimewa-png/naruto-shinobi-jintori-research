@@ -1,3 +1,22 @@
+# LIVE ADDENDUM — Step 7 criterion status rechecked, 27 Oktober 2026 21:53 WIB
+
+No new runtime loader/copy observation was produced in the current static-analysis work. The result remains as documented in the existing criterion matrix: source identity and bounded cold boot are verified for the prior tests, but no accepted breakpoint captured copy source/destination/length/checksum, no runtime resource base was validated, and the candidate seed setter did not hit in the bounded cold-boot probe. A no-hit within the observed window neither proves absence on other paths nor maps an overlay.
+
+New static context at entry 0 from [#40521136060](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521136060) clarifies only that `-1` is passed to helper `0x80037138`, while its return is passed to setter candidate `0x80035DA8`. It does not make this a runtime seed proof. The Step 6 CFG/SSA work and Step 5 resource-function comparison likewise run on hypothetical Ghidra bases and do not establish RAM mapping.
+
+| Step 7 subcriterion | Current result | Why it is not a full closure |
+|---|---|---|
+| Input identity / hash for prior bounded runtime probes | **TERVERIFIKASI for those runs** | Reproduces the source identity checks only. |
+| Cold boot under bounded observation | **SEBAGIAN** | Control runs reached observed frames/time bounds; they did not prove normal completion of startup. |
+| Copy breakpoint / source-destination / length | **BELUM TERBUKTI** | No accepted runtime hit with registers/arguments proving the copy operation. |
+| Runtime resource base / relocation / checksum | **UNKNOWN/BLOCKED** | Static import base is a hypothesis; no complete source→copy→destination chain. |
+| Seed-setter lifecycle | **UNKNOWN** | Bounded no-hit and static helper-return context are not runtime lifecycle proof. |
+| DATA2.BIN/DUMMY.BIN runtime mapping / overlay lifecycle | **UNKNOWN** | No full verified mapping chain. |
+
+Step 7 remains **SEBAGIAN**. No new runtime probe, gameplay input, emulator session or savestate restore was performed in this work.
+
+---
+
 # Live checkpoint addendum — Step 7 status reconciled (27 Oktober 2026, 19:22 WIB)
 
 The later Ghidra workflow [#40498208067](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40498208067) completed success at 19:14:42 WIB, producing artifact #12732952776 (2,255,170 bytes; ZIP SHA-256 6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6). Runner-only verification #40503223693, artifact #12733512950 (13,079 bytes; ZIP SHA-256 382773f9a421835bc97c448c630a2ea5d3891309bb34094f5a67027548c03414), validated metadata/digests, processed only text, and passed cleanup.
