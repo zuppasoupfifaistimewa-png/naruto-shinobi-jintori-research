@@ -62,7 +62,7 @@ jobs:
           }
           download_one ghidra 40487406384 12728867894 ghidra-slps-03553-function-index sha256:5b37df744236d5ba87d85c8a74657cc207c569ab7e42229d51768c5ea05752c1 1724229
           download_one step6 40493556711 12729156734 step6-resource-field-static-scan sha256:c9ea5ef0552a0c80a70f0d3a758622a358509de2079e5954dac3ce0032426e93 180128
-          download_one helper 40498231825 12732006381 step4-helper-return-static-audit sha256:adfdb608af96dd95a7c7e74d9f8b117767aaffa817d0c7eb860757ead868d9ba 9058
+          download_one helper 40498694882 12732041989 step4-helper-return-static-audit sha256:ce3defe44fd840c48eae9d659ed2cc211d0bbf61deb18927c87e0d043aba813a 9886
 
           python3 - "$root" "$report" <<'PY'
           from pathlib import Path
