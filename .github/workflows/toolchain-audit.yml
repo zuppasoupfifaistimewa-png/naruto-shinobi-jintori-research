@@ -41,7 +41,6 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           check-latest: true
-          cache: pip
 
       - name: Set up JDK required by Ghidra
         uses: actions/setup-java@v6.1.0
