@@ -1,3 +1,34 @@
+# HANDOFF TERBARU — Rekonsiliasi Step 4–10, 27 Oktober 2026 21:41 WIB
+
+Mulai dari `main` yang sebelumnya berada di `c36b7407631291afd2a4d303f49a8b03392e2bbc`; pembaruan laporan sejak itu membuat commit dokumentasi baru. Prioritaskan [live reconciliation](STEP4_10_LIVE_RECONCILIATION_2026-10-27.md), [CFG/SSA audit Step 6](STEP6_CFG_SSA_DATAFLOW_AUDIT_2026-10-27.md), [Step 5 candidate function report](STEP5_DATABIN_ENTRY1_ANALYSIS_2026-10-27.md), dan [matrix audit](REVERSE_ENGINEERING_AUDIT_STEPS_1_10_2026-10-27.md).
+
+## Checkpoint terbaru
+
+- Step 4 tetap SEBAGIAN. RNG utama dan isolated vectors sudah diverifikasi. Context entry-0 #40521136060 / artifact #12742056745 dan entry-1 #40521136038 / artifact #12741592577 sukses. Pada `0x800AF2AC`, delay slot `move a0,v0` meneruskan return `0x80037138` ke `0x80035DA8); caller boundary dan seed runtime belum terbukti.
+- Step 5 tetap SEBAGIAN overall. Run #40523020556 success dengan artifact #12742268706, ZIP SHA-256 `5f3f767667444f7c956c36fc59cf75b6bb90a5a1dde8ddb92fb69f9e0f797e81`; function entry `0x800ED8C8), body 160 bytes, Ghidra/m2c same-address cross-check success. Ini satu fungsi resource kandidat tambahan, bukan cakupan penuh.
+- Step 6 tetap SEBAGIAN. Run #40522772847 success; artifact #12741234990 SHA-256 ZIP `7ee636b8e687c5163873cdd40c82a02e8c8617885a0863b1e5a196b6eed1eac9`. CFG/SSA memetakan operasi init dan read-add-write, tetapi global pointer value/alias unresolved. 6(a) partial, 6(b) BLOCKED, 6(c) partial, 6(d) UNKNOWN.
+- Step 7 remains SEBAGIAN; resource base runtime/loader lifecycle not proven. Step 8 remains SEBAGIAN; function behavior clarified, feature identity and game rules unknown. Step 9 remains SEBAGIAN overall; RNG 7/7 and setter/getter 16/16 isolated tests passed; cleanup PASS. Step 10 is TUNTAS only for criterion-level documentation/matrix.
+- Main EXE Ghidra run #40512917437 finished earlier at 21:07:13 WIB. It is not active now.
+
+## Actions live at the last checked snapshot
+
+- #40523020556 Step 5 resource Ghidra/m2c: completed/success, artifact #12742268706.
+- #40522772847 Step 6/7 static scan + SSA export: completed/success, artifact #12741234990.
+- #40520635663 Ghidra static analysis main workflow: API says in_progress, started 21:23:22 WIB, last update stale and step still says analyzing entry 0. The comparable completed Ghidra run #40512917437 took 34m43s; ~21:58 WIB is only a rough reference, not guaranteed. #40521141039 is pending in the same concurrency group. Do not start duplicate scans; re-check IDs/status and artifact before relying on either result.
+
+## Continuation boundaries
+
+1. Re-check HEAD and run/artifact states first; don't trust embedded historical Actions snapshots.
+2. Read the full text artifact/report before drawing conclusions.
+3. To continue Step 6, use CFG/SSA data in the new report, especially pointer global `0x8013A554`, `+0xB44` branch/merge and unresolved alias; do not repeat the old offset census alone.
+4. Extend Step 5 only when a new target has a validated function boundary and an explicit static hypothesis. `0x80012A70` has not been validated as a Ghidra function entry in the prior comparison view.
+5. Do not rerun RNG/accessor tests 7/7 and 16/16 absent a new case or change requiring regression.
+6. No adaptive player, Story Mode runner, classifier, input policy, readiness gate, `.run-storymode-adaptive-player`, gameplay input, emulator session or savestate restoration. Keep private game files, BIOS, Memory Card, saves, RAM dumps and screenshots out of Git/artifacts.
+
+Story Mode **TIDAK TERBUKTI TAMAT**. The new function behavior is static evidence under a hypothetical resource base and is not a gameplay victory proof.
+
+---
+
 # HANDOFF TERBARU — Step 9 accessor tests passed, 27 Oktober 2026, 21:02 WIB
 
 ## Step 9 — hasil isolasi diperluas final (27 Oktober 2026, 21:02 WIB)
