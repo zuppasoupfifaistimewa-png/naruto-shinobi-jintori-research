@@ -1,3 +1,21 @@
+# LIVE LOGIC CHECKPOINT — Entry-1 RNG gate + Step 6 CFG/SSA, 27 Oktober 2026 21:41 WIB
+
+## Bukti statis terbaru
+
+- [Step 5 run #40523020556](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40523020556), artifact #12742268706, ZIP SHA-256 `5f3f767667444f7c956c36fc59cf75b6bb90a5a1dde8ddb92fb69f9e0f797e81`: Ghidra/m2c same-boundary comparison success for candidate function `0x800ED8C8`, body 160 B, end-exclusive `0x800ED968). Index is masked to 16-bit; helper `0x800CB4B4` output byte is the default; `RNG % 250` is compared with table byte at `index*0x90+0x29); return `0xFF` if remainder >= table byte, otherwise helper byte. This is verified function behavior in a hypothetical resource import only, not feature/game-rule identity.
+- [Step 6 run #40522772847](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40522772847), artifact #12741234990, ZIP SHA-256 `7ee636b8e687c5163873cdd40c82a02e8c8617885a0863b1e5a196b6eed1eac9`: CFG/SSA/P-code audits of function entries `0x8012C544` and `0x8012CACC). The former performs read `+B30/+B38`, add, write `+B40`, guarded initialization and field clears; the latter has a branch/merge around the `+B44` consumer. The global pointer value/aliases are unresolved, and base `0x800D0000` is only hypothetical.
+- [Step 4 bounded context #40521136060](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521136060): `li a0,-1` in the delay slot of call to `0x80037138); then `move a0,v0` in the delay slot of setter call `0x80035DA8`. Thus helper return is the setter argument; runtime seed value is not known.
+
+## Status by certainty
+- TERVERIFIKASI: RNG formula/test 7/7; selected setter/getter CPU/RAM tests 16/16; selected entry-1 candidate function body behavior and Ghidra/m2c structural cross-check; static read-add-write sequence in the init function.
+- HIPOTESIS: runtime mapping of entry 0 at `0x800AD000`, entry 1 at `0x800D0000`; candidate table/pointer semantics.
+- UNKNOWN/BLOCKED: runtime seed lifecycle; mapping/copy/relocations; pointer alias closure; semantics of offsets `+B30/+B38/+B40/+B44`; costs, barrier, cards, turns, battle/roulette causality, victory/loss.
+- Overall Steps 4–9 remain **SEBAGIAN**; Step 10 is completed only as documentation/matrix reconciliation.
+
+Tidak ada adaptive player/gameplay runner, input gameplay, emulator/gameplay session, savestate restore, atau aset privat game di Git/artifact. Story Mode **TIDAK TERBUKTI TAMAT**.
+
+---
+
 # LIVE LOGIC CHECKPOINT — Step 6 static evidence only (27 Oktober 2026)
 
 ## Step 9 — hasil isolasi diperluas final (27 Oktober 2026, 21:02 WIB)
