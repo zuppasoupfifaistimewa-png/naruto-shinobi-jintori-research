@@ -128,7 +128,7 @@ Indeks out/logic.md diperbarui agar menautkan checkpoint terkini, laporan audit 
 - Base RAM, relokasi, dan lifecycle resource sebenarnya.
 - Sumber/penulis +0xB30/+0xB38/+0xB40/+0xB44 dan makna field record/kondisi pemicu.
 - Formula universal biaya barrier/upgrade, battle/roulette/turn, serta kemenangan lintas mode.
-- Verifikasi fungsi terisolasi menggunakan Unicorn/emulator setara.
+- Pengujian terisolasi untuk fungsi selain RNG `0x80035D78` belum dilakukan; fungsi RNG tersebut sendiri sudah lulus 7/7 vektor Unicorn (lihat laporan Step 9).
 - Tamat Story Mode: tidak dibuktikan oleh audit ini.
 
 ## Langkah berikutnya yang diizinkan
@@ -136,7 +136,7 @@ Indeks out/logic.md diperbarui agar menautkan checkpoint terkini, laporan audit 
 1. Pertahankan player dijeda; jangan jalankan workflow gameplay atau pulihkan savestate.
 2. Lanjutkan tracing statis entry 0/1 atas tabel dan fungsi transisi: dokumentasikan store, caller, sumber operand, dan branch; jangan menamai delta sebagai biaya sebelum terbukti.
 3. Validasi loader/base resource melalui bukti statis yang sah. Jika hanya bisa dibuktikan runtime, pertahankan UNKNOWN sampai lingkungan verifikasi yang disetujui tersedia.
-4. Buat harness MIPS terisolasi hanya jika dapat membuktikan ia tidak menjalankan game/emulator gameplay; selain itu Langkah 9 tetap TERBLOKIR.
+4. Uji Unicorn terisolasi untuk RNG `0x80035D78` sudah lulus pada run #40474891838. Tidak ada kewajiban otomatis menguji setiap fungsi game satu per satu jika kriteria resmi tidak menuntutnya; setiap fungsi tambahan yang dijadikan dasar klaim harus memiliki entry/return, helper, register/memori, vektor, serta batas instruksi tersendiri. Jangan menggeneralisasi hasil RNG ke fungsi lain.
 
 
 ## Addendum Langkah 4 — 27 Oktober 2026
