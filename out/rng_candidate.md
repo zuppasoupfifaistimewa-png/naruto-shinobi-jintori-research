@@ -27,10 +27,10 @@ Di `0x80035DA8` ada setter yang menulis argumen pertama `$a0` ke global yang sam
 
 | Call site | Petunjuk instruksi setelah kembali | Interpretasi awal |
 |---|---|---|
-| `0x80015B14` | Nilai dipindah ke register saved; jalur selanjutnya menggeser dan mem-mask ke 8 bit | Transformasi/indeks berbasis RNG, tujuan belum diketahui |
-| `0x80015BF0` | Hasil `rand` diikuti `div`/ `mfhi` terhadap nilai tabel `lhu` | Konsisten dengan indeks modulo jumlah/nilai tabel |
-| `0x8001A460` | Hasil diikuti `div`/ `mfhi` dengan pembagi register `$s0` | Konsisten dengan pilihan modulo batas |
-| `0x80020C24` | Hasil langsung disimpan ke field struktur melalui pointer `$s0` | Semantik field belum diketahui |
+| `0x80015B14` | Hasil dipakai bersama hasil dari helper `0x800158D8`; keduanya di-shift/mask, lalu dipakai menghitung remainder sebelum pemanggilan `0x800159BC` | Konsisten dengan pemilihan offset/posisi acak dalam batas; domain belum dikenal |
+| `0x80015BF0` | Berada di loop yang membaca nilai tabel dengan `lhu`, menghitung `rand % bound`, lalu menukar dua byte memakai `lbu`/`sb` | **Keyakinan menengah:** rutinitas shuffle/permutasi byte berbasis RNG; tujuan tabel belum diketahui |
+| `0x8001A460` | Setelah helper `0x80016C68` dipanggil dengan argumen `0x82`–`0x86`, hasil dipakai sebagai indeks modulo jumlah pilihan lokal lalu byte terpilih disimpan ke global `0x80097DA9` | Konsisten dengan pilihan acak dari kumpulan nilai byte; peran fitur belum dipastikan |
+| `0x80020C24` | Nilai RNG disimpan ke field struktur; sesudahnya fungsi menghitung offset batas `0x1000` dan memanggil helper `0x80020D48`, `0x80018300`, `0x80018468` | Bisa merupakan utilitas runtime/alokasi, bukan mekanik gameplay; pemetaan fungsi masih diperlukan |
 
 Empat call site tersebut adalah direct-JAL yang ditemukan pada text utama. Itu **bukan** jumlah seluruh penggunaan RNG game; panggilan via pointer dan kode/overlay lain belum dihitung.
 
