@@ -2049,3 +2049,10 @@ Statuses unchanged: Step4 SEBAGIAN; Step5 TUNTAS for four selected functions; St
 Review of existing artifact #12719587873 adds the bounded decompilation for candidate 0x8011C0D0 (body 408 bytes): input byte-mask; compare with global 0x80139F70; early return if unchanged; update global and field +0x618 if changed. Nonzero input selects a record via global 0x8013EA88, writes 8 at record+0x22, iterates participant count from global 0x8013EA71, negates each record word +0x04, clamps minimum -9999, stores and calls setter 0x8001387C with index/new value. A signed-short +0x10 plus unsigned-short +0x14 sum compared to 0x101 affects calls to 0x8003F5D0 and 0x800F96A4 versus store +0x94A=1. The raw window only contains the function start; these loop details are from decompilation, not full raw listing. Function caller and semantics are UNKNOWN.
 
 Outstanding static gap: no whole-program access inventory of candidate offsets +0xB30/+0xB38/+0xB40/+0xB44 yet. The main-EXE/entry-1 bases remain distinct hypotheses; no runtime semantics are inferred.
+
+
+## 27 October 2026 17:26 WIB — live run and Step 6 scope check
+
+Verified remote `main` before handoff refresh at `2ad2c8dcdcaeee718d656e8696d6853f48ec54a8`; handoff refresh commit then became `e128fe86da6dbd3848813a376aa5b63f53e39977`. Actions #40487406384 remains `in_progress`, job `122132544196`, with DATA.BIN entry 0/helper `0x80037138` still being analyzed. Main EXE and entry 1 are complete; upload/cleanup pending; artifact not yet available. Do not infer helper return or seed lifecycle until its output can be inspected. Previous full Ghidra run duration ~39m43s is reference only, not a guaranteed ETA.
+
+Reconfirmed that Step 6's `0x8011C0D0` trace is bounded decompiler evidence and cannot label the path as a gameplay cost. Whole-program access/store tracing for `+0xB30/+0xB38/+0xB40/+0xB44` remains an independent static task. Do not overlap runtime probes or repeat the prior no-hit targets absent a distinct hypothesis. No adaptive player, Story Mode automation, gameplay input, or savestate restore was performed; Story Mode remains unverified complete.
