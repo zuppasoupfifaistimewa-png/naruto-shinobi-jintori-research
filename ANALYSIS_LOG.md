@@ -2084,3 +2084,13 @@ Previous run #40493608676 failed because grep expected target markers with `0x`,
 **Step 6 memory operand trace:** within the entry-1 code view, raw instructions show `lw v0,0xB30(a0)` at `0x8012C634`, `lw v1,0xB38(a0)` at `0x8012C638`, `addu v0,v0,v1` at `0x8012C640`, and `sw v0,0xB40(a0)` at `0x8012C644`. A candidate initializer writes zero to `+0xB44` at `0x8012C604` as a JAL delay-slot instruction; another function reads `+0xB44` at `0x8012CB14` into argument `a2` for `0x8001B364`. These are instruction/dataflow facts only under hypothetical entry-1 base `0x800D0000`; object identity, full aliases, runtime mapping, and gameplay semantics are UNKNOWN.
 
 Step 4/6/8 remain SEBAGIAN. No gameplay, emulator, savestate or adaptive-player work was run.
+
+## Incremental checkpoint — data xrefs global 0x80066E7C (27 Oktober 2026, 18:44 WIB)
+
+Helper audit [#40498231825](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40498231825) selesai success pada 18:43:58 WIB, artifact #12732006381 (9.058 byte; ZIP SHA-256 adfdb608af96dd95a7c7e74d9f8b117767aaffa817d0c7eb860757ead868d9ba). Raw log membuktikan asset-checksums OK, source image/extraction tree dihapus sebelum Ghidra, STEP4_HELPER_PRIVATE_CLEANUP=PASS, text_only_output_validation=PASS, dan uploaded_input_executable=no.
+
+Runner-only audit [#40498386273](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40498386273) selesai success 18:44:35 WIB, artifact #12731327556 (9.727 byte; ZIP SHA-256 7826480f41372d68ddf3f4b1dfe6d99f51bbbb5cd124eb5c3c6169870150ba5c). Metadata dan ZIP digest #12732006381 diverifikasi di runner; cleanup PASS.
+
+Tambahan target export membaca data reference langsung ke 0x80066E7C. Ghidra melaporkan 8 references in loaded EXE view: WRITE 0x80037B7C (sw zero,0x6e7c(at), owner function 0x80037B58); READ 0x80037BB4 (owner 0x80037BB0); WRITE 0x80037BDC (sw v0,0x6e7c(at), preceding addiu v0,v0,1 at 0x80037BD4, owner 0x80037BB0); READ 0x8003719C, 0x80037204, 0x80037260 (helper 0x80037138); and READ 0x800372C0 and 0x80037324 (function 0x800372B0). Loaded image initial bytes at 0x80066E7C are 00000000 (little-endian word 0), but this is not runtime state. Evidence supports only static zero-store and incrementing-store patterns; sequencing, full aliases, indirect/overlay writers and runtime value remain UNKNOWN. The label “counter-like” is a provisional pattern description, not a confirmed gameplay meaning.
+
+Step 4 remains SEBAGIAN until caller/initializer ordering and boot-time value are pinned down. No emulator/gameplay run was performed.
