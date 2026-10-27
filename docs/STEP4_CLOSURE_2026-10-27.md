@@ -4,7 +4,7 @@
 
 **Status Langkah 4 secara keseluruhan: SEBAGIAN** menurut matriks resmi (4a–4e). Subbagian inventaris statis dan scan pola sempit telah dituntaskan dalam batas alat yang terdokumentasi melalui run Ghidra #40455975408 dan artefak terkait. Run final memperjelas bahwa tidak semua raw JAL di resource diterima Ghidra sebagai decoded direct call: entry 0 3/5, entry 1 108/144; 36 kandidat entry 1 lain terdekode sebagai JAL pada pass disassembly lokal, tetapi boundary caller masih UNKNOWN. Hasil statis tersebut menutup inventaris terbatas, bukan seed/lifecycle runtime, determinisme hasil roulette secara kausal, caller battle, indirect/dispatch menyeluruh, atau randomness alternatif. Karena itu status keseluruhan tetap SEBAGIAN.
 
-Tidak ada emulator/gameplay, input, pemulihan savestate, atau eksekusi fungsi game pada pekerjaan ini. Biner disc diambil/diperiksa hanya pada runner; tidak dimasukkan ke Git atau artefak.
+Untuk penutupan inventaris statis di bagian awal, tidak ada input gameplay atau pemulihan savestate. Cold-boot emulator terpisah tanpa input/restore kemudian dilakukan untuk kandidat seed setter dan dicatat pada addendum runtime di bawah; tidak ada breakpoint hit yang mengonfirmasi setter. Biner disc hanya digunakan pada runner privat, tidak dimasukkan ke Git atau artefak.
 
 ## Hasil akhir yang terverifikasi
 
