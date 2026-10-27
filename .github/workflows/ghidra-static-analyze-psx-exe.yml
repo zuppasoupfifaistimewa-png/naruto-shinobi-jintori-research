@@ -26,22 +26,111 @@ jobs:
       - name: Checkout research repository
         uses: actions/checkout@v4
 
-      - name: Validate private source configuration
+      - name: Install PS1 disc extraction tools
         shell: bash
-        env:
-          PSX_EXE_DOWNLOAD_URL: ${{ secrets.PSX_EXE_DOWNLOAD_URL }}
         run: |
           set -euo pipefail
-          if [[ -z "${PSX_EXE_DOWNLOAD_URL:-}" ]]; then
-            echo "::error::Missing repository Actions secret PSX_EXE_DOWNLOAD_URL. See docs/GHIDRA_PRIVATE_EXE_HANDOFF.md."
-            exit 2
-          fi
-          if [[ "$PSX_EXE_DOWNLOAD_URL" != https://* ]]; then
-            echo "::error::PSX_EXE_DOWNLOAD_URL must be an HTTPS direct-download URL."
-            exit 2
-          fi
-          echo "Private input secret is present; the URL will not be printed."
+          sudo apt-get update
+          sudo apt-get install --yes bchunk xorriso
 
+      - name: Download release disc image and extract SLPS_035.53
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_dir="$RUNNER_TEMP/psx-disc-source"
+          exe_dir="$RUNNER_TEMP/ghidra-input"
+          out="$RUNNER_TEMP/ghidra-output"
+          mkdir -p "$source_dir" "$exe_dir" "$out"
+          base_url="https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/download/research-emulator-pcsx-redux-2026-10-15"
+          disc="$source_dir/naruto-disc.bin"
+          cue_raw="$source_dir/original.cue"
+          cue="$source_dir/naruto-disc.cue"
+
+          if ! curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 --max-time 600 "$base_url/Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin" --output "$disc"; then
+            echo "::error::Could not download the existing Naruto disc-image release asset."
+            exit 1
+          fi
+          if [[ "$(stat -c '%s' "$disc")" != "325989552" ]] || ! echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $disc" | sha256sum --check --status; then
+            rm -f "$disc"
+            echo "::error::Release disc image size or SHA-256 mismatch; input discarded."
+            exit 1
+          fi
+
+          if ! curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 --max-time 60 "$base_url/Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue" --output "$cue_raw"; then
+            echo "::error::Could not download the matching CUE asset."
+            exit 1
+          fi
+          if [[ "$(stat -c '%s' "$cue_raw")" != "116" ]] || ! echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $cue_raw" | sha256sum --check --status; then
+            rm -f "$disc" "$cue_raw"
+            echo "::error::Release CUE size or SHA-256 mismatch; input discarded."
+            exit 1
+          fi
+
+          # Normalize only the CUE FILE path so it points to the downloaded filename.
+          python3 - "$cue_raw" "$cue" <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          source, destination = map(Path, sys.argv[1:3])
+          lines = source.read_text(encoding="utf-8").splitlines()
+          rewritten = []
+          replaced = 0
+          for line in lines:
+              if line.lstrip().upper().startswith("FILE "):
+                  match = re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$', line, re.IGNORECASE)
+                  if not match:
+                      raise SystemExit("Unrecognized CUE FILE directive; refusing to extract.")
+                  line = match.group(1) + '"naruto-disc.bin"' + match.group(2)
+                  replaced += 1
+              rewritten.append(line)
+          if replaced != 1:
+              raise SystemExit(f"Expected one CUE FILE directive, found {replaced}.")
+          destination.write_text("\n".join(rewritten) + "\n", encoding="utf-8")
+          PY
+
+          mkdir -p "$source_dir/extracted-root"
+          bchunk "$disc" "$cue" "$source_dir/track"
+          iso="$(find "$source_dir" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          if [[ -z "$iso" ]]; then
+            echo "::error::No data-track ISO was produced from the verified BIN/CUE pair."
+            exit 1
+          fi
+          xorriso -osirrox on -indev "$iso" -extract / "$source_dir/extracted-root" > "$out/disc-extraction.log" 2>&1
+          candidate="$(find "$source_dir/extracted-root" -type f -iname 'SLPS_035.53*' -print -quit)"
+          if [[ -z "$candidate" ]]; then
+            echo "::error::SLPS_035.53 was not found in the extracted disc filesystem."
+            tail -n 80 "$out/disc-extraction.log" || true
+            exit 1
+          fi
+          exe="$exe_dir/SLPS_035.53"
+          cp "$candidate" "$exe"
+          actual_bytes="$(stat -c '%s' "$exe")"
+          if [[ "$actual_bytes" != "$EXPECTED_EXE_BYTES" ]] || ! echo "$EXPECTED_EXE_SHA256  $exe" | sha256sum --check --status; then
+            rm -f "$exe"
+            echo "::error::Extracted SLPS_035.53 size or SHA-256 mismatch; executable discarded."
+            exit 1
+          fi
+          if [[ "$(head -c 8 "$exe")" != "PS-X EXE" ]]; then
+            rm -f "$exe"
+            echo "::error::Extracted file does not have a PS-X EXE signature."
+            exit 1
+          fi
+          {
+            echo "status=source verified"
+            echo "source=existing GitHub Release BIN/CUE assets"
+            echo "disc_bin_bytes=325989552"
+            echo "disc_bin_sha256=58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88"
+            echo "filename=SLPS_035.53"
+            echo "bytes=$actual_bytes"
+            echo "sha256=$EXPECTED_EXE_SHA256"
+            echo "game_binary_committed_to_git=no"
+            echo "game_binary_uploaded_as_artifact=no"
+          } > "$out/input-validation.txt"
+          # Keep only the verified executable for Ghidra; discard the disc image and extracted filesystem.
+          rm -rf "$source_dir"
+          echo "Release BIN/CUE validated and SLPS_035.53 extracted and verified."
+          
       - name: Set up Java runtime
         uses: actions/setup-java@v6
         with:
@@ -204,8 +293,8 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Remove private executable and temporary project
+      - name: Remove extracted executable and temporary project
         if: always()
         shell: bash
         run: |
-          rm -rf "$RUNNER_TEMP/ghidra-input" "$RUNNER_TEMP/ghidra-project"
+          rm -rf "$RUNNER_TEMP/ghidra-input" "$RUNNER_TEMP/ghidra-project" "$RUNNER_TEMP/psx-disc-source"
