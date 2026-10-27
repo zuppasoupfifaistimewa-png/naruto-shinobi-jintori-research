@@ -1,3 +1,17 @@
+# CHECKPOINT LOGIKA TERBARU — 27 Oktober 2026, 19:22 WIB
+
+Live reconciliation source: [runner-only artifact audit #40503223693](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40503223693), artifact #12733512950 (13,079 bytes; ZIP SHA-256 382773f9a421835bc97c448c630a2ea5d3891309bb34094f5a67027548c03414). Ghidra run #40498208067 is complete (success at 19:14:42 WIB), artifact #12732952776 (2,255,170 bytes; SHA-256 6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6). Step6 scan #40500058788 is complete, artifact #12731474756 (180,174 bytes; SHA-256 4aea20e1420292505666f15898ba2db57a875a4fc67fbe2c65336af0a16fc9f4). The runner checked metadata/digests before text-only processing and reports RUNNER_ARTIFACT_CLEANUP=PASS. Old status text below that says these jobs are in progress is superseded.
+
+## Status per step
+- Step 4: SEBAGIAN. Static callback/tick-like global 0x80066E7C is zeroed by 0x80037B58 and incremented by 0x80037BB0; helper 0x80037138 can return it on a0<0. Candidate entry0 callsite forwards helper return to 0x80035DA8 under hypothetical base 0x800AD000. Runtime order, entry0 mapping, actual setter value/seed lifecycle remain UNKNOWN; battle caller, roulette-result causality, indirect/JT/decompressed calls and alternative RNG remain open.
+- Step 5: TUNTAS for four selected functions only (0x80015ADC, 0x80015B7C, 0x8001A328, 0x80020BF4), run #40449144521, artifact #12710000931, SHA-256 b2fdb6dc3213137e98e0ed298402e1d4b02198ed5310f264780bd8e965246b08.
+- Step 6: SEBAGIAN. Raw access sample includes 0x8012C634 lw v0,0xB30(a0); 0x8012C638 lw v1,0xB38(a0); 0x8012C640 addu; 0x8012C644 sw v0,0xB40(a0); +0xB44 zero-store at 0x8012C604 and read at 0x8012CB14 forwarded to a2. Base 0x800D0000 remains a hypothesis; aliases/access inventory and meaning unresolved.
+- Step 7: SEBAGIAN. Runtime probe #40484548650 target 0x800AD454 no-hit through frame120; bounded timeout 35s, cleanup PASS. Runtime copy registers/size/checksum and base remain UNKNOWN.
+- Step 8: SEBAGIAN. Costs, barrier/upgrade, battle, roulette, turns, card effects, win logic not independently established.
+- Step 9: TUNTAS only for isolated function 0x80035D78 (run #40474891838, artifact #12720127454, SHA-256 bcbfcd77a532ce34334ed60f720fdeaac566308bf2e6e4d54a7e60f28a5f083b), 7/7 test vectors.
+- Step 10: TUNTAS only as auditable criteria closure matrix, not overall game completion. Detailed matrix: docs/STEP4_10_CLOSURE_REPORT_2026-10-27.md.
+Story Mode remains TIDAK TERBUKTI TAMAT; adaptive-player work remains paused.
+
 # Logika game — Naruto: Shinobi no Sato no Jintori Gassen (PS1)
 
 Status: riset logika gameplay; pemain adaptif tetap dijeda.
