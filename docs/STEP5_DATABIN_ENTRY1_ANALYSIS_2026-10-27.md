@@ -1,6 +1,6 @@
 # LIVE ADDENDUM — Same-boundary function analysis, 27 Oktober 2026 21:41 WIB
 
-Run [#40523020556](https://github.com/zuppasoupfivaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40523020556) completed/success, artifact #12742268706 (1.367.605 B; ZIP SHA-256 `5f3f767667444f7c956c36fc59cf75b6bb90a5a1dde8ddb92fb69f9e0f797e81`). Entry 1 hash confirmed: file offset `0x10BB000`, 596.412 B, SHA-256 `9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a`. Private slice stayed in runner temp and was cleaned; artifact is text/C/disassembly/log only.
+Run [#40523020556](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40523020556) completed/success, artifact #12742268706 (1.367.605 B; ZIP SHA-256 `5f3f767667444f7c956c36fc59cf75b6bb90a5a1dde8ddb92fb69f9e0f797e81`). Entry 1 hash confirmed: file offset `0x10BB000`, 596.412 B, SHA-256 `9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a`. Private slice stayed in runner temp and was cleaned; artifact is text/C/disassembly/log only.
 
 Ghidra validates `0x800ED8C8` as entry in the candidate resource view; body size 160 B and end-exclusive `0x800ED968). Direct RNG call is `0x800ED8E4 → 0x80035D78`; the delay slot at `0x800ED8E8` masks and preserves the helper result byte before RNG returns. m2c exit 0. Ghidra and m2c C outputs agree structurally on calls to `0x800CB4B4` and `0x80035D78`.
 
