@@ -174,7 +174,7 @@ def main() -> int:
         "binary_uploaded_as_artifact=no",
         "",
     ]
-    totals = {"rng_jal": 0, "seed_jal": 0, "rng_literal": 0, "state_literal": 0, "rng_address_pair": 0, "state_address_pair": 0}
+    totals = {"rng_jal": 0, "seed_jal": 0, "rng_literal": 0, "seed_literal": 0, "state_literal": 0, "rng_address_pair": 0, "seed_address_pair": 0, "state_address_pair": 0}
     for path in args.files:
         name = path.name.upper()
         data = path.read_bytes()
@@ -201,8 +201,10 @@ def main() -> int:
         rng_jal = all_aligned_occurrences(data, struct.pack("<I", 0x0C0D75DE))
         seed_jal = all_aligned_occurrences(data, struct.pack("<I", 0x0C0D76EA))
         rng_literal = all_aligned_occurrences(data, struct.pack("<I", RNG))
+        seed_literal = all_aligned_occurrences(data, struct.pack("<I", SEED_SETTER))
         state_literal = all_aligned_occurrences(data, struct.pack("<I", RNG_STATE))
         rng_pairs = mips_address_pairs(data, RNG)
+        seed_pairs = mips_address_pairs(data, SEED_SETTER)
         state_pairs = mips_address_pairs(data, RNG_STATE)
         state_memory_pairs = mips_memory_pairs(data, RNG_STATE)
         lines.append(f"direct_jal_rng_raw_hits={len(rng_jal)}")
@@ -219,6 +221,12 @@ def main() -> int:
             lines.append(f"  rng_literal file_offset=0x{off:X}{extra}")
         if len(rng_literal) > 100:
             lines.append("  rng_literal_output_truncated_after=100")
+        lines.append(f"seed_setter_literal_aligned_hits={len(seed_literal)}")
+        for off in seed_literal[:100]:
+            extra = " " + entry_for_offset(entries, off) if name == "DATA.BIN" else ""
+            lines.append(f"  seed_setter_literal file_offset=0x{off:X}{extra}")
+        if len(seed_literal) > 100:
+            lines.append("  seed_setter_literal_output_truncated_after=100")
         lines.append(f"rng_state_literal_aligned_hits={len(state_literal)}")
         for off in state_literal[:100]:
             extra = " " + entry_for_offset(entries, off) if name == "DATA.BIN" else ""
@@ -232,6 +240,13 @@ def main() -> int:
             lines.append(f"  rng_addr_pair lui_file_offset=0x{lui_off:X} low_file_offset=0x{low_off:X}{call}{extra}")
         if len(rng_pairs) > 100:
             lines.append("  rng_addr_pair_output_truncated_after=100")
+        lines.append(f"seed_setter_lui_low_address_pairs={len(seed_pairs)}")
+        for lui_off, low_off, jalr_off in seed_pairs[:100]:
+            extra = " " + entry_for_offset(entries, lui_off) if name == "DATA.BIN" else ""
+            call = f" jalr_file_offset=0x{jalr_off:X}" if jalr_off is not None else " jalr=NOT_WITHIN_4_FOLLOWING_WORDS"
+            lines.append(f"  seed_setter_addr_pair lui_file_offset=0x{lui_off:X} low_file_offset=0x{low_off:X}{call}{extra}")
+        if len(seed_pairs) > 100:
+            lines.append("  seed_setter_addr_pair_output_truncated_after=100")
         lines.append(f"rng_state_lui_low_address_pairs={len(state_pairs)}")
         for lui_off, low_off, jalr_off in state_pairs[:100]:
             extra = " " + entry_for_offset(entries, lui_off) if name == "DATA.BIN" else ""
@@ -248,8 +263,10 @@ def main() -> int:
         totals["rng_jal"] += len(rng_jal)
         totals["seed_jal"] += len(seed_jal)
         totals["rng_literal"] += len(rng_literal)
+        totals["seed_literal"] += len(seed_literal)
         totals["state_literal"] += len(state_literal)
         totals["rng_address_pair"] += len(rng_pairs)
+        totals["seed_address_pair"] += len(seed_pairs)
         totals["state_address_pair"] += len(state_pairs)
         lines.append("scan_status=COMPLETE")
         lines.append("")
@@ -261,7 +278,7 @@ def main() -> int:
     ])
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text("\n".join(lines), encoding="utf-8")
-    print("\n".join(line for line in lines if line.startswith(("analysis=", "=== FILE", "bytes=", "sha256=", "known_identity_check=", "direct_jal_rng_raw_hits=", "direct_jal_seed_setter_raw_hits=", "rng_address_literal_aligned_hits=", "rng_state_literal_aligned_hits=", "rng_lui_low_address_pairs=", "rng_state_lui_low_address_pairs=", "rng_state_lui_memory_access_pairs=", "=== TOTALS ===", "rng_jal=", "seed_jal=", "rng_literal=", "state_literal=", "rng_address_pair=", "state_address_pair="))))
+    print("\n".join(line for line in lines if line.startswith(("analysis=", "=== FILE", "bytes=", "sha256=", "known_identity_check=", "direct_jal_rng_raw_hits=", "direct_jal_seed_setter_raw_hits=", "rng_address_literal_aligned_hits=", "seed_setter_literal_aligned_hits=", "rng_state_literal_aligned_hits=", "rng_lui_low_address_pairs=", "seed_setter_lui_low_address_pairs=", "rng_state_lui_low_address_pairs=", "rng_state_lui_memory_access_pairs=", "=== TOTALS ===", "rng_jal=", "seed_jal=", "rng_literal=", "seed_literal=", "state_literal=", "rng_address_pair=", "seed_address_pair=", "state_address_pair="))))
     return 0
 
 
