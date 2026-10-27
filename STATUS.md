@@ -1,19 +1,34 @@
 # Checkpoint terbaru — reverse engineering Langkah 4–10 (27 Oktober 2026)
 
-**Main sudah maju melewati checkpoint lama cd3827b95e58829dde0ff3da280b603b62f9f45d.** Sebelum sinkronisasi laporan ini, HEAD terverifikasi a3b1e5c814fda26e5e722ed83966432964c68311; selalu periksa ulang SHA terbaru dan working tree dengan GitHub sebelum melanjutkan.
+Checkpoint yang dibaca sebelum pembaruan status ini: `main` HEAD `fb4b3be477c13efead5b787e3d3801b1b78344f3`. Commit dokumentasi status ini sendiri akan memajukan HEAD; saat melanjutkan, ambil SHA `main` live dari GitHub dan jangan menganggap working tree lokal tersedia di konektor.
 
-- Run Step 7 terbaru [#40479865235](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40479865235) selesai success pada 09:21:48 UTC (durasi 157 detik), tetapi probe breakpoint tidak konklusif. Pra-uji tanpa breakpoint mencapai frame 50, kontrol debugger tanpa breakpoint mencapai frame 40, probe empat breakpoint hanya frame 1–3 lalu timeout 124. Artefak teks-only [#12722187784](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40479865235/artifacts/12722187784), SHA-256 ZIP b9537035eb6ffed66a0aadd5ab48db88715ed2e2128bcf46a48f374c7306ac26, cleanup PASS. Parser artifact salah menulis max control frame 0; gunakan raw log (1,2,3,10,20,30,40).
-- Tidak ada loader/seed/RNG target breakpoint hit yang diterima. Step 7 tetap SEBAGIAN. Berikutnya: satu breakpoint per cold boot, timer pendek, no restore/input, perbaiki regex parser; jangan ulang empat-breakpoint identik.
-- Langkah 4 keseluruhan SEBAGIAN; inventaris statis bukan penutupan semua subkriteria (4a–e). Langkah 5 TUNTAS untuk empat fungsi terpilih. Langkah 6 SEBAGIAN. Langkah 7 SEBAGIAN. Langkah 8 SEBAGIAN. Langkah 9 TUNTAS hanya untuk RNG 0x80035D78 (7/7 vector). Langkah 10 TUNTAS sebagai indeks audit saja.
-- Telah diperbaiki: laporan Step 4 tidak lagi memberi status TUNTAS keseluruhan; Step 8/OVERLAY_MAP menahan klaim jalur kemenangan yang belum tervalidasi; audit utama mengakui Step 9 RNG yang lulus; laporan Step 7 terbaru dan laporan penutupan diperbarui.
-- Tidak ada workflow pemain adaptif, Story Mode otomatis, input gameplay, savestate restore, atau perubahan classifier/policy/Revision65/readiness gate. Story Mode TIDAK TERBUKTI TAMAT.
-- ROM/disc, BIOS, Memory Card, savestate, RAM dump, dan bukti screenshot gameplay privat dilarang masuk Git. Hanya repositori ini yang diizinkan.
+## Bukti/pekerjaan terbaru
 
-Laporan utama/handoff:
+- Bug parser shell/Python untuk VSync frame sudah diperbaiki. Regression run [#40484417534](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40484417534) lulus dengan raw log `STEP7_FRAME_PARSER_FIXTURE_PASS frames=1,2,3,10,20,30,40 max=40`; itu validasi parser, bukan validasi loader.
+- Single-breakpoint cold boot [#40484519812](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40484519812) memakai satu breakpoint `0x800AD454`, tanpa input/restore. Raw log mencatat kontrol debugger sampai frame 50, probe target progress sampai frame 100 tanpa hit, exit 124 pada batas 35 detik, dan `STEP7_PRIVATE_CLEANUP=PASS`. Empat source checksums dan BIOS hasil ekstrak lolos. Run gagal hanya di pembentuk laporan (`SyntaxError: '[' was never closed`); jangan gunakan workflow conclusion/artifact summary itu sebagai hasil emulator. Artefak #12723834084 berukuran 1.894 byte, digest ZIP SHA-256 `6188c32e73a0984133c5c1f4ac3a37dcacde677458ec56c7fdf100ba25c73968`; raw job log menjadi sumber untuk metriknya.
+- Parser report assembler diperbaiki di commit `8326c07f71caeab12924133b0812ec7e86b8b1f7`. Run koreksi [#40484548650](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40484548650) mulai 27 Oktober 2026 09:55:56 UTC (16:55:56 WIB); status terakhir yang telah diperiksa masih `in_progress`, sehingga cek ulang status, job log, artifact, dan cleanup sebelum menyimpulkan apa pun.
+- Tracing statis baru memakai output runner-only Step 6 yang sudah ada [#40473737136](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40473737136): pada base entry-1 hipotetis `0x800D0000`, kandidat `0x8011C0D0` menegasikan word peserta offset `+0x04`, menjepit minimum ke `-9999`, lalu memanggil setter `0x8001387C`. Kandidat cabang threshold menulis `+0x58B`/`+0x5D2` sebelum `0x800EF98C`. Ini belum mengidentifikasi arti gameplay; delta `+0xB30/+0xB38/+0xB40/+0xB44` masih UNKNOWN. Lihat [Step 6](docs/STEP6_TARGET_XREF_SEMANTIC_REVIEW_2026-10-27.md) dan [Step 8](docs/STEP8_FUNCTION_SEMANTICS_AND_GAME_RULES_2026-10-27.md).
+- Laporan runtime Step 7 dan peta loader/overlay mencatat temuan parsial terbaru. Base entry 0 `0x800AD000` dan entry 1 `0x800D0000` masih HIPOTESIS; satu breakpoint belum menghasilkan hit atau data register/copy/hash yang dibutuhkan.
+  
+## Status keseluruhan per langkah
+
+- Step 4: **SEBAGIAN** pada seluruh kriteria 4(a–e); rumus RNG benar secara statis dan uji terisolasi berlaku hanya untuk rutinnya. Seed boot/lifecycle, kausalitas roulette, battle caller, dispatch tidak langsung menyeluruh, dan randomness alternatif masih terbuka.
+- Step 5: **TUNTAS untuk empat fungsi terpilih saja** (delapan output C Ghidra/m2c tersimpan).
+- Step 6: **SEBAGIAN**; beberapa dataflow terperjelas tetapi base, sumber delta, batas fungsi/call chain, dan semantik gameplay belum tervalidasi.
+- Step 7: **SEBAGIAN**; direktori/penyalinan didukung statis, runtime mapping/lifecycle/bases belum terbukti.
+- Step 8: **SEBAGIAN**; tidak ada formula universal biaya barrier/level-up, battle/roulette/turn, atau syarat menang per mode yang terverifikasi.
+- Step 9: **TUNTAS hanya untuk RNG `0x80035D78`** (7/7 vektor; run #40474891838), bukan emulator PS1 penuh atau fungsi lain.
+- Step 10: **TUNTAS sebagai indeks audit saja**.
+
+Semua kriteria resmi yang belum terpenuhi harus tetap SEBAGIAN/UNKNOWN sampai bukti spesifik tersedia. Tidak ada workflow pemain adaptif/Story Mode otomatis, input gameplay, savestate restore, classifier/policy/Revision65/readiness-gate change. **Story Mode TIDAK TERBUKTI TAMAT.**
+
+ROM/disc, BIOS, Memory Card, savestate, RAM dump, dan screenshot gameplay privat tidak boleh masuk Git. Hanya repositori `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research` yang boleh diakses/diubah.
+
+Laporan utama:
 - [Laporan penutupan Step 4–10](docs/STEP4_10_CLOSURE_REPORT_2026-10-27.md)
-- [Kriteria resmi audit langkah 1–10](docs/REVERSE_ENGINEERING_AUDIT_STEPS_1_10_2026-10-27.md)
+- [Kriteria audit langkah 1–10](docs/REVERSE_ENGINEERING_AUDIT_STEPS_1_10_2026-10-27.md)
 - [Laporan runtime Step 7](docs/STEP7_RUNTIME_COLD_BOOT_RESULT_2026-10-27.md)
-- [Handoff chat berikutnya](docs/HANDOFF_REVERSE_ENGINEERING_STEPS4_10_2026-10-27.md)
+- [Handoff berikutnya](docs/HANDOFF_REVERSE_ENGINEERING_STEPS4_10_2026-10-27.md)
 
 ---
 ---
