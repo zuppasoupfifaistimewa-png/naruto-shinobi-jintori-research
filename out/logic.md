@@ -92,3 +92,22 @@ Status langkah: **SELESAI — header dibaca langsung dari salinan Library** pada
 - Langkah 3 — analisis MIPS/Ghidra headless dan ekspor fungsi: **belum dilakukan**.
 - Tidak ada ROM, BIOS, savestate, Memory Card, atau bukti privat yang ditambahkan ke repositori.
 
+## Langkah 3 — pemetaan awal fungsi (status parsial)
+
+Ghidra headless **belum dijalankan** karena `ghidraRun`/`analyzeHeadless` tidak terpasang di lingkungan kerja. Ghidra terbaru yang diperiksa berukuran sekitar 570 MB dan mensyaratkan JDK 25, sedangkan lingkungan ini menyediakan JDK 21. Tidak ada klaim bahwa daftar fungsi Ghidra telah diekspor.
+
+Fallback LLVM/heuristik disimpan pada [`out/main_exe_callscan.md`](main_exe_callscan.md):
+- 95.744 kata 32-bit dalam text block dipindai untuk pola `jal`.
+- Ditemukan 2.873 call-site ber-target di dalam text dan 898 alamat target unik sebagai **kandidat**, bukan 898 fungsi terverifikasi.
+- Ditemukan 9 alamat target unik di luar text tetapi dalam rentang RAM, termasuk target efektif `0x800AD454` yang dipanggil dari `0x800115DC`; ini konsisten dengan perlunya menelusuri kode overlay, tetapi belum membuktikan pemetaan overlay.
+- Satu jendela kecil `0x800115A0..0x80011604` didisassemble saja; seluruh executable tidak di-dump.
+
+Artefak teks kandidat lokal `main_exe_function_candidates.tsv` berisi 898 kandidat, jumlah pemanggil, indikator prologue heuristik, dan satu caller contoh. Artefak itu tidak memuat biner game dan belum di-commit ke Git.
+
+### Keputusan status
+
+- Langkah 1 — inventaris disc: **SELESAI berdasarkan catatan ekstraksi terdahulu**.
+- Langkah 2 — validasi header PS-X EXE: **SELESAI dan diverifikasi langsung**.
+- Langkah 3 — Ghidra headless: **BELUM SELESAI**; fallback statis awal tersedia.
+- Story Mode dan pemain adaptif tetap **NOT COMPLETE / dijeda**, tidak ada emulator atau input gameplay dijalankan.
+
