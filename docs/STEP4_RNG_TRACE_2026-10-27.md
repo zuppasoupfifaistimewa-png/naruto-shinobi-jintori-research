@@ -95,3 +95,8 @@ Pemindaian tambahan membentuk pola `LUI 0x41C6` + `ORI/ADDIU 0x4E6D` diikuti MUL
 ## Penutupan akhir Langkah 4 — 27 Oktober 2026
 
 Keputusan status final dan batas bukti disatukan pada [docs/STEP4_CLOSURE_2026-10-27.md](STEP4_CLOSURE_2026-10-27.md). Langkah 4 **SELESAI dalam cakupan inventaris statis yang didefinisikan**: main EXE, seluruh raw direct-JAL hit yang ditemukan, konteks Ghidra entry 0/1, signature LCG, dan pola konstruksi alamat/JALR sempit. Status ini tidak menyatakan semua caller runtime telah ditemukan. Base resource, satu reachability entry 0, 36 boundary fungsi entry 1, caller berbasis pointer/dispatch, serta kode hasil dekompresi/dekripsi tetap UNKNOWN dan tidak boleh dipromosikan menjadi VERIFIED tanpa bukti baru.
+
+
+## Hasil Ghidra final #40455975408
+
+Run selesai dengan `success`; detail dan batas akhir tercatat pada [penutupan Langkah 4](STEP4_CLOSURE_2026-10-27.md). Final Ghidra caller export mencatat entry 0: 5 raw JAL candidates total, 3 decoded direct-call sites (2 RNG + 1 seed setter), 2 RNG raw-only. Entry 1: 144 raw RNG candidates, 108 decoded direct-call sites dalam 50 fungsi, dan 36 raw-only candidates. Pass disassembly lokal sebelumnya mendekode 36 raw-only entry 1 sebagai JAL, tetapi Ghidra tidak mengesahkan mereka sebagai decoded direct-flow. Maka 152 adalah jumlah raw direct-JAL candidates pada main EXE + DATA.BIN; bukan 152 caller yang seluruhnya tervalidasi Ghidra. Runtime mapping/indirect dispatch tetap UNKNOWN.
