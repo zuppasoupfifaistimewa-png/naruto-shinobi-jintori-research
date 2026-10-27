@@ -218,3 +218,14 @@ Status laporan ini tidak menyatakan Story Mode tamat atau seluruh aturan permain
 - Dokumen: [scan lintas resource](rng_resource_reference_scan_2026-10-27.md), [caller Ghidra entry 1](rng_resource_entry1_ghidra_callers_2026-10-27.md), [laporan teknis Step 4](../docs/STEP4_RNG_TRACE_2026-10-27.md).
 
 Pemain adaptif tetap dijeda. Tidak ada emulator, gameplay, input atau pemulihan savestate.
+
+## Checkpoint Langkah 4 terbaru — direct-call inventory (27 Oktober 2026)
+
+- **Main EXE:** 4 caller langsung RNG telah dipetakan ke fungsi Ghidra.
+- **DATA.BIN entry 0 (base hipotetis 0x800AD000):** empat instruksi `jal 0x80035D78` terdekode; tiga punya branch masuk yang terlihat di jendela lokal. `0x800BB748` adalah instruksi JAL tetapi reachability belum terbukti karena ada lompatan tanpa syarat sebelumnya dan tidak ada incoming edge pada konteks lokal. Site `0x800AF2AC` memanggil `0x80035DA8` dengan `$a0=-1`; jika jalur ini berjalan, state RNG ditulis `0xFFFFFFFF`.
+- **DATA.BIN entry 1 (base hipotetis 0x800D0000):** 144/144 call site kini didekode sebagai `jal 0x80035D78`. Auto-analysis telah memetakan 108 ke 50 fungsi plus 1 site tanpa boundary; 36 sisanya didekode lokal tanpa boundary caller. [Laporan caller 108](rng_resource_entry1_ghidra_callers_2026-10-27.md), [konteks 36 sisanya](rng_resource_entry1_unmapped_context_2026-10-27.md).
+- Raw scan tidak menemukan direct-JAL word yang sama di DATA2.BIN/DUMMY.BIN/XASECT.BIN. Ini tidak membuktikan tidak ada code yang compressed/decompressed atau caller tak langsung.
+
+**Status operasional Step 4:** direct-JAL inventory statis yang tercakup sudah dituntaskan; klaim “semua caller runtime absolut” tetap tidak dapat dibuat sampai base/lifecycle overlay dan jalur indirect/decompression diverifikasi. [Laporan entry 0](rng_resource_entry0_ghidra_context_2026-10-27.md) · [scan lintas resource](rng_resource_reference_scan_2026-10-27.md) · [laporan Step 4](../docs/STEP4_RNG_TRACE_2026-10-27.md).
+
+Pemain adaptif tetap dijeda; tidak ada emulator/gameplay/input/savestate.
