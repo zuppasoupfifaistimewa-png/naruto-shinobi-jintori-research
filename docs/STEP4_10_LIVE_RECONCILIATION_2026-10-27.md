@@ -1,5 +1,18 @@
 # Rekonsiliasi live reverse engineering Langkah 4–10 — 27 Oktober 2026
 
+## Step 4/7 — latest Ghidra resource entry-0 result (27 Oktober 2026, 21:07 WIB)
+
+Static-analysis run [#40512917437](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40512917437) **completed/success** at 21:07:13 WIB; the job's 17 steps all completed successfully, including temporary-input cleanup. Text-only artifact [#12738984684](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40512917437/artifacts/12738984684) is 1,720,881 bytes; local SHA-256 matches the API digest `fe83d2edcb1c22a9ef1f6d7193dff799aff0512286b0bf3fdb1caea68c6576e0`. The ZIP contains 22 files ending in text/log/TSV outputs only; no game binary, BIOS, save, RAM dump or screenshot is included. Main executable index reports 1,206 function rows, candidate entry-1 index 1,555 rows, and candidate entry-0 index 38 rows.
+
+### Actual entry-0 observations (still a static candidate mapping)
+
+- DATA.BIN entry 0 identity: file offset `0x5F800`, 110,536 bytes, SHA-256 `56ee7d3b195b0708bd5f9163d354f0173a828430c9467d410e822b1793d316d4`. Candidate base `0x800AD000) remains **NOT runtime validated**.
+- Candidate helper address `0x800BDBFC) lies at entry-0-relative offset `0x10BFC) under that hypothesis. Ghidra indexed 38 function rows. It records a jump instruction at the address, and its computed C block/reference context is not a proven runtime call contract; the report explicitly says interpretation static candidate only. `reference_count=0` for this helper in this Ghidra view.
+- Entry-0 target scan (`0x80035D78`, `0x80035DA8`) scanned 27,586 aligned words, with 5 raw JAL candidates and 3 decoded direct callsites. `0x800AF2AC → 0x80035DA8` is a Ghidra-validated direct JAL, but the caller function is UNMAPPED. RNG callsites `0x800BB2D8) and `0x800BB2FC) are decoded direct JALs to `0x80035D78), also with caller functions UNMAPPED. `0x800BB748) and `0x800BB770) are raw word matches only; their instructions were not decoded. `unique_validated_caller_functions_with_boundary=0` and no detailed caller decompilation was emitted.
+- This improves the static inventory for Step 4(a/c) but still cannot prove the candidate entry's runtime base, whether the sites execute, full caller function boundaries, runtime seed value, or in-game randomness effects. Keep Step 4 overall **SEBAGIAN** and seed lifecycle/indirect paths **UNKNOWN**; do not call this a seed-runtime proof.
+- This run supersedes any earlier statement that #40512917437 is still in progress. At the current checkpoint there are **zero Actions runs queued and zero in progress**. No adaptive-player workflow, gameplay input, emulator session or savestate restore was used.
+
+
 ## Snapshot kerja terbaru — 27 Oktober 2026, 21:02 WIB
 
 ### Langkah 5 — cross-check dekompilasi
