@@ -25,6 +25,14 @@
 - Run [#40487406384](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40487406384) is `in_progress`; main executable analysis has completed and DATA.BIN entry 1 is in progress; entry 0/helper result not yet available at this checkpoint. No gameplay or emulator execution is part of this Ghidra workflow.
 - Step 4 remains **SEBAGIAN**; do not claim seed `0xFFFFFFFF` until return value evidence supports it. Step 7 remains **SEBAGIAN** with both loader and seed-setter probes bounded/no-hit. Story Mode remains **TIDAK TERBUKTI TAMAT**.
 
+
+## Incremental checkpoint — Step 6 full-artifact store inventory and immediate scan (27 Oktober 2026)
+
+- Full text artifact #12719587873 from runner review #40473737136 confirms five entry-1 candidate routines (`0x80111228`, `0x801112CC`, `0x801113B4`, `0x801114F0`, `0x80111588`) write `+0x2E9=0x3F`, `+0x2E5=0`, selector byte `+0x58B`, and conditional codes at `+0x5D2`; these values are observed stores, not game semantics. Candidate `0x8011C0D0` negates record word `+0x04`, clamps to `-9999`, then calls setter `0x8001387C` under hypothetical entry-1 base `0x800D0000`.
+- Bounded scalar-immediate scan [#40488847927](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40488847927) covered 98,357 decoded instructions on entry-1 and reported no exact scalar-immediate hits for offsets `+0xB30/+0xB38/+0xB40/+0xB44/+0x2E9/+0x2E5/+0x58B/+0x5D2`. This scan is not a full memory-displacement/effective-address/register-alias/code-not-decoded scan; it does not contradict explicit store instructions in the decompiler artifact and does not prove offsets unused.
+- A preceding field-scan attempt #40488684688 failed at CUE input normalization before static scanning; do not treat it as a negative reverse-engineering result. The corrected scan artifact is the result to inspect, subject to its scalar-immediate scope.
+- Step 6 remains **SEBAGIAN**. Still unknown: entry-1 runtime base, meanings of field/code values, source/final writer for `+0xB30/+0xB38/+0xB40/+0xB44`, and effects of candidate transitions. Current Ghidra helper-return run #40487406384 also remains to be checked for `0x80037138`; the delay-slot correction says its `$v0` is forwarded to candidate seed setter `0x80035DA8`, so no value should be assumed.
+
 ---
 # One-shot RIGHT-vs-NONE diagnostic outcome (25 October 2026) (25 October 2026)
 
