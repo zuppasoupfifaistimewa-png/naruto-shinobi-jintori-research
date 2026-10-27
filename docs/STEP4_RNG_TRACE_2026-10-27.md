@@ -1,3 +1,13 @@
+## LIVE ADDENDUM — Entry 0 RNG call context (27 Oktober 2026, 21:41 WIB)
+
+Run [context entry 0 #40521136060](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521136060) success, artifact #12742056745 (5.396 B; ZIP SHA-256 `8b7fb1abfe4371c460ddc6f163295bde1ea4b6025c2ecb3fe2550b3504e477f3`). Run [context entry 1 #40521136038](https://github.com/zuppasoupfivaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521136038) success, artifact #12741592577 (15.016 B; ZIP SHA-256 `8f90959c601067480d5718eba6a6f1c819b08c37ac57e8667551dedd9febc1f4`). Kedua run mendecode jendela terbatas, bukan full-resource autoanalysis.
+
+Entry 0: `0x800AF2A4 jal 0x80037138`; delay-slot `0x800AF2A8 li a0,-1` memberi argumen -1 kepada helper. Berikutnya `0x800AF2AC jal 0x80035DA8`; delay-slot `0x800AF2B0 move a0,v0` meneruskan return helper sebagai argumen setter. Jadi setter tidak menerima literal -1 dari callsite ini. Nilai helper return, nilai state saat boot, caller function boundary, dan dampak gameplay tetap UNKNOWN. Base `0x800AD000` hanya hipotesis.
+
+`0x800BB2D8` dan `0x800BB2FC` dalam entry 0 terdekode sebagai direct calls RNG pada jendela lokal; caller boundaries masih belum tervalidasi. Pola prolog yang dikeluarkan skrip hanya heuristik. **Step 4 tetap SEBAGIAN.**
+
+---
+
 ## Step 4/7 — latest Ghidra resource entry-0 result (27 Oktober 2026, 21:07 WIB)
 
 Static-analysis run [#40512917437](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40512917437) **completed/success** at 21:07:13 WIB; the job's 17 steps all completed successfully, including temporary-input cleanup. Text-only artifact [#12738984684](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40512917437/artifacts/12738984684) is 1,720,881 bytes; local SHA-256 matches the API digest `fe83d2edcb1c22a9ef1f6d7193dff799aff0512286b0bf3fdb1caea68c6576e0`. The ZIP contains 22 files ending in text/log/TSV outputs only; no game binary, BIOS, save, RAM dump or screenshot is included. Main executable index reports 1,206 function rows, candidate entry-1 index 1,555 rows, and candidate entry-0 index 38 rows.
