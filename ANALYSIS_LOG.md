@@ -1,3 +1,9 @@
+## Step 9 — hasil isolasi diperluas final (27 Oktober 2026, 21:02 WIB)
+
+Run [#40516755810](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810) **completed/success** pada 21:02:36 WIB. Artifact teks #12740305973: 4.567 byte, SHA-256 ZIP bf1a702074849b2592bfc5555a0d493b5ed86d3de0b9895a192db7fdf9f80cd4. Raw job log/job summary memastikan semua 11 langkah success, termasuk STEP9_PRIVATE_CLEANUP=PASS. Hasil aktual: RNG 0x80035D78 7/7 vektor dan setter/getter 0x8001387C/0x800138EC 16/16 kasus PASS. Setter membatasi nilai [-9999,99999], valid index 0–3 return 1, invalid 4/0xFFFFFFFF return 0 tanpa perubahan slot; getter membaca slot yang sama untuk indeks valid dan return 0 untuk indeks invalid. Setiap tes memeriksa v0/memory, return sentinel dan batas ≤128 instruksi.
+
+Ini uji CPU/RAM terisolasi dengan teks executable terverifikasi, bukan emulator PS1, BIOS, gameplay/input/savestate, dan bukan bukti formula biaya, aturan barrier/upgrade, giliran atau kemenangan. Step 9(b) kini SEBAGIAN (bukan UNKNOWN) karena dua accessor tambahan sudah diuji; Step 9 overall tetap SEBAGIAN karena target-compare, transisi, helper/caller lain dan semua jalur gagal belum tercakup. [Laporan hasil uji](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/out/step9/STEP9_UNICORN_RESULT_2026-10-27.md).
+
 # ANALYSIS LOG — live static evidence reconciliation (27 Oktober 2026)
 
 ## Step 5 — hasil perluasan terverifikasi (27 Oktober 2026, 20:50 WIB)
