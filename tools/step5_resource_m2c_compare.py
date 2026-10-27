@@ -23,6 +23,10 @@ def parse_hex_value(report: str, key: str) -> int | None:
     match = re.search(rf"(?m)^{re.escape(key)}=(?:0x)?([0-9a-fA-F]+)\s*$", report)
     return int(match.group(1), 16) if match else None
 
+def parse_decimal_value(report: str, key: str) -> int | None:
+    match = re.search(rf"(?m)^{re.escape(key)}=(\\d+)\\s*$", report)
+    return int(match.group(1), 10) if match else None
+
 def find_label_for_addr(asm: str, address: int) -> str | None:
     wanted = f"{address:08x}"
     labels = re.findall(
@@ -97,7 +101,7 @@ def main() -> int:
 
     gtext = ghidra_path.read_text(encoding="utf-8", errors="replace")
     entry = parse_hex_value(gtext, "function_entry")
-    size = parse_hex_value(gtext, "function_body_bytes")
+    size = parse_decimal_value(gtext, "function_body_bytes")
     end = parse_hex_value(gtext, "function_end_exclusive")
     call_direct = re.search(
         r"(?m)^rng_callsite_direct_flow_to_0x80035D78=yes\s*$", gtext, re.I
