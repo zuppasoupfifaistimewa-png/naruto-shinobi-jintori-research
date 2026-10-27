@@ -26,14 +26,19 @@ from unicorn.mips_const import (
 
 EXE_BYTES = 385_024
 TEXT_OFFSET = 0x800
-TEXT_BASE = 0x80010000
+TEXT_VIRTUAL_BASE = 0x80010000
+TEXT_BASE = TEXT_VIRTUAL_BASE & 0x1FFFFFFF
 TEXT_SIZE = 0x5D800
-ENTRY = 0x80035D78
-STATE = 0x800A3118
-RAM_BASE = 0x80000000
+ENTRY_VIRTUAL = 0x80035D78
+ENTRY = ENTRY_VIRTUAL & 0x1FFFFFFF
+STATE_VIRTUAL = 0x800A3118
+STATE = STATE_VIRTUAL & 0x1FFFFFFF
+# PS1 KSEG0 addresses 0x80000000–0x801FFFFF alias physical RAM 0x00000000–0x001FFFFF.
+# Unicorn MIPS bypasses KSEG MMU translation; map the physical 2 MiB RAM window.
+RAM_BASE = 0x00000000
 RAM_SIZE = 0x200000
-STACK = 0x801FE000
-RETURN_SENTINEL = 0x801FF000
+STACK = 0x001FE000
+RETURN_SENTINEL = 0x001FF000
 MAX_INSTRUCTIONS = 128
 MULT = 0x41C64E6D
 ADD = 0x3039
@@ -66,7 +71,7 @@ def main() -> int:
     gp = u32(0x14)
     load = u32(0x18)
     text_size = u32(0x1C)
-    if (entry_pc, load, text_size) != (0x80011448, TEXT_BASE, TEXT_SIZE):
+    if (entry_pc, load, text_size) != (0x80011448, TEXT_VIRTUAL_BASE, TEXT_SIZE):
         raise SystemExit("FAIL: PS-X EXE header fields differ from verified baseline")
     code = data[TEXT_OFFSET:TEXT_OFFSET + TEXT_SIZE]
     if len(code) != TEXT_SIZE or not (TEXT_BASE <= ENTRY < TEXT_BASE + TEXT_SIZE):
@@ -133,7 +138,7 @@ def main() -> int:
         "",
         "- Scope: hanya menjalankan fungsi MIPS di 0x80035D78 pada executable text yang telah diverifikasi; tidak menjalankan emulator PS1/game, BIOS, event loop, atau input gameplay.",
         "- RAM model: 2 MiB virtual RAM PS1 pada 0x80000000–0x801FFFFF, text EXE dimuat pada alamat header 0x80010000; seluruh RAM lain nol kecuali state RNG dan register awal yang dicatat.",
-        "- Register awal: PC=0x80035D78, RA=0x801FF000 (sentinel return), SP=0x801FE000, GP diambil dari header PS-X EXE.",
+        "- Alamat CPU virtual fungsi/state adalah `0x80035D78`/`0x800A3118`; fungsi dipanggil pada alias fisik `0x00035D78`, state ditulis di physical `0x000A3118`. Register awal: PC=0x00035D78, RA=0x001FF000 (physical sentinel return), SP=0x001FE000; GP diambil dari header PS-X EXE.",
         f"- Executable: bytes={len(data)}; SHA-256={exe_hash}; teks={len(code)} bytes; rentang=0x{TEXT_BASE:08X}–0x{TEXT_BASE + TEXT_SIZE:08X}.",
         f"- Fungsi berakhir kembali ke sentinel; batas instruksi maksimum per tes={MAX_INSTRUCTIONS}.",
         "",
