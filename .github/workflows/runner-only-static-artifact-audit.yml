@@ -1,5 +1,5 @@
 name: Runner-only audit of latest Ghidra and Step 6 text artifacts
-# RUNNER_ONLY_AUDIT_REVIEW_WIB=2026-10-27 18:03; large logs are streamed for hashing only; refresh targets to Ghidra run 40498208067 and Step 6 run 40500058788.
+# RUNNER_ONLY_AUDIT_REVIEW_WIB=2026-10-27 19:32; refresh to Step6 run 40504141727 and expose uncapped direct-memory inventory; large raw logs are hashed only.
 
 on:
   push:
@@ -61,7 +61,7 @@ jobs:
             printf '%s\t%s\t%s\t%s\n' "$label" "$run_id" "$artifact_id" "$zip" >> "$root/verified.tsv"
           }
           download_one ghidra 40498208067 12732952776 ghidra-slps-03553-function-index sha256:6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6 2255170
-          download_one step6 40500058788 12731474756 step6-resource-field-static-scan sha256:4aea20e1420292505666f15898ba2db57a875a4fc67fbe2c65336af0a16fc9f4 180174
+          download_one step6 40504141727 12733399759 step6-resource-field-static-scan sha256:4dfaabd652694f829cb85d1dee747da4d2924f177b8bc3cbe8c7cbb4eb157ef7 220357
           download_one helper 40499270568 12731593532 step4-helper-return-static-audit sha256:8567a5cad2a00823302ea7b361dd9b6eaab736bce6b77cf51ea136d6bee454b3 11672
 
           python3 - "$root" "$report" <<'PY'
@@ -157,9 +157,23 @@ jobs:
           scan=s.get("field-offset-scan.txt","")
           rows=[]
           for line in scan.splitlines():
-              if line.startswith(("analysis=","program=","processor=","static_base=","decoded_instructions_","match_output_cap","limitation=","=== SUMMARY ===","offset=+0xb30","offset=+0xb38","offset=+0xb40","offset=+0xb44","memory_displacement_parser_fixture=")):
+              if line.startswith(("analysis=","resource=","program=","processor=","static_base=","hypothetical_base=","decoded_instructions_","direct_memory_operand_","base_register_trace=","match_output_cap","limitation=","=== SUMMARY ===","offset=+0xb30","offset=+0xb38","offset=+0xb40","offset=+0xb44","memory_displacement_parser_fixture=")):
                   rows.append(line)
-          emit("Step 6 displacement/immediate scan summary",rows,100)
+          emit("Step 6 displacement/immediate scan summary",rows,160)
+          inventory_rows=[]
+          inside_inventory=False
+          for line in scan.splitlines():
+              if line.strip()=="=== DIRECT_MEMORY_DISPLACEMENT_INVENTORY_BEGIN ===":
+                  inside_inventory=True
+                  inventory_rows.append(line)
+                  continue
+              if line.strip()=="=== DIRECT_MEMORY_DISPLACEMENT_INVENTORY_END ===":
+                  inventory_rows.append(line)
+                  inside_inventory=False
+                  continue
+              if inside_inventory and line.startswith("direct_displacement="):
+                  inventory_rows.append(line)
+          emit("Step 6 all decoded direct-memory displacement inventory",inventory_rows,10000)
           # Include a bounded sample of actual memory operands for each pending offset.
           rows=[]
           targets=("0xb30","0xb38","0xb40","0xb44")
@@ -170,6 +184,13 @@ jobs:
               for block in blocks[:2]:
                   rows.extend(block.strip().splitlines()[:32])
           emit("Step 6 pending-field memory operand samples (bounded)",rows,300)
+          trace_rows=[]
+          trace_blocks=re.split(r"(?=^=== BASE_REGISTER_TRACE_BEGIN )",scan,flags=re.M)
+          for block in trace_blocks:
+              if not block.startswith("=== BASE_REGISTER_TRACE_BEGIN "): continue
+              trace_rows.extend(block.strip().splitlines()[:18])
+              if len(trace_rows)>=180: break
+          emit("Step 6 bounded base-register and alias trace samples",trace_rows,180)
           decomp_rows=[]
           decomp_pattern=r"=== FIELD_ACCESS_FUNCTION_DECOMPILATION_BEGIN entry=([^ ]+) ===(.*?)=== FIELD_ACCESS_FUNCTION_DECOMPILATION_END entry=([^ ]+) ==="
           for match in re.finditer(decomp_pattern,scan,re.S):
