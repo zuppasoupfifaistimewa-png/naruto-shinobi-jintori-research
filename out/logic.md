@@ -1,5 +1,13 @@
 # LIVE LOGIC CHECKPOINT — Step 6 static evidence only (27 Oktober 2026)
 
+## Checkpoint baru — bounded register provenance (27 Oktober 2026, 20:25 WIB)
+
+**Checkpoint terbaru Step 6 (27 Oktober 2026, 20:25 WIB):** scanner provenance di https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/0afc0eec4a5c12e4df5a17c771c8b0d28d7a99dd dijalankan oleh [Actions #40511758146](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40511758146) — completed/success pada 20:25:48 WIB. Artifact [#12737611770](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40511758146/artifacts/12737611770), 229.233 byte, SHA-256 ZIP `b84ff017cdbefb8ece6d04a7c8bef66b3fdc27b61412e91e10cc01485225b126`; digest API sama dengan SHA lokal. Enam anggota ZIP hanya teks/log; `text_only_output_count=6`, `private_binary_in_artifact=no`, `STEP6_PRIVATE_CLEANUP=PASS`. Fixture parser operand dan fixture pembentukan alamat `lui/ori/addiu/sign-extension` benar-benar mengeluarkan PASS. Laporan: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP6_REGISTER_PROVENANCE_AUDIT_2026-10-27.md.
+
+Tool fixture membuktikan perhitungan LUI/ORI/ADDIU dan sign-extension pada resolver terbatas, bukan base runtime game. Untuk akses +B30/+B38/+B40, `a0) berasal dari `lw a0,-0x5AAC(s0)` di 0x8012C628; chain s0 berhenti pada control-flow boundary. Pada +B44 read, chain v1 berhenti di branch 0x8012CAF8. Dengan demikian, seluruh field/objek belum terpetakan. Langkah 6 tetap SEBAGIAN, kriteria 6(b) BLOCKED; arti gameplay UNKNOWN.
+
+
+
 Dalam decoded entry-1 view dengan base hipotesis 0x800D0000, instruksi B30 dan B38 dibaca lalu dijumlahkan dan disimpan ke B40. B44 di-zero-kan pada satu jalur dan pada jalur lain dibaca ke register a2 untuk candidate callee 0x8001B364. Bukti ini mendeskripsikan operasi dan transfer nilai, bukan semantik field; jangan menyebutnya biaya Chakra/barrier/turn/level-up. Aggregate scan meliputi 31.081 direct operand pada 98.357 instruksi terdekode, tetapi tidak menyelesaikan aliases/pointer/split-immediates/alternate bases. Matriks dan status run terbaru: [live reconciliation](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP4_10_LIVE_RECONCILIATION_2026-10-27.md).
 
 ---
