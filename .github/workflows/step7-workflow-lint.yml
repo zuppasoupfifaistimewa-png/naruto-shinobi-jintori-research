@@ -1,0 +1,23 @@
+name: Validate Step 7 loader diagnostic workflow
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/step7-loader-coldboot-diagnostic.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-step7:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout permitted research repository
+        uses: actions/checkout@v4
+      - name: Run actionlint on the Step 7 workflow
+        uses: rhysd/actionlint@v1.7.7
+        with:
+          files: .github/workflows/step7-loader-coldboot-diagnostic.yml
