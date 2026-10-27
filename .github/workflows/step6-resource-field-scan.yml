@@ -84,7 +84,7 @@ jobs:
           rewritten, replaced = [], 0
           for line in lines:
               if line.lstrip().upper().startswith("FILE "):
-                  match = re.match(r'^(s*FILEs+)(?:"[^"]*"|S+)(s+S+s*)$', line, re.I)
+                  match = re.match(r'^([ \t]*FILE[ \t]+)(?:"[^"]*"|[^ \t]+)(.*)$', line, re.I)
                   if not match:
                       raise SystemExit("Unrecognized CUE FILE directive")
                   line = match.group(1) + '"naruto-disc.bin"' + match.group(2)
