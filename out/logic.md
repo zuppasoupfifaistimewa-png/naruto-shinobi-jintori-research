@@ -192,3 +192,18 @@ Ghidra menganalisis entry 1 pada offset 0x10BB000 (596.412 byte, SHA-256 potonga
 ## Langkah 6 — antrean analisis statis berikutnya
 
 Dekompilasi FUN_800EF98C, FUN_80100D14, FUN_80100DCC, FUN_8012A9C4, FUN_80137AD8, dan konsumen setter Chakra. Tujuannya mengenali transisi state/event, tabel record dan field terkait, bukan mengklaim hasil permainan. Base overlay 0x800D0000 tetap hipotesis. Status pemain adaptif tidak berubah: cue UNKNOWN, barrier_level_selection = WAIT, readiness NO-GO, Story Mode NOT COMPLETE, Revision65 tidak diubah.
+
+
+## Checkpoint otoritatif audit Langkah 1–10 — 27 Oktober 2026
+
+Bagian checkpoint ini memperbarui status yang tersebar dalam catatan historis di atas tanpa menghapus riwayat lama. Gunakan laporan audit terbaru untuk status per langkah dan batas bukti:
+
+- Audit Langkah 1–10: [docs/REVERSE_ENGINEERING_AUDIT_STEPS_1_10_2026-10-27.md](../docs/REVERSE_ENGINEERING_AUDIT_STEPS_1_10_2026-10-27.md).
+- Arsip permanen dekompilasi Ghidra/m2c untuk empat caller RNG: [out/step5/STEP5_GHIDRA_M2C_COMPARISON_2026-10-27.md](step5/STEP5_GHIDRA_M2C_COMPARISON_2026-10-27.md).
+- HEAD saat awal audit: 62a4c114b7ac7a55ae9eb6d91bc4c9bfaef1c2ef. Analisis Ghidra terbaru [Actions #40442572534](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40442572534) berhasil dan menghasilkan 1.206 baris fungsi untuk executable utama. Step 5 Ghidra/m2c [Actions #40449144521](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40449144521) berhasil pada SHA tersebut; empat dari empat caller RNG memiliki output Ghidra dan m2c yang tersimpan permanen.
+- Langkah 1–5 berstatus SELESAI dalam cakupan yang ditentukan dalam laporan. Langkah 6–8 dan 10 SELESAI SEBAGIAN; Langkah 9 TERBLOKIR karena belum ada uji fungsi MIPS terisolasi yang tervalidasi. Base DATA.BIN entry 1 0x800D0000 dan entry 0 0x800AD000 tetap hipotesis runtime.
+- RNG terpetakan secara statis pada 0x80035D78 dengan state 0x800A3118 dan empat direct-JAL callers main EXE. Seed runtime dan caller tak langsung tetap UNKNOWN.
+- Cabang resource yang membandingkan record terhadap getter target Chakra telah ditemukan secara statis, tetapi base resource, makna beberapa field/transisi, sumber delta +0xB30/+0xB38/+0xB40/+0xB44, dan apakah cabang tersebut berarti kemenangan Story Mode universal belum terbukti.
+- Actions query pada audit tidak menemukan run aktif atau antrean. Tidak ada workflow gameplay/player dijalankan dalam sesi audit ini. Jangan mengubah marker Revision65, policy, atau readiness gate sebagai bagian dari reverse engineering statis.
+
+Status laporan ini tidak menyatakan Story Mode tamat atau seluruh aturan permainan selesai direverse-engineer.
