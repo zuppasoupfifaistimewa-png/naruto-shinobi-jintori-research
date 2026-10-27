@@ -125,6 +125,43 @@ jobs:
             echo "::error::Extracted file does not have a PS-X EXE signature."
             exit 1
           fi
+
+          python3 - "$exe" "$out/psx-exe-header-validation.txt" <<'PY'
+          from pathlib import Path
+          import struct
+          import sys
+          exe, report = Path(sys.argv[1]), Path(sys.argv[2])
+          data = exe.read_bytes()
+          if len(data) != 385024 or data[:8] != b"PS-X EXE":
+              raise SystemExit("FAIL: executable size or signature mismatch")
+          u32 = lambda off: struct.unpack_from("<I", data, off)[0]
+          pc, gp, load, text = u32(0x10), u32(0x14), u32(0x18), u32(0x1C)
+          data_addr, data_size = u32(0x20), u32(0x24)
+          bss_addr, bss_size = u32(0x28), u32(0x2C)
+          sp_base, sp_offset = u32(0x30), u32(0x34)
+          checks = {
+              "entry_pc": pc == 0x80011448,
+              "load_address": load == 0x80010000,
+              "text_size": text == 0x5D800,
+              "header_plus_text_equals_file": 0x800 + text == len(data),
+              "entry_within_loaded_text": load <= pc < load + text,
+              "file_length": len(data) == 0x5E000,
+          }
+          if not all(checks.values()):
+              raise SystemExit("FAIL: " + ", ".join(k for k,v in checks.items() if not v))
+          report.write_text("\n".join([
+              "status=SUCCESS", "source=SLPS_035.53", f"file_bytes={len(data)}",
+              "magic=PS-X EXE", "header_bytes=0x800", f"initial_pc=0x{pc:08X}",
+              f"initial_gp=0x{gp:08X}", f"load_address=0x{load:08X}",
+              f"text_size=0x{text:X}", f"loaded_range=[0x{load:08X},0x{load+text:08X})",
+              f"data_address=0x{data_addr:08X}", f"data_size=0x{data_size:X}",
+              f"bss_address=0x{bss_addr:08X}", f"bss_size=0x{bss_size:X}",
+              f"initial_sp_base=0x{sp_base:08X}", f"initial_sp_offset=0x{sp_offset:X}",
+              "validation=" + ",".join(f"{k}:PASS" for k,v in checks.items() if v),
+              "input_executable_uploaded_as_artifact=no", ""
+          ]), encoding="utf-8")
+          print(report.read_text(), end="")
+          PY
           {
             echo "status=source verified"
             echo "source=existing GitHub Release BIN/CUE assets"
@@ -358,6 +395,86 @@ jobs:
           } > "$out/data-bin-entry1-analysis-result.txt"
           echo "Static overlay survey exported $count function rows."
 
+      - name: Extract and analyze DATA.BIN entry 0 for external helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/ghidra-output"
+          databin="$RUNNER_TEMP/ghidra-input/DATA.BIN"
+          resource="$RUNNER_TEMP/ghidra-input/DATA_BIN_ENTRY_0000.bin"
+          python3 - "$databin" "$resource" "$out/data-bin-entry0-validation.txt" <<'PY'
+          from pathlib import Path
+          import hashlib
+          import sys
+          source, destination, report = map(Path, sys.argv[1:4])
+          data = source.read_bytes()
+          expected = "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822"
+          if len(data) != 66015232 or hashlib.sha256(data).hexdigest() != expected:
+              raise SystemExit("DATA.BIN identity check failed; refusing to extract entry 0")
+          offset, size = 0x5F800, 110536
+          entry = data[offset:offset+size]
+          if len(entry) != size:
+              raise SystemExit(f"Unexpected entry 0 length: {len(entry)}")
+          destination.write_bytes(entry)
+          report.write_text("\n".join([
+              "resource=DATA.BIN entry index 0", f"file_offset=0x{offset:X}",
+              f"bytes={len(entry)}", f"sha256={hashlib.sha256(entry).hexdigest()}",
+              "hypothetical_load_address=0x800AD000",
+              "load_address_status=STATIC_HYPOTHESIS_NOT_RUNTIME_VALIDATED",
+              "reason=needed to inspect referenced helper 0x800BDBFC",
+              "resource_binary_uploaded_as_artifact=no", ""
+          ]), encoding="utf-8")
+          print(report.read_text(), end="")
+          PY
+
+          headless="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
+          if [[ -z "$headless" || ! -x "$headless" ]]; then
+            echo "::error::Ghidra headless launcher unavailable for DATA.BIN entry 0."
+            exit 1
+          fi
+          project="$RUNNER_TEMP/ghidra-entry0-project"
+          mkdir -p "$project"
+          set +e
+          "$headless" "$project" DATA_BIN_entry_0000 \
+            -import "$resource" \
+            -loader BinaryLoader \
+            -loader-baseAddr 0x800AD000 \
+            -loader-length 0x1AF08 \
+            -loader-blockName DATA_BIN_ENTRY_0000 \
+            -processor "MIPS:LE:32:default" \
+            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -preScript PrepareEntry0Helper.java \
+            -postScript ExportFunctionIndex.java "$out/data-bin-entry0-functions.tsv" \
+            -postScript ExportEntry0Helper.java "$out/data-bin-entry0-helper.txt" \
+            -analysisTimeoutPerFile 1800 \
+            -max-cpu 2 \
+            -deleteProject > "$out/entry0-ghidra-headless.log" 2>&1
+          status=$?
+          set -e
+          if [[ "$status" -ne 0 ]]; then
+            echo "status=FAILED" > "$out/data-bin-entry0-analysis-result.txt"
+            echo "exit_code=$status" >> "$out/data-bin-entry0-analysis-result.txt"
+            tail -n 100 "$out/entry0-ghidra-headless.log" || true
+            exit "$status"
+          fi
+          if [[ ! -s "$out/data-bin-entry0-functions.tsv" || ! -s "$out/data-bin-entry0-helper.txt" ]]; then
+            echo "::error::Entry 0 function index or helper decompilation is missing."
+            exit 1
+          fi
+          rows="$(awk 'END { if (NR > 1) print NR - 1; else print 0 }' "$out/data-bin-entry0-functions.tsv")"
+          {
+            echo "status=SUCCESS"
+            echo "resource=DATA.BIN entry index 0"
+            echo "resource_sha256=$(sha256sum "$resource" | awk '{print $1}')"
+            echo "resource_bytes=110536"
+            echo "hypothetical_load_address=0x800AD000"
+            echo "function_rows=$rows"
+            echo "target_helper=0x800BDBFC"
+            echo "runtime_mapping=NOT_VALIDATED"
+            echo "resource_binary_uploaded_as_artifact=no"
+          } > "$out/data-bin-entry0-analysis-result.txt"
+          echo "Entry 0 helper decompilation completed; $rows functions indexed."
+
       - name: Upload text-only Ghidra results
         if: always()
         uses: actions/upload-artifact@v4
@@ -371,4 +488,4 @@ jobs:
         if: always()
         shell: bash
         run: |
-          rm -rf "$RUNNER_TEMP/ghidra-input" "$RUNNER_TEMP/ghidra-project" "$RUNNER_TEMP/psx-disc-source"
+          rm -rf "$RUNNER_TEMP/ghidra-input" "$RUNNER_TEMP/ghidra-project" "$RUNNER_TEMP/ghidra-overlay-project" "$RUNNER_TEMP/ghidra-entry0-project" "$RUNNER_TEMP/psx-disc-source"
