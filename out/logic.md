@@ -3,6 +3,21 @@
 Status: riset logika gameplay; pemain adaptif tetap dijeda.
 Aturan: catat hanya bukti, pisahkan fakta dari hipotesis, jangan commit ROM/BIOS/savestate/Memory Card/bukti privat.
 
+## Checkpoint terkini — audit reverse engineering Steps 4–10, 27 Oktober 2026
+
+Status keseluruhan (lihat laporan penutupan):
+- Langkah 4: SEBAGIAN untuk kriteria resmi 4(a–e), walaupun inventaris statis tertentu telah selesai; seed/lifecycle runtime, caller battle, hubungan caller-ke-hasil roulette, dispatch menyeluruh, randomness alternatif masih terbuka.
+- Langkah 5: TUNTAS untuk empat fungsi terpilih saja (Ghidra + m2c, tidak mengklaim kode sumber asli).
+- Langkah 6: SEBAGIAN; sumber operand/store/delta dan semantik transisi/resource belum seluruhnya terbukti.
+- Langkah 7: SEBAGIAN. Run [#40479865235](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40479865235) selesai workflow success (157 detik), tetapi probe empat breakpoint timeout pada frame 1–3 tanpa hit accepted; preflight no-breakpoint frame 50 dan debugger-listener-only frame 40. Artifact teks #12722187784 SHA-256 ZIP b9537035eb6ffed66a0aadd5ab48db88715ed2e2128bcf46a48f374c7306ac26; cleanup PASS. Parser metrik control-frame salah mencetak 0; gunakan raw log.
+- Langkah 8: SEBAGIAN; field/table flows statis tertentu terverifikasi, sedangkan biaya barrier/upgrade, battle/roulette/turn universal, kartu, kemenangan tiap mode tetap UNKNOWN atau BELUM TERUJI.
+- Langkah 9: TUNTAS hanya untuk fungsi RNG 0x80035D78 dengan 7/7 input vector, alias fisik RAM yang cocok, return sentinel/12 instruksi; bukan emulator PS1 penuh dan bukan bukti semua fungsi.
+- Langkah 10: TUNTAS sebagai indeks audit saja.
+- Story Mode: TIDAK TERBUKTI TAMAT. Pemain adaptif tetap dijeda.
+
+Langkah berikutnya yang aman dan bernilai: jangan ulangi probe empat-breakpoint yang sama. Isolasi satu breakpoint per cold boot dengan timeout singkat, tanpa input atau savestate restore; rekam VSync/hit/exit dan perbaiki regex parser. Lanjutkan juga tracing statis Step 6 terhadap sumber operand, branch, store, caller, dan field yang belum jelas. Pertahankan pembedaan TERVERIFIKASI / HIPOTESIS / UNKNOWN / BELUM TERUJI.
+
+---
 ## Langkah 1 — identitas disc dan daftar file
 
 Status langkah: **SELESAI BERDASARKAN CATATAN EKSTRAKSI LOKAL TERDAHULU**. Ekstraksi tidak dijalankan ulang pada putaran ini.
