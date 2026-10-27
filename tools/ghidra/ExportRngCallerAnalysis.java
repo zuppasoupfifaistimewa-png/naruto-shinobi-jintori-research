@@ -72,6 +72,41 @@ public class ExportRngCallerAnalysis extends GhidraScript {
         line("--- CALLSITE_INSTRUCTIONS_END ---");
     }
 
+
+    private void dumpSimpleFunction(DecompInterface decompiler, long entryOffset) {
+        Address entry = toAddr(entryOffset);
+        Function function = getFunctionAt(entry);
+        line("");
+        line("=== HELPER_FUNCTION entry=" + entry + " ===");
+        if (function == null) {
+            Function containing = getFunctionContaining(entry);
+            line("function_status=NOT_FOUND_AT_ENTRY");
+            if (containing != null) {
+                line("containing_function_entry=" + containing.getEntryPoint());
+                line("containing_function_name=" + containing.getName());
+            }
+            return;
+        }
+        line("name=" + function.getName());
+        line("body_address_count=" + function.getBody().getNumAddresses());
+        line("source_type=" + function.getSymbol().getSource());
+        DecompileResults result = decompiler.decompileFunction(function, 90, monitor);
+        if (result != null && result.decompileCompleted() && result.getDecompiledFunction() != null) {
+            line("--- C_DECOMPILATION_BEGIN ---");
+            line(result.getDecompiledFunction().getC());
+            line("--- C_DECOMPILATION_END ---");
+        } else {
+            line("decompile_status=FAILED");
+            line("decompile_message=" + (result == null ? "null result" : result.getErrorMessage()));
+        }
+        line("--- HELPER_INSTRUCTIONS_BEGIN ---");
+        Instruction instruction = currentProgram.getListing().getInstructionAt(entry);
+        for (int i = 0; i < 28 && instruction != null; i++, instruction = instruction.getNext()) {
+            line(instruction.getAddress() + "\\t" + instruction.toString());
+        }
+        line("--- HELPER_INSTRUCTIONS_END ---");
+    }
+
     private void dumpReferences(long targetOffset, String label) {
         Address target = toAddr(targetOffset);
         line("");
@@ -137,9 +172,23 @@ public class ExportRngCallerAnalysis extends GhidraScript {
             dumpFunction(decompiler, 0x80015B7CL, "0x80015BF0");
             dumpFunction(decompiler, 0x8001A328L, "0x8001A460");
             dumpFunction(decompiler, 0x80020BF4L, "0x80020C24");
+
+            // Step 4 helper trace: domains, filtering predicates, and downstream initializers.
+            dumpSimpleFunction(decompiler, 0x800154D4L);
+            dumpSimpleFunction(decompiler, 0x800158D8L);
+            dumpSimpleFunction(decompiler, 0x800159BCL);
+            dumpSimpleFunction(decompiler, 0x80016C68L);
+            dumpSimpleFunction(decompiler, 0x80020D48L);
+            dumpSimpleFunction(decompiler, 0x80018300L);
+            dumpSimpleFunction(decompiler, 0x80018468L);
+
+            // Xrefs to RNG and candidate/global table locations (some may be outside loaded text).
             dumpReferences(0x800A3118L, "rng_state_global");
             dumpReferences(0x80035D78L, "lcg_candidate");
             dumpReferences(0x80035DA8L, "seed_setter_candidate");
+            dumpReferences(0x80070D02L, "shuffled_table_count_DAT_80070D02");
+            dumpReferences(0x80070D0AL, "shuffled_table_base_DAT_80070D0A");
+            dumpReferences(0x80089DA9L, "candidate_choice_DAT_80089DA9");
             dumpInstructionWindow(0x80035D60L, 0x80035DC0L, "LCG_AND_SEED_SETTER");
             decompiler.dispose();
             out.flush();
