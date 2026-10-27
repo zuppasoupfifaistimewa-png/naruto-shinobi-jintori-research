@@ -87,7 +87,7 @@ def inject_missing_function_boundaries(asm: str) -> tuple[str, list[str]]:
         if find_asm_function_label(asm, address):
             continue
         insn = re.compile(
-            rf"/\\*\\s*[0-9a-fA-F]+\\s+{address:08X}\\s+[0-9a-fA-F]+\\s+\\*/",
+            rf"/\*\s*[0-9a-fA-F]+\s+{address:08X}\s+[0-9a-fA-F]+\s+\*/",
             re.IGNORECASE,
         )
         lines = asm.splitlines()
@@ -95,7 +95,7 @@ def inject_missing_function_boundaries(asm: str) -> tuple[str, list[str]]:
         if match_index is None:
             continue
         lines.insert(match_index, f"glabel {label} # Ghidra boundary 0x{address:08X}")
-        asm = "\\n".join(lines) + "\\n"
+        asm = "\n".join(lines) + "\n"
         inserted.append(f"0x{address:08X}={label}")
     return asm, inserted
 
