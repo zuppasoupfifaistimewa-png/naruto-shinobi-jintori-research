@@ -133,3 +133,32 @@ Direct-JAL callers yang ditemukan di text utama: `0x80015B14`, `0x80015BF0`, `0x
 
 
 Penyelarasan pipeline setelah temuan Langkah 4: workflow [`ghidra-static-analyze-psx-exe.yml`](../.github/workflows/ghidra-static-analyze-psx-exe.yml) sekarang juga menjalankan `tools/psx_rng_signature_scan.py` terhadap executable yang sama setelah validasi hash. Jika handoff privat selesai, satu run akan menghasilkan daftar fungsi Ghidra dan laporan signature/caller RNG dalam satu artefak teks.
+
+
+## Koreksi status — Ghidra dan langkah 4 (27 Oktober 2026)
+
+Bagian status langkah 3 yang lebih lama di atas ditulis sebelum analisis executable benar-benar berhasil. **Gunakan bagian ini sebagai status terbaru.**
+
+### Langkah 3 — impor, auto-analysis, dan ekspor fungsi Ghidra
+
+**SELESAI.** GitHub Actions run [#40438574949](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40438574949) berhasil dengan Ghidra 12.2, Temurin JDK 25, dan bahasa `MIPS:LE:32:default`. Runner mengekstrak `SLPS_035.53` sementara dari aset BIN/CUE Release; input cocok dengan ukuran 385.024 byte, signature `PS-X EXE`, dan SHA-256 `a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569`.
+
+Pengaturan impor: file offset `0x800`, ukuran text `0x5D800`, load base `0x80010000`, entry point `0x80011448`. Pesan log mengonfirmasi `Analysis succeeded` dan `Post-analysis succeeded`. Export `functions.tsv` selesai dengan **1.206 fungsi**. Artefak teks yang dapat diunduh: [ghidra-slps-03553-function-index (run #40438574949)](https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/artifacts/12704922603). Binary dan proyek sementara tidak dimasukkan ke Git atau artefak; tidak ada emulator/gameplay dijalankan.
+
+### Langkah 4 — RNG: bukti statis dan peta caller awal
+
+- **Keyakinan tinggi:** generator LCG pada `0x80035D78` menggunakan state `0x800A3118`, dengan rumus `state = state * 0x41C64E6D + 0x3039` (modulo (2^{32})), kemudian mengembalikan `(state >> 16) & 0x7FFF`.
+- **Keyakinan tinggi:** `0x80035DA8` menulis argumen `$a0` ke state yang sama; perilaku cocok dengan setter seed. Namun, Ghidra auto-analysis tidak mengekspor entry fungsi terpisah pada alamat itu dan scan tidak menemukan direct-JAL caller di main text. Seed awal belum diketahui.
+- Scan menemukan empat direct-JAL call sites pada main text, dan indeks Ghidra memetakan ke fungsi pemanggil:
+  - `0x80015B14` dalam `FUN_80015adc` (entry `0x80015ADC`, 160 byte).
+  - `0x80015BF0` dalam `FUN_80015b7c` (entry `0x80015B7C`, 240 byte).
+  - `0x8001A460` dalam `FUN_8001a328` (entry `0x8001A328`, 376 byte).
+  - `0x80020C24` dalam `FUN_80020bf4` (entry `0x80020BF4`, 156 byte).
+- Nama `FUN_...` ialah label default, bukan pengetahuan tentang makna gameplay. Konteks caller awal mendukung kemungkinan shuffle/permutasi pada salah satu rutin dan indeks pilihan berbatas pada lainnya, tetapi tujuan tabel/field belum dipastikan.
+- Scan ini hanya menghitung direct-JAL pada text executable utama; pemanggilan tak langsung, seed initialization, dan kode/resource overlay belum tercakup.
+
+Detail dan link artefak: [out/rng_candidate.md](rng_candidate.md), [out/main_exe_callscan.md](main_exe_callscan.md).
+
+### Langkah berikutnya
+
+Lanjutkan Langkah 4 secara terfokus: dekompilasi terbatas empat fungsi pemanggil, kumpulkan xref load/store untuk global `0x800A3118`, dan inspeksi instruksi tepat pada setter `0x80035DA8`. Jangan menyebut caller sebagai roulette, battle, AI, atau mekanik gameplay sebelum flow, tabel, dan efek samping menunjukkan hubungan itu. Status adaptive player tetap dijeda: target cue UNKNOWN, `barrier_level_selection = WAIT`, readiness NO-GO, Story Mode NOT COMPLETE, Revision65 tidak diubah.
