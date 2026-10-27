@@ -62,7 +62,7 @@ jobs:
           }
           download_one ghidra 40487406384 12728867894 ghidra-slps-03553-function-index sha256:5b37df744236d5ba87d85c8a74657cc207c569ab7e42229d51768c5ea05752c1 1724229
           download_one step6 40493556711 12729156734 step6-resource-field-static-scan sha256:c9ea5ef0552a0c80a70f0d3a758622a358509de2079e5954dac3ce0032426e93 180128
-          download_one helper 40498003495 12731037818 step4-helper-return-static-audit sha256:9a41858666611ce238168944112f81bbc212dfa1fe735f8b4bc0df68ff80f4fb 8250
+          download_one helper 40498231825 12732006381 step4-helper-return-static-audit sha256:adfdb608af96dd95a7c7e74d9f8b117767aaffa817d0c7eb860757ead868d9ba 9058
 
           python3 - "$root" "$report" <<'PY'
           from pathlib import Path
@@ -236,6 +236,15 @@ jobs:
                       rows.append(f"FULL_C_DECOMPILATION target={target} line_count={c_end-c_begin-1}")
                       rows.extend(section[c_begin:c_end+1])
           emit("Step 4 helper and setter decompilation excerpts",rows,420)
+          # New targeted xref export: list every direct code/data reference to the helper-return global.
+          rows=[]
+          xref_match=re.search(r"(?im)^=== DATA_XREFS target=(?:0x)?80066e7c ===$",detail)
+          if xref_match:
+              xref_lines=detail[xref_match.start():].splitlines()
+              rows.extend(xref_lines[:320])
+          else:
+              rows.append("MISSING: DATA_XREFS target=0x80066E7C")
+          emit("Step 4 global 0x80066E7C direct xrefs and loaded-image value",rows,320)
           out.write_text("\n".join(lines)+"\n",encoding="utf-8")
           print("STATIC_ARTIFACT_AUDIT_BEGIN")
           print(out.read_text(encoding="utf-8"))
