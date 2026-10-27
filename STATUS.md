@@ -1,3 +1,9 @@
+## Additional boundary caution from the entry-0 artifact
+
+The raw context around `0x800BDBFC` shows a function-like stack prologue and preceding control-flow instructions at `0x800BDBE4)–`0x800BDBF8`, followed by `j 0x800BE11C` at `0x800BDBFC`. Thus `0x800BDBFC` is visibly inside an instruction sequence that already has a stack-frame setup; treating that jump as an independently validated function entry is unsupported. Combined with `reference_count=0` and Ghidra body-overlap errors, this candidate cannot currently be used as the setter's caller/helper or as proof of loader reachability. This observation is bounded to the emitted raw window; it does not automatically validate `0x800BDBE4` as a formal Ghidra function boundary.
+
+---
+
 # ACTIONS LIVE CORRECTION — 27 Oktober 2026, pemeriksaan 21:54:52 WIB
 
 Run [#40520635663](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40520635663) kini **completed/success** dengan artifact teks #12743796502 (2.299.302 byte; ZIP SHA-256 `e2d5b496b2310c17110c59710212f7605bf8b3d90b798abb438c1224bf3d0549`). Baca artifact menunjukkan bahwa Ghidra entry-0 analysis mencapai **timeout internal 1.800 detik** dan memunculkan banyak error function-body overlap/repair. Export tetap memberi 36 function-index rows, tetapi kandidat `0x800BDBFC` memiliki `reference_count=0`; ini bukan validasi caller/helper RNG. Perlakukan Step 4/5 pada resource entry 0 tetap parsial.
