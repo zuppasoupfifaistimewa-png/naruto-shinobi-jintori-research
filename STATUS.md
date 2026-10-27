@@ -40,12 +40,12 @@ Checkpoint utama sebelum update ini: `main` SHA `6d4f2b06a586528cb6c43494359e9e1
 - Step 7: **SEBAGIAN**; direktori/penyalinan didukung statis, runtime mapping/lifecycle/bases belum terbukti.
 - Step 8: **SEBAGIAN**; tidak ada formula universal biaya barrier/level-up, battle/roulette/turn, atau syarat menang per mode yang terverifikasi.
 - Step 9: **TUNTAS hanya untuk RNG `0x80035D78`** (7/7 vektor; run #40474891838), bukan emulator PS1 penuh atau fungsi lain.
-- Step 10: **TUNTAS sebagai indeks audit saja**.
+- Step 10: **TUNTAS sebagai matriks closure audit per-kriteria saja**, bukan bukti seluruh game selesai.
 
 Semua kriteria resmi yang belum terpenuhi harus tetap SEBAGIAN/UNKNOWN sampai bukti spesifik tersedia. Tidak ada workflow pemain adaptif/Story Mode otomatis, input gameplay, savestate restore, classifier/policy/Revision65/readiness-gate change. **Story Mode TIDAK TERBUKTI TAMAT.**
 
 - Run seed-setter [#40485987817](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40485987817) selesai `success` pada 2026-10-27 10:08:48 UTC (17:08:48 WIB). Artefak teks-only #12724933081, 4.003 byte, ZIP SHA-256 `74fcb5b8958ce26ab7fd1091bd7c2ee8dbfc073bb09ac9c4ca70d1a6e2a204c6`: preflight VSync frame 50; listener-only max frame 60; target yang benar `0x80035DA8` mencatat progress frame 1–120 dengan `bp_hits=0`; exit 124 pada batas 35 detik; cleanup PASS. Report asli memiliki fallback PC keliru `0x800AD454`, namun raw ready line mengonfirmasi target dan fix fallback diuji pada validator #40486315324.
-- Run statis Ghidra [#40487406384](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40487406384) sedang berjalan pada commit `b92aa084aba62182ed4edc436cf20d68581be984`; job telah selesai analisis executable utama dan sedang pada DATA.BIN entry 1; entry 0 (serta helper `0x80037138`) belum selesai. Tidak ada run lain yang perlu dimulai; jangan menyimpulkan return helper sebelum artefak/lognya tersedia.
+- Snapshot historis #40487406384 sudah digantikan. Ghidra #40498208067 selesai success pada 19:14:42 WIB; artifact #12732952776 (2.255.170 byte, ZIP SHA-256 6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6) diverifikasi pada runner oleh #40503223693, artifact #12733512950 (SHA-256 ZIP 382773f9a421835bc97c448c630a2ea5d3891309bb34094f5a67027548c03414).
 ROM/disc, BIOS, Memory Card, savestate, RAM dump, dan screenshot gameplay privat tidak boleh masuk Git. Hanya repositori `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research` yang boleh diakses/diubah.
 
 Laporan utama:
