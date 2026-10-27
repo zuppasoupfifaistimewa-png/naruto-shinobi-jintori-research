@@ -20,9 +20,11 @@ Cross-check 13 fungsi mendukung bahwa `0x80037138` dapat mengembalikan global `0
 
 Setter `0x8001387C` menerima indeks 0–3, membatasi nilai ke −9999…99999, dan menulis per-peserta slot; getter `0x800138EC` membaca slot tersebut dan mengembalikan 0 untuk indeks invalid. Ini belum membuktikan formula biaya/refund atau efek mekanika tertentu. **Step 4 dan Step 8 tetap SEBAGIAN**; seed/runtime reachability, cost/barrier/upgrade, battle/roulette/turn, efek kartu, dan syarat menang/kalah tetap HIPOTESIS/UNKNOWN sesuai bukti.
 
-### Langkah 9 — uji isolasi accessor baru sedang antre
+### Langkah 9 — uji isolasi diperluas
 
-Harness `tools/step9_unicorn_rng_probe.py` kini menambahkan 16 kasus isolasi setter/getter nilai peserta: nilai biasa, batas minimum/maksimum, clamp ekstrem, indeks valid, dan indeks invalid, dengan pemeriksaan `v0`, memory slots, return-to-sentinel, dan budget instruksi. Run awal [#40516517691](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516517691) **SKIPPED** oleh guard workflow karena pesan commit tidak berisi marker yang diwajibkan; hasil itu bukan hasil tes. Perbaikan source/trigger commit `430b8a3347ca6bb48833e73c1b6006f8667c9c95` memicu [run #40516755810](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810), yang pada snapshot ini masih `queued` sejak 20:58:10 WIB. Sampai job benar-benar dieksekusi, seluruh 16 kasus tetap **PENDING**, bukan PASS.
+Artifact [#12740305973](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810/artifacts/12740305973) dari run [#40516755810](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810) sudah ada dan telah diperiksa: 4.567 byte, SHA-256 ZIP lokal/API cocok `bf1a702074849b2592bfc5555a0d493b5ed86d3de0b9895a192db7fdf9f80cd4`, empat file teks/log saja. Laporan aktual memuat `ISOLATED_RNG_FUNCTION_EXECUTION=PASS` (7/7), `ISOLATED_PLAYER_VALUE_ACCESSOR_TESTS=PASS` (16/16), `STEP9_ALL_TESTS=PASS`, serta `stage=isolated_function_pass`. Sepuluh kasus setter menguji nilai normal, clamp bawah/atas, nilai ekstrem, batas, dan indeks invalid; enam kasus getter menguji keempat slot, nilai negatif/maximum/all-bits-one dan indeks invalid.
+
+Ada ketidaksesuaian API yang tidak boleh disamarkan: pada snapshot 21:00 WIB, metadata API masih menampilkan run dan job `queued` walaupun artefak yang terikat pada run yang sama sudah mengandung hasil eksekusi dan marker PASS. Karena itu, **hasil tes fungsi terisolasi diverifikasi dari isi artefak**, tetapi run-level conclusion dan cleanup workflow belum dinyatakan terkonfirmasi sampai status API diperbarui. Tidak ada gameplay, PS1 emulator, BIOS, input atau savestate yang digunakan. Rincian dan tabel hasil: [laporan Step 9](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/out/step9/STEP9_UNICORN_RESULT_2026-10-27.md).
 
 ### GitHub Actions yang aktif pada snapshot 20:59 WIB
 
@@ -82,7 +84,7 @@ Pasangan `0x8001387C`/`0x800138EC` berhasil dibandingkan: setter/g getter menyen
 | 8(a) Function semantics dari caller/callee/raw MIPS | **SEBAGIAN** | RNG/helper/counter, getter/setter, beberapa compare/store dan dataflow terpetakan. | Beberapa transition decompile boundaries/P-code bermasalah, dan aliran penuh state belum tersedia. Klaim harus menunjuk instruksi, branch, register dan store/call yang spesifik. |
 | 8(b) Aturan aktual cost/barrier/upgrade/battle/roulette/turn/kartu/menang | **UNKNOWN** | Tidak ada label mekanika yang diasumsikan hanya dari offset/nama simbol. | Formula biaya/resource, efek kartu, giliran, win/loss per mode belum ditopang bukti independen. Jangan namai field atau aturan tanpa chain raw MIPS/dataflow dan corroboration. |
 | 9(a) Eksekusi isolasi RNG `0x80035D78` | **TUNTAS, hanya fungsi ini** | #40474891838/artifact #12720127454 (3.201 byte, SHA-256 ZIP `bcbfcd77a532ce34334ed60f720fdeaac566308bf2e6e4d54a7e60f28a5f083b`): 7/7 vektor, state/`v0` cocok, sentinel 12 instruksi per vektor, limit 128, physical RAM 2 MiB. | Bukan emulator PS1 penuh; tidak menguji caller, seed, visible roulette, fungsi lain. |
-| 9(b) Coverage fungsi/kondisi lain yang diwajibkan | **UNKNOWN** | Hanya RNG utama yang memiliki hasil isolated test dengan oracle. | Belum ada daftar lengkap seluruh rutin/kondisi yang diwajibkan beserta oracle/edge case. Tentukan set coverage dari kriteria dan uji setiap tambahan dengan register/memory/return checks; no gameplay/savestate. |
+| 9(b) Coverage fungsi/kondisi lain yang diwajibkan | **SEBAGIAN** | Artifact #12740305973 dari run #40516755810 menyatakan 16/16 kasus setter/getter `0x8001387C`/`0x800138EC` PASS (register v0, memory slots, return sentinel, budget ≤128 instruksi); 7/7 vektor RNG dipertahankan PASS. Digest ZIP `bf1a702074849b2592bfc5555a0d493b5ed86d3de0b9895a192db7fdf9f80cd4`. | Ini menutup hanya dua accessor di CPU/RAM terisolasi. Oracle/cakupan masih belum lengkap untuk target compare, transisi, semua caller/helper, fungsi candidate resource, dan jalur gagal lainnya. Run/job API masih melaporkan queued walau artifact punya hasil PASS; konfirmasi run-level completion/cleanup masih perlu. |
 | 10) Audit matrix: kriteria→bukti primer/run/commit/hash/status/gap | **TUNTAS sebagai proses matriks saja** | Dokumen ini dan closure report, metadata API artifact #40504640855/#40504977322. | Tidak berarti Steps 4–9 semuanya selesai; refresh saat bukti baru tersedia. |
 
 ## Inventaris artefak dan cleanup
@@ -103,12 +105,12 @@ API metadata checked IDs, names, run mapping, sizes, digests and expiry for the 
 ## Hitungan status (17 baris kriteria)
 
 - **TUNTAS: 2** — 9(a) fungsi RNG terisolasi dan 10) matriks audit saja.
-- **SEBAGIAN: 10** — 4(a–e), 5) cakupan fungsi belum lengkap meskipun 13 fungsi inti lulus, 6(a), 6(c), 7(a), 8(a).
-- **UNKNOWN: 3** — 6(d), 8(b), 9(b).
+- **SEBAGIAN: 11** — 4(a–e), 5) cakupan fungsi belum lengkap meskipun 13 fungsi inti lulus, 6(a), 6(c), 7(a), 8(a), 9(b) uji terisolasi hanya dua accessor.
+- **UNKNOWN: 2** — 6(d), 8(b).
 - **BLOCKED: 2** — 6(b), 7(b).
 - **HIPOTESIS: 0** — hipotesis dicantumkan pada klaim/base tertentu, bukan dipromosikan menjadi penutupan kriteria.
 
-Total 17 baris. Status tingkat langkah: Step 4 SEBAGIAN; Step 5 SEBAGIAN (13 fungsi inti main EXE lulus, DATA.BIN/call graph belum lengkap); Step 6 tetap parsial dengan subkriteria BLOCKED/UNKNOWN; Step 7 SEBAGIAN/BLOCKED; Step 8 SEBAGIAN/UNKNOWN; Step 9 hanya satu rutin TUNTAS, cakupan lebih luas UNKNOWN; Step 10 matriks saja TUNTAS.
+Total 17 baris. Status tingkat langkah: Step 4 SEBAGIAN; Step 5 SEBAGIAN (13 fungsi inti main EXE lulus, DATA.BIN/call graph belum lengkap); Step 6 tetap parsial dengan subkriteria BLOCKED/UNKNOWN; Step 7 SEBAGIAN/BLOCKED; Step 8 SEBAGIAN/UNKNOWN; Step 9 SEBAGIAN overall (9a RNG TUNTAS, 9b dua accessor teruji; coverage lain masih terbuka); Step 10 matriks saja TUNTAS.
 
 ## Batas tugas dan kesimpulan
 
