@@ -58,3 +58,14 @@ Status: **SEBAGIAN**. Beberapa operasi data dapat dijelaskan dengan keyakinan ti
 - Lanjutkan validasi loader/base sebelum menaikkan semantik caller resource dari HIPOTESIS menjadi TERVERIFIKASI.
 
 Kesimpulan: **Langkah 8 = SEBAGIAN**; bagian yang bisa dinyatakan benar dipisahkan eksplisit dari hipotesis dan unknown.
+
+## Addendum — hasil tracing dataflow statis lanjutan (27 Oktober 2026)
+
+Review terhadap raw job log runner-only Step 6 [#40473737136](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40473737136) menambahkan batas fakta berikut, semuanya **statis dan bersyarat pada base entry-1 hipotetis `0x800D0000`**:
+
+- **TERVERIFIKASI-STATIS (pola instruksi/pseudocode):** kandidat `0x8011C0D0` pada cabang argumen nonzero menegasikan word peserta di record `index * 0x90 + 0x04`, menjepit nilai minimum ke `-9999`, menyimpannya, lalu melewatkan indeks dan nilai itu ke setter `0x8001387C`. Ini tidak membuktikan mengapa nilai dinegasikan atau apakah ia merepresentasikan biaya, pengembalian, sinkronisasi, atau nilai sementara.
+- **TERVERIFIKASI-STATIS (urutan bersyarat, bukan efek akhir):** cabang kandidat di sekitar `0x80111228`, `0x801112CC`, `0x801113B4`, `0x801114F0`, dan `0x80111588` membaca target melalui `0x80012A70`, membandingkannya dengan word record peserta menggunakan stride `0x90`, lalu pada cabang-cabang tertentu menulis `+0x58B` dan kode 16-bit pada `+0x5D2` sebelum memanggil `0x800EF98C`. Nilai kode yang terlihat mencakup `0`, `4`, `8`, `0x20`, `0x200`, dan `0x1000`; nilai tersebut tidak diberi nama semantik.
+- **HIPOTESIS/UNKNOWN:** relasi cabang tersebut dengan perubahan Chakra, barrier, level-up, turn, kemenangan, atau kegagalan. Efek akhir `0x800EF98C`, `0x80100D14`, dan `0x80100DCC` belum didukung batas fungsi dan control-flow yang bersih. `0x800E1188` mengandung peringatan Ghidra tentang bad instruction data.
+- **BELUM TERUJI:** penelusuran seluruh source operand dan final store untuk `+0xB30`, `+0xB38`, `+0xB40`, `+0xB44`, `+0x2E9`, dan `+0x2E5`. Offset ini tidak muncul dalam ekstrak dekompilasi terarah yang diperiksa; itu bukan bukti bahwa tak ada pemakainya di bagian kode lainnya.
+
+Status Langkah 8 tetap **SEBAGIAN**. Temuan statis ini memperjelas bentuk beberapa operasi dan field yang ditulis, tetapi tidak memenuhi aturan gameplay universal, rumus biaya barrier/level-up, atau syarat kemenangan setiap mode.
