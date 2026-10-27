@@ -47,3 +47,10 @@ Rumus LCG didukung kode statis, tetapi belum boleh diklaim sebagai RNG roulette.
 ## Langkah berikutnya
 
 Pada Langkah 5 untuk topik ini, telusuri candidate/helper/table dan xref pemanggil untuk menguji apakah ada jalur kode yang benar-benar terhubung ke roulette. Bandingkan keluaran Ghidra dan m2c untuk setiap fungsi yang dapat didukung bukti. Jangan menamai fungsi sebagai roulette sebelum jalurnya terbukti; tidak menjalankan pemain adaptif.
+
+
+## Pembaruan pengujian runtime — 27 Oktober 2026
+
+Probe runtime sudah ditambahkan ke [workflow Step 4 RNG runtime](../../.github/workflows/step4-rng-runtime-validation.yml), dengan tujuan menguji dua pengulangan pada checkpoint/jeda sama serta satu jeda berbeda, mengambil state RAM dan callsite breakpoint. Namun beberapa run gagal sebelum runner dialokasikan: [#40462739823](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40462739823), [#40462775495](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40462775495), [#40462887270](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40462887270), [#40462964226](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40462964226), dan [#40463326725](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40463326725) (percobaan ulang juga gagal). Job records memperlihatkan `runner_id=0`, `steps=[]`; karena job tak pernah memulai, tidak ada data runtime atau log langkah yang dapat dianalisis. Penyebab level akun/layanan pastinya belum dapat dikonfirmasi. Rincian dan status tersimpan pada [laporan hasil runtime/blokir](STEP4_RNG_RUNTIME_RESULT_2026-10-27.md).
+
+**Status tetap SEBAGIAN:** kriteria (b) dan (d) belum dilaksanakan; seed runtime dan cakupan semua sumber randomness tetap UNKNOWN. Tidak ada dasar untuk menaikkan status ke TUNTAS. Pemain adaptif tetap dijeda.
