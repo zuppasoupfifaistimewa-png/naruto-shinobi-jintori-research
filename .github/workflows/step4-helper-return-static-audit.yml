@@ -67,7 +67,7 @@ jobs:
           lines, rewritten, count=source.read_text(encoding="utf-8").splitlines(), [], 0
           for line in lines:
               if line.lstrip().upper().startswith("FILE "):
-                  m=re.match(r'^(\\s*FILE\\s+)(?:"[^"]*"|\\S+)(\\s+\\S+\\s*),line,re.I)
+                  m=re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$',line,re.I)
                   if not m: raise SystemExit("Unrecognized CUE FILE directive")
                   line=m.group(1)+'"naruto-disc.bin"'+m.group(2); count+=1
               rewritten.append(line)
