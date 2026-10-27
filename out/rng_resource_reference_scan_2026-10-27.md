@@ -96,3 +96,8 @@ Run Ghidra entry 1 [#40455582988](https://github.com/zuppasoupfifaistimewa-png/n
 Konteks entry 0 [#40455557190](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455557190): empat instruksi JAL RNG terdekode; tiga punya branch masuk lokal, `0x800BB748` reachability belum terbukti. Direct call seed setter `0x800AF2AC → 0x80035DA8` memasukkan `$a0=-1`; state menjadi `0xFFFFFFFF` jika jalur dijalankan. [Laporan entry 0](rng_resource_entry0_ghidra_context_2026-10-27.md).
 
 Status diperbarui: direct-JAL inventory statis pada main EXE + DATA.BIN entry0/entry1 selesai dengan base resource bersifat hipotesis. Indirect/pointer callers, kode terkompresi/hasil dekompresi, runtime loading, caller boundary entry1 yang belum dikenal, dan satu reachability entry0 tetap UNKNOWN.
+
+
+## Scan signature RNG/LGC tambahan
+
+Run [#40455975609](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455975609) memeriksa kandidat konstruksi LCG `0x41C64E6D` dan MULT/MULTU pada raw lima file disc. Satu hit ada di main EXE pada `0x80035D78); tidak ada kandidat materialisasi yang sama pada DATA.BIN, DATA2.BIN, DUMMY.BIN, atau XASECT.BIN. Immediate `0x3039` ditemukan 29 kali pada DATA.BIN dan 2 kali di DATA2.BIN, tetapi tanpa signature pengali itu tidak boleh dinamai RNG. Laporan: [out/step4_rng_signature_scan_2026-10-27.md](step4_rng_signature_scan_2026-10-27.md).
