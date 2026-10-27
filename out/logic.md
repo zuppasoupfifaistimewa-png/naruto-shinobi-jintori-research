@@ -230,7 +230,7 @@ Status laporan ini tidak menyatakan Story Mode tamat atau seluruh aturan permain
 
 - **Pasti:** generator LCG utama pada `0x80035D78`, state `0x800A3118), formula `state = state * 0x41C64E6D + 0x3039 (mod 2^32)`, keluaran `(state >> 16) & 0x7FFF); empat caller langsung main EXE didokumentasikan sebelumnya.
 - **Pasti pada Ghidra address map entry 1 yang dipakai:** 108 direct-call flow ke RNG pada 50 fungsi pemanggil berbatas fungsi, satu call site terkonfirmasi tanpa batas fungsi, 36 kandidat kata JAL belum terdekode. Base `0x800D0000) masih hipotesis runtime.
-- **Pasti pada disassembly lokal entry 0 dengan base hipotesis:** call site `0x800AF2AC` memanggil kandidat seed setter `0x80035DA8` dengan input `$a0=-1); `0x800BB2D8` memanggil RNG. Base `0x800AD000) dan apakah resource dimuat begitu tetap belum diverifikasi.
+- **Pasti pada disassembly lokal entry 0 dengan base hipotesis:** call site `0x800AF2AC` adalah direct JAL ke kandidat setter `0x80035DA8`; delay slot `move a0,v0` meneruskan return helper `0x80037138` sebagai argumen setter. `$a0=-1` di delay slot sebelumnya dikirim ke helper itu, bukan terbukti input setter. Nilai return dan pemetaan runtime tetap UNKNOWN; `0x800BB2D8` adalah call site RNG pada peta kandidat.
 - **Belum tuntas:** klasifikasi 36 raw-only candidate di entry 1; tiga raw-only candidate lain di entry 0; jalur caller tak langsung/pointer dan kode yang baru terlihat setelah dekompresi; waktu seed setter berjalan saat runtime; serta fungsi gameplay sebenarnya dari caller.
 - Dokumen: [scan lintas resource](rng_resource_reference_scan_2026-10-27.md), [caller Ghidra entry 1](rng_resource_entry1_ghidra_callers_2026-10-27.md), [laporan teknis Step 4](../docs/STEP4_RNG_TRACE_2026-10-27.md).
 
@@ -239,7 +239,7 @@ Pemain adaptif tetap dijeda. Tidak ada emulator, gameplay, input atau pemulihan 
 ## Checkpoint Langkah 4 terbaru — direct-call inventory (27 Oktober 2026)
 
 - **Main EXE:** 4 caller langsung RNG telah dipetakan ke fungsi Ghidra.
-- **DATA.BIN entry 0 (base hipotetis 0x800AD000):** empat instruksi `jal 0x80035D78` terdekode; tiga punya branch masuk yang terlihat di jendela lokal. `0x800BB748` adalah instruksi JAL tetapi reachability belum terbukti karena ada lompatan tanpa syarat sebelumnya dan tidak ada incoming edge pada konteks lokal. Site `0x800AF2AC` memanggil `0x80035DA8` dengan `$a0=-1`; jika jalur ini berjalan, state RNG ditulis `0xFFFFFFFF`.
+- **DATA.BIN entry 0 (base hipotetis 0x800AD000):** empat instruksi `jal 0x80035D78` terdekode; tiga punya branch masuk yang terlihat di jendela lokal. `0x800BB748` adalah instruksi JAL tetapi reachability belum terbukti karena ada lompatan tanpa syarat sebelumnya dan tidak ada incoming edge pada konteks lokal. Site `0x800AF2AC` memanggil kandidat setter `0x80035DA8`; argumennya berasal dari return helper `0x80037138`, yang belum ditelusuri.
 - **DATA.BIN entry 1 (base hipotetis 0x800D0000):** 144/144 call site kini didekode sebagai `jal 0x80035D78`. Auto-analysis telah memetakan 108 ke 50 fungsi plus 1 site tanpa boundary; 36 sisanya didekode lokal tanpa boundary caller. [Laporan caller 108](rng_resource_entry1_ghidra_callers_2026-10-27.md), [konteks 36 sisanya](rng_resource_entry1_unmapped_context_2026-10-27.md).
 - Raw scan tidak menemukan direct-JAL word yang sama di DATA2.BIN/DUMMY.BIN/XASECT.BIN. Ini tidak membuktikan tidak ada code yang compressed/decompressed atau caller tak langsung.
 
