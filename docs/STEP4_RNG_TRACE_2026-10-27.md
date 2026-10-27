@@ -8,7 +8,7 @@ Status: **SELESAI untuk cakupan executable utama dan helper daftar yang dapat di
 - Executable: `SLPS_035.53`, 385.024 byte, SHA-256 `a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569`.
 - Run Ghidra + helper/cross-reference trace: [Actions #40439763833](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40439763833), sukses.
 - Artefak teks saja: [ghidra-slps-03553-function-index, artifact 12705072941](https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/artifacts/12705072941).
-- Tidak ada emulator/gameplay yang dijalankan. Executable disc dan resource tidak masuk Git atau artefak; hanya hasil teks yang diarsipkan.
+- Untuk run Ghidra/caller trace yang diringkas di bagian statis ini, tidak ada emulator/gameplay yang dijalankan. Cold-boot runtime terpisah tanpa input/restore didokumentasikan pada addendum paling bawah. Executable disc dan resource tidak masuk Git atau artefak; hanya hasil teks yang diarsipkan.
 
 ## Generator dan seed
 
