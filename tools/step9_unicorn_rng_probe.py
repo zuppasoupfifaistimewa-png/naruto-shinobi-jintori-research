@@ -44,6 +44,10 @@ RETURN_SENTINEL = 0x001FF000
 MAX_INSTRUCTIONS = 128
 SETTER_VIRTUAL = 0x8001387C
 GETTER_VIRTUAL = 0x800138EC
+# Cross-checked in Ghidra/m2c at 0x8001387C/0x800138EC:
+# four 0xB4-byte records, numeric field at +0x18 => base 0x80070EB8.
+# Setter returns 1 for index 0..3 after clamp [-9999,99999], else 0.
+# Getter returns slot value for index 0..3, else 0. These are CPU-only tests.
 PLAYER_VALUE_SLOT_VIRTUAL = 0x80070EB8
 PLAYER_VALUE_SLOT = PLAYER_VALUE_SLOT_VIRTUAL & 0x1FFFFFFF
 PLAYER_VALUE_STRIDE = 0xB4
