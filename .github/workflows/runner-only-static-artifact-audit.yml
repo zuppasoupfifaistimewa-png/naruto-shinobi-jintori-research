@@ -1,5 +1,5 @@
 name: Runner-only audit of latest Ghidra and Step 6 text artifacts
-# RUNNER_ONLY_AUDIT_REVIEW_WIB=2026-10-27 18:03; large logs are streamed for hashing only.
+# RUNNER_ONLY_AUDIT_REVIEW_WIB=2026-10-27 18:03; large logs are streamed for hashing only; refresh targets to Ghidra run 40498208067 and Step 6 run 40500058788.
 
 on:
   push:
@@ -60,8 +60,8 @@ jobs:
             echo "${expected_digest#sha256:}  $zip" | sha256sum --check
             printf '%s\t%s\t%s\t%s\n' "$label" "$run_id" "$artifact_id" "$zip" >> "$root/verified.tsv"
           }
-          download_one ghidra 40487406384 12728867894 ghidra-slps-03553-function-index sha256:5b37df744236d5ba87d85c8a74657cc207c569ab7e42229d51768c5ea05752c1 1724229
-          download_one step6 40493556711 12729156734 step6-resource-field-static-scan sha256:c9ea5ef0552a0c80a70f0d3a758622a358509de2079e5954dac3ce0032426e93 180128
+          download_one ghidra 40498208067 12732952776 ghidra-slps-03553-function-index sha256:6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6 2255170
+          download_one step6 40500058788 12731474756 step6-resource-field-static-scan sha256:4aea20e1420292505666f15898ba2db57a875a4fc67fbe2c65336af0a16fc9f4 180174
           download_one helper 40499270568 12731593532 step4-helper-return-static-audit sha256:8567a5cad2a00823302ea7b361dd9b6eaab736bce6b77cf51ea136d6bee454b3 11672
 
           python3 - "$root" "$report" <<'PY'
