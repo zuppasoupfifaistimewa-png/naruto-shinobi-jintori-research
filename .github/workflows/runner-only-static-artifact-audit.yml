@@ -236,6 +236,36 @@ jobs:
                       rows.append(f"FULL_C_DECOMPILATION target={target} line_count={c_end-c_begin-1}")
                       rows.extend(section[c_begin:c_end+1])
           emit("Step 4 helper and setter decompilation excerpts",rows,420)
+          # Targeted callers and bodies for functions that write the helper-return global.
+          rows=[]
+          for target in ("80037B58","80037BB0"):
+              marker_match=re.search(r"(?im)^=== TARGET (?:0x)?"+re.escape(target)+r" ===$",detail)
+              rows.append(f"target={target} marker_present={marker_match is not None}")
+              if marker_match is None:
+                  continue
+              start=marker_match.start()
+              next_match=re.search(r"(?im)^=== TARGET ",detail[marker_match.end():])
+              end=(marker_match.end()+next_match.start()) if next_match else len(detail)
+              section=detail[start:end].splitlines()
+              rows.extend(line for line in section[:20] if re.match(r"^(=== TARGET|instruction_at_target=|function_name=|function_entry=|function_body_bytes=|function_return_type=|function_signature=|function_thunk=)",line))
+              raw_begin=next((i for i,line in enumerate(section) if line.strip()=="--- RAW_FUNCTION_BODY_BEGIN ---"),-1)
+              raw_end=next((i for i,line in enumerate(section) if line.strip()=="--- RAW_FUNCTION_BODY_END ---"),-1)
+              if raw_begin>=0 and raw_end>raw_begin:
+                  body=section[raw_begin:raw_end+1]
+                  rows.append(f"FULL_RAW_FUNCTION_BODY target={target} lines={len(body)-2}")
+                  rows.extend(body)
+              c_begin=next((i for i,line in enumerate(section) if line.strip()=="--- C_DECOMPILATION_BEGIN ---"),-1)
+              c_end=next((i for i,line in enumerate(section) if line.strip()=="--- C_DECOMPILATION_END ---"),-1)
+              if c_begin>=0 and c_end>c_begin:
+                  rows.append(f"FULL_C_DECOMPILATION target={target} lines={c_end-c_begin-1}")
+                  rows.extend(section[c_begin:c_end+1])
+              refs_begin=next((i for i,line in enumerate(section) if line.strip()=="--- REFERENCES_TO_FUNCTION_BEGIN ---"),-1)
+              refs_end=next((i for i,line in enumerate(section) if line.strip()=="--- REFERENCES_TO_FUNCTION_END ---"),-1)
+              if refs_begin>=0 and refs_end>refs_begin:
+                  refs=section[refs_begin:refs_end+1]
+                  rows.append(f"INCOMING_FUNCTION_REFERENCES target={target} lines={len(refs)}")
+                  rows.extend(refs)
+          emit("Step 4 functions that write helper-return global: body and incoming caller references",rows,520)
           # New targeted xref export: list every direct code/data reference to the helper-return global.
           rows=[]
           xref_match=re.search(r"(?im)^=== DATA_XREFS target=(?:0x)?80066e7c ===$",detail)
