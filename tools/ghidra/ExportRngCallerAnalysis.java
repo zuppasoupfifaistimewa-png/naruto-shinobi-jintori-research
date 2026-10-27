@@ -38,6 +38,9 @@ public class ExportRngCallerAnalysis extends GhidraScript {
         }
         line("name=" + function.getName());
         line("body_address_count=" + function.getBody().getNumAddresses());
+        line("body_min_address=" + function.getBody().getMinAddress());
+        line("body_max_address=" + function.getBody().getMaxAddress());
+        line("function_end_exclusive=0x" + Long.toHexString(function.getBody().getMaxAddress().getOffset() + 1L));
         line("source_type=" + function.getSymbol().getSource());
         DecompileResults result = decompiler.decompileFunction(function, 90, monitor);
         if (result != null && result.decompileCompleted() && result.getDecompiledFunction() != null) {
@@ -89,6 +92,9 @@ public class ExportRngCallerAnalysis extends GhidraScript {
         }
         line("name=" + function.getName());
         line("body_address_count=" + function.getBody().getNumAddresses());
+        line("body_min_address=" + function.getBody().getMinAddress());
+        line("body_max_address=" + function.getBody().getMaxAddress());
+        line("function_end_exclusive=0x" + Long.toHexString(function.getBody().getMaxAddress().getOffset() + 1L));
         line("source_type=" + function.getSymbol().getSource());
         DecompileResults result = decompiler.decompileFunction(function, 90, monitor);
         if (result != null && result.decompileCompleted() && result.getDecompiledFunction() != null) {
@@ -184,6 +190,16 @@ public class ExportRngCallerAnalysis extends GhidraScript {
             dumpSimpleFunction(decompiler, 0x80020D48L);
             dumpSimpleFunction(decompiler, 0x80018300L);
             dumpSimpleFunction(decompiler, 0x80018468L);
+            // Expanded Step 5 same-function comparison scope: core RNG/state/callback/Chakra routines.
+            dumpSimpleFunction(decompiler, 0x80012A70L);
+            dumpSimpleFunction(decompiler, 0x8001387CL);
+            dumpSimpleFunction(decompiler, 0x800138ECL);
+            dumpSimpleFunction(decompiler, 0x80035D78L);
+            dumpSimpleFunction(decompiler, 0x800373F8L);
+            dumpSimpleFunction(decompiler, 0x8003755CL);
+            dumpSimpleFunction(decompiler, 0x80037B58L);
+            dumpSimpleFunction(decompiler, 0x80037BB0L);
+            dumpSimpleFunction(decompiler, 0x80037C48L);
             // Step 4 delay-slot audit: determine the main-EXE helper return forwarded by
             // DATA.BIN entry-0's candidate setter callsite (0x800AF2AC). This helper's
             // return value, not its input argument, feeds setter argument register $a0.
