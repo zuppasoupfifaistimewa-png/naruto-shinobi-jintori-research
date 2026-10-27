@@ -11,7 +11,7 @@ Batas: laporan ini menutup hanya hal yang benar-benar didukung bukti. Status tia
 |---|---|---|
 | 4 — RNG, seed, caller, determinisme | **SEBAGIAN** | Formula/state RNG diverifikasi statis dan fungsi utamanya lulus eksekusi terisolasi. Perbandingan runtime pada satu checkpoint roulette menunjukkan stream caller/state serta viewport sama untuk dua pengulangan dan satu jeda berbeda. Seed boot, hubungan caller ke hasil roulette, caller battle, dispatch menyeluruh, dan RNG alternatif tetap terbuka. |
 | 5 — perbandingan Ghidra/m2c | **TUNTAS (empat fungsi terpilih)** | Empat fungsi yang sama mempunyai output Ghidra dan m2c; kedelapan output C disimpan permanen. Tidak mengklaim merekonstruksi kode sumber asli atau semua fungsi. |
-| 6 — alamat, setter, xref dan call chain | **SEBAGIAN** | Runner-only artifact #12719587873 adds raw operand/branch/delay-slot evidence at six entry-1 candidates and the negation/clamp/store sequence at 0x8011C0D0 on hypothetical base 0x800D0000. Pending fields +0xB30/+0xB38/+0xB40/+0xB44, transition boundaries, runtime base and semantic effects remain UNKNOWN. [Step 6 report](STEP6_TARGET_XREF_SEMANTIC_REVIEW_2026-10-27.md).
+| 6 — alamat, setter, xref dan call chain | **SEBAGIAN** | Full-text artifact #12719587873 mengonfirmasi static stores `+0x2E9=0x3F`, `+0x2E5=0`, selector `+0x58B`, serta kode bersyarat `+0x5D2` pada lima kandidat entry-1; `0x8011C0D0` juga negate/clamp record `+0x04` ke `-9999` lalu memanggil setter `0x8001387C`. Base `0x800D0000`, arti field/kode, sumber final `+0xB30/+0xB38/+0xB40/+0xB44`, dan efek transisi masih UNKNOWN. [Step 6 report](STEP6_TARGET_XREF_SEMANTIC_REVIEW_2026-10-27.md).
 | 7 — loader dan overlay | **SEBAGIAN** | Loader probe #40484548650 pada `0x800AD454` mencatat progress frame 120 tanpa hit; base/runtime copy/checksum/relokasi belum terbukti. Seed-setter probe terpisah #40485987817 (utama untuk Step 4(a)) menguji hanya `0x80035DA8`, juga tanpa hit sampai frame 120; report fallback PC run itu salah, tetapi raw ready line menetapkan target yang benar dan koreksi parser diverifikasi oleh #40486315324. Kedua run cleanup PASS; hasil no-hit bounded tidak membuktikan target tidak pernah berjalan. [Laporan Step 7](STEP7_RUNTIME_COLD_BOOT_RESULT_2026-10-27.md), [loader run](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40484548650), [seed run](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40485987817). |
 | 8 — penjelasan fungsi dan aturan game | **SEBAGIAN** | Raw MIPS clarifies selected threshold branches, extra gates, delay slots and stores, but codes/fields do not identify gameplay semantics. Costs, battle/roulette/turn rules, card effects and victory conditions remain UNKNOWN. [Step 8 report](STEP8_FUNCTION_SEMANTICS_AND_GAME_RULES_2026-10-27.md).
 | 9 — eksekusi fungsi terisolasi | **TUNTAS untuk fungsi RNG `0x80035D78` saja** | Eksekusi MIPS32 terisolasi berhasil pada tujuh state; state baru, register `v0`, dan return sentinel cocok. Bukan pengganti emulator PS1 dan tidak menggeneralisasi ke fungsi lain. |
@@ -40,7 +40,7 @@ Batas: laporan ini menutup hanya hal yang benar-benar didukung bukti. Status tia
 - Fungsi UI/penggambaran seperti `0x8012A9C4` dan `0x80137AD8` turut membaca target; karena itu getter xref tidak sama dengan caller kemenangan.
 - `0x80112418` menunjukkan cabang pembandingan record/target dan kandidat panggilan transisi, tetapi dekompilasi transisi/batas fungsi bermasalah.
 - Log runner yang telah ada menunjukkan `0x8011C0D0` menegasikan record `+0x04`, membatasi minimum ke `-9999`, lalu memanggil setter; kandidat threshold menulis `+0x58B` dan `+0x5D2` sebelum `0x800EF98C`. Ini adalah temuan statis pada base hipotetis, bukan semantik gameplay.
-- Belum terbukti: pemetaan base entry 1 ke RAM runtime, sumber akhir field/delta `+0xB30/+0xB38/+0xB40/+0xB44` atau `+0x2E9/+0x2E5`, formula biaya, atau efek akhir transisi pada game.
+- Belum terbukti: pemetaan base entry 1 ke RAM runtime, seluruh pembaca/inisialisasi `+0x2E9/+0x2E5`, sumber final field/delta `+0xB30/+0xB38/+0xB40/+0xB44`, formula biaya, atau efek akhir transisi pada game.
 
 ### Langkah 7 — loader dan overlay
 
@@ -89,7 +89,7 @@ Catatan runtime final ada pada [laporan Step 7](STEP7_RUNTIME_COLD_BOOT_RESULT_2
 2. Pemetaan runtime base/relokasi/lifecycle DATA.BIN entry, plus executable/decompressed code di DATA2.BIN dan DUMMY.BIN.
 3. Caller tertentu yang secara kausal menentukan hasil roulette yang terlihat, serta runtime RNG caller pada battle dengan checkpoint autentik.
 4. Seluruh jalur dispatch indirect/jump table dan RNG alternatif, termasuk berbasis tabel, frame/time, atau kode hasil dekompresi/dekripsi.
-5. Makna field `+0x58B`, `+0x2E9`, `+0x2E5`, `+0x5D2`, `+0xB30), `+0xB38), `+0xB40), `+0xB44`; biaya barrier/level-up/Chakra; aturan battle/roulette/turn; victory logic lintas mode.
+5. Makna field/kode `+0x58B`, `+0x2E9`, `+0x2E5`, `+0x5D2` meski store sudah diketahui; sumber operand/final writer `+0xB30/+0xB38/+0xB40/+0xB44`; biaya barrier/level-up/Chakra; aturan battle/roulette/turn; victory logic lintas mode.
 6. Eksekusi terisolasi fungsi game selain rutin RNG yang diuji apabila diperlukan untuk pertanyaan fungsi tertentu.
 
 ## Perubahan Git yang relevan
