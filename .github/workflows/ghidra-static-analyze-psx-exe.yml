@@ -46,12 +46,14 @@ jobs:
           exe_dir="$RUNNER_TEMP/ghidra-input"
           out="$RUNNER_TEMP/ghidra-output"
           mkdir -p "$source_dir" "$exe_dir" "$out"
-          base_url="https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/download/research-emulator-pcsx-redux-2026-10-15"
+          # Use release-asset API endpoints; browser_download_url returned 404 on the hosted runner.
+          bin_asset_url="https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/647346873"
+          cue_asset_url="https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/647354760"
           disc="$source_dir/naruto-disc.bin"
           cue_raw="$source_dir/original.cue"
           cue="$source_dir/naruto-disc.cue"
 
-          if ! curl --fail --location --silent --show-error --header "Authorization: Bearer $GITHUB_TOKEN" --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 --max-time 600 "$base_url/Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin" --output "$disc"; then
+          if ! curl --fail --location --silent --show-error --header "Authorization: Bearer $GITHUB_TOKEN" --header "Accept: application/octet-stream" --header "X-GitHub-Api-Version: 2022-11-28" --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 --max-time 600 "$bin_asset_url" --output "$disc"; then
             echo "::error::Could not download the existing Naruto disc-image release asset."
             exit 1
           fi
@@ -61,7 +63,7 @@ jobs:
             exit 1
           fi
 
-          if ! curl --fail --location --silent --show-error --header "Authorization: Bearer $GITHUB_TOKEN" --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 --max-time 60 "$base_url/Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue" --output "$cue_raw"; then
+          if ! curl --fail --location --silent --show-error --header "Authorization: Bearer $GITHUB_TOKEN" --header "Accept: application/octet-stream" --header "X-GitHub-Api-Version: 2022-11-28" --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 --max-time 60 "$cue_asset_url" --output "$cue_raw"; then
             echo "::error::Could not download the matching CUE asset."
             exit 1
           fi
