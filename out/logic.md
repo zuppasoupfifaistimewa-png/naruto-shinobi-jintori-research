@@ -111,3 +111,4 @@ Artefak teks kandidat lokal `main_exe_function_candidates.tsv` berisi 898 kandid
 - Langkah 3 — Ghidra headless: **BELUM SELESAI**; fallback statis awal tersedia.
 - Story Mode dan pemain adaptif tetap **NOT COMPLETE / dijeda**, tidak ada emulator atau input gameplay dijalankan.
 
+Skrip scan yang dapat diulang pada salinan executable lokal: [`tools/psx_exe_call_target_scan.py`](../tools/psx_exe_call_target_scan.py). Skrip menulis indeks target/caller sebagai teks ke folder `out/`; biner tetap lokal. Hasil fallback dan batas interpretasinya dicatat di [`out/main_exe_callscan.md`](main_exe_callscan.md).
