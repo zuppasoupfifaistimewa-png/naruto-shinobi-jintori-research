@@ -2043,3 +2043,9 @@ The targeted MIPS windows now document six entry-1 target-gated sites, record st
 Separate Step 4 correction: seed candidate callsite 0x800AF2AC forwards return value from helper 0x80037138 to 0x80035DA8 through the JAL delay-slot instruction move a0,v0. The -1 literal goes to the helper, not a proven setter input. Helper return and seed lifecycle remain UNKNOWN.
 
 Statuses unchanged: Step4 SEBAGIAN; Step5 TUNTAS for four selected functions; Step6 SEBAGIAN; Step7 SEBAGIAN; Step8 SEBAGIAN; Step9 TUNTAS only for 0x80035D78; Step10 TUNTAS as audit index only. Story Mode TIDAK TERBUKTI TAMAT. No adaptive-player, Story Mode automatic workflow, gameplay input, or savestate restoration was used. Review latest Actions again before any runtime work.
+
+## Further Step 6 static trace — 27 October 2026
+
+Review of existing artifact #12719587873 adds the bounded decompilation for candidate 0x8011C0D0 (body 408 bytes): input byte-mask; compare with global 0x80139F70; early return if unchanged; update global and field +0x618 if changed. Nonzero input selects a record via global 0x8013EA88, writes 8 at record+0x22, iterates participant count from global 0x8013EA71, negates each record word +0x04, clamps minimum -9999, stores and calls setter 0x8001387C with index/new value. A signed-short +0x10 plus unsigned-short +0x14 sum compared to 0x101 affects calls to 0x8003F5D0 and 0x800F96A4 versus store +0x94A=1. The raw window only contains the function start; these loop details are from decompilation, not full raw listing. Function caller and semantics are UNKNOWN.
+
+Outstanding static gap: no whole-program access inventory of candidate offsets +0xB30/+0xB38/+0xB40/+0xB44 yet. The main-EXE/entry-1 bases remain distinct hypotheses; no runtime semantics are inferred.
