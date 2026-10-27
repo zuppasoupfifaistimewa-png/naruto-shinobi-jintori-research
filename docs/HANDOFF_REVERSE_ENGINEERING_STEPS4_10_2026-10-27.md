@@ -1,3 +1,20 @@
+# HANDOFF UPDATE — Step 6 inventory audited, 27 Oktober 2026 19:35 WIB
+
+HEAD `main` before this handoff update: `f3a1797afecfc9240462a3aa5a54838b34830492`; fetch live main on next continuation. The latest scan is [#40504640855](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504640855) success at 19:34:31 WIB; artifact #12733854252, 220,128 bytes, ZIP SHA-256 `90288a1c8b454cbdc45c75e0244d26508628ecf88bfe8e73ed88524c8cb80891`. Runner audit [#40504977322](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504977322) success 19:35:51 WIB; text artifact #12734840847, 25,756 bytes, ZIP SHA-256 `d022b23548fe95eb34bfbb7a7fb0dd190a498ca54fff11516818138701920398`; metadata and digests validated, `RUNNER_ARTIFACT_CLEANUP=PASS`.
+
+Latest direct-memory operand inventory on the hypothetical DATA.BIN entry-1 base `0x800D0000`: `+0xB30` = 1 read/0 writes, `+0xB38` = 1 read/0 writes, `+0xB40` = 0 reads/1 write, `+0xB44` = 1 read/1 write. Full aggregated displacement inventory is between explicit BEGIN/END in the runner output and remained below the audit output cap; the four priority offsets have no per-offset cap. This is a verified static scan over 98,357 Ghidra-decoded instructions with recognized base+displacement syntax, not a complete alias/pointer/undecoded-code proof. Base remains HIPOTESIS; base-register tracing is a bounded 24-instruction linear window/simple-move hint. Do not infer cost/barrier/Chakra/turn/level-up semantics from these offsets.
+
+The latest Step 6 detailed report is `docs/STEP6_TARGET_XREF_SEMANTIC_REVIEW_2026-10-27.md`; closure matrix is `docs/STEP4_10_CLOSURE_REPORT_2026-10-27.md`. Overall step status remains Step4 SEBAGIAN, Step5 TUNTAS only four selected functions, Step6 SEBAGIAN, Step7 SEBAGIAN, Step8 SEBAGIAN, Step9 TUNTAS only for `0x80035D78`, Step10 TUNTAS only as criteria closure matrix. Story Mode TIDAK TERBUKTI TAMAT. No gameplay/input/savestate/adaptive-player changes.
+
+## Recommended continuation
+1. Fetch live main and Actions; read this addendum and the current closure matrix.
+2. Step6's direct offset census is now improved; next work must trace exact writer/reader callers, register-derived addresses, aliases, split immediates, alternate bases and decompilation failures in raw MIPS. Don't rerun unchanged broad scans unless a parser/code change justifies it.
+3. Step4/7 still need mapping/order/runtime evidence; don't repeat the same no-hit breakpoints. Any new runtime diagnostic must be a statically justified target, bounded, no gameplay input/no savestate, text-only registers/copy length/checksum, cleanup confirmed.
+4. Step8 rules stay UNKNOWN until raw MIPS/data flow and an independent state/result fact agree. Keep Japanese text and Indonesian translation side by side where relevant.
+5. Do not touch any other repository or adaptive-player/Story Mode runner/classifier/policy/readiness gate. No private game assets in Git/artifacts.
+
+---
+
 # HANDOFF TERBARU — Reverse Engineering Naruto PS1, Langkah 4–10
 
 Tanggal snapshot: 27 Oktober 2026, sekitar 19:25 WIB.
