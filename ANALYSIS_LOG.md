@@ -2033,3 +2033,13 @@ This is an operational incident, not new gameplay evidence. An earlier documenta
 - Overall statuses: Step4 SEBAGIAN; Step5 TUNTAS for four selected functions; Step6 SEBAGIAN; Step7 SEBAGIAN pending coldboot result; Step8 SEBAGIAN; Step9 TUNTAS for the primary RNG routine only; Step10 TUNTAS as documentation index.
 
 Story Mode remains TIDAK TERBUKTI TAMAT. Adaptive-player/automatic Story Mode execution remains paused. No classifier/input policy/readiness gate/Revision65 marker changed. No ROM/disc, BIOS, Memory Card, savestate, RAM dump or private gameplay screenshot is in Git.
+
+## Audit continuation — verified raw MIPS trace (27 October 2026)
+
+Parent snapshot when this addendum was prepared: 52f077114c01de00cac52527af92e38a1d4a1e3e. Artifact #12719587873 from runner-only [Actions #40473737136](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40473737136), ZIP SHA-256 e1ea68c92bcbf645fde3c991c8a47192b815987d8044f2d599c163c1f3ec9fb9, was reviewed directly. No runtime experiment was executed.
+
+The targeted MIPS windows now document six entry-1 target-gated sites, record stride 0x90, field +0x04 versus target getter 0x80012A70, failure branch 0x8011253C, a record flag bit 0x200 gate, helper gate 0x800BDBFC(0x20), and conditional byte/halfword stores. Candidate 0x8011C0D0 negates record +0x04, clamps at -9999, stores, then calls main-EXE setter 0x8001387C. DATA.BIN entry-1 base 0x800D0000 remains a static hypothesis; transition and game-rule semantics remain UNKNOWN. Fields +0xB30/+0xB38/+0xB40/+0xB44 are not comprehensively traced.
+
+Separate Step 4 correction: seed candidate callsite 0x800AF2AC forwards return value from helper 0x80037138 to 0x80035DA8 through the JAL delay-slot instruction move a0,v0. The -1 literal goes to the helper, not a proven setter input. Helper return and seed lifecycle remain UNKNOWN.
+
+Statuses unchanged: Step4 SEBAGIAN; Step5 TUNTAS for four selected functions; Step6 SEBAGIAN; Step7 SEBAGIAN; Step8 SEBAGIAN; Step9 TUNTAS only for 0x80035D78; Step10 TUNTAS as audit index only. Story Mode TIDAK TERBUKTI TAMAT. No adaptive-player, Story Mode automatic workflow, gameplay input, or savestate restoration was used. Review latest Actions again before any runtime work.
