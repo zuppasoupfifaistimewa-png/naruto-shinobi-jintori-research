@@ -1,3 +1,23 @@
+# Latest Step 6 audit addendum — runner-verified field access context (27 October 2026, 19:22 WIB)
+
+Artifact #12731474756 from run [#40500058788](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40500058788) was validated by runner-only audit [#40503223693](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40503223693), artifact #12733512950 (13.079 bytes; ZIP SHA-256 382773f9a421835bc97c448c630a2ea5d3891309bb34094f5a67027548c03414). Step6 ZIP is 180.174 bytes, SHA-256 4aea20e1420292505666f15898ba2db57a875a4fc67fbe2c65336af0a16fc9f4. Source job confirmed disc/DATA.BIN/slice identity checks, STEP6_PRIVATE_CLEANUP=PASS, text_only_output_count=6, private_binary_in_artifact=no.
+
+## Raw operand facts (base remains a hypothesis)
+
+DATA.BIN entry1 slice: file offset 0x10BB000, size 596412, SHA-256 9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a. In this candidate view:
+- 0x8012C634: bytes 30 0B 82 8C — lw v0,0xB30(a0).
+- 0x8012C638: bytes 38 0B 83 8C — lw v1,0xB38(a0).
+- 0x8012C640: bytes 21 10 43 00 — addu v0,v0,v1.
+- 0x8012C644: bytes 40 0B 82 AC — sw v0,0xB40(a0).
+- 0x8012C604: bytes 44 0B 40 AC — sw zero,0xB44(v0), in the inspected call's delay slot.
+- 0x8012CB14: bytes 44 0B 66 8C — lw a2,0xB44(v1); the loaded value is forwarded to jal 0x8001B364.
+
+Scanner covers 98,357 decoded instructions. It records a parser fixture PASS and a match output cap of 200 per offset. The exact scanner limitation is that it searches exact 16-bit immediate values only, can include non-field constants, and misses pointer arithmetic, split immediates, aliases, undisassembled code, and alternate object bases. It is NOT a complete writer/reader or effective-address inventory.
+
+Direct instruction facts above are TERVERIFIKASI-STATIS in a candidate code view; base 0x800D0000, object identity, source/final writers, aliases and all gameplay meanings remain HIPOTESIS/UNKNOWN. No field may yet be called Chakra, price/cost, turn, barrier or level-up. Minimum closure: expand static memory-operand scan, track address construction and register aliases, remove/flag output caps, inspect raw undecoded regions, test alternate bases and record all readers/writers.
+
+---
+
 # Langkah 6 — tinjauan xref target, setter, dan batas semantik (27 Oktober 2026)
 
 Status: **SEBAGIAN**. Hasil Ghidra pada base resource kandidat menunjukkan alur kode yang berguna, tetapi belum membuktikan pemetaan RAM resource saat runtime, field cost/turn, ataupun akibat gameplay final.
