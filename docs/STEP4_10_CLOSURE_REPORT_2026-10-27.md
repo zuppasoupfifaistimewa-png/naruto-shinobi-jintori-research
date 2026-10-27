@@ -1,12 +1,12 @@
 # LIVE CLOSURE ADDENDUM — 27 Oktober 2026
 
-## Step 9 — hasil terisolasi tambahan (27 Oktober 2026, 21:00 WIB)
+## Step 9 — hasil terisolasi tambahan (27 Oktober 2026, 21:02 WIB)
 
 ### Langkah 9 — uji isolasi diperluas
 
 Artifact [#12740305973](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810/artifacts/12740305973) dari run [#40516755810](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810) sudah ada dan telah diperiksa: 4.567 byte, SHA-256 ZIP lokal/API cocok `bf1a702074849b2592bfc5555a0d493b5ed86d3de0b9895a192db7fdf9f80cd4`, empat file teks/log saja. Laporan aktual memuat `ISOLATED_RNG_FUNCTION_EXECUTION=PASS` (7/7), `ISOLATED_PLAYER_VALUE_ACCESSOR_TESTS=PASS` (16/16), `STEP9_ALL_TESTS=PASS`, serta `stage=isolated_function_pass`. Sepuluh kasus setter menguji nilai normal, clamp bawah/atas, nilai ekstrem, batas, dan indeks invalid; enam kasus getter menguji keempat slot, nilai negatif/maximum/all-bits-one dan indeks invalid.
 
-Ada ketidaksesuaian API yang tidak boleh disamarkan: pada snapshot 21:00 WIB, metadata API masih menampilkan run dan job `queued` walaupun artefak yang terikat pada run yang sama sudah mengandung hasil eksekusi dan marker PASS. Karena itu, **hasil tes fungsi terisolasi diverifikasi dari isi artefak**, tetapi run-level conclusion dan cleanup workflow belum dinyatakan terkonfirmasi sampai status API diperbarui. Tidak ada gameplay, PS1 emulator, BIOS, input atau savestate yang digunakan. Rincian dan tabel hasil: [laporan Step 9](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/out/step9/STEP9_UNICORN_RESULT_2026-10-27.md).
+Snapshot 21:00 WIB menunjukkan API `queued` meski artefak sudah ada; pemeriksaan pada 21:02 WIB menemukan semua 11 langkah job completed/success dan raw log `STEP9_PRIVATE_CLEANUP=PASS`. Hasil tes serta cleanup kini terverifikasi. Aggregate run API tetap `in_progress`, jadi jangan menyebut seluruh run `completed/success` sampai status agregat berubah. Tidak ada gameplay, PS1 emulator, BIOS, input atau savestate yang digunakan. Rincian dan tabel hasil: [laporan Step 9](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/out/step9/STEP9_UNICORN_RESULT_2026-10-27.md).
 
 
 
@@ -93,7 +93,7 @@ Bagian ini merupakan checkpoint otoritatif terbaru dan menggantikan status opera
 | 9) Isolated function execution | TUNTAS only for 0x80035D78 | #40474891838 artifact #12720127454 SHA bcbfcd77a532ce34334ed60f720fdeaac566308bf2e6e4d54a7e60f28a5f083b; report out/step9/STEP9_UNICORN_RESULT_2026-10-27.md | 7/7 vectors, state/v0 correct, return sentinel 12 instructions, cap 128, 2 MiB physical PS1 RAM. Does not cover other functions or full emulator/game results. |
 | 10) Auditable closure matrix: each criterion has source, artifact, digest, test, limitations and next task | TUNTAS as matrix only | This matrix and runner audit #40503223693 artifact #12733512950 SHA 382773f9a421835bc97c448c630a2ea5d3891309bb34094f5a67027548c03414 | Table gives evidence or a named blocker per criterion. Steps 4/6/7/8 remain partial/blocked; Step10 is not blanket closure of the whole game and must be refreshed for new evidence. |
 
-**Kesimpulan:** Step 4 SEBAGIAN; Step 5 TUNTAS hanya untuk empat fungsi; Step 6 SEBAGIAN (inventaris alias lengkap BLOCKED); Step 7 SEBAGIAN (bukti copy runtime BLOCKED); Step 8 SEBAGIAN (aturan tidak didukung BLOCKED); Step 9 TUNTAS hanya untuk 0x80035D78; Step 10 TUNTAS sebagai matriks closure yang diaudit, bukan penyelesaian reverse engineering seluruh game. Story Mode TIDAK TERBUKTI TAMAT.
+**Kesimpulan terbaru:** Step 4 SEBAGIAN; Step 5 SEBAGIAN (13 fungsi main EXE lulus, candidate DATA.BIN/seluruh caller graph belum lengkap); Step 6 SEBAGIAN (6b BLOCKED, 6d UNKNOWN); Step 7 SEBAGIAN (7b BLOCKED); Step 8 SEBAGIAN (aturan gameplay UNKNOWN); Step 9 SEBAGIAN overall (9a TUNTAS untuk RNG 7/7, 9b SEBAGIAN dengan accessor 16/16); Step 10 TUNTAS sebagai matriks closure yang diaudit, bukan penyelesaian reverse engineering seluruh game. Story Mode TIDAK TERBUKTI TAMAT.
 
 ---
 
