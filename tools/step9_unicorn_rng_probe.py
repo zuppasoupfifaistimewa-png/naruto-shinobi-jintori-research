@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Execute only the verified PS-X EXE LCG routine in a minimal Unicorn MIPS32 RAM map.
 
+STEP9_REPEAT_MARKER: isolated CPU test only; no PS1 emulator or gameplay is launched.
+
 This is function-isolated CPU emulation, not a PS1 emulator and not gameplay.
 The input executable must be verified by the calling workflow and is never copied
 to the repository/artifact. Only the text report is written to the output path.
