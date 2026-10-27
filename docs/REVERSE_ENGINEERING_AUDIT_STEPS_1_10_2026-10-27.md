@@ -16,7 +16,7 @@ Checkpoint awal remote main: 62a4c114b7ac7a55ae9eb6d91bc4c9bfaef1c2ef.
 | 1 — Struktur disc dan inventaris | **SELESAI** | Inventaris ekstraksi terdahulu terdokumentasi dan source BIN/CUE/EXE divalidasi pada runner. Tidak dibongkar ulang hanya demi mengganti alat. |
 | 2 — Header PS-X EXE | **SELESAI** | Ukuran, hash, header, entry point, load base, text length, dan panjang file konsisten; validasi header pada run terbaru lulus. |
 | 3 — Ghidra headless | **SELESAI** | Ghidra 12.2, Temurin JDK 25, MIPS little-endian 32-bit; analisis berhasil dan ekspor indeks berisi 1.206 baris fungsi main EXE. |
-| 4 — RNG | **SELESAI dalam cakupan statis main EXE** | LCG, state global, empat direct-JAL caller dan perilaku umum caller ditelusuri. Seed runtime, caller tak langsung, semantik gameplay/overlay tetap belum diketahui. |
+| 4 — RNG | **SELESAI untuk inventaris direct-JAL statis; runtime scope terbatas** | Empat caller main EXE, 4 kandidat direct JAL pada DATA.BIN entry 0, 144 pada entry 1, serta kandidat seed setter diperiksa. 36 call site entry 1 terdekode lokal; base resource/function boundary tertentu serta caller tak langsung/kode terkompresi tetap UNKNOWN. |
 | 5 — Caller RNG dan m2c | **SELESAI untuk empat caller yang dipilih** | Keempat entry fungsi dibandingkan oleh Ghidra dan m2c; semua output ada, perbandingan berhasil. Delapan keluaran C dan ringkasan disimpan permanen di [laporan Step 5](../out/step5/STEP5_GHIDRA_M2C_COMPARISON_2026-10-27.md). |
 | 6 — Alamat, penulis memori, dan call chain | **SELESAI SEBAGIAN** | Setter Chakra utama dan beberapa cabang perbandingan target dapat dipetakan statis. Base resource hipotesis; beberapa dekompilasi gagal; sumber nilai dan semantik field penting belum terbukti. |
 | 7 — Loader dan overlay | **SELESAI SEBAGIAN** | Direktori DATA.BIN dikenal; entry 0 dan 1 dianalisis statis. Base/lifecycle/runtime loader belum tervalidasi; DATA2.BIN dan DUMMY.BIN belum dipetakan menyeluruh sebagai kode executable. |
@@ -137,3 +137,10 @@ Indeks out/logic.md diperbarui agar menautkan checkpoint terkini, laporan audit 
 2. Lanjutkan tracing statis entry 0/1 atas tabel dan fungsi transisi: dokumentasikan store, caller, sumber operand, dan branch; jangan menamai delta sebagai biaya sebelum terbukti.
 3. Validasi loader/base resource melalui bukti statis yang sah. Jika hanya bisa dibuktikan runtime, pertahankan UNKNOWN sampai lingkungan verifikasi yang disetujui tersedia.
 4. Buat harness MIPS terisolasi hanya jika dapat membuktikan ia tidak menjalankan game/emulator gameplay; selain itu Langkah 9 tetap TERBLOKIR.
+
+
+## Addendum Langkah 4 — 27 Oktober 2026
+
+Status Langkah 4 pada tabel di atas diperbarui setelah pemindaian lintas resource dan konteks Ghidra. Ringkasan terotorisasi yang terbaru ada di [docs/STEP4_RNG_TRACE_2026-10-27.md](STEP4_RNG_TRACE_2026-10-27.md) dan [out/logic.md](../out/logic.md). Daftar caller resource: [144 call site entry 1](../out/rng_resource_entry1_ghidra_callers_2026-10-27.md), [36 local decode tanpa boundary fungsi](../out/rng_resource_entry1_unmapped_context_2026-10-27.md), dan [entry 0 plus seed setter](../out/rng_resource_entry0_ghidra_context_2026-10-27.md). Scan signature pengali LCG yang diketahui hanya menemukan kecocokan main EXE: [out/step4_rng_signature_scan_2026-10-27.md](../out/step4_rng_signature_scan_2026-10-27.md).
+
+**Batas penting:** “SELESAI” di sini berarti inventaris instruksi direct-JAL yang ditemukan dalam aset raw yang di-scan telah dipetakan/didekode sejauh bukti memungkinkan. Ini bukan bukti absolut bahwa caller tidak langsung, code hasil dekompresi/dekripsi, alternative RNG dengan konstanta lain, atau pemuatan resource runtime tidak ada. Base `0x800AD000` dan `0x800D0000` tetap hipotesis. Tidak ada emulator/gameplay/savestate yang dijalankan.
