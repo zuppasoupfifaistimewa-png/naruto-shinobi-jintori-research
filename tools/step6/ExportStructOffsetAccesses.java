@@ -56,6 +56,11 @@ public class ExportStructOffsetAccesses extends GhidraScript {
 
     private String hex(long value) { return String.format("0x%X", value); }
 
+    private boolean isStoreMnemonic(String mnemonic) {
+        String m = mnemonic.toLowerCase();
+        return m.matches("sb|sh|sw|sd|swl|swr|sdl|sdr|sc|scd");
+    }
+
     private boolean isMemoryMnemonic(String mnemonic) {
         String m = mnemonic.toLowerCase();
         return m.matches("l[bhdwq]|lbu|lhu|lwu|lwl|lwr|sb|sh|sw|sd|swl|swr|sdl|sdr|sc|scd");
@@ -198,7 +203,7 @@ public class ExportStructOffsetAccesses extends GhidraScript {
                     line("  trace_stop=control_flow at=" + cursor.getAddress() + " instruction=" + cursor.toString());
                     break;
                 }
-                if (mnemonic.startsWith("s")) continue; // stores do not define the first operand register
+                if (isStoreMnemonic(mnemonic)) continue; // stores do not define the first operand register
                 Matcher def = DESTINATION_REGISTER.matcher(cursor.toString().trim());
                 if (!def.find() || !def.group(1).equalsIgnoreCase(currentRegister)) continue;
                 found = true;
@@ -319,8 +324,8 @@ public class ExportStructOffsetAccesses extends GhidraScript {
                     }
                     histogram[0]++;
                     if (mnemonic.startsWith("l")) histogram[1]++;
-                    else if (mnemonic.startsWith("s")) histogram[2]++;
-                    String direction = mnemonic.startsWith("l") ? "READ" : (mnemonic.startsWith("s") ? "WRITE" : "UNKNOWN");
+                    else if (isStoreMnemonic(mnemonic)) histogram[2]++;
+                    String direction = mnemonic.startsWith("l") ? "READ" : (isStoreMnemonic(mnemonic) ? "WRITE" : "UNKNOWN");
                     for (long target : TARGETS) {
                         if (displacement != target) continue;
                         int now = memoryCounts.get(target) + 1;
