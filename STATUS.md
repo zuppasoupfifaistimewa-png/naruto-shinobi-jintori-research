@@ -3585,3 +3585,9 @@ Bukti baru yang dapat ditautkan: review runner-only [#40473737136](https://githu
 Status akhir per ruang lingkup: Step 4 SEBAGIAN (seed caller return dan lifecycle masih UNKNOWN); Step 5 TUNTAS untuk empat fungsi terpilih; Step 6 SEBAGIAN (operand/branch/delay slot terpilih sekarang terdokumentasi; field pending/runtime base/transition semantics belum lengkap); Step 7 SEBAGIAN (no-hit bounded bukan bukti loader/base); Step 8 SEBAGIAN (aturan permainan belum dibuktikan); Step 9 TUNTAS untuk RNG 0x80035D78 saja; Step 10 TUNTAS sebagai indeks audit. Step 4 correction terbaru: 0x800AF2AC memasukkan return helper 0x80037138 melalui move a0,v0; -1 adalah input helper. Tidak ada bukti Story Mode tamat.
 
 Tidak ada aksi pemain adaptif, restore savestate atau input gameplay dilakukan. Jangan ulangi eksperimen roulette #40474262267, breakpoint tunggal 0x800AD454 (#40484548650), atau seed kandidat 0x80035DA8 (#40485987817) tanpa hipotesis teknis baru.
+
+## Checkpoint addendum — Step 6 dataflow detail (27 Oktober 2026)
+
+The existing runner-only Step 6 artifact also supports a more specific decompiler trace for candidate 0x8011C0D0 on hypothetical entry-1 base 0x800D0000: byte-masked input compared with global 0x80139F70, early return if unchanged, global and field +0x618 update if changed; nonzero path writes 8 to selected record +0x22 and loops participant records with stride 0x90. Each word +0x04 is negated, clamped to minimum -9999, stored, and passed into setter 0x8001387C alongside index. Short/ushort sum +0x10/+0x14 versus 0x101 gates call to 0x8003F5D0 or alternate byte store +0x94A=1; 0x800F96A4 occurs on certain paths. This is decompilation of a 408-byte function body; full raw instruction loop was not archived. It does not establish cost semantics.
+
+Step 6/8 remain SEBAGIAN; +0xB30/+0xB38/+0xB40/+0xB44 still need whole-program instruction-level access analysis. No runtime, adaptive player, savestate or gameplay input was used.
