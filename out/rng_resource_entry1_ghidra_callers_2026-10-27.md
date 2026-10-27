@@ -77,11 +77,17 @@ Alamat fungsi dan call site di bawah semuanya dalam address map hipotetis entry 
 
 Satu call site langsung yang terdekode tetapi tidak memiliki batas fungsi pada pass ini: **0x80128AF8** (target 0x80035D78).
 
-## 36 kandidat mentah yang belum didekode
+## Koreksi: 36 kandidat awal kini didekode secara terarah
 
-Alamat berikut cocok dengan kata JAL target RNG tetapi Ghidra tidak mendekodenya sebagai instruksi dalam pass saat ini. Jangan klasifikasikan sebagai caller terverifikasi maupun sebagai data sampai dianalisis dengan konteks code/data yang lebih kuat:
+Workflow konteks lokal Ghidra [#40455582988](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455582988) memaksa disassembly pada semua 36 alamat yang sebelumnya tidak didekode oleh auto-analysis biasa. **36/36** terbaca sebagai `jal 0x80035d78` dan Ghidra melaporkan direct flow ke target. Hasil lengkap beserta konteks lokal tersimpan di [laporan 36 call site entry 1](rng_resource_entry1_unmapped_context_2026-10-27.md).
+
+Alamat call site (base kandidat `0x800D0000`):
 
 `0x800E7008`, `0x800EC004`, `0x800EC0C8`, `0x800ED1E0`, `0x800FA278`, `0x80129404`, `0x80132C88`, `0x8013332C`, `0x80133370`, `0x801334A4`, `0x801334E8`, `0x8013D548`, `0x8013D580`, `0x8013D5B8`, `0x8013D5DC`, `0x801454EC`, `0x8014A2F0`, `0x8014A570`, `0x8014DD68`, `0x8014DDC8`, `0x8014DE28`, `0x8014DE88`, `0x8014DEE8`, `0x8014DF48`, `0x8014E0D4`, `0x801558FC`, `0x8015592C`, `0x80155974`, `0x801559B0`, `0x801559CC`, `0x801559E8`, `0x80155A04`, `0x80155AB4`, `0x80156478`, `0x8015657C`, `0x801565B8`.
+
+Dua alamat mempunyai incoming branch yang terdekode pada jendela lokal: `0x800EC0C8` dituju oleh `bne s3,v0,0x800EC0C8` di `0x800EC1DC); `0x8015657C` dituju oleh `bne v1,v0,0x8015657C` di `0x8015656C`. Tidak ditemukannya incoming edge pada 34 sisanya di jendela terarah bukan bukti global bahwa lokasi itu tidak terjangkau. Beberapa pola tampak berada pada blok dispatch/switch.
+
+**Interpretasi yang tepat sekarang:** 144/144 call-site entry 1 didekode sebagai instruksi JAL langsung ke RNG pada peta alamat kandidat. 108 berada dalam fungsi yang ditemukan auto-analysis (50 fungsi dan satu site tanpa boundary); 36 sisanya masih belum mempunyai boundary fungsi caller yang teridentifikasi oleh auto-analysis. Base runtime tetap hipotesis, jadi ini bukan jaminan 144 jalur dipakai pada satu sesi runtime.
 
 ## Apa yang boleh disimpulkan
 
