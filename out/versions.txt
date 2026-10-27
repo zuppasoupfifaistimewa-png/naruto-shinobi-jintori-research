@@ -20,7 +20,7 @@ reverse_engineering:
     components: mkpsxiso, dumpsxiso
     archive: mkpsxiso-2.30-Linux.zip
     url: https://github.com/Lameguy64/mkpsxiso/releases/tag/v2.30
-    archive_sha256: PENDING_STEP0_RUN
+    archive_sha256: 8e387e6db51dee3eb7cb08f4d59293a24c48f58bd541631acf9301d78015a1fc
   m2c:
     version: git-commit
     commit: c632946b8cfbe8fce442b522dba92dfa72f1f317
@@ -62,4 +62,53 @@ verification_policy:
   - Only upload text-only toolchain report; never upload any game disc/executable, BIOS, memory card, savestate, RAM dump, or private screenshot.
   - Step 9 Unicorn function tests remain NOT RUN in this setup workflow.
 
-initial_status: PINS_RESEARCHED; RUNTIME_VERIFICATION_PENDING
+installer:
+  pip: 26.2.2
+
+runtime_verification:
+  status: VERIFIED_BY_GITHUB_ACTIONS
+  workflow: .github/workflows/toolchain-audit.yml
+  run: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40457860945
+  run_id: 40457860945
+  conclusion: success
+  verified_at_utc: 2026-10-27T05:54:10Z
+  text_only_artifact: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40457860945/artifacts/12712863298
+  actual_runtime:
+    python: 3.13.18
+    pip: 26.2.2
+    java: Eclipse Temurin 25.0.4.1 LTS
+    ghidra: 12.2; support/analyzeHeadless found and usage output verified
+    mkpsxiso: 2.30; help banner verified
+    dumpsxiso: 2.30; help banner verified
+    splat: 0.50.1; splat --version succeeded
+    unicorn: 2.1.4; Python import and MIPS32 little-endian Uc engine creation succeeded
+    spimdisasm: 1.42.4
+    m2c: commit c632946b8cfbe8fce442b522dba92dfa72f1f317; m2c --help succeeded
+    binutils_mipsel_linux_gnu: 2.42-2ubuntu1cross5; mipsel-linux-gnu-objdump reports GNU Binutils 2.42
+
+cli_notes:
+  ghidra_analyzeHeadless:
+    probe: -help
+    observed_exit_code: 1
+    interpretation: usage text and launcher presence verified; this CLI does not use --version as a normal version command
+  mkpsxiso_and_dumpsxiso:
+    probe: --version
+    observed_exit_code: 1
+    fallback: --help prints exact 2.30 banner for each tool
+  m2c:
+    probe: --version
+    observed_exit_code: 2
+    interpretation: command requires assembly filename and does not expose a standalone version flag; --help succeeded and the installed git commit is pinned
+  splat:
+    probe: --version
+    observed_exit_code: 0
+    output: splat 0.50.1
+
+step9_status: NOT_RUN
+step9_reason: toolchain smoke test only; no function-isolated emulation has been attempted
+safety:
+  emulator_or_gameplay_executed: no
+  game_disc_or_executable_uploaded_as_artifact: no
+  BIOS_memory_card_savestate_RAM_dump_or_private_screenshot_added_to_git: no
+
+final_status: STEP0_TOOLCHAIN_INSTALLED_AND_VERIFIED
