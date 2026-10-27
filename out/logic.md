@@ -229,3 +229,8 @@ Pemain adaptif tetap dijeda. Tidak ada emulator, gameplay, input atau pemulihan 
 **Status operasional Step 4:** direct-JAL inventory statis yang tercakup sudah dituntaskan; klaim “semua caller runtime absolut” tetap tidak dapat dibuat sampai base/lifecycle overlay dan jalur indirect/decompression diverifikasi. [Laporan entry 0](rng_resource_entry0_ghidra_context_2026-10-27.md) · [scan lintas resource](rng_resource_reference_scan_2026-10-27.md) · [laporan Step 4](../docs/STEP4_RNG_TRACE_2026-10-27.md).
 
 Pemain adaptif tetap dijeda; tidak ada emulator/gameplay/input/savestate.
+
+
+## Scan signature LCG lintas berkas
+
+Run [#40455975609](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455975609) menemukan hanya satu pasangan instruksi yang membentuk pengali LCG `0x41C64E6D` dan diikuti MULT/MULTU, yaitu di `SLPS_035.53` sekitar `0x80035D78`. Pola yang sama tidak ditemukan dalam raw DATA.BIN, DATA2.BIN, DUMMY.BIN, XASECT.BIN. Ini bukan bukti bahwa RNG lain dengan rumus berbeda tidak ada atau bahwa code compressed/encoded tidak berisi generator tersembunyi. [Laporan scan signature](step4_rng_signature_scan_2026-10-27.md).
