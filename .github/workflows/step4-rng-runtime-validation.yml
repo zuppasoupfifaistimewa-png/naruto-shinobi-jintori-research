@@ -138,6 +138,13 @@ jobs:
           export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/.config" XDG_DATA_HOME="$WORK/.data" XDG_RUNTIME_DIR="$WORK/runtime" LIBGL_ALWAYS_SOFTWARE=1
           for i in $(seq 1 60); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
           xdpyinfo -display "$DISPLAY" >/dev/null
+          PAD_SETUP=$(cat <<'PADLUA'
+          PCSX.settings.pads[1].DeviceType = 'Analog'
+          PCSX.settings.pads[1].Connected = true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("STEP4_PAD_SETUP=PASS")
+          PADLUA
+          )
           cat > "$WORK/step4-rng-trace.lua" <<'LUA'
           local ffi=require("ffi")
           local mode=os.getenv("STEP4_MODE") or "UNKNOWN"
@@ -226,7 +233,7 @@ jobs:
             echo "STEP4_BRANCH_BEGIN=$mode"
             STEP4_MODE="$mode" timeout --signal=TERM --kill-after=5s 85s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
               -noupdate -debugger -interpreter -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
-              -memcard1 "$WORK/cards/card-$mode.mcd" -dofile "$WORK/step4-rng-trace.lua" -softgpu -stdout -lua_stdout -logfile "$log" -run > "$stdout" 2>&1 &
+              -memcard1 "$WORK/cards/card-$mode.mcd" -exec "$PAD_SETUP" -dofile "$WORK/step4-rng-trace.lua" -softgpu -stdout -lua_stdout -logfile "$log" -run > "$stdout" 2>&1 &
             pid=$!
             python3 - "$pid" "$mode" "$stdout" "$WORK/captures" <<'PY'
           import sys,time,subprocess,hashlib
