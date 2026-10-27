@@ -176,6 +176,7 @@ jobs:
             -scriptPath "$GITHUB_WORKSPACE/tools/step6" \
             -preScript PrepareStep6Resource.java \
             -postScript ExportStructOffsetAccesses.java "$out/field-offset-scan.txt" \
+            -postScript ExportFieldCfgDefUse.java "$out/field-cfg-defuse.txt" 0x8012C544 0x8012CACC \
             -analysisTimeoutPerFile 1200 -max-cpu 2 -deleteProject \
             > "$out/ghidra-headless.log" 2>&1
           grep -q "^analysis=Ghidra decoded-instruction scan" "$out/field-offset-scan.txt"
