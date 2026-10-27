@@ -113,6 +113,49 @@ public class ExportFunctionDetail extends GhidraScript {
         line("--- REFERENCES_TO_FUNCTION_END ---");
     }
 
+    private void dumpDataReferences(long targetOffset) throws Exception {
+        Address target = toAddr(targetOffset);
+        line("");
+        line("=== DATA_XREFS target=" + target + " ===");
+        byte[] initialBytes = new byte[4];
+        try {
+            currentProgram.getMemory().getBytes(target, initialBytes);
+            StringBuilder raw = new StringBuilder();
+            for (byte value : initialBytes) raw.append(String.format("%02X", value & 0xff));
+            long word = ((long)(initialBytes[3] & 0xff) << 24)
+                | ((long)(initialBytes[2] & 0xff) << 16)
+                | ((long)(initialBytes[1] & 0xff) << 8)
+                | (long)(initialBytes[0] & 0xff);
+            line("loaded_image_bytes=" + raw + " loaded_image_word_le=0x" + Long.toHexString(word));
+            line("loaded_image_value_is_not_runtime_state=yes");
+        } catch (Exception e) {
+            line("loaded_image_bytes=UNAVAILABLE reason=" + e.getMessage());
+        }
+
+        ReferenceIterator refs = currentProgram.getReferenceManager().getReferencesTo(target);
+        int count = 0;
+        while (refs.hasNext()) {
+            Reference ref = refs.next();
+            count++;
+            Address from = ref.getFromAddress();
+            Instruction ins = currentProgram.getListing().getInstructionAt(from);
+            Function owner = currentProgram.getFunctionManager().getFunctionContaining(from);
+            line("xref_from=" + from + " type=" + ref.getReferenceType()
+                + " source=" + ref.getSource()
+                + " operand=" + ref.getOperandIndex()
+                + " function_entry=" + (owner == null ? "NONE" : owner.getEntryPoint())
+                + " function_name=" + (owner == null ? "NONE" : owner.getName()));
+            if (ins != null) {
+                line("  source_instruction_bytes=[" + rawBytes(ins) + "] " + ins.toString());
+                dumpWindow(ins, 4, 4);
+            } else {
+                line("  source_instruction=NOT_DECODED");
+            }
+        }
+        line("data_reference_count=" + count);
+        line("interpretation=direct Ghidra references only; indirect aliases and runtime writers may not appear");
+    }
+
     @Override
     protected void run() throws Exception {
         String[] args=getScriptArgs();
@@ -135,6 +178,8 @@ public class ExportFunctionDetail extends GhidraScript {
             if(!decompiler.openProgram(currentProgram))
                 throw new IllegalStateException("Decompiler could not open main executable.");
             for(int i=1;i<args.length;i++) dumpTarget(toAddr(Long.decode(args[i])),decompiler);
+            // Step 4: resolve direct static references to the helper-return global used by a0=-1.
+            dumpDataReferences(0x80066E7CL);
             decompiler.dispose();
             out.flush();
             if(out.checkError()) throw new IllegalStateException("Failed writing selected-function audit.");
