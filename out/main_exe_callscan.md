@@ -53,3 +53,10 @@ Indeks lengkap berisi 898 alamat target `jal` internal, jumlah caller, dua indik
 - **Mungkin:** setidaknya beberapa call sites menuju kode yang berada di luar text executable utama, termasuk `0x800AD454`, sehingga pemetaan loader/overlay relevan.
 - **Belum diketahui:** daftar fungsi definitif, batas setiap fungsi, lokasi roulette/battle/Chakra/RNG.
 - Langkah berikutnya: sediakan salinan `SLPS_035.53` ke runner melalui mekanisme privat yang aman (bukan Git), jalankan `analyzeHeadless` dengan bahasa MIPS little-endian 32-bit pada `0x80010000`, lalu ekspor symbol/function entry ke artefak teks. Jangan mengklaim fallback ini sebagai output Ghidra.
+
+
+## Pembaruan pipeline Ghidra — 27 Oktober 2026
+
+Pipeline untuk tahap berikutnya sudah dibuat: [workflow Ghidra statis](../.github/workflows/ghidra-static-analyze-psx-exe.yml), skrip persiapan entrypoint, dan skrip ekspor TSV [`tools/ghidra/ExportFunctionIndex.java`](../tools/ghidra/ExportFunctionIndex.java). Namun ini baru **pipeline siap konfigurasi**, bukan hasil analisis Ghidra.
+
+Run memerlukan Actions secret `PSX_EXE_DOWNLOAD_URL` berisi direct-download HTTPS privat. Biner divalidasi terhadap ukuran 385.024 byte, magic `PS-X EXE`, dan SHA-256 `a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569`. Tanpa secret tersebut, belum ada fungsi hasil Ghidra dan fallback di atas tetap satu-satunya indeks yang tersedia. Panduan: [`docs/GHIDRA_PRIVATE_EXE_HANDOFF.md`](../docs/GHIDRA_PRIVATE_EXE_HANDOFF.md). Workflow menyimpan hanya teks sebagai artefak; executable dan project sementara dibersihkan dari runner.
