@@ -20,10 +20,23 @@ TEXT_OFFSET = 0x800
 TEXT_BYTES = 0x5D800
 TEXT_BASE = 0x80010000
 FUNCTIONS = {
+    # Four direct RNG callers from the original required comparison.
     0x80015ADC: ("FUN_80015adc", 160),
     0x80015B7C: ("FUN_80015b7c", 240),
     0x8001A328: ("FUN_8001a328", 376),
     0x80020BF4: ("FUN_80020bf4", 156),
+    # Expanded same-address checks of core RNG/state/callback/Chakra functions.
+    # Actual function size/end are read from the current Ghidra report.
+    0x80012A70: ("FUN_80012a70", None),
+    0x8001387C: ("FUN_8001387c", None),
+    0x800138EC: ("FUN_800138ec", None),
+    0x80035D78: ("FUN_80035d78", None),
+    0x80037138: ("FUN_80037138", None),
+    0x800373F8: ("FUN_800373f8", None),
+    0x8003755C: ("FUN_8003755c", None),
+    0x80037B58: ("FUN_80037b58", None),
+    0x80037BB0: ("FUN_80037bb0", None),
+    0x80037C48: ("FUN_80037c48", None),
 }
 
 
@@ -34,16 +47,71 @@ def run_cmd(command: list[str], timeout: int = 180) -> subprocess.CompletedProce
     )
 
 
-def extract_ghidra_c(text: str, address: int) -> tuple[str | None, str | None]:
-    pattern = re.compile(
-        rf"=== FUNCTION entry=(?:0x)?0*{address:08X}\b.*?--- C_DECOMPILATION_BEGIN ---\s*"
-        rf"(.*?)\s*--- C_DECOMPILATION_END ---",
-        re.IGNORECASE | re.DOTALL,
+def extract_ghidra_section(text: str, address: int) -> tuple[str | None, str | None]:
+    """Extract one FUNCTION or HELPER_FUNCTION section without crossing into another."""
+    header = re.compile(
+        rf"(?m)^=== (?:HELPER_)?FUNCTION entry=(?:0x)?0*{address:08X}\b[^\n]*$",
+        re.IGNORECASE,
     )
-    match = pattern.search(text)
+    match = header.search(text)
+    if not match:
+        return None, f"Ghidra function section for 0x{address:08X} not found"
+    remainder = text[match.end():]
+    next_header = re.search(
+        r"(?m)^=== (?:HELPER_)?FUNCTION entry=(?:0x)?0*[0-9A-Fa-f]{8}\b",
+        remainder,
+    )
+    end = match.end() + next_header.start() if next_header else len(text)
+    return text[match.start():end], None
+
+
+def extract_ghidra_c(text: str, address: int) -> tuple[str | None, str | None]:
+    section, error = extract_ghidra_section(text, address)
+    if section is None:
+        return None, error
+    match = re.search(
+        r"--- C_DECOMPILATION_BEGIN ---\s*(.*?)\s*--- C_DECOMPILATION_END ---",
+        section,
+        re.DOTALL,
+    )
     if match:
         return match.group(1).strip() + "\n", None
-    return None, f"Ghidra C block for 0x{address:08X} not found"
+    return None, f"Ghidra C block for 0x{address:08X} not found inside its own section"
+
+
+def extract_ghidra_metadata(text: str, address: int, fallback_size: int | None) -> tuple[int | None, int | None, str | None]:
+    section, error = extract_ghidra_section(text, address)
+    if section is None:
+        return fallback_size, (address + fallback_size if fallback_size else None), error
+    size_match = re.search(r"(?m)^body_address_count=(\d+)\s*$", section)
+    end_match = re.search(r"(?m)^function_end_exclusive=(?:0x)?([0-9A-Fa-f]+)\s*$", section)
+    size = int(size_match.group(1)) if size_match else fallback_size
+    end = int(end_match.group(1), 16) if end_match else (address + size if size else None)
+    if not size:
+        return size, end, f"body_address_count unavailable for 0x{address:08X}"
+    if end is None or end <= address:
+        return size, end, f"valid function_end_exclusive unavailable for 0x{address:08X}"
+    return size, end, None
+
+
+def run_parser_fixtures() -> None:
+    """Guard FUNCTION/HELPER_FUNCTION parsing and exclusive end-address handling."""
+    sample = (
+        "=== FUNCTION entry=0x80015ADC expected_call_site=0x80015B14 ===\n"
+        "name=FUN_80015adc\nbody_address_count=160\nfunction_end_exclusive=0x80015B7C\n"
+        "--- C_DECOMPILATION_BEGIN ---\nint func_80015ADC(void) { return 0; }\n--- C_DECOMPILATION_END ---\n"
+        "=== HELPER_FUNCTION entry=80037138 ===\n"
+        "name=FUN_80037138\nbody_address_count=48\nfunction_end_exclusive=0x80037168\n"
+        "--- C_DECOMPILATION_BEGIN ---\nint func_80037138(void) { return 1; }\n--- C_DECOMPILATION_END ---\n"
+    )
+    c1, e1 = extract_ghidra_c(sample, 0x80015ADC)
+    s1, z1, m1 = extract_ghidra_metadata(sample, 0x80015ADC, None)
+    c2, e2 = extract_ghidra_c(sample, 0x80037138)
+    s2, z2, m2 = extract_ghidra_metadata(sample, 0x80037138, None)
+    if any((e1, m1, e2, m2)) or not c1 or not c2:
+        raise AssertionError(f"section parser errors: {e1}; {m1}; {e2}; {m2}")
+    if (s1, z1, s2, z2) != (160, 0x80015B7C, 48, 0x80037168):
+        raise AssertionError(f"section metadata mismatch: {(s1, z1, s2, z2)}")
 
 
 def normalize_addr_call_tokens(code: str) -> set[str]:
@@ -73,16 +141,20 @@ def find_asm_function_label(asm: str, address: int) -> str | None:
 
 
 
-def inject_missing_function_boundaries(asm: str) -> tuple[str, list[str]]:
-    """Inject only boundaries Ghidra found but spimdisasm's heuristics missed."""
+def inject_missing_function_boundaries(
+    asm: str, function_ends: dict[int, int]
+) -> tuple[str, list[str]]:
+    """Inject starts and Ghidra-derived exclusive ends that spimdisasm omitted."""
     inserted: list[str] = []
     specs: list[tuple[int, str]] = []
-    for address, (_, body_bytes) in FUNCTIONS.items():
+    for address, (_, fallback_size) in FUNCTIONS.items():
         specs.append((address, f"func_{address:08x}"))
-        specs.append((address + body_bytes, f"func_{address + body_bytes:08x}"))
-    # Process in descending address order so line insertion never invalidates a
-    # later insertion address lookup. Labels are added only where no address
-    # label was emitted by spimdisasm.
+        end = function_ends.get(address)
+        if end is None and fallback_size:
+            end = address + fallback_size
+        if end is not None and end > address:
+            specs.append((end, f"func_{end:08x}"))
+    # Process descending so inserting an earlier label cannot invalidate a later search.
     for address, label in sorted(set(specs), reverse=True):
         if find_asm_function_label(asm, address):
             continue
@@ -118,12 +190,13 @@ def main() -> int:
     lines: list[str] = [
         "# Step 5 — Same-function Ghidra/m2c comparison",
         "",
-        "scope=main executable RNG callers; four functions are addressed identically in both decompilers",
+        "scope=main executable; 14 core RNG/state/callback/Chakra functions are compared at matching addresses in Ghidra and m2c",
         "game_or_emulator_executed=no",
         "gameplay_input_sent=no",
         "source_binary_committed=no",
         "source_binary_uploaded_as_artifact=no",
         "artifact_policy=text_only",
+        "expanded_function_scope=4 original RNG callers plus 10 RNG/state/callback/Chakra core functions",
         f"m2c_commit={Path(args.m2c_commit).read_text(encoding='utf-8').strip()}",
         "m2c_target=mips-ido-c (tool backend selection only; not a claim about the original game compiler)",
         "",
@@ -139,6 +212,35 @@ def main() -> int:
               "text_offset=0x800", "text_base=0x80010000", "text_size=0x5D800", ""]
 
     ghidra_text = ghidra_path.read_text(encoding="utf-8", errors="replace")
+    try:
+        run_parser_fixtures()
+        lines.append("metadata_parser_fixture=PASS cases=FUNCTION_HELPER_FUNCTION_end_address")
+    except Exception as exc:
+        lines += ["status=FAILED", f"metadata_parser_fixture=FAIL error={exc}", ""]
+        report_path.write_text("\n".join(lines), encoding="utf-8")
+        return 2
+
+    function_metadata: dict[int, tuple[int | None, int | None]] = {}
+    function_ends: dict[int, int] = {}
+    missing_metadata: list[str] = []
+    for address, (_, fallback_size) in FUNCTIONS.items():
+        size, end, metadata_error = extract_ghidra_metadata(ghidra_text, address, fallback_size)
+        if metadata_error:
+            missing_metadata.append(f"0x{address:08X}:{metadata_error}")
+        function_metadata[address] = (size, end)
+        if end is not None:
+            function_ends[address] = end
+    if missing_metadata:
+        lines += [
+            "status=PARTIAL",
+            "function_metadata_missing=" + ";".join(missing_metadata),
+            "error=exact function section/body end is required before claiming same-function m2c comparison",
+            "",
+        ]
+        report_path.write_text("\n".join(lines), encoding="utf-8")
+        return 0
+    lines.append("function_metadata=PASS source=Ghidra body_address_count_and_end_exclusive")
+
     # Slice to the verified PS-X EXE text in runner temp, then feed that exact
     # machine code image to spimdisasm and m2c.
     work_text = out / "main_text.bin"
@@ -187,7 +289,7 @@ def main() -> int:
 
     asm_path = assembly_files[0]
     asm = asm_path.read_text(encoding="utf-8", errors="replace")
-    asm, injected_labels = inject_missing_function_boundaries(asm)
+    asm, injected_labels = inject_missing_function_boundaries(asm, function_ends)
     asm_path.write_text(asm, encoding="utf-8")
     lines += [
         f"spimdisasm_exit_code={dis.returncode}",
@@ -198,7 +300,8 @@ def main() -> int:
         "",
     ]
     all_ok = True
-    for address, (ghidra_name, expected_size) in FUNCTIONS.items():
+    for address, (ghidra_name, _) in FUNCTIONS.items():
+        expected_size = function_metadata[address][0]
         stem = f"{address:08x}"
         ghidra_c, error = extract_ghidra_c(ghidra_text, address)
         if ghidra_c is None:
@@ -265,7 +368,7 @@ def main() -> int:
         f"functions_requested={len(FUNCTIONS)}",
         f"functions_with_m2c_output={sum(1 for p in out.glob('m2c_*.c') if p.stat().st_size > 0)}",
         f"status={status}",
-        "completion_criteria=Ghidra C and m2c output both exist for all four same-address RNG callers",
+        "completion_criteria=Ghidra C and m2c output both exist for all requested same-address functions with Ghidra-derived end addresses; structural comparison only",
         "",
     ]
     report_path.write_text("\n".join(lines), encoding="utf-8")
