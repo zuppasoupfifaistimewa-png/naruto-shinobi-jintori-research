@@ -38,6 +38,8 @@ jobs:
 
       - name: Download release disc image and extract SLPS_035.53
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           source_dir="$RUNNER_TEMP/psx-disc-source"
@@ -49,7 +51,7 @@ jobs:
           cue_raw="$source_dir/original.cue"
           cue="$source_dir/naruto-disc.cue"
 
-          if ! curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 --max-time 600 "$base_url/Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin" --output "$disc"; then
+          if ! curl --fail --location --silent --show-error --header "Authorization: Bearer $GITHUB_TOKEN" --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 --max-time 600 "$base_url/Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin" --output "$disc"; then
             echo "::error::Could not download the existing Naruto disc-image release asset."
             exit 1
           fi
@@ -59,7 +61,7 @@ jobs:
             exit 1
           fi
 
-          if ! curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 --max-time 60 "$base_url/Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue" --output "$cue_raw"; then
+          if ! curl --fail --location --silent --show-error --header "Authorization: Bearer $GITHUB_TOKEN" --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 --max-time 60 "$base_url/Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue" --output "$cue_raw"; then
             echo "::error::Could not download the matching CUE asset."
             exit 1
           fi
