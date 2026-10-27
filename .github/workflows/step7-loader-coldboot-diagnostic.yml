@@ -110,6 +110,39 @@ jobs:
           for _ in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
           xdpyinfo -display "$DISPLAY" >/dev/null
 
+          # First establish that a cold boot advances without any breakpoints or controller input.
+          cat > "$WORK/step7-vsync-preflight.lua" <<'LUA'
+          local frame=0
+          local function log(s) print(s); pcall(function() io.stdout:flush() end) end
+          PCSX.Events.createEventListener("GPU::Vsync",function()
+            frame=frame+1
+            if frame<=3 or frame%50==0 then log("STEP7_PREFLIGHT_VSYNC frame="..frame) end
+            if frame>=300 then PCSX.quit(0) end
+          end)
+          log("STEP7_PREFLIGHT_READY no_breakpoints=no_input no_savestate_restore limit_frames=300")
+          LUA
+
+          set +e
+          timeout --signal=TERM --kill-after=3s 15s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+            -noupdate -debugger -interpreter -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+            -dofile "$WORK/step7-vsync-preflight.lua" -softgpu -stdout -lua_stdout -logfile "$WORK/pcsx-preflight.log" -run \
+            > "$OUT/preflight.stdout" 2>&1
+          preflight_rc=$?
+          set -e
+          max_frame="$(sed -n 's/.*STEP7_PREFLIGHT_VSYNC frame=\([0-9][0-9]*\).*/\1/p' "$OUT/preflight.stdout" | sort -n | tail -n 1)"
+          max_frame="${max_frame:-0}"
+          {
+            echo "STEP7_PREFLIGHT_EXIT=$preflight_rc"
+            echo "STEP7_PREFLIGHT_MAX_FRAME=$max_frame"
+            cat "$OUT/preflight.stdout"
+          } >> "$OUT/step7-loader.stdout"
+          if [ "$max_frame" -lt 10 ]; then
+            echo "STEP7_PREFLIGHT_STALLED=YES; instrumented probe skipped to avoid repeating an unproductive 70-second wait" >> "$OUT/step7-loader.stdout"
+            printf 'stage=preflight_stalled\n' > "$OUT/stage.txt"
+            exit 0
+          fi
+          echo "STEP7_PREFLIGHT_STALLED=NO" >> "$OUT/step7-loader.stdout"
+
           cat > "$WORK/step7-loader-probe.lua" <<'LUA'
           local ffi=require("ffi")
           local frame=0
@@ -200,7 +233,7 @@ jobs:
           timeout --signal=TERM --kill-after=5s 70s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
             -noupdate -debugger -interpreter -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
             -dofile "$WORK/step7-loader-probe.lua" -softgpu -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
-            > "$OUT/step7-loader.stdout" 2>&1
+            >> "$OUT/step7-loader.stdout" 2>&1
           rc=$?
           set -e
           echo "STEP7_EMULATOR_EXIT=$rc"
@@ -257,12 +290,13 @@ jobs:
             "",
           ]
           lines += ["    "+x for x in useful[-240:]]
-          pcsxlog=Path("/tmp/step7-loader-private/pcsx.log")
-          lines += ["", "## Emulator debug log tail", ""]
-          if pcsxlog.exists():
-              lines += ["    "+x for x in pcsxlog.read_text(errors="replace").splitlines()[-160:]]
-          else:
-              lines += ["    PCSx-Redux logfile was not created."]
+          lines += ["", "## Emulator debug log tails", ""]
+          for pcsxlog in (Path("/tmp/step7-loader-private/pcsx-preflight.log"), Path("/tmp/step7-loader-private/pcsx.log")):
+              lines += ["", "### "+pcsxlog.name]
+              if pcsxlog.exists():
+                  lines += ["    "+x for x in pcsxlog.read_text(errors="replace").splitlines()[-100:]]
+              else:
+                  lines += ["    Logfile was not created."]
           lines += ["", "## Privacy and cleanup", "", "- Binary game/BIOS and extracted AppImage remain under runner-private /tmp and are deleted after the job. Artifact contains only report/log text, stage metadata, register values and checksums; no RAM dump, savestate, Memory Card or screenshot.", "- Private cleanup is recorded in the job log.", ""]
           (root/"STEP7_COLD_BOOT_RESULT.md").write_text("\n".join(lines),encoding="utf-8")
           print("\n".join(lines))
