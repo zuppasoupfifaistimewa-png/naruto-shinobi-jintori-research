@@ -6,7 +6,7 @@ Tanggal pemeriksaan: 27 Oktober 2026. Biner tidak dimasukkan ke Git.
 - SHA-256 terverifikasi: `a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569`.
 - Header: PC `0x80011448`, base `0x80010000`, text `0x5D800`.
 - **Ghidra langkah 3 selesai:** run [#40438574949](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40438574949) berhasil menggunakan Ghidra 12.2, bahasa `MIPS:LE:32:default`, dan mengekspor 1.206 fungsi.
-- **Analisis caller langkah 4 selesai untuk empat direct-JAL caller utama:** run [#40438911181](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40438911181) berhasil mengekspor dekompilasi terbatas, instruksi sekitar call site, serta xref ke state dan entry RNG.
+- **Langkah 4 selesai pada cakupan statis executable utama:** analisis RNG/helper daftar lengkap dan cross-reference tercatat di [laporan Langkah 4](../docs/STEP4_RNG_TRACE_2026-10-27.md), berdasarkan run [#40439763833](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40439763833).
 - Artefak teks untuk analisis caller: [ghidra-slps-03553-function-index (run #40438911181)](https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/artifacts/12705950866). Artefak ini berisi TSV/log/dekompilasi teks saja, bukan executable atau proyek Ghidra.
 
 ## Temuan RNG
@@ -56,13 +56,11 @@ Empat call sites langsung ke `0x80035D78` adalah `0x80015B14`, `0x80015BF0`, `0x
 
 Tidak ada emulator atau input gameplay yang dijalankan. Analisis statis tidak membuktikan aturan gameplay tanpa pemetaan tabel/state tambahan.
 
-## Langkah 4 — kelanjutan yang tepat
+## Status Langkah 4 dan transisi ke Langkah 5–6
 
-1. Telusuri `FUN_800154d4`, `FUN_800158d8`, dan `FUN_800159bc` untuk mengetahui domain indeks pada `FUN_80015adc`.
-2. Telusuri sumber/penulis `DAT_80070d02` dan isi `DAT_80070d0a` untuk mengetahui tabel yang di-shuffle.
-3. Telusuri pemanggil/efek `FUN_8001a328`, pemeriksaan `FUN_80016c68(code)`, dan semua referensi ke `DAT_80089DA9` untuk mengenali jenis kandidat.
-4. Telusuri pengguna `FUN_80020bf4` serta field `param_1[0xD]` untuk menilai apakah ini runtime saja atau aturan game.
-5. Petakan seed setter `0x80035DA8` dan kode/resource overlay secara terpisah; jangan menganggap tiadanya direct-JAL berarti setter tidak dipakai.
+Langkah 4 telah menelusuri empat pemanggil langsung RNG serta helper pembentukan, penyisipan, pengacakan, dan pembacaan daftar kandidat pada executable utama. Kesimpulan teknis dan batas kepastian ada di [laporan Langkah 4](../docs/STEP4_RNG_TRACE_2026-10-27.md). Seed runtime dan arti semantik kode kandidat masih **belum diketahui**; hal ini tidak menghalangi penyelesaian inventaris statis pada cakupan main executable.
+
+Langkah 5 telah melakukan survei Ghidra atas `DATA.BIN` entry index 1 dengan base hipotesis `0x800D0000`. Beberapa call sites resource langsung merujuk getter target Chakra `0x80012A70`; rincian dan batas interpretasi ada di [laporan Langkah 5](../docs/STEP5_DATABIN_ENTRY1_ANALYSIS_2026-10-27.md). Langkah 6 berikutnya menelusuri transisi state/event dari fungsi-fungsi target dan konsumen setter Chakra. Base runtime belum diverifikasi, jadi alamat resource tetap provisional.
 
 ## Reproduksi signature scan
 
