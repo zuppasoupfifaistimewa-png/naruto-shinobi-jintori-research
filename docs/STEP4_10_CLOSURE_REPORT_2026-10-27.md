@@ -1,3 +1,37 @@
+## LIVE RECONCILIATION ADDENDUM — 27 Oktober 2026, 21:41 WIB
+
+HEAD sebelum update dokumentasi: `c36b7407631291afd2a4d303f49a8b03392e2bbc`. Snapshot historis di bawah bagian ini tidak boleh mengalahkan run/artifact berikut.
+
+### Step 4 — RNG entry 0/1
+- [Run context entry 0 #40521136060](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521136060) success, artifact #12742056745 (5.396 B, ZIP SHA-256 `8b7fb1abfe4371c460ddc6f163295bde1ea4b6025c2ecb3fe2550b3504e477f3`). [Entry 1 #40521136038](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40521136038) success, artifact #12741592577 (15.016 B, ZIP SHA-256 `8f90959c601067480d5718eba6a6f1c819b08c37ac57e8667551dedd9febc1f4`). Hanya jendela lokal didisassemble; boundary caller belum tervalidasi.
+- Callsite `0x800AF2AC` ialah direct JAL ke `0x80035DA8`; delay slot `move a0,v0` di `0x800AF2B0` meneruskan return helper `0x80037138` menjadi argumen setter. `li a0,-1` pada delay slot sebelumnya adalah argumen helper, bukan nilai yang langsung ditetapkan sebagai seed.
+- Nilai return helper/seed runtime tetap UNKNOWN. Candidate base entry 0 `0x800AD000` dan entry 1 `0x800D0000` tetap hipotesis.
+
+### Step 5 — perbandingan entry 1
+[Run #40523020556](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40523020556) completed/success pada 21:40:45 WIB; artifact #12742268706 (1.367.605 B; ZIP SHA-256 `5f3f767667444f7c956c36fc59cf75b6bb90a5a1dde8ddb92fb69f9e0f797e81`). Ghidra memvalidasi function entry `0x800ED8C8`, body 160 byte sampai end-exclusive `0x800ED968); direct RNG call `0x800ED8E4`; Ghidra decompilation sukses, m2c exit 0 dan menghasilkan 17 baris C dibanding 13 baris Ghidra. Kedua output menunjukkan call `0x800CB4B4` dan `0x80035D78`. Artefak text/C/disassembly/log saja dan cleanup berhasil.
+- Struktur fungsi: input di-mask 16-bit; hasil awal byte rendah helper; RNG modulo 250 dibandingkan byte pada tabel yang diindeks `index*0x90+0x29); kondisi remainder >= byte mengembalikan `0xFF`, selain itu byte helper. Feature identity dan runtime pointer/table tetap UNKNOWN; jangan melabelinya roulette/battle tanpa caller/effect evidence.
+- Percobaan #40521830977 gagal karena project directory belum ada; #40522317571 parse body-size salah; #40522919529 regex tidak menangkap ukuran. Hanya #40523020556 yang lulus full perbandingan.
+
+### Step 6 — CFG/SSA
+[Run #40522772847](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40522772847) completed/success pukul 21:38:32 WIB; artifact #12741234990 (234.210 B; ZIP SHA-256 `7ee636b8e687c5163873cdd40c82a02e8c8617885a0863b1e5a196b6eed1eac9`). Fungsi `0x8012C544` dan `0x8012CACC` terkonfirmasi function entry pada view entry 1 dengan base hipotesis. Fungsi pertama punya 88 P-code ops (7 offset-constant match); fungsi kedua 47 ops (2 match). Report detail: [Step 6 CFG/SSA](STEP6_CFG_SSA_DATAFLOW_AUDIT_2026-10-27.md).
+- `0x8012C544` mendukung init guard `+0xA1C), clear beberapa field termasuk `+0xB44), helper call `0x80012AC0`, store byte ke `+0xB2E/+0xB2F), set `+0xB4A=0x1E), read `+0xB30/+0xB38), add lalu write `+0xB40`, clear `+0xB2A), set guard 1. Field labels belum diketahui.
+- SSA menunjukkan branch/merge/effective address untuk consumer `+0xB44), tetapi pointer global `0x8013A554` dan alias cross-function belum resolve. Status 6(a) SEBAGIAN, 6(b) BLOCKED, 6(c) SEBAGIAN, 6(d) UNKNOWN.
+
+### Kriteria Langkah 4–10 — status aktual
+| Langkah | Status | Bukti yang ditutup | Belum terbukti |
+|---|---|---|---|
+| 4 RNG/lifecycle | **SEBAGIAN** | Formula, state/output, 7/7 vector tests; bounded contexts baru | Seed boot, caller boundaries lengkap, reachability, roulette/battle causality, indirect/alternative RNG |
+| 5 Ghidra/m2c | **SEBAGIAN** | 13 main-EXE funcs dan 1 candidate entry-1 function same-boundary cross-check | Cakupan fungsi/transition/compare dan callgraph lengkap; `0x80012A70` bukan function-entry valid di view yang dilaporkan |
+| 6 xref/pointer/alias | **SEBAGIAN** | read `+B30/+B38`→sum→write `+B40`, SSA/CFG dua fungsi | Pointer runtime, alias lintas branch/callee, field semantics |
+| 7 loader/resource | **SEBAGIAN** | Struktur direktori dan bootstrap copy statis | Destination/length/checksum runtime, relocation, resource lifecycle, DATA2/DUMMY mappings |
+| 8 aturan/gameplay | **SEBAGIAN** | Perilaku control-flow fungsi `0x800ED8C8` dijelaskan | Identity feature, costs, barrier/upgrade, cards, turns, victory/loss |
+| 9 tests | **SEBAGIAN keseluruhan** | RNG 7/7; accessor setter/getter 16/16; cleanup PASS | Test oracle untuk fungsi lain dan seluruh gameplay |
+| 10 audit closure | **TUNTAS hanya sebagai matriks dokumentasi** | Matriks per-langkah, evidence, artifact, limitation, blockers direkonsiliasi | Tidak menyatakan riset reverse engineering atau game seluruhnya selesai |
+
+Pemain otomatis tidak dijalankan selama sesi ini; tidak ada input gameplay, restore savestate, sesi emulator/gameplay ataupun perubahan adaptive player/runner/classifier/policy/readiness gate. Tidak ada aset privat game di Git/artifact. **Story Mode TIDAK TERBUKTI TAMAT.**
+
+---
+
 # LIVE CLOSURE ADDENDUM — 27 Oktober 2026
 
 ## Step 9 — hasil terisolasi tambahan (27 Oktober 2026, 21:02 WIB)
