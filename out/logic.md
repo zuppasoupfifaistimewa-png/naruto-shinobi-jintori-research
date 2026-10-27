@@ -28,7 +28,7 @@ Status keseluruhan: pekerjaan parsial per kriteria, bukan penyelesaian semua log
 - Langkah 7: **SEBAGIAN**. Parser frame/report telah diperbaiki. Loader probe #40484548650 pada `0x800AD454` dan seed-setter probe #40485987817 pada `0x80035DA8` masing-masing menunjukkan progres hingga frame 120 tanpa hit, exit 124 pada batas 35 detik, cleanup PASS. Probe kedua menambah bukti batas Step 4(a) tetapi tidak memetakan base/loader; fallback PC pada artefak kedua keliru, sementara raw ready line menegaskan target benar. Fix diuji pada #40486315324. Base/lifecycle runtime tetap UNKNOWN.
 - Langkah 8: **SEBAGIAN**. Aliran negasi/clamp dan store threshold terpetakan statis, tetapi semantik delta/field, biaya barrier/level-up, battle/roulette/turn, efek kartu, dan kondisi menang per mode tetap UNKNOWN/BELUM TERUJI.
 - Langkah 9: **TUNTAS hanya untuk RNG `0x80035D78`** dengan 7/7 vektor, alias fisik RAM yang benar, sentinel return/12 instruksi; bukan emulator PS1 penuh atau bukti semua fungsi.
-- Langkah 10: **TUNTAS sebagai indeks audit saja**.
+- Langkah 10: **TUNTAS sebagai matriks closure audit per-kriteria saja**.
 - Story Mode: **TIDAK TERBUKTI TAMAT**. Pemain adaptif tetap dijeda.
 - Seed-setter run [#40485987817](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40485987817) selesai `success`; raw log `bp_hits=0` sampai frame 120, exit 124/35 detik, cleanup PASS. Artifact #12724933081 berukuran 4.003 byte, ZIP SHA-256 `74fcb5b8958ce26ab7fd1091bd7c2ee8dbfc073bb09ac9c4ca70d1a6e2a204c6`. Ringkasan awal menampilkan fallback PC `0x800AD454` yang keliru; sumber konfigurasi target adalah raw `STEP7_SINGLE_BP_READY target=0x80035DA8`. Fallback fixture lulus pada #40486315324.
 
@@ -287,7 +287,7 @@ Status terbaru:
 - Step 7 — **SEBAGIAN**. Struktur directory DATA.BIN dan bootstrap copy didukung statis; loader base/lifecycle runtime/relocation serta pemetaan DATA2/DUMMY belum lengkap. [Review Step 7](../docs/STEP7_LOADER_OVERLAY_MAPPING_2026-10-27.md).
 - Step 8 — **SEBAGIAN**. Hanya perilaku fungsi didukung kode yang diberi label statis; aturan biaya, barrier, battle/roulette/turn, efek kartu, dan victory conditions umum tetap UNKNOWN. [Review Step 8](../docs/STEP8_FUNCTION_SEMANTICS_AND_GAME_RULES_2026-10-27.md).
 - Step 9 — **TUNTAS untuk fungsi RNG 0x80035D78 saja**. Run #40474891838 sukses; 7/7 initial-state vectors cocok untuk state baru, v0 dan return sentinel; 12 instruksi tiap vektor; physical RAM map PS1 2 MiB; runner cleanup PASS. [Laporan Step 9](step9/STEP9_UNICORN_RESULT_2026-10-27.md).
-- Step 10 — **TUNTAS sebagai indeks audit**; ini bukan klaim bahwa seluruh game telah selesai direverse-engineer.
+- Step 10 — **TUNTAS sebagai matriks closure audit per-kriteria**; ini bukan klaim bahwa seluruh game telah selesai direverse-engineer.
 
 Story Mode tetap **TIDAK TERBUKTI TAMAT**. Tidak ada ending autentik yang diverifikasi. Sistem pemain adaptif tetap dijeda; tidak ada classifier, input policy, readiness gate, atau marker Revision65 diubah pada pekerjaan ini. ROM/disc, BIOS, Memory Card, savestate, RAM dump, dan screenshot privat tetap di luar Git.
 
@@ -327,7 +327,7 @@ These operations are static decompilation, not proven cost/level-up rules. Only 
 - **Step 6 — TERVERIFIKASI-STATIS pada entry-1 base HIPOTESIS:** `+0xB30` dibaca pada `0x8012C634`, `+0xB38` pada `0x8012C638`, nilai dijumlahkan di `0x8012C640`, dan hasil disimpan ke `+0xB40` pada `0x8012C644`. Offset `+0xB44` mendapat store nol di `0x8012C604` dan dibaca lagi di `0x8012CB14` menjadi argumen `a2` bagi `0x8001B364`. Arti mekanik, object-base, dan mapping RAM runtime tetap UNKNOWN.
 - Runner-only audit [#40497668341](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40497668341) success pada 18:38:45 WIB, artifact #12730957210 (9.014 bytes; ZIP SHA-256 `695e36bf70237913c0f80c94f0d4100732c92dd8b78155da2ace90d189c5ee24`), cleanup PASS. Field scan source run #40493556711 artifact #12729156734, SHA-256 ZIP `c9ea5ef0552a0c80a70f0d3a758622a358509de2079e5954dac3ce0032426e93`.
 - Failure analysis Step 4: artefak helper #12730020903 dari run #40493608676 mempunyai disassembly walau workflow gagal pada grep target-marker yang menuntut prefiks `0x`; Ghidra menulis alamat tanpa prefiks. Setelah itu ditemukan fragmen workflow duplikat di luar penutup YAML; dihapus pada commit `029fdfab8df55dd16001916f0f53b7abd073c334`. Status run koreksi #40497723766 harus diverifikasi live.
-- Status langkah tetap: Step 4/6/7/8 SEBAGIAN, Step 5 hanya empat fungsi terpilih TUNTAS, Step 9 hanya RNG `0x80035D78` TUNTAS, Step 10 TUNTAS sebagai indeks audit saja. Story Mode TIDAK TERBUKTI TAMAT.
+- Status langkah tetap: Step 4/6/7/8 SEBAGIAN, Step 5 hanya empat fungsi terpilih TUNTAS, Step 9 hanya RNG `0x80035D78` TUNTAS, Step 10 TUNTAS sebagai matriks closure audit per-kriteria saja. Story Mode TIDAK TERBUKTI TAMAT.
 
 ## Checkpoint tambahan — xref langsung global return helper (27 Oktober 2026, 18:44 WIB)
 
