@@ -110,7 +110,16 @@ jobs:
           for _ in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
           xdpyinfo -display "$DISPLAY" >/dev/null
 
-          # First establish that a cold boot advances without any breakpoints or controller input.
+          # Preserve the proven Port 1 Analog/remap setup but do not send any button input.
+          PAD_SETUP=$(cat <<'LUA'
+          PCSX.settings.pads[1].DeviceType = 'Analog'
+          PCSX.settings.pads[1].Connected = true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("PAD_SETUP=Port 1 Analog connected/remapped; no button presses")
+          LUA
+          )
+
+          # First establish that a cold boot advances without breakpoints or button input.
           cat > "$WORK/step7-vsync-preflight.lua" <<'LUA'
           local frame=0
           local function log(s) print(s); pcall(function() io.stdout:flush() end) end
@@ -124,8 +133,8 @@ jobs:
 
           set +e
           timeout --signal=TERM --kill-after=3s 15s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-            -noupdate -debugger -interpreter -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
-            -dofile "$WORK/step7-vsync-preflight.lua" -softgpu -stdout -lua_stdout -logfile "$WORK/pcsx-preflight.log" -run \
+            -noupdate -debugger -no-gdb -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+            -exec "$PAD_SETUP" -dofile "$WORK/step7-vsync-preflight.lua" -dynarec -softgpu -stdout -lua_stdout -logfile "$WORK/pcsx-preflight.log" -run \
             > "$OUT/preflight.stdout" 2>&1
           preflight_rc=$?
           set -e
@@ -231,8 +240,8 @@ jobs:
           printf 'stage=coldboot_observation\n' > "$OUT/stage.txt"
           set +e
           timeout --signal=TERM --kill-after=5s 70s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
-            -noupdate -debugger -interpreter -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
-            -dofile "$WORK/step7-loader-probe.lua" -softgpu -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
+            -noupdate -debugger -no-gdb -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+            -exec "$PAD_SETUP" -dofile "$WORK/step7-loader-probe.lua" -dynarec -softgpu -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run \
             >> "$OUT/step7-loader.stdout" 2>&1
           rc=$?
           set -e
