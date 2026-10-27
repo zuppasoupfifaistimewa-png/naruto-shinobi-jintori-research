@@ -1,6 +1,6 @@
 # Checkpoint terbaru — reverse engineering Langkah 4–10 (27 Oktober 2026)
 
-Checkpoint yang dibaca sebelum pembaruan status ini: `main` HEAD `86b6ab3f3f85464a1d628330d9604dec437710fe`. Commit dokumentasi status ini sendiri akan memajukan HEAD; saat melanjutkan, ambil SHA `main` live dari GitHub. Konektor ini tidak menyediakan pemeriksaan working tree lokal.
+Checkpoint yang dibaca sebelum sinkronisasi akhir status ini: `main` HEAD `601027884ee2e8fa01ca91a51faec65c7c19e709`. Update status ini memajukan HEAD; saat melanjutkan, ambil SHA `main` live dari GitHub. Konektor ini tidak menyediakan pemeriksaan working tree lokal.
 
 ## Bukti/pekerjaan terbaru
 
@@ -8,7 +8,7 @@ Checkpoint yang dibaca sebelum pembaruan status ini: `main` HEAD `86b6ab3f3f8546
 - Single-breakpoint cold boot awal [#40484519812](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40484519812) memakai satu breakpoint `0x800AD454`, tanpa input/restore. Raw log mencatat progress sampai frame 100 tanpa hit, exit 124/35 detik, cleanup PASS; report assembler gagal sintaks sehingga artifact #12723834084 (1.894 byte, ZIP SHA-256 `6188c32e73a0984133c5c1f4ac3a37dcacde677458ec56c7fdf100ba25c73968`) bukan ringkasan lengkap yang valid. Run koreksi [#40484548650](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40484548650) selesai `success` pada 10:00:47 UTC (17:00:47 WIB), durasi sekitar 291 detik. Report lengkap/artefak #12724961702 berukuran 3.960 byte, ZIP SHA-256 `27376e9b78eca7e686843034d8d6e44587e1e2969bf6fcc93dc98d3c6cc0bc71`: preflight frame 50; listener-only max frame 60; target `0x800AD454` progress hingga frame 120 tanpa hit (`SINGLE_BREAKPOINT_HIT=NO`, count 0), exit 124 pada batas 35 detik; seluruh steps lulus dan `STEP7_PRIVATE_CLEANUP=PASS`. Tidak ada hit/register/copy-size/checksum buffer, jadi Step 7 tetap SEBAGIAN.
 - Parser report assembler diperbaiki pada commit `8326c07f71caeab12924133b0812ec7e86b8b1f7`; run koreksi #40484548650 sudah selesai dengan hasil/log/artefak/cleanup diperiksa. Regression fixture parser terpisah lulus pada #40484417534 dengan `frames=1,2,3,10,20,30,40 max=40`.
 - Tracing statis baru memakai output runner-only Step 6 yang sudah ada [#40473737136](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40473737136): pada base entry-1 hipotetis `0x800D0000`, kandidat `0x8011C0D0` menegasikan word peserta offset `+0x04`, menjepit minimum ke `-9999`, lalu memanggil setter `0x8001387C`. Kandidat cabang threshold menulis `+0x58B`/`+0x5D2` sebelum `0x800EF98C`. Ini belum mengidentifikasi arti gameplay; delta `+0xB30/+0xB38/+0xB40/+0xB44` masih UNKNOWN. Lihat [Step 6](docs/STEP6_TARGET_XREF_SEMANTIC_REVIEW_2026-10-27.md) dan [Step 8](docs/STEP8_FUNCTION_SEMANTICS_AND_GAME_RULES_2026-10-27.md).
-- Laporan runtime Step 7 dan peta loader/overlay mencatat temuan parsial terbaru. Base entry 0 `0x800AD000` dan entry 1 `0x800D0000` masih HIPOTESIS; satu breakpoint belum menghasilkan hit atau data register/copy/hash yang dibutuhkan.
+- Laporan runtime Step 7, peta loader/overlay, audit utama, laporan penutupan dan handoff telah disinkronkan dengan hasil final #40484548650. Base entry 0 `0x800AD000` dan entry 1 `0x800D0000` masih HIPOTESIS; satu breakpoint belum menghasilkan hit atau data register/copy/hash yang dibutuhkan.
   
 ## Status keseluruhan per langkah
 
@@ -22,6 +22,7 @@ Checkpoint yang dibaca sebelum pembaruan status ini: `main` HEAD `86b6ab3f3f8546
 
 Semua kriteria resmi yang belum terpenuhi harus tetap SEBAGIAN/UNKNOWN sampai bukti spesifik tersedia. Tidak ada workflow pemain adaptif/Story Mode otomatis, input gameplay, savestate restore, classifier/policy/Revision65/readiness-gate change. **Story Mode TIDAK TERBUKTI TAMAT.**
 
+- Pemeriksaan Actions terakhir: tidak ada run `in_progress` atau `queued`. Run diagnostik #40484548650 selesai `success` dengan cleanup PASS; ini adalah status workflow, bukan penutupan kriteria loader.
 ROM/disc, BIOS, Memory Card, savestate, RAM dump, dan screenshot gameplay privat tidak boleh masuk Git. Hanya repositori `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research` yang boleh diakses/diubah.
 
 Laporan utama:
