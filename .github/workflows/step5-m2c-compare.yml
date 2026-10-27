@@ -154,10 +154,10 @@ jobs:
             -max-cpu 2 \
             -deleteProject > "$out/ghidra-headless.log" 2>&1
           test -s "$out/rng-caller-analysis.txt"
-          grep -q "=== FUNCTION entry=0x80015ADC" "$out/rng-caller-analysis.txt"
-          grep -q "=== FUNCTION entry=0x80015B7C" "$out/rng-caller-analysis.txt"
-          grep -q "=== FUNCTION entry=0x8001A328" "$out/rng-caller-analysis.txt"
-          grep -q "=== FUNCTION entry=0x80020BF4" "$out/rng-caller-analysis.txt"
+          grep -Eiq "=== FUNCTION entry=(0x)?0*80015ADC([[:space:]]|$)" "$out/rng-caller-analysis.txt"
+          grep -Eiq "=== FUNCTION entry=(0x)?0*80015B7C([[:space:]]|$)" "$out/rng-caller-analysis.txt"
+          grep -Eiq "=== FUNCTION entry=(0x)?0*8001A328([[:space:]]|$)" "$out/rng-caller-analysis.txt"
+          grep -Eiq "=== FUNCTION entry=(0x)?0*80020BF4([[:space:]]|$)" "$out/rng-caller-analysis.txt"
           echo "Ghidra exported all four target functions."
 
       - name: Compare same functions with m2c

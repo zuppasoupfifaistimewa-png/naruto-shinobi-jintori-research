@@ -36,20 +36,11 @@ def run_cmd(command: list[str], timeout: int = 180) -> subprocess.CompletedProce
 
 def extract_ghidra_c(text: str, address: int) -> tuple[str | None, str | None]:
     pattern = re.compile(
-        rf"=== FUNCTION entry=0x0*{address:08X} .*?--- C_DECOMPILATION_BEGIN ---\s*"
+        rf"=== FUNCTION entry=(?:0x)?0*{address:08X}\b.*?--- C_DECOMPILATION_BEGIN ---\s*"
         rf"(.*?)\s*--- C_DECOMPILATION_END ---",
         re.IGNORECASE | re.DOTALL,
     )
     match = pattern.search(text)
-    if match:
-        return match.group(1).strip() + "\n", None
-    # Ghidra's address formatter may omit the leading zero padding.
-    fallback = re.compile(
-        rf"=== FUNCTION entry=0x{address:X} .*?--- C_DECOMPILATION_BEGIN ---\s*"
-        rf"(.*?)\s*--- C_DECOMPILATION_END ---",
-        re.IGNORECASE | re.DOTALL,
-    )
-    match = fallback.search(text)
     if match:
         return match.group(1).strip() + "\n", None
     return None, f"Ghidra C block for 0x{address:08X} not found"
