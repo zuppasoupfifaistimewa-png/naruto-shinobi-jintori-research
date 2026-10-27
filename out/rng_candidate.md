@@ -95,3 +95,8 @@ Entri 1: run [#40455582988](https://github.com/zuppasoupfifaistimewa-png/naruto-
 Entri 0: run [#40455557190](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455557190) menunjukkan empat instruksi JAL ke RNG; tiga memiliki incoming branch pada jendela lokal, satu `0x800BB748` tetap belum terbukti reachable. Satu pemanggil langsung kandidat seed setter pada `0x800AF2AC` memasukkan `$a0=-1`; kalau jalur ini dijalankan, state diset ke `0xFFFFFFFF`. Detail: [entry0 context](rng_resource_entry0_ghidra_context_2026-10-27.md).
 
 **Status:** inventaris direct-JAL untuk main EXE dan raw code candidates DATA.BIN selesai dalam cakupan statis yang tercatat. Caller tak langsung, kode terkompresi/tidak terdekode dalam DATA2/DUMMY, load base runtime, serta reachability satu call site masih UNKNOWN; tidak ada claim semua caller runtime secara mutlak telah tersingkirkan.
+
+
+## Pemindaian signature LCG lintas resource
+
+Run [#40455975609](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455975609) menemukan satu pola `LUI 0x41C6` + low immediate `0x4E6D` yang diikuti MULT/MULTU hanya pada `SLPS_035.53`, tepat di `0x80035D78). Tidak ada materialisasi pengali identik dalam raw DATA.BIN/DATA2.BIN/DUMMY.BIN/XASECT.BIN. Hit immediate `0x3039` saja tidak cukup bukti generator. [Laporan signature](step4_rng_signature_scan_2026-10-27.md).
