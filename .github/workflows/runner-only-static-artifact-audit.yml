@@ -62,7 +62,7 @@ jobs:
           }
           download_one ghidra 40487406384 12728867894 ghidra-slps-03553-function-index sha256:5b37df744236d5ba87d85c8a74657cc207c569ab7e42229d51768c5ea05752c1 1724229
           download_one step6 40493556711 12729156734 step6-resource-field-static-scan sha256:c9ea5ef0552a0c80a70f0d3a758622a358509de2079e5954dac3ce0032426e93 180128
-          download_one helper 40499029428 12730814693 step4-helper-return-static-audit sha256:abc53716169d19173ee68f9f033fdc14d87e99835f9febbef453e46628fddc07 11051
+          download_one helper 40499270568 12731593532 step4-helper-return-static-audit sha256:8567a5cad2a00823302ea7b361dd9b6eaab736bce6b77cf51ea136d6bee454b3 11672
 
           python3 - "$root" "$report" <<'PY'
           from pathlib import Path
@@ -238,7 +238,7 @@ jobs:
           emit("Step 4 helper and setter decompilation excerpts",rows,420)
           # Targeted callers and bodies for functions that write the helper-return global.
           rows=[]
-          for target in ("80037B58","80037BB0","8003755C","800373F8"):
+          for target in ("80037B58","80037BB0","8003755C","800373F8","800373C8","80037C48"):
               marker_match=re.search(r"(?im)^=== TARGET (?:0x)?"+re.escape(target)+r" ===$",detail)
               rows.append(f"target={target} marker_present={marker_match is not None}")
               if marker_match is None:
