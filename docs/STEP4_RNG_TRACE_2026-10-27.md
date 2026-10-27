@@ -1,3 +1,23 @@
+# Latest checkpoint — helper-return/callback counter statically traced (27 October 2026, 19:22 WIB)
+
+Run #40498208067 completed success at 19:14:42 WIB. Text-only artifact #12732952776 is 2,255,170 bytes, SHA-256 ZIP 6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6. Runner audit [#40503223693](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40503223693), artifact #12733512950 (13.079 bytes, ZIP SHA-256 382773f9a421835bc97c448c630a2ea5d3891309bb34094f5a67027548c03414), validated artifact id/run id/name/size/digest/expiry for the latest Ghidra, Step 6, and helper artifacts. The audit log confirms ZIP digest verification before reading and RUNNER_ARTIFACT_CLEANUP=PASS.
+
+## New static facts, not runtime seed proof
+
+- Main EXE function 0x80037B58 writes zero to global 0x80066E7C at 0x80037B7C and clears eight 32-bit callback slots beginning at 0x80066E5C by calling 0x80037C48 with count 8 in the JAL delay slot.
+- It prepares a0=0 and a1=0x80037BB0, then calls indirect dispatcher 0x800373F8; this dispatcher invokes a pointer through PTR_PTR_80066E3C + 8. Callback-registration semantics are strongly supported statically, but not runtime-confirmed.
+- Function 0x80037BB0 reads global 0x80066E7C, increments at 0x80037BD4, writes at 0x80037BDC and iterates the eight slots, calling nonzero pointers via JALR.
+- Function 0x8003755C uses guard 0x80065DB4 and its zero path calls 0x80037B58 at 0x800375F0. Delay slot SH v0,-0x3c(s0) at 0x800375F4 stores 1 to 0x80065DB4 given s0=0x80065DF0, before the target executes.
+- Function 0x80037138 returns global 0x80066E7C in v0 on its negative-a0 path at 0x8003719C. Other paths calculate a difference and call 0x800372B0; it is not a constant-return stub.
+- Candidate DATA.BIN entry0 chain under hypothetical base 0x800AD000: JAL 0x80037138 at 0x800AF2A4, delay-slot LI a0,-1 at 0x800AF2A8, JAL 0x80035DA8 at 0x800AF2AC, setter's delay slot MOVE a0,v0 at 0x800AF2B0. Thus -1 is the helper argument; the setter receives the helper return. Runtime base/order/actual execution remain UNKNOWN.
+- Static direct xrefs to 0x80066E7C include write 0x80037B7C, increment/store 0x80037BDC, read 0x80037BB4, and reads 0x8003719C, 0x80037204, 0x80037260, 0x800372C0, 0x80037324. Loaded-image bytes 00000000 are not runtime RAM.
+
+**Step 4 remains SEBAGIAN.** We have static reset/increment/access evidence for a callback/tick-like global, not a verified gameplay seed. Entry0 base 0x800AD000 is only a hypothesis; initializer order relative to setter callsite, runtime reachability, roulette result causality, battle caller, indirect/jump-table/decompressed paths and alternative RNG are unresolved. Existing coldboot setter probe #40485987817 had no hit through frame120, exit124 at 35s; do not repeat unchanged probe without a newly justified PC/reachability hypothesis.
+
+Closure matrix: [STEP4_10_CLOSURE_REPORT_2026-10-27.md](STEP4_10_CLOSURE_REPORT_2026-10-27.md).
+
+---
+
 # Langkah 4 — penelusuran statis RNG dan pemanggil langsung
 
 Tanggal: 27 Oktober 2026  
@@ -151,7 +171,7 @@ Runner-only inspection [#40499154584](https://github.com/zuppasoupfifaistimewa-p
 ### Boundary for Step 4
 The helper `0x80037138` with input `a0=-1` returns current global `0x80066E7C`; candidate DATA.BIN entry-0 callsite `0x800AF2AC` passes that return through the setter's delay slot `move a0,v0`. It is now statically supported that this value can come from a zero-initialized and subsequently incremented callback-like counter. However, the order of the entry-0 callsite relative to the initializer/callback path is not established, entry-0 base `0x800AD000` remains HIPOTESIS, and no runtime value at the setter was observed. **Step 4 remains SEBAGIAN**; do not report a verified boot-time seed or a seed-lifecycle closure from this evidence alone.
 
-The full Ghidra analysis run [#40498208067](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40498208067) was still `in_progress` when checked (last API update 18:42:59 WIB; job remained in “Extract and analyze DATA.BIN entry 0 for external helper”). No completion time is available from the API; do not estimate its outcome.
+Historical status superseded by live check: Ghidra run #40498208067 completed success at 19:14:42 WIB; artifact #12732952776 digest 6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6; runner audit #40503223693 validated it.
 
 ## Addendum — dispatcher and callback-table static trace (27 October 2026, 18:54 WIB)
 
@@ -167,4 +187,4 @@ Runner-only audit [#40499569324](https://github.com/zuppasoupfifaistimewa-png/na
 ### Interpretation limits
 The reset-then-increment behavior of 0x80066E7C is now **TERVERIFIKASI-STATIS** in the main executable. Its likely role as a callback/tick-like counter is a strongly supported inference from the indirect-dispatch table and eight-slot callback loop, not a verified gameplay-field name. The helper 0x80037138 with input a0=-1 returns the current value of that global. Therefore the candidate entry-0 callsite could pass this counter value to setter candidate 0x80035DA8 *if that callsite executes*. The relative runtime ordering of that resource callsite and the initialization/dispatch path is still unknown; entry-0 base 0x800AD000 remains HIPOTESIS, and no setter argument was captured at runtime. Step 4 remains **SEBAGIAN**.
 
-The full Ghidra analysis run [#40498208067](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40498208067) remained `in_progress` when checked; its last API update was 18:42:59 WIB and it was still on “Extract and analyze DATA.BIN entry 0 for external helper”. No ETA is available from the API, so no completion time or result is inferred.
+Historical status superseded: Ghidra run #40498208067 completed success at 19:14:42 WIB; final artifact #12732952776 SHA-256 6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6 was verified by runner audit #40503223693.
