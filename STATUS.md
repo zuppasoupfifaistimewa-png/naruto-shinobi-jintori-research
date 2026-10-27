@@ -1,9 +1,9 @@
-# Latest checkpoint — Step 4 RNG static inventory closed, 27 October 2026
+# Latest checkpoint — Step 4 Ghidra run completed, 27 October 2026
 
-**Langkah 4 ditutup sebagai SELESAI dalam cakupan inventaris statis yang dapat direproduksi.** Ringkasan bukti dan batas UNKNOWN: [docs/STEP4_CLOSURE_2026-10-27.md](docs/STEP4_CLOSURE_2026-10-27.md). Laporan utama dan audit langkah 1–10 juga diperbarui. Hasil: LCG utama `0x80035D78`; 4 caller main EXE; 4 instruksi direct-JAL pada DATA.BIN entry 0; 144 pada entry 1; 152 raw direct-JAL hits total; signature LCG dan pola konstruksi alamat/JALR sempit dipindai lintas berkas. Base resource/runtime, reachability `0x800BB748`, 36 boundary fungsi entry 1, pointer/dispatch callers, serta kode hasil dekompresi/dekripsi tetap UNKNOWN—tidak diklaim sebagai ketiadaan.
+**GitHub Actions #40455975408 selesai dengan `success`** (sekitar 39 menit 43 detik). [Laporan penutupan yang diperbarui](docs/STEP4_CLOSURE_2026-10-27.md) memuat hasil artefak final dan batas validasi caller: 4 caller RNG tervalidasi pada main EXE; DATA.BIN entry 0 punya 2 caller RNG tervalidasi Ghidra plus 2 raw-only RNG candidates; entry 1 punya 108 caller tervalidasi Ghidra dan 36 raw-only candidates. Total 152 tetap hit mentah, bukan semuanya tervalidasi Ghidra. Entry 0 juga punya 1 direct call setter tervalidasi. Runtime mapping, indirect/dispatch caller, dan kode hasil dekompresi/dekripsi tetap `UNKNOWN`.
 
-- [Laporan Langkah 4](docs/STEP4_RNG_TRACE_2026-10-27.md)
-- [Inventaris referensi resource](out/rng_resource_reference_scan_2026-10-27.md)
+- [Run Ghidra final #40455975408](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455975408)
+- [Artefak teks-only #12713583805](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455975408/artifacts/12713583805)
 - Tidak ada emulator/gameplay/input/savestate; pemain adaptif tetap dijeda; ROM/BIOS/Memory Card/savestate/screenshot privat tidak dimasukkan ke Git.
 
 ---
