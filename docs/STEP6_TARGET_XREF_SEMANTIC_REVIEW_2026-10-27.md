@@ -161,3 +161,8 @@ Konteks 17 instruksi untuk masing-masing hit tersedia dari scanner. Hit `+0xB30/
 
 ### Batas interpretasi
 Bukti ini menutup satu celah dataflow statis: dua input `+0xB30` dan `+0xB38` dijumlahkan lalu hasilnya disimpan ke `+0xB40`. Store nol dan pembacaan `+0xB44` juga terverifikasi pada akses yang tercatat. Semua alamat entry 1 masih bergantung pada base hipotetis `0x800D0000`; pemetaan runtime, pemakaian via object-base alternatif/nondecoded code, identitas struktur, sumber awal nilai, dan semantik gameplay tetap UNKNOWN. **Step 6 tetap SEBAGIAN.**
+
+
+## Cross-check caveat — referenced target 0x80012A70 (27 Oktober 2026, 20:50 WIB)
+
+In expanded main-executable Ghidra/m2c run [#40512956924](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40512956924), the exporter returned `function_status=NOT_FOUND_AT_ENTRY` for `0x80012A70`, without an owning function/body metadata. The retry [#40515356524](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524) therefore omitted this address from the set of same-function m2c comparisons rather than manufacturing a function boundary. This result does not prove that the resource call target is invalid; it means this particular Ghidra view does not provide an independently cross-checked function at that address. Preserve the prior reference/getter interpretation as provisional until raw instructions, a valid function/body boundary, and its caller relationship are independently reconciled. Do not use `0x80012A70` as evidence for a fully verified getter rule in the Step 8 semantics table on this run alone.
