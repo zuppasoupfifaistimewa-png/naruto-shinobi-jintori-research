@@ -2,7 +2,7 @@
 
 ## Status saat ini
 
-**SELESAI untuk pemindaian byte mentah pada berkas yang diidentifikasi; validasi caller resource memakai disassembly Ghidra masih berjalan.** Jangan samakan hit pola instruksi dengan caller yang sudah terbukti sebelum hasil Ghidra ditambahkan.
+**SELESAI untuk pemindaian byte mentah, pemeriksaan Ghidra atas call site direct-JAL yang ditemukan, dan penutupan batas bukti statis.** Jangan samakan hit pola instruksi dengan caller yang sudah terbukti sebelum hasil Ghidra ditambahkan.
 
 Sumber: GitHub Actions [#40454059515](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40454059515), artefak teks step4-rng-resource-reference-scan #12711178537. Workflow melaporkan:
 - emulator_or_gameplay_executed=no
@@ -101,3 +101,8 @@ Status diperbarui: direct-JAL inventory statis pada main EXE + DATA.BIN entry0/e
 ## Scan signature RNG/LGC tambahan
 
 Run [#40455975609](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455975609) memeriksa kandidat konstruksi LCG `0x41C64E6D` dan MULT/MULTU pada raw lima file disc. Satu hit ada di main EXE pada `0x80035D78); tidak ada kandidat materialisasi yang sama pada DATA.BIN, DATA2.BIN, DUMMY.BIN, atau XASECT.BIN. Immediate `0x3039` ditemukan 29 kali pada DATA.BIN dan 2 kali di DATA2.BIN, tetapi tanpa signature pengali itu tidak boleh dinamai RNG. Laporan: [out/step4_rng_signature_scan_2026-10-27.md](step4_rng_signature_scan_2026-10-27.md).
+
+
+## Penutupan Langkah 4 — 27 Oktober 2026
+
+Status pemindaian dan validasi caller statis ditutup. Ringkasan akhir, hasil checksum, 152 raw direct-JAL hits, pola alamat/JALR yang dicari, dan seluruh batas UNKNOWN ada di [docs/STEP4_CLOSURE_2026-10-27.md](../docs/STEP4_CLOSURE_2026-10-27.md). Catatan “masih berjalan” pada bagian terdahulu di bawah ini adalah status historis ketika laporan pertama dibuat; hasil Ghidra dan bounded context berikutnya sudah tercantum di pembaruan setelahnya.
