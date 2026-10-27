@@ -1,3 +1,9 @@
+## RAW MIPS CORRECTION — global pointer slot in Step 5 candidate, 27 Oktober 2026 21:43 WIB
+
+At `0x800ED920), raw MIPS loads the high half for global symbol `D_8013EA74`; at `0x800ED924), `lw a0,%lo(D_8013EA74)(v1)` loads the value stored at slot `0x8013EA74). The code adds `index*0x90` to that loaded value and reads byte `+0x29). Ghidra C shows the loaded slot value as `iRam8013ea74`; m2c output does not express that dereference clearly. Thus Ghidra/m2c comparison validates the same function boundary and key call/control structure, but not identical pointer type/effective-address modelling. Loaded pointer and mapped table semantics remain unknown.
+
+---
+
 # LIVE LOGIC CHECKPOINT — Entry-1 RNG gate + Step 6 CFG/SSA, 27 Oktober 2026 21:41 WIB
 
 ## Bukti statis terbaru
