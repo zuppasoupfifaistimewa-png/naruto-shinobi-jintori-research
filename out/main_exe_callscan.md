@@ -6,7 +6,7 @@ Cakupan kode dari header: file offset `0x800..0x5DFFF`, alamat muat `0x80010000`
 
 ## Status Langkah 3
 
-**BELUM SELESAI dengan Ghidra.** Lingkungan yang tersedia tidak memiliki `ghidraRun` atau `analyzeHeadless`. Unduhan Ghidra terbaru yang diperiksa berukuran sekitar 570 MB dan menyebut JDK 25; lingkungan lokal hanya menyediakan JDK 21. Karena itu hasil di bawah adalah fallback LLVM/heuristik, bukan database fungsi Ghidra dan bukan daftar fungsi yang telah diverifikasi.
+**Ghidra tersedia di GitHub Actions, tetapi analisis executable masih BELUM SELESAI.** Run [#40434733043](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40434733043) sukses memasang Ghidra 12.2 dengan Temurin JDK 25 dan memverifikasi launcher `support/analyzeHeadless`; cache instalasi disimpan untuk run berikutnya. Lingkungan kerja lokal sebelumnya tidak memiliki `ghidraRun` atau `analyzeHeadless`. Karena analisis executable game belum dijalankan dengan Ghidra, hasil di bawah tetap merupakan fallback LLVM/heuristik, bukan daftar fungsi hasil Ghidra.
 
 ## Metode fallback
 
@@ -52,4 +52,4 @@ Indeks lengkap berisi 898 alamat target `jal` internal, jumlah caller, dua indik
 - **Pasti:** executable/header dan batas text telah diverifikasi pada langkah sebelumnya; LLVM dapat mendisassemble jendela terpilih pada alamat yang dipasang dari header.
 - **Mungkin:** setidaknya beberapa call sites menuju kode yang berada di luar text executable utama, termasuk `0x800AD454`, sehingga pemetaan loader/overlay relevan.
 - **Belum diketahui:** daftar fungsi definitif, batas setiap fungsi, lokasi roulette/battle/Chakra/RNG.
-- Untuk menuntaskan Langkah 3 sesuai rencana, perlu menjalankan Ghidra headless pada host yang memiliki Ghidra + JDK kompatibel, mengimpor sebagai MIPS little-endian 32-bit pada `0x80010000`, lalu mengekspor symbol/function entry yang ditemukan. Jangan mengklaim fallback ini sebagai output Ghidra.
+- Langkah berikutnya: sediakan salinan `SLPS_035.53` ke runner melalui mekanisme privat yang aman (bukan Git), jalankan `analyzeHeadless` dengan bahasa MIPS little-endian 32-bit pada `0x80010000`, lalu ekspor symbol/function entry ke artefak teks. Jangan mengklaim fallback ini sebagai output Ghidra.
