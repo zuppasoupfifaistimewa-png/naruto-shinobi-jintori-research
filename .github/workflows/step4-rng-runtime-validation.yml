@@ -1,0 +1,372 @@
+name: Step 4 RNG runtime determinism and roulette caller trace
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/step4-rng-runtime-validation.yml"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: step4-rng-runtime-validation
+  cancel-in-progress: false
+
+jobs:
+  rng-runtime:
+    if: contains(github.event.head_commit.message, '[RUN-STEP4-RNG-RUNTIME]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    container:
+      image: ghcr.io/grumpycoders/pcsx-redux-build:latest
+      options: --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
+    env:
+      WORK: /tmp/step4-rng-runtime
+      RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+    steps:
+      - name: Checkout research repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Install runner tools
+        run: |
+          set -euo pipefail
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y jq python3 python3-pil xvfb x11-utils x11-apps imagemagick curl unzip
+          mkdir -p "$WORK"/{build-artifact,state-artifact,card-artifact,resume,cards,captures,home,.config,.data,runtime}
+          chmod 700 "$WORK/runtime"
+
+      - name: Download exact prior emulator, checkpoint and Memory Card artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-control-probe-private
+          run-id: 39513285641
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: /tmp/step4-rng-runtime/build-artifact
+      - uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-barrier-dialog-start-private
+          run-id: 39620432917
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: /tmp/step4-rng-runtime/state-artifact
+      - uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: 39262213468
+          github-token: ${{ github.token }}
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          path: /tmp/step4-rng-runtime/card-artifact
+
+      - name: Download and validate private game and SCPH-7502 BIOS
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; output="$2"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            test -n "$id" && test "$id" != null
+            curl --fail --silent --show-error --location --retry 2 --max-time 300 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$API/releases/assets/$id" -o "$output"
+          }
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset scph7502.zip scph7502.zip
+          test "$(stat -c %s game.bin)" = 325989552
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          test "$(stat -c %s scph7502.zip)" = 283463
+          echo "b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a  scph7502.zip" | sha256sum --check -
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import hashlib, stat, zipfile
+          with zipfile.ZipFile("scph7502.zip") as z:
+              ms=[]; total=0
+              for i in z.infolist():
+                  p=PurePosixPath(i.filename); m=(i.external_attr>>16)&0xffff
+                  if p.is_absolute() or ".." in p.parts or (m and stat.S_ISLNK(m)): raise SystemExit("unsafe BIOS archive")
+                  total+=i.file_size
+                  if i.file_size>2*1024*1024 or total>4*1024*1024: raise SystemExit("BIOS expansion limit")
+                  if not i.is_dir() and i.file_size==524288: ms.append(i)
+              if len(ms)!=1: raise SystemExit("expected exactly one 512 KiB BIOS")
+              b=z.read(ms[0]); h=hashlib.sha256(b).hexdigest()
+              if h!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1": raise SystemExit("BIOS hash mismatch")
+              Path("scph7502.bin").write_bytes(b)
+              print("STEP4_BIOS_CHECK=PASS SHA256="+h)
+          lines=Path("game.cue").read_bytes().decode("utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          ix=[i for i,s in enumerate(lines) if s.lstrip().upper().startswith("FILE ")]
+          if len(ix)!=1 or not any(s.lstrip().upper().startswith("TRACK ") for s in lines): raise SystemExit("invalid CUE")
+          lines[ix[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+
+      - name: Validate immutable source checkpoint and emulator build
+        run: |
+          set -euo pipefail
+          APP="$WORK/build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage"
+          STATE="$WORK/state-artifact/barrier-dialog-start-result-start-f120.sstate"
+          CARD="$WORK/card-artifact/naruto-storymode.mcd"
+          test -f "$APP" && chmod +x "$APP"
+          echo "2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99  $APP" | sha256sum --check -
+          test "$(stat -c %s "$STATE")" = 21162035
+          echo "b124d2ce17f7c802208b893b93ab25758088f557a0e964aadb09c067968d9df1  $STATE" | sha256sum --check -
+          test "$(stat -c %s "$CARD")" = 131072
+          echo "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5  $CARD" | sha256sum --check -
+          cp "$STATE" "$WORK/resume/source-f120.sstate"
+          chmod 400 "$WORK/resume/source-f120.sstate"
+          cp "$CARD" "$WORK/cards/reference.mcd"
+          chmod 400 "$WORK/cards/reference.mcd"
+          cd "$WORK"
+          ./build-artifact/PCSX-Redux-spu-adpcm-patched.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          echo "STEP4_SOURCE_CHECKPOINT=PASS run=39620432917 frame=120 source_unchanged=YES"
+
+      - name: Trace RNG and compare same-delay repeats against a different-delay input
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/captures/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          trap 'kill "$xvfb_pid" 2>/dev/null || true; wait "$xvfb_pid" 2>/dev/null || true' EXIT
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/.config" XDG_DATA_HOME="$WORK/.data" XDG_RUNTIME_DIR="$WORK/runtime" LIBGL_ALWAYS_SOFTWARE=1
+          for i in $(seq 1 60); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          cat > "$WORK/step4-rng-trace.lua" <<'LUA'
+          local ffi=require("ffi")
+          local mode=os.getenv("STEP4_MODE") or "UNKNOWN"
+          local circleAt=(mode=="DELAY60") and 60 or 30
+          local frame,started,loaded,returned,calls,setters=0,false,false,false,0,0
+          local pressed,released=false,false
+          local pad=PCSX.SIO0.slots[1].pads[1]
+          local circle=PCSX.CONSTS.PAD.BUTTON.CIRCLE
+          local function log(s) print(s); pcall(function() io.stdout:flush() end) end
+          local function rngState()
+            return tonumber(ffi.cast("uint32_t*",PCSX.getMemPtr()+0xA3118)[0])
+          end
+          local function stateHex() return string.format("%08X",rngState()) end
+          _G.step4RngBreakpoint=PCSX.addBreakpoint(0x80035D78,"Exec",4,"Step 4 RNG entry",function()
+            if not loaded then return end
+            calls=calls+1
+            local r=PCSX.getRegisters()
+            local ra=tonumber(r.GPR.n.ra) or 0
+            if calls<=250 then
+              log(string.format("STEP4_RNG_CALL mode=%s frame=%d seq=%d ra=0x%08X caller=0x%08X state_before=0x%s",mode,frame,calls,ra,(ra>=8) and (ra-8) or 0,stateHex()))
+            end
+          end)
+          _G.step4SeedBreakpoint=PCSX.addBreakpoint(0x80035DA8,"Exec",4,"Step 4 RNG seed setter",function()
+            if not loaded then return end
+            setters=setters+1
+            local r=PCSX.getRegisters()
+            local a0=tonumber(r.GPR.n.a0) or 0
+            local ra=tonumber(r.GPR.n.ra) or 0
+            if setters<=20 then log(string.format("STEP4_SEED_SETTER mode=%s frame=%d seq=%d a0=0x%08X caller=0x%08X",mode,frame,setters,a0,(ra>=8) and (ra-8) or 0)) end
+          end)
+          local function input(phase)
+            local ok,v=pcall(function()
+              if phase=="press" then pad.setOverride(circle) else pad.clearOverride(circle) end
+              return pad.getButton(circle)
+            end)
+            local pass=ok and v==(phase=="press")
+            log(string.format("STEP4_INPUT mode=%s frame=%d action=CIRCLE phase=%s readback=%s status=%s",mode,frame,phase,tostring(v),pass and "PASS" or "FAIL"))
+            if not pass then PCSX.quit(83); return end
+            if phase=="press" then pressed=true else released=true end
+          end
+          local function finalCapture()
+            PCSX.pauseEmulator()
+            log("STEP4_CAPTURE_READY mode="..mode.." frame="..frame)
+            PCSX.nextTick(function()
+              local path="captures/go-final-"..mode:lower()
+              local deadline=os.time()+15
+              while os.time()<deadline do local f=io.open(path,"r"); if f then f:close(); break end; os.execute("sleep 0.05") end
+              local f=io.open(path,"r")
+              if not f then log("STEP4_CAPTURE_GATE_TIMEOUT mode="..mode); PCSX.quit(84); return end
+              f:close()
+              log("STEP4_BRANCH_FINISH mode="..mode.." frame="..frame.." rng_calls="..calls.." final_state=0x"..stateHex())
+              PCSX.quit(0)
+            end)
+          end
+          PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
+            if started then loaded=true; frame=0; calls=0; setters=0; log("STEP4_LOAD_EVENT=PASS mode="..mode.." initial_state=0x"..stateHex()) end
+          end)
+          PCSX.Events.createEventListener("GPU::Vsync",function()
+            if not started then
+              started=true
+              PCSX.pauseEmulator()
+              PCSX.nextTick(function()
+                local f=assert(Support.File.open("resume/source-f120.sstate"))
+                local ok,err=pcall(function() PCSX.loadSaveState(f) end); f:close()
+                if not ok then log("STEP4_LOAD_ERROR mode="..mode.." error="..tostring(err)); PCSX.quit(32); return end
+                returned=true; log("STEP4_LOAD_CALL_RETURNED=1 mode="..mode); PCSX.resumeEmulator()
+              end)
+              return
+            end
+            if not loaded or not returned then return end
+            frame=frame+1
+            if frame==1 or frame==20 or frame==30 or frame==38 or frame==60 or frame==100 or frame==180 then
+              log(string.format("STEP4_RNG_STATE_SAMPLE mode=%s frame=%d state=0x%s rng_calls=%d",mode,frame,stateHex(),calls))
+            end
+            if frame==circleAt and not pressed then input("press")
+            elseif frame==circleAt+8 and pressed and not released then input("release") end
+            if frame==180 then finalCapture() end
+          end)
+          log("STEP4_SCRIPT_READY mode="..mode.." circle_frame="..circleAt.." source=verified-roulette-f120")
+          LUA
+          failures=0
+          for mode in R30A R30B DELAY60; do
+            cp "$WORK/cards/reference.mcd" "$WORK/cards/card-$mode.mcd"
+            stdout="$WORK/captures/pcsx-$mode.stdout"
+            log="$WORK/captures/pcsx-$mode.log"
+            echo "STEP4_BRANCH_BEGIN=$mode"
+            STEP4_MODE="$mode" timeout --signal=TERM --kill-after=5s 85s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+              -noupdate -debugger -interpreter -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
+              -memcard1 "$WORK/cards/card-$mode.mcd" -dofile "$WORK/step4-rng-trace.lua" -softgpu -stdout -lua_stdout -logfile "$log" -run > "$stdout" 2>&1 &
+            pid=$!
+            python3 - "$pid" "$mode" "$stdout" "$WORK/captures" <<'PY'
+          import sys,time,subprocess,hashlib
+          from pathlib import Path
+          from PIL import Image
+          pid,mode,sp,out=int(sys.argv[1]),sys.argv[2],Path(sys.argv[3]),Path(sys.argv[4])
+          def alive():
+              r=subprocess.run(["ps","-o","stat=","-p",str(pid)],capture_output=True,text=True)
+              s=r.stdout.strip()
+              return bool(s) and not s.startswith("Z")
+          captured=False
+          while alive() and not captured:
+              try: s=sp.read_text(errors="replace")
+              except FileNotFoundError: s=""
+              if "STEP4_CAPTURE_READY mode="+mode+" frame=180" in s:
+                  xwd=out/(mode+"-F180.xwd"); png=out/(mode+"-F180.png")
+                  a=subprocess.run(["xwd","-root","-silent","-out",str(xwd)],capture_output=True,text=True)
+                  if a.returncode==0 and xwd.is_file() and xwd.stat().st_size:
+                      b=subprocess.run(["convert",str(xwd),str(png)],capture_output=True,text=True)
+                      try:xwd.unlink()
+                      except FileNotFoundError:pass
+                      if b.returncode==0 and png.is_file():
+                          with Image.open(png) as im:
+                              cs=im.getcolors(maxcolors=1000000)
+                              valid=im.size==(1280,800) and png.stat().st_size>1000 and not (cs is not None and len(cs)==1)
+                              digest=hashlib.sha256(png.read_bytes()).hexdigest()
+                              print("STEP4_CAPTURE_VALID mode={} width={} height={} bytes={} colors={} sha256={} valid={}".format(mode,im.size[0],im.size[1],png.stat().st_size,len(cs) if cs is not None else "many",digest,valid),flush=True)
+                              captured=True
+                  if not captured: print("STEP4_CAPTURE_FAIL mode="+mode,flush=True)
+                  (out/("go-final-"+mode.lower())).write_text("captured\n",encoding="utf-8")
+              time.sleep(0.05)
+          print("STEP4_SCREEN_WATCHDOG_END mode={} captured={}".format(mode,captured),flush=True)
+          PY
+            set +e
+            wait "$pid"; rc=$?
+            set -e
+            echo "STEP4_BRANCH_EXIT mode=$mode rc=$rc"
+            grep -E 'STEP4_(LOAD_EVENT|LOAD_CALL_RETURNED|RNG_STATE_SAMPLE|RNG_CALL|SEED_SETTER|INPUT|CAPTURE_READY|BRANCH_FINISH|.*ERROR|.*TIMEOUT|CAPTURE_VALID|CAPTURE_FAIL)' "$stdout" || true
+            test "$rc" -eq 0 || failures=$((failures+1))
+            grep -q "STEP4_LOAD_EVENT=PASS mode=$mode" "$stdout" || failures=$((failures+1))
+            grep -q "STEP4_BRANCH_FINISH mode=$mode frame=180" "$stdout" || failures=$((failures+1))
+            grep -q "STEP4_INPUT mode=$mode .*phase=press .*status=PASS" "$stdout" || failures=$((failures+1))
+            grep -q "STEP4_INPUT mode=$mode .*phase=release .*status=PASS" "$stdout" || failures=$((failures+1))
+            grep -q "STEP4_CAPTURE_VALID mode=$mode .*valid=True" "$stdout" || failures=$((failures+1))
+          done
+          python3 - "$WORK/captures" "$GITHUB_RUN_ID" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" > "$WORK/captures/step4-runtime-outcome.txt" <<'PY'
+          import re,sys
+          from pathlib import Path
+          root=Path(sys.argv[1]); rid=sys.argv[2]; server=sys.argv[3]; repo=sys.argv[4]
+          modes=("R30A","R30B","DELAY60"); data={}
+          for mode in modes:
+              p=root/("pcsx-"+mode+".stdout"); t=p.read_text(errors="replace") if p.exists() else ""
+              samples=re.findall(r"STEP4_RNG_STATE_SAMPLE mode=\S+ frame=(\d+) state=0x([0-9A-Fa-f]{8}) rng_calls=(\d+)",t)
+              calls=re.findall(r"STEP4_RNG_CALL mode=\S+ frame=(\d+) seq=(\d+) ra=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8}) state_before=0x([0-9A-Fa-f]{8})",t)
+              setters=re.findall(r"STEP4_SEED_SETTER mode=\S+ frame=(\d+) seq=(\d+) a0=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8})",t)
+              cap=dict(re.findall(r"STEP4_CAPTURE_VALID mode=\S+ .*? sha256=([0-9a-f]{64}) valid=True",t))
+              # The exact outcome screenshot digest is parsed separately from the branch-specific observer line.
+              m=re.search(r"STEP4_CAPTURE_VALID mode=\S+ .*?sha256=([0-9a-f]{64}) valid=True",t)
+              loaded="STEP4_LOAD_EVENT=PASS mode="+mode in t
+              finish="STEP4_BRANCH_FINISH mode="+mode+" frame=180" in t
+              data[mode]={"t":t,"samples":[(int(f),v.lower()) for f,v,_ in samples],"calls":[(int(f),c.lower(),s.lower()) for f,_,_,c,s in calls],"setters":setters,"cap":m.group(1) if m else None,"loaded":loaded,"finish":finish}
+          a,b,d=(data[m] for m in modes)
+          complete=all(x["loaded"] and x["finish"] and len(x["samples"])>=6 and x["cap"] for x in (a,b,d))
+          sample_match=a["samples"]==b["samples"] and bool(a["samples"])
+          caller_match=a["calls"]==b["calls"]
+          screenshot_match=bool(a["cap"]) and a["cap"]==b["cap"]
+          det="PASS" if complete and sample_match and caller_match and screenshot_match else ("FAIL" if complete else "UNKNOWN")
+          changed=(a["samples"],a["calls"],a["cap"]) != (d["samples"],d["calls"],d["cap"])
+          callers=sorted({c for x in data.values() for _,c,_ in x["calls"]})
+          out=[
+           "# Langkah 4 — hasil runtime RNG + roulette","",
+           "- Actions run: "+server+"/"+repo+"/actions/runs/"+rid,
+           "- Uji: checkpoint roulette f120 yang sama; dua cabang Circle f30; satu cabang Circle f60; tiap cabang memakai proses emulator baru, CPU interpreter, breakpoint eksekusi RNG dan pembacaan RAM state.",
+           "- Sumber checkpoint read-only; ROM/BIOS/Memory Card/savestate hanya di ruang privat runner. Screenshot eksternal X11 hanya disimpan pada artefak Actions, tidak di Git.","",
+           "## Hasil",
+           "- SAME_SAVESTATE_SAME_DELAY_DETERMINISM="+det,
+           "- SAME_DELAY_STATE_SAMPLES_MATCH="+str(sample_match),
+           "- SAME_DELAY_CALL_TRACE_MATCH="+str(caller_match),
+           "- SAME_DELAY_FINAL_SCREENSHOT_MATCH="+str(screenshot_match),
+           "- DIFFERENT_DELAY_OBSERVED_EFFECT="+("YES" if changed else "NO_DIFFERENCE_OBSERVED"),
+           "- RUNTIME_RNG_CALLSITES="+(", ".join(callers) if callers else "NONE OBSERVED"),
+           "- Catatan: callsite runtime dihitung sebagai RA-8 pada entry 0x80035D78.",
+           "",
+           "## Log hasil per cabang"]
+          for mode in modes:
+              x=data[mode]
+              out.append("- "+mode+": load="+str(x["loaded"])+", finished="+str(x["finish"])+", RNG hits="+str(len(x["calls"]))+", samples="+(", ".join("F"+str(f)+"=0x"+s for f,s in x["samples"]) if x["samples"] else "NONE")+", seed setter hits post-load="+str(len(x["setters"]))+", F180 SHA256="+str(x["cap"] or "MISSING")+".")
+              if x["calls"]: out.append("  Caller hits: "+", ".join("F"+str(f)+" "+c+" state="+s for f,c,s in x["calls"][:30])+".")
+              if x["setters"]: out.append("  Seed setter: "+", ".join("frame "+s[0]+" a0=0x"+s[2]+" caller=0x"+s[3] for s in x["setters"])+".")
+          out.extend([
+           "",
+           "## Gate assessment",
+           "- Roulette runtime: callers only count as observed in the verified roulette checkpoint window; link to a visible outcome remains an interpretation unless delay branch differences support it.",
+           "- Battle runtime caller: UNKNOWN; this workflow starts from roulette checkpoint and has not entered battle.",
+           "- Seed source at game startup: not settled by a post-load window if no setter breakpoint is seen; static candidate setter remains documented.",
+           "- Alternative RNG/non-function randomness: static signature scan does not exclude other algorithms, tables, frame-derived values or code decoded only at runtime.",
+           "- STEP 4 OVERALL: SEBAGIAN until the battle caller, runtime seed lifecycle and alternative-randomness scope are proved.",
+           ""])
+          (root/"step4-runtime-outcome.txt").write_text("\n".join(out),encoding="utf-8")
+          print("\n".join(out))
+          PY
+          cp "$WORK/captures/step4-runtime-outcome.txt" "$WORK/captures/STEP4_RNG_RUNTIME_RESULT.md"
+          if [ "$failures" -ne 0 ]; then echo "STEP4_RUNTIME_INFRA_STATUS=FAIL failed_checks=$failures"; exit 44; fi
+          echo "STEP4_RUNTIME_INFRA_STATUS=PASS"
+
+      - name: Upload runtime trace and authentic private screenshot observations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: step4-rng-runtime-roulette-observations
+          path: |
+            /tmp/step4-rng-runtime/captures/step4-runtime-outcome.txt
+            /tmp/step4-rng-runtime/captures/STEP4_RNG_RUNTIME_RESULT.md
+            /tmp/step4-rng-runtime/captures/pcsx-*.stdout
+            /tmp/step4-rng-runtime/captures/pcsx-*.log
+            /tmp/step4-rng-runtime/captures/*-F180.png
+            /tmp/step4-rng-runtime/captures/xvfb.log
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Record text-only runtime result in repository
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          mkdir -p out/step4
+          if [ -s "$WORK/captures/step4-runtime-outcome.txt" ]; then
+            cp "$WORK/captures/step4-runtime-outcome.txt" out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md
+          else
+            printf '# Step 4 RNG runtime result\n\n- Actions run: %s\n- Status: BLOCKIR — no valid runtime summary was produced.\n- Private assets were not added to Git.\n' "$GITHUB_RUN_ID" > out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md
+          git commit -m "Record Step 4 RNG runtime test results [skip ci]"
+          if [ "$?" -eq 0 ]; then git pull --rebase origin main && git push origin HEAD:main; fi
+          exit 0
+
+      - name: Remove private files from ephemeral runner
+        if: always()
+        run: |
+          rm -rf "$WORK"
+          echo "STEP4_PRIVATE_ASSET_CLEANUP=COMPLETE"
