@@ -89,7 +89,7 @@ Status langkah: **SELESAI — header dibaca langsung dari salinan Library** pada
 
 - Langkah 1 — identitas disc dan listing file: **SELESAI dari catatan ekstraksi terdahulu**.
 - Langkah 2 — validasi header: **SELESAI**.
-- Langkah 3 — analisis MIPS/Ghidra headless dan ekspor fungsi: **belum dilakukan**.
+- Langkah 3 — penyiapan Ghidra headless di GitHub Actions: **selesai**; analisis executable dan ekspor fungsi: **belum dilakukan** (run [#40434733043](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40434733043) memverifikasi launcher saja).
 - Tidak ada ROM, BIOS, savestate, Memory Card, atau bukti privat yang ditambahkan ke repositori.
 
 ## Langkah 3 — pemetaan awal fungsi (status parsial)
