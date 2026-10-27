@@ -61,8 +61,8 @@ public class ExportRngCallContext extends GhidraScript {
                 line("mips_jal_target_from_word=0x"+String.format("%08X",targetCalc));
                 line("raw_opcode_is_jal="+(((word >>> 26)==3)?"yes":"no"));
 
-                Address start=site.subtract(0x40);
-                Address end=site.add(0x30);
+                Address start=site.subtract(0x60);
+                Address end=site.add(0x20);
                 AddressSet restricted=new AddressSet(start,end);
                 DisassembleCommand cmd=new DisassembleCommand(start,restricted,false);
                 boolean disassembled=cmd.applyTo(currentProgram,monitor);
@@ -78,7 +78,7 @@ public class ExportRngCallContext extends GhidraScript {
 
                 line("--- CONTEXT_WINDOW ---");
                 Instruction first=instruction;
-                for(int n=0;n<12 && first!=null && first.getPrevious()!=null;n++) first=first.getPrevious();
+                for(int n=0;n<16 && first!=null && first.getPrevious()!=null;n++) first=first.getPrevious();
                 if(first==null) {
                     Address probe=start;
                     for(int n=0;n<40 && probe.compareTo(end)<=0;n++,probe=probe.add(4)) {
@@ -86,7 +86,7 @@ public class ExportRngCallContext extends GhidraScript {
                         if(candidate!=null) line(candidate.getAddress()+"\t"+candidate.toString());
                     }
                 } else {
-                    for(int n=0;n<18 && first!=null;n++,first=first.getNext())
+                    for(int n=0;n<22 && first!=null;n++,first=first.getNext())
                         line(first.getAddress()+"\t"+first.toString());
                 }
                 line("--- END_CONTEXT_WINDOW ---");
