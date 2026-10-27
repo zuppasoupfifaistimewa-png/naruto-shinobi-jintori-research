@@ -207,3 +207,14 @@ Bagian checkpoint ini memperbarui status yang tersebar dalam catatan historis di
 - Actions query pada audit tidak menemukan run aktif atau antrean. Tidak ada workflow gameplay/player dijalankan dalam sesi audit ini. Jangan mengubah marker Revision65, policy, atau readiness gate sebagai bagian dari reverse engineering statis.
 
 Status laporan ini tidak menyatakan Story Mode tamat atau seluruh aturan permainan selesai direverse-engineer.
+
+
+## Checkpoint khusus Langkah 4 — 27 Oktober 2026
+
+- **Pasti:** generator LCG utama pada `0x80035D78`, state `0x800A3118), formula `state = state * 0x41C64E6D + 0x3039 (mod 2^32)`, keluaran `(state >> 16) & 0x7FFF); empat caller langsung main EXE didokumentasikan sebelumnya.
+- **Pasti pada Ghidra address map entry 1 yang dipakai:** 108 direct-call flow ke RNG pada 50 fungsi pemanggil berbatas fungsi, satu call site terkonfirmasi tanpa batas fungsi, 36 kandidat kata JAL belum terdekode. Base `0x800D0000) masih hipotesis runtime.
+- **Pasti pada disassembly lokal entry 0 dengan base hipotesis:** call site `0x800AF2AC` memanggil kandidat seed setter `0x80035DA8` dengan input `$a0=-1); `0x800BB2D8` memanggil RNG. Base `0x800AD000) dan apakah resource dimuat begitu tetap belum diverifikasi.
+- **Belum tuntas:** klasifikasi 36 raw-only candidate di entry 1; tiga raw-only candidate lain di entry 0; jalur caller tak langsung/pointer dan kode yang baru terlihat setelah dekompresi; waktu seed setter berjalan saat runtime; serta fungsi gameplay sebenarnya dari caller.
+- Dokumen: [scan lintas resource](rng_resource_reference_scan_2026-10-27.md), [caller Ghidra entry 1](rng_resource_entry1_ghidra_callers_2026-10-27.md), [laporan teknis Step 4](../docs/STEP4_RNG_TRACE_2026-10-27.md).
+
+Pemain adaptif tetap dijeda. Tidak ada emulator, gameplay, input atau pemulihan savestate.
