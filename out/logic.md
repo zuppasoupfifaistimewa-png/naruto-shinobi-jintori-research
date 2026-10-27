@@ -1,3 +1,9 @@
+# LIVE LOGIC CHECKPOINT — Step 6 static evidence only (27 Oktober 2026)
+
+Dalam decoded entry-1 view dengan base hipotesis 0x800D0000, instruksi B30 dan B38 dibaca lalu dijumlahkan dan disimpan ke B40. B44 di-zero-kan pada satu jalur dan pada jalur lain dibaca ke register a2 untuk candidate callee 0x8001B364. Bukti ini mendeskripsikan operasi dan transfer nilai, bukan semantik field; jangan menyebutnya biaya Chakra/barrier/turn/level-up. Aggregate scan meliputi 31.081 direct operand pada 98.357 instruksi terdekode, tetapi tidak menyelesaikan aliases/pointer/split-immediates/alternate bases. Matriks dan status run terbaru: [live reconciliation](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP4_10_LIVE_RECONCILIATION_2026-10-27.md).
+
+---
+
 # LIVE UPDATE — Step 6 direct displacement scan — 27 October 2026, 19:35 WIB
 
 Verified scan [#40504640855](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504640855), artifact #12733854252 (220,128 bytes; ZIP SHA-256 `90288a1c8b454cbdc45c75e0244d26508628ecf88bfe8e73ed88524c8cb80891`). Runner-only audit [#40504977322](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504977322), artifact #12734840847 (25,756 bytes; ZIP SHA-256 `d022b23548fe95eb34bfbb7a7fb0dd190a498ca54fff11516818138701920398`), succeeded with metadata/digest checks and RUNNER_ARTIFACT_CLEANUP=PASS.

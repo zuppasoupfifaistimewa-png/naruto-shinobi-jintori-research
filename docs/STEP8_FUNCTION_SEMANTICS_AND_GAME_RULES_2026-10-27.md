@@ -1,3 +1,11 @@
+# STEP 8 ADDENDUM — new static dataflow, semantics unchanged (27 Oktober 2026)
+
+Step 6 scan cross-check adds a limited static chain: B30 and B38 are loaded, summed, and stored to B40; B44 is zeroed in one candidate initialization branch and read to argument a2 before candidate call 0x8001B364. This is under hypothetical DATA.BIN entry-1 base 0x800D0000; it does not establish runtime mapping, object identity, or semantics. No field has enough independent evidence to be labelled cost, Chakra, barrier, turn or level-up.
+
+Step 8 remains SEBAGIAN. Rule table for resource cost, barrier/upgrade, battle/roulette/turn order, cards and victory/loss remains UNKNOWN; several function boundaries/decompilations are still unreliable. Do not infer rules from offsets or UI text alone. See [live reconciliation](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP4_10_LIVE_RECONCILIATION_2026-10-27.md).
+
+---
+
 # Latest Step 8 evidence boundary — static counter and remaining rules (27 October 2026, 19:22 WIB)
 
 Runner-only audit [#40503223693](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40503223693), artifact #12733512950 (13.079 bytes; SHA-256 ZIP 382773f9a421835bc97c448c630a2ea5d3891309bb34094f5a67027548c03414) validated the Ghidra text artifact #12732952776 (2.255.170 bytes; SHA-256 ZIP 6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6).

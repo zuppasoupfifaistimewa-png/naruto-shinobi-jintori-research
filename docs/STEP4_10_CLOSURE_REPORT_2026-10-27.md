@@ -1,3 +1,9 @@
+# LIVE CLOSURE ADDENDUM — 27 Oktober 2026
+
+Audited Step 6 artifact #12733854252 gives a complete aggregate direct-displacement inventory for the recognized/decoded entry-1 view, but not a complete alias/pointer proof or per-instruction context for common offsets. The precise counts, raw-byte chain B30/B38 → addu → B40, B44 zero-store/read argument flow, artifacts, 17 criterion rows and acceptance gaps are recorded in [live reconciliation](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP4_10_LIVE_RECONCILIATION_2026-10-27.md). Step 6 remains SEBAGIAN overall. Do not promote Steps 4/7/8/9 to complete; Story Mode remains TIDAK TERBUKTI TAMAT.
+
+---
+
 # CHECKPOINT TERBARU — Step 6 extended scan, 27 Oktober 2026 19:35 WIB
 
 Latest audited field scan: [Actions #40504640855](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504640855), completed success 19:34:31 WIB. Text-only artifact [#12733854252](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504640855/artifacts/12733854252), 220,128 bytes, ZIP SHA-256 `90288a1c8b454cbdc45c75e0244d26508628ecf88bfe8e73ed88524c8cb80891`. Latest runner-only audit [#40504977322](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504977322) succeeded 19:35:51 WIB and validated its artifact metadata/digest; artifact [#12734840847](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504977322/artifacts/12734840847), 25,756 bytes, ZIP SHA-256 `d022b23548fe95eb34bfbb7a7fb0dd190a498ca54fff11516818138701920398`; `RUNNER_ARTIFACT_CLEANUP=PASS`.

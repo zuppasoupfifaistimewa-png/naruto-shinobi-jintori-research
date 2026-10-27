@@ -1,3 +1,14 @@
+# STATUS LIVE UPDATE — 27 Oktober 2026: Step 6 inventory audit and criteria reconciliation
+
+- HEAD pra-audit: cc81319cc00037a92a93a3e76552245dd9a9ebf7.
+- Step 6 artifact #12733854252 (#40504640855) verified locally: 220.128 byte; ZIP SHA-256 90288a1c8b454cbdc45c75e0244d26508628ecf88bfe8e73ed88524c8cb80891; six text/log members.
+- Independent text parsing: 98.357 decoded instructions; 2.104 displacement values; 31.081 direct operands (19.366 read / 11.715 write). B30/B38 loads are added and stored to B40; B44 has a zero-store and a read into argument a2 for candidate callee 0x8001B364, all under hypothetical base 0x800D0000.
+- Counts are complete in the decoded-view aggregate, but context snippets are capped at 200 per common offset (+0x2E9: 257 accesses/200 contexts; +0x22: 275/200). B30/B38/B40/B44 are uncapped. Do not treat this as full alias/pointer analysis or field semantics.
+- Latest relevant runs #40504640855 and #40504977322 succeeded; run #40506364365 is scheduled monitor-only and has no artifact. API snapshot: no active/queued runs.
+- Current acceptance matrix, 17 criteria, exact artifact metadata and blockers: [STEP4_10_LIVE_RECONCILIATION_2026-10-27.md](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP4_10_LIVE_RECONCILIATION_2026-10-27.md). Steps 4/6/7/8/9 are not fully closed; Story Mode TIDAK TERBUKTI TAMAT. No gameplay, input, savestate restore, or adaptive-player edits in this audit.
+
+---
+
 # LIVE UPDATE — Step 6 extended field inventory audited, 27 Oktober 2026 19:35 WIB
 
 - Extended static scan [#40504640855](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504640855) completed success at 19:34:31 WIB. Artifact #12733854252: 220,128 bytes; SHA-256 ZIP `90288a1c8b454cbdc45c75e0244d26508628ecf88bfe8e73ed88524c8cb80891`.

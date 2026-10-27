@@ -1,3 +1,11 @@
+# HANDOFF UPDATE — offline Step 6 scan reconciled, 27 Oktober 2026
+
+Mulai dari [live reconciliation](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP4_10_LIVE_RECONCILIATION_2026-10-27.md) dan matrix 17 kriteria di dalamnya. HEAD pra-audit adalah cc81319cc00037a92a93a3e76552245dd9a9ebf7. Scan terbaru (#40504640855) sudah menghasilkan inventory agregat lengkap pada instruksi direct base+displacement yang dikenali dan didekode; jangan mengulang scan sama. Inventaris independen: 2.104 offsets, 31.081 direct operands, 19.366 read/11.715 write dari 98.357 instruksi terdekode. Konteks per-access untuk offset umum dibatasi 200; B30/B38/B40/B44 tidak terkena cap konteks.
+
+Langkah statis lanjutan bernilai tambah adalah menelusuri raw MIPS address construction, control flow, aliases, split immediates dan alternate base untuk Step 6; cari source/callee B30/B38/B40/B44 tanpa menamai field. Belum ada PC runtime baru yang mendapat dukungan reachability statis untuk loader, jadi jangan ulangi no-hit probe 0x800AD454 atau seed setter. Jangan akses repo lain, jangan ubah adaptive player/Story Mode runner/classifier/policy/readiness gate, dan jangan jalankan gameplay/input atau restore savestate. Story Mode TIDAK TERBUKTI TAMAT.
+
+---
+
 # HANDOFF UPDATE — Step 6 inventory audited, 27 Oktober 2026 19:35 WIB
 
 HEAD `main` before this handoff update: `f3a1797afecfc9240462a3aa5a54838b34830492`; fetch live main on next continuation. The latest scan is [#40504640855](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504640855) success at 19:34:31 WIB; artifact #12733854252, 220,128 bytes, ZIP SHA-256 `90288a1c8b454cbdc45c75e0244d26508628ecf88bfe8e73ed88524c8cb80891`. Runner audit [#40504977322](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504977322) success 19:35:51 WIB; text artifact #12734840847, 25,756 bytes, ZIP SHA-256 `d022b23548fe95eb34bfbb7a7fb0dd190a498ca54fff11516818138701920398`; metadata and digests validated, `RUNNER_ARTIFACT_CLEANUP=PASS`.

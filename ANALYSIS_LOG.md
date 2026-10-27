@@ -1,3 +1,11 @@
+# ANALYSIS LOG — live static evidence reconciliation (27 Oktober 2026)
+
+No new runtime experiment is justified by current static evidence. Independent parsing of Step 6 artifact #12733854252 found 2.104 displacement values and 31.081 recognized direct base+displacement operands in 98.357 decoded instructions (19.366 reads/11.715 writes). Static bytes prove B30/B38 loads → addu → B40 store; B44 is zeroed in a candidate initializer and later read into a2 for candidate call 0x8001B364. These are operations on a hypothetical DATA.BIN entry-1 base 0x800D0000, not semantic labels or runtime mapping.
+
+Important distinction: aggregate counts are complete within the recognized/decoded view, but detail contexts for common offsets are capped at 200 (e.g. +0x2E9 has 257 accesses/200 contexts; +0x22 has 275/200). Priority B30/B38/B40/B44 context samples have no per-offset cap. Latest scan #40504640855 and runner audit #40504977322 succeeded; metadata/digests verified and runner cleanup PASS. Full criterion matrix and artifacts: [live reconciliation](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP4_10_LIVE_RECONCILIATION_2026-10-27.md). Story Mode TIDAK TERBUKTI TAMAT.
+
+---
+
 # Research checkpoint update — 27 October 2026, parser repair, one-breakpoint runtime and Step 6/8 trace
 
 - Main HEAD immediately before this checkpoint update: `0fe48bc85451d15fc23b7e2948df7341c1c4f431`. The commit writing this entry advances main; query live main SHA on the next continuation. The GitHub connector does not expose local working tree status.

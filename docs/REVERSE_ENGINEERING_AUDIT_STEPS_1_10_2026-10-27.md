@@ -1,3 +1,11 @@
+# LIVE CRITERION RECONCILIATION — 27 Oktober 2026
+
+The latest aggregate Step 6 direct-operand census is complete only for recognized integer/coprocessor load-store operands decoded by Ghidra and rendered as displacement(base) in the hypothetical entry-1 view; per-instance contexts remain capped at 200 for common offsets. This does not validate the entry base at runtime or complete pointer/alias analysis. See the 17-item matrix with status, artifact hashes, acceptance gaps and Actions URLs in [live reconciliation](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP4_10_LIVE_RECONCILIATION_2026-10-27.md).
+
+Use criterion-level status rather than overall workflow success. Current high-level statuses: Step 4 SEBAGIAN; Step 5 complete for four named functions only; Step 6 SEBAGIAN with alias BLOCKED and field semantics UNKNOWN; Step 7 SEBAGIAN with runtime mapping BLOCKED; Step 8 SEBAGIAN with game-rule semantics UNKNOWN; Step 9 complete only for RNG routine 0x80035D78, broader coverage UNKNOWN; Step 10 TUNTAS only as an audit matrix. Story Mode TIDAK TERBUKTI TAMAT.
+
+---
+
 # Live reconciliation — 27 Oktober 2026, 19:22 WIB
 
 Bagian di bawah merupakan laporan historis yang perlu dibaca dengan koreksi ini: Ghidra run #40498208067 SUDAH SELESAI (success) pada 19:14:42 WIB, bukan masih berjalan. Artefak #12732952776, 2.255.170 byte, SHA-256 ZIP 6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6. Run-only audit [#40503223693](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40503223693), artifact #12733512950 (13.079 byte; ZIP SHA-256 382773f9a421835bc97c448c630a2ea5d3891309bb34094f5a67027548c03414), membuktikan metadata dan digest cocok serta RUNNER_ARTIFACT_CLEANUP=PASS.

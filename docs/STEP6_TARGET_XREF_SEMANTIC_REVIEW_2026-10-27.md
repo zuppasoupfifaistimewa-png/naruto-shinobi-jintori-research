@@ -1,3 +1,15 @@
+# STEP 6 ADDENDUM — direct operand census and B44 consumer cross-check (27 Oktober 2026)
+
+Artifact #12733854252 from run #40504640855 was checked by local ZIP SHA-256 and member listing; it contains six text/log members. Inventory parser counted 2.104 unique displacements and 31.081 accesses (19.366 reads / 11.715 writes) from 98.357 decoded instructions. The full aggregate is between BEGIN/END markers and below the emitter cap, but per-offset context is separately capped at 200 for common offsets: +0x2E9 total 257/contexts 200; +0x22 total 275/contexts 200. Priority offsets +0xB30/+0xB38/+0xB40/+0xB44 have no per-offset context cap.
+
+Under hypothetical entry-1 base 0x800D0000, raw MIPS bytes support: lw +0xB30 (30 0B 82 8C), lw +0xB38 (38 0B 83 8C), addu (21 10 43 00), sw +0xB40 (40 0B 82 AC). Separate candidate routine 0x8012C544 zeroes +0xB44 at 0x8012C604 (44 0B 40 AC); candidate 0x8012CACC reads +0xB44 to a2 at 0x8012CB14 (44 0B 66 8C) before calling 0x8001B364. These facts prove only static operations and value transfer.
+
+Scanner source fixes already included Ghidra underscore-prefixed delay-slot mnemonics and integer/coproc memory operations (commit 486e2590b45efaedd7972accb4561cd647f8a711); emitter cap was raised to 30,001 (commit 4ab16073f770233edffcb13ad8b489361604b64c). Latest scanner and runner-only audit pass. There is no new evidenced tooling defect to justify another scan-only change.
+
+Still unresolved: runtime base/object identity, pointer and split-immediate aliases, alternate base and undecoded code, complete final writer/reader lifecycle, and semantics of fields. Do not call any offset cost/Chakra/barrier/turn/level-up. Step 6 overall remains SEBAGIAN; pointer/alias closure BLOCKED; semantics UNKNOWN. Full acceptance matrix: [live reconciliation](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/blob/main/docs/STEP4_10_LIVE_RECONCILIATION_2026-10-27.md).
+
+---
+
 # Live addendum — completed full displacement inventory audit (27 October 2026, 19:35 WIB)
 
 Latest scan [#40504640855](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504640855) succeeded and created [artifact #12733854252](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504640855/artifacts/12733854252), 220,128 bytes, ZIP SHA-256 `90288a1c8b454cbdc45c75e0244d26508628ecf88bfe8e73ed88524c8cb80891`. Runner-only audit [#40504977322](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504977322) confirmed artifact ID/run/name/size/digest/lifetime and cleaned runner files; audit artifact #12734840847, 25,756 bytes, ZIP SHA-256 `d022b23548fe95eb34bfbb7a7fb0dd190a498ca54fff11516818138701920398`; `RUNNER_ARTIFACT_CLEANUP=PASS`.
