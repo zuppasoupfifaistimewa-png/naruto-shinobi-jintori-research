@@ -1,3 +1,11 @@
+# LIVE UPDATE — Step 6 direct displacement scan — 27 October 2026, 19:35 WIB
+
+Verified scan [#40504640855](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504640855), artifact #12733854252 (220,128 bytes; ZIP SHA-256 `90288a1c8b454cbdc45c75e0244d26508628ecf88bfe8e73ed88524c8cb80891`). Runner-only audit [#40504977322](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40504977322), artifact #12734840847 (25,756 bytes; ZIP SHA-256 `d022b23548fe95eb34bfbb7a7fb0dd190a498ca54fff11516818138701920398`), succeeded with metadata/digest checks and RUNNER_ARTIFACT_CLEANUP=PASS.
+
+Direct base-plus-displacement operands in the hypothetical DATA.BIN entry-1 view: +0xB30 = 1 read/0 writes; +0xB38 = 1 read/0 writes; +0xB40 = 0 reads/1 write; +0xB44 = 1 read/1 write. Inventory emitted within BEGIN/END and below the 30,001-line runner output cap; the four priority offsets have no per-offset cap. This supports direct static access counts only. Base 0x800D0000 is HIPOTESIS, alias traces are bounded and linear, and computed pointers/undecoded code/field meanings remain UNKNOWN. Step 6 remains SEBAGIAN.
+
+Overall status unchanged: Step 4 SEBAGIAN; Step5 TUNTAS only four selected functions; Step6 SEBAGIAN; Step7 SEBAGIAN; Step8 SEBAGIAN; Step9 TUNTAS only for 0x80035D78; Step10 TUNTAS as criterion matrix only. Story Mode TIDAK TERBUKTI TAMAT.
+
 # CHECKPOINT LOGIKA TERBARU — 27 Oktober 2026, 19:22 WIB
 
 Live reconciliation source: [runner-only artifact audit #40503223693](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40503223693), artifact #12733512950 (13,079 bytes; ZIP SHA-256 382773f9a421835bc97c448c630a2ea5d3891309bb34094f5a67027548c03414). Ghidra run #40498208067 is complete (success at 19:14:42 WIB), artifact #12732952776 (2,255,170 bytes; SHA-256 6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6). Step6 scan #40500058788 is complete, artifact #12731474756 (180,174 bytes; SHA-256 4aea20e1420292505666f15898ba2db57a875a4fc67fbe2c65336af0a16fc9f4). The runner checked metadata/digests before text-only processing and reports RUNNER_ARTIFACT_CLEANUP=PASS. Old status text below that says these jobs are in progress is superseded.
