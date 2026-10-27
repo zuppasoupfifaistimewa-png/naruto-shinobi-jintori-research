@@ -32,6 +32,22 @@ Status: **SEBAGIAN untuk cakupan Langkah 5 secara keseluruhan**. Run #4051535652
 
 Kecocokan struktur/call token membantu memeriksa bahwa kedua decompiler membahas entry dan pemanggil yang sama. Perbedaan representasi C adalah wajar. Hasil ini **tidak** membuktikan bahwa salah satu keluaran identik dengan source code asli atau menetapkan semantik gameplay.
 
+### Tambahan cross-check fungsi inti main EXE — run #40515356524
+
+Metadata body dan batas akhir yang dilaporkan Ghidra dipakai untuk menyelaraskan region m2c. Semua target di tabel berikut mempunyai output Ghidra C dan m2c C nonempty, m2c exit code 0, dan per-function `status=SUCCESS`. Kolom token menunjukkan simbol/alamat fungsi yang sama-sama dikenali, bukan bukti semantik lengkap.
+
+| Entry | Ukuran body Ghidra (byte) | Baris Ghidra C / m2c C | Token fungsi/alamat yang sama | Temuan statis yang didukung dan batasnya |
+|---|---:|---:|---|---|
+| `0x8001387C` | 112 | 17 / 17 | `8001387c` | Setter nilai per-peserta: indeks valid 0–3; nilai dibatasi ke rentang −9999 sampai 99999; disimpan pada record stride `0xB4`, offset `+0x18`. Identitas sebagai Chakra didukung konteks laporan lain, tetapi ini tidak menjelaskan alasan pemanggilan atau formula biaya. |
+| `0x800138EC` | 64 | 8 / 8 | `800138ec` | Getter membaca lokasi tabel yang sama dengan setter; indeks di luar 0–3 mengembalikan 0. Ini membuktikan kesesuaian lokasi baca/tulis secara statis, bukan siklus biaya gameplay. |
+| `0x80035D78` | 48 | 8 / 9 | `80035d78` | Generator LCG yang state dan output-nya telah diuji terisolasi 7/7. Perbandingan decompiler menambah cross-check bentuk fungsi, bukan bukti seed boot/caller runtime. |
+| `0x80037138` | 376 | 38 / 46 | `80037138, 800372b0` | Wrapper counter/timer: `a0<0` mengembalikan global `0x80066E7C`; `a0==1` mengembalikan delta timer 16-bit; argumen lain dapat memanggil `0x800372B0` dan memperbarui data timer. Bukan fungsi constant-return; peran gameplay global masih belum terbukti. |
+| `0x800373F8` | 48 | 6 / 5 | `800373f8` | Dispatcher memanggil pointer melalui slot `PTR_PTR_80066E3C + 8`. Target aktual dan makna callback tidak ditentukan hanya oleh cross-check ini. |
+| `0x8003755C` | 216 | 34 / 38 | `80035778, 8003755c, 80037634, 80037a64, 80037a90, 80037ac8, 80037ad8, 80037b58, 80037c78` | Inisialisasi bercabang menggunakan guard `0x80065DB4` dan memiliki jalur yang memanggil `0x80037B58`; semantik mode/runtime masih perlu bukti tambahan. |
+| `0x80037B58` | 88 | 9 / 15 | `800373f8, 80037b58, 80037c48` | Mereset `0x80066E7C`, menulis `0x100` ke `0x80066E80`, mengosongkan delapan slot callback, lalu meneruskan pointer `0x80037BB0` ke dispatcher. |
+| `0x80037BB0` | 108 | 18 / 20 | `80037bb0` | Menambah `0x80066E7C`, memeriksa delapan slot, dan memanggil pointer nonzero lewat jalur tidak langsung. Mendukung deskripsi callback-counter statis, bukan penghitung giliran game yang sudah terverifikasi. |
+| `0x80037C48` | 36 | 15 / 14 | `80037c48` | Mengosongkan array word 32-bit sebanyak hitungan yang diberikan pemanggil; panggilan dari `0x80037B58` menggunakan hitungan delapan. |
+
 ## Keluaran dekompilasi yang disimpan permanen
 
 Kode berikut adalah rendering yang dirapikan dari keluaran C dalam artefak text-only run #40449144521; beberapa pemenggalan baris/formatasi diringkas, sehingga bukan salinan byte-per-byte dari berkas .c asli. Nama variabel, tipe, dan pseudocode adalah hasil decompiler otomatis; jangan menganggapnya source code asli.
