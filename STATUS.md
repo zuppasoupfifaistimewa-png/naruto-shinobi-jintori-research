@@ -3530,3 +3530,21 @@ The matched A/B harness now completes all structural and capture requirements af
 - Langkah 6 disiapkan: dekompilasi pemanggil tambahan getter target, transisi FUN_800EF98C/FUN_80100D14/FUN_80100DCC, jalur pembanding gagal, serta konsumen setter Chakra. Workflow run terbaru [#40440237256](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40440237256) baru berstatus queued saat catatan ini ditulis.
 - Artefak Ghidra yang berhasil berisi teks saja (fungsi TSV/log/dekompilasi); BIN, DATA.BIN, entry resource, BIOS, savestate, Memory Card, dan screenshot privat tidak diunggah atau di-commit.
 - Gerbang pemain adaptif tetap fail-closed: target cue UNKNOWN; barrier_level_selection = WAIT; readiness NO-GO; Story Mode NOT COMPLETE; marker Revision65 tetap tidak disentuh.
+
+
+## Reverse engineering Langkah 4–10 — checkpoint evidence 27 Oktober 2026
+
+Laporan penutupan kriteria dan evidence matrix: [docs/STEP4_10_CLOSURE_REPORT_2026-10-27.md](docs/STEP4_10_CLOSURE_REPORT_2026-10-27.md). Handoff langsung untuk kelanjutan: [docs/HANDOFF_REVERSE_ENGINEERING_STEPS4_10_2026-10-27.md](docs/HANDOFF_REVERSE_ENGINEERING_STEPS4_10_2026-10-27.md).
+
+Status yang didukung bukti:
+- **Step 4 — SEBAGIAN (overall).** Runtime run #40474262267 memakai tiga cabang dari checkpoint roulette yang sama, input readback PASS, masing-masing 127 panggilan RNG, state akhir 0xA99DC6E7; urutan sequence/caller/state-before cocok setelah nomor VSync dinormalisasi, dan normalized viewport crop SHA-256 sama. Capture autentik X11 diperiksa; frame event 169/167/171 berbeda. Sumber seed saat boot, caller battle, hubungan kausal ke hasil roulette, indirect dispatch menyeluruh dan RNG alternatif tetap UNKNOWN. Laporan runtime: [out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md](out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md). Job Actions keseluruhan gagal hanya di penulisan ringkasan via API; data rekonstruksi berasal dari raw log/artifact #12719024236.
+- **Step 5 — TUNTAS untuk empat fungsi terpilih.** Empat pasangan Ghidra/m2c C outputs telah tersimpan; jangan ulang tanpa pertanyaan baru.
+- **Step 6 — SEBAGIAN.** Xref getter/setter, kandidat transisi, dan batas semantik terdokumentasi dalam [docs/STEP6_TARGET_XREF_SEMANTIC_REVIEW_2026-10-27.md](docs/STEP6_TARGET_XREF_SEMANTIC_REVIEW_2026-10-27.md); base runtime/field/delta semantics tetap UNKNOWN.
+- **Step 7 — SEBAGIAN.** Direktori DATA.BIN dan kandidat bootstrap-copy didukung analisis statis. Workflow cold-boot runner-only #40475950842 sedang memeriksa kandidat copy 0x800AD454/0x800AD45C dan RNG seed-setter 0x80035DA8; tanpa save-state restore/input. Status hasilnya belum boleh dinaikkan hingga log/artifact/cleanup diverifikasi.
+- **Step 8 — SEBAGIAN.** Fungsi yang semantiknya didukung kode dijelaskan; aturan umum barrier/cost/battle/roulette/turn belum terbukti. [docs/STEP8_FUNCTION_SEMANTICS_AND_GAME_RULES_2026-10-27.md](docs/STEP8_FUNCTION_SEMANTICS_AND_GAME_RULES_2026-10-27.md).
+- **Step 9 — TUNTAS untuk fungsi RNG utama 0x80035D78 saja.** Run #40474891838 sukses: 7/7 state vectors, state baru/v0 tepat, 12 instruksi per vector, physical RAM map valid, runner-private cleanup PASS. Ini bukan emulator PS1 penuh. [out/step9/STEP9_UNICORN_RESULT_2026-10-27.md](out/step9/STEP9_UNICORN_RESULT_2026-10-27.md).
+- **Step 10 — TUNTAS sebagai indeks audit.** [out/logic.md](out/logic.md) menunjuk evidence/report mutakhir; ini tidak berarti semua logika game sudah direverse-engineer.
+
+HEAD riset saat catatan ini disiapkan: `1076072f69d83546ecf70923e26304e7af4ac057`; perubahan status ini sendiri akan menghasilkan commit baru. Setelah cold-boot selesai, perbarui status Step 7 dan SHA HEAD secara berurutan.
+
+Story Mode: **TIDAK TERBUKTI TAMAT**. Tidak ada ending autentik pada riset ini. Pengembangan pemain adaptif tetap dijeda; tidak ada classifier, kebijakan input, marker Revision65, atau readiness gate yang diubah. Disc/ROM, BIOS, Memory Card, savestate, RAM dump dan screenshot gameplay privat tidak di-commit ke Git.
