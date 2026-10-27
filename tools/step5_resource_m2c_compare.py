@@ -24,7 +24,7 @@ def parse_hex_value(report: str, key: str) -> int | None:
     return int(match.group(1), 16) if match else None
 
 def parse_decimal_value(report: str, key: str) -> int | None:
-    match = re.search(rf"(?m)^{re.escape(key)}=(\\d+)\\s*$", report)
+    match = re.search(rf"(?m)^{re.escape(key)}=(\d+)\s*$", report)
     return int(match.group(1), 10) if match else None
 
 def find_label_for_addr(asm: str, address: int) -> str | None:
