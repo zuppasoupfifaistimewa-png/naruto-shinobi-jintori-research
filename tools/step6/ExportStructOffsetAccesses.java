@@ -15,6 +15,8 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ExportStructOffsetAccesses extends GhidraScript {
     private PrintWriter out;
@@ -27,6 +29,9 @@ public class ExportStructOffsetAccesses extends GhidraScript {
     };
     private final Map<Long, Integer> counts = new LinkedHashMap<>();
     private final Map<Long, Integer> emitted = new LinkedHashMap<>();
+    private final Map<Long, Integer> memoryCounts = new LinkedHashMap<>();
+    private final Map<Long, Integer> memoryEmitted = new LinkedHashMap<>();
+    private static final Pattern MEMORY_DISPLACEMENT = Pattern.compile("(?i)^_?(lb|lbu|lh|lhu|lw|lwl|lwr|lwu|sb|sh|sw|swl|swr|sc)\\s+[^,]+,\\s*(-?(?:0x[0-9a-f]+|[0-9]+))\\(");
 
     private void line(String s) { out.println(s); }
 
@@ -83,6 +88,21 @@ public class ExportStructOffsetAccesses extends GhidraScript {
         line("  references_from_instruction=" + refTargets(ins.getAddress()));
     }
 
+    private void dumpMemoryMatch(Instruction ins, long target, long displacement, long count) {
+        int shown = memoryEmitted.getOrDefault(target, 0);
+        if (shown >= MAX_REPORTED_PER_OFFSET) return;
+        memoryEmitted.put(target, shown + 1);
+        Function f = getFunctionContaining(ins.getAddress());
+        long rawAddress = ins.getAddress().getOffset();
+        long fileOffset = rawAddress - BASE;
+        line("MEMORY_MATCH field=+" + hex(target) + " occurrence=" + (shown + 1) + " total_after_scan=" + count);
+        line("  address=" + ins.getAddress() + " entry1_file_offset=" + (fileOffset >= 0 && fileOffset < LENGTH ? hex(fileOffset) : "OUTSIDE_HYPOTHETICAL_ENTRY1"));
+        line("  instruction_bytes=" + bytes(ins) + " mnemonic=" + ins.getMnemonicString() + " text=" + ins.toString());
+        line("  parsed_memory_displacement=" + hex(displacement) + " access_class=LOAD_STORE_OPCODE_CANDIDATE");
+        line("  function=" + (f == null ? "NONE_OR_UNMAPPED" : f.getName()) + " function_entry=" + (f == null ? "NONE" : f.getEntryPoint()));
+        line("  references_from_instruction=" + refTargets(ins.getAddress()));
+    }
+
     @Override
     protected void run() throws Exception {
         String[] args = getScriptArgs();
@@ -99,7 +119,12 @@ public class ExportStructOffsetAccesses extends GhidraScript {
             line("game_or_emulator_executed=no");
             line("private_binary_uploaded=no");
             line("field_semantics=UNASSIGNED; every hit requires instruction-context review");
-            for (long t : TARGETS) { counts.put(t, 0); emitted.put(t, 0); }
+            for (long t : TARGETS) { counts.put(t, 0); emitted.put(t, 0); memoryCounts.put(t, 0); memoryEmitted.put(t, 0); }
+            // Self-test against known MIPS memory-operand syntax before scanning the program.
+            Matcher fixture = MEMORY_DISPLACEMENT.matcher("sb v0,0x2e9(v1)");
+            if (!fixture.find() || Long.decode(fixture.group(2)) != 0x2E9L)
+                throw new IllegalStateException("memory displacement parser regression: known sb v0,0x2e9(v1) must parse");
+            line("memory_displacement_parser_fixture=PASS sample=sb_v0,0x2e9(v1)");
 
             InstructionIterator it = currentProgram.getListing().getInstructions(true);
             long instructions = 0, inEntry = 0;
@@ -124,6 +149,18 @@ public class ExportStructOffsetAccesses extends GhidraScript {
                         dumpMatch(ins, op, scalar, target, now);
                     }
                 }
+                Matcher memory = MEMORY_DISPLACEMENT.matcher(ins.toString().trim());
+                if (memory.find()) {
+                    long displacement;
+                    try { displacement = Long.decode(memory.group(2)); }
+                    catch (NumberFormatException e) { displacement = Long.MIN_VALUE; }
+                    for (long target : TARGETS) {
+                        if (displacement != target) continue;
+                        int now = memoryCounts.get(target) + 1;
+                        memoryCounts.put(target, now);
+                        dumpMemoryMatch(ins, target, displacement, now);
+                    }
+                }
             }
             line("");
             line("=== SUMMARY ===");
@@ -132,8 +169,10 @@ public class ExportStructOffsetAccesses extends GhidraScript {
             line("match_output_cap_per_offset=" + MAX_REPORTED_PER_OFFSET);
             for (long t : TARGETS)
                 line("offset=+" + hex(t) + " decoded_immediate_hits=" + counts.get(t)
-                    + " emitted=" + emitted.get(t)
-                    + (counts.get(t) > MAX_REPORTED_PER_OFFSET ? " CAP_REACHED; additional hits omitted" : ""));
+                    + " immediate_emitted=" + emitted.get(t)
+                    + " memory_displacement_hits=" + memoryCounts.get(t)
+                    + " memory_emitted=" + memoryEmitted.get(t)
+                    + (counts.get(t) > MAX_REPORTED_PER_OFFSET || memoryCounts.get(t) > MAX_REPORTED_PER_OFFSET ? " CAP_REACHED; additional hits omitted" : ""));
             line("limitation=This pass searches exact 16-bit immediate values in Ghidra-decoded instructions only. It may include non-field constants and will miss pointer arithmetic, split immediates, aliases, undisassembled code and alternate structure bases.");
             out.flush();
             if (out.checkError()) throw new IllegalStateException("Failed writing offset-access report.");
