@@ -124,6 +124,38 @@ def mips_address_pairs(data: bytes, target: int, max_gap: int = 6) -> list[tuple
     return sorted(out)
 
 
+def mips_memory_pairs(data: bytes, target: int, max_gap: int = 6) -> list[tuple[int, int, int]]:
+    """Find LUI + load/store of target; offsets refer to raw file bytes."""
+    hi, lo = (target >> 16) & 0xFFFF, target & 0xFFFF
+    low_offsets = all_aligned_occurrences(data, struct.pack("<H", lo))
+    out: list[tuple[int, int, int]] = []
+    seen: set[tuple[int, int, int]] = set()
+    for mem_off in low_offsets:
+        if mem_off + 4 > len(data):
+            continue
+        word = u32(data, mem_off)
+        op = word >> 26
+        # MIPS R3000A byte/halfword/word loads and stores.
+        if op not in (0x20, 0x21, 0x23, 0x24, 0x25, 0x28, 0x29, 0x2B):
+            continue
+        base_reg = (word >> 21) & 0x1F
+        for gap in range(1, max_gap + 1):
+            lui_off = mem_off - gap * 4
+            if lui_off < 0:
+                break
+            lui_word = u32(data, lui_off)
+            if (lui_word >> 26) != 0x0F or (lui_word & 0xFFFF) != hi:
+                continue
+            lui_rt = (lui_word >> 16) & 0x1F
+            if base_reg != lui_rt:
+                continue
+            item = (lui_off, mem_off, op)
+            if item not in seen:
+                seen.add(item)
+                out.append(item)
+    return sorted(out)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--output", type=Path, required=True)
@@ -172,6 +204,7 @@ def main() -> int:
         state_literal = all_aligned_occurrences(data, struct.pack("<I", RNG_STATE))
         rng_pairs = mips_address_pairs(data, RNG)
         state_pairs = mips_address_pairs(data, RNG_STATE)
+        state_memory_pairs = mips_memory_pairs(data, RNG_STATE)
         lines.append(f"direct_jal_rng_raw_hits={len(rng_jal)}")
         for off in rng_jal:
             extra = " " + entry_for_offset(entries, off) if name == "DATA.BIN" else ""
@@ -206,6 +239,12 @@ def main() -> int:
             lines.append(f"  rng_state_addr_pair lui_file_offset=0x{lui_off:X} low_file_offset=0x{low_off:X}{call}{extra}")
         if len(state_pairs) > 100:
             lines.append("  rng_state_addr_pair_output_truncated_after=100")
+        lines.append(f"rng_state_lui_memory_access_pairs={len(state_memory_pairs)}")
+        for lui_off, mem_off, op in state_memory_pairs[:200]:
+            extra = " " + entry_for_offset(entries, lui_off) if name == "DATA.BIN" else ""
+            lines.append(f"  rng_state_memory_pair lui_file_offset=0x{lui_off:X} access_file_offset=0x{mem_off:X} opcode=0x{op:02X}{extra}")
+        if len(state_memory_pairs) > 200:
+            lines.append("  rng_state_memory_pair_output_truncated_after=200")
         totals["rng_jal"] += len(rng_jal)
         totals["seed_jal"] += len(seed_jal)
         totals["rng_literal"] += len(rng_literal)
@@ -222,7 +261,7 @@ def main() -> int:
     ])
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text("\n".join(lines), encoding="utf-8")
-    print("\n".join(line for line in lines if line.startswith(("analysis=", "=== FILE", "bytes=", "sha256=", "known_identity_check=", "direct_jal_rng_raw_hits=", "direct_jal_seed_setter_raw_hits=", "rng_address_literal_aligned_hits=", "rng_state_literal_aligned_hits=", "rng_lui_low_address_pairs=", "rng_state_lui_low_address_pairs=", "=== TOTALS ===", "rng_jal=", "seed_jal=", "rng_literal=", "state_literal=", "rng_address_pair=", "state_address_pair=")))
+    print("\n".join(line for line in lines if line.startswith(("analysis=", "=== FILE", "bytes=", "sha256=", "known_identity_check=", "direct_jal_rng_raw_hits=", "direct_jal_seed_setter_raw_hits=", "rng_address_literal_aligned_hits=", "rng_state_literal_aligned_hits=", "rng_lui_low_address_pairs=", "rng_state_lui_low_address_pairs=", "rng_state_lui_memory_access_pairs=", "=== TOTALS ===", "rng_jal=", "seed_jal=", "rng_literal=", "state_literal=", "rng_address_pair=", "state_address_pair=")))
     return 0
 
 
