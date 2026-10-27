@@ -2,7 +2,7 @@
 
 ## Cakupan dan keselamatan
 
-Satu-satunya repositori yang digunakan: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research. Audit ini statis dan dokumenter. Tidak ada workflow gameplay/player di-dispatch, input gameplay dikirim, savestate dipulihkan, emulator dijalankan, classifier/policy/Revision65/readiness gate diubah, atau percobaan Story Mode dilakukan. Aset ROM/BIOS/Memory Card/savestate/screenshot gameplay tidak ditambahkan ke Git. Artefak yang diperiksa pada sesi ini hanya output statis berbentuk teks.
+Satu-satunya repositori yang digunakan: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research. Audit ini menggabungkan analisis statis, eksperimen runtime RNG terukur pada checkpoint roulette, dan satu uji CPU MIPS yang terisolasi. Tidak ada workflow pemain adaptif/Story Mode otomatis dijalankan, tidak ada classifier/policy/Revision65/readiness gate yang diubah, dan tidak ada ending Story Mode yang diklaim. Restore checkpoint hanya terjadi pada eksperimen diagnostik Step 4 yang dibatasi. Aset ROM/disc, BIOS, Memory Card, savestate, dump RAM, dan screenshot gameplay privat tidak ditambahkan ke Git; screenshot diagnostik privat disimpan hanya pada artifact Actions ber-retensi terbatas.
 
 Checkpoint awal remote main: 62a4c114b7ac7a55ae9eb6d91bc4c9bfaef1c2ef.
 - Step 5 Ghidra/m2c [run #40449144521](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40449144521): **success** pada SHA checkpoint tersebut; artefak teks #12710000931.
@@ -16,13 +16,13 @@ Checkpoint awal remote main: 62a4c114b7ac7a55ae9eb6d91bc4c9bfaef1c2ef.
 | 1 — Struktur disc dan inventaris | **SELESAI** | Inventaris ekstraksi terdahulu terdokumentasi dan source BIN/CUE/EXE divalidasi pada runner. Tidak dibongkar ulang hanya demi mengganti alat. |
 | 2 — Header PS-X EXE | **SELESAI** | Ukuran, hash, header, entry point, load base, text length, dan panjang file konsisten; validasi header pada run terbaru lulus. |
 | 3 — Ghidra headless | **SELESAI** | Ghidra 12.2, Temurin JDK 25, MIPS little-endian 32-bit; analisis berhasil dan ekspor indeks berisi 1.206 baris fungsi main EXE. |
-| 4 — RNG | **SELESAI dalam cakupan inventaris statis; batas runtime terdokumentasi** | LCG dan 4 caller main EXE diverifikasi; 4 call site entry 0 dan 144 entry 1 diperiksa melalui Ghidra pada base hipotetis; scan signature/pola pointer sempit lintas berkas selesai. Base/lifecycle runtime, satu reachability entry 0, 36 boundary fungsi entry 1, caller pointer/dispatch, dan kode hasil dekompresi/dekripsi tetap UNKNOWN. Lihat [penutupan Langkah 4](STEP4_CLOSURE_2026-10-27.md). |
+| 4 — RNG | **SEBAGIAN (keseluruhan kriteria pengguna)** | Formula dan caller statis dipetakan; uji runtime #40474262267 membandingkan state/caller/viewport pada checkpoint roulette, dan fungsi utama lulus tes terisolasi 7/7 di Step 9. Seed boot, hubungan caller ke hasil roulette, caller battle, pointer/dispatch menyeluruh, dan randomness alternatif tetap UNKNOWN. Lihat [laporan Step 4](../out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md) dan [penutupan Step 4](STEP4_CLOSURE_2026-10-27.md). |
 | 5 — Caller RNG dan m2c | **SELESAI untuk empat caller yang dipilih** | Keempat entry fungsi dibandingkan oleh Ghidra dan m2c; semua output ada, perbandingan berhasil. Delapan keluaran C dan ringkasan disimpan permanen di [laporan Step 5](../out/step5/STEP5_GHIDRA_M2C_COMPARISON_2026-10-27.md). |
 | 6 — Alamat, penulis memori, dan call chain | **SELESAI SEBAGIAN** | Setter Chakra utama dan beberapa cabang perbandingan target dapat dipetakan statis. Base resource hipotesis; beberapa dekompilasi gagal; sumber nilai dan semantik field penting belum terbukti. |
 | 7 — Loader dan overlay | **SELESAI SEBAGIAN** | Direktori DATA.BIN dikenal; entry 0 dan 1 dianalisis statis. Base/lifecycle/runtime loader belum tervalidasi; DATA2.BIN dan DUMMY.BIN belum dipetakan menyeluruh sebagai kode executable. |
 | 8 — Penjelasan fungsi | **SELESAI SEBAGIAN** | Penjelasan RNG, caller, dan kelompok threshold Chakra tersedia; semantik sejumlah field/state dan mekanik battle/roulette/turn belum diketahui. |
-| 9 — Verifikasi terisolasi | **TERBLOKIR** | Belum ada eksekusi fungsi MIPS terisolasi via Unicorn atau emulator fungsi setara yang tervalidasi. Disassembly/decompiler adalah bukti statis, bukan verifikasi runtime. |
-| 10 — Indeks out/logic.md | **SELESAI SEBAGIAN** | Indeks diperbarui untuk menunjuk audit dan keluaran Step 5 terbaru. Karena Langkah 6–9 belum tuntas, indeks tidak mengklaim semua aturan gameplay selesai. |
+| 9 — Verifikasi terisolasi | **TUNTAS untuk satu fungsi RNG utama** | Probe Unicorn MIPS32 menjalankan rutin 0x80035D78 pada 7 vektor dengan memory map fisik PS1, return sentinel, pembandingan state/v0, dan batas instruksi. Run #40474891838 sukses; lihat [laporan uji isolasi](../out/step9/STEP9_UNICORN_RESULT_2026-10-27.md). Tidak menggeneralisasi ke fungsi lain atau emulator PS1 penuh. |
+| 10 — Indeks out/logic.md | **TUNTAS sebagai indeks audit** | Indeks dan laporan penutupan kini menunjuk ke report per-langkah terkini serta memisahkan TERVERIFIKASI/HIPOTESIS/UNKNOWN. Status ini hanya menutup kebutuhan indeks/dokumentasi, bukan seluruh reverse engineering game. |
 
 ## Langkah 1 — struktur disc
 
@@ -101,7 +101,7 @@ Dengan keyakinan tinggi dapat dijelaskan rumus LCG, empat caller langsung, rutin
 
 ## Langkah 9 — verifikasi terisolasi
 
-**TERBLOKIR.** Sesi ini tidak menjalankan rentang instruksi MIPS dengan Unicorn atau harness emulator fungsi setara yang tervalidasi. Ghidra, spimdisasm dan m2c adalah analisis statis saja. Tidak dilakukan probe gameplay/runtime. Penutupan blocker memerlukan emulator fungsi terisolasi yang dapat memodelkan register, branch/delay slot, dan memory map tanpa menjalankan game; setiap uji perlu mencatat state awal, register/memori, output yang diharapkan dan aktual, serta keterbatasan. Jika input biner tidak tersedia lewat lokasi yang disetujui tanpa memindahkan aset privat, status harus tetap UNVERIFIED.
+**SEBELUM uji 27 Oktober: TERBLOKIR.** Snapshot saat itu belum menjalankan rentang instruksi MIPS. Status kemudian berubah setelah probe terisolasi dilakukan: lihat bagian addendum terakhir dan [laporan Step 9](../out/step9/STEP9_UNICORN_RESULT_2026-10-27.md).
 
 ## Langkah 10 — indeks logika
 
@@ -169,3 +169,30 @@ Catatan: beberapa CLI tidak menggunakan `--version` sebagai opsi versi mandiri. 
 ## Penutupan Langkah 4 — 27 Oktober 2026
 
 Langkah 4 ditutup sebagai **SELESAI dalam cakupan inventaris statis yang dapat direproduksi**, bukan sebagai bukti kelengkapan runtime absolut. Laporan penutupan mengklasifikasikan semua hasil dan UNKNOWN tersisa: [STEP4_CLOSURE_2026-10-27.md](STEP4_CLOSURE_2026-10-27.md).
+
+
+## Hasil final diperbarui — Langkah 4–10, 27 Oktober 2026 (snapshot Actions 08:38 UTC)
+
+Laporan penutupan yang memuat matriks kriteria, referensi artefak, hipotesis/UNKNOWN, dan sisa pekerjaan: [docs/STEP4_10_CLOSURE_REPORT_2026-10-27.md](STEP4_10_CLOSURE_REPORT_2026-10-27.md).
+
+### Pembaruan Step 4 runtime
+
+Run [#40474262267](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40474262267) menghasilkan tiga cabang diagnostik yang seluruhnya selesai pada tahap eksperimen: dua Circle input pada frame 30 lalu release 38, satu Circle input frame 60 lalu release 68; input readback PASS. Masing-masing mencatat 127 panggilan RNG, stream sequence/caller/state-before yang sama setelah nomor frame dinormalisasi, sampled RNG state yang sesuai, state akhir 0xA99DC6E7, serta SHA-256 viewport crop yang sama (a1b2dfab61a0922e2b466ddbeb6b5b2642a88289be159df4667e4e2bcaa53355). Tangkapan autentik X11 lolos validasi; event capture frame berbeda 169, 167, 171. Kesimpulan determinisme dibatasi pada stream dan viewport di checkpoint roulette tersebut; hasil pilihan roulette tidak dihubungkan secara kausal ke caller, dan tidak ada caller battle yang diuji. Job Actions keseluruhan gagal pada tahap penyimpanan laporan via API; laporan disusun ulang dari log mentah/artifact [#12719024236](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40474262267/artifacts/12719024236) pada [out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md](../out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md).
+
+**Keputusan Step 4 keseluruhan: SEBAGIAN**, karena subkriteria seed/lifecycle, pointer/dispatch menyeluruh, hubungan caller-ke-hasil roulette, caller battle, dan RNG alternatif masih terbuka. Penutupan statis lama tetap berlaku hanya untuk batas inventory yang dinyatakan eksplisit, bukan bukti lengkap runtime.
+
+### Pembaruan Step 9 — fungsi MIPS terisolasi
+
+Run pertama [#40474699863](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40474699863) gagal 0/7: probe memetakan memory map pada KSEG virtual dan tidak mengeksekusi instruksi. Run kedua [#40474891838](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40474891838) mengoreksi memory map menjadi alamat fisik RAM dan lulus 7/7 input state. Perubahan state/return register sesuai rumus LCG, masing-masing 12 instruksi, cleanup runner PASS; hanya report teks diunggah, tidak ada disk image/executable/RAM dump/savestate di Git. [Laporan isolasi](../out/step9/STEP9_UNICORN_RESULT_2026-10-27.md).
+
+### Status final per langkah
+
+- Langkah 4 — **SEBAGIAN** (overall; static caller inventory and bounded runtime behavior verified, lifecycle/call-meaning gaps open).
+- Langkah 5 — **TUNTAS untuk empat fungsi terpilih** (Ghidra/m2c; eight persistent outputs).
+- Langkah 6 — **SEBAGIAN** (xref/call chain statis terdokumentasi; runtime base/field/transitions UNKNOWN).
+- Langkah 7 — **SEBAGIAN** (directory/bootstrap copy static; loader runtime and broad resource map UNKNOWN).
+- Langkah 8 — **SEBAGIAN** (semantics evidence-backed; general game rules UNKNOWN).
+- Langkah 9 — **TUNTAS untuk satu fungsi RNG utama** (7 isolated vectors; not a full PS1 emulator or all-game function test).
+- Langkah 10 — **TUNTAS sebagai indeks audit**; this does not mean the game is fully reverse-engineered.
+
+Story Mode remains **TIDAK TERBUKTI TAMAT**: no authentic ending was produced or reviewed in this work. Adaptive-player development and Story Mode automation remain paused; no classifier, input policy, readiness gate, or consumed player marker was changed.
