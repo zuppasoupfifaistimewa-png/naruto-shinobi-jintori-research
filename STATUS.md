@@ -22,7 +22,7 @@ Checkpoint yang dibaca sebelum sinkronisasi akhir status ini: `main` HEAD `60102
 
 Semua kriteria resmi yang belum terpenuhi harus tetap SEBAGIAN/UNKNOWN sampai bukti spesifik tersedia. Tidak ada workflow pemain adaptif/Story Mode otomatis, input gameplay, savestate restore, classifier/policy/Revision65/readiness-gate change. **Story Mode TIDAK TERBUKTI TAMAT.**
 
-- Pemeriksaan Actions terakhir: tidak ada run `in_progress` atau `queued`. Run diagnostik #40484548650 selesai `success` dengan cleanup PASS; ini adalah status workflow, bukan penutupan kriteria loader.
+- Run aktif saat checkpoint diperbarui: [#40485987817](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40485987817), Step 4 seed-setter cold boot, mulai 2026-10-27 10:07:04 UTC (17:07:04 WIB), job `coldboot-loader` berada pada langkah observasi runtime setelah aset sumber tervalidasi. Satu breakpoint `0x80035DA8`, tanpa input/restore, batas 35 detik; estimasi total sekitar 5 menit berdasar run sebelumnya 291 detik (bukan jaminan). Validator callback/report parser #40486017081 sudah `success`. Jangan memulai run runtime lain sampai run ini selesai.
 ROM/disc, BIOS, Memory Card, savestate, RAM dump, dan screenshot gameplay privat tidak boleh masuk Git. Hanya repositori `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research` yang boleh diakses/diubah.
 
 Laporan utama:
