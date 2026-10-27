@@ -77,3 +77,13 @@ Temuan berikut menggantikan status sebelumnya yang menganggap keberadaan tabel r
 5. Dari 1.504 entri, 1.500 aktif dan empat berukuran nol (indeks 1491–1494). Interval sektor entri aktif tidak saling tumpang-tindih dan berada di dalam extent `DATA.BIN` pada LBN [212, 32446). Total interval yang tercakup adalah 32.227 sektor dari 32.234 sektor file. Tujuh sektor selisih cocok dengan enam sektor bootstrap yang dibulatkan dan satu sektor akhir yang tidak tercakup.
 
 Ini memberikan keyakinan **tinggi** bahwa executable memakai bootstrap DATA.BIN untuk mendaftarkan direktori resource berbasis LBN/panjang. Ini belum mengidentifikasi format setiap resource atau seluruh pemuatan runtime. Detail signature dan hash tercatat di [RESOURCE_CATALOG.md](RESOURCE_CATALOG.md).
+
+## Survei kode DATA.BIN entry index 1 — 2026-10-27
+
+Run Ghidra [#40439763833](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40439763833) berhasil memvalidasi sumber disc, mengekstrak DATA.BIN sementara, dan menganalisis entry index 1 (offset 0x10BB000, 596.412 byte; SHA-256 potongan 9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a). Artefak hasil teks: [artifact 12705072941](https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/artifacts/12705072941). Base impor 0x800D0000 masih hipotesis; runtime loader belum dibuktikan.
+
+Enam lokasi kandidat pada base tersebut — 0x80111228, 0x801112CC, 0x801113B4, 0x801114F0, 0x80111588, 0x80112418 — memanggil getter target utama 0x80012A70. Dua pemanggil lainnya berada pada FUN_8012A9C4 (call site 0x8012AA2C) dan FUN_80137AD8 (call site 0x80137C34). Instruksi pada enam target menghitung alamat record dengan stride 0x90, membandingkan field word dengan nilai yang dikembalikan getter, lalu pada jalur yang lolos menulis field state dan/atau memanggil FUN_800EF98C; salah satu jalur memanggil FUN_80100D14(1) dan FUN_80100DCC(0xDF) setelah pembandingan. Ini merupakan bukti statis yang kuat bagi jalur pemeriksaan threshold target Chakra, bukan bukti final bahwa suatu lokasi merupakan event kemenangan Story Mode.
+
+Referensi ke setter Chakra utama 0x8001387C juga ditemukan dari sembilan call sites di resource, termasuk fungsi kandidat FUN_800D5608, FUN_800E1188, FUN_800D8918, FUN_8011C0D0, FUN_8010478C, dan FUN_80101814. Referensi ke getter nilai Chakra pemain 0x800138EC muncul pada 16 call sites. Detail dekompilasi fungsi-fungsi itu menjadi target Langkah 6.
+
+Jaga label fakta/hipotesis: call target dan operasi perbandingan adalah temuan statis; penamaan event serta base RAM masih provisional sampai mapping loader/runtime divalidasi. Emulator/gameplay tidak dijalankan; resource tidak dimasukkan ke Git/artifact.
