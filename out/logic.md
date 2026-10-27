@@ -276,3 +276,11 @@ Status terbaru:
 - Step 10 — **TUNTAS sebagai indeks audit**; ini bukan klaim bahwa seluruh game telah selesai direverse-engineer.
 
 Story Mode tetap **TIDAK TERBUKTI TAMAT**. Tidak ada ending autentik yang diverifikasi. Sistem pemain adaptif tetap dijeda; tidak ada classifier, input policy, readiness gate, atau marker Revision65 diubah pada pekerjaan ini. ROM/disc, BIOS, Memory Card, savestate, RAM dump, dan screenshot privat tetap di luar Git.
+
+## Latest audit addendum — raw MIPS Step 6/8 and Step 4 delay-slot correction (27 Oktober 2026)
+
+Static artifact #12719587873 from [Actions #40473737136](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40473737136) adds raw instructions for six target-gated entry-1 sites: 0x80111228, 0x801112CC, 0x801113B4, 0x801114F0, 0x80111588 and 0x80112418. Conditional on hypothetical base 0x800D0000, record word +0x04 (stride 0x90) is compared to getter 0x80012A70; record_word < target routes to 0x8011253C. One path checks flag 0x200 at record +0x0A; another tests helper 0x800BDBFC(0x20) against global 0x8013EBB0. Accepted paths store +0x58B/+0x2E9/+0x2E5/+0x5D2, but the codes remain semantically UNKNOWN. Candidate 0x8011C0D0 negates/clamps record +0x04 to -9999 then calls setter 0x8001387C; not enough to call this a cost/refund/barrier rule.
+
+Step 4 callsite correction: 0x800AF2AC calls 0x80035DA8 with $a0 set in the JAL delay slot by move a0,v0, forwarding helper 0x80037138’s return. The -1 literal was the helper argument, not a verified setter value. Return and runtime seed lifecycle remain UNKNOWN.
+
+Step status remains Step4 SEBAGIAN; Step5 TUNTAS for four chosen functions only; Step6 SEBAGIAN; Step7 SEBAGIAN; Step8 SEBAGIAN; Step9 TUNTAS only for RNG 0x80035D78; Step10 TUNTAS as audit index only. Story Mode remains TIDAK TERBUKTI TAMAT. No adaptive-player workflow, savestate restore, or gameplay input was used in this continuation.
