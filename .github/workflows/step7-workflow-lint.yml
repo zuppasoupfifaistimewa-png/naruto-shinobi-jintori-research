@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/step7-loader-coldboot-diagnostic.yml"
+      - ".github/workflows/step7-workflow-lint.yml"
   workflow_dispatch:
 
 permissions:
