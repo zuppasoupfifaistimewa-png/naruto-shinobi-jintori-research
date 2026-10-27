@@ -117,6 +117,15 @@ jobs:
           } > "$RUNNER_TEMP/ghidra-output/input-validation.txt"
           echo "PS-X EXE size, signature and SHA-256 verified."
 
+      - name: Scan RNG signature and direct callers
+        shell: bash
+        run: |
+          set -euo pipefail
+          exe="$RUNNER_TEMP/ghidra-input/SLPS_035.53"
+          out="$RUNNER_TEMP/ghidra-output/rng-signature-scan.txt"
+          python3 tools/psx_rng_signature_scan.py "$exe" > "$out"
+          cat "$out"
+
       - name: Run Ghidra headless analysis and export function index
         shell: bash
         run: |
