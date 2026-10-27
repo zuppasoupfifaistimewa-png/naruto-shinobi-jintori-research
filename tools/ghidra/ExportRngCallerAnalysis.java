@@ -175,6 +175,9 @@ public class ExportRngCallerAnalysis extends GhidraScript {
 
             // Step 4 helper trace: domains, filtering predicates, and downstream initializers.
             dumpSimpleFunction(decompiler, 0x800154D4L);
+            dumpSimpleFunction(decompiler, 0x80015610L);
+            dumpSimpleFunction(decompiler, 0x80015768L);
+            dumpSimpleFunction(decompiler, 0x800157C4L);
             dumpSimpleFunction(decompiler, 0x800158D8L);
             dumpSimpleFunction(decompiler, 0x800159BCL);
             dumpSimpleFunction(decompiler, 0x80016C68L);
@@ -183,6 +186,8 @@ public class ExportRngCallerAnalysis extends GhidraScript {
             dumpSimpleFunction(decompiler, 0x80018468L);
 
             // Xrefs to RNG and candidate/global table locations (some may be outside loaded text).
+            dumpReferences(0x8006D794L, "bounded_candidate_limit_DAT_8006D794");
+            dumpReferences(0x80070770L, "candidate_filter_bitset_DAT_80070770");
             dumpReferences(0x800A3118L, "rng_state_global");
             dumpReferences(0x80035D78L, "lcg_candidate");
             dumpReferences(0x80035DA8L, "seed_setter_candidate");
