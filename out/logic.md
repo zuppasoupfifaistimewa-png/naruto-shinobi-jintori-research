@@ -234,3 +234,8 @@ Pemain adaptif tetap dijeda; tidak ada emulator/gameplay/input/savestate.
 ## Scan signature LCG lintas berkas
 
 Run [#40455975609](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40455975609) menemukan hanya satu pasangan instruksi yang membentuk pengali LCG `0x41C64E6D` dan diikuti MULT/MULTU, yaitu di `SLPS_035.53` sekitar `0x80035D78`. Pola yang sama tidak ditemukan dalam raw DATA.BIN, DATA2.BIN, DUMMY.BIN, XASECT.BIN. Ini bukan bukti bahwa RNG lain dengan rumus berbeda tidak ada atau bahwa code compressed/encoded tidak berisi generator tersembunyi. [Laporan scan signature](step4_rng_signature_scan_2026-10-27.md).
+
+
+## Topik 1 — Langkah 4 RNG + roulette (27 Oktober 2026)
+
+Status topik ini **SEBAGIAN**, bukan TUNTAS: LCG dan peta caller statis tersedia, tetapi seed runtime, determinisme save-state, pemanggil roulette/battle dinamis, dan pemeriksaan menyeluruh terhadap sumber randomness alternatif belum dibuktikan. Laporan terperinci dan kriteria satu per satu: [out/step4/STEP4_RNG_ROULETTE_TOPIC_2026-10-27.md](step4/STEP4_RNG_ROULETTE_TOPIC_2026-10-27.md). Pemanggil yang tersedia belum boleh dilabeli sebagai roulette hanya berdasarkan operasi indeks/shuffle/pemilihan kandidat. Langkah 5 topik ini belum dimulai ulang; pemain adaptif tetap dijeda.
