@@ -121,3 +121,12 @@ Pipeline analisis statis kini disiapkan di workflow [`ghidra-static-analyze-psx-
 **Status: pipeline sudah ditambahkan, eksekusi analisis belum dimulai.** Runner membutuhkan repository Actions secret `PSX_EXE_DOWNLOAD_URL` yang mengarah ke unduhan HTTPS privat executable tepat 385.024 byte. Ukuran, magic `PS-X EXE`, dan SHA-256 `a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569` diverifikasi sebelum Ghidra dijalankan. Jika tidak cocok, file ditolak dan dihapus.
 
 Panduan setelan satu kali: [`docs/GHIDRA_PRIVATE_EXE_HANDOFF.md`](../docs/GHIDRA_PRIVATE_EXE_HANDOFF.md). Konektor yang tersedia tidak dapat membuat secret Actions atau menyalin biner Library langsung ke runner; karena itu run belum bisa dipicu sebelum secret dibuat oleh pemilik repo. Biner tidak masuk Git maupun artefak; yang diunggah hanya laporan/log teks. Tidak ada emulator atau input gameplay dijalankan.
+
+
+## Langkah 4 — temuan awal RNG (27 Oktober 2026)
+
+Analisis statis lokal yang dapat direproduksi menemukan pola LCG eksak di `0x80035D78`, state di `0x800A3118`, pengali `0x41C64E6D`, penambah `0x3039`, dan output `(state >> 16) & 0x7FFF`. Rutin di `0x80035DA8` menulis argumen pertama ke state yang sama dan berperilaku seperti seed setter.
+
+Direct-JAL callers yang ditemukan di text utama: `0x80015B14`, `0x80015BF0`, `0x8001A460`, `0x80020C24`. Belum diketahui pemanggil via pointer/overlay, seed awal, atau fungsi gameplay tiap caller. Laporan lengkap: [`out/rng_candidate.md`](rng_candidate.md); skrip reproduksi: [`tools/psx_rng_signature_scan.py`](../tools/psx_rng_signature_scan.py).
+
+**Status langkah:** Langkah 4 menemukan kandidat RNG dengan keyakinan tinggi menggunakan fallback statis lokal, tetapi pemetaan ke fungsi/domain gameplay menunggu xref Ghidra. Langkah 3 Ghidra masih parsial/belum selesai: pipeline sudah dibuat, tapi runner belum menerima input privat. Tidak ada emulator/input gameplay yang dijalankan.
