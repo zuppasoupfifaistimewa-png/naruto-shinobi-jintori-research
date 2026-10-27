@@ -1,3 +1,18 @@
+# Current checkpoint — static reverse-engineering audit, 27 October 2026
+
+**This dated section supersedes older “latest checkpoint” headings below.** It records documentation/static-analysis progress only; it does not resume the adaptive player.
+
+- Remote main before documentation updates: `62a4c114b7ac7a55ae9eb6d91bc4c9bfaef1c2ef`. Static Step 5 Actions run [#40449144521](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40449144521) succeeded on that source SHA. Main executable Ghidra/static DATA.BIN run [#40442572534](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40442572534) also succeeded.
+- Audit report for the requested **Steps 1–10**: [docs/REVERSE_ENGINEERING_AUDIT_STEPS_1_10_2026-10-27.md](docs/REVERSE_ENGINEERING_AUDIT_STEPS_1_10_2026-10-27.md).
+- Permanent Ghidra/m2c output for four same-address RNG callers: [out/step5/STEP5_GHIDRA_M2C_COMPARISON_2026-10-27.md](out/step5/STEP5_GHIDRA_M2C_COMPARISON_2026-10-27.md). Current logic index: [out/logic.md](out/logic.md).
+- Step status: 1 **SELESAI** (inventory based on prior extraction plus runner validation); 2 **SELESAI**; 3 **SELESAI**; 4 **SELESAI in main-EXE static scope**; 5 **SELESAI for four selected RNG callers**; 6 **SELESAI SEBAGIAN**; 7 **SELESAI SEBAGIAN**; 8 **SELESAI SEBAGIAN**; 9 **TERBLOKIR** (no validated isolated MIPS/Unicorn run); 10 **SELESAI SEBAGIAN**.
+- VERIFIED static RNG: LCG at 0x80035D78, state at 0x800A3118, four direct-JAL callers in the main EXE. Runtime seed/indirect callers unknown.
+- DATA.BIN entry 1 base 0x800D0000 and entry 0 base 0x800AD000 remain **hypotheses**, not runtime-confirmed. Threshold/target references and setter cross-references are static only; target/record field semantics and candidate delta fields +0xB30/+0xB38/+0xB40/+0xB44 remain unresolved. Do not call any delta a barrier cost or infer a universal Story Mode win rule.
+- GitHub Actions status queries returned zero in-progress and zero queued runs. No gameplay/player workflow was dispatched in this audit; no gameplay inputs, save-state restores or emulator runs were performed. The adaptive player remains paused; keep Revision65 marker, classifier/policy, readiness gate, and `barrier_level_selection = WAIT` unchanged. Story Mode completion is **not proved**.
+- ROM, BIOS, Memory Card, savestates and private gameplay screenshots remain outside Git. Ghidra/m2c artefacts archived in the new Step 5 report are text decompilation/analysis output only.
+
+---
+
 # Latest checkpoint — one-shot submenu diagnostic stopped before input (25 October 2026)
 
 - The one authorized diagnostic [#40144220503](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40144220503) failed during the first preflight capture. Checkpoint restore event passed, but capture failed with `sh: 1: xwd: not found`; no screenshot frames or F20 parity result exist.
