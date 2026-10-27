@@ -182,7 +182,7 @@ jobs:
                 local caller=(ra>=8) and (ra-8) or 0
                 log(string.format("STEP4_RNG_CALL mode=%s frame=%d seq=%d ra=0x%08X caller=0x%08X state_before=0x%s",mode,frame,calls,ra,caller,stateHex()))
                 logCallerWords(caller)
-                if frame>=170 and caller==0x80105F48 and not lateCaptureScheduled then
+                if frame>=160 and caller==0x80105F48 and not lateCaptureScheduled then
                   lateCaptureScheduled=true
                   log("STEP4_LATE_CALL_CAPTURE_TRIGGER mode="..mode.." frame="..frame.." caller=0x80105F48")
                   PCSX.nextTick(function() if finalCapture then finalCapture() end end)
@@ -217,16 +217,18 @@ jobs:
             finalCaptureStarted=true
             PCSX.pauseEmulator()
             log("STEP4_CAPTURE_READY mode="..mode.." frame="..frame)
-            PCSX.nextTick(function()
-              local path="captures/go-final-"..mode:lower()
-              local deadline=os.time()+15
-              while os.time()<deadline do local f=io.open(path,"r"); if f then f:close(); break end; os.execute("sleep 0.05") end
+            local path="captures/go-final-"..mode:lower()
+            local deadline=os.time()+15
+            while os.time()<deadline do
               local f=io.open(path,"r")
-              if not f then log("STEP4_CAPTURE_GATE_TIMEOUT mode="..mode); PCSX.quit(84); return end
-              f:close()
-              log("STEP4_BRANCH_FINISH mode="..mode.." frame="..frame.." rng_calls="..calls.." final_state=0x"..stateHex())
-              PCSX.quit(0)
-            end)
+              if f then f:close(); break end
+              os.execute("sleep 0.05")
+            end
+            local f=io.open(path,"r")
+            if not f then log("STEP4_CAPTURE_GATE_TIMEOUT mode="..mode); PCSX.quit(84); return end
+            f:close()
+            log("STEP4_BRANCH_FINISH mode="..mode.." frame="..frame.." rng_calls="..calls.." final_state=0x"..stateHex())
+            PCSX.quit(0)
           end
           PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
             if started then loaded=true; frame=0; calls=0; setters=0; log("STEP4_LOAD_EVENT=PASS mode="..mode.." initial_state=0x"..stateHex()) end
@@ -260,7 +262,7 @@ jobs:
             stdout="$WORK/captures/pcsx-$mode.stdout"
             log="$WORK/captures/pcsx-$mode.log"
             echo "STEP4_BRANCH_BEGIN=$mode"
-            STEP4_MODE="$mode" timeout --signal=TERM --kill-after=5s 85s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
+              STEP4_MODE="$mode" timeout --signal=TERM --kill-after=5s 45s stdbuf -oL -eL "$WORK/squashfs-root/AppRun" \
               -noupdate -debugger -interpreter -bios "$WORK/scph7502.bin" -iso "$WORK/game-run.cue" \
               -memcard1 "$WORK/cards/card-$mode.mcd" -exec "$PAD_SETUP" -dofile "$WORK/step4-rng-trace.lua" -softgpu -stdout -lua_stdout -logfile "$log" -run > "$stdout" 2>&1 &
             pid=$!
@@ -293,10 +295,10 @@ jobs:
                               digest=hashlib.sha256(im.convert("RGB").crop((105,22,1175,760)).tobytes()).hexdigest()
                               line="STEP4_CAPTURE_VALID mode={} frame={} width={} height={} bytes={} colors={} sha256={} valid={}".format(mode,frame,im.size[0],im.size[1],png.stat().st_size,len(cs) if cs is not None else "many",digest,valid)
                               print(line,flush=True)
-                              with (out/(mode+"-capture.txt")).open("a",encoding="utf-8") as meta: meta.write(line+"\\n")
+                              with (out/(mode+"-capture.txt")).open("a",encoding="utf-8") as meta: meta.write(line+"\n")
                               captured=True
                   if not captured: print("STEP4_CAPTURE_FAIL mode={} frame={}".format(mode,frame),flush=True)
-                  (out/("go-final-"+mode.lower())).write_text("captured\\n",encoding="utf-8")
+                  (out/("go-final-"+mode.lower())).write_text("captured\n",encoding="utf-8")
               time.sleep(0.05)
           print("STEP4_SCREEN_WATCHDOG_END mode={} captured={}".format(mode,captured),flush=True)
           PY
@@ -322,10 +324,10 @@ jobs:
           modes=("R30A","R30B","DELAY60"); data={}
           for mode in modes:
               p=root/("pcsx-"+mode+".stdout"); t=p.read_text(errors="replace") if p.exists() else ""
-              samples=re.findall(r"STEP4_RNG_STATE_SAMPLE mode=\\S+ frame=(\\d+) state=0x([0-9A-Fa-f]{8}) rng_calls=(\\d+)",t)
-              calls=re.findall(r"STEP4_RNG_CALL mode=\\S+ frame=(\\d+) seq=(\\d+) ra=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8}) state_before=0x([0-9A-Fa-f]{8})",t)
-              setters=re.findall(r"STEP4_SEED_SETTER mode=\\S+ frame=(\\d+) seq=(\\d+) a0=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8})",t)
-              frame_match=re.search(r"STEP4_CAPTURE_READY mode="+re.escape(mode)+r" frame=(\\d+)",t)
+              samples=re.findall(r"STEP4_RNG_STATE_SAMPLE mode=\S+ frame=(\d+) state=0x([0-9A-Fa-f]{8}) rng_calls=(\d+)",t)
+              calls=re.findall(r"STEP4_RNG_CALL mode=\S+ frame=(\d+) seq=(\d+) ra=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8}) state_before=0x([0-9A-Fa-f]{8})",t)
+              setters=re.findall(r"STEP4_SEED_SETTER mode=\S+ frame=(\d+) seq=(\d+) a0=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8})",t)
+              frame_match=re.search(r"STEP4_CAPTURE_READY mode="+re.escape(mode)+r" frame=(\d+)",t)
               capture_frame=int(frame_match.group(1)) if frame_match else None
               png=root/(mode+"-F"+str(capture_frame)+".png") if capture_frame is not None else root/"missing.png"
               try:
@@ -337,7 +339,7 @@ jobs:
               except Exception:
                   cap=None; capture_valid=False
               loaded="STEP4_LOAD_EVENT=PASS mode="+mode in t
-              finish=bool(capture_frame is not None and re.search(r"STEP4_BRANCH_FINISH mode="+re.escape(mode)+r" frame="+str(capture_frame)+r"\\b",t))
+              finish=bool(capture_frame is not None and re.search(r"STEP4_BRANCH_FINISH mode="+re.escape(mode)+r" frame="+str(capture_frame)+r"\b",t))
               state_samples=[(int(f),v.lower(),int(n)) for f,v,n in samples]
               parsed_calls=[(int(f),c.lower(),s.lower()) for f,_,_,c,s in calls]
               data[mode]={"t":t,"samples":state_samples,"calls":parsed_calls,"framefree":[(c,s) for _,c,s in parsed_calls],"setters":setters,"cap":cap,"capture_valid":capture_valid,"capture_frame":capture_frame,"loaded":loaded,"finish":finish}
@@ -389,8 +391,8 @@ jobs:
            "- Alternative RNG/non-function randomness: UNKNOWN beyond the explicit raw signature scans; other algorithms, tables, frame-derived values and code decoded at runtime remain possible.",
            "- STEP 4 OVERALL: SEBAGIAN; criteria requiring seed lifecycle, battle correlation and alternative-randomness coverage remain open.",
            ""])
-          (root/"step4-runtime-outcome.txt").write_text("\\n".join(out),encoding="utf-8")
-          print("\\n".join(out))
+          (root/"step4-runtime-outcome.txt").write_text("\n".join(out),encoding="utf-8")
+          print("\n".join(out))
           PY
           cp "$WORK/captures/step4-runtime-outcome.txt" "$WORK/captures/STEP4_RNG_RUNTIME_RESULT.md"
           if [ "$failures" -ne 0 ]; then echo "STEP4_RUNTIME_INFRA_STATUS=FAIL failed_checks=$failures"; exit 44; fi
