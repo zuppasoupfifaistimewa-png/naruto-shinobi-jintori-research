@@ -117,7 +117,7 @@ public class ExportTargetCallers extends GhidraScript {
             }
 
             line("");
-            line("=== GHI DRA_VALIDATED_DIRECT_CALLS ===".replace("GHI DRA","GHIDRA"));
+            line("=== GHIDRA_VALIDATED_DIRECT_CALLS ===");
             for(Hit hit:validatedHits) {
                 line("target="+hit.target+" site="+hit.site+" instruction="+hit.instruction);
                 if(hit.function==null) line("caller_function=UNMAPPED");
