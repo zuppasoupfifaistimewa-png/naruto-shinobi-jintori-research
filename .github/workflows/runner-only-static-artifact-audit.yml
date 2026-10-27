@@ -187,6 +187,19 @@ jobs:
                   decomp_rows.append(f"{i+1}: {body_lines[i]}")
               decomp_rows.append(f"decompile_source_lines={len(body_lines)} matched_lines={len(hits)}")
           emit("Step 6 field-access containing-function decompilation (targeted)",decomp_rows,220)
+          # Full bounded text for the exact functions containing direct B30/B38/B40 and B44 hits.
+          exact_rows=[]
+          wanted_entries={"8012c544","8012cacc"}
+          for match in re.finditer(decomp_pattern,scan,re.S):
+              entry,body,end_entry=match.groups()
+              if entry.lower() not in wanted_entries:
+                  continue
+              body_lines=body.splitlines()
+              exact_rows.append(f"function_entry={entry} matching_end={end_entry} full_decompile_lines={len(body_lines)}")
+              exact_rows.extend(f"{i+1}: {line}" for i,line in enumerate(body_lines))
+          if not exact_rows:
+              exact_rows.append("NO_EXACT_FIELD_ACCESS_FUNCTION_DECOMPILATION_FOUND")
+          emit("Step 6 full decompilation of functions containing +0xB30/+0xB38/+0xB40/+0xB44 hits",exact_rows,900)
           # Inspect the helper-return run that failed; its headless log is inside the text-only artifact.
           h=inputs["helper"]
           rows=[]
