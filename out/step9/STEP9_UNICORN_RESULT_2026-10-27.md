@@ -4,7 +4,7 @@ Artifact [#12740305973](https://github.com/zuppasoupfifaistimewa-png/naruto-shin
 
 **Important metadata caveat:** when checked at 21:00 WIB, the GitHub API still reported the run and job as `queued` despite the artifact already being present and containing actual output for all tests. Therefore this report treats the test output as verified from the artifact contents but does **not** infer a run-level conclusion or claim cleanup success from the stale API status. Recheck the run/job metadata later before marking the whole Actions workflow completed. This inconsistency does not alter the test assertions visible in the artifact.
 
-### Updated workflow/cleanup status — 27 Oktober 2026, 21:02 WIB
+### Final workflow/cleanup status — 27 Oktober 2026, 21:02 WIB
 
 A subsequent read of the GitHub job summary and decoded job log for [#40516755810](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40516755810), job `122232466902`, shows all 11 job steps completed with `success`, including “Remove all private runner files”. The raw job log contains `STEP9_PRIVATE_CLEANUP=PASS`. So the earlier 21:00 observation (run/job API showing queued) is stale/inconsistent; the latest API now shows the aggregate run `in_progress` while the job steps and output artifact already show completion. Cleanup is confirmed by the job log. Do not describe the aggregate run as `completed/success` until that final API field updates.
 
