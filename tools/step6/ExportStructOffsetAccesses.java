@@ -10,6 +10,7 @@ import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.InstructionIterator;
 import ghidra.program.model.scalar.Scalar;
 import ghidra.program.model.symbol.Reference;
+import ghidra.program.model.symbol.ReferenceIterator;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -94,7 +95,7 @@ public class ExportStructOffsetAccesses extends GhidraScript {
         line("  references_from_instruction=" + refTargets(ins.getAddress()));
     }
 
-    private void dumpContextAndFunction(Instruction ins, Function f) {
+    private void dumpContextAndFunction(Instruction ins, Function f, long target) {
         Instruction first = ins;
         for (int i = 0; i < 8 && first.getPrevious() != null; i++) first = first.getPrevious();
         line("=== MEMORY_ACCESS_CONTEXT_BEGIN address=" + ins.getAddress() + " ===");
@@ -123,6 +124,46 @@ public class ExportStructOffsetAccesses extends GhidraScript {
             line("decompile_message=" + (result == null ? "null result" : result.getErrorMessage()));
         }
         line("=== FIELD_ACCESS_FUNCTION_DECOMPILATION_END entry=" + entry + " ===");
+        if (target == 0xB30L || target == 0xB38L || target == 0xB40L || target == 0xB44L) {
+            dumpIncomingFunctionReferences(f);
+        }
+    }
+
+    private void dumpIncomingFunctionReferences(Function f) {
+        line("=== FUNCTION_ENTRY_REFERENCES_BEGIN entry=" + f.getEntryPoint() + " name=" + f.getName() + " ===");
+        ReferenceIterator refs = currentProgram.getReferenceManager().getReferencesTo(f.getEntryPoint());
+        int total = 0;
+        int emittedRefs = 0;
+        final int maxRefs = 50;
+        while (refs.hasNext()) {
+            Reference ref = refs.next();
+            total++;
+            if (emittedRefs >= maxRefs) continue;
+            emittedRefs++;
+            Address from = ref.getFromAddress();
+            Instruction ins = currentProgram.getListing().getInstructionAt(from);
+            Function owner = getFunctionContaining(from);
+            line("INCOMING_REF from=" + from + " type=" + ref.getReferenceType()
+                + " source=" + ref.getSource() + " operand=" + ref.getOperandIndex()
+                + " caller_entry=" + (owner == null ? "NONE" : owner.getEntryPoint())
+                + " caller_name=" + (owner == null ? "NONE" : owner.getName()));
+            if (ins == null) {
+                line("  callsite_instruction=NOT_DECODED");
+                continue;
+            }
+            Instruction first = ins;
+            for (int i = 0; i < 4 && first.getPrevious() != null; i++) first = first.getPrevious();
+            line("  CALLSITE_CONTEXT_BEGIN");
+            Instruction current = first;
+            for (int i = 0; current != null && i < 9; i++, current = current.getNext()) {
+                line("    " + current.getAddress() + " bytes=[" + bytes(current) + "] "
+                    + current.getMnemonicString() + " " + current.toString());
+            }
+            line("  CALLSITE_CONTEXT_END");
+        }
+        line("incoming_function_reference_count=" + total
+            + (total > maxRefs ? " emitted=" + maxRefs + " cap_reached=yes" : " emitted=" + emittedRefs));
+        line("=== FUNCTION_ENTRY_REFERENCES_END ===");
     }
 
     private void dumpMemoryMatch(Instruction ins, long target, long displacement, long count) {
@@ -138,7 +179,7 @@ public class ExportStructOffsetAccesses extends GhidraScript {
         line("  parsed_memory_displacement=" + hex(displacement) + " access_class=LOAD_STORE_OPCODE_CANDIDATE");
         line("  function=" + (f == null ? "NONE_OR_UNMAPPED" : f.getName()) + " function_entry=" + (f == null ? "NONE" : f.getEntryPoint()));
         line("  references_from_instruction=" + refTargets(ins.getAddress()));
-        dumpContextAndFunction(ins, f);
+        dumpContextAndFunction(ins, f, target);
     }
 
     @Override
