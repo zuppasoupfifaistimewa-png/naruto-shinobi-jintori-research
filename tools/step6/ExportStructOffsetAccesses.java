@@ -191,9 +191,125 @@ public class ExportStructOffsetAccesses extends GhidraScript {
         line("=== FUNCTION_ENTRY_REFERENCES_END ===");
     }
 
+    private long parseImmediateValue(String text) {
+        String value = text.trim().toLowerCase();
+        boolean negative = value.startsWith("-");
+        if (negative) value = value.substring(1);
+        long parsed;
+        if (value.startsWith("0x")) parsed = Long.parseLong(value.substring(2), 16);
+        else parsed = Long.parseLong(value);
+        return negative ? -parsed : parsed;
+    }
+
+    private long signExtend16(long value) {
+        long low = value & 0xFFFFL;
+        return (low & 0x8000L) != 0 ? low - 0x10000L : low;
+    }
+
+    private long u32(long value) { return value & 0xFFFFFFFFL; }
+
+    private String constantValue(long value) {
+        return "CONST:0x" + String.format("%08X", u32(value));
+    }
+
+    private Long asConstant(String value) {
+        if (value == null || !value.startsWith("CONST:0x")) return null;
+        try { return Long.parseLong(value.substring(8), 16) & 0xFFFFFFFFL; }
+        catch (NumberFormatException e) { return null; }
+    }
+
+    private String resolveRegisterBefore(Instruction before, Function f, String register,
+            int depth, Set<String> seen) {
+        String reg = register.trim().toLowerCase();
+        if (reg.equals("zero")) return constantValue(0);
+        if (depth <= 0) return "DEPTH_LIMIT(" + reg + ")";
+        if (!REGISTER_TOKEN.matcher(reg).matches()) return "NON_REGISTER(" + reg + ")";
+        String key = (before == null ? "START" : before.getAddress().toString()) + ":" + reg;
+        if (!seen.add(key)) return "TRACE_CYCLE(" + reg + ")";
+        Instruction cursor = before == null ? null : before.getPrevious();
+        for (int i = 0; cursor != null && i < 40; i++, cursor = cursor.getPrevious()) {
+            Function owner = getFunctionContaining(cursor.getAddress());
+            if (f != null && (owner == null || !owner.getEntryPoint().equals(f.getEntryPoint())))
+                return "FUNCTION_BOUNDARY(" + reg + ")";
+            String text = cursor.toString().trim();
+            String[] pieces = text.split("\\s+", 2);
+            if (pieces.length < 2) continue;
+            String mnemonic = normalizeMnemonic(pieces[0]);
+            if (mnemonic.startsWith("b") || mnemonic.equals("j") || mnemonic.equals("jal")
+                    || mnemonic.equals("jalr") || mnemonic.equals("jr"))
+                return "CONTROL_FLOW_BOUNDARY(" + reg + " before " + cursor.getAddress() + ")";
+            if (isStoreMnemonic(mnemonic)) continue;
+            Matcher dest = DESTINATION_REGISTER.matcher(text);
+            if (!dest.find() || !dest.group(1).equalsIgnoreCase(reg)) continue;
+            String[] operands = pieces[1].split(",");
+            for (int k = 0; k < operands.length; k++) operands[k] = operands[k].trim();
+            try {
+                if (mnemonic.equals("lui") && operands.length >= 2)
+                    return constantValue((parseImmediateValue(operands[1]) & 0xFFFFL) << 16);
+                if (mnemonic.equals("move") && operands.length >= 2)
+                    return resolveRegisterBefore(cursor, f, operands[1], depth - 1, seen);
+                if ((mnemonic.equals("ori") || mnemonic.equals("xori") || mnemonic.equals("andi"))
+                        && operands.length >= 3) {
+                    String base = resolveRegisterBefore(cursor, f, operands[1], depth - 1, seen);
+                    Long bv = asConstant(base);
+                    long imm = parseImmediateValue(operands[2]) & 0xFFFFL;
+                    if (bv != null) {
+                        if (mnemonic.equals("ori")) return constantValue(bv | imm);
+                        if (mnemonic.equals("xori")) return constantValue(bv ^ imm);
+                        return constantValue(bv & imm);
+                    }
+                    return mnemonic.toUpperCase() + "(" + base + "," + String.format("0x%X", imm) + ")";
+                }
+                if ((mnemonic.equals("addiu") || mnemonic.equals("addi")) && operands.length >= 3) {
+                    String base = resolveRegisterBefore(cursor, f, operands[1], depth - 1, seen);
+                    long imm = signExtend16(parseImmediateValue(operands[2]));
+                    Long bv = asConstant(base);
+                    if (bv != null) return constantValue(bv + imm);
+                    return mnemonic.toUpperCase() + "(" + base + "," + imm + ")";
+                }
+                if ((mnemonic.equals("addu") || mnemonic.equals("add") || mnemonic.equals("subu")
+                        || mnemonic.equals("sub") || mnemonic.equals("or") || mnemonic.equals("xor")
+                        || mnemonic.equals("and")) && operands.length >= 3) {
+                    String left = resolveRegisterBefore(cursor, f, operands[1], depth - 1, seen);
+                    String right = resolveRegisterBefore(cursor, f, operands[2], depth - 1, seen);
+                    Long lv = asConstant(left), rv = asConstant(right);
+                    if (lv != null && rv != null) {
+                        if (mnemonic.equals("subu") || mnemonic.equals("sub")) return constantValue(lv - rv);
+                        if (mnemonic.equals("or")) return constantValue(lv | rv);
+                        if (mnemonic.equals("xor")) return constantValue(lv ^ rv);
+                        if (mnemonic.equals("and")) return constantValue(lv & rv);
+                        return constantValue(lv + rv);
+                    }
+                    return mnemonic.toUpperCase() + "(" + left + "," + right + ")";
+                }
+                if (mnemonic.equals("sll") && operands.length >= 3) {
+                    String source = resolveRegisterBefore(cursor, f, operands[1], depth - 1, seen);
+                    long shift = parseImmediateValue(operands[2]) & 31L;
+                    Long sv = asConstant(source);
+                    if (sv != null) return constantValue(sv << shift);
+                    return "SLL(" + source + "," + shift + ")";
+                }
+                if (isLoadMnemonic(mnemonic)) {
+                    Matcher mem = MEMORY_DISPLACEMENT.matcher(text);
+                    if (mem.find()) {
+                        String base = resolveRegisterBefore(cursor, f, mem.group(3), depth - 1, seen);
+                        return "LOAD[" + base + "+" + mem.group(2) + "]";
+                    }
+                }
+                return "DEFINED_AT(" + cursor.getAddress() + ":" + text + ")";
+            } catch (RuntimeException parseError) {
+                return "UNRESOLVED_DEF(" + cursor.getAddress() + ":" + text + ")";
+            }
+        }
+        return "ARG_OR_UNKNOWN(" + reg + ";linear_scan_limit=40)";
+    }
+
     private void dumpBaseRegisterDefinitionTrace(Instruction ins, String initialRegister) {
         line("=== BASE_REGISTER_TRACE_BEGIN access=" + ins.getAddress() + " initial=" + initialRegister + " ===");
         Function accessFunction = getFunctionContaining(ins.getAddress());
+        String provenance = resolveRegisterBefore(ins, accessFunction, initialRegister, 10, new HashSet<String>());
+        line("  register_value_provenance=" + provenance);
+        line("  register_value_provenance_scope=bounded backward linear trace; constants only where provable; not a CFG/alias proof");
         String currentRegister = initialRegister.trim();
         int definitions = 0;
         for (int link = 0; link < 6 && REGISTER_TOKEN.matcher(currentRegister).matches(); link++) {
@@ -294,6 +410,13 @@ public class ExportStructOffsetAccesses extends GhidraScript {
             if (!fixture.find() || Long.decode(fixture.group(2)) != 0x2E9L)
                 throw new IllegalStateException("memory displacement parser regression: known sb v0,0x2e9(v1) must parse");
             line("memory_displacement_parser_fixture=PASS sample=sb_v0,0x2e9(v1)");
+            if (parseImmediateValue("0x800D") != 0x800DL
+                    || u32((parseImmediateValue("0x800D") & 0xFFFFL) << 16) != 0x800D0000L
+                    || u32(0x800D0000L | (parseImmediateValue("0xB30") & 0xFFFFL)) != 0x800D0B30L
+                    || u32(0x800D0000L + signExtend16(parseImmediateValue("0xFFFC"))) != 0x800CFFFCL
+                    || signExtend16(parseImmediateValue("-0x3C")) != -0x3CL)
+                throw new IllegalStateException("register provenance address-construction fixture failed");
+            line("register_provenance_address_constructor_fixtures=PASS cases=lui_ori_addiu_sign-extension");
 
             InstructionIterator it = currentProgram.getListing().getInstructions(true);
             long instructions = 0, inEntry = 0;
