@@ -2,7 +2,7 @@
 
 ## Keputusan status
 
-**Langkah 4 SELESAI dalam cakupan inventaris statis yang didefinisikan, setelah run Ghidra #40455975408 sukses dan artefaknya diperiksa.** Run final memperjelas bahwa tidak semua raw JAL di resource diterima Ghidra sebagai decoded direct call: entry 0 3/5, entry 1 108/144. Hit raw sisanya tetap dicatat dan dibatasi sebagai UNKNOWN untuk validasi Ghidra, walau 36 hit entry 1 sebelumnya terdekode melalui pass disassembly lokal. Ini adalah penutupan cakupan statis yang terdefinisi, bukan klaim bahwa semua pemanggilan RNG saat runtime telah diketahui.
+**Status Langkah 4 secara keseluruhan: SEBAGIAN** menurut matriks resmi (4a–4e). Subbagian inventaris statis dan scan pola sempit telah dituntaskan dalam batas alat yang terdokumentasi melalui run Ghidra #40455975408 dan artefak terkait. Run final memperjelas bahwa tidak semua raw JAL di resource diterima Ghidra sebagai decoded direct call: entry 0 3/5, entry 1 108/144; 36 kandidat entry 1 lain terdekode sebagai JAL pada pass disassembly lokal, tetapi boundary caller masih UNKNOWN. Hasil statis tersebut menutup inventaris terbatas, bukan seed/lifecycle runtime, determinisme hasil roulette secara kausal, caller battle, indirect/dispatch menyeluruh, atau randomness alternatif. Karena itu status keseluruhan tetap SEBAGIAN.
 
 Tidak ada emulator/gameplay, input, pemulihan savestate, atau eksekusi fungsi game pada pekerjaan ini. Biner disc diambil/diperiksa hanya pada runner; tidak dimasukkan ke Git atau artefak.
 
@@ -19,8 +19,8 @@ Tidak ada emulator/gameplay, input, pemulihan savestate, atau eksekusi fungsi ga
 
 | Pertanyaan | Hasil akhir |
 |---|---|
-| Algoritme RNG utama dan global state | **VERIFIED statis** |
-| Semua direct-JAL hit mentah yang terdeteksi pada berkas yang diidentifikasi | **SELESAI dipetakan/diperiksa dalam batas scan; status decoding per-callsite dibedakan** |
+| Algoritme RNG utama dan global state | **VERIFIED statis; hanya subkriteria** |
+| Inventaris direct-JAL dan scan signature/pointer sempit | **TUNTAS hanya dalam cakupan scan yang dinyatakan; tidak menutup 4(a–e)** |
 | Raw direct-JAL candidate pada 144 lokasi entry 1 | **VERIFIED sebagai kata mentah; 108 tervalidasi Ghidra, 36 raw-only pada Ghidra** |
 | Base RAM dan lifecycle entry 0/1 saat runtime | **UNKNOWN** |
 | Reachability entry 0 di `0x800BB748` | **UNKNOWN** |
@@ -32,7 +32,7 @@ Tidak ada emulator/gameplay, input, pemulihan savestate, atau eksekusi fungsi ga
 
 ## Mengapa ini merupakan penutupan yang jujur
 
-Tidak ada hasil statis yang dapat membuktikan absennya semua caller tidak langsung atau semua kode yang baru didekode pada runtime hanya dari pencarian byte mentah. Karena itu, pekerjaan yang dapat direproduksi—identifikasi LCG, semua direct-JAL hit yang ditemukan, pemeriksaan Ghidra untuk 144 entry 1 dan empat entry 0, signature scan lintas berkas, serta pola pointer sempit—ditutup sebagai selesai. Item UNKNOWN di atas bukan pekerjaan yang boleh ditandai VERIFIED tanpa bukti loader/xref tambahan atau pengamatan runtime yang terotorisasi.
+Tidak ada hasil statis yang dapat membuktikan absennya semua caller tidak langsung atau semua kode yang baru didekode pada runtime hanya dari pencarian byte mentah. Inventaris JAL/signature/pointer yang didefinisikan telah selesai dijalankan dan dilaporkan; **Langkah 4 keseluruhan tetap SEBAGIAN** sampai kriteria 4(a–e) tercakup. Item UNKNOWN di atas bukan pekerjaan yang boleh ditandai VERIFIED tanpa bukti loader/xref tambahan atau pengamatan runtime yang terotorisasi.
 
 ## Referensi
 
