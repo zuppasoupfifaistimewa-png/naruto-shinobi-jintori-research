@@ -78,3 +78,12 @@ Scan byte mentah lintas executable dan resource selesai pada GitHub Actions [run
 Temuan scan: 4 hit JAL RNG pada SLPS_035.53 yang cocok dengan empat call site Ghidra yang diketahui; 148 hit kata JAL yang mengarah ke RNG pada DATA.BIN; satu hit kata JAL menuju kandidat seed setter 0x80035DA8 pada DATA.BIN entry 0. Dari 148 kandidat RNG DATA.BIN, empat berada di entry 0 dan 144 di entry 1. Base resource 0x800AD000 dan 0x800D0000 masih hipotesis.
 
 **Penting:** hit byte mentah bukan caller tervalidasi. Ghidra sedang dijalankan pada entry 0/1 untuk membandingkan pola mentah dengan direct flow yang benar-benar didekode dan memeriksa pemanggil kandidat seed setter. Sampai laporan itu tersedia, inventaris seluruh resource tetap **SELESAI SEBAGIAN**. Tidak ada emulator/gameplay atau pemulihan savestate.
+
+
+## Pembaruan Langkah 4 — caller lintas resource (27 Oktober 2026)
+
+Workflow scan mentah [#40454059515](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40454059515) menemukan 148 kecocokan kata JAL pada DATA.BIN; hasil Ghidra pada entry 1 kemudian mengonfirmasi **108 direct-call flow** dalam address map kandidat, terdiri dari 50 fungsi pemanggil berbatas fungsi dan satu call site tanpa batas fungsi. Daftar lengkap: [out/rng_resource_entry1_ghidra_callers_2026-10-27.md](rng_resource_entry1_ghidra_callers_2026-10-27.md).
+
+Kandidat seed setter di DATA.BIN entry 0 pada alamat hipotetis `0x800AF2AC` telah didekode sebagai `jal 0x80035DA8`; nilai `$a0) sebelumnya adalah -1, sehingga jalur itu mengatur state ke `0xFFFFFFFF` jika dijalankan. Bukti ini tetap bersyarat pada base/lifecycle entry 0 yang belum divalidasi runtime.
+
+**Status:** RNG dan empat caller main EXE pasti; entry 1 punya 108 call-flow Ghidra-terkonfirmasi; 36 raw candidate entry 1 dan tiga candidate entry 0 tetap UNKNOWN. Seed value di jalur resource diketahui secara statis, tetapi seed runtime pertama yang benar-benar digunakan belum dibuktikan. Tidak ada emulator/gameplay/savestate yang dijalankan.
