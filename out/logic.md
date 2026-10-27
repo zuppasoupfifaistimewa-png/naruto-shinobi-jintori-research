@@ -130,3 +130,6 @@ Analisis statis lokal yang dapat direproduksi menemukan pola LCG eksak di `0x800
 Direct-JAL callers yang ditemukan di text utama: `0x80015B14`, `0x80015BF0`, `0x8001A460`, `0x80020C24`. Belum diketahui pemanggil via pointer/overlay, seed awal, atau fungsi gameplay tiap caller. Laporan lengkap: [`out/rng_candidate.md`](rng_candidate.md); skrip reproduksi: [`tools/psx_rng_signature_scan.py`](../tools/psx_rng_signature_scan.py).
 
 **Status langkah:** Langkah 4 menemukan kandidat RNG dengan keyakinan tinggi menggunakan fallback statis lokal, tetapi pemetaan ke fungsi/domain gameplay menunggu xref Ghidra. Langkah 3 Ghidra masih parsial/belum selesai: pipeline sudah dibuat, tapi runner belum menerima input privat. Tidak ada emulator/input gameplay yang dijalankan.
+
+
+Penyelarasan pipeline setelah temuan Langkah 4: workflow [`ghidra-static-analyze-psx-exe.yml`](../.github/workflows/ghidra-static-analyze-psx-exe.yml) sekarang juga menjalankan `tools/psx_rng_signature_scan.py` terhadap executable yang sama setelah validasi hash. Jika handoff privat selesai, satu run akan menghasilkan daftar fungsi Ghidra dan laporan signature/caller RNG dalam satu artefak teks.
