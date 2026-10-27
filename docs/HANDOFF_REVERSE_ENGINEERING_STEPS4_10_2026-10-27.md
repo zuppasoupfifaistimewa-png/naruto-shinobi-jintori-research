@@ -3,9 +3,9 @@
 Pembaruan: 27 Oktober 2026, setelah parser Step 7 diperbaiki, hasil single-breakpoint diperiksa dari raw log, dan tracing statis Step 6/8 ditambahkan.
 Repo yang diizinkan: `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research` saja. Jangan akses atau ubah repo lain.
 
-## Checkpoint dan run aktif
+## Checkpoint dan status Actions
 
-Main HEAD terakhir yang diperiksa sebelum pembaruan handoff ini: `7bdf61a9c9091bd2f239abf716c8461cb049f860`. Pembaruan handoff ini memajukan HEAD; ambil ulang SHA main ketika chat berikutnya dimulai. Konektor tidak memaparkan local working tree sehingga jangan menyebutnya bersih atau kotor.
+Main HEAD terakhir yang diperiksa sebelum sinkronisasi akhir handoff ini: `eef8d2d2852b00008fe3860aaa425305ce115093`. Pembaruan handoff ini memajukan HEAD; ambil ulang SHA main ketika chat berikutnya dimulai. Konektor tidak memaparkan local working tree sehingga jangan menyebutnya bersih atau kotor.
 
 - **Run koreksi terakhir:** [Step 7 cold-boot #40484548650](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40484548650), source SHA `8326c07f71caeab12924133b0812ec7e86b8b1f7`, selesai `success` pada 2026-10-27 10:00:47 UTC (17:00:47 WIB), durasi sekitar 291 detik. Artefak teks-only #12724961702, 3.960 byte, ZIP SHA-256 `27376e9b78eca7e686843034d8d6e44587e1e2969bf6fcc93dc98d3c6cc0bc71`, expires 2026-11-10. Report/ raw log menyatakan preflight frame 50, control listener-only max frame 60, target one-breakpoint `0x800AD454` progress sampai frame 120 tanpa hit (`SINGLE_BREAKPOINT_HIT=NO`, count 0), exit 124 pada batas 35 detik, dan `STEP7_PRIVATE_CLEANUP=PASS`. Semua job steps lulus. Tidak ada hit atau sampel register/source/destination/size/checksum buffer, jadi ini tidak menetapkan loader/base runtime.
 - Run awal [#40484519812](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40484519812) pada SHA `9edbcb3063a41588ca739e644b9dc9b29c585b3f` menjalankan eksperimen tetapi report assembler gagal (`SyntaxError: '[' was never closed`). Raw log tetap membuktikan checksum disc/CUE/BIOS/emulator lulus, cold boot mencapai frame 100 tanpa hit, timeout 124 dan cleanup PASS. Artefak #12723834084 hanya 1.894 byte dengan ZIP SHA-256 `6188c32e73a0984133c5c1f4ac3a37dcacde677458ec56c7fdf100ba25c73968`; jangan jadikan ringkasan runtime final.
@@ -27,7 +27,7 @@ Main HEAD terakhir yang diperiksa sebelum pembaruan handoff ini: `7bdf61a9c9091b
 ## Aksi berikutnya
 
 1. Run #40484548650 sudah selesai dan raw log/artefak/metadata/cleanup diperiksa. Jangan mulai eksperimen runtime lain hanya untuk mengulang hasil no-hit.
-2. Sinkronkan laporan Step 7, laporan penutupan, STATUS.md, ANALYSIS_LOG.md, out/logic.md dan handoff dengan outcome yang benar-benar teramati. Verifikasi main HEAD live di akhir.
+2. Perubahan laporan Step 7, laporan penutupan, audit utama, STATUS.md, ANALYSIS_LOG.md, out/logic.md dan handoff sudah disinkronkan dengan outcome teramati. Untuk perubahan selanjutnya, sinkronkan kembali status pada seluruh indeks dan verifikasi main HEAD live di akhir.
 3. Lanjutkan instruction-level tracing hanya saat raw disassembly atau sumber yang sesuai tersedia: operand → branch → store → caller/callee → writer final untuk +0xB30/+0xB38/+0xB40/+0xB44, +0x2E9/+0x2E5 dan control flow 0x800EF98C/0x80100D14/0x80100DCC. Jangan menamai mekanik berdasarkan konstanta/offset.
 4. Jangan menjalankan pemain adaptif atau Story Mode otomatis; jangan mengubah classifier/policy/Revision65/readiness gate; jangan memberi input gameplay atau memulihkan savestate. ROM/disc, BIOS, Memory Card, savestate, RAM dump dan screenshot privat tetap di luar Git.
 5. Story Mode tetap **TIDAK TERBUKTI TAMAT** sampai bukti ending autentik diverifikasi.
