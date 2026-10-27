@@ -122,7 +122,7 @@ jobs:
           mkdir -p "$project" "$out"
           headless="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
           [[ -n "$headless" && -x "$headless" ]]
-          "$headless" "$project" Naruto_seed_helper_audit             -import "$exe"             -loader BinaryLoader -loader-baseAddr 0x80010000 -loader-fileOffset 0x800             -loader-length 0x5D800 -loader-blockName MAIN_TEXT             -processor "MIPS:LE:32:default"             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra"             -preScript PreparePsxExe.java             -postScript ExportFunctionDetail.java "$out/seed-helper-detail.txt" 0x80037138 0x80035DA8 0x80037B58 0x80037BB0 0x8003755C 0x800373F8             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject             > "$out/ghidra-headless.log" 2>&1
+          "$headless" "$project" Naruto_seed_helper_audit             -import "$exe"             -loader BinaryLoader -loader-baseAddr 0x80010000 -loader-fileOffset 0x800             -loader-length 0x5D800 -loader-blockName MAIN_TEXT             -processor "MIPS:LE:32:default"             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra"             -preScript PreparePsxExe.java             -postScript ExportFunctionDetail.java "$out/seed-helper-detail.txt" 0x80037138 0x80035DA8 0x80037B58 0x80037BB0 0x8003755C 0x800373F8 0x800373C8 0x80037C48             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject             > "$out/ghidra-headless.log" 2>&1
           grep -Eiq "^=== TARGET (0x)?80037138 ===$" "$out/seed-helper-detail.txt"
           grep -Eiq "^=== TARGET (0x)?80035DA8 ===$" "$out/seed-helper-detail.txt"
           echo "helper_function_and_setter_detail=PASS"
