@@ -209,7 +209,7 @@ jobs:
             echo "loaded_length=0x5D800"
             echo "load_address=0x80010000"
             echo "entry_point=0x80011448"
-            echo "output=functions.tsv (text only)"
+            echo "output=functions.tsv and rng-caller-analysis.txt (text only)"
           } > "$out/analysis-config.txt"
           set +e
           "$headless" "$project" Naruto_SLPS_035_53 \
@@ -223,6 +223,7 @@ jobs:
             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
             -preScript PreparePsxExe.java \
             -postScript ExportFunctionIndex.java "$out/functions.tsv" \
+            -postScript ExportRngCallerAnalysis.java "$out/rng-caller-analysis.txt" \
             -analysisTimeoutPerFile 1800 \
             -max-cpu 2 \
             -deleteProject > "$out/ghidra-headless.log" 2>&1
@@ -242,6 +243,11 @@ jobs:
             echo "::error::Ghidra returned without a non-empty function index."
             exit 1
           fi
+          if [[ ! -s "$out/rng-caller-analysis.txt" ]]; then
+            echo "status=FAILED: targeted RNG caller analysis output is missing or empty" > "$out/analysis-result.txt"
+            echo "::error::Ghidra targeted RNG caller analysis output is missing or empty."
+            exit 1
+          fi
           count="$(awk 'END { if (NR > 1) print NR - 1; else print 0 }' "$out/functions.tsv")"
           {
             echo "status=SUCCESS"
@@ -250,7 +256,8 @@ jobs:
             echo "executable_sha256=$EXPECTED_EXE_SHA256"
             echo "executable_bytes=$EXPECTED_EXE_BYTES"
             echo "function_rows=$count"
-            echo "result=function index exported; interpretation and gameplay function mapping remain pending"
+            echo "result=function index and targeted RNG caller analysis exported"
+            echo "caller_function_mapping=initial labels only; semantic interpretation pending"
             echo "emulator_or_gameplay_executed=no"
             echo "binary_uploaded_as_artifact=no"
           } > "$out/analysis-result.txt"
