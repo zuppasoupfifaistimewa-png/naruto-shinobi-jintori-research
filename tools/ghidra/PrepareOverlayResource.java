@@ -8,7 +8,12 @@ import ghidra.program.model.listing.Instruction;
 public class PrepareOverlayResource extends GhidraScript {
     private static final long[] CANDIDATES = {
         0x80111228L, 0x801112CCL, 0x801113B4L,
-        0x801114F0L, 0x80111588L, 0x80112418L
+        0x801114F0L, 0x80111588L, 0x80112418L,
+        0x8012A9C4L, 0x80137AD8L, 0x800EF98CL,
+        0x80100D14L, 0x80100DCCL, 0x8011253CL,
+        0x800D5608L, 0x800E1188L, 0x800D8918L,
+        0x8011C0D0L, 0x8010478CL, 0x80101814L,
+        0x80111198L, 0x8012AAFCL
     };
 
     @Override

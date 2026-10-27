@@ -92,11 +92,27 @@ public class ExportOverlaySurvey extends GhidraScript {
                 throw new IllegalStateException("Decompiler could not open overlay resource.");
             long[] candidates = {0x80111228L,0x801112CCL,0x801113B4L,0x801114F0L,0x80111588L,0x80112418L};
             for (long address : candidates) dumpTarget(decompiler, address);
+
+            // Step 6: trace target-check callers, transition routines and Chakra mutation callers.
+            long[] followups = {
+                0x8012A9C4L, 0x80137AD8L, 0x800EF98CL,
+                0x80100D14L, 0x80100DCCL, 0x8011253CL,
+                0x800D5608L, 0x800E1188L, 0x800D8918L,
+                0x8011C0D0L, 0x8010478CL, 0x80101814L,
+                0x80111198L, 0x8012AAFCL, 0x800BDBFCL
+            };
+            for (long address : followups) dumpTarget(decompiler, address);
+
             dumpRefs(0x80012A44L, "main_chakra_initial_getter");
             dumpRefs(0x80012A70L, "main_chakra_target_getter");
             dumpRefs(0x8001387CL, "main_chakra_setter");
             dumpRefs(0x800138ECL, "main_player_chakra_getter");
             dumpRefs(0x80070C80L, "main_initial_chakra_global");
+            dumpRefs(0x800EF98CL, "transition_FUN_800EF98C");
+            dumpRefs(0x80100D14L, "transition_FUN_80100D14");
+            dumpRefs(0x80100DCCL, "transition_FUN_80100DCC");
+            dumpRefs(0x8011253CL, "threshold_failure_branch_8011253C");
+            dumpRefs(0x800BDBFCL, "external_resource_target_FUN_800BDBFC");
             decompiler.dispose();
             out.flush();
             if (out.checkError()) throw new IllegalStateException("Failed writing overlay survey.");
