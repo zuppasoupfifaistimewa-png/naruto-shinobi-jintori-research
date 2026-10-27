@@ -11,7 +11,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: step4-rng-runtime-validation
+  group: step4-rng-runtime-validation-v2
   cancel-in-progress: true
 
 jobs:
