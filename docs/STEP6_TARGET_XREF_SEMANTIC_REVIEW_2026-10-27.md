@@ -86,3 +86,20 @@ Kriteria pending +0xB30/+0xB38/+0xB40/+0xB44 tetap BELUM TERUJI pada cakupan art
 ## Addendum — penelusuran penuh artifact store fields
 
 Artifact runner-only [#40473737136](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40473737136), outer artifact #12719587873 (13,977 bytes, ZIP SHA-256 `e1ea68c92bcbf645fde3c991c8a47192b815987d8044f2d599c163c1f3ec9fb9`), berisi hasil teks yang mengambil sumber dari Ghidra run #40455975408; fungsi dan instruction window yang relevan ada pada `step6-audit-artifact.txt`. `+0x2E9` dan `+0x2E5` sekarang bukan UNKNOWN untuk eksistensi store: nilainya tercatat pada lima kandidat di atas. Namun operand object-base di pseudocode memakai register yang tidak selalu terbukti/bernama dan entry-1 base runtime belum tervalidasi, jadi field semantics di game tetap UNKNOWN. Offset `+0xB30/+0xB38/+0xB40/+0xB44` memerlukan xref/store scan tambahan atas seluruh relevant code, bukan inferensi dari scan parsial.
+
+## Addendum — dataflow raw MIPS untuk +0xB30/+0xB38/+0xB40/+0xB44 (27 Oktober 2026, runner audit 18:38 WIB)
+
+Hasil audit runner-only [#40497668341](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40497668341) menelaah artefak pemindaian terbaru #12729156734 dari run #40493556711. Artifact input: 180.128 byte; ZIP SHA-256 `c9ea5ef0552a0c80a70f0d3a758622a358509de2079e5954dac3ce0032426e93`. Output audit runner #12730957210: 9.014 byte, ZIP SHA-256 `695e36bf70237913c0f80c94f0d4100732c92dd8b78155da2ace90d189c5ee24`; raw log `RUNNER_ARTIFACT_CLEANUP=PASS`.
+
+### Instruksi dan aliran data
+- `0x8012C634`, bytes `30 0B 82 8C`: `lw v0,0xB30(a0)`.
+- `0x8012C638`, bytes `38 0B 83 8C`: `lw v1,0xB38(a0)`.
+- `0x8012C640`, bytes `21 10 43 00`: `addu v0,v0,v1`.
+- `0x8012C644`, bytes `40 0B 82 AC`: `sw v0,0xB40(a0)`.
+- `0x8012C604`, bytes `44 0B 40 AC`: `sw zero,0xB44(v0)`; instruksi ini adalah delay slot untuk `jal 0x80012AC0`, jadi store terjadi sebelum callee dimasuki pada alur MIPS.
+- `0x8012CB14`, bytes `44 0B 66 8C`: `lw a2,0xB44(v1)`; instruksi berikutnya `jal 0x8001B364` dengan delay slot `li a3,5`, sehingga nilai load diteruskan dalam register argumen `a2`.
+
+Konteks 17 instruksi untuk masing-masing hit tersedia dari scanner. Hit `+0xB30/+0xB38/+0xB40` berada pada kandidat fungsi `FUN_8012C544` (body 292 byte); pembacaan `+0xB44` terjadi pada `FUN_8012CACC` (body 152 byte). Ghidra body berhasil ditampilkan untuk fungsi pertama, tetapi tidak setiap fungsi/resource boundary dapat dianggap bersih hanya dari label default.
+
+### Batas interpretasi
+Bukti ini menutup satu celah dataflow statis: dua input `+0xB30` dan `+0xB38` dijumlahkan lalu hasilnya disimpan ke `+0xB40`. Store nol dan pembacaan `+0xB44` juga terverifikasi pada akses yang tercatat. Semua alamat entry 1 masih bergantung pada base hipotetis `0x800D0000`; pemetaan runtime, pemakaian via object-base alternatif/nondecoded code, identitas struktur, sumber awal nilai, dan semantik gameplay tetap UNKNOWN. **Step 6 tetap SEBAGIAN.**
