@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: step4-rng-runtime-validation
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   rng-runtime:
@@ -253,7 +253,9 @@ jobs:
                               cs=im.getcolors(maxcolors=1000000)
                               valid=im.size==(1280,800) and png.stat().st_size>1000 and not (cs is not None and len(cs)==1)
                               digest=hashlib.sha256(png.read_bytes()).hexdigest()
-                              print("STEP4_CAPTURE_VALID mode={} width={} height={} bytes={} colors={} sha256={} valid={}".format(mode,im.size[0],im.size[1],png.stat().st_size,len(cs) if cs is not None else "many",digest,valid),flush=True)
+                              line="STEP4_CAPTURE_VALID mode={} width={} height={} bytes={} colors={} sha256={} valid={}".format(mode,im.size[0],im.size[1],png.stat().st_size,len(cs) if cs is not None else "many",digest,valid)
+                              print(line,flush=True)
+                              with (out/(mode+"-capture.txt")).open("a",encoding="utf-8") as meta: meta.write(line+"\n")
                               captured=True
                   if not captured: print("STEP4_CAPTURE_FAIL mode="+mode,flush=True)
                   (out/("go-final-"+mode.lower())).write_text("captured\n",encoding="utf-8")
@@ -270,7 +272,7 @@ jobs:
             grep -q "STEP4_BRANCH_FINISH mode=$mode frame=180" "$stdout" || failures=$((failures+1))
             grep -q "STEP4_INPUT mode=$mode .*phase=press .*status=PASS" "$stdout" || failures=$((failures+1))
             grep -q "STEP4_INPUT mode=$mode .*phase=release .*status=PASS" "$stdout" || failures=$((failures+1))
-            grep -q "STEP4_CAPTURE_VALID mode=$mode .*valid=True" "$stdout" || failures=$((failures+1))
+            grep -q "STEP4_CAPTURE_VALID mode=$mode .*valid=True" "$WORK/captures/$mode-capture.txt" || failures=$((failures+1))
           done
           python3 - "$WORK/captures" "$GITHUB_RUN_ID" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" > "$WORK/captures/step4-runtime-outcome.txt" <<'PY'
           import re,sys
@@ -282,9 +284,8 @@ jobs:
               samples=re.findall(r"STEP4_RNG_STATE_SAMPLE mode=\S+ frame=(\d+) state=0x([0-9A-Fa-f]{8}) rng_calls=(\d+)",t)
               calls=re.findall(r"STEP4_RNG_CALL mode=\S+ frame=(\d+) seq=(\d+) ra=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8}) state_before=0x([0-9A-Fa-f]{8})",t)
               setters=re.findall(r"STEP4_SEED_SETTER mode=\S+ frame=(\d+) seq=(\d+) a0=0x([0-9A-Fa-f]{8}) caller=0x([0-9A-Fa-f]{8})",t)
-              cap=dict(re.findall(r"STEP4_CAPTURE_VALID mode=\S+ .*? sha256=([0-9a-f]{64}) valid=True",t))
-              # The exact outcome screenshot digest is parsed separately from the branch-specific observer line.
-              m=re.search(r"STEP4_CAPTURE_VALID mode=\S+ .*?sha256=([0-9a-f]{64}) valid=True",t)
+              cp=root/(mode+"-capture.txt"); ct=cp.read_text(errors="replace") if cp.exists() else ""
+              m=re.search(r"STEP4_CAPTURE_VALID mode=\S+ .*?sha256=([0-9a-f]{64}) valid=True",ct)
               loaded="STEP4_LOAD_EVENT=PASS mode="+mode in t
               finish="STEP4_BRANCH_FINISH mode="+mode+" frame=180" in t
               data[mode]={"t":t,"samples":[(int(f),v.lower()) for f,v,_ in samples],"calls":[(int(f),c.lower(),s.lower()) for f,_,_,c,s in calls],"setters":setters,"cap":m.group(1) if m else None,"loaded":loaded,"finish":finish}
@@ -342,6 +343,7 @@ jobs:
             /tmp/step4-rng-runtime/captures/STEP4_RNG_RUNTIME_RESULT.md
             /tmp/step4-rng-runtime/captures/pcsx-*.stdout
             /tmp/step4-rng-runtime/captures/pcsx-*.log
+            /tmp/step4-rng-runtime/captures/*-capture.txt
             /tmp/step4-rng-runtime/captures/*-F180.png
             /tmp/step4-rng-runtime/captures/xvfb.log
           if-no-files-found: warn
