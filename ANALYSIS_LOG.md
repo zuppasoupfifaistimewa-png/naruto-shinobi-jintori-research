@@ -1980,3 +1980,28 @@ This is an operational incident, not new gameplay evidence. An earlier documenta
 - Langkah 6 disiapkan: dekompilasi pemanggil tambahan getter target, transisi FUN_800EF98C/FUN_80100D14/FUN_80100DCC, jalur pembanding gagal, serta konsumen setter Chakra. Workflow run terbaru [#40440237256](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40440237256) baru berstatus queued saat catatan ini ditulis.
 - Artefak Ghidra yang berhasil berisi teks saja (fungsi TSV/log/dekompilasi); BIN, DATA.BIN, entry resource, BIOS, savestate, Memory Card, dan screenshot privat tidak diunggah atau di-commit.
 - Gerbang pemain adaptif tetap fail-closed: target cue UNKNOWN; barrier_level_selection = WAIT; readiness NO-GO; Story Mode NOT COMPLETE; marker Revision65 tetap tidak disentuh.
+
+
+## 27 Oktober 2026 — evidence update Step 4–10
+
+### Step 4 runtime determinism (run #40474262267; raw artifact #12719024236)
+- Corrected the prior fixed-F177 observer mismatch: run #40471968654 was invalid/timeout because actual terminal caller event was F171–F172. Run #40473505032 also failed due capture pause/callback lifecycle/parser escaping; it is not used as determinism proof.
+- The corrected run produced three successful branches from the authenticated roulette F120 checkpoint: R30A/R30B Circle F30–F38, DELAY60 Circle F60–F68. All press/release readbacks PASS. Initial state 0xDB75C114; each branch recorded 127 RNG calls; no post-restore setter hit; final state 0xA99DC6E7.
+- Normalized sequence/caller/state-before stream matched across all three branches when VSync frame number was omitted. Sampled states matched. Authenticated X11 PNGs all validated 1280×800, 724063 bytes, 117603 colors, crop SHA-256 a1b2dfab61a0922e2b466ddbeb6b5b2642a88289be159df4667e4e2bcaa53355. Capture frames differ 169/167/171, so do not claim same-VSync-frame comparison. The causal link between specific caller and visible roulette outcome is not proven.
+- The runtime's final report-write step failed with curl exit 22; this is not the same as emulator/test failure. Report rebuilt from raw log/artifact in out/step4/STEP4_RNG_RUNTIME_RESULT_2026-10-27.md.
+- Step 4 remains SEBAGIAN: seed boot/lifecycle, pointers/indirect dispatch, battle caller, outcome linkage and alternative randomness are open.
+
+### Step 6 static xref semantic review
+- Existing text-only artifact #12713583805 from Ghidra run #40455975408 was audited by runner-only review #40473737136 (text artifact #12719587873). Eight target-getter xrefs to 0x80012A70, nine Chakra setter xrefs to 0x8001387C, sixteen player-Chakra getter refs to 0x800138EC were recorded at the hypothetical entry-1 base. UI functions also read the target; xref alone does not identify win conditions. Report docs/STEP6_TARGET_XREF_SEMANTIC_REVIEW_2026-10-27.md. Status SEBAGIAN.
+
+### Step 9 isolated MIPS CPU execution
+- First run #40474699863 failed all 7 vectors with zero executed instructions because Unicorn was mapped at virtual KSEG0 addresses. This diagnoses a memory-map error, not a failed LCG formula.
+- Corrected probe uses physical 2 MiB RAM aliases for KSEG0. Run #40474891838 success; artifact #12720127454, ZIP digest bcbfcd77a532ce34334ed60f720fdeaac566308bf2e6e4d54a7e60f28a5f083b. Seven states produced the expected updated state, v0 and sentinel return in 12 instructions each. Cleanup PASS. This closes Step 9 only for RNG routine 0x80035D78, not a PS1 emulator or all game functions. Report out/step9/STEP9_UNICORN_RESULT_2026-10-27.md.
+
+### Step 7 cold-boot diagnostic preparation
+- Created .github/workflows/step7-loader-coldboot-diagnostic.yml with hash-pinned source assets, 3000-frame/70-second bound, no save-state restore/input, register/adler checksums at candidate copy addresses 0x800AD454/0x800AD45C, seed setter candidate 0x80035DA8 and RNG entry 0x80035D78. Text-only artifact; no RAM dump or screenshot.
+- Initial workflow failed to start because job env used unavailable runner.temp context, and a bounded X11 wait loop had a ShellCheck warning. Those were corrected; lint run #40475950897 passed.
+- Diagnostic run #40475950842 is running the bounded cold-boot observation after verifying assets. No final evidence has been accepted yet. Do not dispatch a duplicate. If it produces no candidate hit, record as “no hit inside this window,” not as proof target/path is absent.
+- Overall statuses: Step4 SEBAGIAN; Step5 TUNTAS for four selected functions; Step6 SEBAGIAN; Step7 SEBAGIAN pending coldboot result; Step8 SEBAGIAN; Step9 TUNTAS for the primary RNG routine only; Step10 TUNTAS as documentation index.
+
+Story Mode remains TIDAK TERBUKTI TAMAT. Adaptive-player/automatic Story Mode execution remains paused. No classifier/input policy/readiness gate/Revision65 marker changed. No ROM/disc, BIOS, Memory Card, savestate, RAM dump or private gameplay screenshot is in Git.
