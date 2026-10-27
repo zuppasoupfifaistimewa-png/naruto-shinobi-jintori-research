@@ -90,3 +90,12 @@ Ini adalah urutan operasi yang didukung dekompilasi statis 408-byte function bod
 ## Addendum — batas fakta field writes dari full review artifact
 
 `step6-audit-artifact.txt` dari [runner review #40473737136](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40473737136) menyediakan dekompilasi dan instruction windows untuk lima kandidat: semua lima menulis `+0x2E9=0x3F` dan `+0x2E5=0`, bersama `+0x58B` yang diisi selektor/indeks byte. Nilai `+0x5D2` berubah bersyarat pada masing-masing routine. Ini menyempurnakan inventaris stores, bukan semantik permainan. Base entry-1 `0x800D0000`, object-base alias dan runtime stores masih belum tervalidasi. Step 8 tetap **SEBAGIAN**.
+
+## Addendum — sumber return helper dan aliran nilai field (27 Oktober 2026)
+
+Bukti statis yang diperiksa dalam runner-only audit [#40497668341](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40497668341) memperjelas dua aliran nilai tanpa memberi nama mekanik.
+
+1. **Helper `0x80037138`:** jika argumen `a0` negatif, raw MIPS memuat global `0x80066E7C` ke `v0` dan mengembalikan nilai itu. Pada callsite kandidat entry 0, delay slot `li a0,-1` memasok input negatif, lalu delay slot `move a0,v0` pada call setter `0x80035DA8` meneruskan return helper. Jadi sumber argumen statis setter adalah global `0x80066E7C` pada jalur tersebut, bukan konstanta -1. Nilai global saat boot, writer/initializer, dan runtime reachability tetap UNKNOWN.
+2. **Field entry 1:** raw MIPS menunjukkan `+0xB30 + +0xB38 -> +0xB40`, `+0xB44` diset nol pada satu jalur inisialisasi, dan `+0xB44` kemudian dibaca sebagai argumen `a2` untuk `0x8001B364`. Base `0x800D0000` adalah HIPOTESIS; label cost/turn/barrier/level-up dan makna helper tidak dibuktikan.
+
+Audit runner #40497668341 selesai success 18:38:45 WIB, artifact #12730957210 (9.014 byte, ZIP SHA-256 `695e36bf70237913c0f80c94f0d4100732c92dd8b78155da2ace90d189c5ee24`), cleanup PASS. Step 8 tetap **SEBAGIAN**; hasil ini memetakan operasi statis, bukan aturan gameplay universal atau hasil kemenangan.
