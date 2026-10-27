@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/step4-helper-return-static-audit.yml"
+      - "tools/ghidra/ExportFunctionDetail.java"
   workflow_dispatch:
 
 permissions:
