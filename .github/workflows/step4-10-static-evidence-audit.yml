@@ -6,10 +6,13 @@ on:
     branches: [main]
     paths:
       - "tools/step4_10_static_evidence_audit.py"
+      - "tools/step2_xref_rng_audit.py"
+      - "tools/ghidra/ExportTargetXrefs.java"
       - ".github/workflows/step4-10-static-evidence-audit.yml"
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: step4-10-read-only-static-evidence-audit
@@ -19,7 +22,7 @@ jobs:
   static-audit:
     name: Verify private source transiently, scan MIPS bytes, emit text/CSV only
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - name: Checkout permitted research repository
         uses: actions/checkout@v4
@@ -110,6 +113,110 @@ jobs:
             --exe "$RUNNER_TEMP/step4-10-static-audit/input/SLPS_035.53" \
             --data "$RUNNER_TEMP/step4-10-static-audit/input/DATA.BIN" \
             --out "$RUNNER_TEMP/step4-10-static-audit/output"
+
+
+
+      - name: Fetch historical sanitized Ghidra XREF evidence
+        shell: bash
+        env:
+          GITHUB_TOKEN: \${{ github.token }}
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/step4-10-static-audit"
+          legacy="$root/legacy"
+          mkdir -p "$legacy"
+          zip="$legacy/step6-xref-audit.zip"
+          url="https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/artifacts/12783307599/zip"
+          curl --fail --location --silent --show-error \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            --retry 2 --retry-delay 2 "$url" --output "$zip"
+          echo "748eadbfe82980bba8d2088d11affba4310d524eb871b6a34ee5fd43584f2892  $zip" | sha256sum --check -
+          unzip -p "$zip" field-cfg-defuse.txt > "$legacy/field-cfg-defuse.txt"
+          test "$(grep -c '^exact_xref ' "$legacy/field-cfg-defuse.txt")" -eq 194
+          rm -f "$zip"
+          echo "LEGACY_GHIDRA_XREFS=194"
+          echo "LEGACY_ARTIFACT_SHA256=748eadbfe82980bba8d2088d11affba4310d524eb871b6a34ee5fd43584f2892"
+
+      - name: Set up Java for rebased Ghidra analysis
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+          java-package: jdk
+
+      - name: Restore cached Ghidra for rebased resource import
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+          key: ghidra-12.2-linux-x64-2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+
+      - name: Install pinned Ghidra if cache is missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          cache="/home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016"
+          mkdir -p "$cache"
+          if ! find "$cache" -type f -path '*/support/analyzeHeadless' -print -quit | grep -q .; then
+            archive="$RUNNER_TEMP/ghidra_12.2_PUBLIC_20261016.zip"
+            url="https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.2_build/ghidra_12.2_PUBLIC_20261016.zip"
+            curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' \
+              --retry 3 --retry-delay 2 "$url" --output "$archive"
+            echo "2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67  $archive" | sha256sum --check -
+            unzip -q "$archive" -d "$cache"
+            rm -f "$archive"
+          fi
+
+      - name: Import entry 1 at 0x800AD450 and export XREFs to 0x8013A554
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/step4-10-static-audit"
+          input="$root/input"
+          out="$root/output"
+          python3 - "$input/DATA.BIN" "$input/DATA_BIN_ENTRY_0001.bin" <<'PY'
+          from pathlib import Path
+          import hashlib, sys
+          src, dst = map(Path, sys.argv[1:3])
+          dat = src.read_bytes()
+          if len(dat) != 66015232 or hashlib.sha256(dat).hexdigest() != "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822":
+              raise SystemExit("DATA.BIN identity mismatch")
+          entry = dat[0x10BB000:0x10BB000+596412]
+          if len(entry) != 596412 or hashlib.sha256(entry).hexdigest() != "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a":
+              raise SystemExit("Entry-1 identity mismatch")
+          dst.write_bytes(entry)
+          print(f"entry1_bytes={len(entry)} entry1_sha256={hashlib.sha256(entry).hexdigest()}")
+          print("entry1_import_base=0x800AD450")
+          print("target_address=0x8013A554")
+          PY
+          headless="$(find /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016 -type f -path '*/support/analyzeHeadless' -print -quit)"
+          [[ -n "$headless" && -x "$headless" ]]
+          mkdir -p "$root/ghidra-project"
+          "$headless" "$root/ghidra-project" ENTRY1_base_800AD450 \
+            -import "$input/DATA_BIN_ENTRY_0001.bin" \
+            -loader BinaryLoader -loader-baseAddr 0x800AD450 -loader-length 0x919BC \
+            -loader-blockName DATA_BIN_ENTRY_0001 -processor "MIPS:LE:32:default" \
+            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -postScript ExportTargetXrefs.java "$out/a2_ghidra_rebased_xrefs.csv" "$out/a2_ghidra_rebased_functions.csv" 0x800AD450 0x8013A554 \
+            -analysisTimeoutPerFile 1200 -max-cpu 2 -deleteProject \
+            > "$out/ghidra-rebased-headless.log" 2>&1
+          test -s "$out/a2_ghidra_rebased_xrefs.csv"
+          test -s "$out/a2_ghidra_rebased_functions.csv"
+          grep -E 'TARGET_XREF_COUNT=|TARGET_SLOT_BYTES=|TARGET_SLOT_U32_LE=|FUNCTIONS_IN_ENTRY1=' "$out/ghidra-rebased-headless.log" || true
+
+      - name: Run expanded XREF and RNG callsite audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/step4-10-static-audit"
+          python3 tools/step2_xref_rng_audit.py \
+            --exe "$root/input/SLPS_035.53" \
+            --data "$root/input/DATA.BIN" \
+            --out "$root/output" \
+            --legacy-ghidra-text "$root/legacy/field-cfg-defuse.txt" \
+            --legacy-scan-csv "$GITHUB_WORKSPACE/reports/step4_10_static_evidence_audit/run_40783998364/a2_xref_hits.csv" \
+            --new-ghidra-xrefs "$root/output/a2_ghidra_rebased_xrefs.csv" \
+            --new-ghidra-functions "$root/output/a2_ghidra_rebased_functions.csv"
 
       - name: Remove private source binaries before artifact upload
         if: always()
