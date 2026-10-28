@@ -25,4 +25,6 @@ Pattern groups: DIV/REMAINDER 11; MASK_ONLY 40; no direct mask/modulus signature
 No gameplay function names assigned.
 EXE callers: 0x80015B14 (DIV/MFHI and masked dynamic divisor); 0x80015BF0 (DIV/MFHI using loaded dynamic divisor); 0x8001A460 (DIV/MFHI using s0 as divisor); 0x80020C24 (BGEZ/SRA/ADDIU/SRA/SLL/SUBU remainder pattern, low 12-bit output, store at 0x80020C48).
 
-Seeded-base follow-up: run #40789851311 in progress at report creation; no final seeded result inferred.
+Seeded-base follow-up #40789851311: Ghidra export, expanded scanner and cleanup succeeded, but report commit was rejected by GitHub as non-fast-forward after main advanced; artifact upload was skipped. Runner log still reported new XREFs=324, Ghidra-only-vs-expanded=32, legacy classes 96/19 and 56/2, and RNG calls 144 (47 VALID, 97 TIDAK PASTI). Because the row-level seeded CSVs were not persisted, use run #40789339014 CSVs as the saved row-level evidence and treat same aggregate values from the failed-publish attempt as log-only corroboration.
+Commit c12c272875c419c9120583144ac81620246d7477 fixes the workflow push race (fetch/rebase before push), changes the auxiliary audit log suffix to .txt, and records the arithmetic MOD 0x1000 sequence for EXE caller 0x80020C24. New run #40790387202 is queued; no output available yet.
+Separate static Ghidra run #40789217602 remains in progress in entry-0 analysis; max timeout boundary 07:17:39 WIB (35 minutes after start 06:42:39 WIB).
