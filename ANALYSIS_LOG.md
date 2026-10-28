@@ -2551,3 +2551,9 @@ Another caller at `0x8012AC04` sends a byte from object +0x94A to the same `0x80
 Detailed report section 28, blob `4061891eba985aaec2469eb13f8a6287e11ad93c`. Candidate entry-1 code calls `0x800138EC` (main Chakra getter) at `0x80111090` and stores the returned value to a selected participant record's +0x04 at `0x801110B8); another selected-index path calls the same getter at `0x801110FC` and stores into +0x04 at `0x80111124`.
 
 Therefore the section 27 comparison is more concrete: stored Chakra + helper output from `0x800BDC4C` is compared with configured target global `D_80070C84`. Static evidence supports a Chakra-target gate, but helper output meaning, guards, final handler and runtime mapping still prevent a verified victory conclusion. Step 8(b) remains UNKNOWN.
+
+ 
+<!-- helper-numeric-triple-consumer-2026-10-28 -->
+## Third use of the 0x800BDC4C result traces against a separate config scalar
+
+Report section 29, blob `3fc780fb9951fbed43a4ce3716cf54b51c18ee4b`: `0x80111008` calls helper with selected index and stores return to `D_8013EAF0); `0x80012A8C` reads `D_80070C88`; the delay slot at `0x80111054` computes the difference and sends it to `0x80109974`, then `0x80109984)/`0x80109994). This confirms a third numeric consumer for the same selected-index helper output. Meaning remains UNKNOWN; runtime mapping and final callee effects remain unproven; no victory rule promoted.
