@@ -99,3 +99,14 @@ Tak ada tombol gameplay dikirim pada kedua percobaan. Karena loader crash dua ka
 - Adaptive player: tidak dijalankan atau diubah.
 
 Prioritas berikutnya: audit secara statis semua referensi ke count/buffer kedua dan fungsi yang memanggil `0x800158E8`/`0x800159BC`, lalu cocokkan daftar byte dengan tabel descriptor sebelum memilih eksperimen gameplay baru. Sampai ada checkpoint yang terbukti bisa dipulihkan, jangan mengklaim eksperimen A/B dari checkpoint ini dapat direproduksi.
+
+
+<!-- descriptor-selector-crosscheck-2026-10-28 -->
+## Cross-check: selector yang benar-benar muncul pada descriptor
+
+Ada dua pemanggil langsung `jal 0x80015610` di main EXE (`0x80012820` dan `0x80012F90`), dan kedua argumen berasal dari byte `+2` pada tabel descriptor. Pembacaan data mentah memberi hasil berikut:
+
+- Descriptor `0x80064918`, stride `0x30`, 18 record: byte `+2` adalah `[0,1,2,3,4,5,6,7,4,4,4,4,4,4,4,5,8,8]`.
+- Descriptor `0x80057798`, stride `0x54`, 18 record: byte `+2` adalah `[0,1,2,8,3,4,8,5,6,6,0,0,0,0,0,0,3,5]`.
+
+Dua tabel descriptor yang ditelusuri hanya memberikan selector 0–8 ke pemanggil langsung tersebut. Jadi blok sumber selector 9–17 yang tersusun sebagai 64 byte nol **tidak dipilih oleh dua descriptor ini**. Fungsi loader sendiri menerima selector hingga 17, tetapi jangan menyebut selector 9–17 reachable dari alur ini tanpa bukti pemanggil lain atau jalur tak langsung. Sebaliknya, ini juga belum membuktikan bahwa selector 9–17 tak pernah dipakai di seluruh game; batas kesimpulan hanya dua callsite dan dua tabel yang diaudit.
