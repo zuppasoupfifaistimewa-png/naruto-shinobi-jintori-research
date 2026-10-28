@@ -1,0 +1,28 @@
+STEP1_3_READONLY_AUDIT_LOG — 2026-10-29
+Scope: static research only. No emulator launch, no gameplay input, no savestate restore.
+Repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+
+Input hashes verified in GitHub Actions run #40789339014:
+SLPS_035.53 385024 bytes SHA256 a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569
+DATA.BIN 66015232 bytes SHA256 69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822
+Entry 1 offset 0x10BB000 bytes 596412 SHA256 9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a
+
+STEP 1: TIDAK BISA. The independent 2 MiB RAM dump with expected SHA256 3ad7b85c857a868d91df4b3f1049c23889a0dc482ad7ee390ac8b6c05c3190f4 was not present in the active workspace. A savestate archive exists but was not parsed to synthesize the RAM dump. No RAM block comparison or 94-row EXE block report generated.
+
+STEP 2 run #40789339014:
+New rebased Ghidra XREFs: 324 rows (322 READ, 2 WRITE).
+Extended raw scan: 326 candidates (324 READ, 2 WRITE), all in entry 1; zero in EXE or entry 0.
+LUI 0x8014 pair no clobber within 32 words: 292 READ + 2 WRITE; 98 pairs crossed a control instruction.
+Old Ghidra 194 vs strict scan 137: common 79, scan-only 58, Ghidra-only 115.
+Cause classes sum exactly: scan-only 56 + 2 = 58; Ghidra-only 96 + 19 = 115.
+Sample audit: 10+10 from the two Ghidra-only classes; 10+2 from the scan-only classes.
+New Ghidra-only relative to extended scan: 32 (<57.5); this satisfies the user's numerical threshold for supporting the old-base mismatch hypothesis, but not runtime loader proof.
+Target 0x8013A554 maps to entry-1 file offset 0x8D104 at candidate base 0x800AD450; bytes 00 00 00 00; static u32=0. RAM value NOT AVAILABLE.
+
+STEP 3:
+144 raw JAL candidates: 47 VALID, 97 TIDAK PASTI, 0 DATA.
+Pattern groups: DIV/REMAINDER 11; MASK_ONLY 40; no direct mask/modulus signature 90; MASK_AND_DIV 3.
+No gameplay function names assigned.
+EXE callers: 0x80015B14 (DIV/MFHI and masked dynamic divisor); 0x80015BF0 (DIV/MFHI using loaded dynamic divisor); 0x8001A460 (DIV/MFHI using s0 as divisor); 0x80020C24 (BGEZ/SRA/ADDIU/SRA/SLL/SUBU remainder pattern, low 12-bit output, store at 0x80020C48).
+
+Seeded-base follow-up: run #40789851311 in progress at report creation; no final seeded result inferred.
