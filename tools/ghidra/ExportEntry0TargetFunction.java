@@ -106,7 +106,7 @@ public class ExportEntry0TargetFunction extends GhidraScript {
         Function f = currentProgram.getFunctionManager().getFunctionAt(target);
         if (f == null && at != null) {
             try {
-                createFunction(target, "FUN_" + target.toString().substring(2).toLowerCase());
+                createFunction(target, "FUN_" + String.format("%08x", target.getOffset()));
             } catch (Exception e) {
                 line("manual_function_creation=FAILED " + e.getMessage());
             }
