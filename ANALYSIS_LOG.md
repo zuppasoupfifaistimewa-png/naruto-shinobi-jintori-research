@@ -2418,3 +2418,14 @@ The `JAL` forms at +0x18 and +0x38 target `0x80021140) and `0x80037138) under MI
 Entry1's instructions at `0x8010F444–0x8010F45C` remain clear static evidence of address math `0x800AE900 + 4*field0`, load of a word for field0<16, and indirect `jr`. The new probe falsifies the simple assumption that the table resides at the same numeric address in entry0 loaded at `0x800AD000); it does not prove actual load base, table owner, or runtime code path. This is a new mapping conflict to drive Step 7 loader/relocation research, not a successful resolution of the jump table.
 
 No step status was promoted. Step 6(b) remains BLOCKED, Step 7 runtime mapping UNKNOWN/BLOCKED, Step 8(b) UNKNOWN; Story Mode remains **TIDAK TERBUKTI TAMAT**. Adaptive player was not run or changed.
+
+<!-- cross-resource-pointer-jump-table-conflict-2026-10-28 -->
+## Static address cross-check: entry1 references helpers at 0x800AD454 while 0x800AE900 maps to instruction-like bytes in entry0 view
+
+Detail: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), revision with blob `930fd9d253154add0a66db36012bc9db9620dcca`.
+
+The assumed entry1 address view shows six consecutive words `0x800AD454, 0x800AD45C, 0x800AD464, 0x800AD46C, 0x800AD478, 0x800AD484` at `0x800D0128..0x800D013C`. They have the shape of an address/function table but their reader is not yet identified. Main startup code also has direct `JAL 0x800AD454` at `0x800115DC`.
+
+Against this, entry1 code computes `0x800AE900 + 4*field0` for field0<16 and indirect-jumps through the loaded word, but an entry0 raw data probe at `0x800AE900) in the `0x800AD000) base hypothesis found 64 bytes that decode as MIPS instruction forms (two JALs resolve to `0x80021140` and `0x80037138`), not a 16-entry pointer table. The exact mapping, overlays, relocation, and lifecycle that reconcile these facts are unknown. This strengthens the rationale for static loader/copy/relocation investigation; it does not prove any of the alternative explanations.
+
+No status promotion: Step 6(b) remains BLOCKED, Step 7 runtime mapping UNKNOWN/BLOCKED, Step 8(b) UNKNOWN; no emulator/gameplay/adaptive player and Story Mode remains TIDAK TERBUKTI TAMAT.
