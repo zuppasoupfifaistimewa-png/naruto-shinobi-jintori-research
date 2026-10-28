@@ -312,3 +312,11 @@ Do not promote Step 8(b): this is a strong target-threshold candidate, not a ver
 The raw entry-1 listing at `0x80111090–0x80111124` shows calls to main-EXE getter `0x800138EC` for a participant index and writes of that return value to field +0x04 of the selected stride-`0x90` record (`0x801110B8` and `0x80111124`). Since `0x800138EC` is the main-EXE Chakra getter, this directly supports interpreting record +0x04 as a stored Chakra value on these paths.
 
 Combined with the candidate comparison at `0x800F1FE4–0x800F2018`, the condition is more precisely: **stored Chakra at participant record +0x04 plus a value returned by `0x800BDC4C(selected_index)` is compared against configured target `D_80070C84`**. This is strong static evidence for a Chakra-target gate; it is not yet a verified victory rule because the helper contribution, guard flags, final handler and runtime resource mapping remain unresolved. Keep Step 8(b) **UNKNOWN**.
+
+ 
+<!-- negative-chakra-target-precondition-2026-10-28 -->
+## Refinement: the candidate target-threshold path requires nonnegative Chakra
+
+Raw entry-1 code immediately before the target comparison (`0x800F1F40–0x800F1F60`) reads the selected record's +0x04 value and tests its sign. When it is negative, the code instead calls `0x80100FC0(record[+0x0F],1)`, `0x8010109C(record[+0x0F],2)), and `0x80101140`; writes active-object byte +0x2E9=`0x14`; clears `D_80139F00+1` and `D_80139EBB`; then jumps to `0x800CFB34`. When record +0x04 is nonnegative, it reaches the separate guarded path, and the target comparison only runs if active-object byte +0x4A2 matches the incoming `$a1`.
+
+Section 28 traces record +0x04 writes from Chakra getter `0x800138EC`, so this is a signed-Chakra precondition within the candidate view. The negative path's visible result and the target path's victory outcome remain unknown. This adds a verified static branch rule but **does not promote Step 8(b)**; game/runtime semantics remain UNKNOWN until mapping and final handlers are resolved.
