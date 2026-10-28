@@ -335,3 +335,11 @@ Detailed report section 29, blob `3fc780fb9951fbed43a4ce3716cf54b51c18ee4b`.
 At entry-1 callsite `0x80111008`, `0x800BDC4C(selected_index)` is stored in `D_8013EAF0`. The caller then gets main config value `D_80070C88` through `0x80012A8C); the JAL delay slot at `0x80111054` computes `D_8013EAF0 - D_80070C88` and passes the difference to `0x80109974`, then calls `0x80109984)/`0x80109994`. The exact effect of those continuations is not established.
 
 Alongside sections 27–28, the helper return is used as (a) a numeric contribution added to Chakra and compared with configured target D_80070C84, (b) a contribution added to Chakra getter output and clamped, and (c) a value differenced against config scalar D_80070C88. The shared value is participant-indexed, but its name/gameplay purpose remains UNKNOWN. This strengthens numerical dataflow coverage, not the victory-rule claim. Step 8(b) remains UNKNOWN.
+
+ 
+<!-- negative-chakra-target-precondition-2026-10-28 -->
+## New precondition around the target-check candidate
+
+Detailed trace report section 30 (current blob `b3b6a0ec04ed80f5dc92c84787535f363302773e`) shows a sign branch at `0x800F1F48`: participant record +0x04 <0 routes to calls using byte +0x0F, writes active-object state +0x2E9=`0x14`, clears `D_80139F00+1` and `D_80139EBB`, then jumps to `0x800CFB34`. Record +0x04 >=0 takes another path; a further equality gate (active-object byte +0x4A2 vs incoming `$a1`) must match before the helper-plus-Chakra target comparison runs.
+
+Since +0x04 is populated from main Chakra getter `0x800138EC` on the static producer paths, this is a negative-Chakra branch versus nonnegative target-check gate. The visible meaning of status `0x14`, negative-branch handler, and final target result is unknown. Step 8(b) remains UNKNOWN; entry1 runtime map remains unverified.
