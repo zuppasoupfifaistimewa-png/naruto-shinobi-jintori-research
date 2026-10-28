@@ -119,7 +119,7 @@ jobs:
       - name: Fetch historical sanitized Ghidra XREF evidence
         shell: bash
         env:
-          GITHUB_TOKEN: \${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           root="$RUNNER_TEMP/step4-10-static-audit"
