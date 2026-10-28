@@ -208,3 +208,20 @@ The strongest supported sequence is now:
 `configured list byte → pop/shift/reshuffle helper → ID stored at object +0x530 → registry field +0 dispatch → field +8 arithmetic → object fields +0x4F0/+0x4F4/+0x534 or +0x2EE/+0x22`.
 
 Separately, resource code invokes add/remove helpers on the four-record, three-slot ID collection. This proves a connected **static data/control-flow mechanism**, stronger than an isolated byte-shift observation. It still does not identify the feature as a card, character, move, turn, tile, battle action, or victory/loss rule. No emulator/gameplay input was used and no runtime value was captured. Step 4 stays **SEBAGIAN**; Step 6(b) stays **BLOCKED**; Step 7 runtime mapping stays **UNKNOWN/BLOCKED**; Step 8(b) stays **UNKNOWN**.
+
+
+## 11. Jump-table hypothesis test: the candidate address collides with instruction-like bytes in entry 0
+
+To test whether the referenced `jtbl_800AE900` could be the expected 16-word dispatch table in DATA.BIN entry 0, the existing entry0-only context workflow was extended with a bounded raw-memory dump (no whole-program analysis and no code execution). The run completed successfully:
+
+- Actions run [#40619049176](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40619049176), artifact [#12786995206](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40619049176/artifacts/12786995206).
+- ZIP SHA-256: `01067b46e0a6e15cebd06d4bcd9898ff946d8c1d4083d40a29b80480fca92dc9` (matches GitHub API digest).
+- Dumped region: `0x800AE900..0x800AE93F`, 64 bytes, in the imported `DATA_BIN_ENTRY_0000` block under the **hypothetical** base `0x800AD000`. Table-byte SHA-256: `0b5987d2a6307848ab55e87b23f0771fe6afdc345f8c42ede9bfa92eb5ab005b`.
+- The 16 words are `000217C2, 00A21021, 00021043, 2442FEF8, 00629823, AFA50010, 0C008450, 248446D0, 14400081, 2402001F, A622000C, A6200010, 240201FF, A6220012, 0C00DC4E, 2404FFFF`. They decode as a sequence of ordinary MIPS instruction forms (SRL, ADDU, SRA, ADDIU, SUBU, SW, JAL, ADDIU, BNE, ADDIU, SH, SH, ADDIU, SH, JAL, ADDIU), not as 16 plausible absolute code addresses. The JAL words themselves resolve to `0x80021140` and `0x80037138` under MIPS decoding.
+- The dump is from a text-only artifact. No binary resource is published; the runner removed the extracted private resource after the job.
+
+### What this proves—and what it does not
+
+This **rejects the specific assumption** that, when entry 0 is mapped contiguously at `0x800AD000`, its bytes at offset `0x1900` are the 16-pointer table referenced by entry-1 code. Those bytes are instruction-like instead. It does not prove whether entry 0 is actually loaded at that base during the entry-1 path, whether another resource is mapped at `0x800AE900` at that time, or whether the entry-1 pointer requires a mapping/relocation interpretation not captured by the present view.
+
+The entry-1 sequence at `0x8010F444–0x8010F45C` does statically compute `0x800AE900 + 4*field0`, load one word, and branch through it for field0 <16. The **address use is verified in static instructions**; table ownership and runtime targets remain **UNKNOWN/BLOCKED**. Do not label the 16 category cases, and do not promote Step 6(b) or Step 7 runtime mapping based on this test. The new next step is to trace loader/relocation logic that explains which resource owns `0x800AE900` when this entry-1 dispatch runs.
