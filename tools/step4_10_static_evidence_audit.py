@@ -281,7 +281,7 @@ def main():
     exe_jals=[(EXE_BASE+4*i, jal_target(w)) for i,w in enumerate(words(text)) if jal_target(w) is not None]
     log=[
       "STATIC AUDIT ONLY — no emulator/gameplay/input/savestate restore",
-      f"SLPS_035.53 bytes={len(exe)} sha256={sha(exe)}",
+      f"SLPS_035.53 bytes={len(exe)} sha256={hashlib.sha256(exe).hexdigest()}",
       f"EXE text base=0x{EXE_BASE:08X} bytes={len(text)}",
       f"DATA.BIN bytes={len(dat)} sha256={sha(Path(args.data))}",
       f"entry0 offset=0x{ENTRY0_OFFSET:X} bytes={len(ent0)} sha256={hashlib.sha256(ent0).hexdigest()} base=HYPOTHESIS 0x{ENTRY0_BASE:08X}",
