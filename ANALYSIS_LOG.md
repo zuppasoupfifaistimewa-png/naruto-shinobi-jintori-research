@@ -2475,3 +2475,10 @@ After `0x80013BF0` returns true (all three selected record IDs are registry-vali
 ## Inventory of direct calls to 0x800C2FD8 from entry1
 
 Existing raw disassembly parsed locally (no new binary download): 74 direct JAL sites; 71 delay-slot arguments are constants in `0x258..0x275`. Frequency table in `docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`, report blob `fcae52c9ba671da8fc70eaedae9a4efd5b882a82`. Frequent arguments include `0x25B` (7 uses) and `0x25F` (11 uses). This repeated range is only a hypothesis for a shared event/message/resource lookup; no target body/string table or player-facing result has been verified. Helper is outside entry1, likely within a resource view whose load mapping is not confirmed.
+
+<!-- bootstrap-entry0-overlap-2026-10-28 -->
+## Address-range intersection adds a constraint to the load-base hypothesis
+
+Added to [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), blob `fd38f7a464eda055eddb2adcbb11516fbf91be85`.
+
+Main startup calls bootstrap routine candidate `0x800AD454); this routine statically copies directory bytes at `0x800AD494..0x800B0193` to `0x8006D830`. This is consistent with bootstrap origin `0x800AD450) during startup. Hypothetical entry0 map `0x800AD000..0x800C7F07) overlaps that full bootstrap code/directory range. These should not be viewed as separate simultaneously resident images. The result supports the need to map overlay lifecycle/replacement, but does not prove the actual later base or the owner of `0x800AE900`. Step 7 remains UNKNOWN/BLOCKED, Step 6(b) BLOCKED.
