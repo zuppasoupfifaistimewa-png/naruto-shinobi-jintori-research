@@ -4073,3 +4073,9 @@ The raw entry-1 instructions at `0x80111090–0x80111124` call main-EXE getter `
 ## Helper 0x800BDC4C — three numeric uses, semantic name still unknown
 
 The latest detailed trace documents a third consumer at `0x80111008`: the return of `0x800BDC4C(selected_index)` is stored to `D_8013EAF0); then getter `0x80012A8C` reads config scalar `D_80070C88`, and a delay-slot subtraction computes helper-result minus this scalar before follow-on calls `0x80109974), `0x80109984), `0x80109994). Combined with the target comparison and Chakra-add/clamp paths in sections 27–28, this confirms consistent numeric use of a selected-index result. It does not identify the contribution's meaning; entry-1 mapping remains unverified. Step 8(b) stays UNKNOWN.
+
+ 
+<!-- negative-chakra-target-precondition-2026-10-28 -->
+## Target-check precondition refined
+
+Entry-1 candidate code at `0x800F1F40–0x800F1F60` tests the sign of selected participant record +0x04 before the threshold comparison. Negative value routes to helpers using participant byte +0x0F, writes active-object +0x2E9=`0x14`, clears two state bytes/counters and jumps to `0x800CFB34`. Nonnegative value can reach the helper-plus-Chakra-vs-target comparison only after an additional equality gate. Field +0x04 is populated from Chakra getter `0x800138EC` on candidate static paths. This is static control-flow evidence, not a named loss/victory condition; Step 8(b) stays UNKNOWN.
