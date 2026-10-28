@@ -103,3 +103,28 @@ Read the newest tail of [`docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md`]
 ## Sequence-shift finding
 
 `0x80015768` saves the first byte from `0x80070D0A`, shifts the sequence left with helper `0x800158E8`, shuffles the configured length with `0x80015B7C`, and returns the saved byte. The shift changes `0x80070C82), not the preset length `0x80070D02`, and does not clear the tail. Treat as static only; next task is understand consumers and the relationship to `0x80070C80+0x8A`, not a guessed deck/roulette label. Latest trace: [preset/list behavior](docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md).
+
+
+<!-- id-collection-consumer-trace-2026-10-28 -->
+## NEW CHECKPOINT — ID collection and downstream consumer trace (28 Oktober 2026)
+
+Detailed report: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), added in commit `50f7672e668e2c1983b01a1c0b9097bc7bfbdc6f`.
+
+### What the new pass establishes
+
+- Registry initialization in main EXE walks 16-byte records at `0x80055CEC), stops at the first-word `0xFFFFFFFF` at `0x8005602C` (index 52), and stores count 52; helper `0x800154D4` returns that count.
+- `0x80070EA0) is four records of stride `0xB4); each contains three ID bytes at +0xA..+0xC. `0x80013A48` validates ID <52 and fills first slot whose current byte is >=52; fails if all three bytes are valid IDs.
+- `0x80013B10` reads the selected ID, calls `0x80015ADC` to pass it through the random insertion path, compacts the record if source slot is 0/1, and sets the tail byte to `0xFF`.
+- Counts/cursors are distinct: D02/D04 are configured lengths for list 0/1, D06/D08 are their load-reset cursors, C82 is a different halfword count changed by helpers, C86 is a cursor for the indexed buffer at C8A. Do not equate them.
+- The helper family audited (`0x800158D8`, `0x800158E8`, `0x800159BC`, `0x80015B7C`) hardcodes its effective list group to 0. Loader 0x80015610 does copy two lists, but these operations mutate/shuffle only list 0 in the traced paths. Whether this asymmetry is intent or defect is UNKNOWN.
+- In a hypothetical DATA.BIN entry-1 map (base `0x800D0000)), direct JALs at `0x800DD2B4` and `0x800DD4CC` reach `0x80013B10`. The surrounding Ghidra decompilation describes conditional checks on fields and values `0x14/0x15), then reads three IDs back and writes them to +0x10..+0x12 of an object record with stride 0x90, alongside other state writes. This is **conditional static cross-resource evidence only**: resource base/pointer slot is not runtime-validated and decompilation explicitly warns about bad instruction data/control-flow truncation.
+- No ID labels or visible gameplay mechanic were established. Do not call the structure a deck/cards/character roster/turn order/barrier/tile until independent consumer evidence confirms it.
+
+### Next productive task
+
+1. Continue static reader/writer analysis around `0x80070C80+0x8A`, `0x80070C82`, `0x80070C86`, `0x80070D0A`, D02/D04 and D06/D08; identify the consumer that reads a returned ID and then changes a visible gameplay result, using only existing text artifacts.
+2. Attempt ID-to-label mapping from verified string/resource tables if a permitted text-only artifact supports it; otherwise explicitly retain UNKNOWN.
+3. Resolve resource loader/relocation/base and global pointer provenance before treating entry-1 callsites as runtime reachability. Step 6(b) stays BLOCKED and Step 7 runtime mapping stays UNKNOWN/BLOCKED.
+4. Do not rerun the two identical savestate loads (both exit 139 before the load event), do not repeat the no-hit 0x800AD454 probe absent new reachability evidence, and do not run/edit adaptive player. Keep `barrier_level_selection=WAIT` and Story Mode **TIDAK TERBUKTI TAMAT**.
+
+Current statuses remain: Step 4 partial; Step 5 partial; Step 6(a,c) partial, 6(b) BLOCKED, 6(d) UNKNOWN; Step 7 partial with runtime mapping blocked; Step 8(b) UNKNOWN; Step 9 tests complete only within previously stated isolated fixtures; Step 10 is an audit matrix only.
