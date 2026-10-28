@@ -160,6 +160,18 @@ jobs:
             -deleteProject > "$out/jumptable-ghidra.log" 2>&1
           [[ -s "$out/jump-table-800AE900.txt" ]]
 
+          # Target only two shared helpers observed in the entry-1 static call graph.
+          # This is static disassembly/decompilation, conditional on the entry0 base hypothesis.
+          "$headless" "$out/project" DATA_BIN_entry_0000_target_functions \
+            -import "$input/DATA_BIN_ENTRY_0000.bin" \
+            -loader BinaryLoader -loader-baseAddr 0x800AD000 -loader-length 0x1AF08 \
+            -loader-blockName DATA_BIN_ENTRY_0000 -processor "MIPS:LE:32:default" \
+            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -postScript ExportEntry0TargetFunction.java "$out/entry0-handler-targets.txt" 0x800C2FD8 0x800C2570 \
+            -analysisTimeoutPerFile 180 \
+            -deleteProject > "$out/entry0-handler-targets.log" 2>&1
+          [[ -s "$out/entry0-handler-targets.txt" ]]
+
           {
             echo "status=SUCCESS"
             echo "scope=five localized call windows plus 16 raw words at 0x800AE900; no whole-program auto-analysis"
