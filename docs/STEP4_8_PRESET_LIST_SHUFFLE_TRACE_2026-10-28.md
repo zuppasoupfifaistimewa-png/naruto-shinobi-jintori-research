@@ -152,3 +152,16 @@ The local MIPS address arithmetic gives a stronger description of the source rec
 - The configured template length at `0x80070D02` is loaded by the preset loader and used for bounds/position calculations, whereas the separate halfword at `0x80070C82` is changed by the insert/remove helpers. The raw code does not establish that these two fields are the same counter or that the template length itself grows/shrinks.
 
 The resulting static rule is now: **each of four records can hold up to three registry IDs; adding an ID fills the first invalid slot, while removing a chosen slot transfers its ID to another indexed structure, compacts remaining IDs, and marks the tail slot `0xFF`.** A separate helper chooses an insertion index pseudo-randomly in the latter half of the preset-configured range and shifts the companion order bytes. Do not label the IDs as cards, characters, upgrades, or actions without further evidence; no runtime/gameplay result was obtained.
+
+
+<!-- sequence-pop-and-reshuffle-helper-2026-10-28 -->
+## Sequence-pop and reshuffle helper at 0x80015768
+
+A separate local operation reveals how the preset buffer is consumed:
+
+1. `0x80015768` saves the current first byte `byte[0x80070D0A]`.
+2. It calls `0x800158E8(0,0)`, whose raw instructions shift the `0x80070D0A` byte sequence left from position 0 through the configured length minus one and decrement the separate halfword `0x80070C82`.
+3. It then calls `0x80015B7C(0)`; as established above, that helper ignores the group parameter and performs `4*n` random swaps only in the first buffer, with `n=halfword[0x80070D02]`.
+4. The wrapper returns the saved pre-shift first byte. The tail byte is not explicitly cleared in the remove routine before the shuffle, and the configured length `0x80070D02` itself is not changed in this path.
+
+The exact static operation is: **return the old first entry, shift the first sequence left, adjust a separate count, then re-shuffle the configured number of positions**. The apparent relationship between the shifted sequence, the ID array at `0x80070C80+0x8A`, and count at `0x80070C82` is still not sufficiently understood to call this a normal queue/deck pop or to assert whether the retained tail is intentional. Do not name this roulette/card drawing without consumer and runtime evidence.
