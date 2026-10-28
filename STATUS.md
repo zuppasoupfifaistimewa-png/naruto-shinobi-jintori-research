@@ -4061,3 +4061,9 @@ Purpose: determine resource-read/allocator caller flow, and distinguish arena st
 The detailed trace report now records entry-1 raw code at `0x800F1FE4–0x800F2024`: on a guarded selected-participant path, code adds the result of `0x800BDC4C(selected_index)` to participant-record field +0x04 and compares the sum with `0x80012A70()`, a main-EXE getter for configured target global `D_80070C84`. A sum below target routes to `0x800F212C`; at/above target, more flags are checked before a different continuation. Another caller at `0x8012AC04` adds the same helper's return to `0x800138EC` (Chakra getter) and clamps the sum.
 
 This is a **strong candidate target/threshold check** and a static numeric contribution path, not a verified victory rule. The contribution meaning, participant +4 meaning, target-route transition, and entry-1 runtime mapping remain unresolved. Step 8(b) stays UNKNOWN; Step 6(b) BLOCKED; Step 7 runtime mapping UNKNOWN/BLOCKED. Report details: [ID/consumer trace](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md).
+
+ 
+<!-- chakra-field-plus4-producer-2026-10-28 -->
+## Target-threshold interpretation strengthened — field +0x04 is sourced from Chakra
+
+The raw entry-1 instructions at `0x80111090–0x80111124` call main-EXE getter `0x800138EC` (Chakra) and store its return to participant-record field +0x04. This connects section 27's target comparison to stored Chakra rather than an unlabelled number: `record Chakra + helper(0x800BDC4C, selected_index)` is compared with target global `D_80070C84`. This is a **strong static candidate Chakra-target gate**, but not a verified victory rule; helper return, guard flags, final handler and entry-1 runtime base remain unresolved. Detailed evidence in [ID/consumer trace, sections 27–28](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md). Step 8(b) status stays UNKNOWN.
