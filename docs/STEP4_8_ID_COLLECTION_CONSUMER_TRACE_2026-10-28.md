@@ -225,3 +225,23 @@ To test whether the referenced `jtbl_800AE900` could be the expected 16-word dis
 This **rejects the specific assumption** that, when entry 0 is mapped contiguously at `0x800AD000`, its bytes at offset `0x1900` are the 16-pointer table referenced by entry-1 code. Those bytes are instruction-like instead. It does not prove whether entry 0 is actually loaded at that base during the entry-1 path, whether another resource is mapped at `0x800AE900` at that time, or whether the entry-1 pointer requires a mapping/relocation interpretation not captured by the present view.
 
 The entry-1 sequence at `0x8010F444–0x8010F45C` does statically compute `0x800AE900 + 4*field0`, load one word, and branch through it for field0 <16. The **address use is verified in static instructions**; table ownership and runtime targets remain **UNKNOWN/BLOCKED**. Do not label the 16 category cases, and do not promote Step 6(b) or Step 7 runtime mapping based on this test. The new next step is to trace loader/relocation logic that explains which resource owns `0x800AE900` when this entry-1 dispatch runs.
+
+
+## 12. Cross-resource pointer evidence sharpens the address conflict
+
+The same entry-1 raw disassembly begins with six aligned 32-bit words at assumed addresses `0x800D0128..0x800D013C`:
+
+| Entry-1 address | Raw word | Absolute value |
+|---|---:|---:|
+| `0x800D0128` | `0x800AD454` | `0x800AD454` |
+| `0x800D012C` | `0x800AD45C` | `0x800AD45C` |
+| `0x800D0130` | `0x800AD464` | `0x800AD464` |
+| `0x800D0134` | `0x800AD46C` | `0x800AD46C` |
+| `0x800D0138` | `0x800AD478` | `0x800AD478` |
+| `0x800D013C` | `0x800AD484` | `0x800AD484` |
+
+These are address-shaped constants packed consecutively in the entry-1 prefix, consistent with a candidate function-address array, but the consumer of this six-word group has not yet been proven. Independently, main-EXE code at `0x800115DC` directly calls `0x800AD454` during the bootstrap/initialization path. The entry0 targeted artifact decoded that same address as a candidate function entry under base `0x800AD000`.
+
+Together with the instruction-like bytes observed at entry0 offset +`0x1900` (numeric address `0x800AE900`), this means the present mapping hypotheses cannot safely be combined into one confirmed runtime memory map: entry1 statically refers to functions around `0x800AD454`, but its dispatch at `0x8010F444` also expects pointer words at `0x800AE900), where the entry0 candidate view contains code-like words. Possible explanations include overlay replacement/lifecycle, relocated or patched module data, a different runtime base, or a different resource owning the dispatch table. The current static artifacts do not choose between these explanations.
+
+**Next evidence required:** recover the loader/relocation/copy rule that determines what occupies `0x800AD000..` at the time the entry1 branch runs, and prove whether the six entry1 constants are relocated or consumed. Keep this as **UNKNOWN/BLOCKED**; neither table ownership nor runtime reachability is promoted.
