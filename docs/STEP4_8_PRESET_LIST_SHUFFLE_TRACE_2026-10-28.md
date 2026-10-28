@@ -123,3 +123,18 @@ A further trace connects these byte values to a bounded numeric ID registry, wit
 4. The counterpart `0x800158E8` shifts bytes left in `0x80070D0A` from a supplied position and decrements that same halfword at `0x80070C80 + 0x82`. The target fields and exact byte transformations are statically visible; whether this state represents a card pool, hand, inventory, action queue, or another game concept remains **UNKNOWN**.
 
 These paths give a more concrete rule-level description: a candidate ID is range-checked against a table-derived count, a randomized position is computed from the first-list count, and related list/count state is mutated. They do not prove which visible gameplay mechanic this implements. Runtime verification is blocked by the tested checkpoint's repeatable loader crash, so this finding remains **TERVERIFIKASI-STATIS**, not runtime-verified.
+
+
+<!-- caller-id-random-insert-audit-2026-10-28 -->
+## Caller cross-reference: ID source and exact random-insertion effects
+
+The full main-EXE disassembly in artifact #12739676233 shows one direct `JAL` to `0x80015ADC`, at `0x80013B50` (delay slot `0x80013B54`). In that local code sequence:
+
+- The routine first calls `0x800139FC(group, slot)`; the helper accepts `group < 4` and `slot < 3` and returns the byte at offset `+0x0A` of the indexed record in the data region based at `0x80070EA0`.
+- That returned byte is passed as the second argument to `0x80015ADC` in the `0x80013B54` delay slot. The caller sets `a0=0`; the insertion helper's effective ID is `a1 & 0xFF` (the helper subsequently passes that byte as argument `a2` to `0x800159BC`).
+- The insertion helper range-checks the ID against the 52-entry registry count returned by `0x800154D4`. It then calculates an insertion position from the first list length `n = byte[0x80070D02]`: `floor(n/2) + (RNG mod floor(n/2))`. For `n >= 2`, this chooses a position in the latter half of the list; if the divisor `floor(n/2)` is zero, raw MIPS reaches a `break` instruction on the zero-divisor path, so a caller must not be assumed safe for a one-item list.
+- `0x800159BC` accepts that position and ID; if checks pass, it increments the halfword at `0x80070C82` only while the previous value is <64, shifts the byte sequence in `0x80070D0A` one slot to the right from the end toward the chosen position, and writes the ID to `0x80070C80 + 0x8A + position`.
+
+**Important structure distinction:** `0x80070D02` is the source/template-list length used for the insertion position and buffer shift. `0x80070C82` is a separate halfword count that the insertion/removal helpers increment/decrement. The code does not increment `0x80070D02` in this path. Do not merge these fields into one presumed “deck size” or other gameplay variable without further dataflow evidence.
+
+This narrows the static effect to: **a byte ID read from one of four three-slot records is range-checked, then placed at a pseudo-random position in a coordinated list/record structure while the source-order bytes shift right**. What a record/ID represents in the visible game, why the chosen position is in the latter half, and which runtime event invokes this local routine remain unknown. The raw disassembly proves the local operations and one direct JAL site; it does not prove an item/card/turn name or actual runtime reachability.
