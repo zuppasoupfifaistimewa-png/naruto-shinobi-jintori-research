@@ -62,7 +62,7 @@ In `0x8012C544`, static instructions show loads from `+0xB30` and `+0xB38`, addi
 - Step 6 **SEBAGIAN**: local CFG/SSA evidence improved; global pointer/alias and semantic field closure remain blocked/unknown.
 - Step 7 **SEBAGIAN**: disc directory/bootstrap copy structure is static evidence; runtime loader destination, relocation, lifecycle, DATA2/DUMMY mapping remain unknown.
 - Step 8 **SEBAGIAN**: function behavior can be described where shown by instructions; costs, barrier/upgrade, cards, turn/battle/roulette and victory/loss rules remain unknown.
-- Step 9 **SEBAGIAN overall**: RNG 7/7 and player-value accessors 16/16 isolated assertions pass; this is not full PS1 gameplay.
+- Step 9 **SEBAGIAN keseluruhan**: RNG 7/7, helper negative-a0 8/8, setter/getter 16/16 pada CPU MIPS dengan RAM/MMIO sintetis; bukan pengujian gameplay PS1.
 - Step 10 **TUNTAS only as a criterion reconciliation/index**, not as global game reverse-engineering completion.
 
 Safety boundary for this research session: no adaptive player or Story Mode runner was run by this work; no gameplay input or savestate restore occurred; no emulator gameplay session was performed. The monitor-only Actions run is not a completion proof. Private ROM/BIN/CUE/EXE, BIOS, Memory Card, savestate, RAM dump, screenshots or gameplay-private evidence were not committed or uploaded by these static runs. **Story Mode is not verified complete.**
@@ -243,7 +243,7 @@ API metadata checked IDs, names, run mapping, sizes, digests and expiry for the 
 ## Hitungan status (17 baris kriteria)
 
 - **TUNTAS: 2** — 9(a) fungsi RNG terisolasi dan 10) matriks audit saja.
-- **SEBAGIAN: 11** — 4(a–e), 5) cakupan fungsi belum lengkap meskipun 13 fungsi inti lulus, 6(a), 6(c), 7(a), 8(a), 9(b) uji terisolasi hanya dua accessor.
+- **SEBAGIAN: 11** — 4(a–e), 5) cakupan fungsi belum lengkap (13 fungsi main EXE + 1 kandidat resource dibandingkan, bukan seluruh cakupan), 6(a), 6(c), 7(a), 8(a), 9(b) hanya tiga rutin/jalur CPU terisolasi yang diuji (7+8+16 kasus).
 - **UNKNOWN: 2** — 6(d), 8(b).
 - **BLOCKED: 2** — 6(b), 7(b).
 - **HIPOTESIS: 0** — hipotesis dicantumkan pada klaim/base tertentu, bukan dipromosikan menjadi penutupan kriteria.
