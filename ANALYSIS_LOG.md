@@ -2339,3 +2339,8 @@ See the detailed trace [`docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md`](
 At `0x80015B9C`, `0x80015B7C` overwrites `a0=0`, reads count at `0x80070D02`, sets base offset to zero and performs 4*n random swaps over only the first buffer. Caller passes 0 then 1, but the helper discards the group parameter. Treat as a confirmed static asymmetry, not a confirmed programmer bug or game-rule label; IDs/feature semantics and consumers of the second list remain UNKNOWN.
 
 Checkpoint restore was attempted without controller input in runs #40613996374 and #40614208610. Both reached the game/BIOS setup, then segfaulted during the savestate load before the load call returned or emitted `ExecutionFlow::SaveStateLoaded`. In the second, sanitized state plus reinserted BIOS reproduced the raw state SHA exactly; no third identical load is warranted. Checkpoint integrity is not proof of restorable state. No adaptive player was run.
+
+
+## Descriptor selector table cross-check — 28 Oktober 2026
+
+The two direct callsites for `0x80015610` obtain their selector from descriptor byte +2. Across the 18 decoded records, `0x80064918` yields `0,1,2,3,4,5,6,7,4,4,4,4,4,4,4,5,8,8`; `0x80057798` yields `0,1,2,8,3,4,8,5,6,6,0,0,0,0,0,0,3,5`. These tables only feed values 0–8 to the identified direct callsites, so source rows 9–17 are not selected by these tables, although the loader's guard allows them. Do not generalize beyond the two audited tables/callsites. See [detailed report](docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md).
