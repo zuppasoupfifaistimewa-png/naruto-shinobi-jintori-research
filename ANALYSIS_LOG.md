@@ -1,3 +1,11 @@
+## Follow-up scan 6(b) — status sementara, 28 Oktober 2026
+
+Run Ghidra statis [#40611660635](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40611660635) dipicu oleh perubahan alat di commit `ea148ca60af2e3eeaa1b58141532e1ff5a98dd60`, branch `main`. Status terbaru yang terlihat: `in_progress`; job `122564387469`; langkah terakhir `Install disc extraction tools` masih berjalan. Mulai pada `2026-10-28T00:53:40Z` (= 07:53:40 WIB). Belum ada artifact dan log job belum tersedia. Workflow memiliki `timeout-minutes: 35`; batas timeout sekitar 08:28:40 WIB bukan ramalan waktu selesai. Jika scan selesai, verifikasi log dan hasil XREF/pola LUI sebelum memutuskan apakah 6(b) berubah; jika gagal, simpan error dan jangan rerun identik sebelum sebab kegagalan dipahami.
+
+Ini pemindaian kode statis saja. Tidak ada emulator/gameplay, tombol, savestate restore, adaptive player, atau upload biner privat ke artefak yang dimulai oleh perubahan ini.
+
+---
+
 # ADDENDUM — targeted static audit 28 Oktober 2026
 
 Dua artefak yang dibuka langsung pada sesi lanjutan: Step 5 ZIP #12739676233 SHA-256 `94d866f9c991b323a64f283da93359620c04ff8859d4c8fb53f4eb857c745f5d`; Step 6 ZIP #12741234990 SHA-256 `7ee636b8e687c5163873cdd40c82a02e8c8617885a0863b1e5a196b6eed1eac9`. Main EXE memiliki empat direct JAL ke RNG yang telah diinventarisasi dan 156 mnemonic JALR; hitungan JALR tidak menyelesaikan target/callee dinamis. Anotasi panjang spimdisasm `nonmatching func_80015B7C, 0x580` perlu direkonsiliasi dengan body Ghidra 240 alamat yang end-exclusive di `0x80015C6C`, sementara disassembly mempunyai label tambahan di alamat itu. Langkah 4(c)/5 tetap SEBAGIAN.
