@@ -1,5 +1,33 @@
-<!-- verified-live-checkpoint-2026-10-28 -->
-# VERIFIED LIVE CHECKPOINT — 28 Oktober 2026, 04:22 WIB
+<!-- current-step9-helper-checkpoint-2026-10-28 -->
+# CHECKPOINT TERBARU — uji helper counter terisolasi, 28 Oktober 2026, 07:03 WIB
+
+Sumber kode yang diuji pada checkpoint ini: commit [`7f234820f1b83a34654e900592903678365006a5`](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/7f234820f1b83a34654e900592903678365006a5). GitHub Actions [run #40606159061](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40606159061) **completed/success** pada 07:03:03 WIB; seluruh langkah job sukses, termasuk eksekusi, unggah laporan teks, dan cleanup. Artefak [#12779814671](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40606159061/artifacts/12779814671) berukuran **5.377 byte**, digest/SHA-256 ZIP `dd3e559997ce0c9f931f330144de8021bdb3c75fa16b4f21717299c4b2d4d79f`.
+
+## Hasil aktual yang diperiksa dari log dan artefak
+- RNG main EXE `0x80035D78`: **7/7** vektor cocok dengan rumus/state/output yang diharapkan.
+- Jalur argumen negatif helper `0x80037138`: **8/8** kasus lulus; argumen `0xFFFFFFFF` dan `0x80000000`, masing-masing diuji terhadap empat nilai global sintetis `0`, `1`, `0x12345678`, `0xFFFFFFFF`. `v0` cocok dengan nilai `0x80066E7C` yang diinjeksi, global tidak berubah, PC kembali ke sentinel `0x001FF000` setelah 33 instruksi, tanpa error emulator.
+- Setter/getter nilai peserta `0x8001387C`/`0x800138EC`: **16/16** kasus lulus. Total cakupan tes yang tercatat sekarang 31 assertion kasus di tiga rutin/jalur ini; status Step 9 keseluruhan tetap **SEBAGIAN**.
+- Helper lebih dahulu membaca alamat timer melalui pointer yang dimuat dari global `0x80065D34 -> 0x1F801814` dan `0x80065D38 -> 0x1F801110`. Agar eksekusi terisolasi dapat mencapai cabang negatif, kedua halaman MMIO dipetakan sebagai fixture sintetis dan diberi word `0x12345678`. Ini **bukan** model perangkat keras/timer PS1 asli. Bukti mengonfirmasi perilaku cabang helper hanya pada model CPU plus MMIO sintetis tersebut; tidak membuktikan nilai counter saat boot, waktu runtime, pemetaan entry-0, seed RNG awal, atau dampak gameplay.
+- `STEP9_PRIVATE_CLEANUP=PASS`. Artefak run ini berisi laporan/log teks, bukan ROM/BIN/CUE/EXE, BIOS, savestate, RAM dump atau screenshot privat.
+
+## Percobaan sebelumnya dan batas interpretasi
+Run [#40605560982](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40605560982) gagal sebelum menjalankan kasus helper karena `SyntaxError: '[' was never closed` pada pembentukan laporan. Run [#40605654394](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40605654394) memperbaiki sintaks namun tes helper awal berhenti di pembacaan MMIO tak terpetakan; hasil awalnya **bukan** bukti return helper gagal. Run [#40605904131](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40605904131) sudah mendapatkan 7/7, 8/8 dan 16/16, tetapi tabel laporannya memiliki kolom status duplikat. Run #40606159061 adalah pengulangan terakhir dengan MMIO sintetis serta tabel yang telah diperbaiki dan diverifikasi.
+
+## Status kriteria yang berlaku
+- **Langkah 4 — SEBAGIAN:** bukti statis jalur helper dan uji terisolasi negatif-a0 bertambah kuat; lifecycle seed, caller boundaries, base resource entry-0 `0x800AD000`, reachability dan hubungan RNG dengan hasil roulette/battle belum terbukti.
+- **Langkah 5 — SEBAGIAN:** 13 fungsi main EXE dan satu kandidat entry-1 telah dibandingkan secara struktur; cakupan seluruh fungsi/resource/call graph belum menyeluruh.
+- **Langkah 6 — SEBAGIAN:** `+0xB30/+0xB38 -> add -> +0xB40` terverifikasi statis; pointer/alias runtime tetap **BLOCKED**, makna field **UNKNOWN**.
+- **Langkah 7 — SEBAGIAN:** direktori/struktur loader statis saja; runtime mapping/relokasi/checksum tetap **BLOCKED**, DATA2.BIN/DUMMY.BIN belum dipetakan end-to-end.
+- **Langkah 8 — SEBAGIAN:** belum ada bukti yang cukup untuk memberi label biaya Chakra, barrier/upgrade, kartu, giliran, roulette/battle, menang/kalah.
+- **Langkah 9 — SEBAGIAN keseluruhan:** 7/7 RNG + 8/8 jalur helper + 16/16 setter/getter lulus dalam pengujian CPU/MIPS terisolasi; belum menguji semua fungsi atau gameplay.
+- **Langkah 10 — TUNTAS hanya sebagai matriks audit/rekonsiliasi**, bukan sebagai penyelesaian Langkah 4–9.
+
+**Tidak dilakukan:** menjalankan gameplay, menekan input emulator, menjalankan pemain otomatis/monitor gameplay, memulihkan savestate, atau mengubah classifier/policy/runner. Story Mode **TIDAK TERBUKTI TAMAT**. Entri historis di bawah checkpoint ini harus dibaca sebagai catatan bertanggal, dan tidak mengalahkan status di atas.
+
+---
+
+<!-- historical-checkpoint-2026-10-28-0422-superseded -->
+## HISTORICAL CHECKPOINT — 28 Oktober 2026, 04:22 WIB (superseded by checkpoint above)
 
 This addendum supersedes earlier snapshots in this file if they conflict. Repository HEAD at inspection: `985a328446295f4b8e526abd9eac9c6f86e70a6e` on `main`. Latest Actions status inspection: **0 queued and 0 in progress**. The most recent unrelated run, [#40561735718](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40561735718), is named “Naruto Story Mode adaptive player monitor”; its success is a monitor result, not evidence that a player ran or that Story Mode completed.
 

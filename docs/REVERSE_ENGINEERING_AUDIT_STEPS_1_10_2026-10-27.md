@@ -1,3 +1,18 @@
+<!-- current-step9-helper-checkpoint-2026-10-28 -->
+# CHECKPOINT TERBARU — uji helper counter terisolasi, 28 Oktober 2026, 07:03 WIB
+
+Sumber kode yang diuji: commit [`7f234820f1b83a34654e900592903678365006a5`](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/7f234820f1b83a34654e900592903678365006a5). Actions [run #40606159061](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40606159061) **completed/success** pada 07:03:03 WIB. Artefak teks #12779814671: 5.377 byte, SHA-256 ZIP `dd3e559997ce0c9f931f330144de8021bdb3c75fa16b4f21717299c4b2d4d79f`.
+
+Hasil terverifikasi dari log dan laporan: RNG `0x80035D78` **7/7**; helper `0x80037138` jalur `a0<0` **8/8**; accessor `0x8001387C`/`0x800138EC` **16/16**. Untuk helper, argumen `0xFFFFFFFF` dan `0x80000000` diuji pada nilai global sintetis `0`, `1`, `0x12345678`, `0xFFFFFFFF`; `v0` cocok dengan global `0x80066E7C` yang diinjeksi, global tidak berubah, PC mencapai sentinel `0x001FF000` sesudah 33 instruksi dan tanpa error. Log memuat `STEP9_TESTS=PASS` serta `STEP9_PRIVATE_CLEANUP=PASS`.
+
+Batas penting: global pointer `0x80065D34 -> 0x1F801814` dan `0x80065D38 -> 0x1F801110` mengarah ke MMIO; tes memetakan halaman tersebut sebagai fixture sintetis dengan word tetap `0x12345678`, bukan timer/hardware PS1 aktual. Ini mengonfirmasi perilaku cabang return negatif pada CPU plus MMIO sintetis saja—bukan seed boot, lifecycle runtime, reachability entry-0 atau aturan gameplay. Status: Step 4 **SEBAGIAN**; Step 5 **SEBAGIAN**; Step 6 **SEBAGIAN** dengan pointer/alias **BLOCKED** dan semantik field **UNKNOWN**; Step 7 **SEBAGIAN** dengan runtime mapping **BLOCKED**; Step 8 **SEBAGIAN** dengan aturan gameplay utama **UNKNOWN**; Step 9 **SEBAGIAN keseluruhan**; Step 10 **TUNTAS hanya sebagai matriks audit**.
+
+Riwayat metode: [#40605560982](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40605560982) gagal karena SyntaxError sebelum helper diuji; [#40605654394](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40605654394) tidak memetakan MMIO sehingga bukan hasil helper yang valid; [#40605904131](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40605904131) memiliki kolom duplikat pada tabel laporan meski tes lulus. Run final #40606159061 memperbaiki format dan terverifikasi. Artefak hanya laporan/log teks; cleanup lulus.
+
+Tidak ada gameplay, input emulator, restore savestate, pemain otomatis atau perubahan policy/runner yang dilakukan. **Story Mode TIDAK TERBUKTI TAMAT.** Entri historis di bawah ini tetap berguna untuk pelacakan, tetapi checkpoint ini mengungguli status yang bertanggal sebelumnya.
+
+---
+
 # LIVE CRITERION RECONCILIATION — 27 Oktober 2026
 
 ## Step 9 final update — all job steps completed success (21:02 WIB)

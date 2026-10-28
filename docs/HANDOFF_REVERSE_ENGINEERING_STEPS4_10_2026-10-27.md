@@ -1,3 +1,18 @@
+<!-- current-step9-helper-checkpoint-2026-10-28 -->
+# CHECKPOINT TERBARU — uji helper counter terisolasi, 28 Oktober 2026, 07:03 WIB
+
+Sumber kode yang diuji: commit [`7f234820f1b83a34654e900592903678365006a5`](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/7f234820f1b83a34654e900592903678365006a5). Actions [run #40606159061](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40606159061) **completed/success** pada 07:03:03 WIB. Artefak teks #12779814671: 5.377 byte, SHA-256 ZIP `dd3e559997ce0c9f931f330144de8021bdb3c75fa16b4f21717299c4b2d4d79f`.
+
+Hasil terverifikasi dalam log dan laporan: RNG `0x80035D78` **7/7**; helper `0x80037138` jalur `a0<0` **8/8**; accessor `0x8001387C`/`0x800138EC` **16/16**. Untuk helper, argumen `0xFFFFFFFF` dan `0x80000000` diuji pada global sintetis `0`, `1`, `0x12345678`, `0xFFFFFFFF`; v0 cocok dengan global `0x80066E7C` yang diinjeksi, global tetap, PC mencapai sentinel `0x001FF000` sesudah 33 instruksi dan tanpa error. Log memuat `STEP9_TESTS=PASS` serta `STEP9_PRIVATE_CLEANUP=PASS`.
+
+Batas penting: global pointer `0x80065D34` memuat `0x1F801814`, dan `0x80065D38` memuat `0x1F801110`. Tes memetakan MMIO sebagai fixture sintetis dengan word tetap `0x12345678`, bukan timer/hardware PS1 aktual. Hasil ini mengonfirmasi jalur return negatif pada CPU plus MMIO sintetis saja—bukan seed boot, lifecycle, reachability entry-0, atau aturan gameplay. Step 4 tetap **SEBAGIAN**; Step 9 tetap **SEBAGIAN keseluruhan** (belum semua fungsi/conditions/gameplay tercakup).
+
+Riwayat metode: [#40605560982](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40605560982) gagal karena SyntaxError sebelum kasus berjalan; [#40605654394](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40605654394) gagal pada tes akibat MMIO belum dimodelkan. Keduanya bukan hasil permainan. [#40605904131](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40605904131) menghasilkan tes PASS tetapi laporannya memiliki kolom duplikat; #40606159061 adalah run final yang lulus dengan tabel diperbaiki. Cleanup PASS dan artefak hanya teks/log.
+
+Status lintas langkah tetap: Step 4 SEBAGIAN; Step 5 SEBAGIAN (13 main EXE + satu kandidat resource dibandingkan); Step 6 SEBAGIAN (pointer/alias BLOCKED, arti field UNKNOWN); Step 7 SEBAGIAN (runtime mapping BLOCKED); Step 8 SEBAGIAN, aturan biaya/barrier/kartu/turn/battle/menang-kalah masih UNKNOWN; Step 9 SEBAGIAN; Step 10 TUNTAS hanya sebagai matriks audit. Tidak ada gameplay, input emulator, restore savestate, pemain otomatis, atau perubahan policy/runner. **Story Mode TIDAK TERBUKTI TAMAT.**
+
+---
+
 <!-- verified-live-checkpoint-2026-10-28 -->
 # VERIFIED LIVE CHECKPOINT — 28 Oktober 2026, 04:22 WIB
 
@@ -206,3 +221,7 @@ Story Mode: **TIDAK TERBUKTI TAMAT**. Jangan menulis bahwa permainan selesai tan
 5. Untuk Step8, table per-rule harus mencantumkan function/callers, raw branch/store, register/dataflow, source independent kedua, evidence status dan unknown. Teks Jepang harus ditemani terjemahan Indonesia bila dikutip.
 6. Jangan akses repositori lain, jangan mengubah adaptive player / classifier / policy / Story Mode runner / readiness gate. Tidak ada aset privat yang dimasukkan ke Git atau artefak.
 
+
+
+## Kelanjutan wajib setelah checkpoint 28 Oktober 2026
+Jangan mengulang uji Step 9 #40606159061 (sudah 7/7 RNG, 8/8 helper negative-a0, 16/16 accessor). Lanjutkan audit statis dari [matriks live reconciliation](STEP4_10_LIVE_RECONCILIATION_2026-10-27.md). Prioritas teknis: validasi batas caller/callee dan lifecycle seed Step 4 tanpa gameplay; perluas cakupan Ghidra terarah untuk kandidat resource/Step 5; tutup pointer/alias dengan CFG-aware trace atau nyatakan blocker Step 6(b); petakan loader hanya bila jalurnya dapat ditunjukkan statis tanpa gameplay; Step 8 jangan memberi label pada mekanika yang belum terbukti. Jangan jalankan pemain otomatis, workflow monitor gameplay, input tombol, restore savestate, atau emulator. Latest code-test commit `7f234820f1b83a34654e900592903678365006a5`; latest verified run `#40606159061`, artifact `#12779814671`. Story Mode TIDAK TERBUKTI TAMAT.
