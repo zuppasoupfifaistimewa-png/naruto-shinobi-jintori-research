@@ -220,3 +220,10 @@ This establishes static use of field +4 as a small enumerated path selector and 
 ## Full category-field cross-tab
 
 The detail report now cross-tabs all 52 records (report blob `ae8775eab56ec61f9616efa793ef02d896b7935e`). Observed +0→+4 mapping is deterministic in the table: categories 0,1,3,4,6 all have +4=1; categories 5,7,13,14,15 all have +4=2; categories 8,9,10,12 all have +4=0. Counts per category are given in the report; no category has mixed +4 values. This tells us that +4 is perfectly associated with the +0 code in the current 52 rows. It does not identify the natural-language role of either field. Use this cross-tab for future call-path coverage and do not assign semantics yet.
+
+<!-- full-slot-branch-state-handler-2026-10-28 -->
+## Full-slot branch traced one step further
+
+ID detail report blob `32213da37aca5f0b9c6c6f0a90b80a8fd652689d`: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md).
+
+On the `0x801304F8` route where registry field +4 !=1, entry-1 calls `0x80013BF0` with object +0xB. If all 3 IDs in that chosen record are valid, it resets active-object word +0=1, +4=0, byte +9=3, byte +0xC=0 and calls `0x8010D138`. That routine, under the unverified entry1 base hypothesis, reads selected record index D_8013EA88, copies record +0x24→active object +0x366, clears record +0x21, copies record +0x1F→object +0x2E8, sets +0x2E9=8 and +0x2EA=3, calls `0x800C2570`, and continues using record +0x22/+0x24 plus globals. This is static state flow only; the three-slot collection’s player-facing meaning and runtime reachability remain unknown.
