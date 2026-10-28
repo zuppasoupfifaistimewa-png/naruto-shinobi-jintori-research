@@ -320,3 +320,13 @@ Combined with the candidate comparison at `0x800F1FE4–0x800F2018`, the conditi
 Raw entry-1 code immediately before the target comparison (`0x800F1F40–0x800F1F60`) reads the selected record's +0x04 value and tests its sign. When it is negative, the code instead calls `0x80100FC0(record[+0x0F],1)`, `0x8010109C(record[+0x0F],2)), and `0x80101140`; writes active-object byte +0x2E9=`0x14`; clears `D_80139F00+1` and `D_80139EBB`; then jumps to `0x800CFB34`. When record +0x04 is nonnegative, it reaches the separate guarded path, and the target comparison only runs if active-object byte +0x4A2 matches the incoming `$a1`.
 
 Section 28 traces record +0x04 writes from Chakra getter `0x800138EC`, so this is a signed-Chakra precondition within the candidate view. The negative path's visible result and the target path's victory outcome remain unknown. This adds a verified static branch rule but **does not promote Step 8(b)**; game/runtime semantics remain UNKNOWN until mapping and final handlers are resolved.
+
+ 
+<!-- target-threshold-full-precondition-2026-10-28 -->
+## Full precondition chain now recorded for the candidate Chakra-target gate
+
+Raw MIPS before `0x800F1FE4` first counts the set bits among participant halfword +0x0A's bits 12–15. If participant byte +0x20 is nonzero, the code routes to an alternate call/state path, writes active-object byte +0x2E9=`0x14`, clears `D_80139F00+1` and `D_80139EBB`, and jumps to `0x800CFB34`. If +0x20 is zero but active-object byte +0x92B is nonzero, participant halfword +0x0A bit `0x200` selects a jump to `0x800CF644` with value 8 or 6. Otherwise, a negative Chakra field +0x04 takes the negative branch, while nonnegative Chakra may continue.
+
+The gate at `0x800F1FD4` next compares the count of those four flag bits with object byte +0x4A2. A mismatch takes the alternate branch; a match permits the comparison `Chakra(record +0x04) + helper(0x800BDC4C, selected_index)` against target `D_80070C84`. Even at/above target, bit `0x8` from getter `0x80012AD0` can combine with participant bit `0x200` to redirect the path before `0x800CF628`.
+
+This is a fairly detailed static rule for a **multi-condition Chakra-target gate**, but the meanings of the four high flag bits, +0x20, +0x92B, 0x200, global bit 0x8, negative-path state 0x14, jump state values 6/8, and final handler remain unknown. The resource mapping/runtime reachability is still unverified. Do not label this a verified win rule; Step 8(b) remains UNKNOWN.
