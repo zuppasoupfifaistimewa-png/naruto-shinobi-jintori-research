@@ -2514,3 +2514,10 @@ This is progress on Step 7 static loader structure, not runtime mapping: no dest
 See detailed report section 24, blob `9c9cb2ab70ed7e9654dfc0ed0f58114de02d7de4`.
 
 `0x8002D4E4(index)` indexes the active directory by index*8, reads word +4, and rounds it to a 0x800-byte boundary. Example: 0x2F44 becomes 0x3000. `0x8002D838` branches between `0x8002DEC4` and `0x8002DF30` using its third incoming argument, with rounded size, then calls `0x8002D00C`. That helper reads the first word (start LBN) from the same directory entry, and `0x8002CF9C` validates destination/size before `0x8002D5C0` appends a request record to a bounded queue, count at GP+0x15C with <15 guard. This statically closes the directory-entry→size rounding→queued read-request path but not the final RAM destination or overlay relocation. Statuses unchanged.
+
+<!-- post-bootstrap-arena-start-2026-10-28 -->
+## Post-bootstrap allocator start derived from raw MIPS
+
+Detailed report section 25, blob `6e61cdd27b0452a692083e796b31ea4bce1e9c3c`.
+
+`T_8002DD80` rounds startup directory length `0x2F44→0x3000), adds it to bootstrap pointer `D_80010498=0x800AD450), and stores `0x800B0450` at GP+0x168. Startup calls `0x8002DE60`, which masks that pointer and uses `0x1F8000 - masked_pointer` as the available size, then initializes the allocator via `0x8002DDEC → 0x80035AA8` (free list head `D_80065C6C`). Later block allocation uses `0x80035B08` through `0x8002DEC4/0x8002DF30`. The allocator arena start is statically derived; exact entry0/entry1 execution address and overlays remain unknown because allocation header / copy / relocation paths are not closed.
