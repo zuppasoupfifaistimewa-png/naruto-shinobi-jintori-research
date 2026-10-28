@@ -553,3 +553,17 @@ A cross-check of the same entry-1 raw disassembly reveals direct producer paths 
 - Main-EXE code at `0x800138EC` is an accessor for the participant's Chakra value. Thus these are direct static producer paths that populate record +0x04 from Chakra, rather than a naming guess from the field's numerical shape.
 
 This improves the section 27 interpretation: the comparison is structurally `Chakra(record[+4]) + helper(0x800BDC4C, selected_index)` against configured target `D_80070C84`. Still, be precise about what has and has not been proved: the field is written from the Chakra getter on these code paths, but the helper's return meaning is unknown, the call paths are under an unverified entry-1 map, and reaching or exceeding the target only passes additional flag checks rather than directly proving victory. **Confidence: strong static candidate for a Chakra-target gate; victory rule remains UNKNOWN until helper, guards, final handler and runtime mapping are closed.**
+
+ 
+## 29. Third consumer of 0x800BDC4C compares its return with a second configured scalar
+
+The caller around `0x80110FFC–0x80111060` adds another use of the same helper result:
+
+- `0x80111004` loads the selected participant index from `D_8013EA88` into `$a0`; `0x80111008` calls `0x800BDC4C`.
+- The return is stored to global `D_8013EAF0` at `0x80111010`.
+- The caller then invokes main-EXE getter `0x80012A8C`, which reads `D_80070C88` (the config field whose player-facing meaning remains unknown).
+- At `0x80111054`, in the delay slot of `JAL 0x80109974`, raw MIPS computes `D_8013EAF0 - D_80070C88` and passes that difference as the callee's first argument. The same caller then passes the getter result to `0x80109984` and calls `0x80109994`, before clearing object byte +0x580 and resuming a broader state path.
+
+Together with the other two call sites, the helper's return is used as a per-index numeric value in three ways: it is added to participant record +4 (which is populated from Chakra) and compared against target D_80070C84; it is added to Chakra getter output and clamped; and it is stored and differenced against configuration scalar D_80070C88 before follow-on calls. This consistent numerical use is evidence of a participant-associated adjustment/value, but it does not identify the value's name or purpose. The entry-1 resource base and pointer ownership remain hypothetical, and callee effects `0x80109974/0x80109984/0x80109994` have not been tied to a visible result.
+
+**Confidence:** static numeric dataflow **TERVERIFIKASI within candidate disassembly**; game rule/name **UNKNOWN**; runtime mapping **BLOCKED/UNKNOWN**. This does not upgrade Step 8(b) or turn the threshold gate into a verified victory rule.
