@@ -2458,3 +2458,8 @@ These are proven static dataflows but remain conditional on unverified entry-1 b
 See [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), report blob `a97e6f535d39deaa9ff50ff16ce4bf796e9d8c84`.
 
 Five direct calls to `0x80015578` exist in the entry-1 disassembly. It reads registry word +4 with invalid ID fallback FFFFFFFF; observed row values: 0:7, 1:26, 2:19. At `0x801302EC`, field +4==1 triggers a subsequent field +0 category check. At `0x801304F8`, +4==1 routes selected ID to `0x80015ADC(0,ID)); otherwise object byte +0xB is passed to `0x80013BF0`, whose static code checks whether all three IDs in a selected record are valid. When full, caller sets object word +0=1, byte +9=3, byte +0xC=0 and word +4=0, then calls `0x8010D138`; otherwise `0x8010CDD0`. Game-semantic naming and runtime reachability remain UNKNOWN.
+
+<!-- registry-category-plus4-crosstab-2026-10-28 -->
+## Full registry category / field+4 cross-tab
+
+Parsed all 52 rows from existing text-only main-EXE disassembly (report blob `ae8775eab56ec61f9616efa793ef02d896b7935e`). Category +0→field+4 mapping: 0→1 (14 rows), 1→1 (1), 3→1 (2), 4→1 (4), 5→2 (14), 6→1 (5), 7→2 (1), 8→0 (1), 9→0 (3), 10→0 (1), 12→0 (2), 13→2 (2), 14→2 (1), 15→2 (1). The mapping is perfectly consistent across observed data; meanings remain UNKNOWN. This cross-tab is not runtime/gameplay evidence.
