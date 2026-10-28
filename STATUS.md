@@ -3971,3 +3971,8 @@ The entry1 path statically reads through `0x800AE900 + 4*registry_field0` for fi
 The ID trace report now documents that the entry1 prefix contains six address-shaped words at `0x800D0128..0x800D013C` referring to `0x800AD454`, `0x800AD45C`, `0x800AD464`, `0x800AD46C`, `0x800AD478`, and `0x800AD484`. Separately, main startup code calls `0x800AD454`. These are candidate helper pointers, not a verified runtime function table because the reader/relocation behavior is unknown.
 
 The dispatch at entry1 `0x8010F444..` reads through `0x800AE900+4*field0`, but the successful raw dump in run #40619049176 shows bytes at that address under entry0 base `0x800AD000` are MIPS instruction-like words, not jump pointers. The base/overlay assumptions cannot yet be combined into one confirmed runtime map. Step 7 remains UNKNOWN/BLOCKED; Step 6(b) remains BLOCKED; Step 8(b) remains UNKNOWN. See [detail report](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md). No gameplay/player-adaptive execution; Story Mode TIDAK TERBUKTI TAMAT.
+
+<!-- registry-full-distribution-2026-10-28 -->
+## Full registry field-distribution check
+
+All 52 registry rows were parsed from the existing main-EXE text artifact and counts recorded in [the ID trace report](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md). Field +0 has 14 observed codes within 0..15 (codes 2 and 11 absent); field +4 is 0/1/2; +8 has signed values -50..500 and the observed discrete set is tabulated in the report; +0xC equals ID+239 for all 52 rows. This confirms the data shapes only. The category dispatch's table ownership/runtime targets remain unknown due the base/overlay conflict. No status promotion; Step 6(b) BLOCKED, Step 7 runtime mapping UNKNOWN/BLOCKED, Step 8(b) UNKNOWN.
