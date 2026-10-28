@@ -366,3 +366,12 @@ A sweep across the available entry-1 raw disassembly finds **74** direct `JAL 0x
 The three other call sites do not set a new immediate `$a0` in their delay slots; their argument provenance is left to the instructions before the call. Some uses of `0x25B` are in the negative-attribute branch already described at `0x8011577C), but the same constant is used in several other code paths.
 
 This repeated dense argument range is a good target for identifying a shared event/message/resource dispatcher, **but that description is a hypothesis only** until the body of `0x800C2FD8` is decompiled and its downstream data lookup or UI effect traced. The helper lies outside the entry-1 slice and inside the current hypothetical entry0 address range; the entry0 view at base `0x800AD000` and its runtime ownership are not yet validated. Do not translate these numeric codes into Japanese messages or gameplay outcomes without a verified string table or consumer.
+
+
+## 20. Bootstrap address overlaps the hypothesized entry-0 map
+
+The loader research gives a further concrete check on the mapping conflict. The initial `DATA.BIN` bootstrap is at file offsets `0x00..0x2F44`: first `0x44` bytes of bootstrap code, then a `0x2F00)-byte directory. Main-EXE startup contains a direct call to `0x800AD454`; statically, the bootstrap copy routine at that address copies `0x2F00) bytes from `0x800AD494` (bootstrap offset +0x44) to `0x8006D830`. This is consistent with the bootstrap's first byte being resident at `0x800AD450) when that routine executes.
+
+The entry-0 resource (file offset `0x5F800`, 110,536 bytes) was imported for analysis at the *hypothetical* base `0x800AD000`. If that base were simultaneously valid while the bootstrap is resident at `0x800AD450), the address ranges would overlap: the bootstrap directory lives at `0x800AD494..0x800B0193), and entry 0's candidate map covers `0x800AD000..0x800C7F07`. The same address region is therefore not evidence for two independent, simultaneously resident memory images.
+
+This is consistent with a lifecycle/overlay replacement possibility, but does not prove when entry 0 is loaded, whether its assumed base is correct, or which resource owns `0x800AE900) during the entry-1 dispatch. Combined with the instruction-like words dumped at `0x800AE900), this further weakens the practice of using base `0x800AD000) as if it were a validated runtime map. **Step 7 mapping remains UNKNOWN/BLOCKED; Step 6(b) remains BLOCKED.** No runtime test is implied.
