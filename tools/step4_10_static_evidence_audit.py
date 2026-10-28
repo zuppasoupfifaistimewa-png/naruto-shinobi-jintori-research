@@ -98,10 +98,8 @@ def write_csv(path, rows, fields=None):
 def a1(entry1,out):
     ws=words(entry1); nbytes=len(entry1)
     bases=sorted(set(BASES))
-    sweepbases=list(range(min(BASES)-0x1000,max(BASES)+0x1000+1,4))
-    # user specified +/-0x1000 around each candidate; unique global sweep has adequate coverage
-    if len(sweepbases)>3000:
-        sweepbases=list(range(0x800AD000-0x1000,0x800D0000+0x1000+1,4))
+    # Controls are +/-0x1000 around EACH candidate, in 4-byte increments.
+    sweepbases=sorted({b+d for b in BASES for d in range(-0x1000,0x1000+1,4)})
     def count_for(base):
         jals=[]
         for i,w in enumerate(ws):
