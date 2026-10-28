@@ -2429,3 +2429,16 @@ The assumed entry1 address view shows six consecutive words `0x800AD454, 0x800AD
 Against this, entry1 code computes `0x800AE900 + 4*field0` for field0<16 and indirect-jumps through the loaded word, but an entry0 raw data probe at `0x800AE900) in the `0x800AD000) base hypothesis found 64 bytes that decode as MIPS instruction forms (two JALs resolve to `0x80021140` and `0x80037138`), not a 16-entry pointer table. The exact mapping, overlays, relocation, and lifecycle that reconcile these facts are unknown. This strengthens the rationale for static loader/copy/relocation investigation; it does not prove any of the alternative explanations.
 
 No status promotion: Step 6(b) remains BLOCKED, Step 7 runtime mapping UNKNOWN/BLOCKED, Step 8(b) UNKNOWN; no emulator/gameplay/adaptive player and Story Mode remains TIDAK TERBUKTI TAMAT.
+
+<!-- registry-full-distribution-2026-10-28 -->
+## Full 52-row registry distribution parsed from existing raw main-EXE text
+
+Added in detail report [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), report blob `e62ffb3076439ccf91660ebb1403b43aa605e5ae`.
+
+All 52 record rows were parsed locally from the already-downloaded text-only main-EXE disassembly; no disc image was downloaded for this pass. Four 32-bit words per row were checked:
+- +0 counts: 0:14, 1:1, 3:2, 4:4, 5:14, 6:5, 7:1, 8:1, 9:3, 10:1, 12:2, 13:2, 14:1, 15:1. Codes 2 and 11 do not occur. Each observed +0 code lies in the <16 range consumed by the entry1 dispatch.
+- +4 counts: 0:7, 1:26, 2:19.
+- +8 unique values: -50,-30,-25,0,1,2,3,4,5,6,7,25,50,75,100,150,200,250,350,400,500.
+- +0xC equals ID+239 exactly for every row, from 239 to 290.
+
+These are numeric shape/usage facts, not labels. Category-to-branch mapping remains unknown because the static address hypotheses conflict, and no field receives a game-semantic name.
