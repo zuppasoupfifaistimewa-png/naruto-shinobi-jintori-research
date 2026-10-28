@@ -1,3 +1,7 @@
+# HANDOFF STATUS ADDENDUM — Step 6(b) scan pending, 28 Oktober 2026
+
+Static scan [#40611660635](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40611660635) is currently `in_progress` on `main` commit `ea148ca60af2e3eeaa1b58141532e1ff5a98dd60`. Job ID `122564387469`; last visible step `Install disc extraction tools`; no artifact yet. Start 07:53:40 WIB; workflow timeout is 35 minutes, giving a deadline around 08:28:40 WIB, not a guaranteed completion estimate. Inspect this run and its text-only artifact/log when available. Do not rerun if it fails until the exact failure is understood. It is a static Ghidra scan; not an emulator/gameplay run and not an adaptive-player workflow.
+
 # HANDOFF ADDENDUM — targeted audit 28 Oktober 2026
 
 Checkpoint ini menambahkan [audit terarah Step 4–10](STEP4_10_TARGETED_AUDIT_2026-10-28.md). Awal sesi membaca HEAD `4b20564b38c895495755143b2aa777dc7ab6b5e5` pada `main`; sesudah audit dokumen diperbarui, periksa HEAD live sebelum tindakan berikutnya. Actions `queued=0`, `in_progress=0` pada query API; run #40606159061 sudah selesai.
