@@ -317,3 +317,11 @@ At candidate entry-1 addresses `0x800F1FE4–0x800F2024`, a guarded path passes 
 Cross-check: entry1 callsite `0x8012AC04` passes a byte from `D_8013A554+0x94A` to the same helper; returned value is added to main-EXE Chakra getter `0x800138EC`, then clamped to -9999..99999 before a follow-on function. This shows helper output is used as a numeric contribution in a Chakra-related path, but does not name that contribution.
 
 Priority next: inspect helper `0x800BDC4C` and handler `0x800CF628` with correct overlay/returned-pointer context; continue loader allocator trace. Run #40626130930 remains the current static Ghidra audit (started 10:20:35 WIB, timeout boundary about 11:20:35 WIB). No emulator/adaptive player. Step 8(b) stays UNKNOWN pending independent closure.
+
+ 
+<!-- chakra-field-plus4-producer-2026-10-28 -->
+## Target comparison narrowed: participant field +0x04 is populated from Chakra
+
+New detail report section 28, blob `4061891eba985aaec2469eb13f8a6287e11ad93c`: candidate entry-1 code at `0x80111090` calls main getter `0x800138EC` and stores its return into participant record +0x04 at `0x801110B8`; a second path at `0x801110FC` stores the selected participant's getter return to +0x04 at `0x80111124`. Therefore record +0x04 is populated from Chakra on these paths.
+
+Together with section 27, the candidate target gate is now: `Chakra(record +0x04) + helper(0x800BDC4C, selected_index)` compared with configured target `D_80070C84`. A below-target branch routes away; at/above target still requires flags before a different transition. This is a strong static candidate for a Chakra target check, not yet an established win condition: helper output semantics, guard meaning, target handler `0x800CF628`, and runtime mapping remain unknown. Step 8(b) remains UNKNOWN.
