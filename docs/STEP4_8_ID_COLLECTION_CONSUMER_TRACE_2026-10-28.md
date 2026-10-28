@@ -488,3 +488,25 @@ The raw startup path and allocator code provide a static lower bound for the mem
 This **does not** prove that DATA.BIN entry 0's executable code starts at `0x800B0450), because allocations can include allocator/header bookkeeping and the disk reader may load a resource buffer that a higher-level overlay loader subsequently copies/relocates. It does show why importing entry 0 at `0x800AD000` is not a loader-derived runtime-base proof: `0x800AD450..` is the initial bootstrap/ directory area, and the subsequent allocator is reinitialized to start at `0x800B0450).
 
 The strongest next test is a bounded alternate-base decode of the entry0 bytes corresponding to the entry1 cross-resource target `0x800C2FD8`, using the new allocator-derived region as a hypothesis and explicitly allowing for block-header offsets. That is a different test from the earlier `0x800AD000)-base inspection and could resolve the argument-contract contradiction; until it is done, the target body/runtime identity stays **UNKNOWN**. Step 7 still remains partial and runtime mapping **UNKNOWN/BLOCKED**.
+
+## 26. Allocator-derived alternate entry-0 mapping test: partial improvement, unresolved contract
+
+The next targeted test was performed in [Actions run #40623532269](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40623532269), artifact [#12788373175](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40623532269/artifacts/12788373175). The artifact ZIP SHA-256 `c16f6df28bea5f4cdf71fec8fb9009b6b550fb60e12ee738b32c539ebbf79194` matches the GitHub digest. It contains text/logs only; the workflow states no emulator/gameplay/input/savestate and no private binary artifact.
+
+The earlier `0x800AD000` entry-0 hypothesis overlaps the live bootstrap address range and yields a complex record predicate at `0x800C2FD8` (reads parameter fields +4/+8/+0xC and calls accessors). But entry-1 raw code contains 74 direct `JAL 0x800C2FD8` sites; 71 pass constants in `0x258..0x275`. Those constants are not plausible pointers to the predicate's record argument, because the first word load would be from unaligned addresses such as `0x25F`.
+
+The new import maps the same entry-0 bytes at the **candidate allocator arena start** `0x800B0450`, derived statically from the bootstrap size. Under this alternate view:
+- `0x800C2FD8` is at resource offset `0x12B88` and decodes as `li v0,1; jr ra; sltu v0,zero,a0` (the final instruction is the return delay slot), i.e. local return behavior `a0 != 0`.
+- `0x800C2570` no longer looks like the old view's two-instruction epilogue stub; however the target script manually seeds this address and the resulting Ghidra body is not proven to start at a true function boundary. Its local instruction and body size therefore do not establish a valid function identity.
+- The scalar argument shape is now compatible with a boolean-like input at `0x800C2FD8`, but that helper would return true for every constant in `0x258..0x275`. That does **not** explain why 74 callers use different numeric constants, so the entry1-to-entry0 call contract remains only partially improved, not resolved.
+
+The alternate mapping also has an important hard bound: `0x800AE900` lies **below** `0x800B0450`, so the 16-word dispatcher read by entry1 cannot reside inside entry0 if its base is at `0x800B0450`. Under the old `0x800AD000` hypothesis, those same numeric addresses were inside the imported entry0 bytes but the words looked like instructions, not jump pointers. Thus **neither tested entry0 mapping establishes ownership of the `0x800AE900` jump table**.
+
+### Interpretation / revised hypothesis ranking
+
+- **Static fact:** bootstrap setup yields allocator arena start `0x800B0450`.
+- **Candidate, not verified:** entry0 may be allocated/copied at or after this arena, potentially with a header or pointer adjustment; mapping payload exactly at the arena start is only one test.
+- **Rejected as a simultaneous map:** entry0 at `0x800AD000` cannot coexist with the bootstrap directory at `0x800AD494..0x800B0193`; the regions overlap. It could only represent a different lifecycle/overlay state, not a simultaneous independent image.
+- **Still unknown:** the actual pointer returned for entry0/entry1, any allocation header/payload offset, whether code bytes are copied/relocated after allocation, which module owns `0x800AE900` at dispatch time, and why the 74 caller constants map to this target.
+
+Next best experiment is now a **static caller/allocator trace**, not another base guess: export raw MIPS + call contexts for `0x8002D838`, `0x8002DEC4`, `0x8002DF30`, `0x8002D00C`, `0x8002D5C0`, `0x8002DE60`, `0x8002DDEC`, `0x80035AA8`, and `0x80035B08`, then determine the returned pointer and any copied payload/header adjustment. Keep Step 6(b) **BLOCKED**, Step 7 runtime mapping **UNKNOWN/BLOCKED**, Step 8(b) **UNKNOWN**. No gameplay rule is promoted by the alternate-base import.
