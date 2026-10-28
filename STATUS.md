@@ -4018,3 +4018,10 @@ Run [#40621318421](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-j
 ## Predicate global dependencies mapped statically
 
 The targeted trace now maps dependencies of the candidate `0x800C2FD8` body: global word `D_80070734` via getter/setter `0x80012444/0x80012434`; global byte `D_8007073C` via `0x800126E8` and a store path in `0x80012454`; lookup of the byte at predicate argument +0xC against +4 values in the four 0xB4-stride records at `0x80070EA0` via `0x80017144`; fallback threshold reads halfword `D_80070E90` via `0x80013380`. Found-branch uses an unresolved `$v1) after callee return, so don't claim found→true. This predicate interpretation remains conditional on entry0 base hypothesis and incompatible with entry1's small-constant arguments until loader/overlay timing is resolved.
+
+<!-- bootstrap-directory-registration-chain-2026-10-28 -->
+## Step 7 loader progress — bootstrap directory lifecycle traced statically
+
+The new section 23 of [the ID/consumer and loader trace](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md) links main startup to directory registration and reads: startup `0x80011560) uses `0x8002D710` first with `0x80055898` then, after successful checks, with `0x8006D830`; `0x8002D710` stores the pointer at `0x9C($gp)`. Bootstrap routine `0x800AD454` copies the 0x2F00-byte directory from `0x800AD494` to `0x8006D830`. Getter `0x8002C9C4` returns the active directory pointer, and `0x8002D00C` reads the first word of indexed 8-byte entries to the lower-level read path. Wrapper `0x8002D838` shows descriptor resolution and two alternate resource-buffer paths.
+
+This verifies the bootstrap directory setup/lookup path statically, but not where entry 0/1 are finally copied in RAM or which resource owns `0x800AE900` at dispatch time. Step 7 overall stays SEBAGIAN; runtime resource base/relocation remains UNKNOWN/BLOCKED; Step 6(b) BLOCKED; Step 8(b) UNKNOWN. No statuses promoted.
