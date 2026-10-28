@@ -4030,3 +4030,8 @@ This verifies the bootstrap directory setup/lookup path statically, but not wher
 ## Step 7 static loader evidence extended
 
 Raw MIPS trace shows `0x8002D4E4` reads directory word +4 and rounds it upward to a 0x800-byte multiple; `0x8002D838` uses this for one of two request/allocation paths, and `0x8002D00C` gets entry +0 (start LBN) and routes to read setup `0x8002CF9C`/`0x8002D5C0`. The latter queues reads under a GP+0x15C count guard (<15). Detailed chain in [ID/loader trace report](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), section 24. This verifies directory and queued-read preparation statically, but not final RAM destination, overlay ownership, or relocation. Step 7 remains partial, runtime mapping UNKNOWN/BLOCKED; Step 6(b) remains BLOCKED; no rule statuses promoted.
+
+<!-- post-bootstrap-arena-start-2026-10-28 -->
+## Loader static finding — post-bootstrap allocation starts at 0x800B0450
+
+Section 25 of the detailed trace confirms raw static flow: `0x800AD450 + round_up(0x2F44,0x800)=0x800B0450); startup passes this value to `0x8002DE60), which initializes allocator metadata via `0x8002DDEC)/`0x80035AA8`. Later allocations use `0x80035B08` via `0x8002DEC4/0x8002DF30`. This establishes the post-bootstrap memory arena start, **not** the actual executable overlay base, because allocators use headers and the caller may copy/relocate loaded bytes. Step 7 remains partial; runtime mapping UNKNOWN/BLOCKED; Step 6(b) BLOCKED; Step 8(b) UNKNOWN.
