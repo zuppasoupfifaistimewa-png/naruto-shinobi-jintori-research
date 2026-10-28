@@ -173,3 +173,14 @@ The entry0 static table-dump run succeeded: Actions [#40619049176](https://githu
 Therefore reject only this specific mapping assumption: the bytes at offset +0x1900 in entry0 **if** imported/mapped at `0x800AD000) cannot be taken as the 16-word table named by entry1. It remains unknown which module actually owns memory `0x800AE900) when entry1's dispatch runs. Entry1 still statically forms that address, adds `4*field0` (with field0 <16), loads a word, and executes `jr` through it. The address calculation is verified; table ownership/target map/runtime dispatch are not.
 
 This result strengthens Step 7's load-base/overlay blocker; do not promote Step 6(b)/7 or label the 16 categories. Next: resolve which code/resource is resident at `0x800AE900) at the time the entry1 routine executes, using loader relocation/copy logic or a new static mapping artifact. No emulator, gameplay, savestate, or adaptive-player run was used.
+
+<!-- cross-resource-pointer-jump-table-conflict-2026-10-28 -->
+## Further mapping contradiction — entry1 addresses helpers at 0x800AD454 but 0x800AE900 contains code-like words in entry0 view
+
+Detail added to [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), latest blob `930fd9d253154add0a66db36012bc9db9620dcca`.
+
+The entry1 static prefix at `0x800D0128..0x800D013C` stores six aligned words pointing to `0x800AD454`, `0x800AD45C`, `0x800AD464`, `0x800AD46C`, `0x800AD478`, and `0x800AD484`. Treat them as a **candidate function-address array** until a reader is identified. Main EXE also directly calls `0x800AD454` in startup code at `0x800115DC`.
+
+But a bounded entry0 dump at `0x800AE900..0x800AE93F` under hypothetical base `0x800AD000` finds instruction-like words (including JALs), not 16 jump pointers, whereas entry1 code at `0x8010F444..` computes `0x800AE900+4*field0`, loads a word and `jr`s to it. The existing static address assumptions therefore cannot be collapsed into a single confirmed runtime map. Likely research gap is module lifecycle/base/relocation or another resource owning that address, but these alternatives are not yet distinguished.
+
+Next: static loader/copy/relocation analysis to determine what occupies `0x800AD000..` when entry1 dispatch runs; identify who consumes the six-word pointer group. Do not retry the failed savestate, do not run emulator/adaptive player. Step 6(b) remains BLOCKED; Step 7 runtime map BLOCKED/UNKNOWN; Step 8(b) UNKNOWN. Story Mode remains TIDAK TERBUKTI TAMAT.
