@@ -112,3 +112,8 @@ A new static trace is recorded in [`STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28
 ## Restore gate update
 
 Runs [#40613996374](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40613996374) and [#40614208610](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40614208610) both crash with exit 139 at savestate load before load-call return/event; rehydrating BIOS into the sanitized checkpoint yields bytes identical to raw state. Mark this checkpoint **UNRESTORABLE IN THE TESTED PCSx-Redux FLOW / WAIT** and do not repeat identical loads without new evidence. No controller input was sent.
+
+
+## Descriptor selector boundary note
+
+The two table-backed direct callers currently identified feed selector values 0–8 into `0x80015610`; selectors 9–17 are permitted by the function guard but not selected by records in the audited `0x80064918` and `0x80057798` tables. Their zero-filled blocks are therefore not evidence of an active gameplay configuration on these paths. The broader all-game reachability question remains unproven. Details in [the preset/list trace](STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md).
