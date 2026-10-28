@@ -232,3 +232,10 @@ On the `0x801304F8` route where registry field +4 !=1, entry-1 calls `0x80013BF0
 ## Cross-resource handler call family inventoried
 
 The ID trace report now lists all 74 direct entry-1 calls to `0x800C2FD8` (detail blob `fcae52c9ba671da8fc70eaedae9a4efd5b882a82`). In 71 cases the delay-slot argument is a constant in `0x258..0x275`; argument `0x25B` appears seven times and `0x25F` eleven times. This suggests a shared event/message/resource-indexed handler as a hypothesis, but its function body and data lookup are not in the entry-1 slice, and the numeric codes have no confirmed labels. The helper sits within the hypothetical entry0 address range; mapping/ownership stays blocked. Next should be a targeted decompilation of `0x800C2FD8` from existing text artifacts if available, then trace any table/string data it consumes. Do not label the constants as Japanese messages yet.
+
+<!-- bootstrap-entry0-overlap-2026-10-28 -->
+## Further address-map constraint: bootstrap overlaps hypothetical entry0 map
+
+Detail report updated at blob `fd38f7a464eda055eddb2adcbb11516fbf91be85`. Main startup calls `0x800AD454`; bootstrap code there copies the `0x2F00)-byte directory from `0x800AD494) to `0x8006D830), consistent with DATA.BIN bootstrap base `0x800AD450) during that routine. If extracted DATA.BIN entry 0 is separately mapped at hypothetical base `0x800AD000), it covers `0x800AD000..0x800C7F07`, overlapping the bootstrap directory at `0x800AD494..0x800B0193`. These two map assumptions cannot be treated as separate co-resident images in the same address range at that time. Overlay replacement/lifecycle is a possibility, not proven.
+
+This makes Step 7 loader/overlay ownership the right blocker: establish when bootstrap memory is replaced and what is resident at `0x800AE900) during entry1 dispatch. Keep Step 6(b) BLOCKED and runtime mapping UNKNOWN/BLOCKED. Detail report contains the static ranges and limits.
