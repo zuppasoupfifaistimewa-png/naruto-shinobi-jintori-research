@@ -36,6 +36,9 @@ ENTRY = ENTRY_VIRTUAL & 0x1FFFFFFF
 COUNTER_HELPER_VIRTUAL = 0x80037138
 COUNTER_GLOBAL_VIRTUAL = 0x80066E7C
 COUNTER_GLOBAL = COUNTER_GLOBAL_VIRTUAL & 0x1FFFFFFF
+TIMER_PTR_GLOBAL_A_VIRTUAL = 0x80065D34
+TIMER_PTR_GLOBAL_B_VIRTUAL = 0x80065D38
+MMIO_SYNTHETIC_WORD = 0x12345678
 STATE_VIRTUAL = 0x800A3118
 STATE = STATE_VIRTUAL & 0x1FFFFFFF
 # PS1 KSEG0 addresses 0x80000000–0x801FFFFF alias physical RAM 0x00000000–0x001FFFFF.
@@ -218,7 +221,17 @@ def run_player_value_accessor_tests(code: bytes, gp: int) -> list[dict[str, obje
 
 
 def run_counter_helper_tests(code: bytes, gp: int) -> list[dict[str, object]]:
-    """Verify the negative-argument helper path against a controlled global word."""
+    """Test the negative-a0 helper path with the loaded image's timer MMIO pointers mapped."""
+    timer_off_a = TIMER_PTR_GLOBAL_A_VIRTUAL - TEXT_VIRTUAL_BASE
+    timer_off_b = TIMER_PTR_GLOBAL_B_VIRTUAL - TEXT_VIRTUAL_BASE
+    if min(timer_off_a, timer_off_b) < 0 or max(timer_off_a, timer_off_b) + 4 > len(code):
+        raise ValueError("timer pointer globals are outside verified executable text")
+    timer_ptr_a = struct.unpack_from("<I", code, timer_off_a)[0]
+    timer_ptr_b = struct.unpack_from("<I", code, timer_off_b)[0]
+    if timer_ptr_a % 4 != 0 or timer_ptr_b % 4 != 0:
+        raise ValueError("loaded timer MMIO pointer is not word aligned")
+    timer_pointers = sorted({timer_ptr_a, timer_ptr_b})
+
     global_values = [0x00000000, 0x00000001, 0x12345678, 0xFFFFFFFF]
     negative_args = [0xFFFFFFFF, 0x80000000]
     rows: list[dict[str, object]] = []
@@ -227,6 +240,15 @@ def run_counter_helper_tests(code: bytes, gp: int) -> list[dict[str, object]]:
             emu = Uc(UC_ARCH_MIPS, UC_MODE_MIPS32 | UC_MODE_LITTLE_ENDIAN)
             emu.mem_map(RAM_BASE, RAM_SIZE)
             emu.mem_write(TEXT_BASE, code)
+            mapped_pages: set[int] = set()
+            for pointer in timer_pointers:
+                page = pointer & ~0xFFF
+                if RAM_BASE <= page < RAM_BASE + RAM_SIZE:
+                    pass
+                elif page not in mapped_pages:
+                    emu.mem_map(page, 0x1000)
+                    mapped_pages.add(page)
+                emu.mem_write(pointer, struct.pack("<I", MMIO_SYNTHETIC_WORD))
             emu.mem_write(COUNTER_GLOBAL, struct.pack("<I", global_value))
             emu.reg_write(UC_MIPS_REG_GP, gp)
             emu.reg_write(UC_MIPS_REG_SP, STACK)
@@ -272,6 +294,10 @@ def run_counter_helper_tests(code: bytes, gp: int) -> list[dict[str, object]]:
                 "actual_v0": f"0x{actual_v0:08X}",
                 "expected_global": f"0x{global_value:08X}",
                 "actual_global": f"0x{actual_global:08X}",
+                "actual_pc": f"0x{actual_pc:08X}",
+                "timer_ptr_a": f"0x{timer_ptr_a:08X}",
+                "timer_ptr_b": f"0x{timer_ptr_b:08X}",
+                "mmio_test_word": f"0x{MMIO_SYNTHETIC_WORD:08X}",
                 "return_to_sentinel": bool(state["returned"]),
                 "instructions": int(state["instructions"]),
                 "budget_exceeded": bool(state["budget_exceeded"]),
@@ -386,14 +412,16 @@ def main() -> int:
         "",
         "- Scope: hanya menguji helper main EXE 0x80037138 dengan a0 bertanda negatif sambil menetapkan global 0x80066E7C ke empat word uji di RAM terisolasi.",
         "- Expected: v0 mengembalikan word global yang disuntikkan dan global tidak berubah; input a0 diuji pada 0xFFFFFFFF dan 0x80000000.",
+        f"- Timer pointer globals in the loaded EXE: {TIMER_PTR_GLOBAL_A_VIRTUAL:#010x} -> {helper_rows[0]['timer_ptr_a']}; {TIMER_PTR_GLOBAL_B_VIRTUAL:#010x} -> {helper_rows[0]['timer_ptr_b']}. Referenced MMIO locations are mapped to the stable synthetic word {helper_rows[0]['mmio_test_word']}; this is a CPU-test fixture, not real PS1 hardware.",
         "",
-        "| Kasus | Entry | a0 | Global harapan | v0 aktual | Global aktual | Instruksi | Return | Status |",
-        "|---|---|---|---|---|---|---:|---|---|",
+        "| Kasus | Entry | a0 | Global harapan | v0 aktual | Global aktual | PC aktual | Instruksi | Error | Return | Status |",
+        "|---|---|---|---|---|---|---|---:|---|---|---|",
     ]
     for r in helper_rows:
         lines.append(
             f"| {r['label']} | {r['entry']} | {r['a0']} | {r['expected_v0']} | "
-            f"{r['actual_v0']} | {r['actual_global']} | {r['instructions']} | "
+            f"{r['actual_v0']} | {r['actual_global']} | {r['actual_pc']} | {r['instructions']} | "
+            f"{r['emulator_error'] or '-'} | {'PASS' if r['return_to_sentinel'] else 'NO'} | {'PASS' if r['pass'] else 'FAIL'} |"
             f"{'PASS' if r['return_to_sentinel'] else 'NO'} | {'PASS' if r['pass'] else 'FAIL'} |"
         )
     lines += [
