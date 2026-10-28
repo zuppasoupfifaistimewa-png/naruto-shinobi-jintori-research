@@ -510,3 +510,35 @@ The alternate mapping also has an important hard bound: `0x800AE900` lies **belo
 - **Still unknown:** the actual pointer returned for entry0/entry1, any allocation header/payload offset, whether code bytes are copied/relocated after allocation, which module owns `0x800AE900` at dispatch time, and why the 74 caller constants map to this target.
 
 Next best experiment is now a **static caller/allocator trace**, not another base guess: export raw MIPS + call contexts for `0x8002D838`, `0x8002DEC4`, `0x8002DF30`, `0x8002D00C`, `0x8002D5C0`, `0x8002DE60`, `0x8002DDEC`, `0x80035AA8`, and `0x80035B08`, then determine the returned pointer and any copied payload/header adjustment. Keep Step 6(b) **BLOCKED**, Step 7 runtime mapping **UNKNOWN/BLOCKED**, Step 8(b) **UNKNOWN**. No gameplay rule is promoted by the alternate-base import.
+
+
+## 27. Candidate target-threshold branch: participant value + helper result is compared with configured target
+
+The existing entry-1 raw-MIPS artifact shows a concrete comparison near `0x800F1FE4–0x800F2024`. This is an instruction-level trace under the still-hypothetical entry-1 base `0x800D0000`; no runtime execution has confirmed reachability.
+
+1. The path begins after comparing the active object's byte `+0x4A2` with a value already held in `$a1`; mismatch branches to alternate handling at `0x800F2130`.
+2. On the matching branch, code passes the selected participant index from halfword `D_8013EA88` to helper `0x800BDC4C`.
+3. It loads the participant-record base from `D_8013EA74`, computes the selected record address using stride `0x90`, and reads the 32-bit field at record offset `+0x04`.
+4. In the delay slot of the call to main-EXE getter `0x80012A70`, it forms `sum = helper_result + record[+0x04]`. The getter returns global `D_80070C84`, which the already-audited main-EXE configuration path identifies as the configured target value used by a target-based Chakra branch.
+5. `slt sum,target` at `0x800F2014` branches to `0x800F212C) if `sum < target`. If `sum >= target`, code checks bit `0x8` from the global halfword getter `0x80012AD0`, may inspect bit `0x200` in the selected participant's halfword at +0x0A, and can set `D_8013EBB0=1`. A nonzero guard goes to the alternate branch at `0x800F2130`; otherwise the routine calls `0x80100FC0`, `0x8010109C`, `0x80018300`, `0x80018468), and `0x80018508`, then jumps to `0x800CF628` while placing 5 in `$v0`.
+6. Both the “below target” branch and the guarded alternate route later process the selected participant's byte +0x0F through `0x80100FC0` / `0x8010109C`; the alternate route eventually writes 8 to the selected record byte +0x22 and calls `0x80101140`.
+
+### Cross-check on the helper's numeric role
+
+A second callsite at `0x8012AC04` passes a byte from an object at `D_8013A554 + 0x94A` to the same `0x800BDC4C` helper. The returned value is added to the result of main-EXE Chakra getter `0x800138EC` for that byte-index, then clamped to `-9999..99999` before being passed to helper `0x8001B364`. This is evidence that the helper result is used as a numeric contribution alongside Chakra in at least one static path. It does not reveal what the contribution means, and the object/pointer provenance remains blocked.
+
+### What this safely tells us in player-facing terms
+
+There is a **candidate “target reached?” check**: code adds a participant field and a helper-derived value, compares the sum with the configured target, and follows a different control-flow path depending on whether the target has been reached. The target getter is linked by the main executable to target-based Chakra configuration, so this is a stronger candidate for a Chakra/goal threshold than the unlabelled ID-list mechanics earlier. However:
+- The return meaning of `0x800BDC4C` remains unknown.
+- The participant record's field +0x04 is not independently proven to be the current Chakra value.
+- Reaching/exceeding the threshold is not by itself a verified victory result; additional flags gate the transition, and `0x800CF628` / its visible result is not yet traced.
+- The entry-1 load base and global object pointer are not runtime-validated, so the chain is **TERVERIFIKASI-STATIS dalam candidate view; runtime/gameplay meaning remains UNKNOWN**.
+
+| Rule candidate | Trigger | Static state/control effect | Status |
+|---|---|---|---|
+| Compare participant value plus helper contribution to target | Earlier selected-object byte +0x4A2 matches the caller's value | Compare `helper( selected_index ) + record[+4]` with `D_80070C84`; below-target branches to 0x800F212C, otherwise flag checks gate another route | **KUAT**, conditional on entry-1 mapping |
+| Target attainment implies victory | Sum reaches/exceeds target | No unique victory endpoint proven; guards can still route away and result helper remains unresolved | **HYPOTHESIS / UNKNOWN** |
+| Helper result is a Chakra contribution | Another callsite adds helper result to getter `0x800138EC` and clamps the sum | Numeric contribution is used in a Chakra-related calculation | **TERVERIFIKASI-STATIS untuk dataflow; arti kontribusi UNKNOWN** |
+
+Next minimal closure: trace helper `0x800BDC4C` at its caller-compatible runtime address and the continuation `0x800CF628`, then resolve overlay/load mapping. Do not promote Step 8(b) to verified victory rules until these gaps are closed.
