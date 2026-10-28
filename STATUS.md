@@ -3993,3 +3993,8 @@ The ID trace report now documents five callsites to registry accessor `0x8001557
 ## Registry category/field +4 cross-tab
 
 All 52 static rows have a deterministic mapping between +0 and +4: +4=1 for categories 0,1,3,4,6; +4=2 for 5,7,13,14,15; +4=0 for 8,9,10,12. No category mixes field+4 values. This is a verified data distribution only and does not name a game mechanic. Details in [ID collection/consumer trace](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md). All Step 4–10 status gates remain unchanged.
+
+<!-- full-slot-branch-state-handler-2026-10-28 -->
+## Full ID-slot branch now traces to additional object-state writes
+
+The detailed trace records that when field +4 !=1 and `0x80013BF0` confirms all three selected ID slots valid, candidate entry-1 code resets active-object word +0=1, word +4=0, byte +9=3 and byte +0xC=0; then calls `0x8010D138`. That routine copies selected record +0x24 to active object +0x366, clears record +0x21, copies +0x1F to object +0x2E8 and sets +0x2E9=8/+0x2EA=3 before calling `0x800C2570`. These are static state changes only; state names and runtime reachability unknown. Status matrix unchanged.
