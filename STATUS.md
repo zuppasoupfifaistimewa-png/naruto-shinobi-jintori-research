@@ -3895,3 +3895,8 @@ The shuffle helper `0x80015B7C` overwrites incoming `a0` with zero at `0x80015B9
 ### Emulator checkpoint restore diagnostic — 28 Oktober 2026
 
 No-input restore attempts [#40613996374](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40613996374) (raw state) and [#40614208610](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40614208610) (sanitized state with BIOS reinserted) both exited 139 with `SIGSEGV` immediately after `RESTORE_LOAD_BEGIN`; the loader call returned neither success nor a `SaveStateLoaded` event. Rehydrated bytes hash exactly to raw-source hash `00fab826…f6c3d`, so this was not an alternate byte representation that independently solved restore. Stop repeated restore tests on this checkpoint unless a new loader/state-format hypothesis is introduced. No buttons were sent. This does not change the rule inventory or prove Story Mode completion.
+
+
+## CURRENT ADDENDUM — descriptor selector cross-check (28 Oktober 2026)
+
+Cross-check baru pada dua tabel yang mengirim argumen ke `0x80015610`: `0x80064918` (stride `0x30`) menghasilkan selector `[0,1,2,3,4,5,6,7,4,4,4,4,4,4,4,5,8,8]`; `0x80057798` (stride `0x54`) menghasilkan `[0,1,2,8,3,4,8,5,6,6,0,0,0,0,0,0,3,5]`. Keduanya terbatas pada selector 0–8. Dengan demikian, blok selector 9–17 yang berisi 64 byte nol tidak dipilih oleh dua jalur descriptor langsung yang diidentifikasi; ini bukan bukti bahwa seluruh jalur tak langsung/seluruh game tidak pernah memakai indeks tersebut. Pembaruan rinci: [`docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md`](docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md), commit `58340592751b84b7b85ba5cb42185063204a9ec9`.
