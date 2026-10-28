@@ -167,7 +167,7 @@ def a2_scan(data,filename,base,scenario):
             defs.clear(); block_start=i
         op,rs,rt,rd,sh,fn,imm=fields(w)
         pc=base+i*4
-        if op in LOADS|STORES or op==9:
+        if op in LOADS|STORES or (op==9 and rs==rt):
             lui=defs.get(rs)
             if (w&0xffff)==LOW and lui and lui["imm"]==0x8014:
                 if op in LOADS: kind="READ"
@@ -210,15 +210,40 @@ def a2(datafiles,out):
     return {"hits":len(allrows),"summary":summary}
 
 def a3():
-    # Exact instruction facts from verified main-EXE spimdisasm artifact:
+    # Addresses, opcodes and roles are grounded in verified EXE disassembly
+    # main_text_80010000.text.s from step5-ghidra-m2c artifact.
     return [
-      {"routine":"setter","instruction_address":"0x800138DC","word":"0x00822021","operation":"addu a0,a0,v0","role":"computed record base"},
-      {"routine":"setter","instruction_address":"0x800138E0","word":"0xAC850018","operation":"sw a1,0x18(a0)","role":"write 32-bit field"},
-      {"routine":"getter","instruction_address":"0x80013918","word":"0x8C820018","operation":"lw v0,0x18(a0)","role":"read 32-bit field"},
+      {"routine":"setter","instruction_address":"0x80013880","word":"0x2CC20004","operation":"sltiu v0,a2,4","role":"index bound: accept indices 0..3"},
+      {"routine":"setter","instruction_address":"0x80013898","word":"0x0045102A","operation":"slt v0,v0,a1","role":"clamp upper bound to 99999"},
+      {"routine":"setter","instruction_address":"0x800138B0","word":"0x28A2D8F1","operation":"slti v0,a1,-9999","role":"test lower clamp boundary"},
+      {"routine":"setter","instruction_address":"0x800138C8","word":"0x00061840","operation":"sll v1,a2,1","role":"index*2"},
+      {"routine":"setter","instruction_address":"0x800138CC","word":"0x00661821","operation":"addu v1,v1,a2","role":"index*3"},
+      {"routine":"setter","instruction_address":"0x800138D0","word":"0x00031100","operation":"sll v0,v1,4","role":"index*48"},
+      {"routine":"setter","instruction_address":"0x800138D4","word":"0x00431023","operation":"subu v0,v0,v1","role":"index*45"},
+      {"routine":"setter","instruction_address":"0x800138D8","word":"0x00021080","operation":"sll v0,v0,2","role":"index*180 = index*0xB4"},
+      {"routine":"setter","instruction_address":"0x800138DC","word":"0x00822021","operation":"addu a0,a0,v0","role":"record base 0x80070EA0 + index*0xB4"},
+      {"routine":"setter","instruction_address":"0x800138E0","word":"0xAC850018","operation":"sw a1,0x18(a0)","role":"32-bit field write at record +0x18"},
+      {"routine":"getter","instruction_address":"0x800138F0","word":"0x2CA20004","operation":"sltiu v0,a1,4","role":"index bound: accept indices 0..3"},
+      {"routine":"getter","instruction_address":"0x80013900","word":"0x00051840","operation":"sll v1,a1,1","role":"index*2"},
+      {"routine":"getter","instruction_address":"0x80013904","word":"0x00651821","operation":"addu v1,v1,a1","role":"index*3"},
+      {"routine":"getter","instruction_address":"0x80013908","word":"0x00031100","operation":"sll v0,v1,4","role":"index*48"},
+      {"routine":"getter","instruction_address":"0x8001390C","word":"0x00431023","operation":"subu v0,v0,v1","role":"index*45"},
+      {"routine":"getter","instruction_address":"0x80013910","word":"0x00021080","operation":"sll v0,v0,2","role":"index*180 = index*0xB4"},
+      {"routine":"getter","instruction_address":"0x80013914","word":"0x00822021","operation":"addu a0,a0,v0","role":"record base 0x80070EA0 + index*0xB4"},
+      {"routine":"getter","instruction_address":"0x80013918","word":"0x8C820018","operation":"lw v0,0x18(a0)","role":"32-bit field read at record +0x18"},
     ]
 
 def caller_audit(datafiles,out,exe_words):
     rows=[]
+    # Only these four EXE call-site/function-start pairs are individually
+    # confirmed by the Ghidra function-body report. Resource candidates are
+    # kept as raw callsites, not assigned a function name from nearby bytes.
+    known_exe_callers={
+      0x80015B14:0x80015ADC,
+      0x80015BF0:0x80015B7C,
+      0x8001A460:0x8001A328,
+      0x80020C24:0x80020BF4,
+    }
     for name,raw,scenarios in datafiles:
       for scenario,base in scenarios:
         ws=words(raw)
@@ -226,29 +251,35 @@ def caller_audit(datafiles,out,exe_words):
           if jal_target(w)!=RNG: continue
           pc=base+4*i
           prior=max(0,i-0x100//4)
-          fnstart=None
+          candidate_start=None
           for j in range(i,prior-1,-1):
-            if is_stack_prologue(ws[j]): fnstart=base+4*j;break
+            if is_stack_prologue(ws[j]):
+              candidate_start=base+4*j
+              break
             if j<i and is_jr_ra(ws[j]): break
-          # raw observations in the next twelve instructions, including decoded operations only
+          fnstart=known_exe_callers.get(pc) if name=="SLPS_035.53 text" else None
           seq=[]
           for k in range(i+2,min(len(ws),i+14)):
-            ww=ws[k]; op,rs,rt,rd,sh,fn,imm=fields(ww)
+            ww=ws[k]
             seq.append(f"{base+k*4:08X}:{simple_decode(ww)}")
-          decs=[mnemonic(ws[k]) for k in range(i+2,min(len(ws),i+14))]
           masks=[f"0x{ws[k]&0xffff:04X}" for k in range(i+2,min(len(ws),i+14)) if ((ws[k]>>26)&63)==0x0c]
           divs=[f"0x{base+k*4:08X}" for k in range(i+2,min(len(ws),i+14)) if ((ws[k]>>26)&63)==0 and (ws[k]&63) in (0x1a,0x1b)]
           mfhi=[f"0x{base+k*4:08X}" for k in range(i+2,min(len(ws),i+14)) if ((ws[k]>>26)&63)==0 and (ws[k]&63)==0x10]
           caller_uppers=[]
           if fnstart is not None:
-            for kn,raw2,scen2 in datafiles:
+            # Only confirmed EXE instruction bytes are accepted as upper callers.
+            for kn,raw2,scen2 in datafiles[:1]:
               for s2,b2 in scen2:
                 for j,ww in enumerate(words(raw2)):
-                  if jal_target(ww)==fnstart: caller_uppers.append(f"{kn}/{s2}:0x{b2+4*j:08X}")
+                  if jal_target(ww)==fnstart:
+                    caller_uppers.append(f"{kn}/{s2}:0x{b2+4*j:08X}")
           rows.append({"file":name,"scenario":scenario,"call_pc":f"0x{pc:08X}",
-            "call_word":f"0x{w:08X}","callee":"0x80035D78","caller_function_start":f"0x{fnstart:08X}" if fnstart else "TIDAK TERBUKTI",
+            "call_word":f"0x{w:08X}","callee":"0x80035D78",
+            "caller_function_start":f"0x{fnstart:08X}" if fnstart else "TIDAK TERBUKTI",
+            "nearest_prologue_candidate":f"0x{candidate_start:08X}" if candidate_start else "TIDAK TERBUKTI",
             "window_andi_immediates":";".join(masks),"div_addresses":";".join(divs),
-            "mfhi_addresses":";".join(mfhi),"caller_above_direct_sites":";".join(caller_uppers) if caller_uppers else "TIDAK TERBUKTI",
+            "mfhi_addresses":";".join(mfhi),
+            "caller_above_direct_sites":";".join(caller_uppers) if caller_uppers else "TIDAK TERBUKTI",
             "following_instructions":" | ".join(seq)})
     write_csv(out/"a4_rng_callers.csv",rows)
     return rows
@@ -268,12 +299,16 @@ def main():
     ent1=dat[ENTRY1_OFFSET:ENTRY1_OFFSET+ENTRY1_SIZE]
     if hashlib.sha256(ent0).hexdigest()!="56ee7d3b195b0708bd5f9163d354f0173a828430c9467d410e822b1793d316d4": raise SystemExit("Entry0 SHA mismatch")
     if hashlib.sha256(ent1).hexdigest()!="9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a": raise SystemExit("Entry1 SHA mismatch")
+    result_a1=a1(ent1,out)
+    if result_a1["criterion_pass"]:
+      entry1_scenarios=[(f"base_{result_a1['candidate_base_best']}_A1_PASS",int(result_a1["candidate_base_best"],16))]
+    else:
+      entry1_scenarios=[(f"base_0x{b:08X}",b) for b in BASES]
     datafiles=[
       ("SLPS_035.53 text",text,[("exe_text",EXE_BASE)]),
-      ("DATA.BIN entry0",ent0,[("base_0x800AD000",ENTRY0_BASE)]),
-      ("DATA.BIN entry1",ent1,[(f"base_0x{b:08X}",b) for b in BASES]),
+      ("DATA.BIN entry0",ent0,[("base_0x800AD000_HYPOTHESIS",ENTRY0_BASE)]),
+      ("DATA.BIN entry1",ent1,entry1_scenarios),
     ]
-    result_a1=a1(ent1,out)
     result_a2=a2(datafiles,out)
     write_csv(out/"a3_getter_setter.csv",a3())
     result_a4=caller_audit(datafiles,out,words(text))
@@ -288,6 +323,7 @@ def main():
       f"entry1 offset=0x{ENTRY1_OFFSET:X} bytes={len(ent1)} sha256={hashlib.sha256(ent1).hexdigest()}",
       "A1: "+json.dumps(result_a1,sort_keys=True),
       "A2: same-block proven linear LUI source hits="+str(result_a2["hits"])+" (not equivalent to Ghidra reference-manager XREF count)",
+      "A2 per-file/per-kind summary: "+json.dumps(result_a2["summary"],sort_keys=True),
       "A4 main EXE direct JAL addresses to RNG: "+", ".join(direct_rng),
       "A4 detected direct RNG callers rows="+str(len(result_a4)),
       "CAVEAT: entry0/entry1 are statically scanned as aligned MIPS words; resource may contain data/overlay bytes and base mappings are not assumed runtime-valid.",
@@ -295,7 +331,7 @@ def main():
     (out/"static-audit.log").write_text("\n".join(log)+"\n",encoding="utf8")
     meta={"exe_bytes":len(exe),"exe_sha256":sha(Path(args.exe)),"data_bytes":len(dat),"data_sha256":sha(Path(args.data)),
           "entry0_sha256":hashlib.sha256(ent0).hexdigest(),"entry1_sha256":hashlib.sha256(ent1).hexdigest(),
-          "a1":result_a1,"a2_hits":len(result_a2["summary"]),"a4_rng_call_rows":len(result_a4),"direct_exe_rng_calls":direct_rng}
+          "a1":result_a1,"a2_total_hits":sum(row["total"] for row in result_a2["summary"]),"a2_summary":result_a2["summary"],"a4_rng_call_rows":len(result_a4),"direct_exe_rng_calls":direct_rng}
     (out/"static-audit.json").write_text(json.dumps(meta,indent=2)+"\n",encoding="utf8")
     print("\n".join(log))
 if __name__=="__main__": main()

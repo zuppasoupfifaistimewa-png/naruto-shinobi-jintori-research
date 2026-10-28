@@ -110,7 +110,6 @@ jobs:
             --exe "$RUNNER_TEMP/step4-10-static-audit/input/SLPS_035.53" \
             --data "$RUNNER_TEMP/step4-10-static-audit/input/DATA.BIN" \
             --out "$RUNNER_TEMP/step4-10-static-audit/output"
-          cp "$RUNNER_TEMP/step4-10-static-audit/input-identity.txt" "$RUNNER_TEMP/step4-10-static-audit/output/"
 
       - name: Remove private source binaries before artifact upload
         if: always()
