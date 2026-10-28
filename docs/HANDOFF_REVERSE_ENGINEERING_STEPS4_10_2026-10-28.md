@@ -257,3 +257,14 @@ Next: resolve actual resource residency/relocation and argument-contract conflic
 Detail report blob `9d3e8ad714655313aea2bffd85d87c89a6fb8118` (section 22) traces `0x800C2FD8)'s candidate conditions to main-EXE helpers: `0x80012444` gets global word `D_80070734` (set by `0x80012434`); `0x800126E8` gets byte `D_8007073C` (written on a path in `0x80012454)); `0x80017144(value)` searches the byte against +4 of the four `0xB4)-stride records at `0x80070EA0), using count `0x80070EA0` from `0x800135E0), and returns index or `0xFF`; `0x80013380` gets halfword `D_80070E90` (set by `0x80013374`).
 
 The predicate therefore compares optional fields against current global values, runs an ID-like lookup, and has a fallback threshold check `D_80070E90 <= byte[param+0xC]`. But the raw found branch also uses `$v1` after the lookup even though meaningful index is in `$v0`; do not assert “found means true” until that register provenance is clarified. This does not solve the entry1 argument conflict (its callsites pass constants to 0x800C2FD8); mapping/overlay remains the top blocker.
+
+<!-- bootstrap-directory-registration-chain-2026-10-28 -->
+## Loader trace update — bootstrap directory is registered and read through a global pointer
+
+Detailed report: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), latest blob `3d0c4918430b4345883ff7f67418105810cac724`.
+
+Main EXE raw disassembly at `0x80011560` proves a startup sequence: `0x800115AC` calls `0x8002D710(0x80055898)`; `0x8002D710` stores its pointer in `0x9C($gp)). After initialization/check path `0x8002DC90(0,0,0)` succeeds, startup calls `0x800AD454(0x8006D830)`; after that, it calls `0x8002D710(0x8006D830)`, replacing the global directory pointer. Combined with the separately traced raw copy at `0x800AD454`, the bootstrap copies the 0x2F00-byte resource directory from `0x800AD494` into `0x8006D830` and registers the destination as the active directory.
+
+`0x8002C9C4` reads the active directory pointer, and `0x8002D00C` indexes it as `base + index*8`, reads the first word, and passes that into lower-level read helper `0x8002CF9C`. Wrapper `0x8002D838` resolves a descriptor, branches to a resource-buffer/allocation path (`0x8002DEC4` vs `0x8002DF30`), then invokes the indexed read. This confirms a directory-based resource-read path, but not the second-word use at this specific point or any entry's final RAM destination/base.
+
+The key unknown remains: when/where entry0 and entry1 are loaded, relocated, and whether overlays replace `0x800AD000..`. The current hypothesized entry0 map overlaps bootstrap memory if considered simultaneous, and table bytes at `0x800AE900` under that hypothetical map decode as instructions, not dispatch pointers. Keep base/overlay runtime mapping UNKNOWN/BLOCKED; Step 6(b) BLOCKED; Step 8(b) UNKNOWN. No emulator/gameplay/adaptive-player execution.
