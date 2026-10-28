@@ -161,3 +161,15 @@ New chain, static only and conditional on hypothetical entry-1 base `0x800D0000)
 This narrows the gap from “possible consumer” to **decoded direct call/dataflow in the static resource view**, but does not verify runtime reachability: resource base/relocation and global pointer provenance remain unclosed; the dispatch table at `0x800AE900` was not included in this entry-1 artifact. Do not name the features or result fields from these addresses alone.
 
 Next: map `jtbl_800AE900` and its owning resource/table using only existing text artifacts if available; identify valid loader/relocation provenance; then compare field +0 branch cases and field +8 effects without renaming them prematurely. Step 4 remains partial, Step 6(b) BLOCKED, Step 7 runtime mapping UNKNOWN/BLOCKED, Step 8(b) UNKNOWN. Story Mode remains TIDAK TERBUKTI TAMAT; adaptive player/gates remain untouched.
+
+
+<!-- jumptable-address-mapping-conflict-2026-10-28 -->
+## New targeted test — 0x800AE900 is not a 16-word table in the entry0 base hypothesis
+
+Added the targeted bounded dump to [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), latest report commit `ada72c30b44fbd7e0cc1a4edbe9ae75d9a7d934a`.
+
+The entry0 static table-dump run succeeded: Actions [#40619049176](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40619049176), artifact #12786995206, ZIP SHA-256 `01067b46e0a6e15cebd06d4bcd9898ff946d8c1d4083d40a29b80480fca92dc9`. Under the hypothetical `0x800AD000` base, address `0x800AE900) is offset `0x1900) inside entry0; its 64 bytes decode as MIPS instruction forms, including `JAL 0x80021140` and `JAL 0x80037138`, not as 16 plausible absolute pointers. The table-byte hash is `0b5987d2a6307848ab55e87b23f0771fe6afdc345f8c42ede9bfa92eb5ab005b`.
+
+Therefore reject only this specific mapping assumption: the bytes at offset +0x1900 in entry0 **if** imported/mapped at `0x800AD000) cannot be taken as the 16-word table named by entry1. It remains unknown which module actually owns memory `0x800AE900) when entry1's dispatch runs. Entry1 still statically forms that address, adds `4*field0` (with field0 <16), loads a word, and executes `jr` through it. The address calculation is verified; table ownership/target map/runtime dispatch are not.
+
+This result strengthens Step 7's load-base/overlay blocker; do not promote Step 6(b)/7 or label the 16 categories. Next: resolve which code/resource is resident at `0x800AE900) at the time the entry1 routine executes, using loader relocation/copy logic or a new static mapping artifact. No emulator, gameplay, savestate, or adaptive-player run was used.
