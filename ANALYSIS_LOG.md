@@ -2533,3 +2533,13 @@ The same entry0 bytes were inspected under candidate base `0x800B0450`, derived 
 Under base B0450, `0x800AE900) is outside/below entry0, so it cannot be its 16-word table. Under base AD000, the bytes at that address are instruction-like. Thus neither tested static map identifies the dispatch-table owner. The bootstrap-derived B0450 value is an allocator arena start, not proof of the payload pointer: allocation header, copying, relocation and overlay lifetime remain open.
 
 Next static experiment: export caller/raw instruction context for `0x8002D838`, `0x8002DEC4`, `0x8002DF30`, `0x8002D00C`, `0x8002D5C0`, `0x8002CF9C`, `0x8002DE60`, `0x8002DDEC`, `0x80035AA8`, and `0x80035B08` to establish returned allocation pointer vs payload. No emulator/gameplay or adaptive player run. Step 6(b) BLOCKED, Step 7 mapping UNKNOWN/BLOCKED, Step 8(b) UNKNOWN; Story Mode remains TIDAK TERBUKTI TAMAT.
+
+
+<!-- candidate-target-threshold-path-2026-10-28 -->
+## Candidate target-threshold logic found in entry-1 disassembly
+
+See [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), report blob `399b55ddb86b03d128cb9ceaee220d40dd758aa5`.
+
+At `0x800F1FE4), candidate entry1 passes selected participant index `D_8013EA88` to `0x800BDC4C`; next it computes the selected stride-`0x90` record, loads field +4 and forms `sum=helper_return+record[+4]`. Delay-slot analysis is essential: `addu s0,v0,v1` at `0x800F2010` is the delay slot of `JAL 0x80012A70`, so it captures the prior helper result and record field before the target getter clobbers v0. The following `slt sum,target` compares with global `D_80070C84`. The main-EXE target getter is documented in OVERLAY_MAP as the configuration target used by a target-based Chakra branch. Below-target branches to `0x800F212C`; non-below-target path checks bit 0x8 from `0x80012AD0()`, can set `D_8013EBB0` after testing record halfword +0xA bit 0x200, and only then reaches the continuation at `0x800CF628` (v0=5) if the guard remains zero.
+
+Another caller at `0x8012AC04` sends a byte from object +0x94A to the same `0x800BDC4C`, then adds the return value to Chakra getter `0x800138EC` and clamps the result to -9999..99999. This supports a static numeric contribution used alongside Chakra, but its natural-language meaning is unknown. The target comparison is **KUAT as a rule candidate**, but victory is **not verified**; entry1 mapping/returned object pointer, helper semantics, final transition and runtime reachability remain open. Step 8(b) unchanged UNKNOWN.
