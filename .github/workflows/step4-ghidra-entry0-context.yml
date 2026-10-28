@@ -153,9 +153,16 @@ jobs:
               0x800BB770:0x80035D78 \
             -deleteProject > "$out/ghidra-context.log" 2>&1
           [[ -s "$out/data-bin-entry0-rng-context.txt" ]]
+
+          # Audit the 16-entry switch table referenced by entry 1 at 0x800AE900.
+          # Entry 0's import base is hypothetical; dump raw words only, never execute targets.
+          "$headless" "$out/project" DATA_BIN_entry_0000_jumptable             -import "$input/DATA_BIN_ENTRY_0000.bin"             -loader BinaryLoader -loader-baseAddr 0x800AD000 -loader-length 0x1AF08             -loader-blockName DATA_BIN_ENTRY_0000 -processor "MIPS:LE:32:default"             -noanalysis -scriptPath "$GITHUB_WORKSPACE/tools/ghidra"             -postScript ExportJumpTableContext.java "$out/jump-table-800AE900.txt" 0x800AE900 16 \
+            -deleteProject > "$out/jumptable-ghidra.log" 2>&1
+          [[ -s "$out/jump-table-800AE900.txt" ]]
+
           {
             echo "status=SUCCESS"
-            echo "scope=five localized instruction windows only; no whole-program auto-analysis"
+            echo "scope=five localized call windows plus 16 raw words at 0x800AE900; no whole-program auto-analysis"
             echo "resource_base=0x800AD000 (hypothesis only)"
             echo "emulator_or_gameplay_executed=no"
             echo "binary_uploaded_as_artifact=no"
