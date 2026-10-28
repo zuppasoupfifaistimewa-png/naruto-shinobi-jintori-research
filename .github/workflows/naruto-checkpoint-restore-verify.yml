@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 20
     env:
       SOURCE_RUN_ID: "39262213468"
-      STATE_SHA256: "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
+      STATE_SHA256: "b94e61502b63a81107f48153932ccbef21bede8c7f53d4b01e6e013ecb8979eb"
       CARD_SHA256: "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5"
       DISC_SHA256: "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88"
       APPIMAGE_SHA256: "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c"
@@ -84,7 +84,7 @@ jobs:
           fetch_asset 652373928 scph7502.zip 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a 60
           fetch_asset 669480936 pcsx-redux.AppImage 65747557 "$APPIMAGE_SHA256" 180
 
-          python3 - "$WORK/state-artifact" "$WORK/card-artifact" "$WORK/resume/storymode-checkpoint.raw.sstate" "$WORK/cards/reference.mcd" "$WORK/captures/source-checks.txt" <<'PY'
+          python3 - "$WORK/state-artifact" "$WORK/card-artifact" "$WORK/resume/checkpoint-sanitized.sstate" "$WORK/cards/reference.mcd" "$WORK/captures/source-checks.txt" <<'PY'
           from pathlib import Path
           import hashlib, sys
           state_root, card_root, state_out, card_out, summary = map(Path, sys.argv[1:])
@@ -93,12 +93,12 @@ jobs:
               if len(xs) != 1 or not xs[0].is_file() or xs[0].stat().st_size == 0:
                   raise SystemExit(f"Expected exactly one non-empty {name}; found {len(xs)}")
               return xs[0]
-          state = unique(state_root, "storymode-checkpoint.raw.sstate")
+          state = unique(state_root, "storymode-checkpoint.sstate")
           card = unique(card_root, "naruto-storymode.mcd")
           def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
           expected = {
-              "state_bytes": "21163286",
-              "state_sha256": "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d",
+              "state_bytes": "20638994",
+              "state_sha256": "b94e61502b63a81107f48153932ccbef21bede8c7f53d4b01e6e013ecb8979eb",
               "card_bytes": "131072",
               "card_sha256": "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5",
           }
@@ -112,7 +112,7 @@ jobs:
           summary.write_text("\n".join(lines) + "\n", encoding="utf-8")
           print("\n".join(lines))
           PY
-          chmod 400 "$WORK/resume/storymode-checkpoint.raw.sstate"
+          chmod 600 "$WORK/resume/checkpoint-sanitized.sstate"
           chmod 600 "$WORK/cards/reference.mcd"
 
           python3 - "$WORK/source/scph7502.zip" "$WORK/source/scph7502.bin" "$BIOS_SHA256" <<'PY'
@@ -135,6 +135,72 @@ jobs:
               destination.write_bytes(data)
               print(f"BIOS_VALID=PASS bytes={len(data)} sha256={got}")
           PY
+          python3 - "$WORK/resume/checkpoint-sanitized.sstate" "$WORK/source/scph7502.bin" "$WORK/resume/checkpoint-rehydrated.sstate" "$WORK/captures/summary.txt" <<'PY'
+          from pathlib import Path
+          import hashlib, sys
+          state_path, bios_path, out_path, summary_path = map(Path, sys.argv[1:])
+          data, bios = state_path.read_bytes(), bios_path.read_bytes()
+          if len(bios) != 0x80000: raise SystemExit("REHYDRATE_FAIL wrong BIOS size")
+          def read_varint(buf, pos):
+              value = shift = 0
+              while pos < len(buf):
+                  b = buf[pos]; pos += 1
+                  value |= (b & 0x7f) << shift
+                  if not b & 0x80: return value, pos
+                  shift += 7
+                  if shift > 70: raise ValueError("protobuf varint too long")
+              raise ValueError("truncated varint")
+          def varint(value):
+              out = bytearray()
+              while value > 0x7f:
+                  out.append((value & 0x7f) | 0x80); value >>= 7
+              out.append(value); return bytes(out)
+          def fields(buf):
+              out, pos = [], 0
+              while pos < len(buf):
+                  start = pos; tag, pos = read_varint(buf, pos)
+                  num, wire = tag >> 3, tag & 7
+                  if wire == 0:
+                      _, pos = read_varint(buf, pos); ps = pe = pos
+                  elif wire == 1:
+                      ps, pe = pos, pos + 8; pos += 8
+                  elif wire == 2:
+                      size, pos = read_varint(buf, pos); ps = pos; pos += size; pe = pos
+                  elif wire == 5:
+                      ps, pe = pos, pos + 4; pos += 4
+                  else: raise ValueError(f"unsupported protobuf wire type {wire}")
+                  if pos > len(buf): raise ValueError("truncated protobuf field")
+                  out.append((num, wire, start, ps, pe, pos))
+              return out
+          top = fields(data)
+          memory = [x for x in top if x[0] == 3 and x[1] == 2]
+          if len(memory) != 1: raise SystemExit(f"REHYDRATE_FAIL memory messages={len(memory)}")
+          _, _, _, ms, me, end = memory[0]
+          nested = fields(data[ms:me])
+          if any(n == 2 and w == 2 for n,w,*_ in nested): raise SystemExit("REHYDRATE_FAIL BIOS already present")
+          if not any(n == 1 and w == 2 for n,w,*_ in nested): raise SystemExit("REHYDRATE_FAIL RAM field missing")
+          rebuilt_mem = bytearray(); inserted = False
+          for n,w,start,ps,pe,end in nested:
+              rebuilt_mem.extend(data[ms+start:ms+end])
+              if n == 1 and w == 2:
+                  rebuilt_mem.extend(varint((2<<3)|2)); rebuilt_mem.extend(varint(len(bios))); rebuilt_mem.extend(bios); inserted = True
+          if not inserted: raise SystemExit("REHYDRATE_FAIL BIOS insertion point missing")
+          rebuilt = bytearray(); replaced = 0
+          for n,w,start,ps,pe,end in top:
+              if n == 3 and w == 2:
+                  rebuilt.extend(varint((3<<3)|2)); rebuilt.extend(varint(len(rebuilt_mem))); rebuilt.extend(rebuilt_mem); replaced += 1
+              else: rebuilt.extend(data[start:end])
+          if replaced != 1: raise SystemExit("REHYDRATE_FAIL outer message count")
+          out_path.write_bytes(rebuilt)
+          got = hashlib.sha256(rebuilt).hexdigest()
+          if len(rebuilt) != 21163286: raise SystemExit(f"REHYDRATE_FAIL size={len(rebuilt)}")
+          raw_match = got == "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
+          note = f"RESTORE_STATE_VARIANT=SANITIZED_PLUS_REHYDRATED_BIOS\\nREHYDRATED_STATE_BYTES={len(rebuilt)}\\nREHYDRATED_STATE_SHA256={got}\\nREHYDRATED_BYTES_MATCH_RAW_SOURCE={int(raw_match)}\\n"
+          with summary_path.open("a") as fp: fp.write(note)
+          print(note, end="")
+          PY
+          chmod 400 "$WORK/resume/checkpoint-rehydrated.sstate"
+
           python3 - "$WORK/source/game.cue" "$WORK/source/game-run.cue" <<'PY'
           from pathlib import Path
           import sys
@@ -219,7 +285,7 @@ jobs:
               log("RESTORE_LOAD_BEGIN=1; no input sent")
               PCSX.pauseEmulator()
               PCSX.nextTick(function()
-                local opened,file=pcall(function() return assert(Support.File.open("resume/storymode-checkpoint.raw.sstate"),"checkpoint open failed") end)
+                local opened,file=pcall(function() return assert(Support.File.open("resume/checkpoint-rehydrated.sstate"),"checkpoint open failed") end)
                 if not opened or not file then log("RESTORE_OPEN_ERROR="..tostring(file)); PCSX.quit(50); return end
                 local ok,err=pcall(function() PCSX.loadSaveState(file) end)
                 file:close()
@@ -238,7 +304,7 @@ jobs:
               log("RESTORE_LOAD_EVENT_TIMEOUT=1"); PCSX.pauseEmulator(); PCSX.nextTick(function() PCSX.quit(53) end)
             end
           end)
-          log("RESTORE_SCRIPT_READY=1; source checkpoint read-only; no controller input")
+          log("RESTORE_SCRIPT_READY=1; sanitized checkpoint with BIOS rehydrated; no controller input")
           LUA
 
           set +e
