@@ -330,3 +330,17 @@ A second full-table pass cross-tabulated field +4 against field +0. The two fiel
 | 15 | 1 | 2 |
 
 This matters because the +4==1 / +4!=1 branch behavior found at `0x801302EC` and `0x801304F8` can be restated as a branch on one of these fixed categories, but that does not identify what the categories mean. The distribution could encode a correlated kind/subtype, allowed-path indicator, or duplicated property; none of those natural-language interpretations is established. Treat the exact cross-tab as **TERVERIFIKASI dari data statis**, and its meaning as **UNKNOWN**.
+
+
+## 18. Downstream state routine on the non-1/full-three-slot branch
+
+The branch at `0x80130514–0x80130558` calls `0x80013BF0` with object byte +0x0B. If that helper returns true (all three IDs in the chosen record are valid), the caller sets object word +0 to 1, byte +9 to 3, byte +0xC to 0, word +4 to 0, and calls `0x8010D138`. The entry-1 routine at `0x8010D138` contains the following statically visible operations:
+
+- Reads global `D_8013EBB0`. If zero, copies active-object byte +0x2E5 to +0x2E7.
+- Uses the selected record index from `D_8013EA88`; the record array is addressed with stride `0x90`.
+- Reads selected record byte +0x24 and copies it to active-object +0x366.
+- Clears selected record byte +0x21; the next read of that byte is passed to helper `0x80014204`.
+- Copies selected record byte +0x1F to active-object +0x2E8, sets active-object +0x2E9 to `8) and +0x2EA to `3), then calls `0x800C2570`.
+- Copies active-object +0x389 to +0x379 and continues into arithmetic using globals `D_8013EAB0`, `D_8013EACE`, `D_8013EA84` and indexed record halfwords +0x22/+0x24. These reads and calculations continue across the next disassembly body beginning at `0x8010D270`; do not treat the Ghidra “function” split as a semantic boundary without further raw control-flow proof.
+
+This adds a direct static sequence from **field +4 !=1 + all-three-slots-valid → object flags reset → per-record fields copied/cleared → internal state values +0x2E9=8 and +0x2EA=3 → helper call**. It is a concrete control/state transition but does not prove that “full” means a full character roster, full inventory, or any other player-facing description. The entry-1 mapping/runtime reachability remains unverified, and helper `0x800C2570` belongs to the unresolved cross-resource address range.
