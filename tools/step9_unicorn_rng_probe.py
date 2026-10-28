@@ -422,7 +422,6 @@ def main() -> int:
             f"| {r['label']} | {r['entry']} | {r['a0']} | {r['expected_v0']} | "
             f"{r['actual_v0']} | {r['actual_global']} | {r['actual_pc']} | {r['instructions']} | "
             f"{r['emulator_error'] or '-'} | {'PASS' if r['return_to_sentinel'] else 'NO'} | {'PASS' if r['pass'] else 'FAIL'} |"
-            f"{'PASS' if r['return_to_sentinel'] else 'NO'} | {'PASS' if r['pass'] else 'FAIL'} |"
         )
     lines += [
         "",
