@@ -167,7 +167,7 @@ jobs:
             -loader BinaryLoader -loader-baseAddr 0x800AD000 -loader-length 0x1AF08 \
             -loader-blockName DATA_BIN_ENTRY_0000 -processor "MIPS:LE:32:default" \
             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
-            -postScript ExportEntry0TargetFunction.java "$out/entry0-handler-targets.txt" 0x800C2FD8 0x800C2570 \
+            -postScript ExportEntry0TargetFunction.java "$out/entry0-handler-targets.txt" 0x800C2FD8 0x800C2570 0x800BDC4C \
             -analysisTimeoutPerFile 180 \
             -deleteProject > "$out/entry0-handler-targets.log" 2>&1
           [[ -s "$out/entry0-handler-targets.txt" ]]
@@ -180,7 +180,7 @@ jobs:
             -loader BinaryLoader -loader-baseAddr 0x800B0450 -loader-length 0x1AF08 \
             -loader-blockName DATA_BIN_ENTRY_0000_ALT -processor "MIPS:LE:32:default" \
             -noanalysis -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
-            -postScript ExportEntry0TargetFunction.java "$out/entry0-altbase-B0450-targets.txt" 0x800C2FD8 0x800C2570 \
+            -postScript ExportEntry0TargetFunction.java "$out/entry0-altbase-B0450-targets.txt" 0x800C2FD8 0x800C2570 0x800BDC4C \
             -deleteProject > "$out/entry0-altbase-B0450-targets.log" 2>&1
           [[ -s "$out/entry0-altbase-B0450-targets.txt" ]]
           python3 - "$out/entry0-altbase-B0450-targets.txt" <<'PY'
@@ -194,6 +194,8 @@ jobs:
                       "target_offset_under_hypothesis=0x12b88")
           s=s.replace("target_offset_under_hypothesis=0x15570",
                       "target_offset_under_hypothesis=0x12120")
+          s=s.replace("target_offset_under_hypothesis=0x10c4c",
+                       "target_offset_under_hypothesis=0xc7fc")
           p.write_text(s,encoding="utf-8")
           if "resource_base=0x800B0450" not in s:
               raise SystemExit("alternate-base report metadata replacement failed")
@@ -202,7 +204,7 @@ jobs:
 
           {
             echo "status=SUCCESS"
-            echo "scope=five localized call windows, 16 raw words at 0x800AE900, and targeted handlers under allocator-derived base hypothesis 0x800B0450"
+            echo "scope=five localized call windows, 16 raw words at 0x800AE900, and three targets (including 0x800BDC4C) under both candidate entry0 bases"
             echo "resource_base_tested=0x800AD000 and 0x800B0450; both are hypotheses, not runtime-confirmed overlay bases"
             echo "emulator_or_gameplay_executed=no"
             echo "binary_uploaded_as_artifact=no"
