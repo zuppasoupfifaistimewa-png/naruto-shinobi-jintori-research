@@ -110,3 +110,16 @@ Ada dua pemanggil langsung `jal 0x80015610` di main EXE (`0x80012820` dan `0x800
 - Descriptor `0x80057798`, stride `0x54`, 18 record: byte `+2` adalah `[0,1,2,8,3,4,8,5,6,6,0,0,0,0,0,0,3,5]`.
 
 Dua tabel descriptor yang ditelusuri hanya memberikan selector 0–8 ke pemanggil langsung tersebut. Jadi blok sumber selector 9–17 yang tersusun sebagai 64 byte nol **tidak dipilih oleh dua descriptor ini**. Fungsi loader sendiri menerima selector hingga 17, tetapi jangan menyebut selector 9–17 reachable dari alur ini tanpa bukti pemanggil lain atau jalur tak langsung. Sebaliknya, ini juga belum membuktikan bahwa selector 9–17 tak pernah dipakai di seluruh game; batas kesimpulan hanya dua callsite dan dua tabel yang diaudit.
+
+
+<!-- registry-and-list-mutation-trace-2026-10-28 -->
+## ID registry and list mutation path
+
+A further trace connects these byte values to a bounded numeric ID registry, without assigning feature labels:
+
+1. Initialization at `0x800121AC–0x800121F4` clears `0x118($gp)`, walks records beginning at `0x80055CEC` with a `0x10)-byte stride, and stops when the first word is `0xFFFFFFFF`. The sentinel is at `0x8005602C`, index 52, so the runtime count written to `0x118($gp)` is 52 (indices 0–51). Function `0x800154D4` returns that count. This is an executable-table count, not a natural-language identification of its records.
+2. The statically listed IDs in active source templates 0–8 fall within that range (maximum seen is `0x32`/50). The shuffle/insert helper `0x80015ADC` checks the input byte ID against this 52-entry count before continuing.
+3. On the valid branch, `0x80015ADC` reads the count through `0x800158D8` (which actually reads the byte at `0x80070D02` regardless of its input argument), obtains one RNG value from `0x80035D78`, computes a position of the form `floor(n/2) + (RNG mod floor(n/2))`, and calls `0x800159BC` with the ID. The instruction sequence shows a mutation of the byte sequence around that position and a write of the ID to `0x80070C80 + 0x8A + position`; it also increments the halfword at `0x80070C80 + 0x82` when it is below 64.
+4. The counterpart `0x800158E8` shifts bytes left in `0x80070D0A` from a supplied position and decrements that same halfword at `0x80070C80 + 0x82`. The target fields and exact byte transformations are statically visible; whether this state represents a card pool, hand, inventory, action queue, or another game concept remains **UNKNOWN**.
+
+These paths give a more concrete rule-level description: a candidate ID is range-checked against a table-derived count, a randomized position is computed from the first-list count, and related list/count state is mutated. They do not prove which visible gameplay mechanic this implements. Runtime verification is blocked by the tested checkpoint's repeatable loader crash, so this finding remains **TERVERIFIKASI-STATIS**, not runtime-verified.
