@@ -167,7 +167,7 @@ def a2_scan(data,filename,base,scenario):
             defs.clear(); block_start=i
         op,rs,rt,rd,sh,fn,imm=fields(w)
         pc=base+i*4
-        if op in LOADS|STORES or (op==9 and rs==rt):
+        if op in LOADS|STORES or op==9:
             lui=defs.get(rs)
             if (w&0xffff)==LOW and lui and lui["imm"]==0x8014:
                 if op in LOADS: kind="READ"
