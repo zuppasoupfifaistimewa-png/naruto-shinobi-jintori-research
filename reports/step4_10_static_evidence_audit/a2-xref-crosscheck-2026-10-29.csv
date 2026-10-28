@@ -1,0 +1,6 @@
+metric,read,write,address,total,interpretation
+ghidra_exact_xref_manager,192,2,0,194,"Artifact run 40611660635; DATA.BIN entry-1 view base 0x800D0000 (hypothesis)"
+strict_same_basic_block_lui_scan,137,0,0,137,"a2_xref_hits.csv; scan view uses candidate base 0x800AD450"
+matched_by_file_offset,79,0,0,79,"Same byte offsets across the two address views; all matched entries are reads"
+ghidra_only_not_found_by_strict_scan,113,2,0,115,"Ghidra XREFs whose file offsets were absent from strict scanner hits; two are writes"
+strict_scan_only_not_in_ghidra_xref_list,58,0,0,58,"Linear scan candidates with no same-offset record in exact Ghidra XREF list; code/data classification not settled"
