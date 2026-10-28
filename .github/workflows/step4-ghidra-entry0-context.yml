@@ -172,10 +172,38 @@ jobs:
             -deleteProject > "$out/entry0-handler-targets.log" 2>&1
           [[ -s "$out/entry0-handler-targets.txt" ]]
 
+          # New hypothesis from the main-EXE allocator trace:
+          # post-bootstrap arena begins at 0x800B0450, but returned resource payload
+          # may differ because allocation records/headers intervene. Test only as a candidate.
+          "$headless" "$out/project" DATA_BIN_entry_0000_allocator_base_test \
+            -import "$input/DATA_BIN_ENTRY_0000.bin" \
+            -loader BinaryLoader -loader-baseAddr 0x800B0450 -loader-length 0x1AF08 \
+            -loader-blockName DATA_BIN_ENTRY_0000_ALT -processor "MIPS:LE:32:default" \
+            -noanalysis -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -postScript ExportEntry0TargetFunction.java "$out/entry0-altbase-B0450-targets.txt" 0x800C2FD8 0x800C2570 \
+            -deleteProject > "$out/entry0-altbase-B0450-targets.log" 2>&1
+          [[ -s "$out/entry0-altbase-B0450-targets.txt" ]]
+          python3 - "$out/entry0-altbase-B0450-targets.txt" <<'PY'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1])
+          s=p.read_text(encoding="utf-8",errors="replace")
+          s=s.replace("resource_base=0x800AD000 (hypothesis only)",
+                      "resource_base=0x800B0450 (allocator-derived candidate; payload offset unproven)")
+          s=s.replace("target_offset_under_hypothesis=0x15fd8",
+                      "target_offset_under_hypothesis=0x12b88")
+          s=s.replace("target_offset_under_hypothesis=0x15570",
+                      "target_offset_under_hypothesis=0x12120")
+          p.write_text(s,encoding="utf-8")
+          if "resource_base=0x800B0450" not in s:
+              raise SystemExit("alternate-base report metadata replacement failed")
+          print("alternate_base_metadata=corrected")
+          PY
+
           {
             echo "status=SUCCESS"
-            echo "scope=five localized call windows plus 16 raw words at 0x800AE900; no whole-program auto-analysis"
-            echo "resource_base=0x800AD000 (hypothesis only)"
+            echo "scope=five localized call windows, 16 raw words at 0x800AE900, and targeted handlers under allocator-derived base hypothesis 0x800B0450"
+            echo "resource_base_tested=0x800AD000 and 0x800B0450; both are hypotheses, not runtime-confirmed overlay bases"
             echo "emulator_or_gameplay_executed=no"
             echo "binary_uploaded_as_artifact=no"
           } > "$out/scan-result.txt"
