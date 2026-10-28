@@ -193,3 +193,16 @@ Detailed report [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STEP
 Field +0 distribution is: 0:14, 1:1, 3:2, 4:4, 5:14, 6:5, 7:1, 8:1, 9:3, 10:1, 12:2, 13:2, 14:1, 15:1; codes 2 and 11 are absent. Field +4 distribution is 0:7, 1:26, 2:19. Field +8 unique values are -50, -30, -25, 0..7, 25, 50, 75, 100, 150, 200, 250, 350, 400, 500. Every row satisfies field +0xC = ID + 239, giving 239..290.
 
 This strengthens the claim that field +0 is a category-like code (range fits the <16 dispatch guard) and field +8 is a signed numeric parameter used in branch/arithmetic. No semantics can yet be assigned to either; particularly, don't call +8 a cost/power/stat or +0xC a resource ID. Jump table/runtime mapping remains blocked. 
+
+<!-- signed-registry-attribute-state-transition-2026-10-28 -->
+## New static state-transition rule from registry field +8
+
+Detailed report updated in [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), report blob `11b9a6389659c7cbc3f27d5a1d2c57a268ae5418`.
+
+Raw entry-1 instructions at `0x80115708–0x80115A68) show a stronger state chain (still conditional on hypothetical base `0x800D0000)): read current ID from object +0x530; accessor `0x8001552C` returns its signed registry field +8; compute `field8 * (byte[0x8013EA71] - 1 - word[0x80139EFC])`; write to selected record halfword +0x2EE+2*index; branch on signed result. Negative path calls `0x800C2FD8(0x25B)`, copies byte +0x2E9→+0x2EB, and sets +0x2E9=`0x12`. Nonnegative path sets selected record byte +0x22=`5`, iterates other records whose byte +0x0E matches the selected record, stores `field8*(count-2)` to their +0x2EE and sets +0x22 to `2` for negative or `5` otherwise. A separate guarded path negates field8 into per-index halfwords and performs sign-based 2/5 status writes.
+
+This confirms static attribute→arithmetic→record state/branch linkage. Still unknown: what field +8 means, whether +0x0E is team/side/owner, what statuses 2/5 and +2E9=0x12 mean, what message/resource 0x25B is, and runtime reachability. Do not label these as power/cost/win/battle outcome without external corroboration.
+
+Correction: at `0x801313D0–0x8013141C`, fields +0xC and +8 are passed to callee addresses `0x80100DCC` and `0x80100E34`, but the decoded instructions at those entry addresses appear not to consume incoming `$a0`; this path proves argument passing, not semantic effect. +0xC consumer remains UNKNOWN.
+
+Next: identify the loader/relocation owner of `0x800AE900`; then trace `0x800C2FD8(0x25B)` to text/UI output using existing text artifacts. Runtime mapping remains blocked and no emulator run is currently justified.
