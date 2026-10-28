@@ -2,12 +2,12 @@
 
 Sumber adalah [artefak teks Step 5 #12739676233](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524/artifacts/12739676233), yang memuat raw MIPS dan output Ghidra/m2c. Dalam istilah sederhana, kode memakai bilangan acak untuk (1) menghitung satu indeks/argumen di dalam batas tertentu; (2) menukar isi tabel byte pada indeks yang dipilih acak berulang kali; (3) memilih satu kode dari daftar yang dibangun berdasarkan delapan pemeriksaan; dan (4) menaruh 12 bit rendah output RNG di field `+0x34` bila guard objek mengizinkan, lalu memanggil fungsi lanjutan. Operasi numerik tersebut terlihat di `0x80015ADC`, `0x80015B7C`, `0x8001A328`, dan `0x80020BF4`.
 
-| Fakta operasi | Makna praktis yang dapat dinyatakan | Yang tetap belum diketahui |
+| Fungsi entry / site JAL | Fakta operasi | Makna praktis yang dapat dinyatakan; yang tetap belum diketahui |
 |---|---|---|
-| `0x80015ADC`: hasil RNG modulo divisor ditambah nilai dasar, kemudian diteruskan ke `0x800159BC` | Sebuah nilai indeks/parameter dibatasi oleh kondisi dan divisor yang dihitung runtime. | Objek/aksi yang dipilih, peluangnya di mata pemain, dan kaitan dengan hasil roulette/battle. |
-| `0x80015B7C`: `4*n` pertukaran in-place pada `n` byte menggunakan indeks RNG | Urutan elemen byte diubah secara pseudo-acak. | Apakah buffer itu urutan kartu, daftar menu, urutan giliran, atau hal lain. |
-| `0x8001A328`: pilih satu dari kandidat `0,1,2,3,4,5,8,9,11` setelah cek `0x7F..0x86`; hasil ke `0x80089DA9` | Himpunan pilihan berubah berdasarkan flag/hasil fungsi; satu kandidat dipilih secara acak dan disimpan. | Nama flag, konteks UI/game mode, serta arti nilai kandidat. |
-| `0x80020BF4`: `RNG % 0x1000` disimpan ke `+0x34` sesudah guard | Prosedur menulis nilai 0–4095 ke sebuah field sebelum melakukan operasi setup lain. | Identitas objek dan apakah field tersebut koordinat, seed lokal, indeks, nilai sementara atau atribut permainan. |
+| `0x80015ADC` — `[0x80015ADC,0x80015B7C)`, JAL `0x80015B14` | Hasil RNG modulo divisor ditambah nilai dasar lalu diteruskan ke `0x800159BC`. | Sebuah nilai parameter dibatasi kondisi/divisor; identitas slot, aksi, dan kaitan roulette/battle belum diketahui. |
+| `0x80015B7C` — `[0x80015B7C,0x800161FC)`, JAL `0x80015BF0` | `4*n` pertukaran in-place pada `n` byte menggunakan indeks RNG. | Urutan byte berubah pseudo-acak; buffer bukan bukti kartu/menu/giliran. |
+| `0x8001A328` — `[0x8001A328,0x8001A4D8)`, JAL `0x8001A460` | Pilih satu dari `0,1,2,3,4,5,8,9,11` setelah cek `0x7F..0x86`; hasil disimpan di `0x80089DA9`. | Nama flag, konteks UI/mode, dan arti kandidat belum diketahui. |
+| `0x80020BF4` — `[0x80020BF4,0x80020C90)`, JAL `0x80020C24` | `RNG % 0x1000` disimpan ke `+0x34` sesudah guard, lalu tiga pemanggilan lanjutan. | Prosedur menulis nilai 0–4095 ke field, tetapi identitas objek dan apakah nilainya koordinat/seed/index/atribut belum diketahui. |
 
 Tidak satu pun hasil ini sendiri membuktikan rumus biaya Chakra, biaya barrier, level upgrade, efek kartu, urutan giliran, rumus hasil pertarungan, ataupun kondisi menang/kalah. Status kriteria Step 8(b) tetap **UNKNOWN** sampai ada chain instruksi/caller, pemetaan objek, dan bukti independen yang mengikat operasi tersebut ke aturan permainan.
 
