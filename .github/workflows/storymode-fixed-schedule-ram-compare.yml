@@ -112,7 +112,7 @@ jobs:
             echo "schedule_source_run=39262213468"
             echo "schedule_final_vsync=10055"
             echo "checkpoint_load=NO (cold boot only; known savestate restore crash is not bypassed)"
-          } > "$C_WORK_ROOT/output/input-identity.txt"
+          } > "$root/output/input-identity.txt"
 
       - name: Create read-only schedule runner and screenshot gate observer
         shell: bash
