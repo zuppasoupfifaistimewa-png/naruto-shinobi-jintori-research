@@ -3998,3 +3998,8 @@ All 52 static rows have a deterministic mapping between +0 and +4: +4=1 for cate
 ## Full ID-slot branch now traces to additional object-state writes
 
 The detailed trace records that when field +4 !=1 and `0x80013BF0` confirms all three selected ID slots valid, candidate entry-1 code resets active-object word +0=1, word +4=0, byte +9=3 and byte +0xC=0; then calls `0x8010D138`. That routine copies selected record +0x24 to active object +0x366, clears record +0x21, copies +0x1F to object +0x2E8 and sets +0x2E9=8/+0x2EA=3 before calling `0x800C2570`. These are static state changes only; state names and runtime reachability unknown. Status matrix unchanged.
+
+<!-- helper-c2fd8-call-family-2026-10-28 -->
+## Cross-resource handler 0x800C2FD8 call family
+
+A static sweep of current entry1 raw disassembly finds 74 direct JALs to `0x800C2FD8`; 71 delay slots pass constants in the range `0x258..0x275`, with `0x25B` used seven times and `0x25F` eleven times. This is evidence of a common numeric-argument handler, not proof it renders text or messages. The helper body and table/lookup provenance are still unverified under the resource-base conflict. See detailed ID trace report. Step 7 mapping remains UNKNOWN/BLOCKED and no semantics are inferred from numeric codes.
