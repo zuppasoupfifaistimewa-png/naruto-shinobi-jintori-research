@@ -567,3 +567,22 @@ The caller around `0x80110FFC–0x80111060` adds another use of the same helper 
 Together with the other two call sites, the helper's return is used as a per-index numeric value in three ways: it is added to participant record +4 (which is populated from Chakra) and compared against target D_80070C84; it is added to Chakra getter output and clamped; and it is stored and differenced against configuration scalar D_80070C88 before follow-on calls. This consistent numerical use is evidence of a participant-associated adjustment/value, but it does not identify the value's name or purpose. The entry-1 resource base and pointer ownership remain hypothetical, and callee effects `0x80109974/0x80109984/0x80109994` have not been tied to a visible result.
 
 **Confidence:** static numeric dataflow **TERVERIFIKASI within candidate disassembly**; game rule/name **UNKNOWN**; runtime mapping **BLOCKED/UNKNOWN**. This does not upgrade Step 8(b) or turn the threshold gate into a verified victory rule.
+
+ 
+## 30. The candidate target check has a signed-Chakra precondition
+
+The preceding raw instructions at `0x800F1F40–0x800F1F60` show that entry into section 27 is not unconditional:
+
+- The routine computes selected record address from `D_8013EA74` and selected index `D_8013EA88`, loads its field +0x04, and executes `bgez` at `0x800F1F48`.
+- If record +0x04 is **nonnegative**, control reaches `0x800F1FC4`, then applies a guard comparing active-object byte +0x4A2 with the value in `$a1`; only when that comparison matches does the helper-plus-Chakra target check at `0x800F1FE4–0x800F2018` run.
+- If record +0x04 is **negative**, the routine instead reads selected record byte +0x0F, calls `0x80100FC0(byte,+1)` and `0x8010109C(byte,+2)`, calls `0x80101140`, writes active-object byte +0x2E9=`0x14`, clears `D_80139F00+1` and `D_80139EBB`, and jumps to `0x800CFB34`. This is the visible static state/call route; the helper outcomes and final player-facing meaning remain unknown.
+
+This further refines the rule: the target comparison sits on the nonnegative-Chakra branch and behind an equality gate. A negative stored Chakra value routes through another path rather than going through the target comparison. Since participant field +0x04 is populated from main getter `0x800138EC` in section 28, the signed precondition is specifically supported as a Chakra-value condition in this static view.
+
+| Candidate rule | Trigger | Static effect | Status |
+|---|---|---|---|
+| Negative-Chakra branch | Selected record +0x04 < 0 | Status byte +0x2E9 becomes `0x14`; counters/flags cleared; jumps to `0x800CFB34) after calls using record byte +0x0F | **TERVERIFIKASI-STATIS in candidate view; meaning UNKNOWN** |
+| Target-check eligibility | Record +0x04 >= 0 and active-object byte +0x4A2 equals incoming `$a1` | Calls helper, adds result to record +0x04, compares with configured target | **KUAT as static control-flow rule** |
+| Victory when target met | Sum >= target and flags permit continuation | Later transition handler and visible result remain unresolved | **UNKNOWN** |
+
+No runtime result or gameplay screenshot was used for this finding. Step 8(b) remains UNKNOWN despite the stronger static chain.
