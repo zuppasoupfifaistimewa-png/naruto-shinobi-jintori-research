@@ -123,3 +123,9 @@ The two table-backed direct callers currently identified feed selector values 0â
 ## Additional caller-to-mutation evidence (28 October)
 
 The raw main EXE has a direct `JAL 0x80015ADC` at `0x80013B50`; delay slot `0x80013B54` passes a byte from `0x800139FC(group,slot)`, which reads offset +0x0A from a record indexed inside the `0x80070EA0)-based table for group <4 and slot <3. The byte is range-checked against the 52-entry registry, then a random insertion position in the latter half of the `0x80070D02)-sized buffer is computed. `0x800159BC` shifts order bytes `0x80070D0A`, writes the ID into `0x80070C80+0x8A+position`, and increments separate count `0x80070C82` if below 64. This strengthens Step 4/8 static trace but remains UNKNOWN for gameplay meaning and runtime reachability; no rule status is promoted. Full address-level details are in [the preset/list trace](STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md).
+
+
+<!-- four-record-three-slot-id-operations-2026-10-28 -->
+## Step 4/8 â€” bounded three-slot ID collection trace
+
+The new raw static trace identifies four indexed records under `0x80070EA0), stride `0xB4), each storing three adjacent ID bytes at offsets `+0xA..+0xC`. The body at `0x80013A48` fills the first invalid slot with a registry-valid ID; the body at `0x80013B10` moves the chosen ID through a pseudo-random indexed insertion, compacts the remaining source bytes, and writes `0xFF` to the tail. This adds a concrete data-structure operation to Step 4/8, but not the semantic name of the feature. Step 8(b) remains UNKNOWN. Details in [preset/list trace](STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md).
