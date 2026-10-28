@@ -343,3 +343,17 @@ Alongside sections 27–28, the helper return is used as (a) a numeric contribut
 Detailed trace report section 30 (current blob `b3b6a0ec04ed80f5dc92c84787535f363302773e`) shows a sign branch at `0x800F1F48`: participant record +0x04 <0 routes to calls using byte +0x0F, writes active-object state +0x2E9=`0x14`, clears `D_80139F00+1` and `D_80139EBB`, then jumps to `0x800CFB34`. Record +0x04 >=0 takes another path; a further equality gate (active-object byte +0x4A2 vs incoming `$a1`) must match before the helper-plus-Chakra target comparison runs.
 
 Since +0x04 is populated from main Chakra getter `0x800138EC` on the static producer paths, this is a negative-Chakra branch versus nonnegative target-check gate. The visible meaning of status `0x14`, negative-branch handler, and final target result is unknown. Step 8(b) remains UNKNOWN; entry1 runtime map remains unverified.
+
+ 
+<!-- target-threshold-full-precondition-2026-10-28 -->
+## Candidate Chakra-target gate — all known static preconditions
+
+Detailed report section 31, blob `95e4d1750b2beb1189c115bae28ee189387c3e8a`, now records the guard chain preceding `0x800F1FE4`:
+
+- Count set bits 12–15 of selected participant halfword +0x0A into `$a1`.
+- If participant byte +0x20 !=0, go to calls using record byte +0x0F, set active object +0x2E9=`0x14`, clear `D_80139F00+1`/`D_80139EBB` and jump `0x800CFB34`.
+- If +0x20==0 but active object byte +0x92B !=0, participant bit +0x0A & `0x200` selects jump `0x800CF644` with `v0=8` or `6`.
+- Otherwise, negative Chakra field +0x04 takes alternate path; nonnegative Chakra can proceed only if counted bits equal active object byte +0x4A2.
+- Only then does the code compare `Chakra(record +0x04) + helper(0x800BDC4C, selected_index)` with target `D_80070C84`. At/above target, global bit `0x8` from `0x80012AD0` and participant bit `0x200` can still redirect flow before `0x800CF628`.
+
+This is a strong static multi-condition target gate, not a verified victory rule. Flag meanings, helper result, final handler, and entry-1 runtime mapping remain unknown. Keep Step 8(b) UNKNOWN.
