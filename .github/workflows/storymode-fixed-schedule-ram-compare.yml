@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: naruto-storymode-fixed-schedule-ram-compare
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   replay-compare:
@@ -244,13 +244,11 @@ jobs:
                   return
               end
               if gate_frames[frame_count] then
-                  local flag = frame_count == 5999 and select_gate or
-                               frame_count == 8999 and intro_gate or
-                               frame_count == 9030 and panel1_gate or panel2_gate
                   local label = frame_count == 5999 and "story_select" or
                                 frame_count == 8999 and "story_intro" or
                                 frame_count == 9030 and "dialog_panel_9030" or "dialog_panel_9105"
-                  wait_for_gate(flag, label, 500)
+                  event_line(string.format("C_TEST_GATE_CAPTURE_READY frame=%d label=%s; input remains denied until screenshot fingerprint is available",
+                      frame_count, label))
                   return
               end
               -- Fixed events copied from the verified input log of run #39262213468.
@@ -303,9 +301,11 @@ jobs:
           captures, raw = run/"captures", run/"captures"/"raw"
           def flag(name, text):
               (captures/name).write_text(text+"\n", encoding="ascii")
-          def read_image(frame, deadline=550):
+          def read_image(frame, deadline=150):
+              import os
               r=raw/f"frame-{frame:06d}.raw"
               m=captures/f"frame-{frame:06d}.json"
+              pid=int(os.environ.get("EMU_PID","0"))
               until=time.monotonic()+deadline
               while time.monotonic()<until:
                   if r.is_file() and m.is_file():
@@ -317,6 +317,8 @@ jobs:
                               v=data[p] | data[p+1]<<8
                               pixels.extend(((v&31)*255//31,((v>>5)&31)*255//31,((v>>10)&31)*255//31))
                           return Image.frombytes("RGB",(320,240),bytes(pixels))
+                  if pid and not Path(f"/proc/{pid}").exists():
+                      raise RuntimeError("emulator_exited_before_frame_"+str(frame))
                   time.sleep(0.02)
               raise TimeoutError(f"frame_{frame}_capture_timeout")
           def crop_hash(img, box):
@@ -385,7 +387,7 @@ jobs:
                 -softgpu -dynarec -stdout -lua_stdout -logfile "$run/pcsx.log" -run \
                 > "$run/pcsx.stdout" 2>&1 &
               emu_pid=$!
-              python3 "$root/bin/gate-watch.py" "$run" > "$run/gate-watch.log" 2>&1 &
+              EMU_PID="$emu_pid" python3 "$root/bin/gate-watch.py" "$run" > "$run/gate-watch.log" 2>&1 &
               watch_pid=$!
               set +e
               wait "$emu_pid"
