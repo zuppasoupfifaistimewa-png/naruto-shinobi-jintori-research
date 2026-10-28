@@ -3956,3 +3956,11 @@ New static linkage: entry-1 code calls `0x80015768` to pop/shift/reshuffle a seq
 Direct decoded entry-1 call sites have now been identified for both `0x80013A48` (3 addresses) and `0x80013B10` (8 addresses) within the hypothesized address map. This strengthens the static caller chain, but runtime reachability is not proven: the resource base/relocation/global pointer and jump-table provenance remain open.
 
 No new emulator/runtime experiment was run; no adaptive player was run/changed; `barrier_level_selection=WAIT` remains unchanged. Status promotions are not justified: Step 4/5/6/7 remain partial or blocked as previously recorded, Step 8(b) remains UNKNOWN, and Story Mode remains **TIDAK TERBUKTI TAMAT**.
+
+
+<!-- jumptable-address-mapping-conflict-2026-10-28 -->
+## Targeted jump-table test — base hypothesis conflict
+
+A successful, bounded raw-word export is now recorded in [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md) and handoff. Actions run [#40619049176](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40619049176), artifact #12786995206, ZIP SHA-256 `01067b46e0a6e15cebd06d4bcd9898ff946d8c1d4083d40a29b80480fca92dc9`.
+
+The entry1 path statically reads through `0x800AE900 + 4*registry_field0` for field0<16. However, under the hypothetical entry0 base `0x800AD000), the 64 bytes at `0x800AE900..0x800AE93F` decode as ordinary MIPS instruction forms rather than 16 jump pointers. That rejects the idea that the target table is in entry0 at offset +0x1900 **under this base map**; it does not identify the actual runtime owner/resource at `0x800AE900`. Base/overlay mapping is therefore still UNKNOWN/BLOCKED, and the table's target cases remain UNKNOWN. No status promotion: Step 6(b) remains BLOCKED; Step 7 runtime mapping remains UNKNOWN/BLOCKED; Step 8(b) remains UNKNOWN. Story Mode remains **TIDAK TERBUKTI TAMAT** and adaptive-player gates/policy remain untouched.
