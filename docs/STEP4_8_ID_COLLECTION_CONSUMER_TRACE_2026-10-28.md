@@ -259,3 +259,31 @@ Using the complete raw MIPS table listing at `D_80055CEC` in the existing main-E
 | +0xC | Every one of the 52 rows satisfies `field_+0xC = registry_ID + 239`; IDs 0..51 map to 239..290. | Exact derived sequential code, but the field's consumer/meaning remains unknown. Do not call it a resource/animation index without proof. |
 
 This makes the dispatch relationship sharper but not semantically complete: +0 holds one of 14 observed category-like codes (all in 0..15), fitting the caller's `<16` jump-table guard; the table's real runtime contents and owners remain unresolved due to the mapping conflict in sections 11–12. The full-distribution counts are static facts from the existing main-EXE text artifact. No game binary was downloaded again for this calculation.
+
+
+## 14. Stronger state-transition trace for registry field +8
+
+Raw code around entry-1 addresses `0x80115708–0x80115A68` provides a more exact effect chain than “numeric attribute affects state”. This is static evidence under the unverified entry-1 base `0x800D0000):
+
+1. Read the active registry ID from object offset `+0x530`, then call `0x8001552C` to retrieve that ID's signed numeric field at registry offset +8.
+2. Compute `result = field8 * (byte[0x8013EA71] - 1 - word[0x80139EFC])`; store the low 16 bits as a signed halfword at `object_base + 0x2EE + 2*halfword[0x8013EA8A]`.
+3. Read that same halfword back and branch on its sign. If negative, the path calls `0x800C2FD8(0x25B)), copies object byte +0x2E9 to +0x2EB, sets +0x2E9 to `0x12`, and jumps to another routine. The user-visible meaning of call argument `0x25B` and state byte `0x12` is not proven.
+4. If the selected halfword is nonnegative, code sets byte +0x22 of the selected stride-`0x90` record to `5`. It then loops over indices from zero to `byte[0x8013EA71]-1`, skipping the selected index and only considering other records whose byte +0x0E equals the selected record's +0x0E.
+5. For each qualifying other record, it writes `result_i = field8 * (byte[0x8013EA71] - 2)` into that record's halfword +0x2EE. If the result is negative, that record's byte +0x22 is set to `2`; otherwise it is set to `5`. On the code path where a required global guard is nonzero, the loop is bypassed and an alternate path writes the negative of field8 into per-index +0x2EE fields, with a second sign test selecting status 2/5.
+
+This proves a static rule about **how an ID attribute affects internal participant records**: a signed field attached to the current ID is scaled by participant-count/counter values; the sign of the result determines state routing and status-byte values, and records are grouped by matching byte +0x0E. It does **not** prove whether +0x0E encodes team/side/ownership, what the numeric field means, what statuses 2/5 represent, or whether this route executes during the game's visible mode. Treat this as **TERVERIFIKASI-STATIS untuk instruksi dan dataflow; UNKNOWN untuk gameplay meaning/runtime reachability**.
+
+### Important correction to the +0xC accessor path
+
+At `0x801313D0–0x8013141C`, code retrieves registry fields +0xC and +8 and passes them in turn to the entry-1 addresses `0x80100DCC` and `0x80100E34`. However, the currently decoded entry sequences at those callee addresses read global/current-record fields and do not use the incoming `$a0` in the visible instructions. The raw call sequence therefore proves that the values are passed as arguments, **not** that the callee result or state changes depend on those arguments. The +0xC field's semantic consumer remains UNKNOWN, and that callsite should not be cited as proof that +0xC affects gameplay.
+
+## 15. Updated rule matrix for the ID attribute path
+
+| Rule/mechanism | Trigger | Confirmed state change in static code | Gameplay-facing effect | Confidence |
+|---|---|---|---|---|
+| ID attribute affects a selected record | ID saved at object +0x530 is valid for accessor; candidate entry-1 path executes | Registry +8 signed value is multiplied and stored to selected record +0x2EE; sign is tested | Meaning of that participant halfword is unknown | **TERVERIFIKASI-STATIS**, runtime **UNKNOWN** |
+| Attribute sign changes selected record status | Computed +0x2EE value is negative or nonnegative | Negative path calls 0x800C2FD8(0x25B), copies +2E9→+2EB, writes +2E9=0x12; nonnegative path writes +0x22=5 | Text/state transition/status meaning unknown | **TERVERIFIKASI-STATIS**, runtime **UNKNOWN** |
+| Attribute propagates to records in same group | Other record +0x0E matches selected +0x0E; loop index differs from selected index | Computes field8×(count−2), writes +0x2EE, sets +0x22 to 2 if negative or 5 if nonnegative | Whether +0x0E means side/team is unknown | **TERVERIFIKASI-STATIS**, runtime **UNKNOWN** |
+| Registry +0xC affects visible state | No dataflow-closed argument use found yet | Caller passes the value into a currently decoded callee sequence that appears to ignore incoming $a0 | No effect proven | **UNKNOWN** |
+
+Next minimal evidence: find the owner/consumer of `0x800AE900` and loader relocation/copy timing, and inspect the destination of `0x800C2FD8(0x25B)` through the permitted static text artifacts. Keep runtime mapping blocked; no new emulator run is justified while the address conflict stands.
