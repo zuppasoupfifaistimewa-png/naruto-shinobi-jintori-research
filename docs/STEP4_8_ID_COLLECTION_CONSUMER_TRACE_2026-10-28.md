@@ -120,3 +120,44 @@ Ini memperlihatkan hubungan statis antara operasi ID pada empat record dan state
 5. **Efek game:** bila kemudian ada eksperimen runtime yang layak, ubah satu kondisi saja dan catat input, kondisi awal, state sebelum/sesudah, serta screenshot autentik emulator. Jangan menggunakan checkpoint restore yang telah dua kali gagal dengan representasi state yang sama.
 
 Status Step 4 tetap **SEBAGIAN**, Step 5 tetap **SEBAGIAN**, Step 6 tetap **SEBAGIAN** (6b **BLOCKED**), Step 7 tetap **SEBAGIAN/BLOCKED** sesuai subkriteria, dan Step 8(b) tetap **UNKNOWN**. Tidak ada status audit yang dinaikkan oleh laporan ini. Story Mode **TIDAK TERBUKTI TAMAT**. Adaptive player tidak dijalankan atau diubah; gate `barrier_level_selection=WAIT` tetap dipertahankan.
+
+
+## 9. Registry row fields: numeric properties and one downstream effect
+
+A separate raw-MIPS cross-check shows that the 52-row table is not only used as a validity bound. Four bounded accessor entrypoints index the record by `ID * 0x10` and read individual 32-bit fields:
+
+| Accessor entry | Word read | Invalid-ID fallback | What is proven |
+|---|---:|---:|---|
+| `0x800154E0` | `record + 0x00` | `0xFFFFFFFF` | Numeric field read; caller uses it in branch/discriminator comparisons in candidate resource code. |
+| `0x80015578` | `record + 0x04` | `0xFFFFFFFF` | Second numeric field can be retrieved; its gameplay meaning is UNKNOWN. |
+| `0x8001552C` | `record + 0x08` | `0` | Signed-looking numeric field is consumed in arithmetic in candidate resource code. |
+| `0x800155C4` | `record + 0x0C` | `0xFFFFFFFF` | Fourth numeric field can be retrieved; its role is UNKNOWN. |
+
+The entries in `0x80055CEC` are four 32-bit words each, not text/name records. In the raw table view, field +0 contains integer codes such as 0, 1, 3–10, 12–15; field +4 contains 0, 1, or 2; field +8 contains signed or positive numeric values from -50 up to 500; field +0xC increases monotonically from `0xEF` (239) at ID 0 to `0x122` (290) at ID 51. The last field could be an index-like value, but no consumer has yet proven whether it is a resource, animation, lookup-table index, or another number. **Do not assign semantic names to these four fields yet.**
+
+Representative exact row values (decimal unless hex is marked):
+
+| Registry ID | +0 | +4 | +8 | +0xC |
+|---:|---:|---:|---:|---:|
+| 0 | 0 | 1 | 150 | 239 (`0xEF`) |
+| 5 | 0 | 1 | -50 (raw `0xFFFFFFCE`) | 244 (`0xF4`) |
+| 10 | 6 | 1 | 0 | 249 (`0xF9`) |
+| 20 | 12 | 0 | 0 | 259 (`0x103`) |
+| 30 | 15 | 2 | 2 | 269 (`0x10D`) |
+| 37 | 0 | 1 | 500 (`0x1F4`) | 276 (`0x114`) |
+| 51 | 5 | 2 | 7 | 290 (`0x122`) |
+
+### Provenance from a candidate consumer
+
+In the DATA.BIN entry-1 decompilation view (base `0x800D0000`, still a hypothesis), routine `FUN_80115728` calls accessor `0x8001552C` using the 32-bit value at object offset `+0x530) as its index. In one branch, the returned field +8 is multiplied by `(group_count - 2)` and written to a group-indexed halfword at object base +`0x2EE + group*2`; if the signed result is negative, that group's byte at +`0x22` is set to 2 and the code calls `FUN_800f2d5c`, otherwise it sets the byte to 5 and calls the same continuation. Other branches store the negated field value or another scaled form and route to separate continuation functions based on the sign. This is a direct static link from a registry numeric field to a state field and control-flow choice in the candidate resource view.
+
+This still does **not** tell us the player-facing meaning of that numeric value or the +0x2EE/+0x22 fields. The imported resource base and pointer source remain unverified, and the decompiler output has malformed-control-flow warnings. Therefore this linkage is **KUAT BERSYARAT**, not a verified gameplay rule.
+
+### Read/write coverage update
+
+- `0x800157C4` returns the byte at `0x80070C80 + 0x8A + cursor`, with cursor from halfword `0x80070C86`; this entrypoint does not visibly bounds-check the cursor.
+- `0x80015808` checks index < the first-list length returned by `0x800158D8` (which reads the low byte of D02), then returns byte from `0x80070C80 + 0x8A + index`; otherwise it returns `0xFF`.
+- `0x80015858` uses the same first-list-length bound and checks value <52 before writing to `0x80070C80 + 0x8A + index`.
+- No direct JAL to `0x80013A48` appears in the available full main-EXE text disassembly. Its static body is understood locally, but its caller/reachability is still UNKNOWN in this evidence set; it may be called from resource/indirect code, which is not yet proven.
+
+These additional accesses strengthen the static ID-to-numeric-field chain, but the report's status matrix and game-mechanic labels remain unchanged.
