@@ -1,0 +1,16 @@
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/pcsx.stdout:ALSA lib confmisc.c:855:(parse_card) [error.core] cannot find card '0'
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/pcsx.stdout:ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_card_inum returned error: No such file or directory
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/pcsx.stdout:ALSA lib confmisc.c:422:(snd_func_concat) [error.core] error evaluating strings
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/pcsx.stdout:ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_concat returned error: No such file or directory
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/pcsx.stdout:ALSA lib confmisc.c:1342:(snd_func_refer) [error.core] error evaluating name
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/pcsx.stdout:ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_refer returned error: No such file or directory
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/pcsx.stdout:ALSA lib conf.c:5734:(snd_config_expand) [error.core] Evaluate error: No such file or directory
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/pcsx.stdout:ALSA lib pcm.c:2722:(snd_pcm_open_noupdate) [error.pcm] Unknown PCM sysdefault
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/pcsx.stdout:Warning: OpenGL error reporting disabled. See About dialog for more information.
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/pcsx.stdout:C_TEST_SCHEDULE_ARMED=1 source_run=39262213468 final_vsync=10055; no savestate restore 
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/pcsx.stdout:C_TEST_PAD_SETUP=Port 1 Analog connected/remapped 
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/pcsx.stdout:C_TEST_EXECUTION_EVENT=ShellReached 
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/gate-watch.log:C_TEST_VISUAL_GATE frame=5999 FAIL reason=TimeoutError:frame_5999_capture_timeout
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/gate-watch.log:C_TEST_VISUAL_GATE frame=8999 FAIL reason=RuntimeError:emulator_exited_before_frame_8999
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/gate-watch.log:C_TEST_VISUAL_GATE frame=9030 FAIL reason=RuntimeError:emulator_exited_before_frame_9030
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run1/gate-watch.log:C_TEST_VISUAL_GATE frame=9105 FAIL reason=RuntimeError:emulator_exited_before_frame_9105
