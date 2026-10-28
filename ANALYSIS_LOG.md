@@ -2563,3 +2563,9 @@ Report section 29, blob `3fc780fb9951fbed43a4ce3716cf54b51c18ee4b`: `0x80111008`
 ## Signed precondition before target-threshold candidate
 
 Detailed report section 30, blob `b3b6a0ec04ed80f5dc92c84787535f363302773e`. At `0x800F1F48`, candidate entry1 code branches based on participant record +0x04 sign. Negative path reads record byte +0x0F, calls `0x80100FC0` and `0x8010109C` with constants 1 and 2, calls `0x80101140`, sets active object +0x2E9=0x14, clears `D_80139F00+1` and `D_80139EBB`, and jumps to `0x800CFB34`. Nonnegative path takes an equality gate before comparing Chakra plus helper result with target. Because +0x04 is populated from Chakra getter `0x800138EC`, this is a signed-Chakra static precondition. Meaning of negative path, status code and final target result remain UNKNOWN; Step 8(b) unchanged.
+
+ 
+<!-- target-threshold-full-precondition-2026-10-28 -->
+## Multi-condition gate before Chakra-target comparison
+
+Detail report section 31, blob `95e4d1750b2beb1189c115bae28ee189387c3e8a`: before `0x800F1FE4), candidate entry1 code counts the participant record +0x0A high four bits (bits 12–15), routes away when record byte +0x20 !=0, checks active-object byte +0x92B and participant bit 0x200, then requires a nonnegative Chakra record +0x04 and equality of the bit count with object byte +0x4A2. Only then does it compute Chakra + `0x800BDC4C` helper return and compare with target D_80070C84. At/above target, global bit 0x8 can interact with participant bit 0x200 to redirect before the final handler. The gate is static and detailed but flag semantics/result remain unknown; Step 8(b) is not promoted.
