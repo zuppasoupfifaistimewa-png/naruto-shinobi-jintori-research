@@ -2543,3 +2543,11 @@ See [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_
 At `0x800F1FE4), candidate entry1 passes selected participant index `D_8013EA88` to `0x800BDC4C`; next it computes the selected stride-`0x90` record, loads field +4 and forms `sum=helper_return+record[+4]`. Delay-slot analysis is essential: `addu s0,v0,v1` at `0x800F2010` is the delay slot of `JAL 0x80012A70`, so it captures the prior helper result and record field before the target getter clobbers v0. The following `slt sum,target` compares with global `D_80070C84`. The main-EXE target getter is documented in OVERLAY_MAP as the configuration target used by a target-based Chakra branch. Below-target branches to `0x800F212C`; non-below-target path checks bit 0x8 from `0x80012AD0()`, can set `D_8013EBB0` after testing record halfword +0xA bit 0x200, and only then reaches the continuation at `0x800CF628` (v0=5) if the guard remains zero.
 
 Another caller at `0x8012AC04` sends a byte from object +0x94A to the same `0x800BDC4C`, then adds the return value to Chakra getter `0x800138EC` and clamps the result to -9999..99999. This supports a static numeric contribution used alongside Chakra, but its natural-language meaning is unknown. The target comparison is **KUAT as a rule candidate**, but victory is **not verified**; entry1 mapping/returned object pointer, helper semantics, final transition and runtime reachability remain open. Step 8(b) unchanged UNKNOWN.
+
+ 
+<!-- chakra-field-plus4-producer-2026-10-28 -->
+## Producer trace validates Chakra source for participant field +0x04
+
+Detailed report section 28, blob `4061891eba985aaec2469eb13f8a6287e11ad93c`. Candidate entry-1 code calls `0x800138EC` (main Chakra getter) at `0x80111090` and stores the returned value to a selected participant record's +0x04 at `0x801110B8); another selected-index path calls the same getter at `0x801110FC` and stores into +0x04 at `0x80111124`.
+
+Therefore the section 27 comparison is more concrete: stored Chakra + helper output from `0x800BDC4C` is compared with configured target global `D_80070C84`. Static evidence supports a Chakra-target gate, but helper output meaning, guards, final handler and runtime mapping still prevent a verified victory conclusion. Step 8(b) remains UNKNOWN.
