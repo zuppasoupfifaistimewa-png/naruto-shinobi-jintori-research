@@ -304,3 +304,11 @@ There is a second static call at `0x8012AC04` where the same helper's return is 
 | Runtime/gameplay confirmation | Entry-1 base and pointer provenance are still hypotheses | **BLOCKED / UNKNOWN** |
 
 Do not promote Step 8(b): this is a strong target-threshold candidate, not a verified victory rule. The helper result, participant field +4, target's exact player-facing label, flag veto, transition handler, and runtime reachability still need closure. No emulator/input/savestate test was run.
+
+ 
+<!-- chakra-field-plus4-producer-2026-10-28 -->
+## Cross-check: the target-threshold record field is populated from Chakra
+
+The raw entry-1 listing at `0x80111090–0x80111124` shows calls to main-EXE getter `0x800138EC` for a participant index and writes of that return value to field +0x04 of the selected stride-`0x90` record (`0x801110B8` and `0x80111124`). Since `0x800138EC` is the main-EXE Chakra getter, this directly supports interpreting record +0x04 as a stored Chakra value on these paths.
+
+Combined with the candidate comparison at `0x800F1FE4–0x800F2018`, the condition is more precisely: **stored Chakra at participant record +0x04 plus a value returned by `0x800BDC4C(selected_index)` is compared against configured target `D_80070C84`**. This is strong static evidence for a Chakra-target gate; it is not yet a verified victory rule because the helper contribution, guard flags, final handler and runtime resource mapping remain unresolved. Keep Step 8(b) **UNKNOWN**.
