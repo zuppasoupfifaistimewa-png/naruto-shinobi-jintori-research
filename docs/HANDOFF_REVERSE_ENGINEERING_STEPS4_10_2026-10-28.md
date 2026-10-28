@@ -227,3 +227,8 @@ The detail report now cross-tabs all 52 records (report blob `ae8775eab56ec61f96
 ID detail report blob `32213da37aca5f0b9c6c6f0a90b80a8fd652689d`: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md).
 
 On the `0x801304F8` route where registry field +4 !=1, entry-1 calls `0x80013BF0` with object +0xB. If all 3 IDs in that chosen record are valid, it resets active-object word +0=1, +4=0, byte +9=3, byte +0xC=0 and calls `0x8010D138`. That routine, under the unverified entry1 base hypothesis, reads selected record index D_8013EA88, copies record +0x24→active object +0x366, clears record +0x21, copies record +0x1F→object +0x2E8, sets +0x2E9=8 and +0x2EA=3, calls `0x800C2570`, and continues using record +0x22/+0x24 plus globals. This is static state flow only; the three-slot collection’s player-facing meaning and runtime reachability remain unknown.
+
+<!-- helper-c2fd8-call-family-2026-10-28 -->
+## Cross-resource handler call family inventoried
+
+The ID trace report now lists all 74 direct entry-1 calls to `0x800C2FD8` (detail blob `fcae52c9ba671da8fc70eaedae9a4efd5b882a82`). In 71 cases the delay-slot argument is a constant in `0x258..0x275`; argument `0x25B` appears seven times and `0x25F` eleven times. This suggests a shared event/message/resource-indexed handler as a hypothesis, but its function body and data lookup are not in the entry-1 slice, and the numeric codes have no confirmed labels. The helper sits within the hypothetical entry0 address range; mapping/ownership stays blocked. Next should be a targeted decompilation of `0x800C2FD8` from existing text artifacts if available, then trace any table/string data it consumes. Do not label the constants as Japanese messages yet.
