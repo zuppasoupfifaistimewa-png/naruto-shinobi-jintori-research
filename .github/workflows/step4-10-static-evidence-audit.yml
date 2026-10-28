@@ -197,6 +197,7 @@ jobs:
             -loader BinaryLoader -loader-baseAddr 0x800AD450 -loader-length 0x919BC \
             -loader-blockName DATA_BIN_ENTRY_0001 -processor "MIPS:LE:32:default" \
             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -preScript PrepareRebasedEntry1.java \
             -postScript ExportTargetXrefs.java "$out/a2_ghidra_rebased_xrefs.csv" "$out/a2_ghidra_rebased_functions.csv" 0x800AD450 0x8013A554 \
             -analysisTimeoutPerFile 1200 -max-cpu 2 -deleteProject \
             > "$out/ghidra-rebased-headless.log" 2>&1
