@@ -424,3 +424,38 @@ Together with the successful local decompilation, the candidate `0x800C2FD8` bod
 Important caveat: on the path where the lookup does **not** return `0xFF`, the raw code also branches using `$v1` after the call, while the helper's meaningful returned index is in `$v0`; this register provenance is not fully explained by the local decompilation. Do not compress that path to the plain rule “found means true” until that raw-register/dataflow issue is resolved.
 
 This strengthens the predicate description under the candidate entry0 view but **does not fix the calling-convention contradiction** with entry1 callsites that pass small constants. The probable immediate task is a register-level recheck of `0x800C2FD8` (including caller arguments and possible overlay switching), not a game-semantics label.
+
+
+## 23. Main executable confirms how the bootstrap directory is registered and read
+
+This section traces the directory lifecycle through existing `main_text_80010000.text.s`; it does not require a new binary input.
+
+### 23.1 Bootstrap sequence in main-executable startup
+
+The code at `0x80011560` executes this sequence after several initialization helpers:
+
+1. `0x800115AC` calls `0x8002D710` with pointer `0x80055898`. The callee `0x8002D710` simply stores that pointer at `0x9C($gp)`.
+2. `0x800115BC` calls `0x8002DC90(0,0,0)`. It runs initialization/check logic (`0x8002DCF8`, `0x8002DD74`, `0x8002DE60` and callbacks) and returns success/failure. The exact higher-level meaning of this preparation is not given a natural-language label here.
+3. On success, `0x800115D4` calls `0x8002DE60` with the value from `0x8002DD74`, then `0x800115DC` directly calls bootstrap routine `0x800AD454` with destination pointer `0x8006D830`.
+4. `0x800115E4` calls `0x8002D710` again with pointer `0x8006D830`, replacing the stored global pointer at `0x9C($gp)` with the newly populated directory buffer.
+
+In combination with the raw instructions at `0x800AD454` documented earlier, this confirms a static bootstrap chain: the code copies a `0x2F00)-byte directory from `0x800AD494` to `0x8006D830`, then registers `0x8006D830` as the current directory pointer used by the main-EXE resource-read helpers. This is stronger than merely inferring the destination from a table-shaped data block.
+
+### 23.2 Confirmed read of an indexed directory entry
+
+- `0x8002C9B8` stores its `a0` pointer to `0x9C($gp)`; `0x8002C9C4` returns that pointer.
+- `0x8002D00C` saves its first argument as an index, calls `0x8002C9C4`, computes `directory_base + index*8`, and reads the first word at that entry. It passes that word into `0x8002CF9C`, along with the remaining caller arguments.
+- `0x8002D838` is a loader wrapper. In the visible path it first resolves a descriptor via `0x8002D4E4`, chooses one of two allocation/record paths depending on its third argument (`0x8002DEC4` or `0x8002DF30`), then calls `0x8002D00C` with the original index and those derived parameters.
+- `0x8002D7F8` is a thin wrapper that calls `0x8002D00C`; `0x8002D818` wraps `0x8002D070`, which is another file-read path.
+
+The indexed `index*8` addressing and first-word read are directly visible. Given the independently validated DATA.BIN directory schema (entries of two uint32 words interpreted as LBN and byte length), the first word is the start-LBN field. The present trace does **not** prove that the second word is consumed in `0x8002D00C` itself; its use may be in descriptor/length calculations in the surrounding helper family. Do not assume this routine alone establishes the final RAM load address for any resource.
+
+### 23.3 What this narrows in the overlay hypothesis
+
+This establishes three separate things:
+
+- **TERVERIFIKASI-STATIS:** bootstrap routine address, directory-copy source/destination, global directory-pointer setter/getter, and index-to-entry read path in the main executable.
+- **TERVERIFIKASI-STATIS:** the directory pointer at `0x8006D830` is intentionally registered and consumed as a resource directory, not merely a random buffer.
+- **STILL UNKNOWN/BLOCKED:** when a particular DATA.BIN entry is copied to RAM, its final destination/base, whether it replaces the bootstrap region, whether relocations or entry-specific load headers are used, and which code owns `0x800AE900) during entry1 dispatch.
+
+The current overlap result therefore has a sharper interpretation: the bootstrap temporarily occupies the `0x800AD450)-region to build the directory, and the resource-read system then keeps using the directory through `0x8006D830). It is plausible that later resource loads reuse/replace memory in the bootstrap's address range, but the exact lifecycle is **not proved** by these instructions. The candidate entry0 import base `0x800AD000` must remain a hypothesis. Step 7 stays partial with runtime mapping **UNKNOWN/BLOCKED**, Step 6(b) **BLOCKED**, and Step 8(b) **UNKNOWN**.
