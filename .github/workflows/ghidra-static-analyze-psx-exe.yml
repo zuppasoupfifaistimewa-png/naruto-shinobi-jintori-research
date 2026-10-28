@@ -299,6 +299,9 @@ jobs:
             -preScript PreparePsxExe.java \
             -postScript ExportFunctionIndex.java "$out/functions.tsv" \
             -postScript ExportRngCallerAnalysis.java "$out/rng-caller-analysis.txt" \
+            -postScript ExportFunctionDetail.java "$out/loader-resource-call-paths.txt" \
+              0x8002D838 0x8002DEC4 0x8002DF30 0x8002D00C 0x8002D5C0 \
+              0x8002CF9C 0x8002DE60 0x8002DDEC 0x80035AA8 0x80035B08 \
             -analysisTimeoutPerFile 1800 \
             -max-cpu 2 \
             -deleteProject > "$out/ghidra-headless.log" 2>&1
@@ -323,6 +326,11 @@ jobs:
             echo "::error::Ghidra targeted RNG caller analysis output is missing or empty."
             exit 1
           fi
+          if [[ ! -s "$out/loader-resource-call-paths.txt" ]]; then
+            echo "status=FAILED: loader/resource call-path detail output is missing or empty" > "$out/analysis-result.txt"
+            echo "::error::Ghidra loader/resource call-path output is missing or empty."
+            exit 1
+          fi
           count="$(awk 'END { if (NR > 1) print NR - 1; else print 0 }' "$out/functions.tsv")"
           {
             echo "status=SUCCESS"
@@ -331,7 +339,8 @@ jobs:
             echo "executable_sha256=$EXPECTED_EXE_SHA256"
             echo "executable_bytes=$EXPECTED_EXE_BYTES"
             echo "function_rows=$count"
-            echo "result=function index and targeted RNG caller analysis exported"
+            echo "result=function index, RNG callers, and 10 loader/resource functions exported"
+            echo "loader_detail_targets=0x8002D838,0x8002DEC4,0x8002DF30,0x8002D00C,0x8002D5C0,0x8002CF9C,0x8002DE60,0x8002DDEC,0x80035AA8,0x80035B08"
             echo "caller_function_mapping=initial labels only; semantic interpretation pending"
             echo "emulator_or_gameplay_executed=no"
             echo "binary_uploaded_as_artifact=no"
