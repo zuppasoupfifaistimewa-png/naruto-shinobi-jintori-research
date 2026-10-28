@@ -245,3 +245,17 @@ These are address-shaped constants packed consecutively in the entry-1 prefix, c
 Together with the instruction-like bytes observed at entry0 offset +`0x1900` (numeric address `0x800AE900`), this means the present mapping hypotheses cannot safely be combined into one confirmed runtime memory map: entry1 statically refers to functions around `0x800AD454`, but its dispatch at `0x8010F444` also expects pointer words at `0x800AE900), where the entry0 candidate view contains code-like words. Possible explanations include overlay replacement/lifecycle, relocated or patched module data, a different runtime base, or a different resource owning the dispatch table. The current static artifacts do not choose between these explanations.
 
 **Next evidence required:** recover the loader/relocation/copy rule that determines what occupies `0x800AD000..` at the time the entry1 branch runs, and prove whether the six entry1 constants are relocated or consumed. Keep this as **UNKNOWN/BLOCKED**; neither table ownership nor runtime reachability is promoted.
+
+
+## 13. Full 52-row registry distribution cross-check
+
+Using the complete raw MIPS table listing at `D_80055CEC` in the existing main-EXE text artifact (52 records before sentinel `0xFFFFFFFF` at `0x8005602C`), I parsed all 52 four-word rows and checked each field rather than relying on examples only.
+
+| Field offset | Exact observed distribution in all 52 rows | Safe interpretation |
+|---|---|---|
+| +0 | Code 0: 14 rows; 1: 1; 3: 2; 4: 4; 5: 14; 6: 5; 7: 1; 8: 1; 9: 3; 10: 1; 12: 2; 13: 2; 14: 1; 15: 1. Codes 2 and 11 do not occur. | Small discriminator/category-like code; caller branches on it and the entry1 path bounds it to <16, but case meanings unknown. |
+| +4 | 0: 7 rows; 1: 26; 2: 19. | Small enumerated field; semantic label unknown. |
+| +8 | Unique values: -50, -30, -25, 0, 1–7, 25, 50, 75, 100, 150, 200, 250, 350, 400, 500. | Signed numeric parameter; multiple consumers use its sign and/or multiply it into state. It is not safe to name this “cost”, “power”, or any specific stat yet. |
+| +0xC | Every one of the 52 rows satisfies `field_+0xC = registry_ID + 239`; IDs 0..51 map to 239..290. | Exact derived sequential code, but the field's consumer/meaning remains unknown. Do not call it a resource/animation index without proof. |
+
+This makes the dispatch relationship sharper but not semantically complete: +0 holds one of 14 observed category-like codes (all in 0..15), fitting the caller's `<16` jump-table guard; the table's real runtime contents and owners remain unresolved due to the mapping conflict in sections 11–12. The full-distribution counts are static facts from the existing main-EXE text artifact. No game binary was downloaded again for this calculation.
