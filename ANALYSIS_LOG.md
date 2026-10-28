@@ -2356,3 +2356,9 @@ Cross-checked raw MIPS in Step 5 artifact #12739676233. Direct JAL at `0x80013B5
 ## Four-record ID-slot operations — 28 Oktober 2026
 
 Additional source-level trace in the preset/list report: `0x80070EA0)-based storage is indexed in four records of stride `0xB4`; each record uses adjacent candidate-ID bytes at `+0xA,+0xB,+0xC`. The raw body at `0x80013A48` inserts a registry-valid byte into the first invalid slot and returns failure when all three slots are occupied. The body at `0x80013B10` reads a slot ID, transfers it through `0x80015ADC` into the pseudo-random insertion path, closes the hole for source slots 0 or 1, and sets the tail byte `+0xC` to `0xFF`. This establishes a three-slot ID collection/transfer pattern. It does not identify the feature represented by these IDs or prove when the routines are reached in visible gameplay.
+
+
+<!-- sequence-pop-and-reshuffle-helper-2026-10-28 -->
+## Sequence shift + random reshuffle — 28 Oktober 2026
+
+The wrapper at `0x80015768` captures the first byte of `0x80070D0A`, removes position zero by calling `0x800158E8`, calls shuffle helper `0x80015B7C`, then returns the saved byte. The shift helper decrements `0x80070C82` and moves bytes left but doesn't clear the tail or decrement `0x80070D02`; the shuffle then operates over configured `n=halfword[0x80070D02]` for `4*n` random swaps. This local behavior is statically supported but should not be named as a queue/deck/roulette without understanding the consumer and corroborating runtime evidence. See the latest preset/list trace.
