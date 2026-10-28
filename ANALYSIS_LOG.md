@@ -1,3 +1,13 @@
+# ADDENDUM — targeted static audit 28 Oktober 2026
+
+Dua artefak yang dibuka langsung pada sesi lanjutan: Step 5 ZIP #12739676233 SHA-256 `94d866f9c991b323a64f283da93359620c04ff8859d4c8fb53f4eb857c745f5d`; Step 6 ZIP #12741234990 SHA-256 `7ee636b8e687c5163873cdd40c82a02e8c8617885a0863b1e5a196b6eed1eac9`. Main EXE memiliki empat direct JAL ke RNG yang telah diinventarisasi dan 156 mnemonic JALR; hitungan JALR tidak menyelesaikan target/callee dinamis. Anotasi panjang spimdisasm `nonmatching func_80015B7C, 0x580` perlu direkonsiliasi dengan body Ghidra 240 alamat yang end-exclusive di `0x80015C6C`, sementara disassembly mempunyai label tambahan di alamat itu. Langkah 4(c)/5 tetap SEBAGIAN.
+
+Pada view hipotetis DATA.BIN entry-1 (base `0x800D0000` belum terverifikasi), direct operand census dari 98.357 instruksi terdekode memberi +B30 1 READ, +B38 1 READ, +B40 1 WRITE dan +B44 1 WRITE/1 READ. Nilai pointer dari `0x8013A554` serta alias/writer lintas fungsi tetap terputus; Step 6(b) BLOCKED. Detail, raw instruction bytes, hash, caveat dan matriks 17 kriteria: [docs/STEP4_10_TARGETED_AUDIT_2026-10-28.md](docs/STEP4_10_TARGETED_AUDIT_2026-10-28.md).
+
+Actions filters `queued` dan `in_progress` keduanya menghasilkan nol run. Tidak dijalankan emulator/input/restore, adaptive player, atau workflow pemain adaptif. Tidak ada status teknis Step 4–9 dinaikkan; Step 10 tetap hanya matriks audit. Story Mode **TIDAK TERBUKTI TAMAT**.
+
+---
+
 # ADDENDUM — cross-check bukti dan checkpoint, 28 Oktober 2026
 
 Artefak Step 5 #12739676233 (SHA-256 ZIP 94d866f9c991b323a64f283da93359620c04ff8859d4c8fb53f4eb857c745f5d) menunjukkan tepat empat direct JAL ke 0x80035D78 dalam main EXE: 0x80015B14, 0x80015BF0, 0x8001A460, dan 0x80020C24. Artefak Step 6 #12741234990 (SHA-256 ZIP 7ee636b8e687c5163873cdd40c82a02e8c8617885a0863b1e5a196b6eed1eac9) mengonfirmasi aliran statis +B30/+B38 → sum → +B40 serta +B44 di-zero-kan lalu digunakan sebagai argumen ke helper 0x8001B364 pada branch +B2A>=6. Base entry-1 0x800D0000 tetap hipotesis.
