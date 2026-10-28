@@ -542,3 +542,14 @@ There is a **candidate “target reached?” check**: code adds a participant fi
 | Helper result is a Chakra contribution | Another callsite adds helper result to getter `0x800138EC` and clamps the sum | Numeric contribution is used in a Chakra-related calculation | **TERVERIFIKASI-STATIS untuk dataflow; arti kontribusi UNKNOWN** |
 
 Next minimal closure: trace helper `0x800BDC4C` at its caller-compatible runtime address and the continuation `0x800CF628`, then resolve overlay/load mapping. Do not promote Step 8(b) to verified victory rules until these gaps are closed.
+
+ 
+## 28. Participant-record field +0x04 is populated from the Chakra getter
+
+A cross-check of the same entry-1 raw disassembly reveals direct producer paths for the field used in section 27:
+
+- At `0x80111090`, code calls main-EXE getter `0x800138EC` with a participant index, then writes the returned `$v0` to the selected stride-`0x90` participant record's field +0x04 (store at `0x801110B8` after the record address is formed).
+- At `0x801110FC`, code calls `0x800138EC` with index `D_8013EA88`; the returned value is subsequently written to the selected record's +0x04 at `0x80111124` (delay slot of `0x80012AD0` call).
+- Main-EXE code at `0x800138EC` is an accessor for the participant's Chakra value. Thus these are direct static producer paths that populate record +0x04 from Chakra, rather than a naming guess from the field's numerical shape.
+
+This improves the section 27 interpretation: the comparison is structurally `Chakra(record[+4]) + helper(0x800BDC4C, selected_index)` against configured target `D_80070C84`. Still, be precise about what has and has not been proved: the field is written from the Chakra getter on these code paths, but the helper's return meaning is unknown, the call paths are under an unverified entry-1 map, and reaching or exceeding the target only passes additional flag checks rather than directly proving victory. **Confidence: strong static candidate for a Chakra-target gate; victory rule remains UNKNOWN until helper, guards, final handler and runtime mapping are closed.**
