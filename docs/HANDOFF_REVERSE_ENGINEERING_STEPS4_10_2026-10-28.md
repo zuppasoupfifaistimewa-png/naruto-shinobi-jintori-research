@@ -297,3 +297,11 @@ The bounded entry0 alternate-map run succeeded: [Actions #40623532269](https://g
 - Bootstrap setup proves only arena start `0x800B0450`; entry payload may include allocator header/offset. Exact entry0/1 returned pointer, copy/relocation and overlay lifecycle still unknown.
 
 Next task: trace main-EXE loader/allocator functions directly, especially `0x8002D838`, `0x8002DEC4`, `0x8002DF30`, `0x8002D00C`, `0x8002D5C0`, `0x8002CF9C`, `0x8002DE60`, `0x8002DDEC`, `0x80035AA8`, and `0x80035B08`. Export raw functions + incoming caller contexts to learn whether the allocation result points to a header or payload. Do not run emulator, restore savestate, or adaptive player. Step 6(b) BLOCKED, Step 7 mapping UNKNOWN/BLOCKED, Step 8(b) UNKNOWN; Story Mode TIDAK TERBUKTI TAMAT.
+
+ 
+<!-- loader-resource-caller-audit-2026-10-28 -->
+## Active workflow — allocation/copy provenance to resolve base conflict
+
+Actions [#40626130930](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40626130930) is **IN PROGRESS** on commit `8f1dd393073fa9b8f6435ebcf14fb760fd0eb2e7`. Started 10:20:35 WIB; workflow timeout 60 min, boundary about **11:20:35 WIB** (not a finish guarantee). Added call-path detail export for ten verified main-EXE function entries to the full Ghidra static job. The resulting text artifact should show decoded raw bodies, caller references and local callsite context for the resource wrapper, directory index reader, request queue, allocator initialization and allocator block allocation.
+
+When the run finishes, download the text-only artifact, verify the API digest, then inspect (in order) `0x8002D838`, `0x8002DEC4`, `0x8002DF30`, `0x8002D00C`, `0x8002D5C0`, `0x8002CF9C`, `0x8002DE60`, `0x8002DDEC`, `0x80035AA8`, `0x80035B08`. Focus on callers' index/size arguments, allocator return value, allocation header size, and any explicit copy into executable payload address. Do not interpret `0x800B0450` as the payload base until proved. No emulator or adaptive-player action is part of this audit; Step 6(b)/Step 7 mapping remains BLOCKED/UNKNOWN.
