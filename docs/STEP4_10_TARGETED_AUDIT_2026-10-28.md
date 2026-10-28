@@ -117,3 +117,9 @@ Runs [#40613996374](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-
 ## Descriptor selector boundary note
 
 The two table-backed direct callers currently identified feed selector values 0–8 into `0x80015610`; selectors 9–17 are permitted by the function guard but not selected by records in the audited `0x80064918` and `0x80057798` tables. Their zero-filled blocks are therefore not evidence of an active gameplay configuration on these paths. The broader all-game reachability question remains unproven. Details in [the preset/list trace](STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md).
+
+
+<!-- caller-id-random-insert-audit-2026-10-28 -->
+## Additional caller-to-mutation evidence (28 October)
+
+The raw main EXE has a direct `JAL 0x80015ADC` at `0x80013B50`; delay slot `0x80013B54` passes a byte from `0x800139FC(group,slot)`, which reads offset +0x0A from a record indexed inside the `0x80070EA0)-based table for group <4 and slot <3. The byte is range-checked against the 52-entry registry, then a random insertion position in the latter half of the `0x80070D02)-sized buffer is computed. `0x800159BC` shifts order bytes `0x80070D0A`, writes the ID into `0x80070C80+0x8A+position`, and increments separate count `0x80070C82` if below 64. This strengthens Step 4/8 static trace but remains UNKNOWN for gameplay meaning and runtime reachability; no rule status is promoted. Full address-level details are in [the preset/list trace](STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md).
