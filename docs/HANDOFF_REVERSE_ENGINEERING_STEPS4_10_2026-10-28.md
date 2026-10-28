@@ -97,3 +97,9 @@ The latest evidence is in [`docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md
 ## Latest detailed static behavior
 
 Read the newest tail of [`docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md`](docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md). The `0x80070EA0)-based area is traversed as four records, stride `0xB4), with three adjacent IDs at `+0xA..+0xC`. The raw code body starting at `0x80013A48` adds a valid registry ID to the first invalid slot; the body at `0x80013B10` moves a chosen ID into the random-indexed shared structure, compacts source IDs, and sets the tail slot to `0xFF`. This is static behavior, not yet proven as cards or any named mechanic. Continue by tracing readers/writers of `0x80070C80+0x8A`, `0x80070C82`, and `0x80070D0A` and the dispatch/reachability of bodies `0x80013A48` / `0x80013B10`; do not start another restore run using the checkpoint that crashed twice.
+
+
+<!-- sequence-pop-and-reshuffle-helper-2026-10-28 -->
+## Sequence-shift finding
+
+`0x80015768` saves the first byte from `0x80070D0A`, shifts the sequence left with helper `0x800158E8`, shuffles the configured length with `0x80015B7C`, and returns the saved byte. The shift changes `0x80070C82), not the preset length `0x80070D02`, and does not clear the tail. Treat as static only; next task is understand consumers and the relationship to `0x80070C80+0x8A`, not a guessed deck/roulette label. Latest trace: [preset/list behavior](docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md).
