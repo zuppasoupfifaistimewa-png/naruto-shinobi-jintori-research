@@ -305,3 +305,15 @@ Next task: trace main-EXE loader/allocator functions directly, especially `0x800
 Actions [#40626130930](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40626130930) is **IN PROGRESS** on commit `8f1dd393073fa9b8f6435ebcf14fb760fd0eb2e7`. Started 10:20:35 WIB; workflow timeout 60 min, boundary about **11:20:35 WIB** (not a finish guarantee). Added call-path detail export for ten verified main-EXE function entries to the full Ghidra static job. The resulting text artifact should show decoded raw bodies, caller references and local callsite context for the resource wrapper, directory index reader, request queue, allocator initialization and allocator block allocation.
 
 When the run finishes, download the text-only artifact, verify the API digest, then inspect (in order) `0x8002D838`, `0x8002DEC4`, `0x8002DF30`, `0x8002D00C`, `0x8002D5C0`, `0x8002CF9C`, `0x8002DE60`, `0x8002DDEC`, `0x80035AA8`, `0x80035B08`. Focus on callers' index/size arguments, allocator return value, allocation header size, and any explicit copy into executable payload address. Do not interpret `0x800B0450` as the payload base until proved. No emulator or adaptive-player action is part of this audit; Step 6(b)/Step 7 mapping remains BLOCKED/UNKNOWN.
+
+
+<!-- candidate-target-threshold-path-2026-10-28 -->
+## New candidate target-threshold rule from entry-1 raw MIPS
+
+Detailed report: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), current report blob `399b55ddb86b03d128cb9ceaee220d40dd758aa5`.
+
+At candidate entry-1 addresses `0x800F1FE4–0x800F2024`, a guarded path passes selected participant index `D_8013EA88` to `0x800BDC4C`, computes selected record at stride `0x90`, reads record +0x04, adds helper return to that field, then compares the sum with `0x80012A70()` (main EXE getter for configured target global `D_80070C84`). If sum < target it branches to `0x800F212C`; otherwise additional global/record flag checks gate a continuation through `0x80100FC0`, `0x8010109C`, `0x80018300`, `0x80018468`, `0x80018508` and jump `0x800CF628` with `v0=5`. This makes “target reached?” a **strong candidate rule**, not a verified victory rule: helper semantics, participant field +4, final handler and runtime entry1 mapping are still unknown.
+
+Cross-check: entry1 callsite `0x8012AC04` passes a byte from `D_8013A554+0x94A` to the same helper; returned value is added to main-EXE Chakra getter `0x800138EC`, then clamped to -9999..99999 before a follow-on function. This shows helper output is used as a numeric contribution in a Chakra-related path, but does not name that contribution.
+
+Priority next: inspect helper `0x800BDC4C` and handler `0x800CF628` with correct overlay/returned-pointer context; continue loader allocator trace. Run #40626130930 remains the current static Ghidra audit (started 10:20:35 WIB, timeout boundary about 11:20:35 WIB). No emulator/adaptive player. Step 8(b) stays UNKNOWN pending independent closure.
