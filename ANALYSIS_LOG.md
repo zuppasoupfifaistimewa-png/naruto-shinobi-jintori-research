@@ -2482,3 +2482,12 @@ Existing raw disassembly parsed locally (no new binary download): 74 direct JAL 
 Added to [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), blob `fd38f7a464eda055eddb2adcbb11516fbf91be85`.
 
 Main startup calls bootstrap routine candidate `0x800AD454); this routine statically copies directory bytes at `0x800AD494..0x800B0193` to `0x8006D830`. This is consistent with bootstrap origin `0x800AD450) during startup. Hypothetical entry0 map `0x800AD000..0x800C7F07) overlaps that full bootstrap code/directory range. These should not be viewed as separate simultaneously resident images. The result supports the need to map overlay lifecycle/replacement, but does not prove the actual later base or the owner of `0x800AE900`. Step 7 remains UNKNOWN/BLOCKED, Step 6(b) BLOCKED.
+
+<!-- target-helper-contract-conflict-2026-10-28 -->
+## Targeted cross-resource helper-body check falsifies the current message-handler guess
+
+Evidence added to [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), blob `599c69df076cc5cdbcaf2dbc222743e925317067`. Actions #40621318421, artifact #12787632016, ZIP SHA-256 `2a61558de753bfd227c4db9f6f8ece52694a2a0890df2be1c5ba0fb6836992cf`.
+
+The targeted post-script decompiled address 0x800C2FD8 in entry0 under base 0x800AD000. Raw sequence moves a0 to s0 then loads +4 and +8, compares them against function results 0x80012444()/0x800126E8(), and validates byte +0xC using 0x80017144()/0x80013380(); the decompile is predicate-like. In contrast, entry1 calls this address with constants 0x258–0x275; for example a0=0x25B would cause the predicate's `lw 4(a0)` to access unaligned 0x25F. Thus a real call at runtime under these assumptions is incompatible; do not label this target as a message handler or infer semantics from the caller constants. This instead confirms that at least one resource base/call-path assumption is wrong or runtime mapping/lifecycle differs.
+
+Address 0x800C2570 in the same entry0 view is only `jr ra` with delay-slot `addiu sp,sp,0x40`, i.e. a stack-adjust/return stub in the locally decoded view. Ghidra's 180-second auto-analysis timed out but the target script post-processing and decompilation succeeded; the body was target-seeded and must not be treated as whole-program boundary closure. Status matrix unchanged; no gameplay/emulator/adaptive execution.
