@@ -161,3 +161,50 @@ This still does **not** tell us the player-facing meaning of that numeric value 
 - No direct JAL to `0x80013A48` appears in the available full main-EXE text disassembly. Its static body is understood locally, but its caller/reachability is still UNKNOWN in this evidence set; it may be called from resource/indirect code, which is not yet proven.
 
 These additional accesses strengthen the static ID-to-numeric-field chain, but the report's status matrix and game-mechanic labels remain unchanged.
+
+
+## 10. Newly reopened DATA.BIN entry-1 artifact: list byte → registry dispatch → state fields
+
+The existing raw disassembly artifact was downloaded from Actions run [#40523020556](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40523020556), artifact [#12742268706](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40523020556/artifacts/12742268706). Local ZIP SHA-256 matched the API digest: `5f3f767667444f7c956c36fc59cf75b6bb90a5a1dde8ddb92fb69f9e0f797e81`. Its `DATA_BIN_ENTRY_0001_800D0000.text.s` is raw static disassembly text for the 596,412-byte entry-1 slice. Base `0x800D0000` remains hypothetical; this is not a runtime observation.
+
+### 10.1 Sequence consumption and ID storage
+
+At `0x8010F3DC` and `0x8010F400), code calls `0x80015768`. That main-EXE helper:
+1. saves byte `0x80070D0A` before mutation;
+2. calls `0x800158E8(0,0)` to shift the first sequence left and decrement the separate counter `0x80070C82`;
+3. calls `0x80015B7C(0)` to perform its bounded RNG swaps over the configured first-list length;
+4. returns the saved byte.
+
+In the surrounding entry-1 sequence, the returned byte is also saved at stack offset `+0x18), masked to a byte, and written as a 32-bit value to the object reached through global pointer slot `0x8013EA74` at object offset `+0x530). This establishes a static dataflow from the first byte of the configured sequence into an object field. The pointer value and the object's player-facing meaning remain unknown.
+
+A related branch at `0x8010F1D4–0x8010F288) calls `0x800157E4` for indices 0, 1, and 2, passes the three returned list bytes to `0x800C7574` along with the current selector, stores that helper's result in `0x8013EBB0), and copies the three bytes from object offsets +0x10..+0x12 to +0x4E0..+0x4E2. This proves another consumer of the sequence bytes, but the helper's output semantics are unknown.
+
+### 10.2 Registry category dispatch and numeric effect
+
+When the branch has `D_80139EC7 == 0) and `0x8010D0F0()` returns zero, the returned ID is passed to `0x800154E0`, which reads registry field +0. Values below 16 index a jump table at `jtbl_800AE900`. The table bytes themselves are not part of the entry-1 slice, so individual category-to-destination mappings cannot yet be reconstructed from this artifact alone.
+
+Two branch destinations independently show the registry field +8 affects state:
+
+- Near `0x8010F464), the code obtains the same ID's field +8 through `0x8001552C`, stores the result in object +0x4F4, tests its sign, and sets object byte +0x534 to 1 on the negative branch or clears it on the nonnegative branch.
+- Near `0x8010F4E4), another path obtains field +8, writes it to object +0x4F0 and +0x4F4, and again branches on sign to set/clear +0x534.
+
+Thus a bounded sequence byte becomes an ID, its registry +0 field chooses a dispatch branch, and at least some branches use registry +8 to change numeric object fields and a separate status byte. The exact meaning of +0x4F0/+0x4F4/+0x534 and the visible gameplay consequence remain **UNKNOWN**. The imported resource base/global pointer and dispatch-table contents remain unverified.
+
+A separate path at `0x80115708–0x801158AC) uses the same field +8 in signed arithmetic: it multiplies the value by `(byte[0x8013EA71] - 2)`, stores the result in a group-indexed halfword at object +0x2EE, and tests the sign; the branches write 2 or 5 to a byte at +0x22 and route to different continuation functions. This adds a second static link from registry numeric attributes to control flow and object state, but not a verified player-facing rule.
+
+### 10.3 Direct resource callers now visible
+
+The same entry-1 raw disassembly contains decoded direct calls to the main-EXE slot helpers under the assumed base map:
+
+- `0x80013A48` (add ID to first invalid slot): call sites `0x8010F8EC`, `0x8010F908`, and `0x801107A8`.
+- `0x80013B10` (remove/transfer selected slot): call sites `0x800D7104`, `0x800DD19C`, `0x800DD2B4`, `0x800DD4CC`, `0x800F78AC`, `0x800FA3D4`, `0x800FAA2C`, and `0x80110798`.
+
+These references narrow the earlier gap: the functions are **directly called by decoded instructions in the candidate resource disassembly**, rather than merely hypothesized as possible external consumers. Their actual reachability at runtime remains unverified because the resource base/relocation/pointer provenance has not closed. Some decompiler paths also report malformed control-flow/instruction data.
+
+### 10.4 Updated interpretation and evidence limits
+
+The strongest supported sequence is now:
+
+`configured list byte → pop/shift/reshuffle helper → ID stored at object +0x530 → registry field +0 dispatch → field +8 arithmetic → object fields +0x4F0/+0x4F4/+0x534 or +0x2EE/+0x22`.
+
+Separately, resource code invokes add/remove helpers on the four-record, three-slot ID collection. This proves a connected **static data/control-flow mechanism**, stronger than an isolated byte-shift observation. It still does not identify the feature as a card, character, move, turn, tile, battle action, or victory/loss rule. No emulator/gameplay input was used and no runtime value was captured. Step 4 stays **SEBAGIAN**; Step 6(b) stays **BLOCKED**; Step 7 runtime mapping stays **UNKNOWN/BLOCKED**; Step 8(b) stays **UNKNOWN**.
