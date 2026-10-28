@@ -2557,3 +2557,9 @@ Therefore the section 27 comparison is more concrete: stored Chakra + helper out
 ## Third use of the 0x800BDC4C result traces against a separate config scalar
 
 Report section 29, blob `3fc780fb9951fbed43a4ce3716cf54b51c18ee4b`: `0x80111008` calls helper with selected index and stores return to `D_8013EAF0); `0x80012A8C` reads `D_80070C88`; the delay slot at `0x80111054` computes the difference and sends it to `0x80109974`, then `0x80109984)/`0x80109994). This confirms a third numeric consumer for the same selected-index helper output. Meaning remains UNKNOWN; runtime mapping and final callee effects remain unproven; no victory rule promoted.
+
+ 
+<!-- negative-chakra-target-precondition-2026-10-28 -->
+## Signed precondition before target-threshold candidate
+
+Detailed report section 30, blob `b3b6a0ec04ed80f5dc92c84787535f363302773e`. At `0x800F1F48`, candidate entry1 code branches based on participant record +0x04 sign. Negative path reads record byte +0x0F, calls `0x80100FC0` and `0x8010109C` with constants 1 and 2, calls `0x80101140`, sets active object +0x2E9=0x14, clears `D_80139F00+1` and `D_80139EBB`, and jumps to `0x800CFB34`. Nonnegative path takes an equality gate before comparing Chakra plus helper result with target. Because +0x04 is populated from Chakra getter `0x800138EC`, this is a signed-Chakra static precondition. Meaning of negative path, status code and final target result remain UNKNOWN; Step 8(b) unchanged.
