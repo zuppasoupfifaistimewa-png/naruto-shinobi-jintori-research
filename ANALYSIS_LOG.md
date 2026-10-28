@@ -2463,3 +2463,10 @@ Five direct calls to `0x80015578` exist in the entry-1 disassembly. It reads reg
 ## Full registry category / field+4 cross-tab
 
 Parsed all 52 rows from existing text-only main-EXE disassembly (report blob `ae8775eab56ec61f9616efa793ef02d896b7935e`). Category +0→field+4 mapping: 0→1 (14 rows), 1→1 (1), 3→1 (2), 4→1 (4), 5→2 (14), 6→1 (5), 7→2 (1), 8→0 (1), 9→0 (3), 10→0 (1), 12→0 (2), 13→2 (2), 14→2 (1), 15→2 (1). The mapping is perfectly consistent across observed data; meanings remain UNKNOWN. This cross-tab is not runtime/gameplay evidence.
+
+<!-- full-slot-branch-state-handler-2026-10-28 -->
+## Full-three-slot condition reaches a distinct state handler (static)
+
+Details in [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), latest report blob `32213da37aca5f0b9c6c6f0a90b80a8fd652689d`.
+
+After `0x80013BF0` returns true (all three selected record IDs are registry-valid), the candidate entry-1 caller sets active object word +0=1, byte +9=3, +0xC=0, word +4=0 and calls `0x8010D138`. That routine uses `D_8013EA88` as selected record index (stride 0x90), copies record +0x24→object +0x366, clears record +0x21, copies record +0x1F→object +0x2E8, sets object +0x2E9=8 and +0x2EA=3, calls `0x800C2570`, then reads record halfwords +0x22/+0x24 for further calculations. The handler remains unlabeled; no player-facing meaning is claimed because entry1 base, pointer provenance and cross-resource helper mapping are unresolved.
