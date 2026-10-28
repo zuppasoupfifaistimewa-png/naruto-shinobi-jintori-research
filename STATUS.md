@@ -4079,3 +4079,9 @@ The latest detailed trace documents a third consumer at `0x80111008`: the return
 ## Target-check precondition refined
 
 Entry-1 candidate code at `0x800F1F40–0x800F1F60` tests the sign of selected participant record +0x04 before the threshold comparison. Negative value routes to helpers using participant byte +0x0F, writes active-object +0x2E9=`0x14`, clears two state bytes/counters and jumps to `0x800CFB34`. Nonnegative value can reach the helper-plus-Chakra-vs-target comparison only after an additional equality gate. Field +0x04 is populated from Chakra getter `0x800138EC` on candidate static paths. This is static control-flow evidence, not a named loss/victory condition; Step 8(b) stays UNKNOWN.
+
+ 
+<!-- target-threshold-full-precondition-2026-10-28 -->
+## Target-gate precondition chain expanded
+
+The detailed ID/consumer report section 31 now establishes the static sequence before the candidate Chakra-target comparison: count bits 12–15 in selected participant halfword +0x0A; branch if participant byte +0x20 is nonzero; check active-object byte +0x92B and participant bit 0x200; require nonnegative Chakra record field +0x04 and equality between the bit count and active-object byte +0x4A2. Only then does it compare Chakra + `0x800BDC4C` contribution with target D_80070C84. At/above target, global bit 0x8 plus participant bit 0x200 still gates the route. All flag/status names and final outcome remain UNKNOWN; this is not a verified victory condition. Step 8(b) remains UNKNOWN; Step 6(b) BLOCKED and Step 7 runtime mapping UNKNOWN/BLOCKED.
