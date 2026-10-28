@@ -306,3 +306,27 @@ When field +4 is **not** 1, the routine instead reads object byte +0xB and passe
 ### Interpretation limit
 
 The sequence shows that field +4 is a **small enumerated property used to choose code paths**, and the value 1 is specifically associated with direct random insertion of the selected ID in Path B. It also shows a distinct response when the property is not 1 and the three-slot ID record is full. But it does not prove what field +4 means in natural language, why IDs with value 1 take that route, or what the state bytes +0/+4/+9/+0xC and follow-on handlers represent in gameplay. Because entry-1 base and pointer provenance are unverified, these are **TERVERIFIKASI-STATIS pada disassembly, runtime UNKNOWN**.
+
+
+## 17. Cross-tab of registry fields +0 and +4 across all 52 IDs
+
+A second full-table pass cross-tabulated field +4 against field +0. The two fields are perfectly associated in the observed registry: no field +0 code has multiple +4 values, and no row contradicts the following mapping.
+
+| Registry field +0 | Number of IDs | Field +4 for every row in that category |
+|---:|---:|---:|
+| 0 | 14 | 1 |
+| 1 | 1 | 1 |
+| 3 | 2 | 1 |
+| 4 | 4 | 1 |
+| 5 | 14 | 2 |
+| 6 | 5 | 1 |
+| 7 | 1 | 2 |
+| 8 | 1 | 0 |
+| 9 | 3 | 0 |
+| 10 | 1 | 0 |
+| 12 | 2 | 0 |
+| 13 | 2 | 2 |
+| 14 | 1 | 2 |
+| 15 | 1 | 2 |
+
+This matters because the +4==1 / +4!=1 branch behavior found at `0x801302EC` and `0x801304F8` can be restated as a branch on one of these fixed categories, but that does not identify what the categories mean. The distribution could encode a correlated kind/subtype, allowed-path indicator, or duplicated property; none of those natural-language interpretations is established. Treat the exact cross-tab as **TERVERIFIKASI dari data statis**, and its meaning as **UNKNOWN**.
