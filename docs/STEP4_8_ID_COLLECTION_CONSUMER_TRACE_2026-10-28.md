@@ -287,3 +287,22 @@ At `0x801313D0–0x8013141C`, code retrieves registry fields +0xC and +8 and pas
 | Registry +0xC affects visible state | No dataflow-closed argument use found yet | Caller passes the value into a currently decoded callee sequence that appears to ignore incoming $a0 | No effect proven | **UNKNOWN** |
 
 Next minimal evidence: find the owner/consumer of `0x800AE900` and loader relocation/copy timing, and inspect the destination of `0x800C2FD8(0x25B)` through the permitted static text artifacts. Keep runtime mapping blocked; no new emulator run is justified while the address conflict stands.
+
+
+## 16. Registry field +4 controls two different static branches
+
+Five direct calls to `0x80015578` were located in the entry-1 text disassembly. The accessor itself returns row word +4 for IDs <52 and `0xFFFFFFFF` otherwise. Its data distribution is exactly 0 in 7 rows, 1 in 26, and 2 in 19. Two call-site families show that its return value is an actual control-flow condition:
+
+### Path A — field +4 equals 1, then category code +0 selects follow-on behavior
+
+At `0x801302EC), ID held in `$s1` is passed to `0x80015578`. If return is not 1, the routine skips the following block. When it is exactly 1, the code calls `0x800154E0` for the same ID (field +0), tests category code against 7 and 5, and routes through different branches. One branch forms a per-record address using a stride computation with current object byte +0xC, calls `0x8010F0B8(record+0xC4, 1)`, then continues through a transition path that passes constants `0x4C00`, `3`, and `0x1E` to helper/continuation calls. Other category cases branch to a different state path. This proves the field +4 == 1 guard and category-conditioned routes, not the visible meaning of those routes.
+
+### Path B — field +4 equals 1 inserts the selected ID into the shared sequence
+
+At `0x801304F8), the routine derives a selected ID from the object at `0x8013A680` plus its byte +0xC and reads the byte at the computed +0xC0 location. That ID is passed to `0x80015578`. If the return is exactly 1, the code calls `0x80015ADC(0, ID)` and then `0x8010CDD0`. The helper call places the ID into the random-position insertion path previously traced; effect in the visible game remains unknown.
+
+When field +4 is **not** 1, the routine instead reads object byte +0xB and passes it to `0x80013BF0`. The target helper checks whether the selected one of four records has all three ID slots valid: it requires group<4, loops slot 0..2, reads each via `0x800139FC`, and compares each returned ID with registry count 52. If that check returns true, the caller sets object word +0 to 1, byte +9 to 3, byte +0xC to zero and word +4 to zero, then calls `0x8010D138`; if false it goes to `0x8010CDD0`. This is an exact conditional internal state change from the observed branch.
+
+### Interpretation limit
+
+The sequence shows that field +4 is a **small enumerated property used to choose code paths**, and the value 1 is specifically associated with direct random insertion of the selected ID in Path B. It also shows a distinct response when the property is not 1 and the three-slot ID record is full. But it does not prove what field +4 means in natural language, why IDs with value 1 take that route, or what the state bytes +0/+4/+9/+0xC and follow-on handlers represent in gameplay. Because entry-1 base and pointer provenance are unverified, these are **TERVERIFIKASI-STATIS pada disassembly, runtime UNKNOWN**.
