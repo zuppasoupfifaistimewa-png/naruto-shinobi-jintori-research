@@ -4003,3 +4003,8 @@ The detailed trace records that when field +4 !=1 and `0x80013BF0` confirms all 
 ## Cross-resource handler 0x800C2FD8 call family
 
 A static sweep of current entry1 raw disassembly finds 74 direct JALs to `0x800C2FD8`; 71 delay slots pass constants in the range `0x258..0x275`, with `0x25B` used seven times and `0x25F` eleven times. This is evidence of a common numeric-argument handler, not proof it renders text or messages. The helper body and table/lookup provenance are still unverified under the resource-base conflict. See detailed ID trace report. Step 7 mapping remains UNKNOWN/BLOCKED and no semantics are inferred from numeric codes.
+
+<!-- bootstrap-entry0-overlap-2026-10-28 -->
+## Loader/map constraint identified: bootstrap vs entry0 overlap
+
+The initial DATA.BIN bootstrap is consistent with a base of `0x800AD450) while main startup calls `0x800AD454` and copies the 0x2F00-byte directory from `0x800AD494). Entry 0 imported at hypothetical base `0x800AD000) spans `0x800AD000..0x800C7F07`, overlapping that bootstrap directory range `0x800AD494..0x800B0193`. Thus the entry0 base cannot be treated as a simultaneously co-resident memory image during that bootstrap use. This does not prove the real later entry0 base or load lifecycle. Step 7 mapping remains UNKNOWN/BLOCKED, Step 6(b) BLOCKED; see detailed trace report blob `fd38f7a464eda055eddb2adcbb11516fbf91be85`.
