@@ -4053,3 +4053,11 @@ Next evidence gate: static raw-MIPS caller/allocation trace for `0x8002D838`, `0
 GitHub Actions run [#40626130930](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40626130930), started 10:20:35 WIB, is **IN PROGRESS**. Workflow timeout is 60 minutes, so timeout boundary is about **11:20:35 WIB**; this is not a guaranteed completion time. It exports raw MIPS, decompilation, and references for 10 already-mapped main-EXE functions: `0x8002D838`, `0x8002DEC4`, `0x8002DF30`, `0x8002D00C`, `0x8002D5C0`, `0x8002CF9C`, `0x8002DE60`, `0x8002DDEC`, `0x80035AA8`, `0x80035B08`.
 
 Purpose: determine resource-read/allocator caller flow, and distinguish arena start `0x800B0450` from any returned allocation pointer or copied payload. Text-only artifacts are allowed; no emulator/gameplay, savestate, or adaptive player is part of this run. Keep Step 6(b) BLOCKED, Step 7 runtime mapping UNKNOWN/BLOCKED, Step 8(b) UNKNOWN until the evidence is audited.
+
+
+<!-- candidate-target-threshold-path-2026-10-28 -->
+## New rule candidate — comparison against configured target
+
+The detailed trace report now records entry-1 raw code at `0x800F1FE4–0x800F2024`: on a guarded selected-participant path, code adds the result of `0x800BDC4C(selected_index)` to participant-record field +0x04 and compares the sum with `0x80012A70()`, a main-EXE getter for configured target global `D_80070C84`. A sum below target routes to `0x800F212C`; at/above target, more flags are checked before a different continuation. Another caller at `0x8012AC04` adds the same helper's return to `0x800138EC` (Chakra getter) and clamps the sum.
+
+This is a **strong candidate target/threshold check** and a static numeric contribution path, not a verified victory rule. The contribution meaning, participant +4 meaning, target-route transition, and entry-1 runtime mapping remain unresolved. Step 8(b) stays UNKNOWN; Step 6(b) BLOCKED; Step 7 runtime mapping UNKNOWN/BLOCKED. Report details: [ID/consumer trace](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md).
