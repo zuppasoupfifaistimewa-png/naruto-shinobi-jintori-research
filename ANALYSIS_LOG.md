@@ -2362,3 +2362,17 @@ Additional source-level trace in the preset/list report: `0x80070EA0)-based stor
 ## Sequence shift + random reshuffle — 28 Oktober 2026
 
 The wrapper at `0x80015768` captures the first byte of `0x80070D0A`, removes position zero by calling `0x800158E8`, calls shuffle helper `0x80015B7C`, then returns the saved byte. The shift helper decrements `0x80070C82` and moves bytes left but doesn't clear the tail or decrement `0x80070D02`; the shuffle then operates over configured `n=halfword[0x80070D02]` for `4*n` random swaps. This local behavior is statically supported but should not be named as a queue/deck/roulette without understanding the consumer and corroborating runtime evidence. See the latest preset/list trace.
+
+
+<!-- id-collection-consumer-trace-2026-10-28 -->
+## New static trace: ID collection → random insertion → conditional consumer (28 Oktober 2026)
+
+Detailed, auditable report: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md). Evidence was re-read from the existing text-only artifact #12739676233 (main-EXE raw MIPS, SHA-256 ZIP `94d866f9c991b323a64f283da93359620c04ff8859d4c8fb53f4eb857c745f5d`) and Step 6 artifact #12783307599 (field/decompilation context, SHA-256 ZIP `748eadbfe82980bba8d2088d11affba4310d524eb871b6a34ee5fd43584f2892`). No fresh game binary download and no runtime run occurred.
+
+- Registry: `0x800121AC–0x800121F4` counts 16-byte rows from `0x80055CEC` up to `0x8005602C` (first-word sentinel at index 52); `0x800154D4` returns 52.
+- Source record: four records, stride `0xB4`, base `0x80070EA0`; three ID bytes +0xA..+0xC. `0x80013A48` checks ID <52 and writes the first slot whose byte is >=52. `0x80013B10` reads selected ID, calls `0x80015ADC` before compaction, shifts slots when needed, and marks the third slot `0xFF`.
+- Random insertion: `0x80015ADC` uses `floor(n/2)+(RNG mod floor(n/2))) where `n` is read from `0x80070D02`; a zero divisor reaches MIPS `break`. `0x800159BC` shifts `0x80070D0A) and writes at `0x80070C80+0x8A+position`; it increments separate count `0x80070C82) under the <64 guard. Insert/remove helper-family group argument is forced to 0 in the traced operations, despite the loader copying two group buffers.
+- Conditional consumer: under the entry-1 import hypothesis `0x800D0000), raw decoded JALs `0x800DD2B4` and `0x800DD4CC` point to `0x80013B10`. Decompiled context around `FUN_800dcfec` checks byte values `0x14/0x15` among fields at +0x10+i, then calls the remover, re-reads three IDs via `0x800139FC`, copies them to +0x10..+0x12 of a stride-`0x90` object, and changes additional fields. This is not runtime proof: entry-1 base/global pointer remain unvalidated and the decompiler explicitly warns about bad instruction/control flow.
+- Counter separation: D02/D04 configured lengths; D06/D08 load-reset cursors; C82 separate counter; C86 separate cursor; C8A indexed ID buffer. Do not combine these based on proximity.
+
+Interpretation: the operation sequence proves a static three-slot numeric-ID transfer and a separate RNG-position insertion mechanism, plus a conditional static cross-resource use. It does **not** identify the IDs or visible mechanic and does not establish that the entry-1 path executes at runtime. Keep Step 4/5/6/7/8 statuses unchanged (6b BLOCKED; runtime mapping UNKNOWN/BLOCKED; Step 8(b) UNKNOWN). Story Mode remains **TIDAK TERBUKTI TAMAT**. Adaptive player not run/changed and `barrier_level_selection=WAIT` remains unchanged.
