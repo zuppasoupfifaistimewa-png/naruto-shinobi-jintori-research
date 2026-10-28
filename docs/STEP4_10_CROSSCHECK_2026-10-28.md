@@ -138,3 +138,11 @@ Alamat MMIO yang dirujuk helper dipetakan menjadi word tetap 0x12345678. Ini buk
 6. Story Mode/readiness: jangan ubah player, classifier, Revision65 marker atau readiness gate. Target cue UNKNOWN, barrier_level_selection=WAIT, readiness NO-GO, Story Mode NOT COMPLETE. Restore savestate atau input gameplay memerlukan izin baru yang eksplisit dan spesifik karena gate terdahulu.
 
 Tidak ada teks Jepang baru yang dikutip; jika muncul dalam laporan mendatang, sertakan terjemahan Bahasa Indonesia di dekat teks asli.
+
+ 
+<!-- target-threshold-candidate-crosscheck-2026-10-28 -->
+## Latest rule-level static addition — target comparison candidate
+
+The detailed ID/consumer report section 27 and Step 8 report now note the raw entry-1 comparison at `0x800F1FE4–0x800F2024`: `helper(0x800BDC4C, selected_index) + participant_record[+4]` is compared with `D_80070C84` (getter `0x80012A70`). A below-target branch is direct; at/above target has additional flag checks before a different continuation. At a second callsite, the same helper's value is added to Chakra getter `0x800138EC` and clamped to -9999..99999.
+
+This is **strong static evidence for a candidate threshold check**, not proof of a victory rule. The helper's function meaning, participant +4 semantics, final transition handler and entry-1 runtime mapping remain unresolved. Step 8(b) remains UNKNOWN; overall Steps 4–9 status is unchanged; Story Mode remains TIDAK TERBUKTI TAMAT. No emulator/gameplay/savestate or adaptive-player run was made.
