@@ -3976,3 +3976,10 @@ The dispatch at entry1 `0x8010F444..` reads through `0x800AE900+4*field0`, but t
 ## Full registry field-distribution check
 
 All 52 registry rows were parsed from the existing main-EXE text artifact and counts recorded in [the ID trace report](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md). Field +0 has 14 observed codes within 0..15 (codes 2 and 11 absent); field +4 is 0/1/2; +8 has signed values -50..500 and the observed discrete set is tabulated in the report; +0xC equals ID+239 for all 52 rows. This confirms the data shapes only. The category dispatch's table ownership/runtime targets remain unknown due the base/overlay conflict. No status promotion; Step 6(b) BLOCKED, Step 7 runtime mapping UNKNOWN/BLOCKED, Step 8(b) UNKNOWN.
+
+<!-- signed-registry-attribute-state-transition-2026-10-28 -->
+## New rule-level static evidence — signed ID attribute changes participant state
+
+The detailed ID trace now covers raw instructions at entry-1 addresses `0x80115708–0x80115A68`. Given current ID in object +0x530, code reads registry field +8, multiplies it by a value derived from participant-count and a separate counter, and stores a signed halfword into record +0x2EE+2*index. The sign selects a negative branch (call `0x800C2FD8(0x25B)`, copy byte +0x2E9→+0x2EB, set +0x2E9=`0x12`) or a nonnegative branch that sets byte +0x22 to `5`. It further loops over records with matching byte +0x0E and sets their +0x2EE values and +0x22 statuses `2`/`5` according to sign. This is a static, conditional rule; attribute semantics, status meanings and visible result remain UNKNOWN. Entry-1 base/pointer map is unverified.
+
+The report also corrects the +0xC accessor call chain: passing the value into `0x80100DCC` does not prove consumption because the visible callee entry sequence does not use incoming `$a0`. No field label or rule name promoted. Step 6(b) BLOCKED, Step 7 runtime mapping UNKNOWN/BLOCKED, Step 8(b) UNKNOWN, Story Mode **TIDAK TERBUKTI TAMAT**.
