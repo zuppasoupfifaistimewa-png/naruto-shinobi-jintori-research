@@ -4045,3 +4045,11 @@ The alternate static import was completed successfully in Actions run [#40623532
 At this base, `0x800C2FD8` maps to three instructions returning `a0 != 0`, which matches scalar-looking arguments `0x258..0x275` better than the prior `0x800AD000) view's record predicate—but it also returns true for every nonzero constant, so it does not explain the 74 entry1 call sites. The script's `0x800C2570` body is not boundary-validated. `0x800AE900) lies below the B0450 entry0 base; under the old AD000 view it contained instruction-like bytes, not jump pointers. Thus the dispatcher table remains unmapped and overlay/payload base remains UNKNOWN/BLOCKED.
 
 Next evidence gate: static raw-MIPS caller/allocation trace for `0x8002D838`, `0x8002DEC4`, `0x8002DF30`, `0x8002D00C`, `0x8002D5C0`, `0x8002CF9C`, `0x8002DE60`, `0x8002DDEC`, `0x80035AA8`, and `0x80035B08`; distinguish allocator arena start from returned payload/copy destination. Step 6(b) remains BLOCKED; Step 7 mapping UNKNOWN/BLOCKED; Step 8(b) UNKNOWN. No emulator/gameplay/adaptive player was run; Story Mode **TIDAK TERBUKTI TAMAT**.
+
+ 
+<!-- loader-resource-caller-audit-2026-10-28 -->
+## Active static audit — loader allocation pointer vs payload (28 Oktober 2026)
+
+GitHub Actions run [#40626130930](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40626130930), started 10:20:35 WIB, is **IN PROGRESS**. Workflow timeout is 60 minutes, so timeout boundary is about **11:20:35 WIB**; this is not a guaranteed completion time. It exports raw MIPS, decompilation, and references for 10 already-mapped main-EXE functions: `0x8002D838`, `0x8002DEC4`, `0x8002DF30`, `0x8002D00C`, `0x8002D5C0`, `0x8002CF9C`, `0x8002DE60`, `0x8002DDEC`, `0x80035AA8`, `0x80035B08`.
+
+Purpose: determine resource-read/allocator caller flow, and distinguish arena start `0x800B0450` from any returned allocation pointer or copied payload. Text-only artifacts are allowed; no emulator/gameplay, savestate, or adaptive player is part of this run. Keep Step 6(b) BLOCKED, Step 7 runtime mapping UNKNOWN/BLOCKED, Step 8(b) UNKNOWN until the evidence is audited.
