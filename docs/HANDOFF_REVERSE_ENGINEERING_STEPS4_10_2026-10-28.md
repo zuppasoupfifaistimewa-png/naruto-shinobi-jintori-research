@@ -325,3 +325,13 @@ Priority next: inspect helper `0x800BDC4C` and handler `0x800CF628` with correct
 New detail report section 28, blob `4061891eba985aaec2469eb13f8a6287e11ad93c`: candidate entry-1 code at `0x80111090` calls main getter `0x800138EC` and stores its return into participant record +0x04 at `0x801110B8`; a second path at `0x801110FC` stores the selected participant's getter return to +0x04 at `0x80111124`. Therefore record +0x04 is populated from Chakra on these paths.
 
 Together with section 27, the candidate target gate is now: `Chakra(record +0x04) + helper(0x800BDC4C, selected_index)` compared with configured target `D_80070C84`. A below-target branch routes away; at/above target still requires flags before a different transition. This is a strong static candidate for a Chakra target check, not yet an established win condition: helper output semantics, guard meaning, target handler `0x800CF628`, and runtime mapping remain unknown. Step 8(b) remains UNKNOWN.
+
+ 
+<!-- helper-numeric-triple-consumer-2026-10-28 -->
+## Further helper cross-check — same returned value flows to three numeric consumers
+
+Detailed report section 29, blob `3fc780fb9951fbed43a4ce3716cf54b51c18ee4b`.
+
+At entry-1 callsite `0x80111008`, `0x800BDC4C(selected_index)` is stored in `D_8013EAF0`. The caller then gets main config value `D_80070C88` through `0x80012A8C); the JAL delay slot at `0x80111054` computes `D_8013EAF0 - D_80070C88` and passes the difference to `0x80109974`, then calls `0x80109984)/`0x80109994`. The exact effect of those continuations is not established.
+
+Alongside sections 27–28, the helper return is used as (a) a numeric contribution added to Chakra and compared with configured target D_80070C84, (b) a contribution added to Chakra getter output and clamped, and (c) a value differenced against config scalar D_80070C88. The shared value is participant-indexed, but its name/gameplay purpose remains UNKNOWN. This strengthens numerical dataflow coverage, not the victory-rule claim. Step 8(b) remains UNKNOWN.
