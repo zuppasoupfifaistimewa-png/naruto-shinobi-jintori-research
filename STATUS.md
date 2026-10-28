@@ -4035,3 +4035,13 @@ Raw MIPS trace shows `0x8002D4E4` reads directory word +4 and rounds it upward t
 ## Loader static finding — post-bootstrap allocation starts at 0x800B0450
 
 Section 25 of the detailed trace confirms raw static flow: `0x800AD450 + round_up(0x2F44,0x800)=0x800B0450); startup passes this value to `0x8002DE60), which initializes allocator metadata via `0x8002DDEC)/`0x80035AA8`. Later allocations use `0x80035B08` via `0x8002DEC4/0x8002DF30`. This establishes the post-bootstrap memory arena start, **not** the actual executable overlay base, because allocators use headers and the caller may copy/relocate loaded bytes. Step 7 remains partial; runtime mapping UNKNOWN/BLOCKED; Step 6(b) BLOCKED; Step 8(b) UNKNOWN.
+
+ 
+<!-- allocator-derived-entry0-altbase-test-2026-10-28 -->
+## Follow-up: allocator-derived base tested; entry mapping still unresolved
+
+The alternate static import was completed successfully in Actions run [#40623532269](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40623532269), text artifact #12788373175, SHA-256 `c16f6df28bea5f4cdf71fec8fb9009b6b550fb60e12ee738b32c539ebbf79194`. It tested candidate entry0 base `0x800B0450`, the arena start derived by bootstrap code.
+
+At this base, `0x800C2FD8` maps to three instructions returning `a0 != 0`, which matches scalar-looking arguments `0x258..0x275` better than the prior `0x800AD000) view's record predicate—but it also returns true for every nonzero constant, so it does not explain the 74 entry1 call sites. The script's `0x800C2570` body is not boundary-validated. `0x800AE900) lies below the B0450 entry0 base; under the old AD000 view it contained instruction-like bytes, not jump pointers. Thus the dispatcher table remains unmapped and overlay/payload base remains UNKNOWN/BLOCKED.
+
+Next evidence gate: static raw-MIPS caller/allocation trace for `0x8002D838`, `0x8002DEC4`, `0x8002DF30`, `0x8002D00C`, `0x8002D5C0`, `0x8002CF9C`, `0x8002DE60`, `0x8002DDEC`, `0x80035AA8`, and `0x80035B08`; distinguish allocator arena start from returned payload/copy destination. Step 6(b) remains BLOCKED; Step 7 mapping UNKNOWN/BLOCKED; Step 8(b) UNKNOWN. No emulator/gameplay/adaptive player was run; Story Mode **TIDAK TERBUKTI TAMAT**.
