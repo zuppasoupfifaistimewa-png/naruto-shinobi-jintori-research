@@ -1,0 +1,69 @@
+{
+  "exe_bytes": 385024,
+  "exe_sha256": "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569",
+  "data_bytes": 66015232,
+  "data_sha256": "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822",
+  "entry0_sha256": "56ee7d3b195b0708bd5f9163d354f0173a828430c9467d410e822b1793d316d4",
+  "entry1_sha256": "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a",
+  "a1": {
+    "entry1_sha256": "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a",
+    "entry1_bytes": 596412,
+    "candidate_base_best": "0x800AD450",
+    "peak_ratio_c_b": 1.0,
+    "best_other_sweep_ratio": 0.11907005969211436,
+    "peak_over_second": 8.398416886543536,
+    "criterion_pass": true,
+    "sweep_points": 6423,
+    "nearest_sweep_peak": {
+      "base": "0x800AD450",
+      "entry1_bytes": 596412,
+      "jal_count": 7221,
+      "targets_inside_entry1_b": 3183,
+      "targets_at_function_start_c": 3183,
+      "c_over_b": 1.0,
+      "targets_in_exe_text_range": 4025,
+      "targets_at_known_exe_function_entry_d": 598,
+      "unique_known_exe_targets": 14
+    }
+  },
+  "a2_total_hits": 137,
+  "a2_summary": [
+    {
+      "file": "SLPS_035.53 text",
+      "scenario": "exe_text",
+      "base": "0x80010000",
+      "read": 0,
+      "write": 0,
+      "address": 0,
+      "total": 0,
+      "scope_note": "linear instruction-word scan; candidate MIPS code bytes; same-block LUI 0x8014 provenance only"
+    },
+    {
+      "file": "DATA.BIN entry0",
+      "scenario": "base_0x800AD000_HYPOTHESIS",
+      "base": "0x800AD000",
+      "read": 0,
+      "write": 0,
+      "address": 0,
+      "total": 0,
+      "scope_note": "linear instruction-word scan; candidate MIPS code bytes; same-block LUI 0x8014 provenance only"
+    },
+    {
+      "file": "DATA.BIN entry1",
+      "scenario": "base_0x800AD450_A1_PASS",
+      "base": "0x800AD450",
+      "read": 137,
+      "write": 0,
+      "address": 0,
+      "total": 137,
+      "scope_note": "linear instruction-word scan; candidate MIPS code bytes; same-block LUI 0x8014 provenance only"
+    }
+  ],
+  "a4_rng_call_rows": 152,
+  "direct_exe_rng_calls": [
+    "0x80015B14",
+    "0x80015BF0",
+    "0x8001A460",
+    "0x80020C24"
+  ]
+}

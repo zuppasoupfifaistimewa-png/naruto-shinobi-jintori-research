@@ -1,0 +1,19 @@
+routine,instruction_address,word,operation,role
+setter,0x80013880,0x2CC20004,"sltiu v0,a2,4",index bound: accept indices 0..3
+setter,0x80013898,0x0045102A,"slt v0,v0,a1",clamp upper bound to 99999
+setter,0x800138B0,0x28A2D8F1,"slti v0,a1,-9999",test lower clamp boundary
+setter,0x800138C8,0x00061840,"sll v1,a2,1",index*2
+setter,0x800138CC,0x00661821,"addu v1,v1,a2",index*3
+setter,0x800138D0,0x00031100,"sll v0,v1,4",index*48
+setter,0x800138D4,0x00431023,"subu v0,v0,v1",index*45
+setter,0x800138D8,0x00021080,"sll v0,v0,2",index*180 = index*0xB4
+setter,0x800138DC,0x00822021,"addu a0,a0,v0",record base 0x80070EA0 + index*0xB4
+setter,0x800138E0,0xAC850018,"sw a1,0x18(a0)",32-bit field write at record +0x18
+getter,0x800138F0,0x2CA20004,"sltiu v0,a1,4",index bound: accept indices 0..3
+getter,0x80013900,0x00051840,"sll v1,a1,1",index*2
+getter,0x80013904,0x00651821,"addu v1,v1,a1",index*3
+getter,0x80013908,0x00031100,"sll v0,v1,4",index*48
+getter,0x8001390C,0x00431023,"subu v0,v0,v1",index*45
+getter,0x80013910,0x00021080,"sll v0,v0,2",index*180 = index*0xB4
+getter,0x80013914,0x00822021,"addu a0,a0,v0",record base 0x80070EA0 + index*0xB4
+getter,0x80013918,0x8C820018,"lw v0,0x18(a0)",32-bit field read at record +0x18
