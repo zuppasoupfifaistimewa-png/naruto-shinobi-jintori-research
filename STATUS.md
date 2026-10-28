@@ -3988,3 +3988,8 @@ The report also corrects the +0xC accessor call chain: passing the value into `0
 ## Field +4 branch consumers added
 
 The ID trace report now documents five callsites to registry accessor `0x80015578`. Field +4 distribution across 52 rows is 0:7, 1:26, 2:19. In a candidate entry-1 branch, +4==1 triggers category-conditioned handling through field +0; another +4==1 path sends the ID into `0x80015ADC` random insertion. For +4!=1, code checks the selected 3-slot record with `0x80013BF0`; when full, object state is changed at +0/+4/+9/+0xC and continuation `0x8010D138` is called. These are static control-flow and dataflow facts; field semantics and runtime reachability remain UNKNOWN because the entry mapping/pointer provenance is unresolved. Status matrix unchanged.
+
+<!-- registry-category-plus4-crosstab-2026-10-28 -->
+## Registry category/field +4 cross-tab
+
+All 52 static rows have a deterministic mapping between +0 and +4: +4=1 for categories 0,1,3,4,6; +4=2 for 5,7,13,14,15; +4=0 for 8,9,10,12. No category mixes field+4 values. This is a verified data distribution only and does not name a game mechanic. Details in [ID collection/consumer trace](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md). All Step 4–10 status gates remain unchanged.
