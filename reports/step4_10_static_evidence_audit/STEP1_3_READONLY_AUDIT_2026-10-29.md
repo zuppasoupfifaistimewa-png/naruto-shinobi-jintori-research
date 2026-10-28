@@ -74,6 +74,12 @@ Bukti EXE:
 - `static-audit.txt`
 
 ## Batas interpretasi dan run susulan
-Impor pertama base `0x800AD450` memberi 88 nama fungsi unik yang berisi sumber XREF. Sesudah pemeriksaan itu, sebuah pre-script `tools/ghidra/PrepareRebasedEntry1.java` ditambahkan untuk menyemai kandidat fungsi pada offset file yang sama seperti impor lama. Run audit susulan [#40789851311](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40789851311) sedang berjalan saat catatan ini ditulis; karena itu hasil final rebase yang memakai seeding belum dinyatakan. Run Ghidra lain [#40789217602](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40789217602) juga masih menganalisis entry 0 dalam workflow statis terpisah.
+Impor pertama base `0x800AD450` memberi 88 nama fungsi unik yang berisi sumber XREF. Pre-script `tools/ghidra/PrepareRebasedEntry1.java` kemudian ditambahkan untuk menyemai kandidat fungsi pada offset file yang sama seperti impor lama.
+
+Run susulan [#40789851311](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40789851311) berhasil pada impor Ghidra, scanner, dan cleanup (langkah 10–12), serta log runner mencatat kembali XREF baru 324, kelas rekonsiliasi yang sama, dan 144 JAL entry-1 (47 VALID/97 TIDAK PASTI). Namun langkah penyimpanan ke repo gagal: `git push` ditolak `fetch first`/non-fast-forward karena `main` bertambah setelah checkout; upload artifact dilewati. Maka keluaran CSV per lokasi yang berasal dari seeded run tidak tersedia di repo, dan angka per lokasi tetap dikutip dari keluaran pertama yang tersimpan. Ini bukan kegagalan Ghidra atau emulator.
+
+Commit `c12c272875c419c9120583144ac81620246d7477` memperbaiki workflow agar rebase pada `origin/main` sebelum push, menulis log sebagai `.txt` agar tidak diabaikan `.gitignore`, dan mencatat pola remainder aritmetis pada pemanggil `0x80020C24`. Run tindak lanjut [#40790387202](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40790387202) telah masuk antrean; belum ada keluaran baru darinya saat laporan diperbarui.
+
+Run Ghidra statis terpisah [#40789217602](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40789217602) masih menganalisis entry 0. Batas maksimum workflow-nya 35 menit sejak mulai 06:42:39 WIB, yakni 07:17:39 WIB; ini batas timeout, bukan prediksi saat selesai normal.
 
 Story Mode tidak disentuh dan tidak dinyatakan tamat.
