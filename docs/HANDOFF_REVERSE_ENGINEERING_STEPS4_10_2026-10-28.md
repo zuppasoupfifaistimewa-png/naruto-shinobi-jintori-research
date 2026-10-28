@@ -30,4 +30,4 @@ Repo tunggal: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 2. Trace pointer CFG-aware dari global slot 0x8013A554 sampai access field +0xB30/+0xB38/+0xB40/+0xB44; catat batas provenance yang tak diketahui.
 3. Step 7 hanya lanjut jika ada copy instruction reachable yang dipilih dari raw disassembly; selain itu pertahankan BLOCKED dan jangan ulang probe generik.
 4. Step 8 hanya beri label aturan dengan code flow dan state/result autentik independen yang saling mendukung.
-5. Pertahankan matriks 17 baris: Step 4 partial; Step 5 partial; Step 6(a,c) partial, 6(b) blocked, 6(d) unknown; Step 7(a) partial, 7(b) blocked; Step 8(a) partial, 8(b) unknown/blocked untuk label unsupported; Step 9(a) tuntas hanya 7 vektor RNG, 9(b) partial; Step 10 tuntas sebagai matriks audit saja.
+5. Pertahankan matriks 17 baris: Step 4 partial; Step 5 partial; Step 6(a,c) partial, 6(b) blocked, 6(d) unknown; Step 7(a) partial, 7(b) blocked; Step 8(a) partial, 8(b) UNKNOWN; label aturan unsupported tetap tidak dipromosikan; Step 9(a) tuntas hanya 7 vektor RNG, 9(b) partial; Step 10 tuntas sebagai matriks audit saja.

@@ -91,7 +91,7 @@ Alamat MMIO yang dirujuk helper dipetakan menjadi word tetap 0x12345678. Ini buk
 | 7(a) Static resource/loader | SEBAGIAN | SEBAGIAN | Direktori DATA.BIN terdokumentasi; destination/length/relocation/lifecycle dan DATA2.BIN/DUMMY.BIN belum lengkap |
 | 7(b) Runtime mapping/copy | BLOCKED | BLOCKED | Probe 0x800AD454 no-hit sampai frame 120; butuh target copy yang dibenarkan statis dan bukti source/dest/length/checksum |
 | 8(a) Semantik operasi terpilih | SEBAGIAN | SEBAGIAN | Operasi caller dan threshold tercatat; base/pointer dan efek aktual belum tervalidasi |
-| 8(b) Aturan game | UNKNOWN/BLOCKED untuk label yang tak didukung | UNKNOWN/BLOCKED | Perlu code flow kondisi→store→hasil plus bukti runtime autentik per biaya/barrier/kartu/battle/turn/menang-kalah |
+| 8(b) Aturan game | UNKNOWN untuk label yang tak didukung | UNKNOWN | Perlu code flow kondisi→store→hasil plus bukti runtime autentik per biaya/barrier/kartu/battle/turn/menang-kalah |
 | 9(a) Tes RNG terisolasi | TUNTAS, hanya 7 vektor | TUNTAS, hanya 7 vektor | #40606159061: 7/7; jangan generalisasikan ke fungsi/hardware/gameplay lain |
 | 9(b) Tes helper/accessor dan breadth | SEBAGIAN | SEBAGIAN | 8/8 helper dan 16/16 accessor dalam model; breadth fungsi/gameplay/PS1 belum diuji |
 | 10 Audit closure per-kriteria | TUNTAS hanya matriks | TUNTAS hanya matriks | Bukti/status/gap diindeks; bukan klaim seluruh riset atau game sudah selesai |
