@@ -268,3 +268,10 @@ Main EXE raw disassembly at `0x80011560` proves a startup sequence: `0x800115AC`
 `0x8002C9C4` reads the active directory pointer, and `0x8002D00C` indexes it as `base + index*8`, reads the first word, and passes that into lower-level read helper `0x8002CF9C`. Wrapper `0x8002D838` resolves a descriptor, branches to a resource-buffer/allocation path (`0x8002DEC4` vs `0x8002DF30`), then invokes the indexed read. This confirms a directory-based resource-read path, but not the second-word use at this specific point or any entry's final RAM destination/base.
 
 The key unknown remains: when/where entry0 and entry1 are loaded, relocated, and whether overlays replace `0x800AD000..`. The current hypothesized entry0 map overlaps bootstrap memory if considered simultaneous, and table bytes at `0x800AE900` under that hypothetical map decode as instructions, not dispatch pointers. Keep base/overlay runtime mapping UNKNOWN/BLOCKED; Step 6(b) BLOCKED; Step 8(b) UNKNOWN. No emulator/gameplay/adaptive-player execution.
+
+<!-- directory-length-rounded-read-queue-2026-10-28 -->
+## Resource reader follow-up — directory +4 is size rounded to 2,048-byte sectors
+
+Detailed report blob `9c9cb2ab70ed7e9654dfc0ed0f58114de02d7de4`, section 24. Raw MIPS at `0x8002D4E4` reads the indexed directory word +4 and computes sector-rounded size `(word & ~0x7FF) + (low11 != 0 ? 0x800 : 0)`; e.g., `0x2F44 → 0x3000`. `0x8002D838` requests this rounded size, chooses `0x8002DEC4` or `0x8002DF30` based on the caller's third argument, then calls `0x8002D00C`; that indexed reader takes entry word +0 (start-LBN) and passes it with destination/size/request values to `0x8002CF9C` / `0x8002D5C0). The latter queues a request record; its queue count is GP+0x15C, guarding under 15 entries.
+
+This confirms actual static directory→rounded-size→request-queue dataflow, not the eventual runtime destination/overlay base. It does not prove every resource entry or code module uses this same wrapper or how relocations work. Continue tracing the caller of the entry-specific loader and data copy path; keep 6(b) BLOCKED and Step 7 runtime mapping UNKNOWN/BLOCKED.
