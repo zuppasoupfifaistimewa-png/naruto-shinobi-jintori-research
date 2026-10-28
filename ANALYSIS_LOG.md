@@ -2329,3 +2329,13 @@ The full Ghidra analysis run [#40498208067](https://github.com/zuppasoupfifaisti
 - Limitation: this census covers recognized direct base+displacement memory operations in Ghidra-decoded code, not full pointer analysis. Base 0x800D0000 remains hypothetical; alias tracing is bounded linear 24-instruction lookback and simple-MOVE only. Indirect aliases, computed pointers, split immediates, undecoded code, alternate bases, object identity and semantic field meaning remain UNKNOWN. Some Ghidra decompilations fail due to malformed P-code/bad instruction boundaries. Step6 remains SEBAGIAN.
 - Overall status remains Step4 SEBAGIAN; Step5 TUNTAS only for four selected functions; Step6 SEBAGIAN; Step7 SEBAGIAN; Step8 SEBAGIAN; Step9 TUNTAS only for 0x80035D78; Step10 TUNTAS only as criterion-level closure matrix. Story Mode TIDAK TERBUKTI TAMAT.
 - No emulator/gameplay, gameplay input, savestate restore, adaptive-player changes or private game asset upload was performed.
+
+
+<!-- step4-step8-preset-list-shuffle-audit-2026-10-28 -->
+## 28 Oktober 2026 — two-list preset loader and first-list-only shuffle
+
+See the detailed trace [`docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md`](docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md). Raw main-EXE disassembly and Ghidra/m2c output in artifact #12739676233 prove `0x80015610` accepts a byte-valued selector <18, loads two 64-byte lists from `0x8005603C + selector*0x40 + group*0x480`, stops on `0xFF` or at 64 bytes, and stores counts at `0x80070D02 + group*2`. Groups are byte-identical for each selector. Selectors 0–8 have first-sentinel lengths 51,55,59,57,61,62,62,62,11; selectors 9–17 are 64 zero bytes with no sentinel, hence the static loader computes length 64 for them.
+
+At `0x80015B9C`, `0x80015B7C` overwrites `a0=0`, reads count at `0x80070D02`, sets base offset to zero and performs 4*n random swaps over only the first buffer. Caller passes 0 then 1, but the helper discards the group parameter. Treat as a confirmed static asymmetry, not a confirmed programmer bug or game-rule label; IDs/feature semantics and consumers of the second list remain UNKNOWN.
+
+Checkpoint restore was attempted without controller input in runs #40613996374 and #40614208610. Both reached the game/BIOS setup, then segfaulted during the savestate load before the load call returned or emitted `ExecutionFlow::SaveStateLoaded`. In the second, sanitized state plus reinserted BIOS reproduced the raw state SHA exactly; no third identical load is warranted. Checkpoint integrity is not proof of restorable state. No adaptive player was run.
