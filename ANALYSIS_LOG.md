@@ -2470,3 +2470,8 @@ Parsed all 52 rows from existing text-only main-EXE disassembly (report blob `ae
 Details in [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), latest report blob `32213da37aca5f0b9c6c6f0a90b80a8fd652689d`.
 
 After `0x80013BF0` returns true (all three selected record IDs are registry-valid), the candidate entry-1 caller sets active object word +0=1, byte +9=3, +0xC=0, word +4=0 and calls `0x8010D138`. That routine uses `D_8013EA88` as selected record index (stride 0x90), copies record +0x24→object +0x366, clears record +0x21, copies record +0x1F→object +0x2E8, sets object +0x2E9=8 and +0x2EA=3, calls `0x800C2570`, then reads record halfwords +0x22/+0x24 for further calculations. The handler remains unlabeled; no player-facing meaning is claimed because entry1 base, pointer provenance and cross-resource helper mapping are unresolved.
+
+<!-- helper-c2fd8-call-family-2026-10-28 -->
+## Inventory of direct calls to 0x800C2FD8 from entry1
+
+Existing raw disassembly parsed locally (no new binary download): 74 direct JAL sites; 71 delay-slot arguments are constants in `0x258..0x275`. Frequency table in `docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`, report blob `fcae52c9ba671da8fc70eaedae9a4efd5b882a82`. Frequent arguments include `0x25B` (7 uses) and `0x25F` (11 uses). This repeated range is only a hypothesis for a shared event/message/resource lookup; no target body/string table or player-facing result has been verified. Helper is outside entry1, likely within a resource view whose load mapping is not confirmed.
