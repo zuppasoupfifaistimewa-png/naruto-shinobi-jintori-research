@@ -459,3 +459,15 @@ This establishes three separate things:
 - **STILL UNKNOWN/BLOCKED:** when a particular DATA.BIN entry is copied to RAM, its final destination/base, whether it replaces the bootstrap region, whether relocations or entry-specific load headers are used, and which code owns `0x800AE900) during entry1 dispatch.
 
 The current overlap result therefore has a sharper interpretation: the bootstrap temporarily occupies the `0x800AD450)-region to build the directory, and the resource-read system then keeps using the directory through `0x8006D830). It is plausible that later resource loads reuse/replace memory in the bootstrap's address range, but the exact lifecycle is **not proved** by these instructions. The candidate entry0 import base `0x800AD000` must remain a hypothesis. Step 7 stays partial with runtime mapping **UNKNOWN/BLOCKED**, Step 6(b) **BLOCKED**, and Step 8(b) **UNKNOWN**.
+
+
+## 24. Directory entry +4 is rounded to sector bytes and used in the reader setup
+
+A tighter raw-MIPS trace of `0x8002D4E4`, `0x8002D00C`, and `0x8002D838` reveals how the second directory word participates in request preparation:
+
+- `0x8002D4E4(index)` calls the active-directory getter `0x8002C9C4`, computes `directory + index*8`, then reads the second word at +4. It calculates `rounded = (word & ~0x7FF) + ((word & 0x7FF) != 0 ? 0x800 : 0)`; that is, it rounds the encoded byte length up to a 2,048-byte sector boundary. Example: directory word `0x2F44` rounds to `0x3000`. Helper `0x8002D530` can return the raw +4 word without rounding.
+- `0x8002D838` preserves the entry index and caller arguments, obtains this rounded size via `0x8002D4E4`, then chooses between two allocation/record-preparation paths based on the incoming third argument: `0x8002DEC4(rounded_size)` if that argument is zero, otherwise `0x8002DF30(rounded_size)`. It then calls `0x8002D00C` with the original entry index and the resulting request parameters.
+- `0x8002D00C(index, ...)` reads the indexed entry's first word at offset +0 (the directory's start-LBN field according to the validated catalog format) and invokes `0x8002CF9C` with that source location plus destination/size/request arguments. In turn, `0x8002CF9C` checks the destination and size parameters before queueing a read through `0x8002D5C0`. The latter writes a request record into a bounded queue (count at `0x80015C($gp)`, capacity guard <15) with source LBN, destination-related parameter, size, and callback/context fields.
+- The queue/record operation is a statically visible disc-read setup. The code uses rounded byte count and a separate LBN; it is not simply copying the whole DATA.BIN resource directly into its hypothetical Ghidra base.
+
+This is useful new loader evidence but not an overlay base solution: `0x8002D838` is only one wrapper in a family, and the current evidence doesn't prove which caller loads entry 0 or 1, how their bytes are subsequently interpreted/copied/relocated, or how their code references are fixed up. Therefore no runtime load base can be inferred from the directory reader alone.
