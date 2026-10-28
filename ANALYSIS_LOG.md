@@ -2390,3 +2390,17 @@ Added to [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_
 - No direct JAL to `0x80013A48` appears in the available full main-EXE text disassembly. That function's local body is understood, but its caller/reachability remains UNKNOWN.
 
 Interpretation limit: this is evidence of four numeric registry attributes, a category-like branch value, and a signed numeric field that affects candidate internal state. It does not identify a player-facing feature or confirm runtime execution of the DATA.BIN entry-1 route. Step 6(b) remains BLOCKED and Step 8(b) UNKNOWN; Story Mode remains **TIDAK TERBUKTI TAMAT**; adaptive player untouched.
+
+
+<!-- sequence-to-registry-dispatch-trace-2026-10-28 -->
+## Existing entry-1 disassembly links sequence IDs to registry dispatch and object-state writes
+
+Detailed continuation: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md); handoff addendum added the next gaps. Existing artifact [#12742268706](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40523020556/artifacts/12742268706) was downloaded and its local ZIP digest matched GitHub: `5f3f767667444f7c956c36fc59cf75b6bb90a5a1dde8ddb92fb69f9e0f797e81`.
+
+- Entry-1 raw disassembly (hypothetical base `0x800D0000)) has calls at `0x8010F3DC` and `0x8010F400` to `0x80015768`. Caller stores the returned first-list byte into object +0x530. The helper's static body saves D0A, shifts list 0, decrements C82 and calls the RNG swap loop before returning the saved byte.
+- On the guard branch where `D_80139EC7==0` and `0x8010D0F0()` returns zero, the caller sends the ID to `0x800154E0` (registry +0); values <16 index table pointer `jtbl_800AE900`. The table data/owner is not yet mapped from the available artifact.
+- Static branch destinations near `0x8010F464` / `0x8010F4E4` fetch registry +8 through `0x8001552C`, write the numeric value to object +0x4F4 or +0x4F0/+0x4F4 and branch on its sign to set/clear +0x534. Another path `0x80115708–0x801158AC` multiplies +8 by a difference derived from `D_8013EA71` and `D_80139EFC`, writes +0x2EE, then uses sign to store 2 or 5 at +0x22 and route to a different continuation. This is static dataflow/branch effect; feature meaning is UNKNOWN.
+- A separate path `0x8010F1D4–0x8010F288` reads list indices 0,1,2, passes them to `0x800C7574`, and copies the bytes to object +0x4E0..+0x4E2. Helper result semantics unknown.
+- Decoded direct JAL references in entry-1 to `0x80013A48`: `0x8010F8EC`, `0x8010F908`, `0x801107A8`. To `0x80013B10`: `0x800D7104`, `0x800DD19C`, `0x800DD2B4`, `0x800DD4CC`, `0x800F78AC`, `0x800FA3D4`, `0x800FAA2C`, `0x80110798`.
+
+The new chain is stronger than the earlier isolated helper operations: it shows sequence byte → ID field → registry category dispatch → attribute-driven numeric writes/branching in the candidate resource view. It does not yet prove runtime reachability because load base, relocation, global pointer provenance and jump-table ownership remain unverified; decompilation has bad-control-flow warnings on some paths. No emulator, gameplay input, or adaptive player was used. Step 4 partial; Step 6(b) BLOCKED; Step 7 runtime mapping UNKNOWN/BLOCKED; Step 8(b) UNKNOWN. Story Mode remains **TIDAK TERBUKTI TAMAT**.
