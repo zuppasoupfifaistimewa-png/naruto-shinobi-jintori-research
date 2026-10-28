@@ -2344,3 +2344,9 @@ Checkpoint restore was attempted without controller input in runs #40613996374 a
 ## Descriptor selector table cross-check — 28 Oktober 2026
 
 The two direct callsites for `0x80015610` obtain their selector from descriptor byte +2. Across the 18 decoded records, `0x80064918` yields `0,1,2,3,4,5,6,7,4,4,4,4,4,4,4,5,8,8`; `0x80057798` yields `0,1,2,8,3,4,8,5,6,6,0,0,0,0,0,0,3,5`. These tables only feed values 0–8 to the identified direct callsites, so source rows 9–17 are not selected by these tables, although the loader's guard allows them. Do not generalize beyond the two audited tables/callsites. See [detailed report](docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md).
+
+
+<!-- caller-id-random-insert-audit-2026-10-28 -->
+## Static caller trace — 28 Oktober 2026
+
+Cross-checked raw MIPS in Step 5 artifact #12739676233. Direct JAL at `0x80013B50` calls `0x80015ADC`; its delay slot `0x80013B54` passes the byte returned by `0x800139FC(group,slot)`. That getter bounds group <4 and slot <3, then reads record byte +0x0A relative to `0x80070EA0) plus calculated record offsets. The inserted ID is validated against the 52-entry registry. The routine derives the index from `byte[0x80070D02]` and RNG: `floor(n/2)+(RNG mod floor(n/2))`; `0x800159BC` shifts the `0x80070D0A` order bytes right, writes the ID to `0x80070C80+0x8A+position`, and increments the separate count `0x80070C82` under a <64 guard. Zero divisor at n<2 reaches a MIPS break instruction; caller precondition/reachability still not proven. No feature name is assigned. See the detailed trace. 
