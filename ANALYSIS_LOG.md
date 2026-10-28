@@ -2376,3 +2376,17 @@ Detailed, auditable report: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-
 - Counter separation: D02/D04 configured lengths; D06/D08 load-reset cursors; C82 separate counter; C86 separate cursor; C8A indexed ID buffer. Do not combine these based on proximity.
 
 Interpretation: the operation sequence proves a static three-slot numeric-ID transfer and a separate RNG-position insertion mechanism, plus a conditional static cross-resource use. It does **not** identify the IDs or visible mechanic and does not establish that the entry-1 path executes at runtime. Keep Step 4/5/6/7/8 statuses unchanged (6b BLOCKED; runtime mapping UNKNOWN/BLOCKED; Step 8(b) UNKNOWN). Story Mode remains **TIDAK TERBUKTI TAMAT**. Adaptive player not run/changed and `barrier_level_selection=WAIT` remains unchanged.
+
+
+<!-- registry-numeric-field-consumer-2026-10-28 -->
+## Registry field accessors and downstream arithmetic — 28 Oktober 2026
+
+Added to [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), commit `07f8b641f354b1ed90e92aedc6e194582c24e714`.
+
+- Raw MIPS accessor entries: `0x800154E0` reads a row's word +0; `0x80015578` reads +4; `0x8001552C` reads +8; `0x800155C4` reads +0xC, all after checking ID against the 52-entry count. Invalid-index return values differ by accessor.
+- Exact raw table profile: 52 records × 16 bytes; +0 contains numeric codes, +4 contains 0/1/2 across the extracted entries, +8 includes signed values -50/-30/-25 and positive values up to 500, and +0xC runs sequentially from 239 (`0xEF`) through 290 (`0x122`). Text/name labels were not found in these fields. The last field is an index-like sequence by shape only; do not call it a resource ID without a consumer proving that.
+- Conditional entry-1 routine `FUN_80115728` uses `0x8001552C` on the value held at object +0x530, multiplies/negates the numeric field, writes a per-group halfword at +0x2EE, and branches on sign to set the associated record byte +0x22 to 2 or 5 before calling different continuations. This traces registry data to a state/control-flow effect in static decompilation, but the base/pointer and actual game meaning are not established.
+- Additional reader/writer clarification: `0x800157C4` reads C8A at cursor C86 without a visible bounds check; `0x80015808` bounds index against D02's low byte and returns C8A or FF; `0x80015858` uses that length bound plus ID <52 to write C8A.
+- No direct JAL to `0x80013A48` appears in the available full main-EXE text disassembly. That function's local body is understood, but its caller/reachability remains UNKNOWN.
+
+Interpretation limit: this is evidence of four numeric registry attributes, a category-like branch value, and a signed numeric field that affects candidate internal state. It does not identify a player-facing feature or confirm runtime execution of the DATA.BIN entry-1 route. Step 6(b) remains BLOCKED and Step 8(b) UNKNOWN; Story Mode remains **TIDAK TERBUKTI TAMAT**; adaptive player untouched.
