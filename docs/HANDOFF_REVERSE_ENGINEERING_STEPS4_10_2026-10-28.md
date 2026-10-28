@@ -239,3 +239,14 @@ The ID trace report now lists all 74 direct entry-1 calls to `0x800C2FD8` (detai
 Detail report updated at blob `fd38f7a464eda055eddb2adcbb11516fbf91be85`. Main startup calls `0x800AD454`; bootstrap code there copies the `0x2F00)-byte directory from `0x800AD494) to `0x8006D830), consistent with DATA.BIN bootstrap base `0x800AD450) during that routine. If extracted DATA.BIN entry 0 is separately mapped at hypothetical base `0x800AD000), it covers `0x800AD000..0x800C7F07`, overlapping the bootstrap directory at `0x800AD494..0x800B0193`. These two map assumptions cannot be treated as separate co-resident images in the same address range at that time. Overlay replacement/lifecycle is a possibility, not proven.
 
 This makes Step 7 loader/overlay ownership the right blocker: establish when bootstrap memory is replaced and what is resident at `0x800AE900) during entry1 dispatch. Keep Step 6(b) BLOCKED and runtime mapping UNKNOWN/BLOCKED. Detail report contains the static ranges and limits.
+
+<!-- target-helper-contract-conflict-2026-10-28 -->
+## Targeted helper result supersedes the “message-dispatcher” hypothesis
+
+The targeted Ghidra run [#40621318421](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40621318421) succeeded with text artifact #12787632016 (ZIP SHA-256 `2a61558de753bfd227c4db9f6f8ece52694a2a0890df2be1c5ba0fb6836992cf`). The detailed ID trace now has section 21, blob `599c69df076cc5cdbcaf2dbc222743e925317067`.
+
+Under the hypothetical entry0 base `0x800AD000), `0x800C2FD8` decompiles as a boolean predicate over a record-like `a0): it loads fields +4 and +8, conditionally compares them to helpers `0x80012444()` and `0x800126E8()`, and checks a byte at +0xC through `0x80017144()` plus `0x80013380()`. It is not a message renderer in this candidate view. But entry1 disassembly has 74 direct calls to absolute `0x800C2FD8`, 71 passing small constants `0x258..0x275`; for argument 0x25B, the predicate's first `lw +4(a0)` would access unaligned address 0x25F. This is an explicit argument contract conflict, so the two hypothetical resource maps/runtime call interpretation cannot be combined without loader/overlay evidence. Previous “message/event dispatcher” wording was only a hypothesis and is **not supported by the body found under this map**.
+
+The other target `0x800C2570` is only `jr ra` plus delay-slot `addiu sp,sp,0x40` (stack-adjust/return stub, no gameplay write visible). Note the headless Ghidra run reached its 180-second analysis timeout but the post-script completed and decompiled both targets; function boundary remains manually seeded, not complete whole-program analysis.
+
+Next: resolve actual resource residency/relocation and argument-contract conflict. No emulator/savestate/player-adaptive run; statuses remain Step 6(b) BLOCKED, Step 7 runtime map UNKNOWN/BLOCKED, Step 8(b) UNKNOWN, Story Mode TIDAK TERBUKTI TAMAT.
