@@ -1,0 +1,8 @@
+classification,pattern_group,calls,interpretation
+TIDAK PASTI,DIV_OR_REMAINDER,9,instruction-pattern grouping only; no gameplay feature name assigned
+TIDAK PASTI,MASK_AND_DIV,3,instruction-pattern grouping only; no gameplay feature name assigned
+TIDAK PASTI,MASK_ONLY,19,instruction-pattern grouping only; no gameplay feature name assigned
+TIDAK PASTI,NO_DIRECT_MASK_MODULUS_32_WORDS,66,instruction-pattern grouping only; no gameplay feature name assigned
+VALID,DIV_OR_REMAINDER,2,instruction-pattern grouping only; no gameplay feature name assigned
+VALID,MASK_ONLY,21,instruction-pattern grouping only; no gameplay feature name assigned
+VALID,NO_DIRECT_MASK_MODULUS_32_WORDS,24,instruction-pattern grouping only; no gameplay feature name assigned

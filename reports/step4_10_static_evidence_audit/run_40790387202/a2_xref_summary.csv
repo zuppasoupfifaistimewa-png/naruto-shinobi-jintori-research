@@ -1,0 +1,4 @@
+file,scenario,base,read,write,address,total,scope_note
+SLPS_035.53 text,exe_text,0x80010000,0,0,0,0,linear instruction-word scan; candidate MIPS code bytes; same-block LUI 0x8014 provenance only
+DATA.BIN entry0,base_0x800AD000_HYPOTHESIS,0x800AD000,0,0,0,0,linear instruction-word scan; candidate MIPS code bytes; same-block LUI 0x8014 provenance only
+DATA.BIN entry1,base_0x800AD450_A1_PASS,0x800AD450,137,0,0,137,linear instruction-word scan; candidate MIPS code bytes; same-block LUI 0x8014 provenance only

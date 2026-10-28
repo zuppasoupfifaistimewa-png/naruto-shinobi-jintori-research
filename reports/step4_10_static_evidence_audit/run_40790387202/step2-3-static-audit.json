@@ -1,0 +1,21 @@
+{
+  "exe_sha256": "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569",
+  "data_bin_sha256": "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822",
+  "entry1_sha256": "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a",
+  "new_ghidra_xref_count": 324,
+  "legacy_xref_count": 194,
+  "legacy_scan_count": 137,
+  "legacy_common": 79,
+  "legacy_scan_only": 58,
+  "legacy_ghidra_only": 115,
+  "expanded_scan_count": 326,
+  "new_ghidra_only_vs_expanded_scan": 32,
+  "base_old_threshold_lt_58": true,
+  "entry1_rng_raw_jals": 144,
+  "entry1_rng_classes": {
+    "VALID": 47,
+    "TIDAK PASTI": 97
+  },
+  "exe_rng_raw_jals": 4,
+  "ram_dump_available": false
+}
