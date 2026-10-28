@@ -471,3 +471,20 @@ A tighter raw-MIPS trace of `0x8002D4E4`, `0x8002D00C`, and `0x8002D838` reveals
 - The queue/record operation is a statically visible disc-read setup. The code uses rounded byte count and a separate LBN; it is not simply copying the whole DATA.BIN resource directly into its hypothetical Ghidra base.
 
 This is useful new loader evidence but not an overlay base solution: `0x8002D838` is only one wrapper in a family, and the current evidence doesn't prove which caller loads entry 0 or 1, how their bytes are subsequently interpreted/copied/relocated, or how their code references are fixed up. Therefore no runtime load base can be inferred from the directory reader alone.
+
+
+## 25. Memory arena is reset to the bootstrap end before later resource allocations
+
+The raw startup path and allocator code provide a static lower bound for the memory used after the bootstrap is loaded:
+
+- Bootstrap directory request size word `0x2F44` rounds to `0x3000` bytes by `0x8002D4E4`.
+- Callback `T_8002DD80` calls the directory-size getter for request index 0, adds the rounded result to the bootstrap pointer in `D_80010498` (= `0x800AD450`), aligns the sum to 4 bytes, and stores it at `0x168($gp)`. In the analyzed input this calculation is `0x800AD450 + 0x3000 = 0x800B0450`.
+- Startup routine `0x80011560` then obtains `0x800B0450` through `0x8002DD74` and calls `0x8002DE60` with that address.
+- `0x8002DE60` masks the address with `0x1FFFFC`, subtracts it from `0x1F8000`, and calls `0x8002DDEC(base, remaining_size)`. `0x8002DDEC` invokes `0x80035AA8(base, size)`, which initializes the allocator's free-list state and records the base in `D_80065C6C). Therefore, the **post-bootstrap allocator arena begins at the pointer value 0x800B0450 in this static path**, with the upper bound derived from `0x1F8000) under the address mask.
+- `0x8002DEC4` and `0x8002DF30` request allocations from `0x80035B08`, the allocator that walks the free-list and returns a payload pointer. `0x8002DF30` adds its own request bookkeeping and rounds the request to an 8-byte boundary; resource-reader size is already rounded to 0x800 bytes by `0x8002D4E4`.
+
+### Implication and limit
+
+This **does not** prove that DATA.BIN entry 0's executable code starts at `0x800B0450), because allocations can include allocator/header bookkeeping and the disk reader may load a resource buffer that a higher-level overlay loader subsequently copies/relocates. It does show why importing entry 0 at `0x800AD000` is not a loader-derived runtime-base proof: `0x800AD450..` is the initial bootstrap/ directory area, and the subsequent allocator is reinitialized to start at `0x800B0450).
+
+The strongest next test is a bounded alternate-base decode of the entry0 bytes corresponding to the entry1 cross-resource target `0x800C2FD8`, using the new allocator-derived region as a hypothesis and explicitly allowing for block-header offsets. That is a different test from the earlier `0x800AD000)-base inspection and could resolve the argument-contract contradiction; until it is done, the target body/runtime identity stays **UNKNOWN**. Step 7 still remains partial and runtime mapping **UNKNOWN/BLOCKED**.
