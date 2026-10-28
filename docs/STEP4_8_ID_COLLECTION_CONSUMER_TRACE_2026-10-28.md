@@ -344,3 +344,25 @@ The branch at `0x80130514–0x80130558` calls `0x80013BF0` with object byte +0x0
 - Copies active-object +0x389 to +0x379 and continues into arithmetic using globals `D_8013EAB0`, `D_8013EACE`, `D_8013EA84` and indexed record halfwords +0x22/+0x24. These reads and calculations continue across the next disassembly body beginning at `0x8010D270`; do not treat the Ghidra “function” split as a semantic boundary without further raw control-flow proof.
 
 This adds a direct static sequence from **field +4 !=1 + all-three-slots-valid → object flags reset → per-record fields copied/cleared → internal state values +0x2E9=8 and +0x2EA=3 → helper call**. It is a concrete control/state transition but does not prove that “full” means a full character roster, full inventory, or any other player-facing description. The entry-1 mapping/runtime reachability remains unverified, and helper `0x800C2570` belongs to the unresolved cross-resource address range.
+
+
+## 19. Cross-resource handler 0x800C2FD8 has 74 decoded direct call sites
+
+A sweep across the available entry-1 raw disassembly finds **74** direct `JAL 0x800C2FD8` instructions. In 71 of those calls, the delay-slot instruction directly sets `$a0` to a constant; all 71 constants lie in the contiguous range `0x258..0x275`. Frequency from the raw disassembly:
+
+| Argument | Calls | Argument | Calls | Argument | Calls |
+|---:|---:|---:|---:|---:|---:|
+| 0x258 | 2 | 0x262 | 2 | 0x26C | 1 |
+| 0x259 | 2 | 0x263 | 2 | 0x26D | 1 |
+| 0x25A | 2 | 0x264 | 1 | 0x26E | 2 |
+| 0x25B | 7 | 0x265 | 1 | 0x26F | 2 |
+| 0x25C | 3 | 0x266 | 1 | 0x270 | 2 |
+| 0x25D | 2 | 0x267 | 2 | 0x271 | 2 |
+| 0x25E | 2 | 0x268 | 2 | 0x272 | 2 |
+| 0x25F | 11 | 0x269 | 2 | 0x273 | 2 |
+| 0x260 | 1 | 0x26A | 3 | 0x274 | 2 |
+| 0x261 | 2 | 0x26B | 2 | 0x275 | 3 |
+
+The three other call sites do not set a new immediate `$a0` in their delay slots; their argument provenance is left to the instructions before the call. Some uses of `0x25B` are in the negative-attribute branch already described at `0x8011577C), but the same constant is used in several other code paths.
+
+This repeated dense argument range is a good target for identifying a shared event/message/resource dispatcher, **but that description is a hypothesis only** until the body of `0x800C2FD8` is decompiled and its downstream data lookup or UI effect traced. The helper lies outside the entry-1 slice and inside the current hypothetical entry0 address range; the entry0 view at base `0x800AD000` and its runtime ownership are not yet validated. Do not translate these numeric codes into Japanese messages or gameplay outcomes without a verified string table or consumer.
