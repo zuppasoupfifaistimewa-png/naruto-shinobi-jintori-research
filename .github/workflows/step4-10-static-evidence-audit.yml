@@ -9,7 +9,7 @@ on:
       - ".github/workflows/step4-10-static-evidence-audit.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: step4-10-read-only-static-evidence-audit
@@ -34,7 +34,7 @@ jobs:
       - name: Download validated private release assets and extract inputs on runner
         shell: bash
         env:
-          GITHUB_TOKEN: \${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           root="$RUNNER_TEMP/step4-10-static-audit"
@@ -127,10 +127,28 @@ jobs:
           fi
           echo "PRIVATE_BINARY_CLEANUP=PASS"
 
+      - name: Commit sanitized CSV and text reports to the permitted repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          destination="reports/step4_10_static_evidence_audit/run_${GITHUB_RUN_ID}"
+          mkdir -p "$destination"
+          cp "$RUNNER_TEMP/step4-10-static-audit/output/"* "$destination/"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$destination"
+          if git diff --cached --quiet; then
+            echo "REPORT_REPO_COMMIT=NO_CHANGES"
+          else
+            git commit -m "Record read-only static evidence audit ${GITHUB_RUN_ID}"
+            git push origin HEAD:main
+            echo "REPORT_REPO_COMMIT=PASS"
+          fi
+
       - name: Upload sanitized CSV and text reports
         uses: actions/upload-artifact@v4
         with:
           name: step4-10-read-only-static-audit
-          path: \${{ runner.temp }}/step4-10-static-audit/output/*
+          path: ${{ runner.temp }}/step4-10-static-audit/output/*
           if-no-files-found: error
           retention-days: 7
