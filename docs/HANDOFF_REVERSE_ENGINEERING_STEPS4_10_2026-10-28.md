@@ -184,3 +184,12 @@ The entry1 static prefix at `0x800D0128..0x800D013C` stores six aligned words po
 But a bounded entry0 dump at `0x800AE900..0x800AE93F` under hypothetical base `0x800AD000` finds instruction-like words (including JALs), not 16 jump pointers, whereas entry1 code at `0x8010F444..` computes `0x800AE900+4*field0`, loads a word and `jr`s to it. The existing static address assumptions therefore cannot be collapsed into a single confirmed runtime map. Likely research gap is module lifecycle/base/relocation or another resource owning that address, but these alternatives are not yet distinguished.
 
 Next: static loader/copy/relocation analysis to determine what occupies `0x800AD000..` when entry1 dispatch runs; identify who consumes the six-word pointer group. Do not retry the failed savestate, do not run emulator/adaptive player. Step 6(b) remains BLOCKED; Step 7 runtime map BLOCKED/UNKNOWN; Step 8(b) UNKNOWN. Story Mode remains TIDAK TERBUKTI TAMAT.
+
+<!-- registry-full-distribution-2026-10-28 -->
+## Registry distribution cross-check (all 52 IDs)
+
+Detailed report [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), report blob `e62ffb3076439ccf91660ebb1403b43aa605e5ae`, records the parse of all 52 four-word registry rows from the existing main-EXE text artifact.
+
+Field +0 distribution is: 0:14, 1:1, 3:2, 4:4, 5:14, 6:5, 7:1, 8:1, 9:3, 10:1, 12:2, 13:2, 14:1, 15:1; codes 2 and 11 are absent. Field +4 distribution is 0:7, 1:26, 2:19. Field +8 unique values are -50, -30, -25, 0..7, 25, 50, 75, 100, 150, 200, 250, 350, 400, 500. Every row satisfies field +0xC = ID + 239, giving 239..290.
+
+This strengthens the claim that field +0 is a category-like code (range fits the <16 dispatch guard) and field +8 is a signed numeric parameter used in branch/arithmetic. No semantics can yet be assigned to either; particularly, don't call +8 a cost/power/stat or +0xC a resource ID. Jump table/runtime mapping remains blocked. 
