@@ -1,3 +1,11 @@
+# ADDENDUM LANJUTAN — 28 Oktober 2026
+
+Audit artefak langsung pasca-checkpoint sebelumnya: laporan spesifik [docs/STEP4_10_TARGETED_AUDIT_2026-10-28.md](STEP4_10_TARGETED_AUDIT_2026-10-28.md). Artefak Step 5 #12739676233 dan Step 6 #12741234990 diunduh/dibuka ulang; hash ZIP cocok dengan nilai yang terdokumentasi. Tambahan yang benar-benar baru: 156 mnemonic JALR dalam main-EXE disassembly (target dinamis belum diselesaikan); perbedaan span anotasi `nonmatching` spimdisasm versus body Ghidra untuk `0x80015B7C`; dan direct operand counts terdekode pada view entry-1: +B30 1 READ, +B38 1 READ, +B40 1 WRITE, +B44 1 WRITE + 1 READ. Itu memperjelas coverage lokal tetapi tidak menutup caller graph, effective address, alias/pointer chain atau semantics runtime.
+
+Matriks 17 kriteria tetap sebagaimana status di bawah: Step 4–9 belum memperoleh closure global; 6(b) dan 7(b) BLOCKED; arti field dan aturan gameplay unsupported tetap UNKNOWN; Step 10 TUNTAS sebagai matriks saja. Tidak ada emulasi/gameplay/input/restore dilakukan dan Story Mode TIDAK TERBUKTI TAMAT.
+
+---
+
 # Cross-check Bukti Riset Reverse Engineering — Langkah 4–10
 Tanggal: 28 Oktober 2026 (checkpoint sesudah pembaruan 07:06 WIB)
 Repositori diizinkan: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
