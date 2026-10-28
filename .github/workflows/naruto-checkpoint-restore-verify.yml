@@ -1,0 +1,334 @@
+name: Naruto checkpoint restore verification (no gameplay input)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/naruto-checkpoint-restore-verify.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: naruto-checkpoint-restore-verify
+  cancel-in-progress: false
+
+jobs:
+  restore-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      WORK: ${{ runner.temp }}/naruto-checkpoint-restore-verify
+      SOURCE_RUN_ID: "39262213468"
+      STATE_SHA256: "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
+      CARD_SHA256: "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5"
+      DISC_SHA256: "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88"
+      APPIMAGE_SHA256: "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c"
+      BIOS_SHA256: "5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1"
+    steps:
+      - name: Prepare private workspace and X11 utilities
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            bchunk xorriso xvfb x11-utils curl jq unzip python3 python3-pil
+          mkdir -p "$WORK"/{source,state-artifact,card-artifact,resume,cards,captures,home,logs}
+          chmod 700 "$WORK"
+          echo "RESTORE_DIAGNOSTIC=NO_INPUT_ONLY" | tee "$WORK/captures/summary.txt"
+          echo "SOURCE_RUN_ID=$SOURCE_RUN_ID" | tee -a "$WORK/captures/summary.txt"
+
+      - name: Download checkpoint and matching private Memory Card
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-checkpoint-private
+          run-id: ${{ env.SOURCE_RUN_ID }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: ${{ env.WORK }}/state-artifact
+
+      - name: Download Memory Card artifact from same checkpoint run
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: ${{ env.SOURCE_RUN_ID }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: ${{ env.WORK }}/card-artifact
+
+      - name: Download and verify private emulator inputs on runner
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          cd "$WORK/source"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          fetch_asset() {
+            id="$1"; name="$2"; bytes="$3"; sha="$4"; limit="$5"
+            curl --fail --location --silent --show-error \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header "Accept: application/octet-stream" \
+              --header "X-GitHub-Api-Version: 2022-11-28" \
+              --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 \
+              --max-time "$limit" "$API/releases/assets/$id" --output "$name"
+            test "$(stat -c '%s' "$name")" = "$bytes"
+            echo "$sha  $name" | sha256sum --check --status
+            echo "PRIVATE_INPUT_VALID name=$name bytes=$bytes sha256=$sha" | tee -a "$WORK/captures/summary.txt"
+          }
+          fetch_asset 647346873 game.bin 325989552 "$DISC_SHA256" 600
+          fetch_asset 647354760 game.cue 116 be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8 60
+          fetch_asset 652373928 scph7502.zip 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a 60
+          fetch_asset 669480936 pcsx-redux.AppImage 65747557 "$APPIMAGE_SHA256" 180
+
+          python3 - "$WORK/state-artifact" "$WORK/card-artifact" "$WORK/resume/storymode-checkpoint.raw.sstate" "$WORK/cards/reference.mcd" "$WORK/captures/source-checks.txt" <<'PY'
+          from pathlib import Path
+          import hashlib, sys
+          state_root, card_root, state_out, card_out, summary = map(Path, sys.argv[1:])
+          def unique(root, name):
+              xs = list(root.rglob(name))
+              if len(xs) != 1 or not xs[0].is_file() or xs[0].stat().st_size == 0:
+                  raise SystemExit(f"Expected exactly one non-empty {name}; found {len(xs)}")
+              return xs[0]
+          state = unique(state_root, "storymode-checkpoint.raw.sstate")
+          card = unique(card_root, "naruto-storymode.mcd")
+          def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
+          expected = {
+              "state_bytes": "21163286",
+              "state_sha256": "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d",
+              "card_bytes": "131072",
+              "card_sha256": "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5",
+          }
+          actual = {"state_bytes": str(state.stat().st_size), "state_sha256": digest(state),
+                    "card_bytes": str(card.stat().st_size), "card_sha256": digest(card)}
+          for k, v in expected.items():
+              if actual[k] != v: raise SystemExit(f"{k} mismatch: {actual[k]}")
+          state_out.write_bytes(state.read_bytes())
+          card_out.write_bytes(card.read_bytes())
+          lines = [f"{k}={actual[k]}" for k in actual]
+          summary.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          print("\n".join(lines))
+          PY
+          chmod 400 "$WORK/resume/storymode-checkpoint.raw.sstate"
+          chmod 600 "$WORK/cards/reference.mcd"
+
+          python3 - "$WORK/source/scph7502.zip" "$WORK/source/scph7502.bin" "$BIOS_SHA256" <<'PY'
+          from pathlib import Path
+          import hashlib, stat, sys, zipfile
+          archive, destination, expected = Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3]
+          with zipfile.ZipFile(archive) as z:
+              total = 0; candidates = []
+              for x in z.infolist():
+                  mode = (x.external_attr >> 16) & 0xffff
+                  p = Path(x.filename)
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)):
+                      raise SystemExit("Unsafe BIOS archive member")
+                  total += x.file_size
+                  if x.file_size > 2*1024*1024 or total > 4*1024*1024: raise SystemExit("BIOS expansion bound exceeded")
+                  if not x.is_dir() and x.file_size == 524288: candidates.append(x)
+              if len(candidates) != 1: raise SystemExit(f"Expected one 512 KiB BIOS; found {len(candidates)}")
+              data = z.read(candidates[0]); got = hashlib.sha256(data).hexdigest()
+              if got != expected: raise SystemExit("BIOS SHA-256 mismatch")
+              destination.write_bytes(data)
+              print(f"BIOS_VALID=PASS bytes={len(data)} sha256={got}")
+          PY
+          python3 - "$WORK/source/game.cue" "$WORK/source/game-run.cue" <<'PY'
+          from pathlib import Path
+          import sys
+          src, dst = map(Path, sys.argv[1:])
+          lines = src.read_bytes().decode("utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          ids = [i for i,x in enumerate(lines) if x.lstrip().upper().startswith("FILE ")]
+          if len(ids) != 1 or not any(x.lstrip().upper().startswith("TRACK ") for x in lines): raise SystemExit("Invalid CUE")
+          lines[ids[0]] = 'FILE "game.bin" BINARY'
+          dst.write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+          chmod +x "$WORK/source/pcsx-redux.AppImage"
+          (cd "$WORK/source" && ./pcsx-redux.AppImage --appimage-extract >/dev/null)
+          test -x "$WORK/source/squashfs-root/AppRun"
+          cp "$WORK/state-artifact/storymode-checkpoint-source.png" "$WORK/captures/source-checkpoint.png"
+          echo "INPUTS_VERIFIED=PASS; private state and game inputs remain on ephemeral runner" | tee -a "$WORK/captures/summary.txt"
+
+      - name: Restore checkpoint, send no controller input, and observe 180 VSyncs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/home/.config" XDG_DATA_HOME="$WORK/home/.local/share" XDG_RUNTIME_DIR="$WORK/home/runtime"
+          export LIBGL_ALWAYS_SOFTWARE=1
+          mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_RUNTIME_DIR"
+          chmod 700 "$XDG_RUNTIME_DIR"
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          trap 'kill "$xvfb_pid" 2>/dev/null || true; wait "$xvfb_pid" 2>/dev/null || true' EXIT
+          for _ in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+
+          PAD_SETUP=$(cat <<'LUA'
+          PCSX.settings.pads[1].DeviceType = 'Analog'
+          PCSX.settings.pads[1].Connected = true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("CHECKPOINT_RESTORE_PAD_SETUP=connected; no buttons pressed")
+          LUA
+          )
+          cat > "$WORK/restore.lua" <<'LUA'
+          if io.stdout then io.stdout:setvbuf("no") end
+          local vsync=0
+          local load_started=false
+          local load_returned=false
+          local state_loaded=false
+          local restored_frames=0
+          local pause_pending=false
+          local function log(s) print(s); pcall(function() io.stdout:flush() end) end
+          local function capture(name, n)
+            local shot=PCSX.GPU.takeScreenShot()
+            local bpp=(shot.bpp == 0) and 16 or 24
+            local raw=assert(Support.File.open("captures/"..name..".raw","TRUNCATE"))
+            raw:writeMoveSlice(shot.data); raw:close()
+            local meta=assert(io.open("captures/"..name..".json","wb"))
+            meta:write(string.format('{"frame":%d,"width":%d,"height":%d,"bpp":%d,"expected_bytes":%d}\n',n,shot.width,shot.height,bpp,shot.width*shot.height*bpp/8))
+            meta:close()
+            log("RESTORE_CAPTURE=PASS name="..name.." frame="..n.." width="..shot.width.." height="..shot.height.." bpp="..bpp)
+          end
+          _G.checkpointRestoreLoadListener=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
+            state_loaded=true; restored_frames=0; log("RESTORE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded")
+          end)
+          local function stop_at(name,n,final)
+            if pause_pending then return end
+            pause_pending=true
+            PCSX.pauseEmulator()
+            PCSX.nextTick(function()
+              local ok,err=pcall(function() capture(name,n) end)
+              if not ok then log("RESTORE_CAPTURE_ERROR="..tostring(err)); PCSX.quit(61); return end
+              if final then
+                local pass=state_loaded and load_returned and restored_frames>=180
+                log("RESTORE_POST_LOAD_VSYNC="..tostring(restored_frames))
+                log("RESTORE_PROOF="..(pass and "PASS" or "FAIL"))
+                PCSX.quit(pass and 0 or 52)
+              else
+                pause_pending=false; PCSX.resumeEmulator()
+              end
+            end)
+          end
+          _G.checkpointRestoreVsyncListener=PCSX.Events.createEventListener("GPU::Vsync",function()
+            vsync=vsync+1
+            if not load_started then
+              load_started=true
+              log("RESTORE_LOAD_BEGIN=1; no input sent")
+              PCSX.pauseEmulator()
+              PCSX.nextTick(function()
+                local opened,file=pcall(function() return assert(Support.File.open("resume/storymode-checkpoint.raw.sstate"),"checkpoint open failed") end)
+                if not opened or not file then log("RESTORE_OPEN_ERROR="..tostring(file)); PCSX.quit(50); return end
+                local ok,err=pcall(function() PCSX.loadSaveState(file) end)
+                file:close()
+                if not ok then log("RESTORE_LOAD_ERROR="..tostring(err)); PCSX.quit(51); return end
+                load_returned=true
+                log("RESTORE_LOAD_CALL_RETURNED=1")
+                PCSX.resumeEmulator()
+              end)
+              return
+            end
+            if state_loaded then
+              restored_frames=restored_frames+1
+              if restored_frames==60 then stop_at("post-restore-60",restored_frames,false)
+              elseif restored_frames==180 then stop_at("post-restore-180",restored_frames,true) end
+            elseif vsync>=1500 and not pause_pending then
+              log("RESTORE_LOAD_EVENT_TIMEOUT=1"); PCSX.pauseEmulator(); PCSX.nextTick(function() PCSX.quit(53) end)
+            end
+          end)
+          log("RESTORE_SCRIPT_READY=1; source checkpoint read-only; no controller input")
+          LUA
+
+          set +e
+          timeout --signal=TERM --kill-after=5s 100s stdbuf -oL -eL "$WORK/source/squashfs-root/AppRun" \
+            -noupdate -no-debugger -no-gdb -bios "$WORK/source/scph7502.bin" -iso "$WORK/source/game-run.cue" \
+            -memcard1 "$WORK/cards/reference.mcd" -exec "$PAD_SETUP" -dofile "$WORK/restore.lua" \
+            -softgpu -dynarec -stdout -lua_stdout -logfile "$WORK/logs/pcsx.log" -run > "$WORK/logs/pcsx.stdout" 2>&1
+          rc=$?
+          set -e
+          echo "EMULATOR_EXIT=$rc" | tee -a "$WORK/captures/summary.txt"
+          grep -E 'RESTORE_|Loaded BIOS:|CD-ROM Label:|CD-ROM ID:|SIGSEGV|Segmentation fault|FATAL|ERROR|Execute !' \
+            "$WORK/logs/pcsx.stdout" "$WORK/logs/pcsx.log" >> "$WORK/captures/summary.txt" || true
+          echo "$rc" > "$WORK/captures/emulator-exit.txt"
+
+      - name: Convert screenshots and compare with source checkpoint
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          from PIL import Image, ImageChops, ImageStat
+          root=Path("captures")
+          lines=[]
+          for meta_path in sorted(root.glob("post-restore-*.json")):
+              try:
+                  meta=json.loads(meta_path.read_text())
+                  raw_path=meta_path.with_suffix(".raw")
+                  raw=raw_path.read_bytes()
+                  w,h,bpp=(int(meta[k]) for k in ("width","height","bpp"))
+                  if len(raw)!=w*h*bpp//8:
+                      lines.append(f"SCREENSHOT_INVALID={meta_path.name}:size"); continue
+                  if bpp==16:
+                      rgb=bytearray()
+                      for i in range(0,len(raw),2):
+                          px=raw[i]|raw[i+1]<<8
+                          rgb.extend(((px&31)*255//31,((px>>5)&31)*255//31,((px>>10)&31)*255//31))
+                      im=Image.frombytes("RGB",(w,h),bytes(rgb))
+                  elif bpp==24: im=Image.frombytes("RGB",(w,h),raw)
+                  else: lines.append(f"SCREENSHOT_INVALID={meta_path.name}:bpp"); continue
+                  out=root/(meta_path.stem+".png"); im.save(out)
+                  stat=im.getextrema()
+                  if not any(high>low for low,high in stat): lines.append(f"SCREENSHOT_BLANK={out.name}")
+                  source=Image.open(root/"source-checkpoint.png").convert("RGB")
+                  if source.size==im.size:
+                      diff=ImageChops.difference(source,im)
+                      mean=sum(ImageStat.Stat(diff).mean)/3
+                      lines.append(f"SOURCE_VISUAL_MEAN_ABS_DIFF={out.name}:{mean:.3f}")
+                  lines.append(f"SCREENSHOT_VALID=PASS file={out.name} size={w}x{h} sha256={hashlib.sha256(out.read_bytes()).hexdigest()}")
+              except Exception as e: lines.append(f"SCREENSHOT_ERROR={meta_path.name}:{type(e).__name__}:{e}")
+          with (root/"screenshot-comparison.txt").open("w") as f: f.write("\n".join(lines)+"\n")
+          print("\n".join(lines))
+          PY
+          cat "$WORK/captures/screenshot-comparison.txt" >> "$WORK/captures/summary.txt" || true
+
+      - name: Upload private restore evidence (no savestate or raw capture)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: naruto-checkpoint-restore-verify-private
+          path: |
+            ${{ runner.temp }}/naruto-checkpoint-restore-verify/captures/summary.txt
+            ${{ runner.temp }}/naruto-checkpoint-restore-verify/captures/*.png
+            ${{ runner.temp }}/naruto-checkpoint-restore-verify/captures/*.json
+            ${{ runner.temp }}/naruto-checkpoint-restore-verify/captures/screenshot-comparison.txt
+            ${{ runner.temp }}/naruto-checkpoint-restore-verify/captures/emulator-exit.txt
+            ${{ runner.temp }}/naruto-checkpoint-restore-verify/logs/*.log
+            ${{ runner.temp }}/naruto-checkpoint-restore-verify/xvfb.log
+          if-no-files-found: warn
+          retention-days: 7
+          compression-level: 6
+
+      - name: Enforce no-input restore proof
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          SUMMARY="$WORK/captures/summary.txt"
+          test -s "$SUMMARY"
+          cat "$SUMMARY"
+          grep -q 'RESTORE_LOAD_EVENT=ExecutionFlow::SaveStateLoaded' "$SUMMARY"
+          grep -q 'RESTORE_LOAD_CALL_RETURNED=1' "$SUMMARY"
+          grep -q 'RESTORE_POST_LOAD_VSYNC=180' "$SUMMARY"
+          grep -q 'RESTORE_PROOF=PASS' "$SUMMARY"
+          grep -q 'SCREENSHOT_VALID=PASS.*post-restore-180.png' "$SUMMARY"
+          echo "CHECKPOINT_RESTORE_VERIFICATION=PASS"
+
+      - name: Remove private game inputs, savestate and temporary captures
+        if: always()
+        shell: bash
+        run: |
+          rm -rf "$WORK"
