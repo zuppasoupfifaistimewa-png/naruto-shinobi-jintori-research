@@ -2496,3 +2496,14 @@ Address 0x800C2570 in the same entry0 view is only `jr ra` with delay-slot `addi
 ## Candidate predicate helper global dependencies — raw-MIPS follow-up
 
 Detailed report blob `9d3e8ad714655313aea2bffd85d87c89a6fb8118`. Accessors `0x80012434/0x80012444) set/get word `D_80070734`; `0x800126E8` reads byte `D_8007073C`; code path in `0x80012454` writes it. `0x800135E0` reads byte `D_80070EA0` as loop bound; `0x8001378C) returns +4 of a chosen stride-`0xB4` record, and `0x80017144` searches the passed byte against those values, returning a matching index or FF. `0x80013374/0x80013380` set/get halfword `D_80070E90`. Candidate `0x800C2FD8` applies these as state filters; however, its found branch's $v1 provenance is unresolved, so the return boolean must not be oversimplified. Caller argument conflict and runtime map remain unresolved.
+
+<!-- bootstrap-directory-registration-chain-2026-10-28 -->
+## Bootstrap directory registration and indexed resource reads (static main-EXE trace)
+
+Detailed report blob `3d0c4918430b4345883ff7f67418105810cac724`, section 23.
+
+From `main_text_80010000.text.s`: startup routine `0x80011560) calls `0x8002D710(0x80055898)`; callee stores the incoming pointer at GP offset `+0x9C). On successful initialization path it obtains a value from `0x8002DD74`, calls `0x8002DE60`, then calls bootstrap `0x800AD454` with destination `0x8006D830`. It then calls `0x8002D710(0x8006D830)`, registering the copied directory as the active pointer. The raw bootstrap body at `0x800AD454` copies `0x2F00) bytes from `0x800AD494` to `0x8006D830`.
+
+Pointer getter `0x8002C9C4` reads GP+0x9C. `0x8002D00C` computes `directory + 8*index`, reads the first uint32 at the entry, and passes it to lower-level `0x8002CF9C). `0x8002D838` wraps descriptor resolution through `0x8002D4E4`, a branch to `0x8002DEC4` or `0x8002DF30`, and the indexed read. The main resource directory schema is independently known as two uint32s per entry (start LBN / byte length), so first-word read is the LBN; second-word consumption is not shown in `0x8002D00C) itself.
+
+This is progress on Step 7 static loader structure, not runtime mapping: no destination base, relocation, overlay replacement, or live owner for address `0x800AE900` has been established. Step 7 remains partial; Step 6(b) blocked; Step 8(b) unknown.
