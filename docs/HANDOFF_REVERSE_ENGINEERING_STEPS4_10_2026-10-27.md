@@ -1,3 +1,9 @@
+# Addendum — temuan caller RNG statis, 28 Oktober 2026, 07:06 WIB
+
+Sumber tambahan adalah artefak teks terverifikasi [#12739676233](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524/artifacts/12739676233) dari run [#40515356524](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524), completed/success; 941.176 byte; SHA-256 ZIP `94d866f9c991b323a64f283da93359620c04ff8859d4c8fb53f4eb857c745f5d`. Artefak memuat raw MIPS, dekompilasi Ghidra, dan C m2c. Empat fungsi caller langsung pada main EXE dapat dijelaskan pada tingkat operasi kode, tetapi identitas fitur/gameplay belum terbukti. Rincian penuh tertera di laporan Step 4 dan Step 8 di bawah.
+
+---
+
 <!-- current-step9-helper-checkpoint-2026-10-28 -->
 # CHECKPOINT TERBARU — uji helper counter terisolasi, 28 Oktober 2026, 07:03 WIB
 
@@ -225,3 +231,7 @@ Story Mode: **TIDAK TERBUKTI TAMAT**. Jangan menulis bahwa permainan selesai tan
 
 ## Kelanjutan wajib setelah checkpoint 28 Oktober 2026
 Jangan mengulang uji Step 9 #40606159061 (sudah 7/7 RNG, 8/8 helper negative-a0, 16/16 accessor). Lanjutkan audit statis dari [matriks live reconciliation](STEP4_10_LIVE_RECONCILIATION_2026-10-27.md). Prioritas teknis: validasi batas caller/callee dan lifecycle seed Step 4 tanpa gameplay; perluas cakupan Ghidra terarah untuk kandidat resource/Step 5; tutup pointer/alias dengan CFG-aware trace atau nyatakan blocker Step 6(b); petakan loader hanya bila jalurnya dapat ditunjukkan statis tanpa gameplay; Step 8 jangan memberi label pada mekanika yang belum terbukti. Jangan jalankan pemain otomatis, workflow monitor gameplay, input tombol, restore savestate, atau emulator. Latest code-test commit `7f234820f1b83a34654e900592903678365006a5`; latest verified run `#40606159061`, artifact `#12779814671`. Story Mode TIDAK TERBUKTI TAMAT.
+
+
+## Added caller operation evidence — 28 October 2026
+The text-only Ghidra/m2c artifact #12739676233 from run #40515356524 (941,176 bytes; ZIP SHA-256 `94d866f9c991b323a64f283da93359620c04ff8859d4c8fb53f4eb857c745f5d`) now has a concise reviewed interpretation of the four main-EXE RNG callers. They statically show: bounded RNG-derived argument at `0x80015ADC`; `4*n` in-place byte swaps using `RNG % n` at `0x80015B7C`; conditional shortlist `[0,1,2,3,4,5,8,9,11]` then `RNG % count` saved to `0x80089DA9` at `0x8001A328`; and a guarded write of `RNG % 0x1000` at pointer offset `+0x34` at `0x80020BF4`. These are code operations, not gameplay labels; caller→roulette/battle causality remains unproven. See `docs/STEP4_RNG_TRACE_2026-10-27.md` and `docs/STEP8_FUNCTION_SEMANTICS_AND_GAME_RULES_2026-10-27.md`.

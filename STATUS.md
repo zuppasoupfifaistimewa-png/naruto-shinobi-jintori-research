@@ -1,3 +1,9 @@
+# ADDENDUM — operasi statis empat caller RNG main EXE, 28 Oktober 2026, 07:06 WIB
+
+Saya meninjau ulang artefak teks [#12739676233](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524/artifacts/12739676233) dari run [#40515356524](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524) (completed/success; 941.176 byte; SHA-256 ZIP `94d866f9c991b323a64f283da93359620c04ff8859d4c8fb53f4eb857c745f5d`). Artefak mencakup raw MIPS, dekompilasi Ghidra dan output m2c untuk caller yang dibatasi di bawah. Operasi yang bisa dipertanggungjawabkan: `0x80015ADC` menghitung argumen pemanggilan berbatas yang mencakup `RNG % divisor`; `0x80015B7C` menjalankan `4*n` pertukaran byte in-place dengan indeks kedua `RNG % n`; `0x8001A328` menyusun kandidat `[0, 1, 2, 3, 4, 5, 8, 9, 11]` sesuai hasil delapan cek `0x7F..0x86`, memilih `RNG % count`, lalu menulis `0x80089DA9`; `0x80020BF4` setelah guard objek lolos menyimpan keluaran RNG modulo `0x1000` ke offset `+0x34` dan memanggil fungsi lanjutan. Ini fakta operasi kode pada batas fungsi yang dibandingkan, bukan bukti bahwa objek adalah kartu/barrier/giliran atau bahwa caller menentukan hasil roulette/battle. Status Step 4(c/d) dan Step 8(a) tetap **SEBAGIAN**; Step 8(b) tetap **UNKNOWN** untuk identitas aturan permainan. Rincian instruksi dan batas interpretasi tercatat di laporan Step 4 dan Step 8.
+
+---
+
 <!-- current-step9-helper-checkpoint-2026-10-28 -->
 # CHECKPOINT TERBARU — uji helper counter terisolasi, 28 Oktober 2026, 07:03 WIB
 

@@ -1,3 +1,9 @@
+# ADDENDUM — caller RNG statis main EXE, 28 Oktober 2026, 07:06 WIB
+
+Artefak teks same-boundary Ghidra/m2c [#12739676233](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524/artifacts/12739676233), dari [run #40515356524](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524) (completed/success; 941.176 byte; SHA-256 ZIP `94d866f9c991b323a64f283da93359620c04ff8859d4c8fb53f4eb857c745f5d`), telah ditinjau ulang untuk empat caller RNG main EXE. Operasi yang dibuktikan oleh raw MIPS/Ghidra/m2c: `0x80015ADC` menghitung argumen berbatas memakai `RNG % divisor`; `0x80015B7C` melakukan `4*n` pertukaran byte in-place dengan indeks acak; `0x8001A328` membangun daftar kandidat berdasarkan delapan cek lalu memilih `RNG % count` dan menulis `0x80089DA9`; `0x80020BF4` menulis `RNG % 0x1000` ke offset `+0x34` setelah guard objek lolos. Identitas feature/objek tidak terbukti. Status tetap Step 4 **SEBAGIAN**, Step 8(a) **SEBAGIAN**, Step 8(b) **UNKNOWN**; detail dan batas interpretasi ada di `docs/STEP4_RNG_TRACE_2026-10-27.md` dan `docs/STEP8_FUNCTION_SEMANTICS_AND_GAME_RULES_2026-10-27.md`.
+
+---
+
 <!-- current-step9-helper-checkpoint-2026-10-28 -->
 # CHECKPOINT TERBARU — uji helper counter terisolasi, 28 Oktober 2026, 07:03 WIB
 

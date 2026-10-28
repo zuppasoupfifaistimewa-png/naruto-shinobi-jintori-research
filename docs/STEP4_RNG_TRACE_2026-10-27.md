@@ -1,3 +1,24 @@
+## Caller RNG main-EXE — operasi statis terverifikasi (28 Oktober 2026)
+
+Bukti: same-boundary Ghidra/m2c outputs dan raw disassembly dalam [artefak teks #12739676233](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524/artifacts/12739676233) (run [#40515356524](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524), artifact ZIP SHA-256 `94d866f9c991b323a64f283da93359620c04ff8859d4c8fb53f4eb857c745f5d`). Catatan ini menjelaskan operasi yang terlihat, bukan nama fitur:
+
+| Fungsi / batas | Alur operasi dari raw MIPS dan output Ghidra/m2c | Kesimpulan yang belum boleh dibuat |
+|---|---|---|
+| `0x80015ADC` | Jika `(a1 & 0xFF) < FUN_800154D4()`, fungsi mengambil `FUN_800158D8(a0)`, satu output RNG, dan divisor `(FUN_800158D8(a0) >> 1) & 0xFF`. Jika divisor nol, cabang trap; selain itu argumen kedua ke `FUN_800159BC` dihitung sebagai `(((first >> 1) & 0xFF) + (RNG % divisor)) & 0xFFFF`, dengan `a0` dan `a1 & 0xFF` sebagai argumen lain. Jika guard gagal, nilai balik 0. | Bukan bukti arti index/slot, peluang gameplay, atau identitas pemanggilan `FUN_800159BC`. |
+| `0x80015B7C` | Jika `n = *(u16*)0x80070D02` bukan nol, jalankan `4*n` iterasi. Setiap iterasi menukar byte pada tabel mulai `0x80070D0A`: posisi pertama `i % n`, posisi kedua `RNG % n`. Ini adalah pertukaran byte in-place yang dipilih acak pada kode statis. | Jangan menyebutnya deck/kartu/roulette tanpa caller/callee dan identitas buffer yang dibuktikan. |
+| `0x8001A328` | Membentuk shortlist lokal dengan kandidat dasar `0`; memeriksa hasil `FUN_80016C68(0x7F..0x86)`, dan menambahkan kandidat `1,2,3,4,5,8,9,11` untuk pemeriksaan yang nonzero. Lalu memilih `RNG % count` dan menulis nilai terpilih ke global byte `0x80089DA9`. | Makna kode `0x7F..0x86`, kondisi yang memunculkannya, dan global tujuan dalam game masih tidak diketahui. |
+| `0x80020BF4` | Jika pointer null atau field word pertama bernilai 1, mengembalikan 0. Jika tidak, menulis 1 ke field pertama, memperoleh RNG `R`, menghitung `R mod 0x1000` (dengan koreksi signed shift dalam instruksi), menyimpan hasil ke word offset `+0x34`, lalu memanggil `0x80020D48(pointer,0x1000)`, `0x80018300(0x4800,2,3,0,0)`, dan `0x80018468(0,0xB4)`; mengembalikan 1. Dengan routine RNG yang diketahui menghasilkan 15 bit nonnegatif, field yang ditulis ialah 12 bit rendah output RNG. | Identitas objek di `param1`, arti field `+0x34`, dan makna helper lanjutan tidak ditetapkan hanya dari urutan ini. |
+
+Temuan ini menambah deskripsi call graph yang konkret, namun tidak menutup Step 4. Masih terbuka pemetaan runtime/base entry-0, lifecycle seed, caller boundaries dan jalur tidak langsung/JALR/JT/resource/decompressed code, serta hubungan kausal RNG dengan hasil roulette/battle. Semua empat fungsi adalah kandidat caller RNG di main EXE; tidak ada input gameplay atau sesi emulator yang dilakukan untuk temuan ini.
+
+---
+
+# Addendum — temuan caller RNG statis, 28 Oktober 2026, 07:06 WIB
+
+Sumber tambahan adalah artefak teks terverifikasi [#12739676233](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524/artifacts/12739676233) dari run [#40515356524](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524), completed/success; 941.176 byte; SHA-256 ZIP `94d866f9c991b323a64f283da93359620c04ff8859d4c8fb53f4eb857c745f5d`. Artefak memuat raw MIPS, dekompilasi Ghidra, dan C m2c. Empat fungsi caller langsung pada main EXE dapat dijelaskan pada tingkat operasi kode, tetapi identitas fitur/gameplay belum terbukti. Rincian penuh tertera di laporan Step 4 dan Step 8 di bawah.
+
+---
+
 <!-- current-step9-helper-checkpoint-2026-10-28 -->
 # CHECKPOINT TERBARU — uji helper counter terisolasi, 28 Oktober 2026, 07:03 WIB
 

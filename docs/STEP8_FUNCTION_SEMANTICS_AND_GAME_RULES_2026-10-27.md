@@ -1,3 +1,24 @@
+## Fakta fungsi yang benar-benar dapat diartikan dari kode (28 Oktober 2026)
+
+Sumber adalah [artefak teks Step 5 #12739676233](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524/artifacts/12739676233), yang memuat raw MIPS dan output Ghidra/m2c. Dalam istilah sederhana, kode memakai bilangan acak untuk (1) menghitung satu indeks/argumen di dalam batas tertentu; (2) menukar isi tabel byte pada indeks yang dipilih acak berulang kali; (3) memilih satu kode dari daftar yang dibangun berdasarkan delapan pemeriksaan; dan (4) menaruh 12 bit rendah output RNG di field `+0x34` bila guard objek mengizinkan, lalu memanggil fungsi lanjutan. Operasi numerik tersebut terlihat di `0x80015ADC`, `0x80015B7C`, `0x8001A328`, dan `0x80020BF4`.
+
+| Fakta operasi | Makna praktis yang dapat dinyatakan | Yang tetap belum diketahui |
+|---|---|---|
+| `0x80015ADC`: hasil RNG modulo divisor ditambah nilai dasar, kemudian diteruskan ke `0x800159BC` | Sebuah nilai indeks/parameter dibatasi oleh kondisi dan divisor yang dihitung runtime. | Objek/aksi yang dipilih, peluangnya di mata pemain, dan kaitan dengan hasil roulette/battle. |
+| `0x80015B7C`: `4*n` pertukaran in-place pada `n` byte menggunakan indeks RNG | Urutan elemen byte diubah secara pseudo-acak. | Apakah buffer itu urutan kartu, daftar menu, urutan giliran, atau hal lain. |
+| `0x8001A328`: pilih satu dari kandidat `0,1,2,3,4,5,8,9,11` setelah cek `0x7F..0x86`; hasil ke `0x80089DA9` | Himpunan pilihan berubah berdasarkan flag/hasil fungsi; satu kandidat dipilih secara acak dan disimpan. | Nama flag, konteks UI/game mode, serta arti nilai kandidat. |
+| `0x80020BF4`: `RNG % 0x1000` disimpan ke `+0x34` sesudah guard | Prosedur menulis nilai 0–4095 ke sebuah field sebelum melakukan operasi setup lain. | Identitas objek dan apakah field tersebut koordinat, seed lokal, indeks, nilai sementara atau atribut permainan. |
+
+Tidak satu pun hasil ini sendiri membuktikan rumus biaya Chakra, biaya barrier, level upgrade, efek kartu, urutan giliran, rumus hasil pertarungan, ataupun kondisi menang/kalah. Status kriteria Step 8(b) tetap **UNKNOWN** sampai ada chain instruksi/caller, pemetaan objek, dan bukti independen yang mengikat operasi tersebut ke aturan permainan.
+
+---
+
+# Addendum — temuan caller RNG statis, 28 Oktober 2026, 07:06 WIB
+
+Sumber tambahan adalah artefak teks terverifikasi [#12739676233](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524/artifacts/12739676233) dari run [#40515356524](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40515356524), completed/success; 941.176 byte; SHA-256 ZIP `94d866f9c991b323a64f283da93359620c04ff8859d4c8fb53f4eb857c745f5d`. Artefak memuat raw MIPS, dekompilasi Ghidra, dan C m2c. Empat fungsi caller langsung pada main EXE dapat dijelaskan pada tingkat operasi kode, tetapi identitas fitur/gameplay belum terbukti. Rincian penuh tertera di laporan Step 4 dan Step 8 di bawah.
+
+---
+
 <!-- current-step9-helper-checkpoint-2026-10-28 -->
 # CHECKPOINT TERBARU — uji helper counter terisolasi, 28 Oktober 2026, 07:03 WIB
 
