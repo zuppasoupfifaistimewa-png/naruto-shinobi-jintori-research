@@ -2442,3 +2442,12 @@ All 52 record rows were parsed locally from the already-downloaded text-only mai
 - +0xC equals ID+239 exactly for every row, from 239 to 290.
 
 These are numeric shape/usage facts, not labels. Category-to-branch mapping remains unknown because the static address hypotheses conflict, and no field receives a game-semantic name.
+
+<!-- signed-registry-attribute-state-transition-2026-10-28 -->
+## New static state-change chain: registry field +8 drives per-record values and status branches
+
+Detailed continuation [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), report blob `11b9a6389659c7cbc3f27d5a1d2c57a268ae5418`.
+
+Raw entry-1 sequence at `0x80115708–0x80115A68) begins with active ID at object +0x530, calls `0x8001552C` for its signed registry field +8, computes `field8*(count-1-counter)` and stores the low halfword at selected record +0x2EE. Negative result calls `0x800C2FD8(0x25B)`, copies object +0x2E9 to +0x2EB, and sets +0x2E9 to `0x12`; nonnegative result sets selected record +0x22=`5`. The code then iterates other records, compares +0x0E to selected record's +0x0E, writes `field8*(count-2)` to their +0x2EE, and sets +0x22=`2` if negative or `5` otherwise. A separately guarded route negates the value and performs similar sign-based status updates.
+
+These are proven static dataflows but remain conditional on unverified entry-1 base/pointer provenance. Do not call field+8 a stat/power/cost, +0x0E a team, or +0x22 a named status without further evidence. The +0xC path to 0x80100DCC/0x80100E34 appears only to pass args that the callee code at those entries doesn't visibly consume, so its semantic effect remains UNKNOWN. Step 6(b) BLOCKED; Step 7 runtime map UNKNOWN/BLOCKED; Step 8(b) UNKNOWN; Story Mode remains TIDAK TERBUKTI TAMAT.
