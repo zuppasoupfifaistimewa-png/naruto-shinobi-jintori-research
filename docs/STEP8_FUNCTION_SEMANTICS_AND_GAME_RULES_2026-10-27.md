@@ -285,3 +285,22 @@ Runner-only audit [#40499569324](https://github.com/zuppasoupfifaistimewa-png/na
 The reset-then-increment behavior of 0x80066E7C is now **TERVERIFIKASI-STATIS** in the main executable. Its likely role as a callback/tick-like counter is a strongly supported inference from the indirect-dispatch table and eight-slot callback loop, not a verified gameplay-field name. The helper 0x80037138 with input a0=-1 returns the current value of that global. Therefore the candidate entry-0 callsite could pass this counter value to setter candidate 0x80035DA8 *if that callsite executes*. The relative runtime ordering of that resource callsite and the initialization/dispatch path is still unknown; entry-0 base 0x800AD000 remains HIPOTESIS, and no setter argument was captured at runtime. Step 4 remains **SEBAGIAN**.
 
 Historical status superseded: Ghidra run #40498208067 completed success at 19:14:42 WIB; final artifact #12732952776 SHA-256 6d78dfc9727932dca67ec7867a35b2a83f7c02237c2d16dc7dfefb34fcf188b6 was verified by runner audit #40503223693.
+
+ 
+## NEW RULE CANDIDATE — target threshold path (28 Oktober 2026; static only)
+
+The raw entry-1 listing provides a more complete candidate rule at `0x800F1FE4–0x800F2024`. See the detailed trace [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), section 27.
+
+In plain language: when the selected-object guard matches, the code obtains a numeric result from `0x800BDC4C` using the selected participant index, adds it to that participant record's field +0x04, and compares the sum with the configured target returned by main-EXE getter `0x80012A70` (`D_80070C84`). If the sum is below target, it branches to `0x800F212C`. If the sum reaches/exceeds target, the code still checks global bit `0x8` and participant halfword bit `0x200`; those guards can redirect execution before the continuation that ends at `0x800CF628` with `v0=5`.
+
+There is a second static call at `0x8012AC04` where the same helper's return is added to the main-EXE Chakra getter `0x800138EC` and the sum is clamped to `-9999..99999`. This supports that the helper return is a numeric contribution used in a Chakra-related calculation. Its actual meaning is not identified.
+
+| Required rule element | Current evidence | Status |
+|---|---|---|
+| Condition tested | `helper(selected_index) + participant_record[+4] < configured_target` | **TERVERIFIKASI-STATIS in candidate address view** |
+| Branch when below target | Transfer to `0x800F212C` | **TERVERIFIKASI-STATIS in candidate view** |
+| Path at/above target | Additional flag checks; may go to another path or continue through transition helpers | **TERVERIFIKASI-STATIS in candidate view** |
+| Is this the victory condition? | Final handler and participant-field meanings remain unresolved | **UNKNOWN** |
+| Runtime/gameplay confirmation | Entry-1 base and pointer provenance are still hypotheses | **BLOCKED / UNKNOWN** |
+
+Do not promote Step 8(b): this is a strong target-threshold candidate, not a verified victory rule. The helper result, participant field +4, target's exact player-facing label, flag veto, transition handler, and runtime reachability still need closure. No emulator/input/savestate test was run.
