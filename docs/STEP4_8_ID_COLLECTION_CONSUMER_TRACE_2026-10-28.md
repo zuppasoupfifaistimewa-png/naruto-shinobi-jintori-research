@@ -404,3 +404,23 @@ The second target is only two decoded instructions: `jr ra` at `0x800C2570` and 
 ### 21.4 Updated mapping conclusion
 
 This targeted result **strengthens the load-map conflict**: the two imported views cannot be treated as one validated simultaneous runtime map, and the target at `0x800C2FD8` cannot be assigned message-code semantics solely from its callers while the candidate entry0 body expects a pointer. The bootstrap/entry0 range overlap and the instruction-like bytes at `0x800AE900` are consistent additional conflicts. Do not promote Step 6(b) or Step 7; continue resolving loader/overlay timing, runtime base and indirect pointer provenance before accepting this cross-resource chain. Step 8(b) remains UNKNOWN.
+
+
+## 22. Static provenance for the candidate predicate's condition fields
+
+Further tracing in the existing main-EXE raw disassembly clarifies what the helpers called from the candidate `0x800C2FD8` body actually access:
+
+| Helper | Raw operation | Defensible description |
+|---|---|---|
+| `0x80012434` / `0x80012444` | Setter stores `a0` to `D_80070734`; getter loads that word. | One global word with an explicit setter/getter pair. |
+| `0x800126E8` | Loads the byte at `D_8007073C`. | Current global byte; a path in `0x80012454` stores `a1 & 0xFF` there. |
+| `0x800135E0` | Loads byte `D_80070EA0`. | Count used by the following bounded record scan (the count byte's broader semantics remain unlabelled). |
+| `0x8001378C(index)` | Validates `index < 4`; computes a `0xB4)-stride record address at `0x80070EA0 + index*0xB4`; reads byte +4. | Getter for byte +4 in the four-record structure, according to this address view. |
+| `0x80017144(value)` | Scans indices while `index < func_800135E0()`; compares the input byte against `func_8001378C(index)`; returns matching index or `0xFF`. | A lookup of one byte against the four-record +4 values. |
+| `0x80013374` / `0x80013380` | Setter stores a halfword to `D_80070E90`; getter reads the halfword. | One separate global halfword with an explicit setter/getter pair. |
+
+Together with the successful local decompilation, the candidate `0x800C2FD8` body compares optional word +4 against `D_80070734), optional word +8 against the byte `D_8007073C`, then checks the byte at +0xC through the lookup above. If the lookup returns `0xFF`, the fallback compares the current `D_8007073C) to parameter +8 and checks whether `D_80070E90 <= parameter_byte_+0xC).
+
+Important caveat: on the path where the lookup does **not** return `0xFF`, the raw code also branches using `$v1` after the call, while the helper's meaningful returned index is in `$v0`; this register provenance is not fully explained by the local decompilation. Do not compress that path to the plain rule “found means true” until that raw-register/dataflow issue is resolved.
+
+This strengthens the predicate description under the candidate entry0 view but **does not fix the calling-convention contradiction** with entry1 callsites that pass small constants. The probable immediate task is a register-level recheck of `0x800C2FD8` (including caller arguments and possible overlay switching), not a game-semantics label.
