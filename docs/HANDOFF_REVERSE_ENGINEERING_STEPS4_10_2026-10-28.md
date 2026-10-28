@@ -72,3 +72,11 @@ Repo tunggal: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 3. Step 7 hanya lanjut jika ada copy instruction reachable yang dipilih dari raw disassembly; selain itu pertahankan BLOCKED dan jangan ulang probe generik.
 4. Step 8 hanya beri label aturan dengan code flow dan state/result autentik independen yang saling mendukung.
 5. Pertahankan matriks 17 baris: Step 4 partial; Step 5 partial; Step 6(a,c) partial, 6(b) blocked, 6(d) unknown; Step 7(a) partial, 7(b) blocked; Step 8(a) partial, 8(b) UNKNOWN; label aturan unsupported tetap tidak dipromosikan; Step 9(a) tuntas hanya 7 vektor RNG, 9(b) partial; Step 10 tuntas sebagai matriks audit saja.
+
+
+<!-- step4-step8-preset-list-shuffle-audit-2026-10-28 -->
+## New evidence from 28 October
+
+Read [`docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md`](STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md) first. Function `0x80015610` loads two lists for selector values <18, but helper `0x80015B7C` zeroes its incoming group arg and only shuffles first buffer `0x80070D0A`, 4*n swaps. The two templates at each selector are byte-identical; selectors 9–17 contain 64 zeros without `0xFF` and are therefore counted as length 64. This is proven static behavior; semantics of ID bytes and intent remain unknown. Next static task: trace all readers and consumers of the second list and connect selector bytes to parent descriptor fields without assigning guessed gameplay names.
+
+Checkpoint restore was attempted twice with no controller input. Raw savestate load and sanitized-plus-BIOS rehydration both crash with `SIGSEGV`/exit 139 before `loadSaveState` returns or `SaveStateLoaded` fires. Rehydrated output hash exactly matches raw checkpoint, so stop repeating this load in the same environment. Use static research until a genuinely different state-format/loader hypothesis is justified. The source checkpoint remains private and was not overwritten.
