@@ -375,3 +375,32 @@ The loader research gives a further concrete check on the mapping conflict. The 
 The entry-0 resource (file offset `0x5F800`, 110,536 bytes) was imported for analysis at the *hypothetical* base `0x800AD000`. If that base were simultaneously valid while the bootstrap is resident at `0x800AD450), the address ranges would overlap: the bootstrap directory lives at `0x800AD494..0x800B0193), and entry 0's candidate map covers `0x800AD000..0x800C7F07`. The same address region is therefore not evidence for two independent, simultaneously resident memory images.
 
 This is consistent with a lifecycle/overlay replacement possibility, but does not prove when entry 0 is loaded, whether its assumed base is correct, or which resource owns `0x800AE900) during the entry-1 dispatch. Combined with the instruction-like words dumped at `0x800AE900), this further weakens the practice of using base `0x800AD000) as if it were a validated runtime map. **Step 7 mapping remains UNKNOWN/BLOCKED; Step 6(b) remains BLOCKED.** No runtime test is implied.
+
+
+## 21. Targeted Ghidra result: the candidate 0x800C2FD8 conflicts with the ID-code caller contract
+
+The targeted helper audit completed successfully in Actions run [#40621318421](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40621318421), artifact [#12787632016](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40621318421/artifacts/12787632016). Artifact ZIP SHA-256 is `2a61558de753bfd227c4db9f6f8ece52694a2a0890df2be1c5ba0fb6836992cf`, matching GitHub. It contains the text-only target report plus tool logs; the workflow records `gameplay_or_emulator_executed=no`, `gameplay_input_sent=no`, and `private_binary_uploaded_as_artifact=no`.
+
+Important quality limit: Ghidra auto-analysis hit its configured 180-second per-file timeout, but the post-script ran and produced the target report with successful decompilation. The two target functions were seeded at specified addresses; function-boundary completeness is **not** independently established. Interpret the raw instructions and local C output, not the auto-analysis warnings or the inferred labels as complete program structure.
+
+### 21.1 Actual operation at 0x800C2FD8 in the entry0 import hypothesis
+
+Under the hypothetical entry0 base `0x800AD000`, address `0x800C2FD8` has local raw instructions and a successful decompilation as a boolean-like predicate. Its first operation is `move s0,a0`, followed by `lw v0,0x4(s0)`; then it conditionally compares that field with `0x80012444()`. It similarly checks field +8 against `0x800126E8()` when that field is nonnegative. It then calls `0x80017144(byte[param+0xC])`; depending on the returned low/high words, it either tests the high word or falls back to a condition involving `0x800126E8()` and `0x80013380() <= param+0xC`. If either nonnegative condition field (+4 or +8) disagrees with its current helper result, it returns false immediately.
+
+**Safe interpretation:** in this imported view, `0x800C2FD8` checks a record-like argument whose +4/+8 words are optional state conditions and whose byte +0xC selects an additional check. The roles of the helper return values and each field remain unknown, but this is a predicate/check—not a generic message renderer based on the locally decoded code.
+
+### 21.2 Why that cannot yet be the same runtime target as the entry1 calls passing 0x258–0x275
+
+In the candidate entry1 disassembly, callers at addresses such as `0x8011577C` invoke `jal 0x800C2FD8` with delay-slot `addiu a0,zero,0x25B`; the complete call sweep found 74 direct JAL sites, and 71 delay-slot arguments set constants in the range `0x258..0x275`.
+
+If `0x800C2FD8` simultaneously contains the predicate body shown above, that call does **not** pass a pointer to the record that the body expects. For example, `a0=0x25B` makes its first load `lw ...,4(a0)` address `0x25F`, which is unaligned for a 32-bit MIPS load. This is a concrete argument-contract contradiction, not just uncertainty about the parameter's natural-language name.
+
+Therefore at least one assumption must not be combined as if it were confirmed: the entry0 `0x800AD000) map, the entry1 `0x800D0000) map, the runtime availability of this call path, or the interpretation of those entry1 raw instructions as live code. The current evidence cannot say which. The earlier suggestion that the call family may be an event/message dispatcher is **not supported by the body found at this address under the entry0 map** and must not be used as a conclusion.
+
+### 21.3 Actual operation at 0x800C2570
+
+The second target is only two decoded instructions: `jr ra` at `0x800C2570` and its delay-slot `addiu sp,sp,0x40` at `0x800C2574`. The decompiler emits a void return. In isolation, this address performs a stack-pointer increase by 0x40 and returns; no gameplay/state mutation is visible in these two instructions. It resembles a shared epilogue/stack-adjustment stub, but caller stack layout and intended use have not been proven independently.
+
+### 21.4 Updated mapping conclusion
+
+This targeted result **strengthens the load-map conflict**: the two imported views cannot be treated as one validated simultaneous runtime map, and the target at `0x800C2FD8` cannot be assigned message-code semantics solely from its callers while the candidate entry0 body expects a pointer. The bootstrap/entry0 range overlap and the instruction-like bytes at `0x800AE900` are consistent additional conflicts. Do not promote Step 6(b) or Step 7; continue resolving loader/overlay timing, runtime base and indirect pointer provenance before accepting this cross-resource chain. Step 8(b) remains UNKNOWN.
