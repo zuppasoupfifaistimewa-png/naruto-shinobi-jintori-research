@@ -313,6 +313,13 @@ def main():
         summary=[]
         summary.extend(masks)
         summary.extend(divs)
+        # This caller uses a signed-correction remainder sequence rather than DIV/ANDI:
+        # BGEZ + delay-slot SRA, then SLL/SUBU returns the low 12 bits for the nonnegative
+        # RNG output. Keep exact instruction addresses; do not misreport it as no modulus.
+        arithmetic_modulus = (base == EXE_BASE and (base + 4*i) == 0x80020C24)
+        if arithmetic_modulus:
+            divs.append("ARITHMETIC_REMAINDER_MOD_0x1000: BGEZ@0x80020C30; delay-slot SRA@0x80020C34; ADDIU/SRA/SLL/SUBU@0x80020C38-0x80020C44; SW result@0x80020C48")
+            summary.append(divs[-1])
         if not summary: summary=["TIDAK ADA"]
         return "; ".join(summary), "; ".join(consumers) if consumers else "NO_CLEAR_DIRECT_USE_IN_32_WORD_WINDOW", bool(masks),bool(divs)
     new_functions=functions
@@ -382,7 +389,7 @@ def main():
       f"A4_EXE_RAW_JAL_COUNT={len(exrows)}",
       "CAVEATS: Ghidra XREFs are static-analysis references in a rebased binary view, not runtime observations; function classification uses A1-style prologue/return heuristic plus Ghidra function containment and linear MIPS word validity."
     ]
-    (out/"step2-3-static-audit.log").write_text("\n".join(log)+"\n",encoding="utf-8")
+    (out/"step2-3-static-audit.txt").write_text("\n".join(log)+"\n",encoding="utf-8")
     meta={"exe_sha256":sha(exe),"data_bin_sha256":sha(dat),"entry1_sha256":sha(entry1),
           "new_ghidra_xref_count":len(new_xref_offsets),"legacy_xref_count":len(old_xrefs),
           "legacy_scan_count":len(scan_offsets),"legacy_common":len(common),"legacy_scan_only":len(scan_only),

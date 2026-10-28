@@ -248,6 +248,11 @@ jobs:
             echo "REPORT_REPO_COMMIT=NO_CHANGES"
           else
             git commit -m "Record read-only static evidence audit ${GITHUB_RUN_ID}"
+            # Rebase this run's sanitized report commit if another allowed report
+            # was added to main while the analysis was running. No source binaries
+            # are present in this report-only commit.
+            git fetch origin main
+            git rebase origin/main
             git push origin HEAD:main
             echo "REPORT_REPO_COMMIT=PASS"
           fi
