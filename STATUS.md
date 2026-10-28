@@ -3922,3 +3922,15 @@ Together with the previously traced insertion helper, the code chooses a pseudo-
 ## CURRENT ADDENDUM — first-byte return and reshuffle sequence (28 Oktober 2026)
 
 Raw main-EXE instructions at `0x80015768` save `byte[0x80070D0A]`, call `0x800158E8(0,0)` to shift the buffer left and decrement the separate halfword `0x80070C82`, then call `0x80015B7C(0)` to perform `4*n` RNG swaps using configured length `n=halfword[0x80070D02]), and finally return the saved first byte. The remove helper does not clear the tail byte or change configured length in this path. This is a confirmed local sequence operation, not a verified roulette/card draw; tail semantics and relationship between order bytes and ID array remain UNKNOWN. Detailed report latest commit `b8506205fdc7c4a679cd2fe516ce00432b47b76a`.
+
+
+<!-- id-collection-consumer-trace-2026-10-28 -->
+## NEW STATUS ADDENDUM — ID collection and consumer trace (28 Oktober 2026)
+
+Detailed evidence: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md). Handoff continuation updated in [`docs/HANDOFF_REVERSE_ENGINEERING_STEPS4_10_2026-10-28.md`](docs/HANDOFF_REVERSE_ENGINEERING_STEPS4_10_2026-10-28.md).
+
+New static result: main EXE registry count is 52 (16-byte rows beginning at `0x80055CEC), bounded by `0xFFFFFFFF` at index 52; four records at `0x80070EA0) have three candidate-ID bytes at +0xA..+0xC. The add helper fills the first slot whose byte is >=52, while the remove helper transfers the chosen ID through the random-insertion path, compacts slots 0/1, and writes `0xFF` to the tail slot. The insertion path uses `floor(n/2)+(RNG mod floor(n/2))) based on first-list length D02, shifts the separate byte sequence at D0A, and changes the distinct halfword C82. D02/D04, D06/D08, C82 and C86 must remain separate concepts.
+
+A conditional consumer trace was also found in the hypothetical DATA.BIN entry-1 view: callsites `0x800DD2B4` and `0x800DD4CC` call `0x80013B10`; the surrounding decompilation then reads three IDs back and writes them to +0x10..+0x12 of another 0x90-stride object while updating state fields. This is static, conditional evidence only. Entry-1 base `0x800D0000) and global pointer provenance are not validated at runtime, and decompilation warns of bad instruction/control-flow data.
+
+**No gameplay feature name has been verified.** Step 4 remains SEBAGIAN; Step 5 SEBAGIAN; Step 6(a,c) SEBAGIAN, 6(b) BLOCKED, 6(d) UNKNOWN; Step 7 runtime mapping blocked/unknown; Step 8(b) UNKNOWN; Step 9 only covers the prior isolated tests; Step 10 is an audit matrix only. Story Mode remains **TIDAK TERBUKTI TAMAT**. Adaptive player was not run or changed; `barrier_level_selection=WAIT` remains untouched. No emulator input, savestate restore, or private game binary artifact was produced in this pass.
