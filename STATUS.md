@@ -1,3 +1,11 @@
+# ADDENDUM TERBARU — audit terarah setelah checkpoint 07:06 WIB, 28 Oktober 2026
+
+Audit langsung artefak teks Step 5/6 menambahkan dua batas penting tanpa menaikkan status: disassembly main EXE memuat 156 mnemonic JALR (target dinamis belum diselesaikan), dan ada perbedaan representasi span `0x80015B7C` antara body Ghidra (240 alamat; end-exclusive `0x80015C6C`) dengan anotasi `nonmatching` spimdisasm sebesar `0x580` yang mencakup label tambahan. Empat direct JAL ke RNG tetap hanya empat pada main EXE yang diperiksa. Pada view entry-1 statis, `+0xB30` dan `+0xB38` masing-masing memiliki satu READ; `+0xB40` satu WRITE; `+0xB44` satu WRITE dan satu READ. Base entry-1 `0x800D0000`, pointer `0x8013A554`, alias runtime dan semantik field tetap belum terverifikasi.
+
+Laporan bukti terbaru: [docs/STEP4_10_TARGETED_AUDIT_2026-10-28.md](docs/STEP4_10_TARGETED_AUDIT_2026-10-28.md). Status Langkah 4–9 tidak berubah; Langkah 10 tuntas hanya sebagai matriks audit. Story Mode **TIDAK TERBUKTI TAMAT**. Adaptive player tetap tidak dijalankan/diubah. Pemeriksaan Actions dengan filter `queued` dan `in_progress` masing-masing menghasilkan 0.
+
+---
+
 # ADDENDUM — cross-check bukti dan checkpoint, 28 Oktober 2026
 
 Audit statis pada parent 7df287bf4ca21f6c32fe2589bc09e8665e62e846 dan tiga artefak yang SHA-nya cocok dengan catatan repo menambah rincian: disassembly main EXE memuat tepat empat direct JAL ke RNG 0x80035D78 pada 0x80015B14, 0x80015BF0, 0x8001A460, dan 0x80020C24; dalam view entry-1 hipotetis, +0xB30/+0xB38 dijumlahkan dan disimpan ke +0xB40, sedangkan +0xB44 diinisialisasi nol lalu dikirim ke helper 0x8001B364 pada branch tertentu. Step 9 artifact telah diperiksa langsung: RNG 7/7, helper negative-a0 8/8, setter/getter 16/16 pada model CPU/MIPS dengan fixture MMIO sintetis.
