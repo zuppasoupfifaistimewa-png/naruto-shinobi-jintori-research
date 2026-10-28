@@ -206,3 +206,12 @@ This confirms static attribute→arithmetic→record state/branch linkage. Still
 Correction: at `0x801313D0–0x8013141C`, fields +0xC and +8 are passed to callee addresses `0x80100DCC` and `0x80100E34`, but the decoded instructions at those entry addresses appear not to consume incoming `$a0`; this path proves argument passing, not semantic effect. +0xC consumer remains UNKNOWN.
 
 Next: identify the loader/relocation owner of `0x800AE900`; then trace `0x800C2FD8(0x25B)` to text/UI output using existing text artifacts. Runtime mapping remains blocked and no emulator run is currently justified.
+
+<!-- registry-field-plus4-consumer-2026-10-28 -->
+## New field +4 consumer trace
+
+Detailed report updated at blob `a97e6f535d39deaa9ff50ff16ce4bf796e9d8c84`: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md).
+
+The accessor `0x80015578` reads registry row +4 (invalid ID fallback `0xFFFFFFFF`); full table distribution is 0:7, 1:26, 2:19. In candidate entry-1 code, one path at `0x801302EC` tests exactly ==1, then reads field +0 and routes on category code; another path at `0x801304F8` tests field +4 ==1 and calls `0x80015ADC(0, ID)`, sending the selected ID through the random insertion helper. If field +4 !=1, it checks the group's three-slot record via `0x80013BF0`; when all three IDs are valid it writes object word +0=1, byte +9=3, byte +0xC=0, word +4=0, and calls `0x8010D138`, otherwise it calls `0x8010CDD0`.
+
+This establishes static use of field +4 as a small enumerated path selector and one precise branch effect, not what the field means to a player or whether the candidate resource path executes at runtime. Base/pointer provenance still open.
