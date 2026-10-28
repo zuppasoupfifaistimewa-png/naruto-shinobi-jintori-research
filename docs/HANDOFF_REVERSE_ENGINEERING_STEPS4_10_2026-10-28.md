@@ -128,3 +128,17 @@ Detailed report: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STE
 4. Do not rerun the two identical savestate loads (both exit 139 before the load event), do not repeat the no-hit 0x800AD454 probe absent new reachability evidence, and do not run/edit adaptive player. Keep `barrier_level_selection=WAIT` and Story Mode **TIDAK TERBUKTI TAMAT**.
 
 Current statuses remain: Step 4 partial; Step 5 partial; Step 6(a,c) partial, 6(b) BLOCKED, 6(d) UNKNOWN; Step 7 partial with runtime mapping blocked; Step 8(b) UNKNOWN; Step 9 tests complete only within previously stated isolated fixtures; Step 10 is an audit matrix only.
+
+
+<!-- registry-numeric-field-consumer-2026-10-28 -->
+## Follow-up audit — registry attributes have downstream numeric effects
+
+The ID trace report was extended in commit `07f8b641f354b1ed90e92aedc6e194582c24e714`: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md).
+
+- The 52-row registry uses four numeric 32-bit words per record. Bounded accessors at `0x800154E0`, `0x80015578`, `0x8001552C`, and `0x800155C4` read offsets +0, +4, +8, and +0xC respectively (invalid-ID fallbacks differ).
+- Raw data field +0 contains category-like integer codes used as branch discriminators in candidate resource code; +4 is 0/1/2 in the visible 52 rows; +8 contains signed/positive numbers (range -50..500); +0xC progresses 239..290. These are observed data shapes only; do not label them as character classes, costs, stats, or resource IDs yet.
+- In candidate entry-1 routine `FUN_80115728`, accessor `0x8001552C` is used on the value at object offset +0x530. Its returned +8 value enters signed multiplication/negation, is stored in a group-indexed halfword at +0x2EE, and its sign selects byte +0x22 values 2/5 and follow-on functions. This adds a static data→numeric field→state branch link, but not a player-facing interpretation; base `0x800D0000) and pointer resolution remain unvalidated at runtime.
+- Indexed-buffer readers/writer: `0x800157C4` reads C8A using cursor C86 without a visible bounds test; `0x80015808` checks index against low-byte D02 then reads C8A or returns FF; `0x80015858` uses the same length bound plus ID<52 before writing C8A.
+- No direct JAL to `0x80013A48` was found in the available full main-EXE text disassembly. Body operation is verified locally; caller/reachability remains UNKNOWN.
+
+Next focus should identify the semantic meaning of registry fields using their consumers or verified string/resource tables. Do not infer it from the numerical ranges. Continue to use only existing text artifacts; no runtime experiment is justified until the base/pointer/reachability gap is closed.
