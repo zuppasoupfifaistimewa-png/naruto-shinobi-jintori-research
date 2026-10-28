@@ -1,0 +1,66 @@
+STATIC AUDIT SUMMARY — RUN 40783998364
+Date: 2026-10-29 WIB (workflow GitHub timestamp 2026-10-28T23:00:13Z)
+Scope: read-only static MIPS word scan; no emulator launch, no input injection, no savestate restore.
+Repository commit: 241224f2fd032e43dcef34d0fecc91ca58d707e2
+Workflow: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40783998364
+Artifact id 12857474734, name step4-10-read-only-static-audit, size 59816 bytes,
+artifact SHA-256 7a7e1b714f48c2a269c27c3db6700bfb0bb44a5f4735c39d7488683a21dbf45b.
+
+INPUT IDENTITY
+SLPS_035.53: 385024 bytes; SHA-256 a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569
+DATA.BIN: 66015232 bytes; SHA-256 69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822
+Entry 0: offset 0x5F800, size 110536, SHA-256 56ee7d3b195b0708bd5f9163d354f0173a828430c9467d410e822b1793d316d4; mapped base 0x800AD000 remains hypothesis.
+Entry 1: offset 0x10BB000, size 596412, SHA-256 9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a.
+
+A1 — ENTRY 1 BASE
+All 6423 control positions (candidate neighborhoods +/-0x1000, 4-byte increments) were scanned.
+Candidate 0x800AD450: JAL count 7221; targets inside entry1 B=3183; targets at detected function start C=3183; C/B=1.0.
+Best other sweep ratio=0.11907005969211436; peak/second=8.398416886543536.
+Other named candidates:
+0x800AD000: B=3183 C=51 ratio 0.016022620169651274
+0x800CD450: B=2769 C=7 ratio 0.002527988443481401
+0x800D0000: B=2754 C=5 ratio 0.0018155410312278055
+A1 numeric criteria PASS. H1 supported, confidence K3/K4 only: starts are detected by prologue/return pattern, so not an independent runtime validation. The "known EXE function entry" metric counts only targets matching a manually enumerated subset of known EXE function entries; it is not exhaustive all-function coverage.
+
+A2 — 0x8013A554
+Strict same-basic-block LUI 0x8014 + signed displacement -0x5AAC scan outputs 137 hits:
+SLPS_035.53 text: 0 read / 0 write / 0 address
+DATA.BIN entry 0 at candidate base 0x800AD000: 0 / 0 / 0
+DATA.BIN entry 1 at A1 base 0x800AD450: 137 reads / 0 writes / 0 address
+Example verified instruction pair: LUI at 0x801046A4 then LW at 0x801046A8 (word 0x8C42A554, lw v0,-0x5AAC(v0)), effective address 0x8013A554.
+Prior broad Ghidra XREF count cited in previous work is 194 (192 READ, 2 WRITE); this scanner reports 137 read sites and no write sites. Delta = -55 read, -2 write. The old exact reference list is not available in the current report bundle, so a per-address reconciliation for all 57 unmatched references is NOT PROVEN. The scanner intentionally requires same-basic-block register provenance; it is not equivalent to Ghidra's reference manager. A2 remains SEBAGIAN.
+
+A3 — RECORD FIELD
+Setter:
+0x800138C8..0x800138D8 computes index*0xB4;
+0x800138DC addu a0,a0,v0 forms record base;
+0x800138E0 word 0xAC850018 = sw a1,0x18(a0), 32-bit write.
+Getter:
+0x80013900..0x80013910 computes index*0xB4;
+0x80013914 addu a0,a0,v0 forms record base;
+0x80013918 word 0x8C820018 = lw v0,0x18(a0), 32-bit read.
+Index is constrained to 0..3. Set/get use same record stride and offset. Arithmetic:
+0x80070EA0+0x18=0x80070EB8
+0x80070EA0+0xB4+0x18=0x80070F6C
+Field semantic name "Chakra" is NOT PROVEN by these instructions; H2 is supported structurally only (record offset/width), not semantically. Clamp range in setter: -9999..99999.
+
+A4 — RNG DIRECT JAL SITES
+EXE direct callers: 0x80015B14 in function 0x80015ADC; 0x80015BF0 in function 0x80015B7C; 0x8001A460 in function 0x8001A328; 0x80020C24 in function 0x80020BF4.
+Total raw direct JAL word patterns in scanned sources = 152: EXE 4; entry0 candidate mapping 4 (0x800BB2D8, 0x800BB2FC, 0x800BB748, 0x800BB770); entry1 H1 mapping 144. The entry0/entry1 rows are raw static candidate sites, not all independently validated executable calls; their function starts and caller labels remain TIDAK TERBUKTI. No indirect-call completeness established.
+EXE call use:
+- 0x80015B14: two values masked to 0xFF; DIV at 0x80015B38, MFHI at 0x80015B3C; modulo-derived selector/table index, exact gameplay label TIDAK TERBUKTI.
+- 0x80015BF0: DIV at 0x80015C00, MFHI at 0x80015C04; remainder-based table position/permutation evidence; exact gameplay label TIDAK TERBUKTI.
+- 0x8001A460: DIV at 0x8001A46C, MFHI at 0x8001A470; later byte indexed from temporary list and stored at 0x80089DA9 (SB at 0x8001A48C); exact gameplay label TIDAK TERBUKTI.
+- 0x80020C24: surrounding arithmetic reduces RNG result to a 12-bit remainder and stores at record +0x34 (SW at 0x80020C48); exact gameplay label TIDAK TERBUKTI.
+Direct-call scan does not resolve all indirect JALR pathways.
+
+HYPOTHESES
+H1 entry1 base 0x800AD450: SUPPORTED by numeric scan; runtime overlay mapping still requires independent validation.
+H2 +0x18 32-bit record field: STRUCTURALLY SUPPORTED; semantic "Chakra": NOT PROVEN.
+H3 victory threshold ~3000 Chakra: NOT TESTED / NOT PROVEN.
+H4 roulette outcome depends on CIRCLE press frame: NOT TESTED / NOT PROVEN.
+
+LIMITATIONS / NEXT
+B checkpoint extraction found values 1500 at both addresses (RAM SHA-256 3ad7b85c857a868d91df4b3f1049c23889a0dc482ad7ee390ac8b6c05c3190f4), but reconstructed-disassembly comparison matched 88/94 (93.62%) 4-KiB EXE blocks, below the requested 95% and not a strict same-process original-EXE comparison. B remains SEBAGIAN.
+C fixed schedule replay twice with equal final RAM SHA is NOT RUN / BELUM. Do not claim deterministic.
+Private ROM/BIOS/save-state/RAM dump/screenshot binaries were not committed. Only sanitized CSV/JSON/text data are suitable for repository tracking.
