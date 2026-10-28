@@ -250,3 +250,10 @@ Under the hypothetical entry0 base `0x800AD000), `0x800C2FD8` decompiles as a bo
 The other target `0x800C2570` is only `jr ra` plus delay-slot `addiu sp,sp,0x40` (stack-adjust/return stub, no gameplay write visible). Note the headless Ghidra run reached its 180-second analysis timeout but the post-script completed and decompiled both targets; function boundary remains manually seeded, not complete whole-program analysis.
 
 Next: resolve actual resource residency/relocation and argument-contract conflict. No emulator/savestate/player-adaptive run; statuses remain Step 6(b) BLOCKED, Step 7 runtime map UNKNOWN/BLOCKED, Step 8(b) UNKNOWN, Story Mode TIDAK TERBUKTI TAMAT.
+
+<!-- predicate-global-provenance-2026-10-28 -->
+## Candidate predicate globals traced
+
+Detail report blob `9d3e8ad714655313aea2bffd85d87c89a6fb8118` (section 22) traces `0x800C2FD8)'s candidate conditions to main-EXE helpers: `0x80012444` gets global word `D_80070734` (set by `0x80012434`); `0x800126E8` gets byte `D_8007073C` (written on a path in `0x80012454)); `0x80017144(value)` searches the byte against +4 of the four `0xB4)-stride records at `0x80070EA0), using count `0x80070EA0` from `0x800135E0), and returns index or `0xFF`; `0x80013380` gets halfword `D_80070E90` (set by `0x80013374`).
+
+The predicate therefore compares optional fields against current global values, runs an ID-like lookup, and has a fallback threshold check `D_80070E90 <= byte[param+0xC]`. But the raw found branch also uses `$v1` after the lookup even though meaningful index is in `$v0`; do not assert “found means true” until that register provenance is clarified. This does not solve the entry1 argument conflict (its callsites pass constants to 0x800C2FD8); mapping/overlay remains the top blocker.
