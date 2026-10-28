@@ -3900,3 +3900,11 @@ No-input restore attempts [#40613996374](https://github.com/zuppasoupfifaistimew
 ## CURRENT ADDENDUM — descriptor selector cross-check (28 Oktober 2026)
 
 Cross-check baru pada dua tabel yang mengirim argumen ke `0x80015610`: `0x80064918` (stride `0x30`) menghasilkan selector `[0,1,2,3,4,5,6,7,4,4,4,4,4,4,4,5,8,8]`; `0x80057798` (stride `0x54`) menghasilkan `[0,1,2,8,3,4,8,5,6,6,0,0,0,0,0,0,3,5]`. Keduanya terbatas pada selector 0–8. Dengan demikian, blok selector 9–17 yang berisi 64 byte nol tidak dipilih oleh dua jalur descriptor langsung yang diidentifikasi; ini bukan bukti bahwa seluruh jalur tak langsung/seluruh game tidak pernah memakai indeks tersebut. Pembaruan rinci: [`docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md`](docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md), commit `58340592751b84b7b85ba5cb42185063204a9ec9`.
+
+
+<!-- caller-id-random-insert-audit-2026-10-28 -->
+## CURRENT ADDENDUM — ID source → RNG position → list mutation (28 Oktober 2026)
+
+Raw main-EXE evidence in artifact #12739676233 shows the only direct JAL site found for `0x80015ADC` at `0x80013B50`. In the same local sequence, `0x800139FC(group,slot)` reads a byte at offset +0x0A from a `0x80070EA0)-based record after checks `group<4` and `slot<3`; that byte becomes the ID passed to `0x80015ADC`. The ID is checked against a 52-entry registry (sentinel at `0x8005602C); then the helper computes `floor(n/2)+(RNG mod floor(n/2))`, with `n=byte[0x80070D02]`. For a valid position, `0x800159BC` shifts bytes in `0x80070D0A) right, stores the ID at `0x80070C80+0x8A+position`, and increments a separate halfword `0x80070C82` if below 64. The insertion helper does not increment `0x80070D02`; do not merge these as one size counter.
+
+Detailed trace and caveats: [`docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md`](docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md), latest trace commit `8f78358fc7ce9b8753e95b40ed57d7e344214600`. These are **static code operations**, not a verified item/card/turn rule or runtime observation. Step 4 remains SEBAGIAN; Step 8(a) SEBAGIAN and Step 8(b) UNKNOWN. The savestate loader failure gate remains closed after two identical exit-139 failures; no buttons were sent.
