@@ -2521,3 +2521,15 @@ See detailed report section 24, blob `9c9cb2ab70ed7e9654dfc0ed0f58114de02d7de4`.
 Detailed report section 25, blob `6e61cdd27b0452a692083e796b31ea4bce1e9c3c`.
 
 `T_8002DD80` rounds startup directory length `0x2F44→0x3000), adds it to bootstrap pointer `D_80010498=0x800AD450), and stores `0x800B0450` at GP+0x168. Startup calls `0x8002DE60`, which masks that pointer and uses `0x1F8000 - masked_pointer` as the available size, then initializes the allocator via `0x8002DDEC → 0x80035AA8` (free list head `D_80065C6C`). Later block allocation uses `0x80035B08` through `0x8002DEC4/0x8002DF30`. The allocator arena start is statically derived; exact entry0/entry1 execution address and overlays remain unknown because allocation header / copy / relocation paths are not closed.
+
+ 
+<!-- allocator-derived-entry0-altbase-test-2026-10-28 -->
+## Alternate entry0 mapping test — scalar-call compatibility partial, table still unmapped
+
+Raw text artifact from [Actions #40623532269](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40623532269), artifact #12788373175, ZIP SHA-256 `c16f6df28bea5f4cdf71fec8fb9009b6b550fb60e12ee738b32c539ebbf79194`.
+
+The same entry0 bytes were inspected under candidate base `0x800B0450`, derived as the post-bootstrap arena start by raw main-EXE code. Target `0x800C2FD8) is at file offset `0x12B88` in that import; raw words `li v0,1; jr ra; sltu v0,zero,a0` produce a return equal to `a0!=0`. This avoids the unaligned record-pointer access produced by the prior `0x800AD000` view when entry1's 74 direct calls pass scalar constants `0x258..0x275` (71 with delay-slot constants). But the new function returns true for every such nonzero constant, which doesn't explain why there are 74 differing values; call contract remains unresolved. `0x800C2570` has a large Ghidra body under this base, but the targeted script manually seeded the target and its true function boundary is not verified.
+
+Under base B0450, `0x800AE900) is outside/below entry0, so it cannot be its 16-word table. Under base AD000, the bytes at that address are instruction-like. Thus neither tested static map identifies the dispatch-table owner. The bootstrap-derived B0450 value is an allocator arena start, not proof of the payload pointer: allocation header, copying, relocation and overlay lifetime remain open.
+
+Next static experiment: export caller/raw instruction context for `0x8002D838`, `0x8002DEC4`, `0x8002DF30`, `0x8002D00C`, `0x8002D5C0`, `0x8002CF9C`, `0x8002DE60`, `0x8002DDEC`, `0x80035AA8`, and `0x80035B08` to establish returned allocation pointer vs payload. No emulator/gameplay or adaptive player run. Step 6(b) BLOCKED, Step 7 mapping UNKNOWN/BLOCKED, Step 8(b) UNKNOWN; Story Mode remains TIDAK TERBUKTI TAMAT.
