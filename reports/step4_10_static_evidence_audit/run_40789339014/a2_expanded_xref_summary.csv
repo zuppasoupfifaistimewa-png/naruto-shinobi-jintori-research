@@ -1,0 +1,10 @@
+file,kind,low_immediate_sites,lui_8014_pair_within_32_no_clobber,control_instruction_crossed_among_pairs,unresolved_same_register_provenance
+SLPS_035.53 text,READ,0,0,0,0
+SLPS_035.53 text,WRITE,0,0,0,0
+SLPS_035.53 text,ADDRESS,0,0,0,0
+DATA.BIN entry 0,READ,0,0,0,0
+DATA.BIN entry 0,WRITE,0,0,0,0
+DATA.BIN entry 0,ADDRESS,0,0,0,0
+DATA.BIN entry 1,READ,324,292,98,32
+DATA.BIN entry 1,WRITE,2,2,2,0
+DATA.BIN entry 1,ADDRESS,0,0,0,0

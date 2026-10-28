@@ -1,0 +1,6 @@
+verified_private_inputs=true
+data_bin_bytes=66015232
+data_bin_sha256=69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822
+exe_bytes=385024
+exe_sha256=a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569
+binary_uploaded_as_artifact=no

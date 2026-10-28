@@ -1,0 +1,5 @@
+side,cause_class,locations,sample_rule
+GHIDRA_ONLY,EXTENDED_32_WORD_LUI_PROVENANCE_RECOVERS_LEGACY_GHIDRA_SITE,96,audit all if <10; otherwise select 10 diverse offsets
+GHIDRA_ONLY,NO_UNCLOBBERED_SAME_REGISTER_LUI_8014_WITHIN_32_WORDS,19,audit all if <10; otherwise select 10 diverse offsets
+SCAN_ONLY,OLD_GHIDRA_VIEW_MISSED_REFERENCE_NOW_PRESENT_AFTER_REBASE,56,audit all if <10; otherwise select 10 diverse offsets
+SCAN_ONLY,RAW_PAIR_NOT_INSIDE_REBASED_GHIDRA_FUNCTION,2,audit all if <10; otherwise select 10 diverse offsets

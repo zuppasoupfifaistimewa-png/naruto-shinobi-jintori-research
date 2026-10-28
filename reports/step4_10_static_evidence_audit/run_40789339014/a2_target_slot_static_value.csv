@@ -1,0 +1,2 @@
+target_virtual_address,entry1_candidate_base,entry1_file_offset,file_bytes_le,file_u32_le,file_u32_le_decimal,ram_dump_sha256,ram_dump_value,static_meaning
+0x8013A554,0x800AD450,0x08D104,00 00 00 00,0x00000000,0,3ad7b85c857a868d91df4b3f1049c23889a0dc482ad7ee390ac8b6c05c3190f4,NOT AVAILABLE IN CURRENT WORKSPACE; not reconstructed from savestate,raw file word only; runtime pointer/value not inferred

@@ -1,0 +1,5 @@
+base,entry1_bytes,jal_count,targets_inside_entry1_b,targets_at_function_start_c,c_over_b,targets_in_exe_text_range,targets_at_known_exe_function_entry_d,unique_known_exe_targets
+0x800AD000,596412,7221,3183,51,0.016022620169651274,4025,598,14
+0x800AD450,596412,7221,3183,3183,1.0,4025,598,14
+0x800CD450,596412,7221,2769,7,0.002527988443481401,4025,598,14
+0x800D0000,596412,7221,2754,5,0.0018155410312273058,4025,598,14
