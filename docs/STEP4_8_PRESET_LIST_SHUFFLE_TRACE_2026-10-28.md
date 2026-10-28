@@ -138,3 +138,17 @@ The full main-EXE disassembly in artifact #12739676233 shows one direct `JAL` to
 **Important structure distinction:** `0x80070D02` is the source/template-list length used for the insertion position and buffer shift. `0x80070C82` is a separate halfword count that the insertion/removal helpers increment/decrement. The code does not increment `0x80070D02` in this path. Do not merge these fields into one presumed “deck size” or other gameplay variable without further dataflow evidence.
 
 This narrows the static effect to: **a byte ID read from one of four three-slot records is range-checked, then placed at a pseudo-random position in a coordinated list/record structure while the source-order bytes shift right**. What a record/ID represents in the visible game, why the chosen position is in the latter half, and which runtime event invokes this local routine remain unknown. The raw disassembly proves the local operations and one direct JAL site; it does not prove an item/card/turn name or actual runtime reachability.
+
+
+<!-- four-record-three-slot-id-operations-2026-10-28 -->
+## Four-record / three-ID-slot operations found around the insertion caller
+
+The local MIPS address arithmetic gives a stronger description of the source record than simply “a 12-slot table”:
+
+- The initializer at `0x8001210C` clears the `0x80070EA0)-based region for `0x2D4` bytes. Address calculations in the adjacent helpers use record stride `0xB4` and accept record index 0–3.
+- Each record has three adjacent ID bytes at offsets `+0x0A`, `+0x0B`, and `+0x0C`; this is exactly what the getter at `0x800139FC` reads when its second argument is 0, 1, or 2.
+- The unlabelled code body starting at `0x80013A48` validates a candidate byte against the 52-entry registry, scans the selected record's three ID bytes, and writes the candidate into the first slot whose current byte is not a valid registry ID. It returns failure if all three slots already contain valid IDs. This is a concrete “put an ID into a free slot” operation; feature semantics remain unknown.
+- The unlabelled code body starting at `0x80013B10` checks record index <4 and slot <3, reads the selected ID via `0x800139FC`, then calls the random-insertion helper. When removing slot 0 or 1 it shifts subsequent ID bytes left within that record; when removing slot 2 it skips the shift. It then sets the third slot `record+0x0C` to `0xFF`. This is a concrete remove-and-compact operation, combined with insertion of that ID into the separate shared indexed structure at `0x80070C80+0x8A`.
+- The configured template length at `0x80070D02` is loaded by the preset loader and used for bounds/position calculations, whereas the separate halfword at `0x80070C82` is changed by the insert/remove helpers. The raw code does not establish that these two fields are the same counter or that the template length itself grows/shrinks.
+
+The resulting static rule is now: **each of four records can hold up to three registry IDs; adding an ID fills the first invalid slot, while removing a chosen slot transfers its ID to another indexed structure, compacts remaining IDs, and marks the tail slot `0xFF`.** A separate helper chooses an insertion index pseudo-randomly in the latter half of the preset-configured range and shifts the companion order bytes. Do not label the IDs as cards, characters, upgrades, or actions without further evidence; no runtime/gameplay result was obtained.
