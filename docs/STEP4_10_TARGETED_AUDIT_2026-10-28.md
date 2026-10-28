@@ -135,3 +135,13 @@ The new raw static trace identifies four indexed records under `0x80070EA0), str
 ## Sequence consumer operation
 
 The body at `0x80015768` saves the first order byte, invokes a left shift at position 0, shuffles the configured range through `0x80015B7C`, and returns the saved byte. The shift does not clear the tail or modify the configured count `0x80070D02`, but decrements `0x80070C82`. This adds static operation detail without assigning a gameplay name. Step 4 remains SEBAGIAN; Step 8(b) remains UNKNOWN. See [the preset/list trace](STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md).
+
+ 
+<!-- target-threshold-candidate-matrix-update-2026-10-28 -->
+## Follow-up rule candidate — configured target comparison (28 October 2026)
+
+Added evidence in [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), section 27, and [Step 8 semantics report](STEP8_FUNCTION_SEMANTICS_AND_GAME_RULES_2026-10-27.md).
+
+Candidate entry-1 instructions at `0x800F1FE4–0x800F2024`: selected participant index is passed to `0x800BDC4C`; its return is added to participant-record field +0x04; result is compared with `D_80070C84` through main getter `0x80012A70`. The below-target branch goes to `0x800F212C); the at/above-target path performs additional global/record flag checks before continuing through another handler. A second callsite adds the same helper's return to Chakra getter `0x800138EC` and clamps the sum to -9999..99999, supporting the interpretation that the helper returns a numeric contribution in a Chakra-related calculation.
+
+This is a stronger candidate for a target-threshold rule, **not** a verified victory condition. Helper meaning, participant field +0x04, the final handler `0x800CF628`, pointer provenance, resource base and runtime reachability remain UNKNOWN/BLOCKED. Therefore Step 8(b) stays **UNKNOWN** and global Step 4–9 statuses are unchanged.
