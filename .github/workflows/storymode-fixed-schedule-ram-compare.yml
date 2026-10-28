@@ -1,0 +1,552 @@
+name: Step C — fixed-schedule Story Mode RAM replay comparison
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/storymode-fixed-schedule-ram-compare.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: naruto-storymode-fixed-schedule-ram-compare
+  cancel-in-progress: false
+
+jobs:
+  replay-compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - name: Checkout permitted research repository
+        uses: actions/checkout@v4
+
+      - name: Install bounded emulator/runtime requirements
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install --yes --no-install-recommends jq xvfb x11-utils libgl1-mesa-dri python3 python3-pil unzip
+
+      - name: Download and validate private emulator, game disc and BIOS
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/storymode-fixed-schedule-ram-compare"
+          mkdir -p "$root/source" "$root/output"
+          echo "C_WORK_ROOT=$root" >> "$GITHUB_ENV"
+          cd "$root/source"
+          api="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 30 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "$api/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            local name="$1" out="$2"
+            local id
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            [[ -n "$id" && "$id" != "null" ]] || { echo "::error::Missing release asset $name"; exit 11; }
+            curl --fail --silent --show-error --location --retry 2 --max-time 300 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+              "$api/releases/assets/$id" --output "$out"
+          }
+          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue
+          fetch_asset scph7502.zip scph7502.zip
+          echo "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c  pcsx-redux.AppImage" | sha256sum --check -
+          [[ "$(stat -c '%s' game.bin)" == "325989552" ]]
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check -
+          [[ "$(stat -c '%s' scph7502.zip)" == "283463" ]]
+          echo "b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a  scph7502.zip" | sha256sum --check -
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import hashlib, stat, zipfile
+          with zipfile.ZipFile("scph7502.zip") as z:
+              matches=[]
+              expanded=0
+              for info in z.infolist():
+                  p=PurePosixPath(info.filename)
+                  mode=(info.external_attr >> 16) & 0xffff
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)):
+                      raise SystemExit("Unsafe BIOS ZIP member")
+                  if info.file_size > 2*1024*1024:
+                      raise SystemExit("BIOS member oversized")
+                  expanded += info.file_size
+                  if expanded > 4*1024*1024:
+                      raise SystemExit("BIOS ZIP expanded size exceeds limit")
+                  if not info.is_dir() and info.file_size == 524288:
+                      matches.append(info)
+              if len(matches) != 1:
+                  raise SystemExit(f"Expected one 512-KiB BIOS, got {len(matches)}")
+              h=hashlib.sha256()
+              with z.open(matches[0]) as src, Path("scph7502.bin").open("wb") as dst:
+                  while True:
+                      b=src.read(65536)
+                      if not b: break
+                      h.update(b); dst.write(b)
+              if h.hexdigest() != "5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1":
+                  raise SystemExit("SCPH-7502 BIOS hash mismatch")
+              print("BIOS_SHA256="+h.hexdigest())
+          PY
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          lines=Path("game.cue").read_bytes().decode("utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          ids=[i for i,s in enumerate(lines) if s.lstrip().upper().startswith("FILE ")]
+          if len(ids)!=1 or not any(s.lstrip().upper().startswith("TRACK ") for s in lines):
+              raise SystemExit("Invalid CUE layout")
+          lines[ids[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+          {
+            echo "emulator_sha256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c"
+            echo "disc_bin_sha256=58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88"
+            echo "bios_sha256=5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1"
+            echo "schedule_source_run=39262213468"
+            echo "schedule_final_vsync=10055"
+            echo "checkpoint_load=NO (cold boot only; known savestate restore crash is not bypassed)"
+          } > "$C_WORK_ROOT/output/input-identity.txt"
+
+      - name: Create read-only schedule runner and screenshot gate observer
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$C_WORK_ROOT/bin"
+          cat > "$C_WORK_ROOT/bin/pad-setup.lua" <<'LUA'
+          PCSX.settings.pads[1].DeviceType = 'Analog'
+          PCSX.settings.pads[1].Connected = true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("C_TEST_PAD_SETUP=Port 1 Analog connected/remapped")
+          LUA
+          cat > "$C_WORK_ROOT/bin/fixed-schedule.lua" <<'LUA'
+          local frame_count = 0
+          local stop_frame = 10055
+          local pad = PCSX.SIO0.slots[1].pads[1]
+          local buttons = PCSX.CONSTS.PAD.BUTTON
+          local root = "captures"
+          local raw = root .. "/raw"
+          local scheduled_circle2 = false
+          local scheduled_start1 = false
+          local scheduled_start2 = false
+          local checkpoint_pending = false
+          local event_log_path = root .. "/fixed-schedule-events.txt"
+          local function event_line(s)
+              local f = io.open(event_log_path, "ab")
+              if f then f:write(s .. "\n"); f:close() end
+              print(s)
+          end
+          local function apply_button(frame, action, button, name, kind)
+              local expected = (action == "press")
+              local ok, readback = pcall(function()
+                  if expected then pad.setOverride(button) else pad.clearOverride(button) end
+                  return pad.getButton(button)
+              end)
+              local status = (ok and readback == expected) and "PASS" or "FAIL"
+              event_line(string.format("C_TEST_EVENT frame=%d button=%s action=%s decision=APPLY readback=%s expected=%s status=%s",
+                  frame, name, action, ok and tostring(readback) or "ERROR", tostring(expected), status))
+              return status == "PASS"
+          end
+          local function skip_button(frame, action, name, reason)
+              event_line(string.format("C_TEST_EVENT frame=%d button=%s action=%s decision=SKIP reason=%s status=NO_GO",
+                  frame, name, action, reason))
+          end
+          local function capture_frame(n)
+              local shot = PCSX.GPU.takeScreenShot()
+              local bpp = (shot.bpp == 0) and 16 or 24
+              local name = string.format("%s/frame-%06d.raw", raw, n)
+              local f = assert(Support.File.open(name, "TRUNCATE"), "cannot create raw screenshot")
+              f:writeMoveSlice(shot.data); f:close()
+              local meta = assert(io.open(string.format("%s/frame-%06d.json", root, n), "wb"), "cannot create screenshot metadata")
+              meta:write(string.format('{"frame":%d,"width":%d,"height":%d,"bpp":%d,"expected_bytes":%d}\n',
+                  n, shot.width, shot.height, bpp, shot.width*shot.height*bpp/8))
+              meta:close()
+          end
+          local function save_checkpoint(frame, path)
+              local ok, err = pcall(function()
+                  local state = PCSX.createSaveState()
+                  local f = assert(Support.File.open(path, "TRUNCATE"), "cannot create private RAM checkpoint")
+                  f:writeMoveSlice(state); f:close()
+              end)
+              event_line(string.format("C_TEST_SAVESTATE frame=%d path=%s status=%s detail=%s",
+                  frame, path, ok and "PASS" or "FAIL", ok and "none" or tostring(err)))
+              return ok
+          end
+          local function safe_pause_save(frame, path, quit_after, reason)
+              if checkpoint_pending then return end
+              checkpoint_pending = true
+              PCSX.pauseEmulator()
+              PCSX.nextTick(function()
+                  if frame == 10055 then
+                      local ok, err = pcall(capture_frame, frame)
+                      event_line(string.format("C_TEST_FINAL_SCREEN frame=%d status=%s detail=%s",
+                          frame, ok and "CAPTURED" or "FAIL", ok and "none" or tostring(err)))
+                  end
+                  local saved = save_checkpoint(frame, path)
+                  event_line(string.format("C_TEST_SAFE_POINT frame=%d save_ok=%s reason=%s",
+                      frame, tostring(saved), reason))
+                  if quit_after then
+                      PCSX.quit(saved and 0 or 42)
+                  else
+                      checkpoint_pending = false
+                      PCSX.resumeEmulator()
+                  end
+              end)
+          end
+          local function wait_for_gate(flag_path, label, next_tick_limit)
+              PCSX.pauseEmulator()
+              local tries = 0
+              local function poll()
+                  tries = tries + 1
+                  local f = io.open(flag_path, "rb")
+                  if f then
+                      local status = (f:read("*a") or ""):gsub("[\r\n]", "")
+                      f:close()
+                      event_line(string.format("C_TEST_GATE label=%s status=%s", label, status))
+                      PCSX.resumeEmulator()
+                  elseif tries >= next_tick_limit then
+                      event_line(string.format("C_TEST_GATE label=%s status=FAIL_TIMEOUT", label))
+                      PCSX.resumeEmulator()
+                  else
+                      PCSX.nextTick(poll)
+                  end
+              end
+              PCSX.nextTick(poll)
+          end
+          local select_gate = "captures/story-select-visual-gate.flag"
+          local intro_gate = "captures/story-dialog-visual-gate.flag"
+          local panel1_gate = "captures/dialog-panel-frame-9030.flag"
+          local panel2_gate = "captures/dialog-panel-frame-9105.flag"
+          local gate_frames = { [5999]=true,[8999]=true,[9030]=true,[9105]=true }
+          local capture_targets = { [2649]=true,[5999]=true,[8999]=true,[9030]=true,[9105]=true,[10055]=true }
+          shellReachedListener = PCSX.Events.createEventListener("ExecutionFlow::ShellReached", function()
+              print("C_TEST_EXECUTION_EVENT=ShellReached")
+          end)
+          runListener = PCSX.Events.createEventListener("ExecutionFlow::Run", function()
+              print("C_TEST_EXECUTION_EVENT=Run")
+          end)
+          gpuTrafficListener = PCSX.Events.createEventListener("GPU::Vsync", function()
+              frame_count = frame_count + 1
+              if capture_targets[frame_count] then
+                  local ok, err = pcall(capture_frame, frame_count)
+                  event_line(string.format("C_TEST_SCREEN frame=%d status=%s detail=%s",
+                      frame_count, ok and "CAPTURED" or "FAIL", ok and "none" or tostring(err)))
+                  if not ok then PCSX.quit(41); return end
+              end
+              if frame_count == 2649 then
+                  safe_pause_save(2649, "captures/raw/ram-frame-002649.sstate", false, "pre_input_baseline")
+                  return
+              end
+              if gate_frames[frame_count] then
+                  local flag = frame_count == 5999 and select_gate or
+                               frame_count == 8999 and intro_gate or
+                               frame_count == 9030 and panel1_gate or panel2_gate
+                  local label = frame_count == 5999 and "story_select" or
+                                frame_count == 8999 and "story_intro" or
+                                frame_count == 9030 and "dialog_panel_9030" or "dialog_panel_9105"
+                  wait_for_gate(flag, label, 500)
+                  return
+              end
+              -- Fixed events copied from the verified input log of run #39262213468.
+              if frame_count == 2650 then apply_button(frame_count,"press",buttons.START,"START")
+              elseif frame_count == 2680 then apply_button(frame_count,"release",buttons.START,"START")
+              elseif frame_count == 2710 then apply_button(frame_count,"press",buttons.DOWN,"DOWN")
+              elseif frame_count == 2720 then apply_button(frame_count,"release",buttons.DOWN,"DOWN")
+              elseif frame_count == 2740 then apply_button(frame_count,"press",buttons.UP,"UP")
+              elseif frame_count == 2750 then apply_button(frame_count,"release",buttons.UP,"UP")
+              elseif frame_count == 2780 then apply_button(frame_count,"press",buttons.CIRCLE,"CIRCLE")
+              elseif frame_count == 2810 then apply_button(frame_count,"release",buttons.CIRCLE,"CIRCLE")
+              elseif frame_count == 6100 then
+                  local f=io.open(select_gate,"rb"); local g=f and (f:read("*a") or "") or ""; if f then f:close() end
+                  if g:match("^PASS") then scheduled_circle2=apply_button(frame_count,"press",buttons.CIRCLE,"CIRCLE2")
+                  else skip_button(frame_count,"press","CIRCLE2","target_cue_not_verified") end
+              elseif frame_count == 6130 then
+                  if scheduled_circle2 then apply_button(frame_count,"release",buttons.CIRCLE,"CIRCLE2")
+                  else skip_button(frame_count,"release","CIRCLE2","press_was_not_authorized") end
+              elseif frame_count == 9035 then
+                  local i=io.open(intro_gate,"rb"); local ig=i and (i:read("*a") or "") or ""; if i then i:close() end
+                  local p=io.open(panel1_gate,"rb"); local pg=p and (p:read("*a") or "") or ""; if p then p:close() end
+                  if ig:match("^PASS") and pg:match("^PASS") then scheduled_start1=apply_button(frame_count,"press",buttons.START,"START_DIALOG")
+                  else skip_button(frame_count,"press","START_DIALOG","dialog_cue_not_verified") end
+              elseif frame_count == 9065 then
+                  if scheduled_start1 then apply_button(frame_count,"release",buttons.START,"START_DIALOG")
+                  else skip_button(frame_count,"release","START_DIALOG","press_was_not_authorized") end
+              elseif frame_count == 9110 then
+                  local i=io.open(intro_gate,"rb"); local ig=i and (i:read("*a") or "") or ""; if i then i:close() end
+                  local p=io.open(panel2_gate,"rb"); local pg=p and (p:read("*a") or "") or ""; if p then p:close() end
+                  if ig:match("^PASS") and pg:match("^PASS") then scheduled_start2=apply_button(frame_count,"press",buttons.START,"START_DIALOG")
+                  else skip_button(frame_count,"press","START_DIALOG","dialog_cue_not_verified") end
+              elseif frame_count == 9140 then
+                  if scheduled_start2 then apply_button(frame_count,"release",buttons.START,"START_DIALOG")
+                  else skip_button(frame_count,"release","START_DIALOG","press_was_not_authorized") end
+              elseif frame_count == 10055 then
+                  safe_pause_save(10055, "captures/raw/ram-frame-010055.sstate", true, "fixed_schedule_final")
+                  return
+              end
+              if frame_count % 1000 == 0 then
+                  print(string.format("C_TEST_VSYNC frame=%d guest_fps=%.4f", frame_count, PCSX.GPU.getGuestFPS()))
+              end
+          end)
+          event_line("C_TEST_SCHEDULE_ARMED=1 source_run=39262213468 final_vsync=10055; no savestate restore")
+          LUA
+          cat > "$C_WORK_ROOT/bin/gate-watch.py" <<'PY'
+          import hashlib, json, sys, time
+          from pathlib import Path
+          from PIL import Image
+          run = Path(sys.argv[1])
+          captures, raw = run/"captures", run/"captures"/"raw"
+          def flag(name, text):
+              (captures/name).write_text(text+"\n", encoding="ascii")
+          def read_image(frame, deadline=550):
+              r=raw/f"frame-{frame:06d}.raw"
+              m=captures/f"frame-{frame:06d}.json"
+              until=time.monotonic()+deadline
+              while time.monotonic()<until:
+                  if r.is_file() and m.is_file():
+                      meta=json.loads(m.read_text())
+                      data=r.read_bytes()
+                      if len(data)==int(meta["expected_bytes"]) and meta["width"]==320 and meta["height"]==240 and meta["bpp"]==16:
+                          pixels=bytearray()
+                          for p in range(0,len(data),2):
+                              v=data[p] | data[p+1]<<8
+                              pixels.extend(((v&31)*255//31,((v>>5)&31)*255//31,((v>>10)&31)*255//31))
+                          return Image.frombytes("RGB",(320,240),bytes(pixels))
+                  time.sleep(0.02)
+              raise TimeoutError(f"frame_{frame}_capture_timeout")
+          def crop_hash(img, box):
+              return hashlib.sha256(img.crop(box).tobytes()).hexdigest()
+          gates=[
+            (5999,"story-select-visual-gate.flag"),
+            (8999,"story-dialog-visual-gate.flag"),
+            (9030,"dialog-panel-frame-9030.flag"),
+            (9105,"dialog-panel-frame-9105.flag"),
+          ]
+          for frame,filename in gates:
+              try:
+                  image=read_image(frame)
+                  if frame==5999:
+                      header=crop_hash(image,(0,10,125,44))
+                      story=crop_hash(image,(90,119,232,157))
+                      good=header=="300d704e0f1765f7aec4480d7994e91bdaaf8d161c9611ca0e3d78955fc9e9c2" and story in {
+                        "5ee1da16985ef0b15142e8ad3c69e86042bfa805e64568372fdf82254a2278d3",
+                        "c50e86a84853a63d9ab15fbe2897774fb547c825dbc08560d924fd2e1bd81998",
+                        "58e8b8487d2c9e361f893b93352a199660adcec3155ef56a6e016df4b1c82448",
+                      }
+                      text=f'{"PASS" if good else "FAIL"} header_sha256={header} story_crop_sha256={story}'
+                  elif frame==8999:
+                      digest=crop_hash(image,(0,0,280,240))
+                      good=digest=="0acf03aa8feba7130a39c8efd0cdad2666290aa5e99466a297495f3fb01f90eb"
+                      text=f'{"PASS" if good else "FAIL"} intro_crop_sha256={digest}'
+                  else:
+                      digest=crop_hash(image,(5,166,286,233))
+                      good=digest=="56b5f02475cd07de9a4f659e80b52d483aebd4771766459a5ffb05cc84ad5565"
+                      text=f'{"PASS" if good else "FAIL"} panel_crop_sha256={digest}'
+                  flag(filename,text)
+                  print(f"C_TEST_VISUAL_GATE frame={frame} {filename} {text}",flush=True)
+              except Exception as exc:
+                  flag(filename,"FAIL reason="+type(exc).__name__+":"+str(exc))
+                  print(f"C_TEST_VISUAL_GATE frame={frame} FAIL reason={type(exc).__name__}:{exc}",flush=True)
+          PY
+
+      - name: Replay identical schedule twice from cold boot and compare 2 MiB RAM
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$C_WORK_ROOT"
+          src="$root/source"
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$root/xvfb.log" 2>&1 &
+          xvfb_pid=$!
+          cleanup_display() { kill "$xvfb_pid" 2>/dev/null || true; wait "$xvfb_pid" 2>/dev/null || true; }
+          trap cleanup_display EXIT
+          export DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1
+          for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+
+          for run_num in 1 2; do
+            run="$root/run$run_num"
+            mkdir -p "$run/home" "$run/captures/raw" "$run/cards"
+            export HOME="$run/home" XDG_CONFIG_HOME="$run/home/.config" XDG_DATA_HOME="$run/home/.local/share"
+            mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME"
+            echo "C_TEST_RUN_BEGIN=$run_num initial_state=cold_boot final_vsync=10055"
+            (
+              cd "$run"
+              # Fresh and isolated user/card state for each cold boot. The RAM hash
+              # at VSync 2649 is the acceptance test for identical starting state.
+              timeout --signal=TERM --kill-after=5s 240s \
+                "$src/squashfs-root/AppRun" -noupdate -bios "$src/scph7502.bin" \
+                -iso "$src/game-run.cue" -memcard1 "$run/cards/naruto-storymode.mcd" \
+                -exec "$(cat "$root/bin/pad-setup.lua")" -dofile "$root/bin/fixed-schedule.lua" \
+                -softgpu -dynarec -stdout -lua_stdout -logfile "$run/pcsx.log" -run \
+                > "$run/pcsx.stdout" 2>&1 &
+              emu_pid=$!
+              python3 "$root/bin/gate-watch.py" "$run" > "$run/gate-watch.log" 2>&1 &
+              watch_pid=$!
+              set +e
+              wait "$emu_pid"
+              emu_rc=$?
+              set -e
+              wait "$watch_pid" || true
+              echo "C_TEST_RUN_END=$run_num exit_code=$emu_rc"
+              grep -E 'C_TEST_|C_TEST_EVENT|C_TEST_GATE|PAD_INJECT|ERROR|error|SIGSEGV' "$run/pcsx.stdout" "$run/gate-watch.log" > "$run/replay-log.txt" || true
+              if [[ $emu_rc -ne 0 ]]; then
+                echo "C_TEST_RUN_STATUS=FAIL run=$run_num emulator_exit=$emu_rc"
+                cat "$run/replay-log.txt" >> "$root/output/run$run_num-summary.txt"
+                exit 1
+              fi
+              cp "$run/replay-log.txt" "$root/output/run$run_num-input-and-gate-log.txt"
+            )
+          done
+
+          cat > "$root/bin/compare_ram.py" <<'PY'
+          import csv, hashlib, json, struct
+          from pathlib import Path
+          root=Path(__import__("os").environ["C_WORK_ROOT"])
+          out=root/"output"
+          def rv(data,pos):
+              val=shift=0
+              while pos<len(data):
+                  b=data[pos];pos+=1;val|=(b&127)<<shift
+                  if not b&128:return val,pos
+                  shift+=7
+                  if shift>70:raise ValueError("varint too long")
+              raise ValueError("truncated varint")
+          def fields(data):
+              result=[];pos=0
+              while pos<len(data):
+                  start=pos;tag,pos=rv(data,pos);no,wire=tag>>3,tag&7
+                  if wire==0:
+                      _,pos=rv(data,pos);p0=p1=pos
+                  elif wire==1:p0,p1=pos,pos+8;pos+=8
+                  elif wire==2:
+                      n,pos=rv(data,pos);p0=pos;p1=pos+n;pos+=n
+                  elif wire==5:p0,p1=pos,pos+4;pos+=4
+                  else:raise ValueError(f"unsupported protobuf wire {wire}")
+                  if pos>len(data):raise ValueError("truncated field")
+                  result.append((no,wire,start,p0,p1,pos))
+              return result
+          def ram_from_state(path):
+              data=path.read_bytes()
+              top=fields(data)
+              matches=[x for x in top if x[0]==3 and x[1]==2]
+              if len(matches)!=1:raise ValueError(f"memory-message count={len(matches)}")
+              mem=data[matches[0][3]:matches[0][4]]
+              f=[x for x in fields(mem) if x[0]==1 and x[1]==2]
+              if len(f)!=1:raise ValueError(f"ram-field count={len(f)}")
+              ram8=mem[f[0][3]:f[0][4]]
+              if len(ram8)!=8388608:raise ValueError(f"RAM byte length={len(ram8)}")
+              return ram8[:0x200000]
+          states={}
+          for run_num in (1,2):
+              cap=root/f"run{run_num}"/"captures"/"raw"
+              for label,filename in (("initial","ram-frame-002649.sstate"),("final","ram-frame-010055.sstate")):
+                  path=cap/filename
+                  if not path.is_file():raise SystemExit(f"missing state file {path}")
+                  ram=ram_from_state(path)
+                  states[(run_num,label)]=ram
+              for label in ("initial","final"):
+                  ram=states[(run_num,label)]
+                  print(f"RAM run={run_num} stage={label} bytes={len(ram)} sha256={hashlib.sha256(ram).hexdigest()}")
+                  for addr in (0x80070EB8,0x80070F6C):
+                      v=struct.unpack_from("<I",ram,addr&0x1fffff)[0]
+                      print(f"RAM_U32 run={run_num} stage={label} address=0x{addr:08X} value=0x{v:08X} dec={v}")
+          init_equal=states[(1,"initial")]==states[(2,"initial")]
+          final_equal=states[(1,"final")]==states[(2,"final")]
+          mismatches=[]
+          if not final_equal:
+              a,b=states[(1,"final")],states[(2,"final")]
+              offsets=[i for i,(x,y) in enumerate(zip(a,b)) if x!=y]
+              block={}
+              for i in offsets:block[i//0x1000]=block.get(i//0x1000,0)+1
+              mismatches=[{"ram_offset":f"0x{k*0x1000:06X}","virtual_start":f"0x{(0x80000000+k*0x1000):08X}","differing_bytes":v} for k,v in sorted(block.items())]
+              print("FINAL_RAM_FIRST_DIFF_OFFSET="+(f"0x{offsets[0]:06X}" if offsets else "NONE"))
+              print("FINAL_RAM_DIFFERING_BYTE_COUNT="+str(len(offsets)))
+              print("FINAL_RAM_DIFFERING_BLOCKS="+json.dumps(mismatches))
+          ev=[]
+          for run_num in (1,2):
+              p=out/f"run{run_num}-input-and-gate-log.txt"
+              lines=p.read_text(errors="replace").splitlines()
+              ev.append([x.split(" ",1)[1] for x in lines if "C_TEST_EVENT " in x])
+          event_equal=ev[0]==ev[1]
+          visual=[]
+          for run_num in (1,2):
+              p=out/f"run{run_num}-input-and-gate-log.txt"
+              lines=p.read_text(errors="replace").splitlines()
+              visual.append([x.split(" ",1)[1] for x in lines if "C_TEST_VISUAL_GATE " in x or "C_TEST_GATE " in x])
+          visual_equal=visual[0]==visual[1]
+          schedules_pass=event_equal and len(ev[0])==14 and all("status=PASS" in x or "status=NO_GO" in x for x in ev[0])
+          all_authorized=all("decision=APPLY" in x and "status=PASS" in x for x in ev[0])
+          criteria_pass=init_equal and final_equal and event_equal and visual_equal and schedules_pass and all_authorized
+          result={
+            "schedule_source_run":39262213468,"final_vsync":10055,"replays":2,
+            "initial_ram_sha256_run1":hashlib.sha256(states[(1,"initial")]).hexdigest(),
+            "initial_ram_sha256_run2":hashlib.sha256(states[(2,"initial")]).hexdigest(),
+            "initial_ram_equal":init_equal,
+            "final_ram_sha256_run1":hashlib.sha256(states[(1,"final")]).hexdigest(),
+            "final_ram_sha256_run2":hashlib.sha256(states[(2,"final")]).hexdigest(),
+            "final_ram_equal":final_equal,"input_event_log_equal":event_equal,"visual_gate_log_equal":visual_equal,
+            "input_event_count_run1":len(ev[0]),"input_event_count_run2":len(ev[1]),
+            "all_scheduled_events_authorized_and_passed":all_authorized,
+            "criterion_pass":criteria_pass,"mismatch_blocks":mismatches,
+            "limitation":"RAM comparisons cover first 0x200000 bytes of savestate RAM field; raw state/RAM/screenshots are temporary and not uploaded."
+          }
+          (out/"schedule-c-ram-comparison.json").write_text(json.dumps(result,indent=2)+"\n")
+          with (out/"schedule-c-ram-comparison.csv").open("w",newline="") as f:
+              w=csv.writer(f);w.writerow(["check","result"])
+              for k,v in result.items():w.writerow([k,json.dumps(v,ensure_ascii=False) if isinstance(v,(dict,list)) else v])
+          summary=[
+            "STEP C — FIXED INPUT SCHEDULE / RAM SHA-256 COMPARISON",
+            "Source input log: run #39262213468; cold-boot replay only, no savestate load.",
+            "Schedule: START 2650/2680; DOWN 2710/2720; UP 2740/2750; CIRCLE 2780/2810; gated CIRCLE 6100/6130; gated START 9035/9065 and 9110/9140.",
+            "Final RAM checkpoint: VSync 10055. Starting-state requirement is verified by matching 2 MiB RAM SHA-256 at VSync 2649.",
+            "RESULT: "+("CONSISTENT 2/2 ON THIS SCHEDULE" if criteria_pass else "NOT PASSED / INCOMPLETE"),
+            "Never infer determinism from two matching runs.",
+            json.dumps(result,indent=2),
+          ]
+          (out/"schedule-c-ram-comparison.txt").write_text("\n".join(summary)+"\n")
+          print("\n".join(summary))
+          if not criteria_pass:
+              raise SystemExit("Step C criteria not met")
+          PY
+          python3 "$root/bin/compare_ram.py"
+          echo "C_TEST_RAM_COMPARISON=PASS"
+
+      - name: Remove private source, RAM checkpoints, and raw screenshots before report commit
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$C_WORK_ROOT"
+          rm -rf "$root/source" "$root/run1" "$root/run2" "$root/bin"
+          if find "$root/output" -type f | grep -E '\.(bin|iso|cue|sstate|mcd|raw|png|rom|exe)$'; then
+            echo "::error::private binary/raw visual artifact leaked into output"
+            exit 1
+          fi
+          echo "PRIVATE_BINARY_AND_SCREENSHOT_CLEANUP=PASS"
+
+      - name: Commit sanitized schedule log and SHA summary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          dest="reports/storymode_fixed_schedule_ram_compare/run_${GITHUB_RUN_ID}"
+          mkdir -p "$dest"
+          cp "$C_WORK_ROOT/output/"* "$dest/" 2>/dev/null || true
+          if ! compgen -G "$dest/*" >/dev/null; then
+            echo "C_TEST_OUTPUT=EMPTY" > "$dest/schedule-c-ram-comparison.txt"
+            echo "Workflow did not reach RAM comparison; inspect Actions step logs." >> "$dest/schedule-c-ram-comparison.txt"
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$dest"
+          if git diff --cached --quiet; then echo "REPORT_COMMIT=NO_CHANGES"
+          else
+            git commit -m "Record fixed-schedule RAM comparison run ${GITHUB_RUN_ID}"
+            git push origin HEAD:main
+            echo "REPORT_COMMIT=PASS"
+          fi
