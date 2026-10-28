@@ -1,3 +1,11 @@
+## Follow-up scan 6(b) — status sementara, 28 Oktober 2026
+
+Run Ghidra statis [#40611660635](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40611660635) dipicu oleh perubahan alat di commit `ea148ca60af2e3eeaa1b58141532e1ff5a98dd60`, branch `main`. Status terbaru yang terlihat: `in_progress`; job `122564387469`; langkah terakhir `Install disc extraction tools` masih berjalan. Mulai pada `2026-10-28T00:53:40Z` (= 07:53:40 WIB). Belum ada artifact dan log job belum tersedia. Workflow memiliki `timeout-minutes: 35`; batas timeout sekitar 08:28:40 WIB bukan ramalan waktu selesai. Jika scan selesai, verifikasi log dan hasil XREF/pola LUI sebelum memutuskan apakah 6(b) berubah; jika gagal, simpan error dan jangan rerun identik sebelum sebab kegagalan dipahami.
+
+Ini pemindaian kode statis saja. Tidak ada emulator/gameplay, tombol, savestate restore, adaptive player, atau upload biner privat ke artefak yang dimulai oleh perubahan ini.
+
+---
+
 # Audit Terarah Lanjutan — Langkah 4–10
 
 Tanggal: 28 Oktober 2026  
