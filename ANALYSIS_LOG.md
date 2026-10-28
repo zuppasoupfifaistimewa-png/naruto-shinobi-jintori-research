@@ -2404,3 +2404,17 @@ Detailed continuation: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md
 - Decoded direct JAL references in entry-1 to `0x80013A48`: `0x8010F8EC`, `0x8010F908`, `0x801107A8`. To `0x80013B10`: `0x800D7104`, `0x800DD19C`, `0x800DD2B4`, `0x800DD4CC`, `0x800F78AC`, `0x800FA3D4`, `0x800FAA2C`, `0x80110798`.
 
 The new chain is stronger than the earlier isolated helper operations: it shows sequence byte → ID field → registry category dispatch → attribute-driven numeric writes/branching in the candidate resource view. It does not yet prove runtime reachability because load base, relocation, global pointer provenance and jump-table ownership remain unverified; decompilation has bad-control-flow warnings on some paths. No emulator, gameplay input, or adaptive player was used. Step 4 partial; Step 6(b) BLOCKED; Step 7 runtime mapping UNKNOWN/BLOCKED; Step 8(b) UNKNOWN. Story Mode remains **TIDAK TERBUKTI TAMAT**.
+
+
+<!-- jumptable-address-mapping-conflict-2026-10-28 -->
+## Targeted 16-word dispatch-table probe — result narrows the mapping hypothesis
+
+A small raw-word export was added to the bounded entry0 context workflow to test whether `jtbl_800AE900` could be hosted inside entry0. Run #40619049176 succeeded and produced artifact #12786995206 (size 7,886 bytes; ZIP SHA-256 `01067b46e0a6e15cebd06d4bcd9898ff946d8c1d4083d40a29b80480fca92dc9`). The 64-byte table region hash is `0b5987d2a6307848ab55e87b23f0771fe6afdc345f8c42ede9bfa92eb5ab005b`. Artifact is text/log only and the workflow declares no emulator/gameplay execution and no private binary upload.
+
+Under the entry0 base hypothesis `0x800AD000`, `0x800AE900) equals block offset `0x1900), and the region `0x800AE900..0x800AE93F` contains 16 valid instruction forms:
+`000217C2, 00A21021, 00021043, 2442FEF8, 00629823, AFA50010, 0C008450, 248446D0, 14400081, 2402001F, A622000C, A6200010, 240201FF, A6220012, 0C00DC4E, 2404FFFF`.
+The `JAL` forms at +0x18 and +0x38 target `0x80021140) and `0x80037138) under MIPS decode. It is therefore not a plausible 16-entry table of absolute branch targets **in this mapped entry0 view**.
+
+Entry1's instructions at `0x8010F444–0x8010F45C` remain clear static evidence of address math `0x800AE900 + 4*field0`, load of a word for field0<16, and indirect `jr`. The new probe falsifies the simple assumption that the table resides at the same numeric address in entry0 loaded at `0x800AD000); it does not prove actual load base, table owner, or runtime code path. This is a new mapping conflict to drive Step 7 loader/relocation research, not a successful resolution of the jump table.
+
+No step status was promoted. Step 6(b) remains BLOCKED, Step 7 runtime mapping UNKNOWN/BLOCKED, Step 8(b) UNKNOWN; Story Mode remains **TIDAK TERBUKTI TAMAT**. Adaptive player was not run or changed.
