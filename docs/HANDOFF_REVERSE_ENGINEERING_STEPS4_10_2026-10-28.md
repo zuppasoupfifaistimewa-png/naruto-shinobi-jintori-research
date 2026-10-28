@@ -85,3 +85,9 @@ Checkpoint restore was attempted twice with no controller input. Raw savestate l
 ## Descriptor selector note (same checkpoint)
 
 The two direct callers of `0x80015610` pass field +2 from descriptors. Both audited tables only expose values 0–8; source blocks 9–17 are 64-byte zero blocks not selected by these table records, despite the loader guard permitting indices <18. Keep this limited to the two statically traced paths; don't claim global unreachability. Continue with the consumers/meaning of IDs selected by 0–8 and investigate the second buffer reader path. See [preset-list trace](STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md).
+
+
+<!-- caller-id-random-insert-audit-2026-10-28 -->
+## Caller/dataflow result to continue from
+
+The latest evidence is in [`docs/STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md`](STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md). Main-EXE direct JAL `0x80013B50→0x80015ADC` passes a byte returned by `0x800139FC(group,slot)`, which reads offset +0x0A from a `0x80070EA0)-based record (group <4, slot <3). That byte is range-checked against 52 entries; a pseudo-random position based on `byte[0x80070D02]` and RNG is computed, then the code shifts `0x80070D0A` order bytes, writes the ID to `0x80070C80+0x8A+position`, and increments the distinct count at `0x80070C82` if <64. Keep this static description literal; do not label as a card/deck/turn or infer runtime reachability. Next: identify all readers/writers and call/dispatch paths for `0x80070EA0`, `0x80070C80+0x8A`, `0x80070C82`, and the consumer of `0x80070D0A`, preferably from existing raw/static artifacts before proposing any new emulator experiment. Restore checkpoint remains NO-GO after repeated SIGSEGV; do not rerun same loader path.
