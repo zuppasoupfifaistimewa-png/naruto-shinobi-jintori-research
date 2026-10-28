@@ -102,3 +102,13 @@ Batas dataflow tetap tegas: pointer yang dipakai sebagai base berasal dari slot 
 Tidak ada emulator/gameplay dijalankan dalam sesi audit ini; tidak ada tombol gameplay dikirim dan tidak ada savestate yang dipulihkan. Artefak historis gameplay/savestate hanya disebut jika ada catatan; file mentahnya tidak diasumsikan tersedia atau sudah diverifikasi hanya dari nama/hash lama. Tidak ada ROM/BIN/CUE/EXE, BIOS, Memory Card, savestate, RAM dump, atau screenshot privat ditambahkan ke laporan/artifact. Tidak ada workflow adaptive-player dijalankan atau diedit.
 
 Story Mode tetap **TIDAK TERBUKTI TAMAT**. Adaptive readiness tetap **NO-GO**; target cue tetap **UNKNOWN** dan `barrier_level_selection=WAIT`.
+
+
+<!-- step4-step8-preset-list-shuffle-audit-2026-10-28 -->
+## Additional Step 4/8 evidence — preset list loading
+
+A new static trace is recorded in [`STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md`](STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md). It establishes a two-buffer preset loader and a mismatch between the caller's group index and the shuffle helper's actual target. This improves static logic coverage but does not name the IDs or prove a gameplay mechanic. Step 4 remains **SEBAGIAN** and Step 8(b) remains **UNKNOWN** pending consumer/context evidence and an independent runtime/gameplay result.
+
+## Restore gate update
+
+Runs [#40613996374](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40613996374) and [#40614208610](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40614208610) both crash with exit 139 at savestate load before load-call return/event; rehydrating BIOS into the sanitized checkpoint yields bytes identical to raw state. Mark this checkpoint **UNRESTORABLE IN THE TESTED PCSx-Redux FLOW / WAIT** and do not repeat identical loads without new evidence. No controller input was sent.
