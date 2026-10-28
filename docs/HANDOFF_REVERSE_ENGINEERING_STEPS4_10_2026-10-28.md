@@ -282,3 +282,18 @@ This confirms actual static directory→rounded-size→request-queue dataflow, n
 Detail report section 25 has blob `6e61cdd27b0452a692083e796b31ea4bce1e9c3c`. Startup callback `T_8002DD80` obtains bootstrap length `0x2F44→0x3000), adds it to `D_80010498=0x800AD450), aligns and stores `0x800B0450` to GP+0x168. Startup calls `0x8002DE60(0x800B0450)`; it derives a remaining size ending at masked `0x1F8000) and invokes `0x8002DDEC), which calls allocator initializer `0x80035AA8(base,size)`. That initializer sets free-list head `D_80065C6C). Later allocation helpers `0x8002DEC4/0x8002DF30` use allocator `0x80035B08`.
 
 This statically proves a post-bootstrap allocator region begins at pointer value 0x800B0450 for general resource allocations, but **does not** prove entry 0/1 executable overlay bases: allocation headers and higher-level copy/relocation may intervene. The old Ghidra import base `0x800AD000` is not derived from this allocator path. Next best test is one alternate-base static decode of entry0 bytes mapped by the allocator hypothesis, targeting cross-resource `0x800C2FD8` while recording header-offset uncertainty; no runtime claim should be made.
+
+ 
+<!-- allocator-derived-entry0-altbase-test-2026-10-28 -->
+## New result after the allocator-derived address test
+
+Detailed report section 26: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), blob `af2762f9242123aab4edc911da73ab4a947a47d1`.
+
+The bounded entry0 alternate-map run succeeded: [Actions #40623532269](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40623532269), artifact #12788373175, SHA-256 `c16f6df28bea5f4cdf71fec8fb9009b6b550fb60e12ee738b32c539ebbf79194`.
+
+- Under entry0 base `0x800AD000`, `0x800C2FD8` decompiles as a record-like predicate reading +4/+8/+0xC; this conflicts with 71/74 entry1 direct calls that pass scalar constants `0x258..0x275`.
+- Under candidate arena-start base `0x800B0450`, the same address `0x800C2FD8` maps to offset `0x12B88` and its three raw instructions return `a0 != 0`. This matches the scalar argument shape but would return true for every one of the 71 constants; it does not explain the differing values. Treat this as **partial contract improvement, not a solved mapping**.
+- `0x800AE900` is below base `0x800B0450`, so it cannot be inside entry0 with this base. In the old base view, the words at that address looked like instructions, not pointers. Neither tested mapping locates the 16-word dispatch table.
+- Bootstrap setup proves only arena start `0x800B0450`; entry payload may include allocator header/offset. Exact entry0/1 returned pointer, copy/relocation and overlay lifecycle still unknown.
+
+Next task: trace main-EXE loader/allocator functions directly, especially `0x8002D838`, `0x8002DEC4`, `0x8002DF30`, `0x8002D00C`, `0x8002D5C0`, `0x8002CF9C`, `0x8002DE60`, `0x8002DDEC`, `0x80035AA8`, and `0x80035B08`. Export raw functions + incoming caller contexts to learn whether the allocation result points to a header or payload. Do not run emulator, restore savestate, or adaptive player. Step 6(b) BLOCKED, Step 7 mapping UNKNOWN/BLOCKED, Step 8(b) UNKNOWN; Story Mode TIDAK TERBUKTI TAMAT.
