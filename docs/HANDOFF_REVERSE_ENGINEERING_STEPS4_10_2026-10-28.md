@@ -142,3 +142,22 @@ The ID trace report was extended in commit `07f8b641f354b1ed90e92aedc6e194582c24
 - No direct JAL to `0x80013A48` was found in the available full main-EXE text disassembly. Body operation is verified locally; caller/reachability remains UNKNOWN.
 
 Next focus should identify the semantic meaning of registry fields using their consumers or verified string/resource tables. Do not infer it from the numerical ranges. Continue to use only existing text artifacts; no runtime experiment is justified until the base/pointer/reachability gap is closed.
+
+
+<!-- sequence-to-registry-dispatch-trace-2026-10-28 -->
+## New static consumer chain — configured byte becomes an ID-driven state branch
+
+Extended evidence is in [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), latest detail commit `c37d73bd062c68cb12447ebd77a1d61d6385f15b`.
+
+Reopened existing entry-1 raw disassembly artifact #12742268706 from run #40523020556; the local ZIP SHA-256 matches API digest `5f3f767667444f7c956c36fc59cf75b6bb90a5a1dde8ddb92fb69f9e0f797e81`. No game binary was downloaded and no emulator ran.
+
+New chain, static only and conditional on hypothetical entry-1 base `0x800D0000):
+- Entry-1 call sites `0x8010F3DC` and `0x8010F400` call main-EXE helper `0x80015768`, which saves the first byte at D0A, removes/shifts first entry, reduces C82, applies RNG swaps, and returns the saved byte.
+- Caller stores the returned byte to object +0x530. On the branch where `D_80139EC7==0` and `0x8010D0F0()` returns zero, `0x800154E0` reads that ID's registry field +0; values <16 index jump table `jtbl_800AE900`.
+- At branch destinations around `0x8010F464` and `0x8010F4E4`, registry field +8 is stored in object +0x4F4 (or both +0x4F0 and +0x4F4), and its sign sets/clears byte +0x534. A separate path at `0x80115708–0x801158AC` uses field +8 in signed multiplication, stores to +0x2EE, and tests sign to write 2 or 5 to byte +0x22 and choose a continuation.
+- The three-byte sequence read path at `0x8010F1D4–0x8010F288` reads list indices 0,1,2, passes them to `0x800C7574`, and copies the bytes to object +0x4E0..+0x4E2. Return semantics for 0x800C7574 remain unknown.
+- Raw entry-1 disassembly now establishes decoded direct JAL references to `0x80013A48` at `0x8010F8EC`, `0x8010F908`, `0x801107A8`; and to `0x80013B10` at `0x800D7104`, `0x800DD19C`, `0x800DD2B4`, `0x800DD4CC`, `0x800F78AC`, `0x800FA3D4`, `0x800FAA2C`, `0x80110798`.
+
+This narrows the gap from “possible consumer” to **decoded direct call/dataflow in the static resource view**, but does not verify runtime reachability: resource base/relocation and global pointer provenance remain unclosed; the dispatch table at `0x800AE900` was not included in this entry-1 artifact. Do not name the features or result fields from these addresses alone.
+
+Next: map `jtbl_800AE900` and its owning resource/table using only existing text artifacts if available; identify valid loader/relocation provenance; then compare field +0 branch cases and field +8 effects without renaming them prematurely. Step 4 remains partial, Step 6(b) BLOCKED, Step 7 runtime mapping UNKNOWN/BLOCKED, Step 8(b) UNKNOWN. Story Mode remains TIDAK TERBUKTI TAMAT; adaptive player/gates remain untouched.
