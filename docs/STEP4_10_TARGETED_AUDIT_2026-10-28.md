@@ -129,3 +129,9 @@ The raw main EXE has a direct `JAL 0x80015ADC` at `0x80013B50`; delay slot `0x80
 ## Step 4/8 — bounded three-slot ID collection trace
 
 The new raw static trace identifies four indexed records under `0x80070EA0), stride `0xB4), each storing three adjacent ID bytes at offsets `+0xA..+0xC`. The body at `0x80013A48` fills the first invalid slot with a registry-valid ID; the body at `0x80013B10` moves the chosen ID through a pseudo-random indexed insertion, compacts the remaining source bytes, and writes `0xFF` to the tail. This adds a concrete data-structure operation to Step 4/8, but not the semantic name of the feature. Step 8(b) remains UNKNOWN. Details in [preset/list trace](STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md).
+
+
+<!-- sequence-pop-and-reshuffle-helper-2026-10-28 -->
+## Sequence consumer operation
+
+The body at `0x80015768` saves the first order byte, invokes a left shift at position 0, shuffles the configured range through `0x80015B7C`, and returns the saved byte. The shift does not clear the tail or modify the configured count `0x80070D02`, but decrements `0x80070C82`. This adds static operation detail without assigning a gameplay name. Step 4 remains SEBAGIAN; Step 8(b) remains UNKNOWN. See [the preset/list trace](STEP4_8_PRESET_LIST_SHUFFLE_TRACE_2026-10-28.md).
