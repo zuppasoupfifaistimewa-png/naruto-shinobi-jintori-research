@@ -145,3 +145,9 @@ Added evidence in [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](ST
 Candidate entry-1 instructions at `0x800F1FE4–0x800F2024`: selected participant index is passed to `0x800BDC4C`; its return is added to participant-record field +0x04; result is compared with `D_80070C84` through main getter `0x80012A70`. The below-target branch goes to `0x800F212C); the at/above-target path performs additional global/record flag checks before continuing through another handler. A second callsite adds the same helper's return to Chakra getter `0x800138EC` and clamps the sum to -9999..99999, supporting the interpretation that the helper returns a numeric contribution in a Chakra-related calculation.
 
 This is a stronger candidate for a target-threshold rule, **not** a verified victory condition. Helper meaning, participant field +0x04, the final handler `0x800CF628`, pointer provenance, resource base and runtime reachability remain UNKNOWN/BLOCKED. Therefore Step 8(b) stays **UNKNOWN** and global Step 4–9 statuses are unchanged.
+
+ 
+<!-- chakra-field-plus4-producer-2026-10-28 -->
+## Evidence refinement — participant +0x04 comes from Chakra getter
+
+Entry-1 candidate raw instructions at `0x80111090–0x80111124` call main-EXE `0x800138EC` and store its returned Chakra value to a participant record's +0x04. The target-threshold candidate from `0x800F1FE4–0x800F2018` therefore compares `stored Chakra + helper(0x800BDC4C, selected_index)` with target `D_80070C84`. This is stronger static evidence for a Chakra target gate, but it does not establish a victory condition because the helper output, guards and final handler are unknown and the entry-1 runtime mapping is not validated. Step 8(b) remains UNKNOWN.
