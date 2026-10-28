@@ -2451,3 +2451,10 @@ Detailed continuation [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`
 Raw entry-1 sequence at `0x80115708–0x80115A68) begins with active ID at object +0x530, calls `0x8001552C` for its signed registry field +8, computes `field8*(count-1-counter)` and stores the low halfword at selected record +0x2EE. Negative result calls `0x800C2FD8(0x25B)`, copies object +0x2E9 to +0x2EB, and sets +0x2E9 to `0x12`; nonnegative result sets selected record +0x22=`5`. The code then iterates other records, compares +0x0E to selected record's +0x0E, writes `field8*(count-2)` to their +0x2EE, and sets +0x22=`2` if negative or `5` otherwise. A separately guarded route negates the value and performs similar sign-based status updates.
 
 These are proven static dataflows but remain conditional on unverified entry-1 base/pointer provenance. Do not call field+8 a stat/power/cost, +0x0E a team, or +0x22 a named status without further evidence. The +0xC path to 0x80100DCC/0x80100E34 appears only to pass args that the callee code at those entries doesn't visibly consume, so its semantic effect remains UNKNOWN. Step 6(b) BLOCKED; Step 7 runtime map UNKNOWN/BLOCKED; Step 8(b) UNKNOWN; Story Mode remains TIDAK TERBUKTI TAMAT.
+
+<!-- registry-field-plus4-consumer-2026-10-28 -->
+## Registry field +4: static consumer and branch use
+
+See [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md), report blob `a97e6f535d39deaa9ff50ff16ce4bf796e9d8c84`.
+
+Five direct calls to `0x80015578` exist in the entry-1 disassembly. It reads registry word +4 with invalid ID fallback FFFFFFFF; observed row values: 0:7, 1:26, 2:19. At `0x801302EC`, field +4==1 triggers a subsequent field +0 category check. At `0x801304F8`, +4==1 routes selected ID to `0x80015ADC(0,ID)); otherwise object byte +0xB is passed to `0x80013BF0`, whose static code checks whether all three IDs in a selected record are valid. When full, caller sets object word +0=1, byte +9=3, byte +0xC=0 and word +4=0, then calls `0x8010D138`; otherwise `0x8010CDD0`. Game-semantic naming and runtime reachability remain UNKNOWN.
