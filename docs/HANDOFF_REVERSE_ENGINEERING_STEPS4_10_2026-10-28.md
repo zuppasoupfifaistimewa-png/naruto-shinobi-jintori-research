@@ -1,3 +1,24 @@
+# HANDOFF ADDENDUM — targeted audit 28 Oktober 2026
+
+Checkpoint ini menambahkan [audit terarah Step 4–10](STEP4_10_TARGETED_AUDIT_2026-10-28.md). Awal sesi membaca HEAD `4b20564b38c895495755143b2aa777dc7ab6b5e5` pada `main`; sesudah audit dokumen diperbarui, periksa HEAD live sebelum tindakan berikutnya. Actions `queued=0`, `in_progress=0` pada query API; run #40606159061 sudah selesai.
+
+### Bukti baru yang dapat digunakan
+
+- Step 5 artifact #12739676233 SHA-256 ZIP `94d866f9c991b323a64f283da93359620c04ff8859d4c8fb53f4eb857c745f5d` dibuka langsung: empat direct JAL ke RNG pada main EXE tetap terkonfirmasi; disassembly mempunyai 156 mnemonic JALR, tetapi target dinamis belum dipetakan.
+- Ada perbedaan batas yang harus diselesaikan sebelum klaim cakupan caller: output Ghidra fungsi `0x80015B7C` = 240 alamat, end-exclusive `0x80015C6C`; anotasi spimdisasm `nonmatching func_80015B7C, 0x580` memiliki label tambahan `0x80015C6C` dan rentang yang tampak berlanjut ke `0x800160FC`. Call di `0x80015BF0` nyata/terdekode, tetapi jangan menganggap span anotasi panjang sebagai body Ghidra tunggal.
+- Step 6 artifact #12741234990 SHA-256 ZIP `7ee636b8e687c5163873cdd40c82a02e8c8617885a0863b1e5a196b6eed1eac9` dibuka langsung: pada view entry-1 hipotetis 98.357 instruksi terdekode, +B30 = 1 READ, +B38 = 1 READ, +B40 = 1 WRITE, +B44 = 1 WRITE dan 1 READ. Base `0x800D0000` dan pointer di slot `0x8013A554` tetap tidak tervalidasi.
+- Tes Step 9 7/7 RNG, 8/8 helper negative-a0, 16/16 setter/getter tetap CPU/MIPS terisolasi dengan MMIO sintetis; jangan mengulang tes identik.
+
+### Prioritas berikutnya
+
+1. Selesaikan rekonsiliasi batas `0x80015B7C` dari raw MIPS/return/tail jumps dan metadata Ghidra yang sama; jangan menaikkan Step 5 sebelum itu serta cakupan fungsi diwajibkan lebih luas.
+2. Untuk 6(b), telusuri pointer slot `0x8013A554`, semua readers/writers dan alias melalui CFG-aware def-use lintas blok/fungsi; pertahankan BLOCKED bila sumber alamat/relokasi terputus.
+3. Step 7: jangan ulangi probe no-hit `0x800AD454`; hanya pilih breakpoint jika raw instruction dan reachability baru mendukung.
+4. Step 4: JALR count bukan target/callgraph; perlu resolusi target dan bukti seed/helper runtime bila fasilitas yang tersedia memungkinkan tanpa membuat klaim dari no-hit.
+5. Pertahankan seluruh matriks dan statuses. Tidak ada adaptive player, emulator gameplay, input ataupun savestate restore yang dijalankan pada audit ini; tidak ada komponen adaptive-player yang diubah. Story Mode tetap NOT COMPLETE / TIDAK TERBUKTI TAMAT.
+
+---
+
 # Handoff Chat Berikutnya — Riset Naruto PS1 Langkah 4–10
 Tanggal: 28 Oktober 2026
 Repo tunggal: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
