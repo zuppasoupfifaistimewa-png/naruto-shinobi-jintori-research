@@ -2350,3 +2350,9 @@ The two direct callsites for `0x80015610` obtain their selector from descriptor 
 ## Static caller trace — 28 Oktober 2026
 
 Cross-checked raw MIPS in Step 5 artifact #12739676233. Direct JAL at `0x80013B50` calls `0x80015ADC`; its delay slot `0x80013B54` passes the byte returned by `0x800139FC(group,slot)`. That getter bounds group <4 and slot <3, then reads record byte +0x0A relative to `0x80070EA0) plus calculated record offsets. The inserted ID is validated against the 52-entry registry. The routine derives the index from `byte[0x80070D02]` and RNG: `floor(n/2)+(RNG mod floor(n/2))`; `0x800159BC` shifts the `0x80070D0A` order bytes right, writes the ID to `0x80070C80+0x8A+position`, and increments the separate count `0x80070C82` under a <64 guard. Zero divisor at n<2 reaches a MIPS break instruction; caller precondition/reachability still not proven. No feature name is assigned. See the detailed trace. 
+
+
+<!-- four-record-three-slot-id-operations-2026-10-28 -->
+## Four-record ID-slot operations — 28 Oktober 2026
+
+Additional source-level trace in the preset/list report: `0x80070EA0)-based storage is indexed in four records of stride `0xB4`; each record uses adjacent candidate-ID bytes at `+0xA,+0xB,+0xC`. The raw body at `0x80013A48` inserts a registry-valid byte into the first invalid slot and returns failure when all three slots are occupied. The body at `0x80013B10` reads a slot ID, transfers it through `0x80015ADC` into the pseudo-random insertion path, closes the hole for source slots 0 or 1, and sets the tail byte `+0xC` to `0xFF`. This establishes a three-slot ID collection/transfer pattern. It does not identify the feature represented by these IDs or prove when the routines are reached in visible gameplay.
