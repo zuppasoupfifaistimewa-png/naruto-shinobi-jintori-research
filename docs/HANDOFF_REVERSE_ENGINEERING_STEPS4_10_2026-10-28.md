@@ -215,3 +215,8 @@ Detailed report updated at blob `a97e6f535d39deaa9ff50ff16ce4bf796e9d8c84`: [`do
 The accessor `0x80015578` reads registry row +4 (invalid ID fallback `0xFFFFFFFF`); full table distribution is 0:7, 1:26, 2:19. In candidate entry-1 code, one path at `0x801302EC` tests exactly ==1, then reads field +0 and routes on category code; another path at `0x801304F8` tests field +4 ==1 and calls `0x80015ADC(0, ID)`, sending the selected ID through the random insertion helper. If field +4 !=1, it checks the group's three-slot record via `0x80013BF0`; when all three IDs are valid it writes object word +0=1, byte +9=3, byte +0xC=0, word +4=0, and calls `0x8010D138`, otherwise it calls `0x8010CDD0`.
 
 This establishes static use of field +4 as a small enumerated path selector and one precise branch effect, not what the field means to a player or whether the candidate resource path executes at runtime. Base/pointer provenance still open.
+
+<!-- registry-category-plus4-crosstab-2026-10-28 -->
+## Full category-field cross-tab
+
+The detail report now cross-tabs all 52 records (report blob `ae8775eab56ec61f9616efa793ef02d896b7935e`). Observed +0→+4 mapping is deterministic in the table: categories 0,1,3,4,6 all have +4=1; categories 5,7,13,14,15 all have +4=2; categories 8,9,10,12 all have +4=0. Counts per category are given in the report; no category has mixed +4 values. This tells us that +4 is perfectly associated with the +0 code in the current 52 rows. It does not identify the natural-language role of either field. Use this cross-tab for future call-path coverage and do not assign semantics yet.
