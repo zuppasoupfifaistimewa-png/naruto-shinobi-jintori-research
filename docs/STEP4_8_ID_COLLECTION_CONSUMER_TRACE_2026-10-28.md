@@ -586,3 +586,23 @@ This further refines the rule: the target comparison sits on the nonnegative-Cha
 | Victory when target met | Sum >= target and flags permit continuation | Later transition handler and visible result remain unresolved | **UNKNOWN** |
 
 No runtime result or gameplay screenshot was used for this finding. Step 8(b) remains UNKNOWN despite the stronger static chain.
+
+ 
+## 31. Full static precondition chain for the Chakra-target candidate
+
+Raw instructions immediately before `0x800F1FE4` show that the target comparison belongs to a narrow branch, not an unconditional check:
+
+1. The code reads the selected participant record's halfword at +0x0A. A four-iteration loop shifts that halfword by `12 + i` for `i=0..3`, tests the low bit, and increments `$a1` for each set bit. Therefore `$a1` becomes the **population count of bits 12–15** in participant halfword +0x0A. No names are assigned to those four bits.
+2. If selected participant byte +0x20 is nonzero, the code takes a different state path: calls `0x80100FC0(record[+0x0F],2)`, `0x8010109C(record[+0x0F],3)`, and `0x80101140`; sets active-object byte +0x2E9 to `0x14`; clears `D_80139F00+1` and `D_80139EBB`; then jumps to `0x800CFB34`.
+3. If byte +0x20 is zero, code tests active-object byte +0x92B. When this byte is nonzero, it tests bit `0x200` in participant halfword +0x0A and jumps to `0x800CF644` with value 8 (bit set) or 6 (bit clear), bypassing the target comparison.
+4. Only when the +0x20 condition and +0x92B guard allow it does the code test participant field +0x04 sign. Negative values take the section 30 branch; nonnegative values reach `0x800F1FC4`.
+5. At `0x800F1FD4`, the counted flag bits in `$a1` are compared against active-object byte +0x4A2. A mismatch branches to `0x800F2130`; a match allows the helper-plus-Chakra target test.
+6. If the sum reaches/exceeds the configured target, another guard uses bit `0x8` from `0x80012AD0()`. When that bit is set, participant halfword +0x0A bit `0x200` is checked; if it is clear, the code sets `D_8013EBB0=1`, which redirects to `0x800F2130`. If the guard is zero—or the participant bit `0x200` is set—the target-side continuation can proceed to `0x800CF628` with `v0=5`.
+
+### Safe rule statement
+
+The static sequence can now be stated precisely:
+
+**Only after a sequence of participant/object flag tests, a nonnegative stored Chakra value, and a match between the count of flag bits 12–15 and object byte +0x4A2 does the code compare “stored Chakra + helper result” against configured target D_80070C84.** The at/above-target route can still be redirected by a second global/participant flag guard.
+
+This is strong static evidence for a multi-condition target gate, not yet proof of a player-facing victory condition. The four high flag bits, byte +0x20, byte +0x92B, bit 0x200, global bit 0x8, state status values and continuation `0x800CF628` remain unnamed/unverified in gameplay terms. Entry-1 runtime mapping and helper `0x800BDC4C` semantics remain **UNKNOWN/BLOCKED**.
