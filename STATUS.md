@@ -3942,3 +3942,17 @@ A conditional consumer trace was also found in the hypothetical DATA.BIN entry-1
 The detail report [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md) now includes four registry field accessors and a candidate downstream effect. Raw main-EXE MIPS confirms bounded accessors for the registry's four 32-bit words at offsets +0, +4, +8, +0xC. Their observed data values are numeric; field +0 participates in branch/discriminator tests in the candidate resource view, and field +8 is used in arithmetic that writes a group-indexed halfword and selects later state branches in candidate routine `FUN_80115728`. The field +0xC values progress from 239 to 290 across IDs 0–51, but no consumer establishes that they are resource IDs rather than another numeric series.
 
 The entry-1 base `0x800D0000) and global pointer remain unvalidated at runtime, and decompilation warns about malformed control flow. The link between attribute arithmetic and state transition is **KUAT BERSYARAT**, not a player-facing rule. `0x80013A48` still has no direct caller found in the available main-EXE disassembly; its reachability is UNKNOWN. No status promotion: Step 4/5/6/7 partial or blocked as already recorded; Step 8(b) UNKNOWN; Story Mode **TIDAK TERBUKTI TAMAT**; adaptive player and `barrier_level_selection=WAIT` unchanged.
+
+
+<!-- sequence-to-registry-dispatch-trace-2026-10-28 -->
+## New static chain — sequence ID → registry dispatch → object state (28 Oktober 2026)
+
+Detailed report: [`docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md`](docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md). Handoff updated with the same evidence.
+
+The existing raw disassembly artifact #12742268706 from Actions run #40523020556 was re-opened and SHA-256 verified against GitHub's digest (`5f3f767667444f7c956c36fc59cf75b6bb90a5a1dde8ddb92fb69f9e0f797e81`). Entry-1 base `0x800D0000) is still hypothetical.
+
+New static linkage: entry-1 code calls `0x80015768` to pop/shift/reshuffle a sequence entry, stores that byte/ID into an object field +0x530, and on a guarded branch uses registry accessor `0x800154E0` (field +0) to dispatch through a 16-entry jump-table reference. At some destinations, registry field +8 is stored into object +0x4F0/+0x4F4 and its sign drives byte +0x534; a separate path multiplies the same field into +0x2EE and branches to set byte +0x22 to 2 or 5. Another path reads three sequence bytes and passes them to `0x800C7574` before copying them into object fields +0x4E0..+0x4E2. The meaning of these fields and of the effect in visible gameplay remains UNKNOWN.
+
+Direct decoded entry-1 call sites have now been identified for both `0x80013A48` (3 addresses) and `0x80013B10` (8 addresses) within the hypothesized address map. This strengthens the static caller chain, but runtime reachability is not proven: the resource base/relocation/global pointer and jump-table provenance remain open.
+
+No new emulator/runtime experiment was run; no adaptive player was run/changed; `barrier_level_selection=WAIT` remains unchanged. Status promotions are not justified: Step 4/5/6/7 remain partial or blocked as previously recorded, Step 8(b) remains UNKNOWN, and Story Mode remains **TIDAK TERBUKTI TAMAT**.
