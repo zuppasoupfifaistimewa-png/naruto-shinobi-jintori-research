@@ -110,7 +110,8 @@ jobs:
           ./pcsx-redux.AppImage --appimage-extract >/dev/null
           APPDIR="$WORK/source/squashfs-root"
           PCSX_BIN="$APPDIR/bin/pcsx-redux"
-          if [ ! -x "$PCSX_BIN" ]; then PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | grep -E '/bin/pcsx-redux
+          if [ ! -x "$PCSX_BIN" ]; then PCSX_BIN="$(find -L "$APPDIR/bin" -maxdepth 1 -type f -executable -name pcsx-redux -print -quit)"; fi
+          if [ ! -x "$PCSX_BIN" ]; then echo "PCSX_BINARY=TIDAK TAHU; canonical AppImage bin path not executable" >> "$WORK/logs/metadata.txt"; exit 2; fi
           CARD="$(find "$WORK/cards" -type f -name 'naruto-storymode.mcd' -print -quit)"
           if [ -n "$CARD" ]; then cp "$CARD" "$WORK/cards/reference.mcd"; else echo "MEMORY_CARD_SOURCE=TIDAK TAHU; no artifact file available" >> "$WORK/logs/metadata.txt"; truncate -s 131072 "$WORK/cards/reference.mcd"; fi
           export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/home/.config" XDG_DATA_HOME="$WORK/home/.local/share" XDG_RUNTIME_DIR="$WORK/home/runtime" LIBGL_ALWAYS_SOFTWARE=1
