@@ -474,6 +474,36 @@ def w1(entry,candidate,function_csv,v3_csv,out):
     (Path(out)/"w1_classification_changes.txt").write_text("\n".join(
       f"{r['pc']}: {r['previous_conservative_2_2_28_classification']} -> {r['class']} | {r['change_explanation']} | reaching={r['reaching_definitions_with_values']} | eff={r['possible_effective_addresses']}" for r in reads)+"\n",encoding="utf-8")
 
+def read_varint(buf,pos):
+    value=shift=0
+    while pos<len(buf) and shift<=63:
+        b=buf[pos];pos+=1;value|=(b&0x7f)<<shift
+        if not (b&0x80):return value,pos
+        shift+=7
+    raise ValueError("invalid/truncated protobuf varint")
+def parse_fields(buf):
+    pos=0
+    while pos<len(buf):
+        key,pos=read_varint(buf,pos);number,wire=key>>3,key&7
+        if number==0:raise ValueError("invalid protobuf field number 0")
+        if wire==0:value,pos=read_varint(buf,pos)
+        elif wire==1:
+            if pos+8>len(buf):raise ValueError("truncated fixed64")
+            value,pos=buf[pos:pos+8],pos+8
+        elif wire==2:
+            size,pos=read_varint(buf,pos)
+            if pos+size>len(buf):raise ValueError("truncated length-delimited")
+            value,pos=buf[pos:pos+size],pos+size
+        elif wire==5:
+            if pos+4>len(buf):raise ValueError("truncated fixed32")
+            value,pos=buf[pos:pos+4],pos+4
+        else:raise ValueError(f"unsupported protobuf wire type {wire}")
+        yield number,wire,value
+def one(fields,number,wire,label):
+    hits=[value for n,w,value in fields if n==number and w==wire]
+    if len(hits)!=1:raise ValueError(f"expected one {label} (field {number}, wire {wire}), found {len(hits)}")
+    return hits[0]
+
 def decode_packed_varints(payload):
     vals=[]
     p=0
