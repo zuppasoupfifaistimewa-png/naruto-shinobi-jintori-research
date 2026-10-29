@@ -531,7 +531,9 @@ end
                 wrapper_rc = 255
                 gdb_log.write_text("AE_LAUNCH_EXCEPTION="+repr(exc)+"\n", encoding="utf-8")
             if not pcsx_work.exists():
-                pcsx_work.write_text("AE_PCXS_LOG_NOT_CREATED; inspect complete GDB log\n", encoding="utf-8")
+                pcsx_work.write_text("AE_PCSX_LOG_NOT_CREATED; inspect complete GDB log\n", encoding="utf-8")
+            raw_pcsx = rawroot/(label+".pcsx.txt")
+            shutil.copyfile(pcsx_work, raw_pcsx)
             logtext = gdb_log.read_text(errors="replace")
             status = classify(logtext, wrapper_rc)
             sigmatch = re.search(r"(?:Thread \d+ .* received signal|Program received signal|Program terminated with signal) (SIG[A-Z0-9]+)", logtext)
