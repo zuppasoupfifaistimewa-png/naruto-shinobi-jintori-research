@@ -1,4 +1,4 @@
-[Detaching after fork from child process 3158]
+[Detaching after fork from child process 3034]
 ALSA lib confmisc.c:855:(parse_card) [error.core] cannot find card '0'
 ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_card_inum returned error: No such file or directory
 ALSA lib confmisc.c:422:(snd_func_concat) [error.core] error evaluating strings
@@ -56,7 +56,7 @@ KERNEL SETUP!
 Configuration : EvCB	0x10		TCB	0x04
 BIOS Trace1: 0x07
 AA1_LOAD_BEGIN=1 path=resume/control.sstate vsync=1 controller=NONE 
-AA1_EVENT_SAVE_STATE_LOADED=1 
+AA1_EVENT_SAVE_STATE_LOADED=1 epoch=1793314828 
 AA1_LOAD_CALL_RETURNED=1 
 [00001] While loading '<RUNNER_PATH>
 [00001] While loading '<RUNNER_PATH>
@@ -64,8 +64,9 @@ AA1_LOAD_CALL_RETURNED=1
 [00001] While loading '<RUNNER_PATH>
 [00001] While loading '<RUNNER_PATH>
 [00001] While loading '<RUNNER_PATH>
-AA1_POST_LOAD_VSYNC=180 
-[Inferior 1 (process 3149) exited normally]
+AA1_POST_LOAD_VSYNC=180 elapsed_since_loaded_s=49 elapsed_since_launch_s=50 
+AA1_RAM_SNAPSHOT=PASS path=runtime/control-attempt2.sstate 
+[Inferior 1 (process 3025) exited normally]
 
 === AA1_THREADS_BEGIN ===
 No threads.
