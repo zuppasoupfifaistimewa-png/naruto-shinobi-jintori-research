@@ -1,0 +1,124 @@
+name: Verify checkpoint release SHA and target RAM window
+
+on:
+  push:
+    branches:
+      - audit/checkpoint-window-2026-10-29
+    paths:
+      - ".github/workflows/audit-checkpoint-target-window.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-checkpoint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      RELEASE_ASSET_ID: "686794219"
+      EXPECTED_STATE_BYTES: "21163286"
+      EXPECTED_STATE_SHA256: "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
+      CHECKPOINT_RUN_ID: "39262213468"
+    steps:
+      - name: Checkout permitted research repository
+        uses: actions/checkout@v4
+
+      - name: Re-download the public Release asset and verify exact bytes/hash
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/checkpoint-release-audit"
+          mkdir -p "$root/output"
+          state="$root/checkpoint.raw.sstate"
+          url="https://api.github.com/repos/$GITHUB_REPOSITORY/releases/assets/$RELEASE_ASSET_ID"
+          curl --fail --location --silent --show-error \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Accept: application/octet-stream" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --retry 2 --retry-delay 2 --max-time 180 "$url" --output "$state"
+          bytes="$(stat -c '%s' "$state")"
+          sha="$(sha256sum "$state" | awk '{print $1}')"
+          printf 'release_asset_id=%s\nrelease_asset_url=https://github.com/%s/releases/download/naruto-checkpoint-39262213468/storymode-checkpoint-run-39262213468.raw.sstate\n' "$RELEASE_ASSET_ID" "$GITHUB_REPOSITORY" > "$root/output/release-download-verification.txt"
+          printf 'source_checkpoint_run_id=%s\nsource_preservation_commit=4c505394ac331225545728261c66566fa3113763\nactual_bytes=%s\nexpected_bytes=%s\nactual_sha256=%s\nexpected_sha256=%s\n' "$CHECKPOINT_RUN_ID" "$bytes" "$EXPECTED_STATE_BYTES" "$sha" "$EXPECTED_STATE_SHA256" >> "$root/output/release-download-verification.txt"
+          if [[ "$bytes" != "$EXPECTED_STATE_BYTES" || "$sha" != "$EXPECTED_STATE_SHA256" ]]; then
+            echo "RESULT=FAIL" >> "$root/output/release-download-verification.txt"
+            cat "$root/output/release-download-verification.txt"
+            exit 1
+          fi
+          echo "RESULT=PASS" >> "$root/output/release-download-verification.txt"
+          cat "$root/output/release-download-verification.txt"
+          echo "STATE_PATH=$state" >> "$GITHUB_ENV"
+          echo "AUDIT_ROOT=$root" >> "$GITHUB_ENV"
+
+      - name: Parse saved state directly and inspect 64 bytes around 0x801CEF08
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$AUDIT_ROOT"
+          ram="$root/ram-prefix.bin"
+          python3 tools/parse_pcsx_savestate_ram.py "$STATE_PATH" "$ram" --run-id "$CHECKPOINT_RUN_ID" --csv "$root/ram-values-private.csv" > "$root/output/ram-parser-log.txt"
+          python3 - "$ram" "$root/output/checkpoint-target-64-byte-window.txt" "$root/output/checkpoint-target-verification.txt" <<'PY'
+          import hashlib, struct, sys
+          from pathlib import Path
+          ram_path, window_path, verify_path = map(Path, sys.argv[1:4])
+          ram = ram_path.read_bytes()
+          if len(ram) != 0x200000:
+              raise SystemExit(f"RAM_PREFIX_SIZE_MISMATCH:{len(ram)}")
+          slot = 0x8013A554
+          target = struct.unpack_from("<I", ram, slot - 0x80000000)[0]
+          expected_target = 0x801CEF08
+          offset = target - 0x80000000
+          lines = [
+              "checkpoint_run_id=39262213468",
+              f"ram_prefix_bytes={len(ram)}",
+              f"ram_prefix_sha256={hashlib.sha256(ram).hexdigest()}",
+              f"slot_address=0x{slot:08X}",
+              f"slot_bytes_le={ram[slot-0x80000000:slot-0x80000000+4].hex(' ').upper()}",
+              f"slot_u32_le=0x{target:08X}",
+              f"expected_slot_value=0x{expected_target:08X}",
+              f"slot_value_matches_expected={'PASS' if target == expected_target else 'FAIL'}",
+              f"target_address=0x{target:08X}",
+              f"target_ram_offset=0x{offset:06X}",
+              f"target_within_extracted_2MiB_RAM={'YES' if 0 <= offset < len(ram) else 'NO'}",
+              "interpretation_limit=RAM-range membership proves an address inside extracted RAM, not a C type or gameplay meaning",
+          ]
+          verify_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          if target != expected_target:
+              raise SystemExit("CHECKPOINT_SLOT_VALUE_MISMATCH")
+          if offset < 32 or offset + 32 > len(ram):
+              raise SystemExit("TARGET_WINDOW_OUTSIDE_EXTRACTED_RAM_PREFIX")
+          start = offset - 32
+          window = ram[start:start+64]
+          out = [
+              "64-byte window centered on 0x801CEF08 (32 bytes before + target + 31 after)",
+              f"virtual_range=0x{0x80000000+start:08X}..0x{0x80000000+start+63:08X}",
+              f"ram_offset_range=0x{start:06X}..0x{start+63:06X}",
+          ]
+          for i in range(0, 64, 16):
+              addr = 0x80000000 + start + i
+              chunk = window[i:i+16]
+              words = [f"{struct.unpack_from('<I', chunk, j)[0]:08X}" for j in range(0,16,4)]
+              out.append(f"0x{addr:08X}: {chunk.hex(' ').upper()} | u32_le: {' '.join(words)}")
+          window_path.write_text("\n".join(out) + "\n", encoding="utf-8")
+          print("\n".join(lines))
+          print("\n".join(out))
+          PY
+
+      - name: Remove binary state and full RAM dump from runner workspace
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f "$RUNNER_TEMP/checkpoint-release-audit/checkpoint.raw.sstate" "$RUNNER_TEMP/checkpoint-release-audit/ram-prefix.bin" "$RUNNER_TEMP/checkpoint-release-audit/ram-values-private.csv"
+
+      - name: Upload text-only verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkpoint-release-target-window-text-only
+          path: |
+            ${{ runner.temp }}/checkpoint-release-audit/output/*.txt
+          if-no-files-found: error
+          retention-days: 7
