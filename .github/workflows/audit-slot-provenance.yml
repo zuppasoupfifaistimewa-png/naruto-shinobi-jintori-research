@@ -6,9 +6,12 @@ on:
       - audit/checkpoint-window-2026-10-29
     paths:
       - "tools/audit_slot_provenance.py"
+      - "tools/audit_w0_w3_cfg_ram.py"
+      - "tools/ghidra/ExportRequestedFunctions.java"
       - ".github/workflows/audit-slot-provenance.yml"
 
 permissions:
+  actions: read
   contents: write
 
 concurrency:
@@ -85,13 +88,18 @@ jobs:
           data="$(find "$extracted" -type f -iname 'DATA.BIN' -print -quit)"
           [[ -n "$data" && "$(stat -c '%s' "$data")" == "$DATA_BIN_BYTES" ]]
           echo "$DATA_BIN_SHA256  $data" | sha256sum --check -
+          exe="$(find "$extracted" -type f -iname 'SLPS_035.53*' -print -quit)"
+          [[ -n "$exe" && "$(stat -c '%s' "$exe")" == "385024" ]]
+          echo "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569  $exe" | sha256sum --check -
           cp "$data" "$root/DATA.BIN"
+          cp "$exe" "$root/SLPS_035.53"
           rm -rf "$src" "$extracted"
           echo "DATA_BIN_SHA256=$DATA_BIN_SHA256" > "$root/output/input-identity.txt"
           echo "DATA_BIN_BYTES=$DATA_BIN_BYTES" >> "$root/output/input-identity.txt"
           echo "ENTRY1_OFFSET=0x10BB000 ENTRY1_SIZE=596412 ENTRY1_SHA256=9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a" >> "$root/output/input-identity.txt"
           echo "raw_binary_git_committed=no" >> "$root/output/input-identity.txt"
           echo "DATA_PATH=$root/DATA.BIN" >> "$GITHUB_ENV"
+          echo "EXE_PATH=$root/SLPS_035.53" >> "$GITHUB_ENV"
           echo "OUT_PATH=$root/output" >> "$GITHUB_ENV"
 
       - name: Emit complete target-function disassembly and 32-row backward trace
@@ -142,12 +150,115 @@ jobs:
           Path(sys.argv[1]).write_text(report, encoding="utf-8")
           PY
 
+      - name: W0-W2 release timeline, CFG, and direct checkpoint RAM parse
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/audit_w0_w3_cfg_ram.py
+          root="$RUNNER_TEMP/slot-provenance-audit"
+          out="reports/slot_provenance_audit/run_$GITHUB_RUN_ID"
+          state="$root/checkpoint.raw.sstate"
+          ram="$root/ram-prefix-private.bin"
+          curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' \
+            --header "Authorization: Bearer $GITHUB_TOKEN" --header "Accept: application/octet-stream" \
+            --header "X-GitHub-Api-Version: 2022-11-28" --retry 2 --retry-delay 2 --max-time 180 \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/assets/686794219" --output "$state"
+          [[ "$(stat -c '%s' "$state")" == "21163286" ]]
+          echo "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d  $state" | sha256sum --check -
+          python3 tools/parse_pcsx_savestate_ram.py "$state" "$ram" --run-id "39262213468" --csv "$root/ram-values-private.csv" > "$root/output/ram-parser-log-private.txt"
+          python3 - "$DATA_PATH" "$root/entry1-private.bin" <<'PY'
+          import hashlib,sys
+          from pathlib import Path
+          src,dst=map(Path,sys.argv[1:3])
+          d=src.read_bytes()
+          if len(d)!=66015232 or hashlib.sha256(d).hexdigest()!="69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822": raise SystemExit("DATA_BIN_IDENTITY_MISMATCH")
+          e=d[0x10BB000:0x10BB000+596412]
+          if len(e)!=596412 or hashlib.sha256(e).hexdigest()!="9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a": raise SystemExit("ENTRY1_IDENTITY_MISMATCH")
+          dst.write_bytes(e)
+          PY
+          python3 tools/audit_w0_w3_cfg_ram.py \
+            --entry "$root/entry1-private.bin" \
+            --candidate "reports/step4_10_static_evidence_audit/run_40789339014/a2_expanded_xref_candidates.csv" \
+            --function_csv "reports/step4_10_static_evidence_audit/run_40789339014/a2_ghidra_rebased_functions.csv" \
+            --v3 "reports/slot_provenance_audit/run_40815320809/v3_32_reader_base_register_trace.csv" \
+            --ram "$ram" --out "$out" --run_id "$GITHUB_RUN_ID"
+
+      - name: Set up Java for W3 Ghidra executable import
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+          java-package: jdk
+
+      - name: Restore pinned Ghidra cache for W3
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+          key: ghidra-12.2-linux-x64-2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+
+      - name: Install pinned Ghidra when cache is missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          cache="/home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016"
+          mkdir -p "$cache"
+          if ! find "$cache" -type f -path '*/support/analyzeHeadless' -print -quit | grep -q .; then
+            archive="$RUNNER_TEMP/ghidra_12.2_PUBLIC_20261016.zip"
+            curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 3 --retry-delay 2 \
+              "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.2_build/ghidra_12.2_PUBLIC_20261016.zip" --output "$archive"
+            echo "2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67  $archive" | sha256sum --check -
+            unzip -q "$archive" -d "$cache"
+            rm -f "$archive"
+          fi
+
+      - name: W3 full Ghidra-bounded helper-function disassembly
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/slot-provenance-audit"
+          out="reports/slot_provenance_audit/run_$GITHUB_RUN_ID"
+          exe_raw="$root/SLPS_035.53-text.bin"
+          python3 - "$EXE_PATH" "$exe_raw" <<'PY'
+          import hashlib,sys
+          from pathlib import Path
+          src,dst=map(Path,sys.argv[1:3])
+          data=src.read_bytes()
+          if len(data)!=385024 or hashlib.sha256(data).hexdigest()!="a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569":
+              raise SystemExit("SLPS_035.53_IDENTITY_MISMATCH")
+          text=data[0x800:]
+          if len(text)!=0x5D800: raise SystemExit("PSX_EXE_TEXT_SIZE_MISMATCH")
+          dst.write_bytes(text)
+          print(f"exe_text_bytes={len(text)} exe_text_sha256={hashlib.sha256(text).hexdigest()} base=0x80010000")
+          PY
+          headless="$(find /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016 -type f -path '*/support/analyzeHeadless' -print -quit)"
+          [[ -n "$headless" && -x "$headless" ]]
+          "$headless" "$root/ghidra-exe-project" SLPS_035_53_main \
+            -import "$exe_raw" -loader BinaryLoader -loader-baseAddr 0x80010000 -loader-length 0x5D800 \
+            -loader-blockName SLPS_035_53_TEXT -processor "MIPS:LE:32:default" \
+            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -postScript ExportRequestedFunctions.java "$out/w3_helper_function_disassembly.txt" \
+              0x8002DEC4 0x8002DFE4 0x80035D48 0x80020F54 \
+            -analysisTimeoutPerFile 1200 -max-cpu 2 -deleteProject \
+            > "$out/w3-ghidra-headless.log" 2>&1
+          test -s "$out/w3_helper_function_disassembly.txt"
+          grep -E 'ERROR|Exception|W3_DISASSEMBLY_OUTPUT' "$out/w3-ghidra-headless.log" || true
+
       - name: Remove source binaries and extracted working files
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          rm -f "$RUNNER_TEMP/slot-provenance-audit/DATA.BIN"
+          rm -f "$RUNNER_TEMP/slot-provenance-audit/DATA.BIN" \
+                "$RUNNER_TEMP/slot-provenance-audit/SLPS_035.53" \
+                "$RUNNER_TEMP/slot-provenance-audit/checkpoint.raw.sstate" \
+                "$RUNNER_TEMP/slot-provenance-audit/ram-prefix-private.bin" \
+                "$RUNNER_TEMP/slot-provenance-audit/ram-values-private.csv" \
+                "$RUNNER_TEMP/slot-provenance-audit/entry1-private.bin" \
+                "$RUNNER_TEMP/slot-provenance-audit/SLPS_035.53-text.bin" \
+                "$RUNNER_TEMP/slot-provenance-audit/output/ram-parser-log-private.txt"
           rm -rf "$RUNNER_TEMP/slot-provenance-audit/source" "$RUNNER_TEMP/slot-provenance-audit/extracted"
 
       - name: Commit sanitized text/CSV report to this audit branch only
