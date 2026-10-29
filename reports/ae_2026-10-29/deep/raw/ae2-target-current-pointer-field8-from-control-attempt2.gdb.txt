@@ -1,4 +1,4 @@
-[Detaching after fork from child process 4403]
+[Detaching after fork from child process 4825]
 ALSA lib confmisc.c:855:(parse_card) [error.core] cannot find card '0'
 ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_card_inum returned error: No such file or directory
 ALSA lib confmisc.c:422:(snd_func_concat) [error.core] error evaluating strings
@@ -58,21 +58,21 @@ BIOS Trace1: 0x07
 AE_LOAD_BEGIN=1 path=resume/ae2-target-current-pointer-field8-from-control.sstate vsync=1 controller=NONE 
 
 Thread 15 "pcsx-redux" received signal SIGSEGV, Segmentation fault.
-[Switching to LWP 4411]
+[Switching to LWP 4833]
 0x00007ffff0dd36d0 in ?? ()
 AE_GDB_CONTEXT_BEGIN
 AE_GDB_COMMAND_BEGIN: info threads
   Id   Target Id               Frame 
-  1    LWP 4394 "pcsx-redux"   0x00007ffff0def65c in ?? ()
-  2    LWP 4397 "pcsx-redux"   0x00007fffee2a08f2 in ?? ()
-  3    LWP 4398 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
-  4    LWP 4399 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
-  5    LWP 4400 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
-  6    LWP 4401 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
-  9    LWP 4405 "SDLAudioP23"  0x00007fffee2a08f2 in ?? ()
-  13   LWP 4409 "libusb_event" 0x00007fffee2a08f2 in ?? ()
-  14   LWP 4410 "libusb"       0x00007fffee2a08f2 in ?? ()
-* 15   LWP 4411 "pcsx-redux"   0x00007ffff0dd36d0 in ?? ()
+  1    LWP 4816 "pcsx-redux"   0x00007ffff0def525 in ?? ()
+  2    LWP 4819 "pcsx-redux"   0x00007fffee2a08f2 in ?? ()
+  3    LWP 4820 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
+  4    LWP 4821 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
+  5    LWP 4822 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
+  6    LWP 4823 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
+  9    LWP 4827 "SDLAudioP23"  0x00007fffee2a08f2 in ?? ()
+  13   LWP 4831 "libusb_event" 0x00007fffee2a08f2 in ?? ()
+  14   LWP 4832 "libusb"       0x00007fffee2a08f2 in ?? ()
+* 15   LWP 4833 "pcsx-redux"   0x00007ffff0dd36d0 in ?? ()
 AE_GDB_COMMAND_END: info threads
 AE_GDB_COMMAND_BEGIN: x/3i $pc
 => 0x7ffff0dd36d0:	movzbl (%rsi),%ecx
@@ -104,11 +104,19 @@ ds             0x0                 0
 es             0x0                 0
 fs             0x0                 0
 gs             0x0                 0
+k0             0x10001             65537
+k1             0xffffffff          4294967295
+k2             0x1fffff            2097151
+k3             0x1102              4354
+k4             0xfffffffd          4294967293
+k5             0x4000001           67108865
+k6             0x80004001          2147500033
+k7             0x0                 0
 fs_base        0x7fffd40526c0      140736750495424
 gs_base        0x0                 0
 AE_GDB_COMMAND_END: info registers
 AE_GDB_COMMAND_BEGIN: info proc mappings
-process 4394
+process 4816
 Mapped address spaces:
 
           Start Addr           End Addr       Size     Offset  Perms  objfile
@@ -130,7 +138,7 @@ Mapped address spaces:
       0x7fffd0200000     0x7fffd0c00000   0xa00000        0x0  rwxp   
       0x7fffd0c4f000     0x7fffd1c50000  0x1001000        0x0  rw-p   
       0x7fffd2051000     0x7fffd2852000   0x801000        0x0  rw-p   
-      0x7fffd2852000     0x7fffd3052000   0x800000        0x0  rw-s   /dev/shm/pcsx-redux-wram-4394
+      0x7fffd2852000     0x7fffd3052000   0x800000        0x0  rw-s   /dev/shm/pcsx-redux-wram-4816
       0x7fffd3052000     0x7fffd4053000  0x1001000        0x0  rw-p   
       0x7fffd4053000     0x7fffd4ffe000   0xfab000        0x0  rw-p   
       0x7fffd4ffe000     0x7fffd5fff000  0x1001000        0x0  rw-p   
@@ -204,11 +212,6 @@ Mapped address spaces:
       0x7fffe347a000     0x7fffe3534000    0xba000  0x1a7a000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libgallium-26.2.2-arch1.1.so
       0x7fffe3534000     0x7fffe355f000    0x2b000  0x1b34000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libgallium-26.2.2-arch1.1.so
       0x7fffe355f000     0x7fffe3725000   0x1c6000        0x0  rw-p   
-      0x7fffe3726000     0x7fffe3728000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/alsa-lib/libasound_module_pcm_pulse.so
-      0x7fffe3728000     0x7fffe372b000     0x3000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/alsa-lib/libasound_module_pcm_pulse.so
-      0x7fffe372b000     0x7fffe372d000     0x2000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/alsa-lib/libasound_module_pcm_pulse.so
-      0x7fffe372d000     0x7fffe372e000     0x1000     0x6000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/alsa-lib/libasound_module_pcm_pulse.so
-      0x7fffe372e000     0x7fffe372f000     0x1000     0x7000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/alsa-lib/libasound_module_pcm_pulse.so
       0x7fffe372f000     0x7fffe373b000     0xc000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpulse.so.0.24.3
       0x7fffe373b000     0x7fffe376b000    0x30000     0xc000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpulse.so.0.24.3
       0x7fffe376b000     0x7fffe377c000    0x11000    0x3c000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpulse.so.0.24.3
@@ -216,106 +219,91 @@ Mapped address spaces:
       0x7fffe377e000     0x7fffe377f000     0x1000    0x4e000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpulse.so.0.24.3
       0x7fffe377f000     0x7fffe427f000   0xb00000        0x0  rw-p   
       0x7fffe427f000     0x7fffe8000000  0x3d81000        0x0  ---p   
-      0x7fffe8001000     0x7fffe8003000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libasyncns.so.0.3.1
-      0x7fffe8003000     0x7fffe8006000     0x3000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libasyncns.so.0.3.1
-      0x7fffe8006000     0x7fffe8007000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libasyncns.so.0.3.1
-      0x7fffe8007000     0x7fffe8008000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libasyncns.so.0.3.1
-      0x7fffe8008000     0x7fffe8009000     0x1000     0x6000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libasyncns.so.0.3.1
-      0x7fffe8009000     0x7fffe8017000     0xe000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libOpenGL.so.0.0.0
-      0x7fffe8017000     0x7fffe8022000     0xb000     0xe000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libOpenGL.so.0.0.0
-      0x7fffe8022000     0x7fffe8027000     0x5000    0x19000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libOpenGL.so.0.0.0
-      0x7fffe8027000     0x7fffe802c000     0x5000    0x1e000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libOpenGL.so.0.0.0
-      0x7fffe802c000     0x7fffe802d000     0x1000    0x23000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libOpenGL.so.0.0.0
-      0x7fffe802d000     0x7fffe8030000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdrm_amdgpu.so.1.134.0
-      0x7fffe8030000     0x7fffe8036000     0x6000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdrm_amdgpu.so.1.134.0
-      0x7fffe8036000     0x7fffe8038000     0x2000     0x9000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdrm_amdgpu.so.1.134.0
-      0x7fffe8038000     0x7fffe8039000     0x1000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdrm_amdgpu.so.1.134.0
-      0x7fffe8039000     0x7fffe803a000     0x1000     0xb000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdrm_amdgpu.so.1.134.0
-      0x7fffe803a000     0x7fffe803d000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libelf-0.196.so
-      0x7fffe803d000     0x7fffe8051000    0x14000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libelf-0.196.so
-      0x7fffe8051000     0x7fffe8056000     0x5000    0x17000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libelf-0.196.so
-      0x7fffe8056000     0x7fffe8057000     0x1000    0x1b000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libelf-0.196.so
-      0x7fffe8057000     0x7fffe8058000     0x1000    0x1c000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libelf-0.196.so
-      0x7fffe8058000     0x7fffe8059000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxshmfence.so.1.0.0
-      0x7fffe8059000     0x7fffe805a000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxshmfence.so.1.0.0
-      0x7fffe805a000     0x7fffe805b000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxshmfence.so.1.0.0
-      0x7fffe805b000     0x7fffe805c000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxshmfence.so.1.0.0
-      0x7fffe805c000     0x7fffe805d000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxshmfence.so.1.0.0
-      0x7fffe805d000     0x7fffe8060000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-sync.so.1.0.0
-      0x7fffe8060000     0x7fffe8063000     0x3000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-sync.so.1.0.0
-      0x7fffe8063000     0x7fffe8064000     0x1000     0x6000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-sync.so.1.0.0
-      0x7fffe8064000     0x7fffe8065000     0x1000     0x7000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-sync.so.1.0.0
-      0x7fffe8065000     0x7fffe8066000     0x1000     0x8000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-sync.so.1.0.0
-      0x7fffe8066000     0x7fffe806d000     0x7000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-randr.so.0.1.0
-      0x7fffe806d000     0x7fffe8073000     0x6000     0x7000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-randr.so.0.1.0
-      0x7fffe8073000     0x7fffe8076000     0x3000     0xd000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-randr.so.0.1.0
-      0x7fffe8076000     0x7fffe8077000     0x1000    0x10000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-randr.so.0.1.0
-      0x7fffe8077000     0x7fffe8078000     0x1000    0x11000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-randr.so.0.1.0
-      0x7fffe8078000     0x7fffe807a000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsensors.so.5.0.0
-      0x7fffe807a000     0x7fffe8082000     0x8000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsensors.so.5.0.0
-      0x7fffe8082000     0x7fffe8086000     0x4000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsensors.so.5.0.0
-      0x7fffe8086000     0x7fffe8087000     0x1000     0xe000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsensors.so.5.0.0
-      0x7fffe8087000     0x7fffe8088000     0x1000     0xf000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsensors.so.5.0.0
-      0x7fffe8088000     0x7fffe808b000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-xfixes.so.0.0.0
-      0x7fffe808b000     0x7fffe808e000     0x3000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-xfixes.so.0.0.0
-      0x7fffe808e000     0x7fffe808f000     0x1000     0x6000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-xfixes.so.0.0.0
-      0x7fffe808f000     0x7fffe8090000     0x1000     0x7000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-xfixes.so.0.0.0
-      0x7fffe8090000     0x7fffe8091000     0x1000     0x8000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-xfixes.so.0.0.0
-      0x7fffe8091000     0x7fffe8092000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-present.so.0.0.0
-      0x7fffe8092000     0x7fffe8093000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-present.so.0.0.0
-      0x7fffe8093000     0x7fffe8094000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-present.so.0.0.0
-      0x7fffe8094000     0x7fffe8095000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-present.so.0.0.0
-      0x7fffe8095000     0x7fffe8096000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-present.so.0.0.0
-      0x7fffe8096000     0x7fffe8097000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-shm.so.0.0.0
-      0x7fffe8097000     0x7fffe8098000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-shm.so.0.0.0
-      0x7fffe8098000     0x7fffe8099000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-shm.so.0.0.0
-      0x7fffe8099000     0x7fffe809a000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-shm.so.0.0.0
-      0x7fffe809a000     0x7fffe809b000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-shm.so.0.0.0
-      0x7fffe809b000     0x7fffe809c000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXxf86vm.so.1.0.0
-      0x7fffe809c000     0x7fffe809f000     0x3000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXxf86vm.so.1.0.0
-      0x7fffe809f000     0x7fffe80a0000     0x1000     0x4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXxf86vm.so.1.0.0
-      0x7fffe80a0000     0x7fffe80a1000     0x1000     0x4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXxf86vm.so.1.0.0
-      0x7fffe80a1000     0x7fffe80a2000     0x1000     0x5000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXxf86vm.so.1.0.0
-      0x7fffe80a2000     0x7fffe80ae000     0xc000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-glx.so.0.0.0
-      0x7fffe80ae000     0x7fffe80b7000     0x9000     0xc000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-glx.so.0.0.0
-      0x7fffe80b7000     0x7fffe80bc000     0x5000    0x15000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-glx.so.0.0.0
-      0x7fffe80bc000     0x7fffe80be000     0x2000    0x1a000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-glx.so.0.0.0
-      0x7fffe80be000     0x7fffe80bf000     0x1000    0x1c000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-glx.so.0.0.0
-      0x7fffe80bf000     0x7fffe80c4000     0x5000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLX_mesa.so.0.0.0
-      0x7fffe80c4000     0x7fffe80f8000    0x34000     0x5000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLX_mesa.so.0.0.0
-      0x7fffe80f8000     0x7fffe8109000    0x11000    0x39000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLX_mesa.so.0.0.0
-      0x7fffe8109000     0x7fffe810c000     0x3000    0x4a000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLX_mesa.so.0.0.0
-      0x7fffe810c000     0x7fffe810d000     0x1000    0x4d000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLX_mesa.so.0.0.0
-      0x7fffe810d000     0x7fffe810f000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXtst.so.6.1.0
-      0x7fffe810f000     0x7fffe8112000     0x3000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXtst.so.6.1.0
-      0x7fffe8112000     0x7fffe8113000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXtst.so.6.1.0
-      0x7fffe8113000     0x7fffe8114000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXtst.so.6.1.0
-      0x7fffe8114000     0x7fffe8115000     0x1000     0x6000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXtst.so.6.1.0
-      0x7fffe8115000     0x7fffe8116000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXss.so.1.0.0
-      0x7fffe8116000     0x7fffe8117000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXss.so.1.0.0
-      0x7fffe8117000     0x7fffe8118000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXss.so.1.0.0
-      0x7fffe8118000     0x7fffe8119000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXss.so.1.0.0
-      0x7fffe8119000     0x7fffe811a000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXss.so.1.0.0
-      0x7fffe811a000     0x7fffe811c000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrandr.so.2.2.0
-      0x7fffe811c000     0x7fffe8123000     0x7000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrandr.so.2.2.0
-      0x7fffe8123000     0x7fffe8125000     0x2000     0x9000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrandr.so.2.2.0
-      0x7fffe8125000     0x7fffe8126000     0x1000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrandr.so.2.2.0
-      0x7fffe8126000     0x7fffe8127000     0x1000     0xb000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrandr.so.2.2.0
-      0x7fffe8127000     0x7fffe812a000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXi.so.6.1.0
-      0x7fffe812a000     0x7fffe8137000     0xd000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXi.so.6.1.0
-      0x7fffe8137000     0x7fffe813a000     0x3000    0x10000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXi.so.6.1.0
-      0x7fffe813a000     0x7fffe813b000     0x1000    0x12000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXi.so.6.1.0
-      0x7fffe813b000     0x7fffe813c000     0x1000    0x13000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXi.so.6.1.0
-      0x7fffe813c000     0x7fffe813e000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrender.so.1.3.0
-      0x7fffe813e000     0x7fffe8145000     0x7000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrender.so.1.3.0
-      0x7fffe8145000     0x7fffe8146000     0x1000     0x9000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrender.so.1.3.0
-      0x7fffe8146000     0x7fffe8147000     0x1000     0x9000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrender.so.1.3.0
-      0x7fffe8147000     0x7fffe8148000     0x1000     0xa000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrender.so.1.3.0
-      0x7fffe8148000     0x7fffe814b000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXcursor.so.1.0.2
-      0x7fffe814b000     0x7fffe8151000     0x6000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXcursor.so.1.0.2
-      0x7fffe8151000     0x7fffe8153000     0x2000     0x9000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXcursor.so.1.0.2
-      0x7fffe8153000     0x7fffe8154000     0x1000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXcursor.so.1.0.2
-      0x7fffe8154000     0x7fffe8155000     0x1000     0xb000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXcursor.so.1.0.2
+      0x7fffe801b000     0x7fffe801d000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/alsa-lib/libasound_module_pcm_pulse.so
+      0x7fffe801d000     0x7fffe8020000     0x3000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/alsa-lib/libasound_module_pcm_pulse.so
+      0x7fffe8020000     0x7fffe8022000     0x2000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/alsa-lib/libasound_module_pcm_pulse.so
+      0x7fffe8022000     0x7fffe8023000     0x1000     0x6000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/alsa-lib/libasound_module_pcm_pulse.so
+      0x7fffe8023000     0x7fffe8024000     0x1000     0x7000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/alsa-lib/libasound_module_pcm_pulse.so
+      0x7fffe8024000     0x7fffe8026000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libasyncns.so.0.3.1
+      0x7fffe8026000     0x7fffe8029000     0x3000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libasyncns.so.0.3.1
+      0x7fffe8029000     0x7fffe802a000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libasyncns.so.0.3.1
+      0x7fffe802a000     0x7fffe802b000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libasyncns.so.0.3.1
+      0x7fffe802b000     0x7fffe802c000     0x1000     0x6000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libasyncns.so.0.3.1
+      0x7fffe802c000     0x7fffe803a000     0xe000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libOpenGL.so.0.0.0
+      0x7fffe803a000     0x7fffe8045000     0xb000     0xe000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libOpenGL.so.0.0.0
+      0x7fffe8045000     0x7fffe804a000     0x5000    0x19000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libOpenGL.so.0.0.0
+      0x7fffe804a000     0x7fffe804f000     0x5000    0x1e000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libOpenGL.so.0.0.0
+      0x7fffe804f000     0x7fffe8050000     0x1000    0x23000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libOpenGL.so.0.0.0
+      0x7fffe8050000     0x7fffe8053000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdrm_amdgpu.so.1.134.0
+      0x7fffe8053000     0x7fffe8059000     0x6000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdrm_amdgpu.so.1.134.0
+      0x7fffe8059000     0x7fffe805b000     0x2000     0x9000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdrm_amdgpu.so.1.134.0
+      0x7fffe805b000     0x7fffe805c000     0x1000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdrm_amdgpu.so.1.134.0
+      0x7fffe805c000     0x7fffe805d000     0x1000     0xb000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdrm_amdgpu.so.1.134.0
+      0x7fffe805d000     0x7fffe8060000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libelf-0.196.so
+      0x7fffe8060000     0x7fffe8074000    0x14000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libelf-0.196.so
+      0x7fffe8074000     0x7fffe8079000     0x5000    0x17000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libelf-0.196.so
+      0x7fffe8079000     0x7fffe807a000     0x1000    0x1b000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libelf-0.196.so
+      0x7fffe807a000     0x7fffe807b000     0x1000    0x1c000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libelf-0.196.so
+      0x7fffe807b000     0x7fffe807c000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxshmfence.so.1.0.0
+      0x7fffe807c000     0x7fffe807d000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxshmfence.so.1.0.0
+      0x7fffe807d000     0x7fffe807e000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxshmfence.so.1.0.0
+      0x7fffe807e000     0x7fffe807f000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxshmfence.so.1.0.0
+      0x7fffe807f000     0x7fffe8080000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxshmfence.so.1.0.0
+      0x7fffe8080000     0x7fffe8083000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-sync.so.1.0.0
+      0x7fffe8083000     0x7fffe8086000     0x3000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-sync.so.1.0.0
+      0x7fffe8086000     0x7fffe8087000     0x1000     0x6000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-sync.so.1.0.0
+      0x7fffe8087000     0x7fffe8088000     0x1000     0x7000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-sync.so.1.0.0
+      0x7fffe8088000     0x7fffe8089000     0x1000     0x8000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-sync.so.1.0.0
+      0x7fffe8089000     0x7fffe8090000     0x7000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-randr.so.0.1.0
+      0x7fffe8090000     0x7fffe8096000     0x6000     0x7000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-randr.so.0.1.0
+      0x7fffe8096000     0x7fffe8099000     0x3000     0xd000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-randr.so.0.1.0
+      0x7fffe8099000     0x7fffe809a000     0x1000    0x10000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-randr.so.0.1.0
+      0x7fffe809a000     0x7fffe809b000     0x1000    0x11000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-randr.so.0.1.0
+      0x7fffe809b000     0x7fffe809d000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsensors.so.5.0.0
+      0x7fffe809d000     0x7fffe80a5000     0x8000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsensors.so.5.0.0
+      0x7fffe80a5000     0x7fffe80a9000     0x4000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsensors.so.5.0.0
+      0x7fffe80a9000     0x7fffe80aa000     0x1000     0xe000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsensors.so.5.0.0
+      0x7fffe80aa000     0x7fffe80ab000     0x1000     0xf000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsensors.so.5.0.0
+      0x7fffe80ab000     0x7fffe80ae000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-xfixes.so.0.0.0
+      0x7fffe80ae000     0x7fffe80b1000     0x3000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-xfixes.so.0.0.0
+      0x7fffe80b1000     0x7fffe80b2000     0x1000     0x6000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-xfixes.so.0.0.0
+      0x7fffe80b2000     0x7fffe80b3000     0x1000     0x7000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-xfixes.so.0.0.0
+      0x7fffe80b3000     0x7fffe80b4000     0x1000     0x8000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-xfixes.so.0.0.0
+      0x7fffe80b4000     0x7fffe80b5000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-present.so.0.0.0
+      0x7fffe80b5000     0x7fffe80b6000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-present.so.0.0.0
+      0x7fffe80b6000     0x7fffe80b7000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-present.so.0.0.0
+      0x7fffe80b7000     0x7fffe80b8000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-present.so.0.0.0
+      0x7fffe80b8000     0x7fffe80b9000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-present.so.0.0.0
+      0x7fffe80b9000     0x7fffe80ba000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXxf86vm.so.1.0.0
+      0x7fffe80ba000     0x7fffe80bd000     0x3000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXxf86vm.so.1.0.0
+      0x7fffe80bd000     0x7fffe80be000     0x1000     0x4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXxf86vm.so.1.0.0
+      0x7fffe80be000     0x7fffe80bf000     0x1000     0x4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXxf86vm.so.1.0.0
+      0x7fffe80bf000     0x7fffe80c0000     0x1000     0x5000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXxf86vm.so.1.0.0
+      0x7fffe80c0000     0x7fffe80cc000     0xc000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-glx.so.0.0.0
+      0x7fffe80cc000     0x7fffe80d5000     0x9000     0xc000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-glx.so.0.0.0
+      0x7fffe80d5000     0x7fffe80da000     0x5000    0x15000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-glx.so.0.0.0
+      0x7fffe80da000     0x7fffe80dc000     0x2000    0x1a000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-glx.so.0.0.0
+      0x7fffe80dc000     0x7fffe80dd000     0x1000    0x1c000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-glx.so.0.0.0
+      0x7fffe80dd000     0x7fffe80e2000     0x5000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLX_mesa.so.0.0.0
+      0x7fffe80e2000     0x7fffe8116000    0x34000     0x5000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLX_mesa.so.0.0.0
+      0x7fffe8116000     0x7fffe8127000    0x11000    0x39000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLX_mesa.so.0.0.0
+      0x7fffe8127000     0x7fffe812a000     0x3000    0x4a000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLX_mesa.so.0.0.0
+      0x7fffe812a000     0x7fffe812b000     0x1000    0x4d000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLX_mesa.so.0.0.0
+      0x7fffe812b000     0x7fffe812d000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXtst.so.6.1.0
+      0x7fffe812d000     0x7fffe8130000     0x3000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXtst.so.6.1.0
+      0x7fffe8130000     0x7fffe8131000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXtst.so.6.1.0
+      0x7fffe8131000     0x7fffe8132000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXtst.so.6.1.0
+      0x7fffe8132000     0x7fffe8133000     0x1000     0x6000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXtst.so.6.1.0
+      0x7fffe8133000     0x7fffe8135000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrandr.so.2.2.0
+      0x7fffe8135000     0x7fffe813c000     0x7000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrandr.so.2.2.0
+      0x7fffe813c000     0x7fffe813e000     0x2000     0x9000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrandr.so.2.2.0
+      0x7fffe813e000     0x7fffe813f000     0x1000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrandr.so.2.2.0
+      0x7fffe813f000     0x7fffe8140000     0x1000     0xb000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrandr.so.2.2.0
+      0x7fffe8140000     0x7fffe8143000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXi.so.6.1.0
+      0x7fffe8143000     0x7fffe8150000     0xd000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXi.so.6.1.0
+      0x7fffe8150000     0x7fffe8153000     0x3000    0x10000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXi.so.6.1.0
+      0x7fffe8153000     0x7fffe8154000     0x1000    0x12000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXi.so.6.1.0
+      0x7fffe8154000     0x7fffe8155000     0x1000    0x13000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXi.so.6.1.0
       0x7fffe8155000     0x7fffe816a000    0x15000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsystemd.so.0.45.0
       0x7fffe816a000     0x7fffe8243000    0xd9000    0x15000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsystemd.so.0.45.0
       0x7fffe8243000     0x7fffe8292000    0x4f000    0xee000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsystemd.so.0.45.0
@@ -331,76 +319,79 @@ Mapped address spaces:
       0x7fffe87a2000     0x7fffeb7a7000  0x3005000        0x0  rw-p   
       0x7fffeb7a7000     0x7fffeb800000    0x59000        0x0  r--p   /usr/lib/locale/C.utf8/LC_CTYPE
       0x7fffeb800000     0x7fffebaeb000   0x2eb000        0x0  r--p   /usr/lib/locale/locale-archive
-      0x7fffebaee000     0x7fffebb0e000    0x20000        0x0  rw-p   
-      0x7fffebb0e000     0x7fffebb12000     0x4000 0x10000000  rw-s   anon_inode:[io_uring]
-      0x7fffebb12000     0x7fffebb15000     0x3000        0x0  rw-s   anon_inode:[io_uring]
-      0x7fffebb15000     0x7fffebb19000     0x4000 0x10000000  rw-s   anon_inode:[io_uring]
-      0x7fffebb19000     0x7fffebb1c000     0x3000        0x0  rw-s   anon_inode:[io_uring]
-      0x7fffebb1c000     0x7fffebb1d000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_NUMERIC
-      0x7fffebb1d000     0x7fffebb1e000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_TIME
-      0x7fffebb1e000     0x7fffebb1f000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_COLLATE
-      0x7fffebb1f000     0x7fffebb20000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_MONETARY
-      0x7fffebb20000     0x7fffebb21000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_MESSAGES/SYS_LC_MESSAGES
-      0x7fffebb21000     0x7fffebb22000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_PAPER
-      0x7fffebb22000     0x7fffebb23000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_NAME
-      0x7fffebb23000     0x7fffebb24000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_ADDRESS
-      0x7fffebb24000     0x7fffebb25000     0x1000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libanl.so.1
-      0x7fffebb25000     0x7fffebb26000     0x1000     0x1000  r-xp   /usr/lib/x86_64-linux-gnu/libanl.so.1
-      0x7fffebb26000     0x7fffebb27000     0x1000     0x2000  r--p   /usr/lib/x86_64-linux-gnu/libanl.so.1
-      0x7fffebb27000     0x7fffebb28000     0x1000     0x2000  r--p   /usr/lib/x86_64-linux-gnu/libanl.so.1
-      0x7fffebb28000     0x7fffebb29000     0x1000     0x3000  rw-p   /usr/lib/x86_64-linux-gnu/libanl.so.1
-      0x7fffebb29000     0x7fffebb2a000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libutil.so.1
-      0x7fffebb2a000     0x7fffebb2b000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libutil.so.1
-      0x7fffebb2b000     0x7fffebb2c000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libutil.so.1
-      0x7fffebb2c000     0x7fffebb2d000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libutil.so.1
-      0x7fffebb2d000     0x7fffebb2e000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libutil.so.1
-      0x7fffebb2e000     0x7fffebb2f000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/librt.so.1
-      0x7fffebb2f000     0x7fffebb30000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/librt.so.1
-      0x7fffebb30000     0x7fffebb31000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/librt.so.1
-      0x7fffebb31000     0x7fffebb32000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/librt.so.1
-      0x7fffebb32000     0x7fffebb33000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/librt.so.1
-      0x7fffebb33000     0x7fffebb34000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpthread.so.0
-      0x7fffebb34000     0x7fffebb35000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpthread.so.0
-      0x7fffebb35000     0x7fffebb36000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpthread.so.0
-      0x7fffebb36000     0x7fffebb37000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpthread.so.0
-      0x7fffebb37000     0x7fffebb38000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpthread.so.0
-      0x7fffebb38000     0x7fffebb3a000     0x2000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
-      0x7fffebb3a000     0x7fffebb4f000    0x15000     0x2000  r-xp   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
-      0x7fffebb4f000     0x7fffebb68000    0x19000    0x17000  r--p   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
-      0x7fffebb68000     0x7fffebb69000     0x1000    0x2f000  r--p   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
-      0x7fffebb69000     0x7fffebb6a000     0x1000    0x30000  rw-p   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
-      0x7fffebb6a000     0x7fffebb7e000    0x14000        0x0  rw-p   
-      0x7fffebb7e000     0x7fffebb80000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libffi.so.8.5.0
-      0x7fffebb80000     0x7fffebb88000     0x8000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libffi.so.8.5.0
-      0x7fffebb88000     0x7fffebb8a000     0x2000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libffi.so.8.5.0
-      0x7fffebb8a000     0x7fffebb8b000     0x1000     0xb000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libffi.so.8.5.0
-      0x7fffebb8b000     0x7fffebb8c000     0x1000     0xc000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libffi.so.8.5.0
-      0x7fffebb8c000     0x7fffebb8e000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libexpat.so.1.12.5
-      0x7fffebb8e000     0x7fffebbaf000    0x21000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libexpat.so.1.12.5
-      0x7fffebbaf000     0x7fffebbb8000     0x9000    0x23000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libexpat.so.1.12.5
-      0x7fffebbb8000     0x7fffebbba000     0x2000    0x2b000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libexpat.so.1.12.5
-      0x7fffebbba000     0x7fffebbbb000     0x1000    0x2d000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libexpat.so.1.12.5
-      0x7fffebbbb000     0x7fffebbbe000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libresolv.so.2
-      0x7fffebbbe000     0x7fffebbc7000     0x9000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libresolv.so.2
-      0x7fffebbc7000     0x7fffebbca000     0x3000     0xc000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libresolv.so.2
-      0x7fffebbca000     0x7fffebbcb000     0x1000     0xf000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libresolv.so.2
-      0x7fffebbcb000     0x7fffebbcc000     0x1000    0x10000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libresolv.so.2
-      0x7fffebbcc000     0x7fffebbce000     0x2000        0x0  rw-p   
-      0x7fffebbce000     0x7fffebbd0000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkeyutils.so.1.10
-      0x7fffebbd0000     0x7fffebbd2000     0x2000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkeyutils.so.1.10
-      0x7fffebbd2000     0x7fffebbd3000     0x1000     0x4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkeyutils.so.1.10
-      0x7fffebbd3000     0x7fffebbd4000     0x1000     0x4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkeyutils.so.1.10
-      0x7fffebbd4000     0x7fffebbd5000     0x1000     0x5000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkeyutils.so.1.10
-      0x7fffebbd5000     0x7fffebbd8000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkrb5support.so.0.1
-      0x7fffebbd8000     0x7fffebbdf000     0x7000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkrb5support.so.0.1
-      0x7fffebbdf000     0x7fffebbe2000     0x3000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkrb5support.so.0.1
-      0x7fffebbe2000     0x7fffebbe3000     0x1000     0xc000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkrb5support.so.0.1
-      0x7fffebbe3000     0x7fffebbe4000     0x1000     0xd000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkrb5support.so.0.1
-      0x7fffebbe4000     0x7fffebbe6000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcom_err.so.2.1
-      0x7fffebbe6000     0x7fffebbe7000     0x1000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcom_err.so.2.1
-      0x7fffebbe7000     0x7fffebbe8000     0x1000     0x3000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcom_err.so.2.1
-      0x7fffebbe8000     0x7fffebbe9000     0x1000     0x3000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcom_err.so.2.1
-      0x7fffebbe9000     0x7fffebbea000     0x1000     0x4000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcom_err.so.2.1
+      0x7fffebaeb000     0x7fffebaec000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-shm.so.0.0.0
+      0x7fffebaec000     0x7fffebaed000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-shm.so.0.0.0
+      0x7fffebaed000     0x7fffebaee000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-shm.so.0.0.0
+      0x7fffebaee000     0x7fffebaef000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-shm.so.0.0.0
+      0x7fffebaef000     0x7fffebaf0000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-shm.so.0.0.0
+      0x7fffebaf0000     0x7fffebaf1000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXss.so.1.0.0
+      0x7fffebaf1000     0x7fffebaf2000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXss.so.1.0.0
+      0x7fffebaf2000     0x7fffebaf3000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXss.so.1.0.0
+      0x7fffebaf3000     0x7fffebaf4000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXss.so.1.0.0
+      0x7fffebaf4000     0x7fffebaf5000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXss.so.1.0.0
+      0x7fffebaf5000     0x7fffebaf7000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrender.so.1.3.0
+      0x7fffebaf7000     0x7fffebafe000     0x7000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrender.so.1.3.0
+      0x7fffebafe000     0x7fffebaff000     0x1000     0x9000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrender.so.1.3.0
+      0x7fffebaff000     0x7fffebb00000     0x1000     0x9000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrender.so.1.3.0
+      0x7fffebb00000     0x7fffebb01000     0x1000     0xa000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXrender.so.1.3.0
+      0x7fffebb01000     0x7fffebb04000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXcursor.so.1.0.2
+      0x7fffebb04000     0x7fffebb0a000     0x6000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXcursor.so.1.0.2
+      0x7fffebb0a000     0x7fffebb0c000     0x2000     0x9000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXcursor.so.1.0.2
+      0x7fffebb0c000     0x7fffebb0d000     0x1000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXcursor.so.1.0.2
+      0x7fffebb0d000     0x7fffebb0e000     0x1000     0xb000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXcursor.so.1.0.2
+      0x7fffebb0e000     0x7fffebb2e000    0x20000        0x0  rw-p   
+      0x7fffebb2e000     0x7fffebb32000     0x4000 0x10000000  rw-s   anon_inode:[io_uring]
+      0x7fffebb32000     0x7fffebb35000     0x3000        0x0  rw-s   anon_inode:[io_uring]
+      0x7fffebb35000     0x7fffebb39000     0x4000 0x10000000  rw-s   anon_inode:[io_uring]
+      0x7fffebb39000     0x7fffebb3c000     0x3000        0x0  rw-s   anon_inode:[io_uring]
+      0x7fffebb3c000     0x7fffebb3d000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_NUMERIC
+      0x7fffebb3d000     0x7fffebb3e000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_TIME
+      0x7fffebb3e000     0x7fffebb3f000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_COLLATE
+      0x7fffebb3f000     0x7fffebb40000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_MONETARY
+      0x7fffebb40000     0x7fffebb41000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_MESSAGES/SYS_LC_MESSAGES
+      0x7fffebb41000     0x7fffebb42000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_PAPER
+      0x7fffebb42000     0x7fffebb43000     0x1000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libanl.so.1
+      0x7fffebb43000     0x7fffebb44000     0x1000     0x1000  r-xp   /usr/lib/x86_64-linux-gnu/libanl.so.1
+      0x7fffebb44000     0x7fffebb45000     0x1000     0x2000  r--p   /usr/lib/x86_64-linux-gnu/libanl.so.1
+      0x7fffebb45000     0x7fffebb46000     0x1000     0x2000  r--p   /usr/lib/x86_64-linux-gnu/libanl.so.1
+      0x7fffebb46000     0x7fffebb47000     0x1000     0x3000  rw-p   /usr/lib/x86_64-linux-gnu/libanl.so.1
+      0x7fffebb47000     0x7fffebb48000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libutil.so.1
+      0x7fffebb48000     0x7fffebb49000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libutil.so.1
+      0x7fffebb49000     0x7fffebb4a000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libutil.so.1
+      0x7fffebb4a000     0x7fffebb4b000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libutil.so.1
+      0x7fffebb4b000     0x7fffebb4c000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libutil.so.1
+      0x7fffebb4c000     0x7fffebb4d000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/librt.so.1
+      0x7fffebb4d000     0x7fffebb4e000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/librt.so.1
+      0x7fffebb4e000     0x7fffebb4f000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/librt.so.1
+      0x7fffebb4f000     0x7fffebb50000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/librt.so.1
+      0x7fffebb50000     0x7fffebb51000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/librt.so.1
+      0x7fffebb51000     0x7fffebb53000     0x2000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+      0x7fffebb53000     0x7fffebb68000    0x15000     0x2000  r-xp   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+      0x7fffebb68000     0x7fffebb81000    0x19000    0x17000  r--p   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+      0x7fffebb81000     0x7fffebb82000     0x1000    0x2f000  r--p   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+      0x7fffebb82000     0x7fffebb83000     0x1000    0x30000  rw-p   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+      0x7fffebb83000     0x7fffebb8b000     0x8000        0x0  rw-p   
+      0x7fffebb8b000     0x7fffebb8d000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libffi.so.8.5.0
+      0x7fffebb8d000     0x7fffebb95000     0x8000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libffi.so.8.5.0
+      0x7fffebb95000     0x7fffebb97000     0x2000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libffi.so.8.5.0
+      0x7fffebb97000     0x7fffebb98000     0x1000     0xb000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libffi.so.8.5.0
+      0x7fffebb98000     0x7fffebb99000     0x1000     0xc000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libffi.so.8.5.0
+      0x7fffebb99000     0x7fffebb9b000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libexpat.so.1.12.5
+      0x7fffebb9b000     0x7fffebbbc000    0x21000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libexpat.so.1.12.5
+      0x7fffebbbc000     0x7fffebbc5000     0x9000    0x23000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libexpat.so.1.12.5
+      0x7fffebbc5000     0x7fffebbc7000     0x2000    0x2b000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libexpat.so.1.12.5
+      0x7fffebbc7000     0x7fffebbc8000     0x1000    0x2d000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libexpat.so.1.12.5
+      0x7fffebbc8000     0x7fffebbcb000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libresolv.so.2
+      0x7fffebbcb000     0x7fffebbd4000     0x9000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libresolv.so.2
+      0x7fffebbd4000     0x7fffebbd7000     0x3000     0xc000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libresolv.so.2
+      0x7fffebbd7000     0x7fffebbd8000     0x1000     0xf000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libresolv.so.2
+      0x7fffebbd8000     0x7fffebbd9000     0x1000    0x10000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libresolv.so.2
+      0x7fffebbd9000     0x7fffebbdb000     0x2000        0x0  rw-p   
+      0x7fffebbdb000     0x7fffebbde000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkrb5support.so.0.1
+      0x7fffebbde000     0x7fffebbe5000     0x7000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkrb5support.so.0.1
+      0x7fffebbe5000     0x7fffebbe8000     0x3000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkrb5support.so.0.1
+      0x7fffebbe8000     0x7fffebbe9000     0x1000     0xc000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkrb5support.so.0.1
+      0x7fffebbe9000     0x7fffebbea000     0x1000     0xd000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkrb5support.so.0.1
       0x7fffebbea000     0x7fffebbed000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libk5crypto.so.3.1
       0x7fffebbed000     0x7fffebc09000    0x1c000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libk5crypto.so.3.1
       0x7fffebc09000     0x7fffebc15000     0xc000    0x1f000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libk5crypto.so.3.1
@@ -441,12 +432,12 @@ Mapped address spaces:
       0x7fffec339000     0x7fffec45d000   0x124000   0x139000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libleancrypto.so.1.9.0
       0x7fffec45d000     0x7fffec463000     0x6000   0x25c000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libleancrypto.so.1.9.0
       0x7fffec463000     0x7fffec465000     0x2000   0x262000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libleancrypto.so.1.9.0
-      0x7fffec465000     0x7fffec466000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_TELEPHONE
-      0x7fffec466000     0x7fffec468000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-dri3.so.0.1.0
-      0x7fffec468000     0x7fffec46a000     0x2000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-dri3.so.0.1.0
-      0x7fffec46a000     0x7fffec46b000     0x1000     0x4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-dri3.so.0.1.0
-      0x7fffec46b000     0x7fffec46c000     0x1000     0x4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-dri3.so.0.1.0
-      0x7fffec46c000     0x7fffec46d000     0x1000     0x5000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-dri3.so.0.1.0
+      0x7fffec465000     0x7fffec466000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpthread.so.0
+      0x7fffec466000     0x7fffec467000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpthread.so.0
+      0x7fffec467000     0x7fffec468000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpthread.so.0
+      0x7fffec468000     0x7fffec469000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpthread.so.0
+      0x7fffec469000     0x7fffec46a000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpthread.so.0
+      0x7fffec46a000     0x7fffec46d000     0x3000        0x0  rw-p   
       0x7fffec46d000     0x7fffec471000     0x4000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXext.so.6.4.0
       0x7fffec471000     0x7fffec47c000     0xb000     0x4000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXext.so.6.4.0
       0x7fffec47c000     0x7fffec47f000     0x3000     0xf000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXext.so.6.4.0
@@ -483,12 +474,9 @@ Mapped address spaces:
       0x7fffeca00000     0x7fffecb26000   0x126000   0x400000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcrypto.so.3
       0x7fffecb26000     0x7fffecba4000    0x7e000   0x526000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcrypto.so.3
       0x7fffecba4000     0x7fffecba7000     0x3000   0x5a4000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcrypto.so.3
-      0x7fffecba7000     0x7fffecbac000     0x5000        0x0  rw-p   
-      0x7fffecbac000     0x7fffecbae000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXfixes.so.3.1.0
-      0x7fffecbae000     0x7fffecbb1000     0x3000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXfixes.so.3.1.0
-      0x7fffecbb1000     0x7fffecbb2000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXfixes.so.3.1.0
-      0x7fffecbb2000     0x7fffecbb3000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXfixes.so.3.1.0
-      0x7fffecbb3000     0x7fffecbb4000     0x1000     0x6000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXfixes.so.3.1.0
+      0x7fffecba7000     0x7fffecbaa000     0x3000        0x0  rw-p   
+      0x7fffecbaa000     0x7fffecbab000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_NAME
+      0x7fffecbab000     0x7fffecbb4000     0x9000        0x0  rw-p   
       0x7fffecbb4000     0x7fffecbb8000     0x4000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libmpg123.so.0.49.4
       0x7fffecbb8000     0x7fffecbf6000    0x3e000     0x4000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libmpg123.so.0.49.4
       0x7fffecbf6000     0x7fffecc11000    0x1b000    0x42000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libmpg123.so.0.49.4
@@ -546,11 +534,13 @@ Mapped address spaces:
       0x7fffed1cf000     0x7fffed1d1000     0x2000   0x1ce000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libx264.so.165
       0x7fffed1d1000     0x7fffed1d2000     0x1000   0x1d0000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libx264.so.165
       0x7fffed1d2000     0x7fffed2cb000    0xf9000        0x0  rw-p   
-      0x7fffed2cb000     0x7fffed2cd000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libogg.so.0.8.6
-      0x7fffed2cd000     0x7fffed2d0000     0x3000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libogg.so.0.8.6
-      0x7fffed2d0000     0x7fffed2d3000     0x3000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libogg.so.0.8.6
-      0x7fffed2d3000     0x7fffed2d4000     0x1000     0x8000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libogg.so.0.8.6
-      0x7fffed2d4000     0x7fffed2d5000     0x1000     0x9000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libogg.so.0.8.6
+      0x7fffed2cb000     0x7fffed2cc000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_ADDRESS
+      0x7fffed2cc000     0x7fffed2ce000     0x2000        0x0  rw-p   
+      0x7fffed2ce000     0x7fffed2d0000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkeyutils.so.1.10
+      0x7fffed2d0000     0x7fffed2d2000     0x2000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkeyutils.so.1.10
+      0x7fffed2d2000     0x7fffed2d3000     0x1000     0x4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkeyutils.so.1.10
+      0x7fffed2d3000     0x7fffed2d4000     0x1000     0x4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkeyutils.so.1.10
+      0x7fffed2d4000     0x7fffed2d5000     0x1000     0x5000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libkeyutils.so.1.10
       0x7fffed2d5000     0x7fffed2d7000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpsl.so.5.3.5
       0x7fffed2d7000     0x7fffed2d9000     0x2000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpsl.so.5.3.5
       0x7fffed2d9000     0x7fffed2e7000     0xe000     0x4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpsl.so.5.3.5
@@ -578,12 +568,13 @@ Mapped address spaces:
       0x7fffed8f1000     0x7fffed928000    0x37000   0x2f1000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvpx.so.12.1.0
       0x7fffed928000     0x7fffed92b000     0x3000   0x328000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvpx.so.12.1.0
       0x7fffed92b000     0x7fffed92c000     0x1000   0x32b000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvpx.so.12.1.0
-      0x7fffed92c000     0x7fffed935000     0x9000        0x0  rw-p   
-      0x7fffed935000     0x7fffed936000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libX11-xcb.so.1.0.0
-      0x7fffed936000     0x7fffed937000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libX11-xcb.so.1.0.0
-      0x7fffed937000     0x7fffed938000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libX11-xcb.so.1.0.0
-      0x7fffed938000     0x7fffed939000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libX11-xcb.so.1.0.0
-      0x7fffed939000     0x7fffed93a000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libX11-xcb.so.1.0.0
+      0x7fffed92c000     0x7fffed933000     0x7000        0x0  rw-p   
+      0x7fffed933000     0x7fffed934000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_TELEPHONE
+      0x7fffed934000     0x7fffed936000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcom_err.so.2.1
+      0x7fffed936000     0x7fffed937000     0x1000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcom_err.so.2.1
+      0x7fffed937000     0x7fffed938000     0x1000     0x3000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcom_err.so.2.1
+      0x7fffed938000     0x7fffed939000     0x1000     0x3000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcom_err.so.2.1
+      0x7fffed939000     0x7fffed93a000     0x1000     0x4000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcom_err.so.2.1
       0x7fffed93a000     0x7fffed93d000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libnghttp3.so.9.9.0
       0x7fffed93d000     0x7fffed952000    0x15000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libnghttp3.so.9.9.0
       0x7fffed952000     0x7fffed95f000     0xd000    0x18000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libnghttp3.so.9.9.0
@@ -605,18 +596,17 @@ Mapped address spaces:
       0x7fffedb8b000     0x7fffedc12000    0x87000   0x18b000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libgnutls.so.30.42.0
       0x7fffedc12000     0x7fffedc24000    0x12000   0x212000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libgnutls.so.30.42.0
       0x7fffedc24000     0x7fffedc27000     0x3000   0x224000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libgnutls.so.30.42.0
-      0x7fffedc27000     0x7fffedc2a000     0x3000        0x0  rw-p   
-      0x7fffedc2a000     0x7fffedc2b000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsharpyuv.so.0.1.2
-      0x7fffedc2b000     0x7fffedc2f000     0x4000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsharpyuv.so.0.1.2
-      0x7fffedc2f000     0x7fffedc30000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsharpyuv.so.0.1.2
-      0x7fffedc30000     0x7fffedc31000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsharpyuv.so.0.1.2
-      0x7fffedc31000     0x7fffedc32000     0x1000     0x6000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsharpyuv.so.0.1.2
-      0x7fffedc32000     0x7fffedc33000     0x1000        0x0  rw-p   
-      0x7fffedc33000     0x7fffedc35000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbisfile.so.3.3.8
-      0x7fffedc35000     0x7fffedc3a000     0x5000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbisfile.so.3.3.8
-      0x7fffedc3a000     0x7fffedc3b000     0x1000     0x7000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbisfile.so.3.3.8
-      0x7fffedc3b000     0x7fffedc3c000     0x1000     0x7000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbisfile.so.3.3.8
-      0x7fffedc3c000     0x7fffedc3d000     0x1000     0x8000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbisfile.so.3.3.8
+      0x7fffedc27000     0x7fffedc2e000     0x7000        0x0  rw-p   
+      0x7fffedc2e000     0x7fffedc30000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-dri3.so.0.1.0
+      0x7fffedc30000     0x7fffedc32000     0x2000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-dri3.so.0.1.0
+      0x7fffedc32000     0x7fffedc33000     0x1000     0x4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-dri3.so.0.1.0
+      0x7fffedc33000     0x7fffedc34000     0x1000     0x4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-dri3.so.0.1.0
+      0x7fffedc34000     0x7fffedc35000     0x1000     0x5000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libxcb-dri3.so.0.1.0
+      0x7fffedc35000     0x7fffedc37000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXfixes.so.3.1.0
+      0x7fffedc37000     0x7fffedc3a000     0x3000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXfixes.so.3.1.0
+      0x7fffedc3a000     0x7fffedc3b000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXfixes.so.3.1.0
+      0x7fffedc3b000     0x7fffedc3c000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXfixes.so.3.1.0
+      0x7fffedc3c000     0x7fffedc3d000     0x1000     0x6000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXfixes.so.3.1.0
       0x7fffedc3d000     0x7fffedc3e000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbisenc.so.2.0.12
       0x7fffedc3e000     0x7fffedc41000     0x3000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbisenc.so.2.0.12
       0x7fffedc41000     0x7fffedcb8000    0x77000     0x4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbisenc.so.2.0.12
@@ -661,12 +651,18 @@ Mapped address spaces:
       0x7fffee39f000     0x7fffee415000    0x76000   0x19f000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libc.so.6
       0x7fffee415000     0x7fffee419000     0x4000   0x214000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libc.so.6
       0x7fffee419000     0x7fffee41b000     0x2000   0x218000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libc.so.6
-      0x7fffee41b000     0x7fffee429000     0xe000        0x0  rw-p   
-      0x7fffee429000     0x7fffee42c000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libngtcp2_crypto_ossl.so.0.3.1
-      0x7fffee42c000     0x7fffee432000     0x6000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libngtcp2_crypto_ossl.so.0.3.1
-      0x7fffee432000     0x7fffee434000     0x2000     0x9000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libngtcp2_crypto_ossl.so.0.3.1
-      0x7fffee434000     0x7fffee435000     0x1000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libngtcp2_crypto_ossl.so.0.3.1
-      0x7fffee435000     0x7fffee436000     0x1000     0xb000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libngtcp2_crypto_ossl.so.0.3.1
+      0x7fffee41b000     0x7fffee423000     0x8000        0x0  rw-p   
+      0x7fffee423000     0x7fffee424000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsharpyuv.so.0.1.2
+      0x7fffee424000     0x7fffee428000     0x4000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsharpyuv.so.0.1.2
+      0x7fffee428000     0x7fffee429000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsharpyuv.so.0.1.2
+      0x7fffee429000     0x7fffee42a000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsharpyuv.so.0.1.2
+      0x7fffee42a000     0x7fffee42b000     0x1000     0x6000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsharpyuv.so.0.1.2
+      0x7fffee42b000     0x7fffee42c000     0x1000        0x0  rw-p   
+      0x7fffee42c000     0x7fffee42e000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libogg.so.0.8.6
+      0x7fffee42e000     0x7fffee431000     0x3000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libogg.so.0.8.6
+      0x7fffee431000     0x7fffee434000     0x3000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libogg.so.0.8.6
+      0x7fffee434000     0x7fffee435000     0x1000     0x8000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libogg.so.0.8.6
+      0x7fffee435000     0x7fffee436000     0x1000     0x9000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libogg.so.0.8.6
       0x7fffee436000     0x7fffee439000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva.so.2.2400.0
       0x7fffee439000     0x7fffee45b000    0x22000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva.so.2.2400.0
       0x7fffee45b000     0x7fffee46e000    0x13000    0x25000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva.so.2.2400.0
@@ -683,7 +679,13 @@ Mapped address spaces:
       0x7fffee81d000     0x7fffee8bd000    0xa0000   0x21d000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libstdc++.so.6.0.36
       0x7fffee8bd000     0x7fffee8ce000    0x11000   0x2bc000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libstdc++.so.6.0.36
       0x7fffee8ce000     0x7fffee8cf000     0x1000   0x2cd000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libstdc++.so.6.0.36
-      0x7fffee8cf000     0x7fffee8d9000     0xa000        0x0  rw-p   
+      0x7fffee8cf000     0x7fffee8d3000     0x4000        0x0  rw-p   
+      0x7fffee8d3000     0x7fffee8d4000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_MEASUREMENT
+      0x7fffee8d4000     0x7fffee8d5000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libX11-xcb.so.1.0.0
+      0x7fffee8d5000     0x7fffee8d6000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libX11-xcb.so.1.0.0
+      0x7fffee8d6000     0x7fffee8d7000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libX11-xcb.so.1.0.0
+      0x7fffee8d7000     0x7fffee8d8000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libX11-xcb.so.1.0.0
+      0x7fffee8d8000     0x7fffee8d9000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libX11-xcb.so.1.0.0
       0x7fffee8d9000     0x7fffee8dc000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbis.so.0.4.9
       0x7fffee8dc000     0x7fffee8f4000    0x18000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbis.so.0.4.9
       0x7fffee8f4000     0x7fffee905000    0x11000    0x1b000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbis.so.0.4.9
@@ -700,19 +702,12 @@ Mapped address spaces:
       0x7fffeec5d000     0x7fffeed0c000    0xaf000   0x25d000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libSDL3.so.0
       0x7fffeed0c000     0x7fffeed19000     0xd000   0x30c000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libSDL3.so.0
       0x7fffeed19000     0x7fffeed26000     0xd000   0x319000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libSDL3.so.0
-      0x7fffeed26000     0x7fffeed2c000     0x6000        0x0  rw-p   
-      0x7fffeed2c000     0x7fffeed2d000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_MEASUREMENT
-      0x7fffeed2d000     0x7fffeed31000     0x4000        0x0  rw-p   
-      0x7fffeed31000     0x7fffeed32000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvdpau.so.1.0.0
-      0x7fffeed32000     0x7fffeed33000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvdpau.so.1.0.0
-      0x7fffeed33000     0x7fffeed34000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvdpau.so.1.0.0
-      0x7fffeed34000     0x7fffeed35000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvdpau.so.1.0.0
-      0x7fffeed35000     0x7fffeed36000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvdpau.so.1.0.0
-      0x7fffeed36000     0x7fffeed38000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-x11.so.2.2400.0
-      0x7fffeed38000     0x7fffeed3b000     0x3000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-x11.so.2.2400.0
-      0x7fffeed3b000     0x7fffeed3c000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-x11.so.2.2400.0
-      0x7fffeed3c000     0x7fffeed3d000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-x11.so.2.2400.0
-      0x7fffeed3d000     0x7fffeed3e000     0x1000     0x6000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-x11.so.2.2400.0
+      0x7fffeed26000     0x7fffeed34000     0xe000        0x0  rw-p   
+      0x7fffeed34000     0x7fffeed36000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbisfile.so.3.3.8
+      0x7fffeed36000     0x7fffeed3b000     0x5000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbisfile.so.3.3.8
+      0x7fffeed3b000     0x7fffeed3c000     0x1000     0x7000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbisfile.so.3.3.8
+      0x7fffeed3c000     0x7fffeed3d000     0x1000     0x7000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbisfile.so.3.3.8
+      0x7fffeed3d000     0x7fffeed3e000     0x1000     0x8000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvorbisfile.so.3.3.8
       0x7fffeed3e000     0x7fffeed3f000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libtheoraenc.so.2.2.1
       0x7fffeed3f000     0x7fffeed63000    0x24000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libtheoraenc.so.2.2.1
       0x7fffeed63000     0x7fffeed6f000     0xc000    0x25000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libtheoraenc.so.2.2.1
@@ -728,12 +723,17 @@ Mapped address spaces:
       0x7fffef49b000     0x7fffef7bd000   0x322000   0x69b000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libavcodec.so.63.1.102
       0x7fffef7bd000     0x7fffef830000    0x73000   0x9bd000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libavcodec.so.63.1.102
       0x7fffef830000     0x7fffef832000     0x2000   0xa30000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libavcodec.so.63.1.102
-      0x7fffef832000     0x7fffefe95000   0x663000        0x0  rw-p   
-      0x7fffefe95000     0x7fffefe97000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libtheoradec.so.2.1.1
-      0x7fffefe97000     0x7fffefea9000    0x12000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libtheoradec.so.2.1.1
-      0x7fffefea9000     0x7fffefeab000     0x2000    0x14000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libtheoradec.so.2.1.1
-      0x7fffefeab000     0x7fffefeac000     0x1000    0x15000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libtheoradec.so.2.1.1
-      0x7fffefeac000     0x7fffefead000     0x1000    0x16000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libtheoradec.so.2.1.1
+      0x7fffef832000     0x7fffefe9b000   0x669000        0x0  rw-p   
+      0x7fffefe9b000     0x7fffefe9e000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libngtcp2_crypto_ossl.so.0.3.1
+      0x7fffefe9e000     0x7fffefea4000     0x6000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libngtcp2_crypto_ossl.so.0.3.1
+      0x7fffefea4000     0x7fffefea6000     0x2000     0x9000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libngtcp2_crypto_ossl.so.0.3.1
+      0x7fffefea6000     0x7fffefea7000     0x1000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libngtcp2_crypto_ossl.so.0.3.1
+      0x7fffefea7000     0x7fffefea8000     0x1000     0xb000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libngtcp2_crypto_ossl.so.0.3.1
+      0x7fffefea8000     0x7fffefea9000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvdpau.so.1.0.0
+      0x7fffefea9000     0x7fffefeaa000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvdpau.so.1.0.0
+      0x7fffefeaa000     0x7fffefeab000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvdpau.so.1.0.0
+      0x7fffefeab000     0x7fffefeac000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvdpau.so.1.0.0
+      0x7fffefeac000     0x7fffefead000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libvdpau.so.1.0.0
       0x7fffefead000     0x7fffefeaf000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libspeex.so.1.5.2
       0x7fffefeaf000     0x7fffefec2000    0x13000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libspeex.so.1.5.2
       0x7fffefec2000     0x7fffefec7000     0x5000    0x15000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libspeex.so.1.5.2
@@ -750,11 +750,17 @@ Mapped address spaces:
       0x7ffff05cf000     0x7ffff0711000   0x142000   0x5cf000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcapstone.so.5
       0x7ffff0711000     0x7ffff0712000     0x1000   0x711000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcapstone.so.5
       0x7ffff0712000     0x7ffff0714000     0x2000        0x0  rw-p   
-      0x7ffff0714000     0x7ffff0717000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsnappy.so.1.2.2
-      0x7ffff0717000     0x7ffff071e000     0x7000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsnappy.so.1.2.2
-      0x7ffff071e000     0x7ffff0721000     0x3000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsnappy.so.1.2.2
-      0x7ffff0721000     0x7ffff0722000     0x1000     0xc000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsnappy.so.1.2.2
-      0x7ffff0722000     0x7ffff0723000     0x1000     0xd000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsnappy.so.1.2.2
+      0x7ffff0714000     0x7ffff0716000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-x11.so.2.2400.0
+      0x7ffff0716000     0x7ffff0719000     0x3000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-x11.so.2.2400.0
+      0x7ffff0719000     0x7ffff071a000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-x11.so.2.2400.0
+      0x7ffff071a000     0x7ffff071b000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-x11.so.2.2400.0
+      0x7ffff071b000     0x7ffff071c000     0x1000     0x6000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-x11.so.2.2400.0
+      0x7ffff071c000     0x7ffff071d000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-drm.so.2.2400.0
+      0x7ffff071d000     0x7ffff071e000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-drm.so.2.2400.0
+      0x7ffff071e000     0x7ffff071f000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-drm.so.2.2400.0
+      0x7ffff071f000     0x7ffff0720000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-drm.so.2.2400.0
+      0x7ffff0720000     0x7ffff0721000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-drm.so.2.2400.0
+      0x7ffff0721000     0x7ffff0723000     0x2000        0x0  rw-p   
       0x7ffff0723000     0x7ffff0727000     0x4000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/liblzma.so.5.8.4
       0x7ffff0727000     0x7ffff074b000    0x24000     0x4000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/liblzma.so.5.8.4
       0x7ffff074b000     0x7ffff0757000     0xc000    0x28000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/liblzma.so.5.8.4
@@ -774,45 +780,49 @@ Mapped address spaces:
       0x7ffff46b8000     0x7ffff66b9000  0x2001000        0x0  rwxp   
       0x7ffff66b9000     0x7ffff68a6000   0x1ed000        0x0  rw-p   
       0x7ffff68a6000     0x7ffff68a7000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_IDENTIFICATION
-      0x7ffff68a7000     0x7ffff68a8000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-drm.so.2.2400.0
-      0x7ffff68a8000     0x7ffff68a9000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-drm.so.2.2400.0
-      0x7ffff68a9000     0x7ffff68aa000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-drm.so.2.2400.0
-      0x7ffff68aa000     0x7ffff68ab000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-drm.so.2.2400.0
-      0x7ffff68ab000     0x7ffff68ac000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libva-drm.so.2.2400.0
-      0x7ffff68ac000     0x7ffff68ae000     0x2000        0x0  rw-p   
-      0x7ffff68ae000     0x7ffff68b1000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbluray.so.4.0.0
-      0x7ffff68b1000     0x7ffff68e8000    0x37000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbluray.so.4.0.0
-      0x7ffff68e8000     0x7ffff68f9000    0x11000    0x3a000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbluray.so.4.0.0
-      0x7ffff68f9000     0x7ffff68fb000     0x2000    0x4b000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbluray.so.4.0.0
-      0x7ffff68fb000     0x7ffff68fc000     0x1000    0x4d000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbluray.so.4.0.0
-      0x7ffff68fc000     0x7ffff68ff000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdread.so.8.2.0
-      0x7ffff68ff000     0x7ffff691d000    0x1e000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdread.so.8.2.0
-      0x7ffff691d000     0x7ffff6926000     0x9000    0x21000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdread.so.8.2.0
-      0x7ffff6926000     0x7ffff6927000     0x1000    0x2a000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdread.so.8.2.0
-      0x7ffff6927000     0x7ffff6928000     0x1000    0x2b000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdread.so.8.2.0
-      0x7ffff6928000     0x7ffff692b000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdnav.so.4.4.0
-      0x7ffff692b000     0x7ffff693a000     0xf000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdnav.so.4.4.0
-      0x7ffff693a000     0x7ffff693e000     0x4000    0x12000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdnav.so.4.4.0
-      0x7ffff693e000     0x7ffff693f000     0x1000    0x15000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdnav.so.4.4.0
-      0x7ffff693f000     0x7ffff6940000     0x1000    0x16000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdnav.so.4.4.0
-      0x7ffff6940000     0x7ffff6960000    0x20000        0x0  rw-p   
-      0x7ffff6960000     0x7ffff6966000     0x6000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpng16.so.16.59.0
-      0x7ffff6966000     0x7ffff6991000    0x2b000     0x6000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpng16.so.16.59.0
-      0x7ffff6991000     0x7ffff699b000     0xa000    0x31000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpng16.so.16.59.0
-      0x7ffff699b000     0x7ffff699c000     0x1000    0x3a000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpng16.so.16.59.0
-      0x7ffff699c000     0x7ffff699d000     0x1000    0x3b000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpng16.so.16.59.0
-      0x7ffff699d000     0x7ffff699f000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbz2.so.1.0.8
-      0x7ffff699f000     0x7ffff69ac000     0xd000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbz2.so.1.0.8
-      0x7ffff69ac000     0x7ffff69ae000     0x2000     0xf000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbz2.so.1.0.8
-      0x7ffff69ae000     0x7ffff69af000     0x1000    0x10000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbz2.so.1.0.8
-      0x7ffff69af000     0x7ffff69b0000     0x1000    0x11000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbz2.so.1.0.8
-      0x7ffff69b0000     0x7ffff69c2000    0x12000        0x0  rw-p   
-      0x7ffff69c2000     0x7ffff69c4000     0x2000        0x0  rw-p   
-      0x7ffff69c4000     0x7ffff69c6000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libwebpmux.so.3.1.2
-      0x7ffff69c6000     0x7ffff69cd000     0x7000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libwebpmux.so.3.1.2
-      0x7ffff69cd000     0x7ffff69ce000     0x1000     0x9000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libwebpmux.so.3.1.2
-      0x7ffff69ce000     0x7ffff69cf000     0x1000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libwebpmux.so.3.1.2
-      0x7ffff69cf000     0x7ffff69d0000     0x1000     0xb000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libwebpmux.so.3.1.2
+      0x7ffff68a7000     0x7ffff68a9000     0x2000        0x0  rw-p   
+      0x7ffff68a9000     0x7ffff68ab000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libtheoradec.so.2.1.1
+      0x7ffff68ab000     0x7ffff68bd000    0x12000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libtheoradec.so.2.1.1
+      0x7ffff68bd000     0x7ffff68bf000     0x2000    0x14000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libtheoradec.so.2.1.1
+      0x7ffff68bf000     0x7ffff68c0000     0x1000    0x15000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libtheoradec.so.2.1.1
+      0x7ffff68c0000     0x7ffff68c1000     0x1000    0x16000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libtheoradec.so.2.1.1
+      0x7ffff68c1000     0x7ffff68c3000     0x2000        0x0  rw-p   
+      0x7ffff68c3000     0x7ffff68c6000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsnappy.so.1.2.2
+      0x7ffff68c6000     0x7ffff68cd000     0x7000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsnappy.so.1.2.2
+      0x7ffff68cd000     0x7ffff68d0000     0x3000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsnappy.so.1.2.2
+      0x7ffff68d0000     0x7ffff68d1000     0x1000     0xc000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsnappy.so.1.2.2
+      0x7ffff68d1000     0x7ffff68d2000     0x1000     0xd000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libsnappy.so.1.2.2
+      0x7ffff68d2000     0x7ffff68d4000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libwebpmux.so.3.1.2
+      0x7ffff68d4000     0x7ffff68db000     0x7000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libwebpmux.so.3.1.2
+      0x7ffff68db000     0x7ffff68dc000     0x1000     0x9000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libwebpmux.so.3.1.2
+      0x7ffff68dc000     0x7ffff68dd000     0x1000     0xa000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libwebpmux.so.3.1.2
+      0x7ffff68dd000     0x7ffff68de000     0x1000     0xb000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libwebpmux.so.3.1.2
+      0x7ffff68de000     0x7ffff68e1000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbluray.so.4.0.0
+      0x7ffff68e1000     0x7ffff6918000    0x37000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbluray.so.4.0.0
+      0x7ffff6918000     0x7ffff6929000    0x11000    0x3a000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbluray.so.4.0.0
+      0x7ffff6929000     0x7ffff692b000     0x2000    0x4b000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbluray.so.4.0.0
+      0x7ffff692b000     0x7ffff692c000     0x1000    0x4d000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbluray.so.4.0.0
+      0x7ffff692c000     0x7ffff692f000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdread.so.8.2.0
+      0x7ffff692f000     0x7ffff694d000    0x1e000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdread.so.8.2.0
+      0x7ffff694d000     0x7ffff6956000     0x9000    0x21000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdread.so.8.2.0
+      0x7ffff6956000     0x7ffff6957000     0x1000    0x2a000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdread.so.8.2.0
+      0x7ffff6957000     0x7ffff6958000     0x1000    0x2b000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdread.so.8.2.0
+      0x7ffff6958000     0x7ffff695b000     0x3000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdnav.so.4.4.0
+      0x7ffff695b000     0x7ffff696a000     0xf000     0x3000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdnav.so.4.4.0
+      0x7ffff696a000     0x7ffff696e000     0x4000    0x12000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdnav.so.4.4.0
+      0x7ffff696e000     0x7ffff696f000     0x1000    0x15000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdnav.so.4.4.0
+      0x7ffff696f000     0x7ffff6970000     0x1000    0x16000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdvdnav.so.4.4.0
+      0x7ffff6970000     0x7ffff6980000    0x10000        0x0  rw-p   
+      0x7ffff6980000     0x7ffff6986000     0x6000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpng16.so.16.59.0
+      0x7ffff6986000     0x7ffff69b1000    0x2b000     0x6000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpng16.so.16.59.0
+      0x7ffff69b1000     0x7ffff69bb000     0xa000    0x31000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpng16.so.16.59.0
+      0x7ffff69bb000     0x7ffff69bc000     0x1000    0x3a000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpng16.so.16.59.0
+      0x7ffff69bc000     0x7ffff69bd000     0x1000    0x3b000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libpng16.so.16.59.0
+      0x7ffff69bd000     0x7ffff69bf000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbz2.so.1.0.8
+      0x7ffff69bf000     0x7ffff69cc000     0xd000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbz2.so.1.0.8
+      0x7ffff69cc000     0x7ffff69ce000     0x2000     0xf000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbz2.so.1.0.8
+      0x7ffff69ce000     0x7ffff69cf000     0x1000    0x10000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbz2.so.1.0.8
+      0x7ffff69cf000     0x7ffff69d0000     0x1000    0x11000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbz2.so.1.0.8
       0x7ffff69d0000     0x7ffff69e1000    0x11000        0x0  rw-p   
       0x7ffff69e1000     0x7ffff69e2000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbrotlidec.so.1.2.0
       0x7ffff69e2000     0x7ffff69eb000     0x9000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbrotlidec.so.1.2.0
@@ -949,166 +959,85 @@ AE_GDB_COMMAND_BEGIN: bt
 #1  0x0000000001587a90 in ?? ()
 #2  0x00000000014f2850 in ?? ()
 #3  0x00007ffff0de5870 in ?? ()
-#4  0x00007fffd4051620 in ?? ()
-#5  0x00007fff0000006e in ?? ()
-#6  0x0000000000000010 in ?? ()
-#7  0x0000000000000001 in ?? ()
-#8  0x000000000000002d in ?? ()
-#9  0x0000000000000002 in ?? ()
-#10 0x0000000001587a90 in ?? ()
-#11 0x00007ffff0deabf3 in ?? ()
-#12 0x00007fffd40515a0 in ?? ()
-#13 0x00007fffd405161c in ?? ()
-#14 0x0000002c00000000 in ?? ()
-#15 0x000000000158776a in ?? ()
-#16 0x00007fffd4051618 in ?? ()
-#17 0x00007ffff7dfcc07 in ?? ()
-#18 0x00007fffd4051618 in ?? ()
-#19 0x0000000000000001 in ?? ()
-#20 0x0000000001587c40 in ?? ()
-#21 0x0000000001587a90 in ?? ()
-#22 0x00000000014f2850 in ?? ()
-#23 0x000000000158a998 in ?? ()
-#24 0x0000000000000003 in ?? ()
-#25 0x00007ffff0de67f3 in ?? ()
-#26 0x0000000000020000 in ?? ()
-#27 0x00000000015776a0 in ?? ()
-#28 0x00007fffd4051630 in ?? ()
-#29 0x000000000000113b in ?? ()
-#30 0x000000000158a224 in ?? ()
-#31 0x00007ffff7dfb637 in ?? ()
-#32 0x00007fffb8000880 in ?? ()
-#33 0x0000013400000161 in ?? ()
-#34 0x0000000000000002 in ?? ()
-#35 0x00007ffff7dfcc07 in ?? ()
-#36 0x00007fffd4051660 in ?? ()
-#37 0xdd1394b8f1246c00 in ?? ()
-#38 0x00007fffd4051650 in ?? ()
-#39 0x000000000f5730e0 in ?? ()
-#40 0x00007fffd4051690 in ?? ()
-#41 0x0000000000000020 in ?? ()
-#42 0x00007ffff7dfb530 in ?? ()
-#43 0x000000000000000b in ?? ()
-#44 0x00007ffff7dfb637 in ?? ()
-#45 0x00007fffee6ea859 in ?? ()
-#46 0x00007fffd4052ce4 in ?? ()
-#47 0x00007ffff7dfb637 in ?? ()
-#48 0x00007fffd40517b0 in ?? ()
-#49 0x00007fffee298042 in ?? ()
-#50 0x0000000000000000 in ?? ()
+#4  0x0000000000000000 in ?? ()
 AE_GDB_COMMAND_END: bt
 AE_GDB_COMMAND_BEGIN: thread apply all bt 40
 
-Thread 15 (LWP 4411 "pcsx-redux"):
+Thread 15 (LWP 4833 "pcsx-redux"):
 #0  0x00007ffff0dd36d0 in ?? ()
 #1  0x0000000001587a90 in ?? ()
 #2  0x00000000014f2850 in ?? ()
 #3  0x00007ffff0de5870 in ?? ()
-#4  0x00007fffd4051620 in ?? ()
-#5  0x00007fff0000006e in ?? ()
-#6  0x0000000000000010 in ?? ()
-#7  0x0000000000000001 in ?? ()
-#8  0x000000000000002d in ?? ()
-#9  0x0000000000000002 in ?? ()
-#10 0x0000000001587a90 in ?? ()
-#11 0x00007ffff0deabf3 in ?? ()
-#12 0x00007fffd40515a0 in ?? ()
-#13 0x00007fffd405161c in ?? ()
-#14 0x0000002c00000000 in ?? ()
-#15 0x000000000158776a in ?? ()
-#16 0x00007fffd4051618 in ?? ()
-#17 0x00007ffff7dfcc07 in ?? ()
-#18 0x00007fffd4051618 in ?? ()
-#19 0x0000000000000001 in ?? ()
-#20 0x0000000001587c40 in ?? ()
-#21 0x0000000001587a90 in ?? ()
-#22 0x00000000014f2850 in ?? ()
-#23 0x000000000158a998 in ?? ()
-#24 0x0000000000000003 in ?? ()
-#25 0x00007ffff0de67f3 in ?? ()
-#26 0x0000000000020000 in ?? ()
-#27 0x00000000015776a0 in ?? ()
-#28 0x00007fffd4051630 in ?? ()
-#29 0x000000000000113b in ?? ()
-#30 0x000000000158a224 in ?? ()
-#31 0x00007ffff7dfb637 in ?? ()
-#32 0x00007fffb8000880 in ?? ()
-#33 0x0000013400000161 in ?? ()
-#34 0x0000000000000002 in ?? ()
-#35 0x00007ffff7dfcc07 in ?? ()
-#36 0x00007fffd4051660 in ?? ()
-#37 0xdd1394b8f1246c00 in ?? ()
-#38 0x00007fffd4051650 in ?? ()
-#39 0x000000000f5730e0 in ?? ()
+#4  0x0000000000000000 in ?? ()
 
-Thread 14 (LWP 4410 "libusb"):
+Thread 14 (LWP 4832 "libusb"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee3112e5 in ?? ()
 #2  0x00007fffcbfff9c8 in ?? ()
 #3  0x0000000000000000 in ?? ()
 
-Thread 13 (LWP 4409 "libusb_event"):
+Thread 13 (LWP 4831 "libusb_event"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee3112e5 in ?? ()
 #2  0x00007fffd1c4f9c8 in ?? ()
 #3  0x0000000000000000 in ?? ()
 
-Thread 9 (LWP 4405 "SDLAudioP23"):
+Thread 9 (LWP 4827 "SDLAudioP23"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee2e4aad in ?? ()
 #2  0x00007fffd5ffe9c8 in ?? ()
 #3  0x0000000000000000 in ?? ()
 
-Thread 6 (LWP 4401 "libuv-worker"):
+Thread 6 (LWP 4823 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffe8fa29c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x0000000000000000 in ?? ()
 
-Thread 5 (LWP 4400 "libuv-worker"):
+Thread 5 (LWP 4822 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffe97a39c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x0000000000000000 in ?? ()
 
-Thread 4 (LWP 4399 "libuv-worker"):
+Thread 4 (LWP 4821 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffe9fa49c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x0000000000000000 in ?? ()
 
-Thread 3 (LWP 4398 "libuv-worker"):
+Thread 3 (LWP 4820 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffea7a59c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x00007ffff7f2e708 in ?? ()
 #5  0x00007fffea7a56c0 in ?? ()
-#6  0x0000112effffffff in ?? ()
+#6  0xffffffffffffffff in ?? ()
 #7  0x00007ffff70ed180 in ?? ()
 #8  0x00007fffea7a4640 in ?? ()
 #9  0x00007fffee2974ec in ?? ()
-#10 0x00007ffff70ed120 in ?? ()
-#11 0x00007ffff70ed120 in ?? ()
-#12 0x0000000000000001 in ?? ()
+#10 0x00007ffff70ed124 in ?? ()
+#11 0x00007ffff70ed124 in ?? ()
+#12 0x0000000100000001 in ?? ()
 #13 0x0000000000000056 in ?? ()
 #14 0x00007fffee297320 in ?? ()
 #15 0x00007fffea7a45e0 in ?? ()
 #16 0x00007fffea7a45e0 in ?? ()
 #17 0x0000000000000000 in ?? ()
 
-Thread 2 (LWP 4397 "pcsx-redux"):
+Thread 2 (LWP 4819 "pcsx-redux"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee3209eb in ?? ()
 #2  0x00007fffeb7a69c8 in ?? ()
 #3  0x0000000000000008 in ?? ()
 #4  0x00007ffff66bd4a8 in ?? ()
 #5  0x00007fffeb7a66c0 in ?? ()
-#6  0x0000000000000065 in ?? ()
-#7  0xdd1394b8f1246c00 in ?? ()
+#6  0x00000000000000c0 in ?? ()
+#7  0xacab5473a19db200 in ?? ()
 #8  0x00007fffeb7a5540 in ?? ()
 #9  0x00007ffff70df901 in ?? ()
 #10 0x00007ffff70cc170 in ?? ()
@@ -1116,9 +1045,10 @@ Thread 2 (LWP 4397 "pcsx-redux"):
 #12 0x0000003000000000 in ?? ()
 #13 0x0000000000000000 in ?? ()
 
-Thread 1 (LWP 4394 "pcsx-redux"):
-#0  0x00007ffff0def65c in ?? ()
-#1  0x0000000000000000 in ?? ()
+Thread 1 (LWP 4816 "pcsx-redux"):
+#0  0x00007ffff0def525 in ?? ()
+#1  0x0000000000000001 in ?? ()
+#2  0x0000000000000000 in ?? ()
 AE_GDB_COMMAND_END: thread apply all bt 40
 AE_GDB_CONTEXT_END
 

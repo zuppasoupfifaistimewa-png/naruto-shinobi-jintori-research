@@ -1,5 +1,5 @@
 Loading memory card /tmp/naruto-ae1-channel-bisect/reference.mcd
-The memory card /tmp/naruto-ae1-channel-bisect/home/.config/pcsx-redux/memcard2.mcd doesn't exist - creating it
+Loading memory card /tmp/naruto-ae1-channel-bisect/home/.config/pcsx-redux/memcard2.mcd
 Audio: driver dummy, 44100 Hz, 441 frames per period
 Warning: OpenGL error reporting disabled. See About dialog for more information.
 Loaded CD Image: /tmp/naruto-ae1-channel-bisect/source/game-run.cue[+cue].

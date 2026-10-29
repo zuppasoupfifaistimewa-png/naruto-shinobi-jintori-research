@@ -1,4 +1,4 @@
-[Detaching after fork from child process 3995]
+[Detaching after fork from child process 4430]
 ALSA lib confmisc.c:855:(parse_card) [error.core] cannot find card '0'
 ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_card_inum returned error: No such file or directory
 ALSA lib confmisc.c:422:(snd_func_concat) [error.core] error evaluating strings
@@ -186,97 +186,97 @@ BIOS Trace1: 0x02
   0xffffffffff600000 0xffffffffff601000     0x1000        0x0  --xp   [vsyscall]
 AE_GDB_COMMAND_END: info proc mappings
 AE_GDB_COMMAND_BEGIN: bt
-#0  0x00007fffe1ed64e2 in ?? ()
+#0  0x00007fffe1f3f32b in ?? ()
 #1  0x0000000000000000 in ?? ()
 AE_GDB_COMMAND_END: bt
 AE_GDB_COMMAND_BEGIN: thread apply all bt 40
 
-Thread 15 (LWP 4003 "pcsx-redux"):
+Thread 15 (LWP 4438 "pcsx-redux"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
-#2  0x00007fffd40529c8 in ?? ()
+#2  0x00007fffcffff9c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
-#4  0x00007fffd40515b0 in ?? ()
-#5  0x00007fffd40526c0 in ?? ()
-#6  0x00007fffd4051730 in ?? ()
+#4  0x00007fffcfffe5b0 in ?? ()
+#5  0x00007fffcffff6c0 in ?? ()
+#6  0x00007fffcfffe730 in ?? ()
 #7  0x000000000158cb00 in ?? ()
-#8  0x00007fffd40515d0 in ?? ()
+#8  0x00007fffcfffe5d0 in ?? ()
 #9  0x00007fffee29796c in ?? ()
 #10 0x00000000014f2830 in ?? ()
 #11 0x00000000f0de5870 in ?? ()
-#12 0x00007fffd4051620 in ?? ()
-#13 0x00007fff000002c2 in ?? ()
-#14 0x00000000000002c4 in ?? ()
+#12 0x00007fffcfffe620 in ?? ()
+#13 0x00007fff000002ca in ?? ()
+#14 0x00000000000002cc in ?? ()
 #15 0x0000000000000000 in ?? ()
 
-Thread 14 (LWP 4002 "libusb"):
+Thread 14 (LWP 4437 "libusb"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee3112e5 in ?? ()
-#2  0x00007fffcbfff9c8 in ?? ()
+#2  0x00007fffccbfb9c8 in ?? ()
 #3  0x0000000000000000 in ?? ()
 
-Thread 13 (LWP 4001 "libusb_event"):
+Thread 13 (LWP 4436 "libusb_event"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee3112e5 in ?? ()
-#2  0x00007fffd1c4f9c8 in ?? ()
+#2  0x00007fffcdbfc9c8 in ?? ()
 #3  0x0000000000000000 in ?? ()
 
-Thread 9 (LWP 3997 "SDLAudioP23"):
+Thread 9 (LWP 4432 "SDLAudioP23"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee2e4aad in ?? ()
 #2  0x00007fffd5ffe9c8 in ?? ()
 #3  0x0000000000000000 in ?? ()
 
-Thread 6 (LWP 3993 "libuv-worker"):
+Thread 6 (LWP 4428 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffe8fa29c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x0000000000000000 in ?? ()
 
-Thread 5 (LWP 3992 "libuv-worker"):
+Thread 5 (LWP 4427 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffe97a39c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x0000000000000000 in ?? ()
 
-Thread 4 (LWP 3991 "libuv-worker"):
+Thread 4 (LWP 4426 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffe9fa49c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x0000000000000000 in ?? ()
 
-Thread 3 (LWP 3990 "libuv-worker"):
+Thread 3 (LWP 4425 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffea7a59c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x00007ffff7f2e708 in ?? ()
 #5  0x00007fffea7a56c0 in ?? ()
-#6  0x00000f96ffffffff in ?? ()
+#6  0x00001149ffffffff in ?? ()
 #7  0x00007ffff70ed180 in ?? ()
 #8  0x00007fffea7a4640 in ?? ()
 #9  0x00007fffee2974ec in ?? ()
-#10 0x00007ffff70ed124 in ?? ()
-#11 0x00007ffff70ed124 in ?? ()
-#12 0x0000000100000001 in ?? ()
-#13 0x0000000000000058 in ?? ()
+#10 0x00007ffff70ed120 in ?? ()
+#11 0x00007ffff70ed120 in ?? ()
+#12 0x0000000000000001 in ?? ()
+#13 0x000000000000005a in ?? ()
 #14 0x00007fffee297320 in ?? ()
 #15 0x00007fffea7a45e0 in ?? ()
 #16 0x00007fffea7a45e0 in ?? ()
 #17 0x0000000000000000 in ?? ()
 
-Thread 2 (LWP 3989 "pcsx-redux"):
+Thread 2 (LWP 4424 "pcsx-redux"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee3209eb in ?? ()
 #2  0x00007fffeb7a69c8 in ?? ()
 #3  0x0000000000000008 in ?? ()
-#4  0x0000000000000147 in ?? ()
+#4  0x0000000000000694 in ?? ()
 #5  0x00007fffeb7a66c0 in ?? ()
-#6  0x0000000000000061 in ?? ()
-#7  0x0bf8f2dead706100 in ?? ()
+#6  0x00000000000000be in ?? ()
+#7  0xde066bed9c4de400 in ?? ()
 #8  0x00007fffeb7a5540 in ?? ()
 #9  0x00007ffff70df901 in ?? ()
 #10 0x00007ffff70cc170 in ?? ()
@@ -284,8 +284,8 @@ Thread 2 (LWP 3989 "pcsx-redux"):
 #12 0x0000003000000000 in ?? ()
 #13 0x0000000000000000 in ?? ()
 
-Thread 1 (LWP 3986 "pcsx-redux"):
-#0  0x00007fffe1ed64e2 in ?? ()
+Thread 1 (LWP 4421 "pcsx-redux"):
+#0  0x00007fffe1f3f32b in ?? ()
 #1  0x0000000000000000 in ?? ()
 AE_GDB_COMMAND_END: thread apply all bt 40
 AE_GDB_CONTEXT_END
