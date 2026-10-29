@@ -146,22 +146,7 @@ jobs:
           out, count = [], 0
           for line in src.read_text(encoding="utf-8").splitlines():
               if line.lstrip().upper().startswith("FILE "):
-                  m = re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -f "$RUNNER_TEMP/checkpoint-release-audit/checkpoint.raw.sstate" "$RUNNER_TEMP/checkpoint-release-audit/ram-prefix.bin" "$RUNNER_TEMP/checkpoint-release-audit/ram-values-private.csv"
-
-      - name: Upload text-only verification evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: checkpoint-release-target-window-text-only
-          path: |
-            ${{ runner.temp }}/checkpoint-release-audit/output/*.txt
-          if-no-files-found: error
-          retention-days: 7
-, line, re.I)
+                  m = re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$', line, re.I)
                   if not m: raise SystemExit("Unrecognized CUE FILE directive")
                   line = m.group(1) + '"naruto-disc.bin"' + m.group(2)
                   count += 1
@@ -205,18 +190,18 @@ jobs:
           head_sha: 4c505394ac331225545728261c66566fa3113763
           Run: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40792708405
           Commit permalink: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/4c505394ac331225545728261c66566fa3113763
-          The same run creates the sanitized report commit b26455720d19b6e78ada49bfe0698d1a289bc91a after the Release step. The job log shows 4c50539..b264557 HEAD -> main. This is why the head SHA and report commit differ.
+          The same run creates the sanitized report commit b26455720d19b6e78ada49bfe0698d1a289bc91a after the Release step. The job log shows 4c50539..b264557 HEAD -> main. These identify distinct workflow stages.
           Report commit permalink: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/b26455720d19b6e78ada49bfe0698d1a289bc91a
 
           ## (b) Checkpoint Release
-          Release API reports release ID 427327611, asset ID 686794219, author github-actions[bot], created_at 2026-10-29T00:14:06Z.
-          Run 40792708405 has the explicit step Preserve raw savestate as a non-expiring GitHub Release asset and records the tag/asset in its manifest. Conclusion: run 40792708405, workflow head commit 4c505394ac331225545728261c66566fa3113763; generated sanitized reports then committed as b26455720d19b6e78ada49bfe0698d1a289bc91a.
+          Release API: release ID 427327611, asset ID 686794219, author github-actions[bot], created_at 2026-10-29T00:14:06Z.
+          Run 40792708405 has the explicit step Preserve raw savestate as a non-expiring GitHub Release asset and records the tag/asset in its manifest. Conclusion: run 40792708405, workflow head commit 4c505394ac331225545728261c66566fa3113763; sanitized reports subsequently committed as b26455720d19b6e78ada49bfe0698d1a289bc91a.
           Release API: https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tags/naruto-checkpoint-39262213468
           Release: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/naruto-checkpoint-39262213468
 
           ## (c) 32 and 191 counts
           Expanded scan has 326 candidate memory instructions: 294 have a heuristic same-register LUI pairing with effective address 0x8013A554; 32 are UNRESOLVED because no same-register LUI was found within a 32-word window.
-          All 191 strict-scan difference rows appear in the expanded candidate list; membership does not mean all 191 effective addresses were independently resolved. The 32 unresolved candidates correspond to 32 READ/LW rows in the 191 difference table lacking a same-register LUI in the window. The value 32 is also used as the look-back window length, but the row count and window size are different concepts.
+          All 191 strict-scan difference rows occur in the expanded candidate list; membership does not mean all 191 effective addresses were independently resolved. The 32 unresolved candidates correspond to 32 READ/LW rows in the 191-row difference table lacking a same-register LUI within that window. The number 32 is also the look-back window length, but the row count and window size are different concepts.
           Scan run: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40789339014
           Scan commit: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/8b70e004f0df21bbb250a3c0b918a19e76ce0a21
           Reconciliation commit: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/4c505394ac331225545728261c66566fa3113763
@@ -226,7 +211,7 @@ jobs:
           rm -rf "$src" "$extracted"
           rm -f "$root/DATA.BIN"
 
-      - name: Cleanup private savestate and RAM dump
+      - name: Remove binary state and full RAM dump from runner workspace
         if: always()
         shell: bash
         run: |
