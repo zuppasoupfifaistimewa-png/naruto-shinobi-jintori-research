@@ -584,8 +584,9 @@ def extract_gpr_from_sstate(state_path):
     chosen=exact[0] if exact else next((x for x in evidence if len(x[2])==32),None)
     try:
         gp_struct=list(parse_fields(gpr_payload))
+        # Structural diagnostics only: never serialize raw non-GP register values into a report.
         gp_sig=[{"field":n,"wire":w,"payload_bytes":len(v) if isinstance(v,bytes) else "",
-                 "scalar":v if isinstance(v,int) and w==0 else (struct.unpack("<I",v)[0] if isinstance(v,bytes) and w==5 else "")}
+                 "value_type":"varint" if w==0 else ("fixed32" if w==5 else "bytes")}
                 for n,w,v in gp_struct]
     except Exception as e:
         gp_struct=[];gp_sig=[{"parse_error":str(e)}]
