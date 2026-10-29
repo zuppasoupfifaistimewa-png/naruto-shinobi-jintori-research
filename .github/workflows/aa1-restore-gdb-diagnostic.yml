@@ -506,6 +506,109 @@ jobs:
             done
           } > "$GITHUB_WORKSPACE/reports/aa_2026-10-29/AA1_runtime_summary.txt"
           cat "$GITHUB_WORKSPACE/reports/aa_2026-10-29/AA1_runtime_summary.txt"
+          JOB_ID_FOR_SUMMARY="$(curl -fsSL -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs" | jq -r '.jobs[] | select(.name=="diagnose") | .id' | head -n 1)"
+          export AA_RUN_ID="$GITHUB_RUN_ID" AA_JOB_ID="$JOB_ID_FOR_SUMMARY" AA_CODE_SHA="$GITHUB_SHA"
+          python3 - "$AA_WORK" "$GITHUB_WORKSPACE/reports/ae_2026-10-30/AG2_AG4_RUNTIME_SUMMARY.txt" "$GITHUB_WORKSPACE/reports/ae_2026-10-30/ag2_raw" <<'PY'
+          import hashlib, os, re, sys
+          from pathlib import Path
+          work, out, rawdir = Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3])
+          lines = [
+              "AG2/AG4 runtime evidence (text only; no ROM/BIOS/savestate/RAM bytes committed)",
+              f"run={os.getenv('AA_RUN_ID','TIDAK_TAHU')} job={os.getenv('AA_JOB_ID','TIDAK_TAHU')} workflow_commit={os.getenv('AA_CODE_SHA','TIDAK_TAHU')}",
+              "target_checkpoint_sha256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d",
+              "control_checkpoint_sha256=9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492",
+              "AG4_SCOPE=control checkpoint only; NOT the target checkpoint.",
+              "time_to_180 comes from Lua elapsed_since_loaded_s marker, not wrapper timeout/kill; timer resolution is 1 second.",
+          ]
+          for label in ("target", "control"):
+              for attempt in (1, 2):
+                  gp = work / "logs" / f"{label}.attempt{attempt}.gdb.log"
+                  pp = work / "logs" / f"{label}.attempt{attempt}.pcsx.log"
+                  full = rawdir / f"{label}-attempt{attempt}.gdb.full.txt"
+                  gt = gp.read_text(errors="replace") if gp.exists() else ""
+                  pt = pp.read_text(errors="replace") if pp.exists() else ""
+                  combined = gt + "\n" + pt
+                  sigmatches = re.findall(r"(?:Program received signal|Thread .* received signal|Program terminated with signal)\s+([^\n]+)", combined)
+                  if re.search(r"SIGSEGV", combined): outcome = "SIGSEGV"
+                  elif re.search(r"SIGABRT", combined): outcome = "SIGABRT"
+                  elif "AA1_POST_LOAD_VSYNC=180" in combined: outcome = "POST_LOAD_VSYNC=180"
+                  elif "AA1_LOAD_EVENT_TIMEOUT=1" in combined: outcome = "LOAD_EVENT_TIMEOUT"
+                  else: outcome = "INCONCLUSIVE/NOT_RECORDED"
+                  marker = re.findall(r"AA1_POST_LOAD_VSYNC=180[^\n]*", combined)
+                  elapsed = "NOT_RECORDED"
+                  if marker:
+                      m = re.search(r"elapsed_since_loaded_s=(\d+)", marker[-1])
+                      elapsed = m.group(1) + "s (1s resolution)" if m else "marker exists, elapsed unavailable"
+                  wrapper = re.findall(r"AA1_GDB_EXIT_CODE=([^\n]+)", gt)
+                  inferior = re.findall(r"Inferior .*?(?:exited normally|exited with code [^\n]+)", gt)
+                  snap = re.findall(r"AA1_RAM_SNAPSHOT=(?:PASS|FAIL)[^\n]*", combined)
+                  full_sha = hashlib.sha256(full.read_bytes()).hexdigest() if full.is_file() else "FULL_LOG_NOT_CREATED"
+                  lines.append(f"{label.upper()} attempt={attempt} outcome={outcome} time_to_180={elapsed}")
+                  lines.append(f"{label.upper()} attempt={attempt} signal={sigmatches[-1] if sigmatches else 'NOT_RECORDED'} inferior_exit={inferior[-1] if inferior else 'NOT_RECORDED'} gdb_wrapper_exit={wrapper[-1] if wrapper else 'NOT_RECORDED'}")
+                  lines.append(f"{label.upper()} attempt={attempt} full_gdb_log_sha256={full_sha} path=reports/ae_2026-10-30/ag2_raw/{label}-attempt{attempt}.gdb.full.txt")
+                  if snap:
+                      lines.append(f"{label.upper()} attempt={attempt} snapshot_status={snap[-1]}")
+          for attempt in (1, 2):
+              p = work / "runtime" / f"control-attempt{attempt}.sstate"
+              if not p.is_file():
+                  lines.append(f"CONTROL attempt={attempt} RAM_2MiB_snapshot=NOT_CREATED; words=TIDAK TAHU")
+                  continue
+              state = p.read_bytes()
+              def varint(buf, pos):
+                  val = 0; shift = 0
+                  while pos < len(buf) and shift <= 70:
+                      c = buf[pos]; pos += 1; val |= (c & 127) << shift
+                      if not c & 128: return val, pos
+                      shift += 7
+                  raise ValueError("invalid protobuf varint")
+              def fields(buf):
+                  ret=[]; pos=0
+                  while pos < len(buf):
+                      tag,pos=varint(buf,pos); n,w=tag>>3,tag&7
+                      if n == 0: raise ValueError("protobuf field 0")
+                      if w == 0: payload,pos=varint(buf,pos)
+                      elif w == 1: payload=buf[pos:pos+8]; pos+=8
+                      elif w == 2:
+                          length,pos=varint(buf,pos); payload=buf[pos:pos+length]; pos+=length
+                      elif w == 5: payload=buf[pos:pos+4]; pos+=4
+                      else: raise ValueError("unsupported wire type "+str(w))
+                      if pos > len(buf): raise ValueError("truncated protobuf")
+                      ret.append((n,w,payload))
+                  return ret
+              def one(buf,n):
+                  xs=[payload for fn,w,payload in fields(buf) if fn==n and w==2]
+                  if len(xs)!=1: raise ValueError(f"field {n}: expected exactly one wire2 entry, got {len(xs)}")
+                  return xs[0]
+              try:
+                  memory=one(state,3); ram=one(memory,1)
+                  if len(ram) < 0x200000: raise ValueError(f"RAM payload only {len(ram)} bytes")
+                  ram2=ram[:0x200000]
+                  vals=[]
+                  for addr in (0x80070EB8,0x80070F6C,0x8013A554):
+                      off=addr-0x80000000; raw=ram2[off:off+4]
+                      if len(raw)!=4: raise ValueError(f"address {addr:#x} not inside captured 2MiB")
+                      vals.append(f"{addr:#010x} bytes={raw.hex(' ')} LE32=0x{int.from_bytes(raw,'little'):08X}")
+                  lines.append(f"CONTROL attempt={attempt} saved_state_file_sha256={hashlib.sha256(state).hexdigest()} saved_state_bytes={len(state)} (temporary input/snapshot not committed)")
+                  lines.append(f"CONTROL attempt={attempt} RAM_2MiB_sha256={hashlib.sha256(ram2).hexdigest()} RAM_bytes={len(ram2)}")
+                  lines.append(f"CONTROL attempt={attempt} RAM_WORDS " + "; ".join(vals))
+              except Exception as e:
+                  lines.append(f"CONTROL attempt={attempt} RAM_SNAPSHOT_PARSE_ERROR={type(e).__name__}: {e}; words=TIDAK TAHU")
+          hashes=[]
+          for attempt in (1,2):
+              p=work/"runtime"/f"control-attempt{attempt}.sstate"
+              if p.is_file():
+                  try:
+                      state=p.read_bytes(); memory=one(state,3); ram=one(memory,1)[:0x200000]
+                      hashes.append(hashlib.sha256(ram).hexdigest())
+                  except Exception: hashes.append(None)
+              else: hashes.append(None)
+          if hashes[0] and hashes[0]==hashes[1]:
+              lines.append("CONTROL_RAM_SHA256_IDENTICAL_TWO_LAUNCHES=YES; K5 is allowed for this control checkpoint/runtime state only.")
+          else:
+              lines.append(f"CONTROL_RAM_SHA256_IDENTICAL_TWO_LAUNCHES=NO_OR_UNVERIFIED values={hashes}; K5 not justified.")
+          out.write_text("\n".join(lines)+"\n",encoding="utf-8")
+          print(out.read_text(),end="")
+          PY
 
       - name: AE1-AE4 static field audit, subfield bisect, reverse necessity, and RAM words (no input)
         if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, 'Run AE1-AE4 SPU protobuf') }}
@@ -583,6 +686,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add reports/aa_2026-10-29/aa1_runtime_logs \
                   reports/aa_2026-10-29/AA1_runtime_metadata.txt \
+                  reports/ae_2026-10-30/ag2_raw \
+                  reports/ae_2026-10-30/AG2_GDB_SHA256.txt \
+                  reports/ae_2026-10-30/AG2_AG4_RUNTIME_SUMMARY.txt \
                   reports/aa_2026-10-29/AA1_runtime_summary.txt \
                   reports/aa_2026-10-29/AC2_savestate_protobuf_static.txt \
                   reports/aa_2026-10-29/anonymous-release-assets.txt \
@@ -616,6 +722,15 @@ jobs:
           GDB/runner metadata: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/reports/aa_2026-10-29/AA1_runtime_metadata.txt
           Raw GDB/PCSX log permalinks:
           EOF
+          cat >> "$REPORT" <<EOF
+          AG2/AG4 runtime summary: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/reports/ae_2026-10-30/AG2_AG4_RUNTIME_SUMMARY.txt
+          AG2 SHA-256 manifest: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/reports/ae_2026-10-30/AG2_GDB_SHA256.txt
+          Full GDB logs (complete sanitized content):
+            target attempt 1: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/reports/ae_2026-10-30/ag2_raw/target-attempt1.gdb.full.txt
+            target attempt 2: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/reports/ae_2026-10-30/ag2_raw/target-attempt2.gdb.full.txt
+            control attempt 1: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/reports/ae_2026-10-30/ag2_raw/control-attempt1.gdb.full.txt
+            control attempt 2: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/reports/ae_2026-10-30/ag2_raw/control-attempt2.gdb.full.txt
+          EOF
           for label in target control; do
             for attempt in 1 2; do
               echo "  $label attempt $attempt GDB: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/reports/aa_2026-10-29/aa1_runtime_logs/$label-attempt$attempt.gdb.txt" >> "$REPORT"
@@ -626,8 +741,8 @@ jobs:
           AC1: dua Actions run terpisah dengan harness yang sama (baseline run 40852693434/job 123375850554 dan run ini $GITHUB_RUN_ID/job $JOB_ID), masing-masing dua peluncuran target + dua control, tanpa tombol. Pada baseline, target dua kali menerima SIGSEGV di Thread 15, PC #0=0x00007ffff0dd36d0; stack #0-#3 hanya alamat ?? dan #4=0; PC berada dalam executable mapping 0x7ffff088c000-0x7ffff1892000 tetapi jalur berkas disamarkan. Last load marker hanya AA1_LOAD_BEGIN at VSync 1. Jadi crash saat jalur pemulihan sangat terkait waktunya, tetapi fungsi penyebab tidak teridentifikasi: TIDAK TAHU. Control dua kali mencapai AA1_POST_LOAD_VSYNC=180 dan inferior keluar normal; GDB wrapper exit=1 karena perintah diagnostik pasca-exit melaporkan No registers, bukan crash emulator. Semua sinyal/stack/mapping/thread/regs ada di raw excerpt.
           AC2: kedua file protobuf mentah, bukan gzip/zlib: magic awal 0a 1b 0a 17 50 43 53 58 2d 52 65 64 75 78 20 53. Raw dan parsed target sama-sama 21,163,286 B; control 21,162,546 B; masing-masing parsed hash sama dengan raw. Delta +740 B cocok seluruhnya dengan field protobuf ter-encode. Field 6 (SPU) +748 B, field 4 (registers) +1 B, field 8 (CD-ROM) -9 B, total +740 B; SHA/wire/payload length tabel lengkap dan anak satu tingkat ada di static report. [0x801CEF04] berisi 0x0000016C pada keduanya. Schema reference: sstate.h pada pin PCSX-Redux 0c3572c3d.
           AC3(i): kontrol berasal dari run 39867730674/job 120134061270, head c9b1438292041f972b712f248fb7052032635b59; workflow menulis captures/adaptive-cycle-01-f180.sstate (ADAPTIVE_CHECKPOINT_WRITE_RETURNED=PASS) lalu mengunggah artifact 12464258211. Run sumber berakhir failure; provenance state terverifikasi, stabilitas sesi sumber tidak.
-          AC3(ii): 39262213468/job 118092519254; workflow commit e396eac00631001b7a0e68d7701c70aec10dec19; ubuntu-26.04; timeout workflow 100m; frame gate/save 10055; PCSX AppImage downloaded from public Release asset 669480936, SHA c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c, source pin 0c3572c3d; flags -softgpu -dynarec via Xvfb (no --headless CLI flag); GDB 17.1-2ubuntu1 installed. 40844474886/job 123348484949; workflow commit 2ef56f8e6d3c3612e03357b34cfae1d65cfd23ab; ubuntu-24.04; workflow timeout 25m, per-emulator timeout 240s; cold boot only; frame gates 2649/5999/8999/9030/9105 and final save 10055; same AppImage SHA and -softgpu -dynarec via Xvfb; no GDB dependency/use in workflow; wrapper timed out (124). 40848251356/job 123360980473; workflow commit 64be99b0ea2d927216a7195dd95e85fbf8cd3612; ubuntu-24.04; timeout 18m; one target and control restore attempt, 180 post-load VSync target and timeout gate at 900 VSync; same AppImage SHA; -noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout; GDB 15.1-1ubuntu1~24.04.1. Current run uses ubuntu-24.04.5, 18m workflow timeout, 110s per emulator attempt (2 of each), 900-VSync pre-load marker timeout/180 post-load frame gate, same AppImage SHA/PCSX pin, same runtime flags, and GDB 15.1-1ubuntu1~24.04.1. No workflow invokes a literal --headless CLI flag; graphical session is Xvfb.
-          AC3(iii): hipotesis target disimpan dengan build PCSX berbeda atau flag -softgpu/-dynarec berbeda DITOLAK sebagai penjelasan berbukti: run 392622 workflow and AA1 use the same exact AppImage SHA and these two flags. Ancillary flags/runner differ; this does not rule out content/format or state-specific issue.
+          AC3(ii): 39262213468/job 118092519254; workflow commit e396eac00631001b7a0e68d7701c70aec10dec19; ubuntu-26.04; timeout workflow 100m; frame gate/save 10055; workflow fetches filename PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage from Release tag research-emulator-pcsx-redux-2026-10-15 and verifies SHA c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c; the 19 Oct job log does not record selected asset ID. Asset 669480936 was created 23 Oct, so historical asset ID is TIDAK TAHU; source pin 0c3572c3d; flags -softgpu -dynarec via Xvfb (no --headless CLI flag); GDB 17.1-2ubuntu1 installed. 40844474886/job 123348484949; workflow commit 2ef56f8e6d3c3612e03357b34cfae1d65cfd23ab; ubuntu-24.04; workflow timeout 25m, per-emulator timeout 240s; cold boot only; frame gates 2649/5999/8999/9030/9105 and final save 10055; same AppImage SHA and -softgpu -dynarec via Xvfb; no GDB dependency/use in workflow; wrapper timed out (124). 40848251356/job 123360980473; workflow commit 64be99b0ea2d927216a7195dd95e85fbf8cd3612; ubuntu-24.04; timeout 18m; one target and control restore attempt, 180 post-load VSync target and timeout gate at 900 VSync; same AppImage SHA; -noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout; GDB 15.1-1ubuntu1~24.04.1. Current run uses ubuntu-24.04.5, 18m workflow timeout, 110s per emulator attempt (2 of each), 900-VSync pre-load marker timeout/180 post-load frame gate, same AppImage SHA/PCSX pin, same runtime flags, and GDB 15.1-1ubuntu1~24.04.1. No workflow invokes a literal --headless CLI flag; graphical session is Xvfb.
+          AC3(iii): pernyataan lama yang menolak hipotesis build berbeda secara umum DITARIK. Target producer/tester run 392622 and AA1 use the same AppImage SHA c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c and flags -softgpu/-dynarec; however control producer run 39867730674/job 120134061270 used AppImage SHA 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99 and exited 92. That producer binary was not retained for replay; whether the build difference caused control checkpoint incompatibility is TIDAK TAHU.
           AC4: anonymously listed releases HTTP 200; ids 647346873 (game BIN), 652373928 (SCPH-7502 ZIP), 686794219 (checkpoint) each HTTP 302 on exact zero-body Range query, redirecting to release-assets.githubusercontent.com. ROM/BIOS/checkpoint are reachable without token. No asset, visibility, or hash was changed. Suggested mitigation only: owner may decide whether copyrighted/private assets should be moved to private storage or repository/release visibility changed.
           AB2 tetap CLOSED. AB2/AB3 tidak dijalankan. ISO, BIOS, savestate, RAM dump, screenshot tidak dikomit. Story Mode completion NOT VERIFIED.
           EOF
