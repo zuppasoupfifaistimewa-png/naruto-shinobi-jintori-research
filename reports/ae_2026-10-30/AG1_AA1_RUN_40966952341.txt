@@ -1,0 +1,22 @@
+AG1 — AA1 restore probe
+Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+Run: 40966952341
+Job: 123773755046 (diagnose)
+Workflow/harness commit: 19d26af1a91e273b5c3bb2717af5032823239b09
+Job final status: completed / success
+Published report commit: b676881aedccd7a492ebef8817656d8c1dd29e73
+Published report raw:
+https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/b676881aedccd7a492ebef8817656d8c1dd29e73/reports/aa_2026-10-29/AC1_AC4_restore_report_2026-10-29.txt
+
+Target checkpoint SHA-256 (read from job log after sha256sum validation): 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d
+Control checkpoint SHA-256 (read from job log after sha256sum validation): 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492
+These are distinct checkpoints; the control must not be treated as the target.
+
+Launch records extracted from the Actions job log:
+- target attempt 1: SIGSEGV; PC #0=0x00007ffff0dd36d0; thread 15; GDB wrapper exit=0. Emulator exit code is TIDAK TAHU because the debugger was stopped at the signal and the log does not report a continued inferior exit code.
+- target attempt 2: SIGSEGV; PC #0=0x00007ffff0dd36d0; thread 15; GDB wrapper exit=0. Emulator exit code is TIDAK TAHU for the same reason.
+- control attempt 1: AA1_POST_LOAD_VSYNC=180; GDB reports inferior exited normally; GDB wrapper exit=1 due post-exit diagnostics reporting "No registers". This wrapper code is not an emulator crash code; normal inferior exit corresponds to exit code 0.
+- control attempt 2: AA1_POST_LOAD_VSYNC=180; GDB reports inferior exited normally; GDB wrapper exit=1 due post-exit diagnostics reporting "No registers". This wrapper code is not an emulator crash code; normal inferior exit corresponds to exit code 0.
+
+Time-to-180: TIDAK TAHU for both control launches. This harness version logs the 180-VSync marker, but does not include an elapsed-since-load measurement; job timestamps correspond to buffered step output and are not a defensible marker duration. Do not replace this with total step/runtime or timeout duration.
+No input was pressed. Run result is runtime evidence from two launches per state; the pure target reproduces SIGSEGV twice, while the separate control checkpoint reaches the 180-VSync marker twice.
