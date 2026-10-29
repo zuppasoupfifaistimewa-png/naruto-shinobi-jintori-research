@@ -1,4 +1,4 @@
-name: AE1 recursive SPU channel-field bisect plus AE2 minimal-field necessity
+name: AE1-AE4 recursive SPU field bisect and conditional RAM snapshots
 
 on:
   workflow_dispatch:
