@@ -1,0 +1,4 @@
+C_TEST_SCHEDULE_ARMED=1 source_run=39262213468 final_vsync=10055; no savestate restore
+C_TEST_RESUME_SCHEDULED=nextTick
+C_TEST_EXPLICIT_RESUME=deferred
+C_TEST_RESUME_CALLBACK=PASS detail=none

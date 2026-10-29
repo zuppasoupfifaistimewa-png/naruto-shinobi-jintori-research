@@ -1,0 +1,11 @@
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run2/pcsx.stdout:Warning: OpenGL error reporting disabled. See About dialog for more information.
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run2/pcsx.stdout:C_TEST_SCHEDULE_ARMED=1 source_run=39262213468 final_vsync=10055; no savestate restore 
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run2/pcsx.stdout:C_TEST_RESUME_SCHEDULED=nextTick 
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run2/pcsx.stdout:C_TEST_EXPLICIT_RESUME=deferred 
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run2/pcsx.stdout:C_TEST_PAD_SETUP=Port 1 Analog connected/remapped 
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run2/pcsx.stdout:C_TEST_RESUME_CALLBACK=PASS detail=none 
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run2/pcsx.stdout:C_TEST_EXECUTION_EVENT=ShellReached 
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run2/gate-watch.log:C_TEST_VISUAL_GATE frame=5999 FAIL reason=TimeoutError:frame_5999_capture_timeout
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run2/gate-watch.log:C_TEST_VISUAL_GATE frame=8999 FAIL reason=RuntimeError:emulator_exited_before_frame_8999
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run2/gate-watch.log:C_TEST_VISUAL_GATE frame=9030 FAIL reason=RuntimeError:emulator_exited_before_frame_9030
+/home/runner/work/_temp/storymode-fixed-schedule-ram-compare/run2/gate-watch.log:C_TEST_VISUAL_GATE frame=9105 FAIL reason=RuntimeError:emulator_exited_before_frame_9105
