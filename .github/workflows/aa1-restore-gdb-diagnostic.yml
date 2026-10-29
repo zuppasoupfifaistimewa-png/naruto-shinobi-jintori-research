@@ -477,6 +477,7 @@ jobs:
           cat "$GITHUB_WORKSPACE/reports/aa_2026-10-29/AA1_runtime_summary.txt"
 
       - name: AE1-AE4 static field audit, subfield bisect, reverse necessity, and RAM words (no input)
+        if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, 'Run AE1-AE4 SPU protobuf') }}
         shell: bash
         run: |
           set -euo pipefail
@@ -495,6 +496,42 @@ jobs:
           export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
           export QML2_IMPORT_PATH="$APPDIR/usr/qml"
           python3 experiments/ae1_ae4_restore_bisect.py \
+            --target "$AA_WORK/resume/target.sstate" \
+            --control "$AA_WORK/resume/control.sstate" \
+            --source-header "$AA_WORK/source/sstate.h" \
+            --output "$GITHUB_WORKSPACE/reports/ae_2026-10-29" \
+            --work "$AA_WORK" \
+            --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" \
+            --bios "$AA_WORK/source/scph7502.bin" \
+            --cue "$AA_WORK/source/game-run.cue" \
+            --card "$AA_WORK/cards/reference.mcd"
+
+      - name: AE1 nested channel-2 refinement and AE2 long-timeout reversal (no input)
+        if: \${{ github.event_name == 'push' && contains(github.event.head_commit.message, 'Refine AE1 SPU channel 2') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          curl --fail --silent --show-error --location --retry 2 --max-time 60 \
+            "https://raw.githubusercontent.com/pcsx-redux/pcsx-redux/0c3572c3d/src/core/sstate.h" \
+            -o "$AA_WORK/source/sstate.h"
+          header_blob="$(git hash-object "$AA_WORK/source/sstate.h")"
+          echo "AE_SOURCE_SSTATE_H_GIT_BLOB_SHA1=$header_blob"
+          test "$header_blob" = "72b7ab0dbd4191f9d9ed4cdd9d77898f467258e2"
+          curl --fail --silent --show-error --location --retry 2 --max-time 60 \
+            "https://raw.githubusercontent.com/pcsx-redux/pcsx-redux/0c3572c3d/src/spu/types.h" \
+            -o "$AA_WORK/source/spu-types.h"
+          curl --fail --silent --show-error --location --retry 2 --max-time 60 \
+            "https://raw.githubusercontent.com/pcsx-redux/pcsx-redux/0c3572c3d/src/spu/adsr.h" \
+            -o "$AA_WORK/source/spu-adsr.h"
+          export DISPLAY=:99 HOME="$AA_WORK/home" XDG_CONFIG_HOME="$AA_WORK/home/.config" \
+            XDG_DATA_HOME="$AA_WORK/home/.local/share" XDG_RUNTIME_DIR="$AA_WORK/home/runtime"
+          export LIBGL_ALWAYS_SOFTWARE=1
+          export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+          export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
+          export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
+          export QML2_IMPORT_PATH="$APPDIR/usr/qml"
+          python3 experiments/ae1_ae4_refine_channel2.py \
             --target "$AA_WORK/resume/target.sstate" \
             --control "$AA_WORK/resume/control.sstate" \
             --source-header "$AA_WORK/source/sstate.h" \
