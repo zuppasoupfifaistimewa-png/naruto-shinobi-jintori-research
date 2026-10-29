@@ -106,6 +106,7 @@ jobs:
         run: |
           set -u
           cd "$WORK/source"
+          chmod +x "$WORK/source/pcsx-redux.AppImage"
           ./pcsx-redux.AppImage --appimage-extract >/dev/null
           APPDIR="$WORK/source/squashfs-root"
           PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | grep -Ei '(^|/)(pcsx-redux|pcsx-redux\.bin)$' | head -n 1 || true)"
