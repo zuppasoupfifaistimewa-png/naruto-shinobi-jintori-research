@@ -255,12 +255,12 @@ Jumlah instruksi langsung menurut analisis ini: 147 site unik; `lbu` READ 48, `l
 | Alamat/region | Nilai mentah byte (little-endian) | Nilai LE | SHA-256 region |
 |---|---|---|---|
 | `0x800A2918..0x800A2927` (16 byte) | `50 F4 13 80 B0 8B 0B 00 20 19 08 00 14 00 00 00` | — | `825df2342664f13d3797897688a3b5ecbb75e5bc138172f78b5b9bcf647bc2fa` |
-| `0x800A2918+0x8 = 0x800A2920` | `20 19 08 00` | `0x00081920` = 530,720 | SHA of 4 bytes `b0f18a09` (slice hash already included in 16-byte region above) |
-| `0x800A2918+0xC = 0x800A2924` | `14 00 00 00` | `0x00000014` = 20 | SHA of 4 bytes `8d7d3d...` (slice hash already included in 16-byte region above) |
+| `0x800A2918+0x8 = 0x800A2920` | `20 19 08 00` | `0x00081920` = 530,720 | `d5fa89a43f77c8a069c5a18213b07b1ebb4f87fe1181b96d9268d2cf53076e8b` |
+| `0x800A2918+0xC = 0x800A2924` | `14 00 00 00` | `0x00000014` = 20 | `447e12701a0d03cf90a4ad7f02f1a045b35d284e26fe520440edb116d76bf700` |
 | Saved `$gp` (GPR index 28) | `0x8006D67C` | source: 32 GPR packed values in save-state Registers field | — |
 | `gp+0xA8 = 0x8006D724` | `00 00 00 00` | `0x00000000` = 0 | `df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119` |
 
-The 4-byte hashes for `+0x8` and `+0xC` were not separately computed for this report; the 16-byte allocator-struct SHA-256 above covers both fields. Their explicit individual hash cells are intentionally not used as evidence. The confirmed accounting values are +8 = 530,720 and +C = 20; saved `$gp=0x8006D67C` is sourced from register index 28 in the save-state, not inferred from the code.
+The SHA-256 values for `+0x8` and `+0xC` are each computed over their exact 4-byte little-endian slices. The confirmed accounting values are +8 = 530,720 and +C = 20; saved `$gp=0x8006D67C` is sourced from register index 28 in the save-state, not inferred from the code.
 
 ## Provenance and pinned source evidence
 
