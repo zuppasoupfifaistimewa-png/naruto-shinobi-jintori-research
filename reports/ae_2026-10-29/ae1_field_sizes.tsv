@@ -1,0 +1,14 @@
+field	name	type	target_count	target_payload_bytes	target_encoded_bytes	control_count	control_payload_bytes	control_encoded_bytes	encoded_delta_target_minus_control
+1	save_state_info	Message<SaveStateInfo>	1	27	29	1	27	29	0
+2	thumbnail	Message<Thumbnail>	0	0	0	0	0	0	0
+3	memory	Message<Memory>	1	19464215	19464220	1	19464215	19464220	0
+4	registers	Message<Registers>	1	8597	8600	1	8596	8599	1
+5	gpu	Message<GPU>	1	1049613	1049617	1	1049613	1049617	0
+6	spu	Message<SPU>	1	632733	632737	1	631985	631989	748
+7	sio	Message<SIO>	1	4400	4403	1	4400	4403	0
+8	cdrom	Message<CDRom>	1	2474	2477	1	2483	2486	-9
+9	hardware	Message<Hardware>	0	0	0	0	0	0	0
+10	counters	Message<Counters>	1	89	91	1	89	91	0
+11	mdec	Message<MDEC>	1	1109	1112	1	1109	1112	0
+13	pcdrv_files	RepeatedVariableField<PCdrvFile>	0	0	0	0	0	0	0
+14	callstacks	Message<CallStacks>	0	0	0	0	0	0	0

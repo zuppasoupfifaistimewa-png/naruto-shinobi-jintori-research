@@ -1,0 +1,1102 @@
+[Detaching after fork from child process 6046]
+ALSA lib confmisc.c:855:(parse_card) [error.core] cannot find card '0'
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) [error.core] error evaluating strings
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) [error.core] error evaluating name
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5734:(snd_config_expand) [error.core] Evaluate error: No such file or directory
+ALSA lib pcm.c:2722:(snd_pcm_open_noupdate) [error.pcm] Unknown PCM sysdefault
+Loading memory card /home/runner/work/_temp/naruto-aa1-gdb/cards/reference.mcd
+Loading memory card /home/runner/work/_temp/naruto-aa1-gdb/home/.config/pcsx-redux/memcard2.mcd
+Audio: driver dummy, 44100 Hz, 441 frames per period
+Warning: OpenGL error reporting disabled. See About dialog for more information.
+[00000] While loading '/home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/NotoSans-Regular.ttf'
+[00000] While loading '/home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/fonts/NotoSans-Regular.ttf'
+[00000] While loading '/home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/NotoSansCJKjp-Regular.otf'
+[00000] While loading '/home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/fonts/NotoSansCJKjp-Regular.otf'
+[00000] While loading '/home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/NotoMono-Regular.ttf'
+[00000] While loading '/home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/fonts/NotoMono-Regular.ttf'
+Loaded CD Image: /home/runner/work/_temp/naruto-aa1-gdb/source/game-run.cue[+cue].
+Track 01 (DATA) - Start 00:02:00, Length 30:48:01
+CD-ROM Label: SLPS-03553
+CD-ROM ID: SLPS03553
+CD-ROM EXE Name: SLPS_035.53;1
+PCSX-Redux Lua Console 
+LuaJIT 2.1.1785598229 
+JIT: ON SSE3 SSE4.1 BMI2 fold cse dce fwd dse narrow loop abc sink fuse 
+Shader compiled: program ID = 4 
+Shader compiled: program ID = 7 
+PCSX-Redux booting
+Copyright (C) 2019-2025 PCSX-Redux authors
+CPU type: Dynarec (x86-64)
+Loaded BIOS: /home/runner/work/_temp/naruto-aa1-gdb/source/scph7502.bin
+Known BIOS detected: SCPH-7502 (EU) (318178bf)
+AE_RESTORE_PROBE_READY_NO_INPUT=1 
+AA1_PAD_CONNECTED_NO_BUTTONS_PRESSED 
+BIOS Trace1: 0x0f
+BIOS Trace1: 0x0e
+BIOS Trace1: 0x01
+BIOS Trace1: 0x02
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x01
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x05
+BIOS Trace1: 0x06
+BIOS Trace1: 0x02
+BIOS Trace1: 0x05
+
+PS-X Realtime Kernel Ver.2.5
+Copyright 1993,1994 (C) Sony Computer Entertainment Inc. 
+BIOS Trace1: 0x06
+KERNEL SETUP!
+
+Configuration : EvCB	0x10		TCB	0x04
+BIOS Trace1: 0x07
+AE_LOAD_BEGIN=1 path=resume/ae2-target-spu-field6-control.sstate vsync=1 controller=NONE 
+AE_EVENT_SAVE_STATE_LOADED=1 
+AE_LOAD_CALL_RETURNED=1 
+[00001] While loading '/home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/NotoSans-Regular.ttf'
+[00001] While loading '/home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/fonts/NotoSans-Regular.ttf'
+[00001] While loading '/home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/NotoSansCJKjp-Regular.otf'
+[00001] While loading '/home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/fonts/NotoSansCJKjp-Regular.otf'
+[00001] While loading '/home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/NotoMono-Regular.ttf'
+[00001] While loading '/home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/fonts/NotoMono-Regular.ttf'
+
+Thread 1 "pcsx-redux" received signal SIGINT, Interrupt.
+0x00007fffe1d5f89d in ?? ()
+AE_GDB_CONTEXT_BEGIN
+AE_GDB_COMMAND_BEGIN: info threads
+  Id   Target Id               Frame 
+* 1    LWP 6037 "pcsx-redux"   0x00007fffe1d5f89d in ?? ()
+  2    LWP 6040 "pcsx-redux"   0x00007fffee2a08f2 in ?? ()
+  3    LWP 6041 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
+  4    LWP 6042 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
+  5    LWP 6043 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
+  6    LWP 6044 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
+  9    LWP 6048 "SDLAudioP23"  0x00007fffee2a08f2 in ?? ()
+  13   LWP 6052 "libusb_event" 0x00007fffee2a08f2 in ?? ()
+  14   LWP 6053 "libusb"       0x00007fffee2a08f2 in ?? ()
+  15   LWP 6054 "pcsx-redux"   0x00007fffee2a08f2 in ?? ()
+AE_GDB_COMMAND_END: info threads
+AE_GDB_COMMAND_BEGIN: x/3i $pc
+=> 0x7fffe1d5f89d:	movss  %xmm1,-0x4(%rax)
+   0x7fffe1d5f8a2:	jmp    0x7fffe1d5f84d
+   0x7fffe1d5f8a4:	ret
+AE_GDB_COMMAND_END: x/3i $pc
+AE_GDB_COMMAND_BEGIN: info registers
+rax            0x9de94e0           165582048
+rbx            0x9de93e0           165581792
+rcx            0x10                16
+rdx            0xff                255
+rsi            0x7b                123
+rdi            0x10080b10          268962576
+rbp            0x10080b10          0x10080b10
+rsp            0x7ffff7dfb338      0x7ffff7dfb338
+r8             0x20                32
+r9             0x20                32
+r10            0x80                128
+r11            0x1                 1
+r12            0x20                32
+r13            0x200               512
+r14            0x6                 6
+r15            0x7fffe3521620      140737007195680
+rip            0x7fffe1d5f89d      0x7fffe1d5f89d
+eflags         0x200a07            [ CF PF IF OF ID ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+k0             0x4000001           67108865
+k1             0x0                 0
+k2             0xffff              65535
+k3             0x41002             266242
+k4             0xc000              49152
+k5             0x4000001           67108865
+k6             0x80004001          2147500033
+k7             0x0                 0
+fs_base        0x7fffec4693c0      140737157436352
+gs_base        0x0                 0
+AE_GDB_COMMAND_END: info registers
+AE_GDB_COMMAND_BEGIN: info proc mappings
+process 6037
+Mapped address spaces:
+
+          Start Addr           End Addr       Size     Offset  Perms  objfile
+           0x1000000          0x1014000    0x14000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/pcsx-redux
+           0x1014000          0x104c000    0x38000    0x13000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/pcsx-redux
+           0x104c000          0x104f000     0x3000    0x4a000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/pcsx-redux
+           0x104f000          0x1050000     0x1000    0x4c000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/bin/pcsx-redux
+           0x1050000          0x1058000     0x8000        0x0  rw-p   
+           0x1058000         0x113ff000 0x103a7000        0x0  rw-p   [heap]
+      0x7fffb8000000     0x7fffb8021000    0x21000        0x0  rw-p   
+      0x7fffb8021000     0x7fffbc000000  0x3fdf000        0x0  ---p   
+      0x7fffc4000000     0x7fffc4021000    0x21000        0x0  rw-p   
+      0x7fffc4021000     0x7fffc8000000  0x3fdf000        0x0  ---p   
+      0x7fffcafff000     0x7fffcc000000  0x1001000        0x0  rw-p   
+      0x7fffcc000000     0x7fffcc021000    0x21000        0x0  rw-p   
+      0x7fffcc021000     0x7fffd0000000  0x3fdf000        0x0  ---p   
+      0x7fffd0200000     0x7fffd0c00000   0xa00000        0x0  rwxp   
+      0x7fffd0c4f000     0x7fffd1c50000  0x1001000        0x0  rw-p   
+      0x7fffd2051000     0x7fffd2852000   0x801000        0x0  rw-p   
+      0x7fffd2852000     0x7fffd3052000   0x800000        0x0  rw-s   /dev/shm/pcsx-redux-wram-6037
+      0x7fffd3052000     0x7fffd4053000  0x1001000        0x0  rw-p   
+      0x7fffd4ffe000     0x7fffd5fff000  0x1001000        0x0  rw-p   
+      0x7fffd5fff000     0x7fffdc23e000  0x623f000        0x0  rw-p   
+      0x7fffdc23e000     0x7fffe0000000  0x3dc2000        0x0  ---p   
+      0x7fffe0128000     0x7fffe0148000    0x20000        0x0  rw-p   
+      0x7fffe0148000     0x7fffe014d000     0x5000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libudev.so.1.7.15
+      0x7fffe014d000     0x7fffe017b000    0x2e000     0x5000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libudev.so.1.7.15
+      0x7fffe017b000     0x7fffe0192000    0x17000    0x33000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libudev.so.1.7.15
+      0x7fffe0192000     0x7fffe0197000     0x5000    0x4a000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libudev.so.1.7.15
+      0x7fffe0197000     0x7fffe0198000     0x1000    0x4f000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libudev.so.1.7.15
+      0x7fffe0198000     0x7fffe019c000     0x4000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libusb-1.0.so.0.6.0
+      0x7fffe019c000     0x7fffe01ad000    0x11000     0x4000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libusb-1.0.so.0.6.0
+      0x7fffe01ad000     0x7fffe01b6000     0x9000    0x15000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libusb-1.0.so.0.6.0
+      0x7fffe01b6000     0x7fffe01b7000     0x1000    0x1e000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libusb-1.0.so.0.6.0
+      0x7fffe01b7000     0x7fffe01b8000     0x1000    0x1f000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libusb-1.0.so.0.6.0
+      0x7fffe01b8000     0x7fffe0369000   0x1b1000        0x0  rw-p   
+      0x7fffe0369000     0x7fffe036c000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpcre2-8.so.0.16.1
+      0x7fffe036c000     0x7fffe03ee000    0x82000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpcre2-8.so.0.16.1
+      0x7fffe03ee000     0x7fffe041a000    0x2c000    0x85000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpcre2-8.so.0.16.1
+      0x7fffe041a000     0x7fffe041b000     0x1000    0xb0000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpcre2-8.so.0.16.1
+      0x7fffe041b000     0x7fffe041c000     0x1000    0xb1000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpcre2-8.so.0.16.1
+      0x7fffe041c000     0x7fffe043a000    0x1e000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libglib-2.0.so.0.8800.3
+      0x7fffe043a000     0x7fffe04e8000    0xae000    0x1e000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libglib-2.0.so.0.8800.3
+      0x7fffe04e8000     0x7fffe057c000    0x94000    0xcc000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libglib-2.0.so.0.8800.3
+      0x7fffe057c000     0x7fffe057d000     0x1000   0x160000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libglib-2.0.so.0.8800.3
+      0x7fffe057d000     0x7fffe057e000     0x1000   0x161000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libglib-2.0.so.0.8800.3
+      0x7fffe057e000     0x7fffe057f000     0x1000        0x0  rw-p   
+      0x7fffe057f000     0x7fffe058c000     0xd000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libharfbuzz.so.0.61450.0
+      0x7fffe058c000     0x7fffe068b000    0xff000     0xd000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libharfbuzz.so.0.61450.0
+      0x7fffe068b000     0x7fffe06c0000    0x35000   0x10c000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libharfbuzz.so.0.61450.0
+      0x7fffe06c0000     0x7fffe06c2000     0x2000   0x140000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libharfbuzz.so.0.61450.0
+      0x7fffe06c2000     0x7fffe06c3000     0x1000   0x142000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libharfbuzz.so.0.61450.0
+      0x7fffe06c3000     0x7fffe0d47000   0x684000        0x0  rw-p   
+      0x7fffe0d47000     0x7fffe0d69000    0x22000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libasound.so.2.0.0
+      0x7fffe0d69000     0x7fffe0e09000    0xa0000    0x22000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libasound.so.2.0.0
+      0x7fffe0e09000     0x7fffe0e37000    0x2e000    0xc2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libasound.so.2.0.0
+      0x7fffe0e37000     0x7fffe0e3f000     0x8000    0xf0000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libasound.so.2.0.0
+      0x7fffe0e3f000     0x7fffe0e40000     0x1000    0xf8000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libasound.so.2.0.0
+      0x7fffe0e40000     0x7fffe0e49000     0x9000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libFLAC.so.14.0.0
+      0x7fffe0e49000     0x7fffe0e7f000    0x36000     0x9000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libFLAC.so.14.0.0
+      0x7fffe0e7f000     0x7fffe0e87000     0x8000    0x3f000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libFLAC.so.14.0.0
+      0x7fffe0e87000     0x7fffe0e88000     0x1000    0x47000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libFLAC.so.14.0.0
+      0x7fffe0e88000     0x7fffe0e89000     0x1000    0x48000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libFLAC.so.14.0.0
+      0x7fffe0e89000     0x7fffe0e8e000     0x5000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsndfile.so.1.0.37
+      0x7fffe0e8e000     0x7fffe0ef4000    0x66000     0x5000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsndfile.so.1.0.37
+      0x7fffe0ef4000     0x7fffe0f0d000    0x19000    0x6b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsndfile.so.1.0.37
+      0x7fffe0f0d000     0x7fffe0f10000     0x3000    0x84000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsndfile.so.1.0.37
+      0x7fffe0f10000     0x7fffe0f11000     0x1000    0x87000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsndfile.so.1.0.37
+      0x7fffe0f11000     0x7fffe0f13000     0x2000        0x0  rw-p   
+      0x7fffe0f13000     0x7fffe0f27000    0x14000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/pulseaudio/libpulsecommon-17.0.so
+      0x7fffe0f27000     0x7fffe0f71000    0x4a000    0x14000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/pulseaudio/libpulsecommon-17.0.so
+      0x7fffe0f71000     0x7fffe0f90000    0x1f000    0x5e000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/pulseaudio/libpulsecommon-17.0.so
+      0x7fffe0f90000     0x7fffe0f92000     0x2000    0x7d000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/pulseaudio/libpulsecommon-17.0.so
+      0x7fffe0f92000     0x7fffe0f93000     0x1000    0x7f000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/pulseaudio/libpulsecommon-17.0.so
+      0x7fffe0f93000     0x7fffe0f9f000     0xc000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpulse.so.0.24.3
+      0x7fffe0f9f000     0x7fffe0fcf000    0x30000     0xc000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpulse.so.0.24.3
+      0x7fffe0fcf000     0x7fffe0fe0000    0x11000    0x3c000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpulse.so.0.24.3
+      0x7fffe0fe0000     0x7fffe0fe2000     0x2000    0x4c000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpulse.so.0.24.3
+      0x7fffe0fe2000     0x7fffe0fe3000     0x1000    0x4e000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpulse.so.0.24.3
+      0x7fffe0fe3000     0x7fffe1053000    0x70000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/share/pcsx-redux/fonts/NotoSans-Regular.ttf
+      0x7fffe1053000     0x7fffe143c000   0x3e9000        0x0  rw-p   
+      0x7fffe143c000     0x7fffe1824000   0x3e8000        0x0  rw-s   /SYSV00000000 (deleted)
+      0x7fffe1824000     0x7fffe183d000    0x19000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libSPIRV-Tools.so
+      0x7fffe183d000     0x7fffe1976000   0x139000    0x19000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libSPIRV-Tools.so
+      0x7fffe1976000     0x7fffe19fc000    0x86000   0x152000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libSPIRV-Tools.so
+      0x7fffe19fc000     0x7fffe19ff000     0x3000   0x1d8000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libSPIRV-Tools.so
+      0x7fffe19ff000     0x7fffe1a00000     0x1000   0x1db000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libSPIRV-Tools.so
+      0x7fffe1a00000     0x7fffe1a10000    0x10000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgallium-26.2.2-arch1.1.so
+      0x7fffe1a10000     0x7fffe279e000   0xd8e000    0x10000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgallium-26.2.2-arch1.1.so
+      0x7fffe279e000     0x7fffe347a000   0xcdc000   0xd9e000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgallium-26.2.2-arch1.1.so
+      0x7fffe347a000     0x7fffe3534000    0xba000  0x1a7a000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgallium-26.2.2-arch1.1.so
+      0x7fffe3534000     0x7fffe355f000    0x2b000  0x1b34000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgallium-26.2.2-arch1.1.so
+      0x7fffe355f000     0x7fffe3725000   0x1c6000        0x0  rw-p   
+      0x7fffe3738000     0x7fffe373a000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgraphite2.so.3.3.1
+      0x7fffe373a000     0x7fffe3753000    0x19000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgraphite2.so.3.3.1
+      0x7fffe3753000     0x7fffe3758000     0x5000    0x1b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgraphite2.so.3.3.1
+      0x7fffe3758000     0x7fffe375a000     0x2000    0x1f000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgraphite2.so.3.3.1
+      0x7fffe375a000     0x7fffe375b000     0x1000    0x21000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgraphite2.so.3.3.1
+      0x7fffe375b000     0x7fffe3769000     0xe000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libOpenGL.so.0.0.0
+      0x7fffe3769000     0x7fffe3774000     0xb000     0xe000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libOpenGL.so.0.0.0
+      0x7fffe3774000     0x7fffe3779000     0x5000    0x19000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libOpenGL.so.0.0.0
+      0x7fffe3779000     0x7fffe377e000     0x5000    0x1e000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libOpenGL.so.0.0.0
+      0x7fffe377e000     0x7fffe377f000     0x1000    0x23000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libOpenGL.so.0.0.0
+      0x7fffe377f000     0x7fffe427f000   0xb00000        0x0  rw-p   
+      0x7fffe427f000     0x7fffe8000000  0x3d81000        0x0  ---p   
+      0x7fffe800e000     0x7fffe8010000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/alsa-lib/libasound_module_pcm_pulse.so
+      0x7fffe8010000     0x7fffe8013000     0x3000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/alsa-lib/libasound_module_pcm_pulse.so
+      0x7fffe8013000     0x7fffe8015000     0x2000     0x5000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/alsa-lib/libasound_module_pcm_pulse.so
+      0x7fffe8015000     0x7fffe8016000     0x1000     0x6000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/alsa-lib/libasound_module_pcm_pulse.so
+      0x7fffe8016000     0x7fffe8017000     0x1000     0x7000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/alsa-lib/libasound_module_pcm_pulse.so
+      0x7fffe8017000     0x7fffe8019000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libasyncns.so.0.3.1
+      0x7fffe8019000     0x7fffe801c000     0x3000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libasyncns.so.0.3.1
+      0x7fffe801c000     0x7fffe801d000     0x1000     0x5000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libasyncns.so.0.3.1
+      0x7fffe801d000     0x7fffe801e000     0x1000     0x5000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libasyncns.so.0.3.1
+      0x7fffe801e000     0x7fffe801f000     0x1000     0x6000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libasyncns.so.0.3.1
+      0x7fffe801f000     0x7fffe8022000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdrm_amdgpu.so.1.134.0
+      0x7fffe8022000     0x7fffe8028000     0x6000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdrm_amdgpu.so.1.134.0
+      0x7fffe8028000     0x7fffe802a000     0x2000     0x9000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdrm_amdgpu.so.1.134.0
+      0x7fffe802a000     0x7fffe802b000     0x1000     0xa000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdrm_amdgpu.so.1.134.0
+      0x7fffe802b000     0x7fffe802c000     0x1000     0xb000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdrm_amdgpu.so.1.134.0
+      0x7fffe802c000     0x7fffe802f000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libelf-0.196.so
+      0x7fffe802f000     0x7fffe8043000    0x14000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libelf-0.196.so
+      0x7fffe8043000     0x7fffe8048000     0x5000    0x17000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libelf-0.196.so
+      0x7fffe8048000     0x7fffe8049000     0x1000    0x1b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libelf-0.196.so
+      0x7fffe8049000     0x7fffe804a000     0x1000    0x1c000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libelf-0.196.so
+      0x7fffe804a000     0x7fffe804b000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxshmfence.so.1.0.0
+      0x7fffe804b000     0x7fffe804c000     0x1000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxshmfence.so.1.0.0
+      0x7fffe804c000     0x7fffe804d000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxshmfence.so.1.0.0
+      0x7fffe804d000     0x7fffe804e000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxshmfence.so.1.0.0
+      0x7fffe804e000     0x7fffe804f000     0x1000     0x3000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxshmfence.so.1.0.0
+      0x7fffe804f000     0x7fffe8052000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-sync.so.1.0.0
+      0x7fffe8052000     0x7fffe8055000     0x3000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-sync.so.1.0.0
+      0x7fffe8055000     0x7fffe8056000     0x1000     0x6000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-sync.so.1.0.0
+      0x7fffe8056000     0x7fffe8057000     0x1000     0x7000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-sync.so.1.0.0
+      0x7fffe8057000     0x7fffe8058000     0x1000     0x8000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-sync.so.1.0.0
+      0x7fffe8058000     0x7fffe805f000     0x7000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-randr.so.0.1.0
+      0x7fffe805f000     0x7fffe8065000     0x6000     0x7000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-randr.so.0.1.0
+      0x7fffe8065000     0x7fffe8068000     0x3000     0xd000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-randr.so.0.1.0
+      0x7fffe8068000     0x7fffe8069000     0x1000    0x10000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-randr.so.0.1.0
+      0x7fffe8069000     0x7fffe806a000     0x1000    0x11000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-randr.so.0.1.0
+      0x7fffe806a000     0x7fffe806c000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsensors.so.5.0.0
+      0x7fffe806c000     0x7fffe8074000     0x8000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsensors.so.5.0.0
+      0x7fffe8074000     0x7fffe8078000     0x4000     0xa000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsensors.so.5.0.0
+      0x7fffe8078000     0x7fffe8079000     0x1000     0xe000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsensors.so.5.0.0
+      0x7fffe8079000     0x7fffe807a000     0x1000     0xf000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsensors.so.5.0.0
+      0x7fffe807a000     0x7fffe807d000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-xfixes.so.0.0.0
+      0x7fffe807d000     0x7fffe8080000     0x3000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-xfixes.so.0.0.0
+      0x7fffe8080000     0x7fffe8081000     0x1000     0x6000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-xfixes.so.0.0.0
+      0x7fffe8081000     0x7fffe8082000     0x1000     0x7000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-xfixes.so.0.0.0
+      0x7fffe8082000     0x7fffe8083000     0x1000     0x8000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-xfixes.so.0.0.0
+      0x7fffe8083000     0x7fffe8084000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-present.so.0.0.0
+      0x7fffe8084000     0x7fffe8085000     0x1000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-present.so.0.0.0
+      0x7fffe8085000     0x7fffe8086000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-present.so.0.0.0
+      0x7fffe8086000     0x7fffe8087000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-present.so.0.0.0
+      0x7fffe8087000     0x7fffe8088000     0x1000     0x3000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-present.so.0.0.0
+      0x7fffe8088000     0x7fffe8089000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-shm.so.0.0.0
+      0x7fffe8089000     0x7fffe808a000     0x1000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-shm.so.0.0.0
+      0x7fffe808a000     0x7fffe808b000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-shm.so.0.0.0
+      0x7fffe808b000     0x7fffe808c000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-shm.so.0.0.0
+      0x7fffe808c000     0x7fffe808d000     0x1000     0x3000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-shm.so.0.0.0
+      0x7fffe808d000     0x7fffe808e000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXxf86vm.so.1.0.0
+      0x7fffe808e000     0x7fffe8091000     0x3000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXxf86vm.so.1.0.0
+      0x7fffe8091000     0x7fffe8092000     0x1000     0x4000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXxf86vm.so.1.0.0
+      0x7fffe8092000     0x7fffe8093000     0x1000     0x4000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXxf86vm.so.1.0.0
+      0x7fffe8093000     0x7fffe8094000     0x1000     0x5000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXxf86vm.so.1.0.0
+      0x7fffe8094000     0x7fffe80a0000     0xc000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-glx.so.0.0.0
+      0x7fffe80a0000     0x7fffe80a9000     0x9000     0xc000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-glx.so.0.0.0
+      0x7fffe80a9000     0x7fffe80ae000     0x5000    0x15000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-glx.so.0.0.0
+      0x7fffe80ae000     0x7fffe80b0000     0x2000    0x1a000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-glx.so.0.0.0
+      0x7fffe80b0000     0x7fffe80b1000     0x1000    0x1c000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-glx.so.0.0.0
+      0x7fffe80b1000     0x7fffe80b6000     0x5000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGLX_mesa.so.0.0.0
+      0x7fffe80b6000     0x7fffe80ea000    0x34000     0x5000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGLX_mesa.so.0.0.0
+      0x7fffe80ea000     0x7fffe80fb000    0x11000    0x39000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGLX_mesa.so.0.0.0
+      0x7fffe80fb000     0x7fffe80fe000     0x3000    0x4a000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGLX_mesa.so.0.0.0
+      0x7fffe80fe000     0x7fffe80ff000     0x1000    0x4d000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGLX_mesa.so.0.0.0
+      0x7fffe80ff000     0x7fffe8101000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXtst.so.6.1.0
+      0x7fffe8101000     0x7fffe8104000     0x3000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXtst.so.6.1.0
+      0x7fffe8104000     0x7fffe8105000     0x1000     0x5000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXtst.so.6.1.0
+      0x7fffe8105000     0x7fffe8106000     0x1000     0x5000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXtst.so.6.1.0
+      0x7fffe8106000     0x7fffe8107000     0x1000     0x6000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXtst.so.6.1.0
+      0x7fffe8107000     0x7fffe8109000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXrandr.so.2.2.0
+      0x7fffe8109000     0x7fffe8110000     0x7000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXrandr.so.2.2.0
+      0x7fffe8110000     0x7fffe8112000     0x2000     0x9000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXrandr.so.2.2.0
+      0x7fffe8112000     0x7fffe8113000     0x1000     0xa000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXrandr.so.2.2.0
+      0x7fffe8113000     0x7fffe8114000     0x1000     0xb000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXrandr.so.2.2.0
+      0x7fffe8114000     0x7fffe8117000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXi.so.6.1.0
+      0x7fffe8117000     0x7fffe8124000     0xd000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXi.so.6.1.0
+      0x7fffe8124000     0x7fffe8127000     0x3000    0x10000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXi.so.6.1.0
+      0x7fffe8127000     0x7fffe8128000     0x1000    0x12000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXi.so.6.1.0
+      0x7fffe8128000     0x7fffe8129000     0x1000    0x13000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXi.so.6.1.0
+      0x7fffe8129000     0x7fffe812b000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXrender.so.1.3.0
+      0x7fffe812b000     0x7fffe8132000     0x7000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXrender.so.1.3.0
+      0x7fffe8132000     0x7fffe8133000     0x1000     0x9000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXrender.so.1.3.0
+      0x7fffe8133000     0x7fffe8134000     0x1000     0x9000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXrender.so.1.3.0
+      0x7fffe8134000     0x7fffe8135000     0x1000     0xa000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXrender.so.1.3.0
+      0x7fffe8135000     0x7fffe814a000    0x15000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsystemd.so.0.45.0
+      0x7fffe814a000     0x7fffe8223000    0xd9000    0x15000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsystemd.so.0.45.0
+      0x7fffe8223000     0x7fffe8272000    0x4f000    0xee000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsystemd.so.0.45.0
+      0x7fffe8272000     0x7fffe827c000     0xa000   0x13c000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsystemd.so.0.45.0
+      0x7fffe827c000     0x7fffe827d000     0x1000   0x146000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsystemd.so.0.45.0
+      0x7fffe827d000     0x7fffe827e000     0x1000        0x0  rw-p   
+      0x7fffe827e000     0x7fffe828c000     0xe000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdbus-1.so.3.38.3
+      0x7fffe828c000     0x7fffe82bd000    0x31000     0xe000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdbus-1.so.3.38.3
+      0x7fffe82bd000     0x7fffe82ce000    0x11000    0x3f000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdbus-1.so.3.38.3
+      0x7fffe82ce000     0x7fffe82d0000     0x2000    0x4f000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdbus-1.so.3.38.3
+      0x7fffe82d0000     0x7fffe82d1000     0x1000    0x51000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdbus-1.so.3.38.3
+      0x7fffe82d1000     0x7fffe87a2000   0x4d1000        0x0  rw-p   
+      0x7fffe87a2000     0x7fffeb7a7000  0x3005000        0x0  rw-p   
+      0x7fffeb7a7000     0x7fffeb800000    0x59000        0x0  r--p   /usr/lib/locale/C.utf8/LC_CTYPE
+      0x7fffeb800000     0x7fffebaeb000   0x2eb000        0x0  r--p   /usr/lib/locale/locale-archive
+      0x7fffebaed000     0x7fffebaee000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXss.so.1.0.0
+      0x7fffebaee000     0x7fffebaef000     0x1000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXss.so.1.0.0
+      0x7fffebaef000     0x7fffebaf0000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXss.so.1.0.0
+      0x7fffebaf0000     0x7fffebaf1000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXss.so.1.0.0
+      0x7fffebaf1000     0x7fffebaf2000     0x1000     0x3000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXss.so.1.0.0
+      0x7fffebaf2000     0x7fffebaf5000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXcursor.so.1.0.2
+      0x7fffebaf5000     0x7fffebafb000     0x6000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXcursor.so.1.0.2
+      0x7fffebafb000     0x7fffebafd000     0x2000     0x9000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXcursor.so.1.0.2
+      0x7fffebafd000     0x7fffebafe000     0x1000     0xa000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXcursor.so.1.0.2
+      0x7fffebafe000     0x7fffebaff000     0x1000     0xb000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXcursor.so.1.0.2
+      0x7fffebaff000     0x7fffebb03000     0x4000 0x10000000  rw-s   anon_inode:[io_uring]
+      0x7fffebb03000     0x7fffebb06000     0x3000        0x0  rw-s   anon_inode:[io_uring]
+      0x7fffebb06000     0x7fffebb0a000     0x4000 0x10000000  rw-s   anon_inode:[io_uring]
+      0x7fffebb0a000     0x7fffebb0d000     0x3000        0x0  rw-s   anon_inode:[io_uring]
+      0x7fffebb0d000     0x7fffebb0e000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_NUMERIC
+      0x7fffebb0e000     0x7fffebb0f000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_TIME
+      0x7fffebb0f000     0x7fffebb10000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_COLLATE
+      0x7fffebb10000     0x7fffebb11000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_MONETARY
+      0x7fffebb11000     0x7fffebb12000     0x1000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libanl.so.1
+      0x7fffebb12000     0x7fffebb13000     0x1000     0x1000  r-xp   /usr/lib/x86_64-linux-gnu/libanl.so.1
+      0x7fffebb13000     0x7fffebb14000     0x1000     0x2000  r--p   /usr/lib/x86_64-linux-gnu/libanl.so.1
+      0x7fffebb14000     0x7fffebb15000     0x1000     0x2000  r--p   /usr/lib/x86_64-linux-gnu/libanl.so.1
+      0x7fffebb15000     0x7fffebb16000     0x1000     0x3000  rw-p   /usr/lib/x86_64-linux-gnu/libanl.so.1
+      0x7fffebb16000     0x7fffebb17000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libutil.so.1
+      0x7fffebb17000     0x7fffebb18000     0x1000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libutil.so.1
+      0x7fffebb18000     0x7fffebb19000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libutil.so.1
+      0x7fffebb19000     0x7fffebb1a000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libutil.so.1
+      0x7fffebb1a000     0x7fffebb1b000     0x1000     0x3000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libutil.so.1
+      0x7fffebb1b000     0x7fffebb1c000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/librt.so.1
+      0x7fffebb1c000     0x7fffebb1d000     0x1000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/librt.so.1
+      0x7fffebb1d000     0x7fffebb1e000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/librt.so.1
+      0x7fffebb1e000     0x7fffebb1f000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/librt.so.1
+      0x7fffebb1f000     0x7fffebb20000     0x1000     0x3000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/librt.so.1
+      0x7fffebb20000     0x7fffebb21000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpthread.so.0
+      0x7fffebb21000     0x7fffebb22000     0x1000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpthread.so.0
+      0x7fffebb22000     0x7fffebb23000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpthread.so.0
+      0x7fffebb23000     0x7fffebb24000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpthread.so.0
+      0x7fffebb24000     0x7fffebb25000     0x1000     0x3000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpthread.so.0
+      0x7fffebb25000     0x7fffebb27000     0x2000        0x0  r--p   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+      0x7fffebb27000     0x7fffebb3c000    0x15000     0x2000  r-xp   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+      0x7fffebb3c000     0x7fffebb55000    0x19000    0x17000  r--p   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+      0x7fffebb55000     0x7fffebb56000     0x1000    0x2f000  r--p   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+      0x7fffebb56000     0x7fffebb57000     0x1000    0x30000  rw-p   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+      0x7fffebb57000     0x7fffebb62000     0xb000        0x0  rw-p   
+      0x7fffebb62000     0x7fffebb64000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libffi.so.8.5.0
+      0x7fffebb64000     0x7fffebb6c000     0x8000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libffi.so.8.5.0
+      0x7fffebb6c000     0x7fffebb6e000     0x2000     0xa000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libffi.so.8.5.0
+      0x7fffebb6e000     0x7fffebb6f000     0x1000     0xb000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libffi.so.8.5.0
+      0x7fffebb6f000     0x7fffebb70000     0x1000     0xc000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libffi.so.8.5.0
+      0x7fffebb70000     0x7fffebb72000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libexpat.so.1.12.5
+      0x7fffebb72000     0x7fffebb93000    0x21000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libexpat.so.1.12.5
+      0x7fffebb93000     0x7fffebb9c000     0x9000    0x23000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libexpat.so.1.12.5
+      0x7fffebb9c000     0x7fffebb9e000     0x2000    0x2b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libexpat.so.1.12.5
+      0x7fffebb9e000     0x7fffebb9f000     0x1000    0x2d000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libexpat.so.1.12.5
+      0x7fffebb9f000     0x7fffebba2000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libk5crypto.so.3.1
+      0x7fffebba2000     0x7fffebbbe000    0x1c000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libk5crypto.so.3.1
+      0x7fffebbbe000     0x7fffebbca000     0xc000    0x1f000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libk5crypto.so.3.1
+      0x7fffebbca000     0x7fffebbcc000     0x2000    0x2a000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libk5crypto.so.3.1
+      0x7fffebbcc000     0x7fffebbcd000     0x1000    0x2c000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libk5crypto.so.3.1
+      0x7fffebbcd000     0x7fffebbde000    0x11000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libkrb5.so.3.3
+      0x7fffebbde000     0x7fffebc4e000    0x70000    0x11000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libkrb5.so.3.3
+      0x7fffebc4e000     0x7fffebc8c000    0x3e000    0x81000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libkrb5.so.3.3
+      0x7fffebc8c000     0x7fffebc9a000     0xe000    0xbf000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libkrb5.so.3.3
+      0x7fffebc9a000     0x7fffebc9c000     0x2000    0xcd000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libkrb5.so.3.3
+      0x7fffebc9c000     0x7fffebc9d000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbrotlienc.so.1.2.0
+      0x7fffebc9d000     0x7fffebd0a000    0x6d000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbrotlienc.so.1.2.0
+      0x7fffebd0a000     0x7fffebd5a000    0x50000    0x6e000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbrotlienc.so.1.2.0
+      0x7fffebd5a000     0x7fffebd5b000     0x1000    0xbd000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbrotlienc.so.1.2.0
+      0x7fffebd5b000     0x7fffebd5c000     0x1000    0xbe000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbrotlienc.so.1.2.0
+      0x7fffebd5c000     0x7fffebd67000     0xb000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgomp.so.1.0.0
+      0x7fffebd67000     0x7fffebda5000    0x3e000     0xb000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgomp.so.1.0.0
+      0x7fffebda5000     0x7fffebdb4000     0xf000    0x49000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgomp.so.1.0.0
+      0x7fffebdb4000     0x7fffebdb5000     0x1000    0x57000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgomp.so.1.0.0
+      0x7fffebdb5000     0x7fffebdb6000     0x1000    0x58000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgomp.so.1.0.0
+      0x7fffebdb6000     0x7fffebdba000     0x4000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpgm-5.3.so.0.0.128
+      0x7fffebdba000     0x7fffebde2000    0x28000     0x4000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpgm-5.3.so.0.0.128
+      0x7fffebde2000     0x7fffebdfb000    0x19000    0x2c000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpgm-5.3.so.0.0.128
+      0x7fffebdfb000     0x7fffebdfc000     0x1000    0x45000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpgm-5.3.so.0.0.128
+      0x7fffebdfc000     0x7fffebdfd000     0x1000    0x46000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpgm-5.3.so.0.0.128
+      0x7fffebdfd000     0x7fffebe01000     0x4000        0x0  rw-p   
+      0x7fffebe01000     0x7fffebe10000     0xf000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsodium.so.26.4.0
+      0x7fffebe10000     0x7fffebe63000    0x53000     0xf000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsodium.so.26.4.0
+      0x7fffebe63000     0x7fffebe75000    0x12000    0x62000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsodium.so.26.4.0
+      0x7fffebe75000     0x7fffebe76000     0x1000    0x74000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsodium.so.26.4.0
+      0x7fffebe76000     0x7fffebe77000     0x1000    0x75000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsodium.so.26.4.0
+      0x7fffebe77000     0x7fffebe86000     0xf000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libunistring.so.5.2.1
+      0x7fffebe86000     0x7fffebeca000    0x44000     0xf000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libunistring.so.5.2.1
+      0x7fffebeca000     0x7fffec059000   0x18f000    0x53000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libunistring.so.5.2.1
+      0x7fffec059000     0x7fffec05d000     0x4000   0x1e2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libunistring.so.5.2.1
+      0x7fffec05d000     0x7fffec05e000     0x1000   0x1e6000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libunistring.so.5.2.1
+      0x7fffec05e000     0x7fffec065000     0x7000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libp11-kit.so.0.4.11
+      0x7fffec065000     0x7fffec14e000    0xe9000     0x7000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libp11-kit.so.0.4.11
+      0x7fffec14e000     0x7fffec1e0000    0x92000    0xf0000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libp11-kit.so.0.4.11
+      0x7fffec1e0000     0x7fffec1f1000    0x11000   0x181000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libp11-kit.so.0.4.11
+      0x7fffec1f1000     0x7fffec200000     0xf000   0x192000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libp11-kit.so.0.4.11
+      0x7fffec200000     0x7fffec21a000    0x1a000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libleancrypto.so.1.9.0
+      0x7fffec21a000     0x7fffec339000   0x11f000    0x1a000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libleancrypto.so.1.9.0
+      0x7fffec339000     0x7fffec45d000   0x124000   0x139000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libleancrypto.so.1.9.0
+      0x7fffec45d000     0x7fffec463000     0x6000   0x25c000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libleancrypto.so.1.9.0
+      0x7fffec463000     0x7fffec465000     0x2000   0x262000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libleancrypto.so.1.9.0
+      0x7fffec465000     0x7fffec466000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_MESSAGES/SYS_LC_MESSAGES
+      0x7fffec466000     0x7fffec470000     0xa000        0x0  rw-p   
+      0x7fffec470000     0x7fffec473000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libresolv.so.2
+      0x7fffec473000     0x7fffec47c000     0x9000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libresolv.so.2
+      0x7fffec47c000     0x7fffec47f000     0x3000     0xc000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libresolv.so.2
+      0x7fffec47f000     0x7fffec480000     0x1000     0xf000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libresolv.so.2
+      0x7fffec480000     0x7fffec481000     0x1000    0x10000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libresolv.so.2
+      0x7fffec481000     0x7fffec483000     0x2000        0x0  rw-p   
+      0x7fffec483000     0x7fffec491000     0xe000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libnettle.so.9.0
+      0x7fffec491000     0x7fffec4c3000    0x32000     0xe000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libnettle.so.9.0
+      0x7fffec4c3000     0x7fffec4db000    0x18000    0x40000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libnettle.so.9.0
+      0x7fffec4db000     0x7fffec4de000     0x3000    0x57000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libnettle.so.9.0
+      0x7fffec4de000     0x7fffec4df000     0x1000    0x5a000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libnettle.so.9.0
+      0x7fffec4df000     0x7fffec4e7000     0x8000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libhogweed.so.7.0
+      0x7fffec4e7000     0x7fffec4fa000    0x13000     0x8000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libhogweed.so.7.0
+      0x7fffec4fa000     0x7fffec523000    0x29000    0x1b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libhogweed.so.7.0
+      0x7fffec523000     0x7fffec525000     0x2000    0x43000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libhogweed.so.7.0
+      0x7fffec525000     0x7fffec526000     0x1000    0x45000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libhogweed.so.7.0
+      0x7fffec526000     0x7fffec52c000     0x6000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libfontconfig.so.1.17.0
+      0x7fffec52c000     0x7fffec561000    0x35000     0x6000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libfontconfig.so.1.17.0
+      0x7fffec561000     0x7fffec597000    0x36000    0x3b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libfontconfig.so.1.17.0
+      0x7fffec597000     0x7fffec5a0000     0x9000    0x71000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libfontconfig.so.1.17.0
+      0x7fffec5a0000     0x7fffec5a1000     0x1000    0x7a000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libfontconfig.so.1.17.0
+      0x7fffec5a1000     0x7fffec5a5000     0x4000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmpg123.so.0.49.4
+      0x7fffec5a5000     0x7fffec5e3000    0x3e000     0x4000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmpg123.so.0.49.4
+      0x7fffec5e3000     0x7fffec5fe000    0x1b000    0x42000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmpg123.so.0.49.4
+      0x7fffec5fe000     0x7fffec5ff000     0x1000    0x5d000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmpg123.so.0.49.4
+      0x7fffec5ff000     0x7fffec600000     0x1000    0x5e000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmpg123.so.0.49.4
+      0x7fffec600000     0x7fffec653000    0x53000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcrypto.so.3
+      0x7fffec653000     0x7fffeca00000   0x3ad000    0x53000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcrypto.so.3
+      0x7fffeca00000     0x7fffecb26000   0x126000   0x400000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcrypto.so.3
+      0x7fffecb26000     0x7fffecba4000    0x7e000   0x526000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcrypto.so.3
+      0x7fffecba4000     0x7fffecba7000     0x3000   0x5a4000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcrypto.so.3
+      0x7fffecba7000     0x7fffecbaa000     0x3000        0x0  rw-p   
+      0x7fffecbaa000     0x7fffecbab000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_PAPER
+      0x7fffecbab000     0x7fffecbad000     0x2000        0x0  rw-p   
+      0x7fffecbad000     0x7fffecbaf000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libkeyutils.so.1.10
+      0x7fffecbaf000     0x7fffecbb1000     0x2000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libkeyutils.so.1.10
+      0x7fffecbb1000     0x7fffecbb2000     0x1000     0x4000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libkeyutils.so.1.10
+      0x7fffecbb2000     0x7fffecbb3000     0x1000     0x4000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libkeyutils.so.1.10
+      0x7fffecbb3000     0x7fffecbb4000     0x1000     0x5000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libkeyutils.so.1.10
+      0x7fffecbb4000     0x7fffecbb7000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libkrb5support.so.0.1
+      0x7fffecbb7000     0x7fffecbbe000     0x7000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libkrb5support.so.0.1
+      0x7fffecbbe000     0x7fffecbc1000     0x3000     0xa000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libkrb5support.so.0.1
+      0x7fffecbc1000     0x7fffecbc2000     0x1000     0xc000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libkrb5support.so.0.1
+      0x7fffecbc2000     0x7fffecbc3000     0x1000     0xd000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libkrb5support.so.0.1
+      0x7fffecbc3000     0x7fffecbc5000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcom_err.so.2.1
+      0x7fffecbc5000     0x7fffecbc6000     0x1000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcom_err.so.2.1
+      0x7fffecbc6000     0x7fffecbc7000     0x1000     0x3000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcom_err.so.2.1
+      0x7fffecbc7000     0x7fffecbc8000     0x1000     0x3000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcom_err.so.2.1
+      0x7fffecbc8000     0x7fffecbc9000     0x1000     0x4000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcom_err.so.2.1
+      0x7fffecbc9000     0x7fffecbcb000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-dri3.so.0.1.0
+      0x7fffecbcb000     0x7fffecbcd000     0x2000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-dri3.so.0.1.0
+      0x7fffecbcd000     0x7fffecbce000     0x1000     0x4000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-dri3.so.0.1.0
+      0x7fffecbce000     0x7fffecbcf000     0x1000     0x4000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-dri3.so.0.1.0
+      0x7fffecbcf000     0x7fffecbd0000     0x1000     0x5000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb-dri3.so.0.1.0
+      0x7fffecbd0000     0x7fffecbd1000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libX11-xcb.so.1.0.0
+      0x7fffecbd1000     0x7fffecbd2000     0x1000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libX11-xcb.so.1.0.0
+      0x7fffecbd2000     0x7fffecbd3000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libX11-xcb.so.1.0.0
+      0x7fffecbd3000     0x7fffecbd4000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libX11-xcb.so.1.0.0
+      0x7fffecbd4000     0x7fffecbd5000     0x1000     0x3000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libX11-xcb.so.1.0.0
+      0x7fffecbd5000     0x7fffecbd9000     0x4000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXext.so.6.4.0
+      0x7fffecbd9000     0x7fffecbe4000     0xb000     0x4000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXext.so.6.4.0
+      0x7fffecbe4000     0x7fffecbe7000     0x3000     0xf000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXext.so.6.4.0
+      0x7fffecbe7000     0x7fffecbe8000     0x1000    0x11000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXext.so.6.4.0
+      0x7fffecbe8000     0x7fffecbe9000     0x1000    0x12000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXext.so.6.4.0
+      0x7fffecbe9000     0x7fffecbea000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbrotlicommon.so.1.2.0
+      0x7fffecbea000     0x7fffecbeb000     0x1000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbrotlicommon.so.1.2.0
+      0x7fffecbeb000     0x7fffecc0a000    0x1f000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbrotlicommon.so.1.2.0
+      0x7fffecc0a000     0x7fffecc0b000     0x1000    0x21000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbrotlicommon.so.1.2.0
+      0x7fffecc0b000     0x7fffecc0c000     0x1000    0x22000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbrotlicommon.so.1.2.0
+      0x7fffecc0c000     0x7fffecc18000     0xc000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libzstd.so.1.5.7
+      0x7fffecc18000     0x7fffeccdf000    0xc7000     0xc000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libzstd.so.1.5.7
+      0x7fffeccdf000     0x7fffeccf0000    0x11000    0xd3000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libzstd.so.1.5.7
+      0x7fffeccf0000     0x7fffeccf1000     0x1000    0xe4000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libzstd.so.1.5.7
+      0x7fffeccf1000     0x7fffeccf2000     0x1000    0xe5000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libzstd.so.1.5.7
+      0x7fffeccf2000     0x7fffeccfb000     0x9000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgssapi_krb5.so.2.2
+      0x7fffeccfb000     0x7fffecd3b000    0x40000     0x9000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgssapi_krb5.so.2.2
+      0x7fffecd3b000     0x7fffecd47000     0xc000    0x49000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgssapi_krb5.so.2.2
+      0x7fffecd47000     0x7fffecd49000     0x2000    0x55000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgssapi_krb5.so.2.2
+      0x7fffecd49000     0x7fffecd4a000     0x1000    0x57000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgssapi_krb5.so.2.2
+      0x7fffecd4a000     0x7fffecd5e000    0x14000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libssl.so.3
+      0x7fffecd5e000     0x7fffece0c000    0xae000    0x14000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libssl.so.3
+      0x7fffece0c000     0x7fffece35000    0x29000    0xc2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libssl.so.3
+      0x7fffece35000     0x7fffece3f000     0xa000    0xea000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libssl.so.3
+      0x7fffece3f000     0x7fffece43000     0x4000    0xf4000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libssl.so.3
+      0x7fffece43000     0x7fffece49000     0x6000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libssh2.so.1.0.1
+      0x7fffece49000     0x7fffece81000    0x38000     0x6000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libssh2.so.1.0.1
+      0x7fffece81000     0x7fffece8e000     0xd000    0x3e000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libssh2.so.1.0.1
+      0x7fffece8e000     0x7fffece90000     0x2000    0x4b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libssh2.so.1.0.1
+      0x7fffece90000     0x7fffece91000     0x1000    0x4d000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libssh2.so.1.0.1
+      0x7fffece91000     0x7fffece93000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libidn2.so.0.4.0
+      0x7fffece93000     0x7fffece97000     0x4000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libidn2.so.0.4.0
+      0x7fffece97000     0x7fffeceb1000    0x1a000     0x6000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libidn2.so.0.4.0
+      0x7fffeceb1000     0x7fffeceb2000     0x1000    0x1f000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libidn2.so.0.4.0
+      0x7fffeceb2000     0x7fffeceb3000     0x1000    0x20000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libidn2.so.0.4.0
+      0x7fffeceb3000     0x7fffeceb7000     0x4000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libnghttp2.so.14.29.5
+      0x7fffeceb7000     0x7fffececd000    0x16000     0x4000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libnghttp2.so.14.29.5
+      0x7fffececd000     0x7fffeced9000     0xc000    0x1a000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libnghttp2.so.14.29.5
+      0x7fffeced9000     0x7fffecedc000     0x3000    0x25000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libnghttp2.so.14.29.5
+      0x7fffecedc000     0x7fffecedd000     0x1000    0x28000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libnghttp2.so.14.29.5
+      0x7fffecedd000     0x7fffecee1000     0x4000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libngtcp2.so.16.11.0
+      0x7fffecee1000     0x7fffecf28000    0x47000     0x4000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libngtcp2.so.16.11.0
+      0x7fffecf28000     0x7fffecf37000     0xf000    0x4b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libngtcp2.so.16.11.0
+      0x7fffecf37000     0x7fffecf38000     0x1000    0x5a000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libngtcp2.so.16.11.0
+      0x7fffecf38000     0x7fffecf39000     0x1000    0x5b000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libngtcp2.so.16.11.0
+      0x7fffecf39000     0x7fffecf3b000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsoxr.so.0.1.2
+      0x7fffecf3b000     0x7fffecf5f000    0x24000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsoxr.so.0.1.2
+      0x7fffecf5f000     0x7fffecf64000     0x5000    0x26000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsoxr.so.0.1.2
+      0x7fffecf64000     0x7fffecf66000     0x2000    0x2a000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsoxr.so.0.1.2
+      0x7fffecf66000     0x7fffecf67000     0x1000    0x2c000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsoxr.so.0.1.2
+      0x7fffecf67000     0x7fffecf9c000    0x35000        0x0  rw-p   
+      0x7fffecf9c000     0x7fffecfa0000     0x4000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvpl.so.2.17
+      0x7fffecfa0000     0x7fffecfea000    0x4a000     0x4000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvpl.so.2.17
+      0x7fffecfea000     0x7fffecffd000    0x13000    0x4e000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvpl.so.2.17
+      0x7fffecffd000     0x7fffecfff000     0x2000    0x60000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvpl.so.2.17
+      0x7fffecfff000     0x7fffed000000     0x1000    0x62000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvpl.so.2.17
+      0x7fffed000000     0x7fffed003000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libx264.so.165
+      0x7fffed003000     0x7fffed196000   0x193000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libx264.so.165
+      0x7fffed196000     0x7fffed1cf000    0x39000   0x196000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libx264.so.165
+      0x7fffed1cf000     0x7fffed1d1000     0x2000   0x1ce000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libx264.so.165
+      0x7fffed1d1000     0x7fffed1d2000     0x1000   0x1d0000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libx264.so.165
+      0x7fffed1d2000     0x7fffed2cd000    0xfb000        0x0  rw-p   
+      0x7fffed2cd000     0x7fffed2cf000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXfixes.so.3.1.0
+      0x7fffed2cf000     0x7fffed2d2000     0x3000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXfixes.so.3.1.0
+      0x7fffed2d2000     0x7fffed2d3000     0x1000     0x5000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXfixes.so.3.1.0
+      0x7fffed2d3000     0x7fffed2d4000     0x1000     0x5000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXfixes.so.3.1.0
+      0x7fffed2d4000     0x7fffed2d5000     0x1000     0x6000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXfixes.so.3.1.0
+      0x7fffed2d5000     0x7fffed2d7000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libtasn1.so.6.6.5
+      0x7fffed2d7000     0x7fffed2e6000     0xf000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libtasn1.so.6.6.5
+      0x7fffed2e6000     0x7fffed2e9000     0x3000    0x11000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libtasn1.so.6.6.5
+      0x7fffed2e9000     0x7fffed2ea000     0x1000    0x14000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libtasn1.so.6.6.5
+      0x7fffed2ea000     0x7fffed2eb000     0x1000    0x15000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libtasn1.so.6.6.5
+      0x7fffed2eb000     0x7fffed2ee000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libnghttp3.so.9.9.0
+      0x7fffed2ee000     0x7fffed303000    0x15000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libnghttp3.so.9.9.0
+      0x7fffed303000     0x7fffed310000     0xd000    0x18000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libnghttp3.so.9.9.0
+      0x7fffed310000     0x7fffed311000     0x1000    0x24000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libnghttp3.so.9.9.0
+      0x7fffed311000     0x7fffed313000     0x2000    0x25000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libnghttp3.so.9.9.0
+      0x7fffed313000     0x7fffed314000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxvidcore.so.4.3
+      0x7fffed314000     0x7fffed39c000    0x88000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxvidcore.so.4.3
+      0x7fffed39c000     0x7fffed3ab000     0xf000    0x89000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxvidcore.so.4.3
+      0x7fffed3ab000     0x7fffed3ac000     0x1000    0x97000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxvidcore.so.4.3
+      0x7fffed3ac000     0x7fffed3b6000     0xa000    0x98000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxvidcore.so.4.3
+      0x7fffed3b6000     0x7fffed41f000    0x69000        0x0  rw-p   
+      0x7fffed41f000     0x7fffed421000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdav1d.so.7.0.0
+      0x7fffed421000     0x7fffed59f000   0x17e000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdav1d.so.7.0.0
+      0x7fffed59f000     0x7fffed5d7000    0x38000   0x180000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdav1d.so.7.0.0
+      0x7fffed5d7000     0x7fffed5db000     0x4000   0x1b7000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdav1d.so.7.0.0
+      0x7fffed5db000     0x7fffed5dc000     0x1000   0x1bb000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdav1d.so.7.0.0
+      0x7fffed5dc000     0x7fffed600000    0x24000        0x0  rw-p   
+      0x7fffed600000     0x7fffed602000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvpx.so.12.1.0
+      0x7fffed602000     0x7fffed8f1000   0x2ef000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvpx.so.12.1.0
+      0x7fffed8f1000     0x7fffed928000    0x37000   0x2f1000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvpx.so.12.1.0
+      0x7fffed928000     0x7fffed92b000     0x3000   0x328000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvpx.so.12.1.0
+      0x7fffed92b000     0x7fffed92c000     0x1000   0x32b000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvpx.so.12.1.0
+      0x7fffed92c000     0x7fffed935000     0x9000        0x0  rw-p   
+      0x7fffed935000     0x7fffed937000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libogg.so.0.8.6
+      0x7fffed937000     0x7fffed93a000     0x3000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libogg.so.0.8.6
+      0x7fffed93a000     0x7fffed93d000     0x3000     0x5000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libogg.so.0.8.6
+      0x7fffed93d000     0x7fffed93e000     0x1000     0x8000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libogg.so.0.8.6
+      0x7fffed93e000     0x7fffed93f000     0x1000     0x9000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libogg.so.0.8.6
+      0x7fffed93f000     0x7fffed942000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libva.so.2.2400.0
+      0x7fffed942000     0x7fffed964000    0x22000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libva.so.2.2400.0
+      0x7fffed964000     0x7fffed977000    0x13000    0x25000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libva.so.2.2400.0
+      0x7fffed977000     0x7fffed978000     0x1000    0x38000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libva.so.2.2400.0
+      0x7fffed978000     0x7fffed979000     0x1000    0x39000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libva.so.2.2400.0
+      0x7fffed979000     0x7fffed97c000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libwebp.so.7.2.0
+      0x7fffed97c000     0x7fffed9ed000    0x71000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libwebp.so.7.2.0
+      0x7fffed9ed000     0x7fffed9fd000    0x10000    0x74000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libwebp.so.7.2.0
+      0x7fffed9fd000     0x7fffed9fe000     0x1000    0x83000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libwebp.so.7.2.0
+      0x7fffed9fe000     0x7fffed9ff000     0x1000    0x84000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libwebp.so.7.2.0
+      0x7fffed9ff000     0x7fffeda00000     0x1000        0x0  rw-p   
+      0x7fffeda00000     0x7fffeda25000    0x25000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgnutls.so.30.42.0
+      0x7fffeda25000     0x7fffedb8b000   0x166000    0x25000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgnutls.so.30.42.0
+      0x7fffedb8b000     0x7fffedc12000    0x87000   0x18b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgnutls.so.30.42.0
+      0x7fffedc12000     0x7fffedc24000    0x12000   0x212000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgnutls.so.30.42.0
+      0x7fffedc24000     0x7fffedc27000     0x3000   0x224000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgnutls.so.30.42.0
+      0x7fffedc27000     0x7fffedc2a000     0x3000        0x0  rw-p   
+      0x7fffedc2a000     0x7fffedc2b000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsharpyuv.so.0.1.2
+      0x7fffedc2b000     0x7fffedc2f000     0x4000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsharpyuv.so.0.1.2
+      0x7fffedc2f000     0x7fffedc30000     0x1000     0x5000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsharpyuv.so.0.1.2
+      0x7fffedc30000     0x7fffedc31000     0x1000     0x5000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsharpyuv.so.0.1.2
+      0x7fffedc31000     0x7fffedc32000     0x1000     0x6000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsharpyuv.so.0.1.2
+      0x7fffedc32000     0x7fffedc33000     0x1000        0x0  rw-p   
+      0x7fffedc33000     0x7fffedc35000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvorbisfile.so.3.3.8
+      0x7fffedc35000     0x7fffedc3a000     0x5000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvorbisfile.so.3.3.8
+      0x7fffedc3a000     0x7fffedc3b000     0x1000     0x7000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvorbisfile.so.3.3.8
+      0x7fffedc3b000     0x7fffedc3c000     0x1000     0x7000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvorbisfile.so.3.3.8
+      0x7fffedc3c000     0x7fffedc3d000     0x1000     0x8000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvorbisfile.so.3.3.8
+      0x7fffedc3d000     0x7fffedc3e000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvorbisenc.so.2.0.12
+      0x7fffedc3e000     0x7fffedc41000     0x3000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvorbisenc.so.2.0.12
+      0x7fffedc41000     0x7fffedcb8000    0x77000     0x4000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvorbisenc.so.2.0.12
+      0x7fffedcb8000     0x7fffedcd4000    0x1c000    0x7a000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvorbisenc.so.2.0.12
+      0x7fffedcd4000     0x7fffedcd5000     0x1000    0x96000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvorbisenc.so.2.0.12
+      0x7fffedcd5000     0x7fffedcd8000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libopus.so.0.11.1
+      0x7fffedcd8000     0x7fffedd30000    0x58000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libopus.so.0.11.1
+      0x7fffedd30000     0x7fffedd44000    0x14000    0x5b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libopus.so.0.11.1
+      0x7fffedd44000     0x7fffedd45000     0x1000    0x6f000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libopus.so.0.11.1
+      0x7fffedd45000     0x7fffedd46000     0x1000    0x70000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libopus.so.0.11.1
+      0x7fffedd46000     0x7fffedd4b000     0x5000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmp3lame.so.0.0.0
+      0x7fffedd4b000     0x7fffedd74000    0x29000     0x5000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmp3lame.so.0.0.0
+      0x7fffedd74000     0x7fffedd81000     0xd000    0x2e000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmp3lame.so.0.0.0
+      0x7fffedd81000     0x7fffedd82000     0x1000    0x3b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmp3lame.so.0.0.0
+      0x7fffedd82000     0x7fffedd83000     0x1000    0x3c000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmp3lame.so.0.0.0
+      0x7fffedd83000     0x7fffedd94000    0x11000        0x0  rw-p   
+      0x7fffedd94000     0x7fffedd9d000     0x9000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/liblcms2.so.2.0.19
+      0x7fffedd9d000     0x7fffedde4000    0x47000     0x9000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/liblcms2.so.2.0.19
+      0x7fffedde4000     0x7fffeddf9000    0x15000    0x50000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/liblcms2.so.2.0.19
+      0x7fffeddf9000     0x7fffeddfc000     0x3000    0x64000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/liblcms2.so.2.0.19
+      0x7fffeddfc000     0x7fffeddff000     0x3000    0x67000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/liblcms2.so.2.0.19
+      0x7fffeddff000     0x7fffede00000     0x1000        0x0  rw-p   
+      0x7fffede00000     0x7fffede0c000     0xc000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libopenmpt.so.0.5.5
+      0x7fffede0c000     0x7fffedf81000   0x175000     0xc000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libopenmpt.so.0.5.5
+      0x7fffedf81000     0x7fffedfd0000    0x4f000   0x181000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libopenmpt.so.0.5.5
+      0x7fffedfd0000     0x7fffedfd5000     0x5000   0x1d0000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libopenmpt.so.0.5.5
+      0x7fffedfd5000     0x7fffedfd6000     0x1000   0x1d5000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libopenmpt.so.0.5.5
+      0x7fffedfd6000     0x7fffee032000    0x5c000        0x0  rw-p   
+      0x7fffee032000     0x7fffee074000    0x42000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libzmq.so.5.2.5
+      0x7fffee074000     0x7fffee0e8000    0x74000    0x42000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libzmq.so.5.2.5
+      0x7fffee0e8000     0x7fffee109000    0x21000    0xb6000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libzmq.so.5.2.5
+      0x7fffee109000     0x7fffee113000     0xa000    0xd6000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libzmq.so.5.2.5
+      0x7fffee113000     0x7fffee114000     0x1000    0xe0000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libzmq.so.5.2.5
+      0x7fffee114000     0x7fffee12f000    0x1b000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsrt.so.1.5.6
+      0x7fffee12f000     0x7fffee1d5000    0xa6000    0x1b000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsrt.so.1.5.6
+      0x7fffee1d5000     0x7fffee1f7000    0x22000    0xc1000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsrt.so.1.5.6
+      0x7fffee1f7000     0x7fffee1fa000     0x3000    0xe2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsrt.so.1.5.6
+      0x7fffee1fa000     0x7fffee1fb000     0x1000    0xe5000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsrt.so.1.5.6
+      0x7fffee1fb000     0x7fffee200000     0x5000        0x0  rw-p   
+      0x7fffee200000     0x7fffee224000    0x24000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libc.so.6
+      0x7fffee224000     0x7fffee39f000   0x17b000    0x24000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libc.so.6
+      0x7fffee39f000     0x7fffee415000    0x76000   0x19f000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libc.so.6
+      0x7fffee415000     0x7fffee419000     0x4000   0x214000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libc.so.6
+      0x7fffee419000     0x7fffee41b000     0x2000   0x218000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libc.so.6
+      0x7fffee41b000     0x7fffee423000     0x8000        0x0  rw-p   
+      0x7fffee423000     0x7fffee424000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_NAME
+      0x7fffee424000     0x7fffee42e000     0xa000        0x0  rw-p   
+      0x7fffee42e000     0x7fffee430000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpsl.so.5.3.5
+      0x7fffee430000     0x7fffee432000     0x2000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpsl.so.5.3.5
+      0x7fffee432000     0x7fffee440000     0xe000     0x4000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpsl.so.5.3.5
+      0x7fffee440000     0x7fffee441000     0x1000    0x11000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpsl.so.5.3.5
+      0x7fffee441000     0x7fffee442000     0x1000    0x12000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpsl.so.5.3.5
+      0x7fffee442000     0x7fffee445000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvorbis.so.0.4.9
+      0x7fffee445000     0x7fffee45d000    0x18000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvorbis.so.0.4.9
+      0x7fffee45d000     0x7fffee46e000    0x11000    0x1b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvorbis.so.0.4.9
+      0x7fffee46e000     0x7fffee46f000     0x1000    0x2b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvorbis.so.0.4.9
+      0x7fffee46f000     0x7fffee470000     0x1000    0x2c000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvorbis.so.0.4.9
+      0x7fffee470000     0x7fffee476000     0x6000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmodplug.so.1.0.0
+      0x7fffee476000     0x7fffee4b4000    0x3e000     0x6000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmodplug.so.1.0.0
+      0x7fffee4b4000     0x7fffee4c1000     0xd000    0x44000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmodplug.so.1.0.0
+      0x7fffee4c1000     0x7fffee4c2000     0x1000    0x51000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmodplug.so.1.0.0
+      0x7fffee4c2000     0x7fffee4c3000     0x1000    0x52000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmodplug.so.1.0.0
+      0x7fffee4c3000     0x7fffee600000   0x13d000        0x0  rw-p   
+      0x7fffee600000     0x7fffee69a000    0x9a000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libstdc++.so.6.0.36
+      0x7fffee69a000     0x7fffee81d000   0x183000    0x9a000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libstdc++.so.6.0.36
+      0x7fffee81d000     0x7fffee8bd000    0xa0000   0x21d000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libstdc++.so.6.0.36
+      0x7fffee8bd000     0x7fffee8ce000    0x11000   0x2bc000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libstdc++.so.6.0.36
+      0x7fffee8ce000     0x7fffee8cf000     0x1000   0x2cd000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libstdc++.so.6.0.36
+      0x7fffee8cf000     0x7fffee8d3000     0x4000        0x0  rw-p   
+      0x7fffee8d3000     0x7fffee8d4000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_ADDRESS
+      0x7fffee8d4000     0x7fffee8d5000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libtheoraenc.so.2.2.1
+      0x7fffee8d5000     0x7fffee8f9000    0x24000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libtheoraenc.so.2.2.1
+      0x7fffee8f9000     0x7fffee905000     0xc000    0x25000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libtheoraenc.so.2.2.1
+      0x7fffee905000     0x7fffee906000     0x1000    0x30000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libtheoraenc.so.2.2.1
+      0x7fffee906000     0x7fffee907000     0x1000    0x31000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libtheoraenc.so.2.2.1
+      0x7fffee907000     0x7fffee921000    0x1a000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxml2.so.16.1.4
+      0x7fffee921000     0x7fffee9b4000    0x93000    0x1a000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxml2.so.16.1.4
+      0x7fffee9b4000     0x7fffee9f5000    0x41000    0xad000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxml2.so.16.1.4
+      0x7fffee9f5000     0x7fffee9fe000     0x9000    0xee000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxml2.so.16.1.4
+      0x7fffee9fe000     0x7fffee9ff000     0x1000    0xf7000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxml2.so.16.1.4
+      0x7fffee9ff000     0x7fffeea00000     0x1000        0x0  rw-p   
+      0x7fffeea00000     0x7fffeea16000    0x16000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libSDL3.so.0
+      0x7fffeea16000     0x7fffeec5d000   0x247000    0x16000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libSDL3.so.0
+      0x7fffeec5d000     0x7fffeed0c000    0xaf000   0x25d000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libSDL3.so.0
+      0x7fffeed0c000     0x7fffeed19000     0xd000   0x30c000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libSDL3.so.0
+      0x7fffeed19000     0x7fffeed26000     0xd000   0x319000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libSDL3.so.0
+      0x7fffeed26000     0x7fffeed2e000     0x8000        0x0  rw-p   
+      0x7fffeed2e000     0x7fffeed31000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libngtcp2_crypto_ossl.so.0.3.1
+      0x7fffeed31000     0x7fffeed37000     0x6000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libngtcp2_crypto_ossl.so.0.3.1
+      0x7fffeed37000     0x7fffeed39000     0x2000     0x9000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libngtcp2_crypto_ossl.so.0.3.1
+      0x7fffeed39000     0x7fffeed3a000     0x1000     0xa000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libngtcp2_crypto_ossl.so.0.3.1
+      0x7fffeed3a000     0x7fffeed3b000     0x1000     0xb000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libngtcp2_crypto_ossl.so.0.3.1
+      0x7fffeed3b000     0x7fffeed40000     0x5000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdrm.so.2.134.0
+      0x7fffeed40000     0x7fffeed4c000     0xc000     0x5000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdrm.so.2.134.0
+      0x7fffeed4c000     0x7fffeed50000     0x4000    0x11000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdrm.so.2.134.0
+      0x7fffeed50000     0x7fffeed51000     0x1000    0x15000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdrm.so.2.134.0
+      0x7fffeed51000     0x7fffeed52000     0x1000    0x16000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdrm.so.2.134.0
+      0x7fffeed52000     0x7fffeed53000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvdpau.so.1.0.0
+      0x7fffeed53000     0x7fffeed54000     0x1000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvdpau.so.1.0.0
+      0x7fffeed54000     0x7fffeed55000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvdpau.so.1.0.0
+      0x7fffeed55000     0x7fffeed56000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvdpau.so.1.0.0
+      0x7fffeed56000     0x7fffeed57000     0x1000     0x3000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libvdpau.so.1.0.0
+      0x7fffeed57000     0x7fffeed59000     0x2000        0x0  rw-p   
+      0x7fffeed59000     0x7fffeed6a000    0x11000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgmp.so.10.5.0
+      0x7fffeed6a000     0x7fffeede8000    0x7e000    0x11000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgmp.so.10.5.0
+      0x7fffeede8000     0x7fffeedfd000    0x15000    0x8f000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgmp.so.10.5.0
+      0x7fffeedfd000     0x7fffeedff000     0x2000    0xa3000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgmp.so.10.5.0
+      0x7fffeedff000     0x7fffeee00000     0x1000    0xa5000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgmp.so.10.5.0
+      0x7fffeee00000     0x7fffeee11000    0x11000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libavcodec.so.63.1.102
+      0x7fffeee11000     0x7fffef49b000   0x68a000    0x11000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libavcodec.so.63.1.102
+      0x7fffef49b000     0x7fffef7bd000   0x322000   0x69b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libavcodec.so.63.1.102
+      0x7fffef7bd000     0x7fffef830000    0x73000   0x9bd000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libavcodec.so.63.1.102
+      0x7fffef830000     0x7fffef832000     0x2000   0xa30000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libavcodec.so.63.1.102
+      0x7fffef832000     0x7fffefe95000   0x663000        0x0  rw-p   
+      0x7fffefe95000     0x7fffefe97000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libtheoradec.so.2.1.1
+      0x7fffefe97000     0x7fffefea9000    0x12000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libtheoradec.so.2.1.1
+      0x7fffefea9000     0x7fffefeab000     0x2000    0x14000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libtheoradec.so.2.1.1
+      0x7fffefeab000     0x7fffefeac000     0x1000    0x15000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libtheoradec.so.2.1.1
+      0x7fffefeac000     0x7fffefead000     0x1000    0x16000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libtheoradec.so.2.1.1
+      0x7fffefead000     0x7fffefeaf000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libspeex.so.1.5.2
+      0x7fffefeaf000     0x7fffefec2000    0x13000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libspeex.so.1.5.2
+      0x7fffefec2000     0x7fffefec7000     0x5000    0x15000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libspeex.so.1.5.2
+      0x7fffefec7000     0x7fffefec8000     0x1000    0x1a000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libspeex.so.1.5.2
+      0x7fffefec8000     0x7fffefec9000     0x1000    0x1b000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libspeex.so.1.5.2
+      0x7fffefec9000     0x7fffefed9000    0x10000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libm.so.6
+      0x7fffefed9000     0x7fffeff75000    0x9c000    0x10000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libm.so.6
+      0x7fffeff75000     0x7fffefffe000    0x89000    0xac000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libm.so.6
+      0x7fffefffe000     0x7fffeffff000     0x1000   0x134000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libm.so.6
+      0x7fffeffff000     0x7ffff0000000     0x1000   0x135000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libm.so.6
+      0x7ffff0000000     0x7ffff0007000     0x7000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcapstone.so.5
+      0x7ffff0007000     0x7ffff00f3000    0xec000     0x7000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcapstone.so.5
+      0x7ffff00f3000     0x7ffff05cf000   0x4dc000    0xf3000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcapstone.so.5
+      0x7ffff05cf000     0x7ffff0711000   0x142000   0x5cf000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcapstone.so.5
+      0x7ffff0711000     0x7ffff0712000     0x1000   0x711000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcapstone.so.5
+      0x7ffff0712000     0x7ffff0714000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libva-x11.so.2.2400.0
+      0x7ffff0714000     0x7ffff0717000     0x3000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libva-x11.so.2.2400.0
+      0x7ffff0717000     0x7ffff0718000     0x1000     0x5000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libva-x11.so.2.2400.0
+      0x7ffff0718000     0x7ffff0719000     0x1000     0x5000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libva-x11.so.2.2400.0
+      0x7ffff0719000     0x7ffff071a000     0x1000     0x6000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libva-x11.so.2.2400.0
+      0x7ffff071a000     0x7ffff071b000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libva-drm.so.2.2400.0
+      0x7ffff071b000     0x7ffff071c000     0x1000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libva-drm.so.2.2400.0
+      0x7ffff071c000     0x7ffff071d000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libva-drm.so.2.2400.0
+      0x7ffff071d000     0x7ffff071e000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libva-drm.so.2.2400.0
+      0x7ffff071e000     0x7ffff071f000     0x1000     0x3000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libva-drm.so.2.2400.0
+      0x7ffff071f000     0x7ffff0723000     0x4000        0x0  rw-p   
+      0x7ffff0723000     0x7ffff0731000     0xe000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libssh.so.4.12.0
+      0x7ffff0731000     0x7ffff078e000    0x5d000     0xe000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libssh.so.4.12.0
+      0x7ffff078e000     0x7ffff07ae000    0x20000    0x6b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libssh.so.4.12.0
+      0x7ffff07ae000     0x7ffff07b0000     0x2000    0x8b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libssh.so.4.12.0
+      0x7ffff07b0000     0x7ffff07b2000     0x2000    0x8d000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libssh.so.4.12.0
+      0x7ffff07b2000     0x7ffff07b5000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbluray.so.4.0.0
+      0x7ffff07b5000     0x7ffff07ec000    0x37000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbluray.so.4.0.0
+      0x7ffff07ec000     0x7ffff07fd000    0x11000    0x3a000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbluray.so.4.0.0
+      0x7ffff07fd000     0x7ffff07ff000     0x2000    0x4b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbluray.so.4.0.0
+      0x7ffff07ff000     0x7ffff0800000     0x1000    0x4d000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbluray.so.4.0.0
+      0x7ffff0800000     0x7ffff088c000    0x8c000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/shared/bin/pcsx-redux
+      0x7ffff088c000     0x7ffff1892000  0x1006000    0x8c000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/shared/bin/pcsx-redux
+      0x7ffff1892000     0x7ffff1c7b000   0x3e9000  0x1092000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/shared/bin/pcsx-redux
+      0x7ffff1c7b000     0x7ffff1ca9000    0x2e000  0x147a000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/shared/bin/pcsx-redux
+      0x7ffff1ca9000     0x7ffff1cb3000     0xa000  0x14a8000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/shared/bin/pcsx-redux
+      0x7ffff1cb3000     0x7ffff46b8000  0x2a05000        0x0  rw-p   
+      0x7ffff46b8000     0x7ffff66b9000  0x2001000        0x0  rwxp   
+      0x7ffff66b9000     0x7ffff68a6000   0x1ed000        0x0  rw-p   
+      0x7ffff68a6000     0x7ffff68a7000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_TELEPHONE
+      0x7ffff68a7000     0x7ffff68aa000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsnappy.so.1.2.2
+      0x7ffff68aa000     0x7ffff68b1000     0x7000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsnappy.so.1.2.2
+      0x7ffff68b1000     0x7ffff68b4000     0x3000     0xa000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsnappy.so.1.2.2
+      0x7ffff68b4000     0x7ffff68b5000     0x1000     0xc000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsnappy.so.1.2.2
+      0x7ffff68b5000     0x7ffff68b6000     0x1000     0xd000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libsnappy.so.1.2.2
+      0x7ffff68b6000     0x7ffff68ba000     0x4000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/liblzma.so.5.8.4
+      0x7ffff68ba000     0x7ffff68de000    0x24000     0x4000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/liblzma.so.5.8.4
+      0x7ffff68de000     0x7ffff68ea000     0xc000    0x28000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/liblzma.so.5.8.4
+      0x7ffff68ea000     0x7ffff68eb000     0x1000    0x34000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/liblzma.so.5.8.4
+      0x7ffff68eb000     0x7ffff68ec000     0x1000    0x35000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/liblzma.so.5.8.4
+      0x7ffff68ec000     0x7ffff68ef000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdvdread.so.8.2.0
+      0x7ffff68ef000     0x7ffff690d000    0x1e000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdvdread.so.8.2.0
+      0x7ffff690d000     0x7ffff6916000     0x9000    0x21000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdvdread.so.8.2.0
+      0x7ffff6916000     0x7ffff6917000     0x1000    0x2a000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdvdread.so.8.2.0
+      0x7ffff6917000     0x7ffff6918000     0x1000    0x2b000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdvdread.so.8.2.0
+      0x7ffff6918000     0x7ffff691b000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdvdnav.so.4.4.0
+      0x7ffff691b000     0x7ffff692a000     0xf000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdvdnav.so.4.4.0
+      0x7ffff692a000     0x7ffff692e000     0x4000    0x12000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdvdnav.so.4.4.0
+      0x7ffff692e000     0x7ffff692f000     0x1000    0x15000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdvdnav.so.4.4.0
+      0x7ffff692f000     0x7ffff6930000     0x1000    0x16000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdvdnav.so.4.4.0
+      0x7ffff6930000     0x7ffff6940000    0x10000        0x0  rw-p   
+      0x7ffff6940000     0x7ffff6946000     0x6000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpng16.so.16.59.0
+      0x7ffff6946000     0x7ffff6971000    0x2b000     0x6000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpng16.so.16.59.0
+      0x7ffff6971000     0x7ffff697b000     0xa000    0x31000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpng16.so.16.59.0
+      0x7ffff697b000     0x7ffff697c000     0x1000    0x3a000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpng16.so.16.59.0
+      0x7ffff697c000     0x7ffff697d000     0x1000    0x3b000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libpng16.so.16.59.0
+      0x7ffff697d000     0x7ffff697f000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbz2.so.1.0.8
+      0x7ffff697f000     0x7ffff698c000     0xd000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbz2.so.1.0.8
+      0x7ffff698c000     0x7ffff698e000     0x2000     0xf000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbz2.so.1.0.8
+      0x7ffff698e000     0x7ffff698f000     0x1000    0x10000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbz2.so.1.0.8
+      0x7ffff698f000     0x7ffff6990000     0x1000    0x11000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbz2.so.1.0.8
+      0x7ffff6990000     0x7ffff69c2000    0x32000        0x0  rw-p   
+      0x7ffff69c2000     0x7ffff69c4000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libwebpmux.so.3.1.2
+      0x7ffff69c4000     0x7ffff69cb000     0x7000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libwebpmux.so.3.1.2
+      0x7ffff69cb000     0x7ffff69cc000     0x1000     0x9000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libwebpmux.so.3.1.2
+      0x7ffff69cc000     0x7ffff69cd000     0x1000     0xa000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libwebpmux.so.3.1.2
+      0x7ffff69cd000     0x7ffff69ce000     0x1000     0xb000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libwebpmux.so.3.1.2
+      0x7ffff69ce000     0x7ffff6a00000    0x32000        0x0  rw-p   
+      0x7ffff6a00000     0x7ffff6a01000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_MEASUREMENT
+      0x7ffff6a01000     0x7ffff6a02000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbrotlidec.so.1.2.0
+      0x7ffff6a02000     0x7ffff6a0b000     0x9000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbrotlidec.so.1.2.0
+      0x7ffff6a0b000     0x7ffff6a0e000     0x3000     0xa000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbrotlidec.so.1.2.0
+      0x7ffff6a0e000     0x7ffff6a0f000     0x1000     0xc000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbrotlidec.so.1.2.0
+      0x7ffff6a0f000     0x7ffff6a10000     0x1000     0xd000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libbrotlidec.so.1.2.0
+      0x7ffff6a10000     0x7ffff6a80000    0x70000        0x0  rw-p   
+      0x7ffff6a80000     0x7ffff6a81000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_IDENTIFICATION
+      0x7ffff6a81000     0x7ffff6a85000     0x4000        0x0  rw-p   
+      0x7ffff6a85000     0x7ffff6a87000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGLX.so.0.0.0
+      0x7ffff6a87000     0x7ffff6aa1000    0x1a000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGLX.so.0.0.0
+      0x7ffff6aa1000     0x7ffff6aa4000     0x3000    0x1c000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGLX.so.0.0.0
+      0x7ffff6aa4000     0x7ffff6aa5000     0x1000    0x1f000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGLX.so.0.0.0
+      0x7ffff6aa5000     0x7ffff6aa6000     0x1000    0x20000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGLX.so.0.0.0
+      0x7ffff6aa6000     0x7ffff6ab6000    0x10000        0x0  rw-p   
+      0x7ffff6ab6000     0x7ffff6ab8000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGLdispatch.so.0.0.0
+      0x7ffff6ab8000     0x7ffff6af7000    0x3f000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGLdispatch.so.0.0.0
+      0x7ffff6af7000     0x7ffff6b0a000    0x13000    0x41000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGLdispatch.so.0.0.0
+      0x7ffff6b0a000     0x7ffff6b26000    0x1c000    0x54000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGLdispatch.so.0.0.0
+      0x7ffff6b26000     0x7ffff6b27000     0x1000    0x70000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGLdispatch.so.0.0.0
+      0x7ffff6b27000     0x7ffff6b2f000     0x8000        0x0  rw-p   
+      0x7ffff6b2f000     0x7ffff6b3c000     0xd000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcurl.so.4.8.0
+      0x7ffff6b3c000     0x7ffff6c03000    0xc7000     0xd000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcurl.so.4.8.0
+      0x7ffff6c03000     0x7ffff6c30000    0x2d000    0xd4000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcurl.so.4.8.0
+      0x7ffff6c30000     0x7ffff6c37000     0x7000   0x100000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcurl.so.4.8.0
+      0x7ffff6c37000     0x7ffff6c38000     0x1000   0x107000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libcurl.so.4.8.0
+      0x7ffff6c38000     0x7ffff6c39000     0x1000        0x0  rw-p   
+      0x7ffff6c39000     0x7ffff6c45000     0xc000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libavutil.so.61.1.102
+      0x7ffff6c45000     0x7ffff6cbd000    0x78000     0xc000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libavutil.so.61.1.102
+      0x7ffff6cbd000     0x7ffff6ce2000    0x25000    0x84000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libavutil.so.61.1.102
+      0x7ffff6ce2000     0x7ffff6cf8000    0x16000    0xa8000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libavutil.so.61.1.102
+      0x7ffff6cf8000     0x7ffff6cf9000     0x1000    0xbe000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libavutil.so.61.1.102
+      0x7ffff6cf9000     0x7ffff6e00000   0x107000        0x0  rw-p   
+      0x7ffff6e00000     0x7ffff6e11000    0x11000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libavformat.so.63.1.102
+      0x7ffff6e11000     0x7ffff6f79000   0x168000    0x11000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libavformat.so.63.1.102
+      0x7ffff6f79000     0x7ffff6ffe000    0x85000   0x179000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libavformat.so.63.1.102
+      0x7ffff6ffe000     0x7ffff7038000    0x3a000   0x1fd000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libavformat.so.63.1.102
+      0x7ffff7038000     0x7ffff7039000     0x1000   0x237000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libavformat.so.63.1.102
+      0x7ffff7039000     0x7ffff703a000     0x1000        0x0  rw-p   
+      0x7ffff703a000     0x7ffff703c000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXdmcp.so.6.0.0
+      0x7ffff703c000     0x7ffff703e000     0x2000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXdmcp.so.6.0.0
+      0x7ffff703e000     0x7ffff7040000     0x2000     0x4000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXdmcp.so.6.0.0
+      0x7ffff7040000     0x7ffff7041000     0x1000     0x5000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXdmcp.so.6.0.0
+      0x7ffff7041000     0x7ffff7042000     0x1000     0x6000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXdmcp.so.6.0.0
+      0x7ffff7042000     0x7ffff7043000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXau.so.6.0.0
+      0x7ffff7043000     0x7ffff7044000     0x1000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXau.so.6.0.0
+      0x7ffff7044000     0x7ffff7045000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXau.so.6.0.0
+      0x7ffff7045000     0x7ffff7046000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXau.so.6.0.0
+      0x7ffff7046000     0x7ffff7047000     0x1000     0x3000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libXau.so.6.0.0
+      0x7ffff7047000     0x7ffff704b000     0x4000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgcc_s.so.1
+      0x7ffff704b000     0x7ffff706e000    0x23000     0x4000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgcc_s.so.1
+      0x7ffff706e000     0x7ffff7072000     0x4000    0x27000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgcc_s.so.1
+      0x7ffff7072000     0x7ffff7073000     0x1000    0x2b000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgcc_s.so.1
+      0x7ffff7073000     0x7ffff7074000     0x1000    0x2c000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libgcc_s.so.1
+      0x7ffff7074000     0x7ffff7078000     0x4000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libfmt.so.12.2.0
+      0x7ffff7078000     0x7ffff7095000    0x1d000     0x4000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libfmt.so.12.2.0
+      0x7ffff7095000     0x7ffff709c000     0x7000    0x21000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libfmt.so.12.2.0
+      0x7ffff709c000     0x7ffff709d000     0x1000    0x28000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libfmt.so.12.2.0
+      0x7ffff709d000     0x7ffff709e000     0x1000    0x29000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libfmt.so.12.2.0
+      0x7ffff709e000     0x7ffff709f000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmd4c.so.0.5.3
+      0x7ffff709f000     0x7ffff70af000    0x10000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmd4c.so.0.5.3
+      0x7ffff70af000     0x7ffff70b2000     0x3000    0x11000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmd4c.so.0.5.3
+      0x7ffff70b2000     0x7ffff70b3000     0x1000    0x14000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmd4c.so.0.5.3
+      0x7ffff70b3000     0x7ffff70b4000     0x1000    0x15000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libmd4c.so.0.5.3
+      0x7ffff70b4000     0x7ffff70bd000     0x9000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libuv.so.1.0.0
+      0x7ffff70bd000     0x7ffff70e1000    0x24000     0x9000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libuv.so.1.0.0
+      0x7ffff70e1000     0x7ffff70ec000     0xb000    0x2d000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libuv.so.1.0.0
+      0x7ffff70ec000     0x7ffff70ed000     0x1000    0x37000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libuv.so.1.0.0
+      0x7ffff70ed000     0x7ffff70ee000     0x1000    0x38000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libuv.so.1.0.0
+      0x7ffff70ee000     0x7ffff70f4000     0x6000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libfreetype.so.6.20.6
+      0x7ffff70f4000     0x7ffff718c000    0x98000     0x6000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libfreetype.so.6.20.6
+      0x7ffff718c000     0x7ffff71b5000    0x29000    0x9e000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libfreetype.so.6.20.6
+      0x7ffff71b5000     0x7ffff71bd000     0x8000    0xc6000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libfreetype.so.6.20.6
+      0x7ffff71bd000     0x7ffff71be000     0x1000    0xce000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libfreetype.so.6.20.6
+      0x7ffff71be000     0x7ffff71d5000    0x17000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libX11.so.6.4.0
+      0x7ffff71d5000     0x7ffff726a000    0x95000    0x17000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libX11.so.6.4.0
+      0x7ffff726a000     0x7ffff72f9000    0x8f000    0xac000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libX11.so.6.4.0
+      0x7ffff72f9000     0x7ffff72fc000     0x3000   0x13a000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libX11.so.6.4.0
+      0x7ffff72fc000     0x7ffff7300000     0x4000   0x13d000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libX11.so.6.4.0
+      0x7ffff7400000     0x7ffff7e00000   0xa00000        0x0  rw-p   
+      0x7ffff7e00000     0x7ffff7e02000     0x2000        0x0  rw-p   
+      0x7ffff7e02000     0x7ffff7e03000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdl.so.2
+      0x7ffff7e03000     0x7ffff7e04000     0x1000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdl.so.2
+      0x7ffff7e04000     0x7ffff7e05000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdl.so.2
+      0x7ffff7e05000     0x7ffff7e06000     0x1000     0x2000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdl.so.2
+      0x7ffff7e06000     0x7ffff7e07000     0x1000     0x3000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libdl.so.2
+      0x7ffff7e07000     0x7ffff7e0b000     0x4000        0x0  rw-p   
+      0x7ffff7e0b000     0x7ffff7e0e000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libz.so.1.3.2
+      0x7ffff7e0e000     0x7ffff7e1e000    0x10000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libz.so.1.3.2
+      0x7ffff7e1e000     0x7ffff7e24000     0x6000    0x13000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libz.so.1.3.2
+      0x7ffff7e24000     0x7ffff7e25000     0x1000    0x18000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libz.so.1.3.2
+      0x7ffff7e25000     0x7ffff7e26000     0x1000    0x19000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libz.so.1.3.2
+      0x7ffff7e26000     0x7ffff7e28000     0x2000        0x0  rw-p   
+      0x7ffff7e28000     0x7ffff7e2a000     0x2000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libswresample.so.7.1.102
+      0x7ffff7e2a000     0x7ffff7e3b000    0x11000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libswresample.so.7.1.102
+      0x7ffff7e3b000     0x7ffff7e3f000     0x4000    0x13000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libswresample.so.7.1.102
+      0x7ffff7e3f000     0x7ffff7e41000     0x2000    0x17000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libswresample.so.7.1.102
+      0x7ffff7e41000     0x7ffff7e42000     0x1000    0x19000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libswresample.so.7.1.102
+      0x7ffff7e42000     0x7ffff7e4e000     0xc000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb.so.1.1.0
+      0x7ffff7e4e000     0x7ffff7e62000    0x14000     0xc000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb.so.1.1.0
+      0x7ffff7e62000     0x7ffff7e6b000     0x9000    0x20000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb.so.1.1.0
+      0x7ffff7e6b000     0x7ffff7e6c000     0x1000    0x28000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb.so.1.1.0
+      0x7ffff7e6c000     0x7ffff7e6d000     0x1000    0x29000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libxcb.so.1.1.0
+      0x7ffff7e6d000     0x7ffff7e9c000    0x2f000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGL.so.1.7.0
+      0x7ffff7e9c000     0x7ffff7ebb000    0x1f000    0x2f000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGL.so.1.7.0
+      0x7ffff7ebb000     0x7ffff7ecf000    0x14000    0x4e000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGL.so.1.7.0
+      0x7ffff7ecf000     0x7ffff7edd000     0xe000    0x62000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGL.so.1.7.0
+      0x7ffff7edd000     0x7ffff7ede000     0x1000    0x70000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/libGL.so.1.7.0
+      0x7ffff7ede000     0x7ffff7edf000     0x1000        0x0  rw-p   
+      0x7ffff7edf000     0x7ffff7ee2000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/sharun-preload/cross-libc-dlopen.so
+      0x7ffff7ee2000     0x7ffff7ee8000     0x6000     0x3000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/sharun-preload/cross-libc-dlopen.so
+      0x7ffff7ee8000     0x7ffff7eec000     0x4000     0x9000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/sharun-preload/cross-libc-dlopen.so
+      0x7ffff7eec000     0x7ffff7eed000     0x1000     0xc000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/sharun-preload/cross-libc-dlopen.so
+      0x7ffff7eed000     0x7ffff7eee000     0x1000     0xd000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/sharun-preload/cross-libc-dlopen.so
+      0x7ffff7eee000     0x7ffff7ef5000     0x7000        0x0  rw-p   
+      0x7ffff7ef5000     0x7ffff7ef8000     0x3000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/sharun-preload/anylinux.so
+      0x7ffff7ef8000     0x7ffff7efb000     0x3000     0x2000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/sharun-preload/anylinux.so
+      0x7ffff7efb000     0x7ffff7efc000     0x1000     0x4000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/sharun-preload/anylinux.so
+      0x7ffff7efc000     0x7ffff7efd000     0x1000        0x0  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/sharun-preload/anylinux.so
+      0x7ffff7efd000     0x7ffff7eff000     0x2000        0x0  rw-p   
+      0x7ffff7eff000     0x7ffff7f00000     0x1000        0x0  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/ld-linux-x86-64.so.2
+      0x7ffff7f00000     0x7ffff7f2d000    0x2d000     0x1000  r-xp   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/ld-linux-x86-64.so.2
+      0x7ffff7f2d000     0x7ffff7f3e000    0x11000    0x2e000  r--p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/ld-linux-x86-64.so.2
+      0x7ffff7f3e000     0x7ffff7f3f000     0x1000    0x3f000  rw-p   /home/runner/work/_temp/naruto-aa1-gdb/source/AppDir/lib/ld-linux-x86-64.so.2
+      0x7ffff7f3f000     0x7ffff7ff0000    0xb1000        0x0  rw-p   
+      0x7ffff7ff0000     0x7ffff7ff1000     0x1000        0x0  rw-p   
+      0x7ffff7ff1000     0x7ffff7ff7000     0x6000        0x0  rw-p   
+      0x7ffff7ff7000     0x7ffff7ffb000     0x4000        0x0  r--p   [vvar]
+      0x7ffff7ffb000     0x7ffff7ffd000     0x2000        0x0  r--p   [vvar_vclock]
+      0x7ffff7ffd000     0x7ffff7fff000     0x2000        0x0  r-xp   [vdso]
+      0x7ffffffdd000     0x7ffffffff000    0x22000        0x0  rw-p   [stack]
+  0xffffffffff600000 0xffffffffff601000     0x1000        0x0  --xp   [vsyscall]
+AE_GDB_COMMAND_END: info proc mappings
+AE_GDB_COMMAND_BEGIN: bt
+#0  0x00007fffe1d5f89d in ?? ()
+#1  0x00007fffe1d90457 in ?? ()
+#2  0x00000020000010ac in ?? ()
+#3  0x0000000000000080 in ?? ()
+#4  0x0000000000000120 in ?? ()
+#5  0x0000000010083e70 in ?? ()
+#6  0x0000000000000020 in ?? ()
+#7  0x0000000000000020 in ?? ()
+#8  0x0000000009de87e0 in ?? ()
+#9  0x0000000000000020 in ?? ()
+#10 0x0000000010080810 in ?? ()
+#11 0x00007fffe1ea7730 in ?? ()
+#12 0x0000000000000020 in ?? ()
+#13 0x0000000000000020 in ?? ()
+#14 0x0000000000000020 in ?? ()
+#15 0x0000000000000001 in ?? ()
+#16 0x000003e000000021 in ?? ()
+#17 0x00007fffe0a05040 in ?? ()
+#18 0x0000008000000120 in ?? ()
+#19 0x0000002000000020 in ?? ()
+#20 0x0000000000000000 in ?? ()
+AE_GDB_COMMAND_END: bt
+AE_GDB_COMMAND_BEGIN: thread apply all bt 40
+
+Thread 15 (LWP 6054 "pcsx-redux"):
+#0  0x00007fffee2a08f2 in ?? ()
+#1  0x00007fffee294c79 in ?? ()
+#2  0x00007fffd40529c8 in ?? ()
+#3  0x00000000ffffffff in ?? ()
+#4  0x00007fffd40515b0 in ?? ()
+#5  0x00007fffd40526c0 in ?? ()
+#6  0x000017a6d4051730 in ?? ()
+#7  0x000000000158d790 in ?? ()
+#8  0x00007fffd40515d0 in ?? ()
+#9  0x00007fffee29796c in ?? ()
+#10 0x00000000014f34c0 in ?? ()
+#11 0x00000000f0de5870 in ?? ()
+#12 0x00007fffd4051620 in ?? ()
+#13 0x00007fff000006ac in ?? ()
+#14 0x00000000000006ae in ?? ()
+#15 0x0000000000000000 in ?? ()
+
+Thread 14 (LWP 6053 "libusb"):
+#0  0x00007fffee2a08f2 in ?? ()
+#1  0x00007fffee3112e5 in ?? ()
+#2  0x00007fffcbfff9c8 in ?? ()
+#3  0x0000000000000000 in ?? ()
+
+Thread 13 (LWP 6052 "libusb_event"):
+#0  0x00007fffee2a08f2 in ?? ()
+#1  0x00007fffee3112e5 in ?? ()
+#2  0x00007fffd1c4f9c8 in ?? ()
+#3  0x0000000000000000 in ?? ()
+
+Thread 9 (LWP 6048 "SDLAudioP23"):
+#0  0x00007fffee2a08f2 in ?? ()
+#1  0x00007fffee2e4aad in ?? ()
+#2  0x00007fffd5ffe9c8 in ?? ()
+#3  0x0000000000000000 in ?? ()
+
+Thread 6 (LWP 6044 "libuv-worker"):
+#0  0x00007fffee2a08f2 in ?? ()
+#1  0x00007fffee294c79 in ?? ()
+#2  0x00007fffe8fa29c8 in ?? ()
+#3  0x00000000ffffffff in ?? ()
+#4  0x0000000000000000 in ?? ()
+
+Thread 5 (LWP 6043 "libuv-worker"):
+#0  0x00007fffee2a08f2 in ?? ()
+#1  0x00007fffee294c79 in ?? ()
+#2  0x00007fffe97a39c8 in ?? ()
+#3  0x00000000ffffffff in ?? ()
+#4  0x0000000000000000 in ?? ()
+
+Thread 4 (LWP 6042 "libuv-worker"):
+#0  0x00007fffee2a08f2 in ?? ()
+#1  0x00007fffee294c79 in ?? ()
+#2  0x00007fffe9fa49c8 in ?? ()
+#3  0x00000000ffffffff in ?? ()
+#4  0x0000000000000000 in ?? ()
+
+Thread 3 (LWP 6041 "libuv-worker"):
+#0  0x00007fffee2a08f2 in ?? ()
+#1  0x00007fffee294c79 in ?? ()
+#2  0x00007fffea7a59c8 in ?? ()
+#3  0x00000000ffffffff in ?? ()
+#4  0x00007ffff7f3e708 in ?? ()
+#5  0x00007fffea7a56c0 in ?? ()
+#6  0x00001799ffffffff in ?? ()
+#7  0x00007ffff70ed180 in ?? ()
+#8  0x00007fffea7a4640 in ?? ()
+#9  0x00007fffee2974ec in ?? ()
+#10 0x00007ffff70ed120 in ?? ()
+#11 0x00007ffff70ed120 in ?? ()
+#12 0x0000000000000001 in ?? ()
+#13 0x0000000000000057 in ?? ()
+#14 0x00007fffee297320 in ?? ()
+#15 0x00007fffea7a45e0 in ?? ()
+#16 0x00007fffea7a45e0 in ?? ()
+#17 0x0000000000000000 in ?? ()
+
+Thread 2 (LWP 6040 "pcsx-redux"):
+#0  0x00007fffee2a08f2 in ?? ()
+#1  0x00007fffee3209eb in ?? ()
+#2  0x00007fffeb7a69c8 in ?? ()
+#3  0x0000000000000008 in ?? ()
+#4  0x0000000000000519 in ?? ()
+#5  0x00007fffeb7a66c0 in ?? ()
+#6  0x00000000000000d0 in ?? ()
+#7  0xf2e9afa85e70fb00 in ?? ()
+#8  0x00007fffeb7a5540 in ?? ()
+#9  0x00007ffff70df901 in ?? ()
+#10 0x00007ffff70cc170 in ?? ()
+#11 0x00007ffff70cd480 in ?? ()
+#12 0x0000003000000000 in ?? ()
+#13 0x0000000000000000 in ?? ()
+
+Thread 1 (LWP 6037 "pcsx-redux"):
+#0  0x00007fffe1d5f89d in ?? ()
+#1  0x00007fffe1d90457 in ?? ()
+#2  0x00000020000010ac in ?? ()
+#3  0x0000000000000080 in ?? ()
+#4  0x0000000000000120 in ?? ()
+#5  0x0000000010083e70 in ?? ()
+#6  0x0000000000000020 in ?? ()
+#7  0x0000000000000020 in ?? ()
+#8  0x0000000009de87e0 in ?? ()
+#9  0x0000000000000020 in ?? ()
+#10 0x0000000010080810 in ?? ()
+#11 0x00007fffe1ea7730 in ?? ()
+#12 0x0000000000000020 in ?? ()
+#13 0x0000000000000020 in ?? ()
+#14 0x0000000000000020 in ?? ()
+#15 0x0000000000000001 in ?? ()
+#16 0x000003e000000021 in ?? ()
+#17 0x00007fffe0a05040 in ?? ()
+#18 0x0000008000000120 in ?? ()
+#19 0x0000002000000020 in ?? ()
+#20 0x0000000000000000 in ?? ()
+AE_GDB_COMMAND_END: thread apply all bt 40
+AE_GDB_CONTEXT_END

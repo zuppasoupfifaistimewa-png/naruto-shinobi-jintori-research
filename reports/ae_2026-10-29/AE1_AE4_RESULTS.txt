@@ -1,0 +1,21 @@
+AE1–AE4 RESULT SUMMARY
+Target state SHA-256: 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d (21,163,286 B); control: 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492 (21,162,546 B).
+Pinned source header: https://github.com/pcsx-redux/pcsx-redux/blob/0c3572c3d/src/core/sstate.h; sstate.h Git blob SHA-1 observed=72b7ab0dbd4191f9d9ed4cdd9d77898f467258e2; file SHA-256=3f99dbb6ec4762dd94c43e660c065e7d7a77dec9b4749b2594213bd9b0de4bf8.
+AE1 field table: ae1_field_sizes.tsv; nested field-6/SPU table: ae1_spu_subfields.tsv; full schema report: ae1_static_field_sizes.txt.
+Field 6/SPU byte delta (target-control): +748 bytes.
+Number of changed SPU (field, occurrence) items: 38.
+Byte-reconstruction of target SPU using all changed occurrence items: FAIL; nested bisection interpretation limited.
+Full field-6 target→control hybrid two-launch result: SIGSEGV_BOTH (case ae1-spu-full-target-in-control).
+Singleton SPU subfields independently causing SIGSEGV twice: field6 occurrence 2, field6 occurrence 3, field6 occurrence 4, field6 occurrence 5, field6 occurrence 6, field6 occurrence 9, field6 occurrence 10, field6 occurrence 11, field6 occurrence 12, field6 occurrence 13, field6 occurrence 14, field6 occurrence 15, field6 occurrence 16, field6 occurrence 17, field6 occurrence 18, field6 occurrence 21, field6 occurrence 22, field6 occurrence 23, field6 occurrence 24
+Minimal DD-minimised target-SPU subfield set on control base: field6 occurrence 2
+Minimal set test status: SIGSEGV_BOTH; this is 1-minimal under the tested occurrence-level delta-debug procedure.
+Interpretation: at least one singleton SPU occurrence is sufficient in the tested control-base context.
+AE2 target + field 6/SPU from control: INCONCLUSIVE_BOTH (two launches).
+AE2 target + minimal SPU occurrence set from control: SIGSEGV_BOTH (two launches).
+Necessity scope: only these exact hybrids/build/state are assessed; no universal necessity claim.
+AE3 producer target run 39262213468/job 118092519254: Ubuntu 26.04; AppImage SHA c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c; source pin 0c3572c3d; flags -noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout; target was restored twice with SIGSEGV in AD1/AD4 and this run reuses that exact verified AppImage.
+AE3 control producer run 39867730674/job 120134061270: Ubuntu 24.04.5 host + ghcr.io/grumpycoders/pcsx-redux-build:latest container digest sha256:d9ae6cbb23a5d0d98d8c3702cc6f512698ee1670bf8d59b236b2baabe99a66e4; patched AppImage SHA 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99; flags -softgpu -dynarec -stdout -lua_stdout; GDB version in the container remains TIDAK TAHU.
+RAM evidence rule: ae4_ram_snapshots.tsv reports SHA-256 of exactly the first 2,097,152 bytes of Memory.ram (PS1 2 MiB RAM) plus 4-byte raw memory order and LE32 words at requested addresses for each successful post-load VSync 180 checkpoint. Serialized RAM is 8 MiB; only its first 2 MiB is hashed. No RAM dump/checkpoint is copied to output.
+AE4 qualifying successful snapshots counted: 0 attempts; unique 2MiB RAM hashes: 0.
+Raw full GDB/PCSX logs: raw/; supplementary excerpts: excerpts/; SHA-256 manifest: ae1-ae4-log-sha256.txt.
+No ISO, BIOS, savestate, RAM dump, or screenshot is written under reports/. Story Mode completion is not assessed or claimed.

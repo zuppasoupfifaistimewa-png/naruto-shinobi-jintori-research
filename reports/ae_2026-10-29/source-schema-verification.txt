@@ -1,0 +1,6 @@
+PCSX-Redux pin: 0c3572c3d
+URL: https://github.com/pcsx-redux/pcsx-redux/blob/0c3572c3d/src/core/sstate.h
+sstate.h expected Git blob SHA-1: 72b7ab0dbd4191f9d9ed4cdd9d77898f467258e2
+Observed Git blob SHA-1: 72b7ab0dbd4191f9d9ed4cdd9d77898f467258e2
+sstate.h SHA-256: 3f99dbb6ec4762dd94c43e660c065e7d7a77dec9b4749b2594213bd9b0de4bf8
+Source declarations verified: save_state_info=1, thumbnail=2, memory=3, registers=4, gpu=5, spu=6, sio=7, cdrom=8, hardware=9, counters=10, mdec=11, PCdrvFiles=13, callstacks=14; SPU channel=6 repeated Channel.

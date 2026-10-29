@@ -1,4 +1,4 @@
-[Detaching after fork from child process 3220]
+[Detaching after fork from child process 3004]
 ALSA lib confmisc.c:855:(parse_card) [error.core] cannot find card '0'
 ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_card_inum returned error: No such file or directory
 ALSA lib confmisc.c:422:(snd_func_concat) [error.core] error evaluating strings
@@ -38,18 +38,110 @@ BIOS Trace1: 0x0f
 BIOS Trace1: 0x0e
 BIOS Trace1: 0x01
 BIOS Trace1: 0x02
-[... omitted middle; source lines=1118 ...]
+[... omitted middle; source lines=1019 ...]
+      0x7fffeed54000     0x7fffeed55000     0x1000     0x2000  r--p   <RUNNER_PATH>
+      0x7fffeed55000     0x7fffeed56000     0x1000     0x2000  r--p   <RUNNER_PATH>
+      0x7fffeed56000     0x7fffeed57000     0x1000     0x3000  rw-p   <RUNNER_PATH>
+      0x7fffeed57000     0x7fffeed59000     0x2000        0x0  rw-p   
+      0x7fffeed59000     0x7fffeed6a000    0x11000        0x0  r--p   <RUNNER_PATH>
+      0x7fffeed6a000     0x7fffeede8000    0x7e000    0x11000  r-xp   <RUNNER_PATH>
+      0x7fffeede8000     0x7fffeedfd000    0x15000    0x8f000  r--p   <RUNNER_PATH>
+      0x7fffeedfd000     0x7fffeedff000     0x2000    0xa3000  r--p   <RUNNER_PATH>
+      0x7fffeedff000     0x7fffeee00000     0x1000    0xa5000  rw-p   <RUNNER_PATH>
+      0x7fffeee00000     0x7fffeee11000    0x11000        0x0  r--p   <RUNNER_PATH>
+      0x7fffeee11000     0x7fffef49b000   0x68a000    0x11000  r-xp   <RUNNER_PATH>
+      0x7fffef49b000     0x7fffef7bd000   0x322000   0x69b000  r--p   <RUNNER_PATH>
+      0x7fffef7bd000     0x7fffef830000    0x73000   0x9bd000  r--p   <RUNNER_PATH>
+      0x7fffef830000     0x7fffef832000     0x2000   0xa30000  rw-p   <RUNNER_PATH>
+      0x7fffef832000     0x7fffefe95000   0x663000        0x0  rw-p   
+      0x7fffefe95000     0x7fffefe97000     0x2000        0x0  r--p   <RUNNER_PATH>
+      0x7fffefe97000     0x7fffefea9000    0x12000     0x2000  r-xp   <RUNNER_PATH>
+      0x7fffefea9000     0x7fffefeab000     0x2000    0x14000  r--p   <RUNNER_PATH>
+      0x7fffefeab000     0x7fffefeac000     0x1000    0x15000  r--p   <RUNNER_PATH>
+      0x7fffefeac000     0x7fffefead000     0x1000    0x16000  rw-p   <RUNNER_PATH>
+      0x7fffefead000     0x7fffefeaf000     0x2000        0x0  r--p   <RUNNER_PATH>
+      0x7fffefeaf000     0x7fffefec2000    0x13000     0x2000  r-xp   <RUNNER_PATH>
+      0x7fffefec2000     0x7fffefec7000     0x5000    0x15000  r--p   <RUNNER_PATH>
+      0x7fffefec7000     0x7fffefec8000     0x1000    0x1a000  r--p   <RUNNER_PATH>
+      0x7fffefec8000     0x7fffefec9000     0x1000    0x1b000  rw-p   <RUNNER_PATH>
+      0x7fffefec9000     0x7fffefed9000    0x10000        0x0  r--p   <RUNNER_PATH>
+      0x7fffefed9000     0x7fffeff75000    0x9c000    0x10000  r-xp   <RUNNER_PATH>
+      0x7fffeff75000     0x7fffefffe000    0x89000    0xac000  r--p   <RUNNER_PATH>
+      0x7fffefffe000     0x7fffeffff000     0x1000   0x134000  r--p   <RUNNER_PATH>
+      0x7fffeffff000     0x7ffff0000000     0x1000   0x135000  rw-p   <RUNNER_PATH>
+      0x7ffff0000000     0x7ffff0007000     0x7000        0x0  r--p   <RUNNER_PATH>
+      0x7ffff0007000     0x7ffff00f3000    0xec000     0x7000  r-xp   <RUNNER_PATH>
+      0x7ffff00f3000     0x7ffff05cf000   0x4dc000    0xf3000  r--p   <RUNNER_PATH>
+      0x7ffff05cf000     0x7ffff0711000   0x142000   0x5cf000  r--p   <RUNNER_PATH>
+      0x7ffff0711000     0x7ffff0712000     0x1000   0x711000  rw-p   <RUNNER_PATH>
+      0x7ffff0712000     0x7ffff0714000     0x2000        0x0  r--p   <RUNNER_PATH>
+      0x7ffff0714000     0x7ffff0717000     0x3000     0x2000  r-xp   <RUNNER_PATH>
+      0x7ffff0717000     0x7ffff0718000     0x1000     0x5000  r--p   <RUNNER_PATH>
+      0x7ffff0718000     0x7ffff0719000     0x1000     0x5000  r--p   <RUNNER_PATH>
+      0x7ffff0719000     0x7ffff071a000     0x1000     0x6000  rw-p   <RUNNER_PATH>
+      0x7ffff071a000     0x7ffff071b000     0x1000        0x0  r--p   <RUNNER_PATH>
+      0x7ffff071b000     0x7ffff071c000     0x1000     0x1000  r-xp   <RUNNER_PATH>
+      0x7ffff071c000     0x7ffff071d000     0x1000     0x2000  r--p   <RUNNER_PATH>
+      0x7ffff071d000     0x7ffff071e000     0x1000     0x2000  r--p   <RUNNER_PATH>
+      0x7ffff071e000     0x7ffff071f000     0x1000     0x3000  rw-p   <RUNNER_PATH>
+      0x7ffff071f000     0x7ffff0723000     0x4000        0x0  rw-p   
+      0x7ffff0723000     0x7ffff0731000     0xe000        0x0  r--p   <RUNNER_PATH>
+      0x7ffff0731000     0x7ffff078e000    0x5d000     0xe000  r-xp   <RUNNER_PATH>
+      0x7ffff078e000     0x7ffff07ae000    0x20000    0x6b000  r--p   <RUNNER_PATH>
+      0x7ffff07ae000     0x7ffff07b0000     0x2000    0x8b000  r--p   <RUNNER_PATH>
+      0x7ffff07b0000     0x7ffff07b2000     0x2000    0x8d000  rw-p   <RUNNER_PATH>
+      0x7ffff07b2000     0x7ffff07b5000     0x3000        0x0  r--p   <RUNNER_PATH>
+      0x7ffff07b5000     0x7ffff07ec000    0x37000     0x3000  r-xp   <RUNNER_PATH>
+      0x7ffff07ec000     0x7ffff07fd000    0x11000    0x3a000  r--p   <RUNNER_PATH>
+      0x7ffff07fd000     0x7ffff07ff000     0x2000    0x4b000  r--p   <RUNNER_PATH>
+      0x7ffff07ff000     0x7ffff0800000     0x1000    0x4d000  rw-p   <RUNNER_PATH>
+      0x7ffff0800000     0x7ffff088c000    0x8c000        0x0  r--p   <RUNNER_PATH>
+      0x7ffff088c000     0x7ffff1892000  0x1006000    0x8c000  r-xp   <RUNNER_PATH>
+      0x7ffff1892000     0x7ffff1c7b000   0x3e9000  0x1092000  r--p   <RUNNER_PATH>
+      0x7ffff1c7b000     0x7ffff1ca9000    0x2e000  0x147a000  r--p   <RUNNER_PATH>
+      0x7ffff1ca9000     0x7ffff1cb3000     0xa000  0x14a8000  rw-p   <RUNNER_PATH>
+      0x7ffff1cb3000     0x7ffff46b8000  0x2a05000        0x0  rw-p   
+      0x7ffff46b8000     0x7ffff66b9000  0x2001000        0x0  rwxp   
+      0x7ffff66b9000     0x7ffff68a6000   0x1ed000        0x0  rw-p   
+      0x7ffff68a6000     0x7ffff68a7000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_TELEPHONE
+      0x7ffff68a7000     0x7ffff68aa000     0x3000        0x0  r--p   <RUNNER_PATH>
+      0x7ffff68aa000     0x7ffff68b1000     0x7000     0x3000  r-xp   <RUNNER_PATH>
+      0x7ffff68b1000     0x7ffff68b4000     0x3000     0xa000  r--p   <RUNNER_PATH>
+      0x7ffff68b4000     0x7ffff68b5000     0x1000     0xc000  r--p   <RUNNER_PATH>
+      0x7ffff68b5000     0x7ffff68b6000     0x1000     0xd000  rw-p   <RUNNER_PATH>
+      0x7ffff68b6000     0x7ffff68ba000     0x4000        0x0  r--p   <RUNNER_PATH>
+      0x7ffff68ba000     0x7ffff68de000    0x24000     0x4000  r-xp   <RUNNER_PATH>
+      0x7ffff68de000     0x7ffff68ea000     0xc000    0x28000  r--p   <RUNNER_PATH>
+      0x7ffff68ea000     0x7ffff68eb000     0x1000    0x34000  r--p   <RUNNER_PATH>
+      0x7ffff68eb000     0x7ffff68ec000     0x1000    0x35000  rw-p   <RUNNER_PATH>
+      0x7ffff68ec000     0x7ffff68ef000     0x3000        0x0  r--p   <RUNNER_PATH>
+      0x7ffff68ef000     0x7ffff690d000    0x1e000     0x3000  r-xp   <RUNNER_PATH>
+      0x7ffff690d000     0x7ffff6916000     0x9000    0x21000  r--p   <RUNNER_PATH>
+      0x7ffff6916000     0x7ffff6917000     0x1000    0x2a000  r--p   <RUNNER_PATH>
+      0x7ffff6917000     0x7ffff6918000     0x1000    0x2b000  rw-p   <RUNNER_PATH>
+      0x7ffff6918000     0x7ffff691b000     0x3000        0x0  r--p   <RUNNER_PATH>
+      0x7ffff691b000     0x7ffff692a000     0xf000     0x3000  r-xp   <RUNNER_PATH>
+      0x7ffff692a000     0x7ffff692e000     0x4000    0x12000  r--p   <RUNNER_PATH>
+      0x7ffff692e000     0x7ffff692f000     0x1000    0x15000  r--p   <RUNNER_PATH>
+      0x7ffff692f000     0x7ffff6930000     0x1000    0x16000  rw-p   <RUNNER_PATH>
+      0x7ffff6930000     0x7ffff6940000    0x10000        0x0  rw-p   
+      0x7ffff6940000     0x7ffff6946000     0x6000        0x0  r--p   <RUNNER_PATH>
+      0x7ffff6946000     0x7ffff6971000    0x2b000     0x6000  r-xp   <RUNNER_PATH>
+      0x7ffff6971000     0x7ffff697b000     0xa000    0x31000  r--p   <RUNNER_PATH>
+      0x7ffff697b000     0x7ffff697c000     0x1000    0x3a000  r--p   <RUNNER_PATH>
+      0x7ffff697c000     0x7ffff697d000     0x1000    0x3b000  rw-p   <RUNNER_PATH>
+      0x7ffff697d000     0x7ffff697f000     0x2000        0x0  r--p   <RUNNER_PATH>
+      0x7ffff697f000     0x7ffff698c000     0xd000     0x2000  r-xp   <RUNNER_PATH>
       0x7ffff698c000     0x7ffff698e000     0x2000     0xf000  r--p   <RUNNER_PATH>
       0x7ffff698e000     0x7ffff698f000     0x1000    0x10000  r--p   <RUNNER_PATH>
       0x7ffff698f000     0x7ffff6990000     0x1000    0x11000  rw-p   <RUNNER_PATH>
       0x7ffff6990000     0x7ffff69c2000    0x32000        0x0  rw-p   
-      0x7ffff69c2000     0x7ffff69c4000     0x2000        0x0  rw-p   
-      0x7ffff69c4000     0x7ffff69c6000     0x2000        0x0  r--p   <RUNNER_PATH>
-      0x7ffff69c6000     0x7ffff69cd000     0x7000     0x2000  r-xp   <RUNNER_PATH>
-      0x7ffff69cd000     0x7ffff69ce000     0x1000     0x9000  r--p   <RUNNER_PATH>
-      0x7ffff69ce000     0x7ffff69cf000     0x1000     0xa000  r--p   <RUNNER_PATH>
-      0x7ffff69cf000     0x7ffff69d0000     0x1000     0xb000  rw-p   <RUNNER_PATH>
-      0x7ffff69d0000     0x7ffff6a00000    0x30000        0x0  rw-p   
+      0x7ffff69c2000     0x7ffff69c4000     0x2000        0x0  r--p   <RUNNER_PATH>
+      0x7ffff69c4000     0x7ffff69cb000     0x7000     0x2000  r-xp   <RUNNER_PATH>
+      0x7ffff69cb000     0x7ffff69cc000     0x1000     0x9000  r--p   <RUNNER_PATH>
+      0x7ffff69cc000     0x7ffff69cd000     0x1000     0xa000  r--p   <RUNNER_PATH>
+      0x7ffff69cd000     0x7ffff69ce000     0x1000     0xb000  rw-p   <RUNNER_PATH>
+      0x7ffff69ce000     0x7ffff6a00000    0x32000        0x0  rw-p   
       0x7ffff6a00000     0x7ffff6a01000     0x1000        0x0  r--p   /usr/lib/locale/C.utf8/LC_MEASUREMENT
       0x7ffff6a01000     0x7ffff6a02000     0x1000        0x0  r--p   <RUNNER_PATH>
       0x7ffff6a02000     0x7ffff6a0b000     0x9000     0x1000  r-xp   <RUNNER_PATH>
@@ -130,13 +222,13 @@ BIOS Trace1: 0x02
       0x7ffff72f9000     0x7ffff72fc000     0x3000   0x13a000  r--p   <RUNNER_PATH>
       0x7ffff72fc000     0x7ffff7300000     0x4000   0x13d000  rw-p   <RUNNER_PATH>
       0x7ffff7400000     0x7ffff7e00000   0xa00000        0x0  rw-p   
-      0x7ffff7e00000     0x7ffff7e04000     0x4000        0x0  rw-p   
-      0x7ffff7e04000     0x7ffff7e05000     0x1000        0x0  r--p   <RUNNER_PATH>
-      0x7ffff7e05000     0x7ffff7e06000     0x1000     0x1000  r-xp   <RUNNER_PATH>
-      0x7ffff7e06000     0x7ffff7e07000     0x1000     0x2000  r--p   <RUNNER_PATH>
-      0x7ffff7e07000     0x7ffff7e08000     0x1000     0x2000  r--p   <RUNNER_PATH>
-      0x7ffff7e08000     0x7ffff7e09000     0x1000     0x3000  rw-p   <RUNNER_PATH>
-      0x7ffff7e09000     0x7ffff7e0b000     0x2000        0x0  rw-p   
+      0x7ffff7e00000     0x7ffff7e02000     0x2000        0x0  rw-p   
+      0x7ffff7e02000     0x7ffff7e03000     0x1000        0x0  r--p   <RUNNER_PATH>
+      0x7ffff7e03000     0x7ffff7e04000     0x1000     0x1000  r-xp   <RUNNER_PATH>
+      0x7ffff7e04000     0x7ffff7e05000     0x1000     0x2000  r--p   <RUNNER_PATH>
+      0x7ffff7e05000     0x7ffff7e06000     0x1000     0x2000  r--p   <RUNNER_PATH>
+      0x7ffff7e06000     0x7ffff7e07000     0x1000     0x3000  rw-p   <RUNNER_PATH>
+      0x7ffff7e07000     0x7ffff7e0b000     0x4000        0x0  rw-p   
       0x7ffff7e0b000     0x7ffff7e0e000     0x3000        0x0  r--p   <RUNNER_PATH>
       0x7ffff7e0e000     0x7ffff7e1e000    0x10000     0x3000  r-xp   <RUNNER_PATH>
       0x7ffff7e1e000     0x7ffff7e24000     0x6000    0x13000  r--p   <RUNNER_PATH>
@@ -192,99 +284,7 @@ No symbol table info available.
 No symbol table info available.
 #3  0x00007ffff0de5870 in ?? ()
 No symbol table info available.
-#4  0x00007fffcfffe620 in ?? ()
-No symbol table info available.
-#5  0x00007fff0000006e in ?? ()
-No symbol table info available.
-#6  0x0000000000000010 in ?? ()
-No symbol table info available.
-#7  0x0000000000000001 in ?? ()
-No symbol table info available.
-#8  0x000000000000002d in ?? ()
-No symbol table info available.
-#9  0x0000000000000001 in ?? ()
-No symbol table info available.
-#10 0x0000000001588520 in ?? ()
-No symbol table info available.
-#11 0x00007ffff0deabf3 in ?? ()
-No symbol table info available.
-#12 0x00007fffcfffe5a0 in ?? ()
-No symbol table info available.
-#13 0x00007fffcfffe61c in ?? ()
-No symbol table info available.
-#14 0x0000002c00000000 in ?? ()
-No symbol table info available.
-#15 0x00000000015883aa in ?? ()
-No symbol table info available.
-#16 0x00007fffcfffe618 in ?? ()
-No symbol table info available.
-#17 0x00007ffff7dfcac7 in ?? ()
-No symbol table info available.
-#18 0x00007fffcfffe5e0 in ?? ()
-No symbol table info available.
-#19 0x0000000000000001 in ?? ()
-No symbol table info available.
-#20 0x00000000015886d0 in ?? ()
-No symbol table info available.
-#21 0x00000000014f3490 in ?? ()
-No symbol table info available.
-#22 0x000000000158b5d8 in ?? ()
-No symbol table info available.
-#23 0x000000000158b5d8 in ?? ()
-No symbol table info available.
-#24 0x0000000000000002 in ?? ()
-No symbol table info available.
-#25 0x00007ffff0de67f3 in ?? ()
-No symbol table info available.
-#26 0x0000000000020000 in ?? ()
-No symbol table info available.
-#27 0x00000000015782e0 in ?? ()
-No symbol table info available.
-#28 0x00007fffcfffe630 in ?? ()
-No symbol table info available.
-#29 0x0000000000000c9c in ?? ()
-No symbol table info available.
-#30 0x000000000158ae64 in ?? ()
-No symbol table info available.
-#31 0x00007ffff7dfb4f7 in ?? ()
-No symbol table info available.
-#32 0x00007fffb8000880 in ?? ()
-No symbol table info available.
-#33 0x0000013400000134 in ?? ()
-No symbol table info available.
-#34 0x0000000000000002 in ?? ()
-No symbol table info available.
-#35 0x00007ffff7dfcac7 in ?? ()
-No symbol table info available.
-#36 0x00007fffcfffe660 in ?? ()
-No symbol table info available.
-#37 0xe441b62ced9d3100 in ?? ()
-No symbol table info available.
-#38 0x00007fffcfffe650 in ?? ()
-No symbol table info available.
-#39 0x000000000ee48610 in ?? ()
-No symbol table info available.
-#40 0x00007fffcfffe690 in ?? ()
-No symbol table info available.
-#41 0x0000000000000020 in ?? ()
-No symbol table info available.
-#42 0x00007ffff7dfb3f0 in ?? ()
-No symbol table info available.
-#43 0x000000000000000b in ?? ()
-No symbol table info available.
-#44 0x00007ffff7dfb4f7 in ?? ()
-No symbol table info available.
-#45 0x00007fffee6ea859 in ?? ()
-No symbol table info available.
-#46 0x00007fffcffffce4 in ?? ()
-No symbol table info available.
-#47 0x00007ffff7dfb4f7 in ?? ()
-No symbol table info available.
-#48 0x00007fffcfffe7b0 in ?? ()
-No symbol table info available.
-#49 0x00007fffee298042 in ?? ()
-No symbol table info available.
-#50 0x0000000000000000 in ?? ()
+#4  0x0000000000000000 in ?? ()
 No symbol table info available.
 
 === AA1_DIAGNOSTICS_END ===

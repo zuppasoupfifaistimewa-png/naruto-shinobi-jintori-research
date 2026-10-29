@@ -1,0 +1,11 @@
+AE1-AE4 runtime metadata
+runner_os=Ubuntu 24.04.5 LTS
+gdb_version=GNU gdb (Ubuntu 15.1-1ubuntu1~24.04.1) 15.1
+PCSX_BIN=/home/runner/work/_temp/naruto-aa1-gdb/source/squashfs-root/bin/pcsx-redux
+PCSX_SOURCE_PIN=0c3572c3d
+AppImage_SHA256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
+flags=-noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout
+controller=NONE; no button overrides; Xvfb display=:99
+per_attempt_timeout_seconds=18; post-load gate=180 VSync; no screenshots; RAM only hashed and words reported
+target_producer_run=39262213468/job=118092519254
+control_producer_run=39867730674/job=120134061270; container_digest=sha256:d9ae6cbb23a5d0d98d8c3702cc6f512698ee1670bf8d59b236b2baabe99a66e4
