@@ -120,6 +120,10 @@ jobs:
           export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
           export QML2_IMPORT_PATH="$APPDIR/usr/qml"
           echo "PCSX_BINARY=$PCSX_BIN" >> "$WORK/logs/metadata.txt"
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/logs/xvfb.log" 2>&1 &
+          echo $! > "$WORK/xvfb.pid"
+          for n in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+          if ! xdpyinfo -display "$DISPLAY" >/dev/null 2>&1; then cat "$WORK/logs/xvfb.log" >> "$WORK/logs/metadata.txt"; echo "Xvfb startup failed" >> "$WORK/logs/metadata.txt"; exit 3; fi
           cat > "$WORK/pad.lua" <<'LUA'
           PCSX.settings.pads[1].DeviceType='Analog'
           PCSX.settings.pads[1].Connected=true
