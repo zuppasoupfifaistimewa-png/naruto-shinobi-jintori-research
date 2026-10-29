@@ -285,9 +285,15 @@ jobs:
               end
           end)
           event_line("C_TEST_SCHEDULE_ARMED=1 source_run=39262213468 final_vsync=10055; no savestate restore")
-          -- Explicitly resume after listeners and input schedule are armed.
-          PCSX.resumeEmulator()
-          event_line("C_TEST_EXPLICIT_RESUME=called")
+          -- Defer resume one interpreter tick: a direct resume at ShellReached
+          -- was followed by no Run/VSync callbacks in run #40826960999.
+          event_line("C_TEST_RESUME_SCHEDULED=nextTick")
+          PCSX.nextTick(function()
+              local ok, err = pcall(function() PCSX.resumeEmulator() end)
+              event_line(string.format("C_TEST_RESUME_CALLBACK=%s detail=%s",
+                  ok and "PASS" or "FAIL", ok and "none" or tostring(err)))
+          end)
+          event_line("C_TEST_EXPLICIT_RESUME=deferred")
           LUA
           cat > "$C_WORK_ROOT/bin/gate-watch.py" <<'PY'
           import hashlib, json, sys, time
