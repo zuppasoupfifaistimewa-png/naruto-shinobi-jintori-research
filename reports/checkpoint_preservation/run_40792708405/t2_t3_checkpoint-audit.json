@@ -1,0 +1,78 @@
+{
+  "data_sha256": "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822",
+  "entry1_sha256": "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a",
+  "ram_sha256": "3ad7b85c857a868d91df4b3f1049c23889a0dc482ad7ee390ac8b6c05c3190f4",
+  "ram_comparison": [
+    {
+      "base": "0x800AD450",
+      "RAM_entry_start_offset": "0x0AD450",
+      "entry_bytes": 596412,
+      "block_size": 4096,
+      "total_blocks_including_partial": 146,
+      "last_block_bytes": 2492,
+      "identical_blocks": 141,
+      "different_blocks": 5,
+      "identical_percent": "96.575342",
+      "different_bytes_total": 2149,
+      "meets_95_percent": "true",
+      "ram_sha256": "3ad7b85c857a868d91df4b3f1049c23889a0dc482ad7ee390ac8b6c05c3190f4",
+      "entry1_sha256": "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a"
+    },
+    {
+      "base": "0x800AD000",
+      "RAM_entry_start_offset": "0x0AD000",
+      "entry_bytes": 596412,
+      "block_size": 4096,
+      "total_blocks_including_partial": 146,
+      "last_block_bytes": 2492,
+      "identical_blocks": 1,
+      "different_blocks": 145,
+      "identical_percent": "0.684932",
+      "different_bytes_total": 506196,
+      "meets_95_percent": "false",
+      "ram_sha256": "3ad7b85c857a868d91df4b3f1049c23889a0dc482ad7ee390ac8b6c05c3190f4",
+      "entry1_sha256": "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a"
+    },
+    {
+      "base": "0x800AC450",
+      "RAM_entry_start_offset": "0x0AC450",
+      "entry_bytes": 596412,
+      "block_size": 4096,
+      "total_blocks_including_partial": 146,
+      "last_block_bytes": 2492,
+      "identical_blocks": 1,
+      "different_blocks": 145,
+      "identical_percent": "0.684932",
+      "different_bytes_total": 510947,
+      "meets_95_percent": "false",
+      "ram_sha256": "3ad7b85c857a868d91df4b3f1049c23889a0dc482ad7ee390ac8b6c05c3190f4",
+      "entry1_sha256": "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a"
+    },
+    {
+      "base": "0x800AE450",
+      "RAM_entry_start_offset": "0x0AE450",
+      "entry_bytes": 596412,
+      "block_size": 4096,
+      "total_blocks_including_partial": 146,
+      "last_block_bytes": 2492,
+      "identical_blocks": 1,
+      "different_blocks": 145,
+      "identical_percent": "0.684932",
+      "different_bytes_total": 508190,
+      "meets_95_percent": "false",
+      "ram_sha256": "3ad7b85c857a868d91df4b3f1049c23889a0dc482ad7ee390ac8b6c05c3190f4",
+      "entry1_sha256": "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a"
+    }
+  ],
+  "target_u32": 2149379848,
+  "a2": {
+    "strict_rows": 137,
+    "strict_unique_offsets": 137,
+    "ghidra_rows": 324,
+    "ghidra_unique_offsets": 324,
+    "same": 135,
+    "scan_only": 2,
+    "ghidra_only": 189,
+    "criterion_pass": false
+  }
+}

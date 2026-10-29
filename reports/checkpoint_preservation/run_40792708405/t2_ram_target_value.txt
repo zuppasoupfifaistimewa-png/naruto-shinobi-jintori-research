@@ -1,0 +1,6 @@
+ram_dump_sha256=3ad7b85c857a868d91df4b3f1049c23889a0dc482ad7ee390ac8b6c05c3190f4
+address=0x8013A554
+dump_offset=0x13A554
+bytes_le=08 EF 1C 80
+u32_le=0x801CEF08
+u32_le_decimal=2149379848

@@ -1,0 +1,8 @@
+STATE_BYTES=21163286
+STATE_SHA256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d
+HEADER=PCSX-Redux SaveState v4 VERSION=4
+MEMORY_FIELD3_BYTES=19464215 MEMORY_FIELD1_BYTES=8388608
+RAM_DUMP=/home/runner/work/_temp/checkpoint-39262213468/ram-first-2MiB-from-savestate.bin BYTES=2097152 SHA256=3ad7b85c857a868d91df4b3f1049c23889a0dc482ad7ee390ac8b6c05c3190f4
+SANITIZED_CSV=/home/runner/work/_temp/checkpoint-39262213468/ram-values-private.csv
+U32 address=0x80070EB8 offset=0x070EB8 bytes=dc050000 value=1500
+U32 address=0x80070F6C offset=0x070F6C bytes=dc050000 value=1500

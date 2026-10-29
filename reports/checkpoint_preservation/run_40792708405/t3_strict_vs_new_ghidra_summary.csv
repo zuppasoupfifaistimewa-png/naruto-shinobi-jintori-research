@@ -1,0 +1,9 @@
+metric,count,criterion
+strict_scan_rows,137,exact strict scan implementation; expected 137
+strict_scan_unique_offsets,137,unique entry-relative source offsets
+new_ghidra_xref_rows,324,rebased Ghidra XREF export
+new_ghidra_unique_offsets,324,unique entry-relative source offsets
+same,135,source offset appears in both
+scan_only,2,source offset appears only in strict scan
+ghidra_only,189,pass criterion requires <57.5
+criterion_ghidra_only_lt_57_5,false,PASS iff Ghidra-only <57.5
