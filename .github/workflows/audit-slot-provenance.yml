@@ -1,0 +1,175 @@
+name: Static slot provenance audit V1-V3
+
+on:
+  push:
+    branches:
+      - audit/checkpoint-window-2026-10-29
+    paths:
+      - "tools/audit_slot_provenance.py"
+      - ".github/workflows/audit-slot-provenance.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: naruto-static-slot-provenance-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      DATA_BIN_ASSET_ID: "647346873"
+      CUE_ASSET_ID: "647354760"
+      DATA_BIN_BYTES: "66015232"
+      DATA_BIN_SHA256: "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822"
+    steps:
+      - name: Checkout permitted research repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install disc extraction tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes bchunk xorriso
+
+      - name: Download and verify private source transiently, extract DATA.BIN
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/slot-provenance-audit"
+          src="$root/source"
+          extracted="$root/extracted"
+          mkdir -p "$src" "$extracted" "$root/output"
+          bin="$src/naruto-disc.bin"
+          cue_raw="$src/original.cue"
+          cue="$src/naruto-disc.cue"
+          api="https://api.github.com/repos/$GITHUB_REPOSITORY/releases/assets"
+          curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' \
+            --header "Authorization: Bearer $GITHUB_TOKEN" --header "Accept: application/octet-stream" \
+            --header "X-GitHub-Api-Version: 2022-11-28" --retry 2 --retry-delay 2 --max-time 600 \
+            "$api/$DATA_BIN_ASSET_ID" --output "$bin"
+          [[ "$(stat -c '%s' "$bin")" == "325989552" ]]
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $bin" | sha256sum --check -
+          curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' \
+            --header "Authorization: Bearer $GITHUB_TOKEN" --header "Accept: application/octet-stream" \
+            --header "X-GitHub-Api-Version: 2022-11-28" --retry 2 --retry-delay 2 --max-time 60 \
+            "$api/$CUE_ASSET_ID" --output "$cue_raw"
+          [[ "$(stat -c '%s' "$cue_raw")" == "116" ]]
+          echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $cue_raw" | sha256sum --check -
+          python3 - "$cue_raw" "$cue" <<'PY'
+          from pathlib import Path
+          import re, sys
+          src, dst = map(Path, sys.argv[1:3])
+          out, count = [], 0
+          for line in src.read_text(encoding="utf-8").splitlines():
+              if line.lstrip().upper().startswith("FILE "):
+                  m = re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$', line, re.I)
+                  if not m: raise SystemExit("Unrecognized CUE FILE directive")
+                  line = m.group(1) + '"naruto-disc.bin"' + m.group(2)
+                  count += 1
+              out.append(line)
+          if count != 1: raise SystemExit(f"Expected one CUE FILE directive; got {count}")
+          dst.write_text("\n".join(out) + "\n", encoding="utf-8")
+          PY
+          bchunk "$bin" "$cue" "$src/track"
+          iso="$(find "$src" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          [[ -n "$iso" ]]
+          xorriso -osirrox on -indev "$iso" -extract / "$extracted" > "$root/output/disc-extraction.log" 2>&1
+          data="$(find "$extracted" -type f -iname 'DATA.BIN' -print -quit)"
+          [[ -n "$data" && "$(stat -c '%s' "$data")" == "$DATA_BIN_BYTES" ]]
+          echo "$DATA_BIN_SHA256  $data" | sha256sum --check -
+          cp "$data" "$root/DATA.BIN"
+          rm -rf "$src" "$extracted"
+          echo "DATA_BIN_SHA256=$DATA_BIN_SHA256" > "$root/output/input-identity.txt"
+          echo "DATA_BIN_BYTES=$DATA_BIN_BYTES" >> "$root/output/input-identity.txt"
+          echo "ENTRY1_OFFSET=0x10BB000 ENTRY1_SIZE=596412 ENTRY1_SHA256=9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a" >> "$root/output/input-identity.txt"
+          echo "raw_binary_git_committed=no" >> "$root/output/input-identity.txt"
+          echo "DATA_PATH=$root/DATA.BIN" >> "$GITHUB_ENV"
+          echo "OUT_PATH=$root/output" >> "$GITHUB_ENV"
+
+      - name: Emit complete target-function disassembly and 32-row backward trace
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="reports/slot_provenance_audit/run_$GITHUB_RUN_ID"
+          mkdir -p "$out"
+          python3 tools/audit_slot_provenance.py \
+            "$DATA_PATH" \
+            "reports/step4_10_static_evidence_audit/run_40789339014/a2_expanded_xref_candidates.csv" \
+            "reports/step4_10_static_evidence_audit/run_40789339014/a2_ghidra_rebased_functions.csv" \
+            "$out"
+          cp "$OUT_PATH/input-identity.txt" "$out/input-identity.txt"
+          cp "$OUT_PATH/disc-extraction.log" "$out/disc-extraction-summary.log"
+          python3 - "$out/V1-reconciliation.md" <<'PY'
+          from pathlib import Path
+          import sys
+          report = """# V1 reconciliation — evidence chain
+
+          ## (a) Run 40792708405 metadata
+          - Workflow: 'Preserve Naruto checkpoint and compare RAM / strict A2'
+          - Workflow file: '.github/workflows/preserve-checkpoint-and-compare.yml'
+          - Branch: 'main'
+          - head_sha: '4c505394ac331225545728261c66566fa3113763'
+          - Run: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40792708405
+          - Head commit permalink: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/4c505394ac331225545728261c66566fa3113763
+          - Follow-on sanitized report commit: 'b26455720d19b6e78ada49bfe0698d1a289bc91a'. The same workflow log shows '4c50539..b264557 HEAD -> main' after the step 'Commit only sanitized text, JSON and CSV reports'. These SHAs identify different stages, not conflicting identities.
+          - Follow-on commit permalink: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/b26455720d19b6e78ada49bfe0698d1a289bc91a
+
+          ## (b) Release creator evidence
+          - Release API: created_at='2026-10-29T00:14:06Z', author='github-actions[bot]', release ID 427327611, asset ID 686794219.
+          - Run 40792708405 began at '2026-10-29T00:14:11Z'. Its job step explicitly named 'Preserve raw savestate as a non-expiring GitHub Release asset' created/verified the asset; the resulting manifest records the release tag and asset ID.
+          - Conclusion: the Release asset was created/verified by run 40792708405 using workflow definition at head commit '4c505394ac331225545728261c66566fa3113763'. The sanitized reports were committed afterward as 'b26455720d19b6e78ada49bfe0698d1a289bc91a'.
+          - Release API: https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tags/naruto-checkpoint-39262213468
+          - Release URL: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/naruto-checkpoint-39262213468
+
+          ## (c) 'extended scan 32' vs '191 all appear'
+          - '326' is the expanded-scan candidate count. Its 'effective_address_if_pair' field has 294 candidates with heuristic same-register LUI-pair effective address '0x8013A554' and 32 candidates marked 'UNRESOLVED' because no same-register LUI was found within the fixed 32-word backward window.
+          - In the 191-row comparison against the strict scan, every row occurs in the expanded candidate file ('extended_scan_326_candidate=YES'). This is candidate-site membership, not 191 independently proved effective addresses.
+          - Exactly 32 of those 191 rows are READ/LW rows categorized as lacking a same-register 'lui 0x8014' within the 32-word window; these correspond to the 32 unresolved effective-address rows in the expanded candidate table. '32' is a row/site count; the window itself is 32 instruction words.
+          - Scan run: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40789339014
+          - Scan commit permalink: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/8b70e004f0df21bbb250a3c0b918a19e76ce0a21
+          - Reconciliation commit permalink: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/4c505394ac331225545728261c66566fa3113763
+
+          Caveat: LUI pairing is a linear local heuristic, not proof of CFG dominance, aliasing, or runtime access. V3 therefore uses a separate in-function backtrace.
+          """
+          Path(sys.argv[1]).write_text(report, encoding="utf-8")
+          PY
+
+      - name: Remove source binaries and extracted working files
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f "$RUNNER_TEMP/slot-provenance-audit/DATA.BIN"
+          rm -rf "$RUNNER_TEMP/slot-provenance-audit/source" "$RUNNER_TEMP/slot-provenance-audit/extracted"
+
+      - name: Commit sanitized text/CSV report to this audit branch only
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "reports/slot_provenance_audit/run_$GITHUB_RUN_ID"
+          git commit -m "Record slot provenance audit run $GITHUB_RUN_ID"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+
+      - name: Upload sanitized text/CSV evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: slot-provenance-audit-text-only
+          path: |
+            reports/slot_provenance_audit/run_${{ github.run_id }}/*.txt
+            reports/slot_provenance_audit/run_${{ github.run_id }}/*.csv
+            reports/slot_provenance_audit/run_${{ github.run_id }}/*.md
+            reports/slot_provenance_audit/run_${{ github.run_id }}/*.log
+          if-no-files-found: warn
+          retention-days: 14
