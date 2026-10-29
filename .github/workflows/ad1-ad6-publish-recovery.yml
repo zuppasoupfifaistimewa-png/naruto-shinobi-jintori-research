@@ -295,20 +295,17 @@ jobs:
             echo "AD5 — Status=TUNTAS, K4."
             echo "Anonymous Releases list returned HTTP 200: 2 releases / 19 assets; table uses headers tag,draft,prerelease,asset_name,asset_id,size_bytes in AD5_release.txt. Asset IDs: 647346873=Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin; 652373928=scph7502.zip; 686794219=storymode-checkpoint-run-39262213468.raw.sstate. Each URL hop was followed with response body discarded: initial API HTTP 302 and final release-assets HTTP 206 for all 3."
             echo
-            echo "AD6 — Status=TUNTAS if AD6_git_history.txt ends with AD6 GIT HISTORY AUDIT END; K4."
-            echo "The output includes git ls-files matches and git rev-list --objects --all plus per-commit recursive trees, listing each matched blob >1 MiB and each occurrence of .bin/.cue/.iso/.sstate/.zip/.gpudump/.raw/.png with commit, blob SHA, size and path. See AD6_git_history.txt for the exact inventory; if the audit records TIDAK TAHU due git worktree failure, this task remains SEBAGIAN."
+            if grep -q "AD6 GIT HISTORY AUDIT END" "$OUT/AD6_git_history.txt"; then
+              echo "AD6 — Status=TUNTAS, K4. The output includes git ls-files matches and git rev-list --objects --all plus per-commit recursive trees, listing each matched blob >1 MiB and each occurrence of .bin/.cue/.iso/.sstate/.zip/.gpudump/.raw/.png with commit, blob SHA, size and path."
+            else
+              echo "AD6 — Status=SEBAGIAN, K2. The all-history scan did not reach its terminal marker; see AD6_git_history.txt and do not infer a zero-match result."
+            fi
             echo
             echo "Story Mode completion: NOT CLAIMED / NOT VERIFIED by these diagnostics."
             echo
-            echo "REPORT_PERMALINK_AFTER_COMMIT: https://raw.githubusercontent.com/$RESEARCH_REPO/REPORT_COMMIT_PLACEHOLDER/$R"
           } > "$R"
           git add "$R"
-          git commit -m "Publish final AD1-AD6 audit report"
-          push_with_rebase
-          REPORT_COMMIT="$(git rev-parse HEAD)"
-          sed -i "s/REPORT_COMMIT_PLACEHOLDER/$REPORT_COMMIT/g" "$R"
-          git add "$R"
-          git commit --amend --no-edit
+          if ! git diff --cached --quiet; then git commit -m "Publish final AD1-AD6 audit report"; fi
           push_with_rebase
           REPORT_COMMIT="$(git rev-parse HEAD)"
           echo "FINAL_REPORT_COMMIT=$REPORT_COMMIT"
