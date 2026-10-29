@@ -31,3 +31,15 @@ Both failed publishers ended with the observed Git push error: [rejected] HEAD -
 Container vs producer notes:
 - Container digest above is copied from the run 398677 job log, not from an AD report.
 - Producer AppImage SHA 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99 is absent from retained artifacts after job cleanup; producer build could not be replayed.
+
+[run 40893599809 / job 123524765697 / commit 9c1287c436522a5b333a3399d734dd8cc8c566c0 — attempt 2]
+2026-10-29T14:59:54.7199923Z AE_REFINE_ATTEMPT_DONE case=ae2-target-spu-field6-control attempt=2 result=POST_LOAD_VSYNC=180 signal=SIGINT pc=0x7fffe1f3c301 wrapper_rc=-9 elapsed=115.017
+2026-10-29T15:03:50.3646145Z AE_REFINE_ATTEMPT_DONE case=ae1-channel2-child-adsr attempt=2 result=POST_LOAD_VSYNC=180 signal=SIGINT pc=0x7fffe1ed71be wrapper_rc=-9 elapsed=115.018
+2026-10-29T15:07:40.4209574Z AE_REFINE_ATTEMPT_DONE case=ae1-channel2-child-adsr_ex attempt=2 result=POST_LOAD_VSYNC=180 signal=SIGINT pc=0x7fffe1f30f35 wrapper_rc=-9 elapsed=115.018
+Interpretasi ketat: marker 180 muncul pada ketiga percobaan kedua, tetapi signal=SIGINT dan wrapper_rc=-9 menyatakan proses diinterupsi/dibunuh; elapsed adalah total durasi peluncuran, bukan waktu-ke-marker dan bukan clean exit.
+
+[PENCABUTAN CATATAN LAMA AC3 — hipotesis producer/tester memakai build berbeda]
+Kesimpulan lama yang menolak hipotesis build berbeda secara umum DITARIK. Target producer/tester memakai AppImage SHA c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c, tetapi producer state kontrol run 39867730674/job 120134061270 memakai SHA 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99 dan exit 92. Karena binary kontrol 2fb33f tidak tersimpan untuk replay, apakah ketidakcocokan disebabkan build berbeda adalah TIDAK TAHU.
+
+[Catatan koreksi sumber unduhan run 39262213468]
+Log 2026-10-19T13:41:09Z menunjukkan workflow mengambil nama asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage melalui API Release tag research-emulator-pcsx-redux-2026-10-15 dan memverifikasi SHA c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c. ID aset yang dipilih runtime tidak dicetak. Asset ID 669480936 yang diketahui dalam audit dibuat pada 2026-10-23T15:05:43Z, sesudah run 19 Okt; maka ID 669480936 tidak dapat diklaim sebagai sumber yang digunakan run 39262213468. ID aset historis: TIDAK TAHU.
