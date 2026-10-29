@@ -486,6 +486,20 @@ def main():
     out=Path(a.out);out.mkdir(parents=True,exist_ok=True)
     (out/"analysis-input-identity.txt").write_text(
       f"entry1_bytes={len(entry)}\nentry1_sha256={sha(entry)}\nentry1_base={H(BASE)}\nsource_v3_commit=b8e8911534a97dcc6fd38319ecd8c4befc14c996\nsource_v3_run=40815320809\n",encoding="utf-8")
-    w0(out,a.run_id);w1(entry,a.candidate,a.function_csv,a.v3,out);w2(a.ram,out,a.run_id)
+    w0(out,a.run_id)
+    # Correct the earlier over-attribution: Release.created_at precedes run 407927's start.
+    prior=out/"V1-reconciliation.md"
+    if prior.exists():
+        txt=prior.read_text(encoding="utf-8")
+        revised="""## (b) Release creator evidence
+          - Release API reports created_at=2026-10-29T00:14:06Z, Release ID 427327611, asset ID 686794219, actor github-actions[bot].
+          - Run 40792708405 started at approximately 2026-10-29T00:14:11Z, after the Release record's created_at. That run therefore cannot be proven to have created the Release record.
+          - W0 queries all Actions runs/jobs overlapping 00:10–00:16Z and records Release/asset/publish-related step timestamps and relevant log excerpts. With available evidence, creator conclusion is TIDAK TAHU unless a prior job's creation event is uniquely attributable.
+          - Release API: https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tags/naruto-checkpoint-39262213468
+          - Release URL: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/naruto-checkpoint-39262213468"""
+        txt=re.sub(r"## \\(b\\) Release creator evidence\\n.*?(?=\\n## \\(c\\))",revised,txt,flags=re.S)
+        prior.write_text(txt,encoding="utf-8")
+    w1(entry,a.candidate,a.function_csv,a.v3,out)
+    w2(a.ram,out,a.run_id)
 if __name__=="__main__":
     main()
