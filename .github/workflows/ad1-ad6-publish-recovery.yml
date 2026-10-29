@@ -238,7 +238,7 @@ jobs:
                       lines.append("DISASSEMBLY_16_INSTRUCTIONS_BEGIN");lines.extend(item[1] for item in ins[lo:hi]);lines.append("DISASSEMBLY_16_INSTRUCTIONS_END")
                   else:
                       lines.append("DISASSEMBLY_16_INSTRUCTIONS=TIDAK TAHU; objdump decoded no instructions in the mapped VA window.")
-                    out.write_text("\n".join(lines)+"\n",encoding="utf-8")
+          out.write_text("\n".join(lines)+"\n",encoding="utf-8")
           print(out.read_text())
           PY
           cat "$TMP_AD/logs/static-binary-inspection.txt" >> "$OUT/AD2_symbolization.txt"
@@ -329,7 +329,7 @@ jobs:
             echo "Excerpt file: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/$OUT/ad1-log-excerpts-first40-last250.txt"
             echo
             echo "AD2 — Status=SEBAGIAN, K4."
-            echo "Runtime PC 0x7ffff0dd36d0 is in GDB mapping line for /AppDir/shared/bin/pcsx-redux: start 0x7ffff088c000, file offset 0x8c000; file offset=PC-base+mapping offset=0x5d36d0. The runtime GDB log directly shows: movzbl (%rsi),%ecx; mov $0x4,%esi; movzbl 0x2(%rax),%r9d; RSI=0xffffffffd736aa9f. The exact mapped path was not demonstrated to be the same ELF as /squashfs-root/bin/pcsx-redux inspected by readelf; thus nearest function/symbol, addr2line and 16 static instructions are TIDAK TAHU rather than guessed. readelf -h/-lW/-Ws/-n, readelf --debug-dump=frames, nm -D -n and objdump -d outputs were run on extracted candidates and retained in AD2_symbolization.txt."
+            echo "Runtime PC 0x7ffff0dd36d0 is in GDB mapping line for /AppDir/shared/bin/pcsx-redux: start 0x7ffff088c000, file offset 0x8c000; file offset=PC-base+mapping offset=0x5d36d0. The runtime GDB log directly shows: movzbl (%rsi),%ecx; mov \$0x4,%esi; movzbl 0x2(%rax),%r9d; RSI=0xffffffffd736aa9f. The exact mapped path was not demonstrated to be the same ELF as /squashfs-root/bin/pcsx-redux inspected by readelf; thus nearest function/symbol, addr2line and 16 static instructions are TIDAK TAHU rather than guessed. readelf -h/-lW/-Ws/-n, readelf --debug-dump=frames, nm -D -n and objdump -d outputs were run on extracted candidates and retained in AD2_symbolization.txt."
             echo
             echo "AD3 — Status=TUNTAS for tested single-field sufficiency, K5."
             cat "$OUT/runtime-results.tsv"
