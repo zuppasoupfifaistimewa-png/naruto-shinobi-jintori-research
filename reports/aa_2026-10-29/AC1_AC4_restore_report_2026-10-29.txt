@@ -1,31 +1,50 @@
-K SCALE: K1 dugaan; K2 indikasi terbatas; K3 bukti pendukung konvergen; K4 bukti langsung yang dapat diperiksa ulang (statis maksimal K4); K5 runtime konsisten pada >=2 peluncuran terpisah.
+K SCALE: K1=dugaan; K2=indikasi terbatas; K3=bukti konvergen; K4=bukti langsung yang dapat diperiksa ulang (statis maksimal K4); K5=runtime direplikasi pada >=2 run Actions terpisah.
 Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-Evidence commit (teks saja): 1689239d81d215b4efc8296b1b896fc8115a12f7
-Runtime run/job: 40853480515 / 123378496809 — https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40853480515/job/123378496809
-Workflow source: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/528fc3164fda9e14b96831403d1f1f1ebd483be6/.github/workflows/aa1-restore-gdb-diagnostic.yml
-PCSX-Redux save-state schema at pin 0c3572c3d: https://raw.githubusercontent.com/pcsx-redux/pcsx-redux/0c3572c3db75f97542001e453ae80ba8c3f8acba/src/core/sstate.h
-Source workflows for historical comparison:
-  run 39262213468: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/e396eac00631001b7a0e68d7701c70aec10dec19/.github/workflows/naruto-scph7502-gpu-traffic-summary.yml
-  run 40844474886: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/2ef56f8e6d3c3612e03357b34cfae1d65cfd23ab/.github/workflows/storymode-fixed-schedule-ram-compare.yml
-  run 40848251356: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/64be99b0ea2d927216a7195dd95e85fbf8cd3612/.github/workflows/aa1-restore-gdb-diagnostic.yml
-  control producer run 39867730674: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/c9b1438292041f972b712f248fb7052032635b59/.github/workflows/naruto-storymode-adaptive-player.yml
-Runtime summary: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/AA1_runtime_summary.txt
-Static protobuf/RAM: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/AC2_savestate_protobuf_static.txt
-Anonymous Release/HTTP results: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/anonymous-release-assets.txt
-GDB/runner metadata: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/AA1_runtime_metadata.txt
-Raw GDB/PCSX log permalinks:
-  target attempt 1 GDB: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/aa1_runtime_logs/target-attempt1.gdb.txt
-  target attempt 1 PCSX: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/aa1_runtime_logs/target-attempt1.pcsx.txt
-  target attempt 2 GDB: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/aa1_runtime_logs/target-attempt2.gdb.txt
-  target attempt 2 PCSX: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/aa1_runtime_logs/target-attempt2.pcsx.txt
-  control attempt 1 GDB: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/aa1_runtime_logs/control-attempt1.gdb.txt
-  control attempt 1 PCSX: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/aa1_runtime_logs/control-attempt1.pcsx.txt
-  control attempt 2 GDB: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/aa1_runtime_logs/control-attempt2.gdb.txt
-  control attempt 2 PCSX: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/aa1_runtime_logs/control-attempt2.pcsx.txt
-AC1: dua Actions run terpisah dengan harness yang sama (baseline run 40852693434/job 123375850554 dan run ini 40853480515/job 123378496809), masing-masing dua peluncuran target + dua control, tanpa tombol. Pada baseline, target dua kali menerima SIGSEGV di Thread 15, PC #0=0x00007ffff0dd36d0; stack #0-#3 hanya alamat ?? dan #4=0; PC berada dalam executable mapping 0x7ffff088c000-0x7ffff1892000 tetapi jalur berkas disamarkan. Last load marker hanya AA1_LOAD_BEGIN at VSync 1. Jadi crash saat jalur pemulihan sangat terkait waktunya, tetapi fungsi penyebab tidak teridentifikasi: TIDAK TAHU. Control dua kali mencapai AA1_POST_LOAD_VSYNC=180 dan inferior keluar normal; GDB wrapper exit=1 karena perintah diagnostik pasca-exit melaporkan No registers, bukan crash emulator. Semua sinyal/stack/mapping/thread/regs ada di raw excerpt.
-AC2: kedua file protobuf mentah, bukan gzip/zlib: magic awal 0a 1b 0a 17 50 43 53 58 2d 52 65 64 75 78 20 53. Raw dan parsed target sama-sama 21,163,286 B; control 21,162,546 B; masing-masing parsed hash sama dengan raw. Delta +740 B cocok seluruhnya dengan field protobuf ter-encode. Field 6 (SPU) +748 B, field 4 (registers) +1 B, field 8 (CD-ROM) -9 B, total +740 B; SHA/wire/payload length tabel lengkap dan anak satu tingkat ada di static report. [0x801CEF04] berisi 0x0000016C pada keduanya. Schema reference: sstate.h pada pin PCSX-Redux 0c3572c3d.
-AC3(i): kontrol berasal dari run 39867730674/job 120134061270, head c9b1438292041f972b712f248fb7052032635b59; workflow menulis captures/adaptive-cycle-01-f180.sstate (ADAPTIVE_CHECKPOINT_WRITE_RETURNED=PASS) lalu mengunggah artifact 12464258211. Run sumber berakhir failure; provenance state terverifikasi, stabilitas sesi sumber tidak.
-AC3(ii): 39262213468/job 118092519254; workflow commit e396eac00631001b7a0e68d7701c70aec10dec19; ubuntu-26.04; timeout workflow 100m; frame gate/save 10055; PCSX AppImage downloaded from public Release asset 669480936, SHA c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c, source pin 0c3572c3d; flags -softgpu -dynarec via Xvfb (no --headless CLI flag); GDB 17.1-2ubuntu1 installed. 40844474886/job 123348484949; workflow commit 2ef56f8e6d3c3612e03357b34cfae1d65cfd23ab; ubuntu-24.04; workflow timeout 25m, per-emulator timeout 240s; cold boot only; frame gates 2649/5999/8999/9030/9105 and final save 10055; same AppImage SHA and -softgpu -dynarec via Xvfb; no GDB dependency/use in workflow; wrapper timed out (124). 40848251356/job 123360980473; workflow commit 64be99b0ea2d927216a7195dd95e85fbf8cd3612; ubuntu-24.04; timeout 18m; one target and control restore attempt, 180 post-load VSync target and timeout gate at 900 VSync; same AppImage SHA; -noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout; GDB 15.1-1ubuntu1~24.04.1. Current run uses ubuntu-24.04.5, 18m workflow timeout, 110s per emulator attempt (2 of each), 900-VSync pre-load marker timeout/180 post-load frame gate, same AppImage SHA/PCSX pin, same runtime flags, and GDB 15.1-1ubuntu1~24.04.1. No workflow invokes a literal --headless CLI flag; graphical session is Xvfb.
-AC3(iii): hipotesis target disimpan dengan build PCSX berbeda atau flag -softgpu/-dynarec berbeda DITOLAK sebagai penjelasan berbukti: run 392622 workflow and AA1 use the same exact AppImage SHA and these two flags. Ancillary flags/runner differ; this does not rule out content/format or state-specific issue.
-AC4: anonymously listed releases HTTP 200; ids 647346873 (game BIN), 652373928 (SCPH-7502 ZIP), 686794219 (checkpoint) each HTTP 302 on exact zero-body Range query, redirecting to release-assets.githubusercontent.com. ROM/BIOS/checkpoint are reachable without token. No asset, visibility, or hash was changed. Suggested mitigation only: owner may decide whether copyrighted/private assets should be moved to private storage or repository/release visibility changed.
-AB2 tetap CLOSED. AB2/AB3 tidak dijalankan. ISO, BIOS, savestate, RAM dump, screenshot tidak dikomit. Story Mode completion NOT VERIFIED.
+Run utama 40853480515/job 123378496809: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40853480515/job/123378496809
+Commit bukti teks: 1689239d81d215b4efc8296b1b896fc8115a12f7
+Perbaikan workflow: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/528fc3164fda9e14b96831403d1f1f1ebd483be6/.github/workflows/aa1-restore-gdb-diagnostic.yml
+Definisi savestate PCSX-Redux 0c3572c3d: https://raw.githubusercontent.com/pcsx-redux/pcsx-redux/0c3572c3db75f97542001e453ae80ba8c3f8acba/src/core/sstate.h
+
+BUKTI RAW (semua teks pada commit bukti):
+Summary runtime: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/AA1_runtime_summary.txt
+Tabel protobuf + RAM: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/AC2_savestate_protobuf_static.txt
+Release anonim + HTTP: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/anonymous-release-assets.txt
+Versi GDB/runner/flags: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/AA1_runtime_metadata.txt
+GDB target #1: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/aa1_runtime_logs/target-attempt1.gdb.txt
+GDB target #2: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/aa1_runtime_logs/target-attempt2.gdb.txt
+GDB control #1: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/aa1_runtime_logs/control-attempt1.gdb.txt
+GDB control #2: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/1689239d81d215b4efc8296b1b896fc8115a12f7/reports/aa_2026-10-29/aa1_runtime_logs/control-attempt2.gdb.txt
+PCSX logs target/control: same directory and commit; filenames target-attempt1.pcsx.txt, target-attempt2.pcsx.txt, control-attempt1.pcsx.txt, control-attempt2.pcsx.txt.
+
+AC1 — Runtime (K5 untuk pola hasil, bukan penyebab)
+Run 40852693434/job 123375850554 dan 40853480515/job 123378496809; tiap run menjalankan target 2x dan control 2x, tanpa input.
+Target: kedua run 4/4 percobaan berhenti pada SIGSEGV di thread 15; frame #0=0x00007ffff0dd36d0 in ??(); penanda load terakhir AA1_LOAD_BEGIN pada VSync 1. Stack selengkapnya hanya alamat tak tersimbolkan (#0 0x7ffff0dd36d0, #1 0x1588520, #2 0x14f3490, #3 0x7ffff0de5870, #4 0). PC jatuh dalam executable mapping 0x7ffff088c000–0x7ffff1892000, tetapi path disamarkan. GDB wrapper exit 0 setelah menangkap sinyal; fungsi penyebab: TIDAK TAHU.
+Control: 4/4 mencapai AA1_POST_LOAD_VSYNC=180 dan inferior keluar normal. GDB wrapper exit 1 karena perintah diagnostik sesudah exit melaporkan “No registers”; itu bukan bukti crash emulator.
+
+AC2 — Statis, tidak memuat emulator (K4)
+Target: 21,163,286 B; SHA256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d.
+Control: 21,162,546 B; SHA256 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492.
+Byte awal keduanya 0a 1b 0a 17 50 43 53 58 2d 52 65 64 75 78 20 53; bukan gzip/zlib, jadi tak didekompresi. Raw size delta=parsed size delta=field encoded sum delta=+740 B.
+Field berukuran berubah: #4 registers +1 B; #6 SPU +748 B; #8 CD-ROM −9 B; total +740 B. Tabel SHA lengkap untuk setiap field dan satu tingkat anak terdapat pada berkas statis. [0x801CEF04] = 0x0000016C pada target dan kontrol, cocok dengan 0x16C.
+
+AC3(i) — Asal kontrol
+Run 39867730674/job 120134061270, head c9b1438292041f972b712f248fb7052032635b59: log mencatat ADAPTIVE_CHECKPOINT_WRITE_RETURNED=PASS untuk captures/adaptive-cycle-01-f180.sstate; artifact 12464258211 diunggah oleh run itu. Run sumber kemudian gagal dengan “corrupted size vs. prev_size”/code 134; provenance terverifikasi, sesi sumber tidak selesai bersih.
+Workflow sumber: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/c9b1438292041f972b712f248fb7052032635b59/.github/workflows/naruto-storymode-adaptive-player.yml
+
+AC3(ii) — Perbandingan runtime
+Run/job | workflow head SHA | runner; timeout; gerbang frame | PCSX/GDB
+39262213468/job 118092519254 | e396eac00631001b7a0e68d7701c70aec10dec19 | ubuntu-26.04; 100 min; checkpoint VSync 10055 | AppImage SHA c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c, pin 0c3572c3d, -softgpu -dynarec/Xvfb, GDB 17.1-2ubuntu1; simpan state, bukan restore.
+40844474886/job 123348484949 | 2ef56f8e6d3c3612e03357b34cfae1d65cfd23ab | ubuntu-24.04; 25 min/240 s per emulator; gate 2649/5999/8999/9030/9105/10055 | AppImage sama, -softgpu -dynarec/Xvfb; GDB tak dipakai; cold boot timeout 124.
+40848251356/job 123360980473 | 64be99b0ea2d927216a7195dd95e85fbf8cd3612 | ubuntu-24.04; 18 min; tunggu 180 VSync selepas load, batas tunggu 900 | AppImage sama; -noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout; GDB 15.1-1ubuntu1~24.04.1.
+40852693434/job 123375850554 dan 40853480515/job 123378496809 | ff0173997dd1425285cd22bb2fc7659a40d96398 lalu 528fc3164fda9e14b96831403d1f1f1ebd483be6 | ubuntu-24.04.5; 18 min/110 s tiap percobaan; dua peluncuran per state | AppImage sama; flags AA1 sama, GDB 15.1-1ubuntu1~24.04.1. Tidak satu pun workflow memakai CLI flag literal --headless; GUI headless disediakan Xvfb.
+Permalink workflow: 39262213468 https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/e396eac00631001b7a0e68d7701c70aec10dec19/.github/workflows/naruto-scph7502-gpu-traffic-summary.yml
+40844474886 https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/2ef56f8e6d3c3612e03357b34cfae1d65cfd23ab/.github/workflows/storymode-fixed-schedule-ram-compare.yml
+40848251356 https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/64be99b0ea2d927216a7195dd95e85fbf8cd3612/.github/workflows/aa1-restore-gdb-diagnostic.yml
+
+AC3(iii)
+Hipotesis “target mesti disimpan dengan build PCSX atau flag -softgpu/-dynarec lain” DITOLAK sebagai penjelasan yang didukung bukti: target workflow dan loader mematok SHA AppImage dan dua flag tersebut sama. Perbedaan flag tambahan/runner tak menyingkirkan masalah isi/format state.
+
+AC4 — Akses anonim
+Tanpa GH_TOKEN: daftar Release HTTP 200; asset 647346873 (ROM BIN), 652373928 (BIOS ZIP), dan 686794219 (savestate) masing-masing HTTP 302 ke release-assets.githubusercontent.com. Ketiganya dapat diunduh publik. Tidak ada aset, visibilitas, atau hash diubah. Mitigasi hanya usulan: pemilik dapat mempertimbangkan penyimpanan privat atau visibilitas repo/Release privat.
+
+AB2 tetap CLOSED; AB2/AB3 tidak dijalankan. ISO, BIOS, savestate, RAM dump dan screenshot tidak dikomit. Story Mode completion NOT VERIFIED.
