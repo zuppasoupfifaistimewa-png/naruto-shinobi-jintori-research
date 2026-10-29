@@ -18,7 +18,7 @@ concurrency:
 jobs:
   diagnose:
     runs-on: ubuntu-24.04
-    timeout-minutes: 18
+    timeout-minutes: 30
     env:
       GH_TOKEN: ${{ github.token }}
       RESEARCH_REPO: ${{ github.repository }}
@@ -476,6 +476,35 @@ jobs:
           } > "$GITHUB_WORKSPACE/reports/aa_2026-10-29/AA1_runtime_summary.txt"
           cat "$GITHUB_WORKSPACE/reports/aa_2026-10-29/AA1_runtime_summary.txt"
 
+      - name: AE1-AE4 static field audit, subfield bisect, reverse necessity, and RAM words (no input)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          curl --fail --silent --show-error --location --retry 2 --max-time 60 \
+            "https://raw.githubusercontent.com/pcsx-redux/pcsx-redux/0c3572c3d/src/core/sstate.h" \
+            -o "$AA_WORK/source/sstate.h"
+          header_blob="$(git hash-object "$AA_WORK/source/sstate.h")"
+          echo "AE_SOURCE_SSTATE_H_GIT_BLOB_SHA1=$header_blob"
+          test "$header_blob" = "72b7ab0dbd4191f9d9ed4cdd9d77898f467258e2"
+          export DISPLAY=:99 HOME="$AA_WORK/home" XDG_CONFIG_HOME="$AA_WORK/home/.config" \
+            XDG_DATA_HOME="$AA_WORK/home/.local/share" XDG_RUNTIME_DIR="$AA_WORK/home/runtime"
+          export LIBGL_ALWAYS_SOFTWARE=1
+          export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+          export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
+          export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
+          export QML2_IMPORT_PATH="$APPDIR/usr/qml"
+          python3 experiments/ae1_ae4_restore_bisect.py \
+            --target "$AA_WORK/resume/target.sstate" \
+            --control "$AA_WORK/resume/control.sstate" \
+            --source-header "$AA_WORK/source/sstate.h" \
+            --output "$GITHUB_WORKSPACE/reports/ae_2026-10-29" \
+            --work "$AA_WORK" \
+            --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" \
+            --bios "$AA_WORK/source/scph7502.bin" \
+            --cue "$AA_WORK/source/game-run.cue" \
+            --card "$AA_WORK/cards/reference.mcd"
+
       - name: Commit sanitized evidence and one-file final report
         if: always()
         shell: bash
@@ -488,7 +517,8 @@ jobs:
                   reports/aa_2026-10-29/AA1_runtime_metadata.txt \
                   reports/aa_2026-10-29/AA1_runtime_summary.txt \
                   reports/aa_2026-10-29/AC2_savestate_protobuf_static.txt \
-                  reports/aa_2026-10-29/anonymous-release-assets.txt
+                  reports/aa_2026-10-29/anonymous-release-assets.txt \
+                  reports/ae_2026-10-29/
           if ! git diff --cached --quiet; then
             git commit -m "Record sanitized AA1 AC2 AC4 evidence"
             git push origin HEAD:main
