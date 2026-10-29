@@ -1,0 +1,17 @@
+W2 DIRECT SAVESTATE RAM PARSE; EMULATOR NOT LAUNCHED
+source_checkpoint_run=39262213468
+audit_run=40823561026
+ram_prefix_bytes=2097152
+ram_prefix_sha256=3ad7b85c857a868d91df4b3f1049c23889a0dc482ad7ee390ac8b6c05c3190f4
+requested_region_address=0x801CEF08
+requested_region_bytes=2900
+requested_region_end_exclusive=0x801CFA5C
+requested_region_sha256=d57024211a379dd6d17844e35d04c3e09fe70a45b9a871cca1fd9aedf9ef04d7
+slot_address=0x8013A554
+slot_raw_bytes_le=08 EF 1C 80
+slot_actual_u32_le=0x801CEF08
+slot_equals_requested_pointer=YES
+predicted_words_match=4/4
+predicted_byte_match=YES
+No raw RAM dump or private CSV committed; only derived values, summaries and SHA-256 digests.
+Prediction source: function FUN_80104690 writes 2 to pointer+0x478+0x58*n for n=0..3 and byte 0xFF to pointer+0x620; the checkpoint may reflect another lifecycle state.

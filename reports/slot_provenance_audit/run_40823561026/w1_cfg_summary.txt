@@ -1,0 +1,14 @@
+W1 CFG REACHING-DEFINITION AUDIT; STATIC ONLY; NO EMULATOR
+v3_rows=32 scan_extended_unresolved_READ_LW_rows=32
+v3_pc_set_equals_scan_unresolved_pc_set=PASS
+join_rows=32 join_all_32_pass=PASS
+unique_reader_functions=12 cfg_reader_total=32
+RESOLVED_SLOT=32 RESOLVED_OTHER=0 UNRESOLVED=0
+previous_conservative_counts=RESOLVED_SLOT:2,RESOLVED_OTHER:2,UNRESOLVED:28
+class_changes=30 changed_pcs=0x80104AE8,0x80105000,0x801050D8,0x80105538,0x8010554C,0x801060E8,0x80106B40,0x80106B54,0x80106B88,0x801073C4,0x801074C0,0x80107B34,0x80109A30,0x80109A40,0x80109A58,0x80109A64,0x80109A78,0x80109A9C,0x80109CC0,0x80109CE8,0x80109D08,0x80109D20,0x80109D54,0x80109D8C,0x80109EA0,0x8010A234,0x8010A7DC,0x8010A7F4,0x8010A808,0x8010A82C
+max_dataflow_rounds=3
+functions_with_cfg_caveat=0
+special_80104AE8=0x80104AE8: class=RESOLVED_SLOT; definitions=0x80104ADC:v0=>0x80140000; effective=0x8013A554; reason=All reaching definitions resolve to base 0x80140000; base + (-23212) = 0x8013A554.
+special_801060E8=0x801060E8: class=RESOLVED_SLOT; definitions=0x801060C4:v0=>0x80140000; effective=0x8013A554; reason=All reaching definitions resolve to base 0x80140000; base + (-23212) = 0x8013A554.
+method=Basic-block CFG; targets, branch joins, jump joins, delay-slot blocks, call-return edges; reaching definitions solved to fixed point; known-constant transfer only for supported GPR instructions.
+limitation=Static may-path analysis; a syntactic invalid address does not prove that path is taken at runtime. Any function-level delay-slot/CFG ambiguity forces that function's reader rows to UNRESOLVED.

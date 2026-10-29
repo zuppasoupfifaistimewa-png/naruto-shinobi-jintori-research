@@ -1,0 +1,88 @@
+Read-only disassembly of DATA.BIN entry 1; base 0x800AD450; no emulator.
+DATA.BIN_SHA256=69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822
+ENTRY1_SHA256=9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a
+Function bounds sourced from Ghidra export run 40789339014, commit 8b70e004f0df21bbb250a3c0b918a19e76ce0a21.
+
+## FUN_80104690 0x80104690..0x8010478B (inclusive)
+0x80104690  E0 FF BD 27  addiu    sp, sp, -32
+0x80104694  1C 00 BF AF  sw       ra, 28(sp)
+0x80104698  18 00 B2 AF  sw       s2, 24(sp)
+0x8010469C  14 00 B1 AF  sw       s1, 20(sp)
+0x801046A0  10 00 B0 AF  sw       s0, 16(sp)
+0x801046A4  14 80 02 3C  lui      v0, 0x8014
+0x801046A8  54 A5 42 8C  lw       v0, -23212(v0)  ; SLOT_XREF_CANDIDATE kind=READ base=v0 target_reg=v0 static_effective=0x8013A554
+0x801046AC  00 00 00 00  sll      zero, zero, 0
+0x801046B0  30 00 40 14  bne      v0, zero, offset +48 ; branch=0x80104774
+0x801046B4  21 10 00 00  addu     v0, zero, zero
+0x801046B8  14 80 10 3C  lui      s0, 0x8014
+0x801046BC  B1 B7 00 0C  jal      0x8002DEC4 ; jump=0x8002DEC4
+0x801046C0  54 0B 04 24  addiu    a0, zero, 2900
+0x801046C4  03 00 40 14  bne      v0, zero, offset +3 ; branch=0x801046D4
+0x801046C8  54 A5 02 AE  sw       v0, -23212(s0)  ; SLOT_XREF_CANDIDATE kind=WRITE base=s0 target_reg=v0 static_effective=0x8013A554
+0x801046CC  DD 11 04 08  j        0x80104774 ; jump=0x80104774
+0x801046D0  21 10 00 00  addu     v0, zero, zero
+0x801046D4  14 80 02 3C  lui      v0, 0x8014
+0x801046D8  54 A5 44 8C  lw       a0, -23212(v0)  ; SLOT_XREF_CANDIDATE kind=READ base=v0 target_reg=a0 static_effective=0x8013A554
+0x801046DC  21 28 00 00  addu     a1, zero, zero
+0x801046E0  52 D7 00 0C  jal      0x80035D48 ; jump=0x80035D48
+0x801046E4  54 0B 06 24  addiu    a2, zero, 2900
+0x801046E8  21 88 00 00  addu     s1, zero, zero
+0x801046EC  14 80 12 3C  lui      s2, 0x8014
+0x801046F0  40 80 11 00  sll      s0, s1, 1
+0x801046F4  21 80 11 02  addu     s0, s0, s1
+0x801046F8  80 80 10 00  sll      s0, s0, 2
+0x801046FC  23 80 11 02  subu     s0, s0, s1
+0x80104700  C0 80 10 00  sll      s0, s0, 3
+0x80104704  A8 01 02 26  addiu    v0, s0, 424
+0x80104708  54 A5 44 8E  lw       a0, -23212(s2)  ; SLOT_XREF_CANDIDATE kind=READ base=s2 target_reg=a0 static_effective=0x8013A554
+0x8010470C  D5 83 00 0C  jal      0x80020F54 ; jump=0x80020F54
+0x80104710  21 20 44 00  addu     a0, v0, a0
+0x80104714  68 04 02 26  addiu    v0, s0, 1128
+0x80104718  54 A5 44 8E  lw       a0, -23212(s2)  ; SLOT_XREF_CANDIDATE kind=READ base=s2 target_reg=a0 static_effective=0x8013A554
+0x8010471C  D5 83 00 0C  jal      0x80020F54 ; jump=0x80020F54
+0x80104720  21 20 44 00  addu     a0, v0, a0
+0x80104724  54 A5 44 8E  lw       a0, -23212(s2)  ; SLOT_XREF_CANDIDATE kind=READ base=s2 target_reg=a0 static_effective=0x8013A554
+0x80104728  00 00 00 00  sll      zero, zero, 0
+0x8010472C  21 18 90 00  addu     v1, a0, s0
+0x80104730  02 00 02 24  addiu    v0, zero, 2
+0x80104734  78 04 62 AC  sw       v0, 1144(v1)
+0x80104738  08 03 10 26  addiu    s0, s0, 776
+0x8010473C  D5 83 00 0C  jal      0x80020F54 ; jump=0x80020F54
+0x80104740  21 20 04 02  addu     a0, s0, a0
+0x80104744  01 00 31 26  addiu    s1, s1, 1
+0x80104748  04 00 22 2A  slti     v0, s1, 4
+0x8010474C  E9 FF 40 14  bne      v0, zero, offset -23 ; branch=0x801046F4
+0x80104750  40 80 11 00  sll      s0, s1, 1
+0x80104754  14 80 10 3C  lui      s0, 0x8014
+0x80104758  54 A5 04 8E  lw       a0, -23212(s0)  ; SLOT_XREF_CANDIDATE kind=READ base=s0 target_reg=a0 static_effective=0x8013A554
+0x8010475C  D5 83 00 0C  jal      0x80020F54 ; jump=0x80020F54
+0x80104760  C8 05 84 24  addiu    a0, a0, 1480
+0x80104764  54 A5 03 8E  lw       v1, -23212(s0)  ; SLOT_XREF_CANDIDATE kind=READ base=s0 target_reg=v1 static_effective=0x8013A554
+0x80104768  FF 00 02 24  addiu    v0, zero, 255
+0x8010476C  20 06 62 A0  sb       v0, 1568(v1)
+0x80104770  01 00 02 24  addiu    v0, zero, 1
+0x80104774  1C 00 BF 8F  lw       ra, 28(sp)
+0x80104778  18 00 B2 8F  lw       s2, 24(sp)
+0x8010477C  14 00 B1 8F  lw       s1, 20(sp)
+0x80104780  10 00 B0 8F  lw       s0, 16(sp)
+0x80104784  08 00 E0 03  jr       ra
+0x80104788  20 00 BD 27  addiu    sp, sp, 32
+
+## FUN_8010478c 0x8010478C..0x801047CB (inclusive)
+0x8010478C  E8 FF BD 27  addiu    sp, sp, -24
+0x80104790  14 00 BF AF  sw       ra, 20(sp)
+0x80104794  10 00 B0 AF  sw       s0, 16(sp)
+0x80104798  14 80 10 3C  lui      s0, 0x8014
+0x8010479C  54 A5 04 8E  lw       a0, -23212(s0)  ; SLOT_XREF_CANDIDATE kind=READ base=s0 target_reg=a0 static_effective=0x8013A554
+0x801047A0  00 00 00 00  sll      zero, zero, 0
+0x801047A4  05 00 80 10  beq      a0, zero, offset +5 ; branch=0x801047BC
+0x801047A8  21 10 00 00  addu     v0, zero, zero
+0x801047AC  F9 B7 00 0C  jal      0x8002DFE4 ; jump=0x8002DFE4
+0x801047B0  00 00 00 00  sll      zero, zero, 0
+0x801047B4  54 A5 00 AE  sw       zero, -23212(s0)  ; SLOT_XREF_CANDIDATE kind=WRITE base=s0 target_reg=zero static_effective=0x8013A554
+0x801047B8  01 00 02 24  addiu    v0, zero, 1
+0x801047BC  14 00 BF 8F  lw       ra, 20(sp)
+0x801047C0  10 00 B0 8F  lw       s0, 16(sp)
+0x801047C4  08 00 E0 03  jr       ra
+0x801047C8  18 00 BD 27  addiu    sp, sp, 24
+

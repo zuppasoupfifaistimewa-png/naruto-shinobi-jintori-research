@@ -1,0 +1,17 @@
+X2 STATIC HELPER XREFS, ARGUMENTS, AND SLOT-OBJECT ACCESS AUDIT
+audit_run=40823561026
+entry1_bytes=596412
+entry1_sha256=9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a
+exe_file_bytes=385024
+exe_sha256=a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569
+v3_slot_reader_rows=32
+unique_v3_reader_functions=12
+main_exe_ghidra_reference_rows=137
+main_exe_direct_jal_helper_sites=36
+entry1_direct_jal_helper_sites=151
+total_xref_argument_rows=187
+object_relative_access_rows=193
+entry1_FUN_80020F54_calls_with_ptr_plus_1A8_58n=6
+direct_jal_counts={"('DATA.BIN entry1', '0x8002DEC4', 'DIRECT_JAL_SCAN')": 55, "('DATA.BIN entry1', '0x80020F54', 'DIRECT_JAL_SCAN')": 96, "('SLPS_035.53', '0x8002DEC4', 'GHIDRA_REFERENCE')": 35, "('SLPS_035.53', '0x80020F54', 'GHIDRA_REFERENCE')": 1}
+method=Direct JAL scan + Ghidra reference/xref export; caller function bounds from Ghidra; symbolic GPR reaching definitions with MIPS JAL delay-slot arguments; object accesses only when a base definition resolves to the pointer value loaded from slot 0x8013A554.
+limitation=Unsupported instructions or ambiguous/unknown reaching definitions remain TIDAK TAHU; static references do not prove runtime execution.
