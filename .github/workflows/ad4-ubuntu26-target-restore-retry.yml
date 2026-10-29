@@ -115,7 +115,16 @@ jobs:
           CARD="$(find "$WORK/cards" -type f -name 'naruto-storymode.mcd' -print -quit)"
           if [ -n "$CARD" ]; then cp "$CARD" "$WORK/cards/reference.mcd"; else echo "MEMORY_CARD_SOURCE=TIDAK TAHU; no artifact file available" >> "$WORK/logs/metadata.txt"; truncate -s 131072 "$WORK/cards/reference.mcd"; fi
           export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/home/.config" XDG_DATA_HOME="$WORK/home/.local/share" XDG_RUNTIME_DIR="$WORK/home/runtime" LIBGL_ALWAYS_SOFTWARE=1
-          export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu" QT_PLUGIN_PATH="$APPDIR/usr/plugins" QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms" QML2_IMPORT_PATH="$APPDIR/usr/qml"
+          APP_LIB_DIRS="$(find -L "$APPDIR" -type f -name 'lib*.so*' -printf '%h\n' | sort -u | paste -sd: -)"
+          QT_PLUGINS="$(find -L "$APPDIR" -type d -name plugins -print -quit)"
+          QT_PLATFORMS="$(find -L "$APPDIR" -type d -path '*/plugins/platforms' -print -quit)"
+          QML_DIR="$(find -L "$APPDIR" -type d -name qml -print -quit)"
+          export LD_LIBRARY_PATH="$APP_LIB_DIRS:$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+          [ -n "$QT_PLUGINS" ] && export QT_PLUGIN_PATH="$QT_PLUGINS" || true
+          [ -n "$QT_PLATFORMS" ] && export QT_QPA_PLATFORM_PLUGIN_PATH="$QT_PLATFORMS" || true
+          [ -n "$QML_DIR" ] && export QML2_IMPORT_PATH="$QML_DIR" || true
+          echo "APP_LIBRARY_DIR_COUNT=$(printf '%s' "$APP_LIB_DIRS" | tr ':' '\n' | wc -l)" >> "$WORK/logs/metadata.txt"
+          echo "QT_PLUGIN_PATH=${QT_PLUGIN_PATH:-TIDAK TAHU}" >> "$WORK/logs/metadata.txt"
           Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/logs/xvfb.log" 2>&1 &
           echo $! > "$WORK/xvfb.pid"
           for n in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
