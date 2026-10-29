@@ -2,22 +2,16 @@ AD6 GIT HISTORY AUDIT
 GITHUB_WORKSPACE=/home/runner/work/naruto-shinobi-jintori-research/naruto-shinobi-jintori-research
 PWD=/home/runner/work/naruto-shinobi-jintori-research/naruto-shinobi-jintori-research
 /home/runner/work/naruto-shinobi-jintori-research/naruto-shinobi-jintori-research
-?? reports/ad_2026-10-29/AD2_symbolization.txt
+ M reports/ad_2026-10-29/AD2_symbolization.txt
+ M reports/ad_2026-10-29/AD6_git_history.txt
 ?? reports/ad_2026-10-29/AD2_symbolization_previous.txt
-?? reports/ad_2026-10-29/AD5_release.txt
-?? reports/ad_2026-10-29/AD6_git_history.txt
 ?? reports/ad_2026-10-29/AD6_git_history_previous.txt
-?? reports/ad_2026-10-29/aa1_runtime_logs/
-?? reports/ad_2026-10-29/ad1-log-excerpts-first40-last250.txt
-?? reports/ad_2026-10-29/ad1-log-sha256.txt
-?? reports/ad_2026-10-29/ad4-ubuntu26-evidence/
 ?? reports/ad_2026-10-29/ad4-ubuntu26-result.txt
-?? reports/ad_2026-10-29/runtime-results.tsv
 CURRENT_TRACKED_EXTENSION_MATCHES_BEGIN
 CURRENT_TRACKED_EXTENSION_MATCHES_END
 GIT_ROOT=/home/runner/work/naruto-shinobi-jintori-research/naruto-shinobi-jintori-research
-REV_LIST_OBJECTS_ALL_COUNT=10391
-REV_LIST_ALL_COMMIT_COUNT=2570
+REV_LIST_OBJECTS_ALL_COUNT=10430
+REV_LIST_ALL_COMMIT_COUNT=2574
 HISTORICAL_MATCH_COUNT=0
 commit	blob_sha	size_bytes	path	reason
 AD6 GIT HISTORY AUDIT END

@@ -13,12 +13,43 @@ ELF_SEGMENT_CORRELATION=The previous run's readelf output for /squashfs-root/bin
 STATIC_BINARY_CANDIDATES_COUNT=2
 STATIC_BINARY_CANDIDATE=/tmp/ad1-ad6-publish-recovery/appimage/AppDir/bin/pcsx-redux
 STATIC_BINARY_CANDIDATE=/tmp/ad1-ad6-publish-recovery/appimage/AppDir/shared/bin/pcsx-redux
-EXACT_MAPPED_PATH_CANDIDATE_FOUND=YES; inspect the matching candidate's PT_LOAD ranges and dynamic symbols in the static-binary-inspection log.
-NEAREST_SYMBOL_OR_FUNCTION=TIDAK TAHU; no verified mapping from this PC/file offset to a PT_LOAD virtual address and symbol boundary.
-ADDR2LINE_AT_RUNTIME_PC=TIDAK TAHU; runtime PC is an address in another process mapping, not a proven ELF virtual address.
-OBJDUMP_16_INSTRUCTIONS_AROUND_FILE_OFFSET=TIDAK TAHU; no matching PT_LOAD file range has been established, so treating file offset as an ELF virtual address would be an unsupported assumption.
-READelf/objdump/nm invocation outputs for every extracted pcsx-redux candidate were run and are in the build log/artifact; the executable path mismatch remains an explicit unresolved limitation.
-K=K4 for the directly inspectable runtime PC, mapping and three instructions; symbol/function identity remains TIDAK TAHU.
+EXACT_MAPPED_PATH_CANDIDATE_FOUND=YES
+MAPPED_ELF_BINARY=/tmp/ad1-ad6-publish-recovery/appimage/AppDir/shared/bin/pcsx-redux
+READELF_PROGRAM_HEADERS_EXIT=0
+MATCHING_LOAD_SEGMENT=LOAD           0x08c000 0x000000000008c000 0x000000000008c000 0x1005641 0x1005641 R E 0x1000
+ELF_LINK_VA=0x5D36D0
+ADDR2LINE_EXIT=0
+ADDR2LINE_RESULT_BEGIN
+std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::swap(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)
+??:?
+ADDR2LINE_RESULT_END
+NM_DYNAMIC_EXIT=0
+NEAREST_DYNAMIC_SYMBOL_BEFORE=0x57fe80 W _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE4swapERS4_
+NEAREST_DYNAMIC_SYMBOL_AFTER=0x6dfdd0 W _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE7reserveEm
+NM_ALL_EXIT=0
+NEAREST_ALL_SYMBOL_BEFORE=TIDAK TAHU
+NEAREST_ALL_SYMBOL_AFTER=TIDAK TAHU
+READELF_DEBUG_DUMP_FRAMES_EXIT=0 CIE_COUNT=0 FDE_COUNT=23321
+FRAME_RANGE_CONTAINING_VA=0x00000000005d36c0..0x00000000005d3bd5
+OBJDUMP_EXIT=0 INSTRUCTIONS_PRINTED=16
+DISASSEMBLY_16_INSTRUCTIONS_BEGIN
+5d36be:	c3                   	ret
+5d36bf:	90                   	nop
+5d36c0:	55                   	push   %rbp
+5d36c1:	48 89 f0             	mov    %rsi,%rax
+5d36c4:	44 8b 5f 18          	mov    0x18(%rdi),%r11d
+5d36c8:	4c 8d 05 f1 49 d1 00 	lea    0xd149f1(%rip),%r8        # 12e80c0 <_ZZNSt19_Sp_make_shared_tag5_S_tiEvE5__tag@@Base+0x1589f0>
+5d36cf:	53                   	push   %rbx
+5d36d0:	0f b6 0e             	movzbl (%rsi),%ecx
+5d36d3:	be 04 00 00 00       	mov    $0x4,%esi
+5d36d8:	44 0f b6 48 02       	movzbl 0x2(%rax),%r9d
+5d36dd:	44 0f b6 50 01       	movzbl 0x1(%rax),%r10d
+5d36e2:	89 ca                	mov    %ecx,%edx
+5d36e4:	c0 ea 04             	shr    $0x4,%dl
+5d36e7:	44 89 cb             	mov    %r9d,%ebx
+5d36ea:	0f b6 d2             	movzbl %dl,%edx
+5d36ed:	39 f2                	cmp    %esi,%edx
+DISASSEMBLY_16_INSTRUCTIONS_END
 CANDIDATE=/tmp/ad1-ad6-publish-recovery/appimage/AppDir/bin/pcsx-redux
 SIZE_BYTES=312080
 19ced768f1e76ebf578d119e9683f7dcb1377dcab55dd1128934fe503718597e  /tmp/ad1-ad6-publish-recovery/appimage/AppDir/bin/pcsx-redux
