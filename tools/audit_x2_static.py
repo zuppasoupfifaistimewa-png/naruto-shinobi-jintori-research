@@ -202,14 +202,14 @@ def main():
         override_reason=""
         if rec["pc"] in override:
             aval,override_reason=override[rec["pc"]]
-            if rec["pc"] == 0x8010470C:
+        ispat,nn_from_symbol=ptr_pattern(aval)
+        if rec["pc"] == 0x8010470C:
             override_n="0..3"; nn="0..3"
         elif rec["pc"] == 0x8010471C:
             override_n="0..3"; nn="8..11"
         elif rec["pc"] == 0x8010473C:
             override_n="0..3"; nn="4..7"
-        ispat,nn_from_symbol=ptr_pattern(aval)
-        if rec["pc"] not in (0x8010470C,0x8010471C,0x8010473C):
+        else:
             nn=nn_from_symbol
         call_rows.append({"binary":"DATA.BIN entry1","xref_kind":"DIRECT_JAL_SCAN","call_pc":H(rec["pc"]),
           "helper_target":H(rec["target"]),"helper_name":HELPERS[rec["target"]],"caller_function":name,
