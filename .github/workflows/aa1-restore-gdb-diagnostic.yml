@@ -1,0 +1,273 @@
+name: AA1 checkpoint load diagnostic (GDB, no input)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/aa1-restore-gdb-diagnostic.yml"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: naruto-aa1-restore-gdb-diagnostic
+  cancel-in-progress: false
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RESEARCH_REPO: ${{ github.repository }}
+    steps:
+      - name: Checkout research repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Install bounded GDB and X11 dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            bchunk xorriso xvfb x11-utils curl jq unzip python3 gdb
+          WORK="$RUNNER_TEMP/naruto-aa1-gdb"
+          mkdir -p "$WORK"/{source,inputs,resume,cards,logs}
+          chmod 700 "$WORK"
+          echo "AA_WORK=$WORK" >> "$GITHUB_ENV"
+
+      - name: Fetch and validate pinned emulator, game, BIOS and target checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$AA_WORK/source"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          fetch_asset() {
+            local asset_id="$1" out="$2" bytes="$3" sha="$4" limit="$5"
+            curl --fail --location --silent --show-error --retry 2 --retry-delay 2 \
+              --max-time "$limit" \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header "Accept: application/octet-stream" \
+              "$API/releases/assets/$asset_id" --output "$out"
+            test "$(stat -c '%s' "$out")" = "$bytes"
+            echo "$sha  $out" | sha256sum --check -
+          }
+          fetch_asset 669480936 pcsx-redux.AppImage 65747557 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c 180
+          fetch_asset 647346873 game.bin 325989552 58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88 600
+          fetch_asset 647354760 game.cue 116 be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8 60
+          fetch_asset 652373928 scph7502.zip 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a 60
+          fetch_asset 686794219 target-checkpoint.raw.sstate 21163286 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d 180
+          cp target-checkpoint.raw.sstate "$AA_WORK/resume/target.sstate"
+          chmod 400 "$AA_WORK/resume/target.sstate"
+          python3 - "$AA_WORK/source/scph7502.zip" "$AA_WORK/source/scph7502.bin" <<'PY'
+          from pathlib import Path
+          import stat,sys,zipfile,hashlib
+          src,dst=map(Path,sys.argv[1:])
+          with zipfile.ZipFile(src) as z:
+              xs=[]; total=0
+              for x in z.infolist():
+                  mode=(x.external_attr>>16)&0xffff; p=Path(x.filename); total+=x.file_size
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)):
+                      raise SystemExit("unsafe BIOS archive entry")
+                  if x.file_size>2*1024*1024 or total>4*1024*1024:
+                      raise SystemExit("BIOS expansion bound exceeded")
+                  if not x.is_dir() and x.file_size==524288: xs.append(x)
+              if len(xs)!=1: raise SystemExit(f"expected one 512KiB BIOS, found {len(xs)}")
+              b=z.read(xs[0]); h=hashlib.sha256(b).hexdigest()
+              if h!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1":
+                  raise SystemExit("BIOS SHA-256 mismatch")
+              dst.write_bytes(b); print("BIOS_VALID=PASS sha256="+h)
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          lines=Path("game.cue").read_bytes().decode("utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          ids=[i for i,x in enumerate(lines) if x.lstrip().upper().startswith("FILE ")]
+          if len(ids)!=1 or not any(x.lstrip().upper().startswith("TRACK ") for x in lines):
+              raise SystemExit("invalid CUE structure")
+          lines[ids[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/AppRun
+          echo "PCSX_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
+          echo "APPIMAGE_SHA256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c"
+          echo "TARGET_STATE_SHA256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
+          echo "BIOS=SCPH-7502"
+
+      - name: Download the control state and original Memory Card
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: "39867730674"
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/naruto-aa1-gdb/inputs
+
+      - name: Download Memory Card from original checkpoint run
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: "39262213468"
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/naruto-aa1-gdb/cards
+
+      - name: Verify control state and Memory Card
+        shell: bash
+        run: |
+          set -euo pipefail
+          find "$AA_WORK/inputs" -type f -name 'adaptive-cycle-01-f180.sstate' -print -quit | grep -q .
+          cp "$(find "$AA_WORK/inputs" -type f -name 'adaptive-cycle-01-f180.sstate' -print -quit)" "$AA_WORK/resume/control.sstate"
+          test "$(stat -c '%s' "$AA_WORK/resume/control.sstate")" = 21162546
+          echo "9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492  $AA_WORK/resume/control.sstate" | sha256sum --check -
+          cp "$(find "$AA_WORK/cards" -type f -name 'naruto-storymode.mcd' -print -quit)" "$AA_WORK/cards/reference.mcd"
+          test "$(stat -c '%s' "$AA_WORK/cards/reference.mcd")" = 131072
+          echo "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5  $AA_WORK/cards/reference.mcd" | sha256sum --check -
+          chmod 400 "$AA_WORK/resume/control.sstate" "$AA_WORK/cards/reference.mcd"
+
+      - name: Prepare read-only restore probe and X11
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$AA_WORK/pad-setup.lua" <<'LUA'
+          PCSX.settings.pads[1].DeviceType = 'Analog'
+          PCSX.settings.pads[1].Connected = true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("AA1_PAD_CONNECTED_NO_BUTTONS_PRESSED")
+          LUA
+          cat > "$AA_WORK/restore.lua" <<'LUA'
+          if io.stdout then io.stdout:setvbuf("no") end
+          local vsync, started, loaded, after = 0, false, false, 0
+          local function log(s) print(s); pcall(function() io.stdout:flush() end) end
+          _G.aaLoaded = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
+            loaded = true; after = 0; log("AA1_EVENT_SAVE_STATE_LOADED=1")
+          end)
+          _G.aaVsync = PCSX.Events.createEventListener("GPU::Vsync", function()
+            vsync = vsync + 1
+            if not started then
+              started = true
+              local path = os.getenv("AA_TEST_STATE") or "resume/target.sstate"
+              log("AA1_LOAD_BEGIN=1 path="..path.." vsync="..vsync.." controller=NONE")
+              PCSX.pauseEmulator()
+              PCSX.nextTick(function()
+                local open_ok, file = pcall(function() return assert(Support.File.open(path), "state open failed") end)
+                if not open_ok or not file then log("AA1_OPEN_FAIL="..tostring(file)); PCSX.quit(50); return end
+                local load_ok, err = pcall(function() PCSX.loadSaveState(file) end)
+                file:close()
+                if not load_ok then log("AA1_LOAD_LUA_ERROR="..tostring(err)); PCSX.quit(51); return end
+                log("AA1_LOAD_CALL_RETURNED=1")
+                PCSX.resumeEmulator()
+              end)
+              return
+            end
+            if loaded then
+              after = after + 1
+              if after >= 180 then
+                log("AA1_POST_LOAD_VSYNC=180")
+                PCSX.pauseEmulator()
+                PCSX.nextTick(function() PCSX.quit(0) end)
+              end
+            elseif vsync >= 900 then
+              log("AA1_LOAD_EVENT_TIMEOUT=1"); PCSX.pauseEmulator()
+              PCSX.nextTick(function() PCSX.quit(53) end)
+            end
+          end)
+          log("AA1_RESTORE_PROBE_READY_NO_INPUT=1")
+          LUA
+          mkdir -p "$AA_WORK/home/.config" "$AA_WORK/home/.local/share" "$AA_WORK/home/runtime"
+          chmod 700 "$AA_WORK/home/runtime"
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$AA_WORK/logs/xvfb.log" 2>&1 &
+          echo $! > "$AA_WORK/xvfb.pid"
+          export DISPLAY=:99
+          for n in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+
+      - name: Probe target and control checkpoint under external GDB
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$AA_WORK"
+          export DISPLAY=:99 HOME="$AA_WORK/home" XDG_CONFIG_HOME="$AA_WORK/home/.config" XDG_DATA_HOME="$AA_WORK/home/.local/share" XDG_RUNTIME_DIR="$AA_WORK/home/runtime"
+          export LIBGL_ALWAYS_SOFTWARE=1
+          for entry in "target:resume/target.sstate" "control:resume/control.sstate"; do
+            label="${entry%%:*}"
+            state="${entry#*:}"
+            echo "AA1_GDB_CASE=$label state_path=$state"
+            set +e
+            AA_TEST_STATE="$state" timeout --signal=TERM --kill-after=5s 110s \
+              gdb --quiet --nx --batch \
+                -ex 'set pagination off' \
+                -ex 'set confirm off' \
+                -ex 'set print thread-events off' \
+                -ex 'set follow-fork-mode child' \
+                -ex 'set detach-on-fork on' \
+                -ex 'set follow-exec-mode same' \
+                -ex 'handle SIGSEGV stop print nopass' \
+                -ex 'run' \
+                -ex 'echo \\n=== AA1 NATIVE BACKTRACE ===\\n' \
+                -ex 'bt full' \
+                -ex 'info registers' \
+                --args "$AA_WORK/source/squashfs-root/AppRun" \
+                  -noupdate -no-debugger -no-gdb \
+                  -bios "$AA_WORK/source/scph7502.bin" -iso "$AA_WORK/source/game-run.cue" \
+                  -memcard1 "$AA_WORK/cards/reference.mcd" -exec "$(cat "$AA_WORK/pad-setup.lua")" \
+                  -dofile "$AA_WORK/restore.lua" -softgpu -dynarec -stdout -lua_stdout \
+                  -logfile "$AA_WORK/logs/$label.pcsx.log" -run \
+                  > "$AA_WORK/logs/$label.gdb.log" 2>&1
+            rc=$?
+            set -e
+            echo "AA1_GDB_EXIT_CODE=$rc" >> "$AA_WORK/logs/$label.gdb.log"
+            echo "AA1_CASE_DONE=$label exit=$rc"
+          done
+
+      - name: Commit text-only diagnostic summary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports/aa_2026-10-29
+          out=reports/aa_2026-10-29/AA1_restore_gdb_diagnostic.md
+          {
+            echo "# AA1 — GDB diagnosis for checkpoint restore"
+            echo
+            echo "- Run ID: $GITHUB_RUN_ID"
+            echo "- Trigger commit: $(git rev-parse HEAD)"
+            echo "- Required emulator: PCSX-Redux 0c3572c3d; AppImage SHA-256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c"
+            echo "- Target raw state: 21,163,286 bytes; SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
+            echo "- Control state: adaptive-cycle-01-f180.sstate; SHA-256 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492"
+            echo "- Controller: no buttons injected; bounded to 180 post-load VSync or failure."
+            for label in target control; do
+              echo
+              echo "## Case: $label"
+              echo
+              if [ -f "$AA_WORK/logs/$label.gdb.log" ]; then
+                grep -E 'AA1_|Loaded BIOS:|CD-ROM Label:|CD-ROM ID:|Program received signal|^#([0-9]+)[[:space:]]|^pc[[:space:]]|^sp[[:space:]]|^ra[[:space:]]|^v0[[:space:]]|^a0[[:space:]]|^a1[[:space:]]|^a2[[:space:]]|^a3[[:space:]]|No stack|exited normally|exited with code|AA1_GDB_EXIT_CODE' "$AA_WORK/logs/$label.gdb.log" | tail -n 90 || true
+              else
+                echo "GDB log not produced; earlier workflow step may have failed."
+              fi
+            done
+            echo
+            echo "## Interpretation guard"
+            echo
+            echo "A target SIGSEGV in the native load call reproduces failure for this build/path but does not prove every restore route impossible. The control case is a wrapper check only if it passes under this exact pinned build."
+          } > "$out"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$out"
+          if ! git diff --cached --quiet; then
+            git commit -m "Record AA1 checkpoint restore GDB diagnostic"
+            git push origin HEAD:main
+          fi
+          cat "$out"
+
+      - name: Remove savestates, BIOS, ISO and private traces
+        if: always()
+        shell: bash
+        run: |
+          kill "$(cat "$AA_WORK/xvfb.pid" 2>/dev/null)" 2>/dev/null || true
+          rm -rf "$AA_WORK" "$RUNNER_TEMP/naruto-aa1-gdb"
