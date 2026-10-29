@@ -3,6 +3,7 @@
 from __future__ import annotations
 import argparse, csv, hashlib, io, json, os, re, struct, urllib.parse, urllib.request, urllib.error, zipfile
 from collections import defaultdict, Counter
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
