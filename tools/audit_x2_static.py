@@ -284,6 +284,7 @@ def main():
           "a0_argument_reason":"CFG reaching definitions + MIPS delay slot" if cfg else "TIDAK TAHU: function boundary unavailable",
           "is_ptr_plus_0x1A8_plus_0x58n":ispat,"matching_n":nn,"caller_loop_n_range":"",
           "ptr_object_base":"0x801CEF08 (DATA.BIN object, if applicable)","source_run":a.run_id})
+    call_rows=[r for r in call_rows if r["helper_target"] in ("0x80020F54","0x8002DEC4")]
     write_csv(out/"x2_helper_xrefs_and_a0_arguments.csv",call_rows)
     # Static access list for every function containing at least one of the 32 V3 slot-reader sites.
     access_ops=set(range(32,40))|{40,41,42,43,46}
@@ -337,7 +338,6 @@ def main():
     add_field(0x620,0x8010476C,"WRITE",1,
       "sb v0,1568(v1); value=0xFF",formula="ptr+0x620")
     # Restrict the main-executable xref table to the two helper targets requested by X2.
-    call_rows=[r for r in call_rows if r["helper_target"] in ("0x80020F54","0x8002DEC4")]
     # Add memset-like 0x58-byte ranges for each helper call whose a0 is an object-relative pointer.
     for r in call_rows:
         if r["helper_target"]!="0x80020F54" or "TIDAK TAHU" in r["a0_at_callee_entry"]:continue
