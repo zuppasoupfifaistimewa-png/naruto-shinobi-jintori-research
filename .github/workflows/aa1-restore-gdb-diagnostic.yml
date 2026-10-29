@@ -97,7 +97,7 @@ jobs:
           APPDIR="$PWD/squashfs-root"
           PCSX_BIN="$(find "$APPDIR/usr" -type f -executable -print | while IFS= read -r f; do
             b="$(basename "$f" | tr '[:upper:]' '[:lower:]')"
-            case "$b" in pcsx-redux|pcsx-redux-*|pcsx) printf '%s\\n' "$f"; break;; esac
+            case "$b" in pcsx-redux|pcsx-redux-*|pcsx) printf '%s\n' "$f"; break;; esac
           done)"
           test -n "$PCSX_BIN" && test -x "$PCSX_BIN"
           echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
