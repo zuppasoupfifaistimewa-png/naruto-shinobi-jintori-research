@@ -7,6 +7,7 @@ on:
     paths:
       - "tools/audit_slot_provenance.py"
       - "tools/audit_w0_w3_cfg_ram.py"
+      - "tools/audit_x2_static.py"
       - "tools/ghidra/ExportRequestedFunctions.java"
       - ".github/workflows/audit-slot-provenance.yml"
 
@@ -183,7 +184,7 @@ jobs:
             --candidate "reports/step4_10_static_evidence_audit/run_40789339014/a2_expanded_xref_candidates.csv" \
             --function_csv "reports/step4_10_static_evidence_audit/run_40789339014/a2_ghidra_rebased_functions.csv" \
             --v3 "reports/slot_provenance_audit/run_40815320809/v3_32_reader_base_register_trace.csv" \
-            --ram "$ram" --out "$out" --run_id "$GITHUB_RUN_ID"
+            --ram "$ram" --state "$state" --out "$out" --run_id "$GITHUB_RUN_ID"
 
       - name: Set up Java for W3 Ghidra executable import
         uses: actions/setup-java@v6
@@ -242,10 +243,27 @@ jobs:
             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
             -postScript ExportRequestedFunctions.java "$out/w3_helper_function_disassembly.txt" \
               0x8002DEC4 0x8002DFE4 0x80035D48 0x80020F54 \
+              "--xref-out=$out/x2_exe_helper_xrefs_and_callers.txt" \
             -analysisTimeoutPerFile 1200 -max-cpu 2 -deleteProject \
             > "$out/w3-ghidra-headless.log" 2>&1
           test -s "$out/w3_helper_function_disassembly.txt"
-          grep -E 'ERROR|Exception|W3_DISASSEMBLY_OUTPUT' "$out/w3-ghidra-headless.log" || true
+          test -s "$out/x2_exe_helper_xrefs_and_callers.txt"
+          grep -E 'ERROR|Exception|W3_DISASSEMBLY_OUTPUT|HELPER_XREF_OUTPUT' "$out/w3-ghidra-headless.log" || true
+
+      - name: X2 helper xrefs, a0 arguments, and slot-object field accesses
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/audit_x2_static.py
+          root="$RUNNER_TEMP/slot-provenance-audit"
+          out="reports/slot_provenance_audit/run_$GITHUB_RUN_ID"
+          python3 tools/audit_x2_static.py \
+            --entry1 "$root/entry1-private.bin" \
+            --exe "$EXE_PATH" \
+            --functions-csv "reports/step4_10_static_evidence_audit/run_40789339014/a2_ghidra_rebased_functions.csv" \
+            --v3 "reports/slot_provenance_audit/run_40815320809/v3_32_reader_base_register_trace.csv" \
+            --ghidra-xrefs "$out/x2_exe_helper_xrefs_and_callers.txt" \
+            --out "$out" --run-id "$GITHUB_RUN_ID"
 
       - name: Remove source binaries and extracted working files
         if: always()
