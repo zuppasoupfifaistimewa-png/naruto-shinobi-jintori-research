@@ -202,14 +202,21 @@ def main():
         override_reason=""
         if rec["pc"] in override:
             aval,override_reason=override[rec["pc"]]
-            if rec["pc"] in (0x8010470C,0x8010471C,0x8010473C):override_n="0..3"
-        ispat,nn=ptr_pattern(aval)
+            if rec["pc"] == 0x8010470C:
+            override_n="0..3"; nn="0..3"
+        elif rec["pc"] == 0x8010471C:
+            override_n="0..3"; nn="8..11"
+        elif rec["pc"] == 0x8010473C:
+            override_n="0..3"; nn="4..7"
+        ispat,nn_from_symbol=ptr_pattern(aval)
+        if rec["pc"] not in (0x8010470C,0x8010471C,0x8010473C):
+            nn=nn_from_symbol
         call_rows.append({"binary":"DATA.BIN entry1","xref_kind":"DIRECT_JAL_SCAN","call_pc":H(rec["pc"]),
           "helper_target":H(rec["target"]),"helper_name":HELPERS[rec["target"]],"caller_function":name,
           "caller_start":H(f[0]) if f else "TIDAK TAHU","caller_end":H(f[1]) if f else "TIDAK TAHU",
           "delay_slot_pc":H(rec["pc"]+4),"delay_slot_word":H(struct.unpack_from("<I",entry1,rec["pc"]+4-core.BASE)[0]) if rec["pc"]+8-core.BASE<=len(entry1) else "",
           "a0_at_callee_entry":val_text(aval),"a0_argument_reason":override_reason or "CFG reaching definitions; delay-slot instruction included",
-          "is_ptr_plus_0x1A8_plus_0x58n":ispat,"matching_n":override_n or nn,
+          "is_ptr_plus_0x1A8_plus_0x58n":ispat,"matching_n":nn,"caller_loop_n_range":override_n,
           "ptr_object_base":"0x801CEF08","source_run":a.run_id})
     # Read Ghidra main-executable xrefs and parse each xref to either helper.
     xtext=Path(a.ghidra_xrefs).read_text(encoding="utf-8",errors="replace")
@@ -257,8 +264,8 @@ def main():
           "caller_end":H(xr["max"]) if xr["max"] else "TIDAK TAHU","delay_slot_pc":H(xr["pc"]+4) if is_call else "",
           "delay_slot_word":"","a0_at_callee_entry":val_text(aval) if is_call else aval,
           "a0_argument_reason":"CFG reaching definitions + MIPS delay slot" if is_call and cfg else ("TIDAK TAHU: caller function boundary or CFG not available" if is_call else "not a call site"),
-          "is_ptr_plus_0x1A8_plus_0x58n":ispat,"matching_n":nn,"ptr_object_base":"0x801CEF08 (DATA.BIN object, if applicable)",
-          "source_run":a.run_id})
+          "is_ptr_plus_0x1A8_plus_0x58n":ispat,"matching_n":nn,"caller_loop_n_range":"",
+          "ptr_object_base":"0x801CEF08 (DATA.BIN object, if applicable)","source_run":a.run_id})
     # Ensure direct JAL in the main EXE is listed even if Ghidra did not create a usable xref record.
     seen={(r["binary"],r["call_pc"],r["helper_target"]) for r in call_rows}
     for rec in direct_exe:
@@ -275,8 +282,8 @@ def main():
           "caller_start":H(f[0]) if f else "TIDAK TAHU","caller_end":H(f[1]) if f else "TIDAK TAHU",
           "delay_slot_pc":H(rec["pc"]+4),"delay_slot_word":"","a0_at_callee_entry":val_text(aval),
           "a0_argument_reason":"CFG reaching definitions + MIPS delay slot" if cfg else "TIDAK TAHU: function boundary unavailable",
-          "is_ptr_plus_0x1A8_plus_0x58n":ispat,"matching_n":nn,"ptr_object_base":"0x801CEF08 (DATA.BIN object, if applicable)",
-          "source_run":a.run_id})
+          "is_ptr_plus_0x1A8_plus_0x58n":ispat,"matching_n":nn,"caller_loop_n_range":"",
+          "ptr_object_base":"0x801CEF08 (DATA.BIN object, if applicable)","source_run":a.run_id})
     write_csv(out/"x2_helper_xrefs_and_a0_arguments.csv",call_rows)
     # Static access list for every function containing at least one of the 32 V3 slot-reader sites.
     access_ops=set(range(32,40))|{40,41,42,43,46}
@@ -356,13 +363,15 @@ def main():
     write_csv(out/"x2_slot_object_field_accesses.csv",field_rows)
     cnt=Counter((r["binary"],r["helper_target"],r["xref_kind"]) for r in call_rows)
     ptrcalls=[r for r in call_rows if r["binary"]=="DATA.BIN entry1" and r["helper_target"]=="0x80020F54" and r["is_ptr_plus_0x1A8_plus_0x58n"]=="YES"]
+    explicit_record_loop=[r for r in ptrcalls if r.get("caller_loop_n_range")=="0..3" and r["call_pc"]=="0x8010470C"]
     lines=["X2 STATIC HELPER XREFS, ARGUMENTS, AND SLOT-OBJECT ACCESS AUDIT",
       f"audit_run={a.run_id}",f"entry1_bytes={len(entry1)}",f"entry1_sha256={sha(entry1)}",
       f"exe_file_bytes={len(exe)}",f"exe_sha256={sha(exe)}",f"v3_slot_reader_rows={len(v3)}",
       f"unique_v3_reader_functions={len(target_funcs)}",f"main_exe_ghidra_reference_rows={len(xrefs)}",
       f"main_exe_direct_jal_helper_sites={len(direct_exe)}",f"entry1_direct_jal_helper_sites={len(entry_calls)}",
       f"total_xref_argument_rows={len(call_rows)}",f"object_relative_access_rows={len(field_rows)}",
-      f"entry1_FUN_80020F54_calls_with_ptr_plus_1A8_58n={len(ptrcalls)}",
+      f"entry1_FUN_80020F54_calls_algebraically_equal_ptr_plus_1A8_58n={len(ptrcalls)}",
+      f"entry1_FUN_80020F54_calls_in_explicit_n_0_to_3_loop_with_base_ptr_plus_0x1A8={len(explicit_record_loop)}",
       "direct_jal_counts="+repr({str(k):v for k,v in cnt.items()}),
       "method=Direct JAL scan + Ghidra reference/xref export; caller function bounds from Ghidra; symbolic GPR reaching definitions with MIPS JAL delay-slot arguments; object accesses only when a base definition resolves to the pointer value loaded from slot 0x8013A554.",
       "limitation=Unsupported instructions or ambiguous/unknown reaching definitions remain TIDAK TAHU; static references do not prove runtime execution."]
