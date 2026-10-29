@@ -178,19 +178,67 @@ jobs:
               if mm: candidates.append(mm.group(1).strip())
           lines.append("STATIC_BINARY_CANDIDATES_COUNT="+str(len(candidates)))
           lines.extend("STATIC_BINARY_CANDIDATE="+x for x in candidates)
-          if any(x.endswith("/AppDir/shared/bin/pcsx-redux") or x.endswith("/shared/bin/pcsx-redux") for x in candidates):
-              lines.append("EXACT_MAPPED_PATH_CANDIDATE_FOUND=YES; inspect the matching candidate's PT_LOAD ranges and dynamic symbols in the static-binary-inspection log.")
+          mapped=[x for x in candidates if x.endswith("/AppDir/shared/bin/pcsx-redux") or x.endswith("/shared/bin/pcsx-redux")]
+          if not mapped:
+              lines += ["EXACT_MAPPED_PATH_CANDIDATE_FOUND=NO",
+                        "NEAREST_SYMBOL_OR_FUNCTION=TIDAK TAHU; extracted candidates do not include runtime mapping pathname.",
+                        "ADDR2LINE= TIDAK TAHU; no exact mapped ELF candidate.",
+                        "READelf_DEBUG_FRAMES/NM_D/OBJDUMP=see per-candidate inspection log; no runtime VA assumption made.",
+                        "DISASSEMBLY_16_INSTRUCTIONS=TIDAK TAHU; exact mapped binary unavailable."]
           else:
-              lines.append("EXACT_MAPPED_PATH_CANDIDATE_FOUND=NO")
-          lines += [
-            "NEAREST_SYMBOL_OR_FUNCTION=TIDAK TAHU; no verified mapping from this PC/file offset to a PT_LOAD virtual address and symbol boundary.",
-            "ADDR2LINE_AT_RUNTIME_PC=TIDAK TAHU; runtime PC is an address in another process mapping, not a proven ELF virtual address.",
-            "OBJDUMP_16_INSTRUCTIONS_AROUND_FILE_OFFSET=TIDAK TAHU; no matching PT_LOAD file range has been established, so treating file offset as an ELF virtual address would be an unsupported assumption.",
-            "READelf/objdump/nm invocation outputs for every extracted pcsx-redux candidate were run and are in the build log/artifact; the executable path mismatch remains an explicit unresolved limitation.",
-            "K=K4 for the directly inspectable runtime PC, mapping and three instructions; symbol/function identity remains TIDAK TAHU."
-          ]
-          prior=Path(sys.argv[2]).with_name("AD2_symbolization_previous.txt")
-          out.write_text("\n".join(lines)+"\n",encoding="utf-8")
+              binary=Path(mapped[0])
+              lines += ["EXACT_MAPPED_PATH_CANDIDATE_FOUND=YES","MAPPED_ELF_BINARY="+str(binary)]
+              ph=subprocess.run(["readelf","-lW",str(binary)],text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+              lines.append("READELF_PROGRAM_HEADERS_EXIT="+str(ph.returncode))
+              loads=[]
+              for ln in ph.stdout.splitlines():
+                  z=ln.split()
+                  if z and z[0]=="LOAD" and len(z)>=6:
+                      try: loads.append((int(z[1],16),int(z[2],16),int(z[4],16),ln.strip()))
+                      except ValueError: pass
+              va=None
+              for off,vaddr,filesz,ln in loads:
+                  if fileoff is not None and off<=fileoff<off+filesz:
+                      va=vaddr+(fileoff-off)
+                      lines += ["MATCHING_LOAD_SEGMENT="+ln,"ELF_LINK_VA=0x%X"%va]
+                      break
+              if va is None:
+                  lines += ["ELF_LINK_VA=TIDAK TAHU; no PT_LOAD file range contains the calculated file offset.",
+                            "NEAREST_SYMBOL_OR_FUNCTION=TIDAK TAHU; cannot map file offset to an ELF virtual address.",
+                            "ADDR2LINE=TIDAK TAHU; no proven ELF VA.",
+                            "DISASSEMBLY_16_INSTRUCTIONS=TIDAK TAHU; no PT_LOAD file-offset relationship. Do not disassemble the file offset as if it were a VA."]
+              else:
+                  a=subprocess.run(["addr2line","-e",str(binary),"-f","-C",hex(va)],text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+                  lines += ["ADDR2LINE_EXIT="+str(a.returncode),"ADDR2LINE_RESULT_BEGIN",a.stdout.strip(),"ADDR2LINE_RESULT_END"]
+                  for nmcmd,label in [(["nm","-D","-n",str(binary)],"DYNAMIC"),(["nm","-n",str(binary)],"ALL")]:
+                      nr=subprocess.run(nmcmd,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+                      lines.append("NM_"+label+"_EXIT="+str(nr.returncode))
+                      symbols=[]
+                      for ln in nr.stdout.splitlines():
+                          sm=re.match(r"^([0-9a-fA-F]+)\s+(\w)\s+(.+)$",ln)
+                          if sm: symbols.append((int(sm.group(1),16),sm.group(2),sm.group(3)))
+                      before=[s for s in symbols if s[0]<=va]
+                      after=[s for s in symbols if s[0]>va]
+                      lines.append("NEAREST_"+label+"_SYMBOL_BEFORE="+(("%#x %s %s"%(before[-1][0],before[-1][1],before[-1][2])) if before else "TIDAK TAHU"))
+                      lines.append("NEAREST_"+label+"_SYMBOL_AFTER="+(("%#x %s %s"%(after[0][0],after[0][1],after[0][2])) if after else "TIDAK TAHU"))
+                  fr=subprocess.run(["readelf","--debug-dump=frames",str(binary)],text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+                  fdes=re.findall(r"FDE .*?pc=([0-9a-fA-F]+)\.\.([0-9a-fA-F]+)",fr.stdout)
+                  hits=[(s,e) for s,e in fdes if int(s,16)<=va<int(e,16)]
+                  lines.append("READELF_DEBUG_DUMP_FRAMES_EXIT="+str(fr.returncode)+" CIE_COUNT="+str(len(re.findall(r'^\s*CIE ',fr.stdout,re.M)))+" FDE_COUNT="+str(len(fdes)))
+                  lines.append("FRAME_RANGE_CONTAINING_VA="+(", ".join("0x%s..0x%s"%(s,e) for s,e in hits) if hits else "TIDAK TAHU"))
+                  d=subprocess.run(["objdump","-d","--start-address=0x%X"%max(0,va-256),"--stop-address=0x%X"%(va+256),str(binary)],text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+                  ins=[]
+                  for ln in d.stdout.splitlines():
+                      im=re.match(r"^\s*([0-9a-fA-F]+):\s+(?:(?:[0-9a-fA-F]{2})\s+)+\s*([^\s].*)$",ln)
+                      if im: ins.append((int(im.group(1),16),ln.strip()))
+                  if ins:
+                      idx=max((i for i,item in enumerate(ins) if item[0]<=va),default=0)
+                      lo=max(0,idx-7);hi=min(len(ins),lo+16);lo=max(0,hi-16)
+                      lines.append("OBJDUMP_EXIT="+str(d.returncode)+" INSTRUCTIONS_PRINTED="+str(hi-lo))
+                      lines.append("DISASSEMBLY_16_INSTRUCTIONS_BEGIN");lines.extend(item[1] for item in ins[lo:hi]);lines.append("DISASSEMBLY_16_INSTRUCTIONS_END")
+                  else:
+                      lines.append("DISASSEMBLY_16_INSTRUCTIONS=TIDAK TAHU; objdump decoded no instructions in the mapped VA window.")
+                    out.write_text("\n".join(lines)+"\n",encoding="utf-8")
           print(out.read_text())
           PY
           cat "$TMP_AD/logs/static-binary-inspection.txt" >> "$OUT/AD2_symbolization.txt"
