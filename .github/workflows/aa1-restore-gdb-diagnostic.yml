@@ -98,19 +98,24 @@ jobs:
           {
             echo "APPDIR=$APPDIR"
             file "$APPDIR/AppRun" || true
-            sed -n '1,100p' "$APPDIR/AppRun" || true
-            echo "EXECUTABLE_FILES_BEGIN"
-            find "$APPDIR" -maxdepth 5 -type f -executable -print | head -n 100
-            echo "EXECUTABLE_FILES_END"
+            echo "TREE_BEGIN"
+            find "$APPDIR" -maxdepth 3 -printf '%y %m %p -> %l\n' | head -n 200
+            echo "TREE_END"
+            echo "FOLLOWED_EXECUTABLES_BEGIN"
+            find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | head -n 200
+            echo "FOLLOWED_EXECUTABLES_END"
+            echo "APP_RUN_STRINGS_BEGIN"
+            strings "$APPDIR/AppRun" | grep -Ei 'pcsx|redux|exec|sharun|APPDIR|APPIMAGE|default|\.env' | head -n 80 || true
+            echo "APP_RUN_STRINGS_END"
           } > "$AA_WORK/logs/appimage-layout.txt"
           cat "$AA_WORK/logs/appimage-layout.txt"
-          PCSX_BIN="$(find "$APPDIR" -type f -executable -print | while IFS= read -r f; do
-            b="$(basename "$f" | tr '[:upper:]' '[:lower:]')"
-            case "$b" in *pcsx*|*redux*) printf '%s\n' "$f"; break;; esac
+          PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | while IFS= read -r f; do
+            bn="$(basename "$f" | tr '[:upper:]' '[:lower:]')"
+            case "$bn" in *pcsx*|*redux*) printf '%s\n' "$f"; break;; esac
           done)"
           if [ -z "$PCSX_BIN" ] || [ ! -x "$PCSX_BIN" ]; then
             echo "PCSX_BINARY_DISCOVERY_FAIL=1"
-            echo "PCSX_BINARY_CANDIDATES=$(grep -Ei 'exec|pcsx|redux|HERE' "$APPDIR/AppRun" || true)"
+            echo "PCSX_BINARY_CANDIDATES=$(strings "$APPDIR/AppRun" | grep -Ei 'pcsx|redux|exec|sharun' | head -n 40 || true)"
             exit 1
           fi
           echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
