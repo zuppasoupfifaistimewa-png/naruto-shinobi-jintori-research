@@ -1,0 +1,216 @@
+name: AD4 ubuntu-26.04 target restore retry (text-only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/ad4-ubuntu26-target-restore-retry.yml"
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: naruto-ad4-ubuntu26-target-restore-retry
+  cancel-in-progress: false
+
+jobs:
+  restore:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RESEARCH_REPO: ${{ github.repository }}
+      WORK: /tmp/naruto-ad4-retry
+    steps:
+      - name: Checkout research workflow revision
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install runtime tools and fetch pinned public assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends xvfb x11-utils curl jq unzip python3 gdb binutils
+          mkdir -p "$WORK"/{source,resume,cards,logs,home/.config,home/.local/share,home/runtime}
+          chmod 700 "$WORK" "$WORK/home/runtime"
+          cd "$WORK/source"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          fetch_asset() {
+            id="$1"; name="$2"; bytes="$3"; sha="$4"; limit="$5"
+            curl --fail --location --silent --show-error --retry 2 --retry-delay 2 --max-time "$limit" \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$API/releases/assets/$id" -o "$name"
+            test "$(stat -c '%s' "$name")" = "$bytes"
+            echo "$sha  $name" | sha256sum --check -
+          }
+          fetch_asset 669480936 pcsx-redux.AppImage 65747557 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c 180
+          fetch_asset 647346873 game.bin 325989552 58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88 600
+          fetch_asset 647354760 game.cue 116 be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8 60
+          fetch_asset 652373928 scph7502.zip 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a 60
+          fetch_asset 686794219 target-checkpoint.raw.sstate 21163286 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d 180
+          cp target-checkpoint.raw.sstate "$WORK/resume/target.sstate"
+          chmod 400 "$WORK/resume/target.sstate"
+          python3 - "$WORK/source/scph7502.zip" "$WORK/source/scph7502.bin" <<'PY'
+          from pathlib import Path
+          import hashlib,stat,sys,zipfile
+          src,dst=map(Path,sys.argv[1:])
+          with zipfile.ZipFile(src) as z:
+              xs=[]; total=0
+              for x in z.infolist():
+                  p=Path(x.filename); mode=(x.external_attr>>16)&0xffff; total+=x.file_size
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)): raise SystemExit("unsafe BIOS archive")
+                  if x.file_size>2*1024*1024 or total>4*1024*1024: raise SystemExit("BIOS archive expansion bound")
+                  if not x.is_dir() and x.file_size==524288: xs.append(x)
+              if len(xs)!=1: raise SystemExit("expected exactly one BIOS")
+              data=z.read(xs[0]); sha=hashlib.sha256(data).hexdigest()
+              if sha!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1": raise SystemExit("BIOS SHA mismatch")
+              dst.write_bytes(data); print("BIOS_SHA256="+sha)
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("game.cue")
+          x=p.read_bytes().decode("utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          ix=[i for i,s in enumerate(x) if s.lstrip().upper().startswith("FILE ")]
+          if len(ix)!=1 or not any(s.lstrip().upper().startswith("TRACK ") for s in x): raise SystemExit("invalid cue")
+          x[ix[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(x)+"\n",encoding="ascii")
+          PY
+          {
+            echo "AD4_RUNNER_BEGIN"
+            cat /etc/os-release
+            gdb --version | sed -n '1,2p'
+            uname -a
+            echo "PCSX_APPIMAGE_SHA256=$(sha256sum pcsx-redux.AppImage | cut -d ' ' -f1)"
+            echo "PCSX_SOURCE_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
+            echo "TARGET_STATE_SHA256=$(sha256sum "$WORK/resume/target.sstate" | cut -d ' ' -f1)"
+            echo "TARGET_STATE_SIZE=$(stat -c %s "$WORK/resume/target.sstate")"
+            echo "FLAGS=-noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout; Xvfb; no --headless CLI flag"
+            echo "AD4_RUNNER_METADATA_END"
+          } > "$WORK/logs/metadata.txt"
+
+      - name: Fetch the original Memory Card from its source run
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: "39262213468"
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: /tmp/naruto-ad4-retry/cards
+
+      - name: Restore pinned target state twice with GDB and no input
+        shell: bash
+        run: |
+          set -u
+          cd "$WORK/source"
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          APPDIR="$WORK/source/squashfs-root"
+          PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | grep -Ei '(^|/)(pcsx-redux|pcsx-redux\.bin)$' | head -n 1 || true)"
+          if [ -z "$PCSX_BIN" ]; then PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | grep -Ei 'pcsx.*redux|redux.*pcsx' | head -n 1 || true)"; fi
+          if [ -z "$PCSX_BIN" ]; then echo "PCSX_BINARY=TIDAK TAHU" >> "$WORK/logs/metadata.txt"; exit 2; fi
+          CARD="$(find "$WORK/cards" -type f -name 'naruto-storymode.mcd' -print -quit)"
+          if [ -n "$CARD" ]; then cp "$CARD" "$WORK/cards/reference.mcd"; else echo "MEMORY_CARD_SOURCE=TIDAK TAHU; no artifact file available" >> "$WORK/logs/metadata.txt"; truncate -s 131072 "$WORK/cards/reference.mcd"; fi
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/home/.config" XDG_DATA_HOME="$WORK/home/.local/share" XDG_RUNTIME_DIR="$WORK/home/runtime" LIBGL_ALWAYS_SOFTWARE=1
+          export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu" QT_PLUGIN_PATH="$APPDIR/usr/plugins" QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms" QML2_IMPORT_PATH="$APPDIR/usr/qml"
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/logs/xvfb.log" 2>&1 &
+          echo $! > "$WORK/xvfb.pid"
+          for n in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          cat > "$WORK/pad.lua" <<'LUA'
+          PCSX.settings.pads[1].DeviceType='Analog'
+          PCSX.settings.pads[1].Connected=true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("AD4_PAD_CONNECTED_NO_BUTTONS")
+          LUA
+          cat > "$WORK/restore.lua" <<'LUA'
+          if io.stdout then io.stdout:setvbuf("no") end
+          local v,s,l,a=0,false,false,0
+          local function log(x) print(x);pcall(function()io.stdout:flush()end) end
+          PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()l=true;a=0;log("AD4_POST_LOAD_EVENT=1")end)
+          PCSX.Events.createEventListener("GPU::Vsync",function()
+            v=v+1
+            if not s then
+              s=true;log("AD4_LOAD_BEGIN=1 vsync="..v.." controller=NONE");PCSX.pauseEmulator()
+              PCSX.nextTick(function()
+                local ok,f=pcall(function()return assert(Support.File.open(os.getenv("AA_TEST_STATE")))end)
+                if not ok or not f then log("AD4_OPEN_FAIL="..tostring(f));PCSX.quit(50);return end
+                local good,e=pcall(function()PCSX.loadSaveState(f)end);f:close()
+                if not good then log("AD4_LOAD_ERROR="..tostring(e));PCSX.quit(51);return end
+                log("AD4_LOAD_CALL_RETURNED=1");PCSX.resumeEmulator()
+              end);return
+            end
+            if l then a=a+1;if a>=180 then log("AD4_POST_LOAD_VSYNC=180");PCSX.pauseEmulator();PCSX.nextTick(function()PCSX.quit(0)end)
+            elseif v>=900 then log("AD4_LOAD_EVENT_TIMEOUT=1");PCSX.pauseEmulator();PCSX.nextTick(function()PCSX.quit(53)end) end
+          end)
+          LUA
+          cat > "$WORK/gdb.cmd" <<'GDB'
+          set pagination off
+          set confirm off
+          set print thread-events off
+          handle SIGSEGV stop print nopass
+          handle SIGABRT stop print nopass
+          handle SIGBUS stop print nopass
+          run
+          echo \n=== AD4_THREADS_BEGIN ===\n
+          info threads
+          echo \n=== AD4_PC_INSTRUCTIONS_BEGIN ===\n
+          x/3i $pc
+          echo \n=== AD4_REGISTERS_BEGIN ===\n
+          info registers
+          echo \n=== AD4_MAPPINGS_BEGIN ===\n
+          info proc mappings
+          echo \n=== AD4_BACKTRACE_BEGIN ===\n
+          bt
+          thread apply all bt
+          GDB
+          for attempt in 1 2; do
+            tag="target-attempt$attempt"
+            g="$WORK/logs/$tag.gdb.txt";p="$WORK/logs/$tag.pcsx.txt"
+            set +e
+            AA_TEST_STATE="$WORK/resume/target.sstate" timeout --signal=INT --kill-after=10s 110s \
+              gdb --quiet --nx --batch -x "$WORK/gdb.cmd" --args "$PCSX_BIN" \
+                -noupdate -no-debugger -no-gdb -bios "$WORK/source/scph7502.bin" -iso "$WORK/source/game-run.cue" \
+                -memcard1 "$WORK/cards/reference.mcd" -exec "$(cat "$WORK/pad.lua")" -dofile "$WORK/restore.lua" \
+                -softgpu -dynarec -stdout -lua_stdout -logfile "$p" -run > "$g" 2>&1
+            rc=$?
+            set -e
+            test -f "$p" || : > "$p"
+            sig="$(grep -m1 -E 'received signal SIGSEGV|Program received signal SIGSEGV' "$g" || true)"
+            post="$(grep -h -m1 'AD4_POST_LOAD_VSYNC=180' "$g" "$p" 2>/dev/null || true)"
+            frame="$(grep -m1 -E '^#0[[:space:]]' "$g" || true)"
+            thread="$(printf '%s' "$sig" | grep -oE 'Thread [0-9]+' | head -n1 || true)"
+            inferior="$(grep -m1 -E 'Inferior .*exited|Program exited' "$g" || true)"
+            state_sha="$(sha256sum "$WORK/resume/target.sstate" | cut -d ' ' -f1)"
+            if [ -n "$sig" ]; then result=SIGSEGV; elif [ -n "$post" ]; then result=POST_LOAD_VSYNC_180; else result=NO_TERMINAL_MARKER; fi
+            [ -n "$frame" ] || frame=NOT_RECORDED
+            [ -n "$thread" ] || thread=NOT_RECORDED
+            [ -n "$inferior" ] || inferior=NOT_RECORDED
+            [ -n "$post" ] || post=NOT_RECORDED
+            echo "CASE=ubuntu26_target_attempt$attempt result=$result state_sha256=$state_sha wrapper_exit=$rc frame_0=$frame thread=$thread inferior=$inferior post=$post" >> "$WORK/logs/metadata.txt"
+          done
+          sha256sum "$WORK/logs/"*.txt > "$WORK/logs/sha256-manifest.txt"
+          mkdir -p "$GITHUB_WORKSPACE/ad4-ubuntu26-evidence"
+          cp "$WORK/logs/"*.txt "$GITHUB_WORKSPACE/ad4-ubuntu26-evidence/"
+          {
+            echo "AD4 ubuntu-26.04 target restore results"
+            cat "$WORK/logs/metadata.txt"
+            echo "RAW LOGS AND SHA256"
+            cat "$WORK/logs/sha256-manifest.txt"
+            for x in "$GITHUB_WORKSPACE/ad4-ubuntu26-evidence/"*.txt; do echo "FILE=$(basename "$x")";cat "$x";done
+          } > "$GITHUB_WORKSPACE/ad4-ubuntu26-result.txt"
+          kill "$(cat "$WORK/xvfb.pid" 2>/dev/null)" 2>/dev/null || true
+          rm -rf "$WORK" "$GITHUB_WORKSPACE/squashfs-root"
+
+      - name: Upload text-only AD4 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ad4-ubuntu26-retry-text
+          path: |
+            ad4-ubuntu26-result.txt
+            ad4-ubuntu26-evidence/*.txt
+          if-no-files-found: warn
+          retention-days: 14
