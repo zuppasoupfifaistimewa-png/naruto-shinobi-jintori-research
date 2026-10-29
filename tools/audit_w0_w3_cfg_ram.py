@@ -172,10 +172,12 @@ def w0(out,run_id):
       f"release_asset_state_sha256_expected=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d",
       f"published_at_inside_release_related_step_count={len(publish_matches)}",
       f"asset_created_at_inside_release_related_step_count={len(asset_matches)}",
-      "CLAIM_RELEASE_RECORD_CREATED_BY_RUN_40792708405=RETRACTED_NOT_PROVEN; tag target commit date matches created_at and the asset step begins later.",
-      "CLAIM_RELEASE_PUBLISHED_BY_RUN_40792708405=SUPPORTED_BY_TIMESTAMPS when its release-preservation step spans published_at 00:14:27Z.",
-      "CLAIM_ASSET_UPLOADED_BY_RUN_40792708405=SUPPORTED_BY_TIMESTAMPS when that same step spans asset created_at 00:14:28Z.",
-      "Attribution is limited to Release publication and asset upload; do not state that the run authored the target tag commit.",
+      "CLAIM_RELEASE_RECORD_CREATED_BY_RUN_40792708405=RETRACTED; tag target commit date equals created_at at 00:14:06Z, before the run starts at 00:14:11Z.",
+      "RELEASE_PUBLICATION_TIMESTAMP_MATCHES_TWO_STEPS=YES (40789851317 step 4 and 40792708405 step 5 both span published_at 00:14:27Z).",
+      "ASSET_CREATION_TIMESTAMP_MATCHES_TWO_STEPS=YES (those same two steps both span asset.created_at 00:14:28Z).",
+      "CLAIM_RELEASE_PUBLISHED_BY_RUN_40792708405=SUPPORTED_BY_STEP_SEMANTICS_AND_PERMISSIONS: step 5 explicitly preserves the checkpoint as a GitHub Release asset; the competing 40789851317 workflow has contents:read permission and its overlapping step only downloads the release disc image.",
+      "CLAIM_ASSET_UPLOADED_BY_RUN_40792708405=SUPPORTED_BY_STEP_SEMANTICS_AND_PERMISSIONS: step 5 is the checkpoint Release-asset step and the competing download workflow lacks contents:write.",
+      "The timestamp overlap alone is not unique attribution. The step names and workflow permissions distinguish the checkpoint-preservation step from the unrelated BIN/CUE download; the tag target commit itself is not authored by run 40792708405.",
       f"current_audit_run={run_id}",
     ]
     (out/"w0_release_timeline_summary.txt").write_text("\n".join(releaselines)+"\n",encoding="utf-8")
