@@ -261,7 +261,7 @@ def main():
         an=sym_eval_cfg(cfg) if cfg else None
         aval=arg_after_delay(cfg,an,rec["pc"]) if cfg else UNKNOWN
         ispat,nn=ptr_pattern(aval)
-        call_rows.append({"binary":"SLPS_035.53","xref_kind":"DIRECT_JAL_SCAN_NO_GHIDRA_XREF","call_pc":H(rec["pc]),
+        call_rows.append({"binary":"SLPS_035.53","xref_kind":"DIRECT_JAL_SCAN_NO_GHIDRA_XREF","call_pc":H(rec["pc"]),
           "helper_target":H(rec["target"]),"helper_name":HELPERS[rec["target"]],"caller_function":f[2] if f else "TIDAK TAHU",
           "caller_start":H(f[0]) if f else "TIDAK TAHU","caller_end":H(f[1]) if f else "TIDAK TAHU",
           "delay_slot_pc":H(rec["pc"]+4),"delay_slot_word":"","a0_at_callee_entry":val_text(aval),
