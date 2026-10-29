@@ -1,0 +1,319 @@
+name: AD1-AD6 evidence publication and history recovery
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/ad1-ad6-publish-recovery.yml"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: naruto-ad1-ad6-publish-recovery
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: write
+      actions: read
+    env:
+      RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+      TMP_AD: /tmp/ad1-ad6-publish-recovery
+    steps:
+      - name: Checkout all refs
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+
+      - name: Download completed runner24 diagnostics from run 40860390103
+        uses: actions/download-artifact@v4
+        with:
+          name: ad1-ad6-text-evidence-24
+          run-id: "40860390103"
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          github-token: ${{ github.token }}
+          path: /tmp/ad1-ad6-publish-recovery/runner24
+
+      - name: Download completed ubuntu26 target restore evidence from run 40862024937
+        uses: actions/download-artifact@v4
+        with:
+          name: ad4-ubuntu26-retry-text
+          run-id: "40862024937"
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          github-token: ${{ github.token }}
+          path: /tmp/ad1-ad6-publish-recovery/runner26
+
+      - name: Install static-analysis tools and fetch the pinned AppImage
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3 binutils file curl
+          mkdir -p "$TMP_AD"/{appimage,logs}
+          curl --fail --location --silent --show-error --retry 2 --max-time 180 \
+            -H "Accept: application/octet-stream" \
+            "https://api.github.com/repos/$RESEARCH_REPO/releases/assets/669480936" \
+            -o "$TMP_AD/appimage/pcsx-redux.AppImage"
+          test "$(stat -c '%s' "$TMP_AD/appimage/pcsx-redux.AppImage")" = 65747557
+          echo "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c  $TMP_AD/appimage/pcsx-redux.AppImage" | sha256sum --check -
+          chmod +x "$TMP_AD/appimage/pcsx-redux.AppImage"
+          cd "$TMP_AD/appimage"
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          echo "APPIMAGE_SHA256=$(sha256sum "$TMP_AD/appimage/pcsx-redux.AppImage" | cut -d ' ' -f1)"
+          echo "EXTRACT_ROOT=$TMP_AD/appimage/squashfs-root"
+          find "$TMP_AD/appimage" -type f -name pcsx-redux -print > "$TMP_AD/logs/pcsx-binary-candidates.txt"
+          cat "$TMP_AD/logs/pcsx-binary-candidates.txt"
+          while IFS= read -r bin; do
+            [ -f "$bin" ] || continue
+            {
+              echo "CANDIDATE=$bin"
+              stat -c 'SIZE_BYTES=%s' "$bin"
+              sha256sum "$bin"
+              file "$bin"
+              readelf -h -lW -Ws -n "$bin" 2>&1 | sed -n '1,180p'
+              echo "NM_DYNAMIC_BEGIN"
+              nm -D -n "$bin" 2>&1 | head -n 160 || true
+              echo "NM_DYNAMIC_END"
+              echo "READelf_FRAMES_BEGIN"
+              readelf --debug-dump=frames "$bin" 2>&1 | sed -n '1,160p'
+              echo "READELF_FRAMES_END"
+              echo "OBJDUMP_SAMPLE_BEGIN"
+              objdump -d "$bin" 2>&1 | sed -n '1,100p'
+              echo "OBJDUMP_SAMPLE_END"
+            } >> "$TMP_AD/logs/static-binary-inspection.txt"
+          done < "$TMP_AD/logs/pcsx-binary-candidates.txt"
+
+      - name: Recover text evidence, calculate raw-log hashes, excerpts, AD2 and AD6
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="$GITHUB_WORKSPACE/reports/ad_2026-10-29"
+          R24="$TMP_AD/runner24"
+          R26="$TMP_AD/runner26"
+          mkdir -p "$OUT/aa1_runtime_logs" "$OUT/ad4-ubuntu26-evidence"
+          cp -R "$R24/aa1_runtime_logs/." "$OUT/aa1_runtime_logs/"
+          for name in runtime-results.tsv AD5_release.txt; do
+            [ ! -f "$R24/$name" ] || cp "$R24/$name" "$OUT/$name"
+          done
+          [ ! -f "$R24/AD2_symbolization.txt" ] || cp "$R24/AD2_symbolization.txt" "$OUT/AD2_symbolization_previous.txt"
+          [ ! -f "$R24/AD6_git_history.txt" ] || cp "$R24/AD6_git_history.txt" "$OUT/AD6_git_history_previous.txt"
+          [ ! -f "$R26/ad4-ubuntu26-result.txt" ] || cp "$R26/ad4-ubuntu26-result.txt" "$OUT/ad4-ubuntu26-result.txt"
+          if [ -d "$R26/ad4-ubuntu26-evidence" ]; then cp -R "$R26/ad4-ubuntu26-evidence/." "$OUT/ad4-ubuntu26-evidence/"; fi
+          # The raw logs are kept in full. This file provides the specifically requested
+          # first 40 and last 250 lines without altering/truncating the original logs.
+          : > "$OUT/ad1-log-excerpts-first40-last250.txt"
+          for f in "$OUT"/aa1_runtime_logs/*.txt "$OUT"/ad4-ubuntu26-evidence/*.txt; do
+            [ -f "$f" ] || continue
+            {
+              echo "============================================================"
+              echo "FILE=$(basename "$f")"
+              echo "LINE_COUNT=$(wc -l < "$f")"
+              echo "SHA256=$(sha256sum "$f" | awk '{print $1}')"
+              echo "----- FIRST 40 LINES -----"
+              head -n 40 "$f"
+              echo "----- LAST 250 LINES -----"
+              tail -n 250 "$f"
+            } >> "$OUT/ad1-log-excerpts-first40-last250.txt"
+          done
+          sha256sum "$OUT"/aa1_runtime_logs/*.txt "$OUT"/ad4-ubuntu26-evidence/*.txt > "$OUT/ad1-log-sha256.txt"
+          {
+            echo "AD2 SYMBOLIZATION — runtime evidence and independent static checks"
+            echo "SOURCE_RUN_UBUNTU24=40860390103/job 123401839796"
+            echo "SOURCE_RUN_UBUNTU26=40862024937/job 123407389010"
+            echo "APPIMAGE_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
+            echo "APPIMAGE_SHA256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c"
+            echo "STATIC_TOOL_OUTPUT=$TMP_AD/logs/static-binary-inspection.txt (temporary run evidence summarized below)"
+            python3 - "$OUT/aa1_runtime_logs/ad1-target-attempt1.gdb.txt" "$OUT/AD2_symbolization.txt" "$TMP_AD/logs/static-binary-inspection.txt" <<'PY'
+          import re,sys,subprocess
+          from pathlib import Path
+          log=Path(sys.argv[1]).read_text(errors="replace")
+          out=Path(sys.argv[2])
+          static=Path(sys.argv[3]).read_text(errors="replace") if Path(sys.argv[3]).exists() else ""
+          mpc=re.search(r"^#0\s+(0x[0-9a-fA-F]+)",log,re.M)
+          lines=[]
+          if not mpc:
+              lines += ["RUNTIME_PC=TIDAK TAHU; GDB frame #0 absent."]
+          else:
+              pc=int(mpc.group(1),16);lines += [f"RUNTIME_PC=0x{pc:X}"]
+              inmap=False;matches=[]
+              rx=re.compile(r"^\s*(0x[0-9a-fA-F]+)\s+(0x[0-9a-fA-F]+)\s+(0x[0-9a-fA-F]+)\s+(0x[0-9a-fA-F]+)\s+(\S+)\s*(.*)$")
+              for line in log.splitlines():
+                  if "AD_PROC_MAPPINGS_BEGIN" in line: inmap=True;continue
+                  if inmap:
+                      q=rx.match(line)
+                      if q:
+                          start,end,size,off,perm,path=q.groups()
+                          if int(start,16)<=pc<int(end,16) and "x" in perm:
+                              matches.append((int(start,16),int(end,16),int(off,16),perm,path.strip(),line.strip()))
+              if matches:
+                  start,end,off,perm,path,raw=matches[0]
+                  fileoff=pc-start+off
+                  lines += [f"PC_MAPPING_LINE={raw}","FILE_OFFSET_FORMULA=PC - mapping_start + mapping_file_offset",f"FILE_OFFSET=0x{fileoff:X}",f"MAPPING_RECORDED_PATH={path}"]
+              else:
+                  fileoff=None
+                  lines += ["PC_MAPPING_LINE=TIDAK TAHU; executable mapping containing PC not parsed."]
+          lines += [
+            "RUNTIME_GDB_INSTRUCTIONS_BEGIN",
+            "The original GDB log directly reports the following three instructions at $pc:",
+          ]
+          x=re.search(r"=== AD_PC_INSTRUCTIONS_BEGIN ===\s*\n(.*?)(?=\n=== AD_INFO_REGISTERS_BEGIN ===)",log,re.S)
+          if x: lines += x.group(1).strip().splitlines()
+          else: lines += ["TIDAK TAHU; x/3i output not present."]
+          regs=re.search(r"^rsi\s+(0x[0-9a-fA-F]+)",log,re.M)
+          if regs: lines.append("RUNTIME_RSI="+regs.group(1))
+          lines += ["ELF_SEGMENT_CORRELATION=The previous run's readelf output for /squashfs-root/bin/pcsx-redux did not contain a PT_LOAD file range covering 0x5D36D0; it was not the same pathname as the runtime mapping /AppDir/shared/bin/pcsx-redux."]
+          # Report actual candidate files and their tool invocations, but do not promote a name
+          # unless the mapped ELF and file-offset-to-PT_LOAD relation match.
+          candidates=[]
+          for block in re.split(r"(?=CANDIDATE=)",static):
+              mm=re.search(r"^CANDIDATE=(.+)$",block,re.M)
+              if mm: candidates.append(mm.group(1).strip())
+          lines.append("STATIC_BINARY_CANDIDATES_COUNT="+str(len(candidates)))
+          lines.extend("STATIC_BINARY_CANDIDATE="+x for x in candidates)
+          if any(x.endswith("/AppDir/shared/bin/pcsx-redux") or x.endswith("/shared/bin/pcsx-redux") for x in candidates):
+              lines.append("EXACT_MAPPED_PATH_CANDIDATE_FOUND=YES; inspect the matching candidate's PT_LOAD ranges and dynamic symbols in the static-binary-inspection log.")
+          else:
+              lines.append("EXACT_MAPPED_PATH_CANDIDATE_FOUND=NO")
+          lines += [
+            "NEAREST_SYMBOL_OR_FUNCTION=TIDAK TAHU; no verified mapping from this PC/file offset to a PT_LOAD virtual address and symbol boundary.",
+            "ADDR2LINE_AT_RUNTIME_PC=TIDAK TAHU; runtime PC is an address in another process mapping, not a proven ELF virtual address.",
+            "OBJDUMP_16_INSTRUCTIONS_AROUND_FILE_OFFSET=TIDAK TAHU; no matching PT_LOAD file range has been established, so treating file offset as an ELF virtual address would be an unsupported assumption.",
+            "READelf/objdump/nm invocation outputs for every extracted pcsx-redux candidate were run and are in the build log/artifact; the executable path mismatch remains an explicit unresolved limitation.",
+            "K=K4 for the directly inspectable runtime PC, mapping and three instructions; symbol/function identity remains TIDAK TAHU."
+          ]
+          prior=Path(sys.argv[2]).with_name("AD2_symbolization_previous.txt")
+          out.write_text("\n".join(lines)+"\n",encoding="utf-8")
+          print(out.read_text())
+          PY
+          cat "$TMP_AD/logs/static-binary-inspection.txt" >> "$OUT/AD2_symbolization.txt"
+          # AD6 deliberately runs in the checked-out Git worktree, not the private emulator cwd.
+          {
+            echo "AD6 GIT HISTORY AUDIT"
+            echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+            echo "PWD=$(pwd)"
+            git rev-parse --show-toplevel
+            git status --short
+            echo "CURRENT_TRACKED_EXTENSION_MATCHES_BEGIN"
+            git ls-files | awk 'tolower($0) ~ /\.(bin|cue|iso|sstate|zip|gpudump|raw|png)$/ {print}'
+            echo "CURRENT_TRACKED_EXTENSION_MATCHES_END"
+            python3 - "$GITHUB_WORKSPACE" <<'PY'
+          import subprocess,sys,re,os
+          root=sys.argv[1]
+          def git(*args):
+              return subprocess.run(["git",*args],cwd=root,stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=True).stdout
+          print("GIT_ROOT="+subprocess.run(["git","rev-parse","--show-toplevel"],cwd=root,text=True,stdout=subprocess.PIPE,check=True).stdout.strip())
+          objects=git("rev-list","--objects","--all").splitlines()
+          commits=git("rev-list","--all").decode("ascii","replace").splitlines()
+          print("REV_LIST_OBJECTS_ALL_COUNT="+str(len(objects)))
+          print("REV_LIST_ALL_COMMIT_COUNT="+str(len(commits)))
+          ext=re.compile(rb"\.(bin|cue|iso|sstate|zip|gpudump|raw|png)$",re.I)
+          found=set()
+          for ci,c in enumerate(commits,1):
+              raw=git("ls-tree","-rlz","--full-tree",c.decode() if isinstance(c,bytes) else c)
+              for entry in raw.split(b"\0"):
+                  if not entry: continue
+                  meta,sep,path=entry.partition(b"\t")
+                  parts=meta.split()
+                  if len(parts)<4 or parts[1]!=b"blob": continue
+                  sha=parts[2].decode();size=int(parts[3]);p=path.decode("utf-8","replace")
+                  if size>1048576 or ext.search(path):
+                      reason="BLOB_GT_1_MIB" if size>1048576 else "EXTENSION_MATCH"
+                      found.add((c.decode() if isinstance(c,bytes) else c,sha,size,p,reason))
+          print("HISTORICAL_MATCH_COUNT="+str(len(found)))
+          print("commit\tblob_sha\tsize_bytes\tpath\treason")
+          for row in sorted(found): print("\t".join(map(str,row)))
+          print("AD6 GIT HISTORY AUDIT END")
+          PY
+          } > "$OUT/AD6_git_history.txt"
+          # The Release audit already captured a body-free redirect chain and the complete anonymous list.
+          # Store runtime metadata from the isolated Ubuntu 26.04 run separately.
+          if [ -f "$OUT/ad4-ubuntu26-evidence/metadata.txt" ]; then
+            cp "$OUT/ad4-ubuntu26-evidence/metadata.txt" "$OUT/AD4_ubuntu26_metadata.txt"
+          fi
+          echo "RECOVERY_INPUTS_READY=1"
+
+      - name: Create one report and commit all text evidence with race-safe push
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="reports/ad_2026-10-29"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$OUT/aa1_runtime_logs/"*.txt "$OUT/ad4-ubuntu26-evidence/"*.txt \
+            "$OUT/runtime-results.tsv" "$OUT/AD5_release.txt" "$OUT/AD6_git_history.txt" \
+            "$OUT/AD2_symbolization.txt" "$OUT/AD4_ubuntu26_metadata.txt" \
+            "$OUT/ad1-log-sha256.txt" "$OUT/ad1-log-excerpts-first40-last250.txt"
+          git commit -m "Preserve AD1-AD6 text evidence and raw log hashes"
+          push_with_rebase() {
+            for attempt in 1 2 3 4; do
+              git fetch origin main
+              git rebase origin/main
+              if git push origin HEAD:main; then return 0; fi
+              echo "Push race detected; retry=$attempt" >&2
+            done
+            return 1
+          }
+          push_with_rebase
+          EVIDENCE_COMMIT="$(git rev-parse HEAD)"
+          R="$OUT/AD1-AD6_AUDIT_REPORT_2026-10-29.txt"
+          {
+            echo "AD1-AD6 AUDIT — Naruto Jintori SLPS-03553"
+            echo "Repository: $RESEARCH_REPO"
+            echo "Recovery workflow run: $GITHUB_RUN_ID"
+            echo "Evidence commit containing raw text logs and manifests: $EVIDENCE_COMMIT"
+            echo "K SCALE: K1=dugaan; K2=indikasi terbatas; K3=beberapa bukti saling mendukung; K4=bukti langsung yang dapat diperiksa ulang (analisis statis maksimal K4); K5=bukti runtime konsisten pada >=2 peluncuran terpisah."
+            echo "Boundary: no ROM/ISO, BIOS, savestate, RAM dump or screenshots were added. Release assets/visibility were not changed."
+            echo
+            echo "AD1 — Status=TUNTAS, K5."
+            echo "Run 40860390103/job 123401839796: target state SHA256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d SIGSEGV twice (Thread 15; PC 0x7ffff0dd36d0); control state SHA256 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492 reached POST_LOAD_VSYNC=180 twice."
+            echo "Eight raw AD1 GDB/PCSX log files are retained in full (not middle-truncated). Each file has SHA256 in ad1-log-sha256.txt. ad1-log-excerpts-first40-last250.txt holds the requested first 40 and last 250 lines per available raw log. Permalinks:"
+            for f in "$OUT"/aa1_runtime_logs/*.txt; do echo "$(basename "$f"): https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/$f"; done
+            echo "SHA256 manifest: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/$OUT/ad1-log-sha256.txt"
+            echo "Excerpt file: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/$OUT/ad1-log-excerpts-first40-last250.txt"
+            echo
+            echo "AD2 — Status=SEBAGIAN, K4."
+            echo "Runtime PC 0x7ffff0dd36d0 is in GDB mapping line for /AppDir/shared/bin/pcsx-redux: start 0x7ffff088c000, file offset 0x8c000; file offset=PC-base+mapping offset=0x5d36d0. The runtime GDB log directly shows: movzbl (%rsi),%ecx; mov $0x4,%esi; movzbl 0x2(%rax),%r9d; RSI=0xffffffffd736aa9f. The exact mapped path was not demonstrated to be the same ELF as /squashfs-root/bin/pcsx-redux inspected by readelf; thus nearest function/symbol, addr2line and 16 static instructions are TIDAK TAHU rather than guessed. readelf -h/-lW/-Ws/-n, readelf --debug-dump=frames, nm -D -n and objdump -d outputs were run on extracted candidates and retained in AD2_symbolization.txt."
+            echo
+            echo "AD3 — Status=TUNTAS for tested single-field sufficiency, K5."
+            cat "$OUT/runtime-results.tsv"
+            echo "H1 field3, H2 field4, H3 field5, H5 field8, H6 field10 each reached POST_LOAD_VSYNC=180 in both trials; H4 field6 produced SIGSEGV in both. Therefore field 6 is sufficient in the tested control/target hybrid context; necessity in all states is not established."
+            echo
+            echo "AD4 — Status=TUNTAS for two-run target crash comparison, K5."
+            echo "Ubuntu 24.04.5 run 40860390103/job 123401839796 with GDB 15.1-1ubuntu1~24.04.1 and AppImage SHA256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c: target SIGSEGV twice, Thread 15, PC 0x7ffff0dd36d0. Ubuntu 26.04.1 run 40862024937/job 123407389010 with GDB 17.1-2ubuntu1 and the same AppImage/state SHA: target SIGSEGV twice with same PC/thread. No cross-OS runtime difference was observed in this setup."
+            echo "Control producer run 39867730674 used host runner ubuntu-24.04.5 and container ghcr.io/grumpycoders/pcsx-redux-build:latest; producer workflow SHA 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99 belonged to patched PCSX AppImage. GDB version in that container is TIDAK TAHU. It used -softgpu -dynarec -stdout -lua_stdout. The current target/control diagnostic uses pinned AppImage SHA c04b3e0a…60fc0c with -noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout via Xvfb."
+            echo "Control outer Actions artifact 12464258211: size=4913880 bytes; ZIP digest sha256:026c4c38451003e2001a8146ec9a69884ca4aa0fd39a541ece54785be6096328. Inner savestate SHA256 checked on extraction: 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492. These are different objects and hashes."
+            echo "Ubuntu26 raw logs/metadata: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/$OUT/ad4-ubuntu26-result.txt and files under $OUT/ad4-ubuntu26-evidence/."
+            echo
+            echo "AD5 — Status=TUNTAS, K4."
+            echo "Anonymous Releases list returned HTTP 200: 2 releases / 19 assets; table uses headers tag,draft,prerelease,asset_name,asset_id,size_bytes in AD5_release.txt. Asset IDs: 647346873=Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin; 652373928=scph7502.zip; 686794219=storymode-checkpoint-run-39262213468.raw.sstate. Each URL hop was followed with response body discarded: initial API HTTP 302 and final release-assets HTTP 206 for all 3."
+            echo
+            echo "AD6 — Status=TUNTAS if AD6_git_history.txt ends with AD6 GIT HISTORY AUDIT END; K4."
+            echo "The output includes git ls-files matches and git rev-list --objects --all plus per-commit recursive trees, listing each matched blob >1 MiB and each occurrence of .bin/.cue/.iso/.sstate/.zip/.gpudump/.raw/.png with commit, blob SHA, size and path. See AD6_git_history.txt for the exact inventory; if the audit records TIDAK TAHU due git worktree failure, this task remains SEBAGIAN."
+            echo
+            echo "Story Mode completion: NOT CLAIMED / NOT VERIFIED by these diagnostics."
+            echo
+            echo "REPORT_PERMALINK_AFTER_COMMIT: https://raw.githubusercontent.com/$RESEARCH_REPO/REPORT_COMMIT_PLACEHOLDER/$R"
+          } > "$R"
+          git add "$R"
+          git commit -m "Publish final AD1-AD6 audit report"
+          push_with_rebase
+          REPORT_COMMIT="$(git rev-parse HEAD)"
+          sed -i "s/REPORT_COMMIT_PLACEHOLDER/$REPORT_COMMIT/g" "$R"
+          git add "$R"
+          git commit --amend --no-edit
+          push_with_rebase
+          REPORT_COMMIT="$(git rev-parse HEAD)"
+          echo "FINAL_REPORT_COMMIT=$REPORT_COMMIT"
+          echo "FINAL_REPORT_RAW=https://raw.githubusercontent.com/$RESEARCH_REPO/$REPORT_COMMIT/$R"
+          git show "$REPORT_COMMIT:$R"
+      - name: Remove temporary extracted AppImage
+        if: always()
+        run: rm -rf "$TMP_AD"
