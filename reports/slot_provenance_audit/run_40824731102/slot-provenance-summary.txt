@@ -1,0 +1,11 @@
+STATIC ONLY — no emulator, no gameplay input, no savestate restore
+DATA_BIN_SHA256=69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822
+ENTRY1_SHA256=9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a
+candidate_source=run 40789339014 artifact a2_expanded_xref_candidates.csv
+candidate_source_commit=https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/commit/8b70e004f0df21bbb250a3c0b918a19e76ce0a21
+v3_total=32
+resolved_to_0x8013A554=24
+resolved_to_other_address=4
+unresolved=4
+method=linear in-function backwards reaching-definition search, recursive constant propagation for LUI/ADDIU/ORI/ANDI/XORI/basic R-type; loads/stack restores/caller-saved registers across JAL are unresolved unless value follows from an explicit supported definition
+caveat=not a complete MIPS CFG/dataflow proof; every CSV row contains the local trace and any intervening control instructions
