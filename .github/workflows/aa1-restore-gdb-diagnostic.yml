@@ -326,21 +326,44 @@ jobs:
           set -euo pipefail
           mkdir -p "$AA_WORK/logs"
           API="https://api.github.com/repos/$RESEARCH_REPO"
+          META="$AA_WORK/logs/anonymous-release-response.json"
+          OUT="$AA_WORK/logs/anonymous-release-assets.txt"
           {
-            echo "ANONYMOUS_RELEASE_LIST_BEGIN"
-            env -u GH_TOKEN curl --fail --silent --show-error --location "$API/releases?per_page=100" |
-              jq -r '.[] as $r | if ($r.assets|length)==0 then [$r.tag_name,($r.draft|tostring),($r.prerelease|tostring),"(no assets)"]|@tsv else $r.assets[] | [$r.tag_name,($r.draft|tostring),($r.prerelease|tostring),.name,(.size|tostring)]|@tsv end'
+            echo "ANONYMOUS_RELEASE_AUDIT_BEGIN token=UNSET"
+            list_code="$(env -u GH_TOKEN curl -sSL -H 'Accept: application/vnd.github+json' -H 'User-Agent: Naruto-Research-Audit' -o "$META" -w '%{http_code}' "$API/releases?per_page=100" || true)"
+            if [ "$list_code" = "200" ] && jq -e 'type=="array"' "$META" >/dev/null 2>&1; then
+              echo "ANONYMOUS_RELEASE_LIST_HTTP=$list_code source=REST_list_releases"
+              jq -r '.[] as $r | if ($r.assets|length)==0 then [$r.tag_name,($r.draft|tostring),($r.prerelease|tostring),"(no assets)"]|@tsv else $r.assets[] | [$r.tag_name,($r.draft|tostring),($r.prerelease|tostring),.name,(.size|tostring)]|@tsv end' "$META"
+            else
+              msg="$(jq -r 'if type=="object" then (.message // "(no message)") else "(unexpected response type)" end' "$META" 2>/dev/null || printf '(unreadable response)')"
+              echo "ANONYMOUS_RELEASE_LIST_HTTP=$list_code message=$msg"
+              echo "ANONYMOUS_RELEASE_LIST_FALLBACK=per-tag REST lookups, still without token"
+              # Two known published tags are queried individually if the list endpoint is rate-limited.
+              for tag in naruto-checkpoint-39262213468 research-emulator-pcsx-redux-2026-10-15; do
+                tag_code="$(env -u GH_TOKEN curl -sSL -H 'Accept: application/vnd.github+json' -H 'User-Agent: Naruto-Research-Audit' -o "$META" -w '%{http_code}' "$API/releases/tags/$tag" || true)"
+                if [ "$tag_code" = "200" ] && jq -e 'type=="object" and has("assets")' "$META" >/dev/null 2>&1; then
+                  echo "ANONYMOUS_RELEASE_TAG_HTTP=$tag_code"
+                  jq -r '. as $r | if ($r.assets|length)==0 then [$r.tag_name,($r.draft|tostring),($r.prerelease|tostring),"(no assets)"]|@tsv else $r.assets[] | [$r.tag_name,($r.draft|tostring),($r.prerelease|tostring),.name,(.size|tostring)]|@tsv end' "$META"
+                else
+                  tag_msg="$(jq -r 'if type=="object" then (.message // "(no message)") else "(unexpected response type)" end' "$META" 2>/dev/null || printf '(unreadable response)')"
+                  echo "ANONYMOUS_RELEASE_TAG tag=$tag http=$tag_code message=$tag_msg"
+                fi
+              done
+            fi
             echo "ANONYMOUS_RELEASE_LIST_END"
             for id in 647346873 652373928 686794219; do
-              raw="$(env -u GH_TOKEN curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -H 'Range: bytes=0-0' -H 'Accept: application/octet-stream' "$API/releases/assets/$id" || true)"
+              # Exact requested curl form; no -L, no Authorization, no response body retained.
+              raw="$(env -u GH_TOKEN curl -s -o /dev/null -w '%{http_code} %{redirect_url}' \
+                -H 'Range: bytes=0-0' -H 'Accept: application/octet-stream' \
+                "$API/releases/assets/$id" || true)"
               code="$(printf '%s' "$raw" | cut -d ' ' -f1)"
               redirect="$(printf '%s' "$raw" | cut -s -d ' ' -f2-)"
               redirect="$(printf '%s' "$redirect" | cut -d '?' -f1)"
               [ -n "$redirect" ] || redirect="(no redirect URL)"
               printf 'ANON_ASSET_HTTP asset_id=%s code=%s redirect=%s\n' "$id" "$code" "$redirect"
             done
-          } > "$AA_WORK/logs/anonymous-release-assets.txt"
-          cat "$AA_WORK/logs/anonymous-release-assets.txt"
+          } > "$OUT"
+          cat "$OUT"
 
       - name: Probe target and control checkpoint under external GDB (two attempts each, no input)
         shell: bash
