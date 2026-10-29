@@ -3,7 +3,7 @@ name: Step C — fixed-schedule Story Mode RAM replay comparison
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, audit/checkpoint-window-2026-10-29]
     paths:
       - ".github/workflows/storymode-fixed-schedule-ram-compare.yml"
 
@@ -12,12 +12,12 @@ permissions:
 
 concurrency:
   group: naruto-storymode-fixed-schedule-ram-compare
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   replay-compare:
     runs-on: ubuntu-24.04
-    timeout-minutes: 18
+    timeout-minutes: 25
     steps:
       - name: Checkout permitted research repository
         uses: actions/checkout@v4
@@ -178,26 +178,19 @@ jobs:
                   frame, path, ok and "PASS" or "FAIL", ok and "none" or tostring(err)))
               return ok
           end
+          -- Snapshot directly from the VSync callback. The previous version paused
+          -- the emulator and waited for nextTick at frame 2649; this run explicitly
+          -- logs every checkpoint step so a pause/nextTick deadlock is distinguishable.
           local function safe_pause_save(frame, path, quit_after, reason)
               if checkpoint_pending then return end
               checkpoint_pending = true
-              PCSX.pauseEmulator()
-              PCSX.nextTick(function()
-                  if frame == 10055 then
-                      local ok, err = pcall(capture_frame, frame)
-                      event_line(string.format("C_TEST_FINAL_SCREEN frame=%d status=%s detail=%s",
-                          frame, ok and "CAPTURED" or "FAIL", ok and "none" or tostring(err)))
-                  end
-                  local saved = save_checkpoint(frame, path)
-                  event_line(string.format("C_TEST_SAFE_POINT frame=%d save_ok=%s reason=%s",
-                      frame, tostring(saved), reason))
-                  if quit_after then
-                      PCSX.quit(saved and 0 or 42)
-                  else
-                      checkpoint_pending = false
-                      PCSX.resumeEmulator()
-                  end
-              end)
+              local saved = save_checkpoint(frame, path)
+              event_line(string.format("C_TEST_SAFE_POINT frame=%d save_ok=%s reason=%s",
+                  frame, tostring(saved), reason))
+              checkpoint_pending = false
+              if quit_after then
+                  PCSX.nextTick(function() PCSX.quit(saved and 0 or 42) end)
+              end
           end
           local function wait_for_gate(flag_path, label, next_tick_limit)
               PCSX.pauseEmulator()
@@ -292,6 +285,9 @@ jobs:
               end
           end)
           event_line("C_TEST_SCHEDULE_ARMED=1 source_run=39262213468 final_vsync=10055; no savestate restore")
+          -- Explicitly resume after listeners and input schedule are armed.
+          PCSX.resumeEmulator()
+          event_line("C_TEST_EXPLICIT_RESUME=called")
           LUA
           cat > "$C_WORK_ROOT/bin/gate-watch.py" <<'PY'
           import hashlib, json, sys, time
@@ -370,7 +366,7 @@ jobs:
           for i in $(seq 1 40); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep 0.25; done
           xdpyinfo -display "$DISPLAY" >/dev/null
 
-          for run_num in 1 2; do
+          for run_num in 1 2 3; do
             run="$root/run$run_num"
             mkdir -p "$run/home" "$run/captures/raw" "$run/cards"
             export HOME="$run/home" XDG_CONFIG_HOME="$run/home/.config" XDG_DATA_HOME="$run/home/.local/share"
@@ -380,7 +376,7 @@ jobs:
               cd "$run"
               # Fresh and isolated user/card state for each cold boot. The RAM hash
               # at VSync 2649 is the acceptance test for identical starting state.
-              timeout --signal=TERM --kill-after=5s 240s \
+              SDL_AUDIODRIVER=dummy timeout --signal=TERM --kill-after=5s 240s stdbuf -oL -eL \
                 "$src/squashfs-root/AppRun" -noupdate -bios "$src/scph7502.bin" \
                 -iso "$src/game-run.cue" -memcard1 "$run/cards/naruto-storymode.mcd" \
                 -exec "$(cat "$root/bin/pad-setup.lua")" -dofile "$root/bin/fixed-schedule.lua" \
@@ -398,18 +394,26 @@ jobs:
               grep -E 'C_TEST_|C_TEST_EVENT|C_TEST_GATE|PAD_INJECT|ERROR|error|SIGSEGV' "$run/pcsx.stdout" "$run/gate-watch.log" > "$run/replay-log.txt" || true
               if [[ $emu_rc -ne 0 ]]; then
                 echo "C_TEST_RUN_STATUS=FAIL run=$run_num emulator_exit=$emu_rc"
-                cat "$run/replay-log.txt" >> "$root/output/run$run_num-summary.txt"
-                exit 1
+              else
+                echo "C_TEST_RUN_STATUS=EXIT_ZERO run=$run_num"
               fi
               cp "$run/replay-log.txt" "$root/output/run$run_num-input-and-gate-log.txt"
+              if [[ -f "$run/captures/fixed-schedule-events.txt" ]]; then
+                cp "$run/captures/fixed-schedule-events.txt" "$root/output/run$run_num-fixed-schedule-events.txt"
+                cat "$run/captures/fixed-schedule-events.txt" >> "$root/output/run$run_num-summary.txt"
+              else
+                echo "C_TEST_FIXED_EVENT_LOG=MISSING run=$run_num" >> "$root/output/run$run_num-summary.txt"
+              fi
+              cat "$run/replay-log.txt" >> "$root/output/run$run_num-summary.txt"
             )
           done
 
           cat > "$root/bin/compare_ram.py" <<'PY'
-          import csv, hashlib, json, struct
+          import csv, hashlib, json, re, struct
           from pathlib import Path
           root=Path(__import__("os").environ["C_WORK_ROOT"])
           out=root/"output"
+          runs=(1,2,3)
           def rv(data,pos):
               val=shift=0
               while pos<len(data):
@@ -443,77 +447,90 @@ jobs:
               ram8=mem[f[0][3]:f[0][4]]
               if len(ram8)!=8388608:raise ValueError(f"RAM byte length={len(ram8)}")
               return ram8[:0x200000]
-          states={}
-          for run_num in (1,2):
+          states={}; hashes={}; run_rc={}; schedule_events={}; visual_gates={}
+          for run_num in runs:
               cap=root/f"run{run_num}"/"captures"/"raw"
-              for label,filename in (("initial","ram-frame-002649.sstate"),("final","ram-frame-010055.sstate")):
+              states[run_num]={}
+              for label,filename in (("F2649","ram-frame-002649.sstate"),("F10055","ram-frame-010055.sstate")):
                   path=cap/filename
-                  if not path.is_file():raise SystemExit(f"missing state file {path}")
-                  ram=ram_from_state(path)
-                  states[(run_num,label)]=ram
-              for label in ("initial","final"):
-                  ram=states[(run_num,label)]
-                  print(f"RAM run={run_num} stage={label} bytes={len(ram)} sha256={hashlib.sha256(ram).hexdigest()}")
-                  for addr in (0x80070EB8,0x80070F6C):
-                      v=struct.unpack_from("<I",ram,addr&0x1fffff)[0]
-                      print(f"RAM_U32 run={run_num} stage={label} address=0x{addr:08X} value=0x{v:08X} dec={v}")
-          init_equal=states[(1,"initial")]==states[(2,"initial")]
-          final_equal=states[(1,"final")]==states[(2,"final")]
-          mismatches=[]
-          if not final_equal:
-              a,b=states[(1,"final")],states[(2,"final")]
-              offsets=[i for i,(x,y) in enumerate(zip(a,b)) if x!=y]
-              block={}
-              for i in offsets:block[i//0x1000]=block.get(i//0x1000,0)+1
-              mismatches=[{"ram_offset":f"0x{k*0x1000:06X}","virtual_start":f"0x{(0x80000000+k*0x1000):08X}","differing_bytes":v} for k,v in sorted(block.items())]
-              print("FINAL_RAM_FIRST_DIFF_OFFSET="+(f"0x{offsets[0]:06X}" if offsets else "NONE"))
-              print("FINAL_RAM_DIFFERING_BYTE_COUNT="+str(len(offsets)))
-              print("FINAL_RAM_DIFFERING_BLOCKS="+json.dumps(mismatches))
-          ev=[]
-          for run_num in (1,2):
-              p=out/f"run{run_num}-input-and-gate-log.txt"
-              lines=p.read_text(errors="replace").splitlines()
-              ev.append([x.split(" ",1)[1] for x in lines if "C_TEST_EVENT " in x])
-          event_equal=ev[0]==ev[1]
-          visual=[]
-          for run_num in (1,2):
-              p=out/f"run{run_num}-input-and-gate-log.txt"
-              lines=p.read_text(errors="replace").splitlines()
-              visual.append([x.split(" ",1)[1] for x in lines if "C_TEST_VISUAL_GATE " in x or "C_TEST_GATE " in x])
-          visual_equal=visual[0]==visual[1]
-          schedules_pass=event_equal and len(ev[0])==14 and all("status=PASS" in x or "status=NO_GO" in x for x in ev[0])
-          all_authorized=all("decision=APPLY" in x and "status=PASS" in x for x in ev[0])
-          criteria_pass=init_equal and final_equal and event_equal and visual_equal and schedules_pass and all_authorized
+                  if path.is_file():
+                      try:
+                          ram=ram_from_state(path)
+                          states[run_num][label]=ram
+                          hashes[(run_num,label)]=hashlib.sha256(ram).hexdigest()
+                          print(f"RAM run={run_num} stage={label} bytes={len(ram)} sha256={hashes[(run_num,label)]}")
+                          for addr in (0x80070EB8,0x80070F6C,0x800A3118):
+                              v=struct.unpack_from("<I",ram,addr-0x80000000)[0]
+                              print(f"RAM_U32 run={run_num} stage={label} address=0x{addr:08X} value=0x{v:08X} dec={v}")
+                      except Exception as e:
+                          print(f"RAM_PARSE_FAIL run={run_num} stage={label} error={type(e).__name__}:{e}")
+                  else:
+                      print(f"RAM_MISSING run={run_num} stage={label} expected_frame={label[1:]}")
+              sp=out/f"run{run_num}-summary.txt"
+              content=sp.read_text(errors="replace") if sp.exists() else ""
+              m=re.search(rf"C_TEST_RUN_END={run_num} exit_code=(-?\d+)",content)
+              run_rc[run_num]=int(m.group(1)) if m else None
+              ep=out/f"run{run_num}-fixed-schedule-events.txt"
+              lines=ep.read_text(errors="replace").splitlines() if ep.exists() else []
+              schedule_events[run_num]=[x for x in lines if "C_TEST_EVENT " in x]
+              lp=out/f"run{run_num}-input-and-gate-log.txt"
+              ll=lp.read_text(errors="replace").splitlines() if lp.exists() else []
+              visual_gates[run_num]=[x.split("C_TEST_",1)[1] for x in ll if "C_TEST_VISUAL_GATE " in x or "C_TEST_GATE " in x]
+          def equal_at(label):
+              vals=[states[n].get(label) for n in runs]
+              return all(v is not None for v in vals) and vals[0]==vals[1]==vals[2]
+          initial_equal=equal_at("F2649")
+          final_equal=equal_at("F10055")
+          event_equal=all(schedule_events[n]==schedule_events[1] for n in (2,3))
+          visual_equal=all(visual_gates[n]==visual_gates[1] for n in (2,3))
+          base_frames=(2650,2680,2710,2720,2740,2750,2780,2810)
+          base_input_pass={}
+          for n in runs:
+              base_input_pass[n]=all(any(re.search(rf"frame={fr}\b.*decision=APPLY.*status=PASS",ev) for ev in schedule_events[n]) for fr in base_frames)
+          final_saved={}
+          for n in runs:
+              final_saved[n]=any("C_TEST_SAFE_POINT frame=10055 save_ok=true" in x for x in (out/f"run{n}-fixed-schedule-events.txt").read_text(errors="replace").splitlines()) if (out/f"run{n}-fixed-schedule-events.txt").exists() else False
+          all_runs_completed=all(run_rc[n]==0 and final_saved[n] for n in runs)
+          # Hash all pairwise differing byte counts only when all 3 final states exist.
+          pairwise={}
+          if all(states[n].get("F10055") is not None for n in runs):
+              for a,b in ((1,2),(1,3),(2,3)):
+                  aa,bb=states[a]["F10055"],states[b]["F10055"]
+                  offsets=[i for i,(x,y) in enumerate(zip(aa,bb)) if x!=y]
+                  pairwise[f"{a}_vs_{b}"]={"identical":len(offsets)==0,"differing_bytes":len(offsets),
+                      "first_difference_offset":f"0x{offsets[0]:06X}" if offsets else None}
           result={
-            "schedule_source_run":39262213468,"final_vsync":10055,"replays":2,
-            "initial_ram_sha256_run1":hashlib.sha256(states[(1,"initial")]).hexdigest(),
-            "initial_ram_sha256_run2":hashlib.sha256(states[(2,"initial")]).hexdigest(),
-            "initial_ram_equal":init_equal,
-            "final_ram_sha256_run1":hashlib.sha256(states[(1,"final")]).hexdigest(),
-            "final_ram_sha256_run2":hashlib.sha256(states[(2,"final")]).hexdigest(),
-            "final_ram_equal":final_equal,"input_event_log_equal":event_equal,"visual_gate_log_equal":visual_equal,
-            "input_event_count_run1":len(ev[0]),"input_event_count_run2":len(ev[1]),
-            "all_scheduled_events_authorized_and_passed":all_authorized,
-            "criterion_pass":criteria_pass,"mismatch_blocks":mismatches,
-            "limitation":"RAM comparisons cover first 0x200000 bytes of savestate RAM field; raw state/RAM/screenshots are temporary and not uploaded."
+            "schedule_source_run":39262213468,"checkpoint_load":"NO; cold boot only",
+            "replays":3,"frame_hash_targets":{"initial_vsync":2649,"final_vsync":10055},
+            "run_exit_codes":run_rc,"initial_ram_sha256_by_run":{str(n):hashes.get((n,"F2649")) for n in runs},
+            "initial_ram_identical_3_of_3":initial_equal,
+            "final_ram_sha256_by_run":{str(n):hashes.get((n,"F10055")) for n in runs},
+            "final_ram_identical_3_of_3":final_equal,
+            "base_fixed_inputs_passed_by_run":base_input_pass,
+            "final_save_passed_by_run":final_saved,
+            "fixed_schedule_event_log_identical_3_of_3":event_equal,
+            "visual_gate_log_identical_3_of_3":visual_equal,
+            "pairwise_final_ram_comparisons":pairwise,
+            "criterion_pass":bool(initial_equal and final_equal and event_equal and visual_equal and all_runs_completed and all(base_input_pass.values())),
+            "limitation":"Only SHA-256 and selected derived words from the first 2 MiB RAM prefix are emitted. Raw savestates, RAM bytes, screenshots and game inputs remain on the ephemeral runner."
           }
           (out/"schedule-c-ram-comparison.json").write_text(json.dumps(result,indent=2)+"\n")
           with (out/"schedule-c-ram-comparison.csv").open("w",newline="") as f:
               w=csv.writer(f);w.writerow(["check","result"])
               for k,v in result.items():w.writerow([k,json.dumps(v,ensure_ascii=False) if isinstance(v,(dict,list)) else v])
           summary=[
-            "STEP C — FIXED INPUT SCHEDULE / RAM SHA-256 COMPARISON",
-            "Source input log: run #39262213468; cold-boot replay only, no savestate load.",
+            "STEP C — Z1 FIXED INPUT SCHEDULE / 3-RUN RAM HASH AUDIT",
+            "Source input log: run #39262213468; cold boots only; no savestate restore.",
             "Schedule: START 2650/2680; DOWN 2710/2720; UP 2740/2750; CIRCLE 2780/2810; gated CIRCLE 6100/6130; gated START 9035/9065 and 9110/9140.",
-            "Final RAM checkpoint: VSync 10055. Starting-state requirement is verified by matching 2 MiB RAM SHA-256 at VSync 2649.",
-            "RESULT: "+("CONSISTENT 2/2 ON THIS SCHEDULE" if criteria_pass else "NOT PASSED / INCOMPLETE"),
-            "Never infer determinism from two matching runs.",
+            "RAM hash targets: VSync 2649 (before scheduled input) and VSync 10055 (after schedule). Only selected words and SHA-256 are reported.",
+            "Z1 acceptance requires identical RAM hashes 3/3 at both frame targets, identical input/gate schedules, all eight baseline presses/releases applied successfully, and three clean exits after the final checkpoint.",
+            "RESULT: "+("TUNTAS: IDENTICAL 3/3 AT BOTH TARGET FRAMES" if result["criterion_pass"] else "SEBAGIAN/BELUM: ACCEPTANCE NOT MET; inspect per-run cause and hash fields"),
             json.dumps(result,indent=2),
           ]
           (out/"schedule-c-ram-comparison.txt").write_text("\n".join(summary)+"\n")
           print("\n".join(summary))
-          if not criteria_pass:
-              raise SystemExit("Step C criteria not met")
+          if not result["criterion_pass"]:
+              raise SystemExit("Z1 acceptance not met; sanitized diagnostic report retained")
           PY
           python3 "$root/bin/compare_ram.py"
           echo "C_TEST_RAM_COMPARISON=PASS"
@@ -524,7 +541,7 @@ jobs:
         run: |
           set -euo pipefail
           root="$C_WORK_ROOT"
-          rm -rf "$root/source" "$root/run1" "$root/run2" "$root/bin"
+          rm -rf "$root/source" "$root/run1" "$root/run2" "$root/run3" "$root/bin"
           if find "$root/output" -type f | grep -E '\.(bin|iso|cue|sstate|mcd|raw|png|rom|exe)$'; then
             echo "::error::private binary/raw visual artifact leaked into output"
             exit 1
@@ -549,6 +566,6 @@ jobs:
           if git diff --cached --quiet; then echo "REPORT_COMMIT=NO_CHANGES"
           else
             git commit -m "Record fixed-schedule RAM comparison run ${GITHUB_RUN_ID}"
-            git push origin HEAD:main
+            git push origin "HEAD:$GITHUB_REF_NAME"
             echo "REPORT_COMMIT=PASS"
           fi
