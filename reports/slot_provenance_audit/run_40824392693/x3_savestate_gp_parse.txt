@@ -1,0 +1,16 @@
+X3 CPU REGISTER PARSE FROM ORIGINAL PCSX-Redux SaveState v4; no emulator
+source_state_bytes=21163286
+source_state_sha256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d
+register_payload_bytes=8597
+gpr_payload_bytes=99
+gpr_field_path=SaveState.field4.Registers.field1.GPR/raw-packed
+gpr_encoding=raw-packed-varint-register-array
+gpr_count=34
+gp_register_index=28
+gp_register_value=0x8006D67C
+gp_plus_0xA8=0x8006D724
+gpr_payload_sha256=51b9d3ba4e8a7f889bc8514bc3ca18c87d199d7624b915349d91d1aed2393035
+gpr_serialized_field_count=0
+gpr_serialized_fields=[{"parse_error": "invalid protobuf field number 0"}]
+candidate_arrays=[{"path": "SaveState.field4.Registers.field1.GPR/raw-packed", "encoding": "raw-packed-varint-register-array", "count": 34}]
+If GP cannot be uniquely decoded from its SaveState.v4 register field, gp+0xA8 is explicitly TIDAK TAHU.
