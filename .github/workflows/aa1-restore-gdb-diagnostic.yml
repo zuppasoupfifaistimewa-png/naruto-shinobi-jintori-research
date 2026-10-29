@@ -109,13 +109,16 @@ jobs:
             echo "APP_RUN_STRINGS_END"
           } > "$AA_WORK/logs/appimage-layout.txt"
           cat "$AA_WORK/logs/appimage-layout.txt"
-          PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | while IFS= read -r f; do
-            bn="$(basename "$f" | tr '[:upper:]' '[:lower:]')"
-            case "$bn" in *pcsx*|*redux*) printf '%s\n' "$f"; break;; esac
-          done)"
+          find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print > "$AA_WORK/logs/executable-paths.txt"
+          PCSX_BIN="$(grep -Ei '(^|/)[^/]*(pcsx|redux)[^/]*$' "$AA_WORK/logs/executable-paths.txt" | sed -n '1p' || true)"
           if [ -z "$PCSX_BIN" ] || [ ! -x "$PCSX_BIN" ]; then
             echo "PCSX_BINARY_DISCOVERY_FAIL=1"
-            echo "PCSX_BINARY_CANDIDATES=$(strings "$APPDIR/AppRun" | grep -Ei 'pcsx|redux|exec|sharun' | head -n 40 || true)"
+            echo "EXECUTABLE_PATHS_BEGIN"
+            cat "$AA_WORK/logs/executable-paths.txt"
+            echo "EXECUTABLE_PATHS_END"
+            echo "APP_RUN_STRINGS_BEGIN"
+            strings "$APPDIR/AppRun" | grep -Ei 'pcsx|redux|exec|sharun|APPDIR|APPIMAGE|default|\.env|bwrap|gio-launch' | sed -n '1,120p' || true
+            echo "APP_RUN_STRINGS_END"
             exit 1
           fi
           echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
