@@ -12,6 +12,13 @@ Direct Channel field outcomes:
  channel[2].field3 => INCONCLUSIVE_TIMEOUT_BOTH
 AE2 necessity check: target base with only Channel[2].data.current (field 8) swapped from control => SIGSEGV_BOTH.
 Schema mapping: src/spu/types.h at PCSX-Redux pin 0c3572c3d defines Chan::CurrPtr as field 8, TYPESTRING("current"); permalink=https://github.com/pcsx-redux/pcsx-redux/blob/0c3572c3d/src/spu/types.h
-Runtime cases=23; two-launch snapshots reaching post-load=180=0
+Runtime cases=28; two-launch snapshots reaching post-load=180=0
+AE4 prior AD3 qualifying hybrids (top-level target field in control base), reconstructed hash identity and current two-launch outcome:
+ field3 expected_sha=78d937e5dabd8b2ebdf949176fad8557f82d6e0759116511530b18b8c841dca4 actual_sha=78d937e5dabd8b2ebdf949176fad8557f82d6e0759116511530b18b8c841dca4 byte_identical=True outcome=INCONCLUSIVE_TIMEOUT_BOTH
+ field4 expected_sha=142f82698ab689518a115e0cdff32ce26d9c52a1cfd8a225fe36c2c1827f67ed actual_sha=142f82698ab689518a115e0cdff32ce26d9c52a1cfd8a225fe36c2c1827f67ed byte_identical=True outcome=INCONCLUSIVE_TIMEOUT_BOTH
+ field5 expected_sha=08f907c3b7f630369d7eca7d2157572fda68009a4caaee1d79827317373a3f6a actual_sha=08f907c3b7f630369d7eca7d2157572fda68009a4caaee1d79827317373a3f6a byte_identical=True outcome=INCONCLUSIVE_TIMEOUT_BOTH
+ field8 expected_sha=967be929b23017796ffc2faaad8a42e1d9d66c26e335d21d2a92ec0c63596967 actual_sha=967be929b23017796ffc2faaad8a42e1d9d66c26e335d21d2a92ec0c63596967 byte_identical=True outcome=INCONCLUSIVE_TIMEOUT_BOTH
+ field10 expected_sha=0617e540eb1a6d0704a2637a50e37766b622870c08d0b1853f8eabeff1ad02e1 actual_sha=0617e540eb1a6d0704a2637a50e37766b622870c08d0b1853f8eabeff1ad02e1 byte_identical=True outcome=INCONCLUSIVE_TIMEOUT_BOTH
+AE4 2MiB RAM SHA/raw word values for successful launches are in ae4_ram_snapshots.tsv; no RAM bytes are written to the repository.
 No SIGINT/timeouts were counted as crashes; timeout outcomes are INCONCLUSIVE_TIMEOUT.
 The prior AE first-level all-child reconstruction did not match target SPU bytes due serialization ordering/add/remove ordering; therefore use these direct-parent-message trials to establish a narrow sufficient child, not global field byte identity.
