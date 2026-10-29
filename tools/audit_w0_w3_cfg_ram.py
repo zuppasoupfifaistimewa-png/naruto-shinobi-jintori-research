@@ -559,6 +559,12 @@ def extract_gpr_from_sstate(state_path):
         for (n,w),vals in groups.items():
             if len(vals) in (32,34):
                 evidence.append((path+f"/field{n}-wire{w}","repeated-scalar-array",vals))
+    # Some PCSX-Redux SaveState.v4 builds encode the fixed GPR array as a raw packed-varint
+    # payload within the length-delimited GPR field, without a nested field tag.
+    # Accept only an exact 34-value decode; retain values in memory and publish only GP itself.
+    raw_gpr_values=decode_packed_varints(gpr_payload)
+    if len(raw_gpr_values)==34:
+        evidence.append(("SaveState.field4.Registers.field1.GPR/raw-packed","raw-packed-varint-register-array",raw_gpr_values))
     parse_array(gpr_payload,"SaveState.field4.Registers.field1.GPR")
     # PCSX-Redux may encode this fixed GPR message as separate scalar fields (one field per register).
     # Accept only an exact sequential field-number set, then map field 29 to GPR index 28 (GP).
