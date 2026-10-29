@@ -1,29 +1,29 @@
-AA1_RUNTIME_SUMMARY — run=40852693434
+AA1_RUNTIME_SUMMARY — run=40853480515
 
 CASE=target attempt=1
 wrapper_exit=0
 signal_or_inferior_exit=Thread 15 "pcsx-redux" received signal SIGSEGV, Segmentation fault.
 frame_0=#0  0x00007ffff0dd36d0 in ?? ()
-thread=* 15   LWP 2951 "pcsx-redux"   0x00007ffff0dd36d0 in ?? ()
+thread=* 15   LWP 3199 "pcsx-redux"   0x00007ffff0dd36d0 in ?? ()
 last_load_log_line=AA1_LOAD_BEGIN=1 path=resume/target.sstate vsync=1 controller=NONE 
 
 CASE=target attempt=2
 wrapper_exit=0
 signal_or_inferior_exit=Thread 15 "pcsx-redux" received signal SIGSEGV, Segmentation fault.
 frame_0=#0  0x00007ffff0dd36d0 in ?? ()
-thread=* 15   LWP 2980 "pcsx-redux"   0x00007ffff0dd36d0 in ?? ()
+thread=* 15   LWP 3228 "pcsx-redux"   0x00007ffff0dd36d0 in ?? ()
 last_load_log_line=AA1_LOAD_BEGIN=1 path=resume/target.sstate vsync=1 controller=NONE 
 
 CASE=control attempt=1
 wrapper_exit=1
-signal_or_inferior_exit=[Inferior 1 (process 2992) exited normally]
+signal_or_inferior_exit=[Inferior 1 (process 3240) exited normally]
 frame_0=NOT_RECORDED
 thread=NOT_RECORDED
 last_load_log_line=AA1_POST_LOAD_VSYNC=180 
 
 CASE=control attempt=2
 wrapper_exit=1
-signal_or_inferior_exit=[Inferior 1 (process 3034) exited normally]
+signal_or_inferior_exit=[Inferior 1 (process 3312) exited normally]
 frame_0=NOT_RECORDED
 thread=NOT_RECORDED
 last_load_log_line=AA1_POST_LOAD_VSYNC=180 
