@@ -474,7 +474,73 @@ def w1(entry,candidate,function_csv,v3_csv,out):
     (Path(out)/"w1_classification_changes.txt").write_text("\n".join(
       f"{r['pc']}: {r['previous_conservative_2_2_28_classification']} -> {r['class']} | {r['change_explanation']} | reaching={r['reaching_definitions_with_values']} | eff={r['possible_effective_addresses']}" for r in reads)+"\n",encoding="utf-8")
 
-def w2(rampath,out,run_id):
+def decode_packed_varints(payload):
+    vals=[]
+    p=0
+    try:
+        while p<len(payload):
+            v=shift=0
+            while True:
+                if p>=len(payload) or shift>63: return []
+                b=payload[p]; p+=1; v|=(b&0x7f)<<shift
+                if not (b&0x80): break
+                shift+=7
+            vals.append(v)
+    except Exception:
+        return []
+    return vals
+
+def extract_gpr_from_sstate(state_path):
+    """Decode serialized CPU GPR values from the protobuf; no emulator is used."""
+    state=Path(state_path).read_bytes()
+    if sha(state)!="00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d":
+        raise SystemExit("SAVESTATE_SHA256_MISMATCH_IN_GPR_PARSER")
+    top=list(parse_fields(state))
+    if one([(n,w,v) for n,w,v in top],1,2,"header message")==b"":
+        raise SystemExit("UNEXPECTED_EMPTY_HEADER")
+    # Current PCSX-Redux SaveState v4 top-level field order: info, thumbnail, memory, registers.
+    reg_payload=one(top,4,2,"registers message")
+    regs_fields=list(parse_fields(reg_payload))
+    # The first Registers member is GPR.
+    gpr_payload=one(regs_fields,1,2,"GPR message")
+    evidence=[]
+    def parse_array(payload,path,depth=0):
+        if depth>5:return
+        if len(payload) in (32*4,34*4):
+            evidence.append((path,"raw-u32-array",list(struct.unpack("<"+"I"*(len(payload)//4),payload))))
+        try: fs=list(parse_fields(payload))
+        except Exception: return
+        groups={}
+        for n,w,v in fs:
+            if w in (0,5):
+                value=v if w==0 else struct.unpack("<I",v)[0]
+                groups.setdefault((n,w),[]).append(value)
+            elif w==1:
+                groups.setdefault((n,w),[]).append(struct.unpack("<Q",v)[0])
+            elif w==2:
+                if len(v) in (32*4,34*4):
+                    parse_array(v,path+f"/field{n}-raw",depth+1)
+                packed=decode_packed_varints(v)
+                if len(packed) in (32,34):
+                    evidence.append((path+f"/field{n}-packed-varint","packed-varint-array",packed))
+                parse_array(v,path+f"/field{n}",depth+1)
+        for (n,w),vals in groups.items():
+            if len(vals) in (32,34):
+                evidence.append((path+f"/field{n}-wire{w}","repeated-scalar-array",vals))
+    parse_array(gpr_payload,"SaveState.field4.Registers.field1.GPR")
+    # Prefer exact 34-element GPR layout; 32-element arrays are accepted only if no 34-element representation exists.
+    exact=[x for x in evidence if len(x[2])==34]
+    chosen=exact[0] if exact else next((x for x in evidence if len(x[2])==32),None)
+    report={"state_bytes":len(state),"state_sha256":sha(state),"register_payload_bytes":len(reg_payload),
+      "gpr_payload_bytes":len(gpr_payload),"candidate_arrays":[{"path":p,"encoding":e,"count":len(v)} for p,e,v in evidence],
+      "gpr_count":len(chosen[2]) if chosen else 0,"gpr_encoding":chosen[1] if chosen else "UNKNOWN",
+      "gpr_field_path":chosen[0] if chosen else "TIDAK TAHU","gp_index":28}
+    gp=chosen[2][28] if chosen and len(chosen[2])>28 else None
+    report["gp_value"]=H(gp) if gp is not None else "TIDAK TAHU"
+    report["gp_raw_u32"]=gp
+    return report
+
+def w2(rampath,out,run_id,statepath):
     ram=Path(rampath).read_bytes()
     if len(ram)!=RAM_BYTES:raise SystemExit(f"RAM_SIZE_MISMATCH:{len(ram)}")
     po=PTR-RAM_BASE;so=SLOT-RAM_BASE
@@ -491,6 +557,43 @@ def w2(rampath,out,run_id):
       "match_prediction":"PASS" if val==255 else "MISMATCH"})
     out=Path(out);write_csv(out/"w2_predicted_vs_checkpoint_values.csv",rows,
       ["field","n","region_offset","virtual_address","raw_bytes_le","u32_le","decimal","predicted_after_init","match_prediction"])
+    # X3 values: RAM accounting words plus GP extracted from SaveState.v4 registers, without restoring it.
+    gp_report=extract_gpr_from_sstate(statepath)
+    x3rows=[]
+    def add_ram_cell(label,addr,meaning):
+        off=addr-RAM_BASE
+        if 0<=off and off+4<=len(ram):
+            raw=ram[off:off+4]; val=struct.unpack("<I",raw)[0]
+            x3rows.append({"field":label,"virtual_address":H(addr),"ram_offset":H(off),"raw_bytes_le":raw.hex(" ").upper(),
+              "u32_le":H(val),"decimal":val,"raw_bytes_sha256":sha(raw),"status":"READ_FROM_CHECKPOINT_RAM","meaning":meaning})
+            return {"address":addr,"raw":raw,"value":val}
+        x3rows.append({"field":label,"virtual_address":H(addr),"ram_offset":"","raw_bytes_le":"","u32_le":"","decimal":"",
+          "raw_bytes_sha256":"","status":"ADDRESS_OUTSIDE_EXTRACTED_2MIB","meaning":meaning})
+        return None
+    c8=add_ram_cell("accounting_plus_0x08",0x800A2918+0x08,"static helper code reads, adds/subtracts derived counts/sizes, and writes this word")
+    c12=add_ram_cell("accounting_plus_0x0C",0x800A2918+0x0C,"static helper code increments/decrements this word")
+    gp_value=gp_report.get("gp_raw_u32")
+    gp_addr=(gp_value+0xA8)&0xffffffff if isinstance(gp_value,int) else None
+    gp_cell=add_ram_cell("saved_gp_plus_0xA8",gp_addr,"address is based on serialized CPU GP register + 0xA8; not assumed to be a fixed RAM address") if gp_addr is not None else None
+    write_csv(out/"x3_accounting_checkpoint_values.csv",x3rows)
+    (out/"x3_savestate_gp_parse.txt").write_text("\n".join([
+      "X3 CPU REGISTER PARSE FROM ORIGINAL PCSX-Redux SaveState v4; no emulator",
+      f"source_state_bytes={gp_report['state_bytes']}",f"source_state_sha256={gp_report['state_sha256']}",
+      f"register_payload_bytes={gp_report['register_payload_bytes']}",f"gpr_payload_bytes={gp_report['gpr_payload_bytes']}",
+      f"gpr_field_path={gp_report['gpr_field_path']}",f"gpr_encoding={gp_report['gpr_encoding']}",
+      f"gpr_count={gp_report['gpr_count']}",f"gp_register_index={gp_report['gp_index']}",
+      f"gp_register_value={gp_report['gp_value']}",f"gp_plus_0xA8={H(gp_addr) if gp_addr is not None else 'TIDAK TAHU'}",
+      "candidate_arrays="+json.dumps(gp_report["candidate_arrays"],ensure_ascii=False),
+      "If GP cannot be uniquely decoded from its SaveState.v4 register field, gp+0xA8 is explicitly TIDAK TAHU."
+    ])+"\n",encoding="utf-8")
+    x3_lines=["X3 RAW CHECKPOINT MEMORY VALUES",f"ram_sha256={sha(ram)}",
+      f"accounting_object_address=0x800A2918",f"accounting_object_+0x08_address=0x800A2920",
+      f"accounting_object_+0x0C_address=0x800A2924",
+      f"accounting_cell_values_sha256={sha((c8['raw'] if c8 else b'')+(c12['raw'] if c12 else b''))}",
+      f"saved_gp={gp_report['gp_value']}",f"gp_plus_0xA8={H(gp_addr) if gp_addr is not None else 'TIDAK TAHU'}",
+      f"gp_plus_0xA8_raw_bytes_sha256={gp_cell['raw'] and sha(gp_cell['raw']) if gp_cell else 'TIDAK TAHU'}",
+      "no_raw_RAM_or_savestate_committed=yes"]
+    (out/"x3_accounting_checkpoint_summary.txt").write_text("\n".join(x3_lines)+"\n",encoding="utf-8")
     lines=["W2 DIRECT SAVESTATE RAM PARSE; EMULATOR NOT LAUNCHED",
       "source_checkpoint_run=39262213468",f"audit_run={run_id}",f"ram_prefix_bytes={len(ram)}",
       f"ram_prefix_sha256={sha(ram)}",f"requested_region_address={H(PTR)}",f"requested_region_bytes={len(region)}",
@@ -505,7 +608,7 @@ def w2(rampath,out,run_id):
 
 def main():
     ap=argparse.ArgumentParser()
-    for x in ("entry","candidate","function_csv","v3","ram","out","run_id"):ap.add_argument("--"+x,required=True)
+    for x in ("entry","candidate","function_csv","v3","ram","state","out","run_id"):ap.add_argument("--"+x,required=True)
     a=ap.parse_args();entry=Path(a.entry).read_bytes()
     if len(entry)!=596412 or sha(entry)!=ENTRY1_SHA:raise SystemExit("ENTRY1_IDENTITY_MISMATCH")
     out=Path(a.out);out.mkdir(parents=True,exist_ok=True)
@@ -528,6 +631,6 @@ def main():
             txt=txt[:start]+revised+"\n\n"+txt[end:]
         prior.write_text(txt,encoding="utf-8")
     w1(entry,a.candidate,a.function_csv,a.v3,out)
-    w2(a.ram,out,a.run_id)
+    w2(a.ram,out,a.run_id,a.state)
 if __name__=="__main__":
     main()
