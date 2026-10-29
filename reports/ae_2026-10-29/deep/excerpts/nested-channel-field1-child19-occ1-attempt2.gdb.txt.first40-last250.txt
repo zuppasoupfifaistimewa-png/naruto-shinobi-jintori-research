@@ -1,4 +1,4 @@
-[Detaching after fork from child process 3944]
+[Detaching after fork from child process 3922]
 ALSA lib confmisc.c:855:(parse_card) [error.core] cannot find card '0'
 ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_card_inum returned error: No such file or directory
 ALSA lib confmisc.c:422:(snd_func_concat) [error.core] error evaluating strings
@@ -39,6 +39,53 @@ BIOS Trace1: 0x0e
 BIOS Trace1: 0x01
 BIOS Trace1: 0x02
 [... omitted middle; full raw log retained]
+      0x7ffff69ee000     0x7ffff69ef000     0x1000     0xc000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbrotlidec.so.1.2.0
+      0x7ffff69ef000     0x7ffff69f0000     0x1000     0xd000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libbrotlidec.so.1.2.0
+      0x7ffff69f0000     0x7ffff6a72000    0x82000        0x0  rw-p   
+      0x7ffff6a72000     0x7ffff6a78000     0x6000        0x0  rw-p   
+      0x7ffff6a78000     0x7ffff6a7a000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXdmcp.so.6.0.0
+      0x7ffff6a7a000     0x7ffff6a7c000     0x2000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXdmcp.so.6.0.0
+      0x7ffff6a7c000     0x7ffff6a7e000     0x2000     0x4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXdmcp.so.6.0.0
+      0x7ffff6a7e000     0x7ffff6a7f000     0x1000     0x5000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXdmcp.so.6.0.0
+      0x7ffff6a7f000     0x7ffff6a80000     0x1000     0x6000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXdmcp.so.6.0.0
+      0x7ffff6a80000     0x7ffff6a81000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXau.so.6.0.0
+      0x7ffff6a81000     0x7ffff6a82000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXau.so.6.0.0
+      0x7ffff6a82000     0x7ffff6a83000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXau.so.6.0.0
+      0x7ffff6a83000     0x7ffff6a84000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXau.so.6.0.0
+      0x7ffff6a84000     0x7ffff6a85000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libXau.so.6.0.0
+      0x7ffff6a85000     0x7ffff6a87000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLX.so.0.0.0
+      0x7ffff6a87000     0x7ffff6aa1000    0x1a000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLX.so.0.0.0
+      0x7ffff6aa1000     0x7ffff6aa4000     0x3000    0x1c000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLX.so.0.0.0
+      0x7ffff6aa4000     0x7ffff6aa5000     0x1000    0x1f000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLX.so.0.0.0
+      0x7ffff6aa5000     0x7ffff6aa6000     0x1000    0x20000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLX.so.0.0.0
+      0x7ffff6aa6000     0x7ffff6ab6000    0x10000        0x0  rw-p   
+      0x7ffff6ab6000     0x7ffff6ab8000     0x2000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLdispatch.so.0.0.0
+      0x7ffff6ab8000     0x7ffff6af7000    0x3f000     0x2000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLdispatch.so.0.0.0
+      0x7ffff6af7000     0x7ffff6b0a000    0x13000    0x41000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLdispatch.so.0.0.0
+      0x7ffff6b0a000     0x7ffff6b26000    0x1c000    0x54000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLdispatch.so.0.0.0
+      0x7ffff6b26000     0x7ffff6b27000     0x1000    0x70000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libGLdispatch.so.0.0.0
+      0x7ffff6b27000     0x7ffff6b2f000     0x8000        0x0  rw-p   
+      0x7ffff6b2f000     0x7ffff6b3c000     0xd000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcurl.so.4.8.0
+      0x7ffff6b3c000     0x7ffff6c03000    0xc7000     0xd000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcurl.so.4.8.0
+      0x7ffff6c03000     0x7ffff6c30000    0x2d000    0xd4000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcurl.so.4.8.0
+      0x7ffff6c30000     0x7ffff6c37000     0x7000   0x100000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcurl.so.4.8.0
+      0x7ffff6c37000     0x7ffff6c38000     0x1000   0x107000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libcurl.so.4.8.0
+      0x7ffff6c38000     0x7ffff6c39000     0x1000        0x0  rw-p   
+      0x7ffff6c39000     0x7ffff6c45000     0xc000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libavutil.so.61.1.102
+      0x7ffff6c45000     0x7ffff6cbd000    0x78000     0xc000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libavutil.so.61.1.102
+      0x7ffff6cbd000     0x7ffff6ce2000    0x25000    0x84000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libavutil.so.61.1.102
+      0x7ffff6ce2000     0x7ffff6cf8000    0x16000    0xa8000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libavutil.so.61.1.102
+      0x7ffff6cf8000     0x7ffff6cf9000     0x1000    0xbe000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libavutil.so.61.1.102
+      0x7ffff6cf9000     0x7ffff6e00000   0x107000        0x0  rw-p   
+      0x7ffff6e00000     0x7ffff6e11000    0x11000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libavformat.so.63.1.102
+      0x7ffff6e11000     0x7ffff6f79000   0x168000    0x11000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libavformat.so.63.1.102
+      0x7ffff6f79000     0x7ffff6ffe000    0x85000   0x179000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libavformat.so.63.1.102
+      0x7ffff6ffe000     0x7ffff7038000    0x3a000   0x1fd000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libavformat.so.63.1.102
+      0x7ffff7038000     0x7ffff7039000     0x1000   0x237000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libavformat.so.63.1.102
+      0x7ffff7039000     0x7ffff703b000     0x2000        0x0  rw-p   
+      0x7ffff703b000     0x7ffff703c000     0x1000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdl.so.2
+      0x7ffff703c000     0x7ffff703d000     0x1000     0x1000  r-xp   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdl.so.2
+      0x7ffff703d000     0x7ffff703e000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdl.so.2
       0x7ffff703e000     0x7ffff703f000     0x1000     0x2000  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdl.so.2
       0x7ffff703f000     0x7ffff7040000     0x1000     0x3000  rw-p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libdl.so.2
       0x7ffff7040000     0x7ffff7044000     0x4000        0x0  r--p   /tmp/naruto-ae1-channel-bisect/source/AppDir/lib/libgcc_s.so.1
@@ -120,132 +167,108 @@ BIOS Trace1: 0x02
   0xffffffffff600000 0xffffffffff601000     0x1000        0x0  --xp   [vsyscall]
 AE_GDB_COMMAND_END: info proc mappings
 AE_GDB_COMMAND_BEGIN: bt
-#0  0x00007fffe1ed4773 in ?? ()
-#1  0x00007fffe1ed78af in ?? ()
-#2  0x00000000f7dfbb50 in ?? ()
-#3  0x0000000010076b40 in ?? ()
-#4  0x3f70f0f23f70f0f2 in ?? ()
-#5  0x3f70f0f23f70f0f2 in ?? ()
-#6  0x3f8000003f800000 in ?? ()
-#7  0x3f8000003f800000 in ?? ()
-#8  0x3d70f0f23d70f0f2 in ?? ()
-#9  0x3d70f0f23d70f0f2 in ?? ()
-#10 0x3d70f0f23d70f0f2 in ?? ()
-#11 0x3d70f0f23d70f0f2 in ?? ()
-#12 0x3d70f0f23d70f0f2 in ?? ()
-#13 0x3d70f0f23d70f0f2 in ?? ()
-#14 0x3f70f0f23f70f0f2 in ?? ()
-#15 0x3f70f0f23f70f0f2 in ?? ()
-#16 0x000000fff7dfbe90 in ?? ()
-#17 0xaf2b7b416dd16800 in ?? ()
-#18 0x000000000000013f in ?? ()
-#19 0x000000000ddee190 in ?? ()
-#20 0x000000000de2f6d0 in ?? ()
-#21 0x00007fffe1ed4cf2 in ?? ()
-#22 0x0000000010076b10 in ?? ()
-#23 0x000000000de2f6d0 in ?? ()
-#24 0x000000000ddee190 in ?? ()
-#25 0x00007fffe1ed8f3d in ?? ()
-#26 0x0000000009dfcfe8 in ?? ()
-#27 0x0000000009dfd1e8 in ?? ()
-#28 0x00007ffff7dfbef0 in ?? ()
-#29 0x00007fffe1f3cebe in ?? ()
-#30 0x000000000000013f in ?? ()
-#31 0x00007fffe1d8fbb4 in ?? ()
-#32 0x0000000000000000 in ?? ()
+#0  0x00007fffe1f414f5 in ?? ()
+#1  0x0000000000000001 in ?? ()
+#2  0x000000000e267020 in ?? ()
+#3  0x0000000000000006 in ?? ()
+#4  0x0000000001dd2130 in ?? ()
+#5  0x0000000000000006 in ?? ()
+#6  0x00007fffe1f3647e in ?? ()
+#7  0x00000000015f8410 in ?? ()
+#8  0xc29bebd83c9d4100 in ?? ()
+#9  0x0000000000000000 in ?? ()
 AE_GDB_COMMAND_END: bt
 AE_GDB_COMMAND_BEGIN: thread apply all bt 40
 
-Thread 15 (LWP 3952 "pcsx-redux"):
+Thread 15 (LWP 3930 "pcsx-redux"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffd40529c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x00007fffd40515b0 in ?? ()
 #5  0x00007fffd40526c0 in ?? ()
-#6  0x00000f70d4051730 in ?? ()
+#6  0x00007fffd4051730 in ?? ()
 #7  0x000000000158cb00 in ?? ()
 #8  0x00007fffd40515d0 in ?? ()
 #9  0x00007fffee29796c in ?? ()
 #10 0x00000000014f2830 in ?? ()
 #11 0x00000000f0de5870 in ?? ()
 #12 0x00007fffd4051620 in ?? ()
-#13 0x00007fff000002d1 in ?? ()
-#14 0x00000000000002d3 in ?? ()
+#13 0x00007fff000002c9 in ?? ()
+#14 0x00000000000002cb in ?? ()
 #15 0x0000000000000001 in ?? ()
 #16 0x00007fffee297320 in ?? ()
 #17 0x00007fffd4051570 in ?? ()
-#18 0x000000000000000e in ?? ()
-#19 0x0000000000000000 in ?? ()
+#18 0x0000000000000000 in ?? ()
 
-Thread 14 (LWP 3951 "libusb"):
+Thread 14 (LWP 3929 "libusb"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee3112e5 in ?? ()
 #2  0x00007fffcbfff9c8 in ?? ()
 #3  0x0000000000000000 in ?? ()
 
-Thread 13 (LWP 3950 "libusb_event"):
+Thread 13 (LWP 3928 "libusb_event"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee3112e5 in ?? ()
 #2  0x00007fffd1c4f9c8 in ?? ()
 #3  0x0000000000000000 in ?? ()
 
-Thread 9 (LWP 3946 "SDLAudioP23"):
+Thread 9 (LWP 3924 "SDLAudioP23"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee2e4aad in ?? ()
 #2  0x00007fffd5ffe9c8 in ?? ()
 #3  0x0000000000000000 in ?? ()
 
-Thread 6 (LWP 3942 "libuv-worker"):
+Thread 6 (LWP 3920 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffe8fa29c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x0000000000000000 in ?? ()
 
-Thread 5 (LWP 3941 "libuv-worker"):
+Thread 5 (LWP 3919 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffe97a39c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x0000000000000000 in ?? ()
 
-Thread 4 (LWP 3940 "libuv-worker"):
+Thread 4 (LWP 3918 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffe9fa49c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x0000000000000000 in ?? ()
 
-Thread 3 (LWP 3939 "libuv-worker"):
+Thread 3 (LWP 3917 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffea7a59c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x00007ffff7f2e708 in ?? ()
 #5  0x00007fffea7a56c0 in ?? ()
-#6  0xffffffffffffffff in ?? ()
+#6  0x00000f4dffffffff in ?? ()
 #7  0x00007ffff70ed180 in ?? ()
 #8  0x00007fffea7a4640 in ?? ()
 #9  0x00007fffee2974ec in ?? ()
 #10 0x00007ffff70ed124 in ?? ()
 #11 0x00007ffff70ed124 in ?? ()
 #12 0x0000000100000001 in ?? ()
-#13 0x0000000000000058 in ?? ()
+#13 0x0000000000000057 in ?? ()
 #14 0x00007fffee297320 in ?? ()
 #15 0x00007fffea7a45e0 in ?? ()
 #16 0x00007fffea7a45e0 in ?? ()
 #17 0x0000000000000000 in ?? ()
 
-Thread 2 (LWP 3938 "pcsx-redux"):
+Thread 2 (LWP 3916 "pcsx-redux"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee3209eb in ?? ()
 #2  0x00007fffeb7a69c8 in ?? ()
 #3  0x0000000000000008 in ?? ()
-#4  0x000000000000017d in ?? ()
+#4  0x000000000000016b in ?? ()
 #5  0x00007fffeb7a66c0 in ?? ()
-#6  0x0000000000000112 in ?? ()
-#7  0xaf2b7b416dd16800 in ?? ()
+#6  0x00000000000000a4 in ?? ()
+#7  0xc29bebd83c9d4100 in ?? ()
 #8  0x00007fffeb7a5540 in ?? ()
 #9  0x00007ffff70df901 in ?? ()
 #10 0x00007ffff70cc170 in ?? ()
@@ -253,39 +276,16 @@ Thread 2 (LWP 3938 "pcsx-redux"):
 #12 0x0000003000000000 in ?? ()
 #13 0x0000000000000000 in ?? ()
 
-Thread 1 (LWP 3935 "pcsx-redux"):
-#0  0x00007fffe1ed4773 in ?? ()
-#1  0x00007fffe1ed78af in ?? ()
-#2  0x00000000f7dfbb50 in ?? ()
-#3  0x0000000010076b40 in ?? ()
-#4  0x3f70f0f23f70f0f2 in ?? ()
-#5  0x3f70f0f23f70f0f2 in ?? ()
-#6  0x3f8000003f800000 in ?? ()
-#7  0x3f8000003f800000 in ?? ()
-#8  0x3d70f0f23d70f0f2 in ?? ()
-#9  0x3d70f0f23d70f0f2 in ?? ()
-#10 0x3d70f0f23d70f0f2 in ?? ()
-#11 0x3d70f0f23d70f0f2 in ?? ()
-#12 0x3d70f0f23d70f0f2 in ?? ()
-#13 0x3d70f0f23d70f0f2 in ?? ()
-#14 0x3f70f0f23f70f0f2 in ?? ()
-#15 0x3f70f0f23f70f0f2 in ?? ()
-#16 0x000000fff7dfbe90 in ?? ()
-#17 0xaf2b7b416dd16800 in ?? ()
-#18 0x000000000000013f in ?? ()
-#19 0x000000000ddee190 in ?? ()
-#20 0x000000000de2f6d0 in ?? ()
-#21 0x00007fffe1ed4cf2 in ?? ()
-#22 0x0000000010076b10 in ?? ()
-#23 0x000000000de2f6d0 in ?? ()
-#24 0x000000000ddee190 in ?? ()
-#25 0x00007fffe1ed8f3d in ?? ()
-#26 0x0000000009dfcfe8 in ?? ()
-#27 0x0000000009dfd1e8 in ?? ()
-#28 0x00007ffff7dfbef0 in ?? ()
-#29 0x00007fffe1f3cebe in ?? ()
-#30 0x000000000000013f in ?? ()
-#31 0x00007fffe1d8fbb4 in ?? ()
-#32 0x0000000000000000 in ?? ()
+Thread 1 (LWP 3913 "pcsx-redux"):
+#0  0x00007fffe1f414f5 in ?? ()
+#1  0x0000000000000001 in ?? ()
+#2  0x000000000e267020 in ?? ()
+#3  0x0000000000000006 in ?? ()
+#4  0x0000000001dd2130 in ?? ()
+#5  0x0000000000000006 in ?? ()
+#6  0x00007fffe1f3647e in ?? ()
+#7  0x00000000015f8410 in ?? ()
+#8  0xc29bebd83c9d4100 in ?? ()
+#9  0x0000000000000000 in ?? ()
 AE_GDB_COMMAND_END: thread apply all bt 40
 AE_GDB_CONTEXT_END

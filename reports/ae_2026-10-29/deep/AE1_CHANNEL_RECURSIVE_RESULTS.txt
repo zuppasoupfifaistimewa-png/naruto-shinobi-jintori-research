@@ -10,6 +10,8 @@ Direct Channel field outcomes:
  channel[2].field1 => SIGSEGV_BOTH
  channel[2].field2 => INCONCLUSIVE_TIMEOUT_BOTH
  channel[2].field3 => INCONCLUSIVE_TIMEOUT_BOTH
-Runtime cases=22; two-launch snapshots reaching post-load=180=0
+AE2 necessity check: target base with only Channel[2].data.current (field 8) swapped from control => SIGSEGV_BOTH.
+Schema mapping: src/spu/types.h at PCSX-Redux pin 0c3572c3d defines Chan::CurrPtr as field 8, TYPESTRING("current"); permalink=https://github.com/pcsx-redux/pcsx-redux/blob/0c3572c3d/src/spu/types.h
+Runtime cases=23; two-launch snapshots reaching post-load=180=0
 No SIGINT/timeouts were counted as crashes; timeout outcomes are INCONCLUSIVE_TIMEOUT.
 The prior AE first-level all-child reconstruction did not match target SPU bytes due serialization ordering/add/remove ordering; therefore use these direct-parent-message trials to establish a narrow sufficient child, not global field byte identity.

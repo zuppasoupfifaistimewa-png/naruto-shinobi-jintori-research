@@ -66,64 +66,64 @@ AE_LOAD_CALL_RETURNED=1
 [00001] While loading '/tmp/naruto-ae1-channel-bisect/source/AppDir/bin/fonts/NotoMono-Regular.ttf'
 
 Thread 1 "pcsx-redux" received signal SIGINT, Interrupt.
-0x00007fffe1f3f1cf in ?? ()
+0x00007fffe1ed71d7 in ?? ()
 AE_GDB_CONTEXT_BEGIN
 AE_GDB_COMMAND_BEGIN: info threads
   Id   Target Id               Frame 
-* 1    LWP 2941 "pcsx-redux"   0x00007fffe1f3f1cf in ?? ()
-  2    LWP 2944 "pcsx-redux"   0x00007fffee2a08f2 in ?? ()
-  3    LWP 2945 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
-  4    LWP 2946 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
-  5    LWP 2947 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
-  6    LWP 2948 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
+* 1    LWP 2940 "pcsx-redux"   0x00007fffe1ed71d7 in ?? ()
+  2    LWP 2943 "pcsx-redux"   0x00007fffee2a08f2 in ?? ()
+  3    LWP 2944 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
+  4    LWP 2945 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
+  5    LWP 2946 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
+  6    LWP 2947 "libuv-worker" 0x00007fffee2a08f2 in ?? ()
   9    LWP 2952 "SDLAudioP23"  0x00007fffee2a08f2 in ?? ()
   13   LWP 2956 "libusb_event" 0x00007fffee2a08f2 in ?? ()
   14   LWP 2957 "libusb"       0x00007fffee2a08f2 in ?? ()
   15   LWP 2958 "pcsx-redux"   0x00007fffee2a08f2 in ?? ()
 AE_GDB_COMMAND_END: info threads
 AE_GDB_COMMAND_BEGIN: x/3i $pc
-=> 0x7fffe1f3f1cf:	mov    0x40(%rax),%edi
-   0x7fffe1f3f1d2:	mov    0x44(%rax),%r12d
-   0x7fffe1f3f1d6:	mov    $0x1,%eax
+=> 0x7fffe1ed71d7:	jmp    0x7fffe1ed7216
+   0x7fffe1ed71d9:	xor    %ebx,%ebx
+   0x7fffe1ed71db:	mov    $0x1,%eax
 AE_GDB_COMMAND_END: x/3i $pc
 AE_GDB_COMMAND_BEGIN: info registers
-rax            0x10078650          268928592
-rbx            0x0                 0
-rcx            0x0                 0
-rdx            0x1                 1
-rsi            0xefba9c0           251374016
-rdi            0x7ffff7dfb950      140737352022352
-rbp            0x7ffff7dfb730      0x7ffff7dfb730
-rsp            0x7ffff7dfb680      0x7ffff7dfb680
-r8             0x7ffff7dfb6a0      140737352021664
-r9             0x7ffff7dfbb60      140737352022880
-r10            0x1                 1
-r11            0x7fffe34e54b0      140737006949552
-r12            0x7ffff7dfb8d8      140737352022232
-r13            0xefba9c0           251374016
-r14            0x7fffe305b540      140737002190144
-r15            0x7ffff7dfb950      140737352022352
-rip            0x7fffe1f3f1cf      0x7fffe1f3f1cf
-eflags         0x200202            [ IF ID ]
+rax            0xe0ca5e0           235709920
+rbx            0xddee1c0           232710592
+rcx            0x4                 4
+rdx            0x3f800000          1065353216
+rsi            0xe7d7fa0           243105696
+rdi            0xddee1c0           232710592
+rbp            0xe0ca5e0           0xe0ca5e0
+rsp            0x7ffff7dfc040      0x7ffff7dfc040
+r8             0x3                 3
+r9             0x7ffff7dfc080      140737352024192
+r10            0x7fffe305b0dc      140737002189020
+r11            0x3                 3
+r12            0xf                 15
+r13            0x7ffff7dfc0c0      140737352024256
+r14            0xe7d7f90           243105680
+r15            0x7ffff7dfc0c0      140737352024256
+rip            0x7fffe1ed71d7      0x7fffe1ed71d7
+eflags         0x200246            [ PF ZF IF ID ]
 cs             0x33                51
 ss             0x2b                43
 ds             0x0                 0
 es             0x0                 0
 fs             0x0                 0
 gs             0x0                 0
-k0             0xffffdffffbfffffe  18446708889270353918
-k1             0xffffffffffffffff  18446744073709551615
+k0             0x4000001           67108865
+k1             0x0                 0
 k2             0xfffffff           268435455
-k3             0xffffffffffffffff  18446744073709551615
+k3             0x4100209           68157961
 k4             0xc000              49152
-k5             0xf00030103ff       16492724814847
+k5             0x4000001           67108865
 k6             0x80004001          2147500033
 k7             0x0                 0
 fs_base        0x7fffebb77f00      140737148059392
 gs_base        0x0                 0
 AE_GDB_COMMAND_END: info registers
 AE_GDB_COMMAND_BEGIN: info proc mappings
-process 2941
+process 2940
 Mapped address spaces:
 
           Start Addr           End Addr       Size     Offset  Perms  objfile
@@ -143,7 +143,7 @@ Mapped address spaces:
       0x7fffd0200000     0x7fffd0c00000   0xa00000        0x0  rwxp   
       0x7fffd0c4f000     0x7fffd1c50000  0x1001000        0x0  rw-p   
       0x7fffd2051000     0x7fffd2852000   0x801000        0x0  rw-p   
-      0x7fffd2852000     0x7fffd3052000   0x800000        0x0  rw-s   /dev/shm/pcsx-redux-wram-2941
+      0x7fffd2852000     0x7fffd3052000   0x800000        0x0  rw-s   /dev/shm/pcsx-redux-wram-2940
       0x7fffd3052000     0x7fffd4053000  0x1001000        0x0  rw-p   
       0x7fffd4ffe000     0x7fffd5fff000  0x1001000        0x0  rw-p   
       0x7fffd5fff000     0x7fffdc23e000  0x623f000        0x0  rw-p   
@@ -958,10 +958,18 @@ Mapped address spaces:
   0xffffffffff600000 0xffffffffff601000     0x1000        0x0  --xp   [vsyscall]
 AE_GDB_COMMAND_END: info proc mappings
 AE_GDB_COMMAND_BEGIN: bt
-#0  0x00007fffe1f3f1cf in ?? ()
-#1  0x00007ffff7dfb798 in ?? ()
-#2  0x00007ffff7dfba3c in ?? ()
-#3  0x0000000000000000 in ?? ()
+#0  0x00007fffe1ed71d7 in ?? ()
+#1  0x0000000000000003 in ?? ()
+#2  0x000000000e7d7f90 in ?? ()
+#3  0x00007fffe1ed3b9c in ?? ()
+#4  0x000000000ddee1c0 in ?? ()
+#5  0x0000000000000004 in ?? ()
+#6  0x00007fffe1ed8528 in ?? ()
+#7  0x000000000e7d7fc0 in ?? ()
+#8  0x000000003f800000 in ?? ()
+#9  0x3f8000003f800000 in ?? ()
+#10 0x3f8000003f800000 in ?? ()
+#11 0x0000000000000000 in ?? ()
 AE_GDB_COMMAND_END: bt
 AE_GDB_COMMAND_BEGIN: thread apply all bt 40
 
@@ -979,13 +987,9 @@ Thread 15 (LWP 2958 "pcsx-redux"):
 #10 0x00000000014f2830 in ?? ()
 #11 0x00000000f0de5870 in ?? ()
 #12 0x00007fffd4051620 in ?? ()
-#13 0x00007fff000002d3 in ?? ()
-#14 0x00000000000002d5 in ?? ()
-#15 0x0000000000000001 in ?? ()
-#16 0x00007fffee297320 in ?? ()
-#17 0x00007fffd4051570 in ?? ()
-#18 0x0000000000000026 in ?? ()
-#19 0x0000000000000000 in ?? ()
+#13 0x00007fff000002ca in ?? ()
+#14 0x00000000000002cc in ?? ()
+#15 0x0000000000000000 in ?? ()
 
 Thread 14 (LWP 2957 "libusb"):
 #0  0x00007fffee2a08f2 in ?? ()
@@ -1005,35 +1009,35 @@ Thread 9 (LWP 2952 "SDLAudioP23"):
 #2  0x00007fffd5ffe9c8 in ?? ()
 #3  0x0000000000000000 in ?? ()
 
-Thread 6 (LWP 2948 "libuv-worker"):
+Thread 6 (LWP 2947 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffe8fa29c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x0000000000000000 in ?? ()
 
-Thread 5 (LWP 2947 "libuv-worker"):
+Thread 5 (LWP 2946 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffe97a39c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x0000000000000000 in ?? ()
 
-Thread 4 (LWP 2946 "libuv-worker"):
+Thread 4 (LWP 2945 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffe9fa49c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x0000000000000000 in ?? ()
 
-Thread 3 (LWP 2945 "libuv-worker"):
+Thread 3 (LWP 2944 "libuv-worker"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee294c79 in ?? ()
 #2  0x00007fffea7a59c8 in ?? ()
 #3  0x00000000ffffffff in ?? ()
 #4  0x00007ffff7f2e708 in ?? ()
 #5  0x00007fffea7a56c0 in ?? ()
-#6  0xffffffffffffffff in ?? ()
+#6  0x00000b80ffffffff in ?? ()
 #7  0x00007ffff70ed180 in ?? ()
 #8  0x00007fffea7a4640 in ?? ()
 #9  0x00007fffee2974ec in ?? ()
@@ -1046,15 +1050,15 @@ Thread 3 (LWP 2945 "libuv-worker"):
 #16 0x00007fffea7a45e0 in ?? ()
 #17 0x0000000000000000 in ?? ()
 
-Thread 2 (LWP 2944 "pcsx-redux"):
+Thread 2 (LWP 2943 "pcsx-redux"):
 #0  0x00007fffee2a08f2 in ?? ()
 #1  0x00007fffee3209eb in ?? ()
 #2  0x00007fffeb7a69c8 in ?? ()
 #3  0x0000000000000008 in ?? ()
-#4  0x0000000000000045 in ?? ()
+#4  0x0000000000000032 in ?? ()
 #5  0x00007fffeb7a66c0 in ?? ()
-#6  0x0000000000000119 in ?? ()
-#7  0xb877191101ef9500 in ?? ()
+#6  0x000000000000009f in ?? ()
+#7  0xe62c8232c27b5d00 in ?? ()
 #8  0x00007fffeb7a5540 in ?? ()
 #9  0x00007ffff70df901 in ?? ()
 #10 0x00007ffff70cc170 in ?? ()
@@ -1062,10 +1066,18 @@ Thread 2 (LWP 2944 "pcsx-redux"):
 #12 0x0000003000000000 in ?? ()
 #13 0x0000000000000000 in ?? ()
 
-Thread 1 (LWP 2941 "pcsx-redux"):
-#0  0x00007fffe1f3f1cf in ?? ()
-#1  0x00007ffff7dfb798 in ?? ()
-#2  0x00007ffff7dfba3c in ?? ()
-#3  0x0000000000000000 in ?? ()
+Thread 1 (LWP 2940 "pcsx-redux"):
+#0  0x00007fffe1ed71d7 in ?? ()
+#1  0x0000000000000003 in ?? ()
+#2  0x000000000e7d7f90 in ?? ()
+#3  0x00007fffe1ed3b9c in ?? ()
+#4  0x000000000ddee1c0 in ?? ()
+#5  0x0000000000000004 in ?? ()
+#6  0x00007fffe1ed8528 in ?? ()
+#7  0x000000000e7d7fc0 in ?? ()
+#8  0x000000003f800000 in ?? ()
+#9  0x3f8000003f800000 in ?? ()
+#10 0x3f8000003f800000 in ?? ()
+#11 0x0000000000000000 in ?? ()
 AE_GDB_COMMAND_END: thread apply all bt 40
 AE_GDB_CONTEXT_END
