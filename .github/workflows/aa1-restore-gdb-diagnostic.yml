@@ -99,10 +99,10 @@ jobs:
             echo "APPDIR=$APPDIR"
             file "$APPDIR/AppRun" || true
             echo "TREE_BEGIN"
-            find "$APPDIR" -maxdepth 3 -printf '%y %m %p -> %l\n' | head -n 200
+            find "$APPDIR" -maxdepth 3 -printf '%y %m %p -> %l\n' | sed -n '1,200p'
             echo "TREE_END"
             echo "FOLLOWED_EXECUTABLES_BEGIN"
-            find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | head -n 200
+            find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | sed -n '1,200p'
             echo "FOLLOWED_EXECUTABLES_END"
             echo "APP_RUN_STRINGS_BEGIN"
             strings "$APPDIR/AppRun" | grep -Ei 'pcsx|redux|exec|sharun|APPDIR|APPIMAGE|default|\.env' | head -n 80 || true
