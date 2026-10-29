@@ -36,7 +36,7 @@ jobs:
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             bchunk xorriso xvfb x11-utils curl jq unzip python3 gdb
           WORK="$RUNNER_TEMP/naruto-aa1-gdb"
-          mkdir -p "$WORK"/{source,inputs,resume,cards,logs}
+          mkdir -p "$WORK"/{source,inputs,resume,cards,logs,runtime}
           chmod 700 "$WORK"
           echo "AA_WORK=$WORK" >> "$GITHUB_ENV"
 
@@ -172,10 +172,10 @@ jobs:
           LUA
           cat > "$AA_WORK/restore.lua" <<'LUA'
           if io.stdout then io.stdout:setvbuf("no") end
-          local vsync, started, loaded, after = 0, false, false, 0
+          local vsync, started, loaded, after, launchEpoch, loadEpoch = 0, false, false, 0, os.time(), 0
           local function log(s) print(s); pcall(function() io.stdout:flush() end) end
           _G.aaLoaded = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
-            loaded = true; after = 0; log("AA1_EVENT_SAVE_STATE_LOADED=1")
+            loaded = true; after = 0; loadEpoch = os.time(); log("AA1_EVENT_SAVE_STATE_LOADED=1 epoch="..tostring(loadEpoch))
           end)
           _G.aaVsync = PCSX.Events.createEventListener("GPU::Vsync", function()
             vsync = vsync + 1
@@ -198,9 +198,23 @@ jobs:
             if loaded then
               after = after + 1
               if after >= 180 then
-                log("AA1_POST_LOAD_VSYNC=180")
-                PCSX.pauseEmulator()
-                PCSX.nextTick(function() PCSX.quit(0) end)
+                log("AA1_POST_LOAD_VSYNC=180 elapsed_since_loaded_s="..tostring(os.time()-loadEpoch).." elapsed_since_launch_s="..tostring(os.time()-launchEpoch))
+                local snapshotPath = os.getenv("AA_RAM_SNAPSHOT")
+                if snapshotPath and snapshotPath ~= "" then
+                  PCSX.nextTick(function()
+                    local ok, err = pcall(function()
+                      local state = PCSX.createSaveState()
+                      local file = assert(Support.File.open(snapshotPath, "TRUNCATE"))
+                      file:writeMoveSlice(state)
+                      file:close()
+                    end)
+                    log(ok and ("AA1_RAM_SNAPSHOT=PASS path="..snapshotPath) or ("AA1_RAM_SNAPSHOT=FAIL "..tostring(err)))
+                    PCSX.quit(ok and 0 or 62)
+                  end)
+                else
+                  PCSX.pauseEmulator()
+                  PCSX.nextTick(function() PCSX.quit(0) end)
+                end
               end
             elseif vsync >= 900 then
               log("AA1_LOAD_EVENT_TIMEOUT=1"); PCSX.pauseEmulator()
@@ -381,7 +395,7 @@ jobs:
             gdb --version | sed -n '1,2p'
             cat /etc/os-release | grep -E '^(PRETTY_NAME|VERSION_ID)=' || true
             uname -a
-            echo "timeout_per_attempt=110s external_timeout_signal=INT kill_after=10s"
+            echo "timeout_per_attempt=300s external_timeout_signal=INT kill_after=10s; control RAM snapshot only after POST_LOAD_VSYNC=180"
             echo "emulator_flags=-noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout -logfile <CASE>.pcsx.log -run"
             echo "target/control attempts=2 each; buttons=NONE; PCSX AppImage SHA256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c; PCSX pin=0c3572c3db75f97542001e453ae80ba8c3f8acba"
             echo "AA1_ENV_METADATA_END"
@@ -401,8 +415,9 @@ jobs:
           echo \n=== AA1_THREADS_BEGIN ===\n
           info threads
           echo \n=== AA1_THREAD_BACKTRACES_BEGIN ===\n
-          thread apply all bt 12
+          thread apply all bt 40
           echo \n=== AA1_PC_INSTRUCTIONS_BEGIN ===\n
+          x/24i $pc-60
           x/3i $pc
           echo \n=== AA1_REQUIRED_REGISTERS_BEGIN ===\n
           info registers rip rsi rdi rcx
@@ -413,7 +428,9 @@ jobs:
           echo \n=== AA1_DIAGNOSTICS_END ===\n
           GDB
               set +e
-              AA_TEST_STATE="$state" timeout --signal=INT --kill-after=10s 110s \
+              snapshot=""
+              if [ "$label" = "control" ]; then snapshot="runtime/control-attempt$attempt.sstate"; fi
+              AA_TEST_STATE="$state" AA_RAM_SNAPSHOT="$snapshot" timeout --signal=INT --kill-after=10s 300s \
                 gdb --quiet --nx --batch -x "$AA_WORK/gdb.commands" \
                 --args "$PCSX_BIN" \
                   -noupdate -no-debugger -no-gdb \
@@ -448,13 +465,27 @@ jobs:
             fi
           }
           outdir="$GITHUB_WORKSPACE/reports/aa_2026-10-29/aa1_runtime_logs"
-          mkdir -p "$outdir"
+          rawdir="$GITHUB_WORKSPACE/reports/ae_2026-10-30/ag2_raw"
+          mkdir -p "$outdir" "$rawdir"
+          make_full() {
+            input="$1"; output="$2"
+            if [ ! -f "$input" ]; then printf 'LOG_NOT_CREATED\\n' > "$output"; return; fi
+            sanitize < "$input" > "$output"
+          }
           for label in target control; do
             for attempt in 1 2; do
               make_excerpt "$AA_WORK/logs/$label.attempt$attempt.gdb.log" "$outdir/$label-attempt$attempt.gdb.txt"
               make_excerpt "$AA_WORK/logs/$label.attempt$attempt.pcsx.log" "$outdir/$label-attempt$attempt.pcsx.txt"
+              make_full "$AA_WORK/logs/$label.attempt$attempt.gdb.log" "$rawdir/$label-attempt$attempt.gdb.full.txt"
             done
           done
+          {
+            for label in target control; do
+              for attempt in 1 2; do
+                sha256sum "$rawdir/$label-attempt$attempt.gdb.full.txt"
+              done
+            done
+          } > "$GITHUB_WORKSPACE/reports/ae_2026-10-30/AG2_GDB_SHA256.txt"
           cp "$AA_WORK/logs/runtime-metadata.txt" "$GITHUB_WORKSPACE/reports/aa_2026-10-29/AA1_runtime_metadata.txt"
           cp "$AA_WORK/logs/anonymous-release-assets.txt" "$GITHUB_WORKSPACE/reports/aa_2026-10-29/anonymous-release-assets.txt"
           cp "$AA_WORK/logs/AC2_savestate_protobuf_static.txt" "$GITHUB_WORKSPACE/reports/aa_2026-10-29/AC2_savestate_protobuf_static.txt"
