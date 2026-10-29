@@ -95,15 +95,27 @@ jobs:
           ./pcsx-redux.AppImage --appimage-extract >/dev/null
           test -x squashfs-root/AppRun
           APPDIR="$PWD/squashfs-root"
-          PCSX_BIN="$(find "$APPDIR/usr" -type f -executable -print | while IFS= read -r f; do
+          {
+            echo "APPDIR=$APPDIR"
+            file "$APPDIR/AppRun" || true
+            sed -n '1,100p' "$APPDIR/AppRun" || true
+            echo "EXECUTABLE_FILES_BEGIN"
+            find "$APPDIR" -maxdepth 5 -type f -executable -print | head -n 100
+            echo "EXECUTABLE_FILES_END"
+          } > "$WORK/logs/appimage-layout.txt"
+          cat "$WORK/logs/appimage-layout.txt"
+          PCSX_BIN="$(find "$APPDIR" -type f -executable -print | while IFS= read -r f; do
             b="$(basename "$f" | tr '[:upper:]' '[:lower:]')"
-            case "$b" in pcsx-redux|pcsx-redux-*|pcsx) printf '%s\n' "$f"; break;; esac
+            case "$b" in *pcsx*|*redux*) printf '%s\n' "$f"; break;; esac
           done)"
-          test -n "$PCSX_BIN" && test -x "$PCSX_BIN"
+          if [ -z "$PCSX_BIN" ] || [ ! -x "$PCSX_BIN" ]; then
+            echo "PCSX_BINARY_DISCOVERY_FAIL=1"
+            echo "PCSX_BINARY_CANDIDATES=$(grep -Ei 'exec|pcsx|redux|HERE' "$APPDIR/AppRun" || true)"
+            exit 1
+          fi
           echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
           echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
           echo "PCSX_BINARY=$PCSX_BIN"
-          sed -n '1,80p' "$APPDIR/AppRun" > "$WORK/logs/AppRun.txt"
           echo "PCSX_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
           echo "APPIMAGE_SHA256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c"
           echo "TARGET_STATE_SHA256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
@@ -249,7 +261,7 @@ jobs:
             echo "- Run ID: $GITHUB_RUN_ID"
             echo "- Trigger commit: $(git rev-parse HEAD)"
             echo "- Required emulator: PCSX-Redux 0c3572c3d; AppImage SHA-256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c"
-            echo "- Direct ELF executable: $PCSX_BIN"
+            echo "- Direct ELF executable: ${PCSX_BIN:-NOT_FOUND}"
             echo "- Target raw state: 21,163,286 bytes; SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
             echo "- Control state: adaptive-cycle-01-f180.sstate; SHA-256 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492"
             echo "- Controller: no buttons injected; bounded to 180 post-load VSync or failure."
