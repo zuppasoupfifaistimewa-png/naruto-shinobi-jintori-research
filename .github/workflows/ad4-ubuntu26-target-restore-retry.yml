@@ -147,8 +147,18 @@ jobs:
                 log("AD4_LOAD_CALL_RETURNED=1");PCSX.resumeEmulator()
               end);return
             end
-            if l then a=a+1;if a>=180 then log("AD4_POST_LOAD_VSYNC=180");PCSX.pauseEmulator();PCSX.nextTick(function()PCSX.quit(0)end)
-            elseif v>=900 then log("AD4_LOAD_EVENT_TIMEOUT=1");PCSX.pauseEmulator();PCSX.nextTick(function()PCSX.quit(53)end) end
+            if l then
+              a=a+1
+              if a>=180 then
+                log("AD4_POST_LOAD_VSYNC=180")
+                PCSX.pauseEmulator()
+                PCSX.nextTick(function() PCSX.quit(0) end)
+              end
+            elseif v>=900 then
+              log("AD4_LOAD_EVENT_TIMEOUT=1")
+              PCSX.pauseEmulator()
+              PCSX.nextTick(function() PCSX.quit(53) end)
+            end
           end)
           LUA
           cat > "$WORK/gdb.cmd" <<'GDB'
