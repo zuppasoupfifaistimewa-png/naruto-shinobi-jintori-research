@@ -1,0 +1,47 @@
+STEP C — Z1 FIXED INPUT SCHEDULE / 3-RUN RAM HASH AUDIT
+Source input log: run #39262213468; cold boots only; no savestate restore.
+Schedule: START 2650/2680; DOWN 2710/2720; UP 2740/2750; CIRCLE 2780/2810; gated CIRCLE 6100/6130; gated START 9035/9065 and 9110/9140.
+RAM hash targets: VSync 2649 (before scheduled input) and VSync 10055 (after schedule). Only selected words and SHA-256 are reported.
+Z1 acceptance requires identical RAM hashes 3/3 at both frame targets, identical input/gate schedules, all eight baseline presses/releases applied successfully, and three clean exits after the final checkpoint.
+RESULT: SEBAGIAN/BELUM: ACCEPTANCE NOT MET; inspect per-run cause and hash fields
+{
+  "schedule_source_run": 39262213468,
+  "checkpoint_load": "NO; cold boot only",
+  "replays": 3,
+  "frame_hash_targets": {
+    "initial_vsync": 2649,
+    "final_vsync": 10055
+  },
+  "run_exit_codes": {
+    "1": 124,
+    "2": 124,
+    "3": 124
+  },
+  "initial_ram_sha256_by_run": {
+    "1": null,
+    "2": null,
+    "3": null
+  },
+  "initial_ram_identical_3_of_3": false,
+  "final_ram_sha256_by_run": {
+    "1": null,
+    "2": null,
+    "3": null
+  },
+  "final_ram_identical_3_of_3": false,
+  "base_fixed_inputs_passed_by_run": {
+    "1": false,
+    "2": false,
+    "3": false
+  },
+  "final_save_passed_by_run": {
+    "1": false,
+    "2": false,
+    "3": false
+  },
+  "fixed_schedule_event_log_identical_3_of_3": true,
+  "visual_gate_log_identical_3_of_3": true,
+  "pairwise_final_ram_comparisons": {},
+  "criterion_pass": false,
+  "limitation": "Only SHA-256 and selected derived words from the first 2 MiB RAM prefix are emitted. Raw savestates, RAM bytes, screenshots and game inputs remain on the ephemeral runner."
+}

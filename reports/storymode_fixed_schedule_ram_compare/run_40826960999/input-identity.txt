@@ -1,0 +1,6 @@
+emulator_sha256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
+disc_bin_sha256=58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88
+bios_sha256=5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1
+schedule_source_run=39262213468
+schedule_final_vsync=10055
+checkpoint_load=NO (cold boot only; known savestate restore crash is not bypassed)

@@ -1,0 +1,17 @@
+check,result
+schedule_source_run,39262213468
+checkpoint_load,NO; cold boot only
+replays,3
+frame_hash_targets,"{""initial_vsync"": 2649, ""final_vsync"": 10055}"
+run_exit_codes,"{""1"": 124, ""2"": 124, ""3"": 124}"
+initial_ram_sha256_by_run,"{""1"": null, ""2"": null, ""3"": null}"
+initial_ram_identical_3_of_3,False
+final_ram_sha256_by_run,"{""1"": null, ""2"": null, ""3"": null}"
+final_ram_identical_3_of_3,False
+base_fixed_inputs_passed_by_run,"{""1"": false, ""2"": false, ""3"": false}"
+final_save_passed_by_run,"{""1"": false, ""2"": false, ""3"": false}"
+fixed_schedule_event_log_identical_3_of_3,True
+visual_gate_log_identical_3_of_3,True
+pairwise_final_ram_comparisons,{}
+criterion_pass,False
+limitation,"Only SHA-256 and selected derived words from the first 2 MiB RAM prefix are emitted. Raw savestates, RAM bytes, screenshots and game inputs remain on the ephemeral runner."
