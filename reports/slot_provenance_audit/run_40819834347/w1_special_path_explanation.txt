@@ -1,0 +1,32 @@
+W1 CFG PATH EXPLANATION — static only; no emulator/savestate restore
+Source run: 40819834347, job 123269457657.
+Output commit for CFG tables: dd2e4d6a3d84e9a66ebcb78d331ea1e8dfd6f471.
+Source V3 rows: reports/slot_provenance_audit/run_40815320809/v3_32_reader_base_register_trace.csv at commit b8e8911534a97dcc6fd38319ecd8c4befc14c996.
+Extended scan input: reports/step4_10_static_evidence_audit/run_40789339014/a2_expanded_xref_candidates.csv at commit 8b70e004f0df21bbb250a3c0b918a19e76ce0a21.
+
+0x80104AE8 — prior linear result 0xFFFFA554 was a cross-branch false reaching definition.
+Function: FUN_80104aa8.
+Path leading to reader:
+- 0x80104AC4: lui v0,0x8014
+- 0x80104AC8: lw v0,-23212(v0) — reads slot 0x8013A554
+- 0x80104AD0: lw v0,0(v0) — dereferences the pointer held in the slot
+- 0x80104AD8: bne v0,zero,0x80104AE8
+- 0x80104ADC: lui v0,0x8014 — MIPS branch delay slot, executes before either branch outcome
+If the branch is taken (the pointed-to word was nonzero), delay-slot LUI sets v0=0x80140000 and control reaches 0x80104AE8. Therefore the reader computes 0x80140000 + sign-extended(-23212) = 0x8013A554.
+If the branch is not taken, control reaches 0x80104AE0 (j 0x80104B74), with delay slot 0x80104AE4 (addu v0,zero,zero); the jump leaves the block and never reaches 0x80104AE8. The linear backtrace had incorrectly allowed the zero value from 0x80104AE4 to flow through that taken-branch path, yielding 0xFFFFA554. CFG class: RESOLVED_SLOT.
+
+0x801060E8 — prior linear result 0xFFFFA554 was likewise from a path that cannot reach this reader.
+Function: FUN_80106088.
+- 0x801060B8: beq v0,zero,0x801060C8; delay slot 0x801060BC: addu s3,a3,zero.
+- If 0x801060B8 is taken, control reaches 0x801060C8 (j 0x801062B8), with delay slot 0x801060CC: addu v0,zero,zero; it jumps away, bypassing 0x801060E8.
+- If 0x801060B8 is not taken, control reaches 0x801060C0: bne s3,zero,0x801060D0; its delay slot 0x801060C4 is lui v0,0x8014.
+- If that second branch is taken (s3 != 0), control reaches 0x801060D0 and eventually 0x801060E8 with v0 still derived from the delay-slot LUI, so the effective address is 0x8013A554.
+- If that second branch is not taken (s3 == 0), it falls through to 0x801060C8 and jumps away; the zero-setting delay slot at 0x801060CC is again on a route that bypasses the reader.
+CFG class: RESOLVED_SLOT.
+
+Counts and join:
+- 32 V3 rows; 32 extended-scan READ/LW rows with effective_address_if_pair=UNRESOLVED.
+- Their instruction-PC sets are identical, 32/32 one-to-one join PASS.
+- CFG reaching definitions classify all 32 as RESOLVED_SLOT, 0 RESOLVED_OTHER, 0 UNRESOLVED.
+- Compared with prior conservative 2/2/28: the unchanged SLOT rows are 0x801073A4 and 0x8010749C; the two old OTHER rows above move to SLOT; 28 old UNRESOLVED rows move to SLOT after CFG/dataflow join handling. Total changes=30.
+- Caveat: these are static feasible-edge conclusions within the Ghidra function boundaries and supported instruction model, not evidence that every reader executes at runtime.
