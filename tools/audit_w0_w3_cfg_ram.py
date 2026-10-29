@@ -666,10 +666,11 @@ def main():
     prior=out/"V1-reconciliation.md"
     if prior.exists():
         txt=prior.read_text(encoding="utf-8")
-        revised="""## (b) Release creator evidence
-          - Release API reports created_at=2026-10-29T00:14:06Z, Release ID 427327611, asset ID 686794219, actor github-actions[bot].
-          - Run 40792708405 started at approximately 2026-10-29T00:14:11Z, after the Release record's created_at. That run therefore cannot be proven to have created the Release record.
-          - W0 queries all Actions runs/jobs overlapping 00:10–00:16Z and records Release/asset/publish-related step timestamps and relevant log excerpts. With available evidence, creator conclusion is TIDAK TAHU unless a prior job's creation event is uniquely attributable.
+        revised="""## (b) Release record, target commit, publication and asset attribution
+          - Release API: created_at=2026-10-29T00:14:06Z, published_at=00:14:27Z, release ID 427327611, asset ID 686794219 created at 00:14:28Z.
+          - Tag refs directly to commit 4c505394ac331225545728261c66566fa3113763; author/committer date is 2026-10-29T00:14:06Z, equal to API created_at. Release object creation is not attributed to run 40792708405; that run began at 00:14:11Z. CLAIM THAT IT CREATED THE RELEASE RECORD IS RETRACTED.
+          - Both run 40789851317 step 4 (23? actually 00:14:17–00:14:44Z) and run 40792708405 step 5 (00:14:26–00:14:31Z) overlap the published_at and asset_created_at timestamps. Timestamp alone is not unique.
+          - The overlapping 40789851317 step is named 'Download release disc image and extract SLPS_035.53' and that workflow uses contents:read; run 40792708405 step 5 is explicitly 'Preserve raw savestate as a non-expiring GitHub Release asset' and has contents:write. The best-supported attribution is: run 40792708405 published the Release and uploaded the checkpoint asset, but it did not author the target tag commit. Attribution of initial record creation remains TIDAK TAHU.
           - Release API: https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tags/naruto-checkpoint-39262213468
           - Release URL: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/naruto-checkpoint-39262213468"""
         start=txt.find("## (b) Release creator evidence")
