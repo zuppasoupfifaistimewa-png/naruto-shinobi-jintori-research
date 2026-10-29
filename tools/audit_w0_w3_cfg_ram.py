@@ -497,7 +497,10 @@ def main():
           - W0 queries all Actions runs/jobs overlapping 00:10–00:16Z and records Release/asset/publish-related step timestamps and relevant log excerpts. With available evidence, creator conclusion is TIDAK TAHU unless a prior job's creation event is uniquely attributable.
           - Release API: https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tags/naruto-checkpoint-39262213468
           - Release URL: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/tag/naruto-checkpoint-39262213468"""
-        txt=re.sub(r"## \\(b\\) Release creator evidence\\n.*?(?=\\n## \\(c\\))",revised,txt,flags=re.S)
+        start=txt.find("## (b) Release creator evidence")
+        end=txt.find("## (c)",start+1) if start>=0 else -1
+        if start>=0 and end>=0:
+            txt=txt[:start]+revised+"\n\n"+txt[end:]
         prior.write_text(txt,encoding="utf-8")
     w1(entry,a.candidate,a.function_csv,a.v3,out)
     w2(a.ram,out,a.run_id)
