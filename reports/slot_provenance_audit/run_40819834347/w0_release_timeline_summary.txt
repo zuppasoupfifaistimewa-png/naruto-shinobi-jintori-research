@@ -1,0 +1,23 @@
+W0 RELEASE CREATOR TIMELINE — UTC; API fields and Actions jobs/steps
+query_window=2026-10-29T00:10:00Z..2026-10-29T00:16:00Z
+runs_fetched_created_2026-10-28_to_2026-10-29=42
+runs_intersecting_window=3
+jobs_active_in_window=3
+release_related_steps_in_candidate_runs=7
+release_tag=naruto-checkpoint-39262213468
+release_id=427327611
+release_created_at=2026-10-29T00:14:06Z
+release_published_at=2026-10-29T00:14:27Z
+release_author=github-actions[bot]
+release_asset_id=686794219
+release_asset_created_at=2026-10-29T00:14:28Z
+release_asset_updated_at=2026-10-29T00:14:29Z
+release_asset_uploader=github-actions[bot]
+release_asset_name=storymode-checkpoint-run-39262213468.raw.sstate
+release_asset_size_bytes=21163286
+release_asset_state_sha256_expected=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d
+release_timestamp_precedes_run_40792708405_start=YES
+release_step_time_overlaps_created_at=0
+creator_conclusion=TIDAK TAHU unless an API creation event is uniquely attributable; author=github-actions[bot] identifies the uploader/actor account, not a specific workflow run.
+creator_rule=Any candidate step starting after Release.created_at cannot have created that record. A time-overlapping step alone is not proof absent an attributable creation event in the logged/API evidence.
+current_audit_run=40819834347

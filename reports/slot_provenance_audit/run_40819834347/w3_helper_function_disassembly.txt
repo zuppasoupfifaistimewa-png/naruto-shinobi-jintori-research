@@ -1,0 +1,141 @@
+Static MIPS disassembly from Ghidra instruction listing; no emulator.
+program=SLPS_035.53-text.bin
+language=MIPS:LE:32:default
+image_min=0x80010000
+image_max=0x8006D7FF
+requested_targets=0x8002DEC4,0x8002DFE4,0x80035D48,0x80020F54
+
+================================================================
+REQUESTED_TARGET=0x8002DEC4
+STATUS=FUNCTION_FOUND
+FUNCTION_NAME=FUN_8002dec4
+FUNCTION_ENTRY=0x8002DEC4
+FUNCTION_BODY_MIN=0x8002DEC4
+FUNCTION_BODY_MAX=0x8002DF2F
+TARGET_OFFSET_WITHIN_FUNCTION=0x0
+FUNCTION_SOURCE=Ghidra function manager body bounds
+0x8002DEC4  E8 FF BD 27              addiu sp,sp,-0x18                         flow=FALL_THROUGH  flows=[]
+0x8002DEC8  10 00 BF AF              sw ra,0x10(sp)                            flow=FALL_THROUGH  flows=[]
+0x8002DECC  C2 D6 00 0C              jal 0x80035b08                            flow=UNCONDITIONAL_CALL  flows=[80035b08]
+0x8002DED0  00 00 00 00              _nop                                      flow=FALL_THROUGH  flows=[]
+0x8002DED4  21 28 40 00              move a1,v0                                flow=FALL_THROUGH  flows=[]
+0x8002DED8  10 00 A0 10              beq a1,zero,0x8002df1c                    flow=CONDITIONAL_JUMP  flows=[8002df1c]
+0x8002DEDC  0A 80 04 3C              _lui a0,0x800a                            flow=FALL_THROUGH  flows=[]
+0x8002DEE0  18 29 84 24              addiu a0,a0,0x2918                        flow=FALL_THROUGH  flows=[]
+0x8002DEE4  0C 00 82 8C              lw v0,0xc(a0)                             flow=FALL_THROUGH  flows=[]
+0x8002DEE8  00 00 00 00              nop                                       flow=FALL_THROUGH  flows=[]
+0x8002DEEC  01 00 42 24              addiu v0,v0,0x1                           flow=FALL_THROUGH  flows=[]
+0x8002DEF0  0C 00 82 AC              sw v0,0xc(a0)                             flow=FALL_THROUGH  flows=[]
+0x8002DEF4  FC FF A2 8C              lw v0,-0x4(a1)                            flow=FALL_THROUGH  flows=[]
+0x8002DEF8  00 00 00 00              nop                                       flow=FALL_THROUGH  flows=[]
+0x8002DEFC  FF FF 42 24              addiu v0,v0,-0x1                          flow=FALL_THROUGH  flows=[]
+0x8002DF00  C0 10 02 00              sll v0,v0,0x3                             flow=FALL_THROUGH  flows=[]
+0x8002DF04  08 00 83 8C              lw v1,0x8(a0)                             flow=FALL_THROUGH  flows=[]
+0x8002DF08  00 00 00 00              nop                                       flow=FALL_THROUGH  flows=[]
+0x8002DF0C  21 10 43 00              addu v0,v0,v1                             flow=FALL_THROUGH  flows=[]
+0x8002DF10  08 00 82 AC              sw v0,0x8(a0)                             flow=FALL_THROUGH  flows=[]
+0x8002DF14  C8 B7 00 08              j 0x8002df20                              flow=UNCONDITIONAL_JUMP  flows=[8002df20]
+0x8002DF18  21 10 A0 00              _move v0,a1                               flow=FALL_THROUGH  flows=[]
+0x8002DF1C  21 10 00 00              clear v0                                  flow=FALL_THROUGH  flows=[]
+0x8002DF20  10 00 BF 8F              lw ra,0x10(sp)                            flow=FALL_THROUGH  flows=[]
+0x8002DF24  00 00 00 00              nop                                       flow=FALL_THROUGH  flows=[]
+0x8002DF28  08 00 E0 03              jr ra                                     flow=TERMINATOR  flows=[]
+0x8002DF2C  18 00 BD 27              _addiu sp,sp,0x18                         flow=FALL_THROUGH  flows=[]
+INSTRUCTION_COUNT=27
+END_FUNCTION=FUN_8002dec4
+
+================================================================
+REQUESTED_TARGET=0x8002DFE4
+STATUS=FUNCTION_FOUND
+FUNCTION_NAME=FUN_8002dfe4
+FUNCTION_ENTRY=0x8002DFE4
+FUNCTION_BODY_MIN=0x8002DFE4
+FUNCTION_BODY_MAX=0x8002E06F
+TARGET_OFFSET_WITHIN_FUNCTION=0x0
+FUNCTION_SOURCE=Ghidra function manager body bounds
+0x8002DFE4  E8 FF BD 27              addiu sp,sp,-0x18                         flow=FALL_THROUGH  flows=[]
+0x8002DFE8  10 00 BF AF              sw ra,0x10(sp)                            flow=FALL_THROUGH  flows=[]
+0x8002DFEC  0A 80 02 3C              lui v0,0x800a                             flow=FALL_THROUGH  flows=[]
+0x8002DFF0  18 29 45 24              addiu a1,v0,0x2918                        flow=FALL_THROUGH  flows=[]
+0x8002DFF4  0C 00 A2 8C              lw v0,0xc(a1)                             flow=FALL_THROUGH  flows=[]
+0x8002DFF8  00 00 00 00              nop                                       flow=FALL_THROUGH  flows=[]
+0x8002DFFC  18 00 40 10              beq v0,zero,0x8002e060                    flow=CONDITIONAL_JUMP  flows=[8002e060]
+0x8002E000  00 00 00 00              _nop                                      flow=FALL_THROUGH  flows=[]
+0x8002E004  FC FF 82 8C              lw v0,-0x4(a0)                            flow=FALL_THROUGH  flows=[]
+0x8002E008  00 00 00 00              nop                                       flow=FALL_THROUGH  flows=[]
+0x8002E00C  FF FF 42 24              addiu v0,v0,-0x1                          flow=FALL_THROUGH  flows=[]
+0x8002E010  C0 10 02 00              sll v0,v0,0x3                             flow=FALL_THROUGH  flows=[]
+0x8002E014  08 00 A3 8C              lw v1,0x8(a1)                             flow=FALL_THROUGH  flows=[]
+0x8002E018  00 00 00 00              nop                                       flow=FALL_THROUGH  flows=[]
+0x8002E01C  23 18 62 00              subu v1,v1,v0                             flow=FALL_THROUGH  flows=[]
+0x8002E020  08 00 A3 AC              sw v1,0x8(a1)                             flow=FALL_THROUGH  flows=[]
+0x8002E024  A8 00 82 8F              lw v0,0xa8(gp)                            flow=FALL_THROUGH  flows=[]
+0x8002E028  00 00 00 00              nop                                       flow=FALL_THROUGH  flows=[]
+0x8002E02C  04 00 82 14              bne a0,v0,0x8002e040                      flow=CONDITIONAL_JUMP  flows=[8002e040]
+0x8002E030  0A 80 03 3C              _lui v1,0x800a                            flow=FALL_THROUGH  flows=[]
+0x8002E034  A8 00 80 AF              sw zero,0xa8(gp)                          flow=FALL_THROUGH  flows=[]
+0x8002E038  14 B8 00 08              j 0x8002e050                              flow=UNCONDITIONAL_JUMP  flows=[8002e050]
+0x8002E03C  18 29 63 24              _addiu v1,v1,0x2918                       flow=FALL_THROUGH  flows=[]
+0x8002E040  EE D6 00 0C              jal 0x80035bb8                            flow=UNCONDITIONAL_CALL  flows=[80035bb8]
+0x8002E044  00 00 00 00              _nop                                      flow=FALL_THROUGH  flows=[]
+0x8002E048  0A 80 03 3C              lui v1,0x800a                             flow=FALL_THROUGH  flows=[]
+0x8002E04C  18 29 63 24              addiu v1,v1,0x2918                        flow=FALL_THROUGH  flows=[]
+0x8002E050  0C 00 62 8C              lw v0,0xc(v1)                             flow=FALL_THROUGH  flows=[]
+0x8002E054  00 00 00 00              nop                                       flow=FALL_THROUGH  flows=[]
+0x8002E058  FF FF 42 24              addiu v0,v0,-0x1                          flow=FALL_THROUGH  flows=[]
+0x8002E05C  0C 00 62 AC              sw v0,0xc(v1)                             flow=FALL_THROUGH  flows=[]
+0x8002E060  10 00 BF 8F              lw ra,0x10(sp)                            flow=FALL_THROUGH  flows=[]
+0x8002E064  00 00 00 00              nop                                       flow=FALL_THROUGH  flows=[]
+0x8002E068  08 00 E0 03              jr ra                                     flow=TERMINATOR  flows=[]
+0x8002E06C  18 00 BD 27              _addiu sp,sp,0x18                         flow=FALL_THROUGH  flows=[]
+INSTRUCTION_COUNT=35
+END_FUNCTION=FUN_8002dfe4
+
+================================================================
+REQUESTED_TARGET=0x80035D48
+STATUS=FUNCTION_FOUND
+FUNCTION_NAME=FUN_80035d48
+FUNCTION_ENTRY=0x80035D48
+FUNCTION_BODY_MIN=0x80035D48
+FUNCTION_BODY_MAX=0x80035D77
+TARGET_OFFSET_WITHIN_FUNCTION=0x0
+FUNCTION_SOURCE=Ghidra function manager body bounds
+0x80035D48  09 00 80 10              beq a0,zero,0x80035d70                    flow=CONDITIONAL_JUMP  flows=[80035d70]
+0x80035D4C  21 10 00 00              _clear v0                                 flow=FALL_THROUGH  flows=[]
+0x80035D50  03 00 C0 1C              bgtz a2,0x80035d60                        flow=CONDITIONAL_JUMP  flows=[80035d60]
+0x80035D54  21 10 80 00              _move v0,a0                               flow=FALL_THROUGH  flows=[]
+0x80035D58  5C D7 00 08              j 0x80035d70                              flow=UNCONDITIONAL_JUMP  flows=[80035d70]
+0x80035D5C  21 10 00 00              _clear v0                                 flow=FALL_THROUGH  flows=[]
+0x80035D60  00 00 85 A0              sb a1,0x0(a0)                             flow=FALL_THROUGH  flows=[]
+0x80035D64  FF FF C6 24              addiu a2,a2,-0x1                          flow=FALL_THROUGH  flows=[]
+0x80035D68  FD FF C0 1C              bgtz a2,0x80035d60                        flow=CONDITIONAL_JUMP  flows=[80035d60]
+0x80035D6C  01 00 84 24              _addiu a0,a0,0x1                          flow=FALL_THROUGH  flows=[]
+0x80035D70  08 00 E0 03              jr ra                                     flow=TERMINATOR  flows=[]
+0x80035D74  00 00 00 00              _nop                                      flow=FALL_THROUGH  flows=[]
+INSTRUCTION_COUNT=12
+END_FUNCTION=FUN_80035d48
+
+================================================================
+REQUESTED_TARGET=0x80020F54
+STATUS=FUNCTION_FOUND
+FUNCTION_NAME=FUN_80020f54
+FUNCTION_ENTRY=0x80020F54
+FUNCTION_BODY_MIN=0x80020F54
+FUNCTION_BODY_MAX=0x80020F87
+TARGET_OFFSET_WITHIN_FUNCTION=0x0
+FUNCTION_SOURCE=Ghidra function manager body bounds
+0x80020F54  E8 FF BD 27              addiu sp,sp,-0x18                         flow=FALL_THROUGH  flows=[]
+0x80020F58  06 00 80 10              beq a0,zero,0x80020f74                    flow=CONDITIONAL_JUMP  flows=[80020f74]
+0x80020F5C  10 00 BF AF              _sw ra,0x10(sp)                           flow=FALL_THROUGH  flows=[]
+0x80020F60  21 28 00 00              clear a1                                  flow=FALL_THROUGH  flows=[]
+0x80020F64  52 D7 00 0C              jal 0x80035d48                            flow=UNCONDITIONAL_CALL  flows=[80035d48]
+0x80020F68  58 00 06 24              _li a2,0x58                               flow=FALL_THROUGH  flows=[]
+0x80020F6C  DE 83 00 08              j 0x80020f78                              flow=UNCONDITIONAL_JUMP  flows=[80020f78]
+0x80020F70  01 00 02 24              _li v0,0x1                                flow=FALL_THROUGH  flows=[]
+0x80020F74  21 10 00 00              clear v0                                  flow=FALL_THROUGH  flows=[]
+0x80020F78  10 00 BF 8F              lw ra,0x10(sp)                            flow=FALL_THROUGH  flows=[]
+0x80020F7C  00 00 00 00              nop                                       flow=FALL_THROUGH  flows=[]
+0x80020F80  08 00 E0 03              jr ra                                     flow=TERMINATOR  flows=[]
+0x80020F84  18 00 BD 27              _addiu sp,sp,0x18                         flow=FALL_THROUGH  flows=[]
+INSTRUCTION_COUNT=13
+END_FUNCTION=FUN_80020f54
