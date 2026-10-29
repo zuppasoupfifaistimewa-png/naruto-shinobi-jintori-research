@@ -172,7 +172,7 @@ jobs:
           LUA
           cat > "$AA_WORK/restore.lua" <<'LUA'
           if io.stdout then io.stdout:setvbuf("no") end
-          local vsync, started, loaded, after, launchEpoch, loadEpoch = 0, false, false, 0, os.time(), 0
+          local vsync, started, loaded, after, launchEpoch, loadEpoch, markerHandled = 0, false, false, 0, os.time(), 0, false
           local function log(s) print(s); pcall(function() io.stdout:flush() end) end
           _G.aaLoaded = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
             loaded = true; after = 0; loadEpoch = os.time(); log("AA1_EVENT_SAVE_STATE_LOADED=1 epoch="..tostring(loadEpoch))
@@ -197,7 +197,8 @@ jobs:
             end
             if loaded then
               after = after + 1
-              if after >= 180 then
+              if after >= 180 and not markerHandled then
+                markerHandled = true
                 log("AA1_POST_LOAD_VSYNC=180 elapsed_since_loaded_s="..tostring(os.time()-loadEpoch).." elapsed_since_launch_s="..tostring(os.time()-launchEpoch))
                 local snapshotPath = os.getenv("AA_RAM_SNAPSHOT")
                 if snapshotPath and snapshotPath ~= "" then
@@ -482,7 +483,8 @@ jobs:
           {
             for label in target control; do
               for attempt in 1 2; do
-                sha256sum "$rawdir/$label-attempt$attempt.gdb.full.txt"
+                full="$rawdir/$label-attempt$attempt.gdb.full.txt"
+                printf '%s  %s\n' "$(sha256sum "$full" | cut -d ' ' -f1)" "reports/ae_2026-10-30/ag2_raw/$label-attempt$attempt.gdb.full.txt"
               done
             done
           } > "$GITHUB_WORKSPACE/reports/ae_2026-10-30/AG2_GDB_SHA256.txt"
@@ -546,6 +548,14 @@ jobs:
                   lines.append(f"{label.upper()} attempt={attempt} outcome={outcome} time_to_180={elapsed}")
                   lines.append(f"{label.upper()} attempt={attempt} signal={sigmatches[-1] if sigmatches else 'NOT_RECORDED'} inferior_exit={inferior[-1] if inferior else 'NOT_RECORDED'} gdb_wrapper_exit={wrapper[-1] if wrapper else 'NOT_RECORDED'}")
                   lines.append(f"{label.upper()} attempt={attempt} full_gdb_log_sha256={full_sha} path=reports/ae_2026-10-30/ag2_raw/{label}-attempt{attempt}.gdb.full.txt")
+                  rsis = re.findall(r"\\brsi\\s+0x([0-9a-fA-F]+)", gt, flags=re.IGNORECASE)
+                  if rsis:
+                      rsi = int(rsis[-1], 16) & 0xFFFFFFFF
+                      diff = (rsi - 0xD5E7578F) & 0xFFFFFFFF
+                      lines.append(f"{label.upper()} attempt={attempt} RSI_last_low32=0x{rsi:08X} delta_from_target_current_0xD5E7578F=0x{diff:08X} ({diff})")
+                  else:
+                      lines.append(f"{label.upper()} attempt={attempt} RSI=TIDAK TAHU (register not recorded in GDB log)")
+                  lines.append(f"{label.upper()} attempt={attempt} RSI_0xffffffffd736aa9f_present_in_this_GDB_log={'0xffffffffd736aa9f' in gt.lower()}")
                   if snap:
                       lines.append(f"{label.upper()} attempt={attempt} snapshot_status={snap[-1]}")
           for attempt in (1, 2):
