@@ -371,7 +371,7 @@ jobs:
             mkdir -p "$run/home" "$run/captures/raw" "$run/cards"
             export HOME="$run/home" XDG_CONFIG_HOME="$run/home/.config" XDG_DATA_HOME="$run/home/.local/share"
             mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME"
-            echo "C_TEST_RUN_BEGIN=$run_num initial_state=cold_boot final_vsync=10055"
+            echo "C_TEST_RUN_BEGIN=$run_num initial_state=cold_boot final_vsync=10055" | tee -a "$root/output/run$run_num-summary.txt"
             (
               cd "$run"
               # Fresh and isolated user/card state for each cold boot. The RAM hash
@@ -390,7 +390,7 @@ jobs:
               emu_rc=$?
               set -e
               wait "$watch_pid" || true
-              echo "C_TEST_RUN_END=$run_num exit_code=$emu_rc"
+              echo "C_TEST_RUN_END=$run_num exit_code=$emu_rc" | tee -a "$root/output/run$run_num-summary.txt"
               grep -E 'C_TEST_|C_TEST_EVENT|C_TEST_GATE|PAD_INJECT|ERROR|error|SIGSEGV' "$run/pcsx.stdout" "$run/gate-watch.log" > "$run/replay-log.txt" || true
               if [[ $emu_rc -ne 0 ]]; then
                 echo "C_TEST_RUN_STATUS=FAIL run=$run_num emulator_exit=$emu_rc"
