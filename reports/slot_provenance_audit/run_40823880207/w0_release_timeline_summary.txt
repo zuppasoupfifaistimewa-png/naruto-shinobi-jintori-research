@@ -1,0 +1,32 @@
+W0 RELEASE CREATOR TIMELINE — UTC; API fields and Actions jobs/steps
+query_window=2026-10-29T00:10:00Z..2026-10-29T00:16:00Z
+runs_fetched_all_recent_pages=814
+runs_intersecting_window=3
+jobs_active_in_window=3
+release_related_steps_in_candidate_runs=7
+release_tag=naruto-checkpoint-39262213468
+release_id=427327611
+release_created_at=2026-10-29T00:14:06Z
+release_published_at=2026-10-29T00:14:27Z
+release_tag_ref_object_type=commit
+release_tag_commit_sha=4c505394ac331225545728261c66566fa3113763
+release_tag_commit_date=2026-10-29T00:14:06Z
+release_tag_annotated_chain=LIGHTWEIGHT_TAG_DIRECT_TO_COMMIT
+created_at_equals_tag_commit_date=YES
+release_author=github-actions[bot]
+release_asset_id=686794219
+release_asset_created_at=2026-10-29T00:14:28Z
+release_asset_updated_at=2026-10-29T00:14:29Z
+release_asset_uploader=github-actions[bot]
+release_asset_name=storymode-checkpoint-run-39262213468.raw.sstate
+release_asset_size_bytes=21163286
+release_asset_state_sha256_expected=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d
+published_at_inside_release_related_step_count=2
+asset_created_at_inside_release_related_step_count=2
+CLAIM_RELEASE_RECORD_CREATOR=TIDAK TAHU: Release.created_at equals the target tag commit date and is not used as a creation-event timestamp.
+RELEASE_PUBLICATION_TIMESTAMP_MATCHES_TWO_STEPS=YES (40789851317 step 4 and 40792708405 step 5 both span published_at 00:14:27Z).
+ASSET_CREATION_TIMESTAMP_MATCHES_TWO_STEPS=YES (those same two steps both span asset.created_at 00:14:28Z).
+CLAIM_RELEASE_PUBLISHED_BY_RUN_40792708405=SUPPORTED_BY_STEP_SEMANTICS_AND_PERMISSIONS: step 5 explicitly preserves the checkpoint as a GitHub Release asset; the competing 40789851317 workflow has contents:read permission and its overlapping step only downloads the release disc image.
+CLAIM_ASSET_UPLOADED_BY_RUN_40792708405=SUPPORTED_BY_STEP_SEMANTICS_AND_PERMISSIONS: step 5 is the checkpoint Release-asset step and the competing download workflow lacks contents:write.
+The timestamp overlap alone is not unique attribution. The step names and workflow permissions distinguish the checkpoint-preservation step from the unrelated BIN/CUE download; the tag target commit itself is not authored by run 40792708405.
+current_audit_run=40823880207

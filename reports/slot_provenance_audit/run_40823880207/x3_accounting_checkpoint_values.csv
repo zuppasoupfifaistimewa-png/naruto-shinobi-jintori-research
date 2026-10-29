@@ -1,0 +1,4 @@
+field,virtual_address,ram_offset,raw_bytes_le,u32_le,decimal,raw_bytes_sha256,status,meaning
+accounting_plus_0x08,0x800A2920,0x000A2920,20 19 08 00,0x00081920,530720,d5fa89a43f77c8a069c5a18213b07b1ebb4f87fe1181b96d9268d2cf53076e8b,READ_FROM_CHECKPOINT_RAM,"static helper code reads, adds/subtracts derived counts/sizes, and writes this word"
+accounting_plus_0x0C,0x800A2924,0x000A2924,14 00 00 00,0x00000014,20,447e12701a0d03cf90a4ad7f02f1a045b35d284e26fe520440edb116d76bf700,READ_FROM_CHECKPOINT_RAM,static helper code increments/decrements this word
+saved_gp_plus_0xA8,0x8006D724,0x0006D724,00 00 00 00,0x00000000,0,df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119,READ_FROM_CHECKPOINT_RAM,address is based on serialized CPU GP register + 0xA8; not assumed to be a fixed RAM address
