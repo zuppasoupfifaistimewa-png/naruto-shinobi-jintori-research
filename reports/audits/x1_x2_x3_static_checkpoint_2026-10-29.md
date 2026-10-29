@@ -47,7 +47,7 @@ Helper `0x80020F54` melakukan pemeriksaan null atas `a0` lalu meneruskan buffer 
 
 Empat callsite initializer menginisialisasi rangkaian 13 segmen berukuran `0x58` yang berawal di `ptr+0x1A8` (`n=0..12`, dibagi menjadi kelompok n=0..3, 4..7, 8..11, lalu 12). Instruksi terpisah menulis byte `0xFF` pada `ptr+0x620`. Pada checkpoint, nilai-nilai terprediksi yang diuji cocok dengan RAM parse langsung: word `2` pada `+0x478 + 0x58*n` untuk n=0..3 (4/4), serta byte `0xFF` pada `+0x620`.
 
-Untuk helper alokasi `0x8002DEC4`, disassembly initializer menunjukkan call di PC `0x801046BC`, dengan `a0=2900` melalui delay-slot PC `0x801046C0`; hasil `v0` disimpan ke slot global `0x8013A554` pada PC `0x801046C8`. Xref yang tampak di Ghidra export untuk fungsi PS-X EXE adalah 35 callsite berikut; survei DATA.BIN entry 1 yang tersedia juga menampilkan 3 callsite tambahan (`0x800D5630`, `0x800D5640`, `0x800D5650`) selain initializer `0x801046BC`. Daftar ini hanya selengkap export sumber yang tersedia—belum menjadi bukti semua overlay/segmen telah diekspor.
+Untuk helper alokasi `0x8002DEC4`, disassembly initializer menunjukkan call di PC `0x801046BC`, dengan `a0=2900` melalui delay-slot PC `0x801046C0`; hasil `v0` disimpan ke slot global `0x8013A554` pada PC `0x801046C8`. Xref yang tampak di Ghidra export untuk fungsi PS-X EXE adalah 35 callsite berikut; survei DATA.BIN entry 1 yang tersedia juga menampilkan 3 callsite tambahan (`0x800D5630`, `0x800D5640`, `0x800D5650`) selain initializer `0x801046BC`. Daftar 35 callsite EXE berasal dari Ghidra call-reference export pada artefak run [40789217602 / artifact 12862775610](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40789217602/artifacts/12862775610); 3 PC entry-1 tambahan berasal dari survei overlay statis run 40789217602. Daftar ini hanya selengkap export sumber yang tersedia—belum menjadi bukti semua overlay/segmen telah diekspor.
 
 | PC pemanggilan `0x8002DEC4` di PS-X EXE | Fungsi caller Ghidra | Sumber |
 |---|---|---|
@@ -257,7 +257,7 @@ Jumlah instruksi langsung menurut analisis ini: 147 site unik; `lbu` READ 48, `l
 | `0x800A2918..0x800A2927` (16 byte) | `50 F4 13 80 B0 8B 0B 00 20 19 08 00 14 00 00 00` | — | `825df2342664f13d3797897688a3b5ecbb75e5bc138172f78b5b9bcf647bc2fa` |
 | `0x800A2918+0x8 = 0x800A2920` | `20 19 08 00` | `0x00081920` = 530,720 | `d5fa89a43f77c8a069c5a18213b07b1ebb4f87fe1181b96d9268d2cf53076e8b` |
 | `0x800A2918+0xC = 0x800A2924` | `14 00 00 00` | `0x00000014` = 20 | `447e12701a0d03cf90a4ad7f02f1a045b35d284e26fe520440edb116d76bf700` |
-| Saved `$gp` (GPR index 28) | `0x8006D67C` | source: 32 GPR packed values in save-state Registers field | — |
+| Saved `$gp` (GPR index 28) | packed register value `0x8006D67C` | `$gp=0x8006D67C`; jadi `gp+0xA8=0x8006D724` | — |
 | `gp+0xA8 = 0x8006D724` | `00 00 00 00` | `0x00000000` = 0 | `df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119` |
 
 The SHA-256 values for `+0x8` and `+0xC` are each computed over their exact 4-byte little-endian slices. The confirmed accounting values are +8 = 530,720 and +C = 20; saved `$gp=0x8006D67C` is sourced from register index 28 in the save-state, not inferred from the code.
