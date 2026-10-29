@@ -158,7 +158,13 @@ def make_cfg(entry,base,fns,name):
 
 def main():
     ap=argparse.ArgumentParser()
-    for n in ("entry1","exe","functions_csv","v3","ghidra_xrefs","out","run_id"):ap.add_argument("--"+n,required=True)
+    ap.add_argument("--entry1", required=True)
+    ap.add_argument("--exe", required=True)
+    ap.add_argument("--functions-csv", "--functions_csv", dest="functions_csv", required=True)
+    ap.add_argument("--v3", required=True)
+    ap.add_argument("--ghidra-xrefs", "--ghidra_xrefs", dest="ghidra_xrefs", required=True)
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--run-id", "--run_id", dest="run_id", required=True)
     a=ap.parse_args();out=Path(a.out);out.mkdir(parents=True,exist_ok=True)
     entry1=Path(a.entry1).read_bytes()
     if len(entry1)!=596412 or sha(entry1)!="9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a":raise SystemExit("ENTRY1_IDENTITY_MISMATCH")
