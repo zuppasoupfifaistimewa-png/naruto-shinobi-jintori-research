@@ -296,6 +296,38 @@ def main():
                   "reaching_base_definitions":";".join(sorted(cfg["before"].get(pc,{}).get(MIPS_GPRS[x.rs],set()))),
                   "symbolic_base":val_text((PTR,boff)),"path_status":"AMBIGUOUS_WITH_UNKNOWN_DEFINITION" if unknown else "CFG_RESOLVED_POINTER_BASE",
                   "instruction_word":H(x.word),"source_run":a.run_id})
+    # Add unrolled symbolic accesses from the complete V2 disassembly of FUN_80104690.
+    # These rows preserve loop formulas that conservative symbolic propagation may not simplify.
+    def add_field(off,pc,kind,width,detail,n="",formula=""):
+        field_rows.append({"object_base_symbol":"value loaded from slot 0x8013A554",
+          "checkpoint_object_base":"0x801CEF08","object_offset":H(off),
+          "object_absolute_address":H(PTR_ADDR+off),"pc":H(pc),"function":"FUN_80104690",
+          "access_kind":kind,"width_bytes":width,"opcode":detail,"base_register":"object pointer / loop index",
+          "signed_displacement":"","reaching_base_definitions":"V2 full disassembly + loop arithmetic",
+          "symbolic_base":formula or ("ptr+"+H(off)),"path_status":"STATIC_INSTRUCTION_AND_LOOP_FORMULA",
+          "instruction_word":"","source_run":a.run_id})
+    # Helper calls zero 88-byte subrecords at ptr+0x1A8+0x58*n, ptr+0x468+0x58*n,
+    # and ptr+0x308+0x58*n for n=0..3.
+    for n in range(4):
+        step=0x58*n
+        add_field(0x1A8+step,0x8010470C,"WRITE_ZERO_FILL_VIA_FUN_80020F54",0x58,
+          "jal 0x80020F54; a0=ptr+0x1A8+0x58*n",n,
+          f"ptr+0x1A8+0x58*{n}")
+        add_field(0x468+step,0x8010471C,"WRITE_ZERO_FILL_VIA_FUN_80020F54",0x58,
+          "jal 0x80020F54; a0=ptr+0x468+0x58*n",n,
+          f"ptr+0x468+0x58*{n}")
+        add_field(0x308+step,0x8010473C,"WRITE_ZERO_FILL_VIA_FUN_80020F54",0x58,
+          "jal 0x80020F54; a0=ptr+0x308+0x58*n",n,
+          f"ptr+0x308+0x58*{n}")
+        add_field(0x478+step,0x80104734,"WRITE",4,
+          "sw v0,1144(v1); value=2; n=0..3",n,
+          f"ptr+0x478+0x58*{n}")
+    add_field(0x5C8,0x8010475C,"WRITE_ZERO_FILL_VIA_FUN_80020F54",0x58,
+      "jal 0x80020F54; a0=ptr+0x5C8",formula="ptr+0x5C8")
+    add_field(0x620,0x8010476C,"WRITE",1,
+      "sb v0,1568(v1); value=0xFF",formula="ptr+0x620")
+    # Restrict the main-executable xref table to the two helper targets requested by X2.
+    call_rows=[r for r in call_rows if r["helper_target"] in ("0x80020F54","0x8002DEC4")]
     # Add memset-like 0x58-byte ranges for each helper call whose a0 is an object-relative pointer.
     for r in call_rows:
         if r["helper_target"]!="0x80020F54" or "TIDAK TAHU" in r["a0_at_callee_entry"]:continue
