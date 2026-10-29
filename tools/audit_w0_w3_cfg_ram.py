@@ -469,7 +469,7 @@ def w2(rampath,out,run_id):
     lines=["W2 DIRECT SAVESTATE RAM PARSE; EMULATOR NOT LAUNCHED",
       "source_checkpoint_run=39262213468",f"audit_run={run_id}",f"ram_prefix_bytes={len(ram)}",
       f"ram_prefix_sha256={sha(ram)}",f"requested_region_address={H(PTR)}",f"requested_region_bytes={len(region)}",
-      f"requested_region_end_exclusive={H(PTR+len(region)}",f"requested_region_sha256={sha(region)}",
+      f"requested_region_end_exclusive={H(PTR+len(region))}",f"requested_region_sha256={sha(region)}",
       f"slot_address={H(SLOT)}",f"slot_raw_bytes_le={ram[so:so+4].hex(' ').upper()}",
       f"slot_actual_u32_le={H(p)}",f"slot_equals_requested_pointer={'YES' if p==PTR else 'NO'}",
       f"predicted_words_match={sum(r['match_prediction']=='PASS' for r in rows[:4])}/4",
