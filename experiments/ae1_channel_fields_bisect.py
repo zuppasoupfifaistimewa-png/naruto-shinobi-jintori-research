@@ -244,15 +244,14 @@ end
     for key,outc in direct_out.items():
       if outc!="SIGSEGV_BOTH": continue
       n,_=key
-      channel=selective(cchan,tchan,{key})
-      payload=one(channel,n)
+      c_payload=one(cchan,n)
       t_payload=one(tchan,n)
-      nested_diff=diffs(payload,t_payload)
+      nested_diff=diffs(c_payload,t_payload)
       report.append("Field inside Channel #2 field %d: base=control, source=target; child diffs=%d; keys=%s"%(n,len(nested_diff),", ".join("%d#%d"%(x,y+1) for x,y in nested_diff)))
       for child in nested_diff:
         # Copy only one field inside the parent message (data/adsr/adsr_ex) while everything else stays control.
-        new_parent=selective(payload,t_payload,{child})
-        new_channel=replace_top(channel,n,encmsg(n,new_parent))
+        new_parent=selective(c_payload,t_payload,{child})
+        new_channel=replace_top(cchan,n,encmsg(n,new_parent))
         hybrid=replace_channel_in_state(control,1,new_channel)
         run_case("nested-channel-field%d-child%d-occ%d"%(n,child[0],child[1]+1),hybrid,
                  "control state; target channel[2].field%d payload contains only target child field %d occurrence %d"%(n,child[0],child[1]+1))
