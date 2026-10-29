@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     env:
-      GH_TOKEN: \${{ github.token }}
+      GH_TOKEN: ${{ github.token }}
       RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
       AA_WORK: /tmp/naruto-ad1-ad6
     steps:
@@ -51,7 +51,7 @@ jobs:
           name: naruto-storymode-adaptive-player-private
           run-id: "39867730674"
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          github-token: \${{ github.token }}
+          github-token: ${{ github.token }}
           path: /tmp/naruto-ad1-ad6/inputs
 
       - name: Fetch original Memory Card (temporary only)
@@ -60,7 +60,7 @@ jobs:
           name: naruto-storymode-memory-card-private
           run-id: "39262213468"
           repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-          github-token: \${{ github.token }}
+          github-token: ${{ github.token }}
           path: /tmp/naruto-ad1-ad6/cards
 
       - name: Run AD1-AD6 audits on ubuntu-24.04
@@ -336,6 +336,7 @@ jobs:
           else:lines.append("ADDR2LINE_AND_DISASSEMBLY=TIDAK TAHU; file offset did not fall in a PT_LOAD file range.")
           outpath.write_text("\n".join(lines)+"\n");print(outpath.read_text())
           PY
+          cp "$AA_WORK/logs/ad2-symbolization.txt" "$OUT/AD2_symbolization.txt"
           # AD5: full anonymous Release table and every redirect response; body bytes always discarded.
           {
             echo "AD5 ANONYMOUS RELEASE AUDIT (no token; no response body retained)"
@@ -450,7 +451,7 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 20
     env:
-      GH_TOKEN: \${{ github.token }}
+      GH_TOKEN: ${{ github.token }}
       RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
       AA_WORK: /tmp/naruto-ad4-26
     steps:
@@ -497,6 +498,17 @@ jobs:
           cue[ix[0]]='FILE "game.bin" BINARY'
           Path(a.parent/"game-run.cue").write_text("\n".join(cue)+"\n",encoding="ascii")
           PY
+
+      - name: Fetch original Memory Card for ubuntu-26.04
+        if: always()
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: "39262213468"
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: /tmp/naruto-ad4-26/cards
 
       - name: Restore target twice on ubuntu-26.04, no input
         if: always()
