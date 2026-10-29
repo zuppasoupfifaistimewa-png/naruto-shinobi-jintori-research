@@ -558,6 +558,21 @@ def extract_gpr_from_sstate(state_path):
             if len(vals) in (32,34):
                 evidence.append((path+f"/field{n}-wire{w}","repeated-scalar-array",vals))
     parse_array(gpr_payload,"SaveState.field4.Registers.field1.GPR")
+    # PCSX-Redux may encode this fixed GPR message as separate scalar fields (one field per register).
+    # Accept only an exact sequential field-number set, then map field 29 to GPR index 28 (GP).
+    try:
+        gpr_fields=list(parse_fields(gpr_payload))
+        if len(gpr_fields) in (32,34) and all(w in (0,5) for _,w,_ in gpr_fields):
+            by_number={}
+            for n,w,v in gpr_fields:
+                if n in by_number: by_number[n]="DUPLICATE"
+                else: by_number[n]=v if w==0 else struct.unpack("<I",v)[0]
+            count=len(gpr_fields)
+            if set(by_number)==set(range(1,count+1)) and all(isinstance(by_number[n],int) for n in range(1,count+1)):
+                vals=[by_number[n] for n in range(1,count+1)]
+                evidence.append(("SaveState.field4.Registers.field1.GPR/numbered-scalars","numbered-scalar-register-fields",vals))
+    except Exception:
+        pass
     # Prefer exact 34-element GPR layout; 32-element arrays are accepted only if no 34-element representation exists.
     exact=[x for x in evidence if len(x[2])==34]
     chosen=exact[0] if exact else next((x for x in evidence if len(x[2])==32),None)
