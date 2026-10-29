@@ -143,9 +143,9 @@ def main():
     lua=work/"restore.lua"
     lua.write_text(r'''
 if io.stdout then io.stdout:setvbuf("no") end
-local vsync,started,loaded,after,pending=0,false,false,0,false
+local vsync,started,loaded,after,pending,loadEpoch,launchEpoch=0,false,false,0,false,0,tonumber(os.getenv("AE_RUN_START_EPOCH")) or os.time()
 local function log(s) print(s); pcall(function() io.stdout:flush() end) end
-_G.aeLoaded=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function() loaded=true;after=0;log("AE_EVENT_SAVE_STATE_LOADED=1") end)
+_G.aeLoaded=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function() loaded=true;after=0;loadEpoch=os.time();log("AE_EVENT_SAVE_STATE_LOADED=1 epoch="..tostring(loadEpoch)) end)
 local function snap()
  local ok,err=pcall(function() local s=PCSX.createSaveState();local f=assert(Support.File.open("runtime/current.sstate","TRUNCATE"));f:writeMoveSlice(s);f:close() end)
  log(ok and "AE_RAM_STATE_CAPTURE=PASS" or ("AE_RAM_STATE_CAPTURE=FAIL "..tostring(err)))
@@ -164,7 +164,7 @@ _G.aeVsync=PCSX.Events.createEventListener("GPU::Vsync",function()
    log("AE_LOAD_CALL_RETURNED=1");PCSX.resumeEmulator()
   end);return
  end
- if loaded then after=after+1;if after>=180 and not pending then pending=true;log("AE_POST_LOAD_VSYNC=180");PCSX.pauseEmulator();PCSX.nextTick(snap) end
+ if loaded then after=after+1;if after>=180 and not pending then pending=true;log("AE_POST_LOAD_VSYNC=180 elapsed_since_loaded_s="..tostring(os.time()-loadEpoch).." elapsed_since_launch_s="..tostring(os.time()-launchEpoch));PCSX.nextTick(snap) end
  elseif vsync>=900 then log("AE_LOAD_EVENT_TIMEOUT=1");PCSX.pauseEmulator();PCSX.nextTick(function() PCSX.quit(53) end) end
 end)
 log("AE_RESTORE_PROBE_READY_NO_INPUT=1")
@@ -174,7 +174,9 @@ log("AE_RESTORE_PROBE_READY_NO_INPUT=1")
     try:(work/"home/runtime").chmod(0o700)
     except OSError:pass
     results=[]; cases=[]; ram=[]; cache={}
+    fastest_to_marker_s=None
     def run_case(name,state,definition):
+      nonlocal fastest_to_marker_s
       path=work/"resume"/(name+".sstate");path.write_bytes(state); h=sha(state); outs=[]; pcs=[]
       for attempt in (1,2):
         label="%s-attempt%d"%(name,attempt); gl=raw/(label+".gdb.txt"); pl=raw/(label+".pcsx.txt"); current=work/"runtime/current.sstate"
@@ -205,13 +207,23 @@ else: print('AE_GDB_CONTEXT_STATUS=INFERIOR_EXITED')
 end
 """,encoding="utf-8")
         te=env.copy();te["AE_TEST_STATE"]="resume/"+path.name
-        call=["timeout","--signal=INT","--kill-after=2s","8s","gdb","--quiet","--nx","--batch","--return-child-result","-x",str(cmd),"--args",a.pcsx_bin,"-noupdate","-no-debugger","-no-gdb","-bios",a.bios,"-iso",a.cue,"-memcard1",a.card,"-exec",pad.read_text(),"-dofile",str(lua),"-softgpu","-dynarec","-stdout","-lua_stdout","-logfile",str(pl),"-run"]
+        long_case = (name.startswith("ae2-target-current-all-24-control") or name.startswith("ae2-current-bisect-") or name.startswith("ae2-target-spu-field6-control") or name in ("direct-channel-field-2","direct-channel-field-3","ae2-target-current-pointer-field8-from-control") or name.startswith("ae4-ad3-field"))
+        if name.startswith("ae4-ad3-field"):
+          timeout_seconds = max(120, 2*(fastest_to_marker_s if fastest_to_marker_s is not None else 120)+5)
+        else:
+          timeout_seconds = 120 if long_case else 8
+        call=["timeout","--signal=INT","--kill-after=5s",str(timeout_seconds)+"s","gdb","--quiet","--nx","--batch","--return-child-result","-x",str(cmd),"--args",a.pcsx_bin,"-noupdate","-no-debugger","-no-gdb","-bios",a.bios,"-iso",a.cue,"-memcard1",a.card,"-exec",pad.read_text(),"-dofile",str(lua),"-softgpu","-dynarec","-stdout","-lua_stdout","-logfile",str(pl),"-run"]
         started=time.time()
+        te["AE_RUN_START_EPOCH"]=str(started)
         with gl.open("wb") as dest:
           try: p=subprocess.run(call,cwd=work,env=te,stdout=dest,stderr=subprocess.STDOUT,check=False);rc=p.returncode
           except Exception as e:rc=255;dest.write(("AE_LAUNCH_ERROR="+repr(e)+"\n").encode())
         if not pl.exists():pl.write_text("AE_PCSX_LOG_NOT_CREATED\n")
         textlog=gl.read_text(errors="replace")
+        marker=re.search(r"AE_POST_LOAD_VSYNC=180 elapsed_since_loaded_s=(\d+)",textlog)
+        if marker:
+          measured=int(marker.group(1))
+          fastest_to_marker_s=measured if fastest_to_marker_s is None else min(fastest_to_marker_s,measured)
         if re.search(r"(?:Thread \d+ .* received signal|Program received signal|Program terminated with signal)\s+SIGSEGV",textlog):status="SIGSEGV"
         elif re.search(r"(?:Thread \d+ .* received signal|Program received signal|Program terminated with signal)\s+SIGABRT",textlog):status="SIGABRT"
         elif "AE_POST_LOAD_VSYNC=180" in textlog and "AE_RAM_STATE_CAPTURE=PASS" in textlog:status="POST_LOAD_VSYNC=180"
@@ -234,6 +246,41 @@ end
       chan=selective(cchan,tchan,keys)
       # Channel's fields 1=data, 2=adsr, 3=adsr_ex are protobuf message fields.
       return replace_channel_in_state(control,1,chan)
+    # AF2 A: target base + control ChannelData.current (field 8) in all 24 channels.
+    def current_hybrid(target_current_channels):
+      state = target
+      for i in range(24):
+        if i in target_current_channels:
+          continue
+        state_spu = one(state,6)
+        state_channels = [r for r in parse(state_spu) if r["n"]==6 and r["w"]==2]
+        control_channels = [r for r in parse(control_spu) if r["n"]==6 and r["w"]==2]
+        tdata = one(state_channels[i]["pay"],1)
+        cdata = one(control_channels[i]["pay"],1)
+        new_data = selective(tdata,cdata,{(8,0)})
+        new_channel = replace_top(state_channels[i]["pay"],1,encmsg(1,new_data))
+        state = replace_channel_in_state(state,i,new_channel)
+      return state
+    all_current_outcome = run_case("ae2-target-current-all-24-control",current_hybrid(set()),
+      "target base; copy only field 8 current from control in all 24 channels")
+    if all_current_outcome == "POST_LOAD_VSYNC_180_BOTH":
+      report.append("AF2 all-current hybrid reached clean marker twice; binary channel bisection begins.")
+      candidates=list(range(24)); step=0
+      while len(candidates)>1:
+        step+=1; mid=len(candidates)//2; left=candidates[:mid]
+        outcome=run_case("ae2-current-bisect-step%d"%step,current_hybrid(set(left)),
+          "retain target current for channels "+",".join(str(x+1) for x in left)+"; control current elsewhere")
+        if outcome=="SIGSEGV_BOTH": candidates=left
+        elif outcome=="POST_LOAD_VSYNC_180_BOTH": candidates=candidates[mid:]
+        else:
+          report.append("AF2 binary bisection stopped at step %d: inconclusive %s"%(step,outcome)); break
+      report.append("AF2 candidate channel(s), 1-based: "+",".join(str(x+1) for x in candidates))
+    elif all_current_outcome == "SIGSEGV_BOTH":
+      report.append("AF2 all-current hybrid still SIGSEGV twice; per-channel bisection not triggered; inspect other field-6 subfields.")
+    else:
+      report.append("AF2 all-current hybrid inconclusive; no per-channel bisection.")
+    run_case("ae2-target-spu-field6-control",replace_top(target,6,encmsg(6,control_spu)),
+      "target base; entire top-level SPU field 6 replaced by control SPU message")
     # A: test each changed direct field on Channel occurrence 2 in control base.
     direct_out={}
     for key in direct_keys:

@@ -186,7 +186,13 @@ jobs:
             git add reports/ae_2026-10-29/deep
             if ! git diff --cached --quiet; then
               git commit -m "Publish recursive AE1 SPU channel-field evidence"
-              git push origin HEAD:main
+              published=0
+              for attempt in 1 2 3; do
+                git pull --rebase origin main || { echo "AE1_REBASE_FAILED attempt=$attempt"; exit 1; }
+                if git push origin HEAD:main; then published=1; break; fi
+                sleep "$attempt"
+              done
+              test "$published" = 1
             fi
           fi
           echo "AE1_DEEP_EVIDENCE_HEAD=$(git rev-parse HEAD)"

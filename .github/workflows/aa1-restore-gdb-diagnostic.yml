@@ -558,7 +558,11 @@ jobs:
                   reports/ae_2026-10-29/
           if ! git diff --cached --quiet; then
             git commit -m "Record sanitized AA1 AC2 AC4 evidence"
-            git push origin HEAD:main
+            git pull --rebase origin main || exit 1
+            git push origin HEAD:main || {
+              git pull --rebase origin main || exit 1
+              git push origin HEAD:main
+            }
           fi
           EVIDENCE_COMMIT="$(git rev-parse HEAD)"
           JOB_ID="$(curl -fsSL -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs" | jq -r '.jobs[] | select(.name=="diagnose") | .id' | head -n 1)"
@@ -598,7 +602,11 @@ jobs:
           EOF
           git add "$REPORT"
           git commit -m "Publish concise AC1-AC4 restore report"
-          git push origin HEAD:main
+          git pull --rebase origin main || exit 1
+            git push origin HEAD:main || {
+              git pull --rebase origin main || exit 1
+              git push origin HEAD:main
+            }
           FINAL_COMMIT="$(git rev-parse HEAD)"
           echo "FINAL_REPORT_COMMIT=$FINAL_COMMIT"
           echo "FINAL_REPORT_RAW=https://raw.githubusercontent.com/$RESEARCH_REPO/$FINAL_COMMIT/$REPORT"
