@@ -204,14 +204,25 @@ jobs:
                 -ex 'set pagination off' \
                 -ex 'set confirm off' \
                 -ex 'set print thread-events off' \
-                -ex 'set follow-fork-mode child' \
-                -ex 'set detach-on-fork on' \
+                -ex 'set follow-fork-mode parent' \
+                -ex 'set detach-on-fork off' \
                 -ex 'set follow-exec-mode same' \
+                -ex 'catch fork' \
+                -ex 'commands' \
+                -ex 'silent' \
+                -ex 'printf "AA1_GDB_FORK_EVENT\\n"' \
+                -ex 'continue' \
+                -ex 'end' \
+                -ex 'catch exec' \
+                -ex 'commands' \
+                -ex 'silent' \
+                -ex 'printf "AA1_GDB_EXEC_EVENT\\n"' \
+                -ex 'continue' \
+                -ex 'end' \
                 -ex 'handle SIGSEGV stop print nopass' \
                 -ex 'run' \
                 -ex 'echo \\n=== AA1 NATIVE BACKTRACE ===\\n' \
                 -ex 'bt full' \
-                -ex 'info registers' \
                 --args "$AA_WORK/source/squashfs-root/AppRun" \
                   -noupdate -no-debugger -no-gdb \
                   -bios "$AA_WORK/source/scph7502.bin" -iso "$AA_WORK/source/game-run.cue" \
@@ -241,12 +252,13 @@ jobs:
             echo "- Target raw state: 21,163,286 bytes; SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
             echo "- Control state: adaptive-cycle-01-f180.sstate; SHA-256 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492"
             echo "- Controller: no buttons injected; bounded to 180 post-load VSync or failure."
+            echo "- Prior attempt #40845962644 tracked a short-lived launcher inferior and produced no emulator stack; it is not restore-failure evidence."
             for label in target control; do
               echo
               echo "## Case: $label"
               echo
               if [ -f "$AA_WORK/logs/$label.gdb.log" ]; then
-                grep -E 'AA1_|Loaded BIOS:|CD-ROM Label:|CD-ROM ID:|Program received signal|^#([0-9]+)[[:space:]]|^pc[[:space:]]|^sp[[:space:]]|^ra[[:space:]]|^v0[[:space:]]|^a0[[:space:]]|^a1[[:space:]]|^a2[[:space:]]|^a3[[:space:]]|No stack|exited normally|exited with code|AA1_GDB_EXIT_CODE' "$AA_WORK/logs/$label.gdb.log" | tail -n 90 || true
+                grep -E 'AA1_|Catchpoint|GDB_FORK_EVENT|GDB_EXEC_EVENT|Loaded BIOS:|CD-ROM Label:|CD-ROM ID:|Program received signal|^#([0-9]+)[[:space:]]|^pc[[:space:]]|^sp[[:space:]]|^ra[[:space:]]|^v0[[:space:]]|^a0[[:space:]]|^a1[[:space:]]|^a2[[:space:]]|^a3[[:space:]]|No stack|exited normally|exited with code|AA1_GDB_EXIT_CODE' "$AA_WORK/logs/$label.gdb.log" | tail -n 90 || true
               else
                 echo "GDB log not produced; earlier workflow step may have failed."
               fi
