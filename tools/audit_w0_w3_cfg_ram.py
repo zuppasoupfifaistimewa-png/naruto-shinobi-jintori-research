@@ -564,22 +564,35 @@ def extract_gpr_from_sstate(state_path):
     # Accept only an exact sequential field-number set, then map field 29 to GPR index 28 (GP).
     try:
         gpr_fields=list(parse_fields(gpr_payload))
-        if len(gpr_fields) in (32,34) and all(w in (0,5) for _,w,_ in gpr_fields):
+        if gpr_fields and all(w in (0,5) for _,w,_ in gpr_fields):
             by_number={}
+            valid=True
             for n,w,v in gpr_fields:
-                if n in by_number: by_number[n]="DUPLICATE"
-                else: by_number[n]=v if w==0 else struct.unpack("<I",v)[0]
-            count=len(gpr_fields)
-            if set(by_number)==set(range(1,count+1)) and all(isinstance(by_number[n],int) for n in range(1,count+1)):
-                vals=[by_number[n] for n in range(1,count+1)]
-                evidence.append(("SaveState.field4.Registers.field1.GPR/numbered-scalars","numbered-scalar-register-fields",vals))
+                if n<1 or n>34 or n in by_number:
+                    valid=False
+                    break
+                by_number[n]=v if w==0 else struct.unpack("<I",v)[0]
+            # Fixed-width register messages may omit default-zero scalar fields.
+            # Treat omitted indices as zero only when all present fields are unique scalar IDs in 1..34.
+            if valid and len(by_number)>=12:
+                vals=[by_number.get(n,0) for n in range(1,35)]
+                evidence.append(("SaveState.field4.Registers.field1.GPR/numbered-scalars-default-zero","numbered-scalar-register-fields-with-omitted-defaults",vals))
     except Exception:
         pass
     # Prefer exact 34-element GPR layout; 32-element arrays are accepted only if no 34-element representation exists.
     exact=[x for x in evidence if len(x[2])==34]
     chosen=exact[0] if exact else next((x for x in evidence if len(x[2])==32),None)
+    try:
+        gp_struct=list(parse_fields(gpr_payload))
+        gp_sig=[{"field":n,"wire":w,"payload_bytes":len(v) if isinstance(v,bytes) else "",
+                 "scalar":v if isinstance(v,int) and w==0 else (struct.unpack("<I",v)[0] if isinstance(v,bytes) and w==5 else "")}
+                for n,w,v in gp_struct]
+    except Exception as e:
+        gp_struct=[];gp_sig=[{"parse_error":str(e)}]
     report={"state_bytes":len(state),"state_sha256":sha(state),"register_payload_bytes":len(reg_payload),
-      "gpr_payload_bytes":len(gpr_payload),"candidate_arrays":[{"path":p,"encoding":e,"count":len(v)} for p,e,v in evidence],
+      "gpr_payload_bytes":len(gpr_payload),"gpr_payload_sha256":sha(gpr_payload),
+      "gpr_serialized_field_count":len(gp_struct),"gpr_serialized_fields":gp_sig,
+      "candidate_arrays":[{"path":p,"encoding":e,"count":len(v)} for p,e,v in evidence],
       "gpr_count":len(chosen[2]) if chosen else 0,"gpr_encoding":chosen[1] if chosen else "UNKNOWN",
       "gpr_field_path":chosen[0] if chosen else "TIDAK TAHU","gp_index":28}
     gp=chosen[2][28] if chosen and len(chosen[2])>28 else None
@@ -630,6 +643,9 @@ def w2(rampath,out,run_id,statepath):
       f"gpr_field_path={gp_report['gpr_field_path']}",f"gpr_encoding={gp_report['gpr_encoding']}",
       f"gpr_count={gp_report['gpr_count']}",f"gp_register_index={gp_report['gp_index']}",
       f"gp_register_value={gp_report['gp_value']}",f"gp_plus_0xA8={H(gp_addr) if gp_addr is not None else 'TIDAK TAHU'}",
+      f"gpr_payload_sha256={gp_report.get('gpr_payload_sha256','TIDAK TAHU')}",
+      f"gpr_serialized_field_count={gp_report.get('gpr_serialized_field_count','TIDAK TAHU')}",
+      "gpr_serialized_fields="+json.dumps(gp_report.get("gpr_serialized_fields",[]),ensure_ascii=False),
       "candidate_arrays="+json.dumps(gp_report["candidate_arrays"],ensure_ascii=False),
       "If GP cannot be uniquely decoded from its SaveState.v4 register field, gp+0xA8 is explicitly TIDAK TAHU."
     ])+"\n",encoding="utf-8")
