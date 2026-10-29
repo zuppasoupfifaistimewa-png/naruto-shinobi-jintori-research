@@ -233,10 +233,10 @@ def funcs(path):
             if s<=e:out.append((s,e,r.get("function_name","")))
         except:pass
     return out
-def build_cfg(entry,s,e,name):
+def build_cfg(entry,s,e,name,base=BASE):
     inst={}
     for pc in range(s,e+1,4):
-        o=pc-BASE
+        o=pc-base
         if o<0 or o+4>len(entry):continue
         inst[pc]=decode(pc,u32(entry,o))
     pcs=sorted(inst)
@@ -406,7 +406,7 @@ def build_cfg(entry,s,e,name):
           "possible_base_values":";".join(H(v) for v in sorted(vals)),"possible_effective_addresses":";".join(H(v) for v in sorted(eff)),
           "class":cls,"reason":reason,"cfg_ambiguity":"; ".join(sorted(set(amb))),
           "dataflow_rounds":rounds,"dataflow_converged":"YES" if not changed else "NO"})
-    return {"blocks":blocks_out,"edges":edges,"reads":reads,"ambiguous":amb,"rounds":rounds,"converged":not changed}
+    return {"blocks":blocks_out,"edges":edges,"reads":reads,"ambiguous":amb,"rounds":rounds,"converged":not changed,"ins":inst,"before":before,"function_name":name,"start":s,"end":e}
 def w1(entry,candidate,function_csv,v3_csv,out):
     fns=funcs(function_csv); v3=read_csv(v3_csv)
     if len(v3)!=32:raise SystemExit(f"V3_ROW_COUNT_NOT_32:{len(v3)}")
