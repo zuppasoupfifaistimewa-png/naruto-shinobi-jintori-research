@@ -98,3 +98,27 @@ The checkpoint's RAM bytes show a word `0x16C` at `0x801D7FBC`; the naturally al
 | `D_800A2918+0xC` allocation count | `0x00000014` (20) | `0x00000013` (19) |
 
 The “after” column is a **static projection from the instructions and checkpoint snapshot**, not a watchpoint trace and not evidence that `FUN_8002DFE4(0x801D7FC0)` actually executed. The snapshot header is strongly compatible with a 2,900-byte request after rounding, but the original request size/call-site has not been tied to this pointer at runtime. That is the remaining AA3 gap.
+
+
+## Additional real allocator call-site found in the same verified disassembly
+
+A static allocation/free lifecycle is directly visible at `0x80031508` through the caller region in `main_text_80010000.text.s`:
+
+```asm
+80031508  jal   func_8002DEC4
+8003150C  addiu $a0, $zero, 0x204C   ; 8268-byte request
+80031510  sw    $v0, 0xB0($gp)       ; retain returned payload pointer
+...
+80031524  lw    $a0, 0xB0($gp)
+80031528  jal   func_80035D48
+8003152C  addiu $a2, $zero, 0x204C   ; initialize 8268 bytes
+...
+80031594  lw    $a0, 0xB0($gp)
+8003159C  beqz  $a0, .L800315B4
+800315A4  jal   func_8002DFE4         ; release pointer when non-null
+800315AC  sw    $zero, 0xB0($gp)      ; clear retained pointer
+```
+
+For this call-site, the allocator's statically established unit rule predicts `ceil(8268/8)=1034` payload units (8,272 bytes), a header count of `1035 = 0x40B`, and `(0x40B-1)<<3 = 0x2050` bytes of accounted capacity. Here `$a0=0x204C` at the allocation call is the **requested size**, not the returned pointer. The payload pointer returned in `$v0` is stored at `0xB0($gp)`, passed as `$a0` to `FUN_8002DFE4` in the release path, then cleared from the global.
+
+This adds a directly inspectable static call-and-release example (K4 for the instruction sequence and arithmetic), but it still does not provide runtime values for the actual returned pointer's `[a0-4]` header or `[a0+8]` before/after release. Those remain **UNKNOWN / not captured**, because AA1 has not established successful restoration of the target checkpoint and AA2 watchpoints were not run.
