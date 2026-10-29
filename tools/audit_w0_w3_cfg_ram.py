@@ -47,7 +47,22 @@ def w0(out,run_id):
     assets=json.loads(assetsraw)
     target=[a for a in assets if a.get("id")==686794219 or a.get("name")=="storymode-checkpoint-run-39262213468.raw.sstate"]
     asset=target[0] if target else {}
-    # Query two adjacent UTC dates. A previous-day run can still be active at 00:10.
+    # Resolve the release tag to its target commit and obtain the commit timestamp.
+    tagraw,_=api("git/ref/tags/naruto-checkpoint-39262213468")
+    tag_ref=json.loads(tagraw)
+    tag_obj=tag_ref.get("object",{})
+    tag_chain=[]
+    while tag_obj.get("type")=="tag":
+        tag_chain.append(tag_obj.get("sha",""))
+        traw,_=api("git/tags/"+tag_obj.get("sha",""))
+        tag_obj=json.loads(traw).get("object",{})
+    tag_commit_sha=tag_obj.get("sha","")
+    commitraw,_=api("commits/"+tag_commit_sha)
+    tag_commit=json.loads(commitraw)
+    tag_commit_date=((tag_commit.get("commit",{}).get("committer",{}) or {}).get("date")
+                     or (tag_commit.get("commit",{}).get("author",{}) or {}).get("date",""))
+    published=dt(rel.get("published_at"))
+    asset_created=dt(asset.get("created_at"))
     runs=[]
     for page in range(1,21):
         q=urllib.parse.urlencode({"per_page":100,"page":page})
@@ -113,21 +128,23 @@ def w0(out,run_id):
                             if len(excerpt)<2000: excerpt.append(f"run={r['id']} job={j['id']} {line[:900]}")
                 except Exception as e:
                     excerpt.append(f"run={r['id']} job={j.get('id')} LOG_FETCH_ERROR={str(e)[:200]}")
-    # The timestamp comparison can exclude a post-creation workflow as a creator, but cannot prove which external actor created it.
-    created=dt(rel.get("created_at"))
-    candidates=[]
+    # Compare every candidate Release-related step against published_at and asset.created_at.
     for st in release_steps:
         ss=dt(st.get("step_started_at")); se=dt(st.get("step_completed_at"))
-        if ss and created and ss<=created and (se is None or se>=created):
-            st["start_vs_release_created"]="TIME_OVERLAP_NOT_PROOF"; candidates.append(st)
-        elif ss and created and ss>created:
-            st["start_vs_release_created"]="STARTED_AFTER_RELEASE_RECORD"
-        elif se and created and se<created:
-            st["start_vs_release_created"]="FINISHED_BEFORE_RELEASE_RECORD"
-        else: st["start_vs_release_created"]="TIME_NOT_ENOUGH"
+        for label,stamp in (("published",published),("asset_created",asset_created)):
+            st[f"step_start_minus_{label}_seconds"]=(ss-stamp).total_seconds() if ss and stamp else ""
+            st[f"step_end_minus_{label}_seconds"]=(se-stamp).total_seconds() if se and stamp else ""
+            st[f"{label}_inside_step"]="YES" if ss and se and stamp and ss<=stamp<=se else "NO"
+        st["step_started_vs_published"]="BEFORE" if ss and published and ss<published else ("AFTER" if ss and published and ss>published else "EQUAL_OR_UNKNOWN")
+        st["step_completed_vs_published"]="BEFORE" if se and published and se<published else ("AFTER" if se and published and se>published else "EQUAL_OR_UNKNOWN")
+        st["step_started_vs_asset_created"]="BEFORE" if ss and asset_created and ss<asset_created else ("AFTER" if ss and asset_created and ss>asset_created else "EQUAL_OR_UNKNOWN")
+        st["step_completed_vs_asset_created"]="BEFORE" if se and asset_created and se<asset_created else ("AFTER" if se and asset_created and se>asset_created else "EQUAL_OR_UNKNOWN")
+    publish_matches=[s for s in release_steps if s.get("published_inside_step")=="YES"]
+    asset_matches=[s for s in release_steps if s.get("asset_created_inside_step")=="YES"]
     write_csv(out/"w0_runs_active_window.csv",run_rows)
     write_csv(out/"w0_jobs_active_window.csv",job_rows)
     write_csv(out/"w0_release_related_steps.csv",release_steps)
+    write_csv(out/"w0_release_step_time_comparison.csv",release_steps)
     (out/"w0_release_job_log_excerpts.txt").write_text("\n".join(excerpt)+"\n",encoding="utf-8")
     releaselines=[
       "W0 RELEASE CREATOR TIMELINE — UTC; API fields and Actions jobs/steps",
@@ -140,6 +157,11 @@ def w0(out,run_id):
       f"release_id={rel.get('id')}",
       f"release_created_at={rel.get('created_at')}",
       f"release_published_at={rel.get('published_at')}",
+      f"release_tag_ref_object_type={tag_ref.get('object',{}).get('type','UNKNOWN')}",
+      f"release_tag_commit_sha={tag_commit_sha}",
+      f"release_tag_commit_date={tag_commit_date}",
+      f"release_tag_annotated_chain={';'.join(tag_chain) if tag_chain else 'LIGHTWEIGHT_TAG_DIRECT_TO_COMMIT'}",
+      f"created_at_equals_tag_commit_date={'YES' if rel.get('created_at')==tag_commit_date else 'NO'}",
       f"release_author={((rel.get('author') or {}).get('login','UNKNOWN'))}",
       f"release_asset_id={asset.get('id','UNKNOWN')}",
       f"release_asset_created_at={asset.get('created_at','UNKNOWN')}",
@@ -148,10 +170,12 @@ def w0(out,run_id):
       f"release_asset_name={asset.get('name','UNKNOWN')}",
       f"release_asset_size_bytes={asset.get('size','UNKNOWN')}",
       f"release_asset_state_sha256_expected=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d",
-      f"release_timestamp_precedes_run_40792708405_start={'YES' if created and dt('2026-10-29T00:14:11Z') and created<dt('2026-10-29T00:14:11Z') else 'NO'}",
-      f"release_step_time_overlaps_created_at={len(candidates)}",
-      "creator_conclusion=TIDAK TAHU unless an API creation event is uniquely attributable; author=github-actions[bot] identifies the uploader/actor account, not a specific workflow run.",
-      "creator_rule=Any candidate step starting after Release.created_at cannot have created that record. A time-overlapping step alone is not proof absent an attributable creation event in the logged/API evidence.",
+      f"published_at_inside_release_related_step_count={len(publish_matches)}",
+      f"asset_created_at_inside_release_related_step_count={len(asset_matches)}",
+      "CLAIM_RELEASE_RECORD_CREATED_BY_RUN_40792708405=RETRACTED_NOT_PROVEN; tag target commit date matches created_at and the asset step begins later.",
+      "CLAIM_RELEASE_PUBLISHED_BY_RUN_40792708405=SUPPORTED_BY_TIMESTAMPS when its release-preservation step spans published_at 00:14:27Z.",
+      "CLAIM_ASSET_UPLOADED_BY_RUN_40792708405=SUPPORTED_BY_TIMESTAMPS when that same step spans asset created_at 00:14:28Z.",
+      "Attribution is limited to Release publication and asset upload; do not state that the run authored the target tag commit.",
       f"current_audit_run={run_id}",
     ]
     (out/"w0_release_timeline_summary.txt").write_text("\n".join(releaselines)+"\n",encoding="utf-8")
