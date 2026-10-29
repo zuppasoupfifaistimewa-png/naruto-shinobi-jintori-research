@@ -22,7 +22,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       RESEARCH_REPO: ${{ github.repository }}
-      WORK: ${{ runner.temp }}/naruto-ae1-channel-bisect
+      WORK: /tmp/naruto-ae1-channel-bisect
 
     steps:
       - name: Checkout research repository
@@ -111,7 +111,7 @@ jobs:
           run-id: "39867730674"
           repository: ${{ github.repository }}
           github-token: ${{ github.token }}
-          path: ${{ runner.temp }}/naruto-ae1-channel-bisect/inputs
+          path: /tmp/naruto-ae1-channel-bisect/inputs
 
       - name: Download reference Memory Card from original checkpoint run
         uses: actions/download-artifact@v4
@@ -120,7 +120,7 @@ jobs:
           run-id: "39262213468"
           repository: ${{ github.repository }}
           github-token: ${{ github.token }}
-          path: ${{ runner.temp }}/naruto-ae1-channel-bisect/cards
+          path: /tmp/naruto-ae1-channel-bisect/cards
 
       - name: Validate control state and prepare emulator
         shell: bash
