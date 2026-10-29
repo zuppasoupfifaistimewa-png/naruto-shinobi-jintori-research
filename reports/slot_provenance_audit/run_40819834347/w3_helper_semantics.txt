@@ -1,0 +1,17 @@
+W3 HELPER SEMANTICS — inferred from full Ghidra-bounded instruction listings
+Evidence: Actions run 40819834347, job 123269457657, output commit dd2e4d6a3d84e9a66ebcb78d331ea1e8dfd6f471, file reports/slot_provenance_audit/run_40819834347/w3_helper_function_disassembly.txt (Ghidra bounds; all four target functions found).
+The disassembly is static. Exact semantics of callees that were not themselves disassembled remain TIDAK TAHU.
+
+1) 0x8002DEC4 — FUN_8002dec4, body 0x8002DEC4..0x8002DF2F, 27 instructions.
+Evidence: 0x8002DECC calls 0x80035B08; 0x8002DED4 moves the return value to a1; 0x8002DED8 branches to null-return handling when a1==0. For non-null return it updates a global count at 0x800A2918+0xC (LW at 0x8002DEE4, increment at 0x8002DEEC, SW at 0x8002DEF0); reads a word before returned pointer (lw v0,-4(a1) at 0x8002DEF4), derives (header-1)*8 at 0x8002DEFC–0x8002DF00, and updates bookkeeping at +0x8 from 0x8002DF04–0x8002DF10. It returns the pointer in v0 via delay slot at 0x8002DF18. Its caller passes size 2900 and treats nonzero return as a pointer. Conclusion: allocation-like wrapper with bookkeeping is strongly supported (K3/K4); whether callee 0x80035B08 is the underlying allocator and the exact header meaning: TIDAK TAHU.
+
+2) 0x8002DFE4 — FUN_8002dfe4, body 0x8002DFE4..0x8002E06F, 35 instructions.
+Evidence: reads allocation header at lw v0,-4(a0) (0x8002E004), calculates (header-1)*8 (0x8002E00C–0x8002E010), updates accounting/list value at 0x800A2918+0x8 (0x8002E014–0x8002E020), checks a global pointer at gp+0xA8 (0x8002E024, compare at 0x8002E02C, clear at 0x8002E034), calls 0x80035BB8 at 0x8002E040, and decrements count at 0x800A2918+0xC (0x8002E050–0x8002E05C). The caller only invokes it for a non-null slot pointer and clears that slot after the call. Conclusion: deallocation/release/accounting wrapper is strongly suggested (K3); exact behavior of 0x80035BB8 and meaning of gp+0xA8: TIDAK TAHU.
+
+3) 0x80035D48 — FUN_80035d48, body 0x80035D48..0x80035D77, 12 instructions.
+Evidence: checks a0 for null at 0x80035D48; for positive a2 it loops at 0x80035D60–0x80035D6C: sb a1,0(a0), decrements a2, branches while positive, increments a0 by one in the branch delay slot. It retains the original pointer in v0 from the delay slot move v0,a0 at 0x80035D54. Conclusion: byte-fill primitive (memset-like), K4. Its caller supplies a1=0 and a2=2900, so this usage clears 2900 bytes.
+
+4) 0x80020F54 — FUN_80020f54, body 0x80020F54..0x80020F87, 13 instructions.
+Evidence: branches to zero-return path if a0==0 (0x80020F58); clears a1 at 0x80020F60; calls 0x80035D48 at 0x80020F64 with delay-slot immediate a2=0x58 at 0x80020F68; returns success value 1 via branch/jump delay slot at 0x80020F70, otherwise returns zero at 0x80020F74. Conclusion: null-checked zero-initializer of 0x58 (88) bytes, K4. This supports the V2 interpretation that the caller zeroes 88-byte subrecords at the observed pointer offsets.
+
+Overall: The 2900-byte block is zero-filled via 0x80035D48; four dword fields are assigned 2 and a byte field 0xFF by FUN_80104690; helper 0x80020F54 clears 88-byte subregions. Strong evidence for an allocated, initialized structured block and matching release path, but exact C struct type, application semantics and the unseen inner alloc/free callees remain TIDAK TAHU.
