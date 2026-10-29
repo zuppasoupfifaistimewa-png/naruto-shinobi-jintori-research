@@ -194,35 +194,37 @@ jobs:
           cd "$AA_WORK"
           export DISPLAY=:99 HOME="$AA_WORK/home" XDG_CONFIG_HOME="$AA_WORK/home/.config" XDG_DATA_HOME="$AA_WORK/home/.local/share" XDG_RUNTIME_DIR="$AA_WORK/home/runtime"
           export LIBGL_ALWAYS_SOFTWARE=1
+          cat > "$AA_WORK/gdb-commands.gdb" <<'GDB'
+          set pagination off
+          set confirm off
+          set print thread-events off
+          set follow-fork-mode parent
+          set detach-on-fork off
+          set follow-exec-mode same
+          catch fork
+          commands
+            silent
+            printf "AA1_GDB_FORK_EVENT\n"
+            continue
+          end
+          catch exec
+          commands
+            silent
+            printf "AA1_GDB_EXEC_EVENT\n"
+            continue
+          end
+          handle SIGSEGV stop print nopass
+          run
+          echo \n=== AA1 NATIVE BACKTRACE ===\n
+          bt full
+          GDB
           for entry in "target:resume/target.sstate" "control:resume/control.sstate"; do
-            label="${entry%%:*}"
-            state="${entry#*:}"
+            label="\${entry%%:*}"
+            state="\${entry#*:}"
             echo "AA1_GDB_CASE=$label state_path=$state"
             set +e
             AA_TEST_STATE="$state" timeout --signal=TERM --kill-after=5s 110s \
-              gdb --quiet --nx --batch \
-                -ex 'set pagination off' \
-                -ex 'set confirm off' \
-                -ex 'set print thread-events off' \
-                -ex 'set follow-fork-mode parent' \
-                -ex 'set detach-on-fork off' \
-                -ex 'set follow-exec-mode same' \
-                -ex 'catch fork' \
-                -ex 'commands' \
-                -ex 'silent' \
-                -ex 'printf "AA1_GDB_FORK_EVENT\\n"' \
-                -ex 'continue' \
-                -ex 'end' \
-                -ex 'catch exec' \
-                -ex 'commands' \
-                -ex 'silent' \
-                -ex 'printf "AA1_GDB_EXEC_EVENT\\n"' \
-                -ex 'continue' \
-                -ex 'end' \
-                -ex 'handle SIGSEGV stop print nopass' \
-                -ex 'run' \
-                -ex 'echo \\n=== AA1 NATIVE BACKTRACE ===\\n' \
-                -ex 'bt full' \
+              gdb --quiet --nx --batch -x "$AA_WORK/gdb-commands.gdb" \
                 --args "$AA_WORK/source/squashfs-root/AppRun" \
                   -noupdate -no-debugger -no-gdb \
                   -bios "$AA_WORK/source/scph7502.bin" -iso "$AA_WORK/source/game-run.cue" \
