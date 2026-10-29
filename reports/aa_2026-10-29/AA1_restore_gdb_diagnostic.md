@@ -38,6 +38,14 @@ AA1_POST_LOAD_VSYNC=180
 \n=== AA1 NATIVE BACKTRACE ===\nNo stack.
 AA1_GDB_EXIT_CODE=1
 
+## Result interpretation (run 40848251356 / job 123360980473)
+
+- **Control state:** the same direct emulator binary, BIOS, ISO, Memory Card, Lua restore hook, and argument order emitted `AA1_EVENT_SAVE_STATE_LOADED=1`, `AA1_LOAD_CALL_RETURNED=1`, then `AA1_POST_LOAD_VSYNC=180`. This is direct runtime evidence that the chosen loader path can restore at least the control state.
+- **Target checkpoint:** emitted `AA1_LOAD_BEGIN=1` at VSync 1, but the captured sanitized report contains neither `AA1_EVENT_SAVE_STATE_LOADED=1` nor `AA1_LOAD_CALL_RETURNED=1` nor `AA1_POST_LOAD_VSYNC=180`. A short native stack excerpt (`#1`–`#4`) appears, but the sanitized report does **not** include an explicit `Program received signal SIGSEGV` line or a reliable signal/exit-code attribution for the target case.
+- **Conclusion:** target restore did not complete under this probe while the control state did. This narrows the failure to the target state or its state-specific restore path, but **does not yet prove the cause of the historical exit 139**, does not prove all possible restore paths impossible, and does not justify calling the target load a confirmed SIGSEGV. Likely alternatives still open include savestate-content/format details or state-specific loader behavior.
+- **AA1 status:** SEBAGIAN, K2 for a target-specific failure indication. The required root-cause diagnosis is not complete.
+- **Downstream gate:** AA2 is NOT RUN / BELUM. No chakra/RNG watchpoint trace, two-CIRCLE-frame comparison, (k) calculation, or PC-to-caller runtime correlation is claimed from this run.
+
 ## Interpretation guard
 
 A restore failure is established only if the target GDB log records SIGSEGV and a native backtrace at the actual load call. Missing direct-executable logs, a launcher-only stack, or an early exit is an inconclusive harness result.
