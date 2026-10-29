@@ -154,7 +154,10 @@ def ptr_pattern(v):
         return "NO",""
     return "UNKNOWN",""
 def make_cfg(entry,base,fns,name):
-    return core.build_cfg(entry,*fns,base=base)
+    matches=[f for f in fns if f[2]==name]
+    if len(matches)!=1:
+        raise SystemExit(f"CFG_FUNCTION_MATCH_NOT_UNIQUE:{name}:{len(matches)}")
+    return core.build_cfg(entry,*matches[0],base=base)
 
 def main():
     ap=argparse.ArgumentParser()
