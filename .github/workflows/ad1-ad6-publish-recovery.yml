@@ -194,6 +194,7 @@ jobs:
           print(out.read_text())
           PY
           cat "$TMP_AD/logs/static-binary-inspection.txt" >> "$OUT/AD2_symbolization.txt"
+          }
           # AD6 deliberately runs in the checked-out Git worktree, not the private emulator cwd.
           {
             echo "AD6 GIT HISTORY AUDIT"
