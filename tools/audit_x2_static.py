@@ -285,7 +285,7 @@ def main():
         an=sym_eval_cfg(cfg)
         ins=cfg["ins"]
         for pc,x in sorted(ins.items()):
-            if x.op not in access_ops or not core.mem_width(x.op):continue
+            if x.op not in access_ops or not mem_width(x.op):continue
             bases=an["reg_before"](pc,MIPS_GPRS[x.rs])
             ptr_bases=sorted({v[1] for v in bases if isinstance(v,tuple) and v[0]==PTR})
             if not ptr_bases:continue
@@ -294,7 +294,7 @@ def main():
                 off=boff+x.imm
                 field_rows.append({"object_base_symbol":"value loaded from slot 0x8013A554",
                   "checkpoint_object_base":"0x801CEF08","object_offset":H(off),"object_absolute_address":H(PTR_ADDR+off),
-                  "pc":H(pc),"function":name,"access_kind":mem_kind(x.op),"width_bytes":core.mem_width(x.op),
+                  "pc":H(pc),"function":name,"access_kind":mem_kind(x.op),"width_bytes":mem_width(x.op),
                   "opcode":x.name,"base_register":MIPS_GPRS[x.rs],"signed_displacement":x.imm,
                   "reaching_base_definitions":";".join(sorted(cfg["before"].get(pc,{}).get(MIPS_GPRS[x.rs],set()))),
                   "symbolic_base":val_text((PTR,boff)),"path_status":"AMBIGUOUS_WITH_UNKNOWN_DEFINITION" if unknown else "CFG_RESOLVED_POINTER_BASE",
