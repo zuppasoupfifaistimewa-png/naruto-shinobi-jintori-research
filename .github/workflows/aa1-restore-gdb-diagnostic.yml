@@ -217,86 +217,296 @@ jobs:
           for n in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
           xdpyinfo -display "$DISPLAY" >/dev/null
 
-      - name: Probe target and control checkpoint under external GDB
+      - name: Static savestate protobuf audit (no emulator load)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$AA_WORK/logs"
+          python3 - "$AA_WORK/source/target-checkpoint.raw.sstate" "$AA_WORK/resume/control.sstate" "$AA_WORK/logs/AC2_savestate_protobuf_static.txt" <<'PY'
+          import gzip, hashlib, sys, zlib
+          from pathlib import Path
+          from collections import defaultdict
+          target_path, control_path, out_path = map(Path, sys.argv[1:])
+          ADDR, RAM_BASE = 0x801CEF04, 0x80000000
+          def vi(buf,p):
+              val=0; shift=0; start=p
+              while p<len(buf) and shift<70:
+                  b=buf[p]; p+=1; val|=(b&127)<<shift
+                  if not b&128: return val,p,p-start
+                  shift+=7
+              raise ValueError("invalid/truncated varint at %d"%start)
+          def parse(buf):
+              out=[]; p=0
+              while p<len(buf):
+                  s=p; tag,p,_=vi(buf,p); num,wire=tag>>3,tag&7
+                  if num==0: raise ValueError("field number zero")
+                  if wire==0:
+                      ps=p; _,p,_=vi(buf,p); plen=p-ps
+                  elif wire==1:
+                      ps=p; plen=8; p+=8
+                  elif wire==2:
+                      n,p,_=vi(buf,p); ps=p; plen=n
+                      if n>len(buf)-p: raise ValueError("length overrun field %d"%num)
+                      p+=n
+                  elif wire==5:
+                      ps=p; plen=4; p+=4
+                  else: raise ValueError("unsupported wire type %d"%wire)
+                  if p>len(buf): raise ValueError("truncated field")
+                  out.append(dict(num=num,wire=wire,plen=plen,start=s,end=p,ps=ps,pe=p,enc=buf[s:p]))
+              return out
+          def load(path):
+              raw=path.read_bytes()
+              if raw.startswith(b"\x1f\x8b"): dec=gzip.decompress(raw); how="gzip magic 1f 8b; gzip.decompress"
+              elif len(raw)>2 and raw[0]==0x78 and ((raw[0]<<8)|raw[1])%31==0:
+                  try: dec=zlib.decompress(raw); how="zlib header/checksum; zlib.decompress"
+                  except zlib.error: dec=raw; how="zlib probe failed; parse raw"
+              else: dec=raw; how="no gzip/zlib magic; parse raw protobuf"
+              return dict(raw=raw,dec=dec,how=how,prefix=raw[:16].hex(" "),f=parse(dec))
+          a,b=load(target_path),load(control_path); lines=[]
+          say=lines.append
+          say("AC2 STATIC SAVESTATE PROTOBUF AUDIT — NO EMULATOR LOAD")
+          for name,x in (("TARGET",a),("CONTROL",b)):
+              say(f"{name}: raw_bytes={len(x['raw'])}; raw_sha256={hashlib.sha256(x['raw']).hexdigest()}")
+              say(f"{name}: raw_first16_hex={x['prefix']}; detect/decompress={x['how']}")
+              say(f"{name}: parsed_bytes={len(x['dec'])}; parsed_sha256={hashlib.sha256(x['dec']).hexdigest()}; top_field_encoded_sum={sum(r['end']-r['start'] for r in x['f'])}")
+          say(f"RAW_SIZE_DELTA_TARGET_MINUS_CONTROL={len(a['raw'])-len(b['raw'])}")
+          say(f"PARSED_SIZE_DELTA_TARGET_MINUS_CONTROL={len(a['dec'])-len(b['dec'])}")
+          def idx(rows):
+              d=defaultdict(list)
+              for r in rows:d[r['num']].append(r)
+              return d
+          ia,ib=idx(a['f']),idx(b['f']); dif=[]
+          say("\nTOP LEVEL (SHA is the entire encoded field including tag/length/payload)")
+          say("key | T wire | T payload_len | T encoded_len | T sha256 | C wire | C payload_len | C encoded_len | C sha256 | encoded_delta_T-C")
+          for n in sorted(set(ia)|set(ib)):
+              for j in range(max(len(ia[n]),len(ib[n]))):
+                  x=ia[n][j] if j<len(ia[n]) else None; y=ib[n][j] if j<len(ib[n]) else None
+                  ex=x['end']-x['start'] if x else 0; ey=y['end']-y['start'] if y else 0
+                  hx=hashlib.sha256(x['enc']).hexdigest() if x else "-"; hy=hashlib.sha256(y['enc']).hexdigest() if y else "-"
+                  say(f"{n}#{j+1} | {x['wire'] if x else '-'} | {x['plen'] if x else '-'} | {ex if x else '-'} | {hx} | {y['wire'] if y else '-'} | {y['plen'] if y else '-'} | {ey if y else '-'} | {hy} | {ex-ey}")
+                  if not x or not y or x['enc']!=y['enc']: dif.append((n,j,x,y))
+          total_t=sum(r['end']-r['start'] for r in a['f']); total_c=sum(r['end']-r['start'] for r in b['f'])
+          say(f"TOP_FIELD_ENCODED_SUM_DELTA={total_t-total_c}")
+          say(f"PARSED_BYTES_MINUS_TOP_FIELD_SUM_DELTA={(len(a['dec'])-len(b['dec']))-(total_t-total_c)}")
+          say("DIFFERING_TOP_FIELDS="+(",".join(f"{n}#{j+1}" for n,j,_,_ in dif) or "none"))
+          say("\nONE LEVEL DOWN FOR DIFFERING WIRE-2 FIELDS")
+          for n,j,x,y in dif:
+              if not x or not y or x['wire']!=2 or y['wire']!=2: continue
+              px=a['dec'][x['ps']:x['ps']+x['plen']]; py=b['dec'][y['ps']:y['ps']+y['plen']]
+              try: fx,fy=parse(px),parse(py)
+              except Exception as e: say(f"parent {n}#{j+1}: nested parse TIDAK TAHU ({type(e).__name__}: {e})"); continue
+              say(f"parent {n}#{j+1}: nested_bytes T={len(px)} C={len(py)} delta={len(px)-len(py)}")
+              ix,iy=idx(fx),idx(fy)
+              for cn in sorted(set(ix)|set(iy)):
+                  for k in range(max(len(ix[cn]),len(iy[cn]))):
+                      u=ix[cn][k] if k<len(ix[cn]) else None; v=iy[cn][k] if k<len(iy[cn]) else None
+                      eu=u['end']-u['start'] if u else 0; ev=v['end']-v['start'] if v else 0
+                      hu=hashlib.sha256(u['enc']).hexdigest() if u else "-"; hv=hashlib.sha256(v['enc']).hexdigest() if v else "-"
+                      say(f" child {cn}#{k+1}: wire={u['wire'] if u else '-'}/{v['wire'] if v else '-'} payload_len={u['plen'] if u else '-'}/{v['plen'] if v else '-'} encoded_len={eu if u else '-'}/{ev if v else '-'} sha256={hu}/{hv} delta={eu-ev}")
+          def ramword(x):
+              try:
+                  m=next(r for r in x['f'] if r['num']==3 and r['wire']==2)
+                  mb=x['dec'][m['ps']:m['ps']+m['plen']]; mf=parse(mb)
+                  r=next(r for r in mf if r['num']==1 and r['wire']==2)
+                  ram=mb[r['ps']:r['ps']+r['plen']]; off=ADDR-RAM_BASE
+                  if off<0 or off+4>len(ram): return f"UNAVAILABLE RAM_BYTES={len(ram)} offset=0x{off:X}"
+                  word=ram[off:off+4]; val=int.from_bytes(word,"little")
+                  return f"offset=0x{off:X} bytes={word.hex(' ')} LE_word=0x{val:08X} equals_0x16C={val==0x16C} RAM_bytes={len(ram)}"
+              except Exception as e:return f"TIDAK TAHU ({type(e).__name__}: {e})"
+          say(f"\nRAM WORD [0x{ADDR:08X}] TARGET: {ramword(a)}")
+          say(f"RAM WORD [0x{ADDR:08X}] CONTROL: {ramword(b)}")
+          say("Field interpretation: PCSX-Redux save-state v4 aggregate uses top-level field 3 for Memory; nested field 1 for RAM. Parser does not load either state into the emulator.")
+          out_path.write_text("\n".join(lines)+"\n",encoding="utf-8")
+          print(out_path.read_text(encoding="utf-8"))
+          PY
+
+      - name: Anonymous Release metadata and zero-byte range checks (no token)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$AA_WORK/logs"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          {
+            echo "ANONYMOUS_RELEASE_LIST_BEGIN"
+            env -u GH_TOKEN curl --fail --silent --show-error --location "$API/releases?per_page=100" |
+              jq -r '.[] as $r | if ($r.assets|length)==0 then [$r.tag_name,($r.draft|tostring),($r.prerelease|tostring),"(no assets)"]|@tsv else $r.assets[] | [$r.tag_name,($r.draft|tostring),($r.prerelease|tostring),.name,(.size|tostring)]|@tsv end'
+            echo "ANONYMOUS_RELEASE_LIST_END"
+            for id in 647346873 652373928 686794219; do
+              raw="$(env -u GH_TOKEN curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -H 'Range: bytes=0-0' -H 'Accept: application/octet-stream' "$API/releases/assets/$id" || true)"
+              code="$(printf '%s' "$raw" | cut -d ' ' -f1)"
+              redirect="$(printf '%s' "$raw" | cut -s -d ' ' -f2-)"
+              redirect="$(printf '%s' "$redirect" | cut -d '?' -f1)"
+              [ -n "$redirect" ] || redirect="(no redirect URL)"
+              printf 'ANON_ASSET_HTTP asset_id=%s code=%s redirect=%s\n' "$id" "$code" "$redirect"
+            done
+          } > "$AA_WORK/logs/anonymous-release-assets.txt"
+          cat "$AA_WORK/logs/anonymous-release-assets.txt"
+
+      - name: Probe target and control checkpoint under external GDB (two attempts each, no input)
         shell: bash
         run: |
           set -euo pipefail
           cd "$AA_WORK"
           export DISPLAY=:99 HOME="$AA_WORK/home" XDG_CONFIG_HOME="$AA_WORK/home/.config" XDG_DATA_HOME="$AA_WORK/home/.local/share" XDG_RUNTIME_DIR="$AA_WORK/home/runtime"
           export LIBGL_ALWAYS_SOFTWARE=1
-          export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}"
+          export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
           export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
           export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
           export QML2_IMPORT_PATH="$APPDIR/usr/qml"
-          for entry in "target:resume/target.sstate" "control:resume/control.sstate"; do
-            label="${entry%%:*}"
-            state="${entry#*:}"
-            echo "AA1_GDB_CASE=$label state_path=$state binary=$PCSX_BIN"
-            set +e
-            AA_TEST_STATE="$state" timeout --signal=TERM --kill-after=5s 110s \
-              gdb --quiet --nx --batch \
-                -ex 'set pagination off' \
-                -ex 'set confirm off' \
-                -ex 'set print thread-events off' \
-                -ex 'handle SIGSEGV stop print nopass' \
-                -ex 'run' \
-                -ex 'echo \\n=== AA1 NATIVE BACKTRACE ===\\n' \
-                -ex 'bt full' \
-                -ex 'info registers' \
+          {
+            echo "AA1_ENV_METADATA_BEGIN"
+            gdb --version | sed -n '1,2p'
+            cat /etc/os-release | grep -E '^(PRETTY_NAME|VERSION_ID)=' || true
+            uname -a
+            echo "timeout_per_attempt=110s external_timeout_signal=INT kill_after=10s"
+            echo "emulator_flags=-noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout -logfile <CASE>.pcsx.log -run"
+            echo "target/control attempts=2 each; buttons=NONE; PCSX AppImage SHA256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c; PCSX pin=0c3572c3db75f97542001e453ae80ba8c3f8acba"
+            echo "AA1_ENV_METADATA_END"
+          } > "$AA_WORK/logs/runtime-metadata.txt"
+          for label in target control; do
+            if [ "$label" = "target" ]; then state="resume/target.sstate"; else state="resume/control.sstate"; fi
+            for attempt in 1 2; do
+              echo "AA1_GDB_CASE=$label attempt=$attempt state_path=$state"
+              cat > "$AA_WORK/gdb.commands" <<'GDB'
+          set pagination off
+          set confirm off
+          set print thread-events off
+          handle SIGSEGV stop print nopass
+          handle SIGABRT stop print nopass
+          handle SIGBUS stop print nopass
+          run
+          echo \n=== AA1_THREADS_BEGIN ===\n
+          info threads
+          echo \n=== AA1_THREAD_BACKTRACES_BEGIN ===\n
+          thread apply all bt 12
+          echo \n=== AA1_PC_INSTRUCTIONS_BEGIN ===\n
+          x/3i $pc
+          echo \n=== AA1_REQUIRED_REGISTERS_BEGIN ===\n
+          info registers rip rsi rdi rcx
+          echo \n=== AA1_PROCESS_MAPPINGS_BEGIN ===\n
+          info proc mappings
+          echo \n=== AA1_FULL_BACKTRACE_BEGIN ===\n
+          bt full
+          echo \n=== AA1_DIAGNOSTICS_END ===\n
+          GDB
+              set +e
+              AA_TEST_STATE="$state" timeout --signal=INT --kill-after=10s 110s \
+                gdb --quiet --nx --batch -x "$AA_WORK/gdb.commands" \
                 --args "$PCSX_BIN" \
                   -noupdate -no-debugger -no-gdb \
                   -bios "$AA_WORK/source/scph7502.bin" -iso "$AA_WORK/source/game-run.cue" \
                   -memcard1 "$AA_WORK/cards/reference.mcd" -exec "$(cat "$AA_WORK/pad-setup.lua")" \
                   -dofile "$AA_WORK/restore.lua" -softgpu -dynarec -stdout -lua_stdout \
-                  -logfile "$AA_WORK/logs/$label.pcsx.log" -run \
-                  > "$AA_WORK/logs/$label.gdb.log" 2>&1
-            rc=$?
-            set -e
-            echo "AA1_GDB_EXIT_CODE=$rc" >> "$AA_WORK/logs/$label.gdb.log"
-            echo "AA1_CASE_DONE=$label exit=$rc"
+                  -logfile "$AA_WORK/logs/$label.attempt$attempt.pcsx.log" -run \
+                  > "$AA_WORK/logs/$label.attempt$attempt.gdb.log" 2>&1
+              rc=$?
+              set -e
+              echo "AA1_GDB_EXIT_CODE=$rc" >> "$AA_WORK/logs/$label.attempt$attempt.gdb.log"
+              echo "AA1_CASE_DONE=$label attempt=$attempt wrapper_exit=$rc"
+            done
           done
+          sanitize() {
+            sed -E \
+              -e 's#/home/runner[^[:space:]]*#<RUNNER_PATH>#g' \
+              -e 's#/__w[^[:space:]]*#<RUNNER_PATH>#g' \
+              -e 's#/tmp/naruto[^[:space:]]*#<PRIVATE_TMP>#g' \
+              -e 's#(Authorization: Bearer)[[:space:]]+[^[:space:]]+#\1 <REDACTED>#Ig' \
+              -e 's#(github_pat_|gh[pousr]_|AKIA)[A-Za-z0-9_:/+-]+#\1<REDACTED>#g' \
+              -e 's#(https?://[^?[:space:]]+)\?[^[:space:]]+#\1?<REDACTED>#g'
+          }
+          make_excerpt() {
+            input="$1"; output="$2"
+            if [ ! -f "$input" ]; then printf 'LOG_NOT_CREATED\n' > "$output"; return; fi
+            count="$(wc -l < "$input")"
+            if [ "$count" -le 290 ]; then
+              cat "$input" | sanitize > "$output"
+            else
+              { sed -n '1,40p' "$input"; echo "[... omitted middle; source lines=$count ...]"; sed -n "$((count-249)),\$p" "$input"; } | sanitize > "$output"
+            fi
+          }
+          outdir="$GITHUB_WORKSPACE/reports/aa_2026-10-29/aa1_runtime_logs"
+          mkdir -p "$outdir"
+          for label in target control; do
+            for attempt in 1 2; do
+              make_excerpt "$AA_WORK/logs/$label.attempt$attempt.gdb.log" "$outdir/$label-attempt$attempt.gdb.txt"
+              make_excerpt "$AA_WORK/logs/$label.attempt$attempt.pcsx.log" "$outdir/$label-attempt$attempt.pcsx.txt"
+            done
+          done
+          cp "$AA_WORK/logs/runtime-metadata.txt" "$GITHUB_WORKSPACE/reports/aa_2026-10-29/AA1_runtime_metadata.txt"
+          cp "$AA_WORK/logs/anonymous-release-assets.txt" "$GITHUB_WORKSPACE/reports/aa_2026-10-29/anonymous-release-assets.txt"
+          cp "$AA_WORK/logs/AC2_savestate_protobuf_static.txt" "$GITHUB_WORKSPACE/reports/aa_2026-10-29/AC2_savestate_protobuf_static.txt"
+          {
+            echo "AA1_RUNTIME_SUMMARY — run=$GITHUB_RUN_ID"
+            for label in target control; do
+              for attempt in 1 2; do
+                gl="$AA_WORK/logs/$label.attempt$attempt.gdb.log"
+                pl="$AA_WORK/logs/$label.attempt$attempt.pcsx.log"
+                echo
+                echo "CASE=$label attempt=$attempt"
+                echo "wrapper_exit=$(grep -E '^AA1_GDB_EXIT_CODE=' "$gl" | tail -n 1 | cut -d= -f2- || echo NOT_RECORDED)"
+                echo "signal_or_inferior_exit=$(grep -E 'Program received signal|Thread .* received signal|Inferior .*exited' "$gl" | tail -n 1 || echo NOT_RECORDED)"
+                echo "frame_0=$(grep -m 1 -E '^#0[[:space:]]' "$gl" || echo NOT_RECORDED)"
+                echo "thread=$(grep -m 1 -E '^[[:space:]]*\*[[:space:]]*[0-9]+[[:space:]]|^[[:space:]]*[0-9]+[[:space:]]+Thread ' "$gl" || echo NOT_RECORDED)"
+                echo "last_load_log_line=$(grep -hE 'AA1_(LOAD_BEGIN|EVENT_SAVE_STATE_LOADED|LOAD_CALL_RETURNED|POST_LOAD_VSYNC|LOAD_EVENT_TIMEOUT|OPEN_FAIL|LOAD_LUA_ERROR)' "$gl" "$pl" 2>/dev/null | tail -n 1 || echo NO_LOAD_MARKER)"
+              done
+            done
+          } > "$GITHUB_WORKSPACE/reports/aa_2026-10-29/AA1_runtime_summary.txt"
+          cat "$GITHUB_WORKSPACE/reports/aa_2026-10-29/AA1_runtime_summary.txt"
 
-      - name: Commit text-only diagnostic summary
+      - name: Commit sanitized evidence and one-file final report
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p reports/aa_2026-10-29
-          out=reports/aa_2026-10-29/AA1_restore_gdb_diagnostic.md
-          {
-            echo "# AA1 — GDB diagnosis for checkpoint restore"
-            echo
-            echo "- Run ID: $GITHUB_RUN_ID"
-            echo "- Trigger commit: $(git rev-parse HEAD)"
-            echo "- Required emulator: PCSX-Redux 0c3572c3d; AppImage SHA-256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c"
-            echo "- Direct ELF executable: ${PCSX_BIN:-NOT_FOUND}"
-            echo "- Target raw state: 21,163,286 bytes; SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
-            echo "- Control state: adaptive-cycle-01-f180.sstate; SHA-256 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492"
-            echo "- Controller: no buttons injected; bounded to 180 post-load VSync or failure."
-            echo "- Prior attempt #40845962644 tracked a short-lived launcher inferior and produced no emulator stack; it is not restore-failure evidence."
-            for label in target control; do
-              echo
-              echo "## Case: $label"
-              echo
-              if [ -f "$AA_WORK/logs/$label.gdb.log" ]; then
-                grep -E 'AA1_|Catchpoint|GDB_FORK_EVENT|GDB_EXEC_EVENT|Loaded BIOS:|CD-ROM Label:|CD-ROM ID:|Program received signal|^#([0-9]+)[[:space:]]|^pc[[:space:]]|^sp[[:space:]]|^ra[[:space:]]|^v0[[:space:]]|^a0[[:space:]]|^a1[[:space:]]|^a2[[:space:]]|^a3[[:space:]]|No stack|exited normally|exited with code|AA1_GDB_EXIT_CODE' "$AA_WORK/logs/$label.gdb.log" | tail -n 90 || true
-              else
-                echo "GDB log not produced; earlier workflow step may have failed."
-              fi
-            done
-            echo
-            echo "## Interpretation guard"
-            echo
-            echo "A restore failure is established only if the target GDB log records SIGSEGV and a native backtrace at the actual load call. Missing direct-executable logs, a launcher-only stack, or an early exit is an inconclusive harness result."
-          } > "$out"
+          mkdir -p reports/aa_2026-10-29/aa1_runtime_logs
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$out"
+          git add reports/aa_2026-10-29/aa1_runtime_logs \
+                  reports/aa_2026-10-29/AA1_runtime_metadata.txt \
+                  reports/aa_2026-10-29/AA1_runtime_summary.txt \
+                  reports/aa_2026-10-29/AC2_savestate_protobuf_static.txt \
+                  reports/aa_2026-10-29/anonymous-release-assets.txt
           if ! git diff --cached --quiet; then
-            git commit -m "Record AA1 checkpoint restore GDB diagnostic"
+            git commit -m "Record sanitized AA1 AC2 AC4 evidence"
             git push origin HEAD:main
           fi
-          cat "$out"
+          EVIDENCE_COMMIT="$(git rev-parse HEAD)"
+          JOB_ID="$(curl -fsSL -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs" | jq -r '.jobs[] | select(.name=="diagnose") | .id' | head -n 1)"
+          REPORT=reports/aa_2026-10-29/AC1_AC4_restore_report_2026-10-29.txt
+          cat > "$REPORT" <<EOF
+          K SCALE: K1 dugaan; K2 indikasi terbatas; K3 bukti pendukung konvergen; K4 bukti langsung yang dapat diperiksa ulang (statis maksimal K4); K5 runtime konsisten pada >=2 peluncuran terpisah.
+          Repo: $RESEARCH_REPO
+          Evidence commit (teks saja): $EVIDENCE_COMMIT
+          Runtime run/job: $GITHUB_RUN_ID / $JOB_ID — https://github.com/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/job/$JOB_ID
+          Workflow source: https://raw.githubusercontent.com/$RESEARCH_REPO/$GITHUB_SHA/.github/workflows/aa1-restore-gdb-diagnostic.yml
+          Runtime summary: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/reports/aa_2026-10-29/AA1_runtime_summary.txt
+          Static protobuf/RAM: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/reports/aa_2026-10-29/AC2_savestate_protobuf_static.txt
+          Anonymous Release/HTTP results: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/reports/aa_2026-10-29/anonymous-release-assets.txt
+          GDB/runner metadata: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/reports/aa_2026-10-29/AA1_runtime_metadata.txt
+          Raw GDB/PCSX log permalinks:
+          EOF
+          for label in target control; do
+            for attempt in 1 2; do
+              echo "  $label attempt $attempt GDB: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/reports/aa_2026-10-29/aa1_runtime_logs/$label-attempt$attempt.gdb.txt" >> "$REPORT"
+              echo "  $label attempt $attempt PCSX: https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/reports/aa_2026-10-29/aa1_runtime_logs/$label-attempt$attempt.pcsx.txt" >> "$REPORT"
+            done
+          done
+          cat >> "$REPORT" <<EOF
+          AC1: empat peluncuran terbatas (target/control masing-masing dua), tanpa tombol. Sinyal, frame #0, thread, wrapper exit, dan baris load terakhir ada di runtime summary dan log raw. Timeout/hang bukan bukti crash. Akar masalah: TIDAK TAHU kecuali stack asli menunjukkan jalur pemanggil saat load.
+          AC2: ukuran mentah dan setelah deteksi/dekompresi, wire type, panjang payload, SHA field, delta, field penyumbang +740 B, satu level anak, dan word [0x801CEF04] dibanding 0x16C ada di laporan statis. Jika parser tidak berhasil menemukan struktur RAM/field, hasilnya TIDAK TAHU.
+          AC3(i): kontrol berasal dari run 39867730674/job 120134061270; log menyatakan ADAPTIVE_CHECKPOINT_WRITE_RETURNED=PASS untuk captures/adaptive-cycle-01-f180.sstate; artefak 12464258211 diunggah run yang sama. AA1 memverifikasi ukuran/hash setelah diunduh. Ini bukti asal, bukan bukti sesi sumber berakhir bersih.
+          AC3(ii): run 39262213468 / commit e396eac00631001b7a0e68d7701c70aec10dec19 / ubuntu-26.04 / timeout 100m / save frame 10055; run 40844474886 / commit 2ef56f8e6d3c3612e03357b34cfae1d65cfd23ab / ubuntu-24.04 / timeout 25m / cold boot / timeout 124; run 40848251356 / commit 64be99b0ea2d927216a7195dd95e85fbf8cd3612 / ubuntu-24.04 / timeout 18m / target-control restore. Ketiganya memakai AppImage SHA c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c dan -softgpu -dynarec; current AA1 menambah -noupdate -no-debugger -no-gdb -stdout -lua_stdout. Versi GDB historis tidak tercatat di bukti yang diperiksa: TIDAK TAHU; versi saat ini di metadata.
+          AC3(iii): hipotesis “target pasti disimpan dari build/flag GPU-dynarec berbeda” DITOLAK sebagai penjelasan yang didukung bukti: workflow run 392622 dan AA1 mematok SHA AppImage yang sama serta -softgpu -dynarec. Runner/flag sampingan berbeda; kemungkinan masalah isi/format state belum tersingkir.
+          AC4: daftar release anonim dan hasil HTTP Range tanpa body untuk aset 647346873, 652373928, 686794219 ada pada log terlampir; query redirect disamarkan. Tidak ada aset dihapus, visibilitas/hash diubah. Mitigasi hanya usulan setelah status HTTP ditinjau.
+          AB2 tetap CLOSED. AB2/AB3 tidak dijalankan. ISO, BIOS, savestate, RAM dump, screenshot tidak dikomit. Story Mode completion NOT VERIFIED.
+          EOF
+          git add "$REPORT"
+          git commit -m "Publish concise AC1-AC4 restore report"
+          git push origin HEAD:main
+          FINAL_COMMIT="$(git rev-parse HEAD)"
+          echo "FINAL_REPORT_COMMIT=$FINAL_COMMIT"
+          echo "FINAL_REPORT_RAW=https://raw.githubusercontent.com/$RESEARCH_REPO/$FINAL_COMMIT/$REPORT"
+          cat "$REPORT"
 
       - name: Remove savestates, BIOS, ISO and private traces
         if: always()
