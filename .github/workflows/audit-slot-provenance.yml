@@ -233,6 +233,7 @@ jobs:
           dst.write_bytes(text)
           print(f"exe_text_bytes={len(text)} exe_text_sha256={hashlib.sha256(text).hexdigest()} base=0x80010000")
           PY
+          mkdir -p "$root/ghidra-exe-project"
           headless="$(find /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016 -type f -path '*/support/analyzeHeadless' -print -quit)"
           [[ -n "$headless" && -x "$headless" ]]
           "$headless" "$root/ghidra-exe-project" SLPS_035_53_main \
