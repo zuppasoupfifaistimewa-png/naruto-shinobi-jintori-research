@@ -1,0 +1,26 @@
+AD4_RUNNER_BEGIN
+PRETTY_NAME="Ubuntu 26.04.1 LTS"
+NAME="Ubuntu"
+VERSION_ID="26.04"
+VERSION="26.04.1 LTS (Resolute Raccoon)"
+VERSION_CODENAME=resolute
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=resolute
+LOGO=ubuntu-logo
+GNU gdb (Ubuntu 17.1-2ubuntu1) 17.1
+Copyright (C) 2025 Free Software Foundation, Inc.
+Linux runnervmnwato 7.0.0-1017-azure #17-Ubuntu SMP PREEMPT Thu Sep 24 15:54:51 UTC 2026 x86_64 GNU/Linux
+PCSX_APPIMAGE_SHA256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
+PCSX_SOURCE_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba
+TARGET_STATE_SHA256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d
+TARGET_STATE_SIZE=21163286
+FLAGS=-noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout; Xvfb; no --headless CLI flag
+AD4_RUNNER_METADATA_END
+PCSX_BINARY=/tmp/naruto-ad4-retry/source/squashfs-root/bin/pcsx-redux
+CASE=ubuntu26_target_attempt1 result=SIGSEGV state_sha256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d wrapper_exit=0 frame_0=#0  0x00007ffff0dd36d0 in ?? () thread=Thread 15 inferior=NOT_RECORDED post=NOT_RECORDED
+CASE=ubuntu26_target_attempt2 result=SIGSEGV state_sha256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d wrapper_exit=0 frame_0=#0  0x00007ffff0dd36d0 in ?? () thread=Thread 15 inferior=NOT_RECORDED post=NOT_RECORDED

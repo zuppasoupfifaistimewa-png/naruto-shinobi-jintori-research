@@ -1,0 +1,684 @@
+RUNTIME_PC=0x7FFFF0DD36D0
+PC_MAPPING_LINE=0x7ffff088c000     0x7ffff1892000  0x1006000    0x8c000  r-xp   /tmp/naruto-ad1-ad6/source/AppDir/shared/bin/pcsx-redux
+FILE_OFFSET_FORMULA=PC - mapping_start + mapping_file_offset
+FILE_OFFSET=0x5D36D0
+MAPPING_RECORDED_PATH=/tmp/naruto-ad1-ad6/source/AppDir/shared/bin/pcsx-redux
+RUNTIME_GDB_INSTRUCTIONS_BEGIN
+The original GDB log directly reports the following three instructions at $pc:
+=> 0x7ffff0dd36d0:	movzbl (%rsi),%ecx
+   0x7ffff0dd36d3:	mov    $0x4,%esi
+   0x7ffff0dd36d8:	movzbl 0x2(%rax),%r9d
+RUNTIME_RSI=0xffffffffd736aa9f
+ELF_SEGMENT_CORRELATION=The previous run's readelf output for /squashfs-root/bin/pcsx-redux did not contain a PT_LOAD file range covering 0x5D36D0; it was not the same pathname as the runtime mapping /AppDir/shared/bin/pcsx-redux.
+STATIC_BINARY_CANDIDATES_COUNT=2
+STATIC_BINARY_CANDIDATE=/tmp/ad1-ad6-publish-recovery/appimage/AppDir/bin/pcsx-redux
+STATIC_BINARY_CANDIDATE=/tmp/ad1-ad6-publish-recovery/appimage/AppDir/shared/bin/pcsx-redux
+EXACT_MAPPED_PATH_CANDIDATE_FOUND=YES; inspect the matching candidate's PT_LOAD ranges and dynamic symbols in the static-binary-inspection log.
+NEAREST_SYMBOL_OR_FUNCTION=TIDAK TAHU; no verified mapping from this PC/file offset to a PT_LOAD virtual address and symbol boundary.
+ADDR2LINE_AT_RUNTIME_PC=TIDAK TAHU; runtime PC is an address in another process mapping, not a proven ELF virtual address.
+OBJDUMP_16_INSTRUCTIONS_AROUND_FILE_OFFSET=TIDAK TAHU; no matching PT_LOAD file range has been established, so treating file offset as an ELF virtual address would be an unsupported assumption.
+READelf/objdump/nm invocation outputs for every extracted pcsx-redux candidate were run and are in the build log/artifact; the executable path mismatch remains an explicit unresolved limitation.
+K=K4 for the directly inspectable runtime PC, mapping and three instructions; symbol/function identity remains TIDAK TAHU.
+CANDIDATE=/tmp/ad1-ad6-publish-recovery/appimage/AppDir/bin/pcsx-redux
+SIZE_BYTES=312080
+19ced768f1e76ebf578d119e9683f7dcb1377dcab55dd1128934fe503718597e  /tmp/ad1-ad6-publish-recovery/appimage/AppDir/bin/pcsx-redux
+/tmp/ad1-ad6-publish-recovery/appimage/AppDir/bin/pcsx-redux: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), for GNU/Linux 2.0.0, statically linked, no section header
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0x1014680
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          0 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         10
+  Size of section headers:           64 (bytes)
+  Number of section headers:         0
+  Section header string table index: 0
+
+Program Headers:
+  Type           Offset   VirtAddr           PhysAddr           FileSiz  MemSiz   Flg Align
+  PHDR           0x000040 0x0000000001000040 0x0000000001000040 0x000230 0x000230 R   0x8
+  LOAD           0x000000 0x0000000001000000 0x0000000001000000 0x013674 0x013674 R   0x1000
+  LOAD           0x013680 0x0000000001014680 0x0000000001014680 0x036f6f 0x036f6f R E 0x1000
+  LOAD           0x04a5f0 0x000000000104c5f0 0x000000000104c5f0 0x001b18 0x002a10 RW  0x1000
+  LOAD           0x04c108 0x000000000104f108 0x000000000104f108 0x000208 0x008680 RW  0x1000
+  TLS            0x04a5f0 0x000000000104b5f0 0x000000000104b5f0 0x000000 0x000024 R   0x8
+  GNU_RELRO      0x04a5f0 0x000000000104c5f0 0x000000000104c5f0 0x001b18 0x002a10 R   0x1
+  GNU_EH_FRAME   0x006d60 0x0000000001006d60 0x0000000001006d60 0x0019e4 0x0019e4 R   0x4
+  GNU_STACK      0x000000 0x0000000000000000 0x0000000000000000 0x000000 0x1000000 RW  0
+  NOTE           0x000270 0x0000000001000270 0x0000000001000270 0x000020 0x000020 R   0x4
+
+Dynamic symbol information is not available for displaying symbols.
+
+Displaying notes found at file offset 0x00000270 with length 0x00000020:
+  Owner                Data size 	Description
+  GNU                  0x00000010	NT_GNU_ABI_TAG (ABI version tag)	    OS: Linux, ABI: 2.0.0
+NM_DYNAMIC_BEGIN
+nm: /tmp/ad1-ad6-publish-recovery/appimage/AppDir/bin/pcsx-redux: no symbols
+NM_DYNAMIC_END
+READelf_FRAMES_BEGIN
+READELF_FRAMES_END
+OBJDUMP_SAMPLE_BEGIN
+
+/tmp/ad1-ad6-publish-recovery/appimage/AppDir/bin/pcsx-redux:     file format elf64-x86-64
+
+OBJDUMP_SAMPLE_END
+CANDIDATE=/tmp/ad1-ad6-publish-recovery/appimage/AppDir/shared/bin/pcsx-redux
+SIZE_BYTES=21701408
+d0e50febc39c232dfc6e066986cc27c2dae07f7d78bb6bfa470a8be80e06695f  /tmp/ad1-ad6-publish-recovery/appimage/AppDir/shared/bin/pcsx-redux
+/tmp/ad1-ad6-publish-recovery/appimage/AppDir/shared/bin/pcsx-redux: ELF 64-bit LSB pie executable, x86-64, version 1 (GNU/Linux), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=a6314ecb43a3dbd31d7715dd81429400942e0ea4, for GNU/Linux 4.4.0, stripped
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 03 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - GNU
+  ABI Version:                       0
+  Type:                              DYN (Position-Independent Executable file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0x133f30
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          21699360 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         16
+  Size of section headers:           64 (bytes)
+  Number of section headers:         32
+  Section header string table index: 31
+
+Program Headers:
+  Type           Offset   VirtAddr           PhysAddr           FileSiz  MemSiz   Flg Align
+  PHDR           0x000040 0x0000000000000040 0x0000000000000040 0x000380 0x000380 R   0x8
+  INTERP         0x0003e4 0x00000000000003e4 0x00000000000003e4 0x00001c 0x00001c R   0x1
+      [Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]
+  LOAD           0x000000 0x0000000000000000 0x0000000000000000 0x08b7f0 0x08b7f0 R   0x1000
+  LOAD           0x08c000 0x000000000008c000 0x000000000008c000 0x1005641 0x1005641 R E 0x1000
+  LOAD           0x1092000 0x0000000001092000 0x0000000001092000 0x3e8778 0x3e8778 R   0x1000
+  LOAD           0x147ab00 0x000000000147bb00 0x000000000147bb00 0x036ef0 0x4c29700 RW  0x1000
+  DYNAMIC        0x14a7678 0x00000000014a8678 0x00000000014a8678 0x000300 0x000300 RW  0x8
+  NOTE           0x0003c0 0x00000000000003c0 0x00000000000003c0 0x000024 0x000024 R   0x4
+  NOTE           0x147a718 0x000000000147a718 0x000000000147a718 0x000040 0x000040 R   0x8
+  NOTE           0x147a758 0x000000000147a758 0x000000000147a758 0x000020 0x000020 R   0x4
+  TLS            0x147ab00 0x000000000147bb00 0x000000000147bb00 0x000000 0x000200 R   0x10
+  GNU_PROPERTY   0x147a718 0x000000000147a718 0x000000000147a718 0x000040 0x000040 R   0x8
+  GNU_EH_FRAME   0x1316a54 0x0000000001316a54 0x0000000001316a54 0x02d8d4 0x02d8d4 R   0x4
+  GNU_SFRAME     0x144fe50 0x000000000144fe50 0x000000000144fe50 0x0000a1 0x0000a1 R   0x8
+  GNU_STACK      0x000000 0x0000000000000000 0x0000000000000000 0x000000 0x000000 RW  0x10
+  GNU_RELRO      0x147ab00 0x000000000147bb00 0x000000000147bb00 0x02d500 0x02d500 R   0x1
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     
+   01     .interp 
+   02     .note.gnu.build-id .interp .gnu.hash .dynsym .dynstr .gnu.version .gnu.version_r .rela.dyn .rela.plt 
+   03     .init .plt .plt.got .text .fini 
+   04     .rodata .eh_frame_hdr .eh_frame .sframe .gcc_except_table .note.gnu.property .note.ABI-tag 
+   05     .init_array .fini_array .data.rel.ro .dynamic .got .got.plt .data .bss 
+   06     .dynamic 
+   07     .note.gnu.build-id 
+   08     .note.gnu.property 
+   09     .note.ABI-tag 
+   10     .tbss 
+   11     .note.gnu.property 
+   12     .eh_frame_hdr 
+   13     .sframe 
+   14     
+   15     .init_array .fini_array .data.rel.ro .dynamic .got 
+
+Symbol table '.dynsym' contains 1119 entries:
+   Num:    Value          Size Type    Bind   Vis      Ndx Name
+     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_fs_realpath
+     2: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND FT_Select_Charmap
+     3: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND SDL_GetGamepads@SDL3_0.0.0 (2)
+     4: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND lround@GLIBC_2.2.5 (3)
+     5: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND open64@GLIBC_2.2.5 (4)
+     6: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt10filesystem16weakly_canonicalERKNS_7__cxx114pathE@GLIBCXX_3.4.26 (5)
+     7: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND ftello64@GLIBC_2.2.5 (4)
+     8: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_random
+     9: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND deflateCopy
+    10: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND SDL_GetGamepadName@SDL3_0.0.0 (2)
+    11: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_stop
+    12: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@GLIBCXX_3.4 (6)
+    13: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZdaPvm@CXXABI_1.3.9 (7)
+    14: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_udp_using_recvmmsg
+    15: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _Unwind_SetIP@GCC_3.0 (8)
+    16: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt13__future_base12_Result_baseC2Ev@GLIBCXX_3.4.15 (9)
+    17: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND strdup@GLIBC_2.2.5 (4)
+    18: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt10filesystem6removeERKNS_7__cxx114pathERSt10error_code@GLIBCXX_3.4.26 (5)
+    19: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND SDL_ShowWindow@SDL3_0.0.0 (2)
+    20: 0000000000000000     0 OBJECT  GLOBAL DEFAULT  UND _ZTISt19__codecvt_utf8_baseIwE@GLIBCXX_3.4.21 (10)
+    21: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND feof@GLIBC_2.2.5 (4)
+    22: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND curl_multi_socket_action@CURL_OPENSSL_4 (11)
+    23: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt14basic_ifstreamIcSt11char_traitsIcEED1Ev@GLIBCXX_3.4 (6)
+    24: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND SDL_WarpMouseGlobal@SDL3_0.0.0 (2)
+    25: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND avcodec_descriptor_next@LIBAVCODEC_63 (12)
+    26: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND pclose@GLIBC_2.2.5 (4)
+    27: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND __register_frame@GCC_3.0 (8)
+    28: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_fs_chmod
+    29: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND __once_proxy@GLIBCXX_3.4.11 (16)
+    30: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_signal_start_oneshot
+    31: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND av_frame_free@LIBAVUTIL_61 (17)
+    32: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND SDL_GL_SwapWindow@SDL3_0.0.0 (2)
+    33: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND realloc@GLIBC_2.2.5 (4)
+    34: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_fs_readdir
+    35: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt10filesystem7__cxx1128recursive_directory_iteratorppEv@GLIBCXX_3.4.26 (5)
+    36: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt14basic_ifstreamIcSt11char_traitsIcEEC1EPKcSt13_Ios_Openmode@GLIBCXX_3.4 (6)
+    37: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt28__atomic_futex_unsigned_base19_M_futex_notify_allEPj@GLIBCXX_3.4.21 (10)
+    38: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_fs_poll_start
+    39: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt10filesystem7__cxx114path17replace_extensionERKS1_@GLIBCXX_3.4.26 (5)
+    40: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt9exceptionD2Ev@GLIBCXX_3.4 (6)
+    41: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND avutil_configuration@LIBAVUTIL_61 (17)
+    42: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_metrics_info
+    43: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND isalpha@GLIBC_2.2.5 (4)
+    44: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt15basic_streambufIcSt11char_traitsIcEE6setbufEPcl@GLIBCXX_3.4 (6)
+    45: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND SDL_free@SDL3_0.0.0 (2)
+    46: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt10filesystem6statusERKNS_7__cxx114pathERSt10error_code@GLIBCXX_3.4.26 (5)
+    47: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND FT_GlyphSlot_Embolden
+    48: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND exp@GLIBC_2.29 (19)
+    49: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND log@GLIBC_2.29 (19)
+    50: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND SDL_ResumeAudioDevice@SDL3_0.0.0 (2)
+    51: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_version_string
+    52: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_os_free_passwd
+    53: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND XCreateSimpleWindow
+    54: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_key_set
+    55: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt6locale7classicEv@GLIBCXX_3.4 (6)
+    56: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND fcntl64@GLIBC_2.28 (20)
+    57: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt13basic_filebufIcSt11char_traitsIcEE27_M_allocate_internal_bufferEv@GLIBCXX_3.4 (6)
+    58: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND __ctype_b_loc@GLIBC_2.3 (21)
+    59: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND strncpy@GLIBC_2.2.5 (4)
+    60: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND toupper@GLIBC_2.2.5 (4)
+    61: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND localtime_r@GLIBC_2.2.5 (4)
+    62: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_send_buffer_size
+    63: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND FT_Library_Version
+    64: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND inflateMark@ZLIB_1.2.3.4 (22)
+    65: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZN3fmt3v126vprintENS0_17basic_string_viewIcEENS0_17basic_format_argsINS0_7contextEEE
+    66: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND __assert_fail@GLIBC_2.2.5 (4)
+    67: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_thread_getpriority
+    68: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_fs_fsync
+    69: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_fs_rename
+    70: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND SDL_CreateSurfaceFrom@SDL3_0.0.0 (2)
+    71: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND shm_open@GLIBC_2.34 (23)
+    72: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND openat@GLIBC_2.4 (24)
+    73: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_pipe_getsockname
+    74: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_os_getpriority
+    75: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_idle_start
+    76: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZSt24__throw_invalid_argumentPKc@GLIBCXX_3.4 (6)
+    77: 0000000000000000     0 OBJECT  GLOBAL DEFAULT  UND _ZTVN10__cxxabiv119__pointer_type_infoE@CXXABI_1.3 (14)
+    78: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND syscall@GLIBC_2.2.5 (4)
+    79: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND mkstemp64@GLIBC_2.2.5 (4)
+    80: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND gzprintf
+    81: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND __openat_2@GLIBC_2.7 (25)
+    82: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_try_write
+    83: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND xcb_send_event
+    84: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_async_send
+    85: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND unlink@GLIBC_2.2.5 (4)
+    86: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_fs_poll_getpath
+    87: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt8__detail15_List_node_base7_M_hookEPS0_@GLIBCXX_3.4.15 (9)
+    88: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_backend_timeout
+    89: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_prepare_stop
+    90: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND XOpenDisplay
+    91: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND ftell@GLIBC_2.2.5 (4)
+    92: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt15basic_streambufIcSt11char_traitsIcEE9pbackfailEi@GLIBCXX_3.4 (6)
+    93: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt15basic_streambufIcSt11char_traitsIcEE6xsgetnEPcl@GLIBCXX_3.4 (6)
+    94: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND lstat@GLIBC_2.33 (15)
+    95: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND sendfile@GLIBC_2.2.5 (4)
+    96: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND SDL_RaiseWindow@SDL3_0.0.0 (2)
+    97: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_get_available_memory
+    98: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND gzgetc_@ZLIB_1.2.5.2 (26)
+    99: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND SDL_GetAudioPlaybackDevices@SDL3_0.0.0 (2)
+   100: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_mutex_unlock
+   101: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_cpu_info
+   102: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND strtok@GLIBC_2.2.5 (4)
+   103: 0000000000000000     0 OBJECT  GLOBAL DEFAULT  UND _ZTISt9exception@GLIBCXX_3.4 (6)
+   104: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND inflateBackEnd@ZLIB_1.2.0 (27)
+   105: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND geteuid@GLIBC_2.2.5 (4)
+   106: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND lseek@GLIBC_2.2.5 (4)
+   107: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_pipe_connect
+   108: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND truncate@GLIBC_2.2.5 (4)
+   109: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt13runtime_errorC1EPKc@GLIBCXX_3.4.21 (10)
+   110: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND atan2@GLIBC_2.2.5 (3)
+   111: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND FT_Done_Library
+   112: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_once
+   113: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNSt13runtime_errorC1ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE@GLIBCXX_3.4.21 (10)
+   114: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND uv_key_create
+   115: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _ZNKSt6localeeqERKS_@GLIBCXX_3.4 (6)
+   116: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND isgraph@GLIBC_2.2.5 (4)
+   117: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND xcb_disconnect
+NM_DYNAMIC_BEGIN
+                 U FT_Activate_Size
+                 U FT_Add_Default_Modules
+                 U FT_Done_Face
+                 U FT_Done_Library
+                 U FT_Done_Size
+                 U FT_Get_Char_Index
+                 U FT_GlyphSlot_Embolden
+                 U FT_GlyphSlot_Oblique
+                 U FT_Library_Version
+                 U FT_Load_Glyph
+                 U FT_New_Library
+                 U FT_New_Memory_Face
+                 U FT_New_Size
+                 U FT_Render_Glyph
+                 U FT_Request_Size
+                 U FT_Select_Charmap
+                 U SDL_BindAudioStream@SDL3_0.0.0
+                 U SDL_CaptureMouse@SDL3_0.0.0
+                 U SDL_CloseAudioDevice@SDL3_0.0.0
+                 U SDL_CloseGamepad@SDL3_0.0.0
+                 U SDL_CreateAudioStream@SDL3_0.0.0
+                 U SDL_CreateSurfaceFrom@SDL3_0.0.0
+                 U SDL_CreateSystemCursor@SDL3_0.0.0
+                 U SDL_CreateWindow@SDL3_0.0.0
+                 U SDL_DestroyAudioStream@SDL3_0.0.0
+                 U SDL_DestroyCursor@SDL3_0.0.0
+                 U SDL_DestroySurface@SDL3_0.0.0
+                 U SDL_DestroyWindow@SDL3_0.0.0
+                 U SDL_FlushAudioStream@SDL3_0.0.0
+                 U SDL_GL_CreateContext@SDL3_0.0.0
+                 U SDL_GL_DestroyContext@SDL3_0.0.0
+                 U SDL_GL_GetCurrentContext@SDL3_0.0.0
+                 U SDL_GL_GetCurrentWindow@SDL3_0.0.0
+                 U SDL_GL_MakeCurrent@SDL3_0.0.0
+                 U SDL_GL_ResetAttributes@SDL3_0.0.0
+                 U SDL_GL_SetAttribute@SDL3_0.0.0
+                 U SDL_GL_SetSwapInterval@SDL3_0.0.0
+                 U SDL_GL_SwapWindow@SDL3_0.0.0
+                 U SDL_GamepadConnected@SDL3_0.0.0
+                 U SDL_GetAudioDeviceFormat@SDL3_0.0.0
+                 U SDL_GetAudioDeviceName@SDL3_0.0.0
+                 U SDL_GetAudioDriver@SDL3_0.0.0
+                 U SDL_GetAudioPlaybackDevices@SDL3_0.0.0
+                 U SDL_GetAudioStreamQueued@SDL3_0.0.0
+                 U SDL_GetClipboardText@SDL3_0.0.0
+                 U SDL_GetCurrentAudioDriver@SDL3_0.0.0
+                 U SDL_GetCurrentVideoDriver@SDL3_0.0.0
+                 U SDL_GetDisplayBounds@SDL3_0.0.0
+                 U SDL_GetDisplayContentScale@SDL3_0.0.0
+                 U SDL_GetDisplayUsableBounds@SDL3_0.0.0
+                 U SDL_GetDisplays@SDL3_0.0.0
+                 U SDL_GetError@SDL3_0.0.0
+                 U SDL_GetGamepadAxis@SDL3_0.0.0
+                 U SDL_GetGamepadButton@SDL3_0.0.0
+                 U SDL_GetGamepadID@SDL3_0.0.0
+                 U SDL_GetGamepadName@SDL3_0.0.0
+                 U SDL_GetGamepads@SDL3_0.0.0
+                 U SDL_GetGlobalMouseState@SDL3_0.0.0
+                 U SDL_GetKeyboardFocus@SDL3_0.0.0
+                 U SDL_GetMouseFocus@SDL3_0.0.0
+                 U SDL_GetNumAudioDrivers@SDL3_0.0.0
+                 U SDL_GetPerformanceCounter@SDL3_0.0.0
+                 U SDL_GetPerformanceFrequency@SDL3_0.0.0
+                 U SDL_GetScancodeName@SDL3_0.0.0
+                 U SDL_GetVersion@SDL3_0.0.0
+                 U SDL_GetWindowDisplayScale@SDL3_0.0.0
+                 U SDL_GetWindowFlags@SDL3_0.0.0
+                 U SDL_GetWindowFromID@SDL3_0.0.0
+                 U SDL_GetWindowID@SDL3_0.0.0
+                 U SDL_GetWindowPosition@SDL3_0.0.0
+                 U SDL_GetWindowRelativeMouseMode@SDL3_0.0.0
+                 U SDL_GetWindowSize@SDL3_0.0.0
+                 U SDL_GetWindowSizeInPixels@SDL3_0.0.0
+                 U SDL_HasClipboardText@SDL3_0.0.0
+                 U SDL_HideCursor@SDL3_0.0.0
+                 U SDL_InitSubSystem@SDL3_0.0.0
+                 U SDL_MaximizeWindow@SDL3_0.0.0
+                 U SDL_OpenAudioDevice@SDL3_0.0.0
+                 U SDL_OpenGamepad@SDL3_0.0.0
+                 U SDL_OpenURL@SDL3_0.0.0
+                 U SDL_PauseAudioDevice@SDL3_0.0.0
+                 U SDL_PeepEvents@SDL3_0.0.0
+                 U SDL_PollEvent@SDL3_0.0.0
+                 U SDL_PumpEvents@SDL3_0.0.0
+                 U SDL_PutAudioStreamData@SDL3_0.0.0
+                 U SDL_QuitSubSystem@SDL3_0.0.0
+                 U SDL_RaiseWindow@SDL3_0.0.0
+                 U SDL_ResumeAudioDevice@SDL3_0.0.0
+                 U SDL_SetAudioDeviceGain@SDL3_0.0.0
+                 U SDL_SetAudioStreamGain@SDL3_0.0.0
+                 U SDL_SetAudioStreamGetCallback@SDL3_0.0.0
+                 U SDL_SetClipboardText@SDL3_0.0.0
+                 U SDL_SetCursor@SDL3_0.0.0
+                 U SDL_SetHint@SDL3_0.0.0
+                 U SDL_SetTextInputArea@SDL3_0.0.0
+                 U SDL_SetWindowFullscreen@SDL3_0.0.0
+                 U SDL_SetWindowFullscreenMode@SDL3_0.0.0
+                 U SDL_SetWindowIcon@SDL3_0.0.0
+                 U SDL_SetWindowOpacity@SDL3_0.0.0
+                 U SDL_SetWindowParent@SDL3_0.0.0
+                 U SDL_SetWindowPosition@SDL3_0.0.0
+                 U SDL_SetWindowRelativeMouseMode@SDL3_0.0.0
+                 U SDL_SetWindowSize@SDL3_0.0.0
+                 U SDL_SetWindowTitle@SDL3_0.0.0
+                 U SDL_ShowCursor@SDL3_0.0.0
+                 U SDL_ShowWindow@SDL3_0.0.0
+                 U SDL_StartTextInput@SDL3_0.0.0
+                 U SDL_StopTextInput@SDL3_0.0.0
+                 U SDL_TextInputActive@SDL3_0.0.0
+                 U SDL_Vulkan_CreateSurface@SDL3_0.0.0
+                 U SDL_WarpMouseGlobal@SDL3_0.0.0
+                 U SDL_WarpMouseInWindow@SDL3_0.0.0
+                 U SDL_free@SDL3_0.0.0
+                 U XCloseDisplay
+                 U XCreateSimpleWindow
+                 U XDrawString
+                 U XMapWindow
+                 U XNextEvent
+                 U XOpenDisplay
+                 U XSelectInput
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 U _Unwind_DeleteException@GCC_3.0
+                 U _Unwind_GetCFA@GCC_3.3
+                 U _Unwind_GetIP@GCC_3.0
+                 U _Unwind_RaiseException@GCC_3.0
+                 U _Unwind_Resume@GCC_3.0
+                 U _Unwind_SetGR@GCC_3.0
+                 U _Unwind_SetIP@GCC_3.0
+                 U _ZN3fmt3v1211assert_failEPKciS2_
+                 U _ZN3fmt3v1212report_errorEPKc
+                 U _ZN3fmt3v126detail10vformat_toERNS1_6bufferIcEENS0_17basic_string_viewIcEENS0_17basic_format_argsINS0_7contextEEENS0_10locale_refE
+                 U _ZN3fmt3v126detail12is_printableEj
+                 U _ZN3fmt3v126detail18decimal_point_implIcEET_NS0_10locale_refE
+                 U _ZN3fmt3v126detail18thousands_sep_implIcEENS1_20thousands_sep_resultIT_EENS0_10locale_refE
+                 U _ZN3fmt3v126detail8allocateEm
+                 U _ZN3fmt3v126detail9dragonbox10to_decimalIdEENS2_10decimal_fpIT_EES5_
+                 U _ZN3fmt3v126detail9dragonbox10to_decimalIfEENS2_10decimal_fpIT_EES5_
+                 U _ZN3fmt3v126detail9dragonbox16get_cached_powerEi
+                 U _ZN3fmt3v126detail9write_locENS0_14basic_appenderIcEENS0_9loc_valueERKNS0_12format_specsENS0_10locale_refE
+                 U _ZN3fmt3v126vprintENS0_17basic_string_viewIcEENS0_17basic_format_argsINS0_7contextEEE
+                 U _ZN3fmt3v126vprintEP8_IO_FILENS0_17basic_string_viewIcEENS0_17basic_format_argsINS0_7contextEEE
+                 U _ZN3fmt3v127vformatB5cxx11ENS0_17basic_string_viewIcEENS0_17basic_format_argsINS0_7contextEEE
+                 U _ZNK3fmt3v1210locale_ref3getISt6localeEET_v
+                 U _ZNKRSt7__cxx1115basic_stringbufIcSt11char_traitsIcESaIcEE3strEv@GLIBCXX_3.4.29
+                 U _ZNKSt10filesystem7__cxx1118directory_iteratordeEv@GLIBCXX_3.4.26
+                 U _ZNKSt10filesystem7__cxx1128recursive_directory_iterator17recursion_pendingEv@GLIBCXX_3.4.26
+                 U _ZNKSt10filesystem7__cxx1128recursive_directory_iteratordeEv@GLIBCXX_3.4.26
+                 U _ZNKSt10filesystem7__cxx114path11parent_pathEv@GLIBCXX_3.4.26
+                 U _ZNKSt10filesystem7__cxx114path12has_filenameEv@GLIBCXX_3.4.26
+                 U _ZNKSt10filesystem7__cxx114path15has_parent_pathEv@GLIBCXX_3.4.26
+                 U _ZNKSt10filesystem7__cxx114path17_M_find_extensionEv@GLIBCXX_3.4.26
+                 U _ZNKSt10filesystem7__cxx114path17has_relative_pathEv@GLIBCXX_3.4.26
+                 U _ZNKSt10filesystem7__cxx114path18has_root_directoryEv@GLIBCXX_3.4.26
+                 U _ZNKSt10filesystem7__cxx114path5_List13_Impl_deleterclEPNS2_5_ImplE@GLIBCXX_3.4.26
+                 U _ZNKSt10filesystem7__cxx114path5_List3endEv@GLIBCXX_3.4.26
+                 U _ZNKSt10filesystem7__cxx114path5_List5beginEv@GLIBCXX_3.4.26
+                 U _ZNKSt10filesystem7__cxx114path7compareERKS1_@GLIBCXX_3.4.26
+                 U _ZNKSt12__basic_fileIcE7is_openEv@GLIBCXX_3.4
+                 U _ZNKSt13runtime_error4whatEv@GLIBCXX_3.4
+NM_DYNAMIC_END
+READelf_FRAMES_BEGIN
+Contents of the .eh_frame section:
+
+
+00000000 0000000000000014 00000000 CIE
+  Version:               1
+  Augmentation:          "zR"
+  Code alignment factor: 1
+  Data alignment factor: -8
+  Return address column: 16
+  Augmentation data:     1b
+  DW_CFA_def_cfa: r7 (rsp) ofs 8
+  DW_CFA_offset: r16 (rip) at cfa-8
+  DW_CFA_nop
+  DW_CFA_nop
+
+00000018 0000000000000014 0000001c FDE cie=00000000 pc=0000000000133f30..0000000000133f56
+  DW_CFA_advance_loc: 4 to 0000000000133f34
+  DW_CFA_undefined: r16 (rip)
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+
+00000030 0000000000000024 00000034 FDE cie=00000000 pc=000000000008c020..000000000008f260
+  DW_CFA_def_cfa_offset: 16
+  DW_CFA_advance_loc: 6 to 000000000008c026
+  DW_CFA_def_cfa_offset: 24
+  DW_CFA_advance_loc: 10 to 000000000008c030
+  DW_CFA_def_cfa_expression (DW_OP_breg7 (rsp): 8; DW_OP_breg16 (rip): 0; DW_OP_lit15; DW_OP_and; DW_OP_lit11; DW_OP_ge; DW_OP_lit3; DW_OP_shl; DW_OP_plus)
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+
+00000058 0000000000000014 0000005c FDE cie=00000000 pc=000000000008f260..000000000008f480
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+
+00000070 0000000000000010 00000074 FDE cie=00000000 pc=0000000000134040..0000000000134054
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+
+00000084 0000000000000010 00000088 FDE cie=00000000 pc=0000000000134060..000000000013406c
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+
+00000098 0000000000000010 0000009c FDE cie=00000000 pc=0000000000134070..0000000000134075
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+
+000000ac 0000000000000030 000000b0 FDE cie=00000000 pc=0000000000134080..0000000000134150
+  DW_CFA_advance_loc: 4 to 0000000000134084
+  DW_CFA_def_cfa_offset: 48
+  DW_CFA_advance_loc: 45 to 00000000001340b1
+  DW_CFA_offset: r6 (rbp) at cfa-16
+  DW_CFA_advance_loc: 25 to 00000000001340ca
+  DW_CFA_offset: r3 (rbx) at cfa-24
+  DW_CFA_advance_loc1: 72 to 0000000000134112
+  DW_CFA_restore: r3 (rbx)
+  DW_CFA_advance_loc: 5 to 0000000000134117
+  DW_CFA_restore: r6 (rbp)
+  DW_CFA_advance_loc: 20 to 000000000013412b
+  DW_CFA_def_cfa_offset: 8
+  DW_CFA_advance_loc: 5 to 0000000000134130
+  DW_CFA_def_cfa_offset: 48
+  DW_CFA_offset: r3 (rbx) at cfa-24
+  DW_CFA_offset: r6 (rbp) at cfa-16
+  DW_CFA_advance_loc: 5 to 0000000000134135
+  DW_CFA_restore: r3 (rbx)
+  DW_CFA_advance_loc: 5 to 000000000013413a
+  DW_CFA_restore: r6 (rbp)
+  DW_CFA_advance_loc: 17 to 000000000013414b
+  DW_CFA_offset: r3 (rbx) at cfa-24
+  DW_CFA_offset: r6 (rbp) at cfa-16
+  DW_CFA_nop
+  DW_CFA_nop
+
+000000e0 0000000000000010 000000e4 FDE cie=00000000 pc=000000000008f480..000000000008f4a0
+  DW_CFA_advance_loc: 1 to 000000000008f481
+  DW_CFA_def_cfa_offset: 16
+
+000000f4 0000000000000010 000000f8 FDE cie=00000000 pc=0000000000134150..0000000000134208
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+
+00000108 0000000000000010 0000010c FDE cie=00000000 pc=0000000000134210..0000000000134241
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+
+0000011c 0000000000000010 00000120 FDE cie=00000000 pc=0000000000134250..0000000000134251
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+
+00000130 0000000000000028 00000134 FDE cie=00000000 pc=0000000000134260..00000000001342b3
+  DW_CFA_advance_loc: 2 to 0000000000134262
+  DW_CFA_def_cfa_offset: 16
+  DW_CFA_offset: r12 (r12) at cfa-16
+  DW_CFA_advance_loc: 9 to 000000000013426b
+  DW_CFA_def_cfa_offset: 24
+  DW_CFA_offset: r6 (rbp) at cfa-24
+  DW_CFA_advance_loc: 4 to 000000000013426f
+  DW_CFA_def_cfa_offset: 32
+  DW_CFA_offset: r3 (rbx) at cfa-32
+  DW_CFA_advance_loc: 60 to 00000000001342ab
+  DW_CFA_def_cfa_offset: 24
+  DW_CFA_advance_loc: 1 to 00000000001342ac
+  DW_CFA_def_cfa_offset: 16
+  DW_CFA_advance_loc: 2 to 00000000001342ae
+  DW_CFA_def_cfa_offset: 8
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+
+0000015c 0000000000000018 00000160 FDE cie=00000000 pc=000000000008f4a0..000000000008f4a5
+  DW_CFA_def_cfa_offset: 32
+  DW_CFA_offset: r3 (rbx) at cfa-32
+  DW_CFA_offset: r6 (rbp) at cfa-24
+  DW_CFA_offset: r12 (r12) at cfa-16
+  DW_CFA_nop
+  DW_CFA_nop
+  DW_CFA_nop
+
+00000178 0000000000000074 0000017c FDE cie=00000000 pc=00000000001342c0..0000000000135bcb
+  DW_CFA_advance_loc: 2 to 00000000001342c2
+  DW_CFA_def_cfa_offset: 16
+  DW_CFA_offset: r14 (r14) at cfa-16
+  DW_CFA_advance_loc: 4 to 00000000001342c6
+  DW_CFA_def_cfa_offset: 24
+  DW_CFA_offset: r6 (rbp) at cfa-24
+  DW_CFA_advance_loc: 1 to 00000000001342c7
+  DW_CFA_def_cfa_offset: 32
+  DW_CFA_offset: r3 (rbx) at cfa-32
+  DW_CFA_advance_loc: 7 to 00000000001342ce
+  DW_CFA_def_cfa_offset: 96
+  DW_CFA_advance_loc2: 813 to 00000000001345fb
+  DW_CFA_remember_state
+  DW_CFA_def_cfa_offset: 32
+  DW_CFA_advance_loc: 7 to 0000000000134602
+  DW_CFA_def_cfa_offset: 24
+  DW_CFA_advance_loc: 1 to 0000000000134603
+  DW_CFA_def_cfa_offset: 16
+  DW_CFA_advance_loc: 2 to 0000000000134605
+  DW_CFA_def_cfa_offset: 8
+  DW_CFA_advance_loc: 11 to 0000000000134610
+  DW_CFA_restore_state
+  DW_CFA_advance_loc1: 99 to 0000000000134673
+  DW_CFA_remember_state
+  DW_CFA_def_cfa_offset: 32
+  DW_CFA_advance_loc: 8 to 000000000013467b
+READELF_FRAMES_END
+OBJDUMP_SAMPLE_BEGIN
+
+/tmp/ad1-ad6-publish-recovery/appimage/AppDir/shared/bin/pcsx-redux:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+000000000008c000 <.init>:
+   8c000:	f3 0f 1e fa          	endbr64
+   8c004:	48 83 ec 08          	sub    $0x8,%rsp
+   8c008:	48 8b 05 79 cd 41 01 	mov    0x141cd79(%rip),%rax        # 14a8d88 <__gmon_start__>
+   8c00f:	48 85 c0             	test   %rax,%rax
+   8c012:	74 02                	je     8c016 <uv_fs_realpath@plt-0x1a>
+   8c014:	ff d0                	call   *%rax
+   8c016:	48 83 c4 08          	add    $0x8,%rsp
+   8c01a:	c3                   	ret
+
+Disassembly of section .plt:
+
+000000000008c020 <uv_fs_realpath@plt-0x10>:
+   8c020:	ff 35 ca cf 41 01    	push   0x141cfca(%rip)        # 14a8ff0 <_ZTIN9__gnu_cxx13stdio_filebufIcSt11char_traitsIcEEE@@Base+0xac0>
+   8c026:	ff 25 cc cf 41 01    	jmp    *0x141cfcc(%rip)        # 14a8ff8 <_ZTIN9__gnu_cxx13stdio_filebufIcSt11char_traitsIcEEE@@Base+0xac8>
+   8c02c:	0f 1f 40 00          	nopl   0x0(%rax)
+
+000000000008c030 <uv_fs_realpath@plt>:
+   8c030:	ff 25 ca cf 41 01    	jmp    *0x141cfca(%rip)        # 14a9000 <uv_fs_realpath>
+   8c036:	68 00 00 00 00       	push   $0x0
+   8c03b:	e9 e0 ff ff ff       	jmp    8c020 <uv_fs_realpath@plt-0x10>
+
+000000000008c040 <FT_Select_Charmap@plt>:
+   8c040:	ff 25 c2 cf 41 01    	jmp    *0x141cfc2(%rip)        # 14a9008 <FT_Select_Charmap>
+   8c046:	68 01 00 00 00       	push   $0x1
+   8c04b:	e9 d0 ff ff ff       	jmp    8c020 <uv_fs_realpath@plt-0x10>
+
+000000000008c050 <SDL_GetGamepads@plt>:
+   8c050:	ff 25 ba cf 41 01    	jmp    *0x141cfba(%rip)        # 14a9010 <SDL_GetGamepads@SDL3_0.0.0>
+   8c056:	68 02 00 00 00       	push   $0x2
+   8c05b:	e9 c0 ff ff ff       	jmp    8c020 <uv_fs_realpath@plt-0x10>
+
+000000000008c060 <lround@plt>:
+   8c060:	ff 25 b2 cf 41 01    	jmp    *0x141cfb2(%rip)        # 14a9018 <lround@GLIBC_2.2.5>
+   8c066:	68 03 00 00 00       	push   $0x3
+   8c06b:	e9 b0 ff ff ff       	jmp    8c020 <uv_fs_realpath@plt-0x10>
+
+000000000008c070 <open64@plt>:
+   8c070:	ff 25 aa cf 41 01    	jmp    *0x141cfaa(%rip)        # 14a9020 <open64@GLIBC_2.2.5>
+   8c076:	68 04 00 00 00       	push   $0x4
+   8c07b:	e9 a0 ff ff ff       	jmp    8c020 <uv_fs_realpath@plt-0x10>
+
+000000000008c080 <_ZNSt10filesystem16weakly_canonicalERKNS_7__cxx114pathE@plt>:
+   8c080:	ff 25 a2 cf 41 01    	jmp    *0x141cfa2(%rip)        # 14a9028 <_ZNSt10filesystem16weakly_canonicalERKNS_7__cxx114pathE@GLIBCXX_3.4.26>
+   8c086:	68 05 00 00 00       	push   $0x5
+   8c08b:	e9 90 ff ff ff       	jmp    8c020 <uv_fs_realpath@plt-0x10>
+
+000000000008c090 <ftello64@plt>:
+   8c090:	ff 25 9a cf 41 01    	jmp    *0x141cf9a(%rip)        # 14a9030 <ftello64@GLIBC_2.2.5>
+   8c096:	68 06 00 00 00       	push   $0x6
+   8c09b:	e9 80 ff ff ff       	jmp    8c020 <uv_fs_realpath@plt-0x10>
+
+000000000008c0a0 <uv_random@plt>:
+   8c0a0:	ff 25 92 cf 41 01    	jmp    *0x141cf92(%rip)        # 14a9038 <uv_random>
+   8c0a6:	68 07 00 00 00       	push   $0x7
+   8c0ab:	e9 70 ff ff ff       	jmp    8c020 <uv_fs_realpath@plt-0x10>
+
+000000000008c0b0 <SDL_GetGamepadName@plt>:
+   8c0b0:	ff 25 8a cf 41 01    	jmp    *0x141cf8a(%rip)        # 14a9040 <SDL_GetGamepadName@SDL3_0.0.0>
+   8c0b6:	68 08 00 00 00       	push   $0x8
+   8c0bb:	e9 60 ff ff ff       	jmp    8c020 <uv_fs_realpath@plt-0x10>
+
+000000000008c0c0 <uv_stop@plt>:
+   8c0c0:	ff 25 82 cf 41 01    	jmp    *0x141cf82(%rip)        # 14a9048 <uv_stop>
+   8c0c6:	68 09 00 00 00       	push   $0x9
+   8c0cb:	e9 50 ff ff ff       	jmp    8c020 <uv_fs_realpath@plt-0x10>
+
+000000000008c0d0 <_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@plt>:
+   8c0d0:	ff 25 7a cf 41 01    	jmp    *0x141cf7a(%rip)        # 14a9050 <_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate@GLIBCXX_3.4>
+   8c0d6:	68 0a 00 00 00       	push   $0xa
+   8c0db:	e9 40 ff ff ff       	jmp    8c020 <uv_fs_realpath@plt-0x10>
+
+000000000008c0e0 <_ZdaPvm@plt>:
+   8c0e0:	ff 25 72 cf 41 01    	jmp    *0x141cf72(%rip)        # 14a9058 <_ZdaPvm@CXXABI_1.3.9>
+   8c0e6:	68 0b 00 00 00       	push   $0xb
+   8c0eb:	e9 30 ff ff ff       	jmp    8c020 <uv_fs_realpath@plt-0x10>
+
+000000000008c0f0 <uv_udp_using_recvmmsg@plt>:
+   8c0f0:	ff 25 6a cf 41 01    	jmp    *0x141cf6a(%rip)        # 14a9060 <uv_udp_using_recvmmsg>
+   8c0f6:	68 0c 00 00 00       	push   $0xc
+   8c0fb:	e9 20 ff ff ff       	jmp    8c020 <uv_fs_realpath@plt-0x10>
+
+000000000008c100 <_Unwind_SetIP@plt>:
+   8c100:	ff 25 62 cf 41 01    	jmp    *0x141cf62(%rip)        # 14a9068 <_Unwind_SetIP@GCC_3.0>
+   8c106:	68 0d 00 00 00       	push   $0xd
+   8c10b:	e9 10 ff ff ff       	jmp    8c020 <uv_fs_realpath@plt-0x10>
+
+000000000008c110 <_ZNSt13__future_base12_Result_baseC2Ev@plt>:
+   8c110:	ff 25 5a cf 41 01    	jmp    *0x141cf5a(%rip)        # 14a9070 <_ZNSt13__future_base12_Result_baseC2Ev@GLIBCXX_3.4.15>
+   8c116:	68 0e 00 00 00       	push   $0xe
+   8c11b:	e9 00 ff ff ff       	jmp    8c020 <uv_fs_realpath@plt-0x10>
+
+000000000008c120 <strdup@plt>:
+   8c120:	ff 25 52 cf 41 01    	jmp    *0x141cf52(%rip)        # 14a9078 <strdup@GLIBC_2.2.5>
+OBJDUMP_SAMPLE_END
