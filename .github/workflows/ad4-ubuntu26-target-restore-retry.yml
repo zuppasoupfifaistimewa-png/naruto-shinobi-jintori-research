@@ -109,9 +109,113 @@ jobs:
           chmod +x "$WORK/source/pcsx-redux.AppImage"
           ./pcsx-redux.AppImage --appimage-extract >/dev/null
           APPDIR="$WORK/source/squashfs-root"
-          PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | grep -Ei '(^|/)(pcsx-redux|pcsx-redux\.bin)$' | head -n 1 || true)"
-          if [ -z "$PCSX_BIN" ]; then PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | grep -Ei 'pcsx.*redux|redux.*pcsx' | head -n 1 || true)"; fi
-          if [ -z "$PCSX_BIN" ]; then echo "PCSX_BINARY=TIDAK TAHU" >> "$WORK/logs/metadata.txt"; exit 2; fi
+          PCSX_BIN="$APPDIR/bin/pcsx-redux"
+          if [ ! -x "$PCSX_BIN" ]; then PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | grep -E '/bin/pcsx-redux
+          CARD="$(find "$WORK/cards" -type f -name 'naruto-storymode.mcd' -print -quit)"
+          if [ -n "$CARD" ]; then cp "$CARD" "$WORK/cards/reference.mcd"; else echo "MEMORY_CARD_SOURCE=TIDAK TAHU; no artifact file available" >> "$WORK/logs/metadata.txt"; truncate -s 131072 "$WORK/cards/reference.mcd"; fi
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/home/.config" XDG_DATA_HOME="$WORK/home/.local/share" XDG_RUNTIME_DIR="$WORK/home/runtime" LIBGL_ALWAYS_SOFTWARE=1
+          export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+          export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
+          export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
+          export QML2_IMPORT_PATH="$APPDIR/usr/qml"
+          echo "PCSX_BINARY=$PCSX_BIN" >> "$WORK/logs/metadata.txt"
+          cat > "$WORK/pad.lua" <<'LUA'
+          PCSX.settings.pads[1].DeviceType='Analog'
+          PCSX.settings.pads[1].Connected=true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("AD4_PAD_CONNECTED_NO_BUTTONS")
+          LUA
+          cat > "$WORK/restore.lua" <<'LUA'
+          if io.stdout then io.stdout:setvbuf("no") end
+          local v,s,l,a=0,false,false,0
+          local function log(x) print(x);pcall(function()io.stdout:flush()end) end
+          PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()l=true;a=0;log("AD4_POST_LOAD_EVENT=1")end)
+          PCSX.Events.createEventListener("GPU::Vsync",function()
+            v=v+1
+            if not s then
+              s=true;log("AD4_LOAD_BEGIN=1 vsync="..v.." controller=NONE");PCSX.pauseEmulator()
+              PCSX.nextTick(function()
+                local ok,f=pcall(function()return assert(Support.File.open(os.getenv("AA_TEST_STATE")))end)
+                if not ok or not f then log("AD4_OPEN_FAIL="..tostring(f));PCSX.quit(50);return end
+                local good,e=pcall(function()PCSX.loadSaveState(f)end);f:close()
+                if not good then log("AD4_LOAD_ERROR="..tostring(e));PCSX.quit(51);return end
+                log("AD4_LOAD_CALL_RETURNED=1");PCSX.resumeEmulator()
+              end);return
+            end
+            if l then a=a+1;if a>=180 then log("AD4_POST_LOAD_VSYNC=180");PCSX.pauseEmulator();PCSX.nextTick(function()PCSX.quit(0)end)
+            elseif v>=900 then log("AD4_LOAD_EVENT_TIMEOUT=1");PCSX.pauseEmulator();PCSX.nextTick(function()PCSX.quit(53)end) end
+          end)
+          LUA
+          cat > "$WORK/gdb.cmd" <<'GDB'
+          set pagination off
+          set confirm off
+          set print thread-events off
+          handle SIGSEGV stop print nopass
+          handle SIGABRT stop print nopass
+          handle SIGBUS stop print nopass
+          run
+          echo \n=== AD4_THREADS_BEGIN ===\n
+          info threads
+          echo \n=== AD4_PC_INSTRUCTIONS_BEGIN ===\n
+          x/3i $pc
+          echo \n=== AD4_REGISTERS_BEGIN ===\n
+          info registers
+          echo \n=== AD4_MAPPINGS_BEGIN ===\n
+          info proc mappings
+          echo \n=== AD4_BACKTRACE_BEGIN ===\n
+          bt
+          thread apply all bt
+          GDB
+          for attempt in 1 2; do
+            tag="target-attempt$attempt"
+            g="$WORK/logs/$tag.gdb.txt";p="$WORK/logs/$tag.pcsx.txt"
+            set +e
+            AA_TEST_STATE="$WORK/resume/target.sstate" timeout --signal=INT --kill-after=10s 110s \
+              gdb --quiet --nx --batch -x "$WORK/gdb.cmd" --args "$PCSX_BIN" \
+                -noupdate -no-debugger -no-gdb -bios "$WORK/source/scph7502.bin" -iso "$WORK/source/game-run.cue" \
+                -memcard1 "$WORK/cards/reference.mcd" -exec "$(cat "$WORK/pad.lua")" -dofile "$WORK/restore.lua" \
+                -softgpu -dynarec -stdout -lua_stdout -logfile "$p" -run > "$g" 2>&1
+            rc=$?
+            set -e
+            test -f "$p" || : > "$p"
+            sig="$(grep -m1 -E 'received signal SIGSEGV|Program received signal SIGSEGV' "$g" || true)"
+            post="$(grep -h -m1 'AD4_POST_LOAD_VSYNC=180' "$g" "$p" 2>/dev/null || true)"
+            frame="$(grep -m1 -E '^#0[[:space:]]' "$g" || true)"
+            thread="$(printf '%s' "$sig" | grep -oE 'Thread [0-9]+' | head -n1 || true)"
+            inferior="$(grep -m1 -E 'Inferior .*exited|Program exited' "$g" || true)"
+            state_sha="$(sha256sum "$WORK/resume/target.sstate" | cut -d ' ' -f1)"
+            if [ -n "$sig" ]; then result=SIGSEGV; elif [ -n "$post" ]; then result=POST_LOAD_VSYNC_180; else result=NO_TERMINAL_MARKER; fi
+            [ -n "$frame" ] || frame=NOT_RECORDED
+            [ -n "$thread" ] || thread=NOT_RECORDED
+            [ -n "$inferior" ] || inferior=NOT_RECORDED
+            [ -n "$post" ] || post=NOT_RECORDED
+            echo "CASE=ubuntu26_target_attempt$attempt result=$result state_sha256=$state_sha wrapper_exit=$rc frame_0=$frame thread=$thread inferior=$inferior post=$post" >> "$WORK/logs/metadata.txt"
+          done
+          sha256sum "$WORK/logs/"*.txt > "$WORK/logs/sha256-manifest.txt"
+          mkdir -p "$GITHUB_WORKSPACE/ad4-ubuntu26-evidence"
+          cp "$WORK/logs/"*.txt "$GITHUB_WORKSPACE/ad4-ubuntu26-evidence/"
+          {
+            echo "AD4 ubuntu-26.04 target restore results"
+            cat "$WORK/logs/metadata.txt"
+            echo "RAW LOGS AND SHA256"
+            cat "$WORK/logs/sha256-manifest.txt"
+            for x in "$GITHUB_WORKSPACE/ad4-ubuntu26-evidence/"*.txt; do echo "FILE=$(basename "$x")";cat "$x";done
+          } > "$GITHUB_WORKSPACE/ad4-ubuntu26-result.txt"
+          kill "$(cat "$WORK/xvfb.pid" 2>/dev/null)" 2>/dev/null || true
+          rm -rf "$WORK" "$GITHUB_WORKSPACE/squashfs-root"
+
+      - name: Upload text-only AD4 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ad4-ubuntu26-retry-text
+          path: |
+            ad4-ubuntu26-result.txt
+            ad4-ubuntu26-evidence/*.txt
+          if-no-files-found: warn
+          retention-days: 14
+ | head -n 1 || true)"; fi
+          if [ ! -x "$PCSX_BIN" ]; then echo "PCSX_BINARY=TIDAK TAHU; canonical AppImage bin path not executable" >> "$WORK/logs/metadata.txt"; exit 2; fi
           CARD="$(find "$WORK/cards" -type f -name 'naruto-storymode.mcd' -print -quit)"
           if [ -n "$CARD" ]; then cp "$CARD" "$WORK/cards/reference.mcd"; else echo "MEMORY_CARD_SOURCE=TIDAK TAHU; no artifact file available" >> "$WORK/logs/metadata.txt"; truncate -s 131072 "$WORK/cards/reference.mcd"; fi
           export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/home/.config" XDG_DATA_HOME="$WORK/home/.local/share" XDG_RUNTIME_DIR="$WORK/home/runtime" LIBGL_ALWAYS_SOFTWARE=1
