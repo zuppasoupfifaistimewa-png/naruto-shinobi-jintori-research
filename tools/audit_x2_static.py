@@ -152,7 +152,7 @@ def ptr_pattern(v):
         if off>=0x1a8 and (off-0x1a8)%0x58==0:
             return "YES",str((off-0x1a8)//0x58)
         return "NO",""
-    return "UNKNOWN",""
+    return "TIDAK TAHU",""
 def make_cfg(entry,base,fns,name):
     matches=[f for f in fns if f[2]==name]
     if len(matches)!=1:
@@ -343,6 +343,16 @@ def main():
               "base_register":"a0","signed_displacement":"","reaching_base_definitions":r["a0_argument_reason"],
               "symbolic_base":r["a0_at_callee_entry"],"path_status":"CALLEE_PROVEN_ZERO_FILL_88_BYTES",
               "instruction_word":"","source_run":a.run_id})
+    # Deduplicate rows supported by both the explicit loop formula and CFG scan.
+    unique_fields=[]
+    seen_field_keys=set()
+    for row in field_rows:
+        key=(row.get("pc",""),row.get("object_offset",""),row.get("access_kind",""),row.get("width_bytes",""))
+        if key in seen_field_keys:
+            continue
+        seen_field_keys.add(key)
+        unique_fields.append(row)
+    field_rows=unique_fields
     write_csv(out/"x2_slot_object_field_accesses.csv",field_rows)
     cnt=Counter((r["binary"],r["helper_target"],r["xref_kind"]) for r in call_rows)
     ptrcalls=[r for r in call_rows if r["binary"]=="DATA.BIN entry1" and r["helper_target"]=="0x80020F54" and r["is_ptr_plus_0x1A8_plus_0x58n"]=="YES"]
