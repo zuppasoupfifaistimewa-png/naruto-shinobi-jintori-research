@@ -1,0 +1,715 @@
+name: AD1-AD6 restore, symbolization, Release and Git-history audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/ad1-ad6-restore-symbol-history-audit.yml"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: naruto-ad1-ad6-audit
+  cancel-in-progress: false
+
+jobs:
+  runner24:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      GH_TOKEN: \${{ github.token }}
+      RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+      AA_WORK: /tmp/naruto-ad1-ad6
+    steps:
+      - name: Checkout all refs for AD6
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+
+      - name: Install tools and create private temporary workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends bchunk xorriso xvfb x11-utils curl jq unzip python3 gdb binutils file
+          mkdir -p "$AA_WORK"/{source,inputs,resume,cards,logs,hybrids,home/.config,home/.local/share,home/runtime}
+          chmod 700 "$AA_WORK" "$AA_WORK/home/runtime"
+          echo "AD_RUNNER24_OS_BEGIN"
+          cat /etc/os-release
+          gdb --version | sed -n '1,2p'
+          uname -a
+          echo "AD_RUNNER24_OS_END"
+
+      - name: Fetch the control state artifact and original Memory Card (temporary only)
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: "39867730674"
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          github-token: \${{ github.token }}
+          path: /tmp/naruto-ad1-ad6/inputs
+
+      - name: Fetch original Memory Card (temporary only)
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: "39262213468"
+          repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+          github-token: \${{ github.token }}
+          path: /tmp/naruto-ad1-ad6/cards
+
+      - name: Run AD1-AD6 audits on ubuntu-24.04
+        id: main_audit
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -uo pipefail
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          cd "$AA_WORK/source"
+          OUT="$GITHUB_WORKSPACE/reports/ad_2026-10-29"
+          LOGOUT="$OUT/aa1_runtime_logs"
+          mkdir -p "$LOGOUT" "$OUT"
+          printf 'group\tcase\tstate_sha256\tresult\tframe_0\tthread\temulator_exit\tgdb_wrapper_exit\tpost_load_marker\n' > "$OUT/runtime-results.tsv"
+          fetch_asset() {
+            id="$1"; name="$2"; bytes="$3"; sha="$4"; limit="$5"
+            curl --fail --location --silent --show-error --retry 2 --retry-delay 2 --max-time "$limit" \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$API/releases/assets/$id" -o "$name"
+            test "$(stat -c '%s' "$name")" = "$bytes"
+            echo "$sha  $name" | sha256sum --check -
+          }
+          set -e
+          fetch_asset 669480936 pcsx-redux.AppImage 65747557 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c 180
+          fetch_asset 647346873 game.bin 325989552 58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88 600
+          fetch_asset 647354760 game.cue 116 be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8 60
+          fetch_asset 652373928 scph7502.zip 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a 60
+          fetch_asset 686794219 target-checkpoint.raw.sstate 21163286 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d 180
+          cp target-checkpoint.raw.sstate "$AA_WORK/resume/target.sstate"
+          python3 - "$AA_WORK/source/scph7502.zip" "$AA_WORK/source/scph7502.bin" <<'PY'
+          from pathlib import Path
+          import hashlib,stat,sys,zipfile
+          src,dst=map(Path,sys.argv[1:])
+          with zipfile.ZipFile(src) as z:
+              xs=[];total=0
+              for x in z.infolist():
+                  p=Path(x.filename);mode=(x.external_attr>>16)&0xffff;total+=x.file_size
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)): raise SystemExit("unsafe BIOS archive")
+                  if x.file_size>2*1024*1024 or total>4*1024*1024: raise SystemExit("BIOS expansion bound")
+                  if not x.is_dir() and x.file_size==524288: xs.append(x)
+              if len(xs)!=1: raise SystemExit("expected exactly one 512KiB BIOS")
+              b=z.read(xs[0]);h=hashlib.sha256(b).hexdigest()
+              if h!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1": raise SystemExit("BIOS SHA mismatch")
+              dst.write_bytes(b);print("BIOS_SHA256="+h)
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("game.cue")
+          lines=p.read_bytes().decode("utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          ix=[i for i,s in enumerate(lines) if s.lstrip().upper().startswith("FILE ")]
+          if len(ix)!=1 or not any(s.lstrip().upper().startswith("TRACK ") for s in lines): raise SystemExit("invalid cue")
+          lines[ix[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          APPDIR="$PWD/squashfs-root"
+          PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | grep -Ei '(^|/)(pcsx-redux|pcsx-redux\.bin)$' | head -n 1 || true)"
+          if [ -z "$PCSX_BIN" ]; then PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | grep -Ei 'pcsx.*redux|redux.*pcsx' | head -n 1 || true)"; fi
+          test -n "$PCSX_BIN" && test -x "$PCSX_BIN"
+          CONTROL="$(find "$AA_WORK/inputs" -type f -name 'adaptive-cycle-01-f180.sstate' -print -quit)"
+          CARD="$(find "$AA_WORK/cards" -type f -name 'naruto-storymode.mcd' -print -quit)"
+          test -n "$CONTROL" && test -n "$CARD"
+          cp "$CONTROL" "$AA_WORK/resume/control.sstate"
+          cp "$CARD" "$AA_WORK/cards/reference.mcd"
+          test "$(stat -c '%s' "$AA_WORK/resume/control.sstate")" = 21162546
+          echo "9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492  $AA_WORK/resume/control.sstate" | sha256sum --check -
+          test "$(stat -c '%s' "$AA_WORK/cards/reference.mcd")" = 131072
+          echo "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5  $AA_WORK/cards/reference.mcd" | sha256sum --check -
+          chmod 400 "$AA_WORK/resume/"*.sstate "$AA_WORK/cards/reference.mcd"
+          mkdir -p "$AA_WORK/home/.config" "$AA_WORK/home/.local/share" "$AA_WORK/home/runtime"
+          chmod 700 "$AA_WORK/home/runtime"
+          export DISPLAY=:99 HOME="$AA_WORK/home" XDG_CONFIG_HOME="$AA_WORK/home/.config" XDG_DATA_HOME="$AA_WORK/home/.local/share" XDG_RUNTIME_DIR="$AA_WORK/home/runtime"
+          export LIBGL_ALWAYS_SOFTWARE=1 LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+          export QT_PLUGIN_PATH="$APPDIR/usr/plugins" QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms" QML2_IMPORT_PATH="$APPDIR/usr/qml"
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$AA_WORK/logs/xvfb.log" 2>&1 &
+          echo $! > "$AA_WORK/xvfb.pid"
+          for n in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          cat > "$AA_WORK/pad.lua" <<'LUA'
+          PCSX.settings.pads[1].DeviceType='Analog'
+          PCSX.settings.pads[1].Connected=true
+          PCSX.SIO0.slots[1].pads[1].map()
+          print("AD_NO_INPUT_PAD_CONNECTED")
+          LUA
+          cat > "$AA_WORK/restore.lua" <<'LUA'
+          if io.stdout then io.stdout:setvbuf("no") end
+          local v,s,l,a=0,false,false,0
+          local function log(x) print(x);pcall(function()io.stdout:flush()end) end
+          PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function() l=true;a=0;log("AD_POST_LOAD_EVENT=1") end)
+          PCSX.Events.createEventListener("GPU::Vsync",function()
+            v=v+1
+            if not s then
+              s=true;local path=os.getenv("AA_TEST_STATE") or "resume/target.sstate"
+              log("AD_LOAD_BEGIN=1 path="..path.." vsync="..v.." controller=NONE")
+              PCSX.pauseEmulator()
+              PCSX.nextTick(function()
+                local ok,f=pcall(function()return assert(Support.File.open(path),"state open failed")end)
+                if not ok or not f then log("AD_OPEN_FAIL="..tostring(f));PCSX.quit(50);return end
+                local good,e=pcall(function()PCSX.loadSaveState(f)end);f:close()
+                if not good then log("AD_LOAD_LUA_ERROR="..tostring(e));PCSX.quit(51);return end
+                log("AD_LOAD_CALL_RETURNED=1");PCSX.resumeEmulator()
+              end)
+              return
+            end
+            if l then a=a+1;if a>=180 then log("AD_POST_LOAD_VSYNC=180");PCSX.pauseEmulator();PCSX.nextTick(function()PCSX.quit(0)end)end
+            elseif v>=900 then log("AD_LOAD_EVENT_TIMEOUT=1");PCSX.pauseEmulator();PCSX.nextTick(function()PCSX.quit(53)end) end
+          end)
+          log("AD_RESTORE_PROBE_READY_NO_INPUT=1")
+          LUA
+          cat > "$AA_WORK/gdb.cmd" <<'GDB'
+          set pagination off
+          set confirm off
+          set print thread-events off
+          handle SIGSEGV stop print nopass
+          handle SIGABRT stop print nopass
+          handle SIGBUS stop print nopass
+          run
+          echo \n=== AD_THREADS_BEGIN ===\n
+          info threads
+          echo \n=== AD_PC_INSTRUCTIONS_BEGIN ===\n
+          x/3i $pc
+          echo \n=== AD_INFO_REGISTERS_BEGIN ===\n
+          info registers
+          echo \n=== AD_PROC_MAPPINGS_BEGIN ===\n
+          info proc mappings
+          echo \n=== AD_BACKTRACE_BEGIN ===\n
+          bt
+          echo \n=== AD_ALL_THREADS_BACKTRACE_BEGIN ===\n
+          thread apply all bt
+          echo \n=== AD_DIAGNOSTICS_END ===\n
+          GDB
+          run_case() {
+            group="$1"; case_name="$2"; state="$3"; save_raw="$4"
+            g="$AA_WORK/logs/$case_name.gdb.txt"; p="$AA_WORK/logs/$case_name.pcsx.txt"
+            set +e
+            AA_TEST_STATE="$state" timeout --signal=INT --kill-after=10s 110s \
+              gdb --quiet --nx --batch -x "$AA_WORK/gdb.cmd" --args "$PCSX_BIN" \
+                -noupdate -no-debugger -no-gdb -bios "$AA_WORK/source/scph7502.bin" -iso "$AA_WORK/source/game-run.cue" \
+                -memcard1 "$AA_WORK/cards/reference.mcd" -exec "$(cat "$AA_WORK/pad.lua")" -dofile "$AA_WORK/restore.lua" \
+                -softgpu -dynarec -stdout -lua_stdout -logfile "$p" -run > "$g" 2>&1
+            rc=$?
+            set -e
+            test -f "$p" || : > "$p"
+            sig="$(grep -m1 -E 'received signal SIGSEGV|Program received signal SIGSEGV' "$g" || true)"
+            post="$(grep -h -m1 -E 'AD_POST_LOAD_VSYNC=180|AA1_POST_LOAD_VSYNC=180' "$g" "$p" 2>/dev/null || true)"
+            frame="$(grep -m1 -E '^#0[[:space:]]' "$g" || true)"
+            thread="$(printf '%s' "$sig" | grep -oE 'Thread [0-9]+' | head -n1 || true)"
+            inf="$(grep -m1 -E 'Inferior .*exited|Program exited' "$g" || true)"
+            state_sha="$(sha256sum "$state" | cut -d ' ' -f1)"
+            if [ -n "$sig" ]; then result="SIGSEGV"; elif [ -n "$post" ]; then result="POST_LOAD_VSYNC=180"; else result="NO_TERMINAL_MARKER"; fi
+            if [ -z "$frame" ]; then frame="NOT_RECORDED"; fi
+            if [ -z "$thread" ]; then thread="NOT_RECORDED"; fi
+            if [ -z "$inf" ]; then inf="NOT_RECORDED"; fi
+            if [ -z "$post" ]; then post="NOT_RECORDED"; fi
+            printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" "$group" "$case_name" "$state_sha" "$result" "$frame" "$thread" "$inf" "$rc" "$post" >> "$OUT/runtime-results.tsv"
+            if [ "$save_raw" = "yes" ]; then cp "$g" "$LOGOUT/$case_name.gdb.txt"; cp "$p" "$LOGOUT/$case_name.pcsx.txt"; fi
+            echo "CASE_RESULT group=$group case=$case_name result=$result state_sha256=$state_sha wrapper_exit=$rc frame=$frame thread=$thread inferior=$inf post=$post"
+          }
+          set -e
+          for attempt in 1 2; do run_case AD1 "ad1-target-attempt$attempt" "$AA_WORK/resume/target.sstate" yes; done
+          for attempt in 1 2; do run_case AD1 "ad1-control-attempt$attempt" "$AA_WORK/resume/control.sstate" yes; done
+          python3 - "$AA_WORK/resume/target.sstate" "$AA_WORK/resume/control.sstate" "$AA_WORK/hybrids" <<'PY'
+          import hashlib,sys
+          from pathlib import Path
+          target,control,out=map(Path,sys.argv[1:])
+          def vi(b,p):
+              v=0;s=0
+              while p<len(b):
+                  x=b[p];p+=1;v|=(x&127)<<s
+                  if not x&128:return v,p
+                  s+=7
+              raise ValueError("truncated varint")
+          def fields(b):
+              a=[];p=0
+              while p<len(b):
+                  start=p;tag,p=vi(b,p);n,w=tag>>3,tag&7
+                  if n==0:raise ValueError("field zero")
+                  if w==0:_,p=vi(b,p)
+                  elif w==1:p+=8
+                  elif w==2:size,p=vi(b,p);p+=size
+                  elif w==5:p+=4
+                  else:raise ValueError("unsupported wire type")
+                  if p>len(b):raise ValueError("field overrun")
+                  a.append((n,b[start:p]))
+              return a
+          t=fields(target.read_bytes());c=fields(control.read_bytes())
+          for num,name in [(3,"H1-field3"),(4,"H2-field4"),(5,"H3-field5"),(6,"H4-field6"),(8,"H5-field8"),(10,"H6-field10")]:
+              tv=[raw for n,raw in t if n==num];cv=[raw for n,raw in c if n==num]
+              if len(tv)!=1 or len(cv)!=1:raise SystemExit(f"field {num} occurrence mismatch target={len(tv)} control={len(cv)}")
+              data=b"".join(tv[0] if n==num else raw for n,raw in c)
+              path=out/(name+".sstate");path.write_bytes(data)
+              print(f"HYBRID={name} field={num} bytes={len(data)} sha256={hashlib.sha256(data).hexdigest()}")
+          PY
+          for field in 3 4 5 6 8 10; do
+            case "$field" in 3) name=H1-field3;;4) name=H2-field4;;5) name=H3-field5;;6) name=H4-field6;;8) name=H5-field8;;10) name=H6-field10;;esac
+            for attempt in 1 2; do run_case AD3 "$name-attempt$attempt" "$AA_WORK/hybrids/$name.sstate" no; done
+          done
+          for attempt in 1 2; do run_case AD4_UBUNTU24 "ad4-ubuntu24-target-attempt$attempt" "$AA_WORK/resume/target.sstate" no; done
+          # AD2: calculate runtime PC file offset from the mapping; correlate only through ELF program headers.
+          python3 - "$PCSX_BIN" "$LOGOUT/ad1-target-attempt1.gdb.txt" "$AA_WORK/logs/ad2-symbolization.txt" <<'PY'
+          import re,subprocess,sys
+          from pathlib import Path
+          binary,logpath,outpath=map(Path,sys.argv[1:])
+          log=logpath.read_text(errors="replace")
+          pc_m=re.search(r"^#0\s+(0x[0-9a-fA-F]+)",log,re.M)
+          lines=["AD2 SYMBOLIZATION — only mapped binary evidence; no function-name assumption."]
+          if not pc_m:
+              lines.append("PC=TIDAK TAHU; no frame #0 in AD1 target attempt 1.")
+              outpath.write_text("\n".join(lines)+"\n");print("\n".join(lines));raise SystemExit(0)
+          pc=int(pc_m.group(1),16); lines+=["ELF_BINARY="+str(binary),"RUNTIME_PC=0x%X"%pc]
+          in_maps=False;maps=[]
+          rx=re.compile(r"^\s*(0x[0-9a-fA-F]+)\s+(0x[0-9a-fA-F]+)\s+(0x[0-9a-fA-F]+)\s+(0x[0-9a-fA-F]+)\s+(\S+)\s*(.*)$")
+          for line in log.splitlines():
+              if "AD_PROC_MAPPINGS_BEGIN" in line: in_maps=True;continue
+              if in_maps:
+                  m=rx.match(line)
+                  if m:
+                      start,end,size,off,perm,path=m.groups()
+                      if int(start,16)<=pc<int(end,16) and "x" in perm:
+                          maps.append((int(start,16),int(end,16),int(off,16),perm,path.strip(),line.strip()))
+          if not maps:
+              lines.append("PC_MAPPING=TIDAK TAHU; no executable mapping containing PC.")
+              outpath.write_text("\n".join(lines)+"\n");print("\n".join(lines));raise SystemExit(0)
+          base,end,mapoff,perm,path,mapline=maps[0]; fileoff=pc-base+mapoff
+          lines += ["PC_MAPPING_LINE="+mapline,"FILE_OFFSET_FORMULA=PC - mapping_start + mapping_file_offset",
+                    "FILE_OFFSET=0x%X"%fileoff]
+          ph=subprocess.run(["readelf","-lW",str(binary)],text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+          lines.append("READELF_PROGRAM_HEADERS_EXIT="+str(ph.returncode))
+          loads=[]
+          for line in ph.stdout.splitlines():
+              z=line.split()
+              if z and z[0]=="LOAD" and len(z)>=6:
+                  try:loads.append((int(z[1],16),int(z[2],16),int(z[4],16),line.strip()))
+                  except ValueError:pass
+          va=None
+          for off,vaddr,filesz,loadline in loads:
+              if off<=fileoff<off+filesz:
+                  va=vaddr+(fileoff-off);lines.append("MATCHING_LOAD_SEGMENT="+loadline);break
+          lines.append("ELF_LINK_VA="+("0x%X"%va if va is not None else "TIDAK TAHU"))
+          h=subprocess.run(["readelf","-h","-lW","-Ws","-n",str(binary)],text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+          lines.append("COMMAND_EXIT="+str(h.returncode)+" COMMAND=readelf -h -lW -Ws -n")
+          lines.extend(x for x in h.stdout.splitlines() if any(k in x for k in ("Class:","Type:","Entry point","LOAD","Build ID","Symbol table")) )
+          nm=subprocess.run(["nm","-D","-n",str(binary)],text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+          lines.append("COMMAND_EXIT="+str(nm.returncode)+" COMMAND=nm -D -n")
+          syms=[]
+          for x in nm.stdout.splitlines():
+              m=re.match(r"^([0-9a-fA-F]+)\s+(\w)\s+(.+)$",x)
+              if m:syms.append((int(m.group(1),16),m.group(2),m.group(3)))
+          if va is not None and syms:
+              prev=[x for x in syms if x[0]<=va];nxt=[x for x in syms if x[0]>va]
+              lines.append("NEAREST_DYNAMIC_SYMBOL_BEFORE="+(("%#x %s %s"%(prev[-1][0],prev[-1][1],prev[-1][2])) if prev else "TIDAK TAHU"))
+              lines.append("NEAREST_DYNAMIC_SYMBOL_AFTER="+(("%#x %s %s"%(nxt[0][0],nxt[0][1],nxt[0][2])) if nxt else "TIDAK TAHU"))
+          else:lines.append("NEAREST_DYNAMIC_SYMBOL=TIDAK TAHU")
+          if va is not None:
+              a=subprocess.run(["addr2line","-e",str(binary),"-f","-C",hex(va)],text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+              lines.append("ADDR2LINE_EXIT="+str(a.returncode)+" VA=0x%X"%va);lines.append(a.stdout.strip())
+              fr=subprocess.run(["readelf","--debug-dump=frames",str(binary)],text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+              (outpath.parent/"readelf-frames-temporary.txt").write_text(fr.stdout)
+              fdes=re.findall(r"FDE .*?pc=([0-9a-fA-F]+)\.\.([0-9a-fA-F]+)",fr.stdout)
+              hit=[(s,e) for s,e in fdes if int(s,16)<=va<int(e,16)]
+              lines.append("READELF_DEBUG_DUMP_FRAMES_EXIT="+str(fr.returncode)+" CIE_COUNT="+str(len(re.findall(r'^\s*CIE ',fr.stdout,re.M)))+" FDE_COUNT="+str(len(fdes)))
+              lines.append("FRAME_RANGE_CONTAINING_VA="+(", ".join("0x%s..0x%s"%(s,e) for s,e in hit) if hit else "TIDAK TAHU"))
+              d=subprocess.run(["objdump","-d","--start-address=0x%X"%max(0,va-256),"--stop-address=0x%X"%(va+256),str(binary)],text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+              ins=[]
+              for ln in d.stdout.splitlines():
+                  m=re.match(r"^\s*([0-9a-fA-F]+):\s+(?:(?:[0-9a-fA-F]{2})\s+)+\s*([^\s].*)$",ln)
+                  if m:ins.append((int(m.group(1),16),ln.strip()))
+              if ins:
+                  idx=max((i for i,x in enumerate(ins) if x[0]<=va),default=0);lo=max(0,idx-7);hi=min(len(ins),lo+16);lo=max(0,hi-16)
+                  lines.append("OBJDUMP_EXIT="+str(d.returncode)+" INSTRUCTIONS_PRINTED="+str(hi-lo)+" TARGET_VA=0x%X"%va)
+                  lines.append("DISASSEMBLY_16_INSTRUCTIONS_BEGIN");lines.extend(x[1] for x in ins[lo:hi]);lines.append("DISASSEMBLY_16_INSTRUCTIONS_END")
+              else:lines.append("DISASSEMBLY_16_INSTRUCTIONS=TIDAK TAHU; objdump decoded no instruction in mapped VA window")
+          else:lines.append("ADDR2LINE_AND_DISASSEMBLY=TIDAK TAHU; file offset did not fall in a PT_LOAD file range.")
+          outpath.write_text("\n".join(lines)+"\n");print(outpath.read_text())
+          PY
+          # AD5: full anonymous Release table and every redirect response; body bytes always discarded.
+          {
+            echo "AD5 ANONYMOUS RELEASE AUDIT (no token; no response body retained)"
+            META="$AA_WORK/logs/releases-anonymous.json"
+            rc="$(env -u GH_TOKEN curl -sS -o "$META" -w '%{http_code}' -H 'Accept: application/vnd.github+json' -H 'User-Agent: AD5-audit' "$API/releases?per_page=100" || true)"
+            echo "release_list_http=$rc"
+            printf 'tag\tdraft\tprerelease\tasset_name\tasset_id\tsize_bytes\n'
+            if [ "$rc" = 200 ]; then jq -r '.[] as $r | if ($r.assets|length)==0 then [$r.tag_name,($r.draft|tostring),($r.prerelease|tostring),"(no assets)","-","-"]|@tsv else $r.assets[]|[$r.tag_name,($r.draft|tostring),($r.prerelease|tostring),.name,(.id|tostring),(.size|tostring)]|@tsv end' "$META"; fi
+            echo "REDIRECT_HOPS_BEGIN"
+            for id in 647346873 652373928 686794219; do
+              url="$API/releases/assets/$id";hop=0
+              while [ "$hop" -lt 8 ]; do
+                raw="$(env -u GH_TOKEN curl -sS -o /dev/null -w '%{http_code}\t%{redirect_url}' -H 'Range: bytes=0-0' -H 'Accept: application/octet-stream' "$url" || true)"
+                code="$(printf '%s' "$raw" | cut -f1)";next="$(printf '%s' "$raw" | cut -f2-)"
+                host="$(printf '%s' "$url" | sed -E 's#^https?://([^/]+).*#\1#')"
+                echo "asset_id=$id hop=$hop host=$host http=$code"
+                case "$code" in 301|302|303|307|308) [ -n "$next" ] || break;url="$next";hop=$((hop+1));;*) break;;esac
+              done
+            done
+            echo "ID_MAPPING_BEGIN"
+            jq -r '.[] as $r | $r.assets[]? | select(.id==647346873 or .id==652373928 or .id==686794219) | "asset_id=\(.id) name=\(.name) tag=\($r.tag_name) size=\(.size)"' "$META" 2>/dev/null || true
+            echo "AD5_END"
+          } > "$OUT/AD5_release.txt"
+          # AD6: git ls-files and all reachable commits/trees, with no binary data extracted or committed.
+          {
+            echo "AD6 GIT HISTORY AUDIT BEGIN"
+            echo "CURRENT_TRACKED_MATCHES_BEGIN"
+            git ls-files | awk 'tolower($0) ~ /\.(bin|cue|iso|sstate|zip|gpudump|raw|png)$/ {print}'
+            echo "CURRENT_TRACKED_MATCHES_END"
+            python3 - "$GITHUB_WORKSPACE" <<'PY'
+          import subprocess,sys,re
+          root=sys.argv[1]
+          def git(*args):
+              return subprocess.run(["git","-C",root,*args],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,check=True).stdout
+          objs=git("rev-list","--objects","--all").splitlines()
+          commits=git("rev-list","--all").splitlines()
+          print("REV_LIST_OBJECTS_ALL_COUNT="+str(len(objs)))
+          print("REV_LIST_ALL_COMMIT_COUNT="+str(len(commits)))
+          ext=re.compile(r"\.(bin|cue|iso|sstate|zip|gpudump|raw|png)$",re.I)
+          found=set()
+          for c in commits:
+              try: entries=git("ls-tree","-rl","--full-tree",c).splitlines()
+              except subprocess.CalledProcessError: continue
+              for line in entries:
+                  m=re.match(r"^\d+\s+blob\s+([0-9a-f]+)\s+(\d+)\t(.*)$",line)
+                  if not m:continue
+                  sha,size,path=m.group(1),int(m.group(2)),m.group(3)
+                  if size>1048576 or ext.search(path):
+                      found.add((c,sha,size,path,"BLOB_GT_1_MIB" if size>1048576 else "EXTENSION_MATCH"))
+          print("HISTORICAL_MATCH_COUNT="+str(len(found)))
+          print("commit\tblob_sha\tsize_bytes\tpath\treason")
+          for r in sorted(found):print("\t".join(map(str,r)))
+          print("AD6 GIT HISTORY AUDIT END")
+          PY
+          } > "$OUT/AD6_git_history.txt"
+          {
+            echo "RUNNER24_FRAGMENT_BEGIN"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            grep -E '^(PRETTY_NAME|VERSION_ID)=' /etc/os-release
+            gdb --version | head -n1
+            echo "APPIMAGE_SHA256=$(sha256sum pcsx-redux.AppImage | cut -d ' ' -f1)"
+            echo "PCSX_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
+            echo "FLAGS=-noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout; Xvfb; no --headless CLI flag"
+            echo "CONTROL_STATE_SHA256=$(sha256sum "$AA_WORK/resume/control.sstate" | cut -d ' ' -f1)"
+            echo "CONTROL_ARTIFACT_ID=12464258211"
+            echo "RUNTIME_RESULTS_BEGIN";cat "$OUT/runtime-results.tsv";echo "RUNTIME_RESULTS_END"
+            echo "AD2_BEGIN";cat "$AA_WORK/logs/ad2-symbolization.txt";echo "AD2_END"
+            echo "AD5_BEGIN";cat "$OUT/AD5_release.txt";echo "AD5_END"
+            echo "AD6_BEGIN";cat "$OUT/AD6_git_history.txt";echo "AD6_END"
+            echo "RUNNER24_FRAGMENT_END"
+          } > "$OUT/ad24-fragment.txt"
+          sha256sum "$LOGOUT"/*.txt > "$OUT/ad1-log-sha256.txt"
+          kill "$(cat "$AA_WORK/xvfb.pid" 2>/dev/null)" 2>/dev/null || true
+          rm -rf "$AA_WORK/source" "$AA_WORK/inputs" "$AA_WORK/resume" "$AA_WORK/cards" "$AA_WORK/hybrids" "$APPDIR"
+
+      - name: Ensure partial runner24 text evidence exists
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p reports/ad_2026-10-29/aa1_runtime_logs
+          test -f reports/ad_2026-10-29/ad24-fragment.txt || printf 'RUNNER24 PARTIAL: probe step did not finish; inspect run %s.\n' "$GITHUB_RUN_ID" > reports/ad_2026-10-29/ad24-fragment.txt
+          test -f reports/ad_2026-10-29/runtime-results.tsv || printf 'group\tcase\tstate_sha256\tresult\tframe_0\tthread\temulator_exit\tgdb_wrapper_exit\tpost_load_marker\n' > reports/ad_2026-10-29/runtime-results.tsv
+          test -f reports/ad_2026-10-29/AD2_symbolization.txt || printf 'AD2: TIDAK TAHU; static symbolization step did not finish.\n' > reports/ad_2026-10-29/AD2_symbolization.txt
+          test -f reports/ad_2026-10-29/AD5_release.txt || printf 'AD5: TIDAK TAHU; anonymous Release audit did not finish.\n' > reports/ad_2026-10-29/AD5_release.txt
+          test -f reports/ad_2026-10-29/AD6_git_history.txt || printf 'AD6: TIDAK TAHU; all-ref tree scan did not finish.\n' > reports/ad_2026-10-29/AD6_git_history.txt
+          test -f reports/ad_2026-10-29/ad1-log-sha256.txt || true
+
+      - name: Upload runner24 text evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ad1-ad6-text-evidence-24
+          path: |
+            reports/ad_2026-10-29/ad24-fragment.txt
+            reports/ad_2026-10-29/runtime-results.tsv
+            reports/ad_2026-10-29/AD2_symbolization.txt
+            reports/ad_2026-10-29/AD5_release.txt
+            reports/ad_2026-10-29/AD6_git_history.txt
+            reports/ad_2026-10-29/ad1-log-sha256.txt
+            reports/ad_2026-10-29/aa1_runtime_logs/*.txt
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Remove private/runtime inputs
+        if: always()
+        shell: bash
+        run: |
+          kill "$(cat "$AA_WORK/xvfb.pid" 2>/dev/null)" 2>/dev/null || true
+          rm -rf "$AA_WORK"
+
+  runner26:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: \${{ github.token }}
+      RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+      AA_WORK: /tmp/naruto-ad4-26
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Fetch target, pinned PCSX AppImage and BIOS
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends xvfb x11-utils curl jq unzip python3 gdb
+          mkdir -p "$AA_WORK"/{source,resume,cards,logs,home/.config,home/.local/share,home/runtime}
+          chmod 700 "$AA_WORK/home/runtime"
+          cd "$AA_WORK/source"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          fetch_asset() {
+            id="$1";name="$2";bytes="$3";sha="$4";limit="$5"
+            curl --fail --location --silent --show-error --retry 2 --max-time "$limit" -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$API/releases/assets/$id" -o "$name"
+            test "$(stat -c '%s' "$name")" = "$bytes"
+            echo "$sha  $name" | sha256sum --check -
+          }
+          fetch_asset 669480936 pcsx-redux.AppImage 65747557 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c 180
+          fetch_asset 647346873 game.bin 325989552 58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88 600
+          fetch_asset 647354760 game.cue 116 be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8 60
+          fetch_asset 652373928 scph7502.zip 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a 60
+          fetch_asset 686794219 target-checkpoint.raw.sstate 21163286 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d 180
+          cp target-checkpoint.raw.sstate "$AA_WORK/resume/target.sstate"
+          python3 - "$AA_WORK/source/scph7502.zip" "$AA_WORK/source/scph7502.bin" <<'PY'
+          from pathlib import Path
+          import hashlib,sys,zipfile
+          a,b=map(Path,sys.argv[1:])
+          with zipfile.ZipFile(a) as z:
+              xs=[x for x in z.infolist() if not x.is_dir() and x.file_size==524288]
+              if len(xs)!=1:raise SystemExit("BIOS member count mismatch")
+              d=z.read(xs[0]);h=hashlib.sha256(d).hexdigest()
+              if h!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1":raise SystemExit("BIOS SHA mismatch")
+              b.write_bytes(d)
+          cue=Path(a.parent/"game.cue").read_bytes().decode("utf-8-sig").replace("\r\n","\n").splitlines()
+          ix=[i for i,x in enumerate(cue) if x.lstrip().upper().startswith("FILE ")]
+          if len(ix)!=1:raise SystemExit("invalid CUE")
+          cue[ix[0]]='FILE "game.bin" BINARY'
+          Path(a.parent/"game-run.cue").write_text("\n".join(cue)+"\n",encoding="ascii")
+          PY
+
+      - name: Restore target twice on ubuntu-26.04, no input
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          OUT="$GITHUB_WORKSPACE/ad4-ubuntu26-fragment.txt"
+          WORK="$AA_WORK"
+          mkdir -p "$WORK/logs" "$WORK/home/.config" "$WORK/home/.local/share" "$WORK/home/runtime"
+          echo "AD4_UBUNTU26_BEGIN" > "$OUT"
+          cat /etc/os-release >> "$OUT"
+          gdb --version | head -n 2 >> "$OUT"
+          uname -a >> "$OUT"
+          echo "APPIMAGE_SHA256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c" >> "$OUT"
+          echo "PCSX_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba" >> "$OUT"
+          echo "FLAGS=-noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout via Xvfb; no --headless CLI flag" >> "$OUT"
+          if [ ! -f "$WORK/source/pcsx-redux.AppImage" ] || [ ! -f "$WORK/resume/target.sstate" ]; then echo "AD4_UBUNTU26_SETUP=FAILED"; echo "AD4_UBUNTU26_SETUP=FAILED" >> "$OUT"; exit 0; fi
+          chmod +x "$WORK/source/pcsx-redux.AppImage"
+          "$WORK/source/pcsx-redux.AppImage" --appimage-extract >/dev/null
+          APPDIR="$WORK/source/squashfs-root"
+          PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | grep -Ei '(^|/)(pcsx-redux|pcsx-redux\.bin)$' | head -n1 || true)"
+          if [ -z "$PCSX_BIN" ]; then PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 -print | grep -Ei 'pcsx.*redux|redux.*pcsx' | head -n1 || true)"; fi
+          if [ -z "$PCSX_BIN" ]; then echo "PCSX_BINARY=TIDAK TAHU" >> "$OUT"; exit 0; fi
+          CARD="$(find "$WORK/cards" -type f -name 'naruto-storymode.mcd' -print -quit)"
+          if [ -n "$CARD" ]; then cp "$CARD" "$WORK/cards/reference.mcd"; else truncate -s 131072 "$WORK/cards/reference.mcd"; echo "MEMORY_CARD_SOURCE=empty fallback" >> "$OUT"; fi
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/home/.config" XDG_DATA_HOME="$WORK/home/.local/share" XDG_RUNTIME_DIR="$WORK/home/runtime" LIBGL_ALWAYS_SOFTWARE=1
+          export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu" QT_PLUGIN_PATH="$APPDIR/usr/plugins" QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms" QML2_IMPORT_PATH="$APPDIR/usr/qml"
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/logs/xvfb.log" 2>&1 & echo $! > "$WORK/xvfb.pid"
+          for n in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+          cat > "$WORK/pad.lua" <<'LUA'
+          PCSX.settings.pads[1].DeviceType='Analog'
+          PCSX.settings.pads[1].Connected=true
+          PCSX.SIO0.slots[1].pads[1].map()
+          LUA
+          cat > "$WORK/restore.lua" <<'LUA'
+          local v,s,l,a=0,false,false,0
+          local function log(x) print(x);pcall(function()io.stdout:flush()end) end
+          PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()l=true;a=0;log("AD_POST_LOAD_EVENT=1")end)
+          PCSX.Events.createEventListener("GPU::Vsync",function()
+            v=v+1
+            if not s then
+              s=true;log("AD_LOAD_BEGIN=1 vsync="..v.." controller=NONE");PCSX.pauseEmulator()
+              PCSX.nextTick(function()
+                local ok,f=pcall(function()return assert(Support.File.open(os.getenv("AA_TEST_STATE")))end)
+                if not ok or not f then log("AD_OPEN_FAIL=1");PCSX.quit(50);return end
+                local good,e=pcall(function()PCSX.loadSaveState(f)end);f:close()
+                if not good then log("AD_LOAD_LUA_ERROR="..tostring(e));PCSX.quit(51);return end
+                log("AD_LOAD_CALL_RETURNED=1");PCSX.resumeEmulator()
+              end);return
+            end
+            if l then a=a+1;if a>=180 then log("AD_POST_LOAD_VSYNC=180");PCSX.pauseEmulator();PCSX.nextTick(function()PCSX.quit(0)end)end
+            elseif v>=900 then log("AD_LOAD_EVENT_TIMEOUT=1");PCSX.pauseEmulator();PCSX.nextTick(function()PCSX.quit(53)end)end
+          end)
+          LUA
+          cat > "$WORK/gdb.cmd" <<'GDB'
+          set pagination off
+          set confirm off
+          set print thread-events off
+          handle SIGSEGV stop print nopass
+          handle SIGABRT stop print nopass
+          handle SIGBUS stop print nopass
+          run
+          info threads
+          x/3i $pc
+          info registers
+          info proc mappings
+          bt
+          thread apply all bt
+          GDB
+          for attempt in 1 2; do
+            tag="ad4-ubuntu26-target-attempt$attempt";log="$WORK/logs/$tag.gdb.txt";pcsx="$WORK/logs/$tag.pcsx.txt"
+            AA_TEST_STATE="$WORK/resume/target.sstate" timeout --signal=INT --kill-after=10s 110s gdb --quiet --nx --batch -x "$WORK/gdb.cmd" --args "$PCSX_BIN" \
+              -noupdate -no-debugger -no-gdb -bios "$WORK/source/scph7502.bin" -iso "$WORK/source/game-run.cue" -memcard1 "$WORK/cards/reference.mcd" \
+              -exec "$(cat "$WORK/pad.lua")" -dofile "$WORK/restore.lua" -softgpu -dynarec -stdout -lua_stdout -logfile "$pcsx" -run > "$log" 2>&1
+            rc=$?
+            sig="$(grep -m1 -E 'received signal SIGSEGV|Program received signal SIGSEGV' "$log" || true)"
+            post="$(grep -h -m1 'AD_POST_LOAD_VSYNC=180' "$log" "$pcsx" 2>/dev/null || true)"
+            frame="$(grep -m1 -E '^#0[[:space:]]' "$log" || true)"
+            thread="$(printf '%s' "$sig" | grep -oE 'Thread [0-9]+' | head -n1 || true)"
+            inf="$(grep -m1 -E 'Inferior .*exited|Program exited' "$log" || true)"
+            sha="$(sha256sum "$WORK/resume/target.sstate" | cut -d ' ' -f1)"
+            if [ -n "$sig" ]; then result=SIGSEGV;elif [ -n "$post" ];then result=POST_LOAD_VSYNC_180;else result=NO_TERMINAL_MARKER;fi
+            [ -n "$frame" ] || frame=NOT_RECORDED;[ -n "$thread" ] || thread=NOT_RECORDED;[ -n "$inf" ] || inf=NOT_RECORDED;[ -n "$post" ] || post=NOT_RECORDED
+            printf 'CASE=AD4_UBUNTU26\tattempt=%s\tresult=%s\tstate_sha256=%s\tframe_0=%s\tthread=%s\tinferior=%s\tgdb_wrapper_exit=%s\tpost=%s\n' "$attempt" "$result" "$sha" "$frame" "$thread" "$inf" "$rc" "$post" >> "$OUT"
+          done
+          echo "AD4_UBUNTU26_END" >> "$OUT"
+          kill "$(cat "$WORK/xvfb.pid" 2>/dev/null)" 2>/dev/null
+          rm -rf "$WORK"
+
+      - name: Upload text-only runner26 result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ad4-ubuntu26-text-evidence
+          path: ad4-ubuntu26-fragment.txt
+          if-no-files-found: warn
+          retention-days: 14
+
+  publish:
+    if: always()
+    needs: [runner24, runner26]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    env:
+      RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+    steps:
+      - name: Checkout research repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Download text-only evidence artifacts
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: ad*-text-evidence-*
+          path: /tmp/ad-publish-inputs
+          merge-multiple: true
+      - name: Download ubuntu26 fragment
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: ad4-ubuntu26-text-evidence
+          path: /tmp/ad-publish-26
+      - name: Commit complete AD1 logs and a one-file audit report
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports/ad_2026-10-29/aa1_runtime_logs
+          E="/tmp/ad-publish-inputs"
+          cp -R "$E/." reports/ad_2026-10-29/ 2>/dev/null || true
+          FRAG26="/tmp/ad-publish-26/ad4-ubuntu26-fragment.txt"
+          if [ ! -f "$FRAG26" ]; then printf 'AD4 UBUNTU26: TIDAK TAHU; job did not upload a fragment.\n' > "$FRAG26"; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/ad_2026-10-29/aa1_runtime_logs/*.txt reports/ad_2026-10-29/ad1-log-sha256.txt reports/ad_2026-10-29/runtime-results.tsv 2>/dev/null || true
+          if ! git diff --cached --quiet; then git commit -m "Record complete AD1 raw GDB and PCSX text logs";git push origin HEAD:main;fi
+          EVIDENCE_COMMIT="$(git rev-parse HEAD)"
+          R="reports/ad_2026-10-29/AD1-AD6_AUDIT_REPORT_2026-10-29.txt"
+          {
+            echo "AD1-AD6 AUDIT — Naruto Jintori SLPS-03553"
+            echo "Repository: $RESEARCH_REPO"
+            echo "Workflow run: $GITHUB_RUN_ID"
+            echo "Evidence commit containing AD1 raw logs/runtime table: $EVIDENCE_COMMIT"
+            echo "K SCALE: K1=dugaan; K2=indikasi terbatas; K3=beberapa bukti saling mendukung; K4=bukti langsung yang dapat diperiksa ulang (statis maksimal K4); K5=runtime konsisten pada >=2 peluncuran terpisah."
+            echo "Safety boundary: ISO, ROM, BIOS, savestate, RAM dump, screenshots and other private binary artifacts were not committed. Release assets and visibility were not changed."
+            echo
+            echo "AD1 — GDB diagnostic, no input"
+            if [ -f reports/ad_2026-10-29/ad1-log-sha256.txt ]; then
+              echo "Raw GDB and PCSX logs, full text files (middle not truncated) plus SHA-256:"
+              cat reports/ad_2026-10-29/ad1-log-sha256.txt
+              echo "AD1 file permalinks:"
+              for f in reports/ad_2026-10-29/aa1_runtime_logs/*.txt; do echo "$(basename "$f"): https://raw.githubusercontent.com/$RESEARCH_REPO/$EVIDENCE_COMMIT/$f"; done
+              echo "Status=TUNTAS only if there are 8 raw logs and each GDB file contains signal/thread/instructions/registers/mappings/backtrace markers; see hashes and full logs."
+            else
+              echo "Status=SEBAGIAN/BELUM: no complete raw log checksum manifest was uploaded."
+            fi
+            echo
+            echo "AD1/AD3/AD4 RUNTIME RESULTS TSV"
+            cat reports/ad_2026-10-29/runtime-results.tsv 2>/dev/null || echo "TIDAK TAHU: runtime-results.tsv missing."
+            echo
+            echo "AD2 — Symbolization from runtime mapping"
+            cat "$E/AD2_symbolization.txt" 2>/dev/null || cat reports/ad_2026-10-29/AD2_symbolization.txt 2>/dev/null || echo "TIDAK TAHU: AD2 output missing."
+            echo
+            echo "AD3 — Hybrid-state field sufficiency"
+            if [ -f reports/ad_2026-10-29/runtime-results.tsv ]; then
+              python3 - reports/ad_2026-10-29/runtime-results.tsv <<'PY'
+          import csv,sys
+          rows=list(csv.DictReader(open(sys.argv[1]),delimiter="\t"))
+          hs=[("H1-field3",3),("H2-field4",4),("H3-field5",5),("H4-field6",6),("H5-field8",8),("H6-field10",10)]
+          sufficient=[]; all_noncrash=True
+          print("hybrid\tfield\tlaunches\tSIGSEGV_count\tresult\tK")
+          for name,num in hs:
+              rr=[r for r in rows if r.get("group")=="AD3" and r.get("case","").startswith(name+"-attempt")]
+              results=[r.get("result","") for r in rr]
+              n=sum(x=="SIGSEGV" for x in results)
+              if n: all_noncrash=False
+              same=len(results)==2 and results[0]==results[1]
+              if same and n==2: result="sufficient-alone-in-this-control/target-context";k="K5";sufficient.append(name)
+              elif same and n==0: result="not-sufficient-alone-in-tested-context";k="K5"
+              else: result="inconsistent-or-incomplete";k="K2"
+              print(f"{name}\t{num}\t{len(results)}\t{n}\t{result}\t{k}")
+          if len(sufficient)==0 and all_noncrash and all(sum(1 for r in rows if r.get("group")=="AD3" and r.get("case","").startswith(n+"-attempt"))==2 for n,_ in hs):
+              print("FIELD_SUFFICIENCY_CONCLUSION=tidak ada yang cukup sendirian (enam uji punya 2 peluncuran dan tidak satu pun crash).")
+          elif sufficient: print("FIELD_SUFFICIENCY_CONCLUSION=consistent crash in: "+", ".join(sufficient))
+          else: print("FIELD_SUFFICIENCY_CONCLUSION=TIDAK TAHU; mixed outcomes or incomplete launches.")
+          print("FIELD_NECESSITY=not identifiable from single-field substitutions alone; do not infer necessity without combination/control tests.")
+          PY
+            else echo "TIDAK TAHU: no hybrid launch table.";fi
+            echo
+            echo "AD4 — Runner/AppImage/flags diff"
+            echo "Run 40853480515: ubuntu-24.04.5; GDB 15.1-1ubuntu1~24.04.1; AppImage SHA256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c; pin 0c3572c3d; flags -noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout using Xvfb."
+            echo "Run 39262213468 historical comparator: ubuntu-26.04; GDB 17.1-2ubuntu1; same AppImage SHA256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c and pin; source run created a checkpoint at VSync 10055 but was a save run, not a restore test."
+            echo "Control producer run 39867730674: host runner ubuntu-24.04.5; workflow ran in container ghcr.io/grumpycoders/pcsx-redux-build:latest; workflow downloaded patched PCSX-Redux-spu-adpcm-patched.AppImage SHA256 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99; flags include -softgpu -dynarec -stdout -lua_stdout. This is not the pinned AppImage binary. Workflow itself did not call GDB; GDB version in container is TIDAK TAHU."
+            cat "$FRAG26" 2>/dev/null || true
+            echo "Artifact comparison: expected inner control checkpoint SHA256 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492; runner24 probe verifies the extracted artifact file. Outer artifact ZIP SHA is a different object and is not equivalent to the contained savestate SHA."
+            echo
+            echo "AD5 — Anonymous Release table and redirect chains"
+            cat "$E/AD5_release.txt" 2>/dev/null || cat reports/ad_2026-10-29/AD5_release.txt 2>/dev/null || echo "TIDAK TAHU: AD5 output missing."
+            echo
+            echo "AD6 — Current tracked paths and all-branch history"
+            cat "$E/AD6_git_history.txt" 2>/dev/null || cat reports/ad_2026-10-29/AD6_git_history.txt 2>/dev/null || echo "TIDAK TAHU: AD6 output missing."
+            echo
+            echo "Story Mode completion: NOT CLAIMED / NOT VERIFIED by these diagnostics."
+          } > "$R"
+          git add "$R"
+          git commit -m "Publish AD1-AD6 audit with fixed evidence permalinks"
+          REPORT_COMMIT="$(git rev-parse HEAD)"
+          echo "FINAL_REPORT_COMMIT=$REPORT_COMMIT"
+          echo "FINAL_REPORT_RAW=https://raw.githubusercontent.com/$RESEARCH_REPO/$REPORT_COMMIT/$R"
+          git push origin HEAD:main
+          cat "$R"
