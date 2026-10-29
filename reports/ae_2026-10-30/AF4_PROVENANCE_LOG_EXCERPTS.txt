@@ -1,0 +1,33 @@
+AF4/AF3 — kutipan log Actions yang relevan
+Diambil 2026-10-30. Repo zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research.
+Hanya teks, tanpa ISO, BIOS, savestate, atau dump RAM.
+
+[run 39262213468 / job 118092519254 / commit e396eac00631001b7a0e68d7701c70aec10dec19]
+2026-10-19T13:40:57.6677444Z Image: ubuntu-26.04
+2026-10-19T13:41:06.5164355Z Unpacking gdb (17.1-2ubuntu1) ...
+2026-10-19T13:41:09.0815105Z echo "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c  pcsx-redux.AppImage" | sha256sum --check -
+2026-10-19T13:41:13.1166952Z GPU_BACKEND_FLAG="-softgpu"
+2026-10-19T13:41:13.1366574Z "$GPU_BACKEND_FLAG" -dynarec -stdout -lua_stdout -logfile "$WORK/pcsx.log" -run
+
+[run 39867730674 / job 120134061270 / commit c9b1438292041f972b712f248fb7052032635b59]
+2026-10-22T22:49:55.3333826Z Image: ubuntu-24.04
+2026-10-22T22:50:28.7819274Z Digest: sha256:d9ae6cbb23a5d0d98d8c3702cc6f512698ee1670bf8d59b236b2baabe99a66e4
+2026-10-22T22:50:46.4630715Z test "$(sha256sum "$APP" | cut -d ' ' -f1)" = 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99
+2026-10-22T22:50:50.0125654Z -exec "$PAD_SETUP" -dofile "$WORK/storymode-adaptive.lua" -softgpu -dynarec
+
+[run 40893536464 / job 123516385854 / commit 9d7c062b8457ecdf118be01fcc6c6fe65bcfe070]
+2026-10-29T14:43:06.4188485Z AE_REFINE_ATTEMPT_DONE case=ae2-target-spu-field6-control attempt=1 result=POST_LOAD_VSYNC=180 signal=SIGINT pc=0x7fffe1f363dd wrapper_rc=-9 elapsed=115.015
+2026-10-29T14:45:01.4352194Z AE_REFINE_ATTEMPT_DONE case=ae2-target-spu-field6-control attempt=2 result=POST_LOAD_VSYNC=180 signal=SIGINT pc=0x7fffe1eb0979 wrapper_rc=-9 elapsed=115.015
+2026-10-29T14:45:05.9145838Z AE_REFINE_ATTEMPT_DONE case=ae1-channel2-child-data attempt=2 result=SIGSEGV signal=SIGSEGV pc=0x7ffff0dd36d0 wrapper_rc=255 elapsed=2.246
+2026-10-29T14:47:00.9464174Z AE_REFINE_ATTEMPT_DONE case=ae1-channel2-child-adsr attempt=1 result=POST_LOAD_VSYNC=180 signal=SIGINT pc=0x7fffe1d5ba0f wrapper_rc=-9 elapsed=115.015
+2026-10-29T14:50:50.9958034Z AE_REFINE_ATTEMPT_DONE case=ae1-channel2-child-adsr_ex attempt=1 result=POST_LOAD_VSYNC=180 signal=SIGINT pc=0x7fffe1f3f334 wrapper_rc=-9 elapsed=115.016
+
+[run 40893599809 / job 123524765697 / commit 9c1287c436522a5b333a3399d734dd8cc8c566c0]
+2026-10-29T14:57:59.7011084Z AE_REFINE_ATTEMPT_DONE case=ae2-target-spu-field6-control attempt=1 result=POST_LOAD_VSYNC=180 signal=SIGINT pc=0x7fffe1f3b973 wrapper_rc=-9 elapsed=115.018
+2026-10-29T15:00:00.3065238Z AE_REFINE_CASE_DONE case=ae1-channel2-child-data outcome=SIGSEGV_BOTH sha256=6bea52c107896f716b68d0174d5cb840c5cf3869a3b8239054584e0e9d92faaa
+
+Both failed publishers ended with the observed Git push error: [rejected] HEAD -> main (fetch first); exit code 1. Raw GDB files for these runs did not get committed before runner cleanup.
+
+Container vs producer notes:
+- Container digest above is copied from the run 398677 job log, not from an AD report.
+- Producer AppImage SHA 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99 is absent from retained artifacts after job cleanup; producer build could not be replayed.
