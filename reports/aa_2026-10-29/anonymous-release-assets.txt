@@ -1,0 +1,25 @@
+ANONYMOUS_RELEASE_AUDIT_BEGIN token=UNSET
+ANONYMOUS_RELEASE_LIST_HTTP=200 source=REST_list_releases
+naruto-checkpoint-39262213468	false	false	storymode-checkpoint-run-39262213468.raw.sstate	21163286
+research-emulator-pcsx-redux-2026-10-15	false	true	EMULATOR-ASSET-INFO.txt	1227
+research-emulator-pcsx-redux-2026-10-15	false	true	LAUNCH-SMOKE-LOG.txt	886
+research-emulator-pcsx-redux-2026-10-15	false	true	LAUNCH-SMOKE-STATUS.txt	72
+research-emulator-pcsx-redux-2026-10-15	false	true	Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin	325989552
+research-emulator-pcsx-redux-2026-10-15	false	true	Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue	116
+research-emulator-pcsx-redux-2026-10-15	false	true	OPENBIOS-CHUNKED-PATCH.diff	1137
+research-emulator-pcsx-redux-2026-10-15	false	true	openbios-chunked.bin	524288
+research-emulator-pcsx-redux-2026-10-15	false	true	openbios-chunked.elf	506192
+research-emulator-pcsx-redux-2026-10-15	false	true	OPENBIOS-SHA256SUMS	502
+research-emulator-pcsx-redux-2026-10-15	false	true	openbios-shell.bin	524288
+research-emulator-pcsx-redux-2026-10-15	false	true	openbios-shell.elf	584232
+research-emulator-pcsx-redux-2026-10-15	false	true	OPENBIOS-SOURCE.txt	832
+research-emulator-pcsx-redux-2026-10-15	false	true	openbios.bin	524288
+research-emulator-pcsx-redux-2026-10-15	false	true	openbios.elf	505448
+research-emulator-pcsx-redux-2026-10-15	false	true	PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage	65747557
+research-emulator-pcsx-redux-2026-10-15	false	true	PCSX-Redux-HEAD-x86_64.AppImage	91474424
+research-emulator-pcsx-redux-2026-10-15	false	true	scph7502.zip	283463
+research-emulator-pcsx-redux-2026-10-15	false	true	SHA256SUMS	112
+ANONYMOUS_RELEASE_LIST_END
+ANON_ASSET_HTTP asset_id=647346873 code=302 redirect=https://release-assets.githubusercontent.com/github-production-release-asset/1420181037/d7b73965-acce-41b4-bf11-54388bcd8d00
+ANON_ASSET_HTTP asset_id=652373928 code=302 redirect=https://release-assets.githubusercontent.com/github-production-release-asset/1420181037/2abe22c2-d8d3-4cdd-9597-9f6d5c06aa00
+ANON_ASSET_HTTP asset_id=686794219 code=302 redirect=https://release-assets.githubusercontent.com/github-production-release-asset/1420181037/d6deb8d3-a878-4da3-9010-85ffb4e5b559

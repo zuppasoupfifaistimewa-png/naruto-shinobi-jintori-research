@@ -1,0 +1,10 @@
+AA1_ENV_METADATA_BEGIN
+GNU gdb (Ubuntu 15.1-1ubuntu1~24.04.1) 15.1
+Copyright (C) 2024 Free Software Foundation, Inc.
+PRETTY_NAME="Ubuntu 24.04.5 LTS"
+VERSION_ID="24.04"
+Linux runnervm48cm3 7.0.0-1017-azure #17~24.04.1-Ubuntu SMP PREEMPT Thu Sep 24 18:46:57 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+timeout_per_attempt=110s external_timeout_signal=INT kill_after=10s
+emulator_flags=-noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout -logfile <CASE>.pcsx.log -run
+target/control attempts=2 each; buttons=NONE; PCSX AppImage SHA256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c; PCSX pin=0c3572c3db75f97542001e453ae80ba8c3f8acba
+AA1_ENV_METADATA_END
