@@ -50,7 +50,7 @@ def w0(out,run_id):
     # Query two adjacent UTC dates. A previous-day run can still be active at 00:10.
     runs=[]
     for page in range(1,21):
-        q=urllib.parse.urlencode({"created":"2026-10-28..2026-10-29","per_page":100,"page":page})
+        q=urllib.parse.urlencode({"per_page":100,"page":page})
         raw,_=api("actions/runs?"+q); data=json.loads(raw)
         batch=data.get("workflow_runs",[])
         runs.extend(batch)
@@ -132,7 +132,7 @@ def w0(out,run_id):
     releaselines=[
       "W0 RELEASE CREATOR TIMELINE — UTC; API fields and Actions jobs/steps",
       f"query_window={iso(WINDOW_START)}..{iso(WINDOW_END)}",
-      f"runs_fetched_created_2026-10-28_to_2026-10-29={len(runs)}",
+      f"runs_fetched_all_recent_pages={len(runs)}",
       f"runs_intersecting_window={len(window_runs)}",
       f"jobs_active_in_window={len(job_rows)}",
       f"release_related_steps_in_candidate_runs={len(release_steps)}",
