@@ -219,8 +219,8 @@ jobs:
           bt full
           GDB
           for entry in "target:resume/target.sstate" "control:resume/control.sstate"; do
-            label="\${entry%%:*}"
-            state="\${entry#*:}"
+            label="${entry%%:*}"
+            state="${entry#*:}"
             echo "AA1_GDB_CASE=$label state_path=$state"
             set +e
             AA_TEST_STATE="$state" timeout --signal=TERM --kill-after=5s 110s \
