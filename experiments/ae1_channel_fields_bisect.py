@@ -255,6 +255,18 @@ end
         hybrid=replace_channel_in_state(control,1,new_channel)
         run_case("nested-channel-field%d-child%d-occ%d"%(n,child[0],child[1]+1),hybrid,
                  "control state; target channel[2].field%d payload contains only target child field %d occurrence %d"%(n,child[0],child[1]+1))
+    # AE2 necessity check for the deepest sufficient field found so far:
+    # replace only Channel[2].data.current (field 8 occurrence 1) in target with control bytes.
+    control_data = one(cchan,1)
+    target_data = one(tchan,1)
+    reverse_current_data = selective(target_data,control_data,{(8,0)})
+    reverse_current_channel = replace_top(tchan,1,encmsg(1,reverse_current_data))
+    reverse_current_state = replace_channel_in_state(target,1,reverse_current_channel)
+    reverse_current_outcome = run_case(
+      "ae2-target-current-pointer-field8-from-control",
+      reverse_current_state,
+      "target base; only SPU.channel[2].data.current (field 8 occurrence 1) swapped to control encoding"
+    )
     with (out/"runtime-results.tsv").open("w",encoding="utf-8") as f:
       f.write(line("case","attempt","hybrid_sha256","result","pc_or_status","gdb_wrapper_exit","emulator_exit_code","ram_2mib_sha256","serialized_ram_field_bytes","raw_words_at_addresses","gdb_log","pcsx_log","seconds"))
       for r in results:f.write(line(*r))
@@ -267,6 +279,8 @@ end
     radd=report.append
     radd("Direct Channel field outcomes:")
     for k,v in direct_out.items():radd(" channel[2].field%d => %s"%(k[0],v))
+    radd("AE2 necessity check: target base with only Channel[2].data.current (field 8) swapped from control => %s." % reverse_current_outcome)
+    radd("Schema mapping: src/spu/types.h at PCSX-Redux pin 0c3572c3d defines Chan::CurrPtr as field 8, TYPESTRING(\"current\"); permalink=https://github.com/pcsx-redux/pcsx-redux/blob/0c3572c3d/src/spu/types.h")
     radd("Runtime cases=%d; two-launch snapshots reaching post-load=180=%d"%(len(cases),len(ram)))
     radd("No SIGINT/timeouts were counted as crashes; timeout outcomes are INCONCLUSIVE_TIMEOUT.")
     radd("The prior AE first-level all-child reconstruction did not match target SPU bytes due serialization ordering/add/remove ordering; therefore use these direct-parent-message trials to establish a narrow sufficient child, not global field byte identity.")
