@@ -267,6 +267,30 @@ end
       reverse_current_state,
       "target base; only SPU.channel[2].data.current (field 8 occurrence 1) swapped to control encoding"
     )
+    # AE4 is conditional on ANY target-containing hybrid previously reaching
+    # POST_LOAD_VSYNC=180 twice. Reconstruct AD3's five known qualifying hybrids
+    # by replacing exactly one complete top-level field target->control, verify
+    # the historical SHA before treating a candidate as the same byte object,
+    # then collect the RAM hash/words in each fresh emulator process.
+    ae4_expected = {
+      3: "78d937e5dabd8b2ebdf949176fad8557f82d6e0759116511530b18b8c841dca4",
+      4: "142f82698ab689518a115e0cdff32ce26d9c52a1cfd8a225fe36c2c1827f67ed",
+      5: "08f907c3b7f630369d7eca7d2157572fda68009a4caaee1d79827317373a3f6a",
+      8: "967be929b23017796ffc2faaad8a42e1d9d66c26e335d21d2a92ec0c63596967",
+      10: "0617e540eb1a6d0704a2637a50e37766b622870c08d0b1853f8eabeff1ad02e1",
+    }
+    ae4_results = []
+    for number, expected_hash in ae4_expected.items():
+      target_fields = [r for r in parse(target) if r["n"]==number]
+      if len(target_fields)!=1:
+        raise ValueError("AE4 expected one target field %d"%number)
+      hybrid = replace_top(control,number,target_fields[0]["enc"])
+      actual_hash = sha(hybrid)
+      identity = (actual_hash == expected_hash)
+      case_name = "ae4-ad3-field%d-target-in-control"%number if identity else "ae4-field%d-hash-mismatch"%number
+      outcome = run_case(case_name,hybrid,
+          "AD3 target field %d -> control; reconstructed_sha=%s expected_sha=%s byte_identical=%s"%(number,actual_hash,expected_hash,identity))
+      ae4_results.append((number,expected_hash,actual_hash,identity,outcome))
     with (out/"runtime-results.tsv").open("w",encoding="utf-8") as f:
       f.write(line("case","attempt","hybrid_sha256","result","pc_or_status","gdb_wrapper_exit","emulator_exit_code","ram_2mib_sha256","serialized_ram_field_bytes","raw_words_at_addresses","gdb_log","pcsx_log","seconds"))
       for r in results:f.write(line(*r))
@@ -282,6 +306,10 @@ end
     radd("AE2 necessity check: target base with only Channel[2].data.current (field 8) swapped from control => %s." % reverse_current_outcome)
     radd("Schema mapping: src/spu/types.h at PCSX-Redux pin 0c3572c3d defines Chan::CurrPtr as field 8, TYPESTRING(\"current\"); permalink=https://github.com/pcsx-redux/pcsx-redux/blob/0c3572c3d/src/spu/types.h")
     radd("Runtime cases=%d; two-launch snapshots reaching post-load=180=%d"%(len(cases),len(ram)))
+    radd("AE4 prior AD3 qualifying hybrids (top-level target field in control base), reconstructed hash identity and current two-launch outcome:")
+    for n,expected,actual,identity,outcome in ae4_results:
+      radd(" field%d expected_sha=%s actual_sha=%s byte_identical=%s outcome=%s"%(n,expected,actual,identity,outcome))
+    radd("AE4 2MiB RAM SHA/raw word values for successful launches are in ae4_ram_snapshots.tsv; no RAM bytes are written to the repository.")
     radd("No SIGINT/timeouts were counted as crashes; timeout outcomes are INCONCLUSIVE_TIMEOUT.")
     radd("The prior AE first-level all-child reconstruction did not match target SPU bytes due serialization ordering/add/remove ordering; therefore use these direct-parent-message trials to establish a narrow sufficient child, not global field byte identity.")
     (out/"AE1_CHANNEL_RECURSIVE_RESULTS.txt").write_text("\n".join(report)+"\n",encoding="utf-8")
