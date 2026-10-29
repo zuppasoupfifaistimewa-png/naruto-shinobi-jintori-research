@@ -1,0 +1,61 @@
+AD1-AD6 AUDIT — Naruto Jintori SLPS-03553
+Repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+Workflow run: 40860122233
+Evidence commit containing AD1 raw logs/runtime table: baa7a53ce9a8dbb1153ea27c1a329219bf9a43d5
+K SCALE: K1=dugaan; K2=indikasi terbatas; K3=beberapa bukti saling mendukung; K4=bukti langsung yang dapat diperiksa ulang (statis maksimal K4); K5=runtime konsisten pada >=2 peluncuran terpisah.
+Safety boundary: ISO, ROM, BIOS, savestate, RAM dump, screenshots and other private binary artifacts were not committed. Release assets and visibility were not changed.
+
+AD1 — GDB diagnostic, no input
+Status=SEBAGIAN/BELUM: no complete raw log checksum manifest was uploaded.
+
+AD1/AD3/AD4 RUNTIME RESULTS TSV
+group	case	state_sha256	result	frame_0	thread	emulator_exit	gdb_wrapper_exit	post_load_marker
+
+AD2 — Symbolization from runtime mapping
+AD2: TIDAK TAHU; static symbolization step did not finish.
+
+AD3 — Hybrid-state field sufficiency
+hybrid	field	launches	SIGSEGV_count	result	K
+H1-field3	3	0	0	inconsistent-or-incomplete	K2
+H2-field4	4	0	0	inconsistent-or-incomplete	K2
+H3-field5	5	0	0	inconsistent-or-incomplete	K2
+H4-field6	6	0	0	inconsistent-or-incomplete	K2
+H5-field8	8	0	0	inconsistent-or-incomplete	K2
+H6-field10	10	0	0	inconsistent-or-incomplete	K2
+FIELD_SUFFICIENCY_CONCLUSION=TIDAK TAHU; mixed outcomes or incomplete launches.
+FIELD_NECESSITY=not identifiable from single-field substitutions alone; do not infer necessity without combination/control tests.
+
+AD4 — Runner/AppImage/flags diff
+Run 40853480515: ubuntu-24.04.5; GDB 15.1-1ubuntu1~24.04.1; AppImage SHA256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c; pin 0c3572c3d; flags -noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout using Xvfb.
+Run 39262213468 historical comparator: ubuntu-26.04; GDB 17.1-2ubuntu1; same AppImage SHA256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c and pin; source run created a checkpoint at VSync 10055 but was a save run, not a restore test.
+Control producer run 39867730674: host runner ubuntu-24.04.5; workflow ran in container ghcr.io/grumpycoders/pcsx-redux-build:latest; workflow downloaded patched PCSX-Redux-spu-adpcm-patched.AppImage SHA256 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99; flags include -softgpu -dynarec -stdout -lua_stdout. This is not the pinned AppImage binary. Workflow itself did not call GDB; GDB version in container is TIDAK TAHU.
+AD4_UBUNTU26_BEGIN
+PRETTY_NAME="Ubuntu 26.04.1 LTS"
+NAME="Ubuntu"
+VERSION_ID="26.04"
+VERSION="26.04.1 LTS (Resolute Raccoon)"
+VERSION_CODENAME=resolute
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=resolute
+LOGO=ubuntu-logo
+GNU gdb (Ubuntu 17.1-2ubuntu1) 17.1
+Copyright (C) 2025 Free Software Foundation, Inc.
+Linux runnervmnwato 7.0.0-1017-azure #17-Ubuntu SMP PREEMPT Thu Sep 24 15:54:51 UTC 2026 x86_64 GNU/Linux
+APPIMAGE_SHA256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
+PCSX_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba
+FLAGS=-noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout via Xvfb; no --headless CLI flag
+AD4_UBUNTU26_SETUP=FAILED
+Artifact comparison: expected inner control checkpoint SHA256 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492; runner24 probe verifies the extracted artifact file. Outer artifact ZIP SHA is a different object and is not equivalent to the contained savestate SHA.
+
+AD5 — Anonymous Release table and redirect chains
+AD5: TIDAK TAHU; anonymous Release audit did not finish.
+
+AD6 — Current tracked paths and all-branch history
+AD6: TIDAK TAHU; all-ref tree scan did not finish.
+
+Story Mode completion: NOT CLAIMED / NOT VERIFIED by these diagnostics.
