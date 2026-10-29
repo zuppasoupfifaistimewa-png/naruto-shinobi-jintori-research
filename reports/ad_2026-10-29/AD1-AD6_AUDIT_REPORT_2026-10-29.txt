@@ -1,61 +1,59 @@
 AD1-AD6 AUDIT — Naruto Jintori SLPS-03553
 Repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-Workflow run: 40860122233
-Evidence commit containing AD1 raw logs/runtime table: baa7a53ce9a8dbb1153ea27c1a329219bf9a43d5
-K SCALE: K1=dugaan; K2=indikasi terbatas; K3=beberapa bukti saling mendukung; K4=bukti langsung yang dapat diperiksa ulang (statis maksimal K4); K5=runtime konsisten pada >=2 peluncuran terpisah.
-Safety boundary: ISO, ROM, BIOS, savestate, RAM dump, screenshots and other private binary artifacts were not committed. Release assets and visibility were not changed.
+Recovery workflow run: 40863635082
+Evidence commit containing raw text logs and manifests: 8663cb5bb0b526b7980cb29a72029756f9f46217
+K SCALE: K1=dugaan; K2=indikasi terbatas; K3=beberapa bukti saling mendukung; K4=bukti langsung yang dapat diperiksa ulang (analisis statis maksimal K4); K5=bukti runtime konsisten pada >=2 peluncuran terpisah.
+Boundary: no ROM/ISO, BIOS, savestate, RAM dump or screenshots were added. Release assets/visibility were not changed.
 
-AD1 — GDB diagnostic, no input
-Status=SEBAGIAN/BELUM: no complete raw log checksum manifest was uploaded.
+AD1 — Status=TUNTAS, K5.
+Run 40860390103/job 123401839796: target state SHA256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d SIGSEGV twice (Thread 15; PC 0x7ffff0dd36d0); control state SHA256 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492 reached POST_LOAD_VSYNC=180 twice.
+Eight raw AD1 GDB/PCSX log files are retained in full (not middle-truncated). Each file has SHA256 in ad1-log-sha256.txt. ad1-log-excerpts-first40-last250.txt holds the requested first 40 and last 250 lines per available raw log. Permalinks:
+ad1-control-attempt1.gdb.txt: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/8663cb5bb0b526b7980cb29a72029756f9f46217/reports/ad_2026-10-29/aa1_runtime_logs/ad1-control-attempt1.gdb.txt
+ad1-control-attempt1.pcsx.txt: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/8663cb5bb0b526b7980cb29a72029756f9f46217/reports/ad_2026-10-29/aa1_runtime_logs/ad1-control-attempt1.pcsx.txt
+ad1-control-attempt2.gdb.txt: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/8663cb5bb0b526b7980cb29a72029756f9f46217/reports/ad_2026-10-29/aa1_runtime_logs/ad1-control-attempt2.gdb.txt
+ad1-control-attempt2.pcsx.txt: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/8663cb5bb0b526b7980cb29a72029756f9f46217/reports/ad_2026-10-29/aa1_runtime_logs/ad1-control-attempt2.pcsx.txt
+ad1-target-attempt1.gdb.txt: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/8663cb5bb0b526b7980cb29a72029756f9f46217/reports/ad_2026-10-29/aa1_runtime_logs/ad1-target-attempt1.gdb.txt
+ad1-target-attempt1.pcsx.txt: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/8663cb5bb0b526b7980cb29a72029756f9f46217/reports/ad_2026-10-29/aa1_runtime_logs/ad1-target-attempt1.pcsx.txt
+ad1-target-attempt2.gdb.txt: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/8663cb5bb0b526b7980cb29a72029756f9f46217/reports/ad_2026-10-29/aa1_runtime_logs/ad1-target-attempt2.gdb.txt
+ad1-target-attempt2.pcsx.txt: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/8663cb5bb0b526b7980cb29a72029756f9f46217/reports/ad_2026-10-29/aa1_runtime_logs/ad1-target-attempt2.pcsx.txt
+SHA256 manifest: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/8663cb5bb0b526b7980cb29a72029756f9f46217/reports/ad_2026-10-29/ad1-log-sha256.txt
+Excerpt file: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/8663cb5bb0b526b7980cb29a72029756f9f46217/reports/ad_2026-10-29/ad1-log-excerpts-first40-last250.txt
 
-AD1/AD3/AD4 RUNTIME RESULTS TSV
+AD2 — Status=SEBAGIAN, K4.
+Runtime PC 0x7ffff0dd36d0 is in GDB mapping line for /AppDir/shared/bin/pcsx-redux: start 0x7ffff088c000, file offset 0x8c000; file offset=PC-base+mapping offset=0x5d36d0. The runtime GDB log directly shows: movzbl (%rsi),%ecx; mov /home/runner/work/_temp/4e0de8d6-534d-4765-8710-0aa717032901.shx4,%esi; movzbl 0x2(%rax),%r9d; RSI=0xffffffffd736aa9f. The exact mapped path was not demonstrated to be the same ELF as /squashfs-root/bin/pcsx-redux inspected by readelf; thus nearest function/symbol, addr2line and 16 static instructions are TIDAK TAHU rather than guessed. readelf -h/-lW/-Ws/-n, readelf --debug-dump=frames, nm -D -n and objdump -d outputs were run on extracted candidates and retained in AD2_symbolization.txt.
+
+AD3 — Status=TUNTAS for tested single-field sufficiency, K5.
 group	case	state_sha256	result	frame_0	thread	emulator_exit	gdb_wrapper_exit	post_load_marker
+AD1	ad1-target-attempt1	00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d	SIGSEGV	#0  0x00007ffff0dd36d0 in ?? ()	Thread 15	NOT_RECORDED	0	NOT_RECORDED
+AD1	ad1-target-attempt2	00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d	SIGSEGV	#0  0x00007ffff0dd36d0 in ?? ()	Thread 15	NOT_RECORDED	0	NOT_RECORDED
+AD1	ad1-control-attempt1	9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492	POST_LOAD_VSYNC=180	NOT_RECORDED	NOT_RECORDED	[Inferior 1 (process 3165) exited normally]	1	AD_POST_LOAD_VSYNC=180 
+AD1	ad1-control-attempt2	9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492	POST_LOAD_VSYNC=180	NOT_RECORDED	NOT_RECORDED	[Inferior 1 (process 3226) exited normally]	1	AD_POST_LOAD_VSYNC=180 
+AD3	H1-field3-attempt1	78d937e5dabd8b2ebdf949176fad8557f82d6e0759116511530b18b8c841dca4	POST_LOAD_VSYNC=180	NOT_RECORDED	NOT_RECORDED	[Inferior 1 (process 3288) exited normally]	1	AD_POST_LOAD_VSYNC=180 
+AD3	H1-field3-attempt2	78d937e5dabd8b2ebdf949176fad8557f82d6e0759116511530b18b8c841dca4	POST_LOAD_VSYNC=180	NOT_RECORDED	NOT_RECORDED	[Inferior 1 (process 3339) exited normally]	1	AD_POST_LOAD_VSYNC=180 
+AD3	H2-field4-attempt1	142f82698ab689518a115e0cdff32ce26d9c52a1cfd8a225fe36c2c1827f67ed	POST_LOAD_VSYNC=180	NOT_RECORDED	NOT_RECORDED	[Inferior 1 (process 3422) exited normally]	1	AD_POST_LOAD_VSYNC=180 
+AD3	H2-field4-attempt2	142f82698ab689518a115e0cdff32ce26d9c52a1cfd8a225fe36c2c1827f67ed	POST_LOAD_VSYNC=180	NOT_RECORDED	NOT_RECORDED	[Inferior 1 (process 3478) exited normally]	1	AD_POST_LOAD_VSYNC=180 
+AD3	H3-field5-attempt1	08f907c3b7f630369d7eca7d2157572fda68009a4caaee1d79827317373a3f6a	POST_LOAD_VSYNC=180	NOT_RECORDED	NOT_RECORDED	[Inferior 1 (process 3538) exited normally]	1	AD_POST_LOAD_VSYNC=180 
+AD3	H3-field5-attempt2	08f907c3b7f630369d7eca7d2157572fda68009a4caaee1d79827317373a3f6a	POST_LOAD_VSYNC=180	NOT_RECORDED	NOT_RECORDED	[Inferior 1 (process 3587) exited normally]	1	AD_POST_LOAD_VSYNC=180 
+AD3	H4-field6-attempt1	12f96200a8d8c228e87bfcea90ac9df4bf7a871f4ff37c43a49607602a9694ca	SIGSEGV	#0  0x00007ffff0dd36d0 in ?? ()	Thread 15	NOT_RECORDED	0	NOT_RECORDED
+AD3	H4-field6-attempt2	12f96200a8d8c228e87bfcea90ac9df4bf7a871f4ff37c43a49607602a9694ca	SIGSEGV	#0  0x00007ffff0dd36d0 in ?? ()	Thread 15	NOT_RECORDED	0	NOT_RECORDED
+AD3	H5-field8-attempt1	967be929b23017796ffc2faaad8a42e1d9d66c26e335d21d2a92ec0c63596967	POST_LOAD_VSYNC=180	NOT_RECORDED	NOT_RECORDED	[Inferior 1 (process 3732) exited normally]	1	AD_POST_LOAD_VSYNC=180 
+AD3	H5-field8-attempt2	967be929b23017796ffc2faaad8a42e1d9d66c26e335d21d2a92ec0c63596967	POST_LOAD_VSYNC=180	NOT_RECORDED	NOT_RECORDED	[Inferior 1 (process 3784) exited normally]	1	AD_POST_LOAD_VSYNC=180 
+AD3	H6-field10-attempt1	0617e540eb1a6d0704a2637a50e37766b622870c08d0b1853f8eabeff1ad02e1	POST_LOAD_VSYNC=180	NOT_RECORDED	NOT_RECORDED	[Inferior 1 (process 3835) exited normally]	1	AD_POST_LOAD_VSYNC=180 
+AD3	H6-field10-attempt2	0617e540eb1a6d0704a2637a50e37766b622870c08d0b1853f8eabeff1ad02e1	POST_LOAD_VSYNC=180	NOT_RECORDED	NOT_RECORDED	[Inferior 1 (process 3886) exited normally]	1	AD_POST_LOAD_VSYNC=180 
+AD4_UBUNTU24	ad4-ubuntu24-target-attempt1	00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d	SIGSEGV	#0  0x00007ffff0dd36d0 in ?? ()	Thread 15	NOT_RECORDED	0	NOT_RECORDED
+AD4_UBUNTU24	ad4-ubuntu24-target-attempt2	00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d	SIGSEGV	#0  0x00007ffff0dd36d0 in ?? ()	Thread 15	NOT_RECORDED	0	NOT_RECORDED
+H1 field3, H2 field4, H3 field5, H5 field8, H6 field10 each reached POST_LOAD_VSYNC=180 in both trials; H4 field6 produced SIGSEGV in both. Therefore field 6 is sufficient in the tested control/target hybrid context; necessity in all states is not established.
 
-AD2 — Symbolization from runtime mapping
-AD2: TIDAK TAHU; static symbolization step did not finish.
+AD4 — Status=TUNTAS for two-run target crash comparison, K5.
+Ubuntu 24.04.5 run 40860390103/job 123401839796 with GDB 15.1-1ubuntu1~24.04.1 and AppImage SHA256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c: target SIGSEGV twice, Thread 15, PC 0x7ffff0dd36d0. Ubuntu 26.04.1 run 40862024937/job 123407389010 with GDB 17.1-2ubuntu1 and the same AppImage/state SHA: target SIGSEGV twice with same PC/thread. No cross-OS runtime difference was observed in this setup.
+Control producer run 39867730674 used host runner ubuntu-24.04.5 and container ghcr.io/grumpycoders/pcsx-redux-build:latest; producer workflow SHA 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99 belonged to patched PCSX AppImage. GDB version in that container is TIDAK TAHU. It used -softgpu -dynarec -stdout -lua_stdout. The current target/control diagnostic uses pinned AppImage SHA c04b3e0a…60fc0c with -noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout via Xvfb.
+Control outer Actions artifact 12464258211: size=4913880 bytes; ZIP digest sha256:026c4c38451003e2001a8146ec9a69884ca4aa0fd39a541ece54785be6096328. Inner savestate SHA256 checked on extraction: 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492. These are different objects and hashes.
+Ubuntu26 raw logs/metadata: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/8663cb5bb0b526b7980cb29a72029756f9f46217/reports/ad_2026-10-29/ad4-ubuntu26-result.txt and files under reports/ad_2026-10-29/ad4-ubuntu26-evidence/.
 
-AD3 — Hybrid-state field sufficiency
-hybrid	field	launches	SIGSEGV_count	result	K
-H1-field3	3	0	0	inconsistent-or-incomplete	K2
-H2-field4	4	0	0	inconsistent-or-incomplete	K2
-H3-field5	5	0	0	inconsistent-or-incomplete	K2
-H4-field6	6	0	0	inconsistent-or-incomplete	K2
-H5-field8	8	0	0	inconsistent-or-incomplete	K2
-H6-field10	10	0	0	inconsistent-or-incomplete	K2
-FIELD_SUFFICIENCY_CONCLUSION=TIDAK TAHU; mixed outcomes or incomplete launches.
-FIELD_NECESSITY=not identifiable from single-field substitutions alone; do not infer necessity without combination/control tests.
+AD5 — Status=TUNTAS, K4.
+Anonymous Releases list returned HTTP 200: 2 releases / 19 assets; table uses headers tag,draft,prerelease,asset_name,asset_id,size_bytes in AD5_release.txt. Asset IDs: 647346873=Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin; 652373928=scph7502.zip; 686794219=storymode-checkpoint-run-39262213468.raw.sstate. Each URL hop was followed with response body discarded: initial API HTTP 302 and final release-assets HTTP 206 for all 3.
 
-AD4 — Runner/AppImage/flags diff
-Run 40853480515: ubuntu-24.04.5; GDB 15.1-1ubuntu1~24.04.1; AppImage SHA256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c; pin 0c3572c3d; flags -noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout using Xvfb.
-Run 39262213468 historical comparator: ubuntu-26.04; GDB 17.1-2ubuntu1; same AppImage SHA256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c and pin; source run created a checkpoint at VSync 10055 but was a save run, not a restore test.
-Control producer run 39867730674: host runner ubuntu-24.04.5; workflow ran in container ghcr.io/grumpycoders/pcsx-redux-build:latest; workflow downloaded patched PCSX-Redux-spu-adpcm-patched.AppImage SHA256 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99; flags include -softgpu -dynarec -stdout -lua_stdout. This is not the pinned AppImage binary. Workflow itself did not call GDB; GDB version in container is TIDAK TAHU.
-AD4_UBUNTU26_BEGIN
-PRETTY_NAME="Ubuntu 26.04.1 LTS"
-NAME="Ubuntu"
-VERSION_ID="26.04"
-VERSION="26.04.1 LTS (Resolute Raccoon)"
-VERSION_CODENAME=resolute
-ID=ubuntu
-ID_LIKE=debian
-HOME_URL="https://www.ubuntu.com/"
-SUPPORT_URL="https://help.ubuntu.com/"
-BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
-PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
-UBUNTU_CODENAME=resolute
-LOGO=ubuntu-logo
-GNU gdb (Ubuntu 17.1-2ubuntu1) 17.1
-Copyright (C) 2025 Free Software Foundation, Inc.
-Linux runnervmnwato 7.0.0-1017-azure #17-Ubuntu SMP PREEMPT Thu Sep 24 15:54:51 UTC 2026 x86_64 GNU/Linux
-APPIMAGE_SHA256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
-PCSX_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba
-FLAGS=-noupdate -no-debugger -no-gdb -softgpu -dynarec -stdout -lua_stdout via Xvfb; no --headless CLI flag
-AD4_UBUNTU26_SETUP=FAILED
-Artifact comparison: expected inner control checkpoint SHA256 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492; runner24 probe verifies the extracted artifact file. Outer artifact ZIP SHA is a different object and is not equivalent to the contained savestate SHA.
-
-AD5 — Anonymous Release table and redirect chains
-AD5: TIDAK TAHU; anonymous Release audit did not finish.
-
-AD6 — Current tracked paths and all-branch history
-AD6: TIDAK TAHU; all-ref tree scan did not finish.
+AD6 — Status=TUNTAS, K4. The output includes git ls-files matches and git rev-list --objects --all plus per-commit recursive trees, listing each matched blob >1 MiB and each occurrence of .bin/.cue/.iso/.sstate/.zip/.gpudump/.raw/.png with commit, blob SHA, size and path.
 
 Story Mode completion: NOT CLAIMED / NOT VERIFIED by these diagnostics.
+
