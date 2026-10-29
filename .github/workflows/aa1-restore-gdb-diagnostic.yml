@@ -102,8 +102,8 @@ jobs:
             echo "EXECUTABLE_FILES_BEGIN"
             find "$APPDIR" -maxdepth 5 -type f -executable -print | head -n 100
             echo "EXECUTABLE_FILES_END"
-          } > "$WORK/logs/appimage-layout.txt"
-          cat "$WORK/logs/appimage-layout.txt"
+          } > "$AA_WORK/logs/appimage-layout.txt"
+          cat "$AA_WORK/logs/appimage-layout.txt"
           PCSX_BIN="$(find "$APPDIR" -type f -executable -print | while IFS= read -r f; do
             b="$(basename "$f" | tr '[:upper:]' '[:lower:]')"
             case "$b" in *pcsx*|*redux*) printf '%s\n' "$f"; break;; esac
