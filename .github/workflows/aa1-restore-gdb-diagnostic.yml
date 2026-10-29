@@ -94,6 +94,16 @@ jobs:
           chmod +x pcsx-redux.AppImage
           ./pcsx-redux.AppImage --appimage-extract >/dev/null
           test -x squashfs-root/AppRun
+          APPDIR="$PWD/squashfs-root"
+          PCSX_BIN="$(find "$APPDIR/usr" -type f -executable -print | while IFS= read -r f; do
+            b="$(basename "$f" | tr '[:upper:]' '[:lower:]')"
+            case "$b" in pcsx-redux|pcsx-redux-*|pcsx) printf '%s\\n' "$f"; break;; esac
+          done)"
+          test -n "$PCSX_BIN" && test -x "$PCSX_BIN"
+          echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
+          echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
+          echo "PCSX_BINARY=$PCSX_BIN"
+          sed -n '1,80p' "$APPDIR/AppRun" > "$WORK/logs/AppRun.txt"
           echo "PCSX_PIN=0c3572c3db75f97542001e453ae80ba8c3f8acba"
           echo "APPIMAGE_SHA256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c"
           echo "TARGET_STATE_SHA256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
@@ -194,38 +204,26 @@ jobs:
           cd "$AA_WORK"
           export DISPLAY=:99 HOME="$AA_WORK/home" XDG_CONFIG_HOME="$AA_WORK/home/.config" XDG_DATA_HOME="$AA_WORK/home/.local/share" XDG_RUNTIME_DIR="$AA_WORK/home/runtime"
           export LIBGL_ALWAYS_SOFTWARE=1
-          cat > "$AA_WORK/gdb-commands.gdb" <<'GDB'
-          set pagination off
-          set confirm off
-          set print thread-events off
-          set follow-fork-mode parent
-          set detach-on-fork off
-          set follow-exec-mode same
-          catch fork
-          commands
-            silent
-            printf "AA1_GDB_FORK_EVENT\n"
-            continue
-          end
-          catch exec
-          commands
-            silent
-            printf "AA1_GDB_EXEC_EVENT\n"
-            continue
-          end
-          handle SIGSEGV stop print nopass
-          run
-          echo \n=== AA1 NATIVE BACKTRACE ===\n
-          bt full
-          GDB
+          export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}"
+          export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
+          export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
+          export QML2_IMPORT_PATH="$APPDIR/usr/qml"
           for entry in "target:resume/target.sstate" "control:resume/control.sstate"; do
             label="${entry%%:*}"
             state="${entry#*:}"
-            echo "AA1_GDB_CASE=$label state_path=$state"
+            echo "AA1_GDB_CASE=$label state_path=$state binary=$PCSX_BIN"
             set +e
             AA_TEST_STATE="$state" timeout --signal=TERM --kill-after=5s 110s \
-              gdb --quiet --nx --batch -x "$AA_WORK/gdb-commands.gdb" \
-                --args "$AA_WORK/source/squashfs-root/AppRun" \
+              gdb --quiet --nx --batch \
+                -ex 'set pagination off' \
+                -ex 'set confirm off' \
+                -ex 'set print thread-events off' \
+                -ex 'handle SIGSEGV stop print nopass' \
+                -ex 'run' \
+                -ex 'echo \\n=== AA1 NATIVE BACKTRACE ===\\n' \
+                -ex 'bt full' \
+                -ex 'info registers' \
+                --args "$PCSX_BIN" \
                   -noupdate -no-debugger -no-gdb \
                   -bios "$AA_WORK/source/scph7502.bin" -iso "$AA_WORK/source/game-run.cue" \
                   -memcard1 "$AA_WORK/cards/reference.mcd" -exec "$(cat "$AA_WORK/pad-setup.lua")" \
@@ -251,6 +249,7 @@ jobs:
             echo "- Run ID: $GITHUB_RUN_ID"
             echo "- Trigger commit: $(git rev-parse HEAD)"
             echo "- Required emulator: PCSX-Redux 0c3572c3d; AppImage SHA-256 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c"
+            echo "- Direct ELF executable: $PCSX_BIN"
             echo "- Target raw state: 21,163,286 bytes; SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
             echo "- Control state: adaptive-cycle-01-f180.sstate; SHA-256 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492"
             echo "- Controller: no buttons injected; bounded to 180 post-load VSync or failure."
@@ -268,7 +267,7 @@ jobs:
             echo
             echo "## Interpretation guard"
             echo
-            echo "A target SIGSEGV in the native load call reproduces failure for this build/path but does not prove every restore route impossible. The control case is a wrapper check only if it passes under this exact pinned build."
+            echo "A restore failure is established only if the target GDB log records SIGSEGV and a native backtrace at the actual load call. Missing direct-executable logs, a launcher-only stack, or an early exit is an inconclusive harness result."
           } > "$out"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
