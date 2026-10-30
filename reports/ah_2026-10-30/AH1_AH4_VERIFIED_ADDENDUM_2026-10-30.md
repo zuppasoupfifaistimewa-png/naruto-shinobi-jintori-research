@@ -177,7 +177,7 @@ Log provenance (kutipan historis AF4):
 https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/c0d5b5e7df392b7cb8c42b46dc23e4dd67c55f91/reports/ae_2026-10-30/AF4_PROVENANCE_LOG_EXCERPTS.txt
 
 Potongan log producer kontrol run 39867730674 yang menunjukkan perbedaan exit emulator 134 versus orchestrator 92:
-https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/c618637e40f9b4c4c0b09fa5291975222fe9d713/reports/ah_2026-10-30/AH3_CONTROL_PRODUCER_EXIT_92_TRACE.txt
+https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/cea09a6d78adf792c69d59ff63bde243d00301f0/reports/ah_2026-10-30/AH3_CONTROL_PRODUCER_EXIT_92_TRACE.txt
 
 ## AH4 — RAM kontrol saja (BUKAN TARGET)
 
