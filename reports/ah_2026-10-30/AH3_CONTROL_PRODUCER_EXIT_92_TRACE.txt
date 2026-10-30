@@ -1,0 +1,33 @@
+AH3 CONTROL PRODUCER — sanitized exit-code evidence
+Game/repo: Naruto Jintori SLPS-03553
+Actions run: 39867730674
+Job: 120134061270
+Workflow commit: c9b1438292041f972b712f248fb7052032635b59
+Runner image: ubuntu-24.04
+Producer PCSX-Redux AppImage SHA-256: 2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99
+
+Relevant stdout/stderr sequence (emulator process):
+ADAPTIVE_CHECKPOINT_WRITE_RETURNED=PASS cycle=1 path=captures/adaptive-cycle-01-f180.sstate validation=deferred_to_shell_after_emulator_exit
+ADAPTIVE_SESSION_FINISHED cycle=1
+corrupted size vs. prev_size
+ADAPTIVE_SESSION_EXIT cycle=1 code=134
+
+Orchestrator observation:
+ADAPTIVE_ORCHESTRATOR_EARLY_EXIT missing=['C02-F100', 'C02-F110', 'C02-F180', 'C02-F20', 'C02-F60'] checkpoints=1/2
+##[error]Process completed with exit code 92.
+
+Relevant Python logic as echoed in the Actions job log:
+if not valid:
+    print("ADAPTIVE_ORCHESTRATOR_EARLY_EXIT missing={} checkpoints={}/{} stdout_tail={}".format(...))
+    raise SystemExit(92)
+
+if missing or len(cps)!=cycles or not sequential:
+    print("ADAPTIVE_CAPTURE_WATCHDOG_FAIL ...")
+    raise SystemExit(91)
+
+Interpretation:
+- 134 belongs to the emulator process, immediately after the allocator diagnostic.
+- 92 belongs to the Python orchestration/watchdog path after it finds the second cycle's required captures/checkpoint missing.
+- 92 is not the emulator's exit code. Both codes may appear in the same producer job and describe different process layers.
+- The allocator corruption's underlying cause is TIDAK TAHU.
+- This text excerpt contains no ISO, BIOS, savestate, Memory Card, RAM bytes or screenshot.

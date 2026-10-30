@@ -113,6 +113,8 @@ Uji RSI:
 - Kandidat `0x014F82C0` berada di dalam mapping generik `[heap]`, sedangkan RSI 64-bit sendiri (high32 FFFFFFFF) tidak dipetakan.
 - Ini cocok secara aritmetika jika current diperlakukan sebagai offset bertanda, tetapi mapping tidak membuktikan bahwa kandidat adalah basis RAM SPU host.
 
+**Koreksi ringkasan ekstraksi:** `AG2_AG4_RUNTIME_SUMMARY.txt` menuliskan RSI=TIDAK TAHU karena parser ringkasan gagal menangkap baris register; itu bukan kondisi log mentah. Kedua log target asli secara eksplisit mencatat RSI `0xffffffffd736da4f`. Nilai itu dipakai dalam analisis di atas.
+
 Putusan hubungan `RSI = host SPU RAM base + current`: **TIDAK TAHU**, K3. Klaim historis `RSI=0xffffffffd736aa9f` **DIPERTAHANKAN sebagai observasi historis**, bukan sebagai nilai AH2 sekarang atau nilai universal: kedua raw log AD1 target pada run terdahulu 40860390103/job 123401839796 merekam nilai itu. Nilai AH2 saat ini pada kedua launch adalah `...d736da4f`.
 
 Status klaim K4 AD2: **DIPERTAHANKAN secara terbatas** untuk mapping PC↔ELF path yang sama, file offset `0x5D36D0`, korelasi PT_LOAD, FDE range `0x5D36C0–0x5D3BD5`, dan 16 instruksi disassembly statis dalam AD2. K4 itu tidak mengidentifikasi fungsi crash secara persis dan tidak membuktikan basis RAM SPU. Basis SPU tetap K3.
@@ -145,7 +147,7 @@ Rentang SPU RAM yang dipakai adalah offset `0x00000–0x7FFFF`. Tabel memuat 24 
 SHA-256 TSV `AF1_SPU_POINTERS_TARGET_VS_CONTROL.tsv`: `37a8caa1a22436804d87e9d646dc295fe2f4c82ba35a80b0505a5315d4f020c6`.
 
 TSV:
-https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/53fe55ff8d5eeab020bedce9fdfe482eac4cac04/reports/ae_2026-10-30/AF1_SPU_POINTERS_TARGET_VS_CONTROL.tsv
+https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/69538f09f5251d3b91a0d405db671d204b0d4b16/reports/ae_2026-10-30/AF1_SPU_POINTERS_TARGET_VS_CONTROL.tsv
 
 Ukuran raw savestate:
 - target 21,163,286 bytes
@@ -171,8 +173,11 @@ Rekonsiliasi producer kontrol run 39867730674/job 120134061270:
 - Maka 134 merupakan kode keluar emulator setelah allocator error; 92 merupakan kode keluar watcher/orchestrator karena sequence/capture tidak lengkap. Penyebab korupsi heap: **TIDAK TAHU**.
 - Producer control memakai AppImage SHA `2fb33f631bfd197654d6f4c2dc89b95c4388e68dd1e77ca25a55a80a7035ba99`; probe AH2 memakai AppImage SHA `c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c`. Dampak kausal perbedaan build: TIDAK TAHU.
 
-Log provenance:
-https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/53fe55ff8d5eeab020bedce9fdfe482eac4cac04/reports/ae_2026-10-30/AF4_PROVENANCE_LOG_EXCERPTS.txt
+Log provenance (kutipan historis AF4):
+https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/c0d5b5e7df392b7cb8c42b46dc23e4dd67c55f91/reports/ae_2026-10-30/AF4_PROVENANCE_LOG_EXCERPTS.txt
+
+Potongan log producer kontrol run 39867730674 yang menunjukkan perbedaan exit emulator 134 versus orchestrator 92:
+https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/c618637e40f9b4c4c0b09fa5291975222fe9d713/reports/ah_2026-10-30/AH3_CONTROL_PRODUCER_EXIT_92_TRACE.txt
 
 ## AH4 — RAM kontrol saja (BUKAN TARGET)
 
