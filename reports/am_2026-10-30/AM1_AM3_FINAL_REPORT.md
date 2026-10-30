@@ -93,3 +93,11 @@ Batas desain: satu file Memory Card referensi yang sama digunakan untuk empat la
 - AL4=REKONSTRUKSI.
 - Story Mode belum dinyatakan tamat; AM1–AM3 bukan bukti Story Mode tamat.
 - Tidak ada ISO, BIOS, Memory Card, savestate, dump RAM mentah, atau biner hybrid dikomit. Output publik hanya teks/log.
+
+
+## Errata AN1 — koreksi hitungan H6/CONTROL dan identitas Actions
+
+- Angka sementara 3 byte diketahui + 56.974 byte TIDAK TAHU dicabut. Nilai yang benar setelah AM1 untuk masing-masing dari dua comparison H6-vs-control adalah **9 byte diketahui/berlabel + 56.968 byte TIDAK TAHU = 56.977 byte berbeda**. Kata “tidak berubah” tidak menggambarkan nilai 9 tersebut; itu adalah byte delta yang dapat diberi label.
+- Run gagal 41048752354 memakai job `am3-h6-circle-ab`, ID `124039280097`, source SHA `240c448205b047f6dcbcb475c8f8b9cfca20c30a`. Output summary dipublikasikan bot sebagai commit `123654ee3a2159befb477980286d460313a61420` (`123654e`); setup gagal HTTP 401 dengan exit code 22 sebelum emulator diluncurkan.
+- Commit `4fbbbdf278ca71e0c84cb651287096561e9b4878` adalah perbaikan workflow. Output run sukses AM3 41048937290 adalah commit `51a66a060f3d4efda7eac7ada408b8d8ac88fe4c`.
+- H6 tetap hybrid, bukan target murni. Story Mode tidak dinyatakan tamat.
