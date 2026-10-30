@@ -1,0 +1,22 @@
+AH2 ACTIONS RUN SUMMARY — 2026-10-30
+repository=zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+workflow_run_id=40998003879
+workflow_job_id=123875562340
+workflow_job_name=diagnose
+workflow_status=completed
+workflow_conclusion=success
+workflow_source_commit=572e10b76df40f3dc9f5dec21444c377ffe08b55
+requested_workflow_reference=c9636874dd6480a2b6d00bc8a759f6ef8ceeba5b
+workflow_diff_vs_requested_reference=2 comment-only lines appended; executable workflow bytes identical
+evidence_parent_commit=53fe55ff8d5eeab020bedce9fdfe482eac4cac04
+target_state_sha256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d
+target_launch_1=SIGSEGV; thread=15; PC=0x7ffff0dd36d0; gdb_wrapper_exit=0; emulator_exit_code=TIDAK_TAHU
+target_launch_2=SIGSEGV; thread=15; PC=0x7ffff0dd36d0; gdb_wrapper_exit=0; emulator_exit_code=TIDAK_TAHU
+control_state_sha256=9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492
+control_launch_1=POST_LOAD_VSYNC=180; time_to_180=50s; inferior_exit=0 normal; gdb_wrapper_exit=1 (post-exit No registers only)
+control_launch_2=POST_LOAD_VSYNC=180; time_to_180=48s; inferior_exit=0 normal; gdb_wrapper_exit=1 (post-exit No registers only)
+job_conclusion=success
+job_numeric_exit_code=NOT_EXPOSED_BY_GITHUB_CONNECTOR
+sanitized_full_gdb_logs=4 files under reports/ae_2026-10-30/ag2_raw/
+sha256_manifest=reports/ae_2026-10-30/AG2_GDB_SHA256.txt
+cleanup_step=success; no ROM/ISO/BIOS/savestate/RAM dump committed
