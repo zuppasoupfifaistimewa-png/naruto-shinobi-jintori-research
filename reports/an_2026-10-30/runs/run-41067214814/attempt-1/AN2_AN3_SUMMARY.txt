@@ -1,1 +1,12 @@
-STATUS=INCOMPLETE (runner did not produce a completed summary)
+AN2/AN3 PREFLIGHT ATTEMPT — NOT A RUNTIME RESULT
+STATUS=SEBAGIAN
+K=K0 (no emulator launches; no runtime captures)
+RUN_ID=41067214814
+JOB=an2-an3-h6-isolated-mcd
+JOB_ID=124101659852
+SOURCE_SHA=9fa54236cfc28464f6a4aef4234e07e5ce4305f0
+FAILURE=Artifact download paths pointed to /tmp/naruto-am3-* while validation searched /tmp/naruto-an2-an3-*; the CONTROL file manifest under WORK was empty.
+ARTIFACT_DOWNLOAD_STEPS=PASS (archives downloaded successfully to the old scratch path)
+EMULATOR_LAUNCHES=0
+NO_CAPTURE_NO_DIFF=TRUE
+EXIT_CODE=1 (preflight validation shell, not emulator)
