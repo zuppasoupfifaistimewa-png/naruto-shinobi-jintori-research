@@ -1,4 +1,4 @@
-[Detaching after fork from child process 2963]
+[Detaching after fork from child process 2969]
 ALSA lib confmisc.c:855:(parse_card) [error.core] cannot find card '0'
 ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_card_inum returned error: No such file or directory
 ALSA lib confmisc.c:422:(snd_func_concat) [error.core] error evaluating strings
@@ -38,7 +38,7 @@ BIOS Trace1: 0x0f
 BIOS Trace1: 0x0e
 BIOS Trace1: 0x01
 BIOS Trace1: 0x02
-[... omitted middle; source lines=1050 ...]
+[... omitted middle; source lines=1051 ...]
       0x7fffeed54000     0x7fffeed55000     0x1000     0x2000  r--p   <RUNNER_PATH>
       0x7fffeed55000     0x7fffeed56000     0x1000     0x2000  r--p   <RUNNER_PATH>
       0x7fffeed56000     0x7fffeed57000     0x1000     0x3000  rw-p   <RUNNER_PATH>

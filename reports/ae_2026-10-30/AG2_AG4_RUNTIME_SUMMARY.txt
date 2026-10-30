@@ -1,0 +1,35 @@
+AG2/AG4 runtime evidence (text only; no ROM/BIOS/savestate/RAM bytes committed)
+run=40998003879 job=123875562340 workflow_commit=572e10b76df40f3dc9f5dec21444c377ffe08b55
+target_checkpoint_sha256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d
+control_checkpoint_sha256=9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492
+AG4_SCOPE=control checkpoint only; NOT the target checkpoint.
+time_to_180 comes from Lua elapsed_since_loaded_s marker, not wrapper timeout/kill; timer resolution is 1 second.
+TARGET attempt=1 outcome=SIGSEGV time_to_180=NOT_RECORDED
+TARGET attempt=1 signal=SIGSEGV, Segmentation fault. inferior_exit=NOT_RECORDED gdb_wrapper_exit=0
+TARGET attempt=1 full_gdb_log_sha256=898d49d962e6532054c93db03384d292274046872e637bf6ef37bb565d101da6 path=reports/ae_2026-10-30/ag2_raw/target-attempt1.gdb.full.txt
+TARGET attempt=1 RSI=TIDAK TAHU (register not recorded in GDB log)
+TARGET attempt=1 RSI_0xffffffffd736aa9f_present_in_this_GDB_log=False
+TARGET attempt=2 outcome=SIGSEGV time_to_180=NOT_RECORDED
+TARGET attempt=2 signal=SIGSEGV, Segmentation fault. inferior_exit=NOT_RECORDED gdb_wrapper_exit=0
+TARGET attempt=2 full_gdb_log_sha256=238364ba8b67307926573e4fa86ffbf4c9e196c369d9bf1ab49fc73f337527c7 path=reports/ae_2026-10-30/ag2_raw/target-attempt2.gdb.full.txt
+TARGET attempt=2 RSI=TIDAK TAHU (register not recorded in GDB log)
+TARGET attempt=2 RSI_0xffffffffd736aa9f_present_in_this_GDB_log=False
+CONTROL attempt=1 outcome=POST_LOAD_VSYNC=180 time_to_180=50s (1s resolution)
+CONTROL attempt=1 signal=NOT_RECORDED inferior_exit=Inferior 1 (process 2989) exited normally gdb_wrapper_exit=1
+CONTROL attempt=1 full_gdb_log_sha256=44fb61b4e61843ea48fbaed171c23f652882cdbb034a6dad69536ba05105ad00 path=reports/ae_2026-10-30/ag2_raw/control-attempt1.gdb.full.txt
+CONTROL attempt=1 RSI=TIDAK TAHU (register not recorded in GDB log)
+CONTROL attempt=1 RSI_0xffffffffd736aa9f_present_in_this_GDB_log=False
+CONTROL attempt=1 snapshot_status=AA1_RAM_SNAPSHOT=PASS path=runtime/control-attempt1.sstate 
+CONTROL attempt=2 outcome=POST_LOAD_VSYNC=180 time_to_180=48s (1s resolution)
+CONTROL attempt=2 signal=NOT_RECORDED inferior_exit=Inferior 1 (process 3027) exited normally gdb_wrapper_exit=1
+CONTROL attempt=2 full_gdb_log_sha256=99f6212f724a433fd16c7b07fdd279e93175c3f2ab1da75b004b30556e0d8507 path=reports/ae_2026-10-30/ag2_raw/control-attempt2.gdb.full.txt
+CONTROL attempt=2 RSI=TIDAK TAHU (register not recorded in GDB log)
+CONTROL attempt=2 RSI_0xffffffffd736aa9f_present_in_this_GDB_log=False
+CONTROL attempt=2 snapshot_status=AA1_RAM_SNAPSHOT=PASS path=runtime/control-attempt2.sstate 
+CONTROL attempt=1 saved_state_file_sha256=4fef69429683e0e92a2302bcb31720f6dedd959dd8ede21ab8e3a970c5563606 saved_state_bytes=21162424 (temporary input/snapshot not committed)
+CONTROL attempt=1 RAM_2MiB_sha256=2a807d5847888d8ba0643cdf86818cfe0f7bb4645a216760f0caea4de91e9d20 RAM_bytes=2097152
+CONTROL attempt=1 RAM_WORDS 0x80070eb8 bytes=64 05 00 00 LE32=0x00000564; 0x80070f6c bytes=64 05 00 00 LE32=0x00000564; 0x8013a554 bytes=08 ef 1c 80 LE32=0x801CEF08
+CONTROL attempt=2 saved_state_file_sha256=d2ec7b4c3a04e59b3baad60cb412d1f03082582f2b1c4affe43af16d38b32f4c saved_state_bytes=21162434 (temporary input/snapshot not committed)
+CONTROL attempt=2 RAM_2MiB_sha256=2a807d5847888d8ba0643cdf86818cfe0f7bb4645a216760f0caea4de91e9d20 RAM_bytes=2097152
+CONTROL attempt=2 RAM_WORDS 0x80070eb8 bytes=64 05 00 00 LE32=0x00000564; 0x80070f6c bytes=64 05 00 00 LE32=0x00000564; 0x8013a554 bytes=08 ef 1c 80 LE32=0x801CEF08
+CONTROL_RAM_SHA256_IDENTICAL_TWO_LAUNCHES=YES; K5 is allowed for this control checkpoint/runtime state only.
