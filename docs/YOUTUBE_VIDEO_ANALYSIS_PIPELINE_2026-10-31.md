@@ -69,3 +69,39 @@ Sumber awal:
 ## Checkpoint
 Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 Base commit saat rencana dibuat: 17a83a587031328d841c80bc4b7273efc376e6a0
+
+
+## Addendum — implementasi Tahap A, 31 Oktober 2026
+
+### Komponen yang ditambahkan
+- tools/youtube_source_access_check.py: validasi URL YouTube, normalisasi video ID, dan permintaan metadata saja ke endpoint oEmbed publik YouTube. Tidak meminta stream, tidak memutar video, tidak mengunduh media.
+- tests/test_youtube_source_access_check.py: sembilan tes offline untuk URL watch/short/embed, host dan ID invalid, klasifikasi respons, serta penegasan bahwa metadata bukan bukti playback.
+- .github/workflows/youtube-source-access-check.yml: workflow manual dan otomatis pada perubahan file pemeriksa. Job menggunakan Python 3.12, menjalankan tes offline, meminta metadata oEmbed, lalu mengomit hanya laporan teks ke repo.
+- Action versions: actions/checkout@v7 dan actions/setup-python@v7.1.0.
+
+### Hasil GitHub Actions terverifikasi
+
+| Run | Status | Job | Source SHA | Exit code |
+|---|---|---|---|---:|
+| 41139666002 | success | check-source (124350580342) | 2769a55f2b71bf227e9717a71900b21cf24685ea | 0 |
+| 41139735708 | success | check-source (124350808562) | eff405eeef552cad4fab7e3c6eff0242c2cacd55 | 0 |
+
+Kedua run menuntaskan 9/9 tes offline. Keduanya memperoleh METADATA_ONLY, HTTP 200, untuk video ID r30Rs_NuExc; metadata oEmbed yang dikembalikan menyebut judul INILAH GAME NARUTO MONOPOLI PS 1 PRASEJARAH! - Naruto: Shinobi no Sato no Jintori Kassen Indonesia dan kanal Kevin Tedja.
+
+Laporan Actions terbaru dikomit pada 019414d9497dc7d15f3bb82032196257461b8c19:
+reports/youtube_source_access/latest.md
+
+Raw permalink laporan:
+https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/019414d9497dc7d15f3bb82032196257461b8c19/reports/youtube_source_access/latest.md
+
+### Batas hasil yang sudah terbukti
+- VERIFIED: video ID tervalidasi; endpoint metadata oEmbed merespons HTTP 200; title dan channel metadata berhasil dibaca; workflow dan tes berhasil.
+- UNKNOWN / NOT TESTED: apakah official player dapat memutar video pada runner; apakah captions tersedia; isi frame dan audio; urutan mekanisme gameplay; aturan papan, Chakra, giliran, battle, trap, maupun AI.
+- METADATA_ONLY bukan status akses audiovisual. Jangan mengubah label ini menjadi PLAYER_ACCESSIBLE tanpa event playback resmi dari IFrame Player API.
+- Tidak ada ROM, BIOS, Memory Card, savestate, dump RAM, file video/audio, screenshot privat, atau frame yang dikomit.
+
+### Tahap berikutnya
+1. Uji akses melalui YouTube IFrame Player API resmi, tanpa mengunduh stream atau menyimpan salinan media. Catat state event, current time, duration, serta kode error player. Dokumentasi: https://developers.google.com/youtube/iframe_api_reference
+2. Periksa captions hanya melalui jalur resmi yang memang diizinkan. Keberadaan oEmbed tidak membuktikan captions.
+3. Baru setelah player terbukti dapat diputar, evaluasi cara sampling frame yang diizinkan dan bagaimana hasil visual dapat diperiksa tanpa mengarsipkan media ke repo.
+4. Jangan memulai analisis aturan game sampai frame/audio atau transkrip yang dapat ditinjau benar-benar tersedia.
