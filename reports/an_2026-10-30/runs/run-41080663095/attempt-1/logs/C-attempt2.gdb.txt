@@ -1,0 +1,80 @@
+[Detaching after fork from child process 3003]
+ALSA lib confmisc.c:855:(parse_card) [error.core] cannot find card '0'
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) [error.core] error evaluating strings
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) [error.core] error evaluating name
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5734:(snd_config_expand) [error.core] Evaluate error: No such file or directory
+ALSA lib pcm.c:2722:(snd_pcm_open_noupdate) [error.pcm] Unknown PCM sysdefault
+Loading memory card /tmp/naruto-an2-an3-41080663095-1/launches/C-attempt2/launch.mcd
+The memory card /tmp/naruto-an2-an3-41080663095-1/launches/C-attempt2/home/.config/pcsx-redux/memcard2.mcd doesn't exist - creating it
+Audio: driver dummy, 44100 Hz, 441 frames per period
+Warning: OpenGL error reporting disabled. See About dialog for more information.
+[00000] While loading '/tmp/naruto-an2-an3-41080663095-1/source/AppDir/bin/NotoSans-Regular.ttf'
+[00000] While loading '/tmp/naruto-an2-an3-41080663095-1/source/AppDir/bin/fonts/NotoSans-Regular.ttf'
+[00000] While loading '/tmp/naruto-an2-an3-41080663095-1/source/AppDir/bin/NotoSansCJKjp-Regular.otf'
+[00000] While loading '/tmp/naruto-an2-an3-41080663095-1/source/AppDir/bin/fonts/NotoSansCJKjp-Regular.otf'
+[00000] While loading '/tmp/naruto-an2-an3-41080663095-1/source/AppDir/bin/NotoMono-Regular.ttf'
+[00000] While loading '/tmp/naruto-an2-an3-41080663095-1/source/AppDir/bin/fonts/NotoMono-Regular.ttf'
+Loaded CD Image: /tmp/naruto-an2-an3-41080663095-1/source/game-run.cue[+cue].
+Track 01 (DATA) - Start 00:02:00, Length 30:48:01
+CD-ROM Label: SLPS-03553
+CD-ROM ID: SLPS03553
+CD-ROM EXE Name: SLPS_035.53;1
+PCSX-Redux Lua Console 
+LuaJIT 2.1.1785598229 
+JIT: ON SSE3 SSE4.1 BMI2 fold cse dce fwd dse narrow loop abc sink fuse 
+Shader compiled: program ID = 4 
+Shader compiled: program ID = 7 
+PCSX-Redux booting
+Copyright (C) 2019-2025 PCSX-Redux authors
+CPU type: Dynarec (x86-64)
+Loaded BIOS: /tmp/naruto-an2-an3-41080663095-1/source/scph7502.bin
+Known BIOS detected: SCPH-7502 (EU) (318178bf)
+AN2_READY schedule=C press=0 release=0 
+AN2_PAD_READY=PASS 
+BIOS Trace1: 0x0f
+BIOS Trace1: 0x0e
+BIOS Trace1: 0x01
+BIOS Trace1: 0x02
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x01
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x05
+BIOS Trace1: 0x06
+BIOS Trace1: 0x02
+BIOS Trace1: 0x05
+
+PS-X Realtime Kernel Ver.2.5
+Copyright 1993,1994 (C) Sony Computer Entertainment Inc. 
+BIOS Trace1: 0x06
+KERNEL SETUP!
+
+Configuration : EvCB	0x10		TCB	0x04
+BIOS Trace1: 0x07
+AN2_LOAD_BEGIN path=/tmp/naruto-an2-an3-41080663095-1/resume/h6.sstate input=NONE 
+AN2_LOAD_EVENT=PASS 
+AN2_LOAD_CALL_RETURNED=1 
+[00001] While loading '/tmp/naruto-an2-an3-41080663095-1/source/AppDir/bin/NotoSans-Regular.ttf'
+[00001] While loading '/tmp/naruto-an2-an3-41080663095-1/source/AppDir/bin/fonts/NotoSans-Regular.ttf'
+[00001] While loading '/tmp/naruto-an2-an3-41080663095-1/source/AppDir/bin/NotoSansCJKjp-Regular.otf'
+[00001] While loading '/tmp/naruto-an2-an3-41080663095-1/source/AppDir/bin/fonts/NotoSansCJKjp-Regular.otf'
+[00001] While loading '/tmp/naruto-an2-an3-41080663095-1/source/AppDir/bin/NotoMono-Regular.ttf'
+[00001] While loading '/tmp/naruto-an2-an3-41080663095-1/source/AppDir/bin/fonts/NotoMono-Regular.ttf'
+AN2_POST_LOAD_FRAME=1 elapsed=0.2806613445282 
+AN2_CAPTURE_FRAME=1=PASS 
+AN2_POST_LOAD_FRAME=60 elapsed=23.280661344528 
+AN2_CAPTURE_FRAME=60=PASS 
+AN2_POST_LOAD_FRAME=180 elapsed=70.280661344528 
+AN2_CAPTURE_FRAME=180=PASS 
+AN2_POST_LOAD_FRAME=240 elapsed=94.280661344528 
+AN2_CAPTURE_FRAME=240=PASS 
+AN2_POST_LOAD_FRAME=360 elapsed=141.28066134453 
+AN2_CAPTURE_FRAME=360=PASS 
+AN2_QUIT0_DIRECT_BEGIN=1 
+AN2_QUIT0_DIRECT_RETURNED=true nil 
+[Inferior 1 (process 2994) exited normally]
+AN2_GDB_INFERIOR_ALREADY_EXITED

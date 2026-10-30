@@ -1,0 +1,35 @@
+Loading memory card /tmp/naruto-an2-an3-41080663095-1/launches/C-attempt2/launch.mcd
+The memory card /tmp/naruto-an2-an3-41080663095-1/launches/C-attempt2/home/.config/pcsx-redux/memcard2.mcd doesn't exist - creating it
+Audio: driver dummy, 44100 Hz, 441 frames per period
+Warning: OpenGL error reporting disabled. See About dialog for more information.
+Loaded CD Image: /tmp/naruto-an2-an3-41080663095-1/source/game-run.cue[+cue].
+Track 01 (DATA) - Start 00:02:00, Length 30:48:01
+CD-ROM Label: SLPS-03553
+CD-ROM ID: SLPS03553
+CD-ROM EXE Name: SLPS_035.53;1
+PCSX-Redux booting
+Copyright (C) 2019-2025 PCSX-Redux authors
+CPU type: Dynarec (x86-64)
+Loaded BIOS: /tmp/naruto-an2-an3-41080663095-1/source/scph7502.bin
+Known BIOS detected: SCPH-7502 (EU) (318178bf)
+BIOS Trace1: 0x0f
+BIOS Trace1: 0x0e
+BIOS Trace1: 0x01
+BIOS Trace1: 0x02
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x01
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x05
+BIOS Trace1: 0x06
+BIOS Trace1: 0x02
+BIOS Trace1: 0x05
+
+PS-X Realtime Kernel Ver.2.5
+Copyright 1993,1994 (C) Sony Computer Entertainment Inc. 
+BIOS Trace1: 0x06
+KERNEL SETUP!
+
+Configuration : EvCB	0x10		TCB	0x04
+BIOS Trace1: 0x07
