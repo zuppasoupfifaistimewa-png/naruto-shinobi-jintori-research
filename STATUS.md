@@ -1,3 +1,18 @@
+# STATUS UPDATE — AN1–AN3 final (30 Oktober 2026)
+
+**Status terkini:** AN1 **TUNTAS K4**; AN2 **TUNTAS K5**; AN3 **TUNTAS K5**. K5 hanya berlaku untuk pola runtime RAM yang diuji pada H6 hybrid (bukan target savestate murni). Story Mode **belum dinyatakan tamat**.
+
+Run AN2/AN3 final: Actions #41080663095, job ID 124148564912, source SHA `6800d4452af6e79aae29e394e8130305448b0f12`, script exit 0, commit publikasi output `2c047d427c555cd2cebf15404e0cbbf7885e64d7`. Semua 30 capture PASS, 6/6 emulator exit 0, tidak ada watchdog, dua launch per jadwal C/A/B deterministik pada lima frame sampel, dan enam Memory Card clone identik tidak berubah.
+
+RNG `0x800A3118` tetap `0x06CF4B77` pada 30 titik capture. Cross-schedule RAM SHA sama sampai frame 60 dan mulai berbeda pada frame 180. Diff C-vs-A = 25.068/24.994/24.756 byte; C-vs-B = 2/6/5; A-vs-B = 25.068/24.992/24.758 pada frame 180/240/360. Semua byte diff AN3 tetap `TIDAK TAHU`; belum ada interpretasi gameplay dari byte tersebut.
+
+Laporan lengkap: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/808a3beff96e7d6fb63ef4e1ce397c63d13d1e65/reports/an_2026-10-30/AN1_AN3_FINAL_REPORT.md  
+Handoff chat berikutnya: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/a52e81021ed5e1fc1a9ca748c5a3bf50ea03c238/docs/HANDOFF_AN1_AN3_2026-10-30.md
+
+Tidak ada ROM, BIOS, Memory Card, savestate, dump RAM mentah, biner hybrid, atau gambar bukti privat yang dikomit. Langkah cleanup Actions sukses.
+
+---
+
 # HASIL FINAL SCAN STEP 6(b) — 28 Oktober 2026, 07:55 WIB
 
 Hasil ini menggantikan catatan sementara “scan pending” yang muncul di bawah/versi sebelumnya. Run [#40611660635](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40611660635) **completed/success** pukul 07:55:13 WIB; job `122564387469`. Artefak teks [#12783307599](https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/40611660635/artifacts/12783307599), 244.577 byte, SHA-256 ZIP `748eadbfe82980bba8d2088d11affba4310d524eb871b6a34ee5fd43584f2892` cocok dengan digest GitHub. Ghidra scan, cleanup aset input privat, validasi output text-only, dan upload laporan lulus; `source_assets_removed_before_ghidra=PASS`, `private_binary_uploaded=no`.
