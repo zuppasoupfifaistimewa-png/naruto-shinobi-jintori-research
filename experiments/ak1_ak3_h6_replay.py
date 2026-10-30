@@ -614,13 +614,32 @@ def main():
                    for n in (1, 2) for frame in FRAMES)
     control_valid = all(lookup[("CONTROL_NOT_TARGET", n, frame)]["capture_status"] == "PASS"
                         for n in (1, 2) for frame in FRAMES)
+    launch_status = {}
+    for variant in ("H6", "CONTROL_NOT_TARGET"):
+        for attempt in (1, 2):
+            r360 = lookup[(variant, attempt, 360)]
+            launch_status[(variant, attempt)] = {
+                "exit": r360["emulator_exit_code_decimal"],
+                "exit_source": r360["emulator_exit_code_source"],
+                "watchdog": r360["watchdog_seen"],
+                "quit0_marker": r360["quit0_call_marker_seen"],
+                "wall": r360["wall_seconds"],
+            }
+    all_exits_zero = all(x["exit"] == "0" and x["watchdog"] == "FALSE"
+                         for x in launch_status.values())
+    all_quit0_markers = all(x["quit0_marker"] == "TRUE" for x in launch_status.values())
+    max_to_frame = max(
+        float(r["elapsed_since_launch_s"]) for r in all_rows
+        if r["frame"] == 360 and r["elapsed_since_launch_s"] != "TIDAK TAHU"
+    ) if any(r["frame"] == 360 and r["elapsed_since_launch_s"] != "TIDAK TAHU" for r in all_rows) else None
+    timeout_bound_ok = (max_to_frame is not None and a.timeout_seconds >= 2 * max_to_frame)
     h6_same = {}
-    first_div = "TIDAK ADA DIVERGENSI PADA 180/240/360" if h6_valid else "TIDAK TAHU (capture tidak lengkap)"
+    first_div = "TIDAK ADA DIVERGENSI PADA FRAME 1/60/180/240/360" if h6_valid else "TIDAK TAHU (capture tidak lengkap)"
     if h6_valid:
         for frame in FRAMES:
             r1, r2 = lookup[("H6", 1, frame)], lookup[("H6", 2, frame)]
             h6_same[frame] = r1["ram_2mib_sha256"] == r2["ram_2mib_sha256"]
-            if first_div == "TIDAK ADA DIVERGENSI PADA 180/240/360" and not h6_same[frame]:
+            if first_div == "TIDAK ADA DIVERGENSI PADA FRAME 1/60/180/240/360" and not h6_same[frame]:
                 first_div = f"FRAME DIVERGENSI PERTAMA={frame}"
     else:
         h6_same = {f: None for f in FRAMES}
@@ -675,9 +694,9 @@ def main():
             replay_lines.append(f"{variant}_FRAME_{frame}_ATTEMPT2_SHA={lookup[(variant,2,frame)]['ram_2mib_sha256']}")
     replay_lines.append("H6_FIRST_DIVERGENCE=" + first_div)
     (out / "AK1_FINDING.txt").write_text("\n".join(replay_lines) + "\n", encoding="utf-8")
-    all_required = h6_valid and control_valid
-    ak1_done = h6_valid
-    ak2_done = h6_valid and control_valid and any(x[0].startswith("TARGET_SOURCE") for x in comparisons) and any(x[0].startswith("H6_attempt") for x in comparisons)
+    all_required = h6_valid and control_valid and all_exits_zero and all_quit0_markers and timeout_bound_ok
+    ak1_done = h6_valid and all_exits_zero and all_quit0_markers and timeout_bound_ok
+    ak2_done = h6_valid and control_valid and all_exits_zero and all_quit0_markers and timeout_bound_ok and any(x[0].startswith("TARGET_SOURCE") for x in comparisons) and any(x[0].startswith("H6_attempt") for x in comparisons)
     # Broad host/RSI exploration remains parked; only a controlled one-variable A/B may proceed.
     rsi_decision = ("PARKED_GENERAL_SEARCH; allow only pre-registered one-variable host/RSI A/B with >=2 launches/condition; causality=TIDAK TAHU"
                     if ak1_done else "TETAP_DIPARKIR; baseline multi-frame replay not established")
@@ -706,17 +725,67 @@ def main():
         "## Berkas yang dikomit",
         "AK1_FINDING.txt; AK1_REPLAY.tsv; AK2_DIFF_SUMMARY.txt; AK2_DIFF_RANGES.tsv; logs/*.gdb.txt; logs/*.pcsx.txt; ACTIONS_RUN_SUMMARY.txt; AK1_AK3_FINAL_REPORT.md. Tidak ada ISO, BIOS, savestate, Memory Card, dump RAM, atau biner hibrida.",
     ]
+    al2_lines, al2_totals = write_al2(out)
+    al3_lines, al3_consistent = write_al3(out, work, target_ram)
+    al4_rows = write_al4(out, target, control)
+    al4_complete = len(al4_rows) == 6 and all(x["definition_status"] == "REKONSTRUKSI" for x in al4_rows)
+    launch_lines = []
+    for (variant, attempt), item in launch_status.items():
+        launch_lines.append(
+            f"{variant} attempt{attempt}: exit_decimal={item['exit']}; source={item['exit_source']}; "
+            f"watchdog={item['watchdog']}; quit0_call_marker={item['quit0_marker']}; wall_seconds={item['wall']}."
+        )
+    al_report = [
+        "# AL1–AL4 — penghentian emulator, relabel RAM, dekomposisi, dan rekonstruksi",
+        "",
+        f"Run #{os.getenv('GITHUB_RUN_ID','TIDAK TAHU')} attempt {os.getenv('GITHUB_RUN_ATTEMPT','TIDAK TAHU')}; job ak1-ak3; source commit {os.getenv('GITHUB_SHA','TIDAK TAHU')}.",
+        "",
+        "## Skala bukti K0–K5",
+        "K0 = tidak ada bukti/fakta tidak diketahui; K1 = satu petunjuk belum diverifikasi; K2 = observasi eksplisit dari satu artefak/log; K3 = beberapa artefak statis konsisten dengan provenance; K4 = pemetaan/struktur statis direproduksi dan divalidasi independen, tanpa klaim runtime untuk semantik; K5 = observasi runtime memenuhi kriteria dan direplikasi pada sedikitnya dua peluncuran independen. Bukti statis saja maksimum K4.",
+        "",
+        "## AL1 — penghentian emulator",
+        f"Capture semua frame {FRAMES} valid: H6={h6_valid}; kontrol={control_valid}. Pada frame360, PCSX.quit(0) dipanggil langsung dari callback nextTick capture, tanpa nextTick tambahan kedua. Ada marker sebelum dan selepas pemanggilan (marker selepas bisa tidak tercetak jika quit menghentikan proses).",
+        *launch_lines,
+        f"MAX_TIME_TO_FRAME360_S={max_to_frame}; timeout_per_launch_s={a.timeout_seconds}; timeout_ge_2x_max_time={timeout_bound_ok}; all_quit0_call_markers={all_quit0_markers}.",
+        "Akar sebab internal mengapa nested nextTick lama tidak menghentikan proses: TIDAK TAHU. Log lama mencatat watchdog frame1200 dan GDB code 065 tetapi tidak mempunyai marker pada batas callback nested. Perubahan direct-call adalah perbaikan yang diuji; bukan bukti definitif apakah callback lama tidak dijalankan atau tertunda.",
+        "Exit code GDB dikonversi dari basis oktal ke desimal. Field emulator_exit_code_decimal menyimpan hasil; emulator_exit_code_source menyebut sumber teks log GDB. Wrapper exit code tetap kolom terpisah.",
+        "",
+        "## AL2 — pelabelan ulang (tanpa emulator run)",
+        *al2_lines,
+        "AL2_FIELD_RELABEL.tsv memberi exact totals per label/perbandingan; rentang berkelompok yang melintasi batas label tetap TIDAK TAHU. Untuk 0x801CEF08 hanya overlap batas bawah/atas dari known_source_overlap yang tersedia; byte tepat tidak dipindah dari TIDAK TAHU.",
+        "",
+        "## AL3 — target-source vs H6",
+        *al3_lines,
+        "Frame1 adalah VSync pasca-load pertama yang dilihat listener SaveStateLoaded. Pada tiap attempt, byte yang beda di frame180 dibagi menjadi sudah berbeda di frame1 dan pertama berbeda setelah frame1. Target-native tidak dapat dijadikan pembanding runtime karena restore target murni sebelumnya SIGSEGV; hasil ini tidak menyimpulkan semua selisih disebabkan replay 180 frame.",
+        "",
+        "## AL4 — enam hibrida AE2",
+        f"Rekonstruksi dari generator eksperimen dan hasil historical GDB dua-peluncuran: complete={al4_complete}. Hash yang dilaporkan adalah REKONSTRUKSI dari input state tervalidasi; biner hibrida tidak disimpan.",
+        "Perincian target-current channels, control-current channels, outcome lama, source SHA, dan reconstructed hybrid SHA: AL4_HYBRID_RECONSTRUCTIONS.tsv.",
+        "",
+        "## Putusan",
+        f"AL1={'LULUS' if ak1_done and all_exits_zero and all_quit0_markers and timeout_bound_ok else 'BELUM LULUS'}; AL2=SELESAI_DENGAN_BATAS_RENTANG; AL3={'KONSISTEN_2_LAUNCH' if al3_consistent else 'HASIL_ANTAR_LAUNCH_TIDAK_SAMA'}; AL4={'SELESAI' if al4_complete else 'SEBAGIAN/TIDAK TAHU'}. Host/RSI tetap DIPARKIR.",
+        "",
+        "## Berkas hasil",
+        "AK1_REPLAY.tsv; AK1_FINDING.txt; AK2_DIFF_SUMMARY.txt; AK2_DIFF_RANGES.tsv; AL1_AL4_FINAL_REPORT.md; AL2_FIELD_RELABEL.tsv; AL2_RELABEL_NOTES.txt; AL3_BYTE_DECOMPOSITION.tsv; AL4_HYBRID_RECONSTRUCTIONS.tsv; ACTIONS_RUN_SUMMARY.txt; logs/*.gdb.txt; logs/*.pcsx.txt. Tidak ada ISO, BIOS, savestate, Memory Card, dump RAM mentah, atau biner hibrida yang dikomit.",
+    ]
+    (out / "AL1_AL4_FINAL_REPORT.md").write_text("\n".join(al_report) + "\n", encoding="utf-8")
     (out / "AK1_AK3_FINAL_REPORT.md").write_text("\n".join(report) + "\n", encoding="utf-8")
     script_exit = 0
-    status = "PASS" if ak1_done and ak2_done else "INCOMPLETE"
+    status = "PASS" if ak1_done and ak2_done and al3_consistent and al4_complete else "INCOMPLETE"
     summary = [
         f"STATUS={status}", "JOB=ak1-ak3",
         f"RUN_ID={os.getenv('GITHUB_RUN_ID','TIDAK TAHU')}",
         f"RUN_ATTEMPT={os.getenv('GITHUB_RUN_ATTEMPT','TIDAK TAHU')}",
         f"HEAD_SHA={os.getenv('GITHUB_SHA','TIDAK TAHU')}",
         f"H6_SHA256={H6_SHA}", f"TIMEOUT_PER_LAUNCH_S={a.timeout_seconds}",
+        f"MAX_TIME_TO_FRAME360_S={max_to_frame}", f"TIMEOUT_GE_2X_MAX_TIME={timeout_bound_ok}",
+        f"ALL_FOUR_EXITS_ZERO={all_exits_zero}", f"ALL_FOUR_WATCHDOG_ABSENT={not any(x['watchdog']=='TRUE' for x in launch_status.values())}",
         f"AK1_STATUS={'TUNTAS' if ak1_done else 'SEBAGIAN'}",
         f"AK2_STATUS={'TUNTAS' if ak2_done else 'SEBAGIAN'}",
+        f"AL1_STATUS={'LULUS' if ak1_done else 'BELUM_LULUS'}",
+        "AL2_STATUS=SELESAI_DENGAN_BATAS_RENTANG",
+        f"AL3_STATUS={'KONSISTEN_2_LAUNCH' if al3_consistent else 'HASIL_ANTAR_LAUNCH_TIDAK_SAMA'}",
+        f"AL4_STATUS={'REKONSTRUKSI' if al4_complete else 'TIDAK_TAHU'}",
         "AK3_STATUS=TUNTAS",
         f"EXIT_CODE={script_exit}",
     ]
