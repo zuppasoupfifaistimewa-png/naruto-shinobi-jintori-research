@@ -244,7 +244,7 @@ def make_diff(left,right,attempt,frame,a,b):
 def main():
     p=argparse.ArgumentParser()
     for n in ("target","control","pcsx-bin","appdir","bios","cue","card","work","out","schedule"): p.add_argument("--"+n,required=True)
-    p.add_argument("--timeout",type=int,default=600); a=p.parse_args()
+    p.add_argument("--timeout",type=int,default=600); p.add_argument("--diagnostic-only",action="store_true"); a=p.parse_args()
     work,out=Path(a.work),Path(a.out)
     t,c=Path(a.target).read_bytes(),Path(a.control).read_bytes()
     if sha(t)!=TARGET or sha(c)!=CONTROL: raise SystemExit("target/control SHA mismatch")
@@ -258,10 +258,39 @@ def main():
     app=Path(a.appdir); env=os.environ.copy()
     env.update({"DISPLAY":":99","LIBGL_ALWAYS_SOFTWARE":"1","LD_LIBRARY_PATH":str(app/"usr/lib")+":"+str(app/"usr/lib/x86_64-linux-gnu"),
       "QT_PLUGIN_PATH":str(app/"usr/plugins"),"QT_QPA_PLATFORM_PLUGIN_PATH":str(app/"usr/plugins/platforms"),"QML2_IMPORT_PATH":str(app/"usr/qml")})
+    out.mkdir(parents=True,exist_ok=True)
+    if a.diagnostic_only:
+        rows,meta,ram=run_one("C",1,sched["C"],a,env,work,sha(card))
+        diag=out/"diagnostics"; diag.mkdir(parents=True,exist_ok=True)
+        for suffix in ("gdb.txt","pcsx.txt"):
+            src=work/"logs"/("C-attempt1."+suffix)
+            if src.is_file():
+                content=src.read_text(encoding="utf-8",errors="replace")
+                (diag/src.name).write_text(content[-250000:],encoding="utf-8")
+        summary=[
+          "MODE=ONE_LAUNCH_DIAGNOSTIC_ONLY (not AN2/AN3 completion)",
+          f"H6_SHA256={H6}",f"REFERENCE_MCD_SHA256={CARD}",
+          f"WRAPPER_EXIT={meta['wrapper_exit']}",f"EMULATOR_EXIT_DECIMAL={meta['exit']}",
+          f"EMULATOR_EXIT_SOURCE={meta['exit_source']}",f"WATCHDOG={str(meta['watchdog']).upper()}",
+          f"MCD_SHA256_BEFORE={meta['mcd_before']}",f"MCD_SHA256_AFTER={meta['mcd_after']}",
+          f"MCD_BYTES_AFTER={meta['mcd_bytes_after']}",
+          "CAPTURES="+",".join(f"{r['frame']}:{r['capture_status']}:{r['time_to_frame_s']}" for r in rows),
+          f"TIMEOUT_PER_LAUNCH_S={a.timeout}",
+          "RAW_SAVE_STATES_NOT_PUBLISHED=TRUE","ONLY_TEXT_LOG_TAILS_PUBLISHED=TRUE"
+        ]
+        (out/"AN2_DIAGNOSTIC_SUMMARY.txt").write_text("\n".join(summary)+"\n",encoding="utf-8")
+        print("\n".join(summary))
+        raise SystemExit(0 if all(r["capture_status"]=="PASS" for r in rows) else 1)
     allrows=[]; metas=[]; memories={}
     for name in ("C","A","B"):
         for attempt in (1,2):
             rows,meta,ram=run_one(name,attempt,sched[name],a,env,work,sha(card))
+            logdir=out/"logs"; logdir.mkdir(parents=True,exist_ok=True)
+            for suffix in ("gdb.txt","pcsx.txt"):
+                src=work/"logs"/(f"{name}-attempt{attempt}."+suffix)
+                if src.is_file():
+                    content=src.read_text(encoding="utf-8",errors="replace")
+                    (logdir/src.name).write_text(content[-250000:],encoding="utf-8")
             allrows.extend(rows); metas.append(meta)
             for frame,data in ram.items(): memories[(name,attempt,frame)]=data
     out.mkdir(parents=True,exist_ok=True)
@@ -316,7 +345,7 @@ def main():
     timeout_ok=max_t is not None and a.timeout>=2*max_t
     summary += [f"MAX_TIME_TO_FRAME360_S={max_t if max_t is not None else 'TIDAK TAHU'}",
       f"TIMEOUT_PER_LAUNCH_S={a.timeout}",f"TIMEOUT_GE_2X_SLOWEST={str(timeout_ok).upper() if max_t is not None else 'TIDAK TAHU'}"]
-    rng=[r["word_0x800A3118"] for r in allrows]
+    rng=[r["rng_0x800A3118"] for r in allrows]
     unique=sorted(set(x for x in rng if x!="TIDAK TAHU"))
     summary += [f"RNG_0x800A3118_CHANGED_ANY_CAPTURE={'YES' if len(unique)>1 and len(unique)==len(set(rng)) else 'NO' if len(unique)==1 and len(rng)==30 else 'TIDAK TAHU'}",
       "RNG_0x800A3118_UNIQUE_VALUES="+(",".join(unique) if unique else "TIDAK TAHU")]
