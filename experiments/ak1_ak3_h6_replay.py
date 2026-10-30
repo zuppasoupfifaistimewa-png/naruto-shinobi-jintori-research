@@ -125,6 +125,10 @@ def parse_exit(log_text):
     m = re.search(r"Program exited with code\s+([0-7]+)", log_text, re.I)
     if m:
         return str(int(m.group(1), 8)), "GDB program exit status (octal converted to decimal)"
+    if re.search(r"Inferior\\s+\\d+.*?exited normally", log_text, re.I):
+        return "0", "GDB 'exited normally' (normal process exit, decimal zero)"
+    if re.search(r"Program exited normally", log_text, re.I):
+        return "0", "GDB 'Program exited normally' (normal process exit, decimal zero)"
     return "TIDAK TAHU", "no explicit GDB/PCSX exit status"
 
 def run_one(variant, attempt, state_path, a, out, work, timeout_s, env_base):
