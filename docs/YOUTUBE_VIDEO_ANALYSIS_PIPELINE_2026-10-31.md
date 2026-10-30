@@ -105,3 +105,30 @@ https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jinto
 2. Periksa captions hanya melalui jalur resmi yang memang diizinkan. Keberadaan oEmbed tidak membuktikan captions.
 3. Baru setelah player terbukti dapat diputar, evaluasi cara sampling frame yang diizinkan dan bagaimana hasil visual dapat diperiksa tanpa mengarsipkan media ke repo.
 4. Jangan memulai analisis aturan game sampai frame/audio atau transkrip yang dapat ditinjau benar-benar tersedia.
+
+
+## Addendum — VidIQ dan akses isi video, 31 Oktober 2026
+
+### Status VidIQ
+- Status instalasi VidIQ pada pemeriksaan konektor: installed=true.
+- Tab VidIQ yang terbuka masih menampilkan layar sambutan dengan tombol Connect channel; koneksi kanal belum terbukti selesai.
+- Belum ada transcript, visual analysis, frame, atau hasil analisis VidIQ yang diterima untuk video r30Rs_NuExc.
+- Karena itu, keberadaan plugin terpasang tidak boleh ditafsirkan sebagai bukti bahwa konten video sudah dapat dibaca.
+
+### Pemeriksaan tambahan
+- Percobaan membuka URL YouTube secara langsung masih gagal dengan Cache miss.
+- Pencarian publik menggunakan video ID dan judul video tidak mengembalikan transcript untuk video yang sama.
+- Beberapa hasil pencarian membahas judul/video Naruto lain atau uraian umum game. Materi itu tidak dipakai sebagai pengganti rekaman sumber dan tidak boleh digunakan untuk mengklaim apa yang terjadi pada timestamp video ini.
+- Tidak ada frame atau audio yang diambil pada checkpoint ini.
+
+### Status akses terkini
+- VERIFIED: metadata oEmbed HTTP 200 dan dua workflow metadata-check sukses; 9/9 tes offline pada masing-masing run.
+- BLOCKED / PENDING: akses isi audiovisual dari video sumber belum terbukti.
+- NOT STARTED: timeline gameplay dari video, identifikasi input yang terlihat, translasi dialog dari frame video, dan verifikasi aturan permainan dari video.
+- VidIQ onboarding meminta koneksi kanal; perlu diselesaikan melalui tombol Connect channel di tab VidIQ. Jangan bagikan password atau token di chat.
+
+### Langkah lanjut
+1. Selesaikan koneksi kanal melalui alur resmi VidIQ di browser jika pengguna menyetujui izin akun yang diminta.
+2. Setelah koneksi benar-benar aktif, jalankan transcript/visual analysis pada URL video yang sama dan verifikasi video ID sebelum menggunakan hasilnya.
+3. Bila VidIQ tetap tidak dapat mengambil isi video ini, gunakan player resmi atau materi ekspor yang pemiliknya berhak bagikan; jangan mengunduh stream dengan metode tidak resmi.
+4. Setiap klaim gameplay harus merujuk ke timestamp dan bukti visual/audio dari video sumber ini. Jika bukti tidak tersedia, tandai UNKNOWN.
