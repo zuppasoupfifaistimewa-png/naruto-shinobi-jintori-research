@@ -1,0 +1,22 @@
+AL2 runtime cross-check addendum
+Run-scoped report: 41042679829 (full AL1-AL4 run).
+AL2 range source: reports/ak_2026-10-30/runs/run-41032514102/attempt-1/AK2_DIFF_RANGES.tsv.
+Runtime cross-check source: reports/ak_2026-10-30/runs/run-41041627786/attempt-1/AK1_REPLAY.tsv (already committed preflight; no additional emulator launch was made for AL2).
+
+Pointer slot:
+- Address 0x8013A554 contains bytes 08 ef 1c 80, LE32=0x801CEF08, in both H6 attempts and both CONTROL_NOT_TARGET attempts at post-load VSync 1, 60, 180, 240, and 360.
+- This is a repeated runtime observation (K5) that the slot points to 0x801CEF08 during the captured interval. It does not identify the target area's semantic role or extent.
+- The slot itself has 0 changed bytes in each of the four AK2 comparisons.
+
+Pointed-to area's first byte:
+- At 0x801CEF08, bytes are 01 00 00 00 for both H6 attempts and 00 00 00 00 for both control attempts at frame 180 (also stable across the other captured frames).
+- Therefore exactly the byte at address 0x801CEF08 (+0) is known to differ in each H6-vs-control pair. This is K5 runtime evidence, cross-checked with the AK2 grouped-range flag pointer_target_0x801CEF08.
+- The matching AK2 group is 0x801CEF08..0x801CEF23 with 3 changed bytes total. One byte is assigned to the known first byte; the other two changed bytes remain TIDAK TAHU because the merged TSV group does not locate them exactly. Block extent and semantics remain UNKNOWN.
+
+Updated four-comparison totals:
+- H6 attempt1 vs control attempt1: player candidate-ID fields 0; player Chakra fields 0; pointer slot 0; block first byte 1; RNG state 0; callback/tick counter 2; TIDAK_TAHU 56,974; total 56,977.
+- H6 attempt2 vs control attempt2: player candidate-ID fields 0; player Chakra fields 0; pointer slot 0; block first byte 1; RNG state 0; callback/tick counter 2; TIDAK_TAHU 56,974; total 56,977.
+- Target-source vs H6 attempt1: player candidate-ID fields 0; player Chakra fields 0; pointer slot 0; block first byte 0; RNG state 0; callback/tick counter 2; TIDAK_TAHU 4,048; total 4,050.
+- Target-source vs H6 attempt2: player candidate-ID fields 0; player Chakra fields 0; pointer slot 0; block first byte 0; RNG state 0; callback/tick counter 2; TIDAK_TAHU 4,048; total 4,050.
+
+K scale: K0 no evidence/unknown; K1 unverified hint; K2 one explicit artifact/log observation; K3 multiple consistent static artifacts; K4 independently reproducible static mapping (static-only maximum); K5 runtime observation replicated in at least two independent launches.
