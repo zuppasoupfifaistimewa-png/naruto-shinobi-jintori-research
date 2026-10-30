@@ -1,22 +1,31 @@
-AL2 runtime cross-check addendum
-Run-scoped report: 41042679829 (full AL1-AL4 run).
-AL2 range source: reports/ak_2026-10-30/runs/run-41032514102/attempt-1/AK2_DIFF_RANGES.tsv.
-Runtime cross-check source: reports/ak_2026-10-30/runs/run-41041627786/attempt-1/AK1_REPLAY.tsv (already committed preflight; no additional emulator launch was made for AL2).
+AL2 runtime cross-check correction
+Run 41042679829; workflow job ak1-ak3; numeric job ID 124019605576; workflow conclusion success.
+Source run commit: 7e457a0ccae1fc9d499dc8d1c5020a4bab73b079.
+Run-output source commit: 493e6bf6bc4f2cc54c2221fe29a3e0d69ce70fd4.
+H6 SHA-256: d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475 (hybrid, not target-pure).
 
-Pointer slot:
-- Address 0x8013A554 contains bytes 08 ef 1c 80, LE32=0x801CEF08, in both H6 attempts and both CONTROL_NOT_TARGET attempts at post-load VSync 1, 60, 180, 240, and 360.
-- This is a repeated runtime observation (K5) that the slot points to 0x801CEF08 during the captured interval. It does not identify the target area's semantic role or extent.
-- The slot itself has 0 changed bytes in each of the four AK2 comparisons.
+AL2 is an offline relabel correction; no new emulator launch was made. Inputs: AK1_REPLAY.tsv and AK2_DIFF_RANGES.tsv already committed from run 41042679829.
 
-Pointed-to area's first byte:
-- At 0x801CEF08, bytes are 01 00 00 00 for both H6 attempts and 00 00 00 00 for both control attempts at frame 180 (also stable across the other captured frames).
-- Therefore exactly the byte at address 0x801CEF08 (+0) is known to differ in each H6-vs-control pair. This is K5 runtime evidence, cross-checked with the AK2 grouped-range flag pointer_target_0x801CEF08.
-- The matching AK2 group is 0x801CEF08..0x801CEF23 with 3 changed bytes total. One byte is assigned to the known first byte; the other two changed bytes remain TIDAK TAHU because the merged TSV group does not locate them exactly. Block extent and semantics remain UNKNOWN.
+Chakra exact-byte correction:
+- 0x80070EB8: H6 bytes DC 05 00 00 (LE32 0x000005DC); CONTROL bytes 64 05 00 00 (LE32 0x00000564). Byte +0 differs; bytes +1..+3 match. Count=1 byte, K5 (both attempts independently agree).
+- 0x80070F6C: H6 bytes DC 05 00 00 (LE32 0x000005DC); CONTROL bytes 64 05 00 00 (LE32 0x00000564). Byte +0 differs; bytes +1..+3 match. Count=1 byte, K5.
 
-Updated four-comparison totals:
-- H6 attempt1 vs control attempt1: player candidate-ID fields 0; player Chakra fields 0; pointer slot 0; block first byte 1; RNG state 0; callback/tick counter 2; TIDAK_TAHU 56,974; total 56,977.
-- H6 attempt2 vs control attempt2: player candidate-ID fields 0; player Chakra fields 0; pointer slot 0; block first byte 1; RNG state 0; callback/tick counter 2; TIDAK_TAHU 56,974; total 56,977.
-- Target-source vs H6 attempt1: player candidate-ID fields 0; player Chakra fields 0; pointer slot 0; block first byte 0; RNG state 0; callback/tick counter 2; TIDAK_TAHU 4,048; total 4,050.
-- Target-source vs H6 attempt2: player candidate-ID fields 0; player Chakra fields 0; pointer slot 0; block first byte 0; RNG state 0; callback/tick counter 2; TIDAK_TAHU 4,048; total 4,050.
+RNG exact-byte correction:
+- 0x800A3118: H6 bytes 77 4B CF 06 (LE32 0x06CF4B77); CONTROL bytes BB C6 62 19 (LE32 0x1962C6BB). All four byte positions differ. Count=4 bytes, K5 (both attempts independently agree).
 
-K scale: K0 no evidence/unknown; K1 unverified hint; K2 one explicit artifact/log observation; K3 multiple consistent static artifacts; K4 independently reproducible static mapping (static-only maximum); K5 runtime observation replicated in at least two independent launches.
+Other relabels retained:
+- Candidate-ID P0..P3 and Chakra P2/P3 are 0 changed bytes.
+- 0x8013A554 pointer slot is 0 bytes changed; repeated LE32 pointer value remains 0x801CEF08 across frames 1/60/180/240/360 and both attempt pairs (K5 for observed pointer value only).
+- 0x801CEF08 first byte differs by 1 in H6/control attempt pairs (K5); two other changed bytes in grouped range 0x801CEF08..0x801CEF23 remain TIDAK TAHU.
+- 0x80066E7C callback/tick-like field remains 2 changed bytes per comparison. Static pattern label K4; repeated difference K5, without interpreting gameplay semantics.
+
+Corrected totals:
+- H6 attempt1 vs control attempt1: P0 Chakra=1, P1 Chakra=1, RNG=4, pointer slot=0, candidate IDs=0, P2/P3 Chakra=0, pointed block first byte=1, callback/tick-like=2, TIDAK_TAHU=56,968; total=56,977.
+- H6 attempt2 vs control attempt2: same; TIDAK_TAHU=56,968; total=56,977.
+- Target-source vs H6 attempt1: all known player/Chakra/RNG/pointer/block labels=0, callback/tick-like=2, TIDAK_TAHU=4,048; total=4,050.
+- Target-source vs H6 attempt2: same; TIDAK_TAHU=4,048; total=4,050.
+
+RAM digest scope audit:
+- Column ram_2mib_sha256 is correctly named. experiments/ak1_ak3_h6_replay.py:24,30–35 sets RAM_BYTES=0x200000, slices ram[:RAM_BYTES], and returns that 2 MiB slice for hashing.
+- ram_segment_bytes=8388608 is len(ram), the decoded RAM field's total reported length (8 MiB); it is not the hash input length.
+- AK2_DIFF_SUMMARY.txt independently says the diff region is the first 2 MiB of PS1 RAM. Therefore the answer is: SHA covers 2 MiB; decoded segment length is 8 MiB. Whether that 8 MiB segment is a mirror/repetition of the 2 MiB physical RAM is TIDAK TAHU from these artifacts. The column name must not be changed.

@@ -17,29 +17,40 @@ MAX_TIME_TO_FRAME360_S=98.708170175552; timeout_per_launch_s=600; timeout_ge_2x_
 Akar sebab internal mengapa nested nextTick lama tidak menghentikan proses: TIDAK TAHU. Log lama mencatat watchdog frame1200 dan GDB `exited with code 065`; 065 adalah oktal, yaitu 53 desimal. Log lama tidak mempunyai marker pada batas callback nested. Perubahan direct-call adalah perbaikan yang diuji; bukan bukti definitif apakah callback lama tidak dijalankan atau tertunda.
 Exit code GDB dikonversi dari basis oktal ke desimal. Field emulator_exit_code_decimal menyimpan hasil; emulator_exit_code_source menyebut sumber teks log GDB. Wrapper exit code tetap kolom terpisah.
 
-## AL2 — pelabelan ulang (tanpa emulator run)
-Ranges are sourced from the committed AK2_DIFF_RANGES.tsv; no extra emulator launch was made for AL2. The already committed preflight AK1_REPLAY.tsv is used only to resolve runtime byte positions.
-A grouped range is allocated only to exact byte positions independently established; all other bytes in a merged span remain TIDAK_TAHU.
-Player records: 0x80070EA0 + n*0xB4. Candidate ID bytes +0x0A..+0x0C and Chakra word +0x18..+0x1B for players 0-3; every one of these fields has 0 changed bytes in all four comparisons.
-0x8013A554 stores LE32 0x801CEF08 at frames 1/60/180/240/360 in both H6 launches and both control launches (runtime K5). The slot itself changes 0 bytes in the four comparisons.
-At 0x801CEF08, the first byte is 0x01 in H6 and 0x00 in control at frame180 in both attempt pairs. One byte is assigned to the pointed-to area's first byte (K5); the area's remaining extent and meaning are UNKNOWN. Two other changed bytes in the AK2 group 0x801CEF08..0x801CEF23 stay TIDAK TAHU.
-H6_attempt1_180_vs_CONTROL_attempt1_180: candidate-ID=0; Chakra=0; slot=0; block-first-byte=1; RNG=0; callback/tick counter=2; TIDAK_TAHU=56974; total=56977.
-H6_attempt2_180_vs_CONTROL_attempt2_180: candidate-ID=0; Chakra=0; slot=0; block-first-byte=1; RNG=0; callback/tick counter=2; TIDAK_TAHU=56974; total=56977.
-TARGET_SOURCE_vs_H6_attempt1_180: candidate-ID=0; Chakra=0; slot=0; block-first-byte=0; RNG=0; callback/tick counter=2; TIDAK_TAHU=4048; total=4050.
-TARGET_SOURCE_vs_H6_attempt2_180: candidate-ID=0; Chakra=0; slot=0; block-first-byte=0; RNG=0; callback/tick counter=2; TIDAK_TAHU=4048; total=4050.
+## AL2 — koreksi hitung byte (tanpa peluncuran emulator)
+Bukti: AK1_REPLAY.tsv + AK2_DIFF_RANGES.tsv run #41042679829; workflow job ak1-ak3, job ID numerik 124019605576; job success. Source SHA 7e457a0ccae1fc9d499dc8d1c5020a4bab73b079; hasil run awal 493e6bf6bc4f2cc54c2221fe29a3e0d69ce70fd4.
 
+Koreksi Chakra dan RNG (perbandingan H6 vs CONTROL, kedua attempt):
+- P0 Chakra 0x80070EB8: H6 0x5DC = DC 05 00 00; kontrol 0x564 = 64 05 00 00; **1 byte berbeda**, K5.
+- P1 Chakra 0x80070F6C: nilai dan pola byte sama; **1 byte berbeda**, K5.
+- RNG 0x800A3118: H6 0x06CF4B77 = 77 4B CF 06; kontrol 0x1962C6BB = BB C6 62 19; **4 byte berbeda**, K5.
+- Candidate ID P0–P3=0; Chakra P2/P3=0; pointer slot=0; block first byte=1; counter-like=2.
+
+Empat total AL2 (label + TIDAK TAHU = total):
+- H6 attempt1 vs CONTROL attempt1: P0 Chakra 1 + P1 Chakra 1 + block first byte 1 + RNG 4 + callback/tick-like 2 + candidate ID/pointer/P2-P3 Chakra 0 + TIDAK TAHU 56,968 = **56,977**.
+- H6 attempt2 vs CONTROL attempt2: nilai sama, **56,968 + 9 = 56,977**.
+- TARGET_SOURCE vs H6 attempt1: seluruh label known kecuali callback/tick-like 2 adalah 0; TIDAK TAHU 4,048; **4,050** total.
+- TARGET_SOURCE vs H6 attempt2: sama, **4,050** total.
+
+K5 di atas adalah replikasi nilai byte runtime pada dua peluncuran; K4 tetap untuk identifikasi field statis. Arti gameplay RNG, counter, dan area pointer tetap TIDAK TAHU.
+
+### Cakupan SHA RAM
+ram_2mib_sha256 menghitung 2 MiB pertama: RAM_BYTES=0x200000, ram[:RAM_BYTES], lalu SHA-256. ram_segment_bytes=8388608 melaporkan panjang field RAM hasil decode, yaitu 8 MiB; bukan jumlah byte yang di-hash. AK2_DIFF_SUMMARY menyatakan area diff 2 MiB pertama. Apakah segmen 8 MiB merupakan mirror 2 MiB adalah **TIDAK TAHU**. Nama kolom ram_2mib_sha256 benar dan dipertahankan.
 
 ## AL3 — target-source vs H6
 H6 attempt1: D1=390 D60=651 D180=4050; @180 already present at @1=235; first appearing after @1=3815; @1 differences reverted by @180=155.
 H6 attempt2: D1=390 D60=651 D180=4050; @180 already present at @1=235; first appearing after @1=3815; @1 differences reverted by @180=155.
 Frame1 adalah VSync pasca-load pertama yang dilihat listener SaveStateLoaded. Pada tiap attempt, byte yang beda di frame180 dibagi menjadi sudah berbeda di frame1 dan pertama berbeda setelah frame1. Target-native tidak dapat dijadikan pembanding runtime karena restore target murni sebelumnya SIGSEGV; hasil ini tidak menyimpulkan semua selisih disebabkan replay 180 frame.
 
-## AL4 — enam hibrida AE2
+## AL4 — enam hibrida AE2 (REKONSTRUKSI)
 Rekonstruksi dari generator eksperimen dan hasil historical GDB dua-peluncuran: complete=True. Hash yang dilaporkan adalah REKONSTRUKSI dari input state tervalidasi; biner hibrida tidak disimpan.
 Perincian target-current channels, control-current channels, outcome lama, source SHA, dan reconstructed hybrid SHA: AL4_HYBRID_RECONSTRUCTIONS.tsv.
 
 ## Putusan
-AL1=LULUS; AL2=SELESAI_DENGAN_BATAS_RENTANG; AL3=KONSISTEN_2_LAUNCH; AL4=SELESAI. Host/RSI tetap DIPARKIR.
+AL1=LULUS; AL2=DIKOREKSI (total byte dijaga); AL3=KONSISTEN_2_LAUNCH; AL4=REKONSTRUKSI. Host/RSI tetap DIPARKIR.
 
 ## Berkas hasil
 AK1_REPLAY.tsv; AK1_FINDING.txt; AK2_DIFF_SUMMARY.txt; AK2_DIFF_RANGES.tsv; AL1_AL4_FINAL_REPORT.md; AL2_FIELD_RELABEL.tsv; AL2_RELABEL_NOTES.txt; AL2_RUNTIME_CROSSCHECK.txt; AL3_BYTE_DECOMPOSITION.tsv; AL4_HYBRID_RECONSTRUCTIONS.tsv; ACTIONS_RUN_SUMMARY.txt; logs/*.gdb.txt; logs/*.pcsx.txt. Tidak ada ISO, BIOS, savestate, Memory Card, dump RAM mentah, atau biner hibrida yang dikomit.
+
+## AM1 correction provenance
+AM1 tidak menjalankan emulator. Koreksi AL2 ini memakai AK1_REPLAY.tsv dan AK2_DIFF_RANGES.tsv yang sudah dikomit. Run #41042679829, job ak1-ak3, ID job numerik 124019605576, conclusion success. Cakupan SHA RAM dijelaskan di bagian AL2.

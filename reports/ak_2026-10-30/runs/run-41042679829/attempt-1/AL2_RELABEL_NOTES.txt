@@ -1,13 +1,19 @@
-AL2 relabeling uses the committed AK2_DIFF_RANGES.tsv for the four comparison groups. No emulator launch was made for AL2; the already committed preflight AK1_REPLAY.tsv from run-41041627786 is used only to disambiguate the pointer slot and one byte within a grouped range.
-Allocation rule: an AK2 grouped range is assigned only to known mapped bytes that are independently located. Changed bytes not proven by an exact address remain TIDAK_TAHU.
-Ranges may merge changed runs separated by gaps <=32 bytes. changed_bytes is exact per group, not per address, so unlocated bytes in a grouped span are not split by assumption.
-Player records: four records at 0x80070EA0 + n*0xB4. Known fields: candidate ID bytes +0x0A..+0x0C, Chakra word +0x18..+0x1B. Other record offsets remain TIDAK TAHU.
-Runtime pointer cross-check: AK1_REPLAY.tsv records 0x8013A554 bytes=08 ef 1c 80 (LE32=0x801CEF08) across frames 1/60/180/240/360 for H6 attempts 1/2 and CONTROL_NOT_TARGET attempts 1/2. This is K5 for the observed pointer value; it does not establish the meaning of the target area.
-Block first-byte cross-check: at 0x801CEF08 H6 bytes=01 00 00 00 and control bytes=00 00 00 00 at frame180 for both attempt pairs. The first byte (+0) is therefore attributed exactly; the other two differing bytes in the merged AK2 group 0x801CEF08..0x801CEF23 remain TIDAK TAHU. Extent and semantic meaning of the block remain UNKNOWN.
-Evidence scale: K0 no evidence/unknown; K1 unverified hint; K2 explicit observation from one artifact/log; K3 multiple consistent static artifacts; K4 independently reproducible static mapping (static-only maximum); K5 runtime finding independently replicated in at least two launches.
-Four-comparison totals (exact-known + TIDAK_TAHU = total):
-H6_attempt1_180_vs_CONTROL_attempt1_180: candidate ID fields=0; Chakra fields=0; slot pointer=0; block first byte=1; RNG state=0; callback/tick counter=2; TIDAK_TAHU=56974; total=56977.
-H6_attempt2_180_vs_CONTROL_attempt2_180: candidate ID fields=0; Chakra fields=0; slot pointer=0; block first byte=1; RNG state=0; callback/tick counter=2; TIDAK_TAHU=56974; total=56977.
-TARGET_SOURCE_vs_H6_attempt1_180: candidate ID fields=0; Chakra fields=0; slot pointer=0; block first byte=0; RNG state=0; callback/tick counter=2; TIDAK_TAHU=4048; total=4050.
-TARGET_SOURCE_vs_H6_attempt2_180: candidate ID fields=0; Chakra fields=0; slot pointer=0; block first byte=0; RNG state=0; callback/tick counter=2; TIDAK_TAHU=4048; total=4050.
-Counter 0x80066E7C retains static callback/tick-like label K4; the repeated byte differences across two launches are K5 observations, not proof that it is a gameplay counter or RNG seed.
+AL2 relabel correction — run 41042679829, job ak1-ak3 (numeric job ID 124019605576).
+
+No emulator was launched for this correction. Evidence inputs are the already committed AK2_DIFF_RANGES.tsv and AK1_REPLAY.tsv from the AK run. H6 is the hybrid checkpoint (target base + control top-level field 6), SHA-256 d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475; it is not target-pure.
+
+Exact byte comparison rules: compare the four little-endian bytes in the named word at each address. A word-value difference is not automatically four changed bytes.
+
+Corrected H6 vs CONTROL values, replicated in both attempts:
+- 0x80070EB8 (P0 Chakra): H6 LE32 0x000005DC, bytes DC 05 00 00; control LE32 0x00000564, bytes 64 05 00 00. Exactly 1 byte differs (byte +0); K5 for the repeated runtime observation.
+- 0x80070F6C (P1 Chakra): same values and bytes; exactly 1 byte differs; K5.
+- 0x800A3118 (RNG state): H6 LE32 0x06CF4B77, bytes 77 4B CF 06; control LE32 0x1962C6BB, bytes BB C6 62 19. Exactly 4 bytes differ; K5.
+- Candidate ID fields P0–P3: 0 each. Chakra P2/P3: 0 each. Pointer slot 0x8013A554: 0. Pointed-to block first byte 0x801CEF08: 1. Callback/tick-like counter 0x80066E7C: 2 (static label K4; repeat-diff runtime observation K5, without claiming gameplay-counter meaning).
+
+Corrected four-comparison totals (labelled counts + TIDAK_TAHU = total):
+H6_attempt1_180_vs_CONTROL_attempt1_180: candidate-ID fields 0; P0 Chakra 1; P1 Chakra 1; P2/P3 Chakra 0; pointer slot 0; block first byte 1; RNG 4; callback/tick counter 2; TIDAK_TAHU 56,968; total 56,977.
+H6_attempt2_180_vs_CONTROL_attempt2_180: same exact counts; TIDAK_TAHU 56,968; total 56,977.
+TARGET_SOURCE_vs_H6_attempt1_180: candidate-ID/Chakra/pointer/block/RNG fields 0; callback/tick counter 2; TIDAK_TAHU 4,048; total 4,050.
+TARGET_SOURCE_vs_H6_attempt2_180: same exact counts; TIDAK_TAHU 4,048; total 4,050.
+
+The 2 Chakra byte changes and 4 RNG byte changes are allocated from exact address/word values shown in AK1_REPLAY.tsv; all remaining unlocated bytes stay TIDAK_TAHU. No gameplay semantics are inferred.

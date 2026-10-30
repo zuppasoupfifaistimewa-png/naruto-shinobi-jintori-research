@@ -1,0 +1,9 @@
+variant	attempt	from_frame	to_frame	rng_before	rng_after	k	max_k	interpretation
+H6	1	1	60	0x06CF4B77	0x06CF4B77	0	16777216	state sama; k minimum 0, tidak menyimpulkan arti gameplay
+H6	1	60	180	0x06CF4B77	0x06CF4B77	0	16777216	state sama; k minimum 0, tidak menyimpulkan arti gameplay
+H6	1	180	240	0x06CF4B77	0x06CF4B77	0	16777216	state sama; k minimum 0, tidak menyimpulkan arti gameplay
+H6	1	240	360	0x06CF4B77	0x06CF4B77	0	16777216	state sama; k minimum 0, tidak menyimpulkan arti gameplay
+H6	2	1	60	0x06CF4B77	0x06CF4B77	0	16777216	state sama; k minimum 0, tidak menyimpulkan arti gameplay
+H6	2	60	180	0x06CF4B77	0x06CF4B77	0	16777216	state sama; k minimum 0, tidak menyimpulkan arti gameplay
+H6	2	180	240	0x06CF4B77	0x06CF4B77	0	16777216	state sama; k minimum 0, tidak menyimpulkan arti gameplay
+H6	2	240	360	0x06CF4B77	0x06CF4B77	0	16777216	state sama; k minimum 0, tidak menyimpulkan arti gameplay
