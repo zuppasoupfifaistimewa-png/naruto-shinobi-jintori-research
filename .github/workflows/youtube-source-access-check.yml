@@ -1,0 +1,89 @@
+name: YouTube source metadata access check
+
+on:
+  workflow_dispatch:
+    inputs:
+      video_url:
+        description: Public YouTube video URL (metadata-only; no media download)
+        required: true
+        type: string
+        default: https://www.youtube.com/watch?v=r30Rs_NuExc
+
+permissions:
+  contents: write
+
+concurrency:
+  group: youtube-source-metadata-check
+  cancel-in-progress: false
+
+jobs:
+  check-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - name: Checkout Naruto research repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run offline unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s tests -p 'test_youtube_source_access_check.py' -v
+
+      - name: Check official YouTube oEmbed metadata only
+        id: source_check
+        shell: bash
+        env:
+          VIDEO_URL: ${{ inputs.video_url }}
+        run: |
+          set +e
+          python tools/youtube_source_access_check.py \
+            --url "$VIDEO_URL" \
+            --output reports/youtube_source_access/latest.md
+          rc=$?
+          set -e
+          mkdir -p reports/youtube_source_access
+          if [ ! -f reports/youtube_source_access/latest.md ]; then
+            printf '%s\n' '# YouTube source access check' '' \
+              '- Access state: INVALID_INPUT' \
+              '- Player playback: NOT_TESTED' \
+              '- Frame/audio inspection: NOT_STARTED' > reports/youtube_source_access/latest.md
+          fi
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          {
+            echo
+            echo "## GitHub Actions execution"
+            echo
+            echo "- Job: $GITHUB_JOB"
+            echo "- Run ID: $GITHUB_RUN_ID"
+            echo "- Source SHA: $GITHUB_SHA"
+            echo "- Checker exit code: $rc"
+          } >> reports/youtube_source_access/latest.md
+          cat reports/youtube_source_access/latest.md >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+
+      - name: Commit text-only check result to this repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/youtube_source_access/latest.md
+          if git diff --cached --quiet; then
+            echo "No report changes to commit."
+          else
+            git commit -m "Record YouTube source metadata check run $GITHUB_RUN_ID"
+            git push
+          fi
+
+      - name: Propagate checker input errors
+        if: steps.source_check.outputs.exit_code != '0'
+        shell: bash
+        run: |
+          echo "Source checker returned a nonzero exit code."
+          exit 1
