@@ -1,6 +1,6 @@
 # YouTube source access check
 
-- Checked at (UTC): 2026-10-30T22:40:33+00:00
+- Checked at (UTC): 2026-10-30T22:41:12+00:00
 - Video ID: r30Rs_NuExc
 - Source: https://www.youtube.com/watch?v=r30Rs_NuExc
 - Access state: METADATA_ONLY
@@ -23,6 +23,6 @@
 ## GitHub Actions execution
 
 - Job: check-source
-- Run ID: 41139666002
-- Source SHA: 2769a55f2b71bf227e9717a71900b21cf24685ea
+- Run ID: 41139735708
+- Source SHA: eff405eeef552cad4fab7e3c6eff0242c2cacd55
 - Checker exit code: 0
