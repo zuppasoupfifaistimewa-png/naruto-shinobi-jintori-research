@@ -24,7 +24,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       RESEARCH_REPO: ${{ github.repository }}
-      WORK: /tmp/naruto-am3-${{ github.run_id }}-${{ github.run_attempt }}
+      WORK: /tmp/naruto-an2-an3-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Checkout research repository
         uses: actions/checkout@v4
@@ -142,7 +142,7 @@ jobs:
           xdpyinfo -display "$DISPLAY" >/dev/null
 
       - name: Run H6 C/A/B schedules twice each
-        id: am3_probe
+        id: an2_an3_probe
         shell: bash
         run: |
           set +e
