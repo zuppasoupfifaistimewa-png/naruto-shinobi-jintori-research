@@ -2,6 +2,8 @@
 
 Run #41042679829 attempt 1; job ak1-ak3; source commit 7e457a0ccae1fc9d499dc8d1c5020a4bab73b079.
 
+H6 is a hybrid, not target-pure: target base with top-level field 6 (SPU) replaced by field 6 from control. H6_SHA256=d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475.
+
 ## Skala bukti K0–K5
 K0 = tidak ada bukti/fakta tidak diketahui; K1 = satu petunjuk belum diverifikasi; K2 = observasi eksplisit dari satu artefak/log; K3 = beberapa artefak statis konsisten dengan provenance; K4 = pemetaan/struktur statis direproduksi dan divalidasi independen, tanpa klaim runtime untuk semantik; K5 = observasi runtime memenuhi kriteria dan direplikasi pada sedikitnya dua peluncuran independen. Bukti statis saja maksimum K4.
 
@@ -12,22 +14,20 @@ H6 attempt2: exit_decimal=0; source=GDB 'exited normally' (normal process exit, 
 CONTROL_NOT_TARGET attempt1: exit_decimal=0; source=GDB 'exited normally' (normal process exit, decimal zero); watchdog=FALSE; quit0_call_marker=TRUE; wall_seconds=99.936.
 CONTROL_NOT_TARGET attempt2: exit_decimal=0; source=GDB 'exited normally' (normal process exit, decimal zero); watchdog=FALSE; quit0_call_marker=TRUE; wall_seconds=99.335.
 MAX_TIME_TO_FRAME360_S=98.708170175552; timeout_per_launch_s=600; timeout_ge_2x_max_time=True; all_quit0_call_markers=True.
-Akar sebab internal mengapa nested nextTick lama tidak menghentikan proses: TIDAK TAHU. Log lama mencatat watchdog frame1200 dan GDB code 065 tetapi tidak mempunyai marker pada batas callback nested. Perubahan direct-call adalah perbaikan yang diuji; bukan bukti definitif apakah callback lama tidak dijalankan atau tertunda.
+Akar sebab internal mengapa nested nextTick lama tidak menghentikan proses: TIDAK TAHU. Log lama mencatat watchdog frame1200 dan GDB `exited with code 065`; 065 adalah oktal, yaitu 53 desimal. Log lama tidak mempunyai marker pada batas callback nested. Perubahan direct-call adalah perbaikan yang diuji; bukan bukti definitif apakah callback lama tidak dijalankan atau tertunda.
 Exit code GDB dikonversi dari basis oktal ke desimal. Field emulator_exit_code_decimal menyimpan hasil; emulator_exit_code_source menyebut sumber teks log GDB. Wrapper exit code tetap kolom terpisah.
 
 ## AL2 — pelabelan ulang (tanpa emulator run)
-AL2 uses only the committed AK2_DIFF_RANGES.tsv; no emulator was launched for this relabelling.
-A grouped range is allocated only when its entire inclusive span fits exactly one mapped field. Groups crossing a label boundary remain TIDAK_TAHU.
-Ranges merge exact changed runs separated by gaps <=32 bytes. changed_bytes is exact per group, not per address, so a mixed group cannot be split accurately.
-Player records: four records at 0x80070EA0 + n*0xB4. Known fields: candidate ID bytes +0x0A..+0x0C, Chakra word +0x18..+0x1B. Other record bytes remain TIDAK TAHU.
-0x8013A554 is address/slot only; pointer semantics unresolved. 0x801CEF08 is only an address start; block extent/meaning unresolved.
-H6_attempt1_180_vs_CONTROL_attempt1_180: exact_known=2; TIDAK_TAHU=56975; total=56977.
-  0x801CEF08 overlap bound=1..3 bytes; grouped range 0x801CEF08..0x801CEF23 (span=28, changed=3); exact count TIDAK TAHU and stays inside TIDAK_TAHU total.
-H6_attempt2_180_vs_CONTROL_attempt2_180: exact_known=2; TIDAK_TAHU=56975; total=56977.
-  0x801CEF08 overlap bound=1..3 bytes; grouped range 0x801CEF08..0x801CEF23 (span=28, changed=3); exact count TIDAK TAHU and stays inside TIDAK_TAHU total.
-TARGET_SOURCE_vs_H6_attempt1_180: exact_known=2; TIDAK_TAHU=4048; total=4050.
-TARGET_SOURCE_vs_H6_attempt2_180: exact_known=2; TIDAK_TAHU=4048; total=4050.
-AL2_FIELD_RELABEL.tsv memberi exact totals per label/perbandingan; rentang berkelompok yang melintasi batas label tetap TIDAK TAHU. Untuk 0x801CEF08 hanya overlap batas bawah/atas dari known_source_overlap yang tersedia; byte tepat tidak dipindah dari TIDAK TAHU.
+Ranges are sourced from the committed AK2_DIFF_RANGES.tsv; no extra emulator launch was made for AL2. The already committed preflight AK1_REPLAY.tsv is used only to resolve runtime byte positions.
+A grouped range is allocated only to exact byte positions independently established; all other bytes in a merged span remain TIDAK_TAHU.
+Player records: 0x80070EA0 + n*0xB4. Candidate ID bytes +0x0A..+0x0C and Chakra word +0x18..+0x1B for players 0-3; every one of these fields has 0 changed bytes in all four comparisons.
+0x8013A554 stores LE32 0x801CEF08 at frames 1/60/180/240/360 in both H6 launches and both control launches (runtime K5). The slot itself changes 0 bytes in the four comparisons.
+At 0x801CEF08, the first byte is 0x01 in H6 and 0x00 in control at frame180 in both attempt pairs. One byte is assigned to the pointed-to area's first byte (K5); the area's remaining extent and meaning are UNKNOWN. Two other changed bytes in the AK2 group 0x801CEF08..0x801CEF23 stay TIDAK TAHU.
+H6_attempt1_180_vs_CONTROL_attempt1_180: candidate-ID=0; Chakra=0; slot=0; block-first-byte=1; RNG=0; callback/tick counter=2; TIDAK_TAHU=56974; total=56977.
+H6_attempt2_180_vs_CONTROL_attempt2_180: candidate-ID=0; Chakra=0; slot=0; block-first-byte=1; RNG=0; callback/tick counter=2; TIDAK_TAHU=56974; total=56977.
+TARGET_SOURCE_vs_H6_attempt1_180: candidate-ID=0; Chakra=0; slot=0; block-first-byte=0; RNG=0; callback/tick counter=2; TIDAK_TAHU=4048; total=4050.
+TARGET_SOURCE_vs_H6_attempt2_180: candidate-ID=0; Chakra=0; slot=0; block-first-byte=0; RNG=0; callback/tick counter=2; TIDAK_TAHU=4048; total=4050.
+
 
 ## AL3 — target-source vs H6
 H6 attempt1: D1=390 D60=651 D180=4050; @180 already present at @1=235; first appearing after @1=3815; @1 differences reverted by @180=155.
@@ -42,4 +42,4 @@ Perincian target-current channels, control-current channels, outcome lama, sourc
 AL1=LULUS; AL2=SELESAI_DENGAN_BATAS_RENTANG; AL3=KONSISTEN_2_LAUNCH; AL4=SELESAI. Host/RSI tetap DIPARKIR.
 
 ## Berkas hasil
-AK1_REPLAY.tsv; AK1_FINDING.txt; AK2_DIFF_SUMMARY.txt; AK2_DIFF_RANGES.tsv; AL1_AL4_FINAL_REPORT.md; AL2_FIELD_RELABEL.tsv; AL2_RELABEL_NOTES.txt; AL3_BYTE_DECOMPOSITION.tsv; AL4_HYBRID_RECONSTRUCTIONS.tsv; ACTIONS_RUN_SUMMARY.txt; logs/*.gdb.txt; logs/*.pcsx.txt. Tidak ada ISO, BIOS, savestate, Memory Card, dump RAM mentah, atau biner hibrida yang dikomit.
+AK1_REPLAY.tsv; AK1_FINDING.txt; AK2_DIFF_SUMMARY.txt; AK2_DIFF_RANGES.tsv; AL1_AL4_FINAL_REPORT.md; AL2_FIELD_RELABEL.tsv; AL2_RELABEL_NOTES.txt; AL2_RUNTIME_CROSSCHECK.txt; AL3_BYTE_DECOMPOSITION.tsv; AL4_HYBRID_RECONSTRUCTIONS.tsv; ACTIONS_RUN_SUMMARY.txt; logs/*.gdb.txt; logs/*.pcsx.txt. Tidak ada ISO, BIOS, savestate, Memory Card, dump RAM mentah, atau biner hibrida yang dikomit.
