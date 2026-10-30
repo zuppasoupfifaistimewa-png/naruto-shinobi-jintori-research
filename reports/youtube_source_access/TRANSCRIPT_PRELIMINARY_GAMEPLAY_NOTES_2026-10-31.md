@@ -5,7 +5,7 @@
 - Video ID returned by VidIQ: r30Rs_NuExc
 - Transcript language: Indonesian (id)
 - Transcript retrieval: successful; VidIQ transcript call charged 5 credits.
-- Visual scene analysis: submitted asynchronously as job job_6d494bd1-b37d-4db6-9ab2-5bd5543d5605; pending at time of this report; charged 25 credits.
+- Visual scene analysis: completed; timestamped scene breakdown saved in VIDEO_WATCH_ANALYSIS_2026-10-31.md; charge recorded as 25 credits.
 - Evidence limitation: the notes below are claims made by the streamer in transcript, not independently confirmed visual observations. Automatic speech recognition may mishear Japanese UI labels, item names, numbers, and mechanics.
 
 ## Transcript-derived candidate mechanics (NOT YET VERIFIED)
@@ -32,6 +32,10 @@
 | 35:35–36:25 | Says scroll can transfer when player defeats the opponent holding it; plans to use scroll to take a 2,700-value tile. | Scroll possession may be a special objective/condition tied to tile capture. | Streamer explanation; exact scroll effect unknown. |
 | 48:40–49:52 | Describes a tree-climbing minigame; says first to reach top wins; item use can increase/decrease steps. | Story progression may include a climbing minigame with step modifiers. | Streamer statement; visual result pending. |
 | 2:32:54 | Says Kirigakure has three battles and final battle is against Third Hokage. | A later story area may contain three battles and culminate in a Hokage III fight. | Streamer statement; needs game-state confirmation. |
+
+## Visual scene analysis follow-up
+
+Visual analysis for the exact same video ID has now completed. See VIDEO_WATCH_ANALYSIS_2026-10-31.md for scene-by-scene observations. Those observations are model-generated video analysis, not raw frame captures or emulator reproduction. The current transcript-derived candidate list below remains hypothesis/streamer-commentary evidence unless a matching visual event is described in the completed scene report.
 
 ## Current evidence classification
 
