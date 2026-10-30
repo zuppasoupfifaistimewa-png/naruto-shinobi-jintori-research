@@ -1,0 +1,249 @@
+name: AJ1 committed evidence audit and AJ2 H6 RAM probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/aj1-aj3-h6-audit.yml"
+      - "experiments/aj1_committed_raw_audit.py"
+      - "experiments/aj2_h6_ram_probe.py"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: naruto-aj1-aj3-h6
+  cancel-in-progress: false
+
+jobs:
+  h6:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      GH_TOKEN: \${{ github.token }}
+      RESEARCH_REPO: \${{ github.repository }}
+      WORK: /tmp/naruto-aj1-aj3-h6
+    steps:
+      - name: Checkout full research history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Allocate unique run and attempt output directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUTDIR="$GITHUB_WORKSPACE/reports/aj_2026-10-30/runs/run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$OUTDIR"
+          echo "OUTDIR=$OUTDIR" >> "$GITHUB_ENV"
+
+      - name: AJ1 audit exact committed bytes at ee48de4
+        shell: bash
+        run: |
+          set -euo pipefail
+          AJ_OUTPUT_DIR="$OUTDIR" python3 experiments/aj1_committed_raw_audit.py
+
+      - name: Install bounded emulator tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            xvfb x11-utils curl jq unzip python3 gdb
+          mkdir -p "$WORK"/{source,inputs,cards,resume,logs,home,.config,.data,runtime}
+          chmod 700 "$WORK/runtime"
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+
+      - name: Download and verify pinned emulator and game inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK/source"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          fetch_asset() {
+            name="$1"; out="$2"; bytes="$3"; digest="$4"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            test -n "$id" && test "$id" != null
+            curl --fail --silent --show-error --location --retry 2 --max-time 600 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$id" -o "$out"
+            test "$(stat -c %s "$out")" = "$bytes"
+            echo "$digest  $out" | sha256sum --check -
+          }
+          curl --fail --silent --show-error --location --retry 2 --max-time 60 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage 65747557 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin 325989552 58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue 116 be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8
+          fetch_asset scph7502.zip scph7502.zip 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a
+          curl --fail --silent --show-error --location --retry 2 --max-time 180 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "$API/releases/assets/686794219" -o target.sstate
+          test "$(stat -c %s target.sstate)" = 21163286
+          echo "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d  target.sstate" | sha256sum --check -
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, stat, zipfile
+          p=Path("scph7502.zip")
+          with zipfile.ZipFile(p) as z:
+              files=[]; total=0
+              for x in z.infolist():
+                  q=Path(x.filename); mode=(x.external_attr>>16)&0xffff; total+=x.file_size
+                  if q.is_absolute() or ".." in q.parts or (mode and stat.S_ISLNK(mode)): raise SystemExit("unsafe BIOS member")
+                  if x.file_size>2*1024*1024 or total>4*1024*1024: raise SystemExit("BIOS expansion bound")
+                  if not x.is_dir() and x.file_size==524288: files.append(x)
+              if len(files)!=1: raise SystemExit("expected one BIOS-sized member")
+              data=z.read(files[0]); digest=hashlib.sha256(data).hexdigest()
+              if digest!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1": raise SystemExit("BIOS SHA mismatch")
+              Path("scph7502.bin").write_bytes(data)
+              print("BIOS_SHA256="+digest)
+          lines=Path("game.cue").read_text(encoding="utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          ids=[i for i,s in enumerate(lines) if s.strip().upper().startswith("FILE ")]
+          if len(ids)!=1: raise SystemExit("expected one CUE FILE")
+          lines[ids[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          APPDIR="$WORK/source/squashfs-root"
+          test -x "$APPDIR/AppRun"
+          PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 | grep -E '/(pcsx-redux|pcsx-redux[^/]*)$' | head -n 1)"
+          test -n "$PCSX_BIN" && test -x "$PCSX_BIN"
+          echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
+          echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
+          cp target.sstate "$WORK/resume/target.sstate"
+          chmod 400 "$WORK/resume/target.sstate"
+          echo "H6_TARGET=PASS sha256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d bytes=21163286"
+
+      - name: Download control savestate artifact (temporary only)
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: "39867730674"
+          repository: \${{ github.repository }}
+          github-token: \${{ github.token }}
+          path: /tmp/naruto-aj1-aj3-h6/inputs
+
+      - name: Download reference Memory Card artifact (temporary only)
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: "39262213468"
+          repository: \${{ github.repository }}
+          github-token: \${{ github.token }}
+          path: /tmp/naruto-aj1-aj3-h6/cards
+
+      - name: Validate control and reference card; start PCSX headless display
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp "$(find "$WORK/inputs" -type f -name adaptive-cycle-01-f180.sstate -print -quit)" "$WORK/resume/control.sstate"
+          test "$(stat -c %s "$WORK/resume/control.sstate")" = 21162546
+          echo "9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492  $WORK/resume/control.sstate" | sha256sum --check -
+          cp "$(find "$WORK/cards" -type f -name naruto-storymode.mcd -print -quit)" "$WORK/reference.mcd"
+          test "$(stat -c %s "$WORK/reference.mcd")" = 131072
+          echo "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5  $WORK/reference.mcd" | sha256sum --check -
+          curl --fail --silent --show-error --location \
+            "https://raw.githubusercontent.com/pcsx-redux/pcsx-redux/0c3572c3d/src/core/sstate.h" \
+            -o "$WORK/source/sstate.h"
+          echo "PCSX_SOURCE_PIN=0c3572c3d"
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/logs/xvfb.log" 2>&1 &
+          echo $! > "$WORK/xvfb.pid"
+          export DISPLAY=:99
+          for n in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+
+      - name: Run H6 two independent PCSX-Redux headless launches
+        id: h6_probe
+        shell: bash
+        run: |
+          set +e
+          export DISPLAY=:99 HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/home/.config" \
+            XDG_DATA_HOME="$WORK/home/.data" XDG_RUNTIME_DIR="$WORK/home/runtime"
+          export LIBGL_ALWAYS_SOFTWARE=1
+          export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+          export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
+          export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
+          export QML2_IMPORT_PATH="$APPDIR/usr/qml"
+          python3 experiments/aj2_h6_ram_probe.py \
+            --target "$WORK/resume/target.sstate" \
+            --control "$WORK/resume/control.sstate" \
+            --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" \
+            --bios "$WORK/source/scph7502.bin" \
+            --cue "$WORK/source/game-run.cue" --card "$WORK/reference.mcd" \
+            --work "$WORK" --out "$OUTDIR"
+          rc=$?
+          echo "H6_SCRIPT_EXIT_CODE=$rc" >> "$OUTDIR/H6_SCRIPT_EXIT_CODE.txt"
+          echo "$rc" > "$OUTDIR/H6_SCRIPT_EXIT_CODE_VALUE.txt"
+          if [ ! -f "$OUTDIR/ACTIONS_RUN_SUMMARY.txt" ]; then
+            {
+              echo "STATUS=SETUP_OR_PROBE_FAILED"
+              echo "JOB=h6"
+              echo "RUN_ID=$GITHUB_RUN_ID"
+              echo "RUN_ATTEMPT=$GITHUB_RUN_ATTEMPT"
+              echo "HEAD_SHA=$GITHUB_SHA"
+              echo "H6_SHA256=d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475"
+              echo "EXIT_CODE=$rc"
+            } > "$OUTDIR/ACTIONS_RUN_SUMMARY.txt"
+          fi
+          exit "$rc"
+
+      - name: Publish run-scoped text evidence and summary
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          cd "$GITHUB_WORKSPACE"
+          OUTDIR="reports/aj_2026-10-30/runs/run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$OUTDIR"
+          if [ ! -f "$OUTDIR/ACTIONS_RUN_SUMMARY.txt" ]; then
+            {
+              echo "STATUS=WORKFLOW_FAILED_BEFORE_H6"
+              echo "JOB=h6"
+              echo "RUN_ID=$GITHUB_RUN_ID"
+              echo "RUN_ATTEMPT=$GITHUB_RUN_ATTEMPT"
+              echo "HEAD_SHA=$GITHUB_SHA"
+              echo "H6_SHA256=d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475"
+              echo "EXIT_CODE=TIDAK TAHU"
+            } > "$OUTDIR/ACTIONS_RUN_SUMMARY.txt"
+          fi
+          {
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "RUN_ATTEMPT=$GITHUB_RUN_ATTEMPT"
+            echo "HEAD_SHA=$GITHUB_SHA"
+            echo "JOB=h6"
+            echo "PUBLISH_PATH=$OUTDIR"
+          } > "$OUTDIR/PUBLICATION_METADATA.txt"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$OUTDIR"
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish AJ1 audit and H6 RAM probe run $GITHUB_RUN_ID attempt $GITHUB_RUN_ATTEMPT"
+            published=0
+            for n in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main
+              if [ $? -ne 0 ]; then
+                git rebase --abort
+                sleep "$n"
+                continue
+              fi
+              git push origin HEAD:main
+              if [ $? -eq 0 ]; then published=1; break; fi
+              sleep "$n"
+            done
+            test "$published" -eq 1
+          fi
+          echo "PUBLISHED_HEAD=$(git rev-parse HEAD)"
+          echo "PUBLISHED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD | grep "^$OUTDIR/" | wc -l)"
+      
+      - name: Remove ephemeral ISO, BIOS, savestates, Memory Card, RAM state, and emulator files
+        if: always()
+        shell: bash
+        run: |
+          kill "$(cat "$WORK/xvfb.pid" 2>/dev/null)" 2>/dev/null || true
+          rm -rf "$WORK"
