@@ -168,7 +168,7 @@ jobs:
             --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/source/scph7502.bin" \
             --cue "$WORK/source/game-run.cue" --card "$WORK/reference.mcd" \
             --work "$WORK" --out "$OUTDIR" --schedule "$GITHUB_WORKSPACE/experiments/AN2_AN3_INPUT_SCHEDULE.tsv" \
-            --timeout 300 --diagnostic-only
+            --timeout 600
           rc=$?
           echo "AN2_AN3_SCRIPT_EXIT_CODE=$rc" > "$OUTDIR/AN2_AN3_SCRIPT_EXIT_CODE.txt"
           exit "$rc"
