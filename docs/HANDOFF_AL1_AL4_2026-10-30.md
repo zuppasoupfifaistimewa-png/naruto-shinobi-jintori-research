@@ -6,7 +6,7 @@
 - Run final: GitHub Actions #41042679829, job ak1-ak3, numeric job ID 124019605576, conclusion success.
 - Source SHA untuk run: 7e457a0ccae1fc9d499dc8d1c5020a4bab73b079.
 - Commit hasil run asli: 493e6bf6bc4f2cc54c2221fe29a3e0d69ce70fd4.
-- Commit addendum AL2/runtime cross-check terakhir sebelum handoff: 5f16e7c31aff56b952e3b68fc0dae2ee221836f2.
+- Commit addendum AL2/runtime cross-check terakhir sebelum handoff: f699b73be9f2941328bcc53496ddbcf006504a52.
 - H6 adalah HIBRIDA, bukan target murni: target base + top-level field 6 (SPU) dari control. H6 SHA-256: d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475.
 
 ## Putusan AL
@@ -71,12 +71,52 @@ K0 tidak ada bukti/unknown; K1 petunjuk tunggal belum diverifikasi; K2 observasi
 
 ## Raw permalink untuk checkpoint laporan
 Semua URL di bawah adalah raw permalink dengan SHA commit penuh:
-- AL1–AL4 final report: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/5f16e7c31aff56b952e3b68fc0dae2ee221836f2/reports/ak_2026-10-30/runs/run-41042679829/attempt-1/AL1_AL4_FINAL_REPORT.md
-- Actions summary: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/5f16e7c31aff56b952e3b68fc0dae2ee221836f2/reports/ak_2026-10-30/runs/run-41042679829/attempt-1/ACTIONS_RUN_SUMMARY.txt
-- AL2 relabel table: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/5f16e7c31aff56b952e3b68fc0dae2ee221836f2/reports/ak_2026-10-30/runs/run-41042679829/attempt-1/AL2_FIELD_RELABEL.tsv
-- AL2 runtime cross-check: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/5f16e7c31aff56b952e3b68fc0dae2ee221836f2/reports/ak_2026-10-30/runs/run-41042679829/attempt-1/AL2_RUNTIME_CROSSCHECK.txt
-- AL3 decomposition: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/5f16e7c31aff56b952e3b68fc0dae2ee221836f2/reports/ak_2026-10-30/runs/run-41042679829/attempt-1/AL3_BYTE_DECOMPOSITION.tsv
-- AL4 reconstructions: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/5f16e7c31aff56b952e3b68fc0dae2ee221836f2/reports/ak_2026-10-30/runs/run-41042679829/attempt-1/AL4_HYBRID_RECONSTRUCTIONS.tsv
+- AL1–AL4 final report: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/f699b73be9f2941328bcc53496ddbcf006504a52/reports/ak_2026-10-30/runs/run-41042679829/attempt-1/AL1_AL4_FINAL_REPORT.md
+- Actions summary: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/f699b73be9f2941328bcc53496ddbcf006504a52/reports/ak_2026-10-30/runs/run-41042679829/attempt-1/ACTIONS_RUN_SUMMARY.txt
+- AL2 relabel table: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/f699b73be9f2941328bcc53496ddbcf006504a52/reports/ak_2026-10-30/runs/run-41042679829/attempt-1/AL2_FIELD_RELABEL.tsv
+- AL2 runtime cross-check: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/f699b73be9f2941328bcc53496ddbcf006504a52/reports/ak_2026-10-30/runs/run-41042679829/attempt-1/AL2_RUNTIME_CROSSCHECK.txt
+- AL3 decomposition: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/f699b73be9f2941328bcc53496ddbcf006504a52/reports/ak_2026-10-30/runs/run-41042679829/attempt-1/AL3_BYTE_DECOMPOSITION.tsv
+- AL4 reconstructions: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/f699b73be9f2941328bcc53496ddbcf006504a52/reports/ak_2026-10-30/runs/run-41042679829/attempt-1/AL4_HYBRID_RECONSTRUCTIONS.tsv
 
 ## AM2 — hasil analisis LCG (tanpa emulator)
 Input: AK1_REPLAY.tsv dari run 41042679829 (output commit 493e6bf6bc4f2cc54c2221fe29a3e0d69ce70fd4); H6 SHA d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475. Nilai RNG 0x800A3118 di frame 1/60/180/240/360 sama dengan 0x06CF4B77 pada kedua attempt. Delapan transisi berurutan menghasilkan k minimum 0 (state before=after); skrip tetap mendukung pencarian sampai 2^24. Tidak ada penafsiran gameplay.
+
+## AM3 — CIRCLE timing A/B headless replay (TUNTAS, K5)
+- Run berhasil: 41048937290; job `am3-h6-circle-ab`; ID job numerik 124039892346; conclusion success; kode keluar skrip 0.
+- Source commit runner: 4fbbbdf278ca71e0c84cb651287096561e9b4878.
+- Commit publikasi hasil: 51a66a060f3d4efda7eac7ada408b8d8ac88fe4c.
+- H6 SHA-256 d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475 (hybrid, bukan target murni).
+- Empat peluncuran valid (A attempt1/2, B attempt1/2); seluruh 20 capture pada frame 1/60/180/240/360 PASS. Setiap peluncuran mencatat tombol CIRCLE press dan release dengan readback PASS, PCSX.quit(0), serta GDB exited normally (kode emulator desimal 0). Watchdog tidak muncul.
+- A: CIRCLE press frame 60/release 61; dua launch RAM SHA identik pada semua lima frame.
+- B: CIRCLE press frame 90/release 91; dua launch RAM SHA identik pada semua lima frame.
+- A vs B: RAM SHA sama pada frame 1 dan 60; berbeda pertama pada frame 180; tetap berbeda di 240 dan 360. Ini observasi RAM runtime pada H6 hybrid, bukan interpretasi gameplay.
+- SHA RAM mencakup 2 MiB pertama (base 0x80000000); `ram_segment_bytes=8388608` adalah panjang field RAM hasil decode (8 MiB), bukan bytes yang di-hash. Mirror 8 MiB tetap TIDAK TAHU.
+- Waktu-ke-frame360 maksimum 142.59486198425 detik; timeout per launch 600 detik (>=2x). Cleanup ISO/BIOS/Memory Card/savestate/RAM/emulator sementara berhasil.
+- Batas eksperimen: runner memakai satu file Memory Card referensi yang sama untuk empat launch dan tidak mencatat hash sebelum/sesudah. Karena itu perbedaan A/B adalah hasil sampel yang nyata, tetapi penyebab eksklusifnya tidak dikunci pada timing tombol saja; isolasi Memory Card per launch diperlukan untuk klaim kausal lebih kuat.
+- Percobaan awal AM3 run 41048752354, job ID 124039280097, gagal sebelum emulator karena HTTP 401 dari ekspresi workflow yang ter-escape; kode keluar 22; emulator launches=0. Kesalahan diperbaiki pada source commit 4fbbb...; tidak mencemari hasil run sukses.
+
+### AM3 hasil per frame (SHA-256 first 2 MiB)
+| Frame pasca-load | A (CIRCLE f60) | B (CIRCLE f90) | A vs B |
+|---:|---|---|---|
+| 1 | 418c0566904bab0fa777f99a1a446c5526d2392cb07821b144c75045e820be8e | 418c0566904bab0fa777f99a1a446c5526d2392cb07821b144c75045e820be8e | sama |
+| 60 | 8de5a60f4610845fc918111e727703b1a271dfb14484198c67d3e080d59ba53f | 8de5a60f4610845fc918111e727703b1a271dfb14484198c67d3e080d59ba53f | sama |
+| 180 | 0506518f28d38e560ddd6dc183f87c428353678c5f51f1f61bd541970f03f736 | a856bc6ec6ac3a7e8b94956373585f767eb023f0945f600b95db9041e7e9b219 | berbeda |
+| 240 | 1c149e3b658d734c2bcf0965ac3d2c0896878c848db3ef43c4c5968041a53549 | d52662110e77cde9dd9f3753039577d9eea17743bfa6318fafd1d89dfd465297 | berbeda |
+| 360 | d1418071ebbc9ae17f5cb8a7dbcd16ee89bafe0d6a53a979ece5713bf38fc192 | c6e6aed802da200798cc7c0319903f7d90c2b69e1595e14d79f73484c9c88d97 | berbeda |
+
+Word yang tercatat pada semua capture AM3:
+- 0x80070EB8 = 0x000005DC (bytes DC 05 00 00)
+- 0x80070F6C = 0x000005DC (bytes DC 05 00 00)
+- 0x800A3118 = 0x06CF4B77 (bytes 77 4B CF 06)
+- 0x8013A554 = 0x801CEF08 (bytes 08 EF 1C 80)
+
+Raw permalink hasil AM3 (commit publikasi penuh):
+- ACTIONS_RUN_SUMMARY.txt: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/51a66a060f3d4efda7eac7ada408b8d8ac88fe4c/reports/am_2026-10-30/runs/run-41048937290/attempt-1/ACTIONS_RUN_SUMMARY.txt
+- AM3_COMPARISON_SUMMARY.txt: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/51a66a060f3d4efda7eac7ada408b8d8ac88fe4c/reports/am_2026-10-30/runs/run-41048937290/attempt-1/AM3_COMPARISON_SUMMARY.txt
+- AM3_REPLAY.tsv: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/51a66a060f3d4efda7eac7ada408b8d8ac88fe4c/reports/am_2026-10-30/runs/run-41048937290/attempt-1/AM3_REPLAY.tsv
+
+## Putusan AM dan batas proyek
+- AM1=TUNTAS; AM2=TUNTAS; AM3=TUNTAS pada cakupan H6 hybrid sebagaimana batas di atas.
+- AL4 tetap REKONSTRUKSI.
+- Story Mode belum dinyatakan tamat. Tidak ada bukti tamat yang diajukan oleh AM1–AM3.
+- Jangan mengulang AM1–AM3 atau AL1–AL4 yang sudah benar. Langkah lanjutan yang relevan adalah memperbaiki batas MCD pada uji kausal berikutnya atau melanjutkan riset lain yang belum terverifikasi; jangan memakai hasil H6 sebagai target-native proof.

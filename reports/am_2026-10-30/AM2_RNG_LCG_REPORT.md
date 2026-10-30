@@ -17,6 +17,6 @@ RNG 0x800A3118 pada frame 1, 60, 180, 240, 360 adalah 0x06CF4B77 pada kedua atte
 | 2 | 180→240 | 0x06CF4B77 | 0x06CF4B77 | 0 |
 | 2 | 240→360 | 0x06CF4B77 | 0x06CF4B77 | 0 |
 
-Formula: S'=(0x41C64E6D*S+0x3039) mod 2^32. Script SHA-256: b1e000e8d3a592018674a1b465b718754a0fca9d1aa000d086fedd97d5f7c2e6. Output TSV SHA-256: c3b0a206109f4a48d7acd750e2368185d6f89bbca1195615eefa19d8f57ddbe5.
+Formula: S'=(0x41C64E6D*S+0x3039) mod 2^32. Script SHA-256: b1e000e8d3a592018674a1b465b718754a0fca9d1aa000d086fedd97d5f7c2e6. Output TSV SHA-256: 96835dc15c7a04783ea32cf8f74ccff52fc443d4108d73b1fc9c32007a689e52.
 
 Batas: hanya step-count aritmetika atas word RNG yang direkam. Tidak menyimpulkan kapan/kenapa game memanggil RNG atau apa arti gameplay state konstan.
