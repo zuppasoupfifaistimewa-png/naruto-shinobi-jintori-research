@@ -16,6 +16,11 @@ TARGET_SHA = "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
 CONTROL_SHA = "9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492"
 H6_SHA = "d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475"
 FRAMES = (1, 60, 180, 240, 360)
+EXPECTED_H6_RAM_SHA256 = {
+    180: "4c964aaca0afccc68317acd0726fec680c305b903cd426e70afe3d8ac1f1e741",
+    240: "16880faeccfca1fbd42d199c1543b00ec8a065bcd53545d14ea4657c9a6c2d5c",
+    360: "a9ac5282e9fb9ad1e77f46ef0c291af8e7e5f27b477b6b31e319f971e7dd9942",
+}
 RAM_BYTES = 0x200000
 PLAYER_BASE = 0x80070EA0
 PLAYER_STRIDE = 0xB4
@@ -618,6 +623,11 @@ def main():
                    for n in (1, 2) for frame in FRAMES)
     control_valid = all(lookup[("CONTROL_NOT_TARGET", n, frame)]["capture_status"] == "PASS"
                         for n in (1, 2) for frame in FRAMES)
+    h6_baseline_checks = {
+        (attempt, frame): lookup[("H6", attempt, frame)]["ram_2mib_sha256"] == EXPECTED_H6_RAM_SHA256[frame]
+        for attempt in (1, 2) for frame in EXPECTED_H6_RAM_SHA256
+    }
+    h6_baselines_match = h6_valid and all(h6_baseline_checks.values())
     launch_status = {}
     for variant in ("H6", "CONTROL_NOT_TARGET"):
         for attempt in (1, 2):
@@ -698,9 +708,9 @@ def main():
             replay_lines.append(f"{variant}_FRAME_{frame}_ATTEMPT2_SHA={lookup[(variant,2,frame)]['ram_2mib_sha256']}")
     replay_lines.append("H6_FIRST_DIVERGENCE=" + first_div)
     (out / "AK1_FINDING.txt").write_text("\n".join(replay_lines) + "\n", encoding="utf-8")
-    all_required = h6_valid and control_valid and all_exits_zero and all_quit0_markers and timeout_bound_ok
-    ak1_done = h6_valid and all_exits_zero and all_quit0_markers and timeout_bound_ok
-    ak2_done = h6_valid and control_valid and all_exits_zero and all_quit0_markers and timeout_bound_ok and any(x[0].startswith("TARGET_SOURCE") for x in comparisons) and any(x[0].startswith("H6_attempt") for x in comparisons)
+    all_required = h6_valid and control_valid and h6_baselines_match and all_exits_zero and all_quit0_markers and timeout_bound_ok
+    ak1_done = h6_valid and h6_baselines_match and all_exits_zero and all_quit0_markers and timeout_bound_ok
+    ak2_done = h6_valid and control_valid and h6_baselines_match and all_exits_zero and all_quit0_markers and timeout_bound_ok and any(x[0].startswith("TARGET_SOURCE") for x in comparisons) and any(x[0].startswith("H6_attempt") for x in comparisons)
     # Broad host/RSI exploration remains parked; only a controlled one-variable A/B may proceed.
     rsi_decision = ("PARKED_GENERAL_SEARCH; allow only pre-registered one-variable host/RSI A/B with >=2 launches/condition; causality=TIDAK TAHU"
                     if ak1_done else "TETAP_DIPARKIR; baseline multi-frame replay not established")
@@ -748,7 +758,7 @@ def main():
         "K0 = tidak ada bukti/fakta tidak diketahui; K1 = satu petunjuk belum diverifikasi; K2 = observasi eksplisit dari satu artefak/log; K3 = beberapa artefak statis konsisten dengan provenance; K4 = pemetaan/struktur statis direproduksi dan divalidasi independen, tanpa klaim runtime untuk semantik; K5 = observasi runtime memenuhi kriteria dan direplikasi pada sedikitnya dua peluncuran independen. Bukti statis saja maksimum K4.",
         "",
         "## AL1 — penghentian emulator",
-        f"Capture semua frame {FRAMES} valid: H6={h6_valid}; kontrol={control_valid}. Pada frame360, PCSX.quit(0) dipanggil langsung dari callback nextTick capture, tanpa nextTick tambahan kedua. Ada marker sebelum dan selepas pemanggilan (marker selepas bisa tidak tercetak jika quit menghentikan proses).",
+        f"Capture semua frame {FRAMES} valid: H6={h6_valid}; kontrol={control_valid}. Baseline H6 AK1 pada frame 180/240/360 cocok di kedua peluncuran={h6_baselines_match}; expected={EXPECTED_H6_RAM_SHA256}. Pada frame360, PCSX.quit(0) dipanggil langsung dari callback nextTick capture, tanpa nextTick tambahan kedua. Ada marker sebelum dan selepas pemanggilan (marker selepas bisa tidak tercetak jika quit menghentikan proses).",
         *launch_lines,
         f"MAX_TIME_TO_FRAME360_S={max_to_frame}; timeout_per_launch_s={a.timeout_seconds}; timeout_ge_2x_max_time={timeout_bound_ok}; all_quit0_call_markers={all_quit0_markers}.",
         "Akar sebab internal mengapa nested nextTick lama tidak menghentikan proses: TIDAK TAHU. Log lama mencatat watchdog frame1200 dan GDB code 065 tetapi tidak mempunyai marker pada batas callback nested. Perubahan direct-call adalah perbaikan yang diuji; bukan bukti definitif apakah callback lama tidak dijalankan atau tertunda.",
@@ -767,7 +777,7 @@ def main():
         "Perincian target-current channels, control-current channels, outcome lama, source SHA, dan reconstructed hybrid SHA: AL4_HYBRID_RECONSTRUCTIONS.tsv.",
         "",
         "## Putusan",
-        f"AL1={'LULUS' if ak1_done and all_exits_zero and all_quit0_markers and timeout_bound_ok else 'BELUM LULUS'}; AL2=SELESAI_DENGAN_BATAS_RENTANG; AL3={'KONSISTEN_2_LAUNCH' if al3_consistent else 'HASIL_ANTAR_LAUNCH_TIDAK_SAMA'}; AL4={'SELESAI' if al4_complete else 'SEBAGIAN/TIDAK TAHU'}. Host/RSI tetap DIPARKIR.",
+        f"AL1={'LULUS' if ak1_done and all_exits_zero and all_quit0_markers and timeout_bound_ok and h6_baselines_match else 'BELUM LULUS'}; AL2=SELESAI_DENGAN_BATAS_RENTANG; AL3={'KONSISTEN_2_LAUNCH' if al3_consistent else 'HASIL_ANTAR_LAUNCH_TIDAK_SAMA'}; AL4={'SELESAI' if al4_complete else 'SEBAGIAN/TIDAK TAHU'}. Host/RSI tetap DIPARKIR.",
         "",
         "## Berkas hasil",
         "AK1_REPLAY.tsv; AK1_FINDING.txt; AK2_DIFF_SUMMARY.txt; AK2_DIFF_RANGES.tsv; AL1_AL4_FINAL_REPORT.md; AL2_FIELD_RELABEL.tsv; AL2_RELABEL_NOTES.txt; AL3_BYTE_DECOMPOSITION.tsv; AL4_HYBRID_RECONSTRUCTIONS.tsv; ACTIONS_RUN_SUMMARY.txt; logs/*.gdb.txt; logs/*.pcsx.txt. Tidak ada ISO, BIOS, savestate, Memory Card, dump RAM mentah, atau biner hibrida yang dikomit.",
@@ -783,6 +793,7 @@ def main():
         f"HEAD_SHA={os.getenv('GITHUB_SHA','TIDAK TAHU')}",
         f"H6_SHA256={H6_SHA}", f"TIMEOUT_PER_LAUNCH_S={a.timeout_seconds}",
         f"MAX_TIME_TO_FRAME360_S={max_to_frame}", f"TIMEOUT_GE_2X_MAX_TIME={timeout_bound_ok}",
+        f"H6_180_240_360_MATCH_AK1_BASELINES={h6_baselines_match}",
         f"ALL_FOUR_EXITS_ZERO={all_exits_zero}", f"ALL_FOUR_WATCHDOG_ABSENT={not any(x['watchdog']=='TRUE' for x in launch_status.values())}",
         f"AK1_STATUS={'TUNTAS' if ak1_done else 'SEBAGIAN'}",
         f"AK2_STATUS={'TUNTAS' if ak2_done else 'SEBAGIAN'}",
