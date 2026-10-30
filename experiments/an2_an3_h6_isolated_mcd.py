@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """AN2/AN3: H6 C/A/B replay with independent Memory Card copies and byte diffs."""
-import argparse, csv, hashlib, os, re, shutil, subprocess, time
+import argparse, csv, hashlib, os, re, shutil, signal, subprocess, time
 from pathlib import Path
 from aj2_h6_ram_probe import one, replace_top, encmsg
 
@@ -164,13 +164,29 @@ end
     e=env.copy(); e.update({"HOME":str(home),"XDG_CONFIG_HOME":str(home/".config"),
       "XDG_DATA_HOME":str(home/".data"),"XDG_RUNTIME_DIR":str(home/"runtime"),
       "AN2_STATE_PATH":str(work/"resume"/"h6.sstate"),"AN2_START_EPOCH":str(time.time())})
-    cmd=["timeout","--signal=INT","--kill-after=5s",str(args.timeout)+"s","gdb","--quiet","--nx","--batch","--return-child-result","-x",str(gcmd),
+    cmd=["gdb","--quiet","--nx","--batch","--return-child-result","-x",str(gcmd),
       "--args",args.pcsx_bin,"-noupdate","-no-debugger","-no-gdb","-bios",args.bios,"-iso",args.cue,"-memcard1",str(card),
       "-exec",pad.read_text(encoding="utf-8"),"-dofile",str(script),"-softgpu","-dynarec","-stdout","-lua_stdout","-logfile",str(plog),"-run"]
-    start=time.monotonic()
+    start=time.monotonic(); timed_out=False
     with glog.open("wb") as f:
-        try: wrapper=subprocess.run(cmd,cwd=root,env=e,stdout=f,stderr=subprocess.STDOUT,check=False).returncode
-        except Exception as ex: wrapper=255; f.write(repr(ex).encode())
+        try:
+            proc=subprocess.Popen(cmd,cwd=root,env=e,stdout=f,stderr=subprocess.STDOUT,start_new_session=True)
+            try:
+                wrapper=proc.wait(timeout=args.timeout)
+            except subprocess.TimeoutExpired:
+                timed_out=True
+                f.write(b"\\nAN2_EXTERNAL_TIMEOUT=1 signal=SIGINT process_group=TRUE\\n")
+                try: os.killpg(proc.pid,signal.SIGINT)
+                except ProcessLookupError: pass
+                try:
+                    wrapper=proc.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    f.write(b"AN2_EXTERNAL_TIMEOUT_ESCALATE=SIGKILL process_group=TRUE\\n")
+                    try: os.killpg(proc.pid,signal.SIGKILL)
+                    except ProcessLookupError: pass
+                    wrapper=proc.wait(timeout=5)
+        except Exception as ex:
+            wrapper=255; f.write(repr(ex).encode())
     wall=time.monotonic()-start
     gt=glog.read_text(encoding="utf-8",errors="replace")
     pt=plog.read_text(encoding="utf-8",errors="replace") if plog.exists() else ""
@@ -192,7 +208,7 @@ end
         row={"schedule":name,"attempt":attempt,"frame":frame,"capture_status":status,
           "time_to_frame_s":m.group(1) if m else "TIDAK TAHU","ram_first_2mib_sha256":digest,"ram_segment_bytes":segment,
           "gdb_wrapper_exit_code":wrapper,"emulator_exit_code_decimal":exitcode,"emulator_exit_code_source":source,
-          "watchdog_seen":str(watchdog).upper(),"circle_press_readback":("NOT_APPLICABLE" if name=="C" else "PASS" if pressok else "FAIL"),
+          "watchdog_seen":str(watchdog).upper(),"runner_timeout":str(timed_out).upper(),"circle_press_readback":("NOT_APPLICABLE" if name=="C" else "PASS" if pressok else "FAIL"),
           "circle_release_readback":("NOT_APPLICABLE" if name=="C" else "PASS" if releaseok else "FAIL"),
           "mcd_sha256_before":before,"mcd_sha256_after":after,"mcd_changed":("YES" if before!=after else "NO"),
           "mcd_bytes_after":card.stat().st_size if card.exists() else 0,"wall_seconds":f"{wall:.3f}"}
@@ -202,7 +218,7 @@ end
         rows.append(row)
     meta={"schedule":name,"attempt":attempt,"mcd_before":before,"mcd_after":after,
       "mcd_bytes_after":card.stat().st_size if card.exists() else 0,"wrapper_exit":wrapper,
-      "exit":exitcode,"exit_source":source,"watchdog":watchdog,"pressok":pressok,"releaseok":releaseok,
+      "exit":exitcode,"exit_source":source,"watchdog":watchdog,"runner_timeout":timed_out,"pressok":pressok,"releaseok":releaseok,
       "frame360":next((x["time_to_frame_s"] for x in rows if x["frame"]==360),"TIDAK TAHU")}
     return rows,meta,ram_by_frame
 
