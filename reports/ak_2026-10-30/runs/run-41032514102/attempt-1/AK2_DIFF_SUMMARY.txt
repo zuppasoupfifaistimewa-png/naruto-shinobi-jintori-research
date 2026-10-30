@@ -1,0 +1,12 @@
+Bytewise RAM diff; region = first 2 MiB of PS1 RAM, address base 0x80000000.
+Diff ranges merge exact changed-byte runs when their separating gap is <=32 bytes; span_bytes includes gaps, changed_bytes counts only unequal bytes.
+Known labels are only exact overlaps with 0x80070EA0, 0x8013A554, or 0x801CEF08. Player0 record extent, stack and code ranges are not mapped here; other ranges are TIDAK TAHU.
+TARGET_SOURCE_RAM_2MIB_SHA256=3ad7b85c857a868d91df4b3f1049c23889a0dc482ad7ee390ac8b6c05c3190f4
+TARGET_SOURCE_RAM_FIELD_BYTES=8388608
+H6_TWO_LAUNCH_CAPTURES_VALID=True
+CONTROL_TWO_LAUNCH_CAPTURES_VALID=True
+TARGET_SOURCE_vs_H6_attempt1_180: different_bytes=4050 grouped_ranges=135
+TARGET_SOURCE_vs_H6_attempt2_180: different_bytes=4050 grouped_ranges=135
+H6_attempt1_180_vs_CONTROL_attempt1_180: different_bytes=56977 grouped_ranges=224
+H6_attempt2_180_vs_CONTROL_attempt2_180: different_bytes=56977 grouped_ranges=224
+TARGET_vs_H6_180_CAUSE= TIDAK TAHU: target source is pre-replay while H6@180 is post-replay; no target-native @180 capture is in this test.
