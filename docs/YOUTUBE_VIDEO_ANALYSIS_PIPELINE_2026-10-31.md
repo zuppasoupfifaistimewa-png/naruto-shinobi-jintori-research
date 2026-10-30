@@ -144,3 +144,40 @@ https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jinto
 - Jalankan transcript lebih dahulu bila pengguna menyetujui biaya 5 kredit. Bila captions tidak tersedia, pertimbangkan visual watch dengan biaya 25 kredit setelah persetujuan yang sesuai. Jangan mengasumsikan private analytics, kepemilikan channel, atau akses akun kreator.
 - Jangan meminta pengguna menghubungkan channel pribadi untuk menganalisis video orang lain. Gunakan hanya URL publik yang diberikan, dan laporkan bila video private, unavailable, atau tool tidak dapat memprosesnya.
 - Setiap penggunaan kredit yang belum disetujui harus dikonfirmasi terlebih dahulu; sampaikan biaya sebelum pemanggilan.
+
+
+
+## Addendum — video watch analysis complete, 31 Oktober 2026
+
+### Sumber isi video
+- VidIQ transcript retrieval completed for video ID r30Rs_NuExc; transcript Indonesian is summarized in reports/youtube_source_access/TRANSCRIPT_PRELIMINARY_GAMEPLAY_NOTES_2026-10-31.md.
+- VidIQ visual scene-by-scene analysis completed for the same video ID. It covers the video from 00:00 to 173:15 and returns scenes covering menu/prologue, Story stages 1–3, a tree-climbing Challenge Stage, and the Stage 4 Land of Waves briefing.
+- Timestamped scene report: reports/youtube_source_access/VIDEO_WATCH_ANALYSIS_2026-10-31.md.
+- Visual analysis charge: 25 credits, as recorded at submission. Polling the existing completed result did not submit another paid analysis.
+
+### Main video findings (candidate rules)
+- Objective Chakra is stage-specific in the scenes: 3,000 (Stage 1), 4,000 (Stage 2), 4,000 (Stage 3), and 5,000 (Stage 4 briefing). Do not treat 3,000 as a universal Story Mode target.
+- Ordinary board movement is described as a 1–8 numbered roulette in the analyzed Stage 1 play; avoid calling it a die without confirming the UI.
+- Neutral nodes can be claimed by paying Chakra to erect barrier 結界 (barrier/penghalang). Own nodes offer upgrades; levels up to 5 are shown.
+- Opponent node encounters involve toll payments and/or battle. Battle shows technique choices and attack/defense roulette; exact costs and damage formula remain unknown.
+- Scroll/card effects include movement, Chakra recovery, combat boosts, traps, and a barrier-takeover technique 結界奪取の術 (Jutsu Perebutan Barrier).
+- Negative Chakra may cause barrier release 結界開放 (Pelepasan Barrier).
+- The Challenge Stage tree-climbing minigame is separate from standard board matches.
+- The video ends at the Stage 4 briefing; Stage 4 completion and later story progress are not shown.
+
+### Evidence discipline
+- VIDEO-OBSERVED means the external visual analysis model reports an on-screen event at a timestamp. The raw frames were not archived or manually re-read in this repository.
+- A video scene observation is not proof of internal program logic. Mathematical formulas, randomizer distributions, AI behavior, and state transitions remain HYPOTHESIS or UNKNOWN until checked against the ROM/emulator with controlled evidence.
+- Do not promote transcript-only claims such as Kunai deleting a tile, trap immobilization/backward motion, or a universal 3,000 target without a matching scene and controlled test.
+- No screenshot, frame, audio, video, ROM, BIOS, Memory Card, savestate, or RAM dump was committed.
+
+### Next research action
+Use the video-derived candidate rules to prioritize the existing ROM research:
+1. Determine stage-specific victory target and milestone node gate.
+2. Map barrier/node ownership and Levels 1–5, including adjacent-node effects.
+3. Identify toll vs battle conditions on opponent nodes.
+4. Separate board-movement roulette from battle attack/defense and barrier-takeover roulette.
+5. Trace negative-Chakra barrier release and its exact bookkeeping.
+6. Map scroll/card/trap effects and the Challenge Stage state machine.
+
+Do not run Story Mode or send gameplay input solely from the video analysis. Reuse existing validated checkpoints and fail-closed WAIT/UNKNOWN gates.
