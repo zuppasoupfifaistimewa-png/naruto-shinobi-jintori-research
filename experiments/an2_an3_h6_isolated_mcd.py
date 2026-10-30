@@ -116,7 +116,7 @@ _G.an2Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
  end
  if after>=1200 then log("AN2_WATCHDOG=1"); PCSX.quit(53) end
 end)
-log("AN2_READY schedule="..schedule.." press="..p.." release="..(p>0 and p+1 or 0))
+log("AN2_READY schedule="..schedule.." press="..pressFrame.." release="..(pressFrame>0 and pressFrame+1 or 0))
 '''
 
 def emu_exit(log):
