@@ -1,0 +1,23 @@
+H6 HYBRID (BUKAN TARGET MURNI)
+hybrid_sha256=d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475
+target_source_sha256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d bytes=21163286
+control_source_sha256=9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492 bytes=21162546
+hybrid_bytes=21162538 expected_committed_reference_sha256=d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475
+timeout_per_launch_s=180 historical_slowest_to_180_s=62.745 required_minimum_s=155.490
+target_ram_2mib_sha256=3ad7b85c857a868d91df4b3f1049c23889a0dc482ad7ee390ac8b6c05c3190f4 target_ram_field_bytes=8388608
+target_0x80070EB8 bytes=dc 05 00 00 LE32=0x000005DC
+target_0x80070F6C bytes=dc 05 00 00 LE32=0x000005DC
+target_0x8013A554 bytes=08 ef 1c 80 LE32=0x801CEF08
+
+ATTEMPT 1 outcome=POST_LOAD_VSYNC=180 + AE_RAM_STATE_CAPTURE elapsed=70.561992883682 wrapper_exit=-9 emulator_exit=TIDAK TAHU
+RAM_2MiB_SHA256=4c964aaca0afccc68317acd0726fec680c305b903cd426e70afe3d8ac1f1e741 capture=PASS segment_bytes=8388608
+raw_words=0x80070EB8 bytes=dc 05 00 00 LE32=0x000005DC; 0x80070F6C bytes=dc 05 00 00 LE32=0x000005DC; 0x8013A554 bytes=08 ef 1c 80 LE32=0x801CEF08
+RAM_match_target=NO
+
+ATTEMPT 2 outcome=POST_LOAD_VSYNC=180 + AE_RAM_STATE_CAPTURE elapsed=70.531628608704 wrapper_exit=-9 emulator_exit=TIDAK TAHU
+RAM_2MiB_SHA256=4c964aaca0afccc68317acd0726fec680c305b903cd426e70afe3d8ac1f1e741 capture=PASS segment_bytes=8388608
+raw_words=0x80070EB8 bytes=dc 05 00 00 LE32=0x000005DC; 0x80070F6C bytes=dc 05 00 00 LE32=0x000005DC; 0x8013A554 bytes=08 ef 1c 80 LE32=0x801CEF08
+RAM_match_target=NO
+
+two_launch_RAM_identical=YES
+two_launch_words_identical=YES
