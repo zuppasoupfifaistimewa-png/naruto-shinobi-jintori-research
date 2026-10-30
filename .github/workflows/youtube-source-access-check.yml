@@ -1,6 +1,12 @@
 name: YouTube source metadata access check
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/youtube-source-access-check.yml"
+      - "tools/youtube_source_access_check.py"
+      - "tests/test_youtube_source_access_check.py"
   workflow_dispatch:
     inputs:
       video_url:
@@ -39,7 +45,7 @@ jobs:
         id: source_check
         shell: bash
         env:
-          VIDEO_URL: ${{ inputs.video_url }}
+          VIDEO_URL: ${{ inputs.video_url || 'https://www.youtube.com/watch?v=r30Rs_NuExc' }}
         run: |
           set +e
           python tools/youtube_source_access_check.py \
