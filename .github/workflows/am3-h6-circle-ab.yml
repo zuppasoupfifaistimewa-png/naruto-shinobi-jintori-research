@@ -22,9 +22,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 55
     env:
-      GH_TOKEN: \${{ github.token }}
-      RESEARCH_REPO: \${{ github.repository }}
-      WORK: /tmp/naruto-am3-\${{ github.run_id }}-\${{ github.run_attempt }}
+      GH_TOKEN: ${{ github.token }}
+      RESEARCH_REPO: ${{ github.repository }}
+      WORK: /tmp/naruto-am3-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Checkout research repository
         uses: actions/checkout@v4
@@ -112,18 +112,18 @@ jobs:
         with:
           name: naruto-storymode-adaptive-player-private
           run-id: "39867730674"
-          repository: \${{ github.repository }}
-          github-token: \${{ github.token }}
-          path: /tmp/naruto-am3-\${{ github.run_id }}-\${{ github.run_attempt }}/inputs
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: /tmp/naruto-am3-${{ github.run_id }}-${{ github.run_attempt }}/inputs
 
       - name: Download reference Memory Card temporarily
         uses: actions/download-artifact@v4
         with:
           name: naruto-storymode-memory-card-private
           run-id: "39262213468"
-          repository: \${{ github.repository }}
-          github-token: \${{ github.token }}
-          path: /tmp/naruto-am3-\${{ github.run_id }}-\${{ github.run_attempt }}/cards
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: /tmp/naruto-am3-${{ github.run_id }}-${{ github.run_attempt }}/cards
 
       - name: Validate private inputs and initialize headless display
         shell: bash

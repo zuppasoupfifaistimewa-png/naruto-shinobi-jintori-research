@@ -1,7 +1,11 @@
-STATUS=INCOMPLETE
+STATUS=FAILED_PREEMULATOR_SETUP
 JOB=am3-h6-circle-ab
-JOB_ID=TIDAK TAHU
+JOB_ID=124039280097
 RUN_ID=41048752354
+RUN_ATTEMPT=1
 HEAD_SHA=240c448205b047f6dcbcb475c8f8b9cfca20c30a
 H6_SHA256=d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475
-EXIT_CODE=TIDAK TAHU
+FAILURE_STEP=Download and verify pinned emulator, disc, BIOS and target checkpoint
+FAILURE=HTTP 401 because workflow expressions were escaped and passed with leading backslash
+EMULATOR_LAUNCHES=0
+EXIT_CODE=22
