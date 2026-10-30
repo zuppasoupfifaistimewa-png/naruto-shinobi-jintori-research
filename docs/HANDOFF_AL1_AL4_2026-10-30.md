@@ -120,3 +120,11 @@ Raw permalink hasil AM3 (commit publikasi penuh):
 - AL4 tetap REKONSTRUKSI.
 - Story Mode belum dinyatakan tamat. Tidak ada bukti tamat yang diajukan oleh AM1–AM3.
 - Jangan mengulang AM1–AM3 atau AL1–AL4 yang sudah benar. Langkah lanjutan yang relevan adalah memperbaiki batas MCD pada uji kausal berikutnya atau melanjutkan riset lain yang belum terverifikasi; jangan memakai hasil H6 sebagai target-native proof.
+
+
+## Errata AN1 — 30 Oktober 2026
+
+- Hitungan sementara H6 vs CONTROL sebesar 3 byte diketahui + 56.974 byte TIDAK TAHU sudah superseded. Koreksi AM1 yang benar pada masing-masing dari dua attempt adalah **9 byte diketahui/berlabel + 56.968 byte TIDAK TAHU = 56.977 byte berbeda**. Angka 9 adalah byte berbeda yang dapat dipetakan ke label, bukan byte identik/tidak berubah. Rincian label serta batas semantik mengikuti laporan AM1.
+- Run gagal #41048752354: job `am3-h6-circle-ab`, ID numerik 124039280097, source SHA `240c448205b047f6dcbcb475c8f8b9cfca20c30a`; commit keluaran ringkasan bot `123654ee3a2159befb477980286d460313a61420` (short `123654e`); setup HTTP 401, kode keluar 22, emulator tidak diluncurkan.
+- Commit `4fbbbdf278ca71e0c84cb651287096561e9b4878` adalah perbaikan workflow, bukan output commit run gagal tersebut. Run sukses AM3 #41048937290 dipublikasikan pada `51a66a060f3d4efda7eac7ada408b8d8ac88fe4c`.
+- H6 tetap hybrid (target base + SPU top-level field 6 dari CONTROL), bukan target murni. Story Mode tidak diklaim tamat.
