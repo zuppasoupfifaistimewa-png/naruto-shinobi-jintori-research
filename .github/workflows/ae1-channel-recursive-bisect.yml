@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - ".github/workflows/ae1-channel-recursive-bisect.yml"
+      - "experiments/ae1_channel_fields_bisect.py"
 
 permissions:
   contents: write
@@ -29,6 +29,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: true
+
+      - name: Allocate a unique run/attempt evidence directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          AE_OUTPUT="$GITHUB_WORKSPACE/reports/ae_2026-10-29/deep/runs/run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$AE_OUTPUT"
+          echo "AE_OUTPUT=$AE_OUTPUT" >> "$GITHUB_ENV"
 
       - name: Install bounded runtime tools
         shell: bash
@@ -169,7 +177,7 @@ jobs:
             --target "$WORK/resume/target.sstate" \
             --control "$WORK/resume/control.sstate" \
             --work "$WORK" \
-            --output "$GITHUB_WORKSPACE/reports/ae_2026-10-29/deep" \
+            --output "$AE_OUTPUT" \
             --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" \
             --bios "$WORK/source/scph7502.bin" \
             --cue "$WORK/source/game-run.cue" --card "$WORK/reference.mcd"
@@ -182,8 +190,8 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if [ -d reports/ae_2026-10-29/deep ]; then
-            git add reports/ae_2026-10-29/deep
+          if [ -d "$AE_OUTPUT" ]; then
+            git add "$AE_OUTPUT"
             if ! git diff --cached --quiet; then
               git commit -m "Publish recursive AE1 SPU channel-field evidence"
               published=0
@@ -196,6 +204,7 @@ jobs:
             fi
           fi
           echo "AE1_DEEP_EVIDENCE_HEAD=$(git rev-parse HEAD)"
+          echo "AE1_OUTPUT_DIR=$AE_OUTPUT"
           echo "AE1_DEEP_RUN=$GITHUB_RUN_ID JOB=$GITHUB_JOB"
 
       - name: Remove ephemeral ISO, BIOS, savestates, Memory Card and RAM checkpoint
