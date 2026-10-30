@@ -802,3 +802,66 @@ Empat jendela 64-byte berhasil dibaca, hanya statistik kategori:
 Tidak ada syscall/break/COP0/COP2 dalam empat jendela. Jangan simpulkan branch statis dieksekusi. GP0 tetap 43 words semua pada VSync bin 200–299; family hanya 39 GPU-state-setting, 1 clear-cache, 1 monochrome rectangle dan 1 NOP. Screenshot tetap hitam.
 
 Berikutnya, sampling PC/CP0 lebih rapat hanya selama PC berada di 0x800372c0–0x800373ff, mempertahankan keluaran statistik saja. Tujuan melihat apakah perpindahan antar-PC menunjukkan loop yang stabil atau transisi singkat. RT-001 tetap blocked.
+
+
+---
+
+## Prioritas uji aturan berdasarkan video gameplay — 31 Oktober 2026
+
+Rujukan observasi video: reports/youtube_source_access/VIDEO_WATCH_ANALYSIS_2026-10-31.md  
+Cross-check kode/data ROM: docs/GAME_RULES.md, bagian "Cross-check video gameplay vs data ROM".
+
+Bagian ini adalah rencana uji, **bukan izin untuk menjalankan gameplay atau memulihkan state**. Sebelum eksperimen aktual, periksa handoff/checkpoint terbaru dan semua gate WAIT/UNKNOWN/NO-GO. Jangan memakai checkpoint yang tidak terbukti dapat dipulihkan. Jangan mengirim input jika layar, fase, atau prompt belum dikenali.
+
+### Prioritas 1 — target Chakra dan pemicu kemenangan
+1. Pada skenario yang sudah teridentifikasi secara visual sebagai Stage 1, catat saldo awal tiap pemain dan target mission yang tampil.
+2. Gunakan screenshot sebelum/sesudah saat Chakra melewati 3.000; jangan lanjutkan input jika target/milestone belum terbaca.
+3. Catat apakah victory check berjalan saat saldo melewati target, saat pemain mendarat pada node tertentu, saat melewati node milestone, atau pada akhir fase/giliran.
+4. Cocokkan dengan record statis 0x00000A00 (1.500/3.000) tanpa langsung menganggap record tersebut sudah dipetakan satu-ke-satu.
+5. Ulangi terpisah untuk Stage 2/3 (2.000/4.000), Stage 4 target 5.000 jika stage itu kelak dapat dicapai dengan checkpoint sah. Catat perbedaan jumlah peserta dan objective.
+6. Jangan menggunakan nilai kemenangan akhir video (9.963, 5.806, 10.690) sebagai ambang. Itu hanya nilai yang dilaporkan pada adegan victory.
+
+### Prioritas 2 — node, ownership, barrier, dan level
+1. Rekam state node netral: owner ID, nilai/toll, durability, Chakra sebelum aksi.
+2. Setelah prompt bangun barrier terbaca, gunakan hanya aksi kontekstual yang terlihat; catat biaya aktual dan perubahan owner/level.
+3. Uji upgrade Level 1 ke 2 satu kali pada node milik pemain; ukur Chakra yang dikurangi, toll/nilai yang berubah, dan durability.
+4. Lanjutkan level berikutnya hanya setelah state sebelumnya terverifikasi dan checkpoint aman.
+5. Bandingkan dua node terisolasi dengan dua node bersebelahan untuk menguji bonus adjacency/chain. Jaga semua variabel lain sama.
+6. Uji apakah warna/jenis node mengubah biaya atau hasil; jangan menganggap contoh 60/150 Chakra dari terjemahan sebagai harga universal.
+
+### Prioritas 3 — mendarat di node lawan dan battle
+1. Catat urutan prompt saat mendarat di node lawan: toll, pilihan battle, atau jalur alternatif.
+2. Jika prompt battle terlihat dan gate input mengizinkan, pilih satu aksi yang tertulis jelas; catat nama Jepang dan terjemahan Indonesia berdampingan.
+3. Pisahkan roulette gerak board 1–8 dari roulette battle attack/defense serta roulette takeover 10+. Catat nilai, timestamp/frame, dan state before/after.
+4. Catat Chakra yang dipakai tiap jutsu, pilihan attacker/defender, damage barrier, durability tersisa, hasil ownership.
+5. Jangan membuat formula damage dari satu ronde. Ulangi dengan variabel terkontrol dan beberapa hasil roulette.
+
+### Prioritas 4 — negative Chakra dan barrier release
+1. Rekam saldo sebelum/sesudah toll dan battle sampai kondisi negatif tercapai secara alami dalam skenario terkontrol.
+2. Catat kapan prompt 結界開放 (Pelepasan Barrier) muncul, barrier mana yang dipilih/dilepas, dan nilai saldo setelah pelepasan.
+3. Periksa apakah urutan release mengikuti level, nilai, jarak, pemilik, atau aturan lain; jangan menebak jika game memilih otomatis.
+4. Bandingkan dengan batas storage setter Chakra -9.999…99.999 tanpa menganggap batas storage sebagai batas gameplay.
+
+### Prioritas 5 — scroll, kartu, dan trap
+1. Untuk setiap kartu, rekam nama Jepang/ikon, sumber node/event, timing penggunaan, biaya, dan perubahan board state.
+2. Uji satu kartu per eksperimen. Bedakan movement card, Chakra recovery, combat modifier, barrier takeover, dan trap.
+3. Untuk trap, catat lokasi pemasangan, pemicu, target, dan perubahan gerak lawan. Klaim mundur atau immobilize tetap UNKNOWN sampai perubahan state terlihat.
+4. Jangan menganggap "Kunai dua kali menghapus tile" sebagai aturan; uji damage terhadap barrier dan ownership terpisah.
+
+### Prioritas 6 — Challenge Stage dan progression
+1. Perlakukan tree-climbing Challenge Stage sebagai state machine terpisah dari board match.
+2. Catat posisi langkah kedua pemain, Chakra awal (video melaporkan 600), penggunaan kartu, dan apakah kondisi selesai adalah mencapai puncak atau mengurangi Chakra lawan ke 0.
+3. Bandingkan dua record statis 600/0 sebagai kandidat konfigurasi minigame, tetapi jangan memberi nama ID sampai pemilih record diketahui.
+4. Catat reward/branching Story setelah hasil minigame. Video menunjukkan transisi setelah challenge menuju briefing Stage 4, tetapi tidak menunjukkan konsekuensi jangka panjang.
+5. Stage 4 yang tampak di video baru briefing: target 5.000; belum ada bukti completion.
+
+### Bukti minimum setiap eksperimen
+- ID run, workflow/job, commit/source SHA, exit code.
+- Checkpoint sumber yang digunakan dan bukti restore (bila restore diizinkan).
+- Identifikasi layar dan prompt sebelum input.
+- Snapshot autentik sebelum/sesudah dengan frame/timestamp.
+- Log input aktual serta readback, tanpa menganggap readback controller sebagai bukti efek gameplay.
+- State/Chakra/node/battle delta yang relevan, batas pengukuran, dan hasil cleanup.
+- Kesimpulan diberi label TERVERIFIKASI, HIPOTESIS, atau UNKNOWN; satu hasil yang ambigu tidak menaikkan status.
+
+**Safety gates tetap berlaku:** dialog Story Mode dilewati dengan START, bukan Circle. Circle hanya untuk prompt/menu yang konteksnya sudah terlihat dan terbukti memerlukannya. Jangan melakukan restore, menjalankan adaptive player, atau mengirim gameplay input ketika cue target belum tervalidasi. ROM, BIOS, Memory Card, savestate, dump RAM, dan screenshot privat tetap di luar Git.
