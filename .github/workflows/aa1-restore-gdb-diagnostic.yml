@@ -774,3 +774,5 @@ jobs:
         run: |
           kill "$(cat "$AA_WORK/xvfb.pid" 2>/dev/null)" 2>/dev/null || true
           rm -rf "$AA_WORK" "$RUNNER_TEMP/naruto-aa1-gdb"
+
+# AH2 trigger only: workflow logic remains byte-identical to c9636874dd6480a2b6d00bc8a759f6ef8ceeba5b.
