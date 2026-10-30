@@ -183,3 +183,49 @@ Dengan demikian, biaya bangun/upgrade hanya dapat dinyatakan **terlihat pada UI 
 - [Halaman pengembang/kontraktor ROUTE134 tentang game](https://route134.stars.ne.jp/service/naruto.html): uraian umum tentang permainan papan penguasaan wilayah, gerak roulette, penggunaan Chakra untuk mengambil petak, serta battle saat memasuki wilayah musuh.
 
 Sumber UI/eksternal ini membantu memberi nama pada aksi dan membuat hipotesis; mereka tidak menggantikan call chain kode atau tes runtime untuk menetapkan rumus universal.
+
+---
+
+## Cross-check video gameplay vs data ROM — 31 Oktober 2026
+
+Sumber video: https://www.youtube.com/watch?v=r30Rs_NuExc  
+Laporan timestamped: reports/youtube_source_access/VIDEO_WATCH_ANALYSIS_2026-10-31.md
+
+Analisis visual otomatis melaporkan adegan Story Stage 1–3, Challenge Stage, dan briefing Stage 4. Hasil ini dipakai sebagai cross-check eksternal terhadap konfigurasi ROM statis; bukan pengganti uji frame/emulator.
+
+### Korelasi objective Chakra dan konfigurasi ROM
+
+| Segmen video | Start Chakra dan target yang dilaporkan | Record ROM statis yang cocok | Status hubungan |
+|---|---|---|---|
+| Stage 1 vs Mizuki | 1.500; target 3.000 | ID 0x00000A00: start 1.500 / target 3.000 | Kecocokan nilai kuat; mapping ID ke stage masih kandidat |
+| Stage 2 vs Sakura (Naruto + Konohamaru) | 2.000; target 4.000 | ID 0x00010B01 atau 0x00020C02: 2.000 / 4.000 | Kecocokan nilai; ID spesifik belum ditentukan |
+| Stage 3 Bell Test (4 pihak) | 2.000; target 4.000 | Salah satu record 2.000 / 4.000 | Kecocokan nilai; ID spesifik belum ditentukan |
+| Stage 4 Land of Waves briefing | Target 5.000; start tidak dilaporkan pada breakdown | Ada beberapa record 2.500 / 5.000 | Target selaras; start dan ID stage belum terbukti |
+| Challenge Stage tree-climbing | 600 per peserta; kondisi akhir disebut mencapai puncak atau Chakra lawan 0 | Dua record statis memiliki start 600 / target 0 | Kandidat kuat sebagai konfigurasi minigame; mapping belum terbukti |
+
+**Arti penting:** angka target bukan satu angka universal. Stage 1–3 yang ditampilkan video cocok dengan nilai start/target pada beberapa record konfigurasi ROM. Dua skenario 600/0 masuk akal sebagai kandidat Challenge Stage, tetapi tidak boleh dipasangkan dengan record tertentu tanpa menelusuri pemilih record dan menguji runtime.
+
+### Cross-check dengan fakta kode
+
+- Getter/setter Chakra pada kode statis telah dipetakan ke empat slot pemain; setter membatasi penyimpanan hingga -9.999…99.999. Video melaporkan Mizuki mencapai saldo negatif sekitar -4.459 sampai -6.219 sebelum barrier dilepas. Ini cocok dengan kemampuan representasi saldo negatif, tetapi tidak membuktikan aturan likuidasi atau rumus saldo.
+- Analisis statis mengidentifikasi kandidat pemakaian RNG, termasuk modulo divisor pada 0x80015ADC, shuffle byte pada 0x80015B7C, pemilihan kode dari himpunan nilai pada 0x8001A328, dan penulisan 12 bit RNG ke field +0x34 pada 0x80020BF4. Video menampilkan konteks randomizer yang berbeda: roulette gerak 1–8, roulette takeover dengan hasil 10+, dan roulette serang/bertahan. Belum ada bukti untuk memasangkan konteks visual tersebut ke salah satu caller RNG di atas.
+- Data ROM memuat label/petunjuk seperti LVUP_ESTATE, CHAKRA_DOWN, FUUIN_GET, NINJYUTU, KABE dan bitfield owner pada data petak. Video menampilkan barrier Level 1–5, upgrade, kartu/scroll, dan battle barrier. Ini mempersempit pencarian, tetapi handler dan field semantik untuk tiap aksi belum ditemukan.
+- Video melaporkan kemenangan pada nilai yang tampak jauh di atas target: Stage 1 sekitar 9.963, Stage 2 sekitar 5.806, Stage 3 sekitar 10.690. Karena ringkasan scene bukan pembacaan frame mentah dan belum mencatat kapan target pertama kali tercapai, tidak boleh disimpulkan bahwa nilai tersebut adalah target atau bahwa target saja langsung memicu kemenangan. Waktu pemeriksaan target, node milestone, dan urutan transisi tetap perlu diuji.
+
+### Label kepastian setelah cross-check
+
+**TERKONFIRMASI SECARA SILANG (video + data ROM statis):**
+- Nilai konfigurasi stage yang tampak pada Stage 1–3 cocok dengan pasangan start/target pada tabel statis.
+- Negative Chakra yang dilaporkan video berada dalam rentang yang dapat direpresentasikan oleh setter Chakra statis.
+
+**VIDEO-OBSERVED (analisis visual otomatis; belum uji ROM):**
+- Gerak roulette 1–8 pada board Stage 1; barrier Level 1–5; toll; pilihan teknik battle; roulette battle; efek kartu/scroll; barrier release; Challenge Stage; briefing Stage 4.
+
+**HIPOTESIS / UNKNOWN (belum ditutup):**
+- ID record persis untuk masing-masing stage/minigame.
+- Formula toll, biaya bangun/upgrade, bonus adjacency, durability, damage, dan efek setiap kartu/trap.
+- Kapan dan bagaimana target Chakra diperiksa; apakah harus melewati node milestone.
+- Pemetaan setiap roulette ke pemanggil RNG statis.
+- Efek kontrol/tombol dan kebijakan AI.
+
+Tidak ada status Step 8 yang dinaikkan hanya berdasarkan video. Hubungan antara record konfigurasi, object field, dan transition masih harus dibuktikan melalui call chain/runtime test.
