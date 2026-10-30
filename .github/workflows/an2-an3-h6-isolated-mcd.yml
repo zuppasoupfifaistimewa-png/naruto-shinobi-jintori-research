@@ -129,10 +129,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cp "$(find "$WORK/inputs" -type f -name adaptive-cycle-01-f180.sstate -print -quit)" "$WORK/resume/control.sstate"
+          echo "CONTROL_ARTIFACT_FILE_MANIFEST_BEGIN"
+          find "$WORK/inputs" -type f -printf '%p %s bytes\\n' | sort
+          echo "CONTROL_ARTIFACT_FILE_MANIFEST_END"
+          CONTROL_PATH="$(find "$WORK/inputs" -type f -size 21162546c -print -quit)"
+          test -n "$CONTROL_PATH" || { echo "CONTROL_ARTIFACT_EXPECTED_SIZE_FILE_NOT_FOUND"; exit 1; }
+          cp "$CONTROL_PATH" "$WORK/resume/control.sstate"
           test "$(stat -c %s "$WORK/resume/control.sstate")" = 21162546
           echo "9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492  $WORK/resume/control.sstate" | sha256sum --check -
-          cp "$(find "$WORK/cards" -type f -name naruto-storymode.mcd -print -quit)" "$WORK/reference.mcd"
+          echo "MEMCARD_ARTIFACT_FILE_MANIFEST_BEGIN"
+          find "$WORK/cards" -type f -printf '%p %s bytes\\n' | sort
+          echo "MEMCARD_ARTIFACT_FILE_MANIFEST_END"
+          CARD_PATH="$(find "$WORK/cards" -type f -size 131072c -print -quit)"
+          test -n "$CARD_PATH" || { echo "MEMCARD_ARTIFACT_EXPECTED_SIZE_FILE_NOT_FOUND"; exit 1; }
+          cp "$CARD_PATH" "$WORK/reference.mcd"
           test "$(stat -c %s "$WORK/reference.mcd")" = 131072
           echo "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5  $WORK/reference.mcd" | sha256sum --check -
           Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/logs/xvfb.log" 2>&1 &
