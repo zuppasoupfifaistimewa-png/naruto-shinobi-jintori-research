@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: naruto-an2-an3-h6-isolated-mcd
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   an2-an3-h6-isolated-mcd:
@@ -185,6 +185,8 @@ jobs:
           if [ ! -f "$OUTDIR/AN3_DIFF_RANGES.tsv" ]; then
             printf 'record_type\tgroup_index\tcomparison\tattempt\tframe\tstart_address\tend_address_inclusive\tspan_bytes\tchanged_bytes_in_range\ttotal_diff_bytes\tCHAKRA\tRNG\tSLOT_0x8013A554\tBLOCK_0x801CEF08\t0x80066E7C\tTIDAK_TAHU\tlabel_plus_unknown_equals_total\tgroup_gap_rule\n' > "$OUTDIR/AN3_DIFF_RANGES.tsv"
           fi
+          SCRIPT_EXIT_CODE="$(sed -n 's/^AN2_AN3_SCRIPT_EXIT_CODE=//p' "$OUTDIR/AN2_AN3_SCRIPT_EXIT_CODE.txt" 2>/dev/null | head -n 1)"
+          test -n "$SCRIPT_EXIT_CODE" || SCRIPT_EXIT_CODE="TIDAK TAHU"
           if [ ! -f "$OUTDIR/ACTIONS_RUN_SUMMARY.txt" ]; then
             {
               echo "STATUS=INCOMPLETE"
@@ -192,7 +194,7 @@ jobs:
               echo "JOB_ID=$JOB_ID"
               echo "RUN_ID=$GITHUB_RUN_ID"
               echo "SOURCE_SHA=$GITHUB_SHA"
-              echo "EXIT_CODE=TIDAK TAHU"
+              echo "EXIT_CODE=$SCRIPT_EXIT_CODE"
             } > "$OUTDIR/ACTIONS_RUN_SUMMARY.txt"
           else
             sed -i "s/^JOB_ID=.*/JOB_ID=$JOB_ID/" "$OUTDIR/ACTIONS_RUN_SUMMARY.txt"
