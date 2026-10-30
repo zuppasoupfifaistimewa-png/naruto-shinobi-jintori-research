@@ -132,3 +132,15 @@ https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jinto
 2. Setelah koneksi benar-benar aktif, jalankan transcript/visual analysis pada URL video yang sama dan verifikasi video ID sebelum menggunakan hasilnya.
 3. Bila VidIQ tetap tidak dapat mengambil isi video ini, gunakan player resmi atau materi ekspor yang pemiliknya berhak bagikan; jangan mengunduh stream dengan metode tidak resmi.
 4. Setiap klaim gameplay harus merujuk ke timestamp dan bukti visual/audio dari video sumber ini. Jika bukti tidak tersedia, tandai UNKNOWN.
+
+
+## Koreksi akses video pihak ketiga — 31 Oktober 2026
+
+- Video sumber r30Rs_NuExc adalah video publik milik kanal pihak lain. Pengguna tidak perlu memiliki atau menghubungkan channel YouTube sendiri untuk meminta analisis konten publik.
+- Layar "Connect channel" di onboarding VidIQ terutama untuk fitur analitik channel milik pengguna. Itu bukan prasyarat bagi tool riset konten publik.
+- VidIQ public-video capabilities tersedia melalui:
+  - vidiq_video_transcript: mengambil captions/transcript video publik bila tersedia; biaya 5 kredit per pemanggilan.
+  - vidiq_video_watch: analisis scene-by-scene bertimestamp dan momen visual untuk long-form YouTube; mendukung video hingga 6 jam; biaya 25 kredit per pemanggilan.
+- Jalankan transcript lebih dahulu bila pengguna menyetujui biaya 5 kredit. Bila captions tidak tersedia, pertimbangkan visual watch dengan biaya 25 kredit setelah persetujuan yang sesuai. Jangan mengasumsikan private analytics, kepemilikan channel, atau akses akun kreator.
+- Jangan meminta pengguna menghubungkan channel pribadi untuk menganalisis video orang lain. Gunakan hanya URL publik yang diberikan, dan laporkan bila video private, unavailable, atau tool tidak dapat memprosesnya.
+- Setiap penggunaan kredit yang belum disetujui harus dikonfirmasi terlebih dahulu; sampaikan biaya sebelum pemanggilan.
