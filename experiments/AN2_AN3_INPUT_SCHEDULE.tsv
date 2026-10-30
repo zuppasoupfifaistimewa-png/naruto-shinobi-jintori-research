@@ -1,0 +1,4 @@
+schedule	button	press_frame	release_frame	launch_count	clock_basis
+C	NONE	0	0	2	post-load GPU::Vsync frames; no input
+A	CIRCLE	60	61	2	post-load GPU::Vsync frames; one-frame press
+B	CIRCLE	90	91	2	post-load GPU::Vsync frames; one-frame press
