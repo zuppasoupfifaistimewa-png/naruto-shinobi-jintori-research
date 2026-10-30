@@ -22,8 +22,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     env:
-      GH_TOKEN: \${{ github.token }}
-      RESEARCH_REPO: \${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+      RESEARCH_REPO: ${{ github.repository }}
       WORK: /tmp/naruto-aj1-aj3-h6
     steps:
       - name: Checkout full research history
@@ -124,8 +124,8 @@ jobs:
         with:
           name: naruto-storymode-adaptive-player-private
           run-id: "39867730674"
-          repository: \${{ github.repository }}
-          github-token: \${{ github.token }}
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
           path: /tmp/naruto-aj1-aj3-h6/inputs
 
       - name: Download reference Memory Card artifact (temporary only)
@@ -133,8 +133,8 @@ jobs:
         with:
           name: naruto-storymode-memory-card-private
           run-id: "39262213468"
-          repository: \${{ github.repository }}
-          github-token: \${{ github.token }}
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
           path: /tmp/naruto-aj1-aj3-h6/cards
 
       - name: Validate control and reference card; start PCSX headless display
