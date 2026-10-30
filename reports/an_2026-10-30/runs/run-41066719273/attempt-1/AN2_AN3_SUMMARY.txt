@@ -1,1 +1,13 @@
-STATUS=INCOMPLETE (runner did not produce a completed summary)
+AN2/AN3 PREFLIGHT ATTEMPT — NOT A RUNTIME RESULT
+STATUS=SEBAGIAN
+K=K0 (no emulator launches; no runtime captures)
+RUN_ID=41066719273
+JOB=an2-an3-h6-isolated-mcd
+JOB_ID=124100558812
+SOURCE_SHA=4a4f1fbfdd09aca578ab3e6a3585736fe66156b1
+FAILURE=Validate private inputs and initialize headless display: lookup by expected filename found no CONTROL file; cp returned exit code 1.
+CONTROL_ARTIFACT_DOWNLOAD=PASS (artifact archive downloaded; internal filename did not match the hard-coded finder)
+MEMCARD_ARTIFACT_DOWNLOAD=PASS (download step completed; validation halted before inspecting the extracted file)
+EMULATOR_LAUNCHES=0
+NO_CAPTURE_NO_DIFF=TRUE
+EXIT_CODE=1 (validation shell; not emulator exit)
