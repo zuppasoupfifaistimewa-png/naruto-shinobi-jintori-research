@@ -219,7 +219,8 @@ jobs:
           } > "$OUTDIR/PUBLICATION_METADATA.txt"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$OUTDIR/AN2_CAPTURE_SUMMARY.tsv" "$OUTDIR/AN3_DIFF_RANGES.tsv" "$OUTDIR/AN2_AN3_SUMMARY.txt" "$OUTDIR/ACTIONS_RUN_SUMMARY.txt" "$OUTDIR/PUBLICATION_METADATA.txt"
+          # OUTDIR is text-only: summaries, TSVs, and emulator/GDB text logs. Private binaries stay under WORK and are never staged.
+          git add "$OUTDIR"
           if ! git diff --cached --quiet; then
             git commit -m "Publish AN2_AN3 H6 Circle A-B replay run $GITHUB_RUN_ID attempt $GITHUB_RUN_ATTEMPT"
             published=0
