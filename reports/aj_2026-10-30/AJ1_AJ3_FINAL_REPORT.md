@@ -26,7 +26,7 @@ Workflow AE1 lama diperbaiki agar menulis ke reports/ae_2026-10-29/deep/runs/run
 
 ## AJ2 — H6 dua peluncuran headless
 
-H6 dibentuk dari target checkpoint SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d, dengan hanya top-level field 6 (SPU) diganti oleh field 6 dari control SHA-256 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492. Label: target-base + SPU field-6 control; BUKAN target murni. Hibrida sementara 21,163,? bytes tidak dikomit; fingerprint hibridanya diverifikasi sebagai SHA-256 64 karakter:
+H6 dibentuk dari target checkpoint SHA-256 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d, dengan hanya top-level field 6 (SPU) diganti oleh field 6 dari control SHA-256 9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492. Label: target-base + SPU field-6 control; BUKAN target murni. Hibrida sementara berukuran 21.162.538 byte tidak dikomit; fingerprint hibridanya diverifikasi sebagai SHA-256 64 karakter:
 d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475.
 
 Runtime pin PCSX-Redux 0c3572c3d, no-input, dua proses independen. Timeout masing-masing 180 detik. Waktu tercepat/terlama historis untuk H6 frame 180: hingga 62,745 detik; batas minimal yang diminta 2 × 62,745 + 30 = 155,490 detik. Timeout 180 detik memenuhi batas. Dua peluncuran baru mencapai POST_LOAD_VSYNC=180 dan AE_H6_RAM_CAPTURE=PASS pada:
