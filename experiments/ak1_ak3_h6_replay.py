@@ -10,14 +10,17 @@ import subprocess
 import time
 from pathlib import Path
 
-from aj2_h6_ram_probe import one, replace_top, encmsg, sha
+from aj2_h6_ram_probe import one, replace_top, encmsg, sha, fields
 
 TARGET_SHA = "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
 CONTROL_SHA = "9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492"
 H6_SHA = "d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475"
-FRAMES = (180, 240, 360)
+FRAMES = (1, 60, 180, 240, 360)
 RAM_BYTES = 0x200000
-ADDRESSES = (0x80070EB8, 0x80070F6C, 0x8013A554)
+PLAYER_BASE = 0x80070EA0
+PLAYER_STRIDE = 0xB4
+ADDRESSES = tuple([PLAYER_BASE + n * PLAYER_STRIDE + 0x18 for n in range(4)] +
+                  [0x8013A554, 0x801CEF08, 0x800A3118, 0x80066E7C])
 
 def ram2m(state_bytes):
     memory = one(state_bytes, 3)
@@ -48,6 +51,8 @@ _G.akLoaded = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", 
   log("AK_SAVE_STATE_LOADED=1")
 end)
 local paths = {
+  [1]="runtime/frame1.sstate",
+  [60]="runtime/frame60.sstate",
   [180]="runtime/frame180.sstate",
   [240]="runtime/frame240.sstate",
   [360]="runtime/frame360.sstate"
@@ -66,7 +71,11 @@ local function snap(frame)
     PCSX.nextTick(function() PCSX.quit(62) end)
     return
   end
-  if frame == 360 then PCSX.nextTick(function() PCSX.quit(0) end) end
+  if frame == 360 then
+    log("AK_QUIT0_CALL_BEGIN=1 frame=360 dispatch=direct")
+    local qok, qerr = pcall(function() PCSX.quit(0) end)
+    log("AK_QUIT0_CALL_RETURNED=1 ok="..tostring(qok).." detail="..tostring(qerr))
+  end
 end
 _G.akVsync = PCSX.Events.createEventListener("GPU::Vsync", function()
   vsync = vsync + 1
@@ -88,7 +97,7 @@ _G.akVsync = PCSX.Events.createEventListener("GPU::Vsync", function()
   end
   if loaded then
     after = after + 1
-    for _, frame in ipairs({180,240,360}) do
+    for _, frame in ipairs({1,60,180,240,360}) do
       if after >= frame and not done[frame] and not pending[frame] then
         pending[frame] = true
         log("AK_POST_LOAD_VSYNC="..frame.." elapsed_since_launch_s="..tostring(os.time()-launchEpoch))
@@ -109,8 +118,14 @@ log("AK_READY_NO_INPUT=1")
 '''.lstrip()
 
 def parse_exit(log_text):
-    m = re.search(r"(?:Inferior\s+\d+.*?exited with code|Program exited with code)\s*[=:]?\s*(-?\d+)", log_text, re.I)
-    return m.group(1) if m else "TIDAK TAHU"
+    # GDB prints the inferior's POSIX exit status in octal.
+    m = re.search(r"Inferior\s+\d+.*?exited with code\s+([0-7]+)", log_text, re.I)
+    if m:
+        return str(int(m.group(1), 8)), "GDB inferior exit status (octal converted to decimal)"
+    m = re.search(r"Program exited with code\s+([0-7]+)", log_text, re.I)
+    if m:
+        return str(int(m.group(1), 8)), "GDB program exit status (octal converted to decimal)"
+    return "TIDAK TAHU", "no explicit GDB/PCSX exit status"
 
 def run_one(variant, attempt, state_path, a, out, work, timeout_s, env_base):
     label = f"{variant}-attempt{attempt}"
@@ -187,7 +202,10 @@ end
     gdb_text = gdb_log.read_text(encoding="utf-8", errors="replace")
     pcsx_text = pcsx_log.read_text(encoding="utf-8", errors="replace") if pcsx_log.exists() else ""
     combined = gdb_text + "\n" + pcsx_text
-    emulator_exit = parse_exit(combined)
+    emulator_exit, emulator_exit_source = parse_exit(combined)
+    watchdog_seen = "AK_POST_LOAD_FRAME_WATCHDOG=1" in combined
+    quit0_call_seen = "AK_QUIT0_CALL_BEGIN=1 frame=360" in combined
+    quit0_return_seen = "AK_QUIT0_CALL_RETURNED=1" in combined
     rows = []
     for frame in FRAMES:
         state_file = runtime / f"frame{frame}.sstate"
@@ -211,7 +229,11 @@ end
             "elapsed_since_launch_s": marker.group(1) if marker else "TIDAK TAHU",
             "ram_2mib_sha256": ram_hash, "ram_segment_bytes": ram_len,
             "words": word_text, "gdb_wrapper_exit_code": wrapper_rc,
-            "emulator_exit_code_in_log": emulator_exit,
+            "emulator_exit_code_decimal": emulator_exit,
+            "emulator_exit_code_source": emulator_exit_source,
+            "watchdog_seen": str(watchdog_seen).upper(),
+            "quit0_call_marker_seen": str(quit0_call_seen).upper(),
+            "quit0_return_marker_seen": str(quit0_return_seen).upper(),
             "wall_seconds": f"{wall:.3f}",
             "gdb_log": str(gdb_log.relative_to(out)),
             "pcsx_log": str(pcsx_log.relative_to(out)),
@@ -259,6 +281,296 @@ def make_diff(a, b, comparison):
             "known_source_overlap": category,
         })
     return len(changed), out
+
+
+def diff_positions(a, b):
+    if len(a) != len(b):
+        raise ValueError("RAM byte lengths differ")
+    return {i for i, (x, y) in enumerate(zip(a, b)) if x != y}
+
+
+def write_al3(out, work, target_ram):
+    rows, summaries = [], []
+    for attempt in (1, 2):
+        snapshots = {}
+        for frame in (1, 60, 180):
+            p = work / "launches" / f"H6-attempt{attempt}" / "runtime" / f"frame{frame}.sstate"
+            if not p.is_file():
+                raise ValueError(f"AL3 missing H6 attempt{attempt} frame{frame}")
+            snapshots[frame], _ = ram2m(p.read_bytes())
+        d1 = diff_positions(target_ram, snapshots[1])
+        d60 = diff_positions(target_ram, snapshots[60])
+        d180 = diff_positions(target_ram, snapshots[180])
+        present = len(d1 & d180)
+        later = len(d180 - d1)
+        reverted = len(d1 - d180)
+        rows.append({
+            "attempt": attempt,
+            "target_vs_h6_frame1_changed_bytes": len(d1),
+            "target_vs_h6_frame60_changed_bytes": len(d60),
+            "target_vs_h6_frame180_changed_bytes": len(d180),
+            "frame180_differences_already_present_at_frame1": present,
+            "frame180_differences_first_appearing_after_frame1": later,
+            "frame1_differences_reverted_by_frame180": reverted,
+            "new_differences_between_frame1_and_frame60": len(d60 - d1),
+            "new_differences_between_frame60_and_frame180": len(d180 - d60),
+            "differences_reverted_between_frame1_and_frame60": len(d1 - d60),
+            "differences_reverted_between_frame60_and_frame180": len(d60 - d180),
+        })
+        summaries.append(
+            f"H6 attempt{attempt}: D1={len(d1)} D60={len(d60)} D180={len(d180)}; "
+            f"@180 already present at @1={present}; first appearing after @1={later}; "
+            f"@1 differences reverted by @180={reverted}."
+        )
+    with (out / "AL3_BYTE_DECOMPOSITION.tsv").open("w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(rows[0]), delimiter="\t")
+        w.writeheader()
+        w.writerows(rows)
+    consistent = (
+        rows[0]["frame180_differences_already_present_at_frame1"] == rows[1]["frame180_differences_already_present_at_frame1"]
+        and rows[0]["frame180_differences_first_appearing_after_frame1"] == rows[1]["frame180_differences_first_appearing_after_frame1"]
+        and rows[0]["target_vs_h6_frame180_changed_bytes"] == rows[1]["target_vs_h6_frame180_changed_bytes"]
+    )
+    return summaries, consistent
+
+
+def write_al2(out):
+    source = Path("reports/ak_2026-10-30/runs/run-41032514102/attempt-1/AK2_DIFF_RANGES.tsv")
+    if not source.is_file():
+        raise FileNotFoundError(f"AL2 source TSV missing: {source}")
+    with source.open("r", encoding="utf-8", newline="") as f:
+        ranges = list(csv.DictReader(f, delimiter="\t"))
+    labels = []
+    for n in range(4):
+        base = PLAYER_BASE + n * PLAYER_STRIDE
+        labels.append({
+            "label": f"P{n}_candidate_ID_slots", "start": base + 0x0A, "end": base + 0x0C,
+            "K": "K4",
+            "source": "ANALYSIS_LOG.md:2352,2358,2373; docs/STEP4_8_ID_COLLECTION_CONSUMER_TRACE_2026-10-28.md:37,108",
+            "notes": "Tiga byte ID; fitur/gameplay yang memilikinya tetap UNKNOWN."
+        })
+        labels.append({
+            "label": f"P{n}_Chakra", "start": base + 0x18, "end": base + 0x1B,
+            "K": "K4",
+            "source": "ANALYSIS_LOG.md:1327,1398; STATUS.md:3246; setter/getter 0x8001387C/0x800138EC",
+            "notes": "Word Chakra pada offset +0x18; tidak menyimpulkan aturan gameplay dari diff."
+        })
+    labels.extend([
+        {"label":"slot_0x8013A554_address_only","start":0x8013A554,"end":0x8013A557,"K":"K3",
+         "source":"ANALYSIS_LOG.md:5-9,29,99,143; STATUS.md:6-9,97,133",
+         "notes":"Slot XREF; nilai, alias runtime dan arti pointer belum terpecahkan."},
+        {"label":"block_start_0x801CEF08_address_only","start":0x801CEF08,"end":0x801CEF0B,"K":"K2",
+         "source":"AK2_DIFF_RANGES.tsv known_source_overlap=pointer_target_0x801CEF08",
+         "notes":"Hanya alamat awal yang dikenali; extent/isi blok TIDAK TAHU."},
+        {"label":"RNG_state_0x800A3118","start":0x800A3118,"end":0x800A311B,"K":"K4",
+         "source":"STATUS.md:276-277; ANALYSIS_LOG.md:56; RNG routine 0x80035D78",
+         "notes":"State word LCG terverifikasi statis; seed/runtime callers lain tetap UNKNOWN."},
+        {"label":"callback_tick_counter_0x80066E7C","start":0x80066E7C,"end":0x80066E7F,"K":"K4/K5",
+         "source":"ANALYSIS_LOG.md:2278-2310; STATUS.md:205-206",
+         "notes":"K4 untuk pola statis reset/increment callback-like; K5 hanya untuk diff runtime berulang pada dua H6 launches."},
+    ])
+    comparisons = sorted({r["comparison"] for r in ranges})
+    output, summaries = [], {}
+    for comparison in comparisons:
+        subset = [r for r in ranges if r["comparison"] == comparison]
+        totals = {x["label"]: 0 for x in labels}
+        unknown = 0
+        partial_block = None
+        for r in subset:
+            start, end = int(r["start"], 16), int(r["end"], 16)
+            changed = int(r["changed_bytes"])
+            hits = [x for x in labels if start <= x["end"] and x["start"] <= end]
+            if len(hits) == 1 and start >= hits[0]["start"] and end <= hits[0]["end"]:
+                totals[hits[0]["label"]] += changed
+            else:
+                unknown += changed
+                if ("pointer_target_0x801CEF08" in r.get("known_source_overlap", "")
+                    and start <= 0x801CEF0B and end >= 0x801CEF08):
+                    partial_block = {
+                        "lower": 1, "upper": changed, "group_changed": changed,
+                        "start": r["start"], "end": r["end"], "span": int(r["span_bytes"])
+                    }
+        totals["TIDAK_TAHU"] = unknown
+        total = sum(int(r["changed_bytes"]) for r in subset)
+        if sum(totals.values()) != total:
+            raise ValueError("AL2 byte accounting mismatch")
+        summaries[comparison] = {"totals":totals,"total":total,"partial_block":partial_block}
+        for item in labels:
+            is_block = item["label"] == "block_start_0x801CEF08_address_only" and partial_block
+            output.append({
+                "comparison":comparison,"label":item["label"],
+                "exact_changed_bytes":totals[item["label"]],
+                "partial_lower_bound":str(partial_block["lower"] if is_block else 0),
+                "partial_upper_bound":str(partial_block["upper"] if is_block else 0),
+                "evidence_K":item["K"],"source":item["source"],"notes":item["notes"]
+            })
+        output.append({
+            "comparison":comparison,"label":"TIDAK_TAHU",
+            "exact_changed_bytes":unknown,"partial_lower_bound":"0","partial_upper_bound":"0",
+            "evidence_K":"K0","source":"AK2_DIFF_RANGES.tsv",
+            "notes":"Semua rentang yang tidak sepenuhnya berada di satu label dikenal tetap TIDAK TAHU."
+        })
+    with (out / "AL2_FIELD_RELABEL.tsv").open("w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(output[0]), delimiter="\t")
+        w.writeheader()
+        w.writerows(output)
+    notes = [
+        "AL2 uses only the committed AK2_DIFF_RANGES.tsv; no emulator was launched for this relabelling.",
+        "A grouped range is allocated only when its entire inclusive span fits exactly one mapped field. Groups crossing a label boundary remain TIDAK_TAHU.",
+        "Ranges merge exact changed runs separated by gaps <=32 bytes. changed_bytes is exact per group, not per address, so a mixed group cannot be split accurately.",
+        "Player records: four records at 0x80070EA0 + n*0xB4. Known fields: candidate ID bytes +0x0A..+0x0C, Chakra word +0x18..+0x1B. Other record bytes remain TIDAK TAHU.",
+        "0x8013A554 is address/slot only; pointer semantics unresolved. 0x801CEF08 is only an address start; block extent/meaning unresolved.",
+    ]
+    for cmp, info in summaries.items():
+        totals = info["totals"]
+        exact = sum(v for k, v in totals.items() if k != "TIDAK_TAHU")
+        notes.append(f"{cmp}: exact_known={exact}; TIDAK_TAHU={totals['TIDAK_TAHU']}; total={info['total']}.")
+        p = info["partial_block"]
+        if p:
+            notes.append(f"  0x801CEF08 overlap bound={p['lower']}..{p['upper']} bytes; grouped range {p['start']}..{p['end']} (span={p['span']}, changed={p['group_changed']}); exact count TIDAK TAHU and stays inside TIDAK_TAHU total.")
+    (out / "AL2_RELABEL_NOTES.txt").write_text("\n".join(notes) + "\n", encoding="utf-8")
+    return notes, summaries
+
+
+def selective_occurrence(base, source, selected):
+    br, sr = fields(base), fields(source)
+    bg, sg = {}, {}
+    for item in br:
+        bg.setdefault(item["n"], []).append(item)
+    for item in sr:
+        sg.setdefault(item["n"], []).append(item)
+    selected = set(selected)
+    out, seen = bytearray(), {}
+    for item in br:
+        n = item["n"]
+        i = seen.get(n, 0)
+        seen[n] = i + 1
+        if (n, i) in selected:
+            if i < len(sg.get(n, [])):
+                out.extend(sg[n][i]["enc"])
+        else:
+            out.extend(item["enc"])
+        if i == len(bg[n]) - 1:
+            for extra in range(len(bg[n]), len(sg.get(n, []))):
+                if (n, extra) in selected:
+                    out.extend(sg[n][extra]["enc"])
+    for n in sorted(set(sg) - set(bg)):
+        for i, item in enumerate(sg[n]):
+            if (n, i) in selected:
+                out.extend(item["enc"])
+    return bytes(out)
+
+
+def replace_channel_in_state(state, channel_number, new_channel):
+    spu = one(state, 6)
+    out, seen = bytearray(), 0
+    for item in fields(spu):
+        if item["n"] == 6 and item["w"] == 2:
+            out.extend(encmsg(6, new_channel) if seen == channel_number else item["enc"])
+            seen += 1
+        else:
+            out.extend(item["enc"])
+    if seen <= channel_number:
+        raise ValueError(f"SPU channel {channel_number} missing")
+    return replace_top(state, 6, encmsg(6, bytes(out)))
+
+
+def current_hybrid(target, control, keep_target_current):
+    target_spu, control_spu = one(target, 6), one(control, 6)
+    target_channels = [x for x in fields(target_spu) if x["n"] == 6 and x["w"] == 2]
+    control_channels = [x for x in fields(control_spu) if x["n"] == 6 and x["w"] == 2]
+    if len(target_channels) != 24 or len(control_channels) != 24:
+        raise ValueError(f"expected 24 SPU channels; target={len(target_channels)} control={len(control_channels)}")
+    state = target
+    for i in range(24):
+        if i in keep_target_current:
+            continue
+        tdata = one(target_channels[i]["pay"], 1)
+        cdata = one(control_channels[i]["pay"], 1)
+        new_data = selective_occurrence(tdata, cdata, {(8, 0)})
+        new_channel = replace_top(target_channels[i]["pay"], 1, encmsg(1, new_data))
+        state = replace_channel_in_state(state, i, new_channel)
+    return state
+
+
+def historical_two_launch_outcome(case, repo_root):
+    statuses = []
+    for attempt in (1, 2):
+        p = repo_root / "reports/ae_2026-10-29/deep/raw" / f"{case}-attempt{attempt}.gdb.txt"
+        if not p.is_file():
+            statuses.append("TIDAK TAHU")
+            continue
+        text = p.read_text(encoding="utf-8", errors="replace")
+        if re.search(r"received signal SIGSEGV", text):
+            statuses.append("SIGSEGV")
+        elif "AE_POST_LOAD_VSYNC=180" in text and "AE_RAM_STATE_CAPTURE=PASS" in text:
+            statuses.append("POST_LOAD_VSYNC_180")
+        else:
+            statuses.append("TIDAK TAHU")
+    if statuses == ["SIGSEGV", "SIGSEGV"]:
+        return "SIGSEGV_BOTH"
+    if statuses == ["POST_LOAD_VSYNC_180", "POST_LOAD_VSYNC_180"]:
+        return "POST_LOAD_VSYNC_180_BOTH"
+    return "MIXED_OR_TIDAK_TAHU:" + ";".join(statuses)
+
+
+def write_al4(out, target, control):
+    repo_root = Path(__file__).resolve().parents[1]
+    all_outcome = historical_two_launch_outcome("ae2-target-current-all-24-control", repo_root)
+    rows = []
+    state = current_hybrid(target, control, set())
+    rows.append({
+        "case":"ae2-target-current-all-24-control",
+        "definition_status":"REKONSTRUKSI" if all_outcome == "POST_LOAD_VSYNC_180_BOTH" else "REKONSTRUKSI_HASH; historical gate TIDAK TAHU",
+        "target_current_channels_1based":"",
+        "control_current_channels_1based":",".join(str(i+1) for i in range(24)),
+        "historical_two_launch_outcome":all_outcome,
+        "target_source_sha256":sha(target),"control_source_sha256":sha(control),
+        "reconstructed_hybrid_sha256":sha(state),
+        "notes":"Target base; copy only ChannelData.current (SPU field6 -> Channel field6 -> data field1 -> field8 occurrence1) from control across all 24 channels."
+    })
+    candidates = list(range(24))
+    proceed = all_outcome == "POST_LOAD_VSYNC_180_BOTH"
+    for step in range(1, 6):
+        case = f"ae2-current-bisect-step{step}"
+        if not proceed or len(candidates) <= 1:
+            rows.append({
+                "case":case,"definition_status":"TIDAK TAHU",
+                "target_current_channels_1based":"","control_current_channels_1based":"",
+                "historical_two_launch_outcome":"NOT_REACHED_BY_VERIFIED_GATE",
+                "target_source_sha256":sha(target),"control_source_sha256":sha(control),
+                "reconstructed_hybrid_sha256":"TIDAK TAHU",
+                "notes":"Tidak dibuat hash karena keputusan bisection sebelumnya tidak tervalidasi."
+            })
+            continue
+        mid = len(candidates) // 2
+        left = candidates[:mid]
+        outcome = historical_two_launch_outcome(case, repo_root)
+        hybrid = current_hybrid(target, control, set(left))
+        if outcome == "SIGSEGV_BOTH":
+            chosen = left
+        elif outcome == "POST_LOAD_VSYNC_180_BOTH":
+            chosen = candidates[mid:]
+        else:
+            chosen = None
+        rows.append({
+            "case":case,"definition_status":"REKONSTRUKSI" if chosen is not None else "TIDAK TAHU",
+            "target_current_channels_1based":",".join(str(i+1) for i in left),
+            "control_current_channels_1based":",".join(str(i+1) for i in range(24) if i not in set(left)),
+            "historical_two_launch_outcome":outcome,
+            "target_source_sha256":sha(target),"control_source_sha256":sha(control),
+            "reconstructed_hybrid_sha256":sha(hybrid),
+            "notes":"Tested object is current_hybrid(left); SIGSEGV_BOTH keeps left, POST_LOAD_VSYNC_180_BOTH selects right."
+        })
+        if chosen is None:
+            proceed = False
+        else:
+            candidates = chosen
+    with (out / "AL4_HYBRID_RECONSTRUCTIONS.tsv").open("w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(rows[0]), delimiter="\t")
+        w.writeheader()
+        w.writerows(rows)
+    return rows
 
 def main():
     ap = argparse.ArgumentParser()
