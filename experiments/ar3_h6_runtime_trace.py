@@ -14,7 +14,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from experiments.aj2_h6_ram_probe import one, replace_top, encmsg
+from aj2_h6_ram_probe import one, replace_top, encmsg
 
 TARGET_SHA = "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
 CONTROL_SHA = "9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492"
