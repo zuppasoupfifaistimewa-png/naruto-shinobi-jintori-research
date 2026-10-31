@@ -186,7 +186,7 @@ jobs:
             -loader BinaryLoader -loader-baseAddr 0x800AD450 \
             -loader-length 0x919BC -loader-blockName DATA_BIN_ENTRY_0001_AT_BUFFER_BASE \
             -processor "MIPS:LE:32:default" \
-            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra:$GITHUB_WORKSPACE/tools/step7" \
+            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
             -postScript ExportEntry0TargetFunction.java "$out/entry1-buffer-base-targets.txt" \
               0x800BDC4C 0x800B770C 0x800BDBFC 0x800B7464 \
               0x800FC700 0x800FCA0C 0x800FD730 0x800FE314 \
