@@ -85,3 +85,6 @@ Sumber YouTube yang tercatat: `https://www.youtube.com/watch?v=r30Rs_NuExc`.
 - Candidate PC setelah rebase old import `0x800D0000` ke `0x800AD450`): init `0x80109994`, store-zero `0x80109A54`, reader `0x80109BDC`/`0x80109F1C`, load `0x80109F64).
 - Field participant `+0x2EE` lebih dekat pada jalur delta per peserta: `FUN_800E1188) → candidate PC `0x800BE5D8`) membaca slot `DAT_8013EA74 + 0x2EE + participant*2`, sinkronisasi lewat Chakra setter/getter di candidate PC `0x800BEC98`/`0x800BECA0`), lalu clear di `0x800BEDA4`. Tetapi sumber penulis nonzero belum ditemukan dan belum ada kaitan dengan Q1/Q2/Q3.
 - Offset +0xB44 dan +0x2EE tetap berbeda. Jangan gunakan salah satunya sebagai bukti toll atau Barrier release.
+
+## Actions provenance
+Ringkasan teks run statis terdahulu beserta status, job, input SHA, kode keluar, dan artifact ID: `reports/stage1_economy/ACTIONS_STATIC_RUNS_2026-10-31.txt`. Untuk dua job lama yang log tersimpannya tidak menampilkan exit-code eksplisit, file tersebut menandai `NOT_LOGGED` dan tidak mengarang angka. Tidak ada workflow baru diluncurkan dalam sesi handoff ini.
