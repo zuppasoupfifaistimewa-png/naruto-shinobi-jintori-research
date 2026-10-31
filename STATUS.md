@@ -4128,3 +4128,5 @@ Fase 4 hanya berisi rancangan uji statis-ke-runtime; tidak ada emulator/input/re
 Artefak Ghidra tambahan memperlihatkan bahwa field manager `+0xB44` yang pernah disebut “pending Chakra” belum terbukti sebagai delta: `FUN_8012C544) menginisialisasikannya menjadi nol; `FUN_8012CACC) dan `FUN_8012C78C) membacanya untuk tampilan UI fase akhir. Tidak ditemukan penulis nonzero dalam artefak yang diaudit. Field `+0xB40) berbeda dan diisi dari `+0xB30 + +0xB38).
 
 Jalur participant `+0x2EE) lebih konkret: fungsi candidate `0x800BE5D8) membaca halfword per peserta, memproses tampilan nilai positif/negatif, menyinkronkan field Chakra +4 melalui setter/getter, lalu membersihkan slot. Sumber penulis nonzero masih belum ditemukan; tidak ada hubungan terbukti dengan toll, pendapatan petak, biaya Barrier, atau 結界開放. Kedua offset berbeda dan tetap UNKNOWN untuk Q1–Q3.
+
+Actions provenance Stage 1 ekonomi (teks-only) diringkas pada `reports/stage1_economy/ACTIONS_STATIC_RUNS_2026-10-31.txt`; dua run lama berstatus job success tetapi exit code eksplisit tidak ada di retained log, sehingga ditandai NOT_LOGGED. Tidak ada run baru diluncurkan pada sesi ini.
