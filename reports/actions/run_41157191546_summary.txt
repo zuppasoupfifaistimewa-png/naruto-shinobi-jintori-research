@@ -1,0 +1,12 @@
+run_id=41157191546
+status=completed/failure
+job_id=124406471345
+job=Trace resource reader, allocation pointer, and payload consumers
+source_commit_sha=9a797fdd6d8918b642cf2ecedcd37d220560e2d6
+exit_code=1
+failure_stage=executable SHA-256 check before Ghidra
+cause=EXPECTED_EXE_SHA256 environment value had trailing whitespace/newline; sha256sum parsed an invalid filename
+ghidra_analysis_executed=no
+game_or_emulator_executed=no
+gameplay_input_sent=no
+savestate_restored=no
