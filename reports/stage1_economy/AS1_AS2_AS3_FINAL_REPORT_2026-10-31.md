@@ -244,12 +244,12 @@ sll   v0,v0,0x4
 \`\`\`
 Ini adalah \`(index*8 + index)*16 = index*0x90\`. Contoh pada \`FUN_800B5D68\`:
 \`\`\`asm
-800B6158 lw    v0,-0x158c(s3)
-800B615C sll   s1,s2,0x3
-800B6160 addu  s1,s1,s2
-800B6164 sll   s1,s1,0x4
-800B6168 addu  v0,v0,s1
+800B6110 sll   v0,s2,0x3
+800B6114 addu  v0,v0,s2
+800B6118 sll   s1,v0,0x4
 ...
+800B6228 lw    v0,-0x158c(s3)
+800B622C nop
 800B6230 addu  v0,v0,s1
 800B6234 lw    a1,0x4(v0)
 800B6238 jal   0x8001387c
