@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/step7-entry1-buffer-base-audit.yml"
+      - "tools/step7/ExportPendingParticipantDelta.java"
 
 permissions:
   contents: read
