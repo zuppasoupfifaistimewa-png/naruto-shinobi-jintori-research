@@ -1,0 +1,14 @@
+run_id=41160186973
+status=completed/failure
+job_id=124415827585
+job=Analyze verified Entry 1 slice at 0x800AD450
+source_commit_sha=dc168c2eed2914210d4f199142cc97243b65d5af
+exit_code=1
+failure_stage=Ghidra headless script lookup before analysis
+cause=Ghidra treated colon-separated scriptPath list as one directory and could not find ExportEntry0TargetFunction.java
+game_or_emulator_executed=no
+gameplay_input_sent=no
+savestate_restored=no
+private_input_cleanup=PASS
+artifact_text_only=yes
+correction=copy caller graph script to tools/ghidra and use one script path
