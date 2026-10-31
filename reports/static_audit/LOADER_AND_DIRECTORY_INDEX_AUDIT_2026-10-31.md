@@ -415,3 +415,69 @@ Workflow sudah diperbaiki pada commit 934c735a39b7ccc2f650e685d78e0aa91c407840: 
 - Biaya build Barrier, biaya upgrade Barrier, dan toll mendarat di petak lawan masih UNKNOWN.
 
 Prioritas berikutnya: periksa 0x800B770C, 0x800BDBFC, dan 0x800B7464 pada base Entry 1 yang sama; telusuri incoming callers dan record-field reads/writes untuk DAT_8013EA84, status byte +0, halfword +0x20, dan stride 0x124. Jangan mengubah nama field menjadi owner/estate sebelum konsumen atau perubahan state terkait dapat dibuktikan.
+
+## Addendum — nilai per-record yang membentuk kontribusi 0x800BDC4C (Run #41159510198)
+
+### Run dan artefak
+- URL: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/41159510198
+- Job: 124413702244 — Analyze verified Entry 1 slice at 0x800AD450.
+- Commit input: 934c735a39b7ccc2f650e685d78e0aa91c407840.
+- Status: completed / success, exit code 0.
+- Artefak: entry1-loader-buffer-base-static-audit, ID 13026796167, 30.317 byte.
+- SHA-256 ZIP: 2911f19a826743f8dc46151c04a79b28f412d1da275be7b5a34f6c359f100d8f.
+- Entry 1 SHA tervalidasi ulang; private input/project cleanup PASS; artefak hanya teks/log; tidak ada game/emulator, gameplay/input, atau savestate.
+- Metadata offset sudah diperbaiki: target 0x800BDC4C dicatat dengan offset Entry 1 +0x107FC pada base 0x800AD450.
+
+### 1. FUN_800B770C — lookup nilai per-record dan multiplier
+Raw/decompile pada Entry 1 candidate base 0x800AD450 menunjukkan:
+- Parameter index dipotong menjadi 8 bit.
+- Alamat record = DAT_8013EA84 + index*0x124.
+- Byte record +0x0B memilih salah satu dari 5 cabang.
+- Field halfword dasar dipilih melalui index bit yang berasal dari halfword record +0x20:
+  base = u16(record + 0x10 + ((u16(record + 0x20) >> 7) & 0x1E)).
+- Nilai hasil berdasarkan byte tipe +0x0B:
+  - 0: base (100%).
+  - 1: base*12/10 (120%).
+  - 2: base*15/10 (150%).
+  - 3: base*18/10 (180%).
+  - 4: base*2 (200%).
+  - selain 0–4: 0.
+- Pembagian integer dipakai pada cabang 1–3.
+
+Ini adalah VERIFIED-STATIC untuk rumus numerik per-record, tetapi label semantik byte +0x0B, halfword +0x20, dan tabel halfword +0x10 masih UNKNOWN. Jangan sebut base sebagai harga bangun, toll, atau income sampai mutator/consumer field tersebut teridentifikasi.
+
+### 2. Hubungan FUN_800BDC4C dan FUN_800B770C
+Helper utama 0x800BDC4C:
+- Iterasi semua record sampai DAT_8013EAC8.
+- Memilih record bila byte +0 == 5 dan (u16(record+0x20) >> 12) == selected_id.
+- Menambahkan hasil FUN_800B770C(record_index) untuk setiap record yang cocok.
+- Membagi jumlah agregat dengan 2 menggunakan pembulatan signed integer ke arah nol, lalu menambah getter konfigurasi 0x80012A8C.
+
+Karena byte status +0 == 5 adalah filter penting, kita tahu aggregate hanya mencakup subset record tertentu. Arti status 5 dan apakah subset itu adalah properti ber-Barrier/owned tiles belum terbukti.
+
+### 3. XREF pemanggil FUN_800B770C
+Ghidra menemukan banyak direct callers. Yang terlihat pada artefak mencakup:
+- 0x800FC700, 0x800FCA0C, 0x800FCB44, 0x800FD730, 0x800FD868,
+- 0x800FE314, 0x800FE42C, 0x800FE6A0, 0x800FE7B8, 0x800FEA28,
+- 0x800FEB38, 0x800FB598, 0x800C815C, 0x800CD678, 0x800E0324,
+- 0x800F1CCC, 0x800F1D08, 0x800F1DF0, 0x800F1F4C, 0x800F2050,
+serta helper aggregate 0x800BDC4C.
+- Direct caller count lebih besar dari jumlah contoh di atas; daftar lengkap berada dalam bagian REFERENCES_TO_TARGET artefak teks.
+- Ini berarti per-record amount helper dipakai oleh beberapa gameplay candidate call paths, bukan hanya fungsi tampilan total.
+
+### 4. Arti ekonomi masih belum ditentukan
+Temuan ini mempersempit pertanyaan, tetapi belum menjawab seluruh rumus game:
+- Field halfword record+0x10 sampai +0x2E tampak sebagai nilai dasar yang berubah sesuai indeks 0–15.
+- Byte +0x0B memilih multiplier 1.0/1.2/1.5/1.8/2.0 atau zero.
+- Halfword +0x20 mengandung dua grup bit yang dipakai helper utama: bit 7–11 membentuk indeks tabel, bit 12–15 dibandingkan dengan selected participant id.
+- Byte record +0 = 5 menjadi filter agregasi total untuk satu peserta.
+- Belum terbukti apakah nilai ini adalah toll yang dibayar saat mendarat, rent yang diterima owner, pendapatan saat menyelesaikan satu lap, atau penilaian nilai aset yang hanya dipakai UI/target score.
+
+### 5. Next audit gate
+1. Dump dan trace semua direct callers FUN_800B770C, prioritaskan beberapa lokasi berdekatan di 0x800FCxxx, 0x800FDxxx, 0x800FExxx, 0x800F1xxx, dan 0x800C8xxx.
+2. Cari writer ke record byte +0, byte +0x0B, halfword +0x10..+0x2E dan halfword +0x20. Korelasikan perubahan dengan state Barrier level/owner.
+3. Trace fungsi yang menggunakan hasil FUN_800B770C untuk mengubah participant Chakra melalui setter 0x8001387C, bukan hanya untuk tampilan/perbandingan target.
+4. Pisahkan call path saat landing di tile lawan dengan call path saat reward/penghitungan turn/lap.
+5. Pertahankan label status 5, tile type byte +0x0B, level code +0x20[7..11], owner code +0x20[12..15] sebagai field names sementara, bukan semantic truth.
+
+Kesimpulan ekonomi Stage 1 masih BELUM DIKETAHUI. Rumus numerik per-record sudah ditemukan; maknanya dan peristiwa transaksi yang menjalankannya masih perlu dibuktikan.
