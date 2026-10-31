@@ -45,7 +45,7 @@ jobs:
           )
           failed=0
           printf 'path\thttp_code\tresult\n' > "$dest/CURL_HTTP_STATUS.tsv"
-          for path in "\${paths[@]}"; do
+          for path in "${paths[@]}"; do
             code="$(curl --fail --location --silent --show-error --retry 2 --connect-timeout 15 --max-time 60 -o /dev/null -w '%{http_code}' "$base/$path" 2>/dev/null)"
             rc=$?
             if [ "$rc" -eq 0 ] && [ "$code" = "200" ]; then
@@ -67,7 +67,7 @@ jobs:
             echo "SOURCE_SHA=$GITHUB_SHA"
             echo "TARGET_RAW_SHA=$TARGET_SHA"
             echo "EXIT_CODE=$rc"
-            echo "LINK_COUNT=\${#paths[@]}"
+            echo "LINK_COUNT=${#paths[@]}"
             echo "ALL_HTTP_200=$([ "$failed" -eq 0 ] && echo YES || echo NO)"
           } > "$dest/ACTIONS_RUN_SUMMARY.txt"
           git config user.name "github-actions[bot]"
