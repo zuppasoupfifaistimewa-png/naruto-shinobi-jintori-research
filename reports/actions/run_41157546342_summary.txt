@@ -1,0 +1,15 @@
+run_id=41157546342
+status=completed/success
+job_id=124407563290
+job=Map code-slice offsets to actual DATA.BIN directory indices
+source_commit_sha=44ca8548fe9c4d9d8c66007b020e4987275ad6d8
+exit_code=0
+artifact_id=13025662463
+artifact_name=databin-directory-resource-map
+artifact_bytes=19196
+artifact_sha256=e4dd4f82023b76b65ce94d4eed8e075e5c05d67971c9e0b55bceafeedf0612e0
+private_input_cleanup=PASS
+text_only_artifact=yes
+game_or_emulator_executed=no
+gameplay_input_sent=no
+savestate_restored=no
