@@ -113,3 +113,54 @@ Perbaikan penting:
 5. Setelah mapping payload ditutup, gunakan indeks 0/1 sebagai anchor untuk meneruskan call-chain ke ESTATE dan LVUP_ESTATE.
 
 Tidak ada emulator/gameplay, input permainan atau restore savestate pada ketiga run loader/directory ini. Story Mode tidak dijalankan dan tidak dinyatakan selesai.
+
+
+## Addendum — ukuran resource dan callback pasca-read (31 Oktober 2026)
+
+### Run #41157751728
+- URL: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/41157751728
+- Job: 124408205088 — Trace resource reader, allocation pointer, and payload consumers.
+- Commit SHA: eafbe6f8bc7c4a11d2530d6154d076d25785bf1d.
+- Status: **completed / success**; exit code **0**.
+- Artefak teks: step7-loader-payload-static-trace, ID 13025842594, 45.375 byte.
+- SHA-256 ZIP: b7271bdda33055e28271521f8a847a93ba9759268993515d6eec27c23c5ee2fa.
+- Semua langkah job selesai/success. Input executable yang sama tervalidasi; private input dan project dibersihkan. Tidak ada game/emulator, input gameplay atau savestate.
+
+### 1. Lookup ukuran berdasarkan directory index
+- Fungsi 0x8002DBB8 hanya memanggil 0x8002D4E4 tanpa mengubah register argumen. Pada MIPS, a0 dari caller tetap diteruskan; caller menggunakannya sebagai directory index.
+- 0x8002D4E4 membaca uint32 length dari row index*8 + 4, lalu membulatkan ke atas ke kelipatan 0x800 byte.
+- Ghidra melaporkan 15 direct xrefs ke 0x8002DBB8. Contoh caller yang terlihat meliputi 0x800196C4, 0x800198E0, 0x8001A648, 0x8001A57C, 0x8001BC04, 0x8002DCF8, 0x8001E9A0, 0x8001EF38, 0x8002409C, 0x8002DD80, 0x8003275C, 0x80024258, 0x80024B70, dan 0x80024464.
+- 0x8002D560 merupakan jalur berbeda: memanggil 0x8003A048 untuk menyelesaikan deskriptor/path dan mengembalikan nilai length dari record lokal jika lookup berhasil. Jangan samakan fungsi ini dengan length langsung dari direktori DATA.BIN.
+
+### 2. Pointer direktori aktif
+- 0x8002C9B8 secara langsung menyimpan a0 ke GP+0x9C.
+- 0x8002D710 adalah wrapper yang memanggil 0x8002C9B8.
+- 0x8002C9C4 mengembalikan pointer yang disimpan di GP+0x9C.
+- XREF ke 0x8002C9B8 hanya satu, dari 0x8002D710. XREF ke 0x8002D710 dari startup 0x80011560 muncul pada dua callsite; startup memberikan alamat tabel dari struktur bootstrap dan kemudian alamat salinan direktori aktif.
+- Ini menutup hubungan setter/getter pointer direktori pada main EXE. Belum membuktikan waktu atau caller yang meminta directory index 0/1.
+
+### 3. Free-list allocator
+- 0x8002DDE0 adalah stub kosong (return); tidak terlihat perubahan state.
+- 0x8002DFE4 memperbarui penghitung alokasi, menangani slot khusus GP+0xA8, dan pada jalur umum memanggil 0x80035BB8.
+- 0x80035BB8 menyisipkan blok ke free list dan menggabungkan blok tetangga yang bersebelahan. Ini bukti kode statis operasi pelepasan/coalescing heap, bukan semantik resource/gameplay.
+
+### 4. Callback dan transformasi setelah read
+- 0x80019C10 menerima completion callback, memanggil 0x80019CA4 pada buffer global 0x800891EC, membersihkan status, melepas buffer saat kondisi parse terpenuhi, dan dapat meneruskan hasil ke user callback.
+- 0x8001A770 memanggil 0x8001E50C dan 0x8001ECA4 dengan buffer hasil read plus parameter koordinat/descriptor; pada jalur sukses ia melepas buffer dan memanggil callback pengguna. Ini menunjukkan read bisa diikuti pemrosesan resource lain sebelum buffer dilepas.
+- 0x8001EBF4 dapat memanggil 0x8001EB08 lalu meneruskan status ke callback aplikasi; 0x8001F048 memanggil 0x8001ECA4, lalu melepas buffer dan meneruskan hasil.
+- 0x80024B10 memanggil helper 0x80037138 dengan argumen -1, memperbarui pointer state-machine per-slot dan menaikkan status. Ini callback untuk state-machine 0x80024B70, bukan bukti bahwa helper tersebut merupakan logika seed boot atau gameplay.
+- 0x8002DD80 menghitung pointer akhir/aligned dari static buffer DAT_80010498 ditambah ukuran yang diperoleh melalui 0x8002DBB8, lalu memanggil callback tersimpan di GP+0x16C.
+
+### 5. Contoh pemanggilan dengan indeks resource yang diketahui
+- 0x800196C4 secara eksplisit meminta directory index 0x5D2 (1490), mengambil ukuran melalui 0x8002DBB8, mengalokasikan buffer, membaca melalui 0x8002D7F8, lalu menyalin data ke alamat statis 0x80089A18 sebelum membebaskan buffer. Ini contoh konkret pola **read → salin ke buffer lain → release**, tetapi resource ini bukan index 0/1.
+- 0x8001A4D8 secara eksplisit meminta index 0x307 (775), membaca ke buffer sementara, meneruskan buffer ke helper 0x80035D08 dengan tujuan 0x80089DB8, lalu melepas buffer. Ini contoh kedua bahwa loader dapat menyalin/memproses payload sesudah read.
+- 0x8001A648 menghitung index dari (param2 & 0xFF)+0x2A9, sehingga hasilnya berada pada rentang 681–936; ini bukan index 0 atau 1.
+- 0x80024464 dan 0x80024B70 adalah state-machine resource loaders. Keduanya menghitung index dari tabel/global descriptor, mengambil size lewat 0x8002DBB8, membuat buffer, lalu membaca melalui 0x8002D838. Callback mengubah state lanjutan. Input descriptor/tabel dan nilai runtime belum teridentifikasi.
+- 0x8002DCF8 mempunyai direct caller 0x8002DC90 dan 0x80011F18. Keduanya belum diekspor pada run ini. Ini jalur prioritas berikutnya karena DCF8 meneruskan param1 sebagai directory index ke reader dan menggunakan static buffer DAT_80010498.
+
+### Keputusan setelah addendum
+**Terbukti secara statis pada main EXE:** pola direktori index → lookup length → sector-rounding → allocation → CD-read queue → callback; pointer directory aktif berada di GP+0x9C; dan ada caller yang menyalin atau memproses payload ke buffer lain setelah read.
+
+**Belum terbukti:** apakah Entry 0 dan Entry 1 diproses oleh callback tertentu, alamat buffer final untuk kedua entry itu, apakah keduanya dieksekusi sebagai kode, dan di mana code relocation/decompression/transfer-of-control dilakukan.
+
+Fokus run berikutnya adalah menelusuri caller 0x80011F18 dan 0x8002DC90, kemudian membuktikan apakah keduanya mengirim index 0 atau 1 ke 0x8002DCF8. Jika tidak, telusuri seluruh dynamic index producers pada state-machine 0x80024464/0x80024B70. Status biaya Barrier, upgrade, toll dan pendapatan Stage 1 tetap UNKNOWN.
