@@ -321,8 +321,8 @@ jobs:
         if: always()
         shell: bash
         env:
-          GH_TOKEN: \${{ github.token }}
-          RESEARCH_REPO: \${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/entry1-buffer-base-output"
