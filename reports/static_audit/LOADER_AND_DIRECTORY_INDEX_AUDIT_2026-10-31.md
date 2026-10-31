@@ -164,3 +164,43 @@ Tidak ada emulator/gameplay, input permainan atau restore savestate pada ketiga 
 **Belum terbukti:** apakah Entry 0 dan Entry 1 diproses oleh callback tertentu, alamat buffer final untuk kedua entry itu, apakah keduanya dieksekusi sebagai kode, dan di mana code relocation/decompression/transfer-of-control dilakukan.
 
 Fokus run berikutnya adalah menelusuri caller 0x80011F18 dan 0x8002DC90, kemudian membuktikan apakah keduanya mengirim index 0 atau 1 ke 0x8002DCF8. Jika tidak, telusuri seluruh dynamic index producers pada state-machine 0x80024464/0x80024B70. Status biaya Barrier, upgrade, toll dan pendapatan Stage 1 tetap UNKNOWN.
+
+## Addendum — koreksi bootstrap awal dan slot pointer buffer (Run #41158277447)
+
+Run #41158277447 (job 124409826948) selesai **completed/success**, exit code 0, pada commit input 7f88eb437fbbb23e317647f3b783a7bd5a5ac744. Artefak teks #13025409336, 59.925 byte, SHA-256 ZIP 129fb7eac55f0624b5c437b88a68323b779c092ca1227a23f093232df1923747. Cleanup private input dan project PASS; tidak ada game/emulator, gameplay, input atau savestate.
+
+Static data dump menemukan:
+- Slot global 0x80010498 berisi word 0x800AD450 di executable image. Instruksi 0x8002DCF8 dan callback 0x8002DD80 membaca isi slot ini sebagai pointer destination.
+- Tabel sementara di 0x80055898 berisi LBN 212 (0xD4) dan byte_length 0x2F44 (12.100 byte).
+- Startup 0x80011560 mengaktifkan pointer sementara tersebut, kemudian memanggil 0x8002DC90(0,0,0).
+- Row 0 dari tabel sementara itu menunjuk ke blok bootstrap awal DATA.BIN, bukan ke row 0 direktori lengkap. Jadi klaim terdahulu bahwa startup langsung memuat resource Entry 0 110.536 byte adalah keliru dan ditarik kembali.
+- 0x2F44 dibulatkan ke 0x3000 oleh helper length. Callback menambahkannya ke base pointer 0x800AD450 dan menyimpan aligned end pointer 0x800B0450. Startup menggunakan hasil itu untuk menginisialisasi allocator melalui 0x8002DE60.
+- Setelah bootstrap read berhasil, startup memanggil kode di 0x800AD454. Kode itu menyalin 0x2F00 byte direktori penuh dari 0x800AD494 ke 0x8006D830, lalu mendaftarkan 0x8006D830 sebagai pointer direktori aktif.
+
+Dengan demikian ada dua row “index 0” berbeda:
+1. Tabel sementara startup: index 0 = LBN 212, panjang 0x2F44, yaitu bootstrap awal.
+2. Direktori penuh hasil bootstrap: index 0 = LBN 403, panjang 110.536 byte, resource slice di DATA.BIN offset 0x5F800.
+
+Dump lain di 0x800558A8 menunjukkan 16 descriptor 0x1C-byte dengan label TITLE, LOGO, MENU, BOARD, BOARDRET, BAT_INI, BAT_VIEW, PRESTG, AFTSTG, ENDING, MC_* dan BINGO. Record pertama memiliki word pertama 0 dan label TITLE; record kedua word pertama 5 dan label LOGO; beberapa record selanjutnya memuat pointer kode. Karena field tersebut heterogeneous, jangan anggap setiap word pertama sebagai directory index. Fungsi 0x80011F18 memang membaca word pertama record yang dipilih dan mengirimkannya ke 0x8002DCF8, tetapi belum ada bukti reachability: Ghidra melaporkan 0 direct function-entry references ke 0x80011F18.
+
+**Status:** bootstrap awal dan alamat buffer untuk pembacaan awal terverifikasi secara statis. Waktu dan alamat pemuatan resource Entry 0 pada direktori penuh belum terbukti; pemuatan Entry 1 juga belum ditemukan. Alamat 0x800AD450 adalah buffer bootstrap, bukan otomatis runtime base Entry 0/1. Arena allocator berawal di 0x800B0450 setelah pembacaan bootstrap. Tidak ada runtime memory snapshot pada run ini.
+
+Prioritas berikutnya: trace caller 0x80011FB4 ke DC90, callback 0x8001202C, dan referensi table 0x800558A8 dari 0x800118E0, 0x80011918, dan 0x80011FEC. Cari bukti argument provenance untuk directory index 1 sebelum menyambungkan Entry 1 ke handler ESTATE/LVUP_ESTATE.
+
+Run summary:
+run_id=41158277447
+status=completed/success
+job_id=124409826948
+job=Trace resource reader, allocation pointer, and payload consumers
+commit_sha=7f88eb437fbbb23e317647f3b783a7bd5a5ac744
+exit_code=0
+artifact_id=13025409336
+artifact_name=step7-loader-payload-static-trace
+artifact_sha256=129fb7eac55f0624b5c437b88a68323b779c092ca1227a23f093232df1923747
+private_input_cleanup=PASS
+text_only_artifact=yes
+game_or_emulator_executed=no
+gameplay_input_sent=no
+savestate_restored=no
+
+Status ekonomi Stage 1 tetap UNKNOWN: belum ada rumus pendapatan petak, biaya build/upgrade Barrier atau toll yang terbukti.
