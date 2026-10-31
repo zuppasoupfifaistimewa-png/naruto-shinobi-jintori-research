@@ -120,10 +120,12 @@ Jadi jangkar 60/150 tidak teridentifikasi sebagai konstanta harga pada instruksi
 
 ### Offset yang tidak boleh dicampur
 
-- `+0xB44`: `docs/GAME_RULES.md` sebelumnya mencatatnya sebagai field pending pada state machine dalam candidate resource mapping berbeda. Field itu diproses pada state `+0xB2A == 7`; nilai pending ditautkan melalui `+0xB40`, yang berasal dari `+0xB30 + +0xB38`. Belum ada hubungan terbukti dari field ini ke biaya build, upgrade, toll, atau release.
-- `+0x2EE`: skrip baru `tools/step7/ExportPendingParticipantDelta.java` memindai operand displacement langsung `+0x2EE` pada candidate Entry 1 buffer-base import. Itu **offset berbeda** dari `+0xB44`, tidak boleh disamakan sebagai field yang sama.
+- `+0xB44`: artefak run #41155800069 (Entry 1 pada import-base lama `0x800D0000`) menunjukkan `FUN_8012C544` menginisialisasi field ini menjadi nol pada PC lama `0x8012C604`; `FUN_8012CACC` membaca `+0xB44` pada PC lama `0x8012CB14` untuk menggambar angka jika state byte `+0xB2A > 5`; `FUN_8012C78C` juga menggambarnya pada fase yang sama. Dalam cakupan output itu **tidak ditemukan penulis nonzero**. Jadi nama “pending Chakra delta” untuk +0xB44 belum terbukti; bukti langsung yang ada adalah reset dan pembacaan UI. `+0xB40` secara terpisah diinisialisasi sebagai `+0xB30 + +0xB38` pada PC lama `0x8012C644`; jangan satukan field B40 dan B44 sebagai satu transaksi.
+  - Rebase berdasarkan file offset yang sama dari base lama `0x800D0000` ke candidate base `0x800AD450` memberi PC kandidat: reset routine `0x80109994`, store-zero `0x80109A54`, reader functions `0x80109BDC` dan `0x80109F1C`, serta load `0x80109F64`. Raw bytes tidak berubah karena yang bergeser hanya alamat import. Runtime mapping tetap belum tervalidasi.
+- `+0x2EE`: ini offset participant-array yang berbeda dan memiliki konsumen lebih konkret. Dalam import-base lama, `FUN_800E1188` membaca halfword per peserta pada `DAT_8013EA74 + 0x2EE + participant*2`; dengan base candidate baru fungsi itu berada pada PC `0x800BE5D8`. Fungsi menyalin nilai antar-peserta yang team-code `+0x0E)-nya sama pada kondisi flag `0x1000), memformat nilai positif/negatif untuk animasi, memanggil setter Chakra `0x8001387C` pada PC kandidat `0x800BEC98`, membaca balik melalui getter `0x800138EC` pada `0x800BECA0`, dan akhirnya mengosongkan field pada PC kandidat `0x800BEDA4`. Setup juga mengosongkan slot `+0x2EE) pada PC kandidat `0x800B2EEC`. Ini mendukung **K3 untuk jalur pemrosesan/animasi delta per peserta**, tetapi sumber penulis nonzero belum ditemukan; belum ada link ke toll, income, build/upgrade, atau release.
+- Global pointer slot `0x8013EA74` mengarah ke array peserta candidate; struktur peserta yang dibaca fungsi ini ber-stride `0x90` dan nilai Chakra berada pada field `+0x04` dalam jalur tersebut. Jangan samakan stride `0x90` ini dengan record tile stride `0x124`.
 - Global `0x8013EBB0` diberi komentar `candidate pending fee value` oleh skrip; label itu masih hipotesis, bukan bukti bahwa nilainya pending income atau refund.
-- D0ef HEAD hanya memperluas daftar PC yang diminta kepada Ghidra untuk tracing toll callback dan candidate pending-delta writers. Pada waktu audit dokumen ini, belum ada hasil baru yang dikomit untuk membuktikan hubungan field-field itu dengan transaksi; status tetap UNKNOWN.
+- HEAD workflow `d0ef969...` menambahkan target rebased `0x800BE5D8`, `0x80109994`, dan `0x80109F1C` di antara PC lain untuk analisis toll callback/pending writers. Pada waktu update ini, belum ada hasil workflow baru yang dikomit untuk menutup sumber delta +0x2EE atau menghubungkan +0xB44 dengan transaksi; status Q terkait tetap UNKNOWN.
 
 ### Resource labels / release
 
@@ -165,3 +167,39 @@ Hanya setelah mapping loader/runtime dan fail-closed gate mengizinkan:
 - Q3: amati titik masuk release tanpa input lebih dulu; catat saldo, record yang berubah, dan pending delta. Bila UI menunggu pilihan, lakukan satu input pilihan saja dan capture lagi. Perlu sedikitnya tiga release record terukur untuk menguji rumus; jangan memicu release sampai gate runtime disetujui.
 
 Tidak ada uji runtime dilakukan dalam sesi ini. Semua WAIT/UNKNOWN/NO-GO yang sudah ada tetap tidak berubah.
+
+
+## Addendum — raw MIPS untuk B44 dan participant delta +2EE (31 Oktober 2026)
+
+Raw excerpt 24 byte pada PC lama `0x8012C5E8`–`0x8012C604` (candidate PC setelah rebase: `0x80109938`–`0x80109954`):
+
+```
+48 0B 40 A4  2D 0B 40 A0  54 A5 02 8E  44 0B 40 AC
+```
+
+Raw excerpt 32 byte sekitar PC lama `0x8012C634`–`0x8012C644` (candidate PC `0x80109984`–`0x80109994`):
+
+```
+30 0B 82 8C  38 0B 83 8C  00 00 00 00  21 10 43 00
+40 0B 82 AC
+```
+
+Instruksi mengosongkan `+0xB44) ada pada `0x8012C604` (`sw zero,0xB44(v0)`); instruksi menjumlahkan B30+B38 dan menyimpan ke B40 ada pada `0x8012C644`. Fungsi UI membaca B44 melalui `lw a2,0xB44(v1)` di `0x8012CB14`.
+
+Raw excerpt 32 byte pembaca delta per-peserta (PC lama `0x800E11C8)–`0x800E11E4`; setelah rebase Entry 1 candidate PC menjadi `0x800BE610)–`0x800BE62C`:
+
+```
+74 EA 42 8C  00 00 00 00  EE 02 49 24  21 10 2A 02
+00 00 42 90  00 00 00 00  22 00 40 14
+```
+
+Ini memuat pengambilan pointer peserta, pembentukan alamat offset `+0x2EE), dan pemeriksaan slot. Raw excerpt update Chakra 20 byte pada PC lama `0x800E1844)–`0x800E1858` (candidate PC `0x800BEC94)–`0x800BECA8`):
+
+```
+04 00 45 8C  1F 4E 00 0C  21 20 20 02  3B 4E 00 0C
+21 20 20 02
+```
+
+Ini menunjukkan field Chakra +4 diberikan ke setter `0x8001387C), kemudian nilai dibaca kembali melalui `0x800138EC). Raw bytes pada PC lama `0x800E1954) (`EE 02 40 A4`) menunjukkan slot delta +2EE dihapus setelah tahapan animasi; candidate PC `0x800BEDA4`.
+
+Catatan: import-base lama dan baru adalah dua alamat virtual untuk slice Entry 1 yang sama; rebasing menggunakan offset file, bukan klaim pemetaan runtime. Artefak #41155800069/#41156493284 dekompilasi juga memperingatkan boundary Ghidra dan beberapa blok control flow yang tidak bersih. Gunakan instruksi di atas sebagai bukti statis parsial, bukan definisi lengkap semantic state.
