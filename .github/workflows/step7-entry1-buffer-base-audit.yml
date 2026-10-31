@@ -189,6 +189,9 @@ jobs:
             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
             -postScript ExportEntry0TargetFunction.java "$out/entry1-buffer-base-targets.txt" \
               0x800BDC4C 0x800B770C 0x800BDBFC 0x800B7464 \
+              0x800FC700 0x800FCA0C 0x800FD730 0x800FE314 \
+              0x800FEA28 0x800FB598 0x800C815C 0x800CD678 \
+              0x800E0324 0x800F1CCC 0x800F2050 \
               0x80107F4C 0x800BE5D8 0x800F9520 0x800B5D68 \
               0x800EE4E0 0x800CF434 0x80108054 0x80109994 0x80109F1C \
             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject \
@@ -244,7 +247,7 @@ jobs:
             echo "entry1_sha256=$EXPECTED_ENTRY1_SHA256"
             echo "analysis_import_base=0x800AD450"
             echo "analysis_base_status=STATIC_CANDIDATE_FROM_GLOBAL_POINTER"
-            echo "targeted_functions=0x800BDC4C plus 9 corrected prior-address candidates"
+            echo "targeted_functions=Entry1 accumulator/per-record helpers and 11 direct callers of 0x800B770C"
             echo "game_or_emulator_executed=no"
             echo "gameplay_input_sent=no"
             echo "savestate_restored=no"
