@@ -1,0 +1,3 @@
+attempt	status	ram_sha256	pointer	count	gdb_wrapper_exit	emulator_exit	card_unchanged	wall_seconds	seconds_to_frame180
+1	PASS	4c964aaca0afccc68317acd0726fec680c305b903cd426e70afe3d8ac1f1e741	0x8013B818	22	-9	TIDAK TAHU	YES	605.002	61.198045253754
+2	PASS	4c964aaca0afccc68317acd0726fec680c305b903cd426e70afe3d8ac1f1e741	0x8013B818	22	-9	TIDAK TAHU	YES	605.002	60.15699505806
