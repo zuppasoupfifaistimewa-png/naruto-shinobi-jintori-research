@@ -9,7 +9,7 @@ Checkpoint yang diberikan: `5f026f9b2f97275ff427b022ab6a4e2156d3d503`
 
 | Tugas | Status | Kesimpulan / batas |
 |---|---|---|
-| AS1(a) commit ledger | SELESAI | 14 descendant sejak checkpoint ditelusuri beserta semua file; `e05e454` ditambahkan sebagai commit pra-checkpoint yang terlewat |
+| AS1(a) commit ledger | SELESAI | 16 descendant sampai commit laporan awal ditelusuri beserta semua file; `e05e454` ditambahkan sebagai commit pra-checkpoint yang terlewat |
 | AS1(b) hitung ulang FIELD | SELESAI — K4 statis | 1.188 baris; dua WRITE `s8` dipertahankan terpisah dari `fp` |
 | AS1(c) fungsi xref / scope | SELESAI — K4 statis | 98 xref fungsi cocok dengan metadata; 93 FIELD record-xref + 4 helper/caller scope; lima xref lainnya tidak punya FIELD pada displacement yang dipindai |
 | AS1(d) 14 setter caller | SELESAI — K4 statis | 10 memakai participant slot EA74 / stride 0x90; 4 manager/getter path; 0 terbukti mengambil argumen a1 dari tile-record EA84 / stride 0x124 |
@@ -22,7 +22,7 @@ Skala K0–K5 tetap berlaku. Static disassembly/Ghidra tidak dinaikkan di atas K
 
 ### Checkpoint dan descendant
 
-HEAD `main` saat tugas dimulai adalah `5f026f9b2f97275ff427b022ab6a4e2156d3d503`. Perbandingan final menunjukkan 14 descendant commit sampai output AS3 selesai. Commit yang terlewat `e05e454` adalah leluhur pra-checkpoint dan dicantumkan terpisah. Daftar lengkap setiap commit beserta semua file yang diubah tersedia pada Bagian 8.
+HEAD `main` saat tugas dimulai adalah `5f026f9b2f97275ff427b022ab6a4e2156d3d503`. Perbandingan final menunjukkan 16 descendant commit sampai versi laporan awal 53a444515e514f31c49917a7cad30494746e9f59, termasuk 15 commit riset/hasil dari exporter sampai output AS3 dan satu commit laporan awal. Commit yang terlewat `e05e454` adalah leluhur pra-checkpoint dan dicantumkan terpisah. Daftar lengkap setiap commit beserta semua file yang diubah tersedia pada Bagian 8.
 
 **`8894686395afdca97328a9fb2af5007a29406584` — Add AS1 AS2 deep Ghidra export and AS3 H6 K0 K1 K2 A/B**
 - `.github/workflows/as3-h6-breakpoint-ab.yml` (baru)
@@ -585,3 +585,19 @@ e05e45401ec58410019bc96448b93c86fa2560cf — Publish AQ1 static economy census r
 ## 9. Batas repo dan keamanan
 
 Tidak ada Release atau visibilitas repository yang diubah. Tidak ada ISO, BIOS, Memory Card, savestate, dump RAM, video, atau frame image yang dikomit. Runner membersihkan input privat setelah eksperimen; yang dipublikasikan hanya source/workflow, laporan Markdown, TSV, teks, dan hash.
+
+
+### 8.1 Commit publikasi runtime AS3 dan laporan awal
+
+15. **`3e2c77c8df7dafff03b0c9da472a446ede427dd5`** — Publish AS3 H6 K0 K1 K2 breakpoint comparison run 41249145093 attempt 1
+    - `reports/stage1_economy/as3-h6-breakpoint-ab-run-41249145093/attempt-1/ACTIONS_RUN_SUMMARY.txt`
+    - `reports/stage1_economy/as3-h6-breakpoint-ab-run-41249145093/attempt-1/AS3_BREAKPOINT_EVENTS.tsv`
+    - `reports/stage1_economy/as3-h6-breakpoint-ab-run-41249145093/attempt-1/AS3_LAUNCHES.tsv`
+    - `reports/stage1_economy/as3-h6-breakpoint-ab-run-41249145093/attempt-1/AS3_RUNS.tsv`
+    - `reports/stage1_economy/as3-h6-breakpoint-ab-run-41249145093/attempt-1/AS3_SCRIPT_EXIT_CODE.txt`
+    - `reports/stage1_economy/as3-h6-breakpoint-ab-run-41249145093/attempt-1/AS3_SUMMARY.txt`
+    - `reports/stage1_economy/as3-h6-breakpoint-ab-run-41249145093/attempt-1/AS3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt`
+
+16. **`53a444515e514f31c49917a7cad30494746e9f59`** — Finalize AS1 AS2 AS3 verified Stage 1 economy audit
+    - `reports/stage1_economy/AS1_AS2_AS3_FINAL_REPORT_2026-10-31.md`
+
