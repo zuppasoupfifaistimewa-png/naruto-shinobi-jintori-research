@@ -1,0 +1,239 @@
+name: Step 7 — DATA.BIN directory index and resource slice map
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/step7-databin-directory-map.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: step7-databin-directory-map
+  cancel-in-progress: false
+
+jobs:
+  map-directory:
+    name: Map code-slice offsets to actual DATA.BIN directory indices
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout research repository
+        uses: actions/checkout@v4
+
+      - name: Install PS1 extraction tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes bchunk xorriso
+
+      - name: Fetch verified BIN/CUE and extract DATA.BIN
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/databin-directory-map"
+          source="$root/source"
+          extracted="$source/extracted-root"
+          out="$RUNNER_TEMP/databin-directory-map-output"
+          mkdir -p "$source" "$extracted" "$out"
+          bin="$source/naruto-disc.bin"
+          cue_raw="$source/original.cue"
+          cue="$source/naruto-disc.cue"
+
+          curl --fail --location --silent --show-error \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Accept: application/octet-stream" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 \
+            --max-time 600 \
+            "https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/647346873" \
+            --output "$bin"
+          [[ "$(stat -c '%s' "$bin")" == "325989552" ]]
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $bin" | sha256sum --check --status
+
+          curl --fail --location --silent --show-error \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Accept: application/octet-stream" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 \
+            --max-time 60 \
+            "https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/647354760" \
+            --output "$cue_raw"
+          [[ "$(stat -c '%s' "$cue_raw")" == "116" ]]
+          echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $cue_raw" | sha256sum --check --status
+
+          python3 - "$cue_raw" "$cue" <<'PY'
+          from pathlib import Path
+          import re, sys
+          source, destination = map(Path, sys.argv[1:3])
+          lines, rewritten, replaced = source.read_text(encoding="utf-8").splitlines(), [], 0
+          for line in lines:
+              if line.lstrip().upper().startswith("FILE "):
+                  match = re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$', line, re.I)
+                  if not match:
+                      raise SystemExit("Unrecognized CUE FILE directive")
+                  line = match.group(1) + '"naruto-disc.bin"' + match.group(2)
+                  replaced += 1
+              rewritten.append(line)
+          if replaced != 1:
+              raise SystemExit(f"Expected one FILE directive, got {replaced}")
+          destination.write_text("\n".join(rewritten) + "\n", encoding="utf-8")
+          PY
+
+          bchunk "$bin" "$cue" "$source/track"
+          iso="$(find "$source" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          [[ -n "$iso" ]]
+          xorriso -osirrox on -indev "$iso" -extract / "$extracted" > "$out/disc-extraction.log" 2>&1
+          databin="$(find "$extracted" -type f -iname 'DATA.BIN' -print -quit)"
+          [[ -n "$databin" && -f "$databin" ]]
+          [[ "$(stat -c '%s' "$databin")" == "66015232" ]]
+          echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $databin" | sha256sum --check --status
+
+          python3 - "$databin" "$out/databin-directory-map.txt" <<'PY'
+          from pathlib import Path
+          import hashlib, struct, sys
+
+          src, report = Path(sys.argv[1]), Path(sys.argv[2])
+          data = src.read_bytes()
+          expected_size = 66_015_232
+          expected_sha = "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822"
+          if len(data) != expected_size or hashlib.sha256(data).hexdigest() != expected_sha:
+              raise SystemExit("DATA_BIN_IDENTITY_FAIL")
+
+          table_start, table_end = 0x44, 0x2F44
+          table = data[table_start:table_end]
+          if len(table) != 0x2F00 or len(table) % 8:
+              raise SystemExit("DIRECTORY_SIZE_FAIL")
+          count = len(table) // 8
+          rows = [struct.unpack_from("<II", table, i * 8) for i in range(count)]
+
+          targets = [
+              ("entry0_candidate_slice", 0x5F800, 110536, "56ee7d3b195b0708bd5f9163d354f0173a828430c9467d410e822b1793d316d4"),
+              ("entry1_candidate_slice", 0x10BB000, 596412, "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a"),
+          ]
+          lines = [
+              "# DATA.BIN directory-to-slice mapping",
+              "status=STATIC_DIRECTORY_PARSE",
+              f"databin_bytes={len(data)}",
+              f"databin_sha256={expected_sha}",
+              "directory_offset=0x44",
+              f"directory_bytes=0x{len(table):X}",
+              f"directory_rows={count}",
+              "row_schema=two uint32 little-endian values: absolute ISO LBN, byte_length",
+              "DATA.BIN_ISO_start_LBN=212",
+              "sector_bytes=2048",
+              "",
+              "## Candidate resource slices",
+          ]
+          for label, file_offset, expected_length, expected_slice_sha in targets:
+              rel_sector, intra = divmod(file_offset, 2048)
+              absolute_lbn = 212 + rel_sector
+              observed_sha = hashlib.sha256(data[file_offset:file_offset + expected_length]).hexdigest()
+              exact = []
+              overlaps = []
+              for index, (lbn, length) in enumerate(rows):
+                  if length == 0:
+                      continue
+                  if lbn == absolute_lbn:
+                      exact.append((index, lbn, length, (lbn - 212) * 2048))
+                  start = (lbn - 212) * 2048
+                  end = start + length
+                  if start <= file_offset < end or (file_offset <= start < file_offset + expected_length):
+                      overlaps.append((index, lbn, length, start, end))
+              lines += [
+                  f"[{label}]",
+                  f"file_offset=0x{file_offset:X}",
+                  f"relative_sector={rel_sector}",
+                  f"intra_sector_offset=0x{intra:X}",
+                  f"absolute_expected_LBN={absolute_lbn}",
+                  f"expected_slice_bytes={expected_length}",
+                  f"slice_sha256={observed_sha}",
+                  f"slice_identity={'PASS' if observed_sha == expected_slice_sha else 'FAIL'}",
+                  f"directory_rows_starting_at_expected_LBN={len(exact)}",
+              ]
+              for index, lbn, length, start in exact:
+                  lines.append(f"exact_row index={index} LBN={lbn} byte_length={length} databin_file_offset=0x{start:X} length_matches={'yes' if length == expected_length else 'no'}")
+              lines.append(f"directory_rows_overlapping_candidate_slice={len(overlaps)}")
+              for index, lbn, length, start, end in overlaps[:12]:
+                  lines.append(f"overlap_row index={index} LBN={lbn} byte_length={length} range=[0x{start:X},0x{end:X})")
+              lines.append("")
+
+          lines += ["## Full directory row map (active rows only)", "index,LBN,byte_length,DATA_BIN_file_offset,sector_aligned_length"]
+          active = 0
+          for index, (lbn, length) in enumerate(rows):
+              if length == 0:
+                  continue
+              active += 1
+              relative = (lbn - 212) * 2048
+              padded = (length + 2047) & ~2047
+              lines.append(f"{index},{lbn},{length},0x{relative:X},{padded}")
+          lines += ["", f"active_rows={active}", f"zero_length_rows={count-active}",
+                    "mapping_interpretation=directory row -> DATA.BIN slice is structural only; no RAM address, runtime overlay identity or code reachability is inferred"]
+          report.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          if any("slice_identity=FAIL" in line for line in lines):
+              raise SystemExit("CANDIDATE_SLICE_IDENTITY_FAIL")
+          print(f"directory_rows={count} active_rows={active}")
+          for label, off, length, sha in targets:
+              print(f"slice={label} file_offset=0x{off:X} sha256_match={hashlib.sha256(data[off:off+length]).hexdigest()==sha}")
+          PY
+          {
+            echo "status=SUCCESS"
+            echo "job=map-directory"
+            echo "commit_sha=$GITHUB_SHA"
+            echo "exit_code=0"
+            echo "scope=map DATA.BIN directory LBN/length rows to two previously fingerprinted code slices"
+            echo "game_or_emulator_executed=no"
+            echo "gameplay_input_sent=no"
+            echo "savestate_restored=no"
+            echo "private_disc_or_DATA_BIN_uploaded=no"
+          } > "$out/run-summary.txt"
+
+      - name: Remove private disc, extraction tree, and DATA.BIN
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/databin-directory-map"
+          rm -rf "$root"
+          if [[ ! -e "$root" ]]; then
+            echo "PRIVATE_INPUT_CLEANUP=PASS" >> "$RUNNER_TEMP/databin-directory-map-output/run-summary.txt" 2>/dev/null || true
+          else
+            echo "PRIVATE_INPUT_CLEANUP=FAIL" >> "$RUNNER_TEMP/databin-directory-map-output/run-summary.txt"
+            exit 1
+          fi
+
+      - name: Validate text-only report
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/databin-directory-map-output"
+          mkdir -p "$out"
+          python3 - "$out" <<'PY'
+          from pathlib import Path
+          import sys
+          root = Path(sys.argv[1])
+          files = [p for p in root.rglob("*") if p.is_file()]
+          invalid = [str(p) for p in files if p.suffix.lower() not in {".txt", ".log"}]
+          oversized = [str(p) for p in files if p.stat().st_size > 5_000_000]
+          if invalid or oversized:
+              raise SystemExit(f"Invalid artifact files: invalid={invalid} oversized={oversized}")
+          if not (root / "databin-directory-map.txt").is_file():
+              raise SystemExit("Missing directory map report")
+          print(f"text_only_output_count={len(files)}")
+          print("private_binary_uploaded=no")
+          PY
+
+      - name: Upload text-only directory map
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: databin-directory-resource-map
+          path: ${{ runner.temp }}/databin-directory-map-output/
+          if-no-files-found: warn
+          retention-days: 14
