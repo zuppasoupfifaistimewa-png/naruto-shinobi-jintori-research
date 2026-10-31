@@ -481,3 +481,51 @@ Temuan ini mempersempit pertanyaan, tetapi belum menjawab seluruh rumus game:
 5. Pertahankan label status 5, tile type byte +0x0B, level code +0x20[7..11], owner code +0x20[12..15] sebagai field names sementara, bukan semantic truth.
 
 Kesimpulan ekonomi Stage 1 masih BELUM DIKETAHUI. Rumus numerik per-record sudah ditemukan; maknanya dan peristiwa transaksi yang menjalankannya masih perlu dibuktikan.
+
+## Addendum — call-site FUN_800B770C dan tampilan fee petak lawan (Run #41159805931)
+
+### Provenance run
+- URL: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/41159805931
+- Job: 124414633147 — Analyze verified Entry 1 slice at 0x800AD450.
+- Commit input: 20346f89463bb1ca8792317de1496e228470ebf8.
+- Status: completed / success; exit code 0.
+- Artifact: entry1-loader-buffer-base-static-audit, ID 13026831655, 84.546 bytes.
+- ZIP SHA-256: 6dcb92f6b333308bfb67afe43d92259a223b743a3d534a5c9c989d776c78520a.
+- Entry 1 slice identity PASS; cleanup PASS; artifact text/log only; no emulator, gameplay input or savestate.
+
+### 1. Strong static evidence: negative fee shown on other-owned type-5 tile
+Candidate board renderer 0x800FC700 (Entry 1 imported at the loader-derived candidate base 0x800AD450):
+- Tests board record byte +0 == 5.
+- Extracts owner-like code from (u16(record+0x20) >> 12) and compares it with selected participant ID DAT_8013EA88.
+- On the not-equal branch, calls FUN_800B770C(record_index).
+- Passes the negated return value to drawing helper 0x8001B364 at a board-tile display position.
+
+The code therefore establishes that the calculated per-record amount is displayed with a negative sign on a status-5 tile whose owner code differs from the selected participant. This is **STRONG VERIFIED-STATIC evidence for a displayed toll/fee amount**. It does not prove the actual account debit, transfer recipient, or payment timing.
+
+### 2. Other direct caller roles
+The same helper is called from multiple Entry 1 candidate functions. Examples from the bounded caller audit:
+- 0x800C815C: combines the amount with a flag-derived adjustment and compares candidate values to select an index; likely AI/selection scoring, not direct balance mutation.
+- 0x800CD678: compares the amount to one quarter of a participant score/Chakra-like value and may adjust an AI score by -10,000; this is not a setter call.
+- 0x800E0324: scans status-5 records for the selected owner code and chooses a low-valued candidate after flag adjustment.
+- 0x800F1CCC: uses several computed values in comparisons with a third of a participant value and RNG thresholds before sending a status to another helper.
+- 0x800FB598: draws a value near record/board coordinates.
+- Other render-related calls appear in the 0x800FCxxx and 0x800FDxxx regions.
+
+These caller shapes show the value is reused for display, ranking/selection, and AI decisions. The inspected callers do not yet close a debit-to-Chakra plus owner-credit transaction.
+
+### 3. Current economy evidence matrix
+| Mechanism | Evidence now available | Status |
+|---|---|---|
+| Per-record value formula | Halfword base selected by bits 7–11 of record +0x20; byte +0x0B selects 100%, 120%, 150%, 180%, 200%, otherwise zero | **VERIFIED-STATIC for arithmetic** |
+| Fee shown on other-owned tile | Renderer checks status 5 and owner != selected participant, then draws -FUN_800B770C(record_index) | **STRONG VERIFIED-STATIC** |
+| Actual payer debit on landing | No closed path to participant-value setter 0x8001387C found yet | **UNKNOWN** |
+| Owner credit / income trigger | No closed path showing positive credit to tile owner; no lap/turn trigger established | **UNKNOWN** |
+| Owned-tile aggregate | 0x800BDC4C sums per-record values for status-5 records matching selected owner code, divides by two and adds config getter 0x80012A8C | **VERIFIED-STATIC for dataflow; meaning UNKNOWN** |
+| Barrier build cost | No source price → balance check → Chakra setter → owner/status mutation chain found | **UNKNOWN** |
+| Barrier upgrade cost | No level price table/formula or complete LVUP_ESTATE transaction chain found | **UNKNOWN** |
+
+### 4. Correction to wording
+Use "displayed fee/toll candidate" for FUN_800B770C. Do not state that this is definitely paid on landing until an actual event handler changes the payer's participant value. Do not call the aggregate FUN_800BDC4C player income; it may instead be a property valuation/projection or target-score component.
+
+### 5. Next audit gate
+Search the full set of direct callers of FUN_800B770C for functions that also call 0x8001387C or directly write the participant value field; inspect callers of those functions to locate the landing/toll event. In parallel, find writers to record byte +0, byte +0x0B, halfwords +0x10..+0x2E and halfword +0x20. Keep the owner-credit path and build/upgrade cost path separate.
