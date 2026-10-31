@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -28,12 +29,19 @@ public class ExportStage1EconomyTrace extends GhidraScript {
         0x800138ECL, // paired participant-record getter
         0x80012A70L, // configured Chakra-target getter candidate
         0x80012A44L, // initial participant-value getter candidate
-        0x800BDC4CL  // numeric helper called by candidate resource logic; mapping/meaning unresolved
+        0x800BDC4CL, // numeric helper called by candidate resource logic; mapping/meaning unresolved
+        0x8012C544L,  // pending-state initializer candidate
+        0x8012CACCL,  // pending-state consumer candidate
+        0x8012C78CL,  // pending-state transition candidate
+        0x8011C0D0L,  // candidate participant-value transform
+        0x800E1188L,  // candidate participant-value display/animation
+        0x800D8918L   // candidate participant-state initialization
     };
     private static final long[] CANDIDATE_ADDRESSES = {
         0x800D5608L, 0x800E1188L, 0x800D8918L, 0x8011C0D0L,
         0x8010478CL, 0x80101814L, 0x80111090L, 0x800F1FE4L,
-        0x8012AC04L, 0x8012C544L, 0x8012CACC
+        0x8012AC04L, 0x8012C544L, 0x8012CACCL,
+        0x8012C78CL, 0x8012A9C4L, 0x8012AAFCL
     };
     private void line(String s) { out.println(s); }
     private String hex(long v) { return String.format("0x%08X", v & 0xffffffffL); }
@@ -151,6 +159,41 @@ public class ExportStage1EconomyTrace extends GhidraScript {
         line("direct_jal_only=yes; jalr/indirect calls are not counted");
         line("=== DIRECT_JAL_COUNTS_END ===");
     }
+    private void scanImmediateCandidates() throws Exception {
+        line("");
+        line("=== IMMEDIATE_CANDIDATE_SCAN_BEGIN ===");
+        String[] tokens={"0x3c","0x96","0x244","0x3e8"};
+        int[] totals=new int[tokens.length];
+        int[] emitted=new int[tokens.length];
+        Pattern[] patterns=new Pattern[tokens.length];
+        for(int i=0;i<tokens.length;i++)
+            patterns[i]=Pattern.compile("(?i)(?<![0-9a-f])"+Pattern.quote(tokens[i])+"(?![0-9a-f])");
+        InstructionIterator it=currentProgram.getListing().getInstructions(true);
+        while(it.hasNext()) {
+            monitor.checkCancelled();
+            Instruction ins=it.next();
+            String textValue=ins.toString();
+            for(int i=0;i<tokens.length;i++) {
+                if(!patterns[i].matcher(textValue).find()) continue;
+                totals[i]++;
+                if(emitted[i]>=40) continue;
+                Function f=currentProgram.getFunctionManager().getFunctionContaining(ins.getAddress());
+                line("");
+                line("=== IMMEDIATE_CANDIDATE constant="+tokens[i]+" address="+ins.getAddress()+" ===");
+                line("instruction_bytes=["+bytes(ins)+"] "+textValue);
+                line("containing_function="+(f==null ? "NONE" : f.getEntryPoint()));
+                line("function_name="+(f==null ? "NONE" : f.getName()));
+                dumpWindow(ins,5,5);
+                emitted[i]++;
+            }
+        }
+        line("");
+        line("=== IMMEDIATE_CANDIDATE_SUMMARY_BEGIN ===");
+        for(int i=0;i<tokens.length;i++)
+            line("constant="+tokens[i]+" total_matches="+totals[i]+" contexts_emitted="+emitted[i]);
+        line("scope=decoded instruction text only; constants may be UI/layout or unrelated values, not assumed prices");
+        line("=== IMMEDIATE_CANDIDATE_SUMMARY_END ===");
+    }
     private void scanAsciiLabels() throws Exception {
         line("");
         line("=== ASCII_LABEL_SCAN_BEGIN ===");
@@ -200,7 +243,8 @@ public class ExportStage1EconomyTrace extends GhidraScript {
             if(!decompiler.openProgram(currentProgram))
                 throw new IllegalStateException("Cannot open DATA.BIN entry-1 program.");
             scanDirectCalls();
-            for(Function f:callers.values()) dumpFunction(f,"caller_of_participant_value_or_target_helper");
+            scanImmediateCandidates();
+            for(Function f:callers.values()) dumpFunction(f,"caller_of_participant_value_or_target_helper_or_pending_state");
             line("");
             line("=== REQUESTED_CANDIDATE_ADDRESSES_BEGIN ===");
             for(long a:CANDIDATE_ADDRESSES) dumpCandidateAddress(a);

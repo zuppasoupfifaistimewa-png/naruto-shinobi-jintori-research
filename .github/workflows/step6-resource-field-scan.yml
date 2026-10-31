@@ -183,6 +183,7 @@ jobs:
           grep -q "^analysis=Ghidra decoded-instruction scan" "$out/field-offset-scan.txt"
           grep -q "^=== SUMMARY ===" "$out/field-offset-scan.txt"
           grep -q "^analysis=Stage 1 economy static audit" "$out/stage1-economy-trace.txt"
+          grep -q "^=== IMMEDIATE_CANDIDATE_SUMMARY_BEGIN ===" "$out/stage1-economy-trace.txt"
           {
             echo "field_offset_scan=PASS"
             echo "stage1_economy_static_trace=PASS"
