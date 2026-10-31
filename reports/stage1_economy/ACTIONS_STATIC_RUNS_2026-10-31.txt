@@ -1,6 +1,6 @@
 Stage 1 economy — Actions summaries collected 31 October 2026
 Repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-Purpose: retain a short text-only index of already completed static audits. No new Actions workflow was started by this chat.
+Purpose: retain text-only summaries of completed static audits, including run #41166812039 launched during this chat. Private binaries and gameplay artifacts are not retained.
 
 run_id=41155800069
 status=completed/success
@@ -55,3 +55,20 @@ scope=44 direct JAL call sites to FUN_800B770C; caller bodies lacked watched dir
 Latest workflow expansion at baseline HEAD d0ef96970724c85d8bcd2c5c7fb8ba58bac04072 added further Ghidra target PCs for toll-commit and candidate pending-delta writers. No run/artifact result for that expansion was committed or established during this session; do not infer completion from workflow configuration alone.
 
 All listed runs are static audits. They did not launch gameplay, send gameplay input, or restore savestates. Private inputs were removed before Ghidra; artifacts are text/log only.
+
+run_id=41166812039
+status=completed/success
+job_id=124436038028
+job=Analyze verified Entry 1 slice at 0x800AD450
+source_commit_sha=ad1dd4d9c7a05458cda20c1000e83c154bb3e73c
+exit_code=0 (all job steps completed successfully)
+artifact_id=13028438888
+artifact_name=entry1-loader-buffer-base-static-audit
+artifact_sha256=2e0e79c6ebe368fe019fd120ced86743499ce10b6efe2236a8883f006fd80f95
+scope=direct operand scan +0x2EE/+0xB44; B44 staged Chakra setter path
+result=+0x2EE 24 accesses (3 loads/19 stores/2 other); +0xB44 14 (8 loads/4 stores/2 other)
+runtime_mapping=NOT_VALIDATED
+game_or_emulator_executed=no
+gameplay_input_sent=no
+savestate_restored=no
+private_binary_uploaded=no

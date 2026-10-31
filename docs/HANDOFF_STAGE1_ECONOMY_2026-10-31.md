@@ -88,3 +88,13 @@ Sumber YouTube yang tercatat: `https://www.youtube.com/watch?v=r30Rs_NuExc`.
 
 ## Actions provenance
 Ringkasan teks run statis terdahulu beserta status, job, input SHA, kode keluar, dan artifact ID: `reports/stage1_economy/ACTIONS_STATIC_RUNS_2026-10-31.txt`. Untuk dua job lama yang log tersimpannya tidak menampilkan exit-code eksplisit, file tersebut menandai `NOT_LOGGED` dan tidak mengarang angka. Tidak ada workflow baru diluncurkan dalam sesi handoff ini.
+
+
+## Addendum terbaru — run #41166812039 (mengoreksi catatan +0xB44 sebelumnya)
+
+Run 41166812039/job 124436038028 selesai success, exit 0; input commit ad1dd4d9c7a05458cda20c1000e83c154bb3e73c. Ringkasan teks: reports/actions/run_41166812039_summary.txt; indeks: reports/stage1_economy/ACTIONS_STATIC_RUNS_2026-10-31.txt.
+
+Keterangan sebelumnya bahwa +0xB44 hanya di-reset dan ditampilkan sudah dikoreksi oleh output baru. FUN_80109FEC menyalin B40 ke B44, lalu menambah Chakra lewat getter 0x800138EC (PC 0x8010A144) dan setter 0x8001387C (PC 0x8010A15C; delay slot 0x8010A160 menambah Chakra lama + B44). B40 = B30+B38 pada PC 0x80109A84–0x80109A94; nilai B44 kemudian dikurangi bertahap. Asal B30/B38 dan sumber event masih UNKNOWN; jangan label sebagai toll, income, refund, atau release.
+
++0x2EE adalah field participant-array yang terpisah dan memiliki consumer Chakra candidate FUN_800E1188/0x800BE5D8; warning decompiler tetap berlaku. Keduanya K3 parsial, bukan K4. Candidate import base 0x800AD450 belum runtime-validated.
+Q1 income tetap UNKNOWN; Q2 semua harga Barrier UNKNOWN; Q3 release amount/formula/auto-vs-selected UNKNOWN. Tidak ada emulator, gameplay input, atau restore savestate.

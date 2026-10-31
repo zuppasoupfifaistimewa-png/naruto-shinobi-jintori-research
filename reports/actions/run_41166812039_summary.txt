@@ -1,0 +1,16 @@
+status=SUCCESS
+job=Analyze verified Entry 1 slice at 0x800AD450
+run_id=41166812039
+job_id=124436038028
+commit_sha=ad1dd4d9c7a05458cda20c1000e83c154bb3e73c
+exit_code=0
+artifact_id=13028438888
+artifact_sha256=2e0e79c6ebe368fe019fd120ced86743499ce10b6efe2236a8883f006fd80f95
+entry1_sha256=9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a
+analysis_import_base=0x800AD450 (STATIC CANDIDATE; runtime mapping unverified)
+direct_offset_0x2EE=24 (3 loads, 19 stores, 2 other)
+direct_offset_0xB44=14 (8 loads, 4 stores, 2 other)
+private_disc_data_uploaded=no
+game_or_emulator_executed=no
+gameplay_input_sent=no
+savestate_restored=no

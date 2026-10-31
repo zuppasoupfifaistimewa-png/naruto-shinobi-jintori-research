@@ -225,3 +225,30 @@ EE 02 40 A4  21 10 35 02
 ```
 
 **Batas:** fungsi `FUN_800E1188` memuat warning Ghidra `Control flow encountered bad instruction data` pada dekompilasi dan fungsi ini berasal dari import view lama yang direbase berdasarkan offset slice. Perlakukan sebagai jalur statis parsial. Workflow terbaru pada HEAD baseline menambahkan candidate PC `0x800BE5D8`, `0x80109994`, dan `0x80109F1C` untuk audit ulang dengan base `0x800AD450`; hasil workflow baru belum tersedia dalam repo pada saat laporan ini ditulis.
+
+
+## Addendum run #41166812039 — jalur penyesuaian Chakra +0xB44
+
+Hasil Ghidra pada candidate import base 0x800AD450 memperbaiki kesimpulan artefak terdahulu: +0xB44 bukan hanya field tampilan. FUN_80109FEC menyalin +0xB40 ke +0xB44 pada PC 0x8010A5C8, lalu menggunakan B44 untuk menambah Chakra melalui getter 0x800138EC dan setter 0x8001387C (PC 0x8010A144–0x8010A160). Nilai B44 diproses bertahap: maksimum step 0x14 (20) pada PC 0x8010A590–0x8010A59C; getter/setter dipanggil kembali pada PC 0x8010A624–0x8010A638; B44 dikurangi pada PC 0x8010A648–0x8010A658. FUN_80109F1C juga membaca B44 untuk ditampilkan di PC 0x80109F64.
+
+B40 dibentuk dari B30+B38 di FUN_80109994 pada PC 0x80109A84–0x80109A94. Reset mengosongkan B44 pada PC 0x80109A54. Ini membuktikan **K3 untuk field penyesuaian Chakra bertahap**, tetapi makna dan penulis sumber B30/B38 belum teridentifikasi; hubungan dengan toll, income, LVUP_ESTATE, atau handler KABE/結界開放 tetap TIDAK TAHU. Q1/Q3 tidak dinaikkan statusnya.
+
+Raw excerpt 20 byte B30+B38→B40:
+```
+30 0B 82 8C  38 0B 83 8C  00 00 00 00
+21 10 43 00  40 0B 82 AC
+```
+
+Raw excerpt 32 byte getter→B44→setter Chakra:
+```
+3B 4E 00 0C  00 00 00 00  54 A5 23 8E  00 00 00 00
+44 0B 65 8C  2B 0B 64 90  1F 4E 00 0C  21 28 45 00
+```
+
+Raw excerpt 32 byte loop bertahap:
+```
+14 80 02 3C  54 A5 43 8C  00 00 00 00  44 0B 62 8C
+00 00 00 00  14 00 42 24  44 0B 62 AC
+```
+
+Run #41166812039 menemukan 14 operand langsung B44 (8 load, 4 store, 2 other) dan 24 operand langsung +0x2EE (3 load, 19 store, 2 other). +0x2EE adalah field array peserta berbeda (base slot 0x8013EA74, stride 0x90); consumer candidate FUN_800E1188/PC 0x800BE5D8 mengakses Chakra setter/getter, tetapi mempunyai warning decompiler. Kedua field tak boleh digabung. Candidate base bukan runtime mapping yang tervalidasi.

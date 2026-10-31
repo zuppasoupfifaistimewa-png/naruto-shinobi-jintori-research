@@ -4130,3 +4130,13 @@ Artefak Ghidra tambahan memperlihatkan bahwa field manager `+0xB44` yang pernah 
 Jalur participant `+0x2EE) lebih konkret: fungsi candidate `0x800BE5D8) membaca halfword per peserta, memproses tampilan nilai positif/negatif, menyinkronkan field Chakra +4 melalui setter/getter, lalu membersihkan slot. Sumber penulis nonzero masih belum ditemukan; tidak ada hubungan terbukti dengan toll, pendapatan petak, biaya Barrier, atau 結界開放. Kedua offset berbeda dan tetap UNKNOWN untuk Q1–Q3.
 
 Actions provenance Stage 1 ekonomi (teks-only) diringkas pada `reports/stage1_economy/ACTIONS_STATIC_RUNS_2026-10-31.txt`; dua run lama berstatus job success tetapi exit code eksplisit tidak ada di retained log, sehingga ditandai NOT_LOGGED. Tidak ada run baru diluncurkan pada sesi ini.
+
+
+<!-- stage1-run-41166812039-static-pending-result-2026-10-31 -->
+## Stage 1 — hasil statis pending Chakra #41166812039
+
+Run #41166812039/job 124436038028, input commit ad1dd4d9c7a05458cda20c1000e83c154bb3e73c, SUCCESS, exit 0. Ringkasan teks: reports/actions/run_41166812039_summary.txt.
+
+FUN_80109FEC menyalin +0xB40 ke +0xB44, lalu menambah B44 ke Chakra via getter 0x800138EC dan setter 0x8001387C (PC 0x8010A144–0x8010A160); B44 dikurangi bertahap pada PC 0x8010A648–0x8010A658. B40 = B30+B38 di 0x80109A84–0x80109A94. B44 adalah jalur penyesuaian Chakra, tetapi sumber B30/B38 dan event pemicunya UNKNOWN.
+
++0x2EE adalah participant-array offset terpisah (consumer candidate 0x800BE5D8). Candidate import base 0x800AD450 belum runtime-validated. Q1 income tetap UNKNOWN; Q2 harga Barrier UNKNOWN; Q3 release Chakra UNKNOWN. Tidak ada perubahan WAIT/UNKNOWN/NO-GO; tidak ada emulator/input/restore.
