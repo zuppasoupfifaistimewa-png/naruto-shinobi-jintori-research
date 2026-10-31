@@ -64,7 +64,50 @@ public class ExportStage1EconomyAQ1 extends GhidraScript {
             Function f=fn(i);if(h){helperCalls++;if(f!=null)helperCallerFns.add(f);}
             if(a)accessorCalls++;
             row(h?"HELPER_CALL":"ACCESSOR_CALL",hx(t),"DIRECT_JAL",hx(i.getAddress().getOffset()),fe(f),fnm(f),excerpt(i.getAddress().getOffset(),64),i.toString(),a?group(f):"DIRECT_HELPER_CALL","direct JAL site; indirect JALR unresolved");
+            if(t==0x8001387CL) {
+                row("AR2_SETTER_CONTEXT",hx(t),"12_PRECALL_INSTRUCTIONS",hx(i.getAddress().getOffset()),
+                    fe(f),fnm(f),previousWindowBytes(i,12),previousWindow(i,12),
+                    group(f),"12 decoded instructions immediately preceding jal; A1_ORIGIN_PENDING_REVIEW; do not infer semantics from streamer");
+            }
         }
+    }
+    private String previousWindow(Instruction center,int before) {
+        List<Instruction> prior=new ArrayList<>();
+        Instruction cur=center;
+        Function owner=fn(center);
+        for(int n=0;n<before;n++) {
+            cur=cur.getPrevious();
+            if(cur==null) break;
+            if(owner!=null && !owner.getBody().contains(cur.getAddress())) break;
+            prior.add(cur);
+        }
+        Collections.reverse(prior);
+        StringBuilder result=new StringBuilder();
+        for(Instruction ins:prior) {
+            if(result.length()>0) result.append(" || ");
+            result.append(hx(ins.getAddress().getOffset())).append(" ").append(ins.toString())
+                  .append(" [").append(bytes(ins)).append("]");
+        }
+        if(prior.size()!=before) result.insert(0,"PRECALL_COUNT="+prior.size()+"; ");
+        return result.toString();
+    }
+    private String previousWindowBytes(Instruction center,int before) {
+        List<Instruction> prior=new ArrayList<>();
+        Instruction cur=center;
+        Function owner=fn(center);
+        for(int n=0;n<before;n++) {
+            cur=cur.getPrevious();
+            if(cur==null) break;
+            if(owner!=null && !owner.getBody().contains(cur.getAddress())) break;
+            prior.add(cur);
+        }
+        Collections.reverse(prior);
+        StringBuilder result=new StringBuilder();
+        for(Instruction ins:prior) {
+            if(result.length()>0) result.append(" | ");
+            result.append(bytes(ins));
+        }
+        return result.toString();
     }
     @Override protected void run()throws Exception{
         String[] args=getScriptArgs();if(args.length<1)throw new IllegalArgumentException("Args: output TSV path");
