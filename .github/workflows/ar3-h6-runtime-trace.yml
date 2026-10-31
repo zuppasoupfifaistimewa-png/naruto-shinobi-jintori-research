@@ -22,9 +22,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
-      GH_TOKEN: \${{ github.token }}
-      RESEARCH_REPO: \${{ github.repository }}
-      WORK: /tmp/naruto-ar3-\${{ github.run_id }}-\${{ github.run_attempt }}
+      GH_TOKEN: ${{ github.token }}
+      RESEARCH_REPO: ${{ github.repository }}
+      WORK: /tmp/naruto-ar3-${{ github.run_id }}-${{ github.run_attempt }}
       TIMEOUT_SECONDS: "900"
     steps:
       - name: Checkout research scripts
@@ -112,18 +112,18 @@ jobs:
         with:
           name: naruto-storymode-adaptive-player-private
           run-id: "39867730674"
-          repository: \${{ github.repository }}
-          github-token: \${{ github.token }}
-          path: \${{ env.WORK }}/inputs
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ env.WORK }}/inputs
 
       - name: Download reference Memory Card temporarily
         uses: actions/download-artifact@v4
         with:
           name: naruto-storymode-memory-card-private
           run-id: "39262213468"
-          repository: \${{ github.repository }}
-          github-token: \${{ github.token }}
-          path: \${{ env.WORK }}/cards
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ env.WORK }}/cards
 
       - name: Validate private inputs and start headless display
         shell: bash
@@ -184,8 +184,8 @@ jobs:
         if: always()
         shell: bash
         env:
-          GH_TOKEN: \${{ github.token }}
-          RESEARCH_REPO: \${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/ar3-h6-output"
