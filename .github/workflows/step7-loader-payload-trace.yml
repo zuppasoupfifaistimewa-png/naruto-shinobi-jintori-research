@@ -1,0 +1,269 @@
+name: Step 7 — targeted loader and payload pointer trace
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/step7-loader-payload-trace.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: step7-loader-payload-trace
+  cancel-in-progress: false
+
+jobs:
+  trace-loader-payload:
+    name: Trace resource reader, allocation pointer, and payload consumers
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GHIDRA_ASSET: "ghidra_12.2_PUBLIC_20261016.zip"
+      GHIDRA_SHA256: "2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67"
+      GHIDRA_CACHE_DIR: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+      EXPECTED_EXE_SHA256: "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569
+"
+      EXPECTED_EXE_BYTES: "385024"
+    steps:
+      - name: Checkout research tools
+        uses: actions/checkout@v4
+
+      - name: Install PS1 extraction tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes bchunk xorriso
+
+      - name: Fetch verified disc and extract only the main executable
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/step7-loader-payload"
+          source="$root/source"
+          extracted="$source/extracted-root"
+          input="$root/input"
+          out="$RUNNER_TEMP/step7-loader-payload-output"
+          mkdir -p "$source" "$extracted" "$input" "$out"
+          bin="$source/naruto-disc.bin"
+          cue_raw="$source/original.cue"
+          cue="$source/naruto-disc.cue"
+
+          curl --fail --location --silent --show-error \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Accept: application/octet-stream" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 \
+            --max-time 600 \
+            "https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/647346873" \
+            --output "$bin"
+          [[ "$(stat -c '%s' "$bin")" == "325989552" ]]
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $bin" | sha256sum --check --status
+
+          curl --fail --location --silent --show-error \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Accept: application/octet-stream" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 \
+            --max-time 60 \
+            "https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/647354760" \
+            --output "$cue_raw"
+          [[ "$(stat -c '%s' "$cue_raw")" == "116" ]]
+          echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $cue_raw" | sha256sum --check --status
+
+          python3 - "$cue_raw" "$cue" <<'PY'
+          from pathlib import Path
+          import re, sys
+          source, destination = map(Path, sys.argv[1:3])
+          lines, rewritten, replaced = source.read_text(encoding="utf-8").splitlines(), [], 0
+          for line in lines:
+              if line.lstrip().upper().startswith("FILE "):
+                  match = re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$', line, re.I)
+                  if not match:
+                      raise SystemExit("Unrecognized CUE FILE directive")
+                  line = match.group(1) + '"naruto-disc.bin"' + match.group(2)
+                  replaced += 1
+              rewritten.append(line)
+          if replaced != 1:
+              raise SystemExit(f"Expected exactly one FILE directive, got {replaced}")
+          destination.write_text("\n".join(rewritten) + "\n", encoding="utf-8")
+          PY
+
+          bchunk "$bin" "$cue" "$source/track"
+          iso="$(find "$source" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          [[ -n "$iso" ]]
+          xorriso -osirrox on -indev "$iso" -extract / "$extracted" > "$out/disc-extraction.log" 2>&1
+          exe_candidate="$(find "$extracted" -type f -iname 'SLPS_035.53*' -print -quit)"
+          [[ -n "$exe_candidate" ]]
+          exe="$input/SLPS_035.53"
+          cp "$exe_candidate" "$exe"
+          [[ "$(stat -c '%s' "$exe")" == "$EXPECTED_EXE_BYTES" ]]
+          echo "$EXPECTED_EXE_SHA256  $exe" | sha256sum --check --status
+          [[ "$(head -c 8 "$exe")" == "PS-X EXE" ]]
+
+          python3 - "$exe" "$out/input-identity.txt" <<'PY'
+          from pathlib import Path
+          import hashlib, struct, sys
+          exe, report = Path(sys.argv[1]), Path(sys.argv[2])
+          b = exe.read_bytes()
+          u32 = lambda o: struct.unpack_from("<I", b, o)[0]
+          checks = {
+              "magic": b[:8] == b"PS-X EXE",
+              "size": len(b) == 385024,
+              "initial_pc": u32(0x10) == 0x80011448,
+              "load_address": u32(0x18) == 0x80010000,
+              "text_size": u32(0x1C) == 0x5D800,
+              "header_text_matches_file": 0x800 + u32(0x1C) == len(b),
+          }
+          if not all(checks.values()):
+              raise SystemExit("EXE header validation failed: " + str(checks))
+          report.write_text("\n".join([
+              "input_validation=PASS",
+              f"exe_bytes={len(b)}",
+              "exe_sha256=" + hashlib.sha256(b).hexdigest(),
+              f"initial_pc=0x{u32(0x10):08X}",
+              f"load_address=0x{u32(0x18):08X}",
+              f"text_size=0x{u32(0x1C):X}",
+              "binary_uploaded_as_artifact=no",
+          ]) + "\n", encoding="utf-8")
+          PY
+          rm -rf "$source"
+          test ! -e "$source"
+          echo "source_disc_and_extraction_removed_before_Ghidra=PASS" >> "$out/input-identity.txt"
+
+      - name: Set up Java runtime
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+          java-package: jdk
+
+      - name: Restore cached Ghidra
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+          key: ghidra-12.2-linux-x64-2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+
+      - name: Install Ghidra if cache is missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$GHIDRA_CACHE_DIR"
+          if ! find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit | grep -q .; then
+            archive="$RUNNER_TEMP/$GHIDRA_ASSET"
+            url="https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.2_build/$GHIDRA_ASSET"
+            curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' \
+              --retry 3 --retry-delay 2 "$url" --output "$archive"
+            echo "$GHIDRA_SHA256  $archive" | sha256sum --check --status
+            unzip -q "$archive" -d "$GHIDRA_CACHE_DIR"
+            rm -f "$archive"
+          fi
+
+      - name: Decompile loader and resource payload call chain
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/step7-loader-payload"
+          input="$root/input"
+          out="$RUNNER_TEMP/step7-loader-payload-output"
+          project="$root/ghidra-project"
+          mkdir -p "$project" "$out"
+          headless="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
+          [[ -n "$headless" && -x "$headless" ]]
+          set +e
+          "$headless" "$project" Naruto_loader_payload_trace \
+            -import "$input/SLPS_035.53" \
+            -loader BinaryLoader -loader-baseAddr 0x80010000 \
+            -loader-fileOffset 0x800 -loader-length 0x5D800 \
+            -loader-blockName MAIN_TEXT \
+            -processor "MIPS:LE:32:default" \
+            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -preScript PreparePsxExe.java \
+            -postScript ExportFunctionDetail.java "$out/loader-payload-detail.txt" \
+              0x80011560 0x80011608 0x800198E0 0x800196C4 \
+              0x8001A4D8 0x8001A648 0x8001E9A0 0x8001EF38 \
+              0x8002409C 0x80024258 0x80024464 \
+              0x8002D070 0x8002D160 0x8002D4E4 0x8002D710 \
+              0x8002D7F8 0x8002D838 0x8002D8A4 0x8002D944 \
+              0x8002D9E4 0x8002DA88 0x8002DC68 0x8002DCF8 \
+              0x8002DEC4 0x8002DF30 0x8002DFE4 \
+              0x8002D00C 0x8002CF9C 0x8002D5C0 \
+              0x8002DE60 0x8002DDEC 0x80035AA8 0x80035B08 \
+              0x8002C9C4 0x8002D1F8 0x8002D28C 0x8002D330 0x8002D44C \
+            -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject \
+            > "$out/ghidra-headless.log" 2>&1
+          rc=$?
+          set -e
+          if [[ "$rc" -ne 0 || ! -s "$out/loader-payload-detail.txt" ]]; then
+            {
+              echo "status=FAILURE"
+              echo "job=trace-loader-payload"
+              echo "commit_sha=$GITHUB_SHA"
+              echo "exit_code=$rc"
+              echo "detail_output_present=$([[ -s "$out/loader-payload-detail.txt" ]] && echo yes || echo no)"
+            } > "$out/run-summary.txt"
+            tail -n 80 "$out/ghidra-headless.log" || true
+            exit 1
+          fi
+          {
+            echo "status=SUCCESS"
+            echo "job=trace-loader-payload"
+            echo "commit_sha=$GITHUB_SHA"
+            echo "exit_code=0"
+            echo "scope=loader wrappers, directory lookup, disk read queue, allocator and incoming callers"
+            echo "game_or_emulator_executed=no"
+            echo "gameplay_input_sent=no"
+            echo "savestate_restored=no"
+            echo "private_disc_or_executable_uploaded=no"
+          } > "$out/run-summary.txt"
+          grep -E '^(=== TARGET|instruction_at_target=|function_name=|function_entry=|function_body_bytes=|decompile_status=|reference_count=)' "$out/loader-payload-detail.txt" > "$out/target-index.txt"
+
+      - name: Remove private executable and Ghidra project
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/step7-loader-payload"
+          rm -rf "$root"
+          if [[ ! -e "$root" ]]; then
+            echo "PRIVATE_INPUT_AND_PROJECT_CLEANUP=PASS" >> "$RUNNER_TEMP/step7-loader-payload-output/run-summary.txt" 2>/dev/null || true
+          else
+            echo "PRIVATE_INPUT_AND_PROJECT_CLEANUP=FAIL" >> "$RUNNER_TEMP/step7-loader-payload-output/run-summary.txt"
+            exit 1
+          fi
+
+      - name: Validate text-only artifact
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/step7-loader-payload-output"
+          mkdir -p "$out"
+          python3 - "$out" <<'PY'
+          from pathlib import Path
+          import sys
+          root = Path(sys.argv[1])
+          files = [p for p in root.rglob("*") if p.is_file()]
+          allowed = {".txt", ".log"}
+          bad = [str(p) for p in files if p.suffix.lower() not in allowed]
+          oversized = [str(p) for p in files if p.stat().st_size > 20_000_000]
+          if bad or oversized:
+              raise SystemExit(f"Invalid artifact members: extensions={bad}, oversize={oversized}")
+          if not (root / "run-summary.txt").is_file():
+              raise SystemExit("Missing run-summary.txt")
+          print(f"text_only_output_count={len(files)}")
+          print("private_binary_uploaded=no")
+          PY
+
+      - name: Upload text-only trace
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: step7-loader-payload-static-trace
+          path: ${{ runner.temp }}/step7-loader-payload-output/
+          if-no-files-found: warn
+          retention-days: 14
