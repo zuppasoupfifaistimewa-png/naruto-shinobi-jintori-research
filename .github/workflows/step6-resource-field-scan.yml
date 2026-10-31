@@ -177,12 +177,16 @@ jobs:
             -preScript PrepareStep6Resource.java \
             -postScript ExportStructOffsetAccesses.java "$out/field-offset-scan.txt" \
             -postScript ExportFieldCfgDefUse.java "$out/field-cfg-defuse.txt" 0x8012C544 0x8012CACC \
+            -postScript ExportStage1EconomyTrace.java "$out/stage1-economy-trace.txt" \
             -analysisTimeoutPerFile 1200 -max-cpu 2 -deleteProject \
             > "$out/ghidra-headless.log" 2>&1
           grep -q "^analysis=Ghidra decoded-instruction scan" "$out/field-offset-scan.txt"
           grep -q "^=== SUMMARY ===" "$out/field-offset-scan.txt"
+          grep -q "^analysis=Stage 1 economy static audit" "$out/stage1-economy-trace.txt"
           {
             echo "field_offset_scan=PASS"
+            echo "stage1_economy_static_trace=PASS"
+            echo "scope=static DATA.BIN entry-1 direct JAL callers and candidate function decompilation"
             echo "static_base=0x800D0000 HYPOTHESIS_ONLY"
             echo "game_or_emulator_executed=no"
             echo "gameplay_input_sent=no"

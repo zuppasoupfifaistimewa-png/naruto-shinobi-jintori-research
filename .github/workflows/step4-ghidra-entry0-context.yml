@@ -183,6 +183,45 @@ jobs:
             -postScript ExportEntry0TargetFunction.java "$out/entry0-altbase-B0450-targets.txt" 0x800C2FD8 0x800C2570 0x800BDC4C \
             -deleteProject > "$out/entry0-altbase-B0450-targets.log" 2>&1
           [[ -s "$out/entry0-altbase-B0450-targets.txt" ]]
+
+          # Re-decode the numeric helper called by the candidate Entry-1 target-threshold path.
+          # No full auto-analysis: locally decode only the target and its control-flow body.
+          # Both imports below are conditional address-map hypotheses, not confirmed runtime overlays.
+          "$headless" "$out/project" DATA_BIN_entry_0000_helper_AD000_noanalysis \
+            -import "$input/DATA_BIN_ENTRY_0000.bin" \
+            -loader BinaryLoader -loader-baseAddr 0x800AD000 -loader-length 0x1AF08 \
+            -loader-blockName DATA_BIN_ENTRY_0000 -processor "MIPS:LE:32:default" \
+            -noanalysis -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -postScript ExportEntry0TargetFunction.java "$out/entry0-helper-AD0000-noanalysis.txt" 0x800BDC4C \
+            -deleteProject > "$out/entry0-helper-AD0000-noanalysis.log" 2>&1
+          [[ -s "$out/entry0-helper-AD0000-noanalysis.txt" ]]
+
+          # With base 0x800B0450, the same file offset 0x10C4C maps to 0x800C109C.
+          # The literal call target 0x800BDC4C maps to a different resource offset (0xD7FC).
+          "$headless" "$out/project" DATA_BIN_entry_0000_helper_B0450_noanalysis \
+            -import "$input/DATA_BIN_ENTRY_0000.bin" \
+            -loader BinaryLoader -loader-baseAddr 0x800B0450 -loader-length 0x1AF08 \
+            -loader-blockName DATA_BIN_ENTRY_0000_ALT -processor "MIPS:LE:32:default" \
+            -noanalysis -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -postScript ExportEntry0TargetFunction.java "$out/entry0-helper-B0450-noanalysis.txt" 0x800C109C 0x800BDC4C \
+            -deleteProject > "$out/entry0-helper-B0450-noanalysis.log" 2>&1
+          [[ -s "$out/entry0-helper-B0450-noanalysis.txt" ]]
+
+          python3 - "$out/entry0-helper-B0450-noanalysis.txt" <<'PY'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1]); s=p.read_text(encoding="utf-8",errors="replace")
+          s=s.replace("resource_base=0x800AD000 (hypothesis only)",
+                      "resource_base=0x800B0450 (allocator-derived candidate; payload offset unproven)")
+          s=s.replace("target_offset_under_hypothesis=0x10c4c",
+                      "target_offset_under_hypothesis=0x10c4c")
+          s=s.replace("target_offset_under_hypothesis=0xd7fc",
+                      "target_offset_under_hypothesis=0xd7fc")
+          p.write_text(s,encoding="utf-8")
+          if "resource_base=0x800B0450" not in s:
+              raise SystemExit("alternate helper base metadata missing")
+          print("entry0_helper_altbase_metadata=PASS")
+          PY
           python3 - "$out/entry0-altbase-B0450-targets.txt" <<'PY'
           from pathlib import Path
           import sys
@@ -204,7 +243,8 @@ jobs:
 
           {
             echo "status=SUCCESS"
-            echo "scope=five localized call windows, 16 raw words at 0x800AE900, and three targets (including 0x800BDC4C) under both candidate entry0 bases"
+            echo "scope=five localized call windows, 16 raw words, three candidate targets, and no-analysis helper comparison for 0x800BDC4C"
+          echo "entry0_helper_bases_tested=0x800AD000 and 0x800B0450; runtime mapping remains unknown"
             echo "resource_base_tested=0x800AD000 and 0x800B0450; both are hypotheses, not runtime-confirmed overlay bases"
             echo "emulator_or_gameplay_executed=no"
             echo "binary_uploaded_as_artifact=no"
