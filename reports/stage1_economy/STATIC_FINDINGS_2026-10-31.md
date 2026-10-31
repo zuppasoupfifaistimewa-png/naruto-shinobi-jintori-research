@@ -169,37 +169,59 @@ Hanya setelah mapping loader/runtime dan fail-closed gate mengizinkan:
 Tidak ada uji runtime dilakukan dalam sesi ini. Semua WAIT/UNKNOWN/NO-GO yang sudah ada tetap tidak berubah.
 
 
-## Addendum — raw MIPS untuk B44 dan participant delta +2EE (31 Oktober 2026)
+## Addendum — pending fields +0xB44 vs +0x2EE (31 Oktober 2026)
 
-Raw excerpt 24 byte pada PC lama `0x8012C5E8`–`0x8012C604` (candidate PC setelah rebase: `0x80109938`–`0x80109954`):
+**Rebasing alamat:** artefak lama #41155800069/#41156493284 mengimpor slice Entry 1 pada candidate base `0x800D0000`. Candidate base yang lebih baru adalah `0x800AD450`. PC di bawah yang disebut “candidate PC” dihitung dengan mempertahankan offset byte terhadap awal slice; ini bukan pembuktian alamat runtime.
 
-```
-48 0B 40 A4  2D 0B 40 A0  54 A5 02 8E  44 0B 40 AC
-```
+### Field manager +0xB44 — belum terbukti sebagai pending Chakra delta
 
-Raw excerpt 32 byte sekitar PC lama `0x8012C634`–`0x8012C644` (candidate PC `0x80109984`–`0x80109994`):
+- Fungsi reset lama `FUN_8012C544` rebased ke candidate PC `0x80109994`; instruksi store-zero di PC lama `0x8012C604` menjadi candidate PC `0x80109A54`.
+- Reader `FUN_8012CACC` rebased ke `0x80109F1C`; ia membaca field `+0xB44` pada PC lama `0x8012CB14` (candidate PC `0x80109F64`) untuk menggambar angka ketika state byte `+0xB2A > 5`. Fungsi `FUN_8012C78C` juga menggambar field tersebut pada fase tampilan akhir.
+- Dalam artefak yang diekspor, tidak ditemukan store nonzero ke `+0xB44`. Karena itu, label “pending Chakra delta” belum dapat diterima: bukti aktual hanya reset nilai dan pembacaan untuk UI.
+- `+0xB40` adalah field berbeda: fungsi reset mengisi `+0xB40 = +0xB30 + +0xB38`. Tidak ada instruksi yang menjadikan B40 sebagai writer B44.
 
-```
-30 0B 82 8C  38 0B 83 8C  00 00 00 00  21 10 43 00
-40 0B 82 AC
-```
-
-Instruksi mengosongkan `+0xB44) ada pada `0x8012C604` (`sw zero,0xB44(v0)`); instruksi menjumlahkan B30+B38 dan menyimpan ke B40 ada pada `0x8012C644`. Fungsi UI membaca B44 melalui `lw a2,0xB44(v1)` di `0x8012CB14`.
-
-Raw excerpt 32 byte pembaca delta per-peserta (PC lama `0x800E11C8)–`0x800E11E4`; setelah rebase Entry 1 candidate PC menjadi `0x800BE610)–`0x800BE62C`:
+Raw excerpt **24 byte** pada PC lama `0x8012C5F8`–`0x8012C60C` (candidate PC `0x80109A48`–`0x80109A5C`):
 
 ```
-74 EA 42 8C  00 00 00 00  EE 02 49 24  21 10 2A 02
-00 00 42 90  00 00 00 00  22 00 40 14
+34 0B 40 AC  3C 0B 40 AC  B0 4A 00 0C
+44 0B 40 AC  54 A5 03 8E  00 00 00 00
 ```
 
-Ini memuat pengambilan pointer peserta, pembentukan alamat offset `+0x2EE), dan pemeriksaan slot. Raw excerpt update Chakra 20 byte pada PC lama `0x800E1844)–`0x800E1858` (candidate PC `0x800BEC94)–`0x800BECA8`):
+Raw excerpt **20 byte** untuk penjumlahan B30+B38 menjadi B40 pada PC lama `0x8012C634`–`0x8012C644` (candidate PC `0x80109A84`–`0x80109A94`):
 
 ```
-04 00 45 8C  1F 4E 00 0C  21 20 20 02  3B 4E 00 0C
-21 20 20 02
+30 0B 82 8C  38 0B 83 8C  00 00 00 00
+21 10 43 00  40 0B 82 AC
 ```
 
-Ini menunjukkan field Chakra +4 diberikan ke setter `0x8001387C), kemudian nilai dibaca kembali melalui `0x800138EC). Raw bytes pada PC lama `0x800E1954) (`EE 02 40 A4`) menunjukkan slot delta +2EE dihapus setelah tahapan animasi; candidate PC `0x800BEDA4`.
+### Field participant +0x2EE — consumer delta per peserta lebih konkret
 
-Catatan: import-base lama dan baru adalah dua alamat virtual untuk slice Entry 1 yang sama; rebasing menggunakan offset file, bukan klaim pemetaan runtime. Artefak #41155800069/#41156493284 dekompilasi juga memperingatkan boundary Ghidra dan beberapa blok control flow yang tidak bersih. Gunakan instruksi di atas sebagai bukti statis parsial, bukan definisi lengkap semantic state.
+- Array peserta memakai pointer slot candidate `0x8013EA74`; consumer memakai struktur peserta ber-stride `0x90`, dan membaca halfword `base + 0x2EE + participant*2`.
+- Fungsi lama `FUN_800E1188` direbase ke candidate PC `0x800BE5D8`. Ia berjalan pada cabang feature flag `GET_0x80012AD0() & 0x1000`, menyalin nilai antar-peserta yang byte team-code `+0x0E)-nya sama, lalu memproses nilai sebagai animasi angka positif/negatif.
+- Pada candidate PC `0x800BEC98` (PC lama `0x800E1848`), fungsi memanggil setter Chakra `0x8001387C` dengan field peserta `+0x04); lalu memanggil getter `0x800138EC` pada candidate PC `0x800BECA0` dan menyalin hasil getter kembali ke field peserta `+0x04`.
+- Setelah alur animasi selesai, field `+0x2EE` dikosongkan pada candidate PC `0x800BEDA4` (PC lama `0x800E1954`). Setup juga mengosongkan slot ini pada candidate PC `0x800B2EEC` (PC lama `0x800D5A9C`).
+- Ini mendukung **K3 untuk pemrosesan/animasi nilai delta per peserta yang tersambung ke accessor Chakra**. Namun, penulis nonzero/sumber nilai +0x2EE belum ditemukan; belum ada koneksi yang terbukti dari nilai ini ke toll, income, build/upgrade, atau 結界開放.
+
+Raw excerpt **28 byte** untuk pembentukan dan pembacaan alamat +0x2EE pada PC lama `0x800E11C8`–`0x800E11E4` (candidate PC `0x800BE618`–`0x800BE634`):
+
+```
+74 EA 42 8C  00 00 00 00  EE 02 49 24
+21 10 2A 02  00 00 42 90  00 00 00 00
+22 00 40 14
+```
+
+Raw excerpt **20 byte** untuk sinkronisasi Chakra pada PC lama `0x800E1844`–`0x800E1858` (candidate PC `0x800BEC94`–`0x800BECA8`):
+
+```
+04 00 45 8C  1F 4E 00 0C  21 20 20 02
+3B 4E 00 0C  21 20 20 02
+```
+
+Raw excerpt **20 byte** untuk clear +0x2EE pada PC lama `0x800E1948`–`0x800E1958` (candidate PC `0x800BED98`–`0x800BEDA8`):
+
+```
+74 EA 42 8E  40 18 11 00  21 10 43 00
+EE 02 40 A4  21 10 35 02
+```
+
+**Batas:** fungsi `FUN_800E1188` memuat warning Ghidra `Control flow encountered bad instruction data` pada dekompilasi dan fungsi ini berasal dari import view lama yang direbase berdasarkan offset slice. Perlakukan sebagai jalur statis parsial. Workflow terbaru pada HEAD baseline menambahkan candidate PC `0x800BE5D8`, `0x80109994`, dan `0x80109F1C) untuk audit ulang dengan base `0x800AD450`; hasil workflow baru belum tersedia dalam repo pada saat laporan ini ditulis.
