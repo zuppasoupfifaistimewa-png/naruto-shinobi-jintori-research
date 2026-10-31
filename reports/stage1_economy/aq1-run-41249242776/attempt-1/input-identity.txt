@@ -1,0 +1,12 @@
+input_validation=PASS
+directory_index=1
+directory_LBN=8778
+directory_byte_length=596412
+DATA_BIN_file_offset=0x10BB000
+slice_bytes=596412
+slice_sha256=9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a
+proposed_buffer_base=0x800AD450
+buffer_base_status=STATIC_CANDIDATE_FROM_MAIN_EXE_GLOBAL_SLOT
+runtime_mapping=NOT_CAPTURED
+binary_uploaded_as_artifact=no
+source_disc_and_DATA_BIN_removed_before_Ghidra=PASS
