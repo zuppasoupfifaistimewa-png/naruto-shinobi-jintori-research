@@ -186,7 +186,7 @@ jobs:
             -loader BinaryLoader -loader-baseAddr 0x800AD450 \
             -loader-length 0x919BC -loader-blockName DATA_BIN_ENTRY_0001_AT_BUFFER_BASE \
             -processor "MIPS:LE:32:default" \
-            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra:$GITHUB_WORKSPACE/tools/step7" \
             -postScript ExportEntry0TargetFunction.java "$out/entry1-buffer-base-targets.txt" \
               0x800BDC4C 0x800B770C 0x800BDBFC 0x800B7464 \
               0x800FC700 0x800FCA0C 0x800FD730 0x800FE314 \
@@ -194,18 +194,20 @@ jobs:
               0x800E0324 0x800F1CCC 0x800F2050 \
               0x80107F4C 0x800BE5D8 0x800F9520 0x800B5D68 \
               0x800EE4E0 0x800CF434 0x80108054 0x80109994 0x80109F1C \
+            -postScript ExportPerRecordCallerGraph.java "$out/per-record-caller-graph.txt" \
             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject \
             > "$out/ghidra-headless.log" 2>&1
           rc=$?
           set -e
 
-          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" ]]; then
+          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" ]]; then
             {
               echo "status=FAILURE"
               echo "job=analyze-entry1-buffer-base"
               echo "commit_sha=$GITHUB_SHA"
               echo "exit_code=$rc"
               echo "target_output_present=$([[ -s "$out/entry1-buffer-base-targets.txt" ]] && echo yes || echo no)"
+              echo "caller_graph_present=$([[ -s "$out/per-record-caller-graph.txt" ]] && echo yes || echo no)"
             } > "$out/run-summary.txt"
             tail -n 80 "$out/ghidra-headless.log" || true
             exit 1
@@ -247,7 +249,8 @@ jobs:
             echo "entry1_sha256=$EXPECTED_ENTRY1_SHA256"
             echo "analysis_import_base=0x800AD450"
             echo "analysis_base_status=STATIC_CANDIDATE_FROM_GLOBAL_POINTER"
-            echo "targeted_functions=Entry1 accumulator/per-record helpers and 11 direct callers of 0x800B770C"
+            echo "per_record_caller_graph=PASS"
+            echo "targeted_functions=Entry1 helpers and all decoded direct callers of 0x800B770C; setter/getter call graph scanned"
             echo "game_or_emulator_executed=no"
             echo "gameplay_input_sent=no"
             echo "savestate_restored=no"
