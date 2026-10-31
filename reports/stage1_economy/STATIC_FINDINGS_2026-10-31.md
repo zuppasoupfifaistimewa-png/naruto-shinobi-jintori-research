@@ -43,7 +43,7 @@ Referensi repo: `reports/static_audit/LOADER_AND_DIRECTORY_INDEX_AUDIT_2026-10-3
 
 Aritmetika ini didukung oleh dekompilasi/raw MIPS dalam artefak run #41159805931. Tetapi semantik byte +0x0B dan hubungan tiap indeks dengan level Barrier belum dipastikan. **TIDAK TAHU** apakah B adalah toll, rent, nilai dasar aset, atau skor penilaian. Tidak boleh mengubahnya menjadi biaya upgrade atau income hanya karena urutan multipliers tampak menyerupai level.
 
-### Raw excerpt 36 byte pada PC 0x800B7730
+### Raw excerpt 48 byte pada PC 0x800B7730
 
 ```
 800B7730  0B 00 43 90   lbu v1,0xb(v0)
