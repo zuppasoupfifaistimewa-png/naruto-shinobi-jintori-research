@@ -46,7 +46,7 @@ jobs:
           failed=0
           printf 'path\thttp_code\tresult\n' > "$dest/CURL_HTTP_STATUS.tsv"
           for path in "${paths[@]}"; do
-            code="$(curl --fail --location --silent --show-error --retry 2 --connect-timeout 15 --max-time 60 -o /dev/null -w '%{http_code}' "$base/$path" 2>/dev/null)"
+            code="$(curl --location --silent --show-error --retry 2 --connect-timeout 15 --max-time 60 -H "Authorization: Bearer $GH_TOKEN" -o /dev/null -w '%{http_code}' "$base/$path" 2>/dev/null)"
             rc=$?
             if [ "$rc" -eq 0 ] && [ "$code" = "200" ]; then
               result="PASS"
