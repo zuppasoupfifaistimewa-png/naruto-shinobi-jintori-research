@@ -49,6 +49,17 @@ Harga bisa berasal dari tabel/field petak atau faktor kondisi, sehingga biaya un
 
 **Jangkar lama bukan sampel ledger:** angka 60 (build), 150 (L1→L2), L1 bernilai 100/durability 2/2, dan L1 lain bernilai 50 tercatat dalam `docs/GAME_RULES.md` sebagai contoh UI dari terjemahan komunitas. Itu bukti K1/teks eksternal, bukan pembacaan frame Stage 1 di ledger; angka tersebut tidak dipakai untuk mem-fit harga.
 
+
+### Pemeriksaan jangkar video/terjemahan (bukan titik fit)
+
+- **60**: transcript 11:20–11:54 menyebut angka 60 pada percakapan tentang petak lawan/pertarungan; konteks tidak memastikan bahwa itu biaya build. K1.
+- **100 dengan durability 2/2, dan 50 untuk contoh L1 lain; build 60; upgrade L1→L2 150**: contoh UI translation yang dirujuk `docs/GAME_RULES.md`, bukan dua-frame observation dari video sesi ini. K1; tidak dipakai dalam regresi harga dan bukan harga universal.
+- **580**: hanya disebut dalam visual scene summary untuk nilai toll pada petak tinggi, tanpa raw frame atau timestamp kejadian; ledger O-004 K0.
+- **2.700**: streamer menyebut nilai petak/scroll pada 35:35–36:25; bukan dua-frame reading dan bukan bukti Chakra payout/refund. K1.
+- **Cup Ramen +50 Chakra**: disebut dalam scene summary pada rentang board 08:34–18:00; timestamp dan dua-frame pembacaan angka tidak tersedia di ledger. K0; item ini bukan salah satu dari empat jenis event yang dimasukkan ke ledger.
+
+Tidak satu pun jangkar ini menaikkan observasi ledger ke K2. Nilai yang tercantum tidak digunakan untuk menghitung rumus Q1–Q3.
+
 **Keputusan Q2:** tidak ada biaya L1–L5 yang terverifikasi. Khususnya, biaya untuk upgrade L2→L3 hingga L4→L5 masih belum diketahui.
 
 ## Q3 — Chakra dari 結界開放 (Barrier release)
