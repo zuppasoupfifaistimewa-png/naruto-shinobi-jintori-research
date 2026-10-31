@@ -188,7 +188,7 @@ jobs:
             -processor "MIPS:LE:32:default" \
             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
             -postScript ExportEntry0TargetFunction.java "$out/entry1-buffer-base-targets.txt" \
-              0x800BDC4C \
+              0x800BDC4C 0x800B770C 0x800BDBFC 0x800B7464 \
               0x80107F4C 0x800BE5D8 0x800F9520 0x800B5D68 \
               0x800EE4E0 0x800CF434 0x80108054 0x80109994 0x80109F1C \
             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject \
@@ -218,7 +218,7 @@ jobs:
           out = []
           current_target = None
           for line in text.splitlines():
-              m = re.match(r"=== TARGET (0x[0-9A-Fa-f]+) ===", line)
+              m = re.match(r"=== TARGET (?:0x)?([0-9A-Fa-f]+) ===", line)
               if m:
                   current_target = int(m.group(1), 16)
               if current_target is not None and line.startswith("target_offset_under_hypothesis="):
@@ -228,6 +228,8 @@ jobs:
           path.write_text(text, encoding="utf-8")
           if "resource_base=0x800AD450" not in text:
               raise SystemExit("Buffer base metadata correction failed")
+          if "target_offset_under_buffer_base=0x107fc" not in text:
+              raise SystemExit("Helper corrected file offset missing")
           print("buffer_base_metadata=PASS")
           PY
 
