@@ -38,6 +38,8 @@ jobs:
           paths=(
             "reports/stage1_economy/AQ1_AQ2_AQ3_AUDIT_2026-10-31.md"
             "reports/stage1_economy/VIDEO_READINGS_2026-10-31.tsv"
+            "reports/stage1_economy/raw-link-check-41207325486/ACTIONS_RUN_SUMMARY.txt"
+            "reports/stage1_economy/raw-link-check-41207325486/CURL_HTTP_STATUS.tsv"
             "reports/stage1_economy/aq1-run-41169411383/attempt-1/aq1-economy-census.tsv"
             "reports/stage1_economy/aq1-run-41169411383/attempt-1/aq1-recount.txt"
             "reports/stage1_economy/aq1-run-41169411383/attempt-1/ACTIONS_RUN_SUMMARY.txt"
