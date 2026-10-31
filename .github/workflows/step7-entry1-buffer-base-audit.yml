@@ -203,6 +203,9 @@ jobs:
               0x80117BD8 0x80117C24 0x800B54F4 \
               0x800F5DBC 0x800F5EFC 0x80117C60 \
               0x80117610 0x80117690 0x80117774 0x80117C60 \
+              0x80119634 0x800DC2E0 0x800DFEE8 0x800E6470 \
+              0x800E9220 0x800EB290 0x800F0C10 0x800F2A9C \
+              0x800D15A8 0x800D8930 0x800D10F0 \
               0x80102898 0x801088A8 0x80108D2C \
             -postScript ExportPerRecordCallerGraph.java "$out/per-record-caller-graph.txt" \
             -postScript ExportPendingParticipantDelta.java "$out/pending-participant-delta.txt" \
@@ -263,7 +266,7 @@ jobs:
             echo "analysis_base_status=STATIC_CANDIDATE_FROM_GLOBAL_POINTER"
             echo "per_record_caller_graph=PASS"
             echo "pending_delta_trace=PASS"
-            echo "targeted_functions=toll and upgrade callbacks, pending Chakra processor caller, top-level board dispatcher and caller graph"
+            echo "targeted_functions=toll commit callback, all candidate pending-delta writers, pending processor, upgrade/toll state machines and caller graph"
             echo "game_or_emulator_executed=no"
             echo "gameplay_input_sent=no"
             echo "savestate_restored=no"
