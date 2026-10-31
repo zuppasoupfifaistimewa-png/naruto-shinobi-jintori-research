@@ -529,3 +529,18 @@ Use "displayed fee/toll candidate" for FUN_800B770C. Do not state that this is d
 
 ### 5. Next audit gate
 Search the full set of direct callers of FUN_800B770C for functions that also call 0x8001387C or directly write the participant value field; inspect callers of those functions to locate the landing/toll event. In parallel, find writers to record byte +0, byte +0x0B, halfwords +0x10..+0x2E and halfword +0x20. Keep the owner-credit path and build/upgrade cost path separate.
+
+## Addendum — kegagalan pemanggil graph akibat konfigurasi scriptPath (Run #41160186973)
+
+- URL: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/41160186973
+- Job: 124415827585 — Analyze verified Entry 1 slice at 0x800AD450.
+- Commit input: dc168c2eed2914210d4f199142cc97243b65d5af.
+- Status: completed / failure, exit code 1.
+- Penyebab: Ghidra headless tidak memecah nilai scriptPath yang berisi dua folder dipisahkan titik dua. Ia membaca seluruh string sebagai satu direktori, kemudian gagal menemukan ExportEntry0TargetFunction.java dan ExportPerRecordCallerGraph.java.
+- Langkah verifikasi input Entry 1, Java, dan cache Ghidra selesai. Gagal pada awal langkah analisis sebelum script dijalankan. Cleanup private slice/project PASS dan artifact hanya text/log.
+- Ini adalah kegagalan konfigurasi workflow, bukan hasil analisis game. Tidak ada kesimpulan gameplay baru.
+
+Perbaikan:
+- ExportPerRecordCallerGraph.java diduplikasi ke folder tools/ghidra, agar kedua postScript berada pada satu script path.
+- Workflow kembali memakai satu folder tools/ghidra.
+- Run perbaikan baru diharapkan dari perubahan workflow; belum dinilai sebelum hasilnya tersedia.
