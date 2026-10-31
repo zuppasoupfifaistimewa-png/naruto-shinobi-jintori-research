@@ -1,0 +1,19 @@
+base_register	offset	READ	WRITE	OTHER	TOTAL
+non-sp	+0x00	581	105	17	703
+non-sp	+0x0B	10	2	0	12
+non-sp	+0x20	274	60	4	338
+sp	+0x00	1	2	0	3
+sp	+0x0B	0	0	0	0
+sp	+0x20	80	51	1	132
+gp	+0x00	0	0	0	0
+gp	+0x0B	0	0	0	0
+gp	+0x20	0	0	0	0
+fp	+0x00	0	0	0	0
+fp	+0x0B	0	0	0	0
+fp	+0x20	0	0	0	0
+TOTAL_NON_SP	all_offsets	865	167	21	1053
+TOTAL_SP	all_offsets	81	53	1	135
+GRAND_TOTAL	all_offsets	946	220	22	1188
+FUNCTION_ENTRIES	unique_FIELD_function_entry				97
+RECORD_SLOT_XREF_FUNCTIONS	scanner_TOTAL_metadata				98
+FUNCTION_COUNT_GAP	unidentified_function				TIDAK TAHU
