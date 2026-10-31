@@ -50,6 +50,10 @@ public class ExportStage1EconomyDeepContext extends GhidraScript {
    dump(fieldDiff,"AQ1_FIELD_RECONCILIATION_0x800DB29C");
    InstructionIterator fieldDiffIt=currentProgram.getListing().getInstructions(fieldDiff.getBody(),true); int diffCount=0; while(fieldDiffIt.hasNext()){Instruction ins=fieldDiffIt.next(); if(disp(ins)==0x00||disp(ins)==0x0B||disp(ins)==0x20)diffCount++;}
    row("FIELD_DIFF_FUNCTION_AUDIT","0x800DB29C",fe(fieldDiff),fnm(fieldDiff),"body_min="+fieldDiff.getBody().getMinAddress(),"body_max="+fieldDiff.getBody().getMaxAddress(),"body_bytes="+fieldDiff.getBody().getNumAddresses(),"field_displacement_count="+diffCount,"field diff between 1188 and 1163 census exports");
+   Function fieldDiff2=currentProgram.getFunctionManager().getFunctionAt(toAddr(0x800E0B3CL));
+   dump(fieldDiff2,"AQ1_FIELD_RECONCILIATION_0x800E0B3C");
+   InstructionIterator fieldDiffIt2=currentProgram.getListing().getInstructions(fieldDiff2.getBody(),true); int diffCount2=0; while(fieldDiffIt2.hasNext()){Instruction ins=fieldDiffIt2.next(); if(disp(ins)==0x00||disp(ins)==0x0B||disp(ins)==0x20)diffCount2++;}
+   row("FIELD_DIFF_FUNCTION_AUDIT","0x800E0B3C",fe(fieldDiff2),fnm(fieldDiff2),"body_min="+fieldDiff2.getBody().getMinAddress(),"body_max="+fieldDiff2.getBody().getMaxAddress(),"body_bytes="+fieldDiff2.getBody().getNumAddresses(),"field_displacement_count="+diffCount2,"field diff between 1188 and 1178 census exports");
    contexts();row("CALL_CONTEXT_TOTAL","DIRECT_JAL","","","","setter_calls="+setterCalls,"getter_calls="+getterCalls,"","JALR not covered");
    out.flush();if(out.checkError())throw new IllegalStateException("AS1/AS2 export failed");
   }
