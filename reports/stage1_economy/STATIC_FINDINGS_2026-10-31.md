@@ -120,12 +120,13 @@ Jadi jangkar 60/150 tidak teridentifikasi sebagai konstanta harga pada instruksi
 
 ### Offset yang tidak boleh dicampur
 
-- `+0xB44`: artefak run #41155800069 (Entry 1 pada import-base lama `0x800D0000`) menunjukkan `FUN_8012C544` menginisialisasi field ini menjadi nol pada PC lama `0x8012C604`; `FUN_8012CACC` membaca `+0xB44` pada PC lama `0x8012CB14` untuk menggambar angka jika state byte `+0xB2A > 5`; `FUN_8012C78C` juga menggambarnya pada fase yang sama. Dalam cakupan output itu **tidak ditemukan penulis nonzero**. Jadi nama “pending Chakra delta” untuk +0xB44 belum terbukti; bukti langsung yang ada adalah reset dan pembacaan UI. `+0xB40` secara terpisah diinisialisasi sebagai `+0xB30 + +0xB38` pada PC lama `0x8012C644`; jangan satukan field B40 dan B44 sebagai satu transaksi.
-  - Rebase berdasarkan file offset yang sama dari base lama `0x800D0000` ke candidate base `0x800AD450` memberi PC kandidat: reset routine `0x80109994`, store-zero `0x80109A54`, reader functions `0x80109BDC` dan `0x80109F1C`, serta load `0x80109F64`. Raw bytes tidak berubah karena yang bergeser hanya alamat import. Runtime mapping tetap belum tervalidasi.
-- `+0x2EE`: ini offset participant-array yang berbeda dan memiliki konsumen lebih konkret. Dalam import-base lama, `FUN_800E1188` membaca halfword per peserta pada `DAT_8013EA74 + 0x2EE + participant*2`; dengan base candidate baru fungsi itu berada pada PC `0x800BE5D8`. Fungsi menyalin nilai antar-peserta yang team-code `+0x0E`-nya sama pada kondisi flag `0x1000), memformat nilai positif/negatif untuk animasi, memanggil setter Chakra `0x8001387C` pada PC kandidat `0x800BEC98`, membaca balik melalui getter `0x800138EC` pada `0x800BECA0`, dan akhirnya mengosongkan field pada PC kandidat `0x800BEDA4`. Setup juga mengosongkan slot `+0x2EE) pada PC kandidat `0x800B2EEC`. Ini mendukung **K3 untuk jalur pemrosesan/animasi delta per peserta**, tetapi sumber penulis nonzero belum ditemukan; belum ada link ke toll, income, build/upgrade, atau release.
-- Global pointer slot `0x8013EA74` mengarah ke array peserta candidate; struktur peserta yang dibaca fungsi ini ber-stride `0x90` dan nilai Chakra berada pada field `+0x04` dalam jalur tersebut. Jangan samakan stride `0x90` ini dengan record tile stride `0x124`.
-- Global `0x8013EBB0` diberi komentar `candidate pending fee value` oleh skrip; label itu masih hipotesis, bukan bukti bahwa nilainya pending income atau refund.
-- HEAD workflow `d0ef969...` menambahkan target rebased `0x800BE5D8`, `0x80109994`, dan `0x80109F1C` di antara PC lain untuk analisis toll callback/pending writers. Pada waktu update ini, belum ada hasil workflow baru yang dikomit untuk menutup sumber delta +0x2EE atau menghubungkan +0xB44 dengan transaksi; status Q terkait tetap UNKNOWN.
+- **+0xB44 — field manager/state yang diterapkan bertahap ke Chakra.** Artefak lama #41155800069 hanya mengekspor reset pada candidate PC 0x80109A54 dan renderer read pada 0x80109F64, sehingga saat itu sumber nonzero belum diketahui. Run #41166812039 menambahkan konteks FUN_80109FEC: B40 disalin ke B44 pada PC 0x8010A5C8; getter Chakra 0x800138EC dipanggil di PC 0x8010A144; B44 dibaca pada 0x8010A154; setter Chakra 0x8001387C dipanggil pada 0x8010A15C dengan Chakra lama + B44 dibentuk di delay slot 0x8010A160. B44 kemudian dikurangi bertahap pada 0x8010A648–0x8010A658. Ini **K3 untuk jalur penerapan nilai penyesuaian Chakra**, bukan bukti jenis event.
+- B40 adalah field berbeda: reset FUN_80109994 membentuk B40 = B30 + B38 pada candidate PC 0x80109A84–0x80109A94; reset juga mengosongkan B44 pada 0x80109A54. Penulis B30/B38 dan sumber event-nya belum ditemukan. Karena itu B44 belum boleh dilabeli sebagai income, toll, refund, build/upgrade cost, atau hasil KABE/結界開放.
+- **+0x2EE — field participant-array yang terpisah.** FUN_800E1188 membaca halfword per peserta dari DAT_8013EA74 + 0x2EE + participant*2; candidate PC 0x800BE5D8. Jalur memproses angka positif/negatif dan memanggil setter Chakra 0x8001387C di 0x800BEC98, getter 0x800138EC di 0x800BECA0, lalu clear di 0x800BEDA4. Ini K3 parsial; writer nonzero/source event belum ditemukan, dan decompiler memberi warning Control flow encountered bad instruction data.
+- Array peserta candidate memakai pointer slot 0x8013EA74, stride 0x90, nilai Chakra di field +0x04. Jangan samakan struktur ini dengan record tile stride 0x124.
+- Global 0x8013EBB0 masih sekadar candidate pending-fee/selection value; label skrip bukan bukti semantik.
+- Run #41166812039 memindai 24 akses langsung +0x2EE (3 load/19 store/2 other) dan 14 akses langsung +0xB44 (8 load/4 store/2 other). Ringkasan status/job/input SHA/exit code ada di reports/actions/run_41166812039_summary.txt.
+- Tidak ada handler KABE/結界開放 yang berhasil dihubungkan ke B30/B38, perubahan saldo, dan mutasi owner/level record. Status Q3 tetap UNKNOWN.
 
 ### Resource labels / release
 
@@ -147,8 +148,8 @@ Jadi jangkar 60/150 tidak teridentifikasi sebagai konstanta harga pada instruksi
 - Run #41159510198, job 124413702244, input SHA `934c735a39b7ccc2f650e685d78e0aa91c407840`, completed/success, exit 0; artefak teks 13026796167.
 - Run #41159805931, job 124414633147, input SHA `20346f89463bb1ca8792317de1496e228470ebf8`, completed/success, exit 0; artefak teks 13026831655; raw excerpt di atas diambil dari artefak ini.
 - Run #41160254539, job 124416042420, input SHA `1b3ee51115342e1d484a019866f0a681067a3639`, completed/success, exit 0; artefak teks 13025909960; direct-caller census.
-- Tidak ada emulator, gameplay input, atau savestate restore dalam run-run tersebut.
-- Tidak ada workflow baru yang dijalankan untuk tugas ini; tidak ada ringkasan run baru yang perlu diklaim.
+- Run #41166812039, job 124436038028, input SHA ad1dd4d9c7a05458cda20c1000e83c154bb3e73c, completed/success, exit code 0; artifact 13028438888. Ringkasan teks disimpan pada reports/actions/run_41166812039_summary.txt.
+- Semua run di bagian ini adalah analisis statis. Tidak ada emulator/gameplay input/savestate restore; private disc/slice dan proyek Ghidra dibersihkan.
 
 ## Langkah statis berikutnya yang dibutuhkan
 
