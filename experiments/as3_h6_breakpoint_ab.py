@@ -73,7 +73,7 @@ local function capture(frame)
  end)
  log(ok and ("AS3_FRAME_CAPTURE frame="..frame.." status=PASS") or ("AS3_FRAME_CAPTURE frame="..frame.." status=FAIL error="..tostring(err)))
  if not ok then PCSX.quit(62);return end
- if frame==360 then PCSX.nextTick(function() PCSX.quit(0) end) end
+ if frame==360 then log("AS3_EXIT_REQUEST_AFTER_FRAME360=1"); PCSX.quit(0) end
 end
 _G.as3Loaded=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
  loaded=true;post=0;log("AS3_SAVE_STATE_LOADED=1 condition="..condition)

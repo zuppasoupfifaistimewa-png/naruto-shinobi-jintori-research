@@ -25,7 +25,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       RESEARCH_REPO: ${{ github.repository }}
       WORK: /tmp/naruto-as3-${{ github.run_id }}-${{ github.run_attempt }}
-      TIMEOUT_SECONDS: "1800"
+      TIMEOUT_SECONDS: "900"
     steps:
       - name: Checkout research scripts
         uses: actions/checkout@v4
