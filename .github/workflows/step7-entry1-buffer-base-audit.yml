@@ -6,10 +6,11 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/step7-entry1-buffer-base-audit.yml"
+      - "tools/step7/ExportStage1EconomyAQ1.java"
       - "tools/step7/ExportPendingParticipantDelta.java"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: step7-entry1-buffer-base-audit
@@ -182,6 +183,7 @@ jobs:
           [[ -n "$headless" && -x "$headless" ]]
 
           cp "$GITHUB_WORKSPACE/tools/step7/ExportPendingParticipantDelta.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportPendingParticipantDelta.java"
+          cp "$GITHUB_WORKSPACE/tools/step7/ExportStage1EconomyAQ1.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportStage1EconomyAQ1.java"
 
           set +e
           "$headless" "$project" Naruto_DATA_BIN_entry1_buffer_base \
@@ -210,12 +212,13 @@ jobs:
               0x80102898 0x801088A8 0x80108D2C \
             -postScript ExportPerRecordCallerGraph.java "$out/per-record-caller-graph.txt" \
             -postScript ExportPendingParticipantDelta.java "$out/pending-participant-delta.txt" \
+            -postScript ExportStage1EconomyAQ1.java "$out/aq1-economy-census.tsv" \
             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject \
             > "$out/ghidra-headless.log" 2>&1
           rc=$?
           set -e
 
-          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" || ! -s "$out/pending-participant-delta.txt" ]]; then
+          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" || ! -s "$out/pending-participant-delta.txt" || ! -s "$out/aq1-economy-census.tsv" ]]; then
             {
               echo "status=FAILURE"
               echo "job=analyze-entry1-buffer-base"
@@ -224,6 +227,7 @@ jobs:
               echo "target_output_present=$([[ -s "$out/entry1-buffer-base-targets.txt" ]] && echo yes || echo no)"
               echo "caller_graph_present=$([[ -s "$out/per-record-caller-graph.txt" ]] && echo yes || echo no)"
               echo "pending_delta_trace_present=$([[ -s "$out/pending-participant-delta.txt" ]] && echo yes || echo no)"
+              echo "aq1_economy_census_present=$([[ -s "$out/aq1-economy-census.tsv" ]] && echo yes || echo no)"
             } > "$out/run-summary.txt"
             tail -n 80 "$out/ghidra-headless.log" || true
             exit 1
@@ -267,6 +271,8 @@ jobs:
             echo "analysis_base_status=STATIC_CANDIDATE_FROM_GLOBAL_POINTER"
             echo "per_record_caller_graph=PASS"
             echo "pending_delta_trace=PASS"
+            echo "aq1_economy_census=PASS"
+            echo "aq1_scope=jump_table_5; record_fields_00_0B_20; direct_callers_770C_BDC4C; accessor_callers_grouped_by_record_B44_2EE"
             echo "targeted_functions=toll commit callback, all candidate pending-delta writers, pending processor, upgrade/toll state machines and caller graph"
             echo "game_or_emulator_executed=no"
             echo "gameplay_input_sent=no"
@@ -301,7 +307,7 @@ jobs:
           import sys
           root = Path(sys.argv[1])
           files = [p for p in root.rglob("*") if p.is_file()]
-          invalid = [str(p) for p in files if p.suffix.lower() not in {".txt", ".log"}]
+          invalid = [str(p) for p in files if p.suffix.lower() not in {".txt", ".log", ".tsv"}]
           oversized = [str(p) for p in files if p.stat().st_size > 30_000_000]
           if invalid or oversized:
               raise SystemExit(f"Invalid artifact files: invalid={invalid} oversized={oversized}")
@@ -310,6 +316,65 @@ jobs:
           print(f"text_only_output_count={len(files)}")
           print("private_binary_uploaded=no")
           PY
+
+      - name: Recount AQ1 TSV and commit text-only report
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: \${{ github.token }}
+          RESEARCH_REPO: \${{ github.repository }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/entry1-buffer-base-output"
+          python3 - "$out/aq1-economy-census.tsv" "$out/aq1-recount.txt" <<'PY'
+          import csv,sys
+          from collections import Counter
+          src,dst=sys.argv[1:3]
+          rows=[]
+          try:
+              with open(src,encoding="utf-8",newline="") as f:
+                  rows=list(csv.DictReader(f,delimiter="\t"))
+          except FileNotFoundError:
+              pass
+          types=Counter(r.get("record_type","") for r in rows)
+          field=Counter((r.get("item",""),r.get("kind","")) for r in rows if r.get("record_type")=="FIELD")
+          helper=Counter(r.get("pc_or_target","") for r in rows if r.get("record_type")=="HELPER_CALL")
+          accessor=Counter((r.get("pc_or_target",""),r.get("scope_or_group","")) for r in rows if r.get("record_type")=="ACCESSOR_CALL")
+          with open(dst,"w",encoding="utf-8") as f:
+              f.write("AQ1 totals recomputed from aq1-economy-census.tsv\n")
+              f.write("record_type_counts="+repr(dict(types))+"\n")
+              f.write("record_field_access_counts="+repr({str(k):v for k,v in field.items()})+"\n")
+              f.write("helper_direct_callsite_counts="+repr(dict(helper))+"\n")
+              f.write("accessor_direct_callsite_group_counts="+repr({str(k):v for k,v in accessor.items()})+"\n")
+              f.write("indirect_JALR=TIDAK_TAHU\n")
+          print("AQ1_COUNTS_RECOMPUTED rows="+str(len(rows)))
+          PY
+          dest="reports/stage1_economy/aq1-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$dest"
+          for f in aq1-economy-census.tsv aq1-recount.txt run-summary.txt input-identity.txt; do
+            if [ -f "$out/$f" ]; then cp "$out/$f" "$dest/$f"; fi
+          done
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="analyze-entry1-buffer-base") | .id' | head -n 1)"
+          test -n "$JOB_ID" || JOB_ID="TIDAK TAHU"
+          RC="$(sed -n 's/^exit_code=//p' "$out/run-summary.txt" 2>/dev/null | head -n 1)"; test -n "$RC" || RC="TIDAK TAHU"
+          STATUS="$(sed -n 's/^status=//p' "$out/run-summary.txt" 2>/dev/null | head -n 1)"; test -n "$STATUS" || STATUS="INCOMPLETE"
+          { echo "STATUS=$STATUS"; echo "JOB=analyze-entry1-buffer-base"; echo "JOB_ID=$JOB_ID"; echo "RUN_ID=$GITHUB_RUN_ID"; echo "SOURCE_SHA=$GITHUB_SHA"; echo "EXIT_CODE=$RC"; } > "$dest/ACTIONS_RUN_SUMMARY.txt"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$dest"
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish AQ1 static economy census run $GITHUB_RUN_ID"
+            pushed=0
+            for n in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main || { git rebase --abort; sleep "$n"; continue; }
+              if git push origin HEAD:main; then pushed=1; break; fi
+              sleep "$n"
+            done
+            test "$pushed" -eq 1
+          fi
+          echo "AQ1_REPORT_PATH=$dest"
 
       - name: Upload text-only trace
         if: always()
