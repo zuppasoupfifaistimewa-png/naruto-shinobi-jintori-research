@@ -1,0 +1,6 @@
+AQ1 totals recomputed from aq1-economy-census.tsv
+record_type_counts={'META': 1, 'JUMP': 5, 'ACCESSOR_CALL': 39, 'HELPER_CALL': 47, 'FIELD': 1188, 'TOTAL': 1, 'LIMIT': 1}
+record_field_access_counts={"('+0x20', 'OTHER')": 5, "('+0x00', 'WRITE')": 107, "('+0x20', 'WRITE')": 111, "('+0x00', 'READ')": 582, "('+0x20', 'READ')": 354, "('+0x0B', 'READ')": 10, "('+0x00', 'OTHER')": 17, "('+0x0B', 'WRITE')": 2}
+helper_direct_callsite_counts={'0x800B770C': 44, '0x800BDC4C': 3}
+accessor_direct_callsite_group_counts={"('0x800138EC', 'RECORD_0x8013EA84+PARTICIPANT_+0x2EE')": 1, "('0x8001387C', 'RECORD_0x8013EA84+PARTICIPANT_+0x2EE')": 5, "('0x800138EC', 'RECORD_0x8013EA84')": 2, "('0x8001387C', 'RECORD_0x8013EA84')": 2, "('0x8001387C', 'PARTICIPANT_+0x2EE')": 1, "('0x800138EC', 'PARTICIPANT_+0x2EE')": 1, "('0x800138EC', 'UNCLASSIFIED_DIRECT_CALLER')": 17, "('0x8001387C', 'UNCLASSIFIED_DIRECT_CALLER')": 2, "('0x800138EC', 'MANAGER_+0xB44')": 4, "('0x8001387C', 'MANAGER_+0xB44')": 4}
+indirect_JALR=TIDAK_TAHU
