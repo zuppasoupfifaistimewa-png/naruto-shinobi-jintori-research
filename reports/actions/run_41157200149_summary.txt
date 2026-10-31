@@ -1,0 +1,15 @@
+run_id=41157200149
+status=completed/success
+job_id=124406644742
+job=Trace resource reader, allocation pointer, and payload consumers
+source_commit_sha=7c26a58a24739415930c3fe2d786110fa0be53e4
+exit_code=0
+artifact_id=13025377482
+artifact_name=step7-loader-payload-static-trace
+artifact_bytes=34934
+artifact_sha256=f19ad9b66e958718c3393156793413b415ee87126f88b0e41acc2079966d6e81
+private_input_cleanup=PASS
+text_only_artifact=yes
+game_or_emulator_executed=no
+gameplay_input_sent=no
+savestate_restored=no
