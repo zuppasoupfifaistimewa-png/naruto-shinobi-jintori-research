@@ -46,7 +46,7 @@ jobs:
           failed=0
           printf 'path\thttp_code\tresult\n' > "$dest/CURL_HTTP_STATUS.tsv"
           for path in "${paths[@]}"; do
-            code="$(curl --location --silent --show-error --retry 2 --connect-timeout 15 --max-time 60 -H "Authorization: Bearer $GH_TOKEN" -o /dev/null -w '%{http_code}' "$base/$path" 2>/dev/null)"
+            code="$(curl --location --silent --show-error --retry 2 --connect-timeout 15 --max-time 60 -H "Authorization: token $GH_TOKEN" -o /dev/null -w '%{http_code}' "$base/$path" 2>/dev/null)"
             rc=$?
             if [ "$rc" -eq 0 ] && [ "$code" = "200" ]; then
               result="PASS"
@@ -56,8 +56,7 @@ jobs:
             fi
             printf '%s\t%s\t%s\n' "$path" "$code" "$result" >> "$dest/CURL_HTTP_STATUS.tsv"
           done
-          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="verify-raw-links") | .id' | head -n 1)"
-          [ -n "$JOB_ID" ] || JOB_ID="TIDAK TAHU"
+          JOB_ID="TIDAK TAHU"
           if [ "$failed" -eq 0 ]; then status="SUCCESS"; rc=0; else status="FAILURE"; rc=1; fi
           {
             echo "STATUS=$status"
