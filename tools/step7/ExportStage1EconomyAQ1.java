@@ -43,7 +43,7 @@ public class ExportStage1EconomyAQ1 extends GhidraScript {
     private String group(Function f){List<String> g=new ArrayList<>();if(has(recordFns,f))g.add("RECORD_0x8013EA84");if(has(managerFns,f)&&hasDisp(f,0xB44))g.add("MANAGER_+0xB44");if(has(participantFns,f)&&hasDisp(f,0x2EE))g.add("PARTICIPANT_+0x2EE");return g.isEmpty()?"UNCLASSIFIED_DIRECT_CALLER":String.join("+",g);}
 
     private void jumpTable()throws Exception{
-        for(int n=0;n<5;n++){long slot=TABLE+4L*n;try{long target=u32(slot);Function f=currentProgram.getFunctionManager().getFunctionContaining(toAddr(target));String ex=excerpt(target,64);int length=ex.equals("UNAVAILABLE")||ex.isEmpty()?0:ex.split(" ").length;row("JUMP",String.valueOf(n),hx(slot),hx(target),hx(target),fe(f),fnm(f),ex,String.valueOf(length),"branch-target excerpt capped at 64 bytes");jumps++;}catch(Exception e){row("JUMP",String.valueOf(n),hx(slot),"TIDAK_TAHU","TIDAK_TAHU","TIDAK_TAHU","TIDAK_TAHU","UNAVAILABLE","0","TABLE_READ_FAIL");}}
+        for(int n=0;n<5;n++){long slot=TABLE+4L*n;try{long target=u32(slot);Function f=currentProgram.getFunctionManager().getFunctionContaining(toAddr(target));String ex=excerpt(target,64);int length=ex.equals("UNAVAILABLE")||ex.isEmpty()?0:ex.split(" ").length;row("JUMP",String.valueOf(n),"TABLE_SLOT="+hx(slot),hx(target),fe(f),fnm(f),ex,"target branch entry","", "excerpt capped at 64 bytes; candidate base only");jumps++;}catch(Exception e){row("JUMP",String.valueOf(n),hx(slot),"TIDAK_TAHU","TIDAK_TAHU","TIDAK_TAHU","TIDAK_TAHU","UNAVAILABLE","0","TABLE_READ_FAIL");}}
     }
     private void fieldAccesses()throws Exception{
         Map<String,Function> scope=new TreeMap<>();scope.putAll(recordFns);
@@ -53,7 +53,7 @@ public class ExportStage1EconomyAQ1 extends GhidraScript {
             Instruction i=it.next();int d=disp(i);boolean valid=false;for(int x:FIELDS)if(d==x)valid=true;if(!valid)continue;
             String mn=i.getMnemonicString().toLowerCase(),kind=load(mn)?"READ":store(mn)?"WRITE":"OTHER";
             String basis=has(recordFns,f)?"FUNCTION_XREF_RECORD_SLOT":"HELPER_OR_CALLER_SCOPE";
-            row("FIELD",String.format("+0x%02X",d),kind,hx(i.getAddress().getOffset()),fe(f),fnm(f),bytes(i),i.toString(),basis,"displacement candidate; base-register alias is not proven");
+            row("FIELD",String.format("+0x%02X",d),kind,hx(i.getAddress().getOffset()),fe(f),fnm(f),excerpt(i.getAddress().getOffset(),64),i.toString(),basis,"displacement candidate; base-register alias is not proven");
             fields++;
         }}
     }
@@ -63,7 +63,7 @@ public class ExportStage1EconomyAQ1 extends GhidraScript {
             boolean h=false,a=false;for(long x:HELPERS)if(t==x)h=true;for(long x:ACCESSORS)if(t==x)a=true;if(!h&&!a)continue;
             Function f=fn(i);if(h){helperCalls++;if(f!=null)helperCallerFns.add(f);}
             if(a)accessorCalls++;
-            row(h?"HELPER_CALL":"ACCESSOR_CALL",hx(t),hx(i.getAddress().getOffset()),fe(f),fnm(f),bytes(i),i.toString(),a?group(f):"DIRECT_HELPER_CALL","direct JAL site; indirect JALR unresolved");
+            row(h?"HELPER_CALL":"ACCESSOR_CALL",hx(t),"DIRECT_JAL",hx(i.getAddress().getOffset()),fe(f),fnm(f),excerpt(i.getAddress().getOffset(),64),i.toString(),a?group(f):"DIRECT_HELPER_CALL","direct JAL site; indirect JALR unresolved");
         }
     }
     @Override protected void run()throws Exception{
@@ -74,7 +74,7 @@ public class ExportStage1EconomyAQ1 extends GhidraScript {
             row("record_type","item","kind","pc_or_target","function_entry","function_name","bytes_or_excerpt_hex","instruction_or_context","scope_or_group","notes");
             row("META","Entry1","STATIC","0x800AD450","runtime_mapping=NOT_VALIDATED","slice=0x10BB000/596412","sha256=9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a","static-only","no gameplay/runtime","candidate import base");
             jumpTable();calls();fieldAccesses();
-            row("TOTAL","jump_rows",String.valueOf(jumps),"field_access_rows",String.valueOf(fields),"helper_call_sites",String.valueOf(helperCalls),"accessor_call_sites",String.valueOf(accessorCalls),"record_slot_xref_function_count",String.valueOf(recordFns.size()),"JALR=TIDAK_TAHU");
+            row("TOTAL","","","","","","","","","jump_rows="+jumps+"; field_access_rows="+fields+"; helper_call_sites="+helperCalls+"; accessor_call_sites="+accessorCalls+"; record_slot_xref_function_count="+recordFns.size()+"; indirect_JALR=TIDAK_TAHU");
             row("LIMIT","field offset scan only","function scope = record-slot xrefs + helper functions/callers","no computed alias proof","no semantic names assigned","direct callers only; unresolved indirect control flow");
             out.flush();if(out.checkError())throw new IllegalStateException("AQ1 TSV write failure");
         }

@@ -338,8 +338,8 @@ jobs:
               pass
           types=Counter(r.get("record_type","") for r in rows)
           field=Counter((r.get("item",""),r.get("kind","")) for r in rows if r.get("record_type")=="FIELD")
-          helper=Counter(r.get("pc_or_target","") for r in rows if r.get("record_type")=="HELPER_CALL")
-          accessor=Counter((r.get("pc_or_target",""),r.get("scope_or_group","")) for r in rows if r.get("record_type")=="ACCESSOR_CALL")
+          helper=Counter(r.get("item","") for r in rows if r.get("record_type")=="HELPER_CALL")
+          accessor=Counter((r.get("item",""),r.get("scope_or_group","")) for r in rows if r.get("record_type")=="ACCESSOR_CALL")
           with open(dst,"w",encoding="utf-8") as f:
               f.write("AQ1 totals recomputed from aq1-economy-census.tsv\n")
               f.write("record_type_counts="+repr(dict(types))+"\n")

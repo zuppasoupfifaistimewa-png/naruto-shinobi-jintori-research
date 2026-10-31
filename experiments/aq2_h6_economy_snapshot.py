@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """AQ2: two no-input H6 hybrid frame-180 RAM inspections; never publish raw memory."""
-import argparse, csv, hashlib, os, re, shutil, subprocess, time
+import argparse, csv, hashlib, os, re, shutil, subprocess, time, sys
 from collections import Counter
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from experiments.aj2_h6_ram_probe import (
     TARGET_SHA, CONTROL_SHA, H6_EXPECTED_SHA, one, replace_top, encmsg, write_lua
