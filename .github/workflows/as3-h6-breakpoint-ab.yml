@@ -1,0 +1,208 @@
+name: AS3 — H6 breakpoint K0/K1/K2 A/B at frames 180, 240, 360
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/as3-h6-breakpoint-ab.yml"
+      - "experiments/as3_h6_breakpoint_ab.py"
+      - "experiments/aj2_h6_ram_probe.py"
+
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: naruto-as3-h6-breakpoint-ab
+  cancel-in-progress: false
+
+jobs:
+  as3-h6-breakpoint-ab:
+    name: K0/K1/K2 six-launch H6 breakpoint comparison
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RESEARCH_REPO: ${{ github.repository }}
+      WORK: /tmp/naruto-as3-${{ github.run_id }}-${{ github.run_attempt }}
+      TIMEOUT_SECONDS: "1800"
+    steps:
+      - name: Checkout research scripts
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Allocate private work and text output
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$WORK"/{source,inputs,cards,resume,logs,launches,home}
+          mkdir -p "$RUNNER_TEMP/as3-h6-output"
+          echo "OUTDIR=$RUNNER_TEMP/as3-h6-output" >> "$GITHUB_ENV"
+      - name: Install bounded emulator tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends xvfb x11-utils curl jq unzip python3
+      - name: Download and verify pinned emulator, disc, BIOS and target checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK/source"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --retry 2 --max-time 60 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; out="$2"; bytes="$3"; digest="$4"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            test -n "$id" && test "$id" != null
+            curl --fail --silent --show-error --location --retry 2 --max-time 600 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$id" -o "$out"
+            test "$(stat -c %s "$out")" = "$bytes"
+            echo "$digest  $out" | sha256sum --check -
+          }
+          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage 65747557 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin 325989552 58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue 116 be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8
+          fetch_asset scph7502.zip scph7502.zip 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a
+          curl --fail --silent --show-error --location --retry 2 --max-time 180 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "$API/releases/assets/686794219" -o target.sstate
+          test "$(stat -c %s target.sstate)" = 21163286
+          echo "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d  target.sstate" | sha256sum --check -
+          python3 - <<'PY'
+          from pathlib import Path
+          import stat,zipfile
+          with zipfile.ZipFile("scph7502.zip") as z:
+              found=[];total=0
+              for x in z.infolist():
+                  p=Path(x.filename);mode=(x.external_attr>>16)&0xffff;total+=x.file_size
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)):raise SystemExit("unsafe BIOS member")
+                  if x.file_size>2*1024*1024 or total>4*1024*1024:raise SystemExit("BIOS expansion bound")
+                  if not x.is_dir() and x.file_size==524288:found.append(x)
+              if len(found)!=1:raise SystemExit("expected one BIOS-sized member")
+              data=z.read(found[0])
+              import hashlib
+              if hashlib.sha256(data).hexdigest()!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1":raise SystemExit("BIOS SHA mismatch")
+              Path("scph7502.bin").write_bytes(data)
+          lines=Path("game.cue").read_text(encoding="utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          idx=[i for i,s in enumerate(lines) if s.strip().upper().startswith("FILE ")]
+          if len(idx)!=1:raise SystemExit("expected one CUE FILE row")
+          lines[idx[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          APPDIR="$WORK/source/squashfs-root"
+          test -x "$APPDIR/AppRun"
+          PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 | grep -E '/(pcsx-redux|pcsx-redux[^/]*)$' | head -n 1)"
+          test -n "$PCSX_BIN" && test -x "$PCSX_BIN"
+          echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
+          echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
+          cp target.sstate "$WORK/resume/target.sstate"
+          chmod 400 "$WORK/resume/target.sstate"
+      - name: Download verified CONTROL checkpoint privately
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: "39867730674"
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ env.WORK }}/inputs
+      - name: Download reference Memory Card privately
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: "39262213468"
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ env.WORK }}/cards
+      - name: Validate private inputs and start headless display
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp "$(find "$WORK/inputs" -type f -name adaptive-cycle-01-f180.sstate -print -quit)" "$WORK/resume/control.sstate"
+          test "$(stat -c %s "$WORK/resume/control.sstate")" = 21162546
+          echo "9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492  $WORK/resume/control.sstate" | sha256sum --check -
+          cp "$(find "$WORK/cards" -type f -name naruto-storymode.mcd -print -quit)" "$WORK/reference.mcd"
+          test "$(stat -c %s "$WORK/reference.mcd")" = 131072
+          echo "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5  $WORK/reference.mcd" | sha256sum --check -
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/logs/xvfb.log" 2>&1 &
+          echo $! > "$WORK/xvfb.pid"
+          export DISPLAY=:99
+          for n in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          echo "PRIVATE_INPUTS_VALIDATED=PASS"
+          echo "GAMEPLAY_INPUT=NONE"
+      - name: Run K0 K1 K2; two independent launches per condition
+        shell: bash
+        run: |
+          set +e
+          export DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1
+          export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+          export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
+          export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
+          export QML2_IMPORT_PATH="$APPDIR/usr/qml"
+          python3 experiments/as3_h6_breakpoint_ab.py \
+            --target "$WORK/resume/target.sstate" --control "$WORK/resume/control.sstate" \
+            --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/source/scph7502.bin" \
+            --cue "$WORK/source/game-run.cue" --card "$WORK/reference.mcd" \
+            --work "$WORK" --out "$OUTDIR" --timeout-seconds "$TIMEOUT_SECONDS"
+          rc=$?
+          if [ ! -f "$OUTDIR/ACTIONS_RUN_SUMMARY.txt" ]; then
+            { echo "STATUS=SETUP_OR_PROBE_FAILED"; echo "JOB=as3-h6-breakpoint-ab"; echo "RUN_ID=$GITHUB_RUN_ID"; echo "RUN_ATTEMPT=$GITHUB_RUN_ATTEMPT"; echo "SOURCE_SHA=$GITHUB_SHA"; echo "H6_SHA256=d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475"; echo "EXIT_CODE=$rc"; } > "$OUTDIR/ACTIONS_RUN_SUMMARY.txt"
+          fi
+          echo "AS3_WORKFLOW_SCRIPT_PROCESS_EXIT=$rc" > "$OUTDIR/AS3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt"
+          exit 0
+      - name: Remove private inputs, savestates, Memory Cards and RAM
+        if: always()
+        shell: bash
+        run: |
+          if [ -f "$WORK/xvfb.pid" ]; then kill "$(cat "$WORK/xvfb.pid")" 2>/dev/null || true; fi
+          rm -rf "$WORK"
+      - name: Validate and commit text-only AS3 result
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/as3-h6-output"
+          mkdir -p "$out"
+          python3 - "$out" <<'PY'
+          from pathlib import Path
+          import sys
+          root=Path(sys.argv[1])
+          invalid=[str(p) for p in root.rglob("*") if p.is_file() and p.suffix.lower() not in {".txt",".tsv",".log"}]
+          if invalid:raise SystemExit("non-text AS3 output blocked: "+repr(invalid))
+          required=("AS3_SUMMARY.txt","AS3_LAUNCHES.tsv","AS3_RUNS.tsv","AS3_BREAKPOINT_EVENTS.tsv","ACTIONS_RUN_SUMMARY.txt")
+          for name in required:
+              if not (root/name).is_file():(root/name).write_text("STATUS=TIDAK_TERSDIA\nreason=workflow did not create this output\n",encoding="utf-8")
+          PY
+          dest="reports/stage1_economy/as3-h6-breakpoint-ab-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$dest"
+          cp "$out"/* "$dest/" 2>/dev/null || true
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="as3-h6-breakpoint-ab") | .id' | head -n 1)"
+          test -n "$JOB_ID" || JOB_ID="TIDAK TAHU"
+          STATUS="$(sed -n 's/^STATUS=//p' "$out/ACTIONS_RUN_SUMMARY.txt" | head -n 1)";test -n "$STATUS" || STATUS="INCOMPLETE"
+          RC="$(sed -n 's/^EXIT_CODE=//p' "$out/ACTIONS_RUN_SUMMARY.txt" | head -n 1)";test -n "$RC" || RC="TIDAK TAHU"
+          { echo "STATUS=$STATUS";echo "JOB=as3-h6-breakpoint-ab";echo "JOB_ID=$JOB_ID";echo "RUN_ID=$GITHUB_RUN_ID";echo "SOURCE_SHA=$GITHUB_SHA";echo "EXIT_CODE=$RC"; } > "$dest/ACTIONS_RUN_SUMMARY.txt"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$dest"
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish AS3 H6 K0 K1 K2 breakpoint comparison run $GITHUB_RUN_ID attempt $GITHUB_RUN_ATTEMPT"
+            pushed=0
+            for n in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main || { git rebase --abort; sleep "$n"; continue; }
+              if git push origin HEAD:main; then pushed=1; break; fi
+              sleep "$n"
+            done
+            test "$pushed" -eq 1
+          fi
+          echo "AS3_REPORT_PATH=$dest"

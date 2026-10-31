@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/step7-entry1-buffer-base-audit.yml"
       - "tools/step7/ExportStage1EconomyAQ1.java"
+      - "tools/step7/ExportStage1EconomyDeepContext.java"
       - "tools/step7/ExportPendingParticipantDelta.java"
 
 permissions:
@@ -184,6 +185,7 @@ jobs:
 
           cp "$GITHUB_WORKSPACE/tools/step7/ExportPendingParticipantDelta.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportPendingParticipantDelta.java"
           cp "$GITHUB_WORKSPACE/tools/step7/ExportStage1EconomyAQ1.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportStage1EconomyAQ1.java"
+          cp "$GITHUB_WORKSPACE/tools/step7/ExportStage1EconomyDeepContext.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportStage1EconomyDeepContext.java"
 
           set +e
           "$headless" "$project" Naruto_DATA_BIN_entry1_buffer_base \
@@ -213,12 +215,13 @@ jobs:
             -postScript ExportPerRecordCallerGraph.java "$out/per-record-caller-graph.txt" \
             -postScript ExportPendingParticipantDelta.java "$out/pending-participant-delta.txt" \
             -postScript ExportStage1EconomyAQ1.java "$out/aq1-economy-census.tsv" \
+            -postScript ExportStage1EconomyDeepContext.java "$out/aq1-deep-context.tsv" \
             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject \
             > "$out/ghidra-headless.log" 2>&1
           rc=$?
           set -e
 
-          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" || ! -s "$out/pending-participant-delta.txt" || ! -s "$out/aq1-economy-census.tsv" ]]; then
+          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" || ! -s "$out/pending-participant-delta.txt" || ! -s "$out/aq1-economy-census.tsv" || ! -s "$out/aq1-deep-context.tsv" ]]; then
             {
               echo "status=FAILURE"
               echo "job=analyze-entry1-buffer-base"
@@ -228,6 +231,7 @@ jobs:
               echo "caller_graph_present=$([[ -s "$out/per-record-caller-graph.txt" ]] && echo yes || echo no)"
               echo "pending_delta_trace_present=$([[ -s "$out/pending-participant-delta.txt" ]] && echo yes || echo no)"
               echo "aq1_economy_census_present=$([[ -s "$out/aq1-economy-census.tsv" ]] && echo yes || echo no)"
+              echo "aq1_deep_context_present=$([[ -s "$out/aq1-deep-context.tsv" ]] && echo yes || echo no)"
             } > "$out/run-summary.txt"
             tail -n 80 "$out/ghidra-headless.log" || true
             exit 1
@@ -351,7 +355,7 @@ jobs:
           PY
           dest="reports/stage1_economy/aq1-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
-          for f in aq1-economy-census.tsv aq1-recount.txt run-summary.txt input-identity.txt; do
+          for f in aq1-economy-census.tsv aq1-deep-context.tsv aq1-recount.txt run-summary.txt input-identity.txt; do
             if [ -f "$out/$f" ]; then cp "$out/$f" "$dest/$f"; fi
           done
           API="https://api.github.com/repos/$RESEARCH_REPO"
