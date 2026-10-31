@@ -335,3 +335,83 @@ The descriptor table is heterogeneous. Some rows have function-address values at
 5. Once the Entry 1 payload ownership is established, resume function tracing for ESTATE and LVUP_ESTATE.
 
 No gameplay economy rule was upgraded. Pendapatan petak, biaya build/upgrade Barrier, and toll remain **UNKNOWN**.
+
+## Addendum — Entry 1 dianalisis pada base buffer loader 0x800AD450 (Run #41159301877)
+
+### Run dan artefak
+- URL: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/41159301877
+- Job: 124413051125 — Analyze verified Entry 1 slice at 0x800AD450.
+- Commit input: 9a6dc0532e865701c654f7650967857c3c8c2c8a.
+- Status: completed / success, exit code 0.
+- Artefak: entry1-loader-buffer-base-static-audit, ID 13026790772, 26.174 byte.
+- SHA-256 ZIP: d72d97209e3afd1ec9c26f837cfba65764e4c3b840f512830be4bad08aac9cf0.
+- Entry 1 row 1, LBN 8.778, byte_length 596.412, offset 0x10BB000 dan slice SHA 9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a tervalidasi ulang.
+- Input slice dan project dibersihkan; PRIVATE_INPUT_AND_PROJECT_CLEANUP=PASS. Artifact hanya teks/log. Tidak ada emulator, gameplay/input atau savestate.
+
+### 1. Fungsi 0x800BDC4C pada Entry 1
+Di base buffer 0x800AD450, alamat 0x800BDC4C jatuh pada file offset **0x107FC** dalam Entry 1 dan raw MIPS membentuk fungsi yang koheren:
+- Prolog menyimpan RA dan S0–S4.
+- A0 dipotong menjadi 16 bit sebagai selected value.
+- Nilai itu dibandingkan dengan byte global DAT_8013EA71; bila tidak di bawah batas, ia diganti dengan halfword DAT_8013EA8A.
+- Loop berjalan sampai count DAT_8013EAC8.
+- Record ke-i berasal dari DAT_8013EA84 + i*0x124.
+- Record diterima bila byte +0 == 5 dan (uint16(record+0x20) >> 12) == selected_value.
+- Untuk setiap record yang cocok, fungsi memanggil FUN_800B770C(i & 0xFF) dan menjumlahkan hasilnya.
+- Setelah loop, fungsi memanggil getter konfigurasi 0x80012A8C; return = jumlah kontribusi dibagi dua dengan pembulatan integer ke arah nol, ditambah nilai getter tersebut.
+
+Bentuk pseudocode aman (nama field tetap belum diketahui):
+
+    p = (selected < DAT_8013EA71) ? selected : DAT_8013EA8A
+    S = 0
+    for i in [0, DAT_8013EAC8):
+        r = DAT_8013EA84 + i * 0x124
+        if byte(r+0) == 5 and (u16(r+0x20) >> 12) == p:
+            S += FUN_800B770C(i & 0xFF)
+    return trunc_toward_zero(S / 2) + GET_80012A8C()
+
+Ini adalah VERIFIED-STATIC untuk operasi dan dataflow MIPS di candidate Entry 1 view. Arti natural-language byte status 5, nibble/flag halfword +0x20, FUN_800B770C, dan config 0x80012A8C masih UNKNOWN. Jangan sebut S sebagai income/rent sebelum helper 0x800B770C diartikan.
+
+### 2. Dua penggunaan helper dalam code path Entry 1
+**UI candidate 0x80107F4C (alamat terkoreksi dari kandidat lama 0x8012AAFC):**
+- Mengambil byte selected ID dari object +0x94A.
+- Menampilkan hasil 0x80013CBC(ID) melalui drawing helper 0x8001B364.
+- Memanggil 0x800BDC4C(ID) dan menampilkan nilainya sendiri.
+- Mengambil participant value melalui 0x800138EC(ID), menjumlahkannya dengan hasil BDC4C, clamp ke -9.999..99.999, lalu menampilkan jumlah itu dengan helper drawing 0x8001B364.
+- Ini membuktikan helper digunakan dalam tampilan nilai yang berdampingan dengan participant Chakra getter. Belum membuktikan helper adalah pembayaran atau kredit saldo.
+
+**Target-threshold candidate 0x800CF434 (alamat kandidat lama 0x800F1FE4):**
+- Instruksi raw memanggil 0x800BDC4C, mengambil participant record field +4, memanggil target getter 0x80012A70, dan membandingkan hasil penjumlahan helper + record +4 terhadap target.
+- Dekompilasi fungsi ini memiliki register/provenance yang tidak lengkap karena alamat target di-seed manual di tengah alur dan bukan function entry tervalidasi. Gunakan hanya raw instruction window untuk menyatakan adanya operasi addition/comparison lokal; jangan menafsirkan seluruh C pseudocode sebagai fungsi utuh.
+- Jalur threshold masih multi-guard dan belum membuktikan kemenangan dengan sendirinya.
+
+### 3. Mengapa analisis lama bertentangan: alamat yang sama, resource berbeda
+Alamat virtual 0x800BDC4C menunjuk ke byte file berbeda tergantung base resource:
+- Entry 0 pada hipotesis base 0x800AD000: offset 0x10C4C. Di sini isi berupa fungsi yang membaca pointer A0 dan menulis field relatif +0x64/+0x68.
+- Entry 1 pada candidate loader-buffer base 0x800AD450: offset 0x107FC. Di sini isi berupa fungsi akumulator yang membaca struktur stride 0x124 dan memanggil FUN_800B770C.
+
+Karena base resource berubah 0x450 byte, satu alamat virtual dapat memuat kode berbeda setelah overlay/resource diganti. Ini menjelaskan kontradiksi helper sebelumnya tanpa menggabungkan kedua bytecode sebagai satu fungsi yang sama. Entry 1 base 0x800AD450 masih STATIC CANDIDATE, karena slot global destination dan state->index path sudah ditemukan secara statis tetapi belum direkam sebagai snapshot RAM runtime.
+
+### 4. Koreksi metadata offset pada artefak run ini
+Post-processing versi pertama gagal mengenali header TARGET tanpa prefix 0x pada alamat. Akibatnya field target_offset_under_hypothesis di artefak run 41159301877 masih memakai offset dari base lama 0x800AD000, yakni 0x450 terlalu besar. Ini adalah kesalahan metadata saja; alamat, raw MIPS, body dan dekompilasi yang dicetak berada pada target address yang diminta.
+Offset yang benar pada base 0x800AD450:
+- 0x800BDC4C = +0x107FC
+- 0x80107F4C = +0x5AAFC
+- 0x800BE5D8 = +0x11188
+- 0x800F9520 = +0x4C0D0
+- 0x800B5D68 = +0x8918
+- 0x800EE4E0 = +0x41090
+- 0x800CF434 = +0x21FE4
+- 0x80108054 = +0x5AC04
+- 0x80109994 = +0x5C544
+- 0x80109F1C = +0x5CACC
+Workflow sudah diperbaiki pada commit 934c735a39b7ccc2f650e685d78e0aa91c407840: regex menerima header dengan atau tanpa 0x, dan memeriksa helper offset +0x107FC. Run ulang 41159510198 sedang berjalan untuk mengeluarkan hasil perbaikan serta target tambahan.
+
+### 5. Kesimpulan Stage 1 setelah base diperbaiki
+- Helper 0x800BDC4C kini jelas memiliki logika agregasi berbasis sejumlah record, bukan sekadar stub pointer.
+- Helper tersebut menambahkan kontribusi agregat ke getter config 0x80012A8C.
+- Satu UI path menambahkan hasil helper ke Chakra getter dan menampilkannya.
+- Satu target-gate candidate membandingkan helper result + participant record +4 dengan configured target.
+- Belum dibuktikan bahwa record status 5 adalah petak yang dimiliki player, bahwa FUN_800B770C adalah nilai toll/income, atau bahwa akumulasi ini dikreditkan ke saldo pemain. FUN_800B770C adalah next dependency yang wajib diurai.
+- Biaya build Barrier, biaya upgrade Barrier, dan toll mendarat di petak lawan masih UNKNOWN.
+
+Prioritas berikutnya: periksa 0x800B770C, 0x800BDBFC, dan 0x800B7464 pada base Entry 1 yang sama; telusuri incoming callers dan record-field reads/writes untuk DAT_8013EA84, status byte +0, halfword +0x20, dan stride 0x124. Jangan mengubah nama field menjadi owner/estate sebelum konsumen atau perubahan state terkait dapat dibuktikan.
