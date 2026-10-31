@@ -46,6 +46,10 @@ public class ExportStage1EconomyDeepContext extends GhidraScript {
    row("META","HELPER_CALLER_FUNCTIONS","","","","count="+helperFns.size(),"helper_targets=0x800B770C;0x800BDC4C","","");
    for(Function f:recordFns.values())row("RECORD_XREF_FUNCTION","FUNCTION_XREF_RECORD_SLOT",fe(f),fe(f),fnm(f),"recordFns metadata membership","","","direct ref or operand-token match");
    fieldFunctions();row("FIELD_SCOPE_TOTAL","DISTINCT_FUNCTIONS","","","","count="+fieldFnCount,"census should contain 93+4 functions","","");
+   Function fieldDiff=currentProgram.getFunctionManager().getFunctionAt(toAddr(0x800DB29CL));
+   dump(fieldDiff,"AQ1_FIELD_RECONCILIATION_0x800DB29C");
+   InstructionIterator fieldDiffIt=currentProgram.getListing().getInstructions(fieldDiff.getBody(),true); int diffCount=0; while(fieldDiffIt.hasNext()){Instruction ins=fieldDiffIt.next(); if(disp(ins)==0x00||disp(ins)==0x0B||disp(ins)==0x20)diffCount++;}
+   row("FIELD_DIFF_FUNCTION_AUDIT","0x800DB29C",fe(fieldDiff),fnm(fieldDiff),"body_min="+fieldDiff.getBody().getMinAddress(),"body_max="+fieldDiff.getBody().getMaxAddress(),"body_bytes="+fieldDiff.getBody().getNumAddresses(),"field_displacement_count="+diffCount,"field diff between 1188 and 1163 census exports");
    contexts();row("CALL_CONTEXT_TOTAL","DIRECT_JAL","","","","setter_calls="+setterCalls,"getter_calls="+getterCalls,"","JALR not covered");
    out.flush();if(out.checkError())throw new IllegalStateException("AS1/AS2 export failed");
   }
