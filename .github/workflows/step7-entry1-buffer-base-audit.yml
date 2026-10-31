@@ -194,6 +194,7 @@ jobs:
               0x800E0324 0x800F1CCC 0x800F2050 \
               0x80107F4C 0x800BE5D8 0x800F9520 0x800B5D68 \
               0x800EE4E0 0x800CF434 0x80108054 0x80109994 0x80109F1C \
+              0x800CADB8 0x800CB4B4 0x800D15A8 0x800E03B0 0x800E3E74 \
             -postScript ExportPerRecordCallerGraph.java "$out/per-record-caller-graph.txt" \
             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject \
             > "$out/ghidra-headless.log" 2>&1
@@ -250,7 +251,7 @@ jobs:
             echo "analysis_import_base=0x800AD450"
             echo "analysis_base_status=STATIC_CANDIDATE_FROM_GLOBAL_POINTER"
             echo "per_record_caller_graph=PASS"
-            echo "targeted_functions=Entry1 helpers and all decoded direct callers of 0x800B770C; setter/getter call graph scanned"
+            echo "targeted_functions=per-record fee helper callers CADB8, CB4B4, D15A8, E03B0, E3E74 plus caller graph"
             echo "game_or_emulator_executed=no"
             echo "gameplay_input_sent=no"
             echo "savestate_restored=no"
