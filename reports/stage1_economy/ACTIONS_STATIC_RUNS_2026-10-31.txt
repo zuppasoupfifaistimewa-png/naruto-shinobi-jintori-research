@@ -1,0 +1,57 @@
+Stage 1 economy — Actions summaries collected 31 October 2026
+Repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+Purpose: retain a short text-only index of already completed static audits. No new Actions workflow was started by this chat.
+
+run_id=41155800069
+status=completed/success
+job_id=124402199996
+job=Verify release inputs, profile data files, scan entry-1 field immediates
+source_commit_sha=2ea8aa554a2c9b45187e8d72815dd2282b56bd51
+exit_code=NOT_LOGGED (GitHub job conclusion success; retained job log did not expose a process exit-code line)
+artifact_id=13024649665
+artifact_name=step6-resource-field-static-scan
+scope=Entry 1 field/accessor scan; no emulator/gameplay/input/savestate
+
+run_id=41156493284
+status=completed/success
+job_id=124404318290
+job=Verify release inputs, profile data files, scan entry-1 field immediates
+source_commit_sha=513939e5ea8492624fb104a77c76aab81c1e72db
+exit_code=NOT_LOGGED (GitHub job conclusion success; retained job log did not expose a process exit-code line)
+artifact_id=13025355982
+artifact_name=step6-resource-field-static-scan
+scope=Immediate constants 60/150/580/1000 and pending-state caller scan; no emulator/gameplay/input/savestate
+
+run_id=41159510198
+status=completed/success
+job_id=124413702244
+job=Analyze verified Entry 1 slice at 0x800AD450
+source_commit_sha=934c735a39b7ccc2f650e685d78e0aa91c407840
+exit_code=0 (explicitly recorded in job log)
+artifact_id=13026796167
+artifact_name=entry1-loader-buffer-base-static-audit
+scope=FUN_800B770C per-record arithmetic and FUN_800BDC4C aggregation; static candidate mapping
+
+run_id=41159805931
+status=completed/success
+job_id=124414633147
+job=Analyze verified Entry 1 slice at 0x800AD450
+source_commit_sha=20346f89463bb1ca8792317de1496e228470ebf8
+exit_code=0 (explicitly recorded in job log)
+artifact_id=13026831655
+artifact_name=entry1-loader-buffer-base-static-audit
+scope=renderer 0x800FC700 displays negated per-record amount for other-owner status-5 record
+
+run_id=41160254539
+status=completed/success
+job_id=124416042420
+job=Analyze verified Entry 1 slice at 0x800AD450
+source_commit_sha=1b3ee51115342e1d484a019866f0a681067a3639
+exit_code=0 (explicitly recorded in job log)
+artifact_id=13025909960
+artifact_name=entry1-loader-buffer-base-static-audit
+scope=44 direct JAL call sites to FUN_800B770C; caller bodies lacked watched direct Chakra setter/getter calls
+
+Latest workflow expansion at baseline HEAD d0ef96970724c85d8bcd2c5c7fb8ba58bac04072 added further Ghidra target PCs for toll-commit and candidate pending-delta writers. No run/artifact result for that expansion was committed or established during this session; do not infer completion from workflow configuration alone.
+
+All listed runs are static audits. They did not launch gameplay, send gameplay input, or restore savestates. Private inputs were removed before Ghidra; artifacts are text/log only.
