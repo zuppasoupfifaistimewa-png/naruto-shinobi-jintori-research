@@ -171,4 +171,68 @@ Angka 60 (pembangunan) dan 150 (contoh upgrade Level 1→2) tetap merupakan nila
 
 Langkah berikutnya harus dimulai dari pemetaan loader/payload Entry 0 dan Entry 1 yang valid, lalu menautkan label ESTATE/LVUP_ESTATE ke dispatch handler yang benar. Setelah itu baru telusuri source price → balance check → participant setter → node owner/level mutation untuk biaya, serta board event → node ownership/level/toll → accumulator → setter untuk income. Eksperimen emulator Stage 1 baru dirancang setelah call chain ini cukup jelas dan gate runtime mengizinkan.
 
-**Tidak ada gameplay/emulator atau input permainan dalam kedua run ini. Story Mode tidak dijalankan dan tidak dinyatakan selesai.**
+**Tidak ada gameplay/emulator atau input permainan dalam ketiga run statis ini. Story Mode tidak dijalankan dan tidak dinyatakan selesai.**
+
+## Hasil Run #41156493284 — pemindaian immediate harga kandidat (31 Oktober 2026)
+
+- URL: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/41156493284
+- Status: completed / success.
+- Job: 124404318290 — Verify release inputs, profile data files, scan entry-1 field immediates.
+- Commit input: 513939e5ea8492624fb104a77c76aab81c1e72db.
+- Semua langkah selesai/success; exit code job: 0.
+- Artefak teks: step6-resource-field-static-scan, ID 13025355982, 296.863 bytes.
+- SHA-256 ZIP: a48fb82db6c8ee90ed190e83afc9cb0e19dad3aee8550c8e2a7cfffe86ede7e8 (cocok dengan digest API).
+- Input disc, DATA.BIN, dan Entry 1 tervalidasi ulang dengan SHA-256 yang sama seperti run #41155800069. Tidak ada emulator/gameplay/input/savestate; artefak hanya teks/log dan binary privat tidak diunggah.
+
+### Tujuan pemindaian
+Skrip memperluas audit Stage 1 dengan:
+1. Memperluas target fungsi pending-state dan kandidat perubahan nilai peserta.
+2. Mencari literal immediate 0x3C (60), 0x96 (150), 0x244 (580), dan 0x3E8 (1000) dalam instruksi terdekode.
+3. Mengeluarkan paling banyak 40 konteks per konstanta, beserta total kecocokan.
+
+Hasil hitungan:
+| Immediate | Nilai desimal | Total kecocokan | Konteks diekspor |
+|---|---:|---:|---:|
+| 0x3C | 60 | 237 | 40 |
+| 0x96 | 150 | 12 | 12 |
+| 0x244 | 580 | 1 | 1 |
+| 0x3E8 | 1.000 | 56 | 40 |
+
+### Interpretasi aman — mengapa hasil ini belum membuktikan harga
+
+- **0x96 (150):** seluruh 12 contoh yang diekspor adalah operasi load/store dengan displacement +0x96 pada struktur atau stack (misalnya sh, lh, lhu, sb), bukan instruksi yang jelas memuat nilai 150 sebagai harga.
+- **0x244 (580):** satu kecocokan adalah sh v0,0x244(v1), yakni offset field memori, bukan scalar 580 yang terbukti dipakai sebagai toll/pendapatan.
+- **0x3C (60):** 237 kecocokan sebagian besar merupakan displacement/offset struktur. Ada li a1,0x3C pada candidate function 0x800D96D4, tetapi fungsi dan alur yang terlihat belum menghubungkannya dengan transaksi ESTATE atau LVUP_ESTATE. Jangan menyebutnya biaya pembangunan.
+- **0x3E8 (1.000):** 56 kecocokan sebagian besar merupakan offset/address arithmetic dan field access. Satu li v0,0x3E8 pada candidate function 0x800E8190 tidak mempunyai hubungan transaksi Barrier yang telah dibuktikan. Pada candidate 0x800E1188 juga muncul aritmetika dengan konstanta ini dalam alur angka/UI; belum dapat ditafsirkan sebagai harga.
+- Pencarian literal immediate hanya sebuah heuristik: ia tidak mendeteksi harga yang dibaca dari tabel, disusun dari beberapa instruksi, dihitung dari level/jenis petak, atau diambil melalui pointer runtime. Kecocokan konstan tidak sama dengan bukti transaksi.
+
+### Status sesudah tiga run
+
+| Pertanyaan Stage 1 | Kesimpulan audit statis saat ini |
+|---|---|
+| Rumus pendapatan petak | **BELUM DIKETAHUI.** Belum ada call chain yang membuktikan iterasi petak milik, penghitungan income, dan kredit ke Chakra. |
+| Waktu pemicu pendapatan | **BELUM DIKETAHUI.** Belum terbukti apakah pemicu adalah melewati node, mendarat, menyelesaikan satu lap, awal/akhir giliran, atau event lain. |
+| Biaya bangun Barrier | **BELUM DIKETAHUI.** Tidak ditemukan scalar 60 yang terhubung ke pemeriksaan saldo dan mutasi kepemilikan petak. |
+| Biaya upgrade Barrier | **BELUM DIKETAHUI.** Tidak ditemukan scalar 150 atau formula level yang terhubung ke transaksi LVUP_ESTATE. |
+| Toll lawan | **BELUM DIKETAHUI.** Belum terbukti apakah toll sama dengan pendapatan pemilik atau hanya transfer saat mendarat. |
+| Helper 0x800BDC4C | **UNKNOWN/BLOCKED.** Dua base resource kandidat menghasilkan ketidakcocokan argumen/fungsi; jangan klasifikasikan sebagai income. |
+| Resource mapping | **UNKNOWN/BLOCKED.** Entry 0/Entry 1 belum dikaitkan secara pasti dengan alamat payload runtime/overlay. |
+
+### Kesimpulan gabungan tiga Actions run
+| Run | Job | Status | Exit code |
+|---|---|---|---:|
+| #41155800069 | 124402199996 — static field/resource scan | completed/success | 0 |
+| #41155800065 | 124402199666 — bounded Entry 0 helper decode | completed/success | 0 |
+| #41156493284 | 124404318290 — Stage 1 price immediate/pending-state scan | completed/success | 0 |
+
+Ketiga run sukses sebagai pekerjaan tooling, bukan sebagai bukti bahwa formula ekonomi sudah ditemukan. Nilai 60, 150, dan 580 tetap hanya contoh dari sumber UI/video yang berbeda; ketiganya belum berhasil diturunkan dari transaksi kode. Kecocokan literal yang ditemukan dalam instruksi saat ini tidak menghubungkannya dengan harga Barrier.
+
+## Keputusan teknis berikutnya
+Audit konstanta sudah cukup untuk menolak asumsi bahwa angka contoh muncul begitu saja sebagai immediate harga sederhana. Pencarian berikutnya tidak boleh sekadar memperlebar daftar konstanta. Yang dibutuhkan adalah menutup dua rantai semantik:
+
+1. **Barrier transaction:** label/ID ESTATE atau LVUP_ESTATE → pemilih dispatch → sumber harga (table/field/formula) → saldo cukup? → setter Chakra → perubahan owner/level/durability → refresh UI.
+2. **Petak income/toll:** event board/turn/lap → iterasi petak dan owner → atribut level/tipe/adjacency → akumulator nilai → setter Chakra, dengan jalur toll saat mendarat di petak lawan dipetakan terpisah.
+
+Sebelum rantai tersebut terhubung, angka 60/150 dari UI komunitas tidak boleh dijadikan rumus universal. Setelah static call chain tersambung, baru rancang tes emulator Stage 1 satu variabel per eksperimen; tidak ada runtime test dilakukan pada sesi ini.
+
+**Tidak ada gameplay/emulator, input permainan, atau restore savestate dalam ketiga run. Story Mode tidak dijalankan dan tidak dinyatakan selesai.**
