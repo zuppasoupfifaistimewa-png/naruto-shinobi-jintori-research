@@ -23,8 +23,7 @@ jobs:
       GHIDRA_ASSET: "ghidra_12.2_PUBLIC_20261016.zip"
       GHIDRA_SHA256: "2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67"
       GHIDRA_CACHE_DIR: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
-      EXPECTED_EXE_SHA256: "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569
-"
+      EXPECTED_EXE_SHA256: "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569"
       EXPECTED_EXE_BYTES: "385024"
     steps:
       - name: Checkout research tools
