@@ -186,7 +186,7 @@ jobs:
           dest="reports/stage1_economy/as3-h6-breakpoint-ab-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
           cp "$out"/* "$dest/" 2>/dev/null || true
-          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="as3-h6-breakpoint-ab") | .id' | head -n 1)"
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="K0/K1/K2 six-launch H6 breakpoint comparison") | .id' | head -n 1)"
           test -n "$JOB_ID" || JOB_ID="TIDAK TAHU"
           STATUS="$(sed -n 's/^STATUS=//p' "$out/ACTIONS_RUN_SUMMARY.txt" | head -n 1)";test -n "$STATUS" || STATUS="INCOMPLETE"
           RC="$(sed -n 's/^EXIT_CODE=//p' "$out/ACTIONS_RUN_SUMMARY.txt" | head -n 1)";test -n "$RC" || RC="TIDAK TAHU"

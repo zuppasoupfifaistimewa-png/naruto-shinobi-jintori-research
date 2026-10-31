@@ -1,0 +1,8 @@
+STATUS=IN_PROGRESS
+JOB=K0/K1/K2 six-launch H6 breakpoint comparison
+JOB_ID=124567642157
+RUN_ID=41211621962
+SOURCE_SHA=8894686395afdca97328a9fb2af5007a29406584
+EXIT_CODE=TIDAK TAHU
+CHECKED_AT_UTC=2026-10-31T15:07:03Z
+NOTE=Preflight steps 1-8 succeeded; six-launch execution step still in progress; no RAM hashes or emulator exit codes available yet.

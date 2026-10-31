@@ -359,7 +359,7 @@ jobs:
             if [ -f "$out/$f" ]; then cp "$out/$f" "$dest/$f"; fi
           done
           API="https://api.github.com/repos/$RESEARCH_REPO"
-          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="analyze-entry1-buffer-base") | .id' | head -n 1)"
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="Analyze verified Entry 1 slice at 0x800AD450") | .id' | head -n 1)"
           test -n "$JOB_ID" || JOB_ID="TIDAK TAHU"
           RC="$(sed -n 's/^exit_code=//p' "$out/run-summary.txt" 2>/dev/null | head -n 1)"; test -n "$RC" || RC="TIDAK TAHU"
           STATUS="$(sed -n 's/^status=//p' "$out/run-summary.txt" 2>/dev/null | head -n 1)"; test -n "$STATUS" || STATUS="INCOMPLETE"
