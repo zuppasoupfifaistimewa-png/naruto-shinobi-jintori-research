@@ -180,6 +180,8 @@ jobs:
           headless="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
           [[ -n "$headless" && -x "$headless" ]]
 
+          cp "$GITHUB_WORKSPACE/tools/step7/ExportPendingParticipantDelta.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportPendingParticipantDelta.java"
+
           set +e
           "$headless" "$project" Naruto_DATA_BIN_entry1_buffer_base \
             -import "$input/DATA_BIN_ENTRY_0001.bin" \
@@ -198,13 +200,16 @@ jobs:
               0x801170A8 0x80117068 0x800BD704 0x800BB36C \
               0x800BB004 0x800BE464 0x80102408 0x80100FC0 \
               0x8010109C 0x80101140 \
+              0x80117610 0x80117690 0x80117774 0x80117C60 \
+              0x80102898 0x801088A8 0x80108D2C \
             -postScript ExportPerRecordCallerGraph.java "$out/per-record-caller-graph.txt" \
+            -postScript ExportPendingParticipantDelta.java "$out/pending-participant-delta.txt" \
             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject \
             > "$out/ghidra-headless.log" 2>&1
           rc=$?
           set -e
 
-          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" ]]; then
+          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" || ! -s "$out/pending-participant-delta.txt" ]]; then
             {
               echo "status=FAILURE"
               echo "job=analyze-entry1-buffer-base"
@@ -212,6 +217,7 @@ jobs:
               echo "exit_code=$rc"
               echo "target_output_present=$([[ -s "$out/entry1-buffer-base-targets.txt" ]] && echo yes || echo no)"
               echo "caller_graph_present=$([[ -s "$out/per-record-caller-graph.txt" ]] && echo yes || echo no)"
+              echo "pending_delta_trace_present=$([[ -s "$out/pending-participant-delta.txt" ]] && echo yes || echo no)"
             } > "$out/run-summary.txt"
             tail -n 80 "$out/ghidra-headless.log" || true
             exit 1
@@ -254,6 +260,7 @@ jobs:
             echo "analysis_import_base=0x800AD450"
             echo "analysis_base_status=STATIC_CANDIDATE_FROM_GLOBAL_POINTER"
             echo "per_record_caller_graph=PASS"
+            echo "pending_delta_trace=PASS"
             echo "targeted_functions=fee/upgrade state machines, pending Chakra handlers, direct fee callers and caller graph"
             echo "game_or_emulator_executed=no"
             echo "gameplay_input_sent=no"
