@@ -196,6 +196,10 @@ jobs:
               0x8002DDE0 0x80035BB8 0x80024B70 \
               0x80019C10 0x8001A770 0x8001EBF4 0x8001F048 \
               0x80024B10 0x80024448 0x8002DD80 \
+              0x80011F18 0x8002DC90 0x8002DBF8 0x8003275C \
+              0x8001BC04 0x8001A57C 0x80024164 0x80012974 \
+              0x8001827C 0x800251C8 0x80019CA4 0x8001ECA4 \
+              0x8001E50C \
               0x8002D1F8 0x8002D28C 0x8002D330 0x8002D44C \
             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject \
             > "$out/ghidra-headless.log" 2>&1
