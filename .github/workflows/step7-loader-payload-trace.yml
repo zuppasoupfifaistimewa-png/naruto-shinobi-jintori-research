@@ -199,7 +199,8 @@ jobs:
               0x80011F18 0x8002DC90 0x8002DBF8 0x8003275C \
               0x8001BC04 0x8001A57C 0x80024164 0x80012974 \
               0x8001827C 0x800251C8 0x80019CA4 0x8001ECA4 \
-              0x8001E50C \
+              0x8001E50C 0x80011FB4 0x8001202C \
+              0x800118E0 0x80011918 0x80011FEC 0x80011504 \
               0x8002D1F8 0x8002D28C 0x8002D330 0x8002D44C \
               0x8002FE70 0x8002DD74 0x8002D760 0x8002D7A4 \
             -postScript ExportStaticMemoryTables.java "$out/loader-static-data-tables.txt" \
