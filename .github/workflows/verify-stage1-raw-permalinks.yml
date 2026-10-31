@@ -1,0 +1,85 @@
+name: Verify Stage 1 raw permalinks with curl
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/verify-stage1-raw-permalinks.yml"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  verify-raw-links:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: \${{ github.token }}
+      RESEARCH_REPO: \${{ github.repository }}
+      TARGET_SHA: 44ecc294692be49d54fee9a759cb3d489b534d37
+    steps:
+      - name: Checkout research repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify every published Stage 1 permalink with curl
+        shell: bash
+        run: |
+          set -u
+          dest="reports/stage1_economy/raw-link-check-$GITHUB_RUN_ID"
+          mkdir -p "$dest"
+          base="https://raw.githubusercontent.com/$RESEARCH_REPO/$TARGET_SHA"
+          paths=(
+            "reports/stage1_economy/AQ1_AQ2_AQ3_RESULTS_2026-10-31.md"
+            "reports/stage1_economy/aq1-run-41169411383/attempt-1/aq1-economy-census.tsv"
+            "reports/stage1_economy/aq1-run-41169411383/attempt-1/aq1-recount.txt"
+            "reports/stage1_economy/aq1-run-41169411383/attempt-1/ACTIONS_RUN_SUMMARY.txt"
+            "reports/stage1_economy/aq2-run-41169411368/attempt-1/AQ2_H6_FRAME180_RECORDS.tsv"
+            "reports/stage1_economy/aq2-run-41169411368/attempt-1/AQ2_LAUNCHES.tsv"
+            "reports/stage1_economy/aq2-run-41169411368/attempt-1/AQ2_H6_SUMMARY.txt"
+            "reports/stage1_economy/aq2-run-41169411368/attempt-1/ACTIONS_RUN_SUMMARY.txt"
+          )
+          failed=0
+          printf 'path\thttp_code\tresult\n' > "$dest/CURL_HTTP_STATUS.tsv"
+          for path in "\${paths[@]}"; do
+            code="$(curl --fail --location --silent --show-error --retry 2 --connect-timeout 15 --max-time 60 -o /dev/null -w '%{http_code}' "$base/$path" 2>/dev/null)"
+            rc=$?
+            if [ "$rc" -eq 0 ] && [ "$code" = "200" ]; then
+              result="PASS"
+            else
+              result="FAIL"; failed=1
+              [ -n "$code" ] || code="000"
+            fi
+            printf '%s\t%s\t%s\n' "$path" "$code" "$result" >> "$dest/CURL_HTTP_STATUS.tsv"
+          done
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="verify-raw-links") | .id' | head -n 1)"
+          [ -n "$JOB_ID" ] || JOB_ID="TIDAK TAHU"
+          if [ "$failed" -eq 0 ]; then status="SUCCESS"; rc=0; else status="FAILURE"; rc=1; fi
+          {
+            echo "STATUS=$status"
+            echo "JOB=verify-raw-links"
+            echo "JOB_ID=$JOB_ID"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "TARGET_RAW_SHA=$TARGET_SHA"
+            echo "EXIT_CODE=$rc"
+            echo "LINK_COUNT=\${#paths[@]}"
+            echo "ALL_HTTP_200=$([ "$failed" -eq 0 ] && echo YES || echo NO)"
+          } > "$dest/ACTIONS_RUN_SUMMARY.txt"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$dest"
+          git commit -m "Publish Stage 1 raw permalink curl verification run $GITHUB_RUN_ID"
+          pushed=0
+          for n in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort; sleep "$n"; continue; }
+            if git push origin HEAD:main; then pushed=1; break; fi
+            sleep "$n"
+          done
+          test "$pushed" -eq 1
+          test "$failed" -eq 0
