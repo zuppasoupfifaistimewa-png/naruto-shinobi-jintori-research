@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/verify-stage1-raw-permalinks.yml"
+      - "reports/stage1_economy/AQ1_AQ2_AQ3_AUDIT_2026-10-31.md"
+      - "reports/stage1_economy/VIDEO_READINGS_2026-10-31.tsv"
 
 permissions:
   contents: write
@@ -16,9 +18,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     env:
-      GH_TOKEN: \${{ github.token }}
-      RESEARCH_REPO: \${{ github.repository }}
-      TARGET_SHA: 44ecc294692be49d54fee9a759cb3d489b534d37
+      GH_TOKEN: ${{ github.token }}
+      RESEARCH_REPO: ${{ github.repository }}
+      TARGET_SHA: ${{ github.sha }}
     steps:
       - name: Checkout research repository
         uses: actions/checkout@v4
@@ -26,7 +28,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Verify every published Stage 1 permalink with curl
+      - name: Verify published Stage 1 permalinks with curl
         shell: bash
         run: |
           set -u
@@ -34,7 +36,8 @@ jobs:
           mkdir -p "$dest"
           base="https://raw.githubusercontent.com/$RESEARCH_REPO/$TARGET_SHA"
           paths=(
-            "reports/stage1_economy/AQ1_AQ2_AQ3_RESULTS_2026-10-31.md"
+            "reports/stage1_economy/AQ1_AQ2_AQ3_AUDIT_2026-10-31.md"
+            "reports/stage1_economy/VIDEO_READINGS_2026-10-31.tsv"
             "reports/stage1_economy/aq1-run-41169411383/attempt-1/aq1-economy-census.tsv"
             "reports/stage1_economy/aq1-run-41169411383/attempt-1/aq1-recount.txt"
             "reports/stage1_economy/aq1-run-41169411383/attempt-1/ACTIONS_RUN_SUMMARY.txt"
@@ -42,11 +45,16 @@ jobs:
             "reports/stage1_economy/aq2-run-41169411368/attempt-1/AQ2_LAUNCHES.tsv"
             "reports/stage1_economy/aq2-run-41169411368/attempt-1/AQ2_H6_SUMMARY.txt"
             "reports/stage1_economy/aq2-run-41169411368/attempt-1/ACTIONS_RUN_SUMMARY.txt"
+            "reports/an_2026-10-30/runs/run-41080663095/attempt-1/ACTIONS_RUN_SUMMARY.txt"
+            "reports/an_2026-10-30/runs/run-41080663095/attempt-1/AN2_CAPTURE_SUMMARY.tsv"
+            "reports/youtube_source_access/STAGE1_NARUTO_VS_MIZUKI_DEEP_DIVE_2026-10-31.md"
+            "reports/youtube_source_access/TRANSCRIPT_PRELIMINARY_GAMEPLAY_NOTES_2026-10-31.md"
+            "reports/youtube_source_access/VIDEO_WATCH_ANALYSIS_2026-10-31.md"
           )
           failed=0
           printf 'path\thttp_code\tresult\n' > "$dest/CURL_HTTP_STATUS.tsv"
           for path in "${paths[@]}"; do
-            code="$(curl --location --silent --show-error --retry 2 --connect-timeout 15 --max-time 60 -H "Authorization: token $GH_TOKEN" -o /dev/null -w '%{http_code}' "$base/$path" 2>/dev/null)"
+            code="$(curl --location --silent --show-error --retry 2 --connect-timeout 15 --max-time 60 -H "Authorization: Bearer $GH_TOKEN" -o /dev/null -w '%{http_code}' "$base/$path" 2>/dev/null)"
             rc=$?
             if [ "$rc" -eq 0 ] && [ "$code" = "200" ]; then
               result="PASS"
@@ -57,6 +65,12 @@ jobs:
             printf '%s\t%s\t%s\n' "$path" "$code" "$result" >> "$dest/CURL_HTTP_STATUS.tsv"
           done
           JOB_ID="TIDAK TAHU"
+          for n in $(seq 1 8); do
+            JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="verify-raw-links") | .id' | head -n 1)"
+            [ -n "$JOB_ID" ] && [ "$JOB_ID" != "null" ] && break
+            sleep 2
+          done
+          [ -n "$JOB_ID" ] && [ "$JOB_ID" != "null" ] || JOB_ID="TIDAK TAHU"
           if [ "$failed" -eq 0 ]; then status="SUCCESS"; rc=0; else status="FAILURE"; rc=1; fi
           {
             echo "STATUS=$status"
