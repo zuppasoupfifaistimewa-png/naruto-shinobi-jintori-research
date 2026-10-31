@@ -81,7 +81,7 @@ Sumber YouTube yang tercatat: `https://www.youtube.com/watch?v=r30Rs_NuExc`.
 
 ## Koreksi penting untuk pending fields (audit artefak Ghidra tambahan)
 
-- Field manager `+0xB44` yang pernah disebut “pending Chakra” **belum terbukti sebagai delta**. Dalam artefak lama, `FUN_8012C544` hanya mengosongkannya; `FUN_8012CACC` dan `FUN_8012C78C` membacanya untuk digambar pada fase UI akhir. Tidak ditemukan penulis nonzero pada hasil yang diperiksa. `+0xB40) secara terpisah diisi dari `+0xB30 + +0xB38`.
-- Candidate PC setelah rebase old import `0x800D0000` ke `0x800AD450): init `0x80109994`, store-zero `0x80109A54), reader `0x80109BDC`/`0x80109F1C`, load `0x80109F64).
-- Field participant `+0x2EE) lebih dekat pada jalur delta per peserta: `FUN_800E1188) → candidate PC `0x800BE5D8) membaca slot `DAT_8013EA74 + 0x2EE + participant*2`, sinkronisasi lewat Chakra setter/getter di candidate PC `0x800BEC98`/`0x800BECA0), lalu clear di `0x800BEDA4`. Tetapi sumber penulis nonzero belum ditemukan dan belum ada kaitan dengan Q1/Q2/Q3.
+- Field manager `+0xB44` yang pernah disebut “pending Chakra” **belum terbukti sebagai delta**. Dalam artefak lama, `FUN_8012C544` hanya mengosongkannya; `FUN_8012CACC` dan `FUN_8012C78C` membacanya untuk digambar pada fase UI akhir. Tidak ditemukan penulis nonzero pada hasil yang diperiksa. `+0xB40` secara terpisah diisi dari `+0xB30 + +0xB38`.
+- Candidate PC setelah rebase old import `0x800D0000` ke `0x800AD450`): init `0x80109994`, store-zero `0x80109A54`, reader `0x80109BDC`/`0x80109F1C`, load `0x80109F64).
+- Field participant `+0x2EE` lebih dekat pada jalur delta per peserta: `FUN_800E1188) → candidate PC `0x800BE5D8`) membaca slot `DAT_8013EA74 + 0x2EE + participant*2`, sinkronisasi lewat Chakra setter/getter di candidate PC `0x800BEC98`/`0x800BECA0`), lalu clear di `0x800BEDA4`. Tetapi sumber penulis nonzero belum ditemukan dan belum ada kaitan dengan Q1/Q2/Q3.
 - Offset +0xB44 dan +0x2EE tetap berbeda. Jangan gunakan salah satunya sebagai bukti toll atau Barrier release.
