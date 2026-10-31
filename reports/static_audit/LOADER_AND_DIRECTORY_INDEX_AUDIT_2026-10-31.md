@@ -262,3 +262,76 @@ Static data dump:
 4. Setelah entry1 load path dan payload base diketahui, lanjutkan tracing code di resource tersebut ke ESTATE dan LVUP_ESTATE.
 
 Status ekonomi Stage 1 tetap UNKNOWN: belum ada rumus pendapatan petak, biaya pembangunan/upgrade Barrier, atau toll yang terverifikasi.
+
+## Addendum — state resource token dan jalur kondisional Entry 1 (Run #41158940692)
+
+### Run dan artefak
+- URL: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/41158940692
+- Job: 124411903548 — Trace resource reader, allocation pointer, and payload consumers.
+- Commit input: be061a58fd81886735bef89513735b3e2e4f46ff.
+- Status: **completed / success**, exit code 0.
+- Artefak: step7-loader-payload-static-trace, ID 13026655433, 66.113 byte.
+- SHA-256 ZIP: 5d945a6d25f066a3ab0be5f29dd95e56e58e50f79a675e094e23f0bdfa8775bf.
+- PRIVATE_INPUT_AND_PROJECT_CLEANUP=PASS; artifact teks saja; tidak ada game/emulator, input gameplay atau savestate.
+
+### 1. Peran fungsi state helper
+- 0x80011F58 adalah getter/setter sederhana: mengambil word GP+0xF4, menyimpan argumen A0 ke slot yang sama, lalu mengembalikan nilai lama. Ia bukan pembaca resource.
+- 0x80011F7C hanya berisi jr ra dengan delay slot clear v0, sehingga return-nya selalu 0 dalam body terdekode saat ini. 0x800117A4 menguji nilai ini setelah pemanggilan.
+- 0x80011FB4 memanggil 0x80011F58(0) sebelum memanggil helper lain dan loader.
+
+### 2. Global state scene/resource pada file-image view
+Alamat berikut adalah file-image global slots pada main EXE, bukan snapshot RAM saat gameplay:
+| Slot | Nilai awal di image | Writer/readers yang terlihat | Peran yang didukung kode |
+|---|---:|---|---|
+| 0x8006D75C (GP+E0) | 0 | ditulis di 0x800116C4; dibaca 0x80011864, 0x800118C4, 0x80011900, 0x80011970, 0x80011984 | pending scene/state index |
+| 0x8006D760 (GP+E4) | 0 | ditulis 0x800116C8 dan 0x8001198C; dibaca state manager | current scene/state index |
+| 0x8006D764 (GP+E8) | 0 | ditulis 0x800116CC dan 0x80011980 | previous scene/state slot |
+| 0x8006D768 (GP+EC) | 0 | ditulis 0x800116D0, dibaca 0x80011874, dibersihkan 0x80011990 | transition/dirty flag slot |
+| 0x8006D76C (GP+F0) | 0 | ditulis 0x800116D8 dan 0x80011920; dibaca 0x800118DC | active resource token compared against descriptor[+0] |
+| 0x8006D774 (GP+F8) | 0 | ditulis 0x800116E8, dibaca 0x8001192C | completion callback pointer passed to 0x8002DC90 |
+| 0x8006D778 (GP+FC) | 0 | ditulis 0x800116EC, dibaca 0x80011944 | callback context passed to 0x8002DC90 |
+
+The static references show startup initialization at function 0x800116B8 (called by 0x80011608), with file-image values initially zero. Exact xref counts are from the bounded Ghidra reference exporter; indirect aliases or un-decoded instructions may not appear.
+
+### 3. Conditional route from scene descriptor to directory index 1
+Raw MIPS establishes the following sequence:
+1. 0x800117A4 reads pending scene index from GP+0xE0 and forms descriptor address 0x800558A8 + scene_index*0x1C.
+2. It reads descriptor word +0 and compares it to active resource token GP+0xF0.
+3. When the token differs and descriptor word +0 is not -1, it calls 0x80011FB4 with the pending scene index.
+4. 0x80011FB4 calculates the same descriptor record address, reads its word +0 as A0, reads callback/context from GP+0xF8/GP+0xFC, then calls 0x8002DC90(A0, callback, context).
+5. 0x8002DC90 calls 0x8002DCF8, which passes the index through 0x8002DBB8/0x8002D4E4 and then 0x8002D838 to the CD read path.
+
+Descriptor dump values that matter:
+| Descriptor row index | Label | Word +0 |
+|---:|---|---:|
+| 0 | TITLE | 0 |
+| 1 | LOGO | 5 |
+| 4 | BOARDRET | 1 |
+| 5 | BAT_INI | 1 |
+| 6 | BAT_VIEW | 1 |
+| 7 | PRESTG | 2 |
+| 8 | AFTSTG | 2 |
+| 9 | ENDING | 2 |
+
+**Strong VERIFIED-STATIC conditional route:** if pending scene row 4 (BOARDRET), 5 (BAT_INI), or 6 (BAT_VIEW) is selected while GP+F0 differs from 1, state manager sends directory index 1 through the reader family. Likewise, descriptor rows 7–9 carry value 2 and are candidates for loading directory index 2 under the same token mismatch condition.
+
+This is static control/data flow, not a runtime observation that those states actually occur during the current save/playthrough. The labels identify descriptor rows; the row field +0 value is passed to the resource loader on this conditional path.
+
+### 4. Important semantic guard
+The descriptor table is heterogeneous. Some rows have function-address values at word +0 (for example rows with values 0x800AF640 and 0x800B1E88) rather than small integers. Do not treat every row as a directory index. The current chain shows how field +0 is forwarded, but the meaning/path for pointer-valued records remains unresolved. The route for numeric values 0, 1, 2, and 5 is structurally meaningful and is the present investigation focus.
+
+### 5. Current result for Entry 1
+- Entry 1 is directory index 1 (LBN 8.778, 596.412 bytes, DATA.BIN offset 0x10BB000), independently verified by directory parsing and slice SHA.
+- The scene-state descriptor rows BOARDRET, BAT_INI, and BAT_VIEW contain +0 = 1.
+- The state manager compares that field against GP+F0 and, on mismatch, calls the resource loader with the field as directory index.
+- The loader uses the pointer value read from global slot 0x80010498 as the destination. File-image value is 0x800AD450, but no runtime memory snapshot exists; the slot has three direct READ xrefs and no direct WRITE xref in this bounded scan. Treat 0x800AD450 as the statically evidenced default buffer destination, not a verified dynamic runtime mapping for every request.
+- The rounded Entry 1 size is 0x92000 (596.412 bytes rounded up to 0x800-sector boundary). If the destination remains 0x800AD450, the callback end pointer would be 0x80134450; this is an arithmetic consequence, not a captured runtime pointer or a verified final execution address.
+
+### 6. Next evidence gate
+1. Determine whether the pointer in 0x80010498 changes indirectly or through an unobserved writer before loads of resources 1/2/5.
+2. Identify initialization and actual writes of scene state indices GP+E0/GP+E4 and transitions into descriptor rows 4–9.
+3. Confirm callback/context behavior through GP+F8/GP+FC for resource reads of index 1.
+4. Determine whether Entry 1 is read as an executable overlay, a data package, or both; trace its callbacks and any copy/relocation/decompression after read.
+5. Once the Entry 1 payload ownership is established, resume function tracing for ESTATE and LVUP_ESTATE.
+
+No gameplay economy rule was upgraded. Pendapatan petak, biaya build/upgrade Barrier, and toll remain **UNKNOWN**.
