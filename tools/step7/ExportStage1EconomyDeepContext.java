@@ -29,6 +29,17 @@ public class ExportStage1EconomyDeepContext extends GhidraScript {
   InstructionIterator it=currentProgram.getListing().getInstructions(true);String token=String.format("%08x",a);
   while(it.hasNext()){Instruction i=it.next();if(i.toString().toLowerCase().contains(token)){Function f=fn(i);if(f!=null)into.put(f.getEntryPoint().toString(),f);}}
  }
+
+ // ReferenceManager can omit a global-base + displacement xref. This exact MIPS pair
+ // resolves effective address 0x80140000-0x157c = record slot 0x8013EA84.
+ private Function recoverExplicitRecordSlotEA84(){
+  Function f=currentProgram.getFunctionManager().getFunctionAt(toAddr(0x800E0B3CL));
+  Instruction hi=currentProgram.getListing().getInstructionAt(toAddr(0x800E11B8L));
+  Instruction load=currentProgram.getListing().getInstructionAt(toAddr(0x800E11D0L));
+  if(f!=null&&fn(hi)==f&&fn(load)==f&&"lui a2,0x8014".equalsIgnoreCase(hi.toString())&&"lw v1,-0x157c(a2)".equalsIgnoreCase(load.toString()))return f;
+  return null;
+ }
+
  private int disp(Instruction i){Matcher m=MEM.matcher(i.toString());while(m.find()){try{String s=m.group(1).toLowerCase();return (int)Long.parseLong(s.startsWith("0x")?s.substring(2):s,16);}catch(Exception ignored){}}return Integer.MIN_VALUE;}
  private boolean hasField(Function f){if(f==null)return false;InstructionIterator it=currentProgram.getListing().getInstructions(f.getBody(),true);while(it.hasNext()){int d=disp(it.next());for(int x:FIELDS)if(d==x)return true;}return false;}
  private void collectHelpers()throws Exception{InstructionIterator it=currentProgram.getListing().getInstructions(true);while(it.hasNext()){Instruction i=it.next();if(!"jal".equalsIgnoreCase(i.getMnemonicString()))continue;long t=jalTarget(i);for(long h:HELPERS)if(t==h){Function f=fn(i);if(f!=null)helperFns.put(f.getEntryPoint().toString(),f);}}}
@@ -39,7 +50,7 @@ public class ExportStage1EconomyDeepContext extends GhidraScript {
  private void contexts()throws Exception{InstructionIterator it=currentProgram.getListing().getInstructions(true);while(it.hasNext()){Instruction i=it.next();if(!"jal".equalsIgnoreCase(i.getMnemonicString()))continue;long t=jalTarget(i);if(t!=0x8001387CL&&t!=0x800138ECL)continue;Function f=fn(i);String kind=t==0x8001387CL?"SETTER_8001387C":"GETTER_800138EC";if(t==0x8001387CL)setterCalls++;else getterCalls++;Instruction d=i.getNext();row("CALL_CONTEXT",kind,hx(t),hx(i.getAddress().getOffset()),fe(f),fnm(f),before(i,12),d==null?"TIDAK_TAHU":hx(d.getAddress().getOffset())+" "+d+" ["+bytes(d)+"]",after(i,18),"12 pre-jal instructions; delay slot; return starts jal+8");dump(f,kind);}Function f=currentProgram.getFunctionManager().getFunctionAt(toAddr(0x801052E8L));if(f!=null)dump(f,"GETTER_CALLER_ENTRY_0x801052E8");}
  @Override protected void run()throws Exception{
   String[] a=getScriptArgs();if(a.length<1)throw new IllegalArgumentException("Args: output TSV");
-  collect(RECORD,recordFns);collect(PARTICIPANT,participantFns);collect(MANAGER,managerFns);collectHelpers();
+  collect(RECORD,recordFns);Function recoveredEA84=recoverExplicitRecordSlotEA84();if(recoveredEA84!=null)recordFns.put(recoveredEA84.getEntryPoint().toString(),recoveredEA84);collect(PARTICIPANT,participantFns);collect(MANAGER,managerFns);collectHelpers();
   try(PrintWriter w=new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(a[0]),StandardCharsets.UTF_8)))){
    out=w;row("record_type","scope_or_target","address","function_entry","function_name","context_before_or_detail","delay_slot","postreturn_context","notes");
    row("META","RECORD_SLOT",hx(RECORD),"TIDAK_TAHU","TIDAK_TAHU","recordFns_count="+recordFns.size(),"PARTICIPANT_SLOT="+hx(PARTICIPANT),"MANAGER_SLOT="+hx(MANAGER),"same Ghidra ref/token collection logic as AQ1 exporter");

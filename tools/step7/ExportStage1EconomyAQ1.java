@@ -35,6 +35,19 @@ public class ExportStage1EconomyAQ1 extends GhidraScript {
         InstructionIterator it=currentProgram.getListing().getInstructions(true);String token=String.format("%08x",addr);
         while(it.hasNext()){Instruction i=it.next();if(i.toString().toLowerCase().contains(token)){Function f=fn(i);if(f!=null)into.put(f.getEntryPoint().toString(),f);}}
     }
+
+    // ReferenceManager can omit a global-base + displacement xref on an otherwise valid Ghidra listing.
+    // Recover this proven reference from the exact MIPS pair: LUI a2,0x8014; LW v1,-0x157c(a2) => EA 0x8013EA84.
+    private Function recoverExplicitRecordSlotEA84() {
+        Function f=currentProgram.getFunctionManager().getFunctionAt(toAddr(0x800E0B3CL));
+        Instruction hi=currentProgram.getListing().getInstructionAt(toAddr(0x800E11B8L));
+        Instruction load=currentProgram.getListing().getInstructionAt(toAddr(0x800E11D0L));
+        if(f!=null && fn(hi)==f && fn(load)==f &&
+           "lui a2,0x8014".equalsIgnoreCase(hi.toString()) &&
+           "lw v1,-0x157c(a2)".equalsIgnoreCase(load.toString())) return f;
+        return null;
+    }
+
     private int disp(Instruction i){Matcher m=MEM.matcher(i.toString());while(m.find()){try{String s=m.group(1).toLowerCase();return (int)Long.parseLong(s.startsWith("0x")?s.substring(2):s,16);}catch(Exception ignored){}}return Integer.MIN_VALUE;}
     private boolean load(String m){return m.startsWith("lb")||m.startsWith("lh")||m.startsWith("lw")||m.startsWith("ld");}
     private boolean store(String m){return m.startsWith("sb")||m.startsWith("sh")||m.startsWith("sw")||m.startsWith("sd");}
@@ -111,7 +124,7 @@ public class ExportStage1EconomyAQ1 extends GhidraScript {
     }
     @Override protected void run()throws Exception{
         String[] args=getScriptArgs();if(args.length<1)throw new IllegalArgumentException("Args: output TSV path");
-        collect(RECORD,recordFns);collect(PARTICIPANT,participantFns);collect(MANAGER,managerFns);
+        collect(RECORD,recordFns);Function recoveredEA84=recoverExplicitRecordSlotEA84();if(recoveredEA84!=null)recordFns.put(recoveredEA84.getEntryPoint().toString(),recoveredEA84);collect(PARTICIPANT,participantFns);collect(MANAGER,managerFns);
         try(PrintWriter w=new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(args[0]),StandardCharsets.UTF_8)))){
             out=w;
             row("record_type","item","kind","pc_or_target","function_entry","function_name","bytes_or_excerpt_hex","instruction_or_context","scope_or_group","notes");
