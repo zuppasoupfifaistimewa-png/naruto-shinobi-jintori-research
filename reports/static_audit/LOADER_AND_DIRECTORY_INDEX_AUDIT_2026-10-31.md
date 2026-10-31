@@ -204,3 +204,61 @@ gameplay_input_sent=no
 savestate_restored=no
 
 Status ekonomi Stage 1 tetap UNKNOWN: belum ada rumus pendapatan petak, biaya build/upgrade Barrier atau toll yang terbukti.
+
+
+## Addendum — state descriptor dan pemicu load resource (Run #41158644685)
+
+### Run dan artefak
+- URL: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/41158644685
+- Job: 124410972407 — Trace resource reader, allocation pointer, and payload consumers.
+- Commit input: d1f0e9d2ab14885337e18cbc092679518e3086e8.
+- Status: **completed / success**, exit code 0.
+- Artefak: step7-loader-payload-static-trace, ID 13026375544, 63.085 byte.
+- SHA-256 ZIP: f3f376bc4c9b46029141e2c3ab1efac5c8e41214f26db2751decb70fffbdd80f.
+- PRIVATE_INPUT_AND_PROJECT_CLEANUP=PASS; hanya teks/log; tidak ada emulator, input gameplay, atau savestate.
+
+### 1. Scene/state dispatcher
+Fungsi 0x800117A4 memiliki satu direct caller dari 0x80011540 di startup loop 0x80011504. Ini bukan fungsi yang tidak terhubung; ia merupakan bagian dari pemrosesan state utama.
+Dari raw MIPS dan dekompilasi:
+- Membaca state aktif/pending dari global GP+0xE4 / GP+0xE0 (file-image addresses 0x8006D760 / 0x8006D75C dalam peta ini).
+- Mengakses record dengan stride 0x1C pada tabel descriptor 0x800558A8.
+- Memanggil function pointer record +0x0C pada salah satu jalur, +0x04 saat state berubah, dan +0x08 pada jalur update berikutnya.
+- Membandingkan token/field record +0 dengan global GP+0xF0 (0x8006D76C). Jika berbeda dan field +0 bukan -1, ia memanggil 0x80011FB4 dengan pending state sebagai argumen.
+- Setelah jalur transition, mengambil end pointer dari 0x8002DD74, menginisialisasi ulang allocator melalui 0x8002DE60, memperbarui state globals, dan melanjutkan callback state.
+
+### 2. Fungsi 0x80011FB4 adalah penghubung state → directory read
+Raw MIPS pada 0x80011FB4 menunjukkan:
+- A0 (pending state index) disimpan di S0.
+- Memanggil 0x80011F58(0) dan 0x80037138(0).
+- Menghitung record address = 0x800558A8 + pending_state_index*0x1C.
+- Membaca word pertama record +0 sebagai A0.
+- Mengambil callback/context dari GP+0xF8 dan GP+0xFC.
+- Memanggil 0x8002DC90(record[+0], callback, context).
+- Jika berhasil, mengosongkan GP+0xF8 dan GP+0xFC dan mengembalikan true.
+
+Jadi ada **direct static chain**:
+state loop 0x800117A4 → state descriptor row → 0x80011FB4 → record[+0] → 0x8002DC90 → 0x8002DCF8 → directory reader/queued CD read.
+
+### 3. Makna nilai pada descriptor table tetap heterogeneous
+Static data dump:
+- Row pertama (label TITLE) memiliki word +0 = 0.
+- Row kedua (label LOGO) memiliki word +0 = 5.
+- Beberapa row berikutnya memiliki word +0 berupa alamat kode, misalnya 0x800AF640 dan 0x800B1E88, bukan integer kecil.
+- Fungsi 0x80011FB4 selalu meneruskan word +0 sebagai argumen loader pada candidate path, sehingga perilaku untuk record pointer-valued belum dapat dijelaskan. Jangan sebut setiap field +0 sebagai directory index.
+- 0x80011F18 adalah jalur lain yang membaca field +0 dan memanggil DCF8 dengan callback tetap 0x8001202C; Ghidra tidak menemukan direct function-entry reference ke 0x80011F18. Sementara 0x80011FB4 memiliki satu direct caller dari 0x800117A4.
+
+**Kesimpulan aman:** descriptor row TITLE (field +0 = 0) dan LOGO (field +0 = 5) adalah kandidat kuat resource identifiers, dan state manager memiliki jalur yang meneruskan field +0 ke loader. Namun pemanggilan aktual row mana pada sesi game tertentu serta arti field +0 untuk semua state masih belum ditutup. Tidak ada bukti directory index 1 dimuat melalui tabel ini.
+
+### 4. Implikasi untuk Entry 0 dan Entry 1
+- Entry 0 directory index 0 terhubung ke descriptor TITLE pada file image; state manager memiliki pemanggil loader yang dapat meneruskan nilai 0 ke DC90 jika TITLE menjadi pending state dan token saat ini berbeda.
+- Entry 1 directory index 1 belum muncul sebagai field +0 numerik di descriptor table yang diekspor; itu tidak membuktikan Entry 1 tidak pernah dimuat, hanya bahwa tabel descriptor 16-record ini belum menunjukkan indeks tersebut.
+- Buffer target DCF8 berasal dari isi global slot 0x80010498, yang pada file image bernilai 0x800AD450 untuk bootstrap awal. Apakah pointer ini berubah sebelum load TITLE/LOGO belum dibuktikan karena static XREF scan menemukan tiga READ dan tidak menemukan direct WRITE pada slot tersebut.
+- Pemanggil 0x80011FB4 tidak menyetel A0 ke indeks state; ia mengambil field +0 record. Ini penting ketika menguji apakah nilai tersebut merupakan resource index atau tipe descriptor lain.
+
+### Keputusan dan tugas lanjutan
+1. Trace fungsi 0x80011F58 dan 0x80011F7C serta semua writer global GP+0xF0/+0xF8/+0xFC dan state GP+0xE0/+0xE4. Ini akan menjelaskan token resource aktif, callback, dan jalur ketika row pointer-valued tidak memicu invalid directory read.
+2. Periksa jalur caller 0x800117A4 dan state initialization 0x80011504 untuk nilai awal scene/state pada boot.
+3. Cari direct dan indirect path yang meminta directory index 1 secara eksplisit, termasuk resource list selain descriptor table 0x800558A8.
+4. Setelah entry1 load path dan payload base diketahui, lanjutkan tracing code di resource tersebut ke ESTATE dan LVUP_ESTATE.
+
+Status ekonomi Stage 1 tetap UNKNOWN: belum ada rumus pendapatan petak, biaya pembangunan/upgrade Barrier, atau toll yang terverifikasi.
