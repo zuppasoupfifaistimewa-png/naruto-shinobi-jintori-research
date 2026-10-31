@@ -81,10 +81,10 @@ Sumber YouTube yang tercatat: `https://www.youtube.com/watch?v=r30Rs_NuExc`.
 
 ## Koreksi penting untuk pending fields (audit artefak Ghidra tambahan)
 
-- Field manager `+0xB44` yang pernah disebut “pending Chakra” **belum terbukti sebagai delta**. Dalam artefak lama, `FUN_8012C544` hanya mengosongkannya; `FUN_8012CACC` dan `FUN_8012C78C` membacanya untuk digambar pada fase UI akhir. Tidak ditemukan penulis nonzero pada hasil yang diperiksa. `+0xB40` secara terpisah diisi dari `+0xB30 + +0xB38`.
+- Pada artefak lama, +0xB44 hanya terlihat di-reset dan dibaca renderer, sehingga asal dan maknanya belum diketahui. Run #41166812039 kemudian menemukan jalur tambahan `FUN_80109FEC`: B40 disalin ke B44, lalu B44 diterapkan bertahap ke Chakra melalui getter 0x800138EC/setter 0x8001387C (PC 0x8010A144–0x8010A160), dan dikurangi di PC 0x8010A648–0x8010A658. Maka B44 adalah field penyesuaian Chakra K3; asal B30/B38 dan event pemicu tetap UNKNOWN.
 - Candidate PC setelah rebase old import `0x800D0000` ke `0x800AD450`: init `0x80109994`, store-zero `0x80109A54`, reader `0x80109BDC`/`0x80109F1C`, load `0x80109F64`.
 - Field participant `+0x2EE` lebih dekat pada jalur delta per peserta: fungsi `FUN_800E1188` (candidate PC `0x800BE5D8`) membaca slot `DAT_8013EA74 + 0x2EE + participant*2`, lalu sinkronisasi lewat Chakra setter/getter di candidate PC `0x800BEC98`/`0x800BECA0`, dan membersihkan slot di `0x800BEDA4`. Sumber penulis nonzero belum ditemukan; belum ada kaitan terbukti dengan Q1/Q2/Q3.
-- Offset +0xB44 dan +0x2EE tetap berbeda. Jangan gunakan salah satunya sebagai bukti toll atau Barrier release.
+- Offset +0xB44 dan +0x2EE tetap berbeda. Keduanya memiliki jalur pemrosesan Chakra, tetapi tidak ada yang terhubung secara statis ke event toll atau Barrier release.
 
 ## Actions provenance
 Ringkasan teks run statis terdahulu beserta status, job, input SHA, kode keluar, dan artifact ID: `reports/stage1_economy/ACTIONS_STATIC_RUNS_2026-10-31.txt`. Untuk dua job lama yang log tersimpannya tidak menampilkan exit-code eksplisit, file tersebut menandai `NOT_LOGGED` dan tidak mengarang angka. Tidak ada workflow baru diluncurkan dalam sesi handoff ini.

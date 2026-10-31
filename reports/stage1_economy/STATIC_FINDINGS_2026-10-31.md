@@ -173,26 +173,39 @@ Tidak ada uji runtime dilakukan dalam sesi ini. Semua WAIT/UNKNOWN/NO-GO yang su
 
 **Rebasing alamat:** artefak lama #41155800069/#41156493284 mengimpor slice Entry 1 pada candidate base `0x800D0000`. Candidate base yang lebih baru adalah `0x800AD450`. PC di bawah yang disebut “candidate PC” dihitung dengan mempertahankan offset byte terhadap awal slice; ini bukan pembuktian alamat runtime.
 
-### Field manager +0xB44 — belum terbukti sebagai pending Chakra delta
+### Field manager +0xB44 — penyesuaian Chakra bertahap; sumber event UNKNOWN
 
-- Fungsi reset lama `FUN_8012C544` rebased ke candidate PC `0x80109994`; instruksi store-zero di PC lama `0x8012C604` menjadi candidate PC `0x80109A54`.
-- Reader `FUN_8012CACC` rebased ke `0x80109F1C`; ia membaca field `+0xB44` pada PC lama `0x8012CB14` (candidate PC `0x80109F64`) untuk menggambar angka ketika state byte `+0xB2A > 5`. Fungsi `FUN_8012C78C` juga menggambar field tersebut pada fase tampilan akhir.
-- Dalam artefak yang diekspor, tidak ditemukan store nonzero ke `+0xB44`. Karena itu, label “pending Chakra delta” belum dapat diterima: bukti aktual hanya reset nilai dan pembacaan untuk UI.
-- `+0xB40` adalah field berbeda: fungsi reset mengisi `+0xB40 = +0xB30 + +0xB38`. Tidak ada instruksi yang menjadikan B40 sebagai writer B44.
+Run #41166812039 mengoreksi batas temuan artefak lama: +0xB44 tidak hanya dibaca renderer. FUN_80109FEC menyalin +0xB40 ke +0xB44 pada PC 0x8010A5C8, lalu menggunakan B44 untuk menambah Chakra lewat getter 0x800138EC dan setter 0x8001387C (PC 0x8010A144–0x8010A160). Nilai B44 dikurangi bertahap setelah diterapkan.
 
-Raw excerpt **24 byte** pada PC lama `0x8012C5F8`–`0x8012C60C` (candidate PC `0x80109A48`–`0x80109A5C`):
+- Object/state candidate dirujuk melalui slot 0x8013A554. FUN_80109994 mengosongkan B44 di PC 0x80109A54.
+- Pada reset yang sama, B40 = B30 + B38 di PC 0x80109A84–0x80109A94. B40 dan B44 adalah field terpisah.
+- FUN_80109FEC menambah B44 sebesar 0x14 (20 desimal) pada PC 0x8010A590–0x8010A59C; ketika tahap transfer dimulai, B40 disalin ke B44 pada PC 0x8010A5C8 dan status byte +0xB2A menjadi 7.
+- PC 0x8010A144 memanggil getter Chakra 0x800138EC; PC 0x8010A154 memuat B44; PC 0x8010A15C memanggil setter 0x8001387C dengan delay-slot addu a1,v0,a1 di PC 0x8010A160. Dengan demikian setter menerima Chakra lama + B44.
+- Jalur bertahap kembali memakai setter 0x8001387C pada PC 0x8010A638 dan mengurangi B44 di PC 0x8010A648–0x8010A658. Renderer FUN_80109F1C juga membaca B44 di PC 0x80109F64 untuk menampilkan angka.
+- Ini membuktikan K3 bahwa B44 adalah nilai penyesuaian Chakra yang diterapkan bertahap dan ditampilkan. Namun penulis/sumber B30 dan B38 serta pemicu event belum ditemukan. Tidak ada bukti yang mengikatnya secara khusus ke toll, income, LVUP_ESTATE, atau KABE/結界開放. Q1 dan Q3 tidak menjadi tuntas.
 
-```
-34 0B 40 AC  3C 0B 40 AC  B0 4A 00 0C
-44 0B 40 AC  54 A5 03 8E  00 00 00 00
-```
-
-Raw excerpt **20 byte** untuk penjumlahan B30+B38 menjadi B40 pada PC lama `0x8012C634`–`0x8012C644` (candidate PC `0x80109A84`–`0x80109A94`):
+Raw excerpt 20 byte pembentukan B40 dari B30+B38 (candidate PC 0x80109A84–0x80109A94):
 
 ```
 30 0B 82 8C  38 0B 83 8C  00 00 00 00
 21 10 43 00  40 0B 82 AC
 ```
+
+Raw excerpt 32 byte jalur getter → B44 → setter Chakra (candidate PC 0x8010A144–0x8010A160):
+
+```
+3B 4E 00 0C  00 00 00 00  54 A5 23 8E  00 00 00 00
+44 0B 65 8C  2B 0B 64 90  1F 4E 00 0C  21 28 45 00
+```
+
+Raw excerpt 32 byte loop progress B44 dan step 20 (candidate PC 0x8010A584–0x8010A5A0):
+
+```
+14 80 02 3C  54 A5 43 8C  00 00 00 00  44 0B 62 8C
+00 00 00 00  14 00 42 24  44 0B 62 AC
+```
+
+Scan operand langsung run #41166812039: +0xB44 = 14 akses (8 load, 4 store, 2 other). Scan tekstual ini tidak menjamin semua akses melalui pointer hasil kalkulasi/alias.
 
 ### Field participant +0x2EE — consumer delta per peserta lebih konkret
 
@@ -224,7 +237,7 @@ Raw excerpt **20 byte** untuk clear +0x2EE pada PC lama `0x800E1948`–`0x800E19
 EE 02 40 A4  21 10 35 02
 ```
 
-**Batas:** fungsi `FUN_800E1188` memuat warning Ghidra `Control flow encountered bad instruction data` pada dekompilasi dan fungsi ini berasal dari import view lama yang direbase berdasarkan offset slice. Perlakukan sebagai jalur statis parsial. Workflow terbaru pada HEAD baseline menambahkan candidate PC `0x800BE5D8`, `0x80109994`, dan `0x80109F1C` untuk audit ulang dengan base `0x800AD450`; hasil workflow baru belum tersedia dalam repo pada saat laporan ini ditulis.
+**Batas:** fungsi `FUN_800E1188` memuat warning Ghidra `Control flow encountered bad instruction data` pada dekompilasi dan fungsi ini berasal dari import view lama yang direbase berdasarkan offset slice. Perlakukan sebagai jalur statis parsial. Run #41166812039 mengaudit ulang candidate base 0x800AD450: +0x2EE memiliki 24 akses langsung (3 load, 19 store, 2 other). Candidate FUN_800E1188/PC 0x800BE5D8 memiliki warning Ghidra Control flow encountered bad instruction data; klasifikasi tetap K3 parsial, bukan K4. Ringkasan ada di reports/actions/run_41166812039_summary.txt.
 
 
 ## Addendum run #41166812039 — jalur penyesuaian Chakra +0xB44

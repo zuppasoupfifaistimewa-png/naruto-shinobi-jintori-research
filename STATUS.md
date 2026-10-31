@@ -4125,7 +4125,7 @@ Fase 4 hanya berisi rancangan uji statis-ke-runtime; tidak ada emulator/input/re
 
 ### Addendum pending fields — koreksi makna +0xB44 (31 Oktober 2026)
 
-Artefak Ghidra tambahan memperlihatkan bahwa field manager `+0xB44` yang pernah disebut “pending Chakra” belum terbukti sebagai delta: `FUN_8012C544) menginisialisasikannya menjadi nol; `FUN_8012CACC) dan `FUN_8012C78C) membacanya untuk tampilan UI fase akhir. Tidak ditemukan penulis nonzero dalam artefak yang diaudit. Field `+0xB40) berbeda dan diisi dari `+0xB30 + +0xB38).
+Pada artefak awal +0xB44 hanya terlihat di-reset dan dibaca renderer. Run #41166812039 kemudian menemukan FUN_80109FEC menyalin B40 ke B44 dan menerapkan B44 ke Chakra melalui getter 0x800138EC/setter 0x8001387C (PC 0x8010A144–0x8010A160), sebelum mengurangi nilainya bertahap. B40 = B30+B38 (PC 0x80109A84–0x80109A94). B44 adalah jalur penyesuaian Chakra K3; asal B30/B38/event tetap UNKNOWN.
 
 Jalur participant `+0x2EE) lebih konkret: fungsi candidate `0x800BE5D8) membaca halfword per peserta, memproses tampilan nilai positif/negatif, menyinkronkan field Chakra +4 melalui setter/getter, lalu membersihkan slot. Sumber penulis nonzero masih belum ditemukan; tidak ada hubungan terbukti dengan toll, pendapatan petak, biaya Barrier, atau 結界開放. Kedua offset berbeda dan tetap UNKNOWN untuk Q1–Q3.
 
