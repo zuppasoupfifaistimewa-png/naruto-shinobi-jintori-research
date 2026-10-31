@@ -224,4 +224,4 @@ Raw excerpt **20 byte** untuk clear +0x2EE pada PC lama `0x800E1948`–`0x800E19
 EE 02 40 A4  21 10 35 02
 ```
 
-**Batas:** fungsi `FUN_800E1188` memuat warning Ghidra `Control flow encountered bad instruction data` pada dekompilasi dan fungsi ini berasal dari import view lama yang direbase berdasarkan offset slice. Perlakukan sebagai jalur statis parsial. Workflow terbaru pada HEAD baseline menambahkan candidate PC `0x800BE5D8`, `0x80109994`, dan `0x80109F1C) untuk audit ulang dengan base `0x800AD450`; hasil workflow baru belum tersedia dalam repo pada saat laporan ini ditulis.
+**Batas:** fungsi `FUN_800E1188` memuat warning Ghidra `Control flow encountered bad instruction data` pada dekompilasi dan fungsi ini berasal dari import view lama yang direbase berdasarkan offset slice. Perlakukan sebagai jalur statis parsial. Workflow terbaru pada HEAD baseline menambahkan candidate PC `0x800BE5D8`, `0x80109994`, dan `0x80109F1C` untuk audit ulang dengan base `0x800AD450`; hasil workflow baru belum tersedia dalam repo pada saat laporan ini ditulis.
