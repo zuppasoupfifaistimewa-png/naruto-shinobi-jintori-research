@@ -4100,3 +4100,24 @@ Entry-1 candidate code at `0x800F1F40–0x800F1F60` tests the sign of selected p
 ## Target-gate precondition chain expanded
 
 The detailed ID/consumer report section 31 now establishes the static sequence before the candidate Chakra-target comparison: count bits 12–15 in selected participant halfword +0x0A; branch if participant byte +0x20 is nonzero; check active-object byte +0x92B and participant bit 0x200; require nonnegative Chakra record field +0x04 and equality between the bit count and active-object byte +0x4A2. Only then does it compare Chakra + `0x800BDC4C` contribution with target D_80070C84. At/above target, global bit 0x8 plus participant bit 0x200 still gates the route. All flag/status names and final outcome remain UNKNOWN; this is not a verified victory condition. Step 8(b) remains UNKNOWN; Step 6(b) BLOCKED and Step 7 runtime mapping UNKNOWN/BLOCKED.
+
+
+---
+
+# Stage 1 economy checkpoint — Naruto vs Mizuki (31 Oktober 2026)
+
+Baseline audit dibuka pada main SHA `d0ef96970724c85d8bcd2c5c7fb8ba58bac04072` (terverifikasi; 70 commit setelah `17a83a587031328d841c80bc4b7273efc376e6a0`). Hasil riset ditambahkan melalui commit bertahap setelah baseline tersebut.
+
+**Batas bukti:** `docs/GAME_RULES.md` tidak memiliki skala numerik K; laporan Stage 1 menetapkan skala lokal K0–K5. Sumber video yang bisa diakses pada sesi ini hanya scene summary/transcript, bukan raw frames. Karena itu ledger mencatat 0 frame mentah untuk pembacaan angka dan tidak memenuhi kuota observasi.
+
+- **Q1 pendapatan petak — SEBAGIAN K3 untuk aritmetika nilai per-record; income UNKNOWN.** `FUN_800B770C` menghitung nilai record; `FUN_800BDC4C` mengagregasi subset record dan menambah config; `FUN_800FC700` menggambar nilai negatif pada tile owner lain. Belum ada bukti waktu pembayaran, debit payer, atau kredit owner.
+- **Q2 biaya build/upgrade — BELUM / UNKNOWN.** Tidak ada tabel harga atau rantai transaksi build/LVUP_ESTATE yang tertutup. Angka 60/150 dan contoh nilai L1 pada `docs/GAME_RULES.md` tetap contoh UI translation, bukan biaya universal.
+- **Q3 結界開放 — UNKNOWN.** Handler release, jumlah Chakra, petak/level yang dilepas, dan otomatis vs pilihan belum dibuktikan. Offset pending manager +0xB44 tidak boleh dicampur dengan participant candidate +0x2EE.
+
+Laporan:
+- `reports/stage1_economy/OBSERVATION_LEDGER_2026-10-31.tsv`
+- `reports/stage1_economy/HYPOTHESES_2026-10-31.md`
+- `reports/stage1_economy/STATIC_FINDINGS_2026-10-31.md`
+- `docs/HANDOFF_STAGE1_ECONOMY_2026-10-31.md`
+
+Fase 4 hanya berisi rancangan uji statis-ke-runtime; tidak ada emulator/input/restore dijalankan. Tidak ada ROM, BIOS, Memory Card, savestate, RAM dump, video, audio, atau gambar dimasukkan ke commit. Status WAIT/UNKNOWN/NO-GO lain tidak dinaikkan. Story Mode tetap belum dinyatakan tamat.
