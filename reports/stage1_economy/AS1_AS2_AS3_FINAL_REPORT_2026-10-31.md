@@ -22,7 +22,7 @@ Skala K0–K5 tetap berlaku. Static disassembly/Ghidra tidak dinaikkan di atas K
 
 ### Checkpoint dan descendant
 
-HEAD `main` saat tugas dimulai adalah `5f026f9b2f97275ff427b022ab6a4e2156d3d503`. Perbandingan final menunjukkan 16 descendant commit sampai versi laporan awal 53a444515e514f31c49917a7cad30494746e9f59, termasuk 15 commit riset/hasil dari exporter sampai output AS3 dan satu commit laporan awal. Commit yang terlewat `e05e454` adalah leluhur pra-checkpoint dan dicantumkan terpisah. Daftar lengkap setiap commit beserta semua file yang diubah tersedia pada Bagian 8.
+HEAD `main` saat tugas dimulai adalah `5f026f9b2f97275ff427b022ab6a4e2156d3d503`. Perbandingan final menunjukkan 17 descendant commit sebelum delivery update ini: 15 commit riset/hasil exporter sampai output AS3, satu commit laporan awal, dan satu commit yang memperbarui ledger. Commit delivery update yang menulis versi laporan ini tercantum di catatan final jawaban. Commit yang terlewat `e05e454` adalah leluhur pra-checkpoint dan dicantumkan terpisah. Daftar lengkap setiap commit beserta semua file yang diubah tersedia pada Bagian 8.
 
 **`8894686395afdca97328a9fb2af5007a29406584` — Add AS1 AS2 deep Ghidra export and AS3 H6 K0 K1 K2 A/B**
 - `.github/workflows/as3-h6-breakpoint-ab.yml` (baru)
@@ -599,5 +599,8 @@ Tidak ada Release atau visibilitas repository yang diubah. Tidak ada ISO, BIOS, 
     - `reports/stage1_economy/as3-h6-breakpoint-ab-run-41249145093/attempt-1/AS3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt`
 
 16. **`53a444515e514f31c49917a7cad30494746e9f59`** — Finalize AS1 AS2 AS3 verified Stage 1 economy audit
+    - `reports/stage1_economy/AS1_AS2_AS3_FINAL_REPORT_2026-10-31.md`
+
+17. **`08e9cfde74a0b03f49a37909dd6827604561128a`** — Complete commit ledger with AS3 runtime and first final-report publication
     - `reports/stage1_economy/AS1_AS2_AS3_FINAL_REPORT_2026-10-31.md`
 
