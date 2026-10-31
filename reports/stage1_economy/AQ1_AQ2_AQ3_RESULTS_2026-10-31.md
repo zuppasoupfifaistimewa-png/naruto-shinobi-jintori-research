@@ -3,7 +3,7 @@
 Repository: `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`
 Scope: Naruto — Shinobi no Sato no Jintori Gassen (PS1), SLPS-03553.
 Baseline HEAD supplied: `4a97f2579e96307c6ffa9298f71cf18b6076ae61`.
-Final HEAD after publication of these results: see this report's commit.
+Report content was first committed at `44ecc294692be49d54fee9a759cb3d489b534d37`; subsequent commits record raw-permalink verification.
 
 ## Executive status
 
@@ -13,7 +13,7 @@ Final HEAD after publication of these results: see this report's commit.
 
 ## AQ1 — Static Ghidra census
 
-Workflow run `41169411383`, job `124443505075`, result SUCCESS, exit code 0.
+Workflow run `41169411383`, job `124443914305`, result SUCCESS, exit code 0.
 Source checkout: `55d6619c95477e5188347133154f286973ce6e44`.
 Entry 1 identity: directory index 1, file offset `0x10BB000`, 596412 bytes, SHA-256 `9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a`.
 Candidate import base: `0x800AD450`; runtime mapping remains **NOT VALIDATED**.
@@ -125,3 +125,11 @@ AQ2:
 - `reports/stage1_economy/aq2-run-41169411368/attempt-1/ACTIONS_RUN_SUMMARY.txt`
 
 Repository policy respected: no ISO, BIOS, savestate, raw RAM dump, video or frame image was committed. Release/visibility settings were not changed.
+
+
+## Raw permalink verification follow-up
+
+- Run: `41171434910`; job: `124450039018`; status: **FAILURE**; exit code: **1**.
+- The runner used `curl` against all eight raw permalinks pinned to `44ecc294692be49d54fee9a759cb3d489b534d37`. Every request returned HTTP **404**.
+- The connected GitHub file/API reader successfully retrieved the same eight file contents, but this does not override the curl result. Repository metadata reports visibility `public`; no repository visibility or Release setting was changed. The discrepancy between API retrieval and raw-host HTTP 404 remains **UNRESOLVED**.
+- The detailed per-path status is stored in `reports/stage1_economy/raw-link-check-41171434910/CURL_HTTP_STATUS.tsv`.
