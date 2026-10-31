@@ -544,3 +544,56 @@ Perbaikan:
 - ExportPerRecordCallerGraph.java diduplikasi ke folder tools/ghidra, agar kedua postScript berada pada satu script path.
 - Workflow kembali memakai satu folder tools/ghidra.
 - Run perbaikan baru diharapkan dari perubahan workflow; belum dinilai sebelum hasilnya tersedia.
+
+
+## Addendum — inventaris seluruh direct caller FUN_800B770C (Run #41160254539)
+
+### Run dan artefak
+- URL: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/41160254539
+- Job: 124416042420 — Analyze verified Entry 1 slice at 0x800AD450.
+- Commit input: 1b3ee51115342e1d484a019866f0a681067a3639.
+- Status: completed / success; exit code 0.
+- Artifact: entry1-loader-buffer-base-static-audit, ID 13025909960, 94.255 bytes.
+- SHA-256 ZIP: 6f7c045c0c63135cc4d6aad55f8385e875135972919ada316200f5ad5ae9f84f.
+- Entry 1 identity PASS; private input/project cleanup PASS; artifact teks/log only; tidak ada emulator, gameplay/input atau savestate.
+
+### 1. Cakupan pemanggilan langsung
+Ghidra menemukan **44 direct JAL call-site** yang menuju FUN_800B770C dalam decoded Entry 1 view. Caller function yang valid dan teridentifikasi antara lain:
+- 0x800BDC4C (aggregator).
+- 0x800C815C.
+- 0x800CADB8.
+- 0x800CB4B4.
+- 0x800CCA18.
+- 0x800CD678.
+- 0x800D15A8.
+- 0x800DC2E0.
+- 0x800E0324.
+- 0x800E03B0.
+- 0x800E3E74.
+- 0x800F1CCC.
+- 0x800F2050.
+- 0x800FB598.
+- 0x800FC700.
+- 0x800FCA0C.
+- 0x800FD730.
+- 0x800FE314.
+- 0x800FEA28.
+Beberapa call-site tidak memiliki containing-function boundary valid pada Ghidra output; tetap dicatat sebagai raw MIPS, tetapi tidak dipaksakan menjadi caller bernama.
+
+### 2. Hasil scan helper transaksi pada body caller
+Dalam fungsi caller dengan boundary valid yang diekspor, pemeriksaan direct JAL tidak menemukan pemanggilan langsung ke:
+- 0x8001387C — participant-value setter.
+- 0x800138EC — participant-value getter.
+- 0x80012A70 — configured target getter.
+Helper yang terlihat langsung pada subset caller ini terutama 0x8001B364 (drawing helper), 0x800BDBFC, serta helper internal lain di luar daftar watch yang diinginkan.
+Batas penting: scan ini menghitung instruksi JAL langsung di dalam body yang Ghidra petakan. Ia tidak menyelesaikan JALR/indirect calls, store langsung pada struktur participant, pemanggilan oleh caller tingkat atas, atau helper perantara yang akhirnya mengubah saldo. Maka ketiadaan direct setter dalam caller body bukan bukti bahwa nilai tidak pernah ditransaksikan.
+
+### 3. Caller yang perlu dibedah berikutnya
+- 0x800CADB8 dan 0x800CB4B4 berisi beberapa perbandingan status/owner sebelum atau sesudah menghitung toll; berpotensi berada dekat board/tile event logic.
+- 0x800D15A8 berisi banyak pemanggilan B770C dalam satu fungsi besar; kandidat penting untuk memahami loop/iterasi banyak petak atau proses nilai.
+- 0x800E03B0 dan 0x800E3E74 memanggil helper tersebut pada jalur lain; perlu dibandingkan apakah hanya decision score atau bagian turn transition.
+- 0x800C815C, 0x800CD678, 0x800E0324 dan 0x800F1CCC mempunyai penggunaan scoring/selection yang sudah terlihat; jangan menyebutnya transaksi saldo tanpa bukti setter/store.
+- 0x800FC700, 0x800FCA0C, 0x800FD730, 0x800FE314, 0x800FEA28, 0x800FB598 memiliki pemanggilan drawing helper, sehingga sebagian pemakaian jelas terkait UI.
+
+### 4. Kesimpulan
+Hasil direct-caller census memperkuat bahwa FUN_800B770C dipakai luas untuk menghitung/menilai fee per record, tetapi **belum menemukan direct debit/credit saldo Chakra di dalam fungsi caller yang diverifikasi**. Jalur aktual pembayaran toll kemungkinan berada di helper perantara, caller tingkat lebih tinggi, atau direct store yang belum terinventarisasi. Jangan promosikan fee display menjadi transaksi aktual.
