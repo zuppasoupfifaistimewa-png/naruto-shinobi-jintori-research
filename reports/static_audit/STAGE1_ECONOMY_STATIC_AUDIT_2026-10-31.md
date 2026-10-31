@@ -113,3 +113,62 @@ Changed files in that commit:
 - .github/workflows/step4-ghidra-entry0-context.yml
 
 This is a text-only interim report; it is not a claim that formulas or full gameplay rules are solved.
+
+
+## Hasil Run #41155800065 — pemeriksaan lintas-resource helper (31 Oktober 2026)
+
+- URL: https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/actions/runs/41155800065
+- Status: completed / success.
+- Job: 124402199666 — Decode only candidate RNG/seed callsite windows.
+- Commit input: 2ea8aa554a2c9b45187e8d72815dd2282b56bd51.
+- Semua langkah job completed/success; exit code job: **0**.
+- Artefak teks: step4-entry0-rng-context, ID 13024184283, 206.225 bytes.
+- SHA-256 ZIP: 823ad3848388f832cf6e1a76d2be7b49fd1f06b1d26933150075e490010ca7f6 (cocok dengan digest API).
+- Marker output: whole-program auto-analysis disabled, emulator/gameplay/input/savestate tidak dijalankan, binary tidak diunggah.
+- Tujuan: mendecode target 0x800BDC4C di dua peta alamat candidate entry 0 yang berbeda, bukan memvalidasi loader runtime.
+
+### Interpretasi pada base 0x800AD000
+Pada impor Entry 0 dengan base hipotesis 0x800AD000, alamat 0x800BDC4C berada pada file offset 0x10C4C. Instruksi yang didecode di alamat itu:
+- 0x800BDC4C: li a3, 6
+- 0x800BDC50: j 0x800BE11C
+- delay slot 0x800BDC54: li v0, 1
+- kelanjutan di 0x800BE11C–0x800BE134 menghitung alamat relatif dari a0, menyimpan word ke a0+0x64 dan a0+0x68, lalu return 1.
+
+Ini tampak seperti stub/initializer yang mengharapkan pointer/object pada a0, bukan jelas sebagai fungsi numerik berbasis indeks peserta. Namun candidate caller Entry 1 pada 0x8012AAFC (base Entry 1 juga hipotesis) tampak memanggil 0x800BDC4C dengan byte dari object +0x94A, lalu menggunakan byte yang sama pada getter peserta 0x800138EC yang membatasi indeks ke 0–3. **Konteks pointer-vs-index ini tidak konsisten.** Karena address map/pemanggil tidak tervalidasi runtime, jangan simpulkan bahwa stub ini benar-benar helper yang dipanggil pada jalur gameplay Stage 1.
+
+### Interpretasi pada base 0x800B0450
+Base 0x800B0450 berasal dari awal arena setelah bootstrap, tetapi bukan alamat payload/resource yang sudah dibuktikan. Pada peta ini:
+- File offset 0x10C4C dipetakan ke 0x800C109C. Byte di sana berisi li a3,6; j 0x800BE11C; delay slot li v0,1; hasil lokal yang didecompile hanya return 1.
+- Akan tetapi, literal call target 0x800BDC4C berada pada file offset **0xD7FC** (hasil aritmetika 0x800BDC4C - 0x800B0450), bukan offset 0x10C4C. Byte di 0x800BDC4C pada peta ini adalah NOP di tengah blok/fungsi yang lebih besar; ia bukan awal helper yang teridentifikasi. Dump fungsi luas ini juga memiliki warning overlap/bad instruction sehingga pseudocode gabungannya tidak dipakai sebagai semantic proof.
+- Artefak memberi metadata target_offset_under_hypothesis=0xC7FC untuk literal 0x800BDC4C pada base ini. Itu **kesalahan metadata emitter/post-processing**; perhitungan alamat yang benar adalah 0xD7FC. Raw bytes dan alamat target tetap diperiksa langsung, tetapi offset tercetak tersebut jangan digunakan.
+
+### Keputusan helper
+Run ini **tidak mengonfirmasi** bahwa 0x800BDC4C menghitung pendapatan petak. Dua peta base yang diuji tidak memberi interpretasi yang cocok dengan pasangan caller/argumen:
+- Pada base AD000, body mengakses field melalui pointer a0, sedangkan candidate caller memberi byte yang juga dipakai sebagai indeks peserta 0–3.
+- Pada base B0450, literal target call berada di tengah fungsi, bukan function entry.
+Dengan demikian, semantik helper 0x800BDC4C dan pemetaan resource tetap **UNKNOWN/BLOCKED**. Jalur penjumlahan getter + helper yang ditemukan di Entry 1 tetap hanya candidate dataflow; jangan namai sebagai income, rent, atau bonus pendapatan.
+
+## Ringkasan dua run Actions pada commit 2ea8aa554a2c9b45187e8d72815dd2282b56bd51
+
+| Run | Job | Status | Exit code |
+|---|---|---|---:|
+| #41155800069 | 124402199996 — static field/resource scan | completed/success | 0 |
+| #41155800065 | 124402199666 — bounded Entry 0 helper decode | completed/success | 0 |
+
+Kedua run selesai sukses secara tooling. Itu **bukan** berarti pertanyaan gameplay telah selesai; output yang berhasil adalah hasil audit statis dan kontrol keluaran, bukan verifikasi rumus biaya/pendapatan melalui emulator.
+
+## Kesimpulan setelah kedua run
+| Pertanyaan | Status final audit statis sesi ini |
+|---|---|
+| Rumus pendapatan petak Stage 1 | **BELUM DIKETAHUI** — helper penjumlahan kandidat belum terbukti sebagai pendapatan |
+| Pemicu dan waktu pendapatan (lap/round/pass/landing) | **BELUM DIKETAHUI** |
+| Biaya pembangunan Barrier | **BELUM DIKETAHUI** — belum ditemukan transaksi/rumus yang terhubung |
+| Biaya upgrade Barrier per level | **BELUM DIKETAHUI** — belum ditemukan tabel/rumus LVUP_ESTATE yang terhubung |
+| Toll petak lawan | **BELUM DIKETAHUI** — belum terbukti apakah sama dengan pendapatan pemilik |
+| Mapping Entry 0/Entry 1 ke alamat runtime | **UNKNOWN/BLOCKED** |
+
+Angka 60 (pembangunan) dan 150 (contoh upgrade Level 1→2) tetap merupakan nilai contoh dari UI/transkripsi komunitas yang dicatat sebelumnya, bukan angka yang berhasil diturunkan dari rumus kode. Toll 580 yang dilaporkan pada video juga tidak boleh disamakan dengan pendapatan.
+
+Langkah berikutnya harus dimulai dari pemetaan loader/payload Entry 0 dan Entry 1 yang valid, lalu menautkan label ESTATE/LVUP_ESTATE ke dispatch handler yang benar. Setelah itu baru telusuri source price → balance check → participant setter → node owner/level mutation untuk biaya, serta board event → node ownership/level/toll → accumulator → setter untuk income. Eksperimen emulator Stage 1 baru dirancang setelah call chain ini cukup jelas dan gate runtime mengizinkan.
+
+**Tidak ada gameplay/emulator atau input permainan dalam kedua run ini. Story Mode tidak dijalankan dan tidak dinyatakan selesai.**
