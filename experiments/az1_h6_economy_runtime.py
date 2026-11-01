@@ -219,7 +219,7 @@ def read_snapshot(state_path, attempt, frame, fields, tiles, aggregates, table_r
             "matches_B38": ("YES" if manager_b38 == total // 2 else "NO") if manager_b38 is not None and unknown == 0 else "TIDAK TAHU",
             "manager_B2B_active_index": active_id,
         })
-    return ram_sha, fields_row, row, header
+    return ram_sha, fields_row, table_row, header
 
 def make_lua():
     return r'''
@@ -428,7 +428,7 @@ def main():
     aggregate_cols = ["attempt","frame","aggregate_owner","status_scope","record_count_with_known_V","unknown_V_count",
                      "sum_V","floor_sum_V_div_2","manager_B38","matches_B38","manager_B2B_active_index",
                      "tile_array_pointer_slot","tile_array_pointer","tile_count_slot","tile_count","record_stride","validation"]
-    table_cols = ["attempt","frame","mode_0x80070734_u32","state_0x8007073C_u32","matrix_base",
+    table_cols = ["attempt","frame","mode_0x80070734_u32","state_0x8007073C_u8","state_read_method","matrix_base",
                   "matrix_stride_mode","matrix_stride_state","matrix_index_address","matrix_index_byte",
                   "selected_table_index","selected_row_base","selected_B30_address","selected_B30_u32",
                   "selected_B30_hex","selected_row_gate_plus_2E","selected_B30_source_expression",
