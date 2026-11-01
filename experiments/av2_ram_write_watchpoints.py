@@ -111,6 +111,8 @@ local function makeWatch(tag, address)
   shadow[base] = readWord(base)
   local bp = PCSX.addBreakpoint(address, "Write", 4, "AV2 " .. tag, function(actualAddress, width, cause)
     local ok, err = pcall(function()
+      actualAddress = tonumber(actualAddress)
+      width = tonumber(width)
       local r = PCSX.getRegisters()
       local g = r.GPR.n
       local pc, ra, a0, a1, v0 = tonumber(r.pc), tonumber(g.ra), tonumber(g.a0), tonumber(g.a1), tonumber(g.v0)
@@ -118,7 +120,9 @@ local function makeWatch(tag, address)
       local oldWord = shadow[wordBase]
       if oldWord == nil then oldWord = readWord(wordBase) end
       local nowWord = readWord(wordBase)
-      local instruction = readWord(pc)
+      local pcOffset = pc - 0x80000000
+      local instruction = 0
+      if pcOffset >= 0 and pcOffset + 4 <= 0x200000 then instruction = readWord(pc) end
       local opcode = math.floor(instruction / 67108864)
       local rt = math.floor(instruction / 65536) % 32
       local rtValue = gprValue(r, rt)
@@ -366,6 +370,7 @@ def main():
             "memory_card_sha256_before":mcd_before,"memory_card_sha256_after":card_after,
             "memory_card_unchanged":str(mcd_before==card_after).upper()
         })
+        calibration_states={}
         for frame in expected_capture:
             p=runtime/("cal-%d.sstate"%frame if calibration else "frame%d.sstate"%frame)
             marker=(f"AV2_CAL_CAPTURE frame={frame} status=PASS" if calibration else f"AV2_CAPTURE frame={frame} status=PASS") in log
@@ -374,26 +379,22 @@ def main():
             if ok:
                 try:
                     ram,segment=ram2m(p.read_bytes()); digest=sha(ram)
+                    if calibration: calibration_states[frame]=ram
                 except Exception: ok=False
             frame_rows.append({"condition":condition,"attempt":attempt,"frame":frame,
                                "capture_status":"PASS" if ok else "FAIL",
                                "ram_first_2mib_sha256":digest,"ram_segment_bytes":segment,
                                "calibration":str(calibration).upper()})
             if p.exists(): p.unlink()
-        return log,rc,wall
+        return log,rc,wall,calibration_states
 
-    # Private calibration: only two temporary RAM snapshots, not uploaded.
-    cal_log,cal_rc,cal_wall=run_one("CALIBRATION-C","CAL",0,0,None,True)
-    cal_paths=[work/"launches"/"CALIBRATION-C"/"runtime"/("cal-%d.sstate"%f) for f in (180,240)]
+    # Private calibration: two snapshots are parsed in memory and deleted immediately.
+    cal_log,cal_rc,cal_wall,calibration_states=run_one("CALIBRATION-C","CAL",0,0,None,True)
     positive=None
-    if cal_rc==0 and all(p.is_file() for p in cal_paths):
+    if cal_rc==0 and 180 in calibration_states and 240 in calibration_states:
         try:
-            before,_=ram2m(cal_paths[0].read_bytes()); after,_=ram2m(cal_paths[1].read_bytes())
-            positive=select_positive_control(before,after)
+            positive=select_positive_control(calibration_states[180],calibration_states[240])
         except Exception: positive=None
-    else:
-        # Files are deleted by run_one after parsing; snapshots above were parsed into RAM hashes only.
-        positive=None
     if positive:
         pos_addr=positive["address"]
     else:

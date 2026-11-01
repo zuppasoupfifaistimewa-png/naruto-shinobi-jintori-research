@@ -121,6 +121,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --retry 2 --max-time 600 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "$API/releases/assets/686794219" -o "$WORK/resume/target.sstate"
+          test "$(stat -c %s "$WORK/resume/target.sstate")" = 21163286
+          echo "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d  $WORK/resume/target.sstate" | sha256sum --check -
           cp "$(find "$WORK/inputs" -type f -name adaptive-cycle-01-f180.sstate -print -quit)" "$WORK/resume/control.sstate"
           test "$(stat -c %s "$WORK/resume/control.sstate")" = 21162546
           echo "9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492  $WORK/resume/control.sstate" | sha256sum --check -
