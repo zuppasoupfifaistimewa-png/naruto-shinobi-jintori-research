@@ -1,0 +1,577 @@
+analysis=Ghidra selected-function static audit
+program=DATA_BIN_ENTRY_0001.bin
+program_language=MIPS:LE:32:default
+loaded_executable_base=0x80010000 (PS-X EXE header verified by workflow)
+game_or_emulator_executed=no
+gameplay_input_sent=no
+savestate_restored=no
+binary_uploaded_as_artifact=no
+
+=== TARGET 800b770c ===
+instruction_at_target=andi a0,a0,0xff
+function_name=FUN_800b770c
+function_entry=800b770c
+function_body_bytes=472
+function_return_type=undefined
+function_signature=undefined FUN_800b770c(void)
+function_thunk=false
+--- RAW_FUNCTION_BODY_BEGIN ---
+800b770c bytes=[FF 00 84 30] andi a0,a0,0xff
+800b7710 bytes=[14 80 02 3C] lui v0,0x8014
+800b7714 bytes=[84 EA 43 8C] lw v1,-0x157c(v0)
+800b7718 bytes=[C0 10 04 00] sll v0,a0,0x3
+800b771c bytes=[21 10 44 00] addu v0,v0,a0
+800b7720 bytes=[C0 10 02 00] sll v0,v0,0x3
+800b7724 bytes=[21 10 44 00] addu v0,v0,a0
+800b7728 bytes=[80 10 02 00] sll v0,v0,0x2
+800b772c bytes=[21 10 43 00] addu v0,v0,v1
+800b7730 bytes=[0B 00 43 90] lbu v1,0xb(v0)
+800b7734 bytes=[00 00 00 00] nop
+800b7738 bytes=[05 00 62 2C] sltiu v0,v1,0x5
+800b773c bytes=[16 00 40 10] beq v0,zero,0x800b7798
+800b7740 bytes=[80 18 03 00] _sll v1,v1,0x2
+800b7744 bytes=[0B 80 02 3C] lui v0,0x800b
+800b7748 bytes=[F4 D5 42 24] addiu v0,v0,-0x2a0c
+800b774c bytes=[21 18 62 00] addu v1,v1,v0
+800b7750 bytes=[00 00 62 8C] lw v0,0x0(v1)
+800b7754 bytes=[00 00 00 00] nop
+800b7758 bytes=[08 00 40 00] jr v0
+800b775c bytes=[00 00 00 00] _nop
+800b7760 bytes=[14 80 02 3C] lui v0,0x8014
+800b7764 bytes=[84 EA 43 8C] lw v1,-0x157c(v0)
+800b7768 bytes=[C0 10 04 00] sll v0,a0,0x3
+800b776c bytes=[21 10 44 00] addu v0,v0,a0
+800b7770 bytes=[C0 10 02 00] sll v0,v0,0x3
+800b7774 bytes=[21 10 44 00] addu v0,v0,a0
+800b7778 bytes=[80 10 02 00] sll v0,v0,0x2
+800b777c bytes=[21 10 43 00] addu v0,v0,v1
+800b7780 bytes=[20 00 43 94] lhu v1,0x20(v0)
+800b7784 bytes=[00 00 00 00] nop
+800b7788 bytes=[C2 19 03 00] srl v1,v1,0x7
+800b778c bytes=[1E 00 63 30] andi v1,v1,0x1e
+800b7790 bytes=[21 10 43 00] addu v0,v0,v1
+800b7794 bytes=[10 00 42 94] lhu v0,0x10(v0)
+800b7798 bytes=[08 00 E0 03] jr ra
+800b779c bytes=[00 00 00 00] _nop
+800b77a0 bytes=[14 80 02 3C] lui v0,0x8014
+800b77a4 bytes=[84 EA 43 8C] lw v1,-0x157c(v0)
+800b77a8 bytes=[C0 10 04 00] sll v0,a0,0x3
+800b77ac bytes=[21 10 44 00] addu v0,v0,a0
+800b77b0 bytes=[C0 10 02 00] sll v0,v0,0x3
+800b77b4 bytes=[21 10 44 00] addu v0,v0,a0
+800b77b8 bytes=[80 10 02 00] sll v0,v0,0x2
+800b77bc bytes=[21 10 43 00] addu v0,v0,v1
+800b77c0 bytes=[20 00 43 94] lhu v1,0x20(v0)
+800b77c4 bytes=[00 00 00 00] nop
+800b77c8 bytes=[C2 19 03 00] srl v1,v1,0x7
+800b77cc bytes=[1E 00 63 30] andi v1,v1,0x1e
+800b77d0 bytes=[21 10 43 00] addu v0,v0,v1
+800b77d4 bytes=[10 00 43 94] lhu v1,0x10(v0)
+800b77d8 bytes=[00 00 00 00] nop
+800b77dc bytes=[40 10 03 00] sll v0,v1,0x1
+800b77e0 bytes=[21 10 43 00] addu v0,v0,v1
+800b77e4 bytes=[80 10 02 00] sll v0,v0,0x2
+800b77e8 bytes=[66 66 03 3C] lui v1,0x6666
+800b77ec bytes=[67 66 63 34] ori v1,v1,0x6667
+800b77f0 bytes=[18 00 43 00] mult v0,v1
+800b77f4 bytes=[10 18 00 00] mfhi v1
+800b77f8 bytes=[83 18 03 00] sra v1,v1,0x2
+800b77fc bytes=[C3 17 02 00] sra v0,v0,0x1f
+800b7800 bytes=[08 00 E0 03] jr ra
+800b7804 bytes=[23 10 62 00] _subu v0,v1,v0
+800b7808 bytes=[14 80 02 3C] lui v0,0x8014
+800b780c bytes=[84 EA 43 8C] lw v1,-0x157c(v0)
+800b7810 bytes=[C0 10 04 00] sll v0,a0,0x3
+800b7814 bytes=[21 10 44 00] addu v0,v0,a0
+800b7818 bytes=[C0 10 02 00] sll v0,v0,0x3
+800b781c bytes=[21 10 44 00] addu v0,v0,a0
+800b7820 bytes=[80 10 02 00] sll v0,v0,0x2
+800b7824 bytes=[21 10 43 00] addu v0,v0,v1
+800b7828 bytes=[20 00 43 94] lhu v1,0x20(v0)
+800b782c bytes=[00 00 00 00] nop
+800b7830 bytes=[C2 19 03 00] srl v1,v1,0x7
+800b7834 bytes=[1E 00 63 30] andi v1,v1,0x1e
+800b7838 bytes=[21 10 43 00] addu v0,v0,v1
+800b783c bytes=[10 00 42 94] lhu v0,0x10(v0)
+800b7840 bytes=[00 00 00 00] nop
+800b7844 bytes=[00 19 02 00] sll v1,v0,0x4
+800b7848 bytes=[FA DD 02 08] j 0x800b77e8
+800b784c bytes=[23 10 62 00] _subu v0,v1,v0
+800b7850 bytes=[14 80 02 3C] lui v0,0x8014
+800b7854 bytes=[84 EA 43 8C] lw v1,-0x157c(v0)
+800b7858 bytes=[C0 10 04 00] sll v0,a0,0x3
+800b785c bytes=[21 10 44 00] addu v0,v0,a0
+800b7860 bytes=[C0 10 02 00] sll v0,v0,0x3
+800b7864 bytes=[21 10 44 00] addu v0,v0,a0
+800b7868 bytes=[80 10 02 00] sll v0,v0,0x2
+800b786c bytes=[21 10 43 00] addu v0,v0,v1
+800b7870 bytes=[20 00 43 94] lhu v1,0x20(v0)
+800b7874 bytes=[00 00 00 00] nop
+800b7878 bytes=[C2 19 03 00] srl v1,v1,0x7
+800b787c bytes=[1E 00 63 30] andi v1,v1,0x1e
+800b7880 bytes=[21 10 43 00] addu v0,v0,v1
+800b7884 bytes=[10 00 43 94] lhu v1,0x10(v0)
+800b7888 bytes=[00 00 00 00] nop
+800b788c bytes=[C0 10 03 00] sll v0,v1,0x3
+800b7890 bytes=[21 10 43 00] addu v0,v0,v1
+800b7894 bytes=[FA DD 02 08] j 0x800b77e8
+800b7898 bytes=[40 10 02 00] _sll v0,v0,0x1
+800b789c bytes=[14 80 02 3C] lui v0,0x8014
+800b78a0 bytes=[84 EA 43 8C] lw v1,-0x157c(v0)
+800b78a4 bytes=[C0 10 04 00] sll v0,a0,0x3
+800b78a8 bytes=[21 10 44 00] addu v0,v0,a0
+800b78ac bytes=[C0 10 02 00] sll v0,v0,0x3
+800b78b0 bytes=[21 10 44 00] addu v0,v0,a0
+800b78b4 bytes=[80 10 02 00] sll v0,v0,0x2
+800b78b8 bytes=[21 10 43 00] addu v0,v0,v1
+800b78bc bytes=[20 00 43 94] lhu v1,0x20(v0)
+800b78c0 bytes=[00 00 00 00] nop
+800b78c4 bytes=[C2 19 03 00] srl v1,v1,0x7
+800b78c8 bytes=[1E 00 63 30] andi v1,v1,0x1e
+800b78cc bytes=[21 10 43 00] addu v0,v0,v1
+800b78d0 bytes=[10 00 42 94] lhu v0,0x10(v0)
+800b78d4 bytes=[00 00 00 00] nop
+800b78d8 bytes=[40 10 02 00] sll v0,v0,0x1
+800b78dc bytes=[08 00 E0 03] jr ra
+800b78e0 bytes=[00 00 00 00] _nop
+--- RAW_FUNCTION_BODY_END ---
+raw_instruction_count_emitted=118
+--- C_DECOMPILATION_BEGIN ---
+
+uint FUN_800b770c(uint param_1)
+
+{
+  uint uVar1;
+  int iVar2;
+  
+  param_1 = param_1 & 0xff;
+  switch(*(undefined1 *)(param_1 * 0x124 + DAT_8013ea84 + 0xb)) {
+  case 0:
+    iVar2 = param_1 * 0x124 + DAT_8013ea84;
+    return (uint)*(ushort *)(iVar2 + (*(ushort *)(iVar2 + 0x20) >> 7 & 0x1e) + 0x10);
+  case 1:
+    iVar2 = param_1 * 0x124 + DAT_8013ea84;
+    uVar1 = (uint)*(ushort *)(iVar2 + (*(ushort *)(iVar2 + 0x20) >> 7 & 0x1e) + 0x10) * 0xc;
+    break;
+  case 2:
+    iVar2 = param_1 * 0x124 + DAT_8013ea84;
+    uVar1 = (uint)*(ushort *)(iVar2 + (*(ushort *)(iVar2 + 0x20) >> 7 & 0x1e) + 0x10) * 0xf;
+    break;
+  case 3:
+    iVar2 = param_1 * 0x124 + DAT_8013ea84;
+    uVar1 = (uint)*(ushort *)(iVar2 + (*(ushort *)(iVar2 + 0x20) >> 7 & 0x1e) + 0x10) * 0x12;
+    break;
+  case 4:
+    iVar2 = param_1 * 0x124 + DAT_8013ea84;
+    return (uint)*(ushort *)(iVar2 + (*(ushort *)(iVar2 + 0x20) >> 7 & 0x1e) + 0x10) << 1;
+  default:
+    return 0;
+  }
+  return uVar1 / 10;
+}
+
+
+--- C_DECOMPILATION_END ---
+decompile_status=SUCCESS
+--- REFERENCES_TO_FUNCTION_BEGIN ---
+reference_from=800fc700 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fc700 caller_name=FUN_800fc700
+  callsite_context:
+  800fc6fc bytes=[1F 00 44 90] lbu a0,0x1f(v0)
+  800fc700 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fc704 bytes=[00 00 00 00] _nop
+  800fc708 bytes=[74 EA 25 8E] lw a1,-0x158c(s1)
+reference_from=800fca0c reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fca0c caller_name=FUN_800fca0c
+  callsite_context:
+  800fca08 bytes=[00 00 00 00] _nop
+  800fca0c bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fca10 bytes=[00 00 00 00] _nop
+  800fca14 bytes=[74 EA 23 8E] lw v1,-0x158c(s1)
+reference_from=800fcb44 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fca0c caller_name=FUN_800fca0c
+  callsite_context:
+  800fcb40 bytes=[01 00 E7 24] _addiu a3,a3,0x1
+  800fcb44 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fcb48 bytes=[00 00 00 00] _nop
+  800fcb4c bytes=[74 EA 23 8E] lw v1,-0x158c(s1)
+reference_from=800fd730 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fd730 caller_name=FUN_800fd730
+  callsite_context:
+  800fd72c bytes=[00 00 00 00] _nop
+  800fd730 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fd734 bytes=[00 00 00 00] _nop
+  800fd738 bytes=[74 EA 23 8E] lw v1,-0x158c(s1)
+reference_from=800fd868 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fd730 caller_name=FUN_800fd730
+  callsite_context:
+  800fd864 bytes=[01 00 E7 24] _addiu a3,a3,0x1
+  800fd868 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fd86c bytes=[00 00 00 00] _nop
+  800fd870 bytes=[74 EA 23 8E] lw v1,-0x158c(s1)
+reference_from=800fe314 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fe314 caller_name=FUN_800fe314
+  callsite_context:
+  800fe310 bytes=[00 00 00 00] _nop
+  800fe314 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fe318 bytes=[FF 00 24 32] _andi a0,s1,0xff
+  800fe31c bytes=[84 EA 65 8E] lw a1,-0x157c(s3)
+reference_from=800fe42c reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fe314 caller_name=FUN_800fe314
+  callsite_context:
+  800fe428 bytes=[00 00 00 00] _nop
+  800fe42c bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fe430 bytes=[FF 00 24 32] _andi a0,s1,0xff
+  800fe434 bytes=[84 EA 65 8E] lw a1,-0x157c(s3)
+reference_from=800fe6a0 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fe314 caller_name=FUN_800fe314
+  callsite_context:
+  800fe69c bytes=[00 00 00 00] _nop
+  800fe6a0 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fe6a4 bytes=[FF 00 44 32] _andi a0,s2,0xff
+  800fe6a8 bytes=[84 EA 25 8E] lw a1,-0x157c(s1)
+reference_from=800fe7b8 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fe314 caller_name=FUN_800fe314
+  callsite_context:
+  800fe7b4 bytes=[00 00 00 00] _nop
+  800fe7b8 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fe7bc bytes=[FF 00 44 32] _andi a0,s2,0xff
+  800fe7c0 bytes=[84 EA 25 8E] lw a1,-0x157c(s1)
+reference_from=800fea28 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fea28 caller_name=FUN_800fea28
+  callsite_context:
+  800fea24 bytes=[00 00 00 00] _nop
+  800fea28 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fea2c bytes=[FF 00 C4 32] _andi a0,s6,0xff
+  800fea30 bytes=[84 EA 25 8E] lw a1,-0x157c(s1)
+reference_from=800feb38 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800feb34 bytes=[00 00 00 00] _nop
+  800feb38 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800feb3c bytes=[FF 00 C4 32] _andi a0,s6,0xff
+  800feb40 bytes=[84 EA 25 8E] lw a1,-0x157c(s1)
+reference_from=800fb598 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fb598 caller_name=FUN_800fb598
+  callsite_context:
+  800fb594 bytes=[00 00 00 00] _nop
+  800fb598 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fb59c bytes=[21 20 00 02] _move a0,s0
+  800fb5a0 bytes=[14 80 03 3C] lui v1,0x8014
+reference_from=800bdce8 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800bdc4c caller_name=FUN_800bdc4c
+  callsite_context:
+  800bdce4 bytes=[00 00 00 00] _nop
+  800bdce8 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800bdcec bytes=[FF 00 04 32] _andi a0,s0,0xff
+  800bdcf0 bytes=[21 90 42 02] addu s2,s2,v0
+reference_from=800c815c reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800c815c caller_name=FUN_800c815c
+  callsite_context:
+  800c8158 bytes=[00 00 00 00] _nop
+  800c815c bytes=[C3 DD 02 0C] jal 0x800b770c
+  800c8160 bytes=[21 20 A0 00] _move a0,a1
+  800c8164 bytes=[74 EA 46 8E] lw a2,-0x158c(s2)
+reference_from=800cd678 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800cd678 caller_name=FUN_800cd678
+  callsite_context:
+  800cd674 bytes=[00 00 00 00] _nop
+  800cd678 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cd67c bytes=[21 20 40 02] _move a0,s2
+  800cd680 bytes=[21 20 40 00] move a0,v0
+reference_from=800e0324 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800e0324 caller_name=FUN_800e0324
+  callsite_context:
+  800e0320 bytes=[00 00 00 00] _nop
+  800e0324 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800e0328 bytes=[FF 00 04 32] _andi a0,s0,0xff
+  800e032c bytes=[84 EA 43 8E] lw v1,-0x157c(s2)
+reference_from=800ccc74 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800cca18 caller_name=FUN_800cca18
+  callsite_context:
+  800ccc70 bytes=[79 03 44 90] lbu a0,0x379(v0)
+  800ccc74 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800ccc78 bytes=[00 00 00 00] _nop
+  800ccc7c bytes=[21 20 40 00] move a0,v0
+reference_from=800cdd48 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800cdd44 bytes=[00 00 62 AC] sw v0,0x0(v1)
+  800cdd48 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cdd4c bytes=[21 20 40 02] _move a0,s2
+  800cdd50 bytes=[20 03 42 28] slti v0,v0,0x320
+reference_from=800cdd74 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800cdd70 bytes=[21 80 02 02] addu s0,s0,v0
+  800cdd74 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cdd78 bytes=[21 20 40 02] _move a0,s2
+  800cdd7c bytes=[BC 02 42 24] addiu v0,v0,0x2bc
+reference_from=800cde84 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800cde80 bytes=[00 00 00 00] _nop
+  800cde84 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cde88 bytes=[21 20 40 02] _move a0,s2
+  800cde8c bytes=[80 20 13 00] sll a0,s3,0x2
+reference_from=800cdf90 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800cdf8c bytes=[00 00 00 00] _nop
+  800cdf90 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cdf94 bytes=[21 20 40 02] _move a0,s2
+  800cdf98 bytes=[80 18 13 00] sll v1,s3,0x2
+reference_from=800ce084 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800ce080 bytes=[14 80 02 3C] _lui v0,0x8014
+  800ce084 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800ce088 bytes=[21 20 40 02] _move a0,s2
+  800ce08c bytes=[80 18 13 00] sll v1,s3,0x2
+reference_from=800ce11c reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800ce118 bytes=[00 00 00 00] _nop
+  800ce11c bytes=[C3 DD 02 0C] jal 0x800b770c
+  800ce120 bytes=[21 20 40 02] _move a0,s2
+  800ce124 bytes=[80 18 13 00] sll v1,s3,0x2
+reference_from=800ce204 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800ce200 bytes=[00 00 00 00] _nop
+  800ce204 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800ce208 bytes=[21 20 40 02] _move a0,s2
+  800ce20c bytes=[80 20 13 00] sll a0,s3,0x2
+reference_from=800cbad8 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800cb4b4 caller_name=FUN_800cb4b4
+  callsite_context:
+  800cbad4 bytes=[00 00 00 00] _nop
+  800cbad8 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cbadc bytes=[FF 00 24 32] _andi a0,s1,0xff
+  800cbae0 bytes=[40 18 14 00] sll v1,s4,0x1
+reference_from=800cbb84 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800cb4b4 caller_name=FUN_800cb4b4
+  callsite_context:
+  800cbb80 bytes=[21 18 20 02] _move v1,s1
+  800cbb84 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cbb88 bytes=[FF 00 24 32] _andi a0,s1,0xff
+  800cbb8c bytes=[80 18 14 00] sll v1,s4,0x2
+reference_from=800f1ccc reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800f1ccc caller_name=FUN_800f1ccc
+  callsite_context:
+  800f1cc8 bytes=[1F 00 84 90] lbu a0,0x1f(a0)
+  800f1ccc bytes=[C3 DD 02 0C] jal 0x800b770c
+  800f1cd0 bytes=[00 00 00 00] _nop
+  800f1cd4 bytes=[74 EA 25 8E] lw a1,-0x158c(s1)
+reference_from=800f1d08 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800f1ccc caller_name=FUN_800f1ccc
+  callsite_context:
+  800f1d04 bytes=[1F 00 44 90] lbu a0,0x1f(v0)
+  800f1d08 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800f1d0c bytes=[00 00 00 00] _nop
+  800f1d10 bytes=[BD 02 42 28] slti v0,v0,0x2bd
+reference_from=800f1df0 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800f1ccc caller_name=FUN_800f1ccc
+  callsite_context:
+  800f1dec bytes=[00 00 00 00] _nop
+  800f1df0 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800f1df4 bytes=[00 00 00 00] _nop
+  800f1df8 bytes=[74 EA 25 8E] lw a1,-0x158c(s1)
+reference_from=800f1f4c reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800f1ccc caller_name=FUN_800f1ccc
+  callsite_context:
+  800f1f48 bytes=[1F 00 84 90] lbu a0,0x1f(a0)
+  800f1f4c bytes=[C3 DD 02 0C] jal 0x800b770c
+  800f1f50 bytes=[00 00 00 00] _nop
+  800f1f54 bytes=[E9 03 42 28] slti v0,v0,0x3e9
+reference_from=800f2050 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800f2050 caller_name=FUN_800f2050
+  callsite_context:
+  800f204c bytes=[1F 00 84 90] lbu a0,0x1f(a0)
+  800f2050 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800f2054 bytes=[00 00 00 00] _nop
+  800f2058 bytes=[72 23 04 0C] jal 0x80108dc8
+reference_from=800e09e0 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800e03b0 caller_name=FUN_800e03b0
+  callsite_context:
+  800e09dc bytes=[1F 00 84 90] lbu a0,0x1f(a0)
+  800e09e0 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800e09e4 bytes=[14 80 12 3C] _lui s2,0x8014
+  800e09e8 bytes=[23 28 02 00] subu a1,zero,v0
+reference_from=800cb320 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800cadb8 caller_name=FUN_800cadb8
+  callsite_context:
+  800cb31c bytes=[00 00 00 00] _nop
+  800cb320 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cb324 bytes=[00 00 00 00] _nop
+  800cb328 bytes=[D0 07 42 24] addiu v0,v0,0x7d0
+reference_from=800e40d4 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800e3e74 caller_name=FUN_800e3e74
+  callsite_context:
+  800e40d0 bytes=[1F 00 84 90] lbu a0,0x1f(a0)
+  800e40d4 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800e40d8 bytes=[14 80 10 3C] _lui s0,0x8014
+  800e40dc bytes=[74 EA 65 8E] lw a1,-0x158c(s3)
+reference_from=800e4210 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800e3e74 caller_name=FUN_800e3e74
+  callsite_context:
+  800e420c bytes=[1F 00 84 90] lbu a0,0x1f(a0)
+  800e4210 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800e4214 bytes=[00 00 00 00] _nop
+  800e4218 bytes=[74 EA 65 8E] lw a1,-0x158c(s3)
+reference_from=800dcf40 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800dc2e0 caller_name=FUN_800dc2e0
+  callsite_context:
+  800dcf3c bytes=[1F 00 84 90] lbu a0,0x1f(a0)
+  800dcf40 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800dcf44 bytes=[00 00 00 00] _nop
+  800dcf48 bytes=[74 EA 24 8E] lw a0,-0x158c(s1)
+reference_from=800dca38 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800dc2e0 caller_name=FUN_800dc2e0
+  callsite_context:
+  800dca34 bytes=[20 05 44 90] lbu a0,0x520(v0)
+  800dca38 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800dca3c bytes=[00 00 00 00] _nop
+  800dca40 bytes=[74 EA 03 8E] lw v1,-0x158c(s0)
+reference_from=800d2c6c reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800d15a8 caller_name=FUN_800d15a8
+  callsite_context:
+  800d2c68 bytes=[B0 EB 04 92] lbu a0,-0x1450(s0)
+  800d2c6c bytes=[C3 DD 02 0C] jal 0x800b770c
+  800d2c70 bytes=[00 00 00 00] _nop
+  800d2c74 bytes=[72 23 04 0C] jal 0x80108dc8
+reference_from=800d4154 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800d15a8 caller_name=FUN_800d15a8
+  callsite_context:
+  800d4150 bytes=[BC EB 24 92] lbu a0,-0x1444(s1)
+  800d4154 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800d4158 bytes=[00 00 00 00] _nop
+  800d415c bytes=[72 23 04 0C] jal 0x80108dc8
+reference_from=800d42e0 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800d15a8 caller_name=FUN_800d15a8
+  callsite_context:
+  800d42dc bytes=[FC 02 44 90] lbu a0,0x2fc(v0)
+  800d42e0 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800d42e4 bytes=[00 00 00 00] _nop
+  800d42e8 bytes=[72 23 04 0C] jal 0x80108dc8
+reference_from=800d4658 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800d15a8 caller_name=FUN_800d15a8
+  callsite_context:
+  800d4654 bytes=[A0 04 44 90] lbu a0,0x4a0(v0)
+  800d4658 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800d465c bytes=[14 80 10 3C] _lui s0,0x8014
+  800d4660 bytes=[74 EA 23 8E] lw v1,-0x158c(s1)
+reference_from=800d4780 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800d15a8 caller_name=FUN_800d15a8
+  callsite_context:
+  800d477c bytes=[A0 04 44 90] lbu a0,0x4a0(v0)
+  800d4780 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800d4784 bytes=[00 00 00 00] _nop
+  800d4788 bytes=[74 EA 25 8E] lw a1,-0x158c(s1)
+reference_from=800d3c84 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800d15a8 caller_name=FUN_800d15a8
+  callsite_context:
+  800d3c80 bytes=[FC 02 44 90] lbu a0,0x2fc(v0)
+  800d3c84 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800d3c88 bytes=[00 00 00 00] _nop
+  800d3c8c bytes=[72 23 04 0C] jal 0x80108dc8
+reference_from=800d27f4 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800d15a8 caller_name=FUN_800d15a8
+  callsite_context:
+  800d27f0 bytes=[B0 EB 04 92] lbu a0,-0x1450(s0)
+  800d27f4 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800d27f8 bytes=[00 00 00 00] _nop
+  800d27fc bytes=[72 23 04 0C] jal 0x80108dc8
+reference_count=44
+--- REFERENCES_TO_FUNCTION_END ---
+
+=== TARGET 800bdc4c ===
+instruction_at_target=addiu sp,sp,-0x28
+function_name=FUN_800bdc4c
+function_entry=800bdc4c
+function_body_bytes=252
+function_return_type=undefined
+function_signature=undefined FUN_800bdc4c(void)
+function_thunk=false
+--- RAW_FUNCTION_BODY_BEGIN ---
+800bdc4c bytes=[D8 FF BD 27] addiu sp,sp,-0x28
+800bdc50 bytes=[24 00 BF AF] sw ra,0x24(sp)
+800bdc54 bytes=[20 00 B4 AF] sw s4,0x20(sp)
+800bdc58 bytes=[1C 00 B3 AF] sw s3,0x1c(sp)
+800bdc5c bytes=[18 00 B2 AF] sw s2,0x18(sp)
+800bdc60 bytes=[14 00 B1 AF] sw s1,0x14(sp)
+800bdc64 bytes=[10 00 B0 AF] sw s0,0x10(sp)
+800bdc68 bytes=[FF FF 91 30] andi s1,a0,0xffff
+800bdc6c bytes=[14 80 02 3C] lui v0,0x8014
+800bdc70 bytes=[71 EA 42 90] lbu v0,-0x158f(v0)
+800bdc74 bytes=[00 00 00 00] nop
+800bdc78 bytes=[2B 10 22 02] sltu v0,s1,v0
+800bdc7c bytes=[03 00 40 14] bne v0,zero,0x800bdc8c
+800bdc80 bytes=[21 90 00 00] _clear s2
+800bdc84 bytes=[14 80 02 3C] lui v0,0x8014
+800bdc88 bytes=[8A EA 51 94] lhu s1,-0x1576(v0)
+800bdc8c bytes=[14 80 02 3C] lui v0,0x8014
+800bdc90 bytes=[C8 EA 42 8C] lw v0,-0x1538(v0)
+800bdc94 bytes=[00 00 00 00] nop
+800bdc98 bytes=[1D 00 40 18] blez v0,0x800bdd10
+800bdc9c bytes=[21 80 00 00] _clear s0
+800bdca0 bytes=[14 80 14 3C] lui s4,0x8014
+800bdca4 bytes=[05 00 13 24] li s3,0x5
+800bdca8 bytes=[84 EA 82 8E] lw v0,-0x157c(s4)
+800bdcac bytes=[C0 18 10 00] sll v1,s0,0x3
+800bdcb0 bytes=[21 18 70 00] addu v1,v1,s0
+800bdcb4 bytes=[C0 18 03 00] sll v1,v1,0x3
+800bdcb8 bytes=[21 18 70 00] addu v1,v1,s0
+800bdcbc bytes=[80 18 03 00] sll v1,v1,0x2
+800bdcc0 bytes=[21 18 62 00] addu v1,v1,v0
+800bdcc4 bytes=[00 00 62 90] lbu v0,0x0(v1)
+800bdcc8 bytes=[00 00 00 00] nop
+800bdccc bytes=[09 00 53 14] bne v0,s3,0x800bdcf4
+800bdcd0 bytes=[00 00 00 00] _nop
+800bdcd4 bytes=[20 00 62 94] lhu v0,0x20(v1)
+800bdcd8 bytes=[00 00 00 00] nop
+800bdcdc bytes=[02 13 02 00] srl v0,v0,0xc
+800bdce0 bytes=[04 00 22 16] bne s1,v0,0x800bdcf4
+800bdce4 bytes=[00 00 00 00] _nop
+800bdce8 bytes=[C3 DD 02 0C] jal 0x800b770c
+800bdcec bytes=[FF 00 04 32] _andi a0,s0,0xff
+800bdcf0 bytes=[21 90 42 02] addu s2,s2,v0
+800bdcf4 bytes=[01 00 10 26] addiu s0,s0,0x1
+800bdcf8 bytes=[14 80 02 3C] lui v0,0x8014
+800bdcfc bytes=[C8 EA 42 8C] lw v0,-0x1538(v0)
+800bdd00 bytes=[00 00 00 00] nop
+800bdd04 bytes=[2A 10 02 02] slt v0,s0,v0
+800bdd08 bytes=[E7 FF 40 14] bne v0,zero,0x800bdca8
+800bdd0c bytes=[00 00 00 00] _nop
+800bdd10 bytes=[A3 4A 00 0C] jal 0x80012a8c
+800bdd14 bytes=[00 00 00 00] _nop
+800bdd18 bytes=[C2 1F 12 00] srl v1,s2,0x1f
+800bdd1c bytes=[21 18 43 02] addu v1,s2,v1
+800bdd20 bytes=[43 18 03 00] sra v1,v1,0x1
+800bdd24 bytes=[21 10 62 00] addu v0,v1,v0
+800bdd28 bytes=[24 00 BF 8F] lw ra,0x24(sp)
+800bdd2c bytes=[20 00 B4 8F] lw s4,0x20(sp)
+800bdd30 bytes=[1C 00 B3 8F] lw s3,0x1c(sp)
+800bdd34 bytes=[18 00 B2 8F] lw s2,0x18(sp)
+800bdd38 bytes=[14 00 B1 8F] lw s1,0x14(sp)
+800bdd3c bytes=[10 00 B0 8F] lw s0,0x10(sp)
+800bdd40 bytes=[08 00 E0 03] jr ra
+800bdd44 bytes=[28 00 BD 27] _addiu sp,sp,0x28
+--- RAW_FUNCTION_BODY_END ---
+raw_instruction_count_emitted=63
+--- C_DECOMPILATION_BEGIN ---
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+int FUN_800bdc4c(ushort param_1)
+
+{
+  int iVar1;
+  char *pcVar2;
+  uint uVar3;
+  int iVar4;
+  
+  iVar4 = 0;
+  if (DAT_8013ea71 <= param_1) {
+    param_1 = _DAT_8013ea8a;
+  }
+  uVar3 = 0;
+  if (0 < DAT_8013eac8) {
+    do {
+      pcVar2 = (char *)(uVar3 * 0x124 + DAT_8013ea84);
+      if ((*pcVar2 == '\x05') && (param_1 == *(ushort *)(pcVar2 + 0x20) >> 0xc)) {
+        iVar1 = FUN_800b770c(uVar3 & 0xff);
+        iVar4 = iVar4 + iVar1;
+      }
+      uVar3 = uVar3 + 1;
+    } while ((int)uVar3 < DAT_8013eac8);
+  }
+  iVar1 = func_0x80012a8c();
+  return iVar4 / 2 + iVar1;
+}
+
+
+--- C_DECOMPILATION_END ---
+decompile_status=SUCCESS
+--- REFERENCES_TO_FUNCTION_BEGIN ---
+reference_from=80108054 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=80108054 caller_name=FUN_80108054
+  callsite_context:
+  80108050 bytes=[4A 09 44 90] lbu a0,0x94a(v0)
+  80108054 bytes=[13 F7 02 0C] jal 0x800bdc4c
+  80108058 bytes=[00 00 00 00] _nop
+  8010805c bytes=[21 98 40 00] move s3,v0
+reference_from=800cf434 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800cf434 caller_name=FUN_800cf434
+  callsite_context:
+  800cf430 bytes=[88 EA 24 96] lhu a0,-0x1578(s1)
+  800cf434 bytes=[13 F7 02 0C] jal 0x800bdc4c
+  800cf438 bytes=[00 00 00 00] _nop
+  800cf43c bytes=[74 EA 45 8E] lw a1,-0x158c(s2)
+reference_from=800ee458 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800edd68 caller_name=FUN_800edd68
+  callsite_context:
+  800ee454 bytes=[88 EA 04 96] lhu a0,-0x1578(s0)
+  800ee458 bytes=[13 F7 02 0C] jal 0x800bdc4c
+  800ee45c bytes=[14 80 11 3C] _lui s1,0x8014
+  800ee460 bytes=[F0 EA 22 AE] sw v0,-0x1510(s1)
+reference_count=3
+--- REFERENCES_TO_FUNCTION_END ---
+
+=== DATA_XREFS target=80066e7c ===
+loaded_image_bytes=UNAVAILABLE reason=Unable to read bytes at ram:80066e7c
+data_reference_count=0
+interpretation=direct Ghidra references only; indirect aliases and runtime writers may not appear
