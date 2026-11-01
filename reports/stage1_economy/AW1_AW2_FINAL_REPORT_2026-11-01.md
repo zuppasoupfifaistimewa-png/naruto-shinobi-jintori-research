@@ -319,7 +319,7 @@ Untuk Entry 0, 5 raw JAL candidates ditemukan pada scan alamat RNG/seed setter. 
 
 Target 0x800BDBFC pada Entry 0, di bawah hipotesis load base 0x800AD000, didekompilasi sebagai kandidat stub 36 byte yang mengisi param+0x64 dengan 0xFFFFE5A8 dan param+0x68 dengan 0x800BE638 lalu return 1. Ghidra mencatat reference_count=0 pada resource tersebut. Instruksi target memuat jump ke 0x800BE11C. Karena base 0x800AD000 masih hipotesis dan caller belum dipetakan, ini belum membuktikan kontrak runtime helper atau kaitan gameplay.
 
-Entry 0 scan output: 38 function rows, 30 immediate-instruction literal rows, 5 raw RNG/seed candidates, 3 Ghidra-decoded direct calls, dan 0 caller function boundary yang tervalidasi. Runtime mapping Entry 0 tetap NOT_VALIDATED. Entry 1 juga tetap menggunakan candidate base statis 0x800D0000; tidak ada klaim runtime mapping.
+Entry 0 scan output: 38 function rows, 30 immediate-instruction literal rows, 5 raw RNG/seed candidates, 3 Ghidra-decoded direct calls, dan 0 caller function boundary yang tervalidasi. Runtime mapping Entry 0 tetap NOT_VALIDATED. Entry 1 menggunakan candidate base statis 0x800AD450 (STATIC_CANDIDATE; runtime belum tervalidasi). Tidak ada klaim runtime mapping.
 
 Artifact run ID 41290779708: ghidra-slps-03553-function-index (artifact ID 13077709660; SHA-256 bea77586b6b2091f840405557cae65c4b1aea2babfd967c1c5d7eb77a9292af5). Artifact mencakup 25 file; log Ghidra Entry 0 sangat besar, sehingga hanya keluaran laporan/TSV yang relevan dipertahankan di repo. Tidak ada executable, DATA.BIN, atau resource binary yang diunggah sebagai artifact.
 
