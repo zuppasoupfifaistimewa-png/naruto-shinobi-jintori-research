@@ -6,33 +6,43 @@ Input Entry 1: 596,412 byte; file offset 0x10BB000; SHA-256 9c531036e66c88849bc8
 
 ## AZ2 — pembaca manager +0xB38 / +0xB40 / +0xB44
 
-Ekspor fungsi AQ1 menyediakan badan instruksi mentah lengkap untuk tiga fungsi yang memuat pembaca field ini: FUN_80109994, FUN_80109F1C, FUN_80109FEC. Pemeriksaan ulang byte dan disassembly menemukan **17 instruksi load langsung** dalam ruang lingkup tiga badan fungsi tersebut: +0xB38 ada 5 reader, +0xB40 ada 4 reader, +0xB44 ada 8 reader. PC, fungsi, instruksi, byte mentah, dan tepat 12 instruksi sebelumnya (atau jumlah yang tersedia bila fungsi dimulai) ada dalam:
-`reports/stage1_economy/AZ2_MANAGER_READERS_2026-11-02.tsv`.
+Pemindaian penuh DATA.BIN Entry 1 pada run `41360300335` mengekspor seluruh instruksi yang memakai displacement +0xB38, +0xB40, dan +0xB44, dengan 12 instruksi sebelumnya untuk tiap akses. Setelah review base register dan rantai pemuatan pointer global manager `[0x8013A554]`, seluruh **17 load langsung** berikut terkonfirmasi sebagai reader manager. Hasil konsolidasi 25 akses (read/write) dan bukti base register per PC ada di:
+`reports/stage1_economy/AZ2_ENTRY1_FIELD_ACCESS_CENSUS_2026-11-02.tsv`.
 
-Ringkasan semua reader:
+Ringkasan pemindaian Entry 1:
 
-| Field | PC | Fungsi | Instruksi | Pemakaian yang terlihat dari instruksi berikutnya |
-|---|---|---|---|---|
-| +0xB38 | 0x80109A88 | FUN_80109994 | lw v1,0xB38(a0) | ditambah B30 pada A90; hasil masuk B40 melalui A94 |
-| +0xB44 | 0x80109F64 | FUN_80109F1C | lw a2,0xB44(v1) | diteruskan sebagai a2 ke formatter 0x8001B364; label UI TIDAK TAHU |
-| +0xB38 | 0x8010A0E0 | FUN_80109FEC | lw v1,0xB38(v0) | disalin ke progress B3C pada A0E8 |
-| +0xB40 | 0x8010A0EC | FUN_80109FEC | lw v1,0xB40(v0) | disalin ke B44 pada A0F4 |
-| +0xB44 | 0x8010A154 | FUN_80109FEC | lw a1,0xB44(v1) | delay slot setter A15C membentuk a1=Q(i)+B44 |
-| +0xB38 | 0x8010A460 | FUN_80109FEC | lw v1,0xB38(v1) | membandingkan progress B3C dengan target B38 |
-| +0xB38 | 0x8010A4D8 | FUN_80109FEC | lw v1,0xB38(v1) | membandingkan B3C setelah kenaikan 0x14 terhadap B38 |
-| +0xB38 | 0x8010A4F8 | FUN_80109FEC | lw v1,0xB38(v0) | menyalin B38 ke B3C pada terminal state 5 |
-| +0xB44 | 0x8010A524 | FUN_80109FEC | lw v0,0xB44(v1) | dipasangkan dengan B40 untuk tes B44<B40 |
-| +0xB40 | 0x8010A528 | FUN_80109FEC | lw v1,0xB40(v1) | target pembanding B44 pada state 6 |
-| +0xB44 | 0x8010A590 | FUN_80109FEC | lw v0,0xB44(v1) | progress B44 sebelum kenaikan 0x14 |
-| +0xB40 | 0x8010A5A0 | FUN_80109FEC | lw v1,0xB40(v1) | target pembanding progress B44 |
-| +0xB40 | 0x8010A5C0 | FUN_80109FEC | lw v1,0xB40(v0) | disalin ke B44 pada A5C8; state menjadi 7 |
-| +0xB44 | 0x8010A5EC | FUN_80109FEC | lw v0,0xB44(v0) | tes B44<21 untuk memilih ukuran langkah |
-| +0xB44 | 0x8010A610 | FUN_80109FEC | lw s1,0xB44(v0) | jika B44<21, s1=B44; jika tidak, delay slot A604 memberi s1=20 |
-| +0xB44 | 0x8010A648 | FUN_80109FEC | lw v0,0xB44(v1) | nilai lama sebelum subu di A650; nilai baru ditulis di delay slot A658 |
-| +0xB44 | 0x8010A6A8 | FUN_80109FEC | lw v0,0xB44(v1) | tes terminal B44!=0; jika nol state menjadi 8 |
+| Field | Total akses langsung | Reader | Writer |
+|---|---:|---:|---:|
+| +0xB38 | 6 | 5 | 1 |
+| +0xB40 | 5 | 4 | 1 |
+| +0xB44 | 14 | 8 | 6 |
+| **Jumlah** | **25** | **17** | **8** |
 
-**Cakupan penting:** tabel ini adalah seluruh pembaca langsung yang teramati pada tiga badan fungsi lengkap yang dipilih/export oleh AQ1, bukan census seluruh module / semua indirect alias. Di luar tiga badan ini, reader lain bagi B38/B40/B44 = **TIDAK TAHU**. Tidak ada kesimpulan dari nol hit yang tidak diuji. File AW1 yang ada mencatat 14 akses displacement +0xB44 dalam tiga fungsi (termasuk store/init); jumlah itu konsisten dengan delapan reader B44 di atas ditambah store/other.
+Reader yang terkonfirmasi:
 
+| Field | PC | Fungsi | Effective base | Bukti pointer manager sebelumnya |
+|---|---:|---|---|---:|
+| +0xB38 | 0x80109A88 | FUN_80109994 | a0 | 0x80109A78 |
+| +0xB38 | 0x8010A0E0 | FUN_80109FEC | v0 | 0x8010A0CC |
+| +0xB38 | 0x8010A460 | FUN_80109FEC | v1 | 0x8010A454 |
+| +0xB38 | 0x8010A4D8 | FUN_80109FEC | v1 | 0x8010A4C0 |
+| +0xB38 | 0x8010A4F8 | FUN_80109FEC | v0 | 0x8010A4F0 |
+| +0xB40 | 0x8010A0EC | FUN_80109FEC | v0 | 0x8010A0CC |
+| +0xB40 | 0x8010A528 | FUN_80109FEC | v1 | 0x8010A51C |
+| +0xB40 | 0x8010A5A0 | FUN_80109FEC | v1 | 0x8010A588 |
+| +0xB40 | 0x8010A5C0 | FUN_80109FEC | v0 | 0x8010A5B8 |
+| +0xB44 | 0x80109F64 | FUN_80109F1C | v1 | 0x80109F34 |
+| +0xB44 | 0x8010A154 | FUN_80109FEC | v1 | 0x8010A14C |
+| +0xB44 | 0x8010A524 | FUN_80109FEC | v1 | 0x8010A51C |
+| +0xB44 | 0x8010A590 | FUN_80109FEC | v1 | 0x8010A588 |
+| +0xB44 | 0x8010A5EC | FUN_80109FEC | v0 | 0x8010A5E4 |
+| +0xB44 | 0x8010A610 | FUN_80109FEC | v0 | 0x8010A608 |
+| +0xB44 | 0x8010A648 | FUN_80109FEC | v1 | 0x8010A640 |
+| +0xB44 | 0x8010A6A8 | FUN_80109FEC | v1 | 0x8010A6A0 |
+
+Untuk setiap PC di atas, 12 instruksi sebelumnya, byte instruction, instruksi load pointer manager, dan register efektif tercatat pada TSV. Tiga displacement tersebut hanya muncul pada tiga fungsi manager yang diperiksa: `FUN_80109974/FUN_80109994`, `FUN_80109F1C`, dan `FUN_80109FEC`. Ini merupakan census seluruh **direct displacement access** di Entry 1, lebih luas dari AQ1 awal yang mengekspor tiga badan fungsi.
+
+**Batas yang tetap berlaku:** operasi yang menghitung alamat field terlebih dahulu lalu mengakses offset 0, pointer yang didapat lewat struktur lain, atau indirect JALR tidak dapat dipastikan hanya dari displacement scan. Pembaca tak langsung semacam itu tetap **TIDAK TAHU**; tidak ada kesimpulan dari nol hit yang tidak diuji.
 ### Ekspresi a1 saat setter 0x8001387C dipanggil dari FUN_80109FEC
 
 | Setter PC | Instruksi pembentuk argumen akhir | Ekspresi a1 |

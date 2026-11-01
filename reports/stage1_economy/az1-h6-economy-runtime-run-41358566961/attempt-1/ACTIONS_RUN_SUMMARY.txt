@@ -1,6 +1,7 @@
 STATUS=PASS
-JOB=az1-h6-economy-runtime
-JOB_ID=TIDAK TAHU
+JOB=Restore H6 and inspect manager/tile records across two launches
+JOB_ID=125003825441
 RUN_ID=41358566961
 SOURCE_SHA=2c5db558a4e3820c3ff2f50a1d133476cbc6ed2d
 EXIT_CODE=0
+H6_SHA256=d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475
