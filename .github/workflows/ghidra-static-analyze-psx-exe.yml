@@ -302,6 +302,7 @@ jobs:
             -postScript ExportFunctionDetail.java "$out/loader-resource-call-paths.txt" \
               0x8002D838 0x8002DEC4 0x8002DF30 0x8002D00C 0x8002D5C0 \
               0x8002CF9C 0x8002DE60 0x8002DDEC 0x80035AA8 0x80035B08 \
+            -postScript ExportNumericLiteralReferences.java "$out/main-numeric-instruction-literals.tsv" \
             -analysisTimeoutPerFile 1800 \
             -max-cpu 2 \
             -deleteProject > "$out/ghidra-headless.log" 2>&1
@@ -326,9 +327,9 @@ jobs:
             echo "::error::Ghidra targeted RNG caller analysis output is missing or empty."
             exit 1
           fi
-          if [[ ! -s "$out/loader-resource-call-paths.txt" ]]; then
-            echo "status=FAILED: loader/resource call-path detail output is missing or empty" > "$out/analysis-result.txt"
-            echo "::error::Ghidra loader/resource call-path output is missing or empty."
+          if [[ ! -s "$out/loader-resource-call-paths.txt" || ! -s "$out/main-numeric-instruction-literals.tsv" ]]; then
+            echo "status=FAILED: loader/resource or numeric instruction reference output is missing or empty" > "$out/analysis-result.txt"
+            echo "::error::Ghidra loader/resource or numeric reference output is missing or empty."
             exit 1
           fi
           count="$(awk 'END { if (NR > 1) print NR - 1; else print 0 }' "$out/functions.tsv")"
@@ -339,7 +340,7 @@ jobs:
             echo "executable_sha256=$EXPECTED_EXE_SHA256"
             echo "executable_bytes=$EXPECTED_EXE_BYTES"
             echo "function_rows=$count"
-            echo "result=function index, RNG callers, and 10 loader/resource functions exported"
+            echo "result=function index, RNG callers, 10 loader/resource functions, and immediate numeric instruction references exported"
             echo "loader_detail_targets=0x8002D838,0x8002DEC4,0x8002DF30,0x8002D00C,0x8002D5C0,0x8002CF9C,0x8002DE60,0x8002DDEC,0x80035AA8,0x80035B08"
             echo "caller_function_mapping=initial labels only; semantic interpretation pending"
             echo "emulator_or_gameplay_executed=no"
@@ -474,6 +475,7 @@ jobs:
             -postScript ExportFunctionIndex.java "$out/data-bin-entry0-functions.tsv" \
             -postScript ExportEntry0Helper.java "$out/data-bin-entry0-helper.txt" \
             -postScript ExportTargetCallers.java "$out/data-bin-entry0-rng-callers.txt" 0x80035D78 0x80035DA8 \
+             -postScript ExportNumericLiteralReferences.java "$out/data-bin-entry0-numeric-instruction-literals.tsv" \
             -analysisTimeoutPerFile 1800 \
             -max-cpu 2 \
             -deleteProject > "$out/entry0-ghidra-headless.log" 2>&1
@@ -485,7 +487,7 @@ jobs:
             tail -n 100 "$out/entry0-ghidra-headless.log" || true
             exit "$status"
           fi
-          if [[ ! -s "$out/data-bin-entry0-functions.tsv" || ! -s "$out/data-bin-entry0-helper.txt" || ! -s "$out/data-bin-entry0-rng-callers.txt" ]]; then
+          if [[ ! -s "$out/data-bin-entry0-functions.tsv" || ! -s "$out/data-bin-entry0-helper.txt" || ! -s "$out/data-bin-entry0-rng-callers.txt" || ! -s "$out/data-bin-entry0-numeric-instruction-literals.tsv" ]]; then
             echo "::error::Entry 0 function index or helper decompilation is missing."
             exit 1
           fi
@@ -497,6 +499,7 @@ jobs:
             echo "resource_bytes=110536"
             echo "hypothetical_load_address=0x800AD000"
             echo "function_rows=$rows"
+            echo "numeric_instruction_literal_rows=$(awk 'END { if (NR > 1) print NR - 1; else print 0 }' "$out/data-bin-entry0-numeric-instruction-literals.tsv")"
             echo "target_helper=0x800BDBFC"
             echo "runtime_mapping=NOT_VALIDATED"
             echo "resource_binary_uploaded_as_artifact=no"

@@ -123,7 +123,7 @@ def main():
     for n,b in files.items():
         runs=sjis_runs(b);sjtotal+=len(runs)
         notes.append(f"### {n}: {len(runs)} runs")
-        for off,raw,txt in runs[:60]:
+        for off,raw,txt in runs:
             safe=txt.replace("|","/").replace("\n"," ")[:96]
             notes.append(f"- offset=0x{off:X}; address={addr(n,off)}; bytes={raw[:40].hex(' ')}; text={safe}")
             rows.append({"input":n,"kind":"sjis_run","value":safe,"offset":f"0x{off:X}",
