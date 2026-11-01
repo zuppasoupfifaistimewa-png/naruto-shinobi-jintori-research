@@ -109,7 +109,7 @@ startNext=function(i)
    currentCase=nil; setterObservation=nil
    PCSX.nextTick(function() startNext(i+1) end)
   end)
-  return true
+  return false
  end)
  if not sbp then fail("SENTINEL_BP_ADD","cannot install sentinel"); return end
  bpKeep[#bpKeep+1]=sbp
@@ -127,7 +127,7 @@ startNext=function(i)
   log("AX4_SETTER_ENTRY label="..t.label.." q_before="..tostring(setterObservation.q_before)..
    " a0="..setterObservation.setter_a0.." a1_live="..tostring(setterObservation.setter_a1))
   PCSX.nextTick(function() PCSX.resumeEmulator() end)
-  return true
+  return false
  end)
  if not ebp then fail("SETTER_BP_ADD","cannot install 0x8001387C"); return end
  bpKeep[#bpKeep+1]=ebp
