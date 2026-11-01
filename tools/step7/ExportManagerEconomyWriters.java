@@ -15,7 +15,7 @@ import java.util.*;
 public class ExportManagerEconomyWriters extends GhidraScript {
     private static final long MANAGER_SLOT = 0x8013A554L;
     private static final long[] TARGETS = {0xB2AL, 0xB30L, 0xB38L};
-    private static final long[] FUNCTIONS = {0x80109994L, 0x801048F0L};
+    private static final long[] FUNCTIONS = {0x80109994L, 0x801048F0L, 0x80109974L, 0x80109984L};
     private PrintWriter out;
     private String module = "UNSPECIFIED";
     private int confirmedStores = 0, unresolvedStores = 0, refCount = 0, pointerWords = 0, jalrCount = 0;
@@ -189,6 +189,25 @@ public class ExportManagerEconomyWriters extends GhidraScript {
     }
     private boolean storeOp(PcodeOp op) { return op.getOpcode()==PcodeOp.STORE && op.getNumInputs()>=3; }
     private String targetName(long off) { return off==0xB2A?"MANAGER+0xB2A":off==0xB30?"MANAGER+0xB30":off==0xB38?"MANAGER+0xB38":"OTHER"; }
+    private boolean hasDelaySlot(String m) {
+        String x=m==null?"":m.toLowerCase();
+        return x.equals("j")||x.equals("jal")||x.equals("jr")||x.equals("jalr")||
+            x.equals("beq")||x.equals("bne")||x.equals("blez")||x.equals("bgtz")||
+            x.equals("bltz")||x.equals("bgez")||x.equals("bc1t")||x.equals("bc1f");
+    }
+    private boolean isStoreMnemonic(String m) {
+        String x=m==null?"":m.toLowerCase();
+        return x.startsWith("sw")||x.startsWith("sb")||x.startsWith("sh")||
+            x.equals("sc")||x.equals("sdc1")||x.equals("sdc2")||x.equals("s.d");
+    }
+    private Address actualStoreAddress(Address pcodePc) {
+        Instruction at=currentProgram.getListing().getInstructionAt(pcodePc);
+        if(at!=null && hasDelaySlot(at.getMnemonicString())) {
+            Instruction delay=currentProgram.getListing().getInstructionAt(pcodePc.add(at.getLength()));
+            if(delay!=null && isStoreMnemonic(delay.getMnemonicString())) return delay.getAddress();
+        }
+        return pcodePc;
+    }
     private boolean instructionHasTargetOffset(Instruction ins) {
         if(ins==null) return false;
         String s=ins.toString().toLowerCase();
@@ -215,7 +234,8 @@ public class ExportManagerEconomyWriters extends GhidraScript {
             while(ops.hasNext()) {
                 PcodeOpAST op=ops.next();
                 if(!storeOp(op)) continue;
-                Address pc=op.getSeqnum().getTarget();
+                Address pcodePc=op.getSeqnum().getTarget();
+                Address pc=actualStoreAddress(pcodePc);
                 Instruction ins=currentProgram.getListing().getInstructionAt(pc);
                 Sym target=eval(op.getInput(1));
                 String source=eval(op.getInput(2)).expr;
@@ -229,7 +249,7 @@ public class ExportManagerEconomyWriters extends GhidraScript {
                     confirmedStores++;
                 } else if(instructionHasTargetOffset(ins)) {
                     row("WRITER_CANDIDATE_UNRESOLVED",module,addrExpr(pc),functionEntry(f),functionName(f),
-                        target.expr,String.valueOf(width),source,ins.toString(),before(ins,f,12),bytes(pc,64),
+                        target.expr,String.valueOf(width),source,ins==null?"INSTRUCTION_NOT_DECODED":ins.toString(),ins==null?"":before(ins,f,12),bytes(pc,64),
                         "store has target displacement but manager base alias is not proven by this function-local def-use");
                     unresolvedStores++;
                 }
@@ -243,17 +263,40 @@ public class ExportManagerEconomyWriters extends GhidraScript {
     private void callerRefs(long target) throws Exception {
         Address a=toAddr(target);
         ReferenceIterator refs=currentProgram.getReferenceManager().getReferencesTo(a);
+        DecompInterface decomp=new DecompInterface();
+        decomp.toggleCCode(false); decomp.toggleSyntaxTree(true);
+        decomp.openProgram(currentProgram);
         while(refs.hasNext()) {
             Reference ref=refs.next();
             Address from=ref.getFromAddress();
             Function caller=currentProgram.getFunctionManager().getFunctionContaining(from);
             Instruction ins=currentProgram.getListing().getInstructionAt(from);
+            Instruction delay=ins==null?null:currentProgram.getListing().getInstructionAt(from.add(ins.getLength()));
             row("CALLER_REFERENCE",module,addrExpr(a),addrExpr(from),functionEntry(caller),functionName(caller),
                 ref.getReferenceType().toString(),ref.getSource().toString(),
-                ins==null?"DATA_OR_UNDECODED":ins.toString(),bytes(from,16),
-                "ReferenceManager xref; call/data type retained","");
+                ins==null?"DATA_OR_UNDECODED":ins.toString(),
+                (ins==null?"":before(ins,caller,12))+" || DELAY_SLOT="+(delay==null?"NONE":addrExpr(delay.getAddress())+" "+delay.toString()),
+                bytes(from,16),"ReferenceManager xref; call/data type retained");
+            if(caller!=null && ins!=null && (ref.getReferenceType().isCall() || hasDelaySlot(ins.getMnemonicString()))) {
+                DecompileResults dr=decomp.decompileFunction(caller,30,monitor);
+                if(dr!=null && dr.decompileCompleted() && dr.getHighFunction()!=null) {
+                    Iterator<PcodeOpAST> callOps=dr.getHighFunction().getPcodeOps();
+                    while(callOps.hasNext()) {
+                        PcodeOpAST call=callOps.next();
+                        if(call.getOpcode()!=PcodeOp.CALL || call.getNumInputs()<2) continue;
+                        Sym callee=eval(call.getInput(0));
+                        if(callee.constant==null || (callee.constant.longValue()&0xffffffffL)!=target) continue;
+                        String arg0=eval(call.getInput(1)).expr;
+                        row("CALL_ARGUMENT_PROVENANCE",module,addrExpr(a),addrExpr(call.getSeqnum().getTarget()),
+                            functionEntry(caller),functionName(caller),"a0_argument","Pcode CALL input[1]",
+                            arg0,"",bytes(call.getSeqnum().getTarget(),64),
+                            "static decompiler def-use for first ABI argument; PHI/CALL_RET/INPUT indicate source not fully resolved");
+                    }
+                }
+            }
             refCount++;
         }
+        decomp.dispose();
         for(MemoryBlock b:currentProgram.getMemory().getBlocks()) {
             if(!b.isInitialized()) continue;
             long start=b.getStart().getOffset(), end=start+b.getSize(), p=(start+3L)&~3L;
@@ -297,7 +340,7 @@ public class ExportManagerEconomyWriters extends GhidraScript {
             scanWriters();
             for(long t:FUNCTIONS) callerRefs(t);
             countJalr();
-            row("INDIRECT_CALL_LIMIT",module,"FUN_80109994;FUN_801048F0","","","",
+            row("INDIRECT_CALL_LIMIT",module,"FUN_80109994;FUN_801048F0;FUN_80109974;FUN_80109984","","","",
                 "jalr_count="+jalrCount,"pointer_words="+pointerWords,"reference_manager_refs="+refCount,
                 "unresolved dynamic CALLIND sites may remain; no runtime caller inference","","");
             out.flush();
