@@ -1,0 +1,8 @@
+STATUS=INCOMPLETE
+TARGET=0x80105BCC
+instruction_at_target=NONE
+function=NONE
+reason=Wrong static image for the requested target: main executable was imported at 0x80010000 with length 0x5D800. The target lies in the separately analyzed DATA.BIN Entry 1 slice loaded at the 0x800AD450 candidate base.
+runtime_executed=no
+emulator_executed=no
+conclusion=TIDAK TAHU whether helper 0x80105BCC preserves or changes a1.
