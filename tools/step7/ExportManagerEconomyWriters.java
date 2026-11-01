@@ -370,6 +370,54 @@ public class ExportManagerEconomyWriters extends GhidraScript {
             "caller A index=(param_1 & 0xff) or caller B index=byte[0x80058758+mode*0x84+state*0x0c]",
             "no runtime");
     }
+    private int readByteValue(long address) {
+        try { return ((int)currentProgram.getMemory().getByte(toAddr(address))) & 0xff; }
+        catch(Exception e) { return -1; }
+    }
+    private void dumpB30ModeStateIndexMap() throws Exception {
+        Set<Integer> indexes=new TreeSet<Integer>();
+        Map<Integer,Integer> counts=new TreeMap<Integer,Integer>();
+        int mapped=0,unmapped=0,zero=0;
+        for(int mode=0;mode<256;mode++) {
+            for(int state=0;state<11;state++) {
+                long address=0x80058758L+(long)mode*0x84L+(long)state*0x0cL;
+                int index=readByteValue(address);
+                if(index<0) {
+                    unmapped++;
+                    row("ECONOMY_B30_MODE_STATE_ROW",module,"mode="+mode,"state="+state,
+                        addrExpr(toAddr(address)),"TIDAK_TAHU","","","","","","unmapped");
+                    continue;
+                }
+                mapped++;
+                indexes.add(index);
+                counts.put(index,counts.containsKey(index)?counts.get(index)+1:1);
+                long value=readWord(0x800577A4L+(long)index*0x54L);
+                if(value==0) zero++;
+                row("ECONOMY_B30_MODE_STATE_ROW",module,"mode="+mode,"state="+state,
+                    addrExpr(toAddr(address)),"index="+index,
+                    "B30_table_addr="+addrExpr(toAddr(0x800577A4L+(long)index*0x54L)),
+                    value==Long.MIN_VALUE?"TIDAK_TAHU":Long.toUnsignedString(value),
+                    value==Long.MIN_VALUE?"":fmt(value),
+                    bytes(toAddr(address),1)+" -> "+bytes(toAddr(0x800577A4L+(long)index*0x54L),4),
+                    "matrix_base=0x80058758 mode_stride=0x84 state_stride=0x0c",
+                    "static mapping byte and corresponding B30 source word");
+            }
+        }
+        for(Integer index:indexes) {
+            long value=readWord(0x800577A4L+(long)index*0x54L);
+            row("ECONOMY_B30_REACHABLE_INDEX",module,"index="+index,
+                addrExpr(toAddr(0x800577A4L+(long)index*0x54L)),
+                "uses="+counts.get(index),"B30_value="+(value==Long.MIN_VALUE?"TIDAK_TAHU":Long.toUnsignedString(value)),
+                "hex="+(value==Long.MIN_VALUE?"":fmt(value)),
+                "bytes="+bytes(toAddr(0x800577A4L+(long)index*0x54L),4),
+                "reachable from static 256x11 mode/state lookup matrix","","",
+                "no runtime");
+        }
+        row("ECONOMY_B30_MODE_STATE_TOTAL",module,"mapped="+mapped,"unmapped="+unmapped,
+            "distinct_indexes="+indexes.size(),"zero_values="+zero,
+            "index_set="+indexes.toString(),"matrix_base=0x80058758",
+            "table_base=0x800577A4 stride=0x54","","","static only");
+    }
     private void exportB30SourceTables() throws Exception {
         dumpB30SourceTable("FUN_80012780_PLAYER_INDEXED",0x8006491CL,0x30L,256,0x8L);
         dumpB30SourceTable("FUN_80012EAC_CONFIG_INDEXED",0x80057798L,0x54L,256,0x0cL);
@@ -486,6 +534,7 @@ public class ExportManagerEconomyWriters extends GhidraScript {
             if(module.equals("MAIN_EXE")) {
                 exportEconomyGlobalSource();
                 exportB30SourceTables();
+                dumpB30ModeStateIndexMap();
                 dumpFunction(0x80012A80L);
                 dumpFunction(0x80012A8CL);
                 dumpFunction(0x80012780L);
