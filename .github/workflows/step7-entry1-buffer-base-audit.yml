@@ -8,6 +8,7 @@ on:
       - ".github/workflows/step7-entry1-buffer-base-audit.yml"
       - "tools/step7/ExportStage1EconomyAQ1.java"
       - "tools/step7/ExportStage1EconomyDeepContext.java"
+      - "tools/step7/ExportManagerEconomyWriters.java"
       - "tools/step7/ExportPendingParticipantDelta.java"
       - "tools/step7/ScanStage1EconomyData.py"
       - "tools/step7/SummarizeStage1EconomyCensus.py"
@@ -191,6 +192,7 @@ jobs:
           cp "$GITHUB_WORKSPACE/tools/step7/ExportPendingParticipantDelta.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportPendingParticipantDelta.java"
           cp "$GITHUB_WORKSPACE/tools/step7/ExportStage1EconomyAQ1.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportStage1EconomyAQ1.java"
           cp "$GITHUB_WORKSPACE/tools/step7/ExportStage1EconomyDeepContext.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportStage1EconomyDeepContext.java"
+          cp "$GITHUB_WORKSPACE/tools/step7/ExportManagerEconomyWriters.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportManagerEconomyWriters.java"
 
           set +e
           "$headless" "$project" Naruto_DATA_BIN_entry1_buffer_base \
@@ -225,6 +227,7 @@ jobs:
             -postScript ExportFunctionDetail.java "$out/aw1-manager-function-detail.txt" 0x80109994 0x80109F1C 0x80109FEC \
             -postScript ExportManagerFieldAccesses.java "$out/aw1-manager-b44-accesses.tsv" 0xB44 \
             -postScript ExportNumericLiteralReferences.java "$out/aw2-numeric-instruction-literals.tsv" \
+            -postScript ExportManagerEconomyWriters.java "$out/ay1-ay2-entry1.tsv" ENTRY1 \
             -postScript ExportCallWindows.java "$out/aw1-helper-call-windows.tsv" 0x800B770C 0x800BDC4C \
             -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
             > "$out/ghidra-headless.log" 2>&1
@@ -244,6 +247,38 @@ jobs:
               echo "aq1_deep_context_present=$([[ -s "$out/aq1-deep-context.tsv" ]] && echo yes || echo no)"
             } > "$out/run-summary.txt"
             tail -n 80 "$out/ghidra-headless.log" || true
+            exit 1
+          fi
+
+          exe_project="$root/ghidra-exe-project"
+          mkdir -p "$exe_project"
+          set +e
+          "$headless" "$exe_project" Naruto_SLPS_035_53_manager_economy \
+            -import "$input/SLPS_035.53" \
+            -loader BinaryLoader \
+            -loader-baseAddr 0x80010000 \
+            -loader-fileOffset 0x800 \
+            -loader-length 0x5D800 \
+            -loader-blockName MAIN_TEXT \
+            -processor "MIPS:LE:32:default" \
+            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -preScript PreparePsxExe.java \
+            -postScript ExportManagerEconomyWriters.java "$out/ay1-ay2-exe.tsv" MAIN_EXE \
+            -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
+            > "$out/ghidra-exe-headless.log" 2>&1
+          exe_rc=$?
+          set -e
+          if [[ "$exe_rc" -ne 0 || ! -s "$out/ay1-ay2-exe.tsv" ]]; then
+            {
+              echo "status=FAILURE"
+              echo "job=analyze-entry1-buffer-base"
+              echo "commit_sha=$GITHUB_SHA"
+              echo "entry1_exit_code=$rc"
+              echo "exe_exit_code=$exe_rc"
+              echo "ay1_ay2_entry1_present=$([[ -s "$out/ay1-ay2-entry1.tsv" ]] && echo yes || echo no)"
+              echo "ay1_ay2_exe_present=$([[ -s "$out/ay1-ay2-exe.tsv" ]] && echo yes || echo no)"
+            } > "$out/run-summary.txt"
+            tail -n 80 "$out/ghidra-exe-headless.log" || true
             exit 1
           fi
 
@@ -398,7 +433,7 @@ jobs:
           PY
           dest="reports/stage1_economy/aq1-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
-          for f in entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b44-accesses.tsv aw2-numeric-instruction-literals.tsv aw1-helper-call-windows.tsv aw1-manager-status.txt aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv aq1-recount.txt run-summary.txt input-identity.txt; do
+          for f in entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b44-accesses.tsv aw2-numeric-instruction-literals.tsv aw1-helper-call-windows.tsv aw1-manager-status.txt aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv ay1-ay2-entry1.tsv ay1-ay2-exe.tsv ghidra-exe-headless.log aq1-recount.txt run-summary.txt input-identity.txt; do
             if [ -f "$out/$f" ]; then cp "$out/$f" "$dest/$f"; fi
           done
           API="https://api.github.com/repos/$RESEARCH_REPO"
