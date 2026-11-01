@@ -2,8 +2,8 @@
 
 Repo: `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`, branch `main`.  
 Base audit: `a065e7d2a8932569a4e0a819e5562b365bb29c6e`.  
-HEAD sumber sebelum file laporan ini dibuat: `4e71d5eb9e9d1cafade9508b534d8f80a684ad2e`.  
-Perbandingan GitHub base→HEAD sumber: 69 commit maju, 0 di belakang; 103 berkas berbeda. Status di daftar menggunakan padanan `git diff --name-status` (A=added, M=modified, D=deleted). Laporan ini sendiri menambahkan satu berkas lagi.
+HEAD sumber sebelum file laporan ini dibuat: `df1812539747ec634a3e8d7199ba13a0353edeef`.  
+Perbandingan GitHub base→HEAD sumber: 75 commit maju, 0 di belakang; 105 berkas berbeda. Status di daftar menggunakan padanan `git diff --name-status` (A=added, M=modified, D=deleted). Laporan ini sendiri menambahkan satu berkas lagi.
 
 ## Status pekerjaan
 
@@ -58,7 +58,7 @@ Run **41274625876**, job **124754181385**, source SHA `214d6641b67b035300d7d8efb
 
 ## Daftar semua berkas berubah sejak base
 
-`git diff --name-status` padanan GitHub Compare base `a065e7d2a8932569a4e0a819e5562b365bb29c6e` → HEAD sumber di atas:
+`git diff --name-status` padanan GitHub Compare base `a065e7d2a8932569a4e0a819e5562b365bb29c6e` → HEAD sumber di atas (status: A=added, M=modified, D=deleted):
 A	`.github/workflows/at1-entry1-helper-a1-provenance.yml`
 A	`.github/workflows/at2-h6-flags-ab.yml`
 A	`.github/workflows/at3-an2-schedule-k0-k2.yml`
@@ -80,6 +80,7 @@ A	`reports/stage1_economy/AT1_STATIC_AUDIT_2026-11-01.md`
 A	`reports/stage1_economy/AT1_STATIC_FINAL_REPORT_2026-11-01.md`
 A	`reports/stage1_economy/AT2_RUNTIME_AUDIT_2026-11-01.md`
 A	`reports/stage1_economy/AT3_RUNTIME_AUDIT_2026-11-01.md`
+A	`reports/stage1_economy/AU0_FINAL_REPORT_2026-11-01.md`
 A	`reports/stage1_economy/AU1_ACCESSOR_DISASSEMBLY_2026-11-01.md`
 A	`reports/stage1_economy/AU2_SETTER_ARGUMENTS_2026-11-01.tsv`
 A	`reports/stage1_economy/aq1-run-41258690146/attempt-1/ACTIONS_RUN_SUMMARY.txt`
@@ -162,4 +163,4 @@ A	`reports/stage1_economy/at3-an2-schedule-k0-k2-run-41259662960/attempt-1/AT3_H
 A	`reports/stage1_economy/at3-an2-schedule-k0-k2-run-41259662960/attempt-1/AT3_LAUNCHES.tsv`
 A	`reports/stage1_economy/at3-an2-schedule-k0-k2-run-41259662960/attempt-1/AT3_SCRIPT_EXIT_CODE.txt`
 A	`reports/stage1_economy/at3-an2-schedule-k0-k2-run-41259662960/attempt-1/AT3_SUMMARY.txt`
-A	`reports/stage1_economy/AU0_FINAL_REPORT_2026-11-01.md` (berkas laporan ini)
+A	`reports/stage1_economy/au3-setter-helper-run-41274625876/attempt-1/ACTIONS_RUN_STATUS.txt`
