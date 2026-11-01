@@ -39,7 +39,7 @@ Program: PS-X EXE SLPS_035.53, base `0x80010000`. Statis; maksimum K4.
 
 ### Operand setter
 
-- `a0` masuk: indeks record; instruksi pertama menyalin ke `a2). Kemudian `a0` ditimpa menjadi pointer record.
+- `a0` masuk: indeks record; instruksi pertama menyalin ke `a2`. Kemudian `a0` ditimpa menjadi pointer record.
 - `a1` masuk: nilai 32-bit yang hendak ditulis; callee dapat membatasi nilainya. Jika nilai lebih besar dari 99999 menjadi 99999; jika lebih kecil dari -9999 menjadi -9999.
 - `a2`: salinan indeks untuk pemeriksaan dan kalkulasi offset.
 - `v0`: hasil pemeriksaan indeks / clamp dan nilai return (0 bila indeks tidak valid, 1 bila penulisan dilakukan).
@@ -71,13 +71,13 @@ Program: PS-X EXE SLPS_035.53, base `0x80010000`. Statis; maksimum K4.
 
 ### Operand getter
 
-- `a0` masuk: indeks record. Instruksi pertama menyalin indeks ke `a1); `a0` kemudian ditimpa menjadi basis `0x80070EA0 + index*0xB4).
-- `a1`: salinan indeks yang dibuat oleh callee; guard `a1<4) dan offset `a1*0xB4) menggunakan salinan ini. Nilai a1 dari caller tidak digunakan.
+- `a0` masuk: indeks record. Instruksi pertama menyalin indeks ke `a1`; `a0` kemudian ditimpa menjadi basis `0x80070EA0 + index*0xB4`.
+- `a1`: salinan indeks yang dibuat oleh callee; guard `a1<4` dan offset `a1*0xB4` menggunakan salinan ini. Nilai a1 dari caller tidak digunakan.
 - `v0`: temporary pemeriksaan indeks, lalu word hasil getter; return 0 bila indeks tidak valid.
 - `v1`: temporary kalkulasi stride.
 - `ra`: alamat kembali.
 - `zero`: register MIPS konstan bernilai 0; dipakai pada branch pembanding dan instruksi clear, bukan input yang dapat berubah.
-- Load word berada pada offset `+0x18) dari record terpilih.
+- Load word berada pada offset `+0x18` dari record terpilih.
 
 ## Rekonsiliasi event runtime AT3
 
@@ -86,8 +86,19 @@ Disassembly mengunci urutan register: saat breakpoint entry `0x800138EC), a0 mas
 | Call return RA | a0 pada entry | a1 pada entry | a0 pada return | a1 pada return | v0 |
 |---|---:|---:|---:|---:|---:|
 | 0x801053CC | 0 atau 1 | 0 atau 1 | 0x80070EA0 atau 0x80070F54 | 0 atau 1 | 0x000005DC |
-| 0x80105420 | 0 atau 1 | 0x801CEF08 | 0x80070EA0 atau 0x80070F54 | 0 atau 1 | 0x000005DC |
+| 0x80105420 | 0 atau 1 | 0x801CEF08 (fall-through) / s3 (BLTZ-taken) | 0x80070EA0 atau 0x80070F54 | 0 atau 1 | 0x000005DC |
 
-`0x80070F54 - 0x80070EA0 = 0xB4), sama dengan stride record. Nilai `a1=0x801CEF08` saat masuk getter kedua tidak menjadi indeks; `move a1,a0` langsung menimpanya. Pada call pertama, a1 caller-supplied yang tidak diketahui juga tidak relevan untuk indeks.
+`0x80070F54 - 0x80070EA0 = 0xB4`, sama dengan stride record. Nilai `a1=0x801CEF08` saat masuk getter kedua tidak menjadi indeks; `move a1,a0` langsung menimpanya. Pada call pertama, a1 caller-supplied yang tidak diketahui juga tidak relevan untuk indeks.
 
 Kesimpulan di atas membuktikan mekanika akses record pada dua fungsi. Identitas ekonomi/gameplay dari field di `+0x18` **TIDAK DITETAPKAN** oleh disassembly ini saja.
+
+## Koreksi asal a1 pada getter kedua
+
+Getter pertama dipanggil di 0x801053C4; delay slot caller 0x801053C8: move a0,s3. Instruksi pertamanya, 0x800138EC: move a1,a0, mengubah a1 menjadi s3. Pada BLTZ-taken tidak ada penulis a1 lagi sebelum getter kedua, sehingga a1=s3. Pada fall-through jalur menjalankan:
+
+```asm
+0x801053D0  lui v0,0x8014
+0x801053D4  lw a1,-0x5AAC(v0)   ; effective global slot 0x8013A554
+```
+
+Trace lama mengamati isi slot manager tersebut sebagai 0x801CEF08. Delay slot getter kedua 0x8010541C memberi a0=s3 dan instruksi pertama getter kedua move a1,a0 mengganti a1 masuk. Pointer manager bukan indeks getter.

@@ -6,7 +6,7 @@ Tanggal: 1 November 2026 (Asia/Jakarta). Repo tetap `zuppasoupfifaistimewa-png/n
 
 AT1(a) **TUNTAS — K4**: 14/14 call-site langsung ke setter `0x8001387C` direkonsiliasi dengan instruksi caller. Tabel lengkap, termasuk 12 instruksi sebelum tiap jal, delay slot, sumber basis, rantai stride, asal final a1, dan label census, ada di `AT1_SETTER_CALLS_RECONCILED_2026-11-01.tsv`.
 
-AT1(b) **TUNTAS — K4**: dua call-site getter dan kedua edge BLTZ dianalisis. `a0=s3` terbukti pada kedua call; v0 hasil getter pertama diuji oleh BLTZ lalu ditimpa instruksi delay-slot `lui v0,0x8014` pada kedua edge. Nilai konkret a1 pada jalur BLTZ-taken adalah **TIDAK TAHU** (a1 caller-saved setelah helper `0x80105BCC`), dan ketidakpastian itu dicatat eksplisit, bukan diisi tebakan. Pada fall-through, a1 berasal dari manager slot `0x8013A554`. Detail lengkap ada di TSV per-edge.
+AT1(b) **TUNTAS — K4**: kedua call memakai a0=s3. Getter pertama menjalankan move a1,a0, sehingga a1=s3 keluar dari getter pertama. Pada edge BLTZ-taken tidak ada instruksi yang menulis a1 sampai getter kedua; jadi a1=s3 saat masuk 0x80105418. Pada edge fall-through, lw a1,-0x5AAC(v0) di 0x801053D4 memuat pointer manager dari slot 0x8013A554 (nilai teramati 0x801CEF08), tetapi getter kedua segera menimpanya dengan move a1,a0.
 
 AT1(c) **TUNTAS — K4**: himpunan FIELD enam run dibandingkan per PC/fungsi. Jumlah: 1.188, 1.188, 1.163, 1.178, 1.188, 1.188. Diff TSV berisi 35 PC yang beda; 25 hilang pada run 41213474394, 10 pada run 41249242776. Penyebab eksporternya **TIDAK TAHU** dari bukti ini saja. Run 41208394883 sudah 1.188 sebelum perubahan exporter cfff770; jadi cfff770 tidak dinyatakan sebagai penyebab kenaikan/selisih.
 
@@ -54,19 +54,19 @@ Di antara 14 caller, tidak ada yang terbukti memperoleh final a1 dari slot tile-
 
 **Call PC 0x80105418**
 - Kedua jalur menuju call, jal taken dan fall-through, memakai delay slot `0x8010541C move a0,s3`: jadi `a0=s3`.
-- Pada BLTZ-taken, instruksi `lw a1,-0x5AAC(v0)` di 0x801053D4 dilewati. a1 yang sampai ke getter kedua mewarisi nilai a1 dari first getter path; nilai konkret **TIDAK TAHU** karena asalnya melibatkan a1 caller-saved di sekitar helper 0x80105BCC.
+- Pada BLTZ-taken, load manager di 0x801053D4 dilewati. Getter pertama di 0x801053C4 menjalankan move a1,a0; delay slot caller di 0x801053C8 menetapkan a0=s3. Tidak ada instruksi penulis a1 di antara getter pertama dan kedua, maka a1=s3 pada entry getter kedua.
 - Pada BLTZ-fall-through, a1 dimuat dari manager slot 0x8013A554 melalui `lw a1,-0x5AAC(v0)` di 0x801053D4; trace terdahulu mengamati 0x801CEF08.
 - Getter kedua mengembalikan `v0`, kemudian caller memindahkannya ke `a2` pada 0x80105440 sebelum `jal 0x8001B364`.
 
-Disassembly penuh getter membuktikan **a0 masuk adalah indeks**. Instruksi pertama `move a1,a0` menyalin indeks ke a1; guard `a1<4` dan kalkulasi offset `a1*0xB4` memakai salinan ini. Callee membentuk basis record sendiri di a0 (`0x80070EA0 + index*0xB4`). Nilai a1 caller-supplied tidak dipakai. Nilai a1 masuk pada jalur BLTZ-taken tetap TIDAK TAHU, tetapi tidak menentukan indeks.
+Disassembly penuh getter membuktikan a0 masuk adalah indeks; instruksi pertama move a1,a0 menyalin indeks ke a1. Karena getter pertama menerima a0=s3, a1=s3 diwariskan pada edge BLTZ-taken. Fall-through berbeda hanya karena 0x801053D4 memuat pointer manager 0x801CEF08 ke a1.
 
 ### Nasib v0 pada BLTZ dan argumen getter
 
 Pada call pertama `0x801053C4`, `v0` return diuji oleh `bltz v0,0x80105414` di `0x801053CC`. **Delay slot MIPS tetap berjalan pada kedua hasil branch**: `0x801053D0: lui v0,0x8014` menimpa nilai return segera setelah branch menguji tandanya.
 
-- **BLTZ-taken**: PC berpindah ke `0x80105414: li s0,0x20`; `v0` tetap hasil delay slot `0x80140000` saat call getter kedua mulai. `a1` tidak dimuat ulang; isinya diwarisi dari call getter pertama dan TIDAK TAHU.
+- **BLTZ-taken**: PC berpindah ke 0x80105414: li s0,0x20; v0 tetap hasil delay slot 0x80140000. Getter pertama telah menyalin a0=s3 ke a1 dan tidak ada penulis a1 pada edge ini; karena itu a1=s3 saat getter kedua mulai.
 - **BLTZ-fall-through**: eksekusi menjalankan `0x801053D4: lw a1,-0x5AAC(v0)`, sehingga `a1` menjadi pointer manager dari slot `0x8013A554`. Selanjutnya `v0` digunakan ulang untuk hitung indeks lalu memuat nilai `+0x478` dan `+0x474`; bukan return getter pertama lagi. Cabang-cabang pemeriksaan berikut menentukan apakah jalur mencapai getter kedua.
-- Pada kedua jalur yang sampai ke getter kedua `0x80105418`, delay slot `0x8010541C: move a0,s3` memberi `a0=s3` sebagai **indeks**. Getter segera menjalankan `move a1,a0`, sehingga a1 caller-supplied (termasuk pointer manager `0x801CEF08` pada fall-through) tertimpa sebelum guard/offset dan bukan argumen indeks aktual. Callee membentuk basis record di a0 sendiri lalu membaca word `+0x18`. Jalur BLTZ-taken tetap tidak diketahui untuk nilai a1 masuk, tetapi ketidakpastian itu tidak menghalangi penentuan indeks: indeks masuk tetap a0.
+- Pada kedua jalur ke getter kedua 0x80105418, delay slot 0x8010541C: move a0,s3 memberi a0=s3 sebagai indeks. Getter kedua segera menjalankan move a1,a0, sehingga a1 masukan (s3 pada taken atau pointer manager 0x801CEF08 pada fall-through) tertimpa sebelum guard/offset.
 - Return v0 dari getter kedua selanjutnya diteruskan sebagai `a2` ke `0x8001B364` lewat `move a2,v0` di `0x80105440`.
 
 ## AT1(c) — perbandingan FIELD
@@ -91,7 +91,35 @@ AQ1 census: `reports/stage1_economy/aq1-run-41249611249/attempt-1/aq1-economy-ce
 
 ## Klarifikasi getter (call-site 0x801053C4/0x80105418)
 
-Koreksi dan tabel lengkap per-edge tersedia dalam `AT1_GETTER_CALLS_RECONCILED_2026-11-01.tsv`. BLTZ di `0x801053CC` menguji v0 dari getter pertama; delay slot `0x801053D0 lui v0,0x8014` dieksekusi pada kedua edge. Jika BLTZ-taken, load manager pointer di `0x801053D4` dilewati dan nilai a1 yang diteruskan ke getter kedua TIDAK TAHU. Pada fall-through, `lw a1,-0x5AAC(v0)` mendapat manager slot `0x8013A554` (trace mengamati `0x801CEF08`). Pada kedua call ke getter, delay slot memberi `a0=s3` sebagai indeks. Getter menjalankan `move a1,a0` sebelum guard dan kalkulasi offset; a1 caller-supplied ditimpa. Getter membentuk `a0=0x80070EA0+index*0xB4`, membaca `+0x18`, dan return kedua dipindah ke a2 di `0x80105440`.
+Koreksi per-edge: getter pertama menyalin a0 ke a1; caller memberinya a0=s3. Edge BLTZ-taken membawa a1=s3 sampai getter kedua. Fall-through menjalankan lw a1,-0x5AAC(v0) di 0x801053D4 dari global slot 0x8013A554 (pointer teramati 0x801CEF08). Instruksi penuh dari call pertama sampai call kedua:
+
+```asm
+0x801053C4  jal   0x800138EC
+0x801053C8  move  a0,s3                 ; delay slot: getter pertama menerima a0=s3
+0x801053CC  bltz  v0,0x80105414
+0x801053D0  lui   v0,0x8014             ; branch delay slot, berjalan pada kedua edge
+0x801053D4  lw    a1,-0x5AAC(v0)        ; hanya fall-through: baca slot manager 0x8013A554
+0x801053D8  sll   v0,s3,0x1
+0x801053DC  addu  v0,v0,s3
+0x801053E0  sll   v0,v0,0x2
+0x801053E4  subu  v0,v0,s3
+0x801053E8  sll   a0,v0,0x3
+0x801053EC  addu  v0,a1,a0
+0x801053F0  lw    v1,0x478(v0)
+0x801053F4  li    v0,0x1
+0x801053F8  bne   v1,v0,0x80105418
+0x801053FC  clear s0
+0x80105400  addu  v0,a1,a0
+0x80105404  lh    v0,0x474(v0)
+0x80105408  nop
+0x8010540C  blez  v0,0x80105418
+0x80105410  nop
+0x80105414  li    s0,0x20              ; target BLTZ-taken
+0x80105418  jal   0x800138EC
+0x8010541C  move  a0,s3                 ; delay slot: getter kedua menerima a0=s3
+```
+
+Getter kedua mendapat a0=s3 pada delay slot 0x8010541C dan menjalankan move a1,a0 sebagai instruksi pertamanya; a1 masukan tidak menjadi indeks. Return getter kedua diteruskan sebagai a2 di 0x80105440.
 
 
 ## Koreksi AU1 — disassembly penuh accessor
