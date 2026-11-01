@@ -40,7 +40,7 @@ jobs:
           mkdir -p "$WORK"/{source,inputs,cards,resume,logs,launches} "$RUNNER_TEMP/ax4-output"
           echo "OUTDIR=$RUNNER_TEMP/ax4-output" >> "$GITHUB_ENV"
           sudo apt-get update -qq
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends xvfb x11-utils curl jq unzip python3
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends xvfb x11-utils curl jq unzip python3 lua5.1
       - name: Download and verify emulator disc BIOS and target checkpoint
         shell: bash
         run: |
@@ -121,6 +121,17 @@ jobs:
           for n in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
           xdpyinfo -display "$DISPLAY" >/dev/null
           echo "AX4_PRIVATE_INPUTS_VALIDATED=PASS"
+      - name: Generate and parse-check AX4 Lua source
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments python3 - <<'PY'
+          from pathlib import Path
+          from ax4_original_manager_code import lua_source
+          Path("/tmp/ax4-generated.lua").write_text(lua_source(), encoding="utf-8")
+          PY
+          luac5.1 -p /tmp/ax4-generated.lua
+          echo "AX4_LUA_SYNTAX=PASS"
       - name: Run original MIPS code slices from H6 on interpreter
         shell: bash
         run: |
