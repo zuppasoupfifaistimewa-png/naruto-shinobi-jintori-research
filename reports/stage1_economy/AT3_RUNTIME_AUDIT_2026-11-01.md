@@ -87,6 +87,19 @@ Hash RAM 2 MiB pertama berbeda antara schedule C (tanpa input) dan A (CIRCLE fra
 
 Perbedaan hash menunjukkan snapshot berbeda di kondisi yang dibandingkan, bukan penjelasan perubahan state maupun bukti bahwa input CIRCLE mengubah satu variabel game tertentu. Sebab rinci perubahan state tetap **TIDAK TAHU** dari hash agregat ini.
 
+### Hit breakpoint yang benar-benar teramati pada K2
+
+Di masing-masing schedule C dan A, agregat dua launch K2 (jendela frame 180–360) mencatat:
+
+| Jadwal | Setter 0x8001387C | Getter 0x800138EC | Helper 0x800B770C | Getter return |
+|---|---:|---:|---:|---:|
+| C | 0 | 720 | 0 | 720 |
+| A | 0 | 720 | 0 | 720 |
+
+K0 mencatat `NOT_MONITORED_BREAKPOINTS_OFF`, bukan hit count nol. Getter return yang diamati pada RA `0x801053CC` dan `0x80105420` menunjukkan `a0=0x80070EA0` atau `0x80070F54`, `a1=0` atau `1`, dan `v0=0x000005DC`. Di entry getter, `a0=0` atau `1`; pada call RA `0x80105420`, `a1=0x801CEF08) dapat tampak saat masuk, tetapi body penuh membuktikan a1 tersebut ditimpa oleh `move a1,a0`. Perincian register dan instruksi berada di laporan AU1.
+
+Hit count setter/helper bernilai nol hanya pada breakpoint dan jendela ini. Tidak ada inferensi bahwa setter/helper tidak dipanggil di frame, state, mode, atau jalur lain.
+
 ### Percobaan yang gagal
 
 | Run | Job | Source SHA | Kode keluar desimal | Hasil |
