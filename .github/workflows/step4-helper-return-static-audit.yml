@@ -189,7 +189,7 @@ jobs:
           from pathlib import Path
           text = Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace")
           def has_body(addr):
-              m = re.search(r"^=== TARGET (?:0x)?" + addr + r" ===\r?\n(.*?)(?=^=== TARGET |\\Z)", text, re.M | re.S | re.I)
+              m = re.search(r"^=== TARGET (?:0x)?" + addr + r" ===\r?\n(.*?)(?=^=== TARGET |\Z)", text, re.M | re.S | re.I)
               return bool(m and "RAW_FUNCTION_BODY_BEGIN" in m.group(1))
           if not has_body("80043f18") or not has_body("80043ab8"):
               raise SystemExit("INCOMPLETE: expected both target bodies")
