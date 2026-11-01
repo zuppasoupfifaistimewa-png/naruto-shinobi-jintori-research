@@ -1,0 +1,518 @@
+record_type	module	target_or_function	pc_or_ref	function_entry_or_block	function_name_or_detail	field_or_ref_type	width_or_ref_source	value_expression_or_instruction	pre_store_12_instructions	bytes_excerpt_hex_max64	notes
+META	MAIN_EXE	manager_slot=0x8013A554	runtime_observation=0x801CEF08	target_fields=0xB2A;0xB30;0xB38	program=SLPS_035.53	STATIC_ONLY	NO_EMULATOR	game_or_emulator_executed=no			all functions with manager-slot displacement or direct target-field displacement are candidate-scanned
+WRITER_SCAN_TOTAL	MAIN_EXE				confirmed=0	unresolved=0	candidate_functions_decompiled=0	decompile_failures=0	manager_slot=0x8013A554 runtime_observation=0x801CEF08		
+CALLER_REFERENCE	MAIN_EXE	0x80012a80	0x80012808	0x80012780	FUN_80012780	UNCONDITIONAL_CALL	DEFAULT	jal 0x80012a80	0x800127d8 nop || 0x800127dc sb v0,0xc(s0) || 0x800127e0 lbu v0,0x0(s1) || 0x800127e4 nop || 0x800127e8 sb v0,0x50(s0) || 0x800127ec lbu a0,0x1(s1) || 0x800127f0 jal 0x80013464 || 0x800127f4 _clear s0 || 0x800127f8 lw a0,0x8(s1) || 0x800127fc jal 0x80012a64 || 0x80012800 _nop || 0x80012804 lw a0,0xc(s1) || DELAY_SLOT=0x8001280c _nop	A0 4A 00 0C 00 00 00 00 11 00 24 92 A7 4A 00 0C	ReferenceManager xref; call/data type retained
+CALL_ARGUMENT_PROVENANCE	MAIN_EXE	0x80012a80	0x80012808	0x80012780	FUN_80012780	a0_argument	Pcode CALL input[1]	LOAD(PTRADD(0x7ff9b6dc,((INPUT((register, 0x10, 4)) OP27 0xff) OP32 0x30),scale=1))		A0 4A 00 0C 00 00 00 00 11 00 24 92 A7 4A 00 0C 00 00 00 00 02 00 24 92 84 55 00 0C 00 00 00 00 B8 4A 00 0C 21 20 00 00 06 80 02 3C 78 4C 52 24 21 10 12 02 00 00 45 90 E9 4A 00 0C FF 00 04 32	static decompiler def-use for first ABI argument; PHI/CALL_RET/INPUT indicate source not fully resolved
+CALLER_REFERENCE	MAIN_EXE	0x80012a80	0x80012f78	0x80012eac	FUN_80012eac	UNCONDITIONAL_CALL	DEFAULT	jal 0x80012a80	0x80012f48 nop || 0x80012f4c sb v0,0x50(s1) || 0x80012f50 lbu a0,0x1(s4) || 0x80012f54 jal 0x80013464 || 0x80012f58 _nop || 0x80012f5c lw v0,0x4(s4) || 0x80012f60 nop || 0x80012f64 sw v0,0xc80(s0) || 0x80012f68 lw a0,0x8(s4) || 0x80012f6c jal 0x80012a64 || 0x80012f70 _nop || 0x80012f74 lw a0,0xc(s4) || DELAY_SLOT=0x80012f7c _nop	A0 4A 00 0C 00 00 00 00 11 00 84 92 A7 4A 00 0C	ReferenceManager xref; call/data type retained
+CALL_ARGUMENT_PROVENANCE	MAIN_EXE	0x80012a80	0x80012f78	0x80012eac	FUN_80012eac	a0_argument	Pcode CALL input[1]	LOAD(PTRADD(0x7ffa885c,(LOAD(PTRADD(0x7ffa78a8,((0x80070734 OP32 0x84) + (0x8007073c OP32 0xc)),scale=1)) OP32 0x54),scale=1))		A0 4A 00 0C 00 00 00 00 11 00 84 92 A7 4A 00 0C 00 00 00 00 02 00 84 92 84 55 00 0C 00 00 00 00 01 00 02 24 53 00 22 A2 B8 4A 00 0C 21 20 00 00 21 88 00 00 FF 00 24 32 E9 4A 00 0C 21 28 00 00	static decompiler def-use for first ABI argument; PHI/CALL_RET/INPUT indicate source not fully resolved
+ECONOMY_GLOBAL_META	MAIN_EXE	0x80070c88			_DAT_80070C88	UNMAPPED	NO_INITIALIZED_BYTES				FUN_80012A8C statically reads this global; numerical value only if loaded/initialized bytes exist
+ECONOMY_GLOBAL_XREF	MAIN_EXE	0x80070c88	0x80012a88	0x80012a80	FUN_80012a80	WRITE	ANALYSIS	_sw a0,0xc88(v0)	PRECOUNT=2; 0x80012a80 lui v0,0x8007 || 0x80012a84 jr ra	88 0C 44 AC 07 80 02 3C 88 0C 42 8C 08 00 E0 03	ReferenceManager xref; store/load semantics require opcode inspection
+ECONOMY_GLOBAL_XREF	MAIN_EXE	0x80070c88	0x800123ac	0x8001238c	FUN_8001238c	READ	ANALYSIS	lw a3,0x8(v1)	PRECOUNT=8; 0x8001238c lui v0,0x8007 || 0x80012390 addiu v0,v0,0x730 || 0x80012394 lui v1,0x8007 || 0x80012398 addiu v0,v0,0x5c || 0x8001239c addiu v1,v1,0xc80 || 0x800123a0 addiu a0,v1,0x210 || 0x800123a4 lw a1,0x0(v1) || 0x800123a8 lw a2,0x4(v1)	08 00 67 8C 0C 00 68 8C 00 00 45 AC 04 00 46 AC	ReferenceManager xref; store/load semantics require opcode inspection
+ECONOMY_GLOBAL_DISPLACEMENT_CANDIDATE	MAIN_EXE	0x80070c88	0x80012a88	0x80012a80	FUN_80012a80	_sw	_sw a0,0xc88(v0)	effective address requires preceding base-register provenance	PRECOUNT=2; 0x80012a80 lui v0,0x8007 || 0x80012a84 jr ra	88 0C 44 AC 07 80 02 3C 88 0C 42 8C 08 00 E0 03	static instruction contains displacement candidate for global +0x80070C88; validate its base register
+ECONOMY_GLOBAL_XREF_TOTAL	MAIN_EXE	0x80070c88				reference_manager_refs=2	memory_block=UNMAPPED	value=NO_INITIALIZED_BYTES	unaligned_function_pointer_words_total=0			no runtime
+FUNCTION_DECOMPILE	MAIN_EXE	0x80012a80		0x80012a80	FUN_80012a80	C_BODY	static decompiler	 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */  void FUN_80012a80(undefined4 param_1)  {   _DAT_80070c88 = param_1;   return; }  			no runtime
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012a80	0x80012a80	0x80012a80	FUN_80012a80	lui	lui v0,0x8007			07 80 02 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012a80	0x80012a84	0x80012a80	FUN_80012a80	jr	jr ra			08 00 E0 03	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012a80	0x80012a88	0x80012a80	FUN_80012a80	_sw	_sw a0,0xc88(v0)			88 0C 44 AC	static disassembly for provenance context
+FUNCTION_DECOMPILE	MAIN_EXE	0x80012a8c		0x80012a8c	FUN_80012a8c	C_BODY	static decompiler	 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */  undefined4 FUN_80012a8c(void)  {   return _DAT_80070c88; }  			no runtime
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012a8c	0x80012a8c	0x80012a8c	FUN_80012a8c	lui	lui v0,0x8007			07 80 02 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012a8c	0x80012a90	0x80012a8c	FUN_80012a8c	lw	lw v0,0xc88(v0)			88 0C 42 8C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012a8c	0x80012a94	0x80012a8c	FUN_80012a8c	jr	jr ra			08 00 E0 03	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012a8c	0x80012a98	0x80012a8c	FUN_80012a8c	_nop	_nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_DECOMPILE	MAIN_EXE	0x80012780		0x80012780	FUN_80012780	C_BODY	static decompiler	 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */  undefined4 FUN_80012780(uint param_1)  {   ushort uVar1;   undefined1 *puVar2;   int iVar3;   uint uVar4;   uint uVar5;   int iVar6;   int iVar7;      FUN_80035d48(&DAT_80070c80,0,0x214);   iVar3 = (param_1 & 0xff) * 0x30;   _DAT_80070c80 = *(undefined4 *)(&DAT_8006491c + iVar3);   DAT_80070c8c = (&DAT_80064928)[iVar3];   DAT_80070cd0 = (&DAT_80064918)[iVar3];   FUN_80013464((&DAT_80064919)[iVar3]);   FUN_80012a64(*(undefined4 *)(&DAT_80064920 + iVar3));   FUN_80012a80(*(undefined4 *)(&DAT_80064924 + iVar3));   FUN_80012a9c((&DAT_80064929)[iVar3]);   FUN_80015610((&DAT_8006491a)[iVar3]);   FUN_80012ae0(0);   puVar2 = &DAT_80064c78;   uVar4 = 0;   do {     FUN_80012ba4(uVar4 & 0xff,*puVar2);     uVar5 = uVar4 + 1;     puVar2 = &DAT_80064c79 + uVar4;     uVar4 = uVar5;   } while ((int)uVar5 < 0x10);   _DAT_80070c8e = 0;   iVar6 = 0;   do {     uVar1 = FUN_80012ad0();     FUN_80012ae0(*(ushort *)(&DAT_8006492a + iVar6 * 4 + iVar3) | uVar1);     iVar6 = iVar6 + 1;   } while (iVar6 < 4);   puVar2 = (undefined1 *)0x80070cf6;   iVar6 = 0;   do {     *puVar2 = (&DAT_8006493a)[iVar6 + iVar3];     iVar7 = iVar6 + 1;     puVar2 = (undefined1 *)(iVar6 + -0x7ff8f309);     iVar6 = iVar7;   } while (iVar7 < 0xc);   DAT_80070cd3 = 1;   return 1; }  			no runtime
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012780	0x80012780	FUN_80012780	addiu	addiu sp,sp,-0x20			E0 FF BD 27	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012784	0x80012780	FUN_80012780	sw	sw ra,0x1c(sp)			1C 00 BF AF	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012788	0x80012780	FUN_80012780	sw	sw s2,0x18(sp)			18 00 B2 AF	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x8001278c	0x80012780	FUN_80012780	sw	sw s1,0x14(sp)			14 00 B1 AF	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012790	0x80012780	FUN_80012780	sw	sw s0,0x10(sp)			10 00 B0 AF	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012794	0x80012780	FUN_80012780	andi	andi s1,a0,0xff			FF 00 91 30	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012798	0x80012780	FUN_80012780	lui	lui s2,0x8007			07 80 12 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x8001279c	0x80012780	FUN_80012780	addiu	addiu s0,s2,0xc80			80 0C 50 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127a0	0x80012780	FUN_80012780	move	move a0,s0			21 20 00 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127a4	0x80012780	FUN_80012780	clear	clear a1			21 28 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127a8	0x80012780	FUN_80012780	jal	jal 0x80035d48			52 D7 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127ac	0x80012780	FUN_80012780	_li	_li a2,0x214			14 02 06 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127b0	0x80012780	FUN_80012780	sll	sll v1,s1,0x1			40 18 11 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127b4	0x80012780	FUN_80012780	addu	addu v1,v1,s1			21 18 71 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127b8	0x80012780	FUN_80012780	sll	sll v1,v1,0x4			00 19 03 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127bc	0x80012780	FUN_80012780	lui	lui v0,0x8006			06 80 02 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127c0	0x80012780	FUN_80012780	addiu	addiu v0,v0,0x4918			18 49 42 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127c4	0x80012780	FUN_80012780	addu	addu s1,v1,v0			21 88 62 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127c8	0x80012780	FUN_80012780	lw	lw v0,0x4(s1)			04 00 22 8E	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127cc	0x80012780	FUN_80012780	nop	nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127d0	0x80012780	FUN_80012780	sw	sw v0,0xc80(s2)			80 0C 42 AE	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127d4	0x80012780	FUN_80012780	lbu	lbu v0,0x10(s1)			10 00 22 92	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127d8	0x80012780	FUN_80012780	nop	nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127dc	0x80012780	FUN_80012780	sb	sb v0,0xc(s0)			0C 00 02 A2	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127e0	0x80012780	FUN_80012780	lbu	lbu v0,0x0(s1)			00 00 22 92	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127e4	0x80012780	FUN_80012780	nop	nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127e8	0x80012780	FUN_80012780	sb	sb v0,0x50(s0)			50 00 02 A2	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127ec	0x80012780	FUN_80012780	lbu	lbu a0,0x1(s1)			01 00 24 92	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127f0	0x80012780	FUN_80012780	jal	jal 0x80013464			19 4D 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127f4	0x80012780	FUN_80012780	_clear	_clear s0			21 80 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127f8	0x80012780	FUN_80012780	lw	lw a0,0x8(s1)			08 00 24 8E	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800127fc	0x80012780	FUN_80012780	jal	jal 0x80012a64			99 4A 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012800	0x80012780	FUN_80012780	_nop	_nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012804	0x80012780	FUN_80012780	lw	lw a0,0xc(s1)			0C 00 24 8E	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012808	0x80012780	FUN_80012780	jal	jal 0x80012a80			A0 4A 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x8001280c	0x80012780	FUN_80012780	_nop	_nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012810	0x80012780	FUN_80012780	lbu	lbu a0,0x11(s1)			11 00 24 92	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012814	0x80012780	FUN_80012780	jal	jal 0x80012a9c			A7 4A 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012818	0x80012780	FUN_80012780	_nop	_nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x8001281c	0x80012780	FUN_80012780	lbu	lbu a0,0x2(s1)			02 00 24 92	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012820	0x80012780	FUN_80012780	jal	jal 0x80015610			84 55 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012824	0x80012780	FUN_80012780	_nop	_nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012828	0x80012780	FUN_80012780	jal	jal 0x80012ae0			B8 4A 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x8001282c	0x80012780	FUN_80012780	_clear	_clear a0			21 20 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012830	0x80012780	FUN_80012780	lui	lui v0,0x8006			06 80 02 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012834	0x80012780	FUN_80012780	addiu	addiu s2,v0,0x4c78			78 4C 52 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012838	0x80012780	FUN_80012780	addu	addu v0,s0,s2			21 10 12 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x8001283c	0x80012780	FUN_80012780	lbu	lbu a1,0x0(v0)			00 00 45 90	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012840	0x80012780	FUN_80012780	jal	jal 0x80012ba4			E9 4A 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012844	0x80012780	FUN_80012780	_andi	_andi a0,s0,0xff			FF 00 04 32	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012848	0x80012780	FUN_80012780	addiu	addiu s0,s0,0x1			01 00 10 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x8001284c	0x80012780	FUN_80012780	slti	slti v0,s0,0x10			10 00 02 2A	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012850	0x80012780	FUN_80012780	bne	bne v0,zero,0x8001283c			FA FF 40 14	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012854	0x80012780	FUN_80012780	_addu	_addu v0,s0,s2			21 10 12 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012858	0x80012780	FUN_80012780	lui	lui v0,0x8007			07 80 02 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x8001285c	0x80012780	FUN_80012780	sh	sh zero,0xc8e(v0)			8E 0C 40 A4	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012860	0x80012780	FUN_80012780	clear	clear s0			21 80 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012864	0x80012780	FUN_80012780	addiu	addiu s2,s1,0x12			12 00 32 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012868	0x80012780	FUN_80012780	jal	jal 0x80012ad0			B4 4A 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x8001286c	0x80012780	FUN_80012780	_nop	_nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012870	0x80012780	FUN_80012780	sll	sll v1,s0,0x2			80 18 10 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012874	0x80012780	FUN_80012780	addu	addu v1,s2,v1			21 18 43 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012878	0x80012780	FUN_80012780	lhu	lhu a0,0x0(v1)			00 00 64 94	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x8001287c	0x80012780	FUN_80012780	nop	nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012880	0x80012780	FUN_80012780	or	or a0,a0,v0			25 20 82 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012884	0x80012780	FUN_80012780	jal	jal 0x80012ae0			B8 4A 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012888	0x80012780	FUN_80012780	_andi	_andi a0,a0,0xffff			FF FF 84 30	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x8001288c	0x80012780	FUN_80012780	addiu	addiu s0,s0,0x1			01 00 10 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012890	0x80012780	FUN_80012780	slti	slti v0,s0,0x4			04 00 02 2A	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012894	0x80012780	FUN_80012780	bne	bne v0,zero,0x80012868			F4 FF 40 14	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x80012898	0x80012780	FUN_80012780	_lui	_lui v0,0x8007			07 80 02 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x8001289c	0x80012780	FUN_80012780	clear	clear s0			21 80 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128a0	0x80012780	FUN_80012780	addiu	addiu a1,v0,0xcf6			F6 0C 45 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128a4	0x80012780	FUN_80012780	addiu	addiu a0,s1,0x22			22 00 24 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128a8	0x80012780	FUN_80012780	addu	addu v1,s0,a1			21 18 05 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128ac	0x80012780	FUN_80012780	addu	addu v0,a0,s0			21 10 90 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128b0	0x80012780	FUN_80012780	lbu	lbu v0,0x0(v0)			00 00 42 90	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128b4	0x80012780	FUN_80012780	nop	nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128b8	0x80012780	FUN_80012780	sb	sb v0,0x0(v1)			00 00 62 A0	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128bc	0x80012780	FUN_80012780	addiu	addiu s0,s0,0x1			01 00 10 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128c0	0x80012780	FUN_80012780	slti	slti v0,s0,0xc			0C 00 02 2A	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128c4	0x80012780	FUN_80012780	bne	bne v0,zero,0x800128ac			F9 FF 40 14	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128c8	0x80012780	FUN_80012780	_addu	_addu v1,s0,a1			21 18 05 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128cc	0x80012780	FUN_80012780	lui	lui v1,0x8007			07 80 03 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128d0	0x80012780	FUN_80012780	li	li v0,0x1			01 00 02 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128d4	0x80012780	FUN_80012780	sb	sb v0,0xcd3(v1)			D3 0C 62 A0	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128d8	0x80012780	FUN_80012780	li	li v0,0x1			01 00 02 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128dc	0x80012780	FUN_80012780	lw	lw ra,0x1c(sp)			1C 00 BF 8F	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128e0	0x80012780	FUN_80012780	lw	lw s2,0x18(sp)			18 00 B2 8F	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128e4	0x80012780	FUN_80012780	lw	lw s1,0x14(sp)			14 00 B1 8F	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128e8	0x80012780	FUN_80012780	lw	lw s0,0x10(sp)			10 00 B0 8F	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128ec	0x80012780	FUN_80012780	jr	jr ra			08 00 E0 03	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012780	0x800128f0	0x80012780	FUN_80012780	_addiu	_addiu sp,sp,0x20			20 00 BD 27	static disassembly for provenance context
+FUNCTION_DECOMPILE	MAIN_EXE	0x80012eac		0x80012eac	FUN_80012eac	C_BODY	static decompiler	 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */  void FUN_80012eac(void)  {   undefined1 uVar1;   ushort uVar2;   int iVar3;   int iVar4;   undefined1 *puVar5;   undefined4 uVar6;   int iVar7;   uint uVar8;   int iVar9;   int iVar10;      iVar3 = (uint)(byte)(&DAT_80058758)[_DAT_80070734 * 0x84 + (uint)DAT_8007073c * 0xc] * 0x54;   DAT_80070cd0 = (&DAT_80057798)[iVar3];   FUN_80013464((&DAT_80057799)[iVar3]);   _DAT_80070c80 = *(undefined4 *)(&DAT_8005779c + iVar3);   FUN_80012a64(*(undefined4 *)(&DAT_800577a0 + iVar3));   FUN_80012a80(*(undefined4 *)(&DAT_800577a4 + iVar3));   FUN_80012a9c((&DAT_800577a9)[iVar3]);   FUN_80015610((&DAT_8005779a)[iVar3]);   DAT_80070cd3 = 1;   FUN_80012ae0(0);   uVar8 = 0;   do {     FUN_80012ba4(uVar8 & 0xff,0);     uVar8 = uVar8 + 1;   } while ((int)uVar8 < 0x10);   iVar9 = 0;   do {     uVar8 = 0;     uVar2 = FUN_80012ad0();     FUN_80012ae0(*(ushort *)(&DAT_800577aa + iVar9 * 4 + iVar3) | uVar2);     do {       if (((int)(uint)*(ushort *)(&DAT_800577aa + iVar9 * 4 + iVar3) >> (uVar8 & 0x1f) & 1U) != 0) {         FUN_80012ba4(uVar8 & 0xff,(int)*(short *)(&DAT_800577ac + iVar9 * 4 + iVar3));       }       uVar8 = uVar8 + 1;     } while ((int)uVar8 < 0x10);     iVar9 = iVar9 + 1;   } while (iVar9 < 4);   puVar5 = (undefined1 *)0x80070cf6;   iVar9 = 0;   do {     *puVar5 = (&DAT_800577ba)[iVar9 + iVar3];     iVar10 = iVar9 + 1;     puVar5 = (undefined1 *)(iVar9 + -0x7ff8f309);     iVar9 = iVar10;   } while (iVar10 < 0xc);   iVar10 = 0;   FUN_80013498();   iVar9 = 0;   if ((byte)(&DAT_800577c6)[iVar3] < 0xd) {     iVar4 = 0;     do {       FUN_8001373c(iVar9,(&DAT_800577c6)[iVar4 + iVar9 + iVar3]);       iVar7 = 0;       iVar4 = iVar9 * 4;       do {         FUN_80016258(iVar9,iVar7,(&DAT_800577da)[iVar4 + iVar3]);         iVar7 = iVar7 + 1;         iVar4 = iVar7 + iVar9 * 4;       } while (iVar7 < 4);       iVar4 = FUN_8001378c(iVar9);       iVar7 = iVar9 * 0xb4;       iVar4 = iVar4 * 9;       uVar6 = *(undefined4 *)(&DAT_80064c8c + iVar4);       uVar1 = (&DAT_80064c90)[iVar4];       *(undefined4 *)(iVar7 + -0x7ff8f0b6) = *(undefined4 *)(&DAT_80064c88 + iVar4);       *(undefined4 *)(iVar7 + -0x7ff8f0b2) = uVar6;       *(undefined1 *)(iVar7 + -0x7ff8f0ae) = uVar1;       iVar4 = FUN_8001378c(iVar9);       uVar1 = (&DAT_80064d01)[iVar4 * 2];       *(undefined *)(iVar7 + -0x7ff8f0ad) = (&DAT_80064d00)[iVar4 * 2];       *(undefined1 *)(iVar7 + -0x7ff8f0ac) = uVar1;       FUN_8001387c(iVar9,*(undefined4 *)(&DAT_8005779c + iVar3));       iVar7 = 0;       iVar4 = iVar9 * 5;       do {         FUN_80014450(iVar9,iVar7,(&DAT_800577c7)[iVar4 + iVar3]);         iVar7 = iVar7 + 1;         iVar4 = iVar7 + iVar9 * 5;       } while (iVar7 < 4);       FUN_800143ac(iVar9,(&DAT_800577a8)[iVar3]);       if ((&DAT_80057798)[iVar3] == '\x11') {         uVar6 = 1;         if (iVar9 == 1) { LAB_800131f4:           FUN_80013620(uVar6,0);         }         else {           FUN_80013620(iVar9,1);         }       }       else {         if (iVar9 == 0) {           uVar6 = 0;           goto LAB_800131f4;         }         FUN_80013620(iVar9,1);       }       iVar10 = iVar10 + 1;       iVar9 = iVar9 + 1;     } while ((iVar9 < 4) && (iVar4 = iVar9 * 4, (byte)(&DAT_800577c6)[iVar9 * 5 + iVar3] < 0xd));   }   FUN_800135bc(iVar10);   FUN_80012c64(0);   FUN_80035d48(0x80070cd4,0,0x20);   return; }  			no runtime
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012eac	0x80012eac	FUN_80012eac	addiu	addiu sp,sp,-0x38			C8 FF BD 27	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012eb0	0x80012eac	FUN_80012eac	sw	sw ra,0x34(sp)			34 00 BF AF	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012eb4	0x80012eac	FUN_80012eac	sw	sw s8,0x30(sp)			30 00 BE AF	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012eb8	0x80012eac	FUN_80012eac	sw	sw s7,0x2c(sp)			2C 00 B7 AF	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ebc	0x80012eac	FUN_80012eac	sw	sw s6,0x28(sp)			28 00 B6 AF	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ec0	0x80012eac	FUN_80012eac	sw	sw s5,0x24(sp)			24 00 B5 AF	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ec4	0x80012eac	FUN_80012eac	sw	sw s4,0x20(sp)			20 00 B4 AF	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ec8	0x80012eac	FUN_80012eac	sw	sw s3,0x1c(sp)			1C 00 B3 AF	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ecc	0x80012eac	FUN_80012eac	sw	sw s2,0x18(sp)			18 00 B2 AF	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ed0	0x80012eac	FUN_80012eac	sw	sw s1,0x14(sp)			14 00 B1 AF	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ed4	0x80012eac	FUN_80012eac	sw	sw s0,0x10(sp)			10 00 B0 AF	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ed8	0x80012eac	FUN_80012eac	lui	lui a1,0x8006			06 80 05 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012edc	0x80012eac	FUN_80012eac	addiu	addiu a1,a1,-0x78a8			58 87 A5 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ee0	0x80012eac	FUN_80012eac	lui	lui v0,0x8007			07 80 02 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ee4	0x80012eac	FUN_80012eac	addiu	addiu v0,v0,0x730			30 07 42 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ee8	0x80012eac	FUN_80012eac	lbu	lbu a0,0xc(v0)			0C 00 44 90	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012eec	0x80012eac	FUN_80012eac	nop	nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ef0	0x80012eac	FUN_80012eac	sll	sll v1,a0,0x1			40 18 04 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ef4	0x80012eac	FUN_80012eac	addu	addu v1,v1,a0			21 18 64 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ef8	0x80012eac	FUN_80012eac	lw	lw a0,0x4(v0)			04 00 44 8C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012efc	0x80012eac	FUN_80012eac	nop	nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f00	0x80012eac	FUN_80012eac	sll	sll v0,a0,0x5			40 11 04 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f04	0x80012eac	FUN_80012eac	addu	addu v0,v0,a0			21 10 44 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f08	0x80012eac	FUN_80012eac	addu	addu v0,v0,v1			21 10 43 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f0c	0x80012eac	FUN_80012eac	sll	sll v0,v0,0x2			80 10 02 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f10	0x80012eac	FUN_80012eac	addu	addu v0,v0,a1			21 10 45 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f14	0x80012eac	FUN_80012eac	lbu	lbu v1,0x0(v0)			00 00 43 90	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f18	0x80012eac	FUN_80012eac	nop	nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f1c	0x80012eac	FUN_80012eac	sll	sll v0,v1,0x2			80 10 03 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f20	0x80012eac	FUN_80012eac	addu	addu v0,v0,v1			21 10 43 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f24	0x80012eac	FUN_80012eac	sll	sll v0,v0,0x2			80 10 02 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f28	0x80012eac	FUN_80012eac	addu	addu v0,v0,v1			21 10 43 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f2c	0x80012eac	FUN_80012eac	sll	sll v0,v0,0x2			80 10 02 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f30	0x80012eac	FUN_80012eac	lui	lui v1,0x8005			05 80 03 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f34	0x80012eac	FUN_80012eac	addiu	addiu v1,v1,0x7798			98 77 63 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f38	0x80012eac	FUN_80012eac	addu	addu s4,v0,v1			21 A0 43 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f3c	0x80012eac	FUN_80012eac	lui	lui s0,0x8007			07 80 10 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f40	0x80012eac	FUN_80012eac	addiu	addiu s1,s0,0xc80			80 0C 11 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f44	0x80012eac	FUN_80012eac	lbu	lbu v0,0x0(s4)			00 00 82 92	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f48	0x80012eac	FUN_80012eac	nop	nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f4c	0x80012eac	FUN_80012eac	sb	sb v0,0x50(s1)			50 00 22 A2	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f50	0x80012eac	FUN_80012eac	lbu	lbu a0,0x1(s4)			01 00 84 92	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f54	0x80012eac	FUN_80012eac	jal	jal 0x80013464			19 4D 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f58	0x80012eac	FUN_80012eac	_nop	_nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f5c	0x80012eac	FUN_80012eac	lw	lw v0,0x4(s4)			04 00 82 8E	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f60	0x80012eac	FUN_80012eac	nop	nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f64	0x80012eac	FUN_80012eac	sw	sw v0,0xc80(s0)			80 0C 02 AE	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f68	0x80012eac	FUN_80012eac	lw	lw a0,0x8(s4)			08 00 84 8E	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f6c	0x80012eac	FUN_80012eac	jal	jal 0x80012a64			99 4A 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f70	0x80012eac	FUN_80012eac	_nop	_nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f74	0x80012eac	FUN_80012eac	lw	lw a0,0xc(s4)			0C 00 84 8E	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f78	0x80012eac	FUN_80012eac	jal	jal 0x80012a80			A0 4A 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f7c	0x80012eac	FUN_80012eac	_nop	_nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f80	0x80012eac	FUN_80012eac	lbu	lbu a0,0x11(s4)			11 00 84 92	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f84	0x80012eac	FUN_80012eac	jal	jal 0x80012a9c			A7 4A 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f88	0x80012eac	FUN_80012eac	_nop	_nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f8c	0x80012eac	FUN_80012eac	lbu	lbu a0,0x2(s4)			02 00 84 92	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f90	0x80012eac	FUN_80012eac	jal	jal 0x80015610			84 55 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f94	0x80012eac	FUN_80012eac	_nop	_nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f98	0x80012eac	FUN_80012eac	li	li v0,0x1			01 00 02 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012f9c	0x80012eac	FUN_80012eac	sb	sb v0,0x53(s1)			53 00 22 A2	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fa0	0x80012eac	FUN_80012eac	jal	jal 0x80012ae0			B8 4A 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fa4	0x80012eac	FUN_80012eac	_clear	_clear a0			21 20 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fa8	0x80012eac	FUN_80012eac	clear	clear s1			21 88 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fac	0x80012eac	FUN_80012eac	andi	andi a0,s1,0xff			FF 00 24 32	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fb0	0x80012eac	FUN_80012eac	jal	jal 0x80012ba4			E9 4A 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fb4	0x80012eac	FUN_80012eac	_clear	_clear a1			21 28 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fb8	0x80012eac	FUN_80012eac	addiu	addiu s1,s1,0x1			01 00 31 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fbc	0x80012eac	FUN_80012eac	slti	slti v0,s1,0x10			10 00 22 2A	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fc0	0x80012eac	FUN_80012eac	bne	bne v0,zero,0x80012fac			FA FF 40 14	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fc4	0x80012eac	FUN_80012eac	_addiu	_addiu s5,s4,0x12			12 00 95 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fc8	0x80012eac	FUN_80012eac	clear	clear s1			21 88 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fcc	0x80012eac	FUN_80012eac	addiu	addiu s6,s4,0x14			14 00 96 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fd0	0x80012eac	FUN_80012eac	jal	jal 0x80012ad0			B4 4A 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fd4	0x80012eac	FUN_80012eac	_clear	_clear s0			21 80 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fd8	0x80012eac	FUN_80012eac	sll	sll v1,s1,0x2			80 18 11 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fdc	0x80012eac	FUN_80012eac	addu	addu v1,s5,v1			21 18 A3 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fe0	0x80012eac	FUN_80012eac	lhu	lhu a0,0x0(v1)			00 00 64 94	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fe4	0x80012eac	FUN_80012eac	nop	nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fe8	0x80012eac	FUN_80012eac	or	or a0,a0,v0			25 20 82 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012fec	0x80012eac	FUN_80012eac	jal	jal 0x80012ae0			B8 4A 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ff0	0x80012eac	FUN_80012eac	_andi	_andi a0,a0,0xffff			FF FF 84 30	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ff4	0x80012eac	FUN_80012eac	sll	sll v0,s1,0x2			80 10 11 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ff8	0x80012eac	FUN_80012eac	addu	addu s3,s5,v0			21 98 A2 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80012ffc	0x80012eac	FUN_80012eac	addu	addu s2,s6,v0			21 90 C2 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013000	0x80012eac	FUN_80012eac	lhu	lhu v0,0x0(s3)			00 00 62 96	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013004	0x80012eac	FUN_80012eac	nop	nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013008	0x80012eac	FUN_80012eac	srav	srav v0,v0,s0			07 10 02 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001300c	0x80012eac	FUN_80012eac	andi	andi v0,v0,0x1			01 00 42 30	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013010	0x80012eac	FUN_80012eac	beq	beq v0,zero,0x80013024			04 00 40 10	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013014	0x80012eac	FUN_80012eac	_nop	_nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013018	0x80012eac	FUN_80012eac	lh	lh a1,0x0(s2)			00 00 45 86	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001301c	0x80012eac	FUN_80012eac	jal	jal 0x80012ba4			E9 4A 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013020	0x80012eac	FUN_80012eac	_andi	_andi a0,s0,0xff			FF 00 04 32	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013024	0x80012eac	FUN_80012eac	addiu	addiu s0,s0,0x1			01 00 10 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013028	0x80012eac	FUN_80012eac	slti	slti v0,s0,0x10			10 00 02 2A	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001302c	0x80012eac	FUN_80012eac	bne	bne v0,zero,0x80013000			F4 FF 40 14	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013030	0x80012eac	FUN_80012eac	_nop	_nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013034	0x80012eac	FUN_80012eac	addiu	addiu s1,s1,0x1			01 00 31 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013038	0x80012eac	FUN_80012eac	slti	slti v0,s1,0x4			04 00 22 2A	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001303c	0x80012eac	FUN_80012eac	bne	bne v0,zero,0x80012fd0			E4 FF 40 14	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013040	0x80012eac	FUN_80012eac	_lui	_lui v0,0x8007			07 80 02 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013044	0x80012eac	FUN_80012eac	clear	clear s1			21 88 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013048	0x80012eac	FUN_80012eac	addiu	addiu a1,v0,0xcf6			F6 0C 45 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001304c	0x80012eac	FUN_80012eac	addiu	addiu a0,s4,0x22			22 00 84 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013050	0x80012eac	FUN_80012eac	addu	addu v1,s1,a1			21 18 25 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013054	0x80012eac	FUN_80012eac	addu	addu v0,a0,s1			21 10 91 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013058	0x80012eac	FUN_80012eac	lbu	lbu v0,0x0(v0)			00 00 42 90	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001305c	0x80012eac	FUN_80012eac	nop	nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013060	0x80012eac	FUN_80012eac	sb	sb v0,0x0(v1)			00 00 62 A0	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013064	0x80012eac	FUN_80012eac	addiu	addiu s1,s1,0x1			01 00 31 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013068	0x80012eac	FUN_80012eac	slti	slti v0,s1,0xc			0C 00 22 2A	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001306c	0x80012eac	FUN_80012eac	bne	bne v0,zero,0x80013054			F9 FF 40 14	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013070	0x80012eac	FUN_80012eac	_addu	_addu v1,s1,a1			21 18 25 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013074	0x80012eac	FUN_80012eac	jal	jal 0x80013498			26 4D 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013078	0x80012eac	FUN_80012eac	_clear	_clear s7			21 B8 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001307c	0x80012eac	FUN_80012eac	lbu	lbu v0,0x2e(s4)			2E 00 82 92	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013080	0x80012eac	FUN_80012eac	nop	nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013084	0x80012eac	FUN_80012eac	sltiu	sltiu v0,v0,0xd			0D 00 42 2C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013088	0x80012eac	FUN_80012eac	beq	beq v0,zero,0x8001323c			6C 00 40 10	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001308c	0x80012eac	FUN_80012eac	_clear	_clear s1			21 88 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013090	0x80012eac	FUN_80012eac	addiu	addiu s5,s4,0x2e			2E 00 95 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013094	0x80012eac	FUN_80012eac	addiu	addiu s6,s4,0x42			42 00 96 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013098	0x80012eac	FUN_80012eac	lui	lui v0,0x8006			06 80 02 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001309c	0x80012eac	FUN_80012eac	addiu	addiu s8,v0,0x4c88			88 4C 5E 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130a0	0x80012eac	FUN_80012eac	sll	sll v0,s1,0x2			80 10 11 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130a4	0x80012eac	FUN_80012eac	addu	addu v0,v0,s1			21 10 51 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130a8	0x80012eac	FUN_80012eac	addu	addu v0,s5,v0			21 10 A2 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130ac	0x80012eac	FUN_80012eac	lbu	lbu a1,0x0(v0)			00 00 45 90	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130b0	0x80012eac	FUN_80012eac	jal	jal 0x8001373c			CF 4D 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130b4	0x80012eac	FUN_80012eac	_move	_move a0,s1			21 20 20 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130b8	0x80012eac	FUN_80012eac	clear	clear s0			21 80 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130bc	0x80012eac	FUN_80012eac	sll	sll s2,s1,0x2			80 90 11 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130c0	0x80012eac	FUN_80012eac	addu	addu v0,s0,s2			21 10 12 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130c4	0x80012eac	FUN_80012eac	addu	addu v0,s6,v0			21 10 C2 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130c8	0x80012eac	FUN_80012eac	move	move a0,s1			21 20 20 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130cc	0x80012eac	FUN_80012eac	lbu	lbu a2,0x0(v0)			00 00 46 90	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130d0	0x80012eac	FUN_80012eac	jal	jal 0x80016258			96 58 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130d4	0x80012eac	FUN_80012eac	_move	_move a1,s0			21 28 00 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130d8	0x80012eac	FUN_80012eac	addiu	addiu s0,s0,0x1			01 00 10 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130dc	0x80012eac	FUN_80012eac	slti	slti v0,s0,0x4			04 00 02 2A	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130e0	0x80012eac	FUN_80012eac	bne	bne v0,zero,0x800130c4			F8 FF 40 14	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130e4	0x80012eac	FUN_80012eac	_addu	_addu v0,s0,s2			21 10 12 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130e8	0x80012eac	FUN_80012eac	jal	jal 0x8001378c			E3 4D 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130ec	0x80012eac	FUN_80012eac	_move	_move a0,s1			21 20 20 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130f0	0x80012eac	FUN_80012eac	sll	sll v1,s1,0x1			40 18 11 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130f4	0x80012eac	FUN_80012eac	addu	addu v1,v1,s1			21 18 71 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130f8	0x80012eac	FUN_80012eac	sll	sll s0,v1,0x4			00 81 03 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800130fc	0x80012eac	FUN_80012eac	subu	subu s0,s0,v1			23 80 03 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013100	0x80012eac	FUN_80012eac	sll	sll s0,s0,0x2			80 80 10 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013104	0x80012eac	FUN_80012eac	lui	lui v1,0x8007			07 80 03 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013108	0x80012eac	FUN_80012eac	addiu	addiu v1,v1,0xea0			A0 0E 63 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001310c	0x80012eac	FUN_80012eac	addu	addu s0,s0,v1			21 80 03 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013110	0x80012eac	FUN_80012eac	sll	sll v1,v0,0x3			C0 18 02 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013114	0x80012eac	FUN_80012eac	addu	addu v1,v1,v0			21 18 62 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013118	0x80012eac	FUN_80012eac	addu	addu v0,v1,s8			21 10 7E 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001311c	0x80012eac	FUN_80012eac	lwl	lwl a0,0x3(v0)			03 00 44 88	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013120	0x80012eac	FUN_80012eac	lwr	lwr a0,0x0(v0)			00 00 44 98	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013124	0x80012eac	FUN_80012eac	lwl	lwl a1,0x7(v0)			07 00 45 88	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013128	0x80012eac	FUN_80012eac	lwr	lwr a1,0x4(v0)			04 00 45 98	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001312c	0x80012eac	FUN_80012eac	lb	lb a2,0x8(v0)			08 00 46 80	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013130	0x80012eac	FUN_80012eac	swl	swl a0,0xad(s0)			AD 00 04 AA	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013134	0x80012eac	FUN_80012eac	swr	swr a0,0xaa(s0)			AA 00 04 BA	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013138	0x80012eac	FUN_80012eac	swl	swl a1,0xb1(s0)			B1 00 05 AA	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001313c	0x80012eac	FUN_80012eac	swr	swr a1,0xae(s0)			AE 00 05 BA	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013140	0x80012eac	FUN_80012eac	sb	sb a2,0xb2(s0)			B2 00 06 A2	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013144	0x80012eac	FUN_80012eac	jal	jal 0x8001378c			E3 4D 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013148	0x80012eac	FUN_80012eac	_move	_move a0,s1			21 20 20 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001314c	0x80012eac	FUN_80012eac	lui	lui v1,0x8006			06 80 03 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013150	0x80012eac	FUN_80012eac	addiu	addiu v1,v1,0x4d00			00 4D 63 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013154	0x80012eac	FUN_80012eac	sll	sll v0,v0,0x1			40 10 02 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013158	0x80012eac	FUN_80012eac	addu	addu v0,v0,v1			21 10 43 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001315c	0x80012eac	FUN_80012eac	lb	lb a0,0x0(v0)			00 00 44 80	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013160	0x80012eac	FUN_80012eac	lb	lb a1,0x1(v0)			01 00 45 80	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013164	0x80012eac	FUN_80012eac	sb	sb a0,0xb3(s0)			B3 00 04 A2	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013168	0x80012eac	FUN_80012eac	sb	sb a1,0xb4(s0)			B4 00 05 A2	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001316c	0x80012eac	FUN_80012eac	lw	lw a1,0x4(s4)			04 00 85 8E	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013170	0x80012eac	FUN_80012eac	jal	jal 0x8001387c			1F 4E 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013174	0x80012eac	FUN_80012eac	_move	_move a0,s1			21 20 20 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013178	0x80012eac	FUN_80012eac	clear	clear s0			21 80 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001317c	0x80012eac	FUN_80012eac	sll	sll v0,s1,0x2			80 10 11 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013180	0x80012eac	FUN_80012eac	addu	addu s3,v0,s1			21 98 51 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013184	0x80012eac	FUN_80012eac	addiu	addiu s2,s4,0x2f			2F 00 92 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013188	0x80012eac	FUN_80012eac	addu	addu v0,s0,s3			21 10 13 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001318c	0x80012eac	FUN_80012eac	addu	addu v0,s2,v0			21 10 42 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013190	0x80012eac	FUN_80012eac	move	move a0,s1			21 20 20 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013194	0x80012eac	FUN_80012eac	lbu	lbu a2,0x0(v0)			00 00 46 90	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013198	0x80012eac	FUN_80012eac	jal	jal 0x80014450			14 51 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001319c	0x80012eac	FUN_80012eac	_move	_move a1,s0			21 28 00 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131a0	0x80012eac	FUN_80012eac	addiu	addiu s0,s0,0x1			01 00 10 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131a4	0x80012eac	FUN_80012eac	slti	slti v0,s0,0x4			04 00 02 2A	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131a8	0x80012eac	FUN_80012eac	bne	bne v0,zero,0x8001318c			F8 FF 40 14	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131ac	0x80012eac	FUN_80012eac	_addu	_addu v0,s0,s3			21 10 13 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131b0	0x80012eac	FUN_80012eac	lbu	lbu a1,0x10(s4)			10 00 85 92	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131b4	0x80012eac	FUN_80012eac	jal	jal 0x800143ac			EB 50 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131b8	0x80012eac	FUN_80012eac	_move	_move a0,s1			21 20 20 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131bc	0x80012eac	FUN_80012eac	lbu	lbu v1,0x0(s4)			00 00 83 92	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131c0	0x80012eac	FUN_80012eac	li	li v0,0x11			11 00 02 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131c4	0x80012eac	FUN_80012eac	bne	bne v1,v0,0x800131e8			08 00 62 14	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131c8	0x80012eac	FUN_80012eac	_li	_li v0,0x1			01 00 02 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131cc	0x80012eac	FUN_80012eac	beq	beq s1,v0,0x800131f4			09 00 22 12	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131d0	0x80012eac	FUN_80012eac	_li	_li a0,0x1			01 00 04 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131d4	0x80012eac	FUN_80012eac	move	move a0,s1			21 20 20 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131d8	0x80012eac	FUN_80012eac	jal	jal 0x80013620			88 4D 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131dc	0x80012eac	FUN_80012eac	_li	_li a1,0x1			01 00 05 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131e0	0x80012eac	FUN_80012eac	j	j 0x80013210			84 4C 00 08	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131e4	0x80012eac	FUN_80012eac	_addiu	_addiu s7,s7,0x1			01 00 F7 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131e8	0x80012eac	FUN_80012eac	bne	bne s1,zero,0x80013204			06 00 20 16	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131ec	0x80012eac	FUN_80012eac	_move	_move a0,s1			21 20 20 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131f0	0x80012eac	FUN_80012eac	clear	clear a0			21 20 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131f4	0x80012eac	FUN_80012eac	jal	jal 0x80013620			88 4D 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131f8	0x80012eac	FUN_80012eac	_clear	_clear a1			21 28 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x800131fc	0x80012eac	FUN_80012eac	j	j 0x80013210			84 4C 00 08	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013200	0x80012eac	FUN_80012eac	_addiu	_addiu s7,s7,0x1			01 00 F7 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013204	0x80012eac	FUN_80012eac	jal	jal 0x80013620			88 4D 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013208	0x80012eac	FUN_80012eac	_li	_li a1,0x1			01 00 05 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001320c	0x80012eac	FUN_80012eac	addiu	addiu s7,s7,0x1			01 00 F7 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013210	0x80012eac	FUN_80012eac	addiu	addiu s1,s1,0x1			01 00 31 26	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013214	0x80012eac	FUN_80012eac	slti	slti v0,s1,0x4			04 00 22 2A	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013218	0x80012eac	FUN_80012eac	beq	beq v0,zero,0x8001323c			08 00 40 10	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001321c	0x80012eac	FUN_80012eac	_sll	_sll v0,s1,0x2			80 10 11 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013220	0x80012eac	FUN_80012eac	addu	addu v0,v0,s1			21 10 51 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013224	0x80012eac	FUN_80012eac	addu	addu v0,s5,v0			21 10 A2 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013228	0x80012eac	FUN_80012eac	lbu	lbu v0,0x0(v0)			00 00 42 90	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001322c	0x80012eac	FUN_80012eac	nop	nop			00 00 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013230	0x80012eac	FUN_80012eac	sltiu	sltiu v0,v0,0xd			0D 00 42 2C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013234	0x80012eac	FUN_80012eac	bne	bne v0,zero,0x800130a4			9B FF 40 14	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013238	0x80012eac	FUN_80012eac	_sll	_sll v0,s1,0x2			80 10 11 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001323c	0x80012eac	FUN_80012eac	jal	jal 0x800135bc			6F 4D 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013240	0x80012eac	FUN_80012eac	_move	_move a0,s7			21 20 E0 02	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013244	0x80012eac	FUN_80012eac	jal	jal 0x80012c64			19 4B 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013248	0x80012eac	FUN_80012eac	_clear	_clear a0			21 20 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001324c	0x80012eac	FUN_80012eac	lui	lui a0,0x8007			07 80 04 3C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013250	0x80012eac	FUN_80012eac	addiu	addiu a0,a0,0xcd4			D4 0C 84 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013254	0x80012eac	FUN_80012eac	clear	clear a1			21 28 00 00	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013258	0x80012eac	FUN_80012eac	jal	jal 0x80035d48			52 D7 00 0C	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001325c	0x80012eac	FUN_80012eac	_li	_li a2,0x20			20 00 06 24	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013260	0x80012eac	FUN_80012eac	lw	lw ra,0x34(sp)			34 00 BF 8F	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013264	0x80012eac	FUN_80012eac	lw	lw s8,0x30(sp)			30 00 BE 8F	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013268	0x80012eac	FUN_80012eac	lw	lw s7,0x2c(sp)			2C 00 B7 8F	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001326c	0x80012eac	FUN_80012eac	lw	lw s6,0x28(sp)			28 00 B6 8F	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013270	0x80012eac	FUN_80012eac	lw	lw s5,0x24(sp)			24 00 B5 8F	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013274	0x80012eac	FUN_80012eac	lw	lw s4,0x20(sp)			20 00 B4 8F	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013278	0x80012eac	FUN_80012eac	lw	lw s3,0x1c(sp)			1C 00 B3 8F	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001327c	0x80012eac	FUN_80012eac	lw	lw s2,0x18(sp)			18 00 B2 8F	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013280	0x80012eac	FUN_80012eac	lw	lw s1,0x14(sp)			14 00 B1 8F	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013284	0x80012eac	FUN_80012eac	lw	lw s0,0x10(sp)			10 00 B0 8F	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x80013288	0x80012eac	FUN_80012eac	jr	jr ra			08 00 E0 03	static disassembly for provenance context
+FUNCTION_INSTRUCTION	MAIN_EXE	0x80012eac	0x8001328c	0x80012eac	FUN_80012eac	_addiu	_addiu sp,sp,0x38			38 00 BD 27	static disassembly for provenance context
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800118b4	0x800117a4	FUN_800117a4	JALR		jalr v0		09 F8 40 00 00 00 00 00 05 80 02 3C A8 58 50 24	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8001193c	0x800117a4	FUN_800117a4	JALR		jalr v0		09 F8 40 00 21 20 00 00 FC 00 82 8F 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80011954	0x800117a4	FUN_800117a4	JALR		jalr v0		09 F8 40 00 21 20 00 00 5D B7 00 0C 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800119c4	0x800117a4	FUN_800117a4	JALR		jalr v0		09 F8 40 00 21 80 00 00 4B BC 00 0C 21 20 00 02	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80011a28	0x800117a4	FUN_800117a4	JALR		jalr v0		09 F8 40 00 00 00 00 00 0C 00 82 8F 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80012094	0x8001205c	FUN_8001205c	JALR		jalr v0		09 F8 40 00 00 00 00 00 4E DC 00 0C FF FF 04 24	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80017764	0x8001756c	FUN_8001756c	JALR		jalr v0		09 F8 40 00 00 00 00 00 01 00 10 26 02 00 02 2A	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800177d8	0x8001756c	FUN_8001756c	JALR		jalr v0		09 F8 40 00 21 20 00 00 09 80 02 3C E8 91 40 AC	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800178c0	0x8001756c	FUN_8001756c	JALR		jalr v0		09 F8 40 00 21 20 00 00 54 5E 00 08 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80019c78	0x80019c10	FUN_80019c10	JALR		jalr v0		09 F8 40 00 21 20 20 02 09 80 03 3C 02 00 02 24	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8001a860	0x8001a770	FUN_8001a770	JALR		jalr v0		09 F8 40 00 00 00 00 00 01 00 02 24 24 00 BF 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8001a8d8	0x8001a87c	FUN_8001a87c	JALR		jalr v0		09 F8 40 00 00 00 00 00 01 00 02 24 10 00 BF 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8001af58	0x8001add8	FUN_8001add8	JALR		jalr v0		09 F8 40 00 21 20 00 00 28 6C 00 08 01 00 02 24	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8001c76c	0x8001c634	FUN_8001c634	JALR		jalr v0		09 F8 40 00 21 38 60 02 AE 14 01 0C 60 00 A4 27	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8001ec48	0x8001ebf4	FUN_8001ebf4	JALR		jalr v0		09 F8 40 00 21 20 00 02 01 00 02 24 14 00 BF 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8001f0bc	0x8001f048	FUN_8001f048	JALR		jalr v0		09 F8 40 00 21 28 40 02 01 00 02 24 20 00 BF 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80021124	0x80020f88	FUN_80020f88	JALR		jalr v0		09 F8 40 00 21 20 00 02 01 00 02 24 14 00 BF 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80022bbc	0x80022aa8	FUN_80022aa8	JALR		jalr v0		09 F8 40 00 21 20 00 02 F7 8A 00 08 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8002cdb8	0x8002cadc	FUN_8002cadc	JALR		jalr v1		09 F8 60 00 00 00 00 00 5A 01 84 87 A9 B3 00 08	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8002ce68	0x8002cadc	FUN_8002cadc	JALR		jalr v0		09 F8 40 00 00 00 00 00 0A 80 03 3C 10 29 62 AC	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8002d138	0x8002d118	FUN_8002d118	JALR		jalr s0		09 F8 00 02 21 20 00 00 60 01 82 8F 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8002dcc0	0x8002dc90	FUN_8002dc90	JALR		jalr s0		09 F8 00 02 21 20 00 00 4E DC 00 0C 21 20 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8002ddc4	0x8002dd80	FUN_8002dd80	JALR		jalr v0		09 F8 40 00 21 20 00 02 01 00 02 24 14 00 BF 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8002ffac	0x8002ff88	FUN_8002ff88	JALR		jalr v0		09 F8 40 00 00 00 00 00 02 00 40 14 06 00 02 24	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800314e8	0x800314c0	FUN_800314c0	JALR		jalr v0		09 F8 40 00 00 00 00 00 10 00 BF 8F 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80035a68	0x80035994	FUN_80035994	JALR		jalr v0		09 F8 40 00 21 30 A0 02 28 00 BF 8F 24 00 B5 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800373e0	0x800373c8	FUN_800373c8	JALR		jalr v0		09 F8 40 00 00 00 00 00 10 00 BF 8F 18 00 BD 27	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80037410	0x800373f8	FUN_800373f8	JALR		jalr v0		09 F8 40 00 00 00 00 00 10 00 BF 8F 18 00 BD 27	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80037440	0x80037428	FUN_80037428	JALR		jalr v0		09 F8 40 00 00 00 00 00 10 00 BF 8F 18 00 BD 27	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80037474	0x80037458	FUN_80037458	JALR		jalr v0		09 F8 40 00 04 00 04 24 10 00 BF 8F 18 00 BD 27	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800374a4	0x8003748c	FUN_8003748c	JALR		jalr v0		09 F8 40 00 00 00 00 00 10 00 BF 8F 18 00 BD 27	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800374d4	0x800374bc	FUN_800374bc	JALR		jalr v0		09 F8 40 00 00 00 00 00 10 00 BF 8F 18 00 BD 27	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80037504	0x800374ec	FUN_800374ec	JALR		jalr v0		09 F8 40 00 00 00 00 00 10 00 BF 8F 18 00 BD 27	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80037708	0x80037634	FUN_80037634	JALR		jalr v0		09 F8 40 00 00 00 00 00 04 00 52 26 42 80 10 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80037bf0	0x80037bb0	FUN_80037bb0	JALR		jalr v0		09 F8 40 00 00 00 00 00 01 00 31 26 08 00 22 2A	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80037d64	0x80037cc4	FUN_80037cc4	JALR		jalr v0		09 F8 40 00 00 00 00 00 04 00 52 26 42 88 11 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003ac34	0x8003abc8	FUN_8003abc8	JALR		jalr a0		09 F8 80 00 00 00 00 00 0A 80 01 3C 64 31 20 AC	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003b444	0x8003af18	FUN_8003af18	JALR		jalr v1		09 F8 60 00 00 00 00 00 0A 80 02 3C 78 31 42 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003b4e8	0x8003af18	FUN_8003af18	JALR		jalr v1		09 F8 60 00 00 00 00 00 0A 80 02 3C 78 31 42 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003c10c	0x8003bf6c	FUN_8003bf6c	JALR		jalr v0		09 F8 40 00 C0 55 A5 24 02 00 02 32 EE FF 40 10	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003c13c	0x8003bf6c	FUN_8003bf6c	JALR		jalr v0		09 F8 40 00 B8 55 A5 24 35 F0 00 08 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003c38c	0x8003c1ec	FUN_8003c1ec	JALR		jalr v0		09 F8 40 00 C0 55 A5 24 02 00 02 32 EE FF 40 10	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003c3bc	0x8003c1ec	FUN_8003c1ec	JALR		jalr v0		09 F8 40 00 B8 55 A5 24 D5 F0 00 08 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003c7e8	0x8003c4b4	FUN_8003c4b4	JALR		jalr v0		09 F8 40 00 C0 55 A5 24 02 00 02 32 EE FF 40 10	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003c818	0x8003c4b4	FUN_8003c4b4	JALR		jalr v0		09 F8 40 00 B8 55 A5 24 EC F1 00 08 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003cf18	0x8003ceac	FUN_8003ceac	JALR		jalr v0		09 F8 40 00 C0 55 A5 24 02 00 02 32 EE FF 40 10	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003cf48	0x8003ceac	FUN_8003ceac	JALR		jalr v0		09 F8 40 00 B8 55 A5 24 B8 F3 00 08 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003d864	0x8003d60c	FUN_8003d60c	JALR		jalr v1		09 F8 60 00 21 28 20 02 28 00 BF 8F 24 00 B1 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003d938	0x8003d880	FUN_8003d880	JALR		jalr v1		09 F8 60 00 02 00 04 24 14 00 BF 8F 10 00 B0 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003e450	0x8003e438	FUN_8003e438	JALR		jalr t2		09 F8 40 01 00 00 00 00 18 00 42 8C 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f0e4	0x8003efa8	FUN_8003efa8	JALR		jalr v0		09 F8 40 00 21 28 20 02 07 80 02 3C E4 87 42 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f100	0x8003efa8	FUN_8003efa8	JALR		jalr v0		09 F8 40 00 01 00 04 24 18 00 BF 8F 14 00 B1 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f15c	0x8003f11c	FUN_8003f11c	JALR		jalr v0		09 F8 40 00 7C 10 84 24 21 10 00 02 14 00 BF 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f1bc	0x8003f178	FUN_8003f178	JALR		jalr v0		09 F8 40 00 21 28 00 02 00 00 22 92 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f1e8	0x8003f178	FUN_8003f178	JALR		jalr v0		09 F8 40 00 01 00 04 24 02 00 04 24 21 28 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f268	0x8003f22c	FUN_8003f22c	JALR		jalr v0		09 F8 40 00 21 28 20 02 0A 00 02 8E 0A 00 11 AE	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f2cc	0x8003f28c	FUN_8003f28c	JALR		jalr v0		09 F8 40 00 21 28 00 02 04 00 00 16 6A 00 24 26	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f308	0x8003f28c	FUN_8003f28c	JALR		jalr v0		09 F8 40 00 00 00 00 00 18 00 BF 8F 14 00 B1 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f358	0x8003f324	FUN_8003f324	JALR		jalr v0		09 F8 40 00 21 28 00 02 07 80 02 3C E4 87 42 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f374	0x8003f324	FUN_8003f324	JALR		jalr v0		09 F8 40 00 21 20 00 02 14 00 BF 8F 10 00 B0 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f468	0x8003f38c	FUN_8003f38c	JALR		jalr v0		09 F8 40 00 21 28 00 01 00 00 05 86 02 00 06 86	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f490	0x8003f38c	FUN_8003f38c	JALR		jalr v0		09 F8 40 00 10 00 A3 AF 1C 00 BF 8F 18 00 B0 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f514	0x8003f4a8	FUN_8003f4a8	JALR		jalr v0		09 F8 40 00 25 38 12 02 20 00 BF 8F 1C 00 B3 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f5ac	0x8003f538	FUN_8003f538	JALR		jalr v0		09 F8 40 00 25 38 32 02 20 00 BF 8F 1C 00 B3 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f614	0x8003f5d0	FUN_8003f5d0	JALR		jalr v0		09 F8 40 00 21 38 20 02 18 00 BF 8F 14 00 B1 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f674	0x8003f630	FUN_8003f630	JALR		jalr v0		09 F8 40 00 21 38 20 02 18 00 BF 8F 14 00 B1 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f728	0x8003f690	FUN_8003f690	JALR		jalr v0		09 F8 40 00 21 38 00 00 1C 00 BF 8F 18 00 B2 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f850	0x8003f810	FUN_8003f810	JALR		jalr v0		09 F8 40 00 21 30 20 02 07 80 02 3C E4 87 42 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f86c	0x8003f810	FUN_8003f810	JALR		jalr v0		09 F8 40 00 21 28 20 02 FF 00 06 3C FF FF C6 34	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f8e0	0x8003f8bc	FUN_8003f8bc	JALR		jalr v0		09 F8 40 00 21 20 00 00 07 80 02 3C E4 87 42 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f8fc	0x8003f8bc	FUN_8003f8bc	JALR		jalr v0		09 F8 40 00 21 28 20 02 18 00 BF 8F 14 00 B1 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f94c	0x8003f918	FUN_8003f918	JALR		jalr v0		09 F8 40 00 21 28 00 02 21 28 00 02 07 80 02 3C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f970	0x8003f918	FUN_8003f918	JALR		jalr v0		09 F8 40 00 21 38 00 00 14 00 BF 8F 10 00 B0 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003f9cc	0x8003f988	FUN_8003f988	JALR		jalr v0		09 F8 40 00 21 28 20 02 1C 00 30 26 21 20 00 02	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003fa14	0x8003f988	FUN_8003f988	JALR		jalr v0		09 F8 40 00 21 38 00 00 0E 00 44 26 21 28 20 02	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003fa98	0x8003fa48	FUN_8003fa48	JALR		jalr v0		09 F8 40 00 21 30 20 02 1C 00 30 26 21 20 00 02	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003faec	0x8003fa48	FUN_8003fa48	JALR		jalr v0		09 F8 40 00 21 38 00 00 0E 00 64 26 21 28 20 02	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003fb9c	0x8003fb54	FUN_8003fb54	JALR		jalr v0		09 F8 40 00 21 28 20 02 00 05 02 3C 02 00 23 96	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003fbd0	0x8003fb54	FUN_8003fb54	JALR		jalr v0		09 F8 40 00 25 20 64 00 7A 00 43 8E 10 00 22 8E	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003fd28	0x8003fb54	FUN_8003fb54	JALR		jalr v0		09 F8 40 00 21 20 00 02 08 00 02 24 12 00 22 A2	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8003ffe8	0x8003fb54	FUN_8003fb54	JALR		jalr v0		09 F8 40 00 25 20 64 00 FF 03 43 32 80 1A 03 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80040014	0x8003fb54	FUN_8003fb54	JALR		jalr v0		09 F8 40 00 25 20 64 00 07 80 04 3C 58 88 84 24	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80040098	0x80040080	FUN_80040080	JALR		jalr v0		09 F8 40 00 00 00 00 00 10 00 BF 8F C2 17 02 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800411a4	0x800410a0	FUN_800410a0	JALR		jalr s3		09 F8 60 02 21 28 40 02 07 80 04 3C 1C 89 84 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800414a0	0x80041350	FUN_80041350	JALR		jalr v0		09 F8 40 00 00 00 00 00 07 80 02 3C 18 89 42 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80041578	0x80041350	FUN_80041350	JALR		jalr a0		09 F8 80 00 00 00 00 00 07 80 02 3C 14 89 42 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80041b0c	0x80041a40	FUN_80041a40	JALR		jalr v0		09 F8 40 00 21 28 20 02 21 10 00 00 18 00 BF 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80041bf8	0x80041b2c	FUN_80041b2c	JALR		jalr v0		09 F8 40 00 21 28 20 02 21 10 00 00 18 00 BF 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80041d38	0x80041c18	FUN_80041c18	JALR		jalr v0		09 F8 40 00 F8 FF 84 24 21 10 00 00 1C 00 BF 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80046004	0x80045fe8	FUN_80045fe8	JALR		jalr v0		09 F8 40 00 21 88 C0 00 28 00 50 AC 34 00 51 A0	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80046040	0x80046028	FUN_80046028	JALR		jalr v0		09 F8 40 00 10 00 B0 AF 21 80 40 00 07 80 02 3C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80046058	0x80046028	FUN_80046028	JALR		jalr v0		09 F8 40 00 21 20 00 02 0B 00 40 14 21 10 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800461f8	0x800461e8	FUN_800461e8	JALR		jalr v0		09 F8 40 00 00 00 00 00 21 18 40 00 37 00 62 90	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800462d4	0x800462b8	FUN_800462b8	JALR		jalr v0		09 F8 40 00 21 88 C0 00 21 18 40 00 03 00 02 24	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800463d4	0x800463b8	FUN_800463b8	JALR		jalr v0		09 F8 40 00 21 88 C0 00 04 00 01 06 21 18 40 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80046514	0x80046498	FUN_80046498	JALR		jalr v0		09 F8 40 00 00 00 00 00 07 80 04 3C 68 CB 84 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80046530	0x80046498	FUN_80046498	JALR		jalr v0		09 F8 40 00 F0 00 84 24 0B 80 02 3C F8 BD 42 24	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80047060	0x80046e2c	FUN_80046e2c	JALR		jalr v0		09 F8 40 00 21 20 A0 00 23 1C 01 08 21 10 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80047294	0x8004709c	FUN_8004709c	JALR		jalr v0		09 F8 40 00 21 20 00 02 0C 00 02 8E 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80047304	0x8004709c	FUN_8004709c	JALR		jalr v0		09 F8 40 00 21 20 00 02 1D 1D 01 08 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8004744c	0x8004709c	FUN_8004709c	JALR		jalr v0		09 F8 40 00 21 20 00 02 19 1D 01 08 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800476c4	0x80047484	FUN_80047484	JALR		jalr v0		09 F8 40 00 21 20 20 02 E8 00 23 92 02 00 02 24	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80047764	0x80047484	FUN_80047484	JALR		jalr v0		09 F8 40 00 21 20 20 02 08 00 03 24 09 00 63 12	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80047904	0x800478b8	FUN_800478b8	JALR		jalr v0		09 F8 40 00 00 00 00 00 01 00 02 24 10 00 BF 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80047a24	0x80047920	FUN_80047920	JALR		jalr v0		09 F8 40 00 FF FF 04 34 07 80 03 3C 74 CB 63 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80047b88	0x80047aac	FUN_80047aac	JALR		jalr v1		09 F8 60 00 21 20 44 00 07 80 02 3C 74 CB 42 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80047bec	0x80047aac	FUN_80047aac	JALR		jalr v0		09 F8 40 00 00 00 A3 AC 07 80 02 3C 58 CB 42 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80047c00	0x80047aac	FUN_80047aac	JALR		jalr v0		09 F8 40 00 21 20 00 02 07 80 03 3C AC CB 63 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80047e14	0x80047de0	FUN_80047de0	JALR		jalr v0		09 F8 40 00 00 00 A3 AC 21 20 40 00 22 00 80 04	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80047e80	0x80047de0	FUN_80047de0	JALR		jalr v0		09 F8 40 00 FD FF 04 24 07 80 03 3C 78 CB 63 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80047eb8	0x80047de0	FUN_80047de0	JALR		jalr v0		09 F8 40 00 00 00 00 00 14 00 BF 8F 10 00 B0 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800486b0	0x800484bc	FUN_800484bc	JALR		jalr v0		09 F8 40 00 21 20 00 02 FE 00 02 24 46 00 02 A2	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8004879c	0x80048764	FUN_80048764	JALR		jalr v0		09 F8 40 00 00 00 00 00 03 00 40 10 01 00 02 24	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80048e54	0x80048e40	FUN_80048e40	JALR		jalr v0		09 F8 40 00 21 80 80 00 21 20 00 02 3C 00 03 8E	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80048ecc	NONE	NONE	JALR		jalr v0		09 F8 40 00 00 00 00 00 07 80 02 3C 60 CB 42 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80048ee0	NONE	NONE	JALR		jalr v0		09 F8 40 00 00 00 00 00 07 80 02 3C B4 CB 42 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80048f0c	NONE	NONE	JALR		jalr v0		09 F8 40 00 00 00 00 00 0C 00 04 8E 07 80 02 3C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80048f24	NONE	NONE	JALR		jalr v0		09 F8 40 00 F0 00 84 24 37 00 02 92 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80048f8c	0x80048f60	FUN_80048f60	JALR		jalr v0		09 F8 40 00 E0 01 84 24 0C 00 04 8E 07 80 02 3C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80048fa4	0x80048f60	FUN_80048f60	JALR		jalr v0		09 F8 40 00 D0 02 84 24 37 00 02 92 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800490c4	0x8004900c	FUN_8004900c	JALR		jalr v0		09 F8 40 00 21 20 00 02 07 80 05 3C B8 CB A5 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800490e0	0x8004900c	FUN_8004900c	JALR		jalr v0		09 F8 40 00 21 20 00 02 21 20 00 02 3D 20 01 0C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800491c0	0x80049128	FUN_80049128	JALR		jalr v0		09 F8 40 00 21 20 20 02 07 80 15 3C B8 CB B5 8E	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80049278	0x80049128	FUN_80049128	JALR		jalr v0		09 F8 40 00 00 00 00 00 21 20 20 02 07 80 02 3C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80049290	0x80049128	FUN_80049128	JALR		jalr v0		09 F8 40 00 01 00 05 24 21 20 20 02 3D 20 01 0C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800493dc	0x80049128	FUN_80049128	JALR		jalr v0		09 F8 40 00 21 20 00 02 00 00 43 8E 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80049438	0x80049128	FUN_80049128	JALR		jalr v0		09 F8 40 00 10 FF 04 26 21 25 01 08 01 00 02 24	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80049464	0x80049128	FUN_80049128	JALR		jalr v0		09 F8 40 00 21 20 00 02 07 80 02 3C 58 CB 42 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80049478	0x80049128	FUN_80049128	JALR		jalr v0		09 F8 40 00 21 20 00 02 FF FF 02 24 00 00 42 AE	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80049498	0x80049128	FUN_80049128	JALR		jalr v0		09 F8 40 00 21 28 A0 02 21 20 20 02 B4 1F 01 0C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800495ac	0x80049128	FUN_80049128	JALR		jalr v0		09 F8 40 00 21 28 A0 02 21 20 20 02 B4 1F 01 0C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800496e8	0x80049128	FUN_80049128	JALR		jalr v0		09 F8 40 00 21 20 00 00 21 10 00 00 2C 00 BF 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8004a028	0x80049f98	FUN_80049f98	JALR		jalr v0		09 F8 40 00 00 00 00 00 11 28 01 08 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8004b034	0x8004ad28	FUN_8004ad28	JALR		jalr v0		09 F8 40 00 25 38 67 01 00 24 17 00 03 24 04 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8004b508	0x8004b478	FUN_8004b478	JALR		jalr v0		09 F8 40 00 FF 00 26 32 1B 00 03 92 1E 00 02 24	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8004c700	0x8004c528	FUN_8004c528	JALR		jalr v0		09 F8 40 00 21 30 60 00 D1 31 01 08 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8004c720	0x8004c528	FUN_8004c528	JALR		jalr v0		09 F8 40 00 21 28 E0 00 D1 31 01 08 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8004d74c	0x8004d728	FUN_8004d728	JALR		jalr v0		09 F8 40 00 00 00 00 00 FC FF 02 8E 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8004d75c	0x8004d728	FUN_8004d728	JALR		jalr v0		09 F8 40 00 00 00 00 00 14 00 BF 8F 10 00 B0 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8004d7a4	0x8004d774	FUN_8004d774	JALR		jalr v0		09 F8 40 00 40 D1 20 AC 10 00 BF 8F 18 00 BD 27	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8004e480	0x8004e1c8	FUN_8004e1c8	JALR		jalr v0		09 F8 40 00 21 38 80 02 54 39 01 08 21 10 A0 02	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8004e4e8	0x8004e1c8	FUN_8004e1c8	JALR		jalr v0		09 F8 40 00 03 2C 05 00 54 39 01 08 21 10 A0 02	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8004e544	0x8004e1c8	FUN_8004e1c8	JALR		jalr v0		09 F8 40 00 00 00 00 00 21 10 A0 02 28 00 BF 8F	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800502cc	0x800500b8	FUN_800500b8	JALR		jalr v0		09 F8 40 00 21 20 00 02 0B 80 02 3C 21 10 51 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800502f8	0x800500b8	FUN_800500b8	JALR		jalr v0		09 F8 40 00 21 20 00 02 01 00 10 26 18 00 02 2A	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800548b8	0x80054608	FUN_80054608	JALR		jalr s6		09 F8 C0 02 21 30 20 02 21 20 40 00 FF FF 02 24	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80055118	0x80055100	FUN_80055100	JALR		jalr t2		09 F8 40 01 00 00 00 00 6C 01 42 8C 0B 00 09 24	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80055190	0x80055178	FUN_80055178	JALR		jalr t2		09 F8 40 01 00 00 00 00 09 00 0A 24 6C 01 42 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80055228	0x80055218	FUN_80055218	JALR		jalr t2		09 F8 40 01 00 00 00 00 09 00 0A 24 6C 01 42 8C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x8005530c	0x800552f4	FUN_800552f4	JALR		jalr t2		09 F8 40 01 00 00 00 00 18 00 42 8C 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x800553a0	0x80055388	FUN_80055388	JALR		jalr t2		09 F8 40 01 00 00 00 00 6C 01 42 8C 00 00 00 00	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_SITE	MAIN_EXE	TARGET_UNRESOLVED	0x80055450	0x80055438	FUN_80055438	JALR		jalr t2		09 F8 40 01 00 00 00 00 18 00 42 8C 05 80 0A 3C	dynamic register target not statically tied to either requested entry
+INDIRECT_CALL_LIMIT	MAIN_EXE	FUN_80109994;FUN_801048F0;FUN_80109974;FUN_80109984;FUN_80012A80;FUN_80012A8C				jalr_count=152	pointer_words=0	reference_manager_refs=2	unresolved dynamic CALLIND sites may remain; no runtime caller inference		
