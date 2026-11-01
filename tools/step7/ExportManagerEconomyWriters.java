@@ -15,7 +15,7 @@ import java.util.*;
 public class ExportManagerEconomyWriters extends GhidraScript {
     private static final long MANAGER_SLOT = 0x8013A554L;
     private static final long[] TARGETS = {0xB2AL, 0xB30L, 0xB38L};
-    private static final long[] FUNCTIONS = {0x80109994L, 0x801048F0L, 0x80109974L, 0x80109984L};
+    private static final long[] FUNCTIONS = {0x80109994L, 0x801048F0L, 0x80109974L, 0x80109984L, 0x80012A8CL};
     private PrintWriter out;
     private String module = "UNSPECIFIED";
     private int confirmedStores = 0, unresolvedStores = 0, refCount = 0, pointerWords = 0, jalrCount = 0;
@@ -346,9 +346,21 @@ public class ExportManagerEconomyWriters extends GhidraScript {
         }
     }
     private void dumpFunction(long target) throws Exception {
-        Function f=currentProgram.getFunctionManager().getFunctionAt(toAddr(target));
+        Address targetAddress=toAddr(target);
+        Function f=currentProgram.getFunctionManager().getFunctionAt(targetAddress);
         if(f==null) {
-            row("FUNCTION_BODY_UNAVAILABLE",module,addrExpr(toAddr(target)),"","","NO_FUNCTION","","","","","","static listing has no function at requested address");
+            // Entry 1 may reference a main-EXE routine that Ghidra did not discover
+            // from its own entry point. Force static disassembly/function creation.
+            try {
+                if(currentProgram.getListing().getInstructionAt(targetAddress)==null) disassemble(targetAddress);
+                f=currentProgram.getFunctionManager().getFunctionAt(targetAddress);
+                if(f==null && currentProgram.getMemory().contains(targetAddress)) f=createFunction(targetAddress,null);
+            } catch(Exception e) {
+                row("FUNCTION_FORCE_CREATE_ERROR",module,addrExpr(targetAddress),"","","ERROR",e.toString(),"","","","","static");
+            }
+        }
+        if(f==null) {
+            row("FUNCTION_BODY_UNAVAILABLE",module,addrExpr(targetAddress),"","","NO_FUNCTION","","","","","","no function created after static disassembly attempt");
             return;
         }
         DecompInterface d=new DecompInterface();
