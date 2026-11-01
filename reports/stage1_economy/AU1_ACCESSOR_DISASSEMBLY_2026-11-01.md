@@ -45,6 +45,7 @@ Program: PS-X EXE SLPS_035.53, base `0x80010000`. Statis; maksimum K4.
 - `v0`: hasil pemeriksaan indeks / clamp dan nilai return (0 bila indeks tidak valid, 1 bila penulisan dilakukan).
 - `v1`: temporary kalkulasi stride.
 - `ra`: alamat kembali.
+- `zero`: register MIPS konstan bernilai 0; dipakai pada branch pembanding dan bukan input yang dapat berubah.
 - Record target dibentuk dari `0x80070EA0 + a2*0xB4`; store ke `+0x18`.
 
 ## Getter 0x800138EC
@@ -75,6 +76,7 @@ Program: PS-X EXE SLPS_035.53, base `0x80010000`. Statis; maksimum K4.
 - `v0`: temporary pemeriksaan indeks, lalu word hasil getter; return 0 bila indeks tidak valid.
 - `v1`: temporary kalkulasi stride.
 - `ra`: alamat kembali.
+- `zero`: register MIPS konstan bernilai 0; dipakai pada branch pembanding dan instruksi clear, bukan input yang dapat berubah.
 - Load word berada pada offset `+0x18) dari record terpilih.
 
 ## Rekonsiliasi event runtime AT3
