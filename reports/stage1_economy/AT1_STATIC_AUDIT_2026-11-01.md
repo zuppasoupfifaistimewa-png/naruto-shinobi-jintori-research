@@ -60,6 +60,15 @@ Di antara 14 caller, tidak ada yang terbukti memperoleh final a1 dari slot tile-
 
 Disassembly getter di data statis lama menunjukkan a1 dipakai untuk pemeriksaan indeks `<4` dan untuk offset record `index*0xB4`; a0 dipakai sebagai basis record. Karena itu dua argumen yang dibaca accessor adalah a0 (basis/pointer record) dan a1 (indeks). Nilai a1 konkret pada jalur BLTZ-taken tetap TIDAK TAHU, bukan diasumsikan sebagai 0 atau manager pointer.
 
+### Nasib v0 pada BLTZ dan argumen getter
+
+Pada call pertama `0x801053C4`, `v0` return diuji oleh `bltz v0,0x80105414` di `0x801053CC`. **Delay slot MIPS tetap berjalan pada kedua hasil branch**: `0x801053D0: lui v0,0x8014` menimpa nilai return segera setelah branch menguji tandanya.
+
+- **BLTZ-taken**: PC berpindah ke `0x80105414: li s0,0x20`; `v0` tetap hasil delay slot `0x80140000` saat call getter kedua mulai. `a1` tidak dimuat ulang; isinya diwarisi dari call getter pertama dan TIDAK TAHU.
+- **BLTZ-fall-through**: eksekusi menjalankan `0x801053D4: lw a1,-0x5AAC(v0)`, sehingga `a1` menjadi pointer manager dari slot `0x8013A554`. Selanjutnya `v0` digunakan ulang untuk hitung indeks lalu memuat nilai `+0x478` dan `+0x474`; bukan return getter pertama lagi. Cabang-cabang pemeriksaan berikut menentukan apakah jalur mencapai getter kedua.
+- Pada kedua jalur yang sampai ke getter kedua `0x80105418`, delay slot `0x8010541C: move a0,s3` memberi `a0=s3`. Getter menerima dua operand relevan: `a0` sebagai basis record dan `a1` sebagai indeks. Body accessor `0x800138EC` memvalidasi `a1<4`, membentuk offset `a1×0xB4`, lalu membaca word di `+0x18`. Maka pada jalur fall-through, caller mengirim pointer manager pada tempat a1 yang diperlakukan callee sebagai indeks; jangan mengubahnya menjadi dugaan indeks valid. Pada BLTZ-taken, nilai a1 tetap TIDAK TAHU.
+- Return v0 dari getter kedua selanjutnya diteruskan sebagai `a2` ke `0x8001B364` lewat `move a2,v0` di `0x80105440`.
+
 ## AT1(c) — perbandingan FIELD
 
 | Run | Job | Commit sumber | FIELD |
