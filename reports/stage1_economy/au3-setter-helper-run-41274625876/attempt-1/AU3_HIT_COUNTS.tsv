@@ -1,0 +1,5 @@
+condition	tag	pc	hits	interpretation
+C	SETTER_8001387C	0x8001387C	0	count in frames 1..600 only; zero is not an unused-routine conclusion
+C	HELPER_800B770C	0x800B770C	0	count in frames 1..600 only; zero is not an unused-routine conclusion
+A	SETTER_8001387C	0x8001387C	0	count in frames 1..600 only; zero is not an unused-routine conclusion
+A	HELPER_800B770C	0x800B770C	0	count in frames 1..600 only; zero is not an unused-routine conclusion
