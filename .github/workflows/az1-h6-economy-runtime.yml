@@ -5,7 +5,6 @@ on:
   push:
     branches: [main]
     paths:
-      - ".github/workflows/az1-h6-economy-runtime.yml"
       - "experiments/az1_h6_economy_runtime.py"
 
 permissions:
@@ -239,7 +238,7 @@ jobs:
           dest="reports/stage1_economy/az1-h6-economy-runtime-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
           cp "$out"/* "$dest/" 2>/dev/null || true
-          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="az1-h6-economy-runtime") | .id' | head -n 1)"
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="Restore H6 and inspect manager/tile records across two launches") | .id' | head -n 1)"
           test -n "$JOB_ID" || JOB_ID="TIDAK TAHU"
           STATUS="$(sed -n 's/^STATUS=//p' "$out/ACTIONS_RUN_SUMMARY.txt" | head -n 1)"; test -n "$STATUS" || STATUS="INCOMPLETE"
           SOURCE_SHA="$(sed -n 's/^SOURCE_SHA=//p' "$out/ACTIONS_RUN_SUMMARY.txt" | head -n 1)"; test -n "$SOURCE_SHA" || SOURCE_SHA="$GITHUB_SHA"
@@ -252,6 +251,57 @@ jobs:
             echo "SOURCE_SHA=$SOURCE_SHA"
             echo "EXIT_CODE=$RC"
           } > "$dest/ACTIONS_RUN_SUMMARY.txt"
+          python3 - "$GITHUB_WORKSPACE" "$dest" <<'PY'
+          from pathlib import Path
+          import hashlib, sys
+          root = Path(sys.argv[1])
+          dest = Path(sys.argv[2])
+          dest_abs = root / dest
+          dest_rel = dest.as_posix()
+          source_paths = [
+              "docs/HANDOFF_STAGE1_ECONOMY_2026-10-31.md",
+              "reports/stage1_economy/AT1_GETTER_CALLS_RECONCILED_2026-11-01.tsv",
+              "reports/stage1_economy/AT1_SETTER_CALLS.tsv",
+              "reports/stage1_economy/AX2_SETTER_ARGUMENTS_FULL_2026-11-01.tsv",
+              "reports/stage1_economy/aq1-run-41319511985/attempt-1/input-identity.txt",
+              "reports/stage1_economy/aq1-run-41319511985/attempt-1/ay1-ay2-entry1.tsv",
+              "reports/stage1_economy/aq1-run-41319511985/attempt-1/ay1-ay2-exe.tsv",
+              "reports/stage1_economy/aq1-run-41319511985/attempt-1/aw1-manager-function-detail.txt",
+              "reports/stage1_economy/aq1-run-41319511985/attempt-1/aw1-manager-b44-accesses.tsv",
+              "reports/stage1_economy/aq1-run-41319511985/attempt-1/entry1-helper-function-detail.txt",
+              "reports/stage1_economy/AZ0_AY1_RAW_WRITER_AUDIT_2026-11-02.tsv",
+              "reports/stage1_economy/AZ0_AZ1_HYPOTHESES_2026-11-02.md",
+              "reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md",
+              "reports/stage1_economy/AZ2_MANAGER_READERS_2026-11-02.tsv",
+              "reports/stage1_economy/AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv",
+              "experiments/az1_h6_economy_runtime.py",
+              ".github/workflows/az1-h6-economy-runtime.yml",
+              "reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/ACTIONS_RUN_SUMMARY.txt",
+              "reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_H6_ECONOMY_SUMMARY.txt",
+              "reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_LAUNCHES.tsv",
+              "reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_MANAGER_FIELDS.tsv",
+              "reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_TILE_AGGREGATES.tsv",
+              "reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_TILE_RECORDS.tsv",
+              "reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_TABLE_SELECTION.tsv",
+          ]
+          output_names = [
+              "ACTIONS_RUN_SUMMARY.txt", "AZ0_COMMIT_FILE_LIST.txt",
+              "AZ1_H6_ECONOMY_SUMMARY.txt", "AZ1_LAUNCHES.tsv",
+              "AZ1_MANAGER_FIELDS.tsv", "AZ1_SCRIPT_EXIT_CODE.txt",
+              "AZ1_TABLE_SELECTION.tsv", "AZ1_TILE_AGGREGATES.tsv",
+              "AZ1_TILE_RECORDS.tsv", "AZ1_WORKFLOW_SCRIPT_PROCESS_EXIT.txt",
+          ]
+          paths = source_paths + [f"{dest_rel}/{name}" for name in output_names]
+          rows = ["path\tbytes\tsha256\tstatus"]
+          for rel in paths:
+              p = root / rel
+              if p.is_file():
+                  data = p.read_bytes()
+                  rows.append(f"{rel}\t{len(data)}\t{hashlib.sha256(data).hexdigest()}\tPRESENT")
+              else:
+                  rows.append(f"{rel}\tTIDAK TAHU\tTIDAK TAHU\tMISSING")
+          (dest_abs / "AZ0_SHA256_ONE_SET.tsv").write_text("\n".join(rows)+"\n", encoding="utf-8")
+          PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$dest"

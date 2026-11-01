@@ -95,7 +95,7 @@ def read_snapshot(state_path, attempt, frame, fields, tiles, aggregates, table_r
     fields.append(fields_row)
 
     mode = read_u32(ram, 0x80070734)
-    state = read_u32(ram, 0x8007073C)
+    state = read_u8(ram, 0x8007073C)
     matrix_base = 0x80058758
     table_base = 0x80057798
     row_stride = 0x54
@@ -104,7 +104,8 @@ def read_snapshot(state_path, attempt, frame, fields, tiles, aggregates, table_r
     table_row = {
         "attempt": attempt, "frame": frame,
         "mode_0x80070734_u32": mode,
-        "state_0x8007073C_u32": state,
+        "state_0x8007073C_u8": state,
+        "state_read_method": "lbu 0x8007073C (static PC 0x80012EE8)",
         "matrix_base": fmt32(matrix_base),
         "matrix_stride_mode": fmt32(matrix_stride_mode),
         "matrix_stride_state": fmt32(matrix_stride_state),
@@ -159,7 +160,7 @@ def read_snapshot(state_path, attempt, frame, fields, tiles, aggregates, table_r
     if count > 512 or pointer < RAM_BASE or pointer + count * RECORD_STRIDE > RAM_BASE + len(ram):
         header["validation"] = "POINTER_OR_COUNT_OUTSIDE_2MIB_OR_IMPLAUSIBLE"
         aggregates.append(header)
-        return ram_sha, fields_row, row, header
+        return ram_sha, fields_row, table_row, header
     header["validation"] = "PASS"
     header["record_count_checked"] = str(count)
     aggregates.append(header)
@@ -400,9 +401,11 @@ def main():
             "attempt": attempt, "frame180_reached": "YES" if frame_results[180]["reached"] else "NO",
             "frame180_capture": "PASS" if frame_results[180]["captured"] else "FAIL",
             "frame180_ram_2mib_sha256": frame_results[180]["ram_sha"],
+            "frame180_parse_error": frame_results[180].get("parse_error", ""),
             "frame360_reached": "YES" if frame_results[360]["reached"] else "NO",
             "frame360_capture": "PASS" if frame_results[360]["captured"] else "FAIL",
             "frame360_ram_2mib_sha256": frame_results[360]["ram_sha"],
+            "frame360_parse_error": frame_results[360].get("parse_error", ""),
             "wrapper_exit_code_decimal": str(wrapper_rc), "emulator_exit_code_decimal": emulator_exit,
             "exit_code_source": exit_source, "wall_seconds": "%.3f" % wall,
             "memory_card_sha256_before": card_before, "memory_card_sha256_after": card_after,
@@ -449,7 +452,8 @@ def main():
     )
     max_wall = max(float(x["wall_seconds"]) for x in launches) if launches else 0.0
     timeout_twice_observed = timeout_s >= 2 * max_wall
-    exit_code = 0 if all_good and complete_pairs and timeout_ok else 2
+    table_selection_complete = len(table_rows) == 4 and all(r.get("selection_status") == "PASS_STATIC_XREF_AND_RUNTIME_INDEX" for r in table_rows)
+    exit_code = 0 if all_good and complete_pairs and same_each_frame and table_selection_complete and timeout_ok and timeout_twice_observed else 2
     status = "PASS" if exit_code == 0 else "INCOMPLETE"
     report = [
         "AZ1 — H6 HYBRID READ-ONLY ECONOMY SNAPSHOT",
@@ -471,6 +475,7 @@ def main():
         "TWO_LAUNCH_BOTH_FRAMES_CAPTURED=%s" % all_good,
         "TWO_LAUNCH_FRAME_SHA_IDENTICAL_PER_FRAME=%s" % same_each_frame,
         "ALL_FOUR_RAM_SNAPSHOTS_PARSED=%s" % complete_pairs,
+        "TABLE_SELECTION_COMPLETE=%s" % table_selection_complete,
     ]
     for x in launches:
         report.extend([

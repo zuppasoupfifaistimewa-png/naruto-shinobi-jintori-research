@@ -22,11 +22,28 @@ public class ExportManagerFieldAccesses extends GhidraScript {
   return lui&&load;
  }
  private String entry(Function f){return f==null?"TIDAK_TAHU":f.getEntryPoint().toString();}
+ private String before(Instruction center, Function owner, int count) {
+  List<Instruction> prior=new ArrayList<Instruction>();
+  Instruction cur=center;
+  for(int i=0;i<count;i++) {
+   cur=cur.getPrevious();
+   if(cur==null || (owner!=null && !owner.getBody().contains(cur.getAddress()))) break;
+   prior.add(cur);
+  }
+  Collections.reverse(prior);
+  StringBuilder out=new StringBuilder();
+  for(Instruction ins:prior) {
+   if(out.length()>0) out.append(" || ");
+   out.append(ins.getAddress()).append(" ").append(ins.toString());
+  }
+  if(prior.size()!=count) out.insert(0,"PRECOUNT="+prior.size()+"; ");
+  return out.toString();
+ }
  @Override protected void run() throws Exception {
   String[] a=getScriptArgs();if(a.length<2)throw new IllegalArgumentException("Args: output and displacement");
   int disp=(int)Long.decode(a[1]).longValue();
   try(PrintWriter w=new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(a[0]),StandardCharsets.UTF_8)))){
-   out=w;row("pc","function_entry","function_name","mnemonic","instruction","manager_slot_load_same_function","classification");
+   out=w;row("pc","function_entry","function_name","mnemonic","instruction","manager_slot_load_same_function","pre_12_instructions","classification");
    Map<String,Function> funcs=new TreeMap<>();int count=0;
    InstructionIterator it=currentProgram.getListing().getInstructions(true);
    while(it.hasNext()){
@@ -38,7 +55,7 @@ public class ExportManagerFieldAccesses extends GhidraScript {
     if(f!=null)funcs.put(entry(f),f);
     boolean manager=f!=null&&hasManagerSlotLoad(f);
     row(ins.getAddress().toString(),entry(f),f==null?"NONE":f.getName(),ins.getMnemonicString(),ins.toString(),
-        manager?"YES":"NO","B44_DISPLACEMENT; BASE_ALIAS_REQUIRES_REVIEW");
+        manager?"YES":"NO",before(ins,f,12),"DISPLACEMENT_CANDIDATE; BASE_ALIAS_REQUIRES_REVIEW; verify effective base register");
     count++;
    }
    row("TOTAL","","","","instruction_count="+count,"unique_functions="+funcs.size(),"");
