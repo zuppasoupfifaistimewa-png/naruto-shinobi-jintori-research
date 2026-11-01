@@ -107,7 +107,9 @@ startNext=function(i)
     "mcd_before_sha="..currentCardBefore,"mcd_after_sha="..cardAfter,"mcd_unchanged="..tostring(cardAfter==currentCardBefore),
     "duration_seconds="..string.format("%.6f",duration),"status="..status},"|"))
    currentCase=nil; setterObservation=nil
-   PCSX.nextTick(function() startNext(i+1) end)
+   -- This callback already runs inside nextTick; start the next isolated slice
+   -- directly instead of scheduling a nested nextTick that can remain queued.
+   startNext(i+1)
   end)
   return false
  end)
