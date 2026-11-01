@@ -1,0 +1,116 @@
+BASE=e2a2f4485dfa258d8a4d25599c26cab0c9ac551a
+COMMIT=2c5db558a4e3820c3ff2f50a1d133476cbc6ed2d
+SUBJECT=Add AZ0 raw writer audit and AZ1 read-only H6 snapshots
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+A	.github/workflows/az1-h6-economy-runtime.yml
+A	experiments/az1_h6_economy_runtime.py
+A	reports/stage1_economy/AZ0_AY1_RAW_WRITER_AUDIT_2026-11-02.tsv
+A	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+
+COMMIT=6b7279604f3540b3b5c66fc0e77f794ce6b9c674
+SUBJECT=Add AZ0-AZ1 hypotheses and exhaustive direct setter argument table
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+A	reports/stage1_economy/AZ0_AZ1_HYPOTHESES_2026-11-02.md
+A	reports/stage1_economy/AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv
+
+COMMIT=f9a6cd896a15876e16121de49537294681c94acc
+SUBJECT=Publish AZ1 H6 runtime trace run 41358566961 attempt 1
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ0_COMMIT_FILE_LIST.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ0_SHA256_ONE_SET.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_H6_ECONOMY_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_LAUNCHES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_MANAGER_FIELDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_SCRIPT_EXIT_CODE.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_TABLE_SELECTION.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_TILE_AGGREGATES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_TILE_RECORDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+
+COMMIT=6c1e3b95e54ebfa46468e62b96cd0cd08d85ab9a
+SUBJECT=Resolve AZ1 B30 table lookup and complete scoped AZ2 reader census
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	experiments/az1_h6_economy_runtime.py
+M	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+A	reports/stage1_economy/AZ2_MANAGER_READERS_2026-11-02.tsv
+
+COMMIT=e4b377cc3932d53c9574585e5bb890662b5a6c1d
+SUBJECT=Publish AZ1 H6 runtime trace run 41359528784 attempt 1
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ0_COMMIT_FILE_LIST.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ0_SHA256_ONE_SET.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_H6_ECONOMY_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_LAUNCHES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_MANAGER_FIELDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_SCRIPT_EXIT_CODE.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_TABLE_SELECTION.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_TILE_AGGREGATES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_TILE_RECORDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+
+COMMIT=9584198b07e3111c59fc33814bcb6e7d70d4c277
+SUBJECT=Fix AZ1 snapshot parser and expand Entry1 manager field reader scan
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/az1-h6-economy-runtime.yml
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+M	experiments/az1_h6_economy_runtime.py
+M	tools/ghidra/ExportManagerFieldAccesses.java
+
+COMMIT=330127a2830949d6b722a633a874f7a31a4ca4ba
+SUBJECT=Publish AQ1 static economy census run 41360300335
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/run-summary.txt
+
+COMMIT=e413f1d0f59667f3f7cb4c25f5a6c6b0b9e9cf5b
+SUBJECT=Publish AZ1 H6 runtime trace run 41360300315 attempt 1
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ0_COMMIT_FILE_LIST.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ0_SHA256_ONE_SET.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_H6_ECONOMY_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_LAUNCHES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_MANAGER_FIELDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_SCRIPT_EXIT_CODE.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_TABLE_SELECTION.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_TILE_AGGREGATES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_TILE_RECORDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+
+COMMIT=4c537e3034bd0b2c2c0ad1a51312621843160910
+SUBJECT=Fix AZ1 read_snapshot return and u8 state TSV header
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	experiments/az1_h6_economy_runtime.py
+

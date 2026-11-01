@@ -1,0 +1,21 @@
+attempt	frame	aggregate_owner	status_scope	record_count_with_known_V	unknown_V_count	sum_V	floor_sum_V_div_2	manager_B38	matches_B38	manager_B2B_active_index	tile_array_pointer_slot	tile_array_pointer	tile_count_slot	tile_count	record_stride	validation
+1	180										0x8013EA84	0x8013B818	0x8013EAC8	22	0x124	PASS
+1	180	ALL	ALL	22	0	1270	635	0	NO	0						
+1	180	ALL	STATUS_5	0	0	0	0	0	YES	0						
+1	180	15	ALL	22	0	1270	635	0	NO	0						
+1	180	15	STATUS_5	0	0	0	0	0	YES	0						
+1	360										0x8013EA84	0x8013B818	0x8013EAC8	22	0x124	PASS
+1	360	ALL	ALL	22	0	1270	635	0	NO	0						
+1	360	ALL	STATUS_5	0	0	0	0	0	YES	0						
+1	360	15	ALL	22	0	1270	635	0	NO	0						
+1	360	15	STATUS_5	0	0	0	0	0	YES	0						
+2	180										0x8013EA84	0x8013B818	0x8013EAC8	22	0x124	PASS
+2	180	ALL	ALL	22	0	1270	635	0	NO	0						
+2	180	ALL	STATUS_5	0	0	0	0	0	YES	0						
+2	180	15	ALL	22	0	1270	635	0	NO	0						
+2	180	15	STATUS_5	0	0	0	0	0	YES	0						
+2	360										0x8013EA84	0x8013B818	0x8013EAC8	22	0x124	PASS
+2	360	ALL	ALL	22	0	1270	635	0	NO	0						
+2	360	ALL	STATUS_5	0	0	0	0	0	YES	0						
+2	360	15	ALL	22	0	1270	635	0	NO	0						
+2	360	15	STATUS_5	0	0	0	0	0	YES	0						
