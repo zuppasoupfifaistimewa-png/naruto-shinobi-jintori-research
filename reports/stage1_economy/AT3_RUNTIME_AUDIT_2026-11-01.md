@@ -55,3 +55,10 @@ At getter entry:
 ## Conclusion
 
 **AT3: TUNTAS — K5 terbatas pada eksperimen H6 HYBRID ini.** Runtime repetitions, input readbacks, captures, exit codes, Memory Card hashes, and timeout bound all passed. No gameplay/economy meaning is assigned to the observed register values or breakpoint counts.
+
+
+## Follow-up attempt and workflow correction
+
+The qualifying AT3 result above remains run **41256458701** (job **124700549589**, exit code 0). A later replication attempt, run **41258300049**, did not execute the emulator: all eight subprocesses returned **127** almost immediately, and the script returned exit code 2. The workflow had selected `squashfs-root/shared/bin/pcsx-redux`, which was not the executable used by the prior successful run. Its zero breakpoint counts and failed CIRCLE readbacks are therefore **invalid/not monitored**, not game behavior.
+
+The workflow was corrected in commit `968c1a55731e09f815a1d1d385e1bf3edf792279` to use the executable path `$APPDIR/bin/pcsx-redux`, matching the path from successful run 41256458701. A replication run **41259662960** was started with that correction. At the time of this report update it was still in progress; its outcome is not used for the AT3 completion claim. This follow-up is a replication, not a prerequisite for the already-valid eight-launch result above.
