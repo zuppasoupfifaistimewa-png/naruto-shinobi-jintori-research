@@ -2,8 +2,8 @@
 
 Repo: `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`, branch `main`.  
 Base audit: `a065e7d2a8932569a4e0a819e5562b365bb29c6e`.  
-HEAD sumber sebelum file laporan ini dibuat: `7225f88575bd613acff8d5fbc73c2858fd8c952e`.  
-Perbandingan GitHub base→HEAD sumber: 77 commit maju, 0 di belakang; 105 berkas berbeda. Status di daftar menggunakan padanan `git diff --name-status` (A=added, M=modified, D=deleted). Path laporan AU0 sudah termasuk dalam 105 path karena berkas dibuat sebelum HEAD sumber `df1812539747ec634a3e8d7199ba13a0353edeef`.
+HEAD sumber inventaris (sebelum update laporan induk): `e7925cfcd69c6487a5bb2ab8cce672b5a589a099`.  
+Perbandingan base→HEAD sumber inventaris: 84 commit maju, 0 di belakang; 114 berkas berbeda. Daftar di bawah adalah padanan `git diff --name-status` (A=added, M=modified, D=deleted); semua 114 path termasuk artefak AU3.
 
 ## Status pekerjaan
 
