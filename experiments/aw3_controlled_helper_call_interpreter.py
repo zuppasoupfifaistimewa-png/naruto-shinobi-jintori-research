@@ -70,11 +70,11 @@ if io.stdout then io.stdout:setvbuf("no") end
 local ffi=require("ffi")
 local bit=require("bit")
 ffi.cdef[[
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned int uint32_t;
-typedef unsigned long size_t;
-unsigned char *SHA256(const unsigned char *d, size_t n, unsigned char *md);
+typedef unsigned char aw3_u8;
+typedef unsigned short aw3_u16;
+typedef unsigned int aw3_u32;
+
+unsigned char *SHA256(const unsigned char *d, unsigned long n, unsigned char *md);
 ]]
 local cryptoOk,crypto=pcall(ffi.load,"crypto")
 local function log(s) print(s); pcall(function() io.stdout:flush() end) end
@@ -111,9 +111,9 @@ local failedCalls=0
 local function phys(a) return bit.band(a,0x1fffffff) end
 local function rd8(a) return tonumber(mem[phys(a)]) end
 local function wr8(a,v) mem[phys(a)]=v%256 end
-local function rd16(a) return tonumber(ffi.cast("uint16_t*",mem+phys(a))[0]) end
+local function rd16(a) return tonumber(ffi.cast("aw3_u16*",mem+phys(a))[0]) end
 local function wr16(a,v) ffi.cast("uint16_t*",mem+phys(a))[0]=v%65536 end
-local function rd32(a) return tonumber(ffi.cast("uint32_t*",mem+phys(a))[0]) end
+local function rd32(a) return tonumber(ffi.cast("aw3_u32*",mem+phys(a))[0]) end
 local function wr32(a,v) ffi.cast("uint32_t*",mem+phys(a))[0]=v end
 local function ramString() return ffi.string(mem,RAM_SIZE) end
 local function ramSha()
@@ -326,7 +326,7 @@ def parse_results(log):
     for line in log.splitlines():
         if "AW3_CALL|" not in line:continue
         s=line[line.index("AW3_CALL|"):].strip().split("|")
-        if len(s)<17:continue
+        if len(s)<16:continue
         d={"label":s[1],"kind":s[2]}
         for item in s[3:]:
             if "=" in item:
