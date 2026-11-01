@@ -333,17 +333,64 @@ public class ExportManagerEconomyWriters extends GhidraScript {
         decomp.dispose();
         for(MemoryBlock b:currentProgram.getMemory().getBlocks()) {
             if(!b.isInitialized()) continue;
-            long start=b.getStart().getOffset(), end=start+b.getSize(), p=(start+3L)&~3L;
-            for(;p+4<=end;p+=4) {
+            long start=b.getStart().getOffset(), end=start+b.getSize(), p=start;
+            for(;p+4<=end;p++) {
                 long word=readWord(p);
                 if((word&0xffffffffL)==target) {
                     row("FUNCTION_POINTER_WORD",module,addrExpr(a),addrExpr(toAddr(p)),b.getName(),
                         "value="+addrExpr(toAddr(word)),bytes(toAddr(p),4),
-                        "aligned 32-bit pointer found in initialized block; caller/jump-table use needs xref/control-flow confirmation");
+                        "4-byte target pointer found at any byte alignment; table/caller semantics still need xref/control-flow confirmation");
                     pointerWords++;
                 }
             }
         }
+    }
+    private void exportEconomyGlobalSource() throws Exception {
+        long target=0x80070C88L;
+        Address a=toAddr(target);
+        MemoryBlock block=currentProgram.getMemory().getBlock(a);
+        String blockName=block==null?"UNMAPPED":block.getName();
+        String value="NO_INITIALIZED_BYTES";
+        String raw="";
+        if(block!=null && block.isInitialized() && block.contains(a)) {
+            raw=bytes(a,4);
+            long word=readWord(target);
+            if(word!=Long.MIN_VALUE) value=fmt(word);
+        }
+        row("ECONOMY_GLOBAL_META",module,addrExpr(a),"","","_DAT_80070C88",
+            blockName,value,raw,"","","FUN_80012A8C statically reads this global; numerical value only if loaded/initialized bytes exist");
+        int refsFound=0;
+        ReferenceIterator refs=currentProgram.getReferenceManager().getReferencesTo(a);
+        while(refs.hasNext()) {
+            Reference ref=refs.next();
+            Address from=ref.getFromAddress();
+            Function owner=currentProgram.getFunctionManager().getFunctionContaining(from);
+            Instruction ins=currentProgram.getListing().getInstructionAt(from);
+            row("ECONOMY_GLOBAL_XREF",module,addrExpr(a),addrExpr(from),functionEntry(owner),functionName(owner),
+                ref.getReferenceType().toString(),ref.getSource().toString(),
+                ins==null?"DATA_OR_UNDECODED":ins.toString(),
+                ins==null?"":before(ins,owner,12),bytes(from,16),
+                "ReferenceManager xref; store/load semantics require opcode inspection");
+            refsFound++;
+        }
+        InstructionIterator it=currentProgram.getListing().getInstructions(true);
+        while(it.hasNext()) {
+            Instruction ins=it.next();
+            String text=ins.toString().toLowerCase();
+            // 0x80070C88 may be referenced through LUI 0x8007 + displacement 0xC88,
+            // or an equivalent signed displacement based on another register.
+            if(text.contains("0xc88(") || text.contains("-0x3978(")) {
+                Function owner=currentProgram.getFunctionManager().getFunctionContaining(ins.getAddress());
+                row("ECONOMY_GLOBAL_DISPLACEMENT_CANDIDATE",module,addrExpr(a),addrExpr(ins.getAddress()),
+                    functionEntry(owner),functionName(owner),ins.getMnemonicString(),ins.toString(),
+                    "effective address requires preceding base-register provenance",
+                    owner==null?"":before(ins,owner,12),bytes(ins.getAddress(),16),
+                    "static instruction contains displacement candidate for global +0x80070C88; validate its base register");
+            }
+        }
+        row("ECONOMY_GLOBAL_XREF_TOTAL",module,addrExpr(a),"","","",
+            "reference_manager_refs="+refsFound,"memory_block="+blockName,"value="+value,
+            "unaligned_function_pointer_words_total="+pointerWords,"","","no runtime");
     }
     private void dumpFunction(long target) throws Exception {
         Address targetAddress=toAddr(target);
@@ -407,7 +454,10 @@ public class ExportManagerEconomyWriters extends GhidraScript {
                 "all functions with manager-slot displacement or direct target-field displacement are candidate-scanned");
             scanWriters();
             for(long t:FUNCTIONS) callerRefs(t);
-            if(module.equals("MAIN_EXE")) dumpFunction(0x80012A8CL);
+            if(module.equals("MAIN_EXE")) {
+                exportEconomyGlobalSource();
+                dumpFunction(0x80012A8CL);
+            }
             if(module.equals("ENTRY1")) dumpFunction(0x800EDD68L);
             countJalr();
             row("INDIRECT_CALL_LIMIT",module,"FUN_80109994;FUN_801048F0;FUN_80109974;FUN_80109984","","","",
