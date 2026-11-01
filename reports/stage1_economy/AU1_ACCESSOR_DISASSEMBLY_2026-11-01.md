@@ -81,7 +81,7 @@ Program: PS-X EXE SLPS_035.53, base `0x80010000`. Statis; maksimum K4.
 
 ## Rekonsiliasi event runtime AT3
 
-Disassembly mengunci urutan register: saat breakpoint entry `0x800138EC), a0 masih indeks; pada instruksi pertama a1 disetel sama dengan a0. Setelah getter selesai, a0 menjadi pointer record. Ini cocok dengan event yang mencatat:
+Disassembly mengunci urutan register: saat breakpoint entry `0x800138EC`, a0 masih indeks; pada instruksi pertama a1 disetel sama dengan a0. Setelah kalkulasi stride, a0 menjadi pointer record. Ini cocok dengan event yang mencatat:
 
 | Call return RA | a0 pada entry | a1 pada entry | a0 pada return | a1 pada return | v0 |
 |---|---:|---:|---:|---:|---:|
