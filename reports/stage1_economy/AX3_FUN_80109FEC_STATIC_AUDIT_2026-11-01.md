@@ -94,3 +94,32 @@ Other progress states call 0x80011C6C, test its return bit, then call UI/audio-l
 - reports/stage1_economy/AU1_ACCESSOR_DISASSEMBLY_2026-11-01.md
 - reports/stage1_economy/AT1_SETTER_CALLS.tsv and AU2_SETTER_ARGUMENTS_2026-11-01.tsv
 - reports/stage1_economy/aw3-controlled-run-41291503009/attempt-1/AW3_SUMMARY.txt
+
+
+## G. Batas xref dan seluruh nilai state yang masuk ke dispatcher
+
+Direct reference list dari ekspor AQ1 mencatat satu instruksi pemanggil yang ditemukan: PC 0x80104960, jal 0x80109FEC di FUN_801048F0; delay slot 0x80104964 adalah move a0,s0. Nilai ABI yang masuk adalah a0=s0 (pointer/objek caller), bukan konstanta state. Xref tidak menunjukkan argumen state eksplisit. Pemanggilan tidak langsung melalui function pointer: TIDAK TAHU; satu xref langsung bukan bukti tidak ada indirect call.
+
+State dibaca dari byte manager+0xB2A, bukan argumen caller:
+- 0x8010A094 lbu v0,0xB2A(v1), diikuti addiu v0,v0,-3 dan sltiu v0,v0,4 menguji state 3,4,5,6.
+- 0x8010A130 lbu v1,0xB2A(a0), lalu li v0,7 dan bne; state 7 memasuki jalur getter/setter yang berhubungan dengan B44.
+- 0x8010A23C lbu v1,0xB2A(v0) menjadi indeks jump table: sltiu batas 0x10, sll indeks 2, load alamat dari tabel dan jr. Dekompilasi switch menampilkan case 0, 2, 3, 4, 5, 6, 7, 8; state 1 jatuh ke default path. Makna cabang state 9–15: TIDAK TAHU dari bukti yang diekspor.
+
+## H. Pembaca display yang dapat dibuktikan
+
+Pada rentang tepat 0x8010A648–0x8010A658, instruksinya:
+- 0x8010A648 lw v0,0xB44(v1)
+- 0x8010A64C nop
+- 0x8010A650 subu v0,v0,s1
+- 0x8010A654 jal 0x80011C6C
+- 0x8010A658 delay slot sw v0,0xB44(v1)
+
+Tidak ada load string, alamat teks, atau literal label pada rentang tersebut.
+
+Pembaca B44 terdekat yang menyiapkannya bersama pointer buffer/teks berada di FUN_80109F1C:
+- 0x80109F5C addiu a0,s2,0xC0
+- 0x80109F60 addiu a1,s3,0x80
+- 0x80109F64 lw a2,0xB44(v1)
+- 0x80109F68 jal 0x8001B364; delay slot 0x80109F6C li a3,5
+
+Ini membuktikan B44 dipasok sebagai a2 bersama dua alamat buffer/teks dan parameter a3=5. Caller tidak mengungkap literal string atau label yang dipakai callee. Identitas tulisan yang terlihat: TIDAK TAHU.
