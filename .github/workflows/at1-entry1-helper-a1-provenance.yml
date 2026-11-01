@@ -48,8 +48,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          sudo apt-get update -qq
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends bchunk xorriso curl jq unzip python3
+          missing=0
+          for cmd in bchunk xorriso curl jq unzip python3; do
+            command -v "$cmd" >/dev/null 2>&1 || missing=1
+          done
+          if [ "$missing" -eq 1 ]; then
+            sudo apt-get update
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends bchunk xorriso curl jq unzip python3
+          fi
+          for cmd in bchunk xorriso curl jq unzip python3; do
+            command -v "$cmd" >/dev/null 2>&1 || { echo "MISSING_TOOL=$cmd"; exit 1; }
+          done
 
       - name: Download and verify BIN/CUE; extract exact DATA.BIN Entry 1 slice
         shell: bash
