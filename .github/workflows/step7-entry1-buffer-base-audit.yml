@@ -211,7 +211,7 @@ jobs:
               0x80119634 0x800DC2E0 0x800DFEE8 0x800E6470 \
               0x800E9220 0x800EB290 0x800F0C10 0x800F2A9C \
               0x800D15A8 0x800D8930 0x800D10F0 \
-              0x80102898 0x801088A8 0x80108D2C \
+              0x80102898 0x801088A8 0x80108D2C 0x80105BCC 0x801052E8 \
             -postScript ExportPerRecordCallerGraph.java "$out/per-record-caller-graph.txt" \
             -postScript ExportPendingParticipantDelta.java "$out/pending-participant-delta.txt" \
             -postScript ExportStage1EconomyAQ1.java "$out/aq1-economy-census.tsv" \
@@ -261,6 +261,24 @@ jobs:
               raise SystemExit("Helper corrected file offset missing")
           print("buffer_base_metadata=PASS")
           PY
+          {
+            echo "TARGET=0x80105BCC"
+            echo "CALLER=0x801053BC"
+            echo "STATIC_IMPORT_BASE=0x800AD450"
+            echo "RUNTIME_MAPPING=NOT_VALIDATED"
+            if awk '/=== TARGET 80105bcc ===/{p=1;next} /^=== TARGET /{p=0} p' "$out/entry1-buffer-base-targets.txt" | grep -q "RAW_FUNCTION_BODY_BEGIN"; then
+              echo "STATUS=PASS"
+            else
+              echo "STATUS=INCOMPLETE"
+            fi
+            if grep -q "=== TARGET 0x801052E8 ===" "$out/entry1-buffer-base-targets.txt"; then
+              echo "CALLER_EXPORT=PASS"
+            else
+              echo "CALLER_EXPORT=INCOMPLETE"
+            fi
+            echo "NOTE=Manually seeded Ghidra function boundary; validate raw return/tail jumps."
+          } > "$out/helper-a1-provenance-status.txt"
+          cat "$out/helper-a1-provenance-status.txt"
 
           {
             echo "status=SUCCESS"
@@ -355,7 +373,7 @@ jobs:
           PY
           dest="reports/stage1_economy/aq1-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
-          for f in aq1-economy-census.tsv aq1-deep-context.tsv aq1-recount.txt run-summary.txt input-identity.txt; do
+          for f in entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv aq1-deep-context.tsv aq1-recount.txt run-summary.txt input-identity.txt; do
             if [ -f "$out/$f" ]; then cp "$out/$f" "$dest/$f"; fi
           done
           API="https://api.github.com/repos/$RESEARCH_REPO"
