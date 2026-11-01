@@ -1,0 +1,22 @@
+AW3 — PCSX-REDUX HEADLESS INTERPRETER; H6 HIBRIDA; CONTROLLED DIRECT CALLS
+H6_SHA256=d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475
+H6_IDENTITY=target checkpoint base + CONTROL top-level protobuf field 6; HIBRIDA, NOT TARGET-PURE
+USER_INPUT=NONE; STORY_MODE_ADAPTIVE_PLAYER=NOT_RUN
+LAUNCH_MATRIX=two independent H6 reloads, two separately copied Memory Cards
+FLAGS=-debugger -interpreter; no dynarec
+DIRECT_FUNCTIONS=FUN_800B770C; getter_0x800138EC; setter_0x8001387C
+MANAGER_FUN_80109FEC=NOT_CALLED_DIRECTLY; state-machine has UI/audio/state side effects and chained calls; direct call lacks safe isolated preconditions
+TILE_HELPER_TEST=selectors 0..4 x three halfword fields/values; selector 5 default path; 31? exact counts in TSV
+GETTER_POSITIVE_CONTROL=index 0 and 1; expected 1500 each before any write
+SETTER_CONTROL=100,1500,100000,-10000; record +0x18 checked and full record restored
+REGISTER_STATE=GPR[0..33] including HI/LO, CP0, CP2D, CP2C, PC saved/restored per call
+RAM_HASH=SHA256 first 2MiB before/after and after restore for every call
+EXPECTED_CALLS_PER_LAUNCH=22
+OBSERVED_CALLS=44
+HISTORICAL_MAX_WALL_SECONDS=241.088
+MAX_LAUNCH_WALL_SECONDS=83.575
+TIMEOUT_SECONDS_PER_LAUNCH=600
+TIMEOUT_GE_2X_HISTORICAL_MAX=True
+ALL_TESTS_PASS=False
+ATTEMPT=1 EXIT_DECIMAL=93 WALL=83.575 H6_LOADED=YES MCD_UNCHANGED=TRUE RAM_RESTORED=false CALLS=22 FAILED=22
+ATTEMPT=2 EXIT_DECIMAL=93 WALL=82.743 H6_LOADED=YES MCD_UNCHANGED=TRUE RAM_RESTORED=false CALLS=22 FAILED=22

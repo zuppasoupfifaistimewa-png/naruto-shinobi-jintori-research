@@ -1,0 +1,112 @@
+ALSA lib confmisc.c:855:(parse_card) [error.core] cannot find card '0'
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) [error.core] error evaluating strings
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) [error.core] error evaluating name
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5734:(snd_config_expand) [error.core] Evaluate error: No such file or directory
+ALSA lib pcm.c:2722:(snd_pcm_open_noupdate) [error.pcm] Unknown PCM sysdefault
+Warning: OpenGL error reporting disabled. See About dialog for more information.
+PCSX-Redux Lua Console
+LuaJIT 2.1.1785598229
+PCSX-Redux booting
+Copyright (C) 2019-2025 PCSX-Redux authors
+AW3_READY interpreter=1 debugger=1 input=NONE H6=HIBRIDA
+AW3_PAD_NO_INPUT=PASS
+AW3_H6_LOADED=1
+AW3_H6_LOAD_CALL_RETURNED=1
+AW3_BASELINE frame=180 tile_slot=0x8013B818 player0_chakra=1500 player1_chakra=1500 ram_sha=5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7
+AW3_SENTINEL_ARMED=true address=0x801FFFE0
+AW3_CALL_BEGIN index=1 label=getter_control_index_0 fn=0x800138EC ra=0x801FFFE0
+AW3_CALL|getter_control_index_0|GETTER|fn=0x800138EC|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=1500|actual=1500|memory_value=NA|ram_before_sha=5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7|ram_after_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_unchanged=false|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=0x7264,0xE2AC,0xE2AD,0xE2B4,0xE2B5,0xE2B8,0xE2B9,0xE2BA,0xE2BB,0xE2BC,0xE2BD,0xE2BE,0xE2BF,0xE2C0,0xE2C1,0xE2C2,0xE2C3,0xE2E7,0xE320,0xE321,0xE322,0xE324,0xE325,0xE326,0x66CA4,0x66CA5,0x66E7C,0x6D7E0,0x71208,0xA2B38,0xA55D0,0xABDEC|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=2 label=getter_control_index_1 fn=0x800138EC ra=0x801FFFE0
+AW3_CALL|getter_control_index_1|GETTER|fn=0x800138EC|a0=0x00000001|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=1500|actual=1500|memory_value=NA|ram_before_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_after_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=3 label=selector_0_off_10_h_19 fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_0_off_10_h_19|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=19|actual=0|memory_value=NA|ram_before_sha=3b3ab8ec13b9fcfa649ed854342c45f3e85015f4f02014b36912f8f48604ef39|ram_after_sha=3b3ab8ec13b9fcfa649ed854342c45f3e85015f4f02014b36912f8f48604ef39|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=4 label=selector_0_off_12_h_101 fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_0_off_12_h_101|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=101|actual=101|memory_value=NA|ram_before_sha=612a82c7ab32f69bdd9bf42c0e052deb59e9d518fddc13312ebe6f9b52b1fdbd|ram_after_sha=612a82c7ab32f69bdd9bf42c0e052deb59e9d518fddc13312ebe6f9b52b1fdbd|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=5 label=selector_0_off_2E_h_257 fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_0_off_2E_h_257|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=257|actual=0|memory_value=NA|ram_before_sha=d9df33ae9b03cb8b8da376a2b558eb3d9ca6b64ffe189f4126fdaaff3afc9ced|ram_after_sha=d9df33ae9b03cb8b8da376a2b558eb3d9ca6b64ffe189f4126fdaaff3afc9ced|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=6 label=selector_1_off_10_h_19 fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_1_off_10_h_19|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=22|actual=0|memory_value=NA|ram_before_sha=b6733f34c55f73d1d002acd2c99fd19969d27217642927c387ffb6f96d8bead1|ram_after_sha=b6733f34c55f73d1d002acd2c99fd19969d27217642927c387ffb6f96d8bead1|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=7 label=selector_1_off_12_h_101 fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_1_off_12_h_101|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=121|actual=121|memory_value=NA|ram_before_sha=85945f4efc898ef757508b290b0e8d28a7b1a9c41b094a60c0f7a00685580aac|ram_after_sha=85945f4efc898ef757508b290b0e8d28a7b1a9c41b094a60c0f7a00685580aac|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=8 label=selector_1_off_2E_h_257 fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_1_off_2E_h_257|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=308|actual=0|memory_value=NA|ram_before_sha=4848ef07649055cf0312d9f5039fd0b00e916409984247b1b84eec94c2533e95|ram_after_sha=4848ef07649055cf0312d9f5039fd0b00e916409984247b1b84eec94c2533e95|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=9 label=selector_2_off_10_h_19 fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_2_off_10_h_19|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=28|actual=0|memory_value=NA|ram_before_sha=2483c12d883dfafb32ab8b41a88e246a787f781c8801c0329209cd81a1e98ac2|ram_after_sha=2483c12d883dfafb32ab8b41a88e246a787f781c8801c0329209cd81a1e98ac2|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=10 label=selector_2_off_12_h_101 fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_2_off_12_h_101|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=151|actual=151|memory_value=NA|ram_before_sha=0c72d0830a79b401e6ce52e40ada1a5e10106be1ba632de53caa53f33164930e|ram_after_sha=0c72d0830a79b401e6ce52e40ada1a5e10106be1ba632de53caa53f33164930e|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=11 label=selector_2_off_2E_h_257 fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_2_off_2E_h_257|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=385|actual=0|memory_value=NA|ram_before_sha=1e2ea4d4f30800a45ad59b81298317623f88e6788b7f73de75a2ec27152a54b2|ram_after_sha=1e2ea4d4f30800a45ad59b81298317623f88e6788b7f73de75a2ec27152a54b2|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=12 label=selector_3_off_10_h_19 fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_3_off_10_h_19|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=34|actual=0|memory_value=NA|ram_before_sha=8bfa98bf01ab5270310f191e82473b76afec313594276944a9179d92b9958d75|ram_after_sha=8bfa98bf01ab5270310f191e82473b76afec313594276944a9179d92b9958d75|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=13 label=selector_3_off_12_h_101 fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_3_off_12_h_101|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=181|actual=181|memory_value=NA|ram_before_sha=b476aec01f980265aed638f71321cd94a96c863f60cf1b504ed0c0a5de2c588f|ram_after_sha=b476aec01f980265aed638f71321cd94a96c863f60cf1b504ed0c0a5de2c588f|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=14 label=selector_3_off_2E_h_257 fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_3_off_2E_h_257|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=462|actual=0|memory_value=NA|ram_before_sha=a6a98f49f3afafeb1f051c5146110db3fcd9a53e7233c45938eb506d823affa2|ram_after_sha=a6a98f49f3afafeb1f051c5146110db3fcd9a53e7233c45938eb506d823affa2|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=15 label=selector_4_off_10_h_19 fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_4_off_10_h_19|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=38|actual=0|memory_value=NA|ram_before_sha=6c56fe34847bab83d2061187487a980bd22f7d6dd673146555523409779dc039|ram_after_sha=6c56fe34847bab83d2061187487a980bd22f7d6dd673146555523409779dc039|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=16 label=selector_4_off_12_h_101 fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_4_off_12_h_101|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=202|actual=202|memory_value=NA|ram_before_sha=8989c284ebada3acc94e0fa15eb4c07cad69793cba8567641f4791b316f49abf|ram_after_sha=8989c284ebada3acc94e0fa15eb4c07cad69793cba8567641f4791b316f49abf|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=17 label=selector_4_off_2E_h_257 fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_4_off_2E_h_257|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=514|actual=0|memory_value=NA|ram_before_sha=cdfb6b28ed681107fc4e987bd89aecd2c49e507c18339b1f30e8104b83c1da1c|ram_after_sha=cdfb6b28ed681107fc4e987bd89aecd2c49e507c18339b1f30e8104b83c1da1c|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=18 label=selector_5_default_zero fn=0x800B770C ra=0x801FFFE0
+AW3_CALL|selector_5_default_zero|TILE_HELPER|fn=0x800B770C|a0=0x00000000|a1=0xA1A1A1A1|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=0|actual=0|memory_value=NA|ram_before_sha=224e2b2a192a39a777bb98b3718e17246b465f1f8ab006f18b0b75719f101a36|ram_after_sha=224e2b2a192a39a777bb98b3718e17246b465f1f8ab006f18b0b75719f101a36|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=19 label=setter_index_0_value_100 fn=0x8001387C ra=0x801FFFE0
+AW3_CALL|setter_index_0_value_100|SETTER|fn=0x8001387C|a0=0x00000000|a1=0x00000064|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=1|actual=1|memory_value=100|ram_before_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_after_sha=aac1dd990669f7150a0afa10ef1996db6c39eed3659d07950d56906e6103448b|ram_unchanged=false|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=0x70EB8,0x70EB9|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=20 label=setter_index_0_value_1500 fn=0x8001387C ra=0x801FFFE0
+AW3_CALL|setter_index_0_value_1500|SETTER|fn=0x8001387C|a0=0x00000000|a1=0x000005DC|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=1|actual=1|memory_value=1500|ram_before_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_after_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_unchanged=true|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=NONE|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=21 label=setter_index_0_value_100000 fn=0x8001387C ra=0x801FFFE0
+AW3_CALL|setter_index_0_value_100000|SETTER|fn=0x8001387C|a0=0x00000000|a1=0x000186A0|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=1|actual=1|memory_value=99999|ram_before_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_after_sha=1c5aca26ca0f551f7bb9e54557db3035fe970c688c35fdd32550a904ff773530|ram_unchanged=false|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=0x70EB8,0x70EB9,0x70EBA|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_CALL_BEGIN index=22 label=setter_index_0_value_-10000 fn=0x8001387C ra=0x801FFFE0
+AW3_CALL|setter_index_0_value_-10000|SETTER|fn=0x8001387C|a0=0x00000000|a1=0xFFFFD8F0|a2=0xA2A2A2A2|a3=0xA3A3A3A3|expected=1|actual=1|memory_value=-9999|ram_before_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_after_sha=12b2912a7b7136bcf820bee009087ed5c84138a020e10a21522b8cb9b0c4ccf3|ram_unchanged=false|ram_restored_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e|ram_restored=false|diff_offsets=0x70EB8,0x70EB9,0x70EBA,0x70EBB|status=FAIL
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AW3_FINAL_RAM baseline_sha=5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7 final_sha=3af9c7526bc6d5a1d7c7abec0b6fd6e98539cc58bb7860ce2754e2ffeabb590e unchanged=false
+AW3_DONE calls=22 failed=22 ram_restored=false
+Warning: OpenGL error reporting disabled. See About dialog for more information.
+PCSX-Redux booting
+Copyright (C) 2019-2025 PCSX-Redux authors
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
