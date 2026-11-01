@@ -1,0 +1,1 @@
+AW1_MANAGER_GHIDRA=PASS function=0x80109FEC program=DATA.BIN_ENTRY1 B44_inventory=exported

@@ -1,0 +1,1175 @@
+analysis=Ghidra selected-function static audit
+program=DATA_BIN_ENTRY_0001.bin
+program_language=MIPS:LE:32:default
+loaded_executable_base=0x80010000 (PS-X EXE header verified by workflow)
+game_or_emulator_executed=no
+gameplay_input_sent=no
+savestate_restored=no
+binary_uploaded_as_artifact=no
+
+=== TARGET 80109994 ===
+instruction_at_target=addiu sp,sp,-0x18
+function_name=FUN_80109994
+function_entry=80109994
+function_body_bytes=292
+function_return_type=undefined
+function_signature=undefined FUN_80109994(void)
+function_thunk=false
+--- RAW_FUNCTION_BODY_BEGIN ---
+80109994 bytes=[E8 FF BD 27] addiu sp,sp,-0x18
+80109998 bytes=[14 00 BF AF] sw ra,0x14(sp)
+8010999c bytes=[10 00 B0 AF] sw s0,0x10(sp)
+801099a0 bytes=[14 80 10 3C] lui s0,0x8014
+801099a4 bytes=[54 A5 02 8E] lw v0,-0x5aac(s0)
+801099a8 bytes=[00 00 00 00] nop
+801099ac bytes=[1C 0A 42 8C] lw v0,0xa1c(v0)
+801099b0 bytes=[00 00 00 00] nop
+801099b4 bytes=[3C 00 40 14] bne v0,zero,0x80109aa8
+801099b8 bytes=[21 10 00 00] _clear v0
+801099bc bytes=[3E 13 04 0C] jal 0x80104cf8
+801099c0 bytes=[00 00 00 00] _nop
+801099c4 bytes=[54 A5 04 8E] lw a0,-0x5aac(s0)
+801099c8 bytes=[D5 83 00 0C] jal 0x80020f54
+801099cc bytes=[20 0A 84 24] _addiu a0,a0,0xa20
+801099d0 bytes=[54 A5 04 8E] lw a0,-0x5aac(s0)
+801099d4 bytes=[00 00 00 00] nop
+801099d8 bytes=[20 0A 84 24] addiu a0,a0,0xa20
+801099dc bytes=[20 00 05 24] li a1,0x20
+801099e0 bytes=[57 84 00 0C] jal 0x8002115c
+801099e4 bytes=[10 FF 06 24] _li a2,-0xf0
+801099e8 bytes=[54 A5 04 8E] lw a0,-0x5aac(s0)
+801099ec bytes=[D5 83 00 0C] jal 0x80020f54
+801099f0 bytes=[78 0A 84 24] _addiu a0,a0,0xa78
+801099f4 bytes=[54 A5 04 8E] lw a0,-0x5aac(s0)
+801099f8 bytes=[00 00 00 00] nop
+801099fc bytes=[78 0A 84 24] addiu a0,a0,0xa78
+80109a00 bytes=[68 FF 05 24] li a1,-0x98
+80109a04 bytes=[57 84 00 0C] jal 0x8002115c
+80109a08 bytes=[44 00 06 24] _li a2,0x44
+80109a0c bytes=[54 A5 04 8E] lw a0,-0x5aac(s0)
+80109a10 bytes=[D5 83 00 0C] jal 0x80020f54
+80109a14 bytes=[D0 0A 84 24] _addiu a0,a0,0xad0
+80109a18 bytes=[54 A5 04 8E] lw a0,-0x5aac(s0)
+80109a1c bytes=[00 00 00 00] nop
+80109a20 bytes=[D0 0A 84 24] addiu a0,a0,0xad0
+80109a24 bytes=[40 01 05 24] li a1,0x140
+80109a28 bytes=[57 84 00 0C] jal 0x8002115c
+80109a2c bytes=[80 00 06 24] _li a2,0x80
+80109a30 bytes=[54 A5 02 8E] lw v0,-0x5aac(s0)
+80109a34 bytes=[00 00 00 00] nop
+80109a38 bytes=[48 0B 40 A4] sh zero,0xb48(v0)
+80109a3c bytes=[2D 0B 40 A0] sb zero,0xb2d(v0)
+80109a40 bytes=[54 A5 02 8E] lw v0,-0x5aac(s0)
+80109a44 bytes=[00 00 00 00] nop
+80109a48 bytes=[34 0B 40 AC] sw zero,0xb34(v0)
+80109a4c bytes=[3C 0B 40 AC] sw zero,0xb3c(v0)
+80109a50 bytes=[B0 4A 00 0C] jal 0x80012ac0
+80109a54 bytes=[44 0B 40 AC] _sw zero,0xb44(v0)
+80109a58 bytes=[54 A5 03 8E] lw v1,-0x5aac(s0)
+80109a5c bytes=[00 00 00 00] nop
+80109a60 bytes=[2E 0B 62 A0] sb v0,0xb2e(v1)
+80109a64 bytes=[54 A5 03 8E] lw v1,-0x5aac(s0)
+80109a68 bytes=[00 00 00 00] nop
+80109a6c bytes=[2E 0B 62 90] lbu v0,0xb2e(v1)
+80109a70 bytes=[00 00 00 00] nop
+80109a74 bytes=[2F 0B 62 A0] sb v0,0xb2f(v1)
+80109a78 bytes=[54 A5 04 8E] lw a0,-0x5aac(s0)
+80109a7c bytes=[1E 00 02 24] li v0,0x1e
+80109a80 bytes=[4A 0B 82 A4] sh v0,0xb4a(a0)
+80109a84 bytes=[30 0B 82 8C] lw v0,0xb30(a0)
+80109a88 bytes=[38 0B 83 8C] lw v1,0xb38(a0)
+80109a8c bytes=[00 00 00 00] nop
+80109a90 bytes=[21 10 43 00] addu v0,v0,v1
+80109a94 bytes=[40 0B 82 AC] sw v0,0xb40(a0)
+80109a98 bytes=[2A 0B 80 A0] sb zero,0xb2a(a0)
+80109a9c bytes=[54 A5 03 8E] lw v1,-0x5aac(s0)
+80109aa0 bytes=[01 00 02 24] li v0,0x1
+80109aa4 bytes=[1C 0A 62 AC] sw v0,0xa1c(v1)
+80109aa8 bytes=[14 00 BF 8F] lw ra,0x14(sp)
+80109aac bytes=[10 00 B0 8F] lw s0,0x10(sp)
+80109ab0 bytes=[08 00 E0 03] jr ra
+80109ab4 bytes=[18 00 BD 27] _addiu sp,sp,0x18
+--- RAW_FUNCTION_BODY_END ---
+raw_instruction_count_emitted=73
+--- C_DECOMPILATION_BEGIN ---
+
+bool FUN_80109994(void)
+
+{
+  bool bVar1;
+  int iVar2;
+  undefined1 uVar3;
+  
+  bVar1 = *(int *)(DAT_8013a554 + 0xa1c) == 0;
+  if (bVar1) {
+    FUN_80104cf8();
+    func_0x80020f54(DAT_8013a554 + 0xa20);
+    func_0x8002115c(DAT_8013a554 + 0xa20,0x20,0xffffff10);
+    func_0x80020f54(DAT_8013a554 + 0xa78);
+    func_0x8002115c(DAT_8013a554 + 0xa78,0xffffff68,0x44);
+    func_0x80020f54(DAT_8013a554 + 0xad0);
+    func_0x8002115c(DAT_8013a554 + 0xad0,0x140,0x80);
+    iVar2 = DAT_8013a554;
+    *(undefined2 *)(DAT_8013a554 + 0xb48) = 0;
+    *(undefined1 *)(iVar2 + 0xb2d) = 0;
+    iVar2 = DAT_8013a554;
+    *(undefined4 *)(DAT_8013a554 + 0xb34) = 0;
+    *(undefined4 *)(iVar2 + 0xb3c) = 0;
+    *(undefined4 *)(iVar2 + 0xb44) = 0;
+    uVar3 = func_0x80012ac0();
+    *(undefined1 *)(DAT_8013a554 + 0xb2e) = uVar3;
+    *(undefined1 *)(DAT_8013a554 + 0xb2f) = *(undefined1 *)(DAT_8013a554 + 0xb2e);
+    iVar2 = DAT_8013a554;
+    *(undefined2 *)(DAT_8013a554 + 0xb4a) = 0x1e;
+    *(int *)(iVar2 + 0xb40) = *(int *)(iVar2 + 0xb30) + *(int *)(iVar2 + 0xb38);
+    *(undefined1 *)(iVar2 + 0xb2a) = 0;
+    *(undefined4 *)(DAT_8013a554 + 0xa1c) = 1;
+  }
+  return bVar1;
+}
+
+
+--- C_DECOMPILATION_END ---
+decompile_status=SUCCESS
+--- REFERENCES_TO_FUNCTION_BEGIN ---
+reference_from=800ee4bc reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800edd68 caller_name=FUN_800edd68
+  callsite_context:
+  800ee4b8 bytes=[21 20 40 00] _move a0,v0
+  800ee4bc bytes=[65 26 04 0C] jal 0x80109994
+  800ee4c0 bytes=[00 00 00 00] _nop
+  800ee4c4 bytes=[74 EA 42 8E] lw v0,-0x158c(s2)
+reference_count=1
+--- REFERENCES_TO_FUNCTION_END ---
+
+=== TARGET 80109f1c ===
+instruction_at_target=addiu a0,s2,0xc0
+function_name=FUN_80109f1c
+function_entry=80109f1c
+function_body_bytes=208
+function_return_type=undefined
+function_signature=undefined FUN_80109f1c(void)
+function_thunk=false
+--- RAW_FUNCTION_BODY_BEGIN ---
+80109f1c bytes=[C0 00 44 26] addiu a0,s2,0xc0
+80109f20 bytes=[21 28 20 02] move a1,s1
+80109f24 bytes=[3C 0B 46 8C] lw a2,0xb3c(v0)
+80109f28 bytes=[D9 6C 00 0C] jal 0x8001b364
+80109f2c bytes=[05 00 07 24] _li a3,0x5
+80109f30 bytes=[14 80 02 3C] lui v0,0x8014
+80109f34 bytes=[54 A5 43 8C] lw v1,-0x5aac(v0)
+80109f38 bytes=[00 00 00 00] nop
+80109f3c bytes=[2A 0B 62 90] lbu v0,0xb2a(v1)
+80109f40 bytes=[00 00 00 00] nop
+80109f44 bytes=[06 00 42 2C] sltiu v0,v0,0x6
+80109f48 bytes=[09 00 40 14] bne v0,zero,0x80109f70
+80109f4c bytes=[01 00 02 24] _li v0,0x1
+80109f50 bytes=[10 00 A0 AF] sw zero,0x10(sp)
+80109f54 bytes=[14 00 B4 AF] sw s4,0x14(sp)
+80109f58 bytes=[18 00 A2 AF] sw v0,0x18(sp)
+80109f5c bytes=[C0 00 44 26] addiu a0,s2,0xc0
+80109f60 bytes=[80 00 65 26] addiu a1,s3,0x80
+80109f64 bytes=[44 0B 66 8C] lw a2,0xb44(v1)
+80109f68 bytes=[D9 6C 00 0C] jal 0x8001b364
+80109f6c bytes=[05 00 07 24] _li a3,0x5
+80109f70 bytes=[30 00 A0 A7] sh zero,0x30(sp)
+80109f74 bytes=[FF 00 02 24] li v0,0xff
+80109f78 bytes=[32 00 A2 A7] sh v0,0x32(sp)
+80109f7c bytes=[2E 00 A0 A3] sb zero,0x2e(sp)
+80109f80 bytes=[2F 00 A0 A3] sb zero,0x2f(sp)
+80109f84 bytes=[00 01 02 24] li v0,0x100
+80109f88 bytes=[28 00 A2 A7] sh v0,0x28(sp)
+80109f8c bytes=[C8 00 02 24] li v0,0xc8
+80109f90 bytes=[2A 00 A2 A7] sh v0,0x2a(sp)
+80109f94 bytes=[24 00 B2 A7] sh s2,0x24(sp)
+80109f98 bytes=[26 00 B3 A7] sh s3,0x26(sp)
+80109f9c bytes=[0D 00 02 24] li v0,0xd
+80109fa0 bytes=[2C 00 A2 A7] sh v0,0x2c(sp)
+80109fa4 bytes=[20 00 A4 27] addiu a0,sp,0x20
+80109fa8 bytes=[21 28 80 02] move a1,s4
+80109fac bytes=[C6 0F 01 0C] jal 0x80043f18
+80109fb0 bytes=[01 00 06 24] _li a2,0x1
+80109fb4 bytes=[B1 6C 00 0C] jal 0x8001b2c4
+80109fb8 bytes=[FF FF E4 32] _andi a0,s7,0xffff
+80109fbc bytes=[01 00 02 24] li v0,0x1
+80109fc0 bytes=[68 00 BF 8F] lw ra,0x68(sp)
+80109fc4 bytes=[64 00 B7 8F] lw s7,0x64(sp)
+80109fc8 bytes=[60 00 B6 8F] lw s6,0x60(sp)
+80109fcc bytes=[5C 00 B5 8F] lw s5,0x5c(sp)
+80109fd0 bytes=[58 00 B4 8F] lw s4,0x58(sp)
+80109fd4 bytes=[54 00 B3 8F] lw s3,0x54(sp)
+80109fd8 bytes=[50 00 B2 8F] lw s2,0x50(sp)
+80109fdc bytes=[4C 00 B1 8F] lw s1,0x4c(sp)
+80109fe0 bytes=[48 00 B0 8F] lw s0,0x48(sp)
+80109fe4 bytes=[08 00 E0 03] jr ra
+80109fe8 bytes=[70 00 BD 27] _addiu sp,sp,0x70
+--- RAW_FUNCTION_BODY_END ---
+raw_instruction_count_emitted=52
+--- C_DECOMPILATION_BEGIN ---
+
+undefined4 FUN_80109f1c(void)
+
+{
+  int unaff_s2;
+  int unaff_s3;
+  undefined2 unaff_s7;
+  undefined1 uStack00000020;
+  undefined2 in_stack_00000024;
+  undefined2 uStack00000026;
+  undefined2 in_stack_00000028;
+  undefined2 uStack0000002a;
+  undefined2 in_stack_0000002c;
+  undefined1 uStack0000002e;
+  undefined1 uStack0000002f;
+  undefined2 in_stack_00000030;
+  undefined2 uStack00000032;
+  
+  func_0x8001b364(unaff_s2 + 0xc0);
+  if (5 < *(byte *)(DAT_8013a554 + 0xb2a)) {
+    func_0x8001b364(unaff_s2 + 0xc0,unaff_s3 + 0x80,*(undefined4 *)(DAT_8013a554 + 0xb44),5);
+  }
+  in_stack_00000030 = 0;
+  uStack00000032 = 0xff;
+  uStack0000002e = 0;
+  uStack0000002f = 0;
+  in_stack_00000028 = 0x100;
+  uStack0000002a = 200;
+  in_stack_00000024 = (undefined2)unaff_s2;
+  uStack00000026 = (undefined2)unaff_s3;
+  in_stack_0000002c = 0xd;
+  func_0x80043f18(&uStack00000020);
+  func_0x8001b2c4(unaff_s7);
+  return 1;
+}
+
+
+--- C_DECOMPILATION_END ---
+decompile_status=SUCCESS
+--- REFERENCES_TO_FUNCTION_BEGIN ---
+reference_count=0
+--- REFERENCES_TO_FUNCTION_END ---
+
+=== TARGET 80109fec ===
+instruction_at_target=addiu sp,sp,-0x28
+function_name=FUN_80109fec
+function_entry=80109fec
+function_body_bytes=2616
+function_return_type=undefined
+function_signature=undefined FUN_80109fec(void)
+function_thunk=false
+--- RAW_FUNCTION_BODY_BEGIN ---
+80109fec bytes=[D8 FF BD 27] addiu sp,sp,-0x28
+80109ff0 bytes=[24 00 BF AF] sw ra,0x24(sp)
+80109ff4 bytes=[20 00 B2 AF] sw s2,0x20(sp)
+80109ff8 bytes=[1C 00 B1 AF] sw s1,0x1c(sp)
+80109ffc bytes=[18 00 B0 AF] sw s0,0x18(sp)
+8010a000 bytes=[21 90 80 00] move s2,a0
+8010a004 bytes=[14 80 11 3C] lui s1,0x8014
+8010a008 bytes=[54 A5 24 8E] lw a0,-0x5aac(s1)
+8010a00c bytes=[00 00 00 00] nop
+8010a010 bytes=[28 0B 82 94] lhu v0,0xb28(a0)
+8010a014 bytes=[00 00 00 00] nop
+8010a018 bytes=[01 00 42 24] addiu v0,v0,0x1
+8010a01c bytes=[28 0B 82 A4] sh v0,0xb28(a0)
+8010a020 bytes=[E2 83 00 0C] jal 0x80020f88
+8010a024 bytes=[20 0A 84 24] _addiu a0,a0,0xa20
+8010a028 bytes=[54 A5 24 8E] lw a0,-0x5aac(s1)
+8010a02c bytes=[E2 83 00 0C] jal 0x80020f88
+8010a030 bytes=[78 0A 84 24] _addiu a0,a0,0xa78
+8010a034 bytes=[54 A5 24 8E] lw a0,-0x5aac(s1)
+8010a038 bytes=[E2 83 00 0C] jal 0x80020f88
+8010a03c bytes=[D0 0A 84 24] _addiu a0,a0,0xad0
+8010a040 bytes=[54 A5 24 8E] lw a0,-0x5aac(s1)
+8010a044 bytes=[50 84 00 0C] jal 0x80021140
+8010a048 bytes=[20 0A 84 24] _addiu a0,a0,0xa20
+8010a04c bytes=[21 80 40 00] move s0,v0
+8010a050 bytes=[54 A5 24 8E] lw a0,-0x5aac(s1)
+8010a054 bytes=[50 84 00 0C] jal 0x80021140
+8010a058 bytes=[78 0A 84 24] _addiu a0,a0,0xa78
+8010a05c bytes=[25 80 02 02] or s0,s0,v0
+8010a060 bytes=[54 A5 24 8E] lw a0,-0x5aac(s1)
+8010a064 bytes=[50 84 00 0C] jal 0x80021140
+8010a068 bytes=[D0 0A 84 24] _addiu a0,a0,0xad0
+8010a06c bytes=[25 80 02 02] or s0,s0,v0
+8010a070 bytes=[66 02 00 16] bne s0,zero,0x8010aa0c
+8010a074 bytes=[01 00 02 24] _li v0,0x1
+8010a078 bytes=[0C 00 42 8E] lw v0,0xc(s2)
+8010a07c bytes=[00 00 00 00] nop
+8010a080 bytes=[20 00 42 30] andi v0,v0,0x20
+8010a084 bytes=[5F 00 40 10] beq v0,zero,0x8010a204
+8010a088 bytes=[14 80 04 3C] _lui a0,0x8014
+8010a08c bytes=[54 A5 83 8C] lw v1,-0x5aac(a0)
+8010a090 bytes=[00 00 00 00] nop
+8010a094 bytes=[2A 0B 62 90] lbu v0,0xb2a(v1)
+8010a098 bytes=[00 00 00 00] nop
+8010a09c bytes=[FD FF 42 24] addiu v0,v0,-0x3
+8010a0a0 bytes=[04 00 42 2C] sltiu v0,v0,0x4
+8010a0a4 bytes=[1F 00 40 10] beq v0,zero,0x8010a124
+8010a0a8 bytes=[02 00 05 24] _li a1,0x2
+8010a0ac bytes=[2C 0B 62 90] lbu v0,0xb2c(v1)
+8010a0b0 bytes=[00 00 00 00] nop
+8010a0b4 bytes=[2D 0B 62 A0] sb v0,0xb2d(v1)
+8010a0b8 bytes=[54 A5 83 8C] lw v1,-0x5aac(a0)
+8010a0bc bytes=[00 00 00 00] nop
+8010a0c0 bytes=[2E 0B 62 90] lbu v0,0xb2e(v1)
+8010a0c4 bytes=[00 00 00 00] nop
+8010a0c8 bytes=[2F 0B 62 A0] sb v0,0xb2f(v1)
+8010a0cc bytes=[54 A5 82 8C] lw v0,-0x5aac(a0)
+8010a0d0 bytes=[00 00 00 00] nop
+8010a0d4 bytes=[30 0B 43 8C] lw v1,0xb30(v0)
+8010a0d8 bytes=[00 00 00 00] nop
+8010a0dc bytes=[34 0B 43 AC] sw v1,0xb34(v0)
+8010a0e0 bytes=[38 0B 43 8C] lw v1,0xb38(v0)
+8010a0e4 bytes=[00 00 00 00] nop
+8010a0e8 bytes=[3C 0B 43 AC] sw v1,0xb3c(v0)
+8010a0ec bytes=[40 0B 43 8C] lw v1,0xb40(v0)
+8010a0f0 bytes=[00 00 00 00] nop
+8010a0f4 bytes=[44 0B 43 AC] sw v1,0xb44(v0)
+8010a0f8 bytes=[01 00 02 24] li v0,0x1
+8010a0fc bytes=[10 00 A2 AF] sw v0,0x10(sp)
+8010a100 bytes=[00 48 04 24] li a0,0x4800
+8010a104 bytes=[21 30 00 00] clear a2
+8010a108 bytes=[C0 60 00 0C] jal 0x80018300
+8010a10c bytes=[01 00 07 24] _li a3,0x1
+8010a110 bytes=[01 00 04 24] li a0,0x1
+8010a114 bytes=[1A 61 00 0C] jal 0x80018468
+8010a118 bytes=[B4 00 05 24] _li a1,0xb4
+8010a11c bytes=[7D 28 04 08] j 0x8010a1f4
+8010a120 bytes=[14 80 02 3C] _lui v0,0x8014
+8010a124 bytes=[14 80 11 3C] lui s1,0x8014
+8010a128 bytes=[54 A5 24 8E] lw a0,-0x5aac(s1)
+8010a12c bytes=[00 00 00 00] nop
+8010a130 bytes=[2A 0B 83 90] lbu v1,0xb2a(a0)
+8010a134 bytes=[07 00 02 24] li v0,0x7
+8010a138 bytes=[2E 00 62 14] bne v1,v0,0x8010a1f4
+8010a13c bytes=[14 80 02 3C] _lui v0,0x8014
+8010a140 bytes=[2B 0B 84 90] lbu a0,0xb2b(a0)
+8010a144 bytes=[3B 4E 00 0C] jal 0x800138ec
+8010a148 bytes=[00 00 00 00] _nop
+8010a14c bytes=[54 A5 23 8E] lw v1,-0x5aac(s1)
+8010a150 bytes=[00 00 00 00] nop
+8010a154 bytes=[44 0B 65 8C] lw a1,0xb44(v1)
+8010a158 bytes=[2B 0B 64 90] lbu a0,0xb2b(v1)
+8010a15c bytes=[1F 4E 00 0C] jal 0x8001387c
+8010a160 bytes=[21 28 45 00] _addu a1,v0,a1
+8010a164 bytes=[54 A5 22 8E] lw v0,-0x5aac(s1)
+8010a168 bytes=[00 00 00 00] nop
+8010a16c bytes=[2B 0B 44 90] lbu a0,0xb2b(v0)
+8010a170 bytes=[37 52 00 0C] jal 0x800148dc
+8010a174 bytes=[00 00 00 00] _nop
+8010a178 bytes=[10 00 40 10] beq v0,zero,0x8010a1bc
+8010a17c bytes=[14 80 02 3C] _lui v0,0x8014
+8010a180 bytes=[54 A5 22 8E] lw v0,-0x5aac(s1)
+8010a184 bytes=[00 00 00 00] nop
+8010a188 bytes=[2B 0B 44 90] lbu a0,0xb2b(v0)
+8010a18c bytes=[69 5C 00 0C] jal 0x800171a4
+8010a190 bytes=[00 00 00 00] _nop
+8010a194 bytes=[21 80 40 00] move s0,v0
+8010a198 bytes=[54 A5 22 8E] lw v0,-0x5aac(s1)
+8010a19c bytes=[00 00 00 00] nop
+8010a1a0 bytes=[2B 0B 44 90] lbu a0,0xb2b(v0)
+8010a1a4 bytes=[3B 4E 00 0C] jal 0x800138ec
+8010a1a8 bytes=[00 00 00 00] _nop
+8010a1ac bytes=[21 20 00 02] move a0,s0
+8010a1b0 bytes=[1F 4E 00 0C] jal 0x8001387c
+8010a1b4 bytes=[21 28 40 00] _move a1,v0
+8010a1b8 bytes=[14 80 02 3C] lui v0,0x8014
+8010a1bc bytes=[54 A5 42 8C] lw v0,-0x5aac(v0)
+8010a1c0 bytes=[00 00 00 00] nop
+8010a1c4 bytes=[44 0B 40 AC] sw zero,0xb44(v0)
+8010a1c8 bytes=[01 00 02 24] li v0,0x1
+8010a1cc bytes=[10 00 A2 AF] sw v0,0x10(sp)
+8010a1d0 bytes=[00 48 04 24] li a0,0x4800
+8010a1d4 bytes=[02 00 05 24] li a1,0x2
+8010a1d8 bytes=[21 30 00 00] clear a2
+8010a1dc bytes=[C0 60 00 0C] jal 0x80018300
+8010a1e0 bytes=[01 00 07 24] _li a3,0x1
+8010a1e4 bytes=[01 00 04 24] li a0,0x1
+8010a1e8 bytes=[1A 61 00 0C] jal 0x80018468
+8010a1ec bytes=[B4 00 05 24] _li a1,0xb4
+8010a1f0 bytes=[14 80 02 3C] lui v0,0x8014
+8010a1f4 bytes=[54 A5 42 8C] lw v0,-0x5aac(v0)
+8010a1f8 bytes=[00 00 00 00] nop
+8010a1fc bytes=[4A 0B 40 A4] sh zero,0xb4a(v0)
+8010a200 bytes=[48 0B 40 A4] sh zero,0xb48(v0)
+8010a204 bytes=[14 80 02 3C] lui v0,0x8014
+8010a208 bytes=[54 A5 43 8C] lw v1,-0x5aac(v0)
+8010a20c bytes=[00 00 00 00] nop
+8010a210 bytes=[48 0B 62 94] lhu v0,0xb48(v1)
+8010a214 bytes=[00 00 00 00] nop
+8010a218 bytes=[06 00 40 10] beq v0,zero,0x8010a234
+8010a21c bytes=[14 80 02 3C] _lui v0,0x8014
+8010a220 bytes=[48 0B 62 94] lhu v0,0xb48(v1)
+8010a224 bytes=[00 00 00 00] nop
+8010a228 bytes=[FF FF 42 24] addiu v0,v0,-0x1
+8010a22c bytes=[82 2A 04 08] j 0x8010aa08
+8010a230 bytes=[48 0B 62 A4] _sh v0,0xb48(v1)
+8010a234 bytes=[54 A5 42 8C] lw v0,-0x5aac(v0)
+8010a238 bytes=[00 00 00 00] nop
+8010a23c bytes=[2A 0B 43 90] lbu v1,0xb2a(v0)
+8010a240 bytes=[00 00 00 00] nop
+8010a244 bytes=[10 00 62 2C] sltiu v0,v1,0x10
+8010a248 bytes=[EF 01 40 10] beq v0,zero,0x8010aa08
+8010a24c bytes=[0B 80 02 3C] _lui v0,0x800b
+8010a250 bytes=[70 EF 42 24] addiu v0,v0,-0x1090
+8010a254 bytes=[80 18 03 00] sll v1,v1,0x2
+8010a258 bytes=[21 18 62 00] addu v1,v1,v0
+8010a25c bytes=[00 00 62 8C] lw v0,0x0(v1)
+8010a260 bytes=[00 00 00 00] nop
+8010a264 bytes=[08 00 40 00] jr v0
+8010a268 bytes=[00 00 00 00] _nop
+8010a26c bytes=[14 80 02 3C] lui v0,0x8014
+8010a270 bytes=[54 A5 42 8C] lw v0,-0x5aac(v0)
+8010a274 bytes=[00 00 00 00] nop
+8010a278 bytes=[2B 0B 44 90] lbu a0,0xb2b(v0)
+8010a27c bytes=[E3 4D 00 0C] jal 0x8001378c
+8010a280 bytes=[00 00 00 00] _nop
+8010a284 bytes=[B4 26 04 0C] jal 0x80109ad0
+8010a288 bytes=[FF 00 44 30] _andi a0,v0,0xff
+8010a28c bytes=[83 2A 04 08] j 0x8010aa0c
+8010a290 bytes=[01 00 02 24] _li v0,0x1
+8010a294 bytes=[14 80 04 3C] lui a0,0x8014
+8010a298 bytes=[54 A5 83 8C] lw v1,-0x5aac(a0)
+8010a29c bytes=[03 00 02 24] li v0,0x3
+8010a2a0 bytes=[2A 0B 62 A0] sb v0,0xb2a(v1)
+8010a2a4 bytes=[54 A5 83 8C] lw v1,-0x5aac(a0)
+8010a2a8 bytes=[2C 2A 04 08] j 0x8010a8b0
+8010a2ac bytes=[00 00 00 00] _nop
+8010a2b0 bytes=[14 80 02 3C] lui v0,0x8014
+8010a2b4 bytes=[54 A5 43 8C] lw v1,-0x5aac(v0)
+8010a2b8 bytes=[00 00 00 00] nop
+8010a2bc bytes=[34 0B 62 8C] lw v0,0xb34(v1)
+8010a2c0 bytes=[30 0B 63 8C] lw v1,0xb30(v1)
+8010a2c4 bytes=[00 00 00 00] nop
+8010a2c8 bytes=[2A 10 43 00] slt v0,v0,v1
+8010a2cc bytes=[20 00 40 10] beq v0,zero,0x8010a350
+8010a2d0 bytes=[14 80 04 3C] _lui a0,0x8014
+8010a2d4 bytes=[1B 47 00 0C] jal 0x80011c6c
+8010a2d8 bytes=[00 00 00 00] _nop
+8010a2dc bytes=[01 00 42 30] andi v0,v0,0x1
+8010a2e0 bytes=[09 00 40 14] bne v0,zero,0x8010a308
+8010a2e4 bytes=[02 00 04 24] _li a0,0x2
+8010a2e8 bytes=[01 00 02 24] li v0,0x1
+8010a2ec bytes=[10 00 A2 AF] sw v0,0x10(sp)
+8010a2f0 bytes=[00 4C 04 24] li a0,0x4c00
+8010a2f4 bytes=[03 00 05 24] li a1,0x3
+8010a2f8 bytes=[05 00 06 24] li a2,0x5
+8010a2fc bytes=[C0 60 00 0C] jal 0x80018300
+8010a300 bytes=[02 00 07 24] _li a3,0x2
+8010a304 bytes=[02 00 04 24] li a0,0x2
+8010a308 bytes=[1A 61 00 0C] jal 0x80018468
+8010a30c bytes=[B4 00 05 24] _li a1,0xb4
+8010a310 bytes=[02 00 04 24] li a0,0x2
+8010a314 bytes=[42 61 00 0C] jal 0x80018508
+8010a318 bytes=[21 28 00 00] _clear a1
+8010a31c bytes=[14 80 02 3C] lui v0,0x8014
+8010a320 bytes=[54 A5 43 8C] lw v1,-0x5aac(v0)
+8010a324 bytes=[00 00 00 00] nop
+8010a328 bytes=[34 0B 62 8C] lw v0,0xb34(v1)
+8010a32c bytes=[00 00 00 00] nop
+8010a330 bytes=[14 00 42 24] addiu v0,v0,0x14
+8010a334 bytes=[34 0B 62 AC] sw v0,0xb34(v1)
+8010a338 bytes=[30 0B 63 8C] lw v1,0xb30(v1)
+8010a33c bytes=[00 00 00 00] nop
+8010a340 bytes=[2A 10 43 00] slt v0,v0,v1
+8010a344 bytes=[B1 01 40 14] bne v0,zero,0x8010aa0c
+8010a348 bytes=[01 00 02 24] _li v0,0x1
+8010a34c bytes=[14 80 04 3C] lui a0,0x8014
+8010a350 bytes=[54 A5 82 8C] lw v0,-0x5aac(a0)
+8010a354 bytes=[00 00 00 00] nop
+8010a358 bytes=[30 0B 43 8C] lw v1,0xb30(v0)
+8010a35c bytes=[00 00 00 00] nop
+8010a360 bytes=[34 0B 43 AC] sw v1,0xb34(v0)
+8010a364 bytes=[04 00 03 24] li v1,0x4
+8010a368 bytes=[2A 0B 43 A0] sb v1,0xb2a(v0)
+8010a36c bytes=[54 A5 83 8C] lw v1,-0x5aac(a0)
+8010a370 bytes=[2C 2A 04 08] j 0x8010a8b0
+8010a374 bytes=[00 00 00 00] _nop
+8010a378 bytes=[14 80 02 3C] lui v0,0x8014
+8010a37c bytes=[54 A5 43 8C] lw v1,-0x5aac(v0)
+8010a380 bytes=[00 00 00 00] nop
+8010a384 bytes=[2D 0B 62 90] lbu v0,0xb2d(v1)
+8010a388 bytes=[2C 0B 63 90] lbu v1,0xb2c(v1)
+8010a38c bytes=[00 00 00 00] nop
+8010a390 bytes=[2B 10 43 00] sltu v0,v0,v1
+8010a394 bytes=[23 00 40 10] beq v0,zero,0x8010a424
+8010a398 bytes=[14 80 04 3C] _lui a0,0x8014
+8010a39c bytes=[1B 47 00 0C] jal 0x80011c6c
+8010a3a0 bytes=[00 00 00 00] _nop
+8010a3a4 bytes=[01 00 42 30] andi v0,v0,0x1
+8010a3a8 bytes=[09 00 40 14] bne v0,zero,0x8010a3d0
+8010a3ac bytes=[02 00 04 24] _li a0,0x2
+8010a3b0 bytes=[01 00 02 24] li v0,0x1
+8010a3b4 bytes=[10 00 A2 AF] sw v0,0x10(sp)
+8010a3b8 bytes=[00 4C 04 24] li a0,0x4c00
+8010a3bc bytes=[03 00 05 24] li a1,0x3
+8010a3c0 bytes=[05 00 06 24] li a2,0x5
+8010a3c4 bytes=[C0 60 00 0C] jal 0x80018300
+8010a3c8 bytes=[02 00 07 24] _li a3,0x2
+8010a3cc bytes=[02 00 04 24] li a0,0x2
+8010a3d0 bytes=[1A 61 00 0C] jal 0x80018468
+8010a3d4 bytes=[B4 00 05 24] _li a1,0xb4
+8010a3d8 bytes=[02 00 04 24] li a0,0x2
+8010a3dc bytes=[42 61 00 0C] jal 0x80018508
+8010a3e0 bytes=[21 28 00 00] _clear a1
+8010a3e4 bytes=[14 80 04 3C] lui a0,0x8014
+8010a3e8 bytes=[54 A5 83 8C] lw v1,-0x5aac(a0)
+8010a3ec bytes=[00 00 00 00] nop
+8010a3f0 bytes=[2D 0B 62 90] lbu v0,0xb2d(v1)
+8010a3f4 bytes=[00 00 00 00] nop
+8010a3f8 bytes=[01 00 42 24] addiu v0,v0,0x1
+8010a3fc bytes=[2D 0B 62 A0] sb v0,0xb2d(v1)
+8010a400 bytes=[54 A5 83 8C] lw v1,-0x5aac(a0)
+8010a404 bytes=[00 00 00 00] nop
+8010a408 bytes=[2D 0B 62 90] lbu v0,0xb2d(v1)
+8010a40c bytes=[2C 0B 63 90] lbu v1,0xb2c(v1)
+8010a410 bytes=[00 00 00 00] nop
+8010a414 bytes=[2B 10 43 00] sltu v0,v0,v1
+8010a418 bytes=[7C 01 40 14] bne v0,zero,0x8010aa0c
+8010a41c bytes=[01 00 02 24] _li v0,0x1
+8010a420 bytes=[14 80 04 3C] lui a0,0x8014
+8010a424 bytes=[54 A5 83 8C] lw v1,-0x5aac(a0)
+8010a428 bytes=[00 00 00 00] nop
+8010a42c bytes=[2C 0B 62 90] lbu v0,0xb2c(v1)
+8010a430 bytes=[00 00 00 00] nop
+8010a434 bytes=[2D 0B 62 A0] sb v0,0xb2d(v1)
+8010a438 bytes=[54 A5 83 8C] lw v1,-0x5aac(a0)
+8010a43c bytes=[05 00 02 24] li v0,0x5
+8010a440 bytes=[2A 0B 62 A0] sb v0,0xb2a(v1)
+8010a444 bytes=[54 A5 83 8C] lw v1,-0x5aac(a0)
+8010a448 bytes=[2C 2A 04 08] j 0x8010a8b0
+8010a44c bytes=[00 00 00 00] _nop
+8010a450 bytes=[14 80 02 3C] lui v0,0x8014
+8010a454 bytes=[54 A5 43 8C] lw v1,-0x5aac(v0)
+8010a458 bytes=[00 00 00 00] nop
+8010a45c bytes=[3C 0B 62 8C] lw v0,0xb3c(v1)
+8010a460 bytes=[38 0B 63 8C] lw v1,0xb38(v1)
+8010a464 bytes=[00 00 00 00] nop
+8010a468 bytes=[2A 10 43 00] slt v0,v0,v1
+8010a46c bytes=[20 00 40 10] beq v0,zero,0x8010a4f0
+8010a470 bytes=[14 80 04 3C] _lui a0,0x8014
+8010a474 bytes=[1B 47 00 0C] jal 0x80011c6c
+8010a478 bytes=[00 00 00 00] _nop
+8010a47c bytes=[01 00 42 30] andi v0,v0,0x1
+8010a480 bytes=[09 00 40 14] bne v0,zero,0x8010a4a8
+8010a484 bytes=[02 00 04 24] _li a0,0x2
+8010a488 bytes=[01 00 02 24] li v0,0x1
+8010a48c bytes=[10 00 A2 AF] sw v0,0x10(sp)
+8010a490 bytes=[00 4C 04 24] li a0,0x4c00
+8010a494 bytes=[03 00 05 24] li a1,0x3
+8010a498 bytes=[05 00 06 24] li a2,0x5
+8010a49c bytes=[C0 60 00 0C] jal 0x80018300
+8010a4a0 bytes=[02 00 07 24] _li a3,0x2
+8010a4a4 bytes=[02 00 04 24] li a0,0x2
+8010a4a8 bytes=[1A 61 00 0C] jal 0x80018468
+8010a4ac bytes=[B4 00 05 24] _li a1,0xb4
+8010a4b0 bytes=[02 00 04 24] li a0,0x2
+8010a4b4 bytes=[42 61 00 0C] jal 0x80018508
+8010a4b8 bytes=[21 28 00 00] _clear a1
+8010a4bc bytes=[14 80 02 3C] lui v0,0x8014
+8010a4c0 bytes=[54 A5 43 8C] lw v1,-0x5aac(v0)
+8010a4c4 bytes=[00 00 00 00] nop
+8010a4c8 bytes=[3C 0B 62 8C] lw v0,0xb3c(v1)
+8010a4cc bytes=[00 00 00 00] nop
+8010a4d0 bytes=[14 00 42 24] addiu v0,v0,0x14
+8010a4d4 bytes=[3C 0B 62 AC] sw v0,0xb3c(v1)
+8010a4d8 bytes=[38 0B 63 8C] lw v1,0xb38(v1)
+8010a4dc bytes=[00 00 00 00] nop
+8010a4e0 bytes=[2A 10 43 00] slt v0,v0,v1
+8010a4e4 bytes=[49 01 40 14] bne v0,zero,0x8010aa0c
+8010a4e8 bytes=[01 00 02 24] _li v0,0x1
+8010a4ec bytes=[14 80 04 3C] lui a0,0x8014
+8010a4f0 bytes=[54 A5 82 8C] lw v0,-0x5aac(a0)
+8010a4f4 bytes=[00 00 00 00] nop
+8010a4f8 bytes=[38 0B 43 8C] lw v1,0xb38(v0)
+8010a4fc bytes=[00 00 00 00] nop
+8010a500 bytes=[3C 0B 43 AC] sw v1,0xb3c(v0)
+8010a504 bytes=[06 00 03 24] li v1,0x6
+8010a508 bytes=[2A 0B 43 A0] sb v1,0xb2a(v0)
+8010a50c bytes=[54 A5 83 8C] lw v1,-0x5aac(a0)
+8010a510 bytes=[2C 2A 04 08] j 0x8010a8b0
+8010a514 bytes=[00 00 00 00] _nop
+8010a518 bytes=[14 80 02 3C] lui v0,0x8014
+8010a51c bytes=[54 A5 43 8C] lw v1,-0x5aac(v0)
+8010a520 bytes=[00 00 00 00] nop
+8010a524 bytes=[44 0B 62 8C] lw v0,0xb44(v1)
+8010a528 bytes=[40 0B 63 8C] lw v1,0xb40(v1)
+8010a52c bytes=[00 00 00 00] nop
+8010a530 bytes=[2A 10 43 00] slt v0,v0,v1
+8010a534 bytes=[20 00 40 10] beq v0,zero,0x8010a5b8
+8010a538 bytes=[14 80 04 3C] _lui a0,0x8014
+8010a53c bytes=[1B 47 00 0C] jal 0x80011c6c
+8010a540 bytes=[00 00 00 00] _nop
+8010a544 bytes=[01 00 42 30] andi v0,v0,0x1
+8010a548 bytes=[09 00 40 14] bne v0,zero,0x8010a570
+8010a54c bytes=[02 00 04 24] _li a0,0x2
+8010a550 bytes=[01 00 02 24] li v0,0x1
+8010a554 bytes=[10 00 A2 AF] sw v0,0x10(sp)
+8010a558 bytes=[00 4C 04 24] li a0,0x4c00
+8010a55c bytes=[03 00 05 24] li a1,0x3
+8010a560 bytes=[05 00 06 24] li a2,0x5
+8010a564 bytes=[C0 60 00 0C] jal 0x80018300
+8010a568 bytes=[02 00 07 24] _li a3,0x2
+8010a56c bytes=[02 00 04 24] li a0,0x2
+8010a570 bytes=[1A 61 00 0C] jal 0x80018468
+8010a574 bytes=[B4 00 05 24] _li a1,0xb4
+8010a578 bytes=[02 00 04 24] li a0,0x2
+8010a57c bytes=[42 61 00 0C] jal 0x80018508
+8010a580 bytes=[21 28 00 00] _clear a1
+8010a584 bytes=[14 80 02 3C] lui v0,0x8014
+8010a588 bytes=[54 A5 43 8C] lw v1,-0x5aac(v0)
+8010a58c bytes=[00 00 00 00] nop
+8010a590 bytes=[44 0B 62 8C] lw v0,0xb44(v1)
+8010a594 bytes=[00 00 00 00] nop
+8010a598 bytes=[14 00 42 24] addiu v0,v0,0x14
+8010a59c bytes=[44 0B 62 AC] sw v0,0xb44(v1)
+8010a5a0 bytes=[40 0B 63 8C] lw v1,0xb40(v1)
+8010a5a4 bytes=[00 00 00 00] nop
+8010a5a8 bytes=[2A 10 43 00] slt v0,v0,v1
+8010a5ac bytes=[17 01 40 14] bne v0,zero,0x8010aa0c
+8010a5b0 bytes=[01 00 02 24] _li v0,0x1
+8010a5b4 bytes=[14 80 04 3C] lui a0,0x8014
+8010a5b8 bytes=[54 A5 82 8C] lw v0,-0x5aac(a0)
+8010a5bc bytes=[00 00 00 00] nop
+8010a5c0 bytes=[40 0B 43 8C] lw v1,0xb40(v0)
+8010a5c4 bytes=[00 00 00 00] nop
+8010a5c8 bytes=[44 0B 43 AC] sw v1,0xb44(v0)
+8010a5cc bytes=[07 00 03 24] li v1,0x7
+8010a5d0 bytes=[2A 0B 43 A0] sb v1,0xb2a(v0)
+8010a5d4 bytes=[54 A5 83 8C] lw v1,-0x5aac(a0)
+8010a5d8 bytes=[2C 2A 04 08] j 0x8010a8b0
+8010a5dc bytes=[00 00 00 00] _nop
+8010a5e0 bytes=[14 80 02 3C] lui v0,0x8014
+8010a5e4 bytes=[54 A5 42 8C] lw v0,-0x5aac(v0)
+8010a5e8 bytes=[00 00 00 00] nop
+8010a5ec bytes=[44 0B 42 8C] lw v0,0xb44(v0)
+8010a5f0 bytes=[00 00 00 00] nop
+8010a5f4 bytes=[15 00 42 28] slti v0,v0,0x15
+8010a5f8 bytes=[03 00 40 14] bne v0,zero,0x8010a608
+8010a5fc bytes=[14 80 02 3C] _lui v0,0x8014
+8010a600 bytes=[85 29 04 08] j 0x8010a614
+8010a604 bytes=[14 00 11 24] _li s1,0x14
+8010a608 bytes=[54 A5 42 8C] lw v0,-0x5aac(v0)
+8010a60c bytes=[00 00 00 00] nop
+8010a610 bytes=[44 0B 51 8C] lw s1,0xb44(v0)
+8010a614 bytes=[14 80 10 3C] lui s0,0x8014
+8010a618 bytes=[54 A5 02 8E] lw v0,-0x5aac(s0)
+8010a61c bytes=[00 00 00 00] nop
+8010a620 bytes=[2B 0B 44 90] lbu a0,0xb2b(v0)
+8010a624 bytes=[3B 4E 00 0C] jal 0x800138ec
+8010a628 bytes=[00 00 00 00] _nop
+8010a62c bytes=[54 A5 03 8E] lw v1,-0x5aac(s0)
+8010a630 bytes=[00 00 00 00] nop
+8010a634 bytes=[2B 0B 64 90] lbu a0,0xb2b(v1)
+8010a638 bytes=[1F 4E 00 0C] jal 0x8001387c
+8010a63c bytes=[21 28 51 00] _addu a1,v0,s1
+8010a640 bytes=[54 A5 03 8E] lw v1,-0x5aac(s0)
+8010a644 bytes=[00 00 00 00] nop
+8010a648 bytes=[44 0B 62 8C] lw v0,0xb44(v1)
+8010a64c bytes=[00 00 00 00] nop
+8010a650 bytes=[23 10 51 00] subu v0,v0,s1
+8010a654 bytes=[1B 47 00 0C] jal 0x80011c6c
+8010a658 bytes=[44 0B 62 AC] _sw v0,0xb44(v1)
+8010a65c bytes=[01 00 42 30] andi v0,v0,0x1
+8010a660 bytes=[09 00 40 14] bne v0,zero,0x8010a688
+8010a664 bytes=[02 00 04 24] _li a0,0x2
+8010a668 bytes=[01 00 02 24] li v0,0x1
+8010a66c bytes=[10 00 A2 AF] sw v0,0x10(sp)
+8010a670 bytes=[00 4C 04 24] li a0,0x4c00
+8010a674 bytes=[03 00 05 24] li a1,0x3
+8010a678 bytes=[05 00 06 24] li a2,0x5
+8010a67c bytes=[C0 60 00 0C] jal 0x80018300
+8010a680 bytes=[02 00 07 24] _li a3,0x2
+8010a684 bytes=[02 00 04 24] li a0,0x2
+8010a688 bytes=[1A 61 00 0C] jal 0x80018468
+8010a68c bytes=[B4 00 05 24] _li a1,0xb4
+8010a690 bytes=[02 00 04 24] li a0,0x2
+8010a694 bytes=[42 61 00 0C] jal 0x80018508
+8010a698 bytes=[21 28 00 00] _clear a1
+8010a69c bytes=[14 80 02 3C] lui v0,0x8014
+8010a6a0 bytes=[54 A5 43 8C] lw v1,-0x5aac(v0)
+8010a6a4 bytes=[00 00 00 00] nop
+8010a6a8 bytes=[44 0B 62 8C] lw v0,0xb44(v1)
+8010a6ac bytes=[00 00 00 00] nop
+8010a6b0 bytes=[D6 00 40 14] bne v0,zero,0x8010aa0c
+8010a6b4 bytes=[01 00 02 24] _li v0,0x1
+8010a6b8 bytes=[08 00 02 24] li v0,0x8
+8010a6bc bytes=[2A 0B 62 A0] sb v0,0xb2a(v1)
+8010a6c0 bytes=[7F 4F 04 0C] jal 0x80113dfc
+8010a6c4 bytes=[04 00 04 24] _li a0,0x4
+8010a6c8 bytes=[83 2A 04 08] j 0x8010aa0c
+8010a6cc bytes=[01 00 02 24] _li v0,0x1
+8010a6d0 bytes=[0C 00 42 8E] lw v0,0xc(s2)
+8010a6d4 bytes=[00 00 00 00] nop
+8010a6d8 bytes=[20 00 42 30] andi v0,v0,0x20
+8010a6dc bytes=[CA 00 40 10] beq v0,zero,0x8010aa08
+8010a6e0 bytes=[14 80 10 3C] _lui s0,0x8014
+8010a6e4 bytes=[54 A5 03 8E] lw v1,-0x5aac(s0)
+8010a6e8 bytes=[09 00 02 24] li v0,0x9
+8010a6ec bytes=[B7 4F 04 0C] jal 0x80113edc
+8010a6f0 bytes=[2A 0B 62 A0] _sb v0,0xb2a(v1)
+8010a6f4 bytes=[54 A5 03 8E] lw v1,-0x5aac(s0)
+8010a6f8 bytes=[1E 00 02 24] li v0,0x1e
+8010a6fc bytes=[3F 2A 04 08] j 0x8010a8fc
+8010a700 bytes=[4A 0B 62 A4] _sh v0,0xb4a(v1)
+8010a704 bytes=[14 80 10 3C] lui s0,0x8014
+8010a708 bytes=[54 A5 04 8E] lw a0,-0x5aac(s0)
+8010a70c bytes=[00 00 00 00] nop
+8010a710 bytes=[78 0A 84 24] addiu a0,a0,0xa78
+8010a714 bytes=[54 00 05 24] li a1,0x54
+8010a718 bytes=[44 00 06 24] li a2,0x44
+8010a71c bytes=[A3 84 00 0C] jal 0x8002128c
+8010a720 bytes=[08 00 07 24] _li a3,0x8
+8010a724 bytes=[54 A5 02 8E] lw v0,-0x5aac(s0)
+8010a728 bytes=[00 00 00 00] nop
+8010a72c bytes=[2B 0B 44 90] lbu a0,0xb2b(v0)
+8010a730 bytes=[DB 50 00 0C] jal 0x8001436c
+8010a734 bytes=[00 00 00 00] _nop
+8010a738 bytes=[F9 21 04 0C] jal 0x801087e4
+8010a73c bytes=[FF 00 44 30] _andi a0,v0,0xff
+8010a740 bytes=[01 22 04 0C] jal 0x80108804
+8010a744 bytes=[00 00 00 00] _nop
+8010a748 bytes=[54 A5 03 8E] lw v1,-0x5aac(s0)
+8010a74c bytes=[2A 2A 04 08] j 0x8010a8a8
+8010a750 bytes=[0A 00 02 24] _li v0,0xa
+8010a754 bytes=[14 80 10 3C] lui s0,0x8014
+8010a758 bytes=[54 A5 05 8E] lw a1,-0x5aac(s0)
+8010a75c bytes=[00 00 00 00] nop
+8010a760 bytes=[28 0B A4 94] lhu a0,0xb28(a1)
+8010a764 bytes=[AA AA 03 3C] lui v1,0xaaaa
+8010a768 bytes=[AB AA 63 34] ori v1,v1,0xaaab
+8010a76c bytes=[19 00 83 00] multu a0,v1
+8010a770 bytes=[10 18 00 00] mfhi v1
+8010a774 bytes=[42 18 03 00] srl v1,v1,0x1
+8010a778 bytes=[40 10 03 00] sll v0,v1,0x1
+8010a77c bytes=[21 10 43 00] addu v0,v0,v1
+8010a780 bytes=[23 20 82 00] subu a0,a0,v0
+8010a784 bytes=[FF FF 84 30] andi a0,a0,0xffff
+8010a788 bytes=[A0 00 80 14] bne a0,zero,0x8010aa0c
+8010a78c bytes=[01 00 02 24] _li v0,0x1
+8010a790 bytes=[2F 0B A2 90] lbu v0,0xb2f(a1)
+8010a794 bytes=[00 00 00 00] nop
+8010a798 bytes=[10 00 40 14] bne v0,zero,0x8010a7dc
+8010a79c bytes=[00 00 00 00] _nop
+8010a7a0 bytes=[2B 0B A4 90] lbu a0,0xb2b(a1)
+8010a7a4 bytes=[82 F6 02 0C] jal 0x800bda08
+8010a7a8 bytes=[00 00 00 00] _nop
+8010a7ac bytes=[04 00 40 10] beq v0,zero,0x8010a7c0
+8010a7b0 bytes=[0B 00 02 24] _li v0,0xb
+8010a7b4 bytes=[54 A5 03 8E] lw v1,-0x5aac(s0)
+8010a7b8 bytes=[2B 2A 04 08] j 0x8010a8ac
+8010a7bc bytes=[2A 0B 62 A0] _sb v0,0xb2a(v1)
+8010a7c0 bytes=[14 80 04 3C] lui a0,0x8014
+8010a7c4 bytes=[54 A5 83 8C] lw v1,-0x5aac(a0)
+8010a7c8 bytes=[0C 00 02 24] li v0,0xc
+8010a7cc bytes=[2A 0B 62 A0] sb v0,0xb2a(v1)
+8010a7d0 bytes=[54 A5 83 8C] lw v1,-0x5aac(a0)
+8010a7d4 bytes=[2C 2A 04 08] j 0x8010a8b0
+8010a7d8 bytes=[00 00 00 00] _nop
+8010a7dc bytes=[54 A5 02 8E] lw v0,-0x5aac(s0)
+8010a7e0 bytes=[00 00 00 00] nop
+8010a7e4 bytes=[2B 0B 44 90] lbu a0,0xb2b(v0)
+8010a7e8 bytes=[DB 50 00 0C] jal 0x8001436c
+8010a7ec bytes=[00 00 00 00] _nop
+8010a7f0 bytes=[01 00 42 24] addiu v0,v0,0x1
+8010a7f4 bytes=[54 A5 03 8E] lw v1,-0x5aac(s0)
+8010a7f8 bytes=[00 00 00 00] nop
+8010a7fc bytes=[2B 0B 64 90] lbu a0,0xb2b(v1)
+8010a800 bytes=[EB 50 00 0C] jal 0x800143ac
+8010a804 bytes=[FF FF 45 30] _andi a1,v0,0xffff
+8010a808 bytes=[54 A5 02 8E] lw v0,-0x5aac(s0)
+8010a80c bytes=[00 00 00 00] nop
+8010a810 bytes=[2B 0B 44 90] lbu a0,0xb2b(v0)
+8010a814 bytes=[DB 50 00 0C] jal 0x8001436c
+8010a818 bytes=[00 00 00 00] _nop
+8010a81c bytes=[F9 21 04 0C] jal 0x801087e4
+8010a820 bytes=[FF 00 44 30] _andi a0,v0,0xff
+8010a824 bytes=[83 22 04 0C] jal 0x80108a0c
+8010a828 bytes=[00 00 00 00] _nop
+8010a82c bytes=[54 A5 03 8E] lw v1,-0x5aac(s0)
+8010a830 bytes=[00 00 00 00] nop
+8010a834 bytes=[2F 0B 62 90] lbu v0,0xb2f(v1)
+8010a838 bytes=[00 00 00 00] nop
+8010a83c bytes=[FF FF 42 24] addiu v0,v0,-0x1
+8010a840 bytes=[2F 0B 62 A0] sb v0,0xb2f(v1)
+8010a844 bytes=[01 00 02 24] li v0,0x1
+8010a848 bytes=[10 00 A2 AF] sw v0,0x10(sp)
+8010a84c bytes=[00 4C 04 24] li a0,0x4c00
+8010a850 bytes=[03 00 05 24] li a1,0x3
+8010a854 bytes=[05 00 06 24] li a2,0x5
+8010a858 bytes=[C0 60 00 0C] jal 0x80018300
+8010a85c bytes=[02 00 07 24] _li a3,0x2
+8010a860 bytes=[02 00 04 24] li a0,0x2
+8010a864 bytes=[1A 61 00 0C] jal 0x80018468
+8010a868 bytes=[B4 00 05 24] _li a1,0xb4
+8010a86c bytes=[02 00 04 24] li a0,0x2
+8010a870 bytes=[42 61 00 0C] jal 0x80018508
+8010a874 bytes=[21 28 00 00] _clear a1
+8010a878 bytes=[83 2A 04 08] j 0x8010aa0c
+8010a87c bytes=[01 00 02 24] _li v0,0x1
+8010a880 bytes=[14 80 10 3C] lui s0,0x8014
+8010a884 bytes=[54 A5 04 8E] lw a0,-0x5aac(s0)
+8010a888 bytes=[00 00 00 00] nop
+8010a88c bytes=[D0 0A 84 24] addiu a0,a0,0xad0
+8010a890 bytes=[40 00 05 24] li a1,0x40
+8010a894 bytes=[80 00 06 24] li a2,0x80
+8010a898 bytes=[A3 84 00 0C] jal 0x8002128c
+8010a89c bytes=[08 00 07 24] _li a3,0x8
+8010a8a0 bytes=[54 A5 03 8E] lw v1,-0x5aac(s0)
+8010a8a4 bytes=[0C 00 02 24] li v0,0xc
+8010a8a8 bytes=[2A 0B 62 A0] sb v0,0xb2a(v1)
+8010a8ac bytes=[54 A5 03 8E] lw v1,-0x5aac(s0)
+8010a8b0 bytes=[00 00 00 00] nop
+8010a8b4 bytes=[4A 0B 62 94] lhu v0,0xb4a(v1)
+8010a8b8 bytes=[82 2A 04 08] j 0x8010aa08
+8010a8bc bytes=[48 0B 62 A4] _sh v0,0xb48(v1)
+8010a8c0 bytes=[7F 4F 04 0C] jal 0x80113dfc
+8010a8c4 bytes=[04 00 04 24] _li a0,0x4
+8010a8c8 bytes=[14 80 02 3C] lui v0,0x8014
+8010a8cc bytes=[54 A5 43 8C] lw v1,-0x5aac(v0)
+8010a8d0 bytes=[81 2A 04 08] j 0x8010aa04
+8010a8d4 bytes=[0D 00 02 24] _li v0,0xd
+8010a8d8 bytes=[0C 00 42 8E] lw v0,0xc(s2)
+8010a8dc bytes=[00 00 00 00] nop
+8010a8e0 bytes=[20 00 42 30] andi v0,v0,0x20
+8010a8e4 bytes=[48 00 40 10] beq v0,zero,0x8010aa08
+8010a8e8 bytes=[14 80 02 3C] _lui v0,0x8014
+8010a8ec bytes=[54 A5 43 8C] lw v1,-0x5aac(v0)
+8010a8f0 bytes=[0E 00 02 24] li v0,0xe
+8010a8f4 bytes=[B7 4F 04 0C] jal 0x80113edc
+8010a8f8 bytes=[2A 0B 62 A0] _sb v0,0xb2a(v1)
+8010a8fc bytes=[01 00 02 24] li v0,0x1
+8010a900 bytes=[10 00 A2 AF] sw v0,0x10(sp)
+8010a904 bytes=[00 48 04 24] li a0,0x4800
+8010a908 bytes=[02 00 05 24] li a1,0x2
+8010a90c bytes=[21 30 00 00] clear a2
+8010a910 bytes=[C0 60 00 0C] jal 0x80018300
+8010a914 bytes=[01 00 07 24] _li a3,0x1
+8010a918 bytes=[01 00 04 24] li a0,0x1
+8010a91c bytes=[1A 61 00 0C] jal 0x80018468
+8010a920 bytes=[B4 00 05 24] _li a1,0xb4
+8010a924 bytes=[83 2A 04 08] j 0x8010aa0c
+8010a928 bytes=[01 00 02 24] _li v0,0x1
+8010a92c bytes=[14 80 11 3C] lui s1,0x8014
+8010a930 bytes=[54 A5 22 8E] lw v0,-0x5aac(s1)
+8010a934 bytes=[00 00 00 00] nop
+8010a938 bytes=[2B 0B 44 90] lbu a0,0xb2b(v0)
+8010a93c bytes=[37 52 00 0C] jal 0x800148dc
+8010a940 bytes=[00 00 00 00] _nop
+8010a944 bytes=[10 00 40 10] beq v0,zero,0x8010a988
+8010a948 bytes=[14 80 10 3C] _lui s0,0x8014
+8010a94c bytes=[54 A5 22 8E] lw v0,-0x5aac(s1)
+8010a950 bytes=[00 00 00 00] nop
+8010a954 bytes=[2B 0B 44 90] lbu a0,0xb2b(v0)
+8010a958 bytes=[69 5C 00 0C] jal 0x800171a4
+8010a95c bytes=[00 00 00 00] _nop
+8010a960 bytes=[21 80 40 00] move s0,v0
+8010a964 bytes=[54 A5 22 8E] lw v0,-0x5aac(s1)
+8010a968 bytes=[00 00 00 00] nop
+8010a96c bytes=[2B 0B 44 90] lbu a0,0xb2b(v0)
+8010a970 bytes=[3B 4E 00 0C] jal 0x800138ec
+8010a974 bytes=[00 00 00 00] _nop
+8010a978 bytes=[21 20 00 02] move a0,s0
+8010a97c bytes=[1F 4E 00 0C] jal 0x8001387c
+8010a980 bytes=[21 28 40 00] _move a1,v0
+8010a984 bytes=[14 80 10 3C] lui s0,0x8014
+8010a988 bytes=[54 A5 04 8E] lw a0,-0x5aac(s0)
+8010a98c bytes=[00 00 00 00] nop
+8010a990 bytes=[20 0A 84 24] addiu a0,a0,0xa20
+8010a994 bytes=[20 00 05 24] li a1,0x20
+8010a998 bytes=[10 FF 06 24] li a2,-0xf0
+8010a99c bytes=[A3 84 00 0C] jal 0x8002128c
+8010a9a0 bytes=[08 00 07 24] _li a3,0x8
+8010a9a4 bytes=[54 A5 04 8E] lw a0,-0x5aac(s0)
+8010a9a8 bytes=[00 00 00 00] nop
+8010a9ac bytes=[20 0A 84 24] addiu a0,a0,0xa20
+8010a9b0 bytes=[11 80 05 3C] lui a1,0x8011
+8010a9b4 bytes=[64 84 00 0C] jal 0x80021190
+8010a9b8 bytes=[2C AA A5 24] _addiu a1,a1,-0x55d4
+8010a9bc bytes=[54 A5 04 8E] lw a0,-0x5aac(s0)
+8010a9c0 bytes=[00 00 00 00] nop
+8010a9c4 bytes=[78 0A 84 24] addiu a0,a0,0xa78
+8010a9c8 bytes=[68 FF 05 24] li a1,-0x98
+8010a9cc bytes=[44 00 06 24] li a2,0x44
+8010a9d0 bytes=[A3 84 00 0C] jal 0x8002128c
+8010a9d4 bytes=[08 00 07 24] _li a3,0x8
+8010a9d8 bytes=[54 A5 04 8E] lw a0,-0x5aac(s0)
+8010a9dc bytes=[00 00 00 00] nop
+8010a9e0 bytes=[D0 0A 84 24] addiu a0,a0,0xad0
+8010a9e4 bytes=[40 01 05 24] li a1,0x140
+8010a9e8 bytes=[80 00 06 24] li a2,0x80
+8010a9ec bytes=[A3 84 00 0C] jal 0x8002128c
+8010a9f0 bytes=[08 00 07 24] _li a3,0x8
+8010a9f4 bytes=[2A 22 04 0C] jal 0x801088a8
+8010a9f8 bytes=[00 00 00 00] _nop
+8010a9fc bytes=[54 A5 03 8E] lw v1,-0x5aac(s0)
+8010aa00 bytes=[0F 00 02 24] li v0,0xf
+8010aa04 bytes=[2A 0B 62 A0] sb v0,0xb2a(v1)
+8010aa08 bytes=[01 00 02 24] li v0,0x1
+8010aa0c bytes=[24 00 BF 8F] lw ra,0x24(sp)
+8010aa10 bytes=[20 00 B2 8F] lw s2,0x20(sp)
+8010aa14 bytes=[1C 00 B1 8F] lw s1,0x1c(sp)
+8010aa18 bytes=[18 00 B0 8F] lw s0,0x18(sp)
+8010aa1c bytes=[08 00 E0 03] jr ra
+8010aa20 bytes=[28 00 BD 27] _addiu sp,sp,0x28
+--- RAW_FUNCTION_BODY_END ---
+raw_instruction_count_emitted=654
+--- C_DECOMPILATION_BEGIN ---
+
+undefined4 FUN_80109fec(int param_1)
+
+{
+  undefined1 uVar1;
+  short sVar2;
+  int iVar3;
+  int iVar4;
+  int iVar5;
+  undefined4 uVar6;
+  undefined4 uVar7;
+  uint uVar8;
+  
+  iVar3 = DAT_8013a554;
+  *(short *)(DAT_8013a554 + 0xb28) = *(short *)(DAT_8013a554 + 0xb28) + 1;
+  func_0x80020f88(iVar3 + 0xa20);
+  func_0x80020f88(DAT_8013a554 + 0xa78);
+  func_0x80020f88(DAT_8013a554 + 0xad0);
+  iVar3 = func_0x80021140(DAT_8013a554 + 0xa20);
+  iVar4 = func_0x80021140(DAT_8013a554 + 0xa78);
+  iVar5 = func_0x80021140(DAT_8013a554 + 0xad0);
+  if ((iVar3 != 0 || iVar4 != 0) || iVar5 != 0) {
+    return 1;
+  }
+  if ((*(uint *)(param_1 + 0xc) & 0x20) != 0) {
+    if (*(byte *)(DAT_8013a554 + 0xb2a) - 3 < 4) {
+      *(undefined1 *)(DAT_8013a554 + 0xb2d) = *(undefined1 *)(DAT_8013a554 + 0xb2c);
+      *(undefined1 *)(DAT_8013a554 + 0xb2f) = *(undefined1 *)(DAT_8013a554 + 0xb2e);
+      iVar3 = DAT_8013a554;
+      *(undefined4 *)(DAT_8013a554 + 0xb34) = *(undefined4 *)(DAT_8013a554 + 0xb30);
+      *(undefined4 *)(iVar3 + 0xb3c) = *(undefined4 *)(iVar3 + 0xb38);
+      *(undefined4 *)(iVar3 + 0xb44) = *(undefined4 *)(iVar3 + 0xb40);
+      func_0x80018300(0x4800,2,0,1,1);
+      func_0x80018468(1,0xb4);
+    }
+    else if (*(char *)(DAT_8013a554 + 0xb2a) == '\a') {
+      iVar3 = func_0x800138ec(*(undefined1 *)(DAT_8013a554 + 0xb2b),2);
+      func_0x8001387c(*(undefined1 *)(DAT_8013a554 + 0xb2b),iVar3 + *(int *)(DAT_8013a554 + 0xb44));
+      iVar3 = func_0x800148dc(*(undefined1 *)(DAT_8013a554 + 0xb2b));
+      if (iVar3 != 0) {
+        uVar6 = func_0x800171a4(*(undefined1 *)(DAT_8013a554 + 0xb2b));
+        uVar7 = func_0x800138ec(*(undefined1 *)(DAT_8013a554 + 0xb2b));
+        func_0x8001387c(uVar6,uVar7);
+      }
+      *(undefined4 *)(DAT_8013a554 + 0xb44) = 0;
+      func_0x80018300(0x4800,2,0,1,1);
+      func_0x80018468(1,0xb4);
+    }
+    iVar3 = DAT_8013a554;
+    *(undefined2 *)(DAT_8013a554 + 0xb4a) = 0;
+    *(undefined2 *)(iVar3 + 0xb48) = 0;
+  }
+  if (*(short *)(DAT_8013a554 + 0xb48) != 0) {
+    *(short *)(DAT_8013a554 + 0xb48) = *(short *)(DAT_8013a554 + 0xb48) + -1;
+    return 1;
+  }
+  switch(*(undefined1 *)(DAT_8013a554 + 0xb2a)) {
+  case 0:
+    uVar1 = func_0x8001378c(*(undefined1 *)(DAT_8013a554 + 0xb2b));
+    FUN_80109ad0(uVar1);
+    return 1;
+  default:
+    goto switchD_8010a264_caseD_1;
+  case 2:
+    *(undefined1 *)(DAT_8013a554 + 0xb2a) = 3;
+    break;
+  case 3:
+    if (*(int *)(DAT_8013a554 + 0xb34) < *(int *)(DAT_8013a554 + 0xb30)) {
+      uVar8 = func_0x80011c6c();
+      if ((uVar8 & 1) == 0) {
+        func_0x80018300(0x4c00,3,5,2,1);
+      }
+      func_0x80018468(2,0xb4);
+      func_0x80018508(2,0);
+      iVar3 = DAT_8013a554;
+      iVar4 = *(int *)(DAT_8013a554 + 0xb34) + 0x14;
+      *(int *)(DAT_8013a554 + 0xb34) = iVar4;
+      if (iVar4 < *(int *)(iVar3 + 0xb30)) {
+        return 1;
+      }
+    }
+    iVar3 = DAT_8013a554;
+    *(undefined4 *)(DAT_8013a554 + 0xb34) = *(undefined4 *)(DAT_8013a554 + 0xb30);
+    *(undefined1 *)(iVar3 + 0xb2a) = 4;
+    break;
+  case 4:
+    if (*(byte *)(DAT_8013a554 + 0xb2d) < *(byte *)(DAT_8013a554 + 0xb2c)) {
+      uVar8 = func_0x80011c6c();
+      if ((uVar8 & 1) == 0) {
+        func_0x80018300(0x4c00,3,5,2,1);
+      }
+      func_0x80018468(2,0xb4);
+      func_0x80018508(2,0);
+      *(char *)(DAT_8013a554 + 0xb2d) = *(char *)(DAT_8013a554 + 0xb2d) + '\x01';
+      if (*(byte *)(DAT_8013a554 + 0xb2d) < *(byte *)(DAT_8013a554 + 0xb2c)) {
+        return 1;
+      }
+    }
+    *(undefined1 *)(DAT_8013a554 + 0xb2d) = *(undefined1 *)(DAT_8013a554 + 0xb2c);
+    *(undefined1 *)(DAT_8013a554 + 0xb2a) = 5;
+    break;
+  case 5:
+    if (*(int *)(DAT_8013a554 + 0xb3c) < *(int *)(DAT_8013a554 + 0xb38)) {
+      uVar8 = func_0x80011c6c();
+      if ((uVar8 & 1) == 0) {
+        func_0x80018300(0x4c00,3,5,2,1);
+      }
+      func_0x80018468(2,0xb4);
+      func_0x80018508(2,0);
+      iVar3 = DAT_8013a554;
+      iVar4 = *(int *)(DAT_8013a554 + 0xb3c) + 0x14;
+      *(int *)(DAT_8013a554 + 0xb3c) = iVar4;
+      if (iVar4 < *(int *)(iVar3 + 0xb38)) {
+        return 1;
+      }
+    }
+    iVar3 = DAT_8013a554;
+    *(undefined4 *)(DAT_8013a554 + 0xb3c) = *(undefined4 *)(DAT_8013a554 + 0xb38);
+    *(undefined1 *)(iVar3 + 0xb2a) = 6;
+    break;
+  case 6:
+    if (*(int *)(DAT_8013a554 + 0xb44) < *(int *)(DAT_8013a554 + 0xb40)) {
+      uVar8 = func_0x80011c6c();
+      if ((uVar8 & 1) == 0) {
+        func_0x80018300(0x4c00,3,5,2,1);
+      }
+      func_0x80018468(2,0xb4);
+      func_0x80018508(2,0);
+      iVar3 = DAT_8013a554;
+      iVar4 = *(int *)(DAT_8013a554 + 0xb44) + 0x14;
+      *(int *)(DAT_8013a554 + 0xb44) = iVar4;
+      if (iVar4 < *(int *)(iVar3 + 0xb40)) {
+        return 1;
+      }
+    }
+    iVar3 = DAT_8013a554;
+    *(undefined4 *)(DAT_8013a554 + 0xb44) = *(undefined4 *)(DAT_8013a554 + 0xb40);
+    *(undefined1 *)(iVar3 + 0xb2a) = 7;
+    break;
+  case 7:
+    if (*(int *)(DAT_8013a554 + 0xb44) < 0x15) {
+      iVar3 = *(int *)(DAT_8013a554 + 0xb44);
+    }
+    else {
+      iVar3 = 0x14;
+    }
+    iVar4 = func_0x800138ec(*(undefined1 *)(DAT_8013a554 + 0xb2b));
+    func_0x8001387c(*(undefined1 *)(DAT_8013a554 + 0xb2b),iVar4 + iVar3);
+    *(int *)(DAT_8013a554 + 0xb44) = *(int *)(DAT_8013a554 + 0xb44) - iVar3;
+    uVar8 = func_0x80011c6c();
+    if ((uVar8 & 1) == 0) {
+      func_0x80018300(0x4c00,3,5,2,1);
+    }
+    func_0x80018468(2,0xb4);
+    func_0x80018508(2,0);
+    if (*(int *)(DAT_8013a554 + 0xb44) == 0) {
+      *(undefined1 *)(DAT_8013a554 + 0xb2a) = 8;
+      FUN_80113dfc(4);
+      return 1;
+    }
+    return 1;
+  case 8:
+    if ((*(uint *)(param_1 + 0xc) & 0x20) == 0) {
+      return 1;
+    }
+    *(undefined1 *)(DAT_8013a554 + 0xb2a) = 9;
+    FUN_80113edc();
+    *(undefined2 *)(DAT_8013a554 + 0xb4a) = 0x1e;
+    goto LAB_8010a8fc;
+  case 9:
+    func_0x8002128c(DAT_8013a554 + 0xa78,0x54,0x44,8);
+    uVar1 = func_0x8001436c(*(undefined1 *)(DAT_8013a554 + 0xb2b));
+    FUN_801087e4(uVar1);
+    FUN_80108804();
+    uVar1 = 10;
+    goto LAB_8010a8a8;
+  case 10:
+    if ((uint)*(ushort *)(DAT_8013a554 + 0xb28) % 3 != 0) {
+      return 1;
+    }
+    if (*(char *)(DAT_8013a554 + 0xb2f) != '\0') {
+      sVar2 = func_0x8001436c(*(undefined1 *)(DAT_8013a554 + 0xb2b));
+      func_0x800143ac(*(undefined1 *)(DAT_8013a554 + 0xb2b),sVar2 + 1);
+      uVar1 = func_0x8001436c(*(undefined1 *)(DAT_8013a554 + 0xb2b));
+      FUN_801087e4(uVar1);
+      FUN_80108a0c();
+      *(char *)(DAT_8013a554 + 0xb2f) = *(char *)(DAT_8013a554 + 0xb2f) + -1;
+      func_0x80018300(0x4c00,3,5,2,1);
+      func_0x80018468(2,0xb4);
+      func_0x80018508(2,0);
+      return 1;
+    }
+    iVar3 = FUN_800bda08(*(undefined1 *)(DAT_8013a554 + 0xb2b));
+    if (iVar3 == 0) {
+      *(undefined1 *)(DAT_8013a554 + 0xb2a) = 0xc;
+    }
+    else {
+      *(undefined1 *)(DAT_8013a554 + 0xb2a) = 0xb;
+    }
+    break;
+  case 0xb:
+    func_0x8002128c(DAT_8013a554 + 0xad0,0x40,0x80,8);
+    uVar1 = 0xc;
+LAB_8010a8a8:
+    *(undefined1 *)(DAT_8013a554 + 0xb2a) = uVar1;
+    break;
+  case 0xc:
+    FUN_80113dfc(4);
+    uVar1 = 0xd;
+    goto LAB_8010aa04;
+  case 0xd:
+    if ((*(uint *)(param_1 + 0xc) & 0x20) == 0) {
+      return 1;
+    }
+    *(undefined1 *)(DAT_8013a554 + 0xb2a) = 0xe;
+    FUN_80113edc();
+LAB_8010a8fc:
+    func_0x80018300(0x4800,2,0,1,1);
+    func_0x80018468(1,0xb4);
+    return 1;
+  case 0xe:
+    iVar3 = func_0x800148dc(*(undefined1 *)(DAT_8013a554 + 0xb2b));
+    if (iVar3 != 0) {
+      uVar6 = func_0x800171a4(*(undefined1 *)(DAT_8013a554 + 0xb2b));
+      uVar7 = func_0x800138ec(*(undefined1 *)(DAT_8013a554 + 0xb2b));
+      func_0x8001387c(uVar6,uVar7);
+    }
+    func_0x8002128c(DAT_8013a554 + 0xa20,0x20,0xffffff10,8);
+    func_0x80021190(DAT_8013a554 + 0xa20,&LAB_8010aa2c);
+    func_0x8002128c(DAT_8013a554 + 0xa78,0xffffff68,0x44,8);
+    func_0x8002128c(DAT_8013a554 + 0xad0,0x140,0x80,8);
+    FUN_801088a8();
+    uVar1 = 0xf;
+LAB_8010aa04:
+    *(undefined1 *)(DAT_8013a554 + 0xb2a) = uVar1;
+    goto switchD_8010a264_caseD_1;
+  }
+  *(undefined2 *)(DAT_8013a554 + 0xb48) = *(undefined2 *)(DAT_8013a554 + 0xb4a);
+switchD_8010a264_caseD_1:
+  return 1;
+}
+
+
+--- C_DECOMPILATION_END ---
+decompile_status=SUCCESS
+--- REFERENCES_TO_FUNCTION_BEGIN ---
+reference_from=80104960 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=801048f0 caller_name=FUN_801048f0
+  callsite_context:
+  8010495c bytes=[01 00 02 24] _li v0,0x1
+  80104960 bytes=[FB 27 04 0C] jal 0x80109fec
+  80104964 bytes=[21 20 00 02] _move a0,s0
+  80104968 bytes=[01 00 02 24] li v0,0x1
+reference_count=1
+--- REFERENCES_TO_FUNCTION_END ---
+
+=== DATA_XREFS target=80066e7c ===
+loaded_image_bytes=UNAVAILABLE reason=Unable to read bytes at ram:80066e7c
+data_reference_count=0
+interpretation=direct Ghidra references only; indirect aliases and runtime writers may not appear
