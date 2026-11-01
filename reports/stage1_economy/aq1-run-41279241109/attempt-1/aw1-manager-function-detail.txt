@@ -1,0 +1,107 @@
+analysis=Ghidra selected-function static audit
+program=SLPS_035.53
+program_language=MIPS:LE:32:default
+loaded_executable_base=0x80010000 (PS-X EXE header verified by workflow)
+game_or_emulator_executed=no
+gameplay_input_sent=no
+savestate_restored=no
+binary_uploaded_as_artifact=no
+
+=== TARGET 80109fec ===
+instruction_at_target=NONE
+function=NONE
+instruction_window=UNAVAILABLE
+
+=== DATA_XREFS target=80066e7c ===
+loaded_image_bytes=00000000 loaded_image_word_le=0x0
+loaded_image_value_is_not_runtime_state=yes
+xref_from=80037b7c type=WRITE source=ANALYSIS operand=1 function_entry=80037b58 function_name=FUN_80037b58
+  source_instruction_bytes=[7C 6E 20 AC] sw zero,0x6e7c(at)
+  80037b6c bytes=[00 01 02 24] li v0,0x100
+  80037b70 bytes=[10 00 BF AF] sw ra,0x10(sp)
+  80037b74 bytes=[00 00 62 AC] sw v0,0x0(v1)
+  80037b78 bytes=[06 80 01 3C] lui at,0x8006
+  80037b7c bytes=[7C 6E 20 AC] sw zero,0x6e7c(at)
+  80037b80 bytes=[12 DF 00 0C] jal 0x80037c48
+  80037b84 bytes=[08 00 05 24] _li a1,0x8
+  80037b88 bytes=[03 80 05 3C] lui a1,0x8003
+  80037b8c bytes=[B0 7B A5 24] addiu a1,a1,0x7bb0
+xref_from=80037bb4 type=READ source=ANALYSIS operand=1 function_entry=80037bb0 function_name=FUN_80037bb0
+  source_instruction_bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  80037ba4 bytes=[18 00 BD 27] addiu sp,sp,0x18
+  80037ba8 bytes=[08 00 E0 03] jr ra
+  80037bac bytes=[00 00 00 00] _nop
+  80037bb0 bytes=[06 80 02 3C] lui v0,0x8006
+  80037bb4 bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  80037bb8 bytes=[E0 FF BD 27] addiu sp,sp,-0x20
+  80037bbc bytes=[14 00 B1 AF] sw s1,0x14(sp)
+  80037bc0 bytes=[21 88 00 00] clear s1
+  80037bc4 bytes=[10 00 B0 AF] sw s0,0x10(sp)
+xref_from=80037bdc type=WRITE source=ANALYSIS operand=1 function_entry=80037bb0 function_name=FUN_80037bb0
+  source_instruction_bytes=[7C 6E 22 AC] sw v0,0x6e7c(at)
+  80037bcc bytes=[5C 6E 10 26] addiu s0,s0,0x6e5c
+  80037bd0 bytes=[18 00 BF AF] sw ra,0x18(sp)
+  80037bd4 bytes=[01 00 42 24] addiu v0,v0,0x1
+  80037bd8 bytes=[06 80 01 3C] lui at,0x8006
+  80037bdc bytes=[7C 6E 22 AC] sw v0,0x6e7c(at)
+  80037be0 bytes=[00 00 02 8E] lw v0,0x0(s0)
+  80037be4 bytes=[00 00 00 00] nop
+  80037be8 bytes=[03 00 40 10] beq v0,zero,0x80037bf8
+  80037bec bytes=[00 00 00 00] _nop
+xref_from=8003719c type=READ source=ANALYSIS operand=1 function_entry=80037138 function_name=FUN_80037138
+  source_instruction_bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  8003718c bytes=[23 10 43 00] subu v0,v0,v1
+  80037190 bytes=[05 00 81 04] bgez a0,0x800371a8
+  80037194 bytes=[FF FF 51 30] _andi s1,v0,0xffff
+  80037198 bytes=[06 80 02 3C] lui v0,0x8006
+  8003719c bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  800371a0 bytes=[A7 DC 00 08] j 0x8003729c
+  800371a4 bytes=[00 00 00 00] _nop
+  800371a8 bytes=[01 00 02 24] li v0,0x1
+  800371ac bytes=[3A 00 82 10] beq a0,v0,0x80037298
+xref_from=80037204 type=READ source=ANALYSIS operand=1 function_entry=80037138 function_name=FUN_80037138
+  source_instruction_bytes=[7C 6E 84 8C] lw a0,0x6e7c(a0)
+  800371f4 bytes=[34 5D 42 8C] lw v0,0x5d34(v0)
+  800371f8 bytes=[00 00 00 00] nop
+  800371fc bytes=[00 00 50 8C] lw s0,0x0(v0)
+  80037200 bytes=[06 80 04 3C] lui a0,0x8006
+  80037204 bytes=[7C 6E 84 8C] lw a0,0x6e7c(a0)
+  80037208 bytes=[01 00 05 24] li a1,0x1
+  8003720c bytes=[AC DC 00 0C] jal 0x800372b0
+  80037210 bytes=[01 00 84 24] _addiu a0,a0,0x1
+  80037214 bytes=[40 00 02 3C] lui v0,0x40
+xref_from=80037260 type=READ source=ANALYSIS operand=1 function_entry=80037138 function_name=FUN_80037138
+  source_instruction_bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  80037250 bytes=[24 10 44 00] and v0,v0,a0
+  80037254 bytes=[FB FF 40 10] beq v0,zero,0x80037244
+  80037258 bytes=[00 00 00 00] _nop
+  8003725c bytes=[06 80 02 3C] lui v0,0x8006
+  80037260 bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  80037264 bytes=[06 80 04 3C] lui a0,0x8006
+  80037268 bytes=[38 5D 84 8C] lw a0,0x5d38(a0)
+  8003726c bytes=[06 80 01 3C] lui at,0x8006
+  80037270 bytes=[40 5D 22 AC] sw v0,0x5d40(at)
+xref_from=800372c0 type=READ source=ANALYSIS operand=1 function_entry=800372b0 function_name=FUN_800372b0
+  source_instruction_bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  800372b0 bytes=[E0 FF BD 27] addiu sp,sp,-0x20
+  800372b4 bytes=[C0 2B 05 00] sll a1,a1,0xf
+  800372b8 bytes=[10 00 A5 AF] sw a1,0x10(sp)
+  800372bc bytes=[06 80 02 3C] lui v0,0x8006
+  800372c0 bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  800372c4 bytes=[00 00 00 00] nop
+  800372c8 bytes=[2A 10 44 00] slt v0,v0,a0
+  800372cc bytes=[1A 00 40 10] beq v0,zero,0x80037338
+  800372d0 bytes=[18 00 BF AF] _sw ra,0x18(sp)
+xref_from=80037324 type=READ source=ANALYSIS operand=1 function_entry=800372b0 function_name=FUN_800372b0
+  source_instruction_bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  80037314 bytes=[21 28 00 00] _clear a1
+  80037318 bytes=[CE DC 00 08] j 0x80037338
+  8003731c bytes=[00 00 00 00] _nop
+  80037320 bytes=[06 80 02 3C] lui v0,0x8006
+  80037324 bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  80037328 bytes=[00 00 00 00] nop
+  8003732c bytes=[2A 10 44 00] slt v0,v0,a0
+  80037330 bytes=[E9 FF 40 14] bne v0,zero,0x800372d8
+  80037334 bytes=[00 00 00 00] _nop
+data_reference_count=8
+interpretation=direct Ghidra references only; indirect aliases and runtime writers may not appear
