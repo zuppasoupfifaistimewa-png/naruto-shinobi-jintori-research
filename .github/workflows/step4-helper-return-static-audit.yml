@@ -126,6 +126,8 @@ jobs:
           grep -Eiq "^=== TARGET (0x)?80037138 ===$" "$out/seed-helper-detail.txt"
           grep -Eiq "^=== TARGET (0x)?80035DA8 ===$" "$out/seed-helper-detail.txt"
           grep -Eiq "^=== TARGET (0x)?80043F18 ===$" "$out/seed-helper-detail.txt"
+          grep -Eiq "^=== TARGET (0x)?8001387C ===$" "$out/seed-helper-detail.txt"
+          grep -Eiq "^=== TARGET (0x)?800138EC ===$" "$out/seed-helper-detail.txt"
           echo "helper_function_and_setter_detail=PASS"
           echo "runtime_call_contract=NOT_PROVEN"
           echo "hypothetical_DATA_BIN_entry0_base=0x800AD000"
