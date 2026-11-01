@@ -1,0 +1,16 @@
+ALSA lib confmisc.c:855:(parse_card) [error.core] cannot find card '0'
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) [error.core] error evaluating strings
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) [error.core] error evaluating name
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5734:(snd_config_expand) [error.core] Evaluate error: No such file or directory
+ALSA lib pcm.c:2722:(snd_pcm_open_noupdate) [error.pcm] Unknown PCM sysdefault
+2: (String) [string "src:lua/extra.lua"]:31: /tmp/naruto-ax4-41299656659-1/launches/attempt-2/ax4.lua:154: ')' expected (to close '(' at line 141) near 'if'
+4: (String) at =[C]:-1 (error)
+5: (String) at src:lua/extra.lua:31 (dofile)
+6: (String) at internal:dofile.lua:1 ([top])
+Runtime error while running LUA code.
+Warning: OpenGL error reporting disabled. See About dialog for more information.
+PCSX-Redux booting
+Copyright (C) 2019-2025 PCSX-Redux authors
