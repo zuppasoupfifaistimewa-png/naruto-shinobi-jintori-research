@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: step4-helper-return-static-audit
@@ -122,9 +122,10 @@ jobs:
           mkdir -p "$project" "$out"
           headless="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
           [[ -n "$headless" && -x "$headless" ]]
-          "$headless" "$project" Naruto_seed_helper_audit             -import "$exe"             -loader BinaryLoader -loader-baseAddr 0x80010000 -loader-fileOffset 0x800             -loader-length 0x5D800 -loader-blockName MAIN_TEXT             -processor "MIPS:LE:32:default"             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra"             -preScript PreparePsxExe.java             -postScript ExportFunctionDetail.java "$out/seed-helper-detail.txt" 0x80037138 0x80035DA8 0x80037B58 0x80037BB0 0x8003755C 0x800373F8 0x800373C8 0x80037C48             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject             > "$out/ghidra-headless.log" 2>&1
+          "$headless" "$project" Naruto_seed_helper_audit             -import "$exe"             -loader BinaryLoader -loader-baseAddr 0x80010000 -loader-fileOffset 0x800             -loader-length 0x5D800 -loader-blockName MAIN_TEXT             -processor "MIPS:LE:32:default"             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra"             -preScript PreparePsxExe.java             -postScript ExportFunctionDetail.java "$out/seed-helper-detail.txt" 0x80037138 0x80035DA8 0x80037B58 0x80037BB0 0x8003755C 0x800373F8 0x800373C8 0x80037C48 0x80105BCC             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject             > "$out/ghidra-headless.log" 2>&1
           grep -Eiq "^=== TARGET (0x)?80037138 ===$" "$out/seed-helper-detail.txt"
           grep -Eiq "^=== TARGET (0x)?80035DA8 ===$" "$out/seed-helper-detail.txt"
+          grep -Eiq "^=== TARGET (0x)?80105BCC ===$" "$out/seed-helper-detail.txt"
           echo "helper_function_and_setter_detail=PASS"
           echo "runtime_call_contract=NOT_PROVEN"
           echo "hypothetical_DATA_BIN_entry0_base=0x800AD000"
@@ -168,3 +169,48 @@ jobs:
           path: ${{ runner.temp }}/step4-helper-audit-output/
           if-no-files-found: warn
           retention-days: 14
+      - name: Publish text-only helper detail and Actions summary
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/step4-helper-audit-output"
+          mkdir -p "$out"
+          dest="reports/stage1_economy/at1-helper-a1-audit-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$dest"
+          for name in seed-helper-detail.txt input-identity.txt ghidra-headless.log; do
+            if [ -f "$out/$name" ]; then cp "$out/$name" "$dest/"; fi
+          done
+          if [ -s "$out/seed-helper-detail.txt" ] && grep -Eiq "^=== TARGET (0x)?80105BCC ===$" "$out/seed-helper-detail.txt" && grep -q "RAW_FUNCTION_BODY_BEGIN" "$out/seed-helper-detail.txt"; then
+            status="PASS"; rc="0"
+          else
+            status="INCOMPLETE"; rc="1"
+          fi
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="helper-return-audit") | .id' | head -n 1)"
+          test -n "$JOB_ID" && test "$JOB_ID" != null || JOB_ID="TIDAK TAHU"
+          {
+            echo "STATUS=$status"
+            echo "JOB=helper-return-audit"
+            echo "JOB_ID=$JOB_ID"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "EXIT_CODE=$rc"
+            echo "TARGET=0x80105BCC"
+            echo "METHOD=Ghidra static disassembly only; no emulator/gameplay input."
+          } > "$dest/ACTIONS_RUN_SUMMARY.txt"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$dest"
+          git commit -m "Publish static a1 helper provenance for 0x80105BCC run $GITHUB_RUN_ID"
+          pushed=0
+          for n in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort; sleep "$n"; continue; }
+            if git push origin HEAD:main; then pushed=1; break; fi
+            sleep "$n"
+          done
+          test "$pushed" -eq 1
+          echo "AT1_HELPER_REPORT_PATH=$dest"
