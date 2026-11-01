@@ -11,3 +11,9 @@ AT1(c): TUNTAS K4 comparison. FIELD sets: runs 41208394883, 41211621969, 4124941
 AT1(d): TUNTAS K4. Register is s8 (= $30; fp alias), not fp=0. Two sb writes are s8 WRITE (0 READ, 2 WRITE); fp remains 0.
 
 Static findings max K4. No gameplay semantics or economy field meaning inferred.
+
+## Artefak terstruktur tambahan
+
+- `AT1_GETTER_CALLS.tsv` — dua call-site getter, 12 instruksi pre-JAL, delay slot, a0, asal a1 pada jalur teramati, cabang return v0, serta batas caller-saved. Pada bltz-taken menuju getter kedua, a1 tetap TIDAK TAHU.
+- `AT1_SETTER_CALLS.tsv` — seluruh 14 setter call-site, basis slot/stride, final a1, 12 instruksi pre-JAL dan delay slot.
+- `AT1_FIELD_DIFF_PC_FUNCTION.tsv` dan `AT1_FIELD_DIFF_SUMMARY.tsv` — rekonsiliasi 6 ekspor census.
