@@ -1,15 +1,15 @@
-setter_pc	caller_entry	caller_function	a0_origin	a1_expression_at_setter_entry
-0x800B41B0	0x800B2A58	FUN_800B2A58	MEM32[prior_a0 + 0x598]	MEM32[participant_base + 0x4 + MEM32[object + 0x598] * 0x90]
-0x800B4254	0x800B2A58	FUN_800B2A58	MEM32[prior_a0 + 0x5B4]	MEM32[participant_base + 0x4 + MEM32[object + 0x5B4] * 0x90]
-0x800B4F00	0x800B2A58	FUN_800B2A58	s2 (jal delay slot: move a0,s2)	MEM32[participant_base + 0x4 + s2 * 0x90 + a2]
-0x800B4F64	0x800B2A58	FUN_800B2A58	s2 (jal delay slot: move a0,s2)	MEM32[participant_base + 0x4 + s2 * 0x90 + a2]
-0x800B6238	0x800B5D68	FUN_800B5D68	s2 (jal delay slot: move a0,s2)	MEM32[participant_base + s1 + 0x4], where s1 was precomputed as index * 0x90
-0x800BEC98	0x800BE5D8	FUN_800BE5D8	s1 (jal delay slot: move a0,s1)	MEM32[participant_base + s1 * 0x90 + 0x4]
-0x800DEB38	0x800DE760	FUN_800DE760	MEM32[s0 - 0x14F4]	MEM32[participant_base + MEM32[s0 - 0x14F4] * 0x90 + 0x4]
-0x800E1BE0	0x800E1958	FUN_800E1958	ZEXT8[MEM8[s0 - 0x1516]]	MEM32[participant_base + 0x4 + ZEXT8[MEM8[s0 - 0x1516]] * 0x90]
-0x800EC9A4	0x800EC574	FUN_800EC574	ZEXT16[MEM16[v0 - 0x1578]]	MEM32[participant_base + ZEXT16[MEM16[v0 - 0x1578]] * 0x90 + 0x4]
-0x800F95E8	0x800F9520	FUN_800F9520	s0 (jal delay slot: move a0,s0)	MEM32[participant_base + s0 * 0x90 + 0x4]
-0x8010A15C	0x80109FEC	FUN_80109FEC	ZEXT8[MEM8[v1 + 0xB2B]]	getter_return(0x8010A144) + MEM32[manager_base + 0xB44]
-0x8010A1B0	0x80109FEC	FUN_80109FEC	s0 (jal delay slot: move a0,s0)	getter_return(0x8010A1A4)
-0x8010A638	0x80109FEC	FUN_80109FEC	ZEXT8[MEM8[v1 + 0xB2B]]	getter_return(0x8010A624) + 0x14
-0x8010A97C	0x80109FEC	FUN_80109FEC	s0 (jal delay slot: move a0,s0)	getter_return(0x8010A970)
+setter_pc	caller_function	a0_source_instruction	a0_origin	a1_source_instruction	a1_expression_at_setter_entry
+0x800B41B0	FUN_800B2A58	0x800B4194 lw a0,0x598(a0)	MEM32[prior_a0 + 0x598]	0x800B41AC lw a1,0x0(a1)	MEM32[participant_base + 0x4 + MEM32[object + 0x598] * 0x90]
+0x800B4254	FUN_800B2A58	0x800B4238 lw a0,0x5B4(a0)	MEM32[prior_a0 + 0x5B4]	0x800B4250 lw a1,0x0(a1)	MEM32[participant_base + 0x4 + MEM32[object + 0x5B4] * 0x90]
+0x800B4F00	FUN_800B2A58	0x800B4F04 jal delay: move a0,s2	s2	0x800B4EF4 lw a1,0x0(v0)	MEM32[participant_base + 0x4 + s2 * 0x90 + a2]
+0x800B4F64	FUN_800B2A58	0x800B4F68 jal delay: move a0,s2	s2	0x800B4F58 lw a1,0x0(v0)	MEM32[participant_base + 0x4 + s2 * 0x90 + a2]
+0x800B6238	FUN_800B5D68	0x800B623C jal delay: move a0,s2	s2	0x800B6234 lw a1,0x4(v0)	MEM32[participant_base + s1 + 0x4], where s1 = index * 0x90
+0x800BEC98	FUN_800BE5D8	0x800BEC9C jal delay: move a0,s1	s1	0x800BEC94 lw a1,0x4(v0)	MEM32[participant_base + s1 * 0x90 + 0x4]
+0x800DEB38	FUN_800DE760	0x800DEB1C lw a0,-0x14F4(s0)	MEM32[s0 - 0x14F4]	0x800DEB34 lw a1,0x4(v1)	MEM32[participant_base + MEM32[s0 - 0x14F4] * 0x90 + 0x4]
+0x800E1BE0	FUN_800E1958	0x800E1BC4 lbu a0,-0x1516(s0)	ZEXT8[MEM8[s0 - 0x1516]]	0x800E1BDC lw a1,0x0(a1)	MEM32[participant_base + 0x4 + ZEXT8[MEM8[s0 - 0x1516]] * 0x90]
+0x800EC9A4	FUN_800EC574	0x800EC984 lhu a0,-0x1578(v0)	ZEXT16[MEM16[v0 - 0x1578]]	0x800EC9A0 lw a1,0x4(v1)	MEM32[participant_base + ZEXT16[MEM16[v0 - 0x1578]] * 0x90 + 0x4]
+0x800F95E8	FUN_800F9520	0x800F95EC jal delay: move a0,s0	s0	0x800F95E4 lw a1,0x4(v1)	MEM32[participant_base + s0 * 0x90 + 0x4]
+0x8010A15C	FUN_80109FEC	0x8010A158 lbu a0,0xB2B(v1)	ZEXT8[MEM8[v1 + 0xB2B]]	0x8010A154 lw a1,0xB44(v1)	getter_return(0x8010A144) + MEM32[manager_base + 0xB44] (0x8010A160 addu a1,v0,a1)
+0x8010A1B0	FUN_80109FEC	0x8010A1AC jal delay: move a0,s0	s0	0x8010A1B4 jal delay: move a1,v0	getter_return(0x8010A1A4)
+0x8010A638	FUN_80109FEC	0x8010A634 lbu a0,0xB2B(v1)	ZEXT8[MEM8[v1 + 0xB2B]]	0x8010A63C jal delay: addu a1,v0,s1	getter_return(0x8010A624) + 0x14 (s1 is loaded with li s1,0x14 at 0x8010A604; the linear lw s1,0xB44(v0) at 0x8010A610 is skipped)
+0x8010A97C	FUN_80109FEC	0x8010A978 jal delay: move a0,s0	s0	0x8010A980 jal delay: move a1,v0	getter_return(0x8010A970)
