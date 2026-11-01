@@ -11,14 +11,14 @@ Bukti statis maksimum K4; runtime pada H6 selalu dilabel HIBRIDA, bukan target m
 
 ### H1 — B38 sama dengan floor(sum seluruh V / 2)
 
-Status hipotesis umum: BELUM TERBUKTI; **dipatahkan pada kondisi H6 yang diamati**. Pada dua peluncuran independen dan frame 180 serta 360, 22 tile menghasilkan sum(V)=1.270, floor(sum(V)/2)=635, sedangkan manager +0xB38=0. Semua empat snapshot pada run pertama identik SHA per frame; run kedua menangkap angka yang sama, tetapi laporan run kedua berstatus INCOMPLETE karena bug parser return sebelum perhitungan SHA akhir. Falsifier untuk hubungan universal: satu kondisi valid di mana B38 berbeda dari floor(sum V/2), seperti empat snapshot H6 ini. Hipotesis alternatif masih mungkin bahwa hubungan itu hanya berlaku pada state/event tertentu atau hanya subset owner/status.
+Status hipotesis umum: BELUM TERBUKTI; **dipatahkan pada kondisi H6 yang diamati**. Run4 `41360900093` berstatus PASS, script exit 0, dua peluncuran independen dan frame 180 serta 360. Pada empat snapshot valid, 22 tile menghasilkan sum(V)=1.270, floor(sum(V)/2)=635, sedangkan manager +0xB38=0. SHA RAM identik per frame di dua peluncuran dan Memory Card tidak berubah. Run2 `41359528784` sebelumnya menghasilkan data yang sama tetapi script exit 2 karena bug parser; status run2 tetap INCOMPLETE dan tidak dipakai sebagai bukti PASS. Falsifier untuk hubungan universal: satu kondisi valid di mana B38 berbeda dari floor(sum V/2), seperti empat snapshot H6 run4 ini. Hipotesis alternatif masih mungkin bahwa hubungan itu hanya berlaku pada state/event tertentu atau hanya subset owner/status.
 
 ### H2 — B30 mengambil nilai dari tabel yang dipilih mode/state
 
 Bukti statis FUN_80012EAC: 
 `idx = u8[0x80058758 + mode*0x84 + state*0x0C]`;
 `table_value = u32[0x80057798 + idx*0x54 + 0x0C]` (alamat row-0 adalah 0x800577A4).
-Pada snapshot H6 run kedua: mode word [0x80070734]=0, state byte [0x8007073C]=0, index byte di 0x80058758=0, selected row base=0x80057798, nilai tabel di 0x800577A4=400. Manager +0xB30 aktual tetap 0. Ini membuktikan lookup baris dan nilainya untuk mode/state yang tertangkap, tetapi **tidak** membuktikan bahwa nilai tabel 400 sudah disalin ke manager B30 pada state ini. Falsifier untuk hipotesis bahwa manager B30 selalu sama dengan lookup: mismatch aktual 0 versus 400 pada snapshot H6. Untuk membuktikan jalur transfer nilai tabel→manager, perlu melacak caller/argumen setter manager +0xB30 atau snapshot lain ketika manager benar-benar diinisialisasi.
+Pada empat snapshot H6 run4 yang valid: mode word [0x80070734]=0, state byte [0x8007073C]=0, index byte di 0x80058758=0, selected row base=0x80057798, nilai tabel di 0x800577A4=400. Manager +0xB30 aktual tetap 0. Ini membuktikan lookup baris dan nilainya untuk mode/state yang tertangkap, tetapi **tidak** membuktikan bahwa nilai tabel 400 sudah disalin ke manager B30 pada state ini. Falsifier untuk hipotesis bahwa manager B30 selalu sama dengan lookup: mismatch aktual 0 versus 400 pada snapshot H6. Untuk membuktikan jalur transfer nilai tabel→manager, perlu melacak caller/argumen setter manager +0xB30 atau snapshot lain ketika manager benar-benar diinisialisasi.
 
 ### H3 — semua V petak dalam record dibaca dari helper FUN_800B770C
 
