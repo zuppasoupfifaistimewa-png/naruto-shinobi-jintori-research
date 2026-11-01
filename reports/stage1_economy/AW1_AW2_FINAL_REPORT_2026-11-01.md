@@ -201,7 +201,7 @@ Immediate `0x14` pada state machine juga dipakai untuk menaikkan `manager+0xB34`
 
 Read dan write dapat overlap pada fungsi yang sama. Census mencatat displacement operand dan PC; label `DISPLACEMENT_ONLY_BASE_REGISTER_NOT_PROVEN` dipertahankan karena displacement saja tidak cukup membuktikan alias base register sebagai record petak. TSV merupakan daftar lengkap untuk diperiksa, bukan pengganti review tiap fungsi.
 
-Direct-call census: `FUN_800B770C` 44 JAL; `FUN_800BDC4C` 3 JAL. Indirect JALR belum tercakup (`TIDAK TAHU)). 47 jendela caller diekspor pada `aw1-helper-call-windows.tsv`.
+Direct-call census: `FUN_800B770C` 44 JAL; `FUN_800BDC4C` 3 JAL. Indirect JALR belum tercakup (`TIDAK TAHU`). 47 jendela caller diekspor pada `aw1-helper-call-windows.tsv`.
 
 ## AW2 — pencarian data, konstanta dan teks
 
@@ -253,7 +253,7 @@ Peta font/tile index ke glyph tidak berhasil dibangun karena belum ada rantai ko
 Tidak ada formula gameplay yang di-fit dari angka video atau dari kandidat byte.
 
 ### Pendapatan petak
-- **H1:** helper petak menghitung nilai yang dikreditkan saat commit petak menggunakan selector `+0x0B`, halfword yang dipilih oleh `+0x20), dan faktor 100–200%.  
+- **H1:** helper petak menghitung nilai yang dikreditkan saat commit petak menggunakan selector `+0x0B`, halfword yang dipilih oleh `+0x20`, dan faktor 100–200%.  
   *Falsifier:* commit path tidak meneruskan return helper ke saldo/score, dan return hanya dipakai untuk UI/threshold lain.
 - **H2:** helper menghitung nilai petak untuk perbandingan/penilaian; kredit ekonomi berasal dari pending-delta manager atau state lain.  
   *Falsifier:* ditemukan jalur commit yang secara langsung menambah saldo dengan return helper pada sedikitnya tiga tipe petak.
@@ -277,3 +277,24 @@ Tidak ada formula gameplay yang di-fit dari angka video atau dari kandidat byte.
   *Falsifier:* instruksi release mengirim jumlah positif ke setter `0x8001387C`.
 
 **Kesimpulan AW1–AW2:** rantai angka helper dan ekspresi setter telah K4. Label bisnis/gameplay “pendapatan petak”, “harga Barrier”, dan “refund release” belum ditautkan ke teks atau aksi UI secara langsung, sehingga harus tetap diberi status parsial/belum. Tidak ada nilai yang dipaksakan menjadi label.
+
+
+## Addendum AW2 — scan stride dan status run lanjutan
+
+Run Step 7 terbaru yang menyelesaikan scan Entry 1:
+- RUN_ID: `41291576229`
+- JOB_ID: `124803739839`
+- SOURCE_SHA: `64de9960b60cd0eb629b0c15e9025ca787bf1e84`
+- STATUS: `SUCCESS`
+- EXIT_CODE desimal: `0`
+
+Pencarian sequence `100,120,150,180,200` dilakukan sebagai LE u8/u16/u32 pada ketiga input, untuk sequence contiguous dan jarak elemen umum. Seluruh 54 kombinasi yang diuji menghasilkan **0 hit**:
+- contiguous: u8/u16/u32;
+- strided: u8 stride 2/4/8/12/16; u16 stride 1/4/8/12/16; u32 stride 1/2/8/12/16;
+- input: `SLPS_035.53`, DATA.BIN Entry 0, DATA.BIN Entry 1.
+
+Kesimpulannya hanya bahwa tidak ditemukan susunan lima nilai itu dalam tipe/stride yang diuji. Ini tidak meniadakan tabel dengan urutan, encoding, skala, stride, atau padding lain. Khusus helper `FUN_800B770C`, persentase 100/120/150/180/200 terbukti diimplementasikan melalui dispatch ke lima fungsi dan operasi aritmetika, bukan sequence data.
+
+Pencarian string literal ASCII/Shift-JIS exact menghasilkan 0 hit untuk kata kunci English/Japanese yang dicatat pada bagian sebelumnya. Heuristik run Shift-JIS menghasilkan 25 run di EXE, 3 di Entry 0, 234 di Entry 1 (262 total). Run itu tidak terbukti sebagai message UI; sebagian hasil Entry 0 tampak seperti decoding byte acak. Peta indeks glyph/tile ke font tetap **TIDAK TAHU**.
+
+Ekspor immediate literal Ghidra pada Entry 1 tersedia pada `aw2-numeric-instruction-literals.tsv`. Run Ghidra terpisah untuk EXE utama dan DATA.BIN Entry 0 (`41290779708`) masih berstatus berjalan pada saat laporan final ini dibuat; karena itu daftar xref semua literal numerik untuk dua input tersebut belum lengkap. Byte-scan raw numeric occurrences untuk ketiga input sudah selesai dan disimpan.
