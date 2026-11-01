@@ -1,0 +1,41 @@
+BASE=e2a2f4485dfa258d8a4d25599c26cab0c9ac551a
+COMMIT=2c5db558a4e3820c3ff2f50a1d133476cbc6ed2d
+SUBJECT=Add AZ0 raw writer audit and AZ1 read-only H6 snapshots
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+A	.github/workflows/az1-h6-economy-runtime.yml
+A	experiments/az1_h6_economy_runtime.py
+A	reports/stage1_economy/AZ0_AY1_RAW_WRITER_AUDIT_2026-11-02.tsv
+A	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+
+COMMIT=6b7279604f3540b3b5c66fc0e77f794ce6b9c674
+SUBJECT=Add AZ0-AZ1 hypotheses and exhaustive direct setter argument table
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+A	reports/stage1_economy/AZ0_AZ1_HYPOTHESES_2026-11-02.md
+A	reports/stage1_economy/AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv
+
+COMMIT=f9a6cd896a15876e16121de49537294681c94acc
+SUBJECT=Publish AZ1 H6 runtime trace run 41358566961 attempt 1
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ0_COMMIT_FILE_LIST.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ0_SHA256_ONE_SET.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_H6_ECONOMY_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_LAUNCHES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_MANAGER_FIELDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_SCRIPT_EXIT_CODE.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_TABLE_SELECTION.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_TILE_AGGREGATES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_TILE_RECORDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+
+COMMIT=6c1e3b95e54ebfa46468e62b96cd0cd08d85ab9a
+SUBJECT=Resolve AZ1 B30 table lookup and complete scoped AZ2 reader census
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	experiments/az1_h6_economy_runtime.py
+M	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+A	reports/stage1_economy/AZ2_MANAGER_READERS_2026-11-02.tsv
+
