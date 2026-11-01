@@ -458,6 +458,8 @@ public class ExportManagerEconomyWriters extends GhidraScript {
                 exportEconomyGlobalSource();
                 dumpFunction(0x80012A80L);
                 dumpFunction(0x80012A8CL);
+                dumpFunction(0x80012780L);
+                dumpFunction(0x80012EACL);
             }
             if(module.equals("ENTRY1")) dumpFunction(0x800EDD68L);
             countJalr();
