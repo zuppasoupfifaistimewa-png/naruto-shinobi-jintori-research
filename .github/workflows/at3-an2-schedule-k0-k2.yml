@@ -23,9 +23,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     env:
-      GH_TOKEN: \${{ github.token }}
-      RESEARCH_REPO: \${{ github.repository }}
-      WORK: /tmp/naruto-at3-\${{ github.run_id }}-\${{ github.run_attempt }}
+      GH_TOKEN: ${{ github.token }}
+      RESEARCH_REPO: ${{ github.repository }}
+      WORK: /tmp/naruto-at3-${{ github.run_id }}-${{ github.run_attempt }}
       TIMEOUT_SECONDS: "1800"
     steps:
       - name: Checkout
@@ -113,18 +113,18 @@ jobs:
         with:
           name: naruto-storymode-adaptive-player-private
           run-id: "39867730674"
-          repository: \${{ github.repository }}
-          github-token: \${{ github.token }}
-          path: \${{ env.WORK }}/inputs
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ env.WORK }}/inputs
 
       - name: Download reference Memory Card
         uses: actions/download-artifact@v4
         with:
           name: naruto-storymode-memory-card-private
           run-id: "39262213468"
-          repository: \${{ github.repository }}
-          github-token: \${{ github.token }}
-          path: \${{ env.WORK }}/cards
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ env.WORK }}/cards
 
       - name: Validate private inputs and start Xvfb
         shell: bash
