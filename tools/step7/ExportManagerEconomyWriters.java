@@ -203,10 +203,44 @@ public class ExportManagerEconomyWriters extends GhidraScript {
     private Address actualStoreAddress(Address pcodePc) {
         Instruction at=currentProgram.getListing().getInstructionAt(pcodePc);
         if(at!=null && hasDelaySlot(at.getMnemonicString())) {
-            Instruction delay=currentProgram.getListing().getInstructionAt(pcodePc.add(at.getLength()));
+            Address delayAddress=pcodePc.add(at.getLength());
+            Instruction delay=currentProgram.getListing().getInstructionAt(delayAddress);
             if(delay!=null && isStoreMnemonic(delay.getMnemonicString())) return delay.getAddress();
+            // Ghidra may attach the delay-slot STORE p-code to the control-transfer PC
+            // without creating a separate listing instruction. Decode its raw word.
+            try {
+                byte[] raw=new byte[4]; currentProgram.getMemory().getBytes(delayAddress,raw);
+                long word=((long)raw[0]&255L)|(((long)raw[1]&255L)<<8)|(((long)raw[2]&255L)<<16)|(((long)raw[3]&255L)<<24);
+                int opcode=(int)((word>>>26)&0x3f), imm=(short)(word&0xffff);
+                if((opcode==0x28||opcode==0x29||opcode==0x2a||opcode==0x2b||opcode==0x2c||opcode==0x2d) &&
+                   (imm==0xB2A||imm==0xB30||imm==0xB38)) return delayAddress;
+            } catch(Exception ignored) {}
         }
         return pcodePc;
+    }
+    private String regName(int n) {
+        String[] r={"zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"};
+        return n>=0&&n<r.length?r[n]:"r"+n;
+    }
+    private String instructionTextAtStore(Address pc, Instruction ins) {
+        if(ins!=null) return ins.toString();
+        try {
+            byte[] raw=new byte[4]; currentProgram.getMemory().getBytes(pc,raw);
+            long w=((long)raw[0]&255L)|(((long)raw[1]&255L)<<8)|(((long)raw[2]&255L)<<16)|(((long)raw[3]&255L)<<24);
+            int op=(int)((w>>>26)&0x3f), rs=(int)((w>>>21)&31), rt=(int)((w>>>16)&31), imm=(short)(w&0xffff);
+            String m=op==0x28?"sb":op==0x29?"sh":op==0x2b?"sw":op==0x2a?"swl":op==0x2c?"swr":op==0x2d?"sdl":"store";
+            return m+" "+regName(rt)+","+fmt(imm)+"("+regName(rs)+") [delay-slot raw decode]";
+        } catch(Exception e) { return "INSTRUCTION_NOT_DECODED"; }
+    }
+    private String preStoreWindow(Address pcodePc, Address storePc, Function owner, Instruction storeIns) {
+        if(!storePc.equals(pcodePc)) {
+            Instruction branch=currentProgram.getListing().getInstructionAt(pcodePc);
+            if(branch!=null) {
+                String prev=before(branch,owner,11);
+                return (prev.length()==0?"":prev+" || ")+addrExpr(branch.getAddress())+" "+branch.toString();
+            }
+        }
+        return storeIns==null?"":before(storeIns,owner,12);
     }
     private boolean instructionHasTargetOffset(Instruction ins) {
         if(ins==null) return false;
@@ -243,13 +277,13 @@ public class ExportManagerEconomyWriters extends GhidraScript {
                 if(target.managerOffset!=null && targetOffset(target.managerOffset)) {
                     long off=target.managerOffset;
                     row("WRITER_CONFIRMED",module,addrExpr(pc),functionEntry(f),functionName(f),targetName(off),
-                        String.valueOf(width),source,ins==null?"INSTRUCTION_NOT_DECODED":ins.toString(),
-                        ins==null?"":before(ins,f,12),bytes(pc,64),
+                        String.valueOf(width),source,instructionTextAtStore(pc,ins),
+                        preStoreWindow(pcodePc,pc,f,ins),bytes(pc,64),
                         "Pcode STORE target resolves through LOAD at global manager slot 0x8013A554; static");
                     confirmedStores++;
                 } else if(instructionHasTargetOffset(ins)) {
                     row("WRITER_CANDIDATE_UNRESOLVED",module,addrExpr(pc),functionEntry(f),functionName(f),
-                        target.expr,String.valueOf(width),source,ins==null?"INSTRUCTION_NOT_DECODED":ins.toString(),ins==null?"":before(ins,f,12),bytes(pc,64),
+                        target.expr,String.valueOf(width),source,instructionTextAtStore(pc,ins),preStoreWindow(pcodePc,pc,f,ins),bytes(pc,64),
                         "store has target displacement but manager base alias is not proven by this function-local def-use");
                     unresolvedStores++;
                 }
@@ -311,6 +345,28 @@ public class ExportManagerEconomyWriters extends GhidraScript {
             }
         }
     }
+    private void dumpFunction(long target) throws Exception {
+        Function f=currentProgram.getFunctionManager().getFunctionAt(toAddr(target));
+        if(f==null) {
+            row("FUNCTION_BODY_UNAVAILABLE",module,addrExpr(toAddr(target)),"","","NO_FUNCTION","","","","","","static listing has no function at requested address");
+            return;
+        }
+        DecompInterface d=new DecompInterface();
+        d.toggleCCode(true); d.toggleSyntaxTree(true); d.openProgram(currentProgram);
+        DecompileResults r=d.decompileFunction(f,60,monitor);
+        String c=(r!=null&&r.decompileCompleted()&&r.getDecompiledFunction()!=null)
+            ? r.getDecompiledFunction().getC() : "DECOMPILE_UNAVAILABLE";
+        row("FUNCTION_DECOMPILE",module,addrExpr(f.getEntryPoint()),"",functionEntry(f),functionName(f),
+            "C_BODY","static decompiler",c,"","","no runtime");
+        InstructionIterator it=currentProgram.getListing().getInstructions(f.getBody(),true);
+        while(it.hasNext()) {
+            Instruction ins=it.next();
+            row("FUNCTION_INSTRUCTION",module,addrExpr(f.getEntryPoint()),addrExpr(ins.getAddress()),
+                functionEntry(f),functionName(f),ins.getMnemonicString(),ins.toString(),
+                "", "",bytes(ins.getAddress(),4),"static disassembly for provenance context");
+        }
+        d.dispose();
+    }
     private void countJalr() throws Exception {
         InstructionIterator it=currentProgram.getListing().getInstructions(true);
         while(it.hasNext()) {
@@ -339,6 +395,8 @@ public class ExportManagerEconomyWriters extends GhidraScript {
                 "all functions with manager-slot displacement or direct target-field displacement are candidate-scanned");
             scanWriters();
             for(long t:FUNCTIONS) callerRefs(t);
+            if(module.equals("MAIN_EXE")) dumpFunction(0x80012A8CL);
+            if(module.equals("ENTRY1")) dumpFunction(0x800EDD68L);
             countJalr();
             row("INDIRECT_CALL_LIMIT",module,"FUN_80109994;FUN_801048F0;FUN_80109974;FUN_80109984","","","",
                 "jalr_count="+jalrCount,"pointer_words="+pointerWords,"reference_manager_refs="+refCount,
