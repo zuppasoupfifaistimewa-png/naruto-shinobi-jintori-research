@@ -30,7 +30,7 @@ Eight independent launches were completed: schedule C (no input) and schedule A 
 | A | K0 | 1, 2 | 0251aeef113a4c1eb58533a7dc5af85488e9bc2d96f42e24f62f8806ab0b6be8 | 3b06642ed54bac03aaf9962f9074b84e550c861c57d7648fcb1f7cc5f14dc70d | 2c53c4a225acccda78ebf67cb39e4922b0ee73d8c2da44928957df36792cc780 |
 | A | K2 | 1, 2 | same as A/K0 | same as A/K0 | same as A/K0 |
 
-The two launch attempts were identical per schedule/mode/frame. On this H6 hybrid and these fixed schedules, K2 instrumentation did not change the captured RAM hashes relative to K0 at frames 180/240/360. This does not rule out transient changes between those sampled frames.
+The two launch attempts were identical per schedule/mode/frame. On this H6 HIBRIDA and these fixed schedules, K2 instrumentation did not change the captured RAM hashes relative to K0 at frames 180/240/360. This does not rule out transient changes between those sampled frames.
 
 ## Breakpoint counts and register observations
 
@@ -54,7 +54,7 @@ At getter entry:
 
 ## Conclusion
 
-**AT3: TUNTAS — K5 terbatas pada eksperimen H6 HYBRID ini.** Runtime repetitions, input readbacks, captures, exit codes, Memory Card hashes, and timeout bound all passed. No gameplay/economy meaning is assigned to the observed register values or breakpoint counts.
+**AT3: TUNTAS — K5 terbatas pada eksperimen H6 HIBRIDA ini.** Runtime repetitions, input readbacks, captures, exit codes, Memory Card hashes, and timeout bound all passed. No gameplay/economy meaning is assigned to the observed register values or breakpoint counts.
 
 
 ## AU0 — replikasi hasil, hash, dan riwayat kegagalan
