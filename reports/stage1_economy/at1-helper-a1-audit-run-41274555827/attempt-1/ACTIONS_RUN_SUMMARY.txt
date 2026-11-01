@@ -1,0 +1,8 @@
+STATUS=PASS
+JOB=helper-return-audit
+JOB_ID=124753981582
+RUN_ID=41274555827
+SOURCE_SHA=344dff3ca0374388b06c766e99b057420195bb81
+EXIT_CODE=0
+TARGETS=0x80043F18,0x80043AB8
+METHOD=Ghidra static disassembly only; no emulator/gameplay input.
