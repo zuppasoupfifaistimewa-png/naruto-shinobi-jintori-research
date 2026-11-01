@@ -92,6 +92,8 @@ public class ExportManagerEconomyWriters extends GhidraScript {
                     if(z.constant!=null) scale=z.constant;
                 }
                 if(a.managerOffset!=null && b.constant!=null) return Sym.m(a.managerOffset+b.constant*scale);
+                if(a.constant!=null && (a.constant.longValue()&0xffffffffL)==MANAGER_SLOT && b.constant!=null) return Sym.m(b.constant*scale);
+                if(b.constant!=null && (b.constant.longValue()&0xffffffffL)==MANAGER_SLOT && a.constant!=null) return Sym.m(a.constant*scale);
                 if(a.constant!=null && b.constant!=null) return Sym.c(a.constant+b.constant*scale);
                 return Sym.u("PTRADD("+a.expr+","+b.expr+",scale="+scale+")");
             }
@@ -105,6 +107,8 @@ public class ExportManagerEconomyWriters extends GhidraScript {
                 Sym a=eval(op.getInput(0),seen,depth+1), b=eval(op.getInput(1),seen,depth+1);
                 if(a.managerOffset!=null && b.constant!=null) return Sym.m(a.managerOffset+b.constant);
                 if(b.managerOffset!=null && a.constant!=null) return Sym.m(b.managerOffset+a.constant);
+                if(a.constant!=null && (a.constant.longValue()&0xffffffffL)==MANAGER_SLOT && b.constant!=null) return Sym.m(b.constant);
+                if(b.constant!=null && (b.constant.longValue()&0xffffffffL)==MANAGER_SLOT && a.constant!=null) return Sym.m(a.constant);
                 if(a.constant!=null && b.constant!=null) return Sym.c(a.constant+b.constant);
                 return Sym.u("("+a.expr+" + "+b.expr+")");
             }
