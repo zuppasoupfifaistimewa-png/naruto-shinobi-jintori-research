@@ -10,7 +10,14 @@ AT1(b) **SEBAGIAN — K3/K4 statis**: dua call-site getter dalam `FUN_801052E8` 
 
 AT1(c) **TUNTAS — K4**: himpunan FIELD enam run dibandingkan per PC/fungsi. Jumlah: 1.188, 1.188, 1.163, 1.178, 1.188, 1.188. Diff TSV berisi 35 PC yang beda; 25 hilang pada run 41213474394, 10 pada run 41249242776. Penyebab eksporternya **TIDAK TAHU** dari bukti ini saja. Run 41208394883 sudah 1.188 sebelum perubahan exporter cfff770; jadi cfff770 tidak dinyatakan sebagai penyebab kenaikan/selisih.
 
-AT1(d) **TUNTAS — K4**: hitungan register benar: `s8` (register 30, alias frame-pointer) = 2 WRITE, sedangkan `fp` = 0. Dua instruksinya adalah `sb v0,0x0(s8)` pada PC `0x800CAE4C` dan `0x800CB46C`; keduanya bukan WRITE `fp`.
+AT1(d) **TUNTAS — K4**: tabel hitungan operand berikut mempertahankan nama register yang benar-benar muncul di disassembly.
+
+| Operand yang dihitung | Nomor GPR | READ | WRITE | OTHER | Total |
+|---|---:|---:|---:|---:|---:|
+| `s8` | $30 (alias ABI frame-pointer `fp`) | 0 | **2** | 0 | **2** |
+| `fp` sebagai token operand | $30 | 0 | 0 | 0 | 0 |
+
+Register numeriknya sama ($30), tetapi nama operand dalam dua baris census adalah `s8`: `sb v0,0x0(s8)` pada PC `0x800CAE4C` dan `0x800CB46C`. Jadi nilai yang harus dilaporkan adalah **s8 = 2 WRITE, bukan fp = 0**.
 
 ## AT1(a) — 14 setter call-site
 
