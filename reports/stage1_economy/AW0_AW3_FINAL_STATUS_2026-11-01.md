@@ -24,7 +24,7 @@ Statis maksimum K4. K5 pada AW3 berlaku hanya untuk fungsi/kondisi yang benar-be
 |---|---|---:|---|
 | AW0 | **TUNTAS** | K4 | Asal `a1` pada kedua edge ke getter kedua dibuktikan lengkap. |
 | AW1 | **TUNTAS** | K4 | Helper petak, empat setter-call manager, field `+0xB44`, dan census field petak diekspor/didekompilasi. Makna gameplay field manager belum diberi label. |
-| AW2 | **SEBAGIAN** | K3 | Scan byte numerik, exact string ASCII/Shift-JIS, heuristic Shift-JIS, dispatch table dan stride umum selesai. Xref semua kandidat raw numeric belum tuntas; font/tile index map TIDAK TAHU; scan Ghidra EXE utama/Entry 0 masih berjalan. |
+| AW2 | **SEBAGIAN** | K3 | Scan byte numerik, exact string ASCII/Shift-JIS, heuristic Shift-JIS, dispatch table, stride umum, dan triase 47 direct-call windows selesai. Xref immediate lengkap EXE utama/Entry 0 masih menunggu run Ghidra; font/tile index map TIDAK TAHU. |
 | AW3 | **SEBAGIAN** | K5* | 56/56 panggilan terkontrol lulus pada dua launch H6 HIBRIDA, termasuk helper, getter, setter dan dua ekspresi argumen setter berbasis B44. State machine `FUN_80109FEC` tidak dipanggil langsung karena dependensi UI/input/audio/state dan side effect; ekspresi argumennya diisolasi dan diuji melalui setter. |
 
 `K5*` tidak berarti seluruh `FUN_80109FEC` atau gameplay Barrier terbukti runtime. Ia hanya berlaku bagi kondisi dan fungsi yang tampil pada matriks AW3.
@@ -146,4 +146,4 @@ Actions-generated commits menambahkan keluaran teks/TSV ke folder `reports/stage
 - AW2: `aq1-run-41291576229/attempt-1/aw2-static-data-scan.md`, `aw2-numeric-occurrences.tsv`, `aw2-numeric-instruction-literals.tsv`.
 - AW3: `aw3-controlled-run-41291503009/attempt-1/ACTIONS_RUN_SUMMARY.txt`, `AW3_SUMMARY.txt`, `AW3_LAUNCHES.tsv`, `AW3_CALL_RESULTS.tsv`, `AW3_SCRIPT_EXIT_CODE.txt`.
 
-**Kesimpulan:** AW0 dan AW1 selesai sebagai audit statis. AW3 berhasil memvalidasi helper/accessor/setter serta dua ekspresi setter dalam dua launch H6 HIBRIDA. AW2 dan tiga pertanyaan gameplay utama belum sepenuhnya terjawab karena xref lengkap, peta teks/font/tile, dan identitas aksi Barrier belum ada bukti langsung. Semua ketidakpastian itu dipertahankan sebagai TIDAK TAHU; tidak ada rumus gameplay yang direka.
+**Kesimpulan:** AW0 dan AW1 selesai sebagai audit statis; suite uji terkontrol AW3 selesai dengan 56/56 PASS lintas dua launch H6 HIBRIDA. AW2 masih sebagian karena xref immediate EXE utama/Entry 0 pada run Ghidra `41290779708` belum keluar, dan peta teks/font/tile tetap TIDAK TAHU. Tiga pertanyaan gameplay utama juga belum semua terjawab karena belum ada hubungan langsung antara helper/manager dengan aksi pendapatan petak, harga Barrier, dan release Barrier. Status TUNTAS AW3 hanya mencakup matriks uji AW3, bukan seluruh gameplay game.
