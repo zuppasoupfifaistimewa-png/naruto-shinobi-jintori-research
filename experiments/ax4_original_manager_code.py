@@ -41,7 +41,7 @@ __AX4_CASES__
 local post=0; local preloadTicks=0; local started=false; local loaded=false; local running=false
 local managerBase=nil; local baselineRam=nil; local baselineSha=nil; local originalRegs=nil
 local currentCase=nil; local currentBeforeSha=nil; local currentCardBefore=nil; local currentStartClock=nil
-local setterObservation=nil; local callRows=0; local failedCalls=0; local bpKeep={}
+local setterObservation=nil; local callRows=0; local failedCalls=0; local bpKeep={}; local activeFrames=0
 local function phys(a) return bit.band(a,0x1fffffff) end
 local function rd32(a) return tonumber(ffi.cast("ax4_u32*",mem+phys(a))[0]) end
 local function wr8(a,v) mem[phys(a)]=v%256 end
@@ -81,7 +81,7 @@ startNext=function(i)
   log("AX4_DONE calls="..callRows.." failed="..failedCalls.." ram_restored="..tostring(unchanged))
   PCSX.quit((failedCalls==0 and unchanged and callRows==#cases) and 0 or 93); return
  end
- local t=cases[i]; currentCase=t; setterObservation=nil
+ local t=cases[i]; currentCase=t; setterObservation=nil; activeFrames=0
  -- Set manager state only; do not calculate or inject the setter's a1.
  wr8(managerBase+0xB2A,7); wr8(managerBase+0xB2B,0); wr32(managerBase+0xB44,t.b44)
  currentBeforeSha=ramSha(); currentCardBefore=cardSha(); currentStartClock=os.clock()
@@ -172,7 +172,21 @@ _G.ax4Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
     end)
     if not ok then fail("START_TESTS",e) end
    end
- elseif started then
+   if currentCase~=nil then
+    activeFrames=activeFrames+1
+    if activeFrames>360 then
+     local r=PCSX.getRegisters()
+     log("AX4_WATCHDOG_NO_RETURN label="..currentCase.label.." frames="..activeFrames..
+      " pc="..string.format("0x%08X",tonumber(r.pc))..
+      " ra="..string.format("0x%08X",tonumber(r.GPR.n.ra))..
+      " a0="..string.format("0x%08X",tonumber(r.GPR.n.a0))..
+      " a1="..string.format("0x%08X",tonumber(r.GPR.n.a1))..
+      " v0="..string.format("0x%08X",tonumber(r.GPR.n.v0))..
+      " setter_breakpoint_seen="..tostring(setterObservation~=nil))
+     PCSX.pauseEmulator(); PCSX.quit(95); return
+    end
+   end
+  elseif started then
   preloadTicks=preloadTicks+1
   if preloadTicks>600 then fail("SAVE_STATE_LOADED_EVENT_TIMEOUT","GPU vsync >600 without SaveStateLoaded"); return end
  end
@@ -246,6 +260,7 @@ def main():
          "memory_card_sha256_after_launch":card_after,"memory_card_unchanged":str(mcd_before==card_after).upper(),
          "h6_loaded":"YES" if "AX4_H6_LOADED=1" in log else "NO","calls":len(rows),
          "done":"YES" if "AX4_DONE calls=6 failed=0 ram_restored=true" in log else "NO",
+         "watchdog_triggered":"YES" if "AX4_WATCHDOG_NO_RETURN" in log else "NO",
          "h6_hybrid_sha256":H6_SHA,"log_path":str(stdout)})
     verified=[]
     for x in allrows:
@@ -283,7 +298,7 @@ def main():
      "MCD_SHA=launch-local Memory Card file SHA immediately before/after each call and at launch end",
      f"TIMEOUT_SECONDS_PER_LAUNCH={TIMEOUT_SECONDS}",f"HISTORICAL_MAX_WALL_SECONDS={HISTORICAL_MAX_WALL_SECONDS:.3f}",
      f"MAX_LAUNCH_WALL_SECONDS={maxwall:.3f}",f"TIMEOUT_GE_2X_LONGEST={timeout_ok}",
-     f"OBSERVED_CALLS={len(verified)}",f"ALL_CALLS_PASS={calls_ok}",f"ALL_LAUNCHES_PASS={launch_ok}",f"ALL_TESTS_PASS={complete}"]
+     f"OBSERVED_CALLS={len(verified)}",f"ALL_CALLS_PASS={calls_ok}",f"ALL_LAUNCHES_PASS={launch_ok}",f"ALL_TESTS_PASS={complete}","WATCHDOG=360 GPU VSync frames per slice; emits PC/RA/A0/A1/V0 if no setter return"]
     for x in launches:
         summary.append(f"ATTEMPT={x['attempt']} EXIT_DECIMAL={x['emulator_exit_code_decimal']} WALL={x['wall_seconds']} H6_LOADED={x['h6_loaded']} MCD_UNCHANGED={x['memory_card_unchanged']} CALLS={x['calls']} DONE={x['done']}")
     (out/"AX4_SUMMARY.txt").write_text("\n".join(summary)+"\n",encoding="utf-8")
