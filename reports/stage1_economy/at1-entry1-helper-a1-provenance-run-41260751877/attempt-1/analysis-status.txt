@@ -1,0 +1,6 @@
+STATUS=PASS
+TARGET=0x80105BCC
+TARGET_FUNCTION_FOUND=TRUE
+STATIC_IMPORT_BASE=0x800AD450
+RUNTIME_MAPPING=NOT_VALIDATED
+NOTE=Manually seeded Ghidra function boundary; raw return/tail jumps still require review.

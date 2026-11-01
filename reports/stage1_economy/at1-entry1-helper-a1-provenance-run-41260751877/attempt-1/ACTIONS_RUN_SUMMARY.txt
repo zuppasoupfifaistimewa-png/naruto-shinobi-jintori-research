@@ -1,0 +1,8 @@
+STATUS=PASS
+JOB=at1-entry1-helper-a1-provenance
+JOB_ID=124713335726
+RUN_ID=41260751877
+SOURCE_SHA=4aba615a8d5603afe81cd8a5671ee4b088409350
+EXIT_CODE=0
+TARGET=0x80105BCC
+METHOD=Ghidra static import of verified DATA.BIN Entry 1 only; no emulator.
