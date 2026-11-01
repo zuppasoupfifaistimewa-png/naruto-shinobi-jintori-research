@@ -66,8 +66,9 @@ def main():
                 for x in hits[:20]:
                     rows.append({"input":n,"kind":f"u{w*8}","value":v,"offset":f"0x{x:X}",
                                  "address":addr(n,x),"bytes":pat.hex(" "),"xref":"TIDAK TAHU"})
-    notes += ["","## Sequence 100/120/150/180/200 (LE u8/u16/u32)","",
-      "Pencarian exact contiguous. Tabel berpadded/strided perlu disimpulkan melalui instruksi pembaca."]
+    notes += ["","## Sequence pengali contiguous dan strided (LE u8/u16/u32)","",
+      "Exact contiguous sequence dan sequence dengan jarak antar-elemen umum diperiksa. Semua lokasi masih kandidat; xref pembaca harus ditautkan oleh disassembly."]
+    strides=(1,2,4,8,12,16)
     for n,b in files.items():
         for w in (1,2,4):
             pat=b"".join(v.to_bytes(w,"little") for v in MULT);hits=[];p=0
@@ -75,10 +76,27 @@ def main():
                 p=b.find(pat,p)
                 if p<0: break
                 hits.append(p);p+=1
-            notes.append(f"- {n} u{w*8}: {len(hits)} hits; "+("; ".join(f"0x{x:X}/{addr(n,x)}" for x in hits[:12]) or "TIDAK DITEMUKAN"))
+            notes.append(f"- CONTIGUOUS {n} u{w*8}: {len(hits)} hits; "+("; ".join(f"0x{x:X}/{addr(n,x)}" for x in hits[:12]) or "TIDAK DITEMUKAN"))
             for x in hits[:12]:
-                rows.append({"input":n,"kind":f"multiplier_sequence_u{w*8}","value":"100,120,150,180,200",
+                rows.append({"input":n,"kind":f"multiplier_sequence_contiguous_u{w*8}","value":"100,120,150,180,200",
                              "offset":f"0x{x:X}","address":addr(n,x),"bytes":pat.hex(" "),"xref":"TIDAK TAHU"})
+            for stride in strides:
+                if stride==w: continue
+                maxstart=len(b)-(len(MULT)-1)*stride-(w-1)
+                shits=[]
+                for start in range(0,max(0,maxstart)):
+                    ok=True
+                    for k,v in enumerate(MULT):
+                        pos=start+k*stride
+                        if b[pos:pos+w]!=v.to_bytes(w,"little"):
+                            ok=False;break
+                    if ok: shits.append(start)
+                notes.append(f"- STRIDED {n} u{w*8} stride={stride}: {len(shits)} hits; "+("; ".join(f"0x{x:X}/{addr(n,x)}" for x in shits[:12]) or "TIDAK DITEMUKAN"))
+                for x in shits[:12]:
+                    rows.append({"input":n,"kind":f"multiplier_sequence_strided_u{w*8}_stride_{stride}","value":"100,120,150,180,200",
+                                 "offset":f"0x{x:X}","address":addr(n,x),
+                                 "bytes":" | ".join(b[x+k*stride:x+k*stride+w].hex(" ") for k in range(5)),
+                                 "xref":"TIDAK TAHU"})
     notes += ["","## Dispatch table FUN_800B770C","",
       "DATA.BIN Entry 1 file offset 0x1A4 = VA kandidat 0x800AD5F4. Lima word berikut diverifikasi byte-per-byte sebagai pointer dispatch, bukan table berisi angka persentase.",
       "","| Selector | VA tabel | Offset | Byte LE | Target |","|---:|---:|---:|---|---|"]
