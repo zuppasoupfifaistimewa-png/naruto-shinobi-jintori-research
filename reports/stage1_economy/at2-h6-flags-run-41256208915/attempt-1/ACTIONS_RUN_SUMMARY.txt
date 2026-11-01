@@ -1,0 +1,7 @@
+STATUS=PRECHECK_FAILED
+JOB=at2-h6-flags-ab
+JOB_ID=124699799885
+RUN_ID=41256208915
+SOURCE_SHA=390e989e87840232ee30fb3bc5a2aaf831a3419a
+EXIT_CODE=22
+FAILURE=HTTP 401 while downloading the verified target checkpoint asset; emulator probe did not start.

@@ -1,0 +1,7 @@
+STATUS=PRECHECK_FAILED
+JOB=at3-an2-schedule-k0-k2
+JOB_ID=124700059718
+RUN_ID=41256295999
+SOURCE_SHA=cbbab4d4573234e72b05c797926bd1030294a3ce
+EXIT_CODE=22
+FAILURE=HTTP 401 while downloading the verified target checkpoint asset; emulator probe did not start.

@@ -1,2 +1,8 @@
-STATUS=TIDAK_TERSDIA
-reason=workflow did not create this output
+STATUS=SCRIPT_FAILED
+RUN_ID=41256334815
+JOB_ID=124700189639
+SOURCE_SHA=832ccdfe2cc15f0622be23fbfff33f8d104e0a6a
+EXIT_CODE=1
+FAILURE=read_schedule rejected schedule B before emulator launches.
+DETAIL=ValueError: unexpected input schedule B
+RUNTIME_EVIDENCE=NONE; emulator did not start; no hit count, RAM capture, or Memory Card comparison was produced.

@@ -1,6 +1,7 @@
-STATUS=TIDAK_TERSDIA
+STATUS=SCRIPT_FAILED
 JOB=at3-an2-schedule-k0-k2
 JOB_ID=124700189639
 RUN_ID=41256334815
 SOURCE_SHA=832ccdfe2cc15f0622be23fbfff33f8d104e0a6a
 EXIT_CODE=1
+FAILURE=AT3 read_schedule rejected AN2 schedule row B although this task requires A/C only; Python ValueError: unexpected input schedule B.
