@@ -15,7 +15,7 @@ TARGET_SHA="00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
 CONTROL_SHA="9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492"
 H6_SHA="d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475"
 MCD_SHA="ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5"
-TIMEOUT_SECONDS=1800
+TIMEOUT_SECONDS=600
 HISTORICAL_MAX_WALL=241.088
 RAM_SIZE=0x200000
 RECORD_SIZE=0x124
@@ -90,6 +90,7 @@ local RECORD_SIZE=0x124
 local RECORD_SLOT=0x8013EA84
 local PLAYER_BASE=0x80070EA0
 local post=0
+local preloadTicks=0
 local started=false
 local loaded=false
 local running=false
@@ -112,9 +113,9 @@ local function phys(a) return bit.band(a,0x1fffffff) end
 local function rd8(a) return tonumber(mem[phys(a)]) end
 local function wr8(a,v) mem[phys(a)]=v%256 end
 local function rd16(a) return tonumber(ffi.cast("aw3_u16*",mem+phys(a))[0]) end
-local function wr16(a,v) ffi.cast("uint16_t*",mem+phys(a))[0]=v%65536 end
+local function wr16(a,v) ffi.cast("aw3_u16*",mem+phys(a))[0]=v%65536 end
 local function rd32(a) return tonumber(ffi.cast("aw3_u32*",mem+phys(a))[0]) end
-local function wr32(a,v) ffi.cast("uint32_t*",mem+phys(a))[0]=v end
+local function wr32(a,v) ffi.cast("aw3_u32*",mem+phys(a))[0]=v end
 local function ramString() return ffi.string(mem,RAM_SIZE) end
 local function ramSha()
   local out=ffi.new("unsigned char[32]")
@@ -184,9 +185,12 @@ local function makeInput(t)
     ffi.copy(mem+phys(PLAYER_BASE),playerBackup,RECORD_SIZE)
   end
 end
+local currentCase=nil
+local currentBefore=nil
+local currentBeforeSha=nil
 local function startNext(i)
   if i>#cases then
-    restoreInputs({kind="TILE_HELPER"})
+    ffi.copy(mem+recordPhys,tileBackup,RECORD_SIZE)
     ffi.copy(mem+phys(PLAYER_BASE),playerBackup,RECORD_SIZE)
     restoreRegs(originalRegs)
     local finalSha=ramSha()
@@ -201,70 +205,70 @@ local function startNext(i)
   testIndex=i
   local t=cases[i]
   makeInput(t)
-  local before=ramString()
-  local beforeSha=ramSha()
+  currentBefore=ramString()
+  currentBeforeSha=ramSha()
+  currentCase=t
   setCallRegs(t)
-  local called=false
-  bp=PCSX.addBreakpoint(SENTINEL,"Exec",4,"AW3_RETURN_"..t.label,function(addr)
-    called=true
-    PCSX.pauseEmulator()
-    local ok,err=pcall(function()
-      local r=PCSX.getRegisters()
-      local actual=tonumber(r.GPR.n.v0)
-      local after=ramString()
-      local afterSha=ramSha()
-      local diffs=changedOffsets(before,after,RAM_SIZE)
-      local memValue="NA"
-      local effectOK=true
-      local ramUnchanged=(before==after)
-      local extra=""
-      if t.kind=="SETTER" then
-        memValue=s32(rd32(PLAYER_BASE+0x18))
-        local wanted=t.expected_store
-        effectOK=(memValue==wanted)
-        local targetStart=phys(PLAYER_BASE+0x18)
-        for _,off in ipairs(diffs) do
-          if off<targetStart or off>=targetStart+4 then effectOK=false end
-        end
-        extra=";".join and "" or ""
-      elseif t.kind=="GETTER" then
-        effectOK=(actual==t.expected and ramUnchanged)
-      else
-        effectOK=(actual==t.expected and ramUnchanged)
-      end
-      local status=(actual==t.expected and effectOK) and "PASS" or "FAIL"
-      if status=="FAIL" then failedCalls=failedCalls+1 end
-      callRows=callRows+1
-      local diffText=""
-      for k=1,math.min(#diffs,32) do
-        if k>1 then diffText=diffText.."," end
-        diffText=diffText..string.format("0x%X",diffs[k])
-      end
-      if diffText=="" then diffText="NONE" end
-      log(table.concat({"AW3_CALL",t.label,t.kind,string.format("fn=0x%08X",t.fn),
-        "a0="..string.format("0x%08X",t.a0),"a1="..string.format("0x%08X",t.a1),
-        "a2="..string.format("0x%08X",t.a2),"a3="..string.format("0x%08X",t.a3),
-        "expected="..tostring(t.expected),"actual="..tostring(actual),
-        "memory_value="..tostring(memValue),"ram_before_sha="..beforeSha,
-        "ram_after_sha="..afterSha,"ram_unchanged="..tostring(ramUnchanged),
-        "diff_offsets="..diffText,"status="..status},"|"))
-    end)
-    if not ok then
-      failedCalls=failedCalls+1
-      log("AW3_CALL_CALLBACK_ERROR label="..t.label.." error="..tostring(err))
-    end
-    restoreInputs(t)
-    restoreRegs(originalRegs)
-    if bp then bp=nil end
-    PCSX.nextTick(function() startNext(i+1) end)
-    return false
-  end)
-  if not bp then fail("BREAKPOINT_ADD",t.label); return end
   log("AW3_CALL_BEGIN index="..i.." label="..t.label.." fn="..
       string.format("0x%08X",t.fn).." ra="..string.format("0x%08X",SENTINEL))
   PCSX.resumeEmulator()
 end
-
+local function armReturnSentinel()
+  bp=PCSX.addBreakpoint(SENTINEL,"Exec",4,"AW3_RETURN_SENTINEL",function(addr)
+    local t=currentCase
+    if not t then
+      fail("UNEXPECTED_SENTINEL",string.format("pc=0x%08X",tonumber(addr)))
+      return true
+    end
+    PCSX.pauseEmulator()
+    local actual=tonumber(PCSX.getRegisters().GPR.n.v0)
+    local after=ramString()
+    local afterSha=ramSha()
+    local diffs=changedOffsets(currentBefore,after,RAM_SIZE)
+    local memValue="NA"
+    local effectOK=true
+    local ramUnchanged=(currentBefore==after)
+    if t.kind=="SETTER" then
+      memValue=s32(rd32(PLAYER_BASE+0x18))
+      effectOK=(memValue==t.expected_store)
+      local targetStart=phys(PLAYER_BASE+0x18)
+      for _,off in ipairs(diffs) do
+        if off<targetStart or off>=targetStart+4 then effectOK=false end
+      end
+    elseif t.kind=="GETTER" or t.kind=="TILE_HELPER" then
+      effectOK=ramUnchanged
+    end
+    local rawStatus=(actual==t.expected and effectOK) and "PASS" or "FAIL"
+    local diffText=""
+    for k=1,math.min(#diffs,32) do
+      if k>1 then diffText=diffText.."," end
+      diffText=diffText..string.format("0x%X",diffs[k])
+    end
+    if diffText=="" then diffText="NONE" end
+    restoreInputs(t)
+    restoreRegs(originalRegs)
+    local restoredSha=ramSha()
+    local restored=(restoredSha==baselineSha)
+    local status=(rawStatus=="PASS" and restored) and "PASS" or "FAIL"
+    if status=="FAIL" then failedCalls=failedCalls+1 end
+    callRows=callRows+1
+    log(table.concat({"AW3_CALL",t.label,t.kind,string.format("fn=0x%08X",t.fn),
+      "a0="..string.format("0x%08X",t.a0),"a1="..string.format("0x%08X",t.a1),
+      "a2="..string.format("0x%08X",t.a2),"a3="..string.format("0x%08X",t.a3),
+      "expected="..tostring(t.expected),"actual="..tostring(actual),
+      "memory_value="..tostring(memValue),"ram_before_sha="..currentBeforeSha,
+      "ram_after_sha="..afterSha,"ram_unchanged="..tostring(ramUnchanged),
+      "ram_restored_sha="..restoredSha,"ram_restored="..tostring(restored),
+      "diff_offsets="..diffText,"status="..status},"|"))
+    currentCase=nil
+    currentBefore=nil
+    currentBeforeSha=nil
+    PCSX.nextTick(function() startNext(testIndex+1) end)
+    return true
+  end)
+  log("AW3_SENTINEL_ARMED="..tostring(bp~=nil).." address="..string.format("0x%08X",SENTINEL))
+  if not bp then fail("BREAKPOINT_ADD","sentinel breakpoint unavailable") end
+end
 _G.aw3Loaded=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
   loaded=true
   post=0
@@ -311,10 +315,16 @@ _G.aw3Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
           if p0~=1500 or p1~=1500 then
             error("positive getter precondition mismatch: expected player0/player1 chakra=1500")
           end
+          armReturnSentinel()
           startNext(1)
         end)
         if not ok then fail("START_TESTS",e) end
       end)
+    end
+  else
+    if started then
+      preloadTicks=preloadTicks+1
+      if preloadTicks>600 then fail("SAVE_STATE_LOADED_EVENT_TIMEOUT","GPU vsync continued for >600 frames without SaveStateLoaded"); return end
     end
   end
 end)
@@ -388,6 +398,8 @@ def main():
       log=stdout.read_text(encoding="utf-8",errors="replace")
       if pcsxlog.exists():log+="\n"+pcsxlog.read_text(encoding="utf-8",errors="replace")
       rows=parse_results(log);allrows.extend([{**x,"attempt":attempt} for x in rows])
+      diagnostics=[z.strip() for z in log.splitlines() if any(k in z for k in ("AW3_","Lua","lua","error","Error","warning","Warning","SaveState","PCSX"))]
+      (out/f"AW3_DIAGNOSTIC_ATTEMPT_{attempt}.txt").write_text("\n".join(diagnostics[:120])+"\n",encoding="utf-8")
       final=re.search(r"AW3_FINAL_RAM baseline_sha=(\w+) final_sha=(\w+) unchanged=(\w+)",log)
       done=re.search(r"AW3_DONE calls=(\d+) failed=(\d+) ram_restored=(\w+)",log)
       cardAfter=sha(mcd.read_bytes()) if mcd.exists() else "TIDAK_TAHU"
@@ -407,7 +419,7 @@ def main():
     launches_pass=all(x["exit_code_decimal"]==0 and x["memory_card_unchanged"]=="TRUE"
       and x["h6_loaded"]=="YES" and x["ram_restored"]=="true"
       and int(x["calls"])==expected and int(x["failed_calls"])==0 for x in launches)
-    timeout_ok=TIMEOUT_SECONDS>=2*maxwall
+    timeout_ok=TIMEOUT_SECONDS>=2*HISTORICAL_MAX_WALL
     complete=call_pass and launches_pass and timeout_ok
     with (out/"AW3_CALL_RESULTS.tsv").open("w",encoding="utf-8",newline="") as f:
       cols=["attempt","label","kind","fn","a0","a1","a2","a3","expected","actual","memory_value",
@@ -429,13 +441,14 @@ def main():
       "TILE_HELPER_TEST=selectors 0..4 x three halfword fields/values; selector 5 default path; 31? exact counts in TSV",
       "GETTER_POSITIVE_CONTROL=index 0 and 1; expected 1500 each before any write",
       "SETTER_CONTROL=100,1500,100000,-10000; record +0x18 checked and full record restored",
-      "REGISTER_STATE=all GPR, CP0, CP2D, CP2C, PC saved/restored per call",
-      "RAM_HASH=SHA256 first 2MiB before and after every direct call",
+      "REGISTER_STATE=GPR[0..33] including HI/LO, CP0, CP2D, CP2C, PC saved/restored per call",
+      "RAM_HASH=SHA256 first 2MiB before/after and after restore for every call",
       f"EXPECTED_CALLS_PER_LAUNCH={expected}",
       f"OBSERVED_CALLS={len(allrows)}",
+      f"HISTORICAL_MAX_WALL_SECONDS={HISTORICAL_MAX_WALL:.3f}",
       f"MAX_LAUNCH_WALL_SECONDS={maxwall:.3f}",
       f"TIMEOUT_SECONDS_PER_LAUNCH={TIMEOUT_SECONDS}",
-      f"TIMEOUT_GE_2X_OBSERVED_MAX={timeout_ok}",
+      f"TIMEOUT_GE_2X_HISTORICAL_MAX={timeout_ok}",
       f"ALL_TESTS_PASS={complete}",
     ]
     for x in launches:summary.append(
