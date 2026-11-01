@@ -94,22 +94,59 @@ def read_snapshot(state_path, attempt, frame, fields, tiles, aggregates, table_r
             fields_row["manager_%03X_hex" % off] = "TIDAK TAHU"
     fields.append(fields_row)
 
-    table_anchor = 0x800577A4
-    raw_anchor = ram[table_anchor - RAM_BASE: table_anchor - RAM_BASE + 0x20]
-    anchor_words = [int.from_bytes(raw_anchor[i:i+4], "little") for i in range(0, len(raw_anchor), 4)]
-    row = {
+    mode = read_u32(ram, 0x80070734)
+    state = read_u32(ram, 0x8007073C)
+    matrix_base = 0x80058758
+    table_base = 0x80057798
+    row_stride = 0x54
+    matrix_stride_mode = 0x84
+    matrix_stride_state = 0x0C
+    table_row = {
         "attempt": attempt, "frame": frame,
-        "table_candidate_address_0x800577A4": fmt32(table_anchor),
-        "table_candidate_bytes_0x20": raw_anchor.hex(" "),
-        "table_candidate_words_le32": ",".join(fmt32(x) for x in anchor_words),
+        "mode_0x80070734_u32": mode,
+        "state_0x8007073C_u32": state,
+        "matrix_base": fmt32(matrix_base),
+        "matrix_stride_mode": fmt32(matrix_stride_mode),
+        "matrix_stride_state": fmt32(matrix_stride_state),
+        "matrix_index_address": "TIDAK TAHU",
+        "matrix_index_byte": "TIDAK TAHU",
         "selected_table_index": "TIDAK TAHU",
-        "selected_row_address": "TIDAK TAHU",
+        "selected_row_base": "TIDAK TAHU",
+        "selected_B30_address": "TIDAK TAHU",
+        "selected_B30_u32": "TIDAK TAHU",
+        "selected_B30_hex": "TIDAK TAHU",
+        "selected_row_gate_plus_2E": "TIDAK TAHU",
         "selected_B30_source_expression": "TIDAK TAHU",
         "manager_B30_u32": fields_row.get("manager_B30_u32", "TIDAK TAHU"),
         "matches_manager_B30": "TIDAK TAHU",
-        "selection_status": "STATIC_CALLER_OR_TABLE_INDEX_NOT_PROVEN",
+        "selection_status": "MODE_OR_STATE_OUT_OF_RANGE",
     }
-    table_rows.append(row)
+    if mode < 256 and state < 11:
+        index_address = matrix_base + mode * matrix_stride_mode + state * matrix_stride_state
+        index = read_u8(ram, index_address)
+        selected_row_base = table_base + index * row_stride
+        selected_b30_address = selected_row_base + 0x0C
+        selected_b30 = read_u32(ram, selected_b30_address)
+        gate = read_u8(ram, selected_row_base + 0x2E)
+        table_row.update({
+            "matrix_index_address": fmt32(index_address),
+            "matrix_index_byte": "0x%02X" % index,
+            "selected_table_index": str(index),
+            "selected_row_base": fmt32(selected_row_base),
+            "selected_B30_address": fmt32(selected_b30_address),
+            "selected_B30_u32": str(selected_b30),
+            "selected_B30_hex": fmt32(selected_b30),
+            "selected_row_gate_plus_2E": str(gate),
+            "selected_B30_source_expression": (
+                "FUN_80012EAC: idx=u8[0x80058758+mode*0x84+state*0x0C]; "
+                "B30=u32[0x80057798+idx*0x54+0x0C]"
+            ),
+            "matches_manager_B30": (
+                "YES" if fields_row.get("manager_B30_u32") == str(selected_b30) else "NO"
+            ) if fields_row.get("manager_B30_u32") != "TIDAK TAHU" else "TIDAK TAHU",
+            "selection_status": "PASS_STATIC_XREF_AND_RUNTIME_INDEX",
+        })
+    table_rows.append(table_row)
 
     pointer = read_u32(ram, RECORD_ARRAY_SLOT)
     count = read_u32(ram, RECORD_COUNT_SLOT)
@@ -388,9 +425,11 @@ def main():
     aggregate_cols = ["attempt","frame","aggregate_owner","status_scope","record_count_with_known_V","unknown_V_count",
                      "sum_V","floor_sum_V_div_2","manager_B38","matches_B38","manager_B2B_active_index",
                      "tile_array_pointer_slot","tile_array_pointer","tile_count_slot","tile_count","record_stride","validation"]
-    table_cols = ["attempt","frame","table_candidate_address_0x800577A4","table_candidate_bytes_0x20",
-                  "table_candidate_words_le32","selected_table_index","selected_row_address",
-                  "selected_B30_source_expression","manager_B30_u32","matches_manager_B30","selection_status"]
+    table_cols = ["attempt","frame","mode_0x80070734_u32","state_0x8007073C_u32","matrix_base",
+                  "matrix_stride_mode","matrix_stride_state","matrix_index_address","matrix_index_byte",
+                  "selected_table_index","selected_row_base","selected_B30_address","selected_B30_u32",
+                  "selected_B30_hex","selected_row_gate_plus_2E","selected_B30_source_expression",
+                  "manager_B30_u32","matches_manager_B30","selection_status"]
     launch_cols = list(launches[0].keys())
     write_tsv("AZ1_MANAGER_FIELDS.tsv", manager_rows, field_cols)
     write_tsv("AZ1_TILE_RECORDS.tsv", tile_rows, tile_cols)
@@ -421,7 +460,7 @@ def main():
         "FRAMES=180,360; LAUNCHES=2 independent restores",
         "MANAGER=read [0x8013A554], then +0xB2A,+0xB30,+0xB38,+0xB40,+0xB44; plus [0x80070C88]",
         "TILES=pointer [0x8013EA84], count [0x8013EAC8], stride 0x124, status +0x00, selector +0x0B, owner=(hw@+0x20)>>12, V recomputed from FUN_800B770C",
-        "B30_TABLE=read-only raw probe at 0x800577A4 (first 0x20 bytes); selected table index/row remains TIDAK TAHU until caller/index expression is statically established",
+        "B30_TABLE=runtime mode [0x80070734] and state [0x8007073C]; static-confirmed index byte [0x80058758+mode*0x84+state*0x0C]; selected row 0x80057798+index*0x54; B30=u32(row+0x0C) (same as 0x800577A4+index*0x54)",
         "B38_COMPARISON=per-record owner and status 5; floor(sum(V)/2) is exported per owner and all-record aggregate; no semantic inference from zero totals",
         "RAM_COVERAGE=first 2 MiB from 0x80000000, SHA-256 per launch and frame",
         "HISTORICAL_SLOWEST_WALL_S=%.3f" % HISTORICAL_SLOWEST_LAUNCH_S,

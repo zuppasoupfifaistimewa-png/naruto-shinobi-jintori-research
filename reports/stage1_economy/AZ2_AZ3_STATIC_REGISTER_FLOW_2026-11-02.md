@@ -1,71 +1,75 @@
 # AZ2–AZ3 — audit statis manager dan setter biaya
 Tanggal: 2 November 2026
 Target: SLPS-03553 / DATA.BIN Entry 1
-Bukti: disassembly dan byte instruction statis; maksimum K4. Bukan hasil gameplay.
-Batas input: Entry 1 596,412 byte, file offset 0x10BB000, SHA-256 9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a. Import base 0x800AD450 adalah kandidat statis, bukan pemetaan runtime tervalidasi.
+Bukti instruksi MIPS / p-code statis. Maksimum K4; bukan hasil gameplay.
+Input Entry 1: 596,412 byte; file offset 0x10BB000; SHA-256 9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a. Base 0x800AD450 adalah kandidat impor statis, bukan pemetaan runtime tervalidasi.
 
 ## AZ2 — pembaca manager +0xB38 / +0xB40 / +0xB44
 
-### Pembaca yang tampak pada function body yang diekspor
+Ekspor fungsi AQ1 menyediakan badan instruksi mentah lengkap untuk tiga fungsi yang memuat pembaca field ini: FUN_80109994, FUN_80109F1C, FUN_80109FEC. Pemeriksaan ulang byte dan disassembly menemukan **17 instruksi load langsung** dalam ruang lingkup tiga badan fungsi tersebut: +0xB38 ada 5 reader, +0xB40 ada 4 reader, +0xB44 ada 8 reader. PC, fungsi, instruksi, byte mentah, dan tepat 12 instruksi sebelumnya (atau jumlah yang tersedia bila fungsi dimulai) ada dalam:
+`reports/stage1_economy/AZ2_MANAGER_READERS_2026-11-02.tsv`.
 
-| Field | PC | Fungsi | Instruksi | Makna alur yang langsung terlihat |
-|---|---:|---|---|---|
-| +0xB38 | 0x80109A88 | FUN_80109994 | lw v1,0xB38(a0) | dipasangkan dengan B30; hasil penjumlahan ditulis ke B40 pada 0x80109A94 |
-| +0xB38 | 0x8010A0E0 | FUN_80109FEC | lw v1,0xB38(v0) | disalin ke progress B3C pada 0x8010A0E8 |
-| +0xB38 | 0x8010A4D8 | FUN_80109FEC | lw v1,0xB38(v1) | target pembanding progress B3C pada state 5 |
-| +0xB38 | 0x8010A4F8 | FUN_80109FEC | lw v1,0xB38(v0) | nilai target disalin ke B3C saat terminal state 5 |
-| +0xB40 | 0x8010A0EC | FUN_80109FEC | lw v1,0xB40(v0) | disalin ke B44 saat input flag 0x20 dan manager state 3–6 |
-| +0xB40 | 0x8010A5A0 | FUN_80109FEC | lw v1,0xB40(v1) | target pembanding progress B44 pada state 6 |
-| +0xB40 | 0x8010A5C0 | FUN_80109FEC | lw v1,0xB40(v0) | nilai target disalin ke B44 ketika state 6 mencapai terminal |
-| +0xB44 | 0x80109F64 | FUN_80109F1C | lw a2,0xB44(v1) | B44 diteruskan sebagai a2 ke 0x8001B364 bersama pointer buffer; label teksnya TIDAK TAHU |
-| +0xB44 | 0x8010A154 | FUN_80109FEC | lw a1,0xB44(v1) | addend untuk setter pada 0x8010A15C: a1=Q(i)+B44 |
-| +0xB44 | 0x8010A524 | FUN_80109FEC | lw v0,0xB44(v1) | dibandingkan dengan B40 dalam state 6 |
-| +0xB44 | 0x8010A590 | FUN_80109FEC | lw v0,0xB44(v1) | progress lama sebelum +0x14 |
-| +0xB44 | 0x8010A5EC | FUN_80109FEC | lw v0,0xB44(v0) | input untuk clamp 0x15 |
-| +0xB44 | 0x8010A610 | FUN_80109FEC | lw s1,0xB44(v0) | dipakai hanya pada cabang B44<21; cabang lain menetapkan s1=0x14 |
-| +0xB44 | 0x8010A648 | FUN_80109FEC | lw v0,0xB44(v1) | nilai sebelum dikurangi s1 pada jalur setter |
-| +0xB44 | 0x8010A6A8 | FUN_80109FEC | lw v0,0xB44(v1) | tes terminal B44!=0 sebelum state berubah ke 8 |
+Ringkasan semua reader:
 
-Census AW1 yang tersedia menghitung 14 akses displacement +0xB44 dalam tiga fungsi: FUN_80109994 (store/init pada delay slot), FUN_80109F1C (satu reader), FUN_80109FEC (reader dan writer). Daftar akses lengkap yang diekspor ada di aq1-run-41319511985/attempt-1/aw1-manager-b44-accesses.tsv. Untuk +0xB38 dan +0xB40, tabel di atas merangkum semua load yang tampak pada tiga function body terpilih, tetapi **census whole-module bagi dua displacement itu belum tersedia: TIDAK TAHU apakah ada reader lain di luar ekspor ini**. Nol temuan di luar ekspor tidak dipakai sebagai kesimpulan.
+| Field | PC | Fungsi | Instruksi | Pemakaian yang terlihat dari instruksi berikutnya |
+|---|---|---|---|---|
+| +0xB38 | 0x80109A88 | FUN_80109994 | lw v1,0xB38(a0) | ditambah B30 pada A90; hasil masuk B40 melalui A94 |
+| +0xB44 | 0x80109F64 | FUN_80109F1C | lw a2,0xB44(v1) | diteruskan sebagai a2 ke formatter 0x8001B364; label UI TIDAK TAHU |
+| +0xB38 | 0x8010A0E0 | FUN_80109FEC | lw v1,0xB38(v0) | disalin ke progress B3C pada A0E8 |
+| +0xB40 | 0x8010A0EC | FUN_80109FEC | lw v1,0xB40(v0) | disalin ke B44 pada A0F4 |
+| +0xB44 | 0x8010A154 | FUN_80109FEC | lw a1,0xB44(v1) | delay slot setter A15C membentuk a1=Q(i)+B44 |
+| +0xB38 | 0x8010A460 | FUN_80109FEC | lw v1,0xB38(v1) | membandingkan progress B3C dengan target B38 |
+| +0xB38 | 0x8010A4D8 | FUN_80109FEC | lw v1,0xB38(v1) | membandingkan B3C setelah kenaikan 0x14 terhadap B38 |
+| +0xB38 | 0x8010A4F8 | FUN_80109FEC | lw v1,0xB38(v0) | menyalin B38 ke B3C pada terminal state 5 |
+| +0xB44 | 0x8010A524 | FUN_80109FEC | lw v0,0xB44(v1) | dipasangkan dengan B40 untuk tes B44<B40 |
+| +0xB40 | 0x8010A528 | FUN_80109FEC | lw v1,0xB40(v1) | target pembanding B44 pada state 6 |
+| +0xB44 | 0x8010A590 | FUN_80109FEC | lw v0,0xB44(v1) | progress B44 sebelum kenaikan 0x14 |
+| +0xB40 | 0x8010A5A0 | FUN_80109FEC | lw v1,0xB40(v1) | target pembanding progress B44 |
+| +0xB40 | 0x8010A5C0 | FUN_80109FEC | lw v1,0xB40(v0) | disalin ke B44 pada A5C8; state menjadi 7 |
+| +0xB44 | 0x8010A5EC | FUN_80109FEC | lw v0,0xB44(v0) | tes B44<21 untuk memilih ukuran langkah |
+| +0xB44 | 0x8010A610 | FUN_80109FEC | lw s1,0xB44(v0) | jika B44<21, s1=B44; jika tidak, delay slot A604 memberi s1=20 |
+| +0xB44 | 0x8010A648 | FUN_80109FEC | lw v0,0xB44(v1) | nilai lama sebelum subu di A650; nilai baru ditulis di delay slot A658 |
+| +0xB44 | 0x8010A6A8 | FUN_80109FEC | lw v0,0xB44(v1) | tes terminal B44!=0; jika nol state menjadi 8 |
 
-### Semua jalur setter yang berhubungan langsung dengan getter dalam FUN_80109FEC
+**Cakupan penting:** tabel ini adalah seluruh pembaca langsung yang teramati pada tiga badan fungsi lengkap yang dipilih/export oleh AQ1, bukan census seluruh module / semua indirect alias. Di luar tiga badan ini, reader lain bagi B38/B40/B44 = **TIDAK TAHU**. Tidak ada kesimpulan dari nol hit yang tidak diuji. File AW1 yang ada mencatat 14 akses displacement +0xB44 dalam tiga fungsi (termasuk store/init); jumlah itu konsisten dengan delapan reader B44 di atas ditambah store/other.
 
-| Setter PC | 12 instruksi sebelum JAL (ringkas) | Delay slot / ekspresi final a1 | Status |
-|---|---|---|---|
-| 0x8010A15C | A130 lbu state B2A; A134 li 7; A138 bne; A140 lbu index i; A144 jal getter; A14C load manager; A154 lw B44; A158 lbu i | A160 addu a1,v0,a1 → **a1=Q(i)+B44** | K4 |
-| 0x8010A1B0 | A180 load manager; A188 lbu i; A18C jal 0x800171A4; A194 move s0,v0; A198 load manager; A1A0 lbu i; A1A4 jal getter; A1AC move a0,s0 | A1B4 move a1,v0 → **a1=Q(i)** | K4 |
-| 0x8010A638 | A608/A610 branch computes s1; A618 load manager; A620 lbu i; A624 jal getter; A62C load manager; A634 lbu i | A63C addu a1,v0,s1 → **a1=Q(i)+min(B44,0x14)**; jump-delay A604 li s1,0x14 is active when B44>=21 | K4 |
-| 0x8010A97C | A94C load manager; A954 lbu i; A958 jal 0x800171A4; A960 move s0,v0; A964 load manager; A96C lbu i; A970 jal getter; A978 move a0,s0 | A980 move a1,v0 → **a1=Q(i)** | K4 |
+### Ekspresi a1 saat setter 0x8001387C dipanggil dari FUN_80109FEC
 
-Q(i) means getter 0x800138EC using index i=ZEXT8[manager+0xB2B], returning participant record +0x18. Setter 0x8001387C writes that field. The call-site values above are additions or direct copies, not getter-minus-cost.
+| Setter PC | Instruksi pembentuk argumen akhir | Ekspresi a1 |
+|---|---|---|
+| 0x8010A15C | A160 addu a1,v0,a1 | Q(i)+B44 |
+| 0x8010A1B0 | A1B4 move a1,v0 | Q(i) |
+| 0x8010A638 | A63C addu a1,v0,s1 | Q(i)+min(B44,0x14) |
+| 0x8010A97C | A980 move a1,v0 | Q(i) |
 
-### Pemicu transfer/kredit menurut instruksi
+Q(i) adalah getter 0x800138EC untuk indeks i=ZEXT8[manager+0xB2B]; getter/setter mengakses participant +0x18. Empat site ini adalah salinan/penambahan, bukan pengurangan harga.
 
-FUN_80109FEC first tests caller flag: lw v0,0xC(s2); andi v0,v0,0x20 at 0x8010A078–0x8010A080. If the bit is clear, control branches to 0x8010A204 and skips the staged manager logic. If set, it reads manager state +0xB2A. States 3–6 stage B30/B38/B40 into B34/B3C/B44. The state-7 path reads Q(i), passes Q(i)+B44 to setter at 0x8010A15C (and has a further direct-Q(i) setter path at 0x8010A1B0), then clears B44 at 0x8010A1C4. The separate switch-state-7 processing path at 0x8010A638 transfers Q(i)+min(B44,0x14) and subtracts the same amount from B44.
+### Pemicu transfer menurut instruksi, bukan label gameplay
 
-**Kesimpulan mekanis K4:** jalur pengiriman nilai ke participant +0x18 memerlukan bit 0x20 pada caller flag dan state manager 7; state 6 lebih dulu menyiapkan B44 hingga target B40.  
-**Identitas peristiwa gameplay: TIDAK TAHU.** Instruksi yang diekspor tidak menyebut “akhir putaran”, “settlement”, atau “Barrier release”, tidak mengungkap producer yang memberi makna pada bit 0x20, dan tidak memberi label teks B44. Maka saya tidak memilih salah satu dari tiga nama peristiwa tersebut.
+FUN_80109FEC membaca flag caller di param_1+0xC dan menguji bit 0x20 pada PC A078–A080. Jika bit tersebut tidak ada, cabang menuju A204 melewati pemrosesan manager. Jika ada, state byte manager +0xB2A mengatur fase. State 3–6 memindahkan target B30/B38/B40 melalui progress B34/B3C/B44. State 6 menaikkan B44 sebesar 0x14 hingga target B40; pada terminal state 6, B40 disalin ke B44 dan state menjadi 7. Jalur state 7 memanggil getter/setter agar nilai Q(i)+B44 atau Q(i)+min(B44,20) ditulis ke participant +0x18; B44 kemudian dikuras dengan mengurangi langkah yang sama.
 
-## AZ3 — setter dengan pola getter dikurangi nilai (calon biaya bangun/upgrade)
+**Kesimpulan mekanis K4:** kondisi kode untuk jalur transfer ke participant +0x18 adalah caller flag bit 0x20 dan state manager 7, setelah progress state 6 mengisi B44 menuju B40.
+**Nama pemicu gameplay = TIDAK TAHU.** Kode yang diekspor tidak memberi bukti bahwa event tersebut adalah akhir putaran, settlement, atau Barrier release. Producer bit 0x20 dan asal semantik B30/B38 juga belum terbukti. Maka tidak ada satu dari tiga nama event itu yang dipilih.
 
-Semua 14 direct JAL setter yang diekspor dalam AX2:
+## AZ3 — kandidat biaya bangun/upgrade sebagai getter dikurangi nilai
+
+Seluruh 14 direct JAL yang diekspor pada AX2 menuju setter 0x8001387C sudah direkonsiliasi di:
+`reports/stage1_economy/AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv`.
+Callsite:
 0x800B41B0, 0x800B4254, 0x800B4F00, 0x800B4F64, 0x800B6238, 0x800BEC98, 0x800DEB38, 0x800E1BE0, 0x800EC9A4, 0x800F95E8, 0x8010A15C, 0x8010A1B0, 0x8010A638, 0x8010A97C.
 
-- Sepuluh callsite awal memuat nilai a1 dari participant/field record atau slot indeks; ekspresinya bukan hasil getter dikurangi nilai.
-- Empat callsite FUN_80109FEC di atas menghasilkan Q(i)+B44, Q(i), Q(i)+min(B44,0x14), Q(i).
-- Tidak ada ekspresi a1 = Q(i)-nilai yang dibuktikan di 14 direct callsite tersebut.
-- Direct call census bukan bukti bahwa indirect JALR tidak ada; indirect JALR dan setter calls di luar cakupan ekspor: **TIDAK TAHU**.
+Sepuluh caller awal memuat nilai dari participant / field record atau indeks; empat di FUN_80109FEC menghasilkan Q+B44, Q, Q+min(B44,20), Q. Tidak ada dari 14 direct JAL tersebut yang membentuk a1=Q(i)-nilai. Pengurangan B44-s1 pada A650 adalah pengurasan progress, bukan argumen debit harga kepada setter.
 
-**Hasil AZ3:** kandidat harga Barrier bangun/upgrade melalui pola getter-minus-nilai tidak ditemukan di 14 direct caller yang diekspor; rumus biaya aktual = **TIDAK TAHU**. Jangan menafsirkan pengurangan internal B44 sebagai biaya: instruksi 0x8010A650 menghitung B44-s1 untuk menguras progress transfer, bukan menyusun a1 setter sebagai Q(i)-cost.
+**Hasil AZ3: TIDAK TAHU.** Tidak ada getter-minus-cost yang ditemukan pada 14 direct JAL yang diekspor; ini bukan bukti bahwa pola tersebut tidak ada di seluruh game. Indirect JALR dan pemanggil setter di luar ekspor AX2 belum ditelusuri tuntas. Tabel sumber/indeks untuk harga build atau upgrade belum terbukti.
 
 ## Hipotesis dan falsifier
 
 ### AZ2
-- H1: bit caller 0x20 + state 7 mengawali settlement/transfer bertahap B44 ke participant +0x18. Falsifier: xref producer untuk bit 0x20 membuktikan flag itu adalah aksi lain yang tidak terkait settlement atau state 7 runtime tidak mengubah participant field.
-- H2: state 7 adalah penyelesaian Barrier-release dan B44 merupakan jumlah yang dirilis. Falsifier: producer B30/B38/B40 dan flag 0x20 terbukti terkait event non-Barrier atau jalur state 7 dapat berjalan tanpa event release.
+- H1: bit caller 0x20 bersama state 7 mengendalikan transfer nilai B44 ke participant +0x18. Falsifier: xref producer bit 0x20 menunjukkan flag itu tidak terkait dengan jalur transfer atau penelusuran register menunjukkan nilai setter tidak mengubah participant +0x18.
+- H2: state 7 adalah penyelesaian Barrier-release dan B44 adalah nilai yang dirilis. Falsifier: producer B30/B38 atau asal flag 0x20 terbukti terkait aksi lain, atau runtime original-code pada event Barrier release tidak mengikuti state 6→7.
 
 ### AZ3
-- H1: harga build/upgrade dihitung sebagai Q(i)-cost lalu masuk ke setter 0x8001387C. Falsifier: seluruh setter callsites langsung (termasuk di luar Entry 1) menunjukkan tidak ada ekspresi pengurangan dari getter dan saldo tidak didebit lewat setter ini.
-- H2: harga berasal dari tabel/field lain atau didebit melalui setter/indirect call yang belum diekspor. Falsifier: census seluruh direct+indirect callers menunjukkan semua perubahan saldo pembelian berasal dari jalur getter-minus-konstanta yang sama dan tidak ada sumber tabel/field lain.
+- H1: harga build/upgrade dikalkulasi sebagai Q(i)-cost dan ditulis lewat setter 0x8001387C. Falsifier: caller + indirect call census lengkap menunjukkan pembelian tidak pernah menurunkan saldo melalui setter tersebut.
+- H2: harga berasal dari tabel/field lain atau jalur debit terpisah. Falsifier: bukti producer/consumer original-code mengikat seluruh pembelian ke pola Q(i)-cost dan meniadakan sumber alternatif.
 
-Confidence: alur register dan kondisi branch K4 statis; identitas gameplay dan unit field B30/B38/B40/B44 belum terverifikasi. Nol hit tidak dijadikan kesimpulan.
+Confidence register/control-flow statis K4. Identitas event, unit B30/B38/B40/B44, cost build/upgrade, dan cakupan indirect reader/caller di luar ekspor: TIDAK TAHU. Nol hit tidak dipakai sebagai kesimpulan.
