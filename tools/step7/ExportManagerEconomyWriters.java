@@ -44,8 +44,15 @@ public class ExportManagerEconomyWriters extends GhidraScript {
 
     private Sym eval(Varnode v, Set<String> seen, int depth) {
         if(v==null) return Sym.u("NULL");
+        if(depth>64) return Sym.u("DEPTH_LIMIT("+v+")");
+        // Ghidra's RAM-address varnodes are not always reported as constants.
+        if(v.isAddress()) {
+            long address=v.getAddress().getOffset();
+            return Sym.c(address);
+        }
         if(v.isConstant()) return Sym.c(signedConstant(v));
-        if(depth>12) return Sym.u("DEPTH_LIMIT("+v+")");
+        // Each child evaluation gets a sibling-safe copy of this path set.
+        seen=new HashSet<String>(seen);
         String key=v.toString()+"@"+(v.getDef()==null?"INPUT":v.getDef().getSeqnum().toString());
         if(!seen.add(key)) return Sym.u("CYCLE("+v+")");
         PcodeOp op=v.getDef();
@@ -65,6 +72,34 @@ public class ExportManagerEconomyWriters extends GhidraScript {
             if(code==PcodeOp.COPY || code==PcodeOp.CAST || code==PcodeOp.INT_ZEXT ||
                code==PcodeOp.INT_SEXT || code==PcodeOp.SUBPIECE) {
                 return eval(op.getInput(0),seen,depth+1);
+            }
+            if(code==PcodeOp.MULTIEQUAL && op.getNumInputs()>0) {
+                Sym first=eval(op.getInput(0),seen,depth+1);
+                for(int i=1;i<op.getNumInputs();i++) {
+                    Sym next=eval(op.getInput(i),seen,depth+1);
+                    boolean same=(first.constant!=null && next.constant!=null && first.constant.equals(next.constant)) ||
+                                 (first.managerOffset!=null && next.managerOffset!=null && first.managerOffset.equals(next.managerOffset)) ||
+                                 (first.constant==null && next.constant==null && first.managerOffset==null && next.managerOffset==null && first.expr.equals(next.expr));
+                    if(!same) return Sym.u("PHI("+first.expr+" | "+next.expr+")");
+                }
+                return first;
+            }
+            if(code==PcodeOp.PTRADD && op.getNumInputs()>=2) {
+                Sym a=eval(op.getInput(0),seen,depth+1), b=eval(op.getInput(1),seen,depth+1);
+                long scale=1;
+                if(op.getNumInputs()>2) {
+                    Sym z=eval(op.getInput(2),seen,depth+1);
+                    if(z.constant!=null) scale=z.constant;
+                }
+                if(a.managerOffset!=null && b.constant!=null) return Sym.m(a.managerOffset+b.constant*scale);
+                if(a.constant!=null && b.constant!=null) return Sym.c(a.constant+b.constant*scale);
+                return Sym.u("PTRADD("+a.expr+","+b.expr+",scale="+scale+")");
+            }
+            if(code==PcodeOp.PTRSUB && op.getNumInputs()>=2) {
+                Sym a=eval(op.getInput(0),seen,depth+1), b=eval(op.getInput(1),seen,depth+1);
+                if(a.managerOffset!=null && b.constant!=null) return Sym.m(a.managerOffset-b.constant);
+                if(a.constant!=null && b.constant!=null) return Sym.c(a.constant-b.constant);
+                return Sym.u("PTRSUB("+a.expr+","+b.expr+")");
             }
             if(code==PcodeOp.INT_ADD) {
                 Sym a=eval(op.getInput(0),seen,depth+1), b=eval(op.getInput(1),seen,depth+1);
@@ -128,7 +163,7 @@ public class ExportManagerEconomyWriters extends GhidraScript {
         StringBuilder s=new StringBuilder();
         for(Instruction i:a) {
             if(s.length()>0)s.append(" || ");
-            s.append(addrExpr(i.getAddress())).append(" ").append(i.toString()).append(" [").append(bytes(i.getAddress(),4)).append("]");
+            s.append(addrExpr(i.getAddress())).append(" ").append(i.toString());
         }
         if(a.size()!=count) s.insert(0,"PRECOUNT="+a.size()+"; ");
         return s.toString();
@@ -231,7 +266,16 @@ public class ExportManagerEconomyWriters extends GhidraScript {
     }
     private void countJalr() throws Exception {
         InstructionIterator it=currentProgram.getListing().getInstructions(true);
-        while(it.hasNext()) if("jalr".equalsIgnoreCase(it.next().getMnemonicString())) jalrCount++;
+        while(it.hasNext()) {
+            Instruction ins=it.next();
+            if("jalr".equalsIgnoreCase(ins.getMnemonicString())) {
+                jalrCount++;
+                Function owner=currentProgram.getFunctionManager().getFunctionContaining(ins.getAddress());
+                row("INDIRECT_CALL_SITE",module,"TARGET_UNRESOLVED",addrExpr(ins.getAddress()),
+                    functionEntry(owner),functionName(owner),"JALR","",""+ins.toString(),"",
+                    bytes(ins.getAddress(),16),"dynamic register target not statically tied to either requested entry");
+            }
+        }
     }
     @Override protected void run() throws Exception {
         String[] args=getScriptArgs();
