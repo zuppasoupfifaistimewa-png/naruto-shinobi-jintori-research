@@ -28,7 +28,6 @@ jobs:
       GHIDRA_SHA256: "2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67"
       GHIDRA_CACHE_DIR: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
       WORK: /tmp/naruto-at1-helper-a1-${{ github.run_id }}-${{ github.run_attempt }}
-      OUTDIR: ${{ runner.temp }}/at1-helper-a1-output
 
     steps:
       - name: Checkout
@@ -41,6 +40,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          OUTDIR="$RUNNER_TEMP/at1-helper-a1-output"
+          echo "OUTDIR=$OUTDIR" >> "$GITHUB_ENV"
           mkdir -p "$WORK"/{source,extracted,input,project,logs} "$OUTDIR"
 
       - name: Install bounded disc extraction tools
