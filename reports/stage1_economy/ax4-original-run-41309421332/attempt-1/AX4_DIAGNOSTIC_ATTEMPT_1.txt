@@ -1,0 +1,65 @@
+ALSA lib confmisc.c:855:(parse_card) [error.core] cannot find card '0'
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) [error.core] error evaluating strings
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) [error.core] error evaluating name
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5734:(snd_config_expand) [error.core] Evaluate error: No such file or directory
+ALSA lib pcm.c:2722:(snd_pcm_open_noupdate) [error.pcm] Unknown PCM sysdefault
+Warning: OpenGL error reporting disabled. See About dialog for more information.
+PCSX-Redux Lua Console
+LuaJIT 2.1.1785598229
+PCSX-Redux booting
+Copyright (C) 2019-2025 PCSX-Redux authors
+AX4_READY interpreter=1 debugger=1 INPUT=NONE H6=HIBRIDA
+AX4_PAD_NO_INPUT=PASS
+AX4_H6_LOADED=1
+AX4_H6_LOAD_CALL_RETURNED=1
+AX4_BASELINE frame=180 manager=0x801CEF08 manager_B44=0 player0_chakra=1500 RAM_SHA=5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7
+AX4_CALL_BEGIN label=A140_B44_0 entry=0x8010A140 B44=0 RAM_BEFORE=34c337208c4e5922471de0d87ea379e73a8b5e534b7bbf5155cef92c3ba708ad MCD_BEFORE=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
+AX4_SETTER_ENTRY label=A140_B44_0 q_before=1500 a0=0x00000000 a1_live=1500
+Breakpoint triggered: PC=0x8001387c - Cause: 8001387c::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AX4_CALL|A140_B44_0|entry=0x8010A140|b44_before=0|q_before=1500|setter_a0=0x00000000|setter_a1=1500|setter_entry_pc=0x8001387C|setter_return=1|stored_chakra=1500|b44_after=0|ram_before_sha=34c337208c4e5922471de0d87ea379e73a8b5e534b7bbf5155cef92c3ba708ad|ram_after_sha=80adb787fe45c254f0b6208bfdb250de74afed6574774e3037c496272b685a75|ram_restored_sha=5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7|ram_restored=true|mcd_before_sha=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5|mcd_after_sha=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5|mcd_unchanged=true|duration_seconds=0.818047|status=CAPTURED
+AX4_CALL_BEGIN label=A140_B44_7 entry=0x8010A140 B44=7 RAM_BEFORE=96ec688093315a2e461c277bdd758fc98c15678e05cbe951b92c45c9fda6cc12 MCD_BEFORE=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
+AX4_SETTER_ENTRY label=A140_B44_7 q_before=1500 a0=0x00000000 a1_live=1507
+Breakpoint triggered: PC=0x8001387c - Cause: 8001387c::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AX4_CALL|A140_B44_7|entry=0x8010A140|b44_before=7|q_before=1500|setter_a0=0x00000000|setter_a1=1507|setter_entry_pc=0x8001387C|setter_return=1|stored_chakra=1507|b44_after=7|ram_before_sha=96ec688093315a2e461c277bdd758fc98c15678e05cbe951b92c45c9fda6cc12|ram_after_sha=4dafe1b5b1c9c3374c9cf3879aac37c638fd91eb5ca512d8ac892eaa10eefbd4|ram_restored_sha=5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7|ram_restored=true|mcd_before_sha=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5|mcd_after_sha=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5|mcd_unchanged=true|duration_seconds=0.808098|status=CAPTURED
+AX4_CALL_BEGIN label=A140_B44_25 entry=0x8010A140 B44=25 RAM_BEFORE=5e3a0d78f28a4227e5065760648c6db64ea12cf67e65747caaa4121d1ec9fb7e MCD_BEFORE=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
+AX4_SETTER_ENTRY label=A140_B44_25 q_before=1500 a0=0x00000000 a1_live=1525
+Breakpoint triggered: PC=0x8001387c - Cause: 8001387c::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AX4_CALL|A140_B44_25|entry=0x8010A140|b44_before=25|q_before=1500|setter_a0=0x00000000|setter_a1=1525|setter_entry_pc=0x8001387C|setter_return=1|stored_chakra=1525|b44_after=25|ram_before_sha=5e3a0d78f28a4227e5065760648c6db64ea12cf67e65747caaa4121d1ec9fb7e|ram_after_sha=04061b7f7aa3fa00322bcc760cf6bc1f697b97e8ba5a42504ddcdd5ff20ea583|ram_restored_sha=5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7|ram_restored=true|mcd_before_sha=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5|mcd_after_sha=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5|mcd_unchanged=true|duration_seconds=0.806356|status=CAPTURED
+AX4_CALL_BEGIN label=A5EC_B44_0 entry=0x8010A5EC B44=0 RAM_BEFORE=34c337208c4e5922471de0d87ea379e73a8b5e534b7bbf5155cef92c3ba708ad MCD_BEFORE=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
+AX4_SETTER_ENTRY label=A5EC_B44_0 q_before=1500 a0=0x00000000 a1_live=1500
+Breakpoint triggered: PC=0x8001387c - Cause: 8001387c::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AX4_CALL|A5EC_B44_0|entry=0x8010A5EC|b44_before=0|q_before=1500|setter_a0=0x00000000|setter_a1=1500|setter_entry_pc=0x8001387C|setter_return=1|stored_chakra=1500|b44_after=0|ram_before_sha=34c337208c4e5922471de0d87ea379e73a8b5e534b7bbf5155cef92c3ba708ad|ram_after_sha=34c337208c4e5922471de0d87ea379e73a8b5e534b7bbf5155cef92c3ba708ad|ram_restored_sha=5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7|ram_restored=true|mcd_before_sha=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5|mcd_after_sha=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5|mcd_unchanged=true|duration_seconds=0.823991|status=CAPTURED
+AX4_CALL_BEGIN label=A5EC_B44_7 entry=0x8010A5EC B44=7 RAM_BEFORE=96ec688093315a2e461c277bdd758fc98c15678e05cbe951b92c45c9fda6cc12 MCD_BEFORE=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
+AX4_SETTER_ENTRY label=A5EC_B44_7 q_before=1500 a0=0x00000000 a1_live=1507
+Breakpoint triggered: PC=0x8001387c - Cause: 8001387c::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AX4_CALL|A5EC_B44_7|entry=0x8010A5EC|b44_before=7|q_before=1500|setter_a0=0x00000000|setter_a1=1507|setter_entry_pc=0x8001387C|setter_return=1|stored_chakra=1507|b44_after=7|ram_before_sha=96ec688093315a2e461c277bdd758fc98c15678e05cbe951b92c45c9fda6cc12|ram_after_sha=4dafe1b5b1c9c3374c9cf3879aac37c638fd91eb5ca512d8ac892eaa10eefbd4|ram_restored_sha=5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7|ram_restored=true|mcd_before_sha=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5|mcd_after_sha=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5|mcd_unchanged=true|duration_seconds=0.809902|status=CAPTURED
+AX4_CALL_BEGIN label=A5EC_B44_25 entry=0x8010A5EC B44=25 RAM_BEFORE=5e3a0d78f28a4227e5065760648c6db64ea12cf67e65747caaa4121d1ec9fb7e MCD_BEFORE=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5
+AX4_SETTER_ENTRY label=A5EC_B44_25 q_before=1500 a0=0x00000000 a1_live=1520
+Breakpoint triggered: PC=0x8001387c - Cause: 8001387c::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+AX4_CALL|A5EC_B44_25|entry=0x8010A5EC|b44_before=25|q_before=1500|setter_a0=0x00000000|setter_a1=1520|setter_entry_pc=0x8001387C|setter_return=1|stored_chakra=1520|b44_after=25|ram_before_sha=5e3a0d78f28a4227e5065760648c6db64ea12cf67e65747caaa4121d1ec9fb7e|ram_after_sha=71108e23c80e70654a224f43d1141b8bf2bf87e0f46473cf82babf4ac1eae793|ram_restored_sha=5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7|ram_restored=true|mcd_before_sha=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5|mcd_after_sha=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5|mcd_unchanged=true|duration_seconds=0.808400|status=CAPTURED
+AX4_FINAL_RAM baseline_sha=5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7 final_sha=5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7 unchanged=true
+AX4_DONE calls=6 failed=0 ram_restored=true
+Warning: OpenGL error reporting disabled. See About dialog for more information.
+PCSX-Redux booting
+Copyright (C) 2019-2025 PCSX-Redux authors
+Breakpoint triggered: PC=0x8001387c - Cause: 8001387c::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x8001387c - Cause: 8001387c::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x8001387c - Cause: 8001387c::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x8001387c - Cause: 8001387c::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x8001387c - Cause: 8001387c::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x8001387c - Cause: 8001387c::Exec::4 (Lua Breakpoint)
+Breakpoint triggered: PC=0x801fffe0 - Cause: 801fffe0::Exec::4 (Lua Breakpoint)
