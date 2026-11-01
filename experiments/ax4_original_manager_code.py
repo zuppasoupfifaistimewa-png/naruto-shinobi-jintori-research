@@ -171,7 +171,7 @@ _G.ax4Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
      startNext(1)
     end)
     if not ok then fail("START_TESTS",e) end
-   end
+   end)
   end
   if currentCase~=nil then
     activeFrames=activeFrames+1
