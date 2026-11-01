@@ -31,7 +31,7 @@ def tests():
         rows.append({"kind":"GETTER","fn":0x800138EC,"a0":idx,"a1":0xA1A1A1A1,
                      "a2":0xA2A2A2A2,"a3":0xA3A3A3A3,"expected":1500,
                      "label":f"getter_control_index_{idx}"})
-    h_values=((0x10,19),(0x12,101),(0x2E,257))
+    h_values=((0x00,19),(0x02,101),(0x1E,257))
     for selector in range(5):
         for offset,h in h_values:
             numer={0:10,1:12,2:15,3:18,4:20}[selector]
@@ -39,10 +39,10 @@ def tests():
             rows.append({"kind":"TILE_HELPER","fn":0x800B770C,"a0":0,
                          "a1":0xA1A1A1A1,"a2":0xA2A2A2A2,"a3":0xA3A3A3A3,
                          "selector":selector,"halfword_offset":offset,"h":h,
-                         "expected":expected,"label":f"selector_{selector}_off_{offset:02X}_h_{h}"})
+                         "expected":expected,"label":f"selector_{selector}_field_{0x10+offset:02X}_h_{h}"})
     rows.append({"kind":"TILE_HELPER","fn":0x800B770C,"a0":0,"a1":0xA1A1A1A1,
                  "a2":0xA2A2A2A2,"a3":0xA3A3A3A3,"selector":5,
-                 "halfword_offset":0x10,"h":101,"expected":0,"label":"selector_5_default_zero"})
+                 "halfword_offset":0x00,"h":101,"expected":0,"label":"selector_5_default_zero"})
     for value in (100,1500,100000,-10000):
         expected=max(-9999,min(99999,value))
         rows.append({"kind":"SETTER","fn":0x8001387C,"a0":0,"a1":value,
@@ -230,7 +230,7 @@ local function armReturnSentinel()
     local ramUnchanged=(currentBefore==after)
     if t.kind=="SETTER" then
       memValue=s32(rd32(PLAYER_BASE+0x18))
-      effectOK=(memValue==t.expected_store)
+      effectOK=(memValue==s32(t.expected_store))
       local targetStart=phys(PLAYER_BASE+0x18)
       for _,off in ipairs(diffs) do
         if off<targetStart or off>=targetStart+4 then effectOK=false end
