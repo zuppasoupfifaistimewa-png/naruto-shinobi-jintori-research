@@ -49,6 +49,14 @@ def tests():
                      "a2":0xA2A2A2A2,"a3":0xA3A3A3A3,"input_value":value,
                      "expected":1,"expected_store":expected,
                      "label":f"setter_index_0_value_{value}"})
+    # Isolate the two manager a1 expressions from FUN_80109FEC without calling
+    # that UI/audio/state-machine function itself.
+    for mode in ("ADD","CAP"):
+        for delta in (0,7,25):
+            rows.append({"kind":"MANAGER_FORMULA","fn":0x8001387C,"a0":0,"a1":0,
+                         "a2":0xA2A2A2A2,"a3":0xA3A3A3A3,
+                         "manager_mode":mode,"manager_delta":delta,"expected":1,
+                         "label":f"manager_{mode.lower()}_b44_{delta}"})
     return rows
 
 def lua_number(n:int)->str:
@@ -61,8 +69,9 @@ def lua_source(cases):
                f'a0={lua_number(x["a0"])}',f'a1={lua_number(x["a1"])}',
                f'a2={lua_number(x["a2"])}',f'a3={lua_number(x["a3"])}',
                f'expected={x["expected"]}',f'label="{x["label"]}"']
-        for k in ("selector","halfword_offset","h","input_value","expected_store"):
+        for k in ("selector","halfword_offset","h","input_value","expected_store","manager_delta"):
             if k in x:props.append(f'{k}={lua_number(x[k])}')
+        if "manager_mode" in x:props.append(f'manager_mode="{x["manager_mode"]}"')
         test_entries.append("  {"+",".join(props)+"}")
     table=",\n".join(test_entries)
     return r"""
@@ -89,6 +98,7 @@ local RAM_SIZE=0x200000
 local RECORD_SIZE=0x124
 local RECORD_SLOT=0x8013EA84
 local PLAYER_BASE=0x80070EA0
+local MANAGER_SLOT=0x8013A554
 local post=0
 local preloadTicks=0
 local started=false
@@ -102,6 +112,7 @@ __TEST_TABLE__
 local originalRegs=nil
 local recordBase=nil
 local recordPhys=nil
+local managerBase=nil
 local tileBackup=nil
 local playerBackup=nil
 local baselineRam=nil
@@ -183,6 +194,14 @@ local function makeInput(t)
     wr16(recordBase+0x10+t.halfword_offset,t.h)
   elseif t.kind=="SETTER" then
     ffi.copy(mem+phys(PLAYER_BASE),playerBackup,RECORD_SIZE)
+  elseif t.kind=="MANAGER_FORMULA" then
+    wr8(managerBase+0xB2B,0)
+    wr32(managerBase+0xB44,t.manager_delta)
+    local q=s32(rd32(PLAYER_BASE+0x18))
+    local increment=t.manager_delta
+    if t.manager_mode=="CAP" and increment>0x14 then increment=0x14 end
+    t.a1=q+increment
+    t.expected_store=math.max(-9999,math.min(99999,t.a1))
   end
 end
 local currentCase=nil
@@ -227,7 +246,7 @@ local function armReturnSentinel()
     local memValue="NA"
     local effectOK=true
     local ramUnchanged=(currentBefore==after)
-    if t.kind=="SETTER" then
+    if t.kind=="SETTER" or t.kind=="MANAGER_FORMULA" then
       memValue=s32(rd32(PLAYER_BASE+0x18))
       effectOK=(memValue==s32(t.expected_store))
     elseif t.kind=="GETTER" or t.kind=="TILE_HELPER" then
@@ -300,6 +319,10 @@ _G.aw3Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
           if recordBase<0x80000000 or recordBase+RECORD_SIZE>0x80200000 then
             error(string.format("tile base pointer invalid 0x%08X",recordBase))
           end
+          managerBase=rd32(MANAGER_SLOT)
+          if managerBase<0x80000000 or managerBase+0xB48>0x80200000 then
+            error(string.format("manager pointer invalid 0x%08X",managerBase))
+          end
           recordPhys=phys(recordBase)
           tileBackup=ffi.string(mem+recordPhys,RECORD_SIZE)
           playerBackup=ffi.string(mem+phys(PLAYER_BASE),RECORD_SIZE)
@@ -308,8 +331,8 @@ _G.aw3Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
           baselineSha=ramSha()
           local p0=s32(rd32(PLAYER_BASE+0x18))
           local p1=s32(rd32(PLAYER_BASE+0xB4+0x18))
-          log(string.format("AW3_BASELINE frame=180 tile_slot=0x%08X player0_chakra=%d player1_chakra=%d ram_sha=%s",
-             recordBase,p0,p1,baselineSha))
+          log(string.format("AW3_BASELINE frame=180 tile_slot=0x%08X manager=0x%08X manager_B44=%d player0_chakra=%d player1_chakra=%d ram_sha=%s",
+             recordBase,managerBase,s32(rd32(managerBase+0xB44)),p0,p1,baselineSha))
           if p0~=1500 or p1~=1500 then
             error("positive getter precondition mismatch: expected player0/player1 chakra=1500")
           end
@@ -421,7 +444,7 @@ def main():
     complete=call_pass and launches_pass and timeout_ok
     with (out/"AW3_CALL_RESULTS.tsv").open("w",encoding="utf-8",newline="") as f:
       cols=["attempt","label","kind","fn","a0","a1","a2","a3","expected","actual","memory_value",
-            "ram_before_sha","ram_after_sha","ram_unchanged","diff_offsets","status"]
+            "ram_before_sha","ram_after_sha","ram_unchanged","ram_restored_sha","ram_restored","diff_offsets","status"]
       w=csv.DictWriter(f,fieldnames=cols,delimiter="\t",extrasaction="ignore");w.writeheader()
       for x in allrows:w.writerow(x)
     with (out/"AW3_LAUNCHES.tsv").open("w",encoding="utf-8",newline="") as f:
@@ -436,9 +459,11 @@ def main():
       "FLAGS=-debugger -interpreter; no dynarec",
       "DIRECT_FUNCTIONS=FUN_800B770C; getter_0x800138EC; setter_0x8001387C",
       "MANAGER_FUN_80109FEC=NOT_CALLED_DIRECTLY; state-machine has UI/audio/state side effects and chained calls; direct call lacks safe isolated preconditions",
-      "TILE_HELPER_TEST=selectors 0..4 x three halfword fields/values; selector 5 default path; 31? exact counts in TSV",
+      "TILE_HELPER_TEST=16 per launch: selectors 0..4 x H=19/101/257 at fields +0x10/+0x12/+0x2E, plus selector 5 default-zero",
       "GETTER_POSITIVE_CONTROL=index 0 and 1; expected 1500 each before any write",
       "SETTER_CONTROL=100,1500,100000,-10000; record +0x18 checked and full record restored",
+      "MANAGER_A1_FORMULAS=6 per launch: ADD(B44)=0,7,25 and CAP(B44)=0,7,25; getter + B44 or getter + min(B44,0x14) fed to actual setter",
+      "MANAGER_STATE_MACHINE=not called; direct call also enters UI/input/audio/state transitions, only setter argument expressions are isolated here",
       "REGISTER_STATE=GPR[0..33] including HI/LO, CP0, CP2D, CP2C, PC saved/restored per call",
       "RAM_HASH=SHA256 first 2MiB before/after and after full 2MiB baseline restore for every call",
       "RAW_RAM_DELTA=recorded separately; if changes occur outside tested target word they are not assigned to the callee; full baseline restored",
