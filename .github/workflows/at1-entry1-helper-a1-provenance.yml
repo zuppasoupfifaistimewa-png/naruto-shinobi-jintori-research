@@ -1,0 +1,272 @@
+name: AT1 — DATA.BIN Entry 1 helper a1 provenance (static Ghidra)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/at1-entry1-helper-a1-provenance.yml"
+      - "tools/ghidra/ExportEntry0TargetFunction.java"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: naruto-at1-entry1-helper-a1-provenance
+  cancel-in-progress: false
+
+jobs:
+  helper-a1-entry1:
+    name: Static DATA.BIN Entry 1 disassembly for 0x80105BCC
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RESEARCH_REPO: ${{ github.repository }}
+      GHIDRA_VERSION: "12.2"
+      GHIDRA_ASSET: "ghidra_12.2_PUBLIC_20261016.zip"
+      GHIDRA_SHA256: "2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67"
+      GHIDRA_CACHE_DIR: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+      WORK: /tmp/naruto-at1-helper-a1-${{ github.run_id }}-${{ github.run_attempt }}
+      OUTDIR: ${{ runner.temp }}/at1-helper-a1-output
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Allocate private runner directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$WORK"/{source,extracted,input,project,logs} "$OUTDIR"
+
+      - name: Install bounded disc extraction tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends bchunk xorriso curl jq unzip python3
+
+      - name: Download and verify BIN/CUE; extract exact DATA.BIN Entry 1 slice
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          BIN="$WORK/source/naruto-disc.bin"
+          CUE_RAW="$WORK/source/original.cue"
+          CUE="$WORK/source/naruto-disc.cue"
+          curl --fail --silent --show-error --location --retry 2 --max-time 600 \
+            -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/octet-stream" \
+            "$API/releases/assets/647346873" -o "$BIN"
+          test "$(stat -c %s "$BIN")" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $BIN" | sha256sum --check -
+          curl --fail --silent --show-error --location --retry 2 --max-time 60 \
+            -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/octet-stream" \
+            "$API/releases/assets/647354760" -o "$CUE_RAW"
+          test "$(stat -c %s "$CUE_RAW")" = "116"
+          echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $CUE_RAW" | sha256sum --check -
+          python3 - "$CUE_RAW" "$CUE" <<'PY'
+          from pathlib import Path
+          import re,sys
+          source,dest=map(Path,sys.argv[1:3])
+          out=[]; count=0
+          for line in source.read_text(encoding="utf-8").splitlines():
+              if line.lstrip().upper().startswith("FILE "):
+                  m=re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$',line,re.I)
+                  if not m: raise SystemExit("Unrecognized CUE FILE row")
+                  line=m.group(1)+'"naruto-disc.bin"'+m.group(2); count+=1
+              out.append(line)
+          if count!=1: raise SystemExit(f"expected one CUE FILE row, got {count}")
+          dest.write_text("\n".join(out)+"\n",encoding="utf-8")
+          PY
+          bchunk "$BIN" "$CUE" "$WORK/source/track"
+          ISO="$(find "$WORK/source" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          test -n "$ISO"
+          xorriso -osirrox on -indev "$ISO" -extract / "$WORK/extracted" > "$WORK/logs/disc-extract.log" 2>&1
+          DATA="$(find "$WORK/extracted" -type f -iname 'DATA.BIN' -print -quit)"
+          test -n "$DATA" && test -f "$DATA"
+          test "$(stat -c %s "$DATA")" = "66015232"
+          echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $DATA" | sha256sum --check -
+          python3 - "$DATA" "$WORK/input/DATA_BIN_ENTRY_0001.bin" "$OUTDIR/input-identity.txt" <<'PY'
+          from pathlib import Path
+          import hashlib,struct,sys
+          src,dst,report=map(Path,sys.argv[1:4])
+          data=src.read_bytes()
+          rows=[struct.unpack_from("<II",data,0x44+i*8) for i in range((0x2F44-0x44)//8)]
+          lbn,length=rows[1]
+          offset=(lbn-212)*2048
+          if (lbn,length,offset)!=(8778,596412,0x10BB000):
+              raise SystemExit(f"Entry 1 directory mismatch {(lbn,length,hex(offset))}")
+          chunk=data[offset:offset+length]
+          digest=hashlib.sha256(chunk).hexdigest()
+          expected="9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a"
+          if len(chunk)!=596412 or digest!=expected: raise SystemExit("Entry 1 slice digest mismatch")
+          dst.write_bytes(chunk)
+          report.write_text("\n".join([
+            "STATUS=PASS","source=DATA.BIN directory entry 1",
+            f"DATA_BIN_BYTES={len(data)}",
+            "ENTRY1_INDEX=1","ENTRY1_LBN=8778","ENTRY1_FILE_OFFSET=0x10BB000",
+            f"ENTRY1_BYTES={len(chunk)}",f"ENTRY1_SHA256={digest}",
+            "STATIC_IMPORT_BASE=0x800AD450","RUNTIME_MAPPING=NOT_VALIDATED",
+            "RAW_BIN_CUE_ISO_DATA_BIN_UPLOAD=NO",""
+          ]),encoding="utf-8")
+          PY
+          rm -rf "$WORK/source" "$WORK/extracted"
+          test ! -e "$WORK/source" && test ! -e "$WORK/extracted"
+          echo "DISC_AND_DATA_BIN_CLEANUP_BEFORE_GHIDRA=PASS"
+
+      - name: Set up Java runtime
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+          java-package: jdk
+
+      - name: Restore cached Ghidra
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+          key: ghidra-12.2-linux-x64-2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+
+      - name: Install pinned Ghidra if cache is missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$GHIDRA_CACHE_DIR"
+          if ! find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit | grep -q .; then
+            ARCHIVE="$WORK/ghidra.zip"
+            curl --fail --silent --show-error --location --retry 3 \
+              "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.2_build/$GHIDRA_ASSET" -o "$ARCHIVE"
+            echo "$GHIDRA_SHA256  $ARCHIVE" | sha256sum --check -
+            unzip -q "$ARCHIVE" -d "$GHIDRA_CACHE_DIR"
+            rm -f "$ARCHIVE"
+          fi
+
+      - name: Import DATA.BIN Entry 1 at candidate base and export helper/caller disassembly
+        shell: bash
+        run: |
+          set -euo pipefail
+          HEADLESS="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
+          test -n "$HEADLESS" && test -x "$HEADLESS"
+          set +e
+          "$HEADLESS" "$WORK/project" Naruto_DATA_BIN_Entry1_AT1_helper_a1 \
+            -import "$WORK/input/DATA_BIN_ENTRY_0001.bin" \
+            -loader BinaryLoader -loader-baseAddr 0x800AD450 \
+            -loader-length 0x919BC -loader-blockName DATA_BIN_ENTRY_0001_AT_BUFFER_BASE \
+            -processor "MIPS:LE:32:default" \
+            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -postScript ExportEntry0TargetFunction.java "$OUTDIR/AT1_HELPER_A1_DETAIL.txt" \
+              0x80105BCC 0x801052E8 \
+            -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
+            > "$OUTDIR/ghidra-headless.log" 2>&1
+          rc=$?
+          set -e
+          echo "GHIDRA_EXIT_CODE=$rc" > "$OUTDIR/ghidra-exit.txt"
+          if [ "$rc" -ne 0 ] || [ ! -s "$OUTDIR/AT1_HELPER_A1_DETAIL.txt" ]; then
+            echo "STATUS=GHIDRA_FAILED" > "$OUTDIR/analysis-status.txt"
+            exit 0
+          fi
+          python3 - "$OUTDIR/AT1_HELPER_A1_DETAIL.txt" "$OUTDIR/analysis-status.txt" <<'PY'
+          from pathlib import Path
+          import re,sys
+          detail,status=map(Path,sys.argv[1:3])
+          text=detail.read_text(encoding="utf-8",errors="replace")
+          # Correct the exporter’s legacy display labels for the actual Entry 1 candidate import.
+          text=text.replace("resource_base=0x800AD000 (hypothesis only)",
+                            "resource_base=0x800AD450 (static Entry 1 import candidate; runtime mapping NOT_VALIDATED)")
+          out=[]; current=None
+          for line in text.splitlines():
+              m=re.match(r"=== TARGET (?:0x)?([0-9A-Fa-f]+) ===",line)
+              if m: current=int(m.group(1),16)
+              if current is not None and line.startswith("target_offset_under_hypothesis="):
+                  line="target_offset_under_entry1_candidate_base=0x"+format(current-0x800AD450,"x")
+              out.append(line)
+          detail.write_text("\n".join(out)+"\n",encoding="utf-8")
+          m=re.search(r"=== TARGET (?:0x)?80105BCC ===(.*?)(?=\n=== TARGET |\Z)",detail.read_text(encoding="utf-8"),re.S|re.I)
+          section=m.group(1) if m else ""
+          found=("target_status=OUTSIDE_IMPORTED_MEMORY" not in section and
+                 "function_at_target=NONE" not in section and
+                 "function_name=" in section and "RAW_FUNCTION_BODY_BEGIN" in section)
+          status.write_text("\n".join([
+              "STATUS="+("PASS" if found else "INCOMPLETE"),
+              "TARGET=0x80105BCC",
+              "TARGET_FUNCTION_FOUND="+str(found).upper(),
+              "STATIC_IMPORT_BASE=0x800AD450",
+              "RUNTIME_MAPPING=NOT_VALIDATED",
+              "NOTE=Manually seeded Ghidra function boundary; raw return/tail jumps still require review.",
+              ""
+          ]),encoding="utf-8")
+          PY
+
+      - name: Remove private slice and Ghidra project
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$WORK"
+          if [ ! -e "$WORK" ]; then
+            echo "PRIVATE_INPUT_AND_PROJECT_CLEANUP=PASS" >> "$OUTDIR/input-identity.txt" 2>/dev/null || true
+          else
+            echo "PRIVATE_INPUT_AND_PROJECT_CLEANUP=FAIL" >> "$OUTDIR/input-identity.txt"
+            exit 1
+          fi
+
+      - name: Validate text-only output and publish summary
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESEARCH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTDIR"
+          python3 - "$OUTDIR" <<'PY'
+          from pathlib import Path
+          import sys
+          root=Path(sys.argv[1])
+          bad=[str(p) for p in root.rglob("*") if p.is_file() and p.suffix.lower() not in {".txt",".log"}]
+          if bad: raise SystemExit("NON_TEXT_OUTPUT_BLOCKED: "+repr(bad))
+          for name in ("AT1_HELPER_A1_DETAIL.txt","analysis-status.txt","input-identity.txt","ghidra-exit.txt","ghidra-headless.log"):
+              p=root/name
+              if not p.is_file(): p.write_text("STATUS=NOT_AVAILABLE\n",encoding="utf-8")
+          PY
+          DEST="reports/stage1_economy/at1-entry1-helper-a1-provenance-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$DEST"
+          cp "$OUTDIR"/* "$DEST/"
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="Static DATA.BIN Entry 1 disassembly for 0x80105BCC") | .id' | head -n 1)"
+          test -n "$JOB_ID" && test "$JOB_ID" != null || JOB_ID="TIDAK TAHU"
+          STATUS="$(sed -n 's/^STATUS=//p' "$DEST/analysis-status.txt" | head -n 1)"
+          test -n "$STATUS" || STATUS="INCOMPLETE"
+          GHIDRA_RC="$(sed -n 's/^GHIDRA_EXIT_CODE=//p' "$DEST/ghidra-exit.txt" | head -n 1)"
+          test -n "$GHIDRA_RC" || GHIDRA_RC="TIDAK TAHU"
+          {
+            echo "STATUS=$STATUS"
+            echo "JOB=at1-entry1-helper-a1-provenance"
+            echo "JOB_ID=$JOB_ID"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "EXIT_CODE=$GHIDRA_RC"
+            echo "TARGET=0x80105BCC"
+            echo "METHOD=Ghidra static import of verified DATA.BIN Entry 1 only; no emulator."
+          } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$DEST"
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish AT1 DATA BIN helper a1 provenance run $GITHUB_RUN_ID"
+            pushed=0
+            for n in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main || { git rebase --abort; sleep "$n"; continue; }
+              if git push origin HEAD:main; then pushed=1; break; fi
+              sleep "$n"
+            done
+            test "$pushed" -eq 1
+          fi
+          echo "AT1_HELPER_OUTPUT_PATH=$DEST"
+
