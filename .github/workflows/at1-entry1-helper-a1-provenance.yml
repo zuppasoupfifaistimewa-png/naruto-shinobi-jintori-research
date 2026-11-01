@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: naruto-at1-entry1-helper-a1-provenance
+  group: naruto-at1-entry1-helper-a1-provenance-v2
   cancel-in-progress: false
 
 jobs:
