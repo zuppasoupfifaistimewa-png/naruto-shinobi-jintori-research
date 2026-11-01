@@ -310,3 +310,17 @@ Kesimpulannya hanya bahwa tidak ditemukan susunan lima nilai itu dalam tipe/stri
 Pencarian string literal ASCII/Shift-JIS exact menghasilkan 0 hit untuk kata kunci English/Japanese yang dicatat pada bagian sebelumnya. Heuristik run Shift-JIS menghasilkan 25 run di EXE, 3 di Entry 0, 234 di Entry 1 (262 total). Run itu tidak terbukti sebagai message UI; sebagian hasil Entry 0 tampak seperti decoding byte acak. Peta indeks glyph/tile ke font tetap **TIDAK TAHU**.
 
 Ekspor immediate literal Ghidra pada Entry 1 tersedia pada `aw2-numeric-instruction-literals.tsv`. Run Ghidra terpisah untuk EXE utama dan DATA.BIN Entry 0 (`41290779708`) masih berstatus berjalan pada saat laporan final ini dibuat; karena itu daftar xref semua literal numerik untuk dua input tersebut belum lengkap. Byte-scan raw numeric occurrences untuk ketiga input sudah selesai dan disimpan.
+
+## AW2 — hasil akhir ekspor Ghidra Main EXE dan Entry 0
+
+Run GitHub Actions 41290779708 (job 124801401017, source SHA 18b926049fac5126118f545cf46ae2f01e5d84f0) selesai dengan conclusion SUCCESS dan exit code 0. Ghidra 12.2 mengekspor 1.206 fungsi dari SLPS_035.53, 1.555 fungsi dari DATA.BIN Entry 1, dan 38 fungsi dari DATA.BIN Entry 0. Ekspor immediate-literal memiliki 40 kandidat pada main EXE dan 30 pada Entry 0. Angka itu adalah immediate pada instruksi, bukan otomatis konstanta ekonomi atau tabel harga.
+
+Untuk Entry 0, 5 raw JAL candidates ditemukan pada scan alamat RNG/seed setter. Tiga di antaranya tervalidasi sebagai direct call oleh Ghidra (satu ke seed setter 0x80035DA8 dan dua ke RNG 0x80035D78); dua sisanya hanya raw word yang tidak didekode sebagai instruksi. Tidak ada caller yang dapat dipasangkan ke batas fungsi (unique_validated_caller_functions_with_boundary=0), dan tidak ada dekompilasi caller yang berhasil dihasilkan pada run ini (detailed_decompilation_count=0).
+
+Target 0x800BDBFC pada Entry 0, di bawah hipotesis load base 0x800AD000, didekompilasi sebagai kandidat stub 36 byte yang mengisi param+0x64 dengan 0xFFFFE5A8 dan param+0x68 dengan 0x800BE638 lalu return 1. Ghidra mencatat reference_count=0 pada resource tersebut. Instruksi target memuat jump ke 0x800BE11C. Karena base 0x800AD000 masih hipotesis dan caller belum dipetakan, ini belum membuktikan kontrak runtime helper atau kaitan gameplay.
+
+Entry 0 scan output: 38 function rows, 30 immediate-instruction literal rows, 5 raw RNG/seed candidates, 3 Ghidra-decoded direct calls, dan 0 caller function boundary yang tervalidasi. Runtime mapping Entry 0 tetap NOT_VALIDATED. Entry 1 juga tetap menggunakan candidate base statis 0x800D0000; tidak ada klaim runtime mapping.
+
+Artifact run ID 41290779708: ghidra-slps-03553-function-index (artifact ID 13077709660; SHA-256 bea77586b6b2091f840405557cae65c4b1aea2babfd967c1c5d7eb77a9292af5). Artifact mencakup 25 file; log Ghidra Entry 0 sangat besar, sehingga hanya keluaran laporan/TSV yang relevan dipertahankan di repo. Tidak ada executable, DATA.BIN, atau resource binary yang diunggah sebagai artifact.
+
+**Status AW2:** matriks scan statis yang didefinisikan (raw numeric, sequence/stride, exact keyword, Shift-JIS candidates, fungsi Ghidra, dan immediate-instruction references pada main EXE/Entry 0/Entry 1) sekarang selesai. Tetap TIDAK TAHU: pemetaan message/glyph ke font/tile, runtime base Entry 0 dan Entry 1, serta makna gameplay dari setiap literal tanpa caller/consumer proof.
