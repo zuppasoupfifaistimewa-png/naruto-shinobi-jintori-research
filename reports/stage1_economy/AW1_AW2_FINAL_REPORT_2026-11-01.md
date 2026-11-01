@@ -203,6 +203,18 @@ Read dan write dapat overlap pada fungsi yang sama. Census mencatat displacement
 
 Direct-call census: `FUN_800B770C` 44 JAL; `FUN_800BDC4C` 3 JAL. Indirect JALR belum tercakup (`TIDAK TAHU`). 47 jendela caller diekspor pada `aw1-helper-call-windows.tsv`.
 
+#### Klasifikasi konteks caller helper (pemeriksaan jendela instruksi)
+
+Pemeriksaan ulang semua 47 call window menemukan beberapa kelas pemakaian yang berbeda. Ini memperkuat bahwa nilai helper bukan sinonim otomatis untuk pendapatan:
+
+1. **Agregasi** — pada FUN_800bdc4c, callsite 0x800BDCE8 menambahkan return helper ke accumulator s2 (0x800BDCF0). Setelah loop, kode membulatkan pembagian dua atas s2, lalu menambahkan return fungsi lain (0x800BDD18–0x800BDD24). Ini merupakan agregasi/rata-rata nilai, bukan bukti kredit langsung ke saldo player.
+2. **Debit/kebutuhan transaksi (kandidat)** — pada FUN_800cadb8, callsite 0x800CB320 hanya tercapai setelah membandingkan bits dari halfword record +0x20. Return helper kemudian ditambah 0x7D0 (2.000) pada 0x800CB328, lalu dikurangi dari s0 pada 0x800CB32C. Secara aritmetika ini adalah pola pengurangan nilai/kebutuhan. Namun, isi s0, pemanggil tingkat atas, dan label aksi belum diekspor/dibuktikan; belum boleh disebut biaya Barrier.
+3. **Akumulasi per-slot** — pada caller yang belum diberi label fungsi oleh Ghidra, callsite 0x800CE084 menggabungkan return helper dengan s5 dan word sementara pada stack, lalu menyimpan hasilnya ke slot stack. Ini konsisten dengan kalkulasi total sementara, bukan bukti perubahan saldo.
+4. **Penyimpanan global hasil agregat** — FUN_800edd68 memanggil FUN_800bdc4c di 0x800EE458; return disimpan ke alamat global hasil aritmetika 0x8013EAF0 pada 0x800EE460, kemudian ada panggilan FUN_80109914 dan FUN_8010995c. Tidak ada setter player saldo tepat di jendela ini.
+5. **Format tampilan** — FUN_80108054 memanggil FUN_800bdc4c di 0x80108054, lalu melewatkan nilai return sebagai argumen ke FUN_8001b364 (pemformatan/penyusunan teks). Setelah itu fungsi membaca accessor player 0x800138EC, menjumlahkan hasilnya ke accumulator lokal, dan mengirim pemanggilan format berikutnya. Ini adalah jejak display, bukan bukti bahwa return helper sendiri merupakan jumlah saldo yang dikreditkan.
+
+Konteks-konteks tersebut adalah bukti statis pada instruksi caller, bukan interpretasi penuh seluruh fungsi. Untuk memastikan apakah debit pada FUN_800cadb8 merupakan pembelian/upgrade Barrier, diperlukan dekompilasi seluruh fungsi beserta caller yang memasok s0; hasil tersebut belum tersedia dalam ekspor ini. Semua label transaksi tetap TIDAK TAHU sampai rantai itu lengkap.
+
 ## AW2 — pencarian data, konstanta dan teks
 
 ### Identitas input scan
