@@ -1,6 +1,6 @@
-AU3 — PCSX-REDUX HEADLESS; H6 HYBRID; INTERPRETER ONLY
+AU3 — PCSX-REDUX HEADLESS; H6 HIBRIDA; INTERPRETER ONLY
 H6_SHA256=d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475
-H6_IDENTITY=target checkpoint base + CONTROL top-level protobuf field 6; HIBRIDA, NOT TARGET-PURE
+H6_IDENTITY=HIBRIDA: target checkpoint base + CONTROL top-level protobuf field 6; NOT TARGET-PURE
 SCHEDULE_C=no input; SCHEDULE_A=CIRCLE press post-load GPU::Vsync frame 60, release frame 61
 MATRIX=C,A x two independent launches = 4 launches total
 FLAGS=-debugger -interpreter; no dynarec
