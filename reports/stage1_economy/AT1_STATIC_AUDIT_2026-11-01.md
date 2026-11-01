@@ -71,3 +71,8 @@ Run 41213474394 kurang 25 baris yang seluruhnya berada dalam `FUN_800DB29C` (ent
 
 ## Berkas bukti sumber
 AQ1 census: `reports/stage1_economy/aq1-run-41249611249/attempt-1/aq1-economy-census.tsv` dan deep-context. Legacy getter disassembly: `reports/step4_10_static_evidence_audit/run_40783998364/a3_getter_setter.csv`. Semua kesimpulan statis maksimum K4. Nol hit bukan bukti fungsi tidak dipakai; rumus streamer tidak dipakai.
+
+
+## Klarifikasi getter (call-site 0x801053C4/0x80105418)
+
+Koreksi dan tabel lengkap per-edge tersedia dalam `AT1_GETTER_CALLS_RECONCILED_2026-11-01.tsv`. Pada jalur `bltz`-taken, instruksi load manager pointer `lw a1,-0x5AAC(v0)` di 0x801053D4 tidak dijalankan; a1 pada getter kedua diwarisi dari call pertama. Karena call pertama didahului `jal 0x80105BCC`, dan a1 caller-saved, nilai konkret pada jalur ini **TIDAK TAHU**. Pada fall-through, a1 justru dimuat dari manager slot 0x8013A554 (trace lama: 0x801CEF08). Kedua getter menerima a0=s3 melalui delay slot. Callee accessor memeriksa a1<4, menggunakan a1*0xB4 untuk record stride, dan membaca word pada +0x18; tidak ada alasan menyamakan manager pointer dengan indeks.
