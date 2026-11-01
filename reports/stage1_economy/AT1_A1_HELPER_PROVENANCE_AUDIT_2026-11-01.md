@@ -11,8 +11,8 @@ Scope: static MIPS disassembly only; maximum evidence level K4. No emulator, gam
 
 - DATA.BIN Entry 1 was previously extracted and imported by the successful Step 7 / AQ1 run **41258690146**, job **124707242427**.
 - Entry 1: 596,412 bytes, SHA-256 `9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a`; static candidate base `0x800AD450`. Runtime mapping remains NOT VALIDATED.
-- The text-only Ghidra output `entry1-buffer-base-targets.txt` contains function bodies for `0x80105BCC` and `0x801052E8`, including raw instructions and their call relationship. The import was explicitly marked static and not a runtime mapping proof.
-- The main-executable helper audit **41259079319**, job **124708383189**, exported the raw bodies for both `0x80043F18` and `0x80043AB8`. The job completed successfully and the output file contains both function sections. Its old publication validator incorrectly returned INCOMPLETE because its end-of-file regex used a literal `\\Z`; that parser was corrected in workflow commit `8e2eeed39fd36b5224c1e660daed812ccf2365dc`. A corrected Actions run was started separately.
+- The text-only Ghidra output `entry1-buffer-base-targets.txt` and the independently rerun AT1 output `at1-entry1-helper-a1-provenance-run-41260751877/attempt-1/AT1_HELPER_A1_DETAIL.txt` contain function bodies for `0x80105BCC` and `0x801052E8`, including raw instructions and their call relationship. The latter run completed with job **124713335726**, `STATUS=PASS`, `EXIT_CODE=0`, source SHA `4aba615a8d5603afe81cd8a5671ee4b088409350`. The import was explicitly marked static and not a runtime mapping proof.
+- The main-executable helper audit **41260739233**, job **124713299784**, completed with `STATUS=PASS`, `EXIT_CODE=0`, and exported the raw bodies for both `0x80043F18` and `0x80043AB8`. Its source workflow commit is `8e2eeed39fd36b5224c1e660daed812ccf2365dc`; this revision fixes the prior end-of-file validator bug. The previous attempt 41259079319 had the required function bodies but was mislabeled INCOMPLETE by that validator.
 
 ## Caller → helper → renderer → getter
 
@@ -35,6 +35,9 @@ Scope: static MIPS disassembly only; maximum evidence level K4. No emulator, gam
 This is a static register-provenance conclusion, not a gameplay/economy semantic conclusion. The import base `0x800AD450` remains a candidate; dynamic mapping and the exact runtime value of `a1` are **TIDAK TAHU**. No streamer-spoken formula was used.
 
 ## Evidence files
+
+- `reports/stage1_economy/at1-entry1-helper-a1-provenance-run-41260751877/attempt-1/ACTIONS_RUN_SUMMARY.txt` and `AT1_HELPER_A1_DETAIL.txt`
+- `reports/stage1_economy/at1-helper-a1-audit-run-41260739233/attempt-1/ACTIONS_RUN_SUMMARY.txt` and `seed-helper-detail.txt`
 
 - `reports/stage1_economy/aq1-run-41258690146/attempt-1/entry1-buffer-base-targets.txt`
 - `reports/stage1_economy/aq1-run-41258690146/attempt-1/input-identity.txt`
