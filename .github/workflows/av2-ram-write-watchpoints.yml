@@ -1,0 +1,201 @@
+name: AV2 — PCSX-Redux interpreter RAM write-watchpoints
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "experiments/av2_ram_write_watchpoints.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: naruto-av2-ram-write-watchpoints
+  cancel-in-progress: false
+
+jobs:
+  av2-watchpoints:
+    name: AV2 C A D six-launch RAM write-watchpoint matrix
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      GH_TOKEN: \${{ github.token }}
+      RESEARCH_REPO: \${{ github.repository }}
+      WORK: /tmp/naruto-av2-\${{ github.run_id }}-\${{ github.run_attempt }}
+      TIMEOUT_SECONDS: "1800"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Allocate private work and text output
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$WORK"/{source,inputs,cards,resume,logs,launches}
+          mkdir -p "$RUNNER_TEMP/av2-output"
+          echo "OUTDIR=$RUNNER_TEMP/av2-output" >> "$GITHUB_ENV"
+
+      - name: Install headless runtime tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends xvfb x11-utils curl jq unzip python3
+
+      - name: Download and verify pinned emulator, disc and BIOS
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK/source"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --retry 2 --max-time 60 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; out="$2"; bytes="$3"; digest="$4"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            test -n "$id" && test "$id" != null
+            curl --fail --silent --show-error --location --retry 2 --max-time 600 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$id" -o "$out"
+            test "$(stat -c %s "$out")" = "$bytes"
+            echo "$digest  $out" | sha256sum --check -
+          }
+          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage 65747557 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin 325989552 58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue 116 be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8
+          fetch_asset scph7502.zip scph7502.zip 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a
+          python3 - <<'PY'
+          from pathlib import Path
+          import stat,zipfile,hashlib
+          with zipfile.ZipFile("scph7502.zip") as z:
+              found=[];total=0
+              for x in z.infolist():
+                  p=Path(x.filename);mode=(x.external_attr>>16)&0xffff;total+=x.file_size
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)):raise SystemExit("unsafe BIOS member")
+                  if x.file_size>2*1024*1024 or total>4*1024*1024:raise SystemExit("BIOS expansion bound")
+                  if not x.is_dir() and x.file_size==524288:found.append(x)
+              if len(found)!=1:raise SystemExit("expected one BIOS-sized member")
+              bios=z.read(found[0])
+              if hashlib.sha256(bios).hexdigest()!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1":raise SystemExit("BIOS SHA mismatch")
+              Path("scph7502.bin").write_bytes(bios)
+          cue=Path("game.cue").read_text(encoding="utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          idx=[i for i,s in enumerate(cue) if s.strip().upper().startswith("FILE ")]
+          if len(idx)!=1:raise SystemExit("expected one CUE FILE row")
+          cue[idx[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(cue)+"\n",encoding="ascii")
+          PY
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          APPDIR="$WORK/source/squashfs-root"
+          test -x "$APPDIR/AppRun"
+          PCSX_BIN="$APPDIR/bin/pcsx-redux"
+          test -x "$PCSX_BIN"
+          echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
+          echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
+
+      - name: Download verified H6 components and reference Memory Card
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: "39867730674"
+          repository: \${{ github.repository }}
+          github-token: \${{ github.token }}
+          path: \${{ env.WORK }}/inputs
+
+      - name: Download reference Memory Card
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: "39262213468"
+          repository: \${{ github.repository }}
+          github-token: \${{ github.token }}
+          path: \${{ env.WORK }}/cards
+
+      - name: Validate private inputs and start Xvfb
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp "$(find "$WORK/inputs" -type f -name adaptive-cycle-01-f180.sstate -print -quit)" "$WORK/resume/control.sstate"
+          test "$(stat -c %s "$WORK/resume/control.sstate")" = 21162546
+          echo "9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492  $WORK/resume/control.sstate" | sha256sum --check -
+          cp "$(find "$WORK/cards" -type f -name naruto-storymode.mcd -print -quit)" "$WORK/reference.mcd"
+          test "$(stat -c %s "$WORK/reference.mcd")" = 131072
+          echo "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5  $WORK/reference.mcd" | sha256sum --check -
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/logs/xvfb.log" 2>&1 &
+          echo $! > "$WORK/xvfb.pid"
+          export DISPLAY=:99
+          for n in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          echo "PRIVATE_INPUTS_VALIDATED=PASS"
+          echo "H6_IDENTITY=HIBRIDA"
+
+      - name: Run AV2 calibration and C A D interpreter write-watchpoint matrix
+        shell: bash
+        run: |
+          set +e
+          export DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1
+          export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+          export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
+          export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
+          export QML2_IMPORT_PATH="$APPDIR/usr/qml"
+          python3 experiments/av2_ram_write_watchpoints.py \
+            --target "$WORK/resume/target.sstate" --control "$WORK/resume/control.sstate" \
+            --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/source/scph7502.bin" \
+            --cue "$WORK/source/game-run.cue" --card "$WORK/reference.mcd" \
+            --work "$WORK" --out "$OUTDIR" --timeout-seconds "$TIMEOUT_SECONDS"
+          rc=$?
+          echo "AV2_WORKFLOW_STEP_EXIT_CODE=$rc" > "$OUTDIR/AV2_WORKFLOW_STEP_EXIT_CODE.txt"
+          exit "$rc"
+
+      - name: Remove private inputs, emulator, savestates, cards and RAM
+        if: always()
+        shell: bash
+        run: |
+          if [ -f "$WORK/xvfb.pid" ]; then kill "$(cat "$WORK/xvfb.pid")" 2>/dev/null || true; fi
+          rm -rf "$WORK"
+
+      - name: Publish text-only AV2 evidence and Actions summary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          dest="reports/stage1_economy/av2-write-watchpoint-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$dest"
+          python3 - "$OUTDIR" <<'PY'
+          from pathlib import Path
+          import sys
+          root=Path(sys.argv[1])
+          invalid=[str(p) for p in root.rglob("*") if p.is_file() and p.suffix.lower() not in {".txt",".tsv",".log"}]
+          if invalid:raise SystemExit("non-text AV2 output blocked: "+repr(invalid))
+          required=("AV2_SUMMARY.txt","AV2_LAUNCHES.tsv","AV2_FRAMES.tsv","AV2_WRITE_EVENTS.tsv","AV2_HIT_COUNTS.tsv","AV2_AU3_HASH_CROSSCHECK.tsv","ACTIONS_RUN_SUMMARY.txt")
+          for name in required:
+              if not (root/name).is_file():(root/name).write_text("STATUS=TIDAK_TERSDIA\nreason=workflow did not create this output\n",encoding="utf-8")
+          PY
+          cp "$OUTDIR"/* "$dest/" 2>/dev/null || true
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="AV2 C A D six-launch RAM write-watchpoint matrix") | .id' | head -n 1)"
+          test -n "$JOB_ID" || JOB_ID="TIDAK TAHU"
+          STATUS="$(sed -n 's/^STATUS=//p' "$dest/ACTIONS_RUN_SUMMARY.txt" | head -n 1)"; test -n "$STATUS" || STATUS="INCOMPLETE"
+          RC="$(sed -n 's/^EXIT_CODE=//p' "$dest/ACTIONS_RUN_SUMMARY.txt" | head -n 1)"; test -n "$RC" || RC="TIDAK TAHU"
+          { echo "STATUS=$STATUS"; echo "JOB=av2-ram-write-watchpoints"; echo "JOB_ID=$JOB_ID"; echo "RUN_ID=$GITHUB_RUN_ID"; echo "SOURCE_SHA=$GITHUB_SHA"; echo "EXIT_CODE=$RC"; } > "$dest/ACTIONS_RUN_SUMMARY.txt"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$dest"
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish AV2 RAM write-watchpoint run $GITHUB_RUN_ID attempt $GITHUB_RUN_ATTEMPT"
+            pushed=0
+            for n in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main || { git rebase --abort; sleep "$n"; continue; }
+              if git push origin HEAD:main; then pushed=1; break; fi
+              sleep "$n"
+            done
+            test "$pushed" -eq 1
+          fi
+          echo "AV2_REPORT_PATH=$dest"
