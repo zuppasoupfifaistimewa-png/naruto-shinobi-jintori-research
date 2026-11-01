@@ -1,0 +1,26 @@
+AW3 — PCSX-REDUX HEADLESS INTERPRETER; H6 HIBRIDA; CONTROLLED DIRECT CALLS
+H6_SHA256=d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475
+H6_IDENTITY=target checkpoint base + CONTROL top-level protobuf field 6; HIBRIDA, NOT TARGET-PURE
+USER_INPUT=NONE; STORY_MODE_ADAPTIVE_PLAYER=NOT_RUN
+LAUNCH_MATRIX=two independent H6 reloads, two separately copied Memory Cards
+FLAGS=-debugger -interpreter; no dynarec
+DIRECT_FUNCTIONS=FUN_800B770C; getter_0x800138EC; setter_0x8001387C
+MANAGER_FUN_80109FEC=NOT_CALLED_DIRECTLY; state-machine has UI/audio/state side effects and chained calls; direct call lacks safe isolated preconditions
+TILE_HELPER_TEST=16 per launch: selectors 0..4 x H=19/101/257 at fields +0x10/+0x12/+0x2E, plus selector 5 default-zero
+GETTER_POSITIVE_CONTROL=index 0 and 1; expected 1500 each before any write
+SETTER_CONTROL=100,1500,100000,-10000; record +0x18 checked and full record restored
+MANAGER_A1_FORMULAS=6 per launch: ADD(B44)=0,7,25 and CAP(B44)=0,7,25; getter + B44 or getter + min(B44,0x14) fed to actual setter
+MANAGER_STATE_MACHINE=not called; direct call also enters UI/input/audio/state transitions, only setter argument expressions are isolated here
+REGISTER_STATE=GPR[0..33] including HI/LO, CP0, CP2D, CP2C, PC saved/restored per call
+RAM_HASH=SHA256 first 2MiB before/after and after full 2MiB baseline restore for every call
+RAW_RAM_DELTA=recorded separately; if changes occur outside tested target word they are not assigned to the callee; full baseline restored
+RESTORE_POLICY=full RAM snapshot at frame 180 plus complete GPR/CP0/CP2D/CP2C/PC restore after each isolated direct call
+EXPECTED_CALLS_PER_LAUNCH=28
+OBSERVED_CALLS=56
+HISTORICAL_MAX_WALL_SECONDS=241.088
+MAX_LAUNCH_WALL_SECONDS=58.880
+TIMEOUT_SECONDS_PER_LAUNCH=600
+TIMEOUT_GE_2X_HISTORICAL_MAX=True
+ALL_TESTS_PASS=True
+ATTEMPT=1 EXIT_DECIMAL=0 WALL=58.880 H6_LOADED=YES MCD_UNCHANGED=TRUE RAM_RESTORED=true CALLS=28 FAILED=0
+ATTEMPT=2 EXIT_DECIMAL=0 WALL=58.655 H6_LOADED=YES MCD_UNCHANGED=TRUE RAM_RESTORED=true CALLS=28 FAILED=0
