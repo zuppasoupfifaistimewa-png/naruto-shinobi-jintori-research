@@ -1,0 +1,10 @@
+STATUS=PASS
+JOB=helper-return-audit
+JOB_ID=124754117941
+RUN_ID=41274567492
+SOURCE_SHA=7def692176e0ac7e21bff0d4a9a5eca8baf70880
+EXIT_CODE=0
+TARGETS=0x8001387C,0x800138EC
+TARGETS_VERIFIED_IN=seed-helper-detail.txt
+METHOD=Ghidra static full-function disassembly; no emulator/gameplay input.
+NOTE=The original ACTIONS_RUN_SUMMARY TARGETS line named only earlier helper functions; this correction identifies the two accessor targets present in the exported detail file.
