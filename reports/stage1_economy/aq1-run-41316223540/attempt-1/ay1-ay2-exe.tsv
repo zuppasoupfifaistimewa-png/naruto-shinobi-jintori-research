@@ -1,0 +1,4 @@
+record_type	module	target_or_function	pc_or_ref	function_entry_or_block	function_name_or_detail	field_or_ref_type	width_or_ref_source	value_expression_or_instruction	pre_store_12_instructions	bytes_excerpt_hex_max64	notes
+META	MAIN_EXE	manager_slot=0x8013A554	runtime_observation=0x801CEF08	target_fields=0xB2A;0xB30;0xB38	program=SLPS_035.53	STATIC_ONLY	NO_EMULATOR	game_or_emulator_executed=no			all functions with manager-slot displacement or direct target-field displacement are candidate-scanned
+WRITER_SCAN_TOTAL	MAIN_EXE				confirmed=0	unresolved=0	candidate_functions_decompiled=0	decompile_failures=0	manager_slot=0x8013A554 runtime_observation=0x801CEF08		
+INDIRECT_CALL_LIMIT	MAIN_EXE	FUN_80109994;FUN_801048F0				jalr_count=152	pointer_words=0	reference_manager_refs=0	unresolved dynamic CALLIND sites may remain; no runtime caller inference		
