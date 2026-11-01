@@ -11,7 +11,7 @@ permissions:
   actions: read
 concurrency:
   group: naruto-ax4-original-manager-code
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   ax4-original-manager-code:
     name: AX4 two-launch H6 original-code matrix
