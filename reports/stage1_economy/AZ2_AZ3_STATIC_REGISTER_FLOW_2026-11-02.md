@@ -40,7 +40,7 @@ Reader yang terkonfirmasi:
 | +0xB44 | 0x8010A648 | FUN_80109FEC | v1 | 0x8010A640 |
 | +0xB44 | 0x8010A6A8 | FUN_80109FEC | v1 | 0x8010A6A0 |
 
-Untuk setiap PC di atas, 12 instruksi sebelumnya, byte instruction, instruksi load pointer manager, dan register efektif tercatat pada TSV. Tiga displacement tersebut hanya muncul pada tiga fungsi manager yang diperiksa: `FUN_80109974/FUN_80109994`, `FUN_80109F1C`, dan `FUN_80109FEC`. Ini merupakan census seluruh **direct displacement access** di Entry 1, lebih luas dari AQ1 awal yang mengekspor tiga badan fungsi.
+Untuk setiap PC di atas, 12 instruksi sebelumnya, byte instruction, instruksi load pointer manager, dan register efektif tercatat pada TSV. Tiga displacement tersebut muncul pada empat function entry manager yang terdeteksi: `FUN_80109974`, `FUN_80109994`, `FUN_80109F1C`, dan `FUN_80109FEC`. Ini merupakan census seluruh **direct displacement access** di Entry 1, lebih luas dari AQ1 awal yang mengekspor tiga badan fungsi.
 
 **Batas yang tetap berlaku:** operasi yang menghitung alamat field terlebih dahulu lalu mengakses offset 0, pointer yang didapat lewat struktur lain, atau indirect JALR tidak dapat dipastikan hanya dari displacement scan. Pembaca tak langsung semacam itu tetap **TIDAK TAHU**; tidak ada kesimpulan dari nol hit yang tidak diuji.
 ### Ekspresi a1 saat setter 0x8001387C dipanggil dari FUN_80109FEC

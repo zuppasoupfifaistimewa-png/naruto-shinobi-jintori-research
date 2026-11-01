@@ -1,9 +1,9 @@
 AZ0 COMMIT FILE LIST — git name-status across commits after initial HEAD
 BASE=e2a2f4485dfa258d8a4d25599c26cab0c9ac551a
-SNAPSHOT_HEAD=b49ca5aef7f15d39ae697f605d63e77517bdfcc4
-TOTAL_COMMITS=12
+SNAPSHOT_HEAD=cdf2fac29c6a58d129861aef68bbff0405ca2143
+TOTAL_COMMITS=13
 METHOD=each parent..commit compared independently; status letters A/M/D; bot publication commits included.
-NOTE=this file is included in a later metadata commit and therefore its own publishing commit is not part of this snapshot.
+NOTE=this file is included in a later correction/manifest commit and therefore that publishing commit is not part of this snapshot.
 
 COMMIT=2c5db558a4e3820c3ff2f50a1d133476cbc6ed2d
 SUBJECT=Add AZ0 raw writer audit and AZ1 read-only H6 snapshots
@@ -143,3 +143,10 @@ A reports/stage1_economy/AZ1_FINAL_RUNTIME_REPORT_2026-11-02.md
 A reports/stage1_economy/AZ1_MANUAL_RECONCILIATION_2026-11-02.md
 A reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_LAUNCHES_RECONCILED.tsv
 
+
+COMMIT=cdf2fac29c6a58d129861aef68bbff0405ca2143
+SUBJECT=Finalize AZ0 commit inventory and SHA-256 manifest; record AZ1 H6 results
+FILE_COUNT=3
+M reports/stage1_economy/AZ0_AZ1_HYPOTHESES_2026-11-02.md
+M reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ0_COMMIT_FILE_LIST.txt
+M reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ0_SHA256_ONE_SET.tsv
