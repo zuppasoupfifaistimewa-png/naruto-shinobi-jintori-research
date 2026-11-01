@@ -1,0 +1,8 @@
+source=raw SLPS_035.53 bytes; not TSV export
+exe_bytes=385024
+exe_sha256=a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569
+mapping=PC 0x80010000 + relative; raw EXE file offset = 0x800 + relative
+seed=20261101
+sample_1	pc=0x8001BA68	file_offset=0xC268	bytes=21 80 80 00
+sample_2	pc=0x8001ED1C	file_offset=0xF51C	bytes=00 00 00 00
+sample_3	pc=0x80042714	file_offset=0x32F14	bytes=0D 00 07 00
