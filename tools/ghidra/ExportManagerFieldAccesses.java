@@ -1,4 +1,4 @@
-// Export all MIPS instructions using displacement +0xB44 from the main EXE.
+// Export all MIPS instructions using displacement +0xB44 from DATA.BIN Entry 1.
 // The base object is not assumed to be manager unless the function also contains
 // the global-slot load pattern; all candidates are emitted with that caveat.
 import ghidra.app.script.GhidraScript;
@@ -31,7 +31,7 @@ public class ExportManagerFieldAccesses extends GhidraScript {
    InstructionIterator it=currentProgram.getListing().getInstructions(true);
    while(it.hasNext()){
     Instruction ins=it.next();String text=ins.toString().toLowerCase();
-    Matcher m=Pattern.compile("(?i)(?:0x)?([0-9a-f]+)\\(").matcher(text);
+    Matcher m=Pattern.compile("(?i)(?:0x)?([0-9a-f]+)\\\\(").matcher(text);
     boolean hit=false;while(m.find()){try{if((int)Long.parseLong(m.group(1),16)==disp){hit=true;break;}}catch(Exception ignored){}}
     if(!hit)continue;
     Function f=currentProgram.getFunctionManager().getFunctionContaining(ins.getAddress());

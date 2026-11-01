@@ -222,12 +222,14 @@ jobs:
             -postScript ExportStage1EconomyAQ1.java "$out/aq1-economy-census.tsv" \
             -postScript ExportStage1EconomyDeepContext.java "$out/aq1-deep-context.tsv" \
             -postScript ExportFunctionDetail.java "$out/entry1-helper-function-detail.txt" 0x800B770C 0x800BDC4C \
+            -postScript ExportFunctionDetail.java "$out/aw1-manager-function-detail.txt" 0x80109FEC \
+            -postScript ExportManagerFieldAccesses.java "$out/aw1-manager-b44-accesses.tsv" 0xB44 \
             -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
             > "$out/ghidra-headless.log" 2>&1
           rc=$?
           set -e
 
-          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" || ! -s "$out/pending-participant-delta.txt" || ! -s "$out/aq1-economy-census.tsv" || ! -s "$out/aq1-deep-context.tsv" || ! -s "$out/entry1-helper-function-detail.txt" ]]; then
+          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" || ! -s "$out/pending-participant-delta.txt" || ! -s "$out/aq1-economy-census.tsv" || ! -s "$out/aq1-deep-context.tsv" || ! -s "$out/entry1-helper-function-detail.txt" || ! -s "$out/aw1-manager-function-detail.txt" || ! -s "$out/aw1-manager-b44-accesses.tsv" ]]; then
             {
               echo "status=FAILURE"
               echo "job=analyze-entry1-buffer-base"
@@ -286,27 +288,7 @@ jobs:
           } > "$out/helper-a1-provenance-status.txt"
           cat "$out/helper-a1-provenance-status.txt"
 
-          # Analyze the manager state machine in the verified main executable.
-          main_project="$root/ghidra-main-project"
-          mkdir -p "$main_project"
-          set +e
-          "$headless" "$main_project" Naruto_SLPS_035_53_AW1 \
-            -import "$input/SLPS_035.53" -loader BinaryLoader -loader-baseAddr 0x80010000 \
-            -loader-fileOffset 0x800 -loader-length 0x5D800 -loader-blockName MAIN_TEXT \
-            -processor "MIPS:LE:32:default" -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
-            -preScript PreparePsxExe.java \
-            -postScript ExportFunctionDetail.java "$out/aw1-manager-function-detail.txt" 0x80109FEC \
-            -postScript ExportManagerFieldAccesses.java "$out/aw1-manager-b44-accesses.tsv" 0xB44 \
-            -analysisTimeoutPerFile 1800 -max-cpu 2 -deleteProject \
-            > "$out/aw1-main-ghidra.log" 2>&1
-          main_rc=$?
-          set -e
-          if [[ "$main_rc" -ne 0 || ! -s "$out/aw1-manager-function-detail.txt" || ! -s "$out/aw1-manager-b44-accesses.tsv" ]]; then
-            echo "AW1_MANAGER_GHIDRA=FAIL exit_code=$main_rc" > "$out/aw1-manager-status.txt"
-            tail -n 80 "$out/aw1-main-ghidra.log" || true
-            exit 1
-          fi
-          echo "AW1_MANAGER_GHIDRA=PASS function=0x80109FEC B44_inventory=exported" > "$out/aw1-manager-status.txt"
+          echo "AW1_MANAGER_GHIDRA=PASS function=0x80109FEC program=DATA.BIN_ENTRY1 B44_inventory=exported" > "$out/aw1-manager-status.txt"
 
           python3 tools/step7/SummarizeStage1EconomyCensus.py \
             --census "$out/aq1-economy-census.tsv" \
@@ -335,7 +317,7 @@ jobs:
             echo "aw1_manager_function_and_B44_inventory=PASS"
             echo "aw1_tile_field_function_inventory=PASS"
             echo "aw2_numeric_and_shiftjis_scan=PASS"
-            echo "aq1_scope=jump_table_5; record_fields_00_0B_20; direct_callers_770C_BDC4C; accessor_callers_grouped_by_record_B44_2EE"
+            echo "aq1_scope=jump_table_5; record_fields_00_0B_10_to_2E; direct_callers_770C_BDC4C; accessor_callers_grouped_by_record_B44_2EE"
             echo "targeted_functions=toll commit callback, all candidate pending-delta writers, pending processor, upgrade/toll state machines and caller graph"
             echo "game_or_emulator_executed=no"
             echo "gameplay_input_sent=no"
@@ -414,7 +396,7 @@ jobs:
           PY
           dest="reports/stage1_economy/aq1-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
-          for f in entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b44-accesses.tsv aw1-manager-status.txt aw1-main-ghidra.log aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv aq1-recount.txt run-summary.txt input-identity.txt; do
+          for f in entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b44-accesses.tsv aw1-manager-status.txt aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv aq1-recount.txt run-summary.txt input-identity.txt; do
             if [ -f "$out/$f" ]; then cp "$out/$f" "$dest/$f"; fi
           done
           API="https://api.github.com/repos/$RESEARCH_REPO"

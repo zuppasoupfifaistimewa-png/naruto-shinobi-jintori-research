@@ -1,6 +1,8 @@
-STATUS=SUCCESS
-JOB=analyze-entry1-buffer-base
+STATUS=FAILURE
+JOB=Analyze verified Entry 1 slice at 0x800AD450
 JOB_ID=124767570762
 RUN_ID=41279241109
 SOURCE_SHA=ee245b6138c418aff4d0b6d895d0cb5447e870af
-EXIT_CODE=0
+EXIT_CODE=1
+ANALYSIS_STEP=SUCCESS
+FAILURE_REASON=text_only_validation_rejected_aw2-static-data-scan.md_before_md_allowlist_fix
