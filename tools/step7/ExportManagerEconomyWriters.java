@@ -374,6 +374,28 @@ public class ExportManagerEconomyWriters extends GhidraScript {
         try { return ((int)currentProgram.getMemory().getByte(toAddr(address))) & 0xff; }
         catch(Exception e) { return -1; }
     }
+    private void dumpB30ConfigValidation() throws Exception {
+        int valid=0, invalid=0, unmapped=0;
+        for(int index=0;index<256;index++) {
+            long record=0x80057798L+(long)index*0x54L;
+            int gate=readByteValue(record+0x2eL);
+            long value=readWord(record+0x0cL);
+            if(gate<0) unmapped++;
+            else if(gate<0x0d) valid++;
+            else invalid++;
+            row("ECONOMY_B30_CONFIG_VALIDATION",module,"index="+index,
+                addrExpr(toAddr(record+0x0cL)),"B30_value="+(value==Long.MIN_VALUE?"TIDAK_TAHU":Long.toUnsignedString(value)),
+                "B30_hex="+(value==Long.MIN_VALUE?"":fmt(value)),
+                "field_0x2e="+(gate<0?"TIDAK_TAHU":String.valueOf(gate)),
+                "valid_by_FUN_80012EAC_gate="+(gate>=0&&gate<0x0d),
+                "bytes_B30="+bytes(toAddr(record+0x0cL),4),
+                "bytes_gate="+bytes(toAddr(record+0x2eL),1),
+                "gate comes from FUN_80012EAC: row byte +0x2E must be <0x0D","","static");
+        }
+        row("ECONOMY_B30_CONFIG_VALIDATION_TOTAL",module,"valid="+valid,"invalid="+invalid,
+            "unmapped="+unmapped,"rule=*(byte *)(0x80057798 + index*0x54 + 0x2E) < 13",
+            "no runtime","","","","");
+    }
     private void dumpB30ModeStateIndexMap() throws Exception {
         Set<Integer> indexes=new TreeSet<Integer>();
         Map<Integer,Integer> counts=new TreeMap<Integer,Integer>();
@@ -534,6 +556,7 @@ public class ExportManagerEconomyWriters extends GhidraScript {
             if(module.equals("MAIN_EXE")) {
                 exportEconomyGlobalSource();
                 exportB30SourceTables();
+                dumpB30ConfigValidation();
                 dumpB30ModeStateIndexMap();
                 dumpFunction(0x80012A80L);
                 dumpFunction(0x80012A8CL);
