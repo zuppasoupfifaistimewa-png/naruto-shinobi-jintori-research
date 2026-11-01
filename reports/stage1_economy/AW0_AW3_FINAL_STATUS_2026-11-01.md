@@ -143,7 +143,7 @@ Actions-generated commits menambahkan keluaran teks/TSV ke folder `reports/stage
 
 - AW0: AT1 static audit, AT1 getter call TSV, reconciled getter TSV, AU1 accessor disassembly.
 - AW1: `aq1-run-41291576229/attempt-1/aw1-manager-function-detail.txt`, `aw1-manager-b44-accesses.tsv`, `aw1-tile-field-function-inventory.tsv`, `aw1-helper-call-windows.tsv`.
-- AW2: `aq1-run-41291576229/attempt-1/aw2-static-data-scan.md`, `aw2-numeric-occurrences.tsv`, `aw2-numeric-instruction-literals.tsv`.
+- AW2: `aq1-run-41291576229/attempt-1/aw2-static-data-scan.md`, `aw2-numeric-occurrences.tsv`, `aw2-numeric-instruction-literals.tsv`, `ghidra-main-entry0-run-41290779708/ACTIONS_RUN_SUMMARY.txt`.
 - AW3: `aw3-controlled-run-41291503009/attempt-1/ACTIONS_RUN_SUMMARY.txt`, `AW3_SUMMARY.txt`, `AW3_LAUNCHES.tsv`, `AW3_CALL_RESULTS.tsv`, `AW3_SCRIPT_EXIT_CODE.txt`.
 
 **Kesimpulan:** AW0 dan AW1 selesai sebagai audit statis, sensus statis AW2 selesai (termasuk run Ghidra 41290779708 SUCCESS), dan matriks uji terkontrol AW3 selesai 56/56 PASS pada dua launch H6 HIBRIDA. Keempat paket AW0–AW3 tuntas dalam batas pekerjaan masing-masing. Ini bukan berarti logika gameplay keseluruhan tuntas: peta font/tile, runtime mapping Entry 0/1, hubungan helper dengan pendapatan petak, harga Barrier, dan identitas aksi Barrier release masih TIDAK TAHU atau belum terbukti. Tidak ada rumus gameplay yang direka.
