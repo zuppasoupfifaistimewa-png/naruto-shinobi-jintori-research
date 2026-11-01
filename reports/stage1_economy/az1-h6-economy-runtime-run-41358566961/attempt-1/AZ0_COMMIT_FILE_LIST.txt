@@ -1,0 +1,10 @@
+BASE=e2a2f4485dfa258d8a4d25599c26cab0c9ac551a
+COMMIT=2c5db558a4e3820c3ff2f50a1d133476cbc6ed2d
+SUBJECT=Add AZ0 raw writer audit and AZ1 read-only H6 snapshots
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+A	.github/workflows/az1-h6-economy-runtime.yml
+A	experiments/az1_h6_economy_runtime.py
+A	reports/stage1_economy/AZ0_AY1_RAW_WRITER_AUDIT_2026-11-02.tsv
+A	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+
