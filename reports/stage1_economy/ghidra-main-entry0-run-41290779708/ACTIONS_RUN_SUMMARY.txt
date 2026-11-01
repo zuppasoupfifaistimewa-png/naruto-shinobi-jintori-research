@@ -1,0 +1,8 @@
+STATUS=IN_PROGRESS
+JOB=Verify and analyze PS-X EXE; extract and analyze DATA.BIN Entry 0 for external helper
+JOB_ID=124801401017
+RUN_ID=41290779708
+SOURCE_SHA=18b926049fac5126118f545cf46ae2f01e5d84f0
+ACTIVE_STEP=Extract and analyze DATA.BIN entry 0 for external helper
+EXIT_CODE=NOT_AVAILABLE_JOB_STILL_RUNNING
+NOTE=No success/failure conclusion is claimed while GitHub Actions reports in_progress.
