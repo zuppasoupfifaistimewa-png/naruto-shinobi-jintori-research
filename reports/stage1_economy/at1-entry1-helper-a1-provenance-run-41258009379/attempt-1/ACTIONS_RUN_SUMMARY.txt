@@ -1,0 +1,7 @@
+STATUS=WORKFLOW_FAILED_BEFORE_JOB_CREATION
+JOB=NO_JOB_CREATED
+JOB_ID=TIDAK_TAHU
+RUN_ID=41258009379
+SOURCE_SHA=58011e50d346d1a9946220549b6fd5511ad4
+EXIT_CODE=TIDAK_TAHU
+DETAIL=GitHub Actions run completed with conclusion=failure and jobs endpoint returned zero jobs. No Ghidra import or emulator ran; no analysis output exists. Cause is TIDAK TAHU. A revised workflow moved runner temp resolution into a job step and was submitted under source SHA df039ab1e578141b7f1d6539f1e7f29892f5912e.
