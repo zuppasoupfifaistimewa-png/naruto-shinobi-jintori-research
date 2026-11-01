@@ -80,9 +80,9 @@ def main():
                 rows.append({"input":n,"kind":f"multiplier_sequence_u{w*8}","value":"100,120,150,180,200",
                              "offset":f"0x{x:X}","address":addr(n,x),"bytes":pat.hex(" "),"xref":"TIDAK TAHU"})
     notes += ["","## Dispatch table FUN_800B770C","",
-      "DATA.BIN Entry 1 file offset 0x11A4 = VA kandidat 0x800AD5F4. Lima word berikut diverifikasi byte-per-byte sebagai pointer dispatch, bukan table berisi angka persentase.",
+      "DATA.BIN Entry 1 file offset 0x1A4 = VA kandidat 0x800AD5F4. Lima word berikut diverifikasi byte-per-byte sebagai pointer dispatch, bukan table berisi angka persentase.",
       "","| Selector | VA tabel | Offset | Byte LE | Target |","|---:|---:|---:|---|---|"]
-    e1=files["DATA.BIN_ENTRY1"];off=0x11A4;got=e1[off:off+len(DISPATCH_BYTES)]
+    e1=files["DATA.BIN_ENTRY1"];off=0x1A4;got=e1[off:off+len(DISPATCH_BYTES)]
     if got!=DISPATCH_BYTES: raise SystemExit(f"FUN_800B770C dispatch table byte mismatch got={got.hex()}")
     for i,target in enumerate(DISPATCH):
         pos=off+i*4;chunk=e1[pos:pos+4]
