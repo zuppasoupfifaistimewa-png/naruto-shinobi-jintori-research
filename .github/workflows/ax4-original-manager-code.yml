@@ -10,7 +10,7 @@ permissions:
   contents: write
   actions: read
 concurrency:
-  group: naruto-ax4-original-manager-code
+  group: naruto-ax4-original-manager-code-v2
   cancel-in-progress: true
 jobs:
   ax4-original-manager-code:
