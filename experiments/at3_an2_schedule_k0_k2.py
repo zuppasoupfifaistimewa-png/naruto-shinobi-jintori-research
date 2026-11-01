@@ -212,7 +212,7 @@ def main():
     ev=parse_events(log,cond,mode,attempt);events.extend(ev)
     pressok=(cond=="C" or "AT3_INPUT condition=A phase=press frame=60" in log and "status=PASS" in log.split("AT3_INPUT condition=A phase=press frame=60")[-1].splitlines()[0])
     relok=(cond=="C" or "AT3_INPUT condition=A phase=release frame=61" in log and "status=PASS" in log.split("AT3_INPUT condition=A phase=release frame=61")[-1].splitlines()[0])
-    armed=(mode=="K0" or "AT3_BREAKPOINT_SET condition=A mode=K2 count=3 frame=180" in log or "AT3_BREAKPOINT_SET condition=C mode=K2 count=3 frame=180" in log)
+    armed=(mode=="K2" and ("AT3_BREAKPOINT_SET condition=A mode=K2 count=3 frame=180" in log or "AT3_BREAKPOINT_SET condition=C mode=K2 count=3 frame=180" in log))
     launches.append({"condition":cond,"mode":mode,"attempt":attempt,"flags":"-debugger -interpreter",
      "breakpoints_armed":"YES" if armed else ("NOT_APPLICABLE" if mode=="K0" else "NO"),
      "circle_press_readback":"NOT_APPLICABLE" if cond=="C" else ("PASS" if pressok else "FAIL"),
