@@ -101,7 +101,12 @@ jobs:
           ./pcsx-redux.AppImage --appimage-extract >/dev/null
           APPDIR="$WORK/source/squashfs-root"
           test -x "$APPDIR/AppRun"
-          PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 | grep -E '/(pcsx-redux|pcsx-redux[^/]*)$' | head -n 1)"
+          PCSX_BIN="$APPDIR/bin/pcsx-redux"
+          if [ ! -x "$PCSX_BIN" ]; then
+            echo "EXPECTED_PCSX_BIN_MISSING=$PCSX_BIN" >&2
+            find -L "$APPDIR" -maxdepth 8 -type f -name 'pcsx-redux*' -printf '%p %m\\n' >&2 || true
+            exit 1
+          fi
           test -n "$PCSX_BIN" && test -x "$PCSX_BIN"
           echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
           echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
