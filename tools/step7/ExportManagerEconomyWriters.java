@@ -345,6 +345,35 @@ public class ExportManagerEconomyWriters extends GhidraScript {
             }
         }
     }
+    private void dumpB30SourceTable(String tableName, long base, long stride, int count, long fieldOffset) throws Exception {
+        MemoryBlock block=currentProgram.getMemory().getBlock(toAddr(base+fieldOffset));
+        String blockName=block==null?"UNMAPPED":block.getName();
+        int readable=0, distinct=0;
+        Set<Long> values=new HashSet<Long>();
+        for(int i=0;i<count;i++) {
+            long address=base+(long)i*stride+fieldOffset;
+            long value=readWord(address);
+            boolean mapped=false;
+            try { mapped=currentProgram.getMemory().contains(toAddr(address)); } catch(Exception ignored) {}
+            if(value!=Long.MIN_VALUE) { readable++; values.add(value); }
+            row("ECONOMY_B30_TABLE_ROW",module,tableName,addrExpr(toAddr(address)),
+                "index="+i,"base="+addrExpr(toAddr(base))+" stride="+fmt(stride),
+                "field_offset="+fmt(fieldOffset),"mapped="+mapped,
+                value==Long.MIN_VALUE?"TIDAK_TAHU":Long.toUnsignedString(value),
+                value==Long.MIN_VALUE?"":fmt(value),bytes(toAddr(address),4),
+                "static raw loaded-image word; table semantics inferred only from callsite");
+        }
+        distinct=values.size();
+        row("ECONOMY_B30_TABLE_TOTAL",module,tableName,addrExpr(toAddr(base)),
+            "count="+count,"stride="+fmt(stride),"field_offset="+fmt(fieldOffset),
+            "memory_block="+blockName,"readable="+readable,"distinct_values="+distinct,
+            "caller A index=(param_1 & 0xff) or caller B index=byte[0x80058758+mode*0x84+state*0x0c]",
+            "no runtime");
+    }
+    private void exportB30SourceTables() throws Exception {
+        dumpB30SourceTable("FUN_80012780_PLAYER_INDEXED",0x8006491CL,0x30L,256,0x8L);
+        dumpB30SourceTable("FUN_80012EAC_CONFIG_INDEXED",0x80057798L,0x54L,256,0x0cL);
+    }
     private void exportEconomyGlobalSource() throws Exception {
         long target=0x80070C88L;
         Address a=toAddr(target);
@@ -456,6 +485,7 @@ public class ExportManagerEconomyWriters extends GhidraScript {
             for(long t:FUNCTIONS) callerRefs(t);
             if(module.equals("MAIN_EXE")) {
                 exportEconomyGlobalSource();
+                exportB30SourceTables();
                 dumpFunction(0x80012A80L);
                 dumpFunction(0x80012A8CL);
                 dumpFunction(0x80012780L);
