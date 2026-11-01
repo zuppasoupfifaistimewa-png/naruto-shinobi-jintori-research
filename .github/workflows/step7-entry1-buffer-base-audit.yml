@@ -9,6 +9,9 @@ on:
       - "tools/step7/ExportStage1EconomyAQ1.java"
       - "tools/step7/ExportStage1EconomyDeepContext.java"
       - "tools/step7/ExportPendingParticipantDelta.java"
+      - "tools/step7/ScanStage1EconomyData.py"
+      - "tools/step7/SummarizeStage1EconomyCensus.py"
+      - "tools/ghidra/ExportManagerFieldAccesses.java"
 
 permissions:
   contents: write
@@ -102,42 +105,44 @@ jobs:
           [[ -n "$iso" ]]
           xorriso -osirrox on -indev "$iso" -extract / "$extracted" > "$out/disc-extraction.log" 2>&1
           data="$(find "$extracted" -type f -iname 'DATA.BIN' -print -quit)"
+          exe="$(find "$extracted" -type f -iname 'SLPS_035.53' -print -quit)"
           [[ -n "$data" && -f "$data" ]]
+          [[ -n "$exe" && -f "$exe" ]]
+          [[ "$(stat -c '%s' "$exe")" == "385024" ]]
+          echo "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569  $exe" | sha256sum --check --status
+          cp "$exe" "$input/SLPS_035.53"
           [[ "$(stat -c '%s' "$data")" == "66015232" ]]
           echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $data" | sha256sum --check --status
 
-          python3 - "$data" "$input/DATA_BIN_ENTRY_0001.bin" "$out/input-identity.txt" <<'PY'
+          python3 - "$data" "$input" "$out/input-identity.txt" <<'PY'
           from pathlib import Path
           import hashlib, struct, sys
-          src, dst, report = map(Path, sys.argv[1:4])
+          src, dest, report = map(Path, sys.argv[1:4])
           data = src.read_bytes()
           table = data[0x44:0x2F44]
           rows = [struct.unpack_from("<II", table, i * 8) for i in range(len(table) // 8)]
-          lbn, length = rows[1]
-          if (lbn, length) != (8778, 596412):
-              raise SystemExit(f"Entry1 directory row mismatch: {(lbn, length)}")
-          offset = (lbn - 212) * 2048
-          if offset != 0x10BB000:
-              raise SystemExit(f"Entry1 source offset mismatch: {offset:#x}")
-          chunk = data[offset:offset + length]
-          digest = hashlib.sha256(chunk).hexdigest()
-          expected = "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a"
-          if len(chunk) != 596412 or digest != expected:
-              raise SystemExit(f"Entry1 slice identity mismatch bytes={len(chunk)} sha256={digest}")
-          dst.write_bytes(chunk)
-          report.write_text("\n".join([
-              "input_validation=PASS",
-              f"directory_index=1",
-              f"directory_LBN={lbn}",
-              f"directory_byte_length={length}",
-              f"DATA_BIN_file_offset=0x{offset:X}",
-              f"slice_bytes={len(chunk)}",
-              f"slice_sha256={digest}",
-              "proposed_buffer_base=0x800AD450",
-              "buffer_base_status=STATIC_CANDIDATE_FROM_MAIN_EXE_GLOBAL_SLOT",
-              "runtime_mapping=NOT_CAPTURED",
-              "binary_uploaded_as_artifact=no",
-          ]) + "\n", encoding="utf-8")
+          expected = {
+              0: (403, 110536, 0x5F800, "56ee7d3b195b0708bd5f9163d354f0173a828430c9467d410e822b1793d316d4"),
+              1: (8778, 596412, 0x10BB000, "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a"),
+          }
+          meta = []
+          for idx in (0, 1):
+              lbn, length = rows[idx]
+              elbn, elength, eoffset, edigest = expected[idx]
+              offset = (lbn - 212) * 2048
+              chunk = data[offset:offset + length]
+              digest = hashlib.sha256(chunk).hexdigest()
+              if (lbn, length, offset, len(chunk), digest) != (elbn, elength, eoffset, elength, edigest):
+                  raise SystemExit(f"Entry{idx} identity mismatch: lbn={lbn} len={length} off={offset:#x} sha={digest}")
+              (dest / f"DATA_BIN_ENTRY_{idx:04d}.bin").write_bytes(chunk)
+              meta.extend([f"entry{idx}_lbn={lbn}",f"entry{idx}_bytes={length}",
+                           f"entry{idx}_offset=0x{offset:X}",f"entry{idx}_sha256={digest}"])
+          meta.extend(["entry0_runtime_base=TIDAK TAHU",
+                       "entry1_static_base_candidate=0x800AD450",
+                       "entry1_runtime_mapping=NOT_VALIDATED",
+                       "main_exe_sha256=a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569",
+                       "main_exe_bytes=385024","private_binary_artifact=no"])
+          report.write_text("input_validation=PASS\n"+"\n".join(meta)+"\n",encoding="utf-8")
           PY
           rm -rf "$source" "$extracted"
           test ! -e "$source" && test ! -e "$extracted"
@@ -216,12 +221,13 @@ jobs:
             -postScript ExportPendingParticipantDelta.java "$out/pending-participant-delta.txt" \
             -postScript ExportStage1EconomyAQ1.java "$out/aq1-economy-census.tsv" \
             -postScript ExportStage1EconomyDeepContext.java "$out/aq1-deep-context.tsv" \
-            -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject \
+            -postScript ExportFunctionDetail.java "$out/entry1-helper-function-detail.txt" 0x800B770C 0x800BDC4C \
+            -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
             > "$out/ghidra-headless.log" 2>&1
           rc=$?
           set -e
 
-          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" || ! -s "$out/pending-participant-delta.txt" || ! -s "$out/aq1-economy-census.tsv" || ! -s "$out/aq1-deep-context.tsv" ]]; then
+          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" || ! -s "$out/pending-participant-delta.txt" || ! -s "$out/aq1-economy-census.tsv" || ! -s "$out/aq1-deep-context.tsv" || ! -s "$out/entry1-helper-function-detail.txt" ]]; then
             {
               echo "status=FAILURE"
               echo "job=analyze-entry1-buffer-base"
@@ -280,6 +286,37 @@ jobs:
           } > "$out/helper-a1-provenance-status.txt"
           cat "$out/helper-a1-provenance-status.txt"
 
+          # Analyze the manager state machine in the verified main executable.
+          main_project="$root/ghidra-main-project"
+          mkdir -p "$main_project"
+          set +e
+          "$headless" "$main_project" Naruto_SLPS_035_53_AW1 \
+            -import "$input/SLPS_035.53" -loader BinaryLoader -loader-baseAddr 0x80010000 \
+            -loader-fileOffset 0x800 -loader-length 0x5D800 -loader-blockName MAIN_TEXT \
+            -processor "MIPS:LE:32:default" -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -preScript PreparePsxExe.java \
+            -postScript ExportFunctionDetail.java "$out/aw1-manager-function-detail.txt" 0x80109FEC \
+            -postScript ExportManagerFieldAccesses.java "$out/aw1-manager-b44-accesses.tsv" 0xB44 \
+            -analysisTimeoutPerFile 1800 -max-cpu 2 -deleteProject \
+            > "$out/aw1-main-ghidra.log" 2>&1
+          main_rc=$?
+          set -e
+          if [[ "$main_rc" -ne 0 || ! -s "$out/aw1-manager-function-detail.txt" || ! -s "$out/aw1-manager-b44-accesses.tsv" ]]; then
+            echo "AW1_MANAGER_GHIDRA=FAIL exit_code=$main_rc" > "$out/aw1-manager-status.txt"
+            tail -n 80 "$out/aw1-main-ghidra.log" || true
+            exit 1
+          fi
+          echo "AW1_MANAGER_GHIDRA=PASS function=0x80109FEC B44_inventory=exported" > "$out/aw1-manager-status.txt"
+
+          python3 tools/step7/SummarizeStage1EconomyCensus.py \
+            --census "$out/aq1-economy-census.tsv" \
+            --output "$out/aw1-tile-field-function-inventory.tsv"
+          python3 tools/step7/ScanStage1EconomyData.py \
+            --exe "$input/SLPS_035.53" --entry0 "$input/DATA_BIN_ENTRY_0000.bin" \
+            --entry1 "$input/DATA_BIN_ENTRY_0001.bin" \
+            --markdown "$out/aw2-static-data-scan.md" \
+            --tsv "$out/aw2-numeric-occurrences.tsv"
+
           {
             echo "status=SUCCESS"
             echo "job=analyze-entry1-buffer-base"
@@ -294,6 +331,10 @@ jobs:
             echo "per_record_caller_graph=PASS"
             echo "pending_delta_trace=PASS"
             echo "aq1_economy_census=PASS"
+            echo "entry1_helper_decompile=PASS"
+            echo "aw1_manager_function_and_B44_inventory=PASS"
+            echo "aw1_tile_field_function_inventory=PASS"
+            echo "aw2_numeric_and_shiftjis_scan=PASS"
             echo "aq1_scope=jump_table_5; record_fields_00_0B_20; direct_callers_770C_BDC4C; accessor_callers_grouped_by_record_B44_2EE"
             echo "targeted_functions=toll commit callback, all candidate pending-delta writers, pending processor, upgrade/toll state machines and caller graph"
             echo "game_or_emulator_executed=no"
@@ -373,7 +414,7 @@ jobs:
           PY
           dest="reports/stage1_economy/aq1-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
-          for f in entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv aq1-deep-context.tsv aq1-recount.txt run-summary.txt input-identity.txt; do
+          for f in entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b44-accesses.tsv aw1-manager-status.txt aw1-main-ghidra.log aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv aq1-recount.txt run-summary.txt input-identity.txt; do
             if [ -f "$out/$f" ]; then cp "$out/$f" "$dest/$f"; fi
           done
           API="https://api.github.com/repos/$RESEARCH_REPO"
