@@ -6,7 +6,7 @@ Tanggal: 1 November 2026 (Asia/Jakarta). Repo tetap `zuppasoupfifaistimewa-png/n
 
 AT1(a) **TUNTAS — K4**: 14/14 call-site langsung ke setter `0x8001387C` direkonsiliasi dengan instruksi caller. Tabel lengkap, termasuk 12 instruksi sebelum tiap jal, delay slot, sumber basis, rantai stride, asal final a1, dan label census, ada di `AT1_SETTER_CALLS_RECONCILED_2026-11-01.tsv`.
 
-AT1(b) **SEBAGIAN — K3/K4 statis**: dua call-site getter dalam `FUN_801052E8` dijabarkan. Register a0 dan alur v0 terbukti. Nilai a1 pada jalur BLTZ-taken **TIDAK TAHU** karena helper `0x80105BCC` dipanggil sebelum getter dan a1 caller-saved; getter memakai a1 untuk pemeriksaan indeks 0..3. Detail di bawah.
+AT1(b) **TUNTAS — K4**: dua call-site getter dan kedua edge BLTZ dianalisis. `a0=s3` terbukti pada kedua call; v0 hasil getter pertama diuji oleh BLTZ lalu ditimpa instruksi delay-slot `lui v0,0x8014` pada kedua edge. Nilai konkret a1 pada jalur BLTZ-taken adalah **TIDAK TAHU** (a1 caller-saved setelah helper `0x80105BCC`), dan ketidakpastian itu dicatat eksplisit, bukan diisi tebakan. Pada fall-through, a1 berasal dari manager slot `0x8013A554`. Detail lengkap ada di TSV per-edge.
 
 AT1(c) **TUNTAS — K4**: himpunan FIELD enam run dibandingkan per PC/fungsi. Jumlah: 1.188, 1.188, 1.163, 1.178, 1.188, 1.188. Diff TSV berisi 35 PC yang beda; 25 hilang pada run 41213474394, 10 pada run 41249242776. Penyebab eksporternya **TIDAK TAHU** dari bukti ini saja. Run 41208394883 sudah 1.188 sebelum perubahan exporter cfff770; jadi cfff770 tidak dinyatakan sebagai penyebab kenaikan/selisih.
 
