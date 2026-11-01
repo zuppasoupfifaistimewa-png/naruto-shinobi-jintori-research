@@ -28,6 +28,8 @@ def read_schedule(path):
  with Path(path).open(encoding="utf-8",newline="") as f:
   for r in csv.DictReader(f,delimiter="\t"):
    name=r["schedule"]
+   if name=="B":
+    continue
    if name not in ("A","C") or name in schedules or int(r["launch_count"])!=2:raise ValueError("unexpected input schedule row "+str(r))
    if name=="C":
     if r["button"]!="NONE" or int(r["press_frame"])!=0 or int(r["release_frame"])!=0:raise ValueError("schedule C is not no-input")
