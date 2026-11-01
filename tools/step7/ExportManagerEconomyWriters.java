@@ -15,7 +15,7 @@ import java.util.*;
 public class ExportManagerEconomyWriters extends GhidraScript {
     private static final long MANAGER_SLOT = 0x8013A554L;
     private static final long[] TARGETS = {0xB2AL, 0xB30L, 0xB38L};
-    private static final long[] FUNCTIONS = {0x80109994L, 0x801048F0L, 0x80109974L, 0x80109984L, 0x80012A8CL};
+    private static final long[] FUNCTIONS = {0x80109994L, 0x801048F0L, 0x80109974L, 0x80109984L, 0x80012A80L, 0x80012A8CL};
     private PrintWriter out;
     private String module = "UNSPECIFIED";
     private int confirmedStores = 0, unresolvedStores = 0, refCount = 0, pointerWords = 0, jalrCount = 0;
@@ -456,11 +456,12 @@ public class ExportManagerEconomyWriters extends GhidraScript {
             for(long t:FUNCTIONS) callerRefs(t);
             if(module.equals("MAIN_EXE")) {
                 exportEconomyGlobalSource();
+                dumpFunction(0x80012A80L);
                 dumpFunction(0x80012A8CL);
             }
             if(module.equals("ENTRY1")) dumpFunction(0x800EDD68L);
             countJalr();
-            row("INDIRECT_CALL_LIMIT",module,"FUN_80109994;FUN_801048F0;FUN_80109974;FUN_80109984","","","",
+            row("INDIRECT_CALL_LIMIT",module,"FUN_80109994;FUN_801048F0;FUN_80109974;FUN_80109984;FUN_80012A80;FUN_80012A8C","","","",
                 "jalr_count="+jalrCount,"pointer_words="+pointerWords,"reference_manager_refs="+refCount,
                 "unresolved dynamic CALLIND sites may remain; no runtime caller inference","","");
             out.flush();
