@@ -114,4 +114,13 @@ Run 41258300049 diperbaiki dengan menunjuk executable `$APPDIR/bin/pcsx-redux`; 
 
 **AT3 TUNTAS — K5 terbatas pada matriks A/C × K0/K2 di H6 HIBRIDA.** Ada dua run yang lolos, masing-masing dua peluncuran per kondisi, dengan file hasil FRAMES/HITS/EVENTS identik. Pada jendela K2 yang lama (frame 180–360), getter 0x800138EC teramati; setter 0x8001387C dan helper 0x800B770C bernilai nol pada jendela tersebut. Nol hit hanya berarti tidak tertangkap pada alamat dan jendela yang diawasi. Kesimpulan ini tidak berlaku di luar H6 HIBRIDA, mode, dan jendela itu.
 
-Run 41259662960 tidak memperluas window breakpoint lama; AU3 baru yang diminta terpisah memperluas observasi menjadi frame 1–600 dan menonaktifkan breakpoint getter. Hasil AU3 dilaporkan terpisah.
+### Hasil AU3 — window diperluas sampai frame 600 (selesai)
+
+AU3 terpisah kini selesai: run **41274625876**, job **124754181385**, source SHA `214d6641b67b035300d7d8efbd117318d7a3f81b`, status `success`, exit code **0**. Eksperimen ini juga memakai H6 **HIBRIDA** (SHA-256 `d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475)), interpreter saja, dan getter dimatikan sebagai breakpoint. Hanya setter `0x8001387C` dan helper `0x800B770C` aktif sejak frame 1 sampai 600. Jadwal C (tanpa input) dan A (CIRCLE frame 60–61) masing-masing dua launch.
+
+Empat launch exit code desimal 0; timeout 1800 detik (>=2x waktu terlama 241.088 detik); 12/12 RAM capture di frame 180/360/600 PASS; dua A readback press/release PASS; Memory Card terpisah per launch dan tidak berubah (SHA-256 sebelum/sesudah `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`). Semua detail hash/frame dan hit ada pada `AU3_RUNTIME_AUDIT_2026-11-01.md`.
+
+Hit setter/helper = 0 pada kedua jadwal di window frame 1–600; file event hanya memiliki header. Nol hit adalah hasil pengamatan terbatas, bukan bukti routine tidak pernah dipakai. Hash RAM C berulang sama pada kedua launch dan hash A berulang sama pada kedua launch; A vs C berbeda pada seluruh frame sampel 180/360/600. Hash agregat tidak mengidentifikasi field atau sebab perubahan.
+
+**AU3 TUNTAS — K5 terbatas** untuk matriks H6 HIBRIDA/interpreter/A-C/window frame 1–600 yang diuji. Laporan lengkap: `reports/stage1_economy/AU3_RUNTIME_AUDIT_2026-11-01.md`.
+
