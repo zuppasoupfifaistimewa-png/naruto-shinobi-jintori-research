@@ -309,7 +309,7 @@ Kesimpulannya hanya bahwa tidak ditemukan susunan lima nilai itu dalam tipe/stri
 
 Pencarian string literal ASCII/Shift-JIS exact menghasilkan 0 hit untuk kata kunci English/Japanese yang dicatat pada bagian sebelumnya. Heuristik run Shift-JIS menghasilkan 25 run di EXE, 3 di Entry 0, 234 di Entry 1 (262 total). Run itu tidak terbukti sebagai message UI; sebagian hasil Entry 0 tampak seperti decoding byte acak. Peta indeks glyph/tile ke font tetap **TIDAK TAHU**.
 
-Ekspor immediate literal Ghidra pada Entry 1 tersedia pada `aw2-numeric-instruction-literals.tsv`. Run Ghidra terpisah untuk EXE utama dan DATA.BIN Entry 0 (`41290779708`) masih berstatus berjalan pada saat laporan final ini dibuat; karena itu daftar xref semua literal numerik untuk dua input tersebut belum lengkap. Byte-scan raw numeric occurrences untuk ketiga input sudah selesai dan disimpan.
+Ekspor immediate literal Ghidra pada Entry 1 tersedia pada `aw2-numeric-instruction-literals.tsv`. Pada saat laporan awal AW1–AW2 disusun, run Ghidra EXE utama dan DATA.BIN Entry 0 (`41290779708`) masih berjalan. Run tersebut kemudian selesai dengan `SUCCESS` dan exit code `0`; hasil lengkap jumlah function index serta immediate-literal pada EXE utama/Entry 0 dicatat pada bagian “hasil akhir ekspor Ghidra Main EXE dan Entry 0” di bawah dan ringkasan Actions tersimpan pada `ghidra-main-entry0-run-41290779708/ACTIONS_RUN_SUMMARY.txt`. Dengan demikian, matriks ekspor immediate-literal untuk tiga input sudah selesai; interpretasi semantik literal tetap memerlukan caller/consumer proof.
 
 ## AW2 — hasil akhir ekspor Ghidra Main EXE dan Entry 0
 
