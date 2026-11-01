@@ -123,3 +123,28 @@ Pembaca B44 terdekat yang menyiapkannya bersama pointer buffer/teks berada di FU
 - 0x80109F68 jal 0x8001B364; delay slot 0x80109F6C li a3,5
 
 Ini membuktikan B44 dipasok sebagai a2 bersama dua alamat buffer/teks dan parameter a3=5. Caller tidak mengungkap literal string atau label yang dipakai callee. Identitas tulisan yang terlihat: TIDAK TAHU.
+
+
+## I. Census lengkap akses manager+0xB44 pada tiga fungsi terpetakan
+
+Census statis AW1 mencatat 14 instruksi yang mengakses displacement +0xB44. Tabel ini melengkapi fokus A648–A658 dan membedakan load, store, serta calon angka yang diberikan pada routine tampilan.
+
+| PC | Fungsi | Instruksi | Peran yang dapat dibaca dari alur |
+|---|---|---|---|
+| 0x80109A54 | FUN_80109994 | delay slot sw zero,0xB44(v0) | inisialisasi B44=0 |
+| 0x80109F64 | FUN_80109F1C | lw a2,0xB44(v1) | B44 diberikan sebagai a2 ke jalur 0x8001B364; buffer pointer di a0/a1 dan a3=5. Teks literal TIDAK TAHU |
+| 0x8010A0F4 | FUN_80109FEC | sw v1,0xB44(v0) | snapshot B40 ke B44 saat input bit 0x20 dan state B2A 3–6 |
+| 0x8010A154 | FUN_80109FEC | lw a1,0xB44(v1) | sumber addend pada a1; delay slot A160 menambahkan getter Q(i) sebelum setter |
+| 0x8010A1C4 | FUN_80109FEC | sw zero,0xB44(v0) | reset B44=0 pada jalur state 7 ketika bit input 0x20 aktif |
+| 0x8010A524 | FUN_80109FEC | lw v0,0xB44(v1) | dibandingkan dengan B40 oleh slt di A530 untuk state 6 |
+| 0x8010A590 | FUN_80109FEC | lw v0,0xB44(v1) | membaca progress lama sebelum penambahan 0x14 di A598/A59C |
+| 0x8010A59C | FUN_80109FEC | sw v0,0xB44(v1) | menyimpan old(B44)+0x14 dalam state 6 |
+| 0x8010A5C8 | FUN_80109FEC | sw v1,0xB44(v0) | snap B44=B40 ketika state 6 mencapai target, lalu B2A menjadi 7 |
+| 0x8010A5EC | FUN_80109FEC | lw v0,0xB44(v0) | input ke pembatasan nilai 0x15 di A5F4 |
+| 0x8010A610 | FUN_80109FEC | lw s1,0xB44(v0) | dipilih bila B44<21; bila tidak, jump-delay A604 menetapkan s1=0x14 |
+| 0x8010A648 | FUN_80109FEC | lw v0,0xB44(v1) | membaca nilai sebelum pengurangan state 7 |
+| 0x8010A658 | FUN_80109FEC | delay slot sw v0,0xB44(v1) | menyimpan old(B44)-s1 |
+| 0x8010A6A8 | FUN_80109FEC | lw v0,0xB44(v1) | pemeriksaan terminal: bne v0,zero di A6B0; bila nol, state byte diubah ke 8 |
+
+Census ini mengandung 14 akses dalam 3 fungsi (FUN_80109994, FUN_80109F1C, FUN_80109FEC), bukan 14 label string. Hanya site FUN_80109F1C / 0x80109F64 yang terlihat meneruskan B44 bersama buffer pointer ke formatter/routine 0x8001B364. Tidak ada bukti string teks literal atau label semantik khusus B44 dari call-site itu. Nilai yang diuji secara numerik di FUN_80109FEC adalah B44 vs B40 (A530), B44 vs 0x15/21 (A5F4), serta B44 != 0 (A6B0); tidak satu pun instruksi perbandingan tersebut menamai konsep ekonomi.
+
