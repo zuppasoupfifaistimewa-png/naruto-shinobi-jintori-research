@@ -122,10 +122,10 @@ jobs:
           mkdir -p "$project" "$out"
           headless="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
           [[ -n "$headless" && -x "$headless" ]]
-          "$headless" "$project" Naruto_seed_helper_audit             -import "$exe"             -loader BinaryLoader -loader-baseAddr 0x80010000 -loader-fileOffset 0x800             -loader-length 0x5D800 -loader-blockName MAIN_TEXT             -processor "MIPS:LE:32:default"             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra"             -preScript PreparePsxExe.java             -postScript ExportFunctionDetail.java "$out/seed-helper-detail.txt" 0x80037138 0x80035DA8 0x80037B58 0x80037BB0 0x8003755C 0x800373F8 0x800373C8 0x80037C48 0x80105BCC             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject             > "$out/ghidra-headless.log" 2>&1
+          "$headless" "$project" Naruto_seed_helper_audit             -import "$exe"             -loader BinaryLoader -loader-baseAddr 0x80010000 -loader-fileOffset 0x800             -loader-length 0x5D800 -loader-blockName MAIN_TEXT             -processor "MIPS:LE:32:default"             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra"             -preScript PreparePsxExe.java             -postScript ExportFunctionDetail.java "$out/seed-helper-detail.txt" 0x80037138 0x80035DA8 0x80037B58 0x80037BB0 0x8003755C 0x800373F8 0x800373C8 0x80037C48 0x80043F18             -analysisTimeoutPerFile 600 -max-cpu 2 -deleteProject             > "$out/ghidra-headless.log" 2>&1
           grep -Eiq "^=== TARGET (0x)?80037138 ===$" "$out/seed-helper-detail.txt"
           grep -Eiq "^=== TARGET (0x)?80035DA8 ===$" "$out/seed-helper-detail.txt"
-          grep -Eiq "^=== TARGET (0x)?80105BCC ===$" "$out/seed-helper-detail.txt"
+          grep -Eiq "^=== TARGET (0x)?80043F18 ===$" "$out/seed-helper-detail.txt"
           echo "helper_function_and_setter_detail=PASS"
           echo "runtime_call_contract=NOT_PROVEN"
           echo "hypothetical_DATA_BIN_entry0_base=0x800AD000"
@@ -184,7 +184,7 @@ jobs:
           for name in seed-helper-detail.txt input-identity.txt ghidra-headless.log; do
             if [ -f "$out/$name" ]; then cp "$out/$name" "$dest/"; fi
           done
-          if [ -s "$out/seed-helper-detail.txt" ] && grep -Eiq "^=== TARGET (0x)?80105BCC ===$" "$out/seed-helper-detail.txt" && grep -q "RAW_FUNCTION_BODY_BEGIN" "$out/seed-helper-detail.txt"; then
+          if [ -s "$out/seed-helper-detail.txt" ] && awk '/^=== TARGET (0x)?80043f18 ===$/ { in_target=1; next } /^=== TARGET / { in_target=0 } in_target' "$out/seed-helper-detail.txt" | grep -q "RAW_FUNCTION_BODY_BEGIN"; then
             status="PASS"; rc="0"
           else
             status="INCOMPLETE"; rc="1"
@@ -198,13 +198,13 @@ jobs:
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "SOURCE_SHA=$GITHUB_SHA"
             echo "EXIT_CODE=$rc"
-            echo "TARGET=0x80105BCC"
+            echo "TARGET=0x80043F18"
             echo "METHOD=Ghidra static disassembly only; no emulator/gameplay input."
           } > "$dest/ACTIONS_RUN_SUMMARY.txt"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$dest"
-          git commit -m "Publish static a1 helper provenance for 0x80105BCC run $GITHUB_RUN_ID"
+          git commit -m "Publish static a1 helper provenance for 0x80043F18 run $GITHUB_RUN_ID"
           pushed=0
           for n in 1 2 3; do
             git fetch origin main
