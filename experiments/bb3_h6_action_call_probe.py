@@ -325,8 +325,14 @@ def main():
     rows = []
     max_wall = 0.0
     launch_total = 0
+    stop_reason = "ALL_CASES_COMPLETED"
+    stop = False
     for action in ACTION_VALUES:
+        if stop:
+            break
         for level in LEVEL_VALUES:
+            if stop:
+                break
             for attempt in (1, 2):
                 launch_total += 1
                 launch = work / "launches" / ("action-%d-level-%d-attempt-%d" % (action, level, attempt))
@@ -420,6 +426,13 @@ def main():
                     "wrapper_exit_code_decimal": wrapper_rc, "wall_seconds": "%.3f" % wall,
                     "timeout_seconds": timeout_s,
                 })
+                if result_status != "PASS" or wrapper_rc != 0:
+                    diag_name = "BB3_FIRST_NONPASS_A%d_L%d_ATTEMPT%d.txt" % (action, level, attempt)
+                    (out / diag_name).write_text(log_text[-30000:], encoding="utf-8")
+                    stop_reason = ("FIRST_NONPASS action=%d level=%d attempt=%d status=%s wrapper_exit=%d wall=%.3f" %
+                                   (action, level, attempt, result_status, wrapper_rc, wall))
+                    stop = True
+                    break
 
     columns = list(rows[0].keys()) if rows else []
     with (out / "BB3_ACTION_CALL_RESULTS.tsv").open("w", encoding="utf-8", newline="") as f:
@@ -486,6 +499,8 @@ def main():
         "CONDITIONS=action byte 3,8 x tile+0x20 bits8-11 level 0..3 x 2 independent launches",
         "LAUNCHES=%d EXPECTED=%d" % (len(rows), expected_rows),
         "PASS_LAUNCHES=%d" % len(pass_rows),
+        "STOP_REASON=" + stop_reason,
+        "FIRST_FAILURE_DIAGNOSTIC=" + ("PUBLISHED_TEXT_ONLY" if stop else "NONE"),
         "COVERAGE_2_ATTEMPTS_PER_ACTION_LEVEL=%s" % coverage_ok,
         "VALIDATION_ERRORS=%d" % len(validation_errors),
         "VALIDATION_ERROR_DETAILS=" + (";".join(validation_errors) if validation_errors else "NONE"),
@@ -505,8 +520,9 @@ def main():
     (out / "BB3_ACTION_CALL_SUMMARY.txt").write_text("\n".join(report) + "\n", encoding="utf-8")
     (out / "BB3_SCRIPT_EXIT_CODE.txt").write_text("BB3_SCRIPT_EXIT_CODE=%d\n" % exit_code, encoding="utf-8")
     (out / "ACTIONS_RUN_SUMMARY.txt").write_text(
-        "STATUS=INCOMPLETE\nJOB=bb3-h6-action-call-probe\nRUN_ID=%s\nSOURCE_SHA=%s\nEXIT_CODE=%d\n" %
-        (os.getenv("GITHUB_RUN_ID", "TIDAK TAHU"), os.getenv("GITHUB_SHA", "TIDAK TAHU"), exit_code),
+        "STATUS=%s\nJOB=bb3-h6-action-call-probe\nRUN_ID=%s\nSOURCE_SHA=%s\nEXIT_CODE=%d\n" %
+        ("SUCCESS" if exit_code == 0 else "SEBAGIAN",
+         os.getenv("GITHUB_RUN_ID", "TIDAK TAHU"), os.getenv("GITHUB_SHA", "TIDAK TAHU"), exit_code),
         encoding="utf-8")
     raise SystemExit(exit_code)
 
