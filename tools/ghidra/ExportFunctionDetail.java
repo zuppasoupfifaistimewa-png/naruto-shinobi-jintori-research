@@ -178,12 +178,17 @@ public class ExportFunctionDetail extends GhidraScript {
             if(!decompiler.openProgram(currentProgram))
                 throw new IllegalStateException("Decompiler could not open main executable.");
             for(int i=1;i<args.length;i++) dumpTarget(toAddr(Long.decode(args[i])),decompiler);
-            // This legacy global is mapped in MAIN_EXE; emit its xrefs only when present
-            // in the currently imported image, so the same exporter can audit Entry 1.
-            if (currentProgram.getMemory().contains(toAddr(0x80066E7CL))) {
-                dumpDataReferences(0x80066E7CL);
-            } else {
-                line("DATA_XREFS target=0x80066E7C status=UNMAPPED_IN_THIS_IMPORTED_IMAGE");
+            // Probe relevant globals only when mapped in the current imported image.
+            // Entry 1 contains the queued participant deltas and event amount globals;
+            // MAIN_EXE contains the legacy helper-return global.
+            long[] dataTargets = {0x80066E7CL, 0x80139ECCL, 0x80139EFCL};
+            for (long dataTarget : dataTargets) {
+                if (currentProgram.getMemory().contains(toAddr(dataTarget))) {
+                    dumpDataReferences(dataTarget);
+                } else {
+                    line("DATA_XREFS target=0x"+Long.toHexString(dataTarget)
+                        +" status=UNMAPPED_IN_THIS_IMPORTED_IMAGE");
+                }
             }
             decompiler.dispose();
             out.flush();
