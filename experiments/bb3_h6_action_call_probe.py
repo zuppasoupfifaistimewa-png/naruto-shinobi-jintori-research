@@ -37,6 +37,8 @@ def make_lua(action, level):
 if io.stdout then io.stdout:setvbuf("no") end
 local action = tonumber(os.getenv("BB3_ACTION")) or 3
 local level = tonumber(os.getenv("BB3_LEVEL")) or 0
+local TILE_INDEX = 4
+local TILE_STRIDE = 0x124
 local frames, started, done = 0, false, false
 local loaded, postLoadVsync, prepared = false, 0, false
 local selectHit = false
