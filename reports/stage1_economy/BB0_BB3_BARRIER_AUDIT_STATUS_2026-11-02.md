@@ -62,6 +62,29 @@ Rantai yang ditemukan pada `FUN_800D15A8`:
 
 Kesimpulan: jalur biaya action 3/8 secara statis K4. Nama gameplay action 3 vs 8 dan hubungan langsungnya dengan barrier placement yang terlihat di BB0 belum teridentifikasi. Rumus positif `tile+0x1E + level × tile+0x1C` adalah cabang terpisah; label gameplay-nya tetap TIDAK TAHU.
 
+### BB2 — pemetaan PC instruksi yang dapat dipakai untuk verifikasi BB3
+
+Pemeriksaan ulang dekompilasi dan raw MIPS untuk `FUN_800D15A8` (Entry 1, ukuran body 17.944 byte) mengonfirmasi bahwa label `case 3` dan `case 8` berada dalam satu blok transaksi pada `LAB_800D4468`. Jadi kedua nilai action-byte itu memang target uji yang benar; kesimpulan tersebut tidak berasal dari menafsirkan nilai jenis petak.
+
+Urutan instruksi raw yang terkait:
+
+| PC | Instruksi/makna |
+|---|---|
+| `0x800D4468` | Memuat pointer manager; blok `switch(action byte +0x2EB)` dimulai pada label ini. |
+| `0x800D4470` | Membaca action byte `manager+0x2EB`; jump table membedakan action. |
+| `0x800D45D0` | Memanggil `FUN_800BBD9C()` untuk memilih petak. |
+| `0x800D45E0` | Menyimpan indeks terpilih ke `manager+0x4A0`. |
+| `0x800D4628` | Membaca `u16(tile+0x1A)` sebagai fee. |
+| `0x800D462C`–`0x800D4638` | Membaca saldo kerja `participant+0x04`, membandingkan fee dengan saldo, dan menuju jalur gagal bila saldo kurang. |
+| `0x800D46EC`–`0x800D46F8` | Membaca fee, menegasikan nominalnya, lalu menyimpan signed delta ke `participant_manager+0x2EE`. |
+| `0x800D4724`–`0x800D4764` | Menghapus dan menulis ulang nibble bits 8–11 dengan level lama +1. |
+| `0x800D47F4`–`0x800D4834` | Menghapus dan menulis ulang nibble bits 4–7 dengan level lama +1. |
+| `0x800D4840`, `0x800D4848` | Memanggil `FUN_800BB004` dan `FUN_800BE464` sesudah mutasi level. |
+
+Ini memperkuat BB2 sebagai K4 statis. Probe BB3 saat ini memasang breakpoint pada dispatch `0x800D4468`, sesudah return selector `0x800D45D8`, dan sebelum refresh tile `0x800D4838`; ketiga lokasi tersebut berada di dalam blok yang telah dicocokkan dengan instruksi di atas.
+
+Catatan semantik: nama gameplay untuk action byte 3 dan 8 masih **TIDAK TAHU**. Keduanya hanya terbukti masuk ke satu blok transaksi yang sama pada fungsi ini.
+
 ## BB3 — hasil uji runtime dan blocker
 
 ### Run 41459907683 — function-call probe
