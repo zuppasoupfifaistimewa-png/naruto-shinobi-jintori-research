@@ -1,0 +1,37 @@
+path	bytes	sha256	status
+docs/HANDOFF_STAGE1_ECONOMY_2026-10-31.md	8827	adea7ed2c50dcdc0f01af5bdb15edcaa9c079b9ec6abd2289a8962daeac08d30	PRESENT
+reports/stage1_economy/AT1_GETTER_CALLS_RECONCILED_2026-11-01.tsv	2504	19f433dff44b489050e095f8a7223ee7a62a87a2308a8ff51eae53dd9ecd8f67	PRESENT
+reports/stage1_economy/AT1_SETTER_CALLS.tsv	10547	0aff526ae941ce5eb6f10a69935a9280b0acb94ed3d1a9a54aa5203daae34767	PRESENT
+reports/stage1_economy/AX2_SETTER_ARGUMENTS_FULL_2026-11-01.tsv	12579	54706bf28e395967a8e3a10959c8535e5e315a517f3d1c425565fa425b37f19a	PRESENT
+reports/stage1_economy/aq1-run-41319511985/attempt-1/input-identity.txt	587	93c6cf9c2b0ad654d2a83923927cab9e81afc270886d529efe8a3b9444613643	PRESENT
+reports/stage1_economy/aq1-run-41319511985/attempt-1/ay1-ay2-entry1.tsv	113603	90608da0f2738433c12ac5c6181b84e71a5baeb5c3ce97405592d0c76d7466bb	PRESENT
+reports/stage1_economy/aq1-run-41319511985/attempt-1/ay1-ay2-exe.tsv	953275	4e5993ad7581372ecd9a23168b1e6ddec09e3b81d1cec4b7f0c2612b19c6a806	PRESENT
+reports/stage1_economy/aq1-run-41319511985/attempt-1/aw1-manager-function-detail.txt	45731	555abafd26e478c6521fbb8867b5887395bdb8aa5c561777e60f333f503c9ff0	PRESENT
+reports/stage1_economy/aq1-run-41319511985/attempt-1/aw1-manager-b44-accesses.tsv	1727	cd54178c047ad65d40bd18275ee0b5d46a1fe724c3dca1406789e0f76226d73a	PRESENT
+reports/stage1_economy/aq1-run-41319511985/attempt-1/entry1-helper-function-detail.txt	25643	057b8d3fad68765540b43b59ad4701a41805f2e576b5f1efdd1412936e8587fb	PRESENT
+reports/stage1_economy/AZ0_AY1_RAW_WRITER_AUDIT_2026-11-02.tsv	1477	1f572d03bcd4d1b6d84ff18d1d6e7b23057950c473aecb3d1a22a4a2362f0a5f	PRESENT
+reports/stage1_economy/AZ0_BA3_HYPOTHESES_2026-11-02.md	TIDAK TAHU	TIDAK TAHU	MISSING
+reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md	11143	a97bc772c2ca470b1bfe7c458d631ff2dd64a46e4142034f6b05f3b63fad314d	PRESENT
+reports/stage1_economy/AZ2_MANAGER_READERS_2026-11-02.tsv	14841	6526810196896488b42c831ee8bed0a1d4c4b2b0d6739854d6bbb7287225db1d	PRESENT
+reports/stage1_economy/AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv	4665	f438bd60abb1bf286363c5202c8744aff301de378390c680630a417aa1de323e	PRESENT
+experiments/ba3_h6_tile_resource_runtime.py	27979	48ee644a26e4453fea3fa11d538fa704856053f8bad94019c9d90d40b1801a99	PRESENT
+.github/workflows/ba3-h6-economy-runtime.yml	TIDAK TAHU	TIDAK TAHU	MISSING
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41358566961/attempt-1/ACTIONS_RUN_SUMMARY.txt	TIDAK TAHU	TIDAK TAHU	MISSING
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41358566961/attempt-1/BA3_H6_ECONOMY_SUMMARY.txt	TIDAK TAHU	TIDAK TAHU	MISSING
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41358566961/attempt-1/BA3_LAUNCHES.tsv	TIDAK TAHU	TIDAK TAHU	MISSING
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41358566961/attempt-1/BA3_MANAGER_FIELDS.tsv	TIDAK TAHU	TIDAK TAHU	MISSING
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41358566961/attempt-1/BA3_TILE_AGGREGATES.tsv	TIDAK TAHU	TIDAK TAHU	MISSING
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41358566961/attempt-1/BA3_TILE_RECORDS.tsv	TIDAK TAHU	TIDAK TAHU	MISSING
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41358566961/attempt-1/BA3_TABLE_SELECTION.tsv	TIDAK TAHU	TIDAK TAHU	MISSING
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/ACTIONS_RUN_SUMMARY.txt	159	d691d1707712f2d32e22407af43729c94e8e4bacf0276f3b13595e027fcbf448	PRESENT
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/AZ0_COMMIT_FILE_LIST.txt	68464	a855018d0737eba555a1abb67784379a988b1fc8cf18fd770e92797f4558bef2	PRESENT
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_H6_ECONOMY_SUMMARY.txt	64	21b92cc87931f36f469a730ab03fd1ece22ff7398942bb3f329a73ab514f886f	PRESENT
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_LAUNCHES.tsv	64	21b92cc87931f36f469a730ab03fd1ece22ff7398942bb3f329a73ab514f886f	PRESENT
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_MANAGER_FIELDS.tsv	64	21b92cc87931f36f469a730ab03fd1ece22ff7398942bb3f329a73ab514f886f	PRESENT
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_SCRIPT_EXIT_CODE.txt	64	21b92cc87931f36f469a730ab03fd1ece22ff7398942bb3f329a73ab514f886f	PRESENT
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_RESOURCE_SELECTOR.tsv	64	21b92cc87931f36f469a730ab03fd1ece22ff7398942bb3f329a73ab514f886f	PRESENT
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_TABLE_SELECTION.tsv	64	21b92cc87931f36f469a730ab03fd1ece22ff7398942bb3f329a73ab514f886f	PRESENT
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_TILE_AGGREGATES.tsv	64	21b92cc87931f36f469a730ab03fd1ece22ff7398942bb3f329a73ab514f886f	PRESENT
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_TILE_FIELD_SNAPSHOT.tsv	64	21b92cc87931f36f469a730ab03fd1ece22ff7398942bb3f329a73ab514f886f	PRESENT
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_TILE_RECORDS.tsv	64	21b92cc87931f36f469a730ab03fd1ece22ff7398942bb3f329a73ab514f886f	PRESENT
+reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt	35	99585f0b6f2e2220892d680820fea3674456a5f62e7ebeef855f3ec7f4ec6adb	PRESENT
