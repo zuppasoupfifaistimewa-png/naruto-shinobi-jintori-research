@@ -212,6 +212,18 @@ jobs:
             case "$f" in *.txt|*.log|*.tsv) cp "$f" "$OUTDIR/BB3_H6_PATCHED_$(basename "$f")";; esac
           done
           echo "SMOKE_EXIT_CODE=$rc" >> "$OUTDIR/BB3_PATCHED_BUILD_MANIFEST.txt"
+          echo "BB3_SMOKE_WRAPPER_EXIT_CODE=$rc"
+          if [ -f "$OUTDIR/BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt" ]; then
+            cat "$OUTDIR/BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt"
+          fi
+          if [ -f "$OUTDIR/BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt" ]; then
+            cat "$OUTDIR/BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt"
+          fi
+          if [ -f "$OUTDIR/BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt" ]; then
+            echo "BB3_SMOKE_EMULATOR_LOG_TAIL_BEGIN"
+            tail -n 120 "$OUTDIR/BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt"
+            echo "BB3_SMOKE_EMULATOR_LOG_TAIL_END"
+          fi
           if [ "$rc" -eq 0 ]; then
             echo "passed=true" >> "$GITHUB_OUTPUT"
           else
@@ -240,6 +252,9 @@ jobs:
             printf 'STATUS=SETUP_OR_PROBE_FAILED\nreason=no BB3 action summary produced\n' > "$OUTDIR/BB3_ACTION_CALL_SUMMARY.txt"
           fi
           echo "BB3_WORKFLOW_SCRIPT_PROCESS_EXIT=$rc" > "$OUTDIR/BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt"
+          echo "BB3_ACTION_PROBE_PROCESS_EXIT=$rc"
+          [ ! -f "$OUTDIR/BB3_ACTION_CALL_SUMMARY.txt" ] || cat "$OUTDIR/BB3_ACTION_CALL_SUMMARY.txt"
+          [ ! -f "$OUTDIR/BB3_ACTION_CALL_RESULTS.tsv" ] || cat "$OUTDIR/BB3_ACTION_CALL_RESULTS.tsv"
           exit 0
 
       - name: Record action-call probe blocked by H6 restore smoke
@@ -263,6 +278,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          test -d .git
           out="$RUNNER_TEMP/bb3-output"
           mkdir -p "$out"
           python3 - "$out" <<'PY'
