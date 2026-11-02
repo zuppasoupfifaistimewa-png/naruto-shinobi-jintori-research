@@ -410,30 +410,68 @@ def main():
         writer.writerows(rows)
 
     expected_rows = 2 * len(ACTION_VALUES) * len(LEVEL_VALUES)
-    pass_rows = [r for r in rows if r["call_status"] == "PASS" and r["memory_card_unchanged"] == "YES"]
     timeout_twice_observed = timeout_s >= 2 * max_wall
+    validation_errors = []
+    pass_rows = []
+    for row in rows:
+        if row["call_status"] != "PASS":
+            validation_errors.append("call_status:%s:%s:%s" % (row["action_byte"], row["target_level_nibble_8_11"], row["attempt"]))
+            continue
+        def number(field):
+            try:
+                return int(row[field], 0) if str(row[field]).lower().startswith("0x") else int(row[field])
+            except (TypeError, ValueError):
+                return None
+        checks = {
+            "dispatch": row["action_dispatch_reached"] == "1",
+            "selector": row["selected_tile_override"] == str(TILE_INDEX),
+            "fee": number("tile_1A_fee") == EXPECTED_FEE,
+            "pending": number("pending_delta") == -EXPECTED_FEE,
+            "level_8_11": number("level_8_11_after") == number("level_8_11_before") + 1 if number("level_8_11_before") is not None and number("level_8_11_after") is not None else False,
+            "level_4_7": number("nibble_4_7_after") == number("nibble_4_7_before") + 1 if number("nibble_4_7_before") is not None and number("nibble_4_7_after") is not None else False,
+            "card": row["memory_card_unchanged"] == "YES",
+            "process_exit": number("wrapper_exit_code_decimal") == 0,
+        }
+        failed = [name for name, passed in checks.items() if not passed]
+        if failed:
+            row["call_status"] = "VALIDATION_FAIL"
+            validation_errors.append("%s/%s/attempt%s:%s" % (row["action_byte"], row["target_level_nibble_8_11"], row["attempt"], ",".join(failed)))
+        else:
+            pass_rows.append(row)
+    expected_pairs = {(a, level) for a in ACTION_VALUES for level in LEVEL_VALUES}
+    observed_pairs = {}
+    for row in rows:
+        key = (row["action_byte"], row["target_level_nibble_8_11"])
+        observed_pairs.setdefault(key, []).append(row["attempt"])
+    coverage_ok = len(rows) == expected_rows and set(observed_pairs) == expected_pairs and all(sorted(v) == [1, 2] for v in observed_pairs.values())
+    all_pass = coverage_ok and len(pass_rows) == expected_rows and timeout_twice_observed
     control_status = "NOT_RUN"
-    overall = "SEBAGIAN"
-    exit_code = 2
+    overall = "K5_TERBATAS" if all_pass else "SEBAGIAN"
+    exit_code = 0 if all_pass else 2
     report = [
         "BB3 — H6 HYBRID TEMPORARY-RAM FUNCTION-CALL PROBE",
         "STATUS=" + overall,
+        "SCOPE=Runtime confirmation of action-byte 3/8 shared transaction branch at H6 fixture; not proof that either action is the visible Barrier-placement action.",
         "TEST=UJI PANGGILAN FUNGSI; NOT GAMEPLAY; no controller button press",
         "H6_SHA256=" + h6_sha,
         "CONDITIONS=action byte 3,8 x tile+0x20 bits8-11 level 0..3 x 2 independent launches",
         "LAUNCHES=%d EXPECTED=%d" % (len(rows), expected_rows),
         "PASS_LAUNCHES=%d" % len(pass_rows),
+        "COVERAGE_2_ATTEMPTS_PER_ACTION_LEVEL=%s" % coverage_ok,
+        "VALIDATION_ERRORS=%d" % len(validation_errors),
+        "VALIDATION_ERROR_DETAILS=" + (";".join(validation_errors) if validation_errors else "NONE"),
         "TIMEOUT_SECONDS_PER_LAUNCH=%d" % timeout_s,
         "HISTORICAL_SLOWEST_LAUNCH_SECONDS=%.3f" % HISTORICAL_SLOWEST_LAUNCH_S,
         "TIMEOUT_GE_2X_HISTORICAL_SLOWEST=%s" % (timeout_s >= 2 * HISTORICAL_SLOWEST_LAUNCH_S),
         "OBSERVED_MAX_LAUNCH_SECONDS=%.3f" % max_wall,
         "TIMEOUT_GE_2X_OBSERVED_MAX=%s" % timeout_twice_observed,
-        "MEMORY_CARD_UNCHANGED_ALL=%s" % all(r["memory_card_unchanged"] == "YES" for r in rows),
+        "MEMORY_CARD=DISPOSABLE_ZERO_FILLED_128_KIB",
+        "MEMORY_CARD_UNCHANGED_ALL=%s" % (len(rows) == expected_rows and all(r["memory_card_unchanged"] == "YES" for r in rows)),
         "CONTROL_POSITIVE_3_OWNED_TILES_FORMULA=" + control_status,
         "CONTROL_FORMULA= floor(sum(values of 3 owned tiles)/2)+400 (user-supplied known control)",
-        "NOTE=Control positive was not executed; no end-of-turn trigger was identified in this harness.",
+        "NOTE=Positive control was not executed; the formula is separate from the action-byte 3/8 branch under test.",
         "RAM_WRITES=temporary inside disposable emulator launches only; no RAM dumps or savestates published",
-        "RELEASE=naruto-checkpoint-39262213468 unchanged",
+        "RELEASE=unchanged",
     ]
     (out / "BB3_ACTION_CALL_SUMMARY.txt").write_text("\n".join(report) + "\n", encoding="utf-8")
     (out / "BB3_SCRIPT_EXIT_CODE.txt").write_text("BB3_SCRIPT_EXIT_CODE=%d\n" % exit_code, encoding="utf-8")
