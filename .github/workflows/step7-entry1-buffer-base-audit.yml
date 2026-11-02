@@ -241,12 +241,13 @@ jobs:
             -postScript ExportCallWindows.java "$out/az3-setter-call-windows-entry1.tsv" 0x8001387C \
             -postScript ExportCallWindows.java "$out/aw1-helper-call-windows.tsv" 0x800B770C 0x800BDC4C \
             -postScript ExportTileResourceLoader.java "$out/ba1-tile-resource-loader.txt" 0x800F7ADC \
+            -postScript ExportFunctionDetail.java "$out/ba1-tile-loader-callers.txt" 0x800B2A58 0x800B63F4 \
             -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
             > "$out/ghidra-headless.log" 2>&1
           rc=$?
           set -e
 
-          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" || ! -s "$out/pending-participant-delta.txt" || ! -s "$out/aq1-economy-census.tsv" || ! -s "$out/aq1-deep-context.tsv" || ! -s "$out/entry1-helper-function-detail.txt" || ! -s "$out/aw1-manager-function-detail.txt" || ! -s "$out/aw1-manager-b38-accesses.tsv" || ! -s "$out/aw1-manager-b40-accesses.tsv" || ! -s "$out/aw1-manager-b44-accesses.tsv" || ! -s "$out/aw2-numeric-instruction-literals.tsv" || ! -s "$out/aw1-helper-call-windows.tsv" || ! -s "$out/ay1-ay2-entry1.tsv" || ! -s "$out/az3-setter-direct-callers-entry1.txt" || ! -s "$out/az3-setter-call-windows-entry1.tsv" || ! -s "$out/az3-resource-economy-function-detail.txt" || ! -s "$out/ba1-tile-resource-loader.txt" ]]; then
+          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" || ! -s "$out/pending-participant-delta.txt" || ! -s "$out/aq1-economy-census.tsv" || ! -s "$out/aq1-deep-context.tsv" || ! -s "$out/entry1-helper-function-detail.txt" || ! -s "$out/aw1-manager-function-detail.txt" || ! -s "$out/aw1-manager-b38-accesses.tsv" || ! -s "$out/aw1-manager-b40-accesses.tsv" || ! -s "$out/aw1-manager-b44-accesses.tsv" || ! -s "$out/aw2-numeric-instruction-literals.tsv" || ! -s "$out/aw1-helper-call-windows.tsv" || ! -s "$out/ay1-ay2-entry1.tsv" || ! -s "$out/az3-setter-direct-callers-entry1.txt" || ! -s "$out/az3-setter-call-windows-entry1.tsv" || ! -s "$out/az3-resource-economy-function-detail.txt" || ! -s "$out/ba1-tile-resource-loader.txt" || ! -s "$out/ba1-tile-loader-callers.txt" ]]; then
             {
               echo "status=FAILURE"
               echo "job=analyze-entry1-buffer-base"
@@ -281,11 +282,12 @@ jobs:
             -postScript ExportFunctionDetail.java "$out/az3-setter-caller-main-exe-detail.txt" 0x80012C70 0x80012A44 0x80012A54 0x8001387C 0x800138EC \
             -postScript ExportFunctionDetail.java "$out/az3-starting-balance-global-detail.txt" 0x80070C80 0x80070C88 \
             -postScript ExportFunctionDetail.java "$out/az3-main-exe-economic-helper-detail.txt" 0x800154E0 0x8001552C 0x80015768 0x800157E4 0x800148DC 0x800171A4 \
+            -postScript ExportFunctionDetail.java "$out/ba1-resource-parser-main-exe.txt" 0x8002DBB8 0x8002DEC4 0x8002D7F8 0x8002DFE4 \
             -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
             > "$out/ghidra-exe-headless.log" 2>&1
           exe_rc=$?
           set -e
-          if [[ "$exe_rc" -ne 0 || ! -s "$out/ay1-ay2-exe.tsv" || ! -s "$out/az3-setter-direct-callers-main-exe.txt" || ! -s "$out/az3-setter-call-windows-main-exe.tsv" || ! -s "$out/az3-setter-caller-main-exe-detail.txt" || ! -s "$out/az3-starting-balance-global-detail.txt" || ! -s "$out/az3-main-exe-economic-helper-detail.txt" ]]; then
+          if [[ "$exe_rc" -ne 0 || ! -s "$out/ay1-ay2-exe.tsv" || ! -s "$out/az3-setter-direct-callers-main-exe.txt" || ! -s "$out/az3-setter-call-windows-main-exe.tsv" || ! -s "$out/az3-setter-caller-main-exe-detail.txt" || ! -s "$out/az3-starting-balance-global-detail.txt" || ! -s "$out/az3-main-exe-economic-helper-detail.txt" || ! -s "$out/ba1-resource-parser-main-exe.txt" ]]; then
             {
               echo "status=FAILURE"
               echo "job=analyze-entry1-buffer-base"
@@ -487,7 +489,7 @@ jobs:
           PY
           dest="reports/stage1_economy/aq1-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
-          for f in BA1_DATA_BIN_RESOURCE_INVENTORY.tsv BA1_RESOURCE_CANDIDATES.tsv BA1_DATA_SCAN_SUMMARY.txt ba1-tile-resource-loader.txt entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b38-accesses.tsv aw1-manager-b40-accesses.tsv aw1-manager-b44-accesses.tsv aw2-numeric-instruction-literals.tsv aw1-helper-call-windows.tsv aw1-manager-status.txt aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv ay1-ay2-entry1.tsv ay1-ay2-exe.tsv az3-setter-direct-callers-entry1.txt az3-setter-direct-callers-main-exe.txt az3-setter-call-windows-entry1.tsv az3-setter-call-windows-main-exe.tsv az3-setter-caller-main-exe-detail.txt az3-starting-balance-global-detail.txt az3-resource-economy-function-detail.txt az3-main-exe-economic-helper-detail.txt ay2-exe-random-byte-check.txt ay1-ay2-sha256.txt ghidra-exe-headless.log aq1-recount.txt run-summary.txt input-identity.txt; do
+          for f in BA1_DATA_BIN_RESOURCE_INVENTORY.tsv BA1_RESOURCE_CANDIDATES.tsv BA1_DATA_SCAN_SUMMARY.txt ba1-tile-resource-loader.txt ba1-tile-loader-callers.txt ba1-resource-parser-main-exe.txt entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b38-accesses.tsv aw1-manager-b40-accesses.tsv aw1-manager-b44-accesses.tsv aw2-numeric-instruction-literals.tsv aw1-helper-call-windows.tsv aw1-manager-status.txt aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv ay1-ay2-entry1.tsv ay1-ay2-exe.tsv az3-setter-direct-callers-entry1.txt az3-setter-direct-callers-main-exe.txt az3-setter-call-windows-entry1.tsv az3-setter-call-windows-main-exe.tsv az3-setter-caller-main-exe-detail.txt az3-starting-balance-global-detail.txt az3-resource-economy-function-detail.txt az3-main-exe-economic-helper-detail.txt ay2-exe-random-byte-check.txt ay1-ay2-sha256.txt ghidra-exe-headless.log aq1-recount.txt run-summary.txt input-identity.txt; do
             if [ -f "$out/$f" ]; then cp "$out/$f" "$dest/$f"; fi
           done
           API="https://api.github.com/repos/$RESEARCH_REPO"
