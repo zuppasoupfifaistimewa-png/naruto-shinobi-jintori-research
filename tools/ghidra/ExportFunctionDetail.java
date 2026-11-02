@@ -181,7 +181,7 @@ public class ExportFunctionDetail extends GhidraScript {
             // Probe relevant globals only when mapped in the current imported image.
             // Entry 1 contains the queued participant deltas and event amount globals;
             // MAIN_EXE contains the legacy helper-return global.
-            long[] dataTargets = {0x80066E7CL, 0x80139ECCL, 0x80139EFCL};
+            long[] dataTargets = {0x80066E7CL, 0x80070734L, 0x8007073CL, 0x80070CD0L, 0x80139ECCL, 0x80139EFCL};
             for (long dataTarget : dataTargets) {
                 if (currentProgram.getMemory().contains(toAddr(dataTarget))) {
                     dumpDataReferences(dataTarget);
