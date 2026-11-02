@@ -12,6 +12,7 @@ on:
       - "tools/step7/ExportPendingParticipantDelta.java"
       - "tools/step7/ScanStage1EconomyData.py"
       - "tools/step7/SummarizeStage1EconomyCensus.py"
+      - "tools/ghidra/ExportTargetCallers.java"
       - "tools/ghidra/ExportManagerFieldAccesses.java"
 
 permissions:
