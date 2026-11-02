@@ -98,7 +98,7 @@ def main():
          "print('BB3_SMOKE_CONTROLLER_MAPPED_NO_GAMEPLAY_INPUT=1')\n")
     appdir=Path(a.appdir); env=os.environ.copy()
     env.update({"DISPLAY":":99","LIBGL_ALWAYS_SOFTWARE":"1",
-      "LD_LIBRARY_PATH":str(appdir/"usr/lib")+":"+str(appdir/"usr/lib/x86_64-linux-gnu"),
+      "LD_LIBRARY_PATH":str(work/"capstone")+":"+str(appdir/"usr/lib")+":"+str(appdir/"usr/lib/x86_64-linux-gnu"),
       "QT_PLUGIN_PATH":str(appdir/"usr/plugins"),
       "QT_QPA_PLATFORM_PLUGIN_PATH":str(appdir/"usr/plugins/platforms"),
       "QML2_IMPORT_PATH":str(appdir/"usr/qml"),
