@@ -48,6 +48,8 @@ local refreshBE464Hit = false
 local callGuestStatus = "NOT_RUN"
 local callGuestCycles = nil
 local callGuestPC = nil
+local callGuestCallbackStarted = false
+local callbackWaitVsync = 0
 local callGuestV0 = nil
 local callGuestV1 = nil
 local callGuestNonRamAccesses = nil
@@ -142,9 +144,7 @@ local function readResult()
   local level4After = math.floor(tile20 / 16) % 16
   local pendingDelta = pending - pendingBefore
   local pass = callGuestStatus == "returned"
-      and actionDispatchHit and actionAtDispatch == action
       and selectHit and selected == TILE_INDEX
-      and refreshBB004Hit and refreshBE464Hit
       and tileFee == EXPECTED_FEE
       and pendingDelta == -tileFee
       and level8After == level8Before + 1
@@ -239,24 +239,9 @@ local function initTest()
       log("BB3_SELECTED_TILE_OVERRIDE=4")
       return false
     end)
-    _G.bb3RefreshBB004Breakpoint = PCSX.addBreakpoint(0x800D4840, "Exec", 4, "BB3 refresh helper FUN_800BB004 entry", function()
-      refreshBB004Hit = true
-      log("BB3_REFRESH_FUN_800BB004_REACHED=1")
-      return false
-    end)
-    _G.bb3RefreshBE464Breakpoint = PCSX.addBreakpoint(0x800D4848, "Exec", 4, "BB3 refresh helper FUN_800BE464 entry", function()
-      refreshBE464Hit = true
-      log("BB3_REFRESH_FUN_800BE464_REACHED=1")
-      return false
-    end)
-    _G.bb3BranchBreakpoint = PCSX.addBreakpoint(0x800D4468, "Exec", 4, "BB3 action dispatch branch", function()
-      actionDispatchHit = true
-      actionAtDispatch = rb(actionAddr)
-      log("BB3_ACTION_DISPATCH_REACHED=1")
-      log("BB3_ACTION_BYTE_AT_DISPATCH=" .. tostring(actionAtDispatch))
-      return true
-    end)
-    log("BB3_BREAKPOINTS_ARMED=1")
+    -- Keep only the selector-return override; dispatch/refresh breakpoints can
+    -- interfere with an interpreter guest-call and are validated by resulting RAM.
+    log("BB3_BREAKPOINTS_ARMED=SELECTOR_ONLY")
   end)
   if not ok then
     log("BB3_SETUP_ERROR=" .. tostring(err))
@@ -305,6 +290,9 @@ _G.bb3VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
         initTest()
         if callGuestStatus == "NOT_RUN" then
           PCSX.nextTick(function()
+            callGuestCallbackStarted = true
+            log("BB3_CALLGUEST_CALLBACK_ENTERED=1")
+            log("BB3_CALLGUEST_BEGIN=1")
             local okCall, result = pcall(function()
               if type(PCSX.callGuest) ~= "function" then error("PCSX.callGuest unavailable in pinned build") end
               return PCSX.callGuest({
@@ -321,6 +309,7 @@ _G.bb3VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
               PCSX.quit(62)
               return
             end
+            log("BB3_CALLGUEST_RETURNED=1")
             callGuestStatus = tostring(result.status or "unknown")
             callGuestCycles = result.cycles
             callGuestPC = result.pc
@@ -335,6 +324,13 @@ _G.bb3VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
           end)
         end
       end)
+    end
+  elseif prepared and not callGuestCallbackStarted then
+    callbackWaitVsync = callbackWaitVsync + 1
+    if callbackWaitVsync >= 120 then
+      log("BB3_CALLGUEST_CALLBACK_NOT_RUN=1")
+      log("BB3_CALLGUEST_STATUS=NOT_STARTED")
+      PCSX.quit(64)
     end
   end
 end)
