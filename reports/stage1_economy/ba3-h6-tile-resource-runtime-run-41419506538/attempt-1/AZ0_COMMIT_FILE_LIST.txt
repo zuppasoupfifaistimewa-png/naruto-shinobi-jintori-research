@@ -1,0 +1,1180 @@
+BASE=e2a2f4485dfa258d8a4d25599c26cab0c9ac551a
+COMMIT=2c5db558a4e3820c3ff2f50a1d133476cbc6ed2d
+SUBJECT=Add AZ0 raw writer audit and AZ1 read-only H6 snapshots
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+A	.github/workflows/az1-h6-economy-runtime.yml
+A	experiments/az1_h6_economy_runtime.py
+A	reports/stage1_economy/AZ0_AY1_RAW_WRITER_AUDIT_2026-11-02.tsv
+A	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+
+COMMIT=6b7279604f3540b3b5c66fc0e77f794ce6b9c674
+SUBJECT=Add AZ0-AZ1 hypotheses and exhaustive direct setter argument table
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+A	reports/stage1_economy/AZ0_AZ1_HYPOTHESES_2026-11-02.md
+A	reports/stage1_economy/AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv
+
+COMMIT=f9a6cd896a15876e16121de49537294681c94acc
+SUBJECT=Publish AZ1 H6 runtime trace run 41358566961 attempt 1
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ0_COMMIT_FILE_LIST.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ0_SHA256_ONE_SET.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_H6_ECONOMY_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_LAUNCHES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_MANAGER_FIELDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_SCRIPT_EXIT_CODE.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_TABLE_SELECTION.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_TILE_AGGREGATES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_TILE_RECORDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/AZ1_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+
+COMMIT=6c1e3b95e54ebfa46468e62b96cd0cd08d85ab9a
+SUBJECT=Resolve AZ1 B30 table lookup and complete scoped AZ2 reader census
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	experiments/az1_h6_economy_runtime.py
+M	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+A	reports/stage1_economy/AZ2_MANAGER_READERS_2026-11-02.tsv
+
+COMMIT=e4b377cc3932d53c9574585e5bb890662b5a6c1d
+SUBJECT=Publish AZ1 H6 runtime trace run 41359528784 attempt 1
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ0_COMMIT_FILE_LIST.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ0_SHA256_ONE_SET.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_H6_ECONOMY_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_LAUNCHES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_MANAGER_FIELDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_SCRIPT_EXIT_CODE.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_TABLE_SELECTION.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_TILE_AGGREGATES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_TILE_RECORDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+
+COMMIT=9584198b07e3111c59fc33814bcb6e7d70d4c277
+SUBJECT=Fix AZ1 snapshot parser and expand Entry1 manager field reader scan
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/az1-h6-economy-runtime.yml
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+M	experiments/az1_h6_economy_runtime.py
+M	tools/ghidra/ExportManagerFieldAccesses.java
+
+COMMIT=330127a2830949d6b722a633a874f7a31a4ca4ba
+SUBJECT=Publish AQ1 static economy census run 41360300335
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41360300335/attempt-1/run-summary.txt
+
+COMMIT=e413f1d0f59667f3f7cb4c25f5a6c6b0b9e9cf5b
+SUBJECT=Publish AZ1 H6 runtime trace run 41360300315 attempt 1
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ0_COMMIT_FILE_LIST.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ0_SHA256_ONE_SET.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_H6_ECONOMY_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_LAUNCHES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_MANAGER_FIELDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_SCRIPT_EXIT_CODE.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_TABLE_SELECTION.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_TILE_AGGREGATES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_TILE_RECORDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360300315/attempt-1/AZ1_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+
+COMMIT=4c537e3034bd0b2c2c0ad1a51312621843160910
+SUBJECT=Fix AZ1 read_snapshot return and u8 state TSV header
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	experiments/az1_h6_economy_runtime.py
+
+COMMIT=a6aefc0b88f1ed542666ac8a7660921ea0c78390
+SUBJECT=Complete AZ2 Entry1 reader census and correct AZ0 run job summaries
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	reports/stage1_economy/AZ0_AZ1_HYPOTHESES_2026-11-02.md
+M	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+A	reports/stage1_economy/AZ2_ENTRY1_FIELD_ACCESS_CENSUS_2026-11-02.tsv
+M	reports/stage1_economy/AZ2_MANAGER_READERS_2026-11-02.tsv
+M	reports/stage1_economy/az1-h6-economy-runtime-run-41358566961/attempt-1/ACTIONS_RUN_SUMMARY.txt
+M	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/ACTIONS_RUN_SUMMARY.txt
+
+COMMIT=ca5b52980c12f35db04f13a4e652923a49a18fca
+SUBJECT=Publish AZ1 H6 runtime trace run 41360900093 attempt 1
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ0_COMMIT_FILE_LIST.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ0_SHA256_ONE_SET.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ1_H6_ECONOMY_SUMMARY.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ1_LAUNCHES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ1_MANAGER_FIELDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ1_SCRIPT_EXIT_CODE.txt
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ1_TABLE_SELECTION.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ1_TILE_AGGREGATES.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ1_TILE_RECORDS.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ1_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+
+COMMIT=b49ca5aef7f15d39ae697f605d63e77517bdfcc4
+SUBJECT=Publish final AZ1 H6 runtime report and preserve run2 parser reconciliation
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+A	reports/stage1_economy/AZ1_FINAL_RUNTIME_REPORT_2026-11-02.md
+A	reports/stage1_economy/AZ1_MANUAL_RECONCILIATION_2026-11-02.md
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41359528784/attempt-1/AZ1_LAUNCHES_RECONCILED.tsv
+
+COMMIT=cdf2fac29c6a58d129861aef68bbff0405ca2143
+SUBJECT=Finalize AZ0 commit inventory and SHA-256 manifest; record AZ1 H6 results
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	reports/stage1_economy/AZ0_AZ1_HYPOTHESES_2026-11-02.md
+M	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ0_COMMIT_FILE_LIST.txt
+M	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ0_SHA256_ONE_SET.tsv
+
+COMMIT=e08366bd82b08f5ce01965b4c86d268bec6dcc71
+SUBJECT=Correct AZ2 Entry1 function count and refresh AZ0 inventories
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+M	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ0_COMMIT_FILE_LIST.txt
+M	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ0_SHA256_ONE_SET.tsv
+
+COMMIT=e98a2081e7f6573a75705d416f8a727a10634ced
+SUBJECT=Complete AZ0 writer ledger, reconcile AZ1 table flow, expand AZ3 caller scan
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+M	reports/stage1_economy/AZ0_AZ1_HYPOTHESES_2026-11-02.md
+A	reports/stage1_economy/AZ0_MANAGER_WRITER_CENSUS_2026-11-02.tsv
+M	reports/stage1_economy/AZ1_FINAL_RUNTIME_REPORT_2026-11-02.md
+M	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+M	reports/stage1_economy/AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv
+A	reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ1_TABLE_SELECTION_RECONCILED.tsv
+
+COMMIT=13679369d3462f8b8f244ae2337fca57977673ab
+SUBJECT=Publish AQ1 static economy census run 41367221886
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41367221886/attempt-1/run-summary.txt
+
+COMMIT=7439029c2cf12fbd0e904f09a680e67ea3e9dca4
+SUBJECT=Publish AZ1 V formulas and extend AZ3 direct setter caller evidence
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+M	reports/stage1_economy/AZ0_AZ1_HYPOTHESES_2026-11-02.md
+M	reports/stage1_economy/AZ1_FINAL_RUNTIME_REPORT_2026-11-02.md
+A	reports/stage1_economy/AZ1_V_SELECTOR_FORMULAS_2026-11-02.tsv
+M	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+M	reports/stage1_economy/AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv
+
+COMMIT=d2003184f2acc56a1a90458f76dee529477dfc6c
+SUBJECT=Publish AQ1 static economy census run 41367620653
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41367620653/attempt-1/run-summary.txt
+
+COMMIT=253dc96f92d95c76337bdbbf3292d0c388470493
+SUBJECT=Trace AZ3 setter caller return producer FUN_80012A44
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+M	reports/stage1_economy/AZ0_AZ1_HYPOTHESES_2026-11-02.md
+M	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+M	reports/stage1_economy/AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv
+
+COMMIT=d514bdd82c3866543b894c1593085ebde8154cbd
+SUBJECT=Publish AQ1 static economy census run 41367906993
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41367906993/attempt-1/run-summary.txt
+
+COMMIT=5822e40f3698e1b928619ee74ec4cef5a4913f70
+SUBJECT=Trace AZ3 global chakra initializer and expand global reference census
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	reports/stage1_economy/AZ0_AZ1_HYPOTHESES_2026-11-02.md
+M	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+M	reports/stage1_economy/AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv
+M	tools/step7/ExportManagerEconomyWriters.java
+
+COMMIT=119bfa30817541b3a549c85d28f0d4c85fee96f6
+SUBJECT=Publish AQ1 static economy census run 41368276256
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41368276256/attempt-1/run-summary.txt
+
+COMMIT=436ab578891336bf6a12c85dfe27544b96c4bc4c
+SUBJECT=Finalize AZ0-AZ3 evidence report and trace initial chakra seed global
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+
+COMMIT=00734bd200a142baa42d5588881247ed68d03c62
+SUBJECT=Publish AZ0-AZ3 final status and global chakra seed evidence
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	reports/stage1_economy/AZ0_AZ1_HYPOTHESES_2026-11-02.md
+A	reports/stage1_economy/AZ0_AZ3_FINAL_STATUS_2026-11-02.md
+M	reports/stage1_economy/AZ0_MANAGER_WRITER_CENSUS_2026-11-02.tsv
+M	reports/stage1_economy/AZ1_FINAL_RUNTIME_REPORT_2026-11-02.md
+M	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+A	reports/stage1_economy/AZ3_GLOBAL_70C80_SEED_FLOW_2026-11-02.tsv
+
+COMMIT=5f7375a003686f29793a4ae2b07e431069167338
+SUBJECT=Trace startup chakra globals and table balance setter provenance
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+
+COMMIT=77cd214405bff08816b12ccc0f94bd80e3545121
+SUBJECT=Publish AQ1 static economy census run 41371318978
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/az3-starting-balance-global-detail.txt
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41371318978/attempt-1/run-summary.txt
+
+COMMIT=3faa89848a23a679b0d63f7dfd5c48cd62f296b6
+SUBJECT=Decompile every direct Chakra setter caller for AZ3 audit
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	tools/ghidra/ExportTargetCallers.java
+
+COMMIT=1368ad7e983e468a316b3ee283d76b110b9cb279
+SUBJECT=Run AZ3 setter caller decompilation on static audit changes
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+
+COMMIT=e5dd36191ecc3b16dc306e68082ef3bedd90b65b
+SUBJECT=Publish AQ1 static economy census run 41388731912
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/az3-starting-balance-global-detail.txt
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41388731912/attempt-1/run-summary.txt
+
+COMMIT=b5639f3280bef48678db143c4a0b8509531485a7
+SUBJECT=Generalize selected Ghidra function exporter for Entry 1 and EXE
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	tools/ghidra/ExportFunctionDetail.java
+
+COMMIT=0802559834327f21a72c54ef9de46b2baa4790db
+SUBJECT=Extend AZ3 static trace into resource delta writers and cost helper callees
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+
+COMMIT=454c3f06062d27fde5e747736de1cafe10f23dbc
+SUBJECT=Publish static a1 helper provenance for 0x80043F18 run 41389929800
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/at1-helper-a1-audit-run-41389929800/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/at1-helper-a1-audit-run-41389929800/attempt-1/input-identity.txt
+A	reports/stage1_economy/at1-helper-a1-audit-run-41389929800/attempt-1/seed-helper-detail.txt
+
+COMMIT=1916f5ba6bf0cc354132ac7c1bd00a93318bc238
+SUBJECT=Publish AQ1 static economy census run 41389951934
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/az3-main-exe-economic-helper-detail.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/az3-resource-economy-function-detail.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/az3-starting-balance-global-detail.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41389951934/attempt-1/run-summary.txt
+
+COMMIT=980485d6680131187c1e7b09322c9aca22d830b6
+SUBJECT=Trace all static xrefs to queued Chakra deltas and event amount globals
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	tools/ghidra/ExportFunctionDetail.java
+
+COMMIT=1b61ed11dc285777245e528333c5245b0781e547
+SUBJECT=Publish static a1 helper provenance for 0x80043F18 run 41390225508
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/at1-helper-a1-audit-run-41390225508/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/at1-helper-a1-audit-run-41390225508/attempt-1/input-identity.txt
+A	reports/stage1_economy/at1-helper-a1-audit-run-41390225508/attempt-1/seed-helper-detail.txt
+
+COMMIT=9a240eaa7df1d5b85ab41ecc35851332468d2448
+SUBJECT=Publish AQ1 static economy census run 41390225493
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/az3-main-exe-economic-helper-detail.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/az3-resource-economy-function-detail.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/az3-starting-balance-global-detail.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41390225493/attempt-1/run-summary.txt
+
+COMMIT=167cd52bcc94193bea0b9b6d92e13d59a7eb390f
+SUBJECT=Decompile queued Chakra delta producer for AZ3 cost trace
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+
+COMMIT=bc2b6726755316491242e7c2fc3a3475b974c2ed
+SUBJECT=Publish AQ1 static economy census run 41390473200
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/az3-main-exe-economic-helper-detail.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/az3-resource-economy-function-detail.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/az3-starting-balance-global-detail.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41390473200/attempt-1/run-summary.txt
+
+COMMIT=f052a6005bccc852d5fd0a70feaa5f0ec56a9f3f
+SUBJECT=Decompile all direct writers and readers of pending amount globals for AZ3
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+
+COMMIT=3ba203912f79976f15b423873fa01085ec9c2fa5
+SUBJECT=Publish AQ1 static economy census run 41390871544
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/az3-main-exe-economic-helper-detail.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/az3-resource-economy-function-detail.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/az3-starting-balance-global-detail.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41390871544/attempt-1/run-summary.txt
+
+COMMIT=5fc92f2d734fde5a0675af67eb660ad56ad3fc4c
+SUBJECT=Finalize AZ0-AZ3 status with discovered tile debit path
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	reports/stage1_economy/AZ0_AZ3_FINAL_STATUS_2026-11-02.md
+
+COMMIT=c0653d05002d80a56701535fba43ab20c5896c85
+SUBJECT=Document static tile purchase and upgrade debit dataflow for AZ3
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+
+COMMIT=e8944c6ff9a8f99590f2ef8d776e5a8378c169a8
+SUBJECT=Trace candidate tile price field initializers for AZ3
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+
+COMMIT=2156d6c91a26333ceb7dc79126950ea92188ec29
+SUBJECT=Publish AQ1 static economy census run 41391551410
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/az3-main-exe-economic-helper-detail.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/az3-resource-economy-function-detail.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/az3-starting-balance-global-detail.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41391551410/attempt-1/run-summary.txt
+
+COMMIT=6a29e442da621a76064c11bde481765ff0c1db60
+SUBJECT=Add tile-price resource provenance and AZ3 completion evidence
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	reports/stage1_economy/AZ0_AZ3_FINAL_STATUS_2026-11-02.md
+
+COMMIT=a3dbdd0375b732928e876954e9a662c69785c00c
+SUBJECT=Trace tile price resource bytes through loader into AZ3 debit
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md
+
+COMMIT=04a0456aa875f5c2a4736e443177c41dd7fcefe3
+SUBJECT=Add static tile resource loader export for BA1
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+A	tools/step7/ExportTileResourceLoader.java
+
+COMMIT=14807de357d5644cb6832be263ec5bf7f1a667b2
+SUBJECT=Add bounded DATA.BIN tile resource inventory for BA1
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+A	tools/step7/ScanStage1TileResources.py
+
+COMMIT=7401c086ae7bba001143cb268c445c59bc30ebd6
+SUBJECT=Run BA1 static tile resource mapping and DATA.BIN inventory
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+
+COMMIT=bc1010c6fa2addf32c28409bc1bb6d960d154683
+SUBJECT=Publish AQ1 static economy census run 41413492667
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/BA1_DATA_BIN_RESOURCE_INVENTORY.tsv
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/BA1_DATA_SCAN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/BA1_RESOURCE_CANDIDATES.tsv
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/az3-resource-economy-function-detail.txt
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/ba1-tile-resource-loader.txt
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41413492667/attempt-1/run-summary.txt
+
+COMMIT=0a33f7bb3aa00c1ded456f5874d60d13384d2826
+SUBJECT=Fix BA1 Ghidra command continuation
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+
+COMMIT=7d0c94e8bba0152df571f16d26afcbf0072dff02
+SUBJECT=Checkpoint BA1 progress and pending scope
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+A	reports/stage1_economy/BA_STATE.md
+
+COMMIT=c1b51f72c87e97339fa22d85c3af1218bd58761a
+SUBJECT=Publish AQ1 static economy census run 41413850863
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/BA1_DATA_BIN_RESOURCE_INVENTORY.tsv
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/BA1_DATA_SCAN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/BA1_RESOURCE_CANDIDATES.tsv
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/az3-main-exe-economic-helper-detail.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/az3-resource-economy-function-detail.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/az3-starting-balance-global-detail.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/ba1-tile-resource-loader.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41413850863/attempt-1/run-summary.txt
+
+COMMIT=3df981cb65a616c53d042d22665d1b3e1651ddce
+SUBJECT=Trace BA1 tile resource caller and container parser
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+
+COMMIT=51eec40f5746a63a50d1c3dbfbfcff342be436bc
+SUBJECT=Update BA_STATE with verified loader mapping and BA1 rerun
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	reports/stage1_economy/BA_STATE.md
+
+COMMIT=e64f933ba722fe077736a49fdbcf85d55426ec16
+SUBJECT=Publish AQ1 static economy census run 41414694038
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/BA1_DATA_BIN_RESOURCE_INVENTORY.tsv
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/BA1_DATA_SCAN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/BA1_RESOURCE_CANDIDATES.tsv
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/az3-main-exe-economic-helper-detail.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/az3-resource-economy-function-detail.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/az3-starting-balance-global-detail.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/ba1-resource-parser-main-exe.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/ba1-tile-loader-callers.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/ba1-tile-resource-loader.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41414694038/attempt-1/run-summary.txt
+
+COMMIT=7b6a3fa3d51deb0d576cb531193006bf85d74c16
+SUBJECT=Extend BA1 static export to resource decompressor and resolver
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+
+COMMIT=9bcebbaa1f35500e0600f298c78b58ef55d4dd5e
+SUBJECT=Publish AQ1 static economy census run 41415726090
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/BA1_DATA_BIN_RESOURCE_INVENTORY.tsv
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/BA1_DATA_SCAN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/BA1_RESOURCE_CANDIDATES.tsv
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/az3-main-exe-economic-helper-detail.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/az3-resource-economy-function-detail.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/az3-starting-balance-global-detail.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/ba1-resource-parser-main-exe.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/ba1-tile-loader-callers.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/ba1-tile-resource-loader.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41415726090/attempt-1/run-summary.txt
+
+COMMIT=c4ee6edbc98df4a0e285787183ffd3705001434a
+SUBJECT=Export BA1 tile-table candidates and resolve Stage 1 resource selector
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+
+COMMIT=248bd0abb9ed851ec7e2d05fcf5ac6ddefc4ef79
+SUBJECT=Publish AQ1 static economy census run 41416683161
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/BA1_DATA_BIN_RESOURCE_INVENTORY.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/BA1_DATA_SCAN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/BA1_RESOURCE_CANDIDATES.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/BA1_TILE_TABLE_CANDIDATES.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/BA1_TILE_TABLE_RECORDS.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/BA1_TILE_TABLE_SCAN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/az3-main-exe-economic-helper-detail.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/az3-resource-economy-function-detail.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/az3-starting-balance-global-detail.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/ba1-resource-parser-main-exe.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/ba1-tile-loader-callers.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/ba1-tile-resource-loader.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41416683161/attempt-1/run-summary.txt
+
+COMMIT=9bcd94713e51303462c6def5a577770ea4aa10ac
+SUBJECT=Trace static writers of BA1 resource selector byte
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+
+COMMIT=e752d9287b7bace5141bffb67754a8a442e1f743
+SUBJECT=Publish AQ1 static economy census run 41417201213
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/BA1_DATA_BIN_RESOURCE_INVENTORY.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/BA1_DATA_SCAN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/BA1_RESOURCE_CANDIDATES.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/BA1_TILE_TABLE_CANDIDATES.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/BA1_TILE_TABLE_RECORDS.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/BA1_TILE_TABLE_SCAN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/az3-main-exe-economic-helper-detail.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/az3-resource-economy-function-detail.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/az3-starting-balance-global-detail.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/ba1-resource-parser-main-exe.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/ba1-selector-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/ba1-selector-dat80070cd0-xrefs.csv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/ba1-selector-main-exe-functions.csv
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/ba1-tile-loader-callers.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/ba1-tile-resource-loader.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41417201213/attempt-1/run-summary.txt
+
+COMMIT=c5ccb933675a509869632f045a18c99d527ec852
+SUBJECT=Trace BA1 selector context globals in main EXE
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	tools/ghidra/ExportFunctionDetail.java
+
+COMMIT=9517b9e8478e5ab375f74a3fc4a80d9da60c0846
+SUBJECT=Add BA3 two-launch H6 tile source/runtime validator
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+A	.github/workflows/ba3-h6-tile-resource-runtime.yml
+A	experiments/ba3_h6_tile_resource_runtime.py
+
+COMMIT=62170f613266500d9d25db933836fb534b05e7b9
+SUBJECT=Decompile second BA1 selector writer
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/step7-entry1-buffer-base-audit.yml
+
+COMMIT=b0b0292aed1eb09e192a0d24ce520abff33aaa9e
+SUBJECT=Publish static a1 helper provenance for 0x80043F18 run 41417842770
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/at1-helper-a1-audit-run-41417842770/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/at1-helper-a1-audit-run-41417842770/attempt-1/input-identity.txt
+A	reports/stage1_economy/at1-helper-a1-audit-run-41417842770/attempt-1/seed-helper-detail.txt
+
+COMMIT=64eb5a2a1b2c8d2e8451f969d2be4c2a2646ddea
+SUBJECT=Publish BA3 H6 runtime trace run 41417874405 attempt 1
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/AZ0_COMMIT_FILE_LIST.txt
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/AZ0_SHA256_ONE_SET.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_H6_ECONOMY_SUMMARY.txt
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_LAUNCHES.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_MANAGER_FIELDS.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_RESOURCE_SELECTOR.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_SCRIPT_EXIT_CODE.txt
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_TABLE_SELECTION.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_TILE_AGGREGATES.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_TILE_FIELD_SNAPSHOT.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_TILE_RECORDS.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41417874405/attempt-1/BA3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+
+COMMIT=a3f57b45bc57b1cf555d39fef4125c49f59b86f1
+SUBJECT=Fix BA3 H6 tile snapshot parser and workflow manifest
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	.github/workflows/ba3-h6-tile-resource-runtime.yml
+M	experiments/ba3_h6_tile_resource_runtime.py
+
+COMMIT=dcf9e8484881a4e9363e7bde746bb2e9742019c1
+SUBJECT=Publish AQ1 static economy census run 41417842857
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/BA1_DATA_BIN_RESOURCE_INVENTORY.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/BA1_DATA_SCAN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/BA1_RESOURCE_CANDIDATES.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/BA1_TILE_TABLE_CANDIDATES.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/BA1_TILE_TABLE_RECORDS.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/BA1_TILE_TABLE_SCAN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/az3-main-exe-economic-helper-detail.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/az3-resource-economy-function-detail.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/az3-starting-balance-global-detail.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/ba1-resource-parser-main-exe.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/ba1-selector-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/ba1-selector-dat80070cd0-xrefs.csv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/ba1-selector-main-exe-functions.csv
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/ba1-tile-loader-callers.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/ba1-tile-resource-loader.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41417842857/attempt-1/run-summary.txt
+
+COMMIT=7a29763f6f68addc9de52d32ba772543db1cb1ff
+SUBJECT=Publish AQ1 static economy census run 41417885033
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/BA1_DATA_BIN_RESOURCE_INVENTORY.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/BA1_DATA_SCAN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/BA1_RESOURCE_CANDIDATES.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/BA1_TILE_TABLE_CANDIDATES.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/BA1_TILE_TABLE_RECORDS.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/BA1_TILE_TABLE_SCAN_SUMMARY.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/aq1-deep-context.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/aq1-economy-census.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/aq1-recount.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/aw1-helper-call-windows.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/aw1-manager-b38-accesses.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/aw1-manager-b40-accesses.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/aw1-manager-b44-accesses.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/aw1-manager-function-detail.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/aw1-manager-status.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/aw1-tile-field-function-inventory.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/aw2-numeric-instruction-literals.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/aw2-numeric-occurrences.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/aw2-static-data-scan.md
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/ay1-ay2-entry1.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/ay1-ay2-exe.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/ay1-ay2-sha256.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/ay2-exe-random-byte-check.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/az3-main-exe-economic-helper-detail.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/az3-resource-economy-function-detail.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/az3-setter-call-windows-entry1.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/az3-setter-call-windows-main-exe.tsv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/az3-setter-caller-main-exe-detail.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/az3-setter-direct-callers-entry1.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/az3-setter-direct-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/az3-starting-balance-global-detail.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/ba1-resource-parser-main-exe.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/ba1-selector-callers-main-exe.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/ba1-selector-dat80070cd0-xrefs.csv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/ba1-selector-main-exe-functions.csv
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/ba1-tile-loader-callers.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/ba1-tile-resource-loader.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/entry1-buffer-base-targets.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/entry1-helper-function-detail.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/helper-a1-provenance-status.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/input-identity.txt
+A	reports/stage1_economy/aq1-run-41417885033/attempt-1/run-summary.txt
+
+COMMIT=292ac8ce84d2db1c8c6ae0f9ba884c19575072ba
+SUBJECT=Publish BA3 H6 runtime trace run 41418131290 attempt 1
+AUTHOR=github-actions[bot]
+COMMITTER=github-actions[bot]
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41418131290/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41418131290/attempt-1/AZ0_COMMIT_FILE_LIST.txt
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41418131290/attempt-1/AZ0_SHA256_ONE_SET.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41418131290/attempt-1/BA3_H6_ECONOMY_SUMMARY.txt
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41418131290/attempt-1/BA3_LAUNCHES.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41418131290/attempt-1/BA3_MANAGER_FIELDS.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41418131290/attempt-1/BA3_RESOURCE_SELECTOR.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41418131290/attempt-1/BA3_SCRIPT_EXIT_CODE.txt
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41418131290/attempt-1/BA3_TABLE_SELECTION.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41418131290/attempt-1/BA3_TILE_AGGREGATES.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41418131290/attempt-1/BA3_TILE_FIELD_SNAPSHOT.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41418131290/attempt-1/BA3_TILE_RECORDS.tsv
+A	reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41418131290/attempt-1/BA3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+
+COMMIT=7413d48a7eec7be9d97782a5d8b02400b4b83a57
+SUBJECT=Finalize BA1 BA2 BA3 resource mapping and H6 runtime comparison
+AUTHOR=zuppasoupfifaistimewa-png
+COMMITTER=zuppasoupfifaistimewa-png
+M	experiments/ba3_h6_tile_resource_runtime.py
+A	reports/stage1_economy/BA1_STAGE1_RESOURCE_630_RECORDS.tsv
+A	reports/stage1_economy/BA2_TILE_RUNTIME_FIELD_MAP.tsv
+A	reports/stage1_economy/BA3_TILE_FIELD_MATCH_SUMMARY.txt
+A	reports/stage1_economy/BA3_TILE_FIELD_SNAPSHOT.tsv
+A	reports/stage1_economy/BA3_TILE_FIELD_VALIDATION.tsv
+A	reports/stage1_economy/BA_FINAL_REPORT_2026-11-02.md
+M	reports/stage1_economy/BA_STATE.md
+
