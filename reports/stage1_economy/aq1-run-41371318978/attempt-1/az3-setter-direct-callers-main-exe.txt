@@ -1,0 +1,27 @@
+analysis=Ghidra raw-JAL vs decoded direct-flow comparison
+program=SLPS_035.53
+program_language=MIPS:LE:32:default
+entrypoint_or_emulator_executed=no
+address_model=candidate resource base only; runtime loading is not proven
+targets=[8001387c]
+aligned_words_scanned=95744
+raw_jal_candidate_count=2
+ghidra_decoded_direct_callsite_count=2
+unique_validated_caller_functions_with_boundary=2
+
+=== RAW_JAL_CANDIDATES ===
+target=8001387c site=80012dd4 word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=80012c70 caller_name=FUN_80012c70 caller_body_bytes=572
+decoded_instruction=jal 0x8001387c
+target=8001387c site=80013170 word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=80012eac caller_name=FUN_80012eac caller_body_bytes=996
+decoded_instruction=jal 0x8001387c
+
+=== GHIDRA_VALIDATED_DIRECT_CALLS ===
+target=8001387c site=80012dd4 instruction=jal 0x8001387c
+caller_entry=80012c70 caller_name=FUN_80012c70 caller_body_bytes=572
+target=8001387c site=80013170 instruction=jal 0x8001387c
+caller_entry=80012eac caller_name=FUN_80012eac caller_body_bytes=996
+
+detailed_decompilation_limit=seed-setter callers first, then at most 12 unique RNG callers
+detailed_decompilation_count=0
