@@ -8,7 +8,7 @@ Status file ini: checkpoint kemajuan sementara; BA1 belum tuntas.
 
 | Butir | Status | Kepastian | Ringkasan |
 |---|---|---:|---|
-| BA1 | BERJALAN / SEBAGIAN | K2 | Inventaris direktori DATA.BIN berhasil; 1.500 resource aktif. Scan byte tersimpan mentah tidak menemukan 22-record value pattern, tetapi banyak entry PK02 sehingga hasil nol bukan falsifier. Ghidra loader trace masih diulang setelah perbaikan workflow. |
+| BA1 | BERJALAN / SEBAGIAN | K3 | Ghidra mengurai loader FUN_800F7ADC dan menegaskan header count + 22? record 0x1E; byte mapping setiap field runtime tile telah didump. Resource spesifik belum ditemukan; two callers dan empat helper parser sedang diekspor. Run 41414694038 aktif. |
 | BA2 | BELUM | K0 | Belum dimulai. |
 | BA3 | BELUM | K0 | Belum dimulai; runtime harus tetap H6/hibrida dan ≥2 peluncuran. |
 
@@ -30,6 +30,24 @@ Status file ini: checkpoint kemajuan sementara; BA1 belum tuntas.
    Hasil scan: `BA1_DATA_SCAN_SUMMARY.txt` menyebut 0 raw candidate; ini belum menguji resource PK02 terdekompresi.
 2. Perbaikan shell continuation dikomit pada source SHA `0a33f7bb3aa00c1ded456f5874d60d13384d2826`.
 3. Run ulang: `41413850863`, job `125172847213`, status terakhir yang terlihat `in_progress`. Periksa hasil dan log sebelum menyatakan BA1.
+
+## Mapping byte loader (K4 statis untuk mapping saja; belum berarti BA1 selesai)
+
+`FUN_800F7ADC` static body at `ba1-tile-resource-loader.txt`:
+- buffer[0] = record count; `record_ptr = buffer + 1`; `record_ptr += 0x1E` per item.
+- Record +0,+1,+2,+3,+4 -> tile +0,+1,+2,+3,+4.
+- Record +6 -> tile +5; record +5 is not copied. Tile +6 initialized 0.
+- Record +7/+8 -> tile hw +0x0E.
+- Record +9/+10 -> tile hw +0x10.
+- Record +11/+12 -> tile hw +0x12.
+- Record +13/+14 -> tile hw +0x14.
+- Record +15/+16 -> tile hw +0x16.
+- Record +17/+18 -> tile hw +0x18.
+- Record +19/+20 -> tile hw +0x1A (price source candidate).
+- Record +21/+22 -> tile hw +0x1C.
+- Record +23/+24 -> tile hw +0x1E.
+- Tile hw +0x20 initialized to constant `0xF020`; record +25/+26 -> tile hw +0x22; +27/+28 -> tile hw +0x24; record +29 -> tile byte +0x0C.
+- This confirms source→runtime layout statically at the function under import base `0x800AD450` (not runtime validation). It does not prove which resource is Stage 1's 22-record table.
 
 ## Langkah berikut
 
