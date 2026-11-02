@@ -20,7 +20,7 @@ TARGET_SHA = "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d"
 CONTROL_SHA = "9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492"
 H6_SHA = "d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475"
 HISTORICAL_SLOWEST_LAUNCH_S = 145.815
-MIN_TIMEOUT_S = 600
+MIN_TIMEOUT_S = 300
 RAM_BASE = 0x80000000
 RAM_BYTES = 0x200000
 TILE_STRIDE = 0x124
@@ -265,8 +265,8 @@ _G.bb3VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
   end
   if not done then
     frames = frames + 1
-    if frames >= 600 then
-      log("BB3_VSYNC_LIMIT_REACHED=600")
+    if frames >= 360 then
+      log("BB3_VSYNC_LIMIT_REACHED=360")
       log("BB3_SELECTED_TILE_OVERRIDE=" .. tostring(selectHit))
       log("BB3_CALL_STATUS=NOT_REACHED")
       PCSX.quit(60)
