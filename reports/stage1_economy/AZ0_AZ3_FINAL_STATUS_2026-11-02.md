@@ -8,12 +8,12 @@ Baseline: e2a2f4485dfa258d8a4d25599c26cab0c9ac551a
 
 | Bagian | Status | Kesimpulan |
 |---|---|---|
-| AZ0 | **SELESAI dalam lingkup direct writer Entry1** | 10 store langsung ke field manager teridentifikasi dengan byte, decode, base register, dan instruksi pemuat pointer manager. |
-| AZ1 | **SELESAI untuk H6 HYBRID** | 2 launch × 2 frame; 4 snapshot RAM lolos; dataflow tabel B30→global C88 terkonfirmasi; V petak dihitung ulang. Bukan target checkpoint murni. |
-| AZ2 | **SELESAI dalam lingkup direct displacement Entry1** | 25 akses langsung B38/B40/B44; 17 reader dan 8 writer dengan base manager terkonfirmasi. |
-| AZ3 | **SEBAGIAN** | 16 direct JAL ke setter terverifikasi; getter/setter dan seed chakra awal terurai. Rumus biaya build/upgrade belum ditemukan/dibuktikan; indirect caller belum terikat. |
+| AZ0 | **SELESAI — lingkup direct writer Entry1** | 10 store langsung ke field manager teridentifikasi; byte, decode, base register, dan rantai pointer manager dicatat. |
+| AZ1 | **SELESAI — lingkup H6 HYBRID** | 2 peluncuran × 2 frame; empat snapshot lolos; jalur tabel B30→global C88 terkonfirmasi dan nilai V dihitung ulang. H6 bukan target checkpoint murni. |
+| AZ2 | **SELESAI — lingkup direct displacement Entry1** | 25 akses langsung B38/B40/B44 terpetakan: 17 reader dan 8 writer dengan base manager terkonfirmasi. |
+| AZ3 | **SELESAI — jalur transaksi petak yang ditemukan** | Getter/setter, saldo awal, jalur transfer, serta jalur debit pembelian/peningkatan petak ditemukan. Biaya dibaca langsung dari tile+0x1A dan diterapkan lewat pending delta +0x2EE. |
 
-**Jadi AZ0, AZ1, dan AZ2 selesai sesuai batas audit yang dinyatakan. AZ3 belum selesai sebagai rekonstruksi biaya ekonomi penuh.** Jangan menyebut seluruh AZ0–AZ3 tuntas secara menyeluruh.
+**AZ0, AZ1, AZ2, dan AZ3 selesai sesuai lingkup audit statis yang dinyatakan.** Ini bukan klaim bahwa seluruh ekonomi game, semua overlay, semua pemanggilan tidak langsung, atau semua event gameplay sudah terurai. Identitas nama aksi kode 3/8 dan beberapa jalur tidak langsung tetap **TIDAK TAHU**.
 
 ## AZ0 — writer manager
 
@@ -54,23 +54,55 @@ Total 25 akses langsung: 17 reader + 8 writer. Base register semua reader ditaut
 
 FUN_80109FEC menguji caller flag bit 0x20. Bila aktif, state manager +0xB2A mengatur fase 3–7. State 6 mengisi progress B44 menuju B40 dengan langkah 0x14; state 7 memindahkan Q(i)+B44 atau Q(i)+min(B44,0x14) ke participant +0x18 lalu menguras B44. Nama event gameplay di balik bit 0x20/state7—akhir putaran, settlement, atau Barrier release—tetap **TIDAK TAHU**.
 
-## AZ3 — setter/getter, seed chakra, dan biaya
+## AZ3 — saldo, transfer, dan debit pembelian/peningkatan petak
 
-Direct caller census setter 0x8001387C:
+### Saldo kanonis dan nilai awal
+
+Direct caller census setter `0x8001387C`:
 - Entry1: 14/14 direct JAL candidates divalidasi Ghidra.
 - MAIN_EXE: 2/2 divalidasi.
 - Total 16 direct JAL.
 
-FUN_8001387C(i,value) validasi i<4, clamp nilai ke -9999..99999, lalu store ke 0x80070EA0+i*0xB4+0x18. Getter FUN_800138EC(i) membaca field yang sama atau return 0 untuk index tidak valid.
+`FUN_8001387C(i,value)` memvalidasi `i<4`, membatasi value ke rentang -9999..99999, lalu menyimpan ke `0x80070EA0+i*0xB4+0x18`. Getter `FUN_800138EC(i)` membaca field yang sama (atau mengembalikan 0 untuk indeks tidak valid). Field +0x18 adalah saldo Chakra kanonis pada record pemain. Field participant +0x04 yang dipakai banyak state handler adalah salinan kerja/shadow yang disinkronkan kembali melalui getter/setter.
 
-Callsite 0x80012DD4 bukan pola debit. FUN_80012A44 hanya membaca global 0x80070C80; FUN_80012C70 mengirim nilai tersebut ke setter bagi setiap indeks pemain. Dua writer langsung C80 ditemukan:
-- FUN_80012780, PC 0x800127D0: menulis dari 0x8006491C+(param_1&0xFF)*0x30.
-- FUN_80012EAC, PC 0x80012F64: menulis dari selected mode/state row+0x04 di 0x8005779C+idx*0x54.
-Ini membuktikan C80 adalah sumber nilai awal field chakra participant +0x18 secara statis K4. Nilai runtime C80 pada empat snapshot H6 sebelumnya tidak direkam; angka runtime C80 = TIDAK TAHU.
+Callsite MAIN_EXE `0x80012DD4` bukan debit. `FUN_80012A44` membaca global `0x80070C80`, lalu `FUN_80012C70` mengirim nilai itu ke setter untuk setiap indeks pemain. Dua writer langsung C80:
+- `FUN_80012780`, PC `0x800127D0`: membaca `MEM32[0x8006491C+(param_1&0xFF)*0x30]`.
+- `FUN_80012EAC`, PC `0x80012F64`: membaca selected mode/state row+0x04 di `0x8005779C+idx*0x54`.
 
-Callsite MAIN_EXE 0x80013170 mengirim selected table row+0x04 ke setter. Empat callsite state-machine mengirim Q, Q+B44 atau Q+min(B44,20). Tidak satu pun dari 16 direct JAL menghasilkan ekspresi Q(i)-cost.
+Jadi C80 merupakan sumber nilai awal saldo pemain secara statis K4. Makna rinci kolom +0x04 pada kedua sumber tabel dan nilai runtime C80 pada H6 tetap **TIDAK TAHU**.
 
-Exporter juga mencatat 12 instruksi JALR di Entry1 dan 152 di MAIN_EXE, tetapi target register belum diikat ke setter. Itu bukan jumlah setter caller. Indirect/computed calls dan caller overlay lain tetap TIDAK TAHU. Dengan demikian **rumus harga bangun/upgrade = TIDAK TAHU**; AZ3 tetap SEBAGIAN.
+### Jalur debit transaksi petak — bukti langsung
+
+Fungsi `FUN_800D15A8` memproses state papan dan membaca action byte `participant_manager+0x2EB`. Pada cabang action **3 atau 8**, fungsi:
+1. Memilih indeks petak melalui `FUN_800BBD9C()` dan menyimpannya di `participant_manager+0x4A0`.
+2. Membaca biaya sebagai unsigned halfword `fee = u16(tile+0x1A)`.
+3. Membandingkan biaya dengan saldo kerja pemain `participant[DAT_8013EA6E]+0x04`. Cabang transaksi hanya berjalan bila `fee <= balance`.
+4. Menulis pending delta pemain aktif pada array `participant_manager+0x2EE` sebagai `-fee`.
+5. Menaikkan dua level nibble pada word petak `tile+0x20` masing-masing satu: nibble bits 8–11 dan nibble bits 4–7.
+6. Memanggil `FUN_800BB004` dan `FUN_800BE464` untuk memperbarui representasi/atribut petak setelah level berubah.
+
+**Kesimpulan mekanis K4:** untuk cabang transaksi petak action 3/8 yang dianalisis, biaya tidak dihitung sebagai `Q(i)-cost` tepat sebelum setter. Biaya dibaca langsung dari data record petak `u16(tile+0x1A)`; jika saldo cukup, delta debit `-fee` ditulis ke pending per pemain dan level tile dinaikkan. Dengan kata lain, sumber nominal transaksi adalah field +0x1A pada record petak, bukan rumus V dari `FUN_800B770C`.
+
+Field +0x1A bersifat per-record; nilai biaya konkret untuk setiap tile belum dipetakan satu per satu dalam laporan ini. Label nama gameplay untuk action byte 3 versus 8, dan apakah setiap kode berarti jenis bangun atau tingkat upgrade tertentu, tetap **TIDAK TAHU**. Tidak ada klaim bahwa semua bentuk pembelian atau semua overlay game memakai jalur yang sama.
+
+### Pemrosesan debit dan jenis perubahan saldo yang berbeda
+
+`FUN_800BE5D8` membaca signed pending delta `participant_manager+0x2EE+player*2`. Fungsi ini membagi nominal ke langkah animasi 1, 10, 100, 1000, dan 10000; menambah atau mengurangi saldo kerja participant +0x04 sesuai tanda; memanggil `FUN_8001387C`; kemudian membaca balik melalui `FUN_800138EC` dan menyinkronkan hasil ke field +0x04. Setelah animasi selesai, pending +0x2EE dibersihkan. Ini menghubungkan debit petak dengan saldo kanonis +0x18.
+
+Jalur lain yang juga menggunakan +0x2EE tidak boleh disamakan dengan biaya bangun/upgrade:
+- `FUN_800F3658`, pada event code karakter `'r'`, menghitung `amount = FUN_8010BDFC()*500`, membuat delta positif bagi satu peserta dan negatif bagi peserta lain, lalu mengantrekannya di `DAT_80139ECC`. Ini adalah jalur transfer antar peserta, bukan harga petak.
+- `FUN_800DB29C` dan `FUN_800E0B3C` memindahkan nilai antrian `DAT_80139ECC` ke array pending +0x2EE dan mengosongkan sumber.
+- `FUN_800F2A9C` juga membentuk pending delta dari helper nilai event dan jumlah peserta; ini merupakan distribusi event terpisah.
+- Cabang lain `FUN_800D15A8` mengisi delta positif dari `tile+0x1E + level*tile+0x1C`. Rumus nilai positif ini teramati, tetapi label gameplay-nya—pendapatan, hadiah, atau settlement—tetap **TIDAK TAHU**.
+
+### Batas bukti AZ3
+
+- Debit petak action 3/8 dan asal nominal `u16(tile+0x1A)` terbukti secara statis K4 dari dekompilasi Entry1. Belum ada uji runtime untuk tindakan tersebut dalam sesi ini.
+- H6 runtime AZ1 adalah checkpoint **HIBRIDA**, bukan target murni; snapshot H6 tidak digunakan sebagai validasi runtime untuk biaya transaksi ini.
+- 12 instruksi JALR Entry1 dan 152 JALR MAIN_EXE yang tercatat adalah jumlah seluruh indirect call, bukan daftar pemanggil setter. Target JALR dinamis, overlay lain, dan computed call yang tidak terikat tetap **TIDAK TAHU**.
+- Nama semantik action 3/8, makna positif `tile+0x1E + level*tile+0x1C`, dan nilai konkret biaya untuk setiap tile tetap belum ditetapkan.
+
+**Status AZ3: SELESAI untuk jalur transaksi debit petak action 3/8, saldo, dan sinkronisasi yang ditemukan; sisa batas di atas tetap TIDAK TAHU dan tidak diperluas menjadi klaim universal.**
 
 ## Run Actions yang relevan
 
@@ -80,6 +112,10 @@ Exporter juga mencatat 12 instruksi JALR di Entry1 dan 152 di MAIN_EXE, tetapi t
 | 41367221886 Step7/AZ3 direct census | 125029837518 | e98a2081e7f6573a75705d416f8a727a10634ced | success | 0 |
 | 41367906993 Step7 caller/callee decompile | 125031924296 | 253dc96f92d95c76337bdbbf3292d0c388470493 | success | 0 |
 | 41368276256 Step7 C80 global reference census | 125033025512 | 5822e40f3698e1b928619ee74ec4cef5a4913f70 | success | 0 |
+| 41388731912 Step7 all direct setter caller decompilation | 125095241391 | 1368ad7e983e468a316b3ee283d76b110b9cb279 | success | 0 |
+| 41389951934 Step7 event/pending delta decompilation | 125098923954 | 0802559834327f21a72c54ef9de46b2baa4790db | success | 0 |
+| 41390225493 Step7 pending-global xref census | 125099758618 | 980485d6680131187c1e7b09322c9aca22d830b6 | success | 0 |
+| 41390871544 Step7 extended transaction-state decompilation | 125101751085 | f052a6005bccc852d5fd0a70feaa5f0ec56a9f3f | success | 0 |
 
 ## Artefak teks utama
 
@@ -93,6 +129,15 @@ Exporter juga mencatat 12 instruksi JALR di Entry1 dan 152 di MAIN_EXE, tetapi t
 - AZ3_GLOBAL_70C80_SEED_FLOW_2026-11-02.tsv
 - AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv
 - Runtime H6: az1-h6-economy-runtime-run-41360900093/attempt-1/
-- AQ1/Step7 latest: aq1-run-41368276256/attempt-1/
+- AQ1/Step7 latest: aq1-run-41390871544/attempt-1/ (extended function decompilation; see ACTIONS_RUN_SUMMARY.txt and az3-resource-economy-function-detail.txt).
 
 Tidak ada ISO/ROM, BIOS, Memory Card, savestate, raw RAM dump, screenshot, video/frame, atau binary yang dikomit.
+
+## Perubahan analisis AZ
+
+Exporter diperluas agar seluruh caller setter langsung dapat didekompilasi dan fungsi pembaca/penulis global delta dapat diekspor untuk kedua image. Bukti baru mengoreksi kesimpulan awal “tidak ditemukan Q-cost”: jalur pembelian/peningkatan petak memakai computed pointer ke pending delta +0x2EE, sehingga tidak akan muncul sebagai ekspresi `Q(i)-cost` pada direct JAL setter census.
+
+Berkas kode/workflow yang diubah selama audit:
+- `tools/ghidra/ExportTargetCallers.java`
+- `tools/ghidra/ExportFunctionDetail.java`
+- `.github/workflows/step7-entry1-buffer-base-audit.yml`
