@@ -47,6 +47,9 @@ local refreshBB004Hit = false
 local refreshBE464Hit = false
 local callGuestStatus = "NOT_RUN"
 local callGuestCycles = nil
+local callGuestPC = nil
+local callGuestV0 = nil
+local callGuestV1 = nil
 local callGuestNonRamAccesses = nil
 local callGuestDepth = nil
 local callGuestStoresDropped = nil
@@ -154,6 +157,9 @@ local function readResult()
   log("BB3_REFRESH_FUN_800BE464_REACHED=" .. (refreshBE464Hit and "1" or "0"))
   log("BB3_CALLGUEST_STATUS=" .. tostring(callGuestStatus))
   log("BB3_CALLGUEST_CYCLES=" .. tostring(callGuestCycles or "TIDAK TAHU"))
+  log("BB3_CALLGUEST_PC=" .. (callGuestPC and hex(callGuestPC) or "TIDAK TAHU"))
+  log("BB3_CALLGUEST_V0=" .. tostring(callGuestV0 or "TIDAK TAHU"))
+  log("BB3_CALLGUEST_V1=" .. tostring(callGuestV1 or "TIDAK TAHU"))
   log("BB3_CALLGUEST_NON_RAM_ACCESSES=" .. tostring(callGuestNonRamAccesses or "TIDAK TAHU"))
   log("BB3_CALLGUEST_DEPTH=" .. tostring(callGuestDepth or "TIDAK TAHU"))
   log("BB3_CALLGUEST_STORES_DROPPED=" .. tostring(callGuestStoresDropped))
@@ -304,7 +310,7 @@ _G.bb3VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
               return PCSX.callGuest({
                 pc = 0x800D15A8,
                 args = {},
-                cycles = 100000000,
+                cycles = 5000000,
                 isolate = false
               })
             end)
@@ -317,6 +323,9 @@ _G.bb3VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
             end
             callGuestStatus = tostring(result.status or "unknown")
             callGuestCycles = result.cycles
+            callGuestPC = result.pc
+            callGuestV0 = result.v0
+            callGuestV1 = result.v1
             callGuestNonRamAccesses = result.nonRamAccesses
             callGuestDepth = result.depth
             callGuestStoresDropped = result.storesDropped
