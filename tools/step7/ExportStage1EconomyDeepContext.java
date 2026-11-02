@@ -11,7 +11,7 @@ public class ExportStage1EconomyDeepContext extends GhidraScript {
  private PrintWriter out;
  private static final long RECORD=0x8013EA84L, PARTICIPANT=0x8013EA74L, MANAGER=0x8013A554L;
  private static final long[] HELPERS={0x800B770CL,0x800BDC4CL};
- private static final int[] FIELDS={0x00,0x0B,0x10,0x12,0x14,0x16,0x18,0x1A,0x1C,0x1E,0x20,0x22,0x24,0x26,0x28,0x2A,0x2C,0x2E};
+ private static final int[] FIELDS={0x00,0x0B,0x0E,0x10,0x12,0x14,0x16,0x18,0x1A,0x1C,0x1E,0x20,0x22,0x24,0x26,0x28,0x2A,0x2C,0x2E};
  private static final Pattern MEM=Pattern.compile("(?i)(0x[0-9a-f]+|[0-9a-f]+)\\s*\\(\\s*[a-z0-9]+\\s*\\)");
  private final Map<String,Function> recordFns=new TreeMap<>(),participantFns=new TreeMap<>(),managerFns=new TreeMap<>(),helperFns=new TreeMap<>(),dumped=new TreeMap<>();
  private int setterCalls=0,getterCalls=0,fieldFnCount=0;
