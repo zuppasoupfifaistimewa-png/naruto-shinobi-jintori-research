@@ -1,0 +1,6 @@
+STATUS=TIDAK_TERSDIA\nreason=workflow did not create this output\n
+JOB=bb3-h6-smoke
+JOB_ID=125559159417
+RUN_ID=41527576341
+SOURCE_SHA=5d4abe5f830ddce06756ae60f7cb6bc0b0b1b9a6
+EXIT_CODE=TIDAK TAHU
