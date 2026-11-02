@@ -83,7 +83,7 @@ Fungsi `FUN_800D15A8` memproses state papan dan membaca action byte `participant
 
 **Kesimpulan mekanis K4:** untuk cabang transaksi petak action 3/8 yang dianalisis, biaya tidak dihitung sebagai `Q(i)-cost` tepat sebelum setter. Biaya dibaca langsung dari data record petak `u16(tile+0x1A)`; jika saldo cukup, delta debit `-fee` ditulis ke pending per pemain dan level tile dinaikkan. Dengan kata lain, sumber nominal transaksi adalah field +0x1A pada record petak, bukan rumus V dari `FUN_800B770C`.
 
-Field +0x1A bersifat per-record; nilai biaya konkret untuk setiap tile belum dipetakan satu per satu dalam laporan ini. Label nama gameplay untuk action byte 3 versus 8, dan apakah setiap kode berarti jenis bangun atau tingkat upgrade tertentu, tetap **TIDAK TAHU**. Tidak ada klaim bahwa semua bentuk pembelian atau semua overlay game memakai jalur yang sama.
+Asal field harga juga ditelusuri: `FUN_800F7ADC` memuat resource petak, lalu menyalin dua byte `pbVar2[0x14]` dan `pbVar2[0x15]` ke `tile+0x1A` sebagai halfword little-endian. Record sumber berstride `0x1E` byte; record runtime petak berstride `0x124` byte. Dengan demikian, biaya berasal dari data resource/record petak, bukan hasil rumus pada saat transaksi. Nilai nominal tiap record dan identitas nama gameplay action byte 3 versus 8 tetap **TIDAK TAHU**. Tidak ada klaim bahwa semua bentuk pembelian atau semua overlay game memakai jalur yang sama.
 
 ### Pemrosesan debit dan jenis perubahan saldo yang berbeda
 
@@ -116,6 +116,7 @@ Jalur lain yang juga menggunakan +0x2EE tidak boleh disamakan dengan biaya bangu
 | 41389951934 Step7 event/pending delta decompilation | 125098923954 | 0802559834327f21a72c54ef9de46b2baa4790db | success | 0 |
 | 41390225493 Step7 pending-global xref census | 125099758618 | 980485d6680131187c1e7b09322c9aca22d830b6 | success | 0 |
 | 41390871544 Step7 extended transaction-state decompilation | 125101751085 | f052a6005bccc852d5fd0a70feaa5f0ec56a9f3f | success | 0 |
+| 41391551410 Step7 tile-price source-field decompilation | 125103849388 | e8944c6ff9a8f99590f2ef8d776e5a8378c169a8 | success | 0 |
 
 ## Artefak teks utama
 
@@ -129,7 +130,8 @@ Jalur lain yang juga menggunakan +0x2EE tidak boleh disamakan dengan biaya bangu
 - AZ3_GLOBAL_70C80_SEED_FLOW_2026-11-02.tsv
 - AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv
 - Runtime H6: az1-h6-economy-runtime-run-41360900093/attempt-1/
-- AQ1/Step7 latest: aq1-run-41390871544/attempt-1/ (extended function decompilation; see ACTIONS_RUN_SUMMARY.txt and az3-resource-economy-function-detail.txt).
+- AQ1/Step7 transaction trace: aq1-run-41390871544/attempt-1/.
+- AQ1/Step7 tile price source: aq1-run-41391551410/attempt-1/ (FUN_800F7ADC; see ACTIONS_RUN_SUMMARY.txt and az3-resource-economy-function-detail.txt).
 
 Tidak ada ISO/ROM, BIOS, Memory Card, savestate, raw RAM dump, screenshot, video/frame, atau binary yang dikomit.
 
