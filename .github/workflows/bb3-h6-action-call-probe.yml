@@ -1,4 +1,4 @@
-name: BB3 — H6 temporary RAM action-byte function-call probe
+name: BB3 — H6 temporary RAM action-byte function-call probe (patched PCSX)
 
 on:
   workflow_dispatch:
@@ -18,16 +18,20 @@ concurrency:
 
 jobs:
   bb3-h6-action-call-probe:
-    name: BB3 16 H6 function-call launches for action byte 3 and 8
+    name: BB3 16 H6 function-call launches on patched PCSX-Redux
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
+    container:
+      image: ghcr.io/grumpycoders/pcsx-redux-build:latest
+      options: --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
     env:
       GH_TOKEN: ${{ github.token }}
       RESEARCH_REPO: ${{ github.repository }}
       WORK: /tmp/naruto-bb3-${{ github.run_id }}-${{ github.run_attempt }}
+      BASE_COMMIT: 0c3572c3db75f97542001e453ae80ba8c3f8acba
       TIMEOUT_SECONDS: "900"
     steps:
-      - name: Checkout research scripts
+      - name: Checkout research scripts and patch
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -37,18 +41,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$WORK"/{source,inputs,cards,resume,logs,launches,home}
+          mkdir -p "$WORK"/{source,inputs,cards,resume,logs,launches,home,variant}
           mkdir -p "$RUNNER_TEMP/bb3-output"
           echo "OUTDIR=$RUNNER_TEMP/bb3-output" >> "$GITHUB_ENV"
 
-      - name: Install bounded emulator tools
+      - name: Install bounded build and probe utilities
         shell: bash
         run: |
           set -euo pipefail
-          sudo apt-get update -qq
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends xvfb x11-utils curl jq unzip python3
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends jq python3-pil xvfb x11-utils curl git unzip zip gdb
 
-      - name: Download and verify pinned emulator, disc, BIOS and target checkpoint
+      - name: Download and verify private game inputs, BIOS, and target checkpoint
         shell: bash
         run: |
           set -euo pipefail
@@ -67,7 +71,6 @@ jobs:
             test "$(stat -c %s "$out")" = "$bytes"
             echo "$digest  $out" | sha256sum --check -
           }
-          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage 65747557 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
           fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin 325989552 58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88
           fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue 116 be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8
           fetch_asset scph7502.zip scph7502.zip 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a
@@ -78,7 +81,7 @@ jobs:
           echo "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d  target.sstate" | sha256sum --check -
           python3 - <<'PY'
           from pathlib import Path
-          import stat, zipfile
+          import hashlib, stat, zipfile
           with zipfile.ZipFile("scph7502.zip") as z:
               found=[]; total=0
               for x in z.infolist():
@@ -88,7 +91,6 @@ jobs:
                   if not x.is_dir() and x.file_size==524288: found.append(x)
               if len(found)!=1: raise SystemExit("expected one BIOS-sized member")
               data=z.read(found[0])
-              import hashlib
               if hashlib.sha256(data).hexdigest()!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1": raise SystemExit("BIOS SHA mismatch")
               Path("scph7502.bin").write_bytes(data)
           lines=Path("game.cue").read_text(encoding="utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
@@ -97,16 +99,57 @@ jobs:
           lines[idx[0]]='FILE "game.bin" BINARY'
           Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
           PY
-          chmod +x pcsx-redux.AppImage
-          ./pcsx-redux.AppImage --appimage-extract >/dev/null
-          APPDIR="$WORK/source/squashfs-root"
-          test -x "$APPDIR/AppRun"
-          PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 | grep -E '/(pcsx-redux|pcsx-redux[^/]*)$' | head -n 1)"
-          test -n "$PCSX_BIN" && test -x "$PCSX_BIN"
-          echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
-          echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
           cp target.sstate "$WORK/resume/target.sstate"
           chmod 400 "$WORK/resume/target.sstate"
+          echo "TARGET_STATE_SHA256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d" | tee "$WORK/source-input-manifest.txt"
+
+      - name: Build and test patched PCSX-Redux from pinned source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK"
+          git clone --no-checkout https://github.com/grumpycoders/pcsx-redux.git pcsx-src
+          cd pcsx-src
+          git checkout --detach "$BASE_COMMIT"
+          test "$(git rev-parse HEAD)" = "$BASE_COMMIT"
+          ./.github/scripts/update-submodules.sh
+          git apply "$GITHUB_WORKSPACE/experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch"
+          git diff --check
+          git diff --binary -- src/spu/adpcm.cc src/spu/adpcm.h > "$WORK/applied-fix.diff"
+          PATCH_SHA="$(sha256sum "$GITHUB_WORKSPACE/experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch" | cut -d ' ' -f 1)"
+          DIFF_SHA="$(sha256sum "$WORK/applied-fix.diff" | cut -d ' ' -f 1)"
+          test -s "$WORK/applied-fix.diff"
+          make -j 2 all pcsx-redux-tests tools
+          make -C src/mips/tests -j 2 PCSX_TESTS=true
+          make -C src/mips/openbios clean
+          make -C src/mips/openbios -j 2 all
+          export GTEST_OUTPUT=xml:"$WORK/test-results/"
+          mkdir -p "$WORK/test-results"
+          xvfb-run catchsegv ./pcsx-redux-tests
+          make install install-openbios DESTDIR=AppDir/usr
+          sed -i 's:/usr/bin/::' AppDir/usr/share/applications/pcsx-redux.desktop
+          linuxdeploy -v 3 --appdir=AppDir -e AppDir/usr/bin/pcsx-redux \
+            -d AppDir/usr/share/applications/pcsx-redux.desktop \
+            -i AppDir/usr/share/icons/hicolor/256x256/apps/pcsx-redux.png -o appimage
+          mv PCSX-Redux-x86_64.AppImage "$WORK/PCSX-Redux-spu-sentinel-probe-x86_64.AppImage"
+          VARIANT_SHA="$(sha256sum "$WORK/PCSX-Redux-spu-sentinel-probe-x86_64.AppImage" | cut -d ' ' -f 1)"
+          mkdir -p "$WORK/variant"
+          cd "$WORK/variant"
+          ../PCSX-Redux-spu-sentinel-probe-x86_64.AppImage --appimage-extract >/dev/null
+          APPDIR="$WORK/variant/squashfs-root"
+          PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 | grep -E '/(pcsx-redux|pcsx-redux[^/]*)$' | head -n 1)"
+          test -n "$PCSX_BIN" && test -x "$PCSX_BIN"
+          {
+            echo "BASE_COMMIT=$BASE_COMMIT"
+            echo "SOURCE_VARIANT=base_commit_plus_upstream_PR_2218_two_file_SPu_ADPCM_fix"
+            echo "PATCH_FILE=experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch"
+            echo "PATCH_SHA256=$PATCH_SHA"
+            echo "APPLIED_SOURCE_DIFF_SHA256=$DIFF_SHA"
+            echo "VARIANT_APPIMAGE_SHA256=$VARIANT_SHA"
+            echo "PATCHED_BUILD_AND_UNIT_TESTS=PASS"
+          } | tee "$OUTDIR/BB3_PATCHED_BUILD_MANIFEST.txt"
+          echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
+          echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
 
       - name: Download previously verified CONTROL checkpoint
         uses: actions/download-artifact@v4
@@ -146,7 +189,38 @@ jobs:
           echo "GAMEPLAY_INPUT=NONE"
           echo "RAM_WRITE_SCOPE=DISPOSABLE_TEST_LAUNCH_ONLY"
 
+      - name: Smoke-test H6 restore on patched build
+        id: h6_smoke
+        shell: bash
+        run: |
+          set +e
+          export DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1
+          export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+          export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
+          export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
+          export QML2_IMPORT_PATH="$APPDIR/usr/qml"
+          python3 -m py_compile experiments/bb3_h6_smoke.py
+          python3 experiments/bb3_h6_smoke.py \
+            --target "$WORK/resume/target.sstate" --control "$WORK/resume/control.sstate" \
+            --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/source/scph7502.bin" \
+            --cue "$WORK/source/game-run.cue" --card "$WORK/reference.mcd" \
+            --work "$WORK/smoke" --out "$WORK/smoke-out" --timeout-seconds "$TIMEOUT_SECONDS"
+          rc=$?
+          mkdir -p "$WORK/smoke-out"
+          for f in "$WORK/smoke-out"/*; do
+            [ -f "$f" ] || continue
+            case "$f" in *.txt|*.log|*.tsv) cp "$f" "$OUTDIR/BB3_H6_PATCHED_$(basename "$f")";; esac
+          done
+          echo "SMOKE_EXIT_CODE=$rc" >> "$OUTDIR/BB3_PATCHED_BUILD_MANIFEST.txt"
+          if [ "$rc" -eq 0 ]; then
+            echo "passed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "passed=false" >> "$GITHUB_OUTPUT"
+          fi
+          exit 0
+
       - name: Run 16 isolated H6 function-call launches
+        if: steps.h6_smoke.outputs.passed == 'true'
         shell: bash
         run: |
           set +e
@@ -162,17 +236,20 @@ jobs:
             --cue "$WORK/source/game-run.cue" --card "$WORK/reference.mcd" \
             --work "$WORK" --out "$OUTDIR" --timeout-seconds "$TIMEOUT_SECONDS"
           rc=$?
-          if [ ! -f "$OUTDIR/ACTIONS_RUN_SUMMARY.txt" ]; then
-            {
-              echo "STATUS=SETUP_OR_PROBE_FAILED"
-              echo "JOB=bb3-h6-action-call-probe"
-              echo "RUN_ID=$GITHUB_RUN_ID"
-              echo "SOURCE_SHA=$GITHUB_SHA"
-              echo "EXIT_CODE=$rc"
-            } > "$OUTDIR/ACTIONS_RUN_SUMMARY.txt"
+          if [ ! -f "$OUTDIR/BB3_ACTION_CALL_SUMMARY.txt" ]; then
+            printf 'STATUS=SETUP_OR_PROBE_FAILED\nreason=no BB3 action summary produced\n' > "$OUTDIR/BB3_ACTION_CALL_SUMMARY.txt"
           fi
           echo "BB3_WORKFLOW_SCRIPT_PROCESS_EXIT=$rc" > "$OUTDIR/BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt"
           exit 0
+
+      - name: Record action-call probe blocked by H6 restore smoke
+        if: steps.h6_smoke.outputs.passed != 'true'
+        shell: bash
+        run: |
+          printf 'STATUS=BELUM\nreason=patched PCSX build did not pass H6 restore smoke; action dispatcher was not tested\n' > "$OUTDIR/BB3_ACTION_CALL_SUMMARY.txt"
+          printf 'action_byte\tlevel\tattempt\tcall_status\n' > "$OUTDIR/BB3_ACTION_CALL_RESULTS.tsv"
+          printf 'BB3_SCRIPT_EXIT_CODE=TIDAK_DIJALANKAN\n' > "$OUTDIR/BB3_SCRIPT_EXIT_CODE.txt"
+          printf 'BB3_WORKFLOW_SCRIPT_PROCESS_EXIT=TIDAK_DIJALANKAN\n' > "$OUTDIR/BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt"
 
       - name: Remove private ROM, BIOS, savestates, Memory Card and RAM artifacts
         if: always()
@@ -194,7 +271,7 @@ jobs:
           root=Path(sys.argv[1])
           invalid=[str(p) for p in root.rglob("*") if p.is_file() and p.suffix.lower() not in {".txt",".tsv",".log"}]
           if invalid: raise SystemExit("non-text result blocked: "+repr(invalid))
-          required=("BB3_ACTION_CALL_SUMMARY.txt","BB3_ACTION_CALL_RESULTS.tsv","BB3_SCRIPT_EXIT_CODE.txt","BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt","ACTIONS_RUN_SUMMARY.txt")
+          required=("BB3_PATCHED_BUILD_MANIFEST.txt","BB3_ACTION_CALL_SUMMARY.txt","BB3_ACTION_CALL_RESULTS.tsv","BB3_SCRIPT_EXIT_CODE.txt","BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt","ACTIONS_RUN_SUMMARY.txt")
           for name in required:
               if not (root/name).is_file():
                   (root/name).write_text("STATUS=TIDAK_TERSDIA\nreason=workflow did not create this output\n",encoding="utf-8")
@@ -202,14 +279,15 @@ jobs:
           dest="reports/stage1_economy/bb3-h6-action-call-probe-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
           cp "$out"/* "$dest/" 2>/dev/null || true
-          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="BB3 16 H6 function-call launches for action byte 3 and 8") | .id' | head -n 1)"
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="BB3 16 H6 function-call launches on patched PCSX-Redux") | .id' | head -n 1)"
           test -n "$JOB_ID" || JOB_ID="TIDAK TAHU"
           STATUS="$(sed -n 's/^STATUS=//p' "$out/BB3_ACTION_CALL_SUMMARY.txt" | head -n 1)"; test -n "$STATUS" || STATUS="INCOMPLETE"
           SOURCE_SHA="$GITHUB_SHA"
-          RC="$(sed -n 's/^BB3_SCRIPT_EXIT_CODE=//p' "$out/BB3_SCRIPT_EXIT_CODE.txt" | head -n 1)"; test -n "$RC" || RC="TIDAK TAHU"
+          RC="$(sed -n 's/^BB3_SCRIPT_EXIT_CODE=//p' "$out/BB3_SCRIPT_EXIT_CODE.txt" | head -n 1)"; test -n "$RC" || RC="$(sed -n 's/^SMOKE_EXIT_CODE=//p' "$out/BB3_PATCHED_BUILD_MANIFEST.txt" | head -n 1)"
+          test -n "$RC" || RC="TIDAK TAHU"
           {
             echo "STATUS=$STATUS"
-            echo "JOB=bb3-h6-action-call-probe"
+            echo "JOB=bb3-h6-action-call-probe-patched"
             echo "JOB_ID=$JOB_ID"
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "SOURCE_SHA=$SOURCE_SHA"
@@ -219,7 +297,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$dest"
           if ! git diff --cached --quiet; then
-            git commit -m "Publish BB3 H6 action-call probe run $GITHUB_RUN_ID attempt $GITHUB_RUN_ATTEMPT"
+            git commit -m "Publish BB3 patched H6 action-call probe run $GITHUB_RUN_ID attempt $GITHUB_RUN_ATTEMPT"
             pushed=0
             for n in 1 2 3; do
               git fetch origin main
