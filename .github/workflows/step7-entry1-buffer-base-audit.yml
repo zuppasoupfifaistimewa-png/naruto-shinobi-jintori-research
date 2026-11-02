@@ -12,6 +12,8 @@ on:
       - "tools/step7/ExportPendingParticipantDelta.java"
       - "tools/step7/ScanStage1EconomyData.py"
       - "tools/step7/SummarizeStage1EconomyCensus.py"
+      - "tools/step7/ExportTileResourceLoader.java"
+      - "tools/step7/ScanStage1TileResources.py"
       - "tools/ghidra/ExportTargetCallers.java"
       - "tools/ghidra/ExportFunctionDetail.java"
       - "tools/ghidra/ExportManagerFieldAccesses.java"
@@ -147,6 +149,7 @@ jobs:
                        "main_exe_bytes=385024","private_binary_artifact=no"])
           report.write_text("input_validation=PASS\n"+"\n".join(meta)+"\n",encoding="utf-8")
           PY
+          python3 tools/step7/ScanStage1TileResources.py --data "$data" --out-dir "$out"
           rm -rf "$source" "$extracted"
           test ! -e "$source" && test ! -e "$extracted"
           echo "source_disc_and_DATA_BIN_removed_before_Ghidra=PASS" >> "$out/input-identity.txt"
@@ -195,6 +198,7 @@ jobs:
           cp "$GITHUB_WORKSPACE/tools/step7/ExportStage1EconomyAQ1.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportStage1EconomyAQ1.java"
           cp "$GITHUB_WORKSPACE/tools/step7/ExportStage1EconomyDeepContext.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportStage1EconomyDeepContext.java"
           cp "$GITHUB_WORKSPACE/tools/step7/ExportManagerEconomyWriters.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportManagerEconomyWriters.java"
+          cp "$GITHUB_WORKSPACE/tools/step7/ExportTileResourceLoader.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportTileResourceLoader.java"
 
           set +e
           "$headless" "$project" Naruto_DATA_BIN_entry1_buffer_base \
@@ -236,12 +240,13 @@ jobs:
             -postScript ExportFunctionDetail.java "$out/az3-resource-economy-function-detail.txt" 0x800EC574 0x800DB29C 0x800E0B3C 0x800C7574 0x800F3658 0x800E8190 0x800EA18C 0x800EF9A4 0x800F1290 0x800F2A9C 0x800D5BC0 0x800F2490 0x800D05B8 0x800D15A8 0x800D6E7C 0x800DF698 0x800B2A58 0x800B5790 0x800B5D68 0x800B63F4 0x800C88F0 0x800E3E74 0x800EB434 0x800F6988 0x800F7ADC \
             -postScript ExportCallWindows.java "$out/az3-setter-call-windows-entry1.tsv" 0x8001387C \
             -postScript ExportCallWindows.java "$out/aw1-helper-call-windows.tsv" 0x800B770C 0x800BDC4C \
+            -postScript ExportTileResourceLoader.java "$out/ba1-tile-resource-loader.txt" 0x800F7ADC
             -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
             > "$out/ghidra-headless.log" 2>&1
           rc=$?
           set -e
 
-          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" || ! -s "$out/pending-participant-delta.txt" || ! -s "$out/aq1-economy-census.tsv" || ! -s "$out/aq1-deep-context.tsv" || ! -s "$out/entry1-helper-function-detail.txt" || ! -s "$out/aw1-manager-function-detail.txt" || ! -s "$out/aw1-manager-b38-accesses.tsv" || ! -s "$out/aw1-manager-b40-accesses.tsv" || ! -s "$out/aw1-manager-b44-accesses.tsv" || ! -s "$out/aw2-numeric-instruction-literals.tsv" || ! -s "$out/aw1-helper-call-windows.tsv" || ! -s "$out/ay1-ay2-entry1.tsv" || ! -s "$out/az3-setter-direct-callers-entry1.txt" || ! -s "$out/az3-setter-call-windows-entry1.tsv" || ! -s "$out/az3-resource-economy-function-detail.txt" ]]; then
+          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" || ! -s "$out/pending-participant-delta.txt" || ! -s "$out/aq1-economy-census.tsv" || ! -s "$out/aq1-deep-context.tsv" || ! -s "$out/entry1-helper-function-detail.txt" || ! -s "$out/aw1-manager-function-detail.txt" || ! -s "$out/aw1-manager-b38-accesses.tsv" || ! -s "$out/aw1-manager-b40-accesses.tsv" || ! -s "$out/aw1-manager-b44-accesses.tsv" || ! -s "$out/aw2-numeric-instruction-literals.tsv" || ! -s "$out/aw1-helper-call-windows.tsv" || ! -s "$out/ay1-ay2-entry1.tsv" || ! -s "$out/az3-setter-direct-callers-entry1.txt" || ! -s "$out/az3-setter-call-windows-entry1.tsv" || ! -s "$out/az3-resource-economy-function-detail.txt" || ! -s "$out/ba1-tile-resource-loader.txt" ]]; then
             {
               echo "status=FAILURE"
               echo "job=analyze-entry1-buffer-base"
@@ -482,7 +487,7 @@ jobs:
           PY
           dest="reports/stage1_economy/aq1-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
-          for f in entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b38-accesses.tsv aw1-manager-b40-accesses.tsv aw1-manager-b44-accesses.tsv aw2-numeric-instruction-literals.tsv aw1-helper-call-windows.tsv aw1-manager-status.txt aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv ay1-ay2-entry1.tsv ay1-ay2-exe.tsv az3-setter-direct-callers-entry1.txt az3-setter-direct-callers-main-exe.txt az3-setter-call-windows-entry1.tsv az3-setter-call-windows-main-exe.tsv az3-setter-caller-main-exe-detail.txt az3-starting-balance-global-detail.txt az3-resource-economy-function-detail.txt az3-main-exe-economic-helper-detail.txt ay2-exe-random-byte-check.txt ay1-ay2-sha256.txt ghidra-exe-headless.log aq1-recount.txt run-summary.txt input-identity.txt; do
+          for f in BA1_DATA_BIN_RESOURCE_INVENTORY.tsv BA1_RESOURCE_CANDIDATES.tsv BA1_DATA_SCAN_SUMMARY.txt ba1-tile-resource-loader.txt entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b38-accesses.tsv aw1-manager-b40-accesses.tsv aw1-manager-b44-accesses.tsv aw2-numeric-instruction-literals.tsv aw1-helper-call-windows.tsv aw1-manager-status.txt aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv ay1-ay2-entry1.tsv ay1-ay2-exe.tsv az3-setter-direct-callers-entry1.txt az3-setter-direct-callers-main-exe.txt az3-setter-call-windows-entry1.tsv az3-setter-call-windows-main-exe.tsv az3-setter-caller-main-exe-detail.txt az3-starting-balance-global-detail.txt az3-resource-economy-function-detail.txt az3-main-exe-economic-helper-detail.txt ay2-exe-random-byte-check.txt ay1-ay2-sha256.txt ghidra-exe-headless.log aq1-recount.txt run-summary.txt input-identity.txt; do
             if [ -f "$out/$f" ]; then cp "$out/$f" "$dest/$f"; fi
           done
           API="https://api.github.com/repos/$RESEARCH_REPO"
