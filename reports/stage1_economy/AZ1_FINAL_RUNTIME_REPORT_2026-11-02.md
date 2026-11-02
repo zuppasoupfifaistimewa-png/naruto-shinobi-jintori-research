@@ -57,6 +57,16 @@ Pada seluruh empat snapshot H6 yang valid:
 - Global [0x80070C88] = **400** (0x190) pada keempat snapshot. Hasil cocok dengan dataflow statis dan runtime.
 - Manager pointer [0x8013A554]=0x801CEF08 valid; manager +0xB30=0 pada seluruh snapshot. Ini adalah field staging manager yang terpisah; **jangan menyamakannya dengan table B30**. Mismatch manager+0xB30=0 versus row B30=400 tidak membatalkan writeback ke global 0x80070C88.
 
+### Global C80 — seed nilai awal chakra participant (bukti statis)
+
+Run Step7 41368276256 (job 125033025512, source SHA 5822e40f3698e1b928619ee74ec4cef5a4913f70, exit code 0) mengekspor dua writer langsung ke global 0x80070C80:
+- FUN_80012780, PC 0x800127D0, menulis dari MEM32[0x8006491C+(param_1&0xFF)*0x30].
+- FUN_80012EAC, PC 0x80012F64, menulis dari selected mode/state row+0x04, yaitu MEM32[0x8005779C+idx*0x54].
+
+FUN_80012A44 membaca C80; FUN_80012C70 mengirim nilai itu melalui setter FUN_8001387C ke setiap participant record +0x18. Karena +0x18 adalah field chakra pemain, C80 merupakan sumber nilai awal chakra participant secara statis K4. Ini bukan pengurangan biaya atau harga bangun/upgrade.
+
+C80 tidak diambil pada empat snapshot H6 run4 yang terdahulu; nilai runtime C80 pada snapshot itu = TIDAK TAHU. Detail byte dan base-register ada pada AZ3_GLOBAL_70C80_SEED_FLOW_2026-11-02.tsv.
+
 TSV rekonsiliasi empat snapshot yang menggabungkan nilai tabel, global writeback, manager field terpisah, dan PC bukti:
 `reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ1_TABLE_SELECTION_RECONCILED.tsv`.
 

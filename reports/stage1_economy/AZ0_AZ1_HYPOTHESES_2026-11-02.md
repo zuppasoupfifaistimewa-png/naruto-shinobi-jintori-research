@@ -57,4 +57,9 @@ Tidak ada hipotesis AZ1 yang mengubah H6 menjadi bukti target murni. Bukti runti
 
 AZ2 dan AZ3 memiliki hipotesis terpisah beserta falsifier di `AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md`: jalur transfer saldo memerlukan caller bit 0x20 + manager state7; nama event gameplay tetap TIDAK TAHU. Untuk biaya build/upgrade, run 41367221886 mengidentifikasi 16 direct JAL tervalidasi ke setter (14 Entry1 + 2 MAIN_EXE). Tidak ada a1=Q(i)-cost di 16 site yang diuji; site 0x80012DD4 di FUN_80012C70 mengirim DAT_80070C80 (return FUN_80012A44()) ke setter untuk indeks pemain loop; sumber global DAT_80070C80 belum diketahui. Site 0x80013170 mengambil selected table row+0x04. Indirect JALR dan overlay di luar dua image tetap TIDAK TAHU; rumus dan sumber harga aktual tetap TIDAK TAHU.
 
+### AZ3 — global C80 adalah sumber nilai awal field chakra participant
+
+Static K4: FUN_80012780 dan FUN_80012EAC adalah dua writer langsung ke global 0x80070C80, masing-masing menyalin word dari tabel/config +0x04. FUN_80012A44 membaca global itu, lalu FUN_80012C70 mengirim nilai tersebut ke setter FUN_8001387C untuk setiap participant loop index; setter menyimpannya ke record +0x18. Karena +0x18 adalah field chakra player, jalur ini adalah inisialisasi nilai awal chakra participant, bukan debit biaya.
+
+Falsifier: producer lain menimpa C80 sesudah loop dan membuktikan field +0x18 bukan chakra atau caller setter bukan setup participant. Identitas detail table field +0x04 dan runtime value C80 masih TIDAK TAHU. Harga build/upgrade tidak disimpulkan dari jalur seed ini.
 Nol hit tidak digunakan untuk menyimpulkan ketiadaan fitur. Akses berbasis pointer terhitung/indirect JALR yang tidak masuk census langsung tetap TIDAK TAHU.

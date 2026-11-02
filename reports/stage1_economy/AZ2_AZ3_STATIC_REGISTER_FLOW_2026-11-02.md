@@ -61,9 +61,9 @@ FUN_80109FEC membaca flag caller di param_1+0xC dan menguji bit 0x20 pada PC A07
 **Kesimpulan mekanis K4:** kondisi kode untuk jalur transfer ke participant +0x18 adalah caller flag bit 0x20 dan state manager 7, setelah progress state 6 mengisi B44 menuju B40.
 **Nama pemicu gameplay = TIDAK TAHU.** Kode yang diekspor tidak memberi bukti bahwa event tersebut adalah akhir putaran, settlement, atau Barrier release. Producer bit 0x20 dan asal semantik B30/B38 juga belum terbukti. Maka tidak ada satu dari tiga nama event itu yang dipilih.
 
-## AZ3 — census direct caller setter saldo dan pemeriksaan argumen biaya
+## AZ3 — census direct caller setter saldo dan sumber nilai awal participant
 
-Run Step7 `41367221886` (job `125029837518`, source SHA `e98a2081e7f6573a75705d416f8a727a10634ced`, exit code 0) memindai seluruh aligned MIPS words pada kedua image dengan raw-JAL decode dan validasi direct-flow Ghidra:
+Run Step7 `41367221886` memindai seluruh aligned MIPS words pada Entry1 dan MAIN_EXE. Direct JAL ke setter 0x8001387C tervalidasi:
 
 | Image | raw JAL candidate | Ghidra direct-flow validated |
 |---|---:|---:|
@@ -71,20 +71,36 @@ Run Step7 `41367221886` (job `125029837518`, source SHA `e98a2081e7f6573a75705d4
 | MAIN_EXE SLPS_035.53 | 2 | 2 |
 | **Total** | **16** | **16** |
 
-Daftar penuh PC, instruksi sebelumnya, delay slot, a0/a1 expression, dan source classification diperbarui pada:
-`reports/stage1_economy/AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv`.
+Daftar PC, ekspresi argumen, source classification dan instruksi sebelumnya berada pada `AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv`.
 
-Callsite MAIN_EXE tambahan yang sebelumnya tidak ada pada AX2:
-- `0x80012DD4` di FUN_80012C70; raw bytes `1F 4E 00 0C`; Ghidra direct flow validated. Decompile penuh `FUN_80012C70` dan `FUN_80012A44` (run 41367906993) mengonfirmasi urutan `uVar4=FUN_80012A44(); FUN_8001387c(uVar7,uVar4);`; `FUN_80012A44` hanya mengembalikan global word `[0x80070C80]`. Delay slot `0x80012DD8 move a1,v0`, sehingga a1 adalah DAT_80070C80 dan a0 adalah `uVar7` (participant loop index). Tidak ada pengurangan pada caller atau callee 0x80012A44. Sumber/producer global DAT_80070C80 sendiri tetap belum diidentifikasi.
-- `0x80013170` di FUN_80012EAC; raw bytes `1F 4E 00 0C`; a1 berasal dari `u32(selected_table_row+0x04)`, a0 berasal dari indeks participant loop. Ini pengisian table-row, bukan Q(i)-cost.
+### Setter/getter participant +0x18
 
-Pada 14 callsite Entry1, sepuluh callsite awal menulis nilai participant/field/slot tanpa ekspresi Q-minus. Empat site FUN_80109FEC menghasilkan Q+B44, Q, Q+min(B44,0x14), dan Q. Tidak ada pola `a1=Q(i)-cost` yang terbukti di 14 site tersebut. Dari dua MAIN_EXE callsite, site 0x80013170 adalah nilai tabel row+0x04; site 0x80012DD4 mengirim hasil fungsi 0x80012A44 dan masih menunggu decompile penuh.
+`FUN_8001387C(i,value)` memvalidasi `i<4`, membatasi value ke rentang -9999..99999, lalu menulis ke `0x80070EA0 + i*0xB4 + 0x18`. Getter `FUN_800138EC(i)` membaca field yang sama (atau 0 untuk indeks tidak valid). Field +0x18 teridentifikasi sebagai chakra pada record pemain; kode yang diuji menunjukkan setter/getter mentahnya.
 
-**Setter/getter saldo participant K4:** `FUN_8001387C(i,value)` memvalidasi `i<4`, clamp `value` ke -9999..99999, lalu menyimpan ke `0x80070EA0+i*0xB4+0x18`; getter `FUN_800138EC(i)` membaca alamat yang sama atau mengembalikan 0 bila i>=4. Callsite 0x80012DD4 mengirim DAT_80070C80; callsite 0x80013170 mengirim word selected table row+0x04; empat callsite state-machine mengirim Q, Q+B44, atau Q+min(B44,20). Tidak ada direct-JAL callsite dari 16 site yang membentuk Q(i)-cost.
+### Sumber nilai awal dari global 0x80070C80
 
-**Hasil debit biaya: TIDAK TAHU.** Census direct-JAL lengkap untuk dua image yang dianalisis, tetapi indirect JALR/computed-target calls, caller pada resource/overlay lain, dan producer global DAT_80070C80 belum dibuktikan. Exporter Entry1/MAIN_EXE juga menghitung 12/152 instruksi JALR; target dinamisnya tidak terikat ke setter sehingga ini bukan hit pemanggil setter. Tidak ditemukan ekspresi getter-minus-cost dalam 16 direct-JAL callsites yang sudah diuji. Ini bukan bukti bahwa semua biaya build/upgrade tidak ada atau tidak pernah didebit lewat jalur lain. Jangan mengarang rumus atau nama event.
+Decompile run `41367906993` mengungkapkan bahwa callsite MAIN_EXE `0x80012DD4` bukan debit biaya. Alirannya:
+- `FUN_80012A44` pada PC `0x80012A48` hanya membaca `MEM32[0x80070C80]` dan mengembalikannya.
+- `FUN_80012C70` menjalankan loop `uVar7` atas pemain, memanggil `FUN_80012A44()`, lalu memanggil `FUN_8001387C(uVar7,uVar4)`. Jadi nilai dari global C80 diinisialisasikan ke field participant +0x18.
+- `FUN_8001387C` hanya melakukan validasi index, clamp dan store; tidak ada pengurangan saldo atau biaya pada fungsi ini.
 
-**Status AZ3: SEBAGIAN (direct census selesai; semantic cost incomplete).**
+Run Step7 `41368276256` (job `125033025512`, source SHA `5822e40f3698e1b928619ee74ec4cef5a4913f70`, exit code 0) kemudian menemukan dua writer langsung ke global C80:
+- `FUN_80012780`, PC `0x800127D0`, `sw v0,0xc80(s2)`; base s2 dibentuk oleh `lui s2,0x8007`. Nilainya datang dari `MEM32[0x8006491C + (param_1 & 0xFF)*0x30]`.
+- `FUN_80012EAC`, PC `0x80012F64`, `sw v0,0xc80(s0)`; base s0 berasal dari `lui s0,0x8007`. Nilainya datang dari `MEM32[0x8005779C + idx*0x54]`, dengan idx mode/state yang sama seperti tabel B30.
+
+Jadi global C80 adalah **sumber nilai awal field chakra participant +0x18**, yang dapat diisi oleh dua jalur pemilih tabel/config. Label makna field +0x04 tabel dan identitas nilai `param_1` di FUN_80012780 belum dipastikan lebih jauh. C80 sendiri tidak diambil dalam empat H6 runtime snapshots sebelumnya; nilai runtime pada snapshot itu = TIDAK TAHU.
+
+Bukti instruksi dan base provenance C80 ada di `AZ3_GLOBAL_70C80_SEED_FLOW_2026-11-02.tsv`.
+
+### Mengapa AZ3 biaya masih belum tuntas
+
+Pada 14 callsite Entry1, sepuluh caller awal memberi nilai participant/field/slot; empat di FUN_80109FEC memberi Q+B44, Q, Q+min(B44,0x14), dan Q. Dua MAIN_EXE caller: `0x80013170` memberi word selected table row+0x04; `0x80012DD4` memberi global C80 sebagai nilai awal. **Tidak satu pun dari 16 direct-JAL callsite tervalidasi membentuk `Q(i)-cost`.**
+
+Exporter menghitung 12 instruksi JALR di Entry1 dan 152 di MAIN_EXE. Target JALR tersebut dinamis dan tidak terikat ke setter 0x8001387C; angka itu adalah jumlah semua indirect calls, bukan callsite setter. Computed target, overlay/image lain, dan sumber harga build/upgrade tetap **TIDAK TAHU**.
+
+**Hasil debit biaya: TIDAK TAHU.** Tidak ada dasar untuk mengarang formula build/upgrade. AZ3 direct setter census dan jalur seed awal telah selesai; pencarian jalur debit biaya secara keseluruhan belum selesai.
+
+**Status AZ3: SEBAGIAN (setter/getter dan seed initialization terbukti; biaya build/upgrade belum terbukti).**
 ## Hipotesis dan falsifier
 
 ### AZ2
