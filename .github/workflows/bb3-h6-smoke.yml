@@ -117,7 +117,10 @@ jobs:
         run: |
           set +e
           export DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1
-          export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+          CAPSTONE_DIRS="$(find -L "$APPDIR" -type f -name 'libcapstone.so*' -printf '%h\\n' | sort -u | paste -sd: -)"
+          export LD_LIBRARY_PATH="$CAPSTONE_DIRS:$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu:$APPDIR/shared/lib:$APPDIR/shared/lib/x86_64-linux-gnu"
+          echo "BB3_PCSX_CAPSTONE_DIRS=$CAPSTONE_DIRS"
+          ldd "$PCSX_BIN" | tee "$WORK/logs/pcsx-ldd.txt" || true
           export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
           export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
           export QML2_IMPORT_PATH="$APPDIR/usr/qml"
