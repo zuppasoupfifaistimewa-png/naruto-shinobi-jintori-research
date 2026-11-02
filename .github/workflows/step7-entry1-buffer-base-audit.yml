@@ -240,7 +240,7 @@ jobs:
             -postScript ExportFunctionDetail.java "$out/az3-resource-economy-function-detail.txt" 0x800EC574 0x800DB29C 0x800E0B3C 0x800C7574 0x800F3658 0x800E8190 0x800EA18C 0x800EF9A4 0x800F1290 0x800F2A9C 0x800D5BC0 0x800F2490 0x800D05B8 0x800D15A8 0x800D6E7C 0x800DF698 0x800B2A58 0x800B5790 0x800B5D68 0x800B63F4 0x800C88F0 0x800E3E74 0x800EB434 0x800F6988 0x800F7ADC \
             -postScript ExportCallWindows.java "$out/az3-setter-call-windows-entry1.tsv" 0x8001387C \
             -postScript ExportCallWindows.java "$out/aw1-helper-call-windows.tsv" 0x800B770C 0x800BDC4C \
-            -postScript ExportTileResourceLoader.java "$out/ba1-tile-resource-loader.txt" 0x800F7ADC
+            -postScript ExportTileResourceLoader.java "$out/ba1-tile-resource-loader.txt" 0x800F7ADC \
             -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
             > "$out/ghidra-headless.log" 2>&1
           rc=$?
