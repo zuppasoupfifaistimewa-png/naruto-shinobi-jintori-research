@@ -92,7 +92,7 @@ Bukti langsung ada pada `FUN_800D15A8`, cabang action byte `participant_manager+
 
 **Kesimpulan K4 statis:** biaya action petak 3/8 dibaca langsung dari field tile record `+0x1A`; transaksi hanya diproses jika saldo kerja cukup dan debit diposting sebagai signed pending delta `-fee`. Field +0x1A adalah sumber nominal biaya yang digunakan handler tersebut. Ini bukan rumus nilai petak `FUN_800B770C` dan bukan rumus transfer B44.
 
-Nama gameplay yang lebih spesifik untuk action byte 3 versus 8, dan pemetaan setiap record tile ke harga konkret belum dipastikan; keduanya **TIDAK TAHU**.
+Asal penyimpanan field harga juga dibuktikan melalui `FUN_800F7ADC`: resource petak diambil melalui helper resource, lalu parser berjalan per-record sumber dengan stride `0x1E` byte. Dua byte `pbVar2[0x14]` dan `pbVar2[0x15]` disalin sebagai halfword little-endian ke runtime `tile+0x1A` (runtime tile stride `0x124`). Jadi nominal harga berasal dari data record resource petak; parser tidak menghitung nominal itu. Nilai nominal per record belum dienumerasi, dan nama gameplay yang lebih spesifik untuk action byte 3 versus 8 tetap **TIDAK TAHU**.
 
 ### Pemroses pending delta dan jalur ekonomi yang berbeda
 
@@ -103,9 +103,13 @@ Jalur lain yang sama-sama menggunakan pending saldo tetapi tidak boleh dinamai b
 - `FUN_800F2A9C`: membentuk delta berbasis helper nilai event dan jumlah peserta untuk peserta-peserta yang terlibat.
 - Cabang lain `FUN_800D15A8`: delta positif memakai `tile+0x1E + level*tile+0x1C`; formula terlihat tetapi label gameplay (pendapatan/hadiah/settlement) = **TIDAK TAHU**.
 
+### Asal data harga petak
+
+Dalam `FUN_800F7ADC`, helper `func_0x8002dbb8`/`func_0x8002dec4` menyediakan buffer resource yang diproses oleh `func_0x8002d7f8`. Parser kemudian melangkah pada record sumber setiap `0x1E` byte. Untuk setiap petak, offset sumber `+0x14` dan `+0x15` disalin ke offset runtime `tile+0x1A` sebagai halfword. Ini menutup rantai: data resource record → runtime tile +0x1A → pemeriksaan saldo → pending debit -fee → pemroses saldo +0x18.
+
 ### Batas AZ3
 
-Static K4 menetapkan sumber harga dan mekanisme debit untuk branch petak action 3/8. Belum ada runtime replay transaksi pembelian/upgrade dalam sesi ini. H6 runtime AZ1 adalah HIBRIDA, bukan target checkpoint murni. 12 JALR Entry1 dan 152 JALR MAIN_EXE yang diekspor adalah jumlah semua indirect call; target dinamis yang tidak terikat, overlay lain, dan kemungkinan transaksi lain di luar branch yang ditelusuri tetap **TIDAK TAHU**.
+Static K4 menetapkan sumber harga, asal field harga dari record resource, dan mekanisme debit untuk branch petak action 3/8. Belum ada runtime replay transaksi pembelian/upgrade dalam sesi ini. H6 runtime AZ1 adalah HIBRIDA, bukan target checkpoint murni. 12 JALR Entry1 dan 152 JALR MAIN_EXE yang diekspor adalah jumlah semua indirect call; target dinamis yang tidak terikat, overlay lain, dan kemungkinan transaksi lain di luar branch yang ditelusuri tetap **TIDAK TAHU**.
 
 **Status AZ3: SELESAI untuk jalur transaksi petak action 3/8, saldo, dan sinkronisasinya dalam audit statis ini; batas semantik dan coverage di atas tetap dicatat sebagai TIDAK TAHU.**
 
