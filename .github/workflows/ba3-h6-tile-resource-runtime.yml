@@ -214,7 +214,7 @@ jobs:
               "reports/stage1_economy/AZ0_AY1_RAW_WRITER_AUDIT_2026-11-02.tsv",
               "reports/stage1_economy/AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md",
               "experiments/ba3_h6_tile_resource_runtime.py",
-              ".github/workflows/ba3-h6-economy-runtime.yml",
+              ".github/workflows/ba3-h6-tile-resource-runtime.yml",
           ]
           rows = ["path\tbytes\tsha256\tstatus"]
           for rel in paths:
@@ -275,7 +275,7 @@ jobs:
               "reports/stage1_economy/AZ2_MANAGER_READERS_2026-11-02.tsv",
               "reports/stage1_economy/AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv",
               "experiments/ba3_h6_tile_resource_runtime.py",
-              ".github/workflows/ba3-h6-economy-runtime.yml",
+              ".github/workflows/ba3-h6-tile-resource-runtime.yml",
               "reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41358566961/attempt-1/ACTIONS_RUN_SUMMARY.txt",
               "reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41358566961/attempt-1/BA3_H6_ECONOMY_SUMMARY.txt",
               "reports/stage1_economy/ba3-h6-tile-resource-runtime-run-41358566961/attempt-1/BA3_LAUNCHES.tsv",

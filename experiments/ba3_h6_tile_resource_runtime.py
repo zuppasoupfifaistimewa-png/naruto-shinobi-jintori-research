@@ -203,7 +203,8 @@ def read_snapshot(state_path, attempt, frame, fields, tiles, aggregates, table_r
             tile["tile_b_%02X" % off] = read_u8(ram, address + off)
         tile["selected_resource_id"] = resource_id
         tiles.append(tile)
-        acc = owner_acc[owner]        if value is None:
+        acc = owner_acc[owner]
+        if value is None:
             acc["unknown"] += 1
             all_unknown += 1
         else:
