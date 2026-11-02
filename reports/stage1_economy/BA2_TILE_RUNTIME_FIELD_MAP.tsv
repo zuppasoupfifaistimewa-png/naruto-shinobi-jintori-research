@@ -1,0 +1,22 @@
+source_record_relative_offset	runtime_tile_relative_offset	width	mapping	evidence	semantic_status
++0x00	+0x00	u8	copy	FUN_800F7ADC static + BA3 88/88	label TIDAK TAHU
++0x01	+0x01	u8	copy	FUN_800F7ADC static + BA3 88/88	label TIDAK TAHU
++0x02	+0x02	u8	copy	FUN_800F7ADC static + BA3 88/88	label TIDAK TAHU
++0x03	+0x03	u8	copy	FUN_800F7ADC static + BA3 88/88	label TIDAK TAHU
++0x04	+0x04	u8	copy	FUN_800F7ADC static + BA3 88/88	label TIDAK TAHU
++0x05	NONE	u8	not copied	FUN_800F7ADC does not read source +0x05	TIDAK TAHU
++0x06	+0x05	u8	copy	FUN_800F7ADC pbVar2[7] + BA3 88/88	label TIDAK TAHU
+NONE	+0x06	u8	initialize 0	FUN_800F7ADC + BA3 88/88	label TIDAK TAHU
++0x07..+0x08	+0x0E	u16le	copy	FUN_800F7ADC + BA3 88/88	selectable numeric field
++0x09..+0x0A	+0x10	u16le	copy	FUN_800F7ADC + BA3 88/88	selected H default when bits8–11 in tile+0x20 are zero
++0x0B..+0x0C	+0x12	u16le	copy	FUN_800F7ADC + BA3 88/88	selectable numeric field
++0x0D..+0x0E	+0x14	u16le	copy	FUN_800F7ADC + BA3 88/88	selectable numeric field
++0x0F..+0x10	+0x16	u16le	copy	FUN_800F7ADC + BA3 88/88	selectable numeric field
++0x11..+0x12	+0x18	u16le	copy	FUN_800F7ADC + BA3 88/88	selectable numeric field
++0x13..+0x14	+0x1A	u16le	copy	FUN_800F7ADC + BA3 88/88; AZ3 traces fee operand in FUN_800D15A8 action byte 3/8	fee source proven for those branches only
++0x15..+0x16	+0x1C	u16le	copy	FUN_800F7ADC + BA3 88/88	selectable numeric field
++0x17..+0x18	+0x1E	u16le	copy	FUN_800F7ADC + BA3 88/88	selectable numeric field
+NONE	+0x20	u16le	initialize 0xF020	FUN_800F7ADC + BA3 88/88	selector/owner bits; not source data
++0x19..+0x1A	+0x22	u16le	copy	FUN_800F7ADC + BA3 88/88	selectable numeric field
++0x1B..+0x1C	+0x24	u16le	copy	FUN_800F7ADC + BA3 88/88	selectable numeric field
++0x1D	+0x0C	u8	copy	FUN_800F7ADC + BA3 88/88	label TIDAK TAHU

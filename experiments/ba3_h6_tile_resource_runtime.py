@@ -457,6 +457,10 @@ def main():
     write_tsv("BA3_TABLE_SELECTION.tsv", table_rows, table_cols)
     write_tsv("BA3_RESOURCE_SELECTOR.tsv", resource_rows,
               ["attempt","frame","selector_address","selector_u8","base_resource_id","selected_resource_id","selected_resource_id_hex"])
+    field_snapshot_cols = ["attempt","frame","record_index","record_address","selected_resource_id"]
+    field_snapshot_cols += ["tile_hw_%02X" % x for x in (0x0E,0x10,0x12,0x14,0x16,0x18,0x1A,0x1C,0x1E,0x20,0x22,0x24)]
+    field_snapshot_cols += ["tile_b_%02X" % x for x in (0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x0C)]
+    write_tsv("BA3_TILE_FIELD_SNAPSHOT.tsv", tile_rows, field_snapshot_cols)
     write_tsv("BA3_LAUNCHES.tsv", launches, launch_cols)
 
     all_good = len(launches) == 2 and all(

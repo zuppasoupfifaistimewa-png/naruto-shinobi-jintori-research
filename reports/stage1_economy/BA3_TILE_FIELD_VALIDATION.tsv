@@ -1,0 +1,1761 @@
+attempt	frame	resource_id	record_index	runtime_field	runtime_address	source_record_offset	width	actual_value	source_value	validation	note
+1	180	630	0	tile_b_00	0x8013B818	0x11DE001	u8	0	0	PASS	source record copy
+1	180	630	0	tile_b_01	0x8013B819	0x11DE002	u8	1	1	PASS	source record copy
+1	180	630	0	tile_b_02	0x8013B81A	0x11DE003	u8	21	21	PASS	source record copy
+1	180	630	0	tile_b_03	0x8013B81B	0x11DE004	u8	255	255	PASS	source record copy
+1	180	630	0	tile_b_04	0x8013B81C	0x11DE005	u8	255	255	PASS	source record copy
+1	180	630	0	tile_b_05	0x8013B81D	0x11DE007	u8	0	0	PASS	source record copy
+1	180	630	0	tile_b_0C	0x8013B824	0x11DE01E	u8	255	255	PASS	source record copy
+1	180	630	0	tile_hw_0E	0x8013B826	0x11DE008	u16le	0	0	PASS	source record copy
+1	180	630	0	tile_hw_10	0x8013B828	0x11DE00A	u16le	0	0	PASS	source record copy
+1	180	630	0	tile_hw_12	0x8013B82A	0x11DE00C	u16le	0	0	PASS	source record copy
+1	180	630	0	tile_hw_14	0x8013B82C	0x11DE00E	u16le	0	0	PASS	source record copy
+1	180	630	0	tile_hw_16	0x8013B82E	0x11DE010	u16le	0	0	PASS	source record copy
+1	180	630	0	tile_hw_18	0x8013B830	0x11DE012	u16le	0	0	PASS	source record copy
+1	180	630	0	tile_hw_1A	0x8013B832	0x11DE014	u16le	0	0	PASS	source record copy
+1	180	630	0	tile_hw_1C	0x8013B834	0x11DE016	u16le	0	0	PASS	source record copy
+1	180	630	0	tile_hw_1E	0x8013B836	0x11DE018	u16le	0	0	PASS	source record copy
+1	180	630	0	tile_hw_22	0x8013B83A	0x11DE01A	u16le	199	199	PASS	source record copy
+1	180	630	0	tile_hw_24	0x8013B83C	0x11DE01C	u16le	150	150	PASS	source record copy
+1	180	630	0	tile_b_06	0x8013B81E	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	0	tile_hw_20	0x8013B838	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	1	tile_b_00	0x8013B93C	0x11DE01F	u8	4	4	PASS	source record copy
+1	180	630	1	tile_b_01	0x8013B93D	0x11DE020	u8	2	2	PASS	source record copy
+1	180	630	1	tile_b_02	0x8013B93E	0x11DE021	u8	0	0	PASS	source record copy
+1	180	630	1	tile_b_03	0x8013B93F	0x11DE022	u8	255	255	PASS	source record copy
+1	180	630	1	tile_b_04	0x8013B940	0x11DE023	u8	255	255	PASS	source record copy
+1	180	630	1	tile_b_05	0x8013B941	0x11DE025	u8	0	0	PASS	source record copy
+1	180	630	1	tile_b_0C	0x8013B948	0x11DE03C	u8	255	255	PASS	source record copy
+1	180	630	1	tile_hw_0E	0x8013B94A	0x11DE026	u16le	60	60	PASS	source record copy
+1	180	630	1	tile_hw_10	0x8013B94C	0x11DE028	u16le	35	35	PASS	source record copy
+1	180	630	1	tile_hw_12	0x8013B94E	0x11DE02A	u16le	70	70	PASS	source record copy
+1	180	630	1	tile_hw_14	0x8013B950	0x11DE02C	u16le	135	135	PASS	source record copy
+1	180	630	1	tile_hw_16	0x8013B952	0x11DE02E	u16le	265	265	PASS	source record copy
+1	180	630	1	tile_hw_18	0x8013B954	0x11DE030	u16le	530	530	PASS	source record copy
+1	180	630	1	tile_hw_1A	0x8013B956	0x11DE032	u16le	50	50	PASS	source record copy
+1	180	630	1	tile_hw_1C	0x8013B958	0x11DE034	u16le	35	35	PASS	source record copy
+1	180	630	1	tile_hw_1E	0x8013B95A	0x11DE036	u16le	42	42	PASS	source record copy
+1	180	630	1	tile_hw_22	0x8013B95E	0x11DE038	u16le	239	239	PASS	source record copy
+1	180	630	1	tile_hw_24	0x8013B960	0x11DE03A	u16le	150	150	PASS	source record copy
+1	180	630	1	tile_b_06	0x8013B942	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	1	tile_hw_20	0x8013B95C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	2	tile_b_00	0x8013BA60	0x11DE03D	u8	4	4	PASS	source record copy
+1	180	630	2	tile_b_01	0x8013BA61	0x11DE03E	u8	3	3	PASS	source record copy
+1	180	630	2	tile_b_02	0x8013BA62	0x11DE03F	u8	1	1	PASS	source record copy
+1	180	630	2	tile_b_03	0x8013BA63	0x11DE040	u8	255	255	PASS	source record copy
+1	180	630	2	tile_b_04	0x8013BA64	0x11DE041	u8	255	255	PASS	source record copy
+1	180	630	2	tile_b_05	0x8013BA65	0x11DE043	u8	0	0	PASS	source record copy
+1	180	630	2	tile_b_0C	0x8013BA6C	0x11DE05A	u8	255	255	PASS	source record copy
+1	180	630	2	tile_hw_0E	0x8013BA6E	0x11DE044	u16le	100	100	PASS	source record copy
+1	180	630	2	tile_hw_10	0x8013BA70	0x11DE046	u16le	50	50	PASS	source record copy
+1	180	630	2	tile_hw_12	0x8013BA72	0x11DE048	u16le	110	110	PASS	source record copy
+1	180	630	2	tile_hw_14	0x8013BA74	0x11DE04A	u16le	220	220	PASS	source record copy
+1	180	630	2	tile_hw_16	0x8013BA76	0x11DE04C	u16le	440	440	PASS	source record copy
+1	180	630	2	tile_hw_18	0x8013BA78	0x11DE04E	u16le	880	880	PASS	source record copy
+1	180	630	2	tile_hw_1A	0x8013BA7A	0x11DE050	u16le	50	50	PASS	source record copy
+1	180	630	2	tile_hw_1C	0x8013BA7C	0x11DE052	u16le	35	35	PASS	source record copy
+1	180	630	2	tile_hw_1E	0x8013BA7E	0x11DE054	u16le	70	70	PASS	source record copy
+1	180	630	2	tile_hw_22	0x8013BA82	0x11DE056	u16le	279	279	PASS	source record copy
+1	180	630	2	tile_hw_24	0x8013BA84	0x11DE058	u16le	150	150	PASS	source record copy
+1	180	630	2	tile_b_06	0x8013BA66	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	2	tile_hw_20	0x8013BA80	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	3	tile_b_00	0x8013BB84	0x11DE05B	u8	4	4	PASS	source record copy
+1	180	630	3	tile_b_01	0x8013BB85	0x11DE05C	u8	4	4	PASS	source record copy
+1	180	630	3	tile_b_02	0x8013BB86	0x11DE05D	u8	2	2	PASS	source record copy
+1	180	630	3	tile_b_03	0x8013BB87	0x11DE05E	u8	255	255	PASS	source record copy
+1	180	630	3	tile_b_04	0x8013BB88	0x11DE05F	u8	255	255	PASS	source record copy
+1	180	630	3	tile_b_05	0x8013BB89	0x11DE061	u8	0	0	PASS	source record copy
+1	180	630	3	tile_b_0C	0x8013BB90	0x11DE078	u8	255	255	PASS	source record copy
+1	180	630	3	tile_hw_0E	0x8013BB92	0x11DE062	u16le	100	100	PASS	source record copy
+1	180	630	3	tile_hw_10	0x8013BB94	0x11DE064	u16le	50	50	PASS	source record copy
+1	180	630	3	tile_hw_12	0x8013BB96	0x11DE066	u16le	110	110	PASS	source record copy
+1	180	630	3	tile_hw_14	0x8013BB98	0x11DE068	u16le	220	220	PASS	source record copy
+1	180	630	3	tile_hw_16	0x8013BB9A	0x11DE06A	u16le	440	440	PASS	source record copy
+1	180	630	3	tile_hw_18	0x8013BB9C	0x11DE06C	u16le	880	880	PASS	source record copy
+1	180	630	3	tile_hw_1A	0x8013BB9E	0x11DE06E	u16le	50	50	PASS	source record copy
+1	180	630	3	tile_hw_1C	0x8013BBA0	0x11DE070	u16le	35	35	PASS	source record copy
+1	180	630	3	tile_hw_1E	0x8013BBA2	0x11DE072	u16le	70	70	PASS	source record copy
+1	180	630	3	tile_hw_22	0x8013BBA6	0x11DE074	u16le	319	319	PASS	source record copy
+1	180	630	3	tile_hw_24	0x8013BBA8	0x11DE076	u16le	150	150	PASS	source record copy
+1	180	630	3	tile_b_06	0x8013BB8A	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	3	tile_hw_20	0x8013BBA4	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	4	tile_b_00	0x8013BCA8	0x11DE079	u8	4	4	PASS	source record copy
+1	180	630	4	tile_b_01	0x8013BCA9	0x11DE07A	u8	5	5	PASS	source record copy
+1	180	630	4	tile_b_02	0x8013BCAA	0x11DE07B	u8	3	3	PASS	source record copy
+1	180	630	4	tile_b_03	0x8013BCAB	0x11DE07C	u8	255	255	PASS	source record copy
+1	180	630	4	tile_b_04	0x8013BCAC	0x11DE07D	u8	255	255	PASS	source record copy
+1	180	630	4	tile_b_05	0x8013BCAD	0x11DE07F	u8	0	0	PASS	source record copy
+1	180	630	4	tile_b_0C	0x8013BCB4	0x11DE096	u8	255	255	PASS	source record copy
+1	180	630	4	tile_hw_0E	0x8013BCB6	0x11DE080	u16le	120	120	PASS	source record copy
+1	180	630	4	tile_hw_10	0x8013BCB8	0x11DE082	u16le	60	60	PASS	source record copy
+1	180	630	4	tile_hw_12	0x8013BCBA	0x11DE084	u16le	140	140	PASS	source record copy
+1	180	630	4	tile_hw_14	0x8013BCBC	0x11DE086	u16le	265	265	PASS	source record copy
+1	180	630	4	tile_hw_16	0x8013BCBE	0x11DE088	u16le	530	530	PASS	source record copy
+1	180	630	4	tile_hw_18	0x8013BCC0	0x11DE08A	u16le	1050	1050	PASS	source record copy
+1	180	630	4	tile_hw_1A	0x8013BCC2	0x11DE08C	u16le	100	100	PASS	source record copy
+1	180	630	4	tile_hw_1C	0x8013BCC4	0x11DE08E	u16le	70	70	PASS	source record copy
+1	180	630	4	tile_hw_1E	0x8013BCC6	0x11DE090	u16le	84	84	PASS	source record copy
+1	180	630	4	tile_hw_22	0x8013BCCA	0x11DE092	u16le	359	359	PASS	source record copy
+1	180	630	4	tile_hw_24	0x8013BCCC	0x11DE094	u16le	150	150	PASS	source record copy
+1	180	630	4	tile_b_06	0x8013BCAE	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	4	tile_hw_20	0x8013BCC8	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	5	tile_b_00	0x8013BDCC	0x11DE097	u8	2	2	PASS	source record copy
+1	180	630	5	tile_b_01	0x8013BDCD	0x11DE098	u8	6	6	PASS	source record copy
+1	180	630	5	tile_b_02	0x8013BDCE	0x11DE099	u8	4	4	PASS	source record copy
+1	180	630	5	tile_b_03	0x8013BDCF	0x11DE09A	u8	255	255	PASS	source record copy
+1	180	630	5	tile_b_04	0x8013BDD0	0x11DE09B	u8	255	255	PASS	source record copy
+1	180	630	5	tile_b_05	0x8013BDD1	0x11DE09D	u8	0	0	PASS	source record copy
+1	180	630	5	tile_b_0C	0x8013BDD8	0x11DE0B4	u8	255	255	PASS	source record copy
+1	180	630	5	tile_hw_0E	0x8013BDDA	0x11DE09E	u16le	0	0	PASS	source record copy
+1	180	630	5	tile_hw_10	0x8013BDDC	0x11DE0A0	u16le	0	0	PASS	source record copy
+1	180	630	5	tile_hw_12	0x8013BDDE	0x11DE0A2	u16le	0	0	PASS	source record copy
+1	180	630	5	tile_hw_14	0x8013BDE0	0x11DE0A4	u16le	0	0	PASS	source record copy
+1	180	630	5	tile_hw_16	0x8013BDE2	0x11DE0A6	u16le	0	0	PASS	source record copy
+1	180	630	5	tile_hw_18	0x8013BDE4	0x11DE0A8	u16le	0	0	PASS	source record copy
+1	180	630	5	tile_hw_1A	0x8013BDE6	0x11DE0AA	u16le	0	0	PASS	source record copy
+1	180	630	5	tile_hw_1C	0x8013BDE8	0x11DE0AC	u16le	0	0	PASS	source record copy
+1	180	630	5	tile_hw_1E	0x8013BDEA	0x11DE0AE	u16le	0	0	PASS	source record copy
+1	180	630	5	tile_hw_22	0x8013BDEE	0x11DE0B0	u16le	399	399	PASS	source record copy
+1	180	630	5	tile_hw_24	0x8013BDF0	0x11DE0B2	u16le	150	150	PASS	source record copy
+1	180	630	5	tile_b_06	0x8013BDD2	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	5	tile_hw_20	0x8013BDEC	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	6	tile_b_00	0x8013BEF0	0x11DE0B5	u8	4	4	PASS	source record copy
+1	180	630	6	tile_b_01	0x8013BEF1	0x11DE0B6	u8	7	7	PASS	source record copy
+1	180	630	6	tile_b_02	0x8013BEF2	0x11DE0B7	u8	5	5	PASS	source record copy
+1	180	630	6	tile_b_03	0x8013BEF3	0x11DE0B8	u8	255	255	PASS	source record copy
+1	180	630	6	tile_b_04	0x8013BEF4	0x11DE0B9	u8	255	255	PASS	source record copy
+1	180	630	6	tile_b_05	0x8013BEF5	0x11DE0BB	u8	0	0	PASS	source record copy
+1	180	630	6	tile_b_0C	0x8013BEFC	0x11DE0D2	u8	4	4	PASS	source record copy
+1	180	630	6	tile_hw_0E	0x8013BEFE	0x11DE0BC	u16le	120	120	PASS	source record copy
+1	180	630	6	tile_hw_10	0x8013BF00	0x11DE0BE	u16le	60	60	PASS	source record copy
+1	180	630	6	tile_hw_12	0x8013BF02	0x11DE0C0	u16le	140	140	PASS	source record copy
+1	180	630	6	tile_hw_14	0x8013BF04	0x11DE0C2	u16le	265	265	PASS	source record copy
+1	180	630	6	tile_hw_16	0x8013BF06	0x11DE0C4	u16le	530	530	PASS	source record copy
+1	180	630	6	tile_hw_18	0x8013BF08	0x11DE0C6	u16le	1050	1050	PASS	source record copy
+1	180	630	6	tile_hw_1A	0x8013BF0A	0x11DE0C8	u16le	100	100	PASS	source record copy
+1	180	630	6	tile_hw_1C	0x8013BF0C	0x11DE0CA	u16le	70	70	PASS	source record copy
+1	180	630	6	tile_hw_1E	0x8013BF0E	0x11DE0CC	u16le	84	84	PASS	source record copy
+1	180	630	6	tile_hw_22	0x8013BF12	0x11DE0CE	u16le	399	399	PASS	source record copy
+1	180	630	6	tile_hw_24	0x8013BF14	0x11DE0D0	u16le	186	186	PASS	source record copy
+1	180	630	6	tile_b_06	0x8013BEF6	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	6	tile_hw_20	0x8013BF10	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	7	tile_b_00	0x8013C014	0x11DE0D3	u8	4	4	PASS	source record copy
+1	180	630	7	tile_b_01	0x8013C015	0x11DE0D4	u8	8	8	PASS	source record copy
+1	180	630	7	tile_b_02	0x8013C016	0x11DE0D5	u8	6	6	PASS	source record copy
+1	180	630	7	tile_b_03	0x8013C017	0x11DE0D6	u8	255	255	PASS	source record copy
+1	180	630	7	tile_b_04	0x8013C018	0x11DE0D7	u8	255	255	PASS	source record copy
+1	180	630	7	tile_b_05	0x8013C019	0x11DE0D9	u8	0	0	PASS	source record copy
+1	180	630	7	tile_b_0C	0x8013C020	0x11DE0F0	u8	0	0	PASS	source record copy
+1	180	630	7	tile_hw_0E	0x8013C022	0x11DE0DA	u16le	160	160	PASS	source record copy
+1	180	630	7	tile_hw_10	0x8013C024	0x11DE0DC	u16le	85	85	PASS	source record copy
+1	180	630	7	tile_hw_12	0x8013C026	0x11DE0DE	u16le	180	180	PASS	source record copy
+1	180	630	7	tile_hw_14	0x8013C028	0x11DE0E0	u16le	360	360	PASS	source record copy
+1	180	630	7	tile_hw_16	0x8013C02A	0x11DE0E2	u16le	710	710	PASS	source record copy
+1	180	630	7	tile_hw_18	0x8013C02C	0x11DE0E4	u16le	1410	1410	PASS	source record copy
+1	180	630	7	tile_hw_1A	0x8013C02E	0x11DE0E6	u16le	120	120	PASS	source record copy
+1	180	630	7	tile_hw_1C	0x8013C030	0x11DE0E8	u16le	84	84	PASS	source record copy
+1	180	630	7	tile_hw_1E	0x8013C032	0x11DE0EA	u16le	112	112	PASS	source record copy
+1	180	630	7	tile_hw_22	0x8013C036	0x11DE0EC	u16le	439	439	PASS	source record copy
+1	180	630	7	tile_hw_24	0x8013C038	0x11DE0EE	u16le	186	186	PASS	source record copy
+1	180	630	7	tile_b_06	0x8013C01A	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	7	tile_hw_20	0x8013C034	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	8	tile_b_00	0x8013C138	0x11DE0F1	u8	4	4	PASS	source record copy
+1	180	630	8	tile_b_01	0x8013C139	0x11DE0F2	u8	9	9	PASS	source record copy
+1	180	630	8	tile_b_02	0x8013C13A	0x11DE0F3	u8	7	7	PASS	source record copy
+1	180	630	8	tile_b_03	0x8013C13B	0x11DE0F4	u8	255	255	PASS	source record copy
+1	180	630	8	tile_b_04	0x8013C13C	0x11DE0F5	u8	255	255	PASS	source record copy
+1	180	630	8	tile_b_05	0x8013C13D	0x11DE0F7	u8	0	0	PASS	source record copy
+1	180	630	8	tile_b_0C	0x8013C144	0x11DE10E	u8	255	255	PASS	source record copy
+1	180	630	8	tile_hw_0E	0x8013C146	0x11DE0F8	u16le	140	140	PASS	source record copy
+1	180	630	8	tile_hw_10	0x8013C148	0x11DE0FA	u16le	70	70	PASS	source record copy
+1	180	630	8	tile_hw_12	0x8013C14A	0x11DE0FC	u16le	160	160	PASS	source record copy
+1	180	630	8	tile_hw_14	0x8013C14C	0x11DE0FE	u16le	310	310	PASS	source record copy
+1	180	630	8	tile_hw_16	0x8013C14E	0x11DE100	u16le	620	620	PASS	source record copy
+1	180	630	8	tile_hw_18	0x8013C150	0x11DE102	u16le	1250	1250	PASS	source record copy
+1	180	630	8	tile_hw_1A	0x8013C152	0x11DE104	u16le	100	100	PASS	source record copy
+1	180	630	8	tile_hw_1C	0x8013C154	0x11DE106	u16le	70	70	PASS	source record copy
+1	180	630	8	tile_hw_1E	0x8013C156	0x11DE108	u16le	98	98	PASS	source record copy
+1	180	630	8	tile_hw_22	0x8013C15A	0x11DE10A	u16le	439	439	PASS	source record copy
+1	180	630	8	tile_hw_24	0x8013C15C	0x11DE10C	u16le	222	222	PASS	source record copy
+1	180	630	8	tile_b_06	0x8013C13E	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	8	tile_hw_20	0x8013C158	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	9	tile_b_00	0x8013C25C	0x11DE10F	u8	4	4	PASS	source record copy
+1	180	630	9	tile_b_01	0x8013C25D	0x11DE110	u8	10	10	PASS	source record copy
+1	180	630	9	tile_b_02	0x8013C25E	0x11DE111	u8	8	8	PASS	source record copy
+1	180	630	9	tile_b_03	0x8013C25F	0x11DE112	u8	255	255	PASS	source record copy
+1	180	630	9	tile_b_04	0x8013C260	0x11DE113	u8	255	255	PASS	source record copy
+1	180	630	9	tile_b_05	0x8013C261	0x11DE115	u8	0	0	PASS	source record copy
+1	180	630	9	tile_b_0C	0x8013C268	0x11DE12C	u8	255	255	PASS	source record copy
+1	180	630	9	tile_hw_0E	0x8013C26A	0x11DE116	u16le	140	140	PASS	source record copy
+1	180	630	9	tile_hw_10	0x8013C26C	0x11DE118	u16le	70	70	PASS	source record copy
+1	180	630	9	tile_hw_12	0x8013C26E	0x11DE11A	u16le	160	160	PASS	source record copy
+1	180	630	9	tile_hw_14	0x8013C270	0x11DE11C	u16le	310	310	PASS	source record copy
+1	180	630	9	tile_hw_16	0x8013C272	0x11DE11E	u16le	620	620	PASS	source record copy
+1	180	630	9	tile_hw_18	0x8013C274	0x11DE120	u16le	1250	1250	PASS	source record copy
+1	180	630	9	tile_hw_1A	0x8013C276	0x11DE122	u16le	100	100	PASS	source record copy
+1	180	630	9	tile_hw_1C	0x8013C278	0x11DE124	u16le	70	70	PASS	source record copy
+1	180	630	9	tile_hw_1E	0x8013C27A	0x11DE126	u16le	98	98	PASS	source record copy
+1	180	630	9	tile_hw_22	0x8013C27E	0x11DE128	u16le	439	439	PASS	source record copy
+1	180	630	9	tile_hw_24	0x8013C280	0x11DE12A	u16le	258	258	PASS	source record copy
+1	180	630	9	tile_b_06	0x8013C262	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	9	tile_hw_20	0x8013C27C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	10	tile_b_00	0x8013C380	0x11DE12D	u8	4	4	PASS	source record copy
+1	180	630	10	tile_b_01	0x8013C381	0x11DE12E	u8	11	11	PASS	source record copy
+1	180	630	10	tile_b_02	0x8013C382	0x11DE12F	u8	9	9	PASS	source record copy
+1	180	630	10	tile_b_03	0x8013C383	0x11DE130	u8	255	255	PASS	source record copy
+1	180	630	10	tile_b_04	0x8013C384	0x11DE131	u8	255	255	PASS	source record copy
+1	180	630	10	tile_b_05	0x8013C385	0x11DE133	u8	0	0	PASS	source record copy
+1	180	630	10	tile_b_0C	0x8013C38C	0x11DE14A	u8	255	255	PASS	source record copy
+1	180	630	10	tile_hw_0E	0x8013C38E	0x11DE134	u16le	120	120	PASS	source record copy
+1	180	630	10	tile_hw_10	0x8013C390	0x11DE136	u16le	60	60	PASS	source record copy
+1	180	630	10	tile_hw_12	0x8013C392	0x11DE138	u16le	140	140	PASS	source record copy
+1	180	630	10	tile_hw_14	0x8013C394	0x11DE13A	u16le	265	265	PASS	source record copy
+1	180	630	10	tile_hw_16	0x8013C396	0x11DE13C	u16le	530	530	PASS	source record copy
+1	180	630	10	tile_hw_18	0x8013C398	0x11DE13E	u16le	1050	1050	PASS	source record copy
+1	180	630	10	tile_hw_1A	0x8013C39A	0x11DE140	u16le	100	100	PASS	source record copy
+1	180	630	10	tile_hw_1C	0x8013C39C	0x11DE142	u16le	70	70	PASS	source record copy
+1	180	630	10	tile_hw_1E	0x8013C39E	0x11DE144	u16le	84	84	PASS	source record copy
+1	180	630	10	tile_hw_22	0x8013C3A2	0x11DE146	u16le	439	439	PASS	source record copy
+1	180	630	10	tile_hw_24	0x8013C3A4	0x11DE148	u16le	294	294	PASS	source record copy
+1	180	630	10	tile_b_06	0x8013C386	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	10	tile_hw_20	0x8013C3A0	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	11	tile_b_00	0x8013C4A4	0x11DE14B	u8	1	1	PASS	source record copy
+1	180	630	11	tile_b_01	0x8013C4A5	0x11DE14C	u8	12	12	PASS	source record copy
+1	180	630	11	tile_b_02	0x8013C4A6	0x11DE14D	u8	10	10	PASS	source record copy
+1	180	630	11	tile_b_03	0x8013C4A7	0x11DE14E	u8	255	255	PASS	source record copy
+1	180	630	11	tile_b_04	0x8013C4A8	0x11DE14F	u8	255	255	PASS	source record copy
+1	180	630	11	tile_b_05	0x8013C4A9	0x11DE151	u8	0	0	PASS	source record copy
+1	180	630	11	tile_b_0C	0x8013C4B0	0x11DE168	u8	255	255	PASS	source record copy
+1	180	630	11	tile_hw_0E	0x8013C4B2	0x11DE152	u16le	0	0	PASS	source record copy
+1	180	630	11	tile_hw_10	0x8013C4B4	0x11DE154	u16le	0	0	PASS	source record copy
+1	180	630	11	tile_hw_12	0x8013C4B6	0x11DE156	u16le	0	0	PASS	source record copy
+1	180	630	11	tile_hw_14	0x8013C4B8	0x11DE158	u16le	0	0	PASS	source record copy
+1	180	630	11	tile_hw_16	0x8013C4BA	0x11DE15A	u16le	0	0	PASS	source record copy
+1	180	630	11	tile_hw_18	0x8013C4BC	0x11DE15C	u16le	0	0	PASS	source record copy
+1	180	630	11	tile_hw_1A	0x8013C4BE	0x11DE15E	u16le	0	0	PASS	source record copy
+1	180	630	11	tile_hw_1C	0x8013C4C0	0x11DE160	u16le	0	0	PASS	source record copy
+1	180	630	11	tile_hw_1E	0x8013C4C2	0x11DE162	u16le	0	0	PASS	source record copy
+1	180	630	11	tile_hw_22	0x8013C4C6	0x11DE164	u16le	439	439	PASS	source record copy
+1	180	630	11	tile_hw_24	0x8013C4C8	0x11DE166	u16le	330	330	PASS	source record copy
+1	180	630	11	tile_b_06	0x8013C4AA	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	11	tile_hw_20	0x8013C4C4	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	12	tile_b_00	0x8013C5C8	0x11DE169	u8	4	4	PASS	source record copy
+1	180	630	12	tile_b_01	0x8013C5C9	0x11DE16A	u8	13	13	PASS	source record copy
+1	180	630	12	tile_b_02	0x8013C5CA	0x11DE16B	u8	11	11	PASS	source record copy
+1	180	630	12	tile_b_03	0x8013C5CB	0x11DE16C	u8	255	255	PASS	source record copy
+1	180	630	12	tile_b_04	0x8013C5CC	0x11DE16D	u8	255	255	PASS	source record copy
+1	180	630	12	tile_b_05	0x8013C5CD	0x11DE16F	u8	0	0	PASS	source record copy
+1	180	630	12	tile_b_0C	0x8013C5D4	0x11DE186	u8	3	3	PASS	source record copy
+1	180	630	12	tile_hw_0E	0x8013C5D6	0x11DE170	u16le	200	200	PASS	source record copy
+1	180	630	12	tile_hw_10	0x8013C5D8	0x11DE172	u16le	100	100	PASS	source record copy
+1	180	630	12	tile_hw_12	0x8013C5DA	0x11DE174	u16le	220	220	PASS	source record copy
+1	180	630	12	tile_hw_14	0x8013C5DC	0x11DE176	u16le	440	440	PASS	source record copy
+1	180	630	12	tile_hw_16	0x8013C5DE	0x11DE178	u16le	880	880	PASS	source record copy
+1	180	630	12	tile_hw_18	0x8013C5E0	0x11DE17A	u16le	1760	1760	PASS	source record copy
+1	180	630	12	tile_hw_1A	0x8013C5E2	0x11DE17C	u16le	150	150	PASS	source record copy
+1	180	630	12	tile_hw_1C	0x8013C5E4	0x11DE17E	u16le	105	105	PASS	source record copy
+1	180	630	12	tile_hw_1E	0x8013C5E6	0x11DE180	u16le	140	140	PASS	source record copy
+1	180	630	12	tile_hw_22	0x8013C5EA	0x11DE182	u16le	399	399	PASS	source record copy
+1	180	630	12	tile_hw_24	0x8013C5EC	0x11DE184	u16le	330	330	PASS	source record copy
+1	180	630	12	tile_b_06	0x8013C5CE	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	12	tile_hw_20	0x8013C5E8	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	13	tile_b_00	0x8013C6EC	0x11DE187	u8	4	4	PASS	source record copy
+1	180	630	13	tile_b_01	0x8013C6ED	0x11DE188	u8	14	14	PASS	source record copy
+1	180	630	13	tile_b_02	0x8013C6EE	0x11DE189	u8	12	12	PASS	source record copy
+1	180	630	13	tile_b_03	0x8013C6EF	0x11DE18A	u8	255	255	PASS	source record copy
+1	180	630	13	tile_b_04	0x8013C6F0	0x11DE18B	u8	255	255	PASS	source record copy
+1	180	630	13	tile_b_05	0x8013C6F1	0x11DE18D	u8	0	0	PASS	source record copy
+1	180	630	13	tile_b_0C	0x8013C6F8	0x11DE1A4	u8	255	255	PASS	source record copy
+1	180	630	13	tile_hw_0E	0x8013C6FA	0x11DE18E	u16le	220	220	PASS	source record copy
+1	180	630	13	tile_hw_10	0x8013C6FC	0x11DE190	u16le	110	110	PASS	source record copy
+1	180	630	13	tile_hw_12	0x8013C6FE	0x11DE192	u16le	250	250	PASS	source record copy
+1	180	630	13	tile_hw_14	0x8013C700	0x11DE194	u16le	490	490	PASS	source record copy
+1	180	630	13	tile_hw_16	0x8013C702	0x11DE196	u16le	980	980	PASS	source record copy
+1	180	630	13	tile_hw_18	0x8013C704	0x11DE198	u16le	1940	1940	PASS	source record copy
+1	180	630	13	tile_hw_1A	0x8013C706	0x11DE19A	u16le	150	150	PASS	source record copy
+1	180	630	13	tile_hw_1C	0x8013C708	0x11DE19C	u16le	105	105	PASS	source record copy
+1	180	630	13	tile_hw_1E	0x8013C70A	0x11DE19E	u16le	154	154	PASS	source record copy
+1	180	630	13	tile_hw_22	0x8013C70E	0x11DE1A0	u16le	359	359	PASS	source record copy
+1	180	630	13	tile_hw_24	0x8013C710	0x11DE1A2	u16le	330	330	PASS	source record copy
+1	180	630	13	tile_b_06	0x8013C6F2	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	13	tile_hw_20	0x8013C70C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	14	tile_b_00	0x8013C810	0x11DE1A5	u8	4	4	PASS	source record copy
+1	180	630	14	tile_b_01	0x8013C811	0x11DE1A6	u8	15	15	PASS	source record copy
+1	180	630	14	tile_b_02	0x8013C812	0x11DE1A7	u8	13	13	PASS	source record copy
+1	180	630	14	tile_b_03	0x8013C813	0x11DE1A8	u8	255	255	PASS	source record copy
+1	180	630	14	tile_b_04	0x8013C814	0x11DE1A9	u8	255	255	PASS	source record copy
+1	180	630	14	tile_b_05	0x8013C815	0x11DE1AB	u8	0	0	PASS	source record copy
+1	180	630	14	tile_b_0C	0x8013C81C	0x11DE1C2	u8	6	6	PASS	source record copy
+1	180	630	14	tile_hw_0E	0x8013C81E	0x11DE1AC	u16le	260	260	PASS	source record copy
+1	180	630	14	tile_hw_10	0x8013C820	0x11DE1AE	u16le	130	130	PASS	source record copy
+1	180	630	14	tile_hw_12	0x8013C822	0x11DE1B0	u16le	290	290	PASS	source record copy
+1	180	630	14	tile_hw_14	0x8013C824	0x11DE1B2	u16le	580	580	PASS	source record copy
+1	180	630	14	tile_hw_16	0x8013C826	0x11DE1B4	u16le	1150	1150	PASS	source record copy
+1	180	630	14	tile_hw_18	0x8013C828	0x11DE1B6	u16le	2290	2290	PASS	source record copy
+1	180	630	14	tile_hw_1A	0x8013C82A	0x11DE1B8	u16le	200	200	PASS	source record copy
+1	180	630	14	tile_hw_1C	0x8013C82C	0x11DE1BA	u16le	140	140	PASS	source record copy
+1	180	630	14	tile_hw_1E	0x8013C82E	0x11DE1BC	u16le	182	182	PASS	source record copy
+1	180	630	14	tile_hw_22	0x8013C832	0x11DE1BE	u16le	319	319	PASS	source record copy
+1	180	630	14	tile_hw_24	0x8013C834	0x11DE1C0	u16le	330	330	PASS	source record copy
+1	180	630	14	tile_b_06	0x8013C816	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	14	tile_hw_20	0x8013C830	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	15	tile_b_00	0x8013C934	0x11DE1C3	u8	4	4	PASS	source record copy
+1	180	630	15	tile_b_01	0x8013C935	0x11DE1C4	u8	16	16	PASS	source record copy
+1	180	630	15	tile_b_02	0x8013C936	0x11DE1C5	u8	14	14	PASS	source record copy
+1	180	630	15	tile_b_03	0x8013C937	0x11DE1C6	u8	255	255	PASS	source record copy
+1	180	630	15	tile_b_04	0x8013C938	0x11DE1C7	u8	255	255	PASS	source record copy
+1	180	630	15	tile_b_05	0x8013C939	0x11DE1C9	u8	0	0	PASS	source record copy
+1	180	630	15	tile_b_0C	0x8013C940	0x11DE1E0	u8	5	5	PASS	source record copy
+1	180	630	15	tile_hw_0E	0x8013C942	0x11DE1CA	u16le	220	220	PASS	source record copy
+1	180	630	15	tile_hw_10	0x8013C944	0x11DE1CC	u16le	110	110	PASS	source record copy
+1	180	630	15	tile_hw_12	0x8013C946	0x11DE1CE	u16le	250	250	PASS	source record copy
+1	180	630	15	tile_hw_14	0x8013C948	0x11DE1D0	u16le	490	490	PASS	source record copy
+1	180	630	15	tile_hw_16	0x8013C94A	0x11DE1D2	u16le	980	980	PASS	source record copy
+1	180	630	15	tile_hw_18	0x8013C94C	0x11DE1D4	u16le	1940	1940	PASS	source record copy
+1	180	630	15	tile_hw_1A	0x8013C94E	0x11DE1D6	u16le	150	150	PASS	source record copy
+1	180	630	15	tile_hw_1C	0x8013C950	0x11DE1D8	u16le	105	105	PASS	source record copy
+1	180	630	15	tile_hw_1E	0x8013C952	0x11DE1DA	u16le	154	154	PASS	source record copy
+1	180	630	15	tile_hw_22	0x8013C956	0x11DE1DC	u16le	279	279	PASS	source record copy
+1	180	630	15	tile_hw_24	0x8013C958	0x11DE1DE	u16le	330	330	PASS	source record copy
+1	180	630	15	tile_b_06	0x8013C93A	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	15	tile_hw_20	0x8013C954	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	16	tile_b_00	0x8013CA58	0x11DE1E1	u8	4	4	PASS	source record copy
+1	180	630	16	tile_b_01	0x8013CA59	0x11DE1E2	u8	17	17	PASS	source record copy
+1	180	630	16	tile_b_02	0x8013CA5A	0x11DE1E3	u8	15	15	PASS	source record copy
+1	180	630	16	tile_b_03	0x8013CA5B	0x11DE1E4	u8	255	255	PASS	source record copy
+1	180	630	16	tile_b_04	0x8013CA5C	0x11DE1E5	u8	255	255	PASS	source record copy
+1	180	630	16	tile_b_05	0x8013CA5D	0x11DE1E7	u8	0	0	PASS	source record copy
+1	180	630	16	tile_b_0C	0x8013CA64	0x11DE1FE	u8	255	255	PASS	source record copy
+1	180	630	16	tile_hw_0E	0x8013CA66	0x11DE1E8	u16le	200	200	PASS	source record copy
+1	180	630	16	tile_hw_10	0x8013CA68	0x11DE1EA	u16le	100	100	PASS	source record copy
+1	180	630	16	tile_hw_12	0x8013CA6A	0x11DE1EC	u16le	220	220	PASS	source record copy
+1	180	630	16	tile_hw_14	0x8013CA6C	0x11DE1EE	u16le	440	440	PASS	source record copy
+1	180	630	16	tile_hw_16	0x8013CA6E	0x11DE1F0	u16le	880	880	PASS	source record copy
+1	180	630	16	tile_hw_18	0x8013CA70	0x11DE1F2	u16le	1760	1760	PASS	source record copy
+1	180	630	16	tile_hw_1A	0x8013CA72	0x11DE1F4	u16le	150	150	PASS	source record copy
+1	180	630	16	tile_hw_1C	0x8013CA74	0x11DE1F6	u16le	105	105	PASS	source record copy
+1	180	630	16	tile_hw_1E	0x8013CA76	0x11DE1F8	u16le	140	140	PASS	source record copy
+1	180	630	16	tile_hw_22	0x8013CA7A	0x11DE1FA	u16le	239	239	PASS	source record copy
+1	180	630	16	tile_hw_24	0x8013CA7C	0x11DE1FC	u16le	330	330	PASS	source record copy
+1	180	630	16	tile_b_06	0x8013CA5E	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	16	tile_hw_20	0x8013CA78	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	17	tile_b_00	0x8013CB7C	0x11DE1FF	u8	1	1	PASS	source record copy
+1	180	630	17	tile_b_01	0x8013CB7D	0x11DE200	u8	18	18	PASS	source record copy
+1	180	630	17	tile_b_02	0x8013CB7E	0x11DE201	u8	16	16	PASS	source record copy
+1	180	630	17	tile_b_03	0x8013CB7F	0x11DE202	u8	255	255	PASS	source record copy
+1	180	630	17	tile_b_04	0x8013CB80	0x11DE203	u8	255	255	PASS	source record copy
+1	180	630	17	tile_b_05	0x8013CB81	0x11DE205	u8	0	0	PASS	source record copy
+1	180	630	17	tile_b_0C	0x8013CB88	0x11DE21C	u8	255	255	PASS	source record copy
+1	180	630	17	tile_hw_0E	0x8013CB8A	0x11DE206	u16le	0	0	PASS	source record copy
+1	180	630	17	tile_hw_10	0x8013CB8C	0x11DE208	u16le	0	0	PASS	source record copy
+1	180	630	17	tile_hw_12	0x8013CB8E	0x11DE20A	u16le	0	0	PASS	source record copy
+1	180	630	17	tile_hw_14	0x8013CB90	0x11DE20C	u16le	0	0	PASS	source record copy
+1	180	630	17	tile_hw_16	0x8013CB92	0x11DE20E	u16le	0	0	PASS	source record copy
+1	180	630	17	tile_hw_18	0x8013CB94	0x11DE210	u16le	0	0	PASS	source record copy
+1	180	630	17	tile_hw_1A	0x8013CB96	0x11DE212	u16le	0	0	PASS	source record copy
+1	180	630	17	tile_hw_1C	0x8013CB98	0x11DE214	u16le	0	0	PASS	source record copy
+1	180	630	17	tile_hw_1E	0x8013CB9A	0x11DE216	u16le	0	0	PASS	source record copy
+1	180	630	17	tile_hw_22	0x8013CB9E	0x11DE218	u16le	239	239	PASS	source record copy
+1	180	630	17	tile_hw_24	0x8013CBA0	0x11DE21A	u16le	294	294	PASS	source record copy
+1	180	630	17	tile_b_06	0x8013CB82	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	17	tile_hw_20	0x8013CB9C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	18	tile_b_00	0x8013CCA0	0x11DE21D	u8	2	2	PASS	source record copy
+1	180	630	18	tile_b_01	0x8013CCA1	0x11DE21E	u8	19	19	PASS	source record copy
+1	180	630	18	tile_b_02	0x8013CCA2	0x11DE21F	u8	17	17	PASS	source record copy
+1	180	630	18	tile_b_03	0x8013CCA3	0x11DE220	u8	255	255	PASS	source record copy
+1	180	630	18	tile_b_04	0x8013CCA4	0x11DE221	u8	255	255	PASS	source record copy
+1	180	630	18	tile_b_05	0x8013CCA5	0x11DE223	u8	0	0	PASS	source record copy
+1	180	630	18	tile_b_0C	0x8013CCAC	0x11DE23A	u8	255	255	PASS	source record copy
+1	180	630	18	tile_hw_0E	0x8013CCAE	0x11DE224	u16le	0	0	PASS	source record copy
+1	180	630	18	tile_hw_10	0x8013CCB0	0x11DE226	u16le	0	0	PASS	source record copy
+1	180	630	18	tile_hw_12	0x8013CCB2	0x11DE228	u16le	0	0	PASS	source record copy
+1	180	630	18	tile_hw_14	0x8013CCB4	0x11DE22A	u16le	0	0	PASS	source record copy
+1	180	630	18	tile_hw_16	0x8013CCB6	0x11DE22C	u16le	0	0	PASS	source record copy
+1	180	630	18	tile_hw_18	0x8013CCB8	0x11DE22E	u16le	0	0	PASS	source record copy
+1	180	630	18	tile_hw_1A	0x8013CCBA	0x11DE230	u16le	0	0	PASS	source record copy
+1	180	630	18	tile_hw_1C	0x8013CCBC	0x11DE232	u16le	0	0	PASS	source record copy
+1	180	630	18	tile_hw_1E	0x8013CCBE	0x11DE234	u16le	0	0	PASS	source record copy
+1	180	630	18	tile_hw_22	0x8013CCC2	0x11DE236	u16le	199	199	PASS	source record copy
+1	180	630	18	tile_hw_24	0x8013CCC4	0x11DE238	u16le	294	294	PASS	source record copy
+1	180	630	18	tile_b_06	0x8013CCA6	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	18	tile_hw_20	0x8013CCC0	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	19	tile_b_00	0x8013CDC4	0x11DE23B	u8	4	4	PASS	source record copy
+1	180	630	19	tile_b_01	0x8013CDC5	0x11DE23C	u8	20	20	PASS	source record copy
+1	180	630	19	tile_b_02	0x8013CDC6	0x11DE23D	u8	18	18	PASS	source record copy
+1	180	630	19	tile_b_03	0x8013CDC7	0x11DE23E	u8	255	255	PASS	source record copy
+1	180	630	19	tile_b_04	0x8013CDC8	0x11DE23F	u8	255	255	PASS	source record copy
+1	180	630	19	tile_b_05	0x8013CDC9	0x11DE241	u8	0	0	PASS	source record copy
+1	180	630	19	tile_b_0C	0x8013CDD0	0x11DE258	u8	2	2	PASS	source record copy
+1	180	630	19	tile_hw_0E	0x8013CDD2	0x11DE242	u16le	140	140	PASS	source record copy
+1	180	630	19	tile_hw_10	0x8013CDD4	0x11DE244	u16le	70	70	PASS	source record copy
+1	180	630	19	tile_hw_12	0x8013CDD6	0x11DE246	u16le	160	160	PASS	source record copy
+1	180	630	19	tile_hw_14	0x8013CDD8	0x11DE248	u16le	310	310	PASS	source record copy
+1	180	630	19	tile_hw_16	0x8013CDDA	0x11DE24A	u16le	620	620	PASS	source record copy
+1	180	630	19	tile_hw_18	0x8013CDDC	0x11DE24C	u16le	1250	1250	PASS	source record copy
+1	180	630	19	tile_hw_1A	0x8013CDDE	0x11DE24E	u16le	100	100	PASS	source record copy
+1	180	630	19	tile_hw_1C	0x8013CDE0	0x11DE250	u16le	70	70	PASS	source record copy
+1	180	630	19	tile_hw_1E	0x8013CDE2	0x11DE252	u16le	98	98	PASS	source record copy
+1	180	630	19	tile_hw_22	0x8013CDE6	0x11DE254	u16le	199	199	PASS	source record copy
+1	180	630	19	tile_hw_24	0x8013CDE8	0x11DE256	u16le	258	258	PASS	source record copy
+1	180	630	19	tile_b_06	0x8013CDCA	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	19	tile_hw_20	0x8013CDE4	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	20	tile_b_00	0x8013CEE8	0x11DE259	u8	4	4	PASS	source record copy
+1	180	630	20	tile_b_01	0x8013CEE9	0x11DE25A	u8	21	21	PASS	source record copy
+1	180	630	20	tile_b_02	0x8013CEEA	0x11DE25B	u8	19	19	PASS	source record copy
+1	180	630	20	tile_b_03	0x8013CEEB	0x11DE25C	u8	255	255	PASS	source record copy
+1	180	630	20	tile_b_04	0x8013CEEC	0x11DE25D	u8	255	255	PASS	source record copy
+1	180	630	20	tile_b_05	0x8013CEED	0x11DE25F	u8	0	0	PASS	source record copy
+1	180	630	20	tile_b_0C	0x8013CEF4	0x11DE276	u8	255	255	PASS	source record copy
+1	180	630	20	tile_hw_0E	0x8013CEF6	0x11DE260	u16le	120	120	PASS	source record copy
+1	180	630	20	tile_hw_10	0x8013CEF8	0x11DE262	u16le	60	60	PASS	source record copy
+1	180	630	20	tile_hw_12	0x8013CEFA	0x11DE264	u16le	140	140	PASS	source record copy
+1	180	630	20	tile_hw_14	0x8013CEFC	0x11DE266	u16le	265	265	PASS	source record copy
+1	180	630	20	tile_hw_16	0x8013CEFE	0x11DE268	u16le	530	530	PASS	source record copy
+1	180	630	20	tile_hw_18	0x8013CF00	0x11DE26A	u16le	1050	1050	PASS	source record copy
+1	180	630	20	tile_hw_1A	0x8013CF02	0x11DE26C	u16le	100	100	PASS	source record copy
+1	180	630	20	tile_hw_1C	0x8013CF04	0x11DE26E	u16le	70	70	PASS	source record copy
+1	180	630	20	tile_hw_1E	0x8013CF06	0x11DE270	u16le	84	84	PASS	source record copy
+1	180	630	20	tile_hw_22	0x8013CF0A	0x11DE272	u16le	199	199	PASS	source record copy
+1	180	630	20	tile_hw_24	0x8013CF0C	0x11DE274	u16le	222	222	PASS	source record copy
+1	180	630	20	tile_b_06	0x8013CEEE	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	20	tile_hw_20	0x8013CF08	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	180	630	21	tile_b_00	0x8013D00C	0x11DE277	u8	4	4	PASS	source record copy
+1	180	630	21	tile_b_01	0x8013D00D	0x11DE278	u8	0	0	PASS	source record copy
+1	180	630	21	tile_b_02	0x8013D00E	0x11DE279	u8	20	20	PASS	source record copy
+1	180	630	21	tile_b_03	0x8013D00F	0x11DE27A	u8	255	255	PASS	source record copy
+1	180	630	21	tile_b_04	0x8013D010	0x11DE27B	u8	255	255	PASS	source record copy
+1	180	630	21	tile_b_05	0x8013D011	0x11DE27D	u8	0	0	PASS	source record copy
+1	180	630	21	tile_b_0C	0x8013D018	0x11DE294	u8	1	1	PASS	source record copy
+1	180	630	21	tile_hw_0E	0x8013D01A	0x11DE27E	u16le	100	100	PASS	source record copy
+1	180	630	21	tile_hw_10	0x8013D01C	0x11DE280	u16le	50	50	PASS	source record copy
+1	180	630	21	tile_hw_12	0x8013D01E	0x11DE282	u16le	110	110	PASS	source record copy
+1	180	630	21	tile_hw_14	0x8013D020	0x11DE284	u16le	220	220	PASS	source record copy
+1	180	630	21	tile_hw_16	0x8013D022	0x11DE286	u16le	440	440	PASS	source record copy
+1	180	630	21	tile_hw_18	0x8013D024	0x11DE288	u16le	880	880	PASS	source record copy
+1	180	630	21	tile_hw_1A	0x8013D026	0x11DE28A	u16le	50	50	PASS	source record copy
+1	180	630	21	tile_hw_1C	0x8013D028	0x11DE28C	u16le	35	35	PASS	source record copy
+1	180	630	21	tile_hw_1E	0x8013D02A	0x11DE28E	u16le	70	70	PASS	source record copy
+1	180	630	21	tile_hw_22	0x8013D02E	0x11DE290	u16le	199	199	PASS	source record copy
+1	180	630	21	tile_hw_24	0x8013D030	0x11DE292	u16le	186	186	PASS	source record copy
+1	180	630	21	tile_b_06	0x8013D012	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	180	630	21	tile_hw_20	0x8013D02C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	0	tile_b_00	0x8013B818	0x11DE001	u8	0	0	PASS	source record copy
+1	360	630	0	tile_b_01	0x8013B819	0x11DE002	u8	1	1	PASS	source record copy
+1	360	630	0	tile_b_02	0x8013B81A	0x11DE003	u8	21	21	PASS	source record copy
+1	360	630	0	tile_b_03	0x8013B81B	0x11DE004	u8	255	255	PASS	source record copy
+1	360	630	0	tile_b_04	0x8013B81C	0x11DE005	u8	255	255	PASS	source record copy
+1	360	630	0	tile_b_05	0x8013B81D	0x11DE007	u8	0	0	PASS	source record copy
+1	360	630	0	tile_b_0C	0x8013B824	0x11DE01E	u8	255	255	PASS	source record copy
+1	360	630	0	tile_hw_0E	0x8013B826	0x11DE008	u16le	0	0	PASS	source record copy
+1	360	630	0	tile_hw_10	0x8013B828	0x11DE00A	u16le	0	0	PASS	source record copy
+1	360	630	0	tile_hw_12	0x8013B82A	0x11DE00C	u16le	0	0	PASS	source record copy
+1	360	630	0	tile_hw_14	0x8013B82C	0x11DE00E	u16le	0	0	PASS	source record copy
+1	360	630	0	tile_hw_16	0x8013B82E	0x11DE010	u16le	0	0	PASS	source record copy
+1	360	630	0	tile_hw_18	0x8013B830	0x11DE012	u16le	0	0	PASS	source record copy
+1	360	630	0	tile_hw_1A	0x8013B832	0x11DE014	u16le	0	0	PASS	source record copy
+1	360	630	0	tile_hw_1C	0x8013B834	0x11DE016	u16le	0	0	PASS	source record copy
+1	360	630	0	tile_hw_1E	0x8013B836	0x11DE018	u16le	0	0	PASS	source record copy
+1	360	630	0	tile_hw_22	0x8013B83A	0x11DE01A	u16le	199	199	PASS	source record copy
+1	360	630	0	tile_hw_24	0x8013B83C	0x11DE01C	u16le	150	150	PASS	source record copy
+1	360	630	0	tile_b_06	0x8013B81E	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	0	tile_hw_20	0x8013B838	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	1	tile_b_00	0x8013B93C	0x11DE01F	u8	4	4	PASS	source record copy
+1	360	630	1	tile_b_01	0x8013B93D	0x11DE020	u8	2	2	PASS	source record copy
+1	360	630	1	tile_b_02	0x8013B93E	0x11DE021	u8	0	0	PASS	source record copy
+1	360	630	1	tile_b_03	0x8013B93F	0x11DE022	u8	255	255	PASS	source record copy
+1	360	630	1	tile_b_04	0x8013B940	0x11DE023	u8	255	255	PASS	source record copy
+1	360	630	1	tile_b_05	0x8013B941	0x11DE025	u8	0	0	PASS	source record copy
+1	360	630	1	tile_b_0C	0x8013B948	0x11DE03C	u8	255	255	PASS	source record copy
+1	360	630	1	tile_hw_0E	0x8013B94A	0x11DE026	u16le	60	60	PASS	source record copy
+1	360	630	1	tile_hw_10	0x8013B94C	0x11DE028	u16le	35	35	PASS	source record copy
+1	360	630	1	tile_hw_12	0x8013B94E	0x11DE02A	u16le	70	70	PASS	source record copy
+1	360	630	1	tile_hw_14	0x8013B950	0x11DE02C	u16le	135	135	PASS	source record copy
+1	360	630	1	tile_hw_16	0x8013B952	0x11DE02E	u16le	265	265	PASS	source record copy
+1	360	630	1	tile_hw_18	0x8013B954	0x11DE030	u16le	530	530	PASS	source record copy
+1	360	630	1	tile_hw_1A	0x8013B956	0x11DE032	u16le	50	50	PASS	source record copy
+1	360	630	1	tile_hw_1C	0x8013B958	0x11DE034	u16le	35	35	PASS	source record copy
+1	360	630	1	tile_hw_1E	0x8013B95A	0x11DE036	u16le	42	42	PASS	source record copy
+1	360	630	1	tile_hw_22	0x8013B95E	0x11DE038	u16le	239	239	PASS	source record copy
+1	360	630	1	tile_hw_24	0x8013B960	0x11DE03A	u16le	150	150	PASS	source record copy
+1	360	630	1	tile_b_06	0x8013B942	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	1	tile_hw_20	0x8013B95C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	2	tile_b_00	0x8013BA60	0x11DE03D	u8	4	4	PASS	source record copy
+1	360	630	2	tile_b_01	0x8013BA61	0x11DE03E	u8	3	3	PASS	source record copy
+1	360	630	2	tile_b_02	0x8013BA62	0x11DE03F	u8	1	1	PASS	source record copy
+1	360	630	2	tile_b_03	0x8013BA63	0x11DE040	u8	255	255	PASS	source record copy
+1	360	630	2	tile_b_04	0x8013BA64	0x11DE041	u8	255	255	PASS	source record copy
+1	360	630	2	tile_b_05	0x8013BA65	0x11DE043	u8	0	0	PASS	source record copy
+1	360	630	2	tile_b_0C	0x8013BA6C	0x11DE05A	u8	255	255	PASS	source record copy
+1	360	630	2	tile_hw_0E	0x8013BA6E	0x11DE044	u16le	100	100	PASS	source record copy
+1	360	630	2	tile_hw_10	0x8013BA70	0x11DE046	u16le	50	50	PASS	source record copy
+1	360	630	2	tile_hw_12	0x8013BA72	0x11DE048	u16le	110	110	PASS	source record copy
+1	360	630	2	tile_hw_14	0x8013BA74	0x11DE04A	u16le	220	220	PASS	source record copy
+1	360	630	2	tile_hw_16	0x8013BA76	0x11DE04C	u16le	440	440	PASS	source record copy
+1	360	630	2	tile_hw_18	0x8013BA78	0x11DE04E	u16le	880	880	PASS	source record copy
+1	360	630	2	tile_hw_1A	0x8013BA7A	0x11DE050	u16le	50	50	PASS	source record copy
+1	360	630	2	tile_hw_1C	0x8013BA7C	0x11DE052	u16le	35	35	PASS	source record copy
+1	360	630	2	tile_hw_1E	0x8013BA7E	0x11DE054	u16le	70	70	PASS	source record copy
+1	360	630	2	tile_hw_22	0x8013BA82	0x11DE056	u16le	279	279	PASS	source record copy
+1	360	630	2	tile_hw_24	0x8013BA84	0x11DE058	u16le	150	150	PASS	source record copy
+1	360	630	2	tile_b_06	0x8013BA66	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	2	tile_hw_20	0x8013BA80	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	3	tile_b_00	0x8013BB84	0x11DE05B	u8	4	4	PASS	source record copy
+1	360	630	3	tile_b_01	0x8013BB85	0x11DE05C	u8	4	4	PASS	source record copy
+1	360	630	3	tile_b_02	0x8013BB86	0x11DE05D	u8	2	2	PASS	source record copy
+1	360	630	3	tile_b_03	0x8013BB87	0x11DE05E	u8	255	255	PASS	source record copy
+1	360	630	3	tile_b_04	0x8013BB88	0x11DE05F	u8	255	255	PASS	source record copy
+1	360	630	3	tile_b_05	0x8013BB89	0x11DE061	u8	0	0	PASS	source record copy
+1	360	630	3	tile_b_0C	0x8013BB90	0x11DE078	u8	255	255	PASS	source record copy
+1	360	630	3	tile_hw_0E	0x8013BB92	0x11DE062	u16le	100	100	PASS	source record copy
+1	360	630	3	tile_hw_10	0x8013BB94	0x11DE064	u16le	50	50	PASS	source record copy
+1	360	630	3	tile_hw_12	0x8013BB96	0x11DE066	u16le	110	110	PASS	source record copy
+1	360	630	3	tile_hw_14	0x8013BB98	0x11DE068	u16le	220	220	PASS	source record copy
+1	360	630	3	tile_hw_16	0x8013BB9A	0x11DE06A	u16le	440	440	PASS	source record copy
+1	360	630	3	tile_hw_18	0x8013BB9C	0x11DE06C	u16le	880	880	PASS	source record copy
+1	360	630	3	tile_hw_1A	0x8013BB9E	0x11DE06E	u16le	50	50	PASS	source record copy
+1	360	630	3	tile_hw_1C	0x8013BBA0	0x11DE070	u16le	35	35	PASS	source record copy
+1	360	630	3	tile_hw_1E	0x8013BBA2	0x11DE072	u16le	70	70	PASS	source record copy
+1	360	630	3	tile_hw_22	0x8013BBA6	0x11DE074	u16le	319	319	PASS	source record copy
+1	360	630	3	tile_hw_24	0x8013BBA8	0x11DE076	u16le	150	150	PASS	source record copy
+1	360	630	3	tile_b_06	0x8013BB8A	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	3	tile_hw_20	0x8013BBA4	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	4	tile_b_00	0x8013BCA8	0x11DE079	u8	4	4	PASS	source record copy
+1	360	630	4	tile_b_01	0x8013BCA9	0x11DE07A	u8	5	5	PASS	source record copy
+1	360	630	4	tile_b_02	0x8013BCAA	0x11DE07B	u8	3	3	PASS	source record copy
+1	360	630	4	tile_b_03	0x8013BCAB	0x11DE07C	u8	255	255	PASS	source record copy
+1	360	630	4	tile_b_04	0x8013BCAC	0x11DE07D	u8	255	255	PASS	source record copy
+1	360	630	4	tile_b_05	0x8013BCAD	0x11DE07F	u8	0	0	PASS	source record copy
+1	360	630	4	tile_b_0C	0x8013BCB4	0x11DE096	u8	255	255	PASS	source record copy
+1	360	630	4	tile_hw_0E	0x8013BCB6	0x11DE080	u16le	120	120	PASS	source record copy
+1	360	630	4	tile_hw_10	0x8013BCB8	0x11DE082	u16le	60	60	PASS	source record copy
+1	360	630	4	tile_hw_12	0x8013BCBA	0x11DE084	u16le	140	140	PASS	source record copy
+1	360	630	4	tile_hw_14	0x8013BCBC	0x11DE086	u16le	265	265	PASS	source record copy
+1	360	630	4	tile_hw_16	0x8013BCBE	0x11DE088	u16le	530	530	PASS	source record copy
+1	360	630	4	tile_hw_18	0x8013BCC0	0x11DE08A	u16le	1050	1050	PASS	source record copy
+1	360	630	4	tile_hw_1A	0x8013BCC2	0x11DE08C	u16le	100	100	PASS	source record copy
+1	360	630	4	tile_hw_1C	0x8013BCC4	0x11DE08E	u16le	70	70	PASS	source record copy
+1	360	630	4	tile_hw_1E	0x8013BCC6	0x11DE090	u16le	84	84	PASS	source record copy
+1	360	630	4	tile_hw_22	0x8013BCCA	0x11DE092	u16le	359	359	PASS	source record copy
+1	360	630	4	tile_hw_24	0x8013BCCC	0x11DE094	u16le	150	150	PASS	source record copy
+1	360	630	4	tile_b_06	0x8013BCAE	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	4	tile_hw_20	0x8013BCC8	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	5	tile_b_00	0x8013BDCC	0x11DE097	u8	2	2	PASS	source record copy
+1	360	630	5	tile_b_01	0x8013BDCD	0x11DE098	u8	6	6	PASS	source record copy
+1	360	630	5	tile_b_02	0x8013BDCE	0x11DE099	u8	4	4	PASS	source record copy
+1	360	630	5	tile_b_03	0x8013BDCF	0x11DE09A	u8	255	255	PASS	source record copy
+1	360	630	5	tile_b_04	0x8013BDD0	0x11DE09B	u8	255	255	PASS	source record copy
+1	360	630	5	tile_b_05	0x8013BDD1	0x11DE09D	u8	0	0	PASS	source record copy
+1	360	630	5	tile_b_0C	0x8013BDD8	0x11DE0B4	u8	255	255	PASS	source record copy
+1	360	630	5	tile_hw_0E	0x8013BDDA	0x11DE09E	u16le	0	0	PASS	source record copy
+1	360	630	5	tile_hw_10	0x8013BDDC	0x11DE0A0	u16le	0	0	PASS	source record copy
+1	360	630	5	tile_hw_12	0x8013BDDE	0x11DE0A2	u16le	0	0	PASS	source record copy
+1	360	630	5	tile_hw_14	0x8013BDE0	0x11DE0A4	u16le	0	0	PASS	source record copy
+1	360	630	5	tile_hw_16	0x8013BDE2	0x11DE0A6	u16le	0	0	PASS	source record copy
+1	360	630	5	tile_hw_18	0x8013BDE4	0x11DE0A8	u16le	0	0	PASS	source record copy
+1	360	630	5	tile_hw_1A	0x8013BDE6	0x11DE0AA	u16le	0	0	PASS	source record copy
+1	360	630	5	tile_hw_1C	0x8013BDE8	0x11DE0AC	u16le	0	0	PASS	source record copy
+1	360	630	5	tile_hw_1E	0x8013BDEA	0x11DE0AE	u16le	0	0	PASS	source record copy
+1	360	630	5	tile_hw_22	0x8013BDEE	0x11DE0B0	u16le	399	399	PASS	source record copy
+1	360	630	5	tile_hw_24	0x8013BDF0	0x11DE0B2	u16le	150	150	PASS	source record copy
+1	360	630	5	tile_b_06	0x8013BDD2	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	5	tile_hw_20	0x8013BDEC	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	6	tile_b_00	0x8013BEF0	0x11DE0B5	u8	4	4	PASS	source record copy
+1	360	630	6	tile_b_01	0x8013BEF1	0x11DE0B6	u8	7	7	PASS	source record copy
+1	360	630	6	tile_b_02	0x8013BEF2	0x11DE0B7	u8	5	5	PASS	source record copy
+1	360	630	6	tile_b_03	0x8013BEF3	0x11DE0B8	u8	255	255	PASS	source record copy
+1	360	630	6	tile_b_04	0x8013BEF4	0x11DE0B9	u8	255	255	PASS	source record copy
+1	360	630	6	tile_b_05	0x8013BEF5	0x11DE0BB	u8	0	0	PASS	source record copy
+1	360	630	6	tile_b_0C	0x8013BEFC	0x11DE0D2	u8	4	4	PASS	source record copy
+1	360	630	6	tile_hw_0E	0x8013BEFE	0x11DE0BC	u16le	120	120	PASS	source record copy
+1	360	630	6	tile_hw_10	0x8013BF00	0x11DE0BE	u16le	60	60	PASS	source record copy
+1	360	630	6	tile_hw_12	0x8013BF02	0x11DE0C0	u16le	140	140	PASS	source record copy
+1	360	630	6	tile_hw_14	0x8013BF04	0x11DE0C2	u16le	265	265	PASS	source record copy
+1	360	630	6	tile_hw_16	0x8013BF06	0x11DE0C4	u16le	530	530	PASS	source record copy
+1	360	630	6	tile_hw_18	0x8013BF08	0x11DE0C6	u16le	1050	1050	PASS	source record copy
+1	360	630	6	tile_hw_1A	0x8013BF0A	0x11DE0C8	u16le	100	100	PASS	source record copy
+1	360	630	6	tile_hw_1C	0x8013BF0C	0x11DE0CA	u16le	70	70	PASS	source record copy
+1	360	630	6	tile_hw_1E	0x8013BF0E	0x11DE0CC	u16le	84	84	PASS	source record copy
+1	360	630	6	tile_hw_22	0x8013BF12	0x11DE0CE	u16le	399	399	PASS	source record copy
+1	360	630	6	tile_hw_24	0x8013BF14	0x11DE0D0	u16le	186	186	PASS	source record copy
+1	360	630	6	tile_b_06	0x8013BEF6	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	6	tile_hw_20	0x8013BF10	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	7	tile_b_00	0x8013C014	0x11DE0D3	u8	4	4	PASS	source record copy
+1	360	630	7	tile_b_01	0x8013C015	0x11DE0D4	u8	8	8	PASS	source record copy
+1	360	630	7	tile_b_02	0x8013C016	0x11DE0D5	u8	6	6	PASS	source record copy
+1	360	630	7	tile_b_03	0x8013C017	0x11DE0D6	u8	255	255	PASS	source record copy
+1	360	630	7	tile_b_04	0x8013C018	0x11DE0D7	u8	255	255	PASS	source record copy
+1	360	630	7	tile_b_05	0x8013C019	0x11DE0D9	u8	0	0	PASS	source record copy
+1	360	630	7	tile_b_0C	0x8013C020	0x11DE0F0	u8	0	0	PASS	source record copy
+1	360	630	7	tile_hw_0E	0x8013C022	0x11DE0DA	u16le	160	160	PASS	source record copy
+1	360	630	7	tile_hw_10	0x8013C024	0x11DE0DC	u16le	85	85	PASS	source record copy
+1	360	630	7	tile_hw_12	0x8013C026	0x11DE0DE	u16le	180	180	PASS	source record copy
+1	360	630	7	tile_hw_14	0x8013C028	0x11DE0E0	u16le	360	360	PASS	source record copy
+1	360	630	7	tile_hw_16	0x8013C02A	0x11DE0E2	u16le	710	710	PASS	source record copy
+1	360	630	7	tile_hw_18	0x8013C02C	0x11DE0E4	u16le	1410	1410	PASS	source record copy
+1	360	630	7	tile_hw_1A	0x8013C02E	0x11DE0E6	u16le	120	120	PASS	source record copy
+1	360	630	7	tile_hw_1C	0x8013C030	0x11DE0E8	u16le	84	84	PASS	source record copy
+1	360	630	7	tile_hw_1E	0x8013C032	0x11DE0EA	u16le	112	112	PASS	source record copy
+1	360	630	7	tile_hw_22	0x8013C036	0x11DE0EC	u16le	439	439	PASS	source record copy
+1	360	630	7	tile_hw_24	0x8013C038	0x11DE0EE	u16le	186	186	PASS	source record copy
+1	360	630	7	tile_b_06	0x8013C01A	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	7	tile_hw_20	0x8013C034	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	8	tile_b_00	0x8013C138	0x11DE0F1	u8	4	4	PASS	source record copy
+1	360	630	8	tile_b_01	0x8013C139	0x11DE0F2	u8	9	9	PASS	source record copy
+1	360	630	8	tile_b_02	0x8013C13A	0x11DE0F3	u8	7	7	PASS	source record copy
+1	360	630	8	tile_b_03	0x8013C13B	0x11DE0F4	u8	255	255	PASS	source record copy
+1	360	630	8	tile_b_04	0x8013C13C	0x11DE0F5	u8	255	255	PASS	source record copy
+1	360	630	8	tile_b_05	0x8013C13D	0x11DE0F7	u8	0	0	PASS	source record copy
+1	360	630	8	tile_b_0C	0x8013C144	0x11DE10E	u8	255	255	PASS	source record copy
+1	360	630	8	tile_hw_0E	0x8013C146	0x11DE0F8	u16le	140	140	PASS	source record copy
+1	360	630	8	tile_hw_10	0x8013C148	0x11DE0FA	u16le	70	70	PASS	source record copy
+1	360	630	8	tile_hw_12	0x8013C14A	0x11DE0FC	u16le	160	160	PASS	source record copy
+1	360	630	8	tile_hw_14	0x8013C14C	0x11DE0FE	u16le	310	310	PASS	source record copy
+1	360	630	8	tile_hw_16	0x8013C14E	0x11DE100	u16le	620	620	PASS	source record copy
+1	360	630	8	tile_hw_18	0x8013C150	0x11DE102	u16le	1250	1250	PASS	source record copy
+1	360	630	8	tile_hw_1A	0x8013C152	0x11DE104	u16le	100	100	PASS	source record copy
+1	360	630	8	tile_hw_1C	0x8013C154	0x11DE106	u16le	70	70	PASS	source record copy
+1	360	630	8	tile_hw_1E	0x8013C156	0x11DE108	u16le	98	98	PASS	source record copy
+1	360	630	8	tile_hw_22	0x8013C15A	0x11DE10A	u16le	439	439	PASS	source record copy
+1	360	630	8	tile_hw_24	0x8013C15C	0x11DE10C	u16le	222	222	PASS	source record copy
+1	360	630	8	tile_b_06	0x8013C13E	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	8	tile_hw_20	0x8013C158	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	9	tile_b_00	0x8013C25C	0x11DE10F	u8	4	4	PASS	source record copy
+1	360	630	9	tile_b_01	0x8013C25D	0x11DE110	u8	10	10	PASS	source record copy
+1	360	630	9	tile_b_02	0x8013C25E	0x11DE111	u8	8	8	PASS	source record copy
+1	360	630	9	tile_b_03	0x8013C25F	0x11DE112	u8	255	255	PASS	source record copy
+1	360	630	9	tile_b_04	0x8013C260	0x11DE113	u8	255	255	PASS	source record copy
+1	360	630	9	tile_b_05	0x8013C261	0x11DE115	u8	0	0	PASS	source record copy
+1	360	630	9	tile_b_0C	0x8013C268	0x11DE12C	u8	255	255	PASS	source record copy
+1	360	630	9	tile_hw_0E	0x8013C26A	0x11DE116	u16le	140	140	PASS	source record copy
+1	360	630	9	tile_hw_10	0x8013C26C	0x11DE118	u16le	70	70	PASS	source record copy
+1	360	630	9	tile_hw_12	0x8013C26E	0x11DE11A	u16le	160	160	PASS	source record copy
+1	360	630	9	tile_hw_14	0x8013C270	0x11DE11C	u16le	310	310	PASS	source record copy
+1	360	630	9	tile_hw_16	0x8013C272	0x11DE11E	u16le	620	620	PASS	source record copy
+1	360	630	9	tile_hw_18	0x8013C274	0x11DE120	u16le	1250	1250	PASS	source record copy
+1	360	630	9	tile_hw_1A	0x8013C276	0x11DE122	u16le	100	100	PASS	source record copy
+1	360	630	9	tile_hw_1C	0x8013C278	0x11DE124	u16le	70	70	PASS	source record copy
+1	360	630	9	tile_hw_1E	0x8013C27A	0x11DE126	u16le	98	98	PASS	source record copy
+1	360	630	9	tile_hw_22	0x8013C27E	0x11DE128	u16le	439	439	PASS	source record copy
+1	360	630	9	tile_hw_24	0x8013C280	0x11DE12A	u16le	258	258	PASS	source record copy
+1	360	630	9	tile_b_06	0x8013C262	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	9	tile_hw_20	0x8013C27C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	10	tile_b_00	0x8013C380	0x11DE12D	u8	4	4	PASS	source record copy
+1	360	630	10	tile_b_01	0x8013C381	0x11DE12E	u8	11	11	PASS	source record copy
+1	360	630	10	tile_b_02	0x8013C382	0x11DE12F	u8	9	9	PASS	source record copy
+1	360	630	10	tile_b_03	0x8013C383	0x11DE130	u8	255	255	PASS	source record copy
+1	360	630	10	tile_b_04	0x8013C384	0x11DE131	u8	255	255	PASS	source record copy
+1	360	630	10	tile_b_05	0x8013C385	0x11DE133	u8	0	0	PASS	source record copy
+1	360	630	10	tile_b_0C	0x8013C38C	0x11DE14A	u8	255	255	PASS	source record copy
+1	360	630	10	tile_hw_0E	0x8013C38E	0x11DE134	u16le	120	120	PASS	source record copy
+1	360	630	10	tile_hw_10	0x8013C390	0x11DE136	u16le	60	60	PASS	source record copy
+1	360	630	10	tile_hw_12	0x8013C392	0x11DE138	u16le	140	140	PASS	source record copy
+1	360	630	10	tile_hw_14	0x8013C394	0x11DE13A	u16le	265	265	PASS	source record copy
+1	360	630	10	tile_hw_16	0x8013C396	0x11DE13C	u16le	530	530	PASS	source record copy
+1	360	630	10	tile_hw_18	0x8013C398	0x11DE13E	u16le	1050	1050	PASS	source record copy
+1	360	630	10	tile_hw_1A	0x8013C39A	0x11DE140	u16le	100	100	PASS	source record copy
+1	360	630	10	tile_hw_1C	0x8013C39C	0x11DE142	u16le	70	70	PASS	source record copy
+1	360	630	10	tile_hw_1E	0x8013C39E	0x11DE144	u16le	84	84	PASS	source record copy
+1	360	630	10	tile_hw_22	0x8013C3A2	0x11DE146	u16le	439	439	PASS	source record copy
+1	360	630	10	tile_hw_24	0x8013C3A4	0x11DE148	u16le	294	294	PASS	source record copy
+1	360	630	10	tile_b_06	0x8013C386	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	10	tile_hw_20	0x8013C3A0	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	11	tile_b_00	0x8013C4A4	0x11DE14B	u8	1	1	PASS	source record copy
+1	360	630	11	tile_b_01	0x8013C4A5	0x11DE14C	u8	12	12	PASS	source record copy
+1	360	630	11	tile_b_02	0x8013C4A6	0x11DE14D	u8	10	10	PASS	source record copy
+1	360	630	11	tile_b_03	0x8013C4A7	0x11DE14E	u8	255	255	PASS	source record copy
+1	360	630	11	tile_b_04	0x8013C4A8	0x11DE14F	u8	255	255	PASS	source record copy
+1	360	630	11	tile_b_05	0x8013C4A9	0x11DE151	u8	0	0	PASS	source record copy
+1	360	630	11	tile_b_0C	0x8013C4B0	0x11DE168	u8	255	255	PASS	source record copy
+1	360	630	11	tile_hw_0E	0x8013C4B2	0x11DE152	u16le	0	0	PASS	source record copy
+1	360	630	11	tile_hw_10	0x8013C4B4	0x11DE154	u16le	0	0	PASS	source record copy
+1	360	630	11	tile_hw_12	0x8013C4B6	0x11DE156	u16le	0	0	PASS	source record copy
+1	360	630	11	tile_hw_14	0x8013C4B8	0x11DE158	u16le	0	0	PASS	source record copy
+1	360	630	11	tile_hw_16	0x8013C4BA	0x11DE15A	u16le	0	0	PASS	source record copy
+1	360	630	11	tile_hw_18	0x8013C4BC	0x11DE15C	u16le	0	0	PASS	source record copy
+1	360	630	11	tile_hw_1A	0x8013C4BE	0x11DE15E	u16le	0	0	PASS	source record copy
+1	360	630	11	tile_hw_1C	0x8013C4C0	0x11DE160	u16le	0	0	PASS	source record copy
+1	360	630	11	tile_hw_1E	0x8013C4C2	0x11DE162	u16le	0	0	PASS	source record copy
+1	360	630	11	tile_hw_22	0x8013C4C6	0x11DE164	u16le	439	439	PASS	source record copy
+1	360	630	11	tile_hw_24	0x8013C4C8	0x11DE166	u16le	330	330	PASS	source record copy
+1	360	630	11	tile_b_06	0x8013C4AA	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	11	tile_hw_20	0x8013C4C4	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	12	tile_b_00	0x8013C5C8	0x11DE169	u8	4	4	PASS	source record copy
+1	360	630	12	tile_b_01	0x8013C5C9	0x11DE16A	u8	13	13	PASS	source record copy
+1	360	630	12	tile_b_02	0x8013C5CA	0x11DE16B	u8	11	11	PASS	source record copy
+1	360	630	12	tile_b_03	0x8013C5CB	0x11DE16C	u8	255	255	PASS	source record copy
+1	360	630	12	tile_b_04	0x8013C5CC	0x11DE16D	u8	255	255	PASS	source record copy
+1	360	630	12	tile_b_05	0x8013C5CD	0x11DE16F	u8	0	0	PASS	source record copy
+1	360	630	12	tile_b_0C	0x8013C5D4	0x11DE186	u8	3	3	PASS	source record copy
+1	360	630	12	tile_hw_0E	0x8013C5D6	0x11DE170	u16le	200	200	PASS	source record copy
+1	360	630	12	tile_hw_10	0x8013C5D8	0x11DE172	u16le	100	100	PASS	source record copy
+1	360	630	12	tile_hw_12	0x8013C5DA	0x11DE174	u16le	220	220	PASS	source record copy
+1	360	630	12	tile_hw_14	0x8013C5DC	0x11DE176	u16le	440	440	PASS	source record copy
+1	360	630	12	tile_hw_16	0x8013C5DE	0x11DE178	u16le	880	880	PASS	source record copy
+1	360	630	12	tile_hw_18	0x8013C5E0	0x11DE17A	u16le	1760	1760	PASS	source record copy
+1	360	630	12	tile_hw_1A	0x8013C5E2	0x11DE17C	u16le	150	150	PASS	source record copy
+1	360	630	12	tile_hw_1C	0x8013C5E4	0x11DE17E	u16le	105	105	PASS	source record copy
+1	360	630	12	tile_hw_1E	0x8013C5E6	0x11DE180	u16le	140	140	PASS	source record copy
+1	360	630	12	tile_hw_22	0x8013C5EA	0x11DE182	u16le	399	399	PASS	source record copy
+1	360	630	12	tile_hw_24	0x8013C5EC	0x11DE184	u16le	330	330	PASS	source record copy
+1	360	630	12	tile_b_06	0x8013C5CE	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	12	tile_hw_20	0x8013C5E8	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	13	tile_b_00	0x8013C6EC	0x11DE187	u8	4	4	PASS	source record copy
+1	360	630	13	tile_b_01	0x8013C6ED	0x11DE188	u8	14	14	PASS	source record copy
+1	360	630	13	tile_b_02	0x8013C6EE	0x11DE189	u8	12	12	PASS	source record copy
+1	360	630	13	tile_b_03	0x8013C6EF	0x11DE18A	u8	255	255	PASS	source record copy
+1	360	630	13	tile_b_04	0x8013C6F0	0x11DE18B	u8	255	255	PASS	source record copy
+1	360	630	13	tile_b_05	0x8013C6F1	0x11DE18D	u8	0	0	PASS	source record copy
+1	360	630	13	tile_b_0C	0x8013C6F8	0x11DE1A4	u8	255	255	PASS	source record copy
+1	360	630	13	tile_hw_0E	0x8013C6FA	0x11DE18E	u16le	220	220	PASS	source record copy
+1	360	630	13	tile_hw_10	0x8013C6FC	0x11DE190	u16le	110	110	PASS	source record copy
+1	360	630	13	tile_hw_12	0x8013C6FE	0x11DE192	u16le	250	250	PASS	source record copy
+1	360	630	13	tile_hw_14	0x8013C700	0x11DE194	u16le	490	490	PASS	source record copy
+1	360	630	13	tile_hw_16	0x8013C702	0x11DE196	u16le	980	980	PASS	source record copy
+1	360	630	13	tile_hw_18	0x8013C704	0x11DE198	u16le	1940	1940	PASS	source record copy
+1	360	630	13	tile_hw_1A	0x8013C706	0x11DE19A	u16le	150	150	PASS	source record copy
+1	360	630	13	tile_hw_1C	0x8013C708	0x11DE19C	u16le	105	105	PASS	source record copy
+1	360	630	13	tile_hw_1E	0x8013C70A	0x11DE19E	u16le	154	154	PASS	source record copy
+1	360	630	13	tile_hw_22	0x8013C70E	0x11DE1A0	u16le	359	359	PASS	source record copy
+1	360	630	13	tile_hw_24	0x8013C710	0x11DE1A2	u16le	330	330	PASS	source record copy
+1	360	630	13	tile_b_06	0x8013C6F2	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	13	tile_hw_20	0x8013C70C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	14	tile_b_00	0x8013C810	0x11DE1A5	u8	4	4	PASS	source record copy
+1	360	630	14	tile_b_01	0x8013C811	0x11DE1A6	u8	15	15	PASS	source record copy
+1	360	630	14	tile_b_02	0x8013C812	0x11DE1A7	u8	13	13	PASS	source record copy
+1	360	630	14	tile_b_03	0x8013C813	0x11DE1A8	u8	255	255	PASS	source record copy
+1	360	630	14	tile_b_04	0x8013C814	0x11DE1A9	u8	255	255	PASS	source record copy
+1	360	630	14	tile_b_05	0x8013C815	0x11DE1AB	u8	0	0	PASS	source record copy
+1	360	630	14	tile_b_0C	0x8013C81C	0x11DE1C2	u8	6	6	PASS	source record copy
+1	360	630	14	tile_hw_0E	0x8013C81E	0x11DE1AC	u16le	260	260	PASS	source record copy
+1	360	630	14	tile_hw_10	0x8013C820	0x11DE1AE	u16le	130	130	PASS	source record copy
+1	360	630	14	tile_hw_12	0x8013C822	0x11DE1B0	u16le	290	290	PASS	source record copy
+1	360	630	14	tile_hw_14	0x8013C824	0x11DE1B2	u16le	580	580	PASS	source record copy
+1	360	630	14	tile_hw_16	0x8013C826	0x11DE1B4	u16le	1150	1150	PASS	source record copy
+1	360	630	14	tile_hw_18	0x8013C828	0x11DE1B6	u16le	2290	2290	PASS	source record copy
+1	360	630	14	tile_hw_1A	0x8013C82A	0x11DE1B8	u16le	200	200	PASS	source record copy
+1	360	630	14	tile_hw_1C	0x8013C82C	0x11DE1BA	u16le	140	140	PASS	source record copy
+1	360	630	14	tile_hw_1E	0x8013C82E	0x11DE1BC	u16le	182	182	PASS	source record copy
+1	360	630	14	tile_hw_22	0x8013C832	0x11DE1BE	u16le	319	319	PASS	source record copy
+1	360	630	14	tile_hw_24	0x8013C834	0x11DE1C0	u16le	330	330	PASS	source record copy
+1	360	630	14	tile_b_06	0x8013C816	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	14	tile_hw_20	0x8013C830	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	15	tile_b_00	0x8013C934	0x11DE1C3	u8	4	4	PASS	source record copy
+1	360	630	15	tile_b_01	0x8013C935	0x11DE1C4	u8	16	16	PASS	source record copy
+1	360	630	15	tile_b_02	0x8013C936	0x11DE1C5	u8	14	14	PASS	source record copy
+1	360	630	15	tile_b_03	0x8013C937	0x11DE1C6	u8	255	255	PASS	source record copy
+1	360	630	15	tile_b_04	0x8013C938	0x11DE1C7	u8	255	255	PASS	source record copy
+1	360	630	15	tile_b_05	0x8013C939	0x11DE1C9	u8	0	0	PASS	source record copy
+1	360	630	15	tile_b_0C	0x8013C940	0x11DE1E0	u8	5	5	PASS	source record copy
+1	360	630	15	tile_hw_0E	0x8013C942	0x11DE1CA	u16le	220	220	PASS	source record copy
+1	360	630	15	tile_hw_10	0x8013C944	0x11DE1CC	u16le	110	110	PASS	source record copy
+1	360	630	15	tile_hw_12	0x8013C946	0x11DE1CE	u16le	250	250	PASS	source record copy
+1	360	630	15	tile_hw_14	0x8013C948	0x11DE1D0	u16le	490	490	PASS	source record copy
+1	360	630	15	tile_hw_16	0x8013C94A	0x11DE1D2	u16le	980	980	PASS	source record copy
+1	360	630	15	tile_hw_18	0x8013C94C	0x11DE1D4	u16le	1940	1940	PASS	source record copy
+1	360	630	15	tile_hw_1A	0x8013C94E	0x11DE1D6	u16le	150	150	PASS	source record copy
+1	360	630	15	tile_hw_1C	0x8013C950	0x11DE1D8	u16le	105	105	PASS	source record copy
+1	360	630	15	tile_hw_1E	0x8013C952	0x11DE1DA	u16le	154	154	PASS	source record copy
+1	360	630	15	tile_hw_22	0x8013C956	0x11DE1DC	u16le	279	279	PASS	source record copy
+1	360	630	15	tile_hw_24	0x8013C958	0x11DE1DE	u16le	330	330	PASS	source record copy
+1	360	630	15	tile_b_06	0x8013C93A	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	15	tile_hw_20	0x8013C954	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	16	tile_b_00	0x8013CA58	0x11DE1E1	u8	4	4	PASS	source record copy
+1	360	630	16	tile_b_01	0x8013CA59	0x11DE1E2	u8	17	17	PASS	source record copy
+1	360	630	16	tile_b_02	0x8013CA5A	0x11DE1E3	u8	15	15	PASS	source record copy
+1	360	630	16	tile_b_03	0x8013CA5B	0x11DE1E4	u8	255	255	PASS	source record copy
+1	360	630	16	tile_b_04	0x8013CA5C	0x11DE1E5	u8	255	255	PASS	source record copy
+1	360	630	16	tile_b_05	0x8013CA5D	0x11DE1E7	u8	0	0	PASS	source record copy
+1	360	630	16	tile_b_0C	0x8013CA64	0x11DE1FE	u8	255	255	PASS	source record copy
+1	360	630	16	tile_hw_0E	0x8013CA66	0x11DE1E8	u16le	200	200	PASS	source record copy
+1	360	630	16	tile_hw_10	0x8013CA68	0x11DE1EA	u16le	100	100	PASS	source record copy
+1	360	630	16	tile_hw_12	0x8013CA6A	0x11DE1EC	u16le	220	220	PASS	source record copy
+1	360	630	16	tile_hw_14	0x8013CA6C	0x11DE1EE	u16le	440	440	PASS	source record copy
+1	360	630	16	tile_hw_16	0x8013CA6E	0x11DE1F0	u16le	880	880	PASS	source record copy
+1	360	630	16	tile_hw_18	0x8013CA70	0x11DE1F2	u16le	1760	1760	PASS	source record copy
+1	360	630	16	tile_hw_1A	0x8013CA72	0x11DE1F4	u16le	150	150	PASS	source record copy
+1	360	630	16	tile_hw_1C	0x8013CA74	0x11DE1F6	u16le	105	105	PASS	source record copy
+1	360	630	16	tile_hw_1E	0x8013CA76	0x11DE1F8	u16le	140	140	PASS	source record copy
+1	360	630	16	tile_hw_22	0x8013CA7A	0x11DE1FA	u16le	239	239	PASS	source record copy
+1	360	630	16	tile_hw_24	0x8013CA7C	0x11DE1FC	u16le	330	330	PASS	source record copy
+1	360	630	16	tile_b_06	0x8013CA5E	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	16	tile_hw_20	0x8013CA78	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	17	tile_b_00	0x8013CB7C	0x11DE1FF	u8	1	1	PASS	source record copy
+1	360	630	17	tile_b_01	0x8013CB7D	0x11DE200	u8	18	18	PASS	source record copy
+1	360	630	17	tile_b_02	0x8013CB7E	0x11DE201	u8	16	16	PASS	source record copy
+1	360	630	17	tile_b_03	0x8013CB7F	0x11DE202	u8	255	255	PASS	source record copy
+1	360	630	17	tile_b_04	0x8013CB80	0x11DE203	u8	255	255	PASS	source record copy
+1	360	630	17	tile_b_05	0x8013CB81	0x11DE205	u8	0	0	PASS	source record copy
+1	360	630	17	tile_b_0C	0x8013CB88	0x11DE21C	u8	255	255	PASS	source record copy
+1	360	630	17	tile_hw_0E	0x8013CB8A	0x11DE206	u16le	0	0	PASS	source record copy
+1	360	630	17	tile_hw_10	0x8013CB8C	0x11DE208	u16le	0	0	PASS	source record copy
+1	360	630	17	tile_hw_12	0x8013CB8E	0x11DE20A	u16le	0	0	PASS	source record copy
+1	360	630	17	tile_hw_14	0x8013CB90	0x11DE20C	u16le	0	0	PASS	source record copy
+1	360	630	17	tile_hw_16	0x8013CB92	0x11DE20E	u16le	0	0	PASS	source record copy
+1	360	630	17	tile_hw_18	0x8013CB94	0x11DE210	u16le	0	0	PASS	source record copy
+1	360	630	17	tile_hw_1A	0x8013CB96	0x11DE212	u16le	0	0	PASS	source record copy
+1	360	630	17	tile_hw_1C	0x8013CB98	0x11DE214	u16le	0	0	PASS	source record copy
+1	360	630	17	tile_hw_1E	0x8013CB9A	0x11DE216	u16le	0	0	PASS	source record copy
+1	360	630	17	tile_hw_22	0x8013CB9E	0x11DE218	u16le	239	239	PASS	source record copy
+1	360	630	17	tile_hw_24	0x8013CBA0	0x11DE21A	u16le	294	294	PASS	source record copy
+1	360	630	17	tile_b_06	0x8013CB82	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	17	tile_hw_20	0x8013CB9C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	18	tile_b_00	0x8013CCA0	0x11DE21D	u8	2	2	PASS	source record copy
+1	360	630	18	tile_b_01	0x8013CCA1	0x11DE21E	u8	19	19	PASS	source record copy
+1	360	630	18	tile_b_02	0x8013CCA2	0x11DE21F	u8	17	17	PASS	source record copy
+1	360	630	18	tile_b_03	0x8013CCA3	0x11DE220	u8	255	255	PASS	source record copy
+1	360	630	18	tile_b_04	0x8013CCA4	0x11DE221	u8	255	255	PASS	source record copy
+1	360	630	18	tile_b_05	0x8013CCA5	0x11DE223	u8	0	0	PASS	source record copy
+1	360	630	18	tile_b_0C	0x8013CCAC	0x11DE23A	u8	255	255	PASS	source record copy
+1	360	630	18	tile_hw_0E	0x8013CCAE	0x11DE224	u16le	0	0	PASS	source record copy
+1	360	630	18	tile_hw_10	0x8013CCB0	0x11DE226	u16le	0	0	PASS	source record copy
+1	360	630	18	tile_hw_12	0x8013CCB2	0x11DE228	u16le	0	0	PASS	source record copy
+1	360	630	18	tile_hw_14	0x8013CCB4	0x11DE22A	u16le	0	0	PASS	source record copy
+1	360	630	18	tile_hw_16	0x8013CCB6	0x11DE22C	u16le	0	0	PASS	source record copy
+1	360	630	18	tile_hw_18	0x8013CCB8	0x11DE22E	u16le	0	0	PASS	source record copy
+1	360	630	18	tile_hw_1A	0x8013CCBA	0x11DE230	u16le	0	0	PASS	source record copy
+1	360	630	18	tile_hw_1C	0x8013CCBC	0x11DE232	u16le	0	0	PASS	source record copy
+1	360	630	18	tile_hw_1E	0x8013CCBE	0x11DE234	u16le	0	0	PASS	source record copy
+1	360	630	18	tile_hw_22	0x8013CCC2	0x11DE236	u16le	199	199	PASS	source record copy
+1	360	630	18	tile_hw_24	0x8013CCC4	0x11DE238	u16le	294	294	PASS	source record copy
+1	360	630	18	tile_b_06	0x8013CCA6	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	18	tile_hw_20	0x8013CCC0	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	19	tile_b_00	0x8013CDC4	0x11DE23B	u8	4	4	PASS	source record copy
+1	360	630	19	tile_b_01	0x8013CDC5	0x11DE23C	u8	20	20	PASS	source record copy
+1	360	630	19	tile_b_02	0x8013CDC6	0x11DE23D	u8	18	18	PASS	source record copy
+1	360	630	19	tile_b_03	0x8013CDC7	0x11DE23E	u8	255	255	PASS	source record copy
+1	360	630	19	tile_b_04	0x8013CDC8	0x11DE23F	u8	255	255	PASS	source record copy
+1	360	630	19	tile_b_05	0x8013CDC9	0x11DE241	u8	0	0	PASS	source record copy
+1	360	630	19	tile_b_0C	0x8013CDD0	0x11DE258	u8	2	2	PASS	source record copy
+1	360	630	19	tile_hw_0E	0x8013CDD2	0x11DE242	u16le	140	140	PASS	source record copy
+1	360	630	19	tile_hw_10	0x8013CDD4	0x11DE244	u16le	70	70	PASS	source record copy
+1	360	630	19	tile_hw_12	0x8013CDD6	0x11DE246	u16le	160	160	PASS	source record copy
+1	360	630	19	tile_hw_14	0x8013CDD8	0x11DE248	u16le	310	310	PASS	source record copy
+1	360	630	19	tile_hw_16	0x8013CDDA	0x11DE24A	u16le	620	620	PASS	source record copy
+1	360	630	19	tile_hw_18	0x8013CDDC	0x11DE24C	u16le	1250	1250	PASS	source record copy
+1	360	630	19	tile_hw_1A	0x8013CDDE	0x11DE24E	u16le	100	100	PASS	source record copy
+1	360	630	19	tile_hw_1C	0x8013CDE0	0x11DE250	u16le	70	70	PASS	source record copy
+1	360	630	19	tile_hw_1E	0x8013CDE2	0x11DE252	u16le	98	98	PASS	source record copy
+1	360	630	19	tile_hw_22	0x8013CDE6	0x11DE254	u16le	199	199	PASS	source record copy
+1	360	630	19	tile_hw_24	0x8013CDE8	0x11DE256	u16le	258	258	PASS	source record copy
+1	360	630	19	tile_b_06	0x8013CDCA	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	19	tile_hw_20	0x8013CDE4	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	20	tile_b_00	0x8013CEE8	0x11DE259	u8	4	4	PASS	source record copy
+1	360	630	20	tile_b_01	0x8013CEE9	0x11DE25A	u8	21	21	PASS	source record copy
+1	360	630	20	tile_b_02	0x8013CEEA	0x11DE25B	u8	19	19	PASS	source record copy
+1	360	630	20	tile_b_03	0x8013CEEB	0x11DE25C	u8	255	255	PASS	source record copy
+1	360	630	20	tile_b_04	0x8013CEEC	0x11DE25D	u8	255	255	PASS	source record copy
+1	360	630	20	tile_b_05	0x8013CEED	0x11DE25F	u8	0	0	PASS	source record copy
+1	360	630	20	tile_b_0C	0x8013CEF4	0x11DE276	u8	255	255	PASS	source record copy
+1	360	630	20	tile_hw_0E	0x8013CEF6	0x11DE260	u16le	120	120	PASS	source record copy
+1	360	630	20	tile_hw_10	0x8013CEF8	0x11DE262	u16le	60	60	PASS	source record copy
+1	360	630	20	tile_hw_12	0x8013CEFA	0x11DE264	u16le	140	140	PASS	source record copy
+1	360	630	20	tile_hw_14	0x8013CEFC	0x11DE266	u16le	265	265	PASS	source record copy
+1	360	630	20	tile_hw_16	0x8013CEFE	0x11DE268	u16le	530	530	PASS	source record copy
+1	360	630	20	tile_hw_18	0x8013CF00	0x11DE26A	u16le	1050	1050	PASS	source record copy
+1	360	630	20	tile_hw_1A	0x8013CF02	0x11DE26C	u16le	100	100	PASS	source record copy
+1	360	630	20	tile_hw_1C	0x8013CF04	0x11DE26E	u16le	70	70	PASS	source record copy
+1	360	630	20	tile_hw_1E	0x8013CF06	0x11DE270	u16le	84	84	PASS	source record copy
+1	360	630	20	tile_hw_22	0x8013CF0A	0x11DE272	u16le	199	199	PASS	source record copy
+1	360	630	20	tile_hw_24	0x8013CF0C	0x11DE274	u16le	222	222	PASS	source record copy
+1	360	630	20	tile_b_06	0x8013CEEE	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	20	tile_hw_20	0x8013CF08	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+1	360	630	21	tile_b_00	0x8013D00C	0x11DE277	u8	4	4	PASS	source record copy
+1	360	630	21	tile_b_01	0x8013D00D	0x11DE278	u8	0	0	PASS	source record copy
+1	360	630	21	tile_b_02	0x8013D00E	0x11DE279	u8	20	20	PASS	source record copy
+1	360	630	21	tile_b_03	0x8013D00F	0x11DE27A	u8	255	255	PASS	source record copy
+1	360	630	21	tile_b_04	0x8013D010	0x11DE27B	u8	255	255	PASS	source record copy
+1	360	630	21	tile_b_05	0x8013D011	0x11DE27D	u8	0	0	PASS	source record copy
+1	360	630	21	tile_b_0C	0x8013D018	0x11DE294	u8	1	1	PASS	source record copy
+1	360	630	21	tile_hw_0E	0x8013D01A	0x11DE27E	u16le	100	100	PASS	source record copy
+1	360	630	21	tile_hw_10	0x8013D01C	0x11DE280	u16le	50	50	PASS	source record copy
+1	360	630	21	tile_hw_12	0x8013D01E	0x11DE282	u16le	110	110	PASS	source record copy
+1	360	630	21	tile_hw_14	0x8013D020	0x11DE284	u16le	220	220	PASS	source record copy
+1	360	630	21	tile_hw_16	0x8013D022	0x11DE286	u16le	440	440	PASS	source record copy
+1	360	630	21	tile_hw_18	0x8013D024	0x11DE288	u16le	880	880	PASS	source record copy
+1	360	630	21	tile_hw_1A	0x8013D026	0x11DE28A	u16le	50	50	PASS	source record copy
+1	360	630	21	tile_hw_1C	0x8013D028	0x11DE28C	u16le	35	35	PASS	source record copy
+1	360	630	21	tile_hw_1E	0x8013D02A	0x11DE28E	u16le	70	70	PASS	source record copy
+1	360	630	21	tile_hw_22	0x8013D02E	0x11DE290	u16le	199	199	PASS	source record copy
+1	360	630	21	tile_hw_24	0x8013D030	0x11DE292	u16le	186	186	PASS	source record copy
+1	360	630	21	tile_b_06	0x8013D012	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+1	360	630	21	tile_hw_20	0x8013D02C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	0	tile_b_00	0x8013B818	0x11DE001	u8	0	0	PASS	source record copy
+2	180	630	0	tile_b_01	0x8013B819	0x11DE002	u8	1	1	PASS	source record copy
+2	180	630	0	tile_b_02	0x8013B81A	0x11DE003	u8	21	21	PASS	source record copy
+2	180	630	0	tile_b_03	0x8013B81B	0x11DE004	u8	255	255	PASS	source record copy
+2	180	630	0	tile_b_04	0x8013B81C	0x11DE005	u8	255	255	PASS	source record copy
+2	180	630	0	tile_b_05	0x8013B81D	0x11DE007	u8	0	0	PASS	source record copy
+2	180	630	0	tile_b_0C	0x8013B824	0x11DE01E	u8	255	255	PASS	source record copy
+2	180	630	0	tile_hw_0E	0x8013B826	0x11DE008	u16le	0	0	PASS	source record copy
+2	180	630	0	tile_hw_10	0x8013B828	0x11DE00A	u16le	0	0	PASS	source record copy
+2	180	630	0	tile_hw_12	0x8013B82A	0x11DE00C	u16le	0	0	PASS	source record copy
+2	180	630	0	tile_hw_14	0x8013B82C	0x11DE00E	u16le	0	0	PASS	source record copy
+2	180	630	0	tile_hw_16	0x8013B82E	0x11DE010	u16le	0	0	PASS	source record copy
+2	180	630	0	tile_hw_18	0x8013B830	0x11DE012	u16le	0	0	PASS	source record copy
+2	180	630	0	tile_hw_1A	0x8013B832	0x11DE014	u16le	0	0	PASS	source record copy
+2	180	630	0	tile_hw_1C	0x8013B834	0x11DE016	u16le	0	0	PASS	source record copy
+2	180	630	0	tile_hw_1E	0x8013B836	0x11DE018	u16le	0	0	PASS	source record copy
+2	180	630	0	tile_hw_22	0x8013B83A	0x11DE01A	u16le	199	199	PASS	source record copy
+2	180	630	0	tile_hw_24	0x8013B83C	0x11DE01C	u16le	150	150	PASS	source record copy
+2	180	630	0	tile_b_06	0x8013B81E	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	0	tile_hw_20	0x8013B838	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	1	tile_b_00	0x8013B93C	0x11DE01F	u8	4	4	PASS	source record copy
+2	180	630	1	tile_b_01	0x8013B93D	0x11DE020	u8	2	2	PASS	source record copy
+2	180	630	1	tile_b_02	0x8013B93E	0x11DE021	u8	0	0	PASS	source record copy
+2	180	630	1	tile_b_03	0x8013B93F	0x11DE022	u8	255	255	PASS	source record copy
+2	180	630	1	tile_b_04	0x8013B940	0x11DE023	u8	255	255	PASS	source record copy
+2	180	630	1	tile_b_05	0x8013B941	0x11DE025	u8	0	0	PASS	source record copy
+2	180	630	1	tile_b_0C	0x8013B948	0x11DE03C	u8	255	255	PASS	source record copy
+2	180	630	1	tile_hw_0E	0x8013B94A	0x11DE026	u16le	60	60	PASS	source record copy
+2	180	630	1	tile_hw_10	0x8013B94C	0x11DE028	u16le	35	35	PASS	source record copy
+2	180	630	1	tile_hw_12	0x8013B94E	0x11DE02A	u16le	70	70	PASS	source record copy
+2	180	630	1	tile_hw_14	0x8013B950	0x11DE02C	u16le	135	135	PASS	source record copy
+2	180	630	1	tile_hw_16	0x8013B952	0x11DE02E	u16le	265	265	PASS	source record copy
+2	180	630	1	tile_hw_18	0x8013B954	0x11DE030	u16le	530	530	PASS	source record copy
+2	180	630	1	tile_hw_1A	0x8013B956	0x11DE032	u16le	50	50	PASS	source record copy
+2	180	630	1	tile_hw_1C	0x8013B958	0x11DE034	u16le	35	35	PASS	source record copy
+2	180	630	1	tile_hw_1E	0x8013B95A	0x11DE036	u16le	42	42	PASS	source record copy
+2	180	630	1	tile_hw_22	0x8013B95E	0x11DE038	u16le	239	239	PASS	source record copy
+2	180	630	1	tile_hw_24	0x8013B960	0x11DE03A	u16le	150	150	PASS	source record copy
+2	180	630	1	tile_b_06	0x8013B942	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	1	tile_hw_20	0x8013B95C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	2	tile_b_00	0x8013BA60	0x11DE03D	u8	4	4	PASS	source record copy
+2	180	630	2	tile_b_01	0x8013BA61	0x11DE03E	u8	3	3	PASS	source record copy
+2	180	630	2	tile_b_02	0x8013BA62	0x11DE03F	u8	1	1	PASS	source record copy
+2	180	630	2	tile_b_03	0x8013BA63	0x11DE040	u8	255	255	PASS	source record copy
+2	180	630	2	tile_b_04	0x8013BA64	0x11DE041	u8	255	255	PASS	source record copy
+2	180	630	2	tile_b_05	0x8013BA65	0x11DE043	u8	0	0	PASS	source record copy
+2	180	630	2	tile_b_0C	0x8013BA6C	0x11DE05A	u8	255	255	PASS	source record copy
+2	180	630	2	tile_hw_0E	0x8013BA6E	0x11DE044	u16le	100	100	PASS	source record copy
+2	180	630	2	tile_hw_10	0x8013BA70	0x11DE046	u16le	50	50	PASS	source record copy
+2	180	630	2	tile_hw_12	0x8013BA72	0x11DE048	u16le	110	110	PASS	source record copy
+2	180	630	2	tile_hw_14	0x8013BA74	0x11DE04A	u16le	220	220	PASS	source record copy
+2	180	630	2	tile_hw_16	0x8013BA76	0x11DE04C	u16le	440	440	PASS	source record copy
+2	180	630	2	tile_hw_18	0x8013BA78	0x11DE04E	u16le	880	880	PASS	source record copy
+2	180	630	2	tile_hw_1A	0x8013BA7A	0x11DE050	u16le	50	50	PASS	source record copy
+2	180	630	2	tile_hw_1C	0x8013BA7C	0x11DE052	u16le	35	35	PASS	source record copy
+2	180	630	2	tile_hw_1E	0x8013BA7E	0x11DE054	u16le	70	70	PASS	source record copy
+2	180	630	2	tile_hw_22	0x8013BA82	0x11DE056	u16le	279	279	PASS	source record copy
+2	180	630	2	tile_hw_24	0x8013BA84	0x11DE058	u16le	150	150	PASS	source record copy
+2	180	630	2	tile_b_06	0x8013BA66	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	2	tile_hw_20	0x8013BA80	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	3	tile_b_00	0x8013BB84	0x11DE05B	u8	4	4	PASS	source record copy
+2	180	630	3	tile_b_01	0x8013BB85	0x11DE05C	u8	4	4	PASS	source record copy
+2	180	630	3	tile_b_02	0x8013BB86	0x11DE05D	u8	2	2	PASS	source record copy
+2	180	630	3	tile_b_03	0x8013BB87	0x11DE05E	u8	255	255	PASS	source record copy
+2	180	630	3	tile_b_04	0x8013BB88	0x11DE05F	u8	255	255	PASS	source record copy
+2	180	630	3	tile_b_05	0x8013BB89	0x11DE061	u8	0	0	PASS	source record copy
+2	180	630	3	tile_b_0C	0x8013BB90	0x11DE078	u8	255	255	PASS	source record copy
+2	180	630	3	tile_hw_0E	0x8013BB92	0x11DE062	u16le	100	100	PASS	source record copy
+2	180	630	3	tile_hw_10	0x8013BB94	0x11DE064	u16le	50	50	PASS	source record copy
+2	180	630	3	tile_hw_12	0x8013BB96	0x11DE066	u16le	110	110	PASS	source record copy
+2	180	630	3	tile_hw_14	0x8013BB98	0x11DE068	u16le	220	220	PASS	source record copy
+2	180	630	3	tile_hw_16	0x8013BB9A	0x11DE06A	u16le	440	440	PASS	source record copy
+2	180	630	3	tile_hw_18	0x8013BB9C	0x11DE06C	u16le	880	880	PASS	source record copy
+2	180	630	3	tile_hw_1A	0x8013BB9E	0x11DE06E	u16le	50	50	PASS	source record copy
+2	180	630	3	tile_hw_1C	0x8013BBA0	0x11DE070	u16le	35	35	PASS	source record copy
+2	180	630	3	tile_hw_1E	0x8013BBA2	0x11DE072	u16le	70	70	PASS	source record copy
+2	180	630	3	tile_hw_22	0x8013BBA6	0x11DE074	u16le	319	319	PASS	source record copy
+2	180	630	3	tile_hw_24	0x8013BBA8	0x11DE076	u16le	150	150	PASS	source record copy
+2	180	630	3	tile_b_06	0x8013BB8A	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	3	tile_hw_20	0x8013BBA4	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	4	tile_b_00	0x8013BCA8	0x11DE079	u8	4	4	PASS	source record copy
+2	180	630	4	tile_b_01	0x8013BCA9	0x11DE07A	u8	5	5	PASS	source record copy
+2	180	630	4	tile_b_02	0x8013BCAA	0x11DE07B	u8	3	3	PASS	source record copy
+2	180	630	4	tile_b_03	0x8013BCAB	0x11DE07C	u8	255	255	PASS	source record copy
+2	180	630	4	tile_b_04	0x8013BCAC	0x11DE07D	u8	255	255	PASS	source record copy
+2	180	630	4	tile_b_05	0x8013BCAD	0x11DE07F	u8	0	0	PASS	source record copy
+2	180	630	4	tile_b_0C	0x8013BCB4	0x11DE096	u8	255	255	PASS	source record copy
+2	180	630	4	tile_hw_0E	0x8013BCB6	0x11DE080	u16le	120	120	PASS	source record copy
+2	180	630	4	tile_hw_10	0x8013BCB8	0x11DE082	u16le	60	60	PASS	source record copy
+2	180	630	4	tile_hw_12	0x8013BCBA	0x11DE084	u16le	140	140	PASS	source record copy
+2	180	630	4	tile_hw_14	0x8013BCBC	0x11DE086	u16le	265	265	PASS	source record copy
+2	180	630	4	tile_hw_16	0x8013BCBE	0x11DE088	u16le	530	530	PASS	source record copy
+2	180	630	4	tile_hw_18	0x8013BCC0	0x11DE08A	u16le	1050	1050	PASS	source record copy
+2	180	630	4	tile_hw_1A	0x8013BCC2	0x11DE08C	u16le	100	100	PASS	source record copy
+2	180	630	4	tile_hw_1C	0x8013BCC4	0x11DE08E	u16le	70	70	PASS	source record copy
+2	180	630	4	tile_hw_1E	0x8013BCC6	0x11DE090	u16le	84	84	PASS	source record copy
+2	180	630	4	tile_hw_22	0x8013BCCA	0x11DE092	u16le	359	359	PASS	source record copy
+2	180	630	4	tile_hw_24	0x8013BCCC	0x11DE094	u16le	150	150	PASS	source record copy
+2	180	630	4	tile_b_06	0x8013BCAE	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	4	tile_hw_20	0x8013BCC8	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	5	tile_b_00	0x8013BDCC	0x11DE097	u8	2	2	PASS	source record copy
+2	180	630	5	tile_b_01	0x8013BDCD	0x11DE098	u8	6	6	PASS	source record copy
+2	180	630	5	tile_b_02	0x8013BDCE	0x11DE099	u8	4	4	PASS	source record copy
+2	180	630	5	tile_b_03	0x8013BDCF	0x11DE09A	u8	255	255	PASS	source record copy
+2	180	630	5	tile_b_04	0x8013BDD0	0x11DE09B	u8	255	255	PASS	source record copy
+2	180	630	5	tile_b_05	0x8013BDD1	0x11DE09D	u8	0	0	PASS	source record copy
+2	180	630	5	tile_b_0C	0x8013BDD8	0x11DE0B4	u8	255	255	PASS	source record copy
+2	180	630	5	tile_hw_0E	0x8013BDDA	0x11DE09E	u16le	0	0	PASS	source record copy
+2	180	630	5	tile_hw_10	0x8013BDDC	0x11DE0A0	u16le	0	0	PASS	source record copy
+2	180	630	5	tile_hw_12	0x8013BDDE	0x11DE0A2	u16le	0	0	PASS	source record copy
+2	180	630	5	tile_hw_14	0x8013BDE0	0x11DE0A4	u16le	0	0	PASS	source record copy
+2	180	630	5	tile_hw_16	0x8013BDE2	0x11DE0A6	u16le	0	0	PASS	source record copy
+2	180	630	5	tile_hw_18	0x8013BDE4	0x11DE0A8	u16le	0	0	PASS	source record copy
+2	180	630	5	tile_hw_1A	0x8013BDE6	0x11DE0AA	u16le	0	0	PASS	source record copy
+2	180	630	5	tile_hw_1C	0x8013BDE8	0x11DE0AC	u16le	0	0	PASS	source record copy
+2	180	630	5	tile_hw_1E	0x8013BDEA	0x11DE0AE	u16le	0	0	PASS	source record copy
+2	180	630	5	tile_hw_22	0x8013BDEE	0x11DE0B0	u16le	399	399	PASS	source record copy
+2	180	630	5	tile_hw_24	0x8013BDF0	0x11DE0B2	u16le	150	150	PASS	source record copy
+2	180	630	5	tile_b_06	0x8013BDD2	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	5	tile_hw_20	0x8013BDEC	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	6	tile_b_00	0x8013BEF0	0x11DE0B5	u8	4	4	PASS	source record copy
+2	180	630	6	tile_b_01	0x8013BEF1	0x11DE0B6	u8	7	7	PASS	source record copy
+2	180	630	6	tile_b_02	0x8013BEF2	0x11DE0B7	u8	5	5	PASS	source record copy
+2	180	630	6	tile_b_03	0x8013BEF3	0x11DE0B8	u8	255	255	PASS	source record copy
+2	180	630	6	tile_b_04	0x8013BEF4	0x11DE0B9	u8	255	255	PASS	source record copy
+2	180	630	6	tile_b_05	0x8013BEF5	0x11DE0BB	u8	0	0	PASS	source record copy
+2	180	630	6	tile_b_0C	0x8013BEFC	0x11DE0D2	u8	4	4	PASS	source record copy
+2	180	630	6	tile_hw_0E	0x8013BEFE	0x11DE0BC	u16le	120	120	PASS	source record copy
+2	180	630	6	tile_hw_10	0x8013BF00	0x11DE0BE	u16le	60	60	PASS	source record copy
+2	180	630	6	tile_hw_12	0x8013BF02	0x11DE0C0	u16le	140	140	PASS	source record copy
+2	180	630	6	tile_hw_14	0x8013BF04	0x11DE0C2	u16le	265	265	PASS	source record copy
+2	180	630	6	tile_hw_16	0x8013BF06	0x11DE0C4	u16le	530	530	PASS	source record copy
+2	180	630	6	tile_hw_18	0x8013BF08	0x11DE0C6	u16le	1050	1050	PASS	source record copy
+2	180	630	6	tile_hw_1A	0x8013BF0A	0x11DE0C8	u16le	100	100	PASS	source record copy
+2	180	630	6	tile_hw_1C	0x8013BF0C	0x11DE0CA	u16le	70	70	PASS	source record copy
+2	180	630	6	tile_hw_1E	0x8013BF0E	0x11DE0CC	u16le	84	84	PASS	source record copy
+2	180	630	6	tile_hw_22	0x8013BF12	0x11DE0CE	u16le	399	399	PASS	source record copy
+2	180	630	6	tile_hw_24	0x8013BF14	0x11DE0D0	u16le	186	186	PASS	source record copy
+2	180	630	6	tile_b_06	0x8013BEF6	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	6	tile_hw_20	0x8013BF10	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	7	tile_b_00	0x8013C014	0x11DE0D3	u8	4	4	PASS	source record copy
+2	180	630	7	tile_b_01	0x8013C015	0x11DE0D4	u8	8	8	PASS	source record copy
+2	180	630	7	tile_b_02	0x8013C016	0x11DE0D5	u8	6	6	PASS	source record copy
+2	180	630	7	tile_b_03	0x8013C017	0x11DE0D6	u8	255	255	PASS	source record copy
+2	180	630	7	tile_b_04	0x8013C018	0x11DE0D7	u8	255	255	PASS	source record copy
+2	180	630	7	tile_b_05	0x8013C019	0x11DE0D9	u8	0	0	PASS	source record copy
+2	180	630	7	tile_b_0C	0x8013C020	0x11DE0F0	u8	0	0	PASS	source record copy
+2	180	630	7	tile_hw_0E	0x8013C022	0x11DE0DA	u16le	160	160	PASS	source record copy
+2	180	630	7	tile_hw_10	0x8013C024	0x11DE0DC	u16le	85	85	PASS	source record copy
+2	180	630	7	tile_hw_12	0x8013C026	0x11DE0DE	u16le	180	180	PASS	source record copy
+2	180	630	7	tile_hw_14	0x8013C028	0x11DE0E0	u16le	360	360	PASS	source record copy
+2	180	630	7	tile_hw_16	0x8013C02A	0x11DE0E2	u16le	710	710	PASS	source record copy
+2	180	630	7	tile_hw_18	0x8013C02C	0x11DE0E4	u16le	1410	1410	PASS	source record copy
+2	180	630	7	tile_hw_1A	0x8013C02E	0x11DE0E6	u16le	120	120	PASS	source record copy
+2	180	630	7	tile_hw_1C	0x8013C030	0x11DE0E8	u16le	84	84	PASS	source record copy
+2	180	630	7	tile_hw_1E	0x8013C032	0x11DE0EA	u16le	112	112	PASS	source record copy
+2	180	630	7	tile_hw_22	0x8013C036	0x11DE0EC	u16le	439	439	PASS	source record copy
+2	180	630	7	tile_hw_24	0x8013C038	0x11DE0EE	u16le	186	186	PASS	source record copy
+2	180	630	7	tile_b_06	0x8013C01A	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	7	tile_hw_20	0x8013C034	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	8	tile_b_00	0x8013C138	0x11DE0F1	u8	4	4	PASS	source record copy
+2	180	630	8	tile_b_01	0x8013C139	0x11DE0F2	u8	9	9	PASS	source record copy
+2	180	630	8	tile_b_02	0x8013C13A	0x11DE0F3	u8	7	7	PASS	source record copy
+2	180	630	8	tile_b_03	0x8013C13B	0x11DE0F4	u8	255	255	PASS	source record copy
+2	180	630	8	tile_b_04	0x8013C13C	0x11DE0F5	u8	255	255	PASS	source record copy
+2	180	630	8	tile_b_05	0x8013C13D	0x11DE0F7	u8	0	0	PASS	source record copy
+2	180	630	8	tile_b_0C	0x8013C144	0x11DE10E	u8	255	255	PASS	source record copy
+2	180	630	8	tile_hw_0E	0x8013C146	0x11DE0F8	u16le	140	140	PASS	source record copy
+2	180	630	8	tile_hw_10	0x8013C148	0x11DE0FA	u16le	70	70	PASS	source record copy
+2	180	630	8	tile_hw_12	0x8013C14A	0x11DE0FC	u16le	160	160	PASS	source record copy
+2	180	630	8	tile_hw_14	0x8013C14C	0x11DE0FE	u16le	310	310	PASS	source record copy
+2	180	630	8	tile_hw_16	0x8013C14E	0x11DE100	u16le	620	620	PASS	source record copy
+2	180	630	8	tile_hw_18	0x8013C150	0x11DE102	u16le	1250	1250	PASS	source record copy
+2	180	630	8	tile_hw_1A	0x8013C152	0x11DE104	u16le	100	100	PASS	source record copy
+2	180	630	8	tile_hw_1C	0x8013C154	0x11DE106	u16le	70	70	PASS	source record copy
+2	180	630	8	tile_hw_1E	0x8013C156	0x11DE108	u16le	98	98	PASS	source record copy
+2	180	630	8	tile_hw_22	0x8013C15A	0x11DE10A	u16le	439	439	PASS	source record copy
+2	180	630	8	tile_hw_24	0x8013C15C	0x11DE10C	u16le	222	222	PASS	source record copy
+2	180	630	8	tile_b_06	0x8013C13E	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	8	tile_hw_20	0x8013C158	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	9	tile_b_00	0x8013C25C	0x11DE10F	u8	4	4	PASS	source record copy
+2	180	630	9	tile_b_01	0x8013C25D	0x11DE110	u8	10	10	PASS	source record copy
+2	180	630	9	tile_b_02	0x8013C25E	0x11DE111	u8	8	8	PASS	source record copy
+2	180	630	9	tile_b_03	0x8013C25F	0x11DE112	u8	255	255	PASS	source record copy
+2	180	630	9	tile_b_04	0x8013C260	0x11DE113	u8	255	255	PASS	source record copy
+2	180	630	9	tile_b_05	0x8013C261	0x11DE115	u8	0	0	PASS	source record copy
+2	180	630	9	tile_b_0C	0x8013C268	0x11DE12C	u8	255	255	PASS	source record copy
+2	180	630	9	tile_hw_0E	0x8013C26A	0x11DE116	u16le	140	140	PASS	source record copy
+2	180	630	9	tile_hw_10	0x8013C26C	0x11DE118	u16le	70	70	PASS	source record copy
+2	180	630	9	tile_hw_12	0x8013C26E	0x11DE11A	u16le	160	160	PASS	source record copy
+2	180	630	9	tile_hw_14	0x8013C270	0x11DE11C	u16le	310	310	PASS	source record copy
+2	180	630	9	tile_hw_16	0x8013C272	0x11DE11E	u16le	620	620	PASS	source record copy
+2	180	630	9	tile_hw_18	0x8013C274	0x11DE120	u16le	1250	1250	PASS	source record copy
+2	180	630	9	tile_hw_1A	0x8013C276	0x11DE122	u16le	100	100	PASS	source record copy
+2	180	630	9	tile_hw_1C	0x8013C278	0x11DE124	u16le	70	70	PASS	source record copy
+2	180	630	9	tile_hw_1E	0x8013C27A	0x11DE126	u16le	98	98	PASS	source record copy
+2	180	630	9	tile_hw_22	0x8013C27E	0x11DE128	u16le	439	439	PASS	source record copy
+2	180	630	9	tile_hw_24	0x8013C280	0x11DE12A	u16le	258	258	PASS	source record copy
+2	180	630	9	tile_b_06	0x8013C262	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	9	tile_hw_20	0x8013C27C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	10	tile_b_00	0x8013C380	0x11DE12D	u8	4	4	PASS	source record copy
+2	180	630	10	tile_b_01	0x8013C381	0x11DE12E	u8	11	11	PASS	source record copy
+2	180	630	10	tile_b_02	0x8013C382	0x11DE12F	u8	9	9	PASS	source record copy
+2	180	630	10	tile_b_03	0x8013C383	0x11DE130	u8	255	255	PASS	source record copy
+2	180	630	10	tile_b_04	0x8013C384	0x11DE131	u8	255	255	PASS	source record copy
+2	180	630	10	tile_b_05	0x8013C385	0x11DE133	u8	0	0	PASS	source record copy
+2	180	630	10	tile_b_0C	0x8013C38C	0x11DE14A	u8	255	255	PASS	source record copy
+2	180	630	10	tile_hw_0E	0x8013C38E	0x11DE134	u16le	120	120	PASS	source record copy
+2	180	630	10	tile_hw_10	0x8013C390	0x11DE136	u16le	60	60	PASS	source record copy
+2	180	630	10	tile_hw_12	0x8013C392	0x11DE138	u16le	140	140	PASS	source record copy
+2	180	630	10	tile_hw_14	0x8013C394	0x11DE13A	u16le	265	265	PASS	source record copy
+2	180	630	10	tile_hw_16	0x8013C396	0x11DE13C	u16le	530	530	PASS	source record copy
+2	180	630	10	tile_hw_18	0x8013C398	0x11DE13E	u16le	1050	1050	PASS	source record copy
+2	180	630	10	tile_hw_1A	0x8013C39A	0x11DE140	u16le	100	100	PASS	source record copy
+2	180	630	10	tile_hw_1C	0x8013C39C	0x11DE142	u16le	70	70	PASS	source record copy
+2	180	630	10	tile_hw_1E	0x8013C39E	0x11DE144	u16le	84	84	PASS	source record copy
+2	180	630	10	tile_hw_22	0x8013C3A2	0x11DE146	u16le	439	439	PASS	source record copy
+2	180	630	10	tile_hw_24	0x8013C3A4	0x11DE148	u16le	294	294	PASS	source record copy
+2	180	630	10	tile_b_06	0x8013C386	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	10	tile_hw_20	0x8013C3A0	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	11	tile_b_00	0x8013C4A4	0x11DE14B	u8	1	1	PASS	source record copy
+2	180	630	11	tile_b_01	0x8013C4A5	0x11DE14C	u8	12	12	PASS	source record copy
+2	180	630	11	tile_b_02	0x8013C4A6	0x11DE14D	u8	10	10	PASS	source record copy
+2	180	630	11	tile_b_03	0x8013C4A7	0x11DE14E	u8	255	255	PASS	source record copy
+2	180	630	11	tile_b_04	0x8013C4A8	0x11DE14F	u8	255	255	PASS	source record copy
+2	180	630	11	tile_b_05	0x8013C4A9	0x11DE151	u8	0	0	PASS	source record copy
+2	180	630	11	tile_b_0C	0x8013C4B0	0x11DE168	u8	255	255	PASS	source record copy
+2	180	630	11	tile_hw_0E	0x8013C4B2	0x11DE152	u16le	0	0	PASS	source record copy
+2	180	630	11	tile_hw_10	0x8013C4B4	0x11DE154	u16le	0	0	PASS	source record copy
+2	180	630	11	tile_hw_12	0x8013C4B6	0x11DE156	u16le	0	0	PASS	source record copy
+2	180	630	11	tile_hw_14	0x8013C4B8	0x11DE158	u16le	0	0	PASS	source record copy
+2	180	630	11	tile_hw_16	0x8013C4BA	0x11DE15A	u16le	0	0	PASS	source record copy
+2	180	630	11	tile_hw_18	0x8013C4BC	0x11DE15C	u16le	0	0	PASS	source record copy
+2	180	630	11	tile_hw_1A	0x8013C4BE	0x11DE15E	u16le	0	0	PASS	source record copy
+2	180	630	11	tile_hw_1C	0x8013C4C0	0x11DE160	u16le	0	0	PASS	source record copy
+2	180	630	11	tile_hw_1E	0x8013C4C2	0x11DE162	u16le	0	0	PASS	source record copy
+2	180	630	11	tile_hw_22	0x8013C4C6	0x11DE164	u16le	439	439	PASS	source record copy
+2	180	630	11	tile_hw_24	0x8013C4C8	0x11DE166	u16le	330	330	PASS	source record copy
+2	180	630	11	tile_b_06	0x8013C4AA	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	11	tile_hw_20	0x8013C4C4	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	12	tile_b_00	0x8013C5C8	0x11DE169	u8	4	4	PASS	source record copy
+2	180	630	12	tile_b_01	0x8013C5C9	0x11DE16A	u8	13	13	PASS	source record copy
+2	180	630	12	tile_b_02	0x8013C5CA	0x11DE16B	u8	11	11	PASS	source record copy
+2	180	630	12	tile_b_03	0x8013C5CB	0x11DE16C	u8	255	255	PASS	source record copy
+2	180	630	12	tile_b_04	0x8013C5CC	0x11DE16D	u8	255	255	PASS	source record copy
+2	180	630	12	tile_b_05	0x8013C5CD	0x11DE16F	u8	0	0	PASS	source record copy
+2	180	630	12	tile_b_0C	0x8013C5D4	0x11DE186	u8	3	3	PASS	source record copy
+2	180	630	12	tile_hw_0E	0x8013C5D6	0x11DE170	u16le	200	200	PASS	source record copy
+2	180	630	12	tile_hw_10	0x8013C5D8	0x11DE172	u16le	100	100	PASS	source record copy
+2	180	630	12	tile_hw_12	0x8013C5DA	0x11DE174	u16le	220	220	PASS	source record copy
+2	180	630	12	tile_hw_14	0x8013C5DC	0x11DE176	u16le	440	440	PASS	source record copy
+2	180	630	12	tile_hw_16	0x8013C5DE	0x11DE178	u16le	880	880	PASS	source record copy
+2	180	630	12	tile_hw_18	0x8013C5E0	0x11DE17A	u16le	1760	1760	PASS	source record copy
+2	180	630	12	tile_hw_1A	0x8013C5E2	0x11DE17C	u16le	150	150	PASS	source record copy
+2	180	630	12	tile_hw_1C	0x8013C5E4	0x11DE17E	u16le	105	105	PASS	source record copy
+2	180	630	12	tile_hw_1E	0x8013C5E6	0x11DE180	u16le	140	140	PASS	source record copy
+2	180	630	12	tile_hw_22	0x8013C5EA	0x11DE182	u16le	399	399	PASS	source record copy
+2	180	630	12	tile_hw_24	0x8013C5EC	0x11DE184	u16le	330	330	PASS	source record copy
+2	180	630	12	tile_b_06	0x8013C5CE	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	12	tile_hw_20	0x8013C5E8	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	13	tile_b_00	0x8013C6EC	0x11DE187	u8	4	4	PASS	source record copy
+2	180	630	13	tile_b_01	0x8013C6ED	0x11DE188	u8	14	14	PASS	source record copy
+2	180	630	13	tile_b_02	0x8013C6EE	0x11DE189	u8	12	12	PASS	source record copy
+2	180	630	13	tile_b_03	0x8013C6EF	0x11DE18A	u8	255	255	PASS	source record copy
+2	180	630	13	tile_b_04	0x8013C6F0	0x11DE18B	u8	255	255	PASS	source record copy
+2	180	630	13	tile_b_05	0x8013C6F1	0x11DE18D	u8	0	0	PASS	source record copy
+2	180	630	13	tile_b_0C	0x8013C6F8	0x11DE1A4	u8	255	255	PASS	source record copy
+2	180	630	13	tile_hw_0E	0x8013C6FA	0x11DE18E	u16le	220	220	PASS	source record copy
+2	180	630	13	tile_hw_10	0x8013C6FC	0x11DE190	u16le	110	110	PASS	source record copy
+2	180	630	13	tile_hw_12	0x8013C6FE	0x11DE192	u16le	250	250	PASS	source record copy
+2	180	630	13	tile_hw_14	0x8013C700	0x11DE194	u16le	490	490	PASS	source record copy
+2	180	630	13	tile_hw_16	0x8013C702	0x11DE196	u16le	980	980	PASS	source record copy
+2	180	630	13	tile_hw_18	0x8013C704	0x11DE198	u16le	1940	1940	PASS	source record copy
+2	180	630	13	tile_hw_1A	0x8013C706	0x11DE19A	u16le	150	150	PASS	source record copy
+2	180	630	13	tile_hw_1C	0x8013C708	0x11DE19C	u16le	105	105	PASS	source record copy
+2	180	630	13	tile_hw_1E	0x8013C70A	0x11DE19E	u16le	154	154	PASS	source record copy
+2	180	630	13	tile_hw_22	0x8013C70E	0x11DE1A0	u16le	359	359	PASS	source record copy
+2	180	630	13	tile_hw_24	0x8013C710	0x11DE1A2	u16le	330	330	PASS	source record copy
+2	180	630	13	tile_b_06	0x8013C6F2	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	13	tile_hw_20	0x8013C70C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	14	tile_b_00	0x8013C810	0x11DE1A5	u8	4	4	PASS	source record copy
+2	180	630	14	tile_b_01	0x8013C811	0x11DE1A6	u8	15	15	PASS	source record copy
+2	180	630	14	tile_b_02	0x8013C812	0x11DE1A7	u8	13	13	PASS	source record copy
+2	180	630	14	tile_b_03	0x8013C813	0x11DE1A8	u8	255	255	PASS	source record copy
+2	180	630	14	tile_b_04	0x8013C814	0x11DE1A9	u8	255	255	PASS	source record copy
+2	180	630	14	tile_b_05	0x8013C815	0x11DE1AB	u8	0	0	PASS	source record copy
+2	180	630	14	tile_b_0C	0x8013C81C	0x11DE1C2	u8	6	6	PASS	source record copy
+2	180	630	14	tile_hw_0E	0x8013C81E	0x11DE1AC	u16le	260	260	PASS	source record copy
+2	180	630	14	tile_hw_10	0x8013C820	0x11DE1AE	u16le	130	130	PASS	source record copy
+2	180	630	14	tile_hw_12	0x8013C822	0x11DE1B0	u16le	290	290	PASS	source record copy
+2	180	630	14	tile_hw_14	0x8013C824	0x11DE1B2	u16le	580	580	PASS	source record copy
+2	180	630	14	tile_hw_16	0x8013C826	0x11DE1B4	u16le	1150	1150	PASS	source record copy
+2	180	630	14	tile_hw_18	0x8013C828	0x11DE1B6	u16le	2290	2290	PASS	source record copy
+2	180	630	14	tile_hw_1A	0x8013C82A	0x11DE1B8	u16le	200	200	PASS	source record copy
+2	180	630	14	tile_hw_1C	0x8013C82C	0x11DE1BA	u16le	140	140	PASS	source record copy
+2	180	630	14	tile_hw_1E	0x8013C82E	0x11DE1BC	u16le	182	182	PASS	source record copy
+2	180	630	14	tile_hw_22	0x8013C832	0x11DE1BE	u16le	319	319	PASS	source record copy
+2	180	630	14	tile_hw_24	0x8013C834	0x11DE1C0	u16le	330	330	PASS	source record copy
+2	180	630	14	tile_b_06	0x8013C816	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	14	tile_hw_20	0x8013C830	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	15	tile_b_00	0x8013C934	0x11DE1C3	u8	4	4	PASS	source record copy
+2	180	630	15	tile_b_01	0x8013C935	0x11DE1C4	u8	16	16	PASS	source record copy
+2	180	630	15	tile_b_02	0x8013C936	0x11DE1C5	u8	14	14	PASS	source record copy
+2	180	630	15	tile_b_03	0x8013C937	0x11DE1C6	u8	255	255	PASS	source record copy
+2	180	630	15	tile_b_04	0x8013C938	0x11DE1C7	u8	255	255	PASS	source record copy
+2	180	630	15	tile_b_05	0x8013C939	0x11DE1C9	u8	0	0	PASS	source record copy
+2	180	630	15	tile_b_0C	0x8013C940	0x11DE1E0	u8	5	5	PASS	source record copy
+2	180	630	15	tile_hw_0E	0x8013C942	0x11DE1CA	u16le	220	220	PASS	source record copy
+2	180	630	15	tile_hw_10	0x8013C944	0x11DE1CC	u16le	110	110	PASS	source record copy
+2	180	630	15	tile_hw_12	0x8013C946	0x11DE1CE	u16le	250	250	PASS	source record copy
+2	180	630	15	tile_hw_14	0x8013C948	0x11DE1D0	u16le	490	490	PASS	source record copy
+2	180	630	15	tile_hw_16	0x8013C94A	0x11DE1D2	u16le	980	980	PASS	source record copy
+2	180	630	15	tile_hw_18	0x8013C94C	0x11DE1D4	u16le	1940	1940	PASS	source record copy
+2	180	630	15	tile_hw_1A	0x8013C94E	0x11DE1D6	u16le	150	150	PASS	source record copy
+2	180	630	15	tile_hw_1C	0x8013C950	0x11DE1D8	u16le	105	105	PASS	source record copy
+2	180	630	15	tile_hw_1E	0x8013C952	0x11DE1DA	u16le	154	154	PASS	source record copy
+2	180	630	15	tile_hw_22	0x8013C956	0x11DE1DC	u16le	279	279	PASS	source record copy
+2	180	630	15	tile_hw_24	0x8013C958	0x11DE1DE	u16le	330	330	PASS	source record copy
+2	180	630	15	tile_b_06	0x8013C93A	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	15	tile_hw_20	0x8013C954	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	16	tile_b_00	0x8013CA58	0x11DE1E1	u8	4	4	PASS	source record copy
+2	180	630	16	tile_b_01	0x8013CA59	0x11DE1E2	u8	17	17	PASS	source record copy
+2	180	630	16	tile_b_02	0x8013CA5A	0x11DE1E3	u8	15	15	PASS	source record copy
+2	180	630	16	tile_b_03	0x8013CA5B	0x11DE1E4	u8	255	255	PASS	source record copy
+2	180	630	16	tile_b_04	0x8013CA5C	0x11DE1E5	u8	255	255	PASS	source record copy
+2	180	630	16	tile_b_05	0x8013CA5D	0x11DE1E7	u8	0	0	PASS	source record copy
+2	180	630	16	tile_b_0C	0x8013CA64	0x11DE1FE	u8	255	255	PASS	source record copy
+2	180	630	16	tile_hw_0E	0x8013CA66	0x11DE1E8	u16le	200	200	PASS	source record copy
+2	180	630	16	tile_hw_10	0x8013CA68	0x11DE1EA	u16le	100	100	PASS	source record copy
+2	180	630	16	tile_hw_12	0x8013CA6A	0x11DE1EC	u16le	220	220	PASS	source record copy
+2	180	630	16	tile_hw_14	0x8013CA6C	0x11DE1EE	u16le	440	440	PASS	source record copy
+2	180	630	16	tile_hw_16	0x8013CA6E	0x11DE1F0	u16le	880	880	PASS	source record copy
+2	180	630	16	tile_hw_18	0x8013CA70	0x11DE1F2	u16le	1760	1760	PASS	source record copy
+2	180	630	16	tile_hw_1A	0x8013CA72	0x11DE1F4	u16le	150	150	PASS	source record copy
+2	180	630	16	tile_hw_1C	0x8013CA74	0x11DE1F6	u16le	105	105	PASS	source record copy
+2	180	630	16	tile_hw_1E	0x8013CA76	0x11DE1F8	u16le	140	140	PASS	source record copy
+2	180	630	16	tile_hw_22	0x8013CA7A	0x11DE1FA	u16le	239	239	PASS	source record copy
+2	180	630	16	tile_hw_24	0x8013CA7C	0x11DE1FC	u16le	330	330	PASS	source record copy
+2	180	630	16	tile_b_06	0x8013CA5E	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	16	tile_hw_20	0x8013CA78	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	17	tile_b_00	0x8013CB7C	0x11DE1FF	u8	1	1	PASS	source record copy
+2	180	630	17	tile_b_01	0x8013CB7D	0x11DE200	u8	18	18	PASS	source record copy
+2	180	630	17	tile_b_02	0x8013CB7E	0x11DE201	u8	16	16	PASS	source record copy
+2	180	630	17	tile_b_03	0x8013CB7F	0x11DE202	u8	255	255	PASS	source record copy
+2	180	630	17	tile_b_04	0x8013CB80	0x11DE203	u8	255	255	PASS	source record copy
+2	180	630	17	tile_b_05	0x8013CB81	0x11DE205	u8	0	0	PASS	source record copy
+2	180	630	17	tile_b_0C	0x8013CB88	0x11DE21C	u8	255	255	PASS	source record copy
+2	180	630	17	tile_hw_0E	0x8013CB8A	0x11DE206	u16le	0	0	PASS	source record copy
+2	180	630	17	tile_hw_10	0x8013CB8C	0x11DE208	u16le	0	0	PASS	source record copy
+2	180	630	17	tile_hw_12	0x8013CB8E	0x11DE20A	u16le	0	0	PASS	source record copy
+2	180	630	17	tile_hw_14	0x8013CB90	0x11DE20C	u16le	0	0	PASS	source record copy
+2	180	630	17	tile_hw_16	0x8013CB92	0x11DE20E	u16le	0	0	PASS	source record copy
+2	180	630	17	tile_hw_18	0x8013CB94	0x11DE210	u16le	0	0	PASS	source record copy
+2	180	630	17	tile_hw_1A	0x8013CB96	0x11DE212	u16le	0	0	PASS	source record copy
+2	180	630	17	tile_hw_1C	0x8013CB98	0x11DE214	u16le	0	0	PASS	source record copy
+2	180	630	17	tile_hw_1E	0x8013CB9A	0x11DE216	u16le	0	0	PASS	source record copy
+2	180	630	17	tile_hw_22	0x8013CB9E	0x11DE218	u16le	239	239	PASS	source record copy
+2	180	630	17	tile_hw_24	0x8013CBA0	0x11DE21A	u16le	294	294	PASS	source record copy
+2	180	630	17	tile_b_06	0x8013CB82	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	17	tile_hw_20	0x8013CB9C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	18	tile_b_00	0x8013CCA0	0x11DE21D	u8	2	2	PASS	source record copy
+2	180	630	18	tile_b_01	0x8013CCA1	0x11DE21E	u8	19	19	PASS	source record copy
+2	180	630	18	tile_b_02	0x8013CCA2	0x11DE21F	u8	17	17	PASS	source record copy
+2	180	630	18	tile_b_03	0x8013CCA3	0x11DE220	u8	255	255	PASS	source record copy
+2	180	630	18	tile_b_04	0x8013CCA4	0x11DE221	u8	255	255	PASS	source record copy
+2	180	630	18	tile_b_05	0x8013CCA5	0x11DE223	u8	0	0	PASS	source record copy
+2	180	630	18	tile_b_0C	0x8013CCAC	0x11DE23A	u8	255	255	PASS	source record copy
+2	180	630	18	tile_hw_0E	0x8013CCAE	0x11DE224	u16le	0	0	PASS	source record copy
+2	180	630	18	tile_hw_10	0x8013CCB0	0x11DE226	u16le	0	0	PASS	source record copy
+2	180	630	18	tile_hw_12	0x8013CCB2	0x11DE228	u16le	0	0	PASS	source record copy
+2	180	630	18	tile_hw_14	0x8013CCB4	0x11DE22A	u16le	0	0	PASS	source record copy
+2	180	630	18	tile_hw_16	0x8013CCB6	0x11DE22C	u16le	0	0	PASS	source record copy
+2	180	630	18	tile_hw_18	0x8013CCB8	0x11DE22E	u16le	0	0	PASS	source record copy
+2	180	630	18	tile_hw_1A	0x8013CCBA	0x11DE230	u16le	0	0	PASS	source record copy
+2	180	630	18	tile_hw_1C	0x8013CCBC	0x11DE232	u16le	0	0	PASS	source record copy
+2	180	630	18	tile_hw_1E	0x8013CCBE	0x11DE234	u16le	0	0	PASS	source record copy
+2	180	630	18	tile_hw_22	0x8013CCC2	0x11DE236	u16le	199	199	PASS	source record copy
+2	180	630	18	tile_hw_24	0x8013CCC4	0x11DE238	u16le	294	294	PASS	source record copy
+2	180	630	18	tile_b_06	0x8013CCA6	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	18	tile_hw_20	0x8013CCC0	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	19	tile_b_00	0x8013CDC4	0x11DE23B	u8	4	4	PASS	source record copy
+2	180	630	19	tile_b_01	0x8013CDC5	0x11DE23C	u8	20	20	PASS	source record copy
+2	180	630	19	tile_b_02	0x8013CDC6	0x11DE23D	u8	18	18	PASS	source record copy
+2	180	630	19	tile_b_03	0x8013CDC7	0x11DE23E	u8	255	255	PASS	source record copy
+2	180	630	19	tile_b_04	0x8013CDC8	0x11DE23F	u8	255	255	PASS	source record copy
+2	180	630	19	tile_b_05	0x8013CDC9	0x11DE241	u8	0	0	PASS	source record copy
+2	180	630	19	tile_b_0C	0x8013CDD0	0x11DE258	u8	2	2	PASS	source record copy
+2	180	630	19	tile_hw_0E	0x8013CDD2	0x11DE242	u16le	140	140	PASS	source record copy
+2	180	630	19	tile_hw_10	0x8013CDD4	0x11DE244	u16le	70	70	PASS	source record copy
+2	180	630	19	tile_hw_12	0x8013CDD6	0x11DE246	u16le	160	160	PASS	source record copy
+2	180	630	19	tile_hw_14	0x8013CDD8	0x11DE248	u16le	310	310	PASS	source record copy
+2	180	630	19	tile_hw_16	0x8013CDDA	0x11DE24A	u16le	620	620	PASS	source record copy
+2	180	630	19	tile_hw_18	0x8013CDDC	0x11DE24C	u16le	1250	1250	PASS	source record copy
+2	180	630	19	tile_hw_1A	0x8013CDDE	0x11DE24E	u16le	100	100	PASS	source record copy
+2	180	630	19	tile_hw_1C	0x8013CDE0	0x11DE250	u16le	70	70	PASS	source record copy
+2	180	630	19	tile_hw_1E	0x8013CDE2	0x11DE252	u16le	98	98	PASS	source record copy
+2	180	630	19	tile_hw_22	0x8013CDE6	0x11DE254	u16le	199	199	PASS	source record copy
+2	180	630	19	tile_hw_24	0x8013CDE8	0x11DE256	u16le	258	258	PASS	source record copy
+2	180	630	19	tile_b_06	0x8013CDCA	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	19	tile_hw_20	0x8013CDE4	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	20	tile_b_00	0x8013CEE8	0x11DE259	u8	4	4	PASS	source record copy
+2	180	630	20	tile_b_01	0x8013CEE9	0x11DE25A	u8	21	21	PASS	source record copy
+2	180	630	20	tile_b_02	0x8013CEEA	0x11DE25B	u8	19	19	PASS	source record copy
+2	180	630	20	tile_b_03	0x8013CEEB	0x11DE25C	u8	255	255	PASS	source record copy
+2	180	630	20	tile_b_04	0x8013CEEC	0x11DE25D	u8	255	255	PASS	source record copy
+2	180	630	20	tile_b_05	0x8013CEED	0x11DE25F	u8	0	0	PASS	source record copy
+2	180	630	20	tile_b_0C	0x8013CEF4	0x11DE276	u8	255	255	PASS	source record copy
+2	180	630	20	tile_hw_0E	0x8013CEF6	0x11DE260	u16le	120	120	PASS	source record copy
+2	180	630	20	tile_hw_10	0x8013CEF8	0x11DE262	u16le	60	60	PASS	source record copy
+2	180	630	20	tile_hw_12	0x8013CEFA	0x11DE264	u16le	140	140	PASS	source record copy
+2	180	630	20	tile_hw_14	0x8013CEFC	0x11DE266	u16le	265	265	PASS	source record copy
+2	180	630	20	tile_hw_16	0x8013CEFE	0x11DE268	u16le	530	530	PASS	source record copy
+2	180	630	20	tile_hw_18	0x8013CF00	0x11DE26A	u16le	1050	1050	PASS	source record copy
+2	180	630	20	tile_hw_1A	0x8013CF02	0x11DE26C	u16le	100	100	PASS	source record copy
+2	180	630	20	tile_hw_1C	0x8013CF04	0x11DE26E	u16le	70	70	PASS	source record copy
+2	180	630	20	tile_hw_1E	0x8013CF06	0x11DE270	u16le	84	84	PASS	source record copy
+2	180	630	20	tile_hw_22	0x8013CF0A	0x11DE272	u16le	199	199	PASS	source record copy
+2	180	630	20	tile_hw_24	0x8013CF0C	0x11DE274	u16le	222	222	PASS	source record copy
+2	180	630	20	tile_b_06	0x8013CEEE	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	20	tile_hw_20	0x8013CF08	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	180	630	21	tile_b_00	0x8013D00C	0x11DE277	u8	4	4	PASS	source record copy
+2	180	630	21	tile_b_01	0x8013D00D	0x11DE278	u8	0	0	PASS	source record copy
+2	180	630	21	tile_b_02	0x8013D00E	0x11DE279	u8	20	20	PASS	source record copy
+2	180	630	21	tile_b_03	0x8013D00F	0x11DE27A	u8	255	255	PASS	source record copy
+2	180	630	21	tile_b_04	0x8013D010	0x11DE27B	u8	255	255	PASS	source record copy
+2	180	630	21	tile_b_05	0x8013D011	0x11DE27D	u8	0	0	PASS	source record copy
+2	180	630	21	tile_b_0C	0x8013D018	0x11DE294	u8	1	1	PASS	source record copy
+2	180	630	21	tile_hw_0E	0x8013D01A	0x11DE27E	u16le	100	100	PASS	source record copy
+2	180	630	21	tile_hw_10	0x8013D01C	0x11DE280	u16le	50	50	PASS	source record copy
+2	180	630	21	tile_hw_12	0x8013D01E	0x11DE282	u16le	110	110	PASS	source record copy
+2	180	630	21	tile_hw_14	0x8013D020	0x11DE284	u16le	220	220	PASS	source record copy
+2	180	630	21	tile_hw_16	0x8013D022	0x11DE286	u16le	440	440	PASS	source record copy
+2	180	630	21	tile_hw_18	0x8013D024	0x11DE288	u16le	880	880	PASS	source record copy
+2	180	630	21	tile_hw_1A	0x8013D026	0x11DE28A	u16le	50	50	PASS	source record copy
+2	180	630	21	tile_hw_1C	0x8013D028	0x11DE28C	u16le	35	35	PASS	source record copy
+2	180	630	21	tile_hw_1E	0x8013D02A	0x11DE28E	u16le	70	70	PASS	source record copy
+2	180	630	21	tile_hw_22	0x8013D02E	0x11DE290	u16le	199	199	PASS	source record copy
+2	180	630	21	tile_hw_24	0x8013D030	0x11DE292	u16le	186	186	PASS	source record copy
+2	180	630	21	tile_b_06	0x8013D012	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	180	630	21	tile_hw_20	0x8013D02C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	0	tile_b_00	0x8013B818	0x11DE001	u8	0	0	PASS	source record copy
+2	360	630	0	tile_b_01	0x8013B819	0x11DE002	u8	1	1	PASS	source record copy
+2	360	630	0	tile_b_02	0x8013B81A	0x11DE003	u8	21	21	PASS	source record copy
+2	360	630	0	tile_b_03	0x8013B81B	0x11DE004	u8	255	255	PASS	source record copy
+2	360	630	0	tile_b_04	0x8013B81C	0x11DE005	u8	255	255	PASS	source record copy
+2	360	630	0	tile_b_05	0x8013B81D	0x11DE007	u8	0	0	PASS	source record copy
+2	360	630	0	tile_b_0C	0x8013B824	0x11DE01E	u8	255	255	PASS	source record copy
+2	360	630	0	tile_hw_0E	0x8013B826	0x11DE008	u16le	0	0	PASS	source record copy
+2	360	630	0	tile_hw_10	0x8013B828	0x11DE00A	u16le	0	0	PASS	source record copy
+2	360	630	0	tile_hw_12	0x8013B82A	0x11DE00C	u16le	0	0	PASS	source record copy
+2	360	630	0	tile_hw_14	0x8013B82C	0x11DE00E	u16le	0	0	PASS	source record copy
+2	360	630	0	tile_hw_16	0x8013B82E	0x11DE010	u16le	0	0	PASS	source record copy
+2	360	630	0	tile_hw_18	0x8013B830	0x11DE012	u16le	0	0	PASS	source record copy
+2	360	630	0	tile_hw_1A	0x8013B832	0x11DE014	u16le	0	0	PASS	source record copy
+2	360	630	0	tile_hw_1C	0x8013B834	0x11DE016	u16le	0	0	PASS	source record copy
+2	360	630	0	tile_hw_1E	0x8013B836	0x11DE018	u16le	0	0	PASS	source record copy
+2	360	630	0	tile_hw_22	0x8013B83A	0x11DE01A	u16le	199	199	PASS	source record copy
+2	360	630	0	tile_hw_24	0x8013B83C	0x11DE01C	u16le	150	150	PASS	source record copy
+2	360	630	0	tile_b_06	0x8013B81E	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	0	tile_hw_20	0x8013B838	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	1	tile_b_00	0x8013B93C	0x11DE01F	u8	4	4	PASS	source record copy
+2	360	630	1	tile_b_01	0x8013B93D	0x11DE020	u8	2	2	PASS	source record copy
+2	360	630	1	tile_b_02	0x8013B93E	0x11DE021	u8	0	0	PASS	source record copy
+2	360	630	1	tile_b_03	0x8013B93F	0x11DE022	u8	255	255	PASS	source record copy
+2	360	630	1	tile_b_04	0x8013B940	0x11DE023	u8	255	255	PASS	source record copy
+2	360	630	1	tile_b_05	0x8013B941	0x11DE025	u8	0	0	PASS	source record copy
+2	360	630	1	tile_b_0C	0x8013B948	0x11DE03C	u8	255	255	PASS	source record copy
+2	360	630	1	tile_hw_0E	0x8013B94A	0x11DE026	u16le	60	60	PASS	source record copy
+2	360	630	1	tile_hw_10	0x8013B94C	0x11DE028	u16le	35	35	PASS	source record copy
+2	360	630	1	tile_hw_12	0x8013B94E	0x11DE02A	u16le	70	70	PASS	source record copy
+2	360	630	1	tile_hw_14	0x8013B950	0x11DE02C	u16le	135	135	PASS	source record copy
+2	360	630	1	tile_hw_16	0x8013B952	0x11DE02E	u16le	265	265	PASS	source record copy
+2	360	630	1	tile_hw_18	0x8013B954	0x11DE030	u16le	530	530	PASS	source record copy
+2	360	630	1	tile_hw_1A	0x8013B956	0x11DE032	u16le	50	50	PASS	source record copy
+2	360	630	1	tile_hw_1C	0x8013B958	0x11DE034	u16le	35	35	PASS	source record copy
+2	360	630	1	tile_hw_1E	0x8013B95A	0x11DE036	u16le	42	42	PASS	source record copy
+2	360	630	1	tile_hw_22	0x8013B95E	0x11DE038	u16le	239	239	PASS	source record copy
+2	360	630	1	tile_hw_24	0x8013B960	0x11DE03A	u16le	150	150	PASS	source record copy
+2	360	630	1	tile_b_06	0x8013B942	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	1	tile_hw_20	0x8013B95C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	2	tile_b_00	0x8013BA60	0x11DE03D	u8	4	4	PASS	source record copy
+2	360	630	2	tile_b_01	0x8013BA61	0x11DE03E	u8	3	3	PASS	source record copy
+2	360	630	2	tile_b_02	0x8013BA62	0x11DE03F	u8	1	1	PASS	source record copy
+2	360	630	2	tile_b_03	0x8013BA63	0x11DE040	u8	255	255	PASS	source record copy
+2	360	630	2	tile_b_04	0x8013BA64	0x11DE041	u8	255	255	PASS	source record copy
+2	360	630	2	tile_b_05	0x8013BA65	0x11DE043	u8	0	0	PASS	source record copy
+2	360	630	2	tile_b_0C	0x8013BA6C	0x11DE05A	u8	255	255	PASS	source record copy
+2	360	630	2	tile_hw_0E	0x8013BA6E	0x11DE044	u16le	100	100	PASS	source record copy
+2	360	630	2	tile_hw_10	0x8013BA70	0x11DE046	u16le	50	50	PASS	source record copy
+2	360	630	2	tile_hw_12	0x8013BA72	0x11DE048	u16le	110	110	PASS	source record copy
+2	360	630	2	tile_hw_14	0x8013BA74	0x11DE04A	u16le	220	220	PASS	source record copy
+2	360	630	2	tile_hw_16	0x8013BA76	0x11DE04C	u16le	440	440	PASS	source record copy
+2	360	630	2	tile_hw_18	0x8013BA78	0x11DE04E	u16le	880	880	PASS	source record copy
+2	360	630	2	tile_hw_1A	0x8013BA7A	0x11DE050	u16le	50	50	PASS	source record copy
+2	360	630	2	tile_hw_1C	0x8013BA7C	0x11DE052	u16le	35	35	PASS	source record copy
+2	360	630	2	tile_hw_1E	0x8013BA7E	0x11DE054	u16le	70	70	PASS	source record copy
+2	360	630	2	tile_hw_22	0x8013BA82	0x11DE056	u16le	279	279	PASS	source record copy
+2	360	630	2	tile_hw_24	0x8013BA84	0x11DE058	u16le	150	150	PASS	source record copy
+2	360	630	2	tile_b_06	0x8013BA66	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	2	tile_hw_20	0x8013BA80	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	3	tile_b_00	0x8013BB84	0x11DE05B	u8	4	4	PASS	source record copy
+2	360	630	3	tile_b_01	0x8013BB85	0x11DE05C	u8	4	4	PASS	source record copy
+2	360	630	3	tile_b_02	0x8013BB86	0x11DE05D	u8	2	2	PASS	source record copy
+2	360	630	3	tile_b_03	0x8013BB87	0x11DE05E	u8	255	255	PASS	source record copy
+2	360	630	3	tile_b_04	0x8013BB88	0x11DE05F	u8	255	255	PASS	source record copy
+2	360	630	3	tile_b_05	0x8013BB89	0x11DE061	u8	0	0	PASS	source record copy
+2	360	630	3	tile_b_0C	0x8013BB90	0x11DE078	u8	255	255	PASS	source record copy
+2	360	630	3	tile_hw_0E	0x8013BB92	0x11DE062	u16le	100	100	PASS	source record copy
+2	360	630	3	tile_hw_10	0x8013BB94	0x11DE064	u16le	50	50	PASS	source record copy
+2	360	630	3	tile_hw_12	0x8013BB96	0x11DE066	u16le	110	110	PASS	source record copy
+2	360	630	3	tile_hw_14	0x8013BB98	0x11DE068	u16le	220	220	PASS	source record copy
+2	360	630	3	tile_hw_16	0x8013BB9A	0x11DE06A	u16le	440	440	PASS	source record copy
+2	360	630	3	tile_hw_18	0x8013BB9C	0x11DE06C	u16le	880	880	PASS	source record copy
+2	360	630	3	tile_hw_1A	0x8013BB9E	0x11DE06E	u16le	50	50	PASS	source record copy
+2	360	630	3	tile_hw_1C	0x8013BBA0	0x11DE070	u16le	35	35	PASS	source record copy
+2	360	630	3	tile_hw_1E	0x8013BBA2	0x11DE072	u16le	70	70	PASS	source record copy
+2	360	630	3	tile_hw_22	0x8013BBA6	0x11DE074	u16le	319	319	PASS	source record copy
+2	360	630	3	tile_hw_24	0x8013BBA8	0x11DE076	u16le	150	150	PASS	source record copy
+2	360	630	3	tile_b_06	0x8013BB8A	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	3	tile_hw_20	0x8013BBA4	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	4	tile_b_00	0x8013BCA8	0x11DE079	u8	4	4	PASS	source record copy
+2	360	630	4	tile_b_01	0x8013BCA9	0x11DE07A	u8	5	5	PASS	source record copy
+2	360	630	4	tile_b_02	0x8013BCAA	0x11DE07B	u8	3	3	PASS	source record copy
+2	360	630	4	tile_b_03	0x8013BCAB	0x11DE07C	u8	255	255	PASS	source record copy
+2	360	630	4	tile_b_04	0x8013BCAC	0x11DE07D	u8	255	255	PASS	source record copy
+2	360	630	4	tile_b_05	0x8013BCAD	0x11DE07F	u8	0	0	PASS	source record copy
+2	360	630	4	tile_b_0C	0x8013BCB4	0x11DE096	u8	255	255	PASS	source record copy
+2	360	630	4	tile_hw_0E	0x8013BCB6	0x11DE080	u16le	120	120	PASS	source record copy
+2	360	630	4	tile_hw_10	0x8013BCB8	0x11DE082	u16le	60	60	PASS	source record copy
+2	360	630	4	tile_hw_12	0x8013BCBA	0x11DE084	u16le	140	140	PASS	source record copy
+2	360	630	4	tile_hw_14	0x8013BCBC	0x11DE086	u16le	265	265	PASS	source record copy
+2	360	630	4	tile_hw_16	0x8013BCBE	0x11DE088	u16le	530	530	PASS	source record copy
+2	360	630	4	tile_hw_18	0x8013BCC0	0x11DE08A	u16le	1050	1050	PASS	source record copy
+2	360	630	4	tile_hw_1A	0x8013BCC2	0x11DE08C	u16le	100	100	PASS	source record copy
+2	360	630	4	tile_hw_1C	0x8013BCC4	0x11DE08E	u16le	70	70	PASS	source record copy
+2	360	630	4	tile_hw_1E	0x8013BCC6	0x11DE090	u16le	84	84	PASS	source record copy
+2	360	630	4	tile_hw_22	0x8013BCCA	0x11DE092	u16le	359	359	PASS	source record copy
+2	360	630	4	tile_hw_24	0x8013BCCC	0x11DE094	u16le	150	150	PASS	source record copy
+2	360	630	4	tile_b_06	0x8013BCAE	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	4	tile_hw_20	0x8013BCC8	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	5	tile_b_00	0x8013BDCC	0x11DE097	u8	2	2	PASS	source record copy
+2	360	630	5	tile_b_01	0x8013BDCD	0x11DE098	u8	6	6	PASS	source record copy
+2	360	630	5	tile_b_02	0x8013BDCE	0x11DE099	u8	4	4	PASS	source record copy
+2	360	630	5	tile_b_03	0x8013BDCF	0x11DE09A	u8	255	255	PASS	source record copy
+2	360	630	5	tile_b_04	0x8013BDD0	0x11DE09B	u8	255	255	PASS	source record copy
+2	360	630	5	tile_b_05	0x8013BDD1	0x11DE09D	u8	0	0	PASS	source record copy
+2	360	630	5	tile_b_0C	0x8013BDD8	0x11DE0B4	u8	255	255	PASS	source record copy
+2	360	630	5	tile_hw_0E	0x8013BDDA	0x11DE09E	u16le	0	0	PASS	source record copy
+2	360	630	5	tile_hw_10	0x8013BDDC	0x11DE0A0	u16le	0	0	PASS	source record copy
+2	360	630	5	tile_hw_12	0x8013BDDE	0x11DE0A2	u16le	0	0	PASS	source record copy
+2	360	630	5	tile_hw_14	0x8013BDE0	0x11DE0A4	u16le	0	0	PASS	source record copy
+2	360	630	5	tile_hw_16	0x8013BDE2	0x11DE0A6	u16le	0	0	PASS	source record copy
+2	360	630	5	tile_hw_18	0x8013BDE4	0x11DE0A8	u16le	0	0	PASS	source record copy
+2	360	630	5	tile_hw_1A	0x8013BDE6	0x11DE0AA	u16le	0	0	PASS	source record copy
+2	360	630	5	tile_hw_1C	0x8013BDE8	0x11DE0AC	u16le	0	0	PASS	source record copy
+2	360	630	5	tile_hw_1E	0x8013BDEA	0x11DE0AE	u16le	0	0	PASS	source record copy
+2	360	630	5	tile_hw_22	0x8013BDEE	0x11DE0B0	u16le	399	399	PASS	source record copy
+2	360	630	5	tile_hw_24	0x8013BDF0	0x11DE0B2	u16le	150	150	PASS	source record copy
+2	360	630	5	tile_b_06	0x8013BDD2	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	5	tile_hw_20	0x8013BDEC	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	6	tile_b_00	0x8013BEF0	0x11DE0B5	u8	4	4	PASS	source record copy
+2	360	630	6	tile_b_01	0x8013BEF1	0x11DE0B6	u8	7	7	PASS	source record copy
+2	360	630	6	tile_b_02	0x8013BEF2	0x11DE0B7	u8	5	5	PASS	source record copy
+2	360	630	6	tile_b_03	0x8013BEF3	0x11DE0B8	u8	255	255	PASS	source record copy
+2	360	630	6	tile_b_04	0x8013BEF4	0x11DE0B9	u8	255	255	PASS	source record copy
+2	360	630	6	tile_b_05	0x8013BEF5	0x11DE0BB	u8	0	0	PASS	source record copy
+2	360	630	6	tile_b_0C	0x8013BEFC	0x11DE0D2	u8	4	4	PASS	source record copy
+2	360	630	6	tile_hw_0E	0x8013BEFE	0x11DE0BC	u16le	120	120	PASS	source record copy
+2	360	630	6	tile_hw_10	0x8013BF00	0x11DE0BE	u16le	60	60	PASS	source record copy
+2	360	630	6	tile_hw_12	0x8013BF02	0x11DE0C0	u16le	140	140	PASS	source record copy
+2	360	630	6	tile_hw_14	0x8013BF04	0x11DE0C2	u16le	265	265	PASS	source record copy
+2	360	630	6	tile_hw_16	0x8013BF06	0x11DE0C4	u16le	530	530	PASS	source record copy
+2	360	630	6	tile_hw_18	0x8013BF08	0x11DE0C6	u16le	1050	1050	PASS	source record copy
+2	360	630	6	tile_hw_1A	0x8013BF0A	0x11DE0C8	u16le	100	100	PASS	source record copy
+2	360	630	6	tile_hw_1C	0x8013BF0C	0x11DE0CA	u16le	70	70	PASS	source record copy
+2	360	630	6	tile_hw_1E	0x8013BF0E	0x11DE0CC	u16le	84	84	PASS	source record copy
+2	360	630	6	tile_hw_22	0x8013BF12	0x11DE0CE	u16le	399	399	PASS	source record copy
+2	360	630	6	tile_hw_24	0x8013BF14	0x11DE0D0	u16le	186	186	PASS	source record copy
+2	360	630	6	tile_b_06	0x8013BEF6	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	6	tile_hw_20	0x8013BF10	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	7	tile_b_00	0x8013C014	0x11DE0D3	u8	4	4	PASS	source record copy
+2	360	630	7	tile_b_01	0x8013C015	0x11DE0D4	u8	8	8	PASS	source record copy
+2	360	630	7	tile_b_02	0x8013C016	0x11DE0D5	u8	6	6	PASS	source record copy
+2	360	630	7	tile_b_03	0x8013C017	0x11DE0D6	u8	255	255	PASS	source record copy
+2	360	630	7	tile_b_04	0x8013C018	0x11DE0D7	u8	255	255	PASS	source record copy
+2	360	630	7	tile_b_05	0x8013C019	0x11DE0D9	u8	0	0	PASS	source record copy
+2	360	630	7	tile_b_0C	0x8013C020	0x11DE0F0	u8	0	0	PASS	source record copy
+2	360	630	7	tile_hw_0E	0x8013C022	0x11DE0DA	u16le	160	160	PASS	source record copy
+2	360	630	7	tile_hw_10	0x8013C024	0x11DE0DC	u16le	85	85	PASS	source record copy
+2	360	630	7	tile_hw_12	0x8013C026	0x11DE0DE	u16le	180	180	PASS	source record copy
+2	360	630	7	tile_hw_14	0x8013C028	0x11DE0E0	u16le	360	360	PASS	source record copy
+2	360	630	7	tile_hw_16	0x8013C02A	0x11DE0E2	u16le	710	710	PASS	source record copy
+2	360	630	7	tile_hw_18	0x8013C02C	0x11DE0E4	u16le	1410	1410	PASS	source record copy
+2	360	630	7	tile_hw_1A	0x8013C02E	0x11DE0E6	u16le	120	120	PASS	source record copy
+2	360	630	7	tile_hw_1C	0x8013C030	0x11DE0E8	u16le	84	84	PASS	source record copy
+2	360	630	7	tile_hw_1E	0x8013C032	0x11DE0EA	u16le	112	112	PASS	source record copy
+2	360	630	7	tile_hw_22	0x8013C036	0x11DE0EC	u16le	439	439	PASS	source record copy
+2	360	630	7	tile_hw_24	0x8013C038	0x11DE0EE	u16le	186	186	PASS	source record copy
+2	360	630	7	tile_b_06	0x8013C01A	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	7	tile_hw_20	0x8013C034	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	8	tile_b_00	0x8013C138	0x11DE0F1	u8	4	4	PASS	source record copy
+2	360	630	8	tile_b_01	0x8013C139	0x11DE0F2	u8	9	9	PASS	source record copy
+2	360	630	8	tile_b_02	0x8013C13A	0x11DE0F3	u8	7	7	PASS	source record copy
+2	360	630	8	tile_b_03	0x8013C13B	0x11DE0F4	u8	255	255	PASS	source record copy
+2	360	630	8	tile_b_04	0x8013C13C	0x11DE0F5	u8	255	255	PASS	source record copy
+2	360	630	8	tile_b_05	0x8013C13D	0x11DE0F7	u8	0	0	PASS	source record copy
+2	360	630	8	tile_b_0C	0x8013C144	0x11DE10E	u8	255	255	PASS	source record copy
+2	360	630	8	tile_hw_0E	0x8013C146	0x11DE0F8	u16le	140	140	PASS	source record copy
+2	360	630	8	tile_hw_10	0x8013C148	0x11DE0FA	u16le	70	70	PASS	source record copy
+2	360	630	8	tile_hw_12	0x8013C14A	0x11DE0FC	u16le	160	160	PASS	source record copy
+2	360	630	8	tile_hw_14	0x8013C14C	0x11DE0FE	u16le	310	310	PASS	source record copy
+2	360	630	8	tile_hw_16	0x8013C14E	0x11DE100	u16le	620	620	PASS	source record copy
+2	360	630	8	tile_hw_18	0x8013C150	0x11DE102	u16le	1250	1250	PASS	source record copy
+2	360	630	8	tile_hw_1A	0x8013C152	0x11DE104	u16le	100	100	PASS	source record copy
+2	360	630	8	tile_hw_1C	0x8013C154	0x11DE106	u16le	70	70	PASS	source record copy
+2	360	630	8	tile_hw_1E	0x8013C156	0x11DE108	u16le	98	98	PASS	source record copy
+2	360	630	8	tile_hw_22	0x8013C15A	0x11DE10A	u16le	439	439	PASS	source record copy
+2	360	630	8	tile_hw_24	0x8013C15C	0x11DE10C	u16le	222	222	PASS	source record copy
+2	360	630	8	tile_b_06	0x8013C13E	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	8	tile_hw_20	0x8013C158	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	9	tile_b_00	0x8013C25C	0x11DE10F	u8	4	4	PASS	source record copy
+2	360	630	9	tile_b_01	0x8013C25D	0x11DE110	u8	10	10	PASS	source record copy
+2	360	630	9	tile_b_02	0x8013C25E	0x11DE111	u8	8	8	PASS	source record copy
+2	360	630	9	tile_b_03	0x8013C25F	0x11DE112	u8	255	255	PASS	source record copy
+2	360	630	9	tile_b_04	0x8013C260	0x11DE113	u8	255	255	PASS	source record copy
+2	360	630	9	tile_b_05	0x8013C261	0x11DE115	u8	0	0	PASS	source record copy
+2	360	630	9	tile_b_0C	0x8013C268	0x11DE12C	u8	255	255	PASS	source record copy
+2	360	630	9	tile_hw_0E	0x8013C26A	0x11DE116	u16le	140	140	PASS	source record copy
+2	360	630	9	tile_hw_10	0x8013C26C	0x11DE118	u16le	70	70	PASS	source record copy
+2	360	630	9	tile_hw_12	0x8013C26E	0x11DE11A	u16le	160	160	PASS	source record copy
+2	360	630	9	tile_hw_14	0x8013C270	0x11DE11C	u16le	310	310	PASS	source record copy
+2	360	630	9	tile_hw_16	0x8013C272	0x11DE11E	u16le	620	620	PASS	source record copy
+2	360	630	9	tile_hw_18	0x8013C274	0x11DE120	u16le	1250	1250	PASS	source record copy
+2	360	630	9	tile_hw_1A	0x8013C276	0x11DE122	u16le	100	100	PASS	source record copy
+2	360	630	9	tile_hw_1C	0x8013C278	0x11DE124	u16le	70	70	PASS	source record copy
+2	360	630	9	tile_hw_1E	0x8013C27A	0x11DE126	u16le	98	98	PASS	source record copy
+2	360	630	9	tile_hw_22	0x8013C27E	0x11DE128	u16le	439	439	PASS	source record copy
+2	360	630	9	tile_hw_24	0x8013C280	0x11DE12A	u16le	258	258	PASS	source record copy
+2	360	630	9	tile_b_06	0x8013C262	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	9	tile_hw_20	0x8013C27C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	10	tile_b_00	0x8013C380	0x11DE12D	u8	4	4	PASS	source record copy
+2	360	630	10	tile_b_01	0x8013C381	0x11DE12E	u8	11	11	PASS	source record copy
+2	360	630	10	tile_b_02	0x8013C382	0x11DE12F	u8	9	9	PASS	source record copy
+2	360	630	10	tile_b_03	0x8013C383	0x11DE130	u8	255	255	PASS	source record copy
+2	360	630	10	tile_b_04	0x8013C384	0x11DE131	u8	255	255	PASS	source record copy
+2	360	630	10	tile_b_05	0x8013C385	0x11DE133	u8	0	0	PASS	source record copy
+2	360	630	10	tile_b_0C	0x8013C38C	0x11DE14A	u8	255	255	PASS	source record copy
+2	360	630	10	tile_hw_0E	0x8013C38E	0x11DE134	u16le	120	120	PASS	source record copy
+2	360	630	10	tile_hw_10	0x8013C390	0x11DE136	u16le	60	60	PASS	source record copy
+2	360	630	10	tile_hw_12	0x8013C392	0x11DE138	u16le	140	140	PASS	source record copy
+2	360	630	10	tile_hw_14	0x8013C394	0x11DE13A	u16le	265	265	PASS	source record copy
+2	360	630	10	tile_hw_16	0x8013C396	0x11DE13C	u16le	530	530	PASS	source record copy
+2	360	630	10	tile_hw_18	0x8013C398	0x11DE13E	u16le	1050	1050	PASS	source record copy
+2	360	630	10	tile_hw_1A	0x8013C39A	0x11DE140	u16le	100	100	PASS	source record copy
+2	360	630	10	tile_hw_1C	0x8013C39C	0x11DE142	u16le	70	70	PASS	source record copy
+2	360	630	10	tile_hw_1E	0x8013C39E	0x11DE144	u16le	84	84	PASS	source record copy
+2	360	630	10	tile_hw_22	0x8013C3A2	0x11DE146	u16le	439	439	PASS	source record copy
+2	360	630	10	tile_hw_24	0x8013C3A4	0x11DE148	u16le	294	294	PASS	source record copy
+2	360	630	10	tile_b_06	0x8013C386	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	10	tile_hw_20	0x8013C3A0	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	11	tile_b_00	0x8013C4A4	0x11DE14B	u8	1	1	PASS	source record copy
+2	360	630	11	tile_b_01	0x8013C4A5	0x11DE14C	u8	12	12	PASS	source record copy
+2	360	630	11	tile_b_02	0x8013C4A6	0x11DE14D	u8	10	10	PASS	source record copy
+2	360	630	11	tile_b_03	0x8013C4A7	0x11DE14E	u8	255	255	PASS	source record copy
+2	360	630	11	tile_b_04	0x8013C4A8	0x11DE14F	u8	255	255	PASS	source record copy
+2	360	630	11	tile_b_05	0x8013C4A9	0x11DE151	u8	0	0	PASS	source record copy
+2	360	630	11	tile_b_0C	0x8013C4B0	0x11DE168	u8	255	255	PASS	source record copy
+2	360	630	11	tile_hw_0E	0x8013C4B2	0x11DE152	u16le	0	0	PASS	source record copy
+2	360	630	11	tile_hw_10	0x8013C4B4	0x11DE154	u16le	0	0	PASS	source record copy
+2	360	630	11	tile_hw_12	0x8013C4B6	0x11DE156	u16le	0	0	PASS	source record copy
+2	360	630	11	tile_hw_14	0x8013C4B8	0x11DE158	u16le	0	0	PASS	source record copy
+2	360	630	11	tile_hw_16	0x8013C4BA	0x11DE15A	u16le	0	0	PASS	source record copy
+2	360	630	11	tile_hw_18	0x8013C4BC	0x11DE15C	u16le	0	0	PASS	source record copy
+2	360	630	11	tile_hw_1A	0x8013C4BE	0x11DE15E	u16le	0	0	PASS	source record copy
+2	360	630	11	tile_hw_1C	0x8013C4C0	0x11DE160	u16le	0	0	PASS	source record copy
+2	360	630	11	tile_hw_1E	0x8013C4C2	0x11DE162	u16le	0	0	PASS	source record copy
+2	360	630	11	tile_hw_22	0x8013C4C6	0x11DE164	u16le	439	439	PASS	source record copy
+2	360	630	11	tile_hw_24	0x8013C4C8	0x11DE166	u16le	330	330	PASS	source record copy
+2	360	630	11	tile_b_06	0x8013C4AA	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	11	tile_hw_20	0x8013C4C4	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	12	tile_b_00	0x8013C5C8	0x11DE169	u8	4	4	PASS	source record copy
+2	360	630	12	tile_b_01	0x8013C5C9	0x11DE16A	u8	13	13	PASS	source record copy
+2	360	630	12	tile_b_02	0x8013C5CA	0x11DE16B	u8	11	11	PASS	source record copy
+2	360	630	12	tile_b_03	0x8013C5CB	0x11DE16C	u8	255	255	PASS	source record copy
+2	360	630	12	tile_b_04	0x8013C5CC	0x11DE16D	u8	255	255	PASS	source record copy
+2	360	630	12	tile_b_05	0x8013C5CD	0x11DE16F	u8	0	0	PASS	source record copy
+2	360	630	12	tile_b_0C	0x8013C5D4	0x11DE186	u8	3	3	PASS	source record copy
+2	360	630	12	tile_hw_0E	0x8013C5D6	0x11DE170	u16le	200	200	PASS	source record copy
+2	360	630	12	tile_hw_10	0x8013C5D8	0x11DE172	u16le	100	100	PASS	source record copy
+2	360	630	12	tile_hw_12	0x8013C5DA	0x11DE174	u16le	220	220	PASS	source record copy
+2	360	630	12	tile_hw_14	0x8013C5DC	0x11DE176	u16le	440	440	PASS	source record copy
+2	360	630	12	tile_hw_16	0x8013C5DE	0x11DE178	u16le	880	880	PASS	source record copy
+2	360	630	12	tile_hw_18	0x8013C5E0	0x11DE17A	u16le	1760	1760	PASS	source record copy
+2	360	630	12	tile_hw_1A	0x8013C5E2	0x11DE17C	u16le	150	150	PASS	source record copy
+2	360	630	12	tile_hw_1C	0x8013C5E4	0x11DE17E	u16le	105	105	PASS	source record copy
+2	360	630	12	tile_hw_1E	0x8013C5E6	0x11DE180	u16le	140	140	PASS	source record copy
+2	360	630	12	tile_hw_22	0x8013C5EA	0x11DE182	u16le	399	399	PASS	source record copy
+2	360	630	12	tile_hw_24	0x8013C5EC	0x11DE184	u16le	330	330	PASS	source record copy
+2	360	630	12	tile_b_06	0x8013C5CE	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	12	tile_hw_20	0x8013C5E8	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	13	tile_b_00	0x8013C6EC	0x11DE187	u8	4	4	PASS	source record copy
+2	360	630	13	tile_b_01	0x8013C6ED	0x11DE188	u8	14	14	PASS	source record copy
+2	360	630	13	tile_b_02	0x8013C6EE	0x11DE189	u8	12	12	PASS	source record copy
+2	360	630	13	tile_b_03	0x8013C6EF	0x11DE18A	u8	255	255	PASS	source record copy
+2	360	630	13	tile_b_04	0x8013C6F0	0x11DE18B	u8	255	255	PASS	source record copy
+2	360	630	13	tile_b_05	0x8013C6F1	0x11DE18D	u8	0	0	PASS	source record copy
+2	360	630	13	tile_b_0C	0x8013C6F8	0x11DE1A4	u8	255	255	PASS	source record copy
+2	360	630	13	tile_hw_0E	0x8013C6FA	0x11DE18E	u16le	220	220	PASS	source record copy
+2	360	630	13	tile_hw_10	0x8013C6FC	0x11DE190	u16le	110	110	PASS	source record copy
+2	360	630	13	tile_hw_12	0x8013C6FE	0x11DE192	u16le	250	250	PASS	source record copy
+2	360	630	13	tile_hw_14	0x8013C700	0x11DE194	u16le	490	490	PASS	source record copy
+2	360	630	13	tile_hw_16	0x8013C702	0x11DE196	u16le	980	980	PASS	source record copy
+2	360	630	13	tile_hw_18	0x8013C704	0x11DE198	u16le	1940	1940	PASS	source record copy
+2	360	630	13	tile_hw_1A	0x8013C706	0x11DE19A	u16le	150	150	PASS	source record copy
+2	360	630	13	tile_hw_1C	0x8013C708	0x11DE19C	u16le	105	105	PASS	source record copy
+2	360	630	13	tile_hw_1E	0x8013C70A	0x11DE19E	u16le	154	154	PASS	source record copy
+2	360	630	13	tile_hw_22	0x8013C70E	0x11DE1A0	u16le	359	359	PASS	source record copy
+2	360	630	13	tile_hw_24	0x8013C710	0x11DE1A2	u16le	330	330	PASS	source record copy
+2	360	630	13	tile_b_06	0x8013C6F2	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	13	tile_hw_20	0x8013C70C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	14	tile_b_00	0x8013C810	0x11DE1A5	u8	4	4	PASS	source record copy
+2	360	630	14	tile_b_01	0x8013C811	0x11DE1A6	u8	15	15	PASS	source record copy
+2	360	630	14	tile_b_02	0x8013C812	0x11DE1A7	u8	13	13	PASS	source record copy
+2	360	630	14	tile_b_03	0x8013C813	0x11DE1A8	u8	255	255	PASS	source record copy
+2	360	630	14	tile_b_04	0x8013C814	0x11DE1A9	u8	255	255	PASS	source record copy
+2	360	630	14	tile_b_05	0x8013C815	0x11DE1AB	u8	0	0	PASS	source record copy
+2	360	630	14	tile_b_0C	0x8013C81C	0x11DE1C2	u8	6	6	PASS	source record copy
+2	360	630	14	tile_hw_0E	0x8013C81E	0x11DE1AC	u16le	260	260	PASS	source record copy
+2	360	630	14	tile_hw_10	0x8013C820	0x11DE1AE	u16le	130	130	PASS	source record copy
+2	360	630	14	tile_hw_12	0x8013C822	0x11DE1B0	u16le	290	290	PASS	source record copy
+2	360	630	14	tile_hw_14	0x8013C824	0x11DE1B2	u16le	580	580	PASS	source record copy
+2	360	630	14	tile_hw_16	0x8013C826	0x11DE1B4	u16le	1150	1150	PASS	source record copy
+2	360	630	14	tile_hw_18	0x8013C828	0x11DE1B6	u16le	2290	2290	PASS	source record copy
+2	360	630	14	tile_hw_1A	0x8013C82A	0x11DE1B8	u16le	200	200	PASS	source record copy
+2	360	630	14	tile_hw_1C	0x8013C82C	0x11DE1BA	u16le	140	140	PASS	source record copy
+2	360	630	14	tile_hw_1E	0x8013C82E	0x11DE1BC	u16le	182	182	PASS	source record copy
+2	360	630	14	tile_hw_22	0x8013C832	0x11DE1BE	u16le	319	319	PASS	source record copy
+2	360	630	14	tile_hw_24	0x8013C834	0x11DE1C0	u16le	330	330	PASS	source record copy
+2	360	630	14	tile_b_06	0x8013C816	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	14	tile_hw_20	0x8013C830	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	15	tile_b_00	0x8013C934	0x11DE1C3	u8	4	4	PASS	source record copy
+2	360	630	15	tile_b_01	0x8013C935	0x11DE1C4	u8	16	16	PASS	source record copy
+2	360	630	15	tile_b_02	0x8013C936	0x11DE1C5	u8	14	14	PASS	source record copy
+2	360	630	15	tile_b_03	0x8013C937	0x11DE1C6	u8	255	255	PASS	source record copy
+2	360	630	15	tile_b_04	0x8013C938	0x11DE1C7	u8	255	255	PASS	source record copy
+2	360	630	15	tile_b_05	0x8013C939	0x11DE1C9	u8	0	0	PASS	source record copy
+2	360	630	15	tile_b_0C	0x8013C940	0x11DE1E0	u8	5	5	PASS	source record copy
+2	360	630	15	tile_hw_0E	0x8013C942	0x11DE1CA	u16le	220	220	PASS	source record copy
+2	360	630	15	tile_hw_10	0x8013C944	0x11DE1CC	u16le	110	110	PASS	source record copy
+2	360	630	15	tile_hw_12	0x8013C946	0x11DE1CE	u16le	250	250	PASS	source record copy
+2	360	630	15	tile_hw_14	0x8013C948	0x11DE1D0	u16le	490	490	PASS	source record copy
+2	360	630	15	tile_hw_16	0x8013C94A	0x11DE1D2	u16le	980	980	PASS	source record copy
+2	360	630	15	tile_hw_18	0x8013C94C	0x11DE1D4	u16le	1940	1940	PASS	source record copy
+2	360	630	15	tile_hw_1A	0x8013C94E	0x11DE1D6	u16le	150	150	PASS	source record copy
+2	360	630	15	tile_hw_1C	0x8013C950	0x11DE1D8	u16le	105	105	PASS	source record copy
+2	360	630	15	tile_hw_1E	0x8013C952	0x11DE1DA	u16le	154	154	PASS	source record copy
+2	360	630	15	tile_hw_22	0x8013C956	0x11DE1DC	u16le	279	279	PASS	source record copy
+2	360	630	15	tile_hw_24	0x8013C958	0x11DE1DE	u16le	330	330	PASS	source record copy
+2	360	630	15	tile_b_06	0x8013C93A	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	15	tile_hw_20	0x8013C954	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	16	tile_b_00	0x8013CA58	0x11DE1E1	u8	4	4	PASS	source record copy
+2	360	630	16	tile_b_01	0x8013CA59	0x11DE1E2	u8	17	17	PASS	source record copy
+2	360	630	16	tile_b_02	0x8013CA5A	0x11DE1E3	u8	15	15	PASS	source record copy
+2	360	630	16	tile_b_03	0x8013CA5B	0x11DE1E4	u8	255	255	PASS	source record copy
+2	360	630	16	tile_b_04	0x8013CA5C	0x11DE1E5	u8	255	255	PASS	source record copy
+2	360	630	16	tile_b_05	0x8013CA5D	0x11DE1E7	u8	0	0	PASS	source record copy
+2	360	630	16	tile_b_0C	0x8013CA64	0x11DE1FE	u8	255	255	PASS	source record copy
+2	360	630	16	tile_hw_0E	0x8013CA66	0x11DE1E8	u16le	200	200	PASS	source record copy
+2	360	630	16	tile_hw_10	0x8013CA68	0x11DE1EA	u16le	100	100	PASS	source record copy
+2	360	630	16	tile_hw_12	0x8013CA6A	0x11DE1EC	u16le	220	220	PASS	source record copy
+2	360	630	16	tile_hw_14	0x8013CA6C	0x11DE1EE	u16le	440	440	PASS	source record copy
+2	360	630	16	tile_hw_16	0x8013CA6E	0x11DE1F0	u16le	880	880	PASS	source record copy
+2	360	630	16	tile_hw_18	0x8013CA70	0x11DE1F2	u16le	1760	1760	PASS	source record copy
+2	360	630	16	tile_hw_1A	0x8013CA72	0x11DE1F4	u16le	150	150	PASS	source record copy
+2	360	630	16	tile_hw_1C	0x8013CA74	0x11DE1F6	u16le	105	105	PASS	source record copy
+2	360	630	16	tile_hw_1E	0x8013CA76	0x11DE1F8	u16le	140	140	PASS	source record copy
+2	360	630	16	tile_hw_22	0x8013CA7A	0x11DE1FA	u16le	239	239	PASS	source record copy
+2	360	630	16	tile_hw_24	0x8013CA7C	0x11DE1FC	u16le	330	330	PASS	source record copy
+2	360	630	16	tile_b_06	0x8013CA5E	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	16	tile_hw_20	0x8013CA78	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	17	tile_b_00	0x8013CB7C	0x11DE1FF	u8	1	1	PASS	source record copy
+2	360	630	17	tile_b_01	0x8013CB7D	0x11DE200	u8	18	18	PASS	source record copy
+2	360	630	17	tile_b_02	0x8013CB7E	0x11DE201	u8	16	16	PASS	source record copy
+2	360	630	17	tile_b_03	0x8013CB7F	0x11DE202	u8	255	255	PASS	source record copy
+2	360	630	17	tile_b_04	0x8013CB80	0x11DE203	u8	255	255	PASS	source record copy
+2	360	630	17	tile_b_05	0x8013CB81	0x11DE205	u8	0	0	PASS	source record copy
+2	360	630	17	tile_b_0C	0x8013CB88	0x11DE21C	u8	255	255	PASS	source record copy
+2	360	630	17	tile_hw_0E	0x8013CB8A	0x11DE206	u16le	0	0	PASS	source record copy
+2	360	630	17	tile_hw_10	0x8013CB8C	0x11DE208	u16le	0	0	PASS	source record copy
+2	360	630	17	tile_hw_12	0x8013CB8E	0x11DE20A	u16le	0	0	PASS	source record copy
+2	360	630	17	tile_hw_14	0x8013CB90	0x11DE20C	u16le	0	0	PASS	source record copy
+2	360	630	17	tile_hw_16	0x8013CB92	0x11DE20E	u16le	0	0	PASS	source record copy
+2	360	630	17	tile_hw_18	0x8013CB94	0x11DE210	u16le	0	0	PASS	source record copy
+2	360	630	17	tile_hw_1A	0x8013CB96	0x11DE212	u16le	0	0	PASS	source record copy
+2	360	630	17	tile_hw_1C	0x8013CB98	0x11DE214	u16le	0	0	PASS	source record copy
+2	360	630	17	tile_hw_1E	0x8013CB9A	0x11DE216	u16le	0	0	PASS	source record copy
+2	360	630	17	tile_hw_22	0x8013CB9E	0x11DE218	u16le	239	239	PASS	source record copy
+2	360	630	17	tile_hw_24	0x8013CBA0	0x11DE21A	u16le	294	294	PASS	source record copy
+2	360	630	17	tile_b_06	0x8013CB82	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	17	tile_hw_20	0x8013CB9C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	18	tile_b_00	0x8013CCA0	0x11DE21D	u8	2	2	PASS	source record copy
+2	360	630	18	tile_b_01	0x8013CCA1	0x11DE21E	u8	19	19	PASS	source record copy
+2	360	630	18	tile_b_02	0x8013CCA2	0x11DE21F	u8	17	17	PASS	source record copy
+2	360	630	18	tile_b_03	0x8013CCA3	0x11DE220	u8	255	255	PASS	source record copy
+2	360	630	18	tile_b_04	0x8013CCA4	0x11DE221	u8	255	255	PASS	source record copy
+2	360	630	18	tile_b_05	0x8013CCA5	0x11DE223	u8	0	0	PASS	source record copy
+2	360	630	18	tile_b_0C	0x8013CCAC	0x11DE23A	u8	255	255	PASS	source record copy
+2	360	630	18	tile_hw_0E	0x8013CCAE	0x11DE224	u16le	0	0	PASS	source record copy
+2	360	630	18	tile_hw_10	0x8013CCB0	0x11DE226	u16le	0	0	PASS	source record copy
+2	360	630	18	tile_hw_12	0x8013CCB2	0x11DE228	u16le	0	0	PASS	source record copy
+2	360	630	18	tile_hw_14	0x8013CCB4	0x11DE22A	u16le	0	0	PASS	source record copy
+2	360	630	18	tile_hw_16	0x8013CCB6	0x11DE22C	u16le	0	0	PASS	source record copy
+2	360	630	18	tile_hw_18	0x8013CCB8	0x11DE22E	u16le	0	0	PASS	source record copy
+2	360	630	18	tile_hw_1A	0x8013CCBA	0x11DE230	u16le	0	0	PASS	source record copy
+2	360	630	18	tile_hw_1C	0x8013CCBC	0x11DE232	u16le	0	0	PASS	source record copy
+2	360	630	18	tile_hw_1E	0x8013CCBE	0x11DE234	u16le	0	0	PASS	source record copy
+2	360	630	18	tile_hw_22	0x8013CCC2	0x11DE236	u16le	199	199	PASS	source record copy
+2	360	630	18	tile_hw_24	0x8013CCC4	0x11DE238	u16le	294	294	PASS	source record copy
+2	360	630	18	tile_b_06	0x8013CCA6	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	18	tile_hw_20	0x8013CCC0	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	19	tile_b_00	0x8013CDC4	0x11DE23B	u8	4	4	PASS	source record copy
+2	360	630	19	tile_b_01	0x8013CDC5	0x11DE23C	u8	20	20	PASS	source record copy
+2	360	630	19	tile_b_02	0x8013CDC6	0x11DE23D	u8	18	18	PASS	source record copy
+2	360	630	19	tile_b_03	0x8013CDC7	0x11DE23E	u8	255	255	PASS	source record copy
+2	360	630	19	tile_b_04	0x8013CDC8	0x11DE23F	u8	255	255	PASS	source record copy
+2	360	630	19	tile_b_05	0x8013CDC9	0x11DE241	u8	0	0	PASS	source record copy
+2	360	630	19	tile_b_0C	0x8013CDD0	0x11DE258	u8	2	2	PASS	source record copy
+2	360	630	19	tile_hw_0E	0x8013CDD2	0x11DE242	u16le	140	140	PASS	source record copy
+2	360	630	19	tile_hw_10	0x8013CDD4	0x11DE244	u16le	70	70	PASS	source record copy
+2	360	630	19	tile_hw_12	0x8013CDD6	0x11DE246	u16le	160	160	PASS	source record copy
+2	360	630	19	tile_hw_14	0x8013CDD8	0x11DE248	u16le	310	310	PASS	source record copy
+2	360	630	19	tile_hw_16	0x8013CDDA	0x11DE24A	u16le	620	620	PASS	source record copy
+2	360	630	19	tile_hw_18	0x8013CDDC	0x11DE24C	u16le	1250	1250	PASS	source record copy
+2	360	630	19	tile_hw_1A	0x8013CDDE	0x11DE24E	u16le	100	100	PASS	source record copy
+2	360	630	19	tile_hw_1C	0x8013CDE0	0x11DE250	u16le	70	70	PASS	source record copy
+2	360	630	19	tile_hw_1E	0x8013CDE2	0x11DE252	u16le	98	98	PASS	source record copy
+2	360	630	19	tile_hw_22	0x8013CDE6	0x11DE254	u16le	199	199	PASS	source record copy
+2	360	630	19	tile_hw_24	0x8013CDE8	0x11DE256	u16le	258	258	PASS	source record copy
+2	360	630	19	tile_b_06	0x8013CDCA	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	19	tile_hw_20	0x8013CDE4	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	20	tile_b_00	0x8013CEE8	0x11DE259	u8	4	4	PASS	source record copy
+2	360	630	20	tile_b_01	0x8013CEE9	0x11DE25A	u8	21	21	PASS	source record copy
+2	360	630	20	tile_b_02	0x8013CEEA	0x11DE25B	u8	19	19	PASS	source record copy
+2	360	630	20	tile_b_03	0x8013CEEB	0x11DE25C	u8	255	255	PASS	source record copy
+2	360	630	20	tile_b_04	0x8013CEEC	0x11DE25D	u8	255	255	PASS	source record copy
+2	360	630	20	tile_b_05	0x8013CEED	0x11DE25F	u8	0	0	PASS	source record copy
+2	360	630	20	tile_b_0C	0x8013CEF4	0x11DE276	u8	255	255	PASS	source record copy
+2	360	630	20	tile_hw_0E	0x8013CEF6	0x11DE260	u16le	120	120	PASS	source record copy
+2	360	630	20	tile_hw_10	0x8013CEF8	0x11DE262	u16le	60	60	PASS	source record copy
+2	360	630	20	tile_hw_12	0x8013CEFA	0x11DE264	u16le	140	140	PASS	source record copy
+2	360	630	20	tile_hw_14	0x8013CEFC	0x11DE266	u16le	265	265	PASS	source record copy
+2	360	630	20	tile_hw_16	0x8013CEFE	0x11DE268	u16le	530	530	PASS	source record copy
+2	360	630	20	tile_hw_18	0x8013CF00	0x11DE26A	u16le	1050	1050	PASS	source record copy
+2	360	630	20	tile_hw_1A	0x8013CF02	0x11DE26C	u16le	100	100	PASS	source record copy
+2	360	630	20	tile_hw_1C	0x8013CF04	0x11DE26E	u16le	70	70	PASS	source record copy
+2	360	630	20	tile_hw_1E	0x8013CF06	0x11DE270	u16le	84	84	PASS	source record copy
+2	360	630	20	tile_hw_22	0x8013CF0A	0x11DE272	u16le	199	199	PASS	source record copy
+2	360	630	20	tile_hw_24	0x8013CF0C	0x11DE274	u16le	222	222	PASS	source record copy
+2	360	630	20	tile_b_06	0x8013CEEE	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	20	tile_hw_20	0x8013CF08	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
+2	360	630	21	tile_b_00	0x8013D00C	0x11DE277	u8	4	4	PASS	source record copy
+2	360	630	21	tile_b_01	0x8013D00D	0x11DE278	u8	0	0	PASS	source record copy
+2	360	630	21	tile_b_02	0x8013D00E	0x11DE279	u8	20	20	PASS	source record copy
+2	360	630	21	tile_b_03	0x8013D00F	0x11DE27A	u8	255	255	PASS	source record copy
+2	360	630	21	tile_b_04	0x8013D010	0x11DE27B	u8	255	255	PASS	source record copy
+2	360	630	21	tile_b_05	0x8013D011	0x11DE27D	u8	0	0	PASS	source record copy
+2	360	630	21	tile_b_0C	0x8013D018	0x11DE294	u8	1	1	PASS	source record copy
+2	360	630	21	tile_hw_0E	0x8013D01A	0x11DE27E	u16le	100	100	PASS	source record copy
+2	360	630	21	tile_hw_10	0x8013D01C	0x11DE280	u16le	50	50	PASS	source record copy
+2	360	630	21	tile_hw_12	0x8013D01E	0x11DE282	u16le	110	110	PASS	source record copy
+2	360	630	21	tile_hw_14	0x8013D020	0x11DE284	u16le	220	220	PASS	source record copy
+2	360	630	21	tile_hw_16	0x8013D022	0x11DE286	u16le	440	440	PASS	source record copy
+2	360	630	21	tile_hw_18	0x8013D024	0x11DE288	u16le	880	880	PASS	source record copy
+2	360	630	21	tile_hw_1A	0x8013D026	0x11DE28A	u16le	50	50	PASS	source record copy
+2	360	630	21	tile_hw_1C	0x8013D028	0x11DE28C	u16le	35	35	PASS	source record copy
+2	360	630	21	tile_hw_1E	0x8013D02A	0x11DE28E	u16le	70	70	PASS	source record copy
+2	360	630	21	tile_hw_22	0x8013D02E	0x11DE290	u16le	199	199	PASS	source record copy
+2	360	630	21	tile_hw_24	0x8013D030	0x11DE292	u16le	186	186	PASS	source record copy
+2	360	630	21	tile_b_06	0x8013D012	NONE	u8	0	0	PASS	loader initializes zero; source +0x05 is skipped
+2	360	630	21	tile_hw_20	0x8013D02C	NONE	u16le	61472	61472	PASS	loader initializes constant 0xF020; no source field
