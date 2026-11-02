@@ -85,6 +85,12 @@ Ini memperkuat BB2 sebagai K4 statis. Probe BB3 saat ini memasang breakpoint pad
 
 Catatan semantik: nama gameplay untuk action byte 3 dan 8 masih **TIDAK TAHU**. Keduanya hanya terbukti masuk ke satu blok transaksi yang sama pada fungsi ini.
 
+### Fixture uji BB3 yang disiapkan
+
+Probe fungsi sementara memakai index petak 4 pada snapshot H6 yang telah dipetakan ke resource 630. Nilai `tile[4]+0x1A` pada record resource 630 adalah **100**. Probe menguji action byte 3 dan 8 untuk nibble level bits 8–11 bernilai 0, 1, 2, dan 3, masing-masing dua peluncuran independen. Selama uji, tidak ada tombol gameplay; RAM hanya diubah dalam proses emulator disposable, dan Memory Card kerja harus tetap sama.
+
+Hasil yang diharapkan dari jalur statis bila cabang berhasil: pending delta pemain aktif `-100`; nibble bits 8–11 bertambah satu; nibble bits 4–7 bertambah satu; tile refresh dipanggil pada PC `0x800D4840` dan `0x800D4848`. Ini adalah ekspektasi uji yang diturunkan dari instruksi, bukan hasil runtime yang sudah teramati. Probe belum menjalankan positive control; hasil untuk kontrol tersebut tetap **TIDAK DIUJI**.
+
 ## BB3 — hasil uji runtime dan blocker
 
 ### Run 41459907683 — function-call probe
