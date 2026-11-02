@@ -96,15 +96,15 @@ Hasil yang diharapkan dari jalur statis bila cabang berhasil: pending delta pema
 ### Restore H6 dan pembacaan RAM — terkonfirmasi pada dua smoke launch
 
 Run `41527796204`:
-- Source SHA: `25d2436e30ac02cbb751c3463acb77bff` (Actions source commit tercatat penuh pada ringkasan run).
-- Job `125559902986`; script exit 0; wall 2,135 detik.
+- Source SHA: `25d2436e30ac02cbb751c3463acabbfab0841ce2` (Actions source commit tercatat penuh pada ringkasan run).
+- Job `125559902986`; script exit 0; wall 2.135 detik.
 - `SaveStateLoaded=PASS`, pemanggilan load kembali, pembacaan memory-file PASS.
 - Tile array `0x8013B818`, jumlah petak 22; manager `0x801EFBB8`.
 - Kartu sementara nol 128 KiB identik sebelum/sesudah; RAM writes NONE; gameplay input NONE.
 
 Run `41528938163`:
 - Source SHA: `4370d13dfa4c9f1aeaaf5ebb36cd3ce93ba8ea0d`.
-- Job `125563840401`; script exit 0; wall 2,416 detik.
+- Job `125563840401`; script exit 0; wall 2.416 detik.
 - H6 load event PASS dan memory-file read PASS; tile array/count/manager konsisten dengan smoke pertama.
 - Kartu sementara identik; RAM writes NONE; gameplay input NONE.
 
