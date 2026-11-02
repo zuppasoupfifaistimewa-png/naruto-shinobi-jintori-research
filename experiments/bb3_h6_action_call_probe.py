@@ -39,6 +39,8 @@ local action = tonumber(os.getenv("BB3_ACTION")) or 3
 local level = tonumber(os.getenv("BB3_LEVEL")) or 0
 local frames, started, done = 0, false, false
 local selectHit = false
+local refreshBB004Hit = false
+local refreshBE464Hit = false
 local mem = nil
 local manager = nil
 local tileBase = nil
@@ -122,7 +124,9 @@ local function readResult()
   log("BB3_TILE1C=" .. tostring(rw(tile + 0x1C)))
   log("BB3_TILE1E=" .. tostring(rw(tile + 0x1E)))
   log("BB3_SELECTED_TILE_INDEX=" .. tostring(rb(manager + 0x4A0)))
-  log("BB3_CALL_STATUS=PASS")
+  log("BB3_REFRESH_FUN_800BB004_REACHED=" .. (refreshBB004Hit and "1" or "0"))
+  log("BB3_REFRESH_FUN_800BE464_REACHED=" .. (refreshBE464Hit and "1" or "0"))
+  log("BB3_CALL_STATUS=" .. (refreshBB004Hit and refreshBE464Hit and "PASS" or "REFRESH_MISSING"))
 end
 
 local function initTest()
@@ -198,7 +202,17 @@ local function initTest()
       log("BB3_SELECTED_TILE_OVERRIDE=4")
       return false
     end)
-    _G.bb3AfterBreakpoint = PCSX.addBreakpoint(0x800D4838, "Exec", 4, "BB3 capture after action 3/8 tile mutation", function()
+    _G.bb3RefreshBB004Breakpoint = PCSX.addBreakpoint(0x800D4840, "Exec", 4, "BB3 refresh helper FUN_800BB004 entry", function()
+      refreshBB004Hit = true
+      log("BB3_REFRESH_FUN_800BB004_REACHED=1")
+      return false
+    end)
+    _G.bb3RefreshBE464Breakpoint = PCSX.addBreakpoint(0x800D4848, "Exec", 4, "BB3 refresh helper FUN_800BE464 entry", function()
+      refreshBE464Hit = true
+      log("BB3_REFRESH_FUN_800BE464_REACHED=1")
+      return false
+    end)
+    _G.bb3AfterBreakpoint = PCSX.addBreakpoint(0x800D4850, "Exec", 4, "BB3 capture after both tile refresh calls return", function()
       if done then return false end
       done = true
       readResult()
@@ -380,6 +394,8 @@ def main():
                     "test_label": "UJI_PANGGILAN_FUNGSI_NO_GAMEPLAY",
                     "call_status": result_status, "action_dispatch_reached": values.get("BB3_ACTION_DISPATCH_REACHED", "NO"),
                     "selected_tile_override": values.get("BB3_SELECTED_TILE_OVERRIDE", "NO"),
+                    "refresh_800BB004_reached": values.get("BB3_REFRESH_FUN_800BB004_REACHED", "NO"),
+                    "refresh_800BE464_reached": values.get("BB3_REFRESH_FUN_800BE464_REACHED", "NO"),
                     "participant_index": values.get("BB3_PARTICIPANT_INDEX", "TIDAK TAHU"),
                     "balance_original_h6": values.get("BB3_BALANCE_ORIGINAL_H6", "TIDAK TAHU"),
                     "balance_test_start": values.get("BB3_BALANCE_TEST_START", "TIDAK TAHU"),
@@ -428,6 +444,8 @@ def main():
         checks = {
             "dispatch": row["action_dispatch_reached"] == "1",
             "selector": row["selected_tile_override"] == str(TILE_INDEX),
+            "refresh_800BB004": row["refresh_800BB004_reached"] == "1",
+            "refresh_800BE464": row["refresh_800BE464_reached"] == "1",
             "fee": number("tile_1A_fee") == EXPECTED_FEE,
             "pending": number("pending_delta") == -EXPECTED_FEE,
             "level_8_11": number("level_8_11_after") == number("level_8_11_before") + 1 if number("level_8_11_before") is not None and number("level_8_11_after") is not None else False,
