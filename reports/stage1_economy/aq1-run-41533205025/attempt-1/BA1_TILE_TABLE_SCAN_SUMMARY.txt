@@ -1,0 +1,13 @@
+STATUS=PASS
+candidate_entry_indices=630,638
+candidate_count=2
+derived_record_rows=44
+resource_lookup_expression=FUN_800129E4()+0x276 (callsite 0x800B3ED8)
+directory_index_stride=8 bytes (FUN_8002D00C uses param_1*8)
+source_record_stride=0x1E
+runtime_record_stride=0x124
+runtime_map=FUN_800F7ADC static copy map; byte +0x05 is skipped; runtime +0x20 init=0xF020
+selection_status=PENDING_FUN_800129E4_RETURN_VALUE; no candidate is labeled Stage 1 yet
+runtime_base_status=0x800AD450 is static import candidate; runtime mapping unverified
+entry_630_bytes=661 offset=0x11DE000 sha256=12c1a6ff1870f5c6fe33723beef14d93009b509d70caa882c5c6e8de8535e0c8
+entry_638_bytes=661 offset=0x1474000 sha256=d88af9fd0100da3ac3223aa5b1d85f884547b3e3f708ba1dec81cfb923f7775f
