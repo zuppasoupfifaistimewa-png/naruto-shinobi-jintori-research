@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.regex.*;
 
 public class ExportBB2TileNibbleAudit extends GhidraScript {
-    private static final Pattern MEM = Pattern.compile("(?i)\\b(?:0x)?0*(20|0b)\\s*\\(\\s*([a-z0-9]+)\\s*\\)");
+    private static final Pattern MEM = Pattern.compile("(?i)\\b(?:0x)?0*(20|b)\\s*\\(\\s*([a-z0-9]+)\\s*\\)");
     private static final Pattern SHIFT = Pattern.compile("(?i)^_?srl\\s+([a-z0-9]+)\\s*,\\s*([a-z0-9]+)\\s*,\\s*(0x[0-9a-f]+|[0-9]+)");
     private static final Pattern ANDI = Pattern.compile("(?i)^_?andi\\s+([a-z0-9]+)\\s*,\\s*([a-z0-9]+)\\s*,\\s*(0x[0-9a-f]+|[0-9]+)");
     private static final Pattern SLL = Pattern.compile("(?i)^_?sll\\s+([a-z0-9]+)\\s*,\\s*([a-z0-9]+)\\s*,\\s*(0x[0-9a-f]+|[0-9]+)");
@@ -119,7 +119,7 @@ public class ExportBB2TileNibbleAudit extends GhidraScript {
             InstructionIterator it=currentProgram.getListing().getInstructions(true);
             while(it.hasNext()){
                 Instruction ins=it.next();Matcher mm=MEM.matcher(ins.toString());if(!mm.find())continue;
-                int off=(int)num(mm.group(1));String base=mm.group(2);
+                int off=Integer.parseInt(mm.group(1),16);String base=mm.group(2);
                 if("sp".equalsIgnoreCase(base))continue;
                 String mn=ins.getMnemonicString().toLowerCase();
                 String kind=(mn.equals("sb")||mn.equals("sh")||mn.equals("sw")||mn.equals("sd"))?"WRITE":
