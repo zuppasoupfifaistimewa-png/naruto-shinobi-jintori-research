@@ -1,0 +1,5 @@
+attempt	frame	selector_address	selector_u8	base_resource_id	selected_resource_id	selected_resource_id_hex
+1	180	0x80070CD0	0	0x276	630	0x276
+1	360	0x80070CD0	0	0x276	630	0x276
+2	180	0x80070CD0	0	0x276	630	0x276
+2	360	0x80070CD0	0	0x276	630	0x276
