@@ -39,20 +39,28 @@ Semua empat snapshot memiliki:
 - [0x8013A554] manager pointer = 0x801CEF08; pointer valid dalam RAM 2 MiB.
 - Manager +0xB2A=0; +0xB2B=0; +0xB30=0; +0xB38=0; +0xB40=0; +0xB44=0.
 
-## Baris tabel B30 yang dipilih
-Fungsi statis FUN_80012EAC:
-idx = u8[0x80058758 + mode*0x84 + state*0x0C]
-table_B30 = u32[0x80057798 + idx*0x54 + 0x0C]
+## Lookup tabel B30 dan aliran ke global 0x80070C88
 
-Pada seluruh empat snapshot: mode word [0x80070734]=0, state byte [0x8007073C]=0, matrix index address=0x80058758, index byte=0. Baris tabel yang terpilih:
-- Index = 0
-- Row base = 0x80057798
-- B30 table field = 0x800577A4
-- Nilai B30 pada baris = **400** (0x190)
-- Gate byte row+0x2E = 12
+Fungsi statis `FUN_80012EAC`:
+`idx = u8[0x80058758 + mode*0x84 + state*0x0C]`
+`table_B30 = u32[0x80057798 + idx*0x54 + 0x0C]`
 
-Nilai manager +0xB30 tetap **0**, jadi nilai table row 400 tidak sama dengan manager B30 yang sedang tersimpan. [0x80070C88] juga bernilai 400; kesamaan numerik ini **tidak** membuktikan keduanya mempunyai semantik atau jalur data yang sama. Jawaban yang aman: manager B30 aktual=0; selected table row B30=400 pada index0.
+Aliran writeback statis di MAIN_EXE:
+- Pada `FUN_80012EAC`, PC `0x80012F74` memuat `a0 = u32(row+0x0C)`; PC `0x80012F78` memanggil `FUN_80012A80`.
+- `FUN_80012A80` menyimpan `a0` ke global `0x80070C88` melalui instruksi delay-slot `sw a0,0x0C88(v0)` pada PC `0x80012A88`.
+- Dengan demikian, dataflow tabel B30 → `FUN_80012A80` → global `0x80070C88` dibuktikan oleh instruksi, bukan sekadar kesamaan angka.
 
+Pada seluruh empat snapshot H6 yang valid:
+- Mode word [0x80070734]=0; state byte [0x8007073C]=0.
+- Matrix index address=0x80058758; index byte=0; row base=0x80057798.
+- Nilai row B30 pada 0x800577A4 = **400** (0x190); gate byte row+0x2E=12.
+- Global [0x80070C88] = **400** (0x190) pada keempat snapshot. Hasil cocok dengan dataflow statis dan runtime.
+- Manager pointer [0x8013A554]=0x801CEF08 valid; manager +0xB30=0 pada seluruh snapshot. Ini adalah field staging manager yang terpisah; **jangan menyamakannya dengan table B30**. Mismatch manager+0xB30=0 versus row B30=400 tidak membatalkan writeback ke global 0x80070C88.
+
+TSV rekonsiliasi empat snapshot yang menggabungkan nilai tabel, global writeback, manager field terpisah, dan PC bukti:
+`reports/stage1_economy/az1-h6-economy-runtime-run-41360900093/attempt-1/AZ1_TABLE_SELECTION_RECONCILED.tsv`.
+
+Batas: runtime ini tetap H6 HYBRID; belum ada bukti target-checkpoint murni atau gameplay event ketika manager +0xB30 diisi.
 ## Seluruh record petak dan V
 - Pointer record [0x8013EA84] = 0x8013B818.
 - Count [0x8013EAC8] = 22; stride=0x124.

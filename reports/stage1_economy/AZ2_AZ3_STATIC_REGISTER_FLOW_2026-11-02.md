@@ -63,15 +63,27 @@ FUN_80109FEC membaca flag caller di param_1+0xC dan menguji bit 0x20 pada PC A07
 
 ## AZ3 — kandidat biaya bangun/upgrade sebagai getter dikurangi nilai
 
-Seluruh 14 direct JAL yang diekspor pada AX2 menuju setter 0x8001387C sudah direkonsiliasi di:
+AX2 sebelumnya merekonsiliasi **14 direct JAL** ke setter 0x8001387C di:
 `reports/stage1_economy/AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv`.
-Callsite:
+
+Callsite AX2:
 0x800B41B0, 0x800B4254, 0x800B4F00, 0x800B4F64, 0x800B6238, 0x800BEC98, 0x800DEB38, 0x800E1BE0, 0x800EC9A4, 0x800F95E8, 0x8010A15C, 0x8010A1B0, 0x8010A638, 0x8010A97C.
 
-Sepuluh caller awal memuat nilai dari participant / field record atau indeks; empat di FUN_80109FEC menghasilkan Q+B44, Q, Q+min(B44,20), Q. Tidak ada dari 14 direct JAL tersebut yang membentuk a1=Q(i)-nilai. Pengurangan B44-s1 pada A650 adalah pengurasan progress, bukan argumen debit harga kepada setter.
+### Callsite tambahan di MAIN_EXE
 
-**Hasil AZ3: TIDAK TAHU.** Tidak ada getter-minus-cost yang ditemukan pada 14 direct JAL yang diekspor; ini bukan bukti bahwa pola tersebut tidak ada di seluruh game. Indirect JALR dan pemanggil setter di luar ekspor AX2 belum ditelusuri tuntas. Tabel sumber/indeks untuk harga build atau upgrade belum terbukti.
+Disassembly MAIN_EXE juga memperlihatkan direct-JAL candidate ke setter pada PC **0x80013170** di `FUN_80012EAC` (raw word `1F 4E 00 0C`, decode `jal 0x8001387c`). Instruksi persis sebelumnya:
+- 0x8001316C `lw a1,0x4(s4)` — a1 menerima word dari selected table row +0x04.
+- 0x80013170 `jal 0x8001387c`.
+- delay slot 0x80013174 `move a0,s1` — a0 menerima indeks pemain loop.
 
+Dalam `FUN_80012EAC`, s4 adalah selected table row base `0x80057798 + idx*0x54`; jadi a1 pada call ini adalah `u32(selected_table_row+0x04)`. Ini **bukan** getter Q(i) dikurangi nilai, dan belum terbukti sebagai harga build/upgrade. Makna gameplay nilai row+0x04 = **TIDAK TAHU**. Site ini ditambahkan sebagai baris ke-15 di TSV AX2 reconciliation, dengan scope dan keterbatasan yang dinyatakan.
+
+### Hasil pemeriksaan pola debit
+
+NaN
+NaN
+
+**Status AZ3: BELUM SELESAI.** Ada 15 direct-JAL caller candidates yang sudah dapat ditunjuk (14 AX2 + 0x80013170 MAIN_EXE), tetapi belum ada census seluruh MAIN_EXE dan Entry1. Workflow Step7 berikutnya sedang diperluas untuk mengeluarkan semua decoded direct JAL callsites ke 0x8001387C dari dua image tersebut beserta windows instruksi. Indirect JALR/computed-target calls dan code overlay lain tetap TIDAK TAHU sampai ada bukti. Bahkan setelah direct census, rumus biaya aktual tetap tidak boleh disimpulkan bila tidak ada ekspresi debit yang terbukti.
 ## Hipotesis dan falsifier
 
 ### AZ2
