@@ -1,0 +1,7 @@
+executable_bytes=385024
+executable_sha256=a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569
+input_executable_uploaded=no
+game_or_emulator_executed=no
+gameplay_input_sent=no
+savestate_restored=no
+private_binary_uploaded=no
