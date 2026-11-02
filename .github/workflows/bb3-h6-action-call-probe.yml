@@ -145,7 +145,7 @@ jobs:
             echo "SOURCE_VARIANT=PINNED_RELEASE_BINARY_UNPATCHED"
             echo "CAPSTONE_SOURCE=$CAPSTONE_FILE"
             echo "PINNED_RELEASE_INTEGRITY=PASS"
-          } | tee "$OUTDIR/BB3_PATCHED_BUILD_MANIFEST.txt"
+          } | tee "$OUTDIR/BB3_PCSX_RELEASE_MANIFEST.txt"
           echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
           echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
 
@@ -201,7 +201,7 @@ jobs:
             [ -f "$f" ] || continue
             case "$f" in *.txt|*.log|*.tsv) cp "$f" "$OUTDIR/BB3_H6_PATCHED_$(basename "$f")";; esac
           done
-          echo "SMOKE_EXIT_CODE=$rc" >> "$OUTDIR/BB3_PATCHED_BUILD_MANIFEST.txt"
+          echo "SMOKE_EXIT_CODE=$rc" >> "$OUTDIR/BB3_PCSX_RELEASE_MANIFEST.txt"
           echo "BB3_SMOKE_WRAPPER_EXIT_CODE=$rc"
           if [ -f "$OUTDIR/BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt" ]; then
             cat "$OUTDIR/BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt"
@@ -276,21 +276,21 @@ jobs:
           root=Path(sys.argv[1])
           invalid=[str(p) for p in root.rglob("*") if p.is_file() and p.suffix.lower() not in {".txt",".tsv",".log"}]
           if invalid: raise SystemExit("non-text result blocked: "+repr(invalid))
-          required=("BB3_PATCHED_BUILD_MANIFEST.txt","BB3_ACTION_CALL_SUMMARY.txt","BB3_ACTION_CALL_RESULTS.tsv","BB3_SCRIPT_EXIT_CODE.txt","BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt")
+          required=("BB3_PCSX_RELEASE_MANIFEST.txt","BB3_ACTION_CALL_SUMMARY.txt","BB3_ACTION_CALL_RESULTS.tsv","BB3_SCRIPT_EXIT_CODE.txt","BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt")
           for name in required:
               if not (root/name).is_file():
                   (root/name).write_text("STATUS=TIDAK_TERSDIA\\nreason=workflow did not create this output\\n",encoding="utf-8")
           PY
           dest="reports/stage1_economy/bb3-h6-action-call-probe-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
-          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="BB3 16 H6 function-call launches on patched PCSX-Redux") | .id' | head -n 1)"
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="BB3 16 H6 function-call launches on pinned PCSX-Redux release") | .id' | head -n 1)"
           test -n "$JOB_ID" || JOB_ID="TIDAK TAHU"
           STATUS="$(sed -n 's/^STATUS=//p' "$out/BB3_ACTION_CALL_SUMMARY.txt" | head -n 1)"; test -n "$STATUS" || STATUS="INCOMPLETE"
           RC="$(sed -n 's/^BB3_SCRIPT_EXIT_CODE=//p' "$out/BB3_SCRIPT_EXIT_CODE.txt" | head -n 1)"
-          test -n "$RC" || RC="$(sed -n 's/^SMOKE_EXIT_CODE=//p' "$out/BB3_PATCHED_BUILD_MANIFEST.txt" | head -n 1)"
+          test -n "$RC" || RC="$(sed -n 's/^SMOKE_EXIT_CODE=//p' "$out/BB3_PCSX_RELEASE_MANIFEST.txt" | head -n 1)"
           test -n "$RC" || RC="TIDAK TAHU"
           {
             echo "STATUS=$STATUS"
-            echo "JOB=bb3-h6-action-call-probe-patched"
+            echo "JOB=bb3-h6-action-call-probe-release"
             echo "JOB_ID=$JOB_ID"
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "SOURCE_SHA=$GITHUB_SHA"
