@@ -89,10 +89,10 @@ def main():
     run_card=launch/"memory-card.mcd"; shutil.copyfile(card,run_card)
     card_before=sha(run_card.read_bytes())
     lua=launch/"bb3-smoke.lua"; lua.write_text(LUA,encoding="utf-8")
-    pad=("PCSX.settings.pads[1].DeviceType = 'Analog'\\n"
-         "PCSX.settings.pads[1].Connected = true\\n"
-         "PCSX.SIO0.slots[1].pads[1].map()\\n"
-         "print('BB3_SMOKE_CONTROLLER_MAPPED_NO_GAMEPLAY_INPUT=1')\\n")
+    pad=("PCSX.settings.pads[1].DeviceType = 'Analog'\n"
+         "PCSX.settings.pads[1].Connected = true\n"
+         "PCSX.SIO0.slots[1].pads[1].map()\n"
+         "print('BB3_SMOKE_CONTROLLER_MAPPED_NO_GAMEPLAY_INPUT=1')\n")
     appdir=Path(a.appdir); env=os.environ.copy()
     env.update({"DISPLAY":":99","LIBGL_ALWAYS_SOFTWARE":"1",
       "LD_LIBRARY_PATH":str(appdir/"usr/lib")+":"+str(appdir/"usr/lib/x86_64-linux-gnu"),
@@ -111,7 +111,7 @@ def main():
     elapsed=time.monotonic()-start
     stdout=(logs/"emulator-stdout.txt").read_text(encoding="utf-8",errors="replace")
     pcsx=(logs/"pcsx-redux.log").read_text(encoding="utf-8",errors="replace") if (logs/"pcsx-redux.log").exists() else ""
-    combined=stdout+"\\n"+pcsx
+    combined=stdout+"\n"+pcsx
     (out/"BB3_SMOKE_EMULATOR_LOG.txt").write_text(combined[-50000:],encoding="utf-8")
     card_after=sha(run_card.read_bytes()) if run_card.exists() else "TIDAK TAHU"
     markers=[x for x in combined.splitlines() if "BB3_SMOKE_" in x]
@@ -129,10 +129,10 @@ def main():
       "MEMORY_CARD_SHA256_BEFORE="+card_before,"MEMORY_CARD_SHA256_AFTER="+card_after,
       "RAM_WRITES=NONE","GAMEPLAY_INPUT=NONE","MARKERS_BEGIN"
     ]+markers+["MARKERS_END"]
-    (out/"BB3_SMOKE_SUMMARY.txt").write_text("\\n".join(summary)+"\\n",encoding="utf-8")
-    (out/"BB3_SMOKE_SCRIPT_EXIT_CODE.txt").write_text("BB3_SMOKE_SCRIPT_EXIT_CODE=%d\\n"%exit_code,encoding="utf-8")
+    (out/"BB3_SMOKE_SUMMARY.txt").write_text("\n".join(summary)+"\n",encoding="utf-8")
+    (out/"BB3_SMOKE_SCRIPT_EXIT_CODE.txt").write_text("BB3_SMOKE_SCRIPT_EXIT_CODE=%d\n"%exit_code,encoding="utf-8")
     (out/"ACTIONS_RUN_SUMMARY.txt").write_text(
-      "STATUS=%s\\nJOB=bb3-h6-smoke\\nRUN_ID=%s\\nSOURCE_SHA=%s\\nEXIT_CODE=%d\\n"%
+      "STATUS=%s\nJOB=bb3-h6-smoke\nRUN_ID=%s\nSOURCE_SHA=%s\nEXIT_CODE=%d\n"%
       (status,os.getenv("GITHUB_RUN_ID","TIDAK TAHU"),os.getenv("GITHUB_SHA","TIDAK TAHU"),exit_code),encoding="utf-8")
     raise SystemExit(exit_code)
 if __name__=="__main__": main()
