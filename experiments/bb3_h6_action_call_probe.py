@@ -292,9 +292,11 @@ def main():
     h6_path = work / "resume" / "h6-hybrid.sstate"
     h6_path.write_bytes(h6)
     reference_card = Path(args.card)
-    expected_card_sha = "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5"
-    if sha(reference_card.read_bytes()) != expected_card_sha:
-        raise SystemExit("REFERENCE_MEMORY_CARD_SHA_MISMATCH")
+    reference_card_bytes = reference_card.read_bytes()
+    if len(reference_card_bytes) != 131072:
+        raise SystemExit("DISPOSABLE_MEMORY_CARD_SIZE_MISMATCH")
+    if any(reference_card_bytes):
+        raise SystemExit("DISPOSABLE_MEMORY_CARD_NOT_ZERO_FILLED")
 
     appdir = Path(args.appdir)
     env_base = os.environ.copy()
