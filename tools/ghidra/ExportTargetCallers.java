@@ -126,19 +126,34 @@ public class ExportTargetCallers extends GhidraScript {
                     +" caller_body_bytes="+hit.function.getBody().getNumAddresses());
             }
 
-            // Always prioritize decompilation of any function that calls the
-            // candidate seed setter, then sample at most 12 unique RNG callers.
-            for (Hit hit:validatedHits) {
-                if (hit.function!=null && hit.target.getOffset()==0x80035DA8L)
-                    selectedForDecompile.putIfAbsent(hit.function.getEntryPoint().toString(),hit.function);
+            // For the Chakra balance setter, decompile every unique validated direct
+            // caller. Earlier exports only listed these callers and left their bodies
+            // unexamined, which was insufficient to audit Q-cost dataflow.
+            boolean auditingChakraSetter=false;
+            for (Address target:targets)
+                if (target.getOffset()==0x8001387CL) auditingChakraSetter=true;
+            if (auditingChakraSetter) {
+                for (Hit hit:validatedHits) {
+                    if (hit.function!=null)
+                        selectedForDecompile.putIfAbsent(hit.function.getEntryPoint().toString(),hit.function);
+                }
+                line("decompilation_mode=ALL_VALIDATED_DIRECT_CALLER_FUNCTIONS_FOR_0x8001387C");
+            } else {
+                // Preserve the previous seed-setter and bounded RNG-caller behavior.
+                for (Hit hit:validatedHits) {
+                    if (hit.function!=null && hit.target.getOffset()==0x80035DA8L)
+                        selectedForDecompile.putIfAbsent(hit.function.getEntryPoint().toString(),hit.function);
+                }
+                for (Hit hit:validatedHits) {
+                    if (hit.target.getOffset()==0x80035D78L && hit.function!=null
+                        && selectedForDecompile.size()<13)
+                        selectedForDecompile.putIfAbsent(hit.function.getEntryPoint().toString(),hit.function);
+                }
+                line("decompilation_mode=SEED_CALLERS_THEN_UP_TO_12_RNG_CALLERS");
             }
-            for (Hit hit:validatedHits) {
-                if (hit.target.getOffset()==0x80035D78L && hit.function!=null
-                    && selectedForDecompile.size()<13)
-                    selectedForDecompile.putIfAbsent(hit.function.getEntryPoint().toString(),hit.function);
-            }
+            int decompileTimeoutSeconds=auditingChakraSetter?45:15;
             line("");
-            line("detailed_decompilation_limit=seed-setter callers first, then at most 12 unique RNG callers");
+            line("detailed_decompilation_timeout_seconds="+decompileTimeoutSeconds);
             line("detailed_decompilation_count="+selectedForDecompile.size());
 
             DecompInterface decompiler=new DecompInterface();
@@ -151,7 +166,7 @@ public class ExportTargetCallers extends GhidraScript {
                 line("");
                 line("=== SELECTED_CALLER_FUNCTION entry="+f.getEntryPoint()+" name="+f.getName()
                     +" body_bytes="+f.getBody().getNumAddresses()+" ===");
-                DecompileResults result=decompiler.decompileFunction(f,15,monitor);
+                DecompileResults result=decompiler.decompileFunction(f,decompileTimeoutSeconds,monitor);
                 if(result!=null && result.decompileCompleted() && result.getDecompiledFunction()!=null) {
                     line("--- C_DECOMPILATION_BEGIN ---");
                     line(result.getDecompiledFunction().getC());
