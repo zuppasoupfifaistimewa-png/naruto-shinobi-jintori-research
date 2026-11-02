@@ -1,0 +1,25 @@
+BB3 — H6 HYBRID TEMPORARY-RAM FUNCTION-CALL PROBE
+STATUS=SEBAGIAN
+SCOPE=Runtime confirmation of action-byte 3/8 shared transaction branch at H6 fixture; not proof that either action is the visible Barrier-placement action.
+TEST=UJI PANGGILAN FUNGSI; NOT GAMEPLAY; no controller button press
+H6_SHA256=d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475
+CONDITIONS=action byte 3,8 x tile+0x20 bits8-11 level 0..3 x 2 independent launches
+LAUNCHES=1 EXPECTED=16
+PASS_LAUNCHES=0
+STOP_REASON=FIRST_NONPASS action=3 level=0 attempt=1 status=NOT_REACHED wrapper_exit=60 wall=99.714
+FIRST_FAILURE_DIAGNOSTIC=PUBLISHED_TEXT_ONLY
+COVERAGE_2_ATTEMPTS_PER_ACTION_LEVEL=False
+VALIDATION_ERRORS=1
+VALIDATION_ERROR_DETAILS=call_status:3:0:1
+TIMEOUT_SECONDS_PER_LAUNCH=360
+HISTORICAL_SLOWEST_LAUNCH_SECONDS=145.815
+TIMEOUT_GE_2X_HISTORICAL_SLOWEST=True
+OBSERVED_MAX_LAUNCH_SECONDS=99.714
+TIMEOUT_GE_2X_OBSERVED_MAX=True
+MEMORY_CARD=DISPOSABLE_ZERO_FILLED_128_KIB
+MEMORY_CARD_UNCHANGED_ALL=False
+CONTROL_POSITIVE_3_OWNED_TILES_FORMULA=NOT_RUN
+CONTROL_FORMULA= floor(sum(values of 3 owned tiles)/2)+400 (user-supplied known control)
+NOTE=Positive control was not executed; the formula is separate from the action-byte 3/8 branch under test.
+RAM_WRITES=temporary inside disposable emulator launches only; no RAM dumps or savestates published
+RELEASE=unchanged
