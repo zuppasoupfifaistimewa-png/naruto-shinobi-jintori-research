@@ -61,46 +61,54 @@ FUN_80109FEC membaca flag caller di param_1+0xC dan menguji bit 0x20 pada PC A07
 **Kesimpulan mekanis K4:** kondisi kode untuk jalur transfer ke participant +0x18 adalah caller flag bit 0x20 dan state manager 7, setelah progress state 6 mengisi B44 menuju B40.
 **Nama pemicu gameplay = TIDAK TAHU.** Kode yang diekspor tidak memberi bukti bahwa event tersebut adalah akhir putaran, settlement, atau Barrier release. Producer bit 0x20 dan asal semantik B30/B38 juga belum terbukti. Maka tidak ada satu dari tiga nama event itu yang dipilih.
 
-## AZ3 — census direct caller setter saldo dan sumber nilai awal participant
+## AZ3 — saldo awal, transfer, dan debit transaksi petak
 
-Run Step7 `41367221886` memindai seluruh aligned MIPS words pada Entry1 dan MAIN_EXE. Direct JAL ke setter 0x8001387C tervalidasi:
+Run Step7 memperluas analisis dari 16 direct JAL ke setter menjadi dekompilasi caller/callee dan handler state yang memakai array pending. Direct caller setter tetap:
+- Entry1: 14/14 direct JAL candidates divalidasi Ghidra.
+- MAIN_EXE: 2/2 divalidasi.
+- Total 16 direct JAL.
 
-| Image | raw JAL candidate | Ghidra direct-flow validated |
-|---|---:|---:|
-| DATA.BIN Entry 1 (596,412 B) | 14 | 14 |
-| MAIN_EXE SLPS_035.53 | 2 | 2 |
-| **Total** | **16** | **16** |
+Daftar callsite dan ekspresi awal ada di `AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv`. Tidak adanya ekspresi `Q(i)-cost` pada 16 site tersebut bukan bukti bahwa game tidak punya debit: transaksi petak memakai computed pointer store ke pending array +0x2EE, lalu diproses terpisah.
 
-Daftar PC, ekspresi argumen, source classification dan instruksi sebelumnya berada pada `AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv`.
+### Saldo kanonis dan seed awal
 
-### Setter/getter participant +0x18
+`FUN_8001387C(i,value)` memvalidasi `i<4`, clamp -9999..99999, dan menulis ke `0x80070EA0+i*0xB4+0x18`. `FUN_800138EC(i)` membaca field yang sama. Field participant +0x18 adalah saldo Chakra kanonis; beberapa state handler memakai mirror/shadow participant +0x04.
 
-`FUN_8001387C(i,value)` memvalidasi `i<4`, membatasi value ke rentang -9999..99999, lalu menulis ke `0x80070EA0 + i*0xB4 + 0x18`. Getter `FUN_800138EC(i)` membaca field yang sama (atau 0 untuk indeks tidak valid). Field +0x18 teridentifikasi sebagai chakra pada record pemain; kode yang diuji menunjukkan setter/getter mentahnya.
+MAIN_EXE callsite `0x80012DD4` melalui `FUN_80012A44` hanya mengambil global `0x80070C80`; `FUN_80012C70` meneruskan nilai itu untuk inisialisasi saldo tiap pemain. Dua writer langsung C80:
+- `FUN_80012780`, PC `0x800127D0`: sumber `MEM32[0x8006491C+(param_1&0xFF)*0x30]`.
+- `FUN_80012EAC`, PC `0x80012F64`: selected mode/state table row+0x04 di `0x8005779C+idx*0x54`.
 
-### Sumber nilai awal dari global 0x80070C80
+Identitas kolom +0x04 dan nilai runtime C80 pada snapshot H6 = **TIDAK TAHU**.
 
-Decompile run `41367906993` mengungkapkan bahwa callsite MAIN_EXE `0x80012DD4` bukan debit biaya. Alirannya:
-- `FUN_80012A44` pada PC `0x80012A48` hanya membaca `MEM32[0x80070C80]` dan mengembalikannya.
-- `FUN_80012C70` menjalankan loop `uVar7` atas pemain, memanggil `FUN_80012A44()`, lalu memanggil `FUN_8001387C(uVar7,uVar4)`. Jadi nilai dari global C80 diinisialisasikan ke field participant +0x18.
-- `FUN_8001387C` hanya melakukan validasi index, clamp dan store; tidak ada pengurangan saldo atau biaya pada fungsi ini.
+### Jalur biaya pembelian/peningkatan petak
 
-Run Step7 `41368276256` (job `125033025512`, source SHA `5822e40f3698e1b928619ee74ec4cef5a4913f70`, exit code 0) kemudian menemukan dua writer langsung ke global C80:
-- `FUN_80012780`, PC `0x800127D0`, `sw v0,0xc80(s2)`; base s2 dibentuk oleh `lui s2,0x8007`. Nilainya datang dari `MEM32[0x8006491C + (param_1 & 0xFF)*0x30]`.
-- `FUN_80012EAC`, PC `0x80012F64`, `sw v0,0xc80(s0)`; base s0 berasal dari `lui s0,0x8007`. Nilainya datang dari `MEM32[0x8005779C + idx*0x54]`, dengan idx mode/state yang sama seperti tabel B30.
+Bukti langsung ada pada `FUN_800D15A8`, cabang action byte `participant_manager+0x2EB == 3 || 8`:
+1. `FUN_800BBD9C()` memilih indeks tile dan indeks tersebut disimpan pada `participant_manager+0x4A0`.
+2. Biaya transaksi dibaca sebagai `fee = u16(tile+0x1A)`.
+3. Pemeriksaan mencukupi membandingkan `fee <= participant[DAT_8013EA6E]+0x04`.
+4. Bila cukup, kode menulis `pending[DAT_8013EA6E] = -fee` pada array `participant_manager+0x2EE`.
+5. Kode menaikkan nibble level bits 8–11 dan bits 4–7 pada word `tile+0x20`, masing-masing satu.
+6. `FUN_800BB004` dan `FUN_800BE464` dipanggil untuk memperbarui representasi/atribut tile.
 
-Jadi global C80 adalah **sumber nilai awal field chakra participant +0x18**, yang dapat diisi oleh dua jalur pemilih tabel/config. Label makna field +0x04 tabel dan identitas nilai `param_1` di FUN_80012780 belum dipastikan lebih jauh. C80 sendiri tidak diambil dalam empat H6 runtime snapshots sebelumnya; nilai runtime pada snapshot itu = TIDAK TAHU.
+**Kesimpulan K4 statis:** biaya action petak 3/8 dibaca langsung dari field tile record `+0x1A`; transaksi hanya diproses jika saldo kerja cukup dan debit diposting sebagai signed pending delta `-fee`. Field +0x1A adalah sumber nominal biaya yang digunakan handler tersebut. Ini bukan rumus nilai petak `FUN_800B770C` dan bukan rumus transfer B44.
 
-Bukti instruksi dan base provenance C80 ada di `AZ3_GLOBAL_70C80_SEED_FLOW_2026-11-02.tsv`.
+Nama gameplay yang lebih spesifik untuk action byte 3 versus 8, dan pemetaan setiap record tile ke harga konkret belum dipastikan; keduanya **TIDAK TAHU**.
 
-### Mengapa AZ3 biaya masih belum tuntas
+### Pemroses pending delta dan jalur ekonomi yang berbeda
 
-Pada 14 callsite Entry1, sepuluh caller awal memberi nilai participant/field/slot; empat di FUN_80109FEC memberi Q+B44, Q, Q+min(B44,0x14), dan Q. Dua MAIN_EXE caller: `0x80013170` memberi word selected table row+0x04; `0x80012DD4` memberi global C80 sebagai nilai awal. **Tidak satu pun dari 16 direct-JAL callsite tervalidasi membentuk `Q(i)-cost`.**
+`FUN_800BE5D8` membaca signed pending +0x2EE per pemain, menguraikannya untuk animasi dalam langkah 1/10/100/1000/10000, menerapkan plus/minus ke saldo shadow participant +0x04, lalu memanggil setter `FUN_8001387C` dan getter `FUN_800138EC` untuk menyinkronkan saldo kanonis +0x18. Setelah nominal habis, slot pending dibersihkan.
 
-Exporter menghitung 12 instruksi JALR di Entry1 dan 152 di MAIN_EXE. Target JALR tersebut dinamis dan tidak terikat ke setter 0x8001387C; angka itu adalah jumlah semua indirect calls, bukan callsite setter. Computed target, overlay/image lain, dan sumber harga build/upgrade tetap **TIDAK TAHU**.
+Jalur lain yang sama-sama menggunakan pending saldo tetapi tidak boleh dinamai biaya pembelian:
+- `FUN_800F3658`, event code `'r'`: `FUN_8010BDFC()*500` membentuk transfer antarpemain; array `DAT_80139ECC` menampung delta positif/negatif sebelum dipindahkan oleh `FUN_800DB29C` / `FUN_800E0B3C` ke +0x2EE.
+- `FUN_800F2A9C`: membentuk delta berbasis helper nilai event dan jumlah peserta untuk peserta-peserta yang terlibat.
+- Cabang lain `FUN_800D15A8`: delta positif memakai `tile+0x1E + level*tile+0x1C`; formula terlihat tetapi label gameplay (pendapatan/hadiah/settlement) = **TIDAK TAHU**.
 
-**Hasil debit biaya: TIDAK TAHU.** Tidak ada dasar untuk mengarang formula build/upgrade. AZ3 direct setter census dan jalur seed awal telah selesai; pencarian jalur debit biaya secara keseluruhan belum selesai.
+### Batas AZ3
 
-**Status AZ3: SEBAGIAN (setter/getter dan seed initialization terbukti; biaya build/upgrade belum terbukti).**
+Static K4 menetapkan sumber harga dan mekanisme debit untuk branch petak action 3/8. Belum ada runtime replay transaksi pembelian/upgrade dalam sesi ini. H6 runtime AZ1 adalah HIBRIDA, bukan target checkpoint murni. 12 JALR Entry1 dan 152 JALR MAIN_EXE yang diekspor adalah jumlah semua indirect call; target dinamis yang tidak terikat, overlay lain, dan kemungkinan transaksi lain di luar branch yang ditelusuri tetap **TIDAK TAHU**.
+
+**Status AZ3: SELESAI untuk jalur transaksi petak action 3/8, saldo, dan sinkronisasinya dalam audit statis ini; batas semantik dan coverage di atas tetap dicatat sebagai TIDAK TAHU.**
+
 ## Hipotesis dan falsifier
 
 ### AZ2
@@ -108,7 +116,8 @@ Exporter menghitung 12 instruksi JALR di Entry1 dan 152 di MAIN_EXE. Target JALR
 - H2: state 7 adalah penyelesaian Barrier-release dan B44 adalah nilai yang dirilis. Falsifier: producer B30/B38 atau asal flag 0x20 terbukti terkait aksi lain, atau runtime original-code pada event Barrier release tidak mengikuti state 6→7.
 
 ### AZ3
-- H1: harga build/upgrade dikalkulasi sebagai Q(i)-cost dan ditulis lewat setter 0x8001387C. Falsifier: caller + indirect call census lengkap menunjukkan pembelian tidak pernah menurunkan saldo melalui setter tersebut.
-- H2: harga berasal dari tabel/field lain atau jalur debit terpisah. Falsifier: bukti producer/consumer original-code mengikat seluruh pembelian ke pola Q(i)-cost dan meniadakan sumber alternatif.
+- H1 yang kini didukung K4 statis: pada handler `FUN_800D15A8`, action byte 3/8 memakai `u16(tile+0x1A)` sebagai biaya; bila saldo participant +0x04 cukup, pending +0x2EE mendapat `-fee` dan dua level nibble tile+0x20 naik satu.
+- Falsifier untuk H1: decode independen atau penelusuran register membuktikan nilai +0x1A bukan operand perbandingan dan debit pending bukan berasal dari nilai yang sama.
+- H2: semua action bangun/upgrade dalam game memakai jalur tersebut. **Belum terbukti**; action lain, indirect calls, dan overlay lain masih harus diaudit.
 
-Confidence register/control-flow statis K4. Identitas event, unit B30/B38/B40/B44, cost build/upgrade, dan cakupan indirect reader/caller di luar ekspor: TIDAK TAHU. Nol hit tidak dipakai sebagai kesimpulan.
+Confidence control-flow dan dataflow action 3/8 = K4 statis. Tidak ada klaim K5 runtime untuk transaksi ini. Identitas nama action, nominal setiap tile, label delta positif tile+0x1E/1C, nama event B30/B38/B40/B44, dan coverage indirect handler lain tetap TIDAK TAHU. Nol hit tidak dipakai sebagai kesimpulan.
