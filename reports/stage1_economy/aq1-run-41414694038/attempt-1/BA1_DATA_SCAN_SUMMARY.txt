@@ -1,0 +1,11 @@
+STATUS=PASS
+data_bytes=66015232
+data_sha256=69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822
+directory_entries=1504
+active_entries=1500
+zero_length_entries=4
+resource_candidates_with_known_value_pattern=0
+pattern_status=HYPOTHESIS_ONLY_UNTIL_SOURCE_TO_RUNTIME_MAP_IS_CONFIRMED
+record_stride_source=0x1E
+runtime_record_stride=0x124
+known_mapping=source+0x14/+0x15 -> runtime tile+0x1A (from FUN_800F7ADC static report)
