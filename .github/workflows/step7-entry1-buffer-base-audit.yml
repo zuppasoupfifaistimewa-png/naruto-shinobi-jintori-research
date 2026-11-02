@@ -233,7 +233,7 @@ jobs:
             -postScript ExportNumericLiteralReferences.java "$out/aw2-numeric-instruction-literals.tsv" \
             -postScript ExportManagerEconomyWriters.java ENTRY1 "$out/ay1-ay2-entry1.tsv" \
             -postScript ExportTargetCallers.java "$out/az3-setter-direct-callers-entry1.txt" 0x8001387C \
-            -postScript ExportFunctionDetail.java "$out/az3-resource-economy-function-detail.txt" 0x800EC574 0x800DB29C 0x800E0B3C 0x800C7574 \
+            -postScript ExportFunctionDetail.java "$out/az3-resource-economy-function-detail.txt" 0x800EC574 0x800DB29C 0x800E0B3C 0x800C7574 0x800F3658 \
             -postScript ExportCallWindows.java "$out/az3-setter-call-windows-entry1.tsv" 0x8001387C \
             -postScript ExportCallWindows.java "$out/aw1-helper-call-windows.tsv" 0x800B770C 0x800BDC4C \
             -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
