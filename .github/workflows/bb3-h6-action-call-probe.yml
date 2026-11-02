@@ -1,4 +1,4 @@
-name: BB3 — H6 temporary RAM action-byte function-call probe (patched PCSX)
+name: BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)
 
 on:
   workflow_dispatch:
@@ -13,12 +13,12 @@ permissions:
   actions: read
 
 concurrency:
-  group: naruto-bb3-h6-action-call-probe-v2
+  group: naruto-bb3-h6-action-call-probe-release-v3
   cancel-in-progress: false
 
 jobs:
   bb3-h6-action-call-probe:
-    name: BB3 16 H6 function-call launches on patched PCSX-Redux
+    name: BB3 16 H6 function-call launches on pinned PCSX-Redux release
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     container:
@@ -112,50 +112,39 @@ jobs:
           github-token: ${{ github.token }}
           path: ${{ env.WORK }}/inputs
 
-      - name: Build and test patched PCSX-Redux from pinned source
+      - name: Extract and verify pinned PCSX-Redux release build
         shell: bash
         run: |
           set -euo pipefail
-          cd "$WORK"
-          git clone --no-checkout https://github.com/grumpycoders/pcsx-redux.git pcsx-src
-          cd pcsx-src
-          git checkout --detach "$BASE_COMMIT"
-          test "$(git rev-parse HEAD)" = "$BASE_COMMIT"
-          ./.github/scripts/update-submodules.sh
-          git apply "$GITHUB_WORKSPACE/experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch"
-          git diff --check
-          git diff --binary -- src/spu/adpcm.cc src/spu/adpcm.h > "$WORK/applied-fix.diff"
-          PATCH_SHA="$(sha256sum "$GITHUB_WORKSPACE/experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch" | cut -d ' ' -f 1)"
-          DIFF_SHA="$(sha256sum "$WORK/applied-fix.diff" | cut -d ' ' -f 1)"
-          test -s "$WORK/applied-fix.diff"
-          make -j 2 all pcsx-redux-tests tools
-          make -C src/mips/tests -j 2 PCSX_TESTS=true
-          make -C src/mips/openbios clean
-          make -C src/mips/openbios -j 2 all
-          export GTEST_OUTPUT=xml:"$WORK/test-results/"
-          mkdir -p "$WORK/test-results"
-          xvfb-run catchsegv ./pcsx-redux-tests
-          make install install-openbios DESTDIR=AppDir/usr
-          sed -i 's:/usr/bin/::' AppDir/usr/share/applications/pcsx-redux.desktop
-          linuxdeploy -v 3 --appdir=AppDir -e AppDir/usr/bin/pcsx-redux \
-            -d AppDir/usr/share/applications/pcsx-redux.desktop \
-            -i AppDir/usr/share/icons/hicolor/256x256/apps/pcsx-redux.png -o appimage
-          mv PCSX-Redux-x86_64.AppImage "$WORK/PCSX-Redux-spu-sentinel-probe-x86_64.AppImage"
-          VARIANT_SHA="$(sha256sum "$WORK/PCSX-Redux-spu-sentinel-probe-x86_64.AppImage" | cut -d ' ' -f 1)"
-          mkdir -p "$WORK/variant"
-          cd "$WORK/variant"
-          ../PCSX-Redux-spu-sentinel-probe-x86_64.AppImage --appimage-extract >/dev/null
-          APPDIR="$WORK/variant/squashfs-root"
+          cd "$WORK/source"
+          asset_name="PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage"
+          asset_id="$(jq -r --arg name "$asset_name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+          test -n "$asset_id" && test "$asset_id" != null
+          curl --fail --silent --show-error --location --retry 2 --max-time 600 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "https://api.github.com/repos/$RESEARCH_REPO/releases/assets/$asset_id" -o pcsx-redux.AppImage
+          test "$(stat -c %s pcsx-redux.AppImage)" = 65747557
+          echo "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c  pcsx-redux.AppImage" | sha256sum --check -
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          APPDIR="$WORK/source/squashfs-root"
           PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 | grep -E '/(pcsx-redux|pcsx-redux[^/]*)$' | head -n 1)"
           test -n "$PCSX_BIN" && test -x "$PCSX_BIN"
+          CAPSTONE_FILE="$(find -L "$APPDIR" -type f -name 'libcapstone.so.5' -print -quit)"
+          mkdir -p "$WORK/capstone"
+          if [ -n "$CAPSTONE_FILE" ]; then
+            cp "$CAPSTONE_FILE" "$WORK/capstone/libcapstone.so.5"
+          else
+            echo "pinned AppImage missing libcapstone.so.5"; exit 1
+          fi
           {
-            echo "BASE_COMMIT=$BASE_COMMIT"
-            echo "SOURCE_VARIANT=base_commit_plus_upstream_PR_2218_two_file_SPu_ADPCM_fix"
-            echo "PATCH_FILE=experiments/pcsx-redux-spu-adpcm-stopped-cursor.patch"
-            echo "PATCH_SHA256=$PATCH_SHA"
-            echo "APPLIED_SOURCE_DIFF_SHA256=$DIFF_SHA"
-            echo "VARIANT_APPIMAGE_SHA256=$VARIANT_SHA"
-            echo "PATCHED_BUILD_AND_UNIT_TESTS=PASS"
+            echo "PCSX_RELEASE_ASSET=$asset_name"
+            echo "PCSX_RELEASE_SIZE=65747557"
+            echo "PCSX_RELEASE_SHA256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c"
+            echo "PCSX_SOURCE_COMMIT=0c3572c3db75f97542001e453ae80ba8c3f8acba"
+            echo "SOURCE_VARIANT=PINNED_RELEASE_BINARY_UNPATCHED"
+            echo "CAPSTONE_SOURCE=$CAPSTONE_FILE"
+            echo "PINNED_RELEASE_INTEGRITY=PASS"
           } | tee "$OUTDIR/BB3_PATCHED_BUILD_MANIFEST.txt"
           echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
           echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
