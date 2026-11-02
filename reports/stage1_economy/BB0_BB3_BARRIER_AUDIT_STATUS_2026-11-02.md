@@ -134,7 +134,7 @@ Run `41528133484` (source SHA `3e0e33d877945590033a0671d41d4fc33f69a7a7`, job `1
 
 Run lama `41527261817` dan `41527576341` tidak boleh dianggap lulus: keduanya terhambat library/runtime loader. Run `41527251225` pada workflow lama juga masih terhenti di build lama dan bukan sumber valid untuk transaksi.
 
-Run terbaru `41529469001` menggunakan workflow yang dipisahkan ke concurrency group v4 dan timeout/watchdog 360; statusnya sudah aktif, tetapi ketika laporan ini diperbarui masih pada persiapan lingkungan. Ia belum menghasilkan hasil function-call.
+Run terbaru `41529469001` (source SHA `227ee88f06d6618c8f4e0726407f70b4e2e75e05`, job `125565631539`) menggunakan workflow concurrency group v4 dan timeout/watchdog 360. Run telah menyelesaikan ekstraksi dan verifikasi PCSX rilis, validasi input, serta smoke-test H6; langkah 11/14 `Run 16 isolated H6 function-call launches` masih berjalan. Belum ada TSV hasil akhir yang dapat dipakai untuk menyimpulkan transaksi.
 
 Kontrol positif rumus 3 petak tetap **TIDAK DIUJI**. Probe ini juga belum menguji commit saldo kanonik melalui `FUN_800BE5D8`; ia mengamati pending delta dan perubahan field level pada cabang transaksi.
 
