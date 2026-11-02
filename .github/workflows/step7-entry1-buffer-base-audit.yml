@@ -505,7 +505,7 @@ jobs:
           import sys
           root = Path(sys.argv[1])
           files = [p for p in root.rglob("*") if p.is_file()]
-          invalid = [str(p) for p in files if p.suffix.lower() not in {".txt", ".log", ".tsv", ".md"}]
+          invalid = [str(p) for p in files if p.suffix.lower() not in {".txt", ".log", ".tsv", ".md", ".csv"}]
           oversized = [str(p) for p in files if p.stat().st_size > 30_000_000]
           if invalid or oversized:
               raise SystemExit(f"Invalid artifact files: invalid={invalid} oversized={oversized}")
