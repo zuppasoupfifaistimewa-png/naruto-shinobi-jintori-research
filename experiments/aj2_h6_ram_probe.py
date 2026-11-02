@@ -235,10 +235,10 @@ def main():
     capstone_dir = work_for_probe / "capstone"
     if not capstone_dir.is_dir():
         capstone_dir = work_for_probe.parent / "capstone"
-    ffmpeg_dirs = sorted({str(p.parent) for p in appdir.rglob("libavformat.so.63") if p.is_file()})
-    if not ffmpeg_dirs:
-        raise SystemExit("PCSX_APPIMAGE_MISSING_LIBAVFORMAT_63")
-    library_dirs = [str(capstone_dir)] + ffmpeg_dirs + [
+    ffmpeg_dir = work_for_probe.parent / "ffmpeg-libs"
+    if not ffmpeg_dir.is_dir() or not (ffmpeg_dir / "libavformat.so.63").is_file():
+        raise SystemExit("PCSX_PRIVATE_FFMPEG_LIBS_NOT_PREPARED")
+    library_dirs = [str(capstone_dir), str(ffmpeg_dir),
         str(appdir / "usr/lib"), str(appdir / "usr/lib/x86_64-linux-gnu")
     ]
     env = os.environ.copy()

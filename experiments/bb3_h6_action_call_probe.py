@@ -369,10 +369,10 @@ def main():
         raise SystemExit("DISPOSABLE_MEMORY_CARD_NOT_ZERO_FILLED")
 
     appdir = Path(args.appdir)
-    ffmpeg_dirs = sorted({str(p.parent) for p in appdir.rglob("libavformat.so.63") if p.is_file()})
-    if not ffmpeg_dirs:
-        raise SystemExit("PCSX_APPIMAGE_MISSING_LIBAVFORMAT_63")
-    library_dirs = [str(work/"capstone")] + ffmpeg_dirs + [
+    ffmpeg_dir = work / "ffmpeg-libs"
+    if not ffmpeg_dir.is_dir() or not (ffmpeg_dir / "libavformat.so.63").is_file():
+        raise SystemExit("PCSX_PRIVATE_FFMPEG_LIBS_NOT_PREPARED")
+    library_dirs = [str(work/"capstone"), str(ffmpeg_dir),
         str(appdir/"usr/lib"), str(appdir/"usr/lib/x86_64-linux-gnu")
     ]
     env_base = os.environ.copy()

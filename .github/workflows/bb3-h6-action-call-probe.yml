@@ -183,10 +183,13 @@ jobs:
           else
             echo "BB3_PCSX_CAPSTONE_SOURCE=NOT_PACKAGED"
           fi
-          # Add the FFMPEG directory required by this pinned AppImage, never its bundled glibc directory.
-          FFMPEG_LIB_DIRS="$(find -L "$APPDIR" -type f -name 'libavformat.so.63' -printf '%h\n' | sort -u | paste -sd: -)"
-          if [ -z "$FFMPEG_LIB_DIRS" ]; then echo "PCSX_APPIMAGE_MISSING_LIBAVFORMAT_63"; exit 1; fi
-          export LD_LIBRARY_PATH="$WORK/capstone:$FFMPEG_LIB_DIRS:$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+          # Copy only FFmpeg libraries to a private directory; never add AppImage /lib (it contains its bundled glibc).
+          mkdir -p "$WORK/ffmpeg-libs"
+          while IFS= read -r -d '' f; do
+            cp -L "$f" "$WORK/ffmpeg-libs/$(basename "$f")"
+          done < <(find -L "$APPDIR" -type f \( -name 'libav*.so*' -o -name 'libsw*.so*' -o -name 'libpostproc.so*' \) -print0)
+          test -s "$WORK/ffmpeg-libs/libavformat.so.63" || { echo "PCSX_PRIVATE_FFMPEG_LIBS_NOT_PREPARED"; exit 1; }
+          export LD_LIBRARY_PATH="$WORK/capstone:$WORK/ffmpeg-libs:$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
           ldd "$PCSX_BIN" | tee "$WORK/logs/pcsx-ldd.txt" || true
           export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
           export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
@@ -229,8 +232,7 @@ jobs:
         run: |
           set +e
           export DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1
-          FFMPEG_LIB_DIRS="$(find -L "$APPDIR" -type f -name 'libavformat.so.63' -printf '%h\n' | sort -u | paste -sd: -)"
-          export LD_LIBRARY_PATH="$WORK/capstone:$FFMPEG_LIB_DIRS:$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+          export LD_LIBRARY_PATH="$WORK/capstone:$WORK/ffmpeg-libs:$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
           export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
           export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
           export QML2_IMPORT_PATH="$APPDIR/usr/qml"
