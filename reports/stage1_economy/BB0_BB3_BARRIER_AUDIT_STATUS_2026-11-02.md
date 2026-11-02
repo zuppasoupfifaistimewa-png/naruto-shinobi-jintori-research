@@ -93,39 +93,52 @@ Hasil yang diharapkan dari jalur statis bila cabang berhasil: pending delta pema
 
 ## BB3 — hasil uji runtime dan blocker
 
-### Run 41459907683 — function-call probe
+### Restore H6 dan pembacaan RAM — terkonfirmasi pada dua smoke launch
 
-- 16/16 peluncuran (action 3 dan 8 × level 0–3 × dua attempt) menghasilkan `NO_RESULT`.
-- `action_dispatch_reached=NO`, `selected_tile_override=NO`.
-- Wrapper exit code -11 pada seluruh peluncuran; wall time sekitar 2,55–2,75 detik.
-- Memory Card tidak berubah.
-- Positive-control formula tidak dijalankan.
+Run `41527796204`:
+- Source SHA: `25d2436e30ac02cbb751c3463acb77bff` (Actions source commit tercatat penuh pada ringkasan run).
+- Job `125559902986`; script exit 0; wall 2,135 detik.
+- `SaveStateLoaded=PASS`, pemanggilan load kembali, pembacaan memory-file PASS.
+- Tile array `0x8013B818`, jumlah petak 22; manager `0x801EFBB8`.
+- Kartu sementara nol 128 KiB identik sebelum/sesudah; RAM writes NONE; gameplay input NONE.
 
-Berkas: `reports/stage1_economy/bb3-h6-action-call-probe-run-41459907683/attempt-1/`.
+Run `41528938163`:
+- Source SHA: `4370d13dfa4c9f1aeaaf5ebb36cd3ce93ba8ea0d`.
+- Job `125563840401`; script exit 0; wall 2,416 detik.
+- H6 load event PASS dan memory-file read PASS; tile array/count/manager konsisten dengan smoke pertama.
+- Kartu sementara identik; RAM writes NONE; gameplay input NONE.
 
-### Run 41461812798 — smoke awal
+Ringkasan kedua run berada pada:
+- `reports/stage1_economy/bb3-h6-smoke-run-41527796204/attempt-1/`
+- `reports/stage1_economy/bb3-h6-smoke-run-41528938163/attempt-1/`
 
-- Timeout 900 detik.
-- Log menunjukkan Lua command-line error karena string newline ber-escape ganda; H6 load event tidak tercapai.
-- Memory Card tidak berubah; tidak ada RAM write dan tidak ada input gameplay.
+Makna bukti: **pemulihan H6 dan akses baca RAM sekarang terbukti berfungsi pada dua peluncuran independen**. Bukti ini sendiri belum menguji action byte 3/8.
 
-### Perbaikan dan run 41464827189 — smoke ulang
+### Uji function-call 16 kasus — BELUM memperoleh hasil akhir
 
-Perbaikan:
-- Commit `7256c5932a9d34e5ea4d04b0ef39604d1843d586` mengubah escape newline ganda pada `experiments/bb3_h6_smoke.py` menjadi escape newline Python yang benar.
+Fixture uji:
+- Petak index 4, resource 630, fee field `tile+0x1A=100`.
+- Action byte 3 dan 8 × nibble level bits 8–11 = 0,1,2,3 × dua attempt independen.
+- Pengaturan RAM dilakukan hanya pada proses emulator disposable. Tidak ada tombol gameplay ditekan. Kartu yang digunakan adalah file nol sementara 128 KiB, bukan Memory Card pengguna.
 
-Hasil:
-- Workflow/job success hanya berarti pengumpulan dan cleanup selesai.
-- Script exit code 2; emulator exit code -11; wall time 2,813 detik.
-- Log mencapai `BB3_SMOKE_LOAD_BEGIN=1`, lalu `timeout: the monitored command dumped core`.
-- Tidak ada `BB3_SMOKE_SAVE_STATE_LOADED=1`; memory-file read tidak dijalankan.
-- Memory Card SHA-256 sebelum/sesudah tetap `ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5`.
-- Tidak ada RAM write dan tidak ada gameplay input.
+Kriteria lulus yang dipasang pada probe terbaru:
+1. 16 baris hasil, seluruh pasangan action/level tercakup dua kali.
+2. Breakpoint dispatch tercapai dan action byte saat dispatch tepat sesuai input.
+3. Selector mengembalikan index 4 dan nilai tersebut tersimpan di manager+0x4A0.
+4. Fee 100; pending sebelum 0, sesudah −100, delta −100.
+5. Nibble bits 8–11 dimulai dari level fixture yang diminta dan naik satu; nibble bits 4–7 juga naik satu.
+6. Kedua refresh helper `0x800D4840` dan `0x800D4848` benar-benar tercapai.
+7. Wrapper exit 0, kartu sementara tidak berubah, dua attempt pada setiap kasus.
 
-Ringkasan:
-`reports/stage1_economy/bb3-h6-smoke-run-41464827189/attempt-1/`.
+Run `41528133484` (source SHA `3e0e33d877945590033a0671d41d4fc33f69a7a7`, job `125561061837`) berhasil melewati H6 smoke di dalam workflow, tetapi langkah 16 peluncuran masih berstatus berjalan saat laporan ini diperbarui. Belum ada hasil/TSV yang dapat dipakai untuk menyimpulkan transaksi.
 
-Keputusan: jangan ulangi load H6 yang identik. BB3 runtime belum selesai. Lanjutkan analisis dengan static parse/analisis Ghidra; percobaan runtime baru memerlukan jalur checkpoint yang tidak crash dan bukti dispatch yang terukur.
+Run lama `41527261817` dan `41527576341` tidak boleh dianggap lulus: keduanya terhambat library/runtime loader. Run `41527251225` pada workflow lama juga masih terhenti di build lama dan bukan sumber valid untuk transaksi.
+
+Run terbaru `41529469001` menggunakan workflow yang dipisahkan ke concurrency group v4 dan timeout/watchdog 360; statusnya sudah aktif, tetapi ketika laporan ini diperbarui masih pada persiapan lingkungan. Ia belum menghasilkan hasil function-call.
+
+Kontrol positif rumus 3 petak tetap **TIDAK DIUJI**. Probe ini juga belum menguji commit saldo kanonik melalui `FUN_800BE5D8`; ia mengamati pending delta dan perubahan field level pada cabang transaksi.
+
+Keputusan: **BB3 BELUM TUNTAS** sampai hasil 16 kasus lulus sesuai kriteria. Tidak ada dasar untuk menyebut nama gameplay action-byte 3/8 atau menyamakannya dengan aksi pemasangan Barrier pada BB0.
 
 ## Kesimpulan akhir
 
