@@ -145,3 +145,60 @@ Keputusan: **BB3 BELUM TUNTAS** sampai hasil 16 kasus lulus sesuai kriteria. Tid
 BB0, BB1, dan BB2 selesai hanya dalam batas eksplisit di atas. BB3 belum selesai. Karena nama/criteria BB0–BB2 tidak tercatat di repo, kesesuaian pengelompokan ini terhadap checklist BB asli tidak dapat dipastikan (**TIDAK TAHU**). Tidak ada dasar untuk menyatakan seluruh BB0–BB3 telah selesai.
 
 Tidak ada ROM/ISO, BIOS, savestate, Memory Card, raw RAM, screenshot, video, atau binary yang dikomit dalam laporan ini.
+
+
+---
+
+## Addendum pemeriksaan lanjutan — 3 November 2026
+
+Pembaruan ini mempertahankan putusan batas bukti di atas; tidak mengubah hasil lama menjadi klaim runtime baru.
+
+### BB2 — pemeriksaan ulang akses action byte
+
+Run static census `41533205025`:
+- Job: `analyze-entry1-buffer-base`
+- Job ID: `125578418688`
+- Source SHA: `111bf1a3f4177f356e513d2fdea1de2c50f6e697`
+- Status: `SUCCESS`, exit code `0`
+- Output utama: `aq1-run-41533205025/attempt-1/bb2-action-byte-access.tsv` dan `bb2-d15a8-function-detail.txt`.
+
+Census displacement `+0x2EB` berisi 131 temuan: 65 instruksi WRITE, 63 READ, dan 1 OTHER. Angka ini adalah hit pencarian displacement, **bukan** 131 akses yang semuanya telah dibuktikan memakai base register participant-manager. Karena sebagian alias base register belum terbukti, jangan gunakan total 65/63 sebagai jumlah final writer/reader field manager.
+
+Bukti BB2 yang tetap K4 berasal dari rantai instruksi langsung pada `FUN_800D15A8`:
+- `0x800D4470` membaca action byte `manager+0x2EB`; switch mengarah ke satu blok bersama untuk case 3 dan 8.
+- `0x800D45D0` memanggil selector petak; `0x800D45E0` menyimpan index hasil.
+- `0x800D4628` membaca fee `u16(tile+0x1A)`; pemeriksaan saldo ada pada `0x800D462C–0x800D4638`.
+- `0x800D46EC–0x800D46F8` menulis signed pending delta `-fee` pada manager `+0x2EE).
+- `0x800D4724–0x800D4764` menaikkan nibble bits 8–11 satu tingkat.
+- `0x800D47F4–0x800D4834` menaikkan nibble bits 4–7 satu tingkat.
+- `0x800D4840` dan `0x800D4848` memanggil refresh helper `FUN_800BB004` dan `FUN_800BE464`.
+
+Rantai ini membuat debit action 3/8 dan mutasi dua nibble dapat diperiksa langsung dari raw MIPS/dekompilasi. Makna nama action 3/8 tetap **TIDAK TAHU**; jangan menyamakannya dengan aksi pemasangan Barrier yang diamati di BB0.
+
+### BB3 — pembaruan uji
+
+Dua smoke run:
+- `41527796204`, job `125559902986`: H6 load dan read-only memory-file PASS; wall 2.135 s.
+- `41528938163`, job `125563840401`: H6 load dan read-only memory-file PASS; wall 2.416 s.
+- Keduanya membaca tile array `0x8013B818`, jumlah 22, manager `0x801EFBB8`; Memory Card disposable tidak berubah. Tidak ada RAM write atau gameplay input dalam smoke.
+
+Hasil function-call lama `41459907683`:
+- Job `125326000381`, source SHA `c5fb0ff42a90c0530bd20f65b93e74f121f55cc9`, workflow conclusion SUCCESS, tetapi **hasil probe BB3 hanya SEBAGIAN**.
+- 16 baris dibuat; PASS 0/16; seluruh 16 berstatus `NO_RESULT`; wrapper exit `-11` (emulator berhenti abnormal); wall masing-masing sekitar 2.55–2.75 s.
+- Hash Memory Card disposable sama sebelum/sesudah setiap baris.
+- Jadi run workflow SUCCESS tidak berarti pemanggilan fungsi atau transaksi berhasil.
+
+Run function-call `41529469001`:
+- Job `125565631539`, source SHA `227ee88f06d6618c8f4e0726407f70b4e2e75e05`.
+- Pada pemeriksaan 3 November 2026 sekitar 05:18 WIB, job masih `in_progress` pada langkah 16 peluncuran. Belum ada TSV/ringkasan akhir; transaksi belum dapat dinilai.
+
+Perbaikan diagnosis BB3 telah dikomit pada `4159e1b27018cae970eac64013e25a98c78013ee` (berkas diubah: `experiments/bb3_h6_action_call_probe.py`). Probe berikutnya berhenti setelah kasus pertama yang tidak PASS dan menyimpan cuplikan log emulator sebagai teks terbatas, sehingga kegagalan pertama dapat diperiksa tanpa mengulang seluruh matriks 16 kasus. Workflow run `41536404671`, source SHA `4159e1b27018cae970eac64013e25a98c78013ee`, masih `pending` saat catatan ini dibuat; hasilnya belum tersedia.
+
+### Putusan setelah addendum
+
+- BB0: selesai terbatas untuk satu jalur Story Mode yang benar-benar diamati; biaya 120 Chakra hanya berlaku pada transaksi tersebut.
+- BB1: selesai untuk resource 630 pada H6, bukan semua resource/board.
+- BB2: selesai statis K4 untuk cabang action-byte 3/8, bukan identifikasi nama aksi.
+- BB3: belum tuntas. Smoke H6 berhasil, tetapi tidak ada bukti runtime transaksi debit dan kenaikan level yang lulus.
+
+Karena dokumen acceptance criteria BB0–BB3 asli tidak ditemukan dalam repo, kesesuaian label ini dengan checklist BB di percakapan lain tetap **TIDAK TAHU**. H6 adalah fixture hibrida, bukan Story Mode murni. Tidak ada dasar untuk mengklaim BB0–BB3 seluruhnya selesai.
