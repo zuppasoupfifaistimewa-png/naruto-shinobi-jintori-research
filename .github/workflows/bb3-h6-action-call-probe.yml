@@ -112,15 +112,6 @@ jobs:
           github-token: ${{ github.token }}
           path: ${{ env.WORK }}/inputs
 
-      - name: Download reference Memory Card temporarily
-        uses: actions/download-artifact@v4
-        with:
-          name: naruto-storymode-memory-card-private
-          run-id: "39262213468"
-          repository: ${{ github.repository }}
-          github-token: ${{ github.token }}
-          path: ${{ env.WORK }}/cards
-
       - name: Build and test patched PCSX-Redux from pinned source
         shell: bash
         run: |
@@ -176,9 +167,9 @@ jobs:
           cp "$(find "$WORK/inputs" -type f -name adaptive-cycle-01-f180.sstate -print -quit)" "$WORK/resume/control.sstate"
           test "$(stat -c %s "$WORK/resume/control.sstate")" = 21162546
           echo "9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492  $WORK/resume/control.sstate" | sha256sum --check -
-          cp "$(find "$WORK/cards" -type f -name naruto-storymode.mcd -print -quit)" "$WORK/reference.mcd"
+          dd if=/dev/zero of="$WORK/reference.mcd" bs=131072 count=1 status=none
           test "$(stat -c %s "$WORK/reference.mcd")" = 131072
-          echo "ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5  $WORK/reference.mcd" | sha256sum --check -
+          echo "DISPOSABLE_ZERO_CARD_SHA256=$(sha256sum "$WORK/reference.mcd" | cut -d ' ' -f 1)"
           Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/logs/xvfb.log" 2>&1 &
           echo $! > "$WORK/xvfb.pid"
           export DISPLAY=:99
@@ -273,13 +264,11 @@ jobs:
           if [ -f "$WORK/xvfb.pid" ]; then kill "$(cat "$WORK/xvfb.pid")" 2>/dev/null || true; fi
           rm -rf "$WORK"
 
-      - name: Validate and commit text-only BB3 result
+      - name: Validate and publish text-only BB3 result via Contents API
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          cd "$GITHUB_WORKSPACE"
-          test -d .git
           out="$RUNNER_TEMP/bb3-output"
           mkdir -p "$out"
           python3 - "$out" <<'PY'
@@ -288,40 +277,44 @@ jobs:
           root=Path(sys.argv[1])
           invalid=[str(p) for p in root.rglob("*") if p.is_file() and p.suffix.lower() not in {".txt",".tsv",".log"}]
           if invalid: raise SystemExit("non-text result blocked: "+repr(invalid))
-          required=("BB3_PATCHED_BUILD_MANIFEST.txt","BB3_ACTION_CALL_SUMMARY.txt","BB3_ACTION_CALL_RESULTS.tsv","BB3_SCRIPT_EXIT_CODE.txt","BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt","ACTIONS_RUN_SUMMARY.txt")
+          required=("BB3_PATCHED_BUILD_MANIFEST.txt","BB3_ACTION_CALL_SUMMARY.txt","BB3_ACTION_CALL_RESULTS.tsv","BB3_SCRIPT_EXIT_CODE.txt","BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt")
           for name in required:
               if not (root/name).is_file():
-                  (root/name).write_text("STATUS=TIDAK_TERSDIA\nreason=workflow did not create this output\n",encoding="utf-8")
+                  (root/name).write_text("STATUS=TIDAK_TERSDIA\\nreason=workflow did not create this output\\n",encoding="utf-8")
           PY
           dest="reports/stage1_economy/bb3-h6-action-call-probe-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
-          mkdir -p "$dest"
-          cp "$out"/* "$dest/" 2>/dev/null || true
           JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="BB3 16 H6 function-call launches on patched PCSX-Redux") | .id' | head -n 1)"
           test -n "$JOB_ID" || JOB_ID="TIDAK TAHU"
           STATUS="$(sed -n 's/^STATUS=//p' "$out/BB3_ACTION_CALL_SUMMARY.txt" | head -n 1)"; test -n "$STATUS" || STATUS="INCOMPLETE"
-          SOURCE_SHA="$GITHUB_SHA"
-          RC="$(sed -n 's/^BB3_SCRIPT_EXIT_CODE=//p' "$out/BB3_SCRIPT_EXIT_CODE.txt" | head -n 1)"; test -n "$RC" || RC="$(sed -n 's/^SMOKE_EXIT_CODE=//p' "$out/BB3_PATCHED_BUILD_MANIFEST.txt" | head -n 1)"
+          RC="$(sed -n 's/^BB3_SCRIPT_EXIT_CODE=//p' "$out/BB3_SCRIPT_EXIT_CODE.txt" | head -n 1)"
+          test -n "$RC" || RC="$(sed -n 's/^SMOKE_EXIT_CODE=//p' "$out/BB3_PATCHED_BUILD_MANIFEST.txt" | head -n 1)"
           test -n "$RC" || RC="TIDAK TAHU"
           {
             echo "STATUS=$STATUS"
             echo "JOB=bb3-h6-action-call-probe-patched"
             echo "JOB_ID=$JOB_ID"
             echo "RUN_ID=$GITHUB_RUN_ID"
-            echo "SOURCE_SHA=$SOURCE_SHA"
+            echo "SOURCE_SHA=$GITHUB_SHA"
             echo "EXIT_CODE=$RC"
-          } > "$dest/ACTIONS_RUN_SUMMARY.txt"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$dest"
-          if ! git diff --cached --quiet; then
-            git commit -m "Publish BB3 patched H6 action-call probe run $GITHUB_RUN_ID attempt $GITHUB_RUN_ATTEMPT"
-            pushed=0
-            for n in 1 2 3; do
-              git fetch origin main
-              git rebase origin/main || { git rebase --abort; sleep "$n"; continue; }
-              if git push origin HEAD:main; then pushed=1; break; fi
-              sleep "$n"
-            done
-            test "$pushed" -eq 1
-          fi
-          echo "BB3_REPORT_PATH=$dest"
+          } > "$out/ACTIONS_RUN_SUMMARY.txt"
+          API="https://api.github.com/repos/$RESEARCH_REPO/contents"
+          for f in "$out"/*; do
+            [ -f "$f" ] || continue
+            case "$f" in *.txt|*.tsv|*.log) ;; *) echo "blocked non-text output: $f"; exit 1;; esac
+            path="$dest/$(basename "$f")"
+            b64="$(base64 -w0 "$f")"
+            http="$(curl --silent --show-error -o "$RUNNER_TEMP/bb3-existing.json" -w '%{http_code}' -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/$path?ref=main")"
+            existing_sha=""
+            if [ "$http" = "200" ]; then
+              existing_sha="$(jq -r '.sha' "$RUNNER_TEMP/bb3-existing.json")"
+            elif [ "$http" != "404" ]; then
+              echo "unexpected Contents API GET HTTP $http for $path"; cat "$RUNNER_TEMP/bb3-existing.json"; exit 1
+            fi
+            if [ -n "$existing_sha" ] && [ "$existing_sha" != "null" ]; then
+              payload="$(jq -n --arg message "Publish BB3 run $GITHUB_RUN_ID: $(basename "$f")" --arg content "$b64" --arg branch main --arg sha "$existing_sha" '{message:$message,content:$content,branch:$branch,sha:$sha}')"
+            else
+              payload="$(jq -n --arg message "Publish BB3 run $GITHUB_RUN_ID: $(basename "$f")" --arg content "$b64" --arg branch main '{message:$message,content:$content,branch:$branch}')"
+            fi
+            curl --fail --silent --show-error -X PUT -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" -d "$payload" "$API/$path" >/dev/null
+            echo "PUBLISHED=$path"
+          done
