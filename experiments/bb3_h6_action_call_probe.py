@@ -287,41 +287,40 @@ _G.bb3VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
       prepared = true
       PCSX.nextTick(function()
         log("BB3_POST_LOAD_VSYNC=2")
-        initTest()
         if callGuestStatus == "NOT_RUN" then
-          PCSX.nextTick(function()
-            callGuestCallbackStarted = true
-            log("BB3_CALLGUEST_CALLBACK_ENTERED=1")
-            log("BB3_CALLGUEST_BEGIN=1")
-            local okCall, result = pcall(function()
-              if type(PCSX.callGuest) ~= "function" then error("PCSX.callGuest unavailable in pinned build") end
-              return PCSX.callGuest({
-                pc = 0x800D15A8,
-                args = {},
-                cycles = 5000000,
-                isolate = false
-              })
-            end)
-            if not okCall then
-              callGuestStatus = "LUA_ERROR"
-              log("BB3_CALLGUEST_ERROR=" .. tostring(result))
-              readResult()
-              PCSX.quit(62)
-              return
-            end
-            log("BB3_CALLGUEST_RETURNED=1")
-            callGuestStatus = tostring(result.status or "unknown")
-            callGuestCycles = result.cycles
-            callGuestPC = result.pc
-            callGuestV0 = result.v0
-            callGuestV1 = result.v1
-            callGuestNonRamAccesses = result.nonRamAccesses
-            callGuestDepth = result.depth
-            callGuestStoresDropped = result.storesDropped
-            log("BB3_CALLGUEST_API=AVAILABLE")
-            readResult()
-            PCSX.quit(callGuestStatus == "returned" and 0 or 63)
+          -- Run from this already-drained nextTick callback. A nested nextTick
+          -- is not serviced while this post-load callback is active.
+          callGuestCallbackStarted = true
+          log("BB3_CALLGUEST_CALLBACK_ENTERED=1")
+          log("BB3_CALLGUEST_BEGIN=1")
+          local okCall, result = pcall(function()
+            if type(PCSX.callGuest) ~= "function" then error("PCSX.callGuest unavailable in pinned build") end
+            return PCSX.callGuest({
+              pc = 0x800D15A8,
+              args = {},
+              cycles = 5000000,
+              isolate = false
+            })
           end)
+          if not okCall then
+            callGuestStatus = "LUA_ERROR"
+            log("BB3_CALLGUEST_ERROR=" .. tostring(result))
+            readResult()
+            PCSX.quit(62)
+            return
+          end
+          log("BB3_CALLGUEST_RETURNED=1")
+          callGuestStatus = tostring(result.status or "unknown")
+          callGuestCycles = result.cycles
+          callGuestPC = result.pc
+          callGuestV0 = result.v0
+          callGuestV1 = result.v1
+          callGuestNonRamAccesses = result.nonRamAccesses
+          callGuestDepth = result.depth
+          callGuestStoresDropped = result.storesDropped
+          log("BB3_CALLGUEST_API=AVAILABLE")
+          readResult()
+          PCSX.quit(callGuestStatus == "returned" and 0 or 63)
         end
       end)
     end
