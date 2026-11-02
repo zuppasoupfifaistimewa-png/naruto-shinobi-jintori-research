@@ -230,8 +230,14 @@ local function initTest()
 
     _G.bb3SelectBreakpoint = PCSX.addBreakpoint(0x800D45D8, "Exec", 4, "BB3 force tile record 4 return", function()
       selectHit = true
-      PCSX.setGPR(2, TILE_INDEX)
-      log("BB3_SELECTED_TILE_OVERRIDE=4")
+      local regs = PCSX.getRegisters()
+      regs.GPR.n.v0 = TILE_INDEX
+      local verify = PCSX.getRegisters()
+      local actual = tonumber(verify.GPR.n.v0)
+      log("BB3_SELECTED_TILE_OVERRIDE=" .. tostring(actual))
+      if actual ~= TILE_INDEX then
+        error("BB3_SELECTOR_REGISTER_WRITE_MISMATCH=" .. tostring(actual))
+      end
       return false
     end)
     _G.bb3DispatchBreakpoint = PCSX.addBreakpoint(0x800D4470, "Exec", 4, "BB3 action byte dispatch", function()
@@ -317,10 +323,18 @@ _G.bb3VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
           directCallStartPC = tonumber(regs.pc)
           directCallStartSP = tonumber(regs.GPR.n.sp)
           directCallStartGP = tonumber(regs.GPR.n.gp)
-          if type(PCSX.setGPR) ~= "function" then error("PCSX.setGPR unavailable in pinned build") end
-          PCSX.setGPR(31, directCallReturn)
+          -- The pinned release exposes getRegisters() but not setGPR().
+          -- Write the structured cdata register view directly, then read it back.
           local live = PCSX.getRegisters()
+          live.GPR.n.ra = directCallReturn
           live.pc = 0x800D15A8
+          local verify = PCSX.getRegisters()
+          local raActual = tonumber(verify.GPR.n.ra)
+          local pcActual = tonumber(verify.pc)
+          if raActual ~= directCallReturn or pcActual ~= 0x800D15A8 then
+            error("REGISTER_READBACK_MISMATCH pc=" .. hex(pcActual) .. " ra=" .. hex(raActual))
+          end
+          log("BB3_DIRECT_CALL_REGISTER_READBACK=PASS")
         end)
         if not okSet then
           directCallStatus = "REGISTER_WRITE_FAIL"
@@ -331,7 +345,7 @@ _G.bb3VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
         end
         directCallStarted = true
         directCallStatus = "RUNNING"
-        log("BB3_DIRECT_CALL_API=REGISTERS_AND_SETGPR")
+        log("BB3_DIRECT_CALL_API=STRUCTURED_REGISTERS")
         log("BB3_DIRECT_CALL_BEGIN=1")
         log("BB3_DIRECT_CALL_PC=0x800D15A8")
         log("BB3_DIRECT_CALL_RA=" .. hex(directCallReturn))
