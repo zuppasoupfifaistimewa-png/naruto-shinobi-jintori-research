@@ -61,29 +61,28 @@ FUN_80109FEC membaca flag caller di param_1+0xC dan menguji bit 0x20 pada PC A07
 **Kesimpulan mekanis K4:** kondisi kode untuk jalur transfer ke participant +0x18 adalah caller flag bit 0x20 dan state manager 7, setelah progress state 6 mengisi B44 menuju B40.
 **Nama pemicu gameplay = TIDAK TAHU.** Kode yang diekspor tidak memberi bukti bahwa event tersebut adalah akhir putaran, settlement, atau Barrier release. Producer bit 0x20 dan asal semantik B30/B38 juga belum terbukti. Maka tidak ada satu dari tiga nama event itu yang dipilih.
 
-## AZ3 — kandidat biaya bangun/upgrade sebagai getter dikurangi nilai
+## AZ3 — census direct caller setter saldo dan pemeriksaan argumen biaya
 
-AX2 sebelumnya merekonsiliasi **14 direct JAL** ke setter 0x8001387C di:
+Run Step7 `41367221886` (job `125029837518`, source SHA `e98a2081e7f6573a75705d416f8a727a10634ced`, exit code 0) memindai seluruh aligned MIPS words pada kedua image dengan raw-JAL decode dan validasi direct-flow Ghidra:
+
+| Image | raw JAL candidate | Ghidra direct-flow validated |
+|---|---:|---:|
+| DATA.BIN Entry 1 (596,412 B) | 14 | 14 |
+| MAIN_EXE SLPS_035.53 | 2 | 2 |
+| **Total** | **16** | **16** |
+
+Daftar penuh PC, instruksi sebelumnya, delay slot, a0/a1 expression, dan source classification diperbarui pada:
 `reports/stage1_economy/AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv`.
 
-Callsite AX2:
-0x800B41B0, 0x800B4254, 0x800B4F00, 0x800B4F64, 0x800B6238, 0x800BEC98, 0x800DEB38, 0x800E1BE0, 0x800EC9A4, 0x800F95E8, 0x8010A15C, 0x8010A1B0, 0x8010A638, 0x8010A97C.
+Callsite MAIN_EXE tambahan yang sebelumnya tidak ada pada AX2:
+- `0x80012DD4` di FUN_80012C70; raw bytes `1F 4E 00 0C`; Ghidra direct flow validated. Delay slot `0x80012DD8 move a1,v0`; nilai a1 berasal dari return `0x80012A44`. Sumber/arti nilai return menunggu decompile penuh caller FUN_80012C70.
+- `0x80013170` di FUN_80012EAC; raw bytes `1F 4E 00 0C`; a1 berasal dari `u32(selected_table_row+0x04)`, a0 berasal dari indeks participant loop. Ini pengisian table-row, bukan Q(i)-cost.
 
-### Callsite tambahan di MAIN_EXE
+Pada 14 callsite Entry1, sepuluh callsite awal menulis nilai participant/field/slot tanpa ekspresi Q-minus. Empat site FUN_80109FEC menghasilkan Q+B44, Q, Q+min(B44,0x14), dan Q. Tidak ada pola `a1=Q(i)-cost` yang terbukti di 14 site tersebut. Dari dua MAIN_EXE callsite, site 0x80013170 adalah nilai tabel row+0x04; site 0x80012DD4 mengirim hasil fungsi 0x80012A44 dan masih menunggu decompile penuh.
 
-Disassembly MAIN_EXE juga memperlihatkan direct-JAL candidate ke setter pada PC **0x80013170** di `FUN_80012EAC` (raw word `1F 4E 00 0C`, decode `jal 0x8001387c`). Instruksi persis sebelumnya:
-- 0x8001316C `lw a1,0x4(s4)` — a1 menerima word dari selected table row +0x04.
-- 0x80013170 `jal 0x8001387c`.
-- delay slot 0x80013174 `move a0,s1` — a0 menerima indeks pemain loop.
+**Hasil debit biaya: TIDAK TAHU.** Census direct-JAL lengkap untuk dua image yang dianalisis, tetapi indirect JALR/computed-target calls, caller pada resource/overlay lain, dan producer nilai 0x80012A44 belum dibuktikan. Tidak ditemukan ekspresi getter-minus-cost dalam 16 direct-JAL callsites yang sudah diuji. Ini bukan bukti bahwa semua biaya build/upgrade tidak ada atau tidak pernah didebit lewat jalur lain. Jangan mengarang rumus atau nama event.
 
-Dalam `FUN_80012EAC`, s4 adalah selected table row base `0x80057798 + idx*0x54`; jadi a1 pada call ini adalah `u32(selected_table_row+0x04)`. Ini **bukan** getter Q(i) dikurangi nilai, dan belum terbukti sebagai harga build/upgrade. Makna gameplay nilai row+0x04 = **TIDAK TAHU**. Site ini ditambahkan sebagai baris ke-15 di TSV AX2 reconciliation, dengan scope dan keterbatasan yang dinyatakan.
-
-### Hasil pemeriksaan pola debit
-
-NaN
-NaN
-
-**Status AZ3: BELUM SELESAI.** Ada 15 direct-JAL caller candidates yang sudah dapat ditunjuk (14 AX2 + 0x80013170 MAIN_EXE), tetapi belum ada census seluruh MAIN_EXE dan Entry1. Workflow Step7 berikutnya sedang diperluas untuk mengeluarkan semua decoded direct JAL callsites ke 0x8001387C dari dua image tersebut beserta windows instruksi. Indirect JALR/computed-target calls dan code overlay lain tetap TIDAK TAHU sampai ada bukti. Bahkan setelah direct census, rumus biaya aktual tetap tidak boleh disimpulkan bila tidak ada ekspresi debit yang terbukti.
+**Status AZ3: SEBAGIAN (direct census selesai; semantic cost incomplete).**
 ## Hipotesis dan falsifier
 
 ### AZ2

@@ -39,14 +39,22 @@ Fungsi yang sama memuat word row+0x0C ke a0 lalu memanggil `FUN_80012A80`; calle
 Pada empat snapshot H6 run4 yang valid: mode=0, state byte=0, index=0, selected row=0x80057798, nilai table B30 di 0x800577A4=400. Global 0x80070C88 juga=400 di keempat snapshot. Ini adalah konfirmasi runtime H6 terhadap jalur statis, **bukan sekadar kebetulan angka**.
 
 Manager +0xB30 aktual tetap 0 pada snapshot yang sama. Itu field berbeda di objek manager yang dipakai state machine progress; ia tidak sama dengan table B30/global 0x80070C88. Falsifier untuk hipotesis berbeda "manager+0xB30 selalu sama dengan table B30": mismatch 0 versus 400 pada kondisi H6 ini. Jalur yang mengisi manager+0xB30 belum diketahui.
-### H3 — semua V petak dalam record dibaca dari helper FUN_800B770C
+### H3 — nilai V petak dihitung oleh FUN_800B770C
 
-Hipotesis kerja K3/K4 untuk aritmetika V: nilai dasar B yang dipilih lewat halfword +0x20 dan selector +0x0B menentukan V menurut dispatch helper. Pada H6 snapshot selector +0x0B semua record=0, sehingga V=nilai dasar terpilih (rasio 1:1), sum V=1.270. Falsifier: eksekusi manual fungsi/helper pada selector 0 tidak mengembalikan nilai dasar yang sama, atau raw record/offset decode tidak cocok. Ini memverifikasi transformasi aritmetika pada selector 0, bukan seluruh selector 1–4 dalam runtime.
+Dispatch statis K4 dari `FUN_800B770C` memeriksa selector record +0x0B. B dipilih dari halfword record `+0x10 + ((u16(record+0x20)>>7)&0x1E)`. Rumus lengkap:
+- selector 0: V=B
+- selector 1: V=floor(12B/10)
+- selector 2: V=floor(15B/10)
+- selector 3: V=floor(18B/10)
+- selector 4: V=2B
+- selector lain: V=0
+
+Bukti decompile + raw body lengkap (0x800B770C–0x800B78E0) tersimpan pada AQ1 `entry1-helper-function-detail.txt`; tabel rumus terpisah ada di `AZ1_V_SELECTOR_FORMULAS_2026-11-02.tsv`. Pada H6 run4, selector semua 22 record adalah 0. Karena itu 88/88 V runtime cocok dengan B (empat snapshots), sum V=1.270 pada masing-masing snapshot. Selector 1–4 sudah terbukti statis, tetapi runtime H6 belum mengandung record dengan selector tersebut; runtime untuk selector 1–4 = TIDAK TAHU.
 
 Tidak ada hipotesis AZ1 yang mengubah H6 menjadi bukti target murni. Bukti runtime H6 tetap dibatasi oleh identitas hybrid SHA dan state/frame yang dicapture.
 
 ## Hipotesis pemicu dan biaya
 
-AZ2 dan AZ3 memiliki hipotesis terpisah beserta falsifier di `AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md`: jalur transfer saldo memerlukan caller bit 0x20 + manager state7; nama event gameplay tetap TIDAK TAHU. Untuk biaya build/upgrade tidak ada a1=Q(i)-nilai di 14 direct setter callsites AX2; rumus dan sumber harga aktual tetap TIDAK TAHU.
+AZ2 dan AZ3 memiliki hipotesis terpisah beserta falsifier di `AZ2_AZ3_STATIC_REGISTER_FLOW_2026-11-02.md`: jalur transfer saldo memerlukan caller bit 0x20 + manager state7; nama event gameplay tetap TIDAK TAHU. Untuk biaya build/upgrade, run 41367221886 mengidentifikasi 16 direct JAL tervalidasi ke setter (14 Entry1 + 2 MAIN_EXE). Tidak ada a1=Q(i)-cost di 16 site yang diuji; satu site 0x80012DD4 mengirim v0 hasil 0x80012A44 dan menunggu decompile, satu site 0x80013170 mengambil selected table row+0x04. Indirect JALR dan overlay di luar dua image tetap TIDAK TAHU; rumus dan sumber harga aktual tetap TIDAK TAHU.
 
 Nol hit tidak digunakan untuk menyimpulkan ketiadaan fitur. Akses berbasis pointer terhitung/indirect JALR yang tidak masuk census langsung tetap TIDAK TAHU.

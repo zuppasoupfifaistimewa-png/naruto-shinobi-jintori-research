@@ -1,0 +1,7 @@
+selector	selected_base_B	V_formula	integer_rounding	static_evidence	runtime_evidence
+0	U16(record + 0x10 + ((U16(record+0x20)>>7)&0x1E))	B	none	FUN_800B770C case 0 returns selected U16 directly; raw body 0x800B770C-0x800B78E0; decompile SUCCESS	H6 run 41360900093: all 22 records in all 4 snapshots have selector 0; 88/88 recomputed PASS; sum V=1270 each snapshot
+1	U16(record + 0x10 + ((U16(record+0x20)>>7)&0x1E))	floor(12*B/10)	unsigned integer division by 10; truncates fractional remainder	FUN_800B770C case 1 sets multiplier 0x0C then shared divide-by-10 path	TIDAK TAHU; no runtime record with selector 1 in H6 captures
+2	U16(record + 0x10 + ((U16(record+0x20)>>7)&0x1E))	floor(15*B/10)	unsigned integer division by 10; truncates fractional remainder	FUN_800B770C case 2 sets multiplier 0x0F then shared divide-by-10 path	TIDAK TAHU; no runtime record with selector 2 in H6 captures
+3	U16(record + 0x10 + ((U16(record+0x20)>>7)&0x1E))	floor(18*B/10)	unsigned integer division by 10; truncates fractional remainder	FUN_800B770C case 3 sets multiplier 0x12 then shared divide-by-10 path	TIDAK TAHU; no runtime record with selector 3 in H6 captures
+4	U16(record + 0x10 + ((U16(record+0x20)>>7)&0x1E))	2*B	left shift by one	FUN_800B770C case 4 returns selected U16 shifted left by one	TIDAK TAHU; no runtime record with selector 4 in H6 captures
+other	U16(record + 0x10 + ((U16(record+0x20)>>7)&0x1E))	0	constant return	FUN_800B770C checks selector < 5 and default branch returns 0	TIDAK TAHU; no runtime record with selector outside 0..4 in H6 captures

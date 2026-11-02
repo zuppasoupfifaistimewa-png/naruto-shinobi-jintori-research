@@ -66,6 +66,15 @@ Batas: runtime ini tetap H6 HYBRID; belum ada bukti target-checkpoint murni atau
 - Count [0x8013EAC8] = 22; stride=0x124.
 - Status per record pada +0x00: status0=1; status1=2; status2=2; status4=17; status5=0 pada snapshot yang diamati.
 - Selector +0x0B: 0 untuk seluruh 22 record.
+- Helper statis `FUN_800B770C` memiliki rumus selector 0–4 yang di-decompile penuh; detailnya ada di `reports/stage1_economy/AZ1_V_SELECTOR_FORMULAS_2026-11-02.tsv`:
+  - selector 0: V=B
+  - selector 1: V=floor(12B/10)
+  - selector 2: V=floor(15B/10)
+  - selector 3: V=floor(18B/10)
+  - selector 4: V=2B
+  - selector lain: V=0
+- Rumus selector 1–4 merupakan **bukti statis K4**; empat snapshot H6 hanya memberi runtime selector 0. Jangan menaikkan selector 1–4 menjadi runtime-teruji.
+
 - Owner=(u16@+0x20)>>12: 15 untuk seluruh 22 record.
 - Seluruh 88 baris (22 × 2 frame × 2 launch) memiliki validation PASS dan V terhitung; unknown V=0.
 - V dihitung ulang dari dispatch FUN_800B770C. Selector 0 memakai rasio 1:1, jadi V sama dengan selected B u16.
