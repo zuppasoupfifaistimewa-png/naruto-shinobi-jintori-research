@@ -418,8 +418,11 @@ def main():
             validation_errors.append("call_status:%s:%s:%s" % (row["action_byte"], row["target_level_nibble_8_11"], row["attempt"]))
             continue
         def number(field):
+            value = row[field]
+            if isinstance(value, int):
+                return value
             try:
-                return int(row[field], 0) if str(row[field]).lower().startswith("0x") else int(row[field])
+                return int(value, 0) if str(value).lower().startswith("0x") else int(value)
             except (TypeError, ValueError):
                 return None
         checks = {
