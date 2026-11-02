@@ -83,6 +83,8 @@ def main():
     expected="ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5"
     if sha(card.read_bytes())!=expected: raise SystemExit("CARD_SHA_MISMATCH")
     launch=work/"launch"; home=work/"home"; logs=work/"logs"
+    # PCSX runs with cwd=launch and opens resume/h6-hybrid.sstate relative to it.
+    (launch/"resume").symlink_to(work/"resume",target_is_directory=True)
     for p in (home/".config",home/".data",home/"runtime"): p.mkdir(parents=True,exist_ok=True)
     try: (home/"runtime").chmod(0o700)
     except OSError: pass
