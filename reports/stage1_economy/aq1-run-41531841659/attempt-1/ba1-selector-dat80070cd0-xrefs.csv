@@ -1,0 +1,4 @@
+target_address,from_address,entry1_file_offset,reference_type,reference_source,instruction_bytes,instruction_mnemonic,containing_function,function_entry
+"0x80070CD0","0x800129E8","0x0029E8","READ","ANALYSIS","D0 0C 42 90","lbu v0,0xcd0(v0)","FUN_800129e4","0x800129E4"
+"0x80070CD0","0x80012F4C","0x002F4C","WRITE","ANALYSIS","50 00 22 A2","sb v0,0x50(s1)","FUN_80012eac","0x80012EAC"
+"0x80070CD0","0x800127E8","0x0027E8","WRITE","ANALYSIS","50 00 02 A2","sb v0,0x50(s0)","FUN_80012780","0x80012780"
