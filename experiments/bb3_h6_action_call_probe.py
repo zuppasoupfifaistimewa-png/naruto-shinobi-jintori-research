@@ -38,6 +38,7 @@ if io.stdout then io.stdout:setvbuf("no") end
 local action = tonumber(os.getenv("BB3_ACTION")) or 3
 local level = tonumber(os.getenv("BB3_LEVEL")) or 0
 local frames, started, done = 0, false, false
+local loaded, postLoadVsync, prepared = false, 0, false
 local selectHit = false
 local refreshBB004Hit = false
 local refreshBE464Hit = false
@@ -235,11 +236,9 @@ local function initTest()
 end
 
 _G.bb3LoadedListener = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
+  loaded = true
+  postLoadVsync = 0
   log("BB3_SAVE_STATE_LOADED=1")
-  PCSX.nextTick(function()
-    initTest()
-    PCSX.resumeEmulator()
-  end)
 end)
 
 _G.bb3VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
@@ -259,9 +258,22 @@ _G.bb3VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
       if not ok then
         log("BB3_H6_LOAD_FAIL=" .. tostring(err))
         PCSX.quit(51)
+        return
       end
+      log("BB3_H6_LOAD_CALL_RETURNED=1")
+      PCSX.resumeEmulator()
     end)
     return
+  end
+  if loaded and not prepared then
+    postLoadVsync = postLoadVsync + 1
+    if postLoadVsync >= 2 then
+      prepared = true
+      PCSX.nextTick(function()
+        log("BB3_POST_LOAD_VSYNC=2")
+        initTest()
+      end)
+    end
   end
   if not done then
     frames = frames + 1
