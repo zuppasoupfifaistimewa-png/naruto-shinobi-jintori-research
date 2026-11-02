@@ -231,6 +231,16 @@ def main():
         encoding="utf-8",
     )
     appdir = Path(a.appdir)
+    work_for_probe = Path(a.work)
+    capstone_dir = work_for_probe / "capstone"
+    if not capstone_dir.is_dir():
+        capstone_dir = work_for_probe.parent / "capstone"
+    ffmpeg_dirs = sorted({str(p.parent) for p in appdir.rglob("libavformat.so.63") if p.is_file()})
+    if not ffmpeg_dirs:
+        raise SystemExit("PCSX_APPIMAGE_MISSING_LIBAVFORMAT_63")
+    library_dirs = [str(capstone_dir)] + ffmpeg_dirs + [
+        str(appdir / "usr/lib"), str(appdir / "usr/lib/x86_64-linux-gnu")
+    ]
     env = os.environ.copy()
     env.update({
         "DISPLAY": ":99",
@@ -239,7 +249,7 @@ def main():
         "XDG_DATA_HOME": str(home / ".local/share"),
         "XDG_RUNTIME_DIR": str(home / "runtime"),
         "LIBGL_ALWAYS_SOFTWARE": "1",
-        "LD_LIBRARY_PATH": str(appdir / "usr/lib") + ":" + str(appdir / "usr/lib/x86_64-linux-gnu"),
+        "LD_LIBRARY_PATH": ":".join(library_dirs),
         "QT_PLUGIN_PATH": str(appdir / "usr/plugins"),
         "QT_QPA_PLATFORM_PLUGIN_PATH": str(appdir / "usr/plugins/platforms"),
         "QML2_IMPORT_PATH": str(appdir / "usr/qml"),

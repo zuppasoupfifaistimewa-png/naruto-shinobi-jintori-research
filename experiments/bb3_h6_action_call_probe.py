@@ -369,10 +369,16 @@ def main():
         raise SystemExit("DISPOSABLE_MEMORY_CARD_NOT_ZERO_FILLED")
 
     appdir = Path(args.appdir)
+    ffmpeg_dirs = sorted({str(p.parent) for p in appdir.rglob("libavformat.so.63") if p.is_file()})
+    if not ffmpeg_dirs:
+        raise SystemExit("PCSX_APPIMAGE_MISSING_LIBAVFORMAT_63")
+    library_dirs = [str(work/"capstone")] + ffmpeg_dirs + [
+        str(appdir/"usr/lib"), str(appdir/"usr/lib/x86_64-linux-gnu")
+    ]
     env_base = os.environ.copy()
     env_base.update({
         "DISPLAY": ":99", "LIBGL_ALWAYS_SOFTWARE": "1",
-        "LD_LIBRARY_PATH": str(work/"capstone")+":"+str(appdir/"usr/lib")+":"+str(appdir/"usr/lib/x86_64-linux-gnu"),
+        "LD_LIBRARY_PATH": ":".join(library_dirs),
         "QT_PLUGIN_PATH": str(appdir/"usr/plugins"),
         "QT_QPA_PLATFORM_PLUGIN_PATH": str(appdir/"usr/plugins/platforms"),
         "QML2_IMPORT_PATH": str(appdir/"usr/qml"),
