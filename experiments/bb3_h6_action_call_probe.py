@@ -39,11 +39,17 @@ local action = tonumber(os.getenv("BB3_ACTION")) or 3
 local level = tonumber(os.getenv("BB3_LEVEL")) or 0
 local TILE_INDEX = 4
 local TILE_STRIDE = 0x124
-local frames, started, done = 0, false, false
-local loaded, postLoadVsync, prepared = false, 0, false
+local started, loaded, postLoadVsync, prepared = false, false, 0, false
 local selectHit = false
+local actionDispatchHit = false
+local actionAtDispatch = nil
 local refreshBB004Hit = false
 local refreshBE464Hit = false
+local callGuestStatus = "NOT_RUN"
+local callGuestCycles = nil
+local callGuestNonRamAccesses = nil
+local callGuestDepth = nil
+local callGuestStoresDropped = nil
 local mem = nil
 local manager = nil
 local tileBase = nil
@@ -126,10 +132,32 @@ local function readResult()
   log("BB3_TILE1A_FEE=" .. tostring(rw(tile + 0x1A)))
   log("BB3_TILE1C=" .. tostring(rw(tile + 0x1C)))
   log("BB3_TILE1E=" .. tostring(rw(tile + 0x1E)))
-  log("BB3_SELECTED_TILE_INDEX=" .. tostring(rb(manager + 0x4A0)))
+  local selected = rb(manager + 0x4A0)
+  local level8Before = math.floor(tile20Before / 256) % 16
+  local level8After = math.floor(tile20 / 256) % 16
+  local level4Before = math.floor(tile20Before / 16) % 16
+  local level4After = math.floor(tile20 / 16) % 16
+  local pendingDelta = pending - pendingBefore
+  local pass = callGuestStatus == "returned"
+      and actionDispatchHit and actionAtDispatch == action
+      and selectHit and selected == TILE_INDEX
+      and refreshBB004Hit and refreshBE464Hit
+      and tileFee == EXPECTED_FEE
+      and pendingDelta == -tileFee
+      and level8After == level8Before + 1
+      and level4After == level4Before + 1
+      and callGuestStoresDropped == false
+  log("BB3_SELECTED_TILE_INDEX=" .. tostring(selected))
+  log("BB3_ACTION_DISPATCH_REACHED=" .. (actionDispatchHit and "1" or "0"))
+  log("BB3_ACTION_BYTE_AT_DISPATCH=" .. tostring(actionAtDispatch or "TIDAK TAHU"))
   log("BB3_REFRESH_FUN_800BB004_REACHED=" .. (refreshBB004Hit and "1" or "0"))
   log("BB3_REFRESH_FUN_800BE464_REACHED=" .. (refreshBE464Hit and "1" or "0"))
-  log("BB3_CALL_STATUS=" .. (refreshBB004Hit and refreshBE464Hit and "PASS" or "REFRESH_MISSING"))
+  log("BB3_CALLGUEST_STATUS=" .. tostring(callGuestStatus))
+  log("BB3_CALLGUEST_CYCLES=" .. tostring(callGuestCycles or "TIDAK TAHU"))
+  log("BB3_CALLGUEST_NON_RAM_ACCESSES=" .. tostring(callGuestNonRamAccesses or "TIDAK TAHU"))
+  log("BB3_CALLGUEST_DEPTH=" .. tostring(callGuestDepth or "TIDAK TAHU"))
+  log("BB3_CALLGUEST_STORES_DROPPED=" .. tostring(callGuestStoresDropped))
+  log("BB3_CALL_STATUS=" .. (pass and "PASS" or "VALIDATION_FAIL"))
 end
 
 local function initTest()
@@ -215,17 +243,12 @@ local function initTest()
       log("BB3_REFRESH_FUN_800BE464_REACHED=1")
       return false
     end)
-    _G.bb3AfterBreakpoint = PCSX.addBreakpoint(0x800D4850, "Exec", 4, "BB3 capture after both tile refresh calls return", function()
-      if done then return false end
-      done = true
-      readResult()
-      PCSX.quit(0)
-      return false
-    end)
     _G.bb3BranchBreakpoint = PCSX.addBreakpoint(0x800D4468, "Exec", 4, "BB3 action dispatch branch", function()
+      actionDispatchHit = true
+      actionAtDispatch = rb(actionAddr)
       log("BB3_ACTION_DISPATCH_REACHED=1")
-      log("BB3_ACTION_BYTE_AT_DISPATCH=" .. tostring(rb(actionAddr)))
-      return false
+      log("BB3_ACTION_BYTE_AT_DISPATCH=" .. tostring(actionAtDispatch))
+      return true
     end)
     log("BB3_BREAKPOINTS_ARMED=1")
   end)
@@ -274,16 +297,35 @@ _G.bb3VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
       PCSX.nextTick(function()
         log("BB3_POST_LOAD_VSYNC=2")
         initTest()
+        if callGuestStatus == "NOT_RUN" then
+          PCSX.nextTick(function()
+            local okCall, result = pcall(function()
+              if type(PCSX.callGuest) ~= "function" then error("PCSX.callGuest unavailable in pinned build") end
+              return PCSX.callGuest({
+                pc = 0x800D15A8,
+                args = {},
+                cycles = 100000000,
+                isolate = false
+              })
+            end)
+            if not okCall then
+              callGuestStatus = "LUA_ERROR"
+              log("BB3_CALLGUEST_ERROR=" .. tostring(result))
+              readResult()
+              PCSX.quit(62)
+              return
+            end
+            callGuestStatus = tostring(result.status or "unknown")
+            callGuestCycles = result.cycles
+            callGuestNonRamAccesses = result.nonRamAccesses
+            callGuestDepth = result.depth
+            callGuestStoresDropped = result.storesDropped
+            log("BB3_CALLGUEST_API=AVAILABLE")
+            readResult()
+            PCSX.quit(callGuestStatus == "returned" and 0 or 63)
+          end)
+        end
       end)
-    end
-  end
-  if not done then
-    frames = frames + 1
-    if frames >= 360 then
-      log("BB3_VSYNC_LIMIT_REACHED=360")
-      log("BB3_SELECTED_TILE_OVERRIDE=" .. tostring(selectHit))
-      log("BB3_CALL_STATUS=NOT_REACHED")
-      PCSX.quit(60)
     end
   end
 end)
