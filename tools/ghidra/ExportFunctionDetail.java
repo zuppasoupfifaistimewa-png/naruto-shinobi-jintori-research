@@ -167,7 +167,7 @@ public class ExportFunctionDetail extends GhidraScript {
             line("analysis=Ghidra selected-function static audit");
             line("program=" + currentProgram.getName());
             line("program_language=" + currentProgram.getLanguageID());
-            line("loaded_executable_base=0x80010000 (PS-X EXE header verified by workflow)");
+            line("address_model=Ghidra imported image; exact loader base and mapping are defined by the invoking workflow");
             line("game_or_emulator_executed=no");
             line("gameplay_input_sent=no");
             line("savestate_restored=no");
@@ -178,8 +178,13 @@ public class ExportFunctionDetail extends GhidraScript {
             if(!decompiler.openProgram(currentProgram))
                 throw new IllegalStateException("Decompiler could not open main executable.");
             for(int i=1;i<args.length;i++) dumpTarget(toAddr(Long.decode(args[i])),decompiler);
-            // Step 4: resolve direct static references to the helper-return global used by a0=-1.
-            dumpDataReferences(0x80066E7CL);
+            // This legacy global is mapped in MAIN_EXE; emit its xrefs only when present
+            // in the currently imported image, so the same exporter can audit Entry 1.
+            if (currentProgram.getMemory().contains(toAddr(0x80066E7CL))) {
+                dumpDataReferences(0x80066E7CL);
+            } else {
+                line("DATA_XREFS target=0x80066E7C status=UNMAPPED_IN_THIS_IMPORTED_IMAGE");
+            }
             decompiler.dispose();
             out.flush();
             if(out.checkError()) throw new IllegalStateException("Failed writing selected-function audit.");
