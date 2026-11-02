@@ -1,0 +1,581 @@
+analysis=Ghidra selected-function static audit
+program=SLPS_035.53
+program_language=MIPS:LE:32:default
+address_model=Ghidra imported image; exact loader base and mapping are defined by the invoking workflow
+game_or_emulator_executed=no
+gameplay_input_sent=no
+savestate_restored=no
+binary_uploaded_as_artifact=no
+
+=== TARGET 80012a14 ===
+instruction_at_target=addiu sp,sp,-0x18
+function_name=FUN_80012a14
+function_entry=80012a14
+function_body_bytes=48
+function_return_type=undefined
+function_signature=undefined FUN_80012a14(void)
+function_thunk=false
+--- RAW_FUNCTION_BODY_BEGIN ---
+80012a14 bytes=[E8 FF BD 27] addiu sp,sp,-0x18
+80012a18 bytes=[14 00 BF AF] sw ra,0x14(sp)
+80012a1c bytes=[10 00 B0 AF] sw s0,0x10(sp)
+80012a20 bytes=[05 80 10 3C] lui s0,0x8005
+80012a24 bytes=[79 4A 00 0C] jal 0x800129e4
+80012a28 bytes=[84 77 10 26] _addiu s0,s0,0x7784
+80012a2c bytes=[21 10 50 00] addu v0,v0,s0
+80012a30 bytes=[00 00 42 90] lbu v0,0x0(v0)
+80012a34 bytes=[14 00 BF 8F] lw ra,0x14(sp)
+80012a38 bytes=[10 00 B0 8F] lw s0,0x10(sp)
+80012a3c bytes=[08 00 E0 03] jr ra
+80012a40 bytes=[18 00 BD 27] _addiu sp,sp,0x18
+--- RAW_FUNCTION_BODY_END ---
+raw_instruction_count_emitted=12
+--- C_DECOMPILATION_BEGIN ---
+
+undefined1 FUN_80012a14(void)
+
+{
+  int iVar1;
+  
+  iVar1 = FUN_800129e4();
+  return (&DAT_80057784)[iVar1];
+}
+
+
+--- C_DECOMPILATION_END ---
+decompile_status=SUCCESS
+--- REFERENCES_TO_FUNCTION_BEGIN ---
+reference_count=0
+--- REFERENCES_TO_FUNCTION_END ---
+
+=== TARGET 80012a80 ===
+instruction_at_target=lui v0,0x8007
+function_name=FUN_80012a80
+function_entry=80012a80
+function_body_bytes=12
+function_return_type=undefined
+function_signature=undefined FUN_80012a80(void)
+function_thunk=false
+--- RAW_FUNCTION_BODY_BEGIN ---
+80012a80 bytes=[07 80 02 3C] lui v0,0x8007
+80012a84 bytes=[08 00 E0 03] jr ra
+80012a88 bytes=[88 0C 44 AC] _sw a0,0xc88(v0)
+--- RAW_FUNCTION_BODY_END ---
+raw_instruction_count_emitted=3
+--- C_DECOMPILATION_BEGIN ---
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void FUN_80012a80(undefined4 param_1)
+
+{
+  _DAT_80070c88 = param_1;
+  return;
+}
+
+
+--- C_DECOMPILATION_END ---
+decompile_status=SUCCESS
+--- REFERENCES_TO_FUNCTION_BEGIN ---
+reference_from=80012808 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=80012780 caller_name=FUN_80012780
+  callsite_context:
+  80012804 bytes=[0C 00 24 8E] lw a0,0xc(s1)
+  80012808 bytes=[A0 4A 00 0C] jal 0x80012a80
+  8001280c bytes=[00 00 00 00] _nop
+  80012810 bytes=[11 00 24 92] lbu a0,0x11(s1)
+reference_from=80012f78 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=80012eac caller_name=FUN_80012eac
+  callsite_context:
+  80012f74 bytes=[0C 00 84 8E] lw a0,0xc(s4)
+  80012f78 bytes=[A0 4A 00 0C] jal 0x80012a80
+  80012f7c bytes=[00 00 00 00] _nop
+  80012f80 bytes=[11 00 84 92] lbu a0,0x11(s4)
+reference_count=2
+--- REFERENCES_TO_FUNCTION_END ---
+
+=== TARGET 80012eac ===
+instruction_at_target=addiu sp,sp,-0x38
+function_name=FUN_80012eac
+function_entry=80012eac
+function_body_bytes=996
+function_return_type=undefined
+function_signature=undefined FUN_80012eac(void)
+function_thunk=false
+--- RAW_FUNCTION_BODY_BEGIN ---
+80012eac bytes=[C8 FF BD 27] addiu sp,sp,-0x38
+80012eb0 bytes=[34 00 BF AF] sw ra,0x34(sp)
+80012eb4 bytes=[30 00 BE AF] sw s8,0x30(sp)
+80012eb8 bytes=[2C 00 B7 AF] sw s7,0x2c(sp)
+80012ebc bytes=[28 00 B6 AF] sw s6,0x28(sp)
+80012ec0 bytes=[24 00 B5 AF] sw s5,0x24(sp)
+80012ec4 bytes=[20 00 B4 AF] sw s4,0x20(sp)
+80012ec8 bytes=[1C 00 B3 AF] sw s3,0x1c(sp)
+80012ecc bytes=[18 00 B2 AF] sw s2,0x18(sp)
+80012ed0 bytes=[14 00 B1 AF] sw s1,0x14(sp)
+80012ed4 bytes=[10 00 B0 AF] sw s0,0x10(sp)
+80012ed8 bytes=[06 80 05 3C] lui a1,0x8006
+80012edc bytes=[58 87 A5 24] addiu a1,a1,-0x78a8
+80012ee0 bytes=[07 80 02 3C] lui v0,0x8007
+80012ee4 bytes=[30 07 42 24] addiu v0,v0,0x730
+80012ee8 bytes=[0C 00 44 90] lbu a0,0xc(v0)
+80012eec bytes=[00 00 00 00] nop
+80012ef0 bytes=[40 18 04 00] sll v1,a0,0x1
+80012ef4 bytes=[21 18 64 00] addu v1,v1,a0
+80012ef8 bytes=[04 00 44 8C] lw a0,0x4(v0)
+80012efc bytes=[00 00 00 00] nop
+80012f00 bytes=[40 11 04 00] sll v0,a0,0x5
+80012f04 bytes=[21 10 44 00] addu v0,v0,a0
+80012f08 bytes=[21 10 43 00] addu v0,v0,v1
+80012f0c bytes=[80 10 02 00] sll v0,v0,0x2
+80012f10 bytes=[21 10 45 00] addu v0,v0,a1
+80012f14 bytes=[00 00 43 90] lbu v1,0x0(v0)
+80012f18 bytes=[00 00 00 00] nop
+80012f1c bytes=[80 10 03 00] sll v0,v1,0x2
+80012f20 bytes=[21 10 43 00] addu v0,v0,v1
+80012f24 bytes=[80 10 02 00] sll v0,v0,0x2
+80012f28 bytes=[21 10 43 00] addu v0,v0,v1
+80012f2c bytes=[80 10 02 00] sll v0,v0,0x2
+80012f30 bytes=[05 80 03 3C] lui v1,0x8005
+80012f34 bytes=[98 77 63 24] addiu v1,v1,0x7798
+80012f38 bytes=[21 A0 43 00] addu s4,v0,v1
+80012f3c bytes=[07 80 10 3C] lui s0,0x8007
+80012f40 bytes=[80 0C 11 26] addiu s1,s0,0xc80
+80012f44 bytes=[00 00 82 92] lbu v0,0x0(s4)
+80012f48 bytes=[00 00 00 00] nop
+80012f4c bytes=[50 00 22 A2] sb v0,0x50(s1)
+80012f50 bytes=[01 00 84 92] lbu a0,0x1(s4)
+80012f54 bytes=[19 4D 00 0C] jal 0x80013464
+80012f58 bytes=[00 00 00 00] _nop
+80012f5c bytes=[04 00 82 8E] lw v0,0x4(s4)
+80012f60 bytes=[00 00 00 00] nop
+80012f64 bytes=[80 0C 02 AE] sw v0,0xc80(s0)
+80012f68 bytes=[08 00 84 8E] lw a0,0x8(s4)
+80012f6c bytes=[99 4A 00 0C] jal 0x80012a64
+80012f70 bytes=[00 00 00 00] _nop
+80012f74 bytes=[0C 00 84 8E] lw a0,0xc(s4)
+80012f78 bytes=[A0 4A 00 0C] jal 0x80012a80
+80012f7c bytes=[00 00 00 00] _nop
+80012f80 bytes=[11 00 84 92] lbu a0,0x11(s4)
+80012f84 bytes=[A7 4A 00 0C] jal 0x80012a9c
+80012f88 bytes=[00 00 00 00] _nop
+80012f8c bytes=[02 00 84 92] lbu a0,0x2(s4)
+80012f90 bytes=[84 55 00 0C] jal 0x80015610
+80012f94 bytes=[00 00 00 00] _nop
+80012f98 bytes=[01 00 02 24] li v0,0x1
+80012f9c bytes=[53 00 22 A2] sb v0,0x53(s1)
+80012fa0 bytes=[B8 4A 00 0C] jal 0x80012ae0
+80012fa4 bytes=[21 20 00 00] _clear a0
+80012fa8 bytes=[21 88 00 00] clear s1
+80012fac bytes=[FF 00 24 32] andi a0,s1,0xff
+80012fb0 bytes=[E9 4A 00 0C] jal 0x80012ba4
+80012fb4 bytes=[21 28 00 00] _clear a1
+80012fb8 bytes=[01 00 31 26] addiu s1,s1,0x1
+80012fbc bytes=[10 00 22 2A] slti v0,s1,0x10
+80012fc0 bytes=[FA FF 40 14] bne v0,zero,0x80012fac
+80012fc4 bytes=[12 00 95 26] _addiu s5,s4,0x12
+80012fc8 bytes=[21 88 00 00] clear s1
+80012fcc bytes=[14 00 96 26] addiu s6,s4,0x14
+80012fd0 bytes=[B4 4A 00 0C] jal 0x80012ad0
+80012fd4 bytes=[21 80 00 00] _clear s0
+80012fd8 bytes=[80 18 11 00] sll v1,s1,0x2
+80012fdc bytes=[21 18 A3 02] addu v1,s5,v1
+80012fe0 bytes=[00 00 64 94] lhu a0,0x0(v1)
+80012fe4 bytes=[00 00 00 00] nop
+80012fe8 bytes=[25 20 82 00] or a0,a0,v0
+80012fec bytes=[B8 4A 00 0C] jal 0x80012ae0
+80012ff0 bytes=[FF FF 84 30] _andi a0,a0,0xffff
+80012ff4 bytes=[80 10 11 00] sll v0,s1,0x2
+80012ff8 bytes=[21 98 A2 02] addu s3,s5,v0
+80012ffc bytes=[21 90 C2 02] addu s2,s6,v0
+80013000 bytes=[00 00 62 96] lhu v0,0x0(s3)
+80013004 bytes=[00 00 00 00] nop
+80013008 bytes=[07 10 02 02] srav v0,v0,s0
+8001300c bytes=[01 00 42 30] andi v0,v0,0x1
+80013010 bytes=[04 00 40 10] beq v0,zero,0x80013024
+80013014 bytes=[00 00 00 00] _nop
+80013018 bytes=[00 00 45 86] lh a1,0x0(s2)
+8001301c bytes=[E9 4A 00 0C] jal 0x80012ba4
+80013020 bytes=[FF 00 04 32] _andi a0,s0,0xff
+80013024 bytes=[01 00 10 26] addiu s0,s0,0x1
+80013028 bytes=[10 00 02 2A] slti v0,s0,0x10
+8001302c bytes=[F4 FF 40 14] bne v0,zero,0x80013000
+80013030 bytes=[00 00 00 00] _nop
+80013034 bytes=[01 00 31 26] addiu s1,s1,0x1
+80013038 bytes=[04 00 22 2A] slti v0,s1,0x4
+8001303c bytes=[E4 FF 40 14] bne v0,zero,0x80012fd0
+80013040 bytes=[07 80 02 3C] _lui v0,0x8007
+80013044 bytes=[21 88 00 00] clear s1
+80013048 bytes=[F6 0C 45 24] addiu a1,v0,0xcf6
+8001304c bytes=[22 00 84 26] addiu a0,s4,0x22
+80013050 bytes=[21 18 25 02] addu v1,s1,a1
+80013054 bytes=[21 10 91 00] addu v0,a0,s1
+80013058 bytes=[00 00 42 90] lbu v0,0x0(v0)
+8001305c bytes=[00 00 00 00] nop
+80013060 bytes=[00 00 62 A0] sb v0,0x0(v1)
+80013064 bytes=[01 00 31 26] addiu s1,s1,0x1
+80013068 bytes=[0C 00 22 2A] slti v0,s1,0xc
+8001306c bytes=[F9 FF 40 14] bne v0,zero,0x80013054
+80013070 bytes=[21 18 25 02] _addu v1,s1,a1
+80013074 bytes=[26 4D 00 0C] jal 0x80013498
+80013078 bytes=[21 B8 00 00] _clear s7
+8001307c bytes=[2E 00 82 92] lbu v0,0x2e(s4)
+80013080 bytes=[00 00 00 00] nop
+80013084 bytes=[0D 00 42 2C] sltiu v0,v0,0xd
+80013088 bytes=[6C 00 40 10] beq v0,zero,0x8001323c
+8001308c bytes=[21 88 00 00] _clear s1
+80013090 bytes=[2E 00 95 26] addiu s5,s4,0x2e
+80013094 bytes=[42 00 96 26] addiu s6,s4,0x42
+80013098 bytes=[06 80 02 3C] lui v0,0x8006
+8001309c bytes=[88 4C 5E 24] addiu s8,v0,0x4c88
+800130a0 bytes=[80 10 11 00] sll v0,s1,0x2
+800130a4 bytes=[21 10 51 00] addu v0,v0,s1
+800130a8 bytes=[21 10 A2 02] addu v0,s5,v0
+800130ac bytes=[00 00 45 90] lbu a1,0x0(v0)
+800130b0 bytes=[CF 4D 00 0C] jal 0x8001373c
+800130b4 bytes=[21 20 20 02] _move a0,s1
+800130b8 bytes=[21 80 00 00] clear s0
+800130bc bytes=[80 90 11 00] sll s2,s1,0x2
+800130c0 bytes=[21 10 12 02] addu v0,s0,s2
+800130c4 bytes=[21 10 C2 02] addu v0,s6,v0
+800130c8 bytes=[21 20 20 02] move a0,s1
+800130cc bytes=[00 00 46 90] lbu a2,0x0(v0)
+800130d0 bytes=[96 58 00 0C] jal 0x80016258
+800130d4 bytes=[21 28 00 02] _move a1,s0
+800130d8 bytes=[01 00 10 26] addiu s0,s0,0x1
+800130dc bytes=[04 00 02 2A] slti v0,s0,0x4
+800130e0 bytes=[F8 FF 40 14] bne v0,zero,0x800130c4
+800130e4 bytes=[21 10 12 02] _addu v0,s0,s2
+800130e8 bytes=[E3 4D 00 0C] jal 0x8001378c
+800130ec bytes=[21 20 20 02] _move a0,s1
+800130f0 bytes=[40 18 11 00] sll v1,s1,0x1
+800130f4 bytes=[21 18 71 00] addu v1,v1,s1
+800130f8 bytes=[00 81 03 00] sll s0,v1,0x4
+800130fc bytes=[23 80 03 02] subu s0,s0,v1
+80013100 bytes=[80 80 10 00] sll s0,s0,0x2
+80013104 bytes=[07 80 03 3C] lui v1,0x8007
+80013108 bytes=[A0 0E 63 24] addiu v1,v1,0xea0
+8001310c bytes=[21 80 03 02] addu s0,s0,v1
+80013110 bytes=[C0 18 02 00] sll v1,v0,0x3
+80013114 bytes=[21 18 62 00] addu v1,v1,v0
+80013118 bytes=[21 10 7E 00] addu v0,v1,s8
+8001311c bytes=[03 00 44 88] lwl a0,0x3(v0)
+80013120 bytes=[00 00 44 98] lwr a0,0x0(v0)
+80013124 bytes=[07 00 45 88] lwl a1,0x7(v0)
+80013128 bytes=[04 00 45 98] lwr a1,0x4(v0)
+8001312c bytes=[08 00 46 80] lb a2,0x8(v0)
+80013130 bytes=[AD 00 04 AA] swl a0,0xad(s0)
+80013134 bytes=[AA 00 04 BA] swr a0,0xaa(s0)
+80013138 bytes=[B1 00 05 AA] swl a1,0xb1(s0)
+8001313c bytes=[AE 00 05 BA] swr a1,0xae(s0)
+80013140 bytes=[B2 00 06 A2] sb a2,0xb2(s0)
+80013144 bytes=[E3 4D 00 0C] jal 0x8001378c
+80013148 bytes=[21 20 20 02] _move a0,s1
+8001314c bytes=[06 80 03 3C] lui v1,0x8006
+80013150 bytes=[00 4D 63 24] addiu v1,v1,0x4d00
+80013154 bytes=[40 10 02 00] sll v0,v0,0x1
+80013158 bytes=[21 10 43 00] addu v0,v0,v1
+8001315c bytes=[00 00 44 80] lb a0,0x0(v0)
+80013160 bytes=[01 00 45 80] lb a1,0x1(v0)
+80013164 bytes=[B3 00 04 A2] sb a0,0xb3(s0)
+80013168 bytes=[B4 00 05 A2] sb a1,0xb4(s0)
+8001316c bytes=[04 00 85 8E] lw a1,0x4(s4)
+80013170 bytes=[1F 4E 00 0C] jal 0x8001387c
+80013174 bytes=[21 20 20 02] _move a0,s1
+80013178 bytes=[21 80 00 00] clear s0
+8001317c bytes=[80 10 11 00] sll v0,s1,0x2
+80013180 bytes=[21 98 51 00] addu s3,v0,s1
+80013184 bytes=[2F 00 92 26] addiu s2,s4,0x2f
+80013188 bytes=[21 10 13 02] addu v0,s0,s3
+8001318c bytes=[21 10 42 02] addu v0,s2,v0
+80013190 bytes=[21 20 20 02] move a0,s1
+80013194 bytes=[00 00 46 90] lbu a2,0x0(v0)
+80013198 bytes=[14 51 00 0C] jal 0x80014450
+8001319c bytes=[21 28 00 02] _move a1,s0
+800131a0 bytes=[01 00 10 26] addiu s0,s0,0x1
+800131a4 bytes=[04 00 02 2A] slti v0,s0,0x4
+800131a8 bytes=[F8 FF 40 14] bne v0,zero,0x8001318c
+800131ac bytes=[21 10 13 02] _addu v0,s0,s3
+800131b0 bytes=[10 00 85 92] lbu a1,0x10(s4)
+800131b4 bytes=[EB 50 00 0C] jal 0x800143ac
+800131b8 bytes=[21 20 20 02] _move a0,s1
+800131bc bytes=[00 00 83 92] lbu v1,0x0(s4)
+800131c0 bytes=[11 00 02 24] li v0,0x11
+800131c4 bytes=[08 00 62 14] bne v1,v0,0x800131e8
+800131c8 bytes=[01 00 02 24] _li v0,0x1
+800131cc bytes=[09 00 22 12] beq s1,v0,0x800131f4
+800131d0 bytes=[01 00 04 24] _li a0,0x1
+800131d4 bytes=[21 20 20 02] move a0,s1
+800131d8 bytes=[88 4D 00 0C] jal 0x80013620
+800131dc bytes=[01 00 05 24] _li a1,0x1
+800131e0 bytes=[84 4C 00 08] j 0x80013210
+800131e4 bytes=[01 00 F7 26] _addiu s7,s7,0x1
+800131e8 bytes=[06 00 20 16] bne s1,zero,0x80013204
+800131ec bytes=[21 20 20 02] _move a0,s1
+800131f0 bytes=[21 20 00 00] clear a0
+800131f4 bytes=[88 4D 00 0C] jal 0x80013620
+800131f8 bytes=[21 28 00 00] _clear a1
+800131fc bytes=[84 4C 00 08] j 0x80013210
+80013200 bytes=[01 00 F7 26] _addiu s7,s7,0x1
+80013204 bytes=[88 4D 00 0C] jal 0x80013620
+80013208 bytes=[01 00 05 24] _li a1,0x1
+8001320c bytes=[01 00 F7 26] addiu s7,s7,0x1
+80013210 bytes=[01 00 31 26] addiu s1,s1,0x1
+80013214 bytes=[04 00 22 2A] slti v0,s1,0x4
+80013218 bytes=[08 00 40 10] beq v0,zero,0x8001323c
+8001321c bytes=[80 10 11 00] _sll v0,s1,0x2
+80013220 bytes=[21 10 51 00] addu v0,v0,s1
+80013224 bytes=[21 10 A2 02] addu v0,s5,v0
+80013228 bytes=[00 00 42 90] lbu v0,0x0(v0)
+8001322c bytes=[00 00 00 00] nop
+80013230 bytes=[0D 00 42 2C] sltiu v0,v0,0xd
+80013234 bytes=[9B FF 40 14] bne v0,zero,0x800130a4
+80013238 bytes=[80 10 11 00] _sll v0,s1,0x2
+8001323c bytes=[6F 4D 00 0C] jal 0x800135bc
+80013240 bytes=[21 20 E0 02] _move a0,s7
+80013244 bytes=[19 4B 00 0C] jal 0x80012c64
+80013248 bytes=[21 20 00 00] _clear a0
+8001324c bytes=[07 80 04 3C] lui a0,0x8007
+80013250 bytes=[D4 0C 84 24] addiu a0,a0,0xcd4
+80013254 bytes=[21 28 00 00] clear a1
+80013258 bytes=[52 D7 00 0C] jal 0x80035d48
+8001325c bytes=[20 00 06 24] _li a2,0x20
+80013260 bytes=[34 00 BF 8F] lw ra,0x34(sp)
+80013264 bytes=[30 00 BE 8F] lw s8,0x30(sp)
+80013268 bytes=[2C 00 B7 8F] lw s7,0x2c(sp)
+8001326c bytes=[28 00 B6 8F] lw s6,0x28(sp)
+80013270 bytes=[24 00 B5 8F] lw s5,0x24(sp)
+80013274 bytes=[20 00 B4 8F] lw s4,0x20(sp)
+80013278 bytes=[1C 00 B3 8F] lw s3,0x1c(sp)
+8001327c bytes=[18 00 B2 8F] lw s2,0x18(sp)
+80013280 bytes=[14 00 B1 8F] lw s1,0x14(sp)
+80013284 bytes=[10 00 B0 8F] lw s0,0x10(sp)
+80013288 bytes=[08 00 E0 03] jr ra
+8001328c bytes=[38 00 BD 27] _addiu sp,sp,0x38
+--- RAW_FUNCTION_BODY_END ---
+raw_instruction_count_emitted=249
+--- C_DECOMPILATION_BEGIN ---
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void FUN_80012eac(void)
+
+{
+  undefined1 uVar1;
+  ushort uVar2;
+  int iVar3;
+  int iVar4;
+  undefined1 *puVar5;
+  undefined4 uVar6;
+  int iVar7;
+  uint uVar8;
+  int iVar9;
+  int iVar10;
+  
+  iVar3 = (uint)(byte)(&DAT_80058758)[_DAT_80070734 * 0x84 + (uint)DAT_8007073c * 0xc] * 0x54;
+  DAT_80070cd0 = (&DAT_80057798)[iVar3];
+  FUN_80013464((&DAT_80057799)[iVar3]);
+  _DAT_80070c80 = *(undefined4 *)(&DAT_8005779c + iVar3);
+  FUN_80012a64(*(undefined4 *)(&DAT_800577a0 + iVar3));
+  FUN_80012a80(*(undefined4 *)(&DAT_800577a4 + iVar3));
+  FUN_80012a9c((&DAT_800577a9)[iVar3]);
+  FUN_80015610((&DAT_8005779a)[iVar3]);
+  DAT_80070cd3 = 1;
+  FUN_80012ae0(0);
+  uVar8 = 0;
+  do {
+    FUN_80012ba4(uVar8 & 0xff,0);
+    uVar8 = uVar8 + 1;
+  } while ((int)uVar8 < 0x10);
+  iVar9 = 0;
+  do {
+    uVar8 = 0;
+    uVar2 = FUN_80012ad0();
+    FUN_80012ae0(*(ushort *)(&DAT_800577aa + iVar9 * 4 + iVar3) | uVar2);
+    do {
+      if (((int)(uint)*(ushort *)(&DAT_800577aa + iVar9 * 4 + iVar3) >> (uVar8 & 0x1f) & 1U) != 0) {
+        FUN_80012ba4(uVar8 & 0xff,(int)*(short *)(&DAT_800577ac + iVar9 * 4 + iVar3));
+      }
+      uVar8 = uVar8 + 1;
+    } while ((int)uVar8 < 0x10);
+    iVar9 = iVar9 + 1;
+  } while (iVar9 < 4);
+  puVar5 = (undefined1 *)0x80070cf6;
+  iVar9 = 0;
+  do {
+    *puVar5 = (&DAT_800577ba)[iVar9 + iVar3];
+    iVar10 = iVar9 + 1;
+    puVar5 = (undefined1 *)(iVar9 + -0x7ff8f309);
+    iVar9 = iVar10;
+  } while (iVar10 < 0xc);
+  iVar10 = 0;
+  FUN_80013498();
+  iVar9 = 0;
+  if ((byte)(&DAT_800577c6)[iVar3] < 0xd) {
+    iVar4 = 0;
+    do {
+      FUN_8001373c(iVar9,(&DAT_800577c6)[iVar4 + iVar9 + iVar3]);
+      iVar7 = 0;
+      iVar4 = iVar9 * 4;
+      do {
+        FUN_80016258(iVar9,iVar7,(&DAT_800577da)[iVar4 + iVar3]);
+        iVar7 = iVar7 + 1;
+        iVar4 = iVar7 + iVar9 * 4;
+      } while (iVar7 < 4);
+      iVar4 = FUN_8001378c(iVar9);
+      iVar7 = iVar9 * 0xb4;
+      iVar4 = iVar4 * 9;
+      uVar6 = *(undefined4 *)(&DAT_80064c8c + iVar4);
+      uVar1 = (&DAT_80064c90)[iVar4];
+      *(undefined4 *)(iVar7 + -0x7ff8f0b6) = *(undefined4 *)(&DAT_80064c88 + iVar4);
+      *(undefined4 *)(iVar7 + -0x7ff8f0b2) = uVar6;
+      *(undefined1 *)(iVar7 + -0x7ff8f0ae) = uVar1;
+      iVar4 = FUN_8001378c(iVar9);
+      uVar1 = (&DAT_80064d01)[iVar4 * 2];
+      *(undefined *)(iVar7 + -0x7ff8f0ad) = (&DAT_80064d00)[iVar4 * 2];
+      *(undefined1 *)(iVar7 + -0x7ff8f0ac) = uVar1;
+      FUN_8001387c(iVar9,*(undefined4 *)(&DAT_8005779c + iVar3));
+      iVar7 = 0;
+      iVar4 = iVar9 * 5;
+      do {
+        FUN_80014450(iVar9,iVar7,(&DAT_800577c7)[iVar4 + iVar3]);
+        iVar7 = iVar7 + 1;
+        iVar4 = iVar7 + iVar9 * 5;
+      } while (iVar7 < 4);
+      FUN_800143ac(iVar9,(&DAT_800577a8)[iVar3]);
+      if ((&DAT_80057798)[iVar3] == '\x11') {
+        uVar6 = 1;
+        if (iVar9 == 1) {
+LAB_800131f4:
+          FUN_80013620(uVar6,0);
+        }
+        else {
+          FUN_80013620(iVar9,1);
+        }
+      }
+      else {
+        if (iVar9 == 0) {
+          uVar6 = 0;
+          goto LAB_800131f4;
+        }
+        FUN_80013620(iVar9,1);
+      }
+      iVar10 = iVar10 + 1;
+      iVar9 = iVar9 + 1;
+    } while ((iVar9 < 4) && (iVar4 = iVar9 * 4, (byte)(&DAT_800577c6)[iVar9 * 5 + iVar3] < 0xd));
+  }
+  FUN_800135bc(iVar10);
+  FUN_80012c64(0);
+  FUN_80035d48(0x80070cd4,0,0x20);
+  return;
+}
+
+
+--- C_DECOMPILATION_END ---
+decompile_status=SUCCESS
+--- REFERENCES_TO_FUNCTION_BEGIN ---
+reference_from=80035020 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=8003460c caller_name=FUN_8003460c
+  callsite_context:
+  8003501c bytes=[00 00 00 00] _nop
+  80035020 bytes=[AB 4B 00 0C] jal 0x80012eac
+  80035024 bytes=[00 00 00 00] _nop
+  80035028 bytes=[45 4A 00 0C] jal 0x80012914
+reference_count=1
+--- REFERENCES_TO_FUNCTION_END ---
+
+=== DATA_XREFS target=80066e7c ===
+loaded_image_bytes=00000000 loaded_image_word_le=0x0
+loaded_image_value_is_not_runtime_state=yes
+xref_from=80037b7c type=WRITE source=ANALYSIS operand=1 function_entry=80037b58 function_name=FUN_80037b58
+  source_instruction_bytes=[7C 6E 20 AC] sw zero,0x6e7c(at)
+  80037b6c bytes=[00 01 02 24] li v0,0x100
+  80037b70 bytes=[10 00 BF AF] sw ra,0x10(sp)
+  80037b74 bytes=[00 00 62 AC] sw v0,0x0(v1)
+  80037b78 bytes=[06 80 01 3C] lui at,0x8006
+  80037b7c bytes=[7C 6E 20 AC] sw zero,0x6e7c(at)
+  80037b80 bytes=[12 DF 00 0C] jal 0x80037c48
+  80037b84 bytes=[08 00 05 24] _li a1,0x8
+  80037b88 bytes=[03 80 05 3C] lui a1,0x8003
+  80037b8c bytes=[B0 7B A5 24] addiu a1,a1,0x7bb0
+xref_from=80037bb4 type=READ source=ANALYSIS operand=1 function_entry=80037bb0 function_name=FUN_80037bb0
+  source_instruction_bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  80037ba4 bytes=[18 00 BD 27] addiu sp,sp,0x18
+  80037ba8 bytes=[08 00 E0 03] jr ra
+  80037bac bytes=[00 00 00 00] _nop
+  80037bb0 bytes=[06 80 02 3C] lui v0,0x8006
+  80037bb4 bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  80037bb8 bytes=[E0 FF BD 27] addiu sp,sp,-0x20
+  80037bbc bytes=[14 00 B1 AF] sw s1,0x14(sp)
+  80037bc0 bytes=[21 88 00 00] clear s1
+  80037bc4 bytes=[10 00 B0 AF] sw s0,0x10(sp)
+xref_from=80037bdc type=WRITE source=ANALYSIS operand=1 function_entry=80037bb0 function_name=FUN_80037bb0
+  source_instruction_bytes=[7C 6E 22 AC] sw v0,0x6e7c(at)
+  80037bcc bytes=[5C 6E 10 26] addiu s0,s0,0x6e5c
+  80037bd0 bytes=[18 00 BF AF] sw ra,0x18(sp)
+  80037bd4 bytes=[01 00 42 24] addiu v0,v0,0x1
+  80037bd8 bytes=[06 80 01 3C] lui at,0x8006
+  80037bdc bytes=[7C 6E 22 AC] sw v0,0x6e7c(at)
+  80037be0 bytes=[00 00 02 8E] lw v0,0x0(s0)
+  80037be4 bytes=[00 00 00 00] nop
+  80037be8 bytes=[03 00 40 10] beq v0,zero,0x80037bf8
+  80037bec bytes=[00 00 00 00] _nop
+xref_from=8003719c type=READ source=ANALYSIS operand=1 function_entry=80037138 function_name=FUN_80037138
+  source_instruction_bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  8003718c bytes=[23 10 43 00] subu v0,v0,v1
+  80037190 bytes=[05 00 81 04] bgez a0,0x800371a8
+  80037194 bytes=[FF FF 51 30] _andi s1,v0,0xffff
+  80037198 bytes=[06 80 02 3C] lui v0,0x8006
+  8003719c bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  800371a0 bytes=[A7 DC 00 08] j 0x8003729c
+  800371a4 bytes=[00 00 00 00] _nop
+  800371a8 bytes=[01 00 02 24] li v0,0x1
+  800371ac bytes=[3A 00 82 10] beq a0,v0,0x80037298
+xref_from=80037204 type=READ source=ANALYSIS operand=1 function_entry=80037138 function_name=FUN_80037138
+  source_instruction_bytes=[7C 6E 84 8C] lw a0,0x6e7c(a0)
+  800371f4 bytes=[34 5D 42 8C] lw v0,0x5d34(v0)
+  800371f8 bytes=[00 00 00 00] nop
+  800371fc bytes=[00 00 50 8C] lw s0,0x0(v0)
+  80037200 bytes=[06 80 04 3C] lui a0,0x8006
+  80037204 bytes=[7C 6E 84 8C] lw a0,0x6e7c(a0)
+  80037208 bytes=[01 00 05 24] li a1,0x1
+  8003720c bytes=[AC DC 00 0C] jal 0x800372b0
+  80037210 bytes=[01 00 84 24] _addiu a0,a0,0x1
+  80037214 bytes=[40 00 02 3C] lui v0,0x40
+xref_from=80037260 type=READ source=ANALYSIS operand=1 function_entry=80037138 function_name=FUN_80037138
+  source_instruction_bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  80037250 bytes=[24 10 44 00] and v0,v0,a0
+  80037254 bytes=[FB FF 40 10] beq v0,zero,0x80037244
+  80037258 bytes=[00 00 00 00] _nop
+  8003725c bytes=[06 80 02 3C] lui v0,0x8006
+  80037260 bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  80037264 bytes=[06 80 04 3C] lui a0,0x8006
+  80037268 bytes=[38 5D 84 8C] lw a0,0x5d38(a0)
+  8003726c bytes=[06 80 01 3C] lui at,0x8006
+  80037270 bytes=[40 5D 22 AC] sw v0,0x5d40(at)
+xref_from=800372c0 type=READ source=ANALYSIS operand=1 function_entry=800372b0 function_name=FUN_800372b0
+  source_instruction_bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  800372b0 bytes=[E0 FF BD 27] addiu sp,sp,-0x20
+  800372b4 bytes=[C0 2B 05 00] sll a1,a1,0xf
+  800372b8 bytes=[10 00 A5 AF] sw a1,0x10(sp)
+  800372bc bytes=[06 80 02 3C] lui v0,0x8006
+  800372c0 bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  800372c4 bytes=[00 00 00 00] nop
+  800372c8 bytes=[2A 10 44 00] slt v0,v0,a0
+  800372cc bytes=[1A 00 40 10] beq v0,zero,0x80037338
+  800372d0 bytes=[18 00 BF AF] _sw ra,0x18(sp)
+xref_from=80037324 type=READ source=ANALYSIS operand=1 function_entry=800372b0 function_name=FUN_800372b0
+  source_instruction_bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  80037314 bytes=[21 28 00 00] _clear a1
+  80037318 bytes=[CE DC 00 08] j 0x80037338
+  8003731c bytes=[00 00 00 00] _nop
+  80037320 bytes=[06 80 02 3C] lui v0,0x8006
+  80037324 bytes=[7C 6E 42 8C] lw v0,0x6e7c(v0)
+  80037328 bytes=[00 00 00 00] nop
+  8003732c bytes=[2A 10 44 00] slt v0,v0,a0
+  80037330 bytes=[E9 FF 40 14] bne v0,zero,0x800372d8
+  80037334 bytes=[00 00 00 00] _nop
+data_reference_count=8
+interpretation=direct Ghidra references only; indirect aliases and runtime writers may not appear
+DATA_XREFS target=0x80070734 status=UNMAPPED_IN_THIS_IMPORTED_IMAGE
+DATA_XREFS target=0x8007073c status=UNMAPPED_IN_THIS_IMPORTED_IMAGE
+DATA_XREFS target=0x80070cd0 status=UNMAPPED_IN_THIS_IMPORTED_IMAGE
+DATA_XREFS target=0x80139ecc status=UNMAPPED_IN_THIS_IMPORTED_IMAGE
+DATA_XREFS target=0x80139efc status=UNMAPPED_IN_THIS_IMPORTED_IMAGE
