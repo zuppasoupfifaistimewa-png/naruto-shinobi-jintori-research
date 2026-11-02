@@ -316,7 +316,7 @@ def main():
     env_base = os.environ.copy()
     env_base.update({
         "DISPLAY": ":99", "LIBGL_ALWAYS_SOFTWARE": "1",
-        "LD_LIBRARY_PATH": str(appdir/"usr/lib")+":"+str(appdir/"usr/lib/x86_64-linux-gnu"),
+        "LD_LIBRARY_PATH": str(work/"capstone")+":"+str(appdir/"usr/lib")+":"+str(appdir/"usr/lib/x86_64-linux-gnu"),
         "QT_PLUGIN_PATH": str(appdir/"usr/plugins"),
         "QT_QPA_PLATFORM_PLUGIN_PATH": str(appdir/"usr/plugins/platforms"),
         "QML2_IMPORT_PATH": str(appdir/"usr/qml"),
