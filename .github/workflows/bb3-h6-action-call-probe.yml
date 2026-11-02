@@ -13,7 +13,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: naruto-bb3-h6-action-call-probe
+  group: naruto-bb3-h6-action-call-probe-v2
   cancel-in-progress: false
 
 jobs:
@@ -103,6 +103,24 @@ jobs:
           chmod 400 "$WORK/resume/target.sstate"
           echo "TARGET_STATE_SHA256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d" | tee "$WORK/source-input-manifest.txt"
 
+      - name: Download previously verified CONTROL checkpoint
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: "39867730674"
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ env.WORK }}/inputs
+
+      - name: Download reference Memory Card temporarily
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-memory-card-private
+          run-id: "39262213468"
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ env.WORK }}/cards
+
       - name: Build and test patched PCSX-Redux from pinned source
         shell: bash
         run: |
@@ -150,24 +168,6 @@ jobs:
           } | tee "$OUTDIR/BB3_PATCHED_BUILD_MANIFEST.txt"
           echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
           echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
-
-      - name: Download previously verified CONTROL checkpoint
-        uses: actions/download-artifact@v4
-        with:
-          name: naruto-storymode-adaptive-player-private
-          run-id: "39867730674"
-          repository: ${{ github.repository }}
-          github-token: ${{ github.token }}
-          path: ${{ env.WORK }}/inputs
-
-      - name: Download reference Memory Card temporarily
-        uses: actions/download-artifact@v4
-        with:
-          name: naruto-storymode-memory-card-private
-          run-id: "39262213468"
-          repository: ${{ github.repository }}
-          github-token: ${{ github.token }}
-          path: ${{ env.WORK }}/cards
 
       - name: Validate private inputs and start headless display
         shell: bash
