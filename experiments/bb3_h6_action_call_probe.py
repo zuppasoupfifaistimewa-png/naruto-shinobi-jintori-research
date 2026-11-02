@@ -318,6 +318,8 @@ def main():
                 logs = launch / "logs"
                 for folder in (home/".config", home/".data", home/"runtime", logs):
                     folder.mkdir(parents=True, exist_ok=True)
+                # PCSX runs with cwd=launch and opens this relative path from Lua.
+                (launch / "resume").symlink_to(work / "resume", target_is_directory=True)
                 try:
                     (home/"runtime").chmod(0o700)
                 except OSError:
