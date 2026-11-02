@@ -1,0 +1,1 @@
+AW1_MANAGER_GHIDRA=PASS program=DATA.BIN_ENTRY1 B38_B40_B44_displacement_candidates=exported; base alias requires instruction review
