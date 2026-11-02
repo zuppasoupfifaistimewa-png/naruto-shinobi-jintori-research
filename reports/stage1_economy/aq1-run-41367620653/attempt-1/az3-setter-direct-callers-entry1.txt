@@ -1,0 +1,87 @@
+analysis=Ghidra raw-JAL vs decoded direct-flow comparison
+program=DATA_BIN_ENTRY_0001.bin
+program_language=MIPS:LE:32:default
+entrypoint_or_emulator_executed=no
+address_model=candidate resource base only; runtime loading is not proven
+targets=[8001387c]
+aligned_words_scanned=149103
+raw_jal_candidate_count=14
+ghidra_decoded_direct_callsite_count=14
+unique_validated_caller_functions_with_boundary=8
+
+=== RAW_JAL_CANDIDATES ===
+target=8001387c site=800b41b0 word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800b2a58 caller_name=FUN_800b2a58 caller_body_bytes=9672
+decoded_instruction=jal 0x8001387c
+target=8001387c site=800b4254 word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800b2a58 caller_name=FUN_800b2a58 caller_body_bytes=9672
+decoded_instruction=jal 0x8001387c
+target=8001387c site=800b4f00 word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800b2a58 caller_name=FUN_800b2a58 caller_body_bytes=9672
+decoded_instruction=jal 0x8001387c
+target=8001387c site=800b4f64 word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800b2a58 caller_name=FUN_800b2a58 caller_body_bytes=9672
+decoded_instruction=jal 0x8001387c
+target=8001387c site=800b6238 word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800b5d68 caller_name=FUN_800b5d68 caller_body_bytes=1676
+decoded_instruction=jal 0x8001387c
+target=8001387c site=800bec98 word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800be5d8 caller_name=FUN_800be5d8 caller_body_bytes=2172
+decoded_instruction=jal 0x8001387c
+target=8001387c site=800deb38 word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800de760 caller_name=FUN_800de760 caller_body_bytes=2408
+decoded_instruction=jal 0x8001387c
+target=8001387c site=800e1be0 word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e1958 caller_name=FUN_800e1958 caller_body_bytes=5428
+decoded_instruction=jal 0x8001387c
+target=8001387c site=800ec9a4 word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800ec574 caller_name=FUN_800ec574 caller_body_bytes=6132
+decoded_instruction=jal 0x8001387c
+target=8001387c site=800f95e8 word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f9520 caller_name=FUN_800f9520 caller_body_bytes=408
+decoded_instruction=jal 0x8001387c
+target=8001387c site=8010a15c word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=80109fec caller_name=FUN_80109fec caller_body_bytes=2616
+decoded_instruction=jal 0x8001387c
+target=8001387c site=8010a1b0 word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=80109fec caller_name=FUN_80109fec caller_body_bytes=2616
+decoded_instruction=jal 0x8001387c
+target=8001387c site=8010a638 word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=80109fec caller_name=FUN_80109fec caller_body_bytes=2616
+decoded_instruction=jal 0x8001387c
+target=8001387c site=8010a97c word=0x0C004E1F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=80109fec caller_name=FUN_80109fec caller_body_bytes=2616
+decoded_instruction=jal 0x8001387c
+
+=== GHIDRA_VALIDATED_DIRECT_CALLS ===
+target=8001387c site=800b41b0 instruction=jal 0x8001387c
+caller_entry=800b2a58 caller_name=FUN_800b2a58 caller_body_bytes=9672
+target=8001387c site=800b4254 instruction=jal 0x8001387c
+caller_entry=800b2a58 caller_name=FUN_800b2a58 caller_body_bytes=9672
+target=8001387c site=800b4f00 instruction=jal 0x8001387c
+caller_entry=800b2a58 caller_name=FUN_800b2a58 caller_body_bytes=9672
+target=8001387c site=800b4f64 instruction=jal 0x8001387c
+caller_entry=800b2a58 caller_name=FUN_800b2a58 caller_body_bytes=9672
+target=8001387c site=800b6238 instruction=jal 0x8001387c
+caller_entry=800b5d68 caller_name=FUN_800b5d68 caller_body_bytes=1676
+target=8001387c site=800bec98 instruction=jal 0x8001387c
+caller_entry=800be5d8 caller_name=FUN_800be5d8 caller_body_bytes=2172
+target=8001387c site=800deb38 instruction=jal 0x8001387c
+caller_entry=800de760 caller_name=FUN_800de760 caller_body_bytes=2408
+target=8001387c site=800e1be0 instruction=jal 0x8001387c
+caller_entry=800e1958 caller_name=FUN_800e1958 caller_body_bytes=5428
+target=8001387c site=800ec9a4 instruction=jal 0x8001387c
+caller_entry=800ec574 caller_name=FUN_800ec574 caller_body_bytes=6132
+target=8001387c site=800f95e8 instruction=jal 0x8001387c
+caller_entry=800f9520 caller_name=FUN_800f9520 caller_body_bytes=408
+target=8001387c site=8010a15c instruction=jal 0x8001387c
+caller_entry=80109fec caller_name=FUN_80109fec caller_body_bytes=2616
+target=8001387c site=8010a1b0 instruction=jal 0x8001387c
+caller_entry=80109fec caller_name=FUN_80109fec caller_body_bytes=2616
+target=8001387c site=8010a638 instruction=jal 0x8001387c
+caller_entry=80109fec caller_name=FUN_80109fec caller_body_bytes=2616
+target=8001387c site=8010a97c instruction=jal 0x8001387c
+caller_entry=80109fec caller_name=FUN_80109fec caller_body_bytes=2616
+
+detailed_decompilation_limit=seed-setter callers first, then at most 12 unique RNG callers
+detailed_decompilation_count=0
