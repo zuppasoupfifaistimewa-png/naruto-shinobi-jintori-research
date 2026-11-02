@@ -1,0 +1,14 @@
+STATUS=BELUM
+RUN_ID=41466426311
+JOB=BB3 16 H6 function-call launches on patched PCSX-Redux
+JOB_ID=125348427741
+SOURCE_SHA=e28c55b26cf41efa7bf3045a4972791f75080167
+WORKFLOW_CONCLUSION=failure
+WORKFLOW_FINAL_STEP_EXIT_CODE=128
+SMOKE_GATE=FAILED (h6_smoke passed=false; exact script exit code not exposed in old job log)
+ACTION_CALL_TESTS=SKIPPED (0/16 executed)
+PCSX_PATCHED_BUILD_AND_UNIT_TESTS=PASS
+PRIVATE_INPUT_AND_MEMORY_CARD_HASH_VALIDATION=PASS
+MEMORY_CARD_WRITES=NONE_REPORTED
+RESULT_COMMIT_IN_ORIGINAL_RUN=FAILED (git config ran outside repository; fatal: not in a git directory)
+INTERPRETATION=BB3 remains incomplete; no runtime confirmation of action-byte 3/8 transaction.
