@@ -45,16 +45,13 @@ local actionDispatchHit = false
 local actionAtDispatch = nil
 local refreshBB004Hit = false
 local refreshBE464Hit = false
-local callGuestStatus = "NOT_RUN"
-local callGuestCycles = nil
-local callGuestPC = nil
-local callGuestCallbackStarted = false
-local callbackWaitVsync = 0
-local callGuestV0 = nil
-local callGuestV1 = nil
-local callGuestNonRamAccesses = nil
-local callGuestDepth = nil
-local callGuestStoresDropped = nil
+local directCallStatus = "NOT_STARTED"
+local directCallStarted = false
+local directCallFrames = 0
+local directCallStartPC = nil
+local directCallStartSP = nil
+local directCallStartGP = nil
+local directCallReturn = 0x80011448
 local mem = nil
 local manager = nil
 local tileBase = nil
@@ -143,26 +140,24 @@ local function readResult()
   local level4Before = math.floor(tile20Before / 16) % 16
   local level4After = math.floor(tile20 / 16) % 16
   local pendingDelta = pending - pendingBefore
-  local pass = callGuestStatus == "returned"
+  local pass = directCallStatus == "RETURNED"
+      and actionDispatchHit and actionAtDispatch == action
       and selectHit and selected == TILE_INDEX
+      and refreshBB004Hit and refreshBE464Hit
       and tileFee == EXPECTED_FEE
       and pendingDelta == -tileFee
       and level8After == level8Before + 1
       and level4After == level4Before + 1
-      and callGuestStoresDropped == false
   log("BB3_SELECTED_TILE_INDEX=" .. tostring(selected))
   log("BB3_ACTION_DISPATCH_REACHED=" .. (actionDispatchHit and "1" or "0"))
   log("BB3_ACTION_BYTE_AT_DISPATCH=" .. tostring(actionAtDispatch or "TIDAK TAHU"))
   log("BB3_REFRESH_FUN_800BB004_REACHED=" .. (refreshBB004Hit and "1" or "0"))
   log("BB3_REFRESH_FUN_800BE464_REACHED=" .. (refreshBE464Hit and "1" or "0"))
-  log("BB3_CALLGUEST_STATUS=" .. tostring(callGuestStatus))
-  log("BB3_CALLGUEST_CYCLES=" .. tostring(callGuestCycles or "TIDAK TAHU"))
-  log("BB3_CALLGUEST_PC=" .. (callGuestPC and hex(callGuestPC) or "TIDAK TAHU"))
-  log("BB3_CALLGUEST_V0=" .. tostring(callGuestV0 or "TIDAK TAHU"))
-  log("BB3_CALLGUEST_V1=" .. tostring(callGuestV1 or "TIDAK TAHU"))
-  log("BB3_CALLGUEST_NON_RAM_ACCESSES=" .. tostring(callGuestNonRamAccesses or "TIDAK TAHU"))
-  log("BB3_CALLGUEST_DEPTH=" .. tostring(callGuestDepth or "TIDAK TAHU"))
-  log("BB3_CALLGUEST_STORES_DROPPED=" .. tostring(callGuestStoresDropped))
+  log("BB3_DIRECT_CALL_STATUS=" .. tostring(directCallStatus))
+  log("BB3_DIRECT_CALL_START_PC=" .. (directCallStartPC and hex(directCallStartPC) or "TIDAK TAHU"))
+  log("BB3_DIRECT_CALL_START_SP=" .. (directCallStartSP and hex(directCallStartSP) or "TIDAK TAHU"))
+  log("BB3_DIRECT_CALL_START_GP=" .. (directCallStartGP and hex(directCallStartGP) or "TIDAK TAHU"))
+  log("BB3_DIRECT_CALL_RETURN=" .. hex(directCallReturn))
   log("BB3_CALL_STATUS=" .. (pass and "PASS" or "VALIDATION_FAIL"))
 end
 
@@ -239,9 +234,31 @@ local function initTest()
       log("BB3_SELECTED_TILE_OVERRIDE=4")
       return false
     end)
-    -- Keep only the selector-return override; dispatch/refresh breakpoints can
-    -- interfere with an interpreter guest-call and are validated by resulting RAM.
-    log("BB3_BREAKPOINTS_ARMED=SELECTOR_ONLY")
+    _G.bb3DispatchBreakpoint = PCSX.addBreakpoint(0x800D4470, "Exec", 4, "BB3 action byte dispatch", function()
+      actionDispatchHit = true
+      actionAtDispatch = rb(actionAddr)
+      log("BB3_ACTION_DISPATCH_REACHED=1")
+      log("BB3_ACTION_BYTE_AT_DISPATCH=" .. tostring(actionAtDispatch))
+      return false
+    end)
+    _G.bb3RefreshBB004Breakpoint = PCSX.addBreakpoint(0x800D4840, "Exec", 4, "BB3 refresh helper FUN_800BB004 entry", function()
+      refreshBB004Hit = true
+      log("BB3_REFRESH_FUN_800BB004_REACHED=1")
+      return false
+    end)
+    _G.bb3RefreshBE464Breakpoint = PCSX.addBreakpoint(0x800D4848, "Exec", 4, "BB3 refresh helper FUN_800BE464 entry", function()
+      refreshBE464Hit = true
+      log("BB3_REFRESH_FUN_800BE464_REACHED=1")
+      return false
+    end)
+    _G.bb3ReturnBreakpoint = PCSX.addBreakpoint(directCallReturn, "Exec", 4, "BB3 direct function return sentinel", function()
+      directCallStatus = "RETURNED"
+      log("BB3_DIRECT_CALL_RETURN_SENTINEL=1")
+      readResult()
+      PCSX.quit(0)
+      return false
+    end)
+    log("BB3_BREAKPOINTS_ARMED=DIRECT_CPU_CALL")
   end)
   if not ok then
     log("BB3_SETUP_ERROR=" .. tostring(err))
@@ -287,49 +304,52 @@ _G.bb3VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
       prepared = true
       PCSX.nextTick(function()
         log("BB3_POST_LOAD_VSYNC=2")
-        if callGuestStatus == "NOT_RUN" then
-          -- Run from this already-drained nextTick callback. A nested nextTick
-          -- is not serviced while this post-load callback is active.
-          callGuestCallbackStarted = true
-          log("BB3_CALLGUEST_CALLBACK_ENTERED=1")
-          log("BB3_CALLGUEST_BEGIN=1")
-          local okCall, result = pcall(function()
-            if type(PCSX.callGuest) ~= "function" then error("PCSX.callGuest unavailable in pinned build") end
-            return PCSX.callGuest({
-              pc = 0x800D15A8,
-              args = {},
-              cycles = 5000000,
-              isolate = false
-            })
-          end)
-          if not okCall then
-            callGuestStatus = "LUA_ERROR"
-            log("BB3_CALLGUEST_ERROR=" .. tostring(result))
-            readResult()
-            PCSX.quit(62)
-            return
-          end
-          log("BB3_CALLGUEST_RETURNED=1")
-          callGuestStatus = tostring(result.status or "unknown")
-          callGuestCycles = result.cycles
-          callGuestPC = result.pc
-          callGuestV0 = result.v0
-          callGuestV1 = result.v1
-          callGuestNonRamAccesses = result.nonRamAccesses
-          callGuestDepth = result.depth
-          callGuestStoresDropped = result.storesDropped
-          log("BB3_CALLGUEST_API=AVAILABLE")
+        initTest()
+        local okRegs, regs = pcall(function() return PCSX.getRegisters() end)
+        if not okRegs or regs == nil then
+          directCallStatus = "REGISTERS_UNAVAILABLE"
+          log("BB3_DIRECT_CALL_REGISTERS_ERROR=" .. tostring(regs))
           readResult()
-          PCSX.quit(callGuestStatus == "returned" and 0 or 63)
+          PCSX.quit(65)
+          return
         end
+        local okSet, setErr = pcall(function()
+          directCallStartPC = tonumber(regs.pc)
+          directCallStartSP = tonumber(regs.GPR.n.sp)
+          directCallStartGP = tonumber(regs.GPR.n.gp)
+          if type(PCSX.setGPR) ~= "function" then error("PCSX.setGPR unavailable in pinned build") end
+          PCSX.setGPR(31, directCallReturn)
+          local live = PCSX.getRegisters()
+          live.pc = 0x800D15A8
+        end)
+        if not okSet then
+          directCallStatus = "REGISTER_WRITE_FAIL"
+          log("BB3_DIRECT_CALL_REGISTER_WRITE_ERROR=" .. tostring(setErr))
+          readResult()
+          PCSX.quit(66)
+          return
+        end
+        directCallStarted = true
+        directCallStatus = "RUNNING"
+        log("BB3_DIRECT_CALL_API=REGISTERS_AND_SETGPR")
+        log("BB3_DIRECT_CALL_BEGIN=1")
+        log("BB3_DIRECT_CALL_PC=0x800D15A8")
+        log("BB3_DIRECT_CALL_RA=" .. hex(directCallReturn))
       end)
     end
-  elseif prepared and not callGuestCallbackStarted then
-    callbackWaitVsync = callbackWaitVsync + 1
-    if callbackWaitVsync >= 120 then
-      log("BB3_CALLGUEST_CALLBACK_NOT_RUN=1")
-      log("BB3_CALLGUEST_STATUS=NOT_STARTED")
-      PCSX.quit(64)
+  elseif directCallStarted and directCallStatus == "RUNNING" then
+    directCallFrames = directCallFrames + 1
+    if directCallFrames >= 120 then
+      local okRegs, regs = pcall(function() return PCSX.getRegisters() end)
+      log("BB3_DIRECT_CALL_WATCHDOG=120")
+      if okRegs and regs then
+        log("BB3_DIRECT_CALL_STOP_PC=" .. hex(tonumber(regs.pc)))
+        log("BB3_DIRECT_CALL_STOP_SP=" .. hex(tonumber(regs.GPR.n.sp)))
+        log("BB3_DIRECT_CALL_STOP_RA=" .. hex(tonumber(regs.GPR.n.ra)))
+      end
+      directCallStatus = "WATCHDOG"
+      readResult()
+      PCSX.quit(67)
     end
   end
 end)
