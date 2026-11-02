@@ -80,8 +80,9 @@ def main():
     for n in ("resume","launch","home","logs"): (work/n).mkdir(parents=True,exist_ok=True)
     (work/"resume/h6-hybrid.sstate").write_bytes(h6)
     card=Path(a.card)
-    expected="ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5"
-    if sha(card.read_bytes())!=expected: raise SystemExit("CARD_SHA_MISMATCH")
+    card_bytes=card.read_bytes()
+    if len(card_bytes)!=131072: raise SystemExit("DISPOSABLE_MEMORY_CARD_SIZE_MISMATCH")
+    if any(card_bytes): raise SystemExit("DISPOSABLE_MEMORY_CARD_NOT_ZERO_FILLED")
     launch=work/"launch"; home=work/"home"; logs=work/"logs"
     # PCSX runs with cwd=launch and opens resume/h6-hybrid.sstate relative to it.
     (launch/"resume").symlink_to(work/"resume",target_is_directory=True)
