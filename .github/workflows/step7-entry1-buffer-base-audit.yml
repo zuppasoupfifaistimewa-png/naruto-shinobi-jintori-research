@@ -270,7 +270,7 @@ jobs:
             -postScript ExportManagerEconomyWriters.java MAIN_EXE "$out/ay1-ay2-exe.tsv" \
             -postScript ExportTargetCallers.java "$out/az3-setter-direct-callers-main-exe.txt" 0x8001387C \
             -postScript ExportCallWindows.java "$out/az3-setter-call-windows-main-exe.tsv" 0x8001387C \
-            -postScript ExportFunctionDetail.java "$out/az3-setter-caller-main-exe-detail.txt" 0x80012C70 \
+            -postScript ExportFunctionDetail.java "$out/az3-setter-caller-main-exe-detail.txt" 0x80012C70 0x80012A44 0x8001387C 0x800138EC \
             -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
             > "$out/ghidra-exe-headless.log" 2>&1
           exe_rc=$?

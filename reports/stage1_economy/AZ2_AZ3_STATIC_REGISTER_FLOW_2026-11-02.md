@@ -75,7 +75,7 @@ Daftar penuh PC, instruksi sebelumnya, delay slot, a0/a1 expression, dan source 
 `reports/stage1_economy/AZ3_SETTER_GETTER_MINUS_COST_CANDIDATES_2026-11-02.tsv`.
 
 Callsite MAIN_EXE tambahan yang sebelumnya tidak ada pada AX2:
-- `0x80012DD4` di FUN_80012C70; raw bytes `1F 4E 00 0C`; Ghidra direct flow validated. Delay slot `0x80012DD8 move a1,v0`; nilai a1 berasal dari return `0x80012A44`. Sumber/arti nilai return menunggu decompile penuh caller FUN_80012C70.
+- `0x80012DD4` di FUN_80012C70; raw bytes `1F 4E 00 0C`; Ghidra direct flow validated. Decompile penuh `FUN_80012C70` membuktikan `uVar4=FUN_80012A44(); FUN_8001387c(uVar7,uVar4);`; raw delay slot `0x80012DD8 move a1,v0`, dengan `a0=s3` = indeks pemain loop `uVar7`. Tidak ada pengurangan lokal pada caller; isi/arti return `FUN_80012A44` masih menunggu decompile callee.
 - `0x80013170` di FUN_80012EAC; raw bytes `1F 4E 00 0C`; a1 berasal dari `u32(selected_table_row+0x04)`, a0 berasal dari indeks participant loop. Ini pengisian table-row, bukan Q(i)-cost.
 
 Pada 14 callsite Entry1, sepuluh callsite awal menulis nilai participant/field/slot tanpa ekspresi Q-minus. Empat site FUN_80109FEC menghasilkan Q+B44, Q, Q+min(B44,0x14), dan Q. Tidak ada pola `a1=Q(i)-cost` yang terbukti di 14 site tersebut. Dari dua MAIN_EXE callsite, site 0x80013170 adalah nilai tabel row+0x04; site 0x80012DD4 mengirim hasil fungsi 0x80012A44 dan masih menunggu decompile penuh.
