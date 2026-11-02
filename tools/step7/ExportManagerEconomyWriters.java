@@ -444,8 +444,7 @@ public class ExportManagerEconomyWriters extends GhidraScript {
         dumpB30SourceTable("FUN_80012780_PLAYER_INDEXED",0x8006491CL,0x30L,256,0x8L);
         dumpB30SourceTable("FUN_80012EAC_CONFIG_INDEXED",0x80057798L,0x54L,256,0x0cL);
     }
-    private void exportEconomyGlobalSource() throws Exception {
-        long target=0x80070C88L;
+    private void exportEconomyGlobalSource(long target) throws Exception {
         Address a=toAddr(target);
         MemoryBlock block=currentProgram.getMemory().getBlock(a);
         String blockName=block==null?"UNMAPPED":block.getName();
@@ -456,8 +455,8 @@ public class ExportManagerEconomyWriters extends GhidraScript {
             long word=readWord(target);
             if(word!=Long.MIN_VALUE) value=fmt(word);
         }
-        row("ECONOMY_GLOBAL_META",module,addrExpr(a),"","","_DAT_80070C88",
-            blockName,value,raw,"","","FUN_80012A8C statically reads this global; numerical value only if loaded/initialized bytes exist");
+        row("ECONOMY_GLOBAL_META",module,addrExpr(a),"","","_DAT_"+addrExpr(a),
+            blockName,value,raw,"","","static reference audit for global "+addrExpr(a)+"; value only if loaded/initialized bytes exist");
         int refsFound=0;
         ReferenceIterator refs=currentProgram.getReferenceManager().getReferencesTo(a);
         while(refs.hasNext()) {
@@ -476,15 +475,16 @@ public class ExportManagerEconomyWriters extends GhidraScript {
         while(it.hasNext()) {
             Instruction ins=it.next();
             String text=ins.toString().toLowerCase();
-            // 0x80070C88 may be referenced through LUI 0x8007 + displacement 0xC88,
-            // or an equivalent signed displacement based on another register.
-            if(text.contains("0xc88(") || text.contains("-0x3978(")) {
+            // Direct global displacement candidate; computed-pointer aliases still need provenance.
+            String globalDisp="0x"+Long.toHexString(target & 0xffffL);
+            String signedAlias="-0x"+Long.toHexString(0x10000L-(target & 0xffffL));
+            if(text.contains(globalDisp+"(") || text.contains(signedAlias+"(")) {
                 Function owner=currentProgram.getFunctionManager().getFunctionContaining(ins.getAddress());
                 row("ECONOMY_GLOBAL_DISPLACEMENT_CANDIDATE",module,addrExpr(a),addrExpr(ins.getAddress()),
                     functionEntry(owner),functionName(owner),ins.getMnemonicString(),ins.toString(),
                     "effective address requires preceding base-register provenance",
                     owner==null?"":before(ins,owner,12),bytes(ins.getAddress(),16),
-                    "static instruction contains displacement candidate for global +0x80070C88; validate its base register");
+                    "static instruction contains displacement candidate for global "+addrExpr(a)+"; validate its base register");
             }
         }
         row("ECONOMY_GLOBAL_XREF_TOTAL",module,addrExpr(a),"","","",
@@ -554,7 +554,8 @@ public class ExportManagerEconomyWriters extends GhidraScript {
             scanWriters();
             for(long t:FUNCTIONS) callerRefs(t);
             if(module.equals("MAIN_EXE")) {
-                exportEconomyGlobalSource();
+                exportEconomyGlobalSource(0x80070C80L);
+                exportEconomyGlobalSource(0x80070C88L);
                 exportB30SourceTables();
                 dumpB30ConfigValidation();
                 dumpB30ModeStateIndexMap();
