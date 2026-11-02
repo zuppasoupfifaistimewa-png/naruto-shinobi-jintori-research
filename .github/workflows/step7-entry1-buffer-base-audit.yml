@@ -270,12 +270,13 @@ jobs:
             -postScript ExportManagerEconomyWriters.java MAIN_EXE "$out/ay1-ay2-exe.tsv" \
             -postScript ExportTargetCallers.java "$out/az3-setter-direct-callers-main-exe.txt" 0x8001387C \
             -postScript ExportCallWindows.java "$out/az3-setter-call-windows-main-exe.tsv" 0x8001387C \
-            -postScript ExportFunctionDetail.java "$out/az3-setter-caller-main-exe-detail.txt" 0x80012C70 0x80012A44 0x8001387C 0x800138EC \
+            -postScript ExportFunctionDetail.java "$out/az3-setter-caller-main-exe-detail.txt" 0x80012C70 0x80012A44 0x80012A54 0x8001387C 0x800138EC \
+            -postScript ExportFunctionDetail.java "$out/az3-starting-balance-global-detail.txt" 0x80070C80 0x80070C88 \
             -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
             > "$out/ghidra-exe-headless.log" 2>&1
           exe_rc=$?
           set -e
-          if [[ "$exe_rc" -ne 0 || ! -s "$out/ay1-ay2-exe.tsv" || ! -s "$out/az3-setter-direct-callers-main-exe.txt" || ! -s "$out/az3-setter-call-windows-main-exe.tsv" || ! -s "$out/az3-setter-caller-main-exe-detail.txt" ]]; then
+          if [[ "$exe_rc" -ne 0 || ! -s "$out/ay1-ay2-exe.tsv" || ! -s "$out/az3-setter-direct-callers-main-exe.txt" || ! -s "$out/az3-setter-call-windows-main-exe.tsv" || ! -s "$out/az3-setter-caller-main-exe-detail.txt" || ! -s "$out/az3-starting-balance-global-detail.txt" ]]; then
             {
               echo "status=FAILURE"
               echo "job=analyze-entry1-buffer-base"
@@ -320,7 +321,7 @@ jobs:
           print("EXE_RANDOM_RAW_BYTE_CHECK=PASS samples=3")
           PY
 
-          sha256sum "$out/ay1-ay2-entry1.tsv" "$out/ay1-ay2-exe.tsv" "$out/az3-setter-direct-callers-entry1.txt" "$out/az3-setter-direct-callers-main-exe.txt" "$out/az3-setter-call-windows-entry1.tsv" "$out/az3-setter-call-windows-main-exe.tsv" "$out/az3-setter-caller-main-exe-detail.txt" "$out/ay2-exe-random-byte-check.txt" > "$out/ay1-ay2-sha256.txt"
+          sha256sum "$out/ay1-ay2-entry1.tsv" "$out/ay1-ay2-exe.tsv" "$out/az3-setter-direct-callers-entry1.txt" "$out/az3-setter-direct-callers-main-exe.txt" "$out/az3-setter-call-windows-entry1.tsv" "$out/az3-setter-call-windows-main-exe.tsv" "$out/az3-setter-caller-main-exe-detail.txt" "$out/az3-starting-balance-global-detail.txt" "$out/ay2-exe-random-byte-check.txt" > "$out/ay1-ay2-sha256.txt"
 
           python3 - "$out/entry1-buffer-base-targets.txt" <<'PY'
           from pathlib import Path
@@ -477,7 +478,7 @@ jobs:
           PY
           dest="reports/stage1_economy/aq1-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
-          for f in entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b38-accesses.tsv aw1-manager-b40-accesses.tsv aw1-manager-b44-accesses.tsv aw2-numeric-instruction-literals.tsv aw1-helper-call-windows.tsv aw1-manager-status.txt aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv ay1-ay2-entry1.tsv ay1-ay2-exe.tsv az3-setter-direct-callers-entry1.txt az3-setter-direct-callers-main-exe.txt az3-setter-call-windows-entry1.tsv az3-setter-call-windows-main-exe.tsv az3-setter-caller-main-exe-detail.txt ay2-exe-random-byte-check.txt ay1-ay2-sha256.txt ghidra-exe-headless.log aq1-recount.txt run-summary.txt input-identity.txt; do
+          for f in entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b38-accesses.tsv aw1-manager-b40-accesses.tsv aw1-manager-b44-accesses.tsv aw2-numeric-instruction-literals.tsv aw1-helper-call-windows.tsv aw1-manager-status.txt aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv ay1-ay2-entry1.tsv ay1-ay2-exe.tsv az3-setter-direct-callers-entry1.txt az3-setter-direct-callers-main-exe.txt az3-setter-call-windows-entry1.tsv az3-setter-call-windows-main-exe.tsv az3-setter-caller-main-exe-detail.txt az3-starting-balance-global-detail.txt ay2-exe-random-byte-check.txt ay1-ay2-sha256.txt ghidra-exe-headless.log aq1-recount.txt run-summary.txt input-identity.txt; do
             if [ -f "$out/$f" ]; then cp "$out/$f" "$dest/$f"; fi
           done
           API="https://api.github.com/repos/$RESEARCH_REPO"
