@@ -150,6 +150,61 @@ jobs:
           report.write_text("input_validation=PASS\n"+"\n".join(meta)+"\n",encoding="utf-8")
           PY
           python3 tools/step7/ScanStage1TileResources.py --data "$data" --out-dir "$out"
+          python3 - "$data" "$out" <<'PY'
+          import csv,hashlib,struct,sys
+          from pathlib import Path
+          data_path,out_path=Path(sys.argv[1]),Path(sys.argv[2])
+          data=data_path.read_bytes()
+          base=212; table_off=0x44; count=1504; stride=0x1e
+          entries=[struct.unpack_from("<II",data,table_off+i*8) for i in range(count)]
+          candidates=[];records=[]
+          def u16(b,o): return struct.unpack_from("<H",b,o)[0]
+          for idx,(lbn,length) in enumerate(entries):
+              off=(lbn-base)*2048
+              if length!=1+22*stride or off<0 or off+length>len(data): continue
+              chunk=data[off:off+length]
+              if chunk[0]!=22: continue
+              digest=hashlib.sha256(chunk).hexdigest()
+              candidates.append({"entry_index":idx,"lbn":lbn,"length":length,"offset":f"0x{off:X}",
+                                 "sha256":digest,"header_record_count":chunk[0],"record_stride":"0x1E",
+                                 "shape_check":"PASS","selection":"PENDING_FUN_800129E4_RETURN_VALUE"})
+              for ri in range(22):
+                  r=chunk[1+ri*stride:1+(ri+1)*stride]
+                  row={"entry_index":idx,"resource_id_hex":f"0x{idx:X}","entry_lbn":lbn,
+                       "entry_file_offset":f"0x{off:X}","entry_sha256":digest,"record_index":ri,
+                       "record_source_offset":f"0x{off+1+ri*stride:X}","source_byte_05_skipped":r[5],
+                       "runtime_tile_b_00":r[0],"runtime_tile_b_01":r[1],"runtime_tile_b_02":r[2],
+                       "runtime_tile_b_03":r[3],"runtime_tile_b_04":r[4],"runtime_tile_b_05":r[6],
+                       "runtime_tile_b_0C":r[29],"runtime_tile_h_0E":u16(r,7),"runtime_tile_h_10":u16(r,9),
+                       "runtime_tile_h_12":u16(r,11),"runtime_tile_h_14":u16(r,13),"runtime_tile_h_16":u16(r,15),
+                       "runtime_tile_h_18":u16(r,17),"runtime_tile_h_1A":u16(r,19),"runtime_tile_h_1C":u16(r,21),
+                       "runtime_tile_h_1E":u16(r,23),"runtime_tile_h_20_loader_init":0xF020,
+                       "runtime_tile_h_22":u16(r,25),"runtime_tile_h_24":u16(r,27)}
+                  records.append(row)
+          out_path.mkdir(parents=True,exist_ok=True)
+          cand_cols=("entry_index","lbn","length","offset","sha256","header_record_count","record_stride","shape_check","selection")
+          with (out_path/"BA1_TILE_TABLE_CANDIDATES.tsv").open("w",encoding="utf-8",newline="") as f:
+              w=csv.DictWriter(f,fieldnames=cand_cols,delimiter="\t");w.writeheader();w.writerows(candidates)
+          record_cols=("entry_index","resource_id_hex","entry_lbn","entry_file_offset","entry_sha256","record_index",
+              "record_source_offset","source_byte_05_skipped","runtime_tile_b_00","runtime_tile_b_01","runtime_tile_b_02",
+              "runtime_tile_b_03","runtime_tile_b_04","runtime_tile_b_05","runtime_tile_b_0C",
+              "runtime_tile_h_0E","runtime_tile_h_10","runtime_tile_h_12","runtime_tile_h_14","runtime_tile_h_16",
+              "runtime_tile_h_18","runtime_tile_h_1A","runtime_tile_h_1C","runtime_tile_h_1E",
+              "runtime_tile_h_20_loader_init","runtime_tile_h_22","runtime_tile_h_24")
+          with (out_path/"BA1_TILE_TABLE_RECORDS.tsv").open("w",encoding="utf-8",newline="") as f:
+              w=csv.DictWriter(f,fieldnames=record_cols,delimiter="\t");w.writeheader();w.writerows(records)
+          ids=",".join(str(x["entry_index"]) for x in candidates) or "NONE"
+          lines=["STATUS=PASS",f"candidate_entry_indices={ids}",f"candidate_count={len(candidates)}",
+                 f"derived_record_rows={len(records)}","resource_lookup_expression=FUN_800129E4()+0x276 (callsite 0x800B3ED8)",
+                 "directory_index_stride=8 bytes (FUN_8002D00C uses param_1*8)",
+                 "source_record_stride=0x1E","runtime_record_stride=0x124",
+                 "runtime_map=FUN_800F7ADC static copy map; byte +0x05 is skipped; runtime +0x20 init=0xF020",
+                 "selection_status=PENDING_FUN_800129E4_RETURN_VALUE; no candidate is labeled Stage 1 yet",
+                 "runtime_base_status=0x800AD450 is static import candidate; runtime mapping unverified"]
+          for x in candidates: lines.append(f"entry_{x['entry_index']}_bytes={x['length']} offset={x['offset']} sha256={x['sha256']}")
+          (out_path/"BA1_TILE_TABLE_SCAN_SUMMARY.txt").write_text("\n".join(lines)+"\n",encoding="utf-8")
+          print(f"BA1_TILE_TABLE_EXPORT=PASS candidates={len(candidates)} records={len(records)} ids={ids}")
+          PY
           rm -rf "$source" "$extracted"
           test ! -e "$source" && test ! -e "$extracted"
           echo "source_disc_and_DATA_BIN_removed_before_Ghidra=PASS" >> "$out/input-identity.txt"
@@ -241,13 +296,13 @@ jobs:
             -postScript ExportCallWindows.java "$out/az3-setter-call-windows-entry1.tsv" 0x8001387C \
             -postScript ExportCallWindows.java "$out/aw1-helper-call-windows.tsv" 0x800B770C 0x800BDC4C \
             -postScript ExportTileResourceLoader.java "$out/ba1-tile-resource-loader.txt" 0x800F7ADC \
-            -postScript ExportFunctionDetail.java "$out/ba1-tile-loader-callers.txt" 0x800B2A58 0x800B63F4 \
+            -postScript ExportFunctionDetail.java "$out/ba1-tile-loader-callers.txt" 0x800B2A58 0x800B63F4 0x800F64B0 \
             -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
             > "$out/ghidra-headless.log" 2>&1
           rc=$?
           set -e
 
-          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" || ! -s "$out/pending-participant-delta.txt" || ! -s "$out/aq1-economy-census.tsv" || ! -s "$out/aq1-deep-context.tsv" || ! -s "$out/entry1-helper-function-detail.txt" || ! -s "$out/aw1-manager-function-detail.txt" || ! -s "$out/aw1-manager-b38-accesses.tsv" || ! -s "$out/aw1-manager-b40-accesses.tsv" || ! -s "$out/aw1-manager-b44-accesses.tsv" || ! -s "$out/aw2-numeric-instruction-literals.tsv" || ! -s "$out/aw1-helper-call-windows.tsv" || ! -s "$out/ay1-ay2-entry1.tsv" || ! -s "$out/az3-setter-direct-callers-entry1.txt" || ! -s "$out/az3-setter-call-windows-entry1.tsv" || ! -s "$out/az3-resource-economy-function-detail.txt" || ! -s "$out/ba1-tile-resource-loader.txt" || ! -s "$out/ba1-tile-loader-callers.txt" ]]; then
+          if [[ "$rc" -ne 0 || ! -s "$out/entry1-buffer-base-targets.txt" || ! -s "$out/per-record-caller-graph.txt" || ! -s "$out/pending-participant-delta.txt" || ! -s "$out/aq1-economy-census.tsv" || ! -s "$out/aq1-deep-context.tsv" || ! -s "$out/entry1-helper-function-detail.txt" || ! -s "$out/aw1-manager-function-detail.txt" || ! -s "$out/aw1-manager-b38-accesses.tsv" || ! -s "$out/aw1-manager-b40-accesses.tsv" || ! -s "$out/aw1-manager-b44-accesses.tsv" || ! -s "$out/aw2-numeric-instruction-literals.tsv" || ! -s "$out/aw1-helper-call-windows.tsv" || ! -s "$out/ay1-ay2-entry1.tsv" || ! -s "$out/az3-setter-direct-callers-entry1.txt" || ! -s "$out/az3-setter-call-windows-entry1.tsv" || ! -s "$out/az3-resource-economy-function-detail.txt" || ! -s "$out/ba1-tile-resource-loader.txt" || ! -s "$out/ba1-tile-loader-callers.txt" || ! -s "$out/BA1_TILE_TABLE_CANDIDATES.tsv" || ! -s "$out/BA1_TILE_TABLE_RECORDS.tsv" || ! -s "$out/BA1_TILE_TABLE_SCAN_SUMMARY.txt" ]]; then
             {
               echo "status=FAILURE"
               echo "job=analyze-entry1-buffer-base"
@@ -282,7 +337,7 @@ jobs:
             -postScript ExportFunctionDetail.java "$out/az3-setter-caller-main-exe-detail.txt" 0x80012C70 0x80012A44 0x80012A54 0x8001387C 0x800138EC \
             -postScript ExportFunctionDetail.java "$out/az3-starting-balance-global-detail.txt" 0x80070C80 0x80070C88 \
             -postScript ExportFunctionDetail.java "$out/az3-main-exe-economic-helper-detail.txt" 0x800154E0 0x8001552C 0x80015768 0x800157E4 0x800148DC 0x800171A4 \
-            -postScript ExportFunctionDetail.java "$out/ba1-resource-parser-main-exe.txt" 0x8002DBB8 0x8002DEC4 0x8002D7F8 0x8002DFE4 0x8002D00C 0x8002D4E4 0x80035B08 \
+            -postScript ExportFunctionDetail.java "$out/ba1-resource-parser-main-exe.txt" 0x800129E4 0x800132D4 0x8002C9C4 0x8002CF9C 0x8002DBB8 0x8002DEC4 0x8002D7F8 0x8002DFE4 0x8002D00C 0x8002D4E4 0x80035B08 \
             -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
             > "$out/ghidra-exe-headless.log" 2>&1
           exe_rc=$?
@@ -489,7 +544,7 @@ jobs:
           PY
           dest="reports/stage1_economy/aq1-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
-          for f in BA1_DATA_BIN_RESOURCE_INVENTORY.tsv BA1_RESOURCE_CANDIDATES.tsv BA1_DATA_SCAN_SUMMARY.txt ba1-tile-resource-loader.txt ba1-tile-loader-callers.txt ba1-resource-parser-main-exe.txt entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b38-accesses.tsv aw1-manager-b40-accesses.tsv aw1-manager-b44-accesses.tsv aw2-numeric-instruction-literals.tsv aw1-helper-call-windows.tsv aw1-manager-status.txt aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv ay1-ay2-entry1.tsv ay1-ay2-exe.tsv az3-setter-direct-callers-entry1.txt az3-setter-direct-callers-main-exe.txt az3-setter-call-windows-entry1.tsv az3-setter-call-windows-main-exe.tsv az3-setter-caller-main-exe-detail.txt az3-starting-balance-global-detail.txt az3-resource-economy-function-detail.txt az3-main-exe-economic-helper-detail.txt ay2-exe-random-byte-check.txt ay1-ay2-sha256.txt ghidra-exe-headless.log aq1-recount.txt run-summary.txt input-identity.txt; do
+          for f in BA1_DATA_BIN_RESOURCE_INVENTORY.tsv BA1_RESOURCE_CANDIDATES.tsv BA1_DATA_SCAN_SUMMARY.txt BA1_TILE_TABLE_CANDIDATES.tsv BA1_TILE_TABLE_RECORDS.tsv BA1_TILE_TABLE_SCAN_SUMMARY.txt ba1-tile-resource-loader.txt ba1-tile-loader-callers.txt ba1-resource-parser-main-exe.txt entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b38-accesses.tsv aw1-manager-b40-accesses.tsv aw1-manager-b44-accesses.tsv aw2-numeric-instruction-literals.tsv aw1-helper-call-windows.tsv aw1-manager-status.txt aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv ay1-ay2-entry1.tsv ay1-ay2-exe.tsv az3-setter-direct-callers-entry1.txt az3-setter-direct-callers-main-exe.txt az3-setter-call-windows-entry1.tsv az3-setter-call-windows-main-exe.tsv az3-setter-caller-main-exe-detail.txt az3-starting-balance-global-detail.txt az3-resource-economy-function-detail.txt az3-main-exe-economic-helper-detail.txt ay2-exe-random-byte-check.txt ay1-ay2-sha256.txt ghidra-exe-headless.log aq1-recount.txt run-summary.txt input-identity.txt; do
             if [ -f "$out/$f" ]; then cp "$out/$f" "$dest/$f"; fi
           done
           API="https://api.github.com/repos/$RESEARCH_REPO"
