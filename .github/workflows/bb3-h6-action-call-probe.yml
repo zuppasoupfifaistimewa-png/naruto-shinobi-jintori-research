@@ -29,7 +29,7 @@ jobs:
       RESEARCH_REPO: ${{ github.repository }}
       WORK: /tmp/naruto-bb3-${{ github.run_id }}-${{ github.run_attempt }}
       BASE_COMMIT: 0c3572c3db75f97542001e453ae80ba8c3f8acba
-      TIMEOUT_SECONDS: "900"
+      TIMEOUT_SECONDS: "360"
     steps:
       - name: Checkout research scripts and patch
         uses: actions/checkout@v4
