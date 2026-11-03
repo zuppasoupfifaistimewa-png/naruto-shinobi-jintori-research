@@ -232,3 +232,27 @@ Dalam dispatcher yang sama, sebelum rumus reward state 1/2, ada switch langsung 
 Ini menutup sumber *state-machine trigger* positif di dalam dispatcher: byte +0x2EB bernilai 1 atau 0x1D menghasilkan state global 1. Ia belum menutup siapa yang pertama kali menulis +0x2EB dengan nilai tersebut di semua konteks (manager handler input/upstream), maupun label gameplay-nya. Maka hipotesis bahwa nilai 1/0x1D adalah jalur Barrier Release masih HIPOTESIS K1, bukan fakta; falsifier: bila pengamatan prompt/hasil menunjukkan operasi lain atau perubahan selain melepas Barrier, label gugur. Hipotesis alternatif: nilai 1/0x1D adalah klaim/aksi tile lain yang memberi nilai positif rutin; falsifier: menu/UI atau uji runtime yang memperlihatkan perintah Barrier Release dan perubahan Barrier yang konsisten akan menggugurkan alternatif ini.
 
 **Status pemicu kredit:** terpetakan statis K4 sampai boundary `+0x2EB ∈ {1,0x1D} → DAT_80139F03=1 → reward positive branch`; trigger upstream untuk menulis byte, definisi currency helper, dan identifikasi Barrier Release tetap TIDAK TAHU.
+
+
+### Producer eksplisit pemicu kredit (nilai +0x2EB = 1 dan 0x1D)
+
+Audit writer TSV + konteks disassembly juga menemukan immediate producer untuk dua byte yang masuk ke state kredit positif:
+
+| Nilai | PC store | Fungsi/identitas | Rantai instruksi sumber |
+|---:|---:|---|---|
+| 1 | `0x800CF94C` | Fungsi tidak teridentifikasi oleh census (function entry TIDAK TAHU) | `0x800CF93C li v1,1`; `0x800CF940 sb v1,0x2ea(v0)`; `0x800CF944 lw v0,-0x158c(s0)`; `0x800CF948 nop`; `0x800CF94C sb v1,0x2eb(v0)`. |
+| 0x1D | `0x800E0928` | `FUN_800E03B0` | `0x800E0914 lw v0,-0x158c(v1)`; `0x800E0918 li a0,0x1d`; `0x800E091C sb a0,0x2ea(v0)`; `0x800E0920 lw v0,-0x158c(v1)`; `0x800E0924 nop`; `0x800E0928 sb a0,0x2eb(v0)`. |
+
+Untuk store `0x800CF94C`, 12 instruksi pendahulu lengkap: `800CF91C jal 0x8010ABF8; 800CF920 li a0,1; 800CF924 lui v0,0x8014; 800CF928 sb zero,-0x6144(v0); 800CF92C lw v1,-0x158c(s0); 800CF930 li v0,5; 800CF934 sb v0,0x2e9(v1); 800CF938 lw v0,-0x158c(s0); 800CF93C li v1,1; 800CF940 sb v1,0x2ea(v0); 800CF944 lw v0,-0x158c(s0); 800CF948 nop`. Untuk store `0x800E0928`, 12 instruksi pendahulu lengkap: `800E08F8 sw v0,0x2b4(a3); 800E08FC lui v1,0x8014; 800E0900 li v0,0xff; 800E0904 sw v0,-0x6120(v1); 800E0908 lui v0,0x8014; 800E090C sw zero,-0x611c(v0); 800E0910 lui v1,0x8014; 800E0914 lw v0,-0x158c(v1); 800E0918 li a0,0x1d; 800E091C sb a0,0x2ea(v0); 800E0920 lw v0,-0x158c(v1); 800E0924 nop`.
+
+Jadi rantai dalam dispatcher yang sudah terbukti adalah:
+
+```text
+manager+0x2EB == 1 atau 0x1D
+  -> FUN_800D15A8 dispatch action pada 0x800D4470
+  -> pilih petak (FUN_800BBD9C)
+  -> DAT_80139F03 = 1
+  -> state-1 credit formula tile+0x1E + level*tile+0x1C
+```
+
+Keterangan: byte +0x2EA ditulis lebih dahulu oleh dua producer tersebut; +0x2EB menerima nilai yang sama. Ini menutup producer immediate untuk dua trigger ini, namun bukan seluruh 65 store manager+0x2EB (banyak yang menyalin manager+0x2E9 atau memiliki state lain). Tidak ada dasar menyebut label UI 1/0x1D sebagai Barrier Release tanpa prompt/hasil gameplay terverifikasi.
