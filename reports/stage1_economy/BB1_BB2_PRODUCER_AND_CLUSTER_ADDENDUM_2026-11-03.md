@@ -113,3 +113,24 @@ Caller langsung yang tervalidasi untuk FUN_800D15A8 adalah FUN_800F3658 di 0x800
 - Census writer action byte: reports/stage1_economy/aq1-run-41541667221/attempt-1/bb2-action-byte-access.tsv.
 - Decomp dan raw MIPS: reports/stage1_economy/aq1-run-41541667221/attempt-1/bb2-d15a8-function-detail.txt.
 - Caller langsung FUN_800D15A8: reports/stage1_economy/aq1-run-41541667221/attempt-1/bb2-d15a8-direct-callers.txt.
+
+
+### Target B — apakah kredit state-2 adalah 結界開放?
+
+Jalur state-2 di FUN_800D15A8 adalah kandidat yang perlu diperiksa, bukan bukti bahwa Barrier Release telah ditemukan:
+
+- PC 0x800D5118 membaca manager+0x370 dan mensyaratkan nilai 1.
+- PC 0x800D5128 memanggil FUN_80102408; PC 0x800D514C membelok keluar bila hasilnya bukan 0.
+- PC 0x800D5154 memanggil FUN_800BBD9C untuk memilih tile.
+- PC 0x800D5268 membaca tile+0x1C; PC 0x800D5278 membaca tile+0x1E; level bits8–11 dibaca dari tile+0x20.
+- PC 0x800D5288 memanggil FUN_80108EAC dengan nilai tile+0x1E + level×tile+0x1C; PC 0x800D530C/0x800D5314 memanggil helper yang menampilkan total baru dan mengubah state UI.
+- Dekompilasi menunjukkan nilai yang sama ditulis ke slot pending participant manager+0x2EE + participant_index×2. Cumulative manager+0x4D4 hanya diperbarui jika flag participant tertentu aktif.
+
+Dua hipotesis yang saat ini belum bisa dipilih:
+
+| Hipotesis | Dugaan | Falsifier |
+|---|---|---|
+| H-R1 | State-2 positif adalah payout ketika pemain melakukan 結界開放; nilai tile/level menjadi Chakra yang dikembalikan setelah barrier dibuka. | Falsified bila gameplay normal yang jelas menampilkan 結界開放 berjalan tanpa memasuki state-2 / tanpa pending credit rumus tersebut, atau jika state-2 juga terpicu pada aksi non-release yang teridentifikasi. |
+| H-R2 | State-2 adalah payout/penyelesaian tile-action lain yang bukan Barrier Release. | Falsified bila gameplay normal dengan label 結界開放 secara berulang memicu state-2, memilih tile, dan menghasilkan pending credit sesuai rumus di atas, sementara aksi tile lain tidak. |
+
+Belum ada run yang menghubungkan label UI Jepang 結界開放, manager action byte, DAT_80139F03 state-2, dan perubahan saldo secara berurutan. Karena itu target B — identitas dan jumlah Chakra dari Barrier Release — masih **TIDAK TAHU**. Direct dispatch BB3 untuk action byte 3/8 tidak menguji state-2. B44 tetap bukan Barrier Release.
