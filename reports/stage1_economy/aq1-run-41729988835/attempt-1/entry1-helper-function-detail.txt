@@ -1,0 +1,1472 @@
+analysis=Ghidra selected-function static audit
+program=DATA_BIN_ENTRY_0001.bin
+program_language=MIPS:LE:32:default
+address_model=Ghidra imported image; exact loader base and mapping are defined by the invoking workflow
+game_or_emulator_executed=no
+gameplay_input_sent=no
+savestate_restored=no
+binary_uploaded_as_artifact=no
+
+=== TARGET 800b770c ===
+instruction_at_target=andi a0,a0,0xff
+function_name=FUN_800b770c
+function_entry=800b770c
+function_body_bytes=92
+function_return_type=undefined
+function_signature=undefined FUN_800b770c(void)
+function_thunk=false
+--- RAW_FUNCTION_BODY_BEGIN ---
+800b770c bytes=[FF 00 84 30] andi a0,a0,0xff
+800b7710 bytes=[14 80 02 3C] lui v0,0x8014
+800b7714 bytes=[84 EA 43 8C] lw v1,-0x157c(v0)
+800b7718 bytes=[C0 10 04 00] sll v0,a0,0x3
+800b771c bytes=[21 10 44 00] addu v0,v0,a0
+800b7720 bytes=[C0 10 02 00] sll v0,v0,0x3
+800b7724 bytes=[21 10 44 00] addu v0,v0,a0
+800b7728 bytes=[80 10 02 00] sll v0,v0,0x2
+800b772c bytes=[21 10 43 00] addu v0,v0,v1
+800b7730 bytes=[0B 00 43 90] lbu v1,0xb(v0)
+800b7734 bytes=[00 00 00 00] nop
+800b7738 bytes=[05 00 62 2C] sltiu v0,v1,0x5
+800b773c bytes=[16 00 40 10] beq v0,zero,0x800b7798
+800b7740 bytes=[80 18 03 00] _sll v1,v1,0x2
+800b7744 bytes=[0B 80 02 3C] lui v0,0x800b
+800b7748 bytes=[F4 D5 42 24] addiu v0,v0,-0x2a0c
+800b774c bytes=[21 18 62 00] addu v1,v1,v0
+800b7750 bytes=[00 00 62 8C] lw v0,0x0(v1)
+800b7754 bytes=[00 00 00 00] nop
+800b7758 bytes=[08 00 40 00] jr v0
+800b775c bytes=[00 00 00 00] _nop
+800b7798 bytes=[08 00 E0 03] jr ra
+800b779c bytes=[00 00 00 00] _nop
+--- RAW_FUNCTION_BODY_END ---
+raw_instruction_count_emitted=23
+--- C_DECOMPILATION_BEGIN ---
+
+uint FUN_800b770c(uint param_1)
+
+{
+  uint uVar1;
+  int iVar2;
+  
+  param_1 = param_1 & 0xff;
+  switch(*(undefined1 *)(param_1 * 0x124 + DAT_8013ea84 + 0xb)) {
+  case 0:
+    iVar2 = param_1 * 0x124 + DAT_8013ea84;
+    return (uint)*(ushort *)(iVar2 + (*(ushort *)(iVar2 + 0x20) >> 7 & 0x1e) + 0x10);
+  case 1:
+    iVar2 = param_1 * 0x124 + DAT_8013ea84;
+    uVar1 = (uint)*(ushort *)(iVar2 + (*(ushort *)(iVar2 + 0x20) >> 7 & 0x1e) + 0x10) * 0xc;
+    break;
+  case 2:
+    iVar2 = param_1 * 0x124 + DAT_8013ea84;
+    uVar1 = (uint)*(ushort *)(iVar2 + (*(ushort *)(iVar2 + 0x20) >> 7 & 0x1e) + 0x10) * 0xf;
+    break;
+  case 3:
+    iVar2 = param_1 * 0x124 + DAT_8013ea84;
+    uVar1 = (uint)*(ushort *)(iVar2 + (*(ushort *)(iVar2 + 0x20) >> 7 & 0x1e) + 0x10) * 0x12;
+    break;
+  case 4:
+    iVar2 = param_1 * 0x124 + DAT_8013ea84;
+    return (uint)*(ushort *)(iVar2 + (*(ushort *)(iVar2 + 0x20) >> 7 & 0x1e) + 0x10) << 1;
+  default:
+    return 0;
+  }
+  return uVar1 / 10;
+}
+
+
+--- C_DECOMPILATION_END ---
+decompile_status=SUCCESS
+--- REFERENCES_TO_FUNCTION_BEGIN ---
+reference_from=800fc700 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fc700 caller_name=FUN_800fc700
+  callsite_context:
+  800fc6fc bytes=[1F 00 44 90] lbu a0,0x1f(v0)
+  800fc700 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fc704 bytes=[00 00 00 00] _nop
+  800fc708 bytes=[74 EA 25 8E] lw a1,-0x158c(s1)
+reference_from=800fca0c reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fca0c caller_name=FUN_800fca0c
+  callsite_context:
+  800fca08 bytes=[00 00 00 00] _nop
+  800fca0c bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fca10 bytes=[00 00 00 00] _nop
+  800fca14 bytes=[74 EA 23 8E] lw v1,-0x158c(s1)
+reference_from=800fcb44 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fca0c caller_name=FUN_800fca0c
+  callsite_context:
+  800fcb40 bytes=[01 00 E7 24] _addiu a3,a3,0x1
+  800fcb44 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fcb48 bytes=[00 00 00 00] _nop
+  800fcb4c bytes=[74 EA 23 8E] lw v1,-0x158c(s1)
+reference_from=800fd730 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fd730 caller_name=FUN_800fd730
+  callsite_context:
+  800fd72c bytes=[00 00 00 00] _nop
+  800fd730 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fd734 bytes=[00 00 00 00] _nop
+  800fd738 bytes=[74 EA 23 8E] lw v1,-0x158c(s1)
+reference_from=800fd868 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fd730 caller_name=FUN_800fd730
+  callsite_context:
+  800fd864 bytes=[01 00 E7 24] _addiu a3,a3,0x1
+  800fd868 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fd86c bytes=[00 00 00 00] _nop
+  800fd870 bytes=[74 EA 23 8E] lw v1,-0x158c(s1)
+reference_from=800fe314 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fe314 caller_name=FUN_800fe314
+  callsite_context:
+  800fe310 bytes=[00 00 00 00] _nop
+  800fe314 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fe318 bytes=[FF 00 24 32] _andi a0,s1,0xff
+  800fe31c bytes=[84 EA 65 8E] lw a1,-0x157c(s3)
+reference_from=800fe42c reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fe314 caller_name=FUN_800fe314
+  callsite_context:
+  800fe428 bytes=[00 00 00 00] _nop
+  800fe42c bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fe430 bytes=[FF 00 24 32] _andi a0,s1,0xff
+  800fe434 bytes=[84 EA 65 8E] lw a1,-0x157c(s3)
+reference_from=800fe6a0 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fe314 caller_name=FUN_800fe314
+  callsite_context:
+  800fe69c bytes=[00 00 00 00] _nop
+  800fe6a0 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fe6a4 bytes=[FF 00 44 32] _andi a0,s2,0xff
+  800fe6a8 bytes=[84 EA 25 8E] lw a1,-0x157c(s1)
+reference_from=800fe7b8 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fe314 caller_name=FUN_800fe314
+  callsite_context:
+  800fe7b4 bytes=[00 00 00 00] _nop
+  800fe7b8 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fe7bc bytes=[FF 00 44 32] _andi a0,s2,0xff
+  800fe7c0 bytes=[84 EA 25 8E] lw a1,-0x157c(s1)
+reference_from=800fea28 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fea28 caller_name=FUN_800fea28
+  callsite_context:
+  800fea24 bytes=[00 00 00 00] _nop
+  800fea28 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fea2c bytes=[FF 00 C4 32] _andi a0,s6,0xff
+  800fea30 bytes=[84 EA 25 8E] lw a1,-0x157c(s1)
+reference_from=800feb38 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800feb34 bytes=[00 00 00 00] _nop
+  800feb38 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800feb3c bytes=[FF 00 C4 32] _andi a0,s6,0xff
+  800feb40 bytes=[84 EA 25 8E] lw a1,-0x157c(s1)
+reference_from=800fb598 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800fb598 caller_name=FUN_800fb598
+  callsite_context:
+  800fb594 bytes=[00 00 00 00] _nop
+  800fb598 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800fb59c bytes=[21 20 00 02] _move a0,s0
+  800fb5a0 bytes=[14 80 03 3C] lui v1,0x8014
+reference_from=800bdce8 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800bdc4c caller_name=FUN_800bdc4c
+  callsite_context:
+  800bdce4 bytes=[00 00 00 00] _nop
+  800bdce8 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800bdcec bytes=[FF 00 04 32] _andi a0,s0,0xff
+  800bdcf0 bytes=[21 90 42 02] addu s2,s2,v0
+reference_from=800c815c reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800c815c caller_name=FUN_800c815c
+  callsite_context:
+  800c8158 bytes=[00 00 00 00] _nop
+  800c815c bytes=[C3 DD 02 0C] jal 0x800b770c
+  800c8160 bytes=[21 20 A0 00] _move a0,a1
+  800c8164 bytes=[74 EA 46 8E] lw a2,-0x158c(s2)
+reference_from=800cd678 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800cd678 caller_name=FUN_800cd678
+  callsite_context:
+  800cd674 bytes=[00 00 00 00] _nop
+  800cd678 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cd67c bytes=[21 20 40 02] _move a0,s2
+  800cd680 bytes=[21 20 40 00] move a0,v0
+reference_from=800e0324 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800e0324 caller_name=FUN_800e0324
+  callsite_context:
+  800e0320 bytes=[00 00 00 00] _nop
+  800e0324 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800e0328 bytes=[FF 00 04 32] _andi a0,s0,0xff
+  800e032c bytes=[84 EA 43 8E] lw v1,-0x157c(s2)
+reference_from=800cdd48 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800cdd44 bytes=[00 00 62 AC] sw v0,0x0(v1)
+  800cdd48 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cdd4c bytes=[21 20 40 02] _move a0,s2
+  800cdd50 bytes=[20 03 42 28] slti v0,v0,0x320
+reference_from=800cdd74 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800cdd70 bytes=[21 80 02 02] addu s0,s0,v0
+  800cdd74 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cdd78 bytes=[21 20 40 02] _move a0,s2
+  800cdd7c bytes=[BC 02 42 24] addiu v0,v0,0x2bc
+reference_from=800cde84 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800cde80 bytes=[00 00 00 00] _nop
+  800cde84 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cde88 bytes=[21 20 40 02] _move a0,s2
+  800cde8c bytes=[80 20 13 00] sll a0,s3,0x2
+reference_from=800cdf90 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800cdf8c bytes=[00 00 00 00] _nop
+  800cdf90 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cdf94 bytes=[21 20 40 02] _move a0,s2
+  800cdf98 bytes=[80 18 13 00] sll v1,s3,0x2
+reference_from=800ce084 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800ce080 bytes=[14 80 02 3C] _lui v0,0x8014
+  800ce084 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800ce088 bytes=[21 20 40 02] _move a0,s2
+  800ce08c bytes=[80 18 13 00] sll v1,s3,0x2
+reference_from=800ce11c reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800ce118 bytes=[00 00 00 00] _nop
+  800ce11c bytes=[C3 DD 02 0C] jal 0x800b770c
+  800ce120 bytes=[21 20 40 02] _move a0,s2
+  800ce124 bytes=[80 18 13 00] sll v1,s3,0x2
+reference_from=800ce204 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=NONE caller_name=NONE
+  callsite_context:
+  800ce200 bytes=[00 00 00 00] _nop
+  800ce204 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800ce208 bytes=[21 20 40 02] _move a0,s2
+  800ce20c bytes=[80 20 13 00] sll a0,s3,0x2
+reference_from=800cbad8 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800cb4b4 caller_name=FUN_800cb4b4
+  callsite_context:
+  800cbad4 bytes=[00 00 00 00] _nop
+  800cbad8 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cbadc bytes=[FF 00 24 32] _andi a0,s1,0xff
+  800cbae0 bytes=[40 18 14 00] sll v1,s4,0x1
+reference_from=800cbb84 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800cb4b4 caller_name=FUN_800cb4b4
+  callsite_context:
+  800cbb80 bytes=[21 18 20 02] _move v1,s1
+  800cbb84 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cbb88 bytes=[FF 00 24 32] _andi a0,s1,0xff
+  800cbb8c bytes=[80 18 14 00] sll v1,s4,0x2
+reference_from=800ccc74 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800cca18 caller_name=FUN_800cca18
+  callsite_context:
+  800ccc70 bytes=[79 03 44 90] lbu a0,0x379(v0)
+  800ccc74 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800ccc78 bytes=[00 00 00 00] _nop
+  800ccc7c bytes=[21 20 40 00] move a0,v0
+reference_from=800f1ccc reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800f1ccc caller_name=FUN_800f1ccc
+  callsite_context:
+  800f1cc8 bytes=[1F 00 84 90] lbu a0,0x1f(a0)
+  800f1ccc bytes=[C3 DD 02 0C] jal 0x800b770c
+  800f1cd0 bytes=[00 00 00 00] _nop
+  800f1cd4 bytes=[74 EA 25 8E] lw a1,-0x158c(s1)
+reference_from=800f1d08 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800f1ccc caller_name=FUN_800f1ccc
+  callsite_context:
+  800f1d04 bytes=[1F 00 44 90] lbu a0,0x1f(v0)
+  800f1d08 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800f1d0c bytes=[00 00 00 00] _nop
+  800f1d10 bytes=[BD 02 42 28] slti v0,v0,0x2bd
+reference_from=800f1df0 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800f1ccc caller_name=FUN_800f1ccc
+  callsite_context:
+  800f1dec bytes=[00 00 00 00] _nop
+  800f1df0 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800f1df4 bytes=[00 00 00 00] _nop
+  800f1df8 bytes=[74 EA 25 8E] lw a1,-0x158c(s1)
+reference_from=800f1f4c reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800f1ccc caller_name=FUN_800f1ccc
+  callsite_context:
+  800f1f48 bytes=[1F 00 84 90] lbu a0,0x1f(a0)
+  800f1f4c bytes=[C3 DD 02 0C] jal 0x800b770c
+  800f1f50 bytes=[00 00 00 00] _nop
+  800f1f54 bytes=[E9 03 42 28] slti v0,v0,0x3e9
+reference_from=800f2050 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800f2050 caller_name=FUN_800f2050
+  callsite_context:
+  800f204c bytes=[1F 00 84 90] lbu a0,0x1f(a0)
+  800f2050 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800f2054 bytes=[00 00 00 00] _nop
+  800f2058 bytes=[72 23 04 0C] jal 0x80108dc8
+reference_from=800e09e0 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800e03b0 caller_name=FUN_800e03b0
+  callsite_context:
+  800e09dc bytes=[1F 00 84 90] lbu a0,0x1f(a0)
+  800e09e0 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800e09e4 bytes=[14 80 12 3C] _lui s2,0x8014
+  800e09e8 bytes=[23 28 02 00] subu a1,zero,v0
+reference_from=800cb320 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800cadb8 caller_name=FUN_800cadb8
+  callsite_context:
+  800cb31c bytes=[00 00 00 00] _nop
+  800cb320 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800cb324 bytes=[00 00 00 00] _nop
+  800cb328 bytes=[D0 07 42 24] addiu v0,v0,0x7d0
+reference_from=800e40d4 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800e3e74 caller_name=FUN_800e3e74
+  callsite_context:
+  800e40d0 bytes=[1F 00 84 90] lbu a0,0x1f(a0)
+  800e40d4 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800e40d8 bytes=[14 80 10 3C] _lui s0,0x8014
+  800e40dc bytes=[74 EA 65 8E] lw a1,-0x158c(s3)
+reference_from=800e4210 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800e3e74 caller_name=FUN_800e3e74
+  callsite_context:
+  800e420c bytes=[1F 00 84 90] lbu a0,0x1f(a0)
+  800e4210 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800e4214 bytes=[00 00 00 00] _nop
+  800e4218 bytes=[74 EA 65 8E] lw a1,-0x158c(s3)
+reference_from=800dcf40 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800dc2e0 caller_name=FUN_800dc2e0
+  callsite_context:
+  800dcf3c bytes=[1F 00 84 90] lbu a0,0x1f(a0)
+  800dcf40 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800dcf44 bytes=[00 00 00 00] _nop
+  800dcf48 bytes=[74 EA 24 8E] lw a0,-0x158c(s1)
+reference_from=800dca38 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800dc2e0 caller_name=FUN_800dc2e0
+  callsite_context:
+  800dca34 bytes=[20 05 44 90] lbu a0,0x520(v0)
+  800dca38 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800dca3c bytes=[00 00 00 00] _nop
+  800dca40 bytes=[74 EA 03 8E] lw v1,-0x158c(s0)
+reference_from=800d2c6c reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800d15a8 caller_name=FUN_800d15a8
+  callsite_context:
+  800d2c68 bytes=[B0 EB 04 92] lbu a0,-0x1450(s0)
+  800d2c6c bytes=[C3 DD 02 0C] jal 0x800b770c
+  800d2c70 bytes=[00 00 00 00] _nop
+  800d2c74 bytes=[72 23 04 0C] jal 0x80108dc8
+reference_from=800d4154 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800d15a8 caller_name=FUN_800d15a8
+  callsite_context:
+  800d4150 bytes=[BC EB 24 92] lbu a0,-0x1444(s1)
+  800d4154 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800d4158 bytes=[00 00 00 00] _nop
+  800d415c bytes=[72 23 04 0C] jal 0x80108dc8
+reference_from=800d42e0 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800d15a8 caller_name=FUN_800d15a8
+  callsite_context:
+  800d42dc bytes=[FC 02 44 90] lbu a0,0x2fc(v0)
+  800d42e0 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800d42e4 bytes=[00 00 00 00] _nop
+  800d42e8 bytes=[72 23 04 0C] jal 0x80108dc8
+reference_from=800d4658 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800d15a8 caller_name=FUN_800d15a8
+  callsite_context:
+  800d4654 bytes=[A0 04 44 90] lbu a0,0x4a0(v0)
+  800d4658 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800d465c bytes=[14 80 10 3C] _lui s0,0x8014
+  800d4660 bytes=[74 EA 23 8E] lw v1,-0x158c(s1)
+reference_from=800d4780 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800d15a8 caller_name=FUN_800d15a8
+  callsite_context:
+  800d477c bytes=[A0 04 44 90] lbu a0,0x4a0(v0)
+  800d4780 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800d4784 bytes=[00 00 00 00] _nop
+  800d4788 bytes=[74 EA 25 8E] lw a1,-0x158c(s1)
+reference_from=800d3c84 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800d15a8 caller_name=FUN_800d15a8
+  callsite_context:
+  800d3c80 bytes=[FC 02 44 90] lbu a0,0x2fc(v0)
+  800d3c84 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800d3c88 bytes=[00 00 00 00] _nop
+  800d3c8c bytes=[72 23 04 0C] jal 0x80108dc8
+reference_from=800d27f4 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800d15a8 caller_name=FUN_800d15a8
+  callsite_context:
+  800d27f0 bytes=[B0 EB 04 92] lbu a0,-0x1450(s0)
+  800d27f4 bytes=[C3 DD 02 0C] jal 0x800b770c
+  800d27f8 bytes=[00 00 00 00] _nop
+  800d27fc bytes=[72 23 04 0C] jal 0x80108dc8
+reference_count=44
+--- REFERENCES_TO_FUNCTION_END ---
+
+=== TARGET 800bdc4c ===
+instruction_at_target=addiu sp,sp,-0x28
+function_name=FUN_800bdc4c
+function_entry=800bdc4c
+function_body_bytes=252
+function_return_type=undefined
+function_signature=undefined FUN_800bdc4c(void)
+function_thunk=false
+--- RAW_FUNCTION_BODY_BEGIN ---
+800bdc4c bytes=[D8 FF BD 27] addiu sp,sp,-0x28
+800bdc50 bytes=[24 00 BF AF] sw ra,0x24(sp)
+800bdc54 bytes=[20 00 B4 AF] sw s4,0x20(sp)
+800bdc58 bytes=[1C 00 B3 AF] sw s3,0x1c(sp)
+800bdc5c bytes=[18 00 B2 AF] sw s2,0x18(sp)
+800bdc60 bytes=[14 00 B1 AF] sw s1,0x14(sp)
+800bdc64 bytes=[10 00 B0 AF] sw s0,0x10(sp)
+800bdc68 bytes=[FF FF 91 30] andi s1,a0,0xffff
+800bdc6c bytes=[14 80 02 3C] lui v0,0x8014
+800bdc70 bytes=[71 EA 42 90] lbu v0,-0x158f(v0)
+800bdc74 bytes=[00 00 00 00] nop
+800bdc78 bytes=[2B 10 22 02] sltu v0,s1,v0
+800bdc7c bytes=[03 00 40 14] bne v0,zero,0x800bdc8c
+800bdc80 bytes=[21 90 00 00] _clear s2
+800bdc84 bytes=[14 80 02 3C] lui v0,0x8014
+800bdc88 bytes=[8A EA 51 94] lhu s1,-0x1576(v0)
+800bdc8c bytes=[14 80 02 3C] lui v0,0x8014
+800bdc90 bytes=[C8 EA 42 8C] lw v0,-0x1538(v0)
+800bdc94 bytes=[00 00 00 00] nop
+800bdc98 bytes=[1D 00 40 18] blez v0,0x800bdd10
+800bdc9c bytes=[21 80 00 00] _clear s0
+800bdca0 bytes=[14 80 14 3C] lui s4,0x8014
+800bdca4 bytes=[05 00 13 24] li s3,0x5
+800bdca8 bytes=[84 EA 82 8E] lw v0,-0x157c(s4)
+800bdcac bytes=[C0 18 10 00] sll v1,s0,0x3
+800bdcb0 bytes=[21 18 70 00] addu v1,v1,s0
+800bdcb4 bytes=[C0 18 03 00] sll v1,v1,0x3
+800bdcb8 bytes=[21 18 70 00] addu v1,v1,s0
+800bdcbc bytes=[80 18 03 00] sll v1,v1,0x2
+800bdcc0 bytes=[21 18 62 00] addu v1,v1,v0
+800bdcc4 bytes=[00 00 62 90] lbu v0,0x0(v1)
+800bdcc8 bytes=[00 00 00 00] nop
+800bdccc bytes=[09 00 53 14] bne v0,s3,0x800bdcf4
+800bdcd0 bytes=[00 00 00 00] _nop
+800bdcd4 bytes=[20 00 62 94] lhu v0,0x20(v1)
+800bdcd8 bytes=[00 00 00 00] nop
+800bdcdc bytes=[02 13 02 00] srl v0,v0,0xc
+800bdce0 bytes=[04 00 22 16] bne s1,v0,0x800bdcf4
+800bdce4 bytes=[00 00 00 00] _nop
+800bdce8 bytes=[C3 DD 02 0C] jal 0x800b770c
+800bdcec bytes=[FF 00 04 32] _andi a0,s0,0xff
+800bdcf0 bytes=[21 90 42 02] addu s2,s2,v0
+800bdcf4 bytes=[01 00 10 26] addiu s0,s0,0x1
+800bdcf8 bytes=[14 80 02 3C] lui v0,0x8014
+800bdcfc bytes=[C8 EA 42 8C] lw v0,-0x1538(v0)
+800bdd00 bytes=[00 00 00 00] nop
+800bdd04 bytes=[2A 10 02 02] slt v0,s0,v0
+800bdd08 bytes=[E7 FF 40 14] bne v0,zero,0x800bdca8
+800bdd0c bytes=[00 00 00 00] _nop
+800bdd10 bytes=[A3 4A 00 0C] jal 0x80012a8c
+800bdd14 bytes=[00 00 00 00] _nop
+800bdd18 bytes=[C2 1F 12 00] srl v1,s2,0x1f
+800bdd1c bytes=[21 18 43 02] addu v1,s2,v1
+800bdd20 bytes=[43 18 03 00] sra v1,v1,0x1
+800bdd24 bytes=[21 10 62 00] addu v0,v1,v0
+800bdd28 bytes=[24 00 BF 8F] lw ra,0x24(sp)
+800bdd2c bytes=[20 00 B4 8F] lw s4,0x20(sp)
+800bdd30 bytes=[1C 00 B3 8F] lw s3,0x1c(sp)
+800bdd34 bytes=[18 00 B2 8F] lw s2,0x18(sp)
+800bdd38 bytes=[14 00 B1 8F] lw s1,0x14(sp)
+800bdd3c bytes=[10 00 B0 8F] lw s0,0x10(sp)
+800bdd40 bytes=[08 00 E0 03] jr ra
+800bdd44 bytes=[28 00 BD 27] _addiu sp,sp,0x28
+--- RAW_FUNCTION_BODY_END ---
+raw_instruction_count_emitted=63
+--- C_DECOMPILATION_BEGIN ---
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+int FUN_800bdc4c(ushort param_1)
+
+{
+  int iVar1;
+  char *pcVar2;
+  uint uVar3;
+  int iVar4;
+  
+  iVar4 = 0;
+  if (DAT_8013ea71 <= param_1) {
+    param_1 = _DAT_8013ea8a;
+  }
+  uVar3 = 0;
+  if (0 < DAT_8013eac8) {
+    do {
+      pcVar2 = (char *)(uVar3 * 0x124 + DAT_8013ea84);
+      if ((*pcVar2 == '\x05') && (param_1 == *(ushort *)(pcVar2 + 0x20) >> 0xc)) {
+        iVar1 = FUN_800b770c(uVar3 & 0xff);
+        iVar4 = iVar4 + iVar1;
+      }
+      uVar3 = uVar3 + 1;
+    } while ((int)uVar3 < DAT_8013eac8);
+  }
+  iVar1 = func_0x80012a8c();
+  return iVar4 / 2 + iVar1;
+}
+
+
+--- C_DECOMPILATION_END ---
+decompile_status=SUCCESS
+--- REFERENCES_TO_FUNCTION_BEGIN ---
+reference_from=80108054 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=80108054 caller_name=FUN_80108054
+  callsite_context:
+  80108050 bytes=[4A 09 44 90] lbu a0,0x94a(v0)
+  80108054 bytes=[13 F7 02 0C] jal 0x800bdc4c
+  80108058 bytes=[00 00 00 00] _nop
+  8010805c bytes=[21 98 40 00] move s3,v0
+reference_from=800cf434 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800cf434 caller_name=FUN_800cf434
+  callsite_context:
+  800cf430 bytes=[88 EA 24 96] lhu a0,-0x1578(s1)
+  800cf434 bytes=[13 F7 02 0C] jal 0x800bdc4c
+  800cf438 bytes=[00 00 00 00] _nop
+  800cf43c bytes=[74 EA 45 8E] lw a1,-0x158c(s2)
+reference_from=800ee458 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800edd68 caller_name=FUN_800edd68
+  callsite_context:
+  800ee454 bytes=[88 EA 04 96] lhu a0,-0x1578(s0)
+  800ee458 bytes=[13 F7 02 0C] jal 0x800bdc4c
+  800ee45c bytes=[14 80 11 3C] _lui s1,0x8014
+  800ee460 bytes=[F0 EA 22 AE] sw v0,-0x1510(s1)
+reference_count=3
+--- REFERENCES_TO_FUNCTION_END ---
+DATA_XREFS target=0x80066e7c status=UNMAPPED_IN_THIS_IMPORTED_IMAGE
+DATA_XREFS target=0x80070734 status=UNMAPPED_IN_THIS_IMPORTED_IMAGE
+DATA_XREFS target=0x8007073c status=UNMAPPED_IN_THIS_IMPORTED_IMAGE
+DATA_XREFS target=0x80070cd0 status=UNMAPPED_IN_THIS_IMPORTED_IMAGE
+
+=== DATA_XREFS target=80139ecc ===
+loaded_image_bytes=00000000 loaded_image_word_le=0x0
+loaded_image_value_is_not_runtime_state=yes
+xref_from=800dc050 type=READ source=ANALYSIS operand=1 function_entry=800db29c function_name=FUN_800db29c
+  source_instruction_bytes=[00 00 62 94] lhu v0,0x0(v1)
+  800dc040 bytes=[40 28 04 00] sll a1,a0,0x1
+  800dc044 bytes=[21 28 C5 00] addu a1,a2,a1
+  800dc048 bytes=[80 18 04 00] sll v1,a0,0x2
+  800dc04c bytes=[21 18 68 00] addu v1,v1,t0
+  800dc050 bytes=[00 00 62 94] lhu v0,0x0(v1)
+  800dc054 bytes=[00 00 00 00] nop
+  800dc058 bytes=[00 00 A2 A4] sh v0,0x0(a1)
+  800dc05c bytes=[00 00 60 AC] sw zero,0x0(v1)
+  800dc060 bytes=[01 00 84 24] addiu a0,a0,0x1
+xref_from=800dc05c type=WRITE source=ANALYSIS operand=1 function_entry=800db29c function_name=FUN_800db29c
+  source_instruction_bytes=[00 00 60 AC] sw zero,0x0(v1)
+  800dc04c bytes=[21 18 68 00] addu v1,v1,t0
+  800dc050 bytes=[00 00 62 94] lhu v0,0x0(v1)
+  800dc054 bytes=[00 00 00 00] nop
+  800dc058 bytes=[00 00 A2 A4] sh v0,0x0(a1)
+  800dc05c bytes=[00 00 60 AC] sw zero,0x0(v1)
+  800dc060 bytes=[01 00 84 24] addiu a0,a0,0x1
+  800dc064 bytes=[21 18 80 00] move v1,a0
+  800dc068 bytes=[71 EA E2 90] lbu v0,-0x158f(a3)
+  800dc06c bytes=[00 00 00 00] nop
+xref_from=800f3f84 type=DATA source=ANALYSIS operand=1 function_entry=800f3658 function_name=FUN_800f3658
+  source_instruction_bytes=[00 00 62 8C] lw v0,0x0(v1)
+  800f3f74 bytes=[8A EA 43 94] lhu v1,-0x1576(v0)
+  800f3f78 bytes=[00 00 00 00] nop
+  800f3f7c bytes=[80 18 03 00] sll v1,v1,0x2
+  800f3f80 bytes=[21 18 65 00] addu v1,v1,a1
+  800f3f84 bytes=[00 00 62 8C] lw v0,0x0(v1)
+  800f3f88 bytes=[00 00 00 00] nop
+  800f3f8c bytes=[21 10 44 00] addu v0,v0,a0
+  800f3f90 bytes=[00 00 62 AC] sw v0,0x0(v1)
+  800f3f94 bytes=[74 EA 26 8E] lw a2,-0x158c(s1)
+xref_from=800f3f90 type=DATA source=ANALYSIS operand=1 function_entry=800f3658 function_name=FUN_800f3658
+  source_instruction_bytes=[00 00 62 AC] sw v0,0x0(v1)
+  800f3f80 bytes=[21 18 65 00] addu v1,v1,a1
+  800f3f84 bytes=[00 00 62 8C] lw v0,0x0(v1)
+  800f3f88 bytes=[00 00 00 00] nop
+  800f3f8c bytes=[21 10 44 00] addu v0,v0,a0
+  800f3f90 bytes=[00 00 62 AC] sw v0,0x0(v1)
+  800f3f94 bytes=[74 EA 26 8E] lw a2,-0x158c(s1)
+  800f3f98 bytes=[00 00 00 00] nop
+  800f3f9c bytes=[84 05 C2 8C] lw v0,0x584(a2)
+  800f3fa0 bytes=[00 00 00 00] nop
+xref_from=800f3fc8 type=DATA source=ANALYSIS operand=1 function_entry=800f3658 function_name=FUN_800f3658
+  source_instruction_bytes=[00 00 44 AC] sw a0,0x0(v0)
+  800f3fb8 bytes=[80 10 02 00] sll v0,v0,0x2
+  800f3fbc bytes=[21 10 45 00] addu v0,v0,a1
+  800f3fc0 bytes=[23 20 04 00] subu a0,zero,a0
+  800f3fc4 bytes=[F0 04 C4 AC] sw a0,0x4f0(a2)
+  800f3fc8 bytes=[00 00 44 AC] sw a0,0x0(v0)
+  800f3fcc bytes=[14 80 03 3C] lui v1,0x8014
+  800f3fd0 bytes=[BD 9E 62 90] lbu v0,-0x6143(v1)
+  800f3fd4 bytes=[00 00 00 00] nop
+  800f3fd8 bytes=[01 00 42 24] addiu v0,v0,0x1
+xref_from=800f3f6c type=PARAM source=ANALYSIS operand=0 function_entry=800f3658 function_name=FUN_800f3658
+  source_instruction_bytes=[CC 9E A5 24] addiu a1,a1,-0x6134
+  800f3f5c bytes=[21 20 82 00] addu a0,a0,v0
+  800f3f60 bytes=[80 20 04 00] sll a0,a0,0x2
+  800f3f64 bytes=[B0 EB 04 AE] sw a0,-0x1450(s0)
+  800f3f68 bytes=[14 80 05 3C] lui a1,0x8014
+  800f3f6c bytes=[CC 9E A5 24] addiu a1,a1,-0x6134
+  800f3f70 bytes=[14 80 02 3C] lui v0,0x8014
+  800f3f74 bytes=[8A EA 43 94] lhu v1,-0x1576(v0)
+  800f3f78 bytes=[00 00 00 00] nop
+  800f3f7c bytes=[80 18 03 00] sll v1,v1,0x2
+data_reference_count=6
+interpretation=direct Ghidra references only; indirect aliases and runtime writers may not appear
+
+=== DATA_XREFS target=80139efc ===
+loaded_image_bytes=00000000 loaded_image_word_le=0x0
+loaded_image_value_is_not_runtime_state=yes
+xref_from=800e82c8 type=WRITE source=ANALYSIS operand=1 function_entry=800e8190 function_name=FUN_800e8190
+  source_instruction_bytes=[FC 9E 40 AC] sw zero,-0x6104(v0)
+  800e82b8 bytes=[1F 00 46 90] lbu a2,0x1f(v0)
+  800e82bc bytes=[00 00 00 00] nop
+  800e82c0 bytes=[B0 EB A6 AC] sw a2,-0x1450(a1)
+  800e82c4 bytes=[14 80 02 3C] lui v0,0x8014
+  800e82c8 bytes=[FC 9E 40 AC] sw zero,-0x6104(v0)
+  800e82cc bytes=[37 05 82 90] lbu v0,0x537(a0)
+  800e82d0 bytes=[00 00 00 00] nop
+  800e82d4 bytes=[2B 00 40 10] beq v0,zero,0x800e8384
+  800e82d8 bytes=[14 80 02 3C] _lui v0,0x8014
+xref_from=800e8344 type=READ source=ANALYSIS operand=1 function_entry=800e8190 function_name=FUN_800e8190
+  source_instruction_bytes=[FC 9E A2 8C] lw v0,-0x6104(a1)
+  800e8334 bytes=[21 10 44 00] addu v0,v0,a0
+  800e8338 bytes=[02 00 43 90] lbu v1,0x2(v0)
+  800e833c bytes=[00 00 00 00] nop
+  800e8340 bytes=[B0 EB C3 AC] sw v1,-0x1450(a2)
+  800e8344 bytes=[FC 9E A2 8C] lw v0,-0x6104(a1)
+  800e8348 bytes=[00 00 00 00] nop
+  800e834c bytes=[01 00 42 24] addiu v0,v0,0x1
+  800e8350 bytes=[FC 9E A2 AC] sw v0,-0x6104(a1)
+  800e8354 bytes=[C0 10 03 00] sll v0,v1,0x3
+xref_from=800e8350 type=WRITE source=ANALYSIS operand=1 function_entry=800e8190 function_name=FUN_800e8190
+  source_instruction_bytes=[FC 9E A2 AC] sw v0,-0x6104(a1)
+  800e8340 bytes=[B0 EB C3 AC] sw v1,-0x1450(a2)
+  800e8344 bytes=[FC 9E A2 8C] lw v0,-0x6104(a1)
+  800e8348 bytes=[00 00 00 00] nop
+  800e834c bytes=[01 00 42 24] addiu v0,v0,0x1
+  800e8350 bytes=[FC 9E A2 AC] sw v0,-0x6104(a1)
+  800e8354 bytes=[C0 10 03 00] sll v0,v1,0x3
+  800e8358 bytes=[21 10 43 00] addu v0,v0,v1
+  800e835c bytes=[C0 10 02 00] sll v0,v0,0x3
+  800e8360 bytes=[21 10 43 00] addu v0,v0,v1
+xref_from=800e8440 type=READ source=ANALYSIS operand=1 function_entry=800e8190 function_name=FUN_800e8190
+  source_instruction_bytes=[FC 9E A2 8C] lw v0,-0x6104(a1)
+  800e8430 bytes=[74 EA 44 8C] lw a0,-0x158c(v0)
+  800e8434 bytes=[00 00 00 00] nop
+  800e8438 bytes=[E5 02 83 90] lbu v1,0x2e5(a0)
+  800e843c bytes=[14 80 05 3C] lui a1,0x8014
+  800e8440 bytes=[FC 9E A2 8C] lw v0,-0x6104(a1)
+  800e8444 bytes=[00 00 00 00] nop
+  800e8448 bytes=[2A 10 43 00] slt v0,v0,v1
+  800e844c bytes=[05 00 40 10] beq v0,zero,0x800e8464
+  800e8450 bytes=[14 80 10 3C] _lui s0,0x8014
+xref_from=800e8454 type=READ source=ANALYSIS operand=1 function_entry=800e8190 function_name=FUN_800e8190
+  source_instruction_bytes=[FC 9E A2 90] lbu v0,-0x6104(a1)
+  800e8444 bytes=[00 00 00 00] nop
+  800e8448 bytes=[2A 10 43 00] slt v0,v0,v1
+  800e844c bytes=[05 00 40 10] beq v0,zero,0x800e8464
+  800e8450 bytes=[14 80 10 3C] _lui s0,0x8014
+  800e8454 bytes=[FC 9E A2 90] lbu v0,-0x6104(a1)
+  800e8458 bytes=[2A 22 04 0C] jal 0x801088a8
+  800e845c bytes=[E5 02 82 A0] _sb v0,0x2e5(a0)
+  800e8460 bytes=[14 80 10 3C] lui s0,0x8014
+  800e8464 bytes=[74 EA 03 8E] lw v1,-0x158c(s0)
+xref_from=800e83f4 type=READ source=ANALYSIS operand=1 function_entry=800e8190 function_name=FUN_800e8190
+  source_instruction_bytes=[FC 9E A2 8C] lw v0,-0x6104(a1)
+  800e83e4 bytes=[21 10 44 00] addu v0,v0,a0
+  800e83e8 bytes=[01 00 43 90] lbu v1,0x1(v0)
+  800e83ec bytes=[00 00 00 00] nop
+  800e83f0 bytes=[B0 EB C3 AC] sw v1,-0x1450(a2)
+  800e83f4 bytes=[FC 9E A2 8C] lw v0,-0x6104(a1)
+  800e83f8 bytes=[00 00 00 00] nop
+  800e83fc bytes=[01 00 42 24] addiu v0,v0,0x1
+  800e8400 bytes=[FC 9E A2 AC] sw v0,-0x6104(a1)
+  800e8404 bytes=[C0 10 03 00] sll v0,v1,0x3
+xref_from=800e8400 type=WRITE source=ANALYSIS operand=1 function_entry=800e8190 function_name=FUN_800e8190
+  source_instruction_bytes=[FC 9E A2 AC] sw v0,-0x6104(a1)
+  800e83f0 bytes=[B0 EB C3 AC] sw v1,-0x1450(a2)
+  800e83f4 bytes=[FC 9E A2 8C] lw v0,-0x6104(a1)
+  800e83f8 bytes=[00 00 00 00] nop
+  800e83fc bytes=[01 00 42 24] addiu v0,v0,0x1
+  800e8400 bytes=[FC 9E A2 AC] sw v0,-0x6104(a1)
+  800e8404 bytes=[C0 10 03 00] sll v0,v1,0x3
+  800e8408 bytes=[21 10 43 00] addu v0,v0,v1
+  800e840c bytes=[C0 10 02 00] sll v0,v0,0x3
+  800e8410 bytes=[21 10 43 00] addu v0,v0,v1
+xref_from=800ea1d4 type=WRITE source=ANALYSIS operand=1 function_entry=800ea18c function_name=FUN_800ea18c
+  source_instruction_bytes=[FC 9E 06 AE] sw a2,-0x6104(s0)
+  800ea1c4 bytes=[B0 EB 42 AE] sw v0,-0x1450(s2)
+  800ea1c8 bytes=[02 09 04 0C] jal 0x80102408
+  800ea1cc bytes=[14 80 10 3C] _lui s0,0x8014
+  800ea1d0 bytes=[21 30 40 00] move a2,v0
+  800ea1d4 bytes=[FC 9E 06 AE] sw a2,-0x6104(s0)
+  800ea1d8 bytes=[74 EA 24 8E] lw a0,-0x158c(s1)
+  800ea1dc bytes=[B0 EB 43 8E] lw v1,-0x1450(s2)
+  800ea1e0 bytes=[00 00 00 00] nop
+  800ea1e4 bytes=[34 09 83 AC] sw v1,0x934(a0)
+xref_from=800f0490 type=WRITE source=ANALYSIS operand=1 function_entry=800ef9a4 function_name=FUN_800ef9a4
+  source_instruction_bytes=[FC 9E A2 AC] sw v0,-0x6104(a1)
+  800f0480 bytes=[EA FF 60 14] bne v1,zero,0x800f042c
+  800f0484 bytes=[00 00 00 00] _nop
+  800f0488 bytes=[14 80 05 3C] lui a1,0x8014
+  800f048c bytes=[01 00 02 24] li v0,0x1
+  800f0490 bytes=[FC 9E A2 AC] sw v0,-0x6104(a1)
+  800f0494 bytes=[14 80 04 3C] lui a0,0x8014
+  800f0498 bytes=[14 80 02 3C] lui v0,0x8014
+  800f049c bytes=[74 EA 42 8C] lw v0,-0x158c(v0)
+  800f04a0 bytes=[00 00 00 00] nop
+xref_from=800f04bc type=WRITE source=ANALYSIS operand=1 function_entry=800ef9a4 function_name=FUN_800ef9a4
+  source_instruction_bytes=[FC 9E A0 AC] sw zero,-0x6104(a1)
+  800f04ac bytes=[00 00 00 00] nop
+  800f04b0 bytes=[2A 10 43 00] slt v0,v0,v1
+  800f04b4 bytes=[02 00 40 10] beq v0,zero,0x800f04c0
+  800f04b8 bytes=[14 80 02 3C] _lui v0,0x8014
+  800f04bc bytes=[FC 9E A0 AC] sw zero,-0x6104(a1)
+  800f04c0 bytes=[88 EA 44 94] lhu a0,-0x1578(v0)
+  800f04c4 bytes=[4F 33 03 0C] jal 0x800ccd3c
+  800f04c8 bytes=[14 80 10 3C] _lui s0,0x8014
+  800f04cc bytes=[B0 EB 02 AE] sw v0,-0x1450(s0)
+xref_from=800f0948 type=WRITE source=ANALYSIS operand=1 function_entry=800ef9a4 function_name=FUN_800ef9a4
+  source_instruction_bytes=[FC 9E E2 AC] sw v0,-0x6104(a3)
+  800f0938 bytes=[00 00 00 00] nop
+  800f093c bytes=[21 10 43 00] addu v0,v0,v1
+  800f0940 bytes=[07 00 42 90] lbu v0,0x7(v0)
+  800f0944 bytes=[00 00 00 00] nop
+  800f0948 bytes=[FC 9E E2 AC] sw v0,-0x6104(a3)
+  800f094c bytes=[66 03 C2 A0] sb v0,0x366(a2)
+  800f0950 bytes=[74 EA 04 8E] lw a0,-0x158c(s0)
+  800f0954 bytes=[88 EA 23 96] lhu v1,-0x1578(s1)
+  800f0958 bytes=[00 00 00 00] nop
+xref_from=800f0a1c type=READ source=ANALYSIS operand=1 function_entry=800ef9a4 function_name=FUN_800ef9a4
+  source_instruction_bytes=[FC 9E C3 8C] lw v1,-0x6104(a2)
+  800f0a0c bytes=[C0 10 02 00] sll v0,v0,0x3
+  800f0a10 bytes=[21 10 43 00] addu v0,v0,v1
+  800f0a14 bytes=[80 10 02 00] sll v0,v0,0x2
+  800f0a18 bytes=[21 10 45 00] addu v0,v0,a1
+  800f0a1c bytes=[FC 9E C3 8C] lw v1,-0x6104(a2)
+  800f0a20 bytes=[00 00 00 00] nop
+  800f0a24 bytes=[21 10 43 00] addu v0,v0,v1
+  800f0a28 bytes=[01 00 43 90] lbu v1,0x1(v0)
+  800f0a2c bytes=[00 00 00 00] nop
+xref_from=800f0a78 type=READ source=ANALYSIS operand=1 function_entry=800ef9a4 function_name=FUN_800ef9a4
+  source_instruction_bytes=[FC 9E C3 8C] lw v1,-0x6104(a2)
+  800f0a68 bytes=[C0 10 02 00] sll v0,v0,0x3
+  800f0a6c bytes=[21 10 43 00] addu v0,v0,v1
+  800f0a70 bytes=[80 10 02 00] sll v0,v0,0x2
+  800f0a74 bytes=[21 10 45 00] addu v0,v0,a1
+  800f0a78 bytes=[FC 9E C3 8C] lw v1,-0x6104(a2)
+  800f0a7c bytes=[00 00 00 00] nop
+  800f0a80 bytes=[21 10 43 00] addu v0,v0,v1
+  800f0a84 bytes=[01 00 43 90] lbu v1,0x1(v0)
+  800f0a88 bytes=[00 00 00 00] nop
+xref_from=800f0ae4 type=READ source=ANALYSIS operand=1 function_entry=800ef9a4 function_name=FUN_800ef9a4
+  source_instruction_bytes=[FC 9E C3 8C] lw v1,-0x6104(a2)
+  800f0ad4 bytes=[C0 10 02 00] sll v0,v0,0x3
+  800f0ad8 bytes=[21 10 43 00] addu v0,v0,v1
+  800f0adc bytes=[80 10 02 00] sll v0,v0,0x2
+  800f0ae0 bytes=[21 10 45 00] addu v0,v0,a1
+  800f0ae4 bytes=[FC 9E C3 8C] lw v1,-0x6104(a2)
+  800f0ae8 bytes=[00 00 00 00] nop
+  800f0aec bytes=[21 10 43 00] addu v0,v0,v1
+  800f0af0 bytes=[01 00 42 90] lbu v0,0x1(v0)
+  800f0af4 bytes=[00 00 00 00] nop
+xref_from=800f0b04 type=WRITE source=ANALYSIS operand=1 function_entry=800ef9a4 function_name=FUN_800ef9a4
+  source_instruction_bytes=[FC 9E C2 AC] sw v0,-0x6104(a2)
+  800f0af4 bytes=[00 00 00 00] nop
+  800f0af8 bytes=[10 EB E2 AC] sw v0,-0x14f0(a3)
+  800f0afc bytes=[24 00 42 91] lbu v0,0x24(t2)
+  800f0b00 bytes=[00 00 00 00] nop
+  800f0b04 bytes=[FC 9E C2 AC] sw v0,-0x6104(a2)
+  800f0b08 bytes=[E5 02 03 91] lbu v1,0x2e5(t0)
+  800f0b0c bytes=[00 00 00 00] nop
+  800f0b10 bytes=[0F 00 63 30] andi v1,v1,0xf
+  800f0b14 bytes=[0C EB 82 8C] lw v0,-0x14f4(a0)
+xref_from=800f1730 type=WRITE source=ANALYSIS operand=1 function_entry=800f1290 function_name=FUN_800f1290
+  source_instruction_bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800f1720 bytes=[14 80 02 3C] lui v0,0x8014
+  800f1724 bytes=[B0 EB 40 AC] sw zero,-0x1450(v0)
+  800f1728 bytes=[14 80 03 3C] lui v1,0x8014
+  800f172c bytes=[10 27 02 24] li v0,0x2710
+  800f1730 bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800f1734 bytes=[14 80 02 3C] lui v0,0x8014
+  800f1738 bytes=[0C EB 40 AC] sw zero,-0x14f4(v0)
+  800f173c bytes=[21 80 40 00] move s0,v0
+  800f1740 bytes=[14 80 13 3C] lui s3,0x8014
+xref_from=800f1858 type=READ source=ANALYSIS operand=1 function_entry=800f1290 function_name=FUN_800f1290
+  source_instruction_bytes=[FC 9E C3 8C] lw v1,-0x6104(a2)
+  800f1848 bytes=[10 00 42 90] lbu v0,0x10(v0)
+  800f184c bytes=[00 00 00 00] nop
+  800f1850 bytes=[0F 00 47 14] bne v0,a3,0x800f1890
+  800f1854 bytes=[21 10 83 00] _addu v0,a0,v1
+  800f1858 bytes=[FC 9E C3 8C] lw v1,-0x6104(a2)
+  800f185c bytes=[04 00 42 8C] lw v0,0x4(v0)
+  800f1860 bytes=[00 00 00 00] nop
+  800f1864 bytes=[2A 10 43 00] slt v0,v0,v1
+  800f1868 bytes=[02 00 40 10] beq v0,zero,0x800f1874
+xref_from=800f1874 type=READ source=ANALYSIS operand=1 function_entry=800f1290 function_name=FUN_800f1290
+  source_instruction_bytes=[FC 9E C2 8C] lw v0,-0x6104(a2)
+  800f1864 bytes=[2A 10 43 00] slt v0,v0,v1
+  800f1868 bytes=[02 00 40 10] beq v0,zero,0x800f1874
+  800f186c bytes=[00 00 00 00] _nop
+  800f1870 bytes=[10 06 8A A0] sb t2,0x610(a0)
+  800f1874 bytes=[FC 9E C2 8C] lw v0,-0x6104(a2)
+  800f1878 bytes=[00 00 00 00] nop
+  800f187c bytes=[C2 1F 02 00] srl v1,v0,0x1f
+  800f1880 bytes=[21 10 43 00] addu v0,v0,v1
+  800f1884 bytes=[43 10 02 00] sra v0,v0,0x1
+xref_from=800f188c type=WRITE source=ANALYSIS operand=1 function_entry=800f1290 function_name=FUN_800f1290
+  source_instruction_bytes=[FC 9E C2 AC] _sw v0,-0x6104(a2)
+  800f187c bytes=[C2 1F 02 00] srl v1,v0,0x1f
+  800f1880 bytes=[21 10 43 00] addu v0,v0,v1
+  800f1884 bytes=[43 10 02 00] sra v0,v0,0x1
+  800f1888 bytes=[2B C6 03 08] j 0x800f18ac
+  800f188c bytes=[FC 9E C2 AC] _sw v0,-0x6104(a2)
+  800f1890 bytes=[0C EB A2 8C] lw v0,-0x14f4(a1)
+  800f1894 bytes=[00 00 00 00] nop
+  800f1898 bytes=[01 00 42 24] addiu v0,v0,0x1
+  800f189c bytes=[0C EB A2 AC] sw v0,-0x14f4(a1)
+xref_from=800f18d4 type=READ source=ANALYSIS operand=1 function_entry=800f1290 function_name=FUN_800f1290
+  source_instruction_bytes=[FC 9E A3 8C] lw v1,-0x6104(a1)
+  800f18c4 bytes=[C0 10 03 00] sll v0,v1,0x3
+  800f18c8 bytes=[21 10 43 00] addu v0,v0,v1
+  800f18cc bytes=[00 11 02 00] sll v0,v0,0x4
+  800f18d0 bytes=[21 20 82 00] addu a0,a0,v0
+  800f18d4 bytes=[FC 9E A3 8C] lw v1,-0x6104(a1)
+  800f18d8 bytes=[04 00 82 8C] lw v0,0x4(a0)
+  800f18dc bytes=[00 00 00 00] nop
+  800f18e0 bytes=[2A 10 43 00] slt v0,v0,v1
+  800f18e4 bytes=[05 00 40 14] bne v0,zero,0x800f18fc
+xref_from=800f2b38 type=WRITE source=ANALYSIS operand=1 function_entry=800f2a9c function_name=FUN_800f2a9c
+  source_instruction_bytes=[FC 9E 00 AE] _sw zero,-0x6104(s0)
+  800f2b28 bytes=[00 00 00 00] _nop
+  800f2b2c bytes=[6D 01 40 14] bne v0,zero,0x800f30e4
+  800f2b30 bytes=[14 80 10 3C] _lui s0,0x8014
+  800f2b34 bytes=[B4 4A 00 0C] jal 0x80012ad0
+  800f2b38 bytes=[FC 9E 00 AE] _sw zero,-0x6104(s0)
+  800f2b3c bytes=[00 10 42 30] andi v0,v0,0x1000
+  800f2b40 bytes=[02 00 40 10] beq v0,zero,0x800f2b4c
+  800f2b44 bytes=[01 00 02 24] _li v0,0x1
+  800f2b48 bytes=[FC 9E 02 AE] sw v0,-0x6104(s0)
+xref_from=800f2b48 type=WRITE source=ANALYSIS operand=1 function_entry=800f2a9c function_name=FUN_800f2a9c
+  source_instruction_bytes=[FC 9E 02 AE] sw v0,-0x6104(s0)
+  800f2b38 bytes=[FC 9E 00 AE] _sw zero,-0x6104(s0)
+  800f2b3c bytes=[00 10 42 30] andi v0,v0,0x1000
+  800f2b40 bytes=[02 00 40 10] beq v0,zero,0x800f2b4c
+  800f2b44 bytes=[01 00 02 24] _li v0,0x1
+  800f2b48 bytes=[FC 9E 02 AE] sw v0,-0x6104(s0)
+  800f2b4c bytes=[14 80 10 3C] lui s0,0x8014
+  800f2b50 bytes=[74 EA 02 8E] lw v0,-0x158c(s0)
+  800f2b54 bytes=[00 00 00 00] nop
+  800f2b58 bytes=[30 05 44 8C] lw a0,0x530(v0)
+xref_from=800f2b94 type=READ source=ANALYSIS operand=1 function_entry=800f2a9c function_name=FUN_800f2a9c
+  source_instruction_bytes=[FC 9E 84 8C] lw a0,-0x6104(a0)
+  800f2b84 bytes=[71 EA 63 90] lbu v1,-0x158f(v1)
+  800f2b88 bytes=[00 00 00 00] nop
+  800f2b8c bytes=[FF FF 63 24] addiu v1,v1,-0x1
+  800f2b90 bytes=[14 80 04 3C] lui a0,0x8014
+  800f2b94 bytes=[FC 9E 84 8C] lw a0,-0x6104(a0)
+  800f2b98 bytes=[00 00 00 00] nop
+  800f2b9c bytes=[23 18 64 00] subu v1,v1,a0
+  800f2ba0 bytes=[18 00 43 00] mult v0,v1
+  800f2ba4 bytes=[12 10 00 00] mflo v0
+xref_from=800f2e20 type=READ source=ANALYSIS operand=1 function_entry=800f2a9c function_name=FUN_800f2a9c
+  source_instruction_bytes=[FC 9E 63 8C] lw v1,-0x6104(v1)
+  800f2e10 bytes=[71 EA 64 92] lbu a0,-0x158f(s3)
+  800f2e14 bytes=[00 00 00 00] nop
+  800f2e18 bytes=[FF FF 84 24] addiu a0,a0,-0x1
+  800f2e1c bytes=[14 80 03 3C] lui v1,0x8014
+  800f2e20 bytes=[FC 9E 63 8C] lw v1,-0x6104(v1)
+  800f2e24 bytes=[00 00 00 00] nop
+  800f2e28 bytes=[23 20 83 00] subu a0,a0,v1
+  800f2e2c bytes=[18 00 44 00] mult v0,a0
+  800f2e30 bytes=[12 10 00 00] mflo v0
+xref_from=800f1788 type=READ source=ANALYSIS operand=1 function_entry=800f1290 function_name=FUN_800f1290
+  source_instruction_bytes=[FC 9E 82 8C] lw v0,-0x6104(a0)
+  800f1778 bytes=[49 57 00 0C] jal 0x80015d24
+  800f177c bytes=[21 30 20 02] _move a2,s1
+  800f1780 bytes=[14 80 04 3C] lui a0,0x8014
+  800f1784 bytes=[08 00 23 86] lh v1,0x8(s1)
+  800f1788 bytes=[FC 9E 82 8C] lw v0,-0x6104(a0)
+  800f178c bytes=[00 00 00 00] nop
+  800f1790 bytes=[2A 10 62 00] slt v0,v1,v0
+  800f1794 bytes=[04 00 40 10] beq v0,zero,0x800f17a8
+  800f1798 bytes=[00 00 00 00] _nop
+xref_from=800f17a4 type=WRITE source=ANALYSIS operand=1 function_entry=800f1290 function_name=FUN_800f1290
+  source_instruction_bytes=[FC 9E 83 AC] sw v1,-0x6104(a0)
+  800f1794 bytes=[04 00 40 10] beq v0,zero,0x800f17a8
+  800f1798 bytes=[00 00 00 00] _nop
+  800f179c bytes=[02 00 60 10] beq v1,zero,0x800f17a8
+  800f17a0 bytes=[00 00 00 00] _nop
+  800f17a4 bytes=[FC 9E 83 AC] sw v1,-0x6104(a0)
+  800f17a8 bytes=[0C EB 02 8E] lw v0,-0x14f4(s0)
+  800f17ac bytes=[00 00 00 00] nop
+  800f17b0 bytes=[01 00 42 24] addiu v0,v0,0x1
+  800f17b4 bytes=[0C EB 02 AE] sw v0,-0x14f4(s0)
+xref_from=800d6d68 type=WRITE source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E 82 AC] sw v0,-0x6104(a0)
+  800d6d58 bytes=[00 00 00 00] nop
+  800d6d5c bytes=[21 10 43 00] addu v0,v0,v1
+  800d6d60 bytes=[00 00 42 90] lbu v0,0x0(v0)
+  800d6d64 bytes=[00 00 00 00] nop
+  800d6d68 bytes=[FC 9E 82 AC] sw v0,-0x6104(a0)
+  800d6d6c bytes=[66 03 A2 A0] sb v0,0x366(a1)
+  800d6d70 bytes=[74 EA 04 8E] lw a0,-0x158c(s0)
+  800d6d74 bytes=[88 EA 23 96] lhu v1,-0x1578(s1)
+  800d6d78 bytes=[00 00 00 00] nop
+xref_from=800d6204 type=WRITE source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800d61f4 bytes=[E8 03 02 24] li v0,0x3e8
+  800d61f8 bytes=[88 EB 62 AC] sw v0,-0x1478(v1)
+  800d61fc bytes=[14 80 03 3C] lui v1,0x8014
+  800d6200 bytes=[FF 00 02 24] li v0,0xff
+  800d6204 bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800d6208 bytes=[14 80 02 3C] lui v0,0x8014
+  800d620c bytes=[0C EB 40 AC] sw zero,-0x14f4(v0)
+  800d6210 bytes=[14 80 02 3C] lui v0,0x8014
+  800d6214 bytes=[78 EB 4A 24] addiu t2,v0,-0x1488
+xref_from=800d62b8 type=WRITE source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E E2 AC] sw v0,-0x6104(a3)
+  800d62a8 bytes=[00 00 00 00] nop
+  800d62ac bytes=[21 10 66 00] addu v0,v1,a2
+  800d62b0 bytes=[00 00 42 90] lbu v0,0x0(v0)
+  800d62b4 bytes=[00 00 00 00] nop
+  800d62b8 bytes=[FC 9E E2 AC] sw v0,-0x6104(a3)
+  800d62bc bytes=[14 80 02 3C] lui v0,0x8014
+  800d62c0 bytes=[F0 9E 43 AC] sw v1,-0x6110(v0)
+  800d62c4 bytes=[0C EB A2 8C] lw v0,-0x14f4(a1)
+  800d62c8 bytes=[00 00 00 00] nop
+xref_from=800d62e4 type=READ source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E A2 8C] lw v0,-0x6104(a1)
+  800d62d4 bytes=[04 00 42 28] slti v0,v0,0x4
+  800d62d8 bytes=[D6 FF 40 14] bne v0,zero,0x800d6234
+  800d62dc bytes=[00 00 00 00] _nop
+  800d62e0 bytes=[14 80 05 3C] lui a1,0x8014
+  800d62e4 bytes=[FC 9E A2 8C] lw v0,-0x6104(a1)
+  800d62e8 bytes=[FF 00 07 24] li a3,0xff
+  800d62ec bytes=[25 00 47 10] beq v0,a3,0x800d6384
+  800d62f0 bytes=[14 80 04 3C] _lui a0,0x8014
+  800d62f4 bytes=[74 EA 83 8C] lw v1,-0x158c(a0)
+xref_from=800d62f8 type=READ source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E A2 90] lbu v0,-0x6104(a1)
+  800d62e8 bytes=[FF 00 07 24] li a3,0xff
+  800d62ec bytes=[25 00 47 10] beq v0,a3,0x800d6384
+  800d62f0 bytes=[14 80 04 3C] _lui a0,0x8014
+  800d62f4 bytes=[74 EA 83 8C] lw v1,-0x158c(a0)
+  800d62f8 bytes=[FC 9E A2 90] lbu v0,-0x6104(a1)
+  800d62fc bytes=[00 00 00 00] nop
+  800d6300 bytes=[1D 09 62 A0] sb v0,0x91d(v1)
+  800d6304 bytes=[14 80 02 3C] lui v0,0x8014
+  800d6308 bytes=[54 EB 42 24] addiu v0,v0,-0x14ac
+xref_from=800d63b0 type=WRITE source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800d63a0 bytes=[E8 03 02 24] li v0,0x3e8
+  800d63a4 bytes=[88 EB 62 AC] sw v0,-0x1478(v1)
+  800d63a8 bytes=[14 80 03 3C] lui v1,0x8014
+  800d63ac bytes=[FF 00 02 24] li v0,0xff
+  800d63b0 bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800d63b4 bytes=[14 80 02 3C] lui v0,0x8014
+  800d63b8 bytes=[0C EB 40 AC] sw zero,-0x14f4(v0)
+  800d63bc bytes=[14 80 02 3C] lui v0,0x8014
+  800d63c0 bytes=[78 EB 4A 24] addiu t2,v0,-0x1488
+xref_from=800d6464 type=WRITE source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E E2 AC] sw v0,-0x6104(a3)
+  800d6454 bytes=[00 00 00 00] nop
+  800d6458 bytes=[21 10 66 00] addu v0,v1,a2
+  800d645c bytes=[00 00 42 90] lbu v0,0x0(v0)
+  800d6460 bytes=[00 00 00 00] nop
+  800d6464 bytes=[FC 9E E2 AC] sw v0,-0x6104(a3)
+  800d6468 bytes=[14 80 02 3C] lui v0,0x8014
+  800d646c bytes=[F0 9E 43 AC] sw v1,-0x6110(v0)
+  800d6470 bytes=[0C EB A2 8C] lw v0,-0x14f4(a1)
+  800d6474 bytes=[00 00 00 00] nop
+xref_from=800d648c type=READ source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E 82 8C] lw v0,-0x6104(a0)
+  800d647c bytes=[0C EB A2 AC] sw v0,-0x14f4(a1)
+  800d6480 bytes=[04 00 42 28] slti v0,v0,0x4
+  800d6484 bytes=[D6 FF 40 14] bne v0,zero,0x800d63e0
+  800d6488 bytes=[14 80 04 3C] _lui a0,0x8014
+  800d648c bytes=[FC 9E 82 8C] lw v0,-0x6104(a0)
+  800d6490 bytes=[FF 00 07 24] li a3,0xff
+  800d6494 bytes=[26 00 47 10] beq v0,a3,0x800d6530
+  800d6498 bytes=[14 80 05 3C] _lui a1,0x8014
+  800d649c bytes=[74 EA A3 8C] lw v1,-0x158c(a1)
+xref_from=800d64a0 type=READ source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E 82 90] lbu v0,-0x6104(a0)
+  800d6490 bytes=[FF 00 07 24] li a3,0xff
+  800d6494 bytes=[26 00 47 10] beq v0,a3,0x800d6530
+  800d6498 bytes=[14 80 05 3C] _lui a1,0x8014
+  800d649c bytes=[74 EA A3 8C] lw v1,-0x158c(a1)
+  800d64a0 bytes=[FC 9E 82 90] lbu v0,-0x6104(a0)
+  800d64a4 bytes=[00 00 00 00] nop
+  800d64a8 bytes=[1E 09 62 A0] sb v0,0x91e(v1)
+  800d64ac bytes=[14 80 02 3C] lui v0,0x8014
+  800d64b0 bytes=[54 EB 42 24] addiu v0,v0,-0x14ac
+xref_from=800d655c type=WRITE source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800d654c bytes=[E8 03 02 24] li v0,0x3e8
+  800d6550 bytes=[8C EB 62 AC] sw v0,-0x1474(v1)
+  800d6554 bytes=[14 80 03 3C] lui v1,0x8014
+  800d6558 bytes=[FF 00 02 24] li v0,0xff
+  800d655c bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800d6560 bytes=[14 80 02 3C] lui v0,0x8014
+  800d6564 bytes=[0C EB 40 AC] sw zero,-0x14f4(v0)
+  800d6568 bytes=[14 80 02 3C] lui v0,0x8014
+  800d656c bytes=[68 EB 4A 24] addiu t2,v0,-0x1498
+xref_from=800d6610 type=WRITE source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E E2 AC] sw v0,-0x6104(a3)
+  800d6600 bytes=[00 00 00 00] nop
+  800d6604 bytes=[21 10 66 00] addu v0,v1,a2
+  800d6608 bytes=[00 00 42 90] lbu v0,0x0(v0)
+  800d660c bytes=[00 00 00 00] nop
+  800d6610 bytes=[FC 9E E2 AC] sw v0,-0x6104(a3)
+  800d6614 bytes=[14 80 02 3C] lui v0,0x8014
+  800d6618 bytes=[F0 9E 43 AC] sw v1,-0x6110(v0)
+  800d661c bytes=[0C EB A2 8C] lw v0,-0x14f4(a1)
+  800d6620 bytes=[00 00 00 00] nop
+xref_from=800d6638 type=READ source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E 82 8C] lw v0,-0x6104(a0)
+  800d6628 bytes=[0C EB A2 AC] sw v0,-0x14f4(a1)
+  800d662c bytes=[04 00 42 28] slti v0,v0,0x4
+  800d6630 bytes=[D6 FF 40 14] bne v0,zero,0x800d658c
+  800d6634 bytes=[14 80 04 3C] _lui a0,0x8014
+  800d6638 bytes=[FC 9E 82 8C] lw v0,-0x6104(a0)
+  800d663c bytes=[FF 00 07 24] li a3,0xff
+  800d6640 bytes=[26 00 47 10] beq v0,a3,0x800d66dc
+  800d6644 bytes=[14 80 05 3C] _lui a1,0x8014
+  800d6648 bytes=[74 EA A3 8C] lw v1,-0x158c(a1)
+xref_from=800d664c type=READ source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E 82 90] lbu v0,-0x6104(a0)
+  800d663c bytes=[FF 00 07 24] li a3,0xff
+  800d6640 bytes=[26 00 47 10] beq v0,a3,0x800d66dc
+  800d6644 bytes=[14 80 05 3C] _lui a1,0x8014
+  800d6648 bytes=[74 EA A3 8C] lw v1,-0x158c(a1)
+  800d664c bytes=[FC 9E 82 90] lbu v0,-0x6104(a0)
+  800d6650 bytes=[00 00 00 00] nop
+  800d6654 bytes=[1F 09 62 A0] sb v0,0x91f(v1)
+  800d6658 bytes=[14 80 02 3C] lui v0,0x8014
+  800d665c bytes=[54 EB 42 24] addiu v0,v0,-0x14ac
+xref_from=800d6708 type=WRITE source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800d66f8 bytes=[E8 03 02 24] li v0,0x3e8
+  800d66fc bytes=[8C EB 62 AC] sw v0,-0x1474(v1)
+  800d6700 bytes=[14 80 03 3C] lui v1,0x8014
+  800d6704 bytes=[FF 00 02 24] li v0,0xff
+  800d6708 bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800d670c bytes=[14 80 02 3C] lui v0,0x8014
+  800d6710 bytes=[0C EB 40 AC] sw zero,-0x14f4(v0)
+  800d6714 bytes=[14 80 02 3C] lui v0,0x8014
+  800d6718 bytes=[68 EB 4A 24] addiu t2,v0,-0x1498
+xref_from=800d67bc type=WRITE source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E E2 AC] sw v0,-0x6104(a3)
+  800d67ac bytes=[00 00 00 00] nop
+  800d67b0 bytes=[21 10 66 00] addu v0,v1,a2
+  800d67b4 bytes=[00 00 42 90] lbu v0,0x0(v0)
+  800d67b8 bytes=[00 00 00 00] nop
+  800d67bc bytes=[FC 9E E2 AC] sw v0,-0x6104(a3)
+  800d67c0 bytes=[14 80 02 3C] lui v0,0x8014
+  800d67c4 bytes=[F0 9E 43 AC] sw v1,-0x6110(v0)
+  800d67c8 bytes=[0C EB A2 8C] lw v0,-0x14f4(a1)
+  800d67cc bytes=[00 00 00 00] nop
+xref_from=800d67e4 type=READ source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E 83 8C] lw v1,-0x6104(a0)
+  800d67d4 bytes=[0C EB A2 AC] sw v0,-0x14f4(a1)
+  800d67d8 bytes=[04 00 42 28] slti v0,v0,0x4
+  800d67dc bytes=[D6 FF 40 14] bne v0,zero,0x800d6738
+  800d67e0 bytes=[14 80 04 3C] _lui a0,0x8014
+  800d67e4 bytes=[FC 9E 83 8C] lw v1,-0x6104(a0)
+  800d67e8 bytes=[FF 00 02 24] li v0,0xff
+  800d67ec bytes=[20 00 62 10] beq v1,v0,0x800d6870
+  800d67f0 bytes=[14 80 05 3C] _lui a1,0x8014
+  800d67f4 bytes=[74 EA A3 8C] lw v1,-0x158c(a1)
+xref_from=800d67f8 type=READ source=ANALYSIS operand=1 function_entry=800d5bc0 function_name=FUN_800d5bc0
+  source_instruction_bytes=[FC 9E 82 90] lbu v0,-0x6104(a0)
+  800d67e8 bytes=[FF 00 02 24] li v0,0xff
+  800d67ec bytes=[20 00 62 10] beq v1,v0,0x800d6870
+  800d67f0 bytes=[14 80 05 3C] _lui a1,0x8014
+  800d67f4 bytes=[74 EA A3 8C] lw v1,-0x158c(a1)
+  800d67f8 bytes=[FC 9E 82 90] lbu v0,-0x6104(a0)
+  800d67fc bytes=[00 00 00 00] nop
+  800d6800 bytes=[20 09 62 A0] sb v0,0x920(v1)
+  800d6804 bytes=[14 80 02 3C] lui v0,0x8014
+  800d6808 bytes=[54 EB 42 24] addiu v0,v0,-0x14ac
+xref_from=800f2554 type=WRITE source=ANALYSIS operand=1 function_entry=800f2490 function_name=FUN_800f2490
+  source_instruction_bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800f2544 bytes=[14 80 02 3C] _lui v0,0x8014
+  800f2548 bytes=[B0 EB 40 AC] sw zero,-0x1450(v0)
+  800f254c bytes=[14 80 03 3C] lui v1,0x8014
+  800f2550 bytes=[10 27 02 24] li v0,0x2710
+  800f2554 bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800f2558 bytes=[14 80 02 3C] lui v0,0x8014
+  800f255c bytes=[0C EB 40 AC] sw zero,-0x14f4(v0)
+  800f2560 bytes=[21 80 40 00] move s0,v0
+  800f2564 bytes=[14 80 13 3C] lui s3,0x8014
+xref_from=800f2634 type=READ source=ANALYSIS operand=1 function_entry=800f2490 function_name=FUN_800f2490
+  source_instruction_bytes=[FC 9E A3 8C] lw v1,-0x6104(a1)
+  800f2624 bytes=[C0 10 03 00] sll v0,v1,0x3
+  800f2628 bytes=[21 10 43 00] addu v0,v0,v1
+  800f262c bytes=[00 11 02 00] sll v0,v0,0x4
+  800f2630 bytes=[21 20 82 00] addu a0,a0,v0
+  800f2634 bytes=[FC 9E A3 8C] lw v1,-0x6104(a1)
+  800f2638 bytes=[04 00 82 8C] lw v0,0x4(a0)
+  800f263c bytes=[00 00 00 00] nop
+  800f2640 bytes=[2A 10 43 00] slt v0,v0,v1
+  800f2644 bytes=[05 00 40 14] bne v0,zero,0x800f265c
+xref_from=800f25ac type=READ source=ANALYSIS operand=1 function_entry=800f2490 function_name=FUN_800f2490
+  source_instruction_bytes=[FC 9E 82 8C] lw v0,-0x6104(a0)
+  800f259c bytes=[49 57 00 0C] jal 0x80015d24
+  800f25a0 bytes=[21 30 20 02] _move a2,s1
+  800f25a4 bytes=[14 80 04 3C] lui a0,0x8014
+  800f25a8 bytes=[08 00 23 86] lh v1,0x8(s1)
+  800f25ac bytes=[FC 9E 82 8C] lw v0,-0x6104(a0)
+  800f25b0 bytes=[00 00 00 00] nop
+  800f25b4 bytes=[2A 10 62 00] slt v0,v1,v0
+  800f25b8 bytes=[02 00 40 10] beq v0,zero,0x800f25c4
+  800f25bc bytes=[00 00 00 00] _nop
+xref_from=800f25c0 type=WRITE source=ANALYSIS operand=1 function_entry=800f2490 function_name=FUN_800f2490
+  source_instruction_bytes=[FC 9E 83 AC] sw v1,-0x6104(a0)
+  800f25b0 bytes=[00 00 00 00] nop
+  800f25b4 bytes=[2A 10 62 00] slt v0,v1,v0
+  800f25b8 bytes=[02 00 40 10] beq v0,zero,0x800f25c4
+  800f25bc bytes=[00 00 00 00] _nop
+  800f25c0 bytes=[FC 9E 83 AC] sw v1,-0x6104(a0)
+  800f25c4 bytes=[0C EB 02 8E] lw v0,-0x14f4(s0)
+  800f25c8 bytes=[00 00 00 00] nop
+  800f25cc bytes=[01 00 42 24] addiu v0,v0,0x1
+  800f25d0 bytes=[0C EB 02 AE] sw v0,-0x14f4(s0)
+xref_from=800ecae0 type=WRITE source=ANALYSIS operand=1 function_entry=800ec574 function_name=FUN_800ec574
+  source_instruction_bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800ecad0 bytes=[18 00 A4 93] lbu a0,0x18(sp)
+  800ecad4 bytes=[4B 55 00 0C] jal 0x8001552c
+  800ecad8 bytes=[FF FF 14 24] _li s4,-0x1
+  800ecadc bytes=[14 80 03 3C] lui v1,0x8014
+  800ecae0 bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800ecae4 bytes=[14 80 03 3C] lui v1,0x8014
+  800ecae8 bytes=[32 00 02 24] li v0,0x32
+  800ecaec bytes=[A8 EB 62 AC] sw v0,-0x1458(v1)
+  800ecaf0 bytes=[21 80 60 00] move s0,v1
+xref_from=800ecb58 type=READ source=ANALYSIS operand=1 function_entry=800ec574 function_name=FUN_800ec574
+  source_instruction_bytes=[FC 9E 42 8C] lw v0,-0x6104(v0)
+  800ecb48 bytes=[00 00 00 00] _nop
+  800ecb4c bytes=[14 80 02 3C] lui v0,0x8014
+  800ecb50 bytes=[74 EA 43 8C] lw v1,-0x158c(v0)
+  800ecb54 bytes=[14 80 02 3C] lui v0,0x8014
+  800ecb58 bytes=[FC 9E 42 8C] lw v0,-0x6104(v0)
+  800ecb5c bytes=[00 00 00 00] nop
+  800ecb60 bytes=[F0 04 62 AC] sw v0,0x4f0(v1)
+  800ecb64 bytes=[04 00 41 04] bgez v0,0x800ecb78
+  800ecb68 bytes=[F4 04 62 AC] _sw v0,0x4f4(v1)
+xref_from=800ecba8 type=READ source=ANALYSIS operand=1 function_entry=800ec574 function_name=FUN_800ec574
+  source_instruction_bytes=[FC 9E 42 94] lhu v0,-0x6104(v0)
+  800ecb98 bytes=[00 00 00 00] nop
+  800ecb9c bytes=[40 10 02 00] sll v0,v0,0x1
+  800ecba0 bytes=[21 18 62 00] addu v1,v1,v0
+  800ecba4 bytes=[14 80 02 3C] lui v0,0x8014
+  800ecba8 bytes=[FC 9E 42 94] lhu v0,-0x6104(v0)
+  800ecbac bytes=[00 00 00 00] nop
+  800ecbb0 bytes=[23 10 02 00] subu v0,zero,v0
+  800ecbb4 bytes=[4A B2 03 08] j 0x800ec928
+  800ecbb8 bytes=[EE 02 62 A4] _sh v0,0x2ee(v1)
+xref_from=800ec9cc type=WRITE source=ANALYSIS operand=1 function_entry=800ec574 function_name=FUN_800ec574
+  source_instruction_bytes=[FC 9E 40 AC] sw zero,-0x6104(v0)
+  800ec9bc bytes=[00 00 00 00] _nop
+  800ec9c0 bytes=[14 80 03 3C] lui v1,0x8014
+  800ec9c4 bytes=[B0 EB 62 AC] sw v0,-0x1450(v1)
+  800ec9c8 bytes=[14 80 02 3C] lui v0,0x8014
+  800ec9cc bytes=[FC 9E 40 AC] sw zero,-0x6104(v0)
+  800ec9d0 bytes=[14 80 02 3C] lui v0,0x8014
+  800ec9d4 bytes=[0C EB 40 AC] sw zero,-0x14f4(v0)
+  800ec9d8 bytes=[14 80 02 3C] lui v0,0x8014
+  800ec9dc bytes=[C8 EA 42 8C] lw v0,-0x1538(v0)
+xref_from=800eca50 type=READ source=ANALYSIS operand=1 function_entry=800ec574 function_name=FUN_800ec574
+  source_instruction_bytes=[FC 9E C3 8C] lw v1,-0x6104(a2)
+  800eca40 bytes=[00 00 00 00] nop
+  800eca44 bytes=[02 13 04 00] srl v0,a0,0xc
+  800eca48 bytes=[07 00 02 15] bne t0,v0,0x800eca68
+  800eca4c bytes=[02 12 04 00] _srl v0,a0,0x8
+  800eca50 bytes=[FC 9E C3 8C] lw v1,-0x6104(a2)
+  800eca54 bytes=[00 00 00 00] nop
+  800eca58 bytes=[01 00 63 24] addiu v1,v1,0x1
+  800eca5c bytes=[0F 00 42 30] andi v0,v0,0xf
+  800eca60 bytes=[21 18 62 00] addu v1,v1,v0
+xref_from=800eca64 type=WRITE source=ANALYSIS operand=1 function_entry=800ec574 function_name=FUN_800ec574
+  source_instruction_bytes=[FC 9E C3 AC] sw v1,-0x6104(a2)
+  800eca54 bytes=[00 00 00 00] nop
+  800eca58 bytes=[01 00 63 24] addiu v1,v1,0x1
+  800eca5c bytes=[0F 00 42 30] andi v0,v0,0xf
+  800eca60 bytes=[21 18 62 00] addu v1,v1,v0
+  800eca64 bytes=[FC 9E C3 AC] sw v1,-0x6104(a2)
+  800eca68 bytes=[0C EB A2 8C] lw v0,-0x14f4(a1)
+  800eca6c bytes=[00 00 00 00] nop
+  800eca70 bytes=[01 00 42 24] addiu v0,v0,0x1
+  800eca74 bytes=[0C EB A2 AC] sw v0,-0x14f4(a1)
+xref_from=800eca98 type=READ source=ANALYSIS operand=1 function_entry=800ec574 function_name=FUN_800ec574
+  source_instruction_bytes=[FC 9E 62 8C] lw v0,-0x6104(v1)
+  800eca88 bytes=[74 EA 45 8C] lw a1,-0x158c(v0)
+  800eca8c bytes=[14 80 02 3C] lui v0,0x8014
+  800eca90 bytes=[14 80 03 3C] lui v1,0x8014
+  800eca94 bytes=[B0 EB 44 8C] lw a0,-0x1450(v0)
+  800eca98 bytes=[FC 9E 62 8C] lw v0,-0x6104(v1)
+  800eca9c bytes=[00 00 00 00] nop
+  800ecaa0 bytes=[18 00 82 00] mult a0,v0
+  800ecaa4 bytes=[12 10 00 00] mflo v0
+  800ecaa8 bytes=[F0 04 A2 AC] sw v0,0x4f0(a1)
+xref_from=800ef67c type=WRITE source=ANALYSIS operand=1 function_entry=NONE function_name=NONE
+  source_instruction_bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800ef66c bytes=[59 00 80 14] bne a0,zero,0x800ef7d4
+  800ef670 bytes=[14 80 10 3C] _lui s0,0x8014
+  800ef674 bytes=[14 80 03 3C] lui v1,0x8014
+  800ef678 bytes=[01 00 02 24] li v0,0x1
+  800ef67c bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800ef680 bytes=[14 80 02 3C] lui v0,0x8014
+  800ef684 bytes=[0C EB 40 AC] sw zero,-0x14f4(v0)
+  800ef688 bytes=[14 80 02 3C] lui v0,0x8014
+  800ef68c bytes=[71 EA 42 90] lbu v0,-0x158f(v0)
+xref_from=800ef6b4 type=READ source=ANALYSIS operand=1 function_entry=NONE function_name=NONE
+  source_instruction_bytes=[FC 9E 04 8D] lw a0,-0x6104(t0)
+  800ef6a4 bytes=[14 80 05 3C] lui a1,0x8014
+  800ef6a8 bytes=[21 40 60 00] move t0,v1
+  800ef6ac bytes=[14 80 02 3C] lui v0,0x8014
+  800ef6b0 bytes=[71 EA 46 90] lbu a2,-0x158f(v0)
+  800ef6b4 bytes=[FC 9E 04 8D] lw a0,-0x6104(t0)
+  800ef6b8 bytes=[0C EB A2 8C] lw v0,-0x14f4(a1)
+  800ef6bc bytes=[00 00 00 00] nop
+  800ef6c0 bytes=[C0 18 02 00] sll v1,v0,0x3
+  800ef6c4 bytes=[21 18 62 00] addu v1,v1,v0
+xref_from=800ef700 type=WRITE source=ANALYSIS operand=1 function_entry=NONE function_name=NONE
+  source_instruction_bytes=[FC 9E 04 AD] sw a0,-0x6104(t0)
+  800ef6f0 bytes=[0C EB A2 AC] sw v0,-0x14f4(a1)
+  800ef6f4 bytes=[2A 10 46 00] slt v0,v0,a2
+  800ef6f8 bytes=[EF FF 40 14] bne v0,zero,0x800ef6b8
+  800ef6fc bytes=[00 00 00 00] _nop
+  800ef700 bytes=[FC 9E 04 AD] sw a0,-0x6104(t0)
+  800ef704 bytes=[14 80 02 3C] lui v0,0x8014
+  800ef708 bytes=[FC 9E 42 8C] lw v0,-0x6104(v0)
+  800ef70c bytes=[00 00 00 00] nop
+  800ef710 bytes=[10 00 40 14] bne v0,zero,0x800ef754
+xref_from=800ef708 type=READ source=ANALYSIS operand=1 function_entry=NONE function_name=NONE
+  source_instruction_bytes=[FC 9E 42 8C] lw v0,-0x6104(v0)
+  800ef6f8 bytes=[EF FF 40 14] bne v0,zero,0x800ef6b8
+  800ef6fc bytes=[00 00 00 00] _nop
+  800ef700 bytes=[FC 9E 04 AD] sw a0,-0x6104(t0)
+  800ef704 bytes=[14 80 02 3C] lui v0,0x8014
+  800ef708 bytes=[FC 9E 42 8C] lw v0,-0x6104(v0)
+  800ef70c bytes=[00 00 00 00] nop
+  800ef710 bytes=[10 00 40 14] bne v0,zero,0x800ef754
+  800ef714 bytes=[14 80 10 3C] _lui s0,0x8014
+  800ef718 bytes=[14 80 02 3C] lui v0,0x8014
+xref_from=800d09c8 type=WRITE source=ANALYSIS operand=1 function_entry=800d05b8 function_name=FUN_800d05b8
+  source_instruction_bytes=[FC 9E 04 AE] sw a0,-0x6104(s0)
+  800d09b8 bytes=[B0 EB 22 AE] sw v0,-0x1450(s1)
+  800d09bc bytes=[02 09 04 0C] jal 0x80102408
+  800d09c0 bytes=[14 80 10 3C] _lui s0,0x8014
+  800d09c4 bytes=[21 20 40 00] move a0,v0
+  800d09c8 bytes=[FC 9E 04 AE] sw a0,-0x6104(s0)
+  800d09cc bytes=[B0 EB 23 8E] lw v1,-0x1450(s1)
+  800d09d0 bytes=[01 00 02 24] li v0,0x1
+  800d09d4 bytes=[70 01 62 14] bne v1,v0,0x800d0f98
+  800d09d8 bytes=[01 00 83 24] _addiu v1,a0,0x1
+xref_from=800cff2c type=WRITE source=ANALYSIS operand=1 function_entry=NONE function_name=NONE
+  source_instruction_bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800cff1c bytes=[14 80 02 3C] lui v0,0x8014
+  800cff20 bytes=[B0 EB 40 AC] sw zero,-0x1450(v0)
+  800cff24 bytes=[14 80 03 3C] lui v1,0x8014
+  800cff28 bytes=[10 27 02 24] li v0,0x2710
+  800cff2c bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800cff30 bytes=[14 80 02 3C] lui v0,0x8014
+  800cff34 bytes=[0C EB 40 AC] sw zero,-0x14f4(v0)
+  800cff38 bytes=[21 88 40 00] move s1,v0
+  800cff3c bytes=[14 80 13 3C] lui s3,0x8014
+xref_from=800d001c type=READ source=ANALYSIS operand=1 function_entry=NONE function_name=NONE
+  source_instruction_bytes=[FC 9E A3 8C] lw v1,-0x6104(a1)
+  800d000c bytes=[C0 10 03 00] sll v0,v1,0x3
+  800d0010 bytes=[21 10 43 00] addu v0,v0,v1
+  800d0014 bytes=[00 11 02 00] sll v0,v0,0x4
+  800d0018 bytes=[21 20 82 00] addu a0,a0,v0
+  800d001c bytes=[FC 9E A3 8C] lw v1,-0x6104(a1)
+  800d0020 bytes=[04 00 82 8C] lw v0,0x4(a0)
+  800d0024 bytes=[00 00 00 00] nop
+  800d0028 bytes=[2A 10 43 00] slt v0,v0,v1
+  800d002c bytes=[05 00 40 14] bne v0,zero,0x800d0044
+xref_from=800cff94 type=READ source=ANALYSIS operand=1 function_entry=NONE function_name=NONE
+  source_instruction_bytes=[FC 9E 62 8C] lw v0,-0x6104(v1)
+  800cff84 bytes=[40 00 42 30] andi v0,v0,0x40
+  800cff88 bytes=[08 00 40 10] beq v0,zero,0x800cffac
+  800cff8c bytes=[14 80 03 3C] _lui v1,0x8014
+  800cff90 bytes=[0A 00 06 86] lh a2,0xa(s0)
+  800cff94 bytes=[FC 9E 62 8C] lw v0,-0x6104(v1)
+  800cff98 bytes=[00 00 00 00] nop
+  800cff9c bytes=[2A 10 C2 00] slt v0,a2,v0
+  800cffa0 bytes=[02 00 40 10] beq v0,zero,0x800cffac
+  800cffa4 bytes=[00 00 00 00] _nop
+xref_from=800cffa8 type=WRITE source=ANALYSIS operand=1 function_entry=NONE function_name=NONE
+  source_instruction_bytes=[FC 9E 66 AC] sw a2,-0x6104(v1)
+  800cff98 bytes=[00 00 00 00] nop
+  800cff9c bytes=[2A 10 C2 00] slt v0,a2,v0
+  800cffa0 bytes=[02 00 40 10] beq v0,zero,0x800cffac
+  800cffa4 bytes=[00 00 00 00] _nop
+  800cffa8 bytes=[FC 9E 66 AC] sw a2,-0x6104(v1)
+  800cffac bytes=[0C EB 22 8E] lw v0,-0x14f4(s1)
+  800cffb0 bytes=[00 00 00 00] nop
+  800cffb4 bytes=[01 00 42 24] addiu v0,v0,0x1
+  800cffb8 bytes=[0C EB 22 AE] sw v0,-0x14f4(s1)
+xref_from=800d21b0 type=WRITE source=ANALYSIS operand=1 function_entry=800d15a8 function_name=FUN_800d15a8
+  source_instruction_bytes=[FC 9E 40 AC] sw zero,-0x6104(v0)
+  800d21a0 bytes=[00 00 00 00] nop
+  800d21a4 bytes=[FD 02 40 14] bne v0,zero,0x800d2d9c
+  800d21a8 bytes=[14 80 02 3C] _lui v0,0x8014
+  800d21ac bytes=[14 80 02 3C] lui v0,0x8014
+  800d21b0 bytes=[FC 9E 40 AC] sw zero,-0x6104(v0)
+  800d21b4 bytes=[14 80 02 3C] lui v0,0x8014
+  800d21b8 bytes=[74 EA 42 8C] lw v0,-0x158c(v0)
+  800d21bc bytes=[00 00 00 00] nop
+  800d21c0 bytes=[EB 02 43 90] lbu v1,0x2eb(v0)
+xref_from=800d2254 type=WRITE source=ANALYSIS operand=1 function_entry=800d15a8 function_name=FUN_800d15a8
+  source_instruction_bytes=[FC 9E 62 AC] _sw v0,-0x6104(v1)
+  800d2244 bytes=[02 05 82 A0] sb v0,0x502(a0)
+  800d2248 bytes=[14 80 03 3C] lui v1,0x8014
+  800d224c bytes=[01 00 02 24] li v0,0x1
+  800d2250 bytes=[8B 49 03 08] j 0x800d262c
+  800d2254 bytes=[FC 9E 62 AC] _sw v0,-0x6104(v1)
+  800d2258 bytes=[07 EF 02 0C] jal 0x800bbc1c
+  800d225c bytes=[14 80 10 3C] _lui s0,0x8014
+  800d2260 bytes=[FF 00 03 24] li v1,0xff
+  800d2264 bytes=[E8 00 43 10] beq v0,v1,0x800d2608
+xref_from=800d2630 type=READ source=ANALYSIS operand=1 function_entry=800d15a8 function_name=FUN_800d15a8
+  source_instruction_bytes=[FC 9E 42 8C] lw v0,-0x6104(v0)
+  800d2620 bytes=[14 80 02 3C] _lui v0,0x8014
+  800d2624 bytes=[45 03 04 0C] jal 0x80100d14
+  800d2628 bytes=[21 20 00 00] _clear a0
+  800d262c bytes=[14 80 02 3C] lui v0,0x8014
+  800d2630 bytes=[FC 9E 42 8C] lw v0,-0x6104(v0)
+  800d2634 bytes=[00 00 00 00] nop
+  800d2638 bytes=[20 02 40 10] beq v0,zero,0x800d2ebc
+  800d263c bytes=[14 80 02 3C] _lui v0,0x8014
+  800d2640 bytes=[BA 23 04 0C] jal 0x80108ee8
+xref_from=800d25dc type=WRITE source=ANALYSIS operand=1 function_entry=800d15a8 function_name=FUN_800d15a8
+  source_instruction_bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800d25cc bytes=[05 00 62 14] bne v1,v0,0x800d25e4
+  800d25d0 bytes=[14 80 02 3C] _lui v0,0x8014
+  800d25d4 bytes=[14 80 03 3C] lui v1,0x8014
+  800d25d8 bytes=[01 00 02 24] li v0,0x1
+  800d25dc bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800d25e0 bytes=[14 80 02 3C] lui v0,0x8014
+  800d25e4 bytes=[FC 9E 42 8C] lw v0,-0x6104(v0)
+  800d25e8 bytes=[00 00 00 00] nop
+  800d25ec bytes=[32 02 40 10] beq v0,zero,0x800d2eb8
+xref_from=800d25e4 type=READ source=ANALYSIS operand=1 function_entry=800d15a8 function_name=FUN_800d15a8
+  source_instruction_bytes=[FC 9E 42 8C] lw v0,-0x6104(v0)
+  800d25d4 bytes=[14 80 03 3C] lui v1,0x8014
+  800d25d8 bytes=[01 00 02 24] li v0,0x1
+  800d25dc bytes=[FC 9E 62 AC] sw v0,-0x6104(v1)
+  800d25e0 bytes=[14 80 02 3C] lui v0,0x8014
+  800d25e4 bytes=[FC 9E 42 8C] lw v0,-0x6104(v0)
+  800d25e8 bytes=[00 00 00 00] nop
+  800d25ec bytes=[32 02 40 10] beq v0,zero,0x800d2eb8
+  800d25f0 bytes=[14 80 02 3C] _lui v0,0x8014
+  800d25f4 bytes=[74 EA 43 8C] lw v1,-0x158c(v0)
+xref_from=800d2480 type=WRITE source=ANALYSIS operand=1 function_entry=800d15a8 function_name=FUN_800d15a8
+  source_instruction_bytes=[FC 9E 43 AC] _sw v1,-0x6104(v0)
+  800d2470 bytes=[01 00 02 24] li v0,0x1
+  800d2474 bytes=[5B 00 62 14] bne v1,v0,0x800d25e4
+  800d2478 bytes=[14 80 02 3C] _lui v0,0x8014
+  800d247c bytes=[79 49 03 08] j 0x800d25e4
+  800d2480 bytes=[FC 9E 43 AC] _sw v1,-0x6104(v0)
+  800d2484 bytes=[14 80 02 3C] lui v0,0x8014
+  800d2488 bytes=[B0 EB 43 8C] lw v1,-0x1450(v0)
+  800d248c bytes=[14 80 02 3C] lui v0,0x8014
+  800d2490 bytes=[84 EA 44 8C] lw a0,-0x157c(v0)
+xref_from=800d7910 type=WRITE source=ANALYSIS operand=1 function_entry=800d6e7c function_name=FUN_800d6e7c
+  source_instruction_bytes=[FC 9E C2 AC] sw v0,-0x6104(a2)
+  800d7900 bytes=[14 80 06 3C] lui a2,0x8014
+  800d7904 bytes=[14 80 05 3C] lui a1,0x8014
+  800d7908 bytes=[88 EA A2 94] lhu v0,-0x1578(a1)
+  800d790c bytes=[00 00 00 00] nop
+  800d7910 bytes=[FC 9E C2 AC] sw v0,-0x6104(a2)
+  800d7914 bytes=[14 80 02 3C] lui v0,0x8014
+  800d7918 bytes=[74 EA 44 8C] lw a0,-0x158c(v0)
+  800d791c bytes=[14 80 03 3C] lui v1,0x8014
+  800d7920 bytes=[6E EA 62 94] lhu v0,-0x1592(v1)
+xref_from=800d7930 type=READ source=ANALYSIS operand=1 function_entry=800d6e7c function_name=FUN_800d6e7c
+  source_instruction_bytes=[FC 9E C2 94] lhu v0,-0x6104(a2)
+  800d7920 bytes=[6E EA 62 94] lhu v0,-0x1592(v1)
+  800d7924 bytes=[00 00 00 00] nop
+  800d7928 bytes=[88 EA A2 A4] sh v0,-0x1578(a1)
+  800d792c bytes=[D0 05 82 A0] sb v0,0x5d0(a0)
+  800d7930 bytes=[FC 9E C2 94] lhu v0,-0x6104(a2)
+  800d7934 bytes=[00 00 00 00] nop
+  800d7938 bytes=[6E EA 62 A4] sh v0,-0x1592(v1)
+  800d793c bytes=[14 80 02 3C] lui v0,0x8014
+  800d7940 bytes=[B0 EB 40 AC] sw zero,-0x1450(v0)
+xref_from=800d7324 type=WRITE source=ANALYSIS operand=1 function_entry=800d6e7c function_name=FUN_800d6e7c
+  source_instruction_bytes=[FC 9E C2 AC] sw v0,-0x6104(a2)
+  800d7314 bytes=[14 80 06 3C] lui a2,0x8014
+  800d7318 bytes=[14 80 05 3C] lui a1,0x8014
+  800d731c bytes=[88 EA A2 94] lhu v0,-0x1578(a1)
+  800d7320 bytes=[00 00 00 00] nop
+  800d7324 bytes=[FC 9E C2 AC] sw v0,-0x6104(a2)
+  800d7328 bytes=[14 80 02 3C] lui v0,0x8014
+  800d732c bytes=[74 EA 44 8C] lw a0,-0x158c(v0)
+  800d7330 bytes=[14 80 03 3C] lui v1,0x8014
+  800d7334 bytes=[6E EA 62 94] lhu v0,-0x1592(v1)
+xref_from=800d7344 type=READ source=ANALYSIS operand=1 function_entry=800d6e7c function_name=FUN_800d6e7c
+  source_instruction_bytes=[FC 9E C2 94] lhu v0,-0x6104(a2)
+  800d7334 bytes=[6E EA 62 94] lhu v0,-0x1592(v1)
+  800d7338 bytes=[00 00 00 00] nop
+  800d733c bytes=[88 EA A2 A4] sh v0,-0x1578(a1)
+  800d7340 bytes=[D0 05 82 A0] sb v0,0x5d0(a0)
+  800d7344 bytes=[FC 9E C2 94] lhu v0,-0x6104(a2)
+  800d7348 bytes=[00 00 00 00] nop
+  800d734c bytes=[6E EA 62 A4] sh v0,-0x1592(v1)
+  800d7350 bytes=[14 80 02 3C] lui v0,0x8014
+  800d7354 bytes=[B0 EB 40 AC] sw zero,-0x1450(v0)
+xref_from=800f3994 type=WRITE source=ANALYSIS operand=1 function_entry=800f3658 function_name=FUN_800f3658
+  source_instruction_bytes=[FC 9E 40 AC] sw zero,-0x6104(v0)
+  800f3984 bytes=[B0 EB 43 8C] lw v1,-0x1450(v0)
+  800f3988 bytes=[FF 00 02 24] li v0,0xff
+  800f398c bytes=[2A 00 62 10] beq v1,v0,0x800f3a38
+  800f3990 bytes=[14 80 02 3C] _lui v0,0x8014
+  800f3994 bytes=[FC 9E 40 AC] sw zero,-0x6104(v0)
+  800f3998 bytes=[14 80 02 3C] lui v0,0x8014
+  800f399c bytes=[0C EB 40 AC] sw zero,-0x14f4(v0)
+  800f39a0 bytes=[21 80 40 00] move s0,v0
+  800f39a4 bytes=[14 80 12 3C] lui s2,0x8014
+xref_from=800f39f4 type=WRITE source=ANALYSIS operand=1 function_entry=800f3658 function_name=FUN_800f3658
+  source_instruction_bytes=[FC 9E 62 AE] sw v0,-0x6104(s3)
+  800f39e4 bytes=[B0 EB 23 8E] lw v1,-0x1450(s1)
+  800f39e8 bytes=[00 00 00 00] nop
+  800f39ec bytes=[F1 FF 43 14] bne v0,v1,0x800f39b4
+  800f39f0 bytes=[01 00 02 24] _li v0,0x1
+  800f39f4 bytes=[FC 9E 62 AE] sw v0,-0x6104(s3)
+  800f39f8 bytes=[14 80 02 3C] lui v0,0x8014
+  800f39fc bytes=[FC 9E 42 8C] lw v0,-0x6104(v0)
+  800f3a00 bytes=[00 00 00 00] nop
+  800f3a04 bytes=[06 00 40 10] beq v0,zero,0x800f3a20
+xref_from=800f39fc type=READ source=ANALYSIS operand=1 function_entry=800f3658 function_name=FUN_800f3658
+  source_instruction_bytes=[FC 9E 42 8C] lw v0,-0x6104(v0)
+  800f39ec bytes=[F1 FF 43 14] bne v0,v1,0x800f39b4
+  800f39f0 bytes=[01 00 02 24] _li v0,0x1
+  800f39f4 bytes=[FC 9E 62 AE] sw v0,-0x6104(s3)
+  800f39f8 bytes=[14 80 02 3C] lui v0,0x8014
+  800f39fc bytes=[FC 9E 42 8C] lw v0,-0x6104(v0)
+  800f3a00 bytes=[00 00 00 00] nop
+  800f3a04 bytes=[06 00 40 10] beq v0,zero,0x800f3a20
+  800f3a08 bytes=[14 80 02 3C] _lui v0,0x8014
+  800f3a0c bytes=[B0 EB 44 8C] lw a0,-0x1450(v0)
+xref_from=800f3a48 type=WRITE source=ANALYSIS operand=1 function_entry=800f3658 function_name=FUN_800f3658
+  source_instruction_bytes=[FC 9E 40 AC] sw zero,-0x6104(v0)
+  800f3a38 bytes=[14 80 03 3C] lui v1,0x8014
+  800f3a3c bytes=[14 00 02 24] li v0,0x14
+  800f3a40 bytes=[B0 EB 62 AC] sw v0,-0x1450(v1)
+  800f3a44 bytes=[14 80 02 3C] lui v0,0x8014
+  800f3a48 bytes=[FC 9E 40 AC] sw zero,-0x6104(v0)
+  800f3a4c bytes=[14 80 02 3C] lui v0,0x8014
+  800f3a50 bytes=[21 18 40 00] move v1,v0
+  800f3a54 bytes=[0C EB 40 AC] sw zero,-0x14f4(v0)
+  800f3a58 bytes=[14 80 12 3C] lui s2,0x8014
+xref_from=800f3a94 type=READ source=ANALYSIS operand=1 function_entry=800f3658 function_name=FUN_800f3658
+  source_instruction_bytes=[FC 9E 82 8C] lw v0,-0x6104(a0)
+  800f3a84 bytes=[02 00 40 10] beq v0,zero,0x800f3a90
+  800f3a88 bytes=[14 80 04 3C] _lui a0,0x8014
+  800f3a8c bytes=[B0 EB 23 AE] sw v1,-0x1450(s1)
+  800f3a90 bytes=[B4 EB 43 8E] lw v1,-0x144c(s2)
+  800f3a94 bytes=[FC 9E 82 8C] lw v0,-0x6104(a0)
+  800f3a98 bytes=[00 00 00 00] nop
+  800f3a9c bytes=[2A 10 43 00] slt v0,v0,v1
+  800f3aa0 bytes=[02 00 40 10] beq v0,zero,0x800f3aac
+  800f3aa4 bytes=[00 00 00 00] _nop
+xref_from=800f3aa8 type=WRITE source=ANALYSIS operand=1 function_entry=800f3658 function_name=FUN_800f3658
+  source_instruction_bytes=[FC 9E 83 AC] sw v1,-0x6104(a0)
+  800f3a98 bytes=[00 00 00 00] nop
+  800f3a9c bytes=[2A 10 43 00] slt v0,v0,v1
+  800f3aa0 bytes=[02 00 40 10] beq v0,zero,0x800f3aac
+  800f3aa4 bytes=[00 00 00 00] _nop
+  800f3aa8 bytes=[FC 9E 83 AC] sw v1,-0x6104(a0)
+  800f3aac bytes=[0C EB 02 8E] lw v0,-0x14f4(s0)
+  800f3ab0 bytes=[00 00 00 00] nop
+  800f3ab4 bytes=[01 00 42 24] addiu v0,v0,0x1
+  800f3ab8 bytes=[0C EB 02 AE] sw v0,-0x14f4(s0)
+xref_from=800f3acc type=READ source=ANALYSIS operand=1 function_entry=800f3658 function_name=FUN_800f3658
+  source_instruction_bytes=[FC 9E 02 8E] lw v0,-0x6104(s0)
+  800f3abc bytes=[0B 00 42 28] slti v0,v0,0xb
+  800f3ac0 bytes=[E8 FF 40 14] bne v0,zero,0x800f3a64
+  800f3ac4 bytes=[21 18 00 02] _move v1,s0
+  800f3ac8 bytes=[14 80 10 3C] lui s0,0x8014
+  800f3acc bytes=[FC 9E 02 8E] lw v0,-0x6104(s0)
+  800f3ad0 bytes=[00 00 00 00] nop
+  800f3ad4 bytes=[01 00 42 24] addiu v0,v0,0x1
+  800f3ad8 bytes=[5E D7 00 0C] jal 0x80035d78
+  800f3adc bytes=[FC 9E 02 AE] _sw v0,-0x6104(s0)
+xref_from=800f3adc type=WRITE source=ANALYSIS operand=1 function_entry=800f3658 function_name=FUN_800f3658
+  source_instruction_bytes=[FC 9E 02 AE] _sw v0,-0x6104(s0)
+  800f3acc bytes=[FC 9E 02 8E] lw v0,-0x6104(s0)
+  800f3ad0 bytes=[00 00 00 00] nop
+  800f3ad4 bytes=[01 00 42 24] addiu v0,v0,0x1
+  800f3ad8 bytes=[5E D7 00 0C] jal 0x80035d78
+  800f3adc bytes=[FC 9E 02 AE] _sw v0,-0x6104(s0)
+  800f3ae0 bytes=[14 80 04 3C] lui a0,0x8014
+  800f3ae4 bytes=[FC 9E 03 8E] lw v1,-0x6104(s0)
+  800f3ae8 bytes=[B0 EB 85 8C] lw a1,-0x1450(a0)
+  800f3aec bytes=[00 00 00 00] nop
+xref_from=800f3ae4 type=READ source=ANALYSIS operand=1 function_entry=800f3658 function_name=FUN_800f3658
+  source_instruction_bytes=[FC 9E 03 8E] lw v1,-0x6104(s0)
+  800f3ad4 bytes=[01 00 42 24] addiu v0,v0,0x1
+  800f3ad8 bytes=[5E D7 00 0C] jal 0x80035d78
+  800f3adc bytes=[FC 9E 02 AE] _sw v0,-0x6104(s0)
+  800f3ae0 bytes=[14 80 04 3C] lui a0,0x8014
+  800f3ae4 bytes=[FC 9E 03 8E] lw v1,-0x6104(s0)
+  800f3ae8 bytes=[B0 EB 85 8C] lw a1,-0x1450(a0)
+  800f3aec bytes=[00 00 00 00] nop
+  800f3af0 bytes=[23 18 65 00] subu v1,v1,a1
+  800f3af4 bytes=[1A 00 43 00] div v0,v1
+xref_from=800dfa28 type=WRITE source=ANALYSIS operand=1 function_entry=800df698 function_name=FUN_800df698
+  source_instruction_bytes=[FC 9E 04 AE] sw a0,-0x6104(s0)
+  800dfa18 bytes=[B0 EB 22 AE] sw v0,-0x1450(s1)
+  800dfa1c bytes=[02 09 04 0C] jal 0x80102408
+  800dfa20 bytes=[14 80 10 3C] _lui s0,0x8014
+  800dfa24 bytes=[21 20 40 00] move a0,v0
+  800dfa28 bytes=[FC 9E 04 AE] sw a0,-0x6104(s0)
+  800dfa2c bytes=[B0 EB 23 8E] lw v1,-0x1450(s1)
+  800dfa30 bytes=[01 00 02 24] li v0,0x1
+  800dfa34 bytes=[C6 00 62 14] bne v1,v0,0x800dfd50
+  800dfa38 bytes=[14 80 02 3C] _lui v0,0x8014
+data_reference_count=83
+interpretation=direct Ghidra references only; indirect aliases and runtime writers may not appear
