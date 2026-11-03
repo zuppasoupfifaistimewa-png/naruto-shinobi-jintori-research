@@ -332,18 +332,47 @@ _G.bb3VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
           directCallStartPC = tonumber(regs.pc)
           directCallStartSP = tonumber(regs.GPR.n.sp)
           directCallStartGP = tonumber(regs.GPR.n.gp)
-          -- The pinned release exposes getRegisters() but not setGPR().
-          -- Write the structured cdata register view directly, then read it back.
+          local s0Original = tonumber(regs.GPR.n.s0)
+          local s1Original = tonumber(regs.GPR.n.s1)
+          local s2Original = tonumber(regs.GPR.n.s2)
+          local s3Original = tonumber(regs.GPR.n.s3)
+          local s4Original = tonumber(regs.GPR.n.s4)
+          directCallFrameSP = directCallStartSP - 0x30
+          if not validRamPtr(directCallFrameSP, 0x30) then
+            error("DIRECT_CALL_FRAME_OUTSIDE_RAM=" .. hex(directCallFrameSP))
+          end
+          -- Recreate FUN_800D15A8's 0x30-byte prologue frame so its epilogue
+          -- restores the original stack/registers and returns to the sentinel.
+          wd(directCallFrameSP + 0x18, s0Original)
+          wd(directCallFrameSP + 0x1C, s1Original)
+          wd(directCallFrameSP + 0x20, s2Original)
+          wd(directCallFrameSP + 0x24, s3Original)
+          wd(directCallFrameSP + 0x28, s4Original)
+          wd(directCallFrameSP + 0x2C, directCallReturn)
+          -- Enter the actual action-byte switch block after the function's
+          -- state/input gating. These saved registers are the block's live
+          -- context: s1 is the 0x80140000 global page, s4 is the 1-byte flag.
           local live = PCSX.getRegisters()
+          live.GPR.n.sp = directCallFrameSP
           live.GPR.n.ra = directCallReturn
-          live.pc = 0x800D15A8
+          live.GPR.n.s1 = 0x80140000
+          live.GPR.n.s4 = 1
+          live.pc = 0x800D4464
           local verify = PCSX.getRegisters()
           local raActual = tonumber(verify.GPR.n.ra)
           local pcActual = tonumber(verify.pc)
-          if raActual ~= directCallReturn or pcActual ~= 0x800D15A8 then
-            error("REGISTER_READBACK_MISMATCH pc=" .. hex(pcActual) .. " ra=" .. hex(raActual))
+          local spActual = tonumber(verify.GPR.n.sp)
+          local s1Actual = tonumber(verify.GPR.n.s1)
+          local s4Actual = tonumber(verify.GPR.n.s4)
+          if raActual ~= directCallReturn or pcActual ~= 0x800D4464
+              or spActual ~= directCallFrameSP or s1Actual ~= 0x80140000 or s4Actual ~= 1 then
+            error("REGISTER_READBACK_MISMATCH pc=" .. hex(pcActual) .. " sp=" .. hex(spActual)
+              .. " ra=" .. hex(raActual) .. " s1=" .. hex(s1Actual) .. " s4=" .. tostring(s4Actual))
           end
           log("BB3_DIRECT_CALL_REGISTER_READBACK=PASS")
+          log("BB3_DIRECT_CALL_FRAME_SP=" .. hex(directCallFrameSP))
+          log("BB3_DIRECT_CALL_S1=0x80140000")
+          log("BB3_DIRECT_CALL_S4=1")
         end)
         if not okSet then
           directCallStatus = "REGISTER_WRITE_FAIL"
@@ -354,9 +383,9 @@ _G.bb3VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
         end
         directCallStarted = true
         directCallStatus = "RUNNING"
-        log("BB3_DIRECT_CALL_API=STRUCTURED_REGISTERS")
+        log("BB3_DIRECT_CALL_API=DISPATCH_BLOCK_WITH_RECREATED_FRAME")
         log("BB3_DIRECT_CALL_BEGIN=1")
-        log("BB3_DIRECT_CALL_PC=0x800D15A8")
+        log("BB3_DIRECT_CALL_PC=0x800D4464")
         log("BB3_DIRECT_CALL_RA=" .. hex(directCallReturn))
       end)
     end
