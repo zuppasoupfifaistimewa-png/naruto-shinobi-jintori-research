@@ -1,4 +1,4 @@
-# BB1–BB2 — hasil final audit statis Barrier / record petak
+# BB1–BB2 — bukti audit statis Barrier / record petak
 
 Tanggal: 3 November 2026
 Game: Naruto — Shinobi no Sato no Jintori Gassen (PS1, SLPS-03553)
@@ -8,9 +8,9 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 
 | Tahap | Status | Kelas | Batas |
 |---|---|---|---|
-| BB1 — field petak +0x0B dan resource 630 | TUNTAS statis | K4 | Semua store +0x0B dipilah menurut objek; dua store benar-benar menulis record tile. Label gameplay exact tetap TIDAK TAHU. |
-| BB2 — biaya dan kenaikan level action 3/8 | TUNTAS statis | K4 | Fee, guard saldo, pending debit, dua level nibble dan refresh helper terbukti. Nama gameplay action 3/8 tetap TIDAK TAHU. |
-| BB3 — konfirmasi runtime blok transaksi action 3/8 | TUNTAS TERBATAS | K5-terbatas | Run 41550406414: 16/16 uji dispatch-block terisolasi PASS, dua pengulangan per action/level; lihat laporan BB3_RUNTIME_COMPLETE_2026-11-03.md. Bukan uji input gameplay Story Mode dan tidak menetapkan label visual aksi. |
+| BB1 — field petak +0x0B dan resource 630 | TUNTAS statis | K4 | Dua writer tile +0x0B dihitung sebagai jumlah link lanjutan pada rantai type-5 dengan owner sama. Geometri neighbor dan batas cluster gameplay masih TIDAK TAHU; lihat addendum. |
+| BB2 — transaksi action 3/8 dan producer +0x2EB | SEBAGIAN | K4 untuk blok transaksi/kredit; producer mapping belum lengkap | Debit fee, pending credit state-2, nibble updates dan refresh terbukti; dua producer langsung (3 dan 8) dilacak, tetapi satu store tambahan 8 di 0x800EF3CC belum punya function/caller yang terbukti. Label gameplay action 3/8 tetap TIDAK TAHU. |
+| BB3 — konfirmasi runtime blok transaksi action 3/8 | SEBAGIAN | K5-terbatas pada subcakupan lama | Run 41550406414: 16/16 PASS untuk tile4, action3/8, level0–3. Perluasan 40 launch tile4/7 × action3/8 × level0–4 dengan RAM capture frame180 masih berjalan di run 41553653484; bukan uji input gameplay Story Mode. |
 
 ## BB1 — pemetaan semua store +0x0B
 
@@ -256,3 +256,16 @@ manager+0x2EB == 1 atau 0x1D
 ```
 
 Keterangan: byte +0x2EA ditulis lebih dahulu oleh dua producer tersebut; +0x2EB menerima nilai yang sama. Ini menutup producer immediate untuk dua trigger ini, namun bukan seluruh 65 store manager+0x2EB (banyak yang menyalin manager+0x2E9 atau memiliki state lain). Tidak ada dasar menyebut label UI 1/0x1D sebagai Barrier Release tanpa prompt/hasil gameplay terverifikasi.
+
+
+## Revisi cakupan 3 November 2026
+
+Laporan ini adalah kompilasi bukti statis, bukan klaim semua subbutir BB2 dan BB3 sudah ditutup. Addendum terbaru menambahkan:
+- rumus tepat tile+0x0B, batas iterasi lima link lanjutan, ketidakpastian hubungan link dengan geometri tetangga, hipotesis/falsifier, dan check aritmetika terhadap observasi H50/60/70;
+- semua enam direct store +0x0B beserta urutan instruksi sebelum store;
+- producer manager+0x2EB bernilai 3/8, caller langsung yang tervalidasi, store 8 tambahan yang belum punya function/caller, serta jalur kredit positif state-2.
+
+Lihat laporan pendamping:
+reports/stage1_economy/BB1_BB2_PRODUCER_AND_CLUSTER_ADDENDUM_2026-11-03.md
+
+BB2 belum TUNTAS penuh karena producer value 8 di PC 0x800EF3CC dan label gameplay action 3/8 belum terselesaikan. BB3 belum TUNTAS penuh karena run perluasan level0–4/tile4&7 dan hash RAM 2 MiB pra-poke frame180 masih belum terbit.
