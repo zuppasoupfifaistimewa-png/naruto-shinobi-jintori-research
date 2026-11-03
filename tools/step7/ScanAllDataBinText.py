@@ -21,14 +21,14 @@ ENTRY_STRIDE = 8
 BASE_LBN = 212
 PHRASES = (
     "結界開放", "結界解放", "結界解除", "結界", "チャクラ", "バリア",
-    "障壁", "開放", "解放", "解除", "強化", "建設", "建築", "増築",
+    "障壁", "開放", "解放", "解除", "強化", "建設", "建築", "増築", "領地", "防御", "攻撃", "護り", "守り",
     "消費", "費用", "料金", "価格", "所持", "所有", "増加", "獲得",
     "Barrier", "Chakra", "release", "upgrade", "build", "cost",
 )
 HINTS = ("結界", "チャクラ", "バリア", "障壁", "開放", "解放", "解除",
-         "強化", "建設", "建築", "消費", "費用", "料金", "価格", "所持", "所有",
+         "強化", "建設", "建築", "消費", "費用", "料金", "価格", "所持", "所有", "領地", "防御", "攻撃", "護り", "守り",
          "増加", "獲得", "Barrier", "Chakra", "release", "upgrade", "build", "cost")
-MAX_RUNS = 50000
+MAX_RETAINED_MATCHES = 10000
 MAX_DECOMPRESSED = 8 * 1024 * 1024
 
 def digest(buf: bytes) -> str:
@@ -122,7 +122,7 @@ def main():
         f"directory_table_offset=0x{TABLE_OFFSET:X}",
         f"directory_entries={ENTRY_COUNT}",
         "directory_entry_format=<u32 LBN, u32 byte_length>; source LBN base=212; sector=2048 bytes",
-        "scope=all valid non-empty directory entries; raw Shift-JIS/ASCII phrases and plausible Shift-JIS runs",
+        "scope=all valid non-empty directory entries; raw Shift-JIS/ASCII phrase search plus full uncapped heuristic Shift-JIS candidate scan",
         "decompression=only standard gzip and zlib signatures; custom LZ/other containers are not decoded",
         "result=static byte scan only; candidate strings do not prove UI linkage or event identity",
         "",
@@ -138,7 +138,7 @@ def main():
                   "entry_sha256", "variant", "offset_in_variant", "data_bin_offset",
                   "matched_phrase", "text", "bytes_hex", "note")
     totals = {"active": 0, "invalid": 0, "phrase_hits": 0, "sjis_runs": 0,
-              "matched_sjis_runs": 0, "compressed_variants": 0}
+              "matched_sjis_runs": 0, "compressed_variants": 0, "retained_match_rows": 0}
     rows = []
     entry_summary = []
 
@@ -173,32 +173,31 @@ def main():
         for variant, payload in decoded_variants(chunk):
             if variant != "RAW":
                 totals["compressed_variants"] += 1
-            if totals["sjis_runs"] >= MAX_RUNS:
-                continue
             for rel, raw, text_value in sjis_runs(payload):
-                if totals["sjis_runs"] >= MAX_RUNS:
-                    break
                 totals["sjis_runs"] += 1
                 matching = [hint for hint in HINTS if hint.lower() in text_value.lower()]
                 if matching:
                     totals["matched_sjis_runs"] += 1
-                # Retain all runs so the report remains inspectable; no game meaning is inferred.
-                rows.append({
-                    "record_type": "SJIS_RUN", "entry_index": idx, "lbn": lbn,
-                    "entry_offset": f"0x{offset:X}", "entry_length": length,
-                    "entry_sha256": sha, "variant": variant, "offset_in_variant": f"0x{rel:X}",
-                    "data_bin_offset": f"0x{offset+rel:X}" if variant == "RAW" else "NOT_APPLICABLE",
-                    "matched_phrase": ";".join(matching),
-                    "text": clean(text_value[:240]), "bytes_hex": raw[:80].hex(" "),
-                    "note": "heuristic Shift-JIS run; not proven to be a UI string",
-                })
+                    if totals["retained_match_rows"] < MAX_RETAINED_MATCHES:
+                        rows.append({
+                            "record_type": "SJIS_RUN_MATCH", "entry_index": idx, "lbn": lbn,
+                            "entry_offset": f"0x{offset:X}", "entry_length": length,
+                            "entry_sha256": sha, "variant": variant, "offset_in_variant": f"0x{rel:X}",
+                            "data_bin_offset": f"0x{offset+rel:X}" if variant == "RAW" else "NOT_APPLICABLE",
+                            "matched_phrase": ";".join(matching),
+                            "text": clean(text_value[:240]), "bytes_hex": raw[:80].hex(" "),
+                            "note": "heuristic Shift-JIS run containing a search hint; not proven to be a UI string",
+                        })
+                        totals["retained_match_rows"] += 1
     
     report.extend([
         f"| Valid non-empty entries scanned | {totals['active']} |",
         f"| Invalid directory ranges skipped | {totals['invalid']} |",
         f"| Literal ASCII/Shift-JIS phrase occurrences | {totals['phrase_hits']} |",
-        f"| Heuristic Shift-JIS runs retained | {totals['sjis_runs']} |",
-        f"| Runs containing a relevant hint | {totals['matched_sjis_runs']} |",
+        f"| Heuristic Shift-JIS candidate runs examined (uncapped) | {totals['sjis_runs']} |",
+        f"| Matching Shift-JIS runs | {totals['matched_sjis_runs']} |",
+        f"| Matching Shift-JIS rows retained | {totals['retained_match_rows']} |",
+        
         f"| Standard compressed variants decoded | {totals['compressed_variants']} |",
         "",
         "## Per-entry inventory",
@@ -225,7 +224,7 @@ def main():
     report_path.write_text("\n".join(report) + "\n", encoding="utf-8")
     print("BB2_FULL_DATABIN_TEXT_SCAN=PASS "
           f"entries={totals['active']} invalid={totals['invalid']} "
-          f"phrase_hits={totals['phrase_hits']} sjis_runs={totals['sjis_runs']} "
+          f"phrase_hits={totals['phrase_hits']} sjis_runs_examined={totals['sjis_runs']} "
           f"hint_runs={totals['matched_sjis_runs']} decoded_variants={totals['compressed_variants']}")
 
 if __name__ == "__main__":

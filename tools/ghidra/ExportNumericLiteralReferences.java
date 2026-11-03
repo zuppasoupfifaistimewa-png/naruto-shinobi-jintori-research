@@ -1,4 +1,4 @@
-// Enumerate code immediate literals 50/60/100/150 in MIPS instructions.
+// Enumerate selected code immediate literals, including 0xBE (decimal 190), in MIPS instructions.
 // Rows are code-literal candidates, not economic semantic labels or data-table xrefs.
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.listing.*;
@@ -9,7 +9,7 @@ import java.util.regex.*;
 
 public class ExportNumericLiteralReferences extends GhidraScript {
  private PrintWriter out;
- private static final Set<Long> VALUES=new HashSet<>(Arrays.asList(50L,60L,100L,150L));
+ private static final Set<Long> VALUES=new HashSet<>(Arrays.asList(50L,60L,100L,150L,190L));
  private String clean(String s){return s==null?"":s.replace('\t',' ').replace('\n',' ').replace('\r',' ');}
  private void row(String...a){for(int i=0;i<a.length;i++){if(i>0)out.print('\t');out.print(clean(a[i]));}out.println();}
  @Override protected void run() throws Exception {
