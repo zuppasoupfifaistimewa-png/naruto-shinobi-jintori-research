@@ -13,8 +13,8 @@ permissions:
   actions: read
 
 concurrency:
-  group: naruto-bb3-h6-action-call-probe-release-v4
-  cancel-in-progress: true
+  group: naruto-bb3-h6-action-call-probe-release-v5
+  cancel-in-progress: false
 
 jobs:
   bb3-h6-action-call-probe:
@@ -287,7 +287,7 @@ jobs:
                   (root/name).write_text("STATUS=TIDAK_TERSDIA\\nreason=workflow did not create this output\\n",encoding="utf-8")
           PY
           dest="reports/stage1_economy/bb3-h6-action-call-probe-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
-          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="BB3 16 H6 function-call launches on pinned PCSX-Redux release") | .id' | head -n 1)"
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="BB3 40 frame-aligned H6 function-call launches on pinned PCSX-Redux release") | .id' | head -n 1)"
           test -n "$JOB_ID" || JOB_ID="TIDAK TAHU"
           STATUS="$(sed -n 's/^STATUS=//p' "$out/BB3_ACTION_CALL_SUMMARY.txt" | head -n 1)"; test -n "$STATUS" || STATUS="INCOMPLETE"
           RC="$(sed -n 's/^BB3_SCRIPT_EXIT_CODE=//p' "$out/BB3_SCRIPT_EXIT_CODE.txt" | head -n 1)"
