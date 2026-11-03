@@ -1,0 +1,6 @@
+AQ1 totals recomputed from aq1-economy-census.tsv
+record_type_counts={}
+record_field_access_counts={}
+helper_direct_callsite_counts={}
+accessor_direct_callsite_group_counts={}
+indirect_JALR=TIDAK_TAHU
