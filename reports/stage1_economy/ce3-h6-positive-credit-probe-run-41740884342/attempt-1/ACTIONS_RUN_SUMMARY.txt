@@ -1,0 +1,6 @@
+STATUS=TIDAK_TERSDIA\nreason=workflow did not create this output\n
+JOB=ce3-h6-positive-credit-probe
+JOB_ID=126281786546
+RUN_ID=41740884342
+SOURCE_SHA=6e6ae5472f2bbed763bba8180d68a6d9bce205d6
+EXIT_CODE=0
