@@ -509,6 +509,13 @@ def main():
                    for action in ACTION_VALUES
                    for level in LEVEL_VALUES
                    for attempt in (1, 2)]
+    expected_cases = {(tile, action, level, attempt)
+                      for tile in TILE_INDICES
+                      for action in ACTION_VALUES
+                      for level in LEVEL_VALUES
+                      for attempt in (1, 2)}
+    if len(test_cases) != 40 or len(set(test_cases)) != 40 or set(test_cases) != expected_cases:
+        raise SystemExit("BB3_40_CASE_MATRIX_MISMATCH")
     for tile_index, action, level, attempt in test_cases:
         expected_fee = EXPECTED_FEES[tile_index]
         launch_total += 1
