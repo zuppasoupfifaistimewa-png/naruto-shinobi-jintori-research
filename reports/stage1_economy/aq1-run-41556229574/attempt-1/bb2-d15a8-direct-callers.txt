@@ -1,0 +1,103 @@
+analysis=Ghidra raw-JAL vs decoded direct-flow comparison
+program=DATA_BIN_ENTRY_0001.bin
+program_language=MIPS:LE:32:default
+entrypoint_or_emulator_executed=no
+address_model=candidate resource base only; runtime loading is not proven
+targets=[800d15a8, 800d9570, 800eb434, 800ef3cc, 800d8930, 800d10f0, 800dd7c0, 800e481c, 800e4f50, 800e7b38, 800ea18c, 8010bdfc]
+aligned_words_scanned=149103
+raw_jal_candidate_count=17
+ghidra_decoded_direct_callsite_count=17
+unique_validated_caller_functions_with_boundary=2
+
+=== RAW_JAL_CANDIDATES ===
+target=800ea18c site=800f3880 word=0x0C03A863 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x800ea18c
+target=800d10f0 site=800f38a8 word=0x0C03443C status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x800d10f0
+target=8010bdfc site=800f3ed8 word=0x0C042F7F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x8010bdfc
+target=8010bdfc site=800f3f48 word=0x0C042F7F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x8010bdfc
+target=8010bdfc site=800f4058 word=0x0C042F7F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x8010bdfc
+target=8010bdfc site=800f414c word=0x0C042F7F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x8010bdfc
+target=8010bdfc site=800f4368 word=0x0C042F7F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x8010bdfc
+target=8010bdfc site=800f45a8 word=0x0C042F7F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x8010bdfc
+target=800e481c site=800f53bc word=0x0C039207 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x800e481c
+target=800eb434 site=800f5cf8 word=0x0C03AD0D status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x800eb434
+target=800d15a8 site=800f5dac word=0x0C03456A status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x800d15a8
+target=800d8930 site=800f5dfc word=0x0C03624C status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_function=UNMAPPED
+decoded_instruction=jal 0x800d8930
+target=800d9570 site=800f5e1c word=0x0C03655C status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_function=UNMAPPED
+decoded_instruction=jal 0x800d9570
+target=800e4f50 site=800f5e3c word=0x0C0393D4 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_function=UNMAPPED
+decoded_instruction=jal 0x800e4f50
+target=800dd7c0 site=800f5e6c word=0x0C0375F0 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_function=UNMAPPED
+decoded_instruction=jal 0x800dd7c0
+target=800e7b38 site=800f5f1c word=0x0C039ECE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_function=UNMAPPED
+decoded_instruction=jal 0x800e7b38
+target=8010bdfc site=80122dd8 word=0x0C042F7F status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=80121d40 caller_name=FUN_80121d40 caller_body_bytes=6140
+decoded_instruction=jal 0x8010bdfc
+
+=== GHIDRA_VALIDATED_DIRECT_CALLS ===
+target=800ea18c site=800f3880 instruction=jal 0x800ea18c
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=800d10f0 site=800f38a8 instruction=jal 0x800d10f0
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=8010bdfc site=800f3ed8 instruction=jal 0x8010bdfc
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=8010bdfc site=800f3f48 instruction=jal 0x8010bdfc
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=8010bdfc site=800f4058 instruction=jal 0x8010bdfc
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=8010bdfc site=800f414c instruction=jal 0x8010bdfc
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=8010bdfc site=800f4368 instruction=jal 0x8010bdfc
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=8010bdfc site=800f45a8 instruction=jal 0x8010bdfc
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=800e481c site=800f53bc instruction=jal 0x800e481c
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=800eb434 site=800f5cf8 instruction=jal 0x800eb434
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=800d15a8 site=800f5dac instruction=jal 0x800d15a8
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=800d8930 site=800f5dfc instruction=jal 0x800d8930
+caller_function=UNMAPPED
+target=800d9570 site=800f5e1c instruction=jal 0x800d9570
+caller_function=UNMAPPED
+target=800e4f50 site=800f5e3c instruction=jal 0x800e4f50
+caller_function=UNMAPPED
+target=800dd7c0 site=800f5e6c instruction=jal 0x800dd7c0
+caller_function=UNMAPPED
+target=800e7b38 site=800f5f1c instruction=jal 0x800e7b38
+caller_function=UNMAPPED
+target=8010bdfc site=80122dd8 instruction=jal 0x8010bdfc
+caller_entry=80121d40 caller_name=FUN_80121d40 caller_body_bytes=6140
+decompilation_mode=SEED_CALLERS_THEN_UP_TO_12_RNG_CALLERS
+
+detailed_decompilation_timeout_seconds=15
+detailed_decompilation_count=0
