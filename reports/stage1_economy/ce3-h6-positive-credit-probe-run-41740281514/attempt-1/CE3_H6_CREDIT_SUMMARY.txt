@@ -1,0 +1,2 @@
+STATUS=SETUP_OR_PROBE_FAILED
+reason=no CE3 credit summary produced
