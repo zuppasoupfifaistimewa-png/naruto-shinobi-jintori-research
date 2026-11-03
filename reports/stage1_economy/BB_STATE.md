@@ -175,3 +175,21 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 - Run output was published in commit 67d17ca8e5163fed74973a14d13162bff39680e9 under reports/stage1_economy/aq1-run-41561643792/attempt-1/ (52 text/TSV outputs). This keeps the static Chakra setter/caller census independently repeatable.
 - BB2 still SEBAGIAN because the exact in-game event name corresponding to +0x2EB=1/0x1D and the message-token 0xBE text has not been decoded. The numeric reward path itself is proven to update canonical Chakra, not merely a preview.
 - A further message-object xref run 41561885050 was IN_PROGRESS at the last check (job125674403570); do not call its result complete until the run publishes and the relevant message pointer/string can be inspected.
+
+
+---
+
+## AUTHORITATIVE STATUS — audit terbaru BB1 → BB2 → BB3 (3 November 2026, setelah run 41563802704)
+
+| Butir | Status | PC/SHA kunci | Putusan / langkah lanjut |
+|---|---|---|---|
+| BB1 | **TUNTAS K4 — statis** | FUN_800BE0E4; FUN_800B770C; 22 record resource 630 | Semua target statis +0x0B, pemisahan enam store, geometri link untuk 22/22 record, selector 0–4, dan tabel H/lv1–lv4 cocok telah dicatat. Batas geometri hanya data resource yang diperiksa. |
+| BB2 | **SEBAGIAN — K4 mekanisme** | FUN_800D15A8; store 0x800DAA88/0x800EC3A8/0x800EF3CC; FUN_800BE5D8 → FUN_8001387C | Debit, pending, dua nibble, producer immediate 3/8, dan kredit positif masuk Chakra kanonis terbukti. Caller langsung fungsi FUN_800EE4E0 tidak ditemukan dalam scan raw-JAL. Label bangun/upgrade, nilai biaya Barrier secara gameplay, teks token 0xBE dan identitas Barrier Release tetap TIDAK TAHU. |
+| BB3 | **TUNTAS K5 terbatas — H6 HIBRIDA** | H6 SHA d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475; run41556732137/job125657970152 | 40/40 PASS, dua launch per tile4/7 × action3/8 × level0–4; exit0; RAM frame180 hash 5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7; Memory Card tidak berubah. Bukan controller/UI Story Mode. |
+
+### Run tambahan BB2 dan kelanjutan
+
+- Run 41563802704; job 125680354426; source SHA 5c50ea0e5f4f361ba548b28322f49ca87a0632b5; STATUS=SUCCESS; EXIT_CODE=0. Ringkasan tersimpan di `reports/stage1_economy/aq1-run-41563802704/attempt-1/ACTIONS_RUN_SUMMARY.txt`.
+- Census +0x2EB run41563802704: 65 WRITE/63 READ; direct immediate producer 3 di FUN_800D9570/0x800DAA88; producer 8 di FUN_800EB434/0x800EC3A8 dan FUN_800EE4E0/0x800EF3CC. Tidak ada raw-JAL caller ke FUN_800EE4E0 pada scan 149.103 word aligned (176 kandidat JAL berhasil tervalidasi). Pemanggilan indirect masih belum terbukti.
+- Jalur positif +0x2EB=1/0x1D menghasilkan nilai C dan pending Chakra; identifikasi pesan token 0xBE dengan `結界開放` belum berhasil. HP/HQ tetap hipotesis, bukan fakta.
+- Langkah berikut: bukti UI/prompt/teks dan transisi Barrier pada gameplay normal untuk membedakan HA/HB dan HP/HQ; tidak perlu mengulang BB1 atau BB3. Jangan jalankan adaptive-player. B44 bukan Barrier Release.
