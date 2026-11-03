@@ -314,3 +314,15 @@ Pemeriksaan ulang instruksi di `0x800BE248–0x800BE298` memastikan kondisi loop
 Hipotesis yang mungkin menjelaskan perbedaan: (HA) helper `FUN_800152C8` / `FUN_80015274` atau tahap pemilihan/validasi setelah pembentukan rantai membatasi nilai yang digunakan untuk faktor kelompok sampai selector 4; falsifier: uji runtime pada enam tile owner sama memperlihatkan nilai selector 5 dipakai untuk pengali 200%. (HB) pengamatan maksimal lima mencerminkan batas setup/board Story Mode, sedangkan field +0x0B secara umum dapat menyimpan lima successor; falsifier: satu board legal dengan enam tile berurutan owner sama menghasilkan rantai +0x0B=5 dan bonus/UI aktif pada enam tile. Keduanya HIPOTESIS K1; bukti statis yang ada hanya membuktikan kapasitas counter, bukan aturan clamp final atau multiplier.
 
 Karena itu, simpulan yang aman: **+0x0B = jumlah successor valid; maksimum yang diizinkan loop ini lima successor (enam total)**. Apakah selector bonus benar-benar dibatasi 0–4 dan ukuran kelompok gameplay maksimum lima petak masih TIDAK TAHU, sampai helper/rantai runtime dibuktikan.
+
+
+## BB2 errata — penulis ketiga nilai action 8
+
+Census lengkap 65 store ke `participant_manager+0x2EB` menunjukkan satu direct immediate store lain yang sebelumnya belum disorot:
+
+- PC `0x800EF3CC`, enclosing function/function entry TIDAK TAHU pada census; instruksi store `sb a0,0x2eb(v0)`. Sebelum store, `0x800EF3C8 li a0,0x8`, sehingga ini adalah producer immediate nilai 8 (field base berasal dari `lw v0,-0x158c(a0)` di `0x800EF3BC`).
+- 12 instruksi sebelum store: `800EF39C nop; 800EF3A0 subu v0,v0,a0; 800EF3A4 addiu v0,v0,4; 800EF3A8 sw v0,0x2b4(a3); 800EF3AC lui a0,0x8014; 800EF3B0 lw v1,-0x158c(a0); 800EF3B4 li v0,9; 800EF3B8 sb v0,0x2e9(v1); 800EF3BC lw v0,-0x158c(a0); 800EF3C0 li v1,0xff; 800EF3C4 sw v1,0x348(v0); 800EF3C8 li a0,8`.
+
+Maka direct immediate write yang teridentifikasi kini: action byte 3 pada `FUN_800D9570/0x800DAA88`; action byte 8 pada `FUN_800EB434/0x800EC3A8`; dan action byte 8 pada `0x800EF3CC` dengan enclosing function belum terpetakan. Ini memperjelas bahwa pemetaan producer +0x2EB belum selesai: census berisi 65 writes, banyak yang menyalin +0x2E9 atau memakai register dinamis, dan function `0x800EF3CC` belum dilabeli. Action 3/8 tidak boleh disebut dua producer tunggal.
+
+**Update status BB2:** tetap SEBAGIAN K4 untuk blok transaksi, karena writer coverage dan identitas aksi masih belum selesai. Hipotesis HA/HB mengenai 3/8 sebagai bangun/upgrade tetap belum dipastikan; hipotesis alternatif yang harus diuji adalah beberapa writer nilai 8 merupakan state/flow yang berbeda dan masuk dispatch code yang sama hanya berdasarkan byte action. Falsifier untuk kesatuan semantik 8: runtime/trace menunjukkan 0x800EC3A8 dan 0x800EF3CC masuk caller/prompt/tile prerequisites yang berbeda atau hasil state yang berbeda. Untuk klaim bahwa keduanya satu aksi: konsistensi flow/UI/field effects di kedua producer dan dispatch menjadi bukti pendukung.
