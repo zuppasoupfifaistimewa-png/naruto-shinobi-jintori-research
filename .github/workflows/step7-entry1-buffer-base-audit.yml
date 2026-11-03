@@ -356,10 +356,12 @@ jobs:
             -preScript PreparePsxExe.java \
             -postScript ExportManagerEconomyWriters.java MAIN_EXE "$out/ay1-ay2-exe.tsv" \
             -postScript ExportTargetCallers.java "$out/az3-setter-direct-callers-main-exe.txt" 0x8001387C 0x80020D70 \
+            -postScript ExportTargetCallers.java "$out/bb2-action3-helper-callers-main-exe.txt" 0x80013D80 0x800160D4 0x80014FA8 0x800143AC \
             -postScript ExportCallWindows.java "$out/az3-setter-call-windows-main-exe.tsv" 0x8001387C \
+            -postScript ExportCallWindows.java "$out/bb2-action3-helper-call-windows-main-exe.tsv" 0x80013D80 0x800160D4 0x80014FA8 0x800143AC \
             -postScript ExportFunctionDetail.java "$out/az3-setter-caller-main-exe-detail.txt" 0x80012C70 0x80012A44 0x80012A54 0x8001387C 0x800138EC \
             -postScript ExportFunctionDetail.java "$out/az3-starting-balance-global-detail.txt" 0x80070C80 0x80070C88 \
-            -postScript ExportFunctionDetail.java "$out/az3-main-exe-economic-helper-detail.txt" 0x800154E0 0x8001552C 0x80015768 0x800157E4 0x800148DC 0x800171A4 0x80020D70 0x80028C08 0x80029FF0 0x80032A98 0x8003460C 0x8001A63C 0x8001BA88 0x8001BCE8 0x800322F4 0x80032E58 0x8001BA58 0x8001AAD4 0x8001ABEC 0x8001AB60 0x8001ABC0 0x8001AC10 0x8001AC7C 0x8001AC5C 0x8001AD7C 0x8001AD64 0x80100A10 0x80100A78 0x8010109C 0x80101168 0x80101814 \
+            -postScript ExportFunctionDetail.java "$out/az3-main-exe-economic-helper-detail.txt" 0x800154E0 0x8001552C 0x80015768 0x800157E4 0x800148DC 0x800171A4 0x80020D70 0x80028C08 0x80029FF0 0x80032A98 0x8003460C 0x8001A63C 0x8001BA88 0x8001BCE8 0x800322F4 0x80032E58 0x8001BA58 0x8001AAD4 0x8001ABEC 0x8001AB60 0x8001ABC0 0x8001AC10 0x8001AC7C 0x8001AC5C 0x8001AD7C 0x8001AD64 0x80013D80 0x800160D4 0x80014FA8 0x800143AC 0x80100A10 0x80100A78 0x8010109C 0x80101168 0x80101814 \
             -postScript ExportFunctionDetail.java "$out/ba1-resource-parser-main-exe.txt" 0x800129E4 0x800132D4 0x8002C9C4 0x8002CF9C 0x8002DBB8 0x8002DEC4 0x8002D7F8 0x8002DFE4 0x8002D00C 0x8002D4E4 0x80035B08 \
             -postScript ExportFunctionDetail.java "$out/ba1-selector-callers-main-exe.txt" 0x80012780 0x80012A14 0x80012A80 0x80012EAC 0x8003460C \
             -postScript ExportBA1SelectorMatrix.java "$out/ba1-mode-state-resource-selector.tsv" \
@@ -368,7 +370,7 @@ jobs:
             > "$out/ghidra-exe-headless.log" 2>&1
           exe_rc=$?
           set -e
-          if [[ "$exe_rc" -ne 0 || ! -s "$out/ay1-ay2-exe.tsv" || ! -s "$out/az3-setter-direct-callers-main-exe.txt" || ! -s "$out/az3-setter-call-windows-main-exe.tsv" || ! -s "$out/az3-setter-caller-main-exe-detail.txt" || ! -s "$out/az3-starting-balance-global-detail.txt" || ! -s "$out/az3-main-exe-economic-helper-detail.txt" || ! -s "$out/ba1-resource-parser-main-exe.txt" || ! -s "$out/ba1-selector-callers-main-exe.txt" || ! -s "$out/ba1-selector-dat80070cd0-xrefs.csv" || ! -s "$out/ba1-mode-state-resource-selector.tsv" ]]; then
+          if [[ "$exe_rc" -ne 0 || ! -s "$out/ay1-ay2-exe.tsv" || ! -s "$out/az3-setter-direct-callers-main-exe.txt" || ! -s "$out/az3-setter-call-windows-main-exe.tsv" || ! -s "$out/az3-setter-caller-main-exe-detail.txt" || ! -s "$out/az3-starting-balance-global-detail.txt" || ! -s "$out/az3-main-exe-economic-helper-detail.txt" || ! -s "$out/bb2-action3-helper-callers-main-exe.txt" || ! -s "$out/bb2-action3-helper-call-windows-main-exe.tsv" || ! -s "$out/ba1-resource-parser-main-exe.txt" || ! -s "$out/ba1-selector-callers-main-exe.txt" || ! -s "$out/ba1-selector-dat80070cd0-xrefs.csv" || ! -s "$out/ba1-mode-state-resource-selector.tsv" ]]; then
             {
               echo "status=FAILURE"
               echo "job=analyze-entry1-buffer-base"
