@@ -496,3 +496,36 @@ Rumus ini **bukan** cabang debit 3/8. Cabang 3/8 tetap memakai fee `u16(tile+0x1
 - Helpers: `FUN_80108EAC` (`+0xA18)), `FUN_80108EBC` (`+0xA1A)), `FUN_80108E1C/FUN_80108E54` (flag `+0xA14)), `FUN_80100DCC` (message token), `FUN_80102408` (reads current queued value), `FUN_80102600(8)` (removes/clears queued item 8).
 - Source text: `reports/stage1_economy/aq1-run-41557054116/attempt-1/bb2-d15a8-function-detail.txt`; blob SHA-256 Git blob ID `f07601490638a53e45fb40738ec200f107422129`. Caller graph: `reports/stage1_economy/aq1-run-41557054116/attempt-1/bb2-d15a8-direct-callers.txt`.
 - AQ1 run `41557054116`: STATUS=SUCCESS, JOB=analyze-entry1-buffer-base, JOB_ID=125658376355, SOURCE_SHA=`28b3c7380f483e0e158e6089851d7d4a4e72e3e8`, EXIT_CODE=0; summary `reports/stage1_economy/aq1-run-41557054116/attempt-1/ACTIONS_RUN_SUMMARY.txt`.
+
+## BB2 errata — producer dynamic untuk action byte 8
+
+### Temuan jalur +0x2E9 ke +0x2EB di FUN_800EA18C
+
+Census 65 store ke participant manager +0x2EB menunjukkan tiga store immediate yang jelas untuk nilai debit: action 3 pada PC 0x800DAA88 (FUN_800D9570), action 8 pada 0x800EC3A8 (FUN_800EB434), dan action 8 pada 0x800EF3CC (function entry TIDAK TAHU). Tetapi ada jalur producer tidak langsung yang juga dapat mengirim nilai 8 ke dispatcher:
+
+1. FUN_800EA18C memanggil FUN_80102408() dan menyimpan hasil antrean ke iVar4.
+2. Saat iVar4 == 1, fungsi memilih tile melalui rantai link, menyimpan indeks tile ke manager+0x2E8 pada PC 0x800EA648, lalu menulis manager+0x2E9 = 8 pada PC 0x800EA654. Manager+0x2EA menerima hasil FUN_800C2570(3) pada PC 0x800EA660–0x800EA664.
+3. Pada pemanggilan/fase berikutnya, saat iVar4 == 3, kode membaca manager+0x2E9 pada PC 0x800EAA38, menyalinnya ke manager+0x2EA pada 0x800EAA40, dan menyalinnya ke manager+0x2EB pada 0x800EAA44. Sesudah itu manager+0x2E9 diubah menjadi 0x0F pada 0x800EAA50, sehingga nilai yang masuk +0x2EB adalah nilai sebelum sentinel 0x0F ditetapkan.
+4. Nilai 8 ini memasuki switch FUN_800D15A8 yang sama dengan nilai 3/8; tidak ada bukti dalam blok tersebut bahwa 8 mempunyai operasi debit berbeda dari case 3.
+
+Jalur ini melengkapi bukti bahwa nilai +0x2EB=8 tidak hanya berasal dari store literal. Namun hubungan lintas pemanggilan/frames dan prasyarat queue-state harus diuji runtime untuk memastikan tidak ada writer lain yang mengganti +0x2E9 sebelum event iVar4==3.
+
+### Pemisahan producer langsung dan tidak langsung
+
+| Kelas producer | PC | Nilai yang disalurkan | Bukti |
+|---|---:|---:|---|
+| Immediate direct | 0x800DAA88 | 3 | li v0,3; sb v0,0x2EB(v1) dalam FUN_800D9570. |
+| Immediate direct | 0x800EC3A8 | 8 | li v0,8; sb v0,0x2EB(v1) dalam FUN_800EB434. |
+| Immediate direct | 0x800EF3CC | 8 | li a0,8; sb a0,0x2EB(v0); function entry TIDAK TAHU. |
+| State-copy path | 0x800EA654 → 0x800EAA44 | 8 candidate | +0x2E9=8 ditulis pada 0x800EA654, kemudian disalin ke +0x2EB pada cabang iVar4==3 di 0x800EAA44. |
+
+Catatan agar tidak salah menafsirkan: pemanggilan FUN_800BA9F8(8, tile) pada FUN_800D9570 adalah helper penggambaran/animasi tile; badannya hanya mengisi offset tampilan tile+0x4C..+0x66, bukan menulis manager +0x2E9/+0x2EA/+0x2EB. Jadi argumen 8 di pemanggilan itu bukan bukti action byte 8.
+
+### Hipotesis tambahan + falsifier
+
+| Hipotesis | Status | Falsifier |
+|---|---|---|
+| H8A — jalur FUN_800EA18C iVar4=1 lalu iVar4=3 merupakan satu rangkaian interaksi yang secara valid menyalurkan 8 ke +0x2EB | HIPOTESIS K2, didukung urutan store state dan salinan pada satu fungsi | Gugur bila runtime menunjukkan state +0x2E9 selalu diganti sebelum iVar4=3, atau penyalinan +0x2EB tidak terjadi pada satu alur input yang konsisten. |
+| H8B — direct writers 0x800EC3A8/0x800EF3CC adalah satu-satunya sumber action 8 yang relevan; jalur FUN_800EA18C adalah state UI/animasi lain | HIPOTESIS K1, masih mungkin karena queue phase dan pemanggilan antarframe belum diuji | Gugur jika runtime memaksa state +0x2E9=8 dari FUN_800EA18C lalu event iVar4=3 dan terbukti +0x2EB menjadi 8 sebelum masuk FUN_800D15A8. |
+
+**Update BB2:** tetap SEBAGIAN K4 untuk isi cabang transaksi, tetapi cakupan producer +0x2EB sekarang lebih lengkap: 65 write sites disensus, tiga direct immediate sites 3/8 teridentifikasi, dan satu state-copy route 8 ditelusuri. Belum semua 65 store dan semua kemungkinan jalur register/queue ditelusuri sampai asal input; label aksi, teks ID 0xBE, currency Chakra, dan Barrier Release tetap TIDAK TAHU.
