@@ -434,3 +434,65 @@ Perbedaan yang perlu dijaga: `+0x0E` berperan sebagai harga/angka dasar petak ne
 | `manager+0x922`, `manager+0x924` | tulis hasil `FUN_800B770C` sebelum/sesudah perubahan level | Nilai tile ekonomi pre/post. |
 
 **Putusan target A BB2:** fee operasi yang dipakai cabang action 3/8 adalah field `+0x1A`, dan fee tidak naik per level. Untuk tile contoh (record 4 Entry 630), fee statisnya 100 pada setiap pemanggilan; variasi fee antarpetak dibaca langsung dari record masing-masing. Label gameplay cabang (bangun, upgrade, atau operasi Barrier lain) belum dibuktikan, sehingga kesimpulan biaya Barrier per level secara literal tetap menunggu identitas aksi.
+
+
+## BB2 tambahan — positive-credit branch, rumus, dan pemisahan dari debit 3/8
+
+### Identitas cabang pemicu
+
+Pada event byte manager `+0x2EB`, cabang bernilai `1` dan `0x1D` masuk jalur terpisah dari cabang debit `3` dan `8`. Raw code `FUN_800D15A8`:
+
+- `0x800D4968`: set `DAT_80139F03 = 1` (phase/state awal kredit).
+- `0x800D4970`: panggil `FUN_80100DCC(0xBE)`.
+- `0x800D4978`: panggil `FUN_80100D14(1)`.
+- `0x800D4980`: panggil `FUN_80108EE8()`.
+
+`FUN_80100DCC` di `0x80100DCC` menerima parameter 16-bit dan menyimpannya sebagai ID pada object teks/UI `DAT_8013A1D8[0]`, lalu menyiapkan dan menampilkan jendela teks melalui helper UI. Maka **ID pesan 0xBE benar-benar dipakai oleh jalur kredit**. Namun teks Jepang/terjemahan pesan `0xBE` masih **TIDAK TAHU** karena tabel teks/byte string belum berhasil dipetakan ke entri itu. Jangan terjemahkan ID numerik menjadi label gameplay.
+
+### Rumus nilai kredit — terbukti langsung
+
+Setelah pemilihan tile oleh `FUN_800BBD9C()`, indeks tile disimpan di `DAT_8013EB20`. Untuk record tile tersebut, kode mengambil:
+
+- `L = (u16(tile+0x20) >> 8) & 0xF` (nibble level bits 8–11);
+- `B = u16(tile+0x1E)`;
+- `G = u16(tile+0x1C)`.
+
+Pada phase `DAT_80139F03 == 1`, raw code sekitar `0x800D5228–0x800D5314` menghitung `C = B + L*G`. Hasil dan saldo proyeksi ditulis ke object preview:
+- `FUN_80108EAC(C)` pada callsite `0x800D5288`, menyimpan C ke `DAT_8013A554+0xA18`;
+- `FUN_80108EBC(balance+ C)` pada callsite `0x800D530C`, menyimpan hasil saldo ke `DAT_8013A554+0xA1A`;
+- `FUN_80108E1C()` menyalakan flag preview `DAT_8013A554+0xA14` setelah cek `FUN_80108E94()`.
+
+Pada phase `DAT_80139F03 == 2`, state menunggu `manager+0x370 == 1`, membaca hasil lewat `FUN_80102408()`, menutup preview lewat `FUN_80108E54()`, dan jika commit diizinkan:
+- menulis `C` ke pending credit `manager+0x2EE + playerIndex*2`;
+- menulis saldo proyeksi `manager+0x51C = participantBalance(+0x04) + C`;
+- menulis `DAT_80139F03 = 0x14` dan memulai update UI berikutnya.
+
+Jadi rumus positif yang terbukti statis adalah:
+
+`CREDIT = u16(tile+0x1E) + (((u16(tile+0x20)>>8)&0xF) * u16(tile+0x1C))`.
+
+Rumus ini **bukan** cabang debit 3/8. Cabang 3/8 tetap memakai fee `u16(tile+0x1A)`, melakukan cek saldo dan menulis `-fee` ke pending debit. Kedua jalur memakai field dan tanda delta yang berbeda.
+
+### Tingkat bukti dan batas interpretasi
+
+| Klaim | Status |
+|---|---|
+| `+0x2EB=1/0x1D` mengaktifkan phase kredit 1 | TERBUKTI STATIS K4 |
+| Pesan/UI memakai ID `0xBE` | TERBUKTI STATIS K4 |
+| Nilai preview dan commit = `+0x1E + level×+0x1C` | TERBUKTI STATIS K4 |
+| Pending credit ditulis di `manager+0x2EE + player*2`, projected balance di `manager+0x51C` | TERBUKTI STATIS K4 |
+| Pesan `0xBE` berarti “Barrier Release/結界開放” | TIDAK TAHU |
+| Unit nilai kredit itu Chakra | TIDAK TAHU |
+| Identitas visual/gameplay dari event byte 1 dan 0x1D | TIDAK TAHU |
+
+**Putusan BB2:** tetap **SEBAGIAN**. Rumus debit 3/8 dan rumus kredit 1/0x1D sudah dibuktikan statis K4, tetapi label pesan/aksi dan identitas currency belum dapat dikonfirmasi; 65 store site `+0x2EB` juga belum seluruhnya ditrace sampai asal nilai. Jangan mengubah sebutan field/ID menjadi “chakra”, “bangun barrier”, atau “Barrier Release” tanpa bukti string/UI yang tepat.
+
+### Bukti raw yang dapat diperiksa
+
+- Dispatcher nilai kredit dan pesan: `0x800D4968–0x800D4980`.
+- Dispatcher debit 3/8 dan fee: `0x800D45D0–0x800D46F8` (fee read `0x800D4628`, pending debit write `0x800D46F8`).
+- Rumus kredit dan preview: `0x800D5228–0x800D531C`; helper write preview `FUN_80108EAC`, `FUN_80108EBC`, `FUN_80108E1C`.
+- Commit pending credit dan projected balance: phase 2 dalam dekompilasi `FUN_800D15A8`; writes `manager+0x2EE + player*2`, `manager+0x51C`, `DAT_80139F03=0x14`.
+- Helpers: `FUN_80108EAC` (`+0xA18)), `FUN_80108EBC` (`+0xA1A)), `FUN_80108E1C/FUN_80108E54` (flag `+0xA14)), `FUN_80100DCC` (message token), `FUN_80102408` (reads current queued value), `FUN_80102600(8)` (removes/clears queued item 8).
+- Source text: `reports/stage1_economy/aq1-run-41557054116/attempt-1/bb2-d15a8-function-detail.txt`; blob SHA-256 Git blob ID `f07601490638a53e45fb40738ec200f107422129`. Caller graph: `reports/stage1_economy/aq1-run-41557054116/attempt-1/bb2-d15a8-direct-callers.txt`.
+- AQ1 run `41557054116`: STATUS=SUCCESS, JOB=analyze-entry1-buffer-base, JOB_ID=125658376355, SOURCE_SHA=`28b3c7380f483e0e158e6089851d7d4a4e72e3e8`, EXIT_CODE=0; summary `reports/stage1_economy/aq1-run-41557054116/attempt-1/ACTIONS_RUN_SUMMARY.txt`.
