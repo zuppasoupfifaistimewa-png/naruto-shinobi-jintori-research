@@ -14,11 +14,11 @@ permissions:
 
 concurrency:
   group: naruto-bb3-h6-action-call-probe-release-v4
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   bb3-h6-action-call-probe:
-    name: BB3 16 H6 function-call launches on pinned PCSX-Redux release
+    name: BB3 40 frame-aligned H6 function-call launches on pinned PCSX-Redux release
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     container:
