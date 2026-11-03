@@ -1,0 +1,6 @@
+STATUS=TIDAK_TERSDIA\nreason=workflow did not create this output\n
+JOB=bb3-h6-action-call-probe-release
+JOB_ID=125647454203
+RUN_ID=41553653484
+SOURCE_SHA=889838f3b52a2211881ff64228dceaf22db11ba7
+EXIT_CODE=0
