@@ -632,3 +632,54 @@ Satu helper dalam jalur tersebut, external func_0x800143AC, belum dipetakan dala
 | H1D-B — beberapa source 0x1D adalah state transisi/akhir dan bukan pemicu credit yang sama | HIPOTESIS K1/K2; sejumlah PC berada pada bagian state machine yang berbeda | Gugur jika trace runtime menunjukkan masing-masing source berakhir pada dispatcher +0x2EB=0x1D dan menjalankan preview→commit credit state1→2 yang sama. |
 
 Putusan BB2: tetap SEBAGIAN. Perilaku debit 3/8 dan formula/pending credit sudah K4 statis. Audit kini membedakan immediate producer, queue producer, substate, dan copy ke event field. Producer origin untuk keseluruhan 65 store belum tertutup, serta teks token 0xBE, identitas gameplay untuk event 3/8 dan 1/0x1D, unit currency Chakra, serta nama Barrier Release semuanya tetap TIDAK TAHU.
+
+## BB2 penutup tambahan — pending credit terbukti masuk ke saldo Chakra kanonis
+
+### Pemroses antrean manager+0x2EE
+
+Direct-caller census Entry 1 membuktikan `FUN_800BE5D8` adalah caller langsung setter `FUN_8001387C` pada PC `0x800BEC98`. Decompilation function `FUN_800BE5D8` menunjukkan ia memproses empat slot signed-short `manager+0x2EE + playerIndex*2`:
+
+1. Bila pending slot bukan nol, fungsi mengambil saldo kerja participant `manager+0x04 + playerIndex*0x90` dan menginisialisasi state animasi perubahan saldo.
+2. Tanda pending membedakan operasi tambah dan kurang. Nilai absolut dipecah ke digit, lalu saldo kerja dinaikkan/diturunkan bertahap dalam satuan 1, 10, 100, 1000, atau 10000 sesuai digit yang sedang dianimasikan.
+3. Setelah tiap langkah, fungsi memanggil `FUN_8001387C(playerIndex, participantBalance)` dan membaca balik melalui `FUN_800138EC(playerIndex)`; hasil getter ditulis kembali ke mirror `participant+0x04`.
+4. Saat semua digit habis, fungsi mengosongkan slot pending `manager+0x2EE + playerIndex*2`.
+
+Jika bit sharing `func_0x80012AD0() & 0x1000` aktif, fungsi juga dapat menyalin pending delta ke peserta lain yang memiliki field identitas/kelompok sama pada `participant+0x0E`; hal ini merupakan aturan distribusi tim yang terpisah dari rumus nilai tile dan perlu tetap diperlakukan sebagai kondisi mode.
+
+### Hubungan setter ke field Chakra
+
+Raw/decompile `FUN_8001387C` (Main EXE):
+- PC `0x800138C4` membentuk base `0x80070EA0`;
+- PC `0x800138C8–0x800138DC` menghitung `playerIndex * 0xB4`;
+- PC `0x800138E0` menjalankan `sw a1,0x18(a0)`;
+- decompile: `*(int *)(&DAT_80070EB8 + playerIndex * 0xB4) = value`, dengan validasi indeks `<4` dan clamp `-9999..99999`.
+
+Getter `FUN_800138EC` membaca field yang persis sama pada `0x80070EA0 + playerIndex*0xB4 + 0x18`. Audit AZ3 yang sudah ada mengidentifikasi field PlayerRecord `+0x18` sebagai saldo Chakra kanonis; participant `+0x04` adalah saldo kerja/shadow yang disinkronkan lewat getter/setter. Dengan demikian rantai kredit positif kini tertutup secara statis:
+
+`FUN_800D15A8 state 1/2 → C=tile+0x1E+level×tile+0x1C → pending manager+0x2EE → FUN_800BE5D8 → FUN_8001387C → PlayerRecord+0x18 (Chakra)`.
+
+Jadi jumlah Chakra yang dikreditkan oleh cabang positif tersebut adalah `C = u16(tile+0x1E) + (((u16(tile+0x20)>>8)&0xF) * u16(tile+0x1C))`, untuk petak yang dipilih dan level bits 8–11 pada saat perhitungan. Ini terkonfirmasi K4 statis, bukan runtime K5 untuk rute kredit.
+
+### Batas identitas peristiwa
+
+| Pernyataan | Status |
+|---|---|
+| Nilai rumus `C` ditampilkan sebagai preview dan disimpan sebagai pending positif | TERBUKTI K4 |
+| Pending positif diproses ke PlayerRecord+0x18, saldo Chakra kanonis | TERBUKTI K4 |
+| `manager+0x2EE` adalah antrean perubahan saldo bertanda; positif menambah dan negatif mengurangi | TERBUKTI K4 |
+| Pesan token `0xBE` menampilkan label Jepang `結界開放` | TIDAK TAHU |
+| Event `+0x2EB=1/0x1D` adalah Barrier Release, bukan aksi tile lain | TIDAK TAHU |
+| Nilai `C` tersebut merupakan hasil Barrier Release secara spesifik | TIDAK TAHU sampai label/aksi pemicunya dipetakan |
+
+Dua hipotesis tetap terbuka, dengan falsifier:
+- **HR1:** event `+0x2EB=1/0x1D` dan message token `0xBE` adalah Barrier Release yang mengkredit `C` Chakra. Gugur jika tabel pesan/UI membuktikan token `0xBE` bukan `結界開放`, atau gameplay normal dengan label itu tidak memasuki state 1→2 ini.
+- **HR2:** event yang sama adalah aksi lain (misalnya klaim/cashout petak) yang mengkredit `C` Chakra. Gugur jika tabel pesan/UI yang cocok atau pengamatan gameplay normal menghubungkan token `0xBE` dan state 1→2 secara langsung ke `結界開放`.
+
+**Putusan BB2 setelah bukti setter:** formula Chakra dan jalur debit/pending kini K4 statis. BB2 masih **SEBAGIAN**, karena identitas Barrier Release/action, teks token `0xBE`, dan asal seluruh store action byte belum tertutup. Jangan ganti TIDAK TAHU dengan nama aksi yang hanya diduga.
+
+### Bukti primer
+
+- Caller/func detail `FUN_800BE5D8`, termasuk direct setter caller PC `0x800BEC98`: `reports/stage1_economy/aq1-run-41559535429/attempt-1/az3-setter-direct-callers-entry1.txt`, blob SHA `fdf8e77b8a18496bc1941c9485cbe336f0eb131e`.
+- Setter/getter Main EXE: `reports/stage1_economy/aq1-run-41559535429/attempt-1/az3-setter-caller-main-exe-detail.txt`, blob SHA `35a20f7f527f2f4c0a09d14792653029adcf508e`.
+- Penetapan field +0x18 sebagai saldo Chakra kanonis dan participant+0x04 sebagai shadow telah tercatat di `reports/stage1_economy/AZ0_AZ3_FINAL_STATUS_2026-11-02.md`.
+- Static Actions run `41559535429`: STATUS=SUCCESS; JOB=`analyze-entry1-buffer-base`; JOB_ID=`125666521042`; SOURCE_SHA=`424743337e525da13d8a376aaede756c0b7f1400`; EXIT_CODE=`0`. Summary: `reports/stage1_economy/aq1-run-41559535429/attempt-1/ACTIONS_RUN_SUMMARY.txt`.
