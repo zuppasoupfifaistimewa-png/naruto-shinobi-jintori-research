@@ -588,3 +588,47 @@ Dengan demikian candidate dynamic action byte `8` pada `+0x2EB` berasal dari `+0
 - Changed files from publication commit: 52 text/TSV files under `reports/stage1_economy/aq1-run-41559535429/attempt-1/`.
 
 **Putusan BB2 setelah koreksi:** tetap SEBAGIAN. Dynamic source action8 lebih jelas, namun producer `+0x2E9/+0x2EA` lain belum seluruhnya di-origin trace; makna UI action dan unit currency masih TIDAK TAHU.
+
+## BB2 errata — lebih banyak sumber queued-state untuk event +0x2EB
+
+### Batas census
+
+Pada export fungsi Entry 1 yang digunakan oleh AQ1 run 41559535429, ditemukan 65 store ke participant-manager +0x2EB, 95 store ke +0x2E9, dan 11 store ke +0x2EA di dalam fungsi yang dipilih/diekspor. Angka tersebut adalah coverage dari function set audit ini, bukan klaim seluruh ROM telah dipindai menyeluruh. Karena sebagian event ditetapkan lewat pola copy +0x2E9 → +0x2EB, direct immediate store 3/8 bukan satu-satunya jalan yang bisa mencapai dispatcher.
+
+### Sumber antrian nilai 8
+
+Selain dynamic route FUN_800EA18C yang sudah dijelaskan di atas, dua producer antrean lain yang terverifikasi statis:
+
+| Fungsi | PC | Byte yang ditulis | Instruksi/context |
+|---|---:|---|---|
+| FUN_800D15A8 | 0x800D3334 | manager+0x2E9=8 | 0x800D332C li v0,8; 0x800D3330 jal FUN_80113F58; 0x800D3334 sb v0,0x2E9(a0) (delay slot call). Ini menyiapkan queue-state, bukan direct write ke +0x2EB. |
+| FUN_800F3658 | 0x800F4CC8 | manager+0x2E9=8 | 0x800F4CC4 li v0,8; 0x800F4CC8 sb v0,0x2E9(v1). |
+| FUN_800F3658 | 0x800F4CD4 | manager+0x2EA=3 | 0x800F4CD0 li v0,3; 0x800F4CD4 sb v0,0x2EA(v1). Ini pasangan substate queue, bukan event action 3. |
+| FUN_800EA18C | 0x800EA654 | manager+0x2E9=8 | li v0,8; sb v0,0x2E9(v1). |
+| FUN_800EA18C | 0x800EA664 | manager+0x2EA=3 | Delay slot sesudah jal FUN_800C2570; konstanta 3 ditulis sebelum helper berjalan, bukan nilai balik helper. |
+
+Penting: +0x2E9=8 adalah queued state. Belum setiap callsite di atas dibuktikan mencapai +0x2EB=8 dalam urutan yang sama di runtime. Jalur EA18C memiliki bukti transfer berikutnya yang eksplisit: queue state iVar4==3 menyalin +0x2E9 ke +0x2EA dan +0x2EB di 0x800EAA40/0x800EAA44, kemudian mengganti +0x2E9 menjadi 0x0F. Untuk D15A8/F3658, ada state-copy/dispatch yang berkaitan di codebase, tetapi belum dibuktikan satu trace runtime untuk setiap cabang.
+
+### Sumber queued-state kandidat 0x1D untuk credit route
+
+Dua lokasi statis mengisi byte manager +0x2E9 dengan 0x1D:
+
+- FUN_800D15A8, PC 0x800D5400: setelah state memeriksa field manager +0x4CC dan projected balance +0x51C, instruksi li v0,0x1D; sb v0,0x2E9(v1).
+- FUN_800DC2E0, PC 0x800DD4A0: salah satu kondisi pada branch status manager +0x4F0<0, daftar/kelompok +0x4CC tidak kosong, dan func_0x80012AD0() & 1 == 0 mengisi +0x2E9=0x1D. Pada state machine yang sama, case 0x10 kemudian dapat menulis delta ke pending participant +0x2EE + player*2 dan menyalin +0x2E9 → +0x2EB di PC 0x800DC530 setelah helper/message path FUN_800C2FD8(0x25B). Ini menunjukkan rute queued-state 0x1D secara statis; interpretasi event final tetap tidak diberi nama gameplay.
+
+### Peran FUN_800D9570: menyalin state perintah
+
+Dalam FUN_800D9570, hasil FUN_80102408() dipakai sebagai selector beberapa cabang. Cabang seperti uVar6==7, 3, 1, 0, dan 2 membaca manager +0x2EA, menyalinnya ke +0x2E9, melakukan update peserta/tile, lalu melalui FUN_800C2FD8(0x25F) menyalin nilai +0x2E9 ke +0x2EB sebelum menandai +0x2E9=0x12. Ini menguatkan bahwa +0x2EA dan +0x2E9 adalah tahap perintah/queue; nilainya tidak boleh otomatis diberi arti aksi gameplay hanya karena kebetulan 3 atau 8.
+
+Satu helper dalam jalur tersebut, external func_0x800143AC, belum dipetakan dalam export ini. Oleh karena itu asal lengkap semua nilai register yang mengalir ke +0x2EA/+0x2E9 belum tertutup.
+
+### Hipotesis dan falsifier yang tersisa
+
+| Hipotesis | Status | Falsifier |
+|---|---|---|
+| H8A — queued-state +0x2E9=8 dari D15A8/F3658/EA18C adalah jalur-jalur berbeda yang akhirnya mengirim event 8 ke dispatcher bila fase/transisi berikutnya berhasil | HIPOTESIS K2; dukungan dari direct state writes dan transfer EA18C yang terbukti | Gugur untuk suatu jalur jika runtime menunjukkan queue phase berakhir/diganti sebelum salinan ke +0x2EB, atau +0x2EB tidak bernilai 8 ketika dispatcher membaca event. |
+| H8B — hanya sebagian queue-state 8 yang benar-benar mencapai case debit 8; sisanya state UI/animasi atau event lanjutan yang berbeda | HIPOTESIS K2; didukung adanya beberapa phase dan perubahan sentinel | Gugur jika trace runtime setiap source menghasilkan +0x2EB=8 tepat sebelum switch dispatcher dan selalu mengeksekusi block debit yang sama. |
+| H1D-A — queued-state +0x2E9=0x1D dari D15A8/DC2E0 berakhir pada credit branch 1/0x1D | HIPOTESIS K2; alur copy DC2E0 ke +0x2EB ditunjukkan statis; hubungan D15A8 per case belum seluruhnya dipastikan | Gugur jika runtime menunjukkan state berubah sebelum copy atau dispatch byte bukan 0x1D. |
+| H1D-B — beberapa source 0x1D adalah state transisi/akhir dan bukan pemicu credit yang sama | HIPOTESIS K1/K2; sejumlah PC berada pada bagian state machine yang berbeda | Gugur jika trace runtime menunjukkan masing-masing source berakhir pada dispatcher +0x2EB=0x1D dan menjalankan preview→commit credit state1→2 yang sama. |
+
+Putusan BB2: tetap SEBAGIAN. Perilaku debit 3/8 dan formula/pending credit sudah K4 statis. Audit kini membedakan immediate producer, queue producer, substate, dan copy ke event field. Producer origin untuk keseluruhan 65 store belum tertutup, serta teks token 0xBE, identitas gameplay untuk event 3/8 dan 1/0x1D, unit currency Chakra, serta nama Barrier Release semuanya tetap TIDAK TAHU.
