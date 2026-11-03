@@ -324,6 +324,7 @@ jobs:
           test -n "$JOB_ID" || JOB_ID="TIDAK TAHU"
           STATUS="$(sed -n 's/^STATUS=//p' "$out/CE3_H6_CREDIT_SUMMARY.txt" | head -n 1)"; test -n "$STATUS" || STATUS="INCOMPLETE"
           RC="$(sed -n 's/^CE3_SCRIPT_EXIT_CODE=//p' "$out/CE3_SCRIPT_EXIT_CODE.txt" | head -n 1)"
+          test -n "$RC" || RC="$(sed -n 's/^CE3_WORKFLOW_SCRIPT_PROCESS_EXIT=//p' "$out/CE3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt" | head -n 1)"
           test -n "$RC" || RC="$(sed -n 's/^SMOKE_EXIT_CODE=//p' "$out/CE3_PCSX_RELEASE_MANIFEST.txt" | head -n 1)"
           test -n "$RC" || RC="TIDAK TAHU"
           {
