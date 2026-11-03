@@ -284,6 +284,9 @@ local function initTest()
   if tileCount <= TILE_INDEX or tileCount > 512 then error("TILE_COUNT_INVALID="..tileCount) end
   if playerCount < 2 or playerCount > 4 then error("PLAYER_COUNT_LT_TWO_OR_INVALID="..playerCount) end
   tile = tileBase + TILE_INDEX * TILE_STRIDE
+  for p = 0, 3 do
+    poke8("test_isolated_team_p"..p, manager + p * 0x90 + 0x0E, 0xA0 + p)
+  end
   local base = rw(tile + 0x1E)
   local step = rw(tile + 0x1C)
   local tile20 = rw(tile + 0x20)
