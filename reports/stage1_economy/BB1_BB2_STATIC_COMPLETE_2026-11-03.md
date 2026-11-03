@@ -354,3 +354,34 @@ Jadi temuan kuatnya adalah **action byte 1/0x1D → pemilihan tile → preview n
 Direct call `FUN_800D15A8` tervalidasi dari `FUN_800F3658` pada PC `0x800F5DAC`; `FUN_800EB434` juga dipanggil `FUN_800F3658` di `0x800F5CF8`. Untuk `FUN_800D9570`, callsite `0x800F5E1C` tervalidasi sebagai raw JAL namun enclosing caller function ditandai UNMAPPED pada census; jangan menyebut caller-nya sebagai `FUN_800F3658`.
 
 **Putusan BB2 setelah run ini:** tetap SEBAGIAN. Perilaku debit action3/8 dan rantai preview→pending-credit kini K4 secara statis; pemetaan nama action, identitas currency, Barrier Release, dan penelusuran semua 65 producer masih belum tuntas.
+
+
+## BB1 penutup — helper pengali + batas selector terbukti
+
+Run statis AQ1 `41555549917` mengekstrak fungsi Main EXE `FUN_800B770C` dengan dekompilasi dan instruksi mentah. Fungsi menerima indeks tile (a0), menghitung record `tile = base + index*0x124`, lalu membaca `lbu tile+0x0B` (PC `0x800B7730`). Instruksi `sltiu v0,v1,5` pada `0x800B7738` diikuti `beq v0,zero,0x800B7798` pada `0x800B773C`; jika selector >=5 fungsi kembali dengan v0=0. Hanya 0–4 dapat masuk jump table pada `0x800B7744–0x800B7758`.
+
+Untuk selector sah, base H yang dibaca ialah `u16(tile + 0x10 + ((u16(tile+0x20)>>7)&0x1E))`. Lima target tabel mengimplementasikan:
+
+| `tile+0x0B` | Instruksi/fungsi | Hasil | Pengali |
+|---:|---|---:|---:|
+| 0 | return `H` | `H` | 100% |
+| 1 | `H*0xC / 10` | `H*12/10` | 120% |
+| 2 | `H*0xF / 10` | `H*15/10` | 150% |
+| 3 | `H*0x12 / 10` | `H*18/10` | 180% |
+| 4 | `H<<1` | `H*2` | 200% |
+| >=5 | early return, nilai v0 dari `sltiu` = 0 | 0 | tidak diterapkan |
+
+Ini menutup selisih batas yang terdeteksi pada loop penghitung `FUN_800BE0E4`: loop dapat secara lokal menulis hingga lima successor (+0x0B=5), tetapi helper nilai ekonomi secara eksplisit menolak selector 5 atau lebih. Jadi rentang ekonomi yang benar-benar diterima adalah 0–4, cocok dengan kelompok 1–5 petak dan pengali 100/120/150/180/200% dari observasi pengguna. Ini bukan sekadar hipotesis clamp lewat helper lain; pemeriksaan nilai dan pemetaan multiplier berada langsung di fungsi pemakai +0x0B.
+
+**Putusan BB1 final:** TUNTAS statis K4. Rumus nilai ekonomi per petak terpetakan: `H = u16(tile + 0x10 + ((u16(tile+0x20)>>7)&0x1E))`; `V = floor(H * [10,12,15,18,20][tile+0x0B] / 10)` (untuk selector 4 implementasinya shift-left satu; rentang nilai integer positif sama). Selector 5+ menghasilkan 0. Uji aritmetika contoh H=50/60/70: selector0 = 50/60/70; selector1 = 60/72/84; selector2 = 75/90/105; selector3 = 90/108/126; selector4 = 100/120/140. Cocok dengan contoh pengguna, tanpa memaksakan angka pengamatan di luar bukti.
+
+### Bukti raw yang dapat diperiksa
+
+- Baca selector dan batas: `0x800B7730 lbu v1,0x0B(v0)`; `0x800B7738 sltiu v0,v1,5`; `0x800B773C beq v0,zero,0x800b7798`.
+- Tabel target: `0x800B7744–0x800B7758` (jump table; dispatch berdasarkan selector).
+- Kasus 0 dan base H: `0x800B7790 addu v0,v0,v1`; `0x800B7794 lhu v0,0x10(v0)`.
+- Kasus 1: `0x800B77DC–0x800B7804`, multiplier 12/10.
+- Kasus 2: `0x800B7844–0x800B784C`, multiplier 15/10.
+- Kasus 3: `0x800B788C–0x800B7898`, multiplier 18/10.
+- Kasus 4: `0x800B78D0–0x800B78DC`, multiplier 2.
+- Sumber raw/decompile: `reports/stage1_economy/aq1-run-41555549917/attempt-1/entry1-helper-function-detail.txt`, fungsi DATA.BIN context target `800B770C`; alamat target relatif pada mapping resource entry 1. Entry 1 helper merupakan referensi pembanding; fungsi ekonomi yang dihitung di Main EXE tetap sama perilakunya, sedangkan pemetaan resource entry 1 diverifikasi sebelumnya.
