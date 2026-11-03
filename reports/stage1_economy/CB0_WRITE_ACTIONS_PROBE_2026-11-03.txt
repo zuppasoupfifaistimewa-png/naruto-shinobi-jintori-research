@@ -1,0 +1,3 @@
+CB0 WRITE/ACTIONS PROBE
+Purpose: verify text-only repository write and push-triggered Actions.
+No ROM, BIOS, savestate, RAM dump, Memory Card, video, frame, or binary data.
