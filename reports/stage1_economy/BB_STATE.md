@@ -6,7 +6,7 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 
 | Tahap | Status | Kelas bukti | Ringkasan dan batas |
 |---|---|---|---|
-| BB1 | TUNTAS dalam cakupan statis | K4 | Semua enam direct byte store +0x0B Entry 1 telah dipilah. Hanya dua menulis record petak di DAT_8013EA84 + index×0x124; empat lainnya menulis objek selector DAT_8013A680. Perilaku statis +0x0B ialah nilai/status rantai tile type 5 per owner; nama gameplay kanonik tetap TIDAK TAHU. Resource 630: 22 record; mapping empat snapshot H6 cocok 1.760/1.760 field. |
+| BB1 | SEBAGIAN — inti semantik statis terbukti | K4 untuk hitung rantai tertaut; geometri tetangga belum terbukti | Semua enam direct store +0x0B dipilah. Dua store tile (0x800BE1B0/0x800BE330), empat store lain objek DAT_8013A680. FUN_800BE0E4 mengikuti indeks tautan +0x01, hanya type 5 dan owner bits12–15 sama, menulis jumlah tautan valid selain petak awal. Bukti koordinat/arah tetangga dari penulis +0x01 belum ada; nama gameplay +0x0B TIDAK TAHU. Resource index4 cocok 120/60/140/265/530; slot 1050 belum diamati. Laporan supplement commit e33537adbbf9e79739ca1c7e559ae19f1ea0cd3d. |
 | BB2 | TUNTAS dalam cakupan statis | K4 | Action byte 3/8 di FUN_800D15A8 membaca fee u16(tile+0x1A), memeriksa saldo participant+0x04, menyimpan pending delta −fee pada manager+0x2EE, menaikkan nibble tile+0x20 bits 8–11 dan 4–7 masing-masing satu, lalu memanggil FUN_800BB004 dan FUN_800BE464. Nama gameplay action 3/8 tetap TIDAK TAHU. |
 | BB3 | SEBAGIAN — runtime terbatas telah lolos; perluasan penuh masih berjalan | K5-terbatas pada subcakupan lama; K0 hasil matriks baru sampai diterbitkan | Run 41550406414: 16/16 PASS untuk tile 4, action 3/8, level 0–3, dua launch/kondisi; pending −100, kedua nibble +1, kedua refresh helper tercapai, Memory Card disposable tetap identik. Ini direct dispatch-block test pada H6 HIBRIDA, tanpa input kontrol. Perluasan baru run 41553653484 sedang menjalankan 40 launch: tile 4/7 × action 3/8 × level 0–4 × dua launch; snapshot RAM 2 MiB pre-poke ditangkap setelah post-load VSync 180 agar bisa dibandingkan dengan baseline frame-180. Belum ada TSV final atau exit code script. |
 
@@ -42,3 +42,10 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 - H6 adalah fixture HIBRIDA, bukan checkpoint target murni atau save Story Mode murni.
 - Adaptive-player automation tetap dijeda. Tidak ada perubahan ke Tile Duel atau repositori lain.
 - Tidak ada ROM/ISO, BIOS, savestate, Memory Card, raw RAM dump, screenshot/video/frame atau binary yang dikomit/dipublikasikan.
+
+
+## Langkah berikut
+
+1. BB1: selesai sebatas hitung rantai tertaut K4; tutup bila penulis/pembentuk link +0x01 membuktikan geometri tetangga. Laporan statis terbaru: reports/stage1_economy/BB1_BB2_STATIC_COMPLETE_2026-11-03.md (commit e33537adbbf9e79739ca1c7e559ae19f1ea0cd3d).
+2. BB2: petakan penulis participant_manager+0x2EB bernilai 3/8, pemicu positif-credit branch, dan dua hipotesis aksi beserta falsifier; jangan memberi nama aksi tanpa bukti.
+3. BB3: matriks baru 40 launch (tile4/7 × action3/8 × level0–4 × dua launch) telah disiapkan; validasi hasil, RAM 2 MiB frame180, Memory Card SHA, serta kode keluar proses script sebelum status K5.
