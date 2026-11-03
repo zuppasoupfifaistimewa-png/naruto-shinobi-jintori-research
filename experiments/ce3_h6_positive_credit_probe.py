@@ -41,6 +41,7 @@ def make_lua():
     return r'''
 if io.stdout then io.stdout:setvbuf("no") end
 local TILE_INDEX = tonumber(os.getenv("CE3_TILE_INDEX")) or 4
+local TILE_STRIDE = 0x124
 local LEVEL = tonumber(os.getenv("CE3_LEVEL")) or 0
 local EXPECTED_BASE = tonumber(os.getenv("CE3_EXPECTED_BASE")) or 84
 local EXPECTED_STEP = tonumber(os.getenv("CE3_EXPECTED_STEP")) or 70
