@@ -8,7 +8,7 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 
 | Tahap | Status | Kelas | Batas |
 |---|---|---|---|
-| BB1 — field petak +0x0B dan resource 630 | TUNTAS statis | K4 | Dua writer tile +0x0B dihitung sebagai jumlah link lanjutan pada rantai type-5 dengan owner sama. Geometri neighbor dan batas cluster gameplay masih TIDAK TAHU; lihat addendum. |
+| BB1 — field petak +0x0B dan resource 630 | TUNTAS statis | K4 | Dua writer tile +0x0B menghitung petak type-5 berurutan dengan owner sama melalui link +0x01. TSV 22 record membuktikan 22/22 link adalah tetangga ortogonal satu tile dan membentuk ring. +0x0B = jumlah petak lanjutan (ukuran rantai−1). Loop code memungkinkan sampai 5 successor (6 total termasuk awal); ini berbeda dari pengamatan pengguna maksimal 5, dan batas aktual gameplay perlu verifikasi runtime/helper. |
 | BB2 — transaksi action 3/8 dan producer +0x2EB | SEBAGIAN | K4 untuk blok transaksi/kredit; producer mapping belum lengkap | Debit fee, pending credit state-2, nibble updates dan refresh terbukti; dua producer langsung (3 dan 8) dilacak, tetapi satu store tambahan 8 di 0x800EF3CC belum punya function/caller yang terbukti. Label gameplay action 3/8 tetap TIDAK TAHU. |
 | BB3 — konfirmasi runtime blok transaksi action 3/8 | SEBAGIAN | K5-terbatas pada subcakupan lama | Run 41550406414: 16/16 PASS untuk tile4, action3/8, level0–3. Perluasan 40 launch tile4/7 × action3/8 × level0–4 dengan RAM capture frame180 masih berjalan di run 41553653484; bukan uji input gameplay Story Mode. |
 
@@ -165,7 +165,7 @@ Record resource index 4 memiliki `+0x0E=120`, `+0x10=60`, `+0x12=140`, `+0x14=26
 
 Perhitungan aritmetis contoh dasar 50/60/70 dengan faktor yang pengguna berikan (bukan hasil runtime): faktor 1.0 → 50/60/70; 1.2 → 60/72/84; 1.5 → 75/90/105; 1.8 → 90/108/126; 2.0 → 100/120/140. Ini konsisten dengan contoh 50→60/72 dan 75/90/105, tetapi belum mengukur perubahan pemilik/tautan di game.
 
-**Putusan BB1 rinci:** SEBAGIAN K4. Penghitungan rantai tertaut type-5/owner-same, semua enam direct store, konteks 12 instruksi untuk dua store tile, dan kecocokan data resource telah ditutup. Belum terbukti bahwa byte tautan +0x01 selalu merepresentasikan tetangga geometris; nama gameplay kanonik +0x0B tetap TIDAK TAHU.
+**Putusan BB1 rinci:** TUNTAS untuk sasaran audit statis K4. Penghitungan tautan type-5/owner-same, enam direct store, konteks 12 instruksi untuk dua store tile, serta 22/22 hubungan link ke tetangga ortogonal sudah ditutup. Label UI kanonik +0x0B tetap TIDAK TAHU. Loop lokal memungkinkan lima successor (enam petak total termasuk awal), bukan lima petak total; pengamatan pengguna bahwa kelompok maksimal lima belum dijelaskan dan perlu uji batas pada runtime atau helper multiplier.
 
 
 ## BB2 — penulis nilai 3/8, perubahan field, dan cabang kredit positif
@@ -300,8 +300,17 @@ Saya gunakan kembali TSV resource 630 yang sudah ada dari BA1 (tidak ada ekstrak
 | 20 | 21 | (199,222) → (199,186) | 0 | -36 | satu tile vertikal |
 | 21 | 0 | (199,186) → (199,150) | 0 | -36 | satu tile vertikal; tutup ring |
 
-Dengan disassembly `FUN_800BE0E4` yang mem-follow `+0x01`, memvalidasi tipe 5 dan owner bits 12–15 yang sama, menaikkan penghitung untuk setiap anggota berurutan, serta menulis penghitung ke anggota rantai, interpretasi HA kini didukung: `tile+0x0B = jumlah petak type-5 berurutan dengan owner sama selain dirinya sendiri (ukuran rantai−1)`, dibatasi lima anggota oleh loop. Link list resource memang membentuk ring spasial petak yang saling berdampingan. Ini bukan flood-fill 2D bebas; ini scan berurutan di perimeter 22-petak.
+Dengan disassembly `FUN_800BE0E4` yang mem-follow `+0x01`, memvalidasi tipe 5 dan owner bits 12–15 yang sama, menaikkan penghitung untuk setiap anggota berurutan, serta menulis penghitung ke anggota rantai, interpretasi HA kini didukung: `tile+0x0B = jumlah petak type-5 berurutan dengan owner sama selain dirinya sendiri (ukuran rantai−1)`, dibatasi lima successor oleh loop, yakni hingga enam petak total termasuk petak awal. Link list resource memang membentuk ring spasial petak yang saling berdampingan. Ini bukan flood-fill 2D bebas; ini scan berurutan di perimeter 22-petak.
 
 **Falsifier yang tersisa:** hipotesis HA akan gugur jika resource/board alternatif menampilkan link+0x01 melompati posisi tetangga atau jika runtime satu kelompok owner sama menunjukkan nilai +0x0B berbeda antar anggota yang seharusnya satu run. Hipotesis HB (tag/status tak terkait adjacency) gugur oleh kombinasi uji type/owner, counter traversal, dan 22/22 koordinat tetangga di resource ini. Pengujian contoh 50/60/70 tetap aritmetika terhadap faktor pengguna 100/120/150/180/200%, bukan observasi gameplay baru.
 
-**Putusan BB1:** TUNTAS dalam lingkup statis yang diminta, K4. Jalur perimeter adjacency, rule same-type/same-owner, dan counter size−1 didukung bukti code+data 22 record. Label naratif UI +0x0B tetap TIDAK TAHU; tidak diperlukan untuk menjawab struktur matematis selector.
+**Putusan BB1:** TUNTAS dalam lingkup statis yang diminta, K4. Jalur perimeter adjacency, rule same-type/same-owner, dan counter size−1 didukung bukti code+data 22 record. Batas counter yang tampak adalah 5 successor/6 petak total; beda dengan batas kelompok 5 pada pengamatan pengguna, sehingga batas gameplay final masih TIDAK TAHU dan bukan sesuatu yang boleh disimpulkan dari loop saja. Label naratif UI +0x0B tetap TIDAK TAHU.
+
+
+## Errata BB1 — hitungan batas kelompok (kode vs observasi)
+
+Pemeriksaan ulang instruksi di `0x800BE248–0x800BE298` memastikan kondisi loop adalah `s0 < 5` untuk **successor**. `s3` dimulai dari 0 dan bertambah pada delay slot `0x800BE298` untuk setiap successor yang lolos (maksimal lima); nilai itu ditulis ke +0x0B dan disebarkan ke `s3+1` record mulai dari petak awal. Dengan demikian, kode ini secara lokal dapat menghasilkan +0x0B=5, yaitu enam petak total dalam rantai. Itu bertentangan dengan observasi pengguna yang menyebut kelompok paling besar lima dan selector hanya 0–4.
+
+Hipotesis yang mungkin menjelaskan perbedaan: (HA) helper `FUN_800152C8` / `FUN_80015274` atau tahap pemilihan/validasi setelah pembentukan rantai membatasi nilai yang digunakan untuk faktor kelompok sampai selector 4; falsifier: uji runtime pada enam tile owner sama memperlihatkan nilai selector 5 dipakai untuk pengali 200%. (HB) pengamatan maksimal lima mencerminkan batas setup/board Story Mode, sedangkan field +0x0B secara umum dapat menyimpan lima successor; falsifier: satu board legal dengan enam tile berurutan owner sama menghasilkan rantai +0x0B=5 dan bonus/UI aktif pada enam tile. Keduanya HIPOTESIS K1; bukti statis yang ada hanya membuktikan kapasitas counter, bukan aturan clamp final atau multiplier.
+
+Karena itu, simpulan yang aman: **+0x0B = jumlah successor valid; maksimum yang diizinkan loop ini lima successor (enam total)**. Apakah selector bonus benar-benar dibatasi 0–4 dan ukuran kelompok gameplay maksimum lima petak masih TIDAK TAHU, sampai helper/rantai runtime dibuktikan.
