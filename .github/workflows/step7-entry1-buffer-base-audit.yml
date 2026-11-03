@@ -490,8 +490,8 @@ jobs:
             echo "aw1_manager_function_and_B44_inventory=PASS"
             echo "ay1_ay2_entry1_static_writer_and_caller_export=PASS"
             echo "ay1_ay2_main_exe_static_writer_and_caller_export=PASS"
-            echo "az3_direct_setter_census=PASS; both Entry1 and MAIN_EXE scans; caller FUN_80012C70 fully decompiled
-            echo "cd1_indirect_call_scan=PASS; bounded JALR target-register scan in EXE and Entry1 plus exact pointer scan across raw DATA.BIN; compressed DATA.BIN entries not disassembled""
+            echo "az3_direct_setter_census=PASS; both Entry1 and MAIN_EXE scans; caller FUN_80012C70 fully decompiled"
+            echo "cd1_indirect_call_scan=PASS; bounded JALR target-register scan in EXE and Entry1 plus exact pointer scan across raw DATA.BIN; compressed DATA.BIN entries not disassembled"
             echo "ay2_random_exe_raw_byte_check=PASS"
             echo "aw1_tile_field_function_inventory=PASS"
             echo "aw2_numeric_and_shiftjis_scan=PASS"
