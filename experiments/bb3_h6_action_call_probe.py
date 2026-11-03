@@ -64,6 +64,7 @@ local balanceOriginal = nil
 local balanceTestStart = nil
 local pendingBefore = nil
 local tile20Before = nil
+local stateGateBefore = nil
 local tileFee = nil
 local playerIndex = nil
 local cardMarker = "BB3_RAM_TEST_ONLY_NO_CARD_WRITE=1"
@@ -185,6 +186,7 @@ local function initTest()
     tileFee = rw(tile + 0x1A)
     tile20Before = rw(tile + 0x20)
     pendingBefore = s16(pendingAddr)
+    stateGateBefore = rb(0x80139EC8)
     local balStart = balanceOriginal
     if balStart < tileFee then
       balStart = math.max(1000, tileFee * 4)
@@ -202,6 +204,10 @@ local function initTest()
     tile20Before = staged
     pendingBefore = s16(pendingAddr)
     wb(actionAddr, action)
+    -- H6 can carry a nonzero 0x80139EC8 gate that diverts state-0 input flow
+    -- to the alternate branch before the action selector. Neutralize it only
+    -- inside this disposable emulator launch; preserve and report its source value.
+    wb(0x80139EC8, 0)
     wb(0x80139F03, 0)       -- state-machine phase, not the participant action byte
     wd(0x8013EBB0, 1)       -- bypass the idle guard for this isolated function probe
     wd(0x80139BD8, 1)
@@ -217,6 +223,9 @@ local function initTest()
     log("BB3_TILE_ARRAY_POINTER=" .. hex(tileBase))
     log("BB3_TILE4_ADDRESS=" .. hex(tile))
     log("BB3_ACTION_BYTE_BEFORE_TEST=" .. tostring(rb(actionAddr)))
+    log("BB3_STATE_GATE_80139EC8_H6=" .. tostring(stateGateBefore))
+    log("BB3_STATE_GATE_80139EC8_TEST=" .. tostring(rb(0x80139EC8)))
+    log("BB3_STATE_PHASE_80139F03_TEST=" .. tostring(rb(0x80139F03)))
     log("BB3_BALANCE_ORIGINAL_H6=" .. tostring(balanceOriginal))
     log("BB3_BALANCE_TEST_START=" .. tostring(balanceTestStart))
     log("BB3_PENDING_BEFORE=" .. tostring(pendingBefore))
