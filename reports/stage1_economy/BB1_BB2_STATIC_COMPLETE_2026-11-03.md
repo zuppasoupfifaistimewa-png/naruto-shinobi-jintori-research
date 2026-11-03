@@ -166,3 +166,56 @@ Record resource index 4 memiliki `+0x0E=120`, `+0x10=60`, `+0x12=140`, `+0x14=26
 Perhitungan aritmetis contoh dasar 50/60/70 dengan faktor yang pengguna berikan (bukan hasil runtime): faktor 1.0 → 50/60/70; 1.2 → 60/72/84; 1.5 → 75/90/105; 1.8 → 90/108/126; 2.0 → 100/120/140. Ini konsisten dengan contoh 50→60/72 dan 75/90/105, tetapi belum mengukur perubahan pemilik/tautan di game.
 
 **Putusan BB1 rinci:** SEBAGIAN K4. Penghitungan rantai tertaut type-5/owner-same, semua enam direct store, konteks 12 instruksi untuk dua store tile, dan kecocokan data resource telah ditutup. Belum terbukti bahwa byte tautan +0x01 selalu merepresentasikan tetangga geometris; nama gameplay kanonik +0x0B tetap TIDAK TAHU.
+
+
+## BB2 — penulis nilai 3/8, perubahan field, dan cabang kredit positif
+
+### Producer participant-manager +0x2EB
+
+Di antara direct store census pada run 41541667221, dua penulis dengan nilai immediate yang terlihat langsung adalah:
+
+| Nilai | PC store | Fungsi | Rantai instruksi penulis |
+|---:|---:|---|---|
+| 3 | `0x800DAA88` | `FUN_800D9570` | `0x800DAA80 lw v1,-0x158c(v0)`; `0x800DAA84 li v0,3`; `0x800DAA88 sb v0,0x2eb(v1)`. |
+| 8 | `0x800EC3A8` | `FUN_800EB434` | `0x800EC39C lui v0,0x8014`; `0x800EC3A0 lw v1,-0x158c(v0)`; `0x800EC3A4 li v0,8`; `0x800EC3A8 sb v0,0x2eb(v1)`. |
+
+Konteks 12 instruksi sebelum store 3: `800DAA58 li v0,6; 800DAA5C sb v0,-0x6145(v1); 800DAA60 lw v1,-0x158c(s0); 800DAA64 j 0x800daa88; 800DAA68 li v0,1 (delay slot); 800DAA6C jal 0x80102898; 800DAA70 li a0,1; 800DAA74 jal 0x801088a8; 800DAA78 nop; 800DAA7C lui v0,0x8014; 800DAA80 lw v1,-0x158c(v0); 800DAA84 li v0,3`. Konteks 12 instruksi sebelum store 8: `800EC378 sll v0,v0,3; 800EC37C addu v0,v0,v1; 800EC380 sll v0,v0,2; 800EC384 addu v0,v0,a2; 800EC388 lh v0,0x24(v0); 800EC38C nop; 800EC390 subu v0,v0,a0; 800EC394 addiu v0,v0,4; 800EC398 sw v0,0x2b4(a3); 800EC39C lui v0,0x8014; 800EC3A0 lw v1,-0x158c(v0); 800EC3A4 li v0,8`.
+
+Census juga menunjukkan penulis register-to-register lain (misalnya `0x800D9BE4` dan `0x800DA414` dalam `FUN_800D9570`, yang menyalin nilai dari manager+0x2E9), serta banyak store lain yang sumber nilainya belum diketahui. Jadi dua PC di atas adalah producer immediate 3/8 yang terverifikasi; belum terbukti bahwa hanya dua jalur itu yang dapat menyiapkan nilai 3/8 pada semua konteks.
+
+### Detail bersama cabang action 3 dan 8
+
+Keduanya masuk ke blok transaksi yang sama pada `FUN_800D15A8`:
+- `0x800D4470`: membaca byte action dari participant manager `+0x2EB`; cabang 3 dan 8 dialihkan ke blok pemilihan petak/transaksi yang sama.
+- `0x800D45D0`: `FUN_800BBD9C` memilih indeks petak; `0x800D45E0` menyimpan indeks terpilih di manager `+0x4A0`.
+- `0x800D4628`: baca `u16(tile+0x1A)` sebagai fee; `0x800D462C–0x800D4638` membandingkannya dengan field saldo participant `+0x04`; saldo kurang keluar sebelum transaksi.
+- `0x800D46F8`: tulis pending delta `-fee` pada manager `+0x2EE` milik peserta aktif (fee dibaca kembali dari tile+0x1A).
+- `0x800D4724–0x800D4764`: mask `0xF0FF` lalu tulis kenaikan satu pada nibble bits 8–11 tile+0x20.
+- `0x800D47F4–0x800D4834`: mask `0xFF0F` lalu tulis kenaikan satu pada nibble bits 4–7 tile+0x20.
+- Owner bits 12–15 di tile+0x20 tidak disentuh blok ini; tidak ada perubahan pemilik yang terbukti dari jalur bersama ini. Setelahnya `0x800D4840` memanggil `FUN_800BB004`, `0x800D4848` memanggil `FUN_800BE464` untuk refresh.
+
+### Hipotesis label gameplay dan falsifier
+
+| Hipotesis | Status | Falsifier yang membedakan |
+|---|---|---|
+| HA — action 3 = bangun Barrier, action 8 = upgrade Barrier | HIPOTESIS, K1 | Gugur jika pemetaan prompt/input pada writer `0x800DAA88` dan `0x800EC3A8` menunjukkan label/operasi terbalik atau bukan Barrier; atau jika tile sebelum/sesudah tidak menunjukkan transisi bangun lalu upgrade. |
+| HB — action 3 = upgrade Barrier, action 8 = bangun Barrier | HIPOTESIS, K1 | Gugur oleh bukti UI/prompt dan prasyarat tile yang menunjukkan urutan kebalikan HA. |
+| HC — salah satu action 3/8 adalah Barrier Release | LEMAH/tidak didukung, K1 | Cabang bersama yang sama justru membuat pending debit negatif dan menaikkan dua nibble level; model release yang menghasilkan kredit positif atau mengurangi level gugur bila cabangnya dibuktikan masuk ke blok bersama ini. Release dapat saja memakai state lain di luar cabang 3/8. |
+
+Tidak ada label gameplay yang dinaikkan menjadi fakta. Kecocokan struktur fee + level tidak cukup untuk menyebut action 3/8 sebagai bangun/upgrade; kemungkinan bahwa operasi ini jenis tile lain belum ditutup.
+
+### Cabang kredit positif yang memakai +0x1E/+0x1C
+
+Dispatcher `FUN_800D15A8` membaca state byte global `DAT_80139F03` di awal (raw load pada `0x800D15CC`, alamat efektif `0x80139F03`). Pada `case 1`, setelah `FUN_80100F64()==0` dan pemeriksaan flag peserta, fungsi mengambil petak terpilih `DAT_8013EB20`, lalu menghitung:
+
+```text
+reward = u16(tile+0x1E) + ((u16(tile+0x20) >> 8) & 0xF) * u16(tile+0x1C)
+```
+
+Raw PCs: baca level bits 8–11 `0x800D5258–0x800D5264`; baca +0x1C dan multiply `0x800D5268–0x800D5274`; baca +0x1E dan tambah `0x800D5278–0x800D5280`; panggilan `FUN_80108EAC(reward)` di `0x800D5288`; pembentukan `saldo participant + reward` dan panggilan `FUN_80108EBC` di `0x800D52D4–0x800D530C`; lalu `FUN_80108E1C` di `0x800D5314`.
+
+Pada `case 2` juga ada jalur reward/pending terpisah: jika `manager+0x370==1` dan hasil `FUN_80102408()==0`, nilai yang sama `tile+0x1E + level*tile+0x1C` dimasukkan ke akumulator manager+0x4D4 bila flag peserta memenuhi syarat, ditulis ke slot pending `manager+0x2EE + participant_index*2`, dan saldo proyeksi di `manager+0x51C` diperbarui. Jalur case 2 ini tidak boleh disamakan otomatis dengan cabang debit action 3/8.
+
+Satu-satunya direct caller tervalidasi untuk `FUN_800D15A8` pada direct-call scan Entry 1 adalah `FUN_800F3658`, site `0x800F5DAC`. Penulis/pemicu upstream yang mengatur `DAT_80139F03=1` (atau state 2) belum ditemukan; helper `FUN_80108EAC/80108EBC/80108E1C` belum diberi semantik Chakra secara independen di audit ini. Jadi rumus reward positif dan site call-nya K4; klaim bahwa ini pemicu Barrier Release atau reward Chakra masih TIDAK TAHU.
+
+**Putusan BB2 rinci:** SEBAGIAN K4. Blok transaksi fee/pending/dua nibble, dua penulis immediate action 3/8, dan cabang reward positif telah dipetakan. Nama gameplay, seluruh jalur register-based penulis +0x2EB, penulis state kredit, dan pembuktian bahwa resource positif itu Chakra/Barrier Release belum ditutup.
