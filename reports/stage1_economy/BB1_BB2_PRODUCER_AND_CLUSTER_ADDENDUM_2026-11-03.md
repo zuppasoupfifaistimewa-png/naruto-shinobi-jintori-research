@@ -134,3 +134,10 @@ Dua hipotesis yang saat ini belum bisa dipilih:
 | H-R2 | State-2 adalah payout/penyelesaian tile-action lain yang bukan Barrier Release. | Falsified bila gameplay normal dengan label 結界開放 secara berulang memicu state-2, memilih tile, dan menghasilkan pending credit sesuai rumus di atas, sementara aksi tile lain tidak. |
 
 Belum ada run yang menghubungkan label UI Jepang 結界開放, manager action byte, DAT_80139F03 state-2, dan perubahan saldo secara berurutan. Karena itu target B — identitas dan jumlah Chakra dari Barrier Release — masih **TIDAK TAHU**. Direct dispatch BB3 untuk action byte 3/8 tidak menguji state-2. B44 tetap bukan Barrier Release.
+
+
+## Errata geometri resource 630 — 3 November 2026
+
+Bagian awal addendum ini menyatakan geometri adjacency masih TIDAK TAHU karena `FUN_800BE0E4` tidak membaca koordinat. Itu benar untuk instruksi fungsi secara lokal, tetapi kurang lengkap bila dipakai untuk keseluruhan resource 630. Cross-check terpisah terhadap TSV `BA1_STAGE1_RESOURCE_630_RECORDS.tsv` memasangkan setiap link `+0x01` dengan koordinat `+0x22/+0x24`: **22/22** link bergerak tepat satu tile secara ortogonal (|dx|=40, dy=0 atau dx=0, |dy|=36), termasuk wrap 21→0 yang menutup perimeter. Maka untuk resource 630, relasi link ke tetangga ortogonal terbukti K4 dari kombinasi kode dan data. Generalisasi ke resource/board lain tetap belum dibuktikan.
+
+Pernyataan sebelumnya “tidak ada bukti geometri” harus dibaca sebagai “fungsi traversal sendiri tidak memeriksa geometri”, bukan sebagai penyangkalan cross-check koordinat resource 630. Kapasitas loop lima successor (hingga enam record termasuk awal) juga tetap berbeda dari pengamatan gameplay kelompok maksimum lima; batas gameplay akhir belum ditetapkan.
