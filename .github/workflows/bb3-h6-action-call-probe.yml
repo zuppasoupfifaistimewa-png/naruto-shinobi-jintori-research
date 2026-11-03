@@ -226,7 +226,7 @@ jobs:
           fi
           exit 0
 
-      - name: Run 16 isolated H6 function-call launches
+      - name: Run 20 isolated H6 function-call launches
         if: steps.h6_smoke.outputs.passed == 'true'
         shell: bash
         run: |
