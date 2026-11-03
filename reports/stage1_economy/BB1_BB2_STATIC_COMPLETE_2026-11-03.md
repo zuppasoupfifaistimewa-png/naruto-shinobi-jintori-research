@@ -529,3 +529,62 @@ Catatan agar tidak salah menafsirkan: pemanggilan FUN_800BA9F8(8, tile) pada FUN
 | H8B — direct writers 0x800EC3A8/0x800EF3CC adalah satu-satunya sumber action 8 yang relevan; jalur FUN_800EA18C adalah state UI/animasi lain | HIPOTESIS K1, masih mungkin karena queue phase dan pemanggilan antarframe belum diuji | Gugur jika runtime memaksa state +0x2E9=8 dari FUN_800EA18C lalu event iVar4=3 dan terbukti +0x2EB menjadi 8 sebelum masuk FUN_800D15A8. |
 
 **Update BB2:** tetap SEBAGIAN K4 untuk isi cabang transaksi, tetapi cakupan producer +0x2EB sekarang lebih lengkap: 65 write sites disensus, tiga direct immediate sites 3/8 teridentifikasi, dan satu state-copy route 8 ditelusuri. Belum semua 65 store dan semua kemungkinan jalur register/queue ditelusuri sampai asal input; label aksi, teks ID 0xBE, currency Chakra, dan Barrier Release tetap TIDAK TAHU.
+
+## BB2 errata koreksi delay-slot + hasil Step7 run75
+
+### Koreksi tepat untuk callsite FUN_800C2570
+
+Pada `FUN_800EA18C`, nilai `manager+0x2E9=8` memang disimpan di PC `0x800EA654`. Tetapi uraian lama yang menyebut `manager+0x2EA` menerima return dari `FUN_800C2570(3)` tidak tepat. Instruksi mentah menunjukkan:
+
+```asm
+800EA64C lw v1,-0x158c(s0)
+800EA650 li v0,0x8
+800EA654 sb v0,0x2e9(v1)
+800EA658 lw v1,-0x158c(s0)
+800EA65C li v0,0x3
+800EA660 jal 0x800c2570
+800EA664 _sb v0,0x2ea(v1)    # delay slot: simpan konstanta 3 sebelum callee mulai
+```
+
+Jadi `+0x2EA=3` adalah substate/phase yang ditetapkan oleh delay slot; bukan hasil return helper. `FUN_800C2570` tidak menerima argumen 3 dan dekompilasinya bertipe `void`.
+
+### Apa yang benar-benar dilakukan FUN_800C2570
+
+Raw/decompile pada Entry 1:
+
+- baca start tile `manager+0x2E8`, byte start-link/offset `manager+0x366`, dan batas iterasi `manager+0x2E7`;
+- ikuti indeks link petak berurutan (record link dari offset `+0x01` yang dipilih lewat offset per-pemain);
+- hitung langkah yang record tujuannya bukan type `6`;
+- hentikan traversal ketika mencapai petak type `3` atau penghitung mencapai batas `manager+0x2E7`;
+- simpan indeks tile akhir ke `manager+0x389` pada delay slot return `0x800C2678`.
+
+Jadi helper ini mengatur posisi tile yang ditelusuri dan menyimpan hasil posisi ke `+0x389`; ia tidak menulis saldo, fee, owner, atau teks UI. Caller yang terverifikasi mencakup `FUN_800EA18C` pada site `0x800EA660` dan `FUN_800EF9A4` pada site `0x800F0B58`.
+
+### Bukti dynamic action-8 setelah koreksi
+
+Urutan yang tetap terbukti statis adalah:
+
+1. `0x800EA654: sb 8, manager+0x2E9`; `0x800EA664: sb 3, manager+0x2EA` sebagai delay slot.
+2. `FUN_800C2570` menelusuri link tile dan menulis indeks akhir ke `manager+0x389`.
+3. Pada state antrean `iVar4==3` di pemanggilan/fase lanjut, `0x800EAA38` membaca `manager+0x2E9`, `0x800EAA40` menyalinnya ke `+0x2EA`, dan `0x800EAA44` menyalinnya ke `+0x2EB`.
+4. Setelah copy, `0x800EAA50` mengganti `+0x2E9` menjadi sentinel `0x0F`.
+
+Dengan demikian candidate dynamic action byte `8` pada `+0x2EB` berasal dari `+0x2E9=8` yang sudah diset lebih dulu, bukan dari return FUN_800C2570. Kontrol-flow ini K4 statis; konsistensi antar-pemanggilan belum dikonfirmasi oleh BB3 karena run 40-launch belum menghasilkan hasil.
+
+### Helper flag UI pesan
+
+`FUN_80100E9C` yang ikut diekspor pada Step7 run75 hanya mengubah field `DAT_8013A1D8+0xB8`:
+- parameter 0 → tulis 1 ke `+0xB8`;
+- parameter nonzero → tulis 0 ke `+0xB8`.
+
+`FUN_80100DCC` memanggil helper ini sebagai bagian dari setup message window. Fungsi tersebut bukan string-table lookup dan tidak memetakan token `0xBE` ke teks Jepang. Oleh karena itu arti pesan `0xBE` tetap TIDAK TAHU; tidak boleh diterjemahkan sebagai `結界開放` atau Barrier Release tanpa sumber string yang tepat.
+
+### Run statis Step7 41559535429
+
+`run-summary.txt` melaporkan `STATUS=SUCCESS`, `JOB=analyze-entry1-buffer-base`, `JOB_ID=125666521042`, `SOURCE_SHA=424743337e525da13d8a376aaede756c0b7f1400`, dan `EXIT_CODE=0`. Private input/project cleanup tercatat PASS. Ghidra tidak menjalankan game/emulator dan tidak mengirim gameplay input. Run mempublikasikan 52 file teks/TSV, termasuk export fungsi `FUN_800C2570` dan `FUN_80100E9C`.
+
+- Summary: `reports/stage1_economy/aq1-run-41559535429/attempt-1/ACTIONS_RUN_SUMMARY.txt`
+- Raw function evidence blob: `bb2-d15a8-function-detail.txt`, Git blob SHA `cd92a9edabca777a652fc61c83e0a46e73c6530d`.
+- Changed files from publication commit: 52 text/TSV files under `reports/stage1_economy/aq1-run-41559535429/attempt-1/`.
+
+**Putusan BB2 setelah koreksi:** tetap SEBAGIAN. Dynamic source action8 lebih jelas, namun producer `+0x2E9/+0x2EA` lain belum seluruhnya di-origin trace; makna UI action dan unit currency masih TIDAK TAHU.
