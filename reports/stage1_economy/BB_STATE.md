@@ -232,3 +232,47 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 - Run 41567828353 sedang menganalisis fungsi fokus FUN_800D15A8 serta helper selection/message di source SHA 723bd7181489b98238978d700293e38315d7f42e. Jangan tandai selesai sebelum output diterbitkan dan diperiksa.
 
 Langkah berikut yang masih diizinkan: analisis statis output fungsi fokus 41567828353; lanjutkan identifikasi nilai/action3 dan tabel teks pesan. Tidak perlu ulang BB1 atau BB3. Jangan menjalankan workflow adaptive-player atau Story Mode autoplay. Tidak ada binary privat atau savestate yang dipublikasikan.
+
+
+---
+
+## AUTHORITATIVE STATUS — BB1 → BB2 → BB3 setelah hasil run 41567828353 (3 November 2026)
+
+| Butir | Status | PC/SHA kunci | Putusan final saat checkpoint ini |
+|---|---|---|---|
+| BB1 | **TUNTAS K4 — statis** | `FUN_800BE0E4` / `FUN_800B770C`; Entry 630, 22 record | Writer +0x0B record tile dipisahkan dari writer selector; link traversal type-5/owner sama dan 22 record sudah ditabulasi. H lv1–lv4 cocok 60/140/265/530; lv5 statis 1050 belum diamati. Ketetanggaan geometris link +0x01 tetap TIDAK TAHU. Tidak diulang. |
+| BB2 | **SEBAGIAN K4 — mekanisme** | `FUN_800D15A8`; code 8 `FUN_800EB434/0x800EC3A8`; code 3 `FUN_800D9570/0x800DAA88`; reward `0x800D4970`; pending setter `FUN_800BE5D8 → FUN_8001387C` | Code 8 terbukti upgrade Barrier; fee = u16(tile+0x1A), tanpa faktor level yang terbukti. Code 3 belum bernama. Jalur reward positif C terkomit ke Chakra kanonis, tetapi Barrier Release dan teks pesan 0xBE TIDAK TAHU. Producer source +0x2EB belum tertutup tuntas. |
+| BB3 | **TUNTAS K5 TERBATAS — H6 HIBRIDA** | Fixture SHA `d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475`; run `41556732137`, job `125657970152` | Matriks 40/40 PASS, dua launch tiap tile4/7 × action3/8 × level0–4. RAM frame180 2 MiB SHA cocok pada semua kasus; Memory Card disposable tidak berubah. Ini direct function-call test, bukan kontrol Story Mode. Tidak diulang. |
+
+### BB1 — checkpoint
+
+- BB1 tetap TUNTAS K4 statis sesuai laporan utama dan addendum chain/cluster. Dua store record tile +0x0B adalah reset dan hasil penghitung link; empat store lain menyasar objek selector, bukan record tile.
+- +0x0B dihitung dari link +0x01 yang lolos syarat tile type 5 dan owner sama; fungsi tidak memeriksa geometri X/Y. Hubungan link dengan petak yang benar-benar bersebelahan tetap TIDAK TAHU.
+- Record 4 Entry 630: harga netral +0x0E=120; H per-level +0x10..+0x18 = 60/140/265/530/1050; fee +0x1A=100; +0x1C=70; +0x1E=84. Nilai lv5 belum menjadi observasi gameplay pengguna.
+- Detail sebelumnya: `reports/stage1_economy/BB1_BB2_PRODUCER_AND_CLUSTER_ADDENDUM_2026-11-03.md`.
+
+### BB2 — hasil terbaru run statis
+
+- Run `41567828353`; status `SUCCESS`; job `analyze-entry1-buffer-base`; job ID `125694264992`; source SHA `723bd7181489b98238978d700293e38315d7f42e`; exit code desimal `0`.
+- Commit publikasi output: `b59549ef519255b3d32034c8a3a040df14a6cec1`; 60 file teks/TSV. Summary: `reports/stage1_economy/aq1-run-41567828353/attempt-1/ACTIONS_RUN_SUMMARY.txt`.
+- `FUN_800EB434` memilih record type-5, owner aktif, level bits8–11 <4; membaca fee +0x1A; setelah pemilihan tile, producer menyimpan event 8 di PC `0x800EC3A8`. Ini bukti K4 bahwa event 8 = upgrade Barrier.
+- `FUN_800D9570` menyimpan event 3 di PC `0x800DAA88`. Cabangnya mengubah marker/field tile dan menjalankan helper transaksi, tetapi tidak ada prompt/teks/transisi normal yang cukup untuk membuktikan event 3 = bangun Barrier. Nama aksi = TIDAK TAHU.
+- Blok transaksi bersama di `FUN_800D15A8`: fee u16(tile+0x1A), pending signed delta `-fee` pada `manager+0x2EE + participant×2`, increment satu pada nibble tile+0x20 bits8–11 dan bits4–7, owner bits12–15 tidak berubah, refresh `FUN_800BB004` dan `FUN_800BE464`. Fee transaksi dibaca dari record, bukan dihitung sebagai fungsi level.
+- Cabang kredit positif: `C=u16(tile+0x1E)+level_bits8_11×u16(tile+0x1C)`; pending positif masuk `manager+0x2EE`, lalu `FUN_800BE5D8` memprosesnya dan setter `FUN_8001387C` menulis PlayerRecord+0x18 (Chakra kanonis). State/trigger `+0x2EB=1/0x1D` dan label pesan ID `0xBE` tidak teridentifikasi.
+- Hipotesis yang tersisa beserta falsifier dirinci di `reports/stage1_economy/BB2_41567828353_RESULT_2026-11-03.md`. Jangan menyebut event 3 sebagai build atau kredit positif sebagai Barrier Release tanpa bukti pembeda.
+- BB2 belum TUNTAS: source/caller untuk semua 65 store event dalam subset fungsi belum tertutup, store 8 di `0x800EF3CC` belum punya caller raw-JAL yang terpetakan, helper queued-state belum seluruhnya dipahami, dan teks token 0xBE belum didekode.
+
+### BB3 — hasil runtime terbatas
+
+- Run `41556732137`; job `bb3-h6-action-call-probe-release`; job ID `125657970152`; source SHA `296785adc21e399d8b4882cc75a9fda6c8539045`; status SUCCESS; exit code desimal `0`.
+- 40/40 PASS: dua launch per kombinasi tile4/7 × action3/8 × level0–4. Pending delta −100 (tile4) dan −120 (tile7); kedua nibble +0x20 naik satu pada uji direct dispatch.
+- RAM pra-poke: 2,097,152 byte pada post-load VSync180; hash cocok `5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7` untuk semua 40 kasus. Reference frame360 SHA `4d002df6902a6de6aa0724b4284da8decb1725cf693fd1ed80ce0132c45a7907` tidak dipakai karena snapshot uji adalah frame180.
+- Memory Card disposable 128 KiB tidak berubah; SHA sebelum/sesudah `fa43239bcee7b97ca62f007cc68487560a39e19f74f3dde7486db3f98df8e471`.
+- K5 hanya untuk direct function-call pada fixture H6 HIBRIDA. Tidak ada input controller, Story Mode autoplay, positive-credit test, atau validasi normal eligibility level4.
+
+### Langkah berikut
+
+1. BB1 dan BB3 tetap ditutup pada cakupan tertulis; jangan mengulang.
+2. Lanjutkan BB2 hanya untuk decode string/message token 0xBE dan pemetaan prompt/transisi normal event 3 serta event kredit 1/0x1D.
+3. Audit source/caller gap event +0x2EB, khususnya store `0x800EF3CC`; jangan menyimpulkan caller indirect tanpa bukti.
+4. Jangan jalankan workflow adaptive-player/autoplay. Jangan ubah Release/visibilitas repo. Jangan unggah binary privat atau savestate. B44 BUKAN Barrier Release.
