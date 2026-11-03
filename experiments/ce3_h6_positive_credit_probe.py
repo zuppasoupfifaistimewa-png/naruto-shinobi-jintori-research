@@ -222,8 +222,9 @@ local function onCallReturn(label)
     consumerCalls = consumerCalls + 1
     local _, _, pendingAddr = playerAddresses(activePlayer)
     local pending = s16(pendingAddr)
+    local _, _, _, chakraAddr = playerAddresses(activePlayer)
     log("CE3_CONSUMER_RETURN player="..activePlayer.." call="..consumerCalls.." pending="..pending..
-      " setter_calls="..setterCount.." chakra="..rd(playerAddresses(activePlayer)))
+      " setter_calls="..setterCount.." chakra="..rd(chakraAddr))
     if pending ~= 0 then
       if consumerCalls >= 160 then error("CONSUMER_PENDING_DID_NOT_DRAIN calls="..consumerCalls.." pending="..pending) end
       callFunction(0x800BE5D8, "BE5D8_P"..activePlayer.."_CALL"..(consumerCalls + 1))
