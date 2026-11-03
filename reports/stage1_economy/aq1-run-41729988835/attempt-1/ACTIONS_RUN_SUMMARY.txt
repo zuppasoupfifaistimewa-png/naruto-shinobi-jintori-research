@@ -15,3 +15,5 @@ SHA256 4b13630b9dbcf7b184a1d055e554e894758213e903c1bfe2f9c9ac6991ee2afe  /home/r
 SHA256 66aa22fab937525104a3ca7c81a20804bd8f601dedf1157322e4e5d51a90d997  /home/runner/work/_temp/entry1-buffer-base-output/az3-resource-economy-function-detail.txt
 SHA256 4257d83262131762389b9353612e7f81bae0e7e0fd3846443c77716bbb0ac25d  /home/runner/work/_temp/entry1-buffer-base-output/az3-main-exe-economic-helper-detail.txt
 SHA256 4e32db90e5f67f30546f1b12d6a0ed9adf1191a021a99801b59df45e3cb7d709  /home/runner/work/_temp/entry1-buffer-base-output/ay2-exe-random-byte-check.txt
+CD1_INDIRECT_CALL_SCAN=NOT_RUN
+NOTE=Scanner invocation was committed after this run started; do not use this run as CD1(b) evidence.
