@@ -1,0 +1,2 @@
+STATUS=SETUP_OR_PROBE_FAILED
+reason=no BB3 action summary produced
