@@ -210,3 +210,25 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 - Hasil rinci ada di `BB2_FULL_DATABIN_TEXT_SCAN_2026-11-03.md` dan output run di `aq1-run-41565392810/attempt-1/`.
 - Hipotesis HA/HB/HC untuk action3/8 dan HP/HQ untuk event positif tetap terbuka. B44 bukan Barrier Release. Jangan nyalakan adaptive-player.
 - Kelanjutan yang diperlukan untuk menutup label: decode format resource teks khusus atau bukti prompt + transisi Barrier pada gameplay normal yang diizinkan. Tanpa salah satu, nama event tetap TIDAK TAHU.
+
+
+---
+
+## AUTHORITATIVE STATUS — BB1/BB2/BB3 setelah dekompilasi producer (3 November 2026)
+
+| Butir | Status | PC/SHA kunci | Putusan |
+|---|---|---|---|
+| BB1 | **TUNTAS K4 statis** | FUN_800BE0E4; FUN_800B770C; resource 630, 22 record | Tidak diulang. K4 berlaku pada board/resource yang diperiksa. |
+| BB2 | **SEBAGIAN K4** | FUN_800EB434; store 8 di 0x800EC3A8; FUN_800D9570 store 3 di 0x800DAA88; FUN_800D15A8 | Kode 8 terbukti jalur upgrade Barrier: pilih tile type5 milik sendiri dengan level<4 dan fee tile+0x1A, lalu masuk blok transaksi. Kode 3 belum punya label satu-ke-satu; perubahan owner pada salah satu cabang D9570 belum membuktikan seluruh state3 sebagai build Barrier. Kredit positif terbukti masuk Chakra, tetapi identitas event dan teks ID 0xBE masih TIDAK TAHU. |
+| BB3 | **TUNTAS K5 terbatas — fixture H6 HIBRIDA** | run 41556732137/job 125657970152; fixture SHA d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475 | 40/40 direct-function tests PASS; bukan controller/UI Story Mode. Tidak diulang. |
+
+### Bukti baru BB2
+
+- Run 41566798431; job 125690168194; source SHA cdaf593b0610ab87cfdbb9601cee6c61e91ab51f; SUCCESS; EXIT_CODE=0. Memeriksa semua 1.500 entri DATA.BIN valid; 262.654 kandidat Shift-JIS heuristik, 0 frasa relevan, 0 gzip/zlib. Format LZ khusus dan glyph-index tetap belum didekode.
+- Run 41567757209; job 125693287116; source SHA 2869fd35ff8b1e09ea8086ed436d3716bcddad64; SUCCESS; EXIT_CODE=0. Menghasilkan instruction windows untuk store 3/8, event 0x1D, serta token 0xBE.
+- PC 0x800EC3A4–0x800EC3A8: `li v0,8; sb v0,0x2eb(v1)` di FUN_800EB434. Fungsi mengumpulkan type5 own tiles dengan barrier level <4 dan memeriksa fee +0x1A; action8 = upgrade Barrier, K4 statis.
+- PC 0x800D4970–0x800D4978: `jal FUN_80100DCC` dengan delay-slot argumen `0xBE`; ID pesan terbukti, teks belum dipetakan.
+- PC 0x800DAA84–0x800DAA88: producer kode3 di FUN_800D9570; label build Barrier belum terbukti.
+- Run 41567828353 sedang menganalisis fungsi fokus FUN_800D15A8 serta helper selection/message di source SHA 723bd7181489b98238978d700293e38315d7f42e. Jangan tandai selesai sebelum output diterbitkan dan diperiksa.
+
+Langkah berikut yang masih diizinkan: analisis statis output fungsi fokus 41567828353; lanjutkan identifikasi nilai/action3 dan tabel teks pesan. Tidak perlu ulang BB1 atau BB3. Jangan menjalankan workflow adaptive-player atau Story Mode autoplay. Tidak ada binary privat atau savestate yang dipublikasikan.

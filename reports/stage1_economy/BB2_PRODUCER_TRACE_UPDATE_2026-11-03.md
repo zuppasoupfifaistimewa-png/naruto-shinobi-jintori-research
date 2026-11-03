@@ -9,7 +9,7 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 | Butir | Status | Kelas |
 |---|---|---|
 | BB1 — field +0x0B, kelompok/link, multiplier dan tabel resource 630 | **TUNTAS** | K4 statis |
-| BB2 — mekanisme debit action 3/8, producer dan kredit positif | **SEBAGIAN** | K4 mekanisme; label gameplay / caller dinamis belum tertutup |
+| BB2 — transaksi action 3/8 dan kredit positif | **SEBAGIAN** | K4; action 8 terbukti jalur upgrade Barrier; action 3 dan event kredit masih belum berlabel |
 | BB3 — matriks runtime action 3/8 pada H6 | **TUNTAS terbatas** | K5 untuk direct function-call pada fixture H6 HIBRIDA |
 
 ## BB1 — bukti inti yang dipakai
@@ -96,3 +96,63 @@ Data:
 - `reports/stage1_economy/aq1-run-41563802704/attempt-1/bb2-d15a8-direct-callers.txt`
 - `reports/stage1_economy/aq1-run-41563802704/attempt-1/aq1-deep-context.tsv`
 - `reports/stage1_economy/aq1-run-41563802704/attempt-1/run-summary.txt`
+
+
+---
+
+## PEMBARUAN BB2 — dekompilasi producer, pesan 0xBE, dan scan teks penuh (3 November 2026)
+
+### Putusan baru yang sudah langsung didukung kode
+
+**Action 8 = jalur upgrade Barrier — TUNTAS K4 untuk identitas mekanisme statis.**
+
+Rantai bukti:
+1. Dispatcher `FUN_800F3658` memanggil `FUN_800EB434` pada PC `0x800F5CF8`.
+2. `FUN_800EB434` mengumpulkan petak record type 5 milik pemain aktif. Kandidat hanya dimasukkan bila level field `(u16(tile+0x20) >> 8) & 0xF` masih di bawah 4. Fungsi juga menghitung fee minimum dari `u16(tile+0x1A)` dan menyimpan indeks kandidat ke daftar manager mulai `+0x2FC`, jumlah di `+0x4CC`.
+3. Setelah kandidat dipilih dan pemeriksaan validasi berhasil, PC `0x800EC3A4` memuat nilai 8 dan PC `0x800EC3A8` menulisnya ke manager `+0x2EB`.
+4. Dispatcher `FUN_800D15A8` menerima kode 8 pada blok transaksi yang sama dengan kode 3: fee `tile+0x1A` didebit, pending delta negatif dibuat, dan dua nibble level pada `tile+0x20` dinaikkan. Karena producer 8 secara eksplisit memilih petak Barrier milik pemain yang levelnya belum maksimum, label mekanisme **upgrade Barrier** didukung langsung, bukan hanya hipotesis.
+
+Batas: ini bukti logika statis K4; belum merupakan bukti teks menu Jepang atau controller/UI Story Mode runtime.
+
+### Action 3 belum boleh dinamai “build Barrier”
+
+Store nilai 3 berada di `FUN_800D9570`, PC `0x800DAA84–0x800DAA88`. Fungsi tersebut adalah state handler yang lebih luas. Di dalam fungsi yang sama terdapat jalur `FUN_80102408()==3` yang mengubah owner field petak `tile+0x0D`, membersihkan low nibble `tile+0x20`, dan menyiapkan animasi petak. Namun store `+0x2EB=3` terjadi pada blok state berikutnya setelah flag manager `+0x360`; hubungan satu-ke-satu yang memastikan semua event kode 3 adalah “bangun Barrier” belum dibuktikan. Karena itu:
+- `3 = build Barrier`: HIPOTESIS, belum K4.
+- `3 = claim/purchase tile atau operasi lain yang memakai blok debit yang sama`: HIPOTESIS alternatif.
+- Label gameplay action 3: **TIDAK TAHU**.
+
+Temuan baru ini menolak pembacaan lama bahwa kode 3 dan 8 otomatis merupakan pasangan bangun/upgrade hanya karena keduanya masuk blok transaksi serupa. Kode 8 sekarang teridentifikasi sebagai upgrade; kode 3 tetap perlu pemetaan prompt/state.
+
+### Token pesan 0xBE
+
+Instruction window pada `FUN_800D15A8` menunjukkan:
+- PC `0x800D4970`: `jal 0x80100DCC`
+- delay slot PC `0x800D4974`: `li a0,0xBE`
+- sesudahnya dipanggil `FUN_80100D14(1)` dan `FUN_80108EE8()`.
+
+Dengan konvensi MIPS delay slot, argumen `0xBE` dikirim ke `FUN_80100DCC`. Ini membuktikan bahwa 0xBE digunakan sebagai ID/argumen pesan pada jalur tersebut. Ini **belum** membuktikan teksnya `結界開放` atau “Barrier Release”; teks Jepang tetap **TIDAK TAHU**.
+
+### Scan teks penuh DATA.BIN
+
+Run `41566798431`, job `125690168194`, source SHA `cdaf593b0610ab87cfdbb9601cee6c61e91ab51f`, status SUCCESS, exit code 0:
+- DATA.BIN SHA-256 `69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822`.
+- 1.500/1.500 entri non-empty valid diperiksa; 0 range invalid.
+- 262.654 kandidat run Shift-JIS heuristik diperiksa tanpa cap; 0 cocok dengan kata kunci yang diuji.
+- 0 literal phrase hit; 0 kompresi standar gzip/zlib terdeteksi.
+- Batas scan: kompresi khusus (termasuk LZ khusus), tabel glyph-index, dan string yang dibentuk secara runtime belum didekode. Hasil nol tidak membuktikan game tidak memiliki teks tersebut.
+
+### Referensi output run
+
+- Summary: `reports/stage1_economy/aq1-run-41566798431/attempt-1/ACTIONS_RUN_SUMMARY.txt`
+- Full text census: `reports/stage1_economy/aq1-run-41566798431/attempt-1/BB2_FULL_DATABIN_TEXT_SCAN.txt`
+- Instruction windows: `reports/stage1_economy/aq1-run-41567757209/attempt-1/bb2-event-instruction-windows.txt`
+- Event decompilation: `reports/stage1_economy/aq1-run-41567757209/attempt-1/bb2-event-function-detail.txt`
+
+### Status BB2 yang berlaku
+
+- **Action 8 / upgrade Barrier: TUNTAS K4 statis.**
+- **Action 3 / build Barrier: SEBAGIAN; label gameplay TIDAK TAHU.**
+- **Kredit positif +0x2EB=1/0x1D: mekanisme Chakra TUNTAS K4, identitas event TIDAK TAHU.**
+- **Token pesan 0xBE: ID pesan terbukti, teks TIDAK TAHU.**
+
+BB2 keseluruhan tetap **SEBAGIAN K4** karena action 3 dan identitas event kredit belum terbukti. B44 bukan Barrier Release. Jangan menjalankan adaptive-player atau menganggap output statis sebagai runtime UI.
