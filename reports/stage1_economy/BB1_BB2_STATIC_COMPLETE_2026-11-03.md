@@ -326,3 +326,31 @@ Census lengkap 65 store ke `participant_manager+0x2EB` menunjukkan satu direct i
 Maka direct immediate write yang teridentifikasi kini: action byte 3 pada `FUN_800D9570/0x800DAA88`; action byte 8 pada `FUN_800EB434/0x800EC3A8`; dan action byte 8 pada `0x800EF3CC` dengan enclosing function belum terpetakan. Ini memperjelas bahwa pemetaan producer +0x2EB belum selesai: census berisi 65 writes, banyak yang menyalin +0x2E9 atau memakai register dinamis, dan function `0x800EF3CC` belum dilabeli. Action 3/8 tidak boleh disebut dua producer tunggal.
 
 **Update status BB2:** tetap SEBAGIAN K4 untuk blok transaksi, karena writer coverage dan identitas aksi masih belum selesai. Hipotesis HA/HB mengenai 3/8 sebagai bangun/upgrade tetap belum dipastikan; hipotesis alternatif yang harus diuji adalah beberapa writer nilai 8 merupakan state/flow yang berbeda dan masuk dispatch code yang sama hanya berdasarkan byte action. Falsifier untuk kesatuan semantik 8: runtime/trace menunjukkan 0x800EC3A8 dan 0x800EF3CC masuk caller/prompt/tile prerequisites yang berbeda atau hasil state yang berbeda. Untuk klaim bahwa keduanya satu aksi: konsistensi flow/UI/field effects di kedua producer dan dispatch menjadi bukti pendukung.
+
+
+## BB2 update dari AQ1 run 41555549917 — alur preview → kredit final
+
+Run AQ1 tambahan berhasil: `RUN_ID=41555549917`, `JOB=analyze-entry1-buffer-base`, `JOB_ID=125653445027`, `SOURCE_SHA=37beb791fcc48c859b58c312ec1800d44ef77497`, `EXIT_CODE=0`. Census baru tetap menghasilkan 65 write sites ke participant manager `+0x2EB`; direct immediate 3/8 candidate yang teridentifikasi tetap 3 site: 3 di `0x800DAA88` (`FUN_800D9570`), 8 di `0x800EC3A8` (`FUN_800EB434`), 8 di `0x800EF3CC` (function entry TIDAK TAHU). Ini tidak menghapus 62 write sites lain: 31 store v0/2 store zero/2 store v1 tidak ditentukan oleh immediate literal statis dan banyak context membaca `+0x2E9` sebelum copy ke `+0x2EB`. Kandidat immediate bernilai 1, 0x1D, 2, 0x4, 0xE, 0xF, 0x18, 0x25, 0x28, 0x50–0x55, 0x72 dan lainnya adalah action values berbeda; jangan dianggap sebagai action3/8.
+
+### Pembuktian kesinambungan state kredit
+
+Decompile `FUN_800D15A8` menunjukkan secara eksplisit:
+1. Switch atas `participant_manager+0x2EB`: action byte `1` atau `0x1D` memilih tile, memanggil `FUN_800FAD68(tile)`, lalu menetapkan `DAT_80139F03=1` dan pesan/UI index `0xBE`.
+2. State `DAT_80139F03==1` mengecek `FUN_80100F64()==0`, kemudian menghitung `reward=u16(tile+0x1E)+((u16(tile+0x20)>>8)&0xF)*u16(tile+0x1C)`; memanggil `FUN_80108EAC(reward)` dan `FUN_80108EBC(participant+0x04+reward)`, lalu `FUN_80108E1C()`.
+3. Setelah kode pada `LAB_800D5704`, `DAT_80139F03 = DAT_80139F03 + 1`; artinya state 1 benar-benar bergerak ke state 2, bukan state kredit terpisah yang tidak berkaitan.
+4. State `DAT_80139F03==2` memerlukan `manager+0x370==1`; mengambil `FUN_80102408()`; saat hasil 0, jalur menulis reward yang sama ke pending `manager+0x2EE + participant_index*2`, memperbarui projected balance `manager+0x51C = participant+0x04+reward`, dan (untuk flag pemain tertentu) menambahkan jumlah itu ke akumulator `manager+0x4D4`; lalu bergeser ke state `0x14` untuk animasi/penyelesaian.
+
+Jadi temuan kuatnya adalah **action byte 1/0x1D → pemilihan tile → preview nilai → state2 finalisasi pending kredit positif**. Belum terbukti nama UI index 0xBE adalah `結界開放`, atau identitas nilai yang diteruskan ke `FUN_80108EAC/8EBC` adalah Chakra (bisa saja nilai resource lain). Karena itu BB2 target B (jumlah Chakra dari Barrier Release) tetap TIDAK TAHU walaupun formula reward/pending credit sudah K4 secara statis.
+
+### Dua hipotesis target Barrier Release dan falsifier
+
+| Hipotesis | Status | Falsifier |
+|---|---|---|
+| HR1 — rangkaian action byte 1/0x1D → state1→2 adalah Barrier Release dan formula di atas adalah nilai Chakra yang diterima | HIPOTESIS K1; alur pending positif mendukung tetapi label tidak tersedia | Gugur bila UI index0xBE dibuktikan bukan `結界開放`, atau bila input/peristiwa Barrier Release tidak pernah menghasilkan manager+0x2EB 1/0x1D dan state2 ini. |
+| HR2 — rangkaian 1/0x1D adalah aksi petak lain (misalnya cashout/claim) yang memberi resource positif, bukan Barrier Release | HIPOTESIS K1; tidak ada nama UI yang berhasil diambil | Gugur bila UI index0xBE atau rekaman input gameplay yang sah menghubungkan tepat rangkaian ini ke `結界開放` dan hasil Chakra. |
+
+### Koreksi caller map
+
+Direct call `FUN_800D15A8` tervalidasi dari `FUN_800F3658` pada PC `0x800F5DAC`; `FUN_800EB434` juga dipanggil `FUN_800F3658` di `0x800F5CF8`. Untuk `FUN_800D9570`, callsite `0x800F5E1C` tervalidasi sebagai raw JAL namun enclosing caller function ditandai UNMAPPED pada census; jangan menyebut caller-nya sebagai `FUN_800F3658`.
+
+**Putusan BB2 setelah run ini:** tetap SEBAGIAN. Perilaku debit action3/8 dan rantai preview→pending-credit kini K4 secara statis; pemetaan nama action, identitas currency, Barrier Release, dan penelusuran semua 65 producer masih belum tuntas.
