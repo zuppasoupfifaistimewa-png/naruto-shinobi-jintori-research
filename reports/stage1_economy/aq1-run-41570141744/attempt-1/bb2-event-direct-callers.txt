@@ -1,0 +1,463 @@
+analysis=Ghidra raw-JAL vs decoded direct-flow comparison
+program=DATA_BIN_ENTRY_0001.bin
+program_language=MIPS:LE:32:default
+entrypoint_or_emulator_executed=no
+address_model=candidate resource base only; runtime loading is not proven
+targets=[800c2fd8, 8010abf8]
+aligned_words_scanned=149103
+raw_jal_candidate_count=89
+ghidra_decoded_direct_callsite_count=89
+unique_validated_caller_functions_with_boundary=28
+
+=== RAW_JAL_CANDIDATES ===
+target=8010abf8 site=800cf91c word=0x0C042AFE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_function=UNMAPPED
+decoded_instruction=jal 0x8010abf8
+target=800c2fd8 site=800d710c word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800d6e7c caller_name=FUN_800d6e7c caller_body_bytes=4284
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800d80ac word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800d7f38 caller_name=FUN_800d7f38 caller_body_bytes=2552
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800d8c58 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800d8930 caller_name=FUN_800d8930 caller_body_bytes=3136
+decoded_instruction=jal 0x800c2fd8
+target=8010abf8 site=800d8df0 word=0x0C042AFE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800d8930 caller_name=FUN_800d8930 caller_body_bytes=3136
+decoded_instruction=jal 0x8010abf8
+target=800c2fd8 site=800d977c word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800d999c word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800d9bcc word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800d9e18 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800d9ff4 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800da1d4 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800da3fc word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800da620 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800da848 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800dc518 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800dc2e0 caller_name=FUN_800dc2e0 caller_body_bytes=5344
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800dcc98 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800dc2e0 caller_name=FUN_800dc2e0 caller_body_bytes=5344
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800dcff4 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800dc2e0 caller_name=FUN_800dc2e0 caller_body_bytes=5344
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800dd874 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800dd7c0 caller_name=FUN_800dd7c0 caller_body_bytes=4000
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800dd884 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800dd7c0 caller_name=FUN_800dd7c0 caller_body_bytes=4000
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800dd894 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800dd7c0 caller_name=FUN_800dd7c0 caller_body_bytes=4000
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800dd908 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800dd7c0 caller_name=FUN_800dd7c0 caller_body_bytes=4000
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800de544 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800dd7c0 caller_name=FUN_800dd7c0 caller_body_bytes=4000
+decoded_instruction=jal 0x800c2fd8
+target=8010abf8 site=800df5d8 word=0x0C042AFE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800df0c8 caller_name=FUN_800df0c8 caller_body_bytes=1488
+decoded_instruction=jal 0x8010abf8
+target=800c2fd8 site=800e31dc word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e2e8c caller_name=FUN_800e2e8c caller_body_bytes=1716
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e31f8 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e2e8c caller_name=FUN_800e2e8c caller_body_bytes=1716
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3208 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e2e8c caller_name=FUN_800e2e8c caller_body_bytes=1716
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3218 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e2e8c caller_name=FUN_800e2e8c caller_body_bytes=1716
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3228 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e2e8c caller_name=FUN_800e2e8c caller_body_bytes=1716
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3aa4 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3ab4 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3ac4 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3ae4 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3b04 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3b20 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3b30 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3b40 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3b50 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3b60 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3b70 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3b80 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3b90 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3ba0 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3bb0 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3bc0 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3bd0 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3be0 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3bf0 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3c00 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3c40 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3c50 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3c60 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3ca0 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3cb0 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3cf0 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3d30 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3d70 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3db0 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e3dd0 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e43c8 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e3e74 caller_name=FUN_800e3e74 caller_body_bytes=1820
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e4788 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e4590 caller_name=FUN_800e4590 caller_body_bytes=652
+decoded_instruction=jal 0x800c2fd8
+target=8010abf8 site=800e4ed4 word=0x0C042AFE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e4c38 caller_name=FUN_800e4c38 caller_body_bytes=792
+decoded_instruction=jal 0x8010abf8
+target=800c2fd8 site=800e53ac word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e5350 caller_name=FUN_800e5350 caller_body_bytes=732
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e5708 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e562c caller_name=FUN_800e562c caller_body_bytes=808
+decoded_instruction=jal 0x800c2fd8
+target=8010abf8 site=800e58f0 word=0x0C042AFE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e562c caller_name=FUN_800e562c caller_body_bytes=808
+decoded_instruction=jal 0x8010abf8
+target=8010abf8 site=800e5ce8 word=0x0C042AFE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e5954 caller_name=FUN_800e5954 caller_body_bytes=1048
+decoded_instruction=jal 0x8010abf8
+target=800c2fd8 site=800e6620 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e6470 caller_name=FUN_800e6470 caller_body_bytes=2120
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e73f0 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_function=UNMAPPED
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e7e78 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e7b38 caller_name=FUN_800e7b38 caller_body_bytes=1624
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e7fb8 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e7b38 caller_name=FUN_800e7b38 caller_body_bytes=1624
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e8848 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e87c0 caller_name=FUN_800e87c0 caller_body_bytes=2656
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800e9ec0 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800e9220 caller_name=FUN_800e9220 caller_body_bytes=3948
+decoded_instruction=jal 0x800c2fd8
+target=8010abf8 site=800ea7e8 word=0x0C042AFE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800ea18c caller_name=FUN_800ea18c caller_body_bytes=4356
+decoded_instruction=jal 0x8010abf8
+target=800c2fd8 site=800eb6dc word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800eb434 caller_name=FUN_800eb434 caller_body_bytes=4416
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800ee064 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800edd68 caller_name=FUN_800edd68 caller_body_bytes=1912
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800f1024 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f0c10 caller_name=FUN_800f0c10 caller_body_bytes=1664
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800f2bcc word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f2a9c caller_name=FUN_800f2a9c caller_body_bytes=1636
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800f335c word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f32b4 caller_name=FUN_800f32b4 caller_body_bytes=540
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800f342c word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f32b4 caller_name=FUN_800f32b4 caller_body_bytes=540
+decoded_instruction=jal 0x800c2fd8
+target=8010abf8 site=800f3cb8 word=0x0C042AFE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x8010abf8
+target=8010abf8 site=800f3e38 word=0x0C042AFE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x8010abf8
+target=8010abf8 site=800f3fe8 word=0x0C042AFE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x8010abf8
+target=8010abf8 site=800f40a8 word=0x0C042AFE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x8010abf8
+target=8010abf8 site=800f41bc word=0x0C042AFE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x8010abf8
+target=8010abf8 site=800f4458 word=0x0C042AFE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x8010abf8
+target=8010abf8 site=800f4b18 word=0x0C042AFE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+decoded_instruction=jal 0x8010abf8
+target=800c2fd8 site=800f5f88 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_function=UNMAPPED
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800f5fd8 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_function=UNMAPPED
+decoded_instruction=jal 0x800c2fd8
+target=800c2fd8 site=800f60e0 word=0x0C030BF6 status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=800f6078 caller_name=FUN_800f6078 caller_body_bytes=724
+decoded_instruction=jal 0x800c2fd8
+target=8010abf8 site=80122b80 word=0x0C042AFE status=VALIDATED_GHIDRA_DIRECT_CALL
+caller_entry=80121d40 caller_name=FUN_80121d40 caller_body_bytes=6140
+decoded_instruction=jal 0x8010abf8
+
+=== GHIDRA_VALIDATED_DIRECT_CALLS ===
+target=8010abf8 site=800cf91c instruction=jal 0x8010abf8
+caller_function=UNMAPPED
+target=800c2fd8 site=800d710c instruction=jal 0x800c2fd8
+caller_entry=800d6e7c caller_name=FUN_800d6e7c caller_body_bytes=4284
+target=800c2fd8 site=800d80ac instruction=jal 0x800c2fd8
+caller_entry=800d7f38 caller_name=FUN_800d7f38 caller_body_bytes=2552
+target=800c2fd8 site=800d8c58 instruction=jal 0x800c2fd8
+caller_entry=800d8930 caller_name=FUN_800d8930 caller_body_bytes=3136
+target=8010abf8 site=800d8df0 instruction=jal 0x8010abf8
+caller_entry=800d8930 caller_name=FUN_800d8930 caller_body_bytes=3136
+target=800c2fd8 site=800d977c instruction=jal 0x800c2fd8
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+target=800c2fd8 site=800d999c instruction=jal 0x800c2fd8
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+target=800c2fd8 site=800d9bcc instruction=jal 0x800c2fd8
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+target=800c2fd8 site=800d9e18 instruction=jal 0x800c2fd8
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+target=800c2fd8 site=800d9ff4 instruction=jal 0x800c2fd8
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+target=800c2fd8 site=800da1d4 instruction=jal 0x800c2fd8
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+target=800c2fd8 site=800da3fc instruction=jal 0x800c2fd8
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+target=800c2fd8 site=800da620 instruction=jal 0x800c2fd8
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+target=800c2fd8 site=800da848 instruction=jal 0x800c2fd8
+caller_entry=800d9570 caller_name=FUN_800d9570 caller_body_bytes=7468
+target=800c2fd8 site=800dc518 instruction=jal 0x800c2fd8
+caller_entry=800dc2e0 caller_name=FUN_800dc2e0 caller_body_bytes=5344
+target=800c2fd8 site=800dcc98 instruction=jal 0x800c2fd8
+caller_entry=800dc2e0 caller_name=FUN_800dc2e0 caller_body_bytes=5344
+target=800c2fd8 site=800dcff4 instruction=jal 0x800c2fd8
+caller_entry=800dc2e0 caller_name=FUN_800dc2e0 caller_body_bytes=5344
+target=800c2fd8 site=800dd874 instruction=jal 0x800c2fd8
+caller_entry=800dd7c0 caller_name=FUN_800dd7c0 caller_body_bytes=4000
+target=800c2fd8 site=800dd884 instruction=jal 0x800c2fd8
+caller_entry=800dd7c0 caller_name=FUN_800dd7c0 caller_body_bytes=4000
+target=800c2fd8 site=800dd894 instruction=jal 0x800c2fd8
+caller_entry=800dd7c0 caller_name=FUN_800dd7c0 caller_body_bytes=4000
+target=800c2fd8 site=800dd908 instruction=jal 0x800c2fd8
+caller_entry=800dd7c0 caller_name=FUN_800dd7c0 caller_body_bytes=4000
+target=800c2fd8 site=800de544 instruction=jal 0x800c2fd8
+caller_entry=800dd7c0 caller_name=FUN_800dd7c0 caller_body_bytes=4000
+target=8010abf8 site=800df5d8 instruction=jal 0x8010abf8
+caller_entry=800df0c8 caller_name=FUN_800df0c8 caller_body_bytes=1488
+target=800c2fd8 site=800e31dc instruction=jal 0x800c2fd8
+caller_entry=800e2e8c caller_name=FUN_800e2e8c caller_body_bytes=1716
+target=800c2fd8 site=800e31f8 instruction=jal 0x800c2fd8
+caller_entry=800e2e8c caller_name=FUN_800e2e8c caller_body_bytes=1716
+target=800c2fd8 site=800e3208 instruction=jal 0x800c2fd8
+caller_entry=800e2e8c caller_name=FUN_800e2e8c caller_body_bytes=1716
+target=800c2fd8 site=800e3218 instruction=jal 0x800c2fd8
+caller_entry=800e2e8c caller_name=FUN_800e2e8c caller_body_bytes=1716
+target=800c2fd8 site=800e3228 instruction=jal 0x800c2fd8
+caller_entry=800e2e8c caller_name=FUN_800e2e8c caller_body_bytes=1716
+target=800c2fd8 site=800e3aa4 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3ab4 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3ac4 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3ae4 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3b04 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3b20 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3b30 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3b40 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3b50 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3b60 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3b70 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3b80 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3b90 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3ba0 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3bb0 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3bc0 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3bd0 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3be0 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3bf0 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3c00 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3c40 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3c50 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3c60 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3ca0 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3cb0 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3cf0 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3d30 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3d70 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3db0 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e3dd0 instruction=jal 0x800c2fd8
+caller_entry=800e3848 caller_name=FUN_800e3848 caller_body_bytes=1580
+target=800c2fd8 site=800e43c8 instruction=jal 0x800c2fd8
+caller_entry=800e3e74 caller_name=FUN_800e3e74 caller_body_bytes=1820
+target=800c2fd8 site=800e4788 instruction=jal 0x800c2fd8
+caller_entry=800e4590 caller_name=FUN_800e4590 caller_body_bytes=652
+target=8010abf8 site=800e4ed4 instruction=jal 0x8010abf8
+caller_entry=800e4c38 caller_name=FUN_800e4c38 caller_body_bytes=792
+target=800c2fd8 site=800e53ac instruction=jal 0x800c2fd8
+caller_entry=800e5350 caller_name=FUN_800e5350 caller_body_bytes=732
+target=800c2fd8 site=800e5708 instruction=jal 0x800c2fd8
+caller_entry=800e562c caller_name=FUN_800e562c caller_body_bytes=808
+target=8010abf8 site=800e58f0 instruction=jal 0x8010abf8
+caller_entry=800e562c caller_name=FUN_800e562c caller_body_bytes=808
+target=8010abf8 site=800e5ce8 instruction=jal 0x8010abf8
+caller_entry=800e5954 caller_name=FUN_800e5954 caller_body_bytes=1048
+target=800c2fd8 site=800e6620 instruction=jal 0x800c2fd8
+caller_entry=800e6470 caller_name=FUN_800e6470 caller_body_bytes=2120
+target=800c2fd8 site=800e73f0 instruction=jal 0x800c2fd8
+caller_function=UNMAPPED
+target=800c2fd8 site=800e7e78 instruction=jal 0x800c2fd8
+caller_entry=800e7b38 caller_name=FUN_800e7b38 caller_body_bytes=1624
+target=800c2fd8 site=800e7fb8 instruction=jal 0x800c2fd8
+caller_entry=800e7b38 caller_name=FUN_800e7b38 caller_body_bytes=1624
+target=800c2fd8 site=800e8848 instruction=jal 0x800c2fd8
+caller_entry=800e87c0 caller_name=FUN_800e87c0 caller_body_bytes=2656
+target=800c2fd8 site=800e9ec0 instruction=jal 0x800c2fd8
+caller_entry=800e9220 caller_name=FUN_800e9220 caller_body_bytes=3948
+target=8010abf8 site=800ea7e8 instruction=jal 0x8010abf8
+caller_entry=800ea18c caller_name=FUN_800ea18c caller_body_bytes=4356
+target=800c2fd8 site=800eb6dc instruction=jal 0x800c2fd8
+caller_entry=800eb434 caller_name=FUN_800eb434 caller_body_bytes=4416
+target=800c2fd8 site=800ee064 instruction=jal 0x800c2fd8
+caller_entry=800edd68 caller_name=FUN_800edd68 caller_body_bytes=1912
+target=800c2fd8 site=800f1024 instruction=jal 0x800c2fd8
+caller_entry=800f0c10 caller_name=FUN_800f0c10 caller_body_bytes=1664
+target=800c2fd8 site=800f2bcc instruction=jal 0x800c2fd8
+caller_entry=800f2a9c caller_name=FUN_800f2a9c caller_body_bytes=1636
+target=800c2fd8 site=800f335c instruction=jal 0x800c2fd8
+caller_entry=800f32b4 caller_name=FUN_800f32b4 caller_body_bytes=540
+target=800c2fd8 site=800f342c instruction=jal 0x800c2fd8
+caller_entry=800f32b4 caller_name=FUN_800f32b4 caller_body_bytes=540
+target=8010abf8 site=800f3cb8 instruction=jal 0x8010abf8
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=8010abf8 site=800f3e38 instruction=jal 0x8010abf8
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=8010abf8 site=800f3fe8 instruction=jal 0x8010abf8
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=8010abf8 site=800f40a8 instruction=jal 0x8010abf8
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=8010abf8 site=800f41bc instruction=jal 0x8010abf8
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=8010abf8 site=800f4458 instruction=jal 0x8010abf8
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=8010abf8 site=800f4b18 instruction=jal 0x8010abf8
+caller_entry=800f3658 caller_name=FUN_800f3658 caller_body_bytes=10084
+target=800c2fd8 site=800f5f88 instruction=jal 0x800c2fd8
+caller_function=UNMAPPED
+target=800c2fd8 site=800f5fd8 instruction=jal 0x800c2fd8
+caller_function=UNMAPPED
+target=800c2fd8 site=800f60e0 instruction=jal 0x800c2fd8
+caller_entry=800f6078 caller_name=FUN_800f6078 caller_body_bytes=724
+target=8010abf8 site=80122b80 instruction=jal 0x8010abf8
+caller_entry=80121d40 caller_name=FUN_80121d40 caller_body_bytes=6140
+decompilation_mode=SEED_CALLERS_THEN_UP_TO_12_RNG_CALLERS
+
+detailed_decompilation_timeout_seconds=15
+detailed_decompilation_count=0
