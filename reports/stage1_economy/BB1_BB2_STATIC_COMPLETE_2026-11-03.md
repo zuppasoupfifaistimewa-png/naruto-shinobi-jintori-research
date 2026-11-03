@@ -219,3 +219,16 @@ Pada `case 2` juga ada jalur reward/pending terpisah: jika `manager+0x370==1` da
 Satu-satunya direct caller tervalidasi untuk `FUN_800D15A8` pada direct-call scan Entry 1 adalah `FUN_800F3658`, site `0x800F5DAC`. Penulis/pemicu upstream yang mengatur `DAT_80139F03=1` (atau state 2) belum ditemukan; helper `FUN_80108EAC/80108EBC/80108E1C` belum diberi semantik Chakra secara independen di audit ini. Jadi rumus reward positif dan site call-nya K4; klaim bahwa ini pemicu Barrier Release atau reward Chakra masih TIDAK TAHU.
 
 **Putusan BB2 rinci:** SEBAGIAN K4. Blok transaksi fee/pending/dua nibble, dua penulis immediate action 3/8, dan cabang reward positif telah dipetakan. Nama gameplay, seluruh jalur register-based penulis +0x2EB, penulis state kredit, dan pembuktian bahwa resource positif itu Chakra/Barrier Release belum ditutup.
+
+
+### Koreksi/penutupan pemicu state kredit positif
+
+Dalam dispatcher yang sama, sebelum rumus reward state 1/2, ada switch langsung pada byte `participant_manager+0x2EB` (raw `lbu` PC `0x800D4470`, dispatch PC `0x800D4468`):
+
+- `case 1` dan `case 0x1D` memanggil `FUN_800BBD9C` untuk memilih petak, memanggil `FUN_800FAD68` dengan index petak, kemudian menulis `DAT_80139F03=1` dan menyiapkan pesan/UI via `FUN_80100DCC(0xBE)`, `FUN_80100D14(1)`, `FUN_80108EE8()`.
+- `case 3` dan `case 8` masuk blok debit/level bersama yang telah didokumentasikan; jalur itu mengisi pending `-tile+0x1A`, menaikkan dua nibble, lalu mengakhiri state kembali ke 0.
+- Saat state global menjadi 1, dispatcher menjalankan formula `tile+0x1E + level*tile+0x1C` dan meneruskan jumlahnya ke helper kredit `FUN_80108EAC`/ `FUN_80108EBC`. Pada tahap state 2 berikutnya, formula yang sama masuk ke akumulator/pending per pemain jika syarat manager+0x370 dan pemilihan tile terpenuhi.
+
+Ini menutup sumber *state-machine trigger* positif di dalam dispatcher: byte +0x2EB bernilai 1 atau 0x1D menghasilkan state global 1. Ia belum menutup siapa yang pertama kali menulis +0x2EB dengan nilai tersebut di semua konteks (manager handler input/upstream), maupun label gameplay-nya. Maka hipotesis bahwa nilai 1/0x1D adalah jalur Barrier Release masih HIPOTESIS K1, bukan fakta; falsifier: bila pengamatan prompt/hasil menunjukkan operasi lain atau perubahan selain melepas Barrier, label gugur. Hipotesis alternatif: nilai 1/0x1D adalah klaim/aksi tile lain yang memberi nilai positif rutin; falsifier: menu/UI atau uji runtime yang memperlihatkan perintah Barrier Release dan perubahan Barrier yang konsisten akan menggugurkan alternatif ini.
+
+**Status pemicu kredit:** terpetakan statis K4 sampai boundary `+0x2EB ∈ {1,0x1D} → DAT_80139F03=1 → reward positive branch`; trigger upstream untuk menulis byte, definisi currency helper, dan identifikasi Barrier Release tetap TIDAK TAHU.
