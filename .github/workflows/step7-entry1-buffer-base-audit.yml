@@ -291,8 +291,8 @@ jobs:
             -postScript ExportStage1EconomyAQ1.java "$out/aq1-economy-census.tsv" \
             -postScript ExportBB2ActionByteAudit.java "$out/bb2-action-byte-access.tsv" \
             -postScript ExportBB2TileNibbleAudit.java "$out/bb2-tile-nibble-access.tsv" \
-            -postScript ExportFunctionDetail.java "$out/bb2-d15a8-function-detail.txt" 0x800D15A8 0x800BE0E4 0x800BE464 0x800C7870 0x800D7F38 0x800DC2E0 0x800E0324 0x800FA094 0x8010CC38 0x8010CD00 0x8010CD2C 0x8010CDD0 0x800D9570 0x800EB434 \
-            -postScript ExportTargetCallers.java "$out/bb2-d15a8-direct-callers.txt" 0x800D15A8 \
+            -postScript ExportFunctionDetail.java "$out/bb2-d15a8-function-detail.txt" 0x800D15A8 0x800BE0E4 0x800BE464 0x800C7870 0x800D7F38 0x800DC2E0 0x800E0324 0x800FA094 0x8010CC38 0x8010CD00 0x8010CD2C 0x8010CDD0 0x800D9570 0x800EB434 0x800F3658 0x800EF3CC \
+            -postScript ExportTargetCallers.java "$out/bb2-d15a8-direct-callers.txt" 0x800D15A8 0x800D9570 0x800EB434 0x800EF3CC \
             -postScript ExportStage1EconomyDeepContext.java "$out/aq1-deep-context.tsv" \
             -postScript ExportFunctionDetail.java "$out/entry1-helper-function-detail.txt" 0x800B770C 0x800BDC4C \
             -postScript ExportFunctionDetail.java "$out/aw1-manager-function-detail.txt" 0x80109994 0x80109F1C 0x80109FEC \
