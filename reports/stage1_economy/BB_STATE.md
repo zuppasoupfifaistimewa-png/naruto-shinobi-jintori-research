@@ -56,3 +56,5 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 - Dua penulis immediate action byte terverifikasi: 3 di FUN_800D9570/0x800DAA88 dan 8 di FUN_800EB434/0x800EC3A8. Register-based penulis lain masih belum semuanya terurai.
 - Cabang kredit positif pada FUN_800D15A8 memakai DAT_80139F03 case 1/2 dan formula tile+0x1E + level*tile+0x1C. Direct caller fungsi adalah FUN_800F3658/0x800F5DAC; penulis state 1/2 belum ditemukan. Belum terbukti itu Chakra atau Barrier Release.
 - Laporan statis terbaru dan falsifier HA/HB/HC: reports/stage1_economy/BB1_BB2_STATIC_COMPLETE_2026-11-03.md (commit b1f81338d6dd944c889affffb14ad45a9b5428fa).
+
+- BB2 trigger refinement: manager+0x2EB values 1/0x1D set global state DAT_80139F03=1; this positive-credit path is distinct from debit actions 3/8. Report commit 33e62742618aeb67c3cb3dda9fe542ae79b61765.
