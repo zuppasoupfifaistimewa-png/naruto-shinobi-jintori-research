@@ -193,3 +193,20 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 - Census +0x2EB run41563802704: 65 WRITE/63 READ; direct immediate producer 3 di FUN_800D9570/0x800DAA88; producer 8 di FUN_800EB434/0x800EC3A8 dan FUN_800EE4E0/0x800EF3CC. Tidak ada raw-JAL caller ke FUN_800EE4E0 pada scan 149.103 word aligned (176 kandidat JAL berhasil tervalidasi). Pemanggilan indirect masih belum terbukti.
 - Jalur positif +0x2EB=1/0x1D menghasilkan nilai C dan pending Chakra; identifikasi pesan token 0xBE dengan `結界開放` belum berhasil. HP/HQ tetap hipotesis, bukan fakta.
 - Langkah berikut: bukti UI/prompt/teks dan transisi Barrier pada gameplay normal untuk membedakan HA/HB dan HP/HQ; tidak perlu mengulang BB1 atau BB3. Jangan jalankan adaptive-player. B44 bukan Barrier Release.
+
+
+---
+
+## AUTHORITATIVE STATUS — audit lanjutan BB2 (run 41565392810)
+
+| Butir | Status terbaru | PC/SHA kunci | Putusan |
+|---|---|---|---|
+| BB1 | **TUNTAS K4 statis** | FUN_800BE0E4; FUN_800B770C; resource 630 | Cakupan dan batas 22 record tetap seperti laporan BB1; tidak diulang. |
+| BB2 | **SEBAGIAN K4 mekanisme** | FUN_800D15A8; FUN_800BE5D8 → FUN_8001387C; Main EXE FUN_80032A98/FUN_80029FF0 | Semua mekanisme transaksi yang sudah terukur tetap benar. Run 41565392810 memeriksa seluruh 1.500 entri DATA.BIN valid; byte literal istilah relevan 0 hit. 50.000 run Shift-JIS heuristik diekspor, 0 mengandung petunjuk, namun cap tercapai dan format LZ/glyph belum didekode. Objek pesan diketahui memakai ID generik/dinamis; token 0xBE belum punya pemetaan teks yang terbukti. |
+| BB3 | **TUNTAS K5 terbatas — H6 HIBRIDA** | fixture d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475; run41556732137 | 40/40 PASS untuk direct function-call; bukan controller/UI Story Mode. |
+
+### Tambahan run 41565392810
+- STATUS=SUCCESS; JOB_ID=125685566730; SOURCE_SHA=6d5a70e73ada1d68b279093272a76bf154028213; EXIT_CODE=0.
+- Hasil rinci ada di `BB2_FULL_DATABIN_TEXT_SCAN_2026-11-03.md` dan output run di `aq1-run-41565392810/attempt-1/`.
+- Hipotesis HA/HB/HC untuk action3/8 dan HP/HQ untuk event positif tetap terbuka. B44 bukan Barrier Release. Jangan nyalakan adaptive-player.
+- Kelanjutan yang diperlukan untuk menutup label: decode format resource teks khusus atau bukti prompt + transisi Barrier pada gameplay normal yang diizinkan. Tanpa salah satu, nama event tetap TIDAK TAHU.
