@@ -12,6 +12,7 @@ on:
       - "tools/step7/ExportPendingParticipantDelta.java"
       - "tools/step7/ScanStage1EconomyData.py"
       - "tools/step7/ScanAllDataBinText.py"
+      - "tools/step7/ScanIndirectCallCandidates.py"
       - "tools/step7/SummarizeStage1EconomyCensus.py"
       - "tools/step7/ExportTileResourceLoader.java"
       - "tools/step7/ScanStage1TileResources.py"
@@ -489,7 +490,8 @@ jobs:
             echo "aw1_manager_function_and_B44_inventory=PASS"
             echo "ay1_ay2_entry1_static_writer_and_caller_export=PASS"
             echo "ay1_ay2_main_exe_static_writer_and_caller_export=PASS"
-            echo "az3_direct_setter_census=PASS; both Entry1 and MAIN_EXE scans; caller FUN_80012C70 fully decompiled; indirect JALR unresolved"
+            echo "az3_direct_setter_census=PASS; both Entry1 and MAIN_EXE scans; caller FUN_80012C70 fully decompiled
+            echo "cd1_indirect_call_scan=PASS; bounded JALR target-register scan in EXE and Entry1 plus exact pointer scan across raw DATA.BIN; compressed DATA.BIN entries not disassembled""
             echo "ay2_random_exe_raw_byte_check=PASS"
             echo "aw1_tile_field_function_inventory=PASS"
             echo "aw2_numeric_and_shiftjis_scan=PASS"
@@ -573,7 +575,7 @@ jobs:
           PY
           dest="reports/stage1_economy/aq1-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
-          for f in BA1_DATA_BIN_RESOURCE_INVENTORY.tsv BA1_RESOURCE_CANDIDATES.tsv BA1_DATA_SCAN_SUMMARY.txt BA1_TILE_TABLE_CANDIDATES.tsv BA1_TILE_TABLE_RECORDS.tsv BA1_TILE_TABLE_SCAN_SUMMARY.txt ba1-tile-resource-loader.txt ba1-selector-callers-main-exe.txt ba1-selector-dat80070cd0-xrefs.csv ba1-mode-state-resource-selector.tsv ba1-selector-main-exe-functions.csv ba1-tile-loader-callers.txt ba1-resource-parser-main-exe.txt entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv bb2-action-byte-access.tsv bb2-tile-nibble-access.tsv bb2-d15a8-function-detail.txt bb2-d15a8-direct-callers.txt bb2-message-object-xrefs.csv bb2-message-object-functions.csv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b38-accesses.tsv aw1-manager-b40-accesses.tsv aw1-manager-b44-accesses.tsv aw2-numeric-instruction-literals.tsv aw1-helper-call-windows.tsv aw1-manager-status.txt aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv BB2_FULL_DATABIN_TEXT_SCAN.txt bb2-full-databin-text-scan.tsv bb2-entry1-numeric-literals.tsv bb2-event-function-detail.txt bb2-event-direct-callers.txt bb2-event-instruction-windows.txt bb2-d15a8-focused.txt ay1-ay2-entry1.tsv ay1-ay2-exe.tsv az3-setter-direct-callers-entry1.txt az3-setter-direct-callers-main-exe.txt az3-setter-call-windows-entry1.tsv az3-setter-call-windows-main-exe.tsv az3-setter-caller-main-exe-detail.txt az3-starting-balance-global-detail.txt az3-resource-economy-function-detail.txt az3-main-exe-economic-helper-detail.txt ay2-exe-random-byte-check.txt ay1-ay2-sha256.txt ghidra-exe-headless.log aq1-recount.txt run-summary.txt input-identity.txt; do
+          for f in BA1_DATA_BIN_RESOURCE_INVENTORY.tsv BA1_RESOURCE_CANDIDATES.tsv BA1_DATA_SCAN_SUMMARY.txt BA1_TILE_TABLE_CANDIDATES.tsv BA1_TILE_TABLE_RECORDS.tsv BA1_TILE_TABLE_SCAN_SUMMARY.txt ba1-tile-resource-loader.txt ba1-selector-callers-main-exe.txt ba1-selector-dat80070cd0-xrefs.csv ba1-mode-state-resource-selector.tsv ba1-selector-main-exe-functions.csv ba1-tile-loader-callers.txt ba1-resource-parser-main-exe.txt entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv bb2-action-byte-access.tsv bb2-tile-nibble-access.tsv bb2-d15a8-function-detail.txt bb2-d15a8-direct-callers.txt bb2-message-object-xrefs.csv bb2-message-object-functions.csv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b38-accesses.tsv aw1-manager-b40-accesses.tsv aw1-manager-b44-accesses.tsv aw2-numeric-instruction-literals.tsv aw1-helper-call-windows.tsv aw1-manager-status.txt aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv BB2_FULL_DATABIN_TEXT_SCAN.txt bb2-full-databin-text-scan.tsv cd1-raw-indirect-call-candidates.txt bb2-entry1-numeric-literals.tsv bb2-event-function-detail.txt bb2-event-direct-callers.txt bb2-event-instruction-windows.txt bb2-d15a8-focused.txt ay1-ay2-entry1.tsv ay1-ay2-exe.tsv az3-setter-direct-callers-entry1.txt az3-setter-direct-callers-main-exe.txt az3-setter-call-windows-entry1.tsv az3-setter-call-windows-main-exe.tsv az3-setter-caller-main-exe-detail.txt az3-starting-balance-global-detail.txt az3-resource-economy-function-detail.txt az3-main-exe-economic-helper-detail.txt ay2-exe-random-byte-check.txt ay1-ay2-sha256.txt ghidra-exe-headless.log aq1-recount.txt run-summary.txt input-identity.txt; do
             if [ -f "$out/$f" ]; then cp "$out/$f" "$dest/$f"; fi
           done
           API="https://api.github.com/repos/$RESEARCH_REPO"
