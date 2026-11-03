@@ -269,3 +269,39 @@ Lihat laporan pendamping:
 reports/stage1_economy/BB1_BB2_PRODUCER_AND_CLUSTER_ADDENDUM_2026-11-03.md
 
 BB2 belum TUNTAS penuh karena producer value 8 di PC 0x800EF3CC dan label gameplay action 3/8 belum terselesaikan. BB3 belum TUNTAS penuh karena run perluasan level0–4/tile4&7 dan hash RAM 2 MiB pra-poke frame180 masih belum terbit.
+
+
+## BB1 — bukti geometri link +0x01 pada 22 petak
+
+Saya gunakan kembali TSV resource 630 yang sudah ada dari BA1 (tidak ada ekstraksi ROM/runtime baru): `reports/stage1_economy/BA1_STAGE1_RESOURCE_630_RECORDS.tsv`. Untuk tiap 22 record, nilai `runtime_tile_b_01` adalah indeks record berikutnya; `runtime_tile_h_22` dan `runtime_tile_h_24` adalah pasangan koordinat yang disimpan di record. Pemeriksaan 22 sisi, termasuk wrap dari record 21 ke 0, menghasilkan 22/22 langkah orthogonal tepat satu posisi: horizontal `|dx|=40,dy=0` atau vertikal `dx=0,|dy|=36`; tidak ada diagonal, lompat, atau link yang keluar jalur.
+
+| Dari | Ke (+0x01) | (x,y) asal → tujuan | Δx | Δy | Geometri |
+|---:|---:|---|---:|---:|---|
+| 0 | 1 | (199,150) → (239,150) | 40 | 0 | satu tile horizontal |
+| 1 | 2 | (239,150) → (279,150) | 40 | 0 | satu tile horizontal |
+| 2 | 3 | (279,150) → (319,150) | 40 | 0 | satu tile horizontal |
+| 3 | 4 | (319,150) → (359,150) | 40 | 0 | satu tile horizontal |
+| 4 | 5 | (359,150) → (399,150) | 40 | 0 | satu tile horizontal |
+| 5 | 6 | (399,150) → (399,186) | 0 | 36 | satu tile vertikal |
+| 6 | 7 | (399,186) → (439,186) | 40 | 0 | satu tile horizontal |
+| 7 | 8 | (439,186) → (439,222) | 0 | 36 | satu tile vertikal |
+| 8 | 9 | (439,222) → (439,258) | 0 | 36 | satu tile vertikal |
+| 9 | 10 | (439,258) → (439,294) | 0 | 36 | satu tile vertikal |
+| 10 | 11 | (439,294) → (439,330) | 0 | 36 | satu tile vertikal |
+| 11 | 12 | (439,330) → (399,330) | -40 | 0 | satu tile horizontal |
+| 12 | 13 | (399,330) → (359,330) | -40 | 0 | satu tile horizontal |
+| 13 | 14 | (359,330) → (319,330) | -40 | 0 | satu tile horizontal |
+| 14 | 15 | (319,330) → (279,330) | -40 | 0 | satu tile horizontal |
+| 15 | 16 | (279,330) → (239,330) | -40 | 0 | satu tile horizontal |
+| 16 | 17 | (239,330) → (239,294) | 0 | -36 | satu tile vertikal |
+| 17 | 18 | (239,294) → (199,294) | -40 | 0 | satu tile horizontal |
+| 18 | 19 | (199,294) → (199,258) | 0 | -36 | satu tile vertikal |
+| 19 | 20 | (199,258) → (199,222) | 0 | -36 | satu tile vertikal |
+| 20 | 21 | (199,222) → (199,186) | 0 | -36 | satu tile vertikal |
+| 21 | 0 | (199,186) → (199,150) | 0 | -36 | satu tile vertikal; tutup ring |
+
+Dengan disassembly `FUN_800BE0E4` yang mem-follow `+0x01`, memvalidasi tipe 5 dan owner bits 12–15 yang sama, menaikkan penghitung untuk setiap anggota berurutan, serta menulis penghitung ke anggota rantai, interpretasi HA kini didukung: `tile+0x0B = jumlah petak type-5 berurutan dengan owner sama selain dirinya sendiri (ukuran rantai−1)`, dibatasi lima anggota oleh loop. Link list resource memang membentuk ring spasial petak yang saling berdampingan. Ini bukan flood-fill 2D bebas; ini scan berurutan di perimeter 22-petak.
+
+**Falsifier yang tersisa:** hipotesis HA akan gugur jika resource/board alternatif menampilkan link+0x01 melompati posisi tetangga atau jika runtime satu kelompok owner sama menunjukkan nilai +0x0B berbeda antar anggota yang seharusnya satu run. Hipotesis HB (tag/status tak terkait adjacency) gugur oleh kombinasi uji type/owner, counter traversal, dan 22/22 koordinat tetangga di resource ini. Pengujian contoh 50/60/70 tetap aritmetika terhadap faktor pengguna 100/120/150/180/200%, bukan observasi gameplay baru.
+
+**Putusan BB1:** TUNTAS dalam lingkup statis yang diminta, K4. Jalur perimeter adjacency, rule same-type/same-owner, dan counter size−1 didukung bukti code+data 22 record. Label naratif UI +0x0B tetap TIDAK TAHU; tidak diperlukan untuk menjawab struktur matematis selector.
