@@ -557,6 +557,8 @@ def main():
             "-exec", pad_text, "-dofile", str(lua_path),
             "-softgpu", "-stdout", "-lua_stdout", "-logfile", str(pcsx_log_path), "-run",
         ]
+        print("BB3_LAUNCH_START=%d/40 tile=%d action=%d level=%d attempt=%d" %
+              (launch_total, tile_index, action, level, attempt), flush=True)
         started = time.monotonic()
         with stdout_path.open("wb") as f:
             try:
@@ -568,6 +570,8 @@ def main():
                 f.write(("BB3_LAUNCH_EXCEPTION=" + repr(exc) + "\n").encode())
         wall = time.monotonic() - started
         max_wall = max(max_wall, wall)
+        print("BB3_LAUNCH_END=%d/40 tile=%d action=%d level=%d attempt=%d wrapper_exit=%d wall_seconds=%.3f" %
+              (launch_total, tile_index, action, level, attempt, wrapper_rc, wall), flush=True)
         log_text = stdout_path.read_text(encoding="utf-8", errors="replace")
         if pcsx_log_path.exists():
             log_text += "\n" + pcsx_log_path.read_text(encoding="utf-8", errors="replace")
