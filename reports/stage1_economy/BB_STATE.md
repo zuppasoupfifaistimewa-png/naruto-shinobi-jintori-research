@@ -48,3 +48,11 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 - H6 is HIBRIDA, not pure Story Mode.
 - Adaptive-player automation remains paused. No changes to Tile Duel or other repos.
 - No ROM/ISO, BIOS, savestate, Memory Card, raw RAM dump, screenshot/video/frame or binary uploaded/published.
+
+
+## BB2 update — AQ1 41555549917
+
+- Static AQ1 run success: RUN_ID=41555549917; JOB=analyze-entry1-buffer-base; JOB_ID=125653445027; SOURCE_SHA=37beb791fcc48c859b58c312ec1800d44ef77497; EXIT_CODE=0. Compact result: reports/stage1_economy/aq1-run-41555549917/attempt-1/ACTIONS_RUN_SUMMARY.txt.
+- 65 manager+0x2EB write sites re-censused; immediate candidates 3 at 0x800DAA88, 8 at 0x800EC3A8 and 8 at 0x800EF3CC. Remaining copies/read-from +0x2E9 and unknown register values still not all traced.
+- Positive credit path detail: byte+0x2EB=1/0x1D → DAT_80139F03=1. State1 computes and previews +0x1E + level×+0x1C, then LAB_800D5704 increments state to 2. State2 requires manager+0x370==1 and FUN_80102408()==0, then writes pending positive credit at manager+0x2EE+player*2 and projected balance manager+0x51C. No proof of UI label 結界開放 or currency meaning Chakra.
+- BB2 status remains SEBAGIAN. Detailed report update commit d0f950beac863f18ee1c948385e3d8822b65dea7; changed file: reports/stage1_economy/BB1_BB2_STATIC_COMPLETE_2026-11-03.md.
