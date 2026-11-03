@@ -385,3 +385,52 @@ Ini menutup selisih batas yang terdeteksi pada loop penghitung `FUN_800BE0E4`: l
 - Kasus 3: `0x800B788C–0x800B7898`, multiplier 18/10.
 - Kasus 4: `0x800B78D0–0x800B78DC`, multiplier 2.
 - Sumber raw/decompile: `reports/stage1_economy/aq1-run-41555549917/attempt-1/entry1-helper-function-detail.txt`, fungsi DATA.BIN context target `800B770C`; alamat target relatif pada mapping resource entry 1. Entry 1 helper merupakan referensi pembanding; fungsi ekonomi yang dihitung di Main EXE tetap sama perilakunya, sedangkan pemetaan resource entry 1 diverifikasi sebelumnya.
+
+
+## BB2 tambahan — fee +0x1A dan apakah biaya berubah per level?
+
+### Kesimpulan kode transaksi
+
+Di blok transaksi bersama `FUN_800D15A8`, fee diambil sebagai `u16(tile+0x1A)` pada PC `0x800D4628`; saldo peserta dibaca dari `participant+0x04` di `0x800D462C` dan dibandingkan di `0x800D4634`. Saldo yang lebih kecil dari fee keluar sebelum transaksi. Kemudian fee yang sama dibaca lagi di `0x800D46EC`, dinegasikan pada `0x800D46F4`, dan ditulis sebagai pending debit ke `manager+0x2EE` di `0x800D46F8`.
+
+Fee tidak diambil dari nibble level, tidak dikalikan level, dan tidak berubah setelah kode menaikkan nibble pada `tile+0x20` (bits 8–11 dan bits 4–7 masing-masing +1). Dengan demikian, untuk satu record tile yang sama, setiap pemanggilan transaksi di cabang 3/8 memakai fee `tile+0x1A` yang sama di level 0/1/2/3/4. Level menentukan nilai ekonomi pre/post yang dihitung lewat `FUN_800B770C` (PC `0x800D4658` dan `0x800D4780`), bukan fee.
+
+### Data fee per tile dalam resource Entry 630 (22 record)
+
+Untuk record tipe 4 (petak ekonomi) pada resource 630, TSV `BA1_TILE_TABLE_RECORDS.tsv` dari AQ1 run 41555549917 menunjukkan:
+
+| Record index | Harga neutral +0x0E | H field +0x10 | Fee +0x1A | +0x1C | +0x1E |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 60 | 35 | 50 | 35 | 42 |
+| 2 | 100 | 50 | 50 | 35 | 70 |
+| 3 | 100 | 50 | 50 | 35 | 70 |
+| 4 | 120 | 60 | 100 | 70 | 84 |
+| 6 | 120 | 60 | 100 | 70 | 84 |
+| 7 | 160 | 85 | 120 | 84 | 112 |
+| 8 | 140 | 70 | 100 | 70 | 98 |
+| 9 | 140 | 70 | 100 | 70 | 98 |
+| 10 | 120 | 60 | 100 | 70 | 84 |
+| 12 | 200 | 100 | 150 | 105 | 140 |
+| 13 | 220 | 110 | 150 | 105 | 154 |
+| 14 | 260 | 130 | 200 | 140 | 182 |
+| 15 | 220 | 110 | 150 | 105 | 154 |
+| 16 | 200 | 100 | 150 | 105 | 140 |
+| 19 | 140 | 70 | 100 | 70 | 98 |
+| 20 | 120 | 60 | 100 | 70 | 84 |
+| 21 | 100 | 50 | 50 | 35 | 70 |
+
+Record 4 cocok tepat dengan observasi pengguna: harga petak neutral +0x0E=120; nilai H level pertama +0x10=60, selanjutnya +0x12=140, +0x14=265, +0x16=530; field fee +0x1A=100. Maka untuk tile itu, **fee cabang action 3/8 = 100 pada tiap level yang diizinkan**, sepanjang transaksi tetap memakai record tile yang sama. Pada resource Entry 630, fee bervariasi antarpetak tipe 4 (50/100/120/150/200), jadi ini bukan konstanta global semua tile. Record tipe non-ekonomi tidak dicantumkan karena field nilainya nol.
+
+Perbedaan yang perlu dijaga: `+0x0E` berperan sebagai harga/angka dasar petak netral yang diamati pengguna; `+0x1A` adalah fee debit cabang action 3/8. Jangan menyamakan 120 dengan fee transaksi 100.
+
+### Perubahan field saat transaksi
+
+| Field | Operasi | Kesimpulan statis |
+|---|---|---|
+| `tile+0x20[11:8]` | baca nibble, +1, mask 0xF0FF, tulis nibble baru di bits 8–11 (PC 0x800D46A4–0x800D4764) | Level yang dipakai `H` bertambah satu. |
+| `tile+0x20[7:4]` | baca nibble, +1, mask 0xFF0F, tulis nibble baru di bits 4–7 (PC 0x800D47B4–0x800D4834) | Nibble kedua ikut bertambah satu; nama semantiknya TIDAK TAHU. |
+| `tile+0x20[15:12]` | tidak dimask/diganti oleh operasi di atas | Owner bits tidak berubah pada transaksi ini. |
+| `manager+0x2EE` | tulis `-u16(tile+0x1A)` | Pending debit fee. |
+| `manager+0x922`, `manager+0x924` | tulis hasil `FUN_800B770C` sebelum/sesudah perubahan level | Nilai tile ekonomi pre/post. |
+
+**Putusan target A BB2:** fee operasi yang dipakai cabang action 3/8 adalah field `+0x1A`, dan fee tidak naik per level. Untuk tile contoh (record 4 Entry 630), fee statisnya 100 pada setiap pemanggilan; variasi fee antarpetak dibaca langsung dari record masing-masing. Label gameplay cabang (bangun, upgrade, atau operasi Barrier lain) belum dibuktikan, sehingga kesimpulan biaya Barrier per level secara literal tetap menunggu identitas aksi.
