@@ -240,7 +240,7 @@ Langkah berikut yang masih diizinkan: analisis statis output fungsi fokus 415678
 
 | Butir | Status | PC/SHA kunci | Putusan final saat checkpoint ini |
 |---|---|---|---|
-| BB1 | **TUNTAS K4 — statis** | `FUN_800BE0E4` / `FUN_800B770C`; Entry 630, 22 record | Writer +0x0B record tile dipisahkan dari writer selector; link traversal type-5/owner sama dan 22 record sudah ditabulasi. H lv1–lv4 cocok 60/140/265/530; lv5 statis 1050 belum diamati. Ketetanggaan geometris link +0x01 tetap TIDAK TAHU. Tidak diulang. |
+| BB1 | **TUNTAS K4 — statis** | `FUN_800BE0E4` / `FUN_800B770C`; Entry 630, 22 record | Writer +0x0B record tile dipisahkan dari writer selector; link traversal type-5/owner sama dan 22 record sudah ditabulasi. H lv1–lv4 cocok 60/140/265/530; lv5 statis 1050 belum diamati. Untuk resource 630, link +0x01 terbukti tetangga ortogonal satu tile pada 22/22 sisi termasuk wrap 21→0; generalisasi ke resource/board lain belum terbukti. Tidak diulang. |
 | BB2 | **SEBAGIAN K4 — mekanisme** | `FUN_800D15A8`; code 8 `FUN_800EB434/0x800EC3A8`; code 3 `FUN_800D9570/0x800DAA88`; reward `0x800D4970`; pending setter `FUN_800BE5D8 → FUN_8001387C` | Code 8 terbukti upgrade Barrier; fee = u16(tile+0x1A), tanpa faktor level yang terbukti. Code 3 belum bernama. Jalur reward positif C terkomit ke Chakra kanonis, tetapi Barrier Release dan teks pesan 0xBE TIDAK TAHU. Producer source +0x2EB belum tertutup tuntas. |
 | BB3 | **TUNTAS K5 TERBATAS — H6 HIBRIDA** | Fixture SHA `d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475`; run `41556732137`, job `125657970152` | Matriks 40/40 PASS, dua launch tiap tile4/7 × action3/8 × level0–4. RAM frame180 2 MiB SHA cocok pada semua kasus; Memory Card disposable tidak berubah. Ini direct function-call test, bukan kontrol Story Mode. Tidak diulang. |
 
@@ -276,3 +276,11 @@ Langkah berikut yang masih diizinkan: analisis statis output fungsi fokus 415678
 2. Lanjutkan BB2 hanya untuk decode string/message token 0xBE dan pemetaan prompt/transisi normal event 3 serta event kredit 1/0x1D.
 3. Audit source/caller gap event +0x2EB, khususnya store `0x800EF3CC`; jangan menyimpulkan caller indirect tanpa bukti.
 4. Jangan jalankan workflow adaptive-player/autoplay. Jangan ubah Release/visibilitas repo. Jangan unggah binary privat atau savestate. B44 BUKAN Barrier Release.
+
+
+### Koreksi BB1 — bukti koordinat resource 630
+
+- Koreksi status: pada resource 630, adjacency geometris **TERBUKTI K4** dari pasangan koordinat `+0x22/+0x24` dan link `+0x01`: 22/22 sisi adalah langkah orthogonal satu tile, termasuk wrap 21→0 yang menutup perimeter.
+- `FUN_800BE0E4` sendiri tidak menghitung/mengecek koordinat; ia menelusuri link +0x01 dan memfilter type/owner. Klaim adjacency resource 630 datang dari cross-check kode traversal dengan koordinat data resource.
+- Generalisasi ke resource/board lain dan aturan batas gameplay lima vs kapasitas loop lima successor tetap BELUM dibuktikan.
+- Addendum koreksi: `reports/stage1_economy/BB2_41567828353_RESULT_2026-11-03.md` (bagian “Koreksi BB1 — bukti geometri resource 630”).
