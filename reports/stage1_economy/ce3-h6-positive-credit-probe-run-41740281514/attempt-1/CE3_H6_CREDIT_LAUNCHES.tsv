@@ -1,0 +1,101 @@
+launch	tile	level	attempt	status	wrapper_exit_code_decimal	wall_seconds	ram180_sha256	ram360_sha256	memory_card_sha256_before	memory_card_sha256_after	raw_log_tail
+1	4	0	1	FAIL	73	136.430	5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7	4d002df6902a6de6aa0724b4284da8decb1725cf693fd1ed80ce0132c45a7907	fa43239bcee7b97ca62f007cc68487560a39e19f74f3dde7486db3f98df8e471	fa43239bcee7b97ca62f007cc68487560a39e19f74f3dde7486db3f98df8e471	"Loading memory card /tmp/naruto-ce3-41740281514-1/launches/tile-4-level-0-attempt-1/memory-card.mcd
+The memory card /tmp/naruto-ce3-41740281514-1/launches/tile-4-level-0-attempt-1/home/.config/pcsx-redux/memcard2.mcd doesn't exist - creating it
+Audio: driver dummy, 44100 Hz, 441 frames per period
+Warning: OpenGL error reporting disabled. See About dialog for more information.
+[00000] While loading '/tmp/naruto-ce3-41740281514-1/source/AppDir/bin/NotoSans-Regular.ttf'
+[00000] While loading '/tmp/naruto-ce3-41740281514-1/source/AppDir/bin/fonts/NotoSans-Regular.ttf'
+[00000] While loading '/tmp/naruto-ce3-41740281514-1/source/AppDir/bin/NotoSansCJKjp-Regular.otf'
+[00000] While loading '/tmp/naruto-ce3-41740281514-1/source/AppDir/bin/fonts/NotoSansCJKjp-Regular.otf'
+[00000] While loading '/tmp/naruto-ce3-41740281514-1/source/AppDir/bin/NotoMono-Regular.ttf'
+[00000] While loading '/tmp/naruto-ce3-41740281514-1/source/AppDir/bin/fonts/NotoMono-Regular.ttf'
+Loaded CD Image: /tmp/naruto-ce3-41740281514-1/source/game-run.cue[+cue].
+Track 01 (DATA) - Start 00:02:00, Length 30:48:01
+CD-ROM Label: SLPS-03553
+CD-ROM ID: SLPS03553
+CD-ROM EXE Name: SLPS_035.53;1
+PCSX-Redux Lua Console 
+LuaJIT 2.1.1785598229 
+JIT: ON SSE3 SSE4.1 BMI2 fold cse dce fwd dse narrow loop abc sink fuse 
+Shader compiled: program ID = 4 
+Shader compiled: program ID = 7 
+PCSX-Redux booting
+Copyright (C) 2019-2025 PCSX-Redux authors
+CPU type: Interpreted
+Loaded BIOS: /tmp/naruto-ce3-41740281514-1/source/scph7502.bin
+Known BIOS detected: SCPH-7502 (EU) (318178bf)
+CE3_READY_NO_GAMEPLAY_INPUT=1 
+CE3_CONTROLLER_MAPPED_NO_GAMEPLAY_INPUT=1 
+BIOS Trace1: 0x0f
+BIOS Trace1: 0x0e
+BIOS Trace1: 0x01
+BIOS Trace1: 0x02
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x01
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x05
+BIOS Trace1: 0x06
+BIOS Trace1: 0x02
+BIOS Trace1: 0x05
+
+PS-X Realtime Kernel Ver.2.5
+Copyright 1993,1994 (C) Sony Computer Entertainment Inc. 
+BIOS Trace1: 0x06
+KERNEL SETUP!
+
+Configuration : EvCB	0x10		TCB	0x04
+BIOS Trace1: 0x07
+CE3_H6_LOAD_BEGIN=1 
+CE3_SAVE_STATE_LOADED=1 
+CE3_H6_LOAD_CALL_RETURNED=1 
+[00001] While loading '/tmp/naruto-ce3-41740281514-1/source/AppDir/bin/NotoSans-Regular.ttf'
+[00001] While loading '/tmp/naruto-ce3-41740281514-1/source/AppDir/bin/fonts/NotoSans-Regular.ttf'
+[00001] While loading '/tmp/naruto-ce3-41740281514-1/source/AppDir/bin/NotoSansCJKjp-Regular.otf'
+[00001] While loading '/tmp/naruto-ce3-41740281514-1/source/AppDir/bin/fonts/NotoSansCJKjp-Regular.otf'
+[00001] While loading '/tmp/naruto-ce3-41740281514-1/source/AppDir/bin/NotoMono-Regular.ttf'
+[00001] While loading '/tmp/naruto-ce3-41740281514-1/source/AppDir/bin/fonts/NotoMono-Regular.ttf'
+CE3_RAM_FRAME180_BYTES=2097152ULL 
+CE3_RAM_FRAME180_CAPTURE=PASS 
+CE3_RAM_FRAME360_BYTES=2097152ULL 
+CE3_RAM_FRAME360_CAPTURE=PASS 
+CE3_POST_LOAD_VSYNC=360 
+CE3_RAW_ERROR=...-41740281514-1/launches/tile-4-level-0-attempt-1/ce3.lua:245: attempt to perform arithmetic on global 'TILE_STRIDE' (a nil value) 
+CE3_CALL_STATUS=FAIL 
+
+Loading memory card /tmp/naruto-ce3-41740281514-1/launches/tile-4-level-0-attempt-1/memory-card.mcd
+The memory card /tmp/naruto-ce3-41740281514-1/launches/tile-4-level-0-attempt-1/home/.config/pcsx-redux/memcard2.mcd doesn't exist - creating it
+Audio: driver dummy, 44100 Hz, 441 frames per period
+Warning: OpenGL error reporting disabled. See About dialog for more information.
+Loaded CD Image: /tmp/naruto-ce3-41740281514-1/source/game-run.cue[+cue].
+Track 01 (DATA) - Start 00:02:00, Length 30:48:01
+CD-ROM Label: SLPS-03553
+CD-ROM ID: SLPS03553
+CD-ROM EXE Name: SLPS_035.53;1
+PCSX-Redux booting
+Copyright (C) 2019-2025 PCSX-Redux authors
+CPU type: Interpreted
+Loaded BIOS: /tmp/naruto-ce3-41740281514-1/source/scph7502.bin
+Known BIOS detected: SCPH-7502 (EU) (318178bf)
+BIOS Trace1: 0x0f
+BIOS Trace1: 0x0e
+BIOS Trace1: 0x01
+BIOS Trace1: 0x02
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x01
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x05
+BIOS Trace1: 0x06
+BIOS Trace1: 0x02
+BIOS Trace1: 0x05
+
+PS-X Realtime Kernel Ver.2.5
+Copyright 1993,1994 (C) Sony Computer Entertainment Inc. 
+BIOS Trace1: 0x06
+KERNEL SETUP!
+
+Configuration : EvCB	0x10		TCB	0x04
+BIOS Trace1: 0x07"
