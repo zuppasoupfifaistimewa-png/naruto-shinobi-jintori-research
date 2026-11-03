@@ -49,3 +49,10 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 1. BB1: selesai sebatas hitung rantai tertaut K4; tutup bila penulis/pembentuk link +0x01 membuktikan geometri tetangga. Laporan statis terbaru: reports/stage1_economy/BB1_BB2_STATIC_COMPLETE_2026-11-03.md (commit e33537adbbf9e79739ca1c7e559ae19f1ea0cd3d).
 2. BB2: petakan penulis participant_manager+0x2EB bernilai 3/8, pemicu positif-credit branch, dan dua hipotesis aksi beserta falsifier; jangan memberi nama aksi tanpa bukti.
 3. BB3: matriks baru 40 launch (tile4/7 × action3/8 × level0–4 × dua launch) telah disiapkan; validasi hasil, RAM 2 MiB frame180, Memory Card SHA, serta kode keluar proses script sebelum status K5.
+
+
+### Catatan BB2 (3 November 2026)
+
+- Dua penulis immediate action byte terverifikasi: 3 di FUN_800D9570/0x800DAA88 dan 8 di FUN_800EB434/0x800EC3A8. Register-based penulis lain masih belum semuanya terurai.
+- Cabang kredit positif pada FUN_800D15A8 memakai DAT_80139F03 case 1/2 dan formula tile+0x1E + level*tile+0x1C. Direct caller fungsi adalah FUN_800F3658/0x800F5DAC; penulis state 1/2 belum ditemukan. Belum terbukti itu Chakra atau Barrier Release.
+- Laporan statis terbaru dan falsifier HA/HB/HC: reports/stage1_economy/BB1_BB2_STATIC_COMPLETE_2026-11-03.md (commit b1f81338d6dd944c889affffb14ad45a9b5428fa).
