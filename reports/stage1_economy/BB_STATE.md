@@ -7,7 +7,7 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 | Tahap | Status | Kelas bukti | Ringkasan dan batas |
 |---|---|---|---|
 | BB1 | TUNTAS — seluruh target statis selesai | K4 | FUN_800BE0E4 mengikuti tautan +0x01, filter tile type5 dan owner bits12–15 sama, menulis jumlah successor valid ke +0x0B. Resource 22 record membuktikan 22/22 link satu tile ortogonal membentuk ring. FUN_800B770C menerima selector +0x0B 0–4 saja (>=5 return 0) dan menghitung H×100/120/150/180/200%; cocok dengan batas kelompok 1–5 serta contoh 50/60/70. H = u16(tile+0x10+((u16(tile+0x20)>>7)&0x1E)). Report final supplement commit d51fcf3d3db08d18be96fd59620344a8868e69dc. |
-| BB2 | SEBAGIAN — debit/credit dan aliran Chakra terbukti; identitas Barrier Release serta seluruh asal event byte belum selesai | K4 mekanisme debit/kredit ke Chakra; K2–K3 identitas event/producer | Action3/8: fee=u16(tile+0x1A), saldo guard+0x04, pending−fee +0x2EE+player*2, nibble bits8–11 dan4–7 +1; fee tetap per tile lintas level. Kredit event +0x2EB=1/0x1D: C=u16(tile+0x1E)+level(bits8–11)*u16(tile+0x1C), preview +0xA18/+0xA1A, phase2 pending+C +0x2EE+player*2 dan projected +0x51C. FUN_800BE5D8 memproses signed pending, memperbarui participant+0x04, memanggil setter FUN_8001387C @0x800BEC98 lalu getter; setter menulis PlayerRecord+0x18 (0x80070EA0+player*0xB4+0x18), saldo Chakra kanonis. Pesan token0xBE dan hubungan event1/0x1D dengan Barrier Release TIDAK TAHU. Exported census: 65 writes +0x2EB, 95 +0x2E9, 11 +0x2EA; producer/queue origin belum seluruhnya closed. BB2 proof report commit c1fbd1dee2125e88e4bc58678933a2198f714172. |
+| BB2 | SEBAGIAN — mekanisme debit dan reward Chakra terpetakan; identitas Barrier Release masih belum terkonfirmasi | K4 mekanisme/field Chakra; K2–K3 label event dan coverage producer | Action3/8: fee=u16(tile+0x1A), saldo guard+0x04, pending−fee +0x2EE+player*2, nibble bits8–11 dan4–7 +1; fee tetap per tile lintas level. Kredit event +0x2EB=1/0x1D: C=u16(tile+0x1E)+level(bits8–11)*u16(tile+0x1C), preview +0xA18/+0xA1A, phase2 pending+C +0x2EE+player*2 dan projected +0x51C. FUN_800BE5D8 memproses signed pending, memperbarui participant+0x04, memanggil setter FUN_8001387C @0x800BEC98 lalu getter; setter menulis PlayerRecord+0x18 (0x80070EA0+player*0xB4+0x18), saldo Chakra kanonis. Pesan token0xBE dan hubungan event1/0x1D dengan Barrier Release TIDAK TAHU. Exported census: 65 writes +0x2EB, 95 +0x2E9, 11 +0x2EA; producer/queue origin belum seluruhnya closed. BB2 proof report commit c1fbd1dee2125e88e4bc58678933a2198f714172. |
 | BB3 | TUNTAS — matriks 40 launch selesai dan divalidasi | K5 terbatas pada direct function-call di H6 HIBRIDA | Run41556732137/job125657970152/source SHA296785adc21e399d8b4882cc75a9fda6c8539045: 40/40 PASS, 40 unique cases, 0 errors, script/process exit0, workflow SUCCESS. Grid tile4/7 × action3/8 × level0–4 × 2 launch. Fee/pending: tile4 -100, tile7 -120 pada setiap level; dua nibble +1 dan refresh 800BB004/800BE464 tercapai. RAM pre-poke 2MiB pada VSync180 SHA5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7 cocok semua 40; Memory Card SHA fa43239bcee7b97ca62f007cc68487560a39e19f74f3dde7486db3f98df8e471 tidak berubah. Summary commit61a23faa60670fe299cfecea836a8ced71ea46d8; runtime report commit dd44eb3d98da4d645d703cbf488c4068be02adfc. Bukan normal gameplay/UI test; labels action3/8 tetap TIDAK TAHU. |
 
 ## PC acuan
@@ -39,11 +39,11 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 
 ## Batas tetap
 
-- Link tile+0x01 dibuktikan sebagai linked chain type-5/owner sama; kedekatan geometris belum terbukti.
-- Loop FUN_800BE0E4 accepts max five forward links, potentially six records including start; gameplay max group size five is not yet statically proven.
+- Link tile+0x01 dibuktikan secara statis sebagai ring 22 tile dengan 22/22 tetangga ortogonal satu langkah; FUN_800BE0E4 menghitung run type-5 dengan owner sama. Helper FUN_800B770C membatasi selector ekonomi ke 0–4, sehingga pengali kelompok 1–5 petak sudah terbukti K4.
+- Catatan batas lama telah ditutup: walau loop FUN_800BE0E4 dapat menyimpan lima successor, helper nilai ekonomi FUN_800B770C menolak selector >=5 dan menerima 0–4 saja.
 - Gameplay name for tile+0x0B and action bytes3/8: TIDAK TAHU.
-- Positive state2 credit is a candidate for Barrier Release but remains TIDAK TAHU; hypotheses/falsifiers are in the addendum. Do not label B44 as Barrier Release.
-- No normal UI/controller-input Story Mode proof in BB3; BB3 is direct dispatch-block test on H6 hybrid fixture.
+- Positive state 1→2 mengkredit nilai C ke PlayerRecord+0x18 (Chakra kanonis) melalui pending manager+0x2EE dan FUN_800BE5D8/FUN_8001387C. Namun identitas peristiwa sebagai Barrier Release/結界開放 dan teks token 0xBE tetap TIDAK TAHU; B44 bukan Barrier Release.
+- BB3 menguji direct dispatch-block action byte 3/8 pada H6 HIBRIDA, bukan input kontrol/UI Story Mode normal; label gameplay 3/8 tetap TIDAK TAHU.
 - User-confirmed end-turn income formula floor(sum owned-tile values /2)+400 is distinct; it has not been retested in BB3.
 - H6 is HIBRIDA, not pure Story Mode.
 - Adaptive-player automation remains paused. No changes to Tile Duel or other repos.
@@ -168,3 +168,10 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 - Run 41556732137: 40/40 PASS; two launches for every tile4/7 × action3/8 × level0–4 combination; script and workflow process exit decimal 0; frame180 2MiB RAM pre-poke SHA matched every case; disposable Memory Card unchanged. Status TUNTAS K5-terbatas to direct function-call path in H6 HIBRIDA. No controller/UI Story Mode action was performed.
 - Run compact summary commit `61a23faa60670fe299cfecea836a8ced71ea46d8`; changed file `reports/stage1_economy/bb3-h6-action-call-probe-run-41556732137/attempt-1/BB3_VERIFIED_SUMMARY.txt`.
 - Runtime report commit `dd44eb3d98da4d645d703cbf488c4068be02adfc`; changed file `reports/stage1_economy/BB3_RUNTIME_COMPLETE_2026-11-03.md`.
+
+### BB2 confirmation update — AQ1 run 41561643792
+
+- Static run 41561643792: STATUS=SUCCESS; JOB=analyze-entry1-buffer-base; JOB_ID=125673393970; SOURCE_SHA=0dbc053798ae58006a62e9465f991e259038f1b1; EXIT_CODE=0. Recount passed; static Ghidra analysis only, no game/emulator execution, no savestate restore; text/TSV-only publication.
+- Run output was published in commit 67d17ca8e5163fed74973a14d13162bff39680e9 under reports/stage1_economy/aq1-run-41561643792/attempt-1/ (52 text/TSV outputs). This keeps the static Chakra setter/caller census independently repeatable.
+- BB2 still SEBAGIAN because the exact in-game event name corresponding to +0x2EB=1/0x1D and the message-token 0xBE text has not been decoded. The numeric reward path itself is proven to update canonical Chakra, not merely a preview.
+- A further message-object xref run 41561885050 was IN_PROGRESS at the last check (job125674403570); do not call its result complete until the run publishes and the relevant message pointer/string can be inspected.
