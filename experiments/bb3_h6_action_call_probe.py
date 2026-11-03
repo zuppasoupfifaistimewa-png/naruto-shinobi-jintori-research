@@ -39,6 +39,7 @@ local action = tonumber(os.getenv("BB3_ACTION")) or 3
 local level = tonumber(os.getenv("BB3_LEVEL")) or 0
 local TILE_INDEX = 4
 local TILE_STRIDE = 0x124
+local EXPECTED_FEE = 100
 local started, loaded, postLoadVsync, prepared = false, false, 0, false
 local selectHit = false
 local actionDispatchHit = false
@@ -149,6 +150,18 @@ local function readResult()
       and pendingDelta == -tileFee
       and level8After == level8Before + 1
       and level4After == level4Before + 1
+  log("BB3_VALIDATION_DIRECT_CALL_RETURNED=" .. tostring(directCallStatus == "RETURNED"))
+  log("BB3_VALIDATION_DISPATCH=" .. tostring(actionDispatchHit))
+  log("BB3_VALIDATION_ACTION_MATCH=" .. tostring(actionAtDispatch == action))
+  log("BB3_VALIDATION_SELECTOR_HIT=" .. tostring(selectHit))
+  log("BB3_VALIDATION_SELECTED_INDEX=" .. tostring(selected == TILE_INDEX))
+  log("BB3_VALIDATION_REFRESH_BB004=" .. tostring(refreshBB004Hit))
+  log("BB3_VALIDATION_REFRESH_BE464=" .. tostring(refreshBE464Hit))
+  log("BB3_VALIDATION_FEE=" .. tostring(tileFee == EXPECTED_FEE))
+  log("BB3_VALIDATION_PENDING_DELTA=" .. tostring(pendingDelta == -tileFee))
+  log("BB3_VALIDATION_LEVEL8=" .. tostring(level8After == level8Before + 1))
+  log("BB3_VALIDATION_LEVEL4=" .. tostring(level4After == level4Before + 1))
+  log("BB3_EXPECTED_FEE_LUA=" .. tostring(EXPECTED_FEE))
   log("BB3_SELECTED_TILE_INDEX=" .. tostring(selected))
   log("BB3_ACTION_DISPATCH_REACHED=" .. (actionDispatchHit and "1" or "0"))
   log("BB3_ACTION_BYTE_AT_DISPATCH=" .. tostring(actionAtDispatch or "TIDAK TAHU"))
@@ -213,7 +226,7 @@ local function initTest()
     wd(0x80139BD8, 1)
 
     log("BB3_H6_LOADED=1")
-    log("BB3_TEST_KIND=UJI_PANGGILAN_FUNGSI_NO_GAMEPLAY")
+    log("BB3_TEST_KIND=UJI_BLOK_DISPATCH_TANPA_INPUT_GAMEPLAY")
     log("BB3_ACTION=" .. tostring(action))
     log("BB3_TARGET_LEVEL_NIBBLE_8_11=" .. tostring(level))
     log("BB3_PARTICIPANT_INDEX=" .. tostring(playerIndex))
