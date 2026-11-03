@@ -1,0 +1,354 @@
+name: CE3 — H6 positive-credit path to canonical Chakra (pinned PCSX release)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "experiments/ce3_h6_positive_credit_probe.py"
+      - ".github/workflows/ce3-h6-positive-credit-probe.yml"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: naruto-ce3-h6-positive-credit-probe-v1
+  cancel-in-progress: false
+
+jobs:
+  ce3-h6-positive-credit-probe:
+    name: CE3 40 frame-aligned H6 function-call launches on pinned PCSX-Redux release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    container:
+      image: ghcr.io/grumpycoders/pcsx-redux-build:latest
+      options: --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RESEARCH_REPO: ${{ github.repository }}
+      WORK: /tmp/naruto-ce3-${{ github.run_id }}-${{ github.run_attempt }}
+      BASE_COMMIT: 0c3572c3db75f97542001e453ae80ba8c3f8acba
+      TIMEOUT_SECONDS: "600"
+    steps:
+      - name: Checkout research scripts and patch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Allocate private work and text output
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$WORK"/{source,inputs,cards,resume,logs,launches,home,variant}
+          mkdir -p "$RUNNER_TEMP/ce3-output"
+          echo "OUTDIR=$RUNNER_TEMP/ce3-output" >> "$GITHUB_ENV"
+
+      - name: Install bounded build and probe utilities
+        shell: bash
+        run: |
+          set -euo pipefail
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends jq python3-pil xvfb x11-utils curl git unzip zip gdb
+
+      - name: Download and verify private game inputs, BIOS, and target checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK/source"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --retry 2 --max-time 60 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; out="$2"; bytes="$3"; digest="$4"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            test -n "$id" && test "$id" != null
+            curl --fail --silent --show-error --location --retry 2 --max-time 600 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$id" -o "$out"
+            test "$(stat -c %s "$out")" = "$bytes"
+            echo "$digest  $out" | sha256sum --check -
+          }
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin 325989552 58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue 116 be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8
+          fetch_asset scph7502.zip scph7502.zip 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a
+          curl --fail --silent --show-error --location --retry 2 --max-time 180 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "$API/releases/assets/686794219" -o target.sstate
+          test "$(stat -c %s target.sstate)" = 21163286
+          echo "00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d  target.sstate" | sha256sum --check -
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, stat, zipfile
+          with zipfile.ZipFile("scph7502.zip") as z:
+              found=[]; total=0
+              for x in z.infolist():
+                  p=Path(x.filename); mode=(x.external_attr>>16)&0xffff; total+=x.file_size
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)): raise SystemExit("unsafe BIOS member")
+                  if x.file_size>2*1024*1024 or total>4*1024*1024: raise SystemExit("BIOS expansion bound")
+                  if not x.is_dir() and x.file_size==524288: found.append(x)
+              if len(found)!=1: raise SystemExit("expected one BIOS-sized member")
+              data=z.read(found[0])
+              if hashlib.sha256(data).hexdigest()!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1": raise SystemExit("BIOS SHA mismatch")
+              Path("scph7502.bin").write_bytes(data)
+          lines=Path("game.cue").read_text(encoding="utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          idx=[i for i,s in enumerate(lines) if s.strip().upper().startswith("FILE ")]
+          if len(idx)!=1: raise SystemExit("expected one CUE FILE row")
+          lines[idx[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+          cp target.sstate "$WORK/resume/target.sstate"
+          chmod 400 "$WORK/resume/target.sstate"
+          echo "TARGET_STATE_SHA256=00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d" | tee "$WORK/source-input-manifest.txt"
+
+      - name: Download previously verified CONTROL checkpoint
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: "39867730674"
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ env.WORK }}/inputs
+
+      - name: Extract and verify pinned PCSX-Redux release build
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK/source"
+          asset_name="PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage"
+          asset_id="$(jq -r --arg name "$asset_name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+          test -n "$asset_id" && test "$asset_id" != null
+          curl --fail --silent --show-error --location --retry 2 --max-time 600 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "https://api.github.com/repos/$RESEARCH_REPO/releases/assets/$asset_id" -o pcsx-redux.AppImage
+          test "$(stat -c %s pcsx-redux.AppImage)" = 65747557
+          echo "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c  pcsx-redux.AppImage" | sha256sum --check -
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          APPDIR="$WORK/source/squashfs-root"
+          PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 | grep -E '/(pcsx-redux|pcsx-redux[^/]*)$' | head -n 1)"
+          test -n "$PCSX_BIN" && test -x "$PCSX_BIN"
+          CAPSTONE_FILE="$(find -L "$APPDIR" -type f -name 'libcapstone.so.5' -print -quit)"
+          mkdir -p "$WORK/capstone"
+          if [ -n "$CAPSTONE_FILE" ]; then
+            cp "$CAPSTONE_FILE" "$WORK/capstone/libcapstone.so.5"
+          else
+            echo "pinned AppImage missing libcapstone.so.5"; exit 1
+          fi
+          {
+            echo "PCSX_RELEASE_ASSET=$asset_name"
+            echo "PCSX_RELEASE_SIZE=65747557"
+            echo "PCSX_RELEASE_SHA256=c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c"
+            echo "PCSX_SOURCE_COMMIT=0c3572c3db75f97542001e453ae80ba8c3f8acba"
+            echo "SOURCE_VARIANT=PINNED_RELEASE_BINARY_UNPATCHED"
+            echo "CAPSTONE_SOURCE=$CAPSTONE_FILE"
+            echo "PINNED_RELEASE_INTEGRITY=PASS"
+          } | tee "$OUTDIR/CE3_PCSX_RELEASE_MANIFEST.txt"
+          echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
+          echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
+
+      - name: Validate private inputs and start headless display
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp "$(find "$WORK/inputs" -type f -name adaptive-cycle-01-f180.sstate -print -quit)" "$WORK/resume/control.sstate"
+          test "$(stat -c %s "$WORK/resume/control.sstate")" = 21162546
+          echo "9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492  $WORK/resume/control.sstate" | sha256sum --check -
+          dd if=/dev/zero of="$WORK/reference.mcd" bs=131072 count=1 status=none
+          test "$(stat -c %s "$WORK/reference.mcd")" = 131072
+          echo "DISPOSABLE_ZERO_CARD_SHA256=$(sha256sum "$WORK/reference.mcd" | cut -d ' ' -f 1)"
+          Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/logs/xvfb.log" 2>&1 &
+          echo $! > "$WORK/xvfb.pid"
+          export DISPLAY=:99
+          for n in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+          xdpyinfo -display "$DISPLAY" >/dev/null
+          echo "INPUT_VALIDATION=PASS"
+          echo "H6_SOURCE_TARGET_PLUS_CONTROL_FIELD6=PASS"
+          echo "GAMEPLAY_INPUT=NONE"
+          echo "RAM_WRITE_SCOPE=DISPOSABLE_TEST_LAUNCH_ONLY"
+
+      - name: Smoke-test H6 restore on patched build
+        id: h6_smoke
+        shell: bash
+        run: |
+          set +e
+          export DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1
+          CAPSTONE_FILE="$(find -L "$APPDIR" -type f -name 'libcapstone.so.5' -print -quit)"
+          mkdir -p "$WORK/capstone"
+          if [ -n "$CAPSTONE_FILE" ]; then
+            cp "$CAPSTONE_FILE" "$WORK/capstone/libcapstone.so.5"
+            echo "CE3_PCSX_CAPSTONE_SOURCE=$CAPSTONE_FILE"
+          else
+            echo "CE3_PCSX_CAPSTONE_SOURCE=NOT_PACKAGED"
+          fi
+          # Copy only FFmpeg libraries to a private directory; never add AppImage /lib (it contains its bundled glibc).
+          mkdir -p "$WORK/ffmpeg-libs"
+          while IFS= read -r -d '' f; do
+            cp -L "$f" "$WORK/ffmpeg-libs/$(basename "$f")"
+          done < <(find -L "$APPDIR" -type f \( -name 'libav*.so*' -o -name 'libsw*.so*' -o -name 'libpostproc.so*' \) -print0)
+          test -s "$WORK/ffmpeg-libs/libavformat.so.63" || { echo "PCSX_PRIVATE_FFMPEG_LIBS_NOT_PREPARED"; exit 1; }
+          export LD_LIBRARY_PATH="$WORK/capstone:$WORK/ffmpeg-libs:$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+          ldd "$PCSX_BIN" | tee "$WORK/logs/pcsx-ldd.txt" || true
+          export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
+          export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
+          export QML2_IMPORT_PATH="$APPDIR/usr/qml"
+          python3 -m py_compile experiments/bb3_h6_smoke.py
+          python3 experiments/bb3_h6_smoke.py \
+            --target "$WORK/resume/target.sstate" --control "$WORK/resume/control.sstate" \
+            --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/source/scph7502.bin" \
+            --cue "$WORK/source/game-run.cue" --card "$WORK/reference.mcd" \
+            --work "$WORK/smoke" --out "$WORK/smoke-out" --timeout-seconds "$TIMEOUT_SECONDS"
+          rc=$?
+          mkdir -p "$WORK/smoke-out"
+          for f in "$WORK/smoke-out"/*; do
+            [ -f "$f" ] || continue
+            case "$f" in *.txt|*.log|*.tsv) cp "$f" "$OUTDIR/CE3_H6_PATCHED_$(basename "$f")";; esac
+          done
+          echo "SMOKE_EXIT_CODE=$rc" >> "$OUTDIR/CE3_PCSX_RELEASE_MANIFEST.txt"
+          echo "CE3_SMOKE_WRAPPER_EXIT_CODE=$rc"
+          if [ -f "$OUTDIR/CE3_H6_PATCHED_CE3_SMOKE_SUMMARY.txt" ]; then
+            cat "$OUTDIR/CE3_H6_PATCHED_CE3_SMOKE_SUMMARY.txt"
+          fi
+          if [ -f "$OUTDIR/CE3_H6_PATCHED_CE3_SMOKE_SCRIPT_EXIT_CODE.txt" ]; then
+            cat "$OUTDIR/CE3_H6_PATCHED_CE3_SMOKE_SCRIPT_EXIT_CODE.txt"
+          fi
+          if [ -f "$OUTDIR/CE3_H6_PATCHED_CE3_SMOKE_EMULATOR_LOG.txt" ]; then
+            echo "CE3_SMOKE_EMULATOR_LOG_TAIL_BEGIN"
+            tail -n 120 "$OUTDIR/CE3_H6_PATCHED_CE3_SMOKE_EMULATOR_LOG.txt"
+            echo "CE3_SMOKE_EMULATOR_LOG_TAIL_END"
+          fi
+          if [ "$rc" -eq 0 ]; then
+            echo "passed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "passed=false" >> "$GITHUB_OUTPUT"
+          fi
+          exit 0
+
+      - name: Langkah 0 — build and validate CE3 harness
+        id: ce3_build
+        if: steps.h6_smoke.outputs.passed == 'true'
+        shell: bash
+        run: |
+          set +e
+          python3 -m py_compile experiments/ce3_h6_positive_credit_probe.py > "$OUTDIR/CE3_STEP0_BUILD_VALIDATION.txt" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            python3 - <<'PY' >> "$OUTDIR/CE3_STEP0_BUILD_VALIDATION.txt" 2>&1
+          from pathlib import Path
+          source=Path("experiments/ce3_h6_positive_credit_probe.py").read_text(encoding="utf-8")
+          required=("FUN_800D15A8","FUN_800BE5D8","0x8001387C","0x80070EA0","0x80070F6C","CE3_RAM_FRAME180","CE3_RAM_FRAME360")
+          missing=[x for x in required if x not in source]
+          if missing: raise SystemExit("CE3_STEP0_REQUIRED_TOKEN_MISSING="+repr(missing))
+          print("CE3_STEP0_REQUIRED_TOKENS=PASS")
+          PY
+            rc=$?
+          fi
+          printf 'CE3_STEP0_EXIT_CODE=%s\n' "$rc" >> "$OUTDIR/CE3_STEP0_BUILD_VALIDATION.txt"
+          cat "$OUTDIR/CE3_STEP0_BUILD_VALIDATION.txt"
+          echo "CE3_STEP0_EXIT_CODE=$rc" > "$OUTDIR/CE3_STEP0_BUILD_EXIT_CODE.txt"
+          if [ "$rc" -eq 0 ]; then echo "passed=true" >> "$GITHUB_OUTPUT"; else echo "passed=false" >> "$GITHUB_OUTPUT"; fi
+          exit 0
+
+      - name: Run 20 H6 positive-credit launches (two player slots per launch)
+        if: steps.h6_smoke.outputs.passed == 'true' && steps.ce3_build.outputs.passed == 'true'
+        shell: bash
+        run: |
+          set +e
+          export DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1
+          export LD_LIBRARY_PATH="$WORK/capstone:$WORK/ffmpeg-libs:$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+          export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
+          export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
+          export QML2_IMPORT_PATH="$APPDIR/usr/qml"
+          python3 -m py_compile experiments/ce3_h6_positive_credit_probe.py
+          python3 experiments/ce3_h6_positive_credit_probe.py \
+            --target "$WORK/resume/target.sstate" --control "$WORK/resume/control.sstate" \
+            --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/source/scph7502.bin" \
+            --cue "$WORK/source/game-run.cue" --card "$WORK/reference.mcd" \
+            --work "$WORK" --out "$OUTDIR" --timeout-seconds "$TIMEOUT_SECONDS"
+          rc=$?
+          if [ ! -f "$OUTDIR/CE3_H6_CREDIT_SUMMARY.txt" ]; then
+            printf 'STATUS=SETUP_OR_PROBE_FAILED\nreason=no CE3 credit summary produced\n' > "$OUTDIR/CE3_H6_CREDIT_SUMMARY.txt"
+          fi
+          echo "CE3_WORKFLOW_SCRIPT_PROCESS_EXIT=$rc" > "$OUTDIR/CE3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt"
+          echo "CE3_ACTION_PROBE_PROCESS_EXIT=$rc"
+          [ ! -f "$OUTDIR/CE3_ACTION_CALL_SUMMARY.txt" ] || cat "$OUTDIR/CE3_H6_CREDIT_SUMMARY.txt"
+          [ ! -f "$OUTDIR/CE3_H6_CREDIT_RESULTS.tsv" ] || cat "$OUTDIR/CE3_H6_CREDIT_RESULTS.tsv"
+          exit 0
+
+      - name: Record CE3 probe blocked by H6 smoke or Langkah 0
+        if: steps.h6_smoke.outputs.passed != 'true' || steps.ce3_build.outputs.passed != 'true'
+        shell: bash
+        run: |
+          reason="H6 restore smoke did not pass"
+          if [ "${{ steps.ce3_build.outputs.passed }}" != "true" ]; then reason="Langkah 0 build/validation did not pass"; fi
+          printf 'STATUS=BELUM\nreason=%s; no CE3 runtime launch performed\n' "$reason" > "$OUTDIR/CE3_H6_CREDIT_SUMMARY.txt"
+          printf 'launch\ttile\tlevel\tattempt\tplayer\tplayer_status\n' > "$OUTDIR/CE3_H6_CREDIT_RESULTS.tsv"
+          printf 'launch\ttile\tlevel\tattempt\tstatus\twrapper_exit_code_decimal\n' > "$OUTDIR/CE3_H6_CREDIT_LAUNCHES.tsv"
+          printf 'CE3_SCRIPT_EXIT_CODE=TIDAK_DIJALANKAN\n' > "$OUTDIR/CE3_SCRIPT_EXIT_CODE.txt"
+          printf 'CE3_WORKFLOW_SCRIPT_PROCESS_EXIT=TIDAK_DIJALANKAN\n' > "$OUTDIR/CE3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt"
+          [ -f "$OUTDIR/CE3_STEP0_BUILD_VALIDATION.txt" ] || printf 'CE3_STEP0=NOT_REACHED\n' > "$OUTDIR/CE3_STEP0_BUILD_VALIDATION.txt"
+          [ -f "$OUTDIR/CE3_STEP0_BUILD_EXIT_CODE.txt" ] || printf 'CE3_STEP0_EXIT_CODE=TIDAK_DIJALANKAN\n' > "$OUTDIR/CE3_STEP0_BUILD_EXIT_CODE.txt"
+
+      - name: Remove private ROM, BIOS, savestates, Memory Card and RAM artifacts
+        if: always()
+        shell: bash
+        run: |
+          if [ -f "$WORK/xvfb.pid" ]; then kill "$(cat "$WORK/xvfb.pid")" 2>/dev/null || true; fi
+          rm -rf "$WORK"
+
+      - name: Validate and publish text-only CE3 result via Contents API
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/ce3-output"
+          mkdir -p "$out"
+          python3 - "$out" <<'PY'
+          from pathlib import Path
+          import sys
+          root=Path(sys.argv[1])
+          invalid=[str(p) for p in root.rglob("*") if p.is_file() and p.suffix.lower() not in {".txt",".tsv",".log"}]
+          if invalid: raise SystemExit("non-text result blocked: "+repr(invalid))
+          required=("CE3_PCSX_RELEASE_MANIFEST.txt","CE3_STEP0_BUILD_VALIDATION.txt","CE3_STEP0_BUILD_EXIT_CODE.txt","CE3_H6_CREDIT_SUMMARY.txt","CE3_H6_CREDIT_RESULTS.tsv","CE3_H6_CREDIT_LAUNCHES.tsv","CE3_SCRIPT_EXIT_CODE.txt","CE3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt")
+          for name in required:
+              if not (root/name).is_file():
+                  (root/name).write_text("STATUS=TIDAK_TERSDIA\\nreason=workflow did not create this output\\n",encoding="utf-8")
+          PY
+          dest="reports/stage1_economy/ce3-h6-positive-credit-probe-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="CE3 20 frame-aligned H6 positive-credit launches on pinned PCSX-Redux release") | .id' | head -n 1)"
+          test -n "$JOB_ID" || JOB_ID="TIDAK TAHU"
+          STATUS="$(sed -n 's/^STATUS=//p' "$out/CE3_H6_CREDIT_SUMMARY.txt" | head -n 1)"; test -n "$STATUS" || STATUS="INCOMPLETE"
+          RC="$(sed -n 's/^CE3_SCRIPT_EXIT_CODE=//p' "$out/CE3_SCRIPT_EXIT_CODE.txt" | head -n 1)"
+          test -n "$RC" || RC="$(sed -n 's/^SMOKE_EXIT_CODE=//p' "$out/CE3_PCSX_RELEASE_MANIFEST.txt" | head -n 1)"
+          test -n "$RC" || RC="TIDAK TAHU"
+          {
+            echo "STATUS=$STATUS"
+            echo "JOB=ce3-h6-positive-credit-probe"
+            echo "JOB_ID=$JOB_ID"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "EXIT_CODE=$RC"
+          } > "$out/ACTIONS_RUN_SUMMARY.txt"
+          API="https://api.github.com/repos/$RESEARCH_REPO/contents"
+          for f in "$out"/*; do
+            [ -f "$f" ] || continue
+            case "$f" in *.txt|*.tsv|*.log) ;; *) echo "blocked non-text output: $f"; exit 1;; esac
+            path="$dest/$(basename "$f")"
+            b64="$(base64 -w0 "$f")"
+            http="$(curl --silent --show-error -o "$RUNNER_TEMP/bb3-existing.json" -w '%{http_code}' -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/$path?ref=main")"
+            existing_sha=""
+            if [ "$http" = "200" ]; then
+              existing_sha="$(jq -r '.sha' "$RUNNER_TEMP/bb3-existing.json")"
+            elif [ "$http" != "404" ]; then
+              echo "unexpected Contents API GET HTTP $http for $path"; cat "$RUNNER_TEMP/bb3-existing.json"; exit 1
+            fi
+            if [ -n "$existing_sha" ] && [ "$existing_sha" != "null" ]; then
+              payload="$(jq -n --arg message "Publish CE3 run $GITHUB_RUN_ID: $(basename "$f")" --arg content "$b64" --arg branch main --arg sha "$existing_sha" '{message:$message,content:$content,branch:$branch,sha:$sha}')"
+            else
+              payload="$(jq -n --arg message "Publish CE3 run $GITHUB_RUN_ID: $(basename "$f")" --arg content "$b64" --arg branch main '{message:$message,content:$content,branch:$branch}')"
+            fi
+            curl --fail --silent --show-error -X PUT -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" -d "$payload" "$API/$path" >/dev/null
+            echo "PUBLISHED=$path"
+          done
