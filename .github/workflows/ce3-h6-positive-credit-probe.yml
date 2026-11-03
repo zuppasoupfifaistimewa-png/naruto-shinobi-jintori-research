@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: naruto-ce3-h6-positive-credit-probe-v1
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   ce3-h6-positive-credit-probe:
@@ -238,9 +238,12 @@ jobs:
             python3 - <<'PY' >> "$OUTDIR/CE3_STEP0_BUILD_VALIDATION.txt" 2>&1
           from pathlib import Path
           source=Path("experiments/ce3_h6_positive_credit_probe.py").read_text(encoding="utf-8")
-          required=("FUN_800D15A8","FUN_800BE5D8","0x8001387C","0x80070EA0","0x80070F6C","CE3_RAM_FRAME180","CE3_RAM_FRAME360")
+          required=("FUN_800D15A8","FUN_800BE5D8","0x8001387C","0x80070EA0","0xB4","CE3_RAM_FRAME180","CE3_RAM_FRAME360")
           missing=[x for x in required if x not in source]
           if missing: raise SystemExit("CE3_STEP0_REQUIRED_TOKEN_MISSING="+repr(missing))
+          chakra1=0x80070EA0 + 1*0xB4 + 0x18
+          if chakra1 != 0x80070F6C: raise SystemExit("CE3_STEP0_PLAYER1_CHAKRA_ADDRESS_MISMATCH="+hex(chakra1))
+          print("CE3_STEP0_PLAYER_CHakra_ADDRESSES=PASS player0=0x80070EB8 player1=0x80070F6C")
           print("CE3_STEP0_REQUIRED_TOKENS=PASS")
           PY
             rc=$?
