@@ -1,7 +1,7 @@
 # BB1–BB2 — hasil final audit statis Barrier / record petak
 
-Tanggal: 3 November 2026  
-Game: Naruto — Shinobi no Sato no Jintori Gassen (PS1, SLPS-03553)  
+Tanggal: 3 November 2026
+Game: Naruto — Shinobi no Sato no Jintori Gassen (PS1, SLPS-03553)
 Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 
 ## Status
@@ -10,7 +10,7 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 |---|---|---|---|
 | BB1 — field petak +0x0B dan resource 630 | TUNTAS statis | K4 | Semua store +0x0B dipilah menurut objek; dua store benar-benar menulis record tile. Label gameplay exact tetap TIDAK TAHU. |
 | BB2 — biaya dan kenaikan level action 3/8 | TUNTAS statis | K4 | Fee, guard saldo, pending debit, dua level nibble dan refresh helper terbukti. Nama gameplay action 3/8 tetap TIDAK TAHU. |
-| BB3 — konfirmasi transaksi runtime | BELUM | K0 transaksi; K2 H6 smoke | H6 load/read-only PASS, tetapi probe transaksi masih memperbaiki harness. Run 41543294021 sedang berjalan ketika laporan diperbarui. |
+| BB3 — konfirmasi runtime blok transaksi action 3/8 | TUNTAS TERBATAS | K5-terbatas | Run 41550406414: 16/16 uji dispatch-block terisolasi PASS, dua pengulangan per action/level; lihat laporan BB3_RUNTIME_COMPLETE_2026-11-03.md. Bukan uji input gameplay Story Mode dan tidak menetapkan label visual aksi. |
 
 ## BB1 — pemetaan semua store +0x0B
 
@@ -98,19 +98,9 @@ Direct-call scan Entry 1 run 41541667221 menemukan satu caller tervalidasi: FUN_
 
 Nama gameplay action byte 3 dan 8: TIDAK TAHU. Jangan menyebutnya otomatis sebagai aksi Barrier placement. Rumus positif 3 petak milik pemain bukan bagian cabang ini dan belum diuji dalam BB3.
 
-## BB3 — yang masih terbuka
+## Penutupan BB3 — uji runtime terbatas
 
-H6 smoke dua launch sebelumnya berhasil: SaveStateLoaded PASS, tile array 0x8013B818, tile count 22, manager 0x801EFBB8, memory-file read PASS, RAM writes NONE, Memory Card disposable tetap sama.
-
-Probe lama 41536404671 berhenti pada setup pertama, bukan transaksi. Commit 59998bf31c4efee0fc3ed6729d973b2f6f20e031 memperbaiki lifecycle: SaveStateLoaded hanya menandai event; setelah load call kembali, emulator di-resume; setup didefer sampai dua GPU VSync.
-
-Run 41542947152 berhasil melewati smoke dan mencapai BB3_POST_LOAD_VSYNC=2, tetapi SETUP_FAIL karena Lua belum mendeklarasikan TILE_INDEX/TILE_STRIDE. Ini bug harness, bukan bukti transaksi game gagal. Commit d99f57ba98e5b2fc598299ceb69bf1ecc7a2f4c6 menambahkan kedua konstanta. Run berikutnya 41543294021 sedang berjalan saat laporan ini diperbarui.
-
-Kriteria BB3 tetap: dispatch tercapai; action byte benar; tile index benar; pending delta -fee; kedua nibble naik; dua refresh helper tercapai; dua launch independen; kartu disposable tidak berubah. Sampai hasil lulus tersedia, BB3 tetap BELUM TUNTAS.
-
-## Kesimpulan
-
-- BB1: TUNTAS statis K4 dalam cakupan array tile Entry 1 dan resource 630.
-- BB2: TUNTAS statis K4 untuk transaksi action byte 3/8 dalam FUN_800D15A8.
-- BB3: BELUM TUNTAS, transaksi runtime belum lulus.
-- Tidak ada ROM/ISO, BIOS, savestate, Memory Card, raw RAM dump, screenshot/video/frame, atau binary yang dikomit dalam laporan ini.
+Uji runtime terkontrol BB3 selesai pada run 41550406414: 16/16 PASS, nol validation error, dua peluncuran independen untuk masing-masing kombinasi action byte 3/8 dan level nibble 0–3. Status ini menutup konfirmasi runtime pada blok dispatch/transaksi dalam H6 hybrid fixture, bukan demonstrasi input gameplay Story Mode.
+- Laporan lengkap: reports/stage1_economy/BB3_RUNTIME_COMPLETE_2026-11-03.md
+- Hasil terstruktur: reports/stage1_economy/bb3-h6-action-call-probe-run-41550406414/attempt-1/BB3_ACTION_CALL_RESULTS.tsv
+- Ringkasan Actions: reports/stage1_economy/bb3-h6-action-call-probe-run-41550406414/attempt-1/ACTIONS_RUN_SUMMARY.txt
