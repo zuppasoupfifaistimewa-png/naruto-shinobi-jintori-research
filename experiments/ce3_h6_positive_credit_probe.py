@@ -555,7 +555,7 @@ def main():
         launch_rows.append({
             "launch": launch_number, "tile": tile_index, "level": level, "attempt": attempt,
             "status": "PASS" if launch_pass else "FAIL", "wrapper_exit_code_decimal": wrapper_rc,
-            "wall_seconds": "%.3f" % wall, "ram180_sha256": ram180_sha, "ram360_sha256": ram360_sha,
+            "wall_seconds": "%.3f" % wall, "ram180_bytes": ram180_bytes, "ram360_bytes": ram360_bytes, "ram180_sha256": ram180_sha, "ram360_sha256": ram360_sha,
             "memory_card_sha256_before": card_before, "memory_card_sha256_after": card_after,
             "raw_log_tail": "\n".join(log_text.splitlines()[-100:]),
         })
