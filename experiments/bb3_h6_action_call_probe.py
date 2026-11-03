@@ -511,147 +511,147 @@ def main():
                    for attempt in (1, 2)]
     for tile_index, action, level, attempt in test_cases:
         expected_fee = EXPECTED_FEES[tile_index]
-    launch_total += 1
-    launch = work / "launches" / ("tile-%d-action-%d-level-%d-attempt-%d" % (tile_index, action, level, attempt))
-    home = launch / "home"
-    logs = launch / "logs"
-    for folder in (home/".config", home/".data", home/"runtime", launch/"runtime", logs):
-        folder.mkdir(parents=True, exist_ok=True)
-    # PCSX runs with cwd=launch and opens this relative path from Lua.
-    (launch / "resume").symlink_to(work / "resume", target_is_directory=True)
-    try:
-        (home/"runtime").chmod(0o700)
-    except OSError:
-        pass
-    card = launch / "memory-card.mcd"
-    shutil.copyfile(reference_card, card)
-    card_before = sha(card.read_bytes())
-    lua_path = launch / "bb3.lua"
-    lua_path.write_text(make_lua(action, level), encoding="utf-8")
-    pad_text = (
-        "PCSX.settings.pads[1].DeviceType = 'Analog'\n"
-        "PCSX.settings.pads[1].Connected = true\n"
-        "PCSX.SIO0.slots[1].pads[1].map()\n"
-        "print('BB3_CONTROLLER_MAPPED_NO_GAMEPLAY_INPUT=1')\n"
-    )
-    env = env_base.copy()
-    env.update({
-        "HOME": str(home), "XDG_CONFIG_HOME": str(home/".config"),
-        "XDG_DATA_HOME": str(home/".data"), "XDG_RUNTIME_DIR": str(home/"runtime"),
-        "BB3_ACTION": str(action), "BB3_LEVEL": str(level),
-        "BB3_TILE_INDEX": str(tile_index), "BB3_EXPECTED_FEE": str(expected_fee),
-    })
-    stdout_path = logs / "emulator-stdout.txt"
-    pcsx_log_path = logs / "pcsx-redux.log"
-    command = [
-        "timeout", "--signal=INT", "--kill-after=10s", "%ds" % timeout_s,
-        args.pcsx_bin, "-noupdate", "-debugger", "-interpreter",
-        "-bios", args.bios, "-iso", args.cue, "-memcard1", str(card),
-        "-exec", pad_text, "-dofile", str(lua_path),
-        "-softgpu", "-stdout", "-lua_stdout", "-logfile", str(pcsx_log_path), "-run",
-    ]
-    started = time.monotonic()
-    with stdout_path.open("wb") as f:
+        launch_total += 1
+        launch = work / "launches" / ("tile-%d-action-%d-level-%d-attempt-%d" % (tile_index, action, level, attempt))
+        home = launch / "home"
+        logs = launch / "logs"
+        for folder in (home/".config", home/".data", home/"runtime", launch/"runtime", logs):
+            folder.mkdir(parents=True, exist_ok=True)
+        # PCSX runs with cwd=launch and opens this relative path from Lua.
+        (launch / "resume").symlink_to(work / "resume", target_is_directory=True)
         try:
-            proc = subprocess.run(command, cwd=launch, env=env, stdout=f,
-                                  stderr=subprocess.STDOUT, check=False)
-            wrapper_rc = proc.returncode
-        except Exception as exc:
-            wrapper_rc = 255
-            f.write(("BB3_LAUNCH_EXCEPTION=" + repr(exc) + "\n").encode())
-    wall = time.monotonic() - started
-    max_wall = max(max_wall, wall)
-    log_text = stdout_path.read_text(encoding="utf-8", errors="replace")
-    if pcsx_log_path.exists():
-        log_text += "\n" + pcsx_log_path.read_text(encoding="utf-8", errors="replace")
-    values = {}
-    for line in log_text.splitlines():
-        if line.startswith("BB3_") and "=" in line:
-            k, v = line.split("=", 1)
-            values[k] = v.strip()
-    def consume_ram_capture(filename, marker):
-        capture_path = launch / "runtime" / filename
-        status = "NO_RESULT"
-        digest = "TIDAK TAHU"
-        byte_count = 0
-        if capture_path.is_file():
+            (home/"runtime").chmod(0o700)
+        except OSError:
+            pass
+        card = launch / "memory-card.mcd"
+        shutil.copyfile(reference_card, card)
+        card_before = sha(card.read_bytes())
+        lua_path = launch / "bb3.lua"
+        lua_path.write_text(make_lua(action, level), encoding="utf-8")
+        pad_text = (
+            "PCSX.settings.pads[1].DeviceType = 'Analog'\n"
+            "PCSX.settings.pads[1].Connected = true\n"
+            "PCSX.SIO0.slots[1].pads[1].map()\n"
+            "print('BB3_CONTROLLER_MAPPED_NO_GAMEPLAY_INPUT=1')\n"
+        )
+        env = env_base.copy()
+        env.update({
+            "HOME": str(home), "XDG_CONFIG_HOME": str(home/".config"),
+            "XDG_DATA_HOME": str(home/".data"), "XDG_RUNTIME_DIR": str(home/"runtime"),
+            "BB3_ACTION": str(action), "BB3_LEVEL": str(level),
+            "BB3_TILE_INDEX": str(tile_index), "BB3_EXPECTED_FEE": str(expected_fee),
+        })
+        stdout_path = logs / "emulator-stdout.txt"
+        pcsx_log_path = logs / "pcsx-redux.log"
+        command = [
+            "timeout", "--signal=INT", "--kill-after=10s", "%ds" % timeout_s,
+            args.pcsx_bin, "-noupdate", "-debugger", "-interpreter",
+            "-bios", args.bios, "-iso", args.cue, "-memcard1", str(card),
+            "-exec", pad_text, "-dofile", str(lua_path),
+            "-softgpu", "-stdout", "-lua_stdout", "-logfile", str(pcsx_log_path), "-run",
+        ]
+        started = time.monotonic()
+        with stdout_path.open("wb") as f:
             try:
-                raw_ram = capture_path.read_bytes()
-                byte_count = len(raw_ram)
-                if byte_count == 0x200000:
-                    digest = sha(raw_ram)
-                    status = "PASS" if values.get(marker) == "PASS" else "MARKER_MISSING"
-                else:
-                    status = "SHORT_READ:%d" % byte_count
+                proc = subprocess.run(command, cwd=launch, env=env, stdout=f,
+                                      stderr=subprocess.STDOUT, check=False)
+                wrapper_rc = proc.returncode
             except Exception as exc:
-                status = "HASH_FAIL:" + str(exc)
-            finally:
-                capture_path.unlink(missing_ok=True)
-        a_match = "YES" if digest == ram_reference_a else "NO"
-        b_match = "YES" if digest == ram_reference_b else "NO"
-        either_match = "YES" if a_match == "YES" or b_match == "YES" else "NO"
-        return status, digest, byte_count, a_match, b_match, either_match
-    ram_capture_status, ram_before_sha, ram_bytes, ram_ref_a, ram_ref_b, ram_reference_match = consume_ram_capture(
-        "bb3-before-poke-2mib.bin", "BB3_RAM_BEFORE_POKE_CAPTURE"
-    )
-    load_capture_status, ram_load_sha, ram_load_bytes, load_ref_a, load_ref_b, load_ref_either = consume_ram_capture(
-        "bb3-at-load-event-2mib.bin", "BB3_RAM_AT_LOAD_EVENT_CAPTURE"
-    )
-    card_after = sha(card.read_bytes()) if card.exists() else "TIDAK TAHU"
-    result_status = values.get("BB3_CALL_STATUS", "NO_RESULT")
-    if result_status == "PASS" and values.get("BB3_PENDING_DELTA") != str(-int(values.get("BB3_TILE1A_FEE", "0"))):
-        result_status = "DELTA_MISMATCH"
-    rows.append({
-        "tile_index": tile_index, "expected_fee": expected_fee,
-        "action_byte": action, "target_level_nibble_8_11": level, "attempt": attempt,
-        "test_label": "UJI_PANGGILAN_FUNGSI_NO_GAMEPLAY",
-        "call_status": result_status, "action_dispatch_reached": values.get("BB3_ACTION_DISPATCH_REACHED", "NO"),
-        "action_byte_at_dispatch": values.get("BB3_ACTION_BYTE_AT_DISPATCH", "TIDAK TAHU"),
-        "selected_tile_override": values.get("BB3_SELECTED_TILE_OVERRIDE", "NO"),
-        "selected_tile_index": values.get("BB3_SELECTED_TILE_INDEX", "TIDAK TAHU"),
-        "refresh_800BB004_reached": values.get("BB3_REFRESH_FUN_800BB004_REACHED", "NO"),
-        "refresh_800BE464_reached": values.get("BB3_REFRESH_FUN_800BE464_REACHED", "NO"),
-        "participant_index": values.get("BB3_PARTICIPANT_INDEX", "TIDAK TAHU"),
-        "balance_original_h6": values.get("BB3_BALANCE_ORIGINAL_H6", "TIDAK TAHU"),
-        "balance_test_start": values.get("BB3_BALANCE_TEST_START", "TIDAK TAHU"),
-        "balance_after": values.get("BB3_BALANCE_AFTER", "TIDAK TAHU"),
-        "pending_before": values.get("BB3_PENDING_BEFORE", "TIDAK TAHU"),
-        "pending_after": values.get("BB3_PENDING_AFTER", "TIDAK TAHU"),
-        "pending_delta": values.get("BB3_PENDING_DELTA", "TIDAK TAHU"),
-        "tile20_before": values.get("BB3_TILE20_BEFORE", "TIDAK TAHU"),
-        "tile20_after": values.get("BB3_TILE20_AFTER", "TIDAK TAHU"),
-        "level_8_11_before": values.get("BB3_LEVEL_NIBBLE_8_11_BEFORE", "TIDAK TAHU"),
-        "level_8_11_after": values.get("BB3_LEVEL_NIBBLE_8_11_AFTER", "TIDAK TAHU"),
-        "nibble_4_7_before": values.get("BB3_NIBBLE_4_7_BEFORE", "TIDAK TAHU"),
-        "nibble_4_7_after": values.get("BB3_NIBBLE_4_7_AFTER", "TIDAK TAHU"),
-        "tile_0E": values.get("BB3_TILE0E", "TIDAK TAHU"),
-        "tile_1A_fee": values.get("BB3_TILE1A_FEE", "TIDAK TAHU"),
-        "tile_1C": values.get("BB3_TILE1C", "TIDAK TAHU"),
-        "tile_1E": values.get("BB3_TILE1E", "TIDAK TAHU"),
-        "memory_card_sha256_before": card_before, "memory_card_sha256_after": card_after,
-        "memory_card_unchanged": "YES" if card_before == card_after else "NO",
-        "ram_before_poke_capture": ram_capture_status,
-        "ram_2mib_sha256_before_poke": ram_before_sha,
-        "ram_bytes_before_poke": ram_bytes,
-        "ram_reference_a_match": ram_ref_a,
-        "ram_reference_b_match": ram_ref_b,
-        "ram_reference_match_either": ram_reference_match,
-        "ram_at_load_event_capture": load_capture_status,
-        "ram_2mib_sha256_at_load_event": ram_load_sha,
-        "ram_bytes_at_load_event": ram_load_bytes,
-        "ram_at_load_reference_a_match": load_ref_a,
-        "ram_at_load_reference_b_match": load_ref_b,
-        "ram_at_load_reference_match_either": load_ref_either,
-        "wrapper_exit_code_decimal": wrapper_rc, "wall_seconds": "%.3f" % wall,
-        "timeout_seconds": timeout_s,
-    })
-    if result_status != "PASS" or wrapper_rc != 0:
-        diag_name = "BB3_FIRST_NONPASS_T%d_A%d_L%d_ATTEMPT%d.txt" % (tile_index, action, level, attempt)
-        (out / diag_name).write_text(log_text[-30000:], encoding="utf-8")
-        stop_reason = ("FIRST_NONPASS tile=%d action=%d level=%d attempt=%d status=%s wrapper_exit=%d wall=%.3f" %
-                       (tile_index, action, level, attempt, result_status, wrapper_rc, wall))
-        stop = True
-        break
+                wrapper_rc = 255
+                f.write(("BB3_LAUNCH_EXCEPTION=" + repr(exc) + "\n").encode())
+        wall = time.monotonic() - started
+        max_wall = max(max_wall, wall)
+        log_text = stdout_path.read_text(encoding="utf-8", errors="replace")
+        if pcsx_log_path.exists():
+            log_text += "\n" + pcsx_log_path.read_text(encoding="utf-8", errors="replace")
+        values = {}
+        for line in log_text.splitlines():
+            if line.startswith("BB3_") and "=" in line:
+                k, v = line.split("=", 1)
+                values[k] = v.strip()
+        def consume_ram_capture(filename, marker):
+            capture_path = launch / "runtime" / filename
+            status = "NO_RESULT"
+            digest = "TIDAK TAHU"
+            byte_count = 0
+            if capture_path.is_file():
+                try:
+                    raw_ram = capture_path.read_bytes()
+                    byte_count = len(raw_ram)
+                    if byte_count == 0x200000:
+                        digest = sha(raw_ram)
+                        status = "PASS" if values.get(marker) == "PASS" else "MARKER_MISSING"
+                    else:
+                        status = "SHORT_READ:%d" % byte_count
+                except Exception as exc:
+                    status = "HASH_FAIL:" + str(exc)
+                finally:
+                    capture_path.unlink(missing_ok=True)
+            a_match = "YES" if digest == ram_reference_a else "NO"
+            b_match = "YES" if digest == ram_reference_b else "NO"
+            either_match = "YES" if a_match == "YES" or b_match == "YES" else "NO"
+            return status, digest, byte_count, a_match, b_match, either_match
+        ram_capture_status, ram_before_sha, ram_bytes, ram_ref_a, ram_ref_b, ram_reference_match = consume_ram_capture(
+            "bb3-before-poke-2mib.bin", "BB3_RAM_BEFORE_POKE_CAPTURE"
+        )
+        load_capture_status, ram_load_sha, ram_load_bytes, load_ref_a, load_ref_b, load_ref_either = consume_ram_capture(
+            "bb3-at-load-event-2mib.bin", "BB3_RAM_AT_LOAD_EVENT_CAPTURE"
+        )
+        card_after = sha(card.read_bytes()) if card.exists() else "TIDAK TAHU"
+        result_status = values.get("BB3_CALL_STATUS", "NO_RESULT")
+        if result_status == "PASS" and values.get("BB3_PENDING_DELTA") != str(-int(values.get("BB3_TILE1A_FEE", "0"))):
+            result_status = "DELTA_MISMATCH"
+        rows.append({
+            "tile_index": tile_index, "expected_fee": expected_fee,
+            "action_byte": action, "target_level_nibble_8_11": level, "attempt": attempt,
+            "test_label": "UJI_PANGGILAN_FUNGSI_NO_GAMEPLAY",
+            "call_status": result_status, "action_dispatch_reached": values.get("BB3_ACTION_DISPATCH_REACHED", "NO"),
+            "action_byte_at_dispatch": values.get("BB3_ACTION_BYTE_AT_DISPATCH", "TIDAK TAHU"),
+            "selected_tile_override": values.get("BB3_SELECTED_TILE_OVERRIDE", "NO"),
+            "selected_tile_index": values.get("BB3_SELECTED_TILE_INDEX", "TIDAK TAHU"),
+            "refresh_800BB004_reached": values.get("BB3_REFRESH_FUN_800BB004_REACHED", "NO"),
+            "refresh_800BE464_reached": values.get("BB3_REFRESH_FUN_800BE464_REACHED", "NO"),
+            "participant_index": values.get("BB3_PARTICIPANT_INDEX", "TIDAK TAHU"),
+            "balance_original_h6": values.get("BB3_BALANCE_ORIGINAL_H6", "TIDAK TAHU"),
+            "balance_test_start": values.get("BB3_BALANCE_TEST_START", "TIDAK TAHU"),
+            "balance_after": values.get("BB3_BALANCE_AFTER", "TIDAK TAHU"),
+            "pending_before": values.get("BB3_PENDING_BEFORE", "TIDAK TAHU"),
+            "pending_after": values.get("BB3_PENDING_AFTER", "TIDAK TAHU"),
+            "pending_delta": values.get("BB3_PENDING_DELTA", "TIDAK TAHU"),
+            "tile20_before": values.get("BB3_TILE20_BEFORE", "TIDAK TAHU"),
+            "tile20_after": values.get("BB3_TILE20_AFTER", "TIDAK TAHU"),
+            "level_8_11_before": values.get("BB3_LEVEL_NIBBLE_8_11_BEFORE", "TIDAK TAHU"),
+            "level_8_11_after": values.get("BB3_LEVEL_NIBBLE_8_11_AFTER", "TIDAK TAHU"),
+            "nibble_4_7_before": values.get("BB3_NIBBLE_4_7_BEFORE", "TIDAK TAHU"),
+            "nibble_4_7_after": values.get("BB3_NIBBLE_4_7_AFTER", "TIDAK TAHU"),
+            "tile_0E": values.get("BB3_TILE0E", "TIDAK TAHU"),
+            "tile_1A_fee": values.get("BB3_TILE1A_FEE", "TIDAK TAHU"),
+            "tile_1C": values.get("BB3_TILE1C", "TIDAK TAHU"),
+            "tile_1E": values.get("BB3_TILE1E", "TIDAK TAHU"),
+            "memory_card_sha256_before": card_before, "memory_card_sha256_after": card_after,
+            "memory_card_unchanged": "YES" if card_before == card_after else "NO",
+            "ram_before_poke_capture": ram_capture_status,
+            "ram_2mib_sha256_before_poke": ram_before_sha,
+            "ram_bytes_before_poke": ram_bytes,
+            "ram_reference_a_match": ram_ref_a,
+            "ram_reference_b_match": ram_ref_b,
+            "ram_reference_match_either": ram_reference_match,
+            "ram_at_load_event_capture": load_capture_status,
+            "ram_2mib_sha256_at_load_event": ram_load_sha,
+            "ram_bytes_at_load_event": ram_load_bytes,
+            "ram_at_load_reference_a_match": load_ref_a,
+            "ram_at_load_reference_b_match": load_ref_b,
+            "ram_at_load_reference_match_either": load_ref_either,
+            "wrapper_exit_code_decimal": wrapper_rc, "wall_seconds": "%.3f" % wall,
+            "timeout_seconds": timeout_s,
+        })
+        if result_status != "PASS" or wrapper_rc != 0:
+            diag_name = "BB3_FIRST_NONPASS_T%d_A%d_L%d_ATTEMPT%d.txt" % (tile_index, action, level, attempt)
+            (out / diag_name).write_text(log_text[-30000:], encoding="utf-8")
+            stop_reason = ("FIRST_NONPASS tile=%d action=%d level=%d attempt=%d status=%s wrapper_exit=%d wall=%.3f" %
+                           (tile_index, action, level, attempt, result_status, wrapper_rc, wall))
+            stop = True
+            break
 
 
     columns = list(rows[0].keys()) if rows else []
