@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   ce3-h6-positive-credit-probe:
-    name: CE3 40 frame-aligned H6 function-call launches on pinned PCSX-Redux release
+    name: CE3 20 frame-aligned H6 positive-credit launches on pinned PCSX-Redux release
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     container:
@@ -273,7 +273,7 @@ jobs:
           fi
           echo "CE3_WORKFLOW_SCRIPT_PROCESS_EXIT=$rc" > "$OUTDIR/CE3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt"
           echo "CE3_ACTION_PROBE_PROCESS_EXIT=$rc"
-          [ ! -f "$OUTDIR/CE3_ACTION_CALL_SUMMARY.txt" ] || cat "$OUTDIR/CE3_H6_CREDIT_SUMMARY.txt"
+          [ ! -f "$OUTDIR/CE3_H6_CREDIT_SUMMARY.txt" ] || cat "$OUTDIR/CE3_H6_CREDIT_SUMMARY.txt"
           [ ! -f "$OUTDIR/CE3_H6_CREDIT_RESULTS.tsv" ] || cat "$OUTDIR/CE3_H6_CREDIT_RESULTS.tsv"
           exit 0
 
