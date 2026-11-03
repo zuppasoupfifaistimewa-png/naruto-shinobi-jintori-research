@@ -216,6 +216,11 @@ jobs:
             --data "$data" \
             --report "$out/BB2_FULL_DATABIN_TEXT_SCAN.txt" \
             --tsv "$out/bb2-full-databin-text-scan.tsv"
+          python3 tools/step7/ScanIndirectCallCandidates.py \
+            --exe "$exe" \
+            --entry1 "$input/DATA_BIN_ENTRY_0001.bin" \
+            --data "$data" \
+            --out "$out/cd1-raw-indirect-call-candidates.txt"
           rm -rf "$source" "$extracted"
           test ! -e "$source" && test ! -e "$extracted"
           echo "source_disc_and_DATA_BIN_removed_before_Ghidra=PASS" >> "$out/input-identity.txt"
