@@ -139,3 +139,16 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 - Run summary commit 61a23faa60670fe299cfecea836a8ced71ea46d8; changed file reports/stage1_economy/bb3-h6-action-call-probe-run-41556732137/attempt-1/BB3_VERIFIED_SUMMARY.txt.
 - Runtime report commit dd44eb3d98da4d645d703cbf488c4068be02adfc; changed file reports/stage1_economy/BB3_RUNTIME_COMPLETE_2026-11-03.md.
 - K5 applies only to this direct function-call test on H6 HIBRIDA, not normal Story Mode input or visible label interpretation. Positive income control and positive-credit/Barrier Release event were not part of BB3 matrix.
+
+
+### BB2 — upaya lanjutan pemetaan token pesan 0xBE
+
+- Workflow Step7 diperluas untuk mengekspor helper pesan Main EXE yang dipanggil dari FUN_8001AAD4: 0x8001AB60, 0x8001ABC0, 0x8001AC10, 0x8001AC7C, 0x8001AC5C, 0x8001AD7C, 0x8001AD64.
+- Commit workflow: 5c92f44fba20baa0ccd161a838cb8cc9f62b33fe; changed file .github/workflows/step7-entry1-buffer-base-audit.yml.
+- Sampai poll terakhir belum ada run Step7 baru yang memuat target tambahan; run75 (41559535429) tetap run terbaru Step7 yang sudah selesai. Tidak boleh menyatakan pesan 0xBE terpecahkan.
+- BB2 tetap SEBAGIAN karena field/control-flow statis selesai, tetapi label action 3/8, arti pesan 0xBE, identitas unit currency Chakra, dan Barrier Release masih TIDAK TAHU. Lanjutkan hanya melalui bukti teks/UI atau trace runtime normal yang dapat membedakan hipotesis; jangan menamakan aksi dari bentuk rumus saja.
+
+### BB3 — completion scope note
+
+- BB3 matrix full completed by run41556732137 with 40/40 PASS and two launch attempts per tile/action/level. Runtime report and compact summary are recorded above.
+- BB3 status TUNTAS K5 terbatas to direct dispatch function-call test under H6 HIBRIDA. It is not controller gameplay and does not resolve action labels.
