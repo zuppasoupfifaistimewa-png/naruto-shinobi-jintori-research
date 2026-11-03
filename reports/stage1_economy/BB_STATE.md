@@ -6,57 +6,44 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 
 | Tahap | Status | Kelas bukti | Ringkasan dan batas |
 |---|---|---|---|
-| BB1 | SEBAGIAN — inti semantik statis terbukti | K4 untuk hitung rantai tertaut; geometri tetangga belum terbukti | Semua enam direct store +0x0B dipilah. Dua store tile (0x800BE1B0/0x800BE330), empat store lain objek DAT_8013A680. FUN_800BE0E4 mengikuti indeks tautan +0x01, hanya type 5 dan owner bits12–15 sama, menulis jumlah tautan valid selain petak awal. Bukti koordinat/arah tetangga dari penulis +0x01 belum ada; nama gameplay +0x0B TIDAK TAHU. Resource index4 cocok 120/60/140/265/530; slot 1050 belum diamati. Laporan supplement commit e33537adbbf9e79739ca1c7e559ae19f1ea0cd3d. |
-| BB2 | TUNTAS dalam cakupan statis | K4 | Action byte 3/8 di FUN_800D15A8 membaca fee u16(tile+0x1A), memeriksa saldo participant+0x04, menyimpan pending delta −fee pada manager+0x2EE, menaikkan nibble tile+0x20 bits 8–11 dan 4–7 masing-masing satu, lalu memanggil FUN_800BB004 dan FUN_800BE464. Nama gameplay action 3/8 tetap TIDAK TAHU. |
-| BB3 | SEBAGIAN — runtime terbatas telah lolos; perluasan penuh masih berjalan | K5-terbatas pada subcakupan lama; K0 hasil matriks baru sampai diterbitkan | Run 41550406414: 16/16 PASS untuk tile 4, action 3/8, level 0–3, dua launch/kondisi; pending −100, kedua nibble +1, kedua refresh helper tercapai, Memory Card disposable tetap identik. Ini direct dispatch-block test pada H6 HIBRIDA, tanpa input kontrol. Perluasan baru run 41553653484 sedang menjalankan 40 launch: tile 4/7 × action 3/8 × level 0–4 × dua launch; snapshot RAM 2 MiB pre-poke ditangkap setelah post-load VSync 180 agar bisa dibandingkan dengan baseline frame-180. Belum ada TSV final atau exit code script. |
+| BB1 | TUNTAS dalam cakupan statis | K4 | Semua enam direct byte store +0x0B Entry 1 telah dipilah. Dua store menulis record petak DAT_8013EA84 + index×0x124; empat lain menulis objek selector DAT_8013A680. FUN_800BE0E4 menghitung jumlah link lanjutan type-5 dengan owner sama, lalu menulis count itu ke semua record rantai. Hubungan link dengan tetangga geometris, batas gameplay maksimum lima, dan label gameplay +0x0B tetap TIDAK TAHU. Resource 630: 22 record; mapping 4 snapshot H6 cocok 1.760/1.760 field. |
+| BB2 | SEBAGIAN | K4 untuk blok transaksi/debit/kredit; K2–K3 untuk producer mapping | FUN_800D15A8 membaca fee u16(tile+0x1A), memeriksa saldo+0x04, mengisi pending debit−fee pada +0x2EE, menaikkan nibble bits8–11 dan bits4–7, lalu refresh. Cabang kredit terpisah state DAT_80139F03=2 dengan input FUN_80102408()==0 menulis +0x1E + level×+0x1C. Producer byte3 (FUN_800D9570) dan byte8 (FUN_800EB434) serta caller FUN_800F3658 diketahui; store 8 ketiga PC0x800EF3CC belum punya function entry/caller. Nama gameplay action 3/8 tetap TIDAK TAHU. |
+| BB3 | SEBAGIAN — K5-terbatas pada subcakupan lama | K5-terbatas | Run 41550406414: 16/16 PASS untuk tile4, action3/8, level0–3, dua peluncuran independen/kondisi; delta pending−100, kedua nibble naik, kedua refresh tercapai, Memory Card disposable tidak berubah. Run 41552617808: 20/20 launch transaksi menghasilkan perubahan yang diharapkan untuk level0–4, tetapi RAM pre-poke ditangkap pada 2 VSync dan tidak cocok baseline frame180/frame360; script exit2. Run 41553653484 masih in_progress pada langkah 40 launch: tile4/7 × action3/8 × level0–4 × dua launch; RAM pre-poke harus dicapture setelah 180 post-load VSync agar dibandingkan baseline frame180. Belum ada TSV final/summary/exit code untuk run ini. |
 
 ## PC acuan
 
-- BB1: FUN_800BE0E4 reset tile+0x0B di 0x800BE1B0 dan menulis hitungan rantai di 0x800BE330; FUN_800BE464 membaca +0x0B di 0x800BE544 dan 0x800BE5A0.
-- BB2: FUN_800D15A8; action byte dibaca di 0x800D4470; dispatch block mulai 0x800D4468; selector FUN_800BBD9C dipanggil di 0x800D45D0; fee dibaca di 0x800D4628; pending debit ditulis di 0x800D46F8; nibble bits 8–11 diubah pada 0x800D4724–0x800D4764; nibble bits 4–7 diubah pada 0x800D47F4–0x800D4834; refresh di 0x800D4840/0x800D4848.
-- BB3: direct probe memasuki dispatch di 0x800D4464, memeriksa action byte di 0x800D4470, memilih tile di 0x800D45D0, mencapai helper refresh di 0x800D4840/0x800D4848, dan kembali ke sentinel 0x80011448.
+- BB1: FUN_800BE0E4 reset tile+0x0B di 0x800BE1B0 dan menulis nilai rantai di 0x800BE330; FUN_800BE464 membaca +0x0B di 0x800BE544 dan 0x800BE5A0.
+- BB2: FUN_800D15A8; action byte dibaca di 0x800D4470; dispatch block mulai 0x800D4468; selector FUN_800BBD9C di 0x800D45D0; fee dibaca di 0x800D4628; pending debit ditulis di 0x800D46F8; level nibble bits8–11 di 0x800D4724–0x800D4764; bits4–7 di 0x800D47F4–0x800D4834; refresh 0x800D4840/0x800D4848.
+- BB2 producer: byte3 write 0x800DAA88 (FUN_800D9570), caller FUN_800F3658 PC0x800F5E1C; byte8 write 0x800EC3A8 (FUN_800EB434), caller FUN_800F3658 PC0x800F5CF8; extra byte8 write 0x800EF3CC not attributed to a Ghidra function/caller.
+- BB2 credit trigger: FUN_800D15A8 case DAT_80139F03==2, manager+0x370==1, FUN_80102408()==0; credit tile+0x1E + (tile+0x20 bits8–11)×tile+0x1C, pending to participant manager+0x2EE + participant_index×2.
+- BB3: direct dispatch probe enters 0x800D4464, observes action byte 0x800D4470, selector 0x800D45D0, refresh helpers 0x800D4840/0x800D4848, returns sentinel 0x80011448.
 
-## Run, job, dan commit penting
+## Bukti statis dan laporan
 
-- BB1 parser-corrected census: run 41541206308, job 125605524941, source SHA b4baaa6cb65715f5c71223440f23e7d88822d504, workflow SUCCESS, script exit 0.
-- Expanded BB1/BB2 function detail and direct caller census: run 41541667221, job 125607103118, source SHA 3ef6c43fd1fb3f352546bb538a61aa2ef2ce5a96, workflow SUCCESS, script exit 0.
-- BB1/BB2 static report: reports/stage1_economy/BB1_BB2_STATIC_COMPLETE_2026-11-03.md.
-- BB3 runtime limited pass: run 41550406414, job 125636294382, source SHA 57ee8f4cba1ff2b15b1a9674d8dfbeb63fcfbf5e, workflow SUCCESS, script exit 0, 16/16 PASS, Memory Card unchanged.
-- BB3 expanded level 0–4 single-tile attempt: run 41552617808, source SHA 109742216f46251dfd16648b9ec6795dcdfcccbf; 20/20 transaction bodies behaved as expected, but validation failed because RAM capture at post-load VSync 2 was compared to frame-180/frame-360 references. Pre-poke SHA was 70dd6e9301e4375950595c32d5214b53eea31ab9f95ae56a4ebfa9f7cc9365e0; load-event SHA 3ad7b85c857a868d91df4b3f1049c23889a0dc482ad7ee390ac8b6c05c3190f4. Neither is a valid frame-180 baseline.
-- BB3 frame-aligned two-tile probe: commit c1a81420980eaca43a5369f3ecf7f9af4b534c57, changed files experiments/bb3_h6_action_call_probe.py and .github/workflows/bb3-h6-action-call-probe.yml; adds wait for post-load VSync 180, exact frame RAM references, tile indices 4 and 7, fee expectations 100 and 120, and a 40-condition matrix.
-- BB3 matrix indentation fix: commit 889838f3b52a2211881ff64228dceaf22db11ba7, changed file experiments/bb3_h6_action_call_probe.py.
-- BB3 current Actions run: run 41553653484, job ID 125647454203, source SHA 889838f3b52a2211881ff64228dceaf22db11ba7; workflow/job still in progress at this update. Active step: Run 40 isolated H6 function-call launches. Final TSV, summary, script exit code, workflow-script exit code not yet available.
+- Addendum BB1/BB2: reports/stage1_economy/BB1_BB2_PRODUCER_AND_CLUSTER_ADDENDUM_2026-11-03.md
+- Kompilasi bukti statis: reports/stage1_economy/BB1_BB2_STATIC_COMPLETE_2026-11-03.md (status telah dikoreksi: BB2 SEBAGIAN).
+- BB1 census parser-heksadesimal: run 41541206308, job 125605524941, source SHA b4baaa6cb65715f5c71223440f23e7d88822d504, workflow SUCCESS, script exit0.
+- Expanded BB1/BB2 census: run 41541667221, job 125607103118, source SHA 3ef6c43fd1fb3f352546bb538a61aa2ef2ce5a96, workflow SUCCESS, script exit0.
+- BB2 producer/caller expansion: workflow edit commit b68ba43a183519b1a5b3ef499f92c660432ebe8a; changed file .github/workflows/step7-entry1-buffer-base-audit.yml; Step7 run 41554925881 queued, source SHA b68ba43a183519b1a5b3ef499f92c660432ebe8a.
+- BB3 runtime limited PASS: run 41550406414, job125636294382, source SHA57ee8f4cba1ff2b15b1a9674d8dfbeb63fcfbf5e, workflow SUCCESS, script exit0, 16/16 PASS.
+- BB3 20-launch level0–4 one-tile attempt: run41552617808, job125643691591, source SHA109742216f46251dfd16648b9ec6795dcdfcccbf, 20/20 launches, card unchanged, but RAM references mismatched due capture at 2 post-load VSync; script exit2 and wrapper process exit2.
+- BB3 frame-aligned two-tile matrix fix: commit c1a81420980eaca43a5369f3ecf7f9af4b534c57 changed experiments/bb3_h6_action_call_probe.py and .github/workflows/bb3-h6-action-call-probe.yml; waits to post-load VSync180, compares exact RAM references, tiles4/7, fees100/120, 40 conditions.
+- BB3 matrix loop indentation fix: commit 889838f3b52a2211881ff64228dceaf22db11ba7; changed experiments/bb3_h6_action_call_probe.py.
+- BB3 current run: run41553653484, job125647454203, source SHA889838f3b52a2211881ff64228dceaf22db11ba7, workflow/job in_progress at last check, active step “Run 40 isolated H6 function-call launches”, 10/16 prior steps passed, no step failure yet.
 
 ## Baseline RAM SHA references
 
-- H6 hybrid frame 180, two-launch stable SHA-256: 5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7.
-- H6 hybrid frame 360, two-launch stable SHA-256: 4d002df6902a6de6aa0724b4284da8decb1725cf693fd1ed80ce0132c45a7907.
-- Both reference hashes come from BA3 run 41418131290 and repeated BA3 run 41419506538; each captured 2 MiB RAM at explicit post-load VSync frames; two independent launches agreed per frame. Frame-180 and frame-360 hashes are intentionally different.
+- Frame180 two-launch stable RAM2MiB SHA-256: 5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7.
+- Frame360 two-launch stable RAM2MiB SHA-256: 4d002df6902a6de6aa0724b4284da8decb1725cf693fd1ed80ce0132c45a7907.
+- Both hashes are from BA3 runs 41418131290 and repeated 41419506538. They are intentionally different frames and not interchangeable.
 
 ## Batas tetap
 
-- Semantik kanonik field petak +0x0B: TIDAK TAHU.
-- Nama aksi visual/gameplay untuk action byte 3 dan 8: TIDAK TAHU. Jangan menyebut action 3/8 sebagai Barrier placement tanpa bukti UI/gameplay.
-- BB3 yang sudah lulus menguji direct dispatch-block dengan frame/register disiapkan pada H6 hybrid. Tidak ada controller input; hasil tidak membuktikan alur UI/Story Mode murni.
-- Rumus positif 3 petak: floor(sum(nilai 3 petak milik pemain)/2)+400 adalah kontrol terpisah dan belum diuji dalam BB3.
-- H6 adalah fixture HIBRIDA, bukan checkpoint target murni atau save Story Mode murni.
-- Adaptive-player automation tetap dijeda. Tidak ada perubahan ke Tile Duel atau repositori lain.
-- Tidak ada ROM/ISO, BIOS, savestate, Memory Card, raw RAM dump, screenshot/video/frame atau binary yang dikomit/dipublikasikan.
-
-
-## Langkah berikut
-
-1. BB1: selesai sebatas hitung rantai tertaut K4; tutup bila penulis/pembentuk link +0x01 membuktikan geometri tetangga. Laporan statis terbaru: reports/stage1_economy/BB1_BB2_STATIC_COMPLETE_2026-11-03.md (commit e33537adbbf9e79739ca1c7e559ae19f1ea0cd3d).
-2. BB2: petakan penulis participant_manager+0x2EB bernilai 3/8, pemicu positif-credit branch, dan dua hipotesis aksi beserta falsifier; jangan memberi nama aksi tanpa bukti.
-3. BB3: matriks baru 40 launch (tile4/7 × action3/8 × level0–4 × dua launch) telah disiapkan; validasi hasil, RAM 2 MiB frame180, Memory Card SHA, serta kode keluar proses script sebelum status K5.
-
-
-### Catatan BB2 (3 November 2026)
-
-- Dua penulis immediate action byte terverifikasi: 3 di FUN_800D9570/0x800DAA88 dan 8 di FUN_800EB434/0x800EC3A8. Register-based penulis lain masih belum semuanya terurai.
-- Cabang kredit positif pada FUN_800D15A8 memakai DAT_80139F03 case 1/2 dan formula tile+0x1E + level*tile+0x1C. Direct caller fungsi adalah FUN_800F3658/0x800F5DAC; penulis state 1/2 belum ditemukan. Belum terbukti itu Chakra atau Barrier Release.
-- Laporan statis terbaru dan falsifier HA/HB/HC: reports/stage1_economy/BB1_BB2_STATIC_COMPLETE_2026-11-03.md (commit b1f81338d6dd944c889affffb14ad45a9b5428fa).
-
-- BB2 trigger refinement: manager+0x2EB values 1/0x1D set global state DAT_80139F03=1; this positive-credit path is distinct from debit actions 3/8. Report commit 33e62742618aeb67c3cb3dda9fe542ae79b61765.
-
-- BB2 positive-credit writer refinement: +0x2EB=1 is stored at PC 0x800CF94C (function entry not identified; li v1,1 at 0x800CF93C, also copied to +0x2EA); +0x2EB=0x1D stored at PC 0x800E0928 in FUN_800E03B0 (li a0,0x1D at 0x800E0918, also stored +0x2EA). These values select DAT_80139F03=1 in FUN_800D15A8 and then the positive formula. Does not prove Barrier Release label. Latest report commit 61f38a400ac6982be7702160f3ece49eebe4e1be.
+- Geometri neighbor dari tile+0x01 link: TIDAK TAHU; code proves link-chain only.
+- Gameplay max group size five: belum dibuktikan statis; loop accepts at most five forward links and can therefore touch up to six records (start + five).
+- Gameplay name for +0x0B and action bytes3/8: TIDAK TAHU.
+- No normal UI/controller-input Story Mode proof in BB3; it is direct dispatch-block test in H6 hybrid fixture.
+- User-confirmed end-turn income formula floor(sum nilai seluruh petak milik pemain /2)+400 has not been re-tested in BB3 and is separate from per-tile positive delta.
+- H6 is HIBRIDA, not pure Story Mode.
+- Adaptive-player automation stays paused. No access/modification to Tile Duel or other repositories.
+- No ROM/ISO, BIOS, savestate, Memory Card, raw RAM dump, screenshot/video/frame or binary uploaded/published.
