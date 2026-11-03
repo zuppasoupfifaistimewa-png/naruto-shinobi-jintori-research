@@ -58,3 +58,5 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 - Laporan statis terbaru dan falsifier HA/HB/HC: reports/stage1_economy/BB1_BB2_STATIC_COMPLETE_2026-11-03.md (commit b1f81338d6dd944c889affffb14ad45a9b5428fa).
 
 - BB2 trigger refinement: manager+0x2EB values 1/0x1D set global state DAT_80139F03=1; this positive-credit path is distinct from debit actions 3/8. Report commit 33e62742618aeb67c3cb3dda9fe542ae79b61765.
+
+- BB2 positive-credit writer refinement: +0x2EB=1 is stored at PC 0x800CF94C (function entry not identified; li v1,1 at 0x800CF93C, also copied to +0x2EA); +0x2EB=0x1D stored at PC 0x800E0928 in FUN_800E03B0 (li a0,0x1D at 0x800E0918, also stored +0x2EA). These values select DAT_80139F03=1 in FUN_800D15A8 and then the positive formula. Does not prove Barrier Release label. Latest report commit 61f38a400ac6982be7702160f3ece49eebe4e1be.
