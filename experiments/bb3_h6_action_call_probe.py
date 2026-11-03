@@ -116,20 +116,24 @@ end
 local function validRamPtr(p, span)
   return p >= 0x80000000 and p + span <= 0x80200000
 end
-local function captureRamBeforePoke()
+local function captureRamSnapshot(path, label)
   local ok, err = pcall(function()
     local ram = PCSX.getMemPtr()
     if ram == nil then error("PCSX.getMemPtr returned nil") end
-    local file = assert(Support.File.open("runtime/bb3-before-poke-2mib.bin", "TRUNCATE"))
+    local file = assert(Support.File.open(path, "TRUNCATE"))
     local written = file:write(ram, 0x200000)
     file:close()
     if tonumber(written) ~= 0x200000 then
       error("RAM_CAPTURE_SHORT_WRITE=" .. tostring(written))
     end
-    log("BB3_RAM_BEFORE_POKE_BYTES=" .. tostring(written))
+    log(label .. "_BYTES=" .. tostring(written))
   end)
-  if not ok then error("RAM_BEFORE_POKE_CAPTURE_FAILED=" .. tostring(err)) end
-  log("BB3_RAM_BEFORE_POKE_CAPTURE=PASS")
+  if not ok then error(label .. "_CAPTURE_FAILED=" .. tostring(err)) end
+  log(label .. "_CAPTURE=PASS")
+end
+
+local function captureRamBeforePoke()
+  captureRamSnapshot("runtime/bb3-before-poke-2mib.bin", "BB3_RAM_BEFORE_POKE")
 end
 
 local function readResult()
@@ -313,6 +317,7 @@ local function initTest()
 end
 
 _G.bb3LoadedListener = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
+  captureRamSnapshot("runtime/bb3-at-load-event-2mib.bin", "BB3_RAM_AT_LOAD_EVENT")
   loaded = true
   postLoadVsync = 0
   log("BB3_SAVE_STATE_LOADED=1")
@@ -561,30 +566,36 @@ def main():
                     if line.startswith("BB3_") and "=" in line:
                         k, v = line.split("=", 1)
                         values[k] = v.strip()
-                ram_path = launch / "runtime" / "bb3-before-poke-2mib.bin"
-                ram_capture_status = "NO_RESULT"
-                ram_before_sha = "TIDAK TAHU"
-                ram_bytes = 0
-                if ram_path.is_file():
-                    try:
-                        ram_bytes_data = ram_path.read_bytes()
-                        ram_bytes = len(ram_bytes_data)
-                        if ram_bytes == 0x200000:
-                            ram_before_sha = sha(ram_bytes_data)
-                            ram_capture_status = "PASS" if values.get("BB3_RAM_BEFORE_POKE_CAPTURE") == "PASS" else "MARKER_MISSING"
-                        else:
-                            ram_capture_status = "SHORT_READ:%d" % ram_bytes
-                    except Exception as exc:
-                        ram_capture_status = "HASH_FAIL:" + str(exc)
-                    finally:
-                        ram_path.unlink(missing_ok=True)
-                ram_ref_a = "YES" if ram_before_sha.startswith(ram_reference_a_prefix) and ram_before_sha.endswith(ram_reference_a_suffix) else "NO"
-                ram_ref_b = "YES" if ram_before_sha.startswith(ram_reference_b_prefix) and ram_before_sha.endswith(ram_reference_b_suffix) else "NO"
-                ram_reference_match = "YES" if ram_ref_a == "YES" or ram_ref_b == "YES" else "NO"
+                def consume_ram_capture(filename, marker):
+                    capture_path = launch / "runtime" / filename
+                    status = "NO_RESULT"
+                    digest = "TIDAK TAHU"
+                    byte_count = 0
+                    if capture_path.is_file():
+                        try:
+                            raw_ram = capture_path.read_bytes()
+                            byte_count = len(raw_ram)
+                            if byte_count == 0x200000:
+                                digest = sha(raw_ram)
+                                status = "PASS" if values.get(marker) == "PASS" else "MARKER_MISSING"
+                            else:
+                                status = "SHORT_READ:%d" % byte_count
+                        except Exception as exc:
+                            status = "HASH_FAIL:" + str(exc)
+                        finally:
+                            capture_path.unlink(missing_ok=True)
+                    a_match = "YES" if digest.startswith(ram_reference_a_prefix) and digest.endswith(ram_reference_a_suffix) else "NO"
+                    b_match = "YES" if digest.startswith(ram_reference_b_prefix) and digest.endswith(ram_reference_b_suffix) else "NO"
+                    either_match = "YES" if a_match == "YES" or b_match == "YES" else "NO"
+                    return status, digest, byte_count, a_match, b_match, either_match
+                ram_capture_status, ram_before_sha, ram_bytes, ram_ref_a, ram_ref_b, ram_reference_match = consume_ram_capture(
+                    "bb3-before-poke-2mib.bin", "BB3_RAM_BEFORE_POKE_CAPTURE"
+                )
+                load_capture_status, ram_load_sha, ram_load_bytes, load_ref_a, load_ref_b, load_ref_either = consume_ram_capture(
+                    "bb3-at-load-event-2mib.bin", "BB3_RAM_AT_LOAD_EVENT_CAPTURE"
+                )
                 card_after = sha(card.read_bytes()) if card.exists() else "TIDAK TAHU"
                 result_status = values.get("BB3_CALL_STATUS", "NO_RESULT")
-                if result_status == "PASS" and (ram_capture_status != "PASS" or ram_bytes != 0x200000 or ram_reference_match != "YES"):
-                    result_status = "RAM_BEFORE_POKE_REFERENCE_MISMATCH"
                 if result_status == "PASS" and values.get("BB3_PENDING_DELTA") != str(-int(values.get("BB3_TILE1A_FEE", "0"))):
                     result_status = "DELTA_MISMATCH"
                 rows.append({
@@ -621,6 +632,12 @@ def main():
                     "ram_reference_a_match": ram_ref_a,
                     "ram_reference_b_match": ram_ref_b,
                     "ram_reference_match_either": ram_reference_match,
+                    "ram_at_load_event_capture": load_capture_status,
+                    "ram_2mib_sha256_at_load_event": ram_load_sha,
+                    "ram_bytes_at_load_event": ram_load_bytes,
+                    "ram_at_load_reference_a_match": load_ref_a,
+                    "ram_at_load_reference_b_match": load_ref_b,
+                    "ram_at_load_reference_match_either": load_ref_either,
                     "wrapper_exit_code_decimal": wrapper_rc, "wall_seconds": "%.3f" % wall,
                     "timeout_seconds": timeout_s,
                 })
@@ -672,7 +689,10 @@ def main():
             "card": row["memory_card_unchanged"] == "YES",
             "ram_capture": row["ram_before_poke_capture"] == "PASS",
             "ram_bytes": number("ram_bytes_before_poke") == 0x200000,
+            "ram_load_event_capture": row["ram_at_load_event_capture"] == "PASS",
+            "ram_load_event_bytes": number("ram_bytes_at_load_event") == 0x200000,
             "ram_reference": row["ram_reference_match_either"] == "YES",
+            "ram_load_reference": row["ram_at_load_reference_match_either"] == "YES",
             "process_exit": number("wrapper_exit_code_decimal") == 0,
         }
         failed = [name for name, passed in checks.items() if not passed]
@@ -704,6 +724,10 @@ def main():
         "RAM_BEFORE_POKE_MATCHES_REFERENCE_A_ALL=" + ("YES" if len(rows) == expected_rows and all(r["ram_reference_a_match"] == "YES" for r in rows) else "NO"),
         "RAM_BEFORE_POKE_MATCHES_REFERENCE_B_ALL=" + ("YES" if len(rows) == expected_rows and all(r["ram_reference_b_match"] == "YES" for r in rows) else "NO"),
         "RAM_BEFORE_POKE_MATCHES_EITHER_REFERENCE_ALL=" + ("YES" if len(rows) == expected_rows and all(r["ram_reference_match_either"] == "YES" for r in rows) else "NO"),
+        "RAM_AT_LOAD_EVENT_CAPTURE_ALL=" + ("YES" if len(rows) == expected_rows and all(r["ram_at_load_event_capture"] == "PASS" for r in rows) else "NO"),
+        "RAM_AT_LOAD_EVENT_MATCHES_REFERENCE_A_ALL=" + ("YES" if len(rows) == expected_rows and all(r["ram_at_load_reference_a_match"] == "YES" for r in rows) else "NO"),
+        "RAM_AT_LOAD_EVENT_MATCHES_REFERENCE_B_ALL=" + ("YES" if len(rows) == expected_rows and all(r["ram_at_load_reference_b_match"] == "YES" for r in rows) else "NO"),
+        "RAM_AT_LOAD_EVENT_MATCHES_EITHER_REFERENCE_ALL=" + ("YES" if len(rows) == expected_rows and all(r["ram_at_load_reference_match_either"] == "YES" for r in rows) else "NO"),
         "CONDITIONS=action byte 3,8 x tile+0x20 bits8-11 level 0..4 x 2 independent launches",
         "LAUNCHES=%d EXPECTED=%d" % (len(rows), expected_rows),
         "PASS_LAUNCHES=%d" % len(pass_rows),
