@@ -47,3 +47,15 @@ Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
 - H6 is HIBRIDA, not pure Story Mode.
 - Adaptive-player automation stays paused. No access/modification to Tile Duel or other repositories.
 - No ROM/ISO, BIOS, savestate, Memory Card, raw RAM dump, screenshot/video/frame or binary uploaded/published.
+
+
+### BB1 completion
+
+- Status: TUNTAS (statis, K4). 22/22 edge rows in reports/stage1_economy/BA1_STAGE1_RESOURCE_630_RECORDS.tsv have a one-tile orthogonal delta through +0x01 links. Report and falsifiers: reports/stage1_economy/BB1_BB2_STATIC_COMPLETE_2026-11-03.md, commit 31462f2168a79de208fa03bbfdf65b5cfad836e7.
+- Changed file for report commit: reports/stage1_economy/BB1_BB2_STATIC_COMPLETE_2026-11-03.md.
+
+### BB2 refinements
+
+- Action 3 immediate writer 0x800DAA88 in FUN_800D9570; action 8 immediate writer 0x800EC3A8 in FUN_800EB434. Positive branch triggers from byte 1 at 0x800CF94C (function entry unresolved) or 0x1D at 0x800E0928 in FUN_800E03B0, then state global DAT_80139F03=1, then positive formula +0x1E+level×+0x1C. Action labels/currency identity still TIDAK TAHU.
+- Current detailed report commit: 61f38a400ac6982be7702160f3ece49eebe4e1be was superseded for BB1 addendum by report commit 31462f2168a79de208fa03bbfdf65b5cfad836e7; BB2 sections remain in same report path.
+
