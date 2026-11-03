@@ -291,3 +291,13 @@ Langkah berikut yang masih diizinkan: analisis statis output fungsi fokus 415678
 - BB2 addendum run41567828353 dibuat dalam commit `946528849ef40dd4c5f523064179988642fe1a61`; berkas: `reports/stage1_economy/BB2_41567828353_RESULT_2026-11-03.md`.
 - Errata koordinat BB1 di addendum lama dibuat dalam commit `04124773d510e4c169db018cbecbddef455f704a`; berkas: `reports/stage1_economy/BB1_BB2_PRODUCER_AND_CLUSTER_ADDENDUM_2026-11-03.md`.
 - Koreksi otoritatif status + tautan errata ini dicatat di `reports/stage1_economy/BB_STATE.md`. Commit koreksi status sebelumnya `49b64f339893f65dbd2b2d9194a6feb25494ec5f` mengubah berkas ini.
+
+
+### Follow-up statis event 3 — workflow export helper diperluas (belum terverifikasi)
+
+- Commit workflow: `f1a6602f8ed72751f0dbcb629e1d65f770f6ff2e`.
+- Berkas diubah: `.github/workflows/step7-entry1-buffer-base-audit.yml`.
+- Penambahan: dekompilasi Main EXE dan ekspor raw-JAL callers + call windows untuk helper yang dipanggil cabang event3: `0x80013D80`, `0x800160D4`, `0x80014FA8`, `0x800143AC`. Expected output: `bb2-action3-helper-callers-main-exe.txt` dan `bb2-action3-helper-call-windows-main-exe.tsv`; dekompilasi masuk `az3-main-exe-economic-helper-detail.txt`.
+- Per 3 Nov 2026, output publication yang dapat ditemukan masih run `41568369172` (source SHA `e895c319c9009a22a7291402fed13448b9315939`), yang terjadi sebelum commit workflow `f1a6602...`. Karena itu ia BUKAN bukti eksekusi perubahan helper di atas.
+- **Run untuk commit f1a6602: TIDAK TERKONFIRMASI** — tidak ditemukan run/output-summary dengan source SHA tersebut. Jangan mengklaim helper sudah dianalisis; jangan gunakan status SUCCESS run sebelumnya untuk mengisi celah.
+- Dampak status: BB2 tetap **SEBAGIAN K4**. Event8=upgrade Barrier terbukti; event3 label tetap TIDAK TAHU; pemicu kredit positif sampai Chakra kanonis terbukti tetapi Barrier Release tetap TIDAK TAHU.
