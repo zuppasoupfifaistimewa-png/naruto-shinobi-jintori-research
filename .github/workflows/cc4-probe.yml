@@ -1,0 +1,32 @@
+name: CD0 — minimal Actions trigger probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/cc4-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: CD0 echo and summary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo run identity and result
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "STATUS=SUCCESS"
+          echo "JOB=cd0-echo-probe"
+          echo "SOURCE_SHA=$GITHUB_SHA"
+          echo "EXIT_CODE=0"
+          {
+            echo "## CD0 probe"
+            echo "STATUS=SUCCESS"
+            echo "JOB=cd0-echo-probe"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "EXIT_CODE=0"
+          } >> "$GITHUB_STEP_SUMMARY"
