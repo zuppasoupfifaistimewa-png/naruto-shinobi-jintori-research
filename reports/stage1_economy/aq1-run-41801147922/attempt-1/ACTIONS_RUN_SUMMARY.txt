@@ -3,4 +3,5 @@ JOB=analyze-entry1-buffer-base
 JOB_ID=126476923702
 RUN_ID=41801147922
 SOURCE_SHA=5777c6aca85bbe1b5489e37f37c0de66f2ad5226
-EXIT_CODE=0
+EXIT_CODE=1
+NOTE=Ghidra Java exporter compile step failed; this corrects the previous bot summary EXIT_CODE=0, which did not match the failed job step.

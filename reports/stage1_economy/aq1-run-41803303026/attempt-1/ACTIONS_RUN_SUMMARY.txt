@@ -1,0 +1,7 @@
+STATUS=CANCELLED
+JOB=none
+JOB_ID=none
+RUN_ID=41803303026
+SOURCE_SHA=1d1cf3f544524aa4a7244d1d8eff6947db23d799
+EXIT_CODE=N/A
+NOTE=Workflow run cancelled before a job was created; there is no process exit code.
