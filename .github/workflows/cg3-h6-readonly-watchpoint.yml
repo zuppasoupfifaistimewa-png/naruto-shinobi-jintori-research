@@ -183,6 +183,9 @@ jobs:
             } > "$OUTDIR/ACTIONS_RUN_SUMMARY.txt"
           fi
           echo "RUNNER_SCRIPT_EXIT_CODE=$rc"
+          echo "CG3_DRIVER_RAW_BEGIN"
+          tail -n 240 "$OUTDIR/CG3_PYTHON_DRIVER_RAW.txt"
+          echo "CG3_DRIVER_RAW_END"
 
       - name: Remove private game, BIOS, checkpoints, and temporary RAM
         if: always()
@@ -218,6 +221,7 @@ jobs:
           RESEARCH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
           dest="reports/stage1_economy/cg3-h6-readonly-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
           for f in "$OUTDIR"/*.txt "$OUTDIR"/*.tsv; do
