@@ -20,7 +20,7 @@ OPS = {
     0x24: ("lbu","READ"), 0x25: ("lhu","READ"),
     0x28: ("sb","WRITE"), 0x29: ("sh","WRITE"), 0x2B: ("sw","WRITE"),
 }
-FIELDS = {0x10,0x12,0x14,0x16,0x18}
+FIELDS = {0x0E,0x10,0x12,0x14,0x16,0x18}
 
 def scan(label: str, path: Path, base: int, file_start: int, scan_bytes: int | None):
     data = path.read_bytes()
@@ -81,7 +81,7 @@ def main():
         f"ENTRY1_BYTES={len(ent)} ENTRY1_SHA256={hashlib.sha256(ent).hexdigest()}",
         "EXE_MAP=raw file offset 0x800 maps to PC 0x80010000; scan length 0x5D800",
         "ENTRY1_MAP=raw byte offset 0 maps to candidate PC 0x800AD450; runtime mapping unverified",
-        "FILTER=aligned little-endian MIPS-I memory instructions with exact signed-positive displacement 0x10/0x12/0x14/0x16/0x18",
+        "FILTER=aligned little-endian MIPS-I memory instructions with exact signed-positive displacement 0x0E/0x10/0x12/0x14/0x16/0x18",
         "SCOPE=raw opcode candidates only; validity, function and object alias require Ghidra review",
         "EXCLUDES=+0xEA8 and +0x1A (not scanned by this script)",
         f"CANDIDATE_ROWS={len(rows)}",
