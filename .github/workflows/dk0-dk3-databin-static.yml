@@ -1,0 +1,130 @@
+name: DK0-DK3 static DATA.BIN resource audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/dk0-dk3-databin-static.yml"
+      - "tools/step7/ExportDK0DK1DK2DK3Static.py"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dk0-dk3-static-databin-audit
+  cancel-in-progress: false
+
+jobs:
+  parse-all-target-resources:
+    name: parse-all-target-resources
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Extract and parse verified DATA.BIN (temporary only)
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -u
+          root="$RUNNER_TEMP/dk0-dk3-private-input"
+          source="$root/source"
+          extracted="$source/extracted-root"
+          out="$RUNNER_TEMP/dk0-dk3-output"
+          mkdir -p "$source" "$extracted" "$out"
+          set +e
+          (
+            set -euo pipefail
+            sudo apt-get update
+            sudo apt-get install --yes --no-install-recommends bchunk xorriso
+            bin="$source/naruto-disc.bin"
+            cue_raw="$source/original.cue"
+            cue="$source/naruto-disc.cue"
+            curl --fail --location --silent --show-error \
+              --header "Authorization: Bearer $GITHUB_TOKEN" \
+              --header "Accept: application/octet-stream" \
+              --header "X-GitHub-Api-Version: 2022-11-28" \
+              --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 \
+              --max-time 600 \
+              "https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/647346873" \
+              --output "$bin"
+            test "$(stat -c '%s' "$bin")" = "325989552"
+            echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $bin" | sha256sum --check --status
+            curl --fail --location --silent --show-error \
+              --header "Authorization: Bearer $GITHUB_TOKEN" \
+              --header "Accept: application/octet-stream" \
+              --header "X-GitHub-Api-Version: 2022-11-28" \
+              --proto '=https' --proto-redir '=https' --retry 2 --retry-delay 2 \
+              --max-time 60 \
+              "https://api.github.com/repos/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/assets/647354760" \
+              --output "$cue_raw"
+            test "$(stat -c '%s' "$cue_raw")" = "116"
+            echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $cue_raw" | sha256sum --check --status
+            python3 - "$cue_raw" "$cue" <<'PY'
+          from pathlib import Path
+          import re,sys
+          src,dst=map(Path,sys.argv[1:3]); out=[]; n=0
+          for line in src.read_text(encoding="utf-8").splitlines():
+              if line.lstrip().upper().startswith("FILE "):
+                  m=re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$',line,re.I)
+                  if not m: raise SystemExit("CUE_FILE_DIRECTIVE_INVALID")
+                  line=m.group(1)+'"naruto-disc.bin"'+m.group(2); n+=1
+              out.append(line)
+          if n!=1: raise SystemExit(f"CUE_FILE_DIRECTIVE_COUNT={n}")
+          dst.write_text("\n".join(out)+"\n",encoding="utf-8")
+          PY
+            bchunk "$bin" "$cue" "$source/track"
+            iso="$(find "$source" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+            test -n "$iso"
+            xorriso -osirrox on -indev "$iso" -extract / "$extracted" >/dev/null 2>&1
+            databin="$(find "$extracted" -type f -iname 'DATA.BIN' -print -quit)"
+            test -n "$databin"
+            test "$(stat -c '%s' "$databin")" = "66015232"
+            echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $databin" | sha256sum --check --status
+            python3 tools/step7/ExportDK0DK1DK2DK3Static.py --data "$databin" --out-dir "$out"
+          ) > "$RUNNER_TEMP/dk0-dk3-process.log" 2>&1
+          rc=$?
+          set -e
+          rm -rf "$root"
+          printf '%s\n' "$rc" > "$RUNNER_TEMP/dk0-dk3-exit-code"
+          if [ ! -f "$out/DK0_DK1_DK2_DK3_AUDIT_2026-11-04.md" ]; then
+            echo "STATIC_AUDIT_STATUS=INCOMPLETE" > "$out/DK_STATIC_PARSE_FAILURE.txt"
+            tail -n 25 "$RUNNER_TEMP/dk0-dk3-process.log" > "$out/DK_PROCESS_FAILURE_TAIL.txt" 2>/dev/null || true
+          fi
+          echo "PRIVATE_BINARY_CLEANUP=PASS" > "$RUNNER_TEMP/dk0-dk3-cleanup-status"
+
+      - name: Commit text-only outputs and run summary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/dk0-dk3-output"
+          dest="reports/stage1_economy/dk0-dk3-static-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$dest"
+          find "$out" -maxdepth 1 -type f \( -name '*.md' -o -name '*.tsv' -o -name '*.txt' \) -exec cp {} "$dest/" \;
+          rc="$(cat "$RUNNER_TEMP/dk0-dk3-exit-code" 2>/dev/null || echo TIDAK_TAHU)"
+          cleanup="$(cat "$RUNNER_TEMP/dk0-dk3-cleanup-status" 2>/dev/null || echo PRIVATE_BINARY_CLEANUP=UNKNOWN)"
+          if [ "$rc" = "0" ] && [ "$cleanup" = "PRIVATE_BINARY_CLEANUP=PASS" ]; then status=PASS; else status=FAIL; fi
+          {
+            echo "STATUS=$status"
+            echo "JOB=parse-all-target-resources"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "EXIT_CODE=$rc"
+            echo "$cleanup"
+            echo "GAME_OR_EMULATOR_EXECUTED=no"
+            echo "BIOS_OR_SAVESTATE_USED=no"
+            echo "BINARY_COMMITTED=no"
+          } > "$dest/ACTIONS_RUN_SUMMARY.txt"
+          bad="$(find "$dest" -type f ! \( -name '*.md' -o -name '*.tsv' -o -name '*.txt' \) -print)"
+          test -z "$bad"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$dest"
+          git commit -m "Publish DK0-DK3 static DATA.BIN audit run $GITHUB_RUN_ID"
+          git push origin HEAD:main
+          if [ "$status" != "PASS" ]; then exit 1; fi
