@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.regex.*;
 
 public class ExportTileLevelTableAccesses extends GhidraScript {
-    private static final Set<Long> FIELDS = new HashSet<>(Arrays.asList(0x10L,0x12L,0x14L,0x16L,0x18L));
+    private static final Set<Long> FIELDS = new HashSet<>(Arrays.asList(0x0EL,0x10L,0x12L,0x14L,0x16L,0x18L));
     private static final Pattern MEM = Pattern.compile("(?i)(-?0x[0-9a-f]+|-?[0-9]+)\\s*\\(\\s*([a-z0-9]+)\\s*\\)");
     private PrintWriter out;
     private final Map<String,Integer> totals = new TreeMap<>();
