@@ -42,10 +42,10 @@ def main():
         rr=[];plausible=0;nonblank=0
         for idx in range(parse_n):
             q=1+idx*STRIDE
-            # FUN_800F7ADC: source pointer is resource+1; pbVar2[8] -> runtime+0x0E,
-            # pbVar2[10] -> runtime+0x10 (X candidate), pbVar2[12..20] -> runtime+0x12..0x1A (LV1..5).
-            X=U16(blob,q+0x0A)
-            lv=[U16(blob,q+x) for x in (0x0C,0x0E,0x10,0x12,0x14)]
+            # FUN_800F7ADC: source pointer is the record start. pbVar2[8] -> runtime tile+0x0E (X);
+            # pbVar2[10..18] -> runtime tile+0x10..0x18 (LV1..LV5).
+            X=U16(blob,q+0x08)
+            lv=[U16(blob,q+x) for x in (0x0A,0x0C,0x0E,0x10,0x12)]
             raw=[U16(blob,q+x) for x in (0x0E,0x10,0x12,0x14,0x16,0x18)]
             p1a=U16(blob,q+0x1A);p1c=U16(blob,q+0x1C)
             p1e=blob[q+0x1E] if q+0x1E<len(blob) else ""
@@ -56,10 +56,10 @@ def main():
             plausible+=int(good)
             r={
               "resource_id_hex":H(rid),"resource_id_decimal":rid,"record_index":idx,
-              "X_loader_mapped_source_plus_0x0A":X,
-              "LV1_loader_mapped_source_plus_0x0C":lv[0],"LV2_loader_mapped_source_plus_0x0E":lv[1],
-              "LV3_loader_mapped_source_plus_0x10":lv[2],"LV4_loader_mapped_source_plus_0x12":lv[3],
-              "LV5_loader_mapped_source_plus_0x14":lv[4],
+              "X_loader_mapped_source_plus_0x08":X,
+              "LV1_loader_mapped_source_plus_0x0A":lv[0],"LV2_loader_mapped_source_plus_0x0C":lv[1],
+              "LV3_loader_mapped_source_plus_0x0E":lv[2],"LV4_loader_mapped_source_plus_0x10":lv[3],
+              "LV5_loader_mapped_source_plus_0x12":lv[4],
               "literal_spec_X_at_source_plus_0x0E":raw[0],
               "literal_spec_LV1_at_source_plus_0x10":raw[1],"literal_spec_LV2_at_source_plus_0x12":raw[2],
               "literal_spec_LV3_at_source_plus_0x14":raw[3],"literal_spec_LV4_at_source_plus_0x16":raw[4],
@@ -108,8 +108,8 @@ def main():
     matches=[]
     for X,vals in OBS.items():
       for j,val in enumerate(vals,1):
-        same=[r for r in records if r["X_loader_mapped_source_plus_0x0A"]==X]
-        field=f"LV{j}_loader_mapped_source_plus_0x{0x0A+2*j:02X}"
+        same=[r for r in records if r["X_loader_mapped_source_plus_0x08"]==X]
+        field=f"LV{j}_loader_mapped_source_plus_0x{0x08+2*j:02X}"
         exact=[r for r in same if r[field]==val]
         lsame=[r for r in records if r["literal_spec_X_at_source_plus_0x0E"]==X]
         lfield=f"literal_spec_LV{j}_at_source_plus_0x{0x0E+2*j:02X}"
@@ -126,7 +126,7 @@ def main():
     write_tsv(out/"DK2_OBSERVATION_ALL_12_RESOURCE_MATCHES_2026-11-04.tsv",matches)
 
     byx=defaultdict(list)
-    for r in records:byx[r["X_loader_mapped_source_plus_0x0A"]].append(r)
+    for r in records:byx[r["X_loader_mapped_source_plus_0x08"]].append(r)
     cross=[]
     for X,g in sorted(byx.items()):
       vectors=defaultdict(list)
@@ -140,31 +140,31 @@ def main():
 
     ftests=[];e1=[];e2=[]
     for r in records:
-      X=r["X_loader_mapped_source_plus_0x0A"];v1=r["LV1_loader_mapped_source_plus_0x0C"];v2=r["LV2_loader_mapped_source_plus_0x0E"]
+      X=r["X_loader_mapped_source_plus_0x08"];v1=r["LV1_loader_mapped_source_plus_0x0A"];v2=r["LV2_loader_mapped_source_plus_0x0C"]
       exp1=X//2 if X%2==0 else "NON_INTEGER";ok1=(X%2==0 and v1==X//2)
       exp2=10*((11*X+99)//100);ok2=v2==exp2
       ftests.append({"resource_id_hex":r["resource_id_hex"],"record_index":r["record_index"],"X":X,
        "LV1_observed":v1,"LV1_expected_X_div_2":exp1,"LV1_test":"PASS" if ok1 else "EXCEPTION",
        "LV2_observed":v2,"LV2_expected_10xceil_1p1X":exp2,"LV2_test":"PASS" if ok2 else "EXCEPTION",
-       "LV3":r["LV3_loader_mapped_source_plus_0x10"],"LV4":r["LV4_loader_mapped_source_plus_0x12"],
-       "LV5":r["LV5_loader_mapped_source_plus_0x14"],"resource_sha256":r["resource_sha256"]})
+       "LV3":r["LV3_loader_mapped_source_plus_0x0E"],"LV4":r["LV4_loader_mapped_source_plus_0x10"],
+       "LV5":r["LV5_loader_mapped_source_plus_0x12"],"resource_sha256":r["resource_sha256"]})
       if not ok1:e1.append(r)
       if not ok2:e2.append(r)
     write_tsv(out/"DK3_ALL_RECORD_FORMULA_TEST_2026-11-04.tsv",ftests)
 
-    nonblank=[r for r in records if r["X_loader_mapped_source_plus_0x0A"]>0]
+    nonblank=[r for r in records if r["X_loader_mapped_source_plus_0x08"]>0]
     candidates=[]
     for lvl,c in ((3,2.2),(4,4.4),(5,8.8)):
-      field=f"LV{lvl}_loader_mapped_source_plus_0x{0x0A+2*lvl:02X}"
+      field=f"LV{lvl}_loader_mapped_source_plus_0x{0x08+2*lvl:02X}"
       for mode in ("FLOOR","CEIL","NEAREST_HALF_UP"):
         m=0
         for r in nonblank:
-          raw=c*r["X_loader_mapped_source_plus_0x0A"]
+          raw=c*r["X_loader_mapped_source_plus_0x08"]
           expected=math.floor(raw+1e-9) if mode=="FLOOR" else (math.ceil(raw-1e-9) if mode=="CEIL" else math.floor(raw+0.5))
           m+=r[field]==expected
         candidates.append({"level":f"LV{lvl}","candidate_formula":f"{mode}({c}*X)",
           "matching_records":m,"tested_nonblank_records":len(nonblank),
-          "distinct_X_tested":len({r["X_loader_mapped_source_plus_0x0A"] for r in nonblank}),
+          "distinct_X_tested":len({r["X_loader_mapped_source_plus_0x08"] for r in nonblank}),
           "mismatches":len(nonblank)-m,"claim_status":"CANDIDATE_ONLY_NOT_PROVEN"})
     write_tsv(out/"DK3_FORMULA_CANDIDATE_SUMMARY_2026-11-04.tsv",candidates)
 
@@ -172,7 +172,7 @@ def main():
     for r in resources.values():counts[r["class"]]+=1
     conflicts=[r for r in cross if r["consistency"]=="CONFLICT"]
     lv1_pairs=defaultdict(list)
-    for r in e1:lv1_pairs[(r["X_loader_mapped_source_plus_0x0A"],r["LV1_loader_mapped_source_plus_0x0C"])].append(f'{r["resource_id_hex"]}#{r["record_index"]}')
+    for r in e1:lv1_pairs[(r["X_loader_mapped_source_plus_0x08"],r["LV1_loader_mapped_source_plus_0x0A"])].append(f'{r["resource_id_hex"]}#{r["record_index"]}')
     lines=[
       "# DK0-DK3 corrected static audit — 12 DATA.BIN resources",
       "",
@@ -202,20 +202,20 @@ def main():
       "Resource record pointer starts at resource+1 and advances by 0x1E. Disassembly proves source mapping:",
       "| Source record bytes | Runtime destination | Field interpretation here |",
       "|---|---|---|",
-      "| +0x08..+0x09 | tile+0x0E | adjacent field, not X (known row value 255) |",
-      "| +0x0A..+0x0B | tile+0x10 | X candidate |",
-      "| +0x0C..+0x0D | tile+0x12 | LV1 |",
-      "| +0x0E..+0x0F | tile+0x14 | LV2 |",
-      "| +0x10..+0x11 | tile+0x16 | LV3 |",
-      "| +0x12..+0x13 | tile+0x18 | LV4 |",
-      "| +0x14..+0x15 | tile+0x1A | LV5 |",
+      "| +0x08..+0x09 | tile+0x0E | X |",
+      "| +0x0A..+0x0B | tile+0x10 | LV1 |",
+      "| +0x0C..+0x0D | tile+0x12 | LV2 |",
+      "| +0x0E..+0x0F | tile+0x14 | LV3 |",
+      "| +0x10..+0x11 | tile+0x16 | LV4 |",
+      "| +0x12..+0x13 | tile+0x18 | LV5 |",
+      "| +0x14..+0x15 | tile+0x1A | extra |",
       "| +0x16..+0x17 | tile+0x1C | extra |",
       "| +0x18..+0x19 | tile+0x1E | extra |",
       "| +0x1A..+0x1B | tile+0x22 | extra |",
       "| +0x1C..+0x1D | tile+0x24 | extra |",
       "| +0x1E | tile+0x0C | loader reads one byte beyond stride; next record's first byte, EOF on last |",
       "",
-      "So literal raw source offsets requested by the user (+0x0E as X and +0x10..+0x18 as LV1..5) do not identify those fields. DK1 contains both requested-literal raw values and loader-mapped values; DK2 reports matches under both interpretations. Main DK2/DK3 use the loader-mapped fields to avoid mislabeling raw data.",
+      "The requested +0x0E (X) and +0x10..+0x18 (LV1..LV5) are runtime tile-structure offsets, not offsets from the start of the source resource record. The loader copies X from source record +0x08 and LV1..LV5 from +0x0A..+0x12. The TSV preserves raw values at source +0x0E..+0x18 separately, so the two coordinate systems can be checked without conflation.",
       "",
       "## DK0 historical commit ledger",
       "| Full commit SHA | Author | Changed files |","|---|---|---|",
@@ -276,7 +276,7 @@ def main():
       f"RESOURCES={len(resources)}",f"RECORDS={len(records)}",
       "LAYOUT_COUNTS="+";".join(f"{k}:{counts[k]}" for k in ("LAYOUT_SAMA","LAYOUT_BERBEDA","TIDAK_JELAS")),
       f"LV1_EXCEPTIONS={len(e1)}",f"LV2_EXCEPTIONS={len(e2)}",f"X_VECTOR_CONFLICTS={len(conflicts)}",
-      "FIELD_MAP=FUN_800F7ADC_SOURCE_0A_X_0C_0E_10_12_14_LV1_TO_LV5",
+      "FIELD_MAP=FUN_800F7ADC_SOURCE_08_X_0A_0C_0E_10_12_LV1_TO_LV5",
       "LITERAL_REQUESTED_OFFSETS_REPORTED_SEPARATELY=yes","GAME_OR_EMULATOR_EXECUTED=no"])+"\n",encoding="utf-8")
     print(f"DK_PARSE_CORRECTED_PASS resources={len(resources)} records={len(records)} "
           f"layout={dict(counts)} lv1_exceptions={len(e1)} lv2_exceptions={len(e2)} x_conflicts={len(conflicts)}")
