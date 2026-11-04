@@ -14,7 +14,7 @@ public class ExportTileLevelTableAccesses extends GhidraScript {
     private final Map<String,Integer> totals = new TreeMap<>();
 
     private String hx(long v) { return String.format("0x%08X",v & 0xffffffffL); }
-    private String clean(String s) { return s==null?"":s.replace('\\t',' ').replace('\\n',' ').replace('\\r',' '); }
+    private String clean(String s) { return s==null?"":s.replace('\t',' ').replace('\n',' ').replace('\r',' '); }
     private String bytes(Instruction i) {
         try {
             byte[] b=new byte[i.getLength()];
@@ -58,7 +58,7 @@ public class ExportTileLevelTableAccesses extends GhidraScript {
         }
         return s.toString().trim();
     }
-    private void row(String...c){for(int i=0;i<c.length;i++){if(i>0)out.print('\\t');out.print(clean(c[i]));}out.println();}
+    private void row(String...c){for(int i=0;i<c.length;i++){if(i>0)out.print('\t');out.print(clean(c[i]));}out.println();}
 
     @Override protected void run() throws Exception {
         String[] args=getScriptArgs();
