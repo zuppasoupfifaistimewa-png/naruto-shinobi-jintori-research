@@ -41,15 +41,17 @@ def main():
         parse_n=min(n,max(0,(len(blob)-1)//STRIDE))
         rr=[];plausible=0;nonblank=0
         for idx in range(parse_n):
-            q=1+idx*STRIDE
+            q=idx*STRIDE
             # FUN_800F7ADC: source pointer is the record start. pbVar2[8] -> runtime tile+0x0E (X);
             # pbVar2[10..18] -> runtime tile+0x10..0x18 (LV1..LV5).
             X=U16(blob,q+0x08)
             lv=[U16(blob,q+x) for x in (0x0A,0x0C,0x0E,0x10,0x12)]
             raw=[U16(blob,q+x) for x in (0x0E,0x10,0x12,0x14,0x16,0x18)]
-            p1a=U16(blob,q+0x1A);p1c=U16(blob,q+0x1C)
-            p1e=blob[q+0x1E] if q+0x1E<len(blob) else ""
-            p1e16=U16(blob,q+0x1E) if q+0x20<=len(blob) else ""
+            # Runtime tile +0x1A/+0x1C/+0x1E receive source cursor offsets +0x14/+0x16/+0x18.
+            p1a=U16(blob,q+0x14);p1c=U16(blob,q+0x16);p1e_runtime=U16(blob,q+0x18)
+            source_p1a=U16(blob,q+0x1A);source_p1c=U16(blob,q+0x1C)
+            boundary=blob[q+0x1E] if q+0x1E<len(blob) else ""
+            boundary16=U16(blob,q+0x1E) if q+0x20<=len(blob) else ""
             blank=(X==0 and all(v==0 for v in lv));nonblank+=int(not blank)
             good=(X<=4095 and all(v<=10000 for v in lv) and
                   all(lv[j]<=lv[j+1] for j in range(4)) and (blank or (X>0 and lv[0]>0)))
@@ -64,11 +66,13 @@ def main():
               "literal_spec_LV1_at_source_plus_0x10":raw[1],"literal_spec_LV2_at_source_plus_0x12":raw[2],
               "literal_spec_LV3_at_source_plus_0x14":raw[3],"literal_spec_LV4_at_source_plus_0x16":raw[4],
               "literal_spec_LV5_at_source_plus_0x18":raw[5],
-              "plus_0x1A_u16":p1a,"plus_0x1C_u16":p1c,"plus_0x1E_byte":p1e,
-              "plus_0x1E_cross_boundary_u16":p1e16,
-              "plus_0x1E_status":"NEXT_RECORD_FIRST_BYTE" if p1e!="" and idx<n-1 else ("EOF_OUT_OF_RANGE" if p1e=="" else "RESOURCE_END"),
-              "resource_data_bin_offset":H(off),"record_data_bin_offset":H(off+q),
-              "record_resource_offset":H(q),"resource_size_bytes":size,
+              "plus_0x1A":p1a,"plus_0x1C":p1c,"plus_0x1E":p1e_runtime,
+              "source_raw_plus_0x1A":source_p1a,"source_raw_plus_0x1C":source_p1c,
+              "loader_source_plus_0x1E_boundary_byte":boundary,
+              "loader_source_plus_0x1E_boundary_u16":boundary16,
+              "loader_boundary_status":"NEXT_STRIDE_BYTE" if idx<n-1 else "FINAL_IN_RESOURCE",
+              "resource_data_bin_offset":H(off),"loader_stride_base_data_bin_offset":H(off+q),
+              "record_data_bin_offset":H(off+q+1),"record_resource_offset":H(q+1),"resource_size_bytes":size,
               "resource_header_first_byte":header,"expected_N":n,"resource_sha256":digest,
               "_vector":tuple(lv),"_plausible":good}
             rr.append(r);records.append(r)
@@ -199,8 +203,8 @@ def main():
       "| DK3 LV3-LV5 provenance | SEBAGIAN | K3 | Runtime loader copies stored values; offline formula vs authored table TIDAK TAHU. |",
       "",
       "## Critical offset correction from FUN_800F7ADC",
-      "Resource record pointer starts at resource+1 and advances by 0x1E. Disassembly proves source mapping:",
-      "| Source record bytes | Runtime destination | Field interpretation here |",
+      "Loader cursor base begins at resource byte 0 (the first count/preamble byte) and advances by 0x1E each iteration. Each row's data starts at cursor+1. Source mapping below is relative to the loader cursor base:",
+      "| Loader-cursor source bytes | Runtime destination | Field interpretation here |",
       "|---|---|---|",
       "| +0x08..+0x09 | tile+0x0E | X |",
       "| +0x0A..+0x0B | tile+0x10 | LV1 |",
@@ -208,14 +212,14 @@ def main():
       "| +0x0E..+0x0F | tile+0x14 | LV3 |",
       "| +0x10..+0x11 | tile+0x16 | LV4 |",
       "| +0x12..+0x13 | tile+0x18 | LV5 |",
-      "| +0x14..+0x15 | tile+0x1A | extra |",
-      "| +0x16..+0x17 | tile+0x1C | extra |",
-      "| +0x18..+0x19 | tile+0x1E | extra |",
-      "| +0x1A..+0x1B | tile+0x22 | extra |",
-      "| +0x1C..+0x1D | tile+0x24 | extra |",
-      "| +0x1E | tile+0x0C | loader reads one byte beyond stride; next record's first byte, EOF on last |",
+      "| +0x14..+0x15 | tile+0x1A | requested extra field +0x1A |",
+      "| +0x16..+0x17 | tile+0x1C | requested extra field +0x1C |",
+      "| +0x18..+0x19 | tile+0x1E | requested extra field +0x1E |",
+      "| +0x1A..+0x1B | tile+0x22 | additional field |",
+      "| +0x1C..+0x1D | tile+0x24 | additional field |",
+      "| +0x1E | tile+0x0C | loader boundary byte; next stride (final row: final byte in resource) |",
       "",
-      "The requested +0x0E (X) and +0x10..+0x18 (LV1..LV5) are runtime tile-structure offsets, not offsets from the start of the source resource record. The loader copies X from source record +0x08 and LV1..LV5 from +0x0A..+0x12. The TSV preserves raw values at source +0x0E..+0x18 separately, so the two coordinate systems can be checked without conflation.",
+      "The requested +0x0E (X) and +0x10..+0x18 (LV1..LV5) are runtime tile-structure offsets. Relative to the loader cursor base (resource + record_index*0x1E), X is copied from +0x08 and LV1..LV5 from +0x0A..+0x12. Relative to the data row start reported as record_source_offset (cursor+1), those are +0x07 and +0x09..+0x11. The TSV also preserves raw source offsets +0x0E..+0x18 separately.",
       "",
       "## DK0 historical commit ledger",
       "| Full commit SHA | Author | Changed files |","|---|---|---|",
@@ -237,7 +241,7 @@ def main():
     ]
     for rid,r in resources.items():lines.append(f"| {H(rid)} | {r['N']} | {r['header']} | {r['size']} | {r['class']} | {r['reason']} |")
     lines += ["",
-      "DK1 full TSV includes every record, exact raw requested offsets, loader-mapped X/LV fields, +0x1A, +0x1C, +0x1E, absolute DATA.BIN offsets and resource SHA-256.",
+      "DK1 full TSV includes every row, loader-mapped X/LV1-LV5, runtime tile +0x1A/+0x1C/+0x1E, raw source +0x1A/+0x1C, loader boundary byte, row DATA.BIN offset, loader stride-base offset and full resource SHA-256.",
       "",
       "## DK2 — user values are hypotheses, not facts",
       "| X | LV1 | LV2 | LV3 | LV4 | LV5 |","|---:|---|---|---|---|---|"]
