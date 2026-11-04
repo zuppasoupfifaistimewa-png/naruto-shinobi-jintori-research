@@ -120,3 +120,33 @@ https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jinto
 - `reports/stage1_economy/ch2-level-bank-scale-run-41808407107/attempt-1/ACTIONS_RUN_SUMMARY.txt`
 - `reports/stage1_economy/ch2-level-bank-scale-run-41808407107/attempt-1/CH2_LEVEL_BANK_OUTPUT_BY_SUBTYPE.tsv`
 - `reports/stage1_economy/ch2-level-bank-scale-run-41808407107/attempt-1/CH2_LEVEL_BANK_SCALE_SUMMARY.txt`
+
+
+## Pemeriksaan agregator reader — FUN_800BDC4C
+
+Pemeriksaan lanjutan atas fungsi yang sebelumnya hanya dicatat sebagai agregator menemukan rumus operasional yang lebih lengkap:
+
+1. Parameter owner dibandingkan dengan batas `DAT_8013EA71`; jika melewati batas, fungsi memakai owner fallback `_DAT_8013EA8A`.
+2. Fungsi mengiterasi `DAT_8013EAC8` record runtime pada base `DAT_8013EA84`, stride `0x124`.
+3. Hanya tile dengan type byte `+0x00 == 5` dan owner nibble `(u16(tile+0x20) >> 12) == owner_target` yang dihitung.
+4. Setiap tile yang lolos menyumbang `FUN_800B770C(tile_index)` ke akumulator.
+5. Return value persis: `integer_sum / 2 + FUN_80012A8C()` (pembagian integer).
+
+Bentuk rumus yang terbukti:
+`result = floor(sum(reader_value(tile_i) untuk tile type 5 milik owner) / 2) + base_getter()`
+
+Caller langsung yang tercatat:
+- PC `0x80108054`, caller `FUN_80108054`; argumen owner berasal dari `lbu a0,0x94A(v0)`.
+- PC `0x800CF434`, caller `FUN_800CF434`; argumen owner dari global halfword `-0x1578(s1)`.
+- PC `0x800EE458`, caller `FUN_800EDD68`; argumen owner dari global halfword `-0x1578(s0)`; hasil disimpan ke global `-0x1510(s1)`.
+
+Status:
+- Filter type 5, pencocokan owner, penjumlahan nilai reader, pembagian 2, dan penambahan getter: **TUNTAS K4**.
+- Makna `FUN_80012A8C()`, apakah nilainya tetap atau bergantung pada mode/config, serta label fungsi agregat di gameplay: **TIDAK TAHU**.
+- Fungsi agregator ini sendiri tidak menulis saldo atau melakukan debit; ia mengembalikan angka ke caller. Karena itu tidak membuktikan bahwa bank level adalah harga upgrade atau toll.
+- Rumus ini memiliki bentuk aritmetika agregat `floor(sum/2)+base`, tetapi label sebagai pemasukan/pendapatan belum saya berikan tanpa pemetaan caller/UI yang cukup.
+
+Sumber instruksi dan dekompilasi:
+`reports/stage1_economy/aq1-run-41803736009/attempt-1/entry1-helper-function-detail.txt`
+Permalink raw:
+https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/56eb46d739c1a34708377f68b0d1aeb6edbc6d10/reports/stage1_economy/aq1-run-41803736009/attempt-1/entry1-helper-function-detail.txt
