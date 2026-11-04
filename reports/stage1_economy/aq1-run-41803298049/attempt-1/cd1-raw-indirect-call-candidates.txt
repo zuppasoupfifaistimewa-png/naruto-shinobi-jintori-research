@@ -1,0 +1,18 @@
+analysis=bounded little-endian MIPS indirect-call and exact pointer scan
+target=0x800D15A8
+target_semantics=FUN_800D15A8 candidate address from verified Entry 1 static import
+EXE_code_mapping=raw offset 0x800 + relative PC base 0x80010000; code size 0x5D800
+ENTRY1_code_mapping=static import base 0x800AD450; runtime mapping remains unverified
+DATA_BIN_scope=whole raw 66,015,232-byte archive scanned only for exact aligned/unaligned pointer words; compressed entries are not disassembled
+JALR_constant_scope=24 prior aligned instructions; recognizes LUI+ADDIU, LUI+ORI, and register copies through ADDU/OR
+limitation=other register-indirect forms (pointer loads, computed offsets, relocated tables) are not excluded by a zero result
+EXE_bytes=385024 EXE_sha256=a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569
+ENTRY1_bytes=596412 ENTRY1_sha256=9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a
+DATA_BIN_bytes=66015232 DATA_BIN_sha256=69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822
+MODULE=MAIN_EXE code_bytes=382976 jalr_instruction_count=176 exact_lui_addiu_ori_matches=0
+MODULE=MAIN_EXE aligned_target_pointer_word_count=0
+MODULE=DATA_BIN_ENTRY1 code_bytes=596412 jalr_instruction_count=37 exact_lui_addiu_ori_matches=0
+MODULE=DATA_BIN_ENTRY1 aligned_target_pointer_word_count=0
+DATA_BIN_raw_target_pointer_occurrences_byte_aligned_and_unaligned=0
+OVERALL_EXACT_JALR_TARGET_REGISTER_MATCHES=0
+INTERPRETATION=zero exact matches does not rule out an indirect call through a runtime-loaded or transformed pointer
