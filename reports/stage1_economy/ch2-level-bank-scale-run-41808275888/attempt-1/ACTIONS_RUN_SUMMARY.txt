@@ -1,0 +1,9 @@
+STATUS=FAILURE
+WORKFLOW=ch2-level-bank-scale-static
+JOB=export-and-check-level-bank
+JOB_ID=126500693809
+RUN_ID=41808275888
+SOURCE_SHA=d87c3914e9b4edc473d7a27862ce9641b2fac20b
+SCRIPT_EXIT_CODE=1
+CAUSE=Python csv.DictReader rejected the two-character delimiter literal "\\t"; parser correction follows
+GAME_OR_EMULATOR_EXECUTED=no
