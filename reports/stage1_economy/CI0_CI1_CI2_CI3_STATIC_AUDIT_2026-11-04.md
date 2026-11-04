@@ -2,7 +2,7 @@
 
 Game: Naruto — Shinobi no Sato no Jintori Gassen (SLPS-03553)
 Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
-Snapshot input: 447631d02db0649abb07f7064ddf250bba81d779 (main sebelum publikasi audit ini)
+Snapshot input: 447631d02db0649abb07f7064ddf250bba81d779; cutoff CI0 inklusif: b81db45b4ac13d6c69923e25e3c00a4611818d18.
 Metode: Git compare, census mode/state, inventory DATA.BIN, tabel record yang telah diekstrak, serta uji aritmetika statis. Tanpa emulator/game.
 
 ## Ringkasan
@@ -20,7 +20,7 @@ Metode: Git compare, census mode/state, inventory DATA.BIN, tabel record yang te
 
 ## CI0 — commit ledger
 
-Compare 447631d02db0649abb07f7064ddf250bba81d779...main menghasilkan status identical, ahead_by=0, behind_by=0, total_commits=0, files=[]. Jadi daftar SHA, penulis, dan file per commit kosong. TSV ledger memuat header dan nol baris data; jumlah dihitung dari compare objek Git, bukan jumlah file pada commit laporan audit.
+Compare 447631d02db0649abb07f7064ddf250bba81d779...b81db45b4ac13d6c69923e25e3c00a4611818d18 menghasilkan status ahead, ahead_by=1, behind_by=0, total_commits=1, files=6. Commit b81db45b4ac13d6c69923e25e3c00a4611818d18 adalah satu commit MANUSIA (author zuppasoupfifaistimewa-png), pesan: Publish CI0-CI3 static selector and level-bank audit. Enam file yang diubah tercantum utuh pada kolom changed_files ledger. Total: 1 commit, 1 MANUSIA, 0 BOT, 6 entri file-change, 6 path unik. Commit koreksi ledger/laporan yang menerbitkan cutoff ini dikecualikan sebagai self-publication.
 
 Status: TUNTAS — K4.
 
