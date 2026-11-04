@@ -2,25 +2,25 @@
 Tanggal: 4 November 2026
 Repo: `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`
 Main awal: `b841ece9a121c48cc30a14be87813af0ff2b6fa7`
-Ledger cutoff (inklusif): `7b62ad0c9d48f7ef5fbc41f54e6c058c028daa06`
-Rentang compare: 15 commit ahead, 0 behind.
+Ledger cutoff (inklusif): `0afef96546fc892bfd8923891a0a664ac19f7dff`
+Rentang compare: 17 commit ahead, 0 behind.
 
 ## Ringkasan status
 
 | Butir | Status | K | Putusan |
 |---|---|---:|---|
-| CG0 — ledger commit + blob SHA | TUNTAS | K4 | 15 commit baru; 12 manusia, 3 bot; 147 entri file pada commit, 142 path unik, hash blob diperiksa dari objek Git. |
+| CG0 — ledger commit + blob SHA | TUNTAS | K4 | 17 commit baru; 13 manusia, 4 bot; 157 entri file pada commit, 151 path unik, seluruh hash blob cocok dengan objek Git. |
 | CG1 — raw scan EA8, writer/reader, FUN_80102408 | SEBAGIAN | K4 | 4 store EA8 dan 1 reader di Entry 1; tidak ada store EA8 di EXE. Semua store memakai global pointer slot 0x8013A22C; nilai store pertama belum diketahui semantik gameplay-nya. |
 | CG2(a) — D9570 event 3, jalur D15A8 dan action==3 | SEBAGIAN | K3–K4 | Byte action 3 di-set pada D9570; parent memanggil D15A8 lebih dulu. Cabang spesifik action==3 di D15A8: TIDAK TAHU. |
 | CG2(b) — penulis non-loader +0x1A sebagai fee sebelum D15A8 | BELUM | K2 | Ada kandidat writer +0x1A, tetapi belum ada alias pointer yang membuktikan tile EA84+0x1A atau pending-fee. |
 | CG2(c) — HJ1′, HJ2, HJ3, HJ4 dan falsifier | SEBAGIAN | K1 | Empat model dan falsifier ditulis. Belum ada pengukuran pembeda d≥2 yang sah. Pengamatan pengguna saja K1. |
-| CG3 — H6, read-only, 2 peluncuran, watchpoint | SEBAGIAN | K5 terbatas | Dua launch mengonfirmasi pointer dan EA8=0 pada enam sampel/frame identik; parser driver memiliki false-negative `0X` vs `0x`; watchpoint terpasang tetapi 0 hit, sehingga PC/old/new writer tetap TIDAK TAHU. |
+| CG3 — H6, read-only, watchpoint | SEBAGIAN | K5 terbatas | Empat launch pada dua Actions run mengulang enam sampel/frame dengan pointer dan EA8 sama; driver false-negative `0X` vs `0x`; total 0 hit, sehingga PC/old/new writer tetap TIDAK TAHU. |
 
 ## CG0 — ledger semua commit baru
 
-Metode: compare objek Git dari `b841ece9a121c48cc30a14be87813af0ff2b6fa7` sampai `7b62ad0c9d48f7ef5fbc41f54e6c058c028daa06` inklusif. Untuk setiap commit, author type diambil dari metadata author; daftar file dan blob SHA-1 diambil dari `files[]` pada objek commit. Compare mengembalikan 142 path unik; penjumlahan `files[]` per commit menghasilkan 147 entri perubahan.
+Metode: compare objek Git dari `b841ece9a121c48cc30a14be87813af0ff2b6fa7` sampai `0afef96546fc892bfd8923891a0a664ac19f7dff` inklusif. Untuk setiap commit, author type diambil dari metadata author; daftar file dan blob SHA-1 diambil dari `files[]` pada objek commit. Compare mengembalikan 151 path unik; penjumlahan `files[]` per commit menghasilkan 157 entri perubahan. SHA blob tiap entri dicocokkan ulang dengan API objek commit.
 
-Statistik: **15 commit; 12 manusia; 3 bot; 147 entri file; 142 path unik.**
+Statistik: **17 commit; 13 manusia; 4 bot; 157 entri file; 151 path unik.**
 
 ### 1. 2b5326e9d744544a85b76e4429d905525b778675 — MANUSIA
 Author: zuppasoupfifaistimewa-png <zuppasoupfifaistimewa@gmail.com>; Add raw MIPS offset candidate scanner
@@ -213,6 +213,22 @@ Author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.c
 - `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/CG3_PCSX_MANIFEST.txt` — added; Git blob SHA-1 `be07dcbcd9c9e0a7ddc26d859ad0240c48554511`
 - `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/CG3_PYTHON_DRIVER_RAW.txt` — added; Git blob SHA-1 `b45b25d7b846c0840468fdea5fd9838133d7b950`
 - `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/CG3_SCRIPT_EXIT_CODE.txt` — added; Git blob SHA-1 `8642dfc899bcd0f5584d0a2eca9b65efb7e8798f`
+
+### 16. b238dd63cd2a790b09331f0ca8c726ee734e5c16 — MANUSIA
+Author: zuppasoupfifaistimewa-png; Update CG0 ledger and correct CG3 H6 runtime audit
+- `reports/stage1_economy/CG0_CG1_CG2_CG3_AUDIT_2026-11-04.md` — modified; Git blob SHA-1 `9f2bc0f9451b618fba7cbce667eb927bb9add9b7`
+
+### 17. 0afef96546fc892bfd8923891a0a664ac19f7dff — BOT
+Author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>; Publish CG3 H6 read-only watchpoint run 41775298933
+- `reports/stage1_economy/cg3-h6-readonly-run-41775298933/attempt-1/ACTIONS_RUN_SUMMARY.txt` — added; Git blob SHA-1 `ccb11718c44ac33952107ba7ed2e6580baa3aef9`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775298933/attempt-1/CG3_H6_FRAME_VALUES.tsv` — added; Git blob SHA-1 `f48102c27955c296c28a4831644f475b07c92f89`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775298933/attempt-1/CG3_H6_READONLY_SUMMARY.txt` — added; Git blob SHA-1 `32cdf681c6f828e7ab6a023bcbb1041bbae99ae5`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775298933/attempt-1/CG3_H6_WRITE_WATCHPOINT.tsv` — added; Git blob SHA-1 `ad82d6b78188d87c5ed6c8d04e43fc26d1f1ce87`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775298933/attempt-1/CG3_LAUNCH_1_RAW_LOG.txt` — added; Git blob SHA-1 `622da081cbb7638bd3797687a67a68856a54d085`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775298933/attempt-1/CG3_LAUNCH_2_RAW_LOG.txt` — added; Git blob SHA-1 `9a2ab4147cdecb9cc45fbd73b2cc9565de0150b5`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775298933/attempt-1/CG3_PCSX_MANIFEST.txt` — added; Git blob SHA-1 `be07dcbcd9c9e0a7ddc26d859ad0240c48554511`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775298933/attempt-1/CG3_PYTHON_DRIVER_RAW.txt` — added; Git blob SHA-1 `32cdf681c6f828e7ab6a023bcbb1041bbae99ae5`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775298933/attempt-1/CG3_SCRIPT_EXIT_CODE.txt` — added; Git blob SHA-1 `8642dfc899bcd0f5584d0a2eca9b65efb7e8798f`
 
 ## CG1 — scan byte mentah dan audit EA8
 
@@ -480,11 +496,24 @@ Control state SHA-256:
 - Wall time launch 1 `413.593 s`, launch 2 `415.671 s`; timeout `3600 s` per launch, lebih dari 2× waktu terlama teramati (415.671 s). RAM snapshots lokal frame 180/360 di-hash lalu dihapus; tidak dipublikasikan.
 - PCSX wrapper exit desimal `0` dan Lua quit desimal `0` pada tiap launch. Python driver exit desimal `2`; Actions job/workflow tetap `success`, tetapi `ACTIONS_RUN_SUMMARY.txt` sengaja mencatat `STATUS=SEBAGIAN`, `JOB=cg3-h6-readonly-watchpoint`, `SOURCE_SHA=6fd71b25b8a7e5f1695dd6fd32e5f993958b59f1`, `EXIT_CODE=2`.
 
+### Run 41775298933 — pengulangan dua peluncuran
+
+- Workflow `completed/success`; job `CG3 two independent PCSX-Redux H6 read-only launches`, job ID `126398319693`; seluruh step headless, cleanup, validasi teks, dan commit laporan berstatus success.
+- Source SHA `f1ee369f670e39a67ab89c22b51da881e5cc9258`; H6 SHA tetap `d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475`.
+- Dua peluncuran PCSX-Redux tambahan masing-masing mencapai frame 1.200, `GAMEPLAY_INPUT=NONE`, `RAM_POKE=NO`, restore pointer benar dan write-breakpoint dipasang.
+- Pada kedua peluncuran: pointer `0x801CDF80`, alamat EA8 `0x801CEE28`, dan nilai EA8 `0x00000000` pada frame **1/60/180/360/600/1200**.
+- Write watchpoint TSV hanya berisi header (**0 hit**); tidak ada PC/old/new yang bisa dilaporkan.
+- RAM frame 180 dan 360 pada kedua launch kembali cocok dengan hash referensi: `5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7` dan `4d002df6902a6de6aa0724b4284da8decb1725cf693fd1ed80ce0132c45a7907` (masing-masing 2.097.152 byte).
+- Memory Card disposable 128 KiB sebelum dan sesudah tiap launch: `fa43239bcee7b97ca62f007cc68487560a39e19f74f3dde7486db3f98df8e471`; tidak berubah.
+- Wall time launch 1 `479.441 s`, launch 2 `480.465 s`; timeout `3600 s` per launch, lebih dari 2× waktu terlama. Cleanup RAM dan input private pass; tidak ada dump/frame dipublikasikan.
+- PCSX wrapper exit desimal `0` dan Lua quit desimal `0` per launch. Python driver exit desimal `2`; ACTIONS summary `STATUS=SEBAGIAN`, `EXIT_CODE=2`, karena bug parser `0X` vs `0x` yang sama. Audit ulang raw log mengonfirmasi pointer dan alamat benar.
+- Tidak ditemukan pesan `fatal`, `traceback`, atau `error:` pada raw log kedua peluncuran.
+
 ### Koreksi interpretasi flag pointer driver
 
 Flag summary `POINTER_AND_WATCHPOINT_VERIFIED=False` adalah false-negative parser, bukan bukti pointer runtime salah. Di `experiments/cg3_h6_readonly_watchpoint.py`, parser mengubah token alamat dengan `.upper()`, sehingga `0x801CDF80` menjadi `0X801CDF80`; hasil itu lalu dibandingkan dengan literal `0x801CDF80` (huruf `x` kecil), dan tes string gagal. Saya mencocokkan ulang kedua raw log dengan parser-equivalent: keenam sampel per launch ada dan alamat cocok; juga tidak ada baris `CG3_POINTER_VERIFY=FAIL`. Keluaran mentah kedua launch mengonfirmasi nilai pointer dan field di atas. Akibatnya exit 2 adalah kegagalan gate Python akibat normalisasi prefix, bukan exit/crash emulator.
 
-Kesimpulan CG3: **runtime repeatability untuk sampel H6 mencapai K5 terbatas** (dua launch independen, enam frame sample cocok, hash RAM dan Memory Card konsisten). Status butir tetap **SEBAGIAN**, sebab watchpoint tidak menghasilkan PC/old/new dan tidak ada hit untuk ditelusuri. Tidak boleh menyimpulkan perilaku penulis EA8 di gameplay umum dari satu checkpoint tanpa input.
+Kesimpulan CG3: **runtime repeatability untuk enam sampel frame H6 mencapai K5 terbatas** (empat peluncuran independen pada dua Actions run, semua enam sampel cocok, hash RAM dan Memory Card konsisten). Status butir tetap **SEBAGIAN**, sebab total empat launch menghasilkan 0 hit watchpoint; PC/old/new penulis EA8 = **TIDAK TAHU**. Ini tidak membuktikan tidak ada penulisan di luar cakupan/batas kemampuan breakpoint dan tidak membuktikan perilaku EA8 pada gameplay dengan input.
 
 Artefak run:
 - `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/ACTIONS_RUN_SUMMARY.txt`
@@ -496,7 +525,7 @@ Artefak run:
 ## Runner setelah koreksi publikasi
 
 - Run `41775137231`: `completed/success`; hasil dua launch dan ringkasan teks sudah terkomit pada HEAD cutoff laporan ini.
-- Run `41775298933` (source `f1ee369f670e39a67ab89c22b51da881e5cc9258`): pada pemeriksaan terakhir masih `in_progress`, job `126398319693` berada di step headless emulator. Belum ada kesimpulan atau artefak hasil final; tidak dihitung sebagai bukti CG3.
+- Run `41775298933` (source `f1ee369f670e39a67ab89c22b51da881e5cc9258`): `completed/success`, job `126398319693`; dua launch selesai dan artefak teks terkomit oleh bot pada `0afef96546fc892bfd8923891a0a664ac19f7dff`. Hasilnya sama-sama SEBAGIAN karena false-negative parser dan 0 hit watchpoint.
 - Run `41773084992` sebelumnya berakhir `failure` pada langkah commit laporan karena `fatal: detected dubious ownership in repository`; hasilnya tidak dipakai untuk menggantikan artefak lengkap run 41775137231.
 
 ## File sumber audit statis di repo
@@ -513,4 +542,4 @@ Artefak run:
 - `reports/stage1_economy/aq1-run-41769361956/attempt-1/bb2-d15a8-direct-callers.txt`
 
 ---
-Catatan batas: ledger CG0 mencakup seluruh 15 commit dari baseline sampai HEAD cutoff `7b62ad0c9d48f7ef5fbc41f54e6c058c028daa06`. Commit revisi laporan ini sendiri tidak dimasukkan ke ledger (cutoff audit dinyatakan eksplisit). Tidak ada perubahan terhadap Release, `STATUS.md`, visibilitas repo, atau berkas biner.
+Catatan batas: ledger CG0 mencakup seluruh 17 commit dari baseline sampai HEAD cutoff `0afef96546fc892bfd8923891a0a664ac19f7dff`. Commit laporan revisi yang sedang diterbitkan ini sendiri tidak dimasukkan ke ledger (cutoff audit dinyatakan eksplisit). Tidak ada perubahan terhadap Release, `STATUS.md`, visibilitas repo, atau berkas biner.
