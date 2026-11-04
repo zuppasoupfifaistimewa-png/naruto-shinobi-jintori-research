@@ -1,0 +1,58 @@
+name: CH2 static tile level-bank scale expansion
+
+on:
+  push:
+    paths:
+      - 'tools/step7/ExportTileLevelBankScale.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  export-and-check-level-bank:
+    name: export-and-check-level-bank
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Run deterministic static expansion
+        id: export
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/ch2-level-bank"
+          python3 tools/step7/ExportTileLevelBankScale.py \
+            --input reports/stage1_economy/aq1-run-41803736009/attempt-1/BA1_TILE_TABLE_RECORDS.tsv \
+            --out-dir "$out"
+          run_dir="reports/stage1_economy/ch2-level-bank-scale-run-$GITHUB_RUN_ID/attempt-1"
+          mkdir -p "$run_dir"
+          cp "$out/CH2_LEVEL_BANK_OUTPUT_BY_SUBTYPE.tsv" "$run_dir/"
+          cp "$out/CH2_LEVEL_BANK_SCALE_SUMMARY.txt" "$run_dir/"
+          cat > "$run_dir/ACTIONS_RUN_SUMMARY.txt" <<EOF
+          STATUS=PASS
+          WORKFLOW=ch2-level-bank-scale-static
+          JOB=export-and-check-level-bank
+          RUN_ID=$GITHUB_RUN_ID
+          SOURCE_SHA=$GITHUB_SHA
+          SCRIPT_EXIT_CODE=0
+          GAME_OR_EMULATOR_EXECUTED=no
+          EOF
+          echo "RUN_DIR=$run_dir" >> "$GITHUB_OUTPUT"
+
+      - name: Commit text results
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/stage1_economy/ch2-level-bank-scale-run-"$GITHUB_RUN_ID"
+          if git diff --cached --quiet; then
+            echo "No result changes to commit"
+            exit 0
+          fi
+          git commit -m "Publish static CH2 level-bank subtype expansion run $GITHUB_RUN_ID"
+          git push
