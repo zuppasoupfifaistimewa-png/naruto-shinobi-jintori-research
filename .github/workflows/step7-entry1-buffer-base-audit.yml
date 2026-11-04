@@ -21,6 +21,8 @@ on:
       - "tools/step7/ExportBB2TileNibbleAudit.java"
       - "tools/step7/ExportOffsetMemoryAudit.java"
       - "tools/step7/ScanRawMipsOffsets.py"
+      - "tools/step7/ScanTileLevelTableAccesses.py"
+      - "tools/step7/ExportTileLevelTableAccesses.java"
       - "tools/ghidra/ExportTargetCallers.java"
       - "tools/ghidra/ExportFunctionDetail.java"
       - "tools/ghidra/ExportNumericLiteralReferences.java"
@@ -225,6 +227,8 @@ jobs:
             --out "$out/cd1-raw-indirect-call-candidates.txt"
           python3 tools/step7/ScanRawMipsOffsets.py \
             --exe "$exe" --entry1 "$input/DATA_BIN_ENTRY_0001.bin" --out-dir "$out"
+          python3 tools/step7/ScanTileLevelTableAccesses.py \
+            --exe "$exe" --entry1 "$input/DATA_BIN_ENTRY_0001.bin" --out-dir "$out"
           rm -rf "$source" "$extracted"
           test ! -e "$source" && test ! -e "$extracted"
           echo "source_disc_and_DATA_BIN_removed_before_Ghidra=PASS" >> "$out/input-identity.txt"
@@ -278,6 +282,7 @@ jobs:
           cp "$GITHUB_WORKSPACE/tools/step7/ExportBB2ActionByteAudit.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportBB2ActionByteAudit.java"
           cp "$GITHUB_WORKSPACE/tools/step7/ExportBB2TileNibbleAudit.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportBB2TileNibbleAudit.java"
           cp "$GITHUB_WORKSPACE/tools/step7/ExportOffsetMemoryAudit.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportOffsetMemoryAudit.java"
+          cp "$GITHUB_WORKSPACE/tools/step7/ExportTileLevelTableAccesses.java" "$GITHUB_WORKSPACE/tools/ghidra/ExportTileLevelTableAccesses.java"
 
           set +e
           "$headless" "$project" Naruto_DATA_BIN_entry1_buffer_base \
@@ -318,7 +323,8 @@ jobs:
             -postScript ExportTargetCallers.java "$out/bb2-d15a8-direct-callers.txt" 0x800D15A8 0x800C2570 0x800D9570 0x800EB434 0x800EE4E0 0x800EF3CC 0x800D8930 0x800D10F0 0x800DD7C0 0x800E481C 0x800E4F50 0x800E7B38 0x800EA18C 0x8010BDFC 0x80108EAC 0x80108EBC 0x80108E1C 0x80100DCC 0x80100E9C 0x80101360 \
             -postScript ExportTargetXrefs.java "$out/bb2-message-object-xrefs.csv" "$out/bb2-message-object-functions.csv" 0x800AD450 0x8013A1D8 \
             -postScript ExportStage1EconomyDeepContext.java "$out/aq1-deep-context.tsv" \
-            -postScript ExportOffsetMemoryAudit.java "$out/ea8-entry1-offset-audit.tsv" \
+            -postScript ExportOffsetMemoryAudit.java "$out/ea8-entry1-offset-audit.tsv"
+            -postScript ExportTileLevelTableAccesses.java "$out/tile-level-accesses-entry1.tsv" \
             -postScript ExportFunctionDetail.java "$out/entry1-helper-function-detail.txt" 0x800B770C 0x800BDC4C \
             -postScript ExportFunctionDetail.java "$out/cg1-ea8-writer-function-detail.txt" 0x80101FE8 0x80102510 0x80102738 \
             -postScript ExportFunctionDetail.java "$out/cg2-tile-fee-writer-function-detail.txt" 0x800B2A58 0x800B5790 0x800B5D68 0x800B63F4 0x800F6988 0x800F7ADC \
@@ -369,7 +375,8 @@ jobs:
             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
             -preScript PreparePsxExe.java \
             -postScript ExportManagerEconomyWriters.java MAIN_EXE "$out/ay1-ay2-exe.tsv" \
-            -postScript ExportOffsetMemoryAudit.java "$out/ea8-exe-offset-audit.tsv" \
+            -postScript ExportOffsetMemoryAudit.java "$out/ea8-exe-offset-audit.tsv"
+            -postScript ExportTileLevelTableAccesses.java "$out/tile-level-accesses-exe.tsv" \
             -postScript ExportTargetCallers.java "$out/az3-setter-direct-callers-main-exe.txt" 0x8001387C 0x80020D70 \
             -postScript ExportTargetCallers.java "$out/bb2-action3-helper-callers-main-exe.txt" 0x80013D80 0x800160D4 0x80014FA8 0x800143AC \
             -postScript ExportCallWindows.java "$out/az3-setter-call-windows-main-exe.tsv" 0x8001387C \
@@ -591,7 +598,7 @@ jobs:
           PY
           dest="reports/stage1_economy/aq1-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
-          for f in BA1_DATA_BIN_RESOURCE_INVENTORY.tsv BA1_RESOURCE_CANDIDATES.tsv BA1_DATA_SCAN_SUMMARY.txt BA1_TILE_TABLE_CANDIDATES.tsv BA1_TILE_TABLE_RECORDS.tsv BA1_TILE_TABLE_SCAN_SUMMARY.txt ba1-tile-resource-loader.txt ba1-selector-callers-main-exe.txt ba1-selector-dat80070cd0-xrefs.csv ba1-mode-state-resource-selector.tsv ba1-selector-main-exe-functions.csv ba1-tile-loader-callers.txt ba1-resource-parser-main-exe.txt entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv bb2-action-byte-access.tsv bb2-tile-nibble-access.tsv bb2-d15a8-function-detail.txt bb2-d15a8-direct-callers.txt bb2-message-object-xrefs.csv bb2-message-object-functions.csv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b38-accesses.tsv aw1-manager-b40-accesses.tsv aw1-manager-b44-accesses.tsv aw2-numeric-instruction-literals.tsv aw1-helper-call-windows.tsv aw1-manager-status.txt aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv BB2_FULL_DATABIN_TEXT_SCAN.txt bb2-full-databin-text-scan.tsv cd1-raw-indirect-call-candidates.txt bb2-entry1-numeric-literals.tsv bb2-event-function-detail.txt bb2-event-direct-callers.txt bb2-event-instruction-windows.txt bb2-d15a8-focused.txt ay1-ay2-entry1.tsv ay1-ay2-exe.tsv az3-setter-direct-callers-entry1.txt az3-setter-direct-callers-main-exe.txt az3-setter-call-windows-entry1.tsv az3-setter-call-windows-main-exe.tsv az3-setter-caller-main-exe-detail.txt az3-starting-balance-global-detail.txt az3-resource-economy-function-detail.txt az3-main-exe-economic-helper-detail.txt cg1-ea8-writer-function-detail.txt cg2-tile-fee-writer-function-detail.txt ea8-entry1-offset-audit.tsv ea8-exe-offset-audit.tsv cg_raw_mips_offset_candidates.tsv cg_raw_mips_offset_scan_summary.txt ay2-exe-random-byte-check.txt ay1-ay2-sha256.txt ghidra-exe-headless.log aq1-recount.txt run-summary.txt input-identity.txt; do
+          for f in BA1_DATA_BIN_RESOURCE_INVENTORY.tsv BA1_RESOURCE_CANDIDATES.tsv BA1_DATA_SCAN_SUMMARY.txt BA1_TILE_TABLE_CANDIDATES.tsv BA1_TILE_TABLE_RECORDS.tsv BA1_TILE_TABLE_SCAN_SUMMARY.txt ba1-tile-resource-loader.txt ba1-selector-callers-main-exe.txt ba1-selector-dat80070cd0-xrefs.csv ba1-mode-state-resource-selector.tsv ba1-selector-main-exe-functions.csv ba1-tile-loader-callers.txt ba1-resource-parser-main-exe.txt entry1-buffer-base-targets.txt helper-a1-provenance-status.txt aq1-economy-census.tsv bb2-action-byte-access.tsv bb2-tile-nibble-access.tsv bb2-d15a8-function-detail.txt bb2-d15a8-direct-callers.txt bb2-message-object-xrefs.csv bb2-message-object-functions.csv aq1-deep-context.tsv entry1-helper-function-detail.txt aw1-manager-function-detail.txt aw1-manager-b38-accesses.tsv aw1-manager-b40-accesses.tsv aw1-manager-b44-accesses.tsv aw2-numeric-instruction-literals.tsv aw1-helper-call-windows.tsv aw1-manager-status.txt aw1-tile-field-function-inventory.tsv aw2-static-data-scan.md aw2-numeric-occurrences.tsv BB2_FULL_DATABIN_TEXT_SCAN.txt bb2-full-databin-text-scan.tsv cd1-raw-indirect-call-candidates.txt bb2-entry1-numeric-literals.tsv bb2-event-function-detail.txt bb2-event-direct-callers.txt bb2-event-instruction-windows.txt bb2-d15a8-focused.txt ay1-ay2-entry1.tsv ay1-ay2-exe.tsv az3-setter-direct-callers-entry1.txt az3-setter-direct-callers-main-exe.txt az3-setter-call-windows-entry1.tsv az3-setter-call-windows-main-exe.tsv az3-setter-caller-main-exe-detail.txt az3-starting-balance-global-detail.txt az3-resource-economy-function-detail.txt az3-main-exe-economic-helper-detail.txt cg1-ea8-writer-function-detail.txt cg2-tile-fee-writer-function-detail.txt ea8-entry1-offset-audit.tsv ea8-exe-offset-audit.tsv cg_raw_mips_offset_candidates.tsv cg_raw_mips_offset_scan_summary.txt ay2-exe-random-byte-check.txt ay1-ay2-sha256.txt ghidra-exe-headless.log aq1-recount.txt run-summary.txt input-identity.txt tile-level-raw-mips-candidates.tsv tile-level-raw-mips-summary.txt tile-level-accesses-entry1.tsv tile-level-accesses-exe.tsv; do
             if [ -f "$out/$f" ]; then cp "$out/$f" "$dest/$f"; fi
           done
           API="https://api.github.com/repos/$RESEARCH_REPO"
