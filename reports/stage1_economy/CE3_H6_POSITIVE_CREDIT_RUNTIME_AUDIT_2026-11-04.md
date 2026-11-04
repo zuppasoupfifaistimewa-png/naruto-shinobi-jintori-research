@@ -1,6 +1,34 @@
 # CE3 — audit runtime kredit positif H6 (4 November 2026)
 
-## Putusan
+## KOREKSI TERBARU — run 41749255678 (HEAD audit 012367cf0518e519520fe590845d62792289276a)
+
+**Koreksi ini mengesampingkan bagian “Actions run terbaru” dan “Log runtime mentah” historis di bawah.**
+
+- GitHub workflow: `completed/success`; job `ce3-h6-positive-credit-probe`, ID `126309939178`: `completed/success`.
+- Source SHA: `b2ccb20041c31496b23ce531eec3434753db7868`.
+- Test summary: `STATUS=SEBAGIAN`, `EXIT_CODE=2`; script exit desimal **2**, wrapper/launch exit desimal **73**.
+- Launch 1 (tile 4, level 0, attempt 1) berakhir dalam 145.779 s; timeout dikonfigurasi 1201 s.
+- Gate preflight read-only meniru `FUN_80102408`: global `0x8013A22C=0x801CDF80`; `pointer+4=0x801CEC88`; `pointer+0xEA8=0xFFFFFFFE`; hasil prediksi `4294967294`. Gate memblokir state 2 sebelum setter/kredit.
+
+Log mentah:
+```text
+CE3_STATE1_RETURN phase=2
+CE3_STATE2_GLOBAL_POINTER_8013A22C=0x801CDF80
+CE3_STATE2_GATE_POINTER_VALID=YES
+CE3_STATE2_GATE_FIELD_PLUS4=0x801CEC88
+CE3_STATE2_GATE_FIELD_PLUS_EA8=0xFFFFFFFE
+CE3_STATE2_GATE_PREDICTED_RETURN=4294967294
+CE3_RAW_ERROR=.../launches/tile-4-level-0-attempt-1/ce3.lua:186: STATE2_GATE_PREFLIGHT_BLOCK field4=0x801CEC88 fieldEA8=0xFFFFFFFE predicted=4294967294
+CE3_CALL_STATUS=FAIL
+```
+
+Pesan `8-bit read from unknown address: ffffd138` pada bagian historis di bawah berasal dari run 41740957322, **bukan** run terbaru. Jangan gunakan pesan lama sebagai penyebab run 41749255678.
+
+Data frame 180/360 masing-masing cocok dengan SHA referensi; memory card disposable sebelum/sesudah tidak berubah. Hanya satu launch tercatat, tanpa hasil pemain/setter/kredit. Run ini bukan read-only murni karena fixture pokes di RAM disposable (lihat laporan CF0–CF3). K5 belum tercapai.
+
+---
+
+## Putusan historis — run 41740957322 (digantikan oleh koreksi di atas)
 
 **CE3: SEBAGIAN — K2 hanya untuk transisi state 1 → phase 2; jalur kredit ke Chakra kanonis BELUM (K0). K5 tidak tercapai.**
 
@@ -11,13 +39,13 @@ Harness CE3 berhasil dikompilasi dan melewati pemeriksaan Langkah 0. Restore H6 
 ## Sumber yang diaudit
 
 - Baseline yang diminta pengguna: `cd90b281f45cada726e80c3f87661e5ae5494303`.
-- HEAD main pada saat audit: `9928ee9ed3db578e7ea81b6d23a471082c2a0a51` (81 commit di depan baseline).
+- HEAD main pada saat koreksi terbaru: `012367cf0518e519520fe590845d62792289276a` (98 commit di depan baseline).
 - Handoff yang tersedia: `docs/HANDOFF_STAGE1_ECONOMY_2026-10-31.md`.
 - Checkpoint yang lebih baru: `reports/stage1_economy/BB_STATE.md` (tanggal 3 November 2026).
 - Laporan statis CE0–CE2: `reports/stage1_economy/CE0_CE1_CE2_STATIC_AUDIT_2026-11-04.md`.
 - Harness: `experiments/ce3_h6_positive_credit_probe.py`; workflow: `.github/workflows/ce3-h6-positive-credit-probe.yml`.
 
-## Actions run terbaru
+## Actions run sebelumnya — run 41740957322 (historis)
 
 - Run: `41740957322`
 - Job: `ce3-h6-positive-credit-probe`
@@ -58,7 +86,7 @@ Memory Card disposable:
 - Sesudah: `fa43239bcee7b97ca62f007cc68487560a39e19f74f3dde7486db3f98df8e471`
 - Tidak berubah.
 
-### Log runtime mentah yang menentukan
+### Log runtime mentah run 41740957322 (historis; bukan penyebab terbaru)
 
 Dari `CE3_FIRST_NONPASS_TILE4_LEVEL0_ATTEMPT1.txt`:
 
@@ -100,7 +128,7 @@ Arti statis:
 
 **Hipotesis diagnostik, belum fakta runtime:** pembacaan `0xFFFFD138` mungkin berkaitan dengan pointer global `0x8013A22C` yang tidak valid (misalnya pointer sekitar `0xFFFFD134` bila alamat yang dibaca memang pointer+4). Harness tidak pernah mencatat nilai global pointer tersebut, sehingga hubungan ini **BELUM TERBUKTI**. Jangan poke/fiksasi pointer sebelum nilai dan objek yang semestinya dibuktikan.
 
-### Timeout
+### Timeout run 41740957322 (historis)
 
 Timeout disetel 600 detik. Riwayat mencatat peluncuran terlama yang selesai 145.815 detik, tetapi run terbaru sendiri mencapai timeout 600.034 detik. Ringkasan script menyatakan `TIMEOUT_GE_2X_OBSERVED_MAX=False`. Karena tidak ada penyelesaian launch terbaru, persyaratan timeout ≥2× waktu terlama pada rangkaian ini **belum dapat dinyatakan terpenuhi**. Jangan menyamakan timeout dengan durasi launch yang selesai.
 
@@ -118,3 +146,7 @@ Timeout disetel 600 detik. Riwayat mencatat peluncuran terlama yang selesai 145.
 - Tidak mengubah `STATUS.md`; ukuran di HEAD audit `9928ee9ed3db578e7ea81b6d23a471082c2a0a51` diverifikasi **693,844 byte**.
 - BB3 K5 lama tetap terbatas untuk direct-call debit action 3/8 pada H6 hibrida. CE3 kredit positif tidak boleh mewarisi status itu.
 - Event 1/0x1D belum boleh dinamai Barrier Release; token pesan 0xBE dan B44 bukan bukti label itu.
+
+
+## Riwayat koreksi file
+Koreksi CF0 run 41749255678 ditambahkan pada snapshot yang berangkat dari HEAD `012367cf0518e519520fe590845d62792289276a`. Daftar berkas yang diubah pada commit koreksi terdapat di `CF0_CF1_CF2_CF3_AUDIT_2026-11-04.md`.
