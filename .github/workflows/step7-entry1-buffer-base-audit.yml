@@ -323,7 +323,7 @@ jobs:
             -postScript ExportTargetCallers.java "$out/bb2-d15a8-direct-callers.txt" 0x800D15A8 0x800C2570 0x800D9570 0x800EB434 0x800EE4E0 0x800EF3CC 0x800D8930 0x800D10F0 0x800DD7C0 0x800E481C 0x800E4F50 0x800E7B38 0x800EA18C 0x8010BDFC 0x80108EAC 0x80108EBC 0x80108E1C 0x80100DCC 0x80100E9C 0x80101360 \
             -postScript ExportTargetXrefs.java "$out/bb2-message-object-xrefs.csv" "$out/bb2-message-object-functions.csv" 0x800AD450 0x8013A1D8 \
             -postScript ExportStage1EconomyDeepContext.java "$out/aq1-deep-context.tsv" \
-            -postScript ExportOffsetMemoryAudit.java "$out/ea8-entry1-offset-audit.tsv"
+            -postScript ExportOffsetMemoryAudit.java "$out/ea8-entry1-offset-audit.tsv" \
             -postScript ExportTileLevelTableAccesses.java "$out/tile-level-accesses-entry1.tsv" \
             -postScript ExportFunctionDetail.java "$out/entry1-helper-function-detail.txt" 0x800B770C 0x800BDC4C \
             -postScript ExportFunctionDetail.java "$out/cg1-ea8-writer-function-detail.txt" 0x80101FE8 0x80102510 0x80102738 \
@@ -375,7 +375,7 @@ jobs:
             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
             -preScript PreparePsxExe.java \
             -postScript ExportManagerEconomyWriters.java MAIN_EXE "$out/ay1-ay2-exe.tsv" \
-            -postScript ExportOffsetMemoryAudit.java "$out/ea8-exe-offset-audit.tsv"
+            -postScript ExportOffsetMemoryAudit.java "$out/ea8-exe-offset-audit.tsv" \
             -postScript ExportTileLevelTableAccesses.java "$out/tile-level-accesses-exe.tsv" \
             -postScript ExportTargetCallers.java "$out/az3-setter-direct-callers-main-exe.txt" 0x8001387C 0x80020D70 \
             -postScript ExportTargetCallers.java "$out/bb2-action3-helper-callers-main-exe.txt" 0x80013D80 0x800160D4 0x80014FA8 0x800143AC \
