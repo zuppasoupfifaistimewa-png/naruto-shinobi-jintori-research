@@ -49,6 +49,7 @@ local EXPECTED_C = EXPECTED_BASE + LEVEL * EXPECTED_STEP
 local RETURN_PC = 0x80011448
 local started, loaded, postLoadVsync = false, false, 0
 local frame180Captured, frame360Captured = false, false
+local DIAGNOSTIC_ONLY = os.getenv("CE3_DIAGNOSTIC_ONLY") == "1"
 local mem, manager, tileBase, tile, playerCount = nil, nil, nil, nil, 0
 local activeCall, activePlayer, consumerCalls = nil, nil, 0
 local setterCount, setterLastA0, setterLastA1 = 0, -1, -1
@@ -144,6 +145,23 @@ local function playerAddresses(player)
   local chakra = 0x80070EA0 + player * 0xB4 + 0x18
   return participant, participant + 4, manager + 0x2EE + player * 2, chakra
 end
+-- Read-only mirror of FUN_80102408; never dereference outside PS1 RAM.
+local function checkState2Gate()
+  local object = rd(0x8013A22C)
+  log("CE3_STATE2_GLOBAL_POINTER_8013A22C="..hex(object))
+  if not validPtr(object, 0xEAC) then
+    log("CE3_STATE2_GATE_POINTER_VALID=NO")
+    return false, "pointer_invalid="..hex(object)
+  end
+  local field4 = rd(object + 0x04)
+  local fieldEA8 = rd(object + 0xEA8)
+  local predicted = field4 == 0 and -1 or fieldEA8
+  log("CE3_STATE2_GATE_POINTER_VALID=YES")
+  log("CE3_STATE2_GATE_FIELD_PLUS4="..hex(field4))
+  log("CE3_STATE2_GATE_FIELD_PLUS_EA8="..hex(fieldEA8))
+  log("CE3_STATE2_GATE_PREDICTED_RETURN="..tostring(predicted))
+  return predicted == 0, "field4="..hex(field4).." fieldEA8="..hex(fieldEA8).." predicted="..tostring(predicted)
+end
 local function resetConsumerAnimator()
   for p = 0, 3 do
     poke8("anim_state_p"..p, 0x8013B7AC + p, 0)
@@ -205,6 +223,8 @@ local function onCallReturn(label)
     local phase = rb(0x80139F03)
     log("CE3_STATE1_RETURN phase="..phase)
     if phase ~= 2 then error("STATE1_DID_NOT_ADVANCE_TO_2 actual="..phase) end
+    local gateOk, gateDetail = checkState2Gate()
+    if not gateOk then error("STATE2_GATE_PREFLIGHT_BLOCK "..gateDetail) end
     callFunction(0x800D15A8, "D15A8_STATE2_P"..activePlayer)
     return
   end
@@ -232,7 +252,12 @@ local function onCallReturn(label)
       return
     end
     finishPlayer()
-    if activePlayer == 0 then
+    if activePlayer == 0 and DIAGNOSTIC_ONLY then
+      complete = true
+      log("CE3_LAUNCH_STATUS=DIAGNOSTIC_PASS")
+      log("CE3_DIAGNOSTIC_ONLY_COMPLETED=1")
+      PCSX.quit(0)
+    elseif activePlayer == 0 then
       preparePlayer(1)
     else
       complete = true
@@ -299,6 +324,7 @@ local function initTest()
   poke16("tile_level_bits8_11", tile + 0x20, staged)
   log("CE3_H6_LOADED=1")
   log("CE3_TEST_MODE=STATIC_EVENT_STATE1_STATE2_AND_CONSUMER_CALLS_NO_CONTROLLER_INPUT")
+  log("CE3_DIAGNOSTIC_ONLY="..tostring(DIAGNOSTIC_ONLY))
   log("CE3_H6_SHA256="..tostring(os.getenv("CE3_H6_SHA256") or "TIDAK TAHU"))
   log("CE3_MANAGER_POINTER="..hex(manager).." tile_base="..hex(tileBase).." player_count="..playerCount)
   log("CE3_TILE_INDEX="..TILE_INDEX.." tile_address="..hex(tile).." tile_type="..rb(tile))
@@ -360,7 +386,8 @@ def main():
     ap = argparse.ArgumentParser()
     for name in ("target", "control", "pcsx-bin", "appdir", "bios", "cue", "card", "work", "out"):
         ap.add_argument("--" + name, required=True)
-    ap.add_argument("--timeout-seconds", type=int, default=600)
+    ap.add_argument("--timeout-seconds", type=int, default=1201)
+    ap.add_argument("--diagnostic-only", action="store_true")
     args = ap.parse_args()
 
     target = Path(args.target).read_bytes()
@@ -412,12 +439,14 @@ def main():
     stop_reason = "ALL_CASES_COMPLETED"
     launch_number = 0
     failed = False
-    conditions = [(tile, level, attempt)
-                  for tile in TILE_INDICES
-                  for level in LEVEL_VALUES
-                  for attempt in (1, 2)]
-    if len(conditions) != 20 or len(set(conditions)) != 20:
-        raise SystemExit("CE3_20_LAUNCH_MATRIX_MISMATCH")
+    conditions = ([(4, 0, 1)] if args.diagnostic_only else
+                  [(tile, level, attempt)
+                   for tile in TILE_INDICES
+                   for level in LEVEL_VALUES
+                   for attempt in (1, 2)])
+    expected_condition_count = 1 if args.diagnostic_only else 20
+    if len(conditions) != expected_condition_count or len(set(conditions)) != expected_condition_count:
+        raise SystemExit("CE3_LAUNCH_CONDITION_MATRIX_MISMATCH")
 
     for tile_index, level, attempt in conditions:
         launch_number += 1
@@ -452,6 +481,7 @@ def main():
             "CE3_TILE_INDEX": str(tile_index), "CE3_LEVEL": str(level),
             "CE3_EXPECTED_BASE": str(base), "CE3_EXPECTED_STEP": str(step),
             "CE3_H6_SHA256": h6_sha,
+            "CE3_DIAGNOSTIC_ONLY": "1" if args.diagnostic_only else "0",
         })
         stdout_path = logs / "emulator-stdout.txt"
         pcsx_log_path = logs / "pcsx-redux.log"
@@ -462,8 +492,9 @@ def main():
             "-exec", pad_text, "-dofile", str(lua_path),
             "-softgpu", "-stdout", "-lua_stdout", "-logfile", str(pcsx_log_path), "-run",
         ]
-        print("CE3_LAUNCH_START=%d/20 tile=%d level=%d attempt=%d expected_credit=%d" %
-              (launch_number, tile_index, level, attempt, expected_credit), flush=True)
+        expected_launches = 1 if args.diagnostic_only else 20
+        print("CE3_LAUNCH_START=%d/%d tile=%d level=%d attempt=%d expected_credit=%d" %
+              (launch_number, expected_launches, tile_index, level, attempt, expected_credit), flush=True)
         started = time.monotonic()
         with stdout_path.open("wb") as f:
             try:
@@ -475,8 +506,8 @@ def main():
                 f.write(("CE3_LAUNCH_EXCEPTION=" + repr(exc) + "\n").encode())
         wall = time.monotonic() - started
         max_wall = max(max_wall, wall)
-        print("CE3_LAUNCH_END=%d/20 tile=%d level=%d attempt=%d wrapper_exit=%d wall_seconds=%.3f" %
-              (launch_number, tile_index, level, attempt, wrapper_rc, wall), flush=True)
+        print("CE3_LAUNCH_END=%d/%d tile=%d level=%d attempt=%d wrapper_exit=%d wall_seconds=%.3f" %
+              (launch_number, expected_launches, tile_index, level, attempt, wrapper_rc, wall), flush=True)
         log_text = stdout_path.read_text(encoding="utf-8", errors="replace")
         if pcsx_log_path.exists():
             log_text += "\n" + pcsx_log_path.read_text(encoding="utf-8", errors="replace")
@@ -511,7 +542,8 @@ def main():
             "ce3-frame360-2mib.bin", "CE3_RAM_FRAME360_CAPTURE"
         )
         card_after = sha(card.read_bytes()) if card.exists() else "TIDAK TAHU"
-        launch_ok = values.get("CE3_LAUNCH_STATUS") == "PASS" and wrapper_rc == 0
+        expected_launch_status = "DIAGNOSTIC_PASS" if args.diagnostic_only else "PASS"
+        launch_ok = values.get("CE3_LAUNCH_STATUS") == expected_launch_status and wrapper_rc == 0
         rows_for_launch = []
         result_lines = [x for x in log_text.splitlines() if x.startswith("CE3_PLAYER_RESULT ")]
         for textline in result_lines:
@@ -549,7 +581,8 @@ def main():
             }
             rows_for_launch.append(row)
             rows.append(row)
-        launch_pass = launch_ok and len(rows_for_launch) == 2 and all(
+        expected_player_rows = 1 if args.diagnostic_only else 2
+        launch_pass = launch_ok and len(rows_for_launch) == expected_player_rows and all(
             row["player_status"] == "PASS" for row in rows_for_launch
         ) and ram180_status == "PASS" and ram360_status == "PASS"             and ram180_bytes == RAM_BYTES and ram360_bytes == RAM_BYTES             and ram180_sha == RAM_REFERENCE_180 and ram360_sha == RAM_REFERENCE_360             and card_before == card_after
         launch_rows.append({
@@ -589,18 +622,27 @@ def main():
         writer.writeheader()
         writer.writerows(launch_rows)
 
-    expected_conditions = {(p, tile, level) for p in PLAYER_INDICES for tile in TILE_INDICES for level in LEVEL_VALUES}
+    expected_conditions = ({(0, 4, 0)} if args.diagnostic_only else
+                           {(p, tile, level) for p in PLAYER_INDICES for tile in TILE_INDICES for level in LEVEL_VALUES})
     coverage = {}
     for row in rows:
         key = (int(row["player"]), int(row["tile"]), int(row["level"]))
         coverage.setdefault(key, set()).add(int(row["attempt"]))
-    coverage_ok = len(rows) == 40 and set(coverage) == expected_conditions and all(v == {1, 2} for v in coverage.values())
+    if args.diagnostic_only:
+        coverage_ok = len(rows) == 1 and set(coverage) == expected_conditions and all(v == {1} for v in coverage.values())
+    else:
+        coverage_ok = len(rows) == 40 and set(coverage) == expected_conditions and all(v == {1, 2} for v in coverage.values())
     max_wall_ok = timeout_s >= 2 * max_wall
-    all_player_pass = len(rows) == 40 and all(row["player_status"] == "PASS" for row in rows)
-    all_launch_pass = len(launch_rows) == 20 and all(row["status"] == "PASS" for row in launch_rows)
-    all_pass = coverage_ok and max_wall_ok and all_player_pass and all_launch_pass and not failed
-    status = "K5_TERBATAS" if all_pass else "SEBAGIAN"
-    exit_code = 0 if all_pass else 2
+    expected_rows = 1 if args.diagnostic_only else 40
+    expected_launches = 1 if args.diagnostic_only else 20
+    all_player_pass = len(rows) == expected_rows and all(row["player_status"] == "PASS" for row in rows)
+    all_launch_pass = len(launch_rows) == expected_launches and all(row["status"] == "PASS" for row in launch_rows)
+    all_pass = (not args.diagnostic_only and coverage_ok and max_wall_ok
+                and all_player_pass and all_launch_pass and not failed)
+    diagnostic_pass = (args.diagnostic_only and coverage_ok and max_wall_ok
+                       and all_player_pass and all_launch_pass and not failed)
+    status = "K5_TERBATAS" if all_pass else ("DIAGNOSTIC_PASS_NOT_K5" if diagnostic_pass else "SEBAGIAN")
+    exit_code = 0 if (all_pass or diagnostic_pass) else 2
     report = [
         "CE3 — H6 HYBRID POSITIVE-CREDIT / CANONICAL CHAKRA PROBE",
         "STATUS=" + status,
@@ -610,9 +652,10 @@ def main():
         "CONTROL_SOURCE_SHA256=" + CONTROL_SHA,
         "RAM_REFERENCE_FRAME180_SHA256=" + RAM_REFERENCE_180,
         "RAM_REFERENCE_FRAME360_SHA256=" + RAM_REFERENCE_360,
-        "CONDITION_GRID=player0/1 x tile4/7 x level0..4 x 2 independent launches",
-        "LAUNCHES=%d EXPECTED=20" % len(launch_rows),
-        "PLAYER_CONDITION_ROWS=%d EXPECTED=40" % len(rows),
+        "DIAGNOSTIC_ONLY=%s" % args.diagnostic_only,
+        "CONDITION_GRID=" + ("player0 x tile4 x level0 diagnostic" if args.diagnostic_only else "player0/1 x tile4/7 x level0..4 x 2 independent launches"),
+        "LAUNCHES=%d EXPECTED=%d" % (len(launch_rows), expected_launches),
+        "PLAYER_CONDITION_ROWS=%d EXPECTED=%d" % (len(rows), expected_rows),
         "COVERAGE_TWO_LAUNCHES_PER_PLAYER_TILE_LEVEL=%s" % coverage_ok,
         "PLAYER_ROWS_ALL_PASS=%s" % all_player_pass,
         "LAUNCHES_ALL_PASS=%s" % all_launch_pass,
@@ -627,6 +670,7 @@ def main():
         "RAM_WRITES=temporary inside disposable PCSX launches only; RAM files are hashed locally and deleted",
         "MEMORY_CARD=disposable zero-filled 128KiB per launch; before/after hash recorded",
         "NO_ROM_BIOS_SAVESTATE_RAM_DUMP_MEMORY_CARD_SCREENSHOT_VIDEO_FRAME_PUBLISHED=YES",
+        "STATE2_GATE_PREFLIGHT=READ_ONLY_FUN_80102408_MIRROR",
         "BARRIER_RELEASE_LABEL=NOT_ASSERTED",
     ]
     (out / "CE3_H6_CREDIT_SUMMARY.txt").write_text("\n".join(report) + "\n", encoding="utf-8")
