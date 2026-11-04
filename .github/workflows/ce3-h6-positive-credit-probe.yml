@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   ce3-h6-positive-credit-probe:
-    name: CE3 20 frame-aligned H6 positive-credit launches on pinned PCSX-Redux release
+    name: CE3 one frame-aligned H6 positive-credit diagnostic launch on pinned PCSX-Redux release
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     container:
@@ -29,7 +29,7 @@ jobs:
       RESEARCH_REPO: ${{ github.repository }}
       WORK: /tmp/naruto-ce3-${{ github.run_id }}-${{ github.run_attempt }}
       BASE_COMMIT: 0c3572c3db75f97542001e453ae80ba8c3f8acba
-      TIMEOUT_SECONDS: "600"
+      TIMEOUT_SECONDS: "1201"
     steps:
       - name: Checkout research scripts and patch
         uses: actions/checkout@v4
@@ -238,7 +238,7 @@ jobs:
             python3 - <<'PY' >> "$OUTDIR/CE3_STEP0_BUILD_VALIDATION.txt" 2>&1
           from pathlib import Path
           source=Path("experiments/ce3_h6_positive_credit_probe.py").read_text(encoding="utf-8")
-          required=("FUN_800D15A8","FUN_800BE5D8","0x8001387C","0x80070EA0","0xB4","CE3_RAM_FRAME180","CE3_RAM_FRAME360")
+          required=("FUN_800D15A8","FUN_800BE5D8","0x8001387C","0x80070EA0","0xB4","CE3_RAM_FRAME180","CE3_RAM_FRAME360","0x8013A22C","checkState2Gate","CE3_DIAGNOSTIC_ONLY")
           missing=[x for x in required if x not in source]
           if missing: raise SystemExit("CE3_STEP0_REQUIRED_TOKEN_MISSING="+repr(missing))
           chakra1=0x80070EA0 + 1*0xB4 + 0x18
@@ -254,7 +254,7 @@ jobs:
           if [ "$rc" -eq 0 ]; then echo "passed=true" >> "$GITHUB_OUTPUT"; else echo "passed=false" >> "$GITHUB_OUTPUT"; fi
           exit 0
 
-      - name: Run 20 H6 positive-credit launches (two player slots per launch)
+      - name: Run one H6 positive-credit diagnostic launch
         if: steps.h6_smoke.outputs.passed == 'true' && steps.ce3_build.outputs.passed == 'true'
         shell: bash
         run: |
@@ -269,7 +269,7 @@ jobs:
             --target "$WORK/resume/target.sstate" --control "$WORK/resume/control.sstate" \
             --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" --bios "$WORK/source/scph7502.bin" \
             --cue "$WORK/source/game-run.cue" --card "$WORK/reference.mcd" \
-            --work "$WORK" --out "$OUTDIR" --timeout-seconds "$TIMEOUT_SECONDS"
+            --work "$WORK" --out "$OUTDIR" --timeout-seconds "$TIMEOUT_SECONDS" --diagnostic-only
           rc=$?
           if [ ! -f "$OUTDIR/CE3_H6_CREDIT_SUMMARY.txt" ]; then
             printf 'STATUS=SETUP_OR_PROBE_FAILED\nreason=no CE3 credit summary produced\n' > "$OUTDIR/CE3_H6_CREDIT_SUMMARY.txt"
@@ -320,7 +320,7 @@ jobs:
                   (root/name).write_text("STATUS=TIDAK_TERSDIA\\nreason=workflow did not create this output\\n",encoding="utf-8")
           PY
           dest="reports/stage1_economy/ce3-h6-positive-credit-probe-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
-          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="CE3 20 frame-aligned H6 positive-credit launches on pinned PCSX-Redux release") | .id' | head -n 1)"
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="CE3 one frame-aligned H6 positive-credit diagnostic launch on pinned PCSX-Redux release") | .id' | head -n 1)"
           test -n "$JOB_ID" || JOB_ID="TIDAK TAHU"
           STATUS="$(sed -n 's/^STATUS=//p' "$out/CE3_H6_CREDIT_SUMMARY.txt" | head -n 1)"; test -n "$STATUS" || STATUS="INCOMPLETE"
           RC="$(sed -n 's/^CE3_SCRIPT_EXIT_CODE=//p' "$out/CE3_SCRIPT_EXIT_CODE.txt" | head -n 1)"
