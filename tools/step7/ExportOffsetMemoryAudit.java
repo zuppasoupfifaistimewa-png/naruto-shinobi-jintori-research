@@ -114,7 +114,7 @@ public class ExportOffsetMemoryAudit extends GhidraScript {
                 if(!mm.find()) continue;
                 long off;
                 try { off=Long.decode(mm.group(1)); } catch(Exception e) { continue; }
-                if(off!=0xEA8L && off!=0x1AL) continue;
+                if(off!=0xEA8L && off!=0x1AL && off!=0x10L && off!=0x12L && off!=0x14L && off!=0x16L && off!=0x18L) continue;
                 String base=mm.group(2);
                 Matcher sm=STORE.matcher(ins.toString());
                 String dataReg=sm.find()?sm.group(2):ins.toString().trim().split("\\s+",2).length>1?
@@ -125,7 +125,7 @@ public class ExportOffsetMemoryAudit extends GhidraScript {
                 String valueTrace=kind.equals("WRITE")?regDefTrace(dataReg,pre,0):"NOT_APPLICABLE_READ";
                 row(currentProgram.getName(), "MEMORY_OFFSET_ACCESS", hx(ins.getAddress().getOffset()),
                     f==null?"TIDAK_TAHU":hx(f.getEntryPoint().getOffset()),
-                    f==null?"TIDAK_TAHU":f.getName(), off==0xEA8L?"+0xEA8":"+0x1A",
+                    f==null?"TIDAK_TAHU":f.getName(), off==0xEA8L?"+0xEA8":(off==0x1AL?"+0x1A":String.format("+0x%02X",off)),
                     mn,base,dataReg,kind,ins.toString(),bytes(ins),baseTrace,valueTrace,formatPre(pre),excerpt64(pre,ins));
                 if(off==0xEA8L && kind.equals("WRITE")) ea8W++;
                 if(off==0xEA8L && kind.equals("READ")) ea8R++;

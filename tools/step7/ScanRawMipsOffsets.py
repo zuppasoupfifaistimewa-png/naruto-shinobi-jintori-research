@@ -31,17 +31,21 @@ def scan(label: str, path: Path, base: int, file_start: int, scan_bytes: int | N
         word = int.from_bytes(data[pos:pos+4], "little")
         op = (word >> 26) & 0x3F
         imm = word & 0xFFFF
-        if op not in OPS or imm not in (0x0EA8, 0x001A):
+        if op not in OPS or imm not in (0x0EA8, 0x001A, 0x0010, 0x0012, 0x0014, 0x0016, 0x0018):
             continue
         mnemonic, access = OPS[op]
         if imm == 0x0EA8 and access == "WRITE":
             purpose = "EA8_STORE_CANDIDATE"
         elif imm == 0x0EA8:
             purpose = "EA8_READER_CANDIDATE"
-        elif access == "WRITE":
+        elif imm == 0x001A and access == "WRITE":
             purpose = "TILE_PLUS_1A_STORE_CANDIDATE"
-        else:
+        elif imm == 0x001A:
             purpose = "TILE_PLUS_1A_READER_CANDIDATE"
+        elif access == "WRITE":
+            purpose = f"TILE_LEVEL_{imm:04X}_STORE_CANDIDATE"
+        else:
+            purpose = f"TILE_LEVEL_{imm:04X}_READ_CANDIDATE"
         rel = pos - file_start
         pc = base + rel
         rt, rs = (word >> 16) & 31, (word >> 21) & 31
@@ -92,7 +96,7 @@ def main():
         f"ENTRY1_BYTES={len(ent)} ENTRY1_SHA256={hashlib.sha256(ent).hexdigest()}",
         "EXE_MAP=raw file offset 0x800 maps to PC 0x80010000; scanned text length 0x5D800",
         "ENTRY1_MAP=raw byte offset 0 maps to candidate PC 0x800AD450; runtime mapping not independently validated",
-        "FILTER=aligned little-endian MIPS I-type words with exact immediate 0x0EA8 or 0x001A and memory opcodes",
+        "FILTER=aligned little-endian MIPS I-type words; includes tile level halfword offsets 0x0010/0x0012/0x0014/0x0016/0x0018, plus existing auxiliary offsets; memory opcodes only",
         "NOTE=raw opcode candidates are not automatically valid code or proven pointer aliases; Ghidra listing/function review is required",
         f"TOTAL_CANDIDATES={len(rows)}",
     ]
