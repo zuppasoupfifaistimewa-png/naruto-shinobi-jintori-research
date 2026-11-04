@@ -2,25 +2,25 @@
 Tanggal: 4 November 2026
 Repo: `zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research`
 Main awal: `b841ece9a121c48cc30a14be87813af0ff2b6fa7`
-Ledger cutoff (inklusif): `c7cd70313663c0d5a48adec499fad9d3266d7f36`
-Rentang compare: 13 commit ahead, 0 behind.
+Ledger cutoff (inklusif): `7b62ad0c9d48f7ef5fbc41f54e6c058c028daa06`
+Rentang compare: 15 commit ahead, 0 behind.
 
 ## Ringkasan status
 
 | Butir | Status | K | Putusan |
 |---|---|---:|---|
-| CG0 — ledger commit + blob SHA | TUNTAS | K4 | 13 commit baru, author dan daftar path dari objek Git; 137 entri file pada commit, 132 path unik. |
+| CG0 — ledger commit + blob SHA | TUNTAS | K4 | 15 commit baru; 12 manusia, 3 bot; 147 entri file pada commit, 142 path unik, hash blob diperiksa dari objek Git. |
 | CG1 — raw scan EA8, writer/reader, FUN_80102408 | SEBAGIAN | K4 | 4 store EA8 dan 1 reader di Entry 1; tidak ada store EA8 di EXE. Semua store memakai global pointer slot 0x8013A22C; nilai store pertama belum diketahui semantik gameplay-nya. |
 | CG2(a) — D9570 event 3, jalur D15A8 dan action==3 | SEBAGIAN | K3–K4 | Byte action 3 di-set pada D9570; parent memanggil D15A8 lebih dulu. Cabang spesifik action==3 di D15A8: TIDAK TAHU. |
 | CG2(b) — penulis non-loader +0x1A sebagai fee sebelum D15A8 | BELUM | K2 | Ada kandidat writer +0x1A, tetapi belum ada alias pointer yang membuktikan tile EA84+0x1A atau pending-fee. |
 | CG2(c) — HJ1′, HJ2, HJ3, HJ4 dan falsifier | SEBAGIAN | K1 | Empat model dan falsifier ditulis. Belum ada pengukuran pembeda d≥2 yang sah. Pengamatan pengguna saja K1. |
-| CG3 — H6, read-only, 2 peluncuran, watchpoint | SEBAGIAN | K2 | Dua launch mencapai frame 1200; hash RAM/card cocok. Pointer verification false, 0 write-watchpoint hit, sehingga bukan K5. |
+| CG3 — H6, read-only, 2 peluncuran, watchpoint | SEBAGIAN | K5 terbatas | Dua launch mengonfirmasi pointer dan EA8=0 pada enam sampel/frame identik; parser driver memiliki false-negative `0X` vs `0x`; watchpoint terpasang tetapi 0 hit, sehingga PC/old/new writer tetap TIDAK TAHU. |
 
 ## CG0 — ledger semua commit baru
 
-Metode: compare objek Git dari `b841ece9a121c48cc30a14be87813af0ff2b6fa7` sampai `c7cd70313663c0d5a48adec499fad9d3266d7f36` inklusif. Untuk setiap commit, author type diambil dari metadata author; daftar file dan blob SHA-1 diambil dari `files[]` pada objek commit. Ini bukan ringkasan diff berbasis tree saja.
+Metode: compare objek Git dari `b841ece9a121c48cc30a14be87813af0ff2b6fa7` sampai `7b62ad0c9d48f7ef5fbc41f54e6c058c028daa06` inklusif. Untuk setiap commit, author type diambil dari metadata author; daftar file dan blob SHA-1 diambil dari `files[]` pada objek commit. Compare mengembalikan 142 path unik; penjumlahan `files[]` per commit menghasilkan 147 entri perubahan.
 
-Statistik: **13 commit; 11 manusia; 2 bot; 137 entri file; 132 path unik.**
+Statistik: **15 commit; 12 manusia; 3 bot; 147 entri file; 142 path unik.**
 
 ### 1. 2b5326e9d744544a85b76e4429d905525b778675 — MANUSIA
 Author: zuppasoupfifaistimewa-png <zuppasoupfifaistimewa@gmail.com>; Add raw MIPS offset candidate scanner
@@ -197,6 +197,22 @@ Author: zuppasoupfifaistimewa-png <zuppasoupfifaistimewa@gmail.com>; Allow CG3 r
 ### 13. c7cd70313663c0d5a48adec499fad9d3266d7f36 — MANUSIA
 Author: zuppasoupfifaistimewa-png <zuppasoupfifaistimewa@gmail.com>; Record CG3 H6 two-launch run summary 41773084992
 - `reports/stage1_economy/cg3-h6-readonly-run-41773084992/attempt-1/ACTIONS_RUN_SUMMARY.txt` — added; Git blob SHA-1 `903e819f5a02c4a68a3dc1002f5c4b7b17a099d5`
+
+### 14. 89b3a74d53fafdabb0f17c82560d62e6cb22fa38 — MANUSIA
+Author: zuppasoupfifaistimewa-png <zuppasoupfifaistimewa@gmail.com>; Add CG0-CG3 audit report for raw EA8 writers and H6
+- `reports/stage1_economy/CG0_CG1_CG2_CG3_AUDIT_2026-11-04.md` — added; Git blob SHA-1 `657a79d07113901288100e736bf147711c23d57c`
+
+### 15. 7b62ad0c9d48f7ef5fbc41f54e6c058c028daa06 — BOT
+Author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>; Publish CG3 H6 read-only watchpoint run 41775137231
+- `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/ACTIONS_RUN_SUMMARY.txt` — added; Git blob SHA-1 `4c74dc0e7bff92856332e0367036c46664b03708`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/CG3_H6_FRAME_VALUES.tsv` — added; Git blob SHA-1 `f48102c27955c296c28a4831644f475b07c92f89`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/CG3_H6_READONLY_SUMMARY.txt` — added; Git blob SHA-1 `b45b25d7b846c0840468fdea5fd9838133d7b950`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/CG3_H6_WRITE_WATCHPOINT.tsv` — added; Git blob SHA-1 `ad82d6b78188d87c5ed6c8d04e43fc26d1f1ce87`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/CG3_LAUNCH_1_RAW_LOG.txt` — added; Git blob SHA-1 `af5ff956b54473f23576679650cdd8d3bd035338`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/CG3_LAUNCH_2_RAW_LOG.txt` — added; Git blob SHA-1 `c1a97fe373633fefd3c5635ccb05f258057a630a`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/CG3_PCSX_MANIFEST.txt` — added; Git blob SHA-1 `be07dcbcd9c9e0a7ddc26d859ad0240c48554511`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/CG3_PYTHON_DRIVER_RAW.txt` — added; Git blob SHA-1 `b45b25d7b846c0840468fdea5fd9838133d7b950`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/CG3_SCRIPT_EXIT_CODE.txt` — added; Git blob SHA-1 `8642dfc899bcd0f5584d0a2eca9b65efb7e8798f`
 
 ## CG1 — scan byte mentah dan audit EA8
 
@@ -439,7 +455,7 @@ Semua model berikut HIPOTESIS K1. B adalah biaya satu langkah pada kondisi yang 
 
 Audit statis yang ada menyebut D15A8 menggunakan u16 tile+0x1A pada blok transaksi bersama; ini tidak memutuskan rumus untuk d≥2. Pengamatan pengguna tetap K1, bukan bukti final.
 
-## CG3 — H6 headless, dua launch, read-only
+## CG3 — H6 headless, dua peluncuran, read-only
 
 Target H6 SHA-256:
 `d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475`.
@@ -448,38 +464,40 @@ Target state SHA-256:
 Control state SHA-256:
 `9eef83b1590773159b95180447aaa1f35139468b3ea51c7beec00bfb89f41492`.
 
-Run `41773084992`:
-- Job: `CG3 two independent PCSX-Redux H6 read-only launches`, job ID `126387053963`.
-- Dua launch independen, tiap launch menyelesaikan 1.200 frame; wrapper exit 0, Lua quit 0.
-- Tidak ada input gameplay dan tidak ada poke RAM. H6 state di-load; dilakukan read/snapshot/hash dan debugger write-breakpoint.
-- Timeout per launch 3.600 s; observed max 479.718 s; timeout lebih besar dari 2× waktu terlama teramati.
-- RAM frame 180, 2.097.152 byte, SHA-256 `5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7` pada kedua launch; cocok referensi.
-- RAM frame 360, 2.097.152 byte, SHA-256 `4d002df6902a6de6aa0724b4284da8decb1725cf693fd1ed80ce0132c45a7907` pada kedua launch; cocok referensi.
-- Memory Card disposable 128 KiB: SHA sebelum/sesudah pada tiap launch `fa43239bcee7b97ca62f007cc68487560a39e19f74f3dde7486db3f98df8e471`; tidak berubah.
-- Sampel frame 1/60/180/360/600/1200 lengkap pada kedua peluncuran, tetapi nilai pointer/EA8 tidak berhasil diverifikasi.
-- `POINTER_AND_WATCHPOINT_VERIFIED=False` di kedua launch; write watchpoint event = 0.
-- RAM snapshots 180/360 dihitung dan dihapus setelah hash; tidak dipublikasikan.
-- Python experiment driver exit desimal 2 karena kriteria sukses watchpoint tidak terpenuhi. PCSX wrapper/Lua masing-masing exit desimal 0.
-- Workflow/job gagal hanya pada langkah publikasi report, Git exit 128.
+### Run 41775137231 — dua peluncuran yang memiliki artefak lengkap
 
-Pesan error mentah:
-```text
-fatal: detected dubious ownership in repository at '/__w/naruto-shinobi-jintori-research/naruto-shinobi-jintori-research'
-To add an exception for this directory, call:
-git config --global --add safe.directory /__w/naruto-shinobi-jintori-research/naruto-shinobi-jintori-research
-```
+- Workflow `completed/success`; job `CG3 two independent PCSX-Redux H6 read-only launches`, job ID `126393618513`. Semua step termasuk headless run, cleanup, validasi laporan teks, dan commit laporan selesai `success`.
+- Source SHA `6fd71b25b8a7e5f1695dd6fd32e5f993958b59f1`; H6 SHA sesuai target di atas.
+- Dua proses PCSX-Redux independen, masing-masing mencapai 1.200 frame. Gameplay input `NONE`; RAM poke `NO`; CPU interpreter; debugger dan Lua write breakpoint aktif.
+- Pada **kedua** raw log, restore menyatakan:
+  `pointer_slot=0x801CDF80 expected_pointer=0x801CDF80 field_address=0x801CEE28 field_initial=0x00000000`.
+  Baris berikutnya menyatakan `CG3_WRITE_WATCHPOINT_INSTALLED=1 address=0x801CEE28 width=4 type=Write`.
+- `CG3_H6_FRAME_VALUES.tsv` mencatat pada frame **1/60/180/360/600/1200** di kedua launch: pointer `0x801CDF80`, field address `0x801CEE28`, nilai EA8 `0x00000000`. Tidak ada selisih antar-launch pada sampel ini.
+- `CG3_H6_WRITE_WATCHPOINT.tsv` hanya berisi header; tercatat **0 hit**. Karena itu tidak tersedia PC/old/new untuk penulis EA8. Ini berarti tidak ada hit yang direkam oleh probe; tidak cukup untuk menyimpulkan penulis tertentu atau membuktikan tidak ada penulisan di luar cakupan/perilaku breakpoint.
+- RAM frame 180 (2.097.152 byte) SHA-256 `5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7` pada kedua launch; cocok referensi.
+- RAM frame 360 (2.097.152 byte) SHA-256 `4d002df6902a6de6aa0724b4284da8decb1725cf693fd1ed80ce0132c45a7907` pada kedua launch; cocok referensi.
+- Memory Card disposable 128 KiB: SHA sebelum dan sesudah pada setiap launch `fa43239bcee7b97ca62f007cc68487560a39e19f74f3dde7486db3f98df8e471`; tidak berubah.
+- Wall time launch 1 `413.593 s`, launch 2 `415.671 s`; timeout `3600 s` per launch, lebih dari 2× waktu terlama teramati (415.671 s). RAM snapshots lokal frame 180/360 di-hash lalu dihapus; tidak dipublikasikan.
+- PCSX wrapper exit desimal `0` dan Lua quit desimal `0` pada tiap launch. Python driver exit desimal `2`; Actions job/workflow tetap `success`, tetapi `ACTIONS_RUN_SUMMARY.txt` sengaja mencatat `STATUS=SEBAGIAN`, `JOB=cg3-h6-readonly-watchpoint`, `SOURCE_SHA=6fd71b25b8a7e5f1695dd6fd32e5f993958b59f1`, `EXIT_CODE=2`.
 
-Keterbatasan data: sampel value EA8 per frame 1/60/180/360/600/1200 dan actual write PC/old/new tidak tersedia dalam artefak committed untuk run ini, jadi **TIDAK TAHU**. Status pointer verification false bukan bukti nilai pointer tertentu; alamat pointer aktual tidak dipublikasikan pada summary. Tidak ada event write-watchpoint yang bisa dianalisis. Karena syarat inti watchpoint gagal, dua launch konsisten tidak cukup untuk K5; CG3 tetap K2.
+### Koreksi interpretasi flag pointer driver
 
-Ringkasan Actions committed:
-`reports/stage1_economy/cg3-h6-readonly-run-41773084992/attempt-1/ACTIONS_RUN_SUMMARY.txt`
-Sumber pemicu run: `0d26b2f0fe668ef83847c5d9082f7fa2c8ba21fe`.
+Flag summary `POINTER_AND_WATCHPOINT_VERIFIED=False` adalah false-negative parser, bukan bukti pointer runtime salah. Di `experiments/cg3_h6_readonly_watchpoint.py`, parser mengubah token alamat dengan `.upper()`, sehingga `0x801CDF80` menjadi `0X801CDF80`; hasil itu lalu dibandingkan dengan literal `0x801CDF80` (huruf `x` kecil), dan tes string gagal. Saya mencocokkan ulang kedua raw log dengan parser-equivalent: keenam sampel per launch ada dan alamat cocok; juga tidak ada baris `CG3_POINTER_VERIFY=FAIL`. Keluaran mentah kedua launch mengonfirmasi nilai pointer dan field di atas. Akibatnya exit 2 adalah kegagalan gate Python akibat normalisasi prefix, bukan exit/crash emulator.
+
+Kesimpulan CG3: **runtime repeatability untuk sampel H6 mencapai K5 terbatas** (dua launch independen, enam frame sample cocok, hash RAM dan Memory Card konsisten). Status butir tetap **SEBAGIAN**, sebab watchpoint tidak menghasilkan PC/old/new dan tidak ada hit untuk ditelusuri. Tidak boleh menyimpulkan perilaku penulis EA8 di gameplay umum dari satu checkpoint tanpa input.
+
+Artefak run:
+- `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/ACTIONS_RUN_SUMMARY.txt`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/CG3_H6_READONLY_SUMMARY.txt`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/CG3_H6_FRAME_VALUES.tsv`
+- `reports/stage1_economy/cg3-h6-readonly-run-41775137231/attempt-1/CG3_H6_WRITE_WATCHPOINT.tsv`
+- Raw launch logs: `CG3_LAUNCH_1_RAW_LOG.txt` dan `CG3_LAUNCH_2_RAW_LOG.txt` pada direktori yang sama.
 
 ## Runner setelah koreksi publikasi
 
-Run `41775137231` (source `6fd71b25b8a7e5f1695dd6fd32e5f993958b59f1`) tercatat `in_progress`, step headless emulator masih berjalan pada pemeriksaan terakhir.
-Run `41775298933` (source `f1ee369f670e39a67ab89c22b51da881e5cc9258`) tercatat `pending` pada pemeriksaan terakhir.
-Workflow publikasi diperbarui agar menggunakan `git config --global --add safe.directory "$GITHUB_WORKSPACE"`; run tersebut belum selesai saat laporan ini dibuat. Keduanya tidak boleh dianggap sukses atau gagal sampai status final diterima.
+- Run `41775137231`: `completed/success`; hasil dua launch dan ringkasan teks sudah terkomit pada HEAD cutoff laporan ini.
+- Run `41775298933` (source `f1ee369f670e39a67ab89c22b51da881e5cc9258`): pada pemeriksaan terakhir masih `in_progress`, job `126398319693` berada di step headless emulator. Belum ada kesimpulan atau artefak hasil final; tidak dihitung sebagai bukti CG3.
+- Run `41773084992` sebelumnya berakhir `failure` pada langkah commit laporan karena `fatal: detected dubious ownership in repository`; hasilnya tidak dipakai untuk menggantikan artefak lengkap run 41775137231.
 
 ## File sumber audit statis di repo
 
@@ -495,4 +513,4 @@ Workflow publikasi diperbarui agar menggunakan `git config --global --add safe.d
 - `reports/stage1_economy/aq1-run-41769361956/attempt-1/bb2-d15a8-direct-callers.txt`
 
 ---
-Catatan batas: ledger CG0 berhenti pada `c7cd70313663c0d5a48adec499fad9d3266d7f36`, sehingga commit laporan audit ini sendiri tidak dimasukkan. Tidak ada perubahan terhadap Release, `STATUS.md`, visibilitas repo, atau berkas biner.
+Catatan batas: ledger CG0 mencakup seluruh 15 commit dari baseline sampai HEAD cutoff `7b62ad0c9d48f7ef5fbc41f54e6c058c028daa06`. Commit revisi laporan ini sendiri tidak dimasukkan ke ledger (cutoff audit dinyatakan eksplisit). Tidak ada perubahan terhadap Release, `STATUS.md`, visibilitas repo, atau berkas biner.
