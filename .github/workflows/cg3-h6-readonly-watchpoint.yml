@@ -221,7 +221,8 @@ jobs:
           RESEARCH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          cd "$GITHUB_WORKSPACE"
+          echo "CG3_COMMIT_PWD=$(pwd)"
+          git rev-parse --show-toplevel
           dest="reports/stage1_economy/cg3-h6-readonly-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
           for f in "$OUTDIR"/*.txt "$OUTDIR"/*.tsv; do
