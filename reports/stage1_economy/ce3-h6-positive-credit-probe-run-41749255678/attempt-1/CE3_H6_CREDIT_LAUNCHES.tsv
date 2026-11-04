@@ -1,0 +1,101 @@
+launch	tile	level	attempt	status	wrapper_exit_code_decimal	wall_seconds	ram180_bytes	ram360_bytes	ram180_sha256	ram360_sha256	memory_card_sha256_before	memory_card_sha256_after	raw_log_tail
+1	4	0	1	FAIL	73	145.779	2097152	2097152	5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7	4d002df6902a6de6aa0724b4284da8decb1725cf693fd1ed80ce0132c45a7907	fa43239bcee7b97ca62f007cc68487560a39e19f74f3dde7486db3f98df8e471	fa43239bcee7b97ca62f007cc68487560a39e19f74f3dde7486db3f98df8e471	"CE3_MANAGER_POINTER=0x801EFBB8 tile_base=0x8013B818 player_count=2 
+CE3_TILE_INDEX=4 tile_address=0x8013BCA8 tile_type=4 
+CE3_TILE_1C_STEP=70 tile_1E_BASE=84 tile_20=0xF020 
+CE3_LEVEL_BITS8_11=0 EXPECTED_C=84 
+CE3_RAM_WRITES=TEMPORARY_DISPOSABLE_LAUNCH_ONLY 
+CE3_POKE label=active_player_EA6E addr=0x8013EA6E old=0 new=0 
+CE3_POKE label=active_player_EA88 addr=0x8013EA88 old=0 new=0 
+CE3_POKE label=selected_tile_EB20 addr=0x8013EB20 old=0 new=4 
+CE3_POKE label=manager_state_370 addr=0x801EFF28 old=0 new=1 
+CE3_POKE label=pending_clear_p0 addr=0x801EFEA6 old=0 new=0 
+CE3_POKE label=pending_clear_p1 addr=0x801EFEA8 old=0 new=0 
+CE3_POKE label=pending_clear_p2 addr=0x801EFEAA old=0 new=0 
+CE3_POKE label=pending_clear_p3 addr=0x801EFEAC old=0 new=0 
+CE3_POKE label=anim_state_p0 addr=0x8013B7AC old=0 new=0 
+CE3_POKE label=anim_sign_p0 addr=0x8013B7A8 old=0 new=0 
+CE3_POKE label=anim_units_p0 addr=0x8013B7B0 old=0 new=0 
+CE3_POKE label=anim_tens_p0 addr=0x8013B7B4 old=0 new=0 
+CE3_POKE label=anim_hundreds_p0 addr=0x8013B7B8 old=0 new=0 
+CE3_POKE label=anim_thousands_p0 addr=0x8013B7BC old=0 new=0 
+CE3_POKE label=anim_ten_thousands_p0 addr=0x8013B7C0 old=0 new=0 
+CE3_POKE label=anim_start_balance_p0 addr=0x8013B7C8 old=0 new=0 
+CE3_POKE label=anim_state_p1 addr=0x8013B7AD old=0 new=0 
+CE3_POKE label=anim_sign_p1 addr=0x8013B7A9 old=0 new=0 
+CE3_POKE label=anim_units_p1 addr=0x8013B7B1 old=0 new=0 
+CE3_POKE label=anim_tens_p1 addr=0x8013B7B5 old=0 new=0 
+CE3_POKE label=anim_hundreds_p1 addr=0x8013B7B9 old=0 new=0 
+CE3_POKE label=anim_thousands_p1 addr=0x8013B7BD old=0 new=0 
+CE3_POKE label=anim_ten_thousands_p1 addr=0x8013B7C1 old=0 new=0 
+CE3_POKE label=anim_start_balance_p1 addr=0x8013B7CC old=0 new=0 
+CE3_POKE label=anim_state_p2 addr=0x8013B7AE old=0 new=0 
+CE3_POKE label=anim_sign_p2 addr=0x8013B7AA old=0 new=0 
+CE3_POKE label=anim_units_p2 addr=0x8013B7B2 old=0 new=0 
+CE3_POKE label=anim_tens_p2 addr=0x8013B7B6 old=0 new=0 
+CE3_POKE label=anim_hundreds_p2 addr=0x8013B7BA old=0 new=0 
+CE3_POKE label=anim_thousands_p2 addr=0x8013B7BE old=0 new=0 
+CE3_POKE label=anim_ten_thousands_p2 addr=0x8013B7C2 old=0 new=0 
+CE3_POKE label=anim_start_balance_p2 addr=0x8013B7D0 old=0 new=0 
+CE3_POKE label=anim_state_p3 addr=0x8013B7AF old=0 new=0 
+CE3_POKE label=anim_sign_p3 addr=0x8013B7AB old=0 new=0 
+CE3_POKE label=anim_units_p3 addr=0x8013B7B3 old=0 new=0 
+CE3_POKE label=anim_tens_p3 addr=0x8013B7B7 old=0 new=0 
+CE3_POKE label=anim_hundreds_p3 addr=0x8013B7BB old=0 new=0 
+CE3_POKE label=anim_thousands_p3 addr=0x8013B7BF old=0 new=0 
+CE3_POKE label=anim_ten_thousands_p3 addr=0x8013B7C3 old=0 new=0 
+CE3_POKE label=anim_start_balance_p3 addr=0x8013B7D4 old=0 new=0 
+CE3_POKE label=working_balance_p0 addr=0x801EFBBC old=1500 new=1500 
+CE3_POKE label=canonical_chakra_p0 addr=0x80070EB8 old=1500 new=1500 
+CE3_POKE label=manager_action_2E9 addr=0x801EFEA1 old=0 new=9 
+CE3_POKE label=manager_action_2EA addr=0x801EFEA2 old=0 new=1 
+CE3_POKE label=manager_action_2EB addr=0x801EFEA3 old=0 new=1 
+CE3_POKE label=positive_credit_phase addr=0x80139F03 old=0 new=1 
+CE3_PLAYER_FIXTURE player=0 participant=0x801EFBB8 balance=0x801EFBBC chakra=0x80070EB8 pending=0x801EFEA6 expected_C=84 
+CE3_CALL_BEGIN label=D15A8_STATE1_P0 entry=0x800D15A8 old_pc=0x80037320 sp=0x801FFD90 ra=0x80011448 
+CE3_CALL_RETURN label=D15A8_STATE1_P0 
+Breakpoint triggered: PC=0x80011448 - Cause: 80011448::Exec::4 (Lua Breakpoint) 
+CE3_STATE1_RETURN phase=2 
+CE3_STATE2_GLOBAL_POINTER_8013A22C=0x801CDF80 
+CE3_STATE2_GATE_POINTER_VALID=YES 
+CE3_STATE2_GATE_FIELD_PLUS4=0x801CEC88 
+CE3_STATE2_GATE_FIELD_PLUS_EA8=0xFFFFFFFE 
+CE3_STATE2_GATE_PREDICTED_RETURN=4294967294 
+CE3_RAW_ERROR=...-41749255678-1/launches/tile-4-level-0-attempt-1/ce3.lua:186: STATE2_GATE_PREFLIGHT_BLOCK field4=0x801CEC88 fieldEA8=0xFFFFFFFE predicted=4294967294 
+CE3_CALL_STATUS=FAIL 
+
+Loading memory card /tmp/naruto-ce3-41749255678-1/launches/tile-4-level-0-attempt-1/memory-card.mcd
+The memory card /tmp/naruto-ce3-41749255678-1/launches/tile-4-level-0-attempt-1/home/.config/pcsx-redux/memcard2.mcd doesn't exist - creating it
+Audio: driver dummy, 44100 Hz, 441 frames per period
+Warning: OpenGL error reporting disabled. See About dialog for more information.
+Loaded CD Image: /tmp/naruto-ce3-41749255678-1/source/game-run.cue[+cue].
+Track 01 (DATA) - Start 00:02:00, Length 30:48:01
+CD-ROM Label: SLPS-03553
+CD-ROM ID: SLPS03553
+CD-ROM EXE Name: SLPS_035.53;1
+PCSX-Redux booting
+Copyright (C) 2019-2025 PCSX-Redux authors
+CPU type: Interpreted
+Loaded BIOS: /tmp/naruto-ce3-41749255678-1/source/scph7502.bin
+Known BIOS detected: SCPH-7502 (EU) (318178bf)
+BIOS Trace1: 0x0f
+BIOS Trace1: 0x0e
+BIOS Trace1: 0x01
+BIOS Trace1: 0x02
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x01
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x05
+BIOS Trace1: 0x06
+BIOS Trace1: 0x02
+BIOS Trace1: 0x05
+
+PS-X Realtime Kernel Ver.2.5
+Copyright 1993,1994 (C) Sony Computer Entertainment Inc. 
+BIOS Trace1: 0x06
+KERNEL SETUP!
+
+Configuration : EvCB	0x10		TCB	0x04
+BIOS Trace1: 0x07
+Breakpoint triggered: PC=0x80011448 - Cause: 80011448::Exec::4 (Lua Breakpoint) "
