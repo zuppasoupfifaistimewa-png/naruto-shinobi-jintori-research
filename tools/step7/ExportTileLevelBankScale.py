@@ -35,7 +35,7 @@ SUBTYPES = {
 
 def read_records(path: Path) -> List[Dict[str, str]]:
     with path.open("r", encoding="utf-8-sig", newline="") as handle:
-        reader = csv.DictReader(handle, delimiter="\\t")
+        reader = csv.DictReader(handle, delimiter=chr(9))
         required = {
             "entry_index", "resource_id_hex", "entry_sha256", "record_index",
             "record_source_offset", "runtime_tile_h_0E",
@@ -98,7 +98,7 @@ def write_tsv(path: Path, rows: List[Dict[str, object]]) -> None:
     if not rows:
         raise ValueError("no derived rows")
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]), delimiter="\\t", lineterminator="\\n")
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]), delimiter=chr(9), lineterminator=chr(10))
         writer.writeheader()
         writer.writerows(rows)
 
@@ -146,7 +146,7 @@ def main() -> int:
     ]
     if len(derived) != 1100:
         raise ValueError(f"expected 1100 derived rows, got {len(derived)}")
-    summary_path.write_text("\\n".join(summary_lines) + "\\n", encoding="utf-8")
+    summary_path.write_text(chr(10).join(summary_lines) + chr(10), encoding="utf-8")
     print("CH2_LEVEL_BANK_EXPANSION=PASS records=44 subtype_cases=5 levels=5 rows=1100")
     return 0
 
