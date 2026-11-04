@@ -222,6 +222,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "CG3_COMMIT_PWD=$(pwd)"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git rev-parse --show-toplevel
           dest="reports/stage1_economy/cg3-h6-readonly-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
