@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: naruto-dt0-dt4-raw-static
@@ -37,7 +38,7 @@ jobs:
       - name: Download verified disc and extract EXE plus Entry 1 privately
         shell: bash
         env:
-          GITHUB_TOKEN: \${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           root="$RUNNER_TEMP/dt0-dt4-private"
@@ -92,8 +93,8 @@ jobs:
       - name: Run DT0-DT4 raw-byte static analysis
         shell: bash
         env:
-          DT0_BASELINE: "cc0fead8501722a6ea76fefda8caf2f41df4cd3c"
-          DT0_AUDIT_HEAD: \${{ github.sha }}
+          DT0_BASELINE: "2f72b3a2807f1022048083d6d07ad527adaa7cf7"
+          DT0_AUDIT_HEAD: ${{ github.sha }}
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/dt0-dt4-output"
@@ -126,7 +127,7 @@ jobs:
         if: always()
         shell: bash
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/dt0-dt4-output"
@@ -153,7 +154,7 @@ jobs:
             echo "JOB_ID=$JOB_ID"
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "SOURCE_SHA=$GITHUB_SHA"
-            echo "ANALYSIS_BASELINE_SHA=cc0fead8501722a6ea76fefda8caf2f41df4cd3c"
+            echo "ANALYSIS_BASELINE_SHA=2f72b3a2807f1022048083d6d07ad527adaa7cf7"
             echo "EXIT_CODE=$rc"
             echo "$stage"
             echo "$cleanup"
