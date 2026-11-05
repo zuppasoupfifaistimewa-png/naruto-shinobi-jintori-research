@@ -1,0 +1,17 @@
+STATUS=FAILURE
+JOB=raw-static-dt0-dt4
+JOB_ID=127557426028
+RUN_ID=42116499467
+SOURCE_SHA=4dab11cee78944fc14fd19bc5286e85296350487
+ANALYSIS_BASELINE_SHA=cc0fead8501722a6ea76fefda8caf2f41df4cd3c
+EXIT_CODE=22
+FAILED_STEP=Download verified disc and extract EXE plus Entry 1 privately
+FAIL_REASON=GitHub release asset endpoint returned HTTP 401; curl exited 22 before any source bytes were downloaded
+ANALYSIS_STEP=SKIPPED
+PRIVATE_BINARY_CLEANUP=PASS
+SUMMARY_PUBLISH_STEP=FAILED_HTTP_401
+GAME_OR_EMULATOR_EXECUTED=no
+BIOS_OR_SAVESTATE_USED=no
+ISO_EXE_DATA_BIN_COMMITTED=no
+OUTPUT=TEXT_ONLY
+SUMMARY_COMMIT=manual text-only run-status record; no second Actions run
