@@ -1,0 +1,6 @@
+item	result	source_pc	reason
+source field copied to tile+0x00	TIDAK TAHU: no verified load/store mapping unless DV3_TILE_FIELD_COPY_CANDIDATES.tsv identifies a matching source load and destination store	0x800F7ADC	need matching load pointer to 0x1E record and store pointer to tile record
+source field for tile+0x20 bits12-15	TIDAK TAHU: require bitfield transformation and matching tile+0x20 store	0x800F7ADC	field offset cannot be assigned from displacement coincidence alone
+source field for tile+0x20 bits8-11	TIDAK TAHU: require bitfield transformation and matching tile+0x20 store	0x800F7ADC	field offset cannot be assigned from displacement coincidence alone
+12 resources x 415 records	FOUND_CANDIDATES=0; expected 12 fully mapped entries of exactly 12450 B each	DATA.BIN directory candidate scan	candidate extent must also be confirmed as the resources used by FUN_800F7ADC
+initial nibble(s) tile+0x20 after loader	TIDAK TAHU unless loader copy and resource field offsets are confirmed	0x800F7ADC	no assumption from file image or zero-initialized RAM; value must be grounded in loader store

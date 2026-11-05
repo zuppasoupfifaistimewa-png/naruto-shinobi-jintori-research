@@ -1,0 +1,47 @@
+target_jr	step	pc	file_offset	bytes	instruction	source_pc	reason
+0x800F3788	0	0x800F3658	0x1101208	D0 FF BD 27	addiu $sp, $sp, -0x30	0x800F3658	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	1	0x800F365C	0x110120C	28 00 BF AF	sw $ra, 0x28($sp)	0x800F365C	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	2	0x800F3660	0x1101210	24 00 B3 AF	sw $s3, 0x24($sp)	0x800F3660	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	3	0x800F3664	0x1101214	20 00 B2 AF	sw $s2, 0x20($sp)	0x800F3664	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	4	0x800F3668	0x1101218	1C 00 B1 AF	sw $s1, 0x1c($sp)	0x800F3668	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	5	0x800F366C	0x110121C	18 00 B0 AF	sw $s0, 0x18($sp)	0x800F366C	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	6	0x800F3670	0x1101220	14 80 02 3C	lui $v0, 0x8014	0x800F3670	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	7	0x800F3674	0x1101224	74 EA 43 8C	lw $v1, -0x158c($v0)	0x800F3674	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	8	0x800F3678	0x1101228	00 00 00 00	nop	0x800F3678	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	9	0x800F367C	0x110122C	26 09 62 90	lbu $v0, 0x926($v1)	0x800F367C	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	10	0x800F3680	0x1101230	00 00 00 00	nop	0x800F3680	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	11	0x800F3684	0x1101234	0F 00 42 2C	sltiu $v0, $v0, 0xf	0x800F3684	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	12	0x800F3688	0x1101238	06 00 40 10	beqz $v0, 0x800f36a4	0x800F3688	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	13	0x800F36A4	0x1101254	74 EA 44 8C	lw $a0, -0x158c($v0)	0x800F36A4	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	14	0x800F36A8	0x1101258	00 00 00 00	nop	0x800F36A8	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	15	0x800F36AC	0x110125C	E9 02 82 90	lbu $v0, 0x2e9($a0)	0x800F36AC	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	16	0x800F36B0	0x1101260	00 00 00 00	nop	0x800F36B0	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	17	0x800F36B4	0x1101264	11 00 40 14	bnez $v0, 0x800f36fc	0x800F36B4	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	18	0x800F36FC	0x11012AC	74 EA 43 8C	lw $v1, -0x158c($v0)	0x800F36FC	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	19	0x800F3700	0x11012B0	00 00 00 00	nop	0x800F3700	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	20	0x800F3704	0x11012B4	E4 02 62 90	lbu $v0, 0x2e4($v1)	0x800F3704	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	21	0x800F3708	0x11012B8	00 00 00 00	nop	0x800F3708	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	22	0x800F370C	0x11012BC	53 0A 40 14	bnez $v0, 0x800f605c	0x800F370C	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	23	0x800F3714	0x11012C4	E5 02 62 90	lbu $v0, 0x2e5($v1)	0x800F3714	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	24	0x800F3718	0x11012C8	00 00 00 00	nop	0x800F3718	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	25	0x800F371C	0x11012CC	05 00 40 10	beqz $v0, 0x800f3734	0x800F371C	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	26	0x800F3734	0x11012E4	74 EA 43 8C	lw $v1, -0x158c($v0)	0x800F3734	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	27	0x800F3738	0x11012E8	01 00 02 24	addiu $v0, $zero, 1	0x800F3738	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	28	0x800F373C	0x11012EC	30 09 62 AC	sw $v0, 0x930($v1)	0x800F373C	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	29	0x800F3740	0x11012F0	E9 02 63 90	lbu $v1, 0x2e9($v1)	0x800F3740	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	30	0x800F3744	0x11012F4	08 00 02 24	addiu $v0, $zero, 8	0x800F3744	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	31	0x800F3748	0x11012F8	02 00 62 10	beq $v1, $v0, 0x800f3754	0x800F3748	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	32	0x800F3754	0x1101304	14 80 02 3C	lui $v0, 0x8014	0x800F3754	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	33	0x800F3758	0x1101308	74 EA 42 8C	lw $v0, -0x158c($v0)	0x800F3758	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	34	0x800F375C	0x110130C	00 00 00 00	nop	0x800F375C	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	35	0x800F3760	0x1101310	E9 02 43 90	lbu $v1, 0x2e9($v0)	0x800F3760	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	36	0x800F3764	0x1101314	00 00 00 00	nop	0x800F3764	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	37	0x800F3768	0x1101318	40 00 62 2C	sltiu $v0, $v1, 0x40	0x800F3768	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	38	0x800F376C	0x110131C	3B 0A 40 10	beqz $v0, 0x800f605c	0x800F376C	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	39	0x800F3774	0x1101324	20 EA 42 24	addiu $v0, $v0, -0x15e0	0x800F3774	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	40	0x800F3778	0x1101328	80 18 03 00	sll $v1, $v1, 2	0x800F3778	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	41	0x800F377C	0x110132C	21 18 62 00	addu $v1, $v1, $v0	0x800F377C	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	42	0x800F3780	0x1101330	00 00 62 8C	lw $v0, ($v1)	0x800F3780	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	43	0x800F3784	0x1101334	00 00 00 00	nop	0x800F3784	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F3788	44	0x800F3788	0x1101338	08 00 40 00	jr $v0	0x800F3788	salah satu jalur CFG terpendek dari entry fungsi; bukan satu-satunya jalur
+0x800F5CE0	—	TIDAK TAHU	—	—	TARGET_NOT_REACHED_BY_STATIC_CFG	—	tidak ditemukan jalur intrafungsi dari FUN_800F3658 pada CFG konservatif

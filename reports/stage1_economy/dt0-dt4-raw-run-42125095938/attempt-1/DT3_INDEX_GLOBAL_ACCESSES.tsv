@@ -1,0 +1,6 @@
+pc	file_offset	bytes	instruction	destination	later_condition_uses
+0x800F3984	0x1101534	B0 EB 43 8C	lw $v1, -0x1450($v0)	v1	0x800F398C beq $v1, $v0, 0x800f3a38
+0x800F39E4	0x1101594	B0 EB 23 8E	lw $v1, -0x1450($s1)	v1	0x800F39EC bne $v0, $v1, 0x800f39b4; 0x800F3A04 beqz $v0, 0x800f3a20
+0x800F3A0C	0x11015BC	B0 EB 44 8C	lw $a0, -0x1450($v0)	a0	
+0x800F3A78	0x1101628	B0 EB 22 8E	lw $v0, -0x1450($s1)	v0	0x800F3A84 beqz $v0, 0x800f3a90; 0x800F3AA0 beqz $v0, 0x800f3aac
+0x800F3AE8	0x1101698	B0 EB 85 8C	lw $a1, -0x1450($a0)	a1	0x800F3AFC bnez $v1, 0x800f3b08

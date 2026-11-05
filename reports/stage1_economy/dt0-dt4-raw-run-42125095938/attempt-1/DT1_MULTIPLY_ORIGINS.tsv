@@ -1,0 +1,3 @@
+pc	role	register	origin_trace
+0x800ECAA0	MULT_OPERAND_RS	a0	0x800ECA94 lw $a0, -0x1450($v0) [B0 EB 44 8C]; basis=0x800ECA8C lui $v0, 0x8014 [14 80 02 3C]
+0x800ECAA0	MULT_OPERAND_RT	v0	0x800ECA98 lw $v0, -0x6104($v1) [FC 9E 62 8C]; basis=0x800ECA90 lui $v1, 0x8014 [14 80 03 3C]

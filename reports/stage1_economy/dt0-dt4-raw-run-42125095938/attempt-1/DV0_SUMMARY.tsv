@@ -1,0 +1,2 @@
+baseline_inclusive	snapshot_source_sha	snapshot_head_at_analysis	total_inclusive	human	bot	publication_bot_commit_included	reason
+7040cd08a79107a45de6571e875de4fadb165c8a	fed79376ccd639ffaad6f30ddf6feb080e6a8b3b	fed79376ccd639ffaad6f30ddf6feb080e6a8b3b	3	3	0	NO; it is created after this source snapshot	HEAD pada saat analyzer berjalan sama dengan snapshot sumber workflow; publikasi Actions terjadi sesudahnya

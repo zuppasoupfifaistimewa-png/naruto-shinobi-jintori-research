@@ -1,0 +1,14 @@
+pc	file_offset	bytes	instruction	effective_address	value_status	source_pc	reason
+0x800ECBA0	0x10FA750	21 18 62 00	addu $v1, $v1, $v0	TIDAK TAHU	operasi/register statis pada instruksi	0x800ECBA0	konteks pemuatan/transformasi/penyimpanan nilai akumulator
+0x800ECBA4	0x10FA754	14 80 02 3C	lui $v0, 0x8014	TIDAK TAHU	operasi/register statis pada instruksi	0x800ECBA4	konteks pemuatan/transformasi/penyimpanan nilai akumulator
+0x800ECBA8	0x10FA758	FC 9E 42 94	lhu $v0, -0x6104($v0)	0x80139EFC	TIDAK TAHU: runtime load/mutable accumulator	0x800ECBA8	konteks pemuatan/transformasi/penyimpanan nilai akumulator
+0x800ECBAC	0x10FA75C	00 00 00 00	nop	TIDAK TAHU	operasi/register statis pada instruksi	0x800ECBAC	konteks pemuatan/transformasi/penyimpanan nilai akumulator
+0x800ECBB0	0x10FA760	23 10 02 00	negu $v0, $v0	TIDAK TAHU	operasi/register statis pada instruksi	0x800ECBB0	konteks pemuatan/transformasi/penyimpanan nilai akumulator
+0x800ECBB4	0x10FA764	4A B2 03 08	j 0x800ec928	TIDAK TAHU	operasi/register statis pada instruksi	0x800ECBB4	konteks pemuatan/transformasi/penyimpanan nilai akumulator
+0x800ECBB8	0x10FA768	EE 02 62 A4	sh $v0, 0x2ee($v1)	0x000002EE	operasi/register statis pada instruksi	0x800ECBB8	Negasi nilai dinamis hasil baca akumulator global 0x80139EFC
+0x800ECBBC	0x10FA76C	18 00 A4 93	lbu $a0, 0x18($sp)	TIDAK TAHU	TIDAK TAHU: runtime load/mutable accumulator	0x800ECBBC	Simpan halfword hasil negasi ke manager lane +0x2EE (relatif s0)
+0x800ECBC0	0x10FA770	4B 55 00 0C	jal 0x8001552c	TIDAK TAHU	operasi/register statis pada instruksi	0x800ECBC0	konteks pemuatan/transformasi/penyimpanan nilai akumulator
+0x800ECBC4	0x10FA774	14 80 10 3C	lui $s0, 0x8014	TIDAK TAHU	operasi/register statis pada instruksi	0x800ECBC4	konteks pemuatan/transformasi/penyimpanan nilai akumulator
+0x800ECBC8	0x10FA778	FF 00 43 30	andi $v1, $v0, 0xff	TIDAK TAHU	operasi/register statis pada instruksi	0x800ECBC8	konteks pemuatan/transformasi/penyimpanan nilai akumulator
+0x800ECBCC	0x10FA77C	3D 00 60 14	bnez $v1, 0x800eccc4	TIDAK TAHU	operasi/register statis pada instruksi	0x800ECBCC	konteks pemuatan/transformasi/penyimpanan nilai akumulator
+0x800ECBD0	0x10FA780	BE 9E 02 A2	sb $v0, -0x6142($s0)	0x80139EBE	operasi/register statis pada instruksi	0x800ECBD0	konteks pemuatan/transformasi/penyimpanan nilai akumulator

@@ -1,0 +1,11 @@
+fee_dasar	distance_d	H1_fee_dasar_x_2powd	H2prime_lookup_multiplier	H2prime_prediction	H3_piecewise_prediction	H2prime_equals_H3	separates_H1_from_H2prime_H3	separates_H2prime_from_H3	test_note	source	reason
+100	1	200	1	100	100	YES	YES	NO	uji d=1 memisahkan H1 dari pasangan H2'/H3	hypothesis definitions supplied by user	aritmetika langsung; bukan fitting dan bukan bukti ROM
+100	2	400	4	400	400	YES	NO	NO	tidak membedakan ketiganya; semua prediksi sama	hypothesis definitions supplied by user	aritmetika langsung; bukan fitting dan bukan bukti ROM
+100	3	800	8	800	800	YES	NO	NO	tidak membedakan ketiganya; semua prediksi sama	hypothesis definitions supplied by user	aritmetika langsung; bukan fitting dan bukan bukti ROM
+100	4	1600	16	1600	1600	YES	NO	NO	tidak membedakan ketiganya; semua prediksi sama	hypothesis definitions supplied by user	aritmetika langsung; bukan fitting dan bukan bukti ROM
+100	5	3200	32	3200	3200	YES	NO	NO	tidak membedakan ketiganya; semua prediksi sama	hypothesis definitions supplied by user	aritmetika langsung; bukan fitting dan bukan bukti ROM
+50	1	100	1	50	50	YES	YES	NO	uji d=1 memisahkan H1 dari pasangan H2'/H3	hypothesis definitions supplied by user	aritmetika langsung; bukan fitting dan bukan bukti ROM
+50	2	200	4	200	200	YES	NO	NO	tidak membedakan ketiganya; semua prediksi sama	hypothesis definitions supplied by user	aritmetika langsung; bukan fitting dan bukan bukti ROM
+50	3	400	8	400	400	YES	NO	NO	tidak membedakan ketiganya; semua prediksi sama	hypothesis definitions supplied by user	aritmetika langsung; bukan fitting dan bukan bukti ROM
+50	4	800	16	800	800	YES	NO	NO	tidak membedakan ketiganya; semua prediksi sama	hypothesis definitions supplied by user	aritmetika langsung; bukan fitting dan bukan bukti ROM
+50	5	1600	32	1600	1600	YES	NO	NO	tidak membedakan ketiganya; semua prediksi sama	hypothesis definitions supplied by user	aritmetika langsung; bukan fitting dan bukan bukti ROM

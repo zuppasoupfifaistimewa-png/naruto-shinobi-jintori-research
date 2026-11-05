@@ -1,0 +1,6 @@
+pc	operation	base_reg	offset	byte_semantics
+0x800ECA0C	lw $v0, -0x14f4($a1)	a1	-0x14f4	memory field access
+0x800ECA2C	lbu $v0, ($v1)	v1	+0x0	memory field access
+0x800ECA3C	lhu $a0, 0x20($v1)	v1	+0x20	memory field access
+0x800ECA50	lw $v1, -0x6104($a2)	a2	-0x6104	memory field access
+0x800ECA68	lw $v0, -0x14f4($a1)	a1	-0x14f4	memory field access

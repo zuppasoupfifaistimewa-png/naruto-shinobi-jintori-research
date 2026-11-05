@@ -1,0 +1,3 @@
+load_pc	load_file_offset	load_bytes	load_instruction	source_field_offset	source_base_register	store_pc	store_file_offset	store_bytes	store_instruction	destination_field_offset	shared_value_register	source_pc	reason
+0x800F7BB8	0x1105768	00 00 23 92	lbu $v1, ($s1)	0	s1	0x800F7BC0	0x1105770	00 00 83 A0	sb $v1, ($a0)	0	v1	0x800F7BB8	register hasil load dipakai langsung sebagai operand store dalam jarak <=0x20 byte; pointer identity tetap perlu cek base_origin
+0x800F7E48	0x11059F8	00 00 22 92	lbu $v0, ($s1)	0	s1	0x800F7E68	0x1105A18	20 00 A2 A4	sh $v0, 0x20($a1)	32	v0	0x800F7E48	register hasil load dipakai langsung sebagai operand store dalam jarak <=0x20 byte; pointer identity tetap perlu cek base_origin
