@@ -303,7 +303,7 @@ jobs:
               0x8002D838 0x8002DEC4 0x8002DF30 0x8002D00C 0x8002D5C0 \
               0x8002CF9C 0x8002DE60 0x8002DDEC 0x80035AA8 0x80035B08 \
             -postScript ExportNumericLiteralReferences.java "$out/main-numeric-instruction-literals.tsv" \
-            -postScript ExportDN1WriterWindows.java "$out/dn1-unresolved-writer-instructions.tsv" "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv" \
+            -postScript ExportDN1WriterWindows.java "$out/dn1-main-exe-writer-instructions.tsv" "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv" \
             -analysisTimeoutPerFile 1800 \
             -max-cpu 2 \
             -deleteProject > "$out/ghidra-headless.log" 2>&1
@@ -397,7 +397,7 @@ jobs:
             echo "resource_binary_uploaded_as_artifact=no"
           } > "$out/data-bin-entry1-validation.txt"
           set +e
-          "$headless" "$project" DATA_BIN_entry_0001             -import "$resource"             -loader BinaryLoader             -loader-baseAddr 0x800D0000             -loader-length 0x919BC             -loader-blockName DATA_BIN_ENTRY_0001             -processor "MIPS:LE:32:default"             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra"             -preScript PrepareOverlayResource.java             -postScript ExportFunctionIndex.java "$out/data-bin-entry1-functions.tsv"             -postScript ExportOverlaySurvey.java "$out/data-bin-entry1-overlay-survey.txt"             -postScript ExportTargetCallers.java "$out/data-bin-entry1-rng-callers.txt" 0x80035D78 0x80035DA8             -analysisTimeoutPerFile 1800             -max-cpu 2             -deleteProject > "$out/overlay-ghidra-headless.log" 2>&1
+          "$headless" "$project" DATA_BIN_entry_0001             -import "$resource"             -loader BinaryLoader             -loader-baseAddr 0x800D0000             -loader-length 0x919BC             -loader-blockName DATA_BIN_ENTRY_0001             -processor "MIPS:LE:32:default"             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra"             -preScript PrepareOverlayResource.java             -postScript ExportFunctionIndex.java "$out/data-bin-entry1-functions.tsv"             -postScript ExportOverlaySurvey.java "$out/data-bin-entry1-overlay-survey.txt" -postScript ExportDN1WriterWindows.java "$out/dn1-entry1-writer-instructions.tsv" "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv"             -postScript ExportTargetCallers.java "$out/data-bin-entry1-rng-callers.txt" 0x80035D78 0x80035DA8             -analysisTimeoutPerFile 1800             -max-cpu 2             -deleteProject > "$out/overlay-ghidra-headless.log" 2>&1
           status=$?
           set -e
           if [[ "$status" -ne 0 ]]; then
@@ -477,6 +477,7 @@ jobs:
             -postScript ExportEntry0Helper.java "$out/data-bin-entry0-helper.txt" \
             -postScript ExportTargetCallers.java "$out/data-bin-entry0-rng-callers.txt" 0x80035D78 0x80035DA8 \
              -postScript ExportNumericLiteralReferences.java "$out/data-bin-entry0-numeric-instruction-literals.tsv" \
+             -postScript ExportDN1WriterWindows.java "$out/dn1-entry0-writer-instructions.tsv" "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv" \
             -analysisTimeoutPerFile 1800 \
             -max-cpu 2 \
             -deleteProject > "$out/entry0-ghidra-headless.log" 2>&1
@@ -506,6 +507,83 @@ jobs:
             echo "resource_binary_uploaded_as_artifact=no"
           } > "$out/data-bin-entry0-analysis-result.txt"
           echo "Entry 0 helper decompilation completed; $rows functions indexed."
+
+          # Merge PC-specific exports from the main EXE and the two existing overlay analyses.
+          python3 - "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv" "$out" <<'PY'
+          from pathlib import Path
+          import csv, sys
+          census_path, out_dir = Path(sys.argv[1]), Path(sys.argv[2])
+          lines = census_path.read_text(encoding="utf-8").splitlines()
+          header_i = next(i for i, line in enumerate(lines) if line.startswith("field_offset\\tpc\\t"))
+          src_header = lines[header_i].split("\\t")
+          targets = []
+          for line in lines[header_i+1:]:
+              if not line.strip(): continue
+              cells = line.split("\\t")
+              if len(cells) < 14: continue
+              ctx, old_label, alias = cells[13], cells[11], cells[12]
+              wanted = ctx == "NO_STORE_IN_REVIEWED_EXPORT" or (old_label == "LAIN" and alias == "BASE_ALIAS_UNPROVEN" and ctx != "NO_STORE_IN_REVIEWED_EXPORT")
+              if wanted: targets.append(dict(zip(src_header, cells)))
+          output_names = ("dn1-main-exe-writer-instructions.tsv", "dn1-entry0-writer-instructions.tsv", "dn1-entry1-writer-instructions.tsv")
+          merged = {}
+          header = None
+          sources = {}
+          for name in output_names:
+              path = out_dir / name
+              if not path.is_file(): continue
+              with path.open(encoding="utf-8", newline="") as f:
+                  reader = csv.DictReader(f, delimiter="\\t")
+                  if header is None: header = reader.fieldnames
+                  for row in reader:
+                      pc = row.get("pc", "").upper()
+                      if pc and pc not in merged:
+                          merged[pc] = row
+                          sources[pc] = name
+          if header is None:
+              header = ["field_offset","pc","function_entry","function_name","instruction","instruction_bytes","base_register","value_register","previous_instruction_count","previous_12_plus_store","value_origin","nearest_value_def_candidate","nearest_base_def_candidate","label","alias_status","context_status","raw_excerpt_hex_max64","reason","analysis_program"]
+          for t in targets:
+              pc = t["pc"].upper()
+              if pc in merged: continue
+              merged[pc] = {
+                  "field_offset": t["field_offset"], "pc": t["pc"],
+                  "function_entry": t["function_entry"], "function_name": t["function_name"],
+                  "instruction": "TIDAK_TERSEDIA", "instruction_bytes": "TIDAK_TERSEDIA",
+                  "base_register": "TIDAK_TAHU", "value_register": "TIDAK_TAHU",
+                  "previous_instruction_count": "0", "previous_12_plus_store": "TIDAK_TERSEDIA",
+                  "value_origin": "TIDAK TAHU — PC tidak berada di dalam memory image yang dianalisis",
+                  "nearest_value_def_candidate": "TIDAK_TAHU", "nearest_base_def_candidate": "TIDAK_TAHU",
+                  "label": "LAIN", "alias_status": "NOT_MAPPED_TO_KNOWN_STATIC_IMAGE",
+                  "context_status": "OUTSIDE_MAIN_EXE_ENTRY0_ENTRY1_IMAGES",
+                  "raw_excerpt_hex_max64": "TIDAK_TERSEDIA",
+                  "reason": "TIDAK TAHU — PC berada di luar MAIN EXE, DATA.BIN Entry 0, dan DATA.BIN Entry 1 yang dipetakan workflow; image/owner kode belum diketahui",
+                  "analysis_program": "NONE"
+              }
+          rows = [merged[t["pc"].upper()] for t in targets]
+          if len(rows) != len(targets) or len({r["pc"].upper() for r in rows}) != len(rows):
+              raise SystemExit("DN1_MERGE_DUPLICATE_OR_ROW_COUNT_ERROR")
+          output = out_dir / "DN1_UNRESOLVED_WRITER_INSTRUCTIONS_2026-11-05.tsv"
+          with output.open("w", encoding="utf-8", newline="") as f:
+              writer = csv.DictWriter(f, fieldnames=header, delimiter="\\t", lineterminator="\\n", extrasaction="ignore")
+              writer.writeheader()
+              writer.writerows(rows)
+          from collections import Counter
+          label_counts = Counter(r["label"] for r in rows)
+          context_counts = Counter(r["context_status"] for r in rows)
+          mapped_counts = Counter(r.get("analysis_program", "NONE") for r in rows)
+          summary = [
+              "STATUS=EXPORT_COMPLETE_WITH_EXPLICIT_UNMAPPED_ROWS",
+              f"TARGET_UNIQUE_PC={len(rows)}",
+              "TARGET_FROM_CENSUS=272",
+              f"MERGED_UNIQUE_PC={len({r['pc'].upper() for r in rows})}",
+              f"LABEL_COUNTS={dict(label_counts)}",
+              f"CONTEXT_COUNTS={dict(context_counts)}",
+              f"ANALYSIS_PROGRAM_COUNTS={dict(mapped_counts)}",
+              "COMPUTED_CONFIRMED=0 (base alias and full value provenance require further proof)",
+              "UNMAPPED_PC_REASON=each PC outside available MAIN EXE/Entry0/Entry1 static memory images receives a separate explicit TIDAK TAHU row"
+          ]
+          (out_dir / "DN1_WHOLE_CENSUS_SUMMARY.txt").write_text("\\n".join(summary)+"\\n", encoding="utf-8")
+          print("\\n".join(summary))
+          PY
 
       - name: Upload text-only Ghidra results
         if: always()

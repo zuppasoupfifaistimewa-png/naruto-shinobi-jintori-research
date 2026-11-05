@@ -109,8 +109,8 @@ public class ExportDN1WriterWindows extends GhidraScript {
         for (int i=0;i<input.size();i++) if (input.get(i).startsWith("field_offset\\tpc\\t")) { header=i; break; }
         if (header<0) throw new IllegalArgumentException("DM1 census header not found");
         StringBuilder out=new StringBuilder();
-        out.append("field_offset\\tpc\\tfunction_entry\\tfunction_name\\tinstruction\\tinstruction_bytes\\tbase_register\\tvalue_register\\tprevious_instruction_count\\tprevious_12_plus_store\\tvalue_origin\\tnearest_value_def_candidate\\tnearest_base_def_candidate\\tlabel\\talias_status\\tcontext_status\\traw_excerpt_hex_max64\\treason\\n");
-        int target=0, decoded=0, stores=0, loader=0, notDecoded=0, notStore=0;
+        out.append("field_offset\\tpc\\tfunction_entry\\tfunction_name\\tinstruction\\tinstruction_bytes\\tbase_register\\tvalue_register\\tprevious_instruction_count\\tprevious_12_plus_store\\tvalue_origin\\tnearest_value_def_candidate\\tnearest_base_def_candidate\\tlabel\\talias_status\\tcontext_status\\traw_excerpt_hex_max64\\treason\\tanalysis_program\\n");
+        int target=0, outside=0, decoded=0, stores=0, loader=0, notDecoded=0, notStore=0;
         for (int i=header+1;i<input.size();i++) {
             monitor.checkCancelled();
             String[] c=input.get(i).split("\\t",-1);
@@ -124,6 +124,10 @@ public class ExportDN1WriterWindows extends GhidraScript {
             Address a;
             try { a=toAddr(Long.decode(pc)); }
             catch (Exception e) { a=null; }
+            if (a==null || !currentProgram.getMemory().contains(a)) {
+                outside++;
+                continue;
+            }
             Instruction center=(a==null)?null:currentProgram.getListing().getInstructionAt(a);
             Function f=(a==null)?null:currentProgram.getFunctionManager().getFunctionContaining(a);
             String fEntry=f==null?oldEntry:f.getEntryPoint().toString();
@@ -168,10 +172,10 @@ public class ExportDN1WriterWindows extends GhidraScript {
                .append(clean(origin)).append('\\t').append(clean(vdef)).append('\\t')
                .append(clean(bdef)).append('\\t').append(label).append('\\t')
                .append("BASE_ALIAS_UNPROVEN").append('\\t').append(status).append('\\t')
-               .append(clean(raw)).append('\\t').append(clean(reason)).append('\\n');
+               .append(clean(raw)).append('\\t').append(clean(reason)).append('\\t').append(clean(currentProgram.getName())).append('\\n');
         }
         Files.write(output,out.toString().getBytes(StandardCharsets.UTF_8));
-        println("DN1_TARGET_ROWS="+target);
+        println("DN1_TARGET_ROWS_THIS_IMAGE="+target);\n        println("DN1_OUTSIDE_THIS_IMAGE="+outside);
         println("DN1_DECODED_PC="+decoded);
         println("DN1_STORE_DECODED="+stores);
         println("DN1_PC_NOT_STORE="+notStore);
