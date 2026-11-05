@@ -1,0 +1,6 @@
+pc	bytes	instruction	meaning
+0x8010241C	04 00 40 10	beqz $v0, 0x80102430	branch/return-path instruction
+0x80102424	A8 0E 62 8C	lw $v0, 0xea8($v1)	branch/return-path instruction
+0x80102428	08 00 E0 03	jr $ra	branch/return-path instruction
+0x80102430	08 00 E0 03	jr $ra	branch/return-path instruction
+0x80102434	FF FF 02 24	addiu $v0, $zero, -1	branch/return-path instruction

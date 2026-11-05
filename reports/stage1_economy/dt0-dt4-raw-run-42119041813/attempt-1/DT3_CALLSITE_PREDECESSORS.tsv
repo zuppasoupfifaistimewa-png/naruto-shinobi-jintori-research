@@ -1,0 +1,3 @@
+call_pc	from_pc	to_pc	edge	condition	delay_slot	operand_origin	classification
+0x800F3830	TIDAK ADA EDGE LANGSUNG	0x800F3830	LIKELY_INDIRECT_OR_CASE_ENTRY	TIDAK TAHU: tidak ada target branch/j statis langsung ke alamat JAL	—	periksa JR/function-pointer dispatcher	NO_DIRECT_PREDECESSOR
+0x800F5D08	TIDAK ADA EDGE LANGSUNG	0x800F5D08	LIKELY_INDIRECT_OR_CASE_ENTRY	TIDAK TAHU: tidak ada target branch/j statis langsung ke alamat JAL	—	periksa JR/function-pointer dispatcher	NO_DIRECT_PREDECESSOR

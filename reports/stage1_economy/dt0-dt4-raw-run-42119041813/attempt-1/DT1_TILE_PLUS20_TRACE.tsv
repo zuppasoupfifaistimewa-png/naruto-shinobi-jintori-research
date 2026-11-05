@@ -1,0 +1,2 @@
+pc	bytes	instruction	next_8
+0x800ECA3C	20 00 64 94	lhu $a0, 0x20($v1)	0x800ECA40 nop || 0x800ECA44 srl $v0, $a0, 0xc || 0x800ECA48 bne $t0, $v0, 0x800eca68 || 0x800ECA4C srl $v0, $a0, 8 || 0x800ECA50 lw $v1, -0x6104($a2) || 0x800ECA54 nop || 0x800ECA58 addiu $v1, $v1, 1 || 0x800ECA5C andi $v0, $v0, 0xf

@@ -1,0 +1,4 @@
+pc	file_offset	bytes	instruction	source_reg	value_origin	is_clear	position_vs_loop
+0x800EC9CC	0x10FA57C	FC 9E 40 AC	sw $zero, -0x6104($v0)	zero	ZERO_REGISTER	YES	BEFORE
+0x800ECA64	0x10FA614	FC 9E C3 AC	sw $v1, -0x6104($a2)	v1	COMPUTED@800ECA60	NO	INSIDE/AFTER
+0x800ECAE0	0x10FA690	FC 9E 62 AC	sw $v0, -0x6104($v1)	v0	LOAD@800ECAC4	NO	INSIDE/AFTER

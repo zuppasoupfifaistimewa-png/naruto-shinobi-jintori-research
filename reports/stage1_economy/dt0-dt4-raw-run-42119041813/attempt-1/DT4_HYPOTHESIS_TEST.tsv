@@ -1,0 +1,5 @@
+distance_d	fee_dasar_hypothesis	user_observation_hypothesis	H1_exponential_100x2powd	H1_result	H2_lookup_multiplier	H2_value	H2_result
+1	100	100	200	TIDAK COCOK	1	100	COCOK
+2	100	400	400	COCOK	4	400	COCOK
+3	100	800	800	COCOK	8	800	COCOK
+4	100	1600	1600	COCOK	16	1600	COCOK
