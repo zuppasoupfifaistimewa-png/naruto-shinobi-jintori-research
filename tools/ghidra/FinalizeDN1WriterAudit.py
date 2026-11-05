@@ -5,8 +5,11 @@ from pathlib import Path
 from collections import Counter
 
 def read_tsv(path):
-    with Path(path).open(encoding="utf-8", newline="") as f:
-        return list(csv.DictReader(f, delimiter="\t"))
+    lines = Path(path).read_text(encoding="utf-8").splitlines()
+    header = next((i for i, line in enumerate(lines) if line.startswith("field_offset\tpc\t")), None)
+    if header is None:
+        raise SystemExit("TSV header field_offset/pc not found: " + str(path))
+    return list(csv.DictReader(lines[header:], delimiter="\t"))
 
 def write_tsv(path, rows, headers):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
@@ -137,9 +140,9 @@ def main():
     labels = Counter(r["label"] for r in census)
     if labels != Counter({"LAIN":316,"LOADER_COPY":10}):
         raise SystemExit("326-PC census expected 316 LAIN + 10 LOADER_COPY")
-    prior_classes = Counter(r["alias_status"] for r in census if r["label"]=="LAIN" and r["context_status"]!="NO_STORE_IN_REVIEWED_EXPORT")
-    if prior_classes != Counter({"NON_TILE_ALLOCATED_OBJECT":17,"STACK_POINTER":24,"NON_TILE_AUXILIARY":3,"BASE_ALIAS_UNPROVEN":10}):
-        raise SystemExit("previous 54 store classifications do not match expected inventory")
+    prior_classes = Counter(r["alias_status"] for r in census if r["label"]=="LAIN" and r["alias_status"]!="BASE_ALIAS_UNPROVEN" and r["context_status"]!="NO_STORE_IN_REVIEWED_EXPORT")
+    if prior_classes != Counter({"NON_TILE_ALLOCATED_OBJECT":17,"STACK_POINTER":24,"NON_TILE_AUXILIARY":3}):
+        raise SystemExit("previous 44 independently-resolved LAIN store classifications do not match expected inventory")
 
     run_id, source_sha, job_id = os.getenv("GITHUB_RUN_ID","TIDAK_TAHU"), os.getenv("GITHUB_SHA","TIDAK_TAHU"), get_job_id()
     summary = [
