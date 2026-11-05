@@ -36,7 +36,7 @@ Rincian setiap commit, klasifikasi, pesan dan daftar berkas yang berubah tercata
    - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS1_INDEX_ORIGIN_TRACE.tsv
    - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS1_PRELOAD_12_RAW.tsv
    - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS1_TABLE_ADDRESS_TRACE.tsv
-   - reports/stage1_economy/dq1-dq3-raw-run-42013037160/attempt-1/DQ1B_GLOBAL_80139EFC_WRITERS_RAW.tsv
+   - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS1_TABLE_POINTER_GLOBAL_WRITERS.tsv
    - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS2_FUN_80102408_CALLERS.tsv
    - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS2_FUN_80102408_RAW_DISASSEMBLY.tsv
    - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS2_FUN_80102408_RETURN_PATHS.tsv
@@ -58,8 +58,12 @@ Instruksi store: sw $v1, -0x6104($v0), byte mentah FC 9E 43 AC. Basis $v0 pada k
 - PC 0x800D2448, FUN_800d15a8: lw $v1, -0x1450($v0). Dengan $v0=0x80140000, sumber indeks adalah global word 0x8013EBB0. Nilai indeks runtime: TIDAK TAHU; tidak ada snapshot runtime yang diizinkan/dikomit.
 - PC 0x800D2450, FUN_800d15a8: lw $a0, -0x157c($v0). Alamat slot pointer = 0x8013EA84.
 - Dua writer slot pointer yang terdeteksi:
-  - PC 0x800B1F38, label fungsi FUN_800b1e88 (heuristik): sw $v0, -0x157c($v1), byte FC? Tidak; instruksi store pada PC ini adalah 84 EA 62 AC. Nilai $v0 dibentuk oleh PC 0x800B1F30 lui $v0,0x8014 dan PC 0x800B1F34 addiu $v0,$v0,-0x47e8, yaitu alamat konstan 0x8013B818.
-  - PC 0x800B2AC8, label fungsi FUN_800b2a58 (heuristik): store yang sama; $v0 dibentuk oleh 0x800B2AC0 lui $v0,0x8014 dan 0x800B2AC4 addiu $v0,$v0,-0x47e8, juga 0x8013B818.
+  - PC 0x800B1F38, FUN_800b1e88 (heuristik): sw $v0,-0x157c($v1), bytes 84 EA 62 AC. $v0 dibentuk oleh 0x800B1F30 lui $v0,0x8014 dan 0x800B1F34 addiu $v0,$v0,-0x47e8, sehingga alamat yang disimpan adalah 0x8013B818.
+  12 instruksi sebelumnya: 0x800B1F08 addiu $a0,$zero,0x7d8; 0x800B1F0C sw $v0,-0x1540($s0); 0x800B1F10 jal 0x8002dec4; 0x800B1F14 addiu $a0,$zero,0x2d4; 0x800B1F18 sw $v0,-0x1550($s1); 0x800B1F1C lui $s1,0x8014; 0x800B1F20 jal 0x8002dec4; 0x800B1F24 addiu $a0,$zero,0x950; 0x800B1F28 sw $v0,-0x158c($s1); 0x800B1F2C lui $v1,0x8014; 0x800B1F30 lui $v0,0x8014; 0x800B1F34 addiu $v0,$v0,-0x47e8.
+  Excerpt mentah 48 byte: D8 07 04 24 C0 EA 02 AE B1 B7 00 0C D4 02 04 24 B0 EA 22 AE 14 80 11 3C B1 B7 00 0C 50 09 04 24 74 EA 22 AE 14 80 03 3C 14 80 02 3C 18 B8 42 24.
+  - PC 0x800B2AC8, FUN_800b2a58 (heuristik): sw $v0,-0x157c($v1), bytes 84 EA 62 AC. $v0 dibentuk oleh 0x800B2AC0 lui $v0,0x8014 dan 0x800B2AC4 addiu $v0,$v0,-0x47e8, sehingga alamat yang disimpan juga 0x8013B818.
+  12 instruksi sebelumnya: 0x800B2A98 sw $v0,-0x1540($s0); 0x800B2A9C lui $s0,0x8014; 0x800B2AA0 jal 0x8002dec4; 0x800B2AA4 addiu $a0,$zero,0x2d4; 0x800B2AA8 sw $v0,-0x1550($s0); 0x800B2AAC lui $s2,0x8014; 0x800B2AB0 jal 0x8002dec4; 0x800B2AB4 addiu $a0,$zero,0x950; 0x800B2AB8 sw $v0,-0x158c($s2); 0x800B2ABC lui $v1,0x8014; 0x800B2AC0 lui $v0,0x8014; 0x800B2AC4 addiu $v0,$v0,-0x47e8.
+  Excerpt mentah 48 byte: C0 EA 02 AE 14 80 10 3C B1 B7 00 0C D4 02 04 24 B0 EA 02 AE 14 80 12 3C B1 B7 00 0C 50 09 04 24 74 EA 42 AE 14 80 03 3C 14 80 02 3C 18 B8 42 24.
 - Basis pointer tabel statis = 0x8013B818. Slot yang menyimpan pointer tersebut = 0x8013EA84.
 - Offset statis pointer dalam Entry 1 = 0x8E3C8; offset file DATA.BIN = 0x11493C8. Ini memakai rumus yang diberikan: 0x10BB000 + (0x8013B818 - 0x800AD450). Pemetaan runtime tetap tidak tervalidasi.
 - Perhitungan alamat pada PC 0x800D2454–0x800D2468:
@@ -148,7 +152,7 @@ Raw window:
 - 0x800ECBAC: nop — 00 00 00 00
 - 0x800ECBB0: negu $v0,$v0 — 23 10 02 00
 - 0x800ECBB4: j 0x800ec928 — 4A B2 03 08
-- PC 0x800ECB B8 (store pada jalur lanjut) menulis nilai negasi ke manager_base + 2×idx + 0x2EE.
+- PC 0x800ECBB8 (store pada jalur lanjut) menulis nilai negasi ke manager_base + 2×idx + 0x2EE.
 
 ### Instruksi sebelum dua JAL dari FUN_800F3658 ke FUN_800EC574
 
@@ -203,7 +207,7 @@ Status rantai lengkap current-level vs target-level → fee → store ke 0x80139
 3. PC 0x800ECAA0: mult $a0,$v0 (18 00 82 00); PC 0x800ECAA4: mflo $v0 (12 10 00 00); PC 0x800ECAA8: sw $v0,0x4f0($a1) (F0 04 A2 AC). Dalam window yang sama $a0 di-load dari global indeks 0x8013EBB0 dan $v0 dari global fee 0x80139EFC; produk masuk ke manager +0x4F0. Tidak terbukti bahwa $a0 adalah d atau hasil ini adalah pembentuk fee global.
    Excerpt 48 byte:
    01 00 42 24 0C EB A2 AC 2A 10 47 00 E3 FF 40 14 00 00 00 00 14 80 02 3C 74 EA 45 8C 14 80 02 3C 14 80 03 3C B0 EB 44 8C FC 9E 62 8C 00 00 00 00
-4. PC 0x800ECB94–0x800ECB B8 membaca indeks 0x8013EBB0, mengalikan skala indeks 2, mengambil nilai yang sudah ada di 0x80139EFC, menegasikannya dan menaruhnya ke manager lane +0x2EE. Ini bukti transfer/penggunaan nilai fee yang sudah ada, bukan bukti rumus yang membentuk nilainya.
+4. PC 0x800ECB94–0x800ECBB8 membaca indeks 0x8013EBB0, mengalikan skala indeks 2, mengambil nilai yang sudah ada di 0x80139EFC, menegasikannya dan menaruhnya ke manager lane +0x2EE. Ini bukti transfer/penggunaan nilai fee yang sudah ada, bukan bukti rumus yang membentuk nilainya.
 
 ### Uji H1 dan H2 terhadap observasi pengguna (hipotesis, bukan fakta game)
 
@@ -239,3 +243,12 @@ Commit koreksi dokumen setelah snapshot 88663e mengubah:
 - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS2_FUN_80102408_SUMMARY.txt
 
 Commit koreksi ini berada setelah snapshot dan tidak dihitung pada TOTAL=3 DS0 di atas.
+
+
+### Errata sesudah commit koreksi pertama (di luar snapshot DS0)
+
+Commit errata berikutnya mengubah hanya dua berkas:
+- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_COMMIT_LEDGER.tsv
+- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_DS4_STATIC_AUDIT_2026-11-05.md
+
+Errata ini membetulkan path tabel pointer DS1 di ledger dan menambahkan excerpt raw 12-instruksi untuk kedua writer slot pointer. Kedua commit koreksi berada setelah snapshot 88663e dan tidak mengubah hitungan DS0=3.
