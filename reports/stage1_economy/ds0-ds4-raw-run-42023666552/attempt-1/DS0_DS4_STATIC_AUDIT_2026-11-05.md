@@ -89,7 +89,7 @@ Instruksi store: sw $v1, -0x6104($v0), byte mentah FC 9E 43 AC. Basis $v0 pada k
 Excerpt mentah 48 byte (12 word, tidak melebihi 64 B):
 84 EA 44 8C C0 10 03 00 21 10 43 00 C0 10 02 00 21 10 43 00 80 10 02 00 21 10 44 00 00 00 43 90 01 00 02 24 5B 00 62 14 14 80 02 3C 79 49 03 08
 
-PC 0x800D2480 adalah delay slot dari J pada 0x800D247C. Nilai yang disimpan adalah byte yang dibaca di PC 0x800D246C; apakah isi byte tertentu 0, 1, atau nilai lain = TIDAK TAHU tanpa raw table bytes.
+PC 0x800D2480 adalah delay slot dari J pada 0x800D247C. Branch 0x800D2474 hanya melanjutkan ke J/store bila hasil lbu di 0x800D246C sama dengan 1; karena itu, jika PC 0x800D2480 dieksekusi, nilai yang disimpan ke 0x80139EFC terbukti 1. Isi byte aktual untuk setiap indeks/tabel yang tidak ditempuh tetap TIDAK TAHU karena raw table bytes tidak dipersistenkan.
 
 ## DS2 — FUN_80102408
 
@@ -261,3 +261,9 @@ Pada validasi permalink, path DS1_TABLE_POINTER_GLOBAL_WRITERS.tsv di kolom chan
 - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_DS4_STATIC_AUDIT_2026-11-05.md
 
 Koreksi ini pasca-snapshot dan tidak mengubah rentang atau hasil hitung DS0.
+
+
+### Errata akhir DS1 — nilai store bersyarat
+
+Pembacaan ulang branch 0x800D2474 menunjukkan bahwa PC 0x800D2480 hanya terjadi bila byte lbu sama dengan 1. Jadi nilai store pada jalur tersebut adalah 1; yang belum diketahui adalah isi byte tabel untuk indeks-indeks lain dan apakah jalur store itu tercapai pada runtime. Berkas yang diubah pada errata akhir ini:
+- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_DS4_STATIC_AUDIT_2026-11-05.md
