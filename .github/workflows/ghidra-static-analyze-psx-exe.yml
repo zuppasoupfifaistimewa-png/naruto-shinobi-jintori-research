@@ -397,6 +397,11 @@ jobs:
             -postScript ExportDN1WriterWindows.java "$out/dn1-entry1-writer-instructions.tsv" "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv" \
             -postScript ExportFunctionDetail.java "$out/dn1-f7450-function-detail.txt" 0x800F7450 \
             -postScript ExportFunctionDetail.java "$out/dn1-bb36c-function-detail.txt" 0x800BB36C \
+            -postScript ExportFunctionDetail.java "$out/dn1-d15a8-function-detail.txt" 0x800D15A8 \
+            -postScript ExportFunctionDetail.java "$out/dn1-d6e7c-function-detail.txt" 0x800D6E7C \
+            -postScript ExportFunctionDetail.java "$out/dn1-ec574-function-detail.txt" 0x800EC574 \
+            -postScript ExportFunctionDetail.java "$out/dn1-df0c8-function-detail.txt" 0x800DF0C8 \
+            -postScript ExportFunctionDetail.java "$out/dn1-b83fc-function-detail.txt" 0x800B83FC \
             -analysisTimeoutPerFile 1800 \
             -max-cpu 2 \
             -deleteProject > "$out/entry1-correct-base-ghidra.log" 2>&1
@@ -412,8 +417,8 @@ jobs:
             tail -n 100 "$out/entry1-correct-base-ghidra.log" || true
             exit "$status"
           fi
-          if [[ ! -s "$out/dn1-entry1-writer-instructions.tsv" || ! -s "$out/dn1-f7450-function-detail.txt" || ! -s "$out/dn1-bb36c-function-detail.txt" ]]; then
-            echo "::error::DN1 writer export or focused FUN_800F7450/FUN_800BB36C detail is missing or empty."
+          if [[ ! -s "$out/dn1-entry1-writer-instructions.tsv" || ! -s "$out/dn1-f7450-function-detail.txt" || ! -s "$out/dn1-bb36c-function-detail.txt" || ! -s "$out/dn1-d15a8-function-detail.txt" || ! -s "$out/dn1-d6e7c-function-detail.txt" || ! -s "$out/dn1-ec574-function-detail.txt" || ! -s "$out/dn1-df0c8-function-detail.txt" || ! -s "$out/dn1-b83fc-function-detail.txt" ]]; then
+            echo "::error::DN1 writer export or one of five additional base-provenance function details is missing or empty."
             exit 1
           fi
           echo "Entry 1 writer windows exported at $ENTRY1_STATIC_BASE."
