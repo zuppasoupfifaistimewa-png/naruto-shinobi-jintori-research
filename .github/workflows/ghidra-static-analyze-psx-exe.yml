@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: ghidra-psx-exe-static-analysis
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   analyze-main-exe:
