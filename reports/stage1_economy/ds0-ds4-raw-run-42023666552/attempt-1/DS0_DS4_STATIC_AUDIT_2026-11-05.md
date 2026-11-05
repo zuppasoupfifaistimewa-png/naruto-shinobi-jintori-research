@@ -12,23 +12,23 @@ Snapshot HEAD untuk penghitungan DS0: 88663e7549a6e819b7fe631a4cb903b1eded8c87 (
 - Batas bukti statis maksimum K4; tidak ada klaim K5.
 - Run Actions 42023666552: STATUS=PASS, JOB=raw-static-ds0-ds4, JOB_ID=127232405018, SOURCE_SHA=96e03675286f7b7999eee4549f3b6a71a1765c47, EXIT_CODE=0. Rincian mentah ada di ACTIONS_RUN_SUMMARY.txt. Ini menyatakan status job, bukan bukti runtime permainan.
 
-## DS0 — hitung ulang commit inklusif
+## DS0 — hitung ulang semua commit inklusif
 
-GitHub compare dari baseline c6204f... sampai snapshot 88663e... menghasilkan ahead_by=2 dan behind_by=0. Karena baseline ikut dihitung: TOTAL=3, MANUSIA=2, BOT=1.
+Snapshot HEAD yang dibatasi untuk DS0: 72897f45c6401e289102a91c9ad785362a9d9b20. GitHub compare dari baseline c6204f38495c9be76b18c76a9943f17ca835f2f3 sampai snapshot ini menghasilkan ahead_by=6 dan behind_by=0. Baseline ikut dihitung, sehingga **TOTAL=7, MANUSIA=6, BOT=1**.
 
-Rincian setiap commit, klasifikasi, pesan dan daftar berkas yang berubah tercatat di DS0_COMMIT_LEDGER.tsv. Hasil ini berbeda dari ledger yang dibuat run: pada konfigurasi saat itu DS0_AUDIT_HEAD diisi sama dengan DS0_BASELINE, sehingga script hanya menulis satu baris baseline. Hitung ulang ini memakai riwayat Git dari baseline sampai snapshot HEAD yang disebutkan di atas, bukan angka summary lama.
+Ledger awal run keliru karena DS0_AUDIT_HEAD diset sama dengan DS0_BASELINE. Koreksi setelah run menghasilkan empat commit manusia tambahan sebelum snapshot 72897f; karena permintaan DS0 mencakup semua commit sejak baseline, empat commit itu ikut dihitung. Snapshot HEAD untuk DS0 ditetapkan sebelum commit final yang memperbarui ledger/summary/laporan ini agar rentang hitung tidak berubah secara rekursif.
 
-### Berkas berubah per commit dalam rentang
+### Daftar commit dan berkas yang diubah dalam rentang
 
-1. c6204f38495c9be76b18c76a9943f17ca835f2f3 — manusia:
+1. c6204f38495c9be76b18c76a9943f17ca835f2f3 — MANUSIA, zuppasoupfifaistimewa-png:
    - reports/stage1_economy/dq1-dq3-raw-run-42013037160/attempt-1/ACTIONS_RUN_SUMMARY.txt
    - reports/stage1_economy/dq1-dq3-raw-run-42013037160/attempt-1/DR0_DR3_CORRECTIVE_AUDIT_2026-11-05.md
 
-2. 96e03675286f7b7999eee4549f3b6a71a1765c47 — manusia:
+2. 96e03675286f7b7999eee4549f3b6a71a1765c47 — MANUSIA, zuppasoupfifaistimewa-png:
    - .github/workflows/dq1-dq3-raw-static.yml
    - tools/stage1/RunDS0DS4Raw.py
 
-3. 88663e7549a6e819b7fe631a4cb903b1eded8c87 — bot:
+3. 88663e7549a6e819b7fe631a4cb903b1eded8c87 — BOT, github-actions[bot]:
    - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/ACTIONS_RUN_SUMMARY.txt
    - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_COMMIT_LEDGER.tsv
    - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_DS4_STATIC_AUDIT_2026-11-05.md
@@ -47,6 +47,26 @@ Rincian setiap commit, klasifikasi, pesan dan daftar berkas yang berubah tercata
    - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS3_INDEX_GLOBAL_WRITERS.tsv
    - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS4_LEVEL_FEE_CANDIDATE_WINDOWS.tsv
    - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS4_USER_HYPOTHESIS_POINT_TESTS.tsv
+
+4. 0151b29fe94022949f2adb4b8ae559752031d581 — MANUSIA, zuppasoupfifaistimewa-png:
+   - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_COMMIT_LEDGER.tsv
+   - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_DS4_STATIC_AUDIT_2026-11-05.md
+   - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_SUMMARY.txt
+   - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS2_FUN_80102408_RAW_DISASSEMBLY.tsv
+   - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS2_FUN_80102408_RETURN_PATHS.tsv
+   - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS2_FUN_80102408_SUMMARY.txt
+
+5. 48b1b428d69387e81290f684dcca0e228352138d — MANUSIA, zuppasoupfifaistimewa-png:
+   - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_DS4_STATIC_AUDIT_2026-11-05.md
+
+6. 4889f8fba8efedc87394e72f93260893a082c23d — MANUSIA, zuppasoupfifaistimewa-png:
+   - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_COMMIT_LEDGER.tsv
+   - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_DS4_STATIC_AUDIT_2026-11-05.md
+
+7. 72897f45c6401e289102a91c9ad785362a9d9b20 — MANUSIA, zuppasoupfifaistimewa-png:
+   - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_DS4_STATIC_AUDIT_2026-11-05.md
+
+Rincian mesin-readable seluruh baris ada di DS0_COMMIT_LEDGER.tsv. Email author manusia tidak diterbitkan oleh metadata commit yang dipakai untuk audit ini, sehingga field email diberi TIDAK TAHU; klasifikasi manusia/bot didasarkan pada login author/committer GitHub.
 
 ## DS1 — writer 0x80139EFC pada FUN_800D15A8
 
@@ -232,38 +252,14 @@ fee_dasar = 100.
 - DS4 fragmen fee ditemukan, tetapi relasi gameplay-nya dengan jarak level d belum tertaut; H1/H2 tetap hipotesis.
 - Nama fungsi selain target JAL yang pasti adalah heuristik nearest-JAL/prologue; jangan perlakukan seluruhnya sebagai boundary terverifikasi.
 
-## Berkas koreksi yang dibuat setelah snapshot DS0
+## Riwayat koreksi dokumen yang ikut dihitung DS0
 
-Commit koreksi dokumen setelah snapshot 88663e mengubah:
-- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_COMMIT_LEDGER.tsv
-- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_SUMMARY.txt
-- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_DS4_STATIC_AUDIT_2026-11-05.md
-- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS2_FUN_80102408_RAW_DISASSEMBLY.tsv
-- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS2_FUN_80102408_RETURN_PATHS.tsv
-- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS2_FUN_80102408_SUMMARY.txt
+Empat commit manusia setelah publikasi run 88663e dan sebelum snapshot DS0 72897f:
+- 0151b29fe94022949f2adb4b8ae559752031d581 — enam file: DS0 ledger, DS0 summary, audit DS0–DS4, DS2 disassembly, DS2 return paths, DS2 summary.
+- 48b1b428d69387e81290f684dcca0e228352138d — satu file: audit DS0–DS4.
+- 4889f8fba8efedc87394e72f93260893a082c23d — dua file: DS0 ledger dan audit DS0–DS4.
+- 72897f45c6401e289102a91c9ad785362a9d9b20 — satu file: audit DS0–DS4.
 
-Commit koreksi ini berada setelah snapshot dan tidak dihitung pada TOTAL=3 DS0 di atas.
+## Pembaruan ledger final di luar snapshot DS0
 
-
-### Errata sesudah commit koreksi pertama (di luar snapshot DS0)
-
-Commit errata berikutnya mengubah hanya dua berkas:
-- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_COMMIT_LEDGER.tsv
-- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_DS4_STATIC_AUDIT_2026-11-05.md
-
-Errata ini membetulkan path tabel pointer DS1 di ledger dan menambahkan excerpt raw 12-instruksi untuk kedua writer slot pointer. Kedua commit koreksi berada setelah snapshot 88663e dan tidak mengubah hitungan DS0=3.
-
-
-### Koreksi akhir path ledger
-
-Pada validasi permalink, path DS1_TABLE_POINTER_GLOBAL_WRITERS.tsv di kolom changed_files ledger masih tertinggal di direktori lama. Path diperbaiki ke direktori ds0-ds4-raw-run-42023666552/attempt-1. Berkas yang diubah pada commit koreksi path ini:
-- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_COMMIT_LEDGER.tsv
-- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_DS4_STATIC_AUDIT_2026-11-05.md
-
-Koreksi ini pasca-snapshot dan tidak mengubah rentang atau hasil hitung DS0.
-
-
-### Errata akhir DS1 — nilai store bersyarat
-
-Pembacaan ulang branch 0x800D2474 menunjukkan bahwa PC 0x800D2480 hanya terjadi bila byte lbu sama dengan 1. Jadi nilai store pada jalur tersebut adalah 1; yang belum diketahui adalah isi byte tabel untuk indeks-indeks lain dan apakah jalur store itu tercapai pada runtime. Berkas yang diubah pada errata akhir ini:
-- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_DS4_STATIC_AUDIT_2026-11-05.md
+Commit yang memperbarui DS0_COMMIT_LEDGER.tsv, DS0_SUMMARY.txt, dan laporan ini berada setelah snapshot 72897f. Commit itu tidak dihitung dalam TOTAL=7 di atas; snapshot tetap eksplisit agar hitungan tidak self-referential.
