@@ -1,0 +1,42 @@
+DN2 — H6 HYBRID READ-ONLY LIVE TILE ↔ DK1 RESOURCE CROSS-CHECK
+STATUS=TUNTAS
+K=K5 untuk keterulangan runtime H6 hybrid; bukan klaim run TARGET-PURE
+WORKFLOW=ba3-h6-tile-resource-runtime
+JOB=ba3-h6-economy-runtime
+JOB_ID=125191389694
+RUN_ID=41419506538
+SOURCE_SHA=7413d48a7eec7be9d97782a5d8b02400b4b83a57
+EXIT_CODE=0
+H6_SHA256=d57b626100d1023e8f63ec2c7d559bffcfd152453b1affc36032c1d642ee3475
+IDENTITY=target checkpoint base plus CONTROL top-level protobuf SPU field 6; H6 HYBRID, NOT TARGET-PURE
+INPUT=NONE; no gameplay input, no RAM poke, no setter call; RAM snapshots read-only
+LAUNCHES=2 independent H6 restores; frames=180,360
+TIMEOUT_PER_LAUNCH_SECONDS=900
+LAUNCH_1_WALL_SECONDS=145.836
+LAUNCH_1_WRAPPER_EXIT=0
+LAUNCH_1_EMULATOR_EXIT=0
+LAUNCH_2_WALL_SECONDS=144.682
+LAUNCH_2_WRAPPER_EXIT=0
+LAUNCH_2_EMULATOR_EXIT=0
+TIMEOUT_RESULT=NEITHER_LAUNCH_TIMED_OUT
+MODE_U32_AT_0x80070734=0 on all 4 snapshots
+STATE_U8_AT_0x8007073C=0 on all 4 snapshots
+SELECTOR_U8_AT_0x80070CD0=0 on all 4 snapshots
+RESOURCE_ID=0x276 (630)
+TILE_ARRAY_POINTER_SLOT=0x8013EA84
+TILE_ARRAY_POINTER=0x8013B818
+TILE_COUNT_SLOT=0x8013EAC8
+TILE_COUNT=22 on all 4 snapshots
+TILE_RECORD_STRIDE=0x124
+LIVE_TILE_FIELDS=halfwords +0x10,+0x12,+0x14,+0x16,+0x18
+DK1_RESOURCE=0x276; expected records=22; loader-mapped plausible X/LV rows=22/22; resource SHA256=12c1a6ff1870f5c6fe33723beef14d93009b509d70caa882c5c6e8de8535e0c8
+CROSSCHECK=88/88 tile-snapshot records matched; each record matched 5/5 LV fields (440/440 scalar values)
+PER_SNAPSHOT=launch1/frame180 22/22; launch1/frame360 22/22; launch2/frame180 22/22; launch2/frame360 22/22
+RAM_FRAME180_SHA256=5167f48febe55bacd61088286b5a900b32bc95a1efb899225a429e33924609b7 (equal across launches; matches CG3 RAM180_REFERENCE)
+RAM_FRAME360_SHA256=4d002df6902a6de6aa0724b4284da8decb1725cf693fd1ed80ce0132c45a7907 (equal across launches; matches CG3 RAM360_REFERENCE)
+MEMCARD_SHA256_BEFORE=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5 on each launch
+MEMCARD_SHA256_AFTER=ac0dbcb89e54bcddf7c698fb6fe52cb0ca71977dba2d28e521d6ed556c7a11b5 on each launch
+MEMCARD=unchanged in both launches
+COMPARISON_SOURCE=existing BA3 run 41419506538; no new runtime workflow was launched
+INTERPRETATION=selected resource record values are copied into the live 22-tile table without observed changes for this H6 snapshot; does not prove every game mode/selector or a universal LV generation formula
+TEXT_OUTPUT_ONLY=YES
