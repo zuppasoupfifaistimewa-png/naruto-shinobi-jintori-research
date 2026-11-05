@@ -1,0 +1,9 @@
+STATUS=TUNTAS
+TARGET=0x80139EFC
+CONFIRMED_RAW_STORE_CANDIDATES=39
+DARI_TILE_1A=0
+COMPUTED=20
+CLEAR=7
+LAIN=12
+METHOD=aligned raw MIPS words in verified MAIN_EXE text mapping and Entry 1 slice; direct and propagated register constants including GP if initialized.
+LIMIT=indirect/dynamic aliases and code-data distinction in Entry 1 are not fully resolved; zero candidates is not proof of no writer.

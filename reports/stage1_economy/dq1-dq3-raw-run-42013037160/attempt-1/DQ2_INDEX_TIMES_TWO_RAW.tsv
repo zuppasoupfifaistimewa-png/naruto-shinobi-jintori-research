@@ -1,0 +1,2 @@
+pc	function	instruction	hex	note
+0x800ECB9C	FUN_800ec574 (known target)	sll $v0, $v0, 1	40 10 02 00	sll by 1 is consistent with 2-byte index scaling; origin of idx is not independently proven here.

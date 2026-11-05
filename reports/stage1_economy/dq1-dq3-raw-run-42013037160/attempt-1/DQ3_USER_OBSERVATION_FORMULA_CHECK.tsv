@@ -1,0 +1,5 @@
+transition	d	fee_base_X120	observed_user_hypothesis	fee_times_2_pow_d_prediction	match
+LV1->LV2	1	100	100	200	TIDAK_COCOK
+LV1->LV3	2	100	400	400	COCOK
+LV1->LV4	3	100	800	800	COCOK
+LV1->LV5	4	100	1600	1600	COCOK
