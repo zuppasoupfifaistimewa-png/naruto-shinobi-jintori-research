@@ -10,7 +10,7 @@ on:
       - "tools/psx_rng_resource_scan.py"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ghidra-psx-exe-static-analysis
@@ -574,6 +574,32 @@ jobs:
           (out_dir/"DN1_WHOLE_CENSUS_SUMMARY.txt").write_text("\n".join(summary)+"\n",encoding="utf-8")
           print("\n".join(summary))
           PY
+      - name: Finalize and commit DN1 text-only destination audit
+        shell: bash
+        env:
+          GITHUB_TOKEN: \${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 tools/ghidra/FinalizeDN1WriterAudit.py \
+            "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv" \
+            "$RUNNER_TEMP/ghidra-output/DN1_UNRESOLVED_WRITER_INSTRUCTIONS_2026-11-05.tsv" \
+            "$GITHUB_WORKSPACE"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            reports/stage1_economy/DN1_GHIDRA_RAW_WRITER_WINDOWS_2026-11-05.tsv \
+            reports/stage1_economy/DN1_WRITER_DESTINATION_AUDIT_2026-11-05.tsv \
+            reports/stage1_economy/DN1_LOADER_COPY_WRITERS_2026-11-05.tsv \
+            reports/stage1_economy/DN1_WHOLE_CENSUS_SUMMARY_2026-11-05.txt \
+            reports/stage1_economy/DN1_WRITER_DESTINATION_AUDIT_2026-11-05.md \
+            reports/stage1_economy/DN1_GHIDRA_ACTIONS_RUN_SUMMARY_2026-11-05.txt
+          if git diff --cached --quiet; then
+            echo "DN1 text report unchanged; no commit needed."
+          else
+            git commit -m "DN1: publish resolved 272-PC destination audit [skip ci]"
+            git push origin HEAD:main
+          fi
+
       - name: Upload text-only Ghidra results
         if: always()
         uses: actions/upload-artifact@v4
