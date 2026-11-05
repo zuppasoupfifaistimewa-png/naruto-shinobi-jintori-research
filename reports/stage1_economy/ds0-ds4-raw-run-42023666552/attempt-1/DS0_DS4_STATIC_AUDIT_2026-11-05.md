@@ -252,3 +252,12 @@ Commit errata berikutnya mengubah hanya dua berkas:
 - reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_DS4_STATIC_AUDIT_2026-11-05.md
 
 Errata ini membetulkan path tabel pointer DS1 di ledger dan menambahkan excerpt raw 12-instruksi untuk kedua writer slot pointer. Kedua commit koreksi berada setelah snapshot 88663e dan tidak mengubah hitungan DS0=3.
+
+
+### Koreksi akhir path ledger
+
+Pada validasi permalink, path DS1_TABLE_POINTER_GLOBAL_WRITERS.tsv di kolom changed_files ledger masih tertinggal di direktori lama. Path diperbaiki ke direktori ds0-ds4-raw-run-42023666552/attempt-1. Berkas yang diubah pada commit koreksi path ini:
+- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_COMMIT_LEDGER.tsv
+- reports/stage1_economy/ds0-ds4-raw-run-42023666552/attempt-1/DS0_DS4_STATIC_AUDIT_2026-11-05.md
+
+Koreksi ini pasca-snapshot dan tidak mengubah rentang atau hasil hitung DS0.
