@@ -55,14 +55,29 @@ public class ExportDN1WriterWindows extends GhidraScript {
     private String mnemonic(Instruction ins) {
         return ins == null ? "" : ins.getMnemonicString().toLowerCase(Locale.ROOT);
     }
+    private boolean hasExplicitRegisterDestination(Instruction ins) {
+        if (ins == null) return false;
+        String asm = ins.toString().trim();
+        if (STORE.matcher(asm).matches()) return false;
+        String m = ins.getMnemonicString().toLowerCase(Locale.ROOT);
+        while (m.startsWith("_")) m = m.substring(1);
+        if (m.equals("nop") || m.equals("j") || m.equals("jal") || m.equals("jr") ||
+            m.equals("jalr") || m.equals("bal") || m.equals("syscall") || m.equals("break") ||
+            m.equals("mult") || m.equals("multu") || m.equals("div") || m.equals("divu") ||
+            m.startsWith("beq") || m.startsWith("bne") || m.startsWith("bgez") ||
+            m.startsWith("bgtz") || m.startsWith("blez") || m.startsWith("bltz") ||
+            m.startsWith("bc1")) return false;
+        return true;
+    }
+
     private String defCandidate(Instruction center, String reg) {
         if (center == null || reg == null || reg.isEmpty() || reg.equals("zero")) return "";
         Instruction p = center.getPrevious();
         for (int n=0; n<12 && p!=null; n++, p=p.getPrevious()) {
+            if (!hasExplicitRegisterDestination(p)) continue;
             String asm=p.toString().trim();
             String[] split=asm.split("\\s+",2);
             if (split.length<2) continue;
-            String m=split[0].toLowerCase(Locale.ROOT);
             String dst=split[1].split(",",2)[0].trim();
             if (dst.equals(reg)) return p.getAddress()+" "+asm;
         }
@@ -70,7 +85,7 @@ public class ExportDN1WriterWindows extends GhidraScript {
     }
     private String valueOrigin(String reg, String def) {
         if ("zero".equals(reg)) return "KONSTANTA_NOL";
-        if (def == null || def.isEmpty()) return "TIDAK_TAHU — tidak ada definisi register di 12 instruksi sebelumnya";
+        if (def == null || def.isEmpty()) return "TIDAK_TAHU — tidak ada instruksi penulis register dalam jendela 12 instruksi; mungkin argumen masuk, register tersimpan, atau nilai balik call";
         String asm=def.substring(def.indexOf(' ')+1).trim();
         String m=asm.split("\\s+",2)[0].toLowerCase(Locale.ROOT);
         if (m.startsWith("lbu") || m.startsWith("lb") || m.startsWith("lhu") ||
