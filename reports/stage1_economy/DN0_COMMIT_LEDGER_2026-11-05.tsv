@@ -48,3 +48,5 @@ df1995715259339fa06091de1425ce1f40d62526	MANUSIA	zuppasoupfifaistimewa-png	zuppa
 df1995715259339fa06091de1425ce1f40d62526	MANUSIA	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa-png	Record verified DN1 Actions job ID	reports/stage1_economy/DN1_WRITER_DESTINATION_AUDIT_2026-11-05.md
 0056979e910d7f435ec52f001d110579ecbbc0ad	MANUSIA	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa-png	Update DN0 commit ledger through DN1 destination audit	reports/stage1_economy/DN0_COMMIT_LEDGER_2026-11-05.tsv
 0056979e910d7f435ec52f001d110579ecbbc0ad	MANUSIA	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa-png	Update DN0 commit ledger through DN1 destination audit	reports/stage1_economy/DN0_COMMIT_LEDGER_REPORT_2026-11-05.md
+78a293ac95de956960bc9b5212fbf98f7b62a557	MANUSIA	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa-png	Include current HEAD in DN0 commit ledger	reports/stage1_economy/DN0_COMMIT_LEDGER_2026-11-05.tsv
+087e0e9a91d50c824352fa0ab0d823a7cf471858	MANUSIA	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa-png	Refresh DN0 report through current pre-refresh HEAD	reports/stage1_economy/DN0_COMMIT_LEDGER_REPORT_2026-11-05.md
