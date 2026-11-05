@@ -28,6 +28,8 @@ jobs:
       GHIDRA_CACHE_DIR: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
       EXPECTED_EXE_SHA256: "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569"
       EXPECTED_EXE_BYTES: "385024"
+      ENTRY1_STATIC_BASE: "0x800AD450"
+      ENTRY1_LENGTH: "0x919BC"
     steps:
       - name: Checkout research repository
         uses: actions/checkout@v4
@@ -349,7 +351,7 @@ jobs:
           } > "$out/analysis-result.txt"
           echo "Ghidra analysis succeeded; exported $count function rows."
 
-      - name: Extract and statically analyze DATA.BIN resource entry 1
+      - name: Extract and analyze DATA.BIN Entry 1 at buffer base 0x800AD450
         shell: bash
         run: |
           set -euo pipefail
@@ -358,229 +360,213 @@ jobs:
           resource="$RUNNER_TEMP/ghidra-input/DATA_BIN_ENTRY_0001.bin"
           python3 - "$databin" "$resource" <<'PY'
           from pathlib import Path
-          import hashlib
-          import sys
-
+          import hashlib, sys
           source, destination = map(Path, sys.argv[1:3])
-          offset = 0x10BB000
-          size = 596412
           data = source.read_bytes()
           if len(data) != 66015232:
               raise SystemExit(f"Unexpected DATA.BIN size: {len(data)}")
           if hashlib.sha256(data).hexdigest() != "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822":
-              raise SystemExit("DATA.BIN SHA-256 mismatch; refusing to extract resource.")
-          entry = data[offset:offset + size]
+              raise SystemExit("DATA.BIN SHA-256 mismatch; refusing Entry 1 extraction")
+          offset, size = 0x10BB000, 596412
+          entry = data[offset:offset+size]
           if len(entry) != size:
-              raise SystemExit(f"Unexpected resource slice length: {len(entry)}")
+              raise SystemExit(f"Unexpected Entry 1 length: {len(entry)}")
+          digest = hashlib.sha256(entry).hexdigest()
+          if digest != "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a":
+              raise SystemExit(f"Entry 1 SHA-256 mismatch: {digest}")
           destination.write_bytes(entry)
-          print(f"resource_index=1")
-          print(f"file_offset=0x{offset:X}")
-          print(f"bytes={len(entry)}")
-          print(f"sha256={hashlib.sha256(entry).hexdigest()}")
+          print(f"resource=DATA.BIN Entry 1; file_offset=0x{offset:X}; bytes={len(entry)}; sha256={digest}")
           PY
 
           headless="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
           if [[ -z "$headless" || ! -x "$headless" ]]; then
-            echo "::error::Ghidra headless launcher unavailable for overlay survey."
+            echo "::error::Ghidra headless launcher unavailable."
             exit 1
           fi
-          project="$RUNNER_TEMP/ghidra-overlay-project"
+          project="$RUNNER_TEMP/ghidra-entry1-correct-base-project"
           mkdir -p "$project"
-          {
-            echo "resource=DATA.BIN entry index 1"
-            echo "file_offset=0x10BB000"
-            echo "bytes=596412 (0x919BC)"
-            echo "input_sha256=$(sha256sum "$resource" | awk '{print $1}')"
-            echo "hypothetical_load_address=0x800D0000"
-            echo "load_address_status=STATIC_HYPOTHESIS_NOT_RUNTIME_VALIDATED"
-            echo "main_game_or_emulator_executed=no"
-            echo "resource_binary_uploaded_as_artifact=no"
-          } > "$out/data-bin-entry1-validation.txt"
           set +e
-          "$headless" "$project" DATA_BIN_entry_0001             -import "$resource"             -loader BinaryLoader             -loader-baseAddr 0x800D0000             -loader-length 0x919BC             -loader-blockName DATA_BIN_ENTRY_0001             -processor "MIPS:LE:32:default"             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra"             -preScript PrepareOverlayResource.java             -postScript ExportFunctionIndex.java "$out/data-bin-entry1-functions.tsv"             -postScript ExportOverlaySurvey.java "$out/data-bin-entry1-overlay-survey.txt" -postScript ExportDN1WriterWindows.java "$out/dn1-entry1-writer-instructions.tsv" "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv"             -postScript ExportTargetCallers.java "$out/data-bin-entry1-rng-callers.txt" 0x80035D78 0x80035DA8             -analysisTimeoutPerFile 1800             -max-cpu 2             -deleteProject > "$out/overlay-ghidra-headless.log" 2>&1
+          "$headless" "$project" DATA_BIN_entry_0001_correct_base \
+            -import "$resource" \
+            -loader BinaryLoader \
+            -loader-baseAddr "$ENTRY1_STATIC_BASE" \
+            -loader-length "$ENTRY1_LENGTH" \
+            -loader-blockName DATA_BIN_ENTRY_0001 \
+            -processor "MIPS:LE:32:default" \
+            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -postScript ExportDN1WriterWindows.java "$out/dn1-entry1-writer-instructions.tsv" "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv" \
+            -analysisTimeoutPerFile 1800 \
+            -max-cpu 2 \
+            -deleteProject > "$out/entry1-correct-base-ghidra.log" 2>&1
           status=$?
           set -e
           if [[ "$status" -ne 0 ]]; then
-            echo "status=FAILED" > "$out/data-bin-entry1-analysis-result.txt"
-            echo "exit_code=$status" >> "$out/data-bin-entry1-analysis-result.txt"
-            tail -n 100 "$out/overlay-ghidra-headless.log" || true
+            echo "STATUS=FAILED" > "$out/DN1_GHIDRA_RUN_SUMMARY.txt"
+            echo "JOB=analyze-main-exe" >> "$out/DN1_GHIDRA_RUN_SUMMARY.txt"
+            echo "RUN_ID=$GITHUB_RUN_ID" >> "$out/DN1_GHIDRA_RUN_SUMMARY.txt"
+            echo "SOURCE_SHA=$GITHUB_SHA" >> "$out/DN1_GHIDRA_RUN_SUMMARY.txt"
+            echo "ENTRY1_BASE=$ENTRY1_STATIC_BASE" >> "$out/DN1_GHIDRA_RUN_SUMMARY.txt"
+            echo "EXIT_CODE=$status" >> "$out/DN1_GHIDRA_RUN_SUMMARY.txt"
+            tail -n 100 "$out/entry1-correct-base-ghidra.log" || true
             exit "$status"
           fi
-          if [[ ! -s "$out/data-bin-entry1-functions.tsv" || ! -s "$out/data-bin-entry1-overlay-survey.txt" || ! -s "$out/data-bin-entry1-rng-callers.txt" ]]; then
-            echo "status=FAILED; missing or empty text-only survey output" > "$out/data-bin-entry1-analysis-result.txt"
-            echo "::error::Overlay analysis outputs missing or empty."
+          if [[ ! -s "$out/dn1-entry1-writer-instructions.tsv" ]]; then
+            echo "::error::DN1 Entry 1 instruction export is missing or empty."
             exit 1
           fi
-          count="$(awk 'END { if (NR > 1) print NR - 1; else print 0 }' "$out/data-bin-entry1-functions.tsv")"
-          {
-            echo "status=SUCCESS"
-            echo "resource=DATA.BIN entry index 1"
-            echo "resource_sha256=$(sha256sum "$resource" | awk '{print $1}')"
-            echo "resource_bytes=596412"
-            echo "hypothetical_load_address=0x800D0000"
-            echo "function_rows=$count"
-            echo "interpretation=static candidate mapping only; runtime loader and entry point not yet proven"
-            echo "resource_binary_uploaded_as_artifact=no"
-          } > "$out/data-bin-entry1-analysis-result.txt"
-          echo "Static overlay survey exported $count function rows."
+          echo "Entry 1 writer windows exported at $ENTRY1_STATIC_BASE."
 
-      - name: Extract and analyze DATA.BIN entry 0 for external helper
+      - name: Verify and summarize all 272 DN1 writer PCs
         shell: bash
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/ghidra-output"
-          databin="$RUNNER_TEMP/ghidra-input/DATA.BIN"
-          resource="$RUNNER_TEMP/ghidra-input/DATA_BIN_ENTRY_0000.bin"
-          python3 - "$databin" "$resource" "$out/data-bin-entry0-validation.txt" <<'PY'
-          from pathlib import Path
-          import hashlib
-          import sys
-          source, destination, report = map(Path, sys.argv[1:4])
-          data = source.read_bytes()
-          expected = "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822"
-          if len(data) != 66015232 or hashlib.sha256(data).hexdigest() != expected:
-              raise SystemExit("DATA.BIN identity check failed; refusing to extract entry 0")
-          offset, size = 0x5F800, 110536
-          entry = data[offset:offset+size]
-          if len(entry) != size:
-              raise SystemExit(f"Unexpected entry 0 length: {len(entry)}")
-          destination.write_bytes(entry)
-          report.write_text("\n".join([
-              "resource=DATA.BIN entry index 0", f"file_offset=0x{offset:X}",
-              f"bytes={len(entry)}", f"sha256={hashlib.sha256(entry).hexdigest()}",
-              "hypothetical_load_address=0x800AD000",
-              "load_address_status=STATIC_HYPOTHESIS_NOT_RUNTIME_VALIDATED",
-              "reason=static instruction windows for the DN1 tile-level writer census",
-              "resource_binary_uploaded_as_artifact=no", ""
-          ]), encoding="utf-8")
-          print(report.read_text(), end="")
-          PY
-
-          headless="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
-          if [[ -z "$headless" || ! -x "$headless" ]]; then
-            echo "::error::Ghidra headless launcher unavailable for DATA.BIN entry 0."
-            exit 1
-          fi
-          project="$RUNNER_TEMP/ghidra-entry0-project"
-          mkdir -p "$project"
-          set +e
-          "$headless" "$project" DATA_BIN_entry_0000 \
-            -import "$resource" \
-            -loader BinaryLoader \
-            -loader-baseAddr 0x800AD000 \
-            -loader-length 0x1AF08 \
-            -loader-blockName DATA_BIN_ENTRY_0000 \
-            -processor "MIPS:LE:32:default" \
-            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
-            -postScript ExportFunctionIndex.java "$out/data-bin-entry0-functions.tsv" \
-            -postScript ExportDN1WriterWindows.java "$out/dn1-entry0-writer-instructions.tsv" "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv" \
-            -analysisTimeoutPerFile 1800 \
-            -max-cpu 2 \
-            -deleteProject > "$out/entry0-ghidra-headless.log" 2>&1
-          status=$?
-          set -e
-          if [[ "$status" -ne 0 ]]; then
-            echo "status=FAILED" > "$out/data-bin-entry0-analysis-result.txt"
-            echo "exit_code=$status" >> "$out/data-bin-entry0-analysis-result.txt"
-            tail -n 100 "$out/entry0-ghidra-headless.log" || true
-            exit "$status"
-          fi
-          if [[ ! -s "$out/data-bin-entry0-functions.tsv" || ! -s "$out/dn1-entry0-writer-instructions.tsv" ]]; then
-            echo "::error::Entry 0 function index or DN1 writer instruction export is missing."
-            exit 1
-          fi
-          rows="$(awk 'END { if (NR > 1) print NR - 1; else print 0 }' "$out/data-bin-entry0-functions.tsv")"
-          {
-            echo "status=SUCCESS"
-            echo "resource=DATA.BIN entry index 0"
-            echo "resource_sha256=$(sha256sum "$resource" | awk '{print $1}')"
-            echo "resource_bytes=110536"
-            echo "hypothetical_load_address=0x800AD000"
-            echo "function_rows=$rows"
-            echo "dn1_writer_rows=$(awk 'END { if (NR > 1) print NR - 1; else print 0 }' "$out/dn1-entry0-writer-instructions.tsv")"
-            echo "entry0_helper_decompilation=SKIPPED_OUT_OF_SCOPE"
-            echo "runtime_mapping=NOT_VALIDATED"
-            echo "resource_binary_uploaded_as_artifact=no"
-          } > "$out/data-bin-entry0-analysis-result.txt"
-          echo "Entry 0 DN1 writer windows exported; $rows functions indexed."
-
-          # Merge PC-specific exports from the main EXE and the two existing overlay analyses.
-          python3 - "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv" "$out" <<'PY'
+          python3 - "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv" "$out/dn1-entry1-writer-instructions.tsv" "$out" "$ENTRY1_STATIC_BASE" "$ENTRY1_LENGTH" <<'PY'
           from pathlib import Path
           import csv, sys
-          census_path, out_dir = Path(sys.argv[1]), Path(sys.argv[2])
+          from collections import Counter
+          census_path, export_path, out_dir = map(Path, sys.argv[1:4])
+          base, length = int(sys.argv[4],0), int(sys.argv[5],0)
+          end = base + length
+
           lines = census_path.read_text(encoding="utf-8").splitlines()
-          header_i = next(i for i, line in enumerate(lines) if line.startswith("field_offset\tpc\t"))
-          src_header = lines[header_i].split("\t")
+          hi = next(i for i, line in enumerate(lines) if line.startswith("field_offset\tpc\t"))
+          source_header = lines[hi].split("\t")
           targets = []
-          for line in lines[header_i+1:]:
-              if not line.strip(): continue
+          for line in lines[hi+1:]:
+              if not line.strip():
+                  continue
               cells = line.split("\t")
-              if len(cells) < 14: continue
-              ctx, old_label, alias = cells[13], cells[11], cells[12]
-              wanted = ctx == "NO_STORE_IN_REVIEWED_EXPORT" or (old_label == "LAIN" and alias == "BASE_ALIAS_UNPROVEN" and ctx != "NO_STORE_IN_REVIEWED_EXPORT")
-              if wanted: targets.append(dict(zip(src_header, cells)))
-          output_names = ("dn1-main-exe-writer-instructions.tsv", "dn1-entry0-writer-instructions.tsv", "dn1-entry1-writer-instructions.tsv")
-          merged = {}
-          header = None
-          sources = {}
-          for name in output_names:
-              path = out_dir / name
-              if not path.is_file(): continue
-              with path.open(encoding="utf-8", newline="") as f:
-                  reader = csv.DictReader(f, delimiter="\t")
-                  if header is None: header = reader.fieldnames
-                  for row in reader:
-                      pc = row.get("pc", "").upper()
-                      if pc and pc not in merged:
-                          merged[pc] = row
-                          sources[pc] = name
-          if header is None:
-              header = ["field_offset","pc","function_entry","function_name","instruction","instruction_bytes","base_register","value_register","previous_instruction_count","previous_12_plus_store","value_origin","nearest_value_def_candidate","nearest_base_def_candidate","label","alias_status","context_status","raw_excerpt_hex_max64","reason","analysis_program"]
-          for t in targets:
-              pc = t["pc"].upper()
-              if pc in merged: continue
+              if len(cells) < len(source_header):
+                  continue
+              item = dict(zip(source_header,cells))
+              ctx, label, alias = item["context_status"], item["label"], item["alias_status"]
+              wanted = (ctx == "NO_STORE_IN_REVIEWED_EXPORT" or
+                        (label == "LAIN" and alias == "BASE_ALIAS_UNPROVEN" and ctx != "NO_STORE_IN_REVIEWED_EXPORT"))
+              if wanted:
+                  targets.append(item)
+
+          target_pcs = [x["pc"].upper() for x in targets]
+          if len(target_pcs) != 272 or len(set(target_pcs)) != 272:
+              raise SystemExit(f"DN1 expected 272 unique PCs, got rows={len(target_pcs)} unique={len(set(target_pcs))}")
+
+          with export_path.open(encoding="utf-8", newline="") as f:
+              reader = csv.DictReader(f, delimiter="\t")
+              header = reader.fieldnames
+              exported_rows = list(reader)
+          if not header:
+              raise SystemExit("DN1 output has no header")
+          exported = {}
+          duplicates = []
+          for row in exported_rows:
+              pc = row.get("pc","").upper()
+              if pc in exported:
+                  duplicates.append(pc)
+              else:
+                  exported[pc] = row
+          if duplicates:
+              raise SystemExit(f"DN1 export has duplicate PCs: {duplicates[:10]}")
+
+          expected_inside = {}
+          outside = {}
+          for x in targets:
+              pc = x["pc"].upper()
+              value = int(x["pc"],0)
+              (expected_inside if base <= value < end else outside)[pc] = x
+
+          unexpected = sorted(set(exported)-set(target_pcs))
+          if unexpected:
+              raise SystemExit(f"DN1 export contains non-target PCs: {unexpected[:10]}")
+
+          merged = dict(exported)
+          for pc, x in outside.items():
               merged[pc] = {
-                  "field_offset": t["field_offset"], "pc": t["pc"],
-                  "function_entry": t["function_entry"], "function_name": t["function_name"],
-                  "instruction": "TIDAK_TERSEDIA", "instruction_bytes": "TIDAK_TERSEDIA",
-                  "base_register": "TIDAK_TAHU", "value_register": "TIDAK_TAHU",
-                  "previous_instruction_count": "0", "previous_12_plus_store": "TIDAK_TERSEDIA",
-                  "value_origin": "TIDAK TAHU — PC tidak berada di dalam memory image yang dianalisis",
-                  "nearest_value_def_candidate": "TIDAK_TAHU", "nearest_base_def_candidate": "TIDAK_TAHU",
-                  "label": "LAIN", "alias_status": "NOT_MAPPED_TO_KNOWN_STATIC_IMAGE",
-                  "context_status": "OUTSIDE_MAIN_EXE_ENTRY0_ENTRY1_IMAGES",
-                  "raw_excerpt_hex_max64": "TIDAK_TERSEDIA",
-                  "reason": "TIDAK TAHU — PC berada di luar MAIN EXE, DATA.BIN Entry 0, dan DATA.BIN Entry 1 yang dipetakan workflow; image/owner kode belum diketahui",
-                  "analysis_program": "NONE"
+                  "field_offset":x["field_offset"], "pc":x["pc"],
+                  "function_entry":x["function_entry"], "function_name":x["function_name"],
+                  "instruction":"TIDAK_TERSEDIA", "instruction_bytes":"TIDAK_TERSEDIA",
+                  "base_register":"TIDAK_TAHU", "value_register":"TIDAK_TAHU",
+                  "seeded_instruction_count":"0", "previous_instruction_count":"0",
+                  "previous_12_plus_store":"TIDAK_TERSEDIA",
+                  "value_origin":"TIDAK TAHU — PC berada di luar rentang image Entry 1",
+                  "nearest_value_def_candidate":"TIDAK_TAHU", "nearest_base_def_candidate":"TIDAK_TAHU",
+                  "label":"LAIN", "alias_status":"NOT_MAPPED_TO_ENTRY1_IMAGE",
+                  "context_status":"OUTSIDE_ENTRY1_STATIC_IMAGE",
+                  "raw_excerpt_hex_max64":"TIDAK_TERSEDIA",
+                  "reason":"TIDAK TAHU — PC berada di luar rentang Entry 1 pada base statis yang diuji",
+                  "analysis_program":"NONE"
               }
-          rows = [merged[t["pc"].upper()] for t in targets]
-          if len(rows) != len(targets) or len({r["pc"].upper() for r in rows}) != len(rows):
-              raise SystemExit("DN1_MERGE_DUPLICATE_OR_ROW_COUNT_ERROR")
-          output = out_dir / "DN1_UNRESOLVED_WRITER_INSTRUCTIONS_2026-11-05.tsv"
-          with output.open("w", encoding="utf-8", newline="") as f:
-              writer = csv.DictWriter(f, fieldnames=header, delimiter="\t", lineterminator="\n", extrasaction="ignore")
+
+          missing_inside = sorted(set(expected_inside)-set(exported))
+          for pc in missing_inside:
+              x = expected_inside[pc]
+              merged[pc] = {
+                  "field_offset":x["field_offset"], "pc":x["pc"],
+                  "function_entry":x["function_entry"], "function_name":x["function_name"],
+                  "instruction":"TIDAK_TERSEDIA", "instruction_bytes":"TIDAK_TERSEDIA",
+                  "base_register":"TIDAK_TAHU", "value_register":"TIDAK_TAHU",
+                  "seeded_instruction_count":"0", "previous_instruction_count":"0",
+                  "previous_12_plus_store":"TIDAK_TERSEDIA",
+                  "value_origin":"TIDAK TAHU — PC berada dalam Entry 1 tetapi tidak dikembalikan oleh exporter",
+                  "nearest_value_def_candidate":"TIDAK_TAHU", "nearest_base_def_candidate":"TIDAK_TAHU",
+                  "label":"LAIN", "alias_status":"ENTRY1_EXPORT_MISSING",
+                  "context_status":"PC_IN_ENTRY1_EXPORT_MISSING",
+                  "raw_excerpt_hex_max64":"TIDAK_TERSEDIA",
+                  "reason":"TIDAK TAHU — PC ada di dalam image Entry 1 tetapi tidak muncul pada TSV Ghidra",
+                  "analysis_program":"NONE"
+              }
+
+          rows = [merged[pc] for pc in target_pcs]
+          if len(rows) != 272 or len({r["pc"].upper() for r in rows}) != 272:
+              raise SystemExit("DN1 merged output does not contain exactly 272 unique PCs")
+
+          final_path = out_dir / "DN1_UNRESOLVED_WRITER_INSTRUCTIONS_2026-11-05.tsv"
+          with final_path.open("w",encoding="utf-8",newline="") as f:
+              writer=csv.DictWriter(f,fieldnames=header,delimiter="\t",lineterminator="\n",extrasaction="ignore")
               writer.writeheader()
               writer.writerows(rows)
-          from collections import Counter
-          label_counts = Counter(r["label"] for r in rows)
-          context_counts = Counter(r["context_status"] for r in rows)
-          mapped_counts = Counter(r.get("analysis_program", "NONE") for r in rows)
+
+          labels = Counter(r.get("label","") for r in rows)
+          contexts = Counter(r.get("context_status","") for r in rows)
+          fields = Counter(r.get("field_offset","") for r in rows)
+          previous12 = sum(r.get("previous_instruction_count")=="12" for r in rows)
+          decoded = sum(r.get("instruction") not in ("","TIDAK_TERSEDIA") for r in rows)
+          stores = sum(r.get("context_status","").startswith("STORE_DECODED") for r in rows)
+          nonstores = sum(r.get("context_status")=="PC_NOT_STORE" for r in rows)
+          notdecoded = sum(r.get("context_status")=="PC_NOT_DECODED" for r in rows)
+          entry1_in = len(expected_inside)
           summary = [
-              "STATUS=EXPORT_COMPLETE_WITH_EXPLICIT_UNMAPPED_ROWS",
-              f"TARGET_UNIQUE_PC={len(rows)}",
-              "TARGET_FROM_CENSUS=272",
-              f"MERGED_UNIQUE_PC={len({r['pc'].upper() for r in rows})}",
-              f"LABEL_COUNTS={dict(label_counts)}",
-              f"CONTEXT_COUNTS={dict(context_counts)}",
-              f"ANALYSIS_PROGRAM_COUNTS={dict(mapped_counts)}",
-              "COMPUTED_CONFIRMED=0 (base alias and full value provenance require further proof)",
-              "UNMAPPED_PC_REASON=each PC outside available MAIN EXE/Entry0/Entry1 static memory images receives a separate explicit TIDAK TAHU row"
+              "STATUS=EXPORT_COVERAGE_COMPLETE; SEMANTIC_RESOLUTION_PARTIAL",
+              "RUN_ID="+str(__import__("os").environ.get("GITHUB_RUN_ID","TIDAK_TAHU")),
+              "JOB=analyze-main-exe",
+              "SOURCE_SHA="+str(__import__("os").environ.get("GITHUB_SHA","TIDAK_TAHU")),
+              "EXIT_CODE=0",
+              "ENTRY1_STATIC_BASE=0x%08X"%base,
+              "ENTRY1_END_EXCLUSIVE=0x%08X"%end,
+              "ENTRY1_LENGTH=0x%X"%length,
+              f"TARGET_UNIQUE_PC={len(target_pcs)}",
+              f"EXPORT_ROWS={len(exported)}",
+              f"TARGETS_IN_ENTRY1_RANGE={entry1_in}",
+              f"TARGETS_OUTSIDE_ENTRY1_RANGE={len(outside)}",
+              f"TARGETS_MISSING_FROM_GHIDRA_EXPORT={len(missing_inside)}",
+              f"DECODED_INSTRUCTION_AT_PC={decoded}/272",
+              f"PREVIOUS_12_AVAILABLE={previous12}/272",
+              f"STORE_DECODED={stores}",
+              f"PC_NOT_STORE={nonstores}",
+              f"PC_NOT_DECODED={notdecoded}",
+              "FIELD_COUNTS="+str(dict(fields)),
+              "LABEL_COUNTS="+str(dict(labels)),
+              "CONTEXT_COUNTS="+str(dict(contexts)),
+              "COMPUTED_CONFIRMED=0 (base register and destination must be proven as tile array)",
+              "LOADER_COPY_CONFIRMED=10 (prior FUN_800F7ADC export, copy from resource +0x0A..+0x13)",
+              "HT=LV values are copied from resource; supported by loader-copy instructions, but exclusivity not proven",
+              "HC=a computed writer to EA84+index*0x124 exists; no PC in this output is yet a fully proven computed writer",
+              "HT_FALSIFIER=one non-loader write with proven tile-array base and computed level source",
+              "HC_FALSIFIER=complete destination audit shows every LV field write comes only from resource-copy path",
+              "RUNTIME_LIMIT=H6 DN2 matches resource 0x276 in two launches; it does not prove all selectors/modes"
           ]
-          (out_dir / "DN1_WHOLE_CENSUS_SUMMARY.txt").write_text("\n".join(summary)+"\n", encoding="utf-8")
+          (out_dir/"DN1_WHOLE_CENSUS_SUMMARY.txt").write_text("\n".join(summary)+"\n",encoding="utf-8")
           print("\n".join(summary))
           PY
-
       - name: Upload text-only Ghidra results
         if: always()
         uses: actions/upload-artifact@v4
