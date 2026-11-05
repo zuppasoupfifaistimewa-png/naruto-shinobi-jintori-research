@@ -5,7 +5,7 @@ from pathlib import Path
 from capstone import Cs, CS_ARCH_MIPS, CS_MODE_MIPS32, CS_MODE_LITTLE_ENDIAN
 
 EXE_PATH, DATA_PATH, OUT = map(Path, sys.argv[1:4])
-BASELINE=os.environ.get("DT0_BASELINE","2f72b3a2807f1022048083d6d07ad527adaa7cf7")
+BASELINE="7040cd08a79107a45de6571e875de4fadb165c8a"
 AUDIT_HEAD=os.environ.get("DT0_AUDIT_HEAD", subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip())
 ENTRY_BASE=0x800AD450
 ENTRY_OFF=0x10BB000
@@ -548,3 +548,7 @@ f"Second path returns through jr at 0x80102430; v0 before slot trace: {v0_before
 ""
 ]
 (OUT/"DT0_DT4_STATIC_AUDIT.md").write_text("\n".join(lines),encoding="utf-8")
+
+
+# DV0-DV4 raw-byte static audit extension (same verified private inputs; text output only).
+subprocess.run([sys.executable, str(Path(__file__).with_name("RunDV0DV4Raw.py")), str(EXE_PATH), str(DATA_PATH), str(OUT)], check=True)
