@@ -23,7 +23,7 @@ Pada pembekuan sebelum publikasi hasil ini, `main` tepat di baseline. Karena bas
 |---|---|---|---|
 | d6bf7d1723f2b1bb22041eb94d2526254840c185 | MANUSIA: zuppasoupfifaistimewa-png | Complete DO0-DO3 static economy audit and reconcile DN1 | reports/stage1_economy/DN1_DK1_X_LV_TABLE_2026-11-05.tsv; reports/stage1_economy/DN1_DK1_X_LV_TABLE_SUMMARY_2026-11-05.txt; reports/stage1_economy/DN1_VALUE_ORIGIN_UNKNOWN_REASONS_2026-11-05.tsv; reports/stage1_economy/DN1_WHOLE_CENSUS_SUMMARY_2026-11-05.txt; reports/stage1_economy/DO0_DO3_STATIC_AUDIT_2026-11-05.md; reports/stage1_economy/DO2_H6_ALL12_5FIELD_MATCH_2026-11-05.tsv |
 
-Commit publikasi berkas DP1–DP3 merupakan commit anak sesudah snapshot beku ini. Metadata dan jumlah ledger setelah publikasi disajikan di laporan chat agar SHA commit anak tidak ditebak.
+Commit publikasi berkas DP1–DP3 dan koreksi jendela konteks adalah commit anak sesudah snapshot beku ini. Metadata dan jumlah ledger setelah publikasi disajikan di laporan chat agar SHA commit anak tidak ditebak.
 
 ## DP1 — census penulis manager +0x2EE dan action +0x2EB
 
@@ -53,7 +53,7 @@ Untuk +0x2EB, census writer export memiliki 65 PC: 59 berstatus `PARTICIPANT_GLO
 
 **Catatan pengali/shift/loop atas fee:** pada `FUN_800ec574`, PC 0x800ECAA0 menjalankan `mult a0,v0` terhadap nilai yang baru dibaca dari global `-0x6104`; `mflo` di 0x800ECAA4 dan store 0x800ECAA8 menaruh hasil ke `manager+0x4F0`. Store pending di 0x800ECBB8 kemudian membaca ulang `u16 -0x6104`, menegasikannya, dan menulis ke +0x2EE. Karena tujuan hasil multiply adalah +0x4F0 dan hubungan semantiknya dengan pending debit tidak dibuktikan, ini ditandai **KANDIDAT PENGALI SUMBER YANG SAMA**, bukan formula biaya d>=2. Shift `sll v0,0x1` sebelum load halfword di 0x800ECB9C adalah pembentukan indeks alamat; bukan bukti mengalikan nilai fee. Tidak ada loop yang terbukti mengulang debit fee pada writer +0x2EE ini.
 
-Batas census: seluruh 65 writer +0x2EB tersedia dari pemindaian 149 fungsi; 6 alias base masih tidak terurai. Untuk +0x2EE, 5 store ditemukan di export manager/function yang tersimpan, tetapi tidak tersedia export raw memory-operand all-function khusus displacement +0x2EE. Karena itu cakupan universal +0x2EE tetap SEBAGIAN. PC 0x800ECBB8 hanya menyimpan 8 instruksi sebelumnya pada export yang tersedia; empat instruksi pra-store lain TIDAK TERSEDIA dan tidak direka.
+Batas census: seluruh 65 writer +0x2EB tersedia dari pemindaian 149 fungsi; 6 alias base masih tidak terurai. Untuk +0x2EE, 5 store ditemukan di export manager/function yang tersimpan, tetapi tidak tersedia export raw memory-operand all-function khusus displacement +0x2EE. Karena itu cakupan universal +0x2EE tetap SEBAGIAN. PC 0x800ECBB8 hanya menyimpan 8 instruksi pra-store yang berurutan dalam export yang tersedia. Empat instruksi pra-store lebih awal (PC 0x800ECB88–0x800ECB94) TIDAK TERSEDIA; instruksi dari fragmen xref lain tidak digabung sebagai konteks palsu.
 
 ## DP2 — FUN_800D9570, event return 3, dan PC 0x800DAA84–88
 
