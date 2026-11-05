@@ -1,0 +1,8 @@
+STATUS=SUCCESS
+JOB=analyze-main-exe
+JOB_ID=TIDAK_TAHU
+RUN_ID=41975036156
+SOURCE_SHA=d7d96b02a802b37e353f99e16a9216b3902cd8bb
+EXIT_CODE=0
+RESULT=272/272 instruction windows resolved; 245 stack, 5 stack-derived, 22 auxiliary EA74/0x90; 0 tile EA84/0x124
+ARTIFACT_CONTENTS=text-only
