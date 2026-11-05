@@ -2,6 +2,7 @@ DELAY_SLOT_PC=0x80102434
 DELAY_SLOT_BYTES=FF FF 02 24
 DELAY_SLOT_INSTRUCTION=addiu $v0, $zero, -1
 RETURN_PATH_2_PC=0x80102430
-V0_BEFORE_DELAY_SLOT=0x80102424 lw $v0, 0xea8($v1) [A8 0E 62 8C]; basis=0x8010240C lw $v1, -0x5dd4($v0) [2C A2 43 8C]; basis=0x80102408 lui $v0, 0x8014 [14 80 02 3C]
-V0_AFTER_DELAY_SLOT=0x80102424 lw $v0, 0xea8($v1) [A8 0E 62 8C]; basis=0x8010240C lw $v1, -0x5dd4($v0) [2C A2 43 8C]; basis=0x80102408 lui $v0, 0x8014 [14 80 02 3C]
-RETURN_VALUE_AT_JR=TIDAK TAHU: nilai v0 setelah delay slot bergantung pada register/data yang tidak konstan secara statis
+PATH2_GUARD=beqz $v0 at 0x8010241C; taken when the word loaded from manager+0x4 is zero
+V0_BEFORE_DELAY_SLOT=TIDAK TAHU: loaded from manager+0xea8 at 0x80102424
+V0_AFTER_DELAY_SLOT=0xFFFFFFFF (0x80102434 writes -1 to v0)
+RETURN_VALUE_AT_JR=0xFFFFFFFF (K4: directly determined by addiu $v0,$zero,-1 in the jr delay slot)
