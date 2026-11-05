@@ -1,2 +1,3 @@
 commit_sha	author_type	author	message	changed_files
 6fa859e1f9cfdad7b968cd0df36f19a7fe50a5c1	MANUSIA	zuppasoupfifaistimewa-png	Record DL0-DL3 static audit and corrected commit ledger	reports/stage1_economy/DL0_DL1_DL2_DL3_AUDIT_2026-11-05.md
+eee699b1180c0befd8c2e7b4fd97f2bc95b9c929	MANUSIA	zuppasoupfifaistimewa-png	Add DM0-DM3 static LV writer and selector audit	reports/stage1_economy/DM0_COMMIT_LEDGER_2026-11-05.tsv;reports/stage1_economy/DM0_DM1_DM2_DM3_STATIC_AUDIT_2026-11-05.md;reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv;reports/stage1_economy/DM2_LV3_LV5_NEW_HYPOTHESES_2026-11-05.tsv;reports/stage1_economy/DM3_SELECTOR_WRITERS_2026-11-05.tsv
