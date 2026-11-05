@@ -303,6 +303,7 @@ jobs:
               0x8002D838 0x8002DEC4 0x8002DF30 0x8002D00C 0x8002D5C0 \
               0x8002CF9C 0x8002DE60 0x8002DDEC 0x80035AA8 0x80035B08 \
             -postScript ExportNumericLiteralReferences.java "$out/main-numeric-instruction-literals.tsv" \
+            -postScript ExportDN1WriterWindows.java "$out/dn1-unresolved-writer-instructions.tsv" "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv" \
             -analysisTimeoutPerFile 1800 \
             -max-cpu 2 \
             -deleteProject > "$out/ghidra-headless.log" 2>&1
