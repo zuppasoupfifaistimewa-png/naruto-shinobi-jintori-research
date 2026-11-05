@@ -1,4 +1,4 @@
-X	record_count	resource_count	resource_ids	LV1	LV2	LV2_formula_10xceil_11X_over_100	LV2_formula_match	LV3	LV4	LV5	unique_value_count_LV1_to_LV5
+X	record_count	resource_count	resource_ids	LV1	LV2	LV3	LV4	LV5	LV2_formula_10xceil_11X_over_100	LV2_formula_match	unique_value_count_LV1_to_LV5
 0	167	12	0x276;0x277;0x278;0x279;0x27A;0x27B;0x27C;0x27E;0x27F;0x285;0x286;0x287	0	0	0	0	0	0	YES	1/1/1/1/1
 60	23	7	0x276;0x277;0x278;0x279;0x27A;0x27C;0x27F	35	70	135	265	530	70	YES	1/1/1/1/1
 100	34	9	0x276;0x277;0x278;0x279;0x27A;0x27B;0x27C;0x27F;0x285	50	110	220	440	880	110	YES	1/1/1/1/1

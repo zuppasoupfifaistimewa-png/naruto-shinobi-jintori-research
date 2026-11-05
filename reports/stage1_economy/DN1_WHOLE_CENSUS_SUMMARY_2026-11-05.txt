@@ -24,7 +24,10 @@ ORIGINAL_326_CANDIDATE_CENSUS=326
 ORIGINAL_CENSUS_LABELS=316_LAIN,10_LOADER_COPY,0_COMPUTED
 FIELD_COUNTS={'+0x10': 126, '+0x12': 6, '+0x14': 55, '+0x16': 2, '+0x18': 83}
 BASE_REGISTER_COUNTS={'v1': 10, 'sp': 245, 'v0': 6, 'a1': 8, 'a0': 3}
-VALUE_ORIGIN_TIDAK_TAHU_WITHIN_LOCAL_WINDOW=0
+VALUE_ORIGIN_TIDAK_TAHU_WITHIN_LOCAL_WINDOW=55
+VALUE_ORIGIN_RESOLVED=217
+VALUE_ORIGIN_TOTAL=272
+VALUE_ORIGIN_UNKNOWN_REASON=no reaching definition for the stored source register within the 12-instruction window; values may be incoming args, callee-saved live registers, call return candidates, or unresolved CFG predecessors
 LV2_FORMULA_MATCH=415/415_DK1_RESOURCE_RECORDS
 LV1_FORMULA=TIDAK_TAHU; X/2 only 200/248 nonzero records
 LV3_LV5_FORMULA=TIDAK_TAHU; H1=15/39, H2=1/39
