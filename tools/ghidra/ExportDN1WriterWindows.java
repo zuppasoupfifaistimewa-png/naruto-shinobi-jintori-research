@@ -106,14 +106,14 @@ public class ExportDN1WriterWindows extends GhidraScript {
         Path parent=output.getParent();
         if (parent!=null) Files.createDirectories(parent);
         int header=-1;
-        for (int i=0;i<input.size();i++) if (input.get(i).startsWith("field_offset\\tpc\\t")) { header=i; break; }
+        for (int i=0;i<input.size();i++) if (input.get(i).startsWith("field_offset\tpc\t")) { header=i; break; }
         if (header<0) throw new IllegalArgumentException("DM1 census header not found");
         StringBuilder out=new StringBuilder();
-        out.append("field_offset\\tpc\\tfunction_entry\\tfunction_name\\tinstruction\\tinstruction_bytes\\tbase_register\\tvalue_register\\tprevious_instruction_count\\tprevious_12_plus_store\\tvalue_origin\\tnearest_value_def_candidate\\tnearest_base_def_candidate\\tlabel\\talias_status\\tcontext_status\\traw_excerpt_hex_max64\\treason\\tanalysis_program\\n");
+        out.append("field_offset\tpc\tfunction_entry\tfunction_name\tinstruction\tinstruction_bytes\tbase_register\tvalue_register\tprevious_instruction_count\tprevious_12_plus_store\tvalue_origin\tnearest_value_def_candidate\tnearest_base_def_candidate\tlabel\talias_status\tcontext_status\traw_excerpt_hex_max64\treason\tanalysis_program\n");
         int target=0, outside=0, decoded=0, stores=0, loader=0, notDecoded=0, notStore=0;
         for (int i=header+1;i<input.size();i++) {
             monitor.checkCancelled();
-            String[] c=input.get(i).split("\\t",-1);
+            String[] c=input.get(i).split("\t",-1);
             if (c.length<14) continue;
             String ctx=c[13], oldLabel=c[11], alias=c[12];
             boolean wanted=ctx.equals("NO_STORE_IN_REVIEWED_EXPORT") ||
@@ -164,18 +164,19 @@ public class ExportDN1WriterWindows extends GhidraScript {
             else { status="STORE_DECODED_DEF_USE_OPEN"; reason="store ter-decode; nilai hanya memiliki nearest-def lokal, base belum dibuktikan EA84 + index*0x124"; }
             String window=dumpWindow(center,previous);
             String raw=excerpt(previous,center);
-            out.append(clean(field)).append('\\t').append(clean(pc)).append('\\t')
-               .append(clean(fEntry)).append('\\t').append(clean(fName)).append('\\t')
-               .append(clean(inst)).append('\\t').append(clean(instBytes)).append('\\t')
-               .append(clean(base)).append('\\t').append(clean(value)).append('\\t')
-               .append(previous.size()).append('\\t').append(clean(window)).append('\\t')
-               .append(clean(origin)).append('\\t').append(clean(vdef)).append('\\t')
-               .append(clean(bdef)).append('\\t').append(label).append('\\t')
-               .append("BASE_ALIAS_UNPROVEN").append('\\t').append(status).append('\\t')
-               .append(clean(raw)).append('\\t').append(clean(reason)).append('\\t').append(clean(currentProgram.getName())).append('\\n');
+            out.append(clean(field)).append('\t').append(clean(pc)).append('\t')
+               .append(clean(fEntry)).append('\t').append(clean(fName)).append('\t')
+               .append(clean(inst)).append('\t').append(clean(instBytes)).append('\t')
+               .append(clean(base)).append('\t').append(clean(value)).append('\t')
+               .append(previous.size()).append('\t').append(clean(window)).append('\t')
+               .append(clean(origin)).append('\t').append(clean(vdef)).append('\t')
+               .append(clean(bdef)).append('\t').append(label).append('\t')
+               .append("BASE_ALIAS_UNPROVEN").append('\t').append(status).append('\t')
+               .append(clean(raw)).append('\t').append(clean(reason)).append('\t').append(clean(currentProgram.getName())).append('\n');
         }
         Files.write(output,out.toString().getBytes(StandardCharsets.UTF_8));
-        println("DN1_TARGET_ROWS_THIS_IMAGE="+target);\n        println("DN1_OUTSIDE_THIS_IMAGE="+outside);
+        println("DN1_TARGET_ROWS_THIS_IMAGE="+target);
+        println("DN1_OUTSIDE_THIS_IMAGE="+outside);
         println("DN1_DECODED_PC="+decoded);
         println("DN1_STORE_DECODED="+stores);
         println("DN1_PC_NOT_STORE="+notStore);
