@@ -1,9 +1,13 @@
 FUNCTION=FUN_80102408
 DIRECT_JAL_CALLERS=25
 REACHABLE_RAW_INSTRUCTIONS=9
+REPORTED_DELAY_SLOT_INSTRUCTIONS=2
 RETURN_PC_COUNT=2
 RETURN_ROWS=2
+RETURN_NUMERIC_VALUES=0
 UNRESOLVED_OR_TAIL_EDGES=0
 CFG_WORKLIST_STEPS=8
 CFG_LIMIT_REACHED=NO
-Nonconstant, call-return, load-derived, or merged $v0 values are TIDAK TAHU.
+RETURN_PC_0x80102428=TIDAK TAHU; load-derived manager data at 0x80102424
+RETURN_PC_0x80102430=TIDAK TAHU; delay-slot bytes at 0x80102434 not persisted
+The original analyzer row 0xFFFFFFFF for return PC 0x80102430 is not independently verifiable from the committed raw excerpt and is conservatively downgraded.
