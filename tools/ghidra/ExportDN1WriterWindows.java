@@ -29,6 +29,23 @@ public class ExportDN1WriterWindows extends GhidraScript {
         }
         return b.toString();
     }
+    // MIPS32 instructions are four bytes. Seed the precise 13-instruction window
+    // so these census PCs do not depend on unrelated Ghidra code roots.
+    private int seedInstructionWindow(Address target) {
+        int seeded = 0;
+        for (int n = 12; n >= 0; n--) {
+            Address p = target.subtract((long)n * 4L);
+            if (!currentProgram.getMemory().contains(p)) continue;
+            if (currentProgram.getListing().getInstructionAt(p) != null) continue;
+            try {
+                if (disassemble(p)) seeded++;
+            } catch (Exception ignored) {
+                // Any unavailable address is counted and explained in the output row.
+            }
+        }
+        return seeded;
+    }
+
     private String[] storeOperands(Instruction ins) {
         if (ins == null) return new String[] {"", ""};
         Matcher m = STORE.matcher(ins.toString().trim());
@@ -109,7 +126,7 @@ public class ExportDN1WriterWindows extends GhidraScript {
         for (int i=0;i<input.size();i++) if (input.get(i).startsWith("field_offset\tpc\t")) { header=i; break; }
         if (header<0) throw new IllegalArgumentException("DM1 census header not found");
         StringBuilder out=new StringBuilder();
-        out.append("field_offset\tpc\tfunction_entry\tfunction_name\tinstruction\tinstruction_bytes\tbase_register\tvalue_register\tprevious_instruction_count\tprevious_12_plus_store\tvalue_origin\tnearest_value_def_candidate\tnearest_base_def_candidate\tlabel\talias_status\tcontext_status\traw_excerpt_hex_max64\treason\tanalysis_program\n");
+        out.append("field_offset\tpc\tfunction_entry\tfunction_name\tinstruction\tinstruction_bytes\tbase_register\tvalue_register\tseeded_instruction_count\tprevious_instruction_count\tprevious_12_plus_store\tvalue_origin\tnearest_value_def_candidate\tnearest_base_def_candidate\tlabel\talias_status\tcontext_status\traw_excerpt_hex_max64\treason\tanalysis_program\n");
         int target=0, outside=0, decoded=0, stores=0, loader=0, notDecoded=0, notStore=0;
         for (int i=header+1;i<input.size();i++) {
             monitor.checkCancelled();
@@ -128,18 +145,18 @@ public class ExportDN1WriterWindows extends GhidraScript {
                 outside++;
                 continue;
             }
-            Instruction center=(a==null)?null:currentProgram.getListing().getInstructionAt(a);
-            Function f=(a==null)?null:currentProgram.getFunctionManager().getFunctionContaining(a);
+            int seededWindowInstructions = seedInstructionWindow(a);
+            Instruction center=currentProgram.getListing().getInstructionAt(a);
+            Function f=currentProgram.getFunctionManager().getFunctionContaining(a);
             String fEntry=f==null?oldEntry:f.getEntryPoint().toString();
             String fName=f==null?oldName:f.getName();
             List<Instruction> previous=new ArrayList<>();
             if (center!=null) {
                 decoded++;
-                Instruction first=center;
-                for (int n=0;n<12 && first.getPrevious()!=null;n++) first=first.getPrevious();
-                for (Instruction p=first;p!=null;p=p.getNext()) {
-                    if (p.getAddress().equals(center.getAddress())) break;
-                    previous.add(p);
+                for (int n=12; n>=1; n--) {
+                    Address pAddress = a.subtract((long)n * 4L);
+                    Instruction p = currentProgram.getListing().getInstructionAt(pAddress);
+                    if (p != null) previous.add(p);
                 }
             } else {
                 notDecoded++;
@@ -159,16 +176,18 @@ public class ExportDN1WriterWindows extends GhidraScript {
             String origin=isStore?valueOrigin(value,vdef):(center==null?"TIDAK_TAHU — alamat tidak ter-decode pada listing":"TIDAK_TAHU — PC kandidat bukan instruksi store");
             String reason;
             String status;
-            if (center==null) { status="PC_NOT_DECODED"; reason="TIDAK TAHU — listing Ghidra tidak memiliki instruksi tepat pada PC"; }
+            if (center==null) { status="PC_NOT_DECODED"; reason="TIDAK TAHU — instruksi tepat pada PC tetap tidak ter-decode setelah seed window"; }
             else if (!isStore) { status="PC_NOT_STORE"; reason="PC census tidak decode menjadi sb/sh/sw/sd; belum membuktikan store field"; }
-            else { status="STORE_DECODED_DEF_USE_OPEN"; reason="store ter-decode; nilai hanya memiliki nearest-def lokal, base belum dibuktikan EA84 + index*0x124"; }
+            else if (previous.size()!=12) { status="STORE_DECODED_WINDOW_PARTIAL"; reason="store ter-decode, tetapi hanya "+previous.size()+"/12 instruksi pra-store tersedia; def-use dan base alias belum tertutup"; }
+            else { status="STORE_DECODED_DEF_USE_OPEN"; reason="store dan 12 instruksi pra-store ter-decode; nilai hanya memiliki nearest-def lokal, base belum dibuktikan EA84 + index*0x124"; }
             String window=dumpWindow(center,previous);
             String raw=excerpt(previous,center);
             out.append(clean(field)).append('\t').append(clean(pc)).append('\t')
                .append(clean(fEntry)).append('\t').append(clean(fName)).append('\t')
                .append(clean(inst)).append('\t').append(clean(instBytes)).append('\t')
                .append(clean(base)).append('\t').append(clean(value)).append('\t')
-               .append(previous.size()).append('\t').append(clean(window)).append('\t')
+               .append(seededWindowInstructions).append('\t').append(previous.size()).append('\t')
+               .append(clean(window)).append('\t')
                .append(clean(origin)).append('\t').append(clean(vdef)).append('\t')
                .append(clean(bdef)).append('\t').append(label).append('\t')
                .append("BASE_ALIAS_UNPROVEN").append('\t').append(status).append('\t')

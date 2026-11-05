@@ -450,7 +450,7 @@ jobs:
               f"bytes={len(entry)}", f"sha256={hashlib.sha256(entry).hexdigest()}",
               "hypothetical_load_address=0x800AD000",
               "load_address_status=STATIC_HYPOTHESIS_NOT_RUNTIME_VALIDATED",
-              "reason=needed to inspect referenced helper 0x800BDBFC",
+              "reason=static instruction windows for the DN1 tile-level writer census",
               "resource_binary_uploaded_as_artifact=no", ""
           ]), encoding="utf-8")
           print(report.read_text(), end="")
@@ -472,12 +472,8 @@ jobs:
             -loader-blockName DATA_BIN_ENTRY_0000 \
             -processor "MIPS:LE:32:default" \
             -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
-            -preScript PrepareEntry0Helper.java \
             -postScript ExportFunctionIndex.java "$out/data-bin-entry0-functions.tsv" \
-            -postScript ExportEntry0Helper.java "$out/data-bin-entry0-helper.txt" \
-            -postScript ExportTargetCallers.java "$out/data-bin-entry0-rng-callers.txt" 0x80035D78 0x80035DA8 \
-             -postScript ExportNumericLiteralReferences.java "$out/data-bin-entry0-numeric-instruction-literals.tsv" \
-             -postScript ExportDN1WriterWindows.java "$out/dn1-entry0-writer-instructions.tsv" "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv" \
+            -postScript ExportDN1WriterWindows.java "$out/dn1-entry0-writer-instructions.tsv" "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv" \
             -analysisTimeoutPerFile 1800 \
             -max-cpu 2 \
             -deleteProject > "$out/entry0-ghidra-headless.log" 2>&1
@@ -489,8 +485,8 @@ jobs:
             tail -n 100 "$out/entry0-ghidra-headless.log" || true
             exit "$status"
           fi
-          if [[ ! -s "$out/data-bin-entry0-functions.tsv" || ! -s "$out/data-bin-entry0-helper.txt" || ! -s "$out/data-bin-entry0-rng-callers.txt" || ! -s "$out/data-bin-entry0-numeric-instruction-literals.tsv" ]]; then
-            echo "::error::Entry 0 function index or helper decompilation is missing."
+          if [[ ! -s "$out/data-bin-entry0-functions.tsv" || ! -s "$out/dn1-entry0-writer-instructions.tsv" ]]; then
+            echo "::error::Entry 0 function index or DN1 writer instruction export is missing."
             exit 1
           fi
           rows="$(awk 'END { if (NR > 1) print NR - 1; else print 0 }' "$out/data-bin-entry0-functions.tsv")"
@@ -501,12 +497,12 @@ jobs:
             echo "resource_bytes=110536"
             echo "hypothetical_load_address=0x800AD000"
             echo "function_rows=$rows"
-            echo "numeric_instruction_literal_rows=$(awk 'END { if (NR > 1) print NR - 1; else print 0 }' "$out/data-bin-entry0-numeric-instruction-literals.tsv")"
-            echo "target_helper=0x800BDBFC"
+            echo "dn1_writer_rows=$(awk 'END { if (NR > 1) print NR - 1; else print 0 }' "$out/dn1-entry0-writer-instructions.tsv")"
+            echo "entry0_helper_decompilation=SKIPPED_OUT_OF_SCOPE"
             echo "runtime_mapping=NOT_VALIDATED"
             echo "resource_binary_uploaded_as_artifact=no"
           } > "$out/data-bin-entry0-analysis-result.txt"
-          echo "Entry 0 helper decompilation completed; $rows functions indexed."
+          echo "Entry 0 DN1 writer windows exported; $rows functions indexed."
 
           # Merge PC-specific exports from the main EXE and the two existing overlay analyses.
           python3 - "$GITHUB_WORKSPACE/reports/stage1_economy/DM1_TILE_LEVEL_WRITER_CENSUS_2026-11-05.tsv" "$out" <<'PY'
