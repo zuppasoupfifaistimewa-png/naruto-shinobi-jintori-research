@@ -1,16 +1,16 @@
 # DN0 — ledger commit sejak baseline
 
-Status: **TUNTAS — K4 (metadata Git terverifikasi)**.
+Status: **TUNTAS — K4 (Git history/diff terverifikasi)**.
 
 Rentang inklusif: `e194391094fbecbcb11564b3290d66b5826e3f7d` s.d. cutoff `5705c32fade9815a0cbdd1f08deee98c233cf8e7`.
 
-- Total commit dalam rentang: **6**
-- Commit manusia: **6**
-- Commit bot: **0**
-- File-level rows dalam TSV: **0** (satu baris per commit per file yang berubah).
+- Total commit: **6**
+- MANUSIA: **6**
+- BOT: **0**
+- Rincian perubahan: **16 baris file-level** dalam TSV, satu baris per berkas per commit.
 
-Klasifikasi memakai identitas author/committer GitHub. Semua enam commit authored dan committed oleh `zuppasoupfifaistimewa-png`; tidak ada `github-actions[bot]` pada rentang tersebut.
+Klasifikasi author dan committer pada seluruh enam commit adalah `zuppasoupfifaistimewa-png`. Tidak ada identitas `github-actions[bot]` pada rentang ini.
 
-**Batas cutoff:** ledger mencakup commit sampai `5705c32fade9815a0cbdd1f08deee98c233cf8e7` inklusif. Commit yang menambahkan/memperbarui ledger ini sendiri tidak dapat dicantumkan di dalam file yang sama; perubahan setelah cutoff akan masuk pada pembaruan ledger berikutnya.
+**Cutoff dan self-reference:** ledger mencakup seluruh commit sampai `5705c32fade9815a0cbdd1f08deee98c233cf8e7` inklusif. Commit publikasi ledger tidak dapat mencantumkan SHA dirinya sendiri; pembaruan ledger berikutnya harus memasukkan commit setelah cutoff ini.
 
-Rujukan awal: `e194391094fbecbcb11564b3290d66b5826e3f7d`.
+Daftar nama berkas bersumber dari diff setiap commit, bukan asumsi nama berdasarkan pesan commit.
