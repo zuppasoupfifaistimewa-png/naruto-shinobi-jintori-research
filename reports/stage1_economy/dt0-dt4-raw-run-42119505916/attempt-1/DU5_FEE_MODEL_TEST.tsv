@@ -1,0 +1,5 @@
+distance_d	fee_dasar_hypothesis	user_observation_hypothesis	H1_fee_dasar_times_2powd	H1_match	H2_lookup_multiplier	H2_predicted_fee	H2_match	H3_user_rule_predicted_fee	H3_match	H1_prediction_other_base	H2_prediction_other_base	H3_prediction_other_base
+1	100	100	200	TIDAK COCOK	1	100	COCOK	100	COCOK	B*2^d	B*1	B if d=1, otherwise B*2^d
+2	100	400	400	COCOK	3	300	TIDAK COCOK	400	COCOK	B*2^d	B*3	B if d=1, otherwise B*2^d
+3	100	800	800	COCOK	6	600	TIDAK COCOK	800	COCOK	B*2^d	B*6	B if d=1, otherwise B*2^d
+4	100	1600	1600	COCOK	10	1000	TIDAK COCOK	1600	COCOK	B*2^d	B*10	B if d=1, otherwise B*2^d

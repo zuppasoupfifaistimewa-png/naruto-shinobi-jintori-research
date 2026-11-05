@@ -1,0 +1,2 @@
+pc	bytes	instruction	base_register	base_at_call_800F3830	base_at_call_800F5D08	reason
+0x800ECA64	FC 9E C3 AC	sw $v1, -0x6104($a2)	a2	TIDAK TAHU	0x00000000	TIDAK TAHU: parameter a2 tidak terbukti 0x80140000

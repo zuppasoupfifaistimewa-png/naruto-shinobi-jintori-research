@@ -1,0 +1,6 @@
+register	first_use_pc	definition_pc	definition_instruction	definition_bytes	origin_trace
+t0	0x800ECA48	0x800EC9FC	lhu $t0, -0x1578($v0)	88 EA 48 94	0x800EC9FC lhu $t0, -0x1578($v0) [88 EA 48 94]; basis=0x800EC9F8 lui $v0, 0x8014 [14 80 02 3C]
+t1	0x800ECA28	0x800EC9F0	lw $t1, -0x157c($v0)	84 EA 49 8C	0x800EC9F0 lw $t1, -0x157c($v0) [84 EA 49 8C]; basis=0x800EC9EC lui $v0, 0x8014 [14 80 02 3C]
+t2	0x800ECA34	0x800EC9F4	addiu $t2, $zero, 5	05 00 0A 24	0x800EC9F4 addiu $t2, $zero, 5 [05 00 0A 24]
+a2	0x800ECA50	0x800ECA00	lui $a2, 0x8014	14 80 06 3C	0x800ECA00 lui $a2, 0x8014 [14 80 06 3C]
+a3	0x800ECA78	0x800ECA08	lw $a3, -0x1538($v0)	C8 EA 47 8C	0x800ECA08 lw $a3, -0x1538($v0) [C8 EA 47 8C]; basis=0x800ECA04 lui $v0, 0x8014 [14 80 02 3C]

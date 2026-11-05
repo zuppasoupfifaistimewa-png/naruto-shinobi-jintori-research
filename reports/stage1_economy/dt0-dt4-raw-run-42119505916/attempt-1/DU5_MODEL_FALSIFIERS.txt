@@ -1,0 +1,5 @@
+STATUS=HYPOTHESIS_TEST_ONLY
+H1=fee_dasar*2^d; another base B predicts B*2^d; falsifier: one controlled distance/base yields a different fee.
+H2=predeclared lookup multipliers {1:1,2:3,3:6,4:10}; another base B predicts B*M[d]; falsifier: any controlled point disagrees with M[d]. It is a competing testable candidate, not ROM evidence and not copied from observations.
+H3=user rule: d=1 gives fee_dasar; d>=2 gives fee_dasar*2^d; another base B predicts B at d=1 and B*2^d at d>=2; falsifier: one controlled point violates this piecewise rule.
+All four d=1..4 points are tested. fee_dasar=100 is an input hypothesis, not a fitted parameter. No model is fitted from fewer than three points.

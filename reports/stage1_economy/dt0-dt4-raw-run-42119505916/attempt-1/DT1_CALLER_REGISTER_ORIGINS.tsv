@@ -1,0 +1,11 @@
+call_pc	register	last_definition_pc	last_definition	definition_bytes	origin_trace	constant_at_call
+0x800F3830	t0	TIDAK TAHU	TIDAK TAHU: belum ada definisi di caller sejak awal fungsi	—	TIDAK TAHU: register masuk/tidak ada definisi statis dalam batas fungsi	TIDAK TAHU
+0x800F3830	t1	TIDAK TAHU	TIDAK TAHU: belum ada definisi di caller sejak awal fungsi	—	TIDAK TAHU: register masuk/tidak ada definisi statis dalam batas fungsi	TIDAK TAHU
+0x800F3830	t2	TIDAK TAHU	TIDAK TAHU: belum ada definisi di caller sejak awal fungsi	—	TIDAK TAHU: register masuk/tidak ada definisi statis dalam batas fungsi	TIDAK TAHU
+0x800F3830	a2	TIDAK TAHU	TIDAK TAHU: belum ada definisi di caller sejak awal fungsi	—	TIDAK TAHU: register masuk/tidak ada definisi statis dalam batas fungsi	TIDAK TAHU
+0x800F3830	a3	TIDAK TAHU	TIDAK TAHU: belum ada definisi di caller sejak awal fungsi	—	TIDAK TAHU: register masuk/tidak ada definisi statis dalam batas fungsi	TIDAK TAHU
+0x800F5D08	t0	0x800F51E8	lh $t0, -0x1532($v0)	CE EA 48 84	0x800F51E8 lh $t0, -0x1532($v0) [CE EA 48 84]; basis=0x800F51E4 lui $v0, 0x8014 [14 80 02 3C]	0x00000000
+0x800F5D08	t1	0x800F4FCC	lui $t1, 0x8014	14 80 09 3C	0x800F4FCC lui $t1, 0x8014 [14 80 09 3C]	0x80140000
+0x800F5D08	t2	0x800F4FF8	lw $t2, -0x14f8($v0)	08 EB 4A 8C	0x800F4FF8 lw $t2, -0x14f8($v0) [08 EB 4A 8C]; basis=0x800F4FF4 lui $v0, 0x8014 [14 80 02 3C]	0x00000000
+0x800F5D08	a2	0x800F5264	addu $a2, $a0, $v0	21 30 82 00	0x800F5264 addu $a2, $a0, $v0 [21 30 82 00]; src=0x800F5248 lw $a0, -0x158c($v0) [74 EA 44 8C]; basis=0x800F5244 lui $v0, 0x8014 [14 80 02 3C],0x800F5260 sll $v0, $v0, 4 [00 11 02 00]	0x00000000
+0x800F5D08	a3	0x800F51A4	lui $a3, 0x8014	14 80 07 3C	0x800F51A4 lui $a3, 0x8014 [14 80 07 3C]	0x80140000
