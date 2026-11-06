@@ -1,0 +1,63 @@
+resource_id	selector	byte_value	count	source_offset	reason
+0x276	0x000	0x00	1	0x011DE001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x276	0x000	0x01	2	0x011DE001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x276	0x000	0x02	2	0x011DE001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x276	0x000	0x04	17	0x011DE001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x277	0x001	0x00	1	0x01232801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x277	0x001	0x01	2	0x01232801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x277	0x001	0x02	3	0x01232801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x277	0x001	0x03	2	0x01232801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x277	0x001	0x04	25	0x01232801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x278	0x002	0x00	1	0x01287001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x278	0x002	0x01	2	0x01287001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x278	0x002	0x02	3	0x01287001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x278	0x002	0x03	2	0x01287001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x278	0x002	0x04	25	0x01287001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x279	0x003	0x00	1	0x012D7801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x279	0x003	0x01	3	0x012D7801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x279	0x003	0x02	3	0x012D7801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x279	0x003	0x03	3	0x012D7801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x279	0x003	0x04	24	0x012D7801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27A	0x004	0x00	1	0x0132C001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27A	0x004	0x01	4	0x0132C001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27A	0x004	0x02	3	0x0132C001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27A	0x004	0x04	25	0x0132C001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27B	0x005	0x00	1	0x0137F801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27B	0x005	0x01	4	0x0137F801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27B	0x005	0x02	2	0x0137F801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27B	0x005	0x03	4	0x0137F801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27B	0x005	0x04	32	0x0137F801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27C	0x006	0x00	1	0x013D4001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27C	0x006	0x01	3	0x013D4001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27C	0x006	0x02	4	0x013D4001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27C	0x006	0x03	2	0x013D4001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27C	0x006	0x04	28	0x013D4001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27E	0x008	0x00	1	0x01474001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27E	0x008	0x01	2	0x01474001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27E	0x008	0x02	2	0x01474001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27E	0x008	0x04	17	0x01474001	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27F	0x009	0x00	1	0x014C8801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27F	0x009	0x01	3	0x014C8801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27F	0x009	0x02	4	0x014C8801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27F	0x009	0x03	2	0x014C8801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x27F	0x009	0x04	28	0x014C8801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x285	0x00F	0x00	1	0x016C2801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x285	0x00F	0x01	4	0x016C2801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x285	0x00F	0x02	2	0x016C2801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x285	0x00F	0x03	4	0x016C2801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x285	0x00F	0x04	27	0x016C2801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x285	0x00F	0x08	5	0x016C2801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x286	0x010	0x00	2	0x01715801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x286	0x010	0x15	32	0x01715801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x286	0x010	0x16	2	0x01715801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x287	0x011	0x00	2	0x01768801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x287	0x011	0x15	36	0x01768801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+0x287	0x011	0x16	2	0x01768801	histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay
+TOTAL	ALL	0x00	14	MULTIPLE	gabungan 12 resource yang lolos verifikasi extent
+TOTAL	ALL	0x01	29	MULTIPLE	gabungan 12 resource yang lolos verifikasi extent
+TOTAL	ALL	0x02	28	MULTIPLE	gabungan 12 resource yang lolos verifikasi extent
+TOTAL	ALL	0x03	19	MULTIPLE	gabungan 12 resource yang lolos verifikasi extent
+TOTAL	ALL	0x04	248	MULTIPLE	gabungan 12 resource yang lolos verifikasi extent
+TOTAL	ALL	0x08	5	MULTIPLE	gabungan 12 resource yang lolos verifikasi extent
+TOTAL	ALL	0x15	68	MULTIPLE	gabungan 12 resource yang lolos verifikasi extent
+TOTAL	ALL	0x16	4	MULTIPLE	gabungan 12 resource yang lolos verifikasi extent
