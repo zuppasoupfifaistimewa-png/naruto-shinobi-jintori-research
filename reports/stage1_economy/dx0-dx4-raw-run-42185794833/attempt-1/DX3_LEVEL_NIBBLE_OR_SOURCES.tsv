@@ -1,0 +1,3 @@
+seed	store_pc	store_instruction	store_base_origin	store_value_origin	or_pc	or_bytes	or_instruction	or_rs_origin	or_rt_origin	shift_sources	source	reason
+D15A8	0x800D15B8	sw $s2, 0x20($sp)	OTHER_OR_UNRESOLVED	$s2 masuk/dinamis	NONE_IN_BOUNDED_SLICE	—	TIDAK TERDETEKSI	—	—	—	backward def-chain from store at +0x20	no OR/ORI node found in bounded local dataflow slice
+EB434	0x800EB43C	sw $s2, 0x20($sp)	OTHER_OR_UNRESOLVED	$s2 masuk/dinamis	NONE_IN_BOUNDED_SLICE	—	TIDAK TERDETEKSI	—	—	—	backward def-chain from store at +0x20	no OR/ORI node found in bounded local dataflow slice

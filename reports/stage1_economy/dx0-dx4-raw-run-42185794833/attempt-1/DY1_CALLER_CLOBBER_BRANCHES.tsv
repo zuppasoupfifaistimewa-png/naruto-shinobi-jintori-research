@@ -1,0 +1,4 @@
+pc	file_offset	bytes	instruction	v0_origin_after_call	required_value	reason	v0_origin_trace	input_v1_origin
+0x800EC814	0x010FA3C4	4C 05 40 14	bnez $v0, 0x800edd48	return JAL 0x8010CDF0	$v0==0	direct JAL return in v0; bnez must fall through	return JAL 0x8010CDF0	—
+0x800EC874	0x010FA424	D4 04 40 14	bnez $v0, 0x800edbc8	return JAL 0x8010D0F0	$v0==0	direct JAL return in v0; bnez must fall through	return JAL 0x8010D0F0	—
+0x800EC890	0x010FA440	33 01 40 10	beqz $v0, 0x800ecd60	v0=sltiu(v1,0x10); v1=return JAL 0x800154E0	JAL return $v1 < 0x10 unsigned; resulting $v0!=0	JAL return is copied to v1, then sltiu at 0x800EC88C writes v0; beqz must fall through	0x800EC88C sltiu $v0, $v1, 0x10 <- 0x800EC888 move $v1, $v0 <- return JAL 0x800154E0 , $zero	0x800EC888 move $v1, $v0 <- return JAL 0x800154E0 , $zero

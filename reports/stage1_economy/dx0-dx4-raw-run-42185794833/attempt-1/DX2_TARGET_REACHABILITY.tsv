@@ -1,0 +1,10 @@
+target_pc	reachable_from_800EC574	function_bound_end_guess	source	reason
+0x800ECAD0	YES	0x800EDD68	intra-function CFG rooted at 0x800EC574	branch delay slots explicit; JR RA/indirect JR terminates; no assumed JR fall-through
+0x800ECB4C	YES	0x800EDD68	intra-function CFG rooted at 0x800EC574	branch delay slots explicit; JR RA/indirect JR terminates; no assumed JR fall-through
+0x800ECB88	YES	0x800EDD68	intra-function CFG rooted at 0x800EC574	branch delay slots explicit; JR RA/indirect JR terminates; no assumed JR fall-through
+0x800ECBA8	YES	0x800EDD68	intra-function CFG rooted at 0x800EC574	branch delay slots explicit; JR RA/indirect JR terminates; no assumed JR fall-through
+0x800ECBAC	YES	0x800EDD68	intra-function CFG rooted at 0x800EC574	branch delay slots explicit; JR RA/indirect JR terminates; no assumed JR fall-through
+0x800ECBB0	YES	0x800EDD68	intra-function CFG rooted at 0x800EC574	branch delay slots explicit; JR RA/indirect JR terminates; no assumed JR fall-through
+0x800ECBB4	YES	0x800EDD68	intra-function CFG rooted at 0x800EC574	branch delay slots explicit; JR RA/indirect JR terminates; no assumed JR fall-through
+0x800ECBB8	YES	0x800EDD68	intra-function CFG rooted at 0x800EC574	branch delay slots explicit; JR RA/indirect JR terminates; no assumed JR fall-through
+0x800ECBBC	YES	0x800EDD68	intra-function CFG rooted at 0x800EC574	branch delay slots explicit; JR RA/indirect JR terminates; no assumed JR fall-through
