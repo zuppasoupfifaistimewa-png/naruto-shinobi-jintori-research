@@ -119,7 +119,7 @@ def trace_reg(reg,before,lo,code=ins,depth=0,seen=None):
     elif d["op"]==0 and d["fn"] not in (8,9,16,18,12,13):
         s+="; src="+",".join(trace_reg(r,d["pc"],lo,code,depth+1,seen.copy()) for r in (d["rs"],d["rt"]))
     return s
-def pointer_from_slot(reg,before,lo,depth=0,seen=None):
+def pointer_from_slot(reg,before,lo,slot_global=SLOT_GLOBAL,depth=0,seen=None):
     if seen is None:seen=set()
     if depth>8 or (reg,before) in seen:return False
     seen.add((reg,before))
@@ -129,12 +129,12 @@ def pointer_from_slot(reg,before,lo,depth=0,seen=None):
     op,rs,rt,fn=d["op"],d["rs"],d["rt"],d["fn"]
     if op in (0x23,0x20,0x21,0x24,0x25):
         base=const_before(rs,d["pc"],lo)
-        if base is not None and ((base+d["imm"])&0xffffffff)==SLOT_GLOBAL:
+        if base is not None and ((base+d["imm"])&0xffffffff)==slot_global:
             return True
     if op in (8,9):
-        return pointer_from_slot(rs,d["pc"],lo,depth+1,seen.copy())
+        return pointer_from_slot(rs,d["pc"],lo,slot_global,depth+1,seen.copy())
     if op==0 and fn in (0x21,0x23,0x25,0x24,0x26):
-        return pointer_from_slot(rs,d["pc"],lo,depth+1,seen.copy()) or pointer_from_slot(rt,d["pc"],lo,depth+1,seen.copy())
+        return pointer_from_slot(rs,d["pc"],lo,slot_global,depth+1,seen.copy()) or pointer_from_slot(rt,d["pc"],lo,slot_global,depth+1,seen.copy())
     return False
 def branch_target(i):
     op=i["op"]; pc=i["pc"]
@@ -314,7 +314,7 @@ for call in helper_calls:
 write_tsv("DW2_HELPER_CALL_CONTEXT.tsv",helper_call_rows,
  ["call_pc","pc","file_offset","bytes","instruction","role","source","reason"])
 
-# Decode FUN_8001552C from the executable. Stop after the first return and its delay slot.
+# Decode FUN_8001552C and account for MIPS JR delay-slot return semantics.
 helper_start=0x8001552C
 helper_raw=[]; helper_ret=[]
 for pc in range(helper_start,helper_start+0x400,4):
@@ -322,23 +322,30 @@ for pc in range(helper_start,helper_start+0x400,4):
     if not i: break
     helper_raw.append({"pc":h32(pc),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
        "instruction":i["text"],"source":"SLPS_035.53 at EXE base 0x80010000",
-       "reason":"complete sequential helper dump through first jr ra and delay slot"})
+       "reason":"raw helper instruction through JR RA and its executed delay slot"})
     if i["op"]==0 and i["fn"]==8 and i["rs"]==31:
         d=last_def(2,pc,helper_start,exe)
-        ret_origin=(f"{h32(d['pc'])} {d['text']} [{hx(d['bytes'])}]" if d else "TIDAK TAHU: v0 has no local definition")
-        helper_ret.append({"return_pc":h32(pc),"return_bytes":hx(i["bytes"]),
-          "delay_slot_pc":h32(pc+4),"v0_last_definition":ret_origin,
-          "interpretation":"return value is current v0; exact semantic value depends on this def/use chain"})
+        ret_origin=(f"{h32(d['pc'])} {d['text']} [{hx(d['bytes'])}]" if d else "TIDAK TAHU: v0 has no definition before JR")
         delay=exe.get(pc+4)
+        delay_text=delay["text"] if delay else "TIDAK TAHU"
+        delay_bytes=hx(delay["bytes"]) if delay else "TIDAK TAHU"
+        returned=const_before(2,pc+8,helper_start,exe)
+        helper_ret.append({"return_pc":h32(pc),"return_bytes":hx(i["bytes"]),
+          "v0_before_delay_slot":ret_origin,"delay_slot_pc":h32(pc+4),
+          "delay_slot_bytes":delay_bytes,"delay_slot_instruction":delay_text,
+          "v0_after_delay_slot":h32(returned) if returned is not None else "TIDAK TAHU",
+          "interpretation":"MIPS executes the JR delay slot before return; v0_after_delay_slot is the actual returned value"})
         if delay:
             helper_raw.append({"pc":h32(pc+4),"file_offset":h32(delay["fileoff"]),"bytes":hx(delay["bytes"]),
              "instruction":delay["text"],"source":"SLPS_035.53 at EXE base 0x80010000",
-             "reason":"jr ra delay-slot instruction"})
+             "reason":"JR RA delay slot executes before control returns"})
         break
 write_tsv("DW2_FUN_8001552C_RAW.tsv",helper_raw,
  ["pc","file_offset","bytes","instruction","source","reason"])
 write_tsv("DW2_FUN_8001552C_RETURN.tsv",helper_ret,
- ["return_pc","return_bytes","delay_slot_pc","v0_last_definition","interpretation"])
+ ["return_pc","return_bytes","v0_before_delay_slot","delay_slot_pc","delay_slot_bytes",
+  "delay_slot_instruction","v0_after_delay_slot","interpretation"])
+
 
 # Explicitly retain the corrected file offsets for the two byte+0x00 checks.
 corrected=[]
@@ -377,9 +384,9 @@ read=ins.get(0x800F5CB8)
 base_trace=trace_reg(read["rs"],read["pc"],function_at(read["pc"])) if read else "TIDAK TAHU"
 index_origin=trace_reg(2,0x800F5CB0,function_at(0x800F5CB0))
 write_tsv("DW3_SELECTOR_INDEX_ORIGIN.tsv",index_regs+[
- {"pc":"SUMMARY","file_offset":"—","bytes":"—","instruction":"selector address = loaded pointer from global 0x8013EA84 + (index * 4)",
+ {"pc":"SUMMARY","file_offset":"—","bytes":"—","instruction":"lbu at 0x800F5CB8 reads tile-record+0x00 from base pointer 0x8013EA84 indexed by (tile-from-0x8013EA74 field+0x1F * 0x124)",
   "source_register":"$v0","source_origin":index_origin,
-  "reason":"lbu at 0x800F5CB8 reads byte at effective address; base-register origin: "+base_trace}],
+  "reason":"0x800F5C94 first reads current tile+0x1F; scale sequence 0x800F5CA0..0x800F5CB0 multiplies that byte by 0x124; 0x800F5CB4 adds pointer from 0x8013EA84; 0x800F5CB8 reads byte at +0x00; base-register origin: "+base_trace}],
  ["pc","file_offset","bytes","instruction","source_register","source_origin","reason"])
 
 # Exact references to pointer slot 0x8013EA84 and all store candidates through a register
@@ -406,6 +413,98 @@ write_tsv("DW3_SLOT_GLOBAL_XREFS.tsv",slot_refs,
  ["pc","file_offset","bytes","instruction","access","source","reason"])
 write_tsv("DW3_SELECTOR_FIELD_WRITER_CANDIDATES.tsv",slot_stores,
  ["pc","file_offset","bytes","instruction","function_start","base_pointer_origin","value_origin","source","reason"])
+
+# Isolate stores to selected-tile byte +0x00 through the 0x8013EA84 pointer slot.
+tile_byte0_writers=[]
+tile_byte0_reads=[]
+tile_plus1f_access=[]
+slot_globals={0x8013EA74,0x8013EA84,0x8013EA88}
+slot_xrefs=[]
+for i in sorted(ins.values(),key=lambda x:x["pc"]):
+    op=i["op"]; fs=function_at(i["pc"])
+    isload=op in (0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27)
+    isstore=op in (0x28,0x29,0x2A,0x2B,0x2E)
+    if isload or isstore:
+        base=const_before(i["rs"],i["pc"],fs)
+        ea=((base+i["imm"])&0xffffffff) if base is not None else None
+        if ea in slot_globals:
+            slot_xrefs.append({"pc":h32(i["pc"]),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
+              "instruction":i["text"],"slot_global":h32(ea),"access":"WRITE" if isstore else "READ",
+              "source":"absolute effective-address reconstruction",
+              "reason":"resolved global address = base register + signed displacement"})
+    if isstore and i["imm"]==0 and pointer_from_slot(i["rs"],i["pc"],fs,slot_global=0x8013EA84):
+        tile_byte0_writers.append({"pc":h32(i["pc"]),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
+          "instruction":i["text"],"function_start":h32(fs),"base_pointer_origin":trace_reg(i["rs"],i["pc"],fs),
+          "value_origin":trace_reg(i["rt"],i["pc"],fs),"source":"base-register def chain includes load through slot 0x8013EA84",
+          "reason":"candidate write to selected-array record +0x00; array-object alias/runtime target index is not fully resolved"})
+    if isload and i["imm"]==0 and pointer_from_slot(i["rs"],i["pc"],fs,slot_global=0x8013EA84):
+        tile_byte0_reads.append({"pc":h32(i["pc"]),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
+          "instruction":i["text"],"function_start":h32(fs),"base_pointer_origin":trace_reg(i["rs"],i["pc"],fs),
+          "source":"base-register def chain includes load through slot 0x8013EA84",
+          "reason":"candidate read from selected-array record +0x00"})
+    if (isload or isstore) and i["imm"]==0x1f and pointer_from_slot(i["rs"],i["pc"],fs,slot_global=0x8013EA74):
+        tile_plus1f_access.append({"pc":h32(i["pc"]),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
+          "instruction":i["text"],"function_start":h32(fs),"access":"WRITE" if isstore else "READ",
+          "base_pointer_origin":trace_reg(i["rs"],i["pc"],fs),
+          "value_origin":trace_reg(i["rt"],i["pc"],fs) if isstore else "—",
+          "source":"base-register def chain includes load through slot 0x8013EA74",
+          "reason":"candidate access to source-array record +0x1F; exact record alias depends on dynamic index"})
+write_tsv("DW3_TILE_ARRAY_SLOT_XREFS.tsv",slot_xrefs,
+ ["pc","file_offset","bytes","instruction","slot_global","access","source","reason"])
+write_tsv("DW3_EA84_TILE_BYTE00_READERS.tsv",tile_byte0_reads,
+ ["pc","file_offset","bytes","instruction","function_start","base_pointer_origin","source","reason"])
+write_tsv("DW3_EA84_TILE_BYTE00_WRITERS.tsv",tile_byte0_writers,
+ ["pc","file_offset","bytes","instruction","function_start","base_pointer_origin","value_origin","source","reason"])
+write_tsv("DW3_EA74_TILE_PLUS1F_ACCESS.tsv",tile_plus1f_access,
+ ["pc","file_offset","bytes","instruction","function_start","access","base_pointer_origin","value_origin","source","reason"])
+
+# Explicit indexed lookup chain: current record +0x1F selects another record whose +0x00 byte is the JR selector.
+lookup_pcs=[0x800F5C70,0x800F5C74,0x800F5C7C,0x800F5C84,0x800F5C88,0x800F5C8C,0x800F5C90,
+            0x800F5C94,0x800F5C98,0x800F5C9C,0x800F5CA0,0x800F5CA4,0x800F5CA8,0x800F5CAC,
+            0x800F5CB0,0x800F5CB4,0x800F5CB8,0x800F5CC0,0x800F5CC4]
+lookup_role={
+ 0x800F5C74:"loads base pointer from global slot 0x8013EA74",
+ 0x800F5C7C:"loads current tile index from global 0x8013EA88",
+ 0x800F5C84:"begin scaling current tile index",
+ 0x800F5C88:"index*9 step",
+ 0x800F5C8C:"index*0x124 final stride step",
+ 0x800F5C90:"adds current-tile-array base",
+ 0x800F5C94:"reads current tile record byte +0x1F; this byte is the next record index",
+ 0x800F5C98:"loads address high half for second tile-array slot",
+ 0x800F5C9C:"loads base pointer from global slot 0x8013EA84",
+ 0x800F5CA0:"begin multiplying tile+0x1F index",
+ 0x800F5CA4:"index*9 step",
+ 0x800F5CA8:"index*72 step",
+ 0x800F5CAC:"index*73 step",
+ 0x800F5CB0:"shifts to index*0x124",
+ 0x800F5CB4:"adds second tile-array base pointer",
+ 0x800F5CB8:"reads selected tile record byte +0x00; value becomes JR selector",
+ 0x800F5CC0:"checks selector < 9",
+ 0x800F5CC4:"branches to fallback when selector >= 9"
+}
+lookup_rows=[]
+for pc in lookup_pcs:
+    i=ins.get(pc)
+    if i:
+        lookup_rows.append({"pc":h32(pc),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
+          "instruction":i["text"],"role":lookup_role.get(pc,"lookup chain instruction"),
+          "source":"Entry 1 raw-byte decode","reason":"specific static dataflow role; dynamic pointer/index values remain unknown"})
+write_tsv("DW3_INDEXED_TILE_BYTE_LOOKUP.tsv",lookup_rows,
+ ["pc","file_offset","bytes","instruction","role","source","reason"])
+
+# The 9-entry secondary jump table referenced by 0x800F5CC8..0x800F5CE0.
+secondary_base=0x800AEB78
+secondary_rows=[]
+for idx in range(9):
+    off=secondary_base-ENTRY_BASE+idx*4
+    raw=entry[off:off+4]
+    target=int.from_bytes(raw,"little")
+    secondary_rows.append({"selector":idx,"slot_pc":h32(secondary_base+idx*4),
+      "file_offset":h32(ENTRY_OFF+off),"bytes":hx(raw),"target":h32(target),
+      "source":"DATA.BIN Entry 1 table bytes",
+      "reason":"index 0..8 allowed by sltiu at 0x800F5CC0"})
+write_tsv("DW3_SECONDARY_JR_800F5CE0_TABLE_9.tsv",secondary_rows,
+ ["selector","slot_pc","file_offset","bytes","target","source","reason"])
 
 # 64-entry outer dispatch table at 0x800AEA20.
 table_base=0x800AEA20
@@ -456,35 +555,99 @@ write_tsv("DW4_CALLS_TO_FUN_80102408.tsv",call_rows,
  ["call_pc","file_offset","bytes","instruction","function_start_heuristic",
   "a0_origin","a1_origin","a2_origin","a3_origin","source","reason"])
 
-fee_raw=[]; fee_returns=[]; fee_store_candidates=[]
-for pc in range(fee_target,fee_target+0x800,4):
+# DW4 — build the complete direct-CFG region of FUN_80102408, including both sides of conditional branches.
+fee_reach=set(); fee_delay_slots=set(); fee_external=[]
+fee_stack=[fee_target]
+fee_limit=fee_target+0x300
+while fee_stack:
+    pc=fee_stack.pop()
+    if pc in fee_reach or pc<fee_target or pc>=fee_limit: continue
     i=ins.get(pc)
-    if not i: break
+    if i is None: continue
+    fee_reach.add(pc)
+    op=i["op"]
+    succ=[]
+    if op in (1,4,5,6,7):
+        fee_delay_slots.add(pc+4)
+        succ.extend([pc+4,pc+8])
+        t=branch_target(i)
+        if t is not None: succ.append(t)
+    elif op in (2,3):
+        fee_delay_slots.add(pc+4)
+        succ.append(pc+4)
+        if op==3: succ.append(pc+8)
+        else:
+            t=branch_target(i)
+            if t is not None: succ.append(t)
+    elif op==0 and i["fn"]==8:
+        fee_delay_slots.add(pc+4)
+        succ.append(pc+4)
+    elif op==0 and i["fn"]==9:
+        fee_delay_slots.add(pc+4)
+        succ.append(pc+4)
+        fee_external.append({"source_pc":h32(pc),"bytes":hx(i["bytes"]),"instruction":i["text"],
+          "target":"INDIRECT / TIDAK TAHU","reason":"jalr/jr non-ra is not statically resolved in this function"})
+    elif pc in fee_delay_slots:
+        succ=[]
+    else:
+        succ.append(pc+4)
+    for nxt in succ:
+        if nxt in fee_delay_slots:
+            fee_stack.append(nxt)
+        elif fee_target <= nxt < fee_limit:
+            fee_stack.append(nxt)
+        elif nxt != pc+4 and nxt >= fee_limit:
+            fee_external.append({"source_pc":h32(pc),"bytes":hx(i["bytes"]),"instruction":i["text"],
+              "target":h32(nxt),"reason":"direct control edge escapes bounded FUN_80102408 CFG region"})
+
+fee_raw=[]; fee_returns=[]; fee_access_rows=[]; fee_store_candidates=[]
+load_ops={0x20:"lb",0x21:"lh",0x22:"lwl",0x23:"lw",0x24:"lbu",0x25:"lhu",0x26:"lwr"}
+store_ops={0x28:"sb",0x29:"sh",0x2A:"swl",0x2B:"sw",0x2E:"swr"}
+for pc in sorted(fee_reach):
+    i=ins[pc]
     fee_raw.append({"pc":h32(pc),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
-      "instruction":i["text"],"source":"Entry 1 function window FUN_80102408",
-      "reason":"sequential raw decode through first jr ra/delay slot"})
-    if i["op"] in (0x29,0x28,0x2b) and i["imm"]==0x1a:
-        fs=fee_target
-        fee_store_candidates.append({"pc":h32(pc),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
-          "instruction":i["text"],"store_width":{0x29:"u16",0x28:"u8",0x2b:"u32"}[i["op"]],
-          "value_origin":trace_reg(i["rt"],pc,fs),"base_origin":trace_reg(i["rs"],pc,fs),
-          "source":"FUN_80102408 direct store displacement +0x1A",
-          "reason":"exact offset match; semantic tile-object identity is conditional on caller-provided base"})
+      "instruction":i["text"],"source":"Entry 1 FUN_80102408 direct CFG",
+      "reason":"reachable instruction; both conditional branch alternatives are retained"})
+    if i["op"] in load_ops or i["op"] in store_ops:
+        access="READ" if i["op"] in load_ops else "WRITE"
+        fee_access_rows.append({"pc":h32(pc),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
+          "instruction":i["text"],"access":access,"width":load_ops.get(i["op"],store_ops.get(i["op"])),
+          "base_register":rn(i["rs"]),"displacement":i["imm"],
+          "base_origin":trace_reg(i["rs"],pc,fee_target),
+          "value_origin":trace_reg(i["rt"],pc,fee_target) if access=="WRITE" else "loaded value -> "+rn(i["rt"]),
+          "source":"FUN_80102408 direct-CFG memory access",
+          "reason":"all visible memory operations included; offset +0x1A is isolated in dedicated report"})
+        if i["imm"]==0x1a:
+            if access=="WRITE":
+                fee_store_candidates.append({"pc":h32(pc),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
+                  "instruction":i["text"],"store_width":store_ops[i["op"]],
+                  "value_origin":trace_reg(i["rt"],pc,fee_target),"base_origin":trace_reg(i["rs"],pc,fee_target),
+                  "source":"FUN_80102408 direct CFG store displacement +0x1A",
+                  "reason":"exact displacement; object identity depends on runtime base pointer"})
     if i["op"]==0 and i["fn"]==8 and i["rs"]==31:
         delay=ins.get(pc+4)
-        if delay:
-            fee_raw.append({"pc":h32(pc+4),"file_offset":h32(delay["fileoff"]),"bytes":hx(delay["bytes"]),
-              "instruction":delay["text"],"source":"Entry 1 function window FUN_80102408","reason":"jr ra delay slot"})
         fee_returns.append({"return_pc":h32(pc),"bytes":hx(i["bytes"]),
-          "v0_last_definition":trace_reg(2,pc,fee_target),
-          "source":"FUN_80102408 raw body","reason":"value returned in v0; exact runtime value may depend on tile and distance inputs"})
-        break
+          "delay_slot_pc":h32(pc+4) if delay else "TIDAK TAHU",
+          "delay_slot_instruction":delay["text"] if delay else "TIDAK TAHU",
+          "delay_slot_bytes":hx(delay["bytes"]) if delay else "TIDAK TAHU",
+          "v0_before_delay_slot":trace_reg(2,pc,fee_target),
+          "v0_after_delay_slot":trace_reg(2,pc+8,fee_target),
+          "source":"FUN_80102408 direct CFG",
+          "reason":"return path and executed JR delay slot; value may remain dynamic"})
 write_tsv("DW4_FUN_80102408_RAW.tsv",fee_raw,
  ["pc","file_offset","bytes","instruction","source","reason"])
+write_tsv("DW4_FUN_80102408_MEMORY_ACCESSES.tsv",fee_access_rows,
+ ["pc","file_offset","bytes","instruction","access","width","base_register","displacement","base_origin","value_origin","source","reason"])
+write_tsv("DW4_TILE_PLUS1A_ACCESSES.tsv",[r for r in fee_access_rows if r["displacement"]==0x1a],
+ ["pc","file_offset","bytes","instruction","access","width","base_register","displacement","base_origin","value_origin","source","reason"])
 write_tsv("DW4_TILE_PLUS1A_STORES.tsv",fee_store_candidates,
  ["pc","file_offset","bytes","instruction","store_width","value_origin","base_origin","source","reason"])
 write_tsv("DW4_FUN_80102408_RETURNS.tsv",fee_returns,
- ["return_pc","bytes","v0_last_definition","source","reason"])
+ ["return_pc","bytes","delay_slot_pc","delay_slot_instruction","delay_slot_bytes",
+  "v0_before_delay_slot","v0_after_delay_slot","source","reason"])
+write_tsv("DW4_FUN_80102408_CONTROL_EDGES.tsv",fee_external,
+ ["source_pc","bytes","instruction","target","reason"])
+
 
 hyp=[]
 for d in range(2,6):
@@ -523,19 +686,30 @@ f"Total byte +0x00 bernilai 1: {total_hist.get(1,0)}; bernilai 5: {total_hist.ge
 "FUN_800F7ADC menulis initializer tile+0x20 = 0xF020; sehingga nibble awal bits12–15=0xF dan bits8–11=0 untuk setiap tile yang diinisialisasi. Ini bukan field sumber resource.",
 "Arti gameplay 1 dan 5 tidak ditetapkan dari histogram. Kode yang terverifikasi: value 1 mengambil cabang bookkeeping daftar tile pada loader; value 5 adalah filter pertama pada loop ekonomi. Label jenis/status gameplay tetap TIDAK TAHU.",
 "",
+"## Status per level",
+"DW0: TUNTAS K4 — commit ledger inklusif dihitung dari git history pada snapshot; commit bot publikasi dipisahkan.",
+"DW1: TUNTAS K4 untuk histogram/format resource dan initializer tile+0x20; arti gameplay nilai byte tetap TIDAK TAHU.",
+"DW2: SEBAGIAN K4 — helper dan jalur normal statis terbukti; indirect entry/semantik gameplay lane masih perlu batasan tambahan.",
+"DW3: SEBAGIAN K4 — formula lookup dan tabel terbukti; penulisan tile+0x1F/+0x00 dipetakan sebagai kandidat berdasarkan def-chain pointer, bukan alias runtime.",
+"DW4: SEBAGIAN K4 — seluruh direct CFG helper dipetakan; fee_dasar/label semantik tile dan nilai dinamis yang tidak tersimpan statis tetap TIDAK TAHU.",
+"",
 "## DW2 — global 0x80139EFC dan helper",
 "Loop 0x800ECA2C/0x800ECA34 membaca tile+0x00; bila byte=5 dan nibble bits12–15 tile+0x20 sama dengan t0 dinamis, loop menambahkan 1+nibble bits8–11 ke 0x80139EFC.",
-"PC 0x800ECAE0 menulis v0 ke global yang sama setelah JAL 0x8001552C pada 0x800ECAD4; a0 sebelumnya dimuat dari stack+0x18 di 0x800ECAD0. Nilai return helper akan dijelaskan dari DW2_FUN_8001552C_RAW.tsv/RETURN.tsv.",
-"Debit membaca halfword global di 0x800ECBA8, menegasikan di 0x800ECBB0, lalu menyimpan ke manager+0x2EE di delay slot 0x800ECBB8. Jangan menyamakan store ini dengan global write.",
-"Hubungan accumulator-loop ke debit hanya sah jika jalur kontrol tidak melewati/menimpa write 0x800ECAE0; external edges dan raw function helper terlampir. Nilai runtime hasil load tetap TIDAK TAHU.",
+"FUN_8001552C pada 0x8001552C menambahkan a0+a1 sebagai alamat, memuat u16, menambah 1, lalu menyimpan u16 itu. Tetapi nilai kembalian bukan u16 tersebut: delay slot JR RA di 0x80015544 mengatur v0=1 sebelum return.",
+"Karena 0x800ECAD4 memanggil helper itu dan 0x800ECAE0 langsung menyimpan v0, jalur normal meng-overwrite akumulator loop di 0x80139EFC menjadi 1. 0x800ECBA8 kemudian membaca u16 global itu, 0x800ECBB0 menegasikan, dan delay slot 0x800ECBB8 menyimpan halfword hasilnya ke manager+0x2EE. Isi/arti gameplay lane +0x2EE tetap TIDAK TAHU.",
+"Scan branch/J/JAL langsung ke label 0x800ECAD0, 0x800ECB4C, 0x800ECB88, 0x800ECBBC dari luar blok menghasilkan nol referensi langsung; target tidak langsung/JR yang tidak bisa ditetapkan dari byte statis tetap TIDAK TAHU. Karena itu kesimpulan nilai 1 berlaku pada jalur normal yang melewati JAL helper dan store 0x800ECAE0.",
 "",
 "## DW3 — jr 0x800F5CE0",
-"Raw instructions 0x800F5C98..0x800F5CE0 beserta bytes ada di DW3_JR_800F5CE0_RAW.tsv. Selector dibaca pada 0x800F5CB8 melalui base pointer yang dimuat dari slot global 0x8013EA84; formula index/effective address dan writer candidates dilampirkan.",
-"DW3_OUTER_JR_800F3788_TABLE_64.tsv berisi semua 64 slot tabel luar; DW3_OUTER_TABLE_DISPATCHER_TARGETS.tsv hanya slot yang targetnya berada pada rentang dispatcher yang diuji. Pointer slot global dan writer alias dibedakan.",
+"0x800F5C74 memuat base pointer slot global 0x8013EA74; indeks record awal berasal dari global 0x8013EA88. Indeks ini dikali stride record 0x124, lalu 0x800F5C94 membaca byte current-record+0x1F.",
+"Byte +0x1F tersebut kemudian dikali 0x124. Base pointer kedua dimuat dari slot 0x8013EA84; 0x800F5CB4 menambahkan base, dan 0x800F5CB8 membaca byte pada selected-record+0x00. Byte +0x00 itulah selector JR; 0x800F5CC0 mensyaratkan selector <9, sedangkan >=9 jatuh ke 0x800F5D88.",
+"DW3_INDEXED_TILE_BYTE_LOOKUP.tsv merinci seluruh instruksi dan skala. DW3_EA74_TILE_PLUS1F_ACCESS.tsv memuat akses kandidat ke tile+0x1F; DW3_EA84_TILE_BYTE00_READERS.tsv/WRITERS.tsv memuat reader/writer kandidat byte +0x00. DW3_TILE_ARRAY_SLOT_XREFS.tsv mencakup slot EA74, EA84 dan EA88.",
+"Slot global 0x8013EA84 sendiri ditulis pada dua PC statis yang terdeteksi (lihat DW3_TILE_ARRAY_SLOT_XREFS.tsv). Tabel 64-entri luar di 0x800AEA20 mengarah ke area dispatcher pada selector 9, 10, 12, 13, 14 dan 51.",
 "",
-"## DW4 — fee tile+0x1A",
-"Three writer call-site contexts, direct calls to FUN_80102408, and the complete sequential helper decode are attached. A +0x1A store is evidence of an offset operation, not by itself proof that the base is the tile object; the output preserves that distinction.",
-"fee_dasar remains a symbolic unknown unless a static path proves its source. H1/H2prime/H3 are hypotheses, not ROM constants or fitted values. For d>=2, all three predictions coincide; a value that differs from fee_dasar*2^d falsifies the shared rule. d=1 separates H1 from H2prime/H3.",
+"## DW4 — FUN_80102408 dan tile+0x1A",
+"DW4_FUN_80102408_RAW.tsv kini memuat seluruh basic block yang dicapai dari entry 0x80102408 melalui kedua sisi branch, bukan berhenti pada JR RA pertama. DW4_FUN_80102408_MEMORY_ACCESSES.tsv memetakan semua akses memori yang terlihat; DW4_TILE_PLUS1A_ACCESSES.tsv mengisolasi displacement +0x1A.",
+"Ketiga writer global pada 0x800D09C8, 0x800DFA28 dan 0x800EA1D4 masing-masing didahului JAL langsung ke 0x80102408 (lihat DW4_CALLS_TO_FUN_80102408.tsv dan DW4_THREE_WRITER_CONTEXT.tsv). Base/argumen dinamis tetap TIDAK TAHU kecuali register origin terbukti.",
+"fee_dasar tetap simbolik/TIDAK TAHU kecuali sumbernya terbukti. H1/H2prime/H3 adalah hipotesis, bukan konstanta ROM. Untuk d>=2 ketiganya ekuivalen; satu nilai ukur pada d>=2 yang tidak sama dengan fee_dasar*2^d memfalsifikasi aturan bersama. d=1 memisahkan H1 dari H2prime/H3.",
+
 "",
 "## Validity",
 "Input identity checks passed for EXE, DATA.BIN and DATA.BIN Entry 1. No emulator/game was run. No BIOS, savestate, raw DATA.BIN, ISO, EXE, screenshots, video, or frames are included in the committed outputs; the private input is temporary and cleaned by the workflow.",
