@@ -1,0 +1,20 @@
+pc	file_offset	bytes	instruction	role	source	reason
+0x800F5C70	0x01103820	14 80 02 3C	lui $v0, 0x8014	lookup chain instruction	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5C74	0x01103824	74 EA 44 8C	lw $a0, -0x158c($v0)	loads base pointer from global slot 0x8013EA74	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5C7C	0x0110382C	88 EA 43 94	lhu $v1, -0x1578($v0)	loads current tile index from global 0x8013EA88	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5C84	0x01103834	C0 10 03 00	sll $v0, $v1, 3	begin scaling current tile index	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5C88	0x01103838	21 10 43 00	addu $v0, $v0, $v1	index*9 step	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5C8C	0x0110383C	00 11 02 00	sll $v0, $v0, 4	index*0x124 final stride step	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5C90	0x01103840	21 20 82 00	addu $a0, $a0, $v0	adds current-tile-array base	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5C94	0x01103844	1F 00 83 90	lbu $v1, 0x1f($a0)	reads current tile record byte +0x1F; this byte is the next record index	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5C98	0x01103848	14 80 02 3C	lui $v0, 0x8014	loads address high half for second tile-array slot	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5C9C	0x0110384C	84 EA 44 8C	lw $a0, -0x157c($v0)	loads base pointer from global slot 0x8013EA84	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5CA0	0x01103850	C0 10 03 00	sll $v0, $v1, 3	begin multiplying tile+0x1F index	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5CA4	0x01103854	21 10 43 00	addu $v0, $v0, $v1	index*9 step	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5CA8	0x01103858	C0 10 02 00	sll $v0, $v0, 3	index*72 step	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5CAC	0x0110385C	21 10 43 00	addu $v0, $v0, $v1	index*73 step	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5CB0	0x01103860	80 10 02 00	sll $v0, $v0, 2	shifts to index*0x124	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5CB4	0x01103864	21 10 44 00	addu $v0, $v0, $a0	adds second tile-array base pointer	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5CB8	0x01103868	00 00 43 90	lbu $v1, ($v0)	reads selected tile record byte +0x00; value becomes JR selector	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5CC0	0x01103870	09 00 62 2C	sltiu $v0, $v1, 9	checks selector < 9	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
+0x800F5CC4	0x01103874	30 00 40 10	beqz $v0, 0x800f5d88	branches to fallback when selector >= 9	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
