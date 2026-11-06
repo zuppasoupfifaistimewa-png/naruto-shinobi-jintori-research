@@ -1,4 +1,5 @@
 name: DX0-DX4 full-image static economy audit
+# One-time revalidation from the corrected EA compatibility baseline (2026-11-07).
 
 on:
   push:
