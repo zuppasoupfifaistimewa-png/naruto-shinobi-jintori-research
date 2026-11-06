@@ -1145,7 +1145,7 @@ dy4_loop_summary=[{"function":"FUN_800D15A8","fee_post_pc":"0x800D46F8",
  "direct_call_closure_functions":len(closure),
  "result":"NO_DIRECT_BACKEDGE_TO_FEE_LOAD_OR_POST" if not dy4_backedge_rows else "POTENTIAL_BACKEDGE_REQUIRES_PATH_REVIEW",
  "caveat":"JALR/indirect control-flow destinations are not in direct-call closure; no runtime execution",
- "falsifier":"a JALR-resolved edge or a branch target discovered to re-enter 0x800D46EC..0x800D46F8"})
+ "falsifier":"a JALR-resolved edge or a branch target discovered to re-enter 0x800D46EC..0x800D46F8"}]
 write_tsv("DY4_ACTION8_POST_LOOP_AUDIT.tsv",dy4_loop_summary,
  ["function","fee_post_pc","all_plus2ee_stores_in_direct_call_closure","negative_tile_fee_posts",
   "backedges_after_post_to_fee_load_or_earlier","direct_call_closure_functions","result","caveat","falsifier"])
