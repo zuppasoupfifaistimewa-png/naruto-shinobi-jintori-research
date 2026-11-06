@@ -1,0 +1,197 @@
+name: DX0-DX4 full-image static economy audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/dx0-dx4-raw-static.yml"
+      - "tools/stage1/RunDX0DX4Raw.py"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: naruto-dx0-dx4-raw-static
+  cancel-in-progress: false
+
+jobs:
+  dx0-dx4-static:
+    name: dx0-dx4-static
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout full history at triggering source SHA
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install disc extraction and MIPS decoding tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends bchunk xorriso python3-pip
+          python3 -m pip install --break-system-packages "capstone==5.0.3"
+
+      - name: Download and verify disc privately, extract EXE and DATA.BIN
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/dx0-dx4-private"
+          source="$root/source"
+          extracted="$root/extracted"
+          input="$root/input"
+          mkdir -p "$source" "$extracted" "$input"
+
+          bin="$source/naruto-disc.bin"
+          cue_raw="$source/original.cue"
+          cue="$source/naruto-disc.cue"
+          ROM_URL="https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/download/research-emulator-pcsx-redux-2026-10-15/Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin"
+          CUE_URL="https://github.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/releases/download/research-emulator-pcsx-redux-2026-10-15/Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue"
+
+          curl --fail --location --silent --show-error --retry 2 --max-time 600 "$ROM_URL" -o "$bin"
+          test "$(stat -c '%s' "$bin")" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $bin" | sha256sum --check --status
+
+          curl --fail --location --silent --show-error --retry 2 --max-time 60 "$CUE_URL" -o "$cue_raw"
+          test "$(stat -c '%s' "$cue_raw")" = "116"
+          echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $cue_raw" | sha256sum --check --status
+
+          python3 - "$cue_raw" "$cue" <<'PY'
+          from pathlib import Path
+          import re, sys
+          src, dst = map(Path, sys.argv[1:3])
+          out, count = [], 0
+          for line in src.read_text(encoding="utf-8").splitlines():
+              if line.lstrip().upper().startswith("FILE "):
+                  m = re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$', line, re.I)
+                  if not m:
+                      raise SystemExit("CUE_FILE_DIRECTIVE_INVALID")
+                  line = m.group(1) + '"naruto-disc.bin"' + m.group(2)
+                  count += 1
+              out.append(line)
+          if count != 1:
+              raise SystemExit(f"CUE_FILE_DIRECTIVE_COUNT={count}")
+          dst.write_text("\n".join(out) + "\n", encoding="utf-8")
+          PY
+
+          bchunk "$bin" "$cue" "$source/track"
+          iso="$(find "$source" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          test -n "$iso"
+          xorriso -osirrox on -indev "$iso" -extract / "$extracted" > "$RUNNER_TEMP/dx0-dx4-extract.log" 2>&1
+          exe="$(find "$extracted" -type f -iname 'SLPS_035.53' -print -quit)"
+          data="$(find "$extracted" -type f -iname 'DATA.BIN' -print -quit)"
+          test -n "$exe" && test -n "$data"
+          test "$(stat -c '%s' "$exe")" = "385024"
+          echo "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569  $exe" | sha256sum --check --status
+          test "$(stat -c '%s' "$data")" = "66015232"
+          echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $data" | sha256sum --check --status
+
+          cp "$exe" "$input/SLPS_035.53"
+          cp "$data" "$input/DATA.BIN"
+          echo "RAW_INPUT_STAGE=PASS" > "$RUNNER_TEMP/dx0-dx4-stage-status.txt"
+          echo "PRIVATE_INPUTS_TEMPORARY_ONLY=yes" >> "$RUNNER_TEMP/dx0-dx4-stage-status.txt"
+          echo "NO_BINARY_ARTIFACT_UPLOAD=yes" >> "$RUNNER_TEMP/dx0-dx4-stage-status.txt"
+
+      - name: Run DX0-DX4 full-image static analysis
+        shell: bash
+        env:
+          DX_BASELINE: "2d5becc3a70716cf78563233504b800b3c9609e0"
+          DX_SNAPSHOT_SHA: "$GITHUB_SHA"
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/dx0-dx4-output"
+          mkdir -p "$out"
+          set +e
+          python3 tools/stage1/RunDX0DX4Raw.py \
+            "$RUNNER_TEMP/dx0-dx4-private/input/SLPS_035.53" \
+            "$RUNNER_TEMP/dx0-dx4-private/input/DATA.BIN" "$out"
+          rc=$?
+          set -e
+          echo "$rc" > "$RUNNER_TEMP/dx0-dx4-analysis-exit.txt"
+          if [ "$rc" -ne 0 ]; then
+            {
+              echo "STATUS=BELUM"
+              echo "REASON=DX analyzer exited nonzero; inspect job log"
+              echo "EXIT_CODE=$rc"
+            } > "$out/ANALYSIS_FAILURE.txt"
+          fi
+
+      - name: Remove all private disc and extracted binary inputs
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$RUNNER_TEMP/dx0-dx4-private"
+          if [ -e "$RUNNER_TEMP/dx0-dx4-private" ]; then
+            echo "PRIVATE_BINARY_CLEANUP=FAIL" > "$RUNNER_TEMP/dx0-dx4-cleanup.txt"
+            exit 1
+          fi
+          echo "PRIVATE_BINARY_CLEANUP=PASS" > "$RUNNER_TEMP/dx0-dx4-cleanup.txt"
+
+      - name: Commit text-only findings and Actions summary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/dx0-dx4-output"
+          dest="reports/stage1_economy/dx0-dx4-raw-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$dest"
+          if [ -d "$out" ]; then
+            find "$out" -maxdepth 1 -type f \( -name '*.md' -o -name '*.tsv' -o -name '*.txt' \) -exec cp {} "$dest/" \;
+          fi
+
+          rc="$(cat "$RUNNER_TEMP/dx0-dx4-analysis-exit.txt" 2>/dev/null || echo TIDAK_TAHU)"
+          cleanup="$(cat "$RUNNER_TEMP/dx0-dx4-cleanup.txt" 2>/dev/null || echo PRIVATE_BINARY_CLEANUP=UNKNOWN)"
+          stage_file="$RUNNER_TEMP/dx0-dx4-stage-status.txt"
+          if [ -f "$stage_file" ] && grep -qx 'RAW_INPUT_STAGE=PASS' "$stage_file"; then
+            stage="RAW_INPUT_STAGE=PASS"
+          else
+            stage="RAW_INPUT_STAGE=NOT_PASS"
+          fi
+          if [ "$rc" = "0" ] && [ "$cleanup" = "PRIVATE_BINARY_CLEANUP=PASS" ] && [ "$stage" = "RAW_INPUT_STAGE=PASS" ]; then
+            status="PASS"
+          else
+            status="FAIL"
+          fi
+
+          JOB_ID="$(curl --fail --silent --show-error \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" \
+            | jq -r '.jobs[] | select(.name=="dx0-dx4-static") | .id' | head -n 1)"
+          [ -n "$JOB_ID" ] || JOB_ID="TIDAK TAHU"
+          {
+            echo "STATUS=$status"
+            echo "JOB=dx0-dx4-static"
+            echo "JOB_ID=$JOB_ID"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "EXIT_CODE=$rc"
+            echo "$stage"
+            echo "$cleanup"
+            echo "GAME_OR_EMULATOR_EXECUTED=no"
+            echo "BIOS_OR_SAVESTATE_USED=no"
+            echo "BINARY_COMMITTED=no"
+            echo "OUTPUT=TEXT_ONLY"
+          } > "$dest/ACTIONS_RUN_SUMMARY.txt"
+
+          bad="$(find "$dest" -type f ! \( -name '*.md' -o -name '*.tsv' -o -name '*.txt' \) -print)"
+          test -z "$bad"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$dest"
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish DX0-DX4 full-image static audit run $GITHUB_RUN_ID"
+            pushed=0
+            for n in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main || { git rebase --abort; sleep "$n"; continue; }
+              if git push origin HEAD:main; then pushed=1; break; fi
+              sleep "$n"
+            done
+            test "$pushed" -eq 1
+          fi
+
+          echo "DX_OUTPUT_PATH=$dest"
+          echo "ACTIONS_STATUS=$status"
+          test "$status" = "PASS"
