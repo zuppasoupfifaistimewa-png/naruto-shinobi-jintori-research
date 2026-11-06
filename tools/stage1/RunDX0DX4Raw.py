@@ -6,7 +6,7 @@ from pathlib import Path
 from capstone import Cs, CS_ARCH_MIPS, CS_MODE_MIPS32, CS_MODE_LITTLE_ENDIAN
 
 EXE_PATH, DATA_PATH, OUT = map(Path, sys.argv[1:4])
-BASELINE = os.environ.get("DX_BASELINE", "f76a096862ceb88920df19b021a30870c74a9496")
+BASELINE = os.environ.get("DX_BASELINE", "c405f9261c3beea2ed4e3695222108c51a7ad636")
 SNAPSHOT = os.environ.get("DX_SNAPSHOT_SHA", "").strip()
 if not SNAPSHOT or SNAPSHOT.startswith("$"):
     SNAPSHOT = os.environ.get("GITHUB_SHA", subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip())
@@ -70,6 +70,7 @@ PTR_SLOTS={
   0x8013EA74:"SLOT_0x8013EA74",
   0x8013EA84:"SLOT_0x8013EA84",
   0x8013EA88:"SLOT_0x8013EA88",
+  0x8013EAB0:"SLOT_0x8013EAB0",
   0x8013A554:"SLOT_0x8013A554",
   0x8013B818:"ABSOLUTE_OR_POINTER_VALUE_0x8013B818"
 }
@@ -1051,7 +1052,7 @@ write_tsv("DY3_MANAGER_FIELD_READERS.tsv",manager_reader_rows,
 # The bounded retry loop: counter is seeded with 0x32, decremented before each RNG call.
 for pc,role in [
  (0x800ECAE8,"attempt_limit=0x32=50"),
- (0x800ECAEC,"store attempt counter at manager+0x2A8"),
+ (0x800ECAEC,"store attempt counter to global 0x8013EBA8"),
  (0x800ECB00,"read remaining attempt counter"),
  (0x800ECB08,"decrement attempt counter"),
  (0x800ECB0C,"exit when decremented counter == -1; otherwise retry path"),
@@ -1179,6 +1180,345 @@ write_tsv("DY4_FEE_HYPOTHESES_D1_D4.tsv",dy4_model_rows,
  ["model","formula","d","fee_dasar","normalization_for_comparison","factor","predicted_normalized",
   "user_observation_hypothesis","comparison","lookup_tautology","falsifier","evidence_class"])
 
+
+# DZ2-DZ4: complete fee-window, global source, control-flow and +0x24 census.
+# The PC mapping and byte/instruction checks run over every generated TSV below.
+
+dz2_fee_window=[]
+for pc in range(0x800D46B0,0x800D4840+4,4):
+    i=ins.get(pc)
+    if i:
+        dz2_fee_window.append({"pc":h32(pc),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
+          "instruction":i["text"],"function":FUNC["ENTRY1"][2](pc),
+          "source":"Entry 1 raw decode","reason":"full requested instruction window"})
+write_tsv("DZ2_D15A8_FEE_WINDOW_800D46B0_800D4840.tsv",dz2_fee_window,
+ ["pc","file_offset","bytes","instruction","function","source","reason"])
+
+dz2_global_eb0c=[]
+for tag,code,base in codes:
+    starts,f_at,f_name,_=FUNC[tag]
+    for i in sorted(code.values(),key=lambda x:x["pc"]):
+        if i["mnemonic"] not in (MEM_LOADS|MEM_STORES) or i["imm"]!=-0x14f4: continue
+        lo=f_at(i["pc"])
+        if effective_address(i,code,lo)!=0x8013EB0C: continue
+        read=i["mnemonic"] in MEM_LOADS
+        origin="READ_FROM_GLOBAL_0x8013EB0C (runtime value dynamic)" if read else trace_reg(i["rt"],i["pc"],lo,code)
+        nodes=[] if read else expr_nodes(i["rt"],i["pc"],lo,code)
+        if read: cls="GLOBAL_DYNAMIC_LOAD"
+        elif "return JALR" in origin: cls="RETURN_JALR"
+        elif "return JAL " in origin: cls="RETURN_JAL"
+        elif "[load " in origin or any(n["mnemonic"] in MEM_LOADS for n in nodes): cls="DYNAMIC_LOAD"
+        elif "masuk/dinamis" in origin or "TIDAK TAHU" in origin: cls="PARAMETER_OR_UNRESOLVED"
+        elif origin=="$zero" or ("addiu" in origin and "<- $zero" in origin): cls="CONSTANT_FROM_ZERO"
+        elif any(n["mnemonic"] in ("addu","subu","sub","or","ori","sll","srl","andi","mult","multu","mflo") for n in nodes): cls="LOCAL_COMPUTATION_NO_LOAD"
+        else: cls="LOCAL_DEF_OR_UNRESOLVED"
+        dz2_global_eb0c.append({"region":tag,"pc":h32(i["pc"]),"file_offset":h32(i["fileoff"]),
+          "bytes":hx(i["bytes"]),"instruction":i["text"],"function":f_name(i["pc"]),
+          "effective_address":"0x8013EB0C","access":"READ" if read else "WRITE",
+          "value_origin":origin,"value_origin_class":cls,
+          "source":"full EXE + Entry 1 scan; exact displacement -0x14F4 and effective address",
+          "reason":"not displacement -0x1450 / global 0x8013EBB0; not -0x6104 / global 0x80139EFC"})
+write_tsv("DZ2_GLOBAL_8013EB0C_READ_WRITE_CENSUS.tsv",dz2_global_eb0c,
+ ["region","pc","file_offset","bytes","instruction","function","effective_address","access","value_origin",
+  "value_origin_class","source","reason"])
+dz2_eb0c_load_pcs={int(r["pc"],16) for r in dz2_global_eb0c if r["access"]=="READ"}
+
+dz2_or_sites=[]
+for pc,lane in [(0x800D474C,"bits 8-11"),(0x800D4754,"bits 8-11"),(0x800D4760,"bits 8-11"),(0x800D4764,"bits 8-11"),
+                (0x800D481C,"bits 4-7"),(0x800D4824,"bits 4-7"),(0x800D4830,"bits 4-7"),(0x800D4834,"bits 4-7")]:
+    i=ins.get(pc)
+    if not i: continue
+    lo=0x800D15A8
+    left=trace_reg(i["rs"],pc,lo,ins)
+    right=trace_reg(i["rt"],pc,lo,ins)
+    dest=i["rd"] if i["op"]==0 else i["rt"]
+    dst=trace_reg(dest,pc+4,lo,ins) if dest else "—"
+    dep=depends_on_pc(i["rs"],pc,lo,ins,dz2_eb0c_load_pcs)|depends_on_pc(i["rt"],pc,lo,ins,dz2_eb0c_load_pcs)
+    dz2_or_sites.append({"pc":h32(pc),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
+      "instruction":i["text"],"nibble_lane":lane,"left_operand_origin":left,"right_operand_origin":right,
+      "destination_origin":dst,"contains_global_8013EB0C_load":"YES" if dep else "NO_IN_LOCAL_DEF_CHAIN",
+      "source":"Entry 1 decode + backward slice rooted at FUN_800D15A8",
+      "reason":"dynamic load/JAL return remain dynamic/return; no constant relabeling"})
+write_tsv("DZ2_LEVEL_NIBBLE_OR_GLOBAL_SOURCE_SITES.tsv",dz2_or_sites,
+ ["pc","file_offset","bytes","instruction","nibble_lane","left_operand_origin","right_operand_origin",
+  "destination_origin","contains_global_8013EB0C_load","source","reason"])
+
+d15_start=0x800D15A8
+d15_end=FUNC["ENTRY1"][3](d15_start)
+dz2_old_loads=set()
+for pc in range(d15_start,d15_end,4):
+    i=ins.get(pc)
+    if i and i["mnemonic"] in MEM_LOADS and i["imm"]==0x20:
+        if "SLOT_0x8013EA84" in base_origin(i["rs"],pc,d15_start,ins):
+            dz2_old_loads.add(pc)
+dz2_delta_rows=[]
+for pc in range(d15_start,d15_end,4):
+    i=ins.get(pc)
+    if not i: continue
+    mn=i["mnemonic"]
+    if mn not in ("sub","subu","slt","sltu","slti","sltiu","beq","bne"): continue
+    left_old=depends_on_pc(i["rs"],pc,d15_start,ins,dz2_old_loads) if i["rs"] else set()
+    right_old=depends_on_pc(i["rt"],pc,d15_start,ins,dz2_old_loads) if i["rt"] and i["op"] in (0,4,5) else set()
+    left_g=depends_on_pc(i["rs"],pc,d15_start,ins,dz2_eb0c_load_pcs) if i["rs"] else set()
+    right_g=depends_on_pc(i["rt"],pc,d15_start,ins,dz2_eb0c_load_pcs) if i["rt"] and i["op"] in (0,4,5) else set()
+    if not (left_old or right_old or left_g or right_g): continue
+    nodes=expr_nodes(i["rs"],pc,d15_start,ins)
+    if i["op"] in (0,4,5): nodes+=expr_nodes(i["rt"],pc,d15_start,ins)
+    shifts={n["sh"] for n in nodes if n["mnemonic"] in ("srl","sra")}
+    masks={n["uimm"] for n in nodes if n["mnemonic"]=="andi"}
+    lanes=[]
+    if 8 in shifts and 0xF in masks: lanes.append("bits 8-11")
+    if 4 in shifts and 0xF in masks: lanes.append("bits 4-7")
+    dz2_delta_rows.append({"pc":h32(pc),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
+      "instruction":i["text"],"operation":"SUBTRACT" if mn in ("sub","subu") else "COMPARE",
+      "old_tile_plus20_load_pcs":";".join(h32(x) for x in sorted(left_old|right_old)) or "—",
+      "global_8013EB0C_load_pcs":";".join(h32(x) for x in sorted(left_g|right_g)) or "—",
+      "old_nibble_lane_candidates":";".join(lanes) or "TIDAK TERBUKTI",
+      "left_origin":trace_reg(i["rs"],pc,d15_start,ins),
+      "right_origin":trace_reg(i["rt"],pc,d15_start,ins) if i["op"] in (0,4,5) else "—",
+      "old_field_and_EB0C_joint_dependency":"YES" if (left_old or right_old) and (left_g or right_g) else "NO_JOINT_DEPENDENCY_PROVEN",
+      "source":"FUN_800D15A8 local def-chain; exact EA 0x8013EB0C census",
+      "reason":"field semantics do not follow from offset or nibble position"})
+write_tsv("DZ2_ACTION8_OLD_NIBBLE_VS_EB0C_COMPARE_SUBTRACT.tsv",dz2_delta_rows,
+ ["pc","file_offset","bytes","instruction","operation","old_tile_plus20_load_pcs","global_8013EB0C_load_pcs",
+  "old_nibble_lane_candidates","left_origin","right_origin","old_field_and_EB0C_joint_dependency","source","reason"])
+
+# DZ3: all local branches/jumps to <= fee load, not merely post-post branches.
+dz3_edges=[]
+for pc in range(d15_start,d15_end,4):
+    i=ins.get(pc)
+    if not i or i["op"] not in (1,2,4,5,6,7): continue
+    t=branch_target(i)
+    if t is None or t>0x800D46EC: continue
+    dz3_edges.append({"pc":h32(pc),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
+      "instruction":i["text"],"target_pc":h32(t),"target_inside_FUN_800D15A8":"YES" if d15_start<=t<d15_end else "NO",
+      "pc_after_fee_post":"YES" if pc>0x800D46F8 else "NO",
+      "post_loop_edge":"YES" if pc>0x800D46F8 and d15_start<=t<=0x800D46EC else "NO",
+      "source":"all local direct branch/jump instructions in FUN_800D15A8 bounds",
+      "reason":"condition still controls a conditional branch"})
+write_tsv("DZ3_D15A8_ALL_LOCAL_BRANCH_JUMP_TARGETS_LE_46EC.tsv",dz3_edges,
+ ["pc","file_offset","bytes","instruction","target_pc","target_inside_FUN_800D15A8","pc_after_fee_post","post_loop_edge","source","reason"])
+
+# Nine known destinations for JR 0x800F5CE0 via table at 0x800AEB78.
+f5_table=[(0x800AEB78,0x800F5CE8),(0x800AEB7C,0x800F5CF8),(0x800AEB80,0x800F5D08),
+ (0x800AEB84,0x800F5D18),(0x800AEB88,0x800F5D28),(0x800AEB8C,0x800F5D38),
+ (0x800AEB90,0x800F5D88),(0x800AEB94,0x800F5D48),(0x800AEB98,0x800F5D80)]
+dz3_dispatch=[]; dispatch_closure=set()
+for entry,target in f5_table:
+    c=call_closure("ENTRY1",target); dispatch_closure|=c
+    hits=[]
+    for pc,i in ins.items():
+        if FUNC["ENTRY1"][1](pc) in c and i["op"] in (1,2,3,4,5,6,7):
+            t=branch_target(i)
+            if t is not None and (d15_start<=t<=0x800D46F8 or t==0x800EC574):
+                hits.append(h32(pc)+" "+i["text"]+" -> "+h32(t))
+    unresolved=any(FUNC["ENTRY1"][1](pc) in c and ins[pc]["op"]==0 and ins[pc]["fn"] in (8,9)
+                   and pc!=0x800F5CE0 for pc in ins)
+    dz3_dispatch.append({"table_entry_vma":h32(entry),"target_pc":h32(target),"direct_call_closure_functions":len(c),
+      "direct_edge_to_fee_range_or_EC574":";".join(hits) or "NONE_FOUND",
+      "unresolved_other_jr_jalr":"YES" if unresolved else "NO_FOUND",
+      "reachability":"YES" if hits else ("TIDAK TAHU" if unresolved else "NO_DIRECT_EDGE_FOUND"),
+      "source":"known 9-entry table for jr 0x800F5CE0","reason":"table VMA lies outside Entry 1 mapping; no file offset claimed"})
+write_tsv("DZ3_F5CE0_JR_TABLE_9_TARGET_AUDIT.tsv",dz3_dispatch,
+ ["table_entry_vma","target_pc","direct_call_closure_functions","direct_edge_to_fee_range_or_EC574",
+  "unresolved_other_jr_jalr","reachability","source","reason"])
+
+dz3_indirect=[]
+action_closure=set(closure)|set(dispatch_closure)
+for pc,i in sorted(ins.items()):
+    if not (i["op"]==0 and i["fn"] in (8,9)): continue
+    owner=FUNC["ENTRY1"][1](pc)
+    if owner not in action_closure and not (d15_start<=pc<d15_end): continue
+    target=const_before(i["rs"],pc,owner,ins) if owner in FUNC["ENTRY1"][0] else None
+    dz3_indirect.append({"pc":h32(pc),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
+      "instruction":i["text"],"function":FUNC["ENTRY1"][2](pc),
+      "static_register_target":h32(target) if target is not None else "TIDAK TAHU",
+      "kind":"JALR" if i["fn"]==9 else "JR",
+      "source":"JR/JALR in action-8 direct and known-table-expanded closure",
+      "reason":"unknown indirect destination is not treated as ordinary fall-through"})
+write_tsv("DZ3_ACTION8_CLOSURE_JR_JALR_CENSUS.tsv",dz3_indirect,
+ ["pc","file_offset","bytes","instruction","function","static_register_target","kind","source","reason"])
+
+dz3_store_rows=[]
+for i in sorted(ins.values(),key=lambda x:x["pc"]):
+    if i["mnemonic"] not in MEM_STORES or i["imm"]!=0x2ee: continue
+    owner=FUNC["ENTRY1"][1](i["pc"])
+    if owner not in action_closure and i["pc"]!=0x800ECBB8: continue
+    lo=owner if owner in FUNC["ENTRY1"][0] else d15_start
+    value=trace_reg(i["rt"],i["pc"],lo,ins)
+    proven=owner in action_closure
+    dz3_store_rows.append({"pc":h32(i["pc"]),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
+      "instruction":i["text"],"function":FUNC["ENTRY1"][2](i["pc"]),
+      "base_origin":base_origin(i["rs"],i["pc"],lo,ins),"stored_value_origin":value,
+      "action8_reachability":"YES_DIRECT_OR_KNOWN_TABLE" if proven else "TIDAK TAHU_INDIRECT_PATH",
+      "fee_post_or_clear":"CLEAR_ZERO" if i["rt"]==0 else ("NEGATED_VALUE_CANDIDATE" if "negu" in value else "OTHER_OR_TIDAK_TAHU"),
+      "source":"direct JAL closure plus known F5CE0 target closures; ECBB8 always listed",
+      "reason":"only closure membership is labelled proven; unresolved indirect entry remains TIDAK TAHU"})
+write_tsv("DZ3_ACTION8_ALL_PLUS2EE_STORE_PATHS.tsv",dz3_store_rows,
+ ["pc","file_offset","bytes","instruction","function","base_origin","stored_value_origin",
+  "action8_reachability","fee_post_or_clear","source","reason"])
+
+# DZ4: complete lh/lhu/sh displacement +0x24 census, mark tile only via slot EA84.
+dz4_tile24=[]
+for tag,code,base in codes:
+    starts,f_at,f_name,_=FUNC[tag]
+    for i in sorted(code.values(),key=lambda x:x["pc"]):
+        if i["mnemonic"] not in ("lh","lhu","sh") or i["imm"]!=0x24: continue
+        lo=f_at(i["pc"]); origin=base_origin(i["rs"],i["pc"],lo,code)
+        proven="SLOT_0x8013EA84" in origin
+        val=trace_reg(i["rt"],i["pc"],lo,code) if i["mnemonic"]=="sh" else "loaded halfword -> "+rn(i["rt"])
+        dz4_tile24.append({"region":tag,"pc":h32(i["pc"]),"file_offset":h32(i["fileoff"]),
+          "bytes":hx(i["bytes"]),"instruction":i["text"],"function":f_name(i["pc"]),
+          "access":"WRITE" if i["mnemonic"]=="sh" else "READ","base_register":rn(i["rs"]),
+          "base_origin":origin,"tile_array_base_proven":"YES" if proven else "NO_OR_UNRESOLVED",
+          "effective_field_expression":"tile_array_base + dynamic_index*0x124 + 0x24" if proven else "TIDAK TAHU",
+          "value_origin":val,"source":"full EXE + Entry 1 lh/lhu/sh +0x24 census",
+          "reason":"tile identity requires proven lineage through pointer slot 0x8013EA84"})
+write_tsv("DZ4_TILE_PLUS24_ALL_LH_LHU_SH_CENSUS.tsv",dz4_tile24,
+ ["region","pc","file_offset","bytes","instruction","function","access","base_register","base_origin",
+  "tile_array_base_proven","effective_field_expression","value_origin","source","reason"])
+
+dz4_flow=[]
+for pc,role,reference,fanout,active in [
+ (0x800EC388,"ACTION8_TILE_PLUS24_READ",
+  "0x800EC364 lh $a0,-0x152e($v0) => global 0x8013EAD2",
+  "0x800EC390 subu $v0,$v0,$a0; 0x800EC398 sw $v0,0x2b4($a3) (manager base via slot 0x8013EAB0)",
+  "EA88 is not a direct RHS of the EC390 subtract"),
+ (0x800DAF2C,"EVENT3_TILE_PLUS24_READ",
+  "No direct comparison RHS against EA88 in this local path",
+  "0x800DAF34 sw $v0,0x390($a0) (manager base via slot 0x8013EA74)",
+  "0x800DAEF4 lhu $v1,-0x1578($a2) => 0x8013EA88 is used in record-index construction, not proven as the comparison RHS"),
+ (0x800DAF3C,"EVENT3_ACTIVE_INDEX_WRITE",
+  "global active-index 0x8013EA88",
+  "No tile+0x24 value fan-out; 0x800DAF38 sets $v0=5 then sh to EA88",
+  "This is a slot write, not a tile+0x24 field access")
+]:
+    i=ins.get(pc)
+    if not i: continue
+    lo=FUNC["ENTRY1"][1](pc)
+    bo=base_origin(i["rs"],pc,lo,ins) if i["mnemonic"] in (MEM_LOADS|MEM_STORES) else "—"
+    ea=effective_address(i,ins,lo) if i["mnemonic"] in (MEM_LOADS|MEM_STORES) else None
+    dz4_flow.append({"pc":h32(pc),"file_offset":h32(i["fileoff"]),"bytes":hx(i["bytes"]),
+      "instruction":i["text"],"role":role,"base_origin":bo,
+      "effective_address":"dynamic tile array + index*0x124 +0x24" if "SLOT_0x8013EA84" in bo else (h32(ea) if ea is not None else "TIDAK TAHU"),
+      "reference_or_comparison":reference,"value_flow":fanout,"EA88_relationship":active,
+      "source":"Entry 1 decoded instructions + slot provenance","reason":"no gameplay meaning assigned to field+0x24"})
+write_tsv("DZ4_TILE_PLUS24_VALUE_REFERENCE_FANOUT.tsv",dz4_flow,
+ ["pc","file_offset","bytes","instruction","role","base_origin","effective_address","reference_or_comparison",
+  "value_flow","EA88_relationship","source","reason"])
+
+dz4_hypotheses=[
+ {"hypothesis":"H1_OWNER_OR_SLOT_INDEX: tile+0x24 is an owner/player/slot identifier",
+  "indication":"EC388 reads it then subtracts global 0x8013EAD2; this is compatible with an identifier difference but not proof",
+  "falsifier":"Complete writer xref shows +0x24 assigned from level-up values/tables and never from owner/player slot; or consumers restrict it to LV1-LV5 disjoint from owner IDs"},
+ {"hypothesis":"H2_TILE_LEVEL: tile+0x24 stores a level value",
+  "indication":"It is a halfword on the proven tile array and EC390 subtracts a global reference; neither operand's meaning is established",
+  "falsifier":"Complete writers/readers prove +0x24 only carries a player index and never increments/decrements or indexes a level table"},
+ {"hypothesis":"H3_OTHER_TILE_STATE: tile+0x24 stores another status/phase/selection field",
+  "indication":"DAF2C forwards it to manager+0x390 without a local comparison/subtraction in that event-3 path",
+  "falsifier":"Independent writer/consumer traces consistently identify the field as either owner ID or upgrade level across transitions"}
+]
+write_tsv("DZ4_TILE_PLUS24_SEMANTIC_HYPOTHESES.tsv",dz4_hypotheses,
+ ["hypothesis","indication","falsifier"])
+
+# Correct all three previously miscomputed Entry 1 file offsets.
+dz1_corrected=[
+ {"site":"ACTION8_EC3A8","pc":"0x800EC388","file_offset":"0x10F9F38","bytes":"24 00 42 84","instruction":"lh $v0, 0x24($v0)",
+  "target_value_source":"Tile array via slot 0x8013EA84; index dynamic EC368..EC384",
+  "reference_value_source":"0x800EC364 lh $a0,-0x152e($v0) => global 0x8013EAD2",
+  "delta_operation":"0x800EC390 subu $v0,$v0,$a0; 0x800EC398 sw $v0,0x2b4($a3)",
+  "level_semantics_proven":"NO — TIDAK TAHU","d_proven":"NO — signed field difference only",
+  "reason":"field+0x24 meaning is not proven"},
+ {"site":"ACTION8_EF3CC","pc":"0x800EF3CC","file_offset":"0x10FCF7C","bytes":"EB 02 44 A0","instruction":"sb $a0, 0x2eb($v0)",
+  "target_value_source":"TIDAK TAHU — dynamic $v0 base","reference_value_source":"TIDAK TAHU — $a0 parameter/entry",
+  "delta_operation":"No proven subtraction at this site","level_semantics_proven":"NO — TIDAK TAHU","d_proven":"NO",
+  "reason":"base and value are unresolved"},
+ {"site":"EVENT3_FUN_800D9570","pc":"0x800DAF2C","file_offset":"0x10E8ADC","bytes":"24 00 42 84","instruction":"lh $v0, 0x24($v0)",
+  "target_value_source":"Tile array via slot 0x8013EA84; index from manager record+0x1F and active slot 0x8013EA88",
+  "reference_value_source":"No direct RHS comparison found in this event-3 path",
+  "delta_operation":"0x800DAF34 sw $v0,0x390($a0); no subtraction proven",
+  "level_semantics_proven":"NO — TIDAK TAHU","d_proven":"NO",
+  "reason":"field semantic remains unknown"}
+]
+write_tsv("DY2_ACTION8_EVENT3_LEVEL_ADJUDICATION.tsv",dz1_corrected,
+ ["site","pc","file_offset","bytes","instruction","target_value_source","reference_value_source","delta_operation",
+  "level_semantics_proven","d_proven","reason"])
+
+# Cross-check every generated TSV row with a PC/file_offset pair and every
+# four-byte instruction encoding against Capstone's decode at that exact PC.
+import re
+def parse_auto(v):
+    try: return int((v or "").strip(),0)
+    except Exception: return None
+def norm_ins(v): return re.sub(r"\s+","",(v or "")).lower()
+self_checks=[]; self_fail=[]
+for path in sorted(OUT.glob("*.tsv")):
+    if path.name=="DZ1_ALL_TSV_FILE_OFFSET_AND_DECODE_SELF_CHECK.tsv": continue
+    with path.open("r",encoding="utf-8",newline="") as f:
+        for row_no,row in enumerate(csv.DictReader(f,delimiter="\t"),2):
+            pc_s=next((row.get(k) for k in ("pc","branch_pc","call_pc","reader_pc","store_pc","or_pc","site_pc")
+                       if parse_auto(row.get(k)) is not None),None)
+            off=parse_auto(row.get("file_offset"))
+            if pc_s is None or off is None: continue
+            pc=parse_auto(pc_s)
+            if EXE_BASE<=pc<EXE_BASE+385024: expected=0x800+(pc-EXE_BASE); code=exe; region="EXE"
+            elif ENTRY_BASE<=pc<ENTRY_BASE+ENTRY_SIZE: expected=ENTRY_OFF+(pc-ENTRY_BASE); code=ins; region="ENTRY1"
+            else: expected=None; code={}; region="OUTSIDE_IMAGE"
+            off_ok=expected is not None and off==expected
+            btxt=(row.get("bytes") or "").strip(); itxt=(row.get("instruction") or "").strip()
+            dec_ok="SKIPPED"; raw=None; toks=btxt.split()
+            if len(toks)==4 and all(re.fullmatch(r"[0-9A-Fa-f]{2}",z) for z in toks):
+                raw=bytes(int(z,16) for z in toks)
+            if raw is not None and itxt and itxt not in ("TIDAK ADA","—","TIDAK TAHU"):
+                d=next(md.disasm(raw,pc,count=1),None)
+                decoded=(d.mnemonic.lower()+" "+d.op_str).strip() if d else ".word"
+                actual=code.get(pc)
+                dec_ok=(actual is not None and raw==actual["bytes"] and norm_ins(itxt)==norm_ins(decoded))
+            passed=off_ok and dec_ok in (True,"SKIPPED")
+            item={"file":path.name,"row":row_no,"region":region,"pc":h32(pc),
+                  "actual_file_offset":h32(off),"expected_file_offset":h32(expected) if expected is not None else "TIDAK TAHU",
+                  "offset_check":"PASS" if off_ok else "FAIL","decode_check":str(dec_ok),
+                  "status":"PASS" if passed else "FAIL",
+                  "reason":"formula offset and decode verified" if passed else "offset/decode mismatch"}
+            self_checks.append(item)
+            if not passed: self_fail.append(item)
+write_tsv("DZ1_ALL_TSV_FILE_OFFSET_AND_DECODE_SELF_CHECK.tsv",self_checks,
+ ["file","row","region","pc","actual_file_offset","expected_file_offset","offset_check","decode_check","status","reason"])
+(OUT/"DZ1_SELF_CHECK_SUMMARY.txt").write_text(
+ "STATUS="+("PASS" if not self_fail else "FAIL")+"\nCHECKED_ROWS="+str(len(self_checks))+
+ "\nFAILURES="+str(len(self_fail))+"\nEXE_RULE=0x800+(PC-0x80010000)\nENTRY1_RULE=0x10BB000+(PC-0x800AD450)\n",
+ encoding="utf-8")
+if self_fail: raise SystemExit("DZ1_SELF_CHECK_FAILED")
+
+joint=[r for r in dz2_delta_rows if r["old_field_and_EB0C_joint_dependency"]=="YES"]
+post_edges=[r for r in dz3_edges if r["post_loop_edge"]=="YES"]
+ecbb8=next((r for r in dz3_store_rows if r["pc"]=="0x800ECBB8"),None)
+tile24_proven=[r for r in dz4_tile24 if r["tile_array_base_proven"]=="YES"]
+report_dz=[
+ "# DZ0-DZ4 — addendum statis biaya/level petak",
+ "",
+ "Baseline inklusif: "+BASELINE,
+ "Snapshot source SHA: "+SNAPSHOT,
+ "DZ0: TUNTAS K4 untuk snapshot; ledger DX0_COMMIT_LEDGER.tsv dan DX0_COUNTS.tsv menghitung dari baseline inklusif. Snapshot dan HEAD pascapublikasi dibedakan di ringkasan run/repo.",
+ "DZ1: TUNTAS K4 jika file DZ1_SELF_CHECK_SUMMARY.txt PASS; validasi tiap pasangan PC/file_offset TSV serta decode byte 4-byte terhadap instruction. Script syntax harus lolos py_compile sebelum workflow.",
+ "DZ2: SEBAGIAN K4. Window fee lengkap ada di DZ2_D15A8_FEE_WINDOW_800D46B0_800D4840.tsv; census semua reader/writer EA 0x8013EB0C ada di DZ2_GLOBAL_8013EB0C_READ_WRITE_CENSUS.tsv. Old nibble 8-11/4-7 terbukti dibanding/dikurangkan dengan EB0C: "+("YES pada PC "+",".join(r["pc"] for r in joint) if joint else "TIDAK TAHU — tidak ada joint def-chain proof dalam FUN_800D15A8")+". Formula biaya ROM dan level d tidak diasumsikan.",
+ "DZ3: SEBAGIAN K4. Branch/jump lokal ke <=0x800D46EC: "+str(len(dz3_edges))+". Back-edge pasca-post ke fee load: "+str(len(post_edges))+". Table JR F5CE0 diperiksa 9 target; unresolved JR/JALR tetap TIDAK TAHU. Store +0x2EE terinventarisasi di DZ3_ACTION8_ALL_PLUS2EE_STORE_PATHS.tsv; ECBB8 status="+(ecbb8["action8_reachability"] if ecbb8 else "TIDAK TAHU")+".",
+ "DZ4: SEBAGIAN K4. Semua lh/lhu/sh displacement +0x24 ada di DZ4_TILE_PLUS24_ALL_LH_LHU_SH_CENSUS.tsv; tile-array base terbukti pada "+str(len(tile24_proven))+" baris. Dua/tiga fan-out spesifik dicatat di DZ4_TILE_PLUS24_VALUE_REFERENCE_FANOUT.tsv; makna owner/level/lainnya tetap hipotesis terfalsifikasi dalam DZ4_TILE_PLUS24_SEMANTIC_HYPOTHESES.tsv.",
+ "ECAEC: sw -0x1458 setelah lui 0x8014 => global 0x8013EBA8; bukan manager+0x2A8, bukan 0x8013EB0C, bukan 0x8013EBB0.",
+ "Fee dasar tetap simbolik. Angka 100/400/800/1600 adalah hipotesis pengguna, bukan konstanta ROM. Tidak dilakukan fit berbasis kurang dari 3 titik. Statis maksimum K4; tanpa runtime/K5.",
+ "Tidak ada emulator/game/BIOS/savestate dijalankan. Tidak ada biner/video/frame dikomit."
+]
+(OUT/"DZ0_DZ4_STATIC_AUDIT.md").write_text("\n".join(report_dz)+"\n",encoding="utf-8")
+(OUT/"DZ_ANALYSIS_SUMMARY.txt").write_text(
+ "STATUS=ANALYSIS_PASS\nJOB=dx0-dx4-static\nSOURCE_SHA="+SNAPSHOT+"\nEXIT_CODE=0\n"+
+ "DZ0_SNAPSHOT_COMMITS="+str(len(ledger))+"\nDZ0_HUMAN="+str(humans)+"\nDZ0_BOT="+str(bots)+"\n"+
+ "DZ1_SELF_CHECK_ROWS="+str(len(self_checks))+"\nDZ1_SELF_CHECK_FAILURES="+str(len(self_fail))+"\n"+
+ "DZ2_EB0C_READ_WRITE_ROWS="+str(len(dz2_global_eb0c))+"\nDZ2_D15A8_WINDOW_ROWS="+str(len(dz2_fee_window))+"\n"+
+ "DZ2_OLD_FIELD_EB0C_JOINT_ROWS="+str(len(joint))+"\nDZ3_LOCAL_BACKEDGE_ROWS="+str(len(post_edges))+"\n"+
+ "DZ3_PLUS2EE_STORE_ROWS="+str(len(dz3_store_rows))+"\nDZ4_TILE24_ROWS="+str(len(dz4_tile24))+"\n"+
+ "GAME_OR_EMULATOR_EXECUTED=no\nBIOS_OR_SAVESTATE_USED=no\nBINARY_COMMITTED=no\nOUTPUT=TEXT_ONLY\n",
+ encoding="utf-8")
+
 # DY summary and report.
 computed_posts=[r for r in dy4_post_rows if r["negative_tile_fee_post"]=="YES"]
 d15a8_posts=[r for r in computed_posts if r["function"]=="FUN_800D15A8"]
@@ -1205,12 +1545,12 @@ report_dy=[
 "Semua origin berhenti pada batas JAL/JALR: v0/v1 dilabel return, a0-a3 dan t0-t9 setelah JAL dilabel TIDAK TAHU. File offset EXE mengikuti 0x800+(PC-0x80010000), Entry 1 0x10BB000+(PC-0x800AD450).",
 "",
 "## DY2 — tile+0x20/+0x21",
-"DY2_TILE_PLUS20_PLUS21_WRITERS.tsv memuat "+str(len(tile_store_rows))+" operasi store displacement literal +0x20/+0x21 (EXE="+str(sum(1 for r in tile_store_rows if r['region']=='EXE'])+", Entry 1="+str(sum(1 for r in tile_store_rows if r['region']=='ENTRY1'])+"). Hanya "+str(len(tile_alias_writers))+" basisnya terbukti berakar ke slot pointer tile-array 0x8013EA84; sisanya NO_OR_UNRESOLVED. Kolom nibble8_11_operand_origin dan nibble12_15_operand_origin memisahkan parameter/stack dari dynamic load. Nilai load tetap dinamis.",
+"DY2_TILE_PLUS20_PLUS21_WRITERS.tsv memuat "+str(len(tile_store_rows))+" operasi store displacement literal +0x20/+0x21 (EXE="+str(sum(1 for r in tile_store_rows if r['region']=='EXE'))+", Entry 1="+str(sum(1 for r in tile_store_rows if r['region']=='ENTRY1'))+"). Hanya "+str(len(tile_alias_writers))+" basisnya terbukti berakar ke slot pointer tile-array 0x8013EA84; sisanya NO_OR_UNRESOLVED. Kolom nibble8_11_operand_origin dan nibble12_15_operand_origin memisahkan parameter/stack dari dynamic load. Nilai load tetap dinamis.",
 "DY2_ACTION8_EVENT3_LEVEL_FINDINGS.tsv merinci sumber field+0x24. Di action8 EC3A8, PC 0x800EC388 membaca tile+0x24, PC 0x800EC364 membaca global 0x8013EAD2, dan PC 0x800EC390 melakukan subu; ini kandidat beda field, bukan bukti beda level d. Pada event3 D9570, PC 0x800DAF2C membaca tile+0x24 berdasarkan indeks dari manager record +0x1F dan nilai disalin ke manager+0x390; tak ada operasi selisih terbukti. Pada EF3CC, basis dan parameter tetap TIDAK TAHU.",
 "",
 "## DY3 — global accumulator dan RNG retry",
 "DY3_GLOBAL_80139EFC_WRITERS.tsv hanya memuat store yang effective address statisnya tepat 0x80139EFC. Arithmetic slice memuat PC operand untuk sll/sllv/mult/addu/subu; dependency tile+1A, nibble +0x20, atau field resource +0x14/+0x15 hanya YES jika load pada slice teridentifikasi.",
-"Retry: EC AE8 menetapkan 0x32 (50); EC AEC menyimpan counter manager+0x2A8; EC B00/ B08 membaca dan decrement; EC B0C keluar saat -1. Loop memanggil RNG pada EC B14, menghasilkan remainder melalui div/mfhi di ECB24/ECB28, menyimpan kandidat index di ECB38, membaca active index melalui lhu slot 0x8013EA88 di ECB3C, dan mengulang bila sama pada ECB44. Sukses loop mensyaratkan kandidat != active-index; maksimum 50 pemanggilan RNG.",
+"Retry: EC AE8 menetapkan 0x32 (50); EC AEC menyimpan counter global 0x8013EBA8; EC B00/ B08 membaca dan decrement; EC B0C keluar saat -1. Loop memanggil RNG pada EC B14, menghasilkan remainder melalui div/mfhi di ECB24/ECB28, menyimpan kandidat index di ECB38, membaca active index melalui lhu slot 0x8013EA88 di ECB3C, dan mengulang bila sama pada ECB44. Sukses loop mensyaratkan kandidat != active-index; maksimum 50 pemanggilan RNG.",
 "Field manager +0x4F0/+0x4F4/+0x534 dan PC reader/writer berada di DY3_MANAGER_FIELDS_4F0_4F4_534.tsv. Pembaca dengan basis manager terbukti berada di DY3_MANAGER_FIELD_READERS.tsv (total "+str(len(manager_reader_rows))+"); pembaca terkelompok antara FUN_800DC2E0, FUN_800E562C, FUN_800E6470, FUN_800E9220, dan FUN_800C5978. Hipotesis H1/H2 serta falsifier-nya di DY3_HELPER_STATUS_HYPOTHESES.tsv; tidak ada klaim semantik final.",
 "",
 "## DY4 — debit aksi 8",

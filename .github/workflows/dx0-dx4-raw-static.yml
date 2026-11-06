@@ -26,6 +26,12 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
+      - name: Validate Python syntax before private input retrieval
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/stage1/RunDX0DX4Raw.py
+
       - name: Install disc extraction and MIPS decoding tools
         shell: bash
         run: |
@@ -97,7 +103,7 @@ jobs:
       - name: Run DX0-DX4 full-image static analysis
         shell: bash
         env:
-          DX_BASELINE: "f76a096862ceb88920df19b021a30870c74a9496"
+          DX_BASELINE: "c405f9261c3beea2ed4e3695222108c51a7ad636"
           DX_SNAPSHOT_SHA: "$GITHUB_SHA"
         run: |
           set -euo pipefail
