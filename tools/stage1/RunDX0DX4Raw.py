@@ -7,7 +7,9 @@ from capstone import Cs, CS_ARCH_MIPS, CS_MODE_MIPS32, CS_MODE_LITTLE_ENDIAN
 
 EXE_PATH, DATA_PATH, OUT = map(Path, sys.argv[1:4])
 BASELINE = os.environ.get("DX_BASELINE", "2d5becc3a70716cf78563233504b800b3c9609e0")
-SNAPSHOT = os.environ.get("DX_SNAPSHOT_SHA", subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip())
+SNAPSHOT = os.environ.get("DX_SNAPSHOT_SHA", "").strip()
+if not SNAPSHOT or SNAPSHOT.startswith("$"):
+    SNAPSHOT = os.environ.get("GITHUB_SHA", subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip())
 EXE_BASE, ENTRY_BASE, ENTRY_OFF = 0x80010000, 0x800AD450, 0x10BB000
 EXE_SHA = "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569"
 DATA_SHA = "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822"
@@ -269,7 +271,7 @@ for tag,code,base in codes:
         dx2_access.append({"region":tag,"pc":h32(i["pc"]),"file_offset":h32(i["fileoff"]),
           "bytes":hx(i["bytes"]),"instruction":i["text"],
           "access":"READ" if i["mnemonic"] in MEM_LOADS else "WRITE",
-          "width":"1" if i["mnemonic"].endswith("b") else "2" if i["mnemonic"].endswith("h") else "4",
+          "width":"1" if i["mnemonic"] in ("lb","lbu","sb") else "2" if i["mnemonic"] in ("lh","lhu","sh") else "4",
           "function_entry_guess":h32(f_at(i["pc"])),"function_name_guess":f_name(i["pc"]),
           "base_register":rn(i["rs"]),"base_origin":base_origin(i["rs"],i["pc"],lo,code),
           "base_origin_trace":trace_reg(i["rs"],i["pc"],lo,code),
@@ -432,7 +434,7 @@ def reverse_reachable(graph,target):
 
 dx2_entry=0x800EC574
 reach2,g2,exits2,branches2,hi2=build_cfg(ins,dx2_entry,"ENTRY1",0x3000)
-target_pcs=sorted(set([0x800ECAD0,0x800ECB4C,0x800ECB88,0x800ECBBC]+list(range(0x800ECBA8,0x800ECBBC,4))))
+target_pcs=sorted(set([0x800ECAD0,0x800ECB4C,0x800ECB88,0x800ECBBC,0x800ECBB8]+list(range(0x800ECBA8,0x800ECBBC,4))))
 target_rows=[]; gate_rows=[]
 for target in target_pcs:
     can=reverse_reachable(g2,target)
