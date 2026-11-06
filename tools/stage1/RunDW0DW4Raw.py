@@ -212,6 +212,8 @@ for r in sorted(resources,key=lambda x:x["selector"]):
     if rem: raise SystemExit(f"DW1_RECORD_SIZE_REMAINDER_{r['resource_id']:03X}_{rem}")
     n=(size-1)//0x1e
     head=blob[0]
+    if head != n:
+        raise SystemExit(f"DW1_HEADER_RECORD_COUNT_MISMATCH_{r['resource_id']:03X}_{head}_{n}")
     h=Counter(); missing=truncated=0
     for j in range(n):
         start=1+j*0x1e
@@ -225,7 +227,7 @@ for r in sorted(resources,key=lambda x:x["selector"]):
                           "byte_value":f"0x{val:02X}","count":count,"source_offset":h32(off+1),
                           "reason":"histogram byte pertama tiap record 0x1E B; tidak menganggap byte sebagai label gameplay"})
     resource_rows.append({"selector":f"0x{r['selector']:03X}","resource_id":f"0x{r['resource_id']:03X}",
-      "data_bin_offset":h32(off),"size_bytes":size,"header_byte":f"0x{head:02X}",
+      "data_bin_offset":h32(off),"size_bytes":size,"header_byte":f"0x{head:02X}","header_count_matches_extent":"YES",
       "record_size":"0x1E","record_count_by_extent":n,"size_remainder":rem,
       "count_byte_1":h.get(1,0),"count_byte_5":h.get(5,0),
       "records_without_byte_00":missing,"truncated_records":truncated,
@@ -239,13 +241,13 @@ for val,count in sorted(total_hist.items()):
     hist_rows.append({"resource_id":"TOTAL","selector":"ALL","byte_value":f"0x{val:02X}","count":count,
                       "source_offset":"MULTIPLE","reason":"gabungan 12 resource yang lolos verifikasi extent"})
 resource_rows.append({"selector":"ALL","resource_id":"TOTAL","data_bin_offset":"MULTIPLE","size_bytes":sum(r["size"] for r in resources),
- "header_byte":"MULTIPLE","record_size":"0x1E","record_count_by_extent":total_records,"size_remainder":0,
+ "header_byte":"MULTIPLE","header_count_matches_extent":"YES_ALL_12","record_size":"0x1E","record_count_by_extent":total_records,"size_remainder":0,
  "count_byte_1":total_hist.get(1,0),"count_byte_5":total_hist.get(5,0),
  "records_without_byte_00":0,"truncated_records":0,"tile20_initial_word":"0xF020",
  "tile20_bits12_15":"0xF","tile20_bits8_11":"0x0","tile20_initialized_record_count":total_records,
  "source":"verified extents across all 12 selector resources","reason":"aggregate row; runtime initializer applies per loaded tile"})
 write_tsv("DW1_RESOURCE_SUMMARY.tsv",resource_rows,
- ["selector","resource_id","data_bin_offset","size_bytes","header_byte","record_size","record_count_by_extent",
+ ["selector","resource_id","data_bin_offset","size_bytes","header_byte","header_count_matches_extent","record_size","record_count_by_extent",
   "size_remainder","count_byte_1","count_byte_5","records_without_byte_00","truncated_records",
   "tile20_initial_word","tile20_bits12_15","tile20_bits8_11","tile20_initialized_record_count","source","reason"])
 write_tsv("DW1_BYTE00_HISTOGRAM.tsv",hist_rows,
@@ -682,7 +684,7 @@ f"DW0_TOTAL_INCLUSIVE={len(ledger)} HUMAN={humans} BOT={bots}",
 f"Selector inventory yang diverifikasi: {len(resources)} resource; jumlah record dari 1-byte header + N record x 0x1E = {total_records}.",
 f"Total byte +0x00 bernilai 1: {total_hist.get(1,0)}; bernilai 5: {total_hist.get(5,0)}.",
 "Histogram byte ada di DW1_BYTE00_HISTOGRAM.tsv; ringkasan setiap resource dan initial tile+0x20 ada di DW1_RESOURCE_SUMMARY.tsv.",
-"Record tanpa byte +0x00 dan record terpotong dihitung eksplisit; header byte dilaporkan tetapi tidak diasumsikan sebagai N.",
+"Seluruh 12 byte header cocok dengan N dari ukuran extent (1 + N*0x1E); tidak ada record terpotong atau tanpa byte +0x00.",
 "FUN_800F7ADC menulis initializer tile+0x20 = 0xF020; sehingga nibble awal bits12–15=0xF dan bits8–11=0 untuk setiap tile yang diinisialisasi. Ini bukan field sumber resource.",
 "Arti gameplay 1 dan 5 tidak ditetapkan dari histogram. Kode yang terverifikasi: value 1 mengambil cabang bookkeeping daftar tile pada loader; value 5 adalah filter pertama pada loop ekonomi. Label jenis/status gameplay tetap TIDAK TAHU.",
 "",
