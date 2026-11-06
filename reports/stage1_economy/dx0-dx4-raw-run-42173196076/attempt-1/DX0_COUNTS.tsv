@@ -1,0 +1,3 @@
+scope	sha	total_inclusive	human	bot	method	note
+SNAPSHOT_SOURCE	a1f2b3250afe0819e2b9882677df4c876c8b3027	5	4	1	git rev-list baseline^..snapshot	snapshot pemicu; commit publikasi tidak termasuk
+EXPECTED_AFTER_ONE_PUBLICATION	VERIFIKASI_SETELAH_RUN	6	4	2	snapshot ledger + satu commit publikasi bot	proyeksi; final main diverifikasi terpisah setelah Actions

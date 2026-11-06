@@ -1,0 +1,29 @@
+pc	file_offset	bytes	instruction	source	reason
+0x8001387C	0x0000387C	2E 00 82 92	lbu $v0, 0x2e($s4)	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x80013880	0x00003880	00 00 00 00	nop	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x80013884	0x00003884	0D 00 42 2C	sltiu $v0, $v0, 0xd	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x80013888	0x00003888	6C 00 40 10	beqz $v0, 0x80013a3c	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x8001388C	0x0000388C	21 88 00 00	move $s1, $zero	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x80013890	0x00003890	2E 00 95 26	addiu $s5, $s4, 0x2e	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x80013894	0x00003894	42 00 96 26	addiu $s6, $s4, 0x42	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x80013898	0x00003898	06 80 02 3C	lui $v0, 0x8006	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x8001389C	0x0000389C	88 4C 5E 24	addiu $fp, $v0, 0x4c88	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138A0	0x000038A0	80 10 11 00	sll $v0, $s1, 2	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138A4	0x000038A4	21 10 51 00	addu $v0, $v0, $s1	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138A8	0x000038A8	21 10 A2 02	addu $v0, $s5, $v0	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138AC	0x000038AC	00 00 45 90	lbu $a1, ($v0)	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138B0	0x000038B0	CF 4D 00 0C	jal 0x8001373c	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138B4	0x000038B4	21 20 20 02	move $a0, $s1	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138B8	0x000038B8	21 80 00 00	move $s0, $zero	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138BC	0x000038BC	80 90 11 00	sll $s2, $s1, 2	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138C0	0x000038C0	21 10 12 02	addu $v0, $s0, $s2	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138C4	0x000038C4	21 10 C2 02	addu $v0, $s6, $v0	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138C8	0x000038C8	21 20 20 02	move $a0, $s1	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138CC	0x000038CC	00 00 46 90	lbu $a2, ($v0)	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138D0	0x000038D0	96 58 00 0C	jal 0x80016258	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138D4	0x000038D4	21 28 00 02	move $a1, $s0	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138D8	0x000038D8	01 00 10 26	addiu $s0, $s0, 1	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138DC	0x000038DC	04 00 02 2A	slti $v0, $s0, 4	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138E0	0x000038E0	F8 FF 40 14	bnez $v0, 0x800138c4	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138E4	0x000038E4	21 10 12 02	addu $v0, $s0, $s2	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
+0x800138E8	0x000038E8	E3 4D 00 0C	jal 0x8001378c	EXE direct CFG rooted at setter 0x8001387C	bounded setter body; memory destinations retain raw offset and base provenance
