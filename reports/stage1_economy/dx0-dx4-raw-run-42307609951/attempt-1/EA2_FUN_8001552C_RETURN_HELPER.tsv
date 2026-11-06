@@ -1,0 +1,7 @@
+pc	file_offset	bytes	instruction	v0_origin_before_instruction	branch_target
+0x8001552C	0x00005D2C	21 20 85 00	addu $a0, $a0, $a1	$v0 masuk/dinamis	—
+0x80015530	0x00005D30	00 00 82 94	lhu $v0, ($a0)	$v0 masuk/dinamis	—
+0x80015534	0x00005D34	00 00 00 00	nop	0x80015530 lhu $v0, ($a0) [load alamat dinamis; base $a0]	—
+0x80015538	0x00005D38	01 00 42 24	addiu $v0, $v0, 1	0x80015530 lhu $v0, ($a0) [load alamat dinamis; base $a0]	—
+0x8001553C	0x00005D3C	00 00 82 A4	sh $v0, ($a0)	0x80015538 addiu $v0, $v0, 1 <- 0x80015530 lhu $v0, ($a0) [load alamat dinamis; base $a0]	—
+0x80015540	0x00005D40	08 00 E0 03	jr $ra	0x80015538 addiu $v0, $v0, 1 <- 0x80015530 lhu $v0, ($a0) [load alamat dinamis; base $a0]	—

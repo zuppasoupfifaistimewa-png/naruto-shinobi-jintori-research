@@ -1,0 +1,3 @@
+scope	baseline_inclusive	snapshot_sha	total	human	bot	method
+SNAPSHOT_SOURCE	YES	f74961b844d068a164732c08c78a363d5267e569	7	5	2	git rev-list baseline^..snapshot
+EXPECTED_AFTER_ONE_PUBLICATION	YES	f74961b844d068a164732c08c78a363d5267e569	8	5	3	snapshot ledger + one publication bot commit; verify final HEAD separately

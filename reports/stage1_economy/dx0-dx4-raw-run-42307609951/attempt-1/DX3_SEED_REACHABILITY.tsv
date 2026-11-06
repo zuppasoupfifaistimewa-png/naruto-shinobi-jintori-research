@@ -1,0 +1,4 @@
+seed_pc	seed_label	function_label	reachable_instruction_count	reaches_800EC3A8	function_bound_end_guess	source	reason
+0x800D15A8	D15A8	FUN_800D15A8	2560	NO	0x800D3DA8	Entry 1 CFG rooted at requested PC	direct jumps, conditional fall-through and delay slots modeled; indirect JR exits terminate
+0x800EB434	EB434	FUN_800EB434	1104	YES	0x800EC574	Entry 1 CFG rooted at requested PC	direct jumps, conditional fall-through and delay slots modeled; indirect JR exits terminate
+0x800EF3CC	EF3CC	SITE_800EF3CC	374	NO	0x800EF9A4	Entry 1 CFG rooted at requested PC	direct jumps, conditional fall-through and delay slots modeled; indirect JR exits terminate

@@ -1,0 +1,3 @@
+region	pc	file_offset	bytes	instruction	function	source_value
+ENTRY1	0x800F7E2C	0x011059DC	24 00 83 A4	sh $v1, 0x24($a0)	FUN_800F7ADC	0x800F7E24 lbu $v1, ($s1) [load alamat dinamis; base $s1]
+ENTRY1	0x800F7E40	0x011059F0	24 00 83 A4	sh $v1, 0x24($a0)	FUN_800F7ADC	0x800F7E3C or $v1, $v1, $v0 <- 0x800F7E24 lbu $v1, ($s1) [load alamat dinamis; base $s1] , 0x800F7E38 sll $v0, $v0, 8 <- 0x800F7E30 lbu $v0, 1($s1) [load alamat dinamis; base $s1]

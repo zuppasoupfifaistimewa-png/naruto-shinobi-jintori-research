@@ -1,0 +1,3 @@
+pc	file_offset	bytes	instruction	effective_address	dynamic_expression	dynamic_class	source_load_pc	straight_line
+0x800D46B8	0x010E2268	0C EB 02 AE	sw $v0, -0x14f4($s0)	0x8013EB0C	((tile+0x20)>>8 & 0xF)+1	DYNAMIC_FROM_TILE_PLUS20_NIBBLE	0x800D46A4	YES
+0x800D47C8	0x010E2378	0C EB 02 AE	sw $v0, -0x14f4($s0)	0x8013EB0C	((tile+0x20)>>4 & 0xF)+1	DYNAMIC_FROM_TILE_PLUS20_NIBBLE	0x800D47B4	YES

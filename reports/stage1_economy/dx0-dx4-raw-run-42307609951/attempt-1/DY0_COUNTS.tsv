@@ -1,0 +1,3 @@
+scope	sha	total	human	bot	method
+SNAPSHOT_SOURCE_INCLUSIVE	f74961b844d068a164732c08c78a363d5267e569	7	5	2	git rev-list baseline^..snapshot; baseline included
+HEAD_AFTER_ONE_BOT_PUBLICATION_EXPECTED	VERIFY_AFTER_ACTION	8	5	3	snapshot ledger plus one Actions publication bot commit

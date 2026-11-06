@@ -1,0 +1,4 @@
+hypothesis	indication	falsifier
+H1_OWNER_OR_SLOT_INDEX: tile+0x24 is an owner/player/slot identifier	EC388 reads it then subtracts global 0x8013EAD2; this is compatible with an identifier difference but not proof	Complete writer xref shows +0x24 assigned from level-up values/tables and never from owner/player slot; or consumers restrict it to LV1-LV5 disjoint from owner IDs
+H2_TILE_LEVEL: tile+0x24 stores a level value	It is a halfword on the proven tile array and EC390 subtracts a global reference; neither operand's meaning is established	Complete writers/readers prove +0x24 only carries a player index and never increments/decrements or indexes a level table
+H3_OTHER_TILE_STATE: tile+0x24 stores another status/phase/selection field	DAF2C forwards it to manager+0x390 without a local comparison/subtraction in that event-3 path	Independent writer/consumer traces consistently identify the field as either owner ID or upgrade level across transitions

@@ -1,0 +1,409 @@
+pc	file_offset	bytes	instruction	rs_origin	rt_origin	branch_target
+0x800F2A9C	0x0110064C	D8 FF BD 27	addiu $sp, $sp, -0x28	$sp masuk/dinamis	$sp masuk/dinamis	—
+0x800F2AA0	0x01100650	20 00 BF AF	sw $ra, 0x20($sp)	0x800F2A9C addiu $sp, $sp, -0x28 <- $sp masuk/dinamis	$ra masuk/dinamis	—
+0x800F2AA4	0x01100654	1C 00 B3 AF	sw $s3, 0x1c($sp)	0x800F2A9C addiu $sp, $sp, -0x28 <- $sp masuk/dinamis	$s3 masuk/dinamis	—
+0x800F2AA8	0x01100658	18 00 B2 AF	sw $s2, 0x18($sp)	0x800F2A9C addiu $sp, $sp, -0x28 <- $sp masuk/dinamis	$s2 masuk/dinamis	—
+0x800F2AAC	0x0110065C	14 00 B1 AF	sw $s1, 0x14($sp)	0x800F2A9C addiu $sp, $sp, -0x28 <- $sp masuk/dinamis	$s1 masuk/dinamis	—
+0x800F2AB0	0x01100660	10 00 B0 AF	sw $s0, 0x10($sp)	0x800F2A9C addiu $sp, $sp, -0x28 <- $sp masuk/dinamis	$s0 masuk/dinamis	—
+0x800F2AB4	0x01100664	14 80 04 3C	lui $a0, 0x8014	$zero	$a0 masuk/dinamis	—
+0x800F2AB8	0x01100668	14 80 03 3C	lui $v1, 0x8014	$zero	$v1 masuk/dinamis	—
+0x800F2ABC	0x0110066C	42 9F 62 90	lbu $v0, -0x60be($v1)	0x800F2AB8 lui $v1, 0x8014	$v0 masuk/dinamis	—
+0x800F2AC0	0x01100670	00 00 00 00	nop	$zero	$zero	—
+0x800F2AC4	0x01100674	C4 EA 82 A0	sb $v0, -0x153c($a0)	0x800F2AB4 lui $a0, 0x8014	0x800F2ABC lbu $v0, -0x60be($v1) [load 0x80139F42; base $v1]	—
+0x800F2AC8	0x01100678	FF 00 43 30	andi $v1, $v0, 0xff	0x800F2ABC lbu $v0, -0x60be($v1) [load 0x80139F42; base $v1]	0x800F2AB8 lui $v1, 0x8014	—
+0x800F2ACC	0x0110067C	01 00 02 24	addiu $v0, $zero, 1	$zero	0x800F2ABC lbu $v0, -0x60be($v1) [load 0x80139F42; base $v1]	—
+0x800F2AD0	0x01100680	14 00 62 10	beq $v1, $v0, 0x800f2b24	0x800F2AC8 andi $v1, $v0, 0xff <- 0x800F2ABC lbu $v0, -0x60be($v1) [load 0x80139F42; base $v1]	0x800F2ACC addiu $v0, $zero, 1 <- $zero	0x800F2B24
+0x800F2AD4	0x01100684	02 00 62 28	slti $v0, $v1, 2	0x800F2AC8 andi $v1, $v0, 0xff <- 0x800F2ABC lbu $v0, -0x60be($v1) [load 0x80139F42; base $v1]	0x800F2ACC addiu $v0, $zero, 1 <- $zero	—
+0x800F2AD8	0x01100688	05 00 40 10	beqz $v0, 0x800f2af0	0x800F2AD4 slti $v0, $v1, 2 <- 0x800F2AC8 andi $v1, $v0, 0xff <- 0x800F2ABC lbu $v0, -0x60be($v1) [load 0x80139F42; base $v1]	$zero	0x800F2AF0
+0x800F2ADC	0x0110068C	00 00 00 00	nop	$zero	$zero	—
+0x800F2AE0	0x01100690	08 00 60 10	beqz $v1, 0x800f2b04	0x800F2AC8 andi $v1, $v0, 0xff <- 0x800F2ABC lbu $v0, -0x60be($v1) [load 0x80139F42; base $v1]	$zero	0x800F2B04
+0x800F2AE4	0x01100694	14 80 03 3C	lui $v1, 0x8014	$zero	0x800F2AC8 andi $v1, $v0, 0xff <- 0x800F2ABC lbu $v0, -0x60be($v1) [load 0x80139F42; base $v1]	—
+0x800F2AE8	0x01100698	39 CC 03 08	j 0x800f30e4	—	—	0x800F30E4
+0x800F2AEC	0x0110069C	00 00 00 00	nop	$zero	$zero	—
+0x800F2AF0	0x011006A0	02 00 02 24	addiu $v0, $zero, 2	$zero	0x800F2AD4 slti $v0, $v1, 2 <- 0x800F2AC8 andi $v1, $v0, 0xff <- 0x800F2ABC lbu $v0, -0x60be($v1) [load 0x80139F42; base $v1]	—
+0x800F2AF4	0x011006A4	02 01 62 10	beq $v1, $v0, 0x800f2f00	0x800F2AE4 lui $v1, 0x8014	0x800F2AF0 addiu $v0, $zero, 2 <- $zero	0x800F2F00
+0x800F2AF8	0x011006A8	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2AF0 addiu $v0, $zero, 2 <- $zero	—
+0x800F2AFC	0x011006AC	39 CC 03 08	j 0x800f30e4	—	—	0x800F30E4
+0x800F2B00	0x011006B0	00 00 00 00	nop	$zero	$zero	—
+0x800F2B04	0x011006B4	01 00 02 24	addiu $v0, $zero, 1	$zero	0x800F2AF8 lui $v0, 0x8014	—
+0x800F2B08	0x011006B8	D4 EA 62 A0	sb $v0, -0x152c($v1)	0x800F2AE4 lui $v1, 0x8014	0x800F2B04 addiu $v0, $zero, 1 <- $zero	—
+0x800F2B0C	0x011006BC	14 80 03 3C	lui $v1, 0x8014	$zero	0x800F2AE4 lui $v1, 0x8014	—
+0x800F2B10	0x011006C0	42 9F 62 90	lbu $v0, -0x60be($v1)	0x800F2B0C lui $v1, 0x8014	0x800F2B04 addiu $v0, $zero, 1 <- $zero	—
+0x800F2B14	0x011006C4	00 00 00 00	nop	$zero	$zero	—
+0x800F2B18	0x011006C8	01 00 42 24	addiu $v0, $v0, 1	0x800F2B10 lbu $v0, -0x60be($v1) [load 0x80139F42; base $v1]	0x800F2B10 lbu $v0, -0x60be($v1) [load 0x80139F42; base $v1]	—
+0x800F2B1C	0x011006CC	39 CC 03 08	j 0x800f30e4	—	—	0x800F30E4
+0x800F2B20	0x011006D0	42 9F 62 A0	sb $v0, -0x60be($v1)	0x800F2B0C lui $v1, 0x8014	0x800F2B18 addiu $v0, $v0, 1 <- 0x800F2B10 lbu $v0, -0x60be($v1) [load 0x80139F42; base $v1]	—
+0x800F2B24	0x011006D4	87 13 04 0C	jal 0x80104e1c	—	—	0x80104E1C
+0x800F2B28	0x011006D8	00 00 00 00	nop	$zero	$zero	—
+0x800F2B2C	0x011006DC	6D 01 40 14	bnez $v0, 0x800f30e4	return JAL 0x80104E1C	$zero	0x800F30E4
+0x800F2B30	0x011006E0	14 80 10 3C	lui $s0, 0x8014	$zero	$s0 masuk/dinamis	—
+0x800F2B34	0x011006E4	B4 4A 00 0C	jal 0x80012ad0	—	—	0x80012AD0
+0x800F2B38	0x011006E8	FC 9E 00 AE	sw $zero, -0x6104($s0)	0x800F2B30 lui $s0, 0x8014	$zero	—
+0x800F2B3C	0x011006EC	00 10 42 30	andi $v0, $v0, 0x1000	return JAL 0x80012AD0	return JAL 0x80012AD0	—
+0x800F2B40	0x011006F0	02 00 40 10	beqz $v0, 0x800f2b4c	0x800F2B3C andi $v0, $v0, 0x1000 <- return JAL 0x80012AD0	$zero	0x800F2B4C
+0x800F2B44	0x011006F4	01 00 02 24	addiu $v0, $zero, 1	$zero	0x800F2B3C andi $v0, $v0, 0x1000 <- return JAL 0x80012AD0	—
+0x800F2B48	0x011006F8	FC 9E 02 AE	sw $v0, -0x6104($s0)	0x800F2B30 lui $s0, 0x8014	0x800F2B44 addiu $v0, $zero, 1 <- $zero	—
+0x800F2B4C	0x011006FC	14 80 10 3C	lui $s0, 0x8014	$zero	0x800F2B30 lui $s0, 0x8014	—
+0x800F2B50	0x01100700	74 EA 02 8E	lw $v0, -0x158c($s0)	0x800F2B4C lui $s0, 0x8014	0x800F2B44 addiu $v0, $zero, 1 <- $zero	—
+0x800F2B54	0x01100704	00 00 00 00	nop	$zero	$zero	—
+0x800F2B58	0x01100708	30 05 44 8C	lw $a0, 0x530($v0)	0x800F2B50 lw $v0, -0x158c($s0) [load 0x8013EA74; base $s0]	TIDAK TAHU: caller-saved setelah JAL 0x80012AD0	—
+0x800F2B5C	0x0110070C	4B 55 00 0C	jal 0x8001552c	—	—	0x8001552C
+0x800F2B60	0x01100710	00 00 00 00	nop	$zero	$zero	—
+0x800F2B64	0x01100714	74 EA 06 8E	lw $a2, -0x158c($s0)	0x800F2B4C lui $s0, 0x8014	TIDAK TAHU: caller-saved setelah JAL 0x8001552C	—
+0x800F2B68	0x01100718	14 80 07 3C	lui $a3, 0x8014	$zero	TIDAK TAHU: caller-saved setelah JAL 0x8001552C	—
+0x800F2B6C	0x0110071C	8A EA E5 94	lhu $a1, -0x1576($a3)	0x800F2B68 lui $a3, 0x8014	TIDAK TAHU: caller-saved setelah JAL 0x8001552C	—
+0x800F2B70	0x01100720	00 00 00 00	nop	$zero	$zero	—
+0x800F2B74	0x01100724	40 28 05 00	sll $a1, $a1, 1	$zero	0x800F2B6C lhu $a1, -0x1576($a3) [load 0x8013EA8A; base $a3]	—
+0x800F2B78	0x01100728	EE 02 C6 24	addiu $a2, $a2, 0x2ee	0x800F2B64 lw $a2, -0x158c($s0) [load 0x8013EA74; base $s0]	0x800F2B64 lw $a2, -0x158c($s0) [load 0x8013EA74; base $s0]	—
+0x800F2B7C	0x0110072C	21 28 C5 00	addu $a1, $a2, $a1	0x800F2B78 addiu $a2, $a2, 0x2ee <- 0x800F2B64 lw $a2, -0x158c($s0) [load 0x8013EA74; base $s0]	0x800F2B74 sll $a1, $a1, 1 <- 0x800F2B6C lhu $a1, -0x1576($a3) [load 0x8013EA8A; base $a3]	—
+0x800F2B80	0x01100730	14 80 03 3C	lui $v1, 0x8014	$zero	return JAL 0x8001552C	—
+0x800F2B84	0x01100734	71 EA 63 90	lbu $v1, -0x158f($v1)	0x800F2B80 lui $v1, 0x8014	0x800F2B80 lui $v1, 0x8014	—
+0x800F2B88	0x01100738	00 00 00 00	nop	$zero	$zero	—
+0x800F2B8C	0x0110073C	FF FF 63 24	addiu $v1, $v1, -1	0x800F2B84 lbu $v1, -0x158f($v1) [load 0x8013EA71; base $v1]	0x800F2B84 lbu $v1, -0x158f($v1) [load 0x8013EA71; base $v1]	—
+0x800F2B90	0x01100740	14 80 04 3C	lui $a0, 0x8014	$zero	TIDAK TAHU: caller-saved setelah JAL 0x8001552C	—
+0x800F2B94	0x01100744	FC 9E 84 8C	lw $a0, -0x6104($a0)	0x800F2B90 lui $a0, 0x8014	0x800F2B90 lui $a0, 0x8014	—
+0x800F2B98	0x01100748	00 00 00 00	nop	$zero	$zero	—
+0x800F2B9C	0x0110074C	23 18 64 00	subu $v1, $v1, $a0	0x800F2B8C addiu $v1, $v1, -1 <- 0x800F2B84 lbu $v1, -0x158f($v1) [load 0x8013EA71; base $v1]	0x800F2B94 lw $a0, -0x6104($a0) [load 0x80139EFC; base $a0]	—
+0x800F2BA0	0x01100750	18 00 43 00	mult $v0, $v1	return JAL 0x8001552C	0x800F2B9C subu $v1, $v1, $a0 <- 0x800F2B8C addiu $v1, $v1, -1 <- 0x800F2B84 lbu $v1, -0x158f($v1) [load 0x8013EA71; base $v1] , 0x800F2B94 lw $a0, -0x6104($a0) [load 0x80139EFC; base $a0]	—
+0x800F2BA4	0x01100754	12 10 00 00	mflo $v0	$zero	$zero	—
+0x800F2BA8	0x01100758	00 00 A2 A4	sh $v0, ($a1)	0x800F2B7C addu $a1, $a2, $a1 <- 0x800F2B78 addiu $a2, $a2, 0x2ee <- 0x800F2B64 lw $a2, -0x158c($s0) [load 0x8013EA74; base $s0] , 0x800F2B74 sll $a1, $a1, 1 <- 0x800F2B6C lhu $a1, -0x1576($a3) [load 0x8013EA8A; base $a3]	0x800F2BA4 mflo $v0 <- 0x800F2BA0 mult $v0, $v1 (return JAL 0x8001552C; 0x800F2B9C subu $v1, $v1, $a0 <- 0x800F2B8C addiu $v1, $v1, -1 <- 0x800F2B84 lbu $v1, -0x158f($v1) [load 0x8013EA71; base $v1] , 0x800F2B94 lw $a0, -0x6104($a0) [load 0x80139EFC; base $a0])	—
+0x800F2BAC	0x0110075C	8A EA E2 94	lhu $v0, -0x1576($a3)	0x800F2B68 lui $a3, 0x8014	0x800F2BA4 mflo $v0 <- 0x800F2BA0 mult $v0, $v1 (return JAL 0x8001552C; 0x800F2B9C subu $v1, $v1, $a0 <- 0x800F2B8C addiu $v1, $v1, -1 <- 0x800F2B84 lbu $v1, -0x158f($v1) [load 0x8013EA71; base $v1] , 0x800F2B94 lw $a0, -0x6104($a0) [load 0x80139EFC; base $a0])	—
+0x800F2BB0	0x01100760	00 00 00 00	nop	$zero	$zero	—
+0x800F2BB4	0x01100764	40 10 02 00	sll $v0, $v0, 1	$zero	0x800F2BAC lhu $v0, -0x1576($a3) [load 0x8013EA8A; base $a3]	—
+0x800F2BB8	0x01100768	21 30 C2 00	addu $a2, $a2, $v0	0x800F2B78 addiu $a2, $a2, 0x2ee <- 0x800F2B64 lw $a2, -0x158c($s0) [load 0x8013EA74; base $s0]	0x800F2BB4 sll $v0, $v0, 1 <- 0x800F2BAC lhu $v0, -0x1576($a3) [load 0x8013EA8A; base $a3]	—
+0x800F2BBC	0x0110076C	00 00 C2 84	lh $v0, ($a2)	0x800F2BB8 addu $a2, $a2, $v0 <- 0x800F2B78 addiu $a2, $a2, 0x2ee <- 0x800F2B64 lw $a2, -0x158c($s0) [load 0x8013EA74; base $s0] , 0x800F2BB4 sll $v0, $v0, 1 <- 0x800F2BAC lhu $v0, -0x1576($a3) [load 0x8013EA8A; base $a3]	0x800F2BB4 sll $v0, $v0, 1 <- 0x800F2BAC lhu $v0, -0x1576($a3) [load 0x8013EA8A; base $a3]	—
+0x800F2BC0	0x01100770	00 00 00 00	nop	$zero	$zero	—
+0x800F2BC4	0x01100774	13 00 41 04	bgez $v0, 0x800f2c14	0x800F2BBC lh $v0, ($a2) [load alamat dinamis; base $a2]	$at masuk/dinamis	0x800F2C14
+0x800F2BC8	0x01100778	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2BBC lh $v0, ($a2) [load alamat dinamis; base $a2]	—
+0x800F2BCC	0x0110077C	F6 0B 03 0C	jal 0x800c2fd8	—	—	0x800C2FD8
+0x800F2BD0	0x01100780	5B 02 04 24	addiu $a0, $zero, 0x25b	$zero	TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8	—
+0x800F2BD4	0x01100784	74 EA 03 8E	lw $v1, -0x158c($s0)	0x800F2B4C lui $s0, 0x8014	return JAL 0x800C2FD8	—
+0x800F2BD8	0x01100788	00 00 00 00	nop	$zero	$zero	—
+0x800F2BDC	0x0110078C	E9 02 62 90	lbu $v0, 0x2e9($v1)	0x800F2BD4 lw $v1, -0x158c($s0) [load 0x8013EA74; base $s0]	return JAL 0x800C2FD8	—
+0x800F2BE0	0x01100790	00 00 00 00	nop	$zero	$zero	—
+0x800F2BE4	0x01100794	EB 02 62 A0	sb $v0, 0x2eb($v1)	0x800F2BD4 lw $v1, -0x158c($s0) [load 0x8013EA74; base $s0]	0x800F2BDC lbu $v0, 0x2e9($v1) [load alamat dinamis; base $v1]	—
+0x800F2BE8	0x01100798	74 EA 03 8E	lw $v1, -0x158c($s0)	0x800F2B4C lui $s0, 0x8014	0x800F2BD4 lw $v1, -0x158c($s0) [load 0x8013EA74; base $s0]	—
+0x800F2BEC	0x0110079C	12 00 02 24	addiu $v0, $zero, 0x12	$zero	0x800F2BDC lbu $v0, 0x2e9($v1) [load alamat dinamis; base $v1]	—
+0x800F2BF0	0x011007A0	0F CB 03 08	j 0x800f2c3c	—	—	0x800F2C3C
+0x800F2BF4	0x011007A4	E9 02 62 A0	sb $v0, 0x2e9($v1)	0x800F2BE8 lw $v1, -0x158c($s0) [load 0x8013EA74; base $s0]	0x800F2BEC addiu $v0, $zero, 0x12 <- $zero	—
+0x800F2BF8	0x011007A8	C0 10 05 00	sll $v0, $a1, 3	$zero	TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8	—
+0x800F2BFC	0x011007AC	21 10 45 00	addu $v0, $v0, $a1	0x800F2BF8 sll $v0, $a1, 3 <- TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8	TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8	—
+0x800F2C00	0x011007B0	00 11 02 00	sll $v0, $v0, 4	$zero	0x800F2BFC addu $v0, $v0, $a1 <- 0x800F2BF8 sll $v0, $a1, 3 <- TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8 , TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8	—
+0x800F2C04	0x011007B4	21 10 C2 00	addu $v0, $a2, $v0	TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8	0x800F2C00 sll $v0, $v0, 4 <- 0x800F2BFC addu $v0, $v0, $a1 <- 0x800F2BF8 sll $v0, $a1, 3 <- TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8 , TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8	—
+0x800F2C08	0x011007B8	02 00 03 24	addiu $v1, $zero, 2	$zero	0x800F2BE8 lw $v1, -0x158c($s0) [load 0x8013EA74; base $s0]	—
+0x800F2C0C	0x011007BC	57 CB 03 08	j 0x800f2d5c	—	—	0x800F2D5C
+0x800F2C10	0x011007C0	22 00 43 A0	sb $v1, 0x22($v0)	0x800F2C04 addu $v0, $a2, $v0 <- TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8 , 0x800F2C00 sll $v0, $v0, 4 <- 0x800F2BFC addu $v0, $v0, $a1 <- 0x800F2BF8 sll $v0, $a1, 3 <- TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8 , TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8	0x800F2C08 addiu $v1, $zero, 2 <- $zero	—
+0x800F2C14	0x011007C4	74 EA 44 8C	lw $a0, -0x158c($v0)	0x800F2C04 addu $v0, $a2, $v0 <- TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8 , 0x800F2C00 sll $v0, $v0, 4 <- 0x800F2BFC addu $v0, $v0, $a1 <- 0x800F2BF8 sll $v0, $a1, 3 <- TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8 , TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8	TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8	—
+0x800F2C18	0x011007C8	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2C04 addu $v0, $a2, $v0 <- TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8 , 0x800F2C00 sll $v0, $v0, 4 <- 0x800F2BFC addu $v0, $v0, $a1 <- 0x800F2BF8 sll $v0, $a1, 3 <- TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8 , TIDAK TAHU: caller-saved setelah JAL 0x800C2FD8	—
+0x800F2C1C	0x011007CC	8A EA 43 94	lhu $v1, -0x1576($v0)	0x800F2C18 lui $v0, 0x8014	0x800F2C08 addiu $v1, $zero, 2 <- $zero	—
+0x800F2C20	0x011007D0	00 00 00 00	nop	$zero	$zero	—
+0x800F2C24	0x011007D4	C0 10 03 00	sll $v0, $v1, 3	$zero	0x800F2C1C lhu $v1, -0x1576($v0) [load 0x8013EA8A; base $v0]	—
+0x800F2C28	0x011007D8	21 10 43 00	addu $v0, $v0, $v1	0x800F2C24 sll $v0, $v1, 3 <- 0x800F2C1C lhu $v1, -0x1576($v0) [load 0x8013EA8A; base $v0]	0x800F2C1C lhu $v1, -0x1576($v0) [load 0x8013EA8A; base $v0]	—
+0x800F2C2C	0x011007DC	00 11 02 00	sll $v0, $v0, 4	$zero	0x800F2C28 addu $v0, $v0, $v1 <- 0x800F2C24 sll $v0, $v1, 3 <- 0x800F2C1C lhu $v1, -0x1576($v0) [load 0x8013EA8A; base $v0] , 0x800F2C1C lhu $v1, -0x1576($v0) [load 0x8013EA8A; base $v0]	—
+0x800F2C30	0x011007E0	21 20 82 00	addu $a0, $a0, $v0	0x800F2C14 lw $a0, -0x158c($v0) [load alamat dinamis; base $v0]	0x800F2C2C sll $v0, $v0, 4 <- 0x800F2C28 addu $v0, $v0, $v1 <- 0x800F2C24 sll $v0, $v1, 3 <- 0x800F2C1C lhu $v1, -0x1576($v0) [load 0x8013EA8A; base $v0] , 0x800F2C1C lhu $v1, -0x1576($v0) [load 0x8013EA8A; base $v0]	—
+0x800F2C34	0x011007E4	05 00 02 24	addiu $v0, $zero, 5	$zero	0x800F2C2C sll $v0, $v0, 4 <- 0x800F2C28 addu $v0, $v0, $v1 <- 0x800F2C24 sll $v0, $v1, 3 <- 0x800F2C1C lhu $v1, -0x1576($v0) [load 0x8013EA8A; base $v0] , 0x800F2C1C lhu $v1, -0x1576($v0) [load 0x8013EA8A; base $v0]	—
+0x800F2C38	0x011007E8	22 00 82 A0	sb $v0, 0x22($a0)	0x800F2C30 addu $a0, $a0, $v0 <- 0x800F2C14 lw $a0, -0x158c($v0) [load alamat dinamis; base $v0] , 0x800F2C2C sll $v0, $v0, 4 <- 0x800F2C28 addu $v0, $v0, $v1 <- 0x800F2C24 sll $v0, $v1, 3 <- 0x800F2C1C lhu $v1, -0x1576($v0) [load 0x8013EA8A; base $v0] , 0x800F2C1C lhu $v1, -0x1576($v0) [load 0x8013EA8A; base $v0]	0x800F2C34 addiu $v0, $zero, 5 <- $zero	—
+0x800F2C3C	0x011007EC	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2C34 addiu $v0, $zero, 5 <- $zero	—
+0x800F2C40	0x011007F0	FF 00 03 24	addiu $v1, $zero, 0xff	$zero	0x800F2C1C lhu $v1, -0x1576($v0) [load 0x8013EA8A; base $v0]	—
+0x800F2C44	0x011007F4	B4 4A 00 0C	jal 0x80012ad0	—	—	0x80012AD0
+0x800F2C48	0x011007F8	B0 EB 43 AC	sw $v1, -0x1450($v0)	return JAL 0x80012AD0	return JAL 0x80012AD0	—
+0x800F2C4C	0x011007FC	00 10 42 30	andi $v0, $v0, 0x1000	return JAL 0x80012AD0	return JAL 0x80012AD0	—
+0x800F2C50	0x01100800	42 00 40 10	beqz $v0, 0x800f2d5c	0x800F2C4C andi $v0, $v0, 0x1000 <- return JAL 0x80012AD0	$zero	0x800F2D5C
+0x800F2C54	0x01100804	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2C4C andi $v0, $v0, 0x1000 <- return JAL 0x80012AD0	—
+0x800F2C58	0x01100808	0C EB 40 AC	sw $zero, -0x14f4($v0)	0x800F2C54 lui $v0, 0x8014	$zero	—
+0x800F2C5C	0x0110080C	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2C54 lui $v0, 0x8014	—
+0x800F2C60	0x01100810	71 EA 42 90	lbu $v0, -0x158f($v0)	0x800F2C5C lui $v0, 0x8014	0x800F2C5C lui $v0, 0x8014	—
+0x800F2C64	0x01100814	00 00 00 00	nop	$zero	$zero	—
+0x800F2C68	0x01100818	3C 00 40 10	beqz $v0, 0x800f2d5c	0x800F2C60 lbu $v0, -0x158f($v0) [load 0x8013EA71; base $v0]	$zero	0x800F2D5C
+0x800F2C6C	0x0110081C	14 80 12 3C	lui $s2, 0x8014	$zero	$s2 masuk/dinamis	—
+0x800F2C70	0x01100820	14 80 10 3C	lui $s0, 0x8014	$zero	0x800F2B4C lui $s0, 0x8014	—
+0x800F2C74	0x01100824	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2C60 lbu $v0, -0x158f($v0) [load 0x8013EA71; base $v0]	—
+0x800F2C78	0x01100828	8A EA 42 94	lhu $v0, -0x1576($v0)	0x800F2C74 lui $v0, 0x8014	0x800F2C74 lui $v0, 0x8014	—
+0x800F2C7C	0x0110082C	0C EB 04 8E	lw $a0, -0x14f4($s0)	0x800F2C70 lui $s0, 0x8014	TIDAK TAHU: caller-saved setelah JAL 0x80012AD0	—
+0x800F2C80	0x01100830	00 00 00 00	nop	$zero	$zero	—
+0x800F2C84	0x01100834	2C 00 82 10	beq $a0, $v0, 0x800f2d38	0x800F2C7C lw $a0, -0x14f4($s0) [load 0x8013EB0C; base $s0]	0x800F2C78 lhu $v0, -0x1576($v0) [load 0x8013EA8A; base $v0]	0x800F2D38
+0x800F2C88	0x01100838	14 80 11 3C	lui $s1, 0x8014	$zero	$s1 masuk/dinamis	—
+0x800F2C8C	0x0110083C	74 EA 25 8E	lw $a1, -0x158c($s1)	0x800F2C88 lui $s1, 0x8014	TIDAK TAHU: caller-saved setelah JAL 0x80012AD0	—
+0x800F2C90	0x01100840	C0 18 02 00	sll $v1, $v0, 3	$zero	0x800F2C78 lhu $v0, -0x1576($v0) [load 0x8013EA8A; base $v0]	—
+0x800F2C94	0x01100844	21 18 62 00	addu $v1, $v1, $v0	0x800F2C90 sll $v1, $v0, 3 <- 0x800F2C78 lhu $v0, -0x1576($v0) [load 0x8013EA8A; base $v0]	0x800F2C78 lhu $v0, -0x1576($v0) [load 0x8013EA8A; base $v0]	—
+0x800F2C98	0x01100848	00 19 03 00	sll $v1, $v1, 4	$zero	0x800F2C94 addu $v1, $v1, $v0 <- 0x800F2C90 sll $v1, $v0, 3 <- 0x800F2C78 lhu $v0, -0x1576($v0) [load 0x8013EA8A; base $v0] , 0x800F2C78 lhu $v0, -0x1576($v0) [load 0x8013EA8A; base $v0]	—
+0x800F2C9C	0x0110084C	21 18 A3 00	addu $v1, $a1, $v1	0x800F2C8C lw $a1, -0x158c($s1) [load 0x8013EA74; base $s1]	0x800F2C98 sll $v1, $v1, 4 <- 0x800F2C94 addu $v1, $v1, $v0 <- 0x800F2C90 sll $v1, $v0, 3 <- 0x800F2C78 lhu $v0, -0x1576($v0) [load 0x8013EA8A; base $v0] , 0x800F2C78 lhu $v0, -0x1576($v0) [load 0x8013EA8A; base $v0]	—
+0x800F2CA0	0x01100850	C0 10 04 00	sll $v0, $a0, 3	$zero	0x800F2C7C lw $a0, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2CA4	0x01100854	21 10 44 00	addu $v0, $v0, $a0	0x800F2CA0 sll $v0, $a0, 3 <- 0x800F2C7C lw $a0, -0x14f4($s0) [load 0x8013EB0C; base $s0]	0x800F2C7C lw $a0, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2CA8	0x01100858	00 11 02 00	sll $v0, $v0, 4	$zero	0x800F2CA4 addu $v0, $v0, $a0 <- 0x800F2CA0 sll $v0, $a0, 3 <- 0x800F2C7C lw $a0, -0x14f4($s0) [load 0x8013EB0C; base $s0] , 0x800F2C7C lw $a0, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2CAC	0x0110085C	21 10 A2 00	addu $v0, $a1, $v0	0x800F2C8C lw $a1, -0x158c($s1) [load 0x8013EA74; base $s1]	0x800F2CA8 sll $v0, $v0, 4 <- 0x800F2CA4 addu $v0, $v0, $a0 <- 0x800F2CA0 sll $v0, $a0, 3 <- 0x800F2C7C lw $a0, -0x14f4($s0) [load 0x8013EB0C; base $s0] , 0x800F2C7C lw $a0, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2CB0	0x01100860	0E 00 63 90	lbu $v1, 0xe($v1)	0x800F2C9C addu $v1, $a1, $v1 <- 0x800F2C8C lw $a1, -0x158c($s1) [load 0x8013EA74; base $s1] , 0x800F2C98 sll $v1, $v1, 4 <- 0x800F2C94 addu $v1, $v1, $v0 <- 0x800F2C90 sll $v1, $v0, 3 <- 0x800F2C78 lhu $v0, -0x1576($v0) [load 0x8013EA8A; base $v0] , 0x800F2C78 lhu $v0, -0x1576($v0) [load 0x8013EA8A; base $v0]	0x800F2C9C addu $v1, $a1, $v1 <- 0x800F2C8C lw $a1, -0x158c($s1) [load 0x8013EA74; base $s1] , 0x800F2C98 sll $v1, $v1, 4 <- 0x800F2C94 addu $v1, $v1, $v0 <- 0x800F2C90 sll $v1, $v0, 3 <- 0x800F2C78 lhu $v0, -0x1576($v0) [load 0x8013EA8A; base $v0] , 0x800F2C78 lhu $v0, -0x1576($v0) [load 0x8013EA8A; base $v0]	—
+0x800F2CB4	0x01100864	0E 00 42 90	lbu $v0, 0xe($v0)	0x800F2CAC addu $v0, $a1, $v0 <- 0x800F2C8C lw $a1, -0x158c($s1) [load 0x8013EA74; base $s1] , 0x800F2CA8 sll $v0, $v0, 4 <- 0x800F2CA4 addu $v0, $v0, $a0 <- 0x800F2CA0 sll $v0, $a0, 3 <- 0x800F2C7C lw $a0, -0x14f4($s0) [load 0x8013EB0C; base $s0] , 0x800F2C7C lw $a0, -0x14f4($s0) [load 0x8013EB0C; base $s0]	0x800F2CAC addu $v0, $a1, $v0 <- 0x800F2C8C lw $a1, -0x158c($s1) [load 0x8013EA74; base $s1] , 0x800F2CA8 sll $v0, $v0, 4 <- 0x800F2CA4 addu $v0, $v0, $a0 <- 0x800F2CA0 sll $v0, $a0, 3 <- 0x800F2C7C lw $a0, -0x14f4($s0) [load 0x8013EB0C; base $s0] , 0x800F2C7C lw $a0, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2CB8	0x01100868	00 00 00 00	nop	$zero	$zero	—
+0x800F2CBC	0x0110086C	1E 00 62 14	bne $v1, $v0, 0x800f2d38	0x800F2CB0 lbu $v1, 0xe($v1) [load alamat dinamis; base $v1]	0x800F2CB4 lbu $v0, 0xe($v0) [load alamat dinamis; base $v0]	0x800F2D38
+0x800F2CC0	0x01100870	00 00 00 00	nop	$zero	$zero	—
+0x800F2CC4	0x01100874	30 05 A4 8C	lw $a0, 0x530($a1)	0x800F2C8C lw $a1, -0x158c($s1) [load 0x8013EA74; base $s1]	0x800F2C7C lw $a0, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2CC8	0x01100878	4B 55 00 0C	jal 0x8001552c	—	—	0x8001552C
+0x800F2CCC	0x0110087C	00 00 00 00	nop	$zero	$zero	—
+0x800F2CD0	0x01100880	74 EA 26 8E	lw $a2, -0x158c($s1)	0x800F2C88 lui $s1, 0x8014	TIDAK TAHU: caller-saved setelah JAL 0x8001552C	—
+0x800F2CD4	0x01100884	0C EB 05 8E	lw $a1, -0x14f4($s0)	0x800F2C70 lui $s0, 0x8014	TIDAK TAHU: caller-saved setelah JAL 0x8001552C	—
+0x800F2CD8	0x01100888	00 00 00 00	nop	$zero	$zero	—
+0x800F2CDC	0x0110088C	40 20 05 00	sll $a0, $a1, 1	$zero	0x800F2CD4 lw $a1, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2CE0	0x01100890	21 20 C4 00	addu $a0, $a2, $a0	0x800F2CD0 lw $a2, -0x158c($s1) [load 0x8013EA74; base $s1]	0x800F2CDC sll $a0, $a1, 1 <- 0x800F2CD4 lw $a1, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2CE4	0x01100894	71 EA 43 92	lbu $v1, -0x158f($s2)	0x800F2C6C lui $s2, 0x8014	return JAL 0x8001552C	—
+0x800F2CE8	0x01100898	00 00 00 00	nop	$zero	$zero	—
+0x800F2CEC	0x0110089C	FE FF 63 24	addiu $v1, $v1, -2	0x800F2CE4 lbu $v1, -0x158f($s2) [load 0x8013EA71; base $s2]	0x800F2CE4 lbu $v1, -0x158f($s2) [load 0x8013EA71; base $s2]	—
+0x800F2CF0	0x011008A0	18 00 43 00	mult $v0, $v1	return JAL 0x8001552C	0x800F2CEC addiu $v1, $v1, -2 <- 0x800F2CE4 lbu $v1, -0x158f($s2) [load 0x8013EA71; base $s2]	—
+0x800F2CF4	0x011008A4	12 10 00 00	mflo $v0	$zero	$zero	—
+0x800F2CF8	0x011008A8	EE 02 82 A4	sh $v0, 0x2ee($a0)	0x800F2CE0 addu $a0, $a2, $a0 <- 0x800F2CD0 lw $a2, -0x158c($s1) [load 0x8013EA74; base $s1] , 0x800F2CDC sll $a0, $a1, 1 <- 0x800F2CD4 lw $a1, -0x14f4($s0) [load 0x8013EB0C; base $s0]	0x800F2CF4 mflo $v0 <- 0x800F2CF0 mult $v0, $v1 (return JAL 0x8001552C; 0x800F2CEC addiu $v1, $v1, -2 <- 0x800F2CE4 lbu $v1, -0x158f($s2) [load 0x8013EA71; base $s2])	—
+0x800F2CFC	0x011008AC	14 80 03 3C	lui $v1, 0x8014	$zero	0x800F2CEC addiu $v1, $v1, -2 <- 0x800F2CE4 lbu $v1, -0x158f($s2) [load 0x8013EA71; base $s2]	—
+0x800F2D00	0x011008B0	00 14 02 00	sll $v0, $v0, 0x10	$zero	0x800F2CF4 mflo $v0 <- 0x800F2CF0 mult $v0, $v1 (return JAL 0x8001552C; 0x800F2CEC addiu $v1, $v1, -2 <- 0x800F2CE4 lbu $v1, -0x158f($s2) [load 0x8013EA71; base $s2])	—
+0x800F2D04	0x011008B4	BC FF 40 04	bltz $v0, 0x800f2bf8	0x800F2D00 sll $v0, $v0, 0x10 <- 0x800F2CF4 mflo $v0 <- 0x800F2CF0 mult $v0, $v1 (return JAL 0x8001552C; 0x800F2CEC addiu $v1, $v1, -2 <- 0x800F2CE4 lbu $v1, -0x158f($s2) [load 0x8013EA71; base $s2])	$zero	0x800F2BF8
+0x800F2D08	0x011008B8	B0 EB 65 AC	sw $a1, -0x1450($v1)	0x800F2CFC lui $v1, 0x8014	0x800F2CD4 lw $a1, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2D0C	0x011008BC	21 10 20 02	move $v0, $s1	0x800F2C88 lui $s1, 0x8014	$zero	—
+0x800F2D10	0x011008C0	74 EA 44 8C	lw $a0, -0x158c($v0)	0x800F2D0C move $v0, $s1 <- 0x800F2C88 lui $s1, 0x8014 , $zero	0x800F2CE0 addu $a0, $a2, $a0 <- 0x800F2CD0 lw $a2, -0x158c($s1) [load 0x8013EA74; base $s1] , 0x800F2CDC sll $a0, $a1, 1 <- 0x800F2CD4 lw $a1, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2D14	0x011008C4	0C EB 03 8E	lw $v1, -0x14f4($s0)	0x800F2C70 lui $s0, 0x8014	0x800F2CFC lui $v1, 0x8014	—
+0x800F2D18	0x011008C8	00 00 00 00	nop	$zero	$zero	—
+0x800F2D1C	0x011008CC	C0 10 03 00	sll $v0, $v1, 3	$zero	0x800F2D14 lw $v1, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2D20	0x011008D0	21 10 43 00	addu $v0, $v0, $v1	0x800F2D1C sll $v0, $v1, 3 <- 0x800F2D14 lw $v1, -0x14f4($s0) [load 0x8013EB0C; base $s0]	0x800F2D14 lw $v1, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2D24	0x011008D4	00 11 02 00	sll $v0, $v0, 4	$zero	0x800F2D20 addu $v0, $v0, $v1 <- 0x800F2D1C sll $v0, $v1, 3 <- 0x800F2D14 lw $v1, -0x14f4($s0) [load 0x8013EB0C; base $s0] , 0x800F2D14 lw $v1, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2D28	0x011008D8	21 20 82 00	addu $a0, $a0, $v0	0x800F2D10 lw $a0, -0x158c($v0) [load 0x8013EA74; base $v0]	0x800F2D24 sll $v0, $v0, 4 <- 0x800F2D20 addu $v0, $v0, $v1 <- 0x800F2D1C sll $v0, $v1, 3 <- 0x800F2D14 lw $v1, -0x14f4($s0) [load 0x8013EB0C; base $s0] , 0x800F2D14 lw $v1, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2D2C	0x011008DC	05 00 02 24	addiu $v0, $zero, 5	$zero	0x800F2D24 sll $v0, $v0, 4 <- 0x800F2D20 addu $v0, $v0, $v1 <- 0x800F2D1C sll $v0, $v1, 3 <- 0x800F2D14 lw $v1, -0x14f4($s0) [load 0x8013EB0C; base $s0] , 0x800F2D14 lw $v1, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2D30	0x011008E0	57 CB 03 08	j 0x800f2d5c	—	—	0x800F2D5C
+0x800F2D34	0x011008E4	22 00 82 A0	sb $v0, 0x22($a0)	0x800F2D28 addu $a0, $a0, $v0 <- 0x800F2D10 lw $a0, -0x158c($v0) [load 0x8013EA74; base $v0] , 0x800F2D24 sll $v0, $v0, 4 <- 0x800F2D20 addu $v0, $v0, $v1 <- 0x800F2D1C sll $v0, $v1, 3 <- 0x800F2D14 lw $v1, -0x14f4($s0) [load 0x8013EB0C; base $s0] , 0x800F2D14 lw $v1, -0x14f4($s0) [load 0x8013EB0C; base $s0]	0x800F2D2C addiu $v0, $zero, 5 <- $zero	—
+0x800F2D38	0x011008E8	0C EB 02 8E	lw $v0, -0x14f4($s0)	0x800F2C70 lui $s0, 0x8014	0x800F2D2C addiu $v0, $zero, 5 <- $zero	—
+0x800F2D3C	0x011008EC	00 00 00 00	nop	$zero	$zero	—
+0x800F2D40	0x011008F0	01 00 42 24	addiu $v0, $v0, 1	0x800F2D38 lw $v0, -0x14f4($s0) [load 0x8013EB0C; base $s0]	0x800F2D38 lw $v0, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2D44	0x011008F4	0C EB 02 AE	sw $v0, -0x14f4($s0)	0x800F2C70 lui $s0, 0x8014	0x800F2D40 addiu $v0, $v0, 1 <- 0x800F2D38 lw $v0, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2D48	0x011008F8	71 EA 43 92	lbu $v1, -0x158f($s2)	0x800F2C6C lui $s2, 0x8014	0x800F2D14 lw $v1, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2D4C	0x011008FC	00 00 00 00	nop	$zero	$zero	—
+0x800F2D50	0x01100900	2A 10 43 00	slt $v0, $v0, $v1	0x800F2D40 addiu $v0, $v0, 1 <- 0x800F2D38 lw $v0, -0x14f4($s0) [load 0x8013EB0C; base $s0]	0x800F2D48 lbu $v1, -0x158f($s2) [load 0x8013EA71; base $s2]	—
+0x800F2D54	0x01100904	C8 FF 40 14	bnez $v0, 0x800f2c78	0x800F2D50 slt $v0, $v0, $v1	$zero	0x800F2C78
+0x800F2D58	0x01100908	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2D50 slt $v0, $v0, $v1	—
+0x800F2D5C	0x0110090C	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2D58 lui $v0, 0x8014	—
+0x800F2D60	0x01100910	0C EB 40 AC	sw $zero, -0x14f4($v0)	0x800F2D5C lui $v0, 0x8014	$zero	—
+0x800F2D64	0x01100914	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2D5C lui $v0, 0x8014	—
+0x800F2D68	0x01100918	71 EA 42 90	lbu $v0, -0x158f($v0)	0x800F2D64 lui $v0, 0x8014	0x800F2D64 lui $v0, 0x8014	—
+0x800F2D6C	0x0110091C	00 00 00 00	nop	$zero	$zero	—
+0x800F2D70	0x01100920	5B 00 40 10	beqz $v0, 0x800f2ee0	0x800F2D68 lbu $v0, -0x158f($v0) [load 0x8013EA71; base $v0]	$zero	0x800F2EE0
+0x800F2D74	0x01100924	14 80 11 3C	lui $s1, 0x8014	$zero	0x800F2C88 lui $s1, 0x8014	—
+0x800F2D78	0x01100928	14 80 13 3C	lui $s3, 0x8014	$zero	$s3 masuk/dinamis	—
+0x800F2D7C	0x0110092C	14 80 12 3C	lui $s2, 0x8014	$zero	0x800F2C6C lui $s2, 0x8014	—
+0x800F2D80	0x01100930	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2D68 lbu $v0, -0x158f($v0) [load 0x8013EA71; base $v0]	—
+0x800F2D84	0x01100934	8A EA 42 94	lhu $v0, -0x1576($v0)	0x800F2D80 lui $v0, 0x8014	0x800F2D80 lui $v0, 0x8014	—
+0x800F2D88	0x01100938	0C EB 24 8E	lw $a0, -0x14f4($s1)	0x800F2D74 lui $s1, 0x8014	0x800F2D28 addu $a0, $a0, $v0 <- 0x800F2D10 lw $a0, -0x158c($v0) [load 0x8013EA74; base $v0] , 0x800F2D24 sll $v0, $v0, 4 <- 0x800F2D20 addu $v0, $v0, $v1 <- 0x800F2D1C sll $v0, $v1, 3 <- 0x800F2D14 lw $v1, -0x14f4($s0) [load 0x8013EB0C; base $s0] , 0x800F2D14 lw $v1, -0x14f4($s0) [load 0x8013EB0C; base $s0]	—
+0x800F2D8C	0x0110093C	00 00 00 00	nop	$zero	$zero	—
+0x800F2D90	0x01100940	4A 00 82 10	beq $a0, $v0, 0x800f2ebc	0x800F2D88 lw $a0, -0x14f4($s1) [load 0x8013EB0C; base $s1]	0x800F2D84 lhu $v0, -0x1576($v0) [load 0x8013EA8A; base $v0]	0x800F2EBC
+0x800F2D94	0x01100944	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2D84 lhu $v0, -0x1576($v0) [load 0x8013EA8A; base $v0]	—
+0x800F2D98	0x01100948	B0 EB 42 8C	lw $v0, -0x1450($v0)	0x800F2D94 lui $v0, 0x8014	0x800F2D94 lui $v0, 0x8014	—
+0x800F2D9C	0x0110094C	00 00 00 00	nop	$zero	$zero	—
+0x800F2DA0	0x01100950	46 00 82 10	beq $a0, $v0, 0x800f2ebc	0x800F2D88 lw $a0, -0x14f4($s1) [load 0x8013EB0C; base $s1]	0x800F2D98 lw $v0, -0x1450($v0) [load 0x8013EBB0; base $v0]	0x800F2EBC
+0x800F2DA4	0x01100954	14 80 10 3C	lui $s0, 0x8014	$zero	0x800F2C70 lui $s0, 0x8014	—
+0x800F2DA8	0x01100958	74 EA 02 8E	lw $v0, -0x158c($s0)	0x800F2DA4 lui $s0, 0x8014	0x800F2D98 lw $v0, -0x1450($v0) [load 0x8013EBB0; base $v0]	—
+0x800F2DAC	0x0110095C	C0 18 04 00	sll $v1, $a0, 3	$zero	0x800F2D88 lw $a0, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2DB0	0x01100960	21 18 64 00	addu $v1, $v1, $a0	0x800F2DAC sll $v1, $a0, 3 <- 0x800F2D88 lw $a0, -0x14f4($s1) [load 0x8013EB0C; base $s1]	0x800F2D88 lw $a0, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2DB4	0x01100964	00 19 03 00	sll $v1, $v1, 4	$zero	0x800F2DB0 addu $v1, $v1, $a0 <- 0x800F2DAC sll $v1, $a0, 3 <- 0x800F2D88 lw $a0, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2D88 lw $a0, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2DB8	0x01100968	21 10 43 00	addu $v0, $v0, $v1	0x800F2DA8 lw $v0, -0x158c($s0) [load 0x8013EA74; base $s0]	0x800F2DB4 sll $v1, $v1, 4 <- 0x800F2DB0 addu $v1, $v1, $a0 <- 0x800F2DAC sll $v1, $a0, 3 <- 0x800F2D88 lw $a0, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2D88 lw $a0, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2DBC	0x0110096C	0D 00 42 90	lbu $v0, 0xd($v0)	0x800F2DB8 addu $v0, $v0, $v1 <- 0x800F2DA8 lw $v0, -0x158c($s0) [load 0x8013EA74; base $s0] , 0x800F2DB4 sll $v1, $v1, 4 <- 0x800F2DB0 addu $v1, $v1, $a0 <- 0x800F2DAC sll $v1, $a0, 3 <- 0x800F2D88 lw $a0, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2D88 lw $a0, -0x14f4($s1) [load 0x8013EB0C; base $s1]	0x800F2DB8 addu $v0, $v0, $v1 <- 0x800F2DA8 lw $v0, -0x158c($s0) [load 0x8013EA74; base $s0] , 0x800F2DB4 sll $v1, $v1, 4 <- 0x800F2DB0 addu $v1, $v1, $a0 <- 0x800F2DAC sll $v1, $a0, 3 <- 0x800F2D88 lw $a0, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2D88 lw $a0, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2DC0	0x01100970	00 00 00 00	nop	$zero	$zero	—
+0x800F2DC4	0x01100974	01 00 42 30	andi $v0, $v0, 1	0x800F2DBC lbu $v0, 0xd($v0) [load alamat dinamis; base $v0]	0x800F2DBC lbu $v0, 0xd($v0) [load alamat dinamis; base $v0]	—
+0x800F2DC8	0x01100978	3C 00 40 14	bnez $v0, 0x800f2ebc	0x800F2DC4 andi $v0, $v0, 1 <- 0x800F2DBC lbu $v0, 0xd($v0) [load alamat dinamis; base $v0]	$zero	0x800F2EBC
+0x800F2DCC	0x0110097C	00 00 00 00	nop	$zero	$zero	—
+0x800F2DD0	0x01100980	B4 4A 00 0C	jal 0x80012ad0	—	—	0x80012AD0
+0x800F2DD4	0x01100984	00 00 00 00	nop	$zero	$zero	—
+0x800F2DD8	0x01100988	00 10 42 30	andi $v0, $v0, 0x1000	return JAL 0x80012AD0	return JAL 0x80012AD0	—
+0x800F2DDC	0x0110098C	17 00 40 10	beqz $v0, 0x800f2e3c	0x800F2DD8 andi $v0, $v0, 0x1000 <- return JAL 0x80012AD0	$zero	0x800F2E3C
+0x800F2DE0	0x01100990	00 00 00 00	nop	$zero	$zero	—
+0x800F2DE4	0x01100994	74 EA 02 8E	lw $v0, -0x158c($s0)	0x800F2DA4 lui $s0, 0x8014	0x800F2DD8 andi $v0, $v0, 0x1000 <- return JAL 0x80012AD0	—
+0x800F2DE8	0x01100998	00 00 00 00	nop	$zero	$zero	—
+0x800F2DEC	0x0110099C	30 05 44 8C	lw $a0, 0x530($v0)	0x800F2DE4 lw $v0, -0x158c($s0) [load 0x8013EA74; base $s0]	TIDAK TAHU: caller-saved setelah JAL 0x80012AD0	—
+0x800F2DF0	0x011009A0	4B 55 00 0C	jal 0x8001552c	—	—	0x8001552C
+0x800F2DF4	0x011009A4	00 00 00 00	nop	$zero	$zero	—
+0x800F2DF8	0x011009A8	74 EA 05 8E	lw $a1, -0x158c($s0)	0x800F2DA4 lui $s0, 0x8014	TIDAK TAHU: caller-saved setelah JAL 0x8001552C	—
+0x800F2DFC	0x011009AC	0C EB 23 8E	lw $v1, -0x14f4($s1)	0x800F2D74 lui $s1, 0x8014	return JAL 0x8001552C	—
+0x800F2E00	0x011009B0	00 00 00 00	nop	$zero	$zero	—
+0x800F2E04	0x011009B4	40 18 03 00	sll $v1, $v1, 1	$zero	0x800F2DFC lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2E08	0x011009B8	21 28 A3 00	addu $a1, $a1, $v1	0x800F2DF8 lw $a1, -0x158c($s0) [load 0x8013EA74; base $s0]	0x800F2E04 sll $v1, $v1, 1 <- 0x800F2DFC lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2E0C	0x011009BC	23 10 02 00	negu $v0, $v0	$zero	return JAL 0x8001552C	—
+0x800F2E10	0x011009C0	71 EA 64 92	lbu $a0, -0x158f($s3)	0x800F2D78 lui $s3, 0x8014	TIDAK TAHU: caller-saved setelah JAL 0x8001552C	—
+0x800F2E14	0x011009C4	00 00 00 00	nop	$zero	$zero	—
+0x800F2E18	0x011009C8	FF FF 84 24	addiu $a0, $a0, -1	0x800F2E10 lbu $a0, -0x158f($s3) [load 0x8013EA71; base $s3]	0x800F2E10 lbu $a0, -0x158f($s3) [load 0x8013EA71; base $s3]	—
+0x800F2E1C	0x011009CC	14 80 03 3C	lui $v1, 0x8014	$zero	0x800F2E04 sll $v1, $v1, 1 <- 0x800F2DFC lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2E20	0x011009D0	FC 9E 63 8C	lw $v1, -0x6104($v1)	0x800F2E1C lui $v1, 0x8014	0x800F2E1C lui $v1, 0x8014	—
+0x800F2E24	0x011009D4	00 00 00 00	nop	$zero	$zero	—
+0x800F2E28	0x011009D8	23 20 83 00	subu $a0, $a0, $v1	0x800F2E18 addiu $a0, $a0, -1 <- 0x800F2E10 lbu $a0, -0x158f($s3) [load 0x8013EA71; base $s3]	0x800F2E20 lw $v1, -0x6104($v1) [load 0x80139EFC; base $v1]	—
+0x800F2E2C	0x011009DC	18 00 44 00	mult $v0, $a0	0x800F2E0C negu $v0, $v0 <- $zero , return JAL 0x8001552C	0x800F2E28 subu $a0, $a0, $v1 <- 0x800F2E18 addiu $a0, $a0, -1 <- 0x800F2E10 lbu $a0, -0x158f($s3) [load 0x8013EA71; base $s3] , 0x800F2E20 lw $v1, -0x6104($v1) [load 0x80139EFC; base $v1]	—
+0x800F2E30	0x011009E0	12 10 00 00	mflo $v0	$zero	$zero	—
+0x800F2E34	0x011009E4	9B CB 03 08	j 0x800f2e6c	—	—	0x800F2E6C
+0x800F2E38	0x011009E8	EE 02 A2 A4	sh $v0, 0x2ee($a1)	0x800F2E08 addu $a1, $a1, $v1 <- 0x800F2DF8 lw $a1, -0x158c($s0) [load 0x8013EA74; base $s0] , 0x800F2E04 sll $v1, $v1, 1 <- 0x800F2DFC lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	0x800F2E30 mflo $v0 <- 0x800F2E2C mult $v0, $a0 (0x800F2E0C negu $v0, $v0 <- $zero , return JAL 0x8001552C; 0x800F2E28 subu $a0, $a0, $v1 <- 0x800F2E18 addiu $a0, $a0, -1 <- 0x800F2E10 lbu $a0, -0x158f($s3) [load 0x8013EA71; base $s3] , 0x800F2E20 lw $v1, -0x6104($v1) [load 0x80139EFC; base $v1])	—
+0x800F2E3C	0x011009EC	74 EA 42 8E	lw $v0, -0x158c($s2)	0x800F2D7C lui $s2, 0x8014	0x800F2E30 mflo $v0 <- 0x800F2E2C mult $v0, $a0 (0x800F2E0C negu $v0, $v0 <- $zero , return JAL 0x8001552C; 0x800F2E28 subu $a0, $a0, $v1 <- 0x800F2E18 addiu $a0, $a0, -1 <- 0x800F2E10 lbu $a0, -0x158f($s3) [load 0x8013EA71; base $s3] , 0x800F2E20 lw $v1, -0x6104($v1) [load 0x80139EFC; base $v1])	—
+0x800F2E40	0x011009F0	00 00 00 00	nop	$zero	$zero	—
+0x800F2E44	0x011009F4	30 05 44 8C	lw $a0, 0x530($v0)	0x800F2E3C lw $v0, -0x158c($s2) [load 0x8013EA74; base $s2]	0x800F2E28 subu $a0, $a0, $v1 <- 0x800F2E18 addiu $a0, $a0, -1 <- 0x800F2E10 lbu $a0, -0x158f($s3) [load 0x8013EA71; base $s3] , 0x800F2E20 lw $v1, -0x6104($v1) [load 0x80139EFC; base $v1]	—
+0x800F2E48	0x011009F8	4B 55 00 0C	jal 0x8001552c	—	—	0x8001552C
+0x800F2E4C	0x011009FC	00 00 00 00	nop	$zero	$zero	—
+0x800F2E50	0x01100A00	74 EA 44 8E	lw $a0, -0x158c($s2)	0x800F2D7C lui $s2, 0x8014	TIDAK TAHU: caller-saved setelah JAL 0x8001552C	—
+0x800F2E54	0x01100A04	0C EB 23 8E	lw $v1, -0x14f4($s1)	0x800F2D74 lui $s1, 0x8014	return JAL 0x8001552C	—
+0x800F2E58	0x01100A08	00 00 00 00	nop	$zero	$zero	—
+0x800F2E5C	0x01100A0C	40 18 03 00	sll $v1, $v1, 1	$zero	0x800F2E54 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2E60	0x01100A10	21 20 83 00	addu $a0, $a0, $v1	0x800F2E50 lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2]	0x800F2E5C sll $v1, $v1, 1 <- 0x800F2E54 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2E64	0x01100A14	23 10 02 00	negu $v0, $v0	$zero	return JAL 0x8001552C	—
+0x800F2E68	0x01100A18	EE 02 82 A4	sh $v0, 0x2ee($a0)	0x800F2E60 addu $a0, $a0, $v1 <- 0x800F2E50 lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2] , 0x800F2E5C sll $v1, $v1, 1 <- 0x800F2E54 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	0x800F2E64 negu $v0, $v0 <- $zero , return JAL 0x8001552C	—
+0x800F2E6C	0x01100A1C	74 EA 44 8E	lw $a0, -0x158c($s2)	0x800F2D7C lui $s2, 0x8014	0x800F2E60 addu $a0, $a0, $v1 <- 0x800F2E50 lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2] , 0x800F2E5C sll $v1, $v1, 1 <- 0x800F2E54 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2E70	0x01100A20	0C EB 23 8E	lw $v1, -0x14f4($s1)	0x800F2D74 lui $s1, 0x8014	0x800F2E5C sll $v1, $v1, 1 <- 0x800F2E54 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2E74	0x01100A24	00 00 00 00	nop	$zero	$zero	—
+0x800F2E78	0x01100A28	40 10 03 00	sll $v0, $v1, 1	$zero	0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2E7C	0x01100A2C	21 10 82 00	addu $v0, $a0, $v0	0x800F2E6C lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2]	0x800F2E78 sll $v0, $v1, 1 <- 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2E80	0x01100A30	EE 02 42 84	lh $v0, 0x2ee($v0)	0x800F2E7C addu $v0, $a0, $v0 <- 0x800F2E6C lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2] , 0x800F2E78 sll $v0, $v1, 1 <- 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	0x800F2E7C addu $v0, $a0, $v0 <- 0x800F2E6C lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2] , 0x800F2E78 sll $v0, $v1, 1 <- 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2E84	0x01100A34	00 00 00 00	nop	$zero	$zero	—
+0x800F2E88	0x01100A38	07 00 41 04	bgez $v0, 0x800f2ea8	0x800F2E80 lh $v0, 0x2ee($v0) [load alamat dinamis; base $v0]	$at masuk/dinamis	0x800F2EA8
+0x800F2E8C	0x01100A3C	C0 10 03 00	sll $v0, $v1, 3	$zero	0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2E90	0x01100A40	21 10 43 00	addu $v0, $v0, $v1	0x800F2E8C sll $v0, $v1, 3 <- 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2E94	0x01100A44	00 11 02 00	sll $v0, $v0, 4	$zero	0x800F2E90 addu $v0, $v0, $v1 <- 0x800F2E8C sll $v0, $v1, 3 <- 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2E98	0x01100A48	21 10 82 00	addu $v0, $a0, $v0	0x800F2E6C lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2]	0x800F2E94 sll $v0, $v0, 4 <- 0x800F2E90 addu $v0, $v0, $v1 <- 0x800F2E8C sll $v0, $v1, 3 <- 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2E9C	0x01100A4C	02 00 03 24	addiu $v1, $zero, 2	$zero	0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2EA0	0x01100A50	AF CB 03 08	j 0x800f2ebc	—	—	0x800F2EBC
+0x800F2EA4	0x01100A54	22 00 43 A0	sb $v1, 0x22($v0)	0x800F2E98 addu $v0, $a0, $v0 <- 0x800F2E6C lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2] , 0x800F2E94 sll $v0, $v0, 4 <- 0x800F2E90 addu $v0, $v0, $v1 <- 0x800F2E8C sll $v0, $v1, 3 <- 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	0x800F2E9C addiu $v1, $zero, 2 <- $zero	—
+0x800F2EA8	0x01100A58	21 10 43 00	addu $v0, $v0, $v1	0x800F2E98 addu $v0, $a0, $v0 <- 0x800F2E6C lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2] , 0x800F2E94 sll $v0, $v0, 4 <- 0x800F2E90 addu $v0, $v0, $v1 <- 0x800F2E8C sll $v0, $v1, 3 <- 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1]	0x800F2E9C addiu $v1, $zero, 2 <- $zero	—
+0x800F2EAC	0x01100A5C	00 11 02 00	sll $v0, $v0, 4	$zero	0x800F2EA8 addu $v0, $v0, $v1 <- 0x800F2E98 addu $v0, $a0, $v0 <- 0x800F2E6C lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2] , 0x800F2E94 sll $v0, $v0, 4 <- 0x800F2E90 addu $v0, $v0, $v1 <- 0x800F2E8C sll $v0, $v1, 3 <- 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2E9C addiu $v1, $zero, 2 <- $zero	—
+0x800F2EB0	0x01100A60	21 20 82 00	addu $a0, $a0, $v0	0x800F2E6C lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2]	0x800F2EAC sll $v0, $v0, 4 <- 0x800F2EA8 addu $v0, $v0, $v1 <- 0x800F2E98 addu $v0, $a0, $v0 <- 0x800F2E6C lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2] , 0x800F2E94 sll $v0, $v0, 4 <- 0x800F2E90 addu $v0, $v0, $v1 <- 0x800F2E8C sll $v0, $v1, 3 <- 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2E9C addiu $v1, $zero, 2 <- $zero	—
+0x800F2EB4	0x01100A64	05 00 02 24	addiu $v0, $zero, 5	$zero	0x800F2EAC sll $v0, $v0, 4 <- 0x800F2EA8 addu $v0, $v0, $v1 <- 0x800F2E98 addu $v0, $a0, $v0 <- 0x800F2E6C lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2] , 0x800F2E94 sll $v0, $v0, 4 <- 0x800F2E90 addu $v0, $v0, $v1 <- 0x800F2E8C sll $v0, $v1, 3 <- 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2E9C addiu $v1, $zero, 2 <- $zero	—
+0x800F2EB8	0x01100A68	22 00 82 A0	sb $v0, 0x22($a0)	0x800F2EB0 addu $a0, $a0, $v0 <- 0x800F2E6C lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2] , 0x800F2EAC sll $v0, $v0, 4 <- 0x800F2EA8 addu $v0, $v0, $v1 <- 0x800F2E98 addu $v0, $a0, $v0 <- 0x800F2E6C lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2] , 0x800F2E94 sll $v0, $v0, 4 <- 0x800F2E90 addu $v0, $v0, $v1 <- 0x800F2E8C sll $v0, $v1, 3 <- 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2E9C addiu $v1, $zero, 2 <- $zero	0x800F2EB4 addiu $v0, $zero, 5 <- $zero	—
+0x800F2EBC	0x01100A6C	0C EB 22 8E	lw $v0, -0x14f4($s1)	0x800F2D74 lui $s1, 0x8014	0x800F2EB4 addiu $v0, $zero, 5 <- $zero	—
+0x800F2EC0	0x01100A70	00 00 00 00	nop	$zero	$zero	—
+0x800F2EC4	0x01100A74	01 00 42 24	addiu $v0, $v0, 1	0x800F2EBC lw $v0, -0x14f4($s1) [load 0x8013EB0C; base $s1]	0x800F2EBC lw $v0, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2EC8	0x01100A78	0C EB 22 AE	sw $v0, -0x14f4($s1)	0x800F2D74 lui $s1, 0x8014	0x800F2EC4 addiu $v0, $v0, 1 <- 0x800F2EBC lw $v0, -0x14f4($s1) [load 0x8013EB0C; base $s1]	—
+0x800F2ECC	0x01100A7C	71 EA 63 92	lbu $v1, -0x158f($s3)	0x800F2D78 lui $s3, 0x8014	0x800F2E9C addiu $v1, $zero, 2 <- $zero	—
+0x800F2ED0	0x01100A80	00 00 00 00	nop	$zero	$zero	—
+0x800F2ED4	0x01100A84	2A 10 43 00	slt $v0, $v0, $v1	0x800F2EC4 addiu $v0, $v0, 1 <- 0x800F2EBC lw $v0, -0x14f4($s1) [load 0x8013EB0C; base $s1]	0x800F2ECC lbu $v1, -0x158f($s3) [load 0x8013EA71; base $s3]	—
+0x800F2ED8	0x01100A88	AA FF 40 14	bnez $v0, 0x800f2d84	0x800F2ED4 slt $v0, $v0, $v1	$zero	0x800F2D84
+0x800F2EDC	0x01100A8C	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2ED4 slt $v0, $v0, $v1	—
+0x800F2EE0	0x01100A90	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2EDC lui $v0, 0x8014	—
+0x800F2EE4	0x01100A94	42 9F 43 90	lbu $v1, -0x60be($v0)	0x800F2EE0 lui $v0, 0x8014	0x800F2ECC lbu $v1, -0x158f($s3) [load 0x8013EA71; base $s3]	—
+0x800F2EE8	0x01100A98	00 00 00 00	nop	$zero	$zero	—
+0x800F2EEC	0x01100A9C	01 00 63 24	addiu $v1, $v1, 1	0x800F2EE4 lbu $v1, -0x60be($v0) [load 0x80139F42; base $v0]	0x800F2EE4 lbu $v1, -0x60be($v0) [load 0x80139F42; base $v0]	—
+0x800F2EF0	0x01100AA0	42 9F 43 A0	sb $v1, -0x60be($v0)	0x800F2EE0 lui $v0, 0x8014	0x800F2EEC addiu $v1, $v1, 1 <- 0x800F2EE4 lbu $v1, -0x60be($v0) [load 0x80139F42; base $v0]	—
+0x800F2EF4	0x01100AA4	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2EE0 lui $v0, 0x8014	—
+0x800F2EF8	0x01100AA8	39 CC 03 08	j 0x800f30e4	—	—	0x800F30E4
+0x800F2EFC	0x01100AAC	C2 9E 40 A0	sb $zero, -0x613e($v0)	0x800F2EF4 lui $v0, 0x8014	$zero	—
+0x800F2F00	0x01100AB0	B0 EB 40 AC	sw $zero, -0x1450($v0)	0x800F2EF4 lui $v0, 0x8014	$zero	—
+0x800F2F04	0x01100AB4	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2EF4 lui $v0, 0x8014	—
+0x800F2F08	0x01100AB8	0C EB 40 AC	sw $zero, -0x14f4($v0)	0x800F2F04 lui $v0, 0x8014	$zero	—
+0x800F2F0C	0x01100ABC	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2F04 lui $v0, 0x8014	—
+0x800F2F10	0x01100AC0	71 EA 42 90	lbu $v0, -0x158f($v0)	0x800F2F0C lui $v0, 0x8014	0x800F2F0C lui $v0, 0x8014	—
+0x800F2F14	0x01100AC4	00 00 00 00	nop	$zero	$zero	—
+0x800F2F18	0x01100AC8	19 00 40 10	beqz $v0, 0x800f2f80	0x800F2F10 lbu $v0, -0x158f($v0) [load 0x8013EA71; base $v0]	$zero	0x800F2F80
+0x800F2F1C	0x01100ACC	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2F10 lbu $v0, -0x158f($v0) [load 0x8013EA71; base $v0]	—
+0x800F2F20	0x01100AD0	74 EA 42 8C	lw $v0, -0x158c($v0)	0x800F2F1C lui $v0, 0x8014	0x800F2F1C lui $v0, 0x8014	—
+0x800F2F24	0x01100AD4	14 80 04 3C	lui $a0, 0x8014	$zero	0x800F2EB0 addu $a0, $a0, $v0 <- 0x800F2E6C lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2] , 0x800F2EAC sll $v0, $v0, 4 <- 0x800F2EA8 addu $v0, $v0, $v1 <- 0x800F2E98 addu $v0, $a0, $v0 <- 0x800F2E6C lw $a0, -0x158c($s2) [load 0x8013EA74; base $s2] , 0x800F2E94 sll $v0, $v0, 4 <- 0x800F2E90 addu $v0, $v0, $v1 <- 0x800F2E8C sll $v0, $v1, 3 <- 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2E70 lw $v1, -0x14f4($s1) [load 0x8013EB0C; base $s1] , 0x800F2E9C addiu $v1, $zero, 2 <- $zero	—
+0x800F2F28	0x01100AD8	EE 02 46 24	addiu $a2, $v0, 0x2ee	0x800F2F20 lw $v0, -0x158c($v0) [load 0x8013EA74; base $v0]	TIDAK TAHU: caller-saved setelah JAL 0x8001552C	—
+0x800F2F2C	0x01100ADC	14 80 07 3C	lui $a3, 0x8014	$zero	TIDAK TAHU: caller-saved setelah JAL 0x8001552C	—
+0x800F2F30	0x01100AE0	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2F20 lw $v0, -0x158c($v0) [load 0x8013EA74; base $v0]	—
+0x800F2F34	0x01100AE4	71 EA 45 90	lbu $a1, -0x158f($v0)	0x800F2F30 lui $v0, 0x8014	TIDAK TAHU: caller-saved setelah JAL 0x8001552C	—
+0x800F2F38	0x01100AE8	B0 EB E3 8C	lw $v1, -0x1450($a3)	0x800F2F2C lui $a3, 0x8014	0x800F2EEC addiu $v1, $v1, 1 <- 0x800F2EE4 lbu $v1, -0x60be($v0) [load 0x80139F42; base $v0]	—
+0x800F2F3C	0x01100AEC	0C EB 82 8C	lw $v0, -0x14f4($a0)	0x800F2F24 lui $a0, 0x8014	0x800F2F30 lui $v0, 0x8014	—
+0x800F2F40	0x01100AF0	00 00 00 00	nop	$zero	$zero	—
+0x800F2F44	0x01100AF4	40 10 02 00	sll $v0, $v0, 1	$zero	0x800F2F3C lw $v0, -0x14f4($a0) [load 0x8013EB0C; base $a0]	—
+0x800F2F48	0x01100AF8	21 10 C2 00	addu $v0, $a2, $v0	0x800F2F28 addiu $a2, $v0, 0x2ee <- 0x800F2F20 lw $v0, -0x158c($v0) [load 0x8013EA74; base $v0]	0x800F2F44 sll $v0, $v0, 1 <- 0x800F2F3C lw $v0, -0x14f4($a0) [load 0x8013EB0C; base $a0]	—
+0x800F2F4C	0x01100AFC	00 00 42 84	lh $v0, ($v0)	0x800F2F48 addu $v0, $a2, $v0 <- 0x800F2F28 addiu $a2, $v0, 0x2ee <- 0x800F2F20 lw $v0, -0x158c($v0) [load 0x8013EA74; base $v0] , 0x800F2F44 sll $v0, $v0, 1 <- 0x800F2F3C lw $v0, -0x14f4($a0) [load 0x8013EB0C; base $a0]	0x800F2F48 addu $v0, $a2, $v0 <- 0x800F2F28 addiu $a2, $v0, 0x2ee <- 0x800F2F20 lw $v0, -0x158c($v0) [load 0x8013EA74; base $v0] , 0x800F2F44 sll $v0, $v0, 1 <- 0x800F2F3C lw $v0, -0x14f4($a0) [load 0x8013EB0C; base $a0]	—
+0x800F2F50	0x01100B00	00 00 00 00	nop	$zero	$zero	—
+0x800F2F54	0x01100B04	02 00 40 14	bnez $v0, 0x800f2f60	0x800F2F4C lh $v0, ($v0) [load alamat dinamis; base $v0]	$zero	0x800F2F60
+0x800F2F58	0x01100B08	00 00 00 00	nop	$zero	$zero	—
+0x800F2F5C	0x01100B0C	01 00 63 24	addiu $v1, $v1, 1	0x800F2F38 lw $v1, -0x1450($a3) [load 0x8013EBB0; base $a3]	0x800F2F38 lw $v1, -0x1450($a3) [load 0x8013EBB0; base $a3]	—
+0x800F2F60	0x01100B10	0C EB 82 8C	lw $v0, -0x14f4($a0)	0x800F2F24 lui $a0, 0x8014	0x800F2F4C lh $v0, ($v0) [load alamat dinamis; base $v0]	—
+0x800F2F64	0x01100B14	00 00 00 00	nop	$zero	$zero	—
+0x800F2F68	0x01100B18	01 00 42 24	addiu $v0, $v0, 1	0x800F2F60 lw $v0, -0x14f4($a0) [load 0x8013EB0C; base $a0]	0x800F2F60 lw $v0, -0x14f4($a0) [load 0x8013EB0C; base $a0]	—
+0x800F2F6C	0x01100B1C	0C EB 82 AC	sw $v0, -0x14f4($a0)	0x800F2F24 lui $a0, 0x8014	0x800F2F68 addiu $v0, $v0, 1 <- 0x800F2F60 lw $v0, -0x14f4($a0) [load 0x8013EB0C; base $a0]	—
+0x800F2F70	0x01100B20	2A 10 45 00	slt $v0, $v0, $a1	0x800F2F68 addiu $v0, $v0, 1 <- 0x800F2F60 lw $v0, -0x14f4($a0) [load 0x8013EB0C; base $a0]	0x800F2F34 lbu $a1, -0x158f($v0) [load 0x8013EA71; base $v0]	—
+0x800F2F74	0x01100B24	F1 FF 40 14	bnez $v0, 0x800f2f3c	0x800F2F70 slt $v0, $v0, $a1	$zero	0x800F2F3C
+0x800F2F78	0x01100B28	00 00 00 00	nop	$zero	$zero	—
+0x800F2F7C	0x01100B2C	B0 EB E3 AC	sw $v1, -0x1450($a3)	0x800F2F2C lui $a3, 0x8014	0x800F2F5C addiu $v1, $v1, 1 <- 0x800F2F38 lw $v1, -0x1450($a3) [load 0x8013EBB0; base $a3]	—
+0x800F2F80	0x01100B30	14 80 10 3C	lui $s0, 0x8014	$zero	0x800F2DA4 lui $s0, 0x8014	—
+0x800F2F84	0x01100B34	14 80 11 3C	lui $s1, 0x8014	$zero	0x800F2D74 lui $s1, 0x8014	—
+0x800F2F88	0x01100B38	71 EA 23 92	lbu $v1, -0x158f($s1)	0x800F2F84 lui $s1, 0x8014	0x800F2F5C addiu $v1, $v1, 1 <- 0x800F2F38 lw $v1, -0x1450($a3) [load 0x8013EBB0; base $a3]	—
+0x800F2F8C	0x01100B3C	B0 EB 02 8E	lw $v0, -0x1450($s0)	0x800F2F80 lui $s0, 0x8014	0x800F2F70 slt $v0, $v0, $a1	—
+0x800F2F90	0x01100B40	00 00 00 00	nop	$zero	$zero	—
+0x800F2F94	0x01100B44	53 00 43 14	bne $v0, $v1, 0x800f30e4	0x800F2F8C lw $v0, -0x1450($s0) [load 0x8013EBB0; base $s0]	0x800F2F88 lbu $v1, -0x158f($s1) [load 0x8013EA71; base $s1]	0x800F30E4
+0x800F2F98	0x01100B48	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2F8C lw $v0, -0x1450($s0) [load 0x8013EBB0; base $s0]	—
+0x800F2F9C	0x01100B4C	C2 9E 43 90	lbu $v1, -0x613e($v0)	0x800F2F98 lui $v0, 0x8014	0x800F2F88 lbu $v1, -0x158f($s1) [load 0x8013EA71; base $s1]	—
+0x800F2FA0	0x01100B50	00 00 00 00	nop	$zero	$zero	—
+0x800F2FA4	0x01100B54	01 00 64 24	addiu $a0, $v1, 1	0x800F2F9C lbu $v1, -0x613e($v0) [load 0x80139EC2; base $v0]	0x800F2F24 lui $a0, 0x8014	—
+0x800F2FA8	0x01100B58	FF 00 63 30	andi $v1, $v1, 0xff	0x800F2F9C lbu $v1, -0x613e($v0) [load 0x80139EC2; base $v0]	0x800F2F9C lbu $v1, -0x613e($v0) [load 0x80139EC2; base $v0]	—
+0x800F2FAC	0x01100B5C	29 00 63 2C	sltiu $v1, $v1, 0x29	0x800F2FA8 andi $v1, $v1, 0xff <- 0x800F2F9C lbu $v1, -0x613e($v0) [load 0x80139EC2; base $v0]	0x800F2FA8 andi $v1, $v1, 0xff <- 0x800F2F9C lbu $v1, -0x613e($v0) [load 0x80139EC2; base $v0]	—
+0x800F2FB0	0x01100B60	4C 00 60 14	bnez $v1, 0x800f30e4	0x800F2FAC sltiu $v1, $v1, 0x29 <- 0x800F2FA8 andi $v1, $v1, 0xff <- 0x800F2F9C lbu $v1, -0x613e($v0) [load 0x80139EC2; base $v0]	$zero	0x800F30E4
+0x800F2FB4	0x01100B64	C2 9E 44 A0	sb $a0, -0x613e($v0)	0x800F2F98 lui $v0, 0x8014	0x800F2FA4 addiu $a0, $v1, 1 <- 0x800F2F9C lbu $v1, -0x613e($v0) [load 0x80139EC2; base $v0]	—
+0x800F2FB8	0x01100B68	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2F98 lui $v0, 0x8014	—
+0x800F2FBC	0x01100B6C	42 9F 40 A0	sb $zero, -0x60be($v0)	0x800F2FB8 lui $v0, 0x8014	$zero	—
+0x800F2FC0	0x01100B70	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2FB8 lui $v0, 0x8014	—
+0x800F2FC4	0x01100B74	74 EA 42 8C	lw $v0, -0x158c($v0)	0x800F2FC0 lui $v0, 0x8014	0x800F2FC0 lui $v0, 0x8014	—
+0x800F2FC8	0x01100B78	B4 4A 00 0C	jal 0x80012ad0	—	—	0x80012AD0
+0x800F2FCC	0x01100B7C	61 03 40 A0	sb $zero, 0x361($v0)	return JAL 0x80012AD0	$zero	—
+0x800F2FD0	0x01100B80	01 00 42 30	andi $v0, $v0, 1	return JAL 0x80012AD0	return JAL 0x80012AD0	—
+0x800F2FD4	0x01100B84	32 00 40 10	beqz $v0, 0x800f30a0	0x800F2FD0 andi $v0, $v0, 1 <- return JAL 0x80012AD0	$zero	0x800F30A0
+0x800F2FD8	0x01100B88	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2FD0 andi $v0, $v0, 1 <- return JAL 0x80012AD0	—
+0x800F2FDC	0x01100B8C	B0 EB 00 AE	sw $zero, -0x1450($s0)	0x800F2F80 lui $s0, 0x8014	$zero	—
+0x800F2FE0	0x01100B90	0C EB 40 AC	sw $zero, -0x14f4($v0)	0x800F2FD8 lui $v0, 0x8014	$zero	—
+0x800F2FE4	0x01100B94	71 EA 22 92	lbu $v0, -0x158f($s1)	0x800F2F84 lui $s1, 0x8014	0x800F2FD8 lui $v0, 0x8014	—
+0x800F2FE8	0x01100B98	00 00 00 00	nop	$zero	$zero	—
+0x800F2FEC	0x01100B9C	21 00 40 10	beqz $v0, 0x800f3074	0x800F2FE4 lbu $v0, -0x158f($s1) [load 0x8013EA71; base $s1]	$zero	0x800F3074
+0x800F2FF0	0x01100BA0	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F2FE4 lbu $v0, -0x158f($s1) [load 0x8013EA71; base $s1]	—
+0x800F2FF4	0x01100BA4	74 EA 44 8C	lw $a0, -0x158c($v0)	0x800F2FF0 lui $v0, 0x8014	TIDAK TAHU: caller-saved setelah JAL 0x80012AD0	—
+0x800F2FF8	0x01100BA8	14 80 05 3C	lui $a1, 0x8014	$zero	TIDAK TAHU: caller-saved setelah JAL 0x80012AD0	—
+0x800F2FFC	0x01100BAC	04 00 88 24	addiu $t0, $a0, 4	0x800F2FF4 lw $a0, -0x158c($v0) [load 0x8013EA74; base $v0]	TIDAK TAHU: caller-saved setelah JAL 0x80012AD0	—
+0x800F3000	0x01100BB0	21 30 00 02	move $a2, $s0	0x800F2F80 lui $s0, 0x8014	$zero	—
+0x800F3004	0x01100BB4	21 10 20 02	move $v0, $s1	0x800F2F84 lui $s1, 0x8014	$zero	—
+0x800F3008	0x01100BB8	71 EA 47 90	lbu $a3, -0x158f($v0)	0x800F3004 move $v0, $s1 <- 0x800F2F84 lui $s1, 0x8014 , $zero	TIDAK TAHU: caller-saved setelah JAL 0x80012AD0	—
+0x800F300C	0x01100BBC	0C EB A3 8C	lw $v1, -0x14f4($a1)	0x800F2FF8 lui $a1, 0x8014	return JAL 0x80012AD0	—
+0x800F3010	0x01100BC0	00 00 00 00	nop	$zero	$zero	—
+0x800F3014	0x01100BC4	C0 10 03 00	sll $v0, $v1, 3	$zero	0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1]	—
+0x800F3018	0x01100BC8	21 10 43 00	addu $v0, $v0, $v1	0x800F3014 sll $v0, $v1, 3 <- 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1]	0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1]	—
+0x800F301C	0x01100BCC	00 19 02 00	sll $v1, $v0, 4	$zero	0x800F3018 addu $v0, $v0, $v1 <- 0x800F3014 sll $v0, $v1, 3 <- 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1] , 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1]	—
+0x800F3020	0x01100BD0	21 10 03 01	addu $v0, $t0, $v1	0x800F2FFC addiu $t0, $a0, 4 <- 0x800F2FF4 lw $a0, -0x158c($v0) [load 0x8013EA74; base $v0]	0x800F301C sll $v1, $v0, 4 <- 0x800F3018 addu $v0, $v0, $v1 <- 0x800F3014 sll $v0, $v1, 3 <- 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1] , 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1]	—
+0x800F3024	0x01100BD4	00 00 42 8C	lw $v0, ($v0)	0x800F3020 addu $v0, $t0, $v1 <- 0x800F2FFC addiu $t0, $a0, 4 <- 0x800F2FF4 lw $a0, -0x158c($v0) [load 0x8013EA74; base $v0] , 0x800F301C sll $v1, $v0, 4 <- 0x800F3018 addu $v0, $v0, $v1 <- 0x800F3014 sll $v0, $v1, 3 <- 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1] , 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1]	0x800F3020 addu $v0, $t0, $v1 <- 0x800F2FFC addiu $t0, $a0, 4 <- 0x800F2FF4 lw $a0, -0x158c($v0) [load 0x8013EA74; base $v0] , 0x800F301C sll $v1, $v0, 4 <- 0x800F3018 addu $v0, $v0, $v1 <- 0x800F3014 sll $v0, $v1, 3 <- 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1] , 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1]	—
+0x800F3028	0x01100BD8	00 00 00 00	nop	$zero	$zero	—
+0x800F302C	0x01100BDC	0A 00 41 04	bgez $v0, 0x800f3058	0x800F3024 lw $v0, ($v0) [load alamat dinamis; base $v0]	$at masuk/dinamis	0x800F3058
+0x800F3030	0x01100BE0	21 10 83 00	addu $v0, $a0, $v1	0x800F2FF4 lw $a0, -0x158c($v0) [load 0x8013EA74; base $v0]	0x800F301C sll $v1, $v0, 4 <- 0x800F3018 addu $v0, $v0, $v1 <- 0x800F3014 sll $v0, $v1, 3 <- 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1] , 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1]	—
+0x800F3034	0x01100BE4	0D 00 42 90	lbu $v0, 0xd($v0)	0x800F3030 addu $v0, $a0, $v1 <- 0x800F2FF4 lw $a0, -0x158c($v0) [load 0x8013EA74; base $v0] , 0x800F301C sll $v1, $v0, 4 <- 0x800F3018 addu $v0, $v0, $v1 <- 0x800F3014 sll $v0, $v1, 3 <- 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1] , 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1]	0x800F3030 addu $v0, $a0, $v1 <- 0x800F2FF4 lw $a0, -0x158c($v0) [load 0x8013EA74; base $v0] , 0x800F301C sll $v1, $v0, 4 <- 0x800F3018 addu $v0, $v0, $v1 <- 0x800F3014 sll $v0, $v1, 3 <- 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1] , 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1]	—
+0x800F3038	0x01100BE8	00 00 00 00	nop	$zero	$zero	—
+0x800F303C	0x01100BEC	01 00 42 30	andi $v0, $v0, 1	0x800F3034 lbu $v0, 0xd($v0) [load alamat dinamis; base $v0]	0x800F3034 lbu $v0, 0xd($v0) [load alamat dinamis; base $v0]	—
+0x800F3040	0x01100BF0	05 00 40 14	bnez $v0, 0x800f3058	0x800F303C andi $v0, $v0, 1 <- 0x800F3034 lbu $v0, 0xd($v0) [load alamat dinamis; base $v0]	$zero	0x800F3058
+0x800F3044	0x01100BF4	00 00 00 00	nop	$zero	$zero	—
+0x800F3048	0x01100BF8	B0 EB C2 8C	lw $v0, -0x1450($a2)	0x800F3000 move $a2, $s0 <- 0x800F2F80 lui $s0, 0x8014 , $zero	0x800F303C andi $v0, $v0, 1 <- 0x800F3034 lbu $v0, 0xd($v0) [load alamat dinamis; base $v0]	—
+0x800F304C	0x01100BFC	00 00 00 00	nop	$zero	$zero	—
+0x800F3050	0x01100C00	01 00 42 24	addiu $v0, $v0, 1	0x800F3048 lw $v0, -0x1450($a2) [load 0x8013EBB0; base $a2]	0x800F3048 lw $v0, -0x1450($a2) [load 0x8013EBB0; base $a2]	—
+0x800F3054	0x01100C04	B0 EB C2 AC	sw $v0, -0x1450($a2)	0x800F3000 move $a2, $s0 <- 0x800F2F80 lui $s0, 0x8014 , $zero	0x800F3050 addiu $v0, $v0, 1 <- 0x800F3048 lw $v0, -0x1450($a2) [load 0x8013EBB0; base $a2]	—
+0x800F3058	0x01100C08	0C EB A2 8C	lw $v0, -0x14f4($a1)	0x800F2FF8 lui $a1, 0x8014	0x800F3050 addiu $v0, $v0, 1 <- 0x800F3048 lw $v0, -0x1450($a2) [load 0x8013EBB0; base $a2]	—
+0x800F305C	0x01100C0C	00 00 00 00	nop	$zero	$zero	—
+0x800F3060	0x01100C10	01 00 42 24	addiu $v0, $v0, 1	0x800F3058 lw $v0, -0x14f4($a1) [load 0x8013EB0C; base $a1]	0x800F3058 lw $v0, -0x14f4($a1) [load 0x8013EB0C; base $a1]	—
+0x800F3064	0x01100C14	0C EB A2 AC	sw $v0, -0x14f4($a1)	0x800F2FF8 lui $a1, 0x8014	0x800F3060 addiu $v0, $v0, 1 <- 0x800F3058 lw $v0, -0x14f4($a1) [load 0x8013EB0C; base $a1]	—
+0x800F3068	0x01100C18	2A 10 47 00	slt $v0, $v0, $a3	0x800F3060 addiu $v0, $v0, 1 <- 0x800F3058 lw $v0, -0x14f4($a1) [load 0x8013EB0C; base $a1]	0x800F3008 lbu $a3, -0x158f($v0) [load 0x8013EA71; base $v0]	—
+0x800F306C	0x01100C1C	E7 FF 40 14	bnez $v0, 0x800f300c	0x800F3068 slt $v0, $v0, $a3	$zero	0x800F300C
+0x800F3070	0x01100C20	00 00 00 00	nop	$zero	$zero	—
+0x800F3074	0x01100C24	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F3068 slt $v0, $v0, $a3	—
+0x800F3078	0x01100C28	B0 EB 42 8C	lw $v0, -0x1450($v0)	0x800F3074 lui $v0, 0x8014	0x800F3074 lui $v0, 0x8014	—
+0x800F307C	0x01100C2C	00 00 00 00	nop	$zero	$zero	—
+0x800F3080	0x01100C30	07 00 40 10	beqz $v0, 0x800f30a0	0x800F3078 lw $v0, -0x1450($v0) [load 0x8013EBB0; base $v0]	$zero	0x800F30A0
+0x800F3084	0x01100C34	14 80 03 3C	lui $v1, 0x8014	$zero	0x800F301C sll $v1, $v0, 4 <- 0x800F3018 addu $v0, $v0, $v1 <- 0x800F3014 sll $v0, $v1, 3 <- 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1] , 0x800F300C lw $v1, -0x14f4($a1) [load 0x8013EB0C; base $a1]	—
+0x800F3088	0x01100C38	74 EA 62 8C	lw $v0, -0x158c($v1)	0x800F3084 lui $v1, 0x8014	0x800F3078 lw $v0, -0x1450($v0) [load 0x8013EBB0; base $v0]	—
+0x800F308C	0x01100C3C	00 00 00 00	nop	$zero	$zero	—
+0x800F3090	0x01100C40	E5 02 40 A0	sb $zero, 0x2e5($v0)	0x800F3088 lw $v0, -0x158c($v1) [load 0x8013EA74; base $v1]	$zero	—
+0x800F3094	0x01100C44	74 EA 63 8C	lw $v1, -0x158c($v1)	0x800F3084 lui $v1, 0x8014	0x800F3084 lui $v1, 0x8014	—
+0x800F3098	0x01100C48	38 CC 03 08	j 0x800f30e0	—	—	0x800F30E0
+0x800F309C	0x01100C4C	20 00 02 24	addiu $v0, $zero, 0x20	$zero	0x800F3088 lw $v0, -0x158c($v1) [load 0x8013EA74; base $v1]	—
+0x800F30A0	0x01100C50	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F309C addiu $v0, $zero, 0x20 <- $zero	—
+0x800F30A4	0x01100C54	74 EA 43 8C	lw $v1, -0x158c($v0)	0x800F30A0 lui $v0, 0x8014	0x800F3094 lw $v1, -0x158c($v1) [load 0x8013EA74; base $v1]	—
+0x800F30A8	0x01100C58	00 00 00 00	nop	$zero	$zero	—
+0x800F30AC	0x01100C5C	E5 02 62 90	lbu $v0, 0x2e5($v1)	0x800F30A4 lw $v1, -0x158c($v0) [load 0x8013EA74; base $v0]	0x800F30A0 lui $v0, 0x8014	—
+0x800F30B0	0x01100C60	00 00 00 00	nop	$zero	$zero	—
+0x800F30B4	0x01100C64	7F 00 42 30	andi $v0, $v0, 0x7f	0x800F30AC lbu $v0, 0x2e5($v1) [load alamat dinamis; base $v1]	0x800F30AC lbu $v0, 0x2e5($v1) [load alamat dinamis; base $v1]	—
+0x800F30B8	0x01100C68	06 00 40 10	beqz $v0, 0x800f30d4	0x800F30B4 andi $v0, $v0, 0x7f <- 0x800F30AC lbu $v0, 0x2e5($v1) [load alamat dinamis; base $v1]	$zero	0x800F30D4
+0x800F30BC	0x01100C6C	08 00 02 24	addiu $v0, $zero, 8	$zero	0x800F30B4 andi $v0, $v0, 0x7f <- 0x800F30AC lbu $v0, 0x2e5($v1) [load alamat dinamis; base $v1]	—
+0x800F30C0	0x01100C70	E3 4E 04 0C	jal 0x80113b8c	—	—	0x80113B8C
+0x800F30C4	0x01100C74	E9 02 62 A0	sb $v0, 0x2e9($v1)	return JAL 0x80113B8C	return JAL 0x80113B8C	—
+0x800F30C8	0x01100C78	14 80 02 3C	lui $v0, 0x8014	$zero	return JAL 0x80113B8C	—
+0x800F30CC	0x01100C7C	39 CC 03 08	j 0x800f30e4	—	—	0x800F30E4
+0x800F30D0	0x01100C80	D4 EA 40 A0	sb $zero, -0x152c($v0)	0x800F30C8 lui $v0, 0x8014	$zero	—
+0x800F30D4	0x01100C84	14 80 02 3C	lui $v0, 0x8014	$zero	0x800F30C8 lui $v0, 0x8014	—
+0x800F30D8	0x01100C88	74 EA 43 8C	lw $v1, -0x158c($v0)	0x800F30D4 lui $v0, 0x8014	return JAL 0x80113B8C	—
+0x800F30DC	0x01100C8C	18 00 02 24	addiu $v0, $zero, 0x18	$zero	0x800F30D4 lui $v0, 0x8014	—
+0x800F30E0	0x01100C90	E9 02 62 A0	sb $v0, 0x2e9($v1)	0x800F30D8 lw $v1, -0x158c($v0) [load 0x8013EA74; base $v0]	0x800F30DC addiu $v0, $zero, 0x18 <- $zero	—
+0x800F30E4	0x01100C94	20 00 BF 8F	lw $ra, 0x20($sp)	0x800F2A9C addiu $sp, $sp, -0x28 <- $sp masuk/dinamis	0x800F30C0 jal 0x80113b8c	—
+0x800F30E8	0x01100C98	1C 00 B3 8F	lw $s3, 0x1c($sp)	0x800F2A9C addiu $sp, $sp, -0x28 <- $sp masuk/dinamis	0x800F2D78 lui $s3, 0x8014	—
+0x800F30EC	0x01100C9C	18 00 B2 8F	lw $s2, 0x18($sp)	0x800F2A9C addiu $sp, $sp, -0x28 <- $sp masuk/dinamis	0x800F2D7C lui $s2, 0x8014	—
+0x800F30F0	0x01100CA0	14 00 B1 8F	lw $s1, 0x14($sp)	0x800F2A9C addiu $sp, $sp, -0x28 <- $sp masuk/dinamis	0x800F2F84 lui $s1, 0x8014	—
+0x800F30F4	0x01100CA4	10 00 B0 8F	lw $s0, 0x10($sp)	0x800F2A9C addiu $sp, $sp, -0x28 <- $sp masuk/dinamis	0x800F2F80 lui $s0, 0x8014	—
+0x800F30F8	0x01100CA8	08 00 E0 03	jr $ra	0x800F30E4 lw $ra, 0x20($sp) [load alamat dinamis; base $sp]	$zero	—

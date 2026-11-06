@@ -1,0 +1,2 @@
+seed	pc	bytes	instruction	value_operand	shift_count_origin	pattern	source	reason
+EB434	0x800EB7AC	04 10 62 00	sllv $v0, $v0, $v1	1	0x800EB7A4 addiu $v1, $v1, 0xc <- 0x800EB79C lbu $v1, -0x1512($s1) [load 0x8013EAEE; base $s1]	1 << dynamic register	reachable CFG operand trace	rt operand resolves statically to literal 1

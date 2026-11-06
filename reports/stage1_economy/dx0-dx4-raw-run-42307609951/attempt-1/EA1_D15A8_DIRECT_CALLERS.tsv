@@ -1,0 +1,2 @@
+region	pc	file_offset	bytes	caller_function	a0_origin	a1_origin	a2_origin	a3_origin	source
+ENTRY1	0x800F5DAC	0x0110395C	6A 45 03 0C	FUN_800F3658	TIDAK TAHU: caller-saved setelah JAL 0x800F2490	TIDAK TAHU: caller-saved setelah JAL 0x800F2490	TIDAK TAHU: caller-saved setelah JAL 0x800F2490	TIDAK TAHU: caller-saved setelah JAL 0x800F2490	direct JAL xref + local argument def-chain

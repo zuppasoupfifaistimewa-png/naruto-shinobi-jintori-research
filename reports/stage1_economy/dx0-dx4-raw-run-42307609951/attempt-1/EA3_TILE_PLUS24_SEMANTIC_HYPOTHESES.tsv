@@ -1,0 +1,4 @@
+hypothesis	indication	falsifier
+H1_POSITION_OR_COORDINATE	tile+0x24 is a signed halfword and one consumer subtracts global 0x8013EAD2 before forwarding to manager+0x2B4; compatible with a relative position/coordinate component, not proof	writer/consumer trace shows values are categorical owner/status codes and never participate in coordinate or displacement arithmetic
+H2_DISPLAY_OR_EVENT_STATUS	event-3 path forwards tile+0x24 to manager+0x390 without local arithmetic; compatible with a rendering/event-state field	all manager+0x390 readers show numeric movement/position calculations or the field indexes a non-display economy table
+H3_OWNER_OR_LEVEL	also remains possible, but current evidence gives no direct owner/level table proof; only tile-array reads and the audited loader-side byte source are established	complete writer/cross-consumer proof establishes mutually exclusive numeric range and a level/owner transition table

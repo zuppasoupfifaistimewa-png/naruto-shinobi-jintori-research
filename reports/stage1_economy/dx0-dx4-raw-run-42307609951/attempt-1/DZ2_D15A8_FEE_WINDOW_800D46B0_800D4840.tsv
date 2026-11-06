@@ -1,0 +1,102 @@
+pc	file_offset	bytes	instruction	function	source	reason
+0x800D46B0	0x010E2260	0F 00 42 30	andi $v0, $v0, 0xf	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46B4	0x010E2264	01 00 42 24	addiu $v0, $v0, 1	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46B8	0x010E2268	0C EB 02 AE	sw $v0, -0x14f4($s0)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46BC	0x010E226C	6E EA 64 96	lhu $a0, -0x1592($s3)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46C0	0x010E2270	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46C4	0x010E2274	40 20 04 00	sll $a0, $a0, 1	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46C8	0x010E2278	21 20 A4 00	addu $a0, $a1, $a0	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46CC	0x010E227C	A0 04 A3 90	lbu $v1, 0x4a0($a1)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46D0	0x010E2280	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46D4	0x010E2284	C0 10 03 00	sll $v0, $v1, 3	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46D8	0x010E2288	21 10 43 00	addu $v0, $v0, $v1	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46DC	0x010E228C	C0 10 02 00	sll $v0, $v0, 3	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46E0	0x010E2290	21 10 43 00	addu $v0, $v0, $v1	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46E4	0x010E2294	80 10 02 00	sll $v0, $v0, 2	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46E8	0x010E2298	21 10 46 00	addu $v0, $v0, $a2	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46EC	0x010E229C	1A 00 42 94	lhu $v0, 0x1a($v0)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46F0	0x010E22A0	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46F4	0x010E22A4	23 10 02 00	negu $v0, $v0	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46F8	0x010E22A8	EE 02 82 A4	sh $v0, 0x2ee($a0)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D46FC	0x010E22AC	A0 04 A3 90	lbu $v1, 0x4a0($a1)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4700	0x010E22B0	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4704	0x010E22B4	C0 10 03 00	sll $v0, $v1, 3	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4708	0x010E22B8	21 10 43 00	addu $v0, $v0, $v1	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D470C	0x010E22BC	C0 10 02 00	sll $v0, $v0, 3	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4710	0x010E22C0	21 10 43 00	addu $v0, $v0, $v1	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4714	0x010E22C4	80 10 02 00	sll $v0, $v0, 2	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4718	0x010E22C8	21 10 46 00	addu $v0, $v0, $a2	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D471C	0x010E22CC	20 00 43 94	lhu $v1, 0x20($v0)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4720	0x010E22D0	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4724	0x010E22D4	FF F0 63 30	andi $v1, $v1, 0xf0ff	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4728	0x010E22D8	20 00 43 A4	sh $v1, 0x20($v0)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D472C	0x010E22DC	A0 04 A2 90	lbu $v0, 0x4a0($a1)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4730	0x010E22E0	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4734	0x010E22E4	C0 18 02 00	sll $v1, $v0, 3	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4738	0x010E22E8	21 18 62 00	addu $v1, $v1, $v0	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D473C	0x010E22EC	C0 18 03 00	sll $v1, $v1, 3	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4740	0x010E22F0	21 18 62 00	addu $v1, $v1, $v0	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4744	0x010E22F4	80 18 03 00	sll $v1, $v1, 2	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4748	0x010E22F8	21 18 66 00	addu $v1, $v1, $a2	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D474C	0x010E22FC	0C EB 04 96	lhu $a0, -0x14f4($s0)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4750	0x010E2300	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4754	0x010E2304	00 22 04 00	sll $a0, $a0, 8	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4758	0x010E2308	20 00 62 94	lhu $v0, 0x20($v1)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D475C	0x010E230C	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4760	0x010E2310	25 10 44 00	or $v0, $v0, $a0	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4764	0x010E2314	20 00 62 A4	sh $v0, 0x20($v1)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4768	0x010E2318	0C EB 02 92	lbu $v0, -0x14f4($s0)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D476C	0x010E231C	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4770	0x010E2320	F8 04 A2 A0	sb $v0, 0x4f8($a1)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4774	0x010E2324	74 EA 22 8E	lw $v0, -0x158c($s1)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4778	0x010E2328	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D477C	0x010E232C	A0 04 44 90	lbu $a0, 0x4a0($v0)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4780	0x010E2330	C3 DD 02 0C	jal 0x800b770c	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4784	0x010E2334	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4788	0x010E2338	74 EA 25 8E	lw $a1, -0x158c($s1)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D478C	0x010E233C	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4790	0x010E2340	24 09 A2 A4	sh $v0, 0x924($a1)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4794	0x010E2344	A0 04 A3 90	lbu $v1, 0x4a0($a1)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4798	0x010E2348	84 EA 44 8E	lw $a0, -0x157c($s2)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D479C	0x010E234C	C0 10 03 00	sll $v0, $v1, 3	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47A0	0x010E2350	21 10 43 00	addu $v0, $v0, $v1	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47A4	0x010E2354	C0 10 02 00	sll $v0, $v0, 3	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47A8	0x010E2358	21 10 43 00	addu $v0, $v0, $v1	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47AC	0x010E235C	80 10 02 00	sll $v0, $v0, 2	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47B0	0x010E2360	21 10 44 00	addu $v0, $v0, $a0	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47B4	0x010E2364	20 00 42 94	lhu $v0, 0x20($v0)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47B8	0x010E2368	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47BC	0x010E236C	02 11 02 00	srl $v0, $v0, 4	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47C0	0x010E2370	0F 00 42 30	andi $v0, $v0, 0xf	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47C4	0x010E2374	01 00 42 24	addiu $v0, $v0, 1	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47C8	0x010E2378	0C EB 02 AE	sw $v0, -0x14f4($s0)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47CC	0x010E237C	A0 04 A3 90	lbu $v1, 0x4a0($a1)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47D0	0x010E2380	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47D4	0x010E2384	C0 10 03 00	sll $v0, $v1, 3	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47D8	0x010E2388	21 10 43 00	addu $v0, $v0, $v1	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47DC	0x010E238C	C0 10 02 00	sll $v0, $v0, 3	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47E0	0x010E2390	21 10 43 00	addu $v0, $v0, $v1	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47E4	0x010E2394	80 10 02 00	sll $v0, $v0, 2	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47E8	0x010E2398	21 10 44 00	addu $v0, $v0, $a0	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47EC	0x010E239C	20 00 43 94	lhu $v1, 0x20($v0)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47F0	0x010E23A0	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47F4	0x010E23A4	0F FF 63 30	andi $v1, $v1, 0xff0f	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47F8	0x010E23A8	20 00 43 A4	sh $v1, 0x20($v0)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D47FC	0x010E23AC	A0 04 A2 90	lbu $v0, 0x4a0($a1)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4800	0x010E23B0	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4804	0x010E23B4	C0 18 02 00	sll $v1, $v0, 3	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4808	0x010E23B8	21 18 62 00	addu $v1, $v1, $v0	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D480C	0x010E23BC	C0 18 03 00	sll $v1, $v1, 3	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4810	0x010E23C0	21 18 62 00	addu $v1, $v1, $v0	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4814	0x010E23C4	80 18 03 00	sll $v1, $v1, 2	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4818	0x010E23C8	21 18 64 00	addu $v1, $v1, $a0	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D481C	0x010E23CC	0C EB 04 96	lhu $a0, -0x14f4($s0)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4820	0x010E23D0	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4824	0x010E23D4	00 21 04 00	sll $a0, $a0, 4	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4828	0x010E23D8	20 00 62 94	lhu $v0, 0x20($v1)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D482C	0x010E23DC	00 00 00 00	nop	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4830	0x010E23E0	25 10 44 00	or $v0, $v0, $a0	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4834	0x010E23E4	20 00 62 A4	sh $v0, 0x20($v1)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4838	0x010E23E8	6E EA 64 96	lhu $a0, -0x1592($s3)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D483C	0x010E23EC	A0 04 A5 90	lbu $a1, 0x4a0($a1)	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
+0x800D4840	0x010E23F0	01 EC 02 0C	jal 0x800bb004	FUN_800D15A8	Entry 1 raw decode	full requested instruction window
