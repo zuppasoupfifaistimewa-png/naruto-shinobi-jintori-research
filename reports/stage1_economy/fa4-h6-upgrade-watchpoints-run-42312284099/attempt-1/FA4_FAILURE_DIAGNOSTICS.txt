@@ -1,0 +1,36 @@
+FAILURE DIAGNOSTICS — FA4 runtime prerequisite
+
+Run: 42312284099
+Job ID: 128216422129
+Source SHA: 43d2bed4ceb468583ffa5a03730fdb07939e6677
+
+Step 6 — Download and verify pinned PCSX, disc, BIOS, and target H6 base:
+PASS. Log confirms:
+- pcsx-redux.AppImage: OK
+- game.bin: OK
+- game.cue: OK
+- scph7502.zip: OK
+- target.sstate: OK
+- PRIVATE_TARGET_STATE_VERIFIED=PASS
+Target state SHA-256: 00fab82601f4acee6e250c9009234dfb469d6f4d457cfb8413a1e874204f6c3d
+
+Step 7 — Download CONTROL:
+FAIL. actions/download-artifact@v4 attempted artifact:
+name=naruto-storymode-adaptive-player-private
+run-id=39867730674
+Log:
+Unable to download artifact(s): Artifact not found for name: naruto-storymode-adaptive-player-private
+Please ensure that your artifact is not expired and the artifact was uploaded using a compatible version of toolkit/upload-artifact.
+
+Independent GitHub artifact listing for run 39867730674 returned an empty artifacts array. Public Release naruto-checkpoint-39262213468 contains only the raw target checkpoint asset; it does not contain CONTROL.
+
+Consequences:
+- No CONTROL input bytes were available.
+- H6 was not constructed and expected H6 SHA was not reached.
+- PCSX extraction, Xvfb, Python py_compile, all 8 launches, and all 5 watchpoints were skipped.
+- No action-8 reachability result and no debit samples exist.
+- This is not evidence that action 8 is unreachable.
+
+The workflow's final publication step also failed with exit code 2 because its fallback tried to read FA4_WORKFLOW_SCRIPT_PROCESS_EXIT.txt even though the script never started. This text-only record was committed manually so the Actions run, blocker, job ID, source SHA, and exit code remain auditable.
+
+Cleanup step succeeded. No ISO, BIOS, savestate, RAM dump, Memory Card, video, frame, or other binary was committed. Release and STATUS.md remain unchanged.
