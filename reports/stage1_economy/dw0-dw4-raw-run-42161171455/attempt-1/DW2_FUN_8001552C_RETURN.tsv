@@ -1,0 +1,2 @@
+return_pc	return_bytes	delay_slot_pc	v0_last_definition	interpretation
+0x80015540	08 00 E0 03	0x80015544	0x80015538 addiu $v0, $v0, 1 [01 00 42 24]	return value is current v0; exact semantic value depends on this def/use chain
