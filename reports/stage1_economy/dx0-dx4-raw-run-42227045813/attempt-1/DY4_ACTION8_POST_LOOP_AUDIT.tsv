@@ -1,0 +1,2 @@
+function	fee_post_pc	all_plus2ee_stores_in_direct_call_closure	negative_tile_fee_posts	backedges_after_post_to_fee_load_or_earlier	direct_call_closure_functions	result	caveat	falsifier
+FUN_800D15A8	0x800D46F8	3	1	0	75	NO_DIRECT_BACKEDGE_TO_FEE_LOAD_OR_POST	JALR/indirect control-flow destinations are not in direct-call closure; no runtime execution	a JALR-resolved edge or a branch target discovered to re-enter 0x800D46EC..0x800D46F8

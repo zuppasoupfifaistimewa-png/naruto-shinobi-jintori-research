@@ -1,0 +1,271 @@
+pc	file_offset	bytes	instruction	target_pc	target_inside_FUN_800D15A8	pc_after_fee_post	post_loop_edge	source	reason
+0x800D1610	0x010DF1C0	52 00 40 14	bnez $v0, 0x800d175c	0x800D175C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1628	0x010DF1D8	03 00 62 10	beq $v1, $v0, 0x800d1638	0x800D1638	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1630	0x010DF1E0	46 00 62 14	bne $v1, $v0, 0x800d174c	0x800D174C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1664	0x010DF214	05 00 62 14	bne $v1, $v0, 0x800d167c	0x800D167C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1674	0x010DF224	A2 45 03 08	j 0x800d1688	0x800D1688	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D16B4	0x010DF264	06 00 40 14	bnez $v0, 0x800d16d0	0x800D16D0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D16C8	0x010DF278	0B 00 40 10	beqz $v0, 0x800d16f8	0x800D16F8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D16F0	0x010DF2A0	C0 45 03 08	j 0x800d1700	0x800D1700	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D171C	0x010DF2CC	04 00 62 14	bne $v1, $v0, 0x800d1730	0x800D1730	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1754	0x010DF304	7B 00 40 10	beqz $v0, 0x800d1944	0x800D1944	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1780	0x010DF330	07 00 02 16	bne $s0, $v0, 0x800d17a0	0x800D17A0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D17B0	0x010DF360	52 00 22 16	bne $s1, $v0, 0x800d18fc	0x800D18FC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1914	0x010DF4C4	84 05 40 10	beqz $v0, 0x800d2f28	0x800D2F28	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D193C	0x010DF4EC	19 51 03 08	j 0x800d4464	0x800D4464	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1950	0x010DF500	31 00 40 10	beqz $v0, 0x800d1a18	0x800D1A18	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1974	0x010DF524	0D 00 40 14	bnez $v0, 0x800d19ac	0x800D19AC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1994	0x010DF544	07 00 40 14	bnez $v0, 0x800d19b4	0x800D19B4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D19C8	0x010DF578	04 00 40 10	beqz $v0, 0x800d19dc	0x800D19DC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D19D4	0x010DF584	83 46 03 08	j 0x800d1a0c	0x800D1A0C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D19F4	0x010DF5A4	07 00 40 14	bnez $v0, 0x800d1a14	0x800D1A14	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1A48	0x010DF5F8	06 00 40 14	bnez $v0, 0x800d1a64	0x800D1A64	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1A5C	0x010DF60C	48 00 40 10	beqz $v0, 0x800d1b80	0x800D1B80	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1A7C	0x010DF62C	F6 07 40 10	beqz $v0, 0x800d3a58	0x800D3A58	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1AB8	0x010DF668	25 00 62 10	beq $v1, $v0, 0x800d1b50	0x800D1B50	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1AC0	0x010DF670	D1 46 03 08	j 0x800d1b44	0x800D1B44	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1AE0	0x010DF690	1B 00 62 10	beq $v1, $v0, 0x800d1b50	0x800D1B50	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1AE8	0x010DF698	D1 46 03 08	j 0x800d1b44	0x800D1B44	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1B00	0x010DF6B0	D0 46 03 08	j 0x800d1b40	0x800D1B40	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1B20	0x010DF6D0	F2 06 82 14	bne $a0, $v0, 0x800d36ec	0x800D36EC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1B28	0x010DF6D8	D5 46 03 08	j 0x800d1b54	0x800D1B54	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1B48	0x010DF6F8	E8 06 62 14	bne $v1, $v0, 0x800d36ec	0x800D36EC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1B64	0x010DF714	BC 07 43 14	bne $v0, $v1, 0x800d3a58	0x800D3A58	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1B78	0x010DF728	96 4E 03 08	j 0x800d3a58	0x800D3A58	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1BB0	0x010DF760	52 00 40 10	beqz $v0, 0x800d1cfc	0x800D1CFC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1BC4	0x010DF774	12 00 40 10	beqz $v0, 0x800d1c10	0x800D1C10	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1BE4	0x010DF794	42 00 40 14	bnez $v0, 0x800d1cf0	0x800D1CF0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1C08	0x010DF7B8	3C 47 03 08	j 0x800d1cf0	0x800D1CF0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1C24	0x010DF7D4	08 00 40 10	beqz $v0, 0x800d1c48	0x800D1C48	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1C38	0x010DF7E8	1C 00 40 14	bnez $v0, 0x800d1cac	0x800D1CAC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1C58	0x010DF808	14 00 40 14	bnez $v0, 0x800d1cac	0x800D1CAC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1CA4	0x010DF854	3C 47 03 08	j 0x800d1cf0	0x800D1CF0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1CF4	0x010DF8A4	9B 47 03 08	j 0x800d1e6c	0x800D1E6C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1D14	0x010DF8C4	56 00 40 10	beqz $v0, 0x800d1e70	0x800D1E70	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1D38	0x010DF8E8	11 00 40 10	beqz $v0, 0x800d1d80	0x800D1D80	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1D54	0x010DF904	43 00 40 10	beqz $v0, 0x800d1e64	0x800D1E64	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1D78	0x010DF928	99 47 03 08	j 0x800d1e64	0x800D1E64	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1D94	0x010DF944	0A 00 40 14	bnez $v0, 0x800d1dc0	0x800D1DC0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1DAC	0x010DF95C	1C 00 40 14	bnez $v0, 0x800d1e20	0x800D1E20	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1DCC	0x010DF97C	14 00 40 14	bnez $v0, 0x800d1e20	0x800D1E20	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1E18	0x010DF9C8	99 47 03 08	j 0x800d1e64	0x800D1E64	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1E88	0x010DFA38	54 00 40 10	beqz $v0, 0x800d1fdc	0x800D1FDC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1E9C	0x010DFA4C	11 00 40 10	beqz $v0, 0x800d1ee4	0x800D1EE4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1EB8	0x010DFA68	44 00 40 14	bnez $v0, 0x800d1fcc	0x800D1FCC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1EDC	0x010DFA8C	F3 47 03 08	j 0x800d1fcc	0x800D1FCC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1EF8	0x010DFAA8	08 00 40 10	beqz $v0, 0x800d1f1c	0x800D1F1C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1F0C	0x010DFABC	1D 00 40 14	bnez $v0, 0x800d1f84	0x800D1F84	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1F2C	0x010DFADC	16 00 40 14	bnez $v0, 0x800d1f88	0x800D1F88	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1F7C	0x010DFB2C	F3 47 03 08	j 0x800d1fcc	0x800D1FCC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1FD4	0x010DFB84	57 48 03 08	j 0x800d215c	0x800D215C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D1FF4	0x010DFBA4	5A 00 40 10	beqz $v0, 0x800d2160	0x800D2160	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2018	0x010DFBC8	12 00 40 10	beqz $v0, 0x800d2064	0x800D2064	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2038	0x010DFBE8	44 00 40 10	beqz $v0, 0x800d214c	0x800D214C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D205C	0x010DFC0C	53 48 03 08	j 0x800d214c	0x800D214C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2078	0x010DFC28	09 00 40 14	bnez $v0, 0x800d20a0	0x800D20A0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2090	0x010DFC40	1C 00 40 14	bnez $v0, 0x800d2104	0x800D2104	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D20AC	0x010DFC5C	16 00 40 14	bnez $v0, 0x800d2108	0x800D2108	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D20FC	0x010DFCAC	53 48 03 08	j 0x800d214c	0x800D214C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D216C	0x010DFD1C	52 03 A0 10	beqz $a1, 0x800d2eb8	0x800D2EB8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D21A4	0x010DFD54	FD 02 40 14	bnez $v0, 0x800d2d9c	0x800D2D9C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D21C8	0x010DFD78	03 00 62 10	beq $v1, $v0, 0x800d21d8	0x800D21D8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D21D0	0x010DFD80	21 00 62 14	bne $v1, $v0, 0x800d2258	0x800D2258	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2200	0x010DFDB0	07 00 62 14	bne $v1, $v0, 0x800d2220	0x800D2220	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2210	0x010DFDC0	03 00 82 14	bne $a0, $v0, 0x800d2220	0x800D2220	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2228	0x010DFDD8	00 01 62 10	beq $v1, $v0, 0x800d262c	0x800D262C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2250	0x010DFE00	8B 49 03 08	j 0x800d262c	0x800D262C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2264	0x010DFE14	E8 00 43 10	beq $v0, $v1, 0x800d2608	0x800D2608	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2288	0x010DFE38	D5 00 40 10	beqz $v0, 0x800d25e0	0x800D25E0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D22D8	0x010DFE88	73 49 03 08	j 0x800d25cc	0x800D25CC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2318	0x010DFEC8	B2 00 40 14	bnez $v0, 0x800d25e4	0x800D25E4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2320	0x010DFED0	76 49 03 08	j 0x800d25d8	0x800D25D8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2358	0x010DFF08	A2 00 62 14	bne $v1, $v0, 0x800d25e4	0x800D25E4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D236C	0x010DFF1C	73 49 03 08	j 0x800d25cc	0x800D25CC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D23A4	0x010DFF54	09 00 62 14	bne $v1, $v0, 0x800d23cc	0x800D23CC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D23C0	0x010DFF70	85 00 43 14	bne $v0, $v1, 0x800d25d8	0x800D25D8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D23F8	0x010DFFA8	7A 00 62 14	bne $v1, $v0, 0x800d25e4	0x800D25E4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2434	0x010DFFE4	6B 00 40 14	bnez $v0, 0x800d25e4	0x800D25E4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D243C	0x010DFFEC	76 49 03 08	j 0x800d25d8	0x800D25D8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2474	0x010E0024	5B 00 62 14	bne $v1, $v0, 0x800d25e4	0x800D25E4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D247C	0x010E002C	79 49 03 08	j 0x800d25e4	0x800D25E4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D24B0	0x010E0060	73 49 03 08	j 0x800d25cc	0x800D25CC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D24E8	0x010E0098	18 00 62 14	bne $v1, $v0, 0x800d254c	0x800D254C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2504	0x010E00B4	11 00 82 14	bne $a0, $v0, 0x800d254c	0x800D254C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2530	0x010E00E0	06 00 40 14	bnez $v0, 0x800d254c	0x800D254C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2544	0x010E00F4	24 00 40 14	bnez $v0, 0x800d25d8	0x800D25D8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2554	0x010E0104	79 49 03 08	j 0x800d25e4	0x800D25E4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2568	0x010E0118	0D 00 62 14	bne $v1, $v0, 0x800d25a0	0x800D25A0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2598	0x010E0148	73 49 03 08	j 0x800d25cc	0x800D25CC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D25CC	0x010E017C	05 00 62 14	bne $v1, $v0, 0x800d25e4	0x800D25E4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D25EC	0x010E019C	32 02 40 10	beqz $v0, 0x800d2eb8	0x800D2EB8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2600	0x010E01B0	8B 49 03 08	j 0x800d262c	0x800D262C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D261C	0x010E01CC	04 00 62 14	bne $v1, $v0, 0x800d2630	0x800D2630	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2638	0x010E01E8	20 02 40 10	beqz $v0, 0x800d2ebc	0x800D2EBC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2680	0x010E0230	EE 00 62 14	bne $v1, $v0, 0x800d2a3c	0x800D2A3C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D26B8	0x010E0268	C0 00 40 10	beqz $v0, 0x800d29bc	0x800D29BC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D26E8	0x010E0298	05 00 40 10	beqz $v0, 0x800d2700	0x800D2700	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D26F8	0x010E02A8	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2708	0x010E02B8	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2718	0x010E02C8	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2728	0x010E02D8	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2738	0x010E02E8	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D277C	0x010E032C	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2878	0x010E0428	06 00 40 04	bltz $v0, 0x800d2894	0x800D2894	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D288C	0x010E043C	27 4A 03 08	j 0x800d289c	0x800D289C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D28A4	0x010E0454	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D28FC	0x010E04AC	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D290C	0x010E04BC	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D291C	0x010E04CC	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D292C	0x010E04DC	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D293C	0x010E04EC	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D294C	0x010E04FC	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D295C	0x010E050C	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D296C	0x010E051C	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D297C	0x010E052C	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D298C	0x010E053C	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D299C	0x010E054C	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D29AC	0x010E055C	70 4A 03 08	j 0x800d29c0	0x800D29C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D29D8	0x010E0588	37 01 40 10	beqz $v0, 0x800d2eb8	0x800D2EB8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2A08	0x010E05B8	27 01 A2 10	beq $a1, $v0, 0x800d2ea8	0x800D2EA8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2A2C	0x010E05DC	F1 FF 60 14	bnez $v1, 0x800d29f4	0x800D29F4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2A34	0x010E05E4	AF 4B 03 08	j 0x800d2ebc	0x800D2EBC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2A50	0x010E0600	56 00 62 14	bne $v1, $v0, 0x800d2bac	0x800D2BAC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2A60	0x010E0610	52 00 40 14	bnez $v0, 0x800d2bac	0x800D2BAC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2A94	0x010E0644	06 00 40 14	bnez $v0, 0x800d2ab0	0x800D2AB0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2AA8	0x010E0658	23 00 40 10	beqz $v0, 0x800d2b38	0x800D2B38	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2B30	0x010E06E0	EB 4A 03 08	j 0x800d2bac	0x800D2BAC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2BC4	0x010E0774	BD 00 40 14	bnez $v0, 0x800d2ebc	0x800D2EBC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2BD4	0x010E0784	B8 00 82 10	beq $a0, $v0, 0x800d2eb8	0x800D2EB8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2BDC	0x010E078C	B6 00 82 10	beq $a0, $v0, 0x800d2eb8	0x800D2EB8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2BEC	0x010E079C	03 00 62 10	beq $v1, $v0, 0x800d2bfc	0x800D2BFC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2BF4	0x010E07A4	B1 00 82 10	beq $a0, $v0, 0x800d2ebc	0x800D2EBC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2CF0	0x010E08A0	06 00 40 04	bltz $v0, 0x800d2d0c	0x800D2D0C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2D04	0x010E08B4	45 4B 03 08	j 0x800d2d14	0x800D2D14	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2D38	0x010E08E8	5F 00 40 10	beqz $v0, 0x800d2eb8	0x800D2EB8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2D68	0x010E0918	4F 00 A2 10	beq $a1, $v0, 0x800d2ea8	0x800D2EA8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2D8C	0x010E093C	F1 FF 60 14	bnez $v1, 0x800d2d54	0x800D2D54	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2D94	0x010E0944	AF 4B 03 08	j 0x800d2ebc	0x800D2EBC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2DAC	0x010E095C	42 00 40 10	beqz $v0, 0x800d2eb8	0x800D2EB8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2DBC	0x010E096C	03 00 62 10	beq $v1, $v0, 0x800d2dcc	0x800D2DCC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2DC4	0x010E0974	06 00 62 14	bne $v1, $v0, 0x800d2de0	0x800D2DE0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2DD8	0x010E0988	7B 4B 03 08	j 0x800d2dec	0x800D2DEC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2DF8	0x010E09A8	07 00 62 10	beq $v1, $v0, 0x800d2e18	0x800D2E18	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2E10	0x010E09C0	2A 00 62 10	beq $v1, $v0, 0x800d2ebc	0x800D2EBC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2E44	0x010E09F4	03 00 62 14	bne $v1, $v0, 0x800d2e54	0x800D2E54	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2E78	0x010E0A28	05 00 62 10	beq $v1, $v0, 0x800d2e90	0x800D2E90	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2E80	0x010E0A30	0B 00 62 10	beq $v1, $v0, 0x800d2eb0	0x800D2EB0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2E88	0x010E0A38	AF 4B 03 08	j 0x800d2ebc	0x800D2EBC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2EA0	0x010E0A50	AF 4B 03 08	j 0x800d2ebc	0x800D2EBC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2EA8	0x010E0A58	AE 4B 03 08	j 0x800d2eb8	0x800D2EB8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2F20	0x010E0AD0	4C 01 43 14	bne $v0, $v1, 0x800d3454	0x800D3454	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2F44	0x010E0AF4	38 01 40 10	beqz $v0, 0x800d3428	0x800D3428	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2F8C	0x010E0B3C	1D 00 40 10	beqz $v0, 0x800d3004	0x800D3004	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2FB0	0x010E0B60	FD 4B 03 08	j 0x800d2ff4	0x800D2FF4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2FB8	0x010E0B68	FD 4B 03 08	j 0x800d2ff4	0x800D2FF4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2FC8	0x010E0B78	12 00 40 14	bnez $v0, 0x800d3014	0x800D3014	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2FD0	0x010E0B80	FD 4B 03 08	j 0x800d2ff4	0x800D2FF4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2FE0	0x010E0B90	0C 00 40 14	bnez $v0, 0x800d3014	0x800D3014	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2FE8	0x010E0B98	FD 4B 03 08	j 0x800d2ff4	0x800D2FF4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D2FFC	0x010E0BAC	05 00 40 14	bnez $v0, 0x800d3014	0x800D3014	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D301C	0x010E0BCC	02 01 40 10	beqz $v0, 0x800d3428	0x800D3428	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3058	0x010E0C08	39 00 40 10	beqz $v0, 0x800d3140	0x800D3140	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3074	0x010E0C24	19 00 82 10	beq $a0, $v0, 0x800d30dc	0x800D30DC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D308C	0x010E0C3C	1F 00 62 10	beq $v1, $v0, 0x800d310c	0x800D310C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3094	0x010E0C44	11 00 62 14	bne $v1, $v0, 0x800d30dc	0x800D30DC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D30D4	0x010E0C84	0D 00 62 10	beq $v1, $v0, 0x800d310c	0x800D310C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3138	0x010E0CE8	CA FF 40 14	bnez $v0, 0x800d3064	0x800D3064	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D318C	0x010E0D3C	0B 4D 03 08	j 0x800d342c	0x800D342C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D31B0	0x010E0D60	0F 00 40 10	beqz $v0, 0x800d31f0	0x800D31F0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D31E8	0x010E0D98	F5 FF 40 14	bnez $v0, 0x800d31c0	0x800D31C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3224	0x010E0DD4	06 00 40 10	beqz $v0, 0x800d3240	0x800D3240	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3238	0x010E0DE8	94 4C 03 08	j 0x800d3250	0x800D3250	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3288	0x010E0E38	E5 4C 03 08	j 0x800d3394	0x800D3394	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D32AC	0x010E0E5C	0E 00 40 10	beqz $v0, 0x800d32e8	0x800D32E8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D32E0	0x010E0E90	F5 FF 40 14	bnez $v0, 0x800d32b8	0x800D32B8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3348	0x010E0EF8	0B 4D 03 08	j 0x800d342c	0x800D342C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D33A8	0x010E0F58	0B 4D 03 08	j 0x800d342c	0x800D342C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D33B8	0x010E0F68	1C 00 40 14	bnez $v0, 0x800d342c	0x800D342C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D33C8	0x010E0F78	18 00 40 14	bnez $v0, 0x800d342c	0x800D342C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3474	0x010E1024	8D 00 43 14	bne $v0, $v1, 0x800d36ac	0x800D36AC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3488	0x010E1038	88 00 40 14	bnez $v0, 0x800d36ac	0x800D36AC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3498	0x010E1048	03 00 62 10	beq $v1, $v0, 0x800d34a8	0x800D34A8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D34A0	0x010E1050	72 00 62 14	bne $v1, $v0, 0x800d366c	0x800D366C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D34CC	0x010E107C	1E 00 62 14	bne $v1, $v0, 0x800d3548	0x800D3548	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3510	0x010E10C0	02 00 41 04	bgez $v0, 0x800d351c	0x800D351C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3524	0x010E10D4	12 00 45 14	bne $v0, $a1, 0x800d3570	0x800D3570	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3538	0x010E10E8	F2 FF 47 14	bne $v0, $a3, 0x800d3504	0x800D3504	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3540	0x010E10F0	5D 4D 03 08	j 0x800d3574	0x800D3574	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3554	0x010E1104	06 00 41 04	bgez $v0, 0x800d3570	0x800D3570	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3664	0x010E1214	8C 4E 03 08	j 0x800d3a30	0x800D3A30	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D367C	0x010E122C	F5 00 40 10	beqz $v0, 0x800d3a54	0x800D3A54	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3690	0x010E1240	9F 00 41 04	bgez $v0, 0x800d3910	0x800D3910	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D36A4	0x010E1254	44 4E 03 08	j 0x800d3910	0x800D3910	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D36CC	0x010E127C	E1 00 43 14	bne $v0, $v1, 0x800d3a54	0x800D3A54	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D36E0	0x010E1290	DC 00 40 14	bnez $v0, 0x800d3a54	0x800D3A54	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D36FC	0x010E12AC	03 00 62 10	beq $v1, $v0, 0x800d370c	0x800D370C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3704	0x010E12B4	72 00 62 14	bne $v1, $v0, 0x800d38d0	0x800D38D0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3730	0x010E12E0	1E 00 62 14	bne $v1, $v0, 0x800d37ac	0x800D37AC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3774	0x010E1324	02 00 40 14	bnez $v0, 0x800d3780	0x800D3780	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3788	0x010E1338	12 00 45 14	bne $v0, $a1, 0x800d37d4	0x800D37D4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D379C	0x010E134C	F0 FF 47 14	bne $v0, $a3, 0x800d3760	0x800D3760	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D37A4	0x010E1354	F6 4D 03 08	j 0x800d37d8	0x800D37D8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D37C8	0x010E1378	02 00 40 14	bnez $v0, 0x800d37d4	0x800D37D4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D38C8	0x010E1478	8C 4E 03 08	j 0x800d3a30	0x800D3A30	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D38E0	0x010E1490	5C 00 40 10	beqz $v0, 0x800d3a54	0x800D3A54	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3904	0x010E14B4	03 00 40 14	bnez $v0, 0x800d3914	0x800D3914	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3A6C	0x010E161C	69 02 62 10	beq $v1, $v0, 0x800d4414	0x800D4414	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3A74	0x010E1624	67 02 62 10	beq $v1, $v0, 0x800d4414	0x800D4414	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3A8C	0x010E163C	61 02 62 10	beq $v1, $v0, 0x800d4414	0x800D4414	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3A94	0x010E1644	4A 02 40 10	beqz $v0, 0x800d43c0	0x800D43C0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3AB4	0x010E1664	E4 00 62 14	bne $v1, $v0, 0x800d3e48	0x800D3E48	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3AF8	0x010E16A8	46 02 40 10	beqz $v0, 0x800d4414	0x800D4414	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3B28	0x010E16D8	05 00 40 10	beqz $v0, 0x800d3b40	0x800D3B40	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3B38	0x010E16E8	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3B48	0x010E16F8	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3B58	0x010E1708	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3B68	0x010E1718	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3B78	0x010E1728	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3BD0	0x010E1780	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3D30	0x010E18E0	98 01 41 04	bgez $v0, 0x800d4394	0x800D4394	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3D38	0x010E18E8	EA 50 03 08	j 0x800d43a8	0x800D43A8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3D80	0x010E1930	31 50 03 08	j 0x800d40c4	0x800D40C4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3D90	0x010E1940	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3DA0	0x010E1950	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3DB0	0x010E1960	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3DC0	0x010E1970	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3DD0	0x010E1980	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3DE0	0x010E1990	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3DF0	0x010E19A0	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3E00	0x010E19B0	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3E10	0x010E19C0	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3E20	0x010E19D0	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3E30	0x010E19E0	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3E40	0x010E19F0	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3E58	0x010E1A08	5F 00 62 14	bne $v1, $v0, 0x800d3fd8	0x800D3FD8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3E68	0x010E1A18	5B 00 40 14	bnez $v0, 0x800d3fd8	0x800D3FD8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3E9C	0x010E1A4C	06 00 40 14	bnez $v0, 0x800d3eb8	0x800D3EB8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3EB0	0x010E1A60	23 00 40 10	beqz $v0, 0x800d3f40	0x800D3F40	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D3F38	0x010E1AE8	F6 4F 03 08	j 0x800d3fd8	0x800D3FD8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D4004	0x010E1BB4	06 00 40 14	bnez $v0, 0x800d4020	0x800D4020	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D4018	0x010E1BC8	75 00 40 10	beqz $v0, 0x800d41f0	0x800D41F0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D4030	0x010E1BE0	03 00 62 10	beq $v1, $v0, 0x800d4040	0x800D4040	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D4038	0x010E1BE8	F7 00 62 14	bne $v1, $v0, 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D4054	0x010E1C04	04 00 62 14	bne $v1, $v0, 0x800d4068	0x800D4068	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D4060	0x010E1C10	20 50 03 08	j 0x800d4080	0x800D4080	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D40B0	0x010E1C60	0D 00 62 14	bne $v1, $v0, 0x800d40e8	0x800D40E8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D40E0	0x010E1C90	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D41D4	0x010E1D84	74 00 40 04	bltz $v0, 0x800d43a8	0x800D43A8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D41E8	0x010E1D98	EC 50 03 08	j 0x800d43b0	0x800D43B0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D4208	0x010E1DB8	83 00 40 14	bnez $v0, 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D421C	0x010E1DCC	05 00 62 10	beq $v1, $v0, 0x800d4234	0x800D4234	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D422C	0x010E1DDC	7A 00 62 10	beq $v1, $v0, 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D438C	0x010E1F3C	06 00 40 04	bltz $v0, 0x800d43a8	0x800D43A8	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D43A0	0x010E1F50	EC 50 03 08	j 0x800d43b0	0x800D43B0	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D43B8	0x010E1F68	06 51 03 08	j 0x800d4418	0x800D4418	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D43D4	0x010E1F84	05 00 62 10	beq $v1, $v0, 0x800d43ec	0x800D43EC	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D43DC	0x010E1F8C	09 00 62 10	beq $v1, $v0, 0x800d4404	0x800D4404	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D43E4	0x010E1F94	03 51 03 08	j 0x800d440c	0x800D440C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D43FC	0x010E1FAC	03 51 03 08	j 0x800d440c	0x800D440C	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D4420	0x010E1FD0	0B 00 40 10	beqz $v0, 0x800d4450	0x800D4450	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D4448	0x010E1FF8	07 00 43 10	beq $v0, $v1, 0x800d4468	0x800D4468	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
+0x800D4530	0x010E20E0	69 51 03 08	j 0x800d45a4	0x800D45A4	YES	NO	NO	all local direct branch/jump instructions in FUN_800D15A8 bounds	condition still controls a conditional branch
