@@ -6,7 +6,7 @@ from pathlib import Path
 from capstone import Cs, CS_ARCH_MIPS, CS_MODE_MIPS32, CS_MODE_LITTLE_ENDIAN
 
 EXE_PATH, DATA_PATH, OUT = map(Path, sys.argv[1:4])
-BASELINE = os.environ.get("DX_BASELINE", "2d5becc3a70716cf78563233504b800b3c9609e0")
+BASELINE = os.environ.get("DX_BASELINE", "f76a096862ceb88920df19b021a30870c74a9496")
 SNAPSHOT = os.environ.get("DX_SNAPSHOT_SHA", "").strip()
 if not SNAPSHOT or SNAPSHOT.startswith("$"):
     SNAPSHOT = os.environ.get("GITHUB_SHA", subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip())
@@ -60,7 +60,7 @@ def decode(blob,base,file_base):
           "sh":(word>>6)&31,"fn":word&63,"imm":((word&0xffff)^0x8000)-0x8000,
           "uimm":word&0xffff,"target":word&0x03ffffff}
     return out
-exe=decode(EXE_PATH.read_bytes(),EXE_BASE,0)
+exe=decode(EXE_PATH.read_bytes(),EXE_BASE,0x800)
 ins=decode(entry,ENTRY_BASE,ENTRY_OFF)
 codes=[("EXE",exe,EXE_BASE),("ENTRY1",ins,ENTRY_BASE)]
 MEM_LOADS={"lb","lh","lw","lbu","lhu","lwl","lwr"}
@@ -85,7 +85,7 @@ SPECIAL_FUNCS={
 def dest_reg(i):
     op,fn=i["op"],i["fn"]
     if op==0:
-        if fn in (8,9,12,13,16,18,24,25,26,27): return None
+        if fn in (8,9,12,13,24,25,26,27): return None
         return i["rd"] if i["rd"] else None
     if op==3:return 31
     if op in (1,2,4,5,6,7,0x28,0x29,0x2a,0x2b,0x2e,0x38,0x39,0x3a,0x3b):return None
@@ -124,10 +124,34 @@ FUNC={}
 for tag,code,base in codes:
     FUNC[tag]=make_functions(code,base)
 
+CALLER_SAVED = set(range(4,16)) | {24,25}
+RETURN_REGS = {2,3}
+def call_target_text(i):
+    if not i: return "TIDAK TAHU"
+    if i["op"]==3:
+        t=branch_target(i)
+        return h32(t) if t is not None else "TIDAK TAHU"
+    if i["op"]==0 and i["fn"]==9:
+        return "JALR_TARGET_TIDAK_TAHU"
+    return "TIDAK TAHU"
+def last_call_before(before,lo,code):
+    for pc in range(before-4,lo-4,-4):
+        i=code.get(pc)
+        if i and (i["op"]==3 or (i["op"]==0 and i["fn"]==9)):
+            return i
+    return None
 def last_def(reg,before,lo,code):
     for pc in range(before-4,lo-4,-4):
         i=code.get(pc)
-        if i and dest_reg(i)==reg:return i
+        if i and dest_reg(i)==reg:
+            # A MIPS call invalidates caller-saved GPRs, including the delay-slot
+            # setup immediately before the call. Never carry a local slice across it.
+            if reg in (CALLER_SAVED | RETURN_REGS):
+                for cp in range(before-4, max(lo-4, i["pc"]-8), -4):
+                    c=code.get(cp)
+                    if c and (c["op"]==3 or (c["op"]==0 and c["fn"]==9)):
+                        return None
+            return i
     return None
 def const_before(reg,before,lo,code,depth=0,seen=None):
     if seen is None:seen=set()
@@ -190,12 +214,20 @@ def base_origin(reg,before,lo,code):
         if ea is not None:return "OTHER_MEMORY_LOAD_AT_"+h32(ea)
     return "OTHER_OR_UNRESOLVED"
 def trace_reg(reg,before,lo,code,depth=0,seen=None):
-    if seen is None:seen=set()
-    if depth>6 or (reg,before) in seen:return "TIDAK TAHU: batas def-chain"
+    if seen is None: seen=set()
+    if depth>8 or (reg,before) in seen: return "TIDAK TAHU: batas def-chain"
     seen.add((reg,before))
-    if reg==0:return "$zero"
+    if reg==0: return "$zero"
     d=last_def(reg,before,lo,code)
-    if not d:return rn(reg)+" masuk/dinamis"
+    if not d:
+        c=last_call_before(before,lo,code)
+        if c and reg in RETURN_REGS:
+            kind="JALR" if c["op"]==0 else "JAL"
+            return "return "+kind+" "+call_target_text(c)
+        if c and reg in CALLER_SAVED:
+            kind="JALR" if c["op"]==0 else "JAL"
+            return "TIDAK TAHU: caller-saved setelah "+kind+" "+call_target_text(c)
+        return rn(reg)+" masuk/dinamis"
     mn=d["mnemonic"]; op,fn=d["op"],d["fn"]
     s=f"{h32(d['pc'])} {d['text']}"
     if mn in MEM_LOADS:
@@ -207,11 +239,12 @@ def trace_reg(reg,before,lo,code,depth=0,seen=None):
         s+=" <- "+trace_reg(d["rt"],d["pc"],lo,code,depth+1,seen.copy())
     elif op==0 and fn in (4,6,7,0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27):
         s+=" <- "+trace_reg(d["rs"],d["pc"],lo,code,depth+1,seen.copy())+" , "+trace_reg(d["rt"],d["pc"],lo,code,depth+1,seen.copy())
-    elif mn=="mflo":
-        mul=next((code[p] for p in range(d["pc"]-4,max(lo-4,d["pc"]-0x44),-4)
+    elif mn in ("mflo","mfhi"):
+        mul=next((code[p] for p in range(d["pc"]-4,max(lo-4,d["pc"]-0x50),-4)
                   if p in code and code[p]["mnemonic"] in ("mult","multu")),None)
-        if mul:s+=" <- "+h32(mul["pc"])+" "+mul["text"]+" ("+trace_reg(mul["rs"],mul["pc"],lo,code,depth+1,seen.copy())+"; "+trace_reg(mul["rt"],mul["pc"],lo,code,depth+1,seen.copy())+")"
-    return s[:900]
+        if mul:
+            s+=" <- "+h32(mul["pc"])+" "+mul["text"]+" ("+trace_reg(mul["rs"],mul["pc"],lo,code,depth+1,seen.copy())+"; "+trace_reg(mul["rt"],mul["pc"],lo,code,depth+1,seen.copy())+")"
+    return s[:1200]
 
 # DX0: enumerate baseline-inclusively; the workflow publication is counted after snapshot.
 if subprocess.run(["git","merge-base","--is-ancestor",BASELINE,SNAPSHOT]).returncode != 0:
@@ -689,6 +722,407 @@ for mid,formula,factors,falsifier in models:
 write_tsv("DX4_USER_OBSERVATION_MODEL_COMPARISON.tsv",dx4,
  ["model","formula","distance_d","fee_dasar_symbolic","normalization_value_user_assumption","multiplier",
   "predicted_fee_under_user_normalization","user_observation","comparison","contradictory_d_values","falsifier","evidence_class"])
+
+
+# DY0-DY4 extension: caller-clobber-aware provenance and economy paths.
+# This extends the existing DX analyzer; it does not replace its input validation,
+# full-image decode, CFG, or original DX outputs.
+
+def call_trace_value(reg,before,lo,code):
+    d=last_def(reg,before,lo,code)
+    if d: return trace_reg(reg,before,lo,code)
+    c=last_call_before(before,lo,code)
+    if c and reg in RETURN_REGS: return "return JAL "+call_target_text(c)
+    if c and reg in CALLER_SAVED: return "TIDAK TAHU: caller-saved setelah JAL "+call_target_text(c)
+    return trace_reg(reg,before,lo,code)
+
+def expr_nodes(reg,before,lo,code,depth=0,seen=None):
+    if seen is None: seen=set()
+    if depth>12 or (reg,before) in seen or reg==0: return []
+    seen.add((reg,before))
+    d=last_def(reg,before,lo,code)
+    if not d: return []
+    out=[d]
+    mn=d["mnemonic"]; op,fn=d["op"],d["fn"]
+    if mn in MEM_LOADS: return out
+    if mn in ("mflo","mfhi"):
+        mul=next((code[p] for p in range(d["pc"]-4,max(lo-4,d["pc"]-0x60),-4)
+                  if p in code and code[p]["mnemonic"] in ("mult","multu")),None)
+        if mul:
+            out += expr_nodes(mul["rs"],mul["pc"],lo,code,depth+1,seen.copy())
+            out += expr_nodes(mul["rt"],mul["pc"],lo,code,depth+1,seen.copy())
+        return out
+    if op in (8,9,10,11,12,13,14):
+        out += expr_nodes(d["rs"],d["pc"],lo,code,depth+1,seen.copy())
+    elif op==0 and fn in (0,2,3):
+        out += expr_nodes(d["rt"],d["pc"],lo,code,depth+1,seen.copy())
+    elif op==0 and fn in (4,6,7,0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27):
+        out += expr_nodes(d["rs"],d["pc"],lo,code,depth+1,seen.copy())
+        out += expr_nodes(d["rt"],d["pc"],lo,code,depth+1,seen.copy())
+    return out
+
+def function_callers_for(tag):
+    code=exe if tag=="EXE" else ins
+    starts,f_at,f_name,_=FUNC[tag]
+    by_target=defaultdict(list)
+    for i in code.values():
+        if i["op"]==3:
+            t=branch_target(i)
+            if t in code:
+                by_target[t].append(f_name(i["pc"])+"@"+h32(i["pc"]))
+    return by_target
+
+def node_memory_dependencies(nodes,tag,code):
+    out=[]
+    starts,f_at,f_name,_=FUNC[tag]
+    for n in nodes:
+        if n["mnemonic"] not in MEM_LOADS: continue
+        lo=f_at(n["pc"])
+        bo=base_origin(n["rs"],n["pc"],lo,code)
+        if n["imm"]==0x1a and "SLOT_0x8013EA84" in bo:
+            out.append("TILE_PLUS1A@"+h32(n["pc"]))
+        if n["imm"]==0x20 and "SLOT_0x8013EA84" in bo:
+            out.append("TILE_PLUS20@"+h32(n["pc"]))
+        if n["imm"] in (0x14,0x15):
+            out.append("RESOURCE_FIELD_"+hex(n["imm"])+"@"+h32(n["pc"]))
+    return sorted(set(out))
+
+def shift_and_mask_summary(nodes,tag,code,store_pc):
+    shifts=[]; masks=[]; ors=[]
+    starts,f_at,f_name,_=FUNC[tag]
+    for n in nodes:
+        if n["mnemonic"] in ("sll","sllv"):
+            lo=f_at(n["pc"])
+            sc=("immediate "+str(n["sh"])) if n["mnemonic"]=="sll" else call_trace_value(n["rs"],n["pc"],lo,code)
+            shifts.append(h32(n["pc"])+" "+n["text"]+" [shift="+sc+"]")
+        if n["mnemonic"]=="andi":
+            masks.append(hex(n["uimm"]))
+        if n["mnemonic"] in ("or","ori"):
+            lo=f_at(n["pc"])
+            left=call_trace_value(n["rs"],n["pc"],lo,code)
+            right=("immediate "+hex(n["uimm"])) if n["mnemonic"]=="ori" else call_trace_value(n["rt"],n["pc"],lo,code)
+            ors.append(h32(n["pc"])+" "+n["text"]+" [lhs="+left+"; rhs="+right+"]")
+    return shifts,masks,ors
+
+# Corrected file offsets and the three explicitly requested post-JAL branch gates.
+for r in dx1:
+    # decode() now applies EXE file base 0x800; Entry 1 remains 0x10BB000.
+    r["source"]="EXE file_offset=0x800+(PC-0x80010000)" if r["region"]=="EXE" else "Entry 1 file_offset=0x10BB000+(PC-0x800AD450)"
+branch_gate_specs={
+    0x800EC814:("return JAL 0x8010CDF0","$v0==0","direct JAL return in v0; bnez must fall through"),
+    0x800EC874:("return JAL 0x8010D0F0","$v0==0","direct JAL return in v0; bnez must fall through"),
+    0x800EC890:("v0=sltiu(v1,0x10); v1=return JAL 0x800154E0","JAL return $v1 < 0x10 unsigned; resulting $v0!=0","JAL return is copied to v1, then sltiu at 0x800EC88C writes v0; beqz must fall through")
+}
+for r in gate_rows:
+    bpc=int(r["branch_pc"],16)
+    spec=branch_gate_specs.get(bpc)
+    r["v0_origin_after_call"]=spec[0] if spec else "—"
+    r["required_register_value"]=spec[1] if spec else r["condition"]
+    r["origin_reason"]=spec[2] if spec else "caller-saved values are not traced across JAL"
+write_tsv("DX2_PATH_CONDITIONS.tsv",gate_rows,
+ ["target_pc","branch_pc","file_offset","bytes","instruction","condition","condition_registers","required_outcome",
+  "branch_target","fallthrough_after_delay","rs_origin","rt_origin","v0_origin_after_call","required_register_value","origin_reason","source","reason"])
+dy1_rows=[]
+for pc,spec in branch_gate_specs.items():
+    i=ins.get(pc)
+    if not i: continue
+    lo=dx2_entry
+    dy1_rows.append({"pc":h32(pc),"file_offset":h32(0x10BB000+(pc-ENTRY_BASE)),
+      "bytes":hx(i["bytes"]),"instruction":i["text"],"v0_origin_after_call":spec[0],
+      "required_value":spec[1],"reason":spec[2],
+      "v0_origin_trace":trace_reg(2,pc,lo,ins),
+      "input_v1_origin":trace_reg(3,pc,lo,ins) if pc==0x800EC890 else "—"})
+write_tsv("DY1_CALLER_CLOBBER_BRANCHES.tsv",dy1_rows,
+ ["pc","file_offset","bytes","instruction","v0_origin_after_call","required_value","reason","v0_origin_trace","input_v1_origin"])
+
+# DY2: all stores at tile-field displacements +0x20/+0x21 across EXE and Entry 1.
+tile_store_rows=[]
+tile_special_rows=[]
+for tag,code,base in codes:
+    starts,f_at,f_name,next_start=FUNC[tag]
+    callers=function_callers_for(tag)
+    for i in sorted(code.values(),key=lambda x:x["pc"]):
+        if i["mnemonic"] not in ("sb","sh","sw") or i["imm"] not in (0x20,0x21): continue
+        lo=f_at(i["pc"])
+        bo=base_origin(i["rs"],i["pc"],lo,code)
+        nodes=expr_nodes(i["rt"],i["pc"],lo,code)
+        shifts,masks,ors=shift_and_mask_summary(nodes,tag,code,i["pc"])
+        tile_alias=("SLOT_0x8013EA84" in bo or "0x8013B818" in bo)
+        mask_label="TIDAK_TERDETEKSI"
+        if "0xf0ff" in [m.lower() for m in masks]: mask_label="0xF0FF"
+        elif "0xff0f" in [m.lower() for m in masks]: mask_label="0xFF0F"
+        elif masks: mask_label="LAIN:"+",".join(sorted(set(masks)))
+        nibble8=[x for x in shifts if x.endswith("[shift=immediate 8]")]
+        nibble12=[x for x in shifts if x.endswith("[shift=immediate 12]")]
+        direct_callers=callers.get(f_at(i["pc"]),[])
+        tile_store_rows.append({"region":tag,"pc":h32(i["pc"]),"file_offset":h32(i["fileoff"]),
+          "bytes":hx(i["bytes"]),"instruction":i["text"],"function":f_name(i["pc"]),
+          "base_register":rn(i["rs"]),"base_origin":bo,"tile_array_alias_proven":"YES" if tile_alias else "NO_OR_UNRESOLVED",
+          "field_lane":"+0x20" if i["imm"]==0x20 else "+0x21","mask":mask_label,
+          "shift_sources_8_11":";".join(nibble8) if nibble8 else "TIDAK TERDETEKSI",
+          "shift_sources_12_15":";".join(nibble12) if nibble12 else "TIDAK TERDETEKSI",
+          "OR_sources":";".join(ors) if ors else "TIDAK TERDETEKSI",
+          "stored_value_origin":trace_reg(i["rt"],i["pc"],lo,code),
+          "nearest_direct_caller_functions":";".join(direct_callers) if direct_callers else "TIDAK DITEMUKAN",
+          "source":"linear full-image memory-store census; dynamic bases retained",
+          "reason":"tile identity only proven when base trace resolves to slot EA84 / table base"})
+# Special windows: preserve raw context and identify candidate target-level sources.
+for tag,code,base in codes:
+    if tag!="ENTRY1": continue
+    starts,f_at,f_name,_=FUNC[tag]
+    for site,label,window in [
+        (0x800EC3A8,"ACTION8_EC3A8",0x90),
+        (0x800EF3CC,"ACTION8_EF3CC",0x90),
+        (0x800DAF2C,"EVENT3_D9570_FIELD24",0x50)
+    ]:
+        if site not in code: continue
+        lo=f_at(site)
+        for pc in range(max(lo,site-0x20),min(site+window,max(code)+1),4):
+            i=code.get(pc)
+            if not i: continue
+            if i["mnemonic"] not in (MEM_LOADS|MEM_STORES|{"sll","sllv","srl","srlv","subu","sub","or","ori","andi","mult","mflo","jal","slti","sltiu","beq","bne","beqz","bnez"}): continue
+            val=trace_reg(i["rt"],pc,lo,code) if i["mnemonic"] in MEM_STORES|MEM_LOADS else "—"
+            tile_special_rows.append({"site":label,"site_pc":h32(site),"pc":h32(pc),
+              "file_offset":h32(0x10BB000+(pc-ENTRY_BASE)),"bytes":hx(i["bytes"]),
+              "instruction":i["text"],"function":f_name(pc),
+              "rs_origin":trace_reg(i["rs"],pc,lo,code) if i["op"] not in (2,3) else "—",
+              "rt_origin":trace_reg(i["rt"],pc,lo,code) if i["op"] not in (2,3) else "—",
+              "base_origin":base_origin(i["rs"],pc,lo,code) if i["mnemonic"] in MEM_LOADS|MEM_STORES else "—",
+              "value_origin":val,"source":"local instruction window + caller-clobber-aware slice",
+              "reason":"candidate lineage only; semantic label for field+0x24 remains unverified"})
+write_tsv("DY2_TILE_PLUS20_PLUS21_WRITERS.tsv",tile_store_rows,
+ ["region","pc","file_offset","bytes","instruction","function","base_register","base_origin","tile_array_alias_proven",
+  "field_lane","mask","shift_sources_8_11","shift_sources_12_15","OR_sources","stored_value_origin",
+  "nearest_direct_caller_functions","source","reason"])
+write_tsv("DY2_ACTION8_EVENT3_LEVEL_SOURCE_WINDOWS.tsv",tile_special_rows,
+ ["site","site_pc","pc","file_offset","bytes","instruction","function","rs_origin","rt_origin","base_origin",
+  "value_origin","source","reason"])
+
+# DY3: exact-address stores to global 0x80139EFC, plus the expression slice for each.
+global_writer_rows=[]
+manager_field_rows=[]
+helper_rng_rows=[]
+helper_status_hypotheses=[
+ {"hypothesis":"H1 +0x4F0/+0x4F4 are transaction/aggregate scratch results; +0x534 is a success/error state byte",
+  "basis":"CFG writes 4F0/4F4 from helper returns and a computed product; branches set/clear 534 on status paths",
+  "falsifier":"A full reader xref showing every 4F0/4F4 consumer is unrelated to transaction amount/status, or 534 is only a presentation flag with no transaction gate"},
+ {"hypothesis":"H2 +0x4F0/+0x4F4 hold candidate/selection calculations for a board target; +0x534 records whether an eligible target exists",
+  "basis":"the same CFG scans tile records, compares +0x20 nibbles to the active index, then enters an RNG retry loop and writes 534 on alternate branches",
+  "falsifier":"A reader trace proving 4F0/4F4 are not consumed by candidate-selection code, or the 534 writers/readers serve a different state machine"}
+]
+for tag,code,base in codes:
+    starts,f_at,f_name,_=FUNC[tag]
+    for i in sorted(code.values(),key=lambda x:x["pc"]):
+        if i["mnemonic"] not in MEM_STORES: continue
+        lo=f_at(i["pc"])
+        ea=effective_address(i,code,lo)
+        if ea!=0x80139EFC: continue
+        nodes=expr_nodes(i["rt"],i["pc"],lo,code)
+        arith=[]
+        for n in nodes:
+            if n["mnemonic"] in ("sll","sllv","mult","multu","addu","subu"):
+                nlo=f_at(n["pc"])
+                arith.append(h32(n["pc"])+" "+n["text"]+
+                    " [rs="+trace_reg(n["rs"],n["pc"],nlo,code)+"; rt="+trace_reg(n["rt"],n["pc"],nlo,code)+"]")
+        deps=node_memory_dependencies(nodes,tag,code)
+        global_writer_rows.append({"region":tag,"pc":h32(i["pc"]),"file_offset":h32(i["fileoff"]),
+          "bytes":hx(i["bytes"]),"instruction":i["text"],"function":f_name(i["pc"]),
+          "value_origin":trace_reg(i["rt"],i["pc"],lo,code),
+          "arithmetic_expression":";".join(arith) if arith else "NONE_IN_LOCAL_EXPR_SLICE",
+          "tile_plus1a_dependency":"YES" if any(x.startswith("TILE_PLUS1A") for x in deps) else "NOT_PROVEN",
+          "tile_level_nibble_plus20_dependency":"YES" if any(x.startswith("TILE_PLUS20") for x in deps) else "NOT_PROVEN",
+          "resource_14_15_candidate":"YES" if any(x.startswith("RESOURCE_FIELD") for x in deps) else "NOT_PROVEN",
+          "dependency_load_pcs":";".join(deps) if deps else "TIDAK TERDETEKSI",
+          "source":"direct effective-address scan for 0x80139EFC + backward expression slice",
+          "reason":"caller-saved slices stop at JAL/JALR; loaded table values remain dynamic"})
+write_tsv("DY3_GLOBAL_80139EFC_WRITERS.tsv",global_writer_rows,
+ ["region","pc","file_offset","bytes","instruction","function","value_origin","arithmetic_expression",
+  "tile_plus1a_dependency","tile_level_nibble_plus20_dependency","resource_14_15_candidate",
+  "dependency_load_pcs","source","reason"])
+
+# All reads/writes for the three manager fields, separating reachable helper-path PCs.
+helper_reach=set(reach2)
+for tag,code,base in codes:
+    starts,f_at,f_name,_=FUNC[tag]
+    for i in sorted(code.values(),key=lambda x:x["pc"]):
+        if i["mnemonic"] not in (MEM_LOADS|MEM_STORES) or i["imm"] not in (0x4f0,0x4f4,0x534): continue
+        lo=f_at(i["pc"])
+        bo=base_origin(i["rs"],i["pc"],lo,code)
+        is_mgr=("SLOT_0x8013EA74" in bo)
+        # Keep every displacement reader/writer, then mark manager provenance independently.
+        manager_field_rows.append({"region":tag,"pc":h32(i["pc"]),"file_offset":h32(i["fileoff"]),
+          "bytes":hx(i["bytes"]),"instruction":i["text"],"function":f_name(i["pc"]),
+          "field":"+0x"+format(i["imm"],"X"),"access":"READ" if i["mnemonic"] in MEM_LOADS else "WRITE",
+          "base_origin":bo,"manager_array_base_proven":"YES" if is_mgr else "NO_OR_UNRESOLVED",
+          "reachable_from_FUN_800EC574":"YES" if tag=="ENTRY1" and i["pc"] in helper_reach else "NO_OR_NOT_CHECKED",
+          "value_origin":trace_reg(i["rt"],i["pc"],lo,code) if i["mnemonic"] in MEM_STORES else "loaded value -> "+rn(i["rt"]),
+          "source":"full EXE + Entry 1 field-offset scan",
+          "reason":"offset alone does not prove manager base; base provenance retained"})
+write_tsv("DY3_MANAGER_FIELDS_4F0_4F4_534.tsv",manager_field_rows,
+ ["region","pc","file_offset","bytes","instruction","function","field","access","base_origin",
+  "manager_array_base_proven","reachable_from_FUN_800EC574","value_origin","source","reason"])
+
+# The bounded retry loop: counter is seeded with 0x32, decremented before each RNG call.
+for pc,role in [
+ (0x800ECAE8,"attempt_limit=0x32=50"),
+ (0x800ECAEC,"store attempt counter at manager+0x2A8"),
+ (0x800ECB00,"read remaining attempt counter"),
+ (0x800ECB08,"decrement attempt counter"),
+ (0x800ECB0C,"exit when decremented counter == -1; otherwise retry path"),
+ (0x800ECB14,"JAL RNG 0x80035D78"),
+ (0x800ECB1C,"load divisor/range byte; runtime value dynamic"),
+ (0x800ECB24,"divide RNG result by divisor"),
+ (0x800ECB28,"mfhi obtains candidate remainder"),
+ (0x800ECB38,"store candidate index to global 0x8013EBB0"),
+ (0x800ECB3C,"read active index from global slot 0x8013EA88"),
+ (0x800ECB44,"beq candidate,active -> retry; success requires candidate != active")
+]:
+    i=ins.get(pc)
+    if i:
+        helper_rng_rows.append({"pc":h32(pc),"file_offset":h32(0x10BB000+(pc-ENTRY_BASE)),
+          "bytes":hx(i["bytes"]),"instruction":i["text"],"role":role,
+          "origin_rs":trace_reg(i["rs"],pc,dx2_entry,ins) if i["op"] not in (2,3) else "—",
+          "origin_rt":trace_reg(i["rt"],pc,dx2_entry,ins) if i["op"] not in (2,3) else "—",
+          "source":"reachable CFG rooted at 0x800EC574; delay slots modeled",
+          "reason":"counter starts at 50 and exits when the pre-random decrement becomes -1"})
+write_tsv("DY3_HELPER_RNG_RETRY_LOOP.tsv",helper_rng_rows,
+ ["pc","file_offset","bytes","instruction","role","origin_rs","origin_rt","source","reason"])
+write_tsv("DY3_HELPER_STATUS_HYPOTHESES.tsv",helper_status_hypotheses,
+ ["hypothesis","basis","falsifier"])
+
+# DY4: count true tile-fee postings (negative u16(tile+0x1A)) in D15A8 and its direct call closure.
+def direct_calls_in_function(tag,entry):
+    code=exe if tag=="EXE" else ins
+    starts,f_at,f_name,next_start=FUNC[tag]
+    lo=entry; hi=next_start(entry)
+    return [branch_target(i) for i in code.values() if lo<=i["pc"]<hi and i["op"]==3 and branch_target(i) in code]
+def call_closure(tag,root):
+    code=exe if tag=="EXE" else ins
+    starts,f_at,f_name,next_start=FUNC[tag]
+    q=deque([root]); seen=set()
+    while q:
+        en=q.popleft()
+        if en in seen or en not in code: continue
+        seen.add(en)
+        for t in direct_calls_in_function(tag,en):
+            if t not in seen: q.append(t)
+    return seen
+closure=call_closure("ENTRY1",0x800D15A8)
+dy4_post_rows=[]
+for tag,code,base in codes:
+    starts,f_at,f_name,_=FUNC[tag]
+    for i in sorted(code.values(),key=lambda x:x["pc"]):
+        if tag!="ENTRY1" or f_at(i["pc"]) not in closure: continue
+        if i["mnemonic"] not in MEM_STORES or i["imm"]!=0x2ee: continue
+        lo=f_at(i["pc"])
+        bo=base_origin(i["rs"],i["pc"],lo,code)
+        val=trace_reg(i["rt"],i["pc"],lo,code)
+        nodes=expr_nodes(i["rt"],i["pc"],lo,code)
+        deps=node_memory_dependencies(nodes,tag,code)
+        is_fee=("negu" in val and any(x.startswith("TILE_PLUS1A") for x in deps))
+        dy4_post_rows.append({"pc":h32(i["pc"]),"file_offset":h32(i["fileoff"]),
+          "bytes":hx(i["bytes"]),"instruction":i["text"],"function":f_name(i["pc"]),
+          "base_origin":bo,"stored_value_origin":val,
+          "negative_tile_fee_post":"YES" if is_fee else "NO_OR_NOT_PROVEN",
+          "tile_plus1a_load_dependencies":";".join(x for x in deps if x.startswith("TILE_PLUS1A")) or "TIDAK TERDETEKSI",
+          "source":"direct call closure from FUN_800D15A8; direct +0x2EE stores",
+          "reason":"fee-post requires both negation and a proven tile+0x1A load; zero clears are not posts"})
+write_tsv("DY4_ACTION8_FEE_POSTS_CALL_CLOSURE.tsv",dy4_post_rows,
+ ["pc","file_offset","bytes","instruction","function","base_origin","stored_value_origin",
+  "negative_tile_fee_post","tile_plus1a_load_dependencies","source","reason"])
+
+# Three genuinely different formula families; lookup that copies all four user ratios is tautological.
+fee_models=[
+ ("H1_PURE_2_POWER_D","fee_dasar * 2^d",[2,4,8,16],"NOT_TAUTOLOGI",
+  "Contradicted by user d=1=100 vs normalized prediction 200. Falsifier in ROM: show the coefficient path at 0x800EC3A8 or 0x800EF3CC is not a left shift of 1 by d."),
+ ("H2_LOOKUP_COPIED_FROM_ALL_FOUR_USER_POINTS","fee_dasar * lookup[d] where lookup={1:1,2:4,3:8,4:16}",[1,4,8,16],"TAUTOLOGI",
+  "This lookup is defined from all four user ratios, not inferred from ROM. Falsifier: an actual table/selector read at 0x800EC3A8 or 0x800EF3CC whose d=1..4 entries differ from 1,4,8,16."),
+ ("H3_REPEAT_BASE_FEE_ONCE_PER_LEVEL_STEP","fee_dasar * d",[1,2,3,4],"NOT_TAUTOLOGI",
+  "Contradicted by d=2..4. Falsifier: inspect 0x800D46F8 and the D15A8 action-8 branch: a single fee-post site executed once, with no back-edge over the post, disproves d repetitions."),
+ ("H4_ACCUMULATE_DOUBLING_FEE_EACH_STEP","fee_dasar * sum(2^k,k=0..d-1)",[1,3,7,15],"NOT_TAUTOLOGI",
+  "Contradicted by d=2..4. Falsifier: no loop/back-edge around a per-step debit and only one negative tile-fee post in the D15A8 call closure.")
+]
+dy4_model_rows=[]
+user_obs=[100,400,800,1600]
+for model,formula,factors,taut,falsifier in fee_models:
+    for d in range(1,5):
+        pred=100*factors[d-1]
+        obs=user_obs[d-1]
+        dy4_model_rows.append({"model":model,"formula":formula,"d":d,"fee_dasar":"fee_dasar (symbolic)",
+          "normalization_for_comparison":100,"factor":factors[d-1],"predicted_normalized":pred,
+          "user_observation_hypothesis":obs,
+          "comparison":"COCOK" if pred==obs else "BERTENTANGAN_DENGAN_4_TITIK_PENGGUNA",
+          "lookup_tautology":taut,"falsifier":falsifier,
+          "evidence_class":"USER_HYPOTHESIS_ONLY; not ROM/runtime evidence"})
+write_tsv("DY4_FEE_HYPOTHESES_D1_D4.tsv",dy4_model_rows,
+ ["model","formula","d","fee_dasar","normalization_for_comparison","factor","predicted_normalized",
+  "user_observation_hypothesis","comparison","lookup_tautology","falsifier","evidence_class"])
+
+# DY summary and report.
+computed_posts=[r for r in dy4_post_rows if r["negative_tile_fee_post"]=="YES"]
+d15a8_posts=[r for r in computed_posts if r["function"]=="FUN_800D15A8"]
+tile_alias_writers=[r for r in tile_store_rows if r["tile_array_alias_proven"]=="YES"]
+report_dy=[
+"# DY0-DY4 — addendum audit statis",
+"",
+"Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research",
+"Baseline inklusif: "+BASELINE,
+"Snapshot source SHA: "+SNAPSHOT,
+"EXE SHA-256: "+EXE_SHA+"; Entry 1 SHA-256: "+ENTRY_SHA,
+"",
+"## Status",
+"DY0: TUNTAS K4 untuk snapshot source; baseline ikut dihitung. Final HEAD dihitung ulang setelah bot publish dan commit laporan akhir.",
+"DY1: TUNTAS K4 untuk tiga branch gate; DX2_PATH_CONDITIONS.tsv ditulis ulang dengan origin setelah JAL/JALR yang diputus pada call boundary.",
+"DY2: SEBAGIAN K4 — census semua store displacement +0x20/+0x21 EXE+Entry1; hanya baris yang basisnya membuktikan slot EA84 dinyatakan tile array. Level source semantik untuk aksi 8/event 3 masih TIDAK TAHU di luar lineage statis yang dilampirkan.",
+"DY3: SEBAGIAN K4 — direct writer global 0x80139EFC dan expression slices; helper retry loop 50 iterasi dan field manager ditemukan, arti gameplay tetap hipotesis.",
+"DY4: SEBAGIAN K4 — store -fee ke +0x2EE dihitung lewat direct call closure D15A8; tidak menyatakan rumus biaya level tanpa bukti d pada operand.",
+"",
+"## DY1 — JAL clobber",
+"0x800EC814 bnez $v0: $v0 berasal langsung dari return JAL 0x8010CDF0; fall-through wajib $v0=0.",
+"0x800EC874 bnez $v0: $v0 berasal langsung dari return JAL 0x8010D0F0; fall-through wajib $v0=0.",
+"0x800EC890 beqz $v0: return JAL 0x800154E0 masuk ke $v1; 0x800EC88C sltiu $v0,$v1,0x10 membentuk $v0. Fall-through wajib $v0!=0, ekuivalen return unsigned $v1<0x10.",
+"Semua origin berhenti pada batas JAL/JALR: v0/v1 dilabel return, a0-a3 dan t0-t9 setelah JAL dilabel TIDAK TAHU. File offset EXE mengikuti 0x800+(PC-0x80010000), Entry 1 0x10BB000+(PC-0x800AD450).",
+"",
+"## DY2 — tile+0x20/+0x21",
+"DY2_TILE_PLUS20_PLUS21_WRITERS.tsv memuat seluruh operasi store dengan displacement literal +0x20/+0x21 di EXE dan Entry 1. Base slot EA84 dipisahkan dari store yang belum terbukti berasal dari tile array. Mask dan OR-source berasal dari expression slice per PC; hasil tidak boleh ditafsirkan sebagai konstanta saat berasal dari load dinamis/JAL.",
+"Action 8 sites 0x800EC3A8 dan 0x800EF3CC serta event 3 FUN_800D9570 disajikan sebagai jendela instruksi di DY2_ACTION8_EVENT3_LEVEL_SOURCE_WINDOWS.tsv. Event3 D9570 membaca signed halfword +0x24 dari alamat berbasis indeks dan parameter pointer; apakah itu level target = TIDAK TAHU. Nilai beda level d yang eksplisit = TIDAK TERBUKTI dari jendela ini.",
+"",
+"## DY3 — global accumulator dan RNG retry",
+"DY3_GLOBAL_80139EFC_WRITERS.tsv hanya memuat store yang effective address statisnya tepat 0x80139EFC. Arithmetic slice memuat PC operand untuk sll/sllv/mult/addu/subu; dependency tile+1A, nibble +0x20, atau field resource +0x14/+0x15 hanya YES jika load pada slice teridentifikasi.",
+"Retry: EC AE8 menetapkan 0x32 (50); EC AEC menyimpan counter manager+0x2A8; EC B00/ B08 membaca dan decrement; EC B0C keluar saat -1. Loop memanggil RNG pada EC B14, menghasilkan remainder melalui div/mfhi di ECB24/ECB28, menyimpan kandidat index di ECB38, membaca active index melalui lhu slot 0x8013EA88 di ECB3C, dan mengulang bila sama pada ECB44. Sukses loop mensyaratkan kandidat != active-index; maksimum 50 pemanggilan RNG.",
+"Field manager +0x4F0/+0x4F4/+0x534 dan PC reader/writer berada di DY3_MANAGER_FIELDS_4F0_4F4_534.tsv. H1/H2 arti gameplay disediakan sebagai hipotesis yang dapat difalsifikasi di DY3_HELPER_STATUS_HYPOTHESES.tsv; tidak ada klaim semantik final.",
+"",
+"## DY4 — debit aksi 8",
+"Negative fee post terhitung dari instruksi store yang operand slice-nya berisi negu dan pembacaan tile+0x1A, di direct call closure FUN_800D15A8. Jumlah terdeteksi total="+str(len(computed_posts))+"; yang langsung dilabel FUN_800D15A8="+str(len(d15a8_posts))+". Store nol untuk clear pending tidak dihitung sebagai post.",
+"Jika tidak ada back-edge di sekitar site post yang mengeksekusinya berulang, bukti statis ini mendukung satu post -fee per pemanggilan handler, bukan perkalian otomatis d. Ini bukan bukti runtime.",
+"Keempat model formula d=1..4 dalam DY4_FEE_HYPOTHESES_D1_D4.tsv memakai 100 hanya sebagai normalisasi pengamatan pengguna. H2 exact lookup dari empat rasio pengguna ditandai TAUTOLOGI. H3/H4 adalah model debit akumulatif berulang dan bertentangan dengan pengamatan pada nilai d yang dicatat. Formula ROM aktual = TIDAK TAHU.",
+"",
+"## Batas",
+"Statis saja; tidak menjalankan emulator/game. Maksimum K4. Nilai runtime, target label untuk field+0x24, arti gameplay +0x4F0/+0x4F4/+0x534, serta rumus biaya ROM = TIDAK TAHU bila tidak terhubung oleh instruction/dataflow proof.",
+"Output text/TSV saja. EXE/DATA.BIN hanya input privat runner; tidak dikomit."
+]
+(OUT/"DY0_DY4_STATIC_AUDIT.md").write_text("\n".join(report_dy)+"\n",encoding="utf-8")
+write_tsv("DY0_COMMIT_LEDGER.tsv",ledger,
+ ["sha_full","class","author","author_email","message","changed_files","source","reason"])
+write_tsv("DY0_COUNTS.tsv",[
+ {"scope":"SNAPSHOT_SOURCE_INCLUSIVE","sha":SNAPSHOT,"total":len(ledger),"human":humans,"bot":bots,
+  "method":"git rev-list baseline^..snapshot; baseline included"},
+ {"scope":"HEAD_AFTER_ONE_BOT_PUBLICATION_EXPECTED","sha":"VERIFY_AFTER_ACTION","total":len(ledger)+1,"human":humans,"bot":bots+1,
+  "method":"snapshot ledger plus one Actions publication bot commit"}
+],["scope","sha","total","human","bot","method"])
+(OUT/"DY_ANALYSIS_SUMMARY.txt").write_text(
+ "STATUS=ANALYSIS_PASS\nJOB=dx0-dx4-static\nSOURCE_SHA="+SNAPSHOT+"\nEXIT_CODE=0\n"+
+ "DY2_TILE_STORE_ROWS="+str(len(tile_store_rows))+"\nDY2_TILE_ALIAS_PROVEN="+str(len(tile_alias_writers))+"\n"+
+ "DY3_GLOBAL_80139EFC_WRITERS="+str(len(global_writer_rows))+"\n"+
+ "DY3_HELPER_MANAGER_FIELD_ROWS="+str(len(manager_field_rows))+"\n"+
+ "DY3_RNG_LOOP_ROWS="+str(len(helper_rng_rows))+"\n"+
+ "DY4_NEGATIVE_TILE_FEE_POSTS_TOTAL="+str(len(computed_posts))+"\n"+
+ "DY4_NEGATIVE_TILE_FEE_POSTS_D15A8="+str(len(d15a8_posts))+"\n"+
+ "GAME_OR_EMULATOR_EXECUTED=no\nBIOS_OR_SAVESTATE_USED=no\nBINARY_COMMITTED=no\nOUTPUT=TEXT_ONLY\n",encoding="utf-8")
+print("DY2_TILE_STORE_ROWS="+str(len(tile_store_rows))+" TILE_ALIAS_PROVEN="+str(len(tile_alias_writers)))
+print("DY3_GLOBAL_80139EFC_WRITERS="+str(len(global_writer_rows)))
+print("DY3_HELPER_MANAGER_FIELD_ROWS="+str(len(manager_field_rows)))
+print("DY4_NEGATIVE_TILE_FEE_POSTS_TOTAL="+str(len(computed_posts))+" D15A8="+str(len(d15a8_posts)))
 
 # Human-readable audit report.
 d15_reads=[r for r in dx1 if r["region"]=="ENTRY1" and r["function_name_guess"]=="FUN_800D15A8"]

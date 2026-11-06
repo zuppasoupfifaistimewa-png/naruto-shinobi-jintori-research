@@ -97,7 +97,7 @@ jobs:
       - name: Run DX0-DX4 full-image static analysis
         shell: bash
         env:
-          DX_BASELINE: "2d5becc3a70716cf78563233504b800b3c9609e0"
+          DX_BASELINE: "f76a096862ceb88920df19b021a30870c74a9496"
           DX_SNAPSHOT_SHA: "$GITHUB_SHA"
         run: |
           set -euo pipefail
