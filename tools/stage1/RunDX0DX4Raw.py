@@ -787,6 +787,30 @@ def node_memory_dependencies(nodes,tag,code):
             out.append("RESOURCE_FIELD_"+hex(n["imm"])+"@"+h32(n["pc"]))
     return sorted(set(out))
 
+
+def shift_operand_detail(nodes,wanted_shift,tag,code):
+    starts,f_at,f_name,_=FUNC[tag]
+    details=[]
+    for n in nodes:
+        if n["mnemonic"]!="sll" or n["sh"]!=wanted_shift: continue
+        lo=f_at(n["pc"])
+        origin=trace_reg(n["rt"],n["pc"],lo,code)
+        if "return JAL" in origin or "return JALR" in origin:
+            cls="RETURN_CALL"
+        elif "[load " in origin:
+            cls="DYNAMIC_LOAD_TABLE_OR_GLOBAL"
+        elif "masuk/dinamis" in origin or "TIDAK TAHU" in origin:
+            if rn(n["rt"]) in ("$a0","$a1","$a2","$a3","$sp"):
+                cls="FUNCTION_PARAMETER_OR_STACK"
+            else:
+                cls="ENTRY_OR_UNRESOLVED_REGISTER"
+        elif origin=="$zero" or ("addiu" in origin and "<- $zero" in origin):
+            cls="CONSTANT_FROM_ZERO"
+        else:
+            cls="LOCAL_DEF_OR_COMPUTED"
+        details.append(h32(n["pc"])+" "+n["text"]+" | operand "+rn(n["rt"])+" | "+cls+" | "+origin)
+    return ";".join(details) if details else "TIDAK TERDETEKSI"
+
 def shift_and_mask_summary(nodes,tag,code,store_pc):
     shifts=[]; masks=[]; ors=[]
     starts,f_at,f_name,_=FUNC[tag]
@@ -806,8 +830,11 @@ def shift_and_mask_summary(nodes,tag,code,store_pc):
 
 # Corrected file offsets and the three explicitly requested post-JAL branch gates.
 for r in dx1:
-    # decode() now applies EXE file base 0x800; Entry 1 remains 0x10BB000.
+    # decode() uses file bases 0x800 and 0x10BB000, respectively.
     r["source"]="EXE file_offset=0x800+(PC-0x80010000)" if r["region"]=="EXE" else "Entry 1 file_offset=0x10BB000+(PC-0x800AD450)"
+write_tsv("DX1_ALL_PLUS1A_ACCESS.tsv",dx1,
+ ["region","pc","file_offset","bytes","instruction","access","function_entry_guess","function_name_guess",
+  "base_register","base_origin_slot_or_address","base_origin_register_trace","value_origin","source","reason"])
 branch_gate_specs={
     0x800EC814:("return JAL 0x8010CDF0","$v0==0","direct JAL return in v0; bnez must fall through"),
     0x800EC874:("return JAL 0x8010D0F0","$v0==0","direct JAL return in v0; bnez must fall through"),
@@ -860,7 +887,9 @@ for tag,code,base in codes:
           "base_register":rn(i["rs"]),"base_origin":bo,"tile_array_alias_proven":"YES" if tile_alias else "NO_OR_UNRESOLVED",
           "field_lane":"+0x20" if i["imm"]==0x20 else "+0x21","mask":mask_label,
           "shift_sources_8_11":";".join(nibble8) if nibble8 else "TIDAK TERDETEKSI",
+          "nibble8_11_operand_origin":shift_operand_detail(nodes,8,tag,code),
           "shift_sources_12_15":";".join(nibble12) if nibble12 else "TIDAK TERDETEKSI",
+          "nibble12_15_operand_origin":shift_operand_detail(nodes,12,tag,code),
           "OR_sources":";".join(ors) if ors else "TIDAK TERDETEKSI",
           "stored_value_origin":trace_reg(i["rt"],i["pc"],lo,code),
           "nearest_direct_caller_functions":";".join(direct_callers) if direct_callers else "TIDAK DITEMUKAN",
@@ -892,11 +921,47 @@ for tag,code,base in codes:
               "reason":"candidate lineage only; semantic label for field+0x24 remains unverified"})
 write_tsv("DY2_TILE_PLUS20_PLUS21_WRITERS.tsv",tile_store_rows,
  ["region","pc","file_offset","bytes","instruction","function","base_register","base_origin","tile_array_alias_proven",
-  "field_lane","mask","shift_sources_8_11","shift_sources_12_15","OR_sources","stored_value_origin",
+  "field_lane","mask","shift_sources_8_11","nibble8_11_operand_origin","shift_sources_12_15",
+  "nibble12_15_operand_origin","OR_sources","stored_value_origin",
   "nearest_direct_caller_functions","source","reason"])
 write_tsv("DY2_ACTION8_EVENT3_LEVEL_SOURCE_WINDOWS.tsv",tile_special_rows,
  ["site","site_pc","pc","file_offset","bytes","instruction","function","rs_origin","rt_origin","base_origin",
   "value_origin","source","reason"])
+
+
+# Explicit gameplay-source assessment for the three requested sites.
+dy2_level_findings=[
+ {"site":"ACTION8_EC3A8","pc":"0x800EC388","file_offset":h32(0x10BB000+(0x800EC388-ENTRY_BASE)),
+  "bytes":"24 00 42 84","instruction":"lh $v0,0x24($v0)",
+  "target_value_source":"tile-array pointer from slot 0x8013EA84; selected index is built through dynamic manager/input fields at 0x800EC368..0x800EC384",
+  "reference_value_source":"PC 0x800EC364 lh $a0,-0x152e($v0), global address 0x8013EAD2",
+  "delta_operation":"PC 0x800EC390 subu $v0,$v0,$a0; result stored manager+0x2B4 at PC 0x800EC398",
+  "is_level_semantics_proven":"NO — field +0x24 semantic label TIDAK TAHU",
+  "is_d_proven":"NO — signed field difference exists, but neither operand is proven to be a tile level",
+  "source":"Entry 1 instructions + slot provenance",
+  "reason":"do not equate a computed field difference with level delta d without field semantics"},
+ {"site":"EVENT3_FUN_800D9570","pc":"0x800DAF2C","file_offset":h32(0x10BB000+(0x800DAF2C-ENTRY_BASE)),
+  "bytes":"24 00 42 84","instruction":"lh $v0,0x24($v0)",
+  "target_value_source":"tile-array pointer from slot 0x8013EA84; selected tile index comes from manager record +0x1F at PC 0x800DAF0C, indexed from active slot 0x8013EA88",
+  "reference_value_source":"NONE",
+  "delta_operation":"NONE in inspected D9570 path window; value is copied to manager+0x390 at PC 0x800DAF34",
+  "is_level_semantics_proven":"NO — field +0x24 semantic label TIDAK TAHU",
+  "is_d_proven":"NO — no difference operation in this event-3 path",
+  "source":"Entry 1 instructions + slot provenance",
+  "reason":"target tile field is directly identified; gameplay meaning is not"},
+ {"site":"ACTION8_EF3CC","pc":"0x800EF3CC","file_offset":h32(0x10BB000+(0x800EF3CC-ENTRY_BASE)),
+  "bytes":"EB 02 44 A0","instruction":"sb $a0,0x2eb($v0)",
+  "target_value_source":"$a0 entry/dynamic parameter; no local definition is proven before this store",
+  "reference_value_source":"TIDAK TAHU",
+  "delta_operation":"NONE proven at this site",
+  "is_level_semantics_proven":"NO",
+  "is_d_proven":"NO",
+  "source":"Entry 1 caller-clobber-aware entry slice",
+  "reason":"base $v0 and value $a0 are not promoted to constants or table values"}
+]
+write_tsv("DY2_ACTION8_EVENT3_LEVEL_FINDINGS.tsv",dy2_level_findings,
+ ["site","pc","file_offset","bytes","instruction","target_value_source","reference_value_source","delta_operation",
+  "is_level_semantics_proven","is_d_proven","source","reason"])
 
 # DY3: exact-address stores to global 0x80139EFC, plus the expression slice for each.
 global_writer_rows=[]
@@ -935,8 +1000,24 @@ for tag,code,base in codes:
           "dependency_load_pcs":";".join(deps) if deps else "TIDAK TERDETEKSI",
           "source":"direct effective-address scan for 0x80139EFC + backward expression slice",
           "reason":"caller-saved slices stop at JAL/JALR; loaded table values remain dynamic"})
+def classify_global_writer_origin(r):
+    v=r["value_origin"]
+    if v=="$zero": return "ZERO"
+    if "return JAL" in v or "return JALR" in v: return "RETURN_CALL"
+    if "[load " in v: return "DYNAMIC_LOAD"
+    if ("addiu" in v or "ori" in v) and "<- $zero" in v: return "CONSTANT_FROM_ZERO"
+    if r["arithmetic_expression"]!="NONE_IN_LOCAL_EXPR_SLICE": return "ARITHMETIC_CHAIN_PROVEN"
+    if "masuk/dinamis" in v or "TIDAK TAHU" in v: return "PARAMETER_OR_UNRESOLVED"
+    return "LOCAL_DEF_NOT_CLASSIFIED"
+for r in global_writer_rows:
+    r["value_origin_class"]=classify_global_writer_origin(r)
 write_tsv("DY3_GLOBAL_80139EFC_WRITERS.tsv",global_writer_rows,
- ["region","pc","file_offset","bytes","instruction","function","value_origin","arithmetic_expression",
+ ["region","pc","file_offset","bytes","instruction","function","value_origin","value_origin_class","arithmetic_expression",
+  "tile_plus1a_dependency","tile_level_nibble_plus20_dependency","resource_14_15_candidate",
+  "dependency_load_pcs","source","reason"])
+dy3_arithmetic_rows=[r for r in global_writer_rows if r["arithmetic_expression"]!="NONE_IN_LOCAL_EXPR_SLICE"]
+write_tsv("DY3_GLOBAL_80139EFC_ARITHMETIC_EXPRESSIONS.tsv",dy3_arithmetic_rows,
+ ["region","pc","file_offset","bytes","instruction","function","value_origin","value_origin_class","arithmetic_expression",
   "tile_plus1a_dependency","tile_level_nibble_plus20_dependency","resource_14_15_candidate",
   "dependency_load_pcs","source","reason"])
 
@@ -961,6 +1042,11 @@ for tag,code,base in codes:
 write_tsv("DY3_MANAGER_FIELDS_4F0_4F4_534.tsv",manager_field_rows,
  ["region","pc","file_offset","bytes","instruction","function","field","access","base_origin",
   "manager_array_base_proven","reachable_from_FUN_800EC574","value_origin","source","reason"])
+manager_reader_rows=[r for r in manager_field_rows
+  if r["access"]=="READ" and r["manager_array_base_proven"]=="YES"]
+write_tsv("DY3_MANAGER_FIELD_READERS.tsv",manager_reader_rows,
+ ["region","pc","file_offset","bytes","instruction","function","field","base_origin",
+  "manager_array_base_proven","reachable_from_FUN_800EC574","source","reason"])
 
 # The bounded retry loop: counter is seeded with 0x32, decremented before each RNG call.
 for pc,role in [
@@ -987,6 +1073,8 @@ for pc,role in [
           "reason":"counter starts at 50 and exits when the pre-random decrement becomes -1"})
 write_tsv("DY3_HELPER_RNG_RETRY_LOOP.tsv",helper_rng_rows,
  ["pc","file_offset","bytes","instruction","role","origin_rs","origin_rt","source","reason"])
+for h in helper_status_hypotheses:
+    h["observed_reader_functions"]="FUN_800DC2E0 (+4F0/+4F4); FUN_800E562C (+4F0 read then +4F4 write); FUN_800E6470 (+4F4/+534); FUN_800E9220 (+4F4)"
 write_tsv("DY3_HELPER_STATUS_HYPOTHESES.tsv",helper_status_hypotheses,
  ["hypothesis","basis","falsifier"])
 
@@ -1030,17 +1118,50 @@ for tag,code,base in codes:
 write_tsv("DY4_ACTION8_FEE_POSTS_CALL_CLOSURE.tsv",dy4_post_rows,
  ["pc","file_offset","bytes","instruction","function","base_origin","stored_value_origin",
   "negative_tile_fee_post","tile_plus1a_load_dependencies","source","reason"])
+# Back-edge census: determine whether any direct branch after a fee-post returns to
+# the fee load or post site inside FUN_800D15A8.
+dy4_backedge_rows=[]
+post_pc=0x800D46F8
+post_entry=FUNC["ENTRY1"][1](post_pc)
+post_end=FUNC["ENTRY1"][3](post_pc)
+for i in sorted(ins.values(),key=lambda x:x["pc"]):
+    if not (post_entry<=i["pc"]<post_end): continue
+    if i["pc"]<=post_pc: continue
+    op=i["op"]
+    is_direct_jump=(op==2)
+    is_cond_branch=(op==1 or op in (4,5,6,7))
+    if not (is_direct_jump or is_cond_branch): continue
+    t=branch_target(i)
+    if t is not None and t<=0x800D46EC:
+        dy4_backedge_rows.append({"function":"FUN_800D15A8","branch_pc":h32(i["pc"]),
+          "file_offset":h32(0x10BB000+(i["pc"]-ENTRY_BASE)),"bytes":hx(i["bytes"]),
+          "instruction":i["text"],"target_pc":h32(t),
+          "crosses_fee_load_or_post":"YES" if t<=post_pc else "TARGET_BEFORE_FEE_LOAD",
+          "source":"direct branch target scan in function bounds","reason":"potential loop edge; branch condition still controls reachability"})
+dy4_loop_summary=[{"function":"FUN_800D15A8","fee_post_pc":"0x800D46F8",
+ "all_plus2ee_stores_in_direct_call_closure":len(dy4_post_rows),
+ "negative_tile_fee_posts":len([r for r in dy4_post_rows if r["negative_tile_fee_post"]=="YES"]),
+ "backedges_after_post_to_fee_load_or_earlier":len([r for r in dy4_backedge_rows if r["target_pc"]=="0x800D46EC" or int(r["target_pc"],16)<0x800D46EC]),
+ "direct_call_closure_functions":len(closure),
+ "result":"NO_DIRECT_BACKEDGE_TO_FEE_LOAD_OR_POST" if not dy4_backedge_rows else "POTENTIAL_BACKEDGE_REQUIRES_PATH_REVIEW",
+ "caveat":"JALR/indirect control-flow destinations are not in direct-call closure; no runtime execution",
+ "falsifier":"a JALR-resolved edge or a branch target discovered to re-enter 0x800D46EC..0x800D46F8"})
+write_tsv("DY4_ACTION8_POST_LOOP_AUDIT.tsv",dy4_loop_summary,
+ ["function","fee_post_pc","all_plus2ee_stores_in_direct_call_closure","negative_tile_fee_posts",
+  "backedges_after_post_to_fee_load_or_earlier","direct_call_closure_functions","result","caveat","falsifier"])
+write_tsv("DY4_ACTION8_DIRECT_BACKEDGES.tsv",dy4_backedge_rows,
+ ["function","branch_pc","file_offset","bytes","instruction","target_pc","crosses_fee_load_or_post","source","reason"])
 
 # Three genuinely different formula families; lookup that copies all four user ratios is tautological.
 fee_models=[
  ("H1_PURE_2_POWER_D","fee_dasar * 2^d",[2,4,8,16],"NOT_TAUTOLOGI",
-  "Contradicted by user d=1=100 vs normalized prediction 200. Falsifier in ROM: show the coefficient path at 0x800EC3A8 or 0x800EF3CC is not a left shift of 1 by d."),
+  "Contradicted by user d=1=100 vs normalized prediction 200. Concrete ROM falsifier for the D15A8 path: at 0x800D46EC the code loads raw u16(tile+0x1A), at 0x800D46F4 it negates that raw value, and at 0x800D46F8 it posts it; a traced shift/multiply/table coefficient between those PCs would be required to avoid this falsifier."),
  ("H2_LOOKUP_COPIED_FROM_ALL_FOUR_USER_POINTS","fee_dasar * lookup[d] where lookup={1:1,2:4,3:8,4:16}",[1,4,8,16],"TAUTOLOGI",
-  "This lookup is defined from all four user ratios, not inferred from ROM. Falsifier: an actual table/selector read at 0x800EC3A8 or 0x800EF3CC whose d=1..4 entries differ from 1,4,8,16."),
+  "This lookup is defined from all four user ratios, not inferred from ROM. Concrete falsifier: if the D15A8 sequence 0x800D46EC lhu; 0x800D46F4 negu; 0x800D46F8 sh is the complete value path with no intervening selector/table read, this lookup has no ROM support."),
  ("H3_REPEAT_BASE_FEE_ONCE_PER_LEVEL_STEP","fee_dasar * d",[1,2,3,4],"NOT_TAUTOLOGI",
-  "Contradicted by d=2..4. Falsifier: inspect 0x800D46F8 and the D15A8 action-8 branch: a single fee-post site executed once, with no back-edge over the post, disproves d repetitions."),
+  "Contradicted by d=2..4. Concrete falsifier: one raw-fee post at 0x800D46F8 and an empty DY4_ACTION8_DIRECT_BACKEDGES.tsv (no branch from after the post back to 0x800D46EC or earlier) disproves a per-level repeat loop in this handler."),
  ("H4_ACCUMULATE_DOUBLING_FEE_EACH_STEP","fee_dasar * sum(2^k,k=0..d-1)",[1,3,7,15],"NOT_TAUTOLOGI",
-  "Contradicted by d=2..4. Falsifier: no loop/back-edge around a per-step debit and only one negative tile-fee post in the D15A8 call closure.")
+  "Contradicted by d=2..4. Concrete falsifier: 0x800D46F8 is the only negative tile-fee post in the direct call closure and no back-edge re-enters 0x800D46EC..0x800D46F8; an explicit second post or a JALR-resolved loop back to that range would falsify this audit.")
 ]
 dy4_model_rows=[]
 user_obs=[100,400,800,1600]
@@ -1074,7 +1195,7 @@ report_dy=[
 "DY0: TUNTAS K4 untuk snapshot source; baseline ikut dihitung. Final HEAD dihitung ulang setelah bot publish dan commit laporan akhir.",
 "DY1: TUNTAS K4 untuk tiga branch gate; DX2_PATH_CONDITIONS.tsv ditulis ulang dengan origin setelah JAL/JALR yang diputus pada call boundary.",
 "DY2: SEBAGIAN K4 — census semua store displacement +0x20/+0x21 EXE+Entry1; hanya baris yang basisnya membuktikan slot EA84 dinyatakan tile array. Level source semantik untuk aksi 8/event 3 masih TIDAK TAHU di luar lineage statis yang dilampirkan.",
-"DY3: SEBAGIAN K4 — direct writer global 0x80139EFC dan expression slices; helper retry loop 50 iterasi dan field manager ditemukan, arti gameplay tetap hipotesis.",
+"DY3: SEBAGIAN K4 — census langsung menemukan "+str(len(global_writer_rows))+" store ke 0x80139EFC; hanya "+str(len(dy3_arithmetic_rows))+" yang memiliki expression slice berisi sll/sllv/mult/addu/subu. File DS3_INDEX_GLOBAL_WRITERS.tsv lama sebenarnya memindai displacement -0x1450 (global 0x8013EBB0), sehingga bukan census EFC. 40 pembaca field +0x4F0/+0x4F4/+0x534 dipisahkan; arti gameplay tetap hipotesis.",
 "DY4: SEBAGIAN K4 — store -fee ke +0x2EE dihitung lewat direct call closure D15A8; tidak menyatakan rumus biaya level tanpa bukti d pada operand.",
 "",
 "## DY1 — JAL clobber",
@@ -1084,17 +1205,17 @@ report_dy=[
 "Semua origin berhenti pada batas JAL/JALR: v0/v1 dilabel return, a0-a3 dan t0-t9 setelah JAL dilabel TIDAK TAHU. File offset EXE mengikuti 0x800+(PC-0x80010000), Entry 1 0x10BB000+(PC-0x800AD450).",
 "",
 "## DY2 — tile+0x20/+0x21",
-"DY2_TILE_PLUS20_PLUS21_WRITERS.tsv memuat seluruh operasi store dengan displacement literal +0x20/+0x21 di EXE dan Entry 1. Base slot EA84 dipisahkan dari store yang belum terbukti berasal dari tile array. Mask dan OR-source berasal dari expression slice per PC; hasil tidak boleh ditafsirkan sebagai konstanta saat berasal dari load dinamis/JAL.",
-"Action 8 sites 0x800EC3A8 dan 0x800EF3CC serta event 3 FUN_800D9570 disajikan sebagai jendela instruksi di DY2_ACTION8_EVENT3_LEVEL_SOURCE_WINDOWS.tsv. Event3 D9570 membaca signed halfword +0x24 dari alamat berbasis indeks dan parameter pointer; apakah itu level target = TIDAK TAHU. Nilai beda level d yang eksplisit = TIDAK TERBUKTI dari jendela ini.",
+"DY2_TILE_PLUS20_PLUS21_WRITERS.tsv memuat "+str(len(tile_store_rows))+" operasi store displacement literal +0x20/+0x21 (EXE="+str(sum(1 for r in tile_store_rows if r['region']=='EXE'])+", Entry 1="+str(sum(1 for r in tile_store_rows if r['region']=='ENTRY1'])+"). Hanya "+str(len(tile_alias_writers))+" basisnya terbukti berakar ke slot pointer tile-array 0x8013EA84; sisanya NO_OR_UNRESOLVED. Kolom nibble8_11_operand_origin dan nibble12_15_operand_origin memisahkan parameter/stack dari dynamic load. Nilai load tetap dinamis.",
+"DY2_ACTION8_EVENT3_LEVEL_FINDINGS.tsv merinci sumber field+0x24. Di action8 EC3A8, PC 0x800EC388 membaca tile+0x24, PC 0x800EC364 membaca global 0x8013EAD2, dan PC 0x800EC390 melakukan subu; ini kandidat beda field, bukan bukti beda level d. Pada event3 D9570, PC 0x800DAF2C membaca tile+0x24 berdasarkan indeks dari manager record +0x1F dan nilai disalin ke manager+0x390; tak ada operasi selisih terbukti. Pada EF3CC, basis dan parameter tetap TIDAK TAHU.",
 "",
 "## DY3 — global accumulator dan RNG retry",
 "DY3_GLOBAL_80139EFC_WRITERS.tsv hanya memuat store yang effective address statisnya tepat 0x80139EFC. Arithmetic slice memuat PC operand untuk sll/sllv/mult/addu/subu; dependency tile+1A, nibble +0x20, atau field resource +0x14/+0x15 hanya YES jika load pada slice teridentifikasi.",
 "Retry: EC AE8 menetapkan 0x32 (50); EC AEC menyimpan counter manager+0x2A8; EC B00/ B08 membaca dan decrement; EC B0C keluar saat -1. Loop memanggil RNG pada EC B14, menghasilkan remainder melalui div/mfhi di ECB24/ECB28, menyimpan kandidat index di ECB38, membaca active index melalui lhu slot 0x8013EA88 di ECB3C, dan mengulang bila sama pada ECB44. Sukses loop mensyaratkan kandidat != active-index; maksimum 50 pemanggilan RNG.",
-"Field manager +0x4F0/+0x4F4/+0x534 dan PC reader/writer berada di DY3_MANAGER_FIELDS_4F0_4F4_534.tsv. H1/H2 arti gameplay disediakan sebagai hipotesis yang dapat difalsifikasi di DY3_HELPER_STATUS_HYPOTHESES.tsv; tidak ada klaim semantik final.",
+"Field manager +0x4F0/+0x4F4/+0x534 dan PC reader/writer berada di DY3_MANAGER_FIELDS_4F0_4F4_534.tsv. Pembaca dengan basis manager terbukti berada di DY3_MANAGER_FIELD_READERS.tsv (total "+str(len(manager_reader_rows))+"); pembaca terkelompok antara FUN_800DC2E0, FUN_800E562C, FUN_800E6470, FUN_800E9220, dan FUN_800C5978. Hipotesis H1/H2 serta falsifier-nya di DY3_HELPER_STATUS_HYPOTHESES.tsv; tidak ada klaim semantik final.",
 "",
 "## DY4 — debit aksi 8",
 "Negative fee post terhitung dari instruksi store yang operand slice-nya berisi negu dan pembacaan tile+0x1A, di direct call closure FUN_800D15A8. Jumlah terdeteksi total="+str(len(computed_posts))+"; yang langsung dilabel FUN_800D15A8="+str(len(d15a8_posts))+". Store nol untuk clear pending tidak dihitung sebagai post.",
-"Jika tidak ada back-edge di sekitar site post yang mengeksekusinya berulang, bukti statis ini mendukung satu post -fee per pemanggilan handler, bukan perkalian otomatis d. Ini bukan bukti runtime.",
+"DY4_ACTION8_POST_LOOP_AUDIT.tsv menghitung "+str(len(dy4_post_rows))+" store +0x2EE di direct call closure D15A8; hanya "+str(len(computed_posts))+" adalah post -fee, dua lainnya clear. DY4_ACTION8_DIRECT_BACKEDGES.tsv menguji branch dari sesudah post yang kembali ke PC <=0x800D46EC; jalur indirect/JALR belum terikat. Jika kosong, tak ada loop langsung yang mengulangi debit di handler statis ini. Ini bukan bukti runtime.",
 "Keempat model formula d=1..4 dalam DY4_FEE_HYPOTHESES_D1_D4.tsv memakai 100 hanya sebagai normalisasi pengamatan pengguna. H2 exact lookup dari empat rasio pengguna ditandai TAUTOLOGI. H3/H4 adalah model debit akumulatif berulang dan bertentangan dengan pengamatan pada nilai d yang dicatat. Formula ROM aktual = TIDAK TAHU.",
 "",
 "## Batas",
@@ -1114,6 +1235,9 @@ write_tsv("DY0_COUNTS.tsv",[
  "STATUS=ANALYSIS_PASS\nJOB=dx0-dx4-static\nSOURCE_SHA="+SNAPSHOT+"\nEXIT_CODE=0\n"+
  "DY2_TILE_STORE_ROWS="+str(len(tile_store_rows))+"\nDY2_TILE_ALIAS_PROVEN="+str(len(tile_alias_writers))+"\n"+
  "DY3_GLOBAL_80139EFC_WRITERS="+str(len(global_writer_rows))+"\n"+
+ "DY3_GLOBAL_80139EFC_ARITHMETIC_EXPRESSIONS="+str(len(dy3_arithmetic_rows))+"\n"+
+ "DY3_MANAGER_PROVEN_READERS="+str(len(manager_reader_rows))+"\n"+
+ "DY4_BACKEDGES_AFTER_FEE_POST="+str(len(dy4_backedge_rows))+"\n"+
  "DY3_HELPER_MANAGER_FIELD_ROWS="+str(len(manager_field_rows))+"\n"+
  "DY3_RNG_LOOP_ROWS="+str(len(helper_rng_rows))+"\n"+
  "DY4_NEGATIVE_TILE_FEE_POSTS_TOTAL="+str(len(computed_posts))+"\n"+
