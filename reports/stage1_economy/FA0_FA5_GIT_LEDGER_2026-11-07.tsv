@@ -1,0 +1,9 @@
+ordinal	commit_sha	actor	classification	message
+1	b6fbdf25fdaa45b4d05f4dc5055e18fb6597b9b5	zuppasoupfifaistimewa-png	HUMAN	baseline inklusif
+2	f74961b844d068a164732c08c78a363d5267e569	zuppasoupfifaistimewa-png	HUMAN	Trigger one-time DX0-DX4 EA compatibility revalidation
+3	214326f955b0d8c2c8a7f7cf4ad4574fa71e2e42	github-actions[bot]	BOT	Publish DX0-DX4 full-image static audit run 42307609951
+4	be22dc10c1264eaa4bd65948c6e48881a38b6117	zuppasoupfifaistimewa-png	HUMAN	Add FA0-FA5 audit reconciliation for Naruto Jintori
+5	43d2bed4ceb468583ffa5a03730fdb07939e6677	zuppasoupfifaistimewa-png	HUMAN	Add bounded FA4 H6 action-8 write-watchpoint runtime
+6	0491530cc2bc72338849046572422f5958e4a5b2	zuppasoupfifaistimewa-png	HUMAN	Record FA4 run blocked by expired CONTROL artifact
+# Count through audited HEAD: 6 inclusive; 5 human; 1 bot.
+# The publication commit for this reconciliation is after the audited HEAD.

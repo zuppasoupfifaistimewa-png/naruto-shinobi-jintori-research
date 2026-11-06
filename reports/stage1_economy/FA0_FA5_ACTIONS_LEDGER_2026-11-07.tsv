@@ -1,0 +1,5 @@
+run_id	workflow	event	source_sha	status	job	job_id	exit_code	result
+42241745858	Naruto Story Mode adaptive player monitor	schedule	b6fbdf25fdaa45b4d05f4dc5055e18fb6597b9b5	completed/success	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU	historical monitor; not economy evidence
+42292998488	Naruto Story Mode adaptive player monitor	schedule	b6fbdf25fdaa45b4d05f4dc5055e18fb6597b9b5	completed/success	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU	historical monitor; not economy evidence
+42307609951	DX0-DX4 full-image static economy audit	push	f74961b844d068a164732c08c78a363d5267e569	completed/success	dx0-dx4-static	TIDAK TAHU	0	EA exit 0; text-only outputs
+42312284099	FA4 H6 hybrid action-8 write-watchpoint runtime	push	43d2bed4ceb468583ffa5a03730fdb07939e6677	completed/failure	FA4 eight H6 headless launches with five write-watchpoints	128216422129	1	CONTROL artifact unavailable; 0 emulator launches; 0 watchpoints
