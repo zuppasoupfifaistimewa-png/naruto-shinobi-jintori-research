@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/dx0-dx4-raw-static.yml"
       - "tools/stage1/RunDX0DX4Raw.py"
+      - "tools/stage1/RunEA0EA4Supplement.py"
 
 permissions:
   contents: write
@@ -30,7 +31,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m py_compile tools/stage1/RunDX0DX4Raw.py
+          python3 -m py_compile tools/stage1/RunDX0DX4Raw.py tools/stage1/RunEA0EA4Supplement.py
 
       - name: Install disc extraction and MIPS decoding tools
         shell: bash
@@ -100,7 +101,7 @@ jobs:
           echo "PRIVATE_INPUTS_TEMPORARY_ONLY=yes" >> "$RUNNER_TEMP/dx0-dx4-stage-status.txt"
           echo "NO_BINARY_ARTIFACT_UPLOAD=yes" >> "$RUNNER_TEMP/dx0-dx4-stage-status.txt"
 
-      - name: Run DX0-DX4 full-image static analysis
+      - name: Run DX0-DX4 plus EA0-EA4 static analysis in one decoder pass
         shell: bash
         env:
           DX_BASELINE: "c405f9261c3beea2ed4e3695222108c51a7ad636"
@@ -110,12 +111,13 @@ jobs:
           out="$RUNNER_TEMP/dx0-dx4-output"
           mkdir -p "$out"
           set +e
-          python3 tools/stage1/RunDX0DX4Raw.py \
+          python3 tools/stage1/RunEA0EA4Supplement.py \
             "$RUNNER_TEMP/dx0-dx4-private/input/SLPS_035.53" \
             "$RUNNER_TEMP/dx0-dx4-private/input/DATA.BIN" "$out"
           rc=$?
           set -e
           echo "$rc" > "$RUNNER_TEMP/dx0-dx4-analysis-exit.txt"
+          echo "$rc" > "$RUNNER_TEMP/ea-supplement-exit.txt"
           if [ "$rc" -ne 0 ]; then
             {
               echo "STATUS=BELUM"
@@ -149,6 +151,7 @@ jobs:
           fi
 
           rc="$(cat "$RUNNER_TEMP/dx0-dx4-analysis-exit.txt" 2>/dev/null || echo TIDAK_TAHU)"
+          ea_rc="$(cat "$RUNNER_TEMP/ea-supplement-exit.txt" 2>/dev/null || echo TIDAK_TAHU)"
           cleanup="$(cat "$RUNNER_TEMP/dx0-dx4-cleanup.txt" 2>/dev/null || echo PRIVATE_BINARY_CLEANUP=UNKNOWN)"
           stage_file="$RUNNER_TEMP/dx0-dx4-stage-status.txt"
           if [ -f "$stage_file" ] && grep -qx 'RAW_INPUT_STAGE=PASS' "$stage_file"; then
@@ -156,7 +159,7 @@ jobs:
           else
             stage="RAW_INPUT_STAGE=NOT_PASS"
           fi
-          if [ "$rc" = "0" ] && [ "$cleanup" = "PRIVATE_BINARY_CLEANUP=PASS" ] && [ "$stage" = "RAW_INPUT_STAGE=PASS" ]; then
+          if [ "$rc" = "0" ] && [ "$ea_rc" = "0" ] && [ "$cleanup" = "PRIVATE_BINARY_CLEANUP=PASS" ] && [ "$stage" = "RAW_INPUT_STAGE=PASS" ]; then
             status="PASS"
           else
             status="FAIL"
@@ -173,6 +176,7 @@ jobs:
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "SOURCE_SHA=$GITHUB_SHA"
             echo "EXIT_CODE=$rc"
+            echo "EA_EXIT_CODE=$ea_rc"
             echo "$stage"
             echo "$cleanup"
             echo "GAME_OR_EMULATOR_EXECUTED=no"
@@ -198,6 +202,7 @@ jobs:
             test "$pushed" -eq 1
           fi
 
-          echo "DX_OUTPUT_PATH=$dest"
+          echo "DX_EA_OUTPUT_PATH=$dest"
           echo "ACTIONS_STATUS=$status"
+          echo "EA_EXIT_CODE=$ea_rc"
           test "$status" = "PASS"
