@@ -1,0 +1,3 @@
+STATUS=BELUM
+REASON=DX analyzer exited nonzero; inspect job log
+EXIT_CODE=1
