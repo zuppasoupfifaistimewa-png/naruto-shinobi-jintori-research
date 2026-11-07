@@ -1,0 +1,61 @@
+FUNCTION=FUN_800faac8
+ENTRY=0x800FAAC8
+RAW_INSTRUCTION_COUNT=168
+
+C_DECOMPILATION:
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void FUN_800faac8(void)
+
+{
+  int iVar1;
+  byte bVar2;
+  
+  iVar1 = DAT_8013ea74;
+  bVar2 = 0;
+  if ((((*(char *)(DAT_8013ea74 + 0x2e4) != '\0') && (*(short *)(DAT_8013ea74 + 0x2ee) == 0)) &&
+      (*(int *)(DAT_8013ea74 + 0x2f0) == 0)) && (*(short *)(DAT_8013ea74 + 0x2f4) == 0)) {
+    if (*(int *)(DAT_8013ea74 + 0x350) != 0) {
+      *(int *)(DAT_8013ea74 + 0x350) = *(int *)(DAT_8013ea74 + 0x350) + -1;
+      bVar2 = *(byte *)(iVar1 + 0x35d);
+    }
+    iVar1 = DAT_8013ea74;
+    if (*(int *)(DAT_8013ea74 + 0x34c) != 0) {
+      *(int *)(DAT_8013ea74 + 0x34c) = *(int *)(DAT_8013ea74 + 0x34c) + -1;
+      bVar2 = bVar2 | *(byte *)(iVar1 + 0x35c);
+    }
+    iVar1 = FUN_800f7ed4(*(undefined4 *)(DAT_8013eac0 + 0xc),bVar2,0x60000,0x60000);
+    if ((iVar1 == 8) || (iVar1 == 4)) {
+      *(undefined4 *)(DAT_8013ea74 + 0x350) = 0;
+    }
+    if ((iVar1 - 1U & 0xff) < 2) {
+      *(undefined4 *)(DAT_8013ea74 + 0x34c) = 0;
+    }
+    if ((*(int *)(DAT_8013ea74 + 0x34c) == 0) && (*(int *)(DAT_8013ea74 + 0x350) == 0)) {
+      *(undefined1 *)(DAT_8013ea74 + 0x2e4) = 0;
+      iVar1 = DAT_8013ea74 + (uint)_DAT_8013ea8a * 0x90;
+      if (((*(ushort *)(iVar1 + 10) & 0x100) != 0) || ((*(byte *)(iVar1 + 0xc) & 0x20) != 0)) {
+        *(undefined1 *)(DAT_8013ea74 + 0x926) = 0;
+      }
+      if ((((1 < *(byte *)((uint)*(byte *)(DAT_8013ea74 + (uint)DAT_8013ea88 * 0x90 + 0x1f) * 0x124
+                          + DAT_8013ea84)) || (DAT_8013ead5 != '\0')) && (DAT_8013ea94 == '\0')) &&
+         ((*(char *)((uint)*(byte *)(DAT_8013ea74 + (uint)DAT_8013ea88 * 0x90 + 0x1f) * 0x124 +
+                    DAT_8013ea84) != '\x03' || (*(char *)(DAT_8013ea74 + 0x361) == '\0')))) {
+        DAT_8013ead5 = '\0';
+      }
+      if ((*(byte *)(DAT_8013ea74 + 0x361) & 0x80) != 0) {
+        *(undefined1 *)(DAT_8013ea74 + 0x361) = 0;
+      }
+    }
+  }
+  return;
+}
+
+REFERENCES_TO_FUNCTION:
+reference_from=800b54e4 reference_type=UNCONDITIONAL_CALL source=DEFAULT caller_entry=800b50ac caller_name=FUN_800b50ac
+  callsite_context:
+  800b54e0 bytes=[00 00 00 00] _nop
+  800b54e4 bytes=[B2 EA 03 0C] jal 0x800faac8
+  800b54e8 bytes=[00 00 00 00] _nop
+  800b54ec bytes=[80 02 03 0C] jal 0x800c0a00
+reference_count=1
