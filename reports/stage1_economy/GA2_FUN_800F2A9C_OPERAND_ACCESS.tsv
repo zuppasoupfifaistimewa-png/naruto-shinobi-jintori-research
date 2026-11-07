@@ -1,0 +1,12 @@
+pc	file_offset	bytes	instruksi	access	operand	provenance
+0x800F2B58	0x01100708	30 05 44 8C	lw $a0,0x530($v0)	READ	manager+0x530	manager pointer from global slot 0x8013EA74
+0x800F2B84	0x01100734	71 EA 63 90	lbu $v1,-0x158f($v1)	READ	0x8013EA71	byte G; base constructed from 0x8014
+0x800F2B94	0x01100744	FC 9E 84 8C	lw $a0,-0x6104($a0)	READ	0x80139EFC	u32 Q
+0x800F2CC4	0x01100874	30 05 A4 8C	lw $a0,0x530($a1)	READ	manager+0x530	candidate record pointer
+0x800F2CE4	0x01100894	71 EA 43 92	lbu $v1,-0x158f($s2)	READ	0x8013EA71	byte G
+0x800F2D48	0x011008F8	71 EA 43 92	lbu $v1,-0x158f($s2)	READ	0x8013EA71	byte G
+0x800F2D68	0x01100918	71 EA 42 90	lbu $v0,-0x158f($v0)	READ	0x8013EA71	byte G
+0x800F2DEC	0x0110099C	30 05 44 8C	lw $a0,0x530($v0)	READ	manager+0x530	manager pointer from global slot 0x8013EA74
+0x800F2E10	0x011009C0	71 EA 64 92	lbu $a0,-0x158f($s3)	READ	0x8013EA71	byte G
+0x800F2E20	0x011009D0	FC 9E 63 8C	lw $v1,-0x6104($v1)	READ	0x80139EFC	u32 Q
+0x800F2E44	0x011009F4	30 05 44 8C	lw $a0,0x530($v0)	READ	manager+0x530	manager pointer from global slot 0x8013EA74

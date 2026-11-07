@@ -1,0 +1,11 @@
+STATUS=SUCCESS
+JOB=monitor
+JOB_ID=128244394048
+RUN_ID=42320736860
+SOURCE_SHA=6987a76e12b0adf86f8061d47dcc4078e79cda21
+EVENT=schedule
+EXIT_CODE=0 (derived from GitHub Actions job conclusion=success; API did not expose a separate process exit code)
+NOTE=Monitor found no adaptive-player run in latest 50 Actions runs; this does not indicate Story Mode success or completion.
+NOTE=monitoring-report.txt was absent; upload-artifact reported no files and no artifact was uploaded.
+QUEUED=0
+IN_PROGRESS=0

@@ -1,0 +1,20 @@
+pc	file_offset	bytes	instruksi	role
+0x8001552C	0x00005D2C	E8 FF BD 27	addiu $sp,$sp,-0x18	prologue
+0x80015530	0x00005D30	14 00 BF AF	sw $ra,0x14($sp)	save ra
+0x80015534	0x00005D34	10 00 B0 AF	sw $s0,0x10($sp)	save s0
+0x80015538	0x00005D38	35 55 00 0C	jal 0x800154D4	bound helper
+0x8001553C	0x00005D3C	21 80 80 00	move $s0,$a0	delay slot; preserve x
+0x80015540	0x00005D40	2B 10 02 02	sltu $v0,$s0,$v0	unsigned x < bound
+0x80015544	0x00005D44	07 00 40 10	beq $v0,$zero,0x80015564	branch if out of range
+0x80015548	0x00005D48	05 80 02 3C	lui $v0,0x8005	delay slot
+0x8001554C	0x00005D4C	EC 5C 42 24	addiu $v0,$v0,0x5CEC	base 0x80055CEC
+0x80015550	0x00005D50	00 19 10 00	sll $v1,$s0,4	x * 0x10
+0x80015554	0x00005D54	21 10 43 00	addu $v0,$v0,$v1	table entry address
+0x80015558	0x00005D58	08 00 42 8C	lw $v0,0x8($v0)	load u32 at base + x*16 + 8
+0x8001555C	0x00005D5C	5A 55 00 08	j 0x80015568	join valid result
+0x80015560	0x00005D60	00 00 00 00	nop	delay slot
+0x80015564	0x00005D64	21 10 00 00	move $v0,$zero	out-of-range return zero (alias for addu v0,zero,zero)
+0x80015568	0x00005D68	14 00 BF 8F	lw $ra,0x14($sp)	restore ra
+0x8001556C	0x00005D6C	10 00 B0 8F	lw $s0,0x10($sp)	restore s0
+0x80015570	0x00005D70	08 00 E0 03	jr $ra	return
+0x80015574	0x00005D74	18 00 BD 27	addiu $sp,$sp,0x18	delay slot stack restore

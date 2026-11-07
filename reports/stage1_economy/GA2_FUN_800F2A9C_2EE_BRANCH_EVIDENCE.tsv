@@ -1,0 +1,13 @@
+pc	file_offset	bytes	instruksi	registers_tested	condition_for_store_path
+0x800F2AD0	0x01100680	14 00 62 10	beq $v1,$v0,0x800F2B24	$v1,$v0	taken iff byte global 0x80139F42 == 1
+0x800F2B2C	0x011006DC	6D 01 40 14	bne $v0,$zero,0x800F30E4	$v0,$zero	must not be taken; return JAL 0x80104E1C == 0
+0x800F2C50	0x01100800	42 00 40 10	beq $v0,$zero,0x800F2D5C	$v0,$zero	must not be taken; (return JAL 0x80012AD0 & 0x1000) != 0
+0x800F2C68	0x01100818	3C 00 40 10	beq $v0,$zero,0x800F2D5C	$v0,$zero	must not be taken; G=u8(0x8013EA71)>0
+0x800F2C84	0x01100834	2C 00 82 10	beq $a0,$v0,0x800F2D38	$a0,$v0	must not be taken; idx != u16(0x8013EA8A)
+0x800F2CBC	0x0110086C	1E 00 62 14	bne $v1,$v0,0x800F2D38	$v1,$v0	must not be taken; record byte +0xE values equal
+0x800F2D54	0x01100904	C8 FF 40 14	bne $v0,$zero,0x800F2C78	$v0,$zero	taken while idx+1 < G; store candidate idx in [0,G-1]
+0x800F2D70	0x01100920	5B 00 40 10	beq $v0,$zero,0x800F2EE0	$v0,$zero	must not be taken; G>0
+0x800F2D90	0x01100940	4A 00 82 10	beq $a0,$v0,0x800F2EBC	$a0,$v0	must not be taken; idx != u16(0x8013EA8A)
+0x800F2DA0	0x01100950	46 00 82 10	beq $a0,$v0,0x800F2EBC	$a0,$v0	must not be taken; idx != manager-global value at 0x8013EBB0
+0x800F2DC8	0x01100978	3C 00 40 14	bne $v0,$zero,0x800F2EBC	$v0,$zero	must not be taken; (record byte +0xD & 1)==0
+0x800F2DDC	0x0110098C	17 00 40 10	beq $v0,$zero,0x800F2E3C	$v0,$zero	taken selects F2E68 if masked JAL 0x80012AD0 return bit 0x1000 is zero; not taken selects F2E38 if nonzero
