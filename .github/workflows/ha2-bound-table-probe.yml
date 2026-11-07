@@ -46,7 +46,7 @@ jobs:
       - name: Download verified disc and extract PS-X EXE
         shell: bash
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           API="https://api.github.com/repos/$RESEARCH_REPO"
@@ -107,7 +107,7 @@ jobs:
         if: always()
         shell: bash
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           DEST="reports/stage1_economy/ha2-bound-table-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"

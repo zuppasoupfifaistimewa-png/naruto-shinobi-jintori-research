@@ -35,7 +35,7 @@ def decode_gp_accesses(exe: bytes) -> list[tuple[int, bytes, str]]:
     md = Cs(CS_ARCH_MIPS, CS_MODE_MIPS32 | CS_MODE_LITTLE_ENDIAN)
     md.detail = False
     found = []
-    pat = re.compile(r"^\s*(-?(?:0x[0-9a-f]+|\d+))\(\$gp\)\s*$", re.I)
+    pat = re.compile(r"^\s*(-?(?:0x[0-9a-f]+|\d+))\(\$?gp\)\s*$", re.I)
     for off in range(0, len(exe) - 3, 4):
         raw = exe[off:off + 4]
         ins = next(md.disasm(raw, EXE_BASE + off, count=1), None)
