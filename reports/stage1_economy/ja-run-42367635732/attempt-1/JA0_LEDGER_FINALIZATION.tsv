@@ -1,0 +1,2 @@
+run_id	event	workflow	head_sha	job	job_id	final_status	conclusion	analysis_exit	py_compile_exit	ghidra_exe_exit	ghidra_entry1_exit	private_cleanup	source_of_final_state
+42367635732	push	JA0-JA5 isolated static audit	570f19c472b5238349909873ac6c68afc84359df	ja0-ja5-static	128388959351	completed	success	0	0	0	0	PASS	ACTIONS_RUN_SUMMARY.txt and Actions job readback

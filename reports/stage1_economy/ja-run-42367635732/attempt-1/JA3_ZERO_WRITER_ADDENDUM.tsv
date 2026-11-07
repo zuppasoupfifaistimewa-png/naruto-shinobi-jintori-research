@@ -1,0 +1,10 @@
+image	pc	file_offset	bytes	instruksi	function_entry	function_name	role	v0_or_index_provenance	participant_index_conclusion	certainty
+ENTRY1	0x800B24C8	0x010C0078	EE 02 40 A4	sh $zero, 0x2ee($v0)	TIDAK TAHU	TIDAK TAHU	ZERO_WRITER	$v0 base TIDAK TAHU; JA source Ghidra range census has no containing function for this PC	TIDAK TAHU	K2 site instruction retained from prior static Ghidra excerpt; parent/caller not proven
+ENTRY1	0x800BE6CC	0x010CC27C	21 88 00 00	move $s1, $zero	0x800BE5D8	FUN_800be5d8	LOOP_INITIALIZER	initializes loop variable $s1 to 0	not invariant at later store site	K4 static
+ENTRY1	0x800BED98	0x010CC948	74 EA 42 8E	lw $v0, -0x158c($s2)	0x800BE5D8	FUN_800be5d8	BASE_LOAD	EA resolves to manager pointer 0x8013EA74	index still carried in $s1	K4 static
+ENTRY1	0x800BED9C	0x010CC94C	40 18 11 00	sll $v1, $s1, 1	0x800BE5D8	FUN_800be5d8	INDEX_SCALE	computes 2*$s1	index is loop variable $s1, not constant 0	K4 static
+ENTRY1	0x800BEDA0	0x010CC950	21 10 43 00	addu $v0, $v0, $v1	0x800BE5D8	FUN_800be5d8	EFFECTIVE_BASE	$v0 = manager_base + 2*$s1	index is loop variable $s1, not constant 0	K4 static
+ENTRY1	0x800BEDA4	0x010CC954	EE 02 40 A4	sh $zero, 0x2ee($v0)	0x800BE5D8	FUN_800be5d8	ZERO_WRITER	writes zero to manager+0x2ee+2*$s1	index is $s1; loop range 0..3, not constant 0	K4 static
+ENTRY1	0x800BEE1C	0x010CC9CC	01 00 31 26	addiu $s1, $s1, 1	0x800BE5D8	FUN_800be5d8	LOOP_INCREMENT	increments $s1 after body	loop variable	K4 static
+ENTRY1	0x800BEE20	0x010CC9D0	04 00 22 2A	slti $v0, $s1, 4	0x800BE5D8	FUN_800be5d8	LOOP_BOUND	tests $s1 < 4	loop index values 0..3	K4 static
+ENTRY1	0x800BEE24	0x010CC9D4	33 FE 40 14	bnez $v0, 0x800be6f4	0x800BE5D8	FUN_800be5d8	LOOP_BACKEDGE	re-enters loop while $s1 < 4	loop index values 0..3	K4 static

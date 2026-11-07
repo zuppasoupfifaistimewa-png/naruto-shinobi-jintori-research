@@ -1,0 +1,3 @@
+target_pc	parent_function_entry	parent_function	image	pc	file_offset	bytes	instruksi	caller_entry	caller_function	classification	certainty
+0x800BEDA4	0x800BE5D8	FUN_800be5d8	ENTRY1	0x800B54F4	0x010C30A4	76 F9 02 0C	jal 0x800be5d8	0x800B50AC	FUN_800b50ac	DIRECT_JAL_TO_PARENT_FUNCTION; one caller confirmed, exhaustive caller set TIDAK TAHU	K4 static
+0x800B24C8	TIDAK TAHU	TIDAK TAHU	ENTRY1	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU	NO_PARENT_OR_CALLER_PROVEN	K0 unresolved
