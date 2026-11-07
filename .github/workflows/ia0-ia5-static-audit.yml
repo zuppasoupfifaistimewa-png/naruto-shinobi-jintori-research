@@ -201,6 +201,13 @@ jobs:
           set -e
           echo "$EXE_RC" > "$OUT/ghidra-exe.exit"
           echo "$ENTRY_RC" > "$OUT/ghidra-entry1.exit"
+          {
+            echo "=== Ghidra EXE log tail (exit=$EXE_RC) ==="
+            tail -n 120 "$OUT/ghidra-exe.log" 2>/dev/null || echo "EXE_GHIDRA_LOG_MISSING"
+            echo
+            echo "=== Ghidra Entry 1 log tail (exit=$ENTRY_RC) ==="
+            tail -n 120 "$OUT/ghidra-entry1.log" 2>/dev/null || echo "ENTRY1_GHIDRA_LOG_MISSING"
+          } > "$OUT/GHIDRA_DIAGNOSTICS.txt"
 
       - name: Run IA0-IA5 static analysis
         id: analysis
