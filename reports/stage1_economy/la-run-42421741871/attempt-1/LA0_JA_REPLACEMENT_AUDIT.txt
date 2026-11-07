@@ -1,7 +1,18 @@
 DELETED_ONLY=
 reports/stage1_economy/ja-run-42367635732/attempt-1/JA1_CALLER_WINDOWS.tsv
 reports/stage1_economy/ja-run-42367635732/attempt-1/JA1_FUN_80014F10_BODY.tsv
-REPLACEMENT_ROWS=6
+
+REPLACEMENT_BODY_ROWS=6
+REPLACEMENT_BODY_FILE=LA0_JA_REPLACEMENT_EXCERPTS.tsv
+REPLACEMENT_CALLER_WINDOW_ROWS=112
+REPLACEMENT_CALLER_WINDOW_FILE=LA0_JA_REPLACEMENT_CALLER_WINDOWS.tsv
+REPLACEMENT_CALLER_WINDOW_GROUPS=7
 REPLACEMENT_MAX_EXCERPT_BYTES=64
-AGGREGATED_MAX_CONTIGUOUS_BYTES_ACROSS_RETAINED_JA_KA_TSV_ROWS=64
-NOTE=aggregate de-duplicates retained JA/KA TSV instruction rows by image+PC; prior independent evidence can overlap into longer contiguous ranges. New replacement excerpts stay within 16 words (64 B) per group.
+GROUP_LAYOUT=6 distinct 16-instruction caller windows (64 B each) plus one merged 16-instruction window for overlapping call PCs 0x800F5F1C, 0x800F5F2C, and 0x800F5F54.
+
+DUPLICATE_CONTEXT_NOT_REPEATED:
+The old JA1 caller-window group for 0x800B54DC is already covered by the retained KA3_BE5D8_CALLER_WINDOWS.tsv group at call PC 0x800B54F4, spanning 0x800B54D8..0x800B5514 (16 instructions / 64 B). Both call sites are included in that retained context, so no duplicate excerpt was added.
+
+AGGREGATED_MAX_CONTIGUOUS_BYTES_ACROSS_ALL_RETAINED_JA_KA_TSV_ROWS_AND_REPLACEMENTS=64
+AGGREGATION=unique image+PC instruction rows across all 51 retained JA/KA TSV files, plus both replacement files; contiguous addresses merged after de-duplication. The overlapping F5F1C/F5F2C/F5F54 windows were consolidated to keep the union at 64 B.
+No other pre-existing JA/KA file was changed or deleted.
