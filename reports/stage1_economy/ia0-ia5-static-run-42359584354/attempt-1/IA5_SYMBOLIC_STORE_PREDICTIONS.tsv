@@ -1,0 +1,2 @@
+x	H_raw_u32	H_signed	F2CF8	F2E38	F2E68	scope
+TIDAK TAHU	TIDAK TAHU	TIDAK TAHU	low16(H(x)*(G-2))	low16(-H(x)*(G-1-Q))	low16(-H(x))	x domain not established from IA2

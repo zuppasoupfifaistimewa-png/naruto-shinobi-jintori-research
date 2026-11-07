@@ -1,0 +1,105 @@
+=== Ghidra EXE log tail (exit=1) ===
+openjdk version "25.0.5" 2026-10-20 LTS
+OpenJDK Runtime Environment Temurin-25.0.5+8 (build 25.0.5+8-LTS)
+OpenJDK 64-Bit Server VM Temurin-25.0.5+8 (build 25.0.5+8-LTS, mixed mode)
+INFO  Using log config file: jar:file:/home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/runner/.config/ghidra/ghidra_12.2_PUBLIC/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/runner/.config/ghidra/ghidra_12.2_PUBLIC/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (1125 ms) (ClassSearcher)  
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Loaded 120 trusted CA certificate(s) from /etc/ssl/certs/ca-certificates.crt (UnixSystemTrustKeyStoreUtil)  
+INFO  Loaded 120 trusted CA certificates from the OS trust store. (DefaultTrustManagerFactory)  
+INFO  Loaded 120 trusted CA certificates from the Java default trust store. (DefaultTrustManagerFactory)  
+INFO  Starting cache cleanup: /var/tmp/runner-ghidra/fscache2 (FileCacheMaintenanceDaemon)  
+INFO  Finished cache cleanup, estimated storage used: 0 (FileCacheMaintenanceDaemon)  
+INFO  Headless startup complete (6255 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 96 extension points (47 false positives) (ClassSearcher)  
+WARN  REPORT: Could not find -scriptPath entry, skipping: /home/runner/work/naruto-shinobi-jintori-research/naruto-shinobi-jintori-research/tools/ghidra:/home/runner/work/naruto-shinobi-jintori-research/naruto-shinobi-jintori-research/tools/ia-ghidra (HeadlessAnalyzer)  
+INFO  HEADLESS Script Paths:
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/Base/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/PyGhidra/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/PIC/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/JVM/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Debug/Debugger/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/Swift/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/8051/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/FunctionID/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/BytePatterns/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/Decompiler/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/DATA/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/FileFormats/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/BSim/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/Atmel/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/PDB/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/VersionTracking/ghidra_scripts (HeadlessAnalyzer)  
+ERROR REPORT SCRIPT ERROR: PreparePsxExe.java : Script not found: PreparePsxExe.java (HeadlessAnalyzer)  
+ERROR Abort due to Headless analyzer error: Invalid script: PreparePsxExe.java (HeadlessAnalyzer) java.lang.IllegalArgumentException: Invalid script: PreparePsxExe.java
+	at ghidra.app.util.headless.HeadlessAnalyzer.checkScript(HeadlessAnalyzer.java:811)
+	at ghidra.app.util.headless.HeadlessAnalyzer.checkScriptsList(HeadlessAnalyzer.java:824)
+	at ghidra.app.util.headless.HeadlessAnalyzer.compileScripts(HeadlessAnalyzer.java:854)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:427)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:211)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:78)
+	at ghidra.Ghidra.main(Ghidra.java:41)
+ 
+
+=== Ghidra Entry 1 log tail (exit=1) ===
+openjdk version "25.0.5" 2026-10-20 LTS
+OpenJDK Runtime Environment Temurin-25.0.5+8 (build 25.0.5+8-LTS)
+OpenJDK 64-Bit Server VM Temurin-25.0.5+8 (build 25.0.5+8-LTS, mixed mode)
+INFO  Using log config file: jar:file:/home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/runner/.config/ghidra/ghidra_12.2_PUBLIC/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/runner/.config/ghidra/ghidra_12.2_PUBLIC/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (1014 ms) (ClassSearcher)  
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Loaded 120 trusted CA certificate(s) from /etc/ssl/certs/ca-certificates.crt (UnixSystemTrustKeyStoreUtil)  
+INFO  Loaded 120 trusted CA certificates from the OS trust store. (DefaultTrustManagerFactory)  
+INFO  Loaded 120 trusted CA certificates from the Java default trust store. (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (3352 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 96 extension points (47 false positives) (ClassSearcher)  
+WARN  REPORT: Could not find -scriptPath entry, skipping: /home/runner/work/naruto-shinobi-jintori-research/naruto-shinobi-jintori-research/tools/ghidra:/home/runner/work/naruto-shinobi-jintori-research/naruto-shinobi-jintori-research/tools/ia-ghidra (HeadlessAnalyzer)  
+INFO  HEADLESS Script Paths:
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/Base/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/PyGhidra/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/PIC/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/JVM/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Debug/Debugger/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/Swift/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/8051/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/FunctionID/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/BytePatterns/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/Decompiler/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/DATA/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/FileFormats/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/BSim/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/Atmel/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/PDB/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/VersionTracking/ghidra_scripts (HeadlessAnalyzer)  
+ERROR REPORT SCRIPT ERROR: EnsureTargetFunctions.java : Script not found: EnsureTargetFunctions.java (HeadlessAnalyzer)  
+ERROR Abort due to Headless analyzer error: Invalid script: EnsureTargetFunctions.java (HeadlessAnalyzer) java.lang.IllegalArgumentException: Invalid script: EnsureTargetFunctions.java
+	at ghidra.app.util.headless.HeadlessAnalyzer.checkScript(HeadlessAnalyzer.java:811)
+	at ghidra.app.util.headless.HeadlessAnalyzer.checkScriptsList(HeadlessAnalyzer.java:824)
+	at ghidra.app.util.headless.HeadlessAnalyzer.compileScripts(HeadlessAnalyzer.java:858)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:427)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:211)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:78)
+	at ghidra.Ghidra.main(Ghidra.java:41)
+ 

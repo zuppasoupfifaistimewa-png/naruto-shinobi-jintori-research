@@ -1,0 +1,8 @@
+sha	type	author	author_email	committer	committer_email	subject
+b9bd69a5c59ca5103a2144deef3604a6b5f5c4a9	MANUSIA	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	Publish revised final HA0-HA5 addendum with MIPS delay-slot correction
+8e54f2792029e741089ee4d80694b4d4ef075b71	MANUSIA	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	Add isolated IA0-IA5 static audit workflow
+545a6935e166049f9e781f11b9b16f02a5783a54	MANUSIA	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	Fix isolated IA workflow and record validation failure
+52b82ef901362d9f97ed88edce88001b37c8539f	MANUSIA	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	Correct EXE image offset mapping in IA static analysis
+aeee289d93e7438b09c8c603de3b49e68703ff0d	MANUSIA	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	Fix IA analyzer syntax and robust text-only publication
+0fbab973af9333e93c9a31f245b1141bfacc1806	BOT	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	Publish IA0-IA5 static audit run 42359320395
+60639dbac379c5eb201cd261fcee1cde12d6ea58	MANUSIA	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	Capture Ghidra failure diagnostics in IA-only output
