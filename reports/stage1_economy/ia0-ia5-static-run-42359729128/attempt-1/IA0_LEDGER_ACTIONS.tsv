@@ -1,0 +1,7 @@
+run_id	event	workflow	workflow_path	head_sha	status	conclusion	attempt	created_at	jobs	exit_code
+42358884427	push	.github/workflows/ia0-ia5-static-audit.yml	.github/workflows/ia0-ia5-static-audit.yml	8e54f2792029e741089ee4d80694b4d4ef075b71	completed	failure	1	2026-11-07T09:14:27Z	TIDAK TAHU	TIDAK_TAHU_API_NO_PROCESS_EXIT_CODE
+42359075959	push	IA0-IA5 isolated static audit	.github/workflows/ia0-ia5-static-audit.yml	545a6935e166049f9e781f11b9b16f02a5783a54	completed	failure	1	2026-11-07T09:17:05Z	ia0-ia5-static:completed/failure	TIDAK_TAHU_API_NO_PROCESS_EXIT_CODE
+42359186439	push	IA0-IA5 isolated static audit	.github/workflows/ia0-ia5-static-audit.yml	52b82ef901362d9f97ed88edce88001b37c8539f	completed	failure	1	2026-11-07T09:18:38Z	ia0-ia5-static:completed/failure	TIDAK_TAHU_API_NO_PROCESS_EXIT_CODE
+42359320395	push	IA0-IA5 isolated static audit	.github/workflows/ia0-ia5-static-audit.yml	aeee289d93e7438b09c8c603de3b49e68703ff0d	completed	success	1	2026-11-07T09:20:30Z	ia0-ia5-static:completed/success	TIDAK_TAHU_API_NO_PROCESS_EXIT_CODE
+42359584354	push	IA0-IA5 isolated static audit	.github/workflows/ia0-ia5-static-audit.yml	60639dbac379c5eb201cd261fcee1cde12d6ea58	completed	success	1	2026-11-07T09:24:10Z	ia0-ia5-static:completed/success	TIDAK_TAHU_API_NO_PROCESS_EXIT_CODE
+42359729128	push	IA0-IA5 isolated static audit	.github/workflows/ia0-ia5-static-audit.yml	be2d6a4b4d2fd2e3dbc250245aa7046ee5cfc509	in_progress	NONE	1	2026-11-07T09:26:14Z	ia0-ia5-static:in_progress/NONE	TIDAK_TAHU_API_NO_PROCESS_EXIT_CODE

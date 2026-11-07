@@ -1,0 +1,3 @@
+pc	function_entry	file_offset	bytes	instruksi	base_expression	index	index_origin	status
+0x800B24C8	0x800B24C8	0x010C0078	EE 02 40 A4	sh $zero, 0x2ee($v0)	1*ENTRY_$v0	TIDAK TAHU	TIDAK TAHU	INDEX_TIDAK_TAHU
+0x800BEDA4	0x800BEDA4	0x010CC954	EE 02 40 A4	sh $zero, 0x2ee($v0)	1*ENTRY_$v0	TIDAK TAHU	TIDAK TAHU	INDEX_TIDAK_TAHU

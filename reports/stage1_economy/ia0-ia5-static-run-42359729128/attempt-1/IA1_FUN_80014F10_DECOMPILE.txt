@@ -1,0 +1,18 @@
+FUNCTION=0x80014F10
+FUNCTION_ENTRY=0x80014F10
+DECOMPILATION=AVAILABLE
+
+undefined4 HA_TARGET_80014f10(uint param_1,int param_2)
+
+{
+  int *piVar1;
+  
+  if (3 < (param_1 & 0xff)) {
+    return 0;
+  }
+  piVar1 = (int *)((param_1 & 0xff) * 0xb4 + -0x7ff8f0cc);
+  if (*piVar1 < param_2) {
+    *piVar1 = param_2;
+  }
+  return 1;
+}

@@ -1,0 +1,32 @@
+pc	function_entry	function_name	mnemonic	instruction	manager_slot_load_same_function	displacement	base_register
+800c5d24	800c5978	FUN_800c5978	lw	lw v1,0x530(a1)	YES	0x530	a1
+800d165c	800d15a8	FUN_800d15a8	lw	lw v1,0x530(v0)	YES	0x530	v0
+800d49d8	800d15a8	FUN_800d15a8	sw	sw v0,0x530(a2)	YES	0x530	a2
+800db578	800db29c	FUN_800db29c	lw	lw v1,0x530(a0)	YES	0x530	a0
+800e668c	800e6470	FUN_800e6470	lw	lw v0,0x530(a0)	YES	0x530	a0
+800e68ac	800e6470	FUN_800e6470	lw	lw v0,0x530(v1)	YES	0x530	v1
+800e7bec	800e7b38	FUN_800e7b38	lbu	lbu a0,0x530(v0)	YES	0x530	v0
+800e7c54	800e7b38	FUN_800e7b38	lw	lw v1,0x530(a0)	YES	0x530	a0
+800e7dac	800e7b38	FUN_800e7b38	lw	lw v1,0x530(a0)	YES	0x530	a0
+800e7e00	800e7b38	FUN_800e7b38	lw	lw v1,0x530(a0)	YES	0x530	a0
+800e7eb0	800e7b38	FUN_800e7b38	lw	lw v1,0x530(a0)	YES	0x530	a0
+800e7ff8	800e7b38	FUN_800e7b38	lw	lw v1,0x530(a0)	YES	0x530	a0
+800e8038	800e7b38	FUN_800e7b38	lw	lw a0,0x530(v0)	YES	0x530	v0
+800e80f4	800e7b38	FUN_800e7b38	lw	lw v1,0x530(v1)	YES	0x530	v1
+800e8174	800e7b38	FUN_800e7b38	sw	sw zero,0x530(v0)	YES	0x530	v0
+800e8200	800e8190	FUN_800e8190	lw	lw v0,0x530(a0)	YES	0x530	a0
+800e852c	800e8190	FUN_800e8190	lbu	lbu a0,0x530(v0)	YES	0x530	v0
+800e8560	800e8190	FUN_800e8190	lw	lw v1,0x530(a0)	YES	0x530	a0
+800e85e4	800e8190	FUN_800e8190	lw	lw v1,0x530(v0)	YES	0x530	v0
+800e8654	800e8190	FUN_800e8190	lw	lw a0,0x530(v0)	YES	0x530	v0
+800e86f4	800e8190	FUN_800e8190	lw	lw v1,0x530(a1)	YES	0x530	a1
+800ec844	800ec574	FUN_800ec574	sw	sw v0,0x530(v1)	YES	0x530	v1
+800ec868	800ec574	FUN_800ec574	sw	sw v0,0x530(v1)	YES	0x530	v1
+800ece1c	800ec574	FUN_800ec574	lw	lw a0,0x530(v0)	YES	0x530	v0
+800ed3c0	800ec574	FUN_800ec574	lw	lw v1,0x530(a0)	YES	0x530	a0
+800edb08	800ec574	FUN_800ec574	lw	lw a0,0x530(v0)	YES	0x530	v0
+800f2b58	800f2a9c	FUN_800f2a9c	lw	lw a0,0x530(v0)	YES	0x530	v0
+800f2cc4	800f2a9c	FUN_800f2a9c	lw	lw a0,0x530(a1)	YES	0x530	a1
+800f2dec	800f2a9c	FUN_800f2a9c	lw	lw a0,0x530(v0)	YES	0x530	v0
+800f2e44	800f2a9c	FUN_800f2a9c	lw	lw a0,0x530(v0)	YES	0x530	v0
+TOTAL				instruction_count=30	same_function_manager_candidates=30			

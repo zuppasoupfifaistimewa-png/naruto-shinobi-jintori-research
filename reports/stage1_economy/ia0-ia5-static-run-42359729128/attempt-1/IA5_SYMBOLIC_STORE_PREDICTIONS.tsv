@@ -1,0 +1,2 @@
+x	H_raw_u32	H_signed	F2CF8	F2E38	F2E68	scope
+0	0x00000096	150	low16(H(x)*(G-2))	low16(-H(x)*(G-1-Q))	low16(-H(x))	Exact table word; G and Q symbolic
