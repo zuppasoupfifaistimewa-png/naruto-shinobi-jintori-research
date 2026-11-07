@@ -22,12 +22,12 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     env:
-      GH_TOKEN: ${ github.token }
+      GH_TOKEN: ${{ github.token }}
       GHIDRA_ASSET: ghidra_12.2_PUBLIC_20261016.zip
       GHIDRA_SHA256: 2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
       GHIDRA_CACHE_DIR: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
-      WORK: /tmp/naruto-la-private-${ github.run_id }-${ github.run_attempt }
-      OUT: /tmp/naruto-la-output-${ github.run_id }-${ github.run_attempt }
+      WORK: /tmp/naruto-la-private-${{ github.run_id }}-${{ github.run_attempt }}
+      OUT: /tmp/naruto-la-output-${{ github.run_id }}-${{ github.run_attempt }}
       LA_BASELINE: 5a4cd3167beb3a0dba61a48bc6471496ec6fe34f
 
     steps:
@@ -230,9 +230,12 @@ jobs:
           DEST="reports/stage1_economy/la-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$DEST"
           find "$OUT" -maxdepth 1 -type f \( -name 'LA*.txt' -o -name 'LA*.tsv' -o -name 'LA*.md' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
-          EXE_RC="$(sed -n 's/^EXE_GHIDRA_EXIT=//p' "$OUT/GHIDRA_DIAGNOSTICS.txt" | head -n 1)"
-          ENTRY_RC="$(sed -n 's/^ENTRY1_GHIDRA_EXIT=//p' "$OUT/GHIDRA_DIAGNOSTICS.txt" | head -n 1)"
-          ANALYSIS_RC="$(sed -n 's/^ANALYZER_EXIT_CODE=//p' "$OUT/LA0_ANALYZER_STATUS.txt" | head -n 1)"
+          EXE_RC="$(sed -n 's/^EXE_GHIDRA_EXIT=//p' "$OUT/GHIDRA_DIAGNOSTICS.txt" 2>/dev/null | head -n 1 || true)"
+          [ -n "$EXE_RC" ] || EXE_RC=TIDAK_TAHU
+          ENTRY_RC="$(sed -n 's/^ENTRY1_GHIDRA_EXIT=//p' "$OUT/GHIDRA_DIAGNOSTICS.txt" 2>/dev/null | head -n 1 || true)"
+          [ -n "$ENTRY_RC" ] || ENTRY_RC=TIDAK_TAHU
+          ANALYSIS_RC="$(sed -n 's/^ANALYZER_EXIT_CODE=//p' "$OUT/LA0_ANALYZER_STATUS.txt" 2>/dev/null | head -n 1 || true)"
+          [ -n "$ANALYSIS_RC" ] || ANALYSIS_RC=TIDAK_TAHU
           PYRC="$(python3 - "$OUT/LA0_PYCOMPILE.tsv" <<'PY'
           import csv, sys
           try:
