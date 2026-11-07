@@ -1,0 +1,7 @@
+# LA2 dynamic-store census scope
+
+The earlier generated rows in LA2_DYNAMIC_STORE_BASE_CENSUS.tsv were a broad inventory of stores with unresolved base registers and immediate displacement in the range -0x7000..+0x7000. Those rows were not proven aliases of 0x80139EC4..0x80139EC7 and must not be counted as writers to those globals.
+
+The TSV is now header-only rather than misrepresenting unrelated unresolved stores as global aliases. This is not a zero-writer conclusion: any dynamically computed pointer or alias that cannot be resolved to an effective address remains TIDAK TAHU.
+
+The supported constant-effective-address census remains LA2_80139EC4_EC7_WRITERS.tsv (13 exact sb sites). The manager+0x530 displacement census remains LA2_ALL_MANAGER_PLUS530_STORES.tsv (four exact sites).
