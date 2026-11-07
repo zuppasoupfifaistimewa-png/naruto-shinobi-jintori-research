@@ -1,0 +1,5 @@
+FUNCTION=0x80014F10
+FUNCTION_ENTRY=TIDAK TAHU
+DECOMPILATION=TIDAK TAHU
+
+TIDAK TAHU: Ghidra target body/decompilation was not emitted.
