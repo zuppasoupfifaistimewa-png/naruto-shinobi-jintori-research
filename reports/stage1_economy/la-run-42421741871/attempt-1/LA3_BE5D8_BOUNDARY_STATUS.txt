@@ -1,4 +1,13 @@
 TARGET_FUNCTION=0x800BE5D8
-MANUAL_PROLOG=0x800BE0E4
-BOUNDARY_METHOD=stack adjustment followed by ra store
-CALLER_CENSUS=LA3_BE5D8_CALLERS.tsv plus LA3_BE5D8_POINTER_WORDS.tsv
+FUNCTION_ENTRY=0x800BE5D8
+FUNCTION_PROLOG_CONFIRMED=YES
+PROLOG_INSTRUCTIONS:
+ENTRY1 0x800BE5D8 0x010CC188 D0 FF BD 27 addiu $sp, $sp, -0x30
+ENTRY1 0x800BE5DC 0x010CC18C 2C 00 BF AF sw $ra, 0x2c($sp)
+The target address itself begins the stack-frame prolog. The backward scan's earlier candidate 0x800BE0E4 is not the entry for this function and must not be used as the function boundary.
+
+UNIQUE_DIRECT_CALLER_FOUND:
+ENTRY1 0x800B54F4 0x010C30A4 76 F9 02 0C jal 0x800be5d8
+Ghidra reference: UNCONDITIONAL_CALL, caller FUN_800B50AC, entry 0x800B50AC.
+Static search found no additional direct J/JAL or constant-target JR/JALR caller and no aligned pointer word containing 0x800BE5D8 in EXE/Entry 1.
+LIMIT=dynamic register/table dispatch that does not encode the exact constant target remains TIDAK TAHU; the unique caller claim is for static direct/constant-target evidence only.
