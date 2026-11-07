@@ -1,0 +1,10 @@
+return_index	decompiled_expression	mips_v0	physical_jr_ra_count
+0	return; (C function type void)	NO_DEFINED_RETURN_VALUE; ABI does not define residual $v0 for void	1
+1	return; (C function type void)	NO_DEFINED_RETURN_VALUE; ABI does not define residual $v0 for void	1
+2	return; (C function type void)	NO_DEFINED_RETURN_VALUE; ABI does not define residual $v0 for void	1
+3	return; (C function type void)	NO_DEFINED_RETURN_VALUE; ABI does not define residual $v0 for void	1
+4	return; (C function type void)	NO_DEFINED_RETURN_VALUE; ABI does not define residual $v0 for void	1
+5	return; (C function type void)	NO_DEFINED_RETURN_VALUE; ABI does not define residual $v0 for void	1
+6	return; (C function type void)	NO_DEFINED_RETURN_VALUE; ABI does not define residual $v0 for void	1
+7	return; (C function type void)	NO_DEFINED_RETURN_VALUE; ABI does not define residual $v0 for void	1
+8	return; (C function type void)	NO_DEFINED_RETURN_VALUE; ABI does not define residual $v0 for void	1

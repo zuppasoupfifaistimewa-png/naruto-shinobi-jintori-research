@@ -1,0 +1,4 @@
+pc	file_offset	bytes	instruksi
+0x800154D4	0x5CD4	18 01 82 8F	lw $v0, 0x118($gp)
+0x800154D8	0x5CD8	08 00 E0 03	jr $ra
+0x800154DC	0x5CDC	00 00 00 00	nop
