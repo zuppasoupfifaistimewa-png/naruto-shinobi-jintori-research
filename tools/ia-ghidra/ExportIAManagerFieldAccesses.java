@@ -10,6 +10,7 @@ import java.util.regex.*;
  * Only same-function slot loads are marked as manager candidates.
  */
 public class ExportIAManagerFieldAccesses extends GhidraScript {
+    private final Map<String,Boolean> managerCache = new HashMap<>();
     private static final Pattern MEM = Pattern.compile(
         "(?i),\\s*(-?0x[0-9a-f]+|-?[0-9]+)\\(([^)]+)\\)\\s*$");
     private String clean(String s) {
@@ -21,14 +22,17 @@ public class ExportIAManagerFieldAccesses extends GhidraScript {
     }
     private boolean loadsManagerSlot(Function f) {
         if (f == null) return false;
+        String key=f.getEntryPoint().toString();
+        if (managerCache.containsKey(key)) return managerCache.get(key);
         boolean base = false, load = false;
         InstructionIterator it = currentProgram.getListing().getInstructions(f.getBody(), true);
         while (it.hasNext()) {
             String s = it.next().toString().toLowerCase(Locale.ROOT);
             if (s.matches(".*lui\\s+[a-z0-9]+,\\s*0x8014.*")) base = true;
             if (s.matches(".*lw\\s+[a-z0-9]+,\\s*-0x158c\\([a-z0-9]+\\).*")) load = true;
-            if (base && load) return true;
+            if (base && load) { managerCache.put(key,true); return true; }
         }
+        managerCache.put(key,false);
         return false;
     }
     @Override protected void run() throws Exception {
