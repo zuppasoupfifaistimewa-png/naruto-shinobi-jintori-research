@@ -1,0 +1,19 @@
+sha	author	email	class	subject
+5a4cd3167beb3a0dba61a48bc6471496ec6fe34f	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Finalize KA0-KA5 static report and reconcile Actions result
+2c8ed30ae7080161f505835483ff4ecd66f75062	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add LA0-LA5 static analysis helper
+8a8a8fd1e1d18c490048540ad7009ee120a56232	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix caller-saved argument trace boundaries
+0dfa7244dfebb5a0d963e9975d32a5446e80bdf4	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Filter LA scans to Ghidra-listed code and add boundary refs
+74d5cd91a15017c322f3e8e186a72845ac8948da	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add isolated LA0-LA5 static audit workflow
+70b198b12df722609cee97f89eb72e8ace35398c	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix LA workflow expressions and partial-run summary guards
+0e399c2f903038f088cc008de9987d34b4c63c01	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish LA0-LA5 static audit run 42421556109
+31d99b523b5a4c5450402c1166a3d7a4c27ed6e5	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix LA3 manual boundary row initialization
+191492f06ffebaec0a34cbfe1f131790f0d89627	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Make the two approved JA removals idempotent
+f409a905762c01b4d889ff6f9cbd6151fa10c8f6	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish LA0-LA5 static audit run 42421741871
+916ff98eb764962ada841ceaccb37333c7a959b8	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add bounded replacement caller-window excerpts
+bb12d0526105ac057667e3630765ddb4b36900bc	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Finalize LA evidence corrections and aggregate excerpt audit
+1ecd50b90a2c3db884612d66de14b4e09400eba5	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Finalize LA evidence corrections and aggregate excerpt audit
+4b4b8b526d99c078e379c00abc87166ef46ad8f4	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Finalize LA evidence corrections and aggregate excerpt audit
+cd900e9ef4c119f48bcc7a33e088fc4e6c1f8ea5	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Finalize LA evidence corrections and aggregate excerpt audit
+778d6efa62676a262e0dba0097bedf61cb7b47e1	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add final LA post-run corrections
+bb723761db14ce5468296f09f1573bf6aa7aca10	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Remove unqualified dynamic-store candidate noise
+279dd1902c11c47da48171525b070d8b0148cb69	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Document dynamic store census scope and limits
