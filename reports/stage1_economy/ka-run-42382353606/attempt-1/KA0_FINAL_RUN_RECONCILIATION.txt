@@ -1,0 +1,22 @@
+STATUS=COMPLETED_SUCCESS (GitHub Actions workflow run)
+ANALYSIS_STATUS=PARTIAL
+RUN_ID=42382353606
+JOB=ka0-ka5-static
+JOB_ID=128432437635
+SOURCE_SHA=495592eb62ef776fde30d50a96c358e4d2737d3a
+WORKFLOW_RUN_STATUS=completed
+WORKFLOW_RUN_CONCLUSION=success
+JOB_STATUS=completed
+JOB_CONCLUSION=success
+WORKFLOW_JOB_STEP_EXIT_CODE=0
+ANALYZER_EXIT_CODE=1
+PY_COMPILE_EXIT_CODE=0
+PY_COMPILE=66/66
+GHIDRA_EXE_EXIT_CODE=0
+GHIDRA_ENTRY1_EXIT_CODE=0
+PRIVATE_BINARY_CLEANUP=PASS
+EMULATOR_LAUNCHES=0
+GAME_OR_EMULATOR_EXECUTED=no
+BIOS_OR_SAVESTATE_USED=no
+BINARY_COMMITTED=no
+NOTE=The published ACTIONS_RUN_SUMMARY.txt STATUS=PARTIAL and EXIT_CODE=1 describe the nested analyzer result, not the outer GitHub Actions run. Source inspection identifies the analyzer's final extension allow-list guard scanning the temporary OUT directory while .log and .exit files are present. Ghidra and extraction steps succeeded; no second run was started.
