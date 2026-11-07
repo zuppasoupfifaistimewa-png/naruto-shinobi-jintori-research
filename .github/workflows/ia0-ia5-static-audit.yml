@@ -175,7 +175,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$WORK/ghidra-exe" "$WORK/ghidra-entry1"
-          SCRIPT_PATH="$GITHUB_WORKSPACE/tools/ghidra:$GITHUB_WORKSPACE/tools/ia-ghidra"
+          SCRIPT_PATH="$GITHUB_WORKSPACE/tools/ia-ghidra"
           set +e
           "$HEADLESS" "$WORK/ghidra-exe" Naruto_SLPS_035_53_EXE_IA \
             -import "$WORK/input/SLPS_035.53" \
