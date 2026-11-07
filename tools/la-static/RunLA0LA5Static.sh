@@ -522,7 +522,7 @@ for k in range(-7,9):
         be_rows.append(z)
 wr(out/"LA3_BE5D8_MANUAL_FUNCTION.tsv",be_rows,["image","pc","file_offset","bytes","instruksi","target_pc","manual_function_entry"])
 txt(out/"LA3_BE5D8_BOUNDARY_STATUS.txt","TARGET_FUNCTION=0x800BE5D8\nMANUAL_PROLOG="+(h32(be_entry) if be_entry else "TIDAK TAHU")+"\nBOUNDARY_METHOD="+be_reason+"\nCALLER_CENSUS=LA3_BE5D8_CALLERS.tsv plus LA3_BE5D8_POINTER_WORDS.tsv\n")
-b24rows[]
+b24rows=[]
 for k in range(-7,9):
     i=ci.get(b24+k*4)
     if i:
