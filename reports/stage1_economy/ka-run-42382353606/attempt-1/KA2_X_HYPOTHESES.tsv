@@ -1,0 +1,3 @@
+hypothesis	support_1	support_2	falsifier
+x equals level delta d	D49D8 receives lbu result (byte-valued); it is read at F2A9C	DC2E0 has signed manager+0x4F4 settlement-like value; proximity is contextual only	A reachable writer assigns x from independent effect/item/action data, or complete caller provenance fails to link x to d
+x is effect/item/action selector	EC844/EC868 copy masked global byte 0x80139EC7 to manager+0x530	F2A9C reads manager+0x530 and calls table helper 0x8001552C	Complete writer provenance proves every reachable x comes only from signed level delta d

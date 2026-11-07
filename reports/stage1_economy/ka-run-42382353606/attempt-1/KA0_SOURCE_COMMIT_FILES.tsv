@@ -1,0 +1,3 @@
+status	path
+A	.github/workflows/ka0-ka5-static.yml
+A	tools/ka-static/RunKA0KA5Static.py
