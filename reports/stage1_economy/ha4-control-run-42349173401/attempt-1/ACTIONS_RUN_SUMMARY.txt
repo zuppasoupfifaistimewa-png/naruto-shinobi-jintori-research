@@ -1,0 +1,14 @@
+STATUS=PASS_CONTROL_WITH_PUBLISH_FAILURE
+JOB=ha4-h6-control
+JOB_ID=128333421081
+RUN_ID=42349173401
+SOURCE_SHA=f11b28751b38b44201ca9416c1d77054186b9468
+EXIT_CODE=128
+CONTROL_SCRIPT_EXIT_CODE=0
+CONTROL_LAUNCHES=1
+SAVE_STATE_LOADED_EVENT=PASS
+POST_LOAD_VSYNC=180
+WATCHPOINTS=0
+FAILURE_STAGE=Commit text-only Actions summary
+FAILURE_REASON=fatal: not in a git directory; workflow remained in WORK/source rather than GITHUB_WORKSPACE
+SUMMARY_SOURCE=decoded Actions job log; committed manually after workflow publication step failed
