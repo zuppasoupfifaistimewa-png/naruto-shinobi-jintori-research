@@ -7,7 +7,7 @@ Baseline inklusif = HEAD awal `6987a76e12b0adf86f8061d47dcc4078e79cda21` (`main`
 Tiga rumus store `manager+0x2EE` dapat direkonstruksi, tetapi belum terbukti bahwa field ini adalah biaya upgrade, terhubung ke selisih level `d`, atau langsung mendebit uang pemain. Rumus biaya upgrade lintas-level d>=2: **TIDAK TAHU**.
 
 ## GA0 — Ledger
-Rentang inklusif baseline sampai HEAD awal memuat **1 commit** (manusia 1, bot 0); `STATUS.md` tidak disentuh. Satu Actions run pada SHA rentang: `42320736860`, scheduled `Naruto Story Mode adaptive player monitor`, completed/success; job `monitor`, ID `128244394048`, conclusion success. Exit code proses tidak disediakan API; `0` hanya diturunkan dari conclusion job. Log: tidak ada adaptive-player run dalam 50 run terbaru; `monitoring-report.txt` tidak ada, upload tidak menemukan file, artifact tidak dibuat. Queued=0, in_progress=0 saat pemeriksaan. Ringkasan ada di `ga0-run-42320736860/ACTIONS_RUN_SUMMARY.txt`. Tidak meluncurkan run baru.
+Rentang inklusif baseline sampai HEAD final memuat **3 commit** (manusia 3, bot 0): baseline, commit audit awal `6f51afa01a68841bc58a32e9672419ac0d42edfc`, dan commit finalisasi ledger ini. `STATUS.md` tidak disentuh. Satu Actions run pada SHA rentang: `42320736860`, scheduled `Naruto Story Mode adaptive player monitor`, completed/success; job `monitor`, ID `128244394048`, conclusion success. Exit code proses tidak disediakan API; `0` hanya diturunkan dari conclusion job. Log: tidak ada adaptive-player run dalam 50 run terbaru; `monitoring-report.txt` tidak ada, upload tidak menemukan file, artifact tidak dibuat. Queued=0, in_progress=0 saat pemeriksaan. Ringkasan ada di `ga0-run-42320736860/ACTIONS_RUN_SUMMARY.txt`. Tidak meluncurkan run baru.
 
 ## GA1 — Koreksi FA0–FA5
 Berkas lama `FA0_FA5_SESSION_VERIFICATION_2026-11-07.md` tidak diubah.
@@ -77,3 +77,9 @@ TSV baru memakai header `pc,file_offset,bytes,instruksi`; offsets dihitung sesua
 | GA5 | SEBAGIAN | K3 | Prediksi simbolik/falsifier ada; belum ada runtime pembeda model. |
 
 GA0–GA1 selesai pada ruang lingkupnya; GA2–GA5 parsial. **Rumus biaya upgrade lintas-level d>=2 tetap TIDAK TAHU.**
+
+
+## Riwayat commit dan daftar berkas
+
+- `6f51afa01a68841bc58a32e9672419ac0d42edfc` — menambahkan: `reports/stage1_economy/GA0_GA5_FINAL_ADDENDUM_2026-11-07.md`, `reports/stage1_economy/ga0-run-42320736860/ACTIONS_RUN_SUMMARY.txt`, `reports/stage1_economy/GA2_HELPER_8001552C_GHIDRA_EXCERPT.tsv`, `reports/stage1_economy/GA2_FUN_800F2A9C_2EE_STORE_CFG.tsv`, `reports/stage1_economy/GA2_FUN_800F2A9C_2EE_BRANCH_EVIDENCE.tsv`, `reports/stage1_economy/GA2_FUN_800F2A9C_OPERAND_ACCESS.tsv`, `reports/stage1_economy/GA3_MANAGER_SLOT_2EE_ACCESS_CENSUS.tsv`.
+- Commit finalisasi ledger berikutnya hanya memperbarui berkas addendum ini untuk menghitung commit-nya sendiri dalam rentang inklusif; tidak mengubah berkas bukti lain.
