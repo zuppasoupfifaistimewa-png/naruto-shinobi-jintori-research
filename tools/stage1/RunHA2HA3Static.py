@@ -267,6 +267,62 @@ def write_store_window(out,stem,code,pc0,pc1,image):
     write_tsv(out/(stem+".tsv"),rows,["pc","file_offset","bytes","instruksi"])
     return len(rows)
 
+def validate_instruction_tsvs(out):
+    fields=["pc","file_offset","bytes","instruksi"]
+    scanned=0
+    files=0
+    errors=[]
+    for path in sorted(out.glob("*.tsv")):
+        with path.open("r",encoding="utf-8",newline="") as f:
+            reader=csv.DictReader(f,delimiter="\t")
+            if reader.fieldnames!=fields:
+                continue
+            files+=1
+            rows=list(reader)
+        pcs=[]
+        for line_no,row in enumerate(rows,2):
+            scanned+=1
+            try:
+                pc=int(row["pc"],16)
+                offset=int(row["file_offset"],16)
+                image="ENTRY1" if pc>=ENTRY_BASE else "EXE"
+                expected=file_offset(pc,image)
+                raw=bytes.fromhex(row["bytes"])
+                if offset!=expected:
+                    errors.append(f"{path.name}:{line_no}: offset {offset:#x}, expected {expected:#x}")
+                    continue
+                if len(raw)!=4:
+                    errors.append(f"{path.name}:{line_no}: instruction is {len(raw)} bytes")
+                    continue
+                decoded=next(md.disasm(raw,pc,count=1),None)
+                text_value=(decoded.mnemonic.lower()+" "+decoded.op_str).strip() if decoded else ".word 0x"+raw[::-1].hex().upper()
+                if text_value!=row["instruksi"]:
+                    errors.append(f"{path.name}:{line_no}: decode {text_value!r}, recorded {row['instruksi']!r}")
+                pcs.append(pc)
+            except Exception as exc:
+                errors.append(f"{path.name}:{line_no}: {type(exc).__name__}: {exc}")
+        streak=0
+        prior=None
+        for pc in sorted(pcs):
+            streak=streak+1 if prior is not None and pc==prior+4 else 1
+            if streak>16:
+                errors.append(f"{path.name}: contiguous run exceeds 16 instructions at {pc:#x}")
+                break
+            prior=pc
+    report=[
+        f"INSTRUCTION_TSV_FILES={files}",
+        f"INSTRUCTION_ROWS_VALIDATED={scanned}",
+        f"INVALID_ROWS={len(errors)}",
+        "EXE_OFFSET_FORMULA=0x800+(PC-0x80010000)",
+        "ENTRY1_OFFSET_FORMULA=0x10BB000+(PC-0x800AD450)",
+        "MAX_CONTIGUOUS_INSTRUCTIONS_PER_EXCERPT=16",
+    ]
+    report.extend(errors[:100])
+    write_text(out/"HA_TSV_VALIDATION_SUMMARY.txt","\n".join(report)+"\n")
+    if errors:
+        raise SystemExit("TSV_VALIDATION_FAILED="+str(len(errors)))
+    return files,scanned
+
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--exe",type=Path,required=True)
@@ -389,17 +445,24 @@ def main():
     f2=ent_funcs.get(0x800F2A9C)
     rets=parse_return_expressions(f2["decomp"]) if f2 else []
     return_rows=[]
-    for idx,expr in enumerate(rets):
-        return_rows.append({"return_index":idx,"decompiled_expression":expr.strip(),
-                            "mips_v0":"TIDAK TAHU tanpa pemetaan nilai balik C ke register v0 pada setiap path",
-                            "physical_jr_ra_count":sum(1 for r in (f2["raw"] if f2 else []) if re.search(r"\bjr\s+\$?ra\b",r["ghidra"],re.I))})
+    if f2:
+        void_function=bool(re.search(r"\bvoid\s+"+re.escape(f2["name"])+r"\s*\(",f2["decomp"]))
+        epilogs=sum(1 for r in f2["raw"] if re.search(r"\bjr\s+\$?ra\b",r["ghidra"],re.I))
+        bare_returns=len(re.findall(r"\breturn\s*;",f2["decomp"])) if void_function else 0
+        if bare_returns:
+            for idx in range(bare_returns):
+                return_rows.append({"return_index":idx,
+                    "decompiled_expression":"return; (C function type void)",
+                    "mips_v0":"NO_DEFINED_RETURN_VALUE; ABI does not define residual $v0 for void",
+                    "physical_jr_ra_count":epilogs})
+        else:
+            for idx,expr in enumerate(rets):
+                return_rows.append({"return_index":idx,"decompiled_expression":expr.strip(),
+                    "mips_v0":"TIDAK TAHU; decompiled expression not mapped to a unique MIPS return path",
+                    "physical_jr_ra_count":epilogs})
     write_tsv(out/"HA2_F2A9C_RETURN_PATHS.tsv",return_rows,
               ["return_index","decompiled_expression","mips_v0","physical_jr_ra_count"])
-    if f2:
-        write_text(out/"HA2_F2A9C_DECOMPILE_AND_REFS.txt",
-                   "FUNCTION="+f2["name"]+"\nENTRY="+h32(f2["entry"])+"\n\nC_DECOMPILATION:\n"+
-                   (f2["decomp"] or "TIDAK ADA")+"\n\nREFERENCES_TO_FUNCTION:\n"+
-                   (f2["refs"] or "TIDAK ADA")+"\n")
+
     # Key arithmetic / condition instructions in F2A9C.
     keyrows=[]
     if f2:
@@ -520,7 +583,7 @@ def main():
         "f2a9c_key_instructions":len(keyrows),
         "indirect_call_candidates":len(indirect),
         "manager_2ee_census_rows":len(manager_rows),
-        "nonzero_manager_writes":sum(1 for r in manager_rows if r["nonzero_write"]=="NO_ZERO_SOURCE"),
+        "nonzero_manager_writes":sum(1 for r in manager_rows if r["write_source_class"]=="REGISTER_NOT_LITERAL_ZERO"),
         "index_origin_instruction_rows":len(iw),
         "global_operand_rows":len(globals_rows),
     }
@@ -533,7 +596,9 @@ def main():
     for k,v in counts.items(): summary.append(f"{k.upper()}={v}")
     for k,(n,ch) in chunk_counts.items(): summary.append(f"{k}_INSTRUCTIONS={n}; CHUNK_FILES={ch}; MAX_INSTRUCTIONS_PER_FILE=16")
     summary.append("HELPER_BOUND="+(str(bound) if bound is not None else "TIDAK TAHU"))
-    summary.append("HA3_TERMINAL_USE=REQUIRES_MANUAL_REVIEW_OF_GHIDRA_C_EXPORTS; no automatic wallet/status/display conclusion")
+    summary.append("HELPER_BOUND_SOURCE=FUN_800154D4 reads DAT_8006D794 via GP+0x118; value not statically bounded here")
+    summary.append("HA3_TERMINAL_USE=manual Ghidra C review required; see three reader exports and final addendum")
+    validate_instruction_tsvs(out)
     write_text(out/"HA2_HA3_STATIC_SUMMARY.txt","\n".join(summary)+"\n")
 
 if __name__=="__main__":
