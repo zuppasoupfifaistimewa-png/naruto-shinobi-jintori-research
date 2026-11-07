@@ -1,0 +1,278 @@
+name: HA2-HA3 — static helper table, manager +0x2EE and read-flow audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/ha2-ha3-static-audit.yml"
+      - "tools/stage1/RunHA2HA3Static.py"
+      - "tools/ghidra/EnsureTargetFunctions.java"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: naruto-ha2-ha3-static-audit
+  cancel-in-progress: false
+
+jobs:
+  ha2-ha3-static:
+    name: ha2-ha3-static
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      GHIDRA_ASSET: ghidra_12.2_PUBLIC_20261016.zip
+      GHIDRA_SHA256: 2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+      GHIDRA_CACHE_DIR: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+      EXPECTED_EXE_SHA256: a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569
+      EXPECTED_ENTRY1_SHA256: 9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a
+      EXPECTED_DATA_SHA256: 69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822
+      EXPECTED_GAME_SHA256: 58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88
+      RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+      GH_TOKEN: ${{ github.token }}
+      WORK: /tmp/ha2-ha3-work
+      OUT: /tmp/ha2-ha3-output
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Compile-check new Python script
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/stage1/RunHA2HA3Static.py
+          echo "PY_COMPILE=PASS"
+
+      - name: Install private-disc extraction and MIPS decoding tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          WORK="$RUNNER_TEMP/ha2-ha3-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          OUT="$RUNNER_TEMP/ha2-ha3-output"
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+          echo "OUT=$OUT" >> "$GITHUB_ENV"
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends bchunk xorriso unzip python3-pip jq
+          python3 -m pip install --break-system-packages "capstone==5.0.3"
+          mkdir -p "$WORK"/{source,extracted,input,ghidra-exe,ghidra-entry1} "$OUT"
+
+      - name: Download and verify private source, extract EXE and Entry 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          BIN="$WORK/source/naruto-disc.bin"
+          CUE_RAW="$WORK/source/original.cue"
+          CUE="$WORK/source/naruto-disc.cue"
+          curl --fail --location --silent --show-error --retry 2 --max-time 600 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "$API/releases/assets/647346873" -o "$BIN"
+          test "$(stat -c %s "$BIN")" = 325989552
+          echo "$EXPECTED_GAME_SHA256  $BIN" | sha256sum --check --status
+          curl --fail --location --silent --show-error --retry 2 --max-time 60 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "$API/releases/assets/647354760" -o "$CUE_RAW"
+          test "$(stat -c %s "$CUE_RAW")" = 116
+          echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $CUE_RAW" | sha256sum --check --status
+          python3 - "$CUE_RAW" "$CUE" <<'PY'
+          from pathlib import Path
+          import re,sys
+          src,dst=map(Path,sys.argv[1:3]); out=[]; count=0
+          for line in src.read_text(encoding="utf-8").splitlines():
+              if line.lstrip().upper().startswith("FILE "):
+                  m=re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$',line,re.I)
+                  if not m: raise SystemExit("INVALID_CUE_FILE_DIRECTIVE")
+                  line=m.group(1)+'"naruto-disc.bin"'+m.group(2); count+=1
+              out.append(line)
+          if count!=1: raise SystemExit(f"CUE_FILE_COUNT={count}")
+          dst.write_text("\n".join(out)+"\n",encoding="utf-8")
+          PY
+          bchunk "$BIN" "$CUE" "$WORK/source/track"
+          ISO="$(find "$WORK/source" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          test -n "$ISO"
+          xorriso -osirrox on -indev "$ISO" -extract / "$WORK/extracted" > "$WORK/source/extract.log" 2>&1
+          EXE="$(find "$WORK/extracted" -type f -iname 'SLPS_035.53' -print -quit)"
+          DATA="$(find "$WORK/extracted" -type f -iname 'DATA.BIN' -print -quit)"
+          test -n "$EXE" && test -n "$DATA"
+          test "$(stat -c %s "$EXE")" = 385024
+          echo "$EXPECTED_EXE_SHA256  $EXE" | sha256sum --check --status
+          test "$(stat -c %s "$DATA")" = 66015232
+          echo "$EXPECTED_DATA_SHA256  $DATA" | sha256sum --check --status
+          cp "$EXE" "$WORK/input/SLPS_035.53"
+          cp "$DATA" "$WORK/input/DATA.BIN"
+          python3 - "$WORK/input/DATA.BIN" "$WORK/input/SLPS_035.53" "$WORK/input/ENTRY1.bin" <<'PY'
+          from pathlib import Path
+          import hashlib,struct,sys
+          data_path,exe_path,entry_path=map(Path,sys.argv[1:4])
+          data=data_path.read_bytes(); exe=exe_path.read_bytes()
+          lbn,size=struct.unpack_from("<II",data,0x4c)
+          off=(lbn-212)*2048
+          chunk=data[off:off+size]
+          if (lbn,size,off,len(chunk))!=(8778,596412,0x10BB000,596412):
+              raise SystemExit(f"ENTRY1_DIRECTORY_MISMATCH {lbn=} {size=} {off:#x}")
+          digest=hashlib.sha256(chunk).hexdigest()
+          expected="9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a"
+          if digest!=expected: raise SystemExit("ENTRY1_SHA256_MISMATCH="+digest)
+          entry_path.write_bytes(chunk)
+          print("PRIVATE_INPUTS=VERIFIED")
+          print(f"EXE_SHA256={hashlib.sha256(exe).hexdigest()}")
+          print(f"ENTRY1_SHA256={digest}")
+          print("ENTRY1_FILE_OFFSET=0x10BB000")
+          PY
+
+      - name: Prepare Java runtime
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Restore Ghidra cache
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+          key: ghidra-12.2-linux-x64-2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+
+      - name: Install Ghidra if cache is missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$GHIDRA_CACHE_DIR"
+          if ! find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit | grep -q .; then
+            ARCHIVE="$RUNNER_TEMP/$GHIDRA_ASSET"
+            URL="https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.2_build/$GHIDRA_ASSET"
+            curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 3 "$URL" -o "$ARCHIVE"
+            echo "$GHIDRA_SHA256  $ARCHIVE" | sha256sum --check --status
+            unzip -q "$ARCHIVE" -d "$GHIDRA_CACHE_DIR"
+            rm -f "$ARCHIVE"
+          fi
+          HEADLESS="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
+          test -x "$HEADLESS"
+          echo "HEADLESS=$HEADLESS" >> "$GITHUB_ENV"
+
+      - name: Ghidra export Entry 1 functions and reader cross-references
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          "$HEADLESS" "$WORK/ghidra-entry1" Naruto_SLPS_035_53_ENTRY1_HA2_HA3 \
+            -import "$WORK/input/ENTRY1.bin" \
+            -loader BinaryLoader -loader-baseAddr 0x800AD450 \
+            -loader-length 0x919BC -loader-blockName ENTRY1_AT_800AD450 \
+            -processor "MIPS:LE:32:default" \
+            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -postScript EnsureTargetFunctions.java 0x800F2A9C 0x800DC2E0 0x800FAAC8 0x800D15A8 \
+            -postScript ExportFunctionDetail.java "$OUT/ghidra-entry1-target-details.txt" \
+              0x800F2A9C 0x800DC2E0 0x800FAAC8 0x800D15A8 \
+            -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
+            > "$OUT/ghidra-entry1.log" 2>&1
+          RC=$?
+          set -e
+          echo "$RC" > "$OUT/ghidra-entry1.exit"
+          if [ "$RC" -ne 0 ]; then tail -n 80 "$OUT/ghidra-entry1.log" || true; fi
+
+      - name: Ghidra export EXE helper and bound function
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          "$HEADLESS" "$WORK/ghidra-exe" Naruto_SLPS_035_53_EXE_HA2 \
+            -import "$WORK/input/SLPS_035.53" \
+            -loader BinaryLoader -loader-baseAddr 0x80010000 \
+            -loader-fileOffset 0x800 -loader-length 0x5D800 \
+            -loader-blockName MAIN_TEXT \
+            -processor "MIPS:LE:32:default" \
+            -scriptPath "$GITHUB_WORKSPACE/tools/ghidra" \
+            -preScript PreparePsxExe.java \
+            -postScript EnsureTargetFunctions.java 0x800154D4 0x8001552C \
+            -postScript ExportFunctionDetail.java "$OUT/ghidra-exe-target-details.txt" \
+              0x800154D4 0x8001552C \
+            -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject \
+            > "$OUT/ghidra-exe.log" 2>&1
+          RC=$?
+          set -e
+          echo "$RC" > "$OUT/ghidra-exe.exit"
+          if [ "$RC" -ne 0 ]; then tail -n 80 "$OUT/ghidra-exe.log" || true; fi
+
+      - name: Run HA2 and HA3 raw MIPS analysis
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/stage1/RunHA2HA3Static.py
+          set +e
+          python3 tools/stage1/RunHA2HA3Static.py \
+            --exe "$WORK/input/SLPS_035.53" \
+            --entry1 "$WORK/input/ENTRY1.bin" \
+            --ghidra-exe "$OUT/ghidra-exe-target-details.txt" \
+            --ghidra-entry1 "$OUT/ghidra-entry1-target-details.txt" \
+            --out "$OUT"
+          RC=$?
+          set -e
+          echo "$RC" > "$OUT/analysis.exit"
+          if [ "$RC" -ne 0 ]; then echo "ANALYSIS_FAILURE=HA2_HA3_PYTHON_RC_$RC" > "$OUT/ANALYSIS_FAILURE.txt"; fi
+
+      - name: Remove all private binary inputs and Ghidra projects
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$WORK"
+          if [ -e "$WORK" ]; then echo "PRIVATE_CLEANUP=FAIL" > "$OUT/cleanup.txt"; exit 1; fi
+          echo "PRIVATE_CLEANUP=PASS" > "$OUT/cleanup.txt"
+
+      - name: Commit text-only audit and Actions summary
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          DEST="reports/stage1_economy/ha2-ha3-static-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$DEST"
+          find "$OUT" -maxdepth 1 -type f \( -name '*.txt' -o -name '*.tsv' -o -name '*.md' \) -exec cp {} "$DEST/" \;
+          PYRC=0
+          python3 -m py_compile tools/stage1/RunHA2HA3Static.py || PYRC=$?
+          ANALYSIS_RC="$(cat "$OUT/analysis.exit" 2>/dev/null || echo TIDAK_TAHU)"
+          ENTRY_RC="$(cat "$OUT/ghidra-entry1.exit" 2>/dev/null || echo TIDAK_TAHU)"
+          EXE_RC="$(cat "$OUT/ghidra-exe.exit" 2>/dev/null || echo TIDAK_TAHU)"
+          CLEANUP="$(cat "$OUT/cleanup.txt" 2>/dev/null || echo PRIVATE_CLEANUP=UNKNOWN)"
+          if [ "$PYRC" = 0 ] && [ "$ANALYSIS_RC" = 0 ] && [ "$ENTRY_RC" = 0 ] && [ "$EXE_RC" = 0 ] && grep -q '^PRIVATE_CLEANUP=PASS' "$OUT/cleanup.txt" 2>/dev/null; then STATUS=PASS; else STATUS=PARTIAL_OR_FAILURE; fi
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="ha2-ha3-static") | .id' | head -n 1)"
+          [ -n "$JOB_ID" ] || JOB_ID=TIDAK_TAHU
+          {
+            echo "STATUS=$STATUS"
+            echo "JOB=ha2-ha3-static"
+            echo "JOB_ID=$JOB_ID"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "EXIT_CODE=$ANALYSIS_RC"
+            echo "PY_COMPILE_EXIT_CODE=$PYRC"
+            echo "GHIDRA_ENTRY1_EXIT_CODE=$ENTRY_RC"
+            echo "GHIDRA_EXE_EXIT_CODE=$EXE_RC"
+            echo "$CLEANUP"
+            echo "GAME_OR_EMULATOR_EXECUTED=no"
+            echo "PRIVATE_BINARY_COMMITTED=no"
+          } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
+          BAD="$(find "$DEST" -type f ! \( -name '*.txt' -o -name '*.tsv' -o -name '*.md' \) -print)"
+          test -z "$BAD"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$DEST"
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish HA2-HA3 static manager upgrade audit $GITHUB_RUN_ID"
+            PUSHED=0
+            for n in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main || { git rebase --abort; sleep "$n"; continue; }
+              if git push origin HEAD:main; then PUSHED=1; break; fi
+              sleep "$n"
+            done
+            test "$PUSHED" -eq 1
+          fi
+          echo "HA2_HA3_REPORT=$DEST"
