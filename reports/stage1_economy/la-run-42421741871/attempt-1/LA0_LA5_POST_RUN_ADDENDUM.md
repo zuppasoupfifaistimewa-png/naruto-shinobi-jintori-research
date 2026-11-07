@@ -25,3 +25,15 @@ Changed files in this correction commit:
 - `tools/la-static/RunLA0LA5Static.sh`
 - `reports/stage1_economy/la-run-42421741871/attempt-1/LA3_BE5D8_MANUAL_FUNCTION.tsv`
 - `reports/stage1_economy/la-run-42421741871/attempt-1/LA0_LA5_POST_RUN_ADDENDUM.md`
+
+
+## Final checked-out HEAD ledger reconciliation
+
+The inclusive ledger is extended through the verified pre-publication HEAD snapshot `c57b11d6075ba52a8165e62f1c745265e92ec4e4`: **25 commits total (23 human, 2 bot)**, counting from baseline `5a4cd3167beb3a0dba61a48bc6471496ec6fe34f` inclusive. The source snapshot used by LA analysis remains `191492f06ffebaec0a34cbfe1f131790f0d89627`: 9 commits (8 human, 1 bot). The classification is heuristic based on author identity/email. The repository Actions census remains 1,245 runs over 13 pages for all events (81 scheduled), and 66/66 tracked Python scripts passed `py_compile` in run `42421741871`. The commit publishing this updated ledger is excluded because it cannot count itself.
+
+Changed files in this ledger reconciliation commit:
+- `reports/stage1_economy/la-run-42421741871/attempt-1/LA0_LEDGER_COMMITS_FINAL_HEAD.tsv`
+- `reports/stage1_economy/la-run-42421741871/attempt-1/LA0_LEDGER_COMMIT_COUNTS.tsv`
+- `reports/stage1_economy/la-run-42421741871/attempt-1/LA0_LEDGER_SUMMARY.txt`
+- `reports/stage1_economy/la-run-42421741871/attempt-1/LA0_LA5_STATIC_REPORT.md`
+- `reports/stage1_economy/la-run-42421741871/attempt-1/LA0_LA5_POST_RUN_ADDENDUM.md`

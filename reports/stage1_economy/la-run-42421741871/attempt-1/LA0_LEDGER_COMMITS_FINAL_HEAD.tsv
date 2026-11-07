@@ -22,3 +22,5 @@ c0eec1cfe8a8c323a458aca6d3fcbef9fd984a47	zuppasoupfifaistimewa-png	zuppasoupfifa
 c89a3b46a090950212c553223c070219d3953cd8	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Reconcile LA ledger through final repository HEAD
 b3c1789556a5719fcbe0af063037594ab0660cdb	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add final HEAD counts to LA0 report
 acac6d04cb060d661a40f37096e80004c0fab3e6	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Isolate KA Ghidra temporary logs from analyzer output [skip ci]
+3ca8dbce61279bd1346b553e37c35c8feaba84b4	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Reconcile LA0 final ledger at verified HEAD snapshot [skip ci]
+c57b11d6075ba52a8165e62f1c745265e92ec4e4	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	[skip ci] Fix target-address prolog detection in LA3 report
