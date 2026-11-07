@@ -6,6 +6,8 @@ on:
     paths:
       - ".github/workflows/la0-la5-static.yml"
       - "tools/la-static/**"
+      - "tools/ia-ghidra/**"
+      - "tools/ja-ghidra/**"
       - "**/*.py"
 
 permissions:

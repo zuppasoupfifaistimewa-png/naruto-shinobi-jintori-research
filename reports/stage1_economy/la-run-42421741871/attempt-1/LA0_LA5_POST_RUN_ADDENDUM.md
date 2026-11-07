@@ -37,3 +37,12 @@ Changed files in this ledger reconciliation commit:
 - `reports/stage1_economy/la-run-42421741871/attempt-1/LA0_LEDGER_SUMMARY.txt`
 - `reports/stage1_economy/la-run-42421741871/attempt-1/LA0_LA5_STATIC_REPORT.md`
 - `reports/stage1_economy/la-run-42421741871/attempt-1/LA0_LA5_POST_RUN_ADDENDUM.md`
+
+
+## LA workflow path-filter coverage correction
+
+The workflow copies Java Ghidra helpers from both `tools/ia-ghidra/` and `tools/ja-ghidra/`, in addition to invoking `tools/la-static/RunLA0LA5Static.sh`. The `push.paths` filter now includes the workflow itself, `tools/la-static/**`, `tools/ia-ghidra/**`, `tools/ja-ghidra/**`, and `**/*.py`; a change to any required LA helper will therefore match the trigger filter. This correction is committed with `[skip ci]`; it was not followed by a second Actions run, preserving the one-run limit.
+
+Changed files in this correction commit:
+- `.github/workflows/la0-la5-static.yml`
+- `reports/stage1_economy/la-run-42421741871/attempt-1/LA0_LA5_POST_RUN_ADDENDUM.md`
