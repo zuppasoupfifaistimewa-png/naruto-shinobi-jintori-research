@@ -1,0 +1,5 @@
+TARGET_STORE=0x800B24C8
+MANUAL_PROLOG=TIDAK TAHU
+BOUNDARY_METHOD=NO_CLEAR_PROLOG_IN_SCAN_WINDOW
+CALLERS=see LA3_B24C8_FUNCTION_CALLERS.tsv
+LIMIT=backward linear prolog heuristic; if no unique prolog then function/caller set remain TIDAK TAHU

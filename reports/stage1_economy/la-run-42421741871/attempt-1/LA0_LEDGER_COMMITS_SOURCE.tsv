@@ -1,0 +1,10 @@
+sha	author	email	class	subject
+191492f06ffebaec0a34cbfe1f131790f0d89627	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Make the two approved JA removals idempotent
+31d99b523b5a4c5450402c1166a3d7a4c27ed6e5	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix LA3 manual boundary row initialization
+0e399c2f903038f088cc008de9987d34b4c63c01	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish LA0-LA5 static audit run 42421556109
+70b198b12df722609cee97f89eb72e8ace35398c	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix LA workflow expressions and partial-run summary guards
+74d5cd91a15017c322f3e8e186a72845ac8948da	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add isolated LA0-LA5 static audit workflow
+0dfa7244dfebb5a0d963e9975d32a5446e80bdf4	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Filter LA scans to Ghidra-listed code and add boundary refs
+8a8a8fd1e1d18c490048540ad7009ee120a56232	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix caller-saved argument trace boundaries
+2c8ed30ae7080161f505835483ff4ecd66f75062	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add LA0-LA5 static analysis helper
+5a4cd3167beb3a0dba61a48bc6471496ec6fe34f	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Finalize KA0-KA5 static report and reconcile Actions result
