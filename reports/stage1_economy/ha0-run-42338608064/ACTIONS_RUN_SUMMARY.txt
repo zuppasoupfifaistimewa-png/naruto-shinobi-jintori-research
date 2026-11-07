@@ -1,0 +1,11 @@
+STATUS=SUCCESS
+JOB=analyze-main-exe
+JOB_ID=128301078345
+RUN_ID=42338608064
+SOURCE_SHA=58db32c696fe830b6558c6828529a3801be753e0
+EVENT=push
+EXIT_CODE=0
+NOTE=Ghidra static analysis completed; TARGETS_MISSING_FROM_GHIDRA_EXPORT=0.
+NOTE=Existing DN1 text report was unchanged; workflow made no result commit.
+GAME_OR_EMULATOR_EXECUTED=no
+PRIVATE_BINARY_COMMITTED=no
