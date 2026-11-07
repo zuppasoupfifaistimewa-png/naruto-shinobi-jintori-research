@@ -5,8 +5,10 @@ ENTRY="$2"
 OUT="$3"
 BASELINE="$4"
 SOURCE_SHA="$5"
+EXE_CODE="$6"
+ENTRY_CODE="$7"
 mkdir -p "$OUT"
-python3 - "$EXE" "$ENTRY" "$OUT" "$BASELINE" "$SOURCE_SHA" <<'PY'
+python3 - "$EXE" "$ENTRY" "$OUT" "$BASELINE" "$SOURCE_SHA" "$EXE_CODE" "$ENTRY_CODE" <<'PY'
 from __future__ import annotations
 import csv, hashlib, json, os, re, struct, subprocess, sys, urllib.request
 from collections import defaultdict
@@ -180,17 +182,38 @@ def pointer_words(blob,tag,target):
     while True:
         p=data.find(needle,p)
         if p<0:break
+        if p % 4: p+=1; continue
         pc=base+p
         outrows.append({"image":tag,"pc":h32(pc),"file_offset":h32(fileoff(pc,tag)),
                         "bytes":hx(data[p:p+4]),"instruksi":"DATA_POINTER_WORD",
                         "value":h32(target),"classification":"POINTER_WORD_CANDIDATE"})
         p+=1
     return outrows
-def all_pointer_callers(codes,target):
+def parse_code_pcs(path):
+    pcs=set()
+    for line in Path(path).read_text(encoding="utf-8",errors="replace").splitlines():
+        if line.startswith("CODE_INSTRUCTION="):
+            try: pcs.add(int(line.split("=",1)[1].split("|",1)[0],16))
+            except Exception: pass
+    return pcs
+def parse_target_refs(path,target):
+    out=[]; active=False
+    for line in Path(path).read_text(encoding="utf-8",errors="replace").splitlines():
+        if line.startswith("TARGET="):
+            try: active=int(line.split("=",1)[1],16)==target
+            except Exception: active=False
+        elif active and line.startswith("REF="):
+            p=line.split("=",1)[1].split("|")
+            if len(p)>=4:
+                try: out.append({"pc":int(p[0],16),"kind":p[1],"caller_entry":p[2],"caller_name":p[3]})
+                except Exception: pass
+    return out
+def all_pointer_callers(codes,target,valid_pcs):
     rows=[]
     for tag,code in codes:
         lo=EXE_BASE if tag=="EXE" else ENTRY_BASE
         for pc,i in code.items():
+            if pc not in valid_pcs.get(tag,set()): continue
             t=direct_target(i)
             if t==target:
                 z=base_row(i);z.update({"target":h32(target),"kind":"JAL" if i["op"]==3 else "J","classification":"DIRECT_CODE_REFERENCE"})
@@ -205,8 +228,16 @@ def all_pointer_callers(codes,target):
 exe=exe_path.read_bytes(); entry=entry_path.read_bytes()
 if len(exe)!=EXE_SIZE or hashlib.sha256(exe).hexdigest()!=EXE_SHA: raise SystemExit("EXE_VERIFY_FAIL")
 if len(entry)!=ENTRY_SIZE or hashlib.sha256(entry).hexdigest()!=ENTRY_SHA: raise SystemExit("ENTRY1_VERIFY_FAIL")
-ce,ci=decode(exe,"EXE"),decode(entry,"ENTRY1")
+ce_all,ci_all=decode(exe,"EXE"),decode(entry,"ENTRY1")
+exe_code_pcs=parse_code_pcs(sys.argv[6]); entry_code_pcs=parse_code_pcs(sys.argv[7])
+if not exe_code_pcs or not entry_code_pcs: raise SystemExit("GHIDRA_CODE_EXPORT_EMPTY")
+ce={pc:i for pc,i in ce_all.items() if pc in exe_code_pcs}
+ci={pc:i for pc,i in ci_all.items() if pc in entry_code_pcs}
 codes=[("EXE",ce),("ENTRY1",ci)]
+valid_pcs={"EXE":exe_code_pcs,"ENTRY1":entry_code_pcs}
+EXE_REFS=parse_target_refs(sys.argv[6],0x800B50AC)
+ENTRY_B50_REFS=parse_target_refs(sys.argv[7],0x800B50AC)
+ENTRY_BE_REFS=parse_target_refs(sys.argv[7],0x800BE5D8)
 # LA0 — source and checked-out HEAD snapshots; all events/pages for Actions.
 subprocess.run(["git","merge-base","--is-ancestor",baseline,source],check=True)
 def commit_rows(sha):
@@ -283,6 +314,7 @@ ref_users=[]
 for tag,code in codes:
     lo=EXE_BASE if tag=="EXE" else ENTRY_BASE
     for pc,i in code.items():
+        if pc not in valid_pcs.get(tag,set()): continue
         if i["op"] in LOADS:
             expr=expr_reg(code,i["rs"],pc,lo)
             ea,why=eff_addr(code,i,lo)
@@ -319,6 +351,12 @@ for tag,code in codes:
             if v==target:
                 z=base_row(i);z.update({"kind":"JALR" if i["fn"]==9 else "JR","target":h32(target),"classification":"CONSTANT_REGISTER_TARGET"})
                 direct_b50.append(z)
+for tag, refs in [("EXE",EXE_REFS),("ENTRY1",ENTRY_B50_REFS)]:
+    for x in refs:
+        pc=x["pc"]; i=(ce if tag=="EXE" else ci).get(pc)
+        z=base_row(i) if i else {"image":tag,"pc":h32(pc),"file_offset":h32(fileoff(pc,tag)),"bytes":"TIDAK TAHU","instruksi":"GHIDRA_REFERENCE"}
+        z.update({"kind":"GHIDRA_"+x["kind"],"target":h32(target),"classification":"GHIDRA_XREF caller="+x["caller_name"]+" entry="+x["caller_entry"]})
+        direct_b50.append(z)
 wr(out/"LA1_B50AC_DIRECT_CALLS.tsv",direct_b50,["image","pc","file_offset","bytes","instruksi","kind","target","classification"])
 pointer_pcs=sorted(int(x["pc"],16) for x in ptrs if x["image"]=="EXE")
 deltas=[pointer_pcs[i+1]-pointer_pcs[i] for i in range(len(pointer_pcs)-1)]
@@ -378,6 +416,7 @@ wr(out/"LA2_D49D0_ADDRESS_DATAFLOW.tsv",drows,["image","pc","file_offset","bytes
 xrows=[]
 for g in (0x8013EA6E,0x8013EB1C,0x8013EA74,0x8013EA88,0x80139EFC):
     for pc,i in ci.items():
+        if pc not in valid_pcs["ENTRY1"]: continue
         if i["op"] in LOADS or i["op"] in STORES:
             ea,why=eff_addr(ci,i,ENTRY_BASE)
             width={0x20:1,0x21:2,0x23:4,0x24:1,0x25:2,0x28:1,0x29:2,0x2b:4}.get(i["op"],1)
@@ -401,6 +440,7 @@ gw=[]; unresolved=[]
 for tag,code in codes:
     lo=EXE_BASE if tag=="EXE" else ENTRY_BASE
     for pc,i in code.items():
+        if pc not in valid_pcs.get(tag,set()): continue
         if i["op"] not in STORES:continue
         width={0x28:1,0x29:2,0x2b:4}[i["op"]]
         ea,why=eff_addr(code,i,lo)
@@ -425,7 +465,7 @@ xstores=[]
 for tag,code in codes:
     lo=EXE_BASE if tag=="EXE" else ENTRY_BASE
     for pc,i in code.items():
-        if i["op"] in STORES and i["imm"]==0x530:
+        if pc in valid_pcs.get(tag,set()) and i["op"] in STORES and i["imm"]==0x530:
             val,why=const_value(code,i["rt"],pc,lo)
             z=base_row(i);z.update({"base_register":reg(i["rs"]),"value_register":reg(i["rt"]),
                 "value_constant":h32(val) if val is not None else "TIDAK TAHU",
@@ -458,7 +498,12 @@ hyp=[
 wr(out/"LA2_X_ID_HYPOTHESES.tsv",hyp,["hypothesis","support_1","support_2","falsifier"])
 # LA3: direct/static-resolvable caller census for BE5D8 plus raw pointer words.
 bt=0x800BE5D8
-bcalls=all_pointer_callers(codes,bt)
+bcalls=all_pointer_callers(codes,bt,valid_pcs)
+for x in ENTRY_BE_REFS:
+    pc=x["pc"]; i=ci.get(pc)
+    z=base_row(i) if i else {"image":"ENTRY1","pc":h32(pc),"file_offset":h32(fileoff(pc,"ENTRY1")),"bytes":"TIDAK TAHU","instruksi":"GHIDRA_REFERENCE"}
+    z.update({"target":h32(bt),"kind":"GHIDRA_"+x["kind"],"classification":"GHIDRA_XREF caller="+x["caller_name"]+" entry="+x["caller_entry"]})
+    bcalls.append(z)
 wr(out/"LA3_BE5D8_CALLERS.tsv",bcalls,["image","pc","file_offset","bytes","instruksi","target","kind","classification","target_register"])
 bptr=[]
 for tag,blob in [("EXE",exe),("ENTRY1",entry)]:bptr.extend(pointer_words(blob,tag,bt))
@@ -467,7 +512,17 @@ wr(out/"LA3_BE5D8_POINTER_WORDS.tsv",bptr,["image","pc","file_offset","bytes","i
 b24=0x800B24C8
 bpro,breason=find_prolog(ci,b24,ENTRY_BASE)
 bentry=bpro
-b24rows=[]
+be_pro,be_reason=find_prolog(ci,bt,ENTRY_BASE)
+be_entry=be_pro
+be_rows=[]
+for k in range(-7,9):
+    i=ci.get(bt+k*4)
+    if i:
+        z=base_row(i);z.update({"target_pc":h32(bt),"manual_function_entry":h32(be_entry) if be_entry else "TIDAK TAHU"})
+        be_rows.append(z)
+wr(out/"LA3_BE5D8_MANUAL_FUNCTION.tsv",be_rows,["image","pc","file_offset","bytes","instruksi","target_pc","manual_function_entry"])
+txt(out/"LA3_BE5D8_BOUNDARY_STATUS.txt","TARGET_FUNCTION=0x800BE5D8\nMANUAL_PROLOG="+(h32(be_entry) if be_entry else "TIDAK TAHU")+"\nBOUNDARY_METHOD="+be_reason+"\nCALLER_CENSUS=LA3_BE5D8_CALLERS.tsv plus LA3_BE5D8_POINTER_WORDS.tsv\n")
+b24rows[]
 for k in range(-7,9):
     i=ci.get(b24+k*4)
     if i:
