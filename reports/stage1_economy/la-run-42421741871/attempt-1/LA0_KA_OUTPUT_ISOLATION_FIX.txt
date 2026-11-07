@@ -1,0 +1,13 @@
+KA_WORKFLOW_TMP_SEPARATION=FIXED_STATIC
+BASE_HEAD_BEFORE_FIX=b3c1789556a5719fcbe0af063037594ab0660cdb
+ANALYZER_GUARD=tools/ka-static/RunKA0KA5Static.py:423 scans every file under OUT and permits only .txt/.tsv/.md
+BUG_BEFORE=The KA workflow wrote Ghidra .log and .exit files into OUT before running the analyzer, so the analyzer could exit 1 despite successful Ghidra extraction and emitted evidence.
+FIX=Ghidra .log and .exit files are now written under WORK/ghidra-logs; WORK is deleted by the existing private-work cleanup step.
+EXIT_RECONCILIATION=The publisher reads EXE_GHIDRA_EXIT and ENTRY1_GHIDRA_EXIT from the allowed GHIDRA_DIAGNOSTICS.txt in OUT; it no longer depends on .exit files in OUT.
+OUT_GUARD_EFFECT=At analyzer invocation, OUT contains only allowed text evidence and GHIDRA_DIAGNOSTICS.txt, not Ghidra .log/.exit files.
+VALIDATION=Static workflow-source inspection only. The KA workflow was not re-run to preserve the one-workflow Actions limit; post-fix KA analyzer exit remains TIDAK TAHU until a future authorized run.
+EMULATOR_LAUNCHES=0
+BINARY_COMMITTED=no
+CHANGED_FILES:
+- .github/workflows/ka0-ka5-static.yml
+- reports/stage1_economy/la-run-42421741871/attempt-1/LA0_KA_OUTPUT_ISOLATION_FIX.txt

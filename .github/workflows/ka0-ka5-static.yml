@@ -49,7 +49,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends bchunk xorriso unzip python3-pip jq
           python3 -m pip install --break-system-packages "capstone==5.0.3"
-          mkdir -p "$WORK/source" "$WORK/extracted" "$WORK/input" "$WORK/pycache" "$WORK/ghidra-exe" "$WORK/ghidra-entry1" "$WORK/scripts" "$OUT"
+          mkdir -p "$WORK/source" "$WORK/extracted" "$WORK/input" "$WORK/pycache" "$WORK/ghidra-exe" "$WORK/ghidra-entry1" "$WORK/ghidra-logs" "$WORK/scripts" "$OUT"
           python3 - "$OUT/KA0_PYCOMPILE.tsv" "$WORK/pycache" <<'PY'
           import csv,hashlib,py_compile,subprocess,sys
           from pathlib import Path
@@ -148,15 +148,15 @@ jobs:
           cp "$GITHUB_WORKSPACE"/tools/ka-ghidra/*.java "$WORK/scripts/" 2>/dev/null || true
           SCRIPT_PATH="$WORK/scripts"
           set +e
-          "$HEADLESS" "$WORK/ghidra-exe" Naruto_KA_EXE -import "$WORK/input/SLPS_035.53" -loader BinaryLoader -loader-baseAddr 0x80010000 -loader-fileOffset 0x800 -loader-length 0x5D800 -processor "MIPS:LE:32:default" -scriptPath "$SCRIPT_PATH" -preScript PreparePsxExe.java -postScript EnsureTargetFunctions.java 0x80014F10 0x8001552C -postScript ExportJATargetEvidence.java "$OUT/EXE_TARGETS.txt" 0x80014F10 0x8001552C 0x80055CF4 -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject > "$OUT/ghidra-exe.log" 2>&1
+          "$HEADLESS" "$WORK/ghidra-exe" Naruto_KA_EXE -import "$WORK/input/SLPS_035.53" -loader BinaryLoader -loader-baseAddr 0x80010000 -loader-fileOffset 0x800 -loader-length 0x5D800 -processor "MIPS:LE:32:default" -scriptPath "$SCRIPT_PATH" -preScript PreparePsxExe.java -postScript EnsureTargetFunctions.java 0x80014F10 0x8001552C -postScript ExportJATargetEvidence.java "$OUT/EXE_TARGETS.txt" 0x80014F10 0x8001552C 0x80055CF4 -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject > "$WORK/ghidra-logs/ghidra-exe.log" 2>&1
           EXE_RC=$?
-          "$HEADLESS" "$WORK/ghidra-entry1" Naruto_KA_ENTRY1 -import "$WORK/input/ENTRY1.bin" -loader BinaryLoader -loader-baseAddr 0x800AD450 -loader-length 0x919BC -loader-blockName ENTRY1_AT_800AD450 -processor "MIPS:LE:32:default" -scriptPath "$SCRIPT_PATH" -postScript EnsureTargetFunctions.java 0x800B50AC 0x800F2A9C 0x800F3658 0x800DC2E0 0x800D15A8 0x800BE5D8 -postScript ExportJATargetEvidence.java "$OUT/ENTRY_TARGETS.txt" 0x800B50AC 0x800F2A9C 0x800F3658 0x800DC2E0 0x800D15A8 0x800BE5D8 0x800B24C8 0x800BEDA4 0x800F5F54 0x800B54DC 0x800F5EBC -analysisTimeoutPerFile 1200 -max-cpu 2 -deleteProject > "$OUT/ghidra-entry1.log" 2>&1
+          "$HEADLESS" "$WORK/ghidra-entry1" Naruto_KA_ENTRY1 -import "$WORK/input/ENTRY1.bin" -loader BinaryLoader -loader-baseAddr 0x800AD450 -loader-length 0x919BC -loader-blockName ENTRY1_AT_800AD450 -processor "MIPS:LE:32:default" -scriptPath "$SCRIPT_PATH" -postScript EnsureTargetFunctions.java 0x800B50AC 0x800F2A9C 0x800F3658 0x800DC2E0 0x800D15A8 0x800BE5D8 -postScript ExportJATargetEvidence.java "$OUT/ENTRY_TARGETS.txt" 0x800B50AC 0x800F2A9C 0x800F3658 0x800DC2E0 0x800D15A8 0x800BE5D8 0x800B24C8 0x800BEDA4 0x800F5F54 0x800B54DC 0x800F5EBC -analysisTimeoutPerFile 1200 -max-cpu 2 -deleteProject > "$WORK/ghidra-logs/ghidra-entry1.log" 2>&1
           ENTRY_RC=$?
           set -e
-          echo "$EXE_RC" > "$OUT/ghidra-exe.exit"; echo "$ENTRY_RC" > "$OUT/ghidra-entry1.exit"
+          echo "$EXE_RC" > "$WORK/ghidra-logs/ghidra-exe.exit"; echo "$ENTRY_RC" > "$WORK/ghidra-logs/ghidra-entry1.exit"
           {
-            echo "EXE_GHIDRA_EXIT=$EXE_RC"; tail -n 60 "$OUT/ghidra-exe.log" || true
-            echo "ENTRY1_GHIDRA_EXIT=$ENTRY_RC"; tail -n 80 "$OUT/ghidra-entry1.log" || true
+            echo "EXE_GHIDRA_EXIT=$EXE_RC"; tail -n 60 "$WORK/ghidra-logs/ghidra-exe.log" || true
+            echo "ENTRY1_GHIDRA_EXIT=$ENTRY_RC"; tail -n 80 "$WORK/ghidra-logs/ghidra-entry1.log" || true
           } > "$OUT/GHIDRA_DIAGNOSTICS.txt"
 
       - name: Run KA0-KA5 analyzer
@@ -189,8 +189,8 @@ jobs:
           DEST="reports/stage1_economy/ka-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$DEST"
           find "$OUT" -maxdepth 1 -type f \( -name 'KA*.txt' -o -name 'KA*.tsv' -o -name 'KA*.md' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
-          EXE_RC="$(cat "$OUT/ghidra-exe.exit" 2>/dev/null || echo TIDAK_TAHU)"
-          ENTRY_RC="$(cat "$OUT/ghidra-entry1.exit" 2>/dev/null || echo TIDAK_TAHU)"
+          EXE_RC="$(sed -n 's/^EXE_GHIDRA_EXIT=//p' "$OUT/GHIDRA_DIAGNOSTICS.txt" 2>/dev/null | head -n 1 || true)"; [ -n "$EXE_RC" ] || EXE_RC=TIDAK_TAHU
+          ENTRY_RC="$(sed -n 's/^ENTRY1_GHIDRA_EXIT=//p' "$OUT/GHIDRA_DIAGNOSTICS.txt" 2>/dev/null | head -n 1 || true)"; [ -n "$ENTRY_RC" ] || ENTRY_RC=TIDAK_TAHU
           ANALYSIS_RC="$(cat "$OUT/analysis.exit" 2>/dev/null || echo TIDAK_TAHU)"
           PYRC="$(python3 - "$OUT/KA0_PYCOMPILE.tsv" <<'PY'
           import csv,sys
@@ -220,7 +220,7 @@ jobs:
             echo "BINARY_COMMITTED=no"
           } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
           # Delete temporary disassembly/log exports before publishing; only bounded evidence TSVs remain.
-          rm -f "$OUT/EXE_TARGETS.txt" "$OUT/ENTRY_TARGETS.txt" "$OUT/ghidra-exe.log" "$OUT/ghidra-entry1.log"
+          rm -f "$OUT/EXE_TARGETS.txt" "$OUT/ENTRY_TARGETS.txt" "$OUT/GHIDRA_DIAGNOSTICS.txt"
           python3 - "$DEST" <<'PY'
           from pathlib import Path
           import sys
