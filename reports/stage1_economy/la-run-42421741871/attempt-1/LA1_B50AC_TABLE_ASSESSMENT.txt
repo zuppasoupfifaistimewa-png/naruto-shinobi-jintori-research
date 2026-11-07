@@ -1,5 +1,14 @@
 POINTER_WORDS_AT=0x80055904,0x80055920
+POINTER_VALUES=0x800B50AC,0x800B50AC
 OBSERVED_SPACING=0x0000001C
-TABLE_BASE_AND_STRIDE=candidate spacing(s)=0x0000001C; repeated entries alone do not prove table base/stride without an indexed load+jump user
-TABLE_USER_EVIDENCE=see LA1_B50AC_TABLE_USERS.tsv; require base + scaled index + lw + jalr/jr chain before naming a dispatch table
-CALLERS=see LA1_B50AC_DIRECT_CALLS.tsv and pointer-word candidates; absence of a resolved indirect dispatch is not a zero-caller proof
+RECORD_CANDIDATES:
+- candidate record base 0x80055900: word +0x00=0x800B1E88; word +0x04=0x800B50AC; word +0x08=0x800B5020
+- candidate record base 0x8005591C: word +0x00=0x800B2A58; word +0x04=0x800B50AC; word +0x08=0x800B5020
+- both are followed by similar small fields and ASCII-like label bytes in LA1_B50AC_TABLE_REGION.tsv
+
+CANDIDATE_RECORD_STRIDE=0x1C
+CANDIDATE_POINTER_FIELD_OFFSET=+0x04
+CONFIDENCE=K2 structural pattern only; two records are insufficient to prove the table's extent, semantic type, or that +0x1C is the general stride.
+TABLE_USERS=0 resolved indexed code users in LA1_B50AC_TABLE_USERS.tsv; no code sequence proving indexed base + scaled index + lw + jalr/jr was found.
+DIRECT_CALLS=0 resolved J/JAL/JALR/JR callers in LA1_B50AC_DIRECT_CALLS.tsv.
+CALLER_SET=not proven complete for dynamically computed/indirect dispatch. The two pointer words are data references, not proof of active dispatch.
