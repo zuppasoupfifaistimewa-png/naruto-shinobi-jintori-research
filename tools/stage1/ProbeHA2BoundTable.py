@@ -21,8 +21,8 @@ def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 def file_offset(va: int) -> int:
-    if not (EXE_BASE <= va < EXE_BASE + EXE_SIZE):
-        raise ValueError(f"VA outside EXE image: 0x{va:08X}")
+    if not (EXE_BASE <= va < EXE_BASE + (EXE_SIZE - EXE_FILE_BASE)):
+        raise ValueError(f"VA outside loaded EXE image: 0x{va:08X}")
     return EXE_FILE_BASE + (va - EXE_BASE)
 
 def write_tsv(path: Path, header: list[str], rows: list[list[str]]) -> None:
@@ -31,14 +31,27 @@ def write_tsv(path: Path, header: list[str], rows: list[list[str]]) -> None:
         w.writerow(header)
         w.writerows(rows)
 
-def decode_gp_accesses(exe: bytes) -> list[tuple[int, bytes, str]]:
+def decoder(exe: bytes) -> Cs:
     md = Cs(CS_ARCH_MIPS, CS_MODE_MIPS32 | CS_MODE_LITTLE_ENDIAN)
     md.detail = False
+    return md
+
+def decode_at(exe: bytes, md: Cs, pc: int):
+    off = file_offset(pc)
+    raw = exe[off:off + 4]
+    ins = next(md.disasm(raw, pc, count=1), None)
+    if ins is None:
+        return raw, ".word 0x" + raw[::-1].hex().upper()
+    return raw, (ins.mnemonic.lower() + " " + ins.op_str).strip()
+
+def decode_gp_accesses(exe: bytes, md: Cs):
     found = []
     pat = re.compile(r"^\s*(-?(?:0x[0-9a-f]+|\d+))\(\$?gp\)\s*$", re.I)
-    for off in range(0, len(exe) - 3, 4):
+    # PS-X EXE header occupies file offsets [0, 0x800); loaded bytes begin at 0x800.
+    for off in range(EXE_FILE_BASE, len(exe) - 3, 4):
+        pc = EXE_BASE + (off - EXE_FILE_BASE)
         raw = exe[off:off + 4]
-        ins = next(md.disasm(raw, EXE_BASE + off, count=1), None)
+        ins = next(md.disasm(raw, pc, count=1), None)
         if ins is None or ins.mnemonic.lower() not in {
             "lb", "lbu", "lh", "lhu", "lw", "sb", "sh", "sw"
         }:
@@ -51,8 +64,21 @@ def decode_gp_accesses(exe: bytes) -> list[tuple[int, bytes, str]]:
         except ValueError:
             continue
         if imm == 0x118:
-            found.append((EXE_BASE + off, raw, f"{ins.mnemonic.lower()} {ins.op_str}"))
+            found.append((pc, raw, (ins.mnemonic.lower() + " " + ins.op_str).strip()))
     return found
+
+def write_context(exe: bytes, md: Cs, center_pc: int, out: Path, name: str) -> int:
+    start_pc = max(EXE_BASE, center_pc - 8 * 4)
+    start_pc = EXE_BASE + ((start_pc - EXE_BASE) // 4) * 4
+    rows = []
+    for i in range(16):
+        pc = start_pc + i * 4
+        if file_offset(pc) + 4 > len(exe):
+            break
+        raw, ins = decode_at(exe, md, pc)
+        rows.append([f"0x{pc:08X}", f"0x{file_offset(pc):X}", " ".join(f"{x:02X}" for x in raw), ins])
+    write_tsv(out / name, ["pc", "file_offset", "bytes", "instruksi"], rows)
+    return len(rows)
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -67,6 +93,7 @@ def main() -> int:
     if digest != EXE_SHA256:
         raise SystemExit(f"EXE_SHA256_MISMATCH={digest}")
 
+    md = decoder(exe)
     b_off = file_offset(BOUND_VA)
     table_off = file_offset(TABLE_VA)
     b_bytes = exe[b_off:b_off + 4]
@@ -74,21 +101,20 @@ def main() -> int:
         raise SystemExit("BOUND_BYTES_UNAVAILABLE")
     bound_image = struct.unpack("<I", b_bytes)[0]
     max_entries = max(0, (len(exe) - table_off - 4) // 16 + 1)
-    accesses = decode_gp_accesses(exe)
+    accesses = decode_gp_accesses(exe, md)
+    writers = [x for x in accesses if x[2].split(" ", 1)[0] in {"sb", "sh", "sw"}]
 
-    gp_rows = []
+    census_rows = []
     for pc, raw, text in accesses:
-        gp_rows.append([
-            f"0x{pc:08X}",
-            f"0x{file_offset(pc):X}",
-            " ".join(f"{x:02X}" for x in raw),
-            text,
-        ])
-    for n in range(0, len(gp_rows), 16):
-        write_tsv(
-            a.out / f"HA2_BOUND_GP_ACCESS_{n // 16:02d}.tsv",
-            ["pc", "file_offset", "bytes", "instruksi"],
-            gp_rows[n:n + 16],
+        census_rows.append([f"0x{pc:08X}", f"0x{file_offset(pc):X}",
+                            " ".join(f"{x:02X}" for x in raw), text])
+    write_tsv(a.out / "HA2_BOUND_GP_ACCESS_CENSUS.tsv",
+              ["pc", "file_offset", "bytes", "instruksi"], census_rows)
+
+    context_instruction_count = 0
+    for idx, (pc, raw, text) in enumerate(writers):
+        context_instruction_count += write_context(
+            exe, md, pc, a.out, f"HA2_BOUND_WRITER_CONTEXT_{idx:02d}.tsv"
         )
 
     summary = [
@@ -100,16 +126,22 @@ def main() -> int:
         f"BOUND_IMAGE_BYTES={' '.join(f'{x:02X}' for x in b_bytes)}",
         f"BOUND_IMAGE_U32={bound_image}",
         f"BOUND_IMAGE_HEX=0x{bound_image:08X}",
-        "BOUND_SEMANTIC=FUN_800154D4 returns the word loaded from GP+0x118 (DAT_8006D794); raw image bytes are an initializer, not proof of runtime value if overwritten.",
+        "BOUND_SEMANTIC=FUN_800154D4 returns the word loaded from GP+0x118 (DAT_8006D794).",
         f"TABLE_VA=0x{TABLE_VA:08X}",
         f"TABLE_FILE_OFFSET=0x{table_off:X}",
         "TABLE_STRIDE=0x10",
         f"MAX_ENTRIES_WITHIN_EXE={max_entries}",
         f"GP_PLUS_0x118_DIRECT_ACCESS_CANDIDATES={len(accesses)}",
-        f"TABLE_EXTRACTION_STATUS=NOT_ATTEMPTED",
+        f"GP_PLUS_0x118_STORE_CANDIDATES={len(writers)}",
+        f"WRITER_CONTEXT_INSTRUCTIONS_EXPORTED={context_instruction_count}",
+        "GP_ACCESS_SCAN_SCOPE=loaded PS-X EXE bytes only (file offset starts at 0x800)",
     ]
 
-    if bound_image <= max_entries:
+    if writers:
+        summary.append("BOUND_RUNTIME_STATUS=TIDAK TAHU; GP+0x118 has direct store candidate(s), so zero image initializer is not a runtime bound.")
+        summary.append("TABLE_EXTRACTION_STATUS=BLOCKED_RUNTIME_BOUND_UNKNOWN")
+        summary.append("TABLE_ROWS_EXTRACTED=0")
+    elif bound_image <= max_entries:
         vals = []
         rows = []
         for i in range(bound_image):
@@ -120,22 +152,13 @@ def main() -> int:
                 raise SystemExit(f"TABLE_WORD_TRUNCATED index={i}")
             value = struct.unpack("<I", raw)[0]
             vals.append(value)
-            rows.append([
-                str(i),
-                f"0x{va:08X}",
-                f"0x{off:X}",
-                " ".join(f"{x:02X}" for x in raw),
-                f"0x{value:08X}",
-            ])
+            rows.append([str(i), f"0x{va:08X}", f"0x{off:X}",
+                         " ".join(f"{x:02X}" for x in raw), f"0x{value:08X}"])
         for n in range(0, len(rows), 16):
-            write_tsv(
-                a.out / f"HA2_TABLE_U32_{n // 16:03d}.tsv",
-                ["index", "alamat", "file_offset", "bytes", "u32"],
-                rows[n:n + 16],
-            )
-        summary[summary.index("TABLE_EXTRACTION_STATUS=NOT_ATTEMPTED")] = (
-            "TABLE_EXTRACTION_STATUS=EXTRACTED_FROM_LOADED_IMAGE_BYTES"
-        )
+            write_tsv(a.out / f"HA2_TABLE_U32_{n // 16:03d}.tsv",
+                      ["index", "alamat", "file_offset", "bytes", "u32"], rows[n:n + 16])
+        summary.append("BOUND_RUNTIME_STATUS=IMAGE_INITIALIZER_ONLY; no direct writer candidate found by this scan.")
+        summary.append("TABLE_EXTRACTION_STATUS=EXTRACTED_FROM_LOADED_IMAGE_BYTES")
         summary.append(f"TABLE_ROWS_EXTRACTED={len(vals)}")
         if vals:
             summary.append(f"TABLE_U32_MIN=0x{min(vals):08X}")
@@ -150,14 +173,9 @@ def main() -> int:
                 summary.append(f"CONSECUTIVE_RATIO_MAX={max(ratios)}")
             summary.append("NO_FITTING=YES")
     else:
+        summary.append("BOUND_RUNTIME_STATUS=TIDAK TAHU; image value outside table capacity.")
         summary.append("TABLE_EXTRACTION_STATUS=BLOCKED_BOUND_EXCEEDS_IMAGE_CAPACITY")
         summary.append("TABLE_ROWS_EXTRACTED=0")
-        summary.append("BOUND_RUNTIME_VALUE=TIDAK TAHU; image word cannot be accepted as runtime bound without writer audit.")
-
-    if accesses:
-        summary.append("GP_REL_ACCESS_REVIEW=inspect candidate rows; raw sequential disassembly can include data regions.")
-    else:
-        summary.append("GP_REL_ACCESS_REVIEW=no direct GP+0x118 memory-op candidates found by sequential scan; aliases/indirect writes remain possible.")
 
     (a.out / "HA2_BOUND_TABLE_SUMMARY.txt").write_text("\n".join(summary) + "\n", encoding="utf-8")
     print("\n".join(summary))

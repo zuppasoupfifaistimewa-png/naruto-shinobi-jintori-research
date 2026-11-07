@@ -49,6 +49,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          trap 'rc=$?; echo "$rc" > "$OUT/extract.exit"; exit "$rc"' ERR
           API="https://api.github.com/repos/$RESEARCH_REPO"
           BIN="$WORK/source/disc.bin"
           CUE_RAW="$WORK/source/original.cue"
@@ -85,14 +86,26 @@ jobs:
           test "$(stat -c %s "$EXE")" = 385024
           echo "$EXPECTED_EXE_SHA256  $EXE" | sha256sum --check --status
           cp "$EXE" "$WORK/SLPS_035.53"
-          echo "PRIVATE_EXE=VERIFIED" 
+          echo "PRIVATE_EXE=VERIFIED"
+          echo "0" > "$OUT/extract.exit"
 
       - name: Compile and run static bound/table probe
         shell: bash
         run: |
           set -euo pipefail
+          set +e
           python3 -m py_compile tools/stage1/ProbeHA2BoundTable.py
-          python3 tools/stage1/ProbeHA2BoundTable.py --exe "$WORK/SLPS_035.53" --out "$OUT"
+          COMPILE_RC=$?
+          if [ "$COMPILE_RC" -eq 0 ] && [ -f "$WORK/SLPS_035.53" ]; then
+            python3 tools/stage1/ProbeHA2BoundTable.py --exe "$WORK/SLPS_035.53" --out "$OUT"
+            PROBE_RC=$?
+          else
+            PROBE_RC=99
+          fi
+          set -e
+          echo "$COMPILE_RC" > "$OUT/compile.exit"
+          echo "$PROBE_RC" > "$OUT/probe.exit"
+          test "$COMPILE_RC" -eq 0 && test "$PROBE_RC" -eq 0
 
       - name: Remove private binary inputs
         if: always()
@@ -115,17 +128,23 @@ jobs:
           if [ -d "$OUT" ]; then
             find "$OUT" -maxdepth 1 -type f \( -name '*.txt' -o -name '*.tsv' \) -exec cp {} "$DEST/" \;
           fi
-          PYRC=0
-          python3 -m py_compile tools/stage1/ProbeHA2BoundTable.py || PYRC=$?
-          [ "$PYRC" -ne 0 ] || [ -f "$DEST/HA2_BOUND_TABLE_SUMMARY.txt" ] || PYRC=99
-          if [ "$PYRC" -eq 0 ]; then STATUS=PASS; else STATUS=PARTIAL_OR_FAILURE; fi
+          EXTRACT_RC="$(cat "$OUT/extract.exit" 2>/dev/null || echo SKIPPED)"
+          COMPILE_RC="$(cat "$OUT/compile.exit" 2>/dev/null || echo SKIPPED)"
+          PROBE_RC="$(cat "$OUT/probe.exit" 2>/dev/null || echo SKIPPED)"
+          EXIT_CODE=0
+          for rc in "$EXTRACT_RC" "$COMPILE_RC" "$PROBE_RC"; do
+            if [ "$rc" != "0" ]; then EXIT_CODE="$rc"; break; fi
+          done
+          if [ "$EXIT_CODE" = "0" ] && [ -f "$DEST/HA2_BOUND_TABLE_SUMMARY.txt" ]; then STATUS=PASS; else STATUS=PARTIAL_OR_FAILURE; fi
           {
             echo "STATUS=$STATUS"
             echo "JOB=ha2-bound-table-probe"
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "SOURCE_SHA=$GITHUB_SHA"
-            echo "EXIT_CODE=$PYRC"
-            echo "PY_COMPILE_EXIT_CODE=$PYRC"
+            echo "EXIT_CODE=$EXIT_CODE"
+            echo "EXTRACT_EXIT_CODE=$EXTRACT_RC"
+            echo "PY_COMPILE_EXIT_CODE=$COMPILE_RC"
+            echo "PROBE_EXIT_CODE=$PROBE_RC"
             echo "GAME_OR_EMULATOR_EXECUTED=no"
             echo "PRIVATE_BINARY_COMMITTED=no"
           } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
