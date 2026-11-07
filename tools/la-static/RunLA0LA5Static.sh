@@ -72,7 +72,11 @@ def last_def(code, r, before, lo, limit=2048):
     floor=max(lo,before-limit*4)
     for pc in range(before-4,floor-1,-4):
         i=code.get(pc)
-        if i and dest(i)==r: return i
+        if not i: continue
+        # $a0-$a3/$t0-$t7/$t8-$t9 are caller-saved: stop at an earlier call.
+        if r in set(range(4,16)) | {24,25} and (i["op"]==3 or (i["op"]==0 and i["fn"]==9)):
+            return None
+        if dest(i)==r: return i
     return None
 def const_value(code,r,before,lo,depth=0,seen=None):
     if r==0:return 0,"ZERO"
