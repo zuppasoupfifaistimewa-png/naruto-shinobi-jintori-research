@@ -289,7 +289,7 @@ def main():
     exe=EXE_PATH.read_bytes(); entry=ENTRY_PATH.read_bytes()
     if len(exe)!=EXE_SIZE or hashlib.sha256(exe).hexdigest()!=EXE_SHA:raise SystemExit("EXE_IDENTITY_MISMATCH")
     if len(entry)!=ENTRY_SIZE or hashlib.sha256(entry).hexdigest()!=ENTRY_SHA:raise SystemExit("ENTRY1_IDENTITY_MISMATCH")
-    ec=decode(exe,EXE_BASE,"EXE"); ic=decode(entry,ENTRY_BASE,"ENTRY1")
+    ec=decode(exe[EXE_FILE:],EXE_BASE,"EXE"); ic=decode(entry,ENTRY_BASE,"ENTRY1")
     commits,runs,ledger_errors=ledger()
     pyrows=rows_tsv(OUT/"IA0_PYCOMPILE.tsv"); py_ok=sum(x.get("status")=="PASS" for x in pyrows); py_bad=len(pyrows)-py_ok
     write_tsv("IA0_LEDGER_COMMITS.tsv",commits,["sha","type","author","author_email","committer","committer_email","subject"])
