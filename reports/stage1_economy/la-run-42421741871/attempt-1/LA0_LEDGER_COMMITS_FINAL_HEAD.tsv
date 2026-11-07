@@ -17,3 +17,8 @@ cd900e9ef4c119f48bcc7a33e088fc4e6c1f8ea5	zuppasoupfifaistimewa-png	zuppasoupfifa
 778d6efa62676a262e0dba0097bedf61cb7b47e1	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add final LA post-run corrections
 bb723761db14ce5468296f09f1573bf6aa7aca10	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Remove unqualified dynamic-store candidate noise
 279dd1902c11c47da48171525b070d8b0148cb69	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Document dynamic store census scope and limits
+732ec44c4bb4e0e7aab5f239720ad7eba4890449	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add final HEAD commit ledger reconciliation
+c0eec1cfe8a8c323a458aca6d3fcbef9fd984a47	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Record final HEAD commit counts
+c89a3b46a090950212c553223c070219d3953cd8	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Reconcile LA ledger through final repository HEAD
+b3c1789556a5719fcbe0af063037594ab0660cdb	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add final HEAD counts to LA0 report
+acac6d04cb060d661a40f37096e80004c0fab3e6	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Isolate KA Ghidra temporary logs from analyzer output [skip ci]

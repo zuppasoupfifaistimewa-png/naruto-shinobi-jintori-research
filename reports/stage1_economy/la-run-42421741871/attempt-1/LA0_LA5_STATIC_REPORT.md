@@ -8,7 +8,7 @@ Entry 1 SHA-256: 9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60
 Runtime: EMULATOR_LAUNCHES=0.
 
 ## Status
-- LA0=TUNTAS K3 — source SHA saat analisis: 9 commit (8 human, 1 bot); HEAD repository final: 18 commit (16 human, 2 bot), baseline inklusif. Tabel commit final ada di LA0_LEDGER_COMMITS_FINAL_HEAD.tsv. Actions: 1.245 run semua event/13 halaman API; 66/66 Python compile.
+- LA0=TUNTAS K3 — source SHA saat analisis: 9 commit (8 human, 1 bot); HEAD repository final snapshot acac6d04cb060d661a40f37096e80004c0fab3e6: 23 commit (21 human, 2 bot), baseline inklusif; ledger publication commit dikecualikan. Tabel commit final ada di LA0_LEDGER_COMMITS_FINAL_HEAD.tsv. Actions: 1.245 run semua event/13 halaman API; 66/66 Python compile.
 - LA1=SEBAGIAN K3 — dua pointer word membentuk pola record kandidat berjarak 0x1C pada offset +0x04; belum ada kode pembaca/index/jalr yang membuktikan dispatch. Semua $a2/$a3 pada tiga callsite tetap TIDAK TAHU. Setter wallet otoritatif TIDAK TAHU.
 - LA2=SEBAGIAN K3 — D49D0 EA direkonstruksi dari tiga global dan pointer manager; 13 store sb statis pada 0x80139EC4..0x80139EC7; empat store manager+0x530. Himpunan nilai byte x yang dapat dicapai dan identitas x tetap TIDAK TAHU.
 - LA3=SEBAGIAN K3 — fungsi 0x800BE5D8 dimulai dengan prolog pada target itu sendiri; satu direct caller terbukti di 0x800B54F4 dari FUN_800B50AC. Parent function/callers B24C8 tetap TIDAK TAHU.
@@ -16,7 +16,7 @@ Runtime: EMULATOR_LAUNCHES=0.
 - LA5=BELUM K1 — H(x) dapat dinyatakan hanya sebagai table lookup bersyarat; tidak ada formula biaya numerik untuk lompatan level d>=2.
 
 ## Findings
-- LA0: source dan HEAD-at-analysis masing-masing 9 commit (8 human, 1 bot, heuristic); HEAD final 18 commit (16 human, 2 bot). Ledger final ada di LA0_LEDGER_COMMITS_FINAL_HEAD.tsv dan LA0_LEDGER_COMMIT_COUNTS.tsv. Actions 1.245 run/13 halaman API untuk semua event (81 schedule); py_compile 66/66.
+- LA0: source dan HEAD-at-analysis masing-masing 9 commit (8 human, 1 bot, heuristic); HEAD final snapshot 23 commit (21 human, 2 bot). Ledger final ada di LA0_LEDGER_COMMITS_FINAL_HEAD.tsv dan LA0_LEDGER_COMMIT_COUNTS.tsv. Actions 1.245 run/13 halaman API untuk semua event (81 schedule); py_compile 66/66.
 - LA1(a): pointer word EXE 0x80055904 dan 0x80055920 berisi 0x800B50AC. Keduanya berada pada +0x04 dari dua record kandidat 0x80055900 dan 0x8005591C; word +0x08 kedua record adalah 0x800B5020. Jarak 0x1C adalah candidate record stride, bukan dispatch table yang terbukti. LA1_B50AC_TABLE_USERS.tsv dan LA1_B50AC_DIRECT_CALLS.tsv tidak menunjukkan indexed load/jalr atau caller langsung.
 - LA1(b): callsites terkonfirmasi: 0x800F5F54 -> 0x800F2A9C; 0x800B54DC -> 0x800F3658; 0x800F5EBC -> 0x800DC2E0. Penelusuran caller-saved $a2/$a3 berhenti pada incoming/undefined; semua enam hasil register TIDAK TAHU. Slicing linear tidak membuktikan semua path.
 - LA1(c): FUN_80014F10 menulis max-update pada participant record +0x94; ini bukan bukti setter wallet permanen. Kandidat +0x04 dan manager+0x4F4 tetap hipotesis dengan dua dukungan dan falsifier masing-masing. Setter otoritatif TIDAK TAHU.
