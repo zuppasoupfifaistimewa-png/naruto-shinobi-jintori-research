@@ -1,0 +1,245 @@
+name: KA0-KA5 isolated static economy audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/ka0-ka5-static.yml"
+      - "tools/ka-*"
+      - "tools/ka-*/**"
+      - "tools/ia-ghidra/*.java"
+      - "tools/ja-ghidra/*.java"
+      - "**/*.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: naruto-ka0-ka5-static
+  cancel-in-progress: false
+
+jobs:
+  ka0-ka5-static:
+    name: ka0-ka5-static
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GHIDRA_ASSET: ghidra_12.2_PUBLIC_20261016.zip
+      GHIDRA_SHA256: 2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+      GHIDRA_CACHE_DIR: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+      WORK: /tmp/naruto-ka-private-${{ github.run_id }}
+      OUT: /tmp/naruto-ka-output-${{ github.run_id }}
+      KA_BASELINE: 656503e9e21cb4baf3185969abf7b15d05a149c6
+
+    steps:
+      - name: Checkout full source history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install static dependencies and compile every tracked Python script
+        id: pycompile
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends bchunk xorriso unzip python3-pip jq
+          python3 -m pip install --break-system-packages "capstone==5.0.3"
+          mkdir -p "$WORK/source" "$WORK/extracted" "$WORK/input" "$WORK/pycache" "$WORK/ghidra-exe" "$WORK/ghidra-entry1" "$WORK/scripts" "$OUT"
+          python3 - "$OUT/KA0_PYCOMPILE.tsv" "$WORK/pycache" <<'PY'
+          import csv,hashlib,py_compile,subprocess,sys
+          from pathlib import Path
+          out,cache=Path(sys.argv[1]),Path(sys.argv[2]); cache.mkdir(parents=True,exist_ok=True)
+          files=subprocess.check_output(["git","ls-files","-z","*.py"]).decode().split("\0")
+          rows=[]
+          for name in [x for x in files if x]:
+              target=cache/(hashlib.sha256(name.encode()).hexdigest()+".pyc")
+              try: py_compile.compile(name,cfile=str(target),doraise=True); rows.append((name,"PASS",""))
+              except Exception as e: rows.append((name,"FAIL",type(e).__name__+":"+str(e)))
+          with out.open("w",encoding="utf-8",newline="") as f:
+              w=csv.writer(f,delimiter="\t",lineterminator="\n"); w.writerow(["path","status","reason"]); w.writerows(rows)
+          print("PY_COMPILE_TOTAL="+str(len(rows))+" PASS="+str(sum(r[1]=="PASS" for r in rows))+" FAIL="+str(sum(r[1]!="PASS" for r in rows)))
+          PY
+          python3 - "$OUT/KA0_PYCOMPILE.tsv" <<'PY'
+          import csv,sys
+          r=list(csv.DictReader(open(sys.argv[1]),delimiter="\t"))
+          raise SystemExit(0 if r and all(x["status"]=="PASS" for x in r) else 1)
+          PY
+
+      - name: Restore verified Ghidra cache
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+          key: ghidra-12.2-linux-x64-2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+
+      - name: Download Ghidra if cache is absent
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$GHIDRA_CACHE_DIR"
+          if ! find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit | grep -q .; then
+            ARCHIVE="$RUNNER_TEMP/$GHIDRA_ASSET"
+            curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 3 "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.2_build/$GHIDRA_ASSET" -o "$ARCHIVE"
+            echo "$GHIDRA_SHA256  $ARCHIVE" | sha256sum --check --status
+            unzip -q "$ARCHIVE" -d "$GHIDRA_CACHE_DIR"; rm -f "$ARCHIVE"
+          fi
+          HEADLESS="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
+          test -x "$HEADLESS"; echo "HEADLESS=$HEADLESS" >> "$GITHUB_ENV"
+
+      - name: Download and verify disc privately; extract EXE and Entry 1
+        id: extract
+        shell: bash
+        run: |
+          set -euo pipefail
+          API="https://api.github.com/repos/$GITHUB_REPOSITORY"
+          BIN="$WORK/source/naruto-disc.bin"; CUE_RAW="$WORK/source/original.cue"; CUE="$WORK/source/naruto-disc.cue"
+          curl --fail --silent --show-error --location --retry 2 --max-time 600 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$API/releases/assets/647346873" -o "$BIN"
+          test "$(stat -c %s "$BIN")" = 325989552
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $BIN" | sha256sum --check --status
+          curl --fail --silent --show-error --location --retry 2 --max-time 60 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$API/releases/assets/647354760" -o "$CUE_RAW"
+          test "$(stat -c %s "$CUE_RAW")" = 116
+          echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $CUE_RAW" | sha256sum --check --status
+          python3 - "$CUE_RAW" "$CUE" <<'PY'
+          from pathlib import Path
+          import re,sys
+          src,dst=map(Path,sys.argv[1:3]); lines=[]; count=0
+          for line in src.read_text(encoding="utf-8-sig").splitlines():
+              if line.lstrip().upper().startswith("FILE "):
+                  m=re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$',line,re.I)
+                  if not m: raise SystemExit("INVALID_CUE_FILE_DIRECTIVE")
+                  line=m.group(1)+'"naruto-disc.bin"'+m.group(2); count+=1
+              lines.append(line)
+          if count!=1: raise SystemExit("CUE_FILE_DIRECTIVE_COUNT="+str(count))
+          dst.write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+          bchunk "$BIN" "$CUE" "$WORK/source/track"
+          ISO="$(find "$WORK/source" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"; test -n "$ISO"
+          xorriso -osirrox on -indev "$ISO" -extract / "$WORK/extracted" > "$WORK/source/extract.log" 2>&1
+          EXE="$(find "$WORK/extracted" -type f -iname 'SLPS_035.53' -print -quit)"
+          DATA="$(find "$WORK/extracted" -type f -iname 'DATA.BIN' -print -quit)"
+          test -n "$EXE" && test -n "$DATA"; test "$(stat -c %s "$EXE")" = 385024
+          echo "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569  $EXE" | sha256sum --check --status
+          test "$(stat -c %s "$DATA")" = 66015232
+          echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $DATA" | sha256sum --check --status
+          cp "$EXE" "$WORK/input/SLPS_035.53"
+          python3 - "$DATA" "$WORK/input/ENTRY1.bin" <<'PY'
+          from pathlib import Path
+          import hashlib,struct,sys
+          d=Path(sys.argv[1]).read_bytes(); lbn,size=struct.unpack_from("<II",d,0x4c); off=(lbn-212)*2048; e=d[off:off+size]
+          if (lbn,size,off,len(e))!=(8778,596412,0x10BB000,596412): raise SystemExit("ENTRY1_DIRECTORY_MAPPING_MISMATCH")
+          h=hashlib.sha256(e).hexdigest()
+          if h!="9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a": raise SystemExit("ENTRY1_SHA256_MISMATCH="+h)
+          Path(sys.argv[2]).write_bytes(e)
+          PY
+          echo "EXTRACT_VERIFIED=1" >> "$GITHUB_OUTPUT"
+
+      - name: Export bounded static Ghidra reference and function evidence
+        id: ghidra
+        if: steps.extract.outputs.EXTRACT_VERIFIED == '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp "$GITHUB_WORKSPACE"/tools/ia-ghidra/*.java "$WORK/scripts/"
+          cp "$GITHUB_WORKSPACE"/tools/ja-ghidra/*.java "$WORK/scripts/"
+          cp "$GITHUB_WORKSPACE"/tools/ka-ghidra/*.java "$WORK/scripts/" 2>/dev/null || true
+          SCRIPT_PATH="$WORK/scripts"
+          set +e
+          "$HEADLESS" "$WORK/ghidra-exe" Naruto_KA_EXE -import "$WORK/input/SLPS_035.53" -loader BinaryLoader -loader-baseAddr 0x80010000 -loader-fileOffset 0x800 -loader-length 0x5D800 -processor "MIPS:LE:32:default" -scriptPath "$SCRIPT_PATH" -preScript PreparePsxExe.java -postScript EnsureTargetFunctions.java 0x80014F10 0x8001552C -postScript ExportJATargetEvidence.java "$OUT/EXE_TARGETS.txt" 0x80014F10 0x8001552C 0x80055CF4 -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject > "$OUT/ghidra-exe.log" 2>&1
+          EXE_RC=$?
+          "$HEADLESS" "$WORK/ghidra-entry1" Naruto_KA_ENTRY1 -import "$WORK/input/ENTRY1.bin" -loader BinaryLoader -loader-baseAddr 0x800AD450 -loader-length 0x919BC -loader-blockName ENTRY1_AT_800AD450 -processor "MIPS:LE:32:default" -scriptPath "$SCRIPT_PATH" -postScript EnsureTargetFunctions.java 0x800B50AC 0x800F2A9C 0x800F3658 0x800DC2E0 0x800D15A8 0x800BE5D8 -postScript ExportJATargetEvidence.java "$OUT/ENTRY_TARGETS.txt" 0x800B50AC 0x800F2A9C 0x800F3658 0x800DC2E0 0x800D15A8 0x800BE5D8 0x800B24C8 0x800BEDA4 0x800F5F54 0x800B54DC 0x800F5EBC -analysisTimeoutPerFile 1200 -max-cpu 2 -deleteProject > "$OUT/ghidra-entry1.log" 2>&1
+          ENTRY_RC=$?
+          set -e
+          echo "$EXE_RC" > "$OUT/ghidra-exe.exit"; echo "$ENTRY_RC" > "$OUT/ghidra-entry1.exit"
+          {
+            echo "EXE_GHIDRA_EXIT=$EXE_RC"; tail -n 60 "$OUT/ghidra-exe.log" || true
+            echo "ENTRY1_GHIDRA_EXIT=$ENTRY_RC"; tail -n 80 "$OUT/ghidra-entry1.log" || true
+          } > "$OUT/GHIDRA_DIAGNOSTICS.txt"
+
+      - name: Run KA0-KA5 analyzer
+        id: analyzer
+        if: steps.extract.outputs.EXTRACT_VERIFIED == '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          PY_COMPILE_TSV="$OUT/KA0_PYCOMPILE.tsv" python3 tools/ka-static/RunKA0KA5Static.py "$WORK/input/SLPS_035.53" "$WORK/input/ENTRY1.bin" "$OUT/EXE_TARGETS.txt" "$OUT/ENTRY_TARGETS.txt" "$OUT" "$KA_BASELINE" "$GITHUB_SHA"
+          RC=$?
+          set -e
+          echo "$RC" > "$OUT/analysis.exit"; echo "analysis_exit=$RC" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Delete private disc, extracted game, and Ghidra project
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$WORK"
+          test ! -e "$WORK"
+          echo "PRIVATE_BINARY_CLEANUP=PASS" > "$OUT/cleanup.txt"
+
+      - name: Publish only KA report directory and commit run summary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST="reports/stage1_economy/ka-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$DEST"
+          find "$OUT" -maxdepth 1 -type f \( -name 'KA*.txt' -o -name 'KA*.tsv' -o -name 'KA*.md' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
+          EXE_RC="$(cat "$OUT/ghidra-exe.exit" 2>/dev/null || echo TIDAK_TAHU)"
+          ENTRY_RC="$(cat "$OUT/ghidra-entry1.exit" 2>/dev/null || echo TIDAK_TAHU)"
+          ANALYSIS_RC="$(cat "$OUT/analysis.exit" 2>/dev/null || echo TIDAK_TAHU)"
+          PYRC="$(python3 - "$OUT/KA0_PYCOMPILE.tsv" <<'PY'
+          import csv,sys
+          try:
+              r=list(csv.DictReader(open(sys.argv[1]),delimiter="\t")); print(0 if r and all(x["status"]=="PASS" for x in r) else 1)
+          except Exception: print("TIDAK_TAHU")
+          PY
+          )"
+          CLEANUP="$(cat "$OUT/cleanup.txt" 2>/dev/null || echo PRIVATE_BINARY_CLEANUP=UNKNOWN)"
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="ka0-ka5-static") | .id' | head -n 1)" || JOB_ID=TIDAK_TAHU
+          [ -n "$JOB_ID" ] || JOB_ID=TIDAK_TAHU
+          if [ "$PYRC" = 0 ] && [ "$EXE_RC" = 0 ] && [ "$ENTRY_RC" = 0 ] && [ "$ANALYSIS_RC" = 0 ] && [ "$CLEANUP" = "PRIVATE_BINARY_CLEANUP=PASS" ]; then STATUS=PASS; else STATUS=PARTIAL; fi
+          {
+            echo "STATUS=$STATUS"
+            echo "JOB=ka0-ka5-static"
+            echo "JOB_ID=$JOB_ID"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "EXIT_CODE=$ANALYSIS_RC"
+            echo "PY_COMPILE_EXIT_CODE=$PYRC"
+            echo "GHIDRA_EXE_EXIT_CODE=$EXE_RC"
+            echo "GHIDRA_ENTRY1_EXIT_CODE=$ENTRY_RC"
+            echo "$CLEANUP"
+            echo "EMULATOR_LAUNCHES=0"
+            echo "GAME_OR_EMULATOR_EXECUTED=no"
+            echo "BIOS_OR_SAVESTATE_USED=no"
+            echo "BINARY_COMMITTED=no"
+          } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
+          # Delete temporary disassembly/log exports before publishing; only bounded evidence TSVs remain.
+          rm -f "$OUT/EXE_TARGETS.txt" "$OUT/ENTRY_TARGETS.txt" "$OUT/ghidra-exe.log" "$OUT/ghidra-entry1.log"
+          python3 - "$DEST" <<'PY'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1])
+          bad=[str(x) for x in p.rglob("*") if x.is_file() and x.suffix.lower() not in {".txt",".tsv",".md"}]
+          if bad: raise SystemExit("NON_TEXT_COMMIT_BLOCKED="+repr(bad))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$DEST"
+          git diff --cached --name-status > "$RUNNER_TEMP/ka-publish-files.tsv"
+          cp "$RUNNER_TEMP/ka-publish-files.tsv" "$DEST/KA0_PUBLISH_COMMIT_FILES.tsv"
+          git add "$DEST/KA0_PUBLISH_COMMIT_FILES.tsv"
+          git commit -m "Publish KA0-KA5 static audit $GITHUB_RUN_ID [skip ci]"
+          PUSHED=0
+          for n in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort; sleep "$n"; continue; }
+            if git push origin HEAD:main; then PUSHED=1; break; fi
+            sleep "$n"
+          done
+          test "$PUSHED" -eq 1
