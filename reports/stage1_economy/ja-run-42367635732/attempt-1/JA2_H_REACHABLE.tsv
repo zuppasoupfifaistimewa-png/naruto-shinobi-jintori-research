@@ -1,0 +1,2 @@
+x	table_index	status	evidence_pc	image	file_offset	bytes	instruksi
+0 (conditional reset store only)	0	VALUE_WRITTEN_NOT_PROVEN_READ_BY_F2A9C	0x800E8174	ENTRY1	0x010F5D24	30 05 40 AC	sw $zero, 0x530($v0)

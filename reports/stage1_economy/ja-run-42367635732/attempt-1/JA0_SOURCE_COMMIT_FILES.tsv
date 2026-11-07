@@ -1,0 +1,4 @@
+commit_sha	status	path
+570f19c472b5238349909873ac6c68afc84359df	A	.github/workflows/ja0-ja5-static.yml
+570f19c472b5238349909873ac6c68afc84359df	A	tools/ja-ghidra/ExportJATargetEvidence.java
+570f19c472b5238349909873ac6c68afc84359df	A	tools/ja-static/RunJA0JA5Static.py

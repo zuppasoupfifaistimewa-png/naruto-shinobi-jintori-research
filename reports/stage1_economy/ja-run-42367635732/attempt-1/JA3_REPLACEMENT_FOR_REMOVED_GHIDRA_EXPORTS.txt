@@ -1,0 +1,3 @@
+The two oversized raw Ghidra dumps were removed under the approved exception.
+Bounded replacements: JA1_FUN_80014F10_BODY.tsv, JA1_CALLER_WINDOWS.tsv, JA3_ZERO_WRITER_EVIDENCE.tsv.
+Each contiguous excerpt is at most 16 MIPS instructions / 64 bytes.

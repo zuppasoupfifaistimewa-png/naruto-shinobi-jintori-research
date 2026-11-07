@@ -1,0 +1,2 @@
+run_id	event	workflow	workflow_path	head_sha	status	conclusion	attempt	created_at	jobs	exit_code
+42367635732	push	JA0-JA5 isolated static audit	.github/workflows/ja0-ja5-static.yml	570f19c472b5238349909873ac6c68afc84359df	in_progress	NONE	1	2026-11-07T11:18:42Z	ja0-ja5-static:in_progress/NONE	TIDAK_TAHU_API_NO_PROCESS_EXIT_CODE

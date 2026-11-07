@@ -1,0 +1,4 @@
+image	pc	file_offset	bytes	instruksi	target	target_name	kind	caller_entry	caller_function	arg_a0	arg_a1	arg_a2	arg_a3
+ENTRY1	0x800F3830	0x011013E0	5D B1 03 0C	jal 0x800ec574	0x800EC574	FUN_800EC574	JAL	0x800F3658	FUN_800f3658	TIDAK TAHU: entry/caller register	TIDAK TAHU: entry/caller register	TIDAK TAHU: entry/caller register	TIDAK TAHU: entry/caller register
+ENTRY1	0x800F5D08	0x011038B8	5D B1 03 0C	jal 0x800ec574	0x800EC574	FUN_800EC574	JAL	0x800F3658	FUN_800f3658	TIDAK TAHU: entry/caller register	TIDAK TAHU: entry/caller register	TIDAK TAHU: entry/caller register	TIDAK TAHU: entry/caller register
+ENTRY1	0x800F5DAC	0x0110395C	6A 45 03 0C	jal 0x800d15a8	0x800D15A8	FUN_800D15A8	JAL	0x800F3658	FUN_800f3658	TIDAK TAHU: entry/caller register	TIDAK TAHU: entry/caller register	TIDAK TAHU: entry/caller register	TIDAK TAHU: entry/caller register

@@ -1,0 +1,3 @@
+FUN_80014F10=owner-indexed max update to 0x80070F34+owner*0xB4, not proven wallet setter.
+Callee has no demonstrated participant-record+4 store.
+Wallet-authoritative setter=TIDAK TAHU.

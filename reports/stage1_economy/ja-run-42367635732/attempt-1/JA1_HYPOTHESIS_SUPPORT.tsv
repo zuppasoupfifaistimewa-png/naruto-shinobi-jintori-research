@@ -1,0 +1,9 @@
+image	pc	file_offset	bytes	instruksi	hypothesis	role	interpretation
+EXE	0x80014F48	0x00005748	00 00 62 8C	lw $v0, ($v1)	H1_FUN14F10_MAX_FIELD_UPDATE	SUPPORT	Owner-indexed +0x94 field is read/compared/conditionally overwritten; wallet semantics not established.
+EXE	0x80014F50	0x00005750	2A 10 45 00	slt $v0, $v0, $a1	H1_FUN14F10_MAX_FIELD_UPDATE	SUPPORT	Owner-indexed +0x94 field is read/compared/conditionally overwritten; wallet semantics not established.
+EXE	0x80014F5C	0x0000575C	00 00 65 AC	sw $a1, ($v1)	H1_FUN14F10_MAX_FIELD_UPDATE	SUPPORT	Owner-indexed +0x94 field is read/compared/conditionally overwritten; wallet semantics not established.
+EXE	0x80014F64	0x00005764	01 00 02 24	addiu $v0, $zero, 1	H1_FUN14F10_MAX_FIELD_UPDATE	SUPPORT	Owner-indexed +0x94 field is read/compared/conditionally overwritten; wallet semantics not established.
+ENTRY1	0x800B2C54	0x010C0804	04 00 40 A4	sh $zero, 4($v0)	H2_PARTICIPANT_PLUS4_IS_SEPARATE_STATE	SUPPORT	Participant record +4 has write sites, but authority/wallet semantics are unproven.
+ENTRY1	0x800B2D1C	0x010C08CC	04 00 43 AC	sw $v1, 4($v0)	H2_PARTICIPANT_PLUS4_IS_SEPARATE_STATE	SUPPORT	Participant record +4 has write sites, but authority/wallet semantics are unproven.
+ENTRY1	0x800B32E4	0x010C0E94	04 00 40 A4	sh $zero, 4($v0)	H2_PARTICIPANT_PLUS4_IS_SEPARATE_STATE	SUPPORT	Participant record +4 has write sites, but authority/wallet semantics are unproven.
+ENTRY1	0x800B359C	0x010C114C	04 00 43 AC	sw $v1, 4($v0)	H2_PARTICIPANT_PLUS4_IS_SEPARATE_STATE	SUPPORT	Participant record +4 has write sites, but authority/wallet semantics are unproven.

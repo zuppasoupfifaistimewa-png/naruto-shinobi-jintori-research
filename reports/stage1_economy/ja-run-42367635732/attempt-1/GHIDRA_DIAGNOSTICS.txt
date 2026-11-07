@@ -1,0 +1,182 @@
+EXE_GHIDRA_EXIT=0
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/FileFormats/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/BSim/ghidra_scripts
+    /tmp/naruto-ja-private-42367635732/scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/Atmel/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/PDB/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/VersionTracking/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Creating temporary project: /tmp/naruto-ja-private-42367635732/ghidra-exe/Naruto_SLPS_035_53_JA_EXE (HeadlessAnalyzer)  
+INFO  Creating project: /tmp/naruto-ja-private-42367635732/ghidra-exe/Naruto_SLPS_035_53_JA_EXE (DefaultProject)  
+INFO  REPORT: Processing input files:  (HeadlessAnalyzer)  
+INFO       project: /tmp/naruto-ja-private-42367635732/ghidra-exe/Naruto_SLPS_035_53_JA_EXE (HeadlessAnalyzer)  
+INFO  IMPORTING: file:///tmp/naruto-ja-private-42367635732/input/SLPS_035.53 (HeadlessAnalyzer)  
+INFO  Successfully applied "-loader-baseAddr" to "Base Address" (old: "null", new: "0x80010000") (ProgramLoader)  
+INFO  Successfully applied "-loader-fileOffset" to "File Offset" (old: "0x0", new: "0x800") (ProgramLoader)  
+INFO  Successfully applied "-loader-length" to "Length" (old: "0x5e000", new: "0x5D800") (ProgramLoader)  
+INFO  Using Loader: Raw Binary (ProgramLoader)  
+INFO  Using Language/Compiler: MIPS:LE:32:default:default (ProgramLoader)  
+INFO  Using Library Search Path: [., /bin, /lib, /lib64, /lib/x86_64-linux-gnu, /lib/aarch64-linux-gnu, /usr/bin, /usr/lib, /usr/X11R6/bin, /usr/X11R6/lib, /usr/java/packages/lib, /usr/lib64] (ProgramLoader)  
+INFO  IMPORTING: Loaded 0 additional files (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: PreparePsxExe.java  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/naruto-ja-private-42367635732/scripts/PreparePsxExe.java (HeadlessAnalyzer)  
+INFO  PreparePsxExe.java> Prepared PS-X EXE entrypoint: 80011448 (GhidraScript)  
+INFO  PreparePsxExe.java> Entrypoint function: entry_SLPS_035_53 (GhidraScript)  
+INFO  PreparePsxExe.java> Main text block starts at 0x80010000; file bytes are loaded from offset 0x800. (GhidraScript)  
+INFO  ANALYZING all memory and code: file:///tmp/naruto-ja-private-42367635732/input/SLPS_035.53 (HeadlessAnalyzer)  
+INFO  Packed database cache: /var/tmp/runner-ghidra/packed-db-cache (PackedDatabaseCache)  
+INFO  Applied data type archive: generic_clib (ApplyDataArchiveAnalyzer)  
+INFO  No functions detected that make variadic function calls with format strings containing format specifiers (FormatStringAnalyzer)  
+INFO  -----------------------------------------------------
+    ASCII Strings                              0.236 secs
+    Apply Data Archives                        0.694 secs
+    Call Convention ID                         0.009 secs
+    Call-Fixup Installer                       0.011 secs
+    Create Address Tables                      0.039 secs
+    Create Address Tables - One Time           0.175 secs
+    Create Function                            0.404 secs
+    Data Reference                             0.051 secs
+    Decompiler Switch Analysis                 2.750 secs
+    Demangler GNU                              0.013 secs
+    Disassemble                                1.175 secs
+    Disassemble Entry Points                   0.001 secs
+    Embedded Media                             0.016 secs
+    External Entry References                  0.000 secs
+    Function ID                                0.017 secs
+    Function Start Search                      0.036 secs
+    Function Start Search delayed - One Time   0.001 secs
+    MIPS Constant Reference Analyzer           2.195 secs
+    MIPS Symbol                                0.015 secs
+    MIPS UnAlligned Instruction Fix            0.153 secs
+    Non-Returning Functions - Discovered       0.106 secs
+    Reference                                  0.199 secs
+    Shared Return Calls                        0.098 secs
+    Source Language Support                    0.002 secs
+    Stack                                      2.092 secs
+    Subroutine References                      0.150 secs
+    Subroutine References - One Time           0.001 secs
+    Variadic Function Signature Override       0.079 secs
+-----------------------------------------------------
+     Total Time   10 secs
+-----------------------------------------------------
+ (AutoAnalysisManager)  
+INFO  REPORT: Analysis succeeded for file: file:///tmp/naruto-ja-private-42367635732/input/SLPS_035.53 (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: EnsureTargetFunctions.java '0x80014F10'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/naruto-ja-private-42367635732/scripts/EnsureTargetFunctions.java (HeadlessAnalyzer)  
+INFO  EnsureTargetFunctions.java> TARGET_FUNCTION=80014f10; name=HA_TARGET_80014f10 (GhidraScript)  
+INFO  REPORT: Execute script: ExportFunctionDetail.java '/tmp/naruto-ja-output-42367635732/EXE_DETAIL.txt' '0x80014F10'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/naruto-ja-private-42367635732/scripts/ExportFunctionDetail.java (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: ExportIAManagerFieldAccesses.java '/tmp/naruto-ja-output-42367635732/EXE_PLUS4.tsv' '0x4'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/naruto-ja-private-42367635732/scripts/ExportIAManagerFieldAccesses.java (HeadlessAnalyzer)  
+INFO  ExportIAManagerFieldAccesses.java> IA_ACCESS_DISPLACEMENT=0x4 (GhidraScript)  
+INFO  ExportIAManagerFieldAccesses.java> IA_ACCESS_TOTAL=667 (GhidraScript)  
+INFO  ExportIAManagerFieldAccesses.java> IA_ACCESS_MANAGER_FUNCTION_CANDIDATES=0 (GhidraScript)  
+INFO  REPORT: Execute script: ExportJATargetEvidence.java '/tmp/naruto-ja-output-42367635732/EXE_TARGETS.txt' '0x80014F10'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/naruto-ja-private-42367635732/scripts/ExportJATargetEvidence.java (HeadlessAnalyzer)  
+INFO  ANALYZING changes made by post scripts: file:///tmp/naruto-ja-private-42367635732/input/SLPS_035.53 (HeadlessAnalyzer)  
+INFO  REPORT: Post-analysis succeeded for file: file:///tmp/naruto-ja-private-42367635732/input/SLPS_035.53 (HeadlessAnalyzer)  
+INFO  /SLPS_035.53: file created (runner) (LocalFileSystem)  
+INFO  REPORT: Save succeeded for: /SLPS_035.53 (Naruto_SLPS_035_53_JA_EXE:/SLPS_035.53) (HeadlessAnalyzer)  
+INFO  REPORT: Import succeeded (HeadlessAnalyzer)  
+ENTRY1_GHIDRA_EXIT=0
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/Base/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/PyGhidra/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/PIC/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/JVM/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Debug/Debugger/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/Swift/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/8051/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/FunctionID/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/BytePatterns/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/Decompiler/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/DATA/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/FileFormats/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/BSim/ghidra_scripts
+    /tmp/naruto-ja-private-42367635732/scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Processors/Atmel/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/PDB/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016/ghidra_12.2_PUBLIC/Ghidra/Features/VersionTracking/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Creating temporary project: /tmp/naruto-ja-private-42367635732/ghidra-entry1/Naruto_SLPS_035_53_JA_ENTRY1 (HeadlessAnalyzer)  
+INFO  Creating project: /tmp/naruto-ja-private-42367635732/ghidra-entry1/Naruto_SLPS_035_53_JA_ENTRY1 (DefaultProject)  
+INFO  REPORT: Processing input files:  (HeadlessAnalyzer)  
+INFO       project: /tmp/naruto-ja-private-42367635732/ghidra-entry1/Naruto_SLPS_035_53_JA_ENTRY1 (HeadlessAnalyzer)  
+INFO  IMPORTING: file:///tmp/naruto-ja-private-42367635732/input/ENTRY1.bin (HeadlessAnalyzer)  
+INFO  Successfully applied "-loader-baseAddr" to "Base Address" (old: "null", new: "0x800AD450") (ProgramLoader)  
+INFO  Successfully applied "-loader-length" to "Length" (old: "0x919bc", new: "0x919BC") (ProgramLoader)  
+INFO  Successfully applied "-loader-blockName" to "Block Name" (old: "", new: "ENTRY1_AT_800AD450") (ProgramLoader)  
+INFO  Using Loader: Raw Binary (ProgramLoader)  
+INFO  Using Language/Compiler: MIPS:LE:32:default:default (ProgramLoader)  
+INFO  Using Library Search Path: [., /bin, /lib, /lib64, /lib/x86_64-linux-gnu, /lib/aarch64-linux-gnu, /usr/bin, /usr/lib, /usr/X11R6/bin, /usr/X11R6/lib, /usr/java/packages/lib, /usr/lib64] (ProgramLoader)  
+INFO  IMPORTING: Loaded 0 additional files (HeadlessAnalyzer)  
+INFO  ANALYZING all memory and code: file:///tmp/naruto-ja-private-42367635732/input/ENTRY1.bin (HeadlessAnalyzer)  
+INFO  Packed database cache: /var/tmp/runner-ghidra/packed-db-cache (PackedDatabaseCache)  
+INFO  Applied data type archive: generic_clib (ApplyDataArchiveAnalyzer)  
+INFO  -----------------------------------------------------
+    ASCII Strings                              0.242 secs
+    Apply Data Archives                        0.440 secs
+    Call-Fixup Installer                       0.010 secs
+    Create Address Tables                      0.098 secs
+    Create Address Tables - One Time           0.114 secs
+    Create Function                            0.716 secs
+    Data Reference                             0.038 secs
+    Decompiler Switch Analysis                 6.538 secs
+    Demangler GNU                              0.014 secs
+    Disassemble                                1.819 secs
+    Disassemble Entry Points                   0.001 secs
+    Embedded Media                             0.026 secs
+    External Entry References                  0.000 secs
+    Function ID                                0.016 secs
+    Function Start Search                      0.076 secs
+    Function Start Search delayed - One Time   0.000 secs
+    MIPS Constant Reference Analyzer           3.682 secs
+    MIPS Symbol                                0.002 secs
+    MIPS UnAlligned Instruction Fix            0.223 secs
+    Non-Returning Functions - Discovered       0.170 secs
+    Reference                                  0.241 secs
+    Shared Return Calls                        0.132 secs
+    Source Language Support                    0.001 secs
+    Stack                                      3.297 secs
+    Subroutine References                      0.247 secs
+-----------------------------------------------------
+     Total Time   18 secs
+-----------------------------------------------------
+ (AutoAnalysisManager)  
+INFO  REPORT: Analysis succeeded for file: file:///tmp/naruto-ja-private-42367635732/input/ENTRY1.bin (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: EnsureTargetFunctions.java '0x800C5978' '0x800D15A8' '0x800E7B38' '0x800E8190' '0x800DB29C' '0x800EC574' '0x800DC2E0' '0x800F2A9C' '0x800F3658'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/naruto-ja-private-42367635732/scripts/EnsureTargetFunctions.java (HeadlessAnalyzer)  
+INFO  EnsureTargetFunctions.java> TARGET_FUNCTION=800c5978; name=FUN_800c5978 (GhidraScript)  
+INFO  EnsureTargetFunctions.java> TARGET_FUNCTION=800d15a8; name=FUN_800d15a8 (GhidraScript)  
+INFO  EnsureTargetFunctions.java> TARGET_FUNCTION=800e7b38; name=FUN_800e7b38 (GhidraScript)  
+INFO  EnsureTargetFunctions.java> TARGET_FUNCTION=800e8190; name=FUN_800e8190 (GhidraScript)  
+INFO  EnsureTargetFunctions.java> TARGET_FUNCTION=800db29c; name=FUN_800db29c (GhidraScript)  
+INFO  EnsureTargetFunctions.java> TARGET_FUNCTION=800ec574; name=FUN_800ec574 (GhidraScript)  
+INFO  EnsureTargetFunctions.java> TARGET_FUNCTION=800dc2e0; name=FUN_800dc2e0 (GhidraScript)  
+INFO  EnsureTargetFunctions.java> TARGET_FUNCTION=800f2a9c; name=FUN_800f2a9c (GhidraScript)  
+INFO  EnsureTargetFunctions.java> TARGET_FUNCTION=800f3658; name=FUN_800f3658 (GhidraScript)  
+INFO  REPORT: Execute script: ExportFunctionDetail.java '/tmp/naruto-ja-output-42367635732/ENTRY_DETAIL.txt' '0x800C5978' '0x800D15A8' '0x800E7B38' '0x800E8190' '0x800DB29C' '0x800EC574' '0x800DC2E0' '0x800F2A9C' '0x800F3658' '0x800B24C8' '0x800BEDA4'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/naruto-ja-private-42367635732/scripts/ExportFunctionDetail.java (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: ExportIAManagerFieldAccesses.java '/tmp/naruto-ja-output-42367635732/ENTRY_PLUS530.tsv' '0x530'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/naruto-ja-private-42367635732/scripts/ExportIAManagerFieldAccesses.java (HeadlessAnalyzer)  
+INFO  ExportIAManagerFieldAccesses.java> IA_ACCESS_DISPLACEMENT=0x530 (GhidraScript)  
+INFO  ExportIAManagerFieldAccesses.java> IA_ACCESS_TOTAL=30 (GhidraScript)  
+INFO  ExportIAManagerFieldAccesses.java> IA_ACCESS_MANAGER_FUNCTION_CANDIDATES=30 (GhidraScript)  
+INFO  REPORT: Execute script: ExportIAManagerFieldAccesses.java '/tmp/naruto-ja-output-42367635732/ENTRY_PLUS4.tsv' '0x4'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/naruto-ja-private-42367635732/scripts/ExportIAManagerFieldAccesses.java (HeadlessAnalyzer)  
+INFO  ExportIAManagerFieldAccesses.java> IA_ACCESS_DISPLACEMENT=0x4 (GhidraScript)  
+INFO  ExportIAManagerFieldAccesses.java> IA_ACCESS_TOTAL=513 (GhidraScript)  
+INFO  ExportIAManagerFieldAccesses.java> IA_ACCESS_MANAGER_FUNCTION_CANDIDATES=130 (GhidraScript)  
+INFO  REPORT: Execute script: ExportJATargetEvidence.java '/tmp/naruto-ja-output-42367635732/ZERO_TARGETS.txt' '0x800B24C8' '0x800BEDA4'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/naruto-ja-private-42367635732/scripts/ExportJATargetEvidence.java (HeadlessAnalyzer)  
+INFO  ANALYZING changes made by post scripts: file:///tmp/naruto-ja-private-42367635732/input/ENTRY1.bin (HeadlessAnalyzer)  
+INFO  REPORT: Post-analysis succeeded for file: file:///tmp/naruto-ja-private-42367635732/input/ENTRY1.bin (HeadlessAnalyzer)  
+INFO  /ENTRY1.bin: file created (runner) (LocalFileSystem)  
+INFO  REPORT: Save succeeded for: /ENTRY1.bin (Naruto_SLPS_035_53_JA_ENTRY1:/ENTRY1.bin) (HeadlessAnalyzer)  
+INFO  REPORT: Import succeeded (HeadlessAnalyzer)  

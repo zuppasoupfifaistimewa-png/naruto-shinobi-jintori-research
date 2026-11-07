@@ -1,0 +1,3 @@
+hypothesis	falsifier
+H1_FUN14F10_MAX_FIELD_UPDATE	A complete caller/dataflow proof that +0x94 is the authoritative wallet and that this max assignment is the wallet mutation.
+H2_PARTICIPANT_PLUS4_IS_SEPARATE_STATE	A complete alias/caller census showing +4 writes only temporary/display state and never reaches the authoritative wallet getter/setter.

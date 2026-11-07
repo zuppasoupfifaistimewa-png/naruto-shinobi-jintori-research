@@ -1,0 +1,14 @@
+image	pc	file_offset	bytes	instruksi	decomp_statement
+EXE	0x80014F10	0x00005710	FF 00 83 30	andi $v1, $a0, 0xff	owner = argument a0 & 0xFF
+EXE	0x80014F14	0x00005714	04 00 62 2C	sltiu $v0, $v1, 4	valid owner range: owner < 4
+EXE	0x80014F1C	0x0000571C	07 80 04 3C	lui $a0, 0x8007	invalid-owner path clears return value
+EXE	0x80014F28	0x00005728	A0 0E 84 24	addiu $a0, $a0, 0xea0	base address constant construction begins (0x80070EA0)
+EXE	0x80014F2C	0x0000572C	40 10 03 00	sll $v0, $v1, 1	owner index scaled for the 0xB4-stride record
+EXE	0x80014F34	0x00005734	00 19 02 00	sll $v1, $v0, 4	multiply owner by 0x30
+EXE	0x80014F3C	0x0000573C	80 18 03 00	sll $v1, $v1, 2	multiply owner by 0xB4
+EXE	0x80014F40	0x00005740	94 00 84 24	addiu $a0, $a0, 0x94	field offset +0x94 is added to record base
+EXE	0x80014F48	0x00005748	00 00 62 8C	lw $v0, ($v1)	load existing u32 value at owner-record +0x94
+EXE	0x80014F50	0x00005750	2A 10 45 00	slt $v0, $v0, $a1	compare existing value < argument a1
+EXE	0x80014F5C	0x0000575C	00 00 65 AC	sw $a1, ($v1)	conditionally write argument a1 when greater
+EXE	0x80014F60	0x00005760	08 00 E0 03	jr $ra	valid-owner return path
+EXE	0x80014F64	0x00005764	01 00 02 24	addiu $v0, $zero, 1	valid-owner return value = 1
