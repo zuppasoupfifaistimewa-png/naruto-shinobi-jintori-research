@@ -1,0 +1,5 @@
+pc	file_offset	bytes	instruksi
+0x800129AC	0x31AC	18 01 80 AF	sw $zero, 0x118($gp)
+0x800129CC	0x31CC	18 01 83 8F	lw $v1, 0x118($gp)
+0x800129F4	0x31F4	18 01 83 AF	sw $v1, 0x118($gp)
+0x80015CD4	0x64D4	18 01 82 8F	lw $v0, 0x118($gp)
