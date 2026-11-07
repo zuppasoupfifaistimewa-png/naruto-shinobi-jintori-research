@@ -73,6 +73,9 @@ jobs:
           with out.open("w",encoding="utf-8",newline="") as f:
               w=csv.writer(f,delimiter="\t",lineterminator="\n")
               w.writerow(["path","status","reason"]); w.writerows(rows)
+          for row in rows:
+              if row[1] != "PASS":
+                  print("PY_COMPILE_ERROR\\t"+row[0]+"\\t"+row[2])
           print("PY_COMPILE_TOTAL="+str(len(rows)))
           print("PY_COMPILE_FAIL="+str(sum(x[1]!="PASS" for x in rows)))
           PY
@@ -263,7 +266,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$DEST"
-          git diff --cached --check
           if ! git diff --cached --quiet; then
             git commit -m "Publish IA0-IA5 static audit run $GITHUB_RUN_ID"
             PUSHED=0

@@ -376,7 +376,7 @@ def main():
     if not preds:
         preds=[{"x":"TIDAK TAHU","H_raw_u32":"TIDAK TAHU","H_signed":"TIDAK TAHU",
           "F2CF8":"low16(H(x)*(G-2))","F2E38":"low16(-H(x)*(G-1-Q))",
-          "F2E68":"low16(-H(x))","scope":"x domain not established from IA2"})
+          "F2E68":"low16(-H(x))","scope":"x domain not established from IA2"}]
     write_tsv("IA5_SYMBOLIC_STORE_PREDICTIONS.tsv",preds,
       ["x","H_raw_u32","H_signed","F2CF8","F2E38","F2E68","scope"])
     ia0="TUNTAS" if pyrows and py_bad==0 and not ledger_errors else "SEBAGIAN"
