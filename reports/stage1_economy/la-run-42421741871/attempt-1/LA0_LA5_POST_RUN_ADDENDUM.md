@@ -13,3 +13,15 @@ Changed files in this correction publication:
 - Updated reports/stage1_economy/la-run-42421741871/attempt-1/LA3_BE5D8_BOUNDARY_STATUS.txt
 - Updated reports/stage1_economy/la-run-42421741871/attempt-1/LA0_LA5_STATIC_REPORT.md
 - Added reports/stage1_economy/la-run-42421741871/attempt-1/LA0_JA_REPLACEMENT_CALLER_WINDOWS.tsv
+
+
+## Subsequent static correction — target prolog recognition
+
+A code review found that the backward-only `find_prolog()` search begins at `PC-4`; it therefore skipped a prolog located exactly at target `0x800BE5D8` and returned the preceding candidate `0x800BE0E4`. The helper now checks the target PC and next instruction first for `addiu $sp,$sp,-N` followed by `sw $ra,...($sp)`, then falls back to the backward scan. The published `LA3_BE5D8_MANUAL_FUNCTION.tsv` target-context rows now identify `0x800BE5D8` as the function entry, consistent with the direct instruction evidence in `LA3_BE5D8_BOUNDARY_STATUS.txt`.
+
+This is a source/report-only correction. No Actions run was started after this edit, to preserve the one-run budget; the corrected helper has **not** been executed in a new run. The prior run summary remains a record of run `42421741871`, not validation of this post-run code correction.
+
+Changed files in this correction commit:
+- `tools/la-static/RunLA0LA5Static.sh`
+- `reports/stage1_economy/la-run-42421741871/attempt-1/LA3_BE5D8_MANUAL_FUNCTION.tsv`
+- `reports/stage1_economy/la-run-42421741871/attempt-1/LA0_LA5_POST_RUN_ADDENDUM.md`

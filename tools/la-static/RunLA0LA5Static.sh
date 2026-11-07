@@ -512,7 +512,13 @@ wr(out/"LA3_BE5D8_POINTER_WORDS.tsv",bptr,["image","pc","file_offset","bytes","i
 b24=0x800B24C8
 bpro,breason=find_prolog(ci,b24,ENTRY_BASE)
 bentry=bpro
-be_pro,be_reason=find_prolog(ci,bt,ENTRY_BASE)
+bi=ci.get(bt); bn=ci.get(bt+4)
+# The target itself may be the first instruction of the function. Check it
+# before searching backward, otherwise a previous function prolog is returned.
+if bi and bn and bi["op"]==9 and bi["rs"]==29 and bi["rt"]==29 and bi["imm"]<0 and bn["op"]==43 and bn["rs"]==29 and bn["rt"]==31:
+    be_pro,be_reason=bt,"PROLOG_AT_TARGET_ADDiuSP_SWRA"
+else:
+    be_pro,be_reason=find_prolog(ci,bt,ENTRY_BASE)
 be_entry=be_pro
 be_rows=[]
 for k in range(-7,9):
