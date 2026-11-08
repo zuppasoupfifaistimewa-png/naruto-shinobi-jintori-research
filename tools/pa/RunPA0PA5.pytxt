@@ -199,42 +199,65 @@ def strip_crossing_rows(root):
       (0x800F5E7C,0x800F5EE0),
       (0x800F5F14,0x800F5F5C),
     ]
-    for _ in range(8):
-        rows=excerpt_rows(root,False); all_bad=[x for x in spans(rows) if x[2]-x[1]>64]
-        bad=[]
-        for image,a,b in all_bad:
-            if image!="ENTRY1" or not any(a>=lo and b<=hi for lo,hi in allowed):
-                write_txt("PA0_EXCERPT_STRIP_STATUS.txt",f"STATUS=FAIL\nUNAUTHORIZED_OR_UNEXPECTED_GROUP={image}:{h(a)}..{h(b-1)}={b-a}B\n")
-                return removed,False
-            bad.append((image,a,b))
-        if not bad:break
-        image,a,b=bad[0]; choices=[]
+    def permitted(image,a,b):
+        return image=="ENTRY1" and any(a>=lo and b<=hi for lo,hi in allowed)
+    blocked=set()
+    for _ in range(32):
+        rows=excerpt_rows(root,True)
+        all_bad=[x for x in spans(rows) if x[2]-x[1]>64]
+        eligible=[x for x in all_bad if permitted(*x) and x not in blocked]
+        if not eligible:
+            break
+        image,a,b=eligible[0]
+        choices=[]
         lo=max(a+4,b-64); hi=min(a+64,b-4)
         for cut in range(((lo+3)//4)*4,hi+1,4):
             victims=[z for z in rows if z["image"]==image and z["pc"]<cut+4 and z["end"]>cut and z["pc"]>=a and z["end"]<=b]
-            if not victims:continue
+            if not victims:
+                continue
             rem=[z for z in rows if z not in victims]
             ss=spans(rem)
-            if any(im==image and x>=a and y<=b and y-x>64 for im,x,y in ss):continue
+            if any(im==image and x>=a and y<=b and y-x>64 for im,x,y in ss):
+                continue
             choices.append((len(victims),abs(cut-(a+b)//2),cut,victims))
         if not choices:
-            write_txt("PA0_EXCERPT_STRIP_STATUS.txt",f"STATUS=FAIL\nUNSPLIT={image}:{h(a)}..{h(b-1)}={b-a}B\n")
-            return removed,False
+            blocked.add((image,a,b))
+            continue
         _,_,cut,victims=min(choices,key=lambda x:(x[0],x[1]))
         byfile=defaultdict(set)
-        for z in victims:byfile[z["path"]].add(z["line"])
+        for z in victims:
+            byfile[z["path"]].add(z["line"])
         for path,lns in byfile.items():
-            oldlines=path.read_text(encoding="utf-8").splitlines(True); keep=[]
+            oldlines=path.read_text(encoding="utf-8").splitlines(True)
+            keep=[]
             for n,line in enumerate(oldlines,1):
-                if n not in lns:keep.append(line)
-                else:
-                    z=next((v for v in victims if v["path"]==path and v["line"]==n),None)
-                    removed.append({"file":str(path.relative_to(Path.cwd())),"line":n,"pc":h(z["pc"]) if z else "TIDAK TAHU","excerpt_id":z["excerpt_id"] if z else ""})
+                if n not in lns:
+                    keep.append(line)
+                    continue
+                z=next((v for v in victims if v["path"]==path and v["line"]==n),None)
+                try:
+                    shown=str(path.relative_to(Path.cwd()))
+                except ValueError:
+                    shown="PA_CURRENT_OUT/"+path.name if path.parent==OUT else str(path)
+                removed.append({"file":shown,"line":n,"pc":h(z["pc"]) if z else "TIDAK TAHU","excerpt_id":z["excerpt_id"] if z else ""})
             path.write_text("".join(keep),encoding="utf-8")
-    final=spans(excerpt_rows(root,False))
-    ok=not [x for x in final if x[2]-x[1]>64]
+    final=spans(excerpt_rows(root,True))
+    remaining=[x for x in final if x[2]-x[1]>64]
+    unauthorized=[x for x in remaining if not permitted(*x)]
+    allowed_unsplit=[x for x in remaining if permitted(*x)]
+    ok=not remaining
     write_tsv("PA0_DELETED_ROWS.tsv",removed,["file","line","pc","excerpt_id"])
-    write_txt("PA0_EXCERPT_STRIP_STATUS.txt",f"STATUS={'PASS' if ok else 'FAIL'}\nDELETED_ROWS={len(removed)}\nMAX_CONTIGUOUS={max((b-a for _,a,b in final),default=0)}\n")
+    details=[]
+    if unauthorized:
+        details.append("UNAUTHORIZED_OVERLIMIT="+(";".join(f"{im}:{h(a)}..{h(b-1)}={b-a}B" for im,a,b in unauthorized)))
+    if allowed_unsplit:
+        details.append("AUTHORIZED_BUT_UNSPLIT="+(";".join(f"{im}:{h(a)}..{h(b-1)}={b-a}B" for im,a,b in allowed_unsplit)))
+    write_txt("PA0_EXCERPT_STRIP_STATUS.txt",
+      "STATUS="+("PASS" if ok else "FAIL")+"\\n"+
+      "DELETED_ROWS="+str(len(removed))+"\\n"+
+      "MAX_CONTIGUOUS="+str(max((b-a for _,a,b in final),default=0))+"\\n"+
+      "OVER_LIMIT_GROUPS="+str(len(remaining))+"\\n"+
+      ("\\n".join(details)+"\\n" if details else "UNRESOLVED_GROUPS=none\\n"))
     return removed,ok
 
 def aggregate_audit(root):
@@ -265,11 +288,19 @@ def validate_new_tsv(exe,entry):
                 checked+=1
                 try:
                     tag=z["image"]; pc=int(z["pc"],16); off=int(z["file_offset"],16)
-                    expected=(EXE_FILE+(pc-EXE_BASE)) if tag=="EXE" else (ENTRY_FILE+(pc-ENTRY_BASE))
-                    blob=exe if tag=="EXE" else entry
                     raw=bytes(int(x,16) for x in z["bytes"].split())
-                    got=blob[off:off+len(raw)]
-                    if off!=expected or got!=raw or len(raw)%4:raise ValueError("OFFSET_OR_RAW_MISMATCH")
+                    if tag=="EXE":
+                        expected=EXE_FILE+(pc-EXE_BASE)
+                        blob=exe
+                        buffer_off=off
+                    elif tag=="ENTRY1":
+                        expected=ENTRY_FILE+(pc-ENTRY_BASE)
+                        blob=entry
+                        buffer_off=off-ENTRY_FILE
+                    else:
+                        raise ValueError("UNKNOWN_IMAGE_TAG:"+str(tag))
+                    got=blob[buffer_off:buffer_off+len(raw)] if buffer_off>=0 else b""
+                    if off!=expected or len(got)!=len(raw) or got!=raw or len(raw)%4:raise ValueError("OFFSET_OR_RAW_MISMATCH")
                     for k in range(0,len(raw),4):
                         if next(md.disasm(raw[k:k+4],pc+k,count=1),None) is None:raise ValueError("DECODE_FAIL")
                     decoded+=len(raw)//4

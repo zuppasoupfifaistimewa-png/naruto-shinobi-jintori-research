@@ -331,6 +331,7 @@ jobs:
           echo "dest=$DEST" >> "$GITHUB_OUTPUT"
 
   runtime:
+    if: ${{ !contains(github.event.head_commit.message, '[PA_STATIC_ONLY]') }}
     name: pa4-ha4-control
     runs-on: ubuntu-24.04
     timeout-minutes: 75

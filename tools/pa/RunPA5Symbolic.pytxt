@@ -93,6 +93,17 @@ def main():
     a=ap.parse_args()
     a.out.mkdir(parents=True,exist_ok=True)
     pa4=Path(a.pa4) if a.pa4 else None
+    if pa4 is None:
+        root=Path("reports/stage1_economy")
+        candidates=list(root.glob("pa-run-*-pa4/attempt-*"))
+        def run_number(path):
+            try:return int(path.parents[1].name.split("-")[2])
+            except Exception:return -1
+        candidates.sort(key=run_number,reverse=True)
+        pa4=next((p for p in candidates if (p/"PA4_LAUNCH1_SCALARS.tsv").is_file() and
+                  (p/"PA4_LAUNCH2_SCALARS.tsv").is_file() and
+                  (p/"PA4_LAUNCH1_M_REGION.tsv").is_file() and
+                  (p/"PA4_LAUNCH2_M_REGION.tsv").is_file()),None)
     status="TIDAK TAHU"; scalar_equal=False; region_equal=False
     scalars=[]; region_bytes=0; region_hashes=[]
     reason="PA4_DEST_MISSING"
@@ -136,7 +147,7 @@ def main():
       "# PA5 — uji simbolik dan falsifier H1/H2",
       "",
       f"Baseline inklusif: {BASELINE}",
-      f"PA4 data directory: {a.pa4 or 'TIDAK TAHU'}",
+      f"PA4 data directory: {str(pa4) if pa4 else 'TIDAK TAHU'}",
       f"PA4_CONTROL_SNAPSHOTS={status}",
       f"SCALARS_IDENTICAL={'YES' if scalar_equal else 'NO/TIDAK TAHU'}",
       f"M_REGION_IDENTICAL={'YES' if region_equal else 'NO/TIDAK TAHU'}",
