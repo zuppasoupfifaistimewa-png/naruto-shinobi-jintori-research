@@ -1,0 +1,7 @@
+call_pc	target	arg	classification	expression	call_clobber_or_gap	function_entry
+0x800F5F54	0x800F2A9C	$a2	TIDAK TAHU	TIDAK TAHU: intervening call can clobber $a2	clobber_call=0x800F5F44 jal 0x800e6da4	0x800F3658
+0x800F5F54	0x800F2A9C	$a3	TIDAK TAHU	TIDAK TAHU: intervening call can clobber $a3	clobber_call=0x800F5F44 jal 0x800e6da4	0x800F3658
+0x800B54DC	0x800F3658	$a2	TIDAK TAHU	TIDAK TAHU: intervening call can clobber $a2	clobber_call=0x800B54CC jal 0x80139460	0x800B50AC
+0x800B54DC	0x800F3658	$a3	TIDAK TAHU	TIDAK TAHU: intervening call can clobber $a3	clobber_call=0x800B54CC jal 0x80139460	0x800B50AC
+0x800F5EBC	0x800DC2E0	$a2	TIDAK TAHU	TIDAK TAHU: intervening call can clobber $a2	clobber_call=0x800F5EAC jal 0x800e2e8c	0x800F3658
+0x800F5EBC	0x800DC2E0	$a3	TIDAK TAHU	TIDAK TAHU: intervening call can clobber $a3	clobber_call=0x800F5EAC jal 0x800e2e8c	0x800F3658

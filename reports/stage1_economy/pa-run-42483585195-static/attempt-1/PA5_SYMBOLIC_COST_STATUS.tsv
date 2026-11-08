@@ -1,0 +1,5 @@
+premise	status	result
+DN1 resource lookup X to LV1-LV5	TUNTAS K4	415/415 records in 12 resources; LV2 formula matches 415/415, LV3-LV5 remain lookup-only
+cell read index I	TIDAK TAHU: reaching $s0 definition is not a unique constant	TIDAK TAHU
+cell value x equals jump distance d	BELUM K1	TIDAK TAHU: no closed matrix writer, buffer loader, and two-level operand relation
+upgrade cost for d>=2	BELUM K1	TIDAK TAHU: no proved charge/debit calculation or symbolic relation; no user assumptions used

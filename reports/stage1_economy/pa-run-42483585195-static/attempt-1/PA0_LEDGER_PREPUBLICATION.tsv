@@ -1,0 +1,16 @@
+sha	author	email	class	subject
+ad14376c2d21d5ae42228329e165339608a83a4a	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Repair PA offset and excerpt audits; static-only follow-up [PA_STATIC_ONLY]
+fad438257d52010bf2da48db3d91524adaef50b1	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix PA5 scalar table lookup to use canonical RAM keys [skip ci]
+2546f6fe4c318e0c93fbb6fa3eb0890ed026c5cf	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add PA0 validator diagnosis and PA5 TSV reconciliation correction [skip ci]
+cd9879e135024c5dddc72f5527c0cc9be4700ad3	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Correct PA5 scalar and M-region reconciliation from published PA4 TSVs [skip ci]
+00a6b15294812f1f176bfa3d94910f859767b63e	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA5 symbolic falsifier audit 42482696764 [skip ci]
+2c6fd1e7b51274945ed9cf2ec8dd465743225df4	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Preserve lowercase hex prefix in PA5 RAM address parser [skip ci]
+f30d12e49995d050555f71d2ed5bc85dc2a76b2b	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA4 HA4 CONTROL decimal snapshots 42482696764 [skip ci]
+5c88599d9b50605600c3bbfe350f90c301c997f6	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA0-PA3 static audit 42482696764 [skip ci]
+c94964daffbf7154cefa1151f85ad26d451644c5	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Record PA4 CONTROL outcome and failed publication [skip ci]
+5e03369540f34c45f2eea587be926924749939dd	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix PA3 CFG shadow and publisher rebase identity
+6b1e9a4be2262d4e6389c8eeb96165fbab4a1b75	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA5 symbolic falsifier audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA0-PA3 static audit 42482327357 [skip ci]
+9c55c9ded9663b0acb8bb7c0439585db94aaa6bb	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix PA workflow shell escapes and Python compile steps
+8a48b8769115173e6b4f0bf1448a4d9d27500ada	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add PA0-PA5 isolated harness repair and CONTROL workflow
+3f730c73dc628d02f360b7ac12961e6f3e4b1584	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Publish OA0-OA5 partial audit and verified CONTROL result [skip ci]

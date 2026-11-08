@@ -1,0 +1,2 @@
+read_pc	instruction	s0_value	s0_expression	effective_address	conclusion	CELL_READ_FORMULA
+0x800D49B0	lhu $a0, -0x1592($s0)	TIDAK TAHU	0x80140000	TIDAK TAHU	TIDAK TAHU: reaching $s0 definition is not a unique constant	TIDAK TAHU

@@ -1,0 +1,3 @@
+store_pc	source	nearest_definition	intervening_calls	result
+0x800121AC	$zero	TIDAK TAHU	none	0
+0x800121F4	$v1	0x800121D8 move $v1, $v0	none	TIDAK TAHU: ABI may clobber $v1

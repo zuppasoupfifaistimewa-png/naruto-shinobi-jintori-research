@@ -1,0 +1,13 @@
+jalr_pc	instruction	target_register	nearest_definition	target_expression	direct_constant	static_loaded_word	classification
+0x80100878	jalr $v0	$v0	0x80100870 lw $v0, 0x10($s0)	MEM32[(0x80140000-4680)+16]	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: dynamic register/table/global contents not statically closed
+0x80101614	jalr $v0	$v0	0x80101600 lw $v0, 0xc8($v1)	MEM32[MEM32[0x80140000-24104]+200]	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: dynamic register/table/global contents not statically closed
+0x80116C98	jalr $s4	$s4	0x80116C04 move $s4, $a0	COPY(COPY(0))	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: dynamic register/table/global contents not statically closed
+0x80116D68	jalr $v0	$v0	0x80116D58 lw $v0, -0x57a8($v0)	MEM32[0x80140000-22440]	TIDAK TAHU	0x00000000	TIDAK TAHU: dynamic register/table/global contents not statically closed
+0x80116DD0	jalr $v0	$v0	0x80116DC0 lw $v0, -0x57a8($v0)	MEM32[0x80140000-22440]	TIDAK TAHU	0x00000000	TIDAK TAHU: dynamic register/table/global contents not statically closed
+0x801174F4	jalr $v0	$v0	0x801174EC lw $v0, 0x5c($v0)	MEM32[MEM32[0x80140000-22420]+92]	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: dynamic register/table/global contents not statically closed
+0x801175A8	jalr $v0	$v0	0x801175A0 lw $v0, 0x60($v0)	MEM32[MEM32[0x80140000-22420]+96]	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: dynamic register/table/global contents not statically closed
+0x801175F4	jalr $v0	$v0	0x801175EC lw $v0, 0x64($v0)	MEM32[MEM32[0x80140000-22420]+100]	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: dynamic register/table/global contents not statically closed
+0x801372BC	jalr $v0	$v0	0x801372B4 lw $v0, 0xc($a0)	MEM32[MEM32[0x80140000-18732]+12]	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: dynamic register/table/global contents not statically closed
+0x801372EC	jalr $v0	$v0	0x801372E4 lw $v0, 0x10($a0)	MEM32[MEM32[0x80140000-18732]+16]	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: dynamic register/table/global contents not statically closed
+0x8013731C	jalr $v0	$v0	0x80137314 lw $v0, 0x18($a0)	MEM32[MEM32[0x80140000-18732]+24]	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: dynamic register/table/global contents not statically closed
+0x801373B4	jalr $v0	$v0	0x801373AC lw $v0, 0x14($a0)	MEM32[MEM32[0x00000001-18732]+20]	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: dynamic register/table/global contents not statically closed

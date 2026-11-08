@@ -1,0 +1,4 @@
+NA_SUMMARY_REPORTED_EA6E_SOURCE_LHU=0
+TSV_ROWS_EA88_STORES_SOURCED_FROM_EA6E=3
+SOURCE_PCS=0x800D44F4;0x800D733C;0x800D7928
+INTERPRETATION=TSV controls this reconciliation; the legacy TXT was left untouched because only PA files and specific excerpt-row deletions are authorized.
