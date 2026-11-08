@@ -1,0 +1,2 @@
+pc	instruction	gp_value	effective_address	conclusion
+0x800154D4	lw $v0, 0x118($gp)	0x8006D67C	0x8006D794	two sw sites exist; second source $v1 unresolved unless all-path reaching value is closed
