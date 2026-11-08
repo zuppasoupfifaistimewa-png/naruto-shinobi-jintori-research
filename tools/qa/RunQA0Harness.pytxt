@@ -278,7 +278,7 @@ def main():
       "PHYSICAL_DELETE_EXPECTED_ROWS=15",
       f"PHYSICAL_DELETE_VERIFIED_ROWS={len(physical_deleted) if physical_ok else 0}",
       "PHYSICAL_DELETE_EXPECTED_FILES=10",
-      f"PHYSICAL_DELETE_VERIFIED_FILES={sum(1 for r in affected if r[1]=="M" and r[5]=="PASS")}",
+      f"PHYSICAL_DELETE_VERIFIED_FILES={sum(1 for r in affected if r[1]=='M' and r[5]=='PASS')}",
       f"PA_FILE_ROW_COUNTS=QA0_AFFECTED_FILE_COUNTS.tsv",
       f"PA_DELETE_VERIFICATION=QA0_PHYSICAL_DELETION_VERIFICATION.tsv",
       f"PROTECTED_CALLSITE_ROWS_REMOVED={protected_removed}",
