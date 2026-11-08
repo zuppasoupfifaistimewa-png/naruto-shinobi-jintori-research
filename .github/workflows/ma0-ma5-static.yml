@@ -1,0 +1,268 @@
+name: MA0-MA5 isolated static upgrade-cost audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/ma0-ma5-static.yml"
+      - "tools/ma-static/**"
+      - "tools/ia-ghidra/**"
+      - "tools/ja-ghidra/**"
+      - "**/*.py"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: naruto-ma0-ma5-static
+  cancel-in-progress: false
+
+jobs:
+  ma0-ma5-static:
+    name: ma0-ma5-static
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GHIDRA_ASSET: ghidra_12.2_PUBLIC_20261016.zip
+      GHIDRA_SHA256: 2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+      GHIDRA_CACHE_DIR: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+      WORK: /tmp/naruto-ma-private-${{ github.run_id }}-${{ github.run_attempt }}
+      OUT: /tmp/naruto-ma-output-${{ github.run_id }}-${{ github.run_attempt }}
+      MA_BASELINE: 662833da768f473349539eb3fe304dc7fa51a16c
+
+    steps:
+      - name: Checkout complete history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install static dependencies and create private workspaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends bchunk xorriso unzip python3-pip jq
+          python3 -m pip install --break-system-packages "capstone==5.0.3"
+          mkdir -p "$WORK/source" "$WORK/extracted" "$WORK/input" "$WORK/pycache" \
+            "$WORK/ghidra-exe-project" "$WORK/ghidra-entry1-project" "$WORK/ghidra-logs" \
+            "$WORK/scripts" "$OUT"
+
+      - name: Restore pinned Ghidra cache
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+          key: ghidra-12.2-linux-x64-2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+
+      - name: Download Ghidra if cache is missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$GHIDRA_CACHE_DIR"
+          if ! find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit | grep -q .; then
+            ARCHIVE="$RUNNER_TEMP/$GHIDRA_ASSET"
+            curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 3 \
+              "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.2_build/$GHIDRA_ASSET" -o "$ARCHIVE"
+            echo "$GHIDRA_SHA256  $ARCHIVE" | sha256sum --check --status
+            unzip -q "$ARCHIVE" -d "$GHIDRA_CACHE_DIR"
+            rm -f "$ARCHIVE"
+          fi
+          HEADLESS="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
+          test -x "$HEADLESS"
+          echo "HEADLESS=$HEADLESS" >> "$GITHUB_ENV"
+
+      - name: Download and verify disc privately; extract EXE and Entry 1
+        id: extract
+        shell: bash
+        run: |
+          set -euo pipefail
+          API="https://api.github.com/repos/$GITHUB_REPOSITORY"
+          BIN="$WORK/source/naruto-disc.bin"
+          CUE_RAW="$WORK/source/original.cue"
+          CUE="$WORK/source/naruto-disc.cue"
+          curl --fail --silent --show-error --location --retry 2 --max-time 600 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "$API/releases/assets/647346873" -o "$BIN"
+          test "$(stat -c %s "$BIN")" = 325989552
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $BIN" | sha256sum --check --status
+          curl --fail --silent --show-error --location --retry 2 --max-time 60 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "$API/releases/assets/647354760" -o "$CUE_RAW"
+          test "$(stat -c %s "$CUE_RAW")" = 116
+          echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $CUE_RAW" | sha256sum --check --status
+          python3 - "$CUE_RAW" "$CUE" <<'PY'
+          from pathlib import Path
+          import re, sys
+          src, dst = map(Path, sys.argv[1:3])
+          lines, count = [], 0
+          for line in src.read_text(encoding="utf-8-sig").splitlines():
+              if line.lstrip().upper().startswith("FILE "):
+                  m = re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$', line, re.I)
+                  if not m:
+                      raise SystemExit("INVALID_CUE_FILE_DIRECTIVE")
+                  line = m.group(1) + '"naruto-disc.bin"' + m.group(2)
+                  count += 1
+              lines.append(line)
+          if count != 1:
+              raise SystemExit("CUE_FILE_DIRECTIVE_COUNT=" + str(count))
+          dst.write_text("\n".join(lines) + "\n", encoding="ascii")
+          PY
+          bchunk "$BIN" "$CUE" "$WORK/source/track"
+          ISO="$(find "$WORK/source" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          test -n "$ISO"
+          xorriso -osirrox on -indev "$ISO" -extract / "$WORK/extracted" > "$WORK/source/extract.log" 2>&1
+          EXE="$(find "$WORK/extracted" -type f -iname 'SLPS_035.53' -print -quit)"
+          DATA="$(find "$WORK/extracted" -type f -iname 'DATA.BIN' -print -quit)"
+          test -n "$EXE" && test -n "$DATA"
+          test "$(stat -c %s "$EXE")" = 385024
+          echo "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569  $EXE" | sha256sum --check --status
+          test "$(stat -c %s "$DATA")" = 66015232
+          echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $DATA" | sha256sum --check --status
+          cp "$EXE" "$WORK/input/SLPS_035.53"
+          python3 - "$DATA" "$WORK/input/ENTRY1.bin" <<'PY'
+          from pathlib import Path
+          import hashlib, struct, sys
+          data = Path(sys.argv[1]).read_bytes()
+          lbn, size = struct.unpack_from("<II", data, 0x4c)
+          off = (lbn - 212) * 2048
+          entry = data[off:off+size]
+          if (lbn, size, off, len(entry)) != (8778, 596412, 0x10BB000, 596412):
+              raise SystemExit("ENTRY1_DIRECTORY_MAPPING_MISMATCH")
+          digest = hashlib.sha256(entry).hexdigest()
+          if digest != "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a":
+              raise SystemExit("ENTRY1_SHA256_MISMATCH=" + digest)
+          Path(sys.argv[2]).write_bytes(entry)
+          PY
+          echo "EXTRACT_VERIFIED=1" >> "$GITHUB_OUTPUT"
+
+      - name: Run Ghidra static code listings and target references
+        id: ghidra
+        if: steps.extract.outputs.EXTRACT_VERIFIED == '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp "$GITHUB_WORKSPACE"/tools/ia-ghidra/*.java "$WORK/scripts/"
+          cp "$GITHUB_WORKSPACE"/tools/ja-ghidra/*.java "$WORK/scripts/"
+          set +e
+          "$HEADLESS" "$WORK/ghidra-exe-project" Naruto_MA_EXE \
+            -import "$WORK/input/SLPS_035.53" \
+            -loader BinaryLoader -loader-baseAddr 0x80010000 -loader-fileOffset 0x800 -loader-length 0x5D800 \
+            -processor "MIPS:LE:32:default" -scriptPath "$WORK/scripts" \
+            -preScript PreparePsxExe.java \
+            -postScript EnsureTargetFunctions.java 0x800154D4 0x8001552C \
+            -postScript ExportJATargetEvidence.java "$OUT/EXE_CODE.txt" 0x800154D4 0x8001552C 0x80055CF4 \
+            -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject > "$WORK/ghidra-logs/exe.log" 2>&1
+          EXE_RC=$?
+          "$HEADLESS" "$WORK/ghidra-entry1-project" Naruto_MA_ENTRY1 \
+            -import "$WORK/input/ENTRY1.bin" \
+            -loader BinaryLoader -loader-baseAddr 0x800AD450 -loader-length 0x919BC -loader-blockName ENTRY1_AT_800AD450 \
+            -processor "MIPS:LE:32:default" -scriptPath "$WORK/scripts" \
+            -postScript EnsureTargetFunctions.java 0x800B1E88 0x800B50AC 0x800B5020 0x800B2A58 0x800F2A9C 0x800F3658 0x800DC2E0 0x800BE5D8 \
+            -postScript ExportJATargetEvidence.java "$OUT/ENTRY1_CODE.txt" \
+              0x800B1E88 0x800B50AC 0x800B5020 0x800B2A58 0x800B24C8 \
+              0x800F5F54 0x800B54DC 0x800F5EBC 0x800BE5D8 \
+            -analysisTimeoutPerFile 1200 -max-cpu 2 -deleteProject > "$WORK/ghidra-logs/entry1.log" 2>&1
+          ENTRY_RC=$?
+          set -e
+          {
+            echo "EXE_GHIDRA_EXIT=$EXE_RC"
+            tail -n 80 "$WORK/ghidra-logs/exe.log" 2>/dev/null || true
+            echo "ENTRY1_GHIDRA_EXIT=$ENTRY_RC"
+            tail -n 100 "$WORK/ghidra-logs/entry1.log" 2>/dev/null || true
+          } > "$OUT/GHIDRA_DIAGNOSTICS.txt"
+          echo "EXE_GHIDRA_EXIT=$EXE_RC" >> "$GITHUB_OUTPUT"
+          echo "ENTRY1_GHIDRA_EXIT=$ENTRY_RC" >> "$GITHUB_OUTPUT"
+
+      - name: Run MA0-MA5 static analyzer
+        id: analyzer
+        if: steps.extract.outputs.EXTRACT_VERIFIED == '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          python3 tools/ma-static/RunMA0MA5Static.py \
+            "$WORK/input/SLPS_035.53" "$WORK/input/ENTRY1.bin" "$OUT" \
+            "$OUT/EXE_CODE.txt" "$OUT/ENTRY1_CODE.txt"
+          RC=$?
+          set -e
+          echo "ANALYZER_EXIT_CODE=$RC" > "$OUT/MA0_ANALYZER_EXIT.txt"
+          echo "analysis_exit=$RC" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Remove private disc, extracted data, and Ghidra work
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$WORK"
+          test ! -e "$WORK"
+          echo "PRIVATE_BINARY_CLEANUP=PASS" > "$OUT/cleanup.txt"
+
+      - name: Publish only MA text reports and remove the two superseded oversized LA excerpts
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST="reports/stage1_economy/ma-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$DEST"
+          find "$OUT" -maxdepth 1 -type f \( -name 'MA*.txt' -o -name 'MA*.tsv' -o -name 'MA*.md' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
+          ANALYSIS_RC="$(sed -n 's/^ANALYZER_EXIT_CODE=//p' "$OUT/MA0_ANALYZER_EXIT.txt" 2>/dev/null | head -n 1 || true)"
+          [ -n "$ANALYSIS_RC" ] || ANALYSIS_RC=TIDAK_TAHU
+          EXE_RC="$(sed -n 's/^EXE_GHIDRA_EXIT=//p' "$OUT/GHIDRA_DIAGNOSTICS.txt" 2>/dev/null | head -n 1 || true)"
+          [ -n "$EXE_RC" ] || EXE_RC=TIDAK_TAHU
+          ENTRY_RC="$(sed -n 's/^ENTRY1_GHIDRA_EXIT=//p' "$OUT/GHIDRA_DIAGNOSTICS.txt" 2>/dev/null | head -n 1 || true)"
+          [ -n "$ENTRY_RC" ] || ENTRY_RC=TIDAK_TAHU
+          CLEANUP="$(cat "$OUT/cleanup.txt" 2>/dev/null || echo PRIVATE_BINARY_CLEANUP=UNKNOWN)"
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | \
+            jq -r '.jobs[] | select(.name=="ma0-ma5-static") | .id' | head -n 1)" || JOB_ID=TIDAK_TAHU
+          [ -n "$JOB_ID" ] || JOB_ID=TIDAK_TAHU
+          PY_SUMMARY="$(python3 - "$OUT/MA0_PYCOMPILE.tsv" "$OUT/MA0_FILE_OFFSET_DECODE_VALIDATION.tsv" "$OUT/MA0_AGGREGATE_EXCERPT_AUDIT.txt" <<'PY'
+          import csv, sys
+          from pathlib import Path
+          def rows(p):
+              try: return list(csv.DictReader(Path(p).open(encoding="utf-8"), delimiter="\t"))
+              except Exception: return []
+          py=rows(sys.argv[1]); val=rows(sys.argv[2])
+          excerpt=Path(sys.argv[3]).read_text(encoding="utf-8") if Path(sys.argv[3]).exists() else ""
+          ppass=sum(x.get("status")=="PASS" for x in py)
+          vfail=sum(x.get("raw_check")=="FAIL" or x.get("decode_check","").startswith(("FAIL","ERROR")) for x in val)
+          print(f"PY={ppass}/{len(py)}; VALIDATION={len(val)-vfail}/{len(val)}; EXCERPT_AUDIT={'PASS' if 'STATUS=PASS' in excerpt else 'FAIL/UNKNOWN'}")
+          PY
+          )"
+          if [ "$ANALYSIS_RC" = "0" ] && [ "$EXE_RC" = "0" ] && [ "$ENTRY_RC" = "0" ] && [ "$CLEANUP" = "PRIVATE_BINARY_CLEANUP=PASS" ] && grep -q 'STATUS=PASS' "$OUT/MA0_AGGREGATE_EXCERPT_AUDIT.txt" 2>/dev/null; then
+            STATUS=PASS
+          else
+            STATUS=PARTIAL
+          fi
+          {
+            echo "STATUS=$STATUS"
+            echo "JOB=ma0-ma5-static"
+            echo "JOB_ID=$JOB_ID"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "BASELINE_INCLUSIVE=$MA_BASELINE"
+            echo "EXIT_CODE=$ANALYSIS_RC"
+            echo "GHIDRA_EXE_EXIT_CODE=$EXE_RC"
+            echo "GHIDRA_ENTRY1_EXIT_CODE=$ENTRY_RC"
+            echo "$PY_SUMMARY"
+            echo "$CLEANUP"
+            echo "EMULATOR_LAUNCHES=0"
+            echo "GAME_OR_EMULATOR_EXECUTED=no"
+            echo "BIOS_OR_SAVESTATE_USED=no"
+            echo "BINARY_COMMITTED=no"
+            echo "RELEASES_MODIFIED=no"
+          } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
+          rm -f "$OUT/EXE_CODE.txt" "$OUT/ENTRY1_CODE.txt" "$OUT/GHIDRA_DIAGNOSTICS.txt"
+          git rm --ignore-unmatch -- \
+            reports/stage1_economy/la-run-42421741871/attempt-1/LA1_B50AC_TABLE_REGION.tsv \
+            reports/stage1_economy/la-run-42421741871/attempt-1/LA2_BOUNDS_CONTEXT.tsv
+          git add -- "$DEST"
+          git diff --cached --name-only
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "Publish MA0-MA5 isolated static audit run $GITHUB_RUN_ID"
+          git push origin HEAD:main
+          echo "PUBLISHED_DIR=$DEST" >> "$GITHUB_STEP_SUMMARY"
+          echo "RUN_SUMMARY=$DEST/ACTIONS_RUN_SUMMARY.txt" >> "$GITHUB_STEP_SUMMARY"
