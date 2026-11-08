@@ -1,0 +1,232 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+import argparse,csv,hashlib,os,re,shutil,subprocess
+from pathlib import Path
+
+RUN_ID=39907655833
+ARTIFACT_ID=12482055310
+ARTIFACT_SHA="a0f45156dfd489f24c8dc8e122c33a048c7b9ac34b935ac828523593d21ca2a8"
+STATE_NAME="adaptive-cycle-02-f180.sstate"
+STATE_SIZE=21162799
+STATE_SHA="705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35"
+BPS=[0x800B54DC,0x800BE5D8]
+REG_EXPECTED={0x800B54DC:0x800B54C0,0x800BE5D8:0x800B54FC}
+SAVED_RA_EXPECTED=None
+LIMIT=500
+REG_NAMES=("sp","ra","saved_ra_sp14","saved_s0_sp10","stack_read_ok")
+
+LUA=r'''
+local BPS=__BPS__
+local STATE_NAME="adaptive-cycle-02-f180.sstate"
+local LIMIT=500
+local postFrames,preFrames,loaded,restorePending=0,0,0,false
+local counts,indexes={},{}
+local refs={}
+local traceRows,overflowRows,readErrors=0,0,0
+local mem=PCSX.getMemoryAsFile()
+local f=assert(io.open("trace.tsv","w"))
+f:write("launch\tpc\thit_index\tvsync\tsp\tra\tsaved_ra_sp14\tsaved_s0_sp10\tstack_read_ok\n")
+local function log(s) print(s);pcall(function() io.stdout:flush() end) end
+local function read_u32(addr)
+ local ok,value=pcall(function() return tonumber(mem:readU32At(addr)) end)
+ if not ok or value==nil then return "TIDAK_TAHU",false end
+ return tostring(value),true
+end
+for _,pc in ipairs(BPS) do
+ local key=string.format("0x%08X",pc);counts[key]=0;indexes[key]=0
+ refs[#refs+1]=PCSX.addBreakpoint(pc,"Exec",4,"RA1 read-only stack "..key,function(address,width,cause)
+  counts[key]=counts[key]+1;indexes[key]=indexes[key]+1
+  if traceRows<LIMIT then
+   traceRows=traceRows+1
+   local r=PCSX.getRegisters()
+   local sp=tonumber(r.GPR.r[29]);local ra=tonumber(r.GPR.r[31])
+   local savedRA,okRA="TIDAK_TAHU",false
+   local savedS0,okS0="TIDAK_TAHU",false
+   if sp and sp>=0x80000000 and sp+0x18<=0x80200000 then
+    savedRA,okRA=read_u32(sp+0x14)
+    savedS0,okS0=read_u32(sp+0x10)
+   end
+   local ok=(okRA and okS0) and "1" or "0"
+   if ok=="0" then readErrors=readErrors+1 end
+   f:write("__LAUNCH__\t"..key.."\t"..tostring(indexes[key]).."\t"..tostring(postFrames).."\t"..
+     tostring(sp).."\t"..tostring(ra).."\t"..savedRA.."\t"..savedS0.."\t"..ok.."\n")
+   f:flush()
+  else overflowRows=overflowRows+1 end
+  return true
+ end,"RA1_"..key)
+end
+_G.ra1Save=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
+ loaded=loaded+1;postFrames=0;log("RA1_STATE_LOADED=1")
+end)
+_G.ra1Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
+ preFrames=preFrames+1
+ if loaded==0 and not restorePending then
+  restorePending=true;PCSX.pauseEmulator()
+  PCSX.nextTick(function()
+   local ok,file=pcall(function() return assert(Support.File.open("resume/"..STATE_NAME)) end)
+   if not ok or not file then log("RA1_STATE_OPEN_FAIL="..tostring(file));PCSX.quit(50);return end
+   local yes,err=pcall(function() PCSX.loadSaveState(file) end);file:close()
+   if not yes then log("RA1_RESTORE_FAIL="..tostring(err));PCSX.quit(51);return end
+   log("RA1_RESTORE_RETURNED=1");PCSX.resumeEmulator()
+  end)
+  return
+ end
+ if loaded>0 then
+  postFrames=postFrames+1
+  if postFrames==60 or postFrames==180 then log("RA1_POST_RESTORE_VSYNC="..tostring(postFrames)) end
+  if postFrames>=180 then
+   local ok,err=pcall(function()
+    f:flush();f:close()
+    local c=assert(io.open("counts.tsv","w"));c:write("pc\thit_count\n")
+    for _,pc in ipairs(BPS) do local k=string.format("0x%08X",pc);c:write(k.."\t"..tostring(counts[k]).."\n") end
+    c:close()
+   end)
+   if not ok then log("RA1_WRITE_FAIL="..tostring(err));PCSX.quit(54);return end
+   log("RA1_TRACE_ROWS="..tostring(traceRows));log("RA1_TRACE_OVERFLOW="..tostring(overflowRows))
+   log("RA1_STACK_READ_ERRORS="..tostring(readErrors))
+   log("RA1_CONTROL_RESULT=PASS");PCSX.pauseEmulator();PCSX.nextTick(function() PCSX.quit(0) end);return
+  end
+ elseif preFrames>=900 then
+  log("RA1_RESTORE_TIMEOUT=1");PCSX.pauseEmulator();PCSX.nextTick(function() PCSX.quit(53) end)
+ end
+end)
+log("RA1_READY=1 input=NONE breakpoints=EXEC stack_reads=READ_ONLY")
+'''
+def lua_source(n:int)->str:
+    bp="{"+",".join(str(x) for x in BPS)+"}"
+    return LUA.replace("__BPS__",bp).replace("__LAUNCH__",str(n))
+
+def read_counts(p:Path)->dict[str,int]:
+    with p.open(encoding="utf-8") as f:
+        return {r["pc"]:int(r["hit_count"]) for r in csv.DictReader(f,delimiter="\t")}
+
+def read_trace(p:Path)->list[tuple[str,...]]:
+    with p.open(encoding="utf-8",newline="") as f:
+        rows=list(csv.reader(f,delimiter="\t"))
+    want=["launch","pc","hit_index","vsync","sp","ra","saved_ra_sp14","saved_s0_sp10","stack_read_ok"]
+    if not rows or rows[0]!=want:
+        raise RuntimeError("RA1_TRACE_HEADER_INVALID")
+    if any(len(row)!=len(want) for row in rows[1:]):
+        raise RuntimeError("RA1_TRACE_ROW_WIDTH_INVALID")
+    return [tuple(row[1:]) for row in rows[1:]]
+
+def launch(n:int,pcsx:Path,bios:Path,cue:Path,work:Path,out:Path,state:Path)->dict:
+    d=work/f"launch{n}";d.mkdir(parents=True,exist_ok=True)
+    (d/"resume").mkdir(exist_ok=True);shutil.copy2(state,d/"resume"/STATE_NAME)
+    card=d/"control.mcd";card.write_bytes(bytes(131072))
+    lua=d/"ra1.lua";lua.write_text(lua_source(n),encoding="utf-8")
+    home=d/"home";home.mkdir(exist_ok=True);env=os.environ.copy()
+    env.update({"HOME":str(home),"XDG_CONFIG_HOME":str(home/".config"),"XDG_DATA_HOME":str(home/".data"),"XDG_RUNTIME_DIR":str(home/".runtime")})
+    for k in ("XDG_CONFIG_HOME","XDG_DATA_HOME","XDG_RUNTIME_DIR"):Path(env[k]).mkdir(parents=True,exist_ok=True)
+    Path(env["XDG_RUNTIME_DIR"]).chmod(0o700)
+    log=d/"pcsx.stdout.txt";pcsxlog=d/"pcsx.log"
+    cmd=["timeout","--signal=INT","--kill-after=10s","240s",str(pcsx),"-noupdate","-no-ui","-testmode",
+      "-debugger","-interpreter","-bios",str(bios),"-iso",str(cue),"-memcard1",str(card),
+      "-dofile",str(lua),"-softgpu","-logfile",str(pcsxlog),"-run"]
+    with log.open("w",encoding="utf-8") as f:
+        f.write(f"LAUNCH={n}\nGAMEPLAY_INPUT=NONE\n");f.flush()
+        try:rc=subprocess.run(cmd,cwd=d,env=env,stdout=f,stderr=subprocess.STDOUT,check=False).returncode
+        except Exception as e:rc=255;f.write("LAUNCH_EXCEPTION="+repr(e)+"\n")
+    content=log.read_text(encoding="utf-8",errors="replace")
+    (out/f"RA1_LAUNCH{n}_LOG.txt").write_text(content,encoding="utf-8")
+    tr=d/"trace.tsv";co=d/"counts.tsv"
+    loaded=content.count("RA1_STATE_LOADED=1")
+    frames=max([int(x) for x in re.findall(r"RA1_POST_RESTORE_VSYNC=(\d+)",content)] or [0])
+    ok=rc==0 and loaded==1 and frames>=180 and "RA1_CONTROL_RESULT=PASS" in content and tr.is_file() and co.is_file()
+    if ok:
+        shutil.copy2(tr,out/f"RA1_LAUNCH{n}_TRACE.tsv")
+        shutil.copy2(co,out/f"RA1_LAUNCH{n}_COUNTS.tsv")
+    return {"rc":rc,"loaded":loaded,"frames":frames,"ok":ok,"content":content}
+
+def self_test(root:Path)->list[str]:
+    checks=[]
+    if 'PCSX.getMemoryAsFile()' in LUA and 'mem:readU32At(addr)' in LUA:checks.append("READONLY_MEMORY_API=PASS")
+    else:raise SystemExit("SELFTEST_MEMORY_API_MISSING")
+    if 'mem:write' in LUA or 'PCSX.setGPR' in LUA or 'writeU32' in LUA:raise SystemExit("SELFTEST_FORBIDDEN_WRITE_API")
+    checks.append("NO_MEMORY_OR_REGISTER_WRITE_API=PASS")
+    if BPS==[0x800B54DC,0x800BE5D8]:checks.append("TARGET_CONSTANTS=PASS")
+    else:raise SystemExit("SELFTEST_TARGET_CONSTANTS_FAIL")
+    targets=[".github/workflows/ra1-stack-probe.yml","tools/ra/RunRA1StackProbe.pytxt"]
+    collisions=[]
+    for wf in (root/".github"/"workflows").glob("*.yml"):
+        if wf.name=="ra1-stack-probe.yml":continue
+        lines=wf.read_text(encoding="utf-8",errors="replace").splitlines()
+        active=False;patterns=[]
+        for line in lines:
+            if re.match(r"^\s*paths:\s*$",line):active=True;continue
+            if active:
+                m=re.match(r"^\s*-\s*[\"']?([^\"'\s]+)[\"']?\s*$",line)
+                if m:patterns.append(m.group(1))
+                elif line.strip() and not line.lstrip().startswith("#") and not line.lstrip().startswith("-"):
+                    indent=len(line)-len(line.lstrip())
+                    if indent<=4:active=False
+        for pat in patterns:
+            for target in targets:
+                if __import__("fnmatch").fnmatchcase(target,pat):collisions.append(f"{wf.name}:{pat}->{target}")
+    if collisions:raise SystemExit("SELFTEST_WORKFLOW_PATH_COLLISION="+",".join(collisions))
+    checks.append("WORKFLOW_PATH_COLLISIONS=0")
+    return checks
+
+def main():
+    ap=argparse.ArgumentParser()
+    ap.add_argument("--self-test",action="store_true");ap.add_argument("--root",type=Path,default=Path.cwd())
+    for x in ("pcsx","bios","cue","work","out","state"):ap.add_argument("--"+x,type=Path,required=False)
+    a=ap.parse_args()
+    if a.self_test:
+        print("\n".join(self_test(a.root)));return
+    for x in ("pcsx","bios","cue","work","out","state"):
+        if getattr(a,x) is None:raise SystemExit("MISSING_ARGUMENT_"+x.upper())
+    a.out.mkdir(parents=True,exist_ok=True);a.work.mkdir(parents=True,exist_ok=True)
+    if not a.state.is_file() or a.state.stat().st_size!=STATE_SIZE or hashlib.sha256(a.state.read_bytes()).hexdigest()!=STATE_SHA:
+        raise SystemExit("RA1_CHECKPOINT_VALIDATION_FAIL")
+    r1=launch(1,a.pcsx,a.bios,a.cue,a.work,a.out,a.state)
+    r2=launch(2,a.pcsx,a.bios,a.cue,a.work,a.out,a.state) if r1["ok"] else None
+    identical=False;rows1=[];rows2=[];c1={};c2={};overflow=0
+    if r1["ok"] and r2 and r2["ok"]:
+        rows1=read_trace(a.out/"RA1_LAUNCH1_TRACE.tsv");rows2=read_trace(a.out/"RA1_LAUNCH2_TRACE.tsv")
+        c1=read_counts(a.out/"RA1_LAUNCH1_COUNTS.tsv");c2=read_counts(a.out/"RA1_LAUNCH2_COUNTS.tsv")
+        identical=rows1==rows2 and c1==c2
+        overflow=sum(max([int(x) for x in re.findall(r"RA1_TRACE_OVERFLOW=(\d+)",r["content"])] or [0]) for r in (r1,r2))
+        with (a.out/"RA1_PER_PC_SUMMARY.tsv").open("w",encoding="utf-8",newline="") as f:
+            w=csv.writer(f,delimiter="\t",lineterminator="\n")
+            w.writerow(["pc","hit_count_launch1","hit_count_launch2","register_ra_expected","identical"])
+            for pc in BPS:
+                k=f"0x{pc:08X}";w.writerow([k,c1.get(k,0),c2.get(k,0),f"0x{REG_EXPECTED[pc]:08X}","YES" if c1.get(k,0)==c2.get(k,0) else "NO"])
+    all_rows=rows1+rows2
+    stack_errors=sum(1 for r in all_rows if r[7]!="1")
+    saved_values=sorted({f"0x{int(r[5]):08X}" for r in all_rows if r[5].isdigit()})
+    reg_matches_dc=sum(1 for r in all_rows if r[0]=="0x800B54DC" and r[4].isdigit() and int(r[4])==REG_EXPECTED[0x800B54DC])
+    reg_matches_e5=sum(1 for r in all_rows if r[0]=="0x800BE5D8" and r[4].isdigit() and int(r[4])==REG_EXPECTED[0x800BE5D8])
+    count_dc1=c1.get("0x800B54DC",0);count_e51=c1.get("0x800BE5D8",0)
+    count_dc2=c2.get("0x800B54DC",0);count_e52=c2.get("0x800BE5D8",0)
+    runtime_hits=count_dc1+count_e51+count_dc2+count_e52
+    all_match=bool(all_rows) and stack_errors==0 and reg_matches_dc==count_dc1+count_dc2 and reg_matches_e5==count_e51+count_e52
+    success=r1["ok"] and r2 and r2["ok"] and identical and overflow==0 and all_match and min(count_dc1,count_e51,count_dc2,count_e52)>0
+    status="TUNTAS" if success else ("SEBAGIAN" if runtime_hits else "BELUM")
+    confidence="K5" if success else ("K4" if runtime_hits else "K1")
+    lines=[
+      f"STATUS={status}",f"CONFIDENCE={confidence}",f"SOURCE_RUN={RUN_ID}",f"ARTIFACT_ID={ARTIFACT_ID}",
+      f"ARTIFACT_ZIP_SHA256={ARTIFACT_SHA}",f"CHECKPOINT={STATE_NAME}",f"CHECKPOINT_SHA256={STATE_SHA}",
+      "LAUNCHES_REQUESTED=2",f"LAUNCHES_COMPLETED={int(bool(r1['ok'])) + int(bool(r2 and r2['ok']))}",
+      f"LAUNCH1_EXIT={r1['rc']}",f"LAUNCH1_SAVE_STATE_EVENTS={r1['loaded']}",f"LAUNCH1_POST_RESTORE_VSYNC={r1['frames']}",
+      f"LAUNCH2_EXIT={r2['rc'] if r2 else 'NOT_RUN'}",f"LAUNCH2_SAVE_STATE_EVENTS={r2['loaded'] if r2 else 'NOT_RUN'}",
+      f"LAUNCH2_POST_RESTORE_VSYNC={r2['frames'] if r2 else 'NOT_RUN'}",
+      f"B54DC_HITS_LAUNCH1={count_dc1}",f"BE5D8_HITS_LAUNCH1={count_e51}",
+      f"B54DC_HITS_LAUNCH2={count_dc2}",f"BE5D8_HITS_LAUNCH2={count_e52}",
+      f"STACK_TRACE_ROWS={len(all_rows)}",f"STACK_READ_ERRORS={stack_errors}",f"SAVED_RA_UNIQUE_VALUES={len(saved_values)}",f"SAVED_RA_VALUES={','.join(saved_values) if saved_values else 'TIDAK_TAHU'}",
+      f"B54DC_REGISTER_RA_MATCHES={reg_matches_dc}",f"BE5D8_REGISTER_RA_MATCHES={reg_matches_e5}",
+      f"TRACE_OVERFLOW={overflow}",f"IDENTICAL={'YES' if identical else 'NO_OR_TIDAK_TAHU'}",
+      "BREAKPOINT_TYPE=Exec","MEMORY_API=PCSX.getMemoryAsFile():readU32At(address)",
+      "REGISTER_READ=GPR[29]=sp; GPR[31]=ra","REGISTER_WRITE=NONE","MEMORY_WRITE=NONE",
+      "GAMEPLAY_INPUT=NONE","WATCHPOINTS=0","CPU_CORE=interpreter","DEBUGGER=enabled","HEADLESS=-no-ui",
+      "STACK_FRAME_FUNCTION=FUN_800B50AC","STACK_FRAME_SIZE=0x18","SAVED_RA_STACK_OFFSET=0x14",
+      "SAVED_RA_STACK_TARGET=TIDAK TAHU until the captured saved RA is resolved against Entry 1 bytes","B54DC_REGISTER_RA_EXPECTED=0x800B54C0",
+      "BE5D8_REGISTER_RA_EXPECTED=0x800B54FC",
+      "STATIC_CHAIN=B54DC jal 0x800F3658; B54F4 jal 0x800BE5D8; FUN_800B50AC saves outer ra at sp+0x14",
+      "HIT_ZERO_MEANS=not executed in 180 VSYNC after restore without input; not proof of unreachability",
+      "PRIVATE_BINARY_COMMITTED=no","RELEASES_MODIFIED=no"]
+    (a.out/"RA1_RUNTIME_SUMMARY.txt").write_text("\n".join(lines)+"\n",encoding="utf-8")
+    print("\n".join(lines))
+    if status!="TUNTAS":raise SystemExit(1)
+
+if __name__=="__main__":main()

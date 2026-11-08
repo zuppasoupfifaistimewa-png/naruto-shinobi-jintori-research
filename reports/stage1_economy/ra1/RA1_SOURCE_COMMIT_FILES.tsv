@@ -1,0 +1,4 @@
+status	path
+A	.github/workflows/ra1-stack-probe.yml
+A	tools/ra/RunRA1StackProbe.pytxt
+A	reports/stage1_economy/ra1/RA1_SOURCE_COMMIT_FILES.tsv
