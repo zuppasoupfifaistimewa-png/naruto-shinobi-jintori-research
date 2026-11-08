@@ -1,21 +1,21 @@
-area	pc	static_context	launch1_hits	launch2_hits	runtime_values	conclusion
-PA1_callsite	0x800B54DC	PA1 table maps call target 0x800F3658; PA1 window: 0x800B54C0 beqz $v0,0x800B54DC and 0x800B54CC jal 0x80139460 with delay-slot addiu $a0,$a0,0x328	90	90	$v0=0; $a0=0x801EFBB8; $a1=0; $a2(r6)=0; $a3(r7)=0 on all hits	K5 CONTROL-only direct snapshot; closes a2/a3 only for this callsite and state
-PA1_callsite	0x800F5F54	PA1 table maps call target 0x800F2A9C; prior clobber call 0x800F5F44	0	0	no register snapshot	TIDAK TAHU; no execution in 180-VSYNC CONTROL window
-PA1_callsite	0x800F5EBC	PA1 table maps call target 0x800DC2E0; prior clobber call 0x800F5EAC	0	0	no register snapshot	TIDAK TAHU; no execution in 180-VSYNC CONTROL window
-PA2_s0_origin	0x800D49B0	requested $s0 origin probe	0	0	no register snapshot	TIDAK TAHU; no execution in 180-VSYNC CONTROL window
-PA2_gp118_writer	0x800121AC	static instruction sw $zero,0x118($gp)	0	0	no runtime snapshot; source register is literal $zero	STATIC K4: this writer stores 0; runtime execution not observed
-PA2_gp118_writer	0x800121F4	static instruction sw $v1,0x118($gp); prior trace leaves $v1 source unresolved	0	0	no register snapshot	TIDAK TAHU; runtime writer not executed in CONTROL window
-PA3_B24C8	0x800B24C8	static predecessor 0x800B24C4 nop; no direct branch entry listed	0	0	no register snapshot	TIDAK TAHU for requested runtime reachability; zero hit is bounded to CONTROL window
-PA3_jalr	0x80100878	jalr $v0 from lw $v0,0x10($s0)	0	0	no register snapshot	TIDAK TAHU target
-PA3_jalr	0x80101614	jalr $v0 from lw $v0,0xC8($v1)	0	0	no register snapshot	TIDAK TAHU target
-PA3_jalr	0x80116C98	jalr $s4 from move $s4,$a0	0	0	no register snapshot	TIDAK TAHU target
-PA3_jalr	0x80116D68	jalr $v0 from lw $v0,-0x57A8($v0)	0	0	no register snapshot	TIDAK TAHU target
-PA3_jalr	0x80116DD0	jalr $v0 from lw $v0,-0x57A8($v0)	0	0	no register snapshot	TIDAK TAHU target
-PA3_jalr	0x801174F4	jalr $v0 from lw $v0,0x5C($v0)	0	0	no register snapshot	TIDAK TAHU target
-PA3_jalr	0x801175A8	jalr $v0 from lw $v0,0x60($v0)	0	0	no register snapshot	TIDAK TAHU target
-PA3_jalr	0x801175F4	jalr $v0 from lw $v0,0x64($v0)	0	0	no register snapshot	TIDAK TAHU target
-PA3_jalr	0x801372BC	jalr $v0 from lw $v0,0x0C($a0)	0	0	no register snapshot	TIDAK TAHU target
-PA3_jalr	0x801372EC	jalr $v0 from lw $v0,0x10($a0)	0	0	no register snapshot	TIDAK TAHU target
-PA3_jalr	0x8013731C	jalr $v0 from lw $v0,0x18($a0)	0	0	no register snapshot	TIDAK TAHU target
-PA3_jalr	0x801373B4	jalr $v0 from lw $v0,0x14($a0)	0	0	no register snapshot	TIDAK TAHU target
-QA4_other_breakpoint	0x800BE5D8	separate requested Exec breakpoint, not one of the 12 PA3 jalr PCs	90	90	repeated hits with normalized trace equality	K5 CONTROL event only; does not resolve PA3 jalr targets
+area	pc	static_evidence	launch1_hits	launch2_hits	runtime_register_values	conclusion
+PA1_callsite	0x800B54DC	PA1_CALLSITE_A2_A3.tsv maps this PC to target 0x800F3658; PA1_CALL_WINDOWS.tsv decodes 0x800B54C0 beqz $v0,0x800B54DC (bytes 06 00 40 10), delay slot 0x800B54C4 lui $v0,0x8014 (14 80 02 3C); the alternate helper jal at 0x800B54CC is bypassed on the branch-taken path; exact opcode bytes at 0x800B54DC are absent from the excerpt window	90	90	$v0=0x80140000; $a0=0x801EFBB8; $a1=0; $a2=0; $a3=0 on all 90 hits	K5 CONTROL snapshot identical across two restores; $a2/$a3 closed only for this callsite and this CONTROL condition; byte-exact call instruction at 0x800B54DC remains TIDAK TAHU
+PA1_callsite	0x800F5F54	PA1 table target 0x800F2A9C; predecessor jal 0x800F5F44 could clobber a2/a3; call opcode context recorded in PA1 windows	0	0	no hit, no register snapshot	TIDAK TAHU; not executed within 180 VSYNC without input; not proof unreachable
+PA1_callsite	0x800F5EBC	PA1 table target 0x800DC2E0; predecessor jal 0x800F5EAC could clobber a2/a3; call opcode context recorded in PA1 windows	0	0	no hit, no register snapshot	TIDAK TAHU; not executed within 180 VSYNC without input; not proof unreachable
+PA2_s0_origin	0x800D49B0	requested $s0 provenance probe	0	0	no hit, no register snapshot	TIDAK TAHU; no runtime evidence for $s0 origin
+PA2_gp118_writer	0x800121AC	sw $zero,0x118($gp) (raw writer instruction in PA2_GP_118_WRITERS.tsv)	0	0	no hit; static source is literal $zero	STATIC K4: if this writer executes it stores 0; runtime execution not observed in this CONTROL window
+PA2_gp118_writer	0x800121F4	sw $v1,0x118($gp); nearest static definition is move $v1,$v0 at 0x800121D8; source trace marks source uncertain under ABI clobber	0	0	no hit, no register snapshot	TIDAK TAHU runtime value; $v1 cannot be closed from current static trace
+PA3_B24C8	0x800B24C8	static direct CFG row says predecessor 0x800B24C4 nop and no direct branch entry; 0x800B24C0 is lw, not a control transfer	0	0	no hit, no register snapshot	TIDAK TAHU runtime reachability under requested hit-only rule; static CFG path is fall-through only
+PA3_jalr	0x80100878	jalr $v0; nearest def lw $v0,0x10($s0)	0	0	no hit, no target snapshot	TIDAK TAHU indirect target
+PA3_jalr	0x80101614	jalr $v0; nearest def lw $v0,0xC8($v1)	0	0	no hit, no target snapshot	TIDAK TAHU indirect target
+PA3_jalr	0x80116C98	jalr $s4; nearest def move $s4,$a0	0	0	no hit, no target snapshot	TIDAK TAHU indirect target
+PA3_jalr	0x80116D68	jalr $v0; nearest def lw $v0,-0x57A8($v0)	0	0	no hit, no target snapshot	TIDAK TAHU indirect target
+PA3_jalr	0x80116DD0	jalr $v0; nearest def lw $v0,-0x57A8($v0)	0	0	no hit, no target snapshot	TIDAK TAHU indirect target
+PA3_jalr	0x801174F4	jalr $v0; nearest def lw $v0,0x5C($v0)	0	0	no hit, no target snapshot	TIDAK TAHU indirect target
+PA3_jalr	0x801175A8	jalr $v0; nearest def lw $v0,0x60($v0)	0	0	no hit, no target snapshot	TIDAK TAHU indirect target
+PA3_jalr	0x801175F4	jalr $v0; nearest def lw $v0,0x64($v0)	0	0	no hit, no target snapshot	TIDAK TAHU indirect target
+PA3_jalr	0x801372BC	jalr $v0; nearest def lw $v0,0x0C($a0)	0	0	no hit, no target snapshot	TIDAK TAHU indirect target
+PA3_jalr	0x801372EC	jalr $v0; nearest def lw $v0,0x10($a0)	0	0	no hit, no target snapshot	TIDAK TAHU indirect target
+PA3_jalr	0x8013731C	jalr $v0; nearest def lw $v0,0x18($a0)	0	0	no hit, no target snapshot	TIDAK TAHU indirect target
+PA3_jalr	0x801373B4	jalr $v0; nearest def lw $v0,0x14($a0)	0	0	no hit, no target snapshot	TIDAK TAHU indirect target
+QA4_secondary_control_pc	0x800BE5D8	additional requested execution breakpoint, not part of the 12 unresolved PA3 jalr addresses	90	90	hits identical between both normalized traces; register data retained in raw trace	K5 CONTROL event only; does not resolve the 12 PA3 indirect targets

@@ -1,0 +1,11 @@
+field	pc	bytes	instruction	path_or_runtime_observation
+branch	0x800B54C0	06 00 40 10	beqz $v0,0x800b54dc	Static incoming edge listed in PA1_CALLSITE_INCOMING_EDGES.tsv
+branch_delay_slot	0x800B54C4	14 80 02 3C	lui $v0,0x8014	Executes in branch delay slot; changes $v0, not $a2/$a3
+alternate_path_load	0x800B54C8	74 EA 44 8C	lw $a0,-0x158c($v0)	Only on branch-not-taken path
+alternate_path_call	0x800B54CC	18 E5 04 0C	jal 0x80139460	Call-clobber does not apply to the taken path to 0x800B54DC
+alternate_path_delay	0x800B54D0	28 03 84 24	addiu $a0,$a0,0x328	Delay slot of alternate-path call; bypassed on branch-taken path
+alternate_path_jump	0x800B54D4	42 D5 02 08	j 0x800b5508	Branch-not-taken continuation
+alternate_path_jump_delay	0x800B54D8	14 80 02 3C	lui $v0,0x8014	Delay slot for alternate-path jump
+call_pc	0x800B54DC	TIDAK TAHU	TIDAK TAHU	PA1_CALLSITE_A2_A3.tsv associates this PC with target 0x800F3658; exact raw instruction bytes omitted from PA1_CALL_WINDOWS.tsv, so byte-exact opcode verification remains open
+call_delay_slot	0x800B54E0	00 00 00 00	nop	PA1_CALL_WINDOWS.tsv marks this as PA1_800B54DC_DELAY_4B
+runtime_snapshot	0x800B54DC	TIDAK TAHU	Exec breakpoint; two identical restores; 90 hits per launch	All 90 hits: $v0=0x80140000, $a0=0x801EFBB8, $a1=0, $a2=0, $a3=0; launch1/launch2 normalized rows identical

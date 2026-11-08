@@ -1,0 +1,7 @@
+STATUS=PROPOSED_NOT_RUN
+CONTROL_RUNS=two identical checkpoint restores with zero gameplay input; 18 requested PCs had zero hits
+NEXT_SCENARIO_1=Use a separate disposable copy of the same checkpoint; follow the currently displayed UI with one ordinary confirmation to advance the current menu/scene dispatcher; record the same Exec PCs for a separate 180-VSYNC condition
+NEXT_SCENARIO_2=In another separate condition, navigate through one ordinary board-turn or tile-action transition, then observe the same PCs; do not combine scenario 1 and 2 in one trial
+TARGETS=0x800F5F54,0x800F5EBC,0x800D49B0,0x800121AC,0x800121F4,0x800B24C8 and 12 PA3 jalr PCs
+INTERPRETATION=zero hit remains only not-executed-in-that-condition; never infer unreachability
+GAMEPLAY_INPUT_IN_QA4=NONE

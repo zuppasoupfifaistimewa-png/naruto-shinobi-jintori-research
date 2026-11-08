@@ -1,0 +1,10 @@
+STATUS=BELUM
+CONFIDENCE=K1
+H1=x_equals_d=NOT_TESTED
+H2=x_equals_id_effect=NOT_TESTED
+REQUIRED_VARIATION=at least two independently grounded upgrade-cost observations spanning distinct d and/or distinct tile id effects for d>=2
+AVAILABLE_UPGRADE_SAMPLES=0 in QA4 CONTROL traces
+QA4_CONTROL_ONLY=two restores of same saved state with identical 180-VSYNC traces; repeated hits are not independent d/id variation
+STATIC_PA5=PA0_PA5_REPORT.md labels x=d and jump-cost formula d>=2 TIDAK TAHU
+FORBIDDEN_SHORTCUTS=400/800/1600 constants; curve fitting; inference from repeated identical CONTROL traces
+RESULT=No H1/H2 comparison made because required d/id variation is absent; upgrade jump cost formula remains TIDAK TAHU

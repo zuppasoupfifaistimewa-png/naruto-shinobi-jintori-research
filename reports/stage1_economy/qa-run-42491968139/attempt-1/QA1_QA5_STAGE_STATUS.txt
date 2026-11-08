@@ -1,0 +1,7 @@
+QA1_QA3_STATUS=SEBAGIAN
+QA1=SEBAGIAN K5 only for 0x800B54DC under CONTROL; other two callsites TIDAK TAHU
+QA2=SEBAGIAN K4 static literal-zero writer at 0x800121AC; runtime s0 and v1 writer remain TIDAK TAHU
+QA3=SEBAGIAN K5 CONTROL trace reproducible; 12 jalr targets and B24C8 runtime reach remain TIDAK TAHU
+QA4=PASS_RECHECK K5 for two identical checkpoint restores
+QA5=BELUM K1; no d/id sample variation to compare H1/H2
+COST_JUMP_d_ge_2=TIDAK TAHU
