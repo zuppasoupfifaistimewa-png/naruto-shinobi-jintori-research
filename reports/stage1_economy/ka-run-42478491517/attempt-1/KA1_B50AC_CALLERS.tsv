@@ -1,0 +1,3 @@
+image	pc	file_offset	bytes	instruksi	kind	target	classification	second_pc	second_instruksi	caller_function
+EXE	0x80055904	0x00046104	AC 50 0B 80	DATA_POINTER_WORD	pointer-word candidate	0x800B50AC	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU
+EXE	0x80055920	0x00046120	AC 50 0B 80	DATA_POINTER_WORD	pointer-word candidate	0x800B50AC	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU
