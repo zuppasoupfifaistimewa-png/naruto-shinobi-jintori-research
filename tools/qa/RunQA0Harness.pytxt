@@ -117,6 +117,36 @@ def main():
         for im,x,y in full_bad:
             for z in rows:
                 if z["image"]==im and z["pc"]<y and z["end"]>x:w.writerow([im,f"0x{x:08X}",f"0x{y:08X}",y-x,z["source"],z["line"],f'0x{z["pc"]:08X}',len(z["raw"])])
+    # Correct erroneous PA3 control-transfer labels in a companion TSV only.
+    pa3_label_rows=[]
+    for p in sorted(stage.rglob("PA3_B24C8_REACHABILITY.tsv")):
+        rel=p.relative_to(root).as_posix()
+        if not any(part.startswith(("pa-run-","qa-run-")) for part in p.relative_to(stage).parts):
+            continue
+        with p.open("r",encoding="utf-8",newline="") as f:
+            rd=csv.DictReader(f,delimiter="\t")
+            for z in rd:
+                candidate=(z.get("control_transfer_candidate") or "").strip()
+                if not candidate.lower().startswith("lw "):
+                    continue
+                candidate_pc=(z.get("control_transfer_candidate_pc") or "").strip()
+                pred=(z.get("predecessor_pc") or "").strip()
+                target=(z.get("target_pc") or "").strip()
+                if candidate_pc=="0x800B24C0" and pred=="0x800B24C4" and target=="0x800B24C8":
+                    corrected_pc="NONE"
+                    corrected="FALLTHROUGH"
+                    reason="0x800B24C0 is lw, not control transfer; 0x800B24C4 nop falls through to target 0x800B24C8"
+                else:
+                    corrected_pc="TIDAK TAHU"
+                    corrected="TIDAK TAHU"
+                    reason="candidate instruction is lw; independent control-flow review required"
+                pa3_label_rows.append([rel,rd.line_num,candidate_pc,candidate,pred,z.get("predecessor_instruction",""),
+                                       target,corrected_pc,corrected,reason])
+    with (out/"QA0_PA3_CONTROL_TRANSFER_LABEL_AUDIT.tsv").open("w",encoding="utf-8",newline="") as f:
+        w=csv.writer(f,delimiter="\t",lineterminator="\n")
+        w.writerow(["source_file","source_line","original_candidate_pc","original_candidate","predecessor_pc",
+                    "predecessor_instruction","target_pc","corrected_candidate_pc","corrected_candidate","correction_reason"])
+        w.writerows(pa3_label_rows)
     wfdir=root/".github"/"workflows"; wfpaths=[]
     for p in sorted(wfdir.glob("*.yml")):
         ls=p.read_text(encoding="utf-8",errors="replace").splitlines()

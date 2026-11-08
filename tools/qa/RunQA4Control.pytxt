@@ -78,6 +78,14 @@ def lua_source(n):
     return LUA.replace("__BPS__",bp).replace("__REGS__","\t".join(REGS)).replace("__LAUNCH__",str(n))
 def read_counts(p):
     with p.open(encoding="utf-8") as f:return {r["pc"]:int(r["hit_count"]) for r in csv.DictReader(f,delimiter="\t")}
+def read_trace_without_launch_id(p):
+    with p.open(encoding="utf-8",newline="") as f:
+        rows=list(csv.reader(f,delimiter="\t"))
+    if not rows or rows[0][0]!="launch" or len(rows[0])!=36:
+        raise RuntimeError("QA4_TRACE_HEADER_INVALID")
+    if any(len(row)!=36 for row in rows[1:]):
+        raise RuntimeError("QA4_TRACE_ROW_WIDTH_INVALID")
+    return [tuple(row[1:]) for row in rows[1:]]
 def launch(n,pcsx,bios,cue,work,out,state):
     d=work/f"launch{n}";d.mkdir(parents=True,exist_ok=True);(d/"resume").mkdir(exist_ok=True)
     shutil.copy2(state,d/"resume"/STATE_NAME);card=d/"control.mcd";card.write_bytes(bytes(131072))
@@ -110,9 +118,9 @@ def main():
     r1=launch(1,a.pcsx,a.bios,a.cue,a.work,a.out,a.state);r2=launch(2,a.pcsx,a.bios,a.cue,a.work,a.out,a.state) if r1["ok"] else None
     identical=False;overflow=0;n1=n2=0
     if r1["ok"] and r2 and r2["ok"]:
-        t1=(a.out/"QA4_LAUNCH1_TRACE.tsv").read_bytes();t2=(a.out/"QA4_LAUNCH2_TRACE.tsv").read_bytes()
+        t1=read_trace_without_launch_id(a.out/"QA4_LAUNCH1_TRACE.tsv");t2=read_trace_without_launch_id(a.out/"QA4_LAUNCH2_TRACE.tsv")
         c1=read_counts(a.out/"QA4_LAUNCH1_COUNTS.tsv");c2=read_counts(a.out/"QA4_LAUNCH2_COUNTS.tsv")
-        identical=t1==t2 and c1==c2;n1=max(0,len(t1.splitlines())-1);n2=max(0,len(t2.splitlines())-1)
+        identical=t1==t2 and c1==c2;n1=len(t1);n2=len(t2)
         overflow=sum(max([int(x) for x in re.findall(r"QA4_TRACE_OVERFLOW=(\d+)",r["content"])] or [0]) for r in (r1,r2))
         with (a.out/"QA4_PER_PC_SUMMARY.tsv").open("w",encoding="utf-8",newline="") as f:
             w=csv.writer(f,delimiter="\t",lineterminator="\n");w.writerow(["pc","hit_count_launch1","hit_count_launch2","identical"])
