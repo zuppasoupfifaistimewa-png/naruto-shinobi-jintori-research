@@ -17,6 +17,7 @@ FRAMES=180
 LUA=r'''
 local launch=__LAUNCH__
 local STATE="adaptive-cycle-02-f180.sstate"
+local MAX_TILES=512
 local BPS={0x800D15A8,0x800D2520,0x800D46EC}
 local names={[0x800D15A8]="FUN_800D15A8",[0x800D2520]="FEE_LHU_A1_1A",[0x800D46EC]="FEE_LHU_V0_1A"}
 local frame,pre,loaded,restorePending=0,0,0,false
@@ -161,6 +162,7 @@ def self_test(root):
     assert len(STATE_SHA)==64 and len(ARTIFACT_SHA)==64
     assert set(BPS)=={0x800D15A8,0x800D2520,0x800D46EC}
     assert "PCSX.getMemoryAsFile()" in LUA and all(x in LUA for x in (":readU8At(addr)",":readU16At(addr)",":readU32At(addr)"))
+    assert "local MAX_TILES=512" in LUA
     assert "writeAt" not in LUA and "PCSX.setGPR" not in LUA and "setMem" not in LUA
     assert "pad.setOverride(B.CIRCLE)" in LUA and "pad.clearOverride(B.CIRCLE)" in LUA
     targets=[".github/workflows/ra2-upgrade-probe.yml","tools/ra/RunRA2UpgradeProbe.pytxt"]
