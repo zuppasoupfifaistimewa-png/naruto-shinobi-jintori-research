@@ -1,0 +1,9 @@
+status	path
+A	reports/stage1_economy/oa-run-42478491400/attempt-1/OA0_OA5_REPORT.md
+A	reports/stage1_economy/oa-run-42478491400/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/oa-run-42478491400/attempt-1/OA4_RUNTIME_SUMMARY.txt
+A	reports/stage1_economy/oa-run-42478491400/attempt-1/OA0_AGGREGATE_EXCERPT_AUDIT.txt
+A	reports/stage1_economy/oa-run-42478491400/attempt-1/OA0_DELETED_ROWS.tsv
+A	reports/stage1_economy/oa-run-42478491400/attempt-1/OA0_RUN_LEDGER.tsv
+A	reports/stage1_economy/oa-run-42478491400/attempt-1/OA0_COMMIT_LEDGER.tsv
+A	reports/stage1_economy/oa-run-42478491400/attempt-1/OA0_PUBLISH_COMMIT_FILES.txt
