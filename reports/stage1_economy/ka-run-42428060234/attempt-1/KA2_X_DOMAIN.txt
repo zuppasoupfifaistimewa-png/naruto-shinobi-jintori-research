@@ -1,0 +1,4 @@
+X_DOMAIN=0..255 conditional, derived from byte loads / ANDI 0xFF in the three JA x-writer chains; execution reachability not established.
+H_TABLE_ENTRIES=52 (index 0..51)
+BOUNDS_PROVEN=NO
+DYNAMIC_EA_OR_POINTER_WRITERS=TIDAK TAHU

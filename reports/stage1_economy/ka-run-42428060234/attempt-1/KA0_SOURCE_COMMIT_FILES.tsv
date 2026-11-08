@@ -1,0 +1,5 @@
+status	path
+A	.github/workflows/ma0-ma5-static.yml
+D	reports/stage1_economy/la-run-42421741871/attempt-1/LA1_B50AC_TABLE_REGION.tsv
+D	reports/stage1_economy/la-run-42421741871/attempt-1/LA2_BOUNDS_CONTEXT.tsv
+A	tools/ma-static/RunMA0MA5Static.py

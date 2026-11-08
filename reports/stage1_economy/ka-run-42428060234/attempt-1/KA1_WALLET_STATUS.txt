@@ -1,0 +1,5 @@
+WALLET_AUTHORITATIVE_SETTER=TIDAK TAHU
+FUN_80014F10 is not proven to write the participant wallet: JA evidence shows owner-indexed max update at record offset +0x94.
+Candidate H1: participant record +0x04 may be wallet; support: repeated +0xB4-stride accesses and prior JA census of write candidates. Falsifier: direct cross-reference shows +0x04 belongs to a different field or is only UI/cache state.
+Candidate H2: manager slot +0x4F4 may carry a signed settlement amount/delta; support: lw at ENTRY1 0x800DD1B8 and sign-normalization at 0x800DD1C8, followed by reset store at 0x800DD1DC. Falsifier: data-flow proves it is not wallet/balance state.
+Neither candidate is asserted as the authoritative wallet setter (K1).
