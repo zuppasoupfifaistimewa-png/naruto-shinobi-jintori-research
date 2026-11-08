@@ -1145,7 +1145,7 @@ def na_followup():
     write_tsv("NA2_M_LW_USE_CENSUS.tsv",muses,use_fields)
     mstores=[z for z in muses if z["use_kind"]=="STORE_THROUGH_M_DERIVED_POINTER"]
     write_tsv("NA2_M_DERIVED_STORE_CANDIDATES.tsv",mstores,use_fields)
-    x530=[z for z in mstores if re.search(r"\\b(?:sb|sh|sw)\\s+[^,]+,\\s*0x530\\(",z["instruction"])]
+    x530=[z for z in mstores if re.search(r"\b(?:sb|sh|sw)\s+[^,]+,\s*0x530\(",z["instruction"])]
     x530_rows=[]
     for z in x530:
         cls="KONSTANTA" if z["source_class"]=="KONSTANTA" else "SALINAN" if z["source_class"]=="SALINAN_DARI_MEMORI" else "TIDAK TAHU"
