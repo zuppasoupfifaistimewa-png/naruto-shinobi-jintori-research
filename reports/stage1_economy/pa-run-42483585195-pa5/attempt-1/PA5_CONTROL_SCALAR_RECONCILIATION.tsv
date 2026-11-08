@@ -1,0 +1,7 @@
+ram_addr	values_dec	width_bytes	launch2_values_dec	identical
+0x8006D794	52	4	52	YES
+0x80139EFC	0	2	0	YES
+0x8013EA6E	0	2	0	YES
+0x8013EA74	2149514168	4	2149514168	YES
+0x8013EA88	5	2	5	YES
+0x8013EB1C	0	1	0	YES

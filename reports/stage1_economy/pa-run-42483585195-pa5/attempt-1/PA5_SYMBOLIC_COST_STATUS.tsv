@@ -1,0 +1,6 @@
+premise	status	result
+DN1 lookup X->LV1-LV5	TUNTAS K4 (baseline)	415 record/12 resource; tabel lookup bukan formula biaya transaksi.
+M region and scalar consistency	PASS	TWO_IDENTICAL_CONTROL_SNAPSHOTS; bytes=1344; SHA256 launch1=a6b6b518d8b4eff42275f2dd574a78f5741870fc33cebacc79e27a4602d281a7; launch2=a6b6b518d8b4eff42275f2dd574a78f5741870fc33cebacc79e27a4602d281a7
+H1 x=d	BELUM K1	TIDAK TAHU; no independent d/x transaction pair.
+H2 x=effect_id	BELUM K1	TIDAK TAHU; effect-ID semantic map is absent.
+upgrade cost for jump d>=2	BELUM K1	TIDAK TAHU; symbolic debit/charge relation not closed.
