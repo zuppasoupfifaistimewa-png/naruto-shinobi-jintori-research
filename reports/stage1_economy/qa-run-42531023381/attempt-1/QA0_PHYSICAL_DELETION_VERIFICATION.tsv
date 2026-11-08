@@ -1,0 +1,16 @@
+source_file	pc	bytes	rows_found_at_baseline	rows_remaining_at_head	verification
+reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv	0x800F5D8C	74 EA 42 8C	1	0	PASS
+reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	0x800D77A4	95 5F 03 08	1	0	PASS
+reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	0x800D7D2C	95 5F 03 08	1	0	PASS
+reports/stage1_economy/pa-run-42482696764-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv	0x800F5D8C	74 EA 42 8C	1	0	PASS
+reports/stage1_economy/pa-run-42482696764-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	0x800D77A4	95 5F 03 08	1	0	PASS
+reports/stage1_economy/pa-run-42482696764-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	0x800D7D2C	95 5F 03 08	1	0	PASS
+reports/stage1_economy/pa-run-42483585195-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv	0x800F5D8C	74 EA 42 8C	1	0	PASS
+reports/stage1_economy/pa-run-42483585195-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	0x800D77A4	95 5F 03 08	1	0	PASS
+reports/stage1_economy/pa-run-42483585195-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	0x800D7D2C	95 5F 03 08	1	0	PASS
+reports/stage1_economy/pa-run-42484127968-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv	0x800F5D8C	74 EA 42 8C	1	0	PASS
+reports/stage1_economy/pa-run-42484127968-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	0x800D77A4	95 5F 03 08	1	0	PASS
+reports/stage1_economy/pa-run-42484127968-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	0x800D7D2C	95 5F 03 08	1	0	PASS
+reports/stage1_economy/pa-run-42484169218-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv	0x800F5D8C	74 EA 42 8C	1	0	PASS
+reports/stage1_economy/pa-run-42484169218-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	0x800D77A4	95 5F 03 08	1	0	PASS
+reports/stage1_economy/pa-run-42484169218-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	0x800D7D2C	95 5F 03 08	1	0	PASS
