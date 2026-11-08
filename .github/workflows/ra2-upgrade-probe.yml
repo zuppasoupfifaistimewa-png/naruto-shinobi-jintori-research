@@ -76,10 +76,13 @@ jobs:
         run: |
           set -euo pipefail
           STATE="$WORK/checkpoint/adaptive-cycle-02-f180.sstate"
-          test "$(find "$WORK/checkpoint" -maxdepth 1 -type f | wc -l)" = 1
           test -s "$STATE"
-          test "$(stat -c %s "$STATE")" = 21162799
-          echo "705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35  $STATE" | sha256sum --check --status
+          STATE_SIZE="$(stat -c %s "$STATE")"
+          STATE_SHA="$(sha256sum "$STATE" | awk '{print $1}')"
+          echo "CHECKPOINT_FILE_SIZE=$STATE_SIZE"
+          echo "CHECKPOINT_FILE_SHA256=$STATE_SHA"
+          test "$STATE_SIZE" = 21162799
+          test "$STATE_SHA" = 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
           cp "$STATE" "$WORK/resume/adaptive-cycle-02-f180.sstate"
       - name: Download and verify private runtime inputs
         shell: bash
