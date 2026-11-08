@@ -307,6 +307,8 @@ jobs:
               f.write("A\t"+str(dest/"PA0_PUBLISH_COMMIT_FILES.tsv")+"\n")
           PY
           git add -- "$DEST/PA0_PUBLISH_COMMIT_FILES.tsv"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c pa-static-publish
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Publish PA0-PA3 static audit $GITHUB_RUN_ID [skip ci]"
           PUSHED=0
@@ -551,6 +553,8 @@ jobs:
               f.write("A\t"+str(dest/"PA4_PUBLISH_COMMIT_FILES.tsv")+"\n")
           PY
           git add -- "$DEST/PA4_PUBLISH_COMMIT_FILES.tsv"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c pa4-publish
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Publish PA4 HA4 CONTROL decimal snapshots $GITHUB_RUN_ID [skip ci]"
           PUSHED=0
@@ -656,6 +660,8 @@ jobs:
               f.write("A\t"+str(dest/"PA5_PUBLISH_COMMIT_FILES.tsv")+"\n")
           PY
           git add -- "$DEST/PA5_PUBLISH_COMMIT_FILES.tsv"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c pa5-publish
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Publish PA5 symbolic falsifier audit $GITHUB_RUN_ID [skip ci]"
           PUSHED=0

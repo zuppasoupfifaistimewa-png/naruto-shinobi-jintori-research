@@ -204,7 +204,7 @@ def strip_crossing_rows(root):
         bad=[]
         for image,a,b in all_bad:
             if image!="ENTRY1" or not any(a>=lo and b<=hi for lo,hi in allowed):
-                write_txt("PA0_EXCERPT_STRIP_STATUS.txt",f"STATUS=FAIL\\nUNAUTHORIZED_OR_UNEXPECTED_GROUP={image}:{h(a)}..{h(b-1)}={b-a}B\\n")
+                write_txt("PA0_EXCERPT_STRIP_STATUS.txt",f"STATUS=FAIL\nUNAUTHORIZED_OR_UNEXPECTED_GROUP={image}:{h(a)}..{h(b-1)}={b-a}B\n")
                 return removed,False
             bad.append((image,a,b))
         if not bad:break
@@ -218,7 +218,7 @@ def strip_crossing_rows(root):
             if any(im==image and x>=a and y<=b and y-x>64 for im,x,y in ss):continue
             choices.append((len(victims),abs(cut-(a+b)//2),cut,victims))
         if not choices:
-            write_txt("PA0_EXCERPT_STRIP_STATUS.txt",f"STATUS=FAIL\\nUNSPLIT={image}:{h(a)}..{h(b-1)}={b-a}B\\n")
+            write_txt("PA0_EXCERPT_STRIP_STATUS.txt",f"STATUS=FAIL\nUNSPLIT={image}:{h(a)}..{h(b-1)}={b-a}B\n")
             return removed,False
         _,_,cut,victims=min(choices,key=lambda x:(x[0],x[1]))
         byfile=defaultdict(set)
@@ -234,7 +234,7 @@ def strip_crossing_rows(root):
     final=spans(excerpt_rows(root,False))
     ok=not [x for x in final if x[2]-x[1]>64]
     write_tsv("PA0_DELETED_ROWS.tsv",removed,["file","line","pc","excerpt_id"])
-    write_txt("PA0_EXCERPT_STRIP_STATUS.txt",f"STATUS={'PASS' if ok else 'FAIL'}\\nDELETED_ROWS={len(removed)}\\nMAX_CONTIGUOUS={max((b-a for _,a,b in final),default=0)}\\n")
+    write_txt("PA0_EXCERPT_STRIP_STATUS.txt",f"STATUS={'PASS' if ok else 'FAIL'}\nDELETED_ROWS={len(removed)}\nMAX_CONTIGUOUS={max((b-a for _,a,b in final),default=0)}\n")
     return removed,ok
 
 def aggregate_audit(root):
@@ -251,8 +251,8 @@ def aggregate_audit(root):
     ss=spans(norm); bad=[x for x in ss if x[2]-x[1]>64]; conflicts=sum(v==b"CONFLICT" for v in seen.values())
     write_tsv("PA0_AGGREGATE_EXCERPT_SPANS.tsv",[{"image":im,"start_pc":h(a),"end_pc_exclusive":h(b),"contiguous_bytes":b-a} for im,a,b in ss],["image","start_pc","end_pc_exclusive","contiguous_bytes"])
     write_txt("PA0_AGGREGATE_EXCERPT_AUDIT.txt",
-      f"SOURCES=JA,KA,LA,MA,NA,OA,PA\\nUNIQUE_IMAGE_PC={len(seen)}\\nMAX_CONTIGUOUS_BYTES={max((b-a for _,a,b in ss),default=0)}\\nLIMIT_BYTES=64\\nOVER_LIMIT_GROUPS={len(bad)}\\nCONFLICTS={conflicts}\\nSTATUS={'PASS' if not bad and not conflicts else 'FAIL'}\\n"+
-      "GROUPS="+(";".join(f"{im}:{h(a)}..{h(b-1)}={b-a}B" for im,a,b in bad) or "none")+"\\n")
+      f"SOURCES=JA,KA,LA,MA,NA,OA,PA\nUNIQUE_IMAGE_PC={len(seen)}\nMAX_CONTIGUOUS_BYTES={max((b-a for _,a,b in ss),default=0)}\nLIMIT_BYTES=64\nOVER_LIMIT_GROUPS={len(bad)}\nCONFLICTS={conflicts}\nSTATUS={'PASS' if not bad and not conflicts else 'FAIL'}\n"+
+      "GROUPS="+(";".join(f"{im}:{h(a)}..{h(b-1)}={b-a}B" for im,a,b in bad) or "none")+"\n")
     return not bad and not conflicts,max((b-a for _,a,b in ss),default=0),len(bad)
 
 def validate_new_tsv(exe,entry):
@@ -553,9 +553,9 @@ def static_analysis():
             for z in csv.DictReader(f,delimiter="\t"):
                 if z.get("target_global")=="0x8013EA88" and "0x8013EA6E" in z.get("source_expression",""):
                     corr.append(z.get("pc","TIDAK TAHU"))
-    write_txt("PA2_NA_SUMMARY_RECONCILIATION.txt","NA_SUMMARY_REPORTED_EA6E_SOURCE_LHU=0\\nTSV_ROWS_EA88_STORES_SOURCED_FROM_EA6E="+str(len(corr))+"\\nSOURCE_PCS="+";".join(corr)+"\\nINTERPRETATION=TSV controls this reconciliation; the legacy TXT was left untouched because only PA files and specific excerpt-row deletions are authorized.\\n")
+    write_txt("PA2_NA_SUMMARY_RECONCILIATION.txt","NA_SUMMARY_REPORTED_EA6E_SOURCE_LHU=0\nTSV_ROWS_EA88_STORES_SOURCED_FROM_EA6E="+str(len(corr))+"\nSOURCE_PCS="+";".join(corr)+"\nINTERPRETATION=TSV controls this reconciliation; the legacy TXT was left untouched because only PA files and specific excerpt-row deletions are authorized.\n")
     # PA3(i): predecessor / reachability into interior 0x800B24C8.
-    target=0x800B24C8; entry=0x800B1E88; pred=CI.get(target-4); delay=CI.get(target-8)
+    target=0x800B24C8; entry=0x800B1E88; pred=CI.get(target-4); delay_ins=CI.get(target-8)
     branch_edges=[]
     for q,z in CI.items():
         t=direct_target(z)
@@ -592,7 +592,7 @@ def static_analysis():
         else:
             todo.append(q+4)
     b24win=window("ENTRY1",target-0x10,12,"PA3_B24C8_PREDECESSOR_AND_BODY")
-    b24=[{"predecessor_pc":h(target-4),"predecessor_instruction":pred["text"] if pred else "TIDAK TAHU","control_transfer_candidate_pc":h(target-8),"control_transfer_candidate":delay["text"] if delay else "TIDAK TAHU","delay_slot_instruction":pred["text"] if pred else "TIDAK TAHU","target_pc":h(target),"target_instruction":CI.get(target,{}).get("text","TIDAK TAHU"),"direct_branch_entries":len(branch_edges),"reachable_from_function_entry":"YES" if target in seen else "NO/UNRESOLVED","function_entry":h(entry),"interpretation":"fall-through/reachability uses direct static CFG only; indirect entries are not closed"}]
+    b24=[{"predecessor_pc":h(target-4),"predecessor_instruction":pred["text"] if pred else "TIDAK TAHU","control_transfer_candidate_pc":h(target-8),"control_transfer_candidate":delay_ins["text"] if delay_ins else "TIDAK TAHU","delay_slot_instruction":pred["text"] if pred else "TIDAK TAHU","target_pc":h(target),"target_instruction":CI.get(target,{}).get("text","TIDAK TAHU"),"direct_branch_entries":len(branch_edges),"reachable_from_function_entry":"YES" if target in seen else "NO/UNRESOLVED","function_entry":h(entry),"interpretation":"fall-through/reachability uses direct static CFG only; indirect entries are not closed"}]
     write_tsv("PA3_B24C8_REACHABILITY.tsv",b24,["predecessor_pc","predecessor_instruction","control_transfer_candidate_pc","control_transfer_candidate","delay_slot_instruction","target_pc","target_instruction","direct_branch_entries","reachable_from_function_entry","function_entry","interpretation"])
     write_tsv("PA3_B24C8_WINDOWS.tsv",b24win,["image","pc","file_offset","bytes","instruksi","excerpt_id"])
     # PA3(ii): each inherited unresolved JALR target register gets a def chain and static table dereference if possible.
