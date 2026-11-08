@@ -42,6 +42,7 @@ jobs:
           set +e
           python3 "$RUNNER_TEMP/qa/RunQA0Harness.py" \
             --root "$GITHUB_WORKSPACE" --out "$OUT" \
+            --baseline a133f0b266f211a31f26439d3a04ac8705b515e4 \
             > "$OUT/QA0_CONSOLE.txt" 2>&1
           RC=$?
           set -e
@@ -53,7 +54,7 @@ jobs:
           {
             echo "# QA0 harness and merged excerpt audit"
             echo
-            echo "Baseline inclusive: 88c7c185b638a2fdd22e3212055fe50cb88b4d81"
+            echo "Baseline inclusive: a133f0b266f211a31f26439d3a04ac8705b515e4"
             echo
             cat "$OUT/QA0_EXCERPT_AUDIT.txt"
             echo
@@ -91,7 +92,7 @@ jobs:
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "SOURCE_SHA=$GITHUB_SHA"
             echo "EXIT_CODE=$RC"
-            echo "BASELINE_INCLUSIVE=88c7c185b638a2fdd22e3212055fe50cb88b4d81"
+            echo "BASELINE_INCLUSIVE=a133f0b266f211a31f26439d3a04ac8705b515e4"
             echo "LEGACY_FILES_MODIFIED=no"
             echo "STATUS_MD_MODIFIED=no"
             echo "RELEASES_MODIFIED=no"
