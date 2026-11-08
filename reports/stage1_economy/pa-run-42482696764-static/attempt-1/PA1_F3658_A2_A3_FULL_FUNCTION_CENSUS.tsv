@@ -1,0 +1,203 @@
+pc	instruction	register	kind	detail
+0x800F3790	jal 0x800ce9f8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F37A0	jal 0x800df0c8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F37B0	jal 0x800df698	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F37C0	jal 0x800f34d0	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F37D0	jal 0x800dfee8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F37E0	jal 0x80115708	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3800	jal 0x800e87c0	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3818	jal 0x800e9220	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3830	jal 0x800ec574	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3840	jal 0x800e5d6c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3850	jal 0x800eb290	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3860	jal 0x800f3100	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3870	jal 0x800cee18	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3880	jal 0x800ea18c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3898	jal 0x800d05b8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F38A8	jal 0x800d10f0	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3964	jal 0x800cad18	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F39D8	jal 0x8010be54	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3A10	jal 0x8010be90	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3A28	jal 0x8010be90	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3A68	jal 0x8010be54	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3AD8	jal 0x80035d78	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3B08	jal 0x8010be90	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3B2C	jal 0x8010ae10	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3B3C	jal 0x8010b440	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3C34	jal 0x801029f8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3C50	jal 0x80113e6c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3C58	jal 0x80102738	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3C94	jal 0x801087e4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3CB0	jal 0x80108804	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3CB8	jal 0x8010abf8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3CF8	jal 0x8010b028	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3D30	jal 0x80100f64	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3D44	jal 0x800e6cb8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3D60	move $a2, $zero	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F3D64	jal 0x80018300	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3D68	addiu $a3, $zero, 1	$a3	EXPLICIT_DEFINITION	static write within full function range
+0x800F3D70	jal 0x80018468	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3D78	jal 0x80100d14	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3DEC	jal 0x80013d80	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3E10	jal 0x800bce18	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3E38	jal 0x8010abf8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3E40	jal 0x800129e4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3E64	jal 0x80012bd4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3E70	jal 0x8010be24	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3E9C	jal 0x8010bddc	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3ED8	jal 0x8010bdfc	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3EE4	jal 0x80100d14	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3EFC	jal 0x80100dcc	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3F0C	jal 0x80100dcc	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3F48	jal 0x8010bdfc	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F3F94	lw $a2, -0x158c($s1)	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F3FE8	jal 0x8010abf8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4000	move $a2, $zero	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F4004	jal 0x80018300	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4008	addiu $a3, $zero, 1	$a3	EXPLICIT_DEFINITION	static write within full function range
+0x800F4010	jal 0x80018468	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4018	jal 0x80100d14	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4040	lui $a2, 0x8014	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F4058	jal 0x8010bdfc	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F40A8	jal 0x8010abf8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F40C0	move $a2, $zero	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F40C4	jal 0x80018300	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F40C8	addiu $a3, $zero, 1	$a3	EXPLICIT_DEFINITION	static write within full function range
+0x800F40D0	jal 0x80018468	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F40D8	jal 0x80100d14	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F40E0	jal 0x800129e4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4104	jal 0x80012bd4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4110	jal 0x8010be24	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F414C	jal 0x8010bdfc	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4170	jal 0x8010be80	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F41B4	jal 0x800bce18	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F41BC	jal 0x8010abf8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F41D4	move $a2, $zero	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F41D8	jal 0x80018300	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F41DC	addiu $a3, $zero, 1	$a3	EXPLICIT_DEFINITION	static write within full function range
+0x800F41E4	jal 0x80018468	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F41EC	jal 0x80100d14	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F41F4	jal 0x800129e4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4214	jal 0x80012bd4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4220	jal 0x8010be24	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4288	jal 0x800faebc	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4298	jal 0x800135f0	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F42CC	jal 0x800faebc	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4320	jal 0x8010be80	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4330	jal 0x8010be80	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4348	jal 0x8010cb88	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4368	jal 0x8010bdfc	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4398	jal 0x80014818	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F43C0	jal 0x800fad68	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4420	jal 0x800135f0	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4458	jal 0x8010abf8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4460	jal 0x800129e4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4484	jal 0x80012bd4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4490	jal 0x8010be24	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F44D4	jal 0x800bce18	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F455C	jal 0x80013f0c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F45A8	jal 0x8010bdfc	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F45D8	jal 0x80015318	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F45E0	jal 0x801088a8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F45F4	jal 0x80113be4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F45FC	jal 0x80113b8c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4670	jal 0x80014a84	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F468C	lui $a2, 0x8014	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F46E4	jal 0x80013d80	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F46EC	jal 0x800129e4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F470C	jal 0x80012bd4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4718	jal 0x8010be24	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4738	lui $a3, 0x8014	$a3	EXPLICIT_DEFINITION	static write within full function range
+0x800F4778	lui $a3, 0x8014	$a3	EXPLICIT_DEFINITION	static write within full function range
+0x800F477C	jal 0x800129e4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F47A0	jal 0x80012bd4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F47AC	jal 0x8010be24	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F47CC	lui $a2, 0x8014	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F4800	lui $a3, 0x8014	$a3	EXPLICIT_DEFINITION	static write within full function range
+0x800F4824	jal 0x80013f0c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F482C	lui $a3, 0x8014	$a3	EXPLICIT_DEFINITION	static write within full function range
+0x800F4830	lw $a2, -0x158c($a3)	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F493C	lui $a2, 0x8014	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F4A18	lw $a2, -0x157c($v0)	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F4A8C	lw $a3, -0x158c($a1)	$a3	EXPLICIT_DEFINITION	static write within full function range
+0x800F4AB4	lw $a2, -0x157c($v0)	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F4B18	jal 0x8010abf8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4B74	lui $a2, 0x8014	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F4BA8	lui $a2, 0x8014	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F4BFC	jal 0x80013d80	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4C70	jal 0x80013f90	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F4CE0	lui $a2, 0x8014	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F4D20	lui $a2, 0x8014	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F4D54	lui $a2, 0x8014	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F4D94	move $a3, $a2	$a3	EXPLICIT_DEFINITION	static write within full function range
+0x800F4D98	lw $a2, -0x157c($v0)	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F4FBC	lui $a3, 0x8014	$a3	EXPLICIT_DEFINITION	static write within full function range
+0x800F4FC4	lw $a2, -0x157c($v0)	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F5104	lw $a2, -0x1550($v0)	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F511C	addu $a2, $a2, $v0	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F5124	lh $a3, -0x1532($v0)	$a3	EXPLICIT_DEFINITION	static write within full function range
+0x800F51A4	lui $a3, 0x8014	$a3	EXPLICIT_DEFINITION	static write within full function range
+0x800F51C8	lw $a2, -0x1550($v0)	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F51E0	addu $a2, $a2, $v0	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F5264	addu $a2, $a0, $v0	$a2	EXPLICIT_DEFINITION	static write within full function range
+0x800F532C	jal 0x80013f90	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F537C	jal 0x80013e04	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F538C	jal 0x800e562c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F539C	jal 0x800e5954	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F53AC	jal 0x800e4a70	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F53BC	jal 0x800e481c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F543C	jal 0x800c0784	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5458	jal 0x80117068	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5614	jal 0x80013f90	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5620	jal 0x800bce18	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F56D8	jal 0x80013f90	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5758	jal 0x80013e04	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5958	jal 0x80013d80	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F599C	jal 0x80013e88	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5A3C	jal 0x80014180	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5B50	jal 0x800ba43c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5C50	jal 0x800ba43c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5CE8	jal 0x800edd68	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5CF8	jal 0x800eb434	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5D08	jal 0x800ec574	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5D18	jal 0x800ef9a4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5D28	jal 0x800f0c10	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5D38	jal 0x800f1290	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5D80	jal 0x800f2490	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5DAC	jal 0x800d15a8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5DBC	jal 0x800e3e74	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5DCC	jal 0x800d6e7c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5DDC	jal 0x800d7f38	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5DEC	jal 0x800e4590	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5DFC	jal 0x800d8930	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5E0C	jal 0x800e4c38	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5E1C	jal 0x800d9570	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5E2C	jal 0x800d5bc0	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5E3C	jal 0x800e4f50	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5E4C	jal 0x800db29c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5E5C	jal 0x800f6078	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5E6C	jal 0x800dd7c0	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5E7C	jal 0x800e61f4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5E8C	jal 0x800e6470	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5E9C	jal 0x800e5350	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5EAC	jal 0x800e2e8c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5EBC	jal 0x800dc2e0	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5ECC	jal 0x800e70c8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5EDC	jal 0x800e5e0c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5EEC	jal 0x800e3540	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5EFC	jal 0x800e03b0	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5F0C	jal 0x800e0b3c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5F1C	jal 0x800e7b38	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5F2C	jal 0x800e8190	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5F44	jal 0x800e6da4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5F54	jal 0x800f2a9c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5F64	jal 0x800f32b4	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5F74	jal 0x800c4340	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5F88	jal 0x800c2fd8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5FC4	jal 0x800c4340	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F5FD8	jal 0x800c2fd8	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F6014	jal 0x800e014c	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F6024	jal 0x800de760	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F6034	jal 0x800e1958	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F6044	jal 0x800e3848	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9
+0x800F6054	jal 0x800e3658	$a2;$a3	CALL_CLOBBER	ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9

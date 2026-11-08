@@ -1,0 +1,4 @@
+image	pc	edge_kind	target	instruksi	verified_code
+ENTRY1	0x800B54C0	beq	0x800B54DC	beqz $v0, 0x800b54dc	YES
+ENTRY1	0x800AEA80	POINTER_WORD	0x800F5EBC	literal pointer	DATA_POINTER
+ENTRY1	0x800AEAB0	POINTER_WORD	0x800F5F54	literal pointer	DATA_POINTER

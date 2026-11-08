@@ -1,0 +1,4 @@
+record	record_pc	field_offset	dispatch_pc	indirect_target	follow_pc	follow_target	basis
+BPARD	0x800558F8	8	0x800119C4	0x800B1E88	TIDAK TAHU	TIDAK TAHU	DN1/NA scene record pointer fields + static jalr and direct JAL instruction
+BPARD	0x800558F8	12	0x80011A28	0x800B50AC	0x800B54F4	0x800BE5D8	DN1/NA scene record pointer fields + static jalr and direct JAL instruction
+BPARDRET	0x80055914	12	0x80011A28	0x800B50AC	0x800B54F4	0x800BE5D8	DN1/NA scene record pointer fields + static jalr and direct JAL instruction

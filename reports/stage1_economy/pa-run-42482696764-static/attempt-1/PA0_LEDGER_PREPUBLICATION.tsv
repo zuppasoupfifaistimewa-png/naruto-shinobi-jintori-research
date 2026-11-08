@@ -1,0 +1,7 @@
+sha	author	email	class	subject
+5e03369540f34c45f2eea587be926924749939dd	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix PA3 CFG shadow and publisher rebase identity
+6b1e9a4be2262d4e6389c8eeb96165fbab4a1b75	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA5 symbolic falsifier audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA0-PA3 static audit 42482327357 [skip ci]
+9c55c9ded9663b0acb8bb7c0439585db94aaa6bb	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix PA workflow shell escapes and Python compile steps
+8a48b8769115173e6b4f0bf1448a4d9d27500ada	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add PA0-PA5 isolated harness repair and CONTROL workflow
+3f730c73dc628d02f360b7ac12961e6f3e4b1584	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Publish OA0-OA5 partial audit and verified CONTROL result [skip ci]
