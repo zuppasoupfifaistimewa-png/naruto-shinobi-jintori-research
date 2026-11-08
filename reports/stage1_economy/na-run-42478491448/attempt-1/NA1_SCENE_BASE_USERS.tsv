@@ -1,0 +1,7 @@
+base_pc	base_register	field_access	indirect_call	status
+0x80011898	$v0	record+16 at 0x800118AC -> $v0; indirect=0x800118B4 jalr $v0	see field_access	static linear use only; control-flow closure incomplete
+0x800118C0	$s0	record+4 at 0x800118E0 -> $a1; indirect=TIDAK TAHU; record+4 at 0x80011918 -> $v0; indirect=TIDAK TAHU	see field_access	static linear use only; control-flow closure incomplete
+0x800119A0	$v1	record+8 at 0x800119BC -> $v0; indirect=0x800119C4 jalr $v0	see field_access	static linear use only; control-flow closure incomplete
+0x80011A04	$v1	record+12 at 0x80011A20 -> $v0; indirect=0x80011A28 jalr $v0	see field_access	static linear use only; control-flow closure incomplete
+0x80011F24	$v0	record+4 at 0x80011F38 -> $a0; indirect=TIDAK TAHU	see field_access	static linear use only; control-flow closure incomplete
+0x80011FD8	$v1	record+4 at 0x80011FEC -> $a0; indirect=TIDAK TAHU	see field_access	static linear use only; control-flow closure incomplete

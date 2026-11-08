@@ -1,0 +1,6 @@
+run_id	workflow	status	conclusion	event	head_sha
+42478491408	.github/workflows/la0-la5-static.yml	in_progress	TIDAK TAHU	push	744a8f2ae7527cf7ef1781667c93735c293acb24
+42478491465	.github/workflows/ma0-ma5-static.yml	in_progress	TIDAK TAHU	push	744a8f2ae7527cf7ef1781667c93735c293acb24
+42478491400	.github/workflows/oa0-oa5.yml	in_progress	TIDAK TAHU	push	744a8f2ae7527cf7ef1781667c93735c293acb24
+42478491448	.github/workflows/na0-na5-static.yml	in_progress	TIDAK TAHU	push	744a8f2ae7527cf7ef1781667c93735c293acb24
+42478491517	.github/workflows/ka0-ka5-static.yml	completed	success	push	744a8f2ae7527cf7ef1781667c93735c293acb24

@@ -1,0 +1,1 @@
+pc	file_offset	instruksi	target_register	target_constant	target_expression	nearest_definition_pc	nearest_definition	control_flow_between_definition_and_jalr	ghidra_code	classification
