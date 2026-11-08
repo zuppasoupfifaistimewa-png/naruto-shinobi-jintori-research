@@ -1,0 +1,5 @@
+premise	result	status
+x is read as u32(manager+0x530) by the known helper path	x=u32(manager+0x530)	K3 REUSED STATIC READER; writer semantics remain incomplete
+H lookup when 0x8001552C accepts x against the 0x800154D4 return bound	H(x)=u32[0x80055CF4 + 16*x]; limit return=TIDAK TAHU	CONDITIONAL; H index requires x below the proven limit
+x=d for a level jump d>=2	TIDAK TAHU; no proven static chain from level delta to x	UNPROVEN
+numerical upgrade cost for d>=2	TIDAK TAHU; no formula derived	UNKNOWN
