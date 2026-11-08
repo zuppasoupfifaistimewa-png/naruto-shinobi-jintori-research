@@ -1,0 +1,164 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+import argparse, hashlib, os, re, shutil, subprocess, sys, time
+from pathlib import Path
+
+SOURCE_RUN="39907655833"
+ARTIFACT_ID="12482055310"
+ARTIFACT_SHA256="a0f45156dfd489f24c8dc8e122c33a048c7b9ac34b935ac828523593d21ca2a8"
+STATE_NAME="adaptive-cycle-02-f180.sstate"
+STATE_BYTES=21162799
+STATE_SHA256="705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35"
+LUA = r'''
+local begun=false
+local loaded=0
+local loadReturned=false
+local preFrames=0
+local postFrames=0
+local function log(s) print(s); pcall(function() io.stdout:flush() end) end
+_G.oaLoadedListener=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
+  loaded=loaded+1; postFrames=0; log("OA4_SAVE_STATE_LOADED=1")
+end)
+local function write_snapshot()
+  local mem=PCSX.getMemoryAsFile()
+  local g=assert(io.open("globals.tsv","w"))
+  g:write("field\taddress\tvalue_dec\n")
+  local function u32(a) return tonumber(mem:readU32At(a)) end
+  local function u16(a) return tonumber(mem:readU16At(a)) end
+  local function u8(a) return tonumber(mem:readU8At(a)) end
+  local values={
+    {"M","0x8013EA74",u32(0x8013EA74)},
+    {"EA6E_u16","0x8013EA6E",u16(0x8013EA6E)},
+    {"EB1C_u8","0x8013EB1C",u8(0x8013EB1C)},
+    {"EA88_u16","0x8013EA88",u16(0x8013EA88)},
+    {"39EFC_u16","0x80139EFC",u16(0x80139EFC)},
+    {"GP118_u32","0x8006D794",u32(0x8006D794)}
+  }
+  local M=values[1][3]
+  for _,v in ipairs(values) do g:write(v[1].."\t"..v[2].."\t"..tostring(v[3]).."\n") end
+  g:close()
+  if M>=0x80000000 and M<=0x801FFFFF and M+0x540<=0x80200000 then
+    local f=assert(io.open("m_region.tsv","w"))
+    f:write("ram_addr\tvalues_dec\n")
+    for a=M,M+0x53F do f:write(string.format("0x%08X",a).."\t"..tostring(u8(a)).."\n") end
+    f:close()
+    log("OA4_M_REGION_STATUS=READ")
+  else
+    log("OA4_M_REGION_STATUS=NOT_IN_RANGE")
+  end
+  log("OA4_SNAPSHOT_WRITTEN=1")
+end
+_G.oaVsyncListener=PCSX.Events.createEventListener("GPU::Vsync",function()
+  preFrames=preFrames+1
+  if not begun then
+    begun=true
+    log("OA4_LOAD_BEGIN=1 input=NONE watchpoints=0")
+    PCSX.pauseEmulator()
+    PCSX.nextTick(function()
+      local okFile,file=pcall(function() return assert(Support.File.open("resume/adaptive-cycle-02-f180.sstate")) end)
+      if not okFile or not file then log("OA4_STATE_OPEN_FAIL="..tostring(file)); PCSX.quit(50); return end
+      local okLoad,err=pcall(function() PCSX.loadSaveState(file) end)
+      file:close()
+      if not okLoad then log("OA4_STATE_RESTORE_FAIL="..tostring(err)); PCSX.quit(51); return end
+      loadReturned=true; log("OA4_LOAD_CALL_RETURNED=1"); PCSX.resumeEmulator()
+    end)
+    return
+  end
+  if loaded>0 and loadReturned then
+    postFrames=postFrames+1
+    if postFrames==60 or postFrames==180 then log("OA4_POST_LOAD_VSYNC="..tostring(postFrames)) end
+    if postFrames>=180 then
+      local ok,err=pcall(write_snapshot)
+      if not ok then log("OA4_SNAPSHOT_FAIL="..tostring(err)); PCSX.quit(54); return end
+      log("OA4_CONTROL_RESULT=PASS")
+      PCSX.pauseEmulator()
+      PCSX.nextTick(function() PCSX.quit(0) end)
+      return
+    end
+  elseif preFrames>=900 then
+    log("OA4_LOAD_EVENT_TIMEOUT=1"); PCSX.pauseEmulator()
+    PCSX.nextTick(function() PCSX.quit(53) end)
+  end
+end)
+log("OA4_READY=1 gameplay_input=NONE watchpoints=0")
+'''
+
+def parse_globals(path: Path):
+    out={}
+    with path.open(encoding="utf-8") as f:
+        for row in f.read().splitlines()[1:]:
+            q=row.split("\t")
+            if len(q)==3: out[q[0]]=int(q[2])
+    return out
+
+def parse_region(path: Path):
+    vals=[]
+    with path.open(encoding="utf-8") as f:
+        for row in f.read().splitlines()[1:]:
+            q=row.split("\t")
+            if len(q)==2: vals.append(int(q[1]))
+    return bytes(vals)
+
+def launch(n: int, pcsx: Path, bios: Path, cue: Path, work: Path, out: Path, state: Path):
+    d=work/f"launch{n}"; d.mkdir(parents=True,exist_ok=True)
+    (d/"resume").mkdir(exist_ok=True)
+    shutil.copy2(state,d/"resume"/STATE_NAME)
+    card=d/"control.mcd"; card.write_bytes(bytes(131072))
+    lua=d/"oa4.lua"; lua.write_text(LUA,encoding="utf-8")
+    home=d/"home"; home.mkdir(exist_ok=True)
+    env=os.environ.copy()
+    env.update({"HOME":str(home),"XDG_CONFIG_HOME":str(home/".config"),"XDG_DATA_HOME":str(home/".data"),"XDG_RUNTIME_DIR":str(home/".runtime")})
+    for x in ("XDG_CONFIG_HOME","XDG_DATA_HOME","XDG_RUNTIME_DIR"):Path(env[x]).mkdir(parents=True,exist_ok=True)
+    log=d/"pcsx.stdout.txt"; pcsxlog=d/"pcsx.log"
+    cmd=["timeout","--signal=INT","--kill-after=10s","240s",str(pcsx),"-noupdate","-debugger","-interpreter","-bios",str(bios),"-iso",str(cue),"-memcard1",str(card),"-dofile",str(lua),"-softgpu","-dynarec","-stdout","-lua_stdout","-logfile",str(pcsxlog),"-run"]
+    with log.open("w",encoding="utf-8") as f:
+        f.write("LAUNCH_COUNT=1\nGAMEPLAY_INPUT=NONE\nWATCHPOINTS=0\n"); f.flush()
+        try: rc=subprocess.run(cmd,cwd=d,env=env,stdout=f,stderr=subprocess.STDOUT,check=False).returncode
+        except Exception as e: rc=255; f.write("LAUNCH_EXCEPTION="+repr(e)+"\n")
+    content=log.read_text(encoding="utf-8",errors="replace")
+    if pcsxlog.exists():content+="\n"+pcsxlog.read_text(encoding="utf-8",errors="replace")
+    (out/f"OA4_LAUNCH{n}_LOG.txt").write_text(content,encoding="utf-8")
+    loaded=content.count("OA4_SAVE_STATE_LOADED=1")
+    frames=max([int(x) for x in re.findall(r"OA4_POST_LOAD_VSYNC=(\d+)",content)] or [0])
+    region_status="READ" if "OA4_M_REGION_STATUS=READ" in content else "NOT_IN_RANGE" if "OA4_M_REGION_STATUS=NOT_IN_RANGE" in content else "TIDAK TAHU"
+    gp=d/"globals.tsv"; rp=d/"m_region.tsv"
+    ok=rc==0 and loaded==1 and frames>=180 and "OA4_CONTROL_RESULT=PASS" in content and gp.is_file()
+    if ok:
+        shutil.copy2(gp,out/f"OA4_LAUNCH{n}_GLOBALS.tsv")
+        if rp.exists():shutil.copy2(rp,out/f"OA4_LAUNCH{n}_M_REGION.tsv")
+    return {"exit":rc,"loaded_events":loaded,"post_vsync":frames,"region_status":region_status,"ok":ok,"globals":gp if ok else None,"region":rp if ok and rp.exists() else None}
+
+def main():
+    ap=argparse.ArgumentParser()
+    for name in ("pcsx","bios","cue","work","out","state"):ap.add_argument("--"+name,required=True,type=Path)
+    a=ap.parse_args()
+    a.out.mkdir(parents=True,exist_ok=True); a.work.mkdir(parents=True,exist_ok=True)
+    if not a.state.is_file() or a.state.stat().st_size!=STATE_BYTES or hashlib.sha256(a.state.read_bytes()).hexdigest()!=STATE_SHA256:
+        raise SystemExit("OA4_CHECKPOINT_VALIDATION_FAIL")
+    r1=launch(1,a.pcsx,a.bios,a.cue,a.work,a.out,a.state)
+    # Stop on the first restore failure. Never cold-boot or try a substitute path.
+    r2=launch(2,a.pcsx,a.bios,a.cue,a.work,a.out,a.state) if r1["ok"] else None
+    hashes=[]; global_equal=False; same=True
+    if r1["ok"] and r2 and r2["ok"]:
+        g1=parse_globals(a.out/"OA4_LAUNCH1_GLOBALS.tsv"); g2=parse_globals(a.out/"OA4_LAUNCH2_GLOBALS.tsv")
+        global_equal=(g1==g2)
+        if r1["region_status"]=="READ" and r2["region_status"]=="READ":
+            b1=parse_region(a.out/"OA4_LAUNCH1_M_REGION.tsv"); b2=parse_region(a.out/"OA4_LAUNCH2_M_REGION.tsv")
+            hashes=[hashlib.sha256(b1).hexdigest(),hashlib.sha256(b2).hexdigest()]
+            same=(len(b1)==0x540 and len(b2)==0x540 and hashes[0]==hashes[1])
+        else:same=False
+    status="PASS" if r1["ok"] and r2 and r2["ok"] and global_equal and same else "TIDAK TAHU"
+    summary=[
+      f"STATUS={status}",f"SOURCE_RUN={SOURCE_RUN}",f"ARTIFACT_ID={ARTIFACT_ID}",f"ARTIFACT_ZIP_SHA256={ARTIFACT_SHA256}",
+      f"CHECKPOINT={STATE_NAME}",f"CHECKPOINT_SHA256={STATE_SHA256}", "LAUNCHES_REQUESTED=2",
+      f"LAUNCH1_EXIT={r1['exit']}",f"LAUNCH1_SAVE_STATE_LOADED_EVENTS={r1['loaded_events']}",f"LAUNCH1_POST_VSYNC={r1['post_vsync']}",f"LAUNCH1_M_REGION={r1['region_status']}",
+      f"LAUNCH2_EXIT={r2['exit'] if r2 else 'NOT_RUN_FIRST_RESTORE_FAILED'}",
+      f"LAUNCH2_SAVE_STATE_LOADED_EVENTS={r2['loaded_events'] if r2 else 'NOT_RUN'}",f"LAUNCH2_POST_VSYNC={r2['post_vsync'] if r2 else 'NOT_RUN'}",f"LAUNCH2_M_REGION={r2['region_status'] if r2 else 'NOT_RUN'}",
+      f"GLOBALS_IDENTICAL={'YES' if global_equal else 'NO/TIDAK TAHU'}",f"M_REGION_SHA256_LAUNCH1={hashes[0] if hashes else 'TIDAK TAHU'}",f"M_REGION_SHA256_LAUNCH2={hashes[1] if hashes else 'TIDAK TAHU'}",
+      f"M_REGION_IDENTICAL={'YES' if same else 'NO/TIDAK TAHU'}","GAMEPLAY_INPUT=NONE","WATCHPOINTS=0","RAM_BINARY_EXPORTED=no","COLD_BOOT_FALLBACK=no"
+    ]
+    (a.out/"OA4_RUNTIME_SUMMARY.txt").write_text("\n".join(summary)+"\n",encoding="utf-8")
+    print("\n".join(summary))
+    if status!="PASS":raise SystemExit(1)
+
+if __name__=="__main__":main()

@@ -1,0 +1,439 @@
+name: OA0-OA5 isolated static and H6 CONTROL audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/oa0-oa5.yml"
+      - "tools/oa/**"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: naruto-oa0-oa5-isolated
+  cancel-in-progress: false
+
+jobs:
+  oa0-oa5:
+    name: oa0-oa5-static-and-control
+    runs-on: ubuntu-24.04
+    timeout-minutes: 110
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RESEARCH_REPO: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+      BASELINE_INCLUSIVE: dc7a78f3882ff9c22ae6b09df8b8b8e657bb6137
+      GHIDRA_ASSET: ghidra_12.2_PUBLIC_20261016.zip
+      GHIDRA_SHA256: 2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+      GHIDRA_CACHE_DIR: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+      WORK: /tmp/naruto-oa-private-${{ github.run_id }}-${{ github.run_attempt }}
+      OUT: /tmp/naruto-oa-output-${{ github.run_id }}-${{ github.run_attempt }}
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install isolated static and CONTROL dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends bchunk xorriso unzip python3-pip jq curl xvfb x11-utils zip git
+          python3 -m pip install --break-system-packages "capstone==5.0.3"
+          mkdir -p "$WORK/source" "$WORK/extracted" "$WORK/input" "$WORK/pycache" \
+            "$WORK/ghidra-exe-project" "$WORK/ghidra-entry1-project" "$WORK/ghidra-logs" \
+            "$WORK/scripts" "$WORK/resume" "$OUT"
+
+      - name: Compile every tracked Python file
+        id: pycompile
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "$OUT/OA0_PYCOMPILE.tsv" "$WORK/pycache" <<'PY'
+          import csv,hashlib,py_compile,subprocess,sys
+          from pathlib import Path
+          out,cache=Path(sys.argv[1]),Path(sys.argv[2])
+          names=subprocess.check_output(["git","ls-files","-z","--","*.py"]).decode().split("\0")
+          names=[x for x in names if x]
+          rows=[]
+          for name in names:
+              target=cache/(hashlib.sha256(name.encode()).hexdigest()+".pyc")
+              try:
+                  py_compile.compile(name,cfile=str(target),doraise=True)
+                  rows.append((name,"PASS",""))
+              except Exception as exc:
+                  rows.append((name,"FAIL",type(exc).__name__+":"+str(exc)))
+          with out.open("w",encoding="utf-8",newline="") as f:
+              w=csv.writer(f,delimiter="\t",lineterminator="\n")
+              w.writerow(["path","status","reason"]);w.writerows(rows)
+          passed=sum(x[1]=="PASS" for x in rows)
+          print(f"PY_COMPILE_TOTAL={len(rows)} PY_COMPILE_PASS={passed} PY_COMPILE_FAIL={len(rows)-passed}")
+          if not rows or passed!=len(rows):raise SystemExit(1)
+          PY
+          COUNT="$(($(wc -l < "$OUT/OA0_PYCOMPILE.tsv")-1))"
+          echo "OA0_PYCOUNT=$COUNT" >> "$GITHUB_ENV"
+
+      - name: Restore pinned Ghidra cache
+        uses: actions/cache@v4
+        with:
+          path: /home/runner/.cache/ghidra/ghidra_12.2_PUBLIC_20261016
+          key: ghidra-12.2-linux-x64-2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67
+
+      - name: Install pinned Ghidra if cache is missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$GHIDRA_CACHE_DIR"
+          if ! find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit | grep -q .; then
+            ARCHIVE="$RUNNER_TEMP/$GHIDRA_ASSET"
+            curl --fail --location --silent --show-error --proto '=https' --proto-redir '=https' --retry 3 \
+              "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.2_build/$GHIDRA_ASSET" -o "$ARCHIVE"
+            echo "$GHIDRA_SHA256  $ARCHIVE" | sha256sum --check --status
+            unzip -q "$ARCHIVE" -d "$GHIDRA_CACHE_DIR"
+            rm -f "$ARCHIVE"
+          fi
+          HEADLESS="$(find "$GHIDRA_CACHE_DIR" -type f -path '*/support/analyzeHeadless' -print -quit)"
+          test -x "$HEADLESS"
+          echo "HEADLESS=$HEADLESS" >> "$GITHUB_ENV"
+
+      - name: Download and verify disc privately; extract EXE and Entry 1
+        id: extract
+        shell: bash
+        run: |
+          set -euo pipefail
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          BIN="$WORK/source/naruto-disc.bin"
+          CUE_RAW="$WORK/source/original.cue"
+          CUE="$WORK/source/naruto-disc.cue"
+          curl --fail --silent --show-error --location --retry 2 --max-time 600 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "$API/releases/assets/647346873" -o "$BIN"
+          test "$(stat -c %s "$BIN")" = 325989552
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $BIN" | sha256sum --check --status
+          curl --fail --silent --show-error --location --retry 2 --max-time 60 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+            "$API/releases/assets/647354760" -o "$CUE_RAW"
+          test "$(stat -c %s "$CUE_RAW")" = 116
+          echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $CUE_RAW" | sha256sum --check --status
+          python3 - "$CUE_RAW" "$CUE" <<'PY'
+          from pathlib import Path
+          import re,sys
+          src,dst=map(Path,sys.argv[1:3]); lines=[]; count=0
+          for line in src.read_text(encoding="utf-8-sig").splitlines():
+              if line.lstrip().upper().startswith("FILE "):
+                  m=re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$',line,re.I)
+                  if not m:raise SystemExit("INVALID_CUE_FILE_DIRECTIVE")
+                  line=m.group(1)+'"naruto-disc.bin"'+m.group(2);count+=1
+              lines.append(line)
+          if count!=1:raise SystemExit("CUE_FILE_DIRECTIVE_COUNT="+str(count))
+          dst.write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+          bchunk "$BIN" "$CUE" "$WORK/source/track"
+          ISO="$(find "$WORK/source" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          test -n "$ISO"
+          xorriso -osirrox on -indev "$ISO" -extract / "$WORK/extracted" > "$WORK/source/extract.log" 2>&1
+          EXE="$(find "$WORK/extracted" -type f -iname 'SLPS_035.53' -print -quit)"
+          DATA="$(find "$WORK/extracted" -type f -iname 'DATA.BIN' -print -quit)"
+          test -n "$EXE" && test -n "$DATA"
+          test "$(stat -c %s "$EXE")" = 385024
+          echo "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569  $EXE" | sha256sum --check --status
+          test "$(stat -c %s "$DATA")" = 66015232
+          echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $DATA" | sha256sum --check --status
+          cp "$EXE" "$WORK/input/SLPS_035.53"
+          python3 - "$DATA" "$WORK/input/ENTRY1.bin" <<'PY'
+          from pathlib import Path
+          import hashlib,struct,sys
+          data=Path(sys.argv[1]).read_bytes()
+          lbn,size=struct.unpack_from("<II",data,0x4c);off=(lbn-212)*2048
+          entry=data[off:off+size]
+          if (lbn,size,off,len(entry))!=(8778,596412,0x10BB000,596412):raise SystemExit("ENTRY1_DIRECTORY_MISMATCH")
+          digest=hashlib.sha256(entry).hexdigest()
+          if digest!="9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a":raise SystemExit("ENTRY1_SHA256_MISMATCH="+digest)
+          Path(sys.argv[2]).write_bytes(entry)
+          PY
+          echo "EXTRACT_VERIFIED=1" >> "$GITHUB_OUTPUT"
+
+      - name: Run Ghidra code listing and ensure requested function boundaries
+        id: ghidra
+        if: steps.extract.outputs.EXTRACT_VERIFIED == '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp "$GITHUB_WORKSPACE"/tools/ia-ghidra/*.java "$WORK/scripts/"
+          cp "$GITHUB_WORKSPACE"/tools/ja-ghidra/*.java "$WORK/scripts/"
+          set +e
+          "$HEADLESS" "$WORK/ghidra-exe-project" Naruto_OA_EXE \
+            -import "$WORK/input/SLPS_035.53" \
+            -loader BinaryLoader -loader-baseAddr 0x80010000 -loader-fileOffset 0x800 -loader-length 0x5D800 \
+            -processor "MIPS:LE:32:default" -scriptPath "$WORK/scripts" \
+            -preScript PreparePsxExe.java \
+            -postScript EnsureTargetFunctions.java 0x800154D4 0x8001552C 0x800121AC 0x800121F4 \
+            -postScript ExportJATargetEvidence.java "$OUT/EXE_CODE.txt" 0x800154D4 0x8001552C \
+            -analysisTimeoutPerFile 900 -max-cpu 2 -deleteProject > "$WORK/ghidra-logs/exe.log" 2>&1
+          EXE_RC=$?
+          "$HEADLESS" "$WORK/ghidra-entry1-project" Naruto_OA_ENTRY1 \
+            -import "$WORK/input/ENTRY1.bin" \
+            -loader BinaryLoader -loader-baseAddr 0x800AD450 -loader-length 0x919BC -loader-blockName ENTRY1_AT_800AD450 \
+            -processor "MIPS:LE:32:default" -scriptPath "$WORK/scripts" \
+            -postScript EnsureTargetFunctions.java 0x800B1E88 0x800B50AC 0x800B5020 0x800B2A58 0x800F2A9C 0x800F3658 0x800DC2E0 0x800BE5D8 0x800D49B0 0x800E3B1C \
+            -postScript ExportJATargetEvidence.java "$OUT/ENTRY1_CODE.txt" 0x800B1E88 0x800B50AC 0x800B5020 0x800B2A58 0x800B24C8 0x800F5F54 0x800B54DC 0x800F5EBC 0x800BE5D8 0x800D49B0 0x800E3B1C \
+            -analysisTimeoutPerFile 1200 -max-cpu 2 -deleteProject > "$WORK/ghidra-logs/entry1.log" 2>&1
+          ENTRY_RC=$?
+          set -e
+          {
+            echo "EXE_GHIDRA_EXIT=$EXE_RC"
+            tail -n 80 "$WORK/ghidra-logs/exe.log" 2>/dev/null || true
+            echo "ENTRY1_GHIDRA_EXIT=$ENTRY_RC"
+            tail -n 100 "$WORK/ghidra-logs/entry1.log" 2>/dev/null || true
+          } > "$OUT/GHIDRA_DIAGNOSTICS.txt"
+          echo "EXE_GHIDRA_EXIT=$EXE_RC" >> "$GITHUB_OUTPUT"
+          echo "ENTRY1_GHIDRA_EXIT=$ENTRY_RC" >> "$GITHUB_OUTPUT"
+
+      - name: Run OA0-OA3 static analyzer and fix only oversized excerpt rows
+        id: static
+        if: steps.extract.outputs.EXTRACT_VERIFIED == '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          OA0_PYCOUNT="${OA0_PYCOUNT:-0}" python3 tools/oa/RunOA0OA5.py \
+            "$WORK/input/SLPS_035.53" "$WORK/input/ENTRY1.bin" "$OUT" \
+            "$OUT/EXE_CODE.txt" "$OUT/ENTRY1_CODE.txt"
+          RC=$?
+          set -e
+          echo "OA_ANALYZER_EXIT_CODE=$RC" > "$OUT/OA0_ANALYZER_EXIT.txt"
+          echo "oa_analysis_exit=$RC" >> "$GITHUB_OUTPUT"
+
+      - name: Run exactly two HA4 checkpoint CONTROL restores (stop on first failure)
+        id: runtime
+        if: steps.extract.outputs.EXTRACT_VERIFIED == '1'
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p "$OUT"
+          RUNTIME_RC=99
+          (
+            set -euo pipefail
+            API="https://api.github.com/repos/$RESEARCH_REPO"
+            META="$WORK/source/ha4-artifact.json"
+            ZIP="$WORK/source/ha4-private.zip"
+            curl --fail --silent --show-error --location --max-time 60 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "$API/actions/artifacts/12482055310" -o "$META"
+            python3 - "$META" <<'PY'
+          import json,sys
+          j=json.load(open(sys.argv[1],encoding="utf-8"))
+          checks={"id":12482055310,"name":"naruto-storymode-adaptive-player-private","size_in_bytes":11407011,"digest":"sha256:a0f45156dfd489f24c8dc8e122c33a048c7b9ac34b935ac828523593d21ca2a8","expired":False}
+          for k,v in checks.items():
+              if j.get(k)!=v:raise SystemExit("HA4_ARTIFACT_METADATA_MISMATCH_"+k)
+          if j.get("workflow_run",{}).get("id")!=39907655833:raise SystemExit("HA4_ARTIFACT_SOURCE_RUN_MISMATCH")
+          print("HA4_ARTIFACT_METADATA=PASS")
+          PY
+            curl --fail --silent --show-error --location --max-time 180 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "$API/actions/artifacts/12482055310/zip" -o "$ZIP"
+            test "$(stat -c %s "$ZIP")" = 11407011
+            echo "a0f45156dfd489f24c8dc8e122c33a048c7b9ac34b935ac828523593d21ca2a8  $ZIP" | sha256sum --check --status
+            unzip -p "$ZIP" adaptive-cycle-02-f180.sstate > "$WORK/resume/adaptive-cycle-02-f180.sstate"
+            test "$(stat -c %s "$WORK/resume/adaptive-cycle-02-f180.sstate")" = 21162799
+            echo "705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35  $WORK/resume/adaptive-cycle-02-f180.sstate" | sha256sum --check --status
+            RELEASE="$WORK/source/release.json"
+            curl --fail --silent --show-error --location --max-time 60 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o "$RELEASE"
+            fetch_asset() {
+              name="$1"; dest="$2"; bytes="$3"; digest="$4"
+              id="$(jq -r --arg n "$name" '.assets[]? | select(.name==$n) | .id' "$RELEASE" | head -n 1)"
+              test -n "$id" && test "$id" != null
+              curl --fail --silent --show-error --location --max-time 600 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+                "$API/releases/assets/$id" -o "$dest"
+              test "$(stat -c %s "$dest")" = "$bytes"
+              echo "$digest  $dest" | sha256sum --check --status
+            }
+            fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage "$WORK/source/pcsx-redux.AppImage" 65747557 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
+            fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin "$WORK/source/game.bin" 325989552 58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88
+            fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue "$WORK/source/game.cue" 116 be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8
+            fetch_asset scph7502.zip "$WORK/source/scph7502.zip" 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a
+            python3 - "$WORK/source/scph7502.zip" "$WORK/source/scph7502.bin" "$WORK/source/game.cue" "$WORK/source/game-run.cue" <<'PY'
+          import hashlib,re,stat,sys,zipfile
+          from pathlib import Path
+          zpath,bios,cue,out=map(Path,sys.argv[1:])
+          with zipfile.ZipFile(zpath) as z:
+              found=[]
+              for it in z.infolist():
+                  p=Path(it.filename); mode=(it.external_attr>>16)&0xffff
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)):raise SystemExit("UNSAFE_BIOS_ARCHIVE")
+                  if not it.is_dir() and it.file_size==524288:found.append(it)
+              if len(found)!=1:raise SystemExit("BIOS_MEMBER_COUNT_MISMATCH")
+              b=z.read(found[0])
+          if hashlib.sha256(b).hexdigest()!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1":raise SystemExit("BIOS_SHA256_MISMATCH")
+          bios.write_bytes(b)
+          lines=[];n=0
+          for line in cue.read_text(encoding="utf-8-sig").splitlines():
+              if line.lstrip().upper().startswith("FILE "):
+                  m=re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$',line,re.I)
+                  if not m:raise SystemExit("CUE_DIRECTIVE_INVALID")
+                  line=m.group(1)+'"game.bin"'+m.group(2);n+=1
+              lines.append(line)
+          if n!=1:raise SystemExit("CUE_FILE_COUNT="+str(n))
+          out.write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+            chmod +x "$WORK/source/pcsx-redux.AppImage"
+            cd "$WORK/source"
+            ./pcsx-redux.AppImage --appimage-extract >/dev/null
+            APPDIR="$WORK/source/squashfs-root"
+            PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 | grep -E '/(pcsx-redux|pcsx-redux[^/]*)$' | head -n 1)"
+            test -n "$PCSX_BIN" && test -x "$PCSX_BIN"
+            mkdir -p "$WORK/capstone" "$WORK/ffmpeg-libs"
+            CAPSTONE_FILE="$(find -L "$APPDIR" -type f -name 'libcapstone.so.5' -print -quit)"
+            test -n "$CAPSTONE_FILE"; cp -L "$CAPSTONE_FILE" "$WORK/capstone/libcapstone.so.5"
+            while IFS= read -r -d '' lib; do cp -L "$lib" "$WORK/ffmpeg-libs/$(basename "$lib")"; done < <(find -L "$APPDIR" -type f \( -name 'libav*.so*' -o -name 'libsw*.so*' -o -name 'libpostproc.so*' \) -print0)
+            test -s "$WORK/ffmpeg-libs/libavformat.so.63"
+            Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/source/xvfb.log" 2>&1 &
+            echo $! > "$WORK/source/xvfb.pid"
+            export DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1
+            for n in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+            xdpyinfo -display "$DISPLAY" >/dev/null
+            export LD_LIBRARY_PATH="$WORK/capstone:$WORK/ffmpeg-libs:$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+            export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
+            export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
+            export QML2_IMPORT_PATH="$APPDIR/usr/qml"
+            set +e
+            python3 "$GITHUB_WORKSPACE/tools/oa/RunOA4Control.py" \
+              --pcsx "$PCSX_BIN" --bios "$WORK/source/scph7502.bin" --cue "$WORK/source/game-run.cue" \
+              --work "$WORK/runtime" --out "$OUT" --state "$WORK/resume/adaptive-cycle-02-f180.sstate"
+            RUNTIME_RC=$?
+            set -e
+            exit "$RUNTIME_RC"
+          )
+          RUNTIME_RC=$?
+          if [ ! -s "$OUT/OA4_RUNTIME_SUMMARY.txt" ]; then
+            {
+              echo "STATUS=TIDAK TAHU"
+              echo "REASON=artifact_validation_or_runtime_setup_failed; no cold boot or alternative path attempted"
+              echo "SOURCE_RUN=39907655833"
+              echo "ARTIFACT_ID=12482055310"
+              echo "GAMEPLAY_INPUT=NONE"
+              echo "WATCHPOINTS=0"
+              echo "COLD_BOOT_FALLBACK=no"
+              echo "SETUP_EXIT_CODE=$RUNTIME_RC"
+            } > "$OUT/OA4_RUNTIME_SUMMARY.txt"
+          fi
+          if [ -f "$WORK/source/xvfb.pid" ]; then kill "$(cat "$WORK/source/xvfb.pid")" 2>/dev/null || true; fi
+          echo "OA4_RUNTIME_EXIT_CODE=$RUNTIME_RC" >> "$GITHUB_ENV"
+          echo "oa4_exit=$RUNTIME_RC" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Remove all private binary and emulator inputs
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f "$WORK/source/xvfb.pid" ]; then kill "$(cat "$WORK/source/xvfb.pid")" 2>/dev/null || true; fi
+          rm -rf "$WORK"
+          test ! -e "$WORK"
+          echo "PRIVATE_INPUT_CLEANUP=PASS" > "$OUT/cleanup.txt"
+
+      - name: Publish text-only OA evidence and commit run summary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST="reports/stage1_economy/oa-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$DEST"
+          find "$OUT" -maxdepth 1 -type f \( -name 'OA*.txt' -o -name 'OA*.tsv' -o -name 'OA*.md' -o -name 'cleanup.txt' -o -name 'GHIDRA_DIAGNOSTICS.txt' \) -exec cp {} "$DEST/" \;
+          ANALYSIS_RC="$(sed -n 's/^OA_ANALYZER_EXIT_CODE=//p' "$OUT/OA0_ANALYZER_EXIT.txt" 2>/dev/null | head -n 1 || echo TIDAK_TAHU)"
+          RUNTIME_RC="${OA4_RUNTIME_EXIT_CODE:-TIDAK_TAHU}"
+          PY_SUMMARY="TIDAK TAHU"
+          if [ -s "$DEST/OA0_PYCOMPILE.tsv" ]; then
+            PY_SUMMARY="$(python3 - "$DEST/OA0_PYCOMPILE.tsv" <<'PY'
+          import csv,sys
+          r=list(csv.DictReader(open(sys.argv[1],encoding="utf-8"),delimiter="\t"))
+          print(f"{sum(x['status']=='PASS' for x in r)}/{len(r)}")
+          PY
+          )"
+          fi
+          if [ ! -s "$DEST/OA0_OA5_REPORT.md" ]; then
+            printf '# OA0-OA5 result\n\nOA static analyzer did not produce a complete report.\n' > "$DEST/OA0_OA5_REPORT.md"
+          fi
+          OA4_STATUS="$(sed -n 's/^STATUS=//p' "$DEST/OA4_RUNTIME_SUMMARY.txt" | head -n 1)"
+          if [ "$OA4_STATUS" = "PASS" ]; then
+            sed -i 's/^- OA4: TIDAK TAHU sampai dua restore CONTROL berhasil; tidak ada input\/watchpoint\/cold-boot alternatif\./- OA4: TUNTAS K5 — dua restore HA4 CONTROL identik, 180 VSync setelah SaveStateLoaded, tanpa input\/watchpoint; nilai dan hash wilayah M dibandingkan./' "$DEST/OA0_OA5_REPORT.md"
+          fi
+          {
+            echo
+            echo "## OA4 CONTROL restore result"
+            cat "$DEST/OA4_RUNTIME_SUMMARY.txt" 2>/dev/null || echo "STATUS=TIDAK TAHU"
+            echo
+            echo "## OA0 and permitted setup files"
+            echo "Setup commit: $GITHUB_SHA"
+            echo "Setup commit A: .github/workflows/oa0-oa5.yml"
+            echo "Setup commit A: tools/oa/RunOA0OA5.py"
+            echo "Setup commit A: tools/oa/RunOA4Control.py"
+            echo
+            echo "## Static writer counts and selector cross-check"
+            echo "See OA2_SELECTOR_STORE_WRITERS.tsv, OA2_GP_118_SOURCE_TRACE.tsv, and OA2_NA_SUMMARY_RECONCILIATION.txt."
+            echo
+            echo "## NA summary cross-check"
+            echo "NA2 summary reports EA6E_SOURCE_LHU_*=0; its companion writer TSV actually contains three rows with target 0x8013EA88 sourced from MEM16[0x8013EA6E] (PC 0x800D44F4, 0x800D733C, 0x800D7928). This OA addendum records the TSV-derived correction without modifying the protected NA summary text."
+            echo
+            echo "## Commit file list"
+            echo "The final publication commit file list is OA0_PUBLISH_COMMIT_FILES.tsv."
+          } >> "$DEST/OA0_OA5_REPORT.md"
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="oa0-oa5-static-and-control") | .id' | head -n 1)"
+          STATUS=PARTIAL_OR_FAIL
+          if [ "$ANALYSIS_RC" = "0" ] && [ "$RUNTIME_RC" = "0" ] && [ "$OA4_STATUS" = "PASS" ]; then STATUS=PASS; fi
+          {
+            echo "STATUS=$STATUS"
+            echo "JOB=oa0-oa5-static-and-control"
+            echo "JOB_ID=$JOB_ID"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "STATIC_EXIT_CODE=$ANALYSIS_RC"
+            echo "RUNTIME_EXIT_CODE=$RUNTIME_RC"
+            echo "PY_COMPILE=$PY_SUMMARY"
+            echo "EMULATOR_CONTROL_ONLY=YES"
+            echo "GAMEPLAY_INPUT=NONE"
+            echo "WATCHPOINTS=0"
+            echo "PRIVATE_BINARY_COMMITTED=no"
+            echo "RELEASES_MODIFIED=no"
+          } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
+          # Reject every path outside the explicit OA outputs and excerpt-row cleanup scope.
+          git add -- "$DEST"
+          git add -u -- reports/stage1_economy
+          python3 - "$DEST" <<'PY'
+          import subprocess,sys
+          from pathlib import Path
+          dest=Path(sys.argv[1])
+          rows=subprocess.check_output(["git","diff","--cached","--name-status"],text=True).splitlines()
+          bad=[]
+          for line in rows:
+              q=line.split("\t",1); p=q[-1]
+              if p.startswith(str(dest)+"/"):continue
+              if p.startswith("reports/stage1_economy/") and any("/"+x+"-run-" in p for x in ("ja","ka","la","ma","na")) and p.endswith(".tsv"):continue
+              bad.append(line)
+          if bad:raise SystemExit("UNAPPROVED_STAGED_PATHS="+repr(bad))
+          with (dest/"OA0_PUBLISH_COMMIT_FILES.tsv").open("w",encoding="utf-8") as f:
+              f.write("status\tpath\n")
+              for line in rows:
+                  q=line.split("\t",1)
+                  f.write(q[0]+"\t"+q[-1]+"\n")
+              f.write("A\t"+str(dest/"OA0_PUBLISH_COMMIT_FILES.tsv")+"\n")
+          PY
+          git add -- "$DEST/OA0_PUBLISH_COMMIT_FILES.tsv"
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "Publish OA0-OA5 isolated audit $GITHUB_RUN_ID [skip ci]"
+          git push origin HEAD:main
+          PUBLISH_SHA="$(git rev-parse HEAD)"
+          REPORT_URL="https://raw.githubusercontent.com/$RESEARCH_REPO/$PUBLISH_SHA/$DEST/OA0_OA5_REPORT.md"
+          SUMMARY_URL="https://raw.githubusercontent.com/$RESEARCH_REPO/$PUBLISH_SHA/$DEST/ACTIONS_RUN_SUMMARY.txt"
+          REPORT_HTTP="$(curl --silent --show-error --location -o /dev/null -w '%{http_code}' "$REPORT_URL")"
+          SUMMARY_HTTP="$(curl --silent --show-error --location -o /dev/null -w '%{http_code}' "$SUMMARY_URL")"
+          echo "PUBLISH_SHA=$PUBLISH_SHA"
+          echo "RAW_REPORT_HTTP=$REPORT_HTTP"
+          echo "RAW_SUMMARY_HTTP=$SUMMARY_HTTP"
+          test "$REPORT_HTTP" = "200" && test "$SUMMARY_HTTP" = "200"
+          echo "PUBLISHED_REPORT=$REPORT_URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "PUBLISHED_SUMMARY=$SUMMARY_URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "PUBLISH_SHA=$PUBLISH_SHA" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,657 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+import csv, hashlib, json, os, re, struct, subprocess, sys, urllib.request
+from collections import defaultdict, deque
+from pathlib import Path
+from capstone import Cs, CS_ARCH_MIPS, CS_MODE_MIPS32, CS_MODE_LITTLE_ENDIAN
+
+BASELINE="dc7a78f3882ff9c22ae6b09df8b8b8e657bb6137"
+EXE_BASE, EXE_FILE = 0x80010000, 0x800
+ENTRY_BASE, ENTRY_FILE = 0x800AD450, 0x10BB000
+EXE_SHA="a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569"
+ENTRY_SHA="9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a"
+REG=["zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"]
+LOADS={0x20:"lb",0x21:"lh",0x23:"lw",0x24:"lbu",0x25:"lhu"}
+STORES={0x28:"sb",0x29:"sh",0x2b:"sw"}
+md=Cs(CS_ARCH_MIPS,CS_MODE_MIPS32|CS_MODE_LITTLE_ENDIAN); md.detail=False
+OUT=Path(sys.argv[3]); OUT.mkdir(parents=True,exist_ok=True)
+EXE=Path(sys.argv[1]).read_bytes(); ENTRY=Path(sys.argv[2]).read_bytes()
+if len(EXE)!=385024 or hashlib.sha256(EXE).hexdigest()!=EXE_SHA: raise SystemExit("EXE_HASH_SIZE_FAIL")
+if len(ENTRY)!=596412 or hashlib.sha256(ENTRY).hexdigest()!=ENTRY_SHA: raise SystemExit("ENTRY1_HASH_SIZE_FAIL")
+
+def h(v): return f"0x{v&0xffffffff:08X}"
+def s16(v): return (v^0x8000)-0x8000
+def reg(r): return "$"+REG[r]
+def parse_code(blob,tag):
+    base=EXE_BASE if tag=="EXE" else ENTRY_BASE
+    off=EXE_FILE if tag=="EXE" else 0
+    out={}
+    for p in range(0,len(blob)-off-3,4):
+        raw=blob[off+p:off+p+4]; pc=base+p
+        dis=next(md.disasm(raw,pc,count=1),None)
+        if dis is None: continue
+        w=int.from_bytes(raw,"little"); op=w>>26; rs=(w>>21)&31; rt=(w>>16)&31; rd=(w>>11)&31; sh=(w>>6)&31; fn=w&63
+        out[pc]={"tag":tag,"pc":pc,"off":off+p,"raw":raw,"word":w,"op":op,"rs":rs,"rt":rt,"rd":rd,"sh":sh,"fn":fn,"imm":s16(w&65535),"uimm":w&65535,"mn":dis.mnemonic.lower(),"text":(dis.mnemonic+" "+dis.op_str).strip()}
+    return out
+CE=parse_code(EXE,"EXE"); CI=parse_code(ENTRY,"ENTRY1")
+ALL={"EXE":CE,"ENTRY1":CI}
+def parse_ghidra(path):
+    code=set(); ranges=defaultdict(list)
+    p=Path(path)
+    if not p.exists(): return code,ranges
+    for line in p.read_text(encoding="utf-8",errors="replace").splitlines():
+        if line.startswith("CODE_INSTRUCTION="):
+            try: code.add(int(line.split("=",1)[1].split("|",1)[0],16))
+            except Exception: pass
+        elif line.startswith("FUNCTION_RANGE="):
+            q=line.split("=",1)[1].split("|")
+            if len(q)>=4:
+                try: ranges[int(q[0],16)].append((int(q[1],16),int(q[2],16),q[3]))
+                except Exception: pass
+    return code,ranges
+GE,RE=parse_ghidra(sys.argv[4]); GI,RI=parse_ghidra(sys.argv[5])
+VALID={"EXE":GE,"ENTRY1":GI}; RANGES={"EXE":RE,"ENTRY1":RI}
+
+def dest(i):
+    op,fn=i["op"],i["fn"]
+    if op==0:
+        if fn in (8,12,13,24,25,26,27): return None
+        if fn==9: return i["rd"] or 31
+        if fn in (0,2,3,4,6,7,0x10,0x12,0x18,0x19): return i["rd"] or None
+        return i["rd"] or None
+    if op in (2,3,4,5,6,7,1,0x28,0x29,0x2b): return 31 if op==3 else None
+    if op in (8,9,10,11,12,13,14,15,0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37): return i["rt"] or None
+    return None
+
+def direct_target(i):
+    if i["op"] in (2,3): return ((i["pc"]+4)&0xF0000000)|((i["word"]&0x03ffffff)<<2)
+    if i["op"] in (4,5,6,7) or i["op"]==1: return (i["pc"]+4+(i["imm"]<<2))&0xffffffff
+    return None
+
+def func_for(ranges,pc):
+    q=[(entry,lo,hi,name) for entry,spans in ranges.items() for lo,hi,name in spans if lo<=pc<=hi]
+    return min(q,key=lambda x:x[2]-x[1]) if q else None
+
+def last_def(code,r,before,lo,limit=512,stop_control=True):
+    for q in range(before-4,max(lo,before-limit*4)-1,-4):
+        i=code.get(q)
+        if not i: continue
+        if dest(i)==r:return i
+        if stop_control and (i["op"] in (1,2,3,4,5,6,7) or (i["op"]==0 and i["fn"] in (8,9))):return None
+    return None
+
+def const_reg(code,r,before,lo,depth=0,seen=None):
+    if r==0:return 0
+    if depth>12:return None
+    seen=set() if seen is None else seen; key=(r,before)
+    if key in seen:return None
+    seen.add(key); d=last_def(code,r,before,lo)
+    if not d:return None
+    op,fn=d["op"],d["fn"]
+    if op==15:return (d["uimm"]<<16)&0xffffffff
+    if op in (8,9,13,12,14):
+        a=const_reg(code,d["rs"],d["pc"],lo,depth+1,seen.copy())
+        if a is None:return None
+        if op in (8,9):return (a+d["imm"])&0xffffffff
+        if op==13:return (a|d["uimm"])&0xffffffff
+        if op==12:return (a&d["uimm"])&0xffffffff
+        return (a^d["uimm"])&0xffffffff
+    if op==0 and fn in (0,2,3,0x21,0x23,0x24,0x25,0x26):
+        if fn in (0,2,3):
+            b=const_reg(code,d["rt"],d["pc"],lo,depth+1,seen.copy())
+            if b is None:return None
+            return ((b<<d["sh"]) if fn==0 else (b>>d["sh"]))&0xffffffff
+        a=const_reg(code,d["rs"],d["pc"],lo,depth+1,seen.copy()); b=const_reg(code,d["rt"],d["pc"],lo,depth+1,seen.copy())
+        if a is None or b is None:return None
+        return {0x21:(a+b),0x23:(a-b),0x24:(a&b),0x25:(a|b),0x26:(a^b)}[fn]&0xffffffff
+    return None
+
+def sym_reg(code,r,before,lo,depth=0,seen=None):
+    if r==0:return "0"
+    if depth>10:return "TIDAK_TAHU:DEPTH"
+    seen=set() if seen is None else seen; k=(r,before)
+    if k in seen:return "TIDAK_TAHU:CYCLE"
+    seen.add(k); d=last_def(code,r,before,lo,stop_control=False)
+    if not d:return "INCOMING_"+reg(r)
+    op,fn=d["op"],d["fn"]
+    if op==15:return h(d["uimm"]<<16)
+    if op in (8,9):return "("+sym_reg(code,d["rs"],d["pc"],lo,depth+1,seen.copy())+f"{d['imm']:+d})"
+    if op==13:return "("+sym_reg(code,d["rs"],d["pc"],lo,depth+1,seen.copy())+f"|{h(d['uimm'])})"
+    if op in LOADS:
+        b=const_reg(code,d["rs"],d["pc"],lo)
+        base=h(b) if b is not None else sym_reg(code,d["rs"],d["pc"],lo,depth+1,seen.copy())
+        width={0x20:"8S",0x21:"16S",0x23:"32",0x24:"8",0x25:"16"}.get(op,"?")
+        return f"MEM{width}[{base}{d['imm']:+d}]"
+    if op==0 and fn==0:return "("+sym_reg(code,d["rt"],d["pc"],lo,depth+1,seen.copy())+f"<<{d['sh']})"
+    if op==0 and fn in (0x21,0x23,0x24,0x25,0x26):
+        if fn==0x21 and d["rs"]==0:return "COPY("+sym_reg(code,d["rt"],d["pc"],lo,depth+1,seen.copy())+")"
+        if fn==0x21 and d["rt"]==0:return "COPY("+sym_reg(code,d["rs"],d["pc"],lo,depth+1,seen.copy())+")"
+        opstr={0x21:"+",0x23:"-",0x24:"&",0x25:"|",0x26:"^"}[fn]
+        return "("+sym_reg(code,d["rs"],d["pc"],lo,depth+1,seen.copy())+opstr+sym_reg(code,d["rt"],d["pc"],lo,depth+1,seen.copy())+")"
+    return f"DEF@{h(d['pc'])}:{d['text']}"
+
+def ea(code,i,lo):
+    b=const_reg(code,i["rs"],i["pc"],lo)
+    return (b+i["imm"])&0xffffffff if b is not None else None
+
+def row(i,excerpt):
+    base=EXE_BASE if i["tag"]=="EXE" else ENTRY_BASE
+    fileoff=(EXE_FILE if i["tag"]=="EXE" else ENTRY_FILE)+(i["pc"]-base)
+    return {"image":i["tag"],"pc":h(i["pc"]),"file_offset":h(fileoff),"bytes":" ".join(f"{x:02X}" for x in i["raw"]),"instruksi":i["text"],"excerpt_id":excerpt}
+
+def write_tsv(name,rows,fields):
+    with (OUT/name).open("w",encoding="utf-8",newline="") as f:
+        w=csv.DictWriter(f,fieldnames=fields,delimiter="\t",lineterminator="\n",extrasaction="ignore"); w.writeheader()
+        for z in rows:w.writerow({k:("TIDAK TAHU" if z.get(k) is None else z.get(k,"TIDAK TAHU")) for k in fields})
+def write_txt(name,s): (OUT/name).write_text(s,encoding="utf-8")
+
+def excerpt_rows(root,include_out=False):
+    rows=[]
+    for prefix in ("ja-run-","ka-run-","la-run-","ma-run-","na-run-","oa-run-"):
+        for p in root.glob(prefix+"*/attempt-*/*.tsv"):
+            try:
+                with p.open(encoding="utf-8",newline="") as f:
+                    rd=csv.DictReader(f,delimiter="\\t")
+                    if not rd.fieldnames or not {"image","pc","bytes"}.issubset(rd.fieldnames):continue
+                    for z in rd:
+                        raw=z.get("bytes",""); image=z.get("image","")
+                        if not raw or raw=="TIDAK TAHU" or not image:continue
+                        try: pc=int(z["pc"],16); b=bytes(int(x,16) for x in raw.split())
+                        except Exception:continue
+                        if not b or len(b)%4:continue
+                        rows.append({"image":image,"path":p,"line":rd.line_num,"pc":pc,"end":pc+len(b),"raw":b,"excerpt_id":z.get("excerpt_id","")})
+            except Exception: continue
+    if include_out:
+        for p in OUT.glob("OA*.tsv"):
+            try:
+                with p.open(encoding="utf-8",newline="") as f:
+                    rd=csv.DictReader(f,delimiter="\\t")
+                    if not rd.fieldnames or not {"image","pc","bytes"}.issubset(rd.fieldnames):continue
+                    for z in rd:
+                        raw=z.get("bytes",""); image=z.get("image","")
+                        if not raw or raw=="TIDAK TAHU" or not image:continue
+                        try: pc=int(z["pc"],16); b=bytes(int(x,16) for x in raw.split())
+                        except Exception:continue
+                        if b and len(b)%4==0:
+                            rows.append({"image":image,"path":p,"line":rd.line_num,"pc":pc,"end":pc+len(b),"raw":b,"excerpt_id":z.get("excerpt_id","")})
+            except Exception: continue
+    return rows
+
+def spans(rows):
+    by=defaultdict(list)
+    for z in rows:by[z["image"]].append((z["pc"],z["end"]))
+    out=[]
+    for image,items in by.items():
+        q=sorted(items); cur=None
+        for a,b in q:
+            if cur is None or a>cur[1]:
+                if cur:out.append((image,cur[0],cur[1]))
+                cur=[a,b]
+            else:cur[1]=max(cur[1],b)
+        if cur:out.append((image,cur[0],cur[1]))
+    return out
+
+def strip_crossing_rows(root):
+    removed=[]
+    allowed=[
+      (0x800B549C,0x800B5518),
+      (0x800E4800,0x800E4844),
+      (0x800F5E7C,0x800F5EE0),
+      (0x800F5F14,0x800F5F5C),
+    ]
+    for _ in range(8):
+        rows=excerpt_rows(root,False); all_bad=[x for x in spans(rows) if x[2]-x[1]>64]
+        bad=[]
+        for image,a,b in all_bad:
+            if image!="ENTRY1" or not any(a>=lo and b<=hi for lo,hi in allowed):
+                write_txt("OA0_EXCERPT_STRIP_STATUS.txt",f"STATUS=FAIL\\nUNAUTHORIZED_OR_UNEXPECTED_GROUP={image}:{h(a)}..{h(b-1)}={b-a}B\\n")
+                return removed,False
+            bad.append((image,a,b))
+        if not bad:break
+        image,a,b=bad[0]; choices=[]
+        lo=max(a+4,b-64); hi=min(a+64,b-4)
+        for cut in range(((lo+3)//4)*4,hi+1,4):
+            victims=[z for z in rows if z["image"]==image and z["pc"]<cut+4 and z["end"]>cut and z["pc"]>=a and z["end"]<=b]
+            if not victims:continue
+            rem=[z for z in rows if z not in victims]
+            ss=spans(rem)
+            if any(im==image and x>=a and y<=b and y-x>64 for im,x,y in ss):continue
+            choices.append((len(victims),abs(cut-(a+b)//2),cut,victims))
+        if not choices:
+            write_txt("OA0_EXCERPT_STRIP_STATUS.txt",f"STATUS=FAIL\\nUNSPLIT={image}:{h(a)}..{h(b-1)}={b-a}B\\n")
+            return removed,False
+        _,_,cut,victims=min(choices,key=lambda x:(x[0],x[1]))
+        byfile=defaultdict(set)
+        for z in victims:byfile[z["path"]].add(z["line"])
+        for path,lns in byfile.items():
+            oldlines=path.read_text(encoding="utf-8").splitlines(True); keep=[]
+            for n,line in enumerate(oldlines,1):
+                if n not in lns:keep.append(line)
+                else:
+                    z=next((v for v in victims if v["path"]==path and v["line"]==n),None)
+                    removed.append({"file":str(path.relative_to(Path.cwd())),"line":n,"pc":h(z["pc"]) if z else "TIDAK TAHU","excerpt_id":z["excerpt_id"] if z else ""})
+            path.write_text("".join(keep),encoding="utf-8")
+    final=spans(excerpt_rows(root,False))
+    ok=not [x for x in final if x[2]-x[1]>64]
+    write_tsv("OA0_DELETED_ROWS.tsv",removed,["file","line","pc","excerpt_id"])
+    write_txt("OA0_EXCERPT_STRIP_STATUS.txt",f"STATUS={'PASS' if ok else 'FAIL'}\\nDELETED_ROWS={len(removed)}\\nMAX_CONTIGUOUS={max((b-a for _,a,b in final),default=0)}\\n")
+    return removed,ok
+
+def aggregate_audit(root):
+    rows=excerpt_rows(root,True)
+    seen={}
+    for z in rows:
+        k=(z["image"],z["pc"]); v=seen.get(k)
+        if v is None:seen[k]=z["raw"]
+        elif v!=z["raw"] and not v.startswith(z["raw"]) and not z["raw"].startswith(v):seen[k]=b"CONFLICT"
+        elif len(z["raw"])>len(v) and z["raw"].startswith(v):seen[k]=z["raw"]
+    norm=[]
+    for (image,pc),b in seen.items():
+        if b!=b"CONFLICT":norm.append({"image":image,"pc":pc,"end":pc+len(b)})
+    ss=spans(norm); bad=[x for x in ss if x[2]-x[1]>64]; conflicts=sum(v==b"CONFLICT" for v in seen.values())
+    write_tsv("OA0_AGGREGATE_EXCERPT_SPANS.tsv",[{"image":im,"start_pc":h(a),"end_pc_exclusive":h(b),"contiguous_bytes":b-a} for im,a,b in ss],["image","start_pc","end_pc_exclusive","contiguous_bytes"])
+    write_txt("OA0_AGGREGATE_EXCERPT_AUDIT.txt",
+      f"SOURCES=JA,KA,LA,MA,NA,OA\\nUNIQUE_IMAGE_PC={len(seen)}\\nMAX_CONTIGUOUS_BYTES={max((b-a for _,a,b in ss),default=0)}\\nLIMIT_BYTES=64\\nOVER_LIMIT_GROUPS={len(bad)}\\nCONFLICTS={conflicts}\\nSTATUS={'PASS' if not bad and not conflicts else 'FAIL'}\\n"+
+      "GROUPS="+(";".join(f"{im}:{h(a)}..{h(b-1)}={b-a}B" for im,a,b in bad) or "none")+"\\n")
+    return not bad and not conflicts,max((b-a for _,a,b in ss),default=0),len(bad)
+
+def validate_new_tsv(exe,entry):
+    checked=decoded=fail=0; rows=[]
+    for p in OUT.glob("OA*.tsv"):
+        try:
+            rd=csv.DictReader(p.open(encoding="utf-8"),delimiter="\t")
+            if not rd.fieldnames or not {"image","pc","file_offset","bytes"}.issubset(rd.fieldnames):continue
+            for z in rd:
+                checked+=1
+                try:
+                    tag=z["image"]; pc=int(z["pc"],16); off=int(z["file_offset"],16)
+                    expected=(EXE_FILE+(pc-EXE_BASE)) if tag=="EXE" else (ENTRY_FILE+(pc-ENTRY_BASE))
+                    blob=exe if tag=="EXE" else entry
+                    raw=bytes(int(x,16) for x in z["bytes"].split())
+                    got=blob[off:off+len(raw)]
+                    if off!=expected or got!=raw or len(raw)%4:raise ValueError("OFFSET_OR_RAW_MISMATCH")
+                    for k in range(0,len(raw),4):
+                        if next(md.disasm(raw[k:k+4],pc+k,count=1),None) is None:raise ValueError("DECODE_FAIL")
+                    decoded+=len(raw)//4
+                    rows.append({"file":p.name,"pc":z["pc"],"file_offset":z["file_offset"],"raw_check":"PASS","decode_check":"PASS"})
+                except Exception as ex:
+                    fail+=1; rows.append({"file":p.name,"pc":z.get("pc","TIDAK TAHU"),"file_offset":z.get("file_offset","TIDAK TAHU"),"raw_check":"FAIL","decode_check":str(ex)})
+        except Exception as ex: fail+=1
+    write_tsv("OA0_FILE_OFFSET_RAW_DECODE.tsv",rows,["file","pc","file_offset","raw_check","decode_check"])
+    return checked,decoded,fail
+
+def actions_ledger():
+    token=os.environ.get("GH_TOKEN",""); repo=os.environ["GITHUB_REPOSITORY"]
+    def api(url):
+        req=urllib.request.Request(url,headers={"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"})
+        with urllib.request.urlopen(req,timeout=90) as r:return json.loads(r.read().decode())
+    allruns=[]; page=1; total=None
+    while True:
+        j=api(f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&page={page}")
+        total=j.get("total_count",0); rr=j.get("workflow_runs",[]); allruns.extend(rr)
+        if not rr or len(allruns)>=total:break
+        page+=1
+        if page>30:raise RuntimeError("ACTIONS_PAGINATION_LIMIT")
+    baseline_date=subprocess.check_output(["git","show","-s","--format=%cI",BASELINE],text=True).strip()
+    cut=__import__("datetime").datetime.fromisoformat(baseline_date.replace("Z","+00:00"))
+    tr=[x for x in allruns if __import__("datetime").datetime.fromisoformat(x["created_at"].replace("Z","+00:00"))>cut]
+    out=[{"run_id":x.get("id"),"workflow":x.get("path"),"event":x.get("event"),"status":x.get("status"),"conclusion":x.get("conclusion") or "TIDAK TAHU","head_sha":x.get("head_sha"),"created_at":x.get("created_at")} for x in tr]
+    write_tsv("OA0_TRIGGERED_RUNS_AFTER_BASELINE.tsv",out,["run_id","workflow","event","status","conclusion","head_sha","created_at"])
+    commits=subprocess.check_output(["git","log","--format=%H%x09%an%x09%ae%x09%s",f"{BASELINE}^..HEAD"],text=True).splitlines()
+    cr=[]
+    for x in commits:
+        q=x.split("\t",3)
+        if len(q)<4:continue
+        sha,name,email,subject=q; ident=(name+" "+email).lower()
+        bot=("[bot]" in ident or "dependabot" in ident or " bot" in ident or ident.startswith("bot"))
+        cr.append({"sha":sha,"author":name,"email":email,"class":"BOT" if bot else "HUMAN","subject":subject})
+    write_tsv("OA0_LEDGER_PREPUBLICATION.tsv",cr,["sha","author","email","class","subject"])
+    human=sum(x["class"]=="HUMAN" for x in cr); bot=len(cr)-human
+    write_txt("OA0_LEDGER_SUMMARY.txt",f"BASELINE_INCLUSIVE={BASELINE}\nHEAD_PREPUBLICATION={subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()}\nCOMMITS_WITHOUT_PUBLICATION={len(cr)}\nHUMAN_WITHOUT_PUBLICATION={human}\nBOT_WITHOUT_PUBLICATION={bot}\nCOMMITS_WITH_PUBLICATION={len(cr)+1}\nHUMAN_WITH_PUBLICATION={human}\nBOT_WITH_PUBLICATION={bot+1}\nALL_ACTION_RUNS_TOTAL={total}\nRUNS_AFTER_BASELINE={len(tr)}\n")
+    return len(cr),human,bot,len(tr),out
+
+def window(tag,start,n,name):
+    code=ALL[tag]; return [row(code[p],name) for p in range(start,start+n*4,4) if p in code]
+
+def edge_rows():
+    targets={0x800F5F54,0x800B54DC,0x800F5EBC}
+    out=[]
+    for tag,code in ALL.items():
+        for pc,i in code.items():
+            t=direct_target(i)
+            kind=None
+            if t is not None:kind={1:"bcond",2:"j",3:"jal",4:"beq",5:"bne",6:"blez",7:"bgtz"}.get(i["op"],"branch")
+            elif i["op"]==0 and i["fn"] in (8,9):
+                v=const_reg(code,i["rs"],pc,EXE_BASE if tag=="EXE" else ENTRY_BASE)
+                t=v; kind=("jalr_const" if i["fn"]==9 else "jr_const") if v is not None else ("jalr_dynamic" if i["fn"]==9 else "jr_dynamic")
+            if t in targets:
+                out.append({"image":tag,"pc":h(pc),"edge_kind":kind,"target":h(t),"instruksi":i["text"],"verified_code":"YES" if pc in VALID[tag] else "RAW_ONLY"})
+        # pointer literal words
+        blob=EXE if tag=="EXE" else ENTRY
+        base=EXE_BASE if tag=="EXE" else ENTRY_BASE; off=EXE_FILE if tag=="EXE" else 0
+        for q in range(off,len(blob)-3,4):
+            v=int.from_bytes(blob[q:q+4],"little")
+            if v in targets:
+                pc=base+(q-off); out.append({"image":tag,"pc":h(pc),"edge_kind":"POINTER_WORD","target":h(v),"instruksi":"literal pointer","verified_code":"DATA_POINTER"})
+    return out
+
+def classify_reg(value_set):
+    vals=sorted(value_set)
+    if len(vals)==1:
+        v=vals[0]
+        if v.startswith("CONST:"):return "KONSTANTA",v[6:]
+        if v.startswith("ARG:a"):return "ARGUMEN MASUK",v[4:]
+        if v.startswith("COPY:"):return "SALINAN",v[5:]
+        return "TIDAK TAHU",v
+    return "TIDAK TAHU","MULTIPLE_REACHING_VALUES="+(";".join(vals[:8]))
+
+def linear_arg(code,pc,r,entry_pc,lo):
+    p=pc-4; visited=set()
+    while p>=entry_pc and p not in visited:
+        visited.add(p); i=code.get(p)
+        if not i:p-=4;continue
+        if dest(i)==r:
+            v=const_reg(code,r,p+4,lo)
+            if v is not None:return "KONSTANTA",h(v),"definition="+h(p)+";linear scan"
+            if i["op"]==0 and i["fn"]==0x21 and (i["rs"]==0 or i["rt"]==0):
+                src=i["rt"] if i["rs"]==0 else i["rs"]
+                return "SALINAN",sym_reg(code,src,p,lo),"definition="+h(p)+";linear scan"
+            return "TIDAK TAHU",sym_reg(code,r,p+4,lo),"definition="+h(p)+";CFG/dataflow not closed"
+        if i["op"]==3 or (i["op"]==0 and i["fn"]==9):
+            return "TIDAK TAHU","TIDAK TAHU: intervening call can clobber "+reg(r),"clobber_call="+h(p)+" "+i["text"]
+        p-=4
+    return "ARGUMEN MASUK","INCOMING_"+reg(r),"no definition/call found by linear predecessor scan; CFG closure partial"
+
+def static_analysis():
+    # OA1(i): all decoded incoming edges and conservative argument provenance.
+    calls=[(0x800F5F54,0x800F2A9C),(0x800B54DC,0x800F3658),(0x800F5EBC,0x800DC2E0)]
+    edges=edge_rows(); write_tsv("OA1_CALLSITE_INCOMING_EDGES.tsv",edges,["image","pc","edge_kind","target","instruksi","verified_code"])
+    args=[]; wins=[]
+    for pc,target in calls:
+        i=CI.get(pc); fr=func_for(RI,pc); entry=fr[0] if fr else pc-0x100
+        # 64B before + call and delay slot = <=64B each, with a gap at jal word if split.
+        wins+=window("ENTRY1",pc-0x40,16,f"OA1_{pc:08X}_PRE_64B")
+        wins+=window("ENTRY1",pc+4,1,f"OA1_{pc:08X}_DELAY_4B")
+        for r in (6,7):
+            c,e,why=linear_arg(CI,pc,r,entry,ENTRY_BASE)
+            args.append({"call_pc":h(pc),"target":h(target),"arg":reg(r),"classification":c,"expression":e,"call_clobber_or_gap":why,"function_entry":h(entry)})
+    write_tsv("OA1_CALLSITE_A2_A3.tsv",args,["call_pc","target","arg","classification","expression","call_clobber_or_gap","function_entry"])
+    write_tsv("OA1_CALL_WINDOWS.tsv",wins,["image","pc","file_offset","bytes","instruksi","excerpt_id"])
+    # Full static census of $a2/$a3 writes and ABI clobber sites across function 0x800F3658.
+    fr3658=func_for(RI,0x800F3658); frows=[]
+    if fr3658:
+        _,flo,fhi,_=fr3658
+        for q in range(flo,fhi+1,4):
+            z=CI.get(q)
+            if not z: continue
+            d=dest(z)
+            if d in (6,7):
+                frows.append({"pc":h(q),"instruction":z["text"],"register":reg(d),"kind":"EXPLICIT_DEFINITION","detail":"static write within full function range"})
+            if z["op"]==3 or (z["op"]==0 and z["fn"]==9):
+                frows.append({"pc":h(q),"instruction":z["text"],"register":"$a2;$a3","kind":"CALL_CLOBBER","detail":"ABI call may clobber $a0-$a3,$v0,$v1,$t0-$t9"})
+    write_tsv("OA1_F3658_A2_A3_FULL_FUNCTION_CENSUS.tsv",frows,["pc","instruction","register","kind","detail"])
+    # OA1(ii): three unresolved base loads and value consumers.
+    base_sites=[0x800118C0,0x80011F24,0x80011FD8]; base_rows=[]; consumers=[]
+    for pc in base_sites:
+        i=CE.get(pc); fr=func_for(RE,pc); entry=fr[0] if fr else pc-0x80
+        base_reg=i["rt"] if i else 0
+        for off in (4,8,12,16):
+            loads=[z for z in CE.values() if z["pc"]>=pc and z["pc"]<=pc+0x300 and z["op"] in LOADS and z["rs"]==base_reg and z["imm"]==off]
+            for z in loads:
+                target=z["rt"]
+                calls2=[]
+                for q in range(z["pc"]+4,min(z["pc"]+0x100,(fr[2] if fr else pc+0x300))+1,4):
+                    k=CE.get(q)
+                    if not k:continue
+                    if k["op"]==3:
+                        # see if loaded register is passed by a simple copy/argument use.
+                        delay=CE.get(q+4)
+                        calls2.append({"pc":h(q),"target":h(direct_target(k)),"delay":delay["text"] if delay else "TIDAK TAHU","loaded_register":reg(target)})
+                for c in calls2:consumers.append({"base_site":h(pc),"load_pc":h(z["pc"]),"record_field":"+%d"%off,"loaded_register":reg(target),"possible_call_pc":c["pc"],"target":c["target"],"delay_slot":c["delay"],"classification":"CANDIDATE_ONLY"})
+                base_rows.append({"base_site":h(pc),"base_register":reg(base_reg),"load_pc":h(z["pc"]),"field":"+%d"%off,"destination":reg(target),"consumer":"TIDAK TAHU: no proven all-path use"})
+    write_tsv("OA1_SCENE_BASE_VALUE_CONSUMERS.tsv",base_rows,["base_site","base_register","load_pc","field","destination","consumer"])
+    write_tsv("OA1_SCENE_POSSIBLE_CALLS.tsv",consumers,["base_site","load_pc","record_field","loaded_register","possible_call_pc","target","delay_slot","classification"])
+    # OA1(iii): source table +8/+C to dispatch and direct continuation chain.
+    chain=[]
+    specs=[("BOARD",0x800558F8,8,0x800119C4,0x800B1E88,"TIDAK TAHU"),("BOARD",0x800558F8,12,0x80011A28,0x800B50AC,0x800B54F4),("BOARDRET",0x80055914,12,0x80011A28,0x800B50AC,0x800B54F4)]
+    for name,rec,field,dispatch,target,follow in specs:
+        chain.append({"record":name,"record_pc":h(rec),"field_offset":field,"dispatch_pc":h(dispatch),"indirect_target":h(target),"follow_pc":h(follow) if isinstance(follow,int) else follow,"follow_target":h(0x800BE5D8) if isinstance(follow,int) else "TIDAK TAHU","basis":"DN1/NA scene record pointer fields + static jalr and direct JAL instruction"})
+    for pc in (0x80011A28,0x800119C4,0x800B54F4):
+        wins+=window("EXE" if pc<ENTRY_BASE else "ENTRY1",pc-0x10,8 if pc==0x800B54F4 else 4,"OA1_CHAIN_"+f"{pc:08X}")
+    write_tsv("OA1_SCENE_CHAIN.tsv",chain,["record","record_pc","field_offset","dispatch_pc","indirect_target","follow_pc","follow_target","basis"])
+    # OA2(i): base for lhu -0x1592(s0).
+    pc=0x800D49B0; i=CI.get(pc); s0=const_reg(CI,16,pc,ENTRY_BASE); expr=sym_reg(CI,16,pc,ENTRY_BASE)
+    ea_read=((s0-0x1592)&0xffffffff) if s0 is not None else None
+    oa2s0=[{"read_pc":h(pc),"instruction":i["text"] if i else "TIDAK TAHU","s0_value":h(s0) if s0 is not None else "TIDAK TAHU","s0_expression":expr,"effective_address":h(ea_read) if ea_read is not None else "TIDAK TAHU","conclusion":"S0=0x80140000 confirmed by static reaching definition" if s0==0x80140000 else "TIDAK TAHU: reaching $s0 definition is not a unique constant","CELL_READ_FORMULA": "u16[0x8013EA6E] when S0=0x80140000" if ea_read==0x8013EA6E else "TIDAK TAHU"}]
+    write_tsv("OA2_S0_CELL_READ.tsv",oa2s0,["read_pc","instruction","s0_value","s0_expression","effective_address","conclusion","CELL_READ_FORMULA"])
+    # OA2(ii): census M pointer reads/writes and non-sb scale patterns, copy/loader candidates.
+    global_rows=[]
+    for tag,code in ALL.items():
+        lo=EXE_BASE if tag=="EXE" else ENTRY_BASE
+        for q,z in code.items():
+            if z["op"] in LOADS or z["op"] in STORES:
+                a=ea(code,z,lo)
+                if a in (0x8013EA74,0x8013EA6E,0x8013EA88,0x80139EFC):
+                    global_rows.append({"image":tag,"pc":h(q),"file_offset":h(z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruksi":z["text"],"effective_address":h(a),"class":"LOAD" if z["op"] in LOADS else "STORE"})
+    write_tsv("OA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv",global_rows,["image","pc","file_offset","bytes","instruksi","effective_address","class"])
+    scale=[]
+    for q,z in CI.items():
+        # (idx<<3 + idx)<<4 = 144*idx; record a compact 3-instruction sequence if found.
+        a=CI.get(q); b=CI.get(q+4); c=CI.get(q+8)
+        if not (a and b and c):continue
+        if a["op"]==0 and a["fn"]==0 and a["sh"]==3 and b["op"]==0 and b["fn"]==0x21 and c["op"]==0 and c["fn"]==0 and c["sh"]==4:
+            if b["rs"]==a["rd"] or b["rt"]==a["rd"]:
+                idx=b["rt"] if b["rs"]==a["rd"] else b["rs"]
+                if idx==a["rt"]:
+                    scale.append({"pc":h(q),"file_offset":h(a["off"]),"bytes":" ".join(f"{x:02X}" for x in a["raw"]+b["raw"]+c["raw"]),"instruksi":a["text"]+" ; "+b["text"]+" ; "+c["text"],"formula":"(I<<3 + I)<<4 = 144*I","confidence":"pattern only; pointer destination/use not proven"})
+        if a["op"]==0 and a["fn"] in (0x18,0x19):
+            ca=const_reg(CI,a["rt"],q,ENTRY_BASE); cb=const_reg(CI,a["rs"],q,ENTRY_BASE)
+            if ca==0x90 or cb==0x90:
+                scale.append({"pc":h(q),"file_offset":h(a["off"]),"bytes":" ".join(f"{x:02X}" for x in a["raw"]),"instruksi":a["text"],"formula":"mult operand constant 0x90","confidence":"pattern only; pointer destination/use not proven"})
+    write_tsv("OA2_MATRIX_144_SCALE_CANDIDATES.tsv",scale,["pc","file_offset","bytes","instruksi","formula","confidence"])
+    # All candidate M load/use references and calls receiving pointer candidates, without claiming closure.
+    mp=[]; mi=[]
+    for q,z in CI.items():
+        if z["op"]==0x23 and ea(CI,z,ENTRY_BASE)==0x8013EA74:
+            mi.append({"load_pc":h(q),"destination":reg(z["rt"]),"expression":sym_reg(CI,z["rt"],q+4,ENTRY_BASE)})
+    for x in mi:
+        rr=int(x["destination"][2:]) if x["destination"].startswith("$") else -1
+        if rr<0:continue
+        for q in range(int(x["load_pc"],16)+4,int(x["load_pc"],16)+0x180,4):
+            z=CI.get(q)
+            if not z:continue
+            if z["op"]==3:
+                mp.append({"load_pc":x["load_pc"],"call_pc":h(q),"target":h(direct_target(z)),"pointer_register":reg(rr),"delay_slot":CI.get(q+4,{}).get("text","TIDAK TAHU"),"classification":"CANDIDATE; complete alias/CFG not proven"})
+    # Scan every store and direct call for aliases derived from the EA74 M pointer.
+    derived=[]
+    for q,z in CI.items():
+        if z["op"] in STORES:
+            bex=sym_reg(CI,z["rs"],q,ENTRY_BASE)
+            if "8013EA74" in bex:
+                derived.append({"pc":h(q),"file_offset":h(z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruction":z["text"],"base_expression":bex,"source_expression":sym_reg(CI,z["rt"],q,ENTRY_BASE),"kind":"STORE_THROUGH_M_ALIAS"})
+        if z["op"]==3:
+            ax=[]
+            for rr in (4,5,6,7):
+                ex=sym_reg(CI,rr,q,ENTRY_BASE)
+                if "8013EA74" in ex: ax.append(reg(rr)+"="+ex)
+            if ax:
+                derived.append({"pc":h(q),"file_offset":h(z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruction":z["text"],"base_expression":";".join(ax),"source_expression":"TIDAK TAHU","kind":"CALL_RECEIVES_M_ALIAS"})
+    write_tsv("OA2_M_DERIVED_STORE_AND_CALL_CENSUS.tsv",derived,["pc","file_offset","bytes","instruction","base_expression","source_expression","kind"])
+    write_tsv("OA2_M_POINTER_CALLS.tsv",mp,["load_pc","call_pc","target","pointer_register","delay_slot","classification"])
+    # OA2(iii): stores to selected globals including the explicitly required E3B1C candidate.
+    writers=[]
+    for tag,code in ALL.items():
+        lo=EXE_BASE if tag=="EXE" else ENTRY_BASE
+        for q,z in code.items():
+            if z["op"] not in STORES:continue
+            a=ea(code,z,lo)
+            if a in (0x8013EA6E,0x8013EA88,0x80139EFC):
+                writers.append({"image":tag,"pc":h(q),"file_offset":h(z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruksi":z["text"],"target":h(a),"address_resolution":"COMPUTED","source":reg(z["rt"]),"source_expression":sym_reg(code,z["rt"],q,lo),"ghidra_code":"YES" if q in VALID[tag] else "RAW_ONLY","required_E3B1C":"YES" if q==0x800E3B1C else "NO"})
+    if 0x800E3B1C in CI and CI[0x800E3B1C]["op"] in STORES and not any(x["pc"]==h(0x800E3B1C) for x in writers):
+        z=CI[0x800E3B1C]; a=ea(CI,z,ENTRY_BASE)
+        writers.append({"image":"ENTRY1","pc":h(0x800E3B1C),"file_offset":h(z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruksi":z["text"],"target":h(a) if a is not None else "TIDAK TAHU","address_resolution":"COMPUTED" if a is not None else "TIDAK TAHU: required E3B1C store PC retained","source":reg(z["rt"]),"source_expression":sym_reg(CI,z["rt"],0x800E3B1C,ENTRY_BASE),"ghidra_code":"YES" if 0x800E3B1C in GI else "RAW_ONLY","required_E3B1C":"YES"})
+    write_tsv("OA2_SELECTOR_STORE_WRITERS.tsv",writers,["image","pc","file_offset","bytes","instruksi","target","address_resolution","source","source_expression","ghidra_code","required_E3B1C"])
+    ea6e=[x for x in writers if x["target"]==h(0x8013EA6E)]
+    ea88=[x for x in writers if x["target"]==h(0x8013EA88)]
+    ec=[x for x in writers if x["target"]==h(0x80139EFC)]
+    # Ensure the historically missed E3B1C store PC is retained even if its base alias does not resolve.
+    if 0x800E3B1C in CI and CI[0x800E3B1C]["op"] in STORES and not any(x["pc"]==h(0x800E3B1C) for x in writers):
+        z=CI[0x800E3B1C]
+        writers.append({"image":"ENTRY1","pc":h(0x800E3B1C),"file_offset":h(z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruksi":z["text"],"target":"TIDAK TAHU: required E3B1C store retained; EA6E alias needs proof","source":reg(z["rt"]),"source_expression":sym_reg(CI,z["rt"],0x800E3B1C,ENTRY_BASE),"ghidra_code":"YES" if 0x800E3B1C in GI else "RAW_ONLY","required_E3B1C":"YES"})
+        write_tsv("OA2_SELECTOR_STORE_WRITERS.tsv",writers,["image","pc","file_offset","bytes","instruksi","target","source","source_expression","ghidra_code","required_E3B1C"])
+    # OA2(iv): v0 at stores; branch entries, calls, and definitions in split instruction windows.
+    vstores=[0x800D77C4,0x800D7D4C,0x800E4840]; vrows=[]; vw=[]
+    for store in vstores:
+        start=store-0x3C
+        for q in range(start,store+4,4):
+            z=CI.get(q)
+            if z: vw.append(row(z,"OA2_V0_"+h(store)))
+        calls=[h(q) for q in range(start,store,4) if q in CI and (CI[q]["op"]==3 or (CI[q]["op"]==0 and CI[q]["fn"]==9))]
+        branchin=[]
+        for q,z in CI.items():
+            t=direct_target(z)
+            if t is not None and start<t<=store:branchin.append(h(q)+"->"+h(t))
+        vdef=last_def(CI,2,store,ENTRY_BASE,limit=80,stop_control=False)
+        vrows.append({"store_pc":h(store),"store_instruction":CI.get(store,{}).get("text","TIDAK TAHU"),"nearest_linear_definition":h(vdef["pc"])+" "+vdef["text"] if vdef else "TIDAK TAHU","calls_before_store":";".join(calls) or "none","branch_entries":";".join(branchin) or "none","possible_value":"TIDAK TAHU: calls can clobber $v0 and branch paths bypass linear definition"})
+    write_tsv("OA2_V0_STORE_FLOW.tsv",vrows,["store_pc","store_instruction","nearest_linear_definition","calls_before_store","branch_entries","possible_value"])
+    write_tsv("OA2_V0_STORE_WINDOWS.tsv",vw,["image","pc","file_offset","bytes","instruksi","excerpt_id"])
+    # OA2(v): GP=0x8006D67C, helper global +0x118 = 0x8006D794; source of $v1 at second store.
+    gpstores=[]
+    for q,z in CE.items():
+        if z["op"]==0x2b and z["rs"]==28 and z["imm"]==0x118:
+            gpstores.append({"pc":h(q),"instruksi":z["text"],"source":reg(z["rt"]),"source_expression":sym_reg(CE,z["rt"],q,EXE_BASE),"source_constant":h(const_reg(CE,z["rt"],q,EXE_BASE)) if const_reg(CE,z["rt"],q,EXE_BASE) is not None else "TIDAK TAHU"})
+    write_tsv("OA2_GP_118_WRITERS.tsv",gpstores,["pc","instruksi","source","source_expression","source_constant"])
+    # Keep the $v1 store's reaching value conservative: any intervening call may clobber it.
+    gpdetail=[]
+    for q,z in CE.items():
+        if z["op"]==0x2b and z["rs"]==28 and z["imm"]==0x118:
+            d=last_def(CE,z["rt"],q,EXE_BASE,limit=256,stop_control=False)
+            calls_between=[h(p) for p,k in CE.items() if d and d["pc"]<p<q and (k["op"]==3 or (k["op"]==0 and k["fn"]==9))]
+            gpdetail.append({"store_pc":h(q),"source":reg(z["rt"]),"nearest_definition":h(d["pc"])+" "+d["text"] if d else "TIDAK TAHU","intervening_calls":";".join(calls_between) or "none","result":"TIDAK TAHU: ABI may clobber $v1" if calls_between or z["rt"]==3 else sym_reg(CE,z["rt"],q,EXE_BASE)})
+    write_tsv("OA2_GP_118_SOURCE_TRACE.tsv",gpdetail,["store_pc","source","nearest_definition","intervening_calls","result"])
+    helperins=CE.get(0x800154D4)
+    helper=[{"pc":"0x800154D4","instruction":helperins["text"] if helperins else "TIDAK TAHU","gp_value":"0x8006D67C","effective_address":"0x8006D794","conclusion":"two sw sites exist; second source $v1 unresolved unless all-path reaching value is closed"}]
+    write_tsv("OA2_HELPER_800154D4.tsv",helper,["pc","instruction","gp_value","effective_address","conclusion"])
+    # Reconcile the contradictory NA2 text summary against its TSV rows.
+    na_tsv=Path("reports/stage1_economy/na-run-42444870382/attempt-1/NA2_EA88_39EFC_WRITERS.tsv")
+    corr=[]
+    if na_tsv.exists():
+        with na_tsv.open(encoding="utf-8") as f:
+            for z in csv.DictReader(f,delimiter="\\t"):
+                if z.get("target_global")=="0x8013EA88" and "0x8013EA6E" in z.get("source_expression",""):
+                    corr.append(z.get("pc","TIDAK TAHU"))
+    write_txt("OA2_NA_SUMMARY_RECONCILIATION.txt","NA_SUMMARY_REPORTED_EA6E_SOURCE_LHU=0\\nTSV_ROWS_EA88_STORES_SOURCED_FROM_EA6E="+str(len(corr))+"\\nSOURCE_PCS="+";".join(corr)+"\\nINTERPRETATION=TSV controls this reconciliation; the legacy TXT was left untouched because only OA files and specific excerpt-row deletions are authorized.\\n")
+    # OA3(i): predecessor / reachability into interior 0x800B24C8.
+    target=0x800B24C8; entry=0x800B1E88; pred=CI.get(target-4); delay=CI.get(target-8)
+    branch_edges=[]
+    for q,z in CI.items():
+        t=direct_target(z)
+        if t==target:branch_edges.append({"pc":h(q),"target":h(t),"instruction":z["text"]})
+    # static reachability through direct branches/jumps, interpreting delay slots as visited nodes.
+    seen=set(); todo=[entry]; limit=30000
+    while todo and len(seen)<limit:
+        q=todo.pop()
+        if q in seen or q not in CI:continue
+        seen.add(q); z=CI[q]; op=z["op"]; fn=z["fn"]
+        if op in (1,4,5,6,7):
+            delay=q+4
+            if delay in CI:seen.add(delay)
+            t=direct_target(z)
+            todo.extend([t,q+8])
+        elif op==2:
+            delay=q+4
+            if delay in CI:seen.add(delay)
+            todo.append(direct_target(z))
+        elif op==3:
+            delay=q+4
+            if delay in CI:seen.add(delay)
+            todo.append(q+8)
+        elif op==0 and fn==8:
+            delay=q+4
+            if delay in CI:seen.add(delay)
+            if z["rs"]!=31:
+                val=const_reg(CI,z["rs"],q,ENTRY_BASE)
+                if val is not None:todo.append(val)
+        elif op==0 and fn==9:
+            delay=q+4
+            if delay in CI:seen.add(delay)
+            todo.append(q+8)
+        else:
+            todo.append(q+4)
+    b24win=window("ENTRY1",target-0x10,12,"OA3_B24C8_PREDECESSOR_AND_BODY")
+    b24=[{"predecessor_pc":h(target-4),"predecessor_instruction":pred["text"] if pred else "TIDAK TAHU","control_transfer_candidate_pc":h(target-8),"control_transfer_candidate":delay["text"] if delay else "TIDAK TAHU","delay_slot_instruction":pred["text"] if pred else "TIDAK TAHU","target_pc":h(target),"target_instruction":CI.get(target,{}).get("text","TIDAK TAHU"),"direct_branch_entries":len(branch_edges),"reachable_from_function_entry":"YES" if target in seen else "NO/UNRESOLVED","function_entry":h(entry),"interpretation":"fall-through/reachability uses direct static CFG only; indirect entries are not closed"}]
+    write_tsv("OA3_B24C8_REACHABILITY.tsv",b24,["predecessor_pc","predecessor_instruction","control_transfer_candidate_pc","control_transfer_candidate","delay_slot_instruction","target_pc","target_instruction","direct_branch_entries","reachable_from_function_entry","function_entry","interpretation"])
+    write_tsv("OA3_B24C8_WINDOWS.tsv",b24win,["image","pc","file_offset","bytes","instruksi","excerpt_id"])
+    # OA3(ii): each inherited unresolved JALR target register gets a def chain and static table dereference if possible.
+    unresolved=[0x80100878,0x80101614,0x80116C98,0x80116D68,0x80116DD0,0x801174F4,0x801175A8,0x801175F4,0x801372BC,0x801372EC,0x8013731C,0x801373B4]
+    jrows=[]; jw=[]
+    for q in unresolved:
+        z=CI.get(q)
+        if not z:continue
+        d=last_def(CI,z["rs"],q,ENTRY_BASE,limit=96,stop_control=False)
+        v=const_reg(CI,z["rs"],q,ENTRY_BASE)
+        # chase a memory load from a static address only when expression is a direct absolute value.
+        expr=sym_reg(CI,z["rs"],q,ENTRY_BASE)
+        memval="TIDAK TAHU"
+        if d and d["op"] in LOADS:
+            adr=ea(CI,d,ENTRY_BASE)
+            if adr is not None:
+                for tag,blob,base,off in (("EXE",EXE,EXE_BASE,EXE_FILE),("ENTRY1",ENTRY,ENTRY_BASE,0)):
+                    ix=off+(adr-base)
+                    if 0<=ix<=len(blob)-4:
+                        memval=h(int.from_bytes(blob[ix:ix+4],"little")); break
+        classification="STATIC_TARGET_800BE5D8" if v==0x800BE5D8 or memval==h(0x800BE5D8) else "TIDAK TAHU: dynamic register/table/global contents not statically closed"
+        jrows.append({"jalr_pc":h(q),"instruction":z["text"],"target_register":reg(z["rs"]),"nearest_definition":h(d["pc"])+" "+d["text"] if d else "TIDAK TAHU","target_expression":expr,"direct_constant":h(v) if v is not None else "TIDAK TAHU","static_loaded_word":memval,"classification":classification})
+        if d: jw+=window("ENTRY1",max(ENTRY_BASE,d["pc"]-4),min(8,(q-d["pc"]+8)//4), "OA3_JALR_"+h(q))
+    write_tsv("OA3_UNRESOLVED_JALR_CHAINS.tsv",jrows,["jalr_pc","instruction","target_register","nearest_definition","target_expression","direct_constant","static_loaded_word","classification"])
+    write_tsv("OA3_UNRESOLVED_JALR_WINDOWS.tsv",jw,["image","pc","file_offset","bytes","instruksi","excerpt_id"])
+    # OA5: symbolic outcome only, without assumptions/fitting.
+    formula=[
+      {"premise":"DN1 resource lookup X to LV1-LV5","status":"TUNTAS K4","result":"415/415 records in 12 resources; LV2 formula matches 415/415, LV3-LV5 remain lookup-only"},
+      {"premise":"cell read index I","status":oa2s0[0]["conclusion"],"result":oa2s0[0]["CELL_READ_FORMULA"]},
+      {"premise":"cell value x equals jump distance d","status":"BELUM K1","result":"TIDAK TAHU: no closed matrix writer, buffer loader, and two-level operand relation"},
+      {"premise":"upgrade cost for d>=2","status":"BELUM K1","result":"TIDAK TAHU: no proved charge/debit calculation or symbolic relation; no user assumptions used"}
+    ]
+    write_tsv("OA5_SYMBOLIC_COST_STATUS.tsv",formula,["premise","status","result"])
+    # bounded all-output validation then aggregate check after old-row removal.
+    root=Path("reports/stage1_economy")
+    removed,stripok=strip_crossing_rows(root)
+    auditok,maxb,over=aggregate_audit(root)
+    checked,decoded,fail=validate_new_tsv(EXE,ENTRY)
+    pycount=int(os.environ.get("OA0_PYCOUNT","0"))
+    commits,human,bot,runct,runrows=actions_ledger()
+    status=all([stripok,auditok,fail==0,checked>0])
+    report=[
+      "# OA0-OA5 — audit statis dan satu tahap CONTROL runtime",
+      "",
+      f"Baseline inklusif: {BASELINE}",
+      f"Source SHA: {os.environ.get('GITHUB_SHA','TIDAK TAHU')}",
+      "EXE SHA-256: "+EXE_SHA,
+      "Entry 1 SHA-256: "+ENTRY_SHA,
+      "",
+      "## Ringkasan status",
+      f"- OA0: {'SEBAGIAN K2' if stripok and auditok and fail==0 else 'SEBAGIAN K1'} — excerpt strip={'PASS' if stripok else 'FAIL'}, aggregate max={maxb}B, pelanggaran={over}, validasi raw/offset/decode={checked}/{checked} (fail={fail}), py_compile={pycount}.",
+      f"- OA1: SEBAGIAN K2 — tiga callsite dan seluruh edge statis yang dapat dipulihkan dicatat; klasifikasi a2/a3, consumer base table dan indirect dispatch tetap dibatasi oleh CFG/alias closure.",
+      f"- OA2: SEBAGIAN K2 — read selector, pointer M references, 144*I pattern, global stores dan call/branch paths dicensus; writer/loader M+0x10+B+144*I tidak dianggap tertutup tanpa proof chain.",
+      f"- OA3: SEBAGIAN K2 — B24C8 direct CFG reachability serta 12 target-register chains dicatat; table/global indirect targets tetap TIDAK TAHU bila pointer content dinamis.",
+      "- OA4: TIDAK TAHU sampai dua restore CONTROL berhasil; tidak ada input/watchpoint/cold-boot alternatif.",
+      "- OA5: BELUM K1 — x=d dan formula biaya lompat d>=2 TIDAK TAHU; nilai 400/800/1600 tidak dipakai.",
+      "",
+      "## Excerpt audit",
+      f"Deleted rows: {len(removed)}; lihat OA0_DELETED_ROWS.tsv.",
+      f"Aggregate max contiguous span={maxb} B; over-limit groups={over}; STATUS={'PASS' if auditok else 'FAIL'}.",
+      f"New TSV validations={checked}; decoded instructions={decoded}; failures={fail}.",
+      "",
+      "## Ledger pre-publication",
+      f"Commits from baseline inclusive excluding publication={commits}; human={human}; bot={bot}.",
+      f"Runs created after baseline={runct}; see OA0_TRIGGERED_RUNS_AFTER_BASELINE.tsv.",
+      "",
+      "## Scope",
+      "Static analysis only for OA0-OA3. Runtime is limited to two identical HA4 checkpoint restores. No game input, no watchpoints, no cold boot fallback. No ROM/BIOS/savestate/RAM binary committed.",
+    ]
+    write_txt("OA0_OA5_REPORT.md","\n".join(report)+"\n")
+    write_txt("OA0_ANALYZER_STATUS.txt",f"STATUS={'PASS' if status else 'PARTIAL_OR_FAIL'}\nCHECKED_TSV={checked}\nDECODED_INSTRUCTIONS={decoded}\nVALIDATION_FAIL={fail}\nEXCERPT_MAX={maxb}\nOVER_LIMIT_GROUPS={over}\nSTRIP_OK={stripok}\n")
+    print(f"OA_ANALYZER_EXIT_CODE={0 if status else 1} CHECKED={checked} DECODED={decoded} FAIL={fail} MAX={maxb} OVER={over} STRIP={stripok} AUDIT={auditok}")
+    if not status: raise SystemExit(1)
+
+if __name__=="__main__": static_analysis()
