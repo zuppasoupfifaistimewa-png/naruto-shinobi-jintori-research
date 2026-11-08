@@ -50,6 +50,36 @@ jobs:
             "$WORK/ghidra-exe-project" "$WORK/ghidra-entry1-project" "$WORK/ghidra-logs" \
             "$WORK/scripts" "$OUT"
 
+      - name: Compile all tracked Python and MA analyzer before static analysis
+        id: pycompile
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "$OUT/MA0_PRECHECK_PYCOMPILE.tsv" "$WORK/pycache" <<'PY'
+          import csv, hashlib, py_compile, subprocess, sys
+          from pathlib import Path
+          out, cache = Path(sys.argv[1]), Path(sys.argv[2])
+          names = subprocess.check_output(["git", "ls-files", "-z", "--", "*.py"]).decode().split("\0")
+          names = [x for x in names if x]
+          names.append("tools/ma-static/RunMA0MA5Static.txt")
+          rows = []
+          for name in names:
+              target = cache / (hashlib.sha256(name.encode()).hexdigest() + ".pyc")
+              try:
+                  py_compile.compile(name, cfile=str(target), doraise=True)
+                  rows.append((name, "PASS", ""))
+              except Exception as exc:
+                  rows.append((name, "FAIL", type(exc).__name__ + ":" + str(exc)))
+          with out.open("w", encoding="utf-8", newline="") as f:
+              writer = csv.writer(f, delimiter="\t", lineterminator="\n")
+              writer.writerow(["path", "status", "reason"])
+              writer.writerows(rows)
+          passed = sum(row[1] == "PASS" for row in rows)
+          print(f"PY_COMPILE_TOTAL={len(rows)} PY_COMPILE_PASS={passed} PY_COMPILE_FAIL={len(rows)-passed}")
+          if not rows or passed != len(rows):
+              raise SystemExit(1)
+          PY
+
       - name: Restore pinned Ghidra cache
         uses: actions/cache@v4
         with:
@@ -182,7 +212,7 @@ jobs:
         run: |
           set -euo pipefail
           set +e
-          python3 tools/ma-static/RunMA0MA5Static.py \
+          python3 tools/ma-static/RunMA0MA5Static.txt \
             "$WORK/input/SLPS_035.53" "$WORK/input/ENTRY1.bin" "$OUT" \
             "$OUT/EXE_CODE.txt" "$OUT/ENTRY1_CODE.txt"
           RC=$?
@@ -200,14 +230,13 @@ jobs:
           test ! -e "$WORK"
           echo "PRIVATE_BINARY_CLEANUP=PASS" > "$OUT/cleanup.txt"
 
-      - name: Publish only MA text reports and remove the two superseded oversized LA excerpts
+      - name: Publish MA text reports with fast-forward retry and final-parent ledger
         if: always()
         shell: bash
         run: |
           set -euo pipefail
           DEST="reports/stage1_economy/ma-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
-          mkdir -p "$DEST"
-          find "$OUT" -maxdepth 1 -type f \( -name 'MA*.txt' -o -name 'MA*.tsv' -o -name 'MA*.md' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
+          mkdir -p "$OUT"
           ANALYSIS_RC="$(sed -n 's/^ANALYZER_EXIT_CODE=//p' "$OUT/MA0_ANALYZER_EXIT.txt" 2>/dev/null | head -n 1 || true)"
           [ -n "$ANALYSIS_RC" ] || ANALYSIS_RC=TIDAK_TAHU
           EXE_RC="$(sed -n 's/^EXE_GHIDRA_EXIT=//p' "$OUT/GHIDRA_DIAGNOSTICS.txt" 2>/dev/null | head -n 1 || true)"
@@ -216,53 +245,125 @@ jobs:
           [ -n "$ENTRY_RC" ] || ENTRY_RC=TIDAK_TAHU
           CLEANUP="$(cat "$OUT/cleanup.txt" 2>/dev/null || echo PRIVATE_BINARY_CLEANUP=UNKNOWN)"
           JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" |
             jq -r '.jobs[] | select(.name=="ma0-ma5-static") | .id' | head -n 1)" || JOB_ID=TIDAK_TAHU
           [ -n "$JOB_ID" ] || JOB_ID=TIDAK_TAHU
-          PY_SUMMARY="$(python3 - "$OUT/MA0_PYCOMPILE.tsv" "$OUT/MA0_FILE_OFFSET_DECODE_VALIDATION.tsv" "$OUT/MA0_AGGREGATE_EXCERPT_AUDIT.txt" <<'PY'
+          PY_SUMMARY="$(python3 - "$OUT/MA0_PYCOMPILE.tsv" "$OUT/MA0_PRECHECK_PYCOMPILE.tsv" "$OUT/MA0_FILE_OFFSET_DECODE_VALIDATION.tsv" "$OUT/MA0_AGGREGATE_EXCERPT_AUDIT.txt" <<'PY'
           import csv, sys
           from pathlib import Path
-          def rows(p):
-              try: return list(csv.DictReader(Path(p).open(encoding="utf-8"), delimiter="\t"))
-              except Exception: return []
-          py=rows(sys.argv[1]); val=rows(sys.argv[2])
-          excerpt=Path(sys.argv[3]).read_text(encoding="utf-8") if Path(sys.argv[3]).exists() else ""
-          ppass=sum(x.get("status")=="PASS" for x in py)
-          vfail=sum(x.get("raw_check")=="FAIL" or x.get("decode_check","").startswith(("FAIL","ERROR")) for x in val)
-          print(f"PY={ppass}/{len(py)}; VALIDATION={len(val)-vfail}/{len(val)}; EXCERPT_AUDIT={'PASS' if 'STATUS=PASS' in excerpt else 'FAIL/UNKNOWN'}")
+          def rows(path):
+              try:
+                  return list(csv.DictReader(Path(path).open(encoding="utf-8"), delimiter="\t"))
+              except Exception:
+                  return []
+          pyrows = rows(sys.argv[1]) or rows(sys.argv[2])
+          valrows = rows(sys.argv[3])
+          audit = Path(sys.argv[4]).read_text(encoding="utf-8") if Path(sys.argv[4]).exists() else ""
+          ppass = sum(x.get("status") == "PASS" for x in pyrows)
+          vfail = sum(x.get("raw_check") == "FAIL" or x.get("decode_check", "").startswith(("FAIL", "ERROR")) for x in valrows)
+          over = next((x.split("=",1)[1] for x in audit.splitlines() if x.startswith("OVER_LIMIT=")), "TIDAK TAHU")
+          max_bytes = next((x.split("=",1)[1] for x in audit.splitlines() if x.startswith("MAX_CONTIGUOUS_BYTES=")), "TIDAK TAHU")
+          print(f"PY_COMPILE={ppass}/{len(pyrows)}; VALIDATION={len(valrows)-vfail}/{len(valrows)}; EXCERPT_MAX={max_bytes}; OVER_LIMIT={over}")
           PY
           )"
+          STATUS=SEBAGIAN
+          RUN_INTEGRITY=PARTIAL
           if [ "$ANALYSIS_RC" = "0" ] && [ "$EXE_RC" = "0" ] && [ "$ENTRY_RC" = "0" ] && [ "$CLEANUP" = "PRIVATE_BINARY_CLEANUP=PASS" ] && grep -q 'STATUS=PASS' "$OUT/MA0_AGGREGATE_EXCERPT_AUDIT.txt" 2>/dev/null; then
-            STATUS=PASS
-          else
-            STATUS=PARTIAL
+            RUN_INTEGRITY=PASS
           fi
-          {
-            echo "STATUS=$STATUS"
-            echo "JOB=ma0-ma5-static"
-            echo "JOB_ID=$JOB_ID"
-            echo "RUN_ID=$GITHUB_RUN_ID"
-            echo "SOURCE_SHA=$GITHUB_SHA"
-            echo "BASELINE_INCLUSIVE=$MA_BASELINE"
-            echo "EXIT_CODE=$ANALYSIS_RC"
-            echo "GHIDRA_EXE_EXIT_CODE=$EXE_RC"
-            echo "GHIDRA_ENTRY1_EXIT_CODE=$ENTRY_RC"
-            echo "$PY_SUMMARY"
-            echo "$CLEANUP"
-            echo "EMULATOR_LAUNCHES=0"
-            echo "GAME_OR_EMULATOR_EXECUTED=no"
-            echo "BIOS_OR_SAVESTATE_USED=no"
-            echo "BINARY_COMMITTED=no"
-            echo "RELEASES_MODIFIED=no"
-          } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
-          rm -f "$OUT/EXE_CODE.txt" "$OUT/ENTRY1_CODE.txt" "$OUT/GHIDRA_DIAGNOSTICS.txt"
-          git rm --ignore-unmatch -- \
-            reports/stage1_economy/la-run-42421741871/attempt-1/LA1_B50AC_TABLE_REGION.tsv \
-            reports/stage1_economy/la-run-42421741871/attempt-1/LA2_BOUNDS_CONTEXT.tsv
-          git add -- "$DEST"
-          git diff --cached --name-only
-          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-            commit -m "Publish MA0-MA5 isolated static audit run $GITHUB_RUN_ID"
-          git push origin HEAD:main
+          PUBLISH_OK=0
+          for PUBLISH_ATTEMPT in 1 2 3; do
+            git fetch --no-tags origin main
+            git reset --hard origin/main
+            PUBLISH_PARENT_SHA="$(git rev-parse HEAD)"
+            rm -rf "$DEST"
+            mkdir -p "$DEST"
+            find "$OUT" -maxdepth 1 -type f \( -name 'MA*.txt' -o -name 'MA*.tsv' -o -name 'MA*.md' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
+            python3 - "$MA_BASELINE" "$PUBLISH_PARENT_SHA" "$DEST" <<'PY'
+          import csv, subprocess, sys
+          from pathlib import Path
+          baseline, parent, dest = sys.argv[1], sys.argv[2], Path(sys.argv[3])
+          subprocess.run(["git", "merge-base", "--is-ancestor", baseline, parent], check=True)
+          raw = subprocess.check_output(
+              ["git", "log", "--format=%H%x09%an%x09%ae%x09%s", f"{baseline}^..{parent}"],
+              text=True
+          )
+          rows = []
+          for line in raw.splitlines():
+              parts = line.split("\t", 3)
+              if len(parts) != 4:
+                  continue
+              sha, name, email, subject = parts
+              ident = (name + " " + email).lower()
+              bot = "[bot]" in ident or "dependabot" in ident or " bot" in ident or ident.startswith("bot")
+              rows.append({"sha": sha, "author": name, "email": email,
+                           "class": "BOT" if bot else "HUMAN", "subject": subject})
+          with (dest / "MA0_LEDGER_FINAL_PARENT.tsv").open("w", encoding="utf-8", newline="") as f:
+              writer = csv.DictWriter(f, fieldnames=["sha","author","email","class","subject"],
+                                       delimiter="\t", lineterminator="\n")
+              writer.writeheader()
+              writer.writerows(rows)
+          total = len(rows)
+          human = sum(r["class"] == "HUMAN" for r in rows)
+          bot = sum(r["class"] == "BOT" for r in rows)
+          (dest / "MA0_LEDGER_FINAL_PARENT_SUMMARY.txt").write_text(
+              f"BASELINE_INCLUSIVE={baseline}\n"
+              f"FINAL_PARENT_SHA={parent}\n"
+              f"LEDGER_RANGE={baseline}^..{parent}\n"
+              f"COMMITS_TOTAL={total}\nCOMMITS_HUMAN={human}\nCOMMITS_BOT={bot}\n"
+              "PUBLICATION_COMMIT_EXCLUDED=YES\n"
+              "AUTHOR_CLASSIFICATION=heuristic from author name/email; review if ambiguous\n",
+              encoding="utf-8")
+          report = dest / "MA0_MA5_STATIC_REPORT.md"
+          if report.exists():
+              with report.open("a", encoding="utf-8") as f:
+                  f.write("\n## Ledger final parent (publication commit dikecualikan)\n\n")
+                  f.write(f"- Baseline inklusif: {baseline}\n")
+                  f.write(f"- HEAD parent tepat sebelum commit publikasi: {parent}\n")
+                  f.write(f"- Rentang dihitung: {baseline}^..{parent}; commit publikasi laporan sendiri tidak dihitung.\n")
+                  f.write(f"- Commit total: **{total}**; manusia: **{human}**; bot: **{bot}**.\n")
+                  f.write("- Klasifikasi bot memakai heuristik nama/email; identitas ambigu harus ditinjau.\n")
+          PY
+            {
+              echo "STATUS=$STATUS"
+              echo "JOB=ma0-ma5-static"
+              echo "JOB_ID=$JOB_ID"
+              echo "RUN_ID=$GITHUB_RUN_ID"
+              echo "SOURCE_SHA=$GITHUB_SHA"
+              echo "PUBLISH_PARENT_SHA=$PUBLISH_PARENT_SHA"
+              echo "BASELINE_INCLUSIVE=$MA_BASELINE"
+              echo "EXIT_CODE=$ANALYSIS_RC"
+              echo "GHIDRA_EXE_EXIT_CODE=$EXE_RC"
+              echo "GHIDRA_ENTRY1_EXIT_CODE=$ENTRY_RC"
+              echo "$PY_SUMMARY"
+              echo "$CLEANUP"
+              echo "EMULATOR_LAUNCHES=0"
+              echo "GAME_OR_EMULATOR_EXECUTED=no"
+              echo "BIOS_OR_SAVESTATE_USED=no"
+              echo "BINARY_COMMITTED=no"
+              echo "RELEASES_MODIFIED=no"
+              echo "PUBLISH_ATTEMPT=$PUBLISH_ATTEMPT"
+            } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
+            git rm --ignore-unmatch -- \
+              reports/stage1_economy/la-run-42421741871/attempt-1/LA1_B50AC_TABLE_REGION.tsv \
+              reports/stage1_economy/la-run-42421741871/attempt-1/LA2_BOUNDS_CONTEXT.tsv
+            git add -- "$DEST"
+            git diff --cached --name-only | sort -u > "$DEST/MA0_PUBLISH_COMMIT_FILES.txt"
+            echo "$DEST/MA0_PUBLISH_COMMIT_FILES.txt" >> "$DEST/MA0_PUBLISH_COMMIT_FILES.txt"
+            sort -u -o "$DEST/MA0_PUBLISH_COMMIT_FILES.txt" "$DEST/MA0_PUBLISH_COMMIT_FILES.txt"
+            git add -- "$DEST/MA0_PUBLISH_COMMIT_FILES.txt"
+            git diff --cached --name-only
+            git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "Publish MA0-MA5 static audit run $GITHUB_RUN_ID [skip ci]"
+            if git push origin HEAD:main; then
+              PUBLISH_OK=1
+              break
+            fi
+            echo "Push attempt $PUBLISH_ATTEMPT failed; retrying against updated main." >&2
+          done
+          if [ "$PUBLISH_OK" != "1" ]; then
+            echo "MA_PUBLICATION_FAILED=1" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
           echo "PUBLISHED_DIR=$DEST" >> "$GITHUB_STEP_SUMMARY"
           echo "RUN_SUMMARY=$DEST/ACTIONS_RUN_SUMMARY.txt" >> "$GITHUB_STEP_SUMMARY"
