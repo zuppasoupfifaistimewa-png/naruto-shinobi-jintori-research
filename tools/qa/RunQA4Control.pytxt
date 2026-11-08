@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+import argparse,csv,hashlib,os,re,shutil,subprocess
+from pathlib import Path
+RUN_ID=39907655833
+ARTIFACT_ID=12482055310
+ARTIFACT_SHA="a0f45156dfd489f24c8dc8e122c33a048c7b9ac34b935ac828523593d21ca2a8"
+STATE_NAME="adaptive-cycle-02-f180.sstate"
+STATE_SIZE=21162799
+STATE_SHA="705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35"
+BPS=[0x800D49B0,0x800F5F54,0x800B54DC,0x800F5EBC,0x800121AC,0x800121F4,0x800B24C8,0x800BE5D8,
+0x80100878,0x80101614,0x80116C98,0x80116D68,0x80116DD0,0x801174F4,0x801175A8,0x801175F4,
+0x801372BC,0x801372EC,0x8013731C,0x801373B4]
+REGS=["r0","r1","r2","r3","r4","r5","r6","r7","r8","r9","r10","r11","r12","r13","r14","r15",
+"r16","r17","r18","r19","r20","r21","r22","r23","r24","r25","r26","r27","r28","r29","r30","r31"]
+LUA=r'''
+local BPS=__BPS__
+local LIMIT=2000
+local postFrames,preFrames,loaded,restorePending=0,0,0,false
+local counts,indexes={},{}
+local refs={}
+local traceRows,overflowRows=0,0
+local f=assert(io.open("trace.tsv","w"))
+f:write("launch\tpc\thit_index\tvsync\t__REGS__\n")
+local function log(s) print(s);pcall(function() io.stdout:flush() end) end
+for _,pc in ipairs(BPS) do
+ local key=string.format("0x%08X",pc);counts[key]=0;indexes[key]=0
+ refs[#refs+1]=PCSX.addBreakpoint(pc,"Exec",4,"QA4 readonly execution "..key,function(address,width,cause)
+  counts[key]=counts[key]+1;indexes[key]=indexes[key]+1
+  if traceRows<LIMIT then
+   traceRows=traceRows+1
+   local r=PCSX.getRegisters();local v={}
+   for i=0,31 do v[#v+1]=tostring(tonumber(r.GPR.r[i])) end
+   f:write("__LAUNCH__\t"..key.."\t"..tostring(indexes[key]).."\t"..tostring(postFrames).."\t"..table.concat(v,"\t").."\n");f:flush()
+  else overflowRows=overflowRows+1 end
+  return true
+ end,"QA4_"..key)
+end
+_G.qa4Save=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
+ loaded=loaded+1;postFrames=0;log("QA4_STATE_LOADED=1")
+end)
+_G.qa4Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
+ preFrames=preFrames+1
+ if loaded==0 and not restorePending then
+  restorePending=true;PCSX.pauseEmulator()
+  PCSX.nextTick(function()
+   local ok,file=pcall(function() return assert(Support.File.open("resume/"..STATE_NAME)) end)
+   if not ok or not file then log("QA4_STATE_OPEN_FAIL="..tostring(file));PCSX.quit(50);return end
+   local yes,err=pcall(function() PCSX.loadSaveState(file) end);file:close()
+   if not yes then log("QA4_RESTORE_FAIL="..tostring(err));PCSX.quit(51);return end
+   log("QA4_RESTORE_RETURNED=1");PCSX.resumeEmulator()
+  end)
+  return
+ end
+ if loaded>0 then
+  postFrames=postFrames+1
+  if postFrames==60 or postFrames==180 then log("QA4_POST_RESTORE_VSYNC="..tostring(postFrames)) end
+  if postFrames>=180 then
+   local ok,err=pcall(function()
+    f:flush();f:close()
+    local c=assert(io.open("counts.tsv","w"));c:write("pc\thit_count\n")
+    for _,pc in ipairs(BPS) do local k=string.format("0x%08X",pc);c:write(k.."\t"..tostring(counts[k]).."\n") end
+    c:close()
+   end)
+   if not ok then log("QA4_WRITE_FAIL="..tostring(err));PCSX.quit(54);return end
+   log("QA4_TRACE_ROWS="..tostring(traceRows));log("QA4_TRACE_OVERFLOW="..tostring(overflowRows))
+   log("QA4_CONTROL_RESULT=PASS");PCSX.pauseEmulator();PCSX.nextTick(function() PCSX.quit(0) end);return
+  end
+ elseif preFrames>=900 then
+  log("QA4_RESTORE_TIMEOUT=1");PCSX.pauseEmulator();PCSX.nextTick(function() PCSX.quit(53) end)
+ end
+end)
+log("QA4_READY=1 input=NONE breakpoints=EXEC read_only=YES")
+'''
+def lua_source(n):
+    bp="{"+",".join(str(x) for x in BPS)+"}"
+    return LUA.replace("__BPS__",bp).replace("__REGS__","\t".join(REGS)).replace("__LAUNCH__",str(n))
+def read_counts(p):
+    with p.open(encoding="utf-8") as f:return {r["pc"]:int(r["hit_count"]) for r in csv.DictReader(f,delimiter="\t")}
+def launch(n,pcsx,bios,cue,work,out,state):
+    d=work/f"launch{n}";d.mkdir(parents=True,exist_ok=True);(d/"resume").mkdir(exist_ok=True)
+    shutil.copy2(state,d/"resume"/STATE_NAME);card=d/"control.mcd";card.write_bytes(bytes(131072))
+    lua=d/"qa4.lua";lua.write_text(lua_source(n),encoding="utf-8")
+    home=d/"home";home.mkdir(exist_ok=True);env=os.environ.copy()
+    env.update({"HOME":str(home),"XDG_CONFIG_HOME":str(home/".config"),"XDG_DATA_HOME":str(home/".data"),"XDG_RUNTIME_DIR":str(home/".runtime")})
+    for k in ("XDG_CONFIG_HOME","XDG_DATA_HOME","XDG_RUNTIME_DIR"):Path(env[k]).mkdir(parents=True,exist_ok=True)
+    Path(env["XDG_RUNTIME_DIR"]).chmod(0o700)
+    log=d/"pcsx.stdout.txt";pcsxlog=d/"pcsx.log"
+    cmd=["timeout","--signal=INT","--kill-after=10s","240s",str(pcsx),"-noupdate","-no-ui","-testmode",
+     "-debugger","-interpreter","-bios",str(bios),"-iso",str(cue),"-memcard1",str(card),
+     "-dofile",str(lua),"-softgpu","-logfile",str(pcsxlog),"-run"]
+    with log.open("w",encoding="utf-8") as f:
+        f.write(f"LAUNCH={n}\nGAMEPLAY_INPUT=NONE\n");f.flush()
+        try:rc=subprocess.run(cmd,cwd=d,env=env,stdout=f,stderr=subprocess.STDOUT,check=False).returncode
+        except Exception as e:rc=255;f.write("LAUNCH_EXCEPTION="+repr(e)+"\n")
+    content=log.read_text(encoding="utf-8",errors="replace")
+    (out/f"QA4_LAUNCH{n}_LOG.txt").write_text(content,encoding="utf-8")
+    tr=d/"trace.tsv";co=d/"counts.tsv"
+    loaded=content.count("QA4_STATE_LOADED=1")
+    frames=max([int(x) for x in re.findall(r"QA4_POST_RESTORE_VSYNC=(\d+)",content)] or [0])
+    ok=rc==0 and loaded==1 and frames>=180 and "QA4_CONTROL_RESULT=PASS" in content and tr.is_file() and co.is_file()
+    if ok:shutil.copy2(tr,out/f"QA4_LAUNCH{n}_TRACE.tsv");shutil.copy2(co,out/f"QA4_LAUNCH{n}_COUNTS.tsv")
+    return {"rc":rc,"loaded":loaded,"frames":frames,"ok":ok,"content":content}
+def main():
+    ap=argparse.ArgumentParser()
+    for x in ("pcsx","bios","cue","work","out","state"):ap.add_argument("--"+x,required=True,type=Path)
+    a=ap.parse_args();a.out.mkdir(parents=True,exist_ok=True);a.work.mkdir(parents=True,exist_ok=True)
+    if not a.state.is_file() or a.state.stat().st_size!=STATE_SIZE or hashlib.sha256(a.state.read_bytes()).hexdigest()!=STATE_SHA:raise SystemExit("QA4_CHECKPOINT_VALIDATION_FAIL")
+    r1=launch(1,a.pcsx,a.bios,a.cue,a.work,a.out,a.state);r2=launch(2,a.pcsx,a.bios,a.cue,a.work,a.out,a.state) if r1["ok"] else None
+    identical=False;overflow=0;n1=n2=0
+    if r1["ok"] and r2 and r2["ok"]:
+        t1=(a.out/"QA4_LAUNCH1_TRACE.tsv").read_bytes();t2=(a.out/"QA4_LAUNCH2_TRACE.tsv").read_bytes()
+        c1=read_counts(a.out/"QA4_LAUNCH1_COUNTS.tsv");c2=read_counts(a.out/"QA4_LAUNCH2_COUNTS.tsv")
+        identical=t1==t2 and c1==c2;n1=max(0,len(t1.splitlines())-1);n2=max(0,len(t2.splitlines())-1)
+        overflow=sum(max([int(x) for x in re.findall(r"QA4_TRACE_OVERFLOW=(\d+)",r["content"])] or [0]) for r in (r1,r2))
+        with (a.out/"QA4_PER_PC_SUMMARY.tsv").open("w",encoding="utf-8",newline="") as f:
+            w=csv.writer(f,delimiter="\t",lineterminator="\n");w.writerow(["pc","hit_count_launch1","hit_count_launch2","identical"])
+            for pc in BPS:
+                k=f"0x{pc:08X}";x=c1.get(k,0);y=c2.get(k,0);w.writerow([k,x,y,"YES" if x==y else "NO"])
+    else:
+        with (a.out/"QA4_PER_PC_SUMMARY.tsv").open("w",encoding="utf-8",newline="") as f:
+            w=csv.writer(f,delimiter="\t",lineterminator="\n");w.writerow(["pc","hit_count_launch1","hit_count_launch2","identical"])
+            for pc in BPS:w.writerow([f"0x{pc:08X}","TIDAK TAHU","TIDAK TAHU","TIDAK TAHU"])
+    status="PASS" if r1["ok"] and r2 and r2["ok"] and identical and overflow==0 else "TIDAK TAHU"
+    lines=[f"STATUS={status}",f"SOURCE_RUN={RUN_ID}",f"ARTIFACT_ID={ARTIFACT_ID}",f"ARTIFACT_ZIP_SHA256={ARTIFACT_SHA}",
+      f"CHECKPOINT={STATE_NAME}",f"CHECKPOINT_SHA256={STATE_SHA}","LAUNCHES_REQUESTED=2",f"BREAKPOINTS={len(BPS)}",
+      f"LAUNCH1_EXIT={r1['rc']}",f"LAUNCH1_SAVE_STATE_EVENTS={r1['loaded']}",f"LAUNCH1_POST_RESTORE_VSYNC={r1['frames']}",
+      f"LAUNCH2_EXIT={r2['rc'] if r2 else 'NOT_RUN'}",f"LAUNCH2_SAVE_STATE_EVENTS={r2['loaded'] if r2 else 'NOT_RUN'}",
+      f"LAUNCH2_POST_RESTORE_VSYNC={r2['frames'] if r2 else 'NOT_RUN'}",f"TRACE_ROWS_LAUNCH1={n1}",f"TRACE_ROWS_LAUNCH2={n2}",
+      "TRACE_ROW_LIMIT_PER_LAUNCH=2000",f"TRACE_OVERFLOW={overflow}",f"IDENTICAL={'YES' if identical else 'NO_OR_TIDAK_TAHU'}",
+      "BREAKPOINT_TYPE=Exec","REGISTER_READ=PCSX.getRegisters().GPR.r[0..31]","REGISTER_WRITE=NONE","MEMORY_WRITE=NONE",
+      "GAMEPLAY_INPUT=NONE","WATCHPOINTS=0","CPU_CORE=interpreter","DEBUGGER=enabled","HEADLESS=-no-ui",
+      "HIT_ZERO_MEANS=not executed in 180 VSYNC after restore without input; not proof of unreachability",
+      "COLD_BOOT_FALLBACK=no","PRIVATE_BINARY_COMMITTED=no","RELEASES_MODIFIED=no"]
+    (a.out/"QA4_RUNTIME_SUMMARY.txt").write_text("\n".join(lines)+"\n",encoding="utf-8")
+    print("\n".join(lines))
+    if status!="PASS":raise SystemExit(1)
+if __name__=="__main__":main()

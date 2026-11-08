@@ -1,0 +1,368 @@
+name: QA0-QA5 bounded evidence and CONTROL trace
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/qa0-qa5.yml"
+      - "tools/qa/*.pytxt"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: naruto-qa0-qa5-isolated
+  cancel-in-progress: false
+
+jobs:
+  qa0:
+    name: qa0-static-harness-and-excerpt-audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: \${{ github.token }}
+      RESEARCH_REPO: \${{ github.repository }}
+      OUT: /tmp/naruto-qa-output-\${{ github.run_id }}-\${{ github.run_attempt }}-static
+    steps:
+      - name: Checkout the commit under test
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Run fixture, compile all Python and .pytxt, and audit archived excerpts
+        id: audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT" "$RUNNER_TEMP/qa"
+          cp tools/qa/RunQA0Harness.pytxt "$RUNNER_TEMP/qa/RunQA0Harness.py"
+          python3 -m py_compile "$RUNNER_TEMP/qa/RunQA0Harness.py"
+          set +e
+          python3 "$RUNNER_TEMP/qa/RunQA0Harness.py" \
+            --root "$GITHUB_WORKSPACE" --out "$OUT" \
+            > "$OUT/QA0_CONSOLE.txt" 2>&1
+          RC=$?
+          set -e
+          echo "QA0_EXIT_CODE=$RC" >> "$GITHUB_ENV"
+          echo "exit_code=$RC" >> "$GITHUB_OUTPUT"
+          if [ ! -s "$OUT/QA0_EXCERPT_AUDIT.txt" ]; then
+            printf 'STATUS=TIDAK TAHU\nREASON=QA0 analyzer did not produce audit output\n' > "$OUT/QA0_EXCERPT_AUDIT.txt"
+          fi
+          {
+            echo "# QA0 harness and merged excerpt audit"
+            echo
+            echo "Baseline inclusive: 88c7c185b638a2fdd22e3212055fe50cb88b4d81"
+            echo
+            cat "$OUT/QA0_EXCERPT_AUDIT.txt"
+            echo
+            echo "Legacy JA/KA/LA/MA/NA/OA/PA files were not modified."
+            echo "Only text/TSV files are published. This audit is not a gameplay proof."
+          } > "$OUT/QA0_REPORT.md"
+
+      - name: Remove temporary copies
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$RUNNER_TEMP/qa"
+          test ! -e "$RUNNER_TEMP/qa"
+
+      - name: Publish QA0 evidence and Actions summary
+        id: publish
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST="reports/stage1_economy/qa-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$DEST"
+          find "$OUT" -maxdepth 1 -type f \( -name 'QA0_*.txt' -o -name 'QA0_*.tsv' -o -name 'QA0_*.md' \) -exec cp {} "$DEST/" \;
+          RC="\${QA0_EXIT_CODE:-TIDAK_TAHU}"
+          AUDIT_STATUS="$(sed -n 's/^STATUS=//p' "$DEST/QA0_EXCERPT_AUDIT.txt" | head -n 1 || true)"
+          [ -n "$AUDIT_STATUS" ] || AUDIT_STATUS=TIDAK_TAHU
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" \
+            | jq -r '.jobs[] | select(.name=="qa0-static-harness-and-excerpt-audit") | .id' | head -n 1)"
+          {
+            echo "STATUS=$AUDIT_STATUS"
+            echo "JOB=qa0-static-harness-and-excerpt-audit"
+            echo "JOB_ID=$JOB_ID"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "EXIT_CODE=$RC"
+            echo "BASELINE_INCLUSIVE=88c7c185b638a2fdd22e3212055fe50cb88b4d81"
+            echo "LEGACY_FILES_MODIFIED=no"
+            echo "STATUS_MD_MODIFIED=no"
+            echo "RELEASES_MODIFIED=no"
+          } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
+          git add -- "$DEST"
+          python3 - "$DEST" <<'PY'
+          import subprocess,sys
+          from pathlib import Path
+          dest=Path(sys.argv[1])
+          rows=subprocess.check_output(["git","diff","--cached","--name-status"],text=True).splitlines()
+          with (dest/"QA0_PUBLISH_COMMIT_FILES.tsv").open("w",encoding="utf-8",newline="") as f:
+              f.write("status\tpath\n")
+              for line in rows:
+                  status,path=line.split("\t",1);f.write(status+"\t"+path+"\n")
+              f.write("A\t"+str(dest/"QA0_PUBLISH_COMMIT_FILES.tsv")+"\n")
+          PY
+          git add -- "$DEST/QA0_PUBLISH_COMMIT_FILES.tsv"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c qa0-publish
+          git commit -m "Publish QA0 harness and excerpt audit $GITHUB_RUN_ID [skip ci]"
+          PUSHED=0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin HEAD:main; then PUSHED=1; break; fi
+            git rebase --abort >/dev/null 2>&1 || true
+            sleep $((attempt * 2))
+          done
+          test "$PUSHED" = 1
+          PUBLISH_SHA="$(git rev-parse HEAD)"
+          RAW="https://raw.githubusercontent.com/$RESEARCH_REPO/$PUBLISH_SHA/$DEST/ACTIONS_RUN_SUMMARY.txt"
+          REPORT="https://raw.githubusercontent.com/$RESEARCH_REPO/$PUBLISH_SHA/$DEST/QA0_REPORT.md"
+          test "$(curl --silent --show-error --location -o /dev/null -w '%{http_code}' "$RAW")" = 200
+          test "$(curl --silent --show-error --location -o /dev/null -w '%{http_code}' "$REPORT")" = 200
+          echo "PUBLISH_SHA=$PUBLISH_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "$RAW" >> "$GITHUB_STEP_SUMMARY"
+          echo "$REPORT" >> "$GITHUB_STEP_SUMMARY"
+          echo "dest=$DEST" >> "$GITHUB_OUTPUT"
+
+      - name: Return QA0 audit result after evidence publication
+        if: always()
+        shell: bash
+        run: |
+          test "\${QA0_EXIT_CODE:-99}" = 0
+
+  qa4:
+    name: qa4-headless-readonly-control-trace
+    needs: [qa0]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      GH_TOKEN: \${{ github.token }}
+      RESEARCH_REPO: \${{ github.repository }}
+      WORK: /tmp/naruto-qa-private-\${{ github.run_id }}-\${{ github.run_attempt }}
+      OUT: /tmp/naruto-qa-output-\${{ github.run_id }}-\${{ github.run_attempt }}-runtime
+    steps:
+      - name: Checkout main after QA0 publication
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Prepare QA4 source and dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/qa" "$WORK/source" "$WORK/resume" "$OUT" "$WORK/pycache"
+          cp tools/qa/RunQA4Control.pytxt "$RUNNER_TEMP/qa/RunQA4Control.py"
+          python3 - "$RUNNER_TEMP/qa/RunQA4Control.py" "$WORK/pycache/RunQA4Control.pyc" <<'PY'
+          import py_compile,sys
+          py_compile.compile(sys.argv[1],cfile=sys.argv[2],doraise=True)
+          PY
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends unzip jq curl xvfb x11-utils zip git
+
+      - name: Restore checkpoint and pinned emulator inputs, then run two CONTROL launches
+        id: runtime
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p "$OUT"
+          set +e
+          (
+            set -euo pipefail
+            API="https://api.github.com/repos/$RESEARCH_REPO"
+            META="$WORK/source/checkpoint-artifact.json"
+            ZIP="$WORK/source/checkpoint-artifact.zip"
+            curl --fail --silent --show-error --location --max-time 60 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "$API/actions/artifacts/12482055310" -o "$META"
+            python3 - "$META" <<'PY'
+          import json,sys
+          j=json.load(open(sys.argv[1],encoding="utf-8"))
+          want={"id":12482055310,"name":"naruto-storymode-adaptive-player-private",
+                "size_in_bytes":11407011,
+                "digest":"sha256:a0f45156dfd489f24c8dc8e122c33a048c7b9ac34b935ac828523593d21ca2a8",
+                "expired":False}
+          for k,v in want.items():
+              if j.get(k)!=v:raise SystemExit("CHECKPOINT_ARTIFACT_METADATA_MISMATCH_"+k)
+          if j.get("workflow_run",{}).get("id")!=39907655833:raise SystemExit("CHECKPOINT_SOURCE_RUN_MISMATCH")
+          PY
+            curl --fail --silent --show-error --location --max-time 180 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "$API/actions/artifacts/12482055310/zip" -o "$ZIP"
+            test "$(stat -c %s "$ZIP")" = 11407011
+            echo "a0f45156dfd489f24c8dc8e122c33a048c7b9ac34b935ac828523593d21ca2a8  $ZIP" | sha256sum --check --status
+            unzip -p "$ZIP" adaptive-cycle-02-f180.sstate > "$WORK/resume/adaptive-cycle-02-f180.sstate"
+            test "$(stat -c %s "$WORK/resume/adaptive-cycle-02-f180.sstate")" = 21162799
+            echo "705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35  $WORK/resume/adaptive-cycle-02-f180.sstate" | sha256sum --check --status
+
+            RELEASE="$WORK/source/release.json"
+            curl --fail --silent --show-error --location --max-time 60 \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o "$RELEASE"
+            fetch_asset() {
+              name="$1"; dest="$2"; size="$3"; sha="$4"
+              id="$(jq -r --arg n "$name" '.assets[]? | select(.name==$n) | .id' "$RELEASE" | head -n 1)"
+              test -n "$id" && test "$id" != null
+              curl --fail --silent --show-error --location --max-time 600 \
+                -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" \
+                "$API/releases/assets/$id" -o "$dest"
+              test "$(stat -c %s "$dest")" = "$size"
+              echo "$sha  $dest" | sha256sum --check --status
+            }
+            fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage "$WORK/source/pcsx-redux.AppImage" 65747557 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
+            fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin "$WORK/source/game.bin" 325989552 58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88
+            fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue "$WORK/source/game.cue" 116 be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8
+            fetch_asset scph7502.zip "$WORK/source/scph7502.zip" 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a
+            python3 - "$WORK/source/scph7502.zip" "$WORK/source/bios.bin" "$WORK/source/game.cue" "$WORK/source/game-run.cue" <<'PY'
+          import hashlib,re,stat,sys,zipfile
+          from pathlib import Path
+          zpath,bios,cue,out=map(Path,sys.argv[1:])
+          with zipfile.ZipFile(zpath) as z:
+              candidates=[]
+              for info in z.infolist():
+                  p=Path(info.filename);mode=(info.external_attr>>16)&0xffff
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)):raise SystemExit("UNSAFE_BIOS_ARCHIVE")
+                  if not info.is_dir() and info.file_size==524288:candidates.append(info)
+              if len(candidates)!=1:raise SystemExit("BIOS_MEMBER_COUNT_MISMATCH")
+              raw=z.read(candidates[0])
+          if hashlib.sha256(raw).hexdigest()!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1":raise SystemExit("BIOS_SHA256_MISMATCH")
+          bios.write_bytes(raw);lines=[];n=0
+          for line in cue.read_text(encoding="utf-8-sig").splitlines():
+              if line.lstrip().upper().startswith("FILE "):
+                  m=re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$',line,re.I)
+                  if not m:raise SystemExit("CUE_FILE_DIRECTIVE_INVALID")
+                  line=m.group(1)+'"game.bin"'+m.group(2);n+=1
+              lines.append(line)
+          if n!=1:raise SystemExit("CUE_FILE_DIRECTIVE_COUNT="+str(n))
+          out.write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+            chmod +x "$WORK/source/pcsx-redux.AppImage"
+            cd "$WORK/source"
+            ./pcsx-redux.AppImage --appimage-extract > "$WORK/source/appimage-extract.log" 2>&1
+            APPDIR="$WORK/source/squashfs-root"
+            PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 | grep -E '/(pcsx-redux|pcsx-redux[^/]*)$' | head -n 1)"
+            test -n "$PCSX_BIN" && test -x "$PCSX_BIN"
+            mkdir -p "$WORK/capstone" "$WORK/ffmpeg-libs"
+            CAPSTONE="$(find -L "$APPDIR" -type f -name 'libcapstone.so.5' -print -quit)"
+            test -n "$CAPSTONE" && cp -L "$CAPSTONE" "$WORK/capstone/libcapstone.so.5"
+            while IFS= read -r -d '' lib; do cp -L "$lib" "$WORK/ffmpeg-libs/$(basename "$lib")"; done < <(find -L "$APPDIR" -type f \( -name 'libav*.so*' -o -name 'libsw*.so*' -o -name 'libpostproc.so*' \) -print0)
+            test -s "$WORK/ffmpeg-libs/libavformat.so.63"
+            Xvfb :99 -ac -screen 0 1280x800x24 +extension GLX +render -nolisten tcp > "$WORK/source/xvfb.log" 2>&1 &
+            echo $! > "$WORK/source/xvfb.pid"
+            export DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1
+            for n in $(seq 1 80); do xdpyinfo -display "$DISPLAY" >/dev/null 2>&1 && break; sleep .25; done
+            xdpyinfo -display "$DISPLAY" >/dev/null
+            export LD_LIBRARY_PATH="$WORK/capstone:$WORK/ffmpeg-libs:$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+            export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
+            export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
+            export QML2_IMPORT_PATH="$APPDIR/usr/qml"
+            set +e
+            python3 "$RUNNER_TEMP/qa/RunQA4Control.py" \
+              --pcsx "$PCSX_BIN" --bios "$WORK/source/bios.bin" --cue "$WORK/source/game-run.cue" \
+              --work "$WORK/runtime" --out "$OUT" --state "$WORK/resume/adaptive-cycle-02-f180.sstate"
+            RC=$?
+            set -e
+            exit "$RC"
+          )
+          RC=$?
+          echo "QA4_EXIT_CODE=$RC" >> "$GITHUB_ENV"
+          echo "exit_code=$RC" >> "$GITHUB_OUTPUT"
+          if [ ! -s "$OUT/QA4_RUNTIME_SUMMARY.txt" ]; then
+            {
+              echo "STATUS=TIDAK TAHU"
+              echo "REASON=artifact_expired_or_input_validation_or_runtime_restore_failed"
+              echo "SOURCE_RUN=39907655833"
+              echo "ARTIFACT_ID=12482055310"
+              echo "GAMEPLAY_INPUT=NONE"
+              echo "COLD_BOOT_FALLBACK=no"
+              echo "SETUP_EXIT_CODE=$RC"
+            } > "$OUT/QA4_RUNTIME_SUMMARY.txt"
+          fi
+
+      - name: Remove checkpoint, BIOS, disc, emulator, and temporary source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f "$WORK/source/xvfb.pid" ]; then kill "$(cat "$WORK/source/xvfb.pid")" 2>/dev/null || true; fi
+          rm -rf "$WORK" "$RUNNER_TEMP/qa"
+          test ! -e "$WORK"
+          echo "PRIVATE_INPUT_CLEANUP=PASS" > "$OUT/cleanup.txt"
+
+      - name: Publish QA4 trace and Actions summary
+        id: publish
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST="reports/stage1_economy/qa-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$DEST"
+          find "$OUT" -maxdepth 1 -type f \( -name 'QA4_*.txt' -o -name 'QA4_*.tsv' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
+          RC="\${QA4_EXIT_CODE:-TIDAK_TAHU}"
+          QA4_STATUS="$(sed -n 's/^STATUS=//p' "$DEST/QA4_RUNTIME_SUMMARY.txt" | head -n 1 || true)"
+          [ -n "$QA4_STATUS" ] || QA4_STATUS=TIDAK_TAHU
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" \
+            | jq -r '.jobs[] | select(.name=="qa4-headless-readonly-control-trace") | .id' | head -n 1)"
+          {
+            echo "STATUS=$QA4_STATUS"
+            echo "JOB=qa4-headless-readonly-control-trace"
+            echo "JOB_ID=$JOB_ID"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "EXIT_CODE=$RC"
+            echo "CHECKPOINT_RUN=39907655833"
+            echo "CHECKPOINT_ARTIFACT=12482055310"
+            echo "GAMEPLAY_INPUT=NONE"
+            echo "REGISTER_WRITE=NONE"
+            echo "MEMORY_WRITE=NONE"
+            echo "PRIVATE_INPUT_COMMITTED=no"
+            echo "RELEASES_MODIFIED=no"
+          } > "$DEST/ACTIONS_RUN_SUMMARY_QA4.txt"
+          git add -- "$DEST"
+          python3 - "$DEST" <<'PY'
+          import subprocess,sys
+          from pathlib import Path
+          dest=Path(sys.argv[1])
+          rows=subprocess.check_output(["git","diff","--cached","--name-status"],text=True).splitlines()
+          with (dest/"QA4_PUBLISH_COMMIT_FILES.tsv").open("w",encoding="utf-8",newline="") as f:
+              f.write("status\tpath\n")
+              for line in rows:
+                  status,path=line.split("\t",1);f.write(status+"\t"+path+"\n")
+              f.write("A\t"+str(dest/"QA4_PUBLISH_COMMIT_FILES.tsv")+"\n")
+          PY
+          git add -- "$DEST/QA4_PUBLISH_COMMIT_FILES.tsv"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c qa4-publish
+          git commit -m "Publish QA4 read-only CONTROL trace $GITHUB_RUN_ID [skip ci]"
+          PUSHED=0
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin HEAD:main; then PUSHED=1; break; fi
+            git rebase --abort >/dev/null 2>&1 || true
+            sleep $((attempt * 2))
+          done
+          test "$PUSHED" = 1
+          PUBLISH_SHA="$(git rev-parse HEAD)"
+          RAW="https://raw.githubusercontent.com/$RESEARCH_REPO/$PUBLISH_SHA/$DEST/ACTIONS_RUN_SUMMARY_QA4.txt"
+          REPORT="https://raw.githubusercontent.com/$RESEARCH_REPO/$PUBLISH_SHA/$DEST/QA4_RUNTIME_SUMMARY.txt"
+          test "$(curl --silent --show-error --location -o /dev/null -w '%{http_code}' "$RAW")" = 200
+          test "$(curl --silent --show-error --location -o /dev/null -w '%{http_code}' "$REPORT")" = 200
+          echo "PUBLISH_SHA=$PUBLISH_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "$RAW" >> "$GITHUB_STEP_SUMMARY"
+          echo "$REPORT" >> "$GITHUB_STEP_SUMMARY"
+          echo "dest=$DEST" >> "$GITHUB_OUTPUT"
+
+      - name: Return QA4 runtime result after evidence publication
+        if: always()
+        shell: bash
+        run: |
+          test "\${QA4_EXIT_CODE:-99}" = 0
