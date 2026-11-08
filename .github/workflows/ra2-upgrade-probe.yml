@@ -137,7 +137,7 @@ jobs:
             export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
             export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
             export QML2_IMPORT_PATH="$APPDIR/usr/qml"
-            python3 tools/ra/RunRA2UpgradeProbe.py --pcsx "$PCSX_BIN" --bios "$WORK/source/bios.bin" --cue "$WORK/source/game-run.cue" --work "$WORK/runtime" --out "$OUT" --state "$WORK/resume/adaptive-cycle-02-f180.sstate"
+            python3 "$GITHUB_WORKSPACE/tools/ra/RunRA2UpgradeProbe.py" --pcsx "$PCSX_BIN" --bios "$WORK/source/bios.bin" --cue "$WORK/source/game-run.cue" --work "$WORK/runtime" --out "$OUT" --state "$WORK/resume/adaptive-cycle-02-f180.sstate"
           )
           RC=$?
           echo "RA2_EXIT_CODE=$RC" >> "$GITHUB_ENV"
