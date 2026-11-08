@@ -1,0 +1,6 @@
+status	path
+M	reports/stage1_economy/ra2-run-42536155267/attempt-1/ACTIONS_RUN_SUMMARY.txt
+M	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_RUNTIME_SUMMARY.txt
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_UPGRADE_ACTIONS.tsv
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_RESULT_NOTES.md
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_RESULT_COMMIT_FILES.tsv
