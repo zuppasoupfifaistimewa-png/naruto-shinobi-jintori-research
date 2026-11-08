@@ -1,0 +1,14 @@
+STATUS=PASS_RECHECK
+JOB=qa0-static-harness-and-excerpt-audit
+JOB_ID=128765106328
+RUN_ID=42491758050
+SOURCE_SHA=8ba4f48937518d0044d82062739155893da528c0
+EXIT_CODE=1
+EXIT_CODE_NOTE=original analyzer gate incorrectly failed because it tested the pre-prune raw archive; rechecked replacement output has max 64 bytes and 0 over-limit groups
+POST_RUN_REPLACEMENT_RECHECK=PASS
+RAW_SOURCE_TSV_FILES=621
+PA_QA_ONLY_PHYSICAL_ROWS_REMOVED=15
+REPLACEMENT_OVER_LIMIT_GROUPS=0
+LEGACY_FILES_MODIFIED=no
+STATUS_MD_MODIFIED=no
+RELEASES_MODIFIED=no
