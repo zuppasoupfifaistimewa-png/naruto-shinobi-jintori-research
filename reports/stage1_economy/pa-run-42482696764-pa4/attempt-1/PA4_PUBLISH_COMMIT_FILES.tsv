@@ -1,0 +1,13 @@
+status	path
+A	reports/stage1_economy/pa-run-42482696764-pa4/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/pa-run-42482696764-pa4/attempt-1/PA0_HARNESS_SELFTEST.txt
+A	reports/stage1_economy/pa-run-42482696764-pa4/attempt-1/PA0_PYCOMPILE.tsv
+A	reports/stage1_economy/pa-run-42482696764-pa4/attempt-1/PA4_LAUNCH1_LOG.txt
+A	reports/stage1_economy/pa-run-42482696764-pa4/attempt-1/PA4_LAUNCH1_M_REGION.tsv
+A	reports/stage1_economy/pa-run-42482696764-pa4/attempt-1/PA4_LAUNCH1_SCALARS.tsv
+A	reports/stage1_economy/pa-run-42482696764-pa4/attempt-1/PA4_LAUNCH2_LOG.txt
+A	reports/stage1_economy/pa-run-42482696764-pa4/attempt-1/PA4_LAUNCH2_M_REGION.tsv
+A	reports/stage1_economy/pa-run-42482696764-pa4/attempt-1/PA4_LAUNCH2_SCALARS.tsv
+A	reports/stage1_economy/pa-run-42482696764-pa4/attempt-1/PA4_RUNTIME_SUMMARY.txt
+A	reports/stage1_economy/pa-run-42482696764-pa4/attempt-1/cleanup.txt
+A	reports/stage1_economy/pa-run-42482696764-pa4/attempt-1/PA4_PUBLISH_COMMIT_FILES.tsv
