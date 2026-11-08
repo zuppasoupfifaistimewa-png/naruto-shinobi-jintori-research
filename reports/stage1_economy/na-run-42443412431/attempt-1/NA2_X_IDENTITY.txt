@@ -1,0 +1,5 @@
+M_LW_REFERENCES=2085
+M_USE_ROWS=2822
+M_DERIVED_STORE_CANDIDATES=964
+Cell candidate M+0x10+B+144*I; B=u8[0x8013EB1C], I=u16[0x8013EA6E].
+x=d vs effect/item/action ID=TIDAK TAHU; this is bounded linear-use recognition, not CFG/alias closure. Zero candidates does not prove no writers.
