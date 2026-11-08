@@ -252,7 +252,7 @@ def record_at(blob, pc):
     return {"base":pc,"plus4":w[1],"p1":w[2],"p2":w[3],"p3":w[4],"name":n,"raw":raw}
 
 def table_scan(exe, code_sets):
-    lo,hi=0x80055780,0x80055C00
+    lo,hi=EXE_BASE,EXE_BASE+len(exe)-EXE_FILE
     candidates={}
     for pc in range(lo,hi,4):
         r=record_at(exe,pc)
@@ -280,7 +280,7 @@ def table_scan(exe, code_sets):
     return rows,groups,(start,end),snippet,candidates,bool(main)
 
 def scan_code_users(codes, valid, table_start, table_end, ptr_values):
-    rows=[]; arithmetic=[]; low=0x80055780; high=0x80055C00
+    rows=[]; arithmetic=[]; low=table_start or EXE_BASE; high=table_end or (EXE_BASE+len(code)*4)
     for tag,code in codes:
         lo=EXE_BASE if tag=="EXE" else ENTRY_BASE
         for pc,i in sorted(code.items()):
@@ -588,7 +588,7 @@ def main():
     write_tsv("MA1_SCENE_TABLE_EXCERPT.tsv",snippet,["image","pc","file_offset","bytes","instruksi","excerpt_id"])
     group_text=[f"GROUP_{n}: start={h32(g[0])} end_exclusive={h32(g[-1]+0x1c)} records={len(g)} stride=0x1C" for n,g in enumerate(scene_groups)]
     write_txt("MA1_SCENE_TABLE_BOUNDARY.txt",
-        "SCAN_RANGE=0x80055780..0x80055BFC\nANCHOR=0x800558C0\n"+
+        "SCAN_RANGE="+h32(EXE_BASE)+".."+h32(EXE_BASE+len(exe)-EXE_FILE-4)+"\nANCHOR=0x800558C0\n"+
         "ANCHOR_GROUP_FOUND="+("YES" if anchor_found else "NO")+"\n"+
         "PATTERN=word+0 zero; word+4 small integer; +8/+C/+10 pointer-like; +14 8-byte uppercase/underscore label\n"+
         "CANDIDATE_GROUPS\n"+("\n".join(group_text) if group_text else "TIDAK TAHU")+"\n"+
