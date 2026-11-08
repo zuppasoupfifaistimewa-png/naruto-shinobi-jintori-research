@@ -19,7 +19,17 @@ def read_values(path):
             raise ValueError("BAD_TSV_COLUMNS:"+str(rd.fieldnames))
         out={}
         for r in rd:
-            a=r["ram_addr"].upper()
+            raw_addr=r["ram_addr"].strip()
+            if not raw_addr.lower().startswith("0x"):
+                raise ValueError("RAM_ADDR_NOT_HEX:"+raw_addr)
+            digits=raw_addr[2:]
+            try:
+                int(digits,16)
+            except ValueError:
+                raise ValueError("RAM_ADDR_INVALID_HEX:"+raw_addr)
+            if len(digits)!=8:
+                raise ValueError("RAM_ADDR_WIDTH_NOT_32BIT:"+raw_addr)
+            a="0x"+digits.upper()
             v=int(r["values_dec"],10)
             if a in out: raise ValueError("DUPLICATE_RAM_ADDR:"+a)
             out[a]=v
