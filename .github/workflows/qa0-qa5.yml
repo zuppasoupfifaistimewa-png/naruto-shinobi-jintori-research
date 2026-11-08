@@ -21,9 +21,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      GH_TOKEN: \${{ github.token }}
-      RESEARCH_REPO: \${{ github.repository }}
-      OUT: /tmp/naruto-qa-output-\${{ github.run_id }}-\${{ github.run_attempt }}-static
+      GH_TOKEN: ${{ github.token }}
+      RESEARCH_REPO: ${{ github.repository }}
+      OUT: /tmp/naruto-qa-output-${{ github.run_id }}-${{ github.run_attempt }}-static
     steps:
       - name: Checkout the commit under test
         uses: actions/checkout@v4
@@ -78,7 +78,7 @@ jobs:
           DEST="reports/stage1_economy/qa-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$DEST"
           find "$OUT" -maxdepth 1 -type f \( -name 'QA0_*.txt' -o -name 'QA0_*.tsv' -o -name 'QA0_*.md' \) -exec cp {} "$DEST/" \;
-          RC="\${QA0_EXIT_CODE:-TIDAK_TAHU}"
+          RC="${QA0_EXIT_CODE:-TIDAK_TAHU}"
           AUDIT_STATUS="$(sed -n 's/^STATUS=//p' "$DEST/QA0_EXCERPT_AUDIT.txt" | head -n 1 || true)"
           [ -n "$AUDIT_STATUS" ] || AUDIT_STATUS=TIDAK_TAHU
           JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
@@ -134,7 +134,7 @@ jobs:
         if: always()
         shell: bash
         run: |
-          test "\${QA0_EXIT_CODE:-99}" = 0
+          test "${QA0_EXIT_CODE:-99}" = 0
 
   qa4:
     name: qa4-headless-readonly-control-trace
@@ -143,10 +143,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     env:
-      GH_TOKEN: \${{ github.token }}
-      RESEARCH_REPO: \${{ github.repository }}
-      WORK: /tmp/naruto-qa-private-\${{ github.run_id }}-\${{ github.run_attempt }}
-      OUT: /tmp/naruto-qa-output-\${{ github.run_id }}-\${{ github.run_attempt }}-runtime
+      GH_TOKEN: ${{ github.token }}
+      RESEARCH_REPO: ${{ github.repository }}
+      WORK: /tmp/naruto-qa-private-${{ github.run_id }}-${{ github.run_attempt }}
+      OUT: /tmp/naruto-qa-output-${{ github.run_id }}-${{ github.run_attempt }}-runtime
     steps:
       - name: Checkout main after QA0 publication
         uses: actions/checkout@v4
@@ -306,7 +306,7 @@ jobs:
           DEST="reports/stage1_economy/qa-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$DEST"
           find "$OUT" -maxdepth 1 -type f \( -name 'QA4_*.txt' -o -name 'QA4_*.tsv' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
-          RC="\${QA4_EXIT_CODE:-TIDAK_TAHU}"
+          RC="${QA4_EXIT_CODE:-TIDAK_TAHU}"
           QA4_STATUS="$(sed -n 's/^STATUS=//p' "$DEST/QA4_RUNTIME_SUMMARY.txt" | head -n 1 || true)"
           [ -n "$QA4_STATUS" ] || QA4_STATUS=TIDAK_TAHU
           JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
@@ -365,4 +365,4 @@ jobs:
         if: always()
         shell: bash
         run: |
-          test "\${QA4_EXIT_CODE:-99}" = 0
+          test "${QA4_EXIT_CODE:-99}" = 0
