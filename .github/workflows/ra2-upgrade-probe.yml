@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/ra2-upgrade-probe.yml"
-      - "tools/ra/RunRA2UpgradeProbe.py"
+      - "tools/ra/RunRA2UpgradeProbe.pytxt"
 
 permissions:
   contents: write
@@ -36,11 +36,14 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$WORK"/{source,resume} "$OUT"
-          python3 -m py_compile tools/ra/RunRA2UpgradeProbe.py
+          mkdir -p "$RUNNER_TEMP/ra2"
+          cp tools/ra/RunRA2UpgradeProbe.pytxt "$RUNNER_TEMP/ra2/RunRA2UpgradeProbe.py"
+          python3 -m py_compile "$RUNNER_TEMP/ra2/RunRA2UpgradeProbe.py"
           python3 - <<'PY'
           import importlib.util
+          import os
           from pathlib import Path
-          spec=importlib.util.spec_from_file_location("ra2", "tools/ra/RunRA2UpgradeProbe.py")
+          spec=importlib.util.spec_from_file_location("ra2", str(Path(os.environ["RUNNER_TEMP"])/"ra2"/"RunRA2UpgradeProbe.py"))
           m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
           print("\n".join(m.self_test(Path.cwd())))
           PY
@@ -137,7 +140,7 @@ jobs:
             export QT_PLUGIN_PATH="$APPDIR/usr/plugins"
             export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
             export QML2_IMPORT_PATH="$APPDIR/usr/qml"
-            python3 "$GITHUB_WORKSPACE/tools/ra/RunRA2UpgradeProbe.py" --pcsx "$PCSX_BIN" --bios "$WORK/source/bios.bin" --cue "$WORK/source/game-run.cue" --work "$WORK/runtime" --out "$OUT" --state "$WORK/resume/adaptive-cycle-02-f180.sstate"
+            python3 "$RUNNER_TEMP/ra2/RunRA2UpgradeProbe.py" --pcsx "$PCSX_BIN" --bios "$WORK/source/bios.bin" --cue "$WORK/source/game-run.cue" --work "$WORK/runtime" --out "$OUT" --state "$WORK/resume/adaptive-cycle-02-f180.sstate"
           )
           RC=$?
           echo "RA2_EXIT_CODE=$RC" >> "$GITHUB_ENV"
