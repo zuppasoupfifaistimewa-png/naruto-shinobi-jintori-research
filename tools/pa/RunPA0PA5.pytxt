@@ -491,7 +491,7 @@ def static_analysis():
             if z["op"] in LPADS or z["op"] in STORES:
                 a=ea(code,z,lo)
                 if a in (0x8013EA74,0x8013EA6E,0x8013EA88,0x80139EFC):
-                    global_rows.append({"image":tag,"pc":h(q),"file_offset":h(z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruksi":z["text"],"effective_address":h(a),"class":"LPAD" if z["op"] in LPADS else "STORE"})
+                    global_rows.append({"image":tag,"pc":h(q),"file_offset":h((EXE_FILE if tag=="EXE" else ENTRY_FILE)+z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruksi":z["text"],"effective_address":h(a),"class":"LPAD" if z["op"] in LPADS else "STORE"})
     write_tsv("PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv",global_rows,["image","pc","file_offset","bytes","instruksi","effective_address","class"])
     scale=[]
     for q,z in CI.items():
@@ -502,12 +502,12 @@ def static_analysis():
             if b["rs"]==a["rd"] or b["rt"]==a["rd"]:
                 idx=b["rt"] if b["rs"]==a["rd"] else b["rs"]
                 if idx==a["rt"]:
-                    scale.append({"pc":h(q),"file_offset":h(a["off"]),"bytes":" ".join(f"{x:02X}" for x in a["raw"]+b["raw"]+c["raw"]),"instruksi":a["text"]+" ; "+b["text"]+" ; "+c["text"],"formula":"(I<<3 + I)<<4 = 144*I","confidence":"pattern only; pointer destination/use not proven"})
+                    scale.append({"image":"ENTRY1","pc":h(q),"file_offset":h(ENTRY_FILE+a["off"]),"bytes":" ".join(f"{x:02X}" for x in a["raw"]+b["raw"]+c["raw"]),"instruksi":a["text"]+" ; "+b["text"]+" ; "+c["text"],"formula":"(I<<3 + I)<<4 = 144*I","confidence":"pattern only; pointer destination/use not proven"})
         if a["op"]==0 and a["fn"] in (0x18,0x19):
             ca=const_reg(CI,a["rt"],q,ENTRY_BASE); cb=const_reg(CI,a["rs"],q,ENTRY_BASE)
             if ca==0x90 or cb==0x90:
-                scale.append({"pc":h(q),"file_offset":h(a["off"]),"bytes":" ".join(f"{x:02X}" for x in a["raw"]),"instruksi":a["text"],"formula":"mult operand constant 0x90","confidence":"pattern only; pointer destination/use not proven"})
-    write_tsv("PA2_MATRIX_144_SCALE_CANDIDATES.tsv",scale,["pc","file_offset","bytes","instruksi","formula","confidence"])
+                scale.append({"image":"ENTRY1","pc":h(q),"file_offset":h(ENTRY_FILE+a["off"]),"bytes":" ".join(f"{x:02X}" for x in a["raw"]),"instruksi":a["text"],"formula":"mult operand constant 0x90","confidence":"pattern only; pointer destination/use not proven"})
+    write_tsv("PA2_MATRIX_144_SCALE_CANDIDATES.tsv",scale,["image","pc","file_offset","bytes","instruksi","formula","confidence"])
     # All candidate M load/use references and calls receiving pointer candidates, without claiming closure.
     mp=[]; mi=[]
     for q,z in CI.items():
@@ -527,15 +527,15 @@ def static_analysis():
         if z["op"] in STORES:
             bex=sym_reg(CI,z["rs"],q,ENTRY_BASE)
             if "8013EA74" in bex:
-                derived.append({"pc":h(q),"file_offset":h(z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruction":z["text"],"base_expression":bex,"source_expression":sym_reg(CI,z["rt"],q,ENTRY_BASE),"kind":"STORE_THROUGH_M_ALIAS"})
+                derived.append({"image":"ENTRY1","pc":h(q),"file_offset":h(ENTRY_FILE+z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruction":z["text"],"base_expression":bex,"source_expression":sym_reg(CI,z["rt"],q,ENTRY_BASE),"kind":"STORE_THROUGH_M_ALIAS"})
         if z["op"]==3:
             ax=[]
             for rr in (4,5,6,7):
                 ex=sym_reg(CI,rr,q,ENTRY_BASE)
                 if "8013EA74" in ex: ax.append(reg(rr)+"="+ex)
             if ax:
-                derived.append({"pc":h(q),"file_offset":h(z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruction":z["text"],"base_expression":";".join(ax),"source_expression":"TIDAK TAHU","kind":"CALL_RECEIVES_M_ALIAS"})
-    write_tsv("PA2_M_DERIVED_STORE_AND_CALL_CENSUS.tsv",derived,["pc","file_offset","bytes","instruction","base_expression","source_expression","kind"])
+                derived.append({"image":"ENTRY1","pc":h(q),"file_offset":h(ENTRY_FILE+z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruction":z["text"],"base_expression":";".join(ax),"source_expression":"TIDAK TAHU","kind":"CALL_RECEIVES_M_ALIAS"})
+    write_tsv("PA2_M_DERIVED_STORE_AND_CALL_CENSUS.tsv",derived,["image","pc","file_offset","bytes","instruction","base_expression","source_expression","kind"])
     write_tsv("PA2_M_POINTER_CALLS.tsv",mp,["load_pc","call_pc","target","pointer_register","delay_slot","classification"])
     # PA2(iii): stores to selected globals including the explicitly required E3B1C candidate.
     writers=[]
@@ -545,10 +545,10 @@ def static_analysis():
             if z["op"] not in STORES:continue
             a=ea(code,z,lo)
             if a in (0x8013EA6E,0x8013EA88,0x80139EFC):
-                writers.append({"image":tag,"pc":h(q),"file_offset":h(z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruksi":z["text"],"target":h(a),"address_resolution":"COMPUTED","source":reg(z["rt"]),"source_expression":sym_reg(code,z["rt"],q,lo),"ghidra_code":"YES" if q in VALID[tag] else "RAW_ONLY","required_E3B1C":"YES" if q==0x800E3B1C else "NO"})
+                writers.append({"image":tag,"pc":h(q),"file_offset":h((EXE_FILE if tag=="EXE" else ENTRY_FILE)+z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruksi":z["text"],"target":h(a),"address_resolution":"COMPUTED","source":reg(z["rt"]),"source_expression":sym_reg(code,z["rt"],q,lo),"ghidra_code":"YES" if q in VALID[tag] else "RAW_ONLY","required_E3B1C":"YES" if q==0x800E3B1C else "NO"})
     if 0x800E3B1C in CI and CI[0x800E3B1C]["op"] in STORES and not any(x["pc"]==h(0x800E3B1C) for x in writers):
         z=CI[0x800E3B1C]; a=ea(CI,z,ENTRY_BASE)
-        writers.append({"image":"ENTRY1","pc":h(0x800E3B1C),"file_offset":h(z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruksi":z["text"],"target":h(a) if a is not None else "TIDAK TAHU","address_resolution":"COMPUTED" if a is not None else "TIDAK TAHU: required E3B1C store PC retained","source":reg(z["rt"]),"source_expression":sym_reg(CI,z["rt"],0x800E3B1C,ENTRY_BASE),"ghidra_code":"YES" if 0x800E3B1C in GI else "RAW_ONLY","required_E3B1C":"YES"})
+        writers.append({"image":"ENTRY1","pc":h(0x800E3B1C),"file_offset":h(ENTRY_FILE+z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruksi":z["text"],"target":h(a) if a is not None else "TIDAK TAHU","address_resolution":"COMPUTED" if a is not None else "TIDAK TAHU: required E3B1C store PC retained","source":reg(z["rt"]),"source_expression":sym_reg(CI,z["rt"],0x800E3B1C,ENTRY_BASE),"ghidra_code":"YES" if 0x800E3B1C in GI else "RAW_ONLY","required_E3B1C":"YES"})
     write_tsv("PA2_SELECTOR_STORE_WRITERS.tsv",writers,["image","pc","file_offset","bytes","instruksi","target","address_resolution","source","source_expression","ghidra_code","required_E3B1C"])
     ea6e=[x for x in writers if x["target"]==h(0x8013EA6E)]
     ea88=[x for x in writers if x["target"]==h(0x8013EA88)]
@@ -556,7 +556,7 @@ def static_analysis():
     # Ensure the historically missed E3B1C store PC is retained even if its base alias does not resolve.
     if 0x800E3B1C in CI and CI[0x800E3B1C]["op"] in STORES and not any(x["pc"]==h(0x800E3B1C) for x in writers):
         z=CI[0x800E3B1C]
-        writers.append({"image":"ENTRY1","pc":h(0x800E3B1C),"file_offset":h(z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruksi":z["text"],"target":"TIDAK TAHU: required E3B1C store retained; EA6E alias needs proof","source":reg(z["rt"]),"source_expression":sym_reg(CI,z["rt"],0x800E3B1C,ENTRY_BASE),"ghidra_code":"YES" if 0x800E3B1C in GI else "RAW_ONLY","required_E3B1C":"YES"})
+        writers.append({"image":"ENTRY1","pc":h(0x800E3B1C),"file_offset":h(ENTRY_FILE+z["off"]),"bytes":" ".join(f"{x:02X}" for x in z["raw"]),"instruksi":z["text"],"target":"TIDAK TAHU: required E3B1C store retained; EA6E alias needs proof","source":reg(z["rt"]),"source_expression":sym_reg(CI,z["rt"],0x800E3B1C,ENTRY_BASE),"ghidra_code":"YES" if 0x800E3B1C in GI else "RAW_ONLY","required_E3B1C":"YES"})
         write_tsv("PA2_SELECTOR_STORE_WRITERS.tsv",writers,["image","pc","file_offset","bytes","instruksi","target","source","source_expression","ghidra_code","required_E3B1C"])
     # PA2(iv): v0 at stores; branch entries, calls, and definitions in split instruction windows.
     vstores=[0x800D77C4,0x800D7D4C,0x800E4840]; vrows=[]; vw=[]
