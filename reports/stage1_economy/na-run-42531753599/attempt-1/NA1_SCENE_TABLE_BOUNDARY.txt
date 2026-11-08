@@ -1,0 +1,11 @@
+SCAN_RANGE=0x80010000..0x8006D7FC
+ANCHOR=0x800558A4
+ANCHOR_GROUP_FOUND=YES
+PATTERN=word+0 zero; word+4 small integer; +8/+C/+10 pointer-like; +14 8-byte uppercase/underscore label
+CANDIDATE_GROUPS
+GROUP_0: start=0x800558A4 end_exclusive=0x80055CE8 records=39 stride=0x1C
+TABLE_START=0x800558A4
+TABLE_END_EXCLUSIVE=0x80055CE8
+PREVIOUS_STRIDE_RECORD_VALID=NO
+NEXT_STRIDE_RECORD_VALID=NO
+NOTE=Only the stride-0x1C group containing the anchor is treated as the scene-table candidate; other groups remain separate candidates.
