@@ -21,10 +21,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
-      GH_TOKEN: \${{ github.token }}
-      RESEARCH_REPO: \${{ github.repository }}
-      WORK: /tmp/naruto-ra2-\${{ github.run_id }}-\${{ github.run_attempt }}
-      OUT: /tmp/naruto-ra2-output-\${{ github.run_id }}-\${{ github.run_attempt }}
+      GH_TOKEN: ${{ github.token }}
+      RESEARCH_REPO: ${{ github.repository }}
+      WORK: /tmp/naruto-ra2-${{ github.run_id }}-${{ github.run_attempt }}
+      OUT: /tmp/naruto-ra2-output-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Checkout scripts
         uses: actions/checkout@v4
@@ -173,7 +173,7 @@ jobs:
           DEST="reports/stage1_economy/ra2-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$DEST"
           find "$OUT" -maxdepth 1 -type f \( -name 'RA2_*.txt' -o -name 'RA2_*.tsv' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
-          RC="\${RA2_EXIT_CODE:-TIDAK_TAHU}"
+          RC="${RA2_EXIT_CODE:-TIDAK_TAHU}"
           STATUS="$(sed -n 's/^STATUS=//p' "$DEST/RA2_RUNTIME_SUMMARY.txt" | head -n 1 || true)"
           [ -n "$STATUS" ] || STATUS=BELUM
           JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="ra2-two-identical-headless-upgrade-confirmation-launches") | .id' | head -n 1)"
@@ -216,4 +216,4 @@ jobs:
         if: always()
         shell: bash
         run: |
-          test "\${RA2_EXIT_CODE:-99}" = 0
+          test "${RA2_EXIT_CODE:-99}" = 0
