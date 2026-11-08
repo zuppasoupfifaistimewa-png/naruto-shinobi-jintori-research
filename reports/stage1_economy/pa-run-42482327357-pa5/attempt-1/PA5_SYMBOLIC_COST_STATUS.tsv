@@ -1,0 +1,6 @@
+premise	status	result
+DN1 lookup X->LV1-LV5	TUNTAS K4 (baseline)	415 record/12 resource; tabel lookup bukan formula biaya transaksi.
+M region and scalar consistency	TIDAK TAHU	PA4_DEST_MISSING; bytes=0; SHA256 launch1=TIDAK TAHU; launch2=TIDAK TAHU
+H1 x=d	BELUM K1	TIDAK TAHU; no independent d/x transaction pair.
+H2 x=effect_id	BELUM K1	TIDAK TAHU; effect-ID semantic map is absent.
+upgrade cost for jump d>=2	BELUM K1	TIDAK TAHU; symbolic debit/charge relation not closed.

@@ -1,0 +1,42 @@
+sha	author	class	status	path	subject
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/ACTIONS_RUN_SUMMARY.txt	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA0_ANALYZER_EXIT.txt	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA0_HARNESS_SELFTEST.txt	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA0_PA5_REPORT.md	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA0_PUBLISH_COMMIT_FILES.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA0_PYCOMPILE.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA1_CALLSITE_A2_A3.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA1_CALLSITE_INCOMING_EDGES.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA1_CALL_WINDOWS.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA1_F3658_A2_A3_FULL_FUNCTION_CENSUS.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA1_SCENE_BASE_VALUE_CONSUMERS.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA1_SCENE_CHAIN.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA1_SCENE_POSSIBLE_CALLS.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_GP_118_SOURCE_TRACE.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_GP_118_WRITERS.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_HELPER_800154D4.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_MATRIX_144_SCALE_CANDIDATES.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_M_DERIVED_STORE_AND_CALL_CENSUS.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_M_POINTER_CALLS.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_NA_SUMMARY_RECONCILIATION.txt	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_S0_CELL_READ.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_SELECTOR_STORE_WRITERS.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_V0_STORE_FLOW.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA_GHIDRA_DIAGNOSTICS.txt	Publish PA0-PA3 static audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	BOT	A	reports/stage1_economy/pa-run-42482327357-static/attempt-1/cleanup.txt	Publish PA0-PA3 static audit 42482327357 [skip ci]
+9c55c9ded9663b0acb8bb7c0439585db94aaa6bb	zuppasoupfifaistimewa-png	HUMAN	M	.github/workflows/pa0-pa5.yml	Fix PA workflow shell escapes and Python compile steps
+8a48b8769115173e6b4f0bf1448a4d9d27500ada	zuppasoupfifaistimewa-png	HUMAN	A	.github/workflows/pa0-pa5.yml	Add PA0-PA5 isolated harness repair and CONTROL workflow
+8a48b8769115173e6b4f0bf1448a4d9d27500ada	zuppasoupfifaistimewa-png	HUMAN	A	tools/pa/PA0_HarnessSelfTest.pytxt	Add PA0-PA5 isolated harness repair and CONTROL workflow
+8a48b8769115173e6b4f0bf1448a4d9d27500ada	zuppasoupfifaistimewa-png	HUMAN	A	tools/pa/RunPA0PA5.pytxt	Add PA0-PA5 isolated harness repair and CONTROL workflow
+8a48b8769115173e6b4f0bf1448a4d9d27500ada	zuppasoupfifaistimewa-png	HUMAN	A	tools/pa/RunPA4Control.pytxt	Add PA0-PA5 isolated harness repair and CONTROL workflow
+8a48b8769115173e6b4f0bf1448a4d9d27500ada	zuppasoupfifaistimewa-png	HUMAN	A	tools/pa/RunPA5Symbolic.pytxt	Add PA0-PA5 isolated harness repair and CONTROL workflow
+3f730c73dc628d02f360b7ac12961e6f3e4b1584	zuppasoupfifaistimewa-png	HUMAN	A	reports/stage1_economy/oa-run-42478491400/attempt-1/ACTIONS_RUN_SUMMARY.txt	Publish OA0-OA5 partial audit and verified CONTROL result [skip ci]
+3f730c73dc628d02f360b7ac12961e6f3e4b1584	zuppasoupfifaistimewa-png	HUMAN	A	reports/stage1_economy/oa-run-42478491400/attempt-1/OA0_AGGREGATE_EXCERPT_AUDIT.txt	Publish OA0-OA5 partial audit and verified CONTROL result [skip ci]
+3f730c73dc628d02f360b7ac12961e6f3e4b1584	zuppasoupfifaistimewa-png	HUMAN	A	reports/stage1_economy/oa-run-42478491400/attempt-1/OA0_COMMIT_LEDGER.tsv	Publish OA0-OA5 partial audit and verified CONTROL result [skip ci]
+3f730c73dc628d02f360b7ac12961e6f3e4b1584	zuppasoupfifaistimewa-png	HUMAN	A	reports/stage1_economy/oa-run-42478491400/attempt-1/OA0_DELETED_ROWS.tsv	Publish OA0-OA5 partial audit and verified CONTROL result [skip ci]
+3f730c73dc628d02f360b7ac12961e6f3e4b1584	zuppasoupfifaistimewa-png	HUMAN	A	reports/stage1_economy/oa-run-42478491400/attempt-1/OA0_OA5_REPORT.md	Publish OA0-OA5 partial audit and verified CONTROL result [skip ci]
+3f730c73dc628d02f360b7ac12961e6f3e4b1584	zuppasoupfifaistimewa-png	HUMAN	A	reports/stage1_economy/oa-run-42478491400/attempt-1/OA0_PUBLISH_COMMIT_FILES.txt	Publish OA0-OA5 partial audit and verified CONTROL result [skip ci]
+3f730c73dc628d02f360b7ac12961e6f3e4b1584	zuppasoupfifaistimewa-png	HUMAN	A	reports/stage1_economy/oa-run-42478491400/attempt-1/OA0_RUN_LEDGER.tsv	Publish OA0-OA5 partial audit and verified CONTROL result [skip ci]
+3f730c73dc628d02f360b7ac12961e6f3e4b1584	zuppasoupfifaistimewa-png	HUMAN	A	reports/stage1_economy/oa-run-42478491400/attempt-1/OA4_RUNTIME_SUMMARY.txt	Publish OA0-OA5 partial audit and verified CONTROL result [skip ci]
