@@ -252,6 +252,21 @@ def strip_crossing_rows(root):
         details.append("UNAUTHORIZED_OVERLIMIT="+(";".join(f"{im}:{h(a)}..{h(b-1)}={b-a}B" for im,a,b in unauthorized)))
     if allowed_unsplit:
         details.append("AUTHORIZED_BUT_UNSPLIT="+(";".join(f"{im}:{h(a)}..{h(b-1)}={b-a}B" for im,a,b in allowed_unsplit)))
+    origin_rows=[]
+    final_rows=excerpt_rows(root,True)
+    for image,a,b in remaining:
+        for z in final_rows:
+            if z["image"]!=image or z["pc"]>=b or z["end"]<=a:
+                continue
+            try:
+                shown=str(z["path"].relative_to(Path.cwd()))
+            except ValueError:
+                shown="PA_CURRENT_OUT/"+z["path"].name if z["path"].parent==OUT else str(z["path"])
+            origin_rows.append({"image":image,"group_start_pc":h(a),"group_end_pc_exclusive":h(b),
+              "group_bytes":b-a,"source_file":shown,"source_line":z["line"],"row_pc":h(z["pc"]),
+              "row_end_pc_exclusive":h(z["end"]),"row_bytes":len(z["raw"]),"excerpt_id":z["excerpt_id"]})
+    write_tsv("PA0_OVERLIMIT_ORIGINS.tsv",origin_rows,
+      ["image","group_start_pc","group_end_pc_exclusive","group_bytes","source_file","source_line","row_pc","row_end_pc_exclusive","row_bytes","excerpt_id"])
     write_txt("PA0_EXCERPT_STRIP_STATUS.txt",
       "STATUS="+("PASS" if ok else "FAIL")+"\\n"+
       "DELETED_ROWS="+str(len(removed))+"\\n"+
@@ -674,7 +689,7 @@ def static_analysis():
       "Entry 1 SHA-256: "+ENTRY_SHA,
       "",
       "## Ringkasan status",
-      f"- PA0: {'SEBAGIAN K2' if stripok and auditok and fail==0 else 'SEBAGIAN K1'} — excerpt strip={'PASS' if stripok else 'FAIL'}, aggregate max={maxb}B, pelanggaran={over}, validasi raw/offset/decode={checked}/{checked} (fail={fail}), py_compile={pycount}.",
+      f"- PA0: {'TUNTAS K4' if stripok and auditok and fail==0 else ('SEBAGIAN K2' if fail==0 and checked>0 else 'SEBAGIAN K1')} — self-test PASS; validasi raw/offset/decode={checked}/{checked} (fail={fail}); excerpt strip={'PASS' if stripok else 'FAIL'}, aggregate max={maxb}B, pelanggaran={over}, py_compile={pycount}.",
       f"- PA1: SEBAGIAN K2 — tiga callsite dan seluruh edge statis yang dapat dipulihkan dicatat; klasifikasi a2/a3, consumer base table dan indirect dispatch tetap dibatasi oleh CFG/alias closure.",
       f"- PA2: SEBAGIAN K2 — read selector, pointer M references, 144*I pattern, global stores dan call/branch paths dicensus; writer/loader M+0x10+B+144*I tidak dianggap tertutup tanpa proof chain.",
       f"- PA3: SEBAGIAN K2 — B24C8 direct CFG reachability serta 12 target-register chains dicatat; table/global indirect targets tetap TIDAK TAHU bila pointer content dinamis.",
@@ -682,7 +697,7 @@ def static_analysis():
       "- PA5: BELUM K1 — x=d dan formula biaya lompat d>=2 TIDAK TAHU; nilai 400/800/1600 tidak dipakai.",
       "",
       "## Excerpt audit",
-      f"Deleted rows: {len(removed)}; lihat PA0_DELETED_ROWS.tsv.",
+      f"Deleted rows: {len(removed)}; lihat PA0_DELETED_ROWS.tsv. Sisa asal kelompok: PA0_OVERLIMIT_ORIGINS.tsv.",
       f"Aggregate max contiguous span={maxb} B; over-limit groups={over}; STATUS={'PASS' if auditok else 'FAIL'}.",
       f"New TSV validations={checked}; decoded instructions={decoded}; failures={fail}.",
       "",

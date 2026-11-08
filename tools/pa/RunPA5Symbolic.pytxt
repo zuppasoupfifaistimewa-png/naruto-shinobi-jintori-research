@@ -136,7 +136,7 @@ def main():
     write_tsv(a.out/"PA5_HYPOTHESIS_FALSIFIERS.tsv",tests,["hypothesis","status","observed","falsifier","interpretation"])
     write_tsv(a.out/"PA5_SYMBOLIC_COST_STATUS.tsv",[
       {"premise":"DN1 lookup X->LV1-LV5","status":"TUNTAS K4 (baseline)","result":"415 record/12 resource; tabel lookup bukan formula biaya transaksi."},
-      {"premise":"M region and scalar consistency","status":status,"result":reason+"; bytes="+str(region_bytes)+"; SHA256 launch1="+(region_hashes[0] if region_hashes else "TIDAK TAHU")+"; launch2="+(region_hashes[1] if len(region_hashes)>1 else "TIDAK TAHU")},
+      {"premise":"M region and scalar consistency","status":"TUNTAS K4" if status=="PASS" else "TIDAK TAHU","result":reason+"; bytes="+str(region_bytes)+"; SHA256 launch1="+(region_hashes[0] if region_hashes else "TIDAK TAHU")+"; launch2="+(region_hashes[1] if len(region_hashes)>1 else "TIDAK TAHU")},
       {"premise":"H1 x=d","status":"BELUM K1","result":"TIDAK TAHU; no independent d/x transaction pair."},
       {"premise":"H2 x=effect_id","status":"BELUM K1","result":"TIDAK TAHU; effect-ID semantic map is absent."},
       {"premise":"upgrade cost for jump d>=2","status":"BELUM K1","result":"TIDAK TAHU; symbolic debit/charge relation not closed."}
@@ -149,6 +149,8 @@ def main():
       f"Baseline inklusif: {BASELINE}",
       f"PA4 data directory: {str(pa4) if pa4 else 'TIDAK TAHU'}",
       f"PA4_CONTROL_SNAPSHOTS={status}",
+      "PA4_TSV_RECONCILIATION="+("TUNTAS K4" if status=="PASS" else "BELUM / TIDAK TAHU"),
+      "PA4_REPEATABILITY="+("TUNTAS K5 — dua restore CONTROL identik; hanya repeatability, bukan bukti semantik x/d" if status=="PASS" else "BELUM — TIDAK TAHU"),
       f"SCALARS_IDENTICAL={'YES' if scalar_equal else 'NO/TIDAK TAHU'}",
       f"M_REGION_IDENTICAL={'YES' if region_equal else 'NO/TIDAK TAHU'}",
       f"M_REGION_BYTES={region_bytes}",
