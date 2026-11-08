@@ -1,0 +1,7 @@
+call_pc	call_instruction	expected_target	actual_target	caller_function	caller_manual_prolog	argument	origin	definition_pc	expression	manual_entry_used
+0x800F5F54	jal 0x800f2a9c	0x800F2A9C	0x800F2A9C	0x800F3658	0x800F3658	$a2	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: no reaching definition before control-flow boundary	0x800F3658
+0x800F5F54	jal 0x800f2a9c	0x800F2A9C	0x800F2A9C	0x800F3658	0x800F3658	$a3	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: no reaching definition before control-flow boundary	0x800F3658
+0x800B54DC	jal 0x800f3658	0x800F3658	0x800F3658	0x800B50AC	0x800B50AC	$a2	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: no reaching definition before control-flow boundary	0x800B50AC
+0x800B54DC	jal 0x800f3658	0x800F3658	0x800F3658	0x800B50AC	0x800B50AC	$a3	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: no reaching definition before control-flow boundary	0x800B50AC
+0x800F5EBC	jal 0x800dc2e0	0x800DC2E0	0x800DC2E0	0x800F3658	0x800F3658	$a2	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: no reaching definition before control-flow boundary	0x800F3658
+0x800F5EBC	jal 0x800dc2e0	0x800DC2E0	0x800DC2E0	0x800F3658	0x800F3658	$a3	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU: no reaching definition before control-flow boundary	0x800F3658
