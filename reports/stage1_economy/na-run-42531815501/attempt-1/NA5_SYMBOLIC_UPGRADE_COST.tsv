@@ -1,0 +1,5 @@
+premise	result	status
+x is read through manager+0x530 path	Reader/table-helper is statically present; complete x writer semantics are not closed.	SEBAGIAN K3
+x=d for level jump d>=2	TIDAK TAHU; no proven writer path from two level operands.	BELUM K1
+x is effect/item/action ID	TIDAK TAHU; no complete selector-source and writer closure.	BELUM K1
+upgrade cost for d>=2	TIDAK TAHU; no formula proven from code.	BELUM K1

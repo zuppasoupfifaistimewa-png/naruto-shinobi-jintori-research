@@ -1,0 +1,10 @@
+M_LW_REFERENCES=2085
+M_USE_ROWS=2822
+M_DERIVED_STORE_CANDIDATES=964
+M_PLUS_0X530_RECOGNIZED_WRITERS=4
+CELL_READ_FORMULA=M+0x10+u8[0x8013EB1C]+144*u16[0x8013EA6E].
+PRIMARY_WRITER_0x800D49D8=MEM8[((MEM32[0x8013EA74]+16)+(MEM8[0x8013EB1C]+(((MEM16[INCOMING_$s0-5522]<<3)+MEM16[INCOMING_$s0-5522])<<4)))+0]
+PRIMARY_WRITER_CLASS=TIDAK TAHU
+OTHER_0x530_WRITERS=0x800E8174:KONSTANTA;0x800EC844:TIDAK TAHU;0x800EC868:TIDAK TAHU
+x=d vs effect/item/action ID=TIDAK TAHU: the primary writer copies one matrix byte, but the semantics of that cell are not proven; other +0x530 writers include reset/incoming-byte paths.
+The linear-use census is not CFG/alias writer closure; unresolved paths remain TIDAK TAHU.
