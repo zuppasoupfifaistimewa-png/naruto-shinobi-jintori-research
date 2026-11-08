@@ -1,0 +1,45 @@
+# PA4 — HA4 CONTROL runtime outcome
+
+STATUS=PASS
+SOURCE_RUN=39907655833
+ARTIFACT_ID=12482055310
+ARTIFACT_ZIP_SHA256=a0f45156dfd489f24c8dc8e122c33a048c7b9ac34b935ac828523593d21ca2a8
+CHECKPOINT=adaptive-cycle-02-f180.sstate
+CHECKPOINT_SHA256=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
+LAUNCHES_REQUESTED=2
+LAUNCH1_EXIT=0
+LAUNCH1_SAVE_STATE_LOADED_EVENTS=1
+LAUNCH1_POST_VSYNC=180
+LAUNCH1_M_REGION=READ
+LAUNCH2_EXIT=0
+LAUNCH2_SAVE_STATE_LOADED_EVENTS=1
+LAUNCH2_POST_VSYNC=180
+LAUNCH2_M_REGION=READ
+SCALARS_IDENTICAL=YES
+M_REGION_SHA256_LAUNCH1=a6b6b518d8b4eff42275f2dd574a78f5741870fc33cebacc79e27a4602d281a7
+M_REGION_SHA256_LAUNCH2=a6b6b518d8b4eff42275f2dd574a78f5741870fc33cebacc79e27a4602d281a7
+M_REGION_IDENTICAL=YES
+GAMEPLAY_INPUT=NONE
+WATCHPOINTS=0
+RAM_BINARY_EXPORTED=no
+COLD_BOOT_FALLBACK=no
+
+## Publication outcome
+PA4 runtime script returned exit code 0 and printed STATUS=PASS to job 128736752927.
+The job later failed while publishing. It staged the following text outputs in the runner-local commit fc8d2ab2:
+- ACTIONS_RUN_SUMMARY.txt
+- PA0_HARNESS_SELFTEST.txt
+- PA0_PYCOMPILE.tsv
+- PA4_LAUNCH1_LOG.txt
+- PA4_LAUNCH1_M_REGION.tsv
+- PA4_LAUNCH1_SCALARS.tsv
+- PA4_LAUNCH2_LOG.txt
+- PA4_LAUNCH2_M_REGION.tsv
+- PA4_LAUNCH2_SCALARS.tsv
+- PA4_PUBLISH_COMMIT_FILES.tsv
+- PA4_RUNTIME_SUMMARY.txt
+- cleanup.txt
+
+The local commit was not pushed. Each of five git pull --rebase retries failed with:
+fatal: empty ident name (for <runner@...>) not allowed
+The runner workspace was then discarded. Therefore the scalar and M-region TSV values are NOT available in the public repository and must be recorded as TIDAK TAHU here. The repeatability result K5 is supported by the job log, but the actual decimal values cannot be rechecked from repository files.

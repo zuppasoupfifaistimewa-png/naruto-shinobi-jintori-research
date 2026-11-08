@@ -1,0 +1,13 @@
+STATUS=PARTIAL_OR_FAIL
+JOB=pa4-ha4-control
+JOB_ID=128736752927
+RUN_ID=42482327357
+SOURCE_SHA=9c55c9ded9663b0acb8bb7c0439585db94aaa6bb
+RUNTIME_EXIT_CODE=0
+PA4_CONTROL_STATUS=PASS
+JOB_CONCLUSION=failure
+PUBLISH_STATUS=failure
+PUBLISH_REASON=git pull --rebase failed on all five attempts because committer identity was unset
+SCALAR_AND_M_REGION_TSV=runner-local-only; not pushed
+PRIVATE_BINARY_COMMITTED=no
+RELEASES_MODIFIED=no
