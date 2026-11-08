@@ -1,0 +1,151 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+import argparse, csv, datetime, hashlib, json, os, subprocess, urllib.request
+from pathlib import Path
+
+BASELINE="3f730c73dc628d02f360b7ac12961e6f3e4b1584"
+EXPECTED_SCALARS={
+ "0x8013EA74":4, "0x8013EA6E":2, "0x8013EB1C":1,
+ "0x8013EA88":2, "0x80139EFC":2, "0x8006D794":4,
+}
+def write_tsv(path, rows, fields):
+    with Path(path).open("w",encoding="utf-8",newline="") as f:
+        w=csv.DictWriter(f,fieldnames=fields,delimiter="\t",lineterminator="\n",extrasaction="ignore")
+        w.writeheader(); w.writerows(rows)
+def read_values(path):
+    with Path(path).open(encoding="utf-8",newline="") as f:
+        rd=csv.DictReader(f,delimiter="\t")
+        if rd.fieldnames != ["ram_addr","values_dec"]:
+            raise ValueError("BAD_TSV_COLUMNS:"+str(rd.fieldnames))
+        out={}
+        for r in rd:
+            a=r["ram_addr"].upper()
+            v=int(r["values_dec"],10)
+            if a in out: raise ValueError("DUPLICATE_RAM_ADDR:"+a)
+            out[a]=v
+        return out
+def parse_region(path, base):
+    rows=read_values(path)
+    expected=[f"0x{base+i:08X}" for i in range(0x540)]
+    if list(rows.keys()) != expected:
+        raise ValueError("M_REGION_ADDRESS_OR_LENGTH_MISMATCH")
+    vals=list(rows.values())
+    if any(v<0 or v>255 for v in vals): raise ValueError("M_REGION_VALUE_NOT_U8")
+    return bytes(vals)
+def run_ledger(root):
+    token=os.environ.get("GH_TOKEN","")
+    repo=os.environ["GITHUB_REPOSITORY"]
+    def api(url):
+        req=urllib.request.Request(url,headers={"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"})
+        with urllib.request.urlopen(req,timeout=90) as r:return json.loads(r.read().decode())
+    runs=[]; page=1; total=0
+    while True:
+        j=api(f"https://api.github.com/repos/{repo}/actions/runs?per_page=100&page={page}")
+        total=j.get("total_count",0); batch=j.get("workflow_runs",[]); runs.extend(batch)
+        if not batch or len(runs)>=total: break
+        page+=1
+        if page>30: raise RuntimeError("ACTIONS_PAGINATION_LIMIT")
+    stamp=subprocess.check_output(["git","show","-s","--format=%cI",BASELINE],text=True).strip()
+    cut=datetime.datetime.fromisoformat(stamp.replace("Z","+00:00"))
+    chosen=[]
+    for x in runs:
+        created=datetime.datetime.fromisoformat(x["created_at"].replace("Z","+00:00"))
+        if created>cut:
+            chosen.append({"run_id":x.get("id"),"workflow":x.get("path"),"event":x.get("event"),"status":x.get("status"),"conclusion":x.get("conclusion") or "TIDAK TAHU","head_sha":x.get("head_sha"),"created_at":x.get("created_at")})
+    write_tsv(root/"PA5_RUN_LEDGER.tsv",chosen,["run_id","workflow","event","status","conclusion","head_sha","created_at"])
+    return len(runs),chosen
+def commit_ledger(root):
+    commits=subprocess.check_output(["git","log","--format=%H%x09%an%x09%ae%x09%s",f"{BASELINE}^..HEAD"],text=True).splitlines()
+    out=[]
+    details=[]
+    for line in commits:
+        q=line.split("\t",3)
+        if len(q)<4: continue
+        sha,author,email,subject=q
+        ident=(author+" "+email).lower()
+        kind="BOT" if ("[bot]" in ident or "dependabot" in ident or " bot" in ident or ident.startswith("bot")) else "HUMAN"
+        changed=subprocess.check_output(["git","diff-tree","--no-commit-id","--name-status","-r","-M",sha],text=True).splitlines()
+        for item in changed:
+            z=item.split("\t")
+            if z[0].startswith(("R","C")) and len(z)>=3:
+                out.append({"sha":sha,"author":author,"class":kind,"status":"D","path":z[1],"subject":subject})
+                out.append({"sha":sha,"author":author,"class":kind,"status":"A","path":z[2],"subject":subject})
+            elif len(z)>=2 and z[0] in ("A","M","D"):
+                out.append({"sha":sha,"author":author,"class":kind,"status":z[0],"path":z[1],"subject":subject})
+        details.append((sha,author,kind,subject))
+    write_tsv(root/"PA5_COMMIT_LEDGER.tsv",out,["sha","author","class","status","path","subject"])
+    return details,out
+def main():
+    ap=argparse.ArgumentParser()
+    ap.add_argument("--pa4",default="")
+    ap.add_argument("--out",required=True,type=Path)
+    ap.add_argument("--static",default="")
+    a=ap.parse_args()
+    a.out.mkdir(parents=True,exist_ok=True)
+    pa4=Path(a.pa4) if a.pa4 else None
+    status="TIDAK TAHU"; scalar_equal=False; region_equal=False
+    scalars=[]; region_bytes=0; region_hashes=[]
+    reason="PA4_DEST_MISSING"
+    if pa4 and pa4.exists():
+        try:
+            s1=read_values(pa4/"PA4_LAUNCH1_SCALARS.tsv")
+            s2=read_values(pa4/"PA4_LAUNCH2_SCALARS.tsv")
+            missing=sorted(set(EXPECTED_SCALARS)-set(s1))
+            if missing: raise ValueError("MISSING_SCALARS:"+",".join(missing))
+            if set(s1)!=set(s2): raise ValueError("SCALAR_ADDRESS_SET_DIFFERS")
+            scalar_equal=(s1==s2)
+            m1=s1["0x8013EA74"]; m2=s2["0x8013EA74"]
+            b1=parse_region(pa4/"PA4_LAUNCH1_M_REGION.tsv",m1)
+            b2=parse_region(pa4/"PA4_LAUNCH2_M_REGION.tsv",m2)
+            region_bytes=len(b1)
+            region_hashes=[hashlib.sha256(b1).hexdigest(),hashlib.sha256(b2).hexdigest()]
+            region_equal=(b1==b2)
+            for addr,width in sorted(EXPECTED_SCALARS.items()):
+                value=s1[addr.upper()]
+                scalars.append({"ram_addr":addr,"values_dec":value,"width_bytes":width,"launch2_values_dec":s2[addr.upper()],"identical":"YES" if value==s2[addr.upper()] else "NO"})
+            status="PASS" if scalar_equal and region_equal and region_bytes==0x540 else "TIDAK TAHU"
+            reason="TWO_IDENTICAL_CONTROL_SNAPSHOTS" if status=="PASS" else "SCALAR_OR_M_REGION_MISMATCH"
+        except Exception as exc:
+            reason=type(exc).__name__+":"+str(exc)
+    write_tsv(a.out/"PA5_CONTROL_SCALAR_RECONCILIATION.tsv",scalars,["ram_addr","values_dec","width_bytes","launch2_values_dec","identical"])
+    tests=[
+      {"hypothesis":"H1: x=d (nilai petak sama dengan jarak lompatan)","status":"BELUM K1 / TIDAK DAPAT DIUJI","observed":"PA4 CONTROL hanya satu checkpoint yang dipulihkan dua kali; tidak ada pasangan transaksi berlabel d dan x.","falsifier":"Observasi transaksi terikat yang menunjukkan x!=d, atau x sama untuk dua jarak d berbeda.","interpretation":"Kesamaan dua launch memvalidasi repeatability saja; tidak menyediakan variasi d."},
+      {"hypothesis":"H2: x=id efek (nilai petak berasal dari ID efek)","status":"BELUM K1 / TIDAK DAPAT DIUJI","observed":"Snapshot tidak memiliki label semantik effect_id dan tidak ada pemetaan ID->x terkonfirmasi.","falsifier":"ID efek yang sama menghasilkan x berbeda, atau pemetaan ID yang terbukti tidak memprediksi x pada kasus terpisah.","interpretation":"Kemunculan byte/scalar dalam M bukan bukti identitas ID efek."},
+    ]
+    write_tsv(a.out/"PA5_HYPOTHESIS_FALSIFIERS.tsv",tests,["hypothesis","status","observed","falsifier","interpretation"])
+    write_tsv(a.out/"PA5_SYMBOLIC_COST_STATUS.tsv",[
+      {"premise":"DN1 lookup X->LV1-LV5","status":"TUNTAS K4 (baseline)","result":"415 record/12 resource; tabel lookup bukan formula biaya transaksi."},
+      {"premise":"M region and scalar consistency","status":status,"result":reason+"; bytes="+str(region_bytes)+"; SHA256 launch1="+(region_hashes[0] if region_hashes else "TIDAK TAHU")+"; launch2="+(region_hashes[1] if len(region_hashes)>1 else "TIDAK TAHU")},
+      {"premise":"H1 x=d","status":"BELUM K1","result":"TIDAK TAHU; no independent d/x transaction pair."},
+      {"premise":"H2 x=effect_id","status":"BELUM K1","result":"TIDAK TAHU; effect-ID semantic map is absent."},
+      {"premise":"upgrade cost for jump d>=2","status":"BELUM K1","result":"TIDAK TAHU; symbolic debit/charge relation not closed."}
+    ],["premise","status","result"])
+    run_total,runrows=run_ledger(a.out)
+    commits,files=commit_ledger(a.out)
+    text=[
+      "# PA5 — uji simbolik dan falsifier H1/H2",
+      "",
+      f"Baseline inklusif: {BASELINE}",
+      f"PA4 data directory: {a.pa4 or 'TIDAK TAHU'}",
+      f"PA4_CONTROL_SNAPSHOTS={status}",
+      f"SCALARS_IDENTICAL={'YES' if scalar_equal else 'NO/TIDAK TAHU'}",
+      f"M_REGION_IDENTICAL={'YES' if region_equal else 'NO/TIDAK TAHU'}",
+      f"M_REGION_BYTES={region_bytes}",
+      f"REASON={reason}",
+      "",
+      "## Uji hipotesis",
+      "H1 (x=d): BELUM K1. Tidak ada transaksi berlabel d dan x pada checkpoint CONTROL; dua launch identik adalah uji pengulangan, bukan variasi jarak. Falsifier: pasangan transaksi dengan x!=d atau x tetap saat d berubah.",
+      "H2 (x=id efek): BELUM K1. ID efek belum diberi label semantik dan belum ada pemetaan ID->x. Falsifier: ID sama dengan x berbeda, atau pemetaan ID gagal pada kasus terpisah.",
+      "Kecocokan byte mentah atau nilai scalar di wilayah M, bila ada, hanya KORELASI; bukan bukti makna variabel.",
+      "",
+      "## Formula biaya",
+      "Biaya upgrade petak untuk lompatan d>=2: BELUM K1 — TIDAK TAHU. Tidak menggunakan 400/800/1600 dan tidak melakukan fitting.",
+      "",
+      "## Ledger",
+      f"Actions runs total fetched={run_total}; runs after baseline={len(runrows)} (lihat PA5_RUN_LEDGER.tsv).",
+      f"Commits baseline-inclusive (tanpa commit publikasi PA5)={len(commits)}; perubahan A/M/D ada di PA5_COMMIT_LEDGER.tsv.",
+      "Laporan ini tidak mengubah STATUS.md, workflow lama, Release, atau berkas biner.",
+    ]
+    (a.out/"PA5_FINAL_REPORT.md").write_text("\n".join(text)+"\n",encoding="utf-8")
+    print("\n".join(text))
+if __name__=="__main__": main()

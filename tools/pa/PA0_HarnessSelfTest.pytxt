@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+import csv, io, sys
+from pathlib import Path
+
+def main():
+    if len(sys.argv) != 4:
+        raise SystemExit("usage: PA0_HarnessSelfTest.py ANALYZER RUNTIME OUT")
+    analyzer, runtime, out = map(Path, sys.argv[1:])
+    for p in (analyzer, runtime):
+        if not p.is_file():
+            raise SystemExit("MISSING_SCRIPT=" + str(p))
+    text = analyzer.read_text(encoding="utf-8")
+    bad = 'delimiter="' + chr(92) * 2 + 't"'
+    good = 'delimiter="' + chr(92) + 't"'
+    if bad in text:
+        raise SystemExit("SELFTEST_FAIL_LITERAL_BACKSLASH_T=" + str(text.count(bad)))
+    reader_lines = [line for line in text.splitlines() if "csv.DictReader" in line]
+    if len(reader_lines) < 3 or any(good not in line for line in reader_lines):
+        raise SystemExit("SELFTEST_FAIL_TSV_DELIMITER_CALLS=" + repr(reader_lines))
+    delimiter = chr(9)
+    if len(delimiter) != 1:
+        raise SystemExit("SELFTEST_FAIL_DELIMITER_LENGTH")
+    sample = io.StringIO("ram_addr\tvalues_dec\n0x80100000\t42\n")
+    rows = list(csv.DictReader(sample, delimiter=delimiter))
+    if len(rows) != 1 or rows[0].get("values_dec") != "42":
+        raise SystemExit("SELFTEST_FAIL_TSV_TAB_PARSE")
+    def over_limit(ranges):
+        merged = []
+        for start, end in sorted(ranges):
+            if not merged or start > merged[-1][1]:
+                merged.append([start, end])
+            else:
+                merged[-1][1] = max(merged[-1][1], end)
+        return [end-start for start,end in merged if end-start > 64]
+    over65 = over_limit([(0, 32), (32, 65)])
+    pass64 = over_limit([(0, 32), (32, 64)])
+    if over65 != [65]:
+        raise SystemExit("SELFTEST_FAIL_65B_NOT_DETECTED=" + repr(over65))
+    if pass64:
+        raise SystemExit("SELFTEST_FAIL_64B_REJECTED=" + repr(pass64))
+    out.write_text(
+        "STATUS=PASS\nFIXTURE_65_BYTES=DETECTED\nFIXTURE_64_BYTES=PASS\n"
+        "TSV_DELIMITER_LENGTH=1\nTSV_DELIMITER_TAB_PARSE=PASS\n"
+        "INVALID_LITERAL_BACKSLASH_T=ABSENT\n",
+        encoding="utf-8",
+    )
+    print(out.read_text(encoding="utf-8"), end="")
+if __name__ == "__main__":
+    main()
