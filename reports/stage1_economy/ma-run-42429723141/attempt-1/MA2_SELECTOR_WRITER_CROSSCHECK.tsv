@@ -1,0 +1,22 @@
+target_global	store_pc	store_op	value_source_pc	value_source_instruction	value_source	stored_value	certainty	note
+0x8013EA6E	0x800B9774	sh	0x800B976C	lhu $v0, -0x1578($v0)	MEM16[0x8013EA88]	TIDAK TAHU	K4_STATIC_SOURCE_LOAD	Nilai runtime berasal dari u16 yang dibaca; bukan konstanta.
+0x8013EA6E	0x800B9AD8	sh	0x800B9AD0	lhu $v0, -0x1578($v0)	MEM16[0x8013EA88]	TIDAK TAHU	K4_STATIC_SOURCE_LOAD	Nilai runtime berasal dari u16 yang dibaca; bukan konstanta.
+0x8013EA6E	0x800D131C	sh	0x800D1314	lhu $v0, -0x1578($a1)	MEM16[0x8013EA88]	TIDAK TAHU	K4_STATIC_SOURCE_LOAD	Nilai runtime berasal dari u16 yang dibaca; bukan konstanta.
+0x8013EA6E	0x800D8FD8	sh	0x800D8FD0	lhu $v0, -0x1578($a1)	MEM16[0x8013EA88]	TIDAK TAHU	K4_STATIC_SOURCE_LOAD	Nilai runtime berasal dari u16 yang dibaca; bukan konstanta.
+0x8013EA6E	0x800DAC7C	sh	0x800DAC74	lhu $v0, -0x1578($a1)	MEM16[0x8013EA88]	TIDAK TAHU	K4_STATIC_SOURCE_LOAD	Nilai runtime berasal dari u16 yang dibaca; bukan konstanta.
+0x8013EA6E	0x800E04AC	sh	0x800E04A4	lhu $v0, -0x1578($a1)	MEM16[0x8013EA88]	TIDAK TAHU	K4_STATIC_SOURCE_LOAD	Nilai runtime berasal dari u16 yang dibaca; bukan konstanta.
+0x8013EA6E	0x800E3B1C	sh	0x800E3B14	lhu $v0, -0x1578($v0)	MEM16[0x8013EA88]	TIDAK TAHU	K4_STATIC_SOURCE_LOAD	Nilai runtime berasal dari u16 yang dibaca; bukan konstanta.
+0x8013EA6E	0x800E43C4	sh	0x800E43BC	lhu $v0, -0x1578($v0)	MEM16[0x8013EA88]	TIDAK TAHU	K4_STATIC_SOURCE_LOAD	Nilai runtime berasal dari u16 yang dibaca; bukan konstanta.
+0x8013EA6E	0x800E488C	sh	0x800E4884	lhu $v0, -0x1578($s0)	MEM16[0x8013EA88]	TIDAK TAHU	K4_STATIC_SOURCE_LOAD	Nilai runtime berasal dari u16 yang dibaca; bukan konstanta.
+0x8013EA6E	0x800EBEFC	sh	0x800EBEF4	lhu $v0, -0x1578($a1)	MEM16[0x8013EA88]	TIDAK TAHU	K4_STATIC_SOURCE_LOAD	Nilai runtime berasal dari u16 yang dibaca; bukan konstanta.
+0x8013EA6E	0x800ECF34	sh	0x800ECF2C	lhu $v0, -0x1578($v0)	MEM16[0x8013EA88]	TIDAK TAHU	K4_STATIC_SOURCE_LOAD	Nilai runtime berasal dari u16 yang dibaca; bukan konstanta.
+0x8013EA6E	0x800EEF20	sh	0x800EEF18	lhu $v0, -0x1578($v1)	MEM16[0x8013EA88]	TIDAK TAHU	K4_STATIC_SOURCE_LOAD	Nilai runtime berasal dari u16 yang dibaca; bukan konstanta.
+0x8013EA6E	0x800D734C	sh	0x800D7344	lhu $v0, -0x6104($a2)	MEM16[0x80139EFC]	TIDAK TAHU	K4_STATIC_SOURCE_LOAD	Nilai runtime berasal dari u16 yang dibaca; bukan konstanta.
+0x8013EA6E	0x800D7938	sh	0x800D7930	lhu $v0, -0x6104($a2)	MEM16[0x80139EFC]	TIDAK TAHU	K4_STATIC_SOURCE_LOAD	Nilai runtime berasal dari u16 yang dibaca; bukan konstanta.
+0x8013EB1C	0x800D77C4	sb	0x800D7784	lui $v0, 0x8014	0x80140000 (source register)	0x00	K4_STATIC_CONSTANT_LOW_BYTE	sb menyimpan 8 bit rendah dari 0x80140000.
+0x8013EB1C	0x800D7D4C	sb	0x800D7D0C	lui $v0, 0x8014	0x80140000 (source register)	0x00	K4_STATIC_CONSTANT_LOW_BYTE	sb menyimpan 8 bit rendah dari 0x80140000.
+0x8013EB1C	0x800E4840	sb	TIDAK TAHU	TIDAK TAHU	$v0 TIDAK TAHU	TIDAK TAHU	TIDAK TAHU	KA menunjukkan base alamat statis; tidak ada reaching definition sumber $v0 yang terarsipkan.
+0x80139EC7	0x800E8A8C	sb	same instruction	sb $zero, byte-global	$zero	0x00	K4_STATIC_CONSTANT	Instruksi menyimpan register zero langsung ke byte global.
+0x80139EC7	0x800E93D4	sb	same instruction	sb $zero, byte-global	$zero	0x00	K4_STATIC_CONSTANT	Instruksi menyimpan register zero langsung ke byte global.
+0x80139EC7	0x800EB410	sb	same instruction	sb $zero, byte-global	$zero	0x00	K4_STATIC_CONSTANT	Instruksi menyimpan register zero langsung ke byte global.
+0x80139EC7	0x800EC84C	sb	same instruction	sb $zero, byte-global	$zero	0x00	K4_STATIC_CONSTANT	Instruksi menyimpan register zero langsung ke byte global.
