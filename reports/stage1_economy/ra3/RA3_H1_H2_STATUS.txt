@@ -1,0 +1,25 @@
+# RA3 — H1 versus H2 variation gate
+
+BASELINE_INCLUSIVE=a133f0b266f211a31f26439d3a04ac8705b515e4
+STATUS=BELUM
+CONFIDENCE=K1
+H1_x_equals_d=TIDAK TAHU
+H2_x_equals_effect_item_action_id=TIDAK TAHU
+AVAILABLE_INDEPENDENT_UPGRADE_SAMPLES=0
+RA2_BOUNDED_CONFIRMATION=2 identical headless launches; no tile upgrade and no debit breakpoint hit
+RA2_FUN_800D15A8_HITS=48 per launch; this is not an upgrade sample
+REQUIRED_VARIATION=at least two independently grounded actual upgrade actions with distinct d values and/or distinct effect/item/action IDs for d>=2
+H1_SUPPORT=not sufficient; reachable byte-cell writer closure and level-source semantics remain unresolved
+H1_FALSIFIER=TIDAK TAHU; no complete action samples to falsify
+H2_SUPPORT=not sufficient; reachable selector-writer closure and effect-ID semantics remain unresolved
+H2_FALSIFIER=TIDAK TAHU; no complete action samples to falsify
+UPGRADE_COST_FORMULA_d_ge_2=TIDAK TAHU
+FORBIDDEN_SHORTCUTS=400/800/1600 constants; curve fitting; treating identical control restores as independent variation
+INTERPRETATION=No H1/H2 comparison or fit is performed until the variation gate is met.
+
+SOURCES:
+- reports/stage1_economy/na-run-42531753599/attempt-1/NA2_X_EQUALS_D_VS_EFFECT_ID.txt
+- reports/stage1_economy/na-run-42531753599/attempt-1/NA5_SYMBOLIC_UPGRADE_COST.tsv
+- reports/stage1_economy/ka-run-42531753623/attempt-1/KA2_HYPOTHESES.tsv
+- reports/stage1_economy/qa-run-42491968139/attempt-1/QA5_H1_H2_VARIATION_STATUS.txt
+- reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_RUNTIME_SUMMARY.txt
