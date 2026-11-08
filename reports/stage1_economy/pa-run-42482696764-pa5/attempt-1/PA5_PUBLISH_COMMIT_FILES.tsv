@@ -1,0 +1,9 @@
+status	path
+A	reports/stage1_economy/pa-run-42482696764-pa5/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/pa-run-42482696764-pa5/attempt-1/PA5_COMMIT_LEDGER.tsv
+A	reports/stage1_economy/pa-run-42482696764-pa5/attempt-1/PA5_CONTROL_SCALAR_RECONCILIATION.tsv
+A	reports/stage1_economy/pa-run-42482696764-pa5/attempt-1/PA5_FINAL_REPORT.md
+A	reports/stage1_economy/pa-run-42482696764-pa5/attempt-1/PA5_HYPOTHESIS_FALSIFIERS.tsv
+A	reports/stage1_economy/pa-run-42482696764-pa5/attempt-1/PA5_RUN_LEDGER.tsv
+A	reports/stage1_economy/pa-run-42482696764-pa5/attempt-1/PA5_SYMBOLIC_COST_STATUS.tsv
+A	reports/stage1_economy/pa-run-42482696764-pa5/attempt-1/PA5_PUBLISH_COMMIT_FILES.tsv

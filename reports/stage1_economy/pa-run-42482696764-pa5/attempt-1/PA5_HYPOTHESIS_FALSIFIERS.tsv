@@ -1,0 +1,3 @@
+hypothesis	status	observed	falsifier	interpretation
+H1: x=d (nilai petak sama dengan jarak lompatan)	BELUM K1 / TIDAK DAPAT DIUJI	PA4 CONTROL hanya satu checkpoint yang dipulihkan dua kali; tidak ada pasangan transaksi berlabel d dan x.	Observasi transaksi terikat yang menunjukkan x!=d, atau x sama untuk dua jarak d berbeda.	Kesamaan dua launch memvalidasi repeatability saja; tidak menyediakan variasi d.
+H2: x=id efek (nilai petak berasal dari ID efek)	BELUM K1 / TIDAK DAPAT DIUJI	Snapshot tidak memiliki label semantik effect_id dan tidak ada pemetaan ID->x terkonfirmasi.	ID efek yang sama menghasilkan x berbeda, atau pemetaan ID yang terbukti tidak memprediksi x pada kasus terpisah.	Kemunculan byte/scalar dalam M bukan bukti identitas ID efek.
