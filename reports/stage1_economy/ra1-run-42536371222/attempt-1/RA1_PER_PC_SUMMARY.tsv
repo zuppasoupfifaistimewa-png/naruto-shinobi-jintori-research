@@ -1,0 +1,3 @@
+pc	hit_count_launch1	hit_count_launch2	register_ra_expected	identical
+0x800B54DC	90	90	0x800B54C0	YES
+0x800BE5D8	90	90	0x800B54FC	YES
