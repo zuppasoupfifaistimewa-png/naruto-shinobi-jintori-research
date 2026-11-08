@@ -1,0 +1,4 @@
+status	path
+M	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_RUNTIME_SUMMARY.txt
+A	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_OUTER_CALLER_PENDING.txt
+A	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_CORRECTION_COMMIT_FILES.tsv
