@@ -1,0 +1,5 @@
+condition	symbolic_result	evidence
+if x in 0..51 and helper uses H[x]	H(x) = H_TABLE_52[x]	JA2_H_TABLE_52.tsv + F2A9C manager+0x530 read; index use still requires exact helper trace
+x in 52..255 under current conditional byte domain	TIDAK TAHU / outside the 52-entry table; adjacent-memory semantics unknown	No proven bounds guard x<52
+x=d	TIDAK TAHU; x=d unproven	KA2_X_HYPOTHESES.tsv
+x=effect/item/action selector	TIDAK TAHU; selector meaning unproven	KA2_X_HYPOTHESES.tsv
