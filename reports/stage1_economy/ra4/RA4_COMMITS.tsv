@@ -1,0 +1,115 @@
+commit_sha	commit_message	status	path_changed
+76c6c209ad9b6b85495d1a43f1b80e35a7ea5566	RA0 physically prune overlimit PA quote rows 42482327357	M	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv
+42542e2789c89d5d1af7ce9493c7c00d4de98041	RA0 physically prune overlimit PA quote rows 42482327357	M	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv
+4dfef1a70471288997a350975b2d439778deb9d9	RA0 physically prune overlimit PA quote rows 42482696764	M	reports/stage1_economy/pa-run-42482696764-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv
+a5c2de8496105b8fe19712ab2dd147492025812e	RA0 physically prune overlimit PA quote rows 42482696764	M	reports/stage1_economy/pa-run-42482696764-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv
+642954c81ce7f3cf8dea6396a12ae4b72e4b2d94	RA0 physically prune overlimit PA quote rows 42483585195	M	reports/stage1_economy/pa-run-42483585195-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv
+4c7c1a8b6c56db92628d6d348ce45473984e364a	RA0 physically prune overlimit PA quote rows 42483585195	M	reports/stage1_economy/pa-run-42483585195-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv
+255a29c71e79d6200244780f186184e39acd7a09	RA0 physically prune overlimit PA quote rows 42484127968	M	reports/stage1_economy/pa-run-42484127968-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv
+2eb0554f757ec449a0847f8d9c7660b4149500ca	RA0 physically prune overlimit PA quote rows 42484127968	M	reports/stage1_economy/pa-run-42484127968-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv
+59cf333d3650b24379df1e513e8f55e5dda064c7	RA0 physically prune overlimit PA quote rows 42484169218	M	reports/stage1_economy/pa-run-42484169218-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv
+77ae9549ba59bc88d1681af18ef3281acdb0bcce	RA0 physically prune overlimit PA quote rows 42484169218	M	reports/stage1_economy/pa-run-42484169218-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv
+5e4f98eb37f23309083a1804394aec2887e5222f	RA0 run audit against inclusive RA baseline	M	.github/workflows/qa0-qa5.yml
+9c55c9ded9663b0acb8bb7c0439585db94aaa6bb	Fix PA workflow shell escapes and Python compile steps	M	.github/workflows/pa0-pa5.yml
+fb16eccf44422ed9b3fc3dea0f9ede1782447aac	Fix QA0 harness summary quoting	M	tools/qa/RunQA0Harness.pytxt
+4572ffed5ecb520dccc4ee840c5d9b8d63ae3268	Fix QA0 physical deletion verification and byte-wise union audit	M	tools/qa/RunQA0Harness.pytxt
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/ACTIONS_RUN_SUMMARY.txt
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_AFFECTED_FILE_COUNTS.tsv
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_BYTE_OVERLAP_CONFLICTS.tsv
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_CONSOLE.txt
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_DELETED_ROWS.tsv
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_EXCERPT_AUDIT.txt
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_FULL_ARCHIVE_OVERLIMIT.tsv
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_FULL_ARCHIVE_SPANS.tsv
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_HARNESS_SELFTEST.txt
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_MALFORMED_BYTE_ROWS.tsv
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_OVERLIMIT_ORIGINS.tsv
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_PA3_CONTROL_TRANSFER_LABEL_AUDIT.tsv
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_PA_QA_OVERLIMIT.tsv
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_PA_QA_REPLACEMENT_SPANS.tsv
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_PHYSICAL_DELETION_VERIFICATION.tsv
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_PUBLISH_COMMIT_FILES.tsv
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_PYCOMPILE.tsv
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_REPORT.md
+a0bfbe359710a35e0ade9248497b735cec2e298d	Publish QA0 harness and excerpt audit 42530988325	A	reports/stage1_economy/qa-run-42530988325/attempt-1/QA0_WORKFLOW_PATHS_AUDIT.txt
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/ACTIONS_RUN_SUMMARY.txt
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_AFFECTED_FILE_COUNTS.tsv
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_BYTE_OVERLAP_CONFLICTS.tsv
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_CONSOLE.txt
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_DELETED_ROWS.tsv
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_EXCERPT_AUDIT.txt
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_FULL_ARCHIVE_OVERLIMIT.tsv
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_FULL_ARCHIVE_SPANS.tsv
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_HARNESS_SELFTEST.txt
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_MALFORMED_BYTE_ROWS.tsv
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_OVERLIMIT_ORIGINS.tsv
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_PA3_CONTROL_TRANSFER_LABEL_AUDIT.tsv
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_PA_QA_OVERLIMIT.tsv
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_PA_QA_REPLACEMENT_SPANS.tsv
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_PHYSICAL_DELETION_VERIFICATION.tsv
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_PUBLISH_COMMIT_FILES.tsv
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_PYCOMPILE.tsv
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_REPORT.md
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	Publish QA0 harness and excerpt audit 42531023381	A	reports/stage1_economy/qa-run-42531023381/attempt-1/QA0_WORKFLOW_PATHS_AUDIT.txt
+7b53416d563292582bcfc3f1343848a4f0ac57d3	Fix RA2 workflow expressions and record failed attempts	M	.github/workflows/ra2-upgrade-probe.yml
+7b53416d563292582bcfc3f1343848a4f0ac57d3	Fix RA2 workflow expressions and record failed attempts	A	reports/stage1_economy/ra2-run-42531753692/attempt-1/ACTIONS_RUN_SUMMARY.txt
+7b53416d563292582bcfc3f1343848a4f0ac57d3	Fix RA2 workflow expressions and record failed attempts	A	reports/stage1_economy/ra2-run-42531815468/attempt-1/ACTIONS_RUN_SUMMARY.txt
+7b53416d563292582bcfc3f1343848a4f0ac57d3	Fix RA2 workflow expressions and record failed attempts	A	reports/stage1_economy/ra2-run-42531825558/attempt-1/ACTIONS_RUN_SUMMARY.txt
+7b53416d563292582bcfc3f1343848a4f0ac57d3	Fix RA2 workflow expressions and record failed attempts	A	reports/stage1_economy/ra2-run-42532362115/attempt-1/ACTIONS_RUN_SUMMARY.txt
+61f02c69619cb512d590fe7f953eb2ff7c80ebd3	Use artifact action for RA2 checkpoint and record HTTP 415	M	.github/workflows/ra2-upgrade-probe.yml
+61f02c69619cb512d590fe7f953eb2ff7c80ebd3	Use artifact action for RA2 checkpoint and record HTTP 415	A	reports/stage1_economy/ra2-run-42534501546/attempt-1/ACTIONS_RUN_SUMMARY.txt
+61f02c69619cb512d590fe7f953eb2ff7c80ebd3	Use artifact action for RA2 checkpoint and record HTTP 415	A	reports/stage1_economy/ra2-run-42534501546/attempt-1/RA2_CORRECTIVE_COMMIT_FILES.tsv
+61f02c69619cb512d590fe7f953eb2ff7c80ebd3	Use artifact action for RA2 checkpoint and record HTTP 415	A	reports/stage1_economy/ra2-run-42534501546/attempt-1/RA2_RUNTIME_SUMMARY.txt
+3a71e572e11a26daf7f801d4bf124917bcfbc7fa	Validate RA2 downloaded checkpoint contents	M	.github/workflows/ra2-upgrade-probe.yml
+3a71e572e11a26daf7f801d4bf124917bcfbc7fa	Validate RA2 downloaded checkpoint contents	A	reports/stage1_economy/ra2-run-42534501546/attempt-1/RA2_SOURCE_COMMIT_FILES.tsv
+31de6c0bf7b101ad6d5593b182bdc6ab7eb9cbe1	Accept verified checkpoint within private artifact bundle	M	.github/workflows/ra2-upgrade-probe.yml
+31de6c0bf7b101ad6d5593b182bdc6ab7eb9cbe1	Accept verified checkpoint within private artifact bundle	A	reports/stage1_economy/ra2-run-42534641532/attempt-1/ACTIONS_RUN_SUMMARY.txt
+31de6c0bf7b101ad6d5593b182bdc6ab7eb9cbe1	Accept verified checkpoint within private artifact bundle	A	reports/stage1_economy/ra2-run-42534641532/attempt-1/RA2_RUNTIME_SUMMARY.txt
+31de6c0bf7b101ad6d5593b182bdc6ab7eb9cbe1	Accept verified checkpoint within private artifact bundle	A	reports/stage1_economy/ra2-run-42534641532/attempt-1/RA2_SOURCE_COMMIT_FILES.tsv
+8ac19e87c3d2e85dbf2b331af356ec71e831f245	Use typed read-only memory loads for RA2 snapshot guards	M	tools/ra/RunRA2UpgradeProbe.pytxt
+8ac19e87c3d2e85dbf2b331af356ec71e831f245	Use typed read-only memory loads for RA2 snapshot guards	A	reports/stage1_economy/ra2-run-42534757870/attempt-1/ACTIONS_RUN_SUMMARY.txt
+8ac19e87c3d2e85dbf2b331af356ec71e831f245	Use typed read-only memory loads for RA2 snapshot guards	A	reports/stage1_economy/ra2-run-42534757870/attempt-1/RA2_RUNTIME_SUMMARY.txt
+8ac19e87c3d2e85dbf2b331af356ec71e831f245	Use typed read-only memory loads for RA2 snapshot guards	A	reports/stage1_economy/ra2-run-42534757870/attempt-1/RA2_SOURCE_COMMIT_FILES.tsv
+1e5dd7c10114819ac71e9506dde1a2375f37061e	Align RA2 self-test with typed read-only memory API	M	tools/ra/RunRA2UpgradeProbe.pytxt
+1e5dd7c10114819ac71e9506dde1a2375f37061e	Align RA2 self-test with typed read-only memory API	A	reports/stage1_economy/ra2-run-42535223372/attempt-1/RA2_SOURCE_COMMIT_FILES.tsv
+739febf493d0648068cd47f5bba188fcca90fc93	Define RA2 tile limit inside embedded Lua and self-test it	M	tools/ra/RunRA2UpgradeProbe.pytxt
+739febf493d0648068cd47f5bba188fcca90fc93	Define RA2 tile limit inside embedded Lua and self-test it	A	reports/stage1_economy/ra2-run-42535674901/attempt-1/RA2_SOURCE_COMMIT_FILES.tsv
+61c11df64d98fa4c06f7648e63376d921064c07c	Publish RA2 bounded upgrade probe 42536155267	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/ACTIONS_RUN_SUMMARY.txt
+61c11df64d98fa4c06f7648e63376d921064c07c	Publish RA2 bounded upgrade probe 42536155267	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_ACTION_TILE_DIFFS.tsv
+61c11df64d98fa4c06f7648e63376d921064c07c	Publish RA2 bounded upgrade probe 42536155267	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_BREAKPOINT_COUNTS.tsv
+61c11df64d98fa4c06f7648e63376d921064c07c	Publish RA2 bounded upgrade probe 42536155267	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH1_BOARD.tsv
+61c11df64d98fa4c06f7648e63376d921064c07c	Publish RA2 bounded upgrade probe 42536155267	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH1_COUNTS.tsv
+61c11df64d98fa4c06f7648e63376d921064c07c	Publish RA2 bounded upgrade probe 42536155267	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH1_LOG.txt
+61c11df64d98fa4c06f7648e63376d921064c07c	Publish RA2 bounded upgrade probe 42536155267	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH1_TRACE.tsv
+61c11df64d98fa4c06f7648e63376d921064c07c	Publish RA2 bounded upgrade probe 42536155267	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH2_BOARD.tsv
+61c11df64d98fa4c06f7648e63376d921064c07c	Publish RA2 bounded upgrade probe 42536155267	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH2_COUNTS.tsv
+61c11df64d98fa4c06f7648e63376d921064c07c	Publish RA2 bounded upgrade probe 42536155267	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH2_LOG.txt
+61c11df64d98fa4c06f7648e63376d921064c07c	Publish RA2 bounded upgrade probe 42536155267	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH2_TRACE.tsv
+61c11df64d98fa4c06f7648e63376d921064c07c	Publish RA2 bounded upgrade probe 42536155267	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_PUBLISH_COMMIT_FILES.tsv
+61c11df64d98fa4c06f7648e63376d921064c07c	Publish RA2 bounded upgrade probe 42536155267	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_RUNTIME_SUMMARY.txt
+61c11df64d98fa4c06f7648e63376d921064c07c	Publish RA2 bounded upgrade probe 42536155267	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_SELFTEST.txt
+61c11df64d98fa4c06f7648e63376d921064c07c	Publish RA2 bounded upgrade probe 42536155267	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/cleanup.txt
+bda5824f04590f6ded7abec46b659d9ae78456a0	Document RA2 identical traces and no observed upgrade	M	reports/stage1_economy/ra2-run-42536155267/attempt-1/ACTIONS_RUN_SUMMARY.txt
+bda5824f04590f6ded7abec46b659d9ae78456a0	Document RA2 identical traces and no observed upgrade	M	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_RUNTIME_SUMMARY.txt
+bda5824f04590f6ded7abec46b659d9ae78456a0	Document RA2 identical traces and no observed upgrade	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_UPGRADE_ACTIONS.tsv
+bda5824f04590f6ded7abec46b659d9ae78456a0	Document RA2 identical traces and no observed upgrade	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_RESULT_NOTES.md
+bda5824f04590f6ded7abec46b659d9ae78456a0	Document RA2 identical traces and no observed upgrade	A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_RESULT_COMMIT_FILES.tsv
+0f5790f03b87e4fb63fa5b098dcd86ad225560a5	Add RA1 read-only stack chain probe with two identical restores	A	.github/workflows/ra1-stack-probe.yml
+0f5790f03b87e4fb63fa5b098dcd86ad225560a5	Add RA1 read-only stack chain probe with two identical restores	A	tools/ra/RunRA1StackProbe.pytxt
+0f5790f03b87e4fb63fa5b098dcd86ad225560a5	Add RA1 read-only stack chain probe with two identical restores	A	reports/stage1_economy/ra1/RA1_SOURCE_COMMIT_FILES.tsv
+130e1c2473dfcf9e4a9962a6ac7b6839c4d7e834	Publish RA1 read-only stack trace 42536371222	A	reports/stage1_economy/ra1-run-42536371222/attempt-1/ACTIONS_RUN_SUMMARY.txt
+130e1c2473dfcf9e4a9962a6ac7b6839c4d7e834	Publish RA1 read-only stack trace 42536371222	A	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_LAUNCH1_COUNTS.tsv
+130e1c2473dfcf9e4a9962a6ac7b6839c4d7e834	Publish RA1 read-only stack trace 42536371222	A	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_LAUNCH1_LOG.txt
+130e1c2473dfcf9e4a9962a6ac7b6839c4d7e834	Publish RA1 read-only stack trace 42536371222	A	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_LAUNCH1_TRACE.tsv
+130e1c2473dfcf9e4a9962a6ac7b6839c4d7e834	Publish RA1 read-only stack trace 42536371222	A	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_LAUNCH2_COUNTS.tsv
+130e1c2473dfcf9e4a9962a6ac7b6839c4d7e834	Publish RA1 read-only stack trace 42536371222	A	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_LAUNCH2_LOG.txt
+130e1c2473dfcf9e4a9962a6ac7b6839c4d7e834	Publish RA1 read-only stack trace 42536371222	A	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_LAUNCH2_TRACE.tsv
+130e1c2473dfcf9e4a9962a6ac7b6839c4d7e834	Publish RA1 read-only stack trace 42536371222	A	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_PER_PC_SUMMARY.tsv
+130e1c2473dfcf9e4a9962a6ac7b6839c4d7e834	Publish RA1 read-only stack trace 42536371222	A	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_PUBLISH_COMMIT_FILES.tsv
+130e1c2473dfcf9e4a9962a6ac7b6839c4d7e834	Publish RA1 read-only stack trace 42536371222	A	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_RUNTIME_SUMMARY.txt
+130e1c2473dfcf9e4a9962a6ac7b6839c4d7e834	Publish RA1 read-only stack trace 42536371222	A	reports/stage1_economy/ra1-run-42536371222/attempt-1/cleanup.txt
+c9547370fa7c281dd45758cb9b41b193d5d7be9d	Clarify RA1 saved return address and unresolved outer caller	M	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_RUNTIME_SUMMARY.txt
+c9547370fa7c281dd45758cb9b41b193d5d7be9d	Clarify RA1 saved return address and unresolved outer caller	A	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_OUTER_CALLER_PENDING.txt
+c9547370fa7c281dd45758cb9b41b193d5d7be9d	Clarify RA1 saved return address and unresolved outer caller	A	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_CORRECTION_COMMIT_FILES.tsv
+bd91cb50d1b09fe683cd175223453a98c8d9dc13	Record RA3 H1 H2 gate as not met	A	reports/stage1_economy/ra3/RA3_H1_H2_STATUS.txt
+bd91cb50d1b09fe683cd175223453a98c8d9dc13	Record RA3 H1 H2 gate as not met	A	reports/stage1_economy/ra3/RA3_COMMIT_FILES.tsv

@@ -1,0 +1,11 @@
+STATUS=BELUM
+RUN_ID=42491644363
+EVENT=push
+SOURCE_SHA=ef995de316ffa9c9250d04307aa9c595a6c969ba
+JOB_QA0=qa0-static-harness-and-excerpt-audit
+JOB_QA0_ID=128765106328
+JOB_QA0_EXIT_CODE=1
+JOB_QA4=qa4-headless-readonly-control-trace
+JOB_QA4_ID=128765162295
+JOB_QA4_EXIT_CODE=1
+NOTE=both jobs failed; see original run reports/logs

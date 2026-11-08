@@ -1,0 +1,11 @@
+STATUS=TUNTAS
+RUN_ID=42530988325
+EVENT=push
+SOURCE_SHA=4572ffed5ecb520dccc4ee840c5d9b8d63ae3268
+JOB_QA0=qa0-static-harness-and-excerpt-audit
+JOB_QA0_ID=128884902903
+JOB_QA0_EXIT_CODE=0
+JOB_QA4=qa4-headless-readonly-control-trace
+JOB_QA4_ID=128884964548
+JOB_QA4_EXIT_CODE=0
+NOTE=both QA jobs completed successfully; superseded by the final 42531023381 audit for RA0 status

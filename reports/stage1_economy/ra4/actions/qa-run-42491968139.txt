@@ -1,0 +1,11 @@
+STATUS=SEBAGIAN
+RUN_ID=42491968139
+EVENT=push
+SOURCE_SHA=1f766de7ba18c919e0f8eec8f2f2f756546a3700
+JOB_QA0=qa0-static-harness-and-excerpt-audit
+JOB_QA0_ID=128766089975
+JOB_QA0_EXIT_CODE=1
+JOB_QA4=qa4-headless-readonly-control-trace
+JOB_QA4_ID=128766166949
+JOB_QA4_EXIT_CODE=1
+NOTE=QA4 two launches/control traces ran, but comparator failed because it treated launch identity as trace difference; no gameplay upgrade conclusion

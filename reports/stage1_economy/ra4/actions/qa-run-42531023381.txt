@@ -1,0 +1,11 @@
+STATUS=TUNTAS
+RUN_ID=42531023381
+EVENT=push
+SOURCE_SHA=fb16eccf44422ed9b3fc3dea0f9ede1782447aac
+JOB_QA0=qa0-static-harness-and-excerpt-audit
+JOB_QA0_ID=128885141028
+JOB_QA0_EXIT_CODE=0
+JOB_QA4=qa4-headless-readonly-control-trace
+JOB_QA4_ID=128885200329
+JOB_QA4_EXIT_CODE=0
+NOTE=latest authoritative QA0 union audit: 15 physical row deletions verified; 0 groups >64 B; QA4 job successful

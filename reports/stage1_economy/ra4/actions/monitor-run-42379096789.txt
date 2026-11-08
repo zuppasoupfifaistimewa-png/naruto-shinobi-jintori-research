@@ -1,0 +1,9 @@
+STATUS=TUNTAS
+JOB=monitor
+JOB_ID=128422729926
+RUN_ID=42379096789
+EVENT=schedule
+SOURCE_SHA=656503e9e21cb4baf3185969abf7b15d05a149c6
+EXIT_CODE=0
+WORKFLOW_CONCLUSION=success
+NOTE=Scheduled adaptive-player monitor completed successfully; this is monitoring status, not gameplay evidence or player readiness.

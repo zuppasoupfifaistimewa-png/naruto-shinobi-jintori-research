@@ -1,0 +1,11 @@
+git_status_vs_baseline	path	rows_before	rows_removed	rows_after
+M	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv	2907	1	2906
+M	reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	47	2	45
+M	reports/stage1_economy/pa-run-42482696764-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv	2907	1	2906
+M	reports/stage1_economy/pa-run-42482696764-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	47	2	45
+M	reports/stage1_economy/pa-run-42483585195-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv	2907	1	2906
+M	reports/stage1_economy/pa-run-42483585195-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	47	2	45
+M	reports/stage1_economy/pa-run-42484127968-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv	2907	1	2906
+M	reports/stage1_economy/pa-run-42484127968-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	47	2	45
+M	reports/stage1_economy/pa-run-42484169218-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv	2907	1	2906
+M	reports/stage1_economy/pa-run-42484169218-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv	47	2	45

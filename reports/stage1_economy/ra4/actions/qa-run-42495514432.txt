@@ -1,0 +1,11 @@
+STATUS=SEBAGIAN
+RUN_ID=42495514432
+EVENT=push
+SOURCE_SHA=5a8f314f188c1071683257680315886313a8c7d6
+JOB_QA0=qa0-static-harness-and-excerpt-audit
+JOB_QA0_ID=128776886279
+JOB_QA0_EXIT_CODE=0
+JOB_QA4=qa4-headless-readonly-control-trace
+JOB_QA4_ID=128776947615
+JOB_QA4_EXIT_CODE=0
+NOTE=QA0 false-clean result later corrected: true union contained three 68-byte groups; do not use as final pass
