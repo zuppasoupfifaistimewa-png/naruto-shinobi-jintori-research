@@ -1,0 +1,2 @@
+predecessor_pc	predecessor_instruction	control_transfer_candidate_pc	control_transfer_candidate	delay_slot_instruction	target_pc	target_instruction	direct_branch_entries	reachable_from_function_entry	function_entry	interpretation
+0x800B24C4	nop	0x800B24C0	lw $v0, -0x158c($a0)	nop	0x800B24C8	sh $zero, 0x2ee($v0)	0	YES	0x800B1E88	fall-through/reachability uses direct static CFG only; indirect entries are not closed
