@@ -32,11 +32,12 @@ local mem=nil
 local function read(addr,n)
   local ok,v=pcall(function()
     if mem==nil then mem=PCSX.getMemoryAsFile() end
-    local b=mem:readAt(n,addr); local x=0
-    for i=0,n-1 do x=x+tonumber(b[i])*(256^i) end
-    return x
+    if n==1 then return tonumber(mem:readU8At(addr)) end
+    if n==2 then return tonumber(mem:readU16At(addr)) end
+    if n==4 then return tonumber(mem:readU32At(addr)) end
+    error("UNSUPPORTED_READ_WIDTH")
   end)
-  if ok then return v end
+  if ok and type(v)=="number" then return v end
   return nil
 end
 local function fmt(v) if v==nil then return "TIDAK_TAHU" end return tostring(v) end
@@ -46,11 +47,11 @@ local function globals()
     read(0x8013EB0C,4),read(0x80139F03,1)
 end
 local function money(m,i)
-  if not m or not i or i>3 then return nil end
+  if type(m)~="number" or type(i)~="number" or i>3 then return nil end
   return read(m+i*0x90+4,4)
 end
 local function fields(ptr)
-  if not ptr or ptr<0x80000000 or ptr+0x22>0x80200000 then
+  if type(ptr)~="number" or ptr<0x80000000 or ptr+0x22>0x80200000 then
     return nil,nil,nil,nil,nil,nil
   end
   local typ=read(ptr,1); local x=read(ptr+0x0e,2); local fee=read(ptr+0x1a,2)
@@ -60,7 +61,10 @@ local function fields(ptr)
 end
 local function snapshot(tag)
   local m,tb,tc,pi,ci,si,pending,es=globals()
-  if not m or m<0x80000000 or m+0x400>=0x80200000 or not tb or tb<0x80000000 or tb>=0x80200000 or not tc or tc<1 or tc>MAX_TILES then
+  if type(m)~="number" or type(tb)~="number" or type(tc)~="number" then
+    log("RA2_SNAPSHOT_INVALID_READ frame="..frame.." manager="..fmt(m).." tile_base="..fmt(tb).." tile_count="..fmt(tc)); return
+  end
+  if m<0x80000000 or m+0x400>=0x80200000 or tb<0x80000000 or tb>=0x80200000 or tc<1 or tc>MAX_TILES then
     log("RA2_SNAPSHOT_INVALID frame="..frame.." tile_count="..fmt(tc).." tile_base="..fmt(tb)); return
   end
   local ms={money(m,0),money(m,1),money(m,2),money(m,3)}
