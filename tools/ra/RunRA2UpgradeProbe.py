@@ -100,7 +100,9 @@ local function onHit(pc)
 end
 local bpRefs={}
 for _,pc in ipairs(BPS) do
-  bpRefs[#bpRefs+1]=PCSX.addBreakpoint(pc,"Exec",4,"RA2 read-only "..names[pc],function(a,w,c) return onHit(pc) end,"RA2_"..names[pc])
+  local address=pc
+  bpRefs[#bpRefs+1]=PCSX.addBreakpoint(address,"Exec",4,"RA2 read-only "..names[address],
+    function(a,w,c) return onHit(address) end,"RA2_"..names[address])
 end
 local pad=PCSX.SIO0.slots[1].pads[1]
 local B=PCSX.CONSTS.PAD.BUTTON
@@ -204,11 +206,40 @@ def launch(n,pcsx,bios,cue,work,out,state):
         shutil.copy2(bd,out/f"RA2_LAUNCH{n}_BOARD.tsv")
         shutil.copy2(co,out/f"RA2_LAUNCH{n}_COUNTS.tsv")
     return {"rc":rc,"loaded":loaded,"frames":frames,"complete":complete,"content":content}
+def compare_boards(path1,path2,out):
+    changes=[]
+    for launch_id,path in (("1",path1),("2",path2)):
+        keyed={}
+        for row in read_tsv(path):
+            keyed[(row["tag"],int(row["tile_index"]))]=row
+        before={idx:r for (tag,idx),r in keyed.items() if tag=="BEFORE_CONFIRM"}
+        after={idx:r for (tag,idx),r in keyed.items() if tag=="AFTER_CONFIRM"}
+        for idx in sorted(set(before)&set(after)):
+            b,a=before[idx],after[idx]
+            fields=("tile_type","field_0e","fee_1a","packed_20","nibble_4_7","nibble_8_11","nibble_12_15")
+            changed=[k for k in fields if b[k]!=a[k]]
+            money=[k for k in ("money_p0","money_p1","money_p2","money_p3") if b[k]!=a[k]]
+            if changed or money:
+                changes.append([launch_id,idx,",".join(changed),b["field_0e"],a["field_0e"],
+                    b["fee_1a"],a["fee_1a"],b["packed_20"],a["packed_20"],
+                    b["nibble_4_7"],a["nibble_4_7"],b["nibble_8_11"],a["nibble_8_11"],
+                    b["nibble_12_15"],a["nibble_12_15"],",".join(money),
+                    ",".join(b["money_p"+str(i)] for i in range(4)),
+                    ",".join(a["money_p"+str(i)] for i in range(4))])
+    with (out/"RA2_ACTION_TILE_DIFFS.tsv").open("w",encoding="utf-8",newline="") as f:
+        w=csv.writer(f,delimiter="\t",lineterminator="\n")
+        w.writerow(["launch","tile_index","changed_fields","field_0e_before","field_0e_after",
+          "fee_1a_before","fee_1a_after","packed_20_before","packed_20_after",
+          "nibble_4_7_before","nibble_4_7_after","nibble_8_11_before","nibble_8_11_after",
+          "nibble_12_15_before","nibble_12_15_after","changed_money_fields","money_p0_p3_before","money_p0_p3_after"])
+        w.writerows(changes)
+    return changes
+
 def main():
     ap=argparse.ArgumentParser()
     for x in ("pcsx","bios","cue","work","out","state"):ap.add_argument("--"+x,required=True,type=Path)
     a=ap.parse_args();a.out.mkdir(parents=True,exist_ok=True);a.work.mkdir(parents=True,exist_ok=True)
-    tests=self_test(Path.cwd());(a.out/"RA2_SELFTEST.txt").write_text("\n".join(tests)+"\n",encoding="utf-8")
+    tests=self_test(Path(os.environ.get("GITHUB_WORKSPACE",str(Path.cwd()))));(a.out/"RA2_SELFTEST.txt").write_text("\n".join(tests)+"\n",encoding="utf-8")
     if not a.state.is_file() or a.state.stat().st_size!=STATE_SIZE or sha256(a.state)!=STATE_SHA:raise SystemExit("RA2_CHECKPOINT_VALIDATION_FAIL")
     r1=launch(1,a.pcsx,a.bios,a.cue,a.work,a.out,a.state)
     r2=launch(2,a.pcsx,a.bios,a.cue,a.work,a.out,a.state) if r1["complete"] else None
@@ -222,7 +253,9 @@ def main():
         counts=[[f"0x{pc:08X}",label,c1.get(f"0x{pc:08X}",0),c2.get(f"0x{pc:08X}",0)] for pc,label in BPS.items()]
         with (a.out/"RA2_BREAKPOINT_COUNTS.tsv").open("w",encoding="utf-8",newline="") as f:
             w=csv.writer(f,delimiter="\t",lineterminator="\n");w.writerow(["pc","label","hits_launch1","hits_launch2"]);w.writerows(counts)
+        tile_diffs=compare_boards(a.out/"RA2_LAUNCH1_BOARD.tsv",a.out/"RA2_LAUNCH2_BOARD.tsv",a.out)
     else:
+        tile_diffs=[]
         with (a.out/"RA2_BREAKPOINT_COUNTS.tsv").open("w",encoding="utf-8",newline="") as f:
             w=csv.writer(f,delimiter="\t",lineterminator="\n");w.writerow(["pc","label","hits_launch1","hits_launch2"])
             for pc,label in BPS.items():w.writerow([f"0x{pc:08X}",label,"TIDAK_TAHU","TIDAK_TAHU"])
@@ -241,6 +274,7 @@ def main():
       "EFFECT_ID=TIDAK TAHU","D=TIDAK TAHU",
       "LEVEL_MAPPING=TIDAK TAHU; packed +0x20 nibbles recorded without assigning semantics",
       "HIT_ZERO_MEANS=not hit under this bounded confirmation scenario; not proof unreachable",
+      f"ACTION_TILE_DIFF_ROWS={len(tile_diffs) if r1['complete'] and r2 and r2['complete'] else 'TIDAK_TAHU'}",
       "ACTUAL_UPGRADE=TIDAK TAHU unless a level-field change is tied to the confirmation action",
       "BIOS_ROM_SAVESTATE_RAM_DUMP_COMMITTED=no"]
     (a.out/"RA2_RUNTIME_SUMMARY.txt").write_text("\n".join(lines)+"\n",encoding="utf-8")
