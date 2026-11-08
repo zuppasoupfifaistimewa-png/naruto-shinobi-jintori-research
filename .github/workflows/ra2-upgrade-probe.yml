@@ -47,7 +47,7 @@ jobs:
           m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
           print("\n".join(m.self_test(Path.cwd())))
           PY
-      - name: Download and verify prior adaptive checkpoint
+      - name: Verify prior adaptive checkpoint metadata
         shell: bash
         run: |
           set -euo pipefail
@@ -62,12 +62,23 @@ jobs:
               if j.get(k)!=v:raise SystemExit("ARTIFACT_METADATA_MISMATCH_"+k)
           if j.get("workflow_run",{}).get("id")!=39907655833:raise SystemExit("ARTIFACT_SOURCE_RUN_MISMATCH")
           PY
-          curl --fail --silent --show-error --location --max-time 180 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$API/actions/artifacts/12482055310/zip" -o "$WORK/source/checkpoint.zip"
-          test "$(stat -c %s "$WORK/source/checkpoint.zip")" = 11407011
-          echo "a0f45156dfd489f24c8dc8e122c33a048c7b9ac34b935ac828523593d21ca2a8  $WORK/source/checkpoint.zip" | sha256sum --check --status
-          unzip -p "$WORK/source/checkpoint.zip" adaptive-cycle-02-f180.sstate > "$WORK/resume/adaptive-cycle-02-f180.sstate"
-          test "$(stat -c %s "$WORK/resume/adaptive-cycle-02-f180.sstate")" = 21162799
-          echo "705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35  $WORK/resume/adaptive-cycle-02-f180.sstate" | sha256sum --check --status
+
+      - name: Download checkpoint artifact from source run
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: 39907655833
+          github-token: ${{ github.token }}
+          path: ${{ env.WORK }}/checkpoint
+
+      - name: Verify checkpoint file bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          STATE="$WORK/checkpoint/adaptive-cycle-02-f180.sstate"
+          test "$(stat -c %s "$STATE")" = 21162799
+          echo "705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35  $STATE" | sha256sum --check --status
+          cp "$STATE" "$WORK/resume/adaptive-cycle-02-f180.sstate"
       - name: Download and verify private runtime inputs
         shell: bash
         run: |
@@ -172,11 +183,23 @@ jobs:
           set -euo pipefail
           DEST="reports/stage1_economy/ra2-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$DEST"
+          if [ ! -s "$OUT/RA2_RUNTIME_SUMMARY.txt" ]; then
+            {
+              echo "STATUS=BELUM"
+              echo "CONFIDENCE=K1"
+              echo "REASON=CHECKPOINT_OR_HEADLESS_SETUP_FAILED_BEFORE_TWO_LAUNCHES"
+              echo "LAUNCHES_REQUESTED=2"
+              echo "LAUNCHES_COMPLETED=0"
+              echo "MEMORY_WRITE=NONE"
+              echo "REGISTER_WRITE=NONE"
+            } > "$OUT/RA2_RUNTIME_SUMMARY.txt"
+          fi
           find "$OUT" -maxdepth 1 -type f \( -name 'RA2_*.txt' -o -name 'RA2_*.tsv' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
-          RC="${RA2_EXIT_CODE:-TIDAK_TAHU}"
+          RC="${RA2_EXIT_CODE:-1}"
           STATUS="$(sed -n 's/^STATUS=//p' "$DEST/RA2_RUNTIME_SUMMARY.txt" | head -n 1 || true)"
           [ -n "$STATUS" ] || STATUS=BELUM
-          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="ra2-two-identical-headless-upgrade-confirmation-launches") | .id' | head -n 1)"
+          JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" | jq -r '.jobs[] | select(.name=="ra2-two-identical-headless-upgrade-confirmation-launches") | .id' | head -n 1 || true)"
+          [ -n "$JOB_ID" ] || JOB_ID=TIDAK_TAHU
           {
             echo "STATUS=$STATUS";echo "JOB=ra2-two-identical-headless-upgrade-confirmation-launches"
             echo "JOB_ID=$JOB_ID";echo "RUN_ID=$GITHUB_RUN_ID";echo "SOURCE_SHA=$GITHUB_SHA";echo "EXIT_CODE=$RC"
