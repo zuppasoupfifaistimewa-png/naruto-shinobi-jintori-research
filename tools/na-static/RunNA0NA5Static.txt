@@ -1,0 +1,1151 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+import csv, hashlib, json, os, re, struct, subprocess, sys, urllib.request
+from collections import defaultdict
+from pathlib import Path
+from capstone import Cs, CS_ARCH_MIPS, CS_MODE_MIPS32, CS_MODE_LITTLE_ENDIAN
+
+EXE_BASE, EXE_FILE = 0x80010000, 0x800
+ENTRY_BASE, ENTRY_FILE = 0x800AD450, 0x10BB000
+EXE_SHA = "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569"
+ENTRY_SHA = "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a"
+EXE_SIZE, ENTRY_SIZE = 385024, 596412
+BASELINE = os.environ["NA_BASELINE"]
+SOURCE_SHA = os.environ["GITHUB_SHA"]
+REPO = os.environ["GITHUB_REPOSITORY"]
+OUT = Path(sys.argv[3])
+OUT.mkdir(parents=True, exist_ok=True)
+REG = ["zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"]
+LOADS = {0x20:"lb",0x21:"lh",0x23:"lw",0x24:"lbu",0x25:"lhu"}
+STORES = {0x28:"sb",0x29:"sh",0x2b:"sw"}
+WIDTH = {0x20:1,0x21:2,0x23:4,0x24:1,0x25:2,0x28:1,0x29:2,0x2b:4}
+md = Cs(CS_ARCH_MIPS, CS_MODE_MIPS32 | CS_MODE_LITTLE_ENDIAN)
+md.detail = False
+
+def hx(b): return " ".join(f"{x:02X}" for x in b)
+def h32(v): return f"0x{v & 0xffffffff:08X}"
+def sign16(v): return (v ^ 0x8000) - 0x8000
+def reg(r): return "$" + REG[r]
+def write_tsv(name, rows, fields):
+    with (OUT/name).open("w", encoding="utf-8", newline="") as f:
+        w=csv.DictWriter(f, fieldnames=fields, delimiter="\t", extrasaction="ignore", lineterminator="\n")
+        w.writeheader()
+        for row in rows:
+            w.writerow({k: ("TIDAK TAHU" if row.get(k) is None or row.get(k) == "" else row.get(k)) for k in fields})
+def write_txt(name, value): (OUT/name).write_text(value, encoding="utf-8")
+def decode_blob(blob, tag):
+    base, filebase, start = (EXE_BASE, EXE_FILE, EXE_FILE) if tag=="EXE" else (ENTRY_BASE, ENTRY_FILE, 0)
+    data=blob[start:]
+    out={}
+    for p in range(0, len(data)-3, 4):
+        raw=data[p:p+4]
+        pc=base+p
+        ins=next(md.disasm(raw, pc, count=1), None)
+        if ins is None: continue
+        word=int.from_bytes(raw,"little")
+        op=word>>26; rs=(word>>21)&31; rt=(word>>16)&31; rd=(word>>11)&31; sh=(word>>6)&31; fn=word&63
+        out[pc]={"pc":pc,"tag":tag,"raw":raw,"word":word,"op":op,"rs":rs,"rt":rt,"rd":rd,"sh":sh,"fn":fn,
+                 "imm":sign16(word&0xffff),"uimm":word&0xffff,"mn":ins.mnemonic.lower(),
+                 "text":(ins.mnemonic+" "+ins.op_str).strip(),"fileoff":filebase+p}
+    return out
+
+def parse_ghidra(path):
+    code=set(); ranges=defaultdict(list); refs=defaultdict(list)
+    p=Path(path)
+    if not p.exists(): return code, ranges, refs
+    target=None
+    for line in p.read_text(encoding="utf-8", errors="replace").splitlines():
+        if line.startswith("CODE_INSTRUCTION="):
+            try: code.add(int(line.split("=",1)[1].split("|",1)[0],16))
+            except Exception: pass
+        elif line.startswith("FUNCTION_RANGE="):
+            q=line.split("=",1)[1].split("|")
+            if len(q)>=4:
+                try: ranges[int(q[0],16)].append((int(q[1],16),int(q[2],16),q[3]))
+                except Exception: pass
+        elif line.startswith("TARGET="):
+            try: target=int(line.split("=",1)[1],16)
+            except Exception: target=None
+        elif line.startswith("REF=") and target is not None:
+            q=line.split("=",1)[1].split("|")
+            if len(q)>=4:
+                try: refs[target].append({"pc":int(q[0],16),"kind":q[1],"caller_entry":q[2],"caller_name":q[3]})
+                except Exception: pass
+    return code, ranges, refs
+
+def dest(i):
+    op,fn=i["op"],i["fn"]
+    if op==0:
+        if fn in (8,12,13,24,25,26,27): return None
+        if fn==9: return i["rd"] or 31
+        return i["rd"] or None
+    if op in (2,4,5,6,7,0x28,0x29,0x2b,0x38,0x39,0x3a,0x3b): return None
+    if op==3: return 31
+    if op in (1,8,9,10,11,12,13,14,15,0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37): return i["rt"] or None
+    return None
+
+def direct_target(i):
+    if i["op"] not in (2,3): return None
+    return ((i["pc"]+4)&0xF0000000) | ((i["word"]&0x03ffffff)<<2)
+
+def last_def(code, r, before, lo, limit=512, stop_control=True):
+    floor=max(lo,before-limit*4)
+    for pc in range(before-4,floor-1,-4):
+        i=code.get(pc)
+        if not i: continue
+        if dest(i)==r: return i
+        if stop_control and (i["op"] in (2,3,4,5,6,7,1) or (i["op"]==0 and i["fn"] in (8,9))):
+            return None
+    return None
+
+def const_reg(code, r, before, lo, depth=0, seen=None):
+    if r==0: return 0
+    if depth>12: return None
+    seen=set() if seen is None else seen
+    key=(r,before)
+    if key in seen: return None
+    seen.add(key)
+    d=last_def(code,r,before,lo)
+    if not d: return None
+    op,fn=d["op"],d["fn"]
+    if op==15: return (d["uimm"]<<16)&0xffffffff
+    if op in (8,9,13,12,14):
+        a=const_reg(code,d["rs"],d["pc"],lo,depth+1,seen.copy())
+        if a is None: return None
+        if op in (8,9): return (a+d["imm"])&0xffffffff
+        if op==13: return (a|d["uimm"])&0xffffffff
+        if op==12: return (a&d["uimm"])&0xffffffff
+        return (a^d["uimm"])&0xffffffff
+    if op==0 and fn in (0,2,3,0x21,0x23,0x24,0x25,0x26):
+        a=const_reg(code,d["rs"],d["pc"],lo,depth+1,seen.copy())
+        b=const_reg(code,d["rt"],d["pc"],lo,depth+1,seen.copy())
+        if fn==0 and b is not None: return (b<<d["sh"])&0xffffffff
+        if fn==2 and b is not None: return b>>d["sh"]
+        if fn==3 and b is not None: return (b>>d["sh"])
+        if a is None or b is None: return None
+        if fn==0x21: return (a+b)&0xffffffff
+        if fn==0x23: return (a-b)&0xffffffff
+        if fn==0x24: return a&b
+        if fn==0x25: return a|b
+        if fn==0x26: return a^b
+    return None
+
+def sym_reg(code, r, before, lo, depth=0, seen=None):
+    if r==0: return "0"
+    if depth>12: return "TIDAK TAHU:DEPTH"
+    seen=set() if seen is None else seen
+    key=(r,before)
+    if key in seen: return "TIDAK TAHU:CYCLE"
+    seen.add(key)
+    d=last_def(code,r,before,lo)
+    if not d: return "INCOMING_"+reg(r)
+    op,fn=d["op"],d["fn"]
+    if op==15: return h32(d["uimm"]<<16)
+    if op in (8,9): return "("+sym_reg(code,d["rs"],d["pc"],lo,depth+1,seen.copy())+f"{d['imm']:+d})"
+    if op==13: return "("+sym_reg(code,d["rs"],d["pc"],lo,depth+1,seen.copy())+f"|{h32(d['uimm'])})"
+    if op==12: return "("+sym_reg(code,d["rs"],d["pc"],lo,depth+1,seen.copy())+f"&{h32(d['uimm'])})"
+    if op in LOADS:
+        a=const_reg(code,d["rs"],d["pc"],lo)
+        size={0x20:"8S",0x21:"16S",0x23:"32",0x24:"8",0x25:"16"}[op]
+        addr=h32((a+d["imm"])&0xffffffff) if a is not None else sym_reg(code,d["rs"],d["pc"],lo,depth+1,seen.copy())+f"{d['imm']:+d}"
+        return f"MEM{size}[{addr}]"
+    if op==0 and fn==0: return "("+sym_reg(code,d["rt"],d["pc"],lo,depth+1,seen.copy())+f"<<{d['sh']})"
+    if op==0 and fn in (0x21,0x23,0x24,0x25,0x26):
+        if fn==0x21 and d["rs"]==0: return sym_reg(code,d["rt"],d["pc"],lo,depth+1,seen.copy())
+        if fn==0x21 and d["rt"]==0: return sym_reg(code,d["rs"],d["pc"],lo,depth+1,seen.copy())
+        opstr={0x21:"+",0x23:"-",0x24:"&",0x25:"|",0x26:"^"}[fn]
+        return "("+sym_reg(code,d["rs"],d["pc"],lo,depth+1,seen.copy())+opstr+sym_reg(code,d["rt"],d["pc"],lo,depth+1,seen.copy())+")"
+    return f"DEF@{h32(d['pc'])}:{d['text']}"
+
+def eff_addr(code,i,lo):
+    b=const_reg(code,i["rs"],i["pc"],lo)
+    return ((b+i["imm"])&0xffffffff) if b is not None else None
+
+def base_row(i, excerpt=""):
+    z={"image":i["tag"],"pc":h32(i["pc"]),"file_offset":h32(i["fileoff"]),
+       "bytes":hx(i["raw"]),"instruksi":i["text"]}
+    if excerpt: z["excerpt_id"]=excerpt
+    return z
+
+def find_prolog(code, pc, lo, span=0x5000):
+    # First accept a prolog exactly at the target, then search backwards but stop at a return.
+    def at(q):
+        a=code.get(q); b=code.get(q+4)
+        if a and b and a["op"]==9 and a["rs"]==29 and a["rt"]==29 and a["imm"]<0 and b["op"]==0x2b and b["rs"]==29 and b["rt"]==31:
+            return True
+        return False
+    if at(pc): return pc,"PROLOG_AT_TARGET"
+    floor=max(lo,pc-span)
+    for q in range(pc-4,floor-1,-4):
+        i=code.get(q)
+        if not i: continue
+        if i["op"]==0 and i["fn"]==8 and i["rs"]==31: break
+        if at(q): return q,"BACKWARD_PROLOG_BEFORE_RETURN"
+    return None,"NO_UNIQUE_PROLOG"
+
+def function_for(ranges, pc):
+    matches=[]
+    for entry,parts in ranges.items():
+        for lo,hi,name in parts:
+            if lo<=pc<=hi: matches.append((entry,lo,hi,name))
+    if not matches:return None
+    return sorted(matches,key=lambda x:(x[2]-x[1],x[0]))[0]
+
+def parse_refs(path):
+    _,_,refs=parse_ghidra(path)
+    return refs
+
+def get_code_excerpt(code, start, count, image, name):
+    rows=[]
+    for n in range(count):
+        i=code.get(start+n*4)
+        if i: rows.append(base_row(i,name))
+    return rows
+
+def return_sites(code, frange):
+    if not frange:return []
+    entry,lo,hi,_=frange
+    out=[]
+    for pc in range(lo,hi+1,4):
+        i=code.get(pc)
+        if i and i["op"]==0 and i["fn"]==8 and i["rs"]==31:
+            out.append({"pc":pc,"value_expr":sym_reg(code,2,pc,lo),"value_const":const_reg(code,2,pc,lo)})
+    return out
+
+def call_site_origin(code, ranges, pc, r, manual_entry=None):
+    fr=function_for(ranges,pc)
+    entry=manual_entry if manual_entry is not None else (fr[0] if fr else None)
+    if entry is None:
+        return {"origin":"TIDAK TAHU","expression":"TIDAK TAHU: manual prolog/function entry unresolved","definition_pc":"TIDAK TAHU","function_entry":"TIDAK TAHU"}
+    delay=code.get(pc+4)
+    if delay and dest(delay)==r:
+        value=const_reg(code,r,pc+8,entry)
+        expr=sym_reg(code,r,pc+8,entry)
+        origin="KONSTANTA" if value is not None else ("DARI_MEMORI" if expr.startswith("MEM") else ("ARGUMEN_MASUK" if expr.startswith("INCOMING_") else "TIDAK TAHU"))
+        return {"origin":origin,"expression":"DELAY_SLOT "+expr,"definition_pc":h32(delay["pc"]),"function_entry":h32(entry)}
+    d=None; crossed_control=False
+    for q in range(pc-4,entry-1,-4):
+        ins=code.get(q)
+        if not ins: continue
+        if dest(ins)==r: d=ins; break
+        if ins["op"] in (2,3,4,5,6,7,1) or (ins["op"]==0 and ins["fn"] in (8,9)):
+            crossed_control=True; break
+    if d is None:
+        if crossed_control:
+            return {"origin":"TIDAK TAHU","expression":"TIDAK TAHU: no reaching definition before control-flow boundary","definition_pc":"TIDAK TAHU","function_entry":h32(entry)}
+        return {"origin":"ARGUMEN_MASUK","expression":"INCOMING_"+reg(r),"definition_pc":"TIDAK TAHU","function_entry":h32(entry)}
+    value=const_reg(code,r,pc,entry); expr=sym_reg(code,r,pc,entry)
+    origin="KONSTANTA" if value is not None else ("DARI_MEMORI" if expr.startswith("MEM") else ("ARGUMEN_MASUK" if expr.startswith("INCOMING_") else "TIDAK TAHU"))
+    return {"origin":origin,"expression":expr,"definition_pc":h32(d["pc"]),"function_entry":h32(entry)}
+
+def record_at(blob, pc):
+    off=EXE_FILE+(pc-EXE_BASE)
+    if off<0 or off+0x1c>len(blob): return None
+    raw=blob[off:off+0x1c]
+    w=struct.unpack("<7I",raw)
+    name_raw=raw[0x14:0x1c]
+    try:
+        n=name_raw.split(b"\0",1)[0].decode("ascii")
+    except Exception: return None
+    if w[0]!=0 or w[1]>32 or not n or not re.fullmatch(r"[A-Z0-9_]{1,8}",n): return None
+    if not all(0x80010000<=v<=0x801fffff for v in w[2:5]): return None
+    return {"base":pc,"plus4":w[1],"p1":w[2],"p2":w[3],"p3":w[4],"name":n,"raw":raw}
+
+def table_scan(exe, code_sets):
+    lo,hi=EXE_BASE,EXE_BASE+len(exe)-EXE_FILE
+    candidates={}
+    for pc in range(lo,hi,4):
+        r=record_at(exe,pc)
+        if r: candidates[pc]=r
+    groups=[]
+    for pc in sorted(candidates):
+        if not groups or pc-groups[-1][-1]!=0x1c: groups.append([pc])
+        else: groups[-1].append(pc)
+    anchor=0x800558A4
+    main=next((g for g in groups if anchor in g),[])
+    rows=[]
+    if main:
+        for idx,pc in enumerate(main):
+            r=candidates[pc]
+            rows.append({"group":"ANCHOR_TABLE","index":idx,"base_pc":h32(pc),"value_plus4":r["plus4"],
+                         "pointer_plus8":h32(r["p1"]),"pointer_plusC":h32(r["p2"]),
+                         "pointer_plus10":h32(r["p3"]),"name":r["name"],
+                         "group_length":len(main),"stride":h32(0x1c)})
+        start=main[0]; end=main[-1]+0x1c
+    else: start=end=None
+    snippet=[]
+    if len(main)>=2:
+        pc=main[0]; off=EXE_FILE+(pc-EXE_BASE); raw=exe[off:off+0x38]
+        snippet=[{"image":"EXE","pc":h32(pc),"file_offset":h32(off),"bytes":hx(raw),"instruksi":"DATA_RECORD_PAIR","excerpt_id":"NA1_SCENE_TABLE_PAIR_56B"}]
+    return rows,groups,(start,end),snippet,candidates,bool(main)
+
+def scan_code_users(codes, valid, table_start, table_end, ptr_values):
+    rows=[]; arithmetic=[]; low=table_start or EXE_BASE; high=table_end or (EXE_BASE+len(code)*4)
+    for tag,code in codes:
+        lo=EXE_BASE if tag=="EXE" else ENTRY_BASE
+        for pc,i in sorted(code.items()):
+            if pc not in valid[tag]: continue
+            if i["op"] in (8,9,13) and i["rt"]!=0:
+                v=const_reg(code,i["rt"],pc+4,lo)
+                if v is not None and low<=v<high:
+                    z=base_row(i,"NA1_TABLE_ADDRESS_CONSTANT"); z.update({"register":reg(i["rt"]),"constant":h32(v)}); rows.append(z)
+            if i["op"] in LOADS:
+                ea=eff_addr(code,i,lo); expr=sym_reg(code,i["rs"],pc,lo)
+                cs=[int(x,16) for x in re.findall(r"0x([0-9A-Fa-f]{8})",expr)]
+                table_ref=any(low<=x<high for x in cs)
+                if (ea is not None and low-0x40<=ea<high+0x40) or table_ref:
+                    z=base_row(i,"NA1_TABLE_LOAD_CANDIDATE")
+                    z.update({"base_expression":expr,"effective_address":h32(ea) if ea is not None else "DYNAMIC",
+                              "register_destination":reg(i["rt"]),"next_indirect_jump":"TIDAK TAHU",
+                              "load_offset":i["imm"],"table_reference":"YES" if table_ref else "STATIC_EA_CANDIDATE"})
+                    for q in range(pc+4,pc+0x81,4):
+                        j=code.get(q)
+                        if j and j["op"]==0 and j["fn"] in (8,9):
+                            z["next_indirect_jump"]=h32(q)+" "+j["text"]+" target_expr="+sym_reg(code,j["rs"],q,lo); break
+                    rows.append(z)
+            if i["op"]==0 and i["fn"] in (0x18,0x19):
+                a=const_reg(code,i["rs"],pc,lo); b=const_reg(code,i["rt"],pc,lo)
+                if a==28 or b==28:
+                    arithmetic.append(base_row(i,"SCALE_28_CONFIRMED")|{"scale_pattern":"MULT_BY_28",
+                        "left_definition":sym_reg(code,i["rs"],pc,lo),"right_definition":sym_reg(code,i["rt"],pc,lo),
+                        "input_expression":"literal multiplier 28"})
+            elif i["op"]==0 and i["fn"]==0x23:
+                dl=last_def(code,i["rs"],pc,lo); dr=last_def(code,i["rt"],pc,lo)
+                if dl and dr and dl["op"]==0 and dr["op"]==0 and dl["fn"]==0 and dr["fn"]==0:
+                    if dl["rs"]==0 and dr["rs"]==0 and dl["rt"]==dr["rt"] and {dl["sh"],dr["sh"]}=={2,5}:
+                        arithmetic.append(base_row(i,"SCALE_28_CONFIRMED")|{"scale_pattern":"(index<<5)-(index<<2)",
+                            "left_definition":dl["text"],"right_definition":dr["text"],"input_expression":reg(dl["rt"])})
+            elif i["op"]==0 and i["fn"]==0x21:
+                a=sym_reg(code,i["rs"],pc,lo); b=sym_reg(code,i["rt"],pc,lo)
+                if any(("<<" + str(n)) in (a+b) for n in (2,3,4,5)):
+                    arithmetic.append(base_row(i,"SCALE_ARITHMETIC_CANDIDATE")|{"scale_pattern":"TIDAK TAHU",
+                        "left_definition":a,"right_definition":b,"input_expression":"TIDAK TAHU"})
+    def dedup(xs):
+        out={(x.get("image"),x.get("pc"),x.get("instruksi"),x.get("excerpt_id","")):x for x in xs}
+        return list(out.values())
+    return dedup(rows),dedup(arithmetic)
+
+def pointer_words(blobs, targets):
+    out=[]
+    for tag,blob,base,filebase in [("EXE",blobs[0],EXE_BASE,EXE_FILE),("ENTRY1",blobs[1],ENTRY_BASE,ENTRY_FILE)]:
+        for val in targets:
+            needle=struct.pack("<I",val); pos=0
+            while True:
+                p=blob.find(needle,pos)
+                if p<0: break
+                if tag=="EXE":
+                    if p>=EXE_FILE and p%4==0:
+                        pc=EXE_BASE+(p-EXE_FILE)
+                        out.append({"image":tag,"pc":h32(pc),"file_offset":h32(p),"bytes":hx(blob[p:p+4]),
+                                    "instruksi":"DATA_POINTER_WORD","value":h32(val),"classification":"POINTER_WORD"})
+                else:
+                    if p%4==0:
+                        pc=ENTRY_BASE+p
+                        out.append({"image":tag,"pc":h32(pc),"file_offset":h32(ENTRY_FILE+p),"bytes":hx(blob[p:p+4]),
+                                    "instruksi":"DATA_POINTER_WORD","value":h32(val),"classification":"POINTER_WORD"})
+                pos=p+1
+    return out
+
+def source_value_class(expr, value):
+    if value is not None: return "KONSTANTA"
+    if re.fullmatch(r"MEM(?:8|16|32|8S|16S)\[[^\]]+\]",expr): return "SALINAN_DARI_MEMORI"
+    if expr.startswith("INCOMING_"): return "ARGUMEN_MASUK"
+    if "MEM" in expr and any(op in expr for op in ("+","-","&","|")): return "TRANSFORMASI_MEMORI_TIDAK_TERIDENTIFIKASI"
+    return "TIDAK TAHU"
+
+def global_writers(codes, valid, globals_):
+    rows=[]
+    for tag,code in codes:
+        lo=EXE_BASE if tag=="EXE" else ENTRY_BASE
+        for pc,i in sorted(code.items()):
+            if pc not in valid[tag] or i["op"] not in STORES: continue
+            ea=eff_addr(code,i,lo)
+            if ea is None: continue
+            width=WIDTH[i["op"]]
+            for g in globals_:
+                if ea<=g<ea+width:
+                    val=const_reg(code,i["rt"],pc,lo); expr=sym_reg(code,i["rt"],pc,lo)
+                    mask=(1<<(8*width))-1
+                    stored=(val & mask) if val is not None else None
+                    z=base_row(i,"NA2_GLOBAL_WRITER_"+h32(g))
+                    z.update({"target_global":h32(g),"store_width":width,"effective_address":h32(ea),
+                              "source_register":reg(i["rt"]),
+                              "source_constant":h32(val) if val is not None else "TIDAK TAHU",
+                              "stored_constant":(h32(stored) if width==4 else f"0x{stored:0{width*2}X}") if stored is not None else "TIDAK TAHU",
+                              "source_expression":expr,"source_class":source_value_class(expr,val)})
+                    rows.append(z)
+    return rows
+
+def matrix_writers(codes, valid):
+    rows=[]; partial=[]; all_sb=[]
+    anchors=("0x8013EA74","0x8013EB1C","0x8013EA6E")
+    for tag,code in codes:
+        lo=EXE_BASE if tag=="EXE" else ENTRY_BASE
+        for pc,i in sorted(code.items()):
+            if pc not in valid[tag] or i["op"]!=0x28: continue
+            b=sym_reg(code,i["rs"],pc,lo); src=sym_reg(code,i["rt"],pc,lo)
+            base_const=eff_addr(code,i,lo); val=const_reg(code,i["rt"],pc,lo)
+            src_class=source_value_class(src,val)
+            n=sum(a in b.upper() for a in anchors)
+            census=base_row(i,"NA2_ALL_SB_STORE")
+            census.update({"base_expression":b,"effective_address":h32(base_const) if base_const is not None else "TIDAK TAHU",
+                           "base_class":"STATIC_ADDRESS" if base_const is not None else "DYNAMIC_OR_ALIAS_UNRESOLVED",
+                           "source_expression":src,"source_class":src_class,"matrix_anchor_count":n})
+            all_sb.append(census)
+            if n>=1:
+                item=base_row(i,"NA2_MATRIX_WRITER_CANDIDATE")
+                if val is not None: cls="KONSTANTA"
+                elif re.fullmatch(r"MEM(?:8|16|32|8S|16S)\[[^\]]+\]",src): cls="SALINAN_DARI_MEMORI"
+                elif "MEM" in src and "-" in src: cls="SELISIH_KANDIDAT_BELUM_TERVERIFIKASI_LEVEL"
+                else: cls="TIDAK TAHU"
+                item.update({"base_expression":b,"source_expression":src,"source_class":cls,"anchor_count":n})
+                (rows if n==3 else partial).append(item)
+    return rows,partial,all_sb
+
+def caller_rows(code, valid, refs, target):
+    out=[]
+    for pc,i in sorted(code.items()):
+        if pc not in valid: continue
+        t=direct_target(i)
+        if t==target:
+            z=base_row(i); z.update({"target":h32(target),"kind":"JAL" if i["op"]==3 else "J","origin":"DIRECT"})
+            out.append(z)
+        if i["op"]==0 and i["fn"] in (8,9):
+            v=const_reg(code,i["rs"],pc,ENTRY_BASE)
+            if v==target:
+                z=base_row(i); z.update({"target":h32(target),"kind":"JALR" if i["fn"]==9 else "JR","origin":"STATIC_REGISTER"})
+                out.append(z)
+    for x in refs.get(target,[]):
+        z={"image":"ENTRY1","pc":h32(x["pc"]),"file_offset":h32(ENTRY_FILE+x["pc"]-ENTRY_BASE),
+           "bytes":"TIDAK TAHU","instruksi":"GHIDRA_REFERENCE","target":h32(target),
+           "kind":x["kind"],"origin":"GHIDRA_XREF caller="+x["caller_name"]+" entry="+x["caller_entry"]}
+        i=code.get(x["pc"])
+        if i: z.update({"bytes":hx(i["raw"]),"instruksi":i["text"]})
+        out.append(z)
+    unique={(x.get("pc"),x.get("kind"),x.get("origin")):x for x in out}
+    return list(unique.values())
+
+def validate_outputs(exe, entry):
+    rows=[]; checked=decoded=fail=0
+    for path in sorted(OUT.glob("NA*.tsv")):
+        try: data=list(csv.DictReader(path.open(encoding="utf-8"),delimiter="\t"))
+        except Exception: continue
+        for n,r in enumerate(data,2):
+            if not all(r.get(k) for k in ("image","pc","file_offset","bytes")): continue
+            if r["bytes"]=="TIDAK TAHU": continue
+            try:
+                pc=int(r["pc"],16); fo=int(r["file_offset"],16)
+                raw=bytes(int(x,16) for x in r["bytes"].split())
+                tag=r["image"]
+                expected=(EXE_FILE+pc-EXE_BASE) if tag=="EXE" else (ENTRY_FILE+pc-ENTRY_BASE)
+                source=exe[fo:fo+len(raw)] if tag=="EXE" else entry[fo-ENTRY_FILE:fo-ENTRY_FILE+len(raw)]
+                ok=(fo==expected and source==raw and len(raw)>0)
+                dec="NOT_CODE"
+                if ok and len(raw)==4 and not r.get("instruksi","").startswith("DATA_"):
+                    ins=next(md.disasm(raw,pc,count=1),None)
+                    ok=ins is not None
+                    dec="PASS" if ins else "FAIL"
+                    if ins: decoded+=1
+                checked+=1
+                if not ok: fail+=1
+                rows.append({"file":path.name,"line":n,"image":tag,"pc":r["pc"],"file_offset":r["file_offset"],
+                             "raw_check":"PASS" if ok else "FAIL","decode_check":dec})
+            except Exception as e:
+                checked+=1; fail+=1
+                rows.append({"file":path.name,"line":n,"image":r.get("image"),"pc":r.get("pc"),
+                             "file_offset":r.get("file_offset"),"raw_check":"FAIL","decode_check":"ERROR:"+type(e).__name__})
+    write_tsv("NA0_FILE_OFFSET_DECODE_VALIDATION.tsv",rows,["file","line","image","pc","file_offset","raw_check","decode_check"])
+    return checked,decoded,fail
+
+def excerpt_audit():
+    seen={}; sources=[]; root=Path("reports/stage1_economy")
+    for prefix in ("ja-run-","ka-run-","la-run-","ma-run-","na-run-"):
+        sources.extend(root.glob(prefix+"*/attempt-*/*.tsv"))
+    sources.extend(OUT.glob("NA*.tsv"))
+    for path in sources:
+        try: rr=csv.DictReader(path.open(encoding="utf-8"),delimiter="\t")
+        except Exception: continue
+        if not rr.fieldnames or not {"image","pc","bytes"}.issubset(rr.fieldnames): continue
+        for row in rr:
+            raw=row.get("bytes","")
+            if not raw or raw=="TIDAK TAHU": continue
+            try: pc=int(row["pc"],16); b=bytes(int(x,16) for x in raw.split())
+            except Exception: continue
+            if not b or len(b)%4: continue
+            key=(row["image"],pc)
+            if key not in seen:
+                seen[key]={"bytes":b,"files":{str(path)}}
+            elif seen[key]["bytes"]==b"CONFLICT":
+                seen[key]["files"].add(str(path))
+            elif seen[key]["bytes"].startswith(b):
+                seen[key]["files"].add(str(path))
+            elif b.startswith(seen[key]["bytes"]):
+                seen[key]["bytes"]=b
+                seen[key]["files"].add(str(path))
+            elif seen[key]["bytes"]!=b:
+                seen[key]["bytes"]=b"CONFLICT"
+                seen[key]["files"].add(str(path))
+            else:
+                seen[key]["files"].add(str(path))
+    spans=[]
+    for image in sorted(set(k[0] for k in seen)):
+        intervals=sorted((pc,pc+len(v["bytes"]),v["files"]) for (im,pc),v in seen.items()
+                         if im==image and v["bytes"]!=b"CONFLICT")
+        cur=None
+        for start,end,files in intervals:
+            if cur is None or start>cur["end"]:
+                if cur is not None: spans.append(cur)
+                cur={"image":image,"start":start,"end":end,"rows":1,"files":set(files)}
+            else:
+                cur["end"]=max(cur["end"],end); cur["rows"]+=1; cur["files"].update(files)
+        if cur is not None: spans.append(cur)
+    detailed=[]
+    for x in spans:
+        detailed.append({"image":x["image"],"start_pc":h32(x["start"]),"end_pc_exclusive":h32(x["end"]),
+                         "contiguous_bytes":x["end"]-x["start"],"unique_rows":x["rows"],
+                         "source_files":";".join(sorted(x["files"]))})
+    write_tsv("NA0_AGGREGATE_EXCERPT_SPANS.tsv",detailed,["image","start_pc","end_pc_exclusive","contiguous_bytes","unique_rows","source_files"])
+    maximum=max((x["contiguous_bytes"] for x in detailed),default=0)
+    offenders=[x for x in detailed if x["contiguous_bytes"]>64]
+    conflicts=sum(1 for v in seen.values() if v["bytes"]==b"CONFLICT")
+    write_txt("NA0_AGGREGATE_EXCERPT_AUDIT.txt",
+        "AGGREGATION=union of byte intervals by image; unique image+PC rows across every ja-*, ka-*, la-*, ma-* TSV\n"+
+        f"UNIQUE_IMAGE_PC_ROWS={len(seen)}\nMAX_CONTIGUOUS_BYTES={maximum}\nLIMIT_BYTES=64\n"+
+        "STATUS="+("PASS" if not offenders and conflicts==0 else "FAIL")+"\n"+
+        "OVER_LIMIT="+(";".join(f'{x["image"]}:{x["start_pc"]}..{h32(int(x["end_pc_exclusive"],16)-1)}={x["contiguous_bytes"]}B' for x in offenders) or "none")+"\n"+
+        "CONFLICTING_DUPLICATE_ADDRESSES="+str(conflicts)+"\n"+
+        "OFFENDER_PROVENANCE="+(";".join(f'{x["image"]}:{x["start_pc"]}:{x["source_files"]}' for x in offenders) or "none")+"\n")
+    return maximum,len(offenders)
+
+def actions_census():
+    token=os.environ.get("GH_TOKEN","")
+    page=1; total=0; allruns=[]
+    while True:
+        url=f"https://api.github.com/repos/{REPO}/actions/runs?per_page=100&page={page}"
+        req=urllib.request.Request(url,headers={"Authorization":"Bearer "+token,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"})
+        with urllib.request.urlopen(req,timeout=90) as r: j=json.loads(r.read().decode())
+        total=int(j.get("total_count",0)); rs=j.get("workflow_runs",[]); allruns.extend(rs)
+        if not rs or len(allruns)>=total: break
+        page+=1
+        if page>100: raise RuntimeError("ACTIONS_PAGINATION_LIMIT")
+    rows=[{"run_id":x.get("id"),"event":x.get("event"),"status":x.get("status"),"conclusion":x.get("conclusion") or "TIDAK TAHU",
+           "workflow":x.get("path"),"head_sha":x.get("head_sha"),"created_at":x.get("created_at")} for x in allruns]
+    write_tsv("NA0_ACTIONS_ALL_EVENTS.tsv",rows,["run_id","event","status","conclusion","workflow","head_sha","created_at"])
+    return total,len(rows),page,sum(x.get("event")=="schedule" for x in allruns),sum(x.get("status")!="completed" for x in allruns)
+
+def ledger():
+    subprocess.run(["git","merge-base","--is-ancestor",BASELINE,SOURCE_SHA],check=True)
+    raw=subprocess.check_output(["git","log","--format=%H%x09%an%x09%ae%x09%s",f"{BASELINE}^..{SOURCE_SHA}"]).decode().splitlines()
+    rows=[]
+    for line in raw:
+        q=line.split("\t",3)
+        if len(q)!=4: continue
+        sha,name,email,subject=q
+        bot=("[bot]" in name.lower() or "dependabot" in name.lower() or "bot" in name.lower())
+        rows.append({"sha":sha,"author":name,"email":email,"class":"BOT" if bot else "HUMAN","subject":subject})
+    write_tsv("NA0_LEDGER_COMMITS.tsv",rows,["sha","author","email","class","subject"])
+    counts={"total":len(rows),"human":sum(x["class"]=="HUMAN" for x in rows),"bot":sum(x["class"]=="BOT" for x in rows)}
+    return counts
+
+def pycompile():
+    import py_compile
+    names=subprocess.check_output(["git","ls-files","-z","--","*.py"]).decode().split("\0")
+    names=[x for x in names if x]
+    names.append("tools/na-static/RunNA0NA5Static.txt")
+    rows=[]; cache=Path(os.environ.get("WORK","/tmp"))/"pycache"; cache.mkdir(parents=True,exist_ok=True)
+    for name in names:
+        target=cache/(hashlib.sha256(name.encode()).hexdigest()+".pyc")
+        try: py_compile.compile(name,cfile=str(target),doraise=True); rows.append({"path":name,"status":"PASS","reason":""})
+        except Exception as e: rows.append({"path":name,"status":"FAIL","reason":type(e).__name__+":"+str(e)})
+    write_tsv("NA0_PYCOMPILE.tsv",rows,["path","status","reason"])
+    return len(rows),sum(x["status"]=="PASS" for x in rows)
+
+def main():
+    exe_path,entry_path=Path(sys.argv[1]),Path(sys.argv[2])
+    exe,entry=exe_path.read_bytes(),entry_path.read_bytes()
+    if len(exe)!=EXE_SIZE or hashlib.sha256(exe).hexdigest()!=EXE_SHA: raise SystemExit("EXE_VERIFY_FAIL")
+    if len(entry)!=ENTRY_SIZE or hashlib.sha256(entry).hexdigest()!=ENTRY_SHA: raise SystemExit("ENTRY1_VERIFY_FAIL")
+    ce0,ci0=decode_blob(exe,"EXE"),decode_blob(entry,"ENTRY1")
+    ce_valid,ce_ranges,ce_refs=parse_ghidra(sys.argv[4])
+    ci_valid,ci_ranges,ci_refs=parse_ghidra(sys.argv[5])
+    ce={p:i for p,i in ce0.items() if p in ce_valid}
+    ci={p:i for p,i in ci0.items() if p in ci_valid}
+    codes=[("EXE",ce),("ENTRY1",ci)]
+    valid={"EXE":ce_valid,"ENTRY1":ci_valid}
+    # NA0: inclusive ledger, all Actions pages/events and complete py_compile census.
+    counts=ledger()
+    total,run_count,pages,scheduled,active=actions_census()
+    py_total,py_pass=pycompile()
+    ghidra_diag=(OUT/"GHIDRA_DIAGNOSTICS.txt").read_text(encoding="utf-8",errors="replace") if (OUT/"GHIDRA_DIAGNOSTICS.txt").exists() else ""
+    ghidra_ok=("EXE_GHIDRA_EXIT=0" in ghidra_diag and "ENTRY1_GHIDRA_EXIT=0" in ghidra_diag)
+    # NA1(a): anchor-based record table boundary scan.
+    scene_rows,scene_groups,bounds,snippet,scene_candidates,anchor_found=table_scan(exe,codes)
+    selected_group=next((g for g in scene_groups if 0x800558A4 in g),[])
+    selected_records=[scene_candidates[pc] for pc in selected_group]
+    previous_record=record_at(exe,bounds[0]-0x1c) if bounds[0] else None
+    next_record=record_at(exe,bounds[1]) if bounds[1] else None
+    write_tsv("NA1_SCENE_RECORDS.tsv",scene_rows,["group","index","base_pc","value_plus4","pointer_plus8","pointer_plusC","pointer_plus10","name","group_length","stride"])
+    write_tsv("NA1_SCENE_TABLE_EXCERPT.tsv",snippet,["image","pc","file_offset","bytes","instruksi","excerpt_id"])
+    group_text=[f"GROUP_{n}: start={h32(g[0])} end_exclusive={h32(g[-1]+0x1c)} records={len(g)} stride=0x1C" for n,g in enumerate(scene_groups)]
+    write_txt("NA1_SCENE_TABLE_BOUNDARY.txt",
+        "SCAN_RANGE="+h32(EXE_BASE)+".."+h32(EXE_BASE+len(exe)-EXE_FILE-4)+"\nANCHOR=0x800558A4\n"+
+        "ANCHOR_GROUP_FOUND="+("YES" if anchor_found else "NO")+"\n"+
+        "PATTERN=word+0 zero; word+4 small integer; +8/+C/+10 pointer-like; +14 8-byte uppercase/underscore label\n"+
+        "CANDIDATE_GROUPS\n"+("\n".join(group_text) if group_text else "TIDAK TAHU")+"\n"+
+        "TABLE_START="+(h32(bounds[0]) if bounds[0] else "TIDAK TAHU")+"\n"+
+        "TABLE_END_EXCLUSIVE="+(h32(bounds[1]) if bounds[1] else "TIDAK TAHU")+"\n"+
+        "PREVIOUS_STRIDE_RECORD_VALID="+("YES" if previous_record else "NO")+"\n"+
+        "NEXT_STRIDE_RECORD_VALID="+("YES" if next_record else "NO")+"\n"+
+        "NOTE=Only the stride-0x1C group containing the anchor is treated as the scene-table candidate; other groups remain separate candidates.\n")
+    # NA1(b): code loads/address constants, exact stride-28 recognizers and data pointer words.
+    ptr_values=sorted(set(v for r in selected_records for v in (r["p1"],r["p2"],r["p3"])))
+    pwords=pointer_words((exe,entry),ptr_values)
+    write_tsv("NA1_FUNCTION_POINTER_WORDS.tsv",pwords,["image","pc","file_offset","bytes","instruksi","value","classification"])
+    code_users,scale=scan_code_users(codes,valid,bounds[0] if bounds[0] else 0,bounds[1] if bounds[1] else 0,ptr_values)
+    write_tsv("NA1_SCENE_CODE_USERS.tsv",code_users,["image","pc","file_offset","bytes","instruksi","excerpt_id","base_expression","effective_address","register_destination","next_indirect_jump","register","constant","load_offset","table_reference"])
+    write_tsv("NA1_SCALE_28_CANDIDATES.tsv",scale,["image","pc","file_offset","bytes","instruksi","excerpt_id","scale_pattern","left_definition","right_definition","input_expression"])
+    
+    # NA1(c): manual prologs/boundaries for the four scene routines.
+    funcs=[]
+    prolog_windows=[]
+    scene_funcs=[0x800B1E88,0x800B50AC,0x800B5020,0x800B2A58]
+    for target in scene_funcs:
+        fr=function_for(ci_ranges,target)
+        manual,reason=find_prolog(ci,target,ENTRY_BASE)
+        entry_pc=fr[0] if fr else manual
+        f_range=function_for(ci_ranges,entry_pc) if entry_pc else None
+        returns=return_sites(ci,f_range) if f_range else []
+        start=entry_pc if entry_pc else target
+        prolog_windows.extend(get_code_excerpt(ci,start,8,"ENTRY1",f"NA1_PROLOG_{target:08X}_32B"))
+        funcs.append({"target":h32(target),"ghidra_function_entry":h32(fr[0]) if fr else "TIDAK TAHU",
+                      "manual_prolog":h32(manual) if manual else "TIDAK TAHU","prolog_reason":reason,
+                      "selected_entry":h32(entry_pc) if entry_pc else "TIDAK TAHU",
+                      "ghidra_range":(h32(f_range[1])+".."+h32(f_range[2])) if f_range else "TIDAK TAHU",
+                      "jr_ra_count":len(returns),"last_jr_ra":h32(returns[-1]["pc"]) if returns else "TIDAK TAHU",
+                      "boundary_status":"RETURN_FOUND" if returns else "FUNCTION_END_OR_TRUNCATION_TIDAK_TAHU"})
+    write_tsv("NA1_SCENE_FUNCTIONS.tsv",funcs,["target","ghidra_function_entry","manual_prolog","prolog_reason","selected_entry","ghidra_range","jr_ra_count","last_jr_ra","boundary_status"])
+    write_tsv("NA1_SCENE_PROLOG_WINDOWS.tsv",prolog_windows,["image","pc","file_offset","bytes","instruksi","excerpt_id"])
+    # NA1(d): conservative a2/a3 origins at the three prior LA call sites.
+    call_specs=[(0x800F5F54,0x800F2A9C),(0x800B54DC,0x800F3658),(0x800F5EBC,0x800DC2E0)]
+    argrows=[]
+    for pc,target in call_specs:
+        i=ci.get(pc); fr=function_for(ci_ranges,pc)
+        manual,why=find_prolog(ci,pc,ENTRY_BASE); entry_point=fr[0] if fr else manual
+        for r in (6,7):
+            q=call_site_origin(ci,ci_ranges,pc,r,entry_point)
+            argrows.append({"call_pc":h32(pc),"call_instruction":i["text"] if i else "TIDAK TAHU",
+                            "expected_target":h32(target),"actual_target":h32(direct_target(i)) if i and direct_target(i) else "TIDAK TAHU",
+                            "caller_function":h32(fr[0]) if fr else "TIDAK TAHU","caller_manual_prolog":h32(manual) if manual else "TIDAK TAHU",
+                            "argument":reg(r),"origin":q["origin"],"definition_pc":q["definition_pc"],
+                            "expression":q["expression"],"manual_entry_used":q["function_entry"]})
+    write_tsv("NA1_CALLSITE_A2_A3_ORIGINS.tsv",argrows,["call_pc","call_instruction","expected_target","actual_target","caller_function","caller_manual_prolog","argument","origin","definition_pc","expression","manual_entry_used"])
+    # NA1(e): setter wallet remains unresolved unless an authoritative full producer/consumer closure exists.
+    wallet=[
+      {"hypothesis":"H1 participant-record +0x04 is wallet-like",
+       "support_1":"JA record census includes multiple writes at participant-stride candidates; field meaning still not closed",
+       "support_2":"participant records use stride 0xB4; no complete reader+writer path connects +0x04 to visible wallet",
+       "falsifier":"complete caller/reader closure proves +0x04 is only a cache, flag, or unrelated state"},
+      {"hypothesis":"H2 manager+0x4F4 is persistent wallet/settlement state",
+       "support_1":"LA caller sequence loads manager+0x4F4 and conditionally negates it before passing a value to FUN_80014F10",
+       "support_2":"nearby completion path clears +0x4F4; semantics may be transient settlement, not persistent balance",
+       "falsifier":"complete producer/consumer trace proves +0x4F4 is transient and never the visible wallet"},
+      {"hypothesis":"H3 FUN_80014F10 is authoritative wallet setter",
+       "support_1":"its body performs a participant-indexed max-update",
+       "support_2":"the confirmed target writes participant record +0x94 rather than proving +0x04 balance",
+       "falsifier":"complete wallet update trace identifies a different setter and proves FUN_80014F10 only updates +0x94"}
+    ]
+    write_tsv("NA1_WALLET_HYPOTHESES.tsv",wallet,["hypothesis","support_1","support_2","falsifier"])
+    write_txt("NA1_WALLET_STATUS.txt","WALLET_AUTHORITATIVE_SETTER=TIDAK TAHU\nNo complete static producer/consumer closure ties a candidate field to the persistent visible wallet.\n")
+    # NA2(a): all resolved static sb/sh writers to the two selectors.
+    gw=global_writers(codes,valid,[0x8013EB1C,0x8013EA6E,0x80139EC7])
+    write_tsv("NA2_SELECTOR_GLOBAL_WRITERS.tsv",gw,["image","pc","file_offset","bytes","instruksi","excerpt_id","target_global","store_width","effective_address","source_register","source_constant","stored_constant","source_expression","source_class"])
+    eb=[x for x in gw if x["target_global"]==h32(0x8013EB1C)]
+    ea=[x for x in gw if x["target_global"]==h32(0x8013EA6E)]
+    ec7=[x for x in gw if x["target_global"]==h32(0x80139EC7)]
+    # NA2(b): locate writers whose byte-store base symbolically reconstructs the dynamic matrix.
+    mw,mp,all_sb=matrix_writers(codes,valid)
+    write_tsv("NA2_DYNAMIC_MATRIX_WRITERS.tsv",mw,["image","pc","file_offset","bytes","instruksi","excerpt_id","base_expression","source_expression","source_class","anchor_count"])
+    write_tsv("NA2_PARTIAL_DYNAMIC_STORE_CANDIDATES.tsv",mp,["image","pc","file_offset","bytes","instruksi","excerpt_id","base_expression","source_expression","source_class","anchor_count"])
+    write_tsv("NA2_ALL_SB_STORE_CENSUS.tsv",all_sb,["image","pc","file_offset","bytes","instruksi","excerpt_id","base_expression","effective_address","base_class","source_expression","source_class","matrix_anchor_count"])
+    dwin=get_code_excerpt(ci,0x800D49A4,8,"ENTRY1","NA2_D49D0_32B")
+    write_tsv("NA2_D49D0_ADDRESS_WINDOW.tsv",dwin,["image","pc","file_offset","bytes","instruksi","excerpt_id"])
+    # NA2(c): inspect helper return sites and the fallback branch target 0x80015564.
+    helper=[]; hreturn=[]
+    for pc in (0x800154D4,0x80015564):
+        fr=function_for(ce_ranges,pc)
+        if pc==0x800154D4:
+            helper.extend(get_code_excerpt(ce,pc,8,"EXE","NA2_LIMIT_FUNCTION_ENTRY_32B"))
+        else:
+            helper.extend(get_code_excerpt(ce,0x80015538,16,"EXE","NA2_TABLE_HELPER_CORE_64B"))
+        sites=return_sites(ce,fr) if fr else []
+        hreturn.append({"target":h32(pc),"function_entry":h32(fr[0]) if fr else "TIDAK TAHU",
+                        "function_range":(h32(fr[1])+".."+h32(fr[2])) if fr else "TIDAK TAHU",
+                        "return_sites":";".join(h32(x["pc"])+":"+x["value_expr"] for x in sites) if sites else "TIDAK TAHU",
+                        "return_constants":";".join(h32(x["value_const"]) if x["value_const"] is not None else "DYNAMIC" for x in sites) if sites else "TIDAK TAHU"})
+    write_tsv("NA2_HELPER_RETURN_ANALYSIS.tsv",hreturn,["target","function_entry","function_range","return_sites","return_constants"])
+    write_tsv("NA2_HELPER_WINDOWS.tsv",helper,["image","pc","file_offset","bytes","instruksi","excerpt_id"])
+    lim=next((x for x in hreturn if x["target"]==h32(0x800154D4)),None)
+    vals=[]
+    if lim and lim["return_constants"]!="TIDAK TAHU":
+        vals=[x.strip() for x in lim["return_constants"].split(";") if x.strip()]
+    lim_value=(vals[0] if vals and all(x==vals[0] and x!="DYNAMIC" for x in vals) else "TIDAK TAHU")
+    lim52=("YES" if lim_value==h32(52) else ("NO" if lim_value!="TIDAK TAHU" else "TIDAK TAHU"))
+    fb=ce.get(0x80015564)
+    write_txt("NA2_HELPER_SEMANTICS.txt",
+        "HELPER_800154D4_FUNCTION_ENTRY="+(lim["function_entry"] if lim else "TIDAK TAHU")+"\n"+
+        "HELPER_800154D4_RETURN_SITES="+(lim["return_sites"] if lim else "TIDAK TAHU")+"\n"+
+        "HELPER_800154D4_RETURN_CONSTANTS="+(lim["return_constants"] if lim else "TIDAK TAHU")+"\n"+
+        "LIMIT_VALUE_IF_ALL_RETURNS_AGREE="+lim_value+"\n"+
+        "LIMIT_EQUALS_52="+lim52+"\n"+
+        "FALLBACK_80015564_INSTRUCTION="+(fb["text"] if fb else "TIDAK TAHU")+"\n"+
+        "FALLBACK_80015564_RETURN_VALUE="+("0" if fb and fb["op"]==0 and fb["fn"]==0x21 and fb["rs"]==0 and fb["rt"]==0 and fb["rd"]==2 else "TIDAK TAHU")+"\n"+
+        "INTERPRETATION=0x80015564 assigns zero to v0; it returns zero through the shared epilogue. The numeric upper limit is only named if all 0x800154D4 return paths are statically constant and identical.\n")
+    ea88_count=sum("0x8013EA88" in x["source_expression"].upper() for x in ea)
+    e9efc_count=sum("0x80139EFC" in x["source_expression"].upper() for x in ea)
+    write_txt("NA2_SELECTOR_AND_HELPER_SUMMARY.txt",
+        f"EB1C_STATIC_STORE_COUNT={len(eb)}\nEB1C_STORE_WIDTHS="+",".join(str(x["store_width"]) for x in eb)+"\n"+
+        "EB1C_SOURCE_CLASSES="+",".join(x["source_class"] for x in eb)+"\n"+
+        "EB1C_STORED_CONSTANTS="+",".join(x["stored_constant"] for x in eb)+"\n"+
+        f"EA6E_STATIC_STORE_COUNT={len(ea)}\nEA6E_STORE_WIDTHS="+",".join(str(x["store_width"]) for x in ea)+"\n"+
+        f"EA6E_SOURCE_LHU_8013EA88={ea88_count}\nEA6E_SOURCE_LHU_80139EFC={e9efc_count}\n"+
+        "EA6E_SOURCE_CLASSES="+",".join(x["source_class"] for x in ea)+"\n"+
+        f"EC7_STATIC_STORE_COUNT={len(ec7)}\nEC7_STORED_CONSTANTS="+",".join(x["stored_constant"] for x in ec7)+"\n"+
+        f"DYNAMIC_MATRIX_WRITERS_FULL_ANCHOR_CANDIDATE={len(mw)}\nDYNAMIC_MATRIX_PARTIAL_CANDIDATES={len(mp)}\nALL_SB_STORE_ROWS={len(all_sb)}\n"+
+        "NOTE=This is a Ghidra-recognized-code static census; dynamic aliases and unresolved indirect code paths are not proven absent.\n")
+    # Test, but do not force, the two competing hypotheses.
+    h1="TIDAK TAHU: all reachable byte-cell writers are not closed and level-source semantics are not proven."
+    h2="TIDAK TAHU: all reachable byte-cell writers are not closed and selector-ID semantics are not proven."
+    write_txt("NA2_X_EQUALS_D_VS_EFFECT_ID.txt",
+        "H1 x=d: memprediksi setiap byte sel M+0x10+B+144*I yang dipakai untuk mengisi x berasal dari selisih dua nilai level.\n"+
+        "H2 x=effect/item/action ID: memprediksi byte sel berasal dari konstanta atau tabel/selector ID.\n"+
+        f"H1_RESULT={h1}\nH2_RESULT={h2}\n"+
+        f"MATRIX_WRITER_CANDIDATES={len(mw)} PARTIAL={len(mp)} ALL_SB_ROWS={len(all_sb)}\n"+
+        "CLASSIFICATION=KONSTANTA only when constant is proven; SALINAN_DARI_MEMORI only for direct load; visible subtraction without proven level semantics is an unverified delta candidate; otherwise TIDAK TAHU.\n"+
+        "FALSIFICATION=TIDAK TAHU globally: dynamic/alias writer closure is incomplete, so neither hypothesis is declared disproven.\n")
+    write_tsv("NA2_X_HYPOTHESES.tsv",[
+      {"hypothesis":"H1 x=d","prediction":"Every byte cell used for x is written from the difference of two level values.",
+       "support_1":"0x800D49D8 stores the byte read from the dynamically indexed M+0x10+B+144*I cell into manager+0x530.",
+       "support_2":"The byte is passed to the table-helper path; this is compatible with a numeric delta but does not prove its semantics.",
+       "falsifier":"A reachable x writer is proven to source an independent effect/item/action selector, or complete writer closure fails to show two level operands."},
+      {"hypothesis":"H2 x=effect/item/action ID","prediction":"The byte cell is written from a constant or effect/item/action selector table or ID.",
+       "support_1":"The other manager+0x530 writer chains at 0x800EC844 and 0x800EC868 copy the byte global 0x80139EC7.",
+       "support_2":"0x80139EC7 has explicit byte-clear writers in the static census; its live producer/source semantics remain unknown.",
+       "falsifier":"All reachable x writers and byte-cell writers are proven to be exclusively differences of two level values."}
+    ],["hypothesis","prediction","support_1","support_2","falsifier"])
+    # NA3: find parent for B24C8 and direct/static/Ghidra callers to B24C8 and BE5D8.
+    b24=0x800B24C8; be5=0x800BE5D8; b1=0x800B1E88
+    parent=function_for(ci_ranges,b24)
+    manual,manual_reason=find_prolog(ci,b24,ENTRY_BASE)
+    b1range=function_for(ci_ranges,b1)
+    gap_returns=[]; gap_prologs=[]
+    if b1range:
+        for pc in range(b1+4,b24,4):
+            i=ci.get(pc)
+            if not i: continue
+            if i["op"]==0 and i["fn"]==8 and i["rs"]==31: gap_returns.append(pc)
+            if i["op"]==9 and i["rs"]==29 and i["rt"]==29 and i["imm"]<0: gap_prologs.append(pc)
+    b24_rows=caller_rows(ci,ci_valid,ci_refs,b24)
+    parent_entry=parent[0] if parent else manual
+    parent_rows=caller_rows(ci,ci_valid,ci_refs,parent_entry) if parent_entry else []
+    be5_rows=caller_rows(ci,ci_valid,ci_refs,be5)
+    parent_ptrs=pointer_words((exe,entry),[parent_entry]) if parent_entry else []
+    be5_ptrs=pointer_words((exe,entry),[be5])
+    b24_ptrs=pointer_words((exe,entry),[b24])
+    write_tsv("NA3_B24C8_TARGET_CALLERS.tsv",b24_rows,["image","pc","file_offset","bytes","instruksi","target","kind","origin"])
+    write_tsv("NA3_B24C8_TARGET_POINTER_WORDS.tsv",b24_ptrs,["image","pc","file_offset","bytes","instruksi","value","classification"])
+    write_tsv("NA3_B24C8_PARENT_CALLERS.tsv",parent_rows,["image","pc","file_offset","bytes","instruksi","target","kind","origin"])
+    write_tsv("NA3_B24C8_PARENT_POINTER_WORDS.tsv",parent_ptrs,["image","pc","file_offset","bytes","instruksi","value","classification"])
+    write_tsv("NA3_BE5D8_CALLERS.tsv",be5_rows,["image","pc","file_offset","bytes","instruksi","target","kind","origin"])
+    write_tsv("NA3_BE5D8_POINTER_WORDS.tsv",be5_ptrs,["image","pc","file_offset","bytes","instruksi","value","classification"])
+    b24win=get_code_excerpt(ci,b24,8,"ENTRY1","NA3_B24C8_32B")
+    be5_start=0x800BE5BC
+    be5win=get_code_excerpt(ci,be5_start,8,"ENTRY1","NA3_BE5D8_32B")
+    write_tsv("NA3_TARGET_WINDOWS.tsv",b24win+be5win,["image","pc","file_offset","bytes","instruksi","excerpt_id"])
+    write_txt("NA3_B24C8_BOUNDARY.txt",
+        "TARGET=0x800B24C8\n"+
+        "GHIDRA_CONTAINING_FUNCTION="+(h32(parent[0]) if parent else "TIDAK TAHU")+"\n"+
+        "MANUAL_BACKWARD_PROLOG="+(h32(manual) if manual else "TIDAK TAHU")+"\nBOUNDARY_REASON="+manual_reason+"\n"+
+        "CANDIDATE_B1E88_FUNCTION_ENTRY="+(h32(b1range[0]) if b1range else "TIDAK TAHU")+"\n"+
+        "B1E88_RANGE_CONTAINS_TARGET="+("YES" if b1range and b1range[0]==b1 and b1range[1]<=b24<=b1range[2] else "NO/UNKNOWN")+"\n"+
+        "RETURNS_BETWEEN_B1E88_AND_TARGET="+",".join(h32(x) for x in gap_returns)+"\n"+
+        "OTHER_PROLOGS_BETWEEN_B1E88_AND_TARGET="+",".join(h32(x) for x in gap_prologs)+"\n"+
+        f"CALLER_ROWS_TO_TARGET={len(b24_rows)}\nPARENT_ENTRY="+(h32(parent_entry) if parent_entry else "TIDAK TAHU")+"\n"+
+        f"PARENT_CALLER_ROWS={len(parent_rows)} PARENT_POINTER_WORDS={len(parent_ptrs)}\n"+
+        "CONCLUSION="+("B1E88_PARENT_SUPPORTED_BY_GHIDRA_RANGE" if b1range and b1range[0]==b1 and b1range[1]<=b24<=b1range[2] and not gap_returns else "TIDAK TAHU: parent/caller closure is not complete")+"\n")
+    write_txt("NA3_BE5D8_BOUNDARY.txt",
+        "TARGET=0x800BE5D8\nDIRECT_AND_GHIDRA_CALLER_ROWS="+str(len(be5_rows))+"\n"+
+        "KNOWN_DIRECT_CALLER_FROM_PRIOR_LA=0x800B54F4 in FUN_800B50AC\n"+
+        "DYNAMIC_CALLER_COMPLETENESS=TIDAK TAHU; computed jr/jalr targets not resolved remain outside exact-target census.\n")
+    # NA4: explicit static-only constraint.
+    write_txt("NA4_STATIC_ONLY.txt",
+        "EMULATOR_LAUNCHES=0\nGAME_EXECUTIONS=0\nBIOS_USED=no\nSAVESTATE_USED=no\nRAM_DUMP_USED=no\nVIDEO_OR_FRAME_EVIDENCE_USED=no\n"+
+        "PRIVATE_SOURCE_EXTRACTION=TEMPORARY_AND_CLEANED\nBINARY_COMMITTED=no\n")
+    # NA5: only use x if an NA2 proof has established its identity/domain; otherwise leave formula unknown.
+    x_proven=False
+    limit_summary=Path(OUT/"NA2_HELPER_SEMANTICS.txt").read_text(encoding="utf-8") if (OUT/"NA2_HELPER_SEMANTICS.txt").exists() else ""
+    limit_line=next((x.split("=",1)[1] for x in limit_summary.splitlines() if x.startswith("LIMIT_VALUE_IF_ALL_RETURNS_AGREE=")),"TIDAK TAHU")
+    write_tsv("NA5_SYMBOLIC_UPGRADE_COST.tsv",[
+       {"premise":"x is read as u32(manager+0x530) by the known helper path","result":"x=u32(manager+0x530)","status":"K3 REUSED STATIC READER; writer semantics remain incomplete"},
+       {"premise":"H lookup when 0x8001552C accepts x against the 0x800154D4 return bound","result":"H(x)=u32[0x80055CF4 + 16*x]; limit return="+limit_line,"status":"CONDITIONAL; H index requires x below the proven limit"},
+       {"premise":"x=d for a level jump d>=2","result":"TIDAK TAHU; no proven static chain from level delta to x","status":"UNPROVEN"},
+       {"premise":"numerical upgrade cost for d>=2","result":"TIDAK TAHU; no formula derived","status":"UNKNOWN"}
+    ],["premise","result","status"])
+    # Validate file offsets/raw bytes/instruction decoding for every new MA TSV that carries evidence bytes.
+    valid_rows,decoded_rows,invalid_rows=validate_outputs(exe,entry)
+    max_excerpt,over=excerpt_audit()
+    report=(
+      "# NA0-NA5 static audit — SLPS-03553\n\n"+
+      f"Baseline inklusif: {BASELINE}\nSource SHA: {SOURCE_SHA}\n"+
+      f"EXE SHA-256: {EXE_SHA}\nEntry 1 SHA-256: {ENTRY_SHA}\nEMULATOR_LAUNCHES=0.\n\n"+
+      "## Status\n"+
+      f"- NA0: {'TUNTAS K3' if py_total==py_pass and run_count==total and invalid_rows==0 and over==0 and ghidra_ok else 'SEBAGIAN K2'} — Ghidra={'PASS' if ghidra_ok else 'TIDAK TAHU/FAIL'}; ledger source/final-parent snapshot {counts['total']} commit ({counts['human']} human, {counts['bot']} bot); Actions {run_count}/{total} run, {pages} halaman; py_compile {py_pass}/{py_total}; validasi bukti {valid_rows-invalid_rows}/{valid_rows}; kutipan maksimum {max_excerpt} B.\n"+
+      f"- NA1: SEBAGIAN K3 — kandidat record scene {len(scene_rows)} dalam {len(scene_groups)} grup; batas stride utama {h32(bounds[0]) if bounds[0] else 'TIDAK TAHU'}..{h32(bounds[1]) if bounds[1] else 'TIDAK TAHU'}; pemanggil terindeks dan setter wallet tetap memerlukan closure.\n"+
+      f"- NA2: SEBAGIAN K3 — penulis EB1C={len(eb)}, EA6E={len(ea)} (lhu EA88={ea88_count}, 39EFC={e9efc_count}), EC7={len(ec7)}; semua SB terdaftar={len(all_sb)}; kandidat matrix lengkap/parsial={len(mw)}/{len(mp)}; x=d dan x=ID belum terbukti.\n"+
+      "  Byte konstan tersimpan EB1C: "+",".join(x["stored_constant"] for x in eb)+".\n"+
+      f"- NA3: SEBAGIAN K3 — call ke B24C8={len(b24_rows)}, call ke parent={len(parent_rows)}, pointer parent={len(parent_ptrs)}, caller BE5D8={len(be5_rows)}; parent B24C8={'teridentifikasi' if parent else 'TIDAK TAHU'}.\n"+
+      "- NA4: TUNTAS K4 — statis saja; tanpa peluncuran emulator/game.\n"+
+      "- NA5: BELUM K1 — tidak ada rumus biaya numerik lompat level d>=2.\n\n"+
+      "## Batas bukti\n"+
+      "Ghidra instruction listing dan referensi adalah hasil analisis statis; ketiadaan hasil pada scan tidak membuktikan tidak ada jalur alias/dinamis. Tidak ada nilai runtime, hasil fitting, atau formula dari pengamatan streamer.\n\n"+
+      "## Validasi\n"+
+      f"- ACTIONS_TOTAL={total}; FETCHED={run_count}; PAGES={pages}; SCHEDULED={scheduled}; NON_COMPLETED_AT_CENSUS={active}.\n"+
+      f"- PY_COMPILE={py_pass}/{py_total}.\n- FILE_OFFSET_RAW_DECODE_CHECKS={valid_rows}; DECODED_INSTRUCTIONS={decoded_rows}; FAIL={invalid_rows}.\n"+
+      f"- AGGREGATED_MAX_CONTIGUOUS_BYTES={max_excerpt}; OVER_LIMIT_GROUPS={over}.\n"
+    )
+    write_txt("NA0_NA5_STATIC_REPORT.md",report)
+    write_txt("NA0_ANALYZER_STATUS.txt",
+        f"ANALYZER_EXIT_CODE=0\nSOURCE_SHA={SOURCE_SHA}\nBASELINE_INCLUSIVE={BASELINE}\n"+
+        f"PY_COMPILE={py_pass}/{py_total}\nACTIONS={run_count}/{total} pages={pages}\nGHIDRA_OK={ghidra_ok}\n"+
+        f"FILE_OFFSET_CHECKS={valid_rows} FAIL={invalid_rows}\nEXCERPT_MAX_BYTES={max_excerpt} OVER_LIMIT={over}\n"+
+        f"NA1_RECORDS={len(scene_rows)} NA2_EB1C_WRITERS={len(eb)} NA2_EA6E_WRITERS={len(ea)} NA2_MATRIX_WRITERS={len(mw)}\n"+
+        f"NA3_B24C8_TARGET_CALLERS={len(b24_rows)} NA3_B24C8_PARENT_CALLERS={len(parent_rows)} NA3_BE5D8_CALLERS={len(be5_rows)}\n")
+    if invalid_rows or over or py_total!=py_pass or run_count!=total:
+        print("NA_AUDIT_WARNINGS=1")
+    print(f"NA_ANALYZER_EXIT_CODE=0; ACTIONS={run_count}/{total}; PY={py_pass}/{py_total}; VALIDATION={valid_rows-invalid_rows}/{valid_rows}; EXCERPT_MAX={max_excerpt}; OVER={over}")
+
+
+
+def na_window(code,start,count,label):
+    out=[]
+    for n in range(count):
+        i=code.get(start+n*4)
+        if i: out.append(base_row(i,label))
+    return out
+
+def na_edge_rows(codes):
+    rows=[]
+    for tag,code in codes:
+        lo=EXE_BASE if tag=="EXE" else ENTRY_BASE
+        for pc,i in sorted(code.items()):
+            t=None; kind=""
+            if i["op"] in (1,4,5,6,7):
+                t=(pc+4+(i["imm"]<<2))&0xffffffff
+                kind={1:"REGIMM",4:"BEQ",5:"BNE",6:"BLEZ",7:"BGTZ"}[i["op"]]
+            elif i["op"] in (2,3):
+                t=direct_target(i); kind="JAL" if i["op"]==3 else "J"
+            elif i["op"]==0 and i["fn"] in (8,9):
+                t=const_reg(code,i["rs"],pc,lo); kind="JALR" if i["fn"]==9 else "JR"
+            if kind: rows.append((tag,pc,i,t,kind))
+    return rows
+
+def na_call_arg(code,pc,r):
+    q=code.get(pc+4)
+    if q and dest(q)==r:
+        ex=sym_reg(code,r,pc+8,max(ENTRY_BASE,pc-0x40))
+        v=const_reg(code,r,pc+8,max(ENTRY_BASE,pc-0x40))
+        return ("KONSTANTA" if v is not None else "SALINAN" if ex.startswith(("INCOMING_","MEM")) else "TIDAK TAHU",
+                h32(q["pc"]),ex,"DELAY_SLOT")
+    floor=pc-0x40
+    hit=None
+    for p in range(pc-4,floor-1,-4):
+        i=code.get(p)
+        if not i: continue
+        if dest(i)==r: hit=i; break
+        if i["op"] in (1,2,3,4,5,6,7) or (i["op"]==0 and i["fn"] in (8,9)):
+            return "TIDAK TAHU","TIDAK TAHU","TIDAK TAHU: control-flow boundary","CONTROL_FLOW_BOUNDARY"
+    if hit is None: return "ARGUMEN MASUK","TIDAK TAHU","INCOMING_"+reg(r),"NO_LOCAL_DEF_IN_16"
+    ex=sym_reg(code,r,pc,floor); v=const_reg(code,r,pc,floor)
+    if v is not None: cls="KONSTANTA"
+    elif hit["op"] in LOADS or (hit["op"]==0 and hit["fn"] in (0x21,0x25) and (hit["rs"]==0 or hit["rt"]==0)): cls="SALINAN"
+    else: cls="TIDAK TAHU"
+    return cls,h32(hit["pc"]),ex,"DEFINITION_IN_16"
+
+def na_matrix_uses(code,load,lo,hi):
+    # Straight-line pointer propagation only; stop at branch/call, never infer absent writers.
+    aliases={load["rt"]:"M_PTR@"+h32(load["pc"])}; rows=[]
+    for p in range(load["pc"]+4,min(hi,load["pc"]+0x180)+1,4):
+        i=code.get(p)
+        if not i: continue
+        op,fn=i["op"],i["fn"]
+        if op in LOADS and i["rs"] in aliases:
+            rows.append({"load_pc":h32(load["pc"]),"use_pc":h32(p),"file_offset":h32(i["fileoff"]),
+                "instruction":i["text"],"use_kind":"LOAD_FROM_M_DERIVED_POINTER",
+                "address_expression":aliases[i["rs"]]+f"{i['imm']:+d}",
+                "source_expression":"TIDAK TAHU","source_class":"TIDAK TAHU","result_register":reg(i["rt"])})
+        if op in STORES and i["rs"] in aliases:
+            v=const_reg(code,i["rt"],p,lo); ex=sym_reg(code,i["rt"],p,lo)
+            rows.append({"load_pc":h32(load["pc"]),"use_pc":h32(p),"file_offset":h32(i["fileoff"]),
+                "instruction":i["text"],"use_kind":"STORE_THROUGH_M_DERIVED_POINTER",
+                "address_expression":aliases[i["rs"]]+f"{i['imm']:+d}",
+                "source_expression":ex,"source_class":"KONSTANTA" if v is not None else "SALINAN" if ex.startswith("MEM") else "TIDAK TAHU",
+                "result_register":"TIDAK TAHU"})
+        if op==3 and any(r in aliases for r in (4,5,6,7)):
+            rows.append({"load_pc":h32(load["pc"]),"use_pc":h32(p),"file_offset":h32(i["fileoff"]),
+                "instruction":i["text"],"use_kind":"M_POINTER_PASSED_TO_JAL",
+                "address_expression":";".join(reg(r) for r in (4,5,6,7) if r in aliases),
+                "source_expression":"TIDAK TAHU","source_class":"TIDAK TAHU","result_register":"TIDAK TAHU"})
+        d=dest(i)
+        if d is not None:
+            new=None
+            if op in (8,9) and i["rs"] in aliases: new=aliases[i["rs"]]+f"{i['imm']:+d}"
+            elif op==0 and fn in (0x21,0x25) and (i["rs"] in aliases or i["rt"] in aliases):
+                new=(aliases.get(i["rs"],"")+"+"+aliases.get(i["rt"],"")).strip("+")
+            aliases.pop(d,None)
+            if new is not None: aliases[d]=new
+        if op in (1,2,3,4,5,6,7) or (op==0 and fn in (8,9)): break
+    return rows
+
+def na_followup():
+    exe=Path(sys.argv[1]).read_bytes(); entry=Path(sys.argv[2]).read_bytes()
+    d0,e0=parse_ghidra(sys.argv[4])[0],parse_ghidra(sys.argv[5])[0]
+    ce0,ci0=decode_blob(exe,"EXE"),decode_blob(entry,"ENTRY1")
+    ce={p:i for p,i in ce0.items() if p in d0}; ci={p:i for p,i in ci0.items() if p in e0}
+    er0,er1=parse_ghidra(sys.argv[4]),parse_ghidra(sys.argv[5])
+    cr0,cr1=er0[1],er1[1]
+    codes=[("EXE",ce),("ENTRY1",ci)]; valid={"EXE":d0,"ENTRY1":e0}
+    edges=na_edge_rows(codes)
+
+    # NA1a: six known addiu sites; relative loads are record+4/+8/+C/+10.
+    sites=[0x80011898,0x800118C0,0x800119A0,0x80011A04,0x80011F24,0x80011FD8]
+    wins=[]; rows=[]
+    for pc in sites:
+        i=ce.get(pc); fr=function_for(cr0,pc)
+        if not i:
+            rows.append({"base_pc":h32(pc),"base_register":"TIDAK TAHU","field_access":"TIDAK TAHU",
+                         "indirect_call":"TIDAK TAHU","status":"PC not in Ghidra code listing"}); continue
+        r=i["rt"]; lo=fr[1] if fr else pc; hi=fr[2] if fr else pc+0x400
+        wins.extend(na_window(ce,pc-4,5,f"NA1_BASE_{pc:08X}_20B"))
+        alias={r}; found=[]
+        for q in range(pc+4,hi+1,4):
+            z=ce.get(q)
+            if not z: continue
+            if z["op"] in LOADS and z["rs"] in alias and z["imm"] in (0,4,8,12):
+                rr=z["rt"]; indirect="TIDAK TAHU"
+                for p in range(q+4,min(hi,q+0x80)+1,4):
+                    k=ce.get(p)
+                    if not k: continue
+                    if k["op"]==0 and k["fn"] in (8,9) and k["rs"]==rr:
+                        indirect=h32(p)+" "+k["text"]; wins.extend(na_window(ce,p-4,3,f"NA1_JR_{p:08X}_12B")); break
+                    if dest(k)==rr or k["op"] in (1,2,3,4,5,6,7): break
+                wins.extend(na_window(ce,q-4,4,f"NA1_LW_{q:08X}_16B"))
+                found.append(f"record+{4+z['imm']} at {h32(q)} -> {reg(rr)}; indirect={indirect}")
+            destreg=dest(z)
+            if destreg is not None:
+                copy=(z["op"] in (8,9) and z["rs"] in alias) or (z["op"]==0 and z["fn"] in (0x21,0x25) and (z["rs"] in alias or z["rt"] in alias)) or (z["op"]==0 and z["fn"]==0 and z["rt"] in alias)
+                alias.discard(destreg)
+                if copy: alias.add(destreg)
+        rows.append({"base_pc":h32(pc),"base_register":reg(r),
+                     "field_access":"; ".join(found) if found else "TIDAK TAHU",
+                     "indirect_call":"see field_access" if found else "TIDAK TAHU",
+                     "status":"static linear use only; control-flow closure incomplete" if found else "TIDAK TAHU: no alias load recognised"})
+    write_tsv("NA1_SCENE_BASE_WINDOWS.tsv",wins,["image","pc","file_offset","bytes","instruksi","excerpt_id"])
+    write_tsv("NA1_SCENE_BASE_USERS.tsv",rows,["base_pc","base_register","field_access","indirect_call","status"])
+
+    # NA1b: all sw to 0xE0($gp)/0xE4($gp).
+    gp=[]
+    for pc,i in sorted(ce.items()):
+        if i["op"]==0x2B and i["rs"]==28 and i["imm"] in (0xE0,0xE4):
+            v=const_reg(ce,i["rt"],pc,EXE_BASE); ex=sym_reg(ce,i["rt"],pc,EXE_BASE)
+            gp.append(base_row(i,"NA1_GP_E0_E4")|{
+                "target":f"0x{i['imm']&0xffff:04X}($gp)","source":reg(i["rt"]),
+                "constant":h32(v) if v is not None else "TIDAK TAHU","source_expression":ex,
+                "record_index":"TIDAK TAHU: store value not proven as record index"})
+    write_tsv("NA1_GP_E0_E4_STORES.tsv",gp,["image","pc","file_offset","bytes","instruksi","excerpt_id","target","source","constant","source_expression","record_index"])
+
+    # NA1c: maximum 16 preceding instructions + delay; adjacent 32B segments total 64B, delay separated by omitted JAL word.
+    calls=[(0x800F5F54,0x800F2A9C),(0x800B54DC,0x800F3658),(0x800F5EBC,0x800DC2E0)]
+    cw=[]; ar=[]; pred=[]
+    for pc,tgt in calls:
+        fr=function_for(cr1,pc); entrypc=fr[0] if fr else find_prolog(ci,pc,ENTRY_BASE)[0]
+        cw.extend(na_window(ci,pc-0x40,8,f"NA1_CALL_{pc:08X}_HEAD_32B"))
+        cw.extend(na_window(ci,pc-0x20,8,f"NA1_CALL_{pc:08X}_TAIL_32B"))
+        if ci.get(pc+4): cw.extend(na_window(ci,pc+4,1,f"NA1_CALL_{pc:08X}_DELAY_4B"))
+        for r in (6,7):
+            cl,dp,ex,why=na_call_arg(ci,pc,r)
+            ar.append({"call_pc":h32(pc),"target":h32(tgt),"argument":reg(r),"classification":cl,
+                       "definition_pc":dp,"expression":ex,"reason":why,"function_entry":h32(entrypc) if entrypc else "TIDAK TAHU"})
+        for tag,bpc,b,t,k in edges:
+            if t is not None and pc-0x40<t<=pc:
+                pred.append({"call_pc":h32(pc),"image":tag,"branch_pc":h32(bpc),"branch":b["text"],"target":h32(t),"kind":k})
+    write_tsv("NA1_CALLSITE_A2_A3_WINDOWS.tsv",cw,["image","pc","file_offset","bytes","instruksi","excerpt_id"])
+    write_tsv("NA1_CALLSITE_A2_A3_ORIGINS.tsv",ar,["call_pc","target","argument","classification","definition_pc","expression","reason","function_entry"])
+    write_tsv("NA1_CALLSITE_BRANCH_PREDECESSORS.tsv",pred,["call_pc","image","branch_pc","branch","target","kind"])
+
+    # NA1d wallet hypotheses stay unresolved; each includes two supports and a falsifier.
+    wallet=[
+      {"hypothesis":"H1 participant+0x04 wallet","support_1":"Participant records use stride 0xB4.","support_2":"Prior field access patterns are compatible with wallet-like state but no closed reader/writer path proves it.","falsifier":"Complete closure shows +0x04 is cache, flag, or unrelated state."},
+      {"hypothesis":"H2 manager+0x4F4 wallet/settlement","support_1":"Prior static sequence reads and sign-normalizes manager+0x4F4.","support_2":"Nearby completion path clears +0x4F4, consistent with transient settlement but not conclusive.","falsifier":"Complete producer/consumer closure proves this is not persistent wallet state."},
+      {"hypothesis":"H3 FUN_80014F10 wallet setter","support_1":"Function has a participant-indexed max-update pattern.","support_2":"Known target writes participant record +0x94, not proven wallet +0x04.","falsifier":"Complete trace identifies another wallet setter and proves FUN_80014F10 unrelated."}
+    ]
+    write_tsv("NA1_WALLET_HYPOTHESES.tsv",wallet,["hypothesis","support_1","support_2","falsifier"])
+    write_txt("NA1_WALLET_STATUS.txt","WALLET_SETTER=TIDAK TAHU; no complete producer/consumer closure.\n")
+
+    # NA2a: all GP assignments and every recognized sw 0x118($gp).
+    gpdefs=[]; sw118=[]
+    for tag,code in codes:
+        lo=EXE_BASE if tag=="EXE" else ENTRY_BASE
+        for pc,i in sorted(code.items()):
+            if dest(i)==28:
+                v=const_reg(code,28,pc+4,lo); ex=sym_reg(code,28,pc+4,lo)
+                gpdefs.append(base_row(i,"NA2_GP_ASSIGN")|{
+                   "destination":"$gp","source_expression":ex,"constant_value":h32(v) if v is not None else "TIDAK TAHU"})
+            if i["op"]==0x2B and i["rs"]==28 and i["imm"]==0x118:
+                v=const_reg(code,i["rt"],pc,lo); ex=sym_reg(code,i["rt"],pc,lo)
+                sw118.append(base_row(i,"NA2_SW_118_GP")|{
+                   "source":reg(i["rt"]),"source_constant":h32(v) if v is not None else "TIDAK TAHU",
+                   "source_expression":ex,"source_class":"KONSTANTA" if v is not None else "TIDAK TAHU"})
+    write_tsv("NA2_GP_ASSIGNMENTS.tsv",gpdefs,["image","pc","file_offset","bytes","instruksi","excerpt_id","destination","source_expression","constant_value"])
+    write_tsv("NA2_GP_118_STORES.tsv",sw118,["image","pc","file_offset","bytes","instruksi","excerpt_id","source","source_constant","source_expression","source_class"])
+    write_tsv("NA2_HELPER_800154D4_WINDOW.tsv",na_window(ce,0x800154D4,3,"NA2_HELPER_12B"),["image","pc","file_offset","bytes","instruksi","excerpt_id"])
+    bvals=[x["source_constant"] for x in sw118]
+    write_txt("NA2_HELPER_BOUND_STATUS.txt",
+       f"SW_0x118_GP_COUNT={len(sw118)}\nGP_ASSIGNMENT_COUNT={len(gpdefs)}\n"+
+       "HELPER_800154D4=lw $v0,0x118($gp); jr $ra; nop\n"+
+       "BOUND_52=TIDAK TAHU; recognized writers and GP provenance are not closed.\n")
+
+    # NA2b: every statically resolved writer to I input globals.
+    iw=global_writers(codes,valid,[0x8013EA88,0x80139EFC])
+    write_tsv("NA2_EA88_39EFC_WRITERS.tsv",iw,["image","pc","file_offset","bytes","instruksi","excerpt_id","target_global","store_width","effective_address","source_register","source_constant","stored_constant","source_expression","source_class"])
+
+    # NA2c: split 68B V0 windows into <=32B chunks with a >=4B gap; E4840 has 64B backward window.
+    vspec=[(0x800D7784,0x800D77C4,True),(0x800D7D0C,0x800D7D4C,True),(0x800E4804,0x800E4840,False)]
+    vw=[]; vrows=[]
+    for start,store,expect_lui in vspec:
+        if expect_lui:
+            vw.extend(na_window(ci,start,8,f"NA2_V0_{store:08X}_A_32B"))
+            vw.extend(na_window(ci,start+0x24,8,f"NA2_V0_{store:08X}_B_32B"))
+        else:
+            vw.extend(na_window(ci,store-0x3C,16,f"NA2_V0_{store:08X}_BACK_64B"))
+        first=ci.get(start); last=ci.get(store)
+        missing=[h32(p) for p in range(start,store+1,4) if p not in ci]
+        redef=[h32(p) for p in range(start+4,store,4) if p in ci and dest(ci[p])==2]
+        branchin=[h32(bp)+"->"+h32(t) for tag,bp,b,t,k in edges if t is not None and start<t<=store]
+        callsinside=[h32(p) for p in range(start+4,store,4) if p in ci and (ci[p]["op"]==3 or (ci[p]["op"]==0 and ci[p]["fn"]==9))]
+        luiok=(bool(first and first["op"]==15 and first["rt"]==2 and first["uimm"]==0x8014) if expect_lui else first is not None)
+        ok=bool(luiok and last and not missing and not redef and not branchin and not callsinside)
+        vrows.append({"start_pc":h32(start),"store_pc":h32(store),"first":first["text"] if first else "TIDAK TAHU",
+            "store":last["text"] if last else "TIDAK TAHU","redefinitions":";".join(redef) or "none",
+            "branch_entries":";".join(branchin) or "none","calls":";".join(callsinside) or "none",
+            "missing":";".join(missing) or "none",
+            "classification":"PROVEN_LINEAR_NO_REDEF_NO_ENTRY" if ok else "TIDAK TAHU"})
+    write_tsv("NA2_EB1C_V0_WINDOWS.tsv",vw,["image","pc","file_offset","bytes","instruksi","excerpt_id"])
+    write_tsv("NA2_EB1C_V0_CONTINUITY.tsv",vrows,["start_pc","store_pc","first","store","redefinitions","branch_entries","calls","missing","classification"])
+
+    # NA2d/e: all static lw M references, plus bounded register-use census.
+    mloads=[]
+    for pc,i in sorted(ci.items()):
+        if i["op"]==0x23:
+            ex=sym_reg(ci,i["rs"],pc,ENTRY_BASE)
+            if eff_addr(ci,i,ENTRY_BASE)==0x8013EA74 or "0x8013EA74" in ex.upper(): mloads.append(i)
+    muses=[]
+    for li in mloads:
+        fr=function_for(cr1,li["pc"]); lo=fr[1] if fr else max(ENTRY_BASE,li["pc"]-0x100); hi=fr[2] if fr else li["pc"]+0x180
+        ev=na_matrix_uses(ci,li,lo,hi)
+        if ev:
+            for z in ev: muses.append({"load_pc":z["load_pc"],"use_pc":z["use_pc"],"file_offset":z["file_offset"],
+              "instruction":z["instruction"],"use_kind":z["use_kind"],"address_expression":z["address_expression"],
+              "source_expression":z["source_expression"],"source_class":z["source_class"],"result_register":z["result_register"]})
+        else:
+            muses.append({"load_pc":h32(li["pc"]),"use_pc":"TIDAK TAHU","file_offset":"TIDAK TAHU",
+              "instruction":"NO_USE_FOUND_IN_BOUNDED_LINEAR_SCAN","use_kind":"UNRESOLVED_NOT_ABSENT",
+              "address_expression":"TIDAK TAHU","source_expression":"TIDAK TAHU","source_class":"TIDAK TAHU",
+              "result_register":reg(li["rt"])})
+    write_tsv("NA2_M_LW_USE_CENSUS.tsv",muses,["load_pc","use_pc","file_offset","instruction","use_kind","address_expression","source_expression","source_class","result_register"])
+    mstores=[z for z in muses if z["use_kind"]=="STORE_THROUGH_M_DERIVED_POINTER"]
+    write_tsv("NA2_M_DERIVED_STORE_CANDIDATES.tsv",mstores,["load_pc","use_pc","file_offset","instruction","use_kind","address_expression","source_expression","source_class","result_register"])
+    xclass=[{"use_pc":z["use_pc"],"address_expression":z["address_expression"],
+      "source_expression":z["source_expression"],
+      "classification":"KONSTANTA" if z["source_class"]=="KONSTANTA" else "SALINAN" if z["source_class"]=="SALINAN" else "TIDAK TAHU",
+      "level_delta_semantics":"TIDAK TAHU"} for z in mstores]
+    if not xclass: xclass=[{"use_pc":"TIDAK TAHU","address_expression":"TIDAK TAHU",
+      "source_expression":"No M-derived writer established by bounded recognizer","classification":"TIDAK TAHU","level_delta_semantics":"TIDAK TAHU"}]
+    write_tsv("NA2_X_WRITER_CLASSIFICATION.tsv",xclass,["use_pc","address_expression","source_expression","classification","level_delta_semantics"])
+    write_txt("NA2_X_IDENTITY.txt",
+       f"M_LW_REFERENCES={len(mloads)}\nM_USE_ROWS={len(muses)}\nM_DERIVED_STORE_CANDIDATES={len(mstores)}\n"+
+       "Cell candidate M+0x10+B+144*I; B=u8[0x8013EB1C], I=u16[0x8013EA6E].\n"+
+       "x=d vs effect/item/action ID=TIDAK TAHU; this is bounded linear-use recognition, not CFG/alias closure. Zero candidates does not prove no writers.\n")
+
+    # NA3a/3b: branch edges to interior B24C8, static and unresolved JALR to BE5D8.
+    b24=0x800B24C8; be5=0x800BE5D8; b24rows=[]
+    for tag,pc,i,t,k in edges:
+        if t==b24:
+            fr=function_for(cr1,pc) if tag=="ENTRY1" else function_for(cr0,pc)
+            b24rows.append(base_row(i,"NA3_B24C8_EDGE")|{
+              "target":h32(b24),"kind":k,"function_entry":h32(fr[0]) if fr else "TIDAK TAHU",
+              "location":"INSIDE_FUNCTION" if fr else "OUTSIDE_OR_UNRESOLVED"})
+    write_tsv("NA3_B24C8_BRANCH_ENTRIES.tsv",b24rows,["image","pc","file_offset","bytes","instruksi","excerpt_id","target","kind","function_entry","location"])
+    jstatic=[]; junresolved=[]
+    for pc,i in sorted(ci.items()):
+        if i["op"]==0 and i["fn"]==9:
+            v=const_reg(ci,i["rs"],pc,ENTRY_BASE); ex=sym_reg(ci,i["rs"],pc,ENTRY_BASE)
+            row=base_row(i,"NA3_BE5D8_JALR")|{
+              "target_constant":h32(v) if v is not None else "TIDAK TAHU","target_expression":ex,
+              "classification":"STATIC_JALR_TO_BE5D8" if v==be5 else "UNRESOLVED_JALR" if v is None else "OTHER_STATIC_TARGET"}
+            if v==be5: jstatic.append(row)
+            elif v is None: junresolved.append(row)
+    write_tsv("NA3_BE5D8_STATIC_JALR.tsv",jstatic,["image","pc","file_offset","bytes","instruksi","excerpt_id","target_constant","target_expression","classification"])
+    write_tsv("NA3_BE5D8_UNRESOLVED_JALR.tsv",junresolved,["image","pc","file_offset","bytes","instruksi","excerpt_id","target_constant","target_expression","classification"])
+    write_txt("NA3_BRANCH_SUMMARY.txt",
+      f"B24C8_BRANCH_OR_DIRECT_J_OR_CONSTANT_JR={len(b24rows)}\nBE5D8_STATIC_JALR={len(jstatic)}\n"+
+      f"UNRESOLVED_JALR={len(junresolved)}\nKNOWN_DIRECT_JAL_800B54F4=YES\n"+
+      "Computed/dynamic target closure is not proven.\n")
+
+    # NA4/NA5 static-only boundary and formula status.
+    write_txt("NA4_STATIC_ONLY.txt","EMULATOR_LAUNCHES=0\nGAME_EXECUTIONS=0\nBIOS_USED=no\nSAVESTATE_USED=no\nRAM_DUMP_USED=no\nVIDEO_OR_FRAME_EVIDENCE_USED=no\nBINARY_COMMITTED=no\n")
+    write_tsv("NA5_SYMBOLIC_UPGRADE_COST.tsv",[
+      {"premise":"x is read through manager+0x530 path","result":"Reader/table-helper is statically present; complete x writer semantics are not closed.","status":"SEBAGIAN K3"},
+      {"premise":"x=d for level jump d>=2","result":"TIDAK TAHU; no proven writer path from two level operands.","status":"BELUM K1"},
+      {"premise":"x is effect/item/action ID","result":"TIDAK TAHU; no complete selector-source and writer closure.","status":"BELUM K1"},
+      {"premise":"upgrade cost for d>=2","result":"TIDAK TAHU; no formula proven from code.","status":"BELUM K1"}
+    ],["premise","result","status"])
+
+    # Final validation includes every new evidence TSV and all JA/KA/LA/MA/NA reports.
+    nvalid,ndecoded,nfail=validate_outputs(exe,entry)
+    maxbytes,over=excerpt_audit()
+    pyr=list(csv.DictReader((OUT/"NA0_PYCOMPILE.tsv").open(encoding="utf-8"),delimiter="\t"))
+    pycount=len(pyr); pypass=sum(z["status"]=="PASS" for z in pyr)
+    pyfiles=sum(z["path"].endswith(".py") for z in pyr); txtsrc=sum(z["path"].endswith(".txt") for z in pyr)
+    actionr=list(csv.DictReader((OUT/"NA0_ACTIONS_ALL_EVENTS.tsv").open(encoding="utf-8"),delimiter="\t"))
+    scene=list(csv.DictReader((OUT/"NA1_SCENE_RECORDS.tsv").open(encoding="utf-8"),delimiter="\t"))
+    report=(
+      "# NA0-NA5 static audit — SLPS-03553\n\n"+
+      f"Baseline inklusif: {BASELINE}\nSource SHA: {SOURCE_SHA}\nEXE SHA-256: {EXE_SHA}\nEntry 1 SHA-256: {ENTRY_SHA}\nEMULATOR_LAUNCHES=0.\n\n"+
+      "## Status per butir\n"+
+      f"- NA0: {'TUNTAS K4' if pycount==pypass and nfail==0 and over==0 and actionr else 'SEBAGIAN K2'} — py_compile {pypass}/{pycount}; .py aktual={pyfiles}; sumber .txt dihitung={txtsrc}; validasi bytes/offset/decode={nvalid-nfail}/{nvalid}; excerpt maksimum={maxbytes} B; pelanggaran={over}.\n"+
+      f"- NA1: SEBAGIAN K3 — scene record={len(scene)}; enam base PC dianalisis; asal argumen/wallet/index dan CFG pemanggilan belum seluruhnya tertutup.\n"+
+      f"- NA2: SEBAGIAN K3 — sw 0x118($gp)={len(sw118)}; assignment $gp={len(gpdefs)}; writer EA88/39EFC={len(iw)}; lw M={len(mloads)}; x=d dan batas 52 TIDAK TAHU.\n"+
+      f"- NA3: SEBAGIAN K3 — edge ke B24C8={len(b24rows)}; static JALR BE5D8={len(jstatic)}; unresolved JALR={len(junresolved)}; computed caller belum tertutup.\n"+
+      "- NA4: TUNTAS K4 — hanya statis; emulator/game 0; tanpa BIOS/savestate/RAM dump/video; tanpa biner di commit.\n"+
+      "- NA5: BELUM K1 — x=d belum terbukti; biaya lompat level d>=2 TIDAK TAHU; tanpa angka asumsi atau fitting.\n\n"+
+      "## Batas bukti\n"+
+      f"Scene table anchor=0x800558A4; stride=0x1C; jumlah record={len(scene)}.\n"+
+      "NA2 M-use census is bounded and linear; it is not a whole-program CFG/alias writer proof. An empty recognizer is not evidence of no writers.\n"+
+      "V0 continuity rows only pass when every intervening instruction exists, no v0 redef, no call, and no branch entry is seen. Otherwise TIDAK TAHU.\n"+
+      "NA3 counts recognized code and constant indirect targets only; computed/dynamic targets remain TIDAK TAHU.\n\n"+
+      "## Validasi NA0\n"+
+      f"PY_COMPILE={pypass}/{pycount}; PY_FILES={pyfiles}; TXT_SOURCE_FILES={txtsrc}.\n"+
+      f"FILE_OFFSET_RAW_DECODE_CHECKS={nvalid}; DECODED_INSTRUCTIONS={ndecoded}; FAIL={nfail}.\n"+
+      f"AGGREGATED_MAX_CONTIGUOUS_BYTES={maxbytes}; OVER_LIMIT_GROUPS={over}; STATUS={'PASS' if over==0 and nfail==0 else 'FAIL'}.\n"+
+      f"ACTIONS_SNAPSHOT_ROWS={len(actionr)}; commit-trigger run list is published separately.\n")
+    write_txt("NA0_NA5_STATIC_REPORT.md",report)
+    write_txt("NA0_ANALYZER_STATUS.txt",
+       f"ANALYZER_EXIT_CODE=0\nPY_COMPILE={pypass}/{pycount}\nPY_FILES={pyfiles}\nTXT_SOURCE_FILES={txtsrc}\n"+
+       f"VALIDATION={nvalid-nfail}/{nvalid}\nDECODED={ndecoded}\nMAX_EXCERPT={maxbytes}\nOVER_LIMIT={over}\n")
+    print(f"NA_ANALYZER_EXIT_CODE=0 PY={pypass}/{pycount} VALIDATION={nvalid-nfail}/{nvalid} EXCERPT_MAX={maxbytes} OVER={over}")
+
+
+
+if __name__=="__main__":
+    main()
+    na_followup()
+
