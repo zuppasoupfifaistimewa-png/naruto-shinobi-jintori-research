@@ -1,0 +1,16 @@
+status	path
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_ACTION_TILE_DIFFS.tsv
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_BREAKPOINT_COUNTS.tsv
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH1_BOARD.tsv
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH1_COUNTS.tsv
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH1_LOG.txt
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH1_TRACE.tsv
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH2_BOARD.tsv
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH2_COUNTS.tsv
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH2_LOG.txt
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_LAUNCH2_TRACE.tsv
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_RUNTIME_SUMMARY.txt
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_SELFTEST.txt
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/cleanup.txt
+A	reports/stage1_economy/ra2-run-42536155267/attempt-1/RA2_PUBLISH_COMMIT_FILES.tsv
