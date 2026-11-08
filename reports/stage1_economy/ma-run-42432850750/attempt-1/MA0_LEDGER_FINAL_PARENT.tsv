@@ -1,0 +1,9 @@
+sha	author	email	class	subject
+d7f5e73e599ffde3f81405ade31b579f05e99732	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Extend MA1 scene record boundary scan across mapped EXE
+f8ddaa57de718fff3a98440b6404b2940e92450c	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add MA static follow-up and selector writer cross-check
+4963c3e3a54f546ac9cfbb02cf7141daf79d9a16	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish MA0-MA5 static audit run 42429723141 [skip ci]
+66f5672e19a0c624ca787b482fcaa298822b9de5	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Refine MA0-MA5 static audit and safe publication
+0e4dcc64e03bd28b8b74e2f3b6df26121d915a0e	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Record MA0-MA5 partial run summary and recovery findings
+fccce38b8cd2aa8fc3ee1ae121ad295e8f1b19fe	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish KA0-KA5 static audit 42428060234 [skip ci]
+819303553e51b0499c81e94c197616e454cfb2a0	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add isolated MA0-MA5 static upgrade-cost audit
+662833da768f473349539eb3fe304dc7fa51a16c	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	[skip ci] Include all LA Ghidra helpers in workflow path filter

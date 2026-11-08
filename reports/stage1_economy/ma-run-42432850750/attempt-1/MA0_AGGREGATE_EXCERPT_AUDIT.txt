@@ -1,0 +1,8 @@
+AGGREGATION=union of byte intervals by image; unique image+PC rows across every ja-*, ka-*, la-*, ma-* TSV
+UNIQUE_IMAGE_PC_ROWS=20706
+MAX_CONTIGUOUS_BYTES=68
+LIMIT_BYTES=64
+STATUS=FAIL
+OVER_LIMIT=ENTRY1:0x800F5D8C..0x800F5DCF=68B
+CONFLICTING_DUPLICATE_ADDRESSES=0
+OFFENDER_PROVENANCE=ENTRY1:0x800F5D8C:/tmp/naruto-ma-output-42432850750-1/MA2_ALL_SB_STORE_CENSUS.tsv;reports/stage1_economy/ja-run-42367635732/attempt-1/JA1_CALL_SITES.tsv;reports/stage1_economy/ja-run-42367635732/attempt-1/JA2_FUNCTION_CALLERS.tsv;reports/stage1_economy/la-run-42421741871/attempt-1/LA0_JA_REPLACEMENT_CALLER_WINDOWS.tsv;reports/stage1_economy/la-run-42421741871/attempt-1/LA2_GLOBAL_INPUT_ACCESSES.tsv;reports/stage1_economy/ma-run-42429723141/attempt-1/MA2_ALL_SB_STORE_CENSUS.tsv
