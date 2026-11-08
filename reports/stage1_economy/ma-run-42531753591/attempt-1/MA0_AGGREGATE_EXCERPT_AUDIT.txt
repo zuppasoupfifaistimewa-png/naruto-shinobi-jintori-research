@@ -1,0 +1,8 @@
+AGGREGATION=union of byte intervals by image; unique image+PC rows across every ja-*, ka-*, la-*, ma-* TSV
+UNIQUE_IMAGE_PC_ROWS=20702
+MAX_CONTIGUOUS_BYTES=64
+LIMIT_BYTES=64
+STATUS=PASS
+OVER_LIMIT=none
+CONFLICTING_DUPLICATE_ADDRESSES=0
+OFFENDER_PROVENANCE=none
