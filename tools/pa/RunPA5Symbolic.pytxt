@@ -111,8 +111,8 @@ def main():
             region_hashes=[hashlib.sha256(b1).hexdigest(),hashlib.sha256(b2).hexdigest()]
             region_equal=(b1==b2)
             for addr,width in sorted(EXPECTED_SCALARS.items()):
-                value=s1[addr.upper()]
-                scalars.append({"ram_addr":addr,"values_dec":value,"width_bytes":width,"launch2_values_dec":s2[addr.upper()],"identical":"YES" if value==s2[addr.upper()] else "NO"})
+                value=s1[addr]
+                scalars.append({"ram_addr":addr,"values_dec":value,"width_bytes":width,"launch2_values_dec":s2[addr],"identical":"YES" if value==s2[addr] else "NO"})
             status="PASS" if scalar_equal and region_equal and region_bytes==0x540 else "TIDAK TAHU"
             reason="TWO_IDENTICAL_CONTROL_SNAPSHOTS" if status=="PASS" else "SCALAR_OR_M_REGION_MISMATCH"
         except Exception as exc:
