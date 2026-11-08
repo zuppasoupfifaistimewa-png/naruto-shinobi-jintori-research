@@ -253,7 +253,7 @@ jobs:
           jq -r '(["run_id","workflow","status","conclusion","event","head_sha"]|@tsv),(.workflow_runs[]|[.id,.path,.status,(.conclusion//"TIDAK TAHU"),.event,.head_sha]|@tsv)' \
             "$OUT/na-run-events.json" > "$OUT/NA0_COMMIT_TRIGGER_RUNS.tsv"
           rm -f "$OUT/na-run-events.json"
-          PY_SUMNARY="$(python3 - "$OUT/NA0_PYCOMPILE.tsv" "$OUT/NA0_PRECHECK_PYCOMPILE.tsv" "$OUT/NA0_FILE_OFFSET_DECODE_VALIDATION.tsv" "$OUT/NA0_AGGREGATE_EXCERPT_AUDIT.txt" <<'PY'
+          PY_SUMMARY="$(python3 - "$OUT/NA0_PYCOMPILE.tsv" "$OUT/NA0_PRECHECK_PYCOMPILE.tsv" "$OUT/NA0_FILE_OFFSET_DECODE_VALIDATION.tsv" "$OUT/NA0_AGGREGATE_EXCERPT_AUDIT.txt" <<'PY'
           import csv, sys
           from pathlib import Path
           def rows(path):
@@ -267,8 +267,8 @@ jobs:
           ppass = sum(x.get("status") == "PASS" for x in pyrows)
           vfail = sum(x.get("raw_check") == "FAIL" or x.get("decode_check", "").startswith(("FAIL", "ERROR")) for x in valrows)
           over = next((x.split("=",1)[1] for x in audit.splitlines() if x.startswith("OVER_LIMIT=")), "TIDAK TAHU")
-          max_bytes = next((x.split("=",1)[1] for x in audit.splitlines() if x.startswith("NAX_CONTIGUOUS_BYTES=")), "TIDAK TAHU")
-          print(f"PY_COMPILE={ppass}/{len(pyrows)}; VALIDATION={len(valrows)-vfail}/{len(valrows)}; EXCERPT_NAX={max_bytes}; OVER_LIMIT={over}")
+          max_bytes = next((x.split("=",1)[1] for x in audit.splitlines() if x.startswith("MAX_CONTIGUOUS_BYTES=")), "TIDAK TAHU")
+          print(f"PY_COMPILE={ppass}/{len(pyrows)}; VALIDATION={len(valrows)-vfail}/{len(valrows)}; EXCERPT_MAX={max_bytes}; OVER_LIMIT={over}")
           PY
           )"
           STATUS=SEBAGIAN
@@ -302,20 +302,20 @@ jobs:
               ident = (name + " " + email).lower()
               bot = "[bot]" in ident or "dependabot" in ident or " bot" in ident or ident.startswith("bot")
               rows.append({"sha": sha, "author": name, "email": email,
-                           "class": "BOT" if bot else "HUNAN", "subject": subject})
+                           "class": "BOT" if bot else "HUMAN", "subject": subject})
           with (dest / "NA0_LEDGER_FINAL_PARENT.tsv").open("w", encoding="utf-8", newline="") as f:
               writer = csv.DictWriter(f, fieldnames=["sha","author","email","class","subject"],
                                        delimiter="\t", lineterminator="\n")
               writer.writeheader()
               writer.writerows(rows)
           total = len(rows)
-          human = sum(r["class"] == "HUNAN" for r in rows)
+          human = sum(r["class"] == "HUMAN" for r in rows)
           bot = sum(r["class"] == "BOT" for r in rows)
-          (dest / "NA0_LEDGER_FINAL_PARENT_SUMNARY.txt").write_text(
+          (dest / "NA0_LEDGER_FINAL_PARENT_SUMMARY.txt").write_text(
               f"BASELINE_INCLUSIVE={baseline}\n"
               f"FINAL_PARENT_SHA={parent}\n"
               f"LEDGER_RANGE={baseline}^..{parent}\n"
-              f"COMMITS_TOTAL={total}\nCOMMITS_HUNAN={human}\nCOMMITS_BOT={bot}\n"
+              f"COMMITS_TOTAL={total}\nCOMMITS_HUMAN={human}\nCOMMITS_BOT={bot}\n"
               "PUBLICATION_COMMIT_EXCLUDED=YES\n"
               f"COMMITS_TOTAL_WITH_PUBLICATION={total+1}\nCOMMITS_HUMAN_WITH_PUBLICATION={human}\nCOMMITS_BOT_WITH_PUBLICATION={bot+1}\n"
               "PUBLICATION_COMMIT_COUNTED_AS_BOT=YES\n"
@@ -343,7 +343,7 @@ jobs:
               echo "EXIT_CODE=$ANALYSIS_RC"
               echo "GHIDRA_EXE_EXIT_CODE=$EXE_RC"
               echo "GHIDRA_ENTRY1_EXIT_CODE=$ENTRY_RC"
-              echo "$PY_SUMNARY"
+              echo "$PY_SUMMARY"
               echo "$CLEANUP"
               echo "EMULATOR_LAUNCHES=0"
               echo "GAME_OR_EMULATOR_EXECUTED=no"
@@ -351,7 +351,7 @@ jobs:
               echo "BINARY_COMMITTED=no"
               echo "RELEASES_MODIFIED=no"
               echo "PUBLISH_ATTEMPT=$PUBLISH_ATTEMPT"
-            } > "$DEST/ACTIONS_RUN_SUMNARY.txt"
+            } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
             git add -- "$DEST"
             git diff --cached --name-only | sort -u > "$DEST/NA0_PUBLISH_COMMIT_FILES.txt"
             echo "$DEST/NA0_PUBLISH_COMMIT_FILES.txt" >> "$DEST/NA0_PUBLISH_COMMIT_FILES.txt"
@@ -367,8 +367,8 @@ jobs:
             echo "Push attempt $PUBLISH_ATTEMPT failed; retrying against updated main." >&2
           done
           if [ "$PUBLISH_OK" != "1" ]; then
-            echo "NA_PUBLICATION_FAILED=1" >> "$GITHUB_STEP_SUMNARY"
+            echo "NA_PUBLICATION_FAILED=1" >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
-          echo "PUBLISHED_DIR=$DEST" >> "$GITHUB_STEP_SUMNARY"
-          echo "RUN_SUMNARY=$DEST/ACTIONS_RUN_SUMNARY.txt" >> "$GITHUB_STEP_SUMNARY"
+          echo "PUBLISHED_DIR=$DEST" >> "$GITHUB_STEP_SUMMARY"
+          echo "RUN_SUMMARY=$DEST/ACTIONS_RUN_SUMMARY.txt" >> "$GITHUB_STEP_SUMMARY"
