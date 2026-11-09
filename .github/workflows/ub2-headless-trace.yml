@@ -21,10 +21,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
-      GH_TOKEN: \${{ github.token }}
-      RESEARCH_REPO: \${{ github.repository }}
-      WORK: /tmp/naruto-ub2-\${{ github.run_id }}-\${{ github.run_attempt }}
-      OUT: /tmp/naruto-ub2-output-\${{ github.run_id }}-\${{ github.run_attempt }}
+      GH_TOKEN: ${{ github.token }}
+      RESEARCH_REPO: ${{ github.repository }}
+      WORK: /tmp/naruto-ub2-${{ github.run_id }}-${{ github.run_attempt }}
+      OUT: /tmp/naruto-ub2-output-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Checkout repository history
         uses: actions/checkout@v4
@@ -44,9 +44,9 @@ jobs:
         with:
           name: naruto-storymode-adaptive-player-private
           run-id: "39907655833"
-          repository: \${{ github.repository }}
-          github-token: \${{ github.token }}
-          path: \${{ env.WORK }}/checkpoint
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ env.WORK }}/checkpoint
 
       - name: Download and verify emulator, game disc and retail BIOS
         shell: bash
@@ -123,7 +123,7 @@ jobs:
         id: probe
         shell: bash
         env:
-          SOURCE_SHA: \${{ github.sha }}
+          SOURCE_SHA: ${{ github.sha }}
         run: |
           set +e
           python3 experiments/ub2_headless_trace.py \

@@ -1,0 +1,12 @@
+STATUS=FAILED_SETUP
+JOB=ub2-headless-trace
+JOB_ID=129458779685
+RUN_ID=42704832037
+SOURCE_SHA=72d914c12151f25ed995ac6ef3bdc766ed671683
+EXIT_CODE=1
+FAILED_STEP=Download immutable adaptive-cycle-02-f180 source artifact
+REASON=GitHub expression escaping prepended literal backslashes to GITHUB_TOKEN, repository and artifact paths; download returned Bad credentials
+EMULATOR_LAUNCHES=0
+CHECKPOINT_BYTES_VERIFIED=NO
+PRIVATE_WORKSPACE_CLEANUP=PASS
+BINARY_COMMITTED=no
