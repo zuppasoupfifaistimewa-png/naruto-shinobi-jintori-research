@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # TA0 final-head verification for baseline aa32fbce; audit thresholds unchanged.
-# Final-head trigger marker: verify the prior HA2 deletion idempotently.
+# Final-head trigger marker: recheck the prior HA2 deletion with a tab-safe parser.
 from __future__ import annotations
 
 import argparse
