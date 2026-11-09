@@ -1,0 +1,8 @@
+STATUS=SEBAGIAN
+WORKFLOW=la0-la5-static
+JOB=la0-la5-static
+JOB_ID=128887262956
+RUN_ID=42531753597
+SOURCE_SHA=207408634a7a67e7777b03a8e18bab1bee7749e5
+EXIT_CODE=1
+NOTE=Static analysis completed, but the LA publication step failed.

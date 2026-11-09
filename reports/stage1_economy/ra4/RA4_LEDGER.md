@@ -1,26 +1,38 @@
-# RA4 — ledger hasil RA0–RA3 dan Actions
+# RA4 — ledger terkoreksi RA0–RA3 dan seluruh Actions relevan
 
 BASELINE_INCLUSIVE=a133f0b266f211a31f26439d3a04ac8705b515e4
-PARENT_HEAD=bd91cb50d1b09fe683cd175223453a98c8d9dc13
+PARENT_HEAD=700e772c127e935ee2fe82956a5a3821907ed08e
 STATUS=TUNTAS
 CONFIDENCE=K4
-SCOPE=Semua run QA0/QA4, RA2, RA1, dan monitor terjadwal yang relevan terhadap pekerjaan ini; bukan klaim enumerasi seluruh workflow lain dalam repo.
+SCOPE=49 Actions runs / 55 jobs yang tercatat dalam ledger: QA0/QA4, RA2, RA1, delapan run sampingan KA/LA/MA/NA, serta monitor terjadwal. Ini bukan enumerasi seluruh workflow historis repo di luar lingkup audit.
 
 ## Status tahapan
 
 | Tahap | Status | Keyakinan | Hasil |
 |---|---|---|---|
-| RA0 | TUNTAS | K4 | 15/15 baris dihapus fisik dari 10 berkas PA; union byte nyata seluruh JA/KA/LA/MA/NA/OA/PA/QA maksimum 64 byte; 0 grup >64 byte; 0 konflik byte. |
-| RA2 | BELUM | K1 untuk aksi upgrade | Dua restore identik sukses, tetapi tidak ada perubahan record petak atau uang dan tidak ada hit debit. Subklaim eksekusi FUN_800D15A8 sendiri TUNTAS K5 (48 hit per launch). |
-| RA1 | TUNTAS | K5 | Dua restore identik; 90 hit per breakpoint per launch; 360 pembacaan stack berhasil; saved RA pada sp+0x14 konsisten 0x80011A30. Caller outer pada 0x80011A28 masih kandidat; targetnya TIDAK TAHU. |
-| RA3 | BELUM | K1 | Tidak ada sampel upgrade independen dengan d berbeda. H1/H2 tidak dibandingkan. |
-| RA4 | TUNTAS | K4 | Ledger mencakup 47 job dari 41 run relevan: 6 QA run (12 job), 10 RA2, 1 RA1, 24 monitor terjadwal. |
+| RA0 | TUNTAS | K4 | 15/15 baris dihapus fisik dari 10 berkas PA; union byte aktual 266 evidence TSV dari arsip JA/KA/LA/MA/NA/OA/PA/QA maksimum 64 byte; nol grup >64 byte; nol konflik. |
+| RA2 | BELUM | K1 untuk aksi upgrade; K5 subklaim fungsi | Dua restore identik dan 180 VSYNC tiap peluncuran. FUN_800D15A8 terkena 48 hit/peluncuran, tetapi tidak ada perubahan level/petak/uang dan tidak ada hit jalur pembacaan biaya. |
+| RA1 | SEBAGIAN | K5 untuk observasi stack; K4 untuk decoding statis | Caller langsung BE5D8 = JAL di B54F4 terbukti; B54DC dan B54F4 terdekode dari Entry 1. Stack RA tersimpan 0x80011A30 pada 360/360 hit. Kandidat caller terluar 0x80011A28 belum punya byte/target terverifikasi. |
+| RA3 | BELUM | K1 | Tidak ada sampel upgrade independen dengan d berbeda; H1 dan H2 belum dibandingkan. |
+| RA4 | TUNTAS | K4 | 49 run / 55 job dicatat, termasuk semua gagal, job terjadwal, dan delapan run sampingan KA/LA/MA/NA. |
 
-## RA0 — perubahan fisik
+## RA0 — verifikasi fisik dan union aktual
 
-Berkas M terhadap baseline. Semuanya berada di PA; tidak ada arsip JA/KA/LA/MA/NA/OA yang berubah.
+Batas audit tetap **64 byte kontigu**. Tidak ada pelonggaran gerbang. Harness QA0 membandingkan sumber baseline dengan HEAD, memverifikasi penghapusan fisik, lalu menggabungkan byte dari kolom heksa aktual per alamat. Overlap identik digabung; konflik byte dihitung terpisah. Berkas QA0 hasil turunan tidak dihitung sebagai sumber byte independen.
 
-| Berkas | Baris sebelum | Dihapus | Baris sesudah |
+Hasil run audit akhir 42531023381:
+- TSV kandidat: 677; QA0 generated TSV dikecualikan: 38; evidence TSV yang diaudit: 266.
+- Baris byte heksa: 132896; alamat byte unik: 94536; konflik overlap: 0.
+- Penghapusan fisik: 15/15 baris dari 10/10 berkas.
+- Maksimum union: 64 byte; grup >64 byte: 0.
+- Protected callsite rows removed: 0; protected callsite files changed: 0.
+- Berkas JA/KA/LA/MA/NA/OA changed: 0.
+- STATUS.md atau Release changed: 0.
+- Self-test: PASS; Python compile: 75/75; workflow path collision: 0.
+
+**Daftar berkas M terhadap baseline** (baris data sebelum → dihapus → sesudah):
+
+| Berkas | Sebelum | Dihapus | Sesudah |
 |---|---:|---:|---:|
 | `reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv` | 2907 | 1 | 2906 |
 | `reports/stage1_economy/pa-run-42482327357-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv` | 47 | 2 | 45 |
@@ -33,34 +45,64 @@ Berkas M terhadap baseline. Semuanya berada di PA; tidak ada arsip JA/KA/LA/MA/N
 | `reports/stage1_economy/pa-run-42484169218-static/attempt-1/PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv` | 2907 | 1 | 2906 |
 | `reports/stage1_economy/pa-run-42484169218-static/attempt-1/PA2_V0_STORE_WINDOWS.tsv` | 47 | 2 | 45 |
 
-Total: 15 baris dihapus dari 10 berkas; masing-masing file GLOBAL_POINTER turun 1 baris, masing-masing V0_STORE turun 2 baris. Callsite yang dilindungi tidak dihapus. Batas audit tetap 64 byte kontigu; union dihitung dari byte aktual kolom heksa per alamat, overlap identik digabung dan konflik dilaporkan. Hasil final: maksimum 64 byte, 0 grup >64 byte.
+Callsite yang tidak boleh dihapus tetap ada: F5F54, B54DC, dan F5EBC. QA0 physical deletion verification untuk seluruh 15 baris menyatakan rows_remaining_at_head=0. Tidak ada grup >64 byte yang tersisa; tidak ada grup residual untuk dilaporkan.
 
-## RA2 — interpretasi run terakhir
+## RA1 — caller langsung dan pembacaan stack read-only
 
-Checkpoint adaptive-cycle-02-f180 dari run 39907655833 / artifact 12482055310 diverifikasi ukuran dan SHA-256. Dua peluncuran headless identik masing-masing mencapai 180 VSYNC. FUN_800D15A8 terkena 48 hit pada setiap peluncuran; dua breakpoint pembacaan fee 0x800D2520 dan 0x800D46EC masing-masing 0 hit. Seluruh 22 record petak tidak berubah; diff petak 0 baris; uang p0/p1 tetap 1380. Nol hit bukan bukti jalur debit tak terjangkau. Karena tidak ada upgrade aktual, level sebelum/sesudah, effect ID, dan d tetap TIDAK TAHU. Tidak ada fitting atau penggunaan konstanta 400/800/1600.
+Rantai lokal Entry 1 menggunakan offset file **0x10BB000 + (PC - 0x800AD450)**:
 
-## RA1 — interpretasi caller chain
+| PC | Offset Entry 1 | Bytes | Instruksi |
+|---|---:|---|---|
+| 0x800B54DC | 0x010C308C | 96 CD 03 0C | jal 0x800F3658 |
+| 0x800B54F4 | 0x010C30A4 | 76 F9 02 0C | jal 0x800BE5D8 |
 
-Pada dua breakpoint, register RA cocok dengan caller statis: B54DC menerima 0x800B54C0; BE5D8 menerima 0x800B54FC. Baca read-only u32(sp+0x14) berhasil untuk 360/360 hit dan bernilai 0x80011A30. Jika nilai itu adalah return address dari JAL, kandidat callsite outer adalah 0x80011A28 dengan offset main EXE 0x2228. Byte di kandidat itu belum tersedia pada report statis yang diperiksa, jadi target caller outer TIDAK TAHU.
+Breakpoint Exec pada B54DC dan BE5D8 menghasilkan 90 hit per breakpoint pada setiap peluncuran identik. Register RA saat hit: B54DC → 0x800B54C0; BE5D8 → 0x800B54FC. Pembacaan u32 read-only pada sp+0x14 berhasil 360/360 kali; nilainya selalu 0x80011A30, tanpa error dan tanpa memory/register write.
 
-## Ringkasan Actions
+Jika saved RA 0x80011A30 merupakan return address dari JAL, kandidat callsite outer adalah 0x80011A28 (EXE file offset 0x2228). **Byte instruksi dan target pada 0x80011A28 = TIDAK TAHU** karena belum ditemukan pada laporan statis yang diperiksa. Maka rantai langsung dan satu tingkat saved-RA telah diidentifikasi, tetapi caller terluar belum tertutup.
 
-| Kelompok | Run | Job | Hasil |
+## RA2 — hasil dua restore terbatas
+
+Checkpoint adaptive-cycle-02-f180 dari source run 39907655833 / artifact 12482055310 diverifikasi ukuran dan SHA-256. PCSX-Redux menjalankan dua restore identik, masing-masing 180 VSYNC, dengan input CIRCLE pada frame 30–35.
+
+- FUN_800D15A8: 48 hit tiap peluncuran (K5 untuk eksekusi fungsi dalam kondisi ini).
+- Exec breakpoint fee-read 0x800D2520 dan 0x800D46EC: masing-masing 0 hit pada kedua peluncuran.
+- 22 record petak di base 0x8013EA84 dengan stride 0x124; tidak ada perbedaan record.
+- Uang p0/p1 sebelum dan sesudah: 1380/1380.
+- Tabel aksi upgrade kosong; tidak ada perubahan level atau debit.
+
+Level sebelum/sesudah, effect ID, dan d = **TIDAK TAHU**. Nol hit tidak membuktikan jalur tidak terjangkau. Tidak ada rumus, konstanta 400/800/1600, atau fitting yang dibuat dari hasil ini. Skenario QA1_QA3 yang tercatat hanya mengusulkan satu konfirmasi UI dan, sebagai kondisi terpisah, satu transisi board/tile-action; belum ada urutan yang terverifikasi menghasilkan upgrade.
+
+API yang digunakan telah dicocokkan dengan dokumentasi resmi PCSX-Redux:
+- Breakpoint Exec dan retensi objek: https://pcsx-redux.consoledev.net/Lua/breakpoints/
+- Memory/register read API: https://pcsx-redux.consoledev.net/Lua/memory-and-registers/
+- Pads setOverride/clearOverride dan event: https://pcsx-redux.consoledev.net/Lua/redux-basics/
+- Sesi scripted berbasis VSYNC dan input tap: https://pcsx-redux.consoledev.net/Lua/playbook-scripted-session/
+
+## RA3 — gerbang H1/H2
+
+Jumlah sampel upgrade independen: 0. H1 (x=d) dan H2 (x=effect/item/action ID) belum diuji. Support dan falsifier global keduanya tetap TIDAK TAHU. Formula biaya upgrade untuk d>=2 tetap TIDAK TAHU. Tidak ada konstanta 400/800/1600 dan tidak ada curve fitting.
+
+## RA4 — cakupan semua Actions relevan
+
+| Kelompok | Run | Job | Ringkasan |
 |---|---:|---:|---|
-| QA0/QA4 | 6 | 12 | Dua run kedua job TUNTAS; satu run QA0 SEBAGIAN karena audit union keliru dan QA4 TUNTAS; satu run QA0 BELUM/QA4 SEBAGIAN karena comparator; dua run keduanya BELUM. |
-| RA2 | 10 | 10 | Sembilan run exit 1; run terakhir exit 0 namun tidak menemukan aksi upgrade, sehingga RA2 keseluruhan BELUM. |
-| RA1 | 1 | 1 | TUNTAS K5, exit 0. |
-| Monitor terjadwal | 24 | 24 | Semua sukses (exit 0); hanya status monitor, bukan bukti gameplay atau kesiapan player. |
+| QA0/QA4 | 6 | 12 | Termasuk 2 run final lulus; run lama yang salah, gagal, dan comparator error tetap dicatat. |
+| RA2 | 10 | 10 | 9 job gagal (exit 1); 1 job selesai exit 0 tetapi tidak menemukan upgrade (RA2 tetap BELUM). |
+| RA1 | 1 | 1 | Job sukses (exit 0); stage SEBAGIAN karena caller outer masih TIDAK TAHU. |
+| KA/LA/MA/NA side-effect runs | 8 | 8 | 6 sukses; 2 LA gagal pada langkah publikasi setelah analisis statis. |
+| Monitor terjadwal | 24 | 24 | Seluruh 24 sukses (exit 0), monitor saja—bukan bukti gameplay/adaptive readiness. |
+| **Total** | **49** | **55** | **38 job exit 0; 17 job exit 1.** |
 
-Total cakupan ledger: 41 run, 47 job. Rincian job ID, source SHA, exit code, status, dan path ringkasan ada di `RA4_ACTIONS_RUNS.tsv`. Satu ringkasan teks per QA run dan per monitor terjadwal tersedia di folder `actions/`; ringkasan RA2 dan RA1 berada pada folder run masing-masing.
+Job ID, source SHA, stage status, exit code, dan path ringkasan setiap run tersedia di `RA4_ACTIONS_RUNS.tsv`. Satu file ringkasan pendek per Actions run tersedia di `ra4/actions/`; run RA1/RA2 juga punya ringkasan khusus pada folder run masing-masing. Permalink raw terverifikasi dicatat di `RA4_ACTIONS_RAW_LINKS.txt`.
 
-## Batas dan proteksi
+## Batas / perlindungan
 
 - `STATUS.md` tidak diubah.
-- Tidak ada Release yang diubah.
-- Sepuluh berkas sumber yang dimodifikasi untuk pruning hanya berkas PA pada tabel di atas; tidak ada arsip JA/KA/LA/MA/NA/OA yang diubah.
-- Tidak ada BIOS, ROM, savestate, RAM dump, atau binary runtime masuk Git.
-- RA1/RA2 hanya membaca memori/register; tidak ada poke memori atau register.
-- Workflow RA1 memakai filter path spesifik dan self-test menyatakan tidak ada benturan.
+- Release tidak diubah.
+- Tidak ada arsip JA/KA/LA/MA/NA/OA yang diubah.
+- Tidak ada BIOS, ROM, savestate, raw RAM dump, atau binary runtime di Git.
+- RA1/RA2 menggunakan pembacaan memori/register saja; tidak ada poke memory/register.
+- Tidak ada workflow baru dalam pembaruan ledger ini; tidak ada filter path workflow lain yang dilonggarkan.
+- Semua klaim runtime K5 berasal dari dua peluncuran identik; klaim statis tertinggi K4.
 
-Daftar setiap berkas yang berubah pada commit terkait ada di `RA4_COMMITS.tsv`; daftar berkas dalam commit ledger ini ada di `RA4_LEDGER_COMMIT_FILES.tsv`.
+Daftar file yang berubah pada commit pembaruan ini disediakan terpisah dalam laporan commit dan daftar berkas ledger.

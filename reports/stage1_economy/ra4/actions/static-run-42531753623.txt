@@ -1,0 +1,8 @@
+STATUS=TUNTAS
+WORKFLOW=ka0-ka5-static
+JOB=ka0-ka5-static
+JOB_ID=128887263017
+RUN_ID=42531753623
+SOURCE_SHA=207408634a7a67e7777b03a8e18bab1bee7749e5
+EXIT_CODE=0
+NOTE=KA static analyzer, Ghidra export, and publication all succeeded.

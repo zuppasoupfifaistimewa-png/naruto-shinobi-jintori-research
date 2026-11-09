@@ -1,0 +1,8 @@
+STATUS=TUNTAS
+WORKFLOW=na0-na5-static
+JOB=na0-na5-static
+JOB_ID=128887900221
+RUN_ID=42531815501
+SOURCE_SHA=74a73e355d76671c712844a36f537eeb027e49b6
+EXIT_CODE=0
+NOTE=NA static analyzer, Ghidra export, and publication all succeeded.
