@@ -1,6 +1,6 @@
 MISSING_COMMIT_HASHES_VERIFIED_PRESENT=f80ff6e4cbf22c1f33de5f7a73d68bd155bbdd8a;8f9c93a3492b7aaa227c19382e50dbeb2313c6ef;73ada82c500e1883ba5252324c61299acf0c9492;292c422cedf54afc6f8df83ee615c2c1bbecd067
 COUNT_RECONCILIATION_261_262=git compare aa32fbce..292c422 returns 262 net changed paths; one is the self-referential reports/actions/ta3-ledger-aa32fbce/TA3_LEDGER.txt; excluding that ledger path gives 261. The 280 historical per-commit file-event rows are a different metric.
-INCREMENTAL_COMMIT_FILE_CHANGE_ROWS=199 including 292 baseline; 186 after 292 baseline (18 descendants through c00186a7)
+INCREMENTAL_COMMIT_FILE_CHANGE_ROWS=199 including 292 baseline; 186 after 292 baseline (19 descendants through c00186a7; current publication commit excluded)
 INCREMENTAL_COMMIT_COUNT_FROM_292_INCLUSIVE=20 (292 baseline included; 19 descendants through c00186a7; this update's publication commit is excluded)
 ACTIONS_RUNS_CREATED_FROM_292_INCLUSIVE=6 (42571813319 failed anchor; 42584546705 QA0 pass; 42585188841 and 42585667069 LA success; 42587984902 UA2 harness failure; 42588961435 UA2 success)
 UA3_RESULT=Historical ledger retained; incremental ledger contains 20 commits inclusive through c00186a7 and 199 file-event rows including baseline; all 6 Actions runs/10 jobs recorded; exact 261/262 reconciliation preserved
@@ -457,7 +457,9 @@ de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	9dec53ca991e40f6bf36a2c763be2321825f9f4
 c0949d5bc7e3f9371d106fccb52b46f61e5a5805	de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	2026-11-09T08:51:15Z	zuppasoupfifaistimewa-png	HUMAN	1	[UA2] Use bounded PCSX memory reader for candidate fields
 0e564623967cab4ea444c65fb63477fa5540d9f0	c0949d5bc7e3f9371d106fccb52b46f61e5a5805	2026-11-09T08:52:24Z	github-actions[bot]	BOT	14	Publish UA2 fee A/B runtime trace 42588961435 [skip ci]
 39bc552c1c66e455a4e9a910caaed32d8a62e320	0e564623967cab4ea444c65fb63477fa5540d9f0	2026-11-09T08:55:16Z	zuppasoupfifaistimewa-png	HUMAN	1	Update TA3 ledger through UA2 run 42588961435 [skip ci]
-4ff0847e4a213c89b7395be34108257bbca805b1	39bc552c1c66e455a4e9a910caaed32d8a62e320	2026-11-09T08:56:02Z	zuppasoupfifaistimewa-png	HUMAN	1	Clarify final TA3 ledger reconciliation [skip ci]
+4ff0847e4a213c89b7395be34108257bbca805b1	39bc552c1c66e455a4e9a910caaed32d8a62e320	2026-11-09T08:56:02Z	zuppasoupfifaistimewa-png	HUMAN	1	Clarify final TA3 ledger reconciliation
+c0fa603b9d2cd5b8f85ad0f7d56895f95aa4d507	4ff0847e4a213c89b7395be34108257bbca805b1	2026-11-09T08:58:03Z	zuppasoupfifaistimewa-png	HUMAN	1	Complete TA3 commit inventory through UA2 ledger update [skip ci]
+c00186a7d86f4af5012b8a8c2894ccf48e109a17	c0fa603b9d2cd5b8f85ad0f7d56895f95aa4d507	2026-11-09T08:58:25Z	zuppasoupfifaistimewa-png	HUMAN	1	Complete TA3 commit inventory through UA2 ledger reconciliation [skip ci] [skip ci]
 
 === INCREMENTAL COMMIT FILES (EXACT PATH INVENTORY) ===
 commit_sha	status	path	additions	deletions
