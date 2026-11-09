@@ -286,7 +286,7 @@ def main() -> int:
     ap=argparse.ArgumentParser()
     for k in ("work","out","pcsx-bin","appdir","bios","cue","source","card-dir"):
         ap.add_argument("--"+k,required=True)
-    ap.add_argument("--timeout-seconds",type=int,default=600)
+    ap.add_argument("--timeout-seconds",type=int,default=120)
     a=ap.parse_args()
     work=Path(a.work);out=Path(a.out);out.mkdir(parents=True,exist_ok=True)
     pcsx=Path(a.pcsx_bin);appdir=Path(a.appdir);bios=Path(a.bios);cue=Path(a.cue)
@@ -305,6 +305,7 @@ def main() -> int:
     warm_stdout=work/"warmup.stdout.txt"
     warm_rc,warm_wall,warm_log=run_emulator(pcsx,appdir,bios,cue,template,None,
         warmup_lua,warm_home,warm_stdout,120)
+    print("UB2_MEMCARD_WARMUP_DONE rc={} wall_s={:.3f}".format(warm_rc,warm_wall),flush=True)
     if not template.is_file() or template.stat().st_size != EXPECTED_CARD_BYTES:
         raise SystemExit("UB2_MEMORY_CARD_CREATION_FAILED")
     card_hash=sha(template)
@@ -324,10 +325,12 @@ def main() -> int:
         lua=launch_dir/"ub2.lua"
         lua.write_text(lua_probe(mode,launch),encoding="utf-8")
         stdout=launch_dir/"emulator.stdout.txt"
+        print("UB2_LAUNCH_BEGIN={} mode={}".format(launch,mode),flush=True)
         rc,wall,raw=run_emulator(pcsx,appdir,bios,cue,card,state_copy,lua,
             launch_dir/"home",stdout,a.timeout_seconds,
             pad_exec() if mode=="CIRCLE" else None)
         log=read_log_text(stdout)
+        print("UB2_LAUNCH_DONE={} rc={} wall_s={:.3f}".format(launch,rc,wall),flush=True)
         hits,inputs=parse_log(launch,log)
         all_hits.extend(hits);all_inputs.extend(inputs);logs.append(log)
         frames=0
