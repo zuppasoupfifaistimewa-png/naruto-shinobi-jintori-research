@@ -851,9 +851,6 @@ wr(out/"UB1_CALLER_11A28_CONTEXT.tsv",caller_context,
 gp_reg_rows=[]
 gp_offset_rows=[]
 for tag,code,lo in (("EXE",ce,EXE_BASE),("ENTRY1",ci,ENTRY_BASE)):
-    gp_at_site, gp_at_site_reason = const_value(
-        code,28,0x80011A08 if tag=="EXE" else ENTRY_BASE,lo
-    )
     for pc,ins in sorted(code.items()):
         if dest(ins)==28:
             z=base_row(ins)
@@ -861,11 +858,15 @@ for tag,code,lo in (("EXE",ce,EXE_BASE),("ENTRY1",ci,ENTRY_BASE)):
             gp_reg_rows.append(z)
         if ins["op"] not in STORES:
             continue
+        # Resolve the GP value at this exact writer PC.  Direct GP-relative
+        # stores must not discard a static GP definition merely because
+        # their addressing mode is DIRECT_GP_RELATIVE.
+        gp_value,gp_why=const_value(code,28,pc,lo)
         matched=[]
         if ins["rs"]==28 and ins["imm"] in (0xE4,0x118):
-            matched.append((ins["imm"],"DIRECT_GP_RELATIVE",None))
+            effective=((gp_value+ins["imm"])&0xffffffff) if gp_value is not None else None
+            matched.append((ins["imm"],"DIRECT_GP_RELATIVE",effective))
         else:
-            gp_value,gp_why=const_value(code,28,pc,lo)
             base_value,base_why=const_value(code,ins["rs"],pc,lo)
             if gp_value is not None and base_value is not None:
                 effective=(base_value+ins["imm"])&0xffffffff
@@ -879,8 +880,8 @@ for tag,code,lo in (("EXE",ce,EXE_BASE),("ENTRY1",ci,ENTRY_BASE)):
                 "base_register":reg(ins["rs"]),"store_offset_signed":ins["imm"],
                 "effective_address":h32(effective) if effective is not None else "TIDAK TAHU_GP_RUNTIME",
                 "writer_mode":mode,"value_register":reg(ins["rt"]),
-                "gp_at_writer":h32(gp_value) if mode!="DIRECT_GP_RELATIVE" and gp_value is not None
-                               else "TIDAK TAHU"
+                "gp_at_writer":h32(gp_value) if gp_value is not None else "TIDAK TAHU",
+                "gp_value_reason":gp_why
             })
             gp_offset_rows.append(z)
 wr(out/"UB1_GP_REGISTER_WRITERS.tsv",gp_reg_rows,
@@ -888,7 +889,7 @@ wr(out/"UB1_GP_REGISTER_WRITERS.tsv",gp_reg_rows,
 wr(out/"UB1_GP_OFFSET_WRITERS.tsv",gp_offset_rows,
    ["image","pc","file_offset","bytes","instruksi","writer_pc","target_gp_offset",
     "base_register","store_offset_signed","effective_address","writer_mode",
-    "value_register","gp_at_writer"])
+    "value_register","gp_at_writer","gp_value_reason"])
 
 table_base=0x800558FC
 table_rows=[]
@@ -968,6 +969,8 @@ ub1_summary=[
     "GP_LAST_STATIC_DEF="+(h32(gp_def["pc"])+" "+gp_def["text"] if gp_def else "TIDAK TAHU_INCOMING"),
     "GP_VALUE_BEFORE_1A08="+gp_call_text,
     "GP_VALUE_REASON="+gp_call_reason,
+    "GP_PLUS_E4_EFFECTIVE_ADDRESS="+(h32(gp_call_value+0xE4) if gp_call_value is not None else "TIDAK TAHU"),
+    "GP_PLUS_118_EFFECTIVE_ADDRESS="+(h32(gp_call_value+0x118) if gp_call_value is not None else "TIDAK TAHU"),
     "DIRECT_OR_STATIC_ALIAS_WRITERS_GP_PLUS_E4="+str(gp_writer_e4),
     "DIRECT_OR_STATIC_ALIAS_WRITERS_GP_PLUS_118="+str(gp_writer_118),
     "GP_REGISTER_DEFINITION_ROWS="+str(len(gp_reg_rows)),
