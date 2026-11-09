@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# TA0 final-head verification trigger; audit thresholds unchanged.
+# TA0 final-head verification for baseline aa32fbce; audit thresholds unchanged.
 from __future__ import annotations
 
 import argparse
