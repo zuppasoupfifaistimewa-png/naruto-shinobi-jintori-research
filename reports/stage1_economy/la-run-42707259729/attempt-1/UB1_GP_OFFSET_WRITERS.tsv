@@ -1,0 +1,5 @@
+image	pc	file_offset	bytes	instruksi	writer_pc	target_gp_offset	base_register	store_offset_signed	effective_address	writer_mode	value_register	gp_at_writer	gp_value_reason
+EXE	0x800116C8	0x00001EC8	E4 00 82 AF	sw $v0, 0xe4($gp)	0x800116C8	0x0E4	$gp	228	0x8006D760	DIRECT_GP_RELATIVE	$v0	0x8006D67C	ADDIU
+EXE	0x8001198C	0x0000218C	E4 00 82 AF	sw $v0, 0xe4($gp)	0x8001198C	0x0E4	$gp	228	0x8006D760	DIRECT_GP_RELATIVE	$v0	0x8006D67C	ADDIU
+EXE	0x800121AC	0x000029AC	18 01 80 AF	sw $zero, 0x118($gp)	0x800121AC	0x118	$gp	280	0x8006D794	DIRECT_GP_RELATIVE	$zero	0x8006D67C	ADDIU
+EXE	0x800121F4	0x000029F4	18 01 83 AF	sw $v1, 0x118($gp)	0x800121F4	0x118	$gp	280	0x8006D794	DIRECT_GP_RELATIVE	$v1	0x8006D67C	ADDIU

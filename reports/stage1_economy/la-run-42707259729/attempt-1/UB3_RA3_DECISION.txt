@@ -1,0 +1,5 @@
+DECISION=SKIP
+AVAILABLE_INDEPENDENT_UPGRADE_SAMPLES=0
+REQUIRED=at least two independently grounded upgrade actions with distinct d values
+RA3_EXISTING_STATUS=UNCHANGED
+REASON=TIDAK TAHU/no two independent d samples; do not run RA3
