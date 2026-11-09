@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # TA0 final-head verification for baseline aa32fbce; audit thresholds unchanged.
+# Final-head trigger marker: verify the prior HA2 deletion idempotently.
 from __future__ import annotations
 
 import argparse
@@ -365,7 +366,8 @@ def main():
         rows, total_tsv, evidence_files, malformed, labels = read_evidence(stage)
         values, origins, conflicts, spans = byte_union(rows)
     write_tsv(out / "QA0_HA2_CONDITIONAL_REMOVAL.tsv",
-              ["source_file", "rows_before", "rows_after", "matching_rows_removed", "verification"],
+              ["source_file", "baseline_rows", "head_rows", "deleted_rows", "pc", "bytes",
+               "image", "git_status", "verification"],
               ha2_audit)
 
     over = [(image, start, end, end - start) for image, start, end in spans
