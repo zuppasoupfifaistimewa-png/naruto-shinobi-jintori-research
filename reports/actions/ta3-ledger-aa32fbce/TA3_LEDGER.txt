@@ -1,7 +1,7 @@
 MISSING_COMMIT_HASHES_VERIFIED_PRESENT=f80ff6e4cbf22c1f33de5f7a73d68bd155bbdd8a;8f9c93a3492b7aaa227c19382e50dbeb2313c6ef;73ada82c500e1883ba5252324c61299acf0c9492;292c422cedf54afc6f8df83ee615c2c1bbecd067
 COUNT_RECONCILIATION_261_262=git compare aa32fbce..292c422 returns 262 net changed paths; one is the self-referential reports/actions/ta3-ledger-aa32fbce/TA3_LEDGER.txt; excluding that ledger path gives 261. The 280 historical per-commit file-event rows are a different metric.
 INCREMENTAL_COMMIT_FILE_CHANGE_ROWS=197 including 292 baseline; 184 after 292 baseline (all 16 descendant commits through 39bc552c)
-INCREMENTAL_COMMIT_COUNT_FROM_292_INCLUSIVE=17 (292 baseline included; 16 descendants through 39bc552c; current ledger publication commit is excluded)
+INCREMENTAL_COMMIT_COUNT_FROM_292_INCLUSIVE=18 (292 baseline included; 17 descendants through 4ff0847e; current ledger publication commit is excluded)
 ACTIONS_RUNS_CREATED_FROM_292_INCLUSIVE=6 (42571813319 failed anchor; 42584546705 QA0 pass; 42585188841 and 42585667069 LA success; 42587984902 UA2 harness failure; 42588961435 UA2 success)
 UA3_RESULT=Historical ledger retained; incremental commit/file/job ledger extended from 292c422 inclusive through 39bc552c; 17 commits inclusive, 197 incremental file-event rows including 292 baseline, 6 Actions runs/10 job rows, and exact 261/262 reconciliation preserved
 UA3_CONFIDENCE=K4
@@ -21,11 +21,11 @@ CONFIDENCE=K4 for static UA0/UA1/UA3; UA2 runtime K3; overall partial because UA
 BASELINE_INCLUSIVE=aa32fbcee97c8f49946a8e589010cfb9ef1a6928
 LEDGER_PARENT_HEAD=4ff0847e4a213c89b7395be34108257bbca805b1
 LEDGER_RANGE=292c422cedf54afc6f8df83ee615c2c1bbecd067^..4ff0847e4a213c89b7395be34108257bbca805b1 (incremental section; historical section starts at aa32fbce)
-COMMITS_TOTAL_INCLUDING_BASELINE=41
-COMMITS_AFTER_BASELINE=40
-COMMITS_HUMAN=30
+COMMITS_TOTAL_INCLUDING_BASELINE=42
+COMMITS_AFTER_BASELINE=41
+COMMITS_HUMAN=31
 COMMITS_BOT=11
-COMMIT_FILE_CHANGE_ROWS=464 (280 through 292c422 plus 184 descendants through 39bc552c)
+COMMIT_FILE_CHANGE_ROWS=464 (280 through 292c422 plus 184 descendants through 4ff0847e)
 ACTIONS_RUNS_CREATED_SINCE_BASELINE=11
 ACTIONS_JOB_ROWS=19
 ACTIONS_RUNS_SUCCESS=5
@@ -44,7 +44,7 @@ TA1_EMULATOR_RUNS=0
 TA2_STATUS=BELUM
 TA2_REASON=TA0_GATE_DID_NOT_PASS; requested two 900-frame launches (no-input vs periodic CIRCLE) were not performed
 QA4_UNEXPECTED_JOB=RUN_42566294855_JOB_128993639683; two 180-frame no-input CONTROL launches; explicitly NOT_TA2; runs 42568914600, 42570934141 and 42571105641 correctly skipped QA4
-TA3_LEDGER_STATUS=TUNTAS; 17 commits inclusive from 292c422 through 39bc552c and all 6 Actions runs/10 jobs are inventoried; current publication commit is excluded as self-referential
+TA3_LEDGER_STATUS=TUNTAS; 18 commits inclusive from 292c422 through 4ff0847e and all 6 Actions runs/10 jobs are inventoried; current publication commit is excluded as self-referential
 RA2_UPGRADE_ACTIONS_OBSERVED=0
 RA2_D_SAMPLES_OBSERVED=0
 RA2_DISTINCT_D_VALUES=0
@@ -55,7 +55,7 @@ EXCLUDED_INTERMEDIATE_LEDGER_PUBLICATION=1b1ed031466380d4817ae00414f90e4924de1d2
 UA0_STATUS=TUNTAS
 UA1_STATUS=TUNTAS
 UA2_STATUS=SEBAGIAN
-UA3_STATUS=TUNTAS; all incremental records through 39bc552c verified; current publication commit excluded
+UA3_STATUS=TUNTAS; all incremental records through 4ff0847e verified; current publication commit excluded
 ACTIONS_RUNS_TOTAL_REPOSITORY_AT_CHECK=1320; pre-UA2 total after QA0 plus two LA runs was 1318; UA2 runs 42587984902 and 42588961435 raised it to 1320; both QA0 jobs were skipped
 UA2_RUN_42587984902=FAILURE; SOURCE_SHA=db01b8db42c023b584d43c3390c0f425ee551fe3; JOB=129062324323; EXIT_CODE=1; cause: PCSX.addBreakpoint callback was passed before required cause string; frame rows=0; QA0 job skipped; summary raw is in incremental Actions table
 UA2_RUN_42588961435=SUCCESS; SOURCE_SHA=c0949d5bc7e3f9371d106fccb52b46f61e5a5805; JOB=129065561294; EXIT_CODE=0; QA0 job 129065563709 skipped; 900 frames per launch; checkpoint SHA=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
@@ -434,6 +434,7 @@ de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	9dec53ca991e40f6bf36a2c763be2321825f9f4
 c0949d5bc7e3f9371d106fccb52b46f61e5a5805	de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	2026-11-09T08:51:15Z	zuppasoupfifaistimewa-png	HUMAN	1	[UA2] Use bounded PCSX memory reader for candidate fields
 0e564623967cab4ea444c65fb63477fa5540d9f0	c0949d5bc7e3f9371d106fccb52b46f61e5a5805	2026-11-09T08:52:24Z	github-actions[bot]	BOT	14	Publish UA2 fee A/B runtime trace 42588961435 [skip ci]
 39bc552c1c66e455a4e9a910caaed32d8a62e320	0e564623967cab4ea444c65fb63477fa5540d9f0	2026-11-09T08:55:16Z	zuppasoupfifaistimewa-png	HUMAN	1	Update TA3 ledger through UA2 run 42588961435 [skip ci]
+4ff0847e4a213c89b7395be34108257bbca805b1	39bc552c1c66e455a4e9a910caaed32d8a62e320	2026-11-09T08:56:02Z	zuppasoupfifaistimewa-png	HUMAN	1	Clarify final TA3 ledger reconciliation [skip ci]
 
 === INCREMENTAL COMMIT FILES (EXACT PATH INVENTORY) ===
 commit_sha	status	path	additions	deletions
@@ -633,6 +634,7 @@ c0949d5bc7e3f9371d106fccb52b46f61e5a5805	modified	tools/qa/RunUA2Control.pytxt	5
 0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_RUNTIME_SUMMARY.txt	41	0
 0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/cleanup.txt	1	0
 39bc552c1c66e455a4e9a910caaed32d8a62e320	modified	reports/actions/ta3-ledger-aa32fbce/TA3_LEDGER.txt	74	22
+4ff0847e4a213c89b7395be34108257bbca805b1	modified	reports/actions/ta3-ledger-aa32fbce/TA3_LEDGER.txt	2	2
 
 === INCREMENTAL ACTIONS RUNS / JOBS (BASELINE 292c422 INCLUSIVE) ===
 run_id	created_at_utc	workflow	workflow_path	source_sha	run_conclusion	job_id	job_name	job_conclusion	exit_code	summary_path	raw_permalink
