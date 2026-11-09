@@ -8,8 +8,8 @@ SA3_COMMITS_MAIN_PART06.tsv	500	main commits pages 26-30
 SA3_COMMITS_MAIN_PART07.tsv	500	main commits pages 31-35
 SA3_COMMITS_MAIN_PART08.tsv	474	main commits pages 36-40 through prior snapshot 2679c8e
 SA3_COMMITS_MAIN_PART09.tsv	9	newer main ancestry commits after prior snapshot through d80de297
-SA3_COMMITS_MAIN_PART10.tsv	4	four main ancestry commits after d80de297 through 516a945
-SA3_BRANCHES.tsv	6	all repository branch refs at snapshot 516a945
+SA3_COMMITS_MAIN_PART10.tsv	6	six newer main ancestry commits after d80de297 through da1be21
+SA3_BRANCHES.tsv	6	all repository branch refs at snapshot da1be21
 SA3_BRANCH_ONLY_COMMITS.tsv	61	unique commits ahead of main across other refs at snapshot
 SA3_ACTIONS_RUNS_PART01.tsv	500	all-branch Actions runs pages 1-5 through prior run snapshot
 SA3_ACTIONS_RUNS_PART02.tsv	500	all-branch Actions runs pages 6-10 through prior run snapshot
