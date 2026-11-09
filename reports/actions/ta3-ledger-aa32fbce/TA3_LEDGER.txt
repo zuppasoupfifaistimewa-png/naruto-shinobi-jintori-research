@@ -1,9 +1,9 @@
 MISSING_COMMIT_HASHES_VERIFIED_PRESENT=f80ff6e4cbf22c1f33de5f7a73d68bd155bbdd8a;8f9c93a3492b7aaa227c19382e50dbeb2313c6ef;73ada82c500e1883ba5252324c61299acf0c9492;292c422cedf54afc6f8df83ee615c2c1bbecd067
 COUNT_RECONCILIATION_261_262=git compare aa32fbce..292c422 returns 262 net changed paths; one is the self-referential reports/actions/ta3-ledger-aa32fbce/TA3_LEDGER.txt; excluding that ledger path gives 261. The 280 historical per-commit file-event rows are a different metric.
-INCREMENTAL_COMMIT_FILE_CHANGE_ROWS=197 including 292 baseline; 184 after 292 baseline (all 16 descendant commits through 39bc552c)
-INCREMENTAL_COMMIT_COUNT_FROM_292_INCLUSIVE=18 (292 baseline included; 17 descendants through 4ff0847e; current ledger publication commit is excluded)
+INCREMENTAL_COMMIT_FILE_CHANGE_ROWS=199 including 292 baseline; 186 after 292 baseline (18 descendants through c00186a7)
+INCREMENTAL_COMMIT_COUNT_FROM_292_INCLUSIVE=20 (292 baseline included; 19 descendants through c00186a7; this update's publication commit is excluded)
 ACTIONS_RUNS_CREATED_FROM_292_INCLUSIVE=6 (42571813319 failed anchor; 42584546705 QA0 pass; 42585188841 and 42585667069 LA success; 42587984902 UA2 harness failure; 42588961435 UA2 success)
-UA3_RESULT=Historical ledger retained; incremental commit/file/job ledger extended from 292c422 inclusive through 39bc552c; 17 commits inclusive, 197 incremental file-event rows including 292 baseline, 6 Actions runs/10 job rows, and exact 261/262 reconciliation preserved
+UA3_RESULT=Historical ledger retained; incremental ledger contains 20 commits inclusive through c00186a7 and 199 file-event rows including baseline; all 6 Actions runs/10 jobs recorded; exact 261/262 reconciliation preserved
 UA3_CONFIDENCE=K4
 UA2_REASON=Run 42587984902 BELUM/K0: wrong PCSX.addBreakpoint cause argument caused timeout before frame 1; run 42588961435 SEBAGIAN/K3: two 900-frame launches from identical adaptive-cycle-02-f180 checkpoint, no-input vs CIRCLE 6 frames every 120; 900 per-frame comparisons; 0 fee breakpoint hits; authoritative wallet remains TIDAK TAHU.
 UA2_CONFIDENCE=K3_RUNTIME_ONE_LAUNCH_PER_CONDITION; K5 NOT MET
@@ -19,13 +19,13 @@ UA0_CONFIDENCE=K4
 STATUS=SEBAGIAN
 CONFIDENCE=K4 for static UA0/UA1/UA3; UA2 runtime K3; overall partial because UA2 has one launch per condition and no fee hit
 BASELINE_INCLUSIVE=aa32fbcee97c8f49946a8e589010cfb9ef1a6928
-LEDGER_PARENT_HEAD=4ff0847e4a213c89b7395be34108257bbca805b1
-LEDGER_RANGE=292c422cedf54afc6f8df83ee615c2c1bbecd067^..4ff0847e4a213c89b7395be34108257bbca805b1 (incremental section; historical section starts at aa32fbce)
-COMMITS_TOTAL_INCLUDING_BASELINE=42
-COMMITS_AFTER_BASELINE=41
-COMMITS_HUMAN=31
+LEDGER_PARENT_HEAD=c00186a7d86f4af5012b8a8c2894ccf48e109a17
+LEDGER_RANGE=292c422cedf54afc6f8df83ee615c2c1bbecd067^..c00186a7d86f4af5012b8a8c2894ccf48e109a17 (incremental section; this publication commit is excluded; historical section starts at aa32fbce)
+COMMITS_TOTAL_INCLUDING_BASELINE=44
+COMMITS_AFTER_BASELINE=43
+COMMITS_HUMAN=33
 COMMITS_BOT=11
-COMMIT_FILE_CHANGE_ROWS=464 (280 through 292c422 plus 184 descendants through 4ff0847e)
+COMMIT_FILE_CHANGE_ROWS=466 (280 historical through 292c422 plus 186 descendant file events through c00186a7)
 ACTIONS_RUNS_CREATED_SINCE_BASELINE=11
 ACTIONS_JOB_ROWS=19
 ACTIONS_RUNS_SUCCESS=5
@@ -44,7 +44,7 @@ TA1_EMULATOR_RUNS=0
 TA2_STATUS=BELUM
 TA2_REASON=TA0_GATE_DID_NOT_PASS; requested two 900-frame launches (no-input vs periodic CIRCLE) were not performed
 QA4_UNEXPECTED_JOB=RUN_42566294855_JOB_128993639683; two 180-frame no-input CONTROL launches; explicitly NOT_TA2; runs 42568914600, 42570934141 and 42571105641 correctly skipped QA4
-TA3_LEDGER_STATUS=TUNTAS; 18 commits inclusive from 292c422 through 4ff0847e and all 6 Actions runs/10 jobs are inventoried; current publication commit is excluded as self-referential
+TA3_LEDGER_STATUS=TUNTAS; 20 commits inclusive from 292c422 through c00186a7 and all 6 Actions runs/10 jobs are inventoried; this ledger publication commit is excluded as self-referential
 RA2_UPGRADE_ACTIONS_OBSERVED=0
 RA2_D_SAMPLES_OBSERVED=0
 RA2_DISTINCT_D_VALUES=0
@@ -55,7 +55,7 @@ EXCLUDED_INTERMEDIATE_LEDGER_PUBLICATION=1b1ed031466380d4817ae00414f90e4924de1d2
 UA0_STATUS=TUNTAS
 UA1_STATUS=TUNTAS
 UA2_STATUS=SEBAGIAN
-UA3_STATUS=TUNTAS; all incremental records through 4ff0847e verified; current publication commit excluded
+UA3_STATUS=TUNTAS; all incremental records through c00186a7 verified; this publication commit excluded
 ACTIONS_RUNS_TOTAL_REPOSITORY_AT_CHECK=1320; pre-UA2 total after QA0 plus two LA runs was 1318; UA2 runs 42587984902 and 42588961435 raised it to 1320; both QA0 jobs were skipped
 UA2_RUN_42587984902=FAILURE; SOURCE_SHA=db01b8db42c023b584d43c3390c0f425ee551fe3; JOB=129062324323; EXIT_CODE=1; cause: PCSX.addBreakpoint callback was passed before required cause string; frame rows=0; QA0 job skipped; summary raw is in incremental Actions table
 UA2_RUN_42588961435=SUCCESS; SOURCE_SHA=c0949d5bc7e3f9371d106fccb52b46f61e5a5805; JOB=129065561294; EXIT_CODE=0; QA0 job 129065563709 skipped; 900 frames per launch; checkpoint SHA=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
@@ -102,6 +102,29 @@ f80ff6e4cbf22c1f33de5f7a73d68bd155bbdd8a	6fa9da88dda389fce3168026386a5062a873161
 8f9c93a3492b7aaa227c19382e50dbeb2313c6ef	f80ff6e4cbf22c1f33de5f7a73d68bd155bbdd8a	2026-11-09T06:08:34Z	zuppasoupfifaistimewa-png	HUMAN	Extend TA0 source-attribution audit and verify every SA1 excerpt [skip ci]	1	88	1	18	0	YES
 73ada82c500e1883ba5252324c61299acf0c9492	1b1ed031466380d4817ae00414f90e4924de1d2a	2026-11-09T06:14:17Z	zuppasoupfifaistimewa-png	HUMAN	Run TA0 final-head static verification	1	1	1	1	0	NO
 292c422cedf54afc6f8df83ee615c2c1bbecd067	73ada82c500e1883ba5252324c61299acf0c9492	2026-11-09T06:14:35Z	github-actions[bot]	BOT	Publish TA0 static gate audit 42571813319 [skip ci]	13	17289	13	0	0	YES
+=== INCREMENTAL COMMIT METADATA (BASELINE 292 INCLUSIVE) ===
+commit_sha	parent_sha	date_utc	author	class	subject	changed_files	lines_added	lines_deleted	skip_ci
+292c422cedf54afc6f8df83ee615c2c1bbecd067	73ada82c500e1883ba5252324c61299acf0c9492	2026-11-09T06:14:35Z	github-actions[bot]	BOT	Publish TA0 static gate audit 42571813319 [skip ci]	13	18459	0	YES
+875ae30ef1bdaa41642e650b0465c89cb77eac9f	292c422cedf54afc6f8df83ee615c2c1bbecd067	2026-11-09T08:09:09Z	zuppasoupfifaistimewa-png	HUMAN	Extend TA3 ledger through QA0 run 42571813319 [skip ci]	1	47	13	YES
+37f44eb8c520b4cd50178ee95ac81c553421cf64	875ae30ef1bdaa41642e650b0465c89cb77eac9f	2026-11-09T08:14:49Z	zuppasoupfifaistimewa-png	HUMAN	Fix QA0 parser and add protected-edge trimming audit	1	285	1	NO
+36fb63d7472b78bd7d4a4711ca49b48f33e47121	37f44eb8c520b4cd50178ee95ac81c553421cf64	2026-11-09T08:15:07Z	github-actions[bot]	BOT	Publish TA0 static gate audit 42584546705 [skip ci]	59	17491	118	YES
+61cf4621749f4e642864986a189f25b1a5a308ba	36fb63d7472b78bd7d4a4711ca49b48f33e47121	2026-11-09T08:20:07Z	zuppasoupfifaistimewa-png	HUMAN	Add explicit UA1 target-reference static scan	1	177	11	NO
+774ef5d1df0dc7f79c6d103c5738e51ecb51ccfe	61cf4621749f4e642864986a189f25b1a5a308ba	2026-11-09T08:23:13Z	github-actions[bot]	BOT	Publish LA0-LA5 static audit run 42585188841	43	26988	0	NO
+a22274fbc0bafcfebb24362e65a6f112f40bca55	774ef5d1df0dc7f79c6d103c5738e51ecb51ccfe	2026-11-09T08:24:02Z	zuppasoupfifaistimewa-png	HUMAN	Publish UA1-prefixed static audit outputs	1	1	1	NO
+0ac54246d7b5a5c237aa220dbe241f5b8b7cd45f	a22274fbc0bafcfebb24362e65a6f112f40bca55	2026-11-09T08:27:57Z	github-actions[bot]	BOT	Publish LA0-LA5 static audit run 42585667069	47	27029	0	NO
+0370a97fdf5fd9a20cffbcb9f85d58196b150642	0ac54246d7b5a5c237aa220dbe241f5b8b7cd45f	2026-11-09T08:34:30Z	zuppasoupfifaistimewa-png	HUMAN	Cap D49D0 excerpt at 64 bytes [skip ci]	1	1	1	YES
+df559f71bc4ceb0bfac3b0f55688e08b97a285f5	0370a97fdf5fd9a20cffbcb9f85d58196b150642	2026-11-09T08:38:23Z	zuppasoupfifaistimewa-png	HUMAN	Complete UA0-UA3 incremental audit ledger [skip ci]	1	234	12	YES
+58e0f525ad2dd5049bda4a7ff1353a98c5f28063	df559f71bc4ceb0bfac3b0f55688e08b97a285f5	2026-11-09T08:42:17Z	zuppasoupfifaistimewa-png	HUMAN	Add bounded UA2 fee A/B runtime harness [skip ci]	1	358	0	YES
+db01b8db42c023b584d43c3390c0f425ee551fe3	58e0f525ad2dd5049bda4a7ff1353a98c5f28063	2026-11-09T08:43:08Z	zuppasoupfifaistimewa-png	HUMAN	[UA2] Enable isolated fee A/B runtime job; skip QA0	1	31	30	NO
+9dec53ca991e40f6bf36a2c763be2321825f9f4f	db01b8db42c023b584d43c3390c0f425ee551fe3	2026-11-09T08:47:14Z	zuppasoupfifaistimewa-png	HUMAN	Fix UA2 breakpoint signature and retain breakpoint handles [skip ci]	1	14	9	YES
+de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	9dec53ca991e40f6bf36a2c763be2321825f9f4f	2026-11-09T08:48:50Z	github-actions[bot]	BOT	Publish UA2 fee A/B runtime trace 42587984902 [skip ci]	9	79	0	YES
+c0949d5bc7e3f9371d106fccb52b46f61e5a5805	de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	2026-11-09T08:51:15Z	zuppasoupfifaistimewa-png	HUMAN	[UA2] Use bounded PCSX memory reader for candidate fields	1	5	5	NO
+0e564623967cab4ea444c65fb63477fa5540d9f0	c0949d5bc7e3f9371d106fccb52b46f61e5a5805	2026-11-09T08:52:24Z	github-actions[bot]	BOT	Publish UA2 fee A/B runtime trace 42588961435 [skip ci]	14	2882	0	YES
+39bc552c1c66e455a4e9a910caaed32d8a62e320	0e564623967cab4ea444c65fb63477fa5540d9f0	2026-11-09T08:55:16Z	zuppasoupfifaistimewa-png	HUMAN	Update TA3 ledger through UA2 run 42588961435 [skip ci]	1	74	22	YES
+4ff0847e4a213c89b7395be34108257bbca805b1	39bc552c1c66e455a4e9a910caaed32d8a62e320	2026-11-09T08:56:02Z	zuppasoupfifaistimewa-png	HUMAN	Clarify final TA3 ledger reconciliation [skip ci]	1	2	2	YES
+c0fa603b9d2cd5b8f85ad0f7d56895f95aa4d507	4ff0847e4a213c89b7395be34108257bbca805b1	2026-11-09T08:58:03Z	zuppasoupfifaistimewa-png	HUMAN	Complete TA3 commit inventory through UA2 ledger update [skip ci]	1	13	11	YES
+c00186a7d86f4af5012b8a8c2894ccf48e109a17	c0fa603b9d2cd5b8f85ad0f7d56895f95aa4d507	2026-11-09T08:58:25Z	zuppasoupfifaistimewa-png	HUMAN	Complete TA3 commit inventory through UA2 ledger reconciliation [skip ci]	1	9	7	YES
+
 === COMMIT FILES (ALL PATHS) ===
 commit_sha	status	path	additions	deletions
 aa32fbcee97c8f49946a8e589010cfb9ef1a6928	modified	reports/stage1_economy/sa3/SA3_BRANCHES.tsv	1	1
@@ -635,6 +658,9 @@ c0949d5bc7e3f9371d106fccb52b46f61e5a5805	modified	tools/qa/RunUA2Control.pytxt	5
 0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/cleanup.txt	1	0
 39bc552c1c66e455a4e9a910caaed32d8a62e320	modified	reports/actions/ta3-ledger-aa32fbce/TA3_LEDGER.txt	74	22
 4ff0847e4a213c89b7395be34108257bbca805b1	modified	reports/actions/ta3-ledger-aa32fbce/TA3_LEDGER.txt	2	2
+
+c0fa603b9d2cd5b8f85ad0f7d56895f95aa4d507	modified	reports/actions/ta3-ledger-aa32fbce/TA3_LEDGER.txt	13	11
+c00186a7d86f4af5012b8a8c2894ccf48e109a17	modified	reports/actions/ta3-ledger-aa32fbce/TA3_LEDGER.txt	9	7
 
 === INCREMENTAL ACTIONS RUNS / JOBS (BASELINE 292c422 INCLUSIVE) ===
 run_id	created_at_utc	workflow	workflow_path	source_sha	run_conclusion	job_id	job_name	job_conclusion	exit_code	summary_path	raw_permalink
