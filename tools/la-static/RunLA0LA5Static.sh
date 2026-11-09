@@ -300,16 +300,21 @@ target=0x800B50AC
 ptrs=[]
 for tag,blob in [("EXE",exe),("ENTRY1",entry)]:ptrs.extend(pointer_words(blob,tag,target))
 wr(out/"LA1_B50AC_POINTER_WORDS.tsv",ptrs,["image","pc","file_offset","bytes","instruksi","value","classification"])
+# Four bounded neighboring record candidates only. No long contiguous raw-byte export.
+candidate_record_bases=[0x800558E4,0x80055900,0x8005591C,0x80055938]
 region_rows=[]
-for pc in range(0x800558C0,0x80055970,4):
-    off=pc-EXE_BASE+EXE_FILE
-    raw=exe[off:off+4]
-    if len(raw)!=4:continue
-    val=int.from_bytes(raw,"little")
-    region_rows.append({"image":"EXE","pc":h32(pc),"file_offset":h32(off),"bytes":hx(raw),
-                        "instruksi":"DATA_WORD","value":h32(val),
-                        "classification":"TARGET_POINTER" if val==target else "NEARBY_WORD"})
-wr(out/"LA1_B50AC_TABLE_REGION.tsv",region_rows,["image","pc","file_offset","bytes","instruksi","value","classification"])
+for record_base in candidate_record_bases:
+    for field_offset in (0,4,8):
+        pc=record_base+field_offset
+        off=pc-EXE_BASE+EXE_FILE
+        raw=exe[off:off+4]
+        if len(raw)!=4:continue
+        val=int.from_bytes(raw,"little")
+        region_rows.append({"image":"EXE","pc":h32(pc),"file_offset":h32(off),"bytes":hx(raw),
+                            "instruksi":"DATA_WORD","value":h32(val),
+                            "classification":"TARGET_POINTER" if val==target else "NEIGHBOR_WORD"})
+wr(out/"LA1_B50AC_TABLE_REGION.tsv",region_rows,
+   ["image","pc","file_offset","bytes","instruksi","value","classification"])
 ref_users=[]
 for tag,code in codes:
     lo=EXE_BASE if tag=="EXE" else ENTRY_BASE
@@ -358,6 +363,137 @@ for tag, refs in [("EXE",EXE_REFS),("ENTRY1",ENTRY_B50_REFS)]:
         z.update({"kind":"GHIDRA_"+x["kind"],"target":h32(target),"classification":"GHIDRA_XREF caller="+x["caller_name"]+" entry="+x["caller_entry"]})
         direct_b50.append(z)
 wr(out/"LA1_B50AC_DIRECT_CALLS.tsv",direct_b50,["image","pc","file_offset","bytes","instruksi","kind","target","classification"])
+
+# UA1: exact target forms, with each hit classified independently.
+jal_word=((3<<26)|((target>>2)&0x03ffffff))&0xffffffff
+if jal_word!=0x0C02D42B: raise SystemExit("UA1_JAL_ENCODING_MISMATCH")
+ua1_rows=[]
+for p in ptrs:
+    ua1_rows.append({"image":p["image"],"class":"U32_LE_POINTER_WORD",
+        "pc":p["pc"],"file_offset":p["file_offset"],"bytes":p["bytes"],
+        "instruksi":"DATA_POINTER_WORD value="+h32(target),
+        "paired_pc":"NONE","paired_file_offset":"NONE",
+        "paired_bytes":"NONE","paired_instruksi":"NONE"})
+for tag,code in codes:
+    lo=EXE_BASE if tag=="EXE" else ENTRY_BASE
+    for pc,i in sorted(code.items()):
+        direct=direct_target(i)
+        if direct==target:
+            klass="DIRECT_JAL" if i["op"]==3 else "DIRECT_J"
+            ua1_rows.append({"image":tag,"class":klass,"pc":h32(pc),
+                "file_offset":h32(i["fileoff"]),"bytes":hx(i["raw"]),
+                "instruksi":i["text"],"paired_pc":"NONE",
+                "paired_file_offset":"NONE","paired_bytes":"NONE",
+                "paired_instruksi":"NONE"})
+        if i["op"]==0 and i["fn"] in (8,9):
+            value,why=const_value(code,i["rs"],pc,lo)
+            if value==target:
+                klass="CONSTANT_JALR" if i["fn"]==9 else "CONSTANT_JR"
+                ua1_rows.append({"image":tag,"class":klass,"pc":h32(pc),
+                    "file_offset":h32(i["fileoff"]),"bytes":hx(i["raw"]),
+                    "instruksi":i["text"]+" target_register="+reg(i["rs"]),
+                    "paired_pc":"NONE","paired_file_offset":"NONE",
+                    "paired_bytes":"NONE","paired_instruksi":"NONE"})
+        if i["op"]==15 and i["uimm"]==0x800B:
+            source_reg=i["rt"]
+            for distance in range(1,9):
+                q=code.get(pc+4*distance)
+                if q is None: break
+                if q["op"] in (1,2,3,4,5,6,7) or (q["op"]==0 and q["fn"] in (8,9)):
+                    break
+                if q["op"] in (9,13) and q["rs"]==source_reg:
+                    low=(q["imm"] if q["op"]==9 else q["uimm"])
+                    value=((i["uimm"]<<16)+low)&0xffffffff
+                    if value==target:
+                        ua1_rows.append({"image":tag,
+                            "class":"LUI_800B_ADDIU_ORI_50AC_PAIR",
+                            "pc":h32(pc),"file_offset":h32(i["fileoff"]),
+                            "bytes":hx(i["raw"]),"instruksi":i["text"],
+                            "paired_pc":h32(q["pc"]),
+                            "paired_file_offset":h32(q["fileoff"]),
+                            "paired_bytes":hx(q["raw"]),
+                            "paired_instruksi":q["text"]})
+                    break
+                if dest(q)==source_reg:
+                    break
+for tag,refs in [("EXE",EXE_REFS),("ENTRY1",ENTRY_B50_REFS)]:
+    for x in refs:
+        pc=x["pc"]; code=ce if tag=="EXE" else ci; ins=code.get(pc)
+        ua1_rows.append({"image":tag,"class":"GHIDRA_XREF",
+            "pc":h32(pc),"file_offset":h32(fileoff(pc,tag)),
+            "bytes":hx(ins["raw"]) if ins else "TIDAK TAHU",
+            "instruksi":ins["text"] if ins else "TIDAK TAHU",
+            "paired_pc":"NONE","paired_file_offset":"NONE",
+            "paired_bytes":"NONE",
+            "paired_instruksi":"caller="+x["caller_name"]+" entry="+x["caller_entry"]})
+ua1_rows.sort(key=lambda x:(x["image"],int(x["pc"],16),x["class"]))
+wr(out/"UA1_TARGET_REFERENCES.tsv",ua1_rows,
+   ["image","class","pc","file_offset","bytes","instruksi",
+    "paired_pc","paired_file_offset","paired_bytes","paired_instruksi"])
+
+# Nine caller-context instructions total: 36 contiguous bytes.
+caller_pc=0x80011A28
+caller_rows=[]
+for q in range(caller_pc-0x20,caller_pc+4,4):
+    ins=ce_all.get(q)
+    if ins:
+        caller_rows.append({"image":"EXE","pc":h32(q),
+            "file_offset":h32(ins["fileoff"]),"bytes":hx(ins["raw"]),
+            "instruksi":ins["text"],
+            "role":"JALR_V0" if q==caller_pc else "PRECALL_CONTEXT"})
+wr(out/"UA1_CALLER_11A28_CONTEXT.tsv",caller_rows,
+   ["image","pc","file_offset","bytes","instruksi","role"])
+v0_def=last_def(ce_all,2,caller_pc,EXE_BASE)
+v0_expr=expr_reg(ce_all,2,caller_pc,EXE_BASE)
+v0_ea, v0_ea_reason=(eff_addr(ce_all,v0_def,EXE_BASE)
+    if v0_def and v0_def["op"] in LOADS else (None,"NOT_A_LOAD"))
+if v0_ea in (0x80055904,0x80055920):
+    table_v0_status="YES_STATIC_LOAD_FROM_TARGET_POINTER_SLOT"
+elif v0_def is None:
+    table_v0_status="TIDAK TAHU_NO_STATIC_V0_DEFINITION"
+else:
+    table_v0_status="NO_DIRECT_STATIC_LOAD_MATCH; DYNAMIC_OR_INDIRECT_PATH_NOT_EXCLUDED"
+
+# First return after 0x800B54DC and the next recognizable function prolog.
+boundary_start=0x800B54E0
+boundary_end=0x800B5800
+first_jr=None
+for q in range(boundary_start,boundary_end,4):
+    ins=ci.get(q)
+    if ins and ins["op"]==0 and ins["fn"]==8 and ins["rs"]==31:
+        first_jr=ins
+        break
+next_prolog=None
+next_prolog_store=None
+if first_jr is not None:
+    for q in range(first_jr["pc"]+8,boundary_end,4):
+        ins=ci.get(q)
+        if not (ins and ins["op"]==9 and ins["rs"]==29 and
+                ins["rt"]==29 and ins["imm"]<0):
+            continue
+        for k in range(1,13):
+            st=ci.get(q+4*k)
+            if st is None: break
+            if st["op"] in STORES and st["rs"]==29 and st["rt"]==31:
+                next_prolog=ins
+                next_prolog_store=st
+                break
+        if next_prolog is not None: break
+boundary_rows=[{
+    "range_start":"0x800B54E0","range_end_exclusive":"0x800B5800",
+    "first_jr_ra_pc":h32(first_jr["pc"]) if first_jr else "TIDAK TAHU",
+    "first_jr_ra_instruction":first_jr["text"] if first_jr else "TIDAK TAHU",
+    "next_prolog_pc":h32(next_prolog["pc"]) if next_prolog else "TIDAK TAHU",
+    "next_prolog_instruction":next_prolog["text"] if next_prolog else "TIDAK TAHU",
+    "next_prolog_sw_ra_pc":h32(next_prolog_store["pc"]) if next_prolog_store else "TIDAK TAHU",
+    "status":"RETURN_AND_NEXT_PROLOG_FOUND" if first_jr and next_prolog else
+             ("RETURN_FOUND_NEXT_PROLOG_TIDAK_TAHU" if first_jr else "FIRST_JR_RA_TIDAK_TAHU")
+}]
+wr(out/"UA1_B50AC_FUNCTION_END.tsv",boundary_rows,
+   ["range_start","range_end_exclusive","first_jr_ra_pc",
+    "first_jr_ra_instruction","next_prolog_pc","next_prolog_instruction",
+    "next_prolog_sw_ra_pc","status"])
+
 pointer_pcs=sorted(int(x["pc"],16) for x in ptrs if x["image"]=="EXE")
 deltas=[pointer_pcs[i+1]-pointer_pcs[i] for i in range(len(pointer_pcs)-1)]
 stride_note="TIDAK TAHU: fewer than two pointer-word addresses in EXE"
@@ -626,7 +762,7 @@ txt(out/"LA0_JA_REPLACEMENT_AUDIT.txt",
 # Main report.
 statuses=[
  "LA0=TUNTAS K3 if commit/run pagination and py_compile ledgers are complete; bot classification is heuristic",
- "LA1=SEBAGIAN K3; pointer words/direct refs enumerated, table base/stride and wallet setter may remain TIDAK TAHU",
+ "LA1=SEBAGIAN K4; UA1 exact target-form census and caller/function-boundary context exported; table extent and dynamic dispatch remain TIDAK TAHU",
  "LA2=SEBAGIAN K3; D49D0 address expression and static store sites recorded; selected byte/domain and x semantics remain TIDAK TAHU",
  "LA3=SEBAGIAN K2/K3; direct/static-resolvable callers plus manual prolog scan; dynamic JALR/table refs remain TIDAK TAHU",
  "LA4=TUNTAS K4; static-only exclusion explicit (EMULATOR_LAUNCHES=0)",
@@ -637,7 +773,7 @@ report=("# LA0-LA5 static audit — SLPS-03553\n\n"+
  "\n".join("- "+s for s in statuses)+
  "\n\n## Findings\n"+
  "- LA0: baseline-inclusive commit ledger, Actions all-event pagination, and py_compile seluruh skrip Python tercatat di LA0_LEDGER_* dan LA0_PYCOMPILE.tsv. Snapshot HEAD adalah sebelum commit publikasi laporan; commit publikasi tidak dapat menghitung dirinya sendiri.\n"+
- "- LA1: pointer words 0x80055904/0x80055920 dan static J/JAL/JALR candidates ke 0x800B50AC dicatat. Selisih 0x1C sendiri belum membuktikan stride; cek LA1_B50AC_TABLE_USERS.tsv. a2/a3 ditelusuri lewat prolog manual/linear defs, bukan path-sensitive. Wallet setter otoritatif tetap TIDAK TAHU.\n"+
+ "- LA1/UA1: UA1_TARGET_REFERENCES.tsv memisahkan literal u32 LE, J/JAL, constant JR/JALR, pasangan LUI 0x800B + ADDIU/ORI 0x50AC, serta Ghidra xrefs. Jal encoding dihitung dari target 0x800B50AC dan harus 0x0C02D42B. UA1_CALLER_11A28_CONTEXT.tsv dan UA1_B50AC_FUNCTION_END.tsv mencatat konteks caller dan ujung fungsi. Pointer-table base/stride/count serta dynamic dispatch tetap TIDAK TAHU tanpa indexed-load+jump path.\n"+
  "- LA2: alamat efektif D49D0 harus dibaca dari LA2_D49D0_EFFECTIVE_ADDRESS.txt. Jika alamat bergantung pada pointer manager dan global mutable, byte result lbu tidak dapat dinyatakan sebagai himpunan statis. Store census mencakup dua image dan mencatat basis unresolved.\n"+
  "- LA3: BE5D8 census mencakup direct calls/jumps, constant jalr/jr, pointer words; target indirect tidak diinferensikan tanpa bukti. B24C8 parent memakai manual prolog heuristic.\n"+
  "- LA4: tidak ada emulator, game execution, BIOS, savestate, atau RAM dump.\n"+
@@ -657,6 +793,36 @@ print("LA_ANALYSIS=PASS")
 print("LA0_SOURCE_COMMITS="+str(len(src_commits))+" HEAD_COMMITS="+str(len(head_commits))+" ACTIONS_RUNS="+str(len(ar))+" PAGES="+str(page))
 print("LA0_PYCOMPILE="+str(sum(x.get("status")=="PASS" for x in pyrows))+"/"+str(len(pyrows)))
 print("LA1_B50AC_POINTERS="+str(len(ptrs))+" TABLE_USERS="+str(len(ref_users))+" DIRECT_CALLS="+str(len(direct_b50)))
+ua1_pair_count=sum(1 for x in ua1_rows if x["class"]=="LUI_800B_ADDIU_ORI_50AC_PAIR")
+ua1_direct_count=sum(1 for x in ua1_rows if x["class"] in {"DIRECT_JAL","DIRECT_J","CONSTANT_JALR","CONSTANT_JR"})
+ua1_xref_count=sum(1 for x in ua1_rows if x["class"]=="GHIDRA_XREF")
+boundary_status=boundary_rows[0]["status"]
+ua1_status="TUNTAS" if boundary_status=="RETURN_AND_NEXT_PROLOG_FOUND" else "SEBAGIAN"
+ua1_summary=[
+    "STATUS="+ua1_status,
+    "CONFIDENCE=K4",
+    "TARGET=0x800B50AC",
+    "JAL_WORD_LITTLE_ENDIAN=0x0C02D42B",
+    "U32_LE_POINTER_HITS="+str(len(ptrs)),
+    "DIRECT_J_JAL_JR_JALR_HITS="+str(ua1_direct_count),
+    "LUI_800B_ADDIU_ORI_50AC_PAIRS="+str(ua1_pair_count),
+    "GHIDRA_XREF_ROWS="+str(ua1_xref_count),
+    ("POINTER_IMAGES="+",".join(sorted(set(x["image"] for x in ptrs))) if ptrs else "POINTER_IMAGES=NONE"),
+    "CANDIDATE_RECORD_BASES=0x800558E4,0x80055900,0x8005591C,0x80055938",
+    "CANDIDATE_RECORD_SPACING=0x1C; table membership and extent TIDAK TAHU",
+    "TABLE_ENTRY_COUNT=TIDAK TAHU",
+    "TABLE_FEEDS_V0_AT_11A28="+table_v0_status,
+    "V0_LAST_DEFINITION="+(h32(v0_def["pc"])+" "+v0_def["text"] if v0_def else "TIDAK TAHU"),
+    "V0_EXPRESSION="+v0_expr,
+    "FIRST_JR_RA_AFTER_B54DC="+(h32(first_jr["pc"])+" "+first_jr["text"] if first_jr else "TIDAK TAHU"),
+    "NEXT_PROLOG_AFTER_FIRST_JR_RA="+(h32(next_prolog["pc"])+" "+next_prolog["text"] if next_prolog else "TIDAK TAHU"),
+    "FUNCTION_END_STATUS="+boundary_status,
+    "SOURCE_SCOPE=verified EXE and Entry 1; code candidates restricted to Ghidra CODE_INSTRUCTION map",
+    "NO_RUNTIME=YES",
+    "MATCHING_TSV=UA1_TARGET_REFERENCES.tsv;UA1_CALLER_11A28_CONTEXT.tsv;UA1_B50AC_FUNCTION_END.tsv"
+]
+txt(out/"UA1_TARGET_REFERENCE_SUMMARY.txt","\n".join(ua1_summary)+"\n")
+print("UA1_STATUS="+ua1_status+" POINTERS="+str(len(ptrs))+" DIRECT="+str(ua1_direct_count)+" PAIRS="+str(ua1_pair_count)+" FIRST_JR="+(h32(first_jr["pc"]) if first_jr else "TIDAK TAHU")+" NEXT_PROLOG="+(h32(next_prolog["pc"]) if next_prolog else "TIDAK TAHU"))
 print("LA2_EC7_WRITERS="+str(len(gw))+" PLUS530_STORES="+str(len(xstores))+" X_EXPR="+formula)
 print("LA3_BE5D8_CALLERS="+str(len(bcalls))+" B24C8_PROLOG="+(h32(bentry) if bentry else "TIDAK_TAHU"))
 print("EMULATOR_LAUNCHES=0")
