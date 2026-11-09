@@ -1,7 +1,7 @@
 # Raw permalinks for every Actions run in the RA4 ledger
 
-TARGET_SHA=5facd666af50fbe687ce479c857deb3fcb1d76cb
-RUN_COUNT=41
+TARGET_SHA=381e1ae77247d5c20d193e493781d93c580f62c6
+RUN_COUNT=49
 These immutable raw URLs point to committed text summaries with status, job name, job ID, source SHA, and exit code.
 
 QA run 42531023381: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/5facd666af50fbe687ce479c857deb3fcb1d76cb/reports/stage1_economy/ra4/actions/qa-run-42531023381.txt
@@ -45,3 +45,12 @@ Scheduled monitor run 41731044178: https://raw.githubusercontent.com/zuppasoupfi
 Scheduled monitor run 41682475727: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/5facd666af50fbe687ce479c857deb3fcb1d76cb/reports/stage1_economy/ra4/actions/monitor-run-41682475727.txt
 Scheduled monitor run 41610137601: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/5facd666af50fbe687ce479c857deb3fcb1d76cb/reports/stage1_economy/ra4/actions/monitor-run-41610137601.txt
 Scheduled monitor run 41562260893: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/5facd666af50fbe687ce479c857deb3fcb1d76cb/reports/stage1_economy/ra4/actions/monitor-run-41562260893.txt
+
+KA0/MA0/NA0/LA0 side workflow run 42531815506: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/381e1ae77247d5c20d193e493781d93c580f62c6/reports/stage1_economy/ra4/actions/static-run-42531815506.txt
+MA0 side workflow run 42531815503: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/381e1ae77247d5c20d193e493781d93c580f62c6/reports/stage1_economy/ra4/actions/static-run-42531815503.txt
+NA0 side workflow run 42531815501: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/381e1ae77247d5c20d193e493781d93c580f62c6/reports/stage1_economy/ra4/actions/static-run-42531815501.txt
+LA0 side workflow run 42531815297: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/381e1ae77247d5c20d193e493781d93c580f62c6/reports/stage1_economy/ra4/actions/static-run-42531815297.txt
+KA0 side workflow run 42531753623: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/381e1ae77247d5c20d193e493781d93c580f62c6/reports/stage1_economy/ra4/actions/static-run-42531753623.txt
+NA0 side workflow run 42531753599: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/381e1ae77247d5c20d193e493781d93c580f62c6/reports/stage1_economy/ra4/actions/static-run-42531753599.txt
+LA0 side workflow run 42531753597: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/381e1ae77247d5c20d193e493781d93c580f62c6/reports/stage1_economy/ra4/actions/static-run-42531753597.txt
+MA0 side workflow run 42531753591: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/381e1ae77247d5c20d193e493781d93c580f62c6/reports/stage1_economy/ra4/actions/static-run-42531753591.txt

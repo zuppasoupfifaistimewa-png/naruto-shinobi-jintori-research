@@ -113,3 +113,13 @@ c9547370fa7c281dd45758cb9b41b193d5d7be9d	Clarify RA1 saved return address and un
 c9547370fa7c281dd45758cb9b41b193d5d7be9d	Clarify RA1 saved return address and unresolved outer caller	A	reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_CORRECTION_COMMIT_FILES.tsv
 bd91cb50d1b09fe683cd175223453a98c8d9dc13	Record RA3 H1 H2 gate as not met	A	reports/stage1_economy/ra3/RA3_H1_H2_STATUS.txt
 bd91cb50d1b09fe683cd175223453a98c8d9dc13	Record RA3 H1 H2 gate as not met	A	reports/stage1_economy/ra3/RA3_COMMIT_FILES.tsv
+381e1ae77247d5c20d193e493781d93c580f62c6	Complete RA0-RA4 Actions ledger and correct stage statuses [skip ci]	A	reports/stage1_economy/ra4/actions/static-run-42531753591.txt
+381e1ae77247d5c20d193e493781d93c580f62c6	Complete RA0-RA4 Actions ledger and correct stage statuses [skip ci]	A	reports/stage1_economy/ra4/actions/static-run-42531753597.txt
+381e1ae77247d5c20d193e493781d93c580f62c6	Complete RA0-RA4 Actions ledger and correct stage statuses [skip ci]	A	reports/stage1_economy/ra4/actions/static-run-42531753599.txt
+381e1ae77247d5c20d193e493781d93c580f62c6	Complete RA0-RA4 Actions ledger and correct stage statuses [skip ci]	A	reports/stage1_economy/ra4/actions/static-run-42531753623.txt
+381e1ae77247d5c20d193e493781d93c580f62c6	Complete RA0-RA4 Actions ledger and correct stage statuses [skip ci]	A	reports/stage1_economy/ra4/actions/static-run-42531815297.txt
+381e1ae77247d5c20d193e493781d93c580f62c6	Complete RA0-RA4 Actions ledger and correct stage statuses [skip ci]	A	reports/stage1_economy/ra4/actions/static-run-42531815501.txt
+381e1ae77247d5c20d193e493781d93c580f62c6	Complete RA0-RA4 Actions ledger and correct stage statuses [skip ci]	A	reports/stage1_economy/ra4/actions/static-run-42531815503.txt
+381e1ae77247d5c20d193e493781d93c580f62c6	Complete RA0-RA4 Actions ledger and correct stage statuses [skip ci]	A	reports/stage1_economy/ra4/actions/static-run-42531815506.txt
+381e1ae77247d5c20d193e493781d93c580f62c6	Complete RA0-RA4 Actions ledger and correct stage statuses [skip ci]	M	reports/stage1_economy/ra4/RA4_ACTIONS_RUNS.tsv
+381e1ae77247d5c20d193e493781d93c580f62c6	Complete RA0-RA4 Actions ledger and correct stage statuses [skip ci]	M	reports/stage1_economy/ra4/RA4_LEDGER.md
