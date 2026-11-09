@@ -1,0 +1,286 @@
+STATUS=TUNTAS
+CONFIDENCE=K4
+BASELINE_INCLUSIVE=aa32fbcee97c8f49946a8e589010cfb9ef1a6928
+LEDGER_PARENT_HEAD=302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc
+LEDGER_RANGE=aa32fbcee97c8f49946a8e589010cfb9ef1a6928^..302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc
+COMMITS_TOTAL_INCLUDING_BASELINE=8
+COMMITS_AFTER_BASELINE=7
+COMMITS_HUMAN=6
+COMMITS_BOT=2
+COMMIT_FILE_CHANGE_ROWS=222
+ACTIONS_RUNS_CREATED_SINCE_BASELINE=2
+ACTIONS_JOB_ROWS=3
+ACTIONS_RUNS_SUCCESS=1
+ACTIONS_RUNS_FAILURE=1
+TA0_STATUS=BELUM
+TA0_CONFIDENCE=K4_FAILURE_CONFIRMED; incorrect baseline was passed to the QA0 workflow and publish step failed with unstaged files
+TA0_TARGET_DIRECTORY_DELETIONS=152_PHYSICAL_FILES_DELETED
+TA0_HA2_CONDITIONAL_CLEANUP=PASS; two TSV files each have exactly one 4-byte row removed at 0x800F5D8C
+TA0_AUDIT_METRICS=TIDAK_TAHU; no valid final-head QA0 audit was published
+TA1_STATUS=TUNTAS
+TA1_CONFIDENCE=K4
+TA1_RESULT=B54DC_IS_A_BLOCK_IN_THE_B50AC_FUNCTION_CANDIDATE; branch 0x800B54C0 -> 0x800B54DC; zero jr-ra in range; zero external direct branches to B54DC
+TA1_RUN_ID=42567402686
+TA1_JOB_EXIT_CODE=0
+TA1_EMULATOR_RUNS=0
+TA2_STATUS=BELUM
+TA2_REASON=TA0_GATE_DID_NOT_PASS; the requested two 900-frame runs (no-input vs periodic CIRCLE) were not performed
+QA4_UNEXPECTED_JOB=RUN_42566294855_JOB_128993639683; two 180-frame no-input CONTROL launches; explicitly NOT_TA2
+TA3_LEDGER_STATUS=TUNTAS
+RA2_UPGRADE_ACTIONS_OBSERVED=0
+RA2_D_SAMPLES_OBSERVED=0
+RA2_DISTINCT_D_VALUES=0
+RA3_STATUS=SKIP
+RA3_REASON=requires at least two different d samples; condition not met
+PUBLICATION_COMMIT_EXCLUDED=YES
+STATUS_MD_MODIFIED=NO
+RELEASES_MODIFIED=NO
+BINARY_OR_SAVESTATE_COMMITTED=NO
+
+=== COMMITS (BASELINE INCLUSIVE) ===
+commit_sha	parent_sha	date_utc	author	class	subject	changed_files	added	modified	removed	renamed	skip_ci
+aa32fbcee97c8f49946a8e589010cfb9ef1a6928	e810999724c4f99651d48fb99dde544c688e77f8	2026-11-09T04:16:56Z	zuppasoupfifaistimewa-png	HUMAN	Correct SA3 metadata and include all prior ledger commits [skip ci]	4	0	4	0	0	YES
+21e8540010a109798da6f2668effe3a9d005eccd	aa32fbcee97c8f49946a8e589010cfb9ef1a6928	2026-11-09T05:15:31Z	zuppasoupfifaistimewa-png	HUMAN	TA0 restore strict cleanup gates and static-only SA1 windows [skip ci]	159	0	6	152	1	YES
+5ae17d143f2d2dc91b7b3962d40704cec1b697b1	21e8540010a109798da6f2668effe3a9d005eccd	2026-11-09T05:15:54Z	zuppasoupfifaistimewa-png	HUMAN	Trigger TA0 static-only final-head verification	1	0	1	0	0	NO
+035a2b92577b6cc30d88456089ad365feb08f36e	5ae17d143f2d2dc91b7b3962d40704cec1b697b1	2026-11-09T05:17:33Z	github-actions[bot]	BOT	Publish QA4 read-only CONTROL trace 42566294855 [skip ci]	11	11	0	0	0	YES
+221cb91d56c17af34240d3df2c48428f52f51202	035a2b92577b6cc30d88456089ad365feb08f36e	2026-11-09T05:18:59Z	zuppasoupfifaistimewa-png	HUMAN	Record failed TA0 gate, fix publication path, prune conditional HA2 row [skip ci]	5	2	3	0	0	YES
+e29b1f347124329edac4fc6d2a4c231d8a6431fd	221cb91d56c17af34240d3df2c48428f52f51202	2026-11-09T05:27:03Z	zuppasoupfifaistimewa-png	HUMAN	Fix SA1 window default and add TA1 function-boundary scan	1	0	1	0	0	NO
+4179543552f49b80c09d2247b69c8514137c848d	e29b1f347124329edac4fc6d2a4c231d8a6431fd	2026-11-09T05:27:58Z	github-actions[bot]	BOT	Publish DW0-DW4 static raw-byte audit run 42567402686	40	40	0	0	0	NO
+302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc	4179543552f49b80c09d2247b69c8514137c848d	2026-11-09T05:29:31Z	zuppasoupfifaistimewa-png	HUMAN	Record TA0 failed Actions result [skip ci]	1	1	0	0	0	YES
+
+=== COMMIT FILES (ALL PATHS) ===
+commit_sha	status	path	additions	deletions
+aa32fbcee97c8f49946a8e589010cfb9ef1a6928	modified	reports/stage1_economy/sa3/SA3_BRANCHES.tsv	1	1
+aa32fbcee97c8f49946a8e589010cfb9ef1a6928	modified	reports/stage1_economy/sa3/SA3_COMMITS_MAIN_PART10.tsv	3	2
+aa32fbcee97c8f49946a8e589010cfb9ef1a6928	modified	reports/stage1_economy/sa3/SA3_INDEX.tsv	2	2
+aa32fbcee97c8f49946a8e589010cfb9ef1a6928	modified	reports/stage1_economy/sa3/SA3_SUMMARY.txt	5	5
+21e8540010a109798da6f2668effe3a9d005eccd	modified	.github/workflows/dw0-dw4-raw-static.yml	2	2
+21e8540010a109798da6f2668effe3a9d005eccd	modified	.github/workflows/ka0-ka5-static.yml	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	modified	.github/workflows/la0-la5-static.yml	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	modified	.github/workflows/ma0-ma5-static.yml	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	modified	.github/workflows/na0-na5-static.yml	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/ACTIONS_RUN_SUMMARY.txt	0	14
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA0_KA5_FINAL_REPORT.md	0	34
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA0_LEDGER_ACTIONS.tsv	0	1309
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA0_LEDGER_COMMITS.tsv	0	169
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA0_LEDGER_SUMMARY.txt	0	13
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA0_PUBLISH_COMMIT_FILES.tsv	0	27
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA0_PYCOMPILE.tsv	0	71
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA0_SOURCE_COMMIT_FILES.tsv	0	3
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA1_B50AC_CALLERS.tsv	0	3
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA1_B50AC_CALLER_WINDOWS.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA1_CALL_ARGUMENT_ORIGINS.tsv	0	23
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA1_WALLET_HYPOTHESES.tsv	0	3
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA1_WALLET_STATUS.txt	0	5
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA2_GLOBAL_WRITERS.tsv	0	22
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA2_GLOBAL_WRITER_VALUE_ORIGINS.tsv	0	31
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA2_H_TABLE_52.tsv	0	53
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA2_MANAGER_530_X_PROVENANCE.tsv	0	7
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA2_X_DOMAIN.txt	0	4
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA2_X_HYPOTHESES.tsv	0	3
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA3_B24C8_FUNCTION_V0_CONTEXT.tsv	0	4
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA3_B24C8_PARENT_CALLERS.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA3_B24C8_WINDOW.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA3_BE5D8_CALLERS.tsv	0	3
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA3_BE5D8_CALLER_WINDOWS.tsv	0	17
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA3_BOUNDARY_STATUS.txt	0	3
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA4_STATIC_ONLY.txt	0	5
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/KA5_SYMBOLIC_COST.tsv	0	5
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ka-run-42558598094/attempt-1/cleanup.txt	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/ACTIONS_RUN_SUMMARY.txt	0	18
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA0_ACTIONS_ALL_EVENTS.tsv	0	1309
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA0_AGGREGATE_EXCERPT_AUDIT.txt	0	8
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA0_AGGREGATE_EXCERPT_SPANS.tsv	0	17705
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA0_ANALYZER_EXIT.txt	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA0_ANALYZER_STATUS.txt	0	10
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA0_FILE_OFFSET_DECODE_VALIDATION.tsv	0	15604
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA0_LEDGER_COMMITS.tsv	0	140
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA0_LEDGER_FINAL_PARENT.tsv	0	143
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA0_LEDGER_FINAL_PARENT_SUMMARY.txt	0	8
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA0_MA5_STATIC_REPORT.md	0	33
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA0_PRECHECK_PYCOMPILE.tsv	0	72
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA0_PUBLISH_COMMIT_FILES.txt	0	48
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA0_PYCOMPILE.tsv	0	72
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA1_CALLSITE_A2_A3_ORIGINS.tsv	0	7
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA1_FUNCTION_POINTER_WORDS.tsv	0	119
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA1_SCALE_28_CANDIDATES.tsv	0	9691
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA1_SCENE_CODE_USERS.tsv	0	8
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA1_SCENE_FUNCTIONS.tsv	0	5
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA1_SCENE_PROLOG_WINDOWS.tsv	0	33
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA1_SCENE_RECORDS.tsv	0	40
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA1_SCENE_TABLE_BOUNDARY.txt	0	11
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA1_SCENE_TABLE_EXCERPT.tsv	0	2
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA1_WALLET_HYPOTHESES.tsv	0	4
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA1_WALLET_STATUS.txt	0	2
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA2_ALL_SB_STORE_CENSUS.tsv	0	5686
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA2_D49D0_ADDRESS_WINDOW.tsv	0	9
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA2_DYNAMIC_MATRIX_WRITERS.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA2_HELPER_RETURN_ANALYSIS.tsv	0	3
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA2_HELPER_SEMANTICS.txt	0	8
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA2_HELPER_WINDOWS.tsv	0	25
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA2_PARTIAL_DYNAMIC_STORE_CANDIDATES.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA2_SELECTOR_AND_HELPER_SUMMARY.txt	0	15
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA2_SELECTOR_GLOBAL_WRITERS.tsv	0	20
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA2_X_EQUALS_D_VS_EFFECT_ID.txt	0	7
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA2_X_HYPOTHESES.tsv	0	3
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA3_B24C8_BOUNDARY.txt	0	12
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA3_B24C8_PARENT_CALLERS.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA3_B24C8_PARENT_POINTER_WORDS.tsv	0	2
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA3_B24C8_TARGET_CALLERS.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA3_B24C8_TARGET_POINTER_WORDS.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA3_BE5D8_BOUNDARY.txt	0	4
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA3_BE5D8_CALLERS.tsv	0	3
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA3_BE5D8_POINTER_WORDS.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA3_TARGET_WINDOWS.tsv	0	17
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA4_STATIC_ONLY.txt	0	8
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/MA5_SYMBOLIC_UPGRADE_COST.tsv	0	5
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/ma-run-42558598089/attempt-1/cleanup.txt	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/ACTIONS_RUN_SUMMARY.txt	0	18
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA0_ACTIONS_ALL_EVENTS.tsv	0	1309
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA0_AGGREGATE_EXCERPT_AUDIT.txt	0	8
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA0_AGGREGATE_EXCERPT_SPANS.tsv	0	17720
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA0_ANALYZER_EXIT.txt	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA0_ANALYZER_STATUS.txt	0	8
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA0_COMMIT_TRIGGER_RUNS.tsv	0	7
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA0_FILE_OFFSET_DECODE_VALIDATION.tsv	0	15851
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA0_LEDGER_COMMITS.tsv	0	132
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA0_LEDGER_FINAL_PARENT.tsv	0	137
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA0_LEDGER_FINAL_PARENT_SUMMARY.txt	0	12
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA0_NA5_STATIC_REPORT.md	0	35
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA0_PRECHECK_PYCOMPILE.tsv	0	72
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA0_PUBLISH_COMMIT_FILES.txt	0	76
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA0_PYCOMPILE.tsv	0	72
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_CALLSITE_A2_A3_ORIGINS.tsv	0	7
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_CALLSITE_A2_A3_WINDOWS.tsv	0	55
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_CALLSITE_BRANCH_PREDECESSORS.tsv	0	5
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_FUNCTION_POINTER_WORDS.tsv	0	119
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_GP_E0_E4_STORES.tsv	0	5
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_SCALE_28_CANDIDATES.tsv	0	9717
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_SCENE_BASE_USERS.tsv	0	7
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_SCENE_BASE_WINDOWS.tsv	0	68
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_SCENE_CODE_USERS.tsv	0	8
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_SCENE_FUNCTIONS.tsv	0	5
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_SCENE_PROLOG_WINDOWS.tsv	0	33
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_SCENE_RECORDS.tsv	0	40
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_SCENE_TABLE_BOUNDARY.txt	0	11
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_SCENE_TABLE_EXCERPT.tsv	0	2
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_WALLET_HYPOTHESES.tsv	0	4
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA1_WALLET_STATUS.txt	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_ALL_SB_STORE_CENSUS.tsv	0	5690
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_D49D0_ADDRESS_WINDOW.tsv	0	9
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_DYNAMIC_MATRIX_WRITERS.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_EA88_39EFC_WRITERS.tsv	0	67
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_EB1C_V0_CONTINUITY.tsv	0	4
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_EB1C_V0_FLOW.tsv	0	51
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_EB1C_V0_WINDOWS.tsv	0	48
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_GP_118_STORES.tsv	0	3
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_GP_ASSIGNMENTS.tsv	0	3
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_HELPER_800154D4_WINDOW.tsv	0	4
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_HELPER_BOUND_STATUS.txt	0	4
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_HELPER_RETURN_ANALYSIS.tsv	0	3
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_HELPER_SEMANTICS.txt	0	8
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_HELPER_WINDOWS.tsv	0	25
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_M_DERIVED_STORE_CANDIDATES.tsv	0	965
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_M_LW_USE_CENSUS.tsv	0	2822
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_PARTIAL_DYNAMIC_STORE_CANDIDATES.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_SELECTOR_AND_HELPER_SUMMARY.txt	0	15
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_SELECTOR_GLOBAL_WRITERS.tsv	0	20
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_X_EQUALS_D_VS_EFFECT_ID.txt	0	7
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_X_FIELD_530_WRITERS.tsv	0	5
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_X_HYPOTHESES.tsv	0	3
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_X_IDENTITY.txt	0	10
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_X_PRIMARY_READ_PATH.tsv	0	15
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA2_X_WRITER_CLASSIFICATION.tsv	0	965
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_B24C8_BOUNDARY.txt	0	12
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_B24C8_BRANCH_ENTRIES.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_B24C8_PARENT_CALLERS.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_B24C8_PARENT_POINTER_WORDS.tsv	0	2
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_B24C8_RAW_CANDIDATES.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_B24C8_TARGET_CALLERS.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_B24C8_TARGET_POINTER_WORDS.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_BE5D8_BOUNDARY.txt	0	4
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_BE5D8_CALLERS.tsv	0	3
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_BE5D8_POINTER_WORDS.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_BE5D8_RAW_JALR_CANDIDATES.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_BE5D8_RAW_JALR_MATCHES.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_BE5D8_STATIC_JALR.tsv	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_BE5D8_UNRESOLVED_JALR.tsv	0	13
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_BRANCH_SUMMARY.txt	0	5
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_RAW_SCAN_STATUS.txt	0	8
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA3_TARGET_WINDOWS.tsv	0	17
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA4_STATIC_ONLY.txt	0	7
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/NA5_SYMBOLIC_UPGRADE_COST.tsv	0	5
+21e8540010a109798da6f2668effe3a9d005eccd	removed	reports/stage1_economy/na-run-42558598171/attempt-1/cleanup.txt	0	1
+21e8540010a109798da6f2668effe3a9d005eccd	modified	tools/qa/RunQA0Harness.pytxt	408	321
+21e8540010a109798da6f2668effe3a9d005eccd	renamed	tools/stage1/RunSA1Windows.pytxt	14	15
+5ae17d143f2d2dc91b7b3962d40704cec1b697b1	modified	tools/qa/RunQA0Harness.pytxt	1	0
+035a2b92577b6cc30d88456089ad365feb08f36e	added	reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA4.txt	13	0
+035a2b92577b6cc30d88456089ad365feb08f36e	added	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_LAUNCH1_COUNTS.tsv	21	0
+035a2b92577b6cc30d88456089ad365feb08f36e	added	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_LAUNCH1_LOG.txt	47	0
+035a2b92577b6cc30d88456089ad365feb08f36e	added	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_LAUNCH1_TRACE.tsv	181	0
+035a2b92577b6cc30d88456089ad365feb08f36e	added	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_LAUNCH2_COUNTS.tsv	21	0
+035a2b92577b6cc30d88456089ad365feb08f36e	added	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_LAUNCH2_LOG.txt	47	0
+035a2b92577b6cc30d88456089ad365feb08f36e	added	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_LAUNCH2_TRACE.tsv	181	0
+035a2b92577b6cc30d88456089ad365feb08f36e	added	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_PER_PC_SUMMARY.tsv	21	0
+035a2b92577b6cc30d88456089ad365feb08f36e	added	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_PUBLISH_COMMIT_FILES.tsv	12	0
+035a2b92577b6cc30d88456089ad365feb08f36e	added	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_RUNTIME_SUMMARY.txt	32	0
+035a2b92577b6cc30d88456089ad365feb08f36e	added	reports/stage1_economy/qa-run-42566294855/attempt-1/cleanup.txt	1	0
+221cb91d56c17af34240d3df2c48428f52f51202	modified	.github/workflows/qa0-qa5.yml	8	7
+221cb91d56c17af34240d3df2c48428f52f51202	added	reports/actions/ta0-run-42566294855_summary.txt	41	0
+221cb91d56c17af34240d3df2c48428f52f51202	modified	reports/stage1_economy/ha2-ha3-static-run-42338608063/attempt-1/HA2_GLOBAL_OPERAND_ACCESS.tsv	0	1
+221cb91d56c17af34240d3df2c48428f52f51202	modified	reports/stage1_economy/ha2-ha3-static-run-42339837743/attempt-1/HA2_GLOBAL_OPERAND_ACCESS.tsv	0	1
+221cb91d56c17af34240d3df2c48428f52f51202	added	reports/stage1_economy/ta0-repair-42566294855/TA0_HA2_PHYSICAL_DELETE_AUDIT.tsv	3	0
+e29b1f347124329edac4fc6d2a4c231d8a6431fd	modified	tools/stage1/RunSA1Windows.pytxt	102	1
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/ACTIONS_RUN_SUMMARY.txt	14	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW0_COMMIT_LEDGER.tsv	254	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW0_DW4_STATIC_AUDIT.md	45	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW0_SUMMARY.tsv	2	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW1_BYTE00_HISTOGRAM.tsv	63	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW1_RESOURCE_EXCERPTS.txt	35	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW1_RESOURCE_SUMMARY.tsv	14	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW2_CORRECTED_FILE_OFFSETS.tsv	3	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW2_EXTERNAL_ENTRIES.tsv	1	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW2_FEE_DEBIT_FLOW.tsv	31	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW2_FUN_8001552C_RAW.tsv	8	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW2_FUN_8001552C_RETURN.tsv	2	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW2_HELPER_CALL_CONTEXT.tsv	271	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW3_EA74_TILE_PLUS1F_ACCESS.tsv	375	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW3_EA84_TILE_BYTE00_READERS.tsv	263	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW3_EA84_TILE_BYTE00_WRITERS.tsv	15	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW3_INDEXED_TILE_BYTE_LOOKUP.tsv	20	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW3_JR_800F5CE0_RAW.tsv	20	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW3_OUTER_JR_800F3788_TABLE_64.tsv	65	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW3_OUTER_TABLE_DISPATCHER_TARGETS.tsv	7	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW3_SECONDARY_JR_800F5CE0_TABLE_9.tsv	10	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW3_SELECTOR_FIELD_WRITER_CANDIDATES.tsv	503	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW3_SELECTOR_INDEX_ORIGIN.tsv	8	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW3_SLOT_GLOBAL_XREFS.tsv	707	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW3_TILE_ARRAY_SLOT_XREFS.tsv	5343	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW4_CALLS_TO_FUN_80102408.tsv	26	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW4_FEE_MODELS_AND_FALSIFIERS.tsv	6	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW4_FUN_80102408_CONTROL_EDGES.tsv	1	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW4_FUN_80102408_MEMORY_ACCESSES.tsv	4	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW4_FUN_80102408_RAW.tsv	13	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW4_FUN_80102408_RETURNS.tsv	3	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW4_THREE_WRITER_CONTEXT.tsv	76	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW4_TILE_PLUS1A_ACCESSES.tsv	1	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW4_TILE_PLUS1A_STORES.tsv	1	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/sa1-run-42567402686/attempt-1/ACTIONS_RUN_SUMMARY.txt	8	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/sa1-run-42567402686/attempt-1/SA1_INSTRUCTIONS.tsv	19	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/sa1-run-42567402686/attempt-1/SA1_STACK_SLOT_TEST.tsv	2	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/sa1-run-42567402686/attempt-1/SA1_SUMMARY.txt	33	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/sa1-run-42567402686/attempt-1/SA1_TA1_FUNCTION_BOUNDARY.tsv	4	0
+4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/sa1-run-42567402686/attempt-1/SA1_TA1_FUNCTION_BOUNDARY_SUMMARY.txt	24	0
+302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc	added	reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA0.txt	17	0
+
+=== ACTIONS RUNS / JOBS ===
+run_id	created_at_utc	workflow	workflow_path	event	source_sha	run_status	run_conclusion	job_id	job_name	job_status	job_conclusion	exit_code	summary_path	raw_permalink
+42566294855	2026-11-09T05:16:00Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	push	5ae17d143f2d2dc91b7b3962d40704cec1b697b1	completed	failure	128993393696	qa0-static-harness-and-excerpt-audit	completed	failure	1	reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA0.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA0.txt
+42566294855	2026-11-09T05:16:00Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	push	5ae17d143f2d2dc91b7b3962d40704cec1b697b1	completed	failure	128993639683	qa4-headless-readonly-control-trace	completed	success	0	reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA4.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA4.txt
+42567402686	2026-11-09T05:27:15Z	DW0-DW4 raw-byte static economy audit	.github/workflows/dw0-dw4-raw-static.yml	push	e29b1f347124329edac4fc6d2a4c231d8a6431fd	completed	success	128996817396	dw0-dw4-static	completed	success	0	reports/stage1_economy/sa1-run-42567402686/attempt-1/ACTIONS_RUN_SUMMARY.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/sa1-run-42567402686/attempt-1/ACTIONS_RUN_SUMMARY.txt
+
+=== RAW ACTIONS SUMMARY PERMALINKS ===
+https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/actions/ta0-run-42566294855_summary.txt
+https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA0.txt
+https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA4.txt
+https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/sa1-run-42567402686/attempt-1/ACTIONS_RUN_SUMMARY.txt
