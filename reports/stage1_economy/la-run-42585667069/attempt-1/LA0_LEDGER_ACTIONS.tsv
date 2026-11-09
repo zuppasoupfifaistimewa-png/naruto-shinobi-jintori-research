@@ -1,0 +1,1319 @@
+run_id	name	event	status	conclusion	head_sha	created_at
+42585667069	LA0-LA5 isolated static upgrade-cost audit	push	in_progress	TIDAK TAHU	a22274fbc0bafcfebb24362e65a6f112f40bca55	2026-11-09T08:24:04Z
+42585188841	LA0-LA5 isolated static upgrade-cost audit	push	completed	success	61cf4621749f4e642864986a189f25b1a5a308ba	2026-11-09T08:20:09Z
+42584546705	QA0-QA5 bounded evidence and CONTROL trace	push	completed	success	37f44eb8c520b4cd50178ee95ac81c553421cf64	2026-11-09T08:14:51Z
+42571813319	QA0-QA5 bounded evidence and CONTROL trace	push	completed	failure	73ada82c500e1883ba5252324c61299acf0c9492	2026-11-09T06:14:19Z
+42571105641	QA0-QA5 bounded evidence and CONTROL trace	push	completed	failure	fc3a37ec00db9a6c018b98640f9a5477206b29b8	2026-11-09T06:06:57Z
+42570934141	QA0-QA5 bounded evidence and CONTROL trace	push	completed	failure	5dcb949c761b9bd6f9c2a3fcacd6f607fd900d53	2026-11-09T06:05:09Z
+42568914600	QA0-QA5 bounded evidence and CONTROL trace	push	completed	failure	dab4216ef15a3586447e883c6bfeba4819fe5814	2026-11-09T05:43:20Z
+42567402686	DW0-DW4 raw-byte static economy audit	push	completed	success	e29b1f347124329edac4fc6d2a4c231d8a6431fd	2026-11-09T05:27:15Z
+42566294855	QA0-QA5 bounded evidence and CONTROL trace	push	completed	failure	5ae17d143f2d2dc91b7b3962d40704cec1b697b1	2026-11-09T05:16:00Z
+42559773799	QA0-QA5 bounded evidence and CONTROL trace	push	completed	failure	78c119c6bf32da4f736a855b53f46af229b32665	2026-11-09T04:04:42Z
+42558598216	QA0-QA5 bounded evidence and CONTROL trace	push	completed	success	0b23ad24c77f31591609adceca365aa3aca944e2	2026-11-09T03:50:59Z
+42558598171	NA0-NA5 isolated static upgrade-cost audit	push	completed	success	0b23ad24c77f31591609adceca365aa3aca944e2	2026-11-09T03:50:59Z
+42558598121	LA0-LA5 isolated static upgrade-cost audit	push	completed	failure	0b23ad24c77f31591609adceca365aa3aca944e2	2026-11-09T03:50:59Z
+42558598094	KA0-KA5 isolated static economy audit	push	completed	success	0b23ad24c77f31591609adceca365aa3aca944e2	2026-11-09T03:50:59Z
+42558598089	MA0-MA5 isolated static upgrade-cost audit	push	completed	success	0b23ad24c77f31591609adceca365aa3aca944e2	2026-11-09T03:50:59Z
+42558598050	DW0-DW4 raw-byte static economy audit	push	completed	success	0b23ad24c77f31591609adceca365aa3aca944e2	2026-11-09T03:50:59Z
+42555699212	RA2 bounded headless upgrade confirmation probe	push	completed	failure	ca23ea4bdbe87903bd76a4945e11ca5fc474452f	2026-11-09T03:18:48Z
+42555495195	RA2 bounded headless upgrade confirmation probe	push	completed	failure	0edcc08758a6995793275c12f87a26527b8b0087	2026-11-09T03:16:38Z
+42555137254	DW0-DW4 raw-byte static economy audit	push	completed	success	b9ab74e4c524088979adea57984204dbf98ece99	2026-11-09T03:12:54Z
+42554974392	DW0-DW4 raw-byte static economy audit	push	completed	success	ad16f08322c99f5612f1139f5bf5ae8a7d4f4fa8	2026-11-09T03:11:10Z
+42554626237	QA0-QA5 bounded evidence and CONTROL trace	push	completed	failure	00859dc61750f2eb66391048c1d14f1b561644b9	2026-11-09T03:07:33Z
+42554547788	.github/workflows/qa0-qa5.yml	push	completed	failure	0df69f6f79ce091915f14ffec62bf4bfe8e410cb	2026-11-09T03:06:44Z
+42554041029	QA0-QA5 bounded evidence and CONTROL trace	push	completed	success	56d6eaf765234c59372f271c83454bfbdc14d1f4	2026-11-09T03:01:10Z
+42553955977	Naruto Story Mode adaptive player monitor	schedule	completed	success	78e1a32d8cea7be759ecca418a5d2b12b8b87e6f	2026-11-09T03:00:19Z
+42536371222	RA1 read-only stack caller chain probe	push	completed	success	0f5790f03b87e4fb63fa5b098dcd86ad225560a5	2026-11-08T23:41:26Z
+42536155267	RA2 bounded headless upgrade confirmation probe	push	completed	success	739febf493d0648068cd47f5bba188fcca90fc93	2026-11-08T23:38:41Z
+42535761905	Naruto Story Mode adaptive player monitor	schedule	completed	success	1e5dd7c10114819ac71e9506dde1a2375f37061e	2026-11-08T23:33:44Z
+42535674901	RA2 bounded headless upgrade confirmation probe	push	completed	failure	1e5dd7c10114819ac71e9506dde1a2375f37061e	2026-11-08T23:32:42Z
+42535223372	RA2 bounded headless upgrade confirmation probe	push	completed	failure	8ac19e87c3d2e85dbf2b331af356ec71e831f245	2026-11-08T23:27:01Z
+42534757870	RA2 bounded headless upgrade confirmation probe	push	completed	failure	31de6c0bf7b101ad6d5593b182bdc6ab7eb9cbe1	2026-11-08T23:21:07Z
+42534641532	RA2 bounded headless upgrade confirmation probe	push	completed	failure	3a71e572e11a26daf7f801d4bf124917bcfbc7fa	2026-11-08T23:19:46Z
+42534501546	RA2 bounded headless upgrade confirmation probe	push	completed	failure	7b53416d563292582bcfc3f1343848a4f0ac57d3	2026-11-08T23:18:04Z
+42532362115	RA2 bounded headless upgrade confirmation probe	push	completed	failure	ec65242a04b3f26dfd97620730419f38d4405aad	2026-11-08T22:52:11Z
+42531825558	RA2 bounded headless upgrade confirmation probe	push	completed	failure	6ac2e13cd35589d8e51a439eae48a381aa5a356b	2026-11-08T22:45:39Z
+42531815506	KA0-KA5 isolated static economy audit	push	completed	success	74a73e355d76671c712844a36f537eeb027e49b6	2026-11-08T22:45:31Z
+42531815503	MA0-MA5 isolated static upgrade-cost audit	push	completed	success	74a73e355d76671c712844a36f537eeb027e49b6	2026-11-08T22:45:31Z
+42531815501	NA0-NA5 isolated static upgrade-cost audit	push	completed	success	74a73e355d76671c712844a36f537eeb027e49b6	2026-11-08T22:45:31Z
+42531815468	RA2 bounded headless upgrade confirmation probe	push	completed	failure	74a73e355d76671c712844a36f537eeb027e49b6	2026-11-08T22:45:31Z
+42531815297	LA0-LA5 isolated static upgrade-cost audit	push	completed	failure	74a73e355d76671c712844a36f537eeb027e49b6	2026-11-08T22:45:31Z
+42531753692	RA2 bounded headless upgrade confirmation probe	push	completed	failure	207408634a7a67e7777b03a8e18bab1bee7749e5	2026-11-08T22:44:49Z
+42531753623	KA0-KA5 isolated static economy audit	push	completed	success	207408634a7a67e7777b03a8e18bab1bee7749e5	2026-11-08T22:44:49Z
+42531753599	NA0-NA5 isolated static upgrade-cost audit	push	completed	success	207408634a7a67e7777b03a8e18bab1bee7749e5	2026-11-08T22:44:49Z
+42531753597	LA0-LA5 isolated static upgrade-cost audit	push	completed	failure	207408634a7a67e7777b03a8e18bab1bee7749e5	2026-11-08T22:44:49Z
+42531753591	MA0-MA5 isolated static upgrade-cost audit	push	completed	success	207408634a7a67e7777b03a8e18bab1bee7749e5	2026-11-08T22:44:49Z
+42531023381	QA0-QA5 bounded evidence and CONTROL trace	push	completed	success	fb16eccf44422ed9b3fc3dea0f9ede1782447aac	2026-11-08T22:35:45Z
+42530988325	QA0-QA5 bounded evidence and CONTROL trace	push	completed	success	4572ffed5ecb520dccc4ee840c5d9b8d63ae3268	2026-11-08T22:35:21Z
+42517327033	Naruto Story Mode adaptive player monitor	schedule	completed	success	a133f0b266f211a31f26439d3a04ac8705b515e4	2026-11-08T19:53:55Z
+42495514432	QA0-QA5 bounded evidence and CONTROL trace	push	completed	success	5a8f314f188c1071683257680315886313a8c7d6	2026-11-08T15:34:42Z
+42493961374	Naruto Story Mode adaptive player monitor	schedule	completed	success	f19fde4c52ea9831c597a0d17e73874dcd5403fb	2026-11-08T15:16:26Z
+42491968139	QA0-QA5 bounded evidence and CONTROL trace	push	completed	failure	1f766de7ba18c919e0f8eec8f2f2f756546a3700	2026-11-08T14:52:55Z
+42491758050	QA0-QA5 bounded evidence and CONTROL trace	push	completed	failure	8ba4f48937518d0044d82062739155893da528c0	2026-11-08T14:50:18Z
+42491644363	QA0-QA5 bounded evidence and CONTROL trace	push	completed	failure	ef995de316ffa9c9250d04307aa9c595a6c969ba	2026-11-08T14:48:54Z
+42484169218	PA0-PA5 isolated harness repair and CONTROL audit	push	completed	failure	2063eff698cb7e8e990bc7139960d0612fb2b510	2026-11-08T13:16:34Z
+42484127968	PA0-PA5 isolated harness repair and CONTROL audit	push	completed	failure	ea559aea2c772c97f5a6e027ec1f8db966be945a	2026-11-08T13:16:02Z
+42483585195	PA0-PA5 isolated harness repair and CONTROL audit	push	completed	failure	ad14376c2d21d5ae42228329e165339608a83a4a	2026-11-08T13:09:19Z
+42482696764	PA0-PA5 isolated harness repair and CONTROL audit	push	completed	failure	5e03369540f34c45f2eea587be926924749939dd	2026-11-08T12:58:17Z
+42482327357	PA0-PA5 isolated harness repair and CONTROL audit	push	completed	failure	9c55c9ded9663b0acb8bb7c0439585db94aaa6bb	2026-11-08T12:53:19Z
+42482025580	PA0-PA5 isolated harness repair and CONTROL audit	push	completed	failure	8a48b8769115173e6b4f0bf1448a4d9d27500ada	2026-11-08T12:49:23Z
+42478491517	KA0-KA5 isolated static economy audit	push	completed	success	744a8f2ae7527cf7ef1781667c93735c293acb24	2026-11-08T12:03:57Z
+42478491465	MA0-MA5 isolated static upgrade-cost audit	push	completed	success	744a8f2ae7527cf7ef1781667c93735c293acb24	2026-11-08T12:03:57Z
+42478491448	NA0-NA5 isolated static upgrade-cost audit	push	completed	success	744a8f2ae7527cf7ef1781667c93735c293acb24	2026-11-08T12:03:57Z
+42478491408	LA0-LA5 isolated static upgrade-cost audit	push	completed	failure	744a8f2ae7527cf7ef1781667c93735c293acb24	2026-11-08T12:03:57Z
+42478491400	OA0-OA5 isolated static and H6 CONTROL audit	push	completed	failure	744a8f2ae7527cf7ef1781667c93735c293acb24	2026-11-08T12:03:57Z
+42461299230	Naruto Story Mode adaptive player monitor	schedule	completed	success	dc7a78f3882ff9c22ae6b09df8b8b8e657bb6137	2026-11-08T08:03:37Z
+42444870382	NA0-NA5 isolated static upgrade-cost audit	push	completed	success	1b13991b29ece205ad26dba656eb9e23d6240af0	2026-11-08T03:58:16Z
+42444821172	NA0-NA5 isolated static upgrade-cost audit	push	completed	success	4d0a963012c01ecc46cb1d531927205debaaf9b8	2026-11-08T03:57:28Z
+42443412431	NA0-NA5 isolated static upgrade-cost audit	push	completed	failure	4cc242dbd482303ff8204bd92d4a56202eba2423	2026-11-08T03:36:13Z
+42435563602	Naruto Story Mode adaptive player monitor	schedule	completed	success	7bcfef67d0adf89b7ab0cb20e040790f15766017	2026-11-08T01:44:42Z
+42432850750	MA0-MA5 isolated static upgrade-cost audit	push	completed	success	d7f5e73e599ffde3f81405ade31b579f05e99732	2026-11-08T01:07:21Z
+42429723141	MA0-MA5 isolated static upgrade-cost audit	push	completed	success	66f5672e19a0c624ca787b482fcaa298822b9de5	2026-11-08T00:26:03Z
+42428060300	LA0-LA5 isolated static upgrade-cost audit	push	completed	failure	819303553e51b0499c81e94c197616e454cfb2a0	2026-11-08T00:04:09Z
+42428060266	MA0-MA5 isolated static upgrade-cost audit	push	completed	failure	819303553e51b0499c81e94c197616e454cfb2a0	2026-11-08T00:04:09Z
+42428060234	KA0-KA5 isolated static economy audit	push	completed	success	819303553e51b0499c81e94c197616e454cfb2a0	2026-11-08T00:04:09Z
+42421741871	LA0-LA5 isolated static upgrade-cost audit	push	completed	success	191492f06ffebaec0a34cbfe1f131790f0d89627	2026-11-07T22:40:54Z
+42421687803	LA0-LA5 isolated static upgrade-cost audit	push	completed	failure	31d99b523b5a4c5450402c1166a3d7a4c27ed6e5	2026-11-07T22:40:13Z
+42421556109	LA0-LA5 isolated static upgrade-cost audit	push	completed	success	70b198b12df722609cee97f89eb72e8ace35398c	2026-11-07T22:38:29Z
+42421522205	LA0-LA5 isolated static upgrade-cost audit	push	completed	failure	74d5cd91a15017c322f3e8e186a72845ac8948da	2026-11-07T22:38:02Z
+42420167716	Naruto Story Mode adaptive player monitor	schedule	completed	success	5a4cd3167beb3a0dba61a48bc6471496ec6fe34f	2026-11-07T22:20:39Z
+42402198028	Naruto Story Mode adaptive player monitor	schedule	completed	success	5a4cd3167beb3a0dba61a48bc6471496ec6fe34f	2026-11-07T18:37:19Z
+42382353606	KA0-KA5 isolated static economy audit	push	completed	success	495592eb62ef776fde30d50a96c358e4d2737d3a	2026-11-07T14:35:55Z
+42379096789	Naruto Story Mode adaptive player monitor	schedule	completed	success	656503e9e21cb4baf3185969abf7b15d05a149c6	2026-11-07T13:54:33Z
+42367635732	JA0-JA5 isolated static audit	push	completed	success	570f19c472b5238349909873ac6c68afc84359df	2026-11-07T11:18:42Z
+42359729128	IA0-IA5 isolated static audit	push	completed	success	be2d6a4b4d2fd2e3dbc250245aa7046ee5cfc509	2026-11-07T09:26:14Z
+42359584354	IA0-IA5 isolated static audit	push	completed	success	60639dbac379c5eb201cd261fcee1cde12d6ea58	2026-11-07T09:24:10Z
+42359320395	IA0-IA5 isolated static audit	push	completed	success	aeee289d93e7438b09c8c603de3b49e68703ff0d	2026-11-07T09:20:30Z
+42359186439	IA0-IA5 isolated static audit	push	completed	failure	52b82ef901362d9f97ed88edce88001b37c8539f	2026-11-07T09:18:38Z
+42359075959	IA0-IA5 isolated static audit	push	completed	failure	545a6935e166049f9e781f11b9b16f02a5783a54	2026-11-07T09:17:05Z
+42358884427	.github/workflows/ia0-ia5-static-audit.yml	push	completed	failure	8e54f2792029e741089ee4d80694b4d4ef075b71	2026-11-07T09:14:27Z
+42349259001	Naruto Story Mode adaptive player monitor	schedule	completed	success	f11b28751b38b44201ca9416c1d77054186b9468	2026-11-07T06:58:09Z
+42349173401	HA4 — one H6 CONTROL restore, no watchpoints	push	completed	failure	f11b28751b38b44201ca9416c1d77054186b9468	2026-11-07T06:56:50Z
+42342725357	HA2 — raw bound global and helper table probe	push	completed	success	7e10c6d04ec936dd603be8355894d96d0767af42	2026-11-07T05:26:16Z
+42342593255	HA2 — raw bound global and helper table probe	push	completed	success	437db807195f75431590ac3989bcbe5591c96bb2	2026-11-07T05:24:24Z
+42342464750	HA2 — raw bound global and helper table probe	push	completed	success	aeb027f020b8f6c850f6e34ea58e0b04efd483bf	2026-11-07T05:22:31Z
+42342367468	HA2 — raw bound global and helper table probe	push	completed	failure	e5b92bf27e939771699e8b35fdc5e8f92e13d429	2026-11-07T05:21:12Z
+42339837743	HA2-HA3 — static helper table, manager +0x2EE and read-flow audit	push	completed	success	b65ef33c4fc0f4d67e2258ebf77a528000a78241	2026-11-07T04:45:41Z
+42338608064	Ghidra static analysis — SLPS_035.53	push	completed	success	58db32c696fe830b6558c6828529a3801be753e0	2026-11-07T04:28:29Z
+42338608063	HA2-HA3 — static helper table, manager +0x2EE and read-flow audit	push	completed	success	58db32c696fe830b6558c6828529a3801be753e0	2026-11-07T04:28:29Z
+42320736860	Naruto Story Mode adaptive player monitor	schedule	completed	success	6987a76e12b0adf86f8061d47dcc4078e79cda21	2026-11-07T00:51:14Z
+42312284099	FA4 — H6 hybrid action-8 write-watchpoint runtime	push	completed	failure	43d2bed4ceb468583ffa5a03730fdb07939e6677	2026-11-06T23:29:55Z
+42307609951	DX0-DX4 full-image static economy audit	push	completed	success	f74961b844d068a164732c08c78a363d5267e569	2026-11-06T22:49:55Z
+42292998488	Naruto Story Mode adaptive player monitor	schedule	completed	success	b6fbdf25fdaa45b4d05f4dc5055e18fb6597b9b5	2026-11-06T20:59:51Z
+42241745858	Naruto Story Mode adaptive player monitor	schedule	completed	success	b6fbdf25fdaa45b4d05f4dc5055e18fb6597b9b5	2026-11-06T15:18:02Z
+42227045813	DX0-DX4 full-image static economy audit	push	completed	failure	56d1ba6a0ac7e874a3229a494e896336a38e7380	2026-11-06T13:37:50Z
+42193229458	DX0-DX4 full-image static economy audit	push	completed	success	8762d766044fc5e1adfd740ef2498b45dbbe5c29	2026-11-06T09:12:05Z
+42188220758	DX0-DX4 full-image static economy audit	push	completed	failure	2c462adc93cc7e3088e88202d07883887c224f0e	2026-11-06T08:30:54Z
+42185794833	DX0-DX4 full-image static economy audit	push	completed	success	c191c117ba567607df0feab8e4fc11adce015807	2026-11-06T08:10:31Z
+42179639658	Naruto Story Mode adaptive player monitor	schedule	completed	success	f76a096862ceb88920df19b021a30870c74a9496	2026-11-06T07:15:08Z
+42173196076	DX0-DX4 full-image static economy audit	push	completed	success	a1f2b3250afe0819e2b9882677df4c876c8b3027	2026-11-06T06:14:36Z
+42172857714	DX0-DX4 full-image static economy audit	push	completed	failure	43c09007a736a21e9d2b984aed8e1f8d95800ad3	2026-11-06T06:11:21Z
+42161706493	DW0-DW4 raw-byte static economy audit	push	completed	success	9312869ef66f7deaad7ab2e791391abe2b72e099	2026-11-06T04:18:19Z
+42161675076	DW0-DW4 raw-byte static economy audit	push	completed	success	26bcab51a7e93b10f7e8e902f040eb223df07396	2026-11-06T04:18:00Z
+42161171455	DW0-DW4 raw-byte static economy audit	push	completed	success	7c4abdc5166ee69b79e4a2e0f9da8adbd89a2bb9	2026-11-06T04:13:01Z
+42136041502	Naruto Story Mode adaptive player monitor	schedule	completed	success	2d334348b55dd672b3a2b0e428795c8ce817135b	2026-11-06T00:20:00Z
+42125095938	DT0-DT4 raw-byte static economy audit	push	completed	success	fed79376ccd639ffaad6f30ddf6feb080e6a8b3b	2026-11-05T22:52:17Z
+42119505916	DT0-DT4 raw-byte static economy audit	push	completed	success	524d2421e72ce8707c37d9564f4e95eb5cc9fcb9	2026-11-05T22:12:36Z
+42119041813	DT0-DT4 raw-byte static economy audit	push	completed	success	dd91e9df41ccc05f48917abfc91d44366bde458b	2026-11-05T22:09:29Z
+42116499467	DT0-DT4 raw-byte static economy audit	push	completed	failure	4dab11cee78944fc14fd19bc5286e85296350487	2026-11-05T21:52:10Z
+42089991490	Naruto Story Mode adaptive player monitor	schedule	completed	success	cc0fead8501722a6ea76fefda8caf2f41df4cd3c	2026-11-05T19:02:11Z
+42023666552	DS0-DS4 raw-byte static economy audit	push	completed	success	96e03675286f7b7999eee4549f3b6a71a1765c47	2026-11-05T12:01:32Z
+42020466709	Naruto Story Mode adaptive player monitor	schedule	completed	success	c6204f38495c9be76b18c76a9943f17ca835f2f3	2026-11-05T11:37:27Z
+42013037160	DQ1-DQ3 raw-byte static economy audit	push	completed	success	122ef33695c4a1d10bf3829c95d5502f9972c043	2026-11-05T10:43:13Z
+42012728038	DQ1-DQ3 raw-byte static economy audit	push	completed	failure	3e13415f8f08b9ba490b9f6680d424c790b80d4e	2026-11-05T10:40:56Z
+41975036156	Ghidra static analysis — SLPS_035.53	push	completed	success	d7d96b02a802b37e353f99e16a9216b3902cd8bb	2026-11-05T05:36:04Z
+41974599343	Ghidra static analysis — SLPS_035.53	push	completed	failure	6cf9a5a82e6eaac8a71fc59b08c339b3e0c2b9e7	2026-11-05T05:32:02Z
+41973752445	Ghidra static analysis — SLPS_035.53	push	completed	success	0811ca883dc9af6b9f05c0ebde383f26ee867fe6	2026-11-05T05:23:50Z
+41973188328	Ghidra static analysis — SLPS_035.53	push	completed	success	3a702202db57fd10e547250be322edcf6e02ee35	2026-11-05T05:18:31Z
+41972790546	Ghidra static analysis — SLPS_035.53	push	completed	success	c8b211d3630583f7e4dc78b064dad24d85fa3f33	2026-11-05T05:14:50Z
+41971932293	Ghidra static analysis — SLPS_035.53	push	completed	success	44c0ee7a2e4e44f6461acb2f0ad16fe32ea48f72	2026-11-05T05:06:54Z
+41971099453	Ghidra static analysis — SLPS_035.53	push	completed	success	54693fbe7fa831f139c57d1fc6544d5b6ded52df	2026-11-05T04:58:56Z
+41963205767	Naruto Story Mode adaptive player monitor	schedule	completed	success	33509b1d2f9462e9517e0a350162314a35daae65	2026-11-05T03:41:57Z
+41960140409	Ghidra static analysis — SLPS_035.53	push	completed	success	523227c18677aa9fcb0ddcda5cbc9fd09b9636bc	2026-11-05T03:12:38Z
+41958107329	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	1982a1babeb276a1ca0e971348fc5d060e194104	2026-11-05T02:53:35Z
+41956284081	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	2e8c4fabc449ea3cff4c597493cc8b6aea9c05b6	2026-11-05T02:36:08Z
+41956147162	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	601b69fa928dae9828c80a746f4b56b0a8a01fdd	2026-11-05T02:34:54Z
+41955540541	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	f39417465eb0e12be83b40af31b4666d4f1932ce	2026-11-05T02:29:25Z
+41934104636	Naruto Story Mode adaptive player monitor	schedule	completed	success	1d1d60ff1b9fc18713a21a679fb3d5d2c06ed32d	2026-11-04T23:29:25Z
+41881561610	Naruto Story Mode adaptive player monitor	schedule	completed	success	1d1d60ff1b9fc18713a21a679fb3d5d2c06ed32d	2026-11-04T17:54:06Z
+41817953399	DK0-DK3 static DATA.BIN resource audit	push	completed	success	c7684b30cb720b40282679f0616408b8703a32b6	2026-11-04T11:00:09Z
+41817415683	DK0-DK3 static DATA.BIN resource audit	push	completed	success	c71d656735e1704ac3edac52422f9db2dca8508c	2026-11-04T10:55:25Z
+41816597358	DK0-DK3 static DATA.BIN resource audit	push	completed	success	217ce9df11f8ad1223a5196fa6c00a4c8fd0fd8a	2026-11-04T10:48:15Z
+41815588375	DK0-DK3 static DATA.BIN resource audit	push	completed	success	f9645cdcc79da3a370ae36334000f94bbd5841d5	2026-11-04T10:39:15Z
+41810722797	Naruto Story Mode adaptive player monitor	schedule	completed	success	447631d02db0649abb07f7064ddf250bba81d779	2026-11-04T09:55:04Z
+41808407107	CH2 static tile level-bank scale expansion	push	completed	success	81d4a336dc4c9e8152d6c88f4d7608d4429d88a6	2026-11-04T09:32:51Z
+41808275888	CH2 static tile level-bank scale expansion	push	completed	failure	d87c3914e9b4edc473d7a27862ce9641b2fac20b	2026-11-04T09:31:55Z
+41803736009	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	48c16d73d788d69657c05b494f1a06d86fd5485b	2026-11-04T08:59:18Z
+41803308974	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	cancelled	63bf90b0a24c46ccb7b59cb953fb4f2e34b747f3	2026-11-04T08:55:58Z
+41803303026	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	cancelled	1d1cf3f544524aa4a7244d1d8eff6947db23d799	2026-11-04T08:55:56Z
+41803298049	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	e00a0dbd3c4e85e8f0643d8ed86c07428f0627c3	2026-11-04T08:55:53Z
+41802560703	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	ec3ba6dcf0c9bbbbbc5c2765614a4c05819dab14	2026-11-04T08:50:13Z
+41801621667	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	b8efccaa2605dfe09608bf4a96a3231a7765a4e9	2026-11-04T08:42:53Z
+41801147922	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	failure	5777c6aca85bbe1b5489e37f37c0de66f2ad5226	2026-11-04T08:39:07Z
+41800173595	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	failure	178be910c55cdcc52393ef06e74ea5d9218f2ee9	2026-11-04T08:31:34Z
+41800043936	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	4b459d00185374df7ebe9a6c42d631ea3ccdc604	2026-11-04T08:30:35Z
+41775298933	CG3 — H6 read-only 0xEA8 write-watchpoint, two launches	push	completed	success	f1ee369f670e39a67ab89c22b51da881e5cc9258	2026-11-04T04:47:21Z
+41775137231	CG3 — H6 read-only 0xEA8 write-watchpoint, two launches	push	completed	success	6fd71b25b8a7e5f1695dd6fd32e5f993958b59f1	2026-11-04T04:45:43Z
+41773084992	CG3 — H6 read-only 0xEA8 write-watchpoint, two launches	push	completed	failure	0d26b2f0fe668ef83847c5d9082f7fa2c8ba21fe	2026-11-04T04:25:08Z
+41770540433	CG3 — H6 read-only 0xEA8 write-watchpoint, two launches	push	completed	failure	9f2bd9a98c722b57979c62b7ce031d467f6370c4	2026-11-04T04:00:32Z
+41769361956	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	773fef1a34643ebb34f832346dd9fb0ca14f98d2	2026-11-04T03:48:25Z
+41768694313	CG3 — H6 read-only 0xEA8 write-watchpoint, two launches	push	completed	failure	0ad31c376c8c49f3f8c2ae03cd3b32d797dbc6fb	2026-11-04T03:41:42Z
+41768087823	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	27a716552d7638feedc09fb103c6f3545431765e	2026-11-04T03:35:40Z
+41762117878	Naruto Story Mode adaptive player monitor	schedule	completed	success	012367cf0518e519520fe590845d62792289276a	2026-11-04T02:38:57Z
+41749255678	CE3 — H6 positive-credit path to canonical Chakra (pinned PCSX release)	push	completed	success	b2ccb20041c31496b23ce531eec3434753db7868	2026-11-04T00:45:56Z
+41740957322	CE3 — H6 positive-credit path to canonical Chakra (pinned PCSX release)	push	completed	success	c9e89ab1f811940349bfd0e61d6b64d89ff6526d	2026-11-03T23:40:09Z
+41740952660	CE3 — H6 positive-credit path to canonical Chakra (pinned PCSX release)	push	completed	cancelled	9fc931e95b081133cfcb8e7398b0a106bde61814	2026-11-03T23:40:07Z
+41740884342	CE3 — H6 positive-credit path to canonical Chakra (pinned PCSX release)	push	completed	cancelled	6e6ae5472f2bbed763bba8180d68a6d9bce205d6	2026-11-03T23:39:30Z
+41740281514	CE3 — H6 positive-credit path to canonical Chakra (pinned PCSX release)	push	completed	success	b9b449dddd71455a633ad761c0bbb15a4829a0bb	2026-11-03T23:34:55Z
+41740084140	CE3 — H6 positive-credit path to canonical Chakra (pinned PCSX release)	push	completed	cancelled	7c054c3edc741b1ac8fb4173671fbc6f024edc96	2026-11-03T23:33:26Z
+41740037209	CE3 — H6 positive-credit path to canonical Chakra (pinned PCSX release)	push	completed	success	f5339ca1af67ea2150c355850c1f7c7386794ef3	2026-11-03T23:33:06Z
+41738996928	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	4104626043d012a6c91d09bec8cf7c4e68256b9d	2026-11-03T23:25:13Z
+41731044178	Naruto Story Mode adaptive player monitor	schedule	completed	success	072b251e620c86cbe72742ffccfe74282445b7ea	2026-11-03T22:28:04Z
+41730277650	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	failure	f3e666a653b66566cccc56ca386e2275cfb440bc	2026-11-03T22:22:47Z
+41729988835	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	95e6d8a2277cb4efa985f8a47277ff9f2089f362	2026-11-03T22:20:50Z
+41729541613	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	failure	de1e4c9568e543b6dc5af6f7c54c25e5123cbd11	2026-11-03T22:17:52Z
+41728269961	CD0 — minimal Actions trigger probe	push	completed	success	7ec489f7f4df87f41677446be413a1fb5383be62	2026-11-03T22:09:24Z
+41682475727	Naruto Story Mode adaptive player monitor	schedule	completed	success	c7457a73d6378ee62be4f344add796c132ed0144	2026-11-03T17:15:35Z
+41610137601	Naruto Story Mode adaptive player monitor	schedule	completed	success	4cfbf9b006733b54499a6232cc8aa481e1ef0928	2026-11-03T09:19:51Z
+41570141744	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	f1a6602f8ed72751f0dbcb629e1d65f770f6ff2e	2026-11-03T03:06:07Z
+41568369172	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	e895c319c9009a22a7291402fed13448b9315939	2026-11-03T02:48:30Z
+41567828353	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	723bd7181489b98238978d700293e38315d7f42e	2026-11-03T02:43:08Z
+41567757209	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	2869fd35ff8b1e09ea8086ed436d3716bcddad64	2026-11-03T02:42:24Z
+41567757169	Ghidra static analysis — SLPS_035.53	push	completed	success	2869fd35ff8b1e09ea8086ed436d3716bcddad64	2026-11-03T02:42:24Z
+41566798487	Ghidra static analysis — SLPS_035.53	push	completed	success	cdaf593b0610ab87cfdbb9601cee6c61e91ab51f	2026-11-03T02:32:55Z
+41566798431	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	cdaf593b0610ab87cfdbb9601cee6c61e91ab51f	2026-11-03T02:32:55Z
+41566033549	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	6c4774f24ecad51d436a7ac4da270c822179476a	2026-11-03T02:25:34Z
+41565392810	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	6d5a70e73ada1d68b279093272a76bf154028213	2026-11-03T02:19:31Z
+41563802704	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	5c50ea0e5f4f361ba548b28322f49ca87a0632b5	2026-11-03T02:04:26Z
+41562521224	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	6812dbfb34a5d8cdda00623a5f13c6d9e273f870	2026-11-03T01:52:17Z
+41562376940	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	cancelled	ceccf517d847909bc931588c7a58ed8c50269190	2026-11-03T01:50:54Z
+41562260893	Naruto Story Mode adaptive player monitor	schedule	completed	success	67d17ca8e5163fed74973a14d13162bff39680e9	2026-11-03T01:49:50Z
+41562193241	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	5c92f44fba20baa0ccd161a838cb8cc9f62b33fe	2026-11-03T01:49:09Z
+41561885050	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	1e8c7991fae66ce83abfc73a83a7622700700663	2026-11-03T01:46:15Z
+41561643792	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	0dbc053798ae58006a62e9465f991e259038f1b1	2026-11-03T01:44:01Z
+41559535429	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	424743337e525da13d8a376aaede756c0b7f1400	2026-11-03T01:24:26Z
+41558104325	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	a15a0fda198625a3dbdfb04052c1929db90da7bf	2026-11-03T01:11:44Z
+41557380908	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	87a0e111c8928a75848dad41d830df594bc011c3	2026-11-03T01:05:20Z
+41557054116	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	28b3c7380f483e0e158e6089851d7d4a4e72e3e8	2026-11-03T01:02:27Z
+41556732137	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	296785adc21e399d8b4882cc75a9fda6c8539045	2026-11-03T00:59:47Z
+41556726425	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	cancelled	216c9782cf75a0f94594c5e831ff19a36bb5f98a	2026-11-03T00:59:44Z
+41556598876	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	da1a20d26aeb8b50c6ea893c9d2c4aca58aaff16	2026-11-03T00:58:31Z
+41556229574	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	dc0046b205d4490e5a91f1075fe6eab0a082aa50	2026-11-03T00:55:09Z
+41555549917	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	37beb791fcc48c859b58c312ec1800d44ef77497	2026-11-03T00:49:16Z
+41554925881	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	b68ba43a183519b1a5b3ef499f92c660432ebe8a	2026-11-03T00:43:57Z
+41554278531	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	cancelled	05f714017a86b7b26e1013a48bdd85e209b173eb	2026-11-03T00:38:18Z
+41553653484	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	cancelled	889838f3b52a2211881ff64228dceaf22db11ba7	2026-11-03T00:33:02Z
+41553596296	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	c1a81420980eaca43a5369f3ecf7f9af4b534c57	2026-11-03T00:32:32Z
+41552617808	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	109742216f46251dfd16648b9ec6795dcdfcccbf	2026-11-03T00:24:27Z
+41552359932	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	0fb861c38075f4584c111060e7314fdf5b49c711	2026-11-03T00:22:17Z
+41552041884	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	82b647e30496c0234c1f56e09b9c44a892176ba8	2026-11-03T00:19:37Z
+41550406414	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	57ee8f4cba1ff2b15b1a9674d8dfbeb63fcfbf5e	2026-11-03T00:06:22Z
+41550067749	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	9c04073ce5c5a5c6768b07d9f211079c32d707ab	2026-11-03T00:03:40Z
+41549745261	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	cd52c764ff01b89f0cdb147198696232aac138db	2026-11-03T00:01:07Z
+41549383103	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	6a36f6617a947a35efb992163278aed8449921b8	2026-11-02T23:58:09Z
+41548473746	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	8ed5a8133b9dcc3dd24c239ffea7ae5a366a0f62	2026-11-02T23:50:35Z
+41547245720	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	383cccd1599878075c4f564353bd3353bf7f5b98	2026-11-02T23:40:37Z
+41546927609	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	890ab1b76e1d5a6523b1ef77f6d8f04f8e817c87	2026-11-02T23:38:02Z
+41545858564	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	fc01e8183f35173672dd1a3113d0b84606cb4e69	2026-11-02T23:29:47Z
+41544845872	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	b18bf57a19736418466345212e2dc6c6433bd268	2026-11-02T23:21:49Z
+41544845748	AQ2 H6 hybrid no-input economy snapshot at frame 180	push	completed	failure	b18bf57a19736418466345212e2dc6c6433bd268	2026-11-02T23:21:49Z
+41544845699	AJ1 committed evidence audit and AJ2 H6 RAM probe	push	completed	failure	b18bf57a19736418466345212e2dc6c6433bd268	2026-11-02T23:21:49Z
+41544845684	AS3 — H6 breakpoint K0/K1/K2 A/B at frames 180, 240, 360	push	completed	failure	b18bf57a19736418466345212e2dc6c6433bd268	2026-11-02T23:21:49Z
+41544401168	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	9eb83400cadb2b7d4a4412d0f2e14af8854a1b33	2026-11-02T23:18:31Z
+41544400978	AQ2 H6 hybrid no-input economy snapshot at frame 180	push	completed	failure	9eb83400cadb2b7d4a4412d0f2e14af8854a1b33	2026-11-02T23:18:31Z
+41544400881	AJ1 committed evidence audit and AJ2 H6 RAM probe	push	completed	failure	9eb83400cadb2b7d4a4412d0f2e14af8854a1b33	2026-11-02T23:18:31Z
+41544400775	AS3 — H6 breakpoint K0/K1/K2 A/B at frames 180, 240, 360	push	completed	failure	9eb83400cadb2b7d4a4412d0f2e14af8854a1b33	2026-11-02T23:18:30Z
+41544096390	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	782012f57fdb741a387ccf0370f0e84e11ba2ed6	2026-11-02T23:16:13Z
+41543294021	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	d99f57ba98e5b2fc598299ceb69bf1ecc7a2f4c6	2026-11-02T23:10:18Z
+41542947152	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	59998bf31c4efee0fc3ed6729d973b2f6f20e031	2026-11-02T23:07:46Z
+41541667221	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	3ef6c43fd1fb3f352546bb538a61aa2ef2ce5a96	2026-11-02T22:58:24Z
+41541206308	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	b4baaa6cb65715f5c71223440f23e7d88822d504	2026-11-02T22:54:55Z
+41536404671	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	4159e1b27018cae970eac64013e25a98c78013ee	2026-11-02T22:20:22Z
+41533205025	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	111bf1a3f4177f356e513d2fdea1de2c50f6e697	2026-11-02T21:58:50Z
+41531841659	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	a9a8ed21e1a7f972ac0eca9551894a90b93f8ed9	2026-11-02T21:49:28Z
+41529469001	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	227ee88f06d6618c8f4e0726407f70b4e2e75e05	2026-11-02T21:33:47Z
+41529267551	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	c0b8555493e5ac0ce64a89381a7cbfce2b5f59d3	2026-11-02T21:32:29Z
+41529254742	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	cancelled	1ba22b223c27043fe5e903d387a0e3cae9ea45d9	2026-11-02T21:32:24Z
+41528938163	BB3 H6 smoke test — safe PCSX memory-file read	push	completed	success	4370d13dfa4c9f1aeaaf5ebb36cd3ce93ba8ea0d	2026-11-02T21:30:21Z
+41528929933	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	cancelled	825d74f2d226c6e94a94ab9940b882b96c6f170c	2026-11-02T21:30:18Z
+41528401894	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	cancelled	60e78b573dbfdcf5312cb03e692ff2c66e172a14	2026-11-02T21:26:45Z
+41528358476	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	cancelled	2f062e8a1292c4c4e29c28ca220422fe5778e82e	2026-11-02T21:26:29Z
+41528169303	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	cancelled	503eb7c2ef4b680a91a13ad5a65c8d56472b2c97	2026-11-02T21:25:14Z
+41528133484	BB3 — H6 temporary RAM action-byte function-call probe (pinned PCSX release)	push	completed	success	3e0e33d877945590033a0671d41d4fc33f69a7a7	2026-11-02T21:25:00Z
+41527796204	BB3 H6 smoke test — safe PCSX memory-file read	push	completed	success	25d2436e30ac02cbb751c3463acabbfab0841ce2	2026-11-02T21:22:44Z
+41527786379	BB3 — H6 temporary RAM action-byte function-call probe (patched PCSX)	push	completed	success	1a7d8d70d91d4b25600def9ae7abb70c565049cb	2026-11-02T21:22:40Z
+41527576341	BB3 H6 smoke test — safe PCSX memory-file read	push	completed	success	5d4abe5f830ddce06756ae60f7cb6bc0b0b1b9a6	2026-11-02T21:21:18Z
+41527566971	BB3 — H6 temporary RAM action-byte function-call probe (patched PCSX)	push	completed	cancelled	489c983821e0fe2a1a5b670694d923e574d04746	2026-11-02T21:21:14Z
+41527414811	BB3 — H6 temporary RAM action-byte function-call probe (patched PCSX)	push	completed	cancelled	85efa25e0973736f71d61920312f7c3986e3ab34	2026-11-02T21:20:15Z
+41527382932	BB3 — H6 temporary RAM action-byte function-call probe (patched PCSX)	push	completed	cancelled	852e230edfb7908e33e885d2d853e9260f6e5eec	2026-11-02T21:20:04Z
+41527261817	BB3 H6 smoke test — safe PCSX memory-file read	push	completed	success	dcbdf1cf0ce90d42b2558ecd4c38a28988087a02	2026-11-02T21:19:16Z
+41527251225	BB3 — H6 temporary RAM action-byte function-call probe (patched PCSX)	push	completed	success	435b05824f8f5bd3e767e7b4c643c6655ba74701	2026-11-02T21:19:11Z
+41527053511	BB3 H6 smoke test — safe PCSX memory-file read	push	completed	failure	8a715f8cc6cbbad7083659ab4d761f72044e91a1	2026-11-02T21:17:54Z
+41527046616	BB3 — H6 temporary RAM action-byte function-call probe (patched PCSX)	push	completed	failure	03685cfd53456256da68839f786bd3966c858ed8	2026-11-02T21:17:51Z
+41526651531	BB3 H6 smoke test — safe PCSX memory-file read	push	completed	failure	4516c026312c8af3bace08f3529268afe867dcb7	2026-11-02T21:15:19Z
+41526642101	BB3 — H6 temporary RAM action-byte function-call probe (patched PCSX)	push	completed	failure	1df34332deb8da2404db8dd2eb302779df68c0c4	2026-11-02T21:15:16Z
+41526479592	BB3 — H6 temporary RAM action-byte function-call probe (patched PCSX)	push	completed	failure	1b45eb2c69ded03fe21cd6a16ad9edbf2ab20a8f	2026-11-02T21:14:12Z
+41511453755	Naruto Story Mode adaptive player monitor	schedule	completed	success	6bb698392b16ee45dbc27b38f44cee5103610c16	2026-11-02T19:36:08Z
+41466426311	BB3 — H6 temporary RAM action-byte function-call probe (patched PCSX)	push	completed	failure	e28c55b26cf41efa7bf3045a4972791f75080167	2026-11-02T14:54:39Z
+41466268602	BB3 — H6 temporary RAM action-byte function-call probe (patched PCSX)	push	completed	failure	dba19b5e897b93525d976fdf6ebac42507d0ea02	2026-11-02T14:53:39Z
+41464827189	BB3 H6 smoke test — safe PCSX memory-file read	push	completed	success	7256c5932a9d34e5ea4d04b0ef39604d1843d586	2026-11-02T14:44:35Z
+41461812798	BB3 H6 smoke test — safe PCSX memory-file read	push	completed	success	f8d770673e4f6cec1ebb711e2fda8b73508d2ea7	2026-11-02T14:25:29Z
+41459907683	BB3 — H6 temporary RAM action-byte function-call probe	push	completed	success	c5fb0ff42a90c0530bd20f65b93e74f121f55cc9	2026-11-02T14:13:36Z
+41422227109	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	dc4f752e7c653afd4bb8d572d6de153979724e77	2026-11-02T09:37:44Z
+41419756918	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	failure	ed788883372aefa1772790e4e8a74e7a677ba633	2026-11-02T09:19:59Z
+41419506538	BA3 — H6 hybrid read-only economy snapshot at frames 180 and 360	push	completed	success	7413d48a7eec7be9d97782a5d8b02400b4b83a57	2026-11-02T09:18:06Z
+41418919522	Naruto Story Mode adaptive player monitor	schedule	completed	success	292ac8ce84d2db1c8c6ae0f9ba884c19575072ba	2026-11-02T09:13:43Z
+41418131290	BA3 — H6 hybrid read-only economy snapshot at frames 180 and 360	push	completed	success	a3f57b45bc57b1cf555d39fef4125c49f59b86f1	2026-11-02T09:07:41Z
+41417885033	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	failure	62170f613266500d9d25db933836fb534b05e7b9	2026-11-02T09:05:48Z
+41417874405	BA3 — H6 hybrid read-only economy snapshot at frames 180 and 360	push	completed	success	9517b9e8478e5ab375f74a3fc4a80d9da60c0846	2026-11-02T09:05:43Z
+41417842857	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	failure	c5ccb933675a509869632f045a18c99d527ec852	2026-11-02T09:05:29Z
+41417842770	Step 4 — static helper return and seed-setter audit	push	completed	success	c5ccb933675a509869632f045a18c99d527ec852	2026-11-02T09:05:29Z
+41417842767	Ghidra static analysis — SLPS_035.53	push	completed	success	c5ccb933675a509869632f045a18c99d527ec852	2026-11-02T09:05:29Z
+41417201213	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	failure	9bcd94713e51303462c6def5a577770ea4aa10ac	2026-11-02T09:00:30Z
+41416683161	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	c4ee6edbc98df4a0e285787183ffd3705001434a	2026-11-02T08:56:13Z
+41415726090	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	7b6a3fa3d51deb0d576cb531193006bf85d74c16	2026-11-02T08:48:20Z
+41414694038	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	3df981cb65a616c53d042d22665d1b3e1651ddce	2026-11-02T08:39:45Z
+41413850863	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	0a33f7bb3aa00c1ded456f5874d60d13384d2826	2026-11-02T08:32:43Z
+41413492667	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	failure	7401c086ae7bba001143cb268c445c59bc30ebd6	2026-11-02T08:29:52Z
+41391551410	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	e8944c6ff9a8f99590f2ef8d776e5a8378c169a8	2026-11-02T05:00:47Z
+41390871544	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	f052a6005bccc852d5fd0a70feaa5f0ec56a9f3f	2026-11-02T04:52:57Z
+41390473200	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	167cd52bcc94193bea0b9b6d92e13d59a7eb390f	2026-11-02T04:48:20Z
+41390225508	Step 4 — static helper return and seed-setter audit	push	completed	success	980485d6680131187c1e7b09322c9aca22d830b6	2026-11-02T04:45:33Z
+41390225499	Ghidra static analysis — SLPS_035.53	push	completed	success	980485d6680131187c1e7b09322c9aca22d830b6	2026-11-02T04:45:33Z
+41390225493	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	980485d6680131187c1e7b09322c9aca22d830b6	2026-11-02T04:45:33Z
+41389951934	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	0802559834327f21a72c54ef9de46b2baa4790db	2026-11-02T04:42:29Z
+41389929814	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	b5639f3280bef48678db143c4a0b8509531485a7	2026-11-02T04:42:13Z
+41389929800	Step 4 — static helper return and seed-setter audit	push	completed	success	b5639f3280bef48678db143c4a0b8509531485a7	2026-11-02T04:42:13Z
+41388731912	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	1368ad7e983e468a316b3ee283d76b110b9cb279	2026-11-02T04:29:15Z
+41388716919	Step 4 — Ghidra validation of RNG callers in resource code	push	completed	success	3faa89848a23a679b0d63f7dfd5c48cd62f296b6	2026-11-02T04:29:06Z
+41388716859	Ghidra static analysis — SLPS_035.53	push	completed	success	3faa89848a23a679b0d63f7dfd5c48cd62f296b6	2026-11-02T04:29:06Z
+41374729352	Naruto Story Mode adaptive player monitor	schedule	completed	success	77cd214405bff08816b12ccc0f94bd80e3545121	2026-11-02T01:52:33Z
+41371318978	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	5f7375a003686f29793a4ae2b07e431069167338	2026-11-02T01:13:18Z
+41368276256	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	5822e40f3698e1b928619ee74ec4cef5a4913f70	2026-11-02T00:38:57Z
+41367906993	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	253dc96f92d95c76337bdbbf3292d0c388470493	2026-11-02T00:34:56Z
+41367620653	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	7439029c2cf12fbd0e904f09a680e67ea3e9dca4	2026-11-02T00:31:38Z
+41367221886	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	e98a2081e7f6573a75705d416f8a727a10634ced	2026-11-02T00:27:14Z
+41360900093	AZ1 — H6 hybrid read-only economy snapshot at frames 180 and 360	push	completed	success	4c537e3034bd0b2c2c0ad1a51312621843160910	2026-11-01T23:11:41Z
+41360300349	Ghidra static analysis — SLPS_035.53	push	completed	success	9584198b07e3111c59fc33814bcb6e7d70d4c277	2026-11-01T23:04:51Z
+41360300335	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	9584198b07e3111c59fc33814bcb6e7d70d4c277	2026-11-01T23:04:51Z
+41360300315	AZ1 — H6 hybrid read-only economy snapshot at frames 180 and 360	push	completed	success	9584198b07e3111c59fc33814bcb6e7d70d4c277	2026-11-01T23:04:51Z
+41359528784	AZ1 — H6 hybrid read-only economy snapshot at frames 180 and 360	push	completed	success	6c1e3b95e54ebfa46468e62b96cd0cd08d85ab9a	2026-11-01T22:55:24Z
+41358566961	AZ1 — H6 hybrid read-only economy snapshot at frames 180 and 360	push	completed	success	2c5db558a4e3820c3ff2f50a1d133476cbc6ed2d	2026-11-01T22:43:37Z
+41358340222	Naruto Story Mode adaptive player monitor	schedule	completed	success	e2a2f4485dfa258d8a4d25599c26cab0c9ac551a	2026-11-01T22:40:49Z
+41338647504	Naruto Story Mode adaptive player monitor	schedule	completed	success	e2a2f4485dfa258d8a4d25599c26cab0c9ac551a	2026-11-01T18:50:17Z
+41319511985	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	20e6e78fb29fe0994d853a162ae13130b6e64bf4	2026-11-01T15:06:29Z
+41319244717	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	b27de05b2b8d137529e4d2ac4701b4bfc40f5b57	2026-11-01T15:03:25Z
+41318918804	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	8da36418b865e5c17e46d48e8a85a457fb96bc7f	2026-11-01T14:59:44Z
+41318572706	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	9132ad629086a80d3e974f0af47b937b8d4fe1fc	2026-11-01T14:55:25Z
+41318371336	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	2177d42bb1cbae7be7fc58272f266508c84da454	2026-11-01T14:52:56Z
+41318066991	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	cedc2e7f3eb842a748b250d6431e84aee791ff59	2026-11-01T14:49:09Z
+41317621473	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	068fb8eee56e78f2c2990a30e5c1c81a55844068	2026-11-01T14:43:47Z
+41317349898	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	b2721446d7beb46d89e9104ff4c621fcfc2400dc	2026-11-01T14:40:22Z
+41317073417	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	4c423953d032b36fc044379bc299169fb737cce5	2026-11-01T14:36:57Z
+41316699811	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	6a396ecb431dc11052766869258474ee6665dcca	2026-11-01T14:32:27Z
+41316627800	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	df33199053e0e8b6e4eb4f80694b9d3d33e44197	2026-11-01T14:31:35Z
+41316223540	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	ba6a381e781e6b331c0fea285c527b4b5b707819	2026-11-01T14:26:44Z
+41315862085	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	failure	ae6e597d41784641a57caf1f3b2be81fe92e02e9	2026-11-01T14:22:19Z
+41313202957	Naruto Story Mode adaptive player monitor	schedule	completed	success	c4dd26d2ad01f60810bd5ac4519193cd3ef4bc6f	2026-11-01T13:50:29Z
+41309421332	AX4 — original manager-code runtime matrix	push	completed	success	fd55121deea2ceb6c61b22490bc1ba54e51f280b	2026-11-01T13:03:48Z
+41305597371	AX4 — original manager-code runtime matrix	push	completed	failure	97a27176455fe920ebb4968c6b84907f144cfc16	2026-11-01T12:15:20Z
+41305476145	AX4 — original manager-code runtime matrix	push	completed	failure	871cd2e00df474f7cb45b413a08a2abd9094f8d9	2026-11-01T12:13:52Z
+41305464178	AX4 — original manager-code runtime matrix	push	completed	cancelled	8b3e83dc894959be5690835eaea9f2ac02e8b819	2026-11-01T12:13:43Z
+41299796542	AX4 — original manager-code runtime matrix	push	completed	failure	a36354c1a4e9c923d3a59ad3f9c5c9b3434042cb	2026-11-01T10:58:32Z
+41299656659	AX4 — original manager-code runtime matrix	push	completed	failure	a9645f4c93cd1df0570bf5148e07c361b85b9021	2026-11-01T10:56:31Z
+41299216451	AX4 — original manager-code runtime matrix	push	completed	cancelled	b040515c9a79617e38c66a1b5b55c57c74623f19	2026-11-01T10:50:15Z
+41299197819	AX4 — original manager-code runtime matrix	push	completed	cancelled	60f9dd063b6ec50885b360f0ec26500f5071047f	2026-11-01T10:50:00Z
+41299165108	AX4 — original manager-code runtime matrix	push	completed	cancelled	4f31e913066e93f3066c536ec421cc36c78c6fce	2026-11-01T10:49:32Z
+41298963243	AX4 — original manager-code runtime matrix	push	completed	cancelled	abc9e940b00d3101f3b21984597fd7928178a3f3	2026-11-01T10:46:47Z
+41298860212	AX4 — original manager-code runtime matrix	push	completed	failure	e2af6d2ba97860ec3ce001a3b21630720bbab902	2026-11-01T10:45:22Z
+41291576229	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	64de9960b60cd0eb629b0c15e9025ca787bf1e84	2026-11-01T09:05:33Z
+41291503009	AW3 — controlled direct helper/accessor calls on H6 hybrid	push	completed	success	2e53cbb26a1eddce05849580bdcef90113e9368d	2026-11-01T09:04:36Z
+41290956575	AW3 — controlled direct helper/accessor calls on H6 hybrid	push	completed	success	4325ccf24132470fb1df5077d285fccd83d8faa0	2026-11-01T09:56:54Z
+41290779721	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	18b926049fac5126118f545cf46ae2f01e5d84f0	2026-11-01T09:54:16Z
+41290779708	Ghidra static analysis — SLPS_035.53	push	completed	success	18b926049fac5126118f545cf46ae2f01e5d84f0	2026-11-01T09:54:16Z
+41290627762	AW3 — controlled direct helper/accessor calls on H6 hybrid	push	completed	failure	2339c50db8cc1eeba75ac7d65786b0ae7cb1ef9e	2026-11-01T09:51:56Z
+41290551962	AW3 — controlled direct helper/accessor calls on H6 hybrid	push	completed	failure	711f4fb22422b79724d5591f55ab72b3a08c77d5	2026-11-01T09:50:48Z
+41282460129	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	71d7e05449da3bf7f1782d10bb1db9cf614cfd69	2026-11-01T06:51:06Z
+41282460102	Ghidra static analysis — SLPS_035.53	push	completed	success	71d7e05449da3bf7f1782d10bb1db9cf614cfd69	2026-11-01T06:51:06Z
+41282394816	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	db3719c54c40d4ea2706894c071e6215205389d0	2026-11-01T06:50:07Z
+41282394808	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	failure	db3719c54c40d4ea2706894c071e6215205389d0	2026-11-01T06:50:07Z
+41282260451	AW3 — controlled direct helper/accessor calls on H6 hybrid	push	completed	failure	9445d79af7e192e2a90f2942ed532ed82ff72310	2026-11-01T06:48:00Z
+41282202942	AW3 — controlled direct helper/accessor calls on H6 hybrid	push	completed	failure	c5c1c88fe62653b734f7a4311a5feac02eb07440	2026-11-01T06:47:05Z
+41281900514	Naruto Story Mode adaptive player monitor	schedule	completed	success	e3bdf645f0311bcc8753b8a623bee69991a6d37e	2026-11-01T06:42:25Z
+41279573060	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	ce2391d8a7e5299a4df7964b87fa6228ededb47a	2026-11-01T06:08:03Z
+41279573052	Ghidra static analysis — SLPS_035.53	push	completed	success	ce2391d8a7e5299a4df7964b87fa6228ededb47a	2026-11-01T06:08:03Z
+41279536787	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	c95ad1ffc8834ff660f1dcbb88e681e29dea0546	2026-11-01T06:07:32Z
+41279536763	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	c95ad1ffc8834ff660f1dcbb88e681e29dea0546	2026-11-01T06:07:32Z
+41279330674	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	ab00a62e7ccc2bc0776b0385706fa64513598967	2026-11-01T06:04:27Z
+41279241120	Ghidra static analysis — SLPS_035.53	push	completed	success	ee245b6138c418aff4d0b6d895d0cb5447e870af	2026-11-01T06:03:05Z
+41279241109	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	failure	ee245b6138c418aff4d0b6d895d0cb5447e870af	2026-11-01T06:03:05Z
+41278306307	AV2 — PCSX-Redux interpreter RAM write-watchpoints	push	completed	failure	5954e1839d03313d37c9b90ac5da4ac01a75ba3c	2026-11-01T05:47:57Z
+41278264065	AV2 — PCSX-Redux interpreter RAM write-watchpoints	push	completed	failure	4af986ac6fb111e8a85187ea8a3b816bd52e390f	2026-11-01T05:47:16Z
+41274625876	AU3 — interpreter A/C setter and helper trace	push	completed	success	214d6641b67b035300d7d8efbd117318d7a3f81b	2026-11-01T04:50:33Z
+41274567492	Step 4 — static helper return and seed-setter audit	push	completed	success	7def692176e0ac7e21bff0d4a9a5eca8baf70880	2026-11-01T04:49:36Z
+41274555827	Step 4 — static helper return and seed-setter audit	push	completed	failure	344dff3ca0374388b06c766e99b057420195bb81	2026-11-01T04:49:24Z
+41260751877	AT1 — DATA.BIN Entry 1 helper a1 provenance (static Ghidra)	push	completed	success	4aba615a8d5603afe81cd8a5671ee4b088409350	2026-11-01T01:21:27Z
+41260739233	Step 4 — static helper return and seed-setter audit	push	completed	success	8e2eeed39fd36b5224c1e660daed812ccf2365dc	2026-11-01T01:21:16Z
+41260683654	AT1 — DATA.BIN Entry 1 helper a1 provenance (static Ghidra)	push	completed	success	2429a4f78c8054053426bf1f7179dd2e9a12e727	2026-11-01T01:20:29Z
+41259662960	AT3 — AN2 schedule A/C and K0/K2 breakpoint trace	push	completed	success	968c1a55731e09f815a1d1d385e1bf3edf792279	2026-11-01T01:06:37Z
+41259079319	Step 4 — static helper return and seed-setter audit	push	completed	success	e154ca132edde3e8b5afc47d02cada1c31af3fc1	2026-11-01T00:58:22Z
+41258911810	Step 4 — static helper return and seed-setter audit	push	completed	success	24779cb46987ddf64114ad0b62ac7e77e78dc7ed	2026-11-01T00:56:02Z
+41258690146	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	51ec907222a8f9e2c2754d7a732de8ab3ae4d57d	2026-11-01T00:53:02Z
+41258300049	AT3 — AN2 schedule A/C and K0/K2 breakpoint trace	push	completed	failure	7aafeb06eaa326ecb238bdf7662a5ee7df7ec38f	2026-11-01T00:47:38Z
+41258067708	AT1 — DATA.BIN Entry 1 helper a1 provenance (static Ghidra)	push	completed	cancelled	df039ab1e578141b7f1d6539f1e7f29892f5912e	2026-11-01T00:44:31Z
+41258009379	.github/workflows/at1-entry1-helper-a1-provenance.yml	push	completed	failure	58011e50d346d1a994622054f3e9c56a49b6f966	2026-11-01T00:43:44Z
+41257708406	Step 4 — static helper return and seed-setter audit	push	completed	success	b954f02c77ba01687433c3c4af199b6fd5511ad4	2026-11-01T00:39:38Z
+41256458701	AT3 — AN2 schedule A/C and K0/K2 breakpoint trace	push	completed	success	7659306d19bdac7e9a831b4ed7355f60c8dc1dc0	2026-11-01T00:22:23Z
+41256355975	Naruto Story Mode adaptive player monitor	schedule	completed	success	832ccdfe2cc15f0622be23fbfff33f8d104e0a6a	2026-11-01T00:20:59Z
+41256334815	AT3 — AN2 schedule A/C and K0/K2 breakpoint trace	push	completed	failure	832ccdfe2cc15f0622be23fbfff33f8d104e0a6a	2026-11-01T00:20:42Z
+41256330348	AT2 — H6 hybrid F1/F2 emulator flags, four launches	push	completed	success	9e5a60cb468593c7d9049691d55f687e059066e5	2026-11-01T00:20:38Z
+41256295999	AT3 — AN2 schedule A/C and K0/K2 breakpoint trace	push	completed	failure	cbbab4d4573234e72b05c797926bd1030294a3ce	2026-11-01T00:20:11Z
+41256208915	AT2 — H6 hybrid F1/F2 emulator flags, four launches	push	completed	failure	390e989e87840232ee30fb3bc5a2aaf831a3419a	2026-11-01T00:19:02Z
+41249611249	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	cfff7709f745f1f68ba01134e49c65b991528eb2	2026-10-31T22:45:40Z
+41249411706	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	d74cf2aaa162c399d31362b9421f567be294f27c	2026-10-31T22:42:54Z
+41249242776	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	3016fa0a10f3d672d52c1d1101d1daa403a07f95	2026-10-31T22:40:34Z
+41249145093	AS3 — H6 breakpoint K0/K1/K2 A/B at frames 180, 240, 360	push	completed	success	f5beedd207f9c77090bd609188c29a2cbff4b55f	2026-10-31T22:39:13Z
+41243442912	Naruto Story Mode adaptive player monitor	schedule	completed	success	4412575e45c09bd42df5455af7b4f1ae7a480830	2026-10-31T21:24:27Z
+41226989222	Naruto Story Mode adaptive player monitor	schedule	completed	success	e4189fb4858c8950091c27cb6a2ebc2e18bc7dbc	2026-10-31T17:57:07Z
+41213474394	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	1c7ff2f85861020af859f152f68d4cd71f1b6f20	2026-10-31T15:09:17Z
+41213474358	AS3 — H6 breakpoint K0/K1/K2 A/B at frames 180, 240, 360	push	completed	success	1c7ff2f85861020af859f152f68d4cd71f1b6f20	2026-10-31T15:09:17Z
+41211621969	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	8894686395afdca97328a9fb2af5007a29406584	2026-10-31T14:45:42Z
+41211621962	AS3 — H6 breakpoint K0/K1/K2 A/B at frames 180, 240, 360	push	completed	success	8894686395afdca97328a9fb2af5007a29406584	2026-10-31T14:45:42Z
+41208953906	AR3 — H6 hybrid runtime breakpoint trace at frames 180–360	push	completed	success	a6002e5c016f9cdc954eec7c799e4e43df2464b5	2026-10-31T14:11:09Z
+41208874219	AR3 — H6 hybrid runtime breakpoint trace at frames 180–360	push	completed	success	2406c86ef5595dae296497734f54c3638b38a6a1	2026-10-31T14:10:08Z
+41208693098	AR3 — H6 hybrid runtime breakpoint trace at frames 180–360	push	completed	failure	a7f42355b58541f0558125a34c8574245d6835b8	2026-10-31T14:07:51Z
+41208394883	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	a3cc4bfde7784858840e9cc98cc12e9bd70a2efe	2026-10-31T14:04:01Z
+41207396993	Verify Stage 1 raw permalinks with curl	push	completed	success	d39be4f1b4ac5fed20a99be53a5925a6ffc72cd3	2026-10-31T13:50:43Z
+41207325486	Verify Stage 1 raw permalinks with curl	push	completed	success	11d292940ee5a95f2a16ebe8d7b0cc0ebf8d418b	2026-10-31T13:49:47Z
+41205843943	Naruto Story Mode adaptive player monitor	schedule	completed	success	a00e9a33c2c4da28d7917603ad05e9571860cf87	2026-10-31T13:30:16Z
+41178258388	Naruto Story Mode adaptive player monitor	schedule	completed	success	a00e9a33c2c4da28d7917603ad05e9571860cf87	2026-10-31T06:51:12Z
+41171434910	Verify Stage 1 raw permalinks with curl	push	completed	failure	226a7294205648fa584432f221331b068438cf09	2026-10-31T05:09:14Z
+41171379016	Verify Stage 1 raw permalinks with curl	push	completed	failure	ac7c6b4a99ffef64258a2d300634adc0c6099bdb	2026-10-31T05:08:24Z
+41171338655	Verify Stage 1 raw permalinks with curl	push	completed	failure	73670f3fd386ce5b71b3f4ad1e99cbd414eb0cc4	2026-10-31T05:07:49Z
+41171278914	Verify Stage 1 raw permalinks with curl	push	completed	failure	f6de3c329374e4a9485e1e20e59e617d3f749d68	2026-10-31T05:06:58Z
+41169411383	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	55d6619c95477e5188347133154f286973ce6e44	2026-10-31T04:38:44Z
+41169411368	AQ2 H6 hybrid no-input economy snapshot at frame 180	push	completed	success	55d6619c95477e5188347133154f286973ce6e44	2026-10-31T04:38:44Z
+41169277980	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	d4b3034bb722d1de92a8101ed0bd20f5878af40d	2026-10-31T04:36:40Z
+41169277947	AQ2 H6 hybrid no-input economy snapshot at frame 180	push	completed	failure	d4b3034bb722d1de92a8101ed0bd20f5878af40d	2026-10-31T04:36:40Z
+41169156553	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	failure	9cd3f68fe3720d83cf8dd434601d2377168a39aa	2026-10-31T04:34:56Z
+41169156505	AQ2 H6 hybrid no-input economy snapshot at frame 180	push	completed	failure	9cd3f68fe3720d83cf8dd434601d2377168a39aa	2026-10-31T04:34:56Z
+41166812039	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	ad1dd4d9c7a05458cda20c1000e83c154bb3e73c	2026-10-31T04:01:27Z
+41161277158	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	d0ef96970724c85d8bcd2c5c7fb8ba58bac04072	2026-10-31T02:43:34Z
+41161116972	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	818dcc0a913608ad5c50b65924fb523b5cb5784f	2026-10-31T02:41:18Z
+41160842378	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	844f9bfa32a211c8cea5bb0417bfba050ccd53cb	2026-10-31T02:37:24Z
+41160643532	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	54090de31574c912cc36c339879239bfa362d558	2026-10-31T02:34:47Z
+41160453018	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	cf8a4bab9841e12e386eb1f3f68c484b595fa01b	2026-10-31T02:32:18Z
+41160254539	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	1b3ee51115342e1d484a019866f0a681067a3639	2026-10-31T02:29:47Z
+41160250853	Ghidra static analysis — SLPS_035.53	push	completed	success	4b52d14ecbf104e7fed88540db424289b9e31331	2026-10-31T02:29:44Z
+41160186973	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	failure	dc168c2eed2914210d4f199142cc97243b65d5af	2026-10-31T02:28:48Z
+41159805931	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	20346f89463bb1ca8792317de1496e228470ebf8	2026-10-31T02:23:43Z
+41159510198	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	934c735a39b7ccc2f650e685d78e0aa91c407840	2026-10-31T02:19:59Z
+41159301877	Step 7 — DATA.BIN Entry 1 analysis at loader buffer base	push	completed	success	9a6dc0532e865701c654f7650967857c3c8c2c8a	2026-10-31T02:17:13Z
+41158940692	Step 7 — targeted loader and payload pointer trace	push	completed	success	be061a58fd81886735bef89513735b3e2e4f46ff	2026-10-31T02:12:36Z
+41158644685	Step 7 — targeted loader and payload pointer trace	push	completed	success	d1f0e9d2ab14885337e18cbc092679518e3086e8	2026-10-31T02:08:51Z
+41158277447	Step 7 — targeted loader and payload pointer trace	push	completed	success	7f88eb437fbbb23e317647f3b783a7bd5a5ac744	2026-10-31T02:04:11Z
+41158240394	Ghidra static analysis — SLPS_035.53	push	completed	success	61cc5b83338d50b31156a87f74bb3d045199d430	2026-10-31T02:03:44Z
+41157955614	Step 7 — targeted loader and payload pointer trace	push	completed	success	2e1a9497bf499dd9c1dc574f775d2981df8faeba	2026-10-31T02:00:13Z
+41157751728	Step 7 — targeted loader and payload pointer trace	push	completed	success	eafbe6f8bc7c4a11d2530d6154d076d25785bf1d	2026-10-31T01:57:23Z
+41157546342	Step 7 — DATA.BIN directory index and resource slice map	push	completed	success	44ca8548fe9c4d9d8c66007b020e4987275ad6d8	2026-10-31T01:54:35Z
+41157200149	Step 7 — targeted loader and payload pointer trace	push	completed	success	7c26a58a24739415930c3fe2d786110fa0be53e4	2026-10-31T01:49:58Z
+41157191546	Step 7 — targeted loader and payload pointer trace	push	completed	failure	9a797fdd6d8918b642cf2ecedcd37d220560e2d6	2026-10-31T01:49:51Z
+41156493284	Step 6/7 — static field-offset and resource profile scan	push	completed	success	513939e5ea8492624fb104a77c76aab81c1e72db	2026-10-31T01:40:39Z
+41155800069	Step 6/7 — static field-offset and resource profile scan	push	completed	success	2ea8aa554a2c9b45187e8d72815dd2282b56bd51	2026-10-31T01:32:01Z
+41155800065	Step 4 — bounded Ghidra context for DATA.BIN entry 0 calls	push	completed	success	2ea8aa554a2c9b45187e8d72815dd2282b56bd51	2026-10-31T01:32:01Z
+41152261362	Naruto Story Mode adaptive player monitor	schedule	completed	success	fd3306bda2e337b2f51c4a46a35c55b9c93b4e14	2026-10-31T00:49:41Z
+41139735708	YouTube source metadata access check	push	completed	success	eff405eeef552cad4fab7e3c6eff0242c2cacd55	2026-10-30T22:41:05Z
+41139666002	YouTube source metadata access check	push	completed	success	2769a55f2b71bf227e9717a71900b21cf24685ea	2026-10-30T22:40:26Z
+41128471033	Naruto Story Mode adaptive player monitor	schedule	completed	success	17a83a587031328d841c80bc4b7273efc376e6a0	2026-10-30T21:06:23Z
+41091686698	Naruto Story Mode adaptive player monitor	schedule	completed	success	17a83a587031328d841c80bc4b7273efc376e6a0	2026-10-30T16:38:12Z
+41080663095	AN2 AN3 H6 hybrid C/A/B isolated Memory Card replay and byte diff	push	completed	success	6800d4452af6e79aae29e394e8130305448b0f12	2026-10-30T15:26:00Z
+41079972127	AN2 AN3 H6 hybrid C/A/B isolated Memory Card replay and byte diff	push	completed	success	c8d344e6879704fae312dfc879148e72617f820a	2026-10-30T15:21:35Z
+41079756661	AN2 AN3 H6 hybrid C/A/B isolated Memory Card replay and byte diff	push	completed	cancelled	1b9ba1e37290fe3de4e8942eeae9b4974dc70d41	2026-10-30T15:20:14Z
+41078632012	AN2 AN3 H6 hybrid C/A/B isolated Memory Card replay and byte diff	push	completed	failure	a49ef988e958d5d01725e8e65924d0ff36eb9677	2026-10-30T15:13:02Z
+41078417753	AN2 AN3 H6 hybrid C/A/B isolated Memory Card replay and byte diff	push	completed	cancelled	38b24af3da03ccb9c1fc63970e86c883e6a497ed	2026-10-30T15:11:39Z
+41078402898	AN2 AN3 H6 hybrid C/A/B isolated Memory Card replay and byte diff	push	completed	cancelled	3510ec5a367b18933adb3c752d92ac644b7d6821	2026-10-30T15:11:34Z
+41067396027	AN2 AN3 H6 hybrid C/A/B isolated Memory Card replay and byte diff	push	completed	failure	af23a756191b18eb9872a41e894877d18039f41e	2026-10-30T13:56:07Z
+41067214814	AN2 AN3 H6 hybrid C/A/B isolated Memory Card replay and byte diff	push	completed	failure	9fa54236cfc28464f6a4aef4234e07e5ce4305f0	2026-10-30T13:54:51Z
+41066719273	AN2 AN3 H6 hybrid C/A/B isolated Memory Card replay and byte diff	push	completed	failure	4a4f1fbfdd09aca578ab3e6a3585736fe66156b1	2026-10-30T13:51:25Z
+41066593471	AN2 AN3 H6 hybrid C/A/B isolated Memory Card replay and byte diff	push	completed	cancelled	813220ad2b7811ca551d7f2e5d3ed1cc7357a639	2026-10-30T13:50:32Z
+41065356040	AN2 AN3 H6 hybrid C/A/B isolated Memory Card replay and byte diff	push	completed	cancelled	1aedc00b0ba93e0fa46009b05e8a65b63ed7dbbb	2026-10-30T13:41:50Z
+41065252719	AN2 AN3 H6 hybrid C/A/B isolated Memory Card replay and byte diff	push	completed	cancelled	d380c77e1fc36d0d374c04831ddcaedebd184125	2026-10-30T13:41:05Z
+41048937290	AM3 H6 hybrid Circle timing A-B replay	push	completed	success	4fbbbdf278ca71e0c84cb651287096561e9b4878	2026-10-30T11:33:35Z
+41048752354	AM3 H6 hybrid Circle timing A-B replay	push	completed	failure	240c448205b047f6dcbcb475c8f8b9cfca20c30a	2026-10-30T11:32:02Z
+41042679829	AK1-AK3 H6 multi-frame replay and RAM diff	push	completed	success	7e457a0ccae1fc9d499dc8d1c5020a4bab73b079	2026-10-30T10:42:12Z
+41042603881	AK1-AK3 H6 multi-frame replay and RAM diff	push	completed	cancelled	7bbe8ec64b8728e68e0d53c4a1b869013048b235	2026-10-30T10:41:35Z
+41042445743	AK1-AK3 H6 multi-frame replay and RAM diff	push	completed	cancelled	07e14cbc7b4f33b437776346c561be8082632da5	2026-10-30T10:40:17Z
+41041704100	AK1-AK3 H6 multi-frame replay and RAM diff	push	completed	cancelled	8f6dd448268ed5db2ab0d6b6f8469a2d00c0d396	2026-10-30T10:34:14Z
+41041627786	AK1-AK3 H6 multi-frame replay and RAM diff	push	completed	success	c11ce716b389d474c02f20966bbfbf1528637dd8	2026-10-30T10:33:35Z
+41036731738	Naruto Story Mode adaptive player monitor	schedule	completed	success	50ba6146524d8e9a510f13d646bee6901a17faad	2026-10-30T09:53:40Z
+41032514102	AK1-AK3 H6 multi-frame replay and RAM diff	push	completed	success	b7f230947d632e024243a4e12f63c9af46c33a2e	2026-10-30T09:18:52Z
+41032338902	AK1-AK3 H6 multi-frame replay and RAM diff	push	completed	failure	da800c422e9abed1dbdaeedb5c40cad244373956	2026-10-30T09:17:24Z
+41028457166	AJ1 committed evidence audit and AJ2 H6 RAM probe	push	completed	success	5bffeda14ccc8757ae5d8f5145a46398881bcbf1	2026-10-30T08:44:13Z
+41028349650	AJ1 committed evidence audit and AJ2 H6 RAM probe	push	completed	failure	d6194a6ce0463d23da52dc4fc72a9c8b3bc82b33	2026-10-30T08:43:15Z
+40998003879	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	success	572e10b76df40f3dc9f5dec21444c377ffe08b55	2026-10-30T03:33:01Z
+40994807058	Naruto Story Mode adaptive player monitor	schedule	completed	success	ee48de43577d08eeca77f6930d7f49a250cbba83	2026-10-30T02:59:26Z
+40973612551	Naruto Story Mode adaptive player monitor	schedule	completed	success	ee48de43577d08eeca77f6930d7f49a250cbba83	2026-10-29T23:30:33Z
+40970111403	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	failure	c9636874dd6480a2b6d00bc8a759f6ef8ceeba5b	2026-10-29T23:00:51Z
+40970003398	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	cancelled	9f3da08b8793b99fa4a8ac81fb6daa941b614fad	2026-10-29T23:00:03Z
+40969902308	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	success	6048b34a82b2ad6d7c3cfa567e08d3ff92a13fa3	2026-10-29T22:59:11Z
+40966952341	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	success	19d26af1a91e273b5c3bb2717af5032823239b09	2026-10-29T22:34:53Z
+40966952270	AE1-AE4 recursive SPU field bisect and conditional RAM snapshots	push	completed	cancelled	19d26af1a91e273b5c3bb2717af5032823239b09	2026-10-29T22:34:53Z
+40938485415	Naruto Story Mode adaptive player monitor	schedule	completed	success	f71f23126e9c79e53fdbbcb4734c395a91a52e0e	2026-10-29T19:15:48Z
+40899089356	AE1-AE4 recursive SPU field bisect and conditional RAM snapshots	push	completed	success	b8ac9eba871fc05eff75baace38d2cdb545eedf7	2026-10-29T15:11:53Z
+40897542675	AE1 recursive SPU channel-field bisect plus AE2 minimal-field necessity	push	completed	success	65522cd174782e6d65cb765811b43440e95b33c3	2026-10-29T15:02:44Z
+40896077197	AE1 recursive SPU channel-field bisect	push	completed	success	e5c98fb5aeb9fce0292ec6b2540b347d2e8d4e96	2026-10-29T14:53:57Z
+40895934142	.github/workflows/ae1-channel-recursive-bisect.yml	push	completed	failure	aaee865b4127b3eeb94f5bf4efcc7eb1692c11b9	2026-10-29T14:53:05Z
+40893599809	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	failure	9c1287c436522a5b333a3399d734dd8cc8c566c0	2026-10-29T14:39:02Z
+40893536464	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	failure	9d7c062b8457ecdf118be01fcc6c6fe65bcfe070	2026-10-29T14:38:39Z
+40889442511	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	success	579c94e26baea0e9bf8fe86a5f5f68c7c00a07ce	2026-10-29T14:14:05Z
+40883272263	Naruto Story Mode adaptive player monitor	schedule	completed	success	8433b51660d4607efd3f87497919ee118c356b3c	2026-10-29T13:35:07Z
+40863884515	AD1-AD6 evidence publication and history recovery	push	completed	success	008268d03d3ca5620ac11ce8554b8a5d15eb3560	2026-10-29T11:14:47Z
+40863741406	AD1-AD6 evidence publication and history recovery	push	completed	failure	0acf3ddd6372fac3ebc864ddf028da1659c14ac3	2026-10-29T11:13:42Z
+40863635082	AD1-AD6 evidence publication and history recovery	push	completed	success	d9b54be8ec95a2407def572c56b3933a40007c27	2026-10-29T11:12:53Z
+40863560996	AD1-AD6 evidence publication and history recovery	push	completed	failure	252e2f919368184943932be54f06e26a4db52d55	2026-10-29T11:12:18Z
+40863466571	AD1-AD6 evidence publication and history recovery	push	completed	failure	f447fcc291efb8a8bcb60d51676eb2fb3c0a5972	2026-10-29T11:11:35Z
+40862024937	AD4 ubuntu-26.04 target restore retry (text-only)	push	completed	success	66149f13cf0d1b4ca9dfb7645bd2dea3aeaefce7	2026-10-29T11:00:42Z
+40861419453	AD4 ubuntu-26.04 target restore retry (text-only)	push	completed	success	9fef28ece340e09db0367e6463404882cc34be87	2026-10-29T10:55:58Z
+40861282071	AD4 ubuntu-26.04 target restore retry (text-only)	push	completed	success	1278a46805fbc14781b1ccb87116c47523512df3	2026-10-29T10:54:54Z
+40861210294	.github/workflows/ad4-ubuntu26-target-restore-retry.yml	push	completed	failure	460855932a53c2572c9c1a9da66c4a8049b7603f	2026-10-29T10:54:19Z
+40861112111	.github/workflows/ad4-ubuntu26-target-restore-retry.yml	push	completed	failure	20035df57a4370202921e3bf8b7e2a6f2dd07837	2026-10-29T10:53:34Z
+40860941312	AD4 ubuntu-26.04 target restore retry (text-only)	push	completed	failure	82bb1f07893d5d1c4193c5dfbf7963ea8d18e182	2026-10-29T10:52:13Z
+40860783346	AD4 ubuntu-26.04 target restore retry (text-only)	push	completed	success	2855cd17ed8a1d26af131de25845def3df6539d2	2026-10-29T10:50:58Z
+40860691655	AD4 ubuntu-26.04 target restore retry (text-only)	push	completed	failure	0810b74912e5ca619ce5ad7dd5a87e2134fab15b	2026-10-29T10:50:16Z
+40860390103	AD1-AD6 restore, symbolization, Release and Git-history audit	push	completed	failure	8670c10f64e569800f169a148f17f66ab2a1295c	2026-10-29T10:47:57Z
+40860122233	AD1-AD6 restore, symbolization, Release and Git-history audit	push	completed	failure	baa7a53ce9a8dbb1153ea27c1a329219bf9a43d5	2026-10-29T10:45:55Z
+40853480515	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	success	528fc3164fda9e14b96831403d1f1f1ebd483be6	2026-10-29T09:55:52Z
+40852693434	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	success	ff0173997dd1425285cd22bb2fc7659a40d96398	2026-10-29T09:49:48Z
+40852321482	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	failure	052518f4a2da32ae5a59afa4df6f80b3e27cf2e2	2026-10-29T09:46:56Z
+40848251356	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	success	64be99b0ea2d927216a7195dd95e85fbf8cd3612	2026-10-29T09:15:44Z
+40848104320	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	failure	9af29693376fba076a2fe7f465a1331021eaac2c	2026-10-29T09:14:38Z
+40847792046	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	failure	8da0a78706296f1e90d8de96d1332876f2103fc5	2026-10-29T09:12:15Z
+40847605139	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	failure	13b95e3bab15be767d2a16b5567af8337f98e848	2026-10-29T09:10:48Z
+40847405507	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	failure	0a10565e3b1f365d719bea7a58f061b2ebec7ba2	2026-10-29T09:09:19Z
+40847142238	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	failure	3b45161b1df268621cbbca441237458be2e2ba5c	2026-10-29T09:07:17Z
+40847105603	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	failure	172d0df70393b0f575563d5088874cb3485d3157	2026-10-29T09:07:00Z
+40846881777	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	success	2946c9f754942bd89ab3e1ba834b6fd743a4aec3	2026-10-29T09:05:16Z
+40846708956	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	success	9091d9e6f303399a5de3e1f1de6e92b60f1fca7a	2026-10-29T09:03:56Z
+40846544137	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	success	1dc091f31e4bea8bca96fd7171f5ef01c3d3bff1	2026-10-29T09:02:38Z
+40845962644	AA1 checkpoint load diagnostic (GDB, no input)	push	completed	success	f87fe444d67d8994e20a5048b189375db4e811b8	2026-10-29T08:58:00Z
+40844474886	Step C — fixed-schedule Story Mode RAM replay comparison	push	completed	failure	2ef56f8e6d3c3612e03357b34cfae1d65cfd23ab	2026-10-29T08:45:42Z
+40828503219	Naruto Story Mode adaptive player monitor	schedule	completed	success	e757c4d41923edb8c5b4e6266eb701dc31c5bd77	2026-10-29T06:19:24Z
+40826960999	Step C — fixed-schedule Story Mode RAM replay comparison	push	completed	failure	8b22ec029b33e045e6ca3f8bf9ef451bfebd2d74	2026-10-29T06:03:49Z
+40826919573	Step C — fixed-schedule Story Mode RAM replay comparison	push	completed	failure	aacce00c1bf32485bb4c653bcf8fd304cd013646	2026-10-29T06:03:23Z
+40824731102	Static slot provenance audit V1-V3	push	completed	success	00e498c9773099d8ff52e643c9cecc711874958d	2026-10-29T05:40:16Z
+40824392693	Static slot provenance audit V1-V3	push	completed	success	9cdb8b45a4926cf9729f0e4edcfdb4aa57f5a326	2026-10-29T05:36:40Z
+40824224141	Static slot provenance audit V1-V3	push	completed	failure	451e319bee57673e496c7d9948fd88cc38f87d99	2026-10-29T05:34:58Z
+40823880207	Static slot provenance audit V1-V3	push	completed	success	d8d37d708993baf5113b100aeca925db678f4270	2026-10-29T05:31:22Z
+40823853413	Static slot provenance audit V1-V3	push	completed	failure	ed01173d4150270125acd8068a5b71df63f6f658	2026-10-29T05:31:06Z
+40823561026	Static slot provenance audit V1-V3	push	completed	success	47acc35b7cc970106ce2c1c694bf6b18863f446f	2026-10-29T05:28:04Z
+40823429023	Static slot provenance audit V1-V3	push	completed	success	79369fc55959dbe7709c4b8261a4b2b356513795	2026-10-29T05:26:41Z
+40823190677	Static slot provenance audit V1-V3	push	completed	failure	4a87cf79e8f2d88a408ad2c61715e4ab6497d536	2026-10-29T05:24:13Z
+40823082075	Static slot provenance audit V1-V3	push	completed	failure	291575070e8e85e0f7a4b4f46f0332ebd54b136c	2026-10-29T05:23:05Z
+40823059818	Static slot provenance audit V1-V3	push	completed	cancelled	10b450585df3c4a5f4285fcd8d3565263a259d77	2026-10-29T05:22:51Z
+40823004271	Static slot provenance audit V1-V3	push	completed	failure	0f3a9000138b8409252114357f6558aafde05991	2026-10-29T05:22:18Z
+40822660227	Static slot provenance audit V1-V3	push	completed	failure	c1742bc6ae62bdec7db875a8b498327cda25ad25	2026-10-29T05:18:48Z
+40822541935	Static slot provenance audit V1-V3	push	completed	failure	45fc65567a7a9ff71d9ec0d36783d33e891079fa	2026-10-29T05:17:35Z
+40822485274	Static slot provenance audit V1-V3	push	completed	cancelled	da1d3bdcce2319b494905b6edd2487deeb7aff3d	2026-10-29T05:17:00Z
+40822467742	Static slot provenance audit V1-V3	push	completed	failure	b61a03a86e147a203160cf4548b0891a3a3f67e0	2026-10-29T05:16:49Z
+40822322914	Static slot provenance audit V1-V3	push	completed	failure	5864e9023be80d0b82243f59fd455856665d6731	2026-10-29T05:15:21Z
+40822119065	Static slot provenance audit V1-V3	push	completed	failure	e24f63f3790be3a1c3c4287e5b16994583cc4003	2026-10-29T05:13:18Z
+40822004697	Static slot provenance audit V1-V3	push	completed	failure	078271be04c7c08cd6b9865f6b49a248b5702448	2026-10-29T05:12:05Z
+40821882151	Static slot provenance audit V1-V3	push	completed	failure	a60ebfb146da73e80d5de5ad3e13b43ec65ac922	2026-10-29T05:10:47Z
+40821831450	Ghidra static analysis — SLPS_035.53	push	completed	success	14e47ec914446cfe0b1801fa0de32250ac18d0b1	2026-10-29T05:10:17Z
+40821831405	Static slot provenance audit V1-V3	push	completed	cancelled	14e47ec914446cfe0b1801fa0de32250ac18d0b1	2026-10-29T05:10:17Z
+40821790757	Static slot provenance audit V1-V3	push	completed	cancelled	e432c4ba3ced084d0be512762f9a0fb90fcf2aa0	2026-10-29T05:09:53Z
+40821753914	Static slot provenance audit V1-V3	push	completed	failure	c723423beb46e6f3e470d5744b9d4d97194711f2	2026-10-29T05:09:30Z
+40820189600	Static slot provenance audit V1-V3	push	completed	success	dfaa2d3f10547a05e119690e03a4e7014ce2901b	2026-10-29T04:52:43Z
+40819834347	Static slot provenance audit V1-V3	push	completed	success	40be932c8993f6b911cf2ecd04e5206572a9b5a5	2026-10-29T04:48:52Z
+40819533178	Static slot provenance audit V1-V3	push	completed	success	8975b643395e2a3594b3b5a0799c496e94354b67	2026-10-29T04:45:35Z
+40819440085	Static slot provenance audit V1-V3	push	completed	failure	e85f34ba253ef87d0633ca62c96a5ee214a51a1e	2026-10-29T04:44:36Z
+40819318503	Ghidra static analysis — SLPS_035.53	push	completed	success	89f0bb67948462ac3c84cd59e3479a978c1bbdb1	2026-10-29T04:43:15Z
+40815536136	Verify checkpoint release SHA and target RAM window	push	completed	success	6d6957bb8e7a34f1fc0d377be571ef17cd6828f0	2026-10-29T04:03:06Z
+40815425037	.github/workflows/audit-checkpoint-target-window.yml	push	completed	failure	33312fc0487472e8b5f9afe91e95250697c8d8d2	2026-10-29T04:01:54Z
+40815320809	Static slot provenance audit V1-V3	push	completed	success	31d66b8986a15caa1c5975cacb4954f070569cc0	2026-10-29T04:00:49Z
+40794709587	Verify checkpoint release SHA and target RAM window	push	completed	success	f3c1c6a8fce500b37a56a216547cc7d9ee1486bd	2026-10-29T00:32:21Z
+40792975954	Naruto Story Mode adaptive player monitor	schedule	completed	success	e757c4d41923edb8c5b4e6266eb701dc31c5bd77	2026-10-29T00:16:31Z
+40792708405	Preserve Naruto checkpoint and compare RAM / strict A2	push	completed	success	4c505394ac331225545728261c66566fa3113763	2026-10-29T00:14:11Z
+40790387202	Step 4–10 read-only static evidence audit	push	completed	success	c12c272875c419c9120583144ac81620246d7477	2026-10-28T23:53:15Z
+40789851317	Ghidra static analysis — SLPS_035.53	push	completed	success	f2bb35efb237df3d194cf60eb5a56a2ad271c4ee	2026-10-28T23:48:15Z
+40789851311	Step 4–10 read-only static evidence audit	push	completed	failure	f2bb35efb237df3d194cf60eb5a56a2ad271c4ee	2026-10-28T23:48:15Z
+40789339014	Step 4–10 read-only static evidence audit	push	completed	success	8b70e004f0df21bbb250a3c0b918a19e76ce0a21	2026-10-28T23:43:45Z
+40789217636	Step 4–10 read-only static evidence audit	push	completed	failure	feff126f47ec0ca58ed75197e8f37732f26b4332	2026-10-28T23:42:39Z
+40789217602	Ghidra static analysis — SLPS_035.53	push	completed	success	feff126f47ec0ca58ed75197e8f37732f26b4332	2026-10-28T23:42:39Z
+40785917691	Step C — fixed-schedule Story Mode RAM replay comparison	push	completed	failure	eeaaa87165113a17b8ca7b52e716d850bda0b955	2026-10-28T23:14:21Z
+40784795830	Step C — fixed-schedule Story Mode RAM replay comparison	push	completed	cancelled	9e34a0de1419ce0b8f39d912b81e0607112bcb51	2026-10-28T23:05:11Z
+40784703481	Step C — fixed-schedule Story Mode RAM replay comparison	push	completed	failure	b679a9976a969571a7e38a452b41376c359d1165	2026-10-28T23:04:28Z
+40783998364	Step 4–10 read-only static evidence audit	push	completed	success	241224f2fd032e43dcef34d0fecc91ca58d707e2	2026-10-28T22:58:46Z
+40783339297	Step 4–10 read-only static evidence audit	push	completed	failure	2c7623e16dce250e1306a769cdaff166d196c885	2026-10-28T22:53:16Z
+40782907718	Step 4–10 read-only static evidence audit	push	completed	failure	fe16b855dd41327279c056978f3cbd24302bed69	2026-10-28T22:49:44Z
+40782833804	Step 4–10 read-only static evidence audit	push	completed	failure	9c2b9980fb210d8c2ce5797181873fbbbce51064	2026-10-28T22:49:08Z
+40782805224	Step 4–10 read-only static evidence audit	push	completed	failure	748daab9dc607077e56817ecfeea87289bb4ae95	2026-10-28T22:48:54Z
+40762363616	Naruto Story Mode adaptive player monitor	schedule	completed	success	44ee7d7dd032bed34c3d6db18f8989708c6bd6c3	2026-10-28T20:20:15Z
+40713332201	Naruto Story Mode adaptive player monitor	schedule	completed	success	44ee7d7dd032bed34c3d6db18f8989708c6bd6c3	2026-10-28T15:10:56Z
+40655028525	Naruto Story Mode adaptive player monitor	schedule	completed	success	44ee7d7dd032bed34c3d6db18f8989708c6bd6c3	2026-10-28T08:11:29Z
+40628145062	Step 4 — bounded Ghidra context for DATA.BIN entry 0 calls	push	completed	success	44ee7d7dd032bed34c3d6db18f8989708c6bd6c3	2026-10-28T03:41:43Z
+40626130930	Ghidra static analysis — SLPS_035.53	push	completed	success	8f1dd393073fa9b8f6435ebcf14fb760fd0eb2e7	2026-10-28T03:20:35Z
+40623532269	Step 4 — bounded Ghidra context for DATA.BIN entry 0 calls	push	completed	success	b14ac7cbca5ef1786c701daf92e6ac027d0df6e5	2026-10-28T02:53:17Z
+40621318421	Step 4 — bounded Ghidra context for DATA.BIN entry 0 calls	push	completed	success	8af02be732b5d0fb801966f7b1e39387c495d217	2026-10-28T02:30:19Z
+40621293045	Ghidra static analysis — SLPS_035.53	push	completed	success	e693386a8e9b31e79a238048fe55aa55210eec42	2026-10-28T02:30:05Z
+40621187152	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	a96f7d007cff163502ae86a1dd897232f40b63af	2026-10-28T02:29:00Z
+40619049176	Step 4 — bounded Ghidra context for DATA.BIN entry 0 calls	push	completed	success	da0000f0d1a981eb62dbce48bd597b52478070f6	2026-10-28T02:07:14Z
+40619036727	Ghidra static analysis — SLPS_035.53	push	completed	success	c360894a1250dd44dafb28811e85472bba9e5da3	2026-10-28T02:07:06Z
+40617078061	Naruto Story Mode adaptive player monitor	schedule	completed	success	28dba03ce0198564ddf10d1a199758f0c2440c27	2026-10-28T01:46:57Z
+40614208610	Naruto checkpoint restore verification (no gameplay input)	push	completed	failure	428fde928cb6bfedeafad88a17c844339d6cd681	2026-10-28T01:18:09Z
+40613996374	Naruto checkpoint restore verification (no gameplay input)	push	completed	failure	c3da684b609b344a961e90076a25f20b77088e66	2026-10-28T01:16:04Z
+40613802942	.github/workflows/naruto-checkpoint-restore-verify.yml	push	completed	failure	480f7f5e575f8b365acb37c00fbace219475cc79	2026-10-28T01:14:14Z
+40611660635	Step 6/7 — static field-offset and resource profile scan	push	completed	success	ea148ca60af2e3eeaa1b58141532e1ff5a98dd60	2026-10-28T00:53:40Z
+40606159061	Step 9 — isolated MIPS RNG function verification (Unicorn)	push	completed	success	7f234820f1b83a34654e900592903678365006a5	2026-10-28T00:02:30Z
+40605904131	Step 9 — isolated MIPS RNG function verification (Unicorn)	push	completed	success	2f7e373055cab788292bb7aad164dfad2b3b9c34	2026-10-28T00:00:17Z
+40605654394	Step 9 — isolated MIPS RNG function verification (Unicorn)	push	completed	failure	77cce46f7cf145aef30b63ad1b1106b72c92c36b	2026-10-27T23:57:57Z
+40605560982	Step 9 — isolated MIPS RNG function verification (Unicorn)	push	completed	failure	e19b70d64289da6ae9226cad616b51c32892ef44	2026-10-27T23:57:04Z
+40596433514	Naruto Story Mode adaptive player monitor	schedule	completed	success	09c04ac78709a4251c5fda24eba99e435a91b0db	2026-10-27T22:39:06Z
+40561735718	Naruto Story Mode adaptive player monitor	schedule	completed	success	985a328446295f4b8e526abd9eac9c6f86e70a6e	2026-10-27T18:37:42Z
+40523020556	Step 5 — targeted DATA.BIN entry-1 Ghidra/m2c comparison	push	completed	success	c36b7407631291afd2a4d303f49a8b03392e2bbc	2026-10-27T14:38:17Z
+40522919529	Step 5 — targeted DATA.BIN entry-1 Ghidra/m2c comparison	push	completed	success	6cb2b6b3912db606008bb12f214926b3051a83d4	2026-10-27T14:37:39Z
+40522772847	Step 6/7 — static field-offset and resource profile scan	push	completed	success	136210a7acc34518f7c060f6088e0753d2c811f7	2026-10-27T14:36:44Z
+40522660181	Step 6/7 — static field-offset and resource profile scan	push	completed	failure	2fd58605a780655d2f8dcde5d2fe89650ac4e069	2026-10-27T14:36:02Z
+40522317571	Step 5 — targeted DATA.BIN entry-1 Ghidra/m2c comparison	push	completed	success	a75d8307257ff1e154eebfdeb97f23a3ce4f1b03	2026-10-27T14:33:56Z
+40521830977	Step 5 — targeted DATA.BIN entry-1 Ghidra/m2c comparison	push	completed	failure	a62e29d38c695032c786392668d7a8eda6042d8c	2026-10-27T14:30:54Z
+40521141039	Ghidra static analysis — SLPS_035.53	push	completed	success	a8556c02d1df3ce28007213cbce51ccda53ac065	2026-10-27T14:26:36Z
+40521136060	Step 4 — bounded Ghidra context for DATA.BIN entry 0 calls	push	completed	success	a8556c02d1df3ce28007213cbce51ccda53ac065	2026-10-27T14:26:34Z
+40521136038	Step 4 — bounded Ghidra context for entry 1 raw RNG candidates	push	completed	success	a8556c02d1df3ce28007213cbce51ccda53ac065	2026-10-27T14:26:34Z
+40520635759	Step 4 — bounded Ghidra context for entry 1 raw RNG candidates	push	completed	failure	2fd0c9798e11a99348a5979ab0028d205cded1ba	2026-10-27T14:23:22Z
+40520635668	Step 4 — bounded Ghidra context for DATA.BIN entry 0 calls	push	completed	failure	2fd0c9798e11a99348a5979ab0028d205cded1ba	2026-10-27T14:23:22Z
+40520635663	Ghidra static analysis — SLPS_035.53	push	completed	success	2fd0c9798e11a99348a5979ab0028d205cded1ba	2026-10-27T14:23:22Z
+40516755810	Step 9 — isolated MIPS RNG function verification (Unicorn)	push	completed	success	430b8a3347ca6bb48833e73c1b6006f8667c9c95	2026-10-27T13:58:10Z
+40516517691	Step 9 — isolated MIPS RNG function verification (Unicorn)	push	completed	skipped	24003eaa1619ea660f7bfee89618ebd9b0aff5a6	2026-10-27T13:56:29Z
+40515356524	Step 5 — Ghidra/m2c same-function comparison	push	completed	success	2b16e67bfafde873c95b577bc030f6e0c9f84c58	2026-10-27T13:48:41Z
+40512956924	Step 5 — Ghidra/m2c same-function comparison	push	completed	failure	873db7b4b46fd1f20bb0afb6a8d19a16198a3d01	2026-10-27T13:32:47Z
+40512917437	Ghidra static analysis — SLPS_035.53	push	completed	success	929c87bd8675c6ae98aaeaa9ae3189c79d987791	2026-10-27T13:32:30Z
+40511758146	Step 6/7 — static field-offset and resource profile scan	push	completed	success	0afc0eec4a5c12e4df5a17c771c8b0d28d7a99dd	2026-10-27T13:24:27Z
+40506364365	Naruto Story Mode adaptive player monitor	schedule	completed	success	cc81319cc00037a92a93a3e76552245dd9a9ebf7	2026-10-27T12:46:01Z
+40504977322	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	4ab16073f770233edffcb13ad8b489361604b64c	2026-10-27T12:35:34Z
+40504876796	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	df144ad5a4330531afd4f45978e4e36f1bc8a447	2026-10-27T12:34:50Z
+40504640855	Step 6/7 — static field-offset and resource profile scan	push	completed	success	486e2590b45efaedd7972accb4561cd647f8a711	2026-10-27T12:33:04Z
+40504498120	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	a4ad57b5fb79f1e37297d3149ae156083f3e29f4	2026-10-27T12:31:59Z
+40504141727	Step 6/7 — static field-offset and resource profile scan	push	completed	success	c29c30cd5a8a9500f946309a943ed48a6c9112ef	2026-10-27T12:29:23Z
+40504112023	Step 6/7 — static field-offset and resource profile scan	push	completed	success	1895efa960a83745bf3cf1d481d1f2302688e0b2	2026-10-27T12:29:10Z
+40503223693	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	555b84a4d178b41e4d04705e1700104bd41ed1d3	2026-10-27T12:22:19Z
+40500058788	Step 6/7 — static field-offset and resource profile scan	push	completed	success	dfa0bf47dff300384c1f9884aa957c7ce1b48658	2026-10-27T11:57:44Z
+40499884728	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	4539ad058f3f96dbb2726142eb870e5c13aec3b0	2026-10-27T11:56:20Z
+40499569324	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	9e28847c8b47152d1600f5a6f249e3671fde86d7	2026-10-27T11:53:51Z
+40499270568	Step 4 — static helper return and seed-setter audit	push	completed	success	57f7b88d92d5e76d62ee6186e264c787aba375c2	2026-10-27T11:51:27Z
+40499154584	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	07844eaad943e2c577feaf77ae3feb887d513400	2026-10-27T11:50:32Z
+40499029428	Step 4 — static helper return and seed-setter audit	push	completed	success	0fc3c0ad4c291929c45808655d90eb5288b072fd	2026-10-27T11:49:31Z
+40498931825	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	41fbd0234ccbdb047da9d040ee05733b4cbb9ec2	2026-10-27T11:48:43Z
+40498846967	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	9cd6d317f17f9ef988846f184f3b07e33c7064c9	2026-10-27T11:48:02Z
+40498694882	Step 4 — static helper return and seed-setter audit	push	completed	success	a4c8d50cc107943b735b6e6b35f8516a6b55bf15	2026-10-27T11:46:47Z
+40498386273	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	8f70c3679a52de044f7687b0ab449d6bb801bd84	2026-10-27T11:44:21Z
+40498231825	Step 4 — static helper return and seed-setter audit	push	completed	success	d99d72c7fe3703de7099a156ca1c09fe715997ee	2026-10-27T11:43:06Z
+40498208067	Ghidra static analysis — SLPS_035.53	push	completed	success	dc5ad30c1ec97329e2829da33da092d1bf43f5ef	2026-10-27T11:42:55Z
+40498161578	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	7f9534ab97720cadf2ec043d9b0214bdbba2f67f	2026-10-27T11:42:32Z
+40498003495	Step 4 — static helper return and seed-setter audit	push	completed	success	be7fbb4aad79c8782641172cc8baff46b00dde1d	2026-10-27T11:41:15Z
+40497723766	Step 4 — static helper return and seed-setter audit	push	completed	failure	029fdfab8df55dd16001916f0f53b7abd073c334	2026-10-27T11:39:00Z
+40497668341	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	ccba874527f8e0b3e0b56e10f033593578495fd3	2026-10-27T11:38:32Z
+40497666746	.github/workflows/step4-helper-return-static-audit.yml	push	completed	failure	ccba874527f8e0b3e0b56e10f033593578495fd3	2026-10-27T11:38:31Z
+40497544243	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	2e51931a289d4acbb7f1517e05e759f69a62fc04	2026-10-27T11:37:31Z
+40497542692	.github/workflows/step4-helper-return-static-audit.yml	push	completed	failure	2e51931a289d4acbb7f1517e05e759f69a62fc04	2026-10-27T11:37:31Z
+40497396684	.github/workflows/step4-helper-return-static-audit.yml	push	completed	failure	f192e9dd9f49360629c6498599ddf7464fb65854	2026-10-27T11:36:20Z
+40495264355	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	d4a7740824a544249942e94cab389e6284f0815a	2026-10-27T11:19:25Z
+40495262850	.github/workflows/step4-helper-return-static-audit.yml	push	completed	failure	d4a7740824a544249942e94cab389e6284f0815a	2026-10-27T11:19:24Z
+40493732705	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	48c262aa77fec58260de39f547f2017a760df571	2026-10-27T11:07:17Z
+40493731187	.github/workflows/step4-helper-return-static-audit.yml	push	completed	failure	48c262aa77fec58260de39f547f2017a760df571	2026-10-27T11:07:17Z
+40493608676	Step 4 — static seed helper return audit (runner-only)	push	completed	failure	40f48020f53d73e23ee3a40a2e704c5ff2b5cfb7	2026-10-27T11:06:19Z
+40493606856	.github/workflows/step4-helper-return-static-audit.yml	push	completed	failure	40f48020f53d73e23ee3a40a2e704c5ff2b5cfb7	2026-10-27T11:06:18Z
+40493556711	Step 6/7 — static field-offset and resource profile scan	push	completed	success	440ab28288b52f8677aa7e74bdebcadc01e40569	2026-10-27T11:05:54Z
+40493554762	.github/workflows/step4-helper-return-static-audit.yml	push	completed	failure	440ab28288b52f8677aa7e74bdebcadc01e40569	2026-10-27T11:05:53Z
+40493453951	Step 6/7 — static field-offset and resource profile scan	push	completed	success	f256793e57bd3cf864b58c5199cafbea1c565f6a	2026-10-27T11:05:06Z
+40493451708	.github/workflows/step4-helper-return-static-audit.yml	push	completed	failure	f256793e57bd3cf864b58c5199cafbea1c565f6a	2026-10-27T11:05:05Z
+40493303603	.github/workflows/step4-helper-return-static-audit.yml	push	completed	failure	5b825312c646cad1f6a165179cfffe7a0dd5facf	2026-10-27T11:03:56Z
+40493270231	.github/workflows/step4-helper-return-static-audit.yml	push	completed	failure	63f4ac420160e3944738efbf76009525b74f122d	2026-10-27T11:03:39Z
+40493121099	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	b5876d3da9ba40c057c37b1f8b5d4cde02b5eaa9	2026-10-27T11:02:29Z
+40493105226	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	success	155f280c0557a9f5414445cff424734539e786ab	2026-10-27T11:02:22Z
+40493080211	Step 4 — static helper return and seed-setter audit	push	completed	failure	a63b332dd2aeb6ceda0df67a96ee8998fd9b9919	2026-10-27T11:02:10Z
+40492821372	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	failure	1eddbed23e2051d5fa095813710b443d2c0cf29e	2026-10-27T11:00:12Z
+40492759391	Ghidra static analysis — SLPS_035.53	push	completed	success	a88a47f0b3d06a3486381793e808ad5790649018	2026-10-27T10:59:43Z
+40492697187	Runner-only audit of latest Ghidra and Step 6 text artifacts	push	completed	failure	db7bcc35d5ad3ea0778d513fa2cb976165b93e2d	2026-10-27T10:59:14Z
+40489410897	Step 6/7 — static field-offset and resource profile scan	push	completed	success	67d802accb55db1b9db0200361dbd402d7cd1386	2026-10-27T10:33:33Z
+40489091209	Step 6/7 — static field-offset and resource profile scan	push	completed	success	8c00d4f796110735d352de82cc586363708473d6	2026-10-27T10:31:06Z
+40488925469	Validate Step 7 loader diagnostic workflow	push	completed	success	ccaec2217d7a6c992ee16672cf9806ffc09deda2	2026-10-27T10:29:55Z
+40488847927	Step 6/7 — static field-offset and resource profile scan	push	completed	success	07d7eee854ba9b36c5fe0c68fdd6a2b26dc37f81	2026-10-27T10:29:18Z
+40488684688	Step 6/7 — static field-offset and resource profile scan	push	completed	failure	8ebd45fbe16d1b3b406b2b79179ddb412b2ef619	2026-10-27T10:28:03Z
+40487406384	Ghidra static analysis — SLPS_035.53	push	completed	success	b92aa084aba62182ed4edc436cf20d68581be984	2026-10-27T10:18:13Z
+40486315324	Validate Step 7 loader diagnostic workflow	push	completed	success	ec6b5c753ef755ebed6fdbd4131d34d5fd7b6918	2026-10-27T10:09:34Z
+40486294703	Validate Step 7 loader diagnostic workflow	push	completed	success	a6734d7fc57ff6dfab9b8135cd5661bf0278c437	2026-10-27T10:09:24Z
+40486294611	Step 7 — cold-boot loader mapping diagnostic	push	completed	skipped	a6734d7fc57ff6dfab9b8135cd5661bf0278c437	2026-10-27T10:09:24Z
+40486017081	Validate Step 7 loader diagnostic workflow	push	completed	success	8f8f7e3c32f9b69d1b4842f5d72ec2e120b439d9	2026-10-27T10:07:17Z
+40485987878	Validate Step 7 loader diagnostic workflow	push	completed	success	e1e346e707254ad617a6cccad43689df908801a6	2026-10-27T10:07:04Z
+40485987817	Step 7 — cold-boot loader mapping diagnostic	push	completed	success	e1e346e707254ad617a6cccad43689df908801a6	2026-10-27T10:07:04Z
+40484548650	Step 7 — cold-boot loader mapping diagnostic	push	completed	success	8326c07f71caeab12924133b0812ec7e86b8b1f7	2026-10-27T09:55:56Z
+40484547388	Validate Step 7 loader diagnostic workflow	push	completed	success	8326c07f71caeab12924133b0812ec7e86b8b1f7	2026-10-27T09:55:55Z
+40484519812	Step 7 — cold-boot loader mapping diagnostic	push	completed	failure	9edbcb3063a41588ca739e644b9dc9b29c585b3f	2026-10-27T09:55:42Z
+40484519429	Validate Step 7 loader diagnostic workflow	push	completed	success	9edbcb3063a41588ca739e644b9dc9b29c585b3f	2026-10-27T09:55:42Z
+40484417534	Validate Step 7 loader diagnostic workflow	push	completed	success	82ad2c1a36b8f46efb4596338900465869b0232b	2026-10-27T09:54:54Z
+40484404049	Step 7 — cold-boot loader mapping diagnostic	push	completed	skipped	b7e44fca665436a9e6acf45e55a13121574afff9	2026-10-27T09:54:48Z
+40484404044	Validate Step 7 loader diagnostic workflow	push	completed	success	b7e44fca665436a9e6acf45e55a13121574afff9	2026-10-27T09:54:48Z
+40479865408	Validate Step 7 loader diagnostic workflow	push	completed	success	51cce7fe07ce5b73b83a5296b4a1d1d86b424ce6	2026-10-27T09:19:11Z
+40479865235	Step 7 — cold-boot loader mapping diagnostic	push	completed	success	51cce7fe07ce5b73b83a5296b4a1d1d86b424ce6	2026-10-27T09:19:11Z
+40477367700	Step 7 — cold-boot loader mapping diagnostic	push	completed	success	cd3827b95e58829dde0ff3da280b603b62f9f45d	2026-10-27T08:59:07Z
+40477367613	Validate Step 7 loader diagnostic workflow	push	completed	success	cd3827b95e58829dde0ff3da280b603b62f9f45d	2026-10-27T08:59:07Z
+40477111936	Step 7 — cold-boot loader mapping diagnostic	push	completed	success	e7ad51801c3ee0016f170b7e898db35a9575b1f5	2026-10-27T08:56:59Z
+40477111910	Validate Step 7 loader diagnostic workflow	push	completed	success	e7ad51801c3ee0016f170b7e898db35a9575b1f5	2026-10-27T08:56:59Z
+40476597210	Validate Step 7 loader diagnostic workflow	push	completed	success	3421c9847f60bb41275ff65edd5d6547378fc336	2026-10-27T08:52:42Z
+40476596894	Step 7 — cold-boot loader mapping diagnostic	push	completed	success	3421c9847f60bb41275ff65edd5d6547378fc336	2026-10-27T08:52:42Z
+40476311295	Validate Step 7 loader diagnostic workflow	push	completed	success	26a23b6bd3b4b202095d066098bca9faf25beac5	2026-10-27T08:50:18Z
+40476311274	Step 7 — cold-boot loader mapping diagnostic	push	completed	success	26a23b6bd3b4b202095d066098bca9faf25beac5	2026-10-27T08:50:18Z
+40476236380	Step 7 — cold-boot loader mapping diagnostic	push	completed	skipped	69ae32a0441000f97087427b6df6d24f661d479c	2026-10-27T08:49:41Z
+40476236346	Validate Step 7 loader diagnostic workflow	push	completed	success	69ae32a0441000f97087427b6df6d24f661d479c	2026-10-27T08:49:41Z
+40475950897	Validate Step 7 loader diagnostic workflow	push	completed	success	1076072f69d83546ecf70923e26304e7af4ac057	2026-10-27T08:47:14Z
+40475950842	Step 7 — cold-boot loader mapping diagnostic	push	completed	success	1076072f69d83546ecf70923e26304e7af4ac057	2026-10-27T08:47:14Z
+40475897234	Validate Step 7 loader diagnostic workflow	push	completed	failure	0fc775b5cffde2e408698937f0cd9080647f1a31	2026-10-27T08:46:47Z
+40475895677	.github/workflows/step7-loader-coldboot-diagnostic.yml	push	completed	failure	0fc775b5cffde2e408698937f0cd9080647f1a31	2026-10-27T08:46:46Z
+40475832037	Validate Step 7 loader diagnostic workflow	push	completed	failure	be0ad2e1c6cfebff812aed69131c16c9e3ba0207	2026-10-27T08:46:13Z
+40475830281	.github/workflows/step7-loader-coldboot-diagnostic.yml	push	completed	failure	be0ad2e1c6cfebff812aed69131c16c9e3ba0207	2026-10-27T08:46:13Z
+40475734218	Validate Step 7 loader diagnostic workflow	push	completed	failure	d5658d39c2381a34a10e7fe0a75c5cefac38910a	2026-10-27T08:45:26Z
+40475732490	.github/workflows/step7-loader-coldboot-diagnostic.yml	push	completed	failure	d5658d39c2381a34a10e7fe0a75c5cefac38910a	2026-10-27T08:45:25Z
+40475709478	.github/workflows/step7-loader-coldboot-diagnostic.yml	push	completed	failure	3486bded7b95471ebf52f931bf01719edb6f40c4	2026-10-27T08:45:14Z
+40475685346	.github/workflows/step7-loader-coldboot-diagnostic.yml	push	completed	failure	b3a08a8a5a4a9949a6f4d6bca13498ec8551823e	2026-10-27T08:45:03Z
+40475407424	.github/workflows/step7-loader-coldboot-diagnostic.yml	push	completed	failure	8434f65bc2a831d993cb99ce680cc6577cac391f	2026-10-27T08:42:41Z
+40474891838	Step 9 — isolated MIPS RNG function verification (Unicorn)	push	completed	success	6d332244607298154c51fbd3f16ff7718483e6b2	2026-10-27T08:38:15Z
+40474699863	Step 9 — isolated MIPS RNG function verification (Unicorn)	push	completed	failure	03382f832885ce830c25df19387b248a084299d1	2026-10-27T08:36:35Z
+40474677505	Step 4 RNG runtime determinism and roulette caller trace	push	completed	skipped	e35ef26390b5c9477f195a7c030897fdde836a22	2026-10-27T08:36:23Z
+40474262267	Step 4 RNG runtime determinism and roulette caller trace	push	completed	failure	653ada12cbf29a3bffad5aba91b16ecf8b90ce77	2026-10-27T08:32:50Z
+40474117702	Step 9 — isolated MIPS RNG function verification (Unicorn)	push	completed	skipped	87995addb2bfe36f071ef793bc4fdc213add9971	2026-10-27T08:31:37Z
+40473769103	Inspect Step 6 Ghidra text artifact (runner-only)	push	completed	success	481ee437d4704da6a10ac7cb9a1406dae5cef9c9	2026-10-27T08:28:43Z
+40473737136	Inspect Step 6 Ghidra text artifact (runner-only)	push	completed	success	481ee437d4704da6a10ac7cb9a1406dae5cef9c9	2026-10-27T08:28:27Z
+40473602053	Inspect Step 6 Ghidra text artifact (runner-only)	push	completed	failure	5dc93bdb4b645fe34356b51e070f0f28ae6123b3	2026-10-27T08:27:16Z
+40473505032	Step 4 RNG runtime determinism and roulette caller trace	push	completed	failure	2264f1744c9ad039b7e928e00abf99443d5f9bfa	2026-10-27T08:26:27Z
+40471968654	Step 4 RNG runtime determinism and roulette caller trace	push	completed	failure	244b075f448200937ebd549b26ad9e5ffe0a8daf	2026-10-27T08:12:59Z
+40470778244	Step 4 RNG runtime determinism and roulette caller trace	push	completed	success	45b2f66fafe1d144c1455e94b04c6e6b3f174df8	2026-10-27T08:02:07Z
+40470717334	Step 4 RNG runtime determinism and roulette caller trace	push	completed	cancelled	bd1fd7cceacead4a4826abd10c81ecd4c746c9bd	2026-10-27T08:01:33Z
+40470255341	Step 4 RNG runtime determinism and roulette caller trace	push	completed	success	e767c72e835b96bfd5e936c4d056a926b4e82d61	2026-10-27T07:57:16Z
+40469043150	Step 4 RNG runtime determinism and roulette caller trace	push	completed	failure	2fa02b69e9099275a6f0584e96d366332a0fa187	2026-10-27T07:45:30Z
+40468928327	Step 4 RNG runtime determinism and roulette caller trace	push	completed	failure	5de31d96d69d9141c482fbc49b290a4d8a99e767	2026-10-27T07:44:25Z
+40468746790	Step 4 RNG runtime determinism and roulette caller trace	push	completed	failure	8da53d32b6275576e2acb027152ec6594513be7a	2026-10-27T07:42:37Z
+40468681500	Step 4 RNG runtime determinism and roulette caller trace	push	completed	failure	274ba4109a3b526695974a4498f0ce95f2885cc0	2026-10-27T07:41:58Z
+40468375859	Step 4 RNG runtime determinism and roulette caller trace	push	completed	cancelled	d927c2a9decc274f67cdc9e71028efec78fc532f	2026-10-27T07:38:55Z
+40468099590	Step 4 RNG runtime determinism and roulette caller trace	push	completed	failure	fbf74c028acc52ba59c25537c698d2d532df65ad	2026-10-27T07:36:06Z
+40463326725	Step 4 RNG runtime determinism and roulette caller trace	push	completed	failure	163b55308159766e08194582d300dcea32ca13ce	2026-10-27T06:48:47Z
+40462964226	Step 4 RNG runtime determinism and roulette caller trace	push	completed	failure	bb48a552e7ff50f51d4a8196b49cfe55b929bb13	2026-10-27T06:45:07Z
+40462887857	Naruto Story Mode adaptive player monitor	schedule	completed	failure	cc43fa729e3edd7b57df58b43196ff6339f3d570	2026-10-27T06:44:22Z
+40462887270	Step 4 RNG runtime determinism and roulette caller trace	push	completed	failure	cc43fa729e3edd7b57df58b43196ff6339f3d570	2026-10-27T06:44:22Z
+40462775495	Step 4 RNG runtime determinism and roulette caller trace	push	completed	failure	2efa42d76406eabaeafb25bfe70c353f1bee61df	2026-10-27T06:43:15Z
+40462739823	Step 4 RNG runtime determinism and roulette caller trace	push	completed	failure	eac20594aa3909fb6a443389f144b981321730d0	2026-10-27T06:42:53Z
+40457860945	Step 0 — pinned reverse-engineering toolchain audit	push	completed	success	fd71a08bded941ca183419acc1c4ea9eb5b1d355	2026-10-27T05:53:16Z
+40457711597	Step 0 — pinned reverse-engineering toolchain audit	push	completed	success	d9572a4dabd629000938fbd92d6fe8ac451372b5	2026-10-27T05:51:41Z
+40457494771	Step 0 — pinned reverse-engineering toolchain audit	push	completed	success	09507099defd40f51dcf9d637b26371221a2a579	2026-10-27T05:49:27Z
+40457459389	Step 0 — pinned reverse-engineering toolchain audit	push	completed	failure	c5b2ee3d505cf09f74d81bf0ffc0376a823b0f0d	2026-10-27T05:49:03Z
+40457425849	Step 0 — pinned reverse-engineering toolchain audit	push	completed	failure	b6dcb2a55be83fc75f00a876c6510043244b56c1	2026-10-27T05:48:41Z
+40455975609	Step 4 — cross-resource RNG reference scan	push	completed	success	1078dca964df913d9d1582cf1fe56cecea3dabb8	2026-10-27T05:33:20Z
+40455975408	Ghidra static analysis — SLPS_035.53	push	completed	success	1078dca964df913d9d1582cf1fe56cecea3dabb8	2026-10-27T05:33:20Z
+40455582988	Step 4 — bounded Ghidra context for entry 1 raw RNG candidates	push	completed	success	ff6c65a94fc566f017f9d71c04975d5ebaba6348	2026-10-27T05:29:15Z
+40455557212	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	2ccbdfb4e430227089dad2477f93c77ca6095474	2026-10-27T05:28:59Z
+40455557190	Step 4 — bounded Ghidra context for DATA.BIN entry 0 calls	push	completed	success	2ccbdfb4e430227089dad2477f93c77ca6095474	2026-10-27T05:28:59Z
+40455411443	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	11a31d18c82e9382cb3f11cfd6dd39a1ee12362a	2026-10-27T05:27:23Z
+40455411404	Step 4 — bounded Ghidra context for DATA.BIN entry 0 calls	push	completed	success	11a31d18c82e9382cb3f11cfd6dd39a1ee12362a	2026-10-27T05:27:23Z
+40455197588	Step 4 — bounded Ghidra context for DATA.BIN entry 0 calls	push	completed	success	281fc1c3b0d320c240713554e45cb5463ce69dde	2026-10-27T05:25:05Z
+40455173075	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	7fe106f25791ca811003721b4aa052a4aa4b407c	2026-10-27T05:24:49Z
+40455153934	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	68a91a4dee2c96f48ef4bc4345f6a556131e6c36	2026-10-27T05:24:37Z
+40454881770	Step 4 — Ghidra validation of RNG callers in resource code	push	completed	success	7c05c6c1f666f2d5e2fd0f90bad68d6569ce7b6c	2026-10-27T05:21:44Z
+40454580752	Step 4 — Ghidra validation of RNG callers in resource code	push	completed	success	361168bc2c5b6c0cfe648cd0c4639c650c4669ae	2026-10-27T05:18:35Z
+40454562360	Step 4 — Ghidra validation of RNG callers in resource code	push	completed	success	43d2940c750ac4011ba9cc28e9bfe7449af13568	2026-10-27T05:18:23Z
+40454562259	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	43d2940c750ac4011ba9cc28e9bfe7449af13568	2026-10-27T05:18:23Z
+40454548076	Step 4 — Ghidra validation of RNG callers in resource code	push	completed	cancelled	503a95143749a4140e0d0a63915b9631b4384cb5	2026-10-27T05:18:14Z
+40454548071	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	503a95143749a4140e0d0a63915b9631b4384cb5	2026-10-27T05:18:14Z
+40454283551	Step 4 — Ghidra validation of RNG callers in resource code	push	completed	success	fcab25c52ab92006c8600edd0cc902018b845ae2	2026-10-27T05:15:30Z
+40454227354	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	5b05dd28b02965c282f69cc766b3dd9bd207929d	2026-10-27T05:14:58Z
+40454211195	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	ca75d89cb2d72a51d7c84705545df79672e01c21	2026-10-27T05:14:47Z
+40454059515	Step 4 — cross-resource RNG reference scan	push	completed	success	a0c1d28265f1f3f3a9809337a3056caa98f987a4	2026-10-27T05:13:11Z
+40454059455	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	a0c1d28265f1f3f3a9809337a3056caa98f987a4	2026-10-27T05:13:11Z
+40453968486	Step 4 — cross-resource RNG reference scan	push	completed	success	f52dbe20b03789d5f61cf159aa2af7afe7bae5c9	2026-10-27T05:12:14Z
+40453968453	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	f52dbe20b03789d5f61cf159aa2af7afe7bae5c9	2026-10-27T05:12:14Z
+40453906376	Step 4 — cross-resource RNG reference scan	push	completed	success	e793b90204bb806ffa88ca3fd7aea5321bd7053b	2026-10-27T05:11:34Z
+40453582175	Ghidra static analysis — SLPS_035.53	push	completed	success	9754b5830a90a2fd377c8c1de242bb0b814b6d7d	2026-10-27T05:08:11Z
+40453571800	Ghidra static analysis — SLPS_035.53	push	completed	failure	c516f6c8de4de53041a277a2a7a3ea86cb798ff9	2026-10-27T05:08:05Z
+40453492809	Ghidra static analysis — SLPS_035.53	push	completed	failure	22dd8033f8b0b811d660c32b3284583f625b03d8	2026-10-27T05:07:13Z
+40449144521	Step 5 — Ghidra/m2c same-function comparison	push	completed	success	62a4c114b7ac7a55ae9eb6d91bc4c9bfaef1c2ef	2026-10-27T04:20:00Z
+40449120362	Step 5 — Ghidra/m2c same-function comparison	push	completed	failure	ea2500bc3dac9b739c14de696bb87c8a55561ec7	2026-10-27T04:19:44Z
+40448794226	Step 5 — Ghidra/m2c same-function comparison	push	completed	success	0e366e8878c9643531b6afb2f14dbdb448aceccd	2026-10-27T04:16:06Z
+40448547310	Step 5 — Ghidra/m2c same-function comparison	push	completed	failure	8c23ea3d57efd8beba0e781513e7b40c17c128ad	2026-10-27T04:13:29Z
+40448322428	Step 5 — Ghidra/m2c same-function comparison	push	completed	failure	4dbd871e14cf35fb3bc079357d23c71f4c93a366	2026-10-27T04:11:03Z
+40448264269	Step 5 — Ghidra/m2c same-function comparison	push	completed	cancelled	26865e017f8d1a5ac3517fcacd639ae56ee9eea7	2026-10-27T04:10:25Z
+40448260304	Step 5 — Ghidra/m2c same-function comparison	push	completed	failure	155d921c40dae289162bcdd96dfa6ddf417517f0	2026-10-27T04:10:23Z
+40448028534	Step 5 — Ghidra/m2c same-function comparison	push	completed	success	fddbdaa7941570b946a3d8211a84d6b3a9e7d472	2026-10-27T04:07:55Z
+40447963996	Step 5 — Ghidra/m2c same-function comparison	push	completed	failure	ace2529845a3cb3720846c6ee3c647bed2f74923	2026-10-27T04:07:15Z
+40447928746	Step 5 — Ghidra/m2c same-function comparison	push	completed	failure	148353e4d0507bf8c252841ca6445de02c18262c	2026-10-27T04:06:53Z
+40442572534	Ghidra static analysis — SLPS_035.53	push	completed	success	7cebc04dc471f530e1d69e9a074e10acae81c59f	2026-10-27T03:09:21Z
+40442218416	Inspect Step 6 Ghidra text artifact (runner-only)	push	completed	success	6cdf90cfdb10ec42bcda8b6cc90524fb13921763	2026-10-27T03:05:38Z
+40442084610	Inspect Step 6 Ghidra text artifact (runner-only)	push	completed	success	32776c61adec370447e06792b9baa1dfde25810b	2026-10-27T03:04:17Z
+40442062775	Inspect Step 6 Ghidra text artifact (runner-only)	push	completed	failure	3c2dc38cbc2a154227dd7a40b7d5ed1dbfda15ee	2026-10-27T03:04:04Z
+40440237256	Ghidra static analysis — SLPS_035.53	push	completed	success	314c5ac6c7a84d054daa132ba56f11f82e0a61f4	2026-10-27T02:45:03Z
+40439763833	Ghidra static analysis — SLPS_035.53	push	completed	success	edc94845c50f038df156b8488b8e49e0390d02ba	2026-10-27T02:40:10Z
+40439683496	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	60df35bcf6e6dd6314a475645ef845f4a7b5836a	2026-10-27T02:39:21Z
+40439656955	Ghidra static analysis — SLPS_035.53	push	completed	success	57216ba6df385e8d0d7a5eefe710a7fc3bc1f64e	2026-10-27T02:39:03Z
+40439652358	Ghidra static analysis — SLPS_035.53	push	completed	cancelled	bd4011179d59de0a7fdc47e2825661a04aa1291f	2026-10-27T02:39:00Z
+40439532681	Ghidra static analysis — SLPS_035.53	push	completed	success	2b5cab873101ceafe0a0862c7d0510118eaec089	2026-10-27T02:37:44Z
+40438911181	Ghidra static analysis — SLPS_035.53	push	completed	success	061d99397856c6d71956caf494e7e001d14d2a6f	2026-10-27T02:31:21Z
+40438894013	Ghidra static analysis — SLPS_035.53	push	completed	success	0b9c7964dc2ba30c6cd0441e10ec395a715fe01d	2026-10-27T02:31:10Z
+40438574949	Ghidra static analysis — SLPS_035.53	push	completed	success	86ddd84d446174c27b4a7fbab1f530f6d3f8b1fa	2026-10-27T02:27:59Z
+40438115824	Ghidra static analysis — SLPS_035.53	push	completed	failure	20347b43c14a5094f213294274c7b038e3a6e629	2026-10-27T02:23:14Z
+40437952839	Ghidra static analysis — SLPS_035.53	push	completed	failure	aaa9aeae5379b6b182088594fad24d2e685e06e9	2026-10-27T02:21:30Z
+40437799927	Ghidra static analysis — SLPS_035.53	push	completed	failure	eaf7b4b8d745bb45ea47e1475237704abddb6e65	2026-10-27T02:19:55Z
+40437646256	Ghidra static analysis — SLPS_035.53	push	completed	failure	6039f47c4cf6f29b45ebe992f01a9446562cb80d	2026-10-27T02:18:16Z
+40434733043	Ghidra headless install and verification	push	completed	success	e9d8b702147a66af0fc429e8c5fa813b970500fc	2026-10-27T01:48:24Z
+40434667787	.github/workflows/ghidra-headless-install.yml	push	completed	failure	58c59cb89579a8c6aba7858c0ba7a3a6843e4886	2026-10-27T01:47:42Z
+40432060488	Naruto Story Mode adaptive player monitor	schedule	completed	success	ca25ddefd2f208ccf300ca2dc9c5ce5e7c1e00a5	2026-10-27T01:21:12Z
+40408288442	Naruto Story Mode adaptive player monitor	schedule	completed	success	ca25ddefd2f208ccf300ca2dc9c5ce5e7c1e00a5	2026-10-26T21:54:49Z
+40370328271	Naruto Story Mode adaptive player monitor	schedule	completed	success	ca25ddefd2f208ccf300ca2dc9c5ce5e7c1e00a5	2026-10-26T17:37:17Z
+40315401446	Naruto Story Mode adaptive player monitor	schedule	completed	success	ca25ddefd2f208ccf300ca2dc9c5ce5e7c1e00a5	2026-10-26T11:29:04Z
+40274320602	Naruto Story Mode adaptive player monitor	schedule	completed	success	ca25ddefd2f208ccf300ca2dc9c5ce5e7c1e00a5	2026-10-26T05:27:35Z
+40250783351	Naruto Story Mode adaptive player monitor	schedule	completed	success	ca25ddefd2f208ccf300ca2dc9c5ce5e7c1e00a5	2026-10-26T00:44:12Z
+40240500721	Naruto Story Mode adaptive player monitor	schedule	completed	success	ca25ddefd2f208ccf300ca2dc9c5ce5e7c1e00a5	2026-10-25T22:30:20Z
+40228660787	Naruto Story Mode adaptive player monitor	schedule	completed	success	ca25ddefd2f208ccf300ca2dc9c5ce5e7c1e00a5	2026-10-25T19:59:58Z
+40217651520	Naruto Story Mode adaptive player monitor	schedule	completed	success	ca25ddefd2f208ccf300ca2dc9c5ce5e7c1e00a5	2026-10-25T17:41:08Z
+40201171435	Naruto Story Mode adaptive player monitor	schedule	completed	success	ca25ddefd2f208ccf300ca2dc9c5ce5e7c1e00a5	2026-10-25T14:12:45Z
+40182525404	Naruto Story Mode adaptive player monitor	schedule	completed	success	ca25ddefd2f208ccf300ca2dc9c5ce5e7c1e00a5	2026-10-25T09:53:38Z
+40164677505	Naruto Story Mode adaptive player monitor	schedule	completed	success	ca25ddefd2f208ccf300ca2dc9c5ce5e7c1e00a5	2026-10-25T05:12:22Z
+40146851749	Naruto Story Mode adaptive player monitor	schedule	completed	success	ca25ddefd2f208ccf300ca2dc9c5ce5e7c1e00a5	2026-10-25T00:28:51Z
+40144439400	Runner-only analysis of bounded submenu diagnostic result	push	completed	success	2d62137c41db60ceb3f91a1bb895dec2bdf29158	2026-10-24T23:51:47Z
+40144372685	Runner-only analysis of bounded submenu diagnostic result	push	completed	success	d09549b34f73b99601d74795031cddb85ab3c985	2026-10-24T23:50:45Z
+40144220503	One-shot runner-only submenu RIGHT versus no-input diagnostic	push	completed	failure	8a0db0ca1ece816b6919a65272751a3a9d3ea9b2	2026-10-24T23:48:25Z
+40142939830	Runner-only analysis of bounded submenu diagnostic result	push	completed	success	dc4d34a9e8f12b0b7ece7205f7ee259fa9784675	2026-10-24T23:29:24Z
+40142559635	One-shot runner-only submenu RIGHT versus no-input diagnostic	push	completed	failure	ee00647a04f2346e1fb5f4440f90a488a265371b	2026-10-24T23:23:44Z
+40142411378	One-shot runner-only submenu RIGHT versus no-input diagnostic	push	completed	failure	7fc5b7530b6bfd318a2f7ec7825d99f88426ccbc	2026-10-24T23:21:35Z
+40142291858	One-shot runner-only submenu RIGHT versus no-input diagnostic	push	completed	failure	606718d5b2563983f966a2b131805405d77ebef6	2026-10-24T23:19:57Z
+40141018663	Corrected runner-only control-probe artifact inspection	push	completed	success	162e11cc198d3721db57ac631b42106953c2544b	2026-10-24T23:01:42Z
+40140914545	Corrected runner-only control-probe artifact inspection	push	completed	failure	9d38227ce645e0c42b933efcbbddee93bb89db47	2026-10-24T23:00:20Z
+40138291196	Naruto Story Mode adaptive player monitor	schedule	completed	success	5ef90ff17593f6c0d67e9b9a95483a9841fb0710	2026-10-24T22:22:40Z
+40127087609	Naruto Story Mode adaptive player monitor	schedule	completed	success	5ef90ff17593f6c0d67e9b9a95483a9841fb0710	2026-10-24T19:50:09Z
+40116593730	Naruto Story Mode adaptive player monitor	schedule	completed	success	5ef90ff17593f6c0d67e9b9a95483a9841fb0710	2026-10-24T17:32:31Z
+40110571330	Inspect existing control-probe artifact on runner	push	completed	success	a8c258f297680b690aa0e61f9ab9f4a2d2ee9871	2026-10-24T16:13:40Z
+40102319836	Naruto Story Mode adaptive player monitor	schedule	completed	success	2a5fa920ab544f125041f3fefd8f202ab702601b	2026-10-24T14:24:04Z
+40087271642	Naruto Story Mode adaptive player monitor	schedule	completed	success	ed683f21f856a5def2f4a5ab9d0db09028b78500	2026-10-24T10:46:56Z
+40071317759	Naruto adaptive classifier regression	push	completed	success	c0b7d48933d37f59914d82a4bfeab4100d836a1e	2026-10-24T06:43:19Z
+40071223499	Naruto adaptive classifier regression	push	completed	failure	0f57f2ba0a60cdb1ae9847520147233f7f8f7a9c	2026-10-24T06:41:54Z
+40069923244	Naruto adaptive classifier regression	push	completed	success	e0f3c49f735a7a518399cef1457e8233affec43e	2026-10-24T06:22:05Z
+40068234800	Naruto Story Mode adaptive player monitor	schedule	completed	success	ebd080c6d8eef8ef5cc9a9fde62c10207c8dbf7a	2026-10-24T05:56:46Z
+40066679351	Naruto adaptive classifier regression	push	completed	success	885d9889215a4fdca6b276daadd8a431f8177c51	2026-10-24T05:32:52Z
+40066588970	Naruto adaptive classifier regression	push	completed	failure	009a12cac33360c6d390b858474a22ad293ddb00	2026-10-24T05:31:31Z
+40065597290	Naruto adaptive classifier regression	push	completed	success	96e9c22089e257facf2be3359ead33deed117583	2026-10-24T05:16:18Z
+40064182088	Naruto adaptive classifier regression	push	completed	success	d1c0428381581b80814bebf6557f5579594bb9da	2026-10-24T04:54:28Z
+40061967694	Naruto adaptive classifier regression	push	completed	success	6d2fdc4553f5eacabf2607c19ebf69bc012c2c51	2026-10-24T04:20:42Z
+40061712532	Naruto adaptive classifier regression	push	completed	success	bde6a797871baf30a77a4fe0b8d21f0ca5089558	2026-10-24T04:16:47Z
+40061620783	Naruto adaptive classifier regression	push	completed	success	f344c1f228e7d5468ca6748f6d506a0e593fea4a	2026-10-24T04:15:22Z
+40061564273	Naruto adaptive classifier regression	push	completed	failure	c6ed8bce181ab71a8915e9dca2cba87f038acb87	2026-10-24T04:14:35Z
+40059425253	Naruto adaptive classifier regression	push	completed	success	1ec34ac934ee62ba69fe3fe43705de1221a17196	2026-10-24T03:42:52Z
+40048510714	Naruto Story Mode adaptive player monitor	schedule	completed	failure	d1c5338f0ab472f8b0070a40eba925846836c880	2026-10-24T01:09:41Z
+40034304421	Naruto Story Mode adaptive player monitor	schedule	completed	failure	d1c5338f0ab472f8b0070a40eba925846836c880	2026-10-23T22:32:48Z
+40010286618	Naruto Story Mode adaptive player monitor	schedule	completed	failure	d1c5338f0ab472f8b0070a40eba925846836c880	2026-10-23T19:17:52Z
+39978745505	Naruto adaptive classifier regression	push	completed	success	1e22c1b37d0233455a5a6cf49ddf98e6e555c93c	2026-10-23T15:29:45Z
+39978693381	Naruto adaptive classifier regression	push	completed	failure	79a7fb720d2d828afa2b761c9ae66884aa8e0b8b	2026-10-23T15:29:24Z
+39978029528	Naruto adaptive classifier regression	push	completed	success	c98a384e497634d39dc488fb19ac160669cd1498	2026-10-23T15:24:42Z
+39977746401	Naruto raw Story Mode restore and continuation	workflow_run	completed	skipped	9ed90eda06b5f487620187d81adb3a21300c0e56	2026-10-23T15:22:43Z
+39977732726	Naruto SCPH-7502 Story Mode playthrough	push	completed	skipped	9ed90eda06b5f487620187d81adb3a21300c0e56	2026-10-23T15:22:37Z
+39977472612	Naruto raw Story Mode restore and continuation	workflow_run	completed	cancelled	cdca8fa8311d2df0dca4104c4f7f130318bc1c81	2026-10-23T15:20:47Z
+39977463182	Naruto SCPH-7502 Story Mode playthrough	push	completed	skipped	cdca8fa8311d2df0dca4104c4f7f130318bc1c81	2026-10-23T15:20:43Z
+39977463036	Naruto adaptive classifier regression	push	completed	success	cdca8fa8311d2df0dca4104c4f7f130318bc1c81	2026-10-23T15:20:43Z
+39976636178	Naruto SCPH-7502 controlled software-GPU A/B probe	push	completed	skipped	0dfa5ed7b62750f44cbf007448b9d90d4dd782ce	2026-10-23T15:14:59Z
+39976625672	Naruto SCPH-7502 internal framebuffer and minimal RSP probe	push	completed	skipped	bef03b7b1b0c8279ec57af1aec63f7a8d95217fd	2026-10-23T15:14:54Z
+39976611565	Naruto retail SCPH-7502 PCSX-Redux GUI boot probe	push	completed	skipped	478598fccb8664b4172f2419d8e068903b15b3a9	2026-10-23T15:14:48Z
+39976594162	Naruto fastboot GDB PC snapshots	push	completed	skipped	627e1e135e9aada0ca27adc5885084f29663b1cd	2026-10-23T15:14:41Z
+39976584350	Naruto DuckStation private BIOS compatibility probe	push	completed	skipped	ed070cf62b89b936eb7daafc1e7381df4ca794a3	2026-10-23T15:14:37Z
+39976570707	Naruto OpenBIOS variant GUI A/B probe	push	completed	skipped	d643cedfef53c99b8c4c9fa7fcd8d13963b4d998	2026-10-23T15:14:32Z
+39976220055	Naruto raw Story Mode restore and continuation	workflow_run	completed	skipped	4e49400e7df0694ab024511872ddcfa41e359097	2026-10-23T15:12:06Z
+39976218618	Naruto raw Story Mode restore and continuation	workflow_run	completed	failure	4e49400e7df0694ab024511872ddcfa41e359097	2026-10-23T15:12:05Z
+39976126067	Naruto fastboot OpenBIOS window-identification probe	push	completed	skipped	4e49400e7df0694ab024511872ddcfa41e359097	2026-10-23T15:11:26Z
+39976046086	Naruto SCPH-7502 Story Mode playthrough	push	completed	skipped	e0ad03ad2c0098c89e92ffdd18e4bbdc763c027e	2026-10-23T15:10:53Z
+39975897639	Naruto SCPH-7502 low-rate RSP progress probe	push	completed	skipped	368b8b4dd7dddb2b583e1c419b2022ff1d248895	2026-10-23T15:09:52Z
+39975881758	Naruto fastboot GPU traffic summary	push	completed	skipped	a526262abf5245e1cf6a8bdd441ca452ab8f7657	2026-10-23T15:09:45Z
+39975872445	Naruto fastboot minimal GDB RSP probe	push	completed	skipped	d49d2be6840cbf1cd8bca82fa20748a29a928738	2026-10-23T15:09:41Z
+39975750140	Naruto current-source PCSX GUI probe	push	completed	skipped	bf3b3b579ceaf107bd7f4af87aa67b5f6cb387de	2026-10-23T15:08:50Z
+39975438035	Naruto raw savestate cross-run restore	workflow_run	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:06:43Z
+39975100222	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:25Z
+39975090690	Naruto Story Mode adaptive checkpoint player	push	completed	skipped	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090681	Naruto fastboot minimal GDB RSP probe	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090633	Naruto fastboot GPU traffic summary	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090632	Naruto SCPH-7502 low-rate RSP progress probe	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090590	Naruto adaptive classifier regression	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090570	Naruto current-source PCSX GUI probe	push	completed	cancelled	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090541	Naruto SCPH-7502 private BIOS identity check	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090519	Naruto Story Mode next roulette Circle-versus-no-input test	push	completed	skipped	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090443	Naruto fastboot GDB PC snapshots	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090438	Naruto private guest-screen capture	push	completed	failure	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090418	Prepare PCSX-Redux research emulator	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090400	Naruto emulator runner smoke test	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090334	Naruto savestate isolated diagnostic (no Story Mode input)	push	completed	failure	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090313	Naruto retail SCPH-7502 PCSX-Redux GUI boot probe	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090303	Naruto savestate sanitizer positive-control experiment	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090302	Naruto SCPH-7502 controlled software-GPU A/B probe	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090293	Naruto raw savestate cross-run proof	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090243	Naruto DuckStation private BIOS compatibility probe	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090240	Naruto SCPH-7502 Story Mode playthrough	push	completed	cancelled	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090194	Naruto fastboot GPU register watchpoints	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090175	Naruto fastboot OpenBIOS window-identification probe	push	completed	cancelled	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090134	Naruto cloud visual boot probe (PCSX-Redux framebuffer capture)	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090090	Naruto OpenBIOS variant GUI A/B probe	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975090010	Naruto standalone Mesa OpenGL diagnosis	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975089876	Build OpenBIOS for PS1 research	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975089868	Naruto SCPH-7502 internal framebuffer and minimal RSP probe	push	completed	failure	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39975089858	Naruto fastboot VRAM checkpoints	push	completed	success	98c0577cf7ca026edf861ac307c380745a225d25	2026-10-23T15:04:21Z
+39973978654	Naruto adaptive classifier regression	push	completed	success	563e34562f4bea0423557755a5c03b4b60077894	2026-10-23T14:56:48Z
+39968148025	Naruto Story Mode adaptive player monitor	schedule	completed	success	620b54143b468bd271b7e2b3ff0df4622ad7f8a2	2026-10-23T14:15:57Z
+39955066779	Naruto adaptive classifier regression	push	completed	success	6ac013fc76c8d82417305bfbfabeac4c6a73876a	2026-10-23T12:40:14Z
+39954571305	Naruto adaptive classifier regression	push	completed	success	61fd13189de5496631ca7a37900b64f4e50330ee	2026-10-23T12:36:16Z
+39954326794	Naruto adaptive classifier regression	push	completed	failure	743412264735aaae947d11f91c604de1a01fb01b	2026-10-23T12:34:21Z
+39952866478	Naruto adaptive classifier regression	push	completed	success	d210e75d17591c1ad03a50d539c3746bc1bd53fe	2026-10-23T12:22:50Z
+39950309113	Naruto adaptive classifier regression	push	completed	success	7735abe065a33bbb67c40c719530055f06971974	2026-10-23T12:01:59Z
+39950014349	Naruto adaptive classifier regression	push	completed	failure	76f7b9a5475a4b721d62c988dda576d25f5206b1	2026-10-23T11:59:40Z
+39948007642	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	76387b12c560310937e3f7c468e571317d5bcbac	2026-10-23T11:42:51Z
+39947481094	Naruto Story Mode adaptive checkpoint player	push	completed	success	76387b12c560310937e3f7c468e571317d5bcbac	2026-10-23T11:38:21Z
+39947302492	Naruto adaptive classifier regression	push	completed	success	23b03a440363cff80f3b718f5fd07c26b67a2e30	2026-10-23T11:36:49Z
+39946783507	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	5d1e55f25bc7bfe03020c0583842bed1c48ca0da	2026-10-23T11:32:24Z
+39946344909	Naruto Story Mode adaptive checkpoint player	push	completed	failure	5d1e55f25bc7bfe03020c0583842bed1c48ca0da	2026-10-23T11:28:43Z
+39944753664	Naruto adaptive classifier regression	push	completed	success	123efe8480d50a1589d00dc3dd87e003b310e1bb	2026-10-23T11:14:59Z
+39944688900	Naruto adaptive classifier regression	push	completed	success	0a8658f4195b0b889052a20b6a227fed348816c8	2026-10-23T11:14:25Z
+39944154234	Naruto adaptive classifier regression	push	completed	failure	813cc644f9898fd58a09f5678d6619c6f610df8f	2026-10-23T11:09:53Z
+39942489706	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	91b9bbffb3c1a7c8a51ae944f229a29583c021e3	2026-10-23T10:55:28Z
+39942178665	Naruto Story Mode adaptive checkpoint player	push	completed	success	91b9bbffb3c1a7c8a51ae944f229a29583c021e3	2026-10-23T10:52:46Z
+39940388655	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	d6cf0d6b05f96b1f0f6d346bd935f31185ee51f3	2026-10-23T10:37:12Z
+39940196133	Naruto Story Mode adaptive checkpoint player	push	completed	success	d6cf0d6b05f96b1f0f6d346bd935f31185ee51f3	2026-10-23T10:35:32Z
+39939979616	Naruto adaptive classifier regression	push	completed	success	11ea522ef63e0d90f96ff3aabb8ae3f7ccf5451c	2026-10-23T10:33:43Z
+39929972672	Naruto Story Mode adaptive player monitor	schedule	completed	success	bf25fb42a4742daeb1f4698cfd789b9fa26a87d1	2026-10-23T09:10:46Z
+39909388777	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	bf25fb42a4742daeb1f4698cfd789b9fa26a87d1	2026-10-23T06:05:10Z
+39909132189	Naruto Story Mode adaptive checkpoint player	push	completed	success	bf25fb42a4742daeb1f4698cfd789b9fa26a87d1	2026-10-23T06:02:36Z
+39909012516	Naruto adaptive classifier regression	push	completed	success	5e8b4179dcd3e90030ef4a4554cd3d386d024d2f	2026-10-23T06:01:21Z
+39908874249	Naruto adaptive classifier regression	push	completed	failure	62d443c9b5fb03f5984fad92c3591ed9a1196e1f	2026-10-23T06:00:04Z
+39908656465	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	f9286322cb5cdc8084b9e4a4ee921d2631e247fe	2026-10-23T05:57:38Z
+39908484177	Naruto Story Mode adaptive checkpoint player	push	completed	success	3f330804a219f45e9a830888af18e363dec9bf12	2026-10-23T05:55:44Z
+39908408445	Naruto adaptive classifier regression	push	completed	success	17e00061d45a8a0bcfd43fa18e2cf9ffb5145c04	2026-10-23T05:54:57Z
+39908235773	Naruto adaptive classifier regression	push	completed	failure	10c1b5b29bf5cc7c4e34bbffd70ad94b5dd7122c	2026-10-23T05:53:07Z
+39908211479	Naruto adaptive classifier regression	push	completed	failure	40fc562f4c4d0913381fc2dc24b1fda88ff01493	2026-10-23T05:52:52Z
+39908003802	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	fd427db505a30799462c3431d3df4a014b7a9f3d	2026-10-23T05:50:37Z
+39907832073	Naruto adaptive classifier regression	push	completed	success	59abbb758a1ed0dfe813746afee75e9d68f240e5	2026-10-23T05:48:45Z
+39907655833	Naruto Story Mode adaptive checkpoint player	push	completed	success	32fff10c0ef98e8c0afeae5c7bda279290ab43c3	2026-10-23T05:46:50Z
+39907638413	Naruto adaptive classifier regression	push	completed	failure	5deb1f3a7975e6239ac235981827c2cdab2d9642	2026-10-23T05:46:39Z
+39907549694	Naruto adaptive classifier regression	push	completed	failure	a00026dca5a7be60f78b35d642fa0d954912df82	2026-10-23T05:45:41Z
+39907542754	Naruto adaptive classifier regression	push	completed	failure	afdbfad5c87bd8d0a1a029f70e668919e5c0e08f	2026-10-23T05:45:36Z
+39905470152	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	6b698f13fb108100d22c1a5f5cd1fe2f17dc4cb8	2026-10-23T05:23:16Z
+39905240818	Naruto Story Mode adaptive checkpoint player	push	completed	failure	6b698f13fb108100d22c1a5f5cd1fe2f17dc4cb8	2026-10-23T05:20:47Z
+39904997190	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	e2836c25825937301ffb0fbe34946b99368eb812	2026-10-23T05:18:08Z
+39904672868	Naruto Story Mode adaptive checkpoint player	push	completed	success	e2836c25825937301ffb0fbe34946b99368eb812	2026-10-23T05:14:39Z
+39904327589	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	e67d98c6c5500c2ed93cd7f98320c73bfb7d0d48	2026-10-23T05:10:50Z
+39904097181	Naruto Story Mode adaptive checkpoint player	push	completed	success	e67d98c6c5500c2ed93cd7f98320c73bfb7d0d48	2026-10-23T05:08:19Z
+39897372007	Naruto Story Mode adaptive player monitor	schedule	completed	success	3cbe7d5a8fdfee245fdb0fa69ee07c89bdaed5d0	2026-10-23T03:53:09Z
+39879628497	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	3cbe7d5a8fdfee245fdb0fa69ee07c89bdaed5d0	2026-10-23T00:41:41Z
+39879445016	Naruto Story Mode adaptive checkpoint player	push	completed	success	8b2caf45a060e984939cc6cb83690063cdc834a2	2026-10-23T00:39:52Z
+39879199115	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	0637861fc54bac231f9e45906281524d33a42dab	2026-10-23T00:37:17Z
+39878936772	Naruto Story Mode adaptive checkpoint player	push	completed	success	0637861fc54bac231f9e45906281524d33a42dab	2026-10-23T00:34:37Z
+39878572840	Naruto adaptive classifier regression	push	completed	success	a7f9f5da2a8ad2cb39af27aef48e24bf926fc11c	2026-10-23T00:30:58Z
+39878204502	Naruto adaptive classifier regression	push	completed	failure	331e2317cc51e386af51dc2d2d0117d459a42391	2026-10-23T00:27:19Z
+39877750457	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	e4a090a6f71b35a379ecd65e5fe6101458337ad4	2026-10-23T00:22:39Z
+39877412316	Naruto Story Mode adaptive checkpoint player	push	completed	success	e4a090a6f71b35a379ecd65e5fe6101458337ad4	2026-10-23T00:19:18Z
+39877110916	Naruto adaptive classifier regression	push	completed	success	25141c41a77b55340d4a8cc077cec76a4589f502	2026-10-23T00:16:18Z
+39877077884	Naruto adaptive classifier regression	push	completed	failure	84f6c76a5a515e0e6b7a90c40c9555ba1307beb1	2026-10-23T00:15:59Z
+39877051224	Naruto adaptive classifier regression	push	completed	failure	10dc395a6f05c71cc0cdca82cec4e6e34323d6b5	2026-10-23T00:15:43Z
+39876847536	Naruto adaptive classifier regression	push	completed	success	f3801c86552a9de6dd28c8836bb5e59b02454f43	2026-10-23T00:13:47Z
+39876688838	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	f7e89824cfb644f0f2e2a33b12f487c10811d815	2026-10-23T00:12:17Z
+39876658165	Naruto adaptive classifier regression	push	completed	success	f7e89824cfb644f0f2e2a33b12f487c10811d815	2026-10-23T00:11:58Z
+39876534507	Naruto Story Mode adaptive checkpoint player	push	completed	success	84a279081330c685f5407644611f4fbeb01816f9	2026-10-23T00:10:47Z
+39876294837	Naruto adaptive classifier regression	push	completed	success	3f65ba64510783663fb253aa74f554d557d60d42	2026-10-23T00:08:34Z
+39875981926	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	49cffc997821aceede919d828a995dc53c4f4929	2026-10-23T00:05:40Z
+39875714125	Naruto Story Mode adaptive checkpoint player	push	completed	success	1f31441cb54b66753554ddcb02e5d42b5f28df7f	2026-10-23T00:03:12Z
+39875557447	Naruto adaptive classifier regression	push	completed	success	da728ffd7b9b80da7dbbdefb712d8b0be8ced81a	2026-10-23T00:01:42Z
+39874797427	Naruto Story Mode adaptive player monitor	schedule	completed	success	f519ee68fa4630a8cfdfd2fb45585aeab4655b23	2026-10-22T23:54:22Z
+39873273913	Naruto adaptive classifier regression	push	completed	success	d8082dcdfa8997df65cddf9e6d0d8d806c8da927	2026-10-22T23:39:57Z
+39873268266	Naruto adaptive classifier regression	push	completed	success	02f39ca3cdf21120e574923a4e8706d66dd16333	2026-10-22T23:39:54Z
+39872713097	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	119174438989e19ab63f9c113ea84746ef23417c	2026-10-22T23:34:44Z
+39872449049	Naruto Story Mode adaptive checkpoint player	push	completed	success	1c30215c9a4b6035b5c24d1bf0befc4819110642	2026-10-22T23:32:21Z
+39870512242	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	c6ba16be236a566a6b7188269320fd1ffde00c1d	2026-10-22T23:14:52Z
+39870243073	Naruto Story Mode adaptive checkpoint player	push	completed	success	04102a5f79e81a0f91586af3f348b6f2fb3183fe	2026-10-22T23:12:25Z
+39869936495	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	5b854ac386bb57e27e03b729b3c6bbd2412465ea	2026-10-22T23:09:39Z
+39869536734	Naruto Story Mode adaptive checkpoint player	push	completed	failure	eb12d63e0daf45179c30f12d525b43cea90390a4	2026-10-22T23:05:59Z
+39868912037	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	2d68e87913128f35b8271a047ef27200c34006ca	2026-10-22T23:00:33Z
+39868722262	Naruto Story Mode adaptive checkpoint player	push	completed	failure	a626f25110fd0416af6800b00668febd6688c862	2026-10-22T22:58:51Z
+39868493361	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	6f17fefc1322037fac81b157d813824be24021fb	2026-10-22T22:56:42Z
+39868354205	Naruto Story Mode adaptive checkpoint player	push	completed	success	096a5cdc411e3ce26fd44f9bde8ff4ed909313c7	2026-10-22T22:55:24Z
+39867881392	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	d2a524a3093a38c4de5403f6c436d93ab7564540	2026-10-22T22:51:11Z
+39867730674	Naruto Story Mode adaptive checkpoint player	push	completed	failure	c9b1438292041f972b712f248fb7052032635b59	2026-10-22T22:49:51Z
+39867550545	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	3d7165b952351ef8262a86ff9fa80438b562637f	2026-10-22T22:48:14Z
+39867381637	Naruto Story Mode adaptive checkpoint player	push	completed	success	6108a8c95d7a72cc0dbd2d6b59a476902c62587d	2026-10-22T22:46:45Z
+39867005557	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	b82e9165463947bfaea76e285858cc763e9ea894	2026-10-22T22:43:32Z
+39866820866	Naruto Story Mode adaptive checkpoint player	push	completed	success	e70dc37a21e62a7eaf22afb0b56dfa24a8b50f43	2026-10-22T22:41:57Z
+39866698996	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	cb2e594f1aea7dd830fd687aa34ef9f16518fea9	2026-10-22T22:40:54Z
+39866476856	Naruto Story Mode adaptive checkpoint player	push	completed	failure	0fb5636106edc03073517335417db7bf24be2284	2026-10-22T22:39:00Z
+39852250871	Naruto Story Mode adaptive player monitor	schedule	completed	success	813a4b88725c4919f189f1af6666c6ca24e4311d	2026-10-22T20:50:10Z
+39823760548	Naruto Story Mode adaptive player monitor	schedule	completed	success	813a4b88725c4919f189f1af6666c6ca24e4311d	2026-10-22T17:33:31Z
+39787187291	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	813a4b88725c4919f189f1af6666c6ca24e4311d	2026-10-22T13:28:46Z
+39786899480	Naruto Story Mode adaptive checkpoint player	push	completed	success	3cea3698cb78134356f0801b226e20676c88bc6b	2026-10-22T13:26:48Z
+39786305880	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	1da987cc2556e4e0d9324f9f8c4471f35a0c9687	2026-10-22T13:22:49Z
+39786019434	Naruto Story Mode adaptive checkpoint player	push	completed	success	db23ff61a50e692044af864bd650d250920f9315	2026-10-22T13:20:51Z
+39785501689	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	36dd4272db2c184e5135cac300a1164a67f732f2	2026-10-22T13:17:15Z
+39784493293	Naruto Story Mode adaptive checkpoint player	push	completed	failure	4893e1e0eb6cdcaf9fff052c9c794ae62327858a	2026-10-22T13:10:11Z
+39783587805	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	8a225627b2b5bad65f80aa6f9fb16356213afaa7	2026-10-22T13:03:52Z
+39783158903	Naruto Story Mode adaptive checkpoint player	push	completed	success	fc31a8ac1674733d1b76154028ed26a578703acc	2026-10-22T13:00:55Z
+39782250858	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	b29e5139b8bae99571380f3d2e980300bd2e2e3c	2026-10-22T12:54:31Z
+39782011370	Naruto Story Mode adaptive checkpoint player	push	completed	success	60b22d1e76b9eeb6ea53d1c98c0ea0d748ab66f0	2026-10-22T12:52:49Z
+39781705088	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	0cda8234c571208d16d707c9c5c6a707a606c4fc	2026-10-22T12:50:37Z
+39781495023	Naruto Story Mode adaptive checkpoint player	push	completed	success	e0677bc5270e5c2a86e3a5209c3ec1e5ce007dc1	2026-10-22T12:49:08Z
+39780987080	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	943c01eff0cd0163e16839e3b3cd2f7e8be2d014	2026-10-22T12:45:28Z
+39780755350	Naruto Story Mode adaptive checkpoint player	push	completed	success	94ae6597a369fbd2e59106a1dae41570fa96ee96	2026-10-22T12:43:50Z
+39780437969	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	f37477e42ed2bd09178faeda44f3881e317b3f55	2026-10-22T12:41:34Z
+39780143613	Naruto Story Mode adaptive checkpoint player	push	completed	success	62db1bac757e44a7414a894e716e36f0e36172cc	2026-10-22T12:39:28Z
+39779848041	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	cebf632f7b073f9b471e461c1b1a2542770c01a3	2026-10-22T12:37:17Z
+39779256427	Naruto Story Mode adaptive checkpoint player	push	completed	success	0a16924aee11ec937b4d5d7735bf85308ef759aa	2026-10-22T12:32:59Z
+39778757554	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	a12124db0cde73e25fc5ab530cc40fb697dbe401	2026-10-22T12:29:28Z
+39778714729	Naruto Story Mode adaptive player monitor	schedule	completed	success	a649fc020b05e6befebe73fcf50544acab776f9b	2026-10-22T12:29:09Z
+39777917775	Naruto Story Mode adaptive checkpoint player	push	completed	failure	b77f74af5b258dfcd7d8bfbeeeca0c685c5fc7b7	2026-10-22T12:23:17Z
+39777496358	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	570f1a4363bf59f4e11c8ca3ab76fdac3e836a63	2026-10-22T12:20:13Z
+39777301626	Naruto Story Mode adaptive checkpoint player	push	completed	success	2723a453682e830809925033229efd9dbb8e3d68	2026-10-22T12:18:45Z
+39776739732	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	ca8ad37cdc9f8e1ca8a2113bcf9e315d1ebc6dda	2026-10-22T12:14:37Z
+39776518701	Naruto Story Mode adaptive checkpoint player	push	completed	success	ca8ad37cdc9f8e1ca8a2113bcf9e315d1ebc6dda	2026-10-22T12:12:57Z
+39776267526	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	92cc6c82af52d0dd2aed69775dfe1a32ee527480	2026-10-22T12:11:01Z
+39776089816	Naruto Story Mode adaptive checkpoint player	push	completed	success	92cc6c82af52d0dd2aed69775dfe1a32ee527480	2026-10-22T12:09:40Z
+39775469349	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	83c854fbf23227e2c5b6a363863a324ceb63532e	2026-10-22T12:04:56Z
+39775176728	Naruto Story Mode adaptive checkpoint player	push	completed	success	e31ebb2afbe1145746e480e9a0f020854621a82f	2026-10-22T12:02:38Z
+39773357265	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	aec03de54e3dd991985bfb1cdc6a6395d69ef8ce	2026-10-22T11:48:25Z
+39772650469	Naruto Story Mode adaptive checkpoint player	push	completed	success	ce9413eee80b207ad1d3f81f72a6d7d100b093ad	2026-10-22T11:42:49Z
+39772132081	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	ab39c09dbc798aa472d9a52074931ed97b9adc4d	2026-10-22T11:38:44Z
+39771377339	Naruto Story Mode adaptive checkpoint player	push	completed	failure	ab39c09dbc798aa472d9a52074931ed97b9adc4d	2026-10-22T11:32:42Z
+39770945714	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	13dd67dab4ae4d75e36866f88c4cae9a58cde99e	2026-10-22T11:29:19Z
+39770465538	Naruto Story Mode adaptive checkpoint player	push	completed	failure	13dd67dab4ae4d75e36866f88c4cae9a58cde99e	2026-10-22T11:25:26Z
+39770006717	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	b1fac503f3ec50344a1a584266f3d8c9b2aaa8bd	2026-10-22T11:21:51Z
+39769826213	Naruto Story Mode adaptive checkpoint player	push	completed	failure	20b1b3d8fce908c2bcdc964f45fb55d817ac631a	2026-10-22T11:20:25Z
+39769532078	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	8c1af5fad02fe2e48d9f6e2cfa6d8597ee66e6bd	2026-10-22T11:18:03Z
+39769265269	Naruto Story Mode adaptive checkpoint player	push	completed	success	95efc3c4f646b9ca30a48d3c4c7e31ad8469a665	2026-10-22T11:15:53Z
+39769031179	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	bfa1ad4dd90642542bf1c8f5e0d2a55414ff2374	2026-10-22T11:14:02Z
+39768787669	Naruto Story Mode adaptive checkpoint player	push	completed	success	ebfbd877e202dacc1b59c04d858c3ef62144fafd	2026-10-22T11:12:05Z
+39768603459	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	03348895005793d8183042bcdf8d8cc83ce751b2	2026-10-22T11:10:35Z
+39768371975	Naruto Story Mode adaptive checkpoint player	push	completed	success	b087e3727dfe26b564e403b956dbcb4e88bfeb40	2026-10-22T11:08:43Z
+39767988177	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	f6191316ed53ad694d0cb2035a25a51d50184287	2026-10-22T11:05:36Z
+39767790829	Naruto Story Mode adaptive checkpoint player	push	completed	success	f6191316ed53ad694d0cb2035a25a51d50184287	2026-10-22T11:04:05Z
+39767621886	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	ed314322a35fe0ca32e0e19e770e5c7c38f4edeb	2026-10-22T11:02:44Z
+39767083708	Naruto Story Mode adaptive checkpoint player	push	completed	failure	7231f76917f51217f9a12fdcacbb45611900f322	2026-10-22T10:58:29Z
+39766859790	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	ad5e69ec02d71f6b0b30d36eefa0179cce8fa31d	2026-10-22T10:56:38Z
+39766331759	Naruto Story Mode adaptive checkpoint player	push	completed	failure	ad5e69ec02d71f6b0b30d36eefa0179cce8fa31d	2026-10-22T10:52:20Z
+39765650014	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	f43e9c38c0bf21337208a5fbc1711e129cb8a2c0	2026-10-22T10:46:49Z
+39765193287	Naruto Story Mode adaptive checkpoint player	push	completed	success	4843d8ec4284010a3974ea7a6973eceb8a4c7026	2026-10-22T10:43:07Z
+39764774051	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	bb911ba5f394e317b4c07dac3c11e9f4ea5ae39a	2026-10-22T10:39:48Z
+39764239171	Naruto Story Mode adaptive checkpoint player	push	completed	success	7d495e23240c1b4d8e86122f66ed0cf63ddacde9	2026-10-22T10:35:27Z
+39763799467	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	f3a37f3471d138424b38935f90a13c585273a416	2026-10-22T10:31:56Z
+39763526377	Naruto Story Mode adaptive checkpoint player	push	completed	success	f3a37f3471d138424b38935f90a13c585273a416	2026-10-22T10:29:50Z
+39761887612	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	7fdf783b25b6f8b0cfcfed98fa13b07c6eb3065f	2026-10-22T10:16:43Z
+39761617867	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	7fdf783b25b6f8b0cfcfed98fa13b07c6eb3065f	2026-10-22T10:14:35Z
+39761094445	Naruto Story Mode adaptive checkpoint player	push	completed	failure	6c117a78682e62e166732e122481a1e8cf16bff6	2026-10-22T10:10:27Z
+39760914530	Naruto Story Mode adaptive checkpoint player	push	completed	failure	4544e62d01942178d623a823d539353b597209d6	2026-10-22T10:09:03Z
+39760544908	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	981d6d6e2c1646a6151dfe626fd9d8243ceb830b	2026-10-22T10:06:10Z
+39759822818	Naruto Story Mode adaptive checkpoint player	push	completed	failure	e831cd0c218bdd177d3341849ce00991888106dc	2026-10-22T10:00:40Z
+39759649670	Naruto adaptive classifier regression	push	completed	success	4116fd8922022a1f32cb090fcf802c3095ee6daf	2026-10-22T09:59:21Z
+39759620008	Naruto adaptive classifier regression	push	completed	failure	b25e5270028ba40ccd3a0742418c88697545e30f	2026-10-22T09:59:07Z
+39759590050	Naruto adaptive classifier regression	push	completed	failure	358f6b69384c6933754677a2bc9ecde83c4c1100	2026-10-22T09:58:53Z
+39759027959	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	5092b4784862640340804be60aa0a0d0587a3884	2026-10-22T09:54:28Z
+39758737690	Naruto Story Mode adaptive checkpoint player	push	completed	failure	5092b4784862640340804be60aa0a0d0587a3884	2026-10-22T09:52:12Z
+39758601603	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	19a40c9ed0adcc328d2fc84b39422e05eb01b751	2026-10-22T09:51:09Z
+39758312897	Naruto Story Mode adaptive checkpoint player	push	completed	failure	cccab716701b7000b7b7f1fcd99765fd4380e3e3	2026-10-22T09:48:55Z
+39758224253	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	a2cc906c4b36429d75953f39bccff0d481fa1b42	2026-10-22T09:48:13Z
+39758184020	Naruto adaptive classifier regression	push	completed	success	a2cc906c4b36429d75953f39bccff0d481fa1b42	2026-10-22T09:47:54Z
+39758045339	Naruto adaptive classifier regression	push	completed	failure	7449bfa7caea6d9c83869dc6b7643e619b5ba4c8	2026-10-22T09:46:47Z
+39757956636	Naruto adaptive classifier regression	push	completed	failure	8e5f19e360d27a2d5642c9226fbf59da76c935d6	2026-10-22T09:46:04Z
+39757913529	Naruto Story Mode adaptive checkpoint player	push	completed	failure	c61c964747e56b5d486b1dd5ab9ab61969cccd11	2026-10-22T09:45:43Z
+39757912822	Naruto adaptive classifier regression	push	completed	success	a6641b96ed7d61903e1ff473061b0f036a71ee1c	2026-10-22T09:45:43Z
+39757511578	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	b8a1d7094801f304f405c4eb06a6ea0dc123c2fa	2026-10-22T09:42:37Z
+39757152944	Naruto Story Mode adaptive checkpoint player	push	completed	failure	b8a1d7094801f304f405c4eb06a6ea0dc123c2fa	2026-10-22T09:39:49Z
+39757001153	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	f2407ef8eb8e051fee8ba18fa96a0152b4ac7549	2026-10-22T09:38:36Z
+39756681141	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	f2407ef8eb8e051fee8ba18fa96a0152b4ac7549	2026-10-22T09:36:05Z
+39756594921	Naruto Story Mode adaptive checkpoint player	push	completed	failure	f2407ef8eb8e051fee8ba18fa96a0152b4ac7549	2026-10-22T09:35:23Z
+39756323474	Naruto Story Mode adaptive checkpoint player	push	completed	failure	b69eac12944a5e6fe6cc753186b997a61be525e4	2026-10-22T09:33:17Z
+39755432479	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	3993673e9ae80596b2399e3159abe30f5225cbe5	2026-10-22T09:26:27Z
+39755156980	Naruto Story Mode adaptive checkpoint player	push	completed	failure	3993673e9ae80596b2399e3159abe30f5225cbe5	2026-10-22T09:24:20Z
+39755014052	Naruto Story Mode adaptive player monitor	workflow_run	completed	success	a8cf10c673fd11d76000c50d78b672e38cb2aeba	2026-10-22T09:23:14Z
+39754843760	Naruto Story Mode adaptive checkpoint player	push	completed	success	a8cf10c673fd11d76000c50d78b672e38cb2aeba	2026-10-22T09:21:54Z
+39754764045	Naruto Story Mode adaptive player monitor	workflow_run	completed	failure	b6f3f7428a1e0fe84ae020d9ceb920b6e6c5778a	2026-10-22T09:21:17Z
+39754572944	Naruto Story Mode adaptive checkpoint player	push	completed	failure	91b97903585c9632c618a0df0687264952e19583	2026-10-22T09:19:51Z
+39753391179	Naruto adaptive classifier regression	push	completed	success	8400aab5d7e216bd7f0c2a6245360b8714b37343	2026-10-22T09:10:42Z
+39753241462	Naruto adaptive classifier regression	push	completed	failure	d5313eb13368886c35f4f9d2e1aefa4a196927ab	2026-10-22T09:09:33Z
+39735171093	Naruto Story Mode adaptive player monitor	schedule	completed	failure	ca88f86a46f95a7f81df1ade1ca2dcf5f0a8eac1	2026-10-22T06:38:07Z
+39707223614	Naruto Story Mode adaptive player monitor	schedule	completed	failure	ca88f86a46f95a7f81df1ade1ca2dcf5f0a8eac1	2026-10-22T01:42:22Z
+39687675432	Naruto Story Mode adaptive checkpoint player	push	completed	failure	69b1cad9a4effcf95b58f96c5458508453117c29	2026-10-21T22:36:11Z
+39687593537	Naruto Story Mode adaptive checkpoint player	push	completed	failure	7fdd6f3e1fefeda74c7239c6302e6e5f7bc314df	2026-10-21T22:35:29Z
+39685868421	Naruto Story Mode next roulette Circle-versus-no-input test	push	completed	success	a1df86733e062618eb3d99bf45d5f61fd95128e4	2026-10-21T22:21:16Z
+39620432917	Naruto Story Mode START skips Mizuki dialogue after barrier	push	completed	success	4fe8cc2bb17bf382a0da801109aa680be95cd604	2026-10-21T14:50:45Z
+39620192432	Naruto Story Mode delayed DOWN after barrier animation versus no-input	push	completed	skipped	2e69bfa75e103b5a4693fc3701ccf92e6106ddd7	2026-10-21T14:49:07Z
+39619671384	Naruto Story Mode delayed DOWN after barrier animation versus no-input	push	completed	success	d20d5f1ec98d0670ed5b9f64e6d48289b8fdb13b	2026-10-21T14:45:37Z
+39619431988	Naruto Story Mode barrier follow-through DOWN versus no-input	push	completed	skipped	21e122f8808b820166d35661d0a8e6591cc2ea8b	2026-10-21T14:44:01Z
+39618670884	Naruto Story Mode barrier follow-through DOWN versus no-input	push	completed	success	6ae465040760c8638d5172bf763893afe14244b1	2026-10-21T14:38:52Z
+39618177166	Naruto Story Mode confirm highlighted barrier YES with Circle	push	completed	skipped	06a291b03334426d5216ac2a7a3c88a07b443d26	2026-10-21T14:35:35Z
+39617444912	Naruto Story Mode confirm highlighted barrier YES with Circle	push	completed	success	d7168c92bd2f4c138d6dc801b438abdf916d481f	2026-10-21T14:30:51Z
+39616954954	Naruto Story Mode skip live dialogue with START after map movement	push	completed	skipped	bf10856b63ac16289c72b072331c983bc16d1607	2026-10-21T14:27:28Z
+39616129634	Naruto Story Mode skip live dialogue with START after map movement	push	completed	success	5dc022cc1b54ade73a1219fe0190863dc62844ac	2026-10-21T14:21:15Z
+39615902308	Naruto Story Mode map route DOWN versus no-input probe	push	completed	skipped	388c16c8c4afdfe5a4e1ca12d361ace0104bf042	2026-10-21T14:19:40Z
+39615341661	Naruto Story Mode map route DOWN versus no-input probe	push	completed	success	b38df09bebee393b328264b403ac0bccb2021b02	2026-10-21T14:15:52Z
+39615050609	Naruto Story Mode post-roulette board follow-through observation	push	completed	skipped	59580e72f265f01ae29378342c7ec747a59ac99e	2026-10-21T14:14:02Z
+39614665390	Naruto Story Mode post-roulette board follow-through observation	push	completed	success	3062f5097855706171b34f91f32d82eece963297	2026-10-21T14:11:28Z
+39614466558	Naruto Story Mode controlled roulette Circle stop versus no-input	push	completed	skipped	9cc13beb26c2772d5fdfa191b9d81706ee95ee81	2026-10-21T14:10:09Z
+39613929898	Naruto Story Mode controlled roulette Circle stop versus no-input	push	completed	success	6384855485b35c6e77f21ba9b3b5130006d32e29	2026-10-21T14:06:37Z
+39613862021	Naruto Story Mode controlled roulette Circle stop versus no-input	push	completed	skipped	1b3c13df4f937a9ae77fddb9bc150e886fe10dd1	2026-10-21T14:06:12Z
+39613614822	Naruto Story Mode controlled roulette Circle stop versus no-input	push	completed	failure	6a9e307cda6e3ed15d614be9a843a2367c3f356f	2026-10-21T14:04:37Z
+39613055531	Naruto Story Mode extended roulette settling observation from checkpoint	push	completed	skipped	87d934620d1ee1b7621832fb7d9868aba77e85d5	2026-10-21T14:00:53Z
+39612126429	Naruto Story Mode extended roulette settling observation from checkpoint	push	completed	failure	47a60f0f2310ff4250ea43b548dab80eb5672917	2026-10-21T13:54:37Z
+39610498573	Naruto Story Mode observe roulette follow-through without input	push	completed	skipped	71aeb823294b40c164319c8d5dd9d597de3540a9	2026-10-21T13:43:35Z
+39609425942	Naruto Story Mode observe roulette follow-through without input	push	completed	success	1434d9a627d4179fa49a85a79b5612600247a1d6	2026-10-21T13:36:07Z
+39609181155	Naruto Story Mode f175 controlled input versus no-input probe	push	completed	skipped	bd9bc0a350c0f1420d63cddc35801df9ca211269	2026-10-21T13:34:27Z
+39608389644	Naruto Story Mode f175 controlled input versus no-input probe	push	completed	success	ddebb2d78d5f329c1978a2c888f2abbea4d8f460	2026-10-21T13:29:05Z
+39607704007	Naruto Story Mode f175 controlled input versus no-input probe	push	completed	success	e44cc8d95e4051af3322dab50d3f14ef98233bc1	2026-10-21T13:24:22Z
+39606938717	Naruto Story Mode f175 controlled RIGHT versus no-input probe	push	completed	success	e16a6246ddfef2854a05f03962acc4279bf0a12f	2026-10-21T13:19:08Z
+39602124751	Naruto Story Mode confirm barrier prompt with one Circle tap	push	completed	skipped	fede416c85b2b64293ad32cb69d8d5b824ed55d3	2026-10-21T12:45:13Z
+39599932467	Naruto Story Mode confirm barrier prompt with one Circle tap	push	completed	success	f7ec9f84791f8cd92881ebc4e102c8162135ffd0	2026-10-21T12:28:55Z
+39599620401	Naruto Story Mode inspect post-Iruka board without input	push	completed	skipped	edc546bdcd1801b8c6af591e1f3a74c618d81c52	2026-10-21T12:26:35Z
+39599001309	Naruto Story Mode inspect post-Iruka board without input	push	completed	success	e9a75ff5e6f42adebd0d118bd7c4607c59e0732d	2026-10-21T12:21:55Z
+39598831889	Naruto Story Mode skip Iruka route dialog with one START tap	push	completed	skipped	c21360d93eb650901285c0f291804e674273b4b5	2026-10-21T12:20:37Z
+39598292538	Naruto Story Mode skip Iruka route dialog with one START tap	push	completed	success	748a121b632d50df182c6e97dad2cd0d23af2844	2026-10-21T12:16:27Z
+39598136570	Naruto Story Mode settle Konoha route movement without further input	push	completed	skipped	070d46af75d0b5d3f5663734765f606d470b7ba1	2026-10-21T12:15:18Z
+39597491313	Naruto Story Mode settle Konoha route movement without further input	push	completed	success	e3d6c8dee9590d1edfda9e7841ef902071caa901	2026-10-21T12:10:25Z
+39597090435	Naruto Story Mode test route direction from Konoha Roulette result	push	completed	skipped	22e9b5122088bc2016496437e5492293fb19231c	2026-10-21T12:07:18Z
+39596338264	Naruto Story Mode test route direction from Konoha Roulette result	push	completed	success	cda2315c1b6a595628af06884ab55419e91aa510	2026-10-21T12:01:29Z
+39596029691	Naruto Story Mode observe Roulette result after Circle stop	push	completed	skipped	db18eee54ed6336cfabc5b5f83fb94ebb8de771f	2026-10-21T11:59:08Z
+39595608648	Naruto Story Mode observe Roulette result after Circle stop	push	completed	success	53571bb82076a8d58e8ce91b52de4efcb1ba1058	2026-10-21T11:55:45Z
+39595451492	Naruto Story Mode stop spinning Roulette with one Circle tap	push	completed	skipped	58a0cbe0afa33d742b328582fa2f4a89c68a55bc	2026-10-21T11:54:29Z
+39595042810	Naruto Story Mode stop spinning Roulette with one Circle tap	push	completed	success	5a810d22a5384150dab8c3e3f64c670d50c9132c	2026-10-21T11:51:15Z
+39594886325	Naruto Story Mode Konoha Roulette outcome no-input continuation	push	completed	skipped	f7a33bdceab84b991f685234356f93a4524e0519	2026-10-21T11:50:01Z
+39594191633	Naruto Story Mode Konoha Roulette outcome no-input continuation	push	completed	failure	9a0b282548bf95d1c6e7ef8e92cb278f85efa774	2026-10-21T11:44:29Z
+39594022594	Naruto Story Mode Konoha Roulette menu confirm from f175	push	completed	skipped	b1a8fac697e1f3af14c6ea118674c56235ef07ed	2026-10-21T11:43:07Z
+39593536028	Naruto Story Mode Konoha Roulette menu confirm from f175	push	completed	success	6cf17142e58d6fbfd9536c37a9e2e26b10867e97	2026-10-21T11:39:12Z
+39593523822	Naruto Story Mode Konoha Roulette menu confirm from f175	push	completed	skipped	f182e39d15c717834536970233f43d48f01a34e0	2026-10-21T11:39:06Z
+39593334685	Naruto Story Mode Konoha Roulette menu confirm from f175	push	completed	failure	9f2cf4e6b503ceb0996201dd14d1fd5ac008f07f	2026-10-21T11:37:32Z
+39593103177	Naruto Story Mode Konoha f175 isolated direction differential	push	completed	skipped	ad460c8dc4fc99d52449b2745d84c53215c9dad6	2026-10-21T11:35:39Z
+39592501516	Naruto Story Mode Konoha f175 isolated direction differential	push	completed	success	3fffd99f86d9e4a41dbc79177296a9d6ab4756a2	2026-10-21T11:30:49Z
+39592440726	Naruto Story Mode Konoha f175 isolated direction differential	push	completed	skipped	036b033816d1c066f55cbbcf9a83c989fef6afd6	2026-10-21T11:30:22Z
+39591956964	Naruto Story Mode Konoha f175 isolated direction differential	push	completed	failure	3a68e6c5a6f4aac338f165ab03e3c4099c52d1f0	2026-10-21T11:26:22Z
+39591512666	Naruto Story Mode Konoha resume from preserved dialog checkpoint	push	completed	skipped	e78e85b6b9ff0be7a95bb8e77934c5d2155c4547	2026-10-21T11:22:47Z
+39591032125	Naruto Story Mode Konoha resume from preserved dialog checkpoint	push	completed	success	8e7f38a11ca4f492036b1d2f3784e20f252f61b3	2026-10-21T11:18:57Z
+39589034311	Naruto Story Mode VSync watchdog and lightweight native SIGSEGV trace (no START input)	push	completed	skipped	e1e3a827acbc3db8c240284ad78ec66e0be46833	2026-10-21T11:02:51Z
+39588281198	Naruto Story Mode VSync watchdog and lightweight native SIGSEGV trace (no START input)	push	completed	success	e76d1f0e0240e30e117a71ee66a50f6539a25add	2026-10-21T10:56:44Z
+39586576680	Naruto Story Mode VSync watchdog and lightweight native SIGSEGV trace (no START input)	push	completed	skipped	1076dd3bf151915551e4469769e3c79541402dbf	2026-10-21T10:42:44Z
+39586201539	Naruto Story Mode VSync watchdog and lightweight native SIGSEGV trace (no START input)	push	completed	success	4c163ccc3e5a65d91c57bd201d7e74a7c19ad2bb	2026-10-21T10:39:39Z
+39585715088	Naruto Story Mode VSync watchdog and lightweight native SIGSEGV trace (no START input)	push	completed	skipped	9d7ce0e16b077c6d4ef86019ba1f1330dced1fdb	2026-10-21T10:35:36Z
+39585486518	Naruto Story Mode VSync watchdog and lightweight native SIGSEGV trace (no START input)	push	completed	success	4485b68b9589e3b8e43e9afe08aeb20411bf914d	2026-10-21T10:33:44Z
+39578532142	Naruto Story Mode VSync watchdog and external X11 capture (no START input)	push	completed	skipped	1c9d81276d89d662231942adfa92cd9b5308d175	2026-10-21T09:38:31Z
+39577891131	Naruto Story Mode VSync watchdog and external X11 capture (no START input)	push	completed	success	e3ff8027eecfab775a7a51e6e864fa06976da222	2026-10-21T09:33:31Z
+39577781329	Naruto Story Mode VSync watchdog and external X11 capture (no START input)	push	completed	skipped	ed8556282fba83388c489f239275be129b34aba7	2026-10-21T09:32:41Z
+39577470148	Naruto Story Mode VSync watchdog and external X11 capture (no START input)	push	completed	success	d1ebe40f7325fc52ad53f0ceb26e56d8c9aa5aa8	2026-10-21T09:30:19Z
+39577458713	Naruto Story Mode VSync watchdog and external X11 capture (no START input)	push	completed	skipped	d74454f5466b2b87fee6e268108c220569416b98	2026-10-21T09:30:14Z
+39576905583	Naruto Story Mode VSync watchdog and external X11 capture (no START input)	push	completed	success	859487396a3445386a63e5583cdc790d283898fa	2026-10-21T09:25:58Z
+39576695520	Naruto Story Mode VSync watchdog and external X11 capture (no START input)	push	completed	skipped	8db1354a40540810bea05797db72f3d02011a592	2026-10-21T09:24:21Z
+39576146808	Naruto Story Mode VSync watchdog and external X11 capture (no START input)	push	completed	success	9e24c67944f0b41f099abae847bed7a9d33e1144	2026-10-21T09:20:11Z
+39575165416	Naruto Story Mode VSync watchdog and external X11 capture (no START input)	push	completed	skipped	2a4de374e573854f770366cf4f55ddaf003c22e3	2026-10-21T09:12:34Z
+39574435847	Naruto Story Mode VSync watchdog and external X11 capture (no START input)	push	completed	success	99b60e6bb6825269687573d208f4d14c9f6402a8	2026-10-21T09:06:53Z
+39573924538	Naruto Story Mode VSync watchdog and external X11 capture (no START input)	push	completed	success	6398fcbac09e65267e48dec59b9eb26c5c213b29	2026-10-21T09:02:56Z
+39573533078	Naruto Story Mode VSync watchdog and external X11 capture (no START input)	push	completed	success	51376c0b63ab395a76227c9f87873385bc8efdac	2026-10-21T09:00:01Z
+39571044132	Naruto Story Mode paired no-input vs START VSync diagnostic (screenshots stop at frame 130)	push	completed	skipped	c7ff890e6ecc715712257f23c4c0072793c3c3d7	2026-10-21T08:40:22Z
+39570556284	Naruto Story Mode paired no-input vs START VSync diagnostic (screenshots stop at frame 130)	push	completed	success	8982bf019e7bc4e2d2eb3b42dc814c3983e049a8	2026-10-21T08:36:29Z
+39570013344	Naruto Story Mode no-input VSync diagnostic (screenshots stop at frame 130)	push	completed	success	036f32d79f52f3605c0e642fef9b4ddf994fa7f0	2026-10-21T08:32:14Z
+39565029764	Naruto Story Mode dialog freeze diagnostic (no-input control)	push	completed	skipped	b9f27d9ad8100d6968a1e94a7b07211267eec68c	2026-10-21T07:52:08Z
+39565014834	Naruto Story Mode dialog freeze diagnostic (no-input control)	push	completed	failure	a6fdd864d96dbb62053cfe002ae27d8fe262b0f4	2026-10-21T07:52:01Z
+39564558072	Naruto Story Mode dialog freeze diagnostic (no-input control)	push	completed	skipped	62dde9acfd6f62c6889c510f0cbda8a2f9aa2280	2026-10-21T07:48:12Z
+39564546236	Naruto Story Mode dialog freeze diagnostic (no-input control)	push	completed	success	32bc4e13fa842100cef122b7b7c98ebbac2515b5	2026-10-21T07:48:07Z
+39564127542	Naruto Story Mode dialog freeze diagnostic (no-input control)	push	completed	skipped	83fedbfcfcccb3d49a6dbc580f2571ba3941be84	2026-10-21T07:44:35Z
+39564116290	Naruto Story Mode dialog freeze diagnostic (no-input control)	push	completed	success	9c2e6576fc5a21a29981869b1c3074fad09ed640	2026-10-21T07:44:29Z
+39563790192	Naruto Story Mode dialog freeze diagnostic (no-input control)	push	completed	skipped	916f35e59f5881820fadb66cb636cbb0440bb140	2026-10-21T07:41:44Z
+39563774000	Naruto Story Mode dialog freeze diagnostic (no-input control)	push	completed	success	6a1b0f756c4de4780cf937634c68b38a10a60f0f	2026-10-21T07:41:36Z
+39563537039	Naruto Story Mode dialog freeze diagnostic (no-input control)	push	completed	skipped	3e1c1cc925a3a7efb6c016dbf8c393ff8d726b0a	2026-10-21T07:39:35Z
+39563521778	Naruto Story Mode dialog freeze diagnostic (no-input control)	push	completed	success	9f8f97fc72644735d4575a6c2bc2d841845893d1	2026-10-21T07:39:27Z
+39563228589	Naruto Story Mode dialog freeze diagnostic (no-input control)	push	completed	skipped	baee30b30930dcd05538f4955131800b1100d337	2026-10-21T07:36:55Z
+39563209277	Naruto Story Mode dialog freeze diagnostic (no-input control)	push	completed	failure	527f940a3820869e5e5f05021ce47f189d86c925	2026-10-21T07:36:45Z
+39562007578	Naruto Story Mode dialog START skip probe	push	completed	skipped	5fd37943aa6c83e0f96d06827b59517fea300127	2026-10-21T07:26:40Z
+39558959143	Naruto Story Mode dialog START skip probe	push	completed	failure	ee3d200af85fb5a9fd3ca2ba496891b226438034	2026-10-21T07:00:00Z
+39558656073	Naruto Story Mode dialog START skip probe	push	completed	failure	d3965329b089f45deb96b36c2f8a00eb879e2b2f	2026-10-21T06:57:09Z
+39558242453	Naruto Story Mode dialog START skip probe	push	completed	failure	ec4c471d4c26b33a377124f8ae2e43e66a627811	2026-10-21T06:53:17Z
+39557821644	Naruto Story Mode dialog START skip probe	push	completed	failure	3fa2eb9abd0bea56ef4ada9139f00c6e87a8a50e	2026-10-21T06:49:21Z
+39555043759	Naruto Story Mode post-f178 continuation probe	push	completed	skipped	57dcd31faeebc44f12714229be83cc0131899dd4	2026-10-21T06:22:52Z
+39555023915	Naruto Story Mode post-f178 continuation probe	push	completed	failure	8784386dd25fc7edbd67d53b8f39016cdcf78061	2026-10-21T06:22:40Z
+39554153133	Naruto Story Mode post-f178 continuation probe	push	completed	skipped	6c3a7b9f122901cbc8034ede8cee472867d8791d	2026-10-21T06:13:59Z
+39554130946	Naruto Story Mode post-f178 continuation probe	push	completed	failure	f3df5aa384f496dea8a2cfd5b07ece588658d848	2026-10-21T06:13:44Z
+39553605027	Naruto Story Mode post-f178 continuation probe	push	completed	skipped	a954e740d31d63397324fb25e48e872753239819	2026-10-21T06:08:28Z
+39553585285	Naruto Story Mode post-f178 continuation probe	push	completed	failure	8ce17c204cca763247282b967544c7cece22b0c5	2026-10-21T06:08:16Z
+39553289759	Naruto Story Mode post-f178 continuation probe	push	completed	skipped	15480eef3de4778b77aa608a7b1077310f34aaab	2026-10-21T06:05:20Z
+39553261685	Naruto Story Mode post-f178 continuation probe	push	completed	success	42411053f8f0cfbce90cfe13f2e4995fcb328f14	2026-10-21T06:05:05Z
+39553021756	Naruto Story Mode post-f178 continuation probe	push	completed	skipped	ce2e2e52095a4015ffb7d58e8270f61ba5efe5f8	2026-10-21T06:02:43Z
+39552998498	Naruto Story Mode post-f178 continuation probe	push	completed	success	2819c5ab1cf3976c830005d07845fd2a43a398a3	2026-10-21T06:02:29Z
+39552712838	Naruto Story Mode post-f178 continuation probe	push	completed	skipped	fde6a141d34301ee9c064e1d2a89c7496c6b8ce9	2026-10-21T05:59:41Z
+39552697314	Naruto Story Mode post-f178 continuation probe	push	completed	success	a5fd32550c2479909805d955815d3088cf0e05dc	2026-10-21T05:59:32Z
+39552313799	Naruto Story Mode post-f178 continuation probe	push	completed	skipped	f8154cc53935b008d7719a4674faad664df0ca97	2026-10-21T05:55:24Z
+39552282942	Naruto Story Mode post-f178 continuation probe	push	completed	success	d28e56baa32e56f1e4842472ef6e1bbc3b14c116	2026-10-21T05:55:06Z
+39546361314	Naruto Story Mode post-f178 continuation probe	push	completed	skipped	3c2fed1fb1067dbbcb686bff9ce9a48609b44e17	2026-10-21T04:51:57Z
+39546339666	Naruto Story Mode post-f178 continuation probe	push	completed	success	770ad1ae35b9dac54bf8e63d2771178681f66b91	2026-10-21T04:51:43Z
+39530539638	Naruto Story Mode Circle follow-up timeline probe	push	completed	skipped	800f4bea415644f12043a0dabafcd34721d73976	2026-10-21T02:00:15Z
+39530526794	Naruto Story Mode Circle follow-up timeline probe	push	completed	success	41d063205edf3be473bd95ef6c4019345e4f68d7	2026-10-21T02:00:08Z
+39530052140	Naruto Story Mode Circle follow-up timeline probe	push	completed	skipped	59216db8268d09a64efa96d56f51dc1eb62d907f	2026-10-21T01:55:05Z
+39530038534	Naruto Story Mode Circle follow-up timeline probe	push	completed	failure	901d1fdc5c033b7cebfb74a166ae0a71ac67272b	2026-10-21T01:54:57Z
+39529616885	Naruto Story Mode Circle follow-up timeline probe	push	completed	skipped	ad15cbdfb66b961939256c251a28e8f3b5450aed	2026-10-21T01:50:28Z
+39529605910	Naruto Story Mode Circle follow-up timeline probe	push	completed	failure	d6abdb1444e6111ae12ae45b39dd780ecf53b460	2026-10-21T01:50:22Z
+39529251788	Naruto Story Mode Circle follow-up timeline probe	push	completed	skipped	b4e75933286bba639e08d6ff2bf2c3ced7e37cf1	2026-10-21T01:46:34Z
+39529241370	Naruto Story Mode Circle follow-up timeline probe	push	completed	failure	7a4435faa25ce750e76810fee13b09859bf5a775	2026-10-21T01:46:27Z
+39528890385	Naruto Story Mode Circle follow-up timeline probe	push	completed	skipped	b8080f39884eb8cec32b3a1b0ee76f117cc2c1b2	2026-10-21T01:42:39Z
+39528879636	Naruto Story Mode Circle follow-up timeline probe	push	completed	failure	19e2639ee165909beaf3a5182435f11edeadf88d	2026-10-21T01:42:32Z
+39527657999	Naruto Story Mode Circle follow-up timeline probe	push	completed	skipped	bbadf93a1ca8ea28a7a2e982a8998b7a8f8ec03b	2026-10-21T01:29:57Z
+39527646447	Naruto Story Mode Circle follow-up timeline probe	push	completed	failure	f03ca072cef4323a6a503fd80f4f99e0ac73fcd9	2026-10-21T01:29:49Z
+39526696115	Naruto Story Mode Circle follow-up timeline probe	push	completed	skipped	e0a173dc87bd8d44d05ffde7eb982e30262b18a2	2026-10-21T01:20:04Z
+39526690265	Naruto Story Mode Circle follow-up timeline probe	push	completed	success	599b3ceac485d8e18e55989c7d2ad48bb5aba340	2026-10-21T01:20:01Z
+39526451497	Naruto Story Mode Circle follow-up timeline probe	push	completed	skipped	30b4daed7c309ad7b81fec5b2eed29a3913fcd93	2026-10-21T01:17:31Z
+39526446924	Naruto Story Mode Circle follow-up timeline probe	push	completed	failure	3d7046eb75f94a867240da136ad713124e057729	2026-10-21T01:17:29Z
+39525741993	Naruto Story Mode Circle follow-up timeline probe	push	completed	skipped	b9061526de2d991c04744e337af78e2259e0ddcc	2026-10-21T01:10:19Z
+39525735032	Naruto Story Mode Circle follow-up timeline probe	push	completed	failure	9a893559496f881db4648f6dca12b760c434abd4	2026-10-21T01:10:15Z
+39525538194	Naruto Story Mode Circle follow-up timeline probe	push	completed	skipped	f5e69c1e05ee2b69a622024ae2f42521c8ce03e7	2026-10-21T01:08:16Z
+39525534387	Naruto Story Mode Circle follow-up timeline probe	push	completed	failure	7277edf88cef51f2c3a484b73f4360a7383ab3df	2026-10-21T01:08:14Z
+39524705710	Naruto Story Mode Circle timeline probe	push	completed	skipped	9d5384038dd5e55f65616a66371488015e6cfc0c	2026-10-21T01:00:12Z
+39524697802	Naruto Story Mode Circle timeline probe	push	completed	success	4c078af1743dcfcf8c8bcaef7c84cf081dc318e0	2026-10-21T01:00:08Z
+39523072930	Naruto Story Mode Circle timeline probe	push	completed	skipped	765d4e2c8dbcfd1bd72a66ec57aa22b7a679067a	2026-10-21T00:43:51Z
+39523066920	Naruto Story Mode Circle timeline probe	push	completed	failure	91ca1d44ba95ff349099f96c1c0c71c7f52da836	2026-10-21T00:43:47Z
+39513291249	Naruto Story Mode checkpoint control probe	push	completed	skipped	17384614ebf79ccbb1cbcf36d2de14d5e670ae0d	2026-10-20T23:10:56Z
+39513285641	Naruto Story Mode checkpoint control probe	push	completed	success	2ec67e46c16615fe2f8a5674290811d1c59d4740	2026-10-20T23:10:53Z
+39426068247	Naruto SPU stopped-cursor savestate probe	push	completed	success	e10504cf9bccfa849bbc0f692b10c0c5bee29ced	2026-10-20T12:55:19Z
+39425661897	.github/workflows/naruto-spu-sentinel-fix-probe.yml	push	completed	failure	ceb600fea8bf180850b8149ff769200055768c42	2026-10-20T12:52:16Z
+39425629341	.github/workflows/naruto-spu-sentinel-fix-probe.yml	push	completed	failure	794dcc6da443685c9bd746c4a77460b22b9066c2	2026-10-20T12:52:02Z
+39383287999	Naruto SPU stopped-cursor savestate probe	push	completed	failure	77d29f09f79e145b9212697a32a489c181f4534e	2026-10-20T06:55:55Z
+39373493482	Naruto SPU stopped-cursor savestate probe	push	completed	failure	f1a0d7f0c2a574c07b875e38a3c6f7ffa561daa6	2026-10-20T05:10:45Z
+39372712212	Naruto SPU stopped-cursor savestate probe	push	completed	failure	92c7044e9b4c428a9a4c9fa3a33d1913e4709574	2026-10-20T05:02:04Z
+39372202653	Naruto SPU stopped-cursor savestate probe	workflow_dispatch	completed	failure	6ac7414421f0594425f72bd01f9b2679a681aaf9	2026-10-20T04:56:18Z
+39314115221	Naruto raw Story Mode restore and continuation	push	completed	failure	04d804b958bf1df97285af1e7526822917dff21a	2026-10-19T19:49:02Z
+39313917935	Naruto raw Story Mode restore and continuation	push	completed	failure	83e1755d0c8ade82603bbf685edf6524b79e0608	2026-10-19T19:47:34Z
+39313679196	Naruto raw Story Mode restore and continuation	push	completed	failure	36e5027f9efe14531fc45b135787cbf278549514	2026-10-19T19:45:49Z
+39313520942	Naruto raw Story Mode restore and continuation	push	completed	failure	cfd6bfc7fcf455bae672e53f3b51b56467c1b737	2026-10-19T19:44:44Z
+39313409415	Naruto raw Story Mode restore and continuation	push	completed	failure	ab5f9445d320ac8c71ff45ee4a48975e7243fde3	2026-10-19T19:43:56Z
+39313274945	.github/workflows/naruto-raw-storymode-restore.yml	push	completed	failure	0026e8b858ffd294986b8b9181c990a8e8d900a6	2026-10-19T19:42:55Z
+39312125361	Naruto raw Story Mode restore and continuation	push	completed	failure	4c83bae3c35a6c6cbb240250439f128cfff291e3	2026-10-19T19:34:32Z
+39311930637	Naruto raw Story Mode restore and continuation	push	completed	failure	d5f9bd7d88615caed334cffbf1de4839603cb095	2026-10-19T19:33:07Z
+39274593965	Naruto raw Story Mode restore and continuation	workflow_run	completed	failure	085bfb9c5421d8aae4b26e9169b254c409e28250	2026-10-19T15:03:44Z
+39262213468	Naruto SCPH-7502 Story Mode playthrough	push	completed	success	e396eac00631001b7a0e68d7701c70aec10dec19	2026-10-19T13:40:53Z
+39262211513	.github/workflows/naruto-raw-storymode-restore.yml	push	completed	failure	e396eac00631001b7a0e68d7701c70aec10dec19	2026-10-19T13:40:52Z
+39262163072	.github/workflows/naruto-raw-storymode-restore.yml	push	completed	failure	723b33a3e7179af5a0169d00baf77f6626576394	2026-10-19T13:40:32Z
+39262100556	.github/workflows/naruto-raw-storymode-restore.yml	push	completed	failure	410a754aa7cfc7733ef9a790a017da72728606d5	2026-10-19T13:40:06Z
+39261524544	Naruto SCPH-7502 Story Mode playthrough	push	completed	failure	ded5867641f5b9614af65201f20cc152962a11b5	2026-10-19T13:35:56Z
+39257735369	Naruto savestate sanitizer positive-control experiment	push	completed	success	a6bc618bd2b408be9afe448b2485f3c58370d05f	2026-10-19T13:09:18Z
+39255549341	Naruto raw savestate cross-run restore	workflow_run	completed	success	db19f353003350e1297db6b7576994b7558ca00c	2026-10-19T12:53:10Z
+39255438457	Naruto raw savestate cross-run proof	push	completed	success	39f4c81b7bdb5912fe0aa643f964b9ff73cfdff2	2026-10-19T12:52:19Z
+39255419921	.github/workflows/naruto-savestate-cross-run.yml	push	completed	failure	ade910b2652b0e7f6125e982b8ff0160000a6c69	2026-10-19T12:52:10Z
+39254947786	.github/workflows/naruto-savestate-cross-run.yml	push	completed	failure	b9bf3c956cafb35f629f3a931b0b867ea24a9247	2026-10-19T12:48:31Z
+39254745374	.github/workflows/naruto-savestate-cross-run.yml	push	completed	failure	419c78ae4fd406774ac44256985403233cfa043e	2026-10-19T12:46:57Z
+39252214331	Naruto savestate isolated diagnostic (no Story Mode input)	push	completed	failure	301228609369a562771af888ce1193b0adf9cdbf	2026-10-19T12:27:35Z
+39249643038	Naruto savestate isolated diagnostic (no Story Mode input)	push	completed	failure	3922836cf17796b568f84346d8eca23b0677647c	2026-10-19T12:07:43Z
+39249046252	Naruto savestate isolated diagnostic (no Story Mode input)	push	completed	failure	0c85b6dba766f64e0bcbb70386bbcc422fa8fe19	2026-10-19T12:02:56Z
+39248501957	Naruto savestate isolated diagnostic (no Story Mode input)	push	completed	failure	cb68e943abeb9a40ca790615a63efa5c172b6270	2026-10-19T11:58:29Z
+39248081546	Naruto savestate isolated diagnostic (no Story Mode input)	push	completed	failure	f62c8d4e84ce46724d6f87421cd2d7284187b394	2026-10-19T11:54:51Z
+39247516927	Naruto savestate isolated diagnostic (no Story Mode input)	push	completed	failure	e89b01171271f0821204b9ca5d74fd6405f454a0	2026-10-19T11:50:12Z
+39247114913	Naruto savestate isolated diagnostic (no Story Mode input)	push	completed	failure	fec4dae603d0ac247f22e979a3e8d7872a2fdb27	2026-10-19T11:46:50Z
+39246843539	Naruto savestate isolated diagnostic (no Story Mode input)	push	completed	failure	5a75ad0ad61e3fe9601190f5712adb96e8588c01	2026-10-19T11:44:41Z
+39246754178	Naruto savestate isolated diagnostic (no Story Mode input)	push	completed	failure	02707633b9242016e9848919013b94a26c34500d	2026-10-19T11:43:57Z
+39242130783	Naruto SCPH-7502 Story Mode playthrough	push	completed	failure	9dc876f08d724b6f809c6da4e2dbea1b549b9d62	2026-10-19T11:05:44Z
+39235643517	Naruto SCPH-7502 Story Mode playthrough	push	completed	cancelled	be597ce2b4c6da6c8db34be328007806f164ddd7	2026-10-19T10:11:24Z
+39235079514	Naruto SCPH-7502 Story Mode playthrough	push	completed	failure	7eba9489ec74d1c08a9aaebdf1386bcd2fba91f1	2026-10-19T10:06:52Z
+39234894821	Naruto SCPH-7502 Story Mode playthrough	push	completed	failure	83409a5d197b38104129ad51a54748745066c6c0	2026-10-19T10:05:23Z
+39234568868	Naruto SCPH-7502 Story Mode playthrough	push	completed	failure	ef4308714dfa40aac06e99a45e8dc80947e9e6e3	2026-10-19T10:02:44Z
+39234351228	Naruto SCPH-7502 Story Mode playthrough	push	completed	success	680980c66bfb1cf88c688336bfef57ea3f1cda8d	2026-10-19T10:00:58Z
+39233746088	Naruto SCPH-7502 Story Mode playthrough	push	completed	failure	fa220bead2da2418921b2fcc392d16b87201dd42	2026-10-19T09:56:02Z
+39233268705	Naruto SCPH-7502 Story Mode playthrough	push	completed	failure	f4ea6b0169ef23c70be980602f91a65b3457c02c	2026-10-19T09:52:11Z
+39232852795	Naruto SCPH-7502 Story Mode playthrough	push	completed	failure	077f576f33e8f65eea0504382383d6cc67d5cff6	2026-10-19T09:48:46Z
+39205699071	Naruto SCPH-7502 Story Mode playthrough	push	completed	success	88d5cfa8833ef39e286431f5e8bedf2584485804	2026-10-19T05:39:40Z
+39205556772	Naruto SCPH-7502 Story Mode playthrough	push	completed	failure	749f7364f7b141731ed32a691fbbd422a9cb8b93	2026-10-19T05:37:56Z
+39205262049	Naruto SCPH-7502 Story Mode playthrough	push	completed	success	58d2e8b18feec9dedbb9fbfd9623fc40c1039175	2026-10-19T05:34:31Z
+39201989926	Naruto SCPH-7502 GPU traffic summary	push	completed	cancelled	6b54b66b6ab041652670f0775694499d626ee275	2026-10-19T04:56:32Z
+39201719057	Naruto SCPH-7502 GPU traffic summary	push	completed	cancelled	a561b8196658dd218bedb5a70e34a1796e3ff9cf	2026-10-19T04:53:16Z
+39189879767	Naruto SCPH-7502 GPU traffic summary	push	completed	success	892f16c2b2ea140f41b7e920d09d08261867b377	2026-10-19T02:25:17Z
+39183597316	Naruto SCPH-7502 GPU traffic summary	push	completed	success	e9a6f985458ad2dd23c939813881918cb9a7f701	2026-10-19T01:04:00Z
+39178662131	Naruto SCPH-7502 GPU traffic summary	push	completed	success	f5484146809c59c1d9386650a9c812c1a61b7354	2026-10-18T23:57:55Z
+39176328030	Naruto SCPH-7502 GPU traffic summary	push	completed	success	69ab7544ef7aaea40dc8af4ab12132e9997b3575	2026-10-18T23:23:40Z
+39149443247	Naruto SCPH-7502 GPU traffic summary	push	completed	success	ae015c5cf5d0f06800970a201ffce8c7c3511e53	2026-10-18T17:24:31Z
+39147391100	Naruto SCPH-7502 GPU traffic summary	push	completed	success	5f89389d3af1f3f6254057ae8b0162667bd5eaf0	2026-10-18T16:57:57Z
+39145309203	Naruto SCPH-7502 GPU traffic summary	push	completed	success	43bab6c337693eff87d5fa996d450299adc31093	2026-10-18T16:30:28Z
+39122631591	Naruto SCPH-7502 GPU traffic summary	push	completed	success	7c614e3c005af0cbbbe1e6ad448a8afb0f4bfed2	2026-10-18T11:17:23Z
+39120694338	Naruto SCPH-7502 GPU traffic summary	push	completed	success	e9f753833b0689723fc22fe07afbd55fce92eb05	2026-10-18T10:48:20Z
+39119261650	Naruto SCPH-7502 GPU traffic summary	push	completed	success	57de951b24cb8ec4e37d587a0a75ac36f926ec94	2026-10-18T10:26:30Z
+39117084569	Naruto SCPH-7502 GPU traffic summary	push	completed	success	bbaf544afe3f64879a88253dd5fe949dbbd6e517	2026-10-18T09:53:04Z
+39102138479	Naruto SCPH-7502 GPU traffic summary	push	completed	success	25998b13cdefa7f9029ee782447ad8de3a070d1e	2026-10-18T05:54:02Z
+39101435497	Naruto SCPH-7502 GPU traffic summary	push	completed	success	dcf31d022e43e8eaf32c8a31ae4686720044f354	2026-10-18T05:41:50Z
+39101372658	Naruto SCPH-7502 GPU traffic summary	push	completed	cancelled	312fbffc8c5a43806355908072848078f0db3c85	2026-10-18T05:40:44Z
+39101124484	Naruto SCPH-7502 GPU traffic summary	push	completed	success	b4d849c4d555f092e1d5b406bdd67c1aa5aa3205	2026-10-18T05:36:22Z
+39100957600	Naruto SCPH-7502 GPU traffic summary	push	completed	success	1a35c21ac385fd3786ecdd7fc61b42aed8a11a25	2026-10-18T05:33:25Z
+39100743589	Naruto SCPH-7502 GPU traffic summary	push	completed	success	d1125a9b49068f5d55862a87b6c6951c0f0ca101	2026-10-18T05:29:54Z
+39100404932	Naruto SCPH-7502 GPU traffic summary	push	completed	success	f68799906a40466a2617daea87c4f72d5a756b9d	2026-10-18T05:23:55Z
+39100377314	Naruto SCPH-7502 GPU traffic summary	push	completed	cancelled	f6c640468c0c9107c2e2132d064018379479dec8	2026-10-18T05:23:24Z
+39098622572	Naruto SCPH-7502 low-rate RSP progress probe	push	completed	success	2566da091954aebc641a6126d9ab4959668f1730	2026-10-18T04:52:51Z
+39097162854	Naruto SCPH-7502 internal framebuffer and minimal RSP probe	push	completed	failure	e2b58858bc71444770a241a0fe8826a164afd505	2026-10-18T04:27:37Z
+39097099408	.github/workflows/naruto-scph7502-internal-frame-rsp.yml	push	completed	failure	bfe2a235c3c04bdfc5f2cade4425c9f4e06d7ec4	2026-10-18T04:26:33Z
+39096505491	Naruto SCPH-7502 internal framebuffer and minimal RSP probe	push	completed	failure	62570549738fd75c0a7f3b2a77122ec583350bd1	2026-10-18T04:16:12Z
+39095269662	Naruto SCPH-7502 controlled software-GPU A/B probe	push	completed	success	4b763f1ec528dfed4a83f00ef098ea5b97cbd81c	2026-10-18T03:54:47Z
+39094530928	Naruto retail SCPH-7502 PCSX-Redux GUI boot probe	push	completed	success	4ab7e230f89ee3440bb05cfdf537b7cdd2d096b2	2026-10-18T03:41:53Z
+39094479973	Naruto SCPH-7502 private BIOS identity check	push	completed	success	ddb7865e698e54d9005288a65218043b7491cbce	2026-10-18T03:41:01Z
+39094471354	Naruto SCPH-7502 private BIOS identity check	push	completed	success	4d8855d2086b0b051841593a6ae6dabc8994d9b6	2026-10-18T03:40:52Z
+39093727808	Naruto OpenBIOS variant GUI A/B probe	push	completed	success	b5555142f58b720e333f124763cfcc47dbf22d0c	2026-10-18T03:28:14Z
+39085422680	Naruto standalone Mesa OpenGL diagnosis	push	completed	success	bbb5c72a20f7e1c076320d493295f51dfb6e954b	2026-10-18T01:09:09Z
+39084130154	Naruto fastboot GPU traffic summary	push	completed	success	fbe766cffdb4ee72c3765364e96a8a01b6678ec6	2026-10-18T00:48:31Z
+39083850904	Naruto fastboot GPU traffic summary	push	completed	success	8f75c3d558afd2261fb644e0fa192d5972ff3236	2026-10-18T00:44:03Z
+39083701297	Naruto fastboot GPU traffic summary	push	completed	success	df93b6467314b483b409de35f6e1bd07f3cb2c80	2026-10-18T00:41:40Z
+39083372634	Naruto fastboot GPU traffic summary	push	completed	success	ca4729858e8f008660984b0c252ecbceb4463eae	2026-10-18T00:36:17Z
+39083141057	Naruto fastboot GPU traffic summary	push	completed	success	eb9cb4d250c48a926f672b298cc51e2babf29a75	2026-10-18T00:32:34Z
+39082912598	Naruto fastboot GPU traffic summary	push	completed	success	8d9d7819e63e77368654f9b4ab55213bbdb1da6d	2026-10-18T00:29:01Z
+39082587807	Naruto fastboot GPU traffic summary	push	completed	success	a544975d774f5f4a24424b202fa9694d9fa7ad64	2026-10-18T00:23:37Z
+39082569469	Naruto fastboot GPU traffic summary	push	completed	cancelled	1361855c0b0ef881c0f15884e0a233a6c0690bbe	2026-10-18T00:23:19Z
+39082375609	Naruto fastboot GPU traffic summary	push	completed	success	e915b10586cc338a9de8a2e48c6bab770c4bd9e7	2026-10-18T00:20:07Z
+39082046438	Naruto fastboot GPU traffic summary	push	completed	success	bbb34ba183be63086611c22ee6f6bddf8ab7357f	2026-10-18T00:14:44Z
+39081872155	Naruto fastboot GPU traffic summary	push	completed	success	dc2d98d34fc154b421232bacae2eeffb753cd1eb	2026-10-18T00:11:54Z
+39081524928	Naruto fastboot GPU traffic summary	push	completed	success	18d39b730ccd900d24726a2a7b543b53f70e84e5	2026-10-18T00:06:15Z
+39081346569	Naruto fastboot GPU traffic summary	push	completed	success	a8215c8f0e09587bdc05c61a54ef636767086add	2026-10-18T00:03:29Z
+39080987461	Naruto fastboot GPU traffic summary	push	completed	success	1edab8366f250a1cb380b8a87e2f5fb2d7baaf62	2026-10-17T23:57:49Z
+39080977686	Naruto standalone Mesa OpenGL diagnosis	push	completed	success	cf16162c85001d1006fee32725ce01407843ac35	2026-10-17T23:57:38Z
+39080926618	Naruto fastboot GPU traffic summary	push	completed	cancelled	887a7167cf658fc3b30cd2d7a01c47f5e0542dce	2026-10-17T23:56:46Z
+39080721606	Naruto fastboot GPU traffic summary	push	completed	success	965eaff8447cf23b38f36891dd3fe2e462325352	2026-10-17T23:53:19Z
+39080612184	Naruto fastboot GPU traffic summary	push	completed	cancelled	d4a3e2bf1e0146f0fb9b2e8de0922435fbfefbbf	2026-10-17T23:51:34Z
+39080591108	Naruto fastboot GPU traffic summary	push	completed	cancelled	cc58dd74eb9c65168f21ad726f8cf2e87d50cc3f	2026-10-17T23:51:13Z
+39080239541	Naruto fastboot GPU traffic summary	push	completed	success	178b0375d4f030a720d1ca204005815d1328c558	2026-10-17T23:45:35Z
+39079981314	Naruto fastboot GPU traffic summary	push	completed	success	ef92257e4f104713a4ba61dfb30693cf36d08b8c	2026-10-17T23:41:19Z
+39079744599	Naruto fastboot GPU traffic summary	push	completed	success	e08922c1e96cb5be42846290edc55b5f17efafdd	2026-10-17T23:37:32Z
+39079600379	Naruto fastboot GPU traffic summary	push	completed	cancelled	30cd69d61a5ab01761baa7f3a209a386f205b650	2026-10-17T23:35:16Z
+39079574363	Naruto fastboot GPU traffic summary	push	completed	cancelled	24bef27cdc52f6b7a70753ccddf55039fd05aeb2	2026-10-17T23:34:52Z
+39079291837	Naruto fastboot GPU traffic summary	push	completed	success	fcf69868a16f1fae8d3b4505b477ae24fc9c426b	2026-10-17T23:30:30Z
+39079279565	Naruto fastboot GPU traffic summary	push	completed	cancelled	7b9391563fb793294f758ad4a7bc753a6340f12f	2026-10-17T23:30:20Z
+39079066598	Naruto fastboot VRAM checkpoints	push	completed	success	0ba7c858a0fac6f2286f08d15a3ba59b23b8d7e3	2026-10-17T23:26:59Z
+39079057558	Naruto fastboot VRAM checkpoints	push	completed	cancelled	89700d37b5d47cf6539d5032ad9bd763b4956ea4	2026-10-17T23:26:49Z
+39078905140	Naruto fastboot VRAM checkpoints	push	completed	success	8af38b4f57c87cd63f47468fd543fac406b10920	2026-10-17T23:24:31Z
+39078732160	Naruto fastboot VRAM checkpoints	push	completed	success	3a69fcef242563ecf45de8c920bec3443db3e956	2026-10-17T23:21:52Z
+39078592809	Naruto fastboot VRAM checkpoints	push	completed	success	776439848fccb0becc57ffa9ae667fb503e200b8	2026-10-17T23:19:45Z
+39050174557	Naruto fastboot VRAM checkpoints	push	completed	success	f07fa08731b30496d733adf010cf67496663a96e	2026-10-17T16:36:50Z
+39049916592	Naruto fastboot VRAM checkpoints	push	completed	success	a415d47f809f9c7c3f98102ab3bc1acebbbe83a3	2026-10-17T16:33:16Z
+39049689832	Naruto standalone Mesa OpenGL diagnosis	push	completed	success	3e92e100abf17a51e4e335e92ea7b70632293933	2026-10-17T16:30:17Z
+39047765424	Naruto cloud visual boot probe (PCSX-Redux framebuffer capture)	push	completed	success	3f1d7e005136bdc917a1dc62cfb89ad29688852f	2026-10-17T16:03:45Z
+39047678829	.github/workflows/naruto-fastboot-cpu-poll.yml	push	completed	failure	ef4390573a0029cf4498518ee0b8aaffa24d00f8	2026-10-17T16:02:31Z
+39030290487	Naruto fastboot CPU and CP0 polling	push	completed	success	f884ff8131612314e5b4ffed47e3e066304d159e	2026-10-17T11:51:35Z
+39029860914	Naruto fastboot CPU and CP0 polling	push	completed	success	89927d14ed48b05cfb9b7ddca38428390e745c76	2026-10-17T11:44:43Z
+39021127913	Naruto fastboot GPU register watchpoints	push	completed	success	a8d8db8a0c3b84967a14c3a0905e046dbed24cf9	2026-10-17T09:26:22Z
+39020901596	Naruto fastboot GPU register watchpoints	push	completed	success	ae62176483a10d9360ced7d5b86822a01755f376	2026-10-17T09:22:51Z
+39020810743	Naruto fastboot GPU register watchpoints	push	completed	cancelled	5055074671acf8cb2f2512182f8484dc2815552d	2026-10-17T09:21:26Z
+39017636267	Naruto fastboot GPU register watchpoints	push	completed	success	7d57bddd6b2bda91585e768aa3256614d54ae0c7	2026-10-17T08:30:42Z
+39017271906	Naruto fastboot minimal GDB RSP probe	push	completed	success	b2f40ebb1d6bdc229d8e15daa75c651bf2391a0b	2026-10-17T08:24:57Z
+39016277234	Naruto fastboot GDB PC snapshots	push	completed	success	d8871702ad3a80d69bdb1e508eb92f5b9dd052e3	2026-10-17T08:09:02Z
+39015919056	Naruto fastboot OpenBIOS window-identification probe	push	completed	success	a3a2756bf06c8606afba335af9e56f3a7fe280a8	2026-10-17T08:03:14Z
+39015722771	Naruto fastboot OpenBIOS window-identification probe	push	completed	success	8deb5fcbdb308317b5465c7a6a803417cbbf315f	2026-10-17T08:00:17Z
+39015610296	Naruto fastboot OpenBIOS window-identification probe	push	completed	cancelled	1acd87e9960c0caeb334cffc48ed8aea212212e1	2026-10-17T07:58:24Z
+39015419649	Naruto fastboot OpenBIOS window-identification probe	push	completed	success	83173bb10cfbf905a296f59720c0a63c95bc3a32	2026-10-17T07:55:12Z
+39015290594	Naruto fastboot OpenBIOS window-identification probe	push	completed	cancelled	a20bec42325878db7f2e380c697852c8f4bd0a51	2026-10-17T07:53:03Z
+39015133027	Naruto fastboot OpenBIOS window-identification probe	push	completed	success	f25ca615ce239c0f3507ac2ac8d54e99436f9bfc	2026-10-17T07:50:26Z
+39013612865	Naruto OpenBIOS variant GUI A/B probe	push	completed	success	713357a37d61b4c586b8ee7165b09439a8026752	2026-10-17T07:26:06Z
+39012694027	Naruto DuckStation private BIOS compatibility probe	push	completed	success	5afd32eca0d32ee191de7f2963f74b53aed89448	2026-10-17T07:11:15Z
+39012504017	Naruto DuckStation private BIOS compatibility probe	push	completed	success	058aadea1c664712b62a63cf01fcb3e5598ef047	2026-10-17T07:08:14Z
+39012200147	Naruto DuckStation private BIOS compatibility probe	push	completed	success	30dda0b4bac135cfc4aa1f2ce523bb553c50e49e	2026-10-17T07:03:20Z
+39011842708	Naruto current-source PCSX GUI probe	push	completed	success	0654ceb514e22eec8c5ff8f2682e45a9009b58b4	2026-10-17T06:57:43Z
+39011515345	Naruto private guest-screen capture	push	completed	failure	49d5cdc4c5170f2e43b8fb66396018c0ca764f94	2026-10-17T06:52:25Z
+38899067452	Naruto emulator runner smoke test	push	completed	success	8fc278539564c324fec957db6f6e454a757b9017	2026-10-16T12:13:48Z
+38898987921	Naruto emulator runner smoke test	push	completed	failure	2a5451b093d85490a9b65cac0664bf01067a20c1	2026-10-16T12:13:08Z
+38697240018	Build OpenBIOS for PS1 research	push	completed	success	3dd9fe41f42283335306e0cfb89c3d81a42aff9c	2026-10-15T07:12:52Z
+38696846469	Build OpenBIOS for PS1 research	push	completed	success	7accc8fd4e5b07b1bd9c1f4f3685f31e628ae0ab	2026-10-15T07:09:12Z
+38696240418	Build OpenBIOS for PS1 research	push	completed	success	79f6defc2aaad8c8bc25b56402c3ae1ecf800476	2026-10-15T07:03:36Z
+38696177738	Build OpenBIOS for PS1 research	push	completed	failure	9f8cccbda3487291b0e967c456bf5fecdb3e27fa	2026-10-15T07:03:00Z
+38696122775	Build OpenBIOS for PS1 research	push	completed	failure	c1de25881fdabaa869edee284010625cfd5ddf7c	2026-10-15T07:02:29Z
+38694270003	Build OpenBIOS for PS1 research	push	completed	success	7c86a927e444ceb1feb2de5aec8f592c96a903ec	2026-10-15T06:44:50Z
+38693918169	Build OpenBIOS for PS1 research	push	completed	success	e85af8db90f778cb2f9683bb880cb252986f71cf	2026-10-15T06:41:23Z
+38693358323	Build OpenBIOS for PS1 research	push	completed	success	5dbce0f4d850499a3c140c812e8d2814641fa040	2026-10-15T06:35:50Z
+38693323975	Build OpenBIOS for PS1 research	push	completed	failure	2a1bad53a6ec40e52720d114793fd387577aecc5	2026-10-15T06:35:29Z
+38693201238	Build OpenBIOS for PS1 research	push	completed	failure	9f10b28e149edf19068d1dc8b41764927df0d88e	2026-10-15T06:34:17Z
+38692549397	Prepare PCSX-Redux research emulator	push	completed	success	7aa8c89cf0642953de05aca84a38421b172411b4	2026-10-15T06:27:50Z
+38692445232	Prepare PCSX-Redux research emulator	push	completed	failure	f03b010fdabeebe26666966bb394b7d8f634f479	2026-10-15T06:26:47Z
+38692427689	Prepare PCSX-Redux research emulator	push	completed	failure	ce2316b0317b2c1138ca976d62a54d59e0ef1a06	2026-10-15T06:26:37Z
