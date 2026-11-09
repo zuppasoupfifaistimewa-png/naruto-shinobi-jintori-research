@@ -1,0 +1,7 @@
+H1 x=d: memprediksi setiap byte sel M+0x10+B+144*I yang dipakai untuk mengisi x berasal dari selisih dua nilai level.
+H2 x=effect/item/action ID: memprediksi byte sel berasal dari konstanta atau tabel/selector ID.
+H1_RESULT=TIDAK TAHU: all reachable byte-cell writers are not closed and level-source semantics are not proven.
+H2_RESULT=TIDAK TAHU: all reachable byte-cell writers are not closed and selector-ID semantics are not proven.
+MATRIX_WRITER_CANDIDATES=0 PARTIAL=0 ALL_SB_ROWS=5685
+CLASSIFICATION=KONSTANTA only when constant is proven; SALINAN_DARI_MEMORI only for direct load; visible subtraction without proven level semantics is an unverified delta candidate; otherwise TIDAK TAHU.
+FALSIFICATION=TIDAK TAHU globally: dynamic/alias writer closure is incomplete, so neither hypothesis is declared disproven.

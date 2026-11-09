@@ -1,0 +1,140 @@
+sha	author	email	class	subject
+0b23ad24c77f31591609adceca365aa3aca944e2	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix QA0 path deletion audit and SA1 indirect-call handling
+89f3ee149cd608906fec1e8a8f717232f58c5558	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add SA2 run summary and full SA3 ledger counts
+71e7ee64cd6a9f3d961861295f688ac8534ea5a1	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Publish complete SA3 commit and all-branch Actions ledgers
+2679c8eaf119b562eb580fbb2e766661b3318502	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish RA2 bounded upgrade probe 42555699212 [skip ci]
+ca23ea4bdbe87903bd76a4945e11ca5fc474452f	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Publish full SA2 scenario traces and keep runtime summary
+36521130f5c05c8cdaa519db357e09001f47b742	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish RA2 bounded upgrade probe 42555495195 [skip ci]
+0edcc08758a6995793275c12f87a26527b8b0087	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add no-input control and full-register bounded RA2 scenarios
+57e0efa8761d70de1a6d681a4a0be73acb7531ab	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish DW0-DW4 static raw-byte audit run 42555137254
+b9ab74e4c524088979adea57984204dbf98ece99	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Trigger SA1 static EXE and Entry 1 extraction
+73984766875a3f6dc4418ac9ae262c7dab9f333a	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish DW0-DW4 static raw-byte audit run 42554974392
+fa18394bf2aef3dfe430be5aba855c5db01c89c4	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add SA1 static decoder and record rejected QA workflow run [skip ci]
+ad16f08322c99f5612f1139f5bf5ae8a7d4f4fa8	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Wire SA1 bounded static analysis into existing DW workflow
+089a544c18c280fdadfc9ea59b5d59fd16ec9e54	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish QA4 read-only CONTROL trace 42554626237 [skip ci]
+621201b6c41f8f26e44ea384cbd3bdbdca6b10c9	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish QA0 harness and excerpt audit 42554626237 [skip ci]
+00859dc61750f2eb66391048c1d14f1b561644b9	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix QA0 workflow summary indentation
+0df69f6f79ce091915f14ffec62bf4bfe8e410cb	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Correct QA0 PA file baseline count and Actions summary baseline
+d98b0b25b94cdad52386cffc5a6748acbbeb2011	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish QA4 read-only CONTROL trace 42554041029 [skip ci]
+91fdb9606022b0eed5c40a494a76344e371a7dbb	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish QA0 harness and excerpt audit 42554041029 [skip ci]
+56d6eaf765234c59372f271c83454bfbdc14d1f4	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Trigger final SA0 bounded QA0 audit
+9dbd97084b1eb99d781eb7e47e84e601b8ea99ce	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Separate SA0 cleanup audit and preserve historical PA verification [skip ci]
+78e1a32d8cea7be759ecca418a5d2b12b8b87e6f	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Remove obsolete KA MA NA outputs and RA2 duplicate trigger [skip ci]
+3d3eff5d9e0e03b0742423be241473cf60bb3736	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Log final RA4 ledger count correction [skip ci]
+483aebcfa6cc741ebd13042effd85f131003e8f8	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Correct final RA4 ledger run and job total [skip ci]
+e27a06dd0d586fd7c7e437106fedd2d05cc70c8a	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Align scheduled monitor row counts in RA4 ledger [skip ci]
+853eb7159df843785c9c5e6c9a4a080c9be9f19f	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Correct RA4 total after final scheduled monitor inclusion [skip ci]
+e0b71793dd7a93d9a277bf5f0d5983f1604b11df	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Finalize raw links and record follow-up ledger commits [skip ci]
+fa2a40e59df379ac46496ad13cbb66244ffbe095	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Include latest scheduled monitor in complete Actions ledger [skip ci]
+9b8a89bba2e179d2be68725966bb7df95fd53f67	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add exact raw permalinks and ledger commit file inventory [skip ci]
+381e1ae77247d5c20d193e493781d93c580f62c6	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Complete RA0-RA4 Actions ledger and correct stage statuses [skip ci]
+700e772c127e935ee2fe82956a5a3821907ed08e	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Index raw permalinks for every RA4 Actions run [skip ci]
+5facd666af50fbe687ce479c857deb3fcb1d76cb	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add RA4 run and commit ledger with per-run summaries [skip ci]
+bd91cb50d1b09fe683cd175223453a98c8d9dc13	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Record RA3 H1 H2 gate as not met [skip ci]
+c9547370fa7c281dd45758cb9b41b193d5d7be9d	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Clarify RA1 saved return address and unresolved outer caller [skip ci]
+130e1c2473dfcf9e4a9962a6ac7b6839c4d7e834	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish RA1 read-only stack trace 42536371222 [skip ci]
+0f5790f03b87e4fb63fa5b098dcd86ad225560a5	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add RA1 read-only stack chain probe with two identical restores
+bda5824f04590f6ded7abec46b659d9ae78456a0	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Document RA2 identical traces and no observed upgrade [skip ci]
+61c11df64d98fa4c06f7648e63376d921064c07c	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish RA2 bounded upgrade probe 42536155267 [skip ci]
+739febf493d0648068cd47f5bba188fcca90fc93	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Define RA2 tile limit inside embedded Lua and self-test it
+6941b3ce85247182b0b2c96eabe2412469cf2956	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish RA2 bounded upgrade probe 42535674901 [skip ci]
+1e5dd7c10114819ac71e9506dde1a2375f37061e	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Align RA2 self-test with typed read-only memory API
+6601b7c4c2f8251fa3ced660e5877fcf3b157499	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish RA2 bounded upgrade probe 42535223372 [skip ci]
+8ac19e87c3d2e85dbf2b331af356ec71e831f245	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Use typed read-only memory loads for RA2 snapshot guards
+8051367926d5bfc4793987b30306aea99877bc01	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish RA2 bounded upgrade probe 42534757870 [skip ci]
+31de6c0bf7b101ad6d5593b182bdc6ab7eb9cbe1	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Accept verified checkpoint within private artifact bundle
+eb05d98fa5a2956a1b5dae789b09ac971644e0c4	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish RA2 bounded upgrade probe 42534641532 [skip ci]
+3a71e572e11a26daf7f801d4bf124917bcfbc7fa	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Validate RA2 downloaded checkpoint contents
+61f02c69619cb512d590fe7f953eb2ff7c80ebd3	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Use artifact action for RA2 checkpoint and record HTTP 415 [skip ci]
+f03322c84eb1a8664fc7ee15706489416b06c98a	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish RA2 bounded upgrade probe 42534501546 [skip ci]
+7b53416d563292582bcfc3f1343848a4f0ac57d3	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix RA2 workflow expressions and record failed attempts
+ec65242a04b3f26dfd97620730419f38d4405aad	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Isolate RA2 paths from generic Python workflow filters
+66c2d9f8ef88088179ed98e4b600a1b61138034d	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Store RA2 harness as .pytxt to avoid other Python workflow filters
+2ece9d8f247979e91610c655248554eb9373fa73	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish NA0-NA5 static audit run 42531815501 [skip ci]
+d7a82d4472e273a95876330bd2e147a1a7d20d97	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish KA0-KA5 static audit 42531815506 [skip ci]
+a048d4c24f26b40068fb87645f33fec3105a19f1	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish MA0-MA5 static audit run 42531815503 [skip ci]
+67d2ad5c4bda90f2e2301c42dacce71994dc9f3b	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish NA0-NA5 static audit run 42531753599 [skip ci]
+8b6029909cd0dca228e0bd2224838786169515df	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish KA0-KA5 static audit 42531753623 [skip ci]
+7ba8617f337adca1c25f5a4eb8c9f41bd51e0c2b	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish MA0-MA5 static audit run 42531753591 [skip ci]
+6ac2e13cd35589d8e51a439eae48a381aa5a356b	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Use absolute workspace path for RA2 runtime harness
+74a73e355d76671c712844a36f537eeb027e49b6	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix RA2 runtime path, breakpoint capture, and action tile-diff reporting
+207408634a7a67e7777b03a8e18bab1bee7749e5	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add bounded RA2 headless upgrade confirmation probe
+613f4164d1927c52b294440fbdaf313ccddb1029	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish QA4 read-only CONTROL trace 42531023381 [skip ci]
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish QA0 harness and excerpt audit 42531023381 [skip ci]
+823d91910494b635a61a584390bf267b4cd42e05	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish QA4 read-only CONTROL trace 42530988325 [skip ci]
+fb16eccf44422ed9b3fc3dea0f9ede1782447aac	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix QA0 harness summary quoting
+a0bfbe359710a35e0ade9248497b735cec2e298d	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish QA0 harness and excerpt audit 42530988325 [skip ci]
+4572ffed5ecb520dccc4ee840c5d9b8d63ae3268	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix QA0 physical deletion verification and byte-wise union audit
+5e4f98eb37f23309083a1804394aec2887e5222f	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 run audit against inclusive RA baseline [skip ci]
+1ca0c87055eb64545faf56cc380ac905d092acf0	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 enforce zero overlimit groups in actual archive union [skip ci]
+9acb339d28200aa62a002fa2dee294dadc38a81c	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 restore hard gate to complete archive union [skip ci]
+77ae9549ba59bc88d1681af18ef3281acdb0bcce	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 physically prune overlimit PA quote rows pa-run-42484169218-static [skip ci]
+59cf333d3650b24379df1e513e8f55e5dda064c7	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 physically prune overlimit PA quote rows pa-run-42484169218-static [skip ci]
+2eb0554f757ec449a0847f8d9c7660b4149500ca	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 physically prune overlimit PA quote rows pa-run-42484127968-static [skip ci]
+255a29c71e79d6200244780f186184e39acd7a09	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 physically prune overlimit PA quote rows pa-run-42484127968-static [skip ci]
+4c7c1a8b6c56db92628d6d348ce45473984e364a	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 physically prune overlimit PA quote rows pa-run-42483585195-static [skip ci]
+43cf78984aec79e43fd9f6b4c45f511d522863b3	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 physically prune overlimit PA quote rows pa-run-42483585195-static [skip ci]
+642954c81ce7f3cf8dea6396a12ae4b72e4b2d94	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 physically prune overlimit PA quote rows pa-run-42483585195-static [skip ci]
+a5c2de8496105b8fe19712ab2dd147492025812e	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 physically prune overlimit PA quote rows pa-run-42482696764-static [skip ci]
+33f9f87fe1872ad162f12ba7e13b9031b717b72e	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 physically prune overlimit PA quote rows pa-run-42482696764-static [skip ci]
+4dfef1a70471288997a350975b2d439778deb9d9	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 physically prune overlimit PA quote rows pa-run-42482696764-static [skip ci]
+42542e2789c89d5d1af7ce9493c7c00d4de98041	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 physically prune overlimit PA quote rows pa-run-42482327357-static [skip ci]
+e35068c381d79afeacbe3eec499ffd2611f71df2	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 physically prune overlimit PA quote rows pa-run-42482327357-static [skip ci]
+76c6c209ad9b6b85495d1a43f1b80e35a7ea5566	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	RA0 physically prune overlimit PA quote rows pa-run-42482327357-static [skip ci]
+a133f0b266f211a31f26439d3a04ac8705b515e4	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish QA4 read-only CONTROL trace 42495514432 [skip ci]
+bab5938092ee723285c33fd2e9e4bf232d6b87dc	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish QA0 harness and excerpt audit 42495514432 [skip ci]
+5a8f314f188c1071683257680315886313a8c7d6	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix QA0 pruning pass criterion and add recheck summary
+13ce7ccca0336b70b29e990f43e329fe99db443a	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Finalize bounded QA1-QA5 CONTROL evidence review
+f19fde4c52ea9831c597a0d17e73874dcd5403fb	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Exclude QA0 generated TSVs from future raw scans [skip ci]
+7f676865ffb6558fa5980d77af5c1766d79159d8	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Correct QA4 trace normalization and add PA3 label audit [skip ci]
+ee645077e5c32000907d26847a14b67821a3c0b8	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish QA4 read-only CONTROL trace 42491968139 [skip ci]
+a0f4b8240c607853f2ea9a29d17d9225bf2f2df6	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish QA0 harness and excerpt audit 42491968139 [skip ci]
+1f766de7ba18c919e0f8eec8f2f2f756546a3700	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix QA4 Lua checkpoint filename binding
+c5032819c15d17445217b43b1930cb45654c41d0	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish QA4 read-only CONTROL trace 42491758050 [skip ci]
+ad512f5b6cffec2816fbfa30a0f8cbe0193f0e25	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish QA0 harness and excerpt audit 42491758050 [skip ci]
+8ba4f48937518d0044d82062739155893da528c0	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix QA workflow environment and token interpolation
+ef995de316ffa9c9250d04307aa9c595a6c969ba	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add isolated QA0-QA5 harness and read-only CONTROL trace
+88c7c185b638a2fdd22e3212055fe50cb88b4d81	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA5 symbolic falsifier audit 42484169218 [skip ci]
+74d4992064e75ff1263e3d81f8f156ea618d0c29	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA0-PA3 static audit 42484169218 [skip ci]
+58b2ca696ea78522f513cb1b8baeb6b861130e34	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA5 symbolic falsifier audit 42484127968 [skip ci]
+3269034b0af1e63619f7c5c221885c62c193039e	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA0-PA3 static audit 42484127968 [skip ci]
+2063eff698cb7e8e990bc7139960d0612fb2b510	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix PA2 absolute file offsets for all instruction excerpts [PA_STATIC_ONLY]
+ea559aea2c772c97f5a6e027ec1f8db966be945a	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix PA2 DATA.BIN offsets and log over-limit origins [PA_STATIC_ONLY]
+457c7fdca570bf293a22c012bb51fc0ee3b6d7d3	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA5 symbolic falsifier audit 42483585195 [skip ci]
+27192f100a917100fb67667d3874df64a3474d5d	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA0-PA3 static audit 42483585195 [skip ci]
+ad14376c2d21d5ae42228329e165339608a83a4a	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Repair PA offset and excerpt audits; static-only follow-up [PA_STATIC_ONLY]
+fad438257d52010bf2da48db3d91524adaef50b1	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix PA5 scalar table lookup to use canonical RAM keys [skip ci]
+2546f6fe4c318e0c93fbb6fa3eb0890ed026c5cf	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add PA0 validator diagnosis and PA5 TSV reconciliation correction [skip ci]
+cd9879e135024c5dddc72f5527c0cc9be4700ad3	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Correct PA5 scalar and M-region reconciliation from published PA4 TSVs [skip ci]
+00a6b15294812f1f176bfa3d94910f859767b63e	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA5 symbolic falsifier audit 42482696764 [skip ci]
+2c6fd1e7b51274945ed9cf2ec8dd465743225df4	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Preserve lowercase hex prefix in PA5 RAM address parser [skip ci]
+f30d12e49995d050555f71d2ed5bc85dc2a76b2b	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA4 HA4 CONTROL decimal snapshots 42482696764 [skip ci]
+5c88599d9b50605600c3bbfe350f90c301c997f6	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA0-PA3 static audit 42482696764 [skip ci]
+c94964daffbf7154cefa1151f85ad26d451644c5	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Record PA4 CONTROL outcome and failed publication [skip ci]
+5e03369540f34c45f2eea587be926924749939dd	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix PA3 CFG shadow and publisher rebase identity
+6b1e9a4be2262d4e6389c8eeb96165fbab4a1b75	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA5 symbolic falsifier audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish PA0-PA3 static audit 42482327357 [skip ci]
+9c55c9ded9663b0acb8bb7c0439585db94aaa6bb	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Fix PA workflow shell escapes and Python compile steps
+8a48b8769115173e6b4f0bf1448a4d9d27500ada	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add PA0-PA5 isolated harness repair and CONTROL workflow
+3f730c73dc628d02f360b7ac12961e6f3e4b1584	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Publish OA0-OA5 partial audit and verified CONTROL result [skip ci]
+1c9e83471a280b3ebd3fc9d14ac0d9af5e25f185	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish NA0-NA5 static audit run 42478491448 [skip ci]
+f76af655656df4e3ec7cf0e85c5ee94da158e38c	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish MA0-MA5 static audit run 42478491465 [skip ci]
+151d00dd1844babca09f7254906b45bded0c2640	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish KA0-KA5 static audit 42478491517 [skip ci]
+744a8f2ae7527cf7ef1781667c93735c293acb24	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add isolated OA0-OA5 static and H6 CONTROL workflow
+dc7a78f3882ff9c22ae6b09df8b8b8e657bb6137	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Record final NA Actions job outcomes [skip ci]
+a526918de860968d0a0d9ce10ccb5324f5b8caa0	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish NA0-NA5 static audit run 42444870382 [skip ci]
+c5c551a0b3bc3349834baf1260629e50905c84a3	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish NA0-NA5 static audit run 42444821172 [skip ci]
+1b13991b29ece205ad26dba656eb9e23d6240af0	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Correct exact x field writer matcher
+4d0a963012c01ecc46cb1d531927205debaaf9b8	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Improve NA static evidence closure and audit windows
+833cb9c40c005831f193e83035898bbbf3564125	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Record final NA Actions run status [skip ci]
+e92ca39c2942295303da697a9e5b8cb329ad0667	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish NA0-NA5 static audit run 42443412431 [skip ci]
+4cc242dbd482303ff8204bd92d4a56202eba2423	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add isolated NA0-NA5 static follow-up
+7bcfef67d0adf89b7ab0cb20e040790f15766017	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish MA0-MA5 static audit run 42432850750 [skip ci]
+d7f5e73e599ffde3f81405ade31b579f05e99732	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Extend MA1 scene record boundary scan across mapped EXE
+f8ddaa57de718fff3a98440b6404b2940e92450c	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add MA static follow-up and selector writer cross-check
+4963c3e3a54f546ac9cfbb02cf7141daf79d9a16	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish MA0-MA5 static audit run 42429723141 [skip ci]
+66f5672e19a0c624ca787b482fcaa298822b9de5	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Refine MA0-MA5 static audit and safe publication
+0e4dcc64e03bd28b8b74e2f3b6df26121d915a0e	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Record MA0-MA5 partial run summary and recovery findings
+fccce38b8cd2aa8fc3ee1ae121ad295e8f1b19fe	github-actions[bot]	41898282+github-actions[bot]@users.noreply.github.com	BOT	Publish KA0-KA5 static audit 42428060234 [skip ci]
+819303553e51b0499c81e94c197616e454cfb2a0	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	Add isolated MA0-MA5 static upgrade-cost audit
+662833da768f473349539eb3fe304dc7fa51a16c	zuppasoupfifaistimewa-png	zuppasoupfifaistimewa@gmail.com	HUMAN	[skip ci] Include all LA Ghidra helpers in workflow path filter
