@@ -1,0 +1,12 @@
+status	path
+A	reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA4.txt
+A	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_LAUNCH1_COUNTS.tsv
+A	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_LAUNCH1_LOG.txt
+A	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_LAUNCH1_TRACE.tsv
+A	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_LAUNCH2_COUNTS.tsv
+A	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_LAUNCH2_LOG.txt
+A	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_LAUNCH2_TRACE.tsv
+A	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_PER_PC_SUMMARY.tsv
+A	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_RUNTIME_SUMMARY.txt
+A	reports/stage1_economy/qa-run-42566294855/attempt-1/cleanup.txt
+A	reports/stage1_economy/qa-run-42566294855/attempt-1/QA4_PUBLISH_COMMIT_FILES.tsv
