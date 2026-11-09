@@ -254,7 +254,7 @@ def audit_target_deletions(root: Path, baseline: str):
     return rows, statuses
 
 
-def workflow_path_audit(root: Path):
+def workflow_path_audit(root: Path, tested_commit: str):
     workflow_dir = root / ".github" / "workflows"
     workflows = sorted(workflow_dir.glob("*.yml"))
     patterns = []
@@ -281,13 +281,14 @@ def workflow_path_audit(root: Path):
                         catchalls.append(path.name)
                 cursor += 1
 
-    last_commit_files = git(root, "diff", "--name-only", "HEAD^", "HEAD").splitlines()
+    git(root, "cat-file", "-e", f"{tested_commit}^{{commit}}")
+    last_commit_files = git(root, "diff", "--name-only", f"{tested_commit}^", tested_commit).splitlines()
     trigger_matches = sorted({
         workflow for workflow, pattern in patterns
         for changed_path in last_commit_files
         if fnmatch.fnmatchcase(changed_path, pattern)
     })
-    previous_subject = git(root, "log", "-1", "--format=%s", "HEAD^").strip()
+    previous_subject = git(root, "log", "-1", "--format=%s", f"{tested_commit}^").strip()
     return {
         "workflow_count": len(workflows),
         "path_pattern_count": len(patterns),
@@ -396,6 +397,136 @@ PROTECTED_RANGES = (
     ("EXE", 0x80011A28, 0x80011A68),
     ("ENTRY1", 0x800B50AC, 0x800B50B4),
 )
+
+
+
+def row_overlaps_protected(image: str, pc: int, size: int) -> bool:
+    return any(
+        image == label and pc < end and pc + size > start
+        for label, start, end in PROTECTED_RANGES
+    )
+
+
+def remove_union_gap_rows(stage: Path, root: Path, image: str, gap_start: int,
+                          gap_end: int):
+    removed = []
+    changed_paths = []
+    for path in sorted(stage.rglob("*.tsv")):
+        original = path.read_bytes()
+        has_bom = original.startswith(b"\xef\xbb\xbf")
+        try:
+            source = original.decode("utf-8-sig")
+            physical = source.splitlines(keepends=True)
+            reader = csv.reader(io.StringIO(source, newline=""), delimiter="\t")
+            header = next(reader)
+        except (UnicodeDecodeError, csv.Error, StopIteration):
+            continue
+        hm = {normalize_header(name): index for index, name in enumerate(header)}
+        if not {"image", "pc", "bytes"}.issubset(hm):
+            continue
+        cursor = reader.line_num
+        kept = physical[:cursor]
+        count = 0
+        for cells in reader:
+            line_end = reader.line_num
+            record = physical[cursor:line_end]
+            cursor = line_end
+            if not cells or len(cells) <= max(hm["image"], hm["pc"], hm["bytes"]):
+                kept.extend(record)
+                continue
+            try:
+                label = normalize_image(cells[hm["image"]])
+                pc = parse_pc(cells[hm["pc"]])
+                payload = parse_bytes(cells[hm["bytes"]])
+            except Exception:
+                kept.extend(record)
+                continue
+            if not (label == image and pc < gap_end and pc + len(payload) > gap_start):
+                kept.extend(record)
+                continue
+            if row_overlaps_protected(label, pc, len(payload)):
+                kept.extend(record)
+                continue
+            removed.append([
+                path.relative_to(root).as_posix(), line_end, label,
+                f"0x{pc:08X}", len(payload),
+                f"0x{gap_start:08X}-0x{gap_end - 1:08X}",
+            ])
+            count += 1
+        if cursor < len(physical):
+            kept.extend(physical[cursor:])
+        if count:
+            rewritten = "".join(kept).encode("utf-8")
+            if has_bom:
+                rewritten = b"\xef\xbb\xbf" + rewritten
+            path.write_bytes(rewritten)
+            changed_paths.append(path.relative_to(root).as_posix())
+    if changed_paths:
+        git(root, "add", "--", *changed_paths)
+    return removed, changed_paths
+
+
+def automatic_union_trim(stage: Path, root: Path, out: Path):
+    """Split every >64-byte union span with the smallest safe 4-byte excerpt gap."""
+    removed_all = []
+    guard_failures = []
+    iterations = 0
+    while iterations < 1024:
+        iterations += 1
+        rows, _, _, malformed, _ = read_evidence(stage)
+        _, origins, conflicts, spans = byte_union(rows)
+        over = [(image, start, end) for image, start, end in spans
+                if end - start > LIMIT]
+        if not over:
+            break
+        image, start, end = over[0]
+        upper = min(start + LIMIT, end - 4)
+        candidates = [
+            gap for gap in range(upper, start - 1, -4)
+            if (gap - start) % 4 == 0 and gap + 4 <= end
+        ]
+        selected = None
+        for gap in candidates:
+            refs = set()
+            for address in range(gap, gap + 4):
+                refs.update(origins.get((image, address), []))
+            if not refs:
+                continue
+            if any(row_overlaps_protected(image, row_pc, row_size)
+                   for _, _, row_pc, row_size in refs):
+                continue
+            selected = gap
+            break
+        if selected is None:
+            guard_failures.append([
+                image, f"0x{start:08X}", f"0x{end:08X}", end-start,
+                "NO_SAFE_GAP_WITHOUT_TOUCHING_PROTECTED_SA1_BYTES",
+            ])
+            break
+        removed, _ = remove_union_gap_rows(stage, root, image, selected, selected + 4)
+        if not removed:
+            guard_failures.append([
+                image, f"0x{start:08X}", f"0x{end:08X}", end-start,
+                f"NO_ROWS_REMOVED_AT_0x{selected:08X}",
+            ])
+            break
+        removed_all.extend(removed)
+    write_tsv(
+        out / "QA0_AUTO_UNION_TRIM.tsv",
+        ["source_file", "source_line_end", "image", "pc", "byte_count", "union_gap"],
+        removed_all,
+    )
+    write_tsv(
+        out / "QA0_AUTO_UNION_TRIM_GUARDS.tsv",
+        ["image", "group_start_pc", "group_end_pc_exclusive", "group_bytes", "reason"],
+        guard_failures,
+    )
+    rows, _, _, malformed, _ = read_evidence(stage)
+    _, _, conflicts, spans = byte_union(rows)
+    remaining = [(image, start, end) for image, start, end in spans
+                 if end - start > LIMIT]
+    ok = not guard_failures and not remaining and not conflicts and not malformed
+    return removed_all, ok
 
 
 def prune_target_rows(stage: Path, root: Path, out: Path):
@@ -654,6 +785,8 @@ def main():
     parser.add_argument("--root", required=True, type=Path)
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--baseline", default=BASELINE_DEFAULT)
+    parser.add_argument("--tested-commit", required=True,
+                        help="exact commit SHA whose path trigger must be audited")
     args = parser.parse_args()
     root = args.root.resolve()
     out = args.out.resolve()
@@ -679,6 +812,8 @@ def main():
               deletion_rows)
 
     trim_rows, trim_files, trim_eligible_files, trim_ok = prune_target_rows(stage, root, out)
+    auto_trim_rows, auto_trim_ok = automatic_union_trim(stage, root, out)
+    trim_ok = trim_ok and auto_trim_ok
     literal_ok, literal_rows = literal_repr_audit(root, out)
 
     rows, total_tsv, evidence_files, malformed, labels = read_evidence(stage)
@@ -727,12 +862,12 @@ def main():
     write_tsv(out / "QA0_MALFORMED_BYTE_ROWS.tsv",
               ["source_file", "source_line", "image", "pc", "bytes", "reason"], malformed)
 
-    workflow = workflow_path_audit(root)
+    workflow = workflow_path_audit(root, args.tested_commit)
     workflow_checks = {
         "NO_CATCHALL_PY_FILTERS": not workflow["catchalls"],
         "NO_LEGACY_SA1_WORKFLOW_REFS": not workflow["legacy_refs"],
         "PREPARATION_COMMIT_HAS_SKIP_CI": workflow["prep_commit_skip_ci"],
-        "LAST_COMMIT_ONLY_QA0_TRIGGER": workflow["last_commit_files"] == ["tools/qa/RunQA0Harness.pytxt"]
+        "LAST_COMMIT_ONLY_QA0_TRIGGER": workflow["last_commit_files"] == [".github/workflows/qa0-qa5.yml"]
                                          and workflow["trigger_matches"] == ["qa0-qa5.yml"],
     }
     sa1_checks = sa1_audit(root)
@@ -775,6 +910,8 @@ def main():
         f"TRIMMED_OVERLAP_ROWS={len(trim_rows)}",
         f"TRIMMED_TSV_FILES={len(trim_files)}",
         f"TRIM_ELIGIBLE_TSV_FILES={trim_eligible_files}",
+        f"AUTO_UNION_TRIM_ROWS={len(auto_trim_rows)}",
+        f"AUTO_UNION_TRIM_STATUS={'PASS' if auto_trim_ok else 'FAIL'}",
         f"TRIM_STATUS={'PASS' if trim_ok else 'FAIL'}",
         f"LITERAL_REPR_STATUS={'PASS' if literal_ok else 'FAIL'}",
         f"LITERAL_REPR_CHECKS={len(literal_rows)}",

@@ -46,6 +46,7 @@ jobs:
           python3 "$RUNNER_TEMP/qa/RunQA0Harness.py" \
             --root "$GITHUB_WORKSPACE" --out "$OUT" \
             --baseline aa32fbcee97c8f49946a8e589010cfb9ef1a6928 \
+            --tested-commit "$GITHUB_SHA" \
             > "$OUT/QA0_CONSOLE.txt" 2>&1
           RC=$?
           set -e
