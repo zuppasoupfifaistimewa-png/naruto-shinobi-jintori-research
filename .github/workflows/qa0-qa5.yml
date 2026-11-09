@@ -94,8 +94,8 @@ jobs:
             echo "SOURCE_SHA=$GITHUB_SHA"
             echo "EXIT_CODE=$RC"
             BASELINE_INCLUSIVE="$(sed -n 's/^BASELINE_INCLUSIVE=//p' "$DEST/QA0_EXCERPT_AUDIT.txt" | head -n 1)"
-[ -n "$BASELINE_INCLUSIVE" ] || BASELINE_INCLUSIVE=TIDAK_TAHU
-echo "BASELINE_INCLUSIVE=$BASELINE_INCLUSIVE"
+            [ -n "$BASELINE_INCLUSIVE" ] || BASELINE_INCLUSIVE=TIDAK_TAHU
+            echo "BASELINE_INCLUSIVE=$BASELINE_INCLUSIVE"
             echo "LEGACY_FILES_MODIFIED=no"
             echo "STATUS_MD_MODIFIED=no"
             echo "RELEASES_MODIFIED=no"
