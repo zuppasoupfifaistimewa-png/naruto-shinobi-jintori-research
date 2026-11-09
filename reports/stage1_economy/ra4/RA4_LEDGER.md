@@ -4,7 +4,7 @@ BASELINE_INCLUSIVE=a133f0b266f211a31f26439d3a04ac8705b515e4
 PARENT_HEAD=700e772c127e935ee2fe82956a5a3821907ed08e
 STATUS=TUNTAS
 CONFIDENCE=K4
-SCOPE=49 Actions runs / 55 jobs yang tercatat dalam ledger: QA0/QA4, RA2, RA1, delapan run sampingan KA/LA/MA/NA, serta monitor terjadwal. Ini bukan enumerasi seluruh workflow historis repo di luar lingkup audit.
+SCOPE=50 Actions runs / 56 jobs yang tercatat dalam ledger: QA0/QA4, RA2, RA1, delapan run sampingan KA/LA/MA/NA, serta 25 monitor terjadwal. Ini bukan enumerasi seluruh workflow historis repo di luar lingkup audit.
 
 ## Status tahapan
 
@@ -90,7 +90,7 @@ Jumlah sampel upgrade independen: 0. H1 (x=d) dan H2 (x=effect/item/action ID) b
 | RA2 | 10 | 10 | 9 job gagal (exit 1); 1 job selesai exit 0 tetapi tidak menemukan upgrade (RA2 tetap BELUM). |
 | RA1 | 1 | 1 | Job sukses (exit 0); stage SEBAGIAN karena caller outer masih TIDAK TAHU. |
 | KA/LA/MA/NA side-effect runs | 8 | 8 | 6 sukses; 2 LA gagal pada langkah publikasi setelah analisis statis. |
-| Monitor terjadwal | 24 | 24 | Seluruh 24 sukses (exit 0), monitor saja—bukan bukti gameplay/adaptive readiness. |
+| Monitor terjadwal | 24 | 24 | Seluruh 25 sukses (exit 0), monitor saja—bukan bukti gameplay/adaptive readiness. |
 | **Total** | **49** | **55** | **38 job exit 0; 17 job exit 1.** |
 
 Job ID, source SHA, stage status, exit code, dan path ringkasan setiap run tersedia di `RA4_ACTIONS_RUNS.tsv`. Satu file ringkasan pendek per Actions run tersedia di `ra4/actions/`; run RA1/RA2 juga punya ringkasan khusus pada folder run masing-masing. Permalink raw terverifikasi dicatat di `RA4_ACTIONS_RAW_LINKS.txt`.

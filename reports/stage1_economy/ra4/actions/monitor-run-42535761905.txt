@@ -1,0 +1,9 @@
+STATUS=TUNTAS
+WORKFLOW=Naruto Story Mode adaptive player monitor
+JOB=monitor
+JOB_ID=128899580598
+RUN_ID=42535761905
+EVENT=schedule
+SOURCE_SHA=1e5dd7c10114819ac71e9506dde1a2375f37061e
+EXIT_CODE=0
+NOTE=Scheduled monitor completion only; not gameplay proof or adaptive player readiness.

@@ -54,3 +54,4 @@ run_id	event	workflow	job	job_id	source_sha	stage_status	exit_code	repo_summary_
 42531753599	push	NA0-NA5	na0-na5-static	128887262831	207408634a7a67e7777b03a8e18bab1bee7749e5	TUNTAS	0	reports/stage1_economy/ra4/actions/static-run-42531753599.txt	NA analyzer and publish succeeded.
 42531753597	push	LA0-LA5	la0-la5-static	128887262956	207408634a7a67e7777b03a8e18bab1bee7749e5	SEBAGIAN	1	reports/stage1_economy/ra4/actions/static-run-42531753597.txt	Static analysis completed; LA publication step failed.
 42531753591	push	MA0-MA5	ma0-ma5-static	128887262861	207408634a7a67e7777b03a8e18bab1bee7749e5	TUNTAS	0	reports/stage1_economy/ra4/actions/static-run-42531753591.txt	MA analyzer and publish succeeded.
+42535761905	schedule	adaptive-player-monitor	monitor	128899580598	1e5dd7c10114819ac71e9506dde1a2375f37061e	TUNTAS	0	reports/stage1_economy/ra4/actions/monitor-run-42535761905.txt	scheduled monitor completion only; not gameplay proof or adaptive readiness
