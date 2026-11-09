@@ -50,7 +50,7 @@ def decode_word(data: bytes, pc: int):
         "mnemonic": ins.mnemonic if ins else ".word",
     }
 
-def window_rows(image: str, blob: bytes, base_pc: int, file_base: int, start_pc: int, label: str, window_bytes: int = window_bytes) -> list[dict]:
+def window_rows(image: str, blob: bytes, base_pc: int, file_base: int, start_pc: int, label: str, window_bytes: int = WINDOW_BYTES) -> list[dict]:
     if start_pc % 4:
         raise RuntimeError(f"UNALIGNED_WINDOW_{label}")
     off = start_pc - base_pc
@@ -127,6 +127,107 @@ def main() -> int:
                 prologs.append({"entry": pc, "stores": stores})
     candidate = max((p for p in prologs if p["entry"] <= TARGET_PC),
                     key=lambda p: p["entry"], default=None)
+
+    # TA1: bounded control-flow and stack-boundary census from B50AC through B54DC.
+    TA1_START_PC = 0x800B50AC
+    TA1_END_PC = TARGET_PC
+
+    def direct_control_target(ins):
+        word = ins["word"]
+        op = ins["op"]
+        pc = ins["pc"]
+        imm = ins["imm"]
+        rs = ins["rs"]
+        if op in (1, 4, 5, 6, 7, 20, 21, 22, 23) or (op in (16, 17, 18, 19) and rs == 8):
+            return (pc + 4 + (imm << 2)) & 0xFFFFFFFF
+        if op in (2, 3):
+            return (((pc + 4) & 0xF0000000) | ((word & 0x03FFFFFF) << 2)) & 0xFFFFFFFF
+        return None
+
+    ta1_rows = []
+    ta1_jr_ra = []
+    ta1_sw_ra = []
+    ta1_addiu_sp = []
+    for ta1_pc in range(TA1_START_PC, TA1_END_PC + 1, 4):
+        ins = ins_map.get(ta1_pc)
+        if ins is None:
+            continue
+        row = [f"0x{ta1_pc:08X}", ins["text"]]
+        if ins["op"] == 0 and (ins["word"] & 0x3F) == 8 and ins["rs"] == 31:
+            ta1_jr_ra.append(row)
+            ta1_rows.append(["JR_RA", row[0], row[1], ""])
+        if ins["op"] == 0x2B and ins["rt"] == 31:
+            ta1_sw_ra.append(row)
+            ta1_rows.append(["SW_RA", row[0], row[1], ""])
+        if ins["op"] == 9 and ins["rt"] == 29:
+            ta1_addiu_sp.append(row)
+            ta1_rows.append(["ADDIU_SP", row[0], row[1], ""])
+
+    ta1_external_branches = []
+    ta1_internal_branches = []
+    for ta1_pc, ins in ins_map.items():
+        branch_target = direct_control_target(ins)
+        if branch_target != TA1_END_PC:
+            continue
+        branch_row = [f"0x{ta1_pc:08X}", ins["text"], f"0x{branch_target:08X}"]
+        is_inside_range = TA1_START_PC <= ta1_pc < TA1_END_PC
+        if is_inside_range:
+            ta1_internal_branches.append(branch_row)
+            ta1_rows.append(["BRANCH_TO_B54DC_INTERNAL", branch_row[0], branch_row[1], branch_row[2]])
+        else:
+            ta1_external_branches.append(branch_row)
+            ta1_rows.append(["BRANCH_TO_B54DC_EXTERNAL", branch_row[0], branch_row[1], branch_row[2]])
+
+    write_rows = sorted(ta1_rows, key=lambda x: (x[1], x[0]))
+    with (OUT / "SA1_TA1_FUNCTION_BOUNDARY.tsv").open("w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f, delimiter="\t", lineterminator="\n")
+        w.writerow(["category", "pc", "instruction", "branch_target"])
+        w.writerows(write_rows)
+
+    ta1_candidate = candidate["entry"] if candidate else None
+    ta1_predecessor = ins_map.get(TA1_END_PC - 4)
+    ta1_predecessor_text = ta1_predecessor["text"] if ta1_predecessor else "TIDAK_TAHU"
+    ta1_predecessor_target = direct_control_target(ta1_predecessor) if ta1_predecessor else None
+    ta1_has_jr_before_target = any(int(row[0], 16) < TA1_END_PC for row in ta1_jr_ra)
+    ta1_next_prologs = [p["entry"] for p in prologs if ta1_candidate is not None and p["entry"] > ta1_candidate]
+    ta1_next_prolog = min(ta1_next_prologs) if ta1_next_prologs else None
+    ta1_same_function_supported = (
+        ta1_candidate == TA1_START_PC
+        and not ta1_has_jr_before_target
+        and not ta1_external_branches
+        and ta1_predecessor is not None
+        and ta1_predecessor_target is None
+    )
+    ta1_membership = "B54DC_IN_B50AC_FUNCTION_CANDIDATE" if ta1_same_function_supported else "TIDAK_TAHU"
+    ta1_confidence = "K4" if ta1_same_function_supported else "K2"
+
+    ta1_summary = [
+        f"RANGE_START=0x{TA1_START_PC:08X}",
+        f"RANGE_END_INCLUSIVE=0x{TA1_END_PC:08X}",
+        f"RANGE_BYTES={TA1_END_PC - TA1_START_PC + 4}",
+        f"JR_RA_COUNT={len(ta1_jr_ra)}",
+        f"JR_RA_ADDRESSES={';'.join(row[0] for row in ta1_jr_ra) or 'NONE'}",
+        f"SW_RA_COUNT={len(ta1_sw_ra)}",
+        f"SW_RA_ADDRESSES={';'.join(row[0] for row in ta1_sw_ra) or 'NONE'}",
+        f"ADDIU_SP_COUNT={len(ta1_addiu_sp)}",
+        f"ADDIU_SP_ADDRESSES={';'.join(row[0] for row in ta1_addiu_sp) or 'NONE'}",
+        f"B54DC_EXTERNAL_BRANCH_COUNT={len(ta1_external_branches)}",
+        f"B54DC_EXTERNAL_BRANCHES={';'.join(row[0] for row in ta1_external_branches) or 'NONE'}",
+        f"B54DC_INTERNAL_BRANCH_COUNT={len(ta1_internal_branches)}",
+        f"B54DC_INTERNAL_BRANCHES={';'.join(row[0] for row in ta1_internal_branches) or 'NONE'}",
+        f"FUNCTION_PROLOG_CANDIDATE={f'0x{ta1_candidate:08X}' if ta1_candidate is not None else 'TIDAK_TAHU'}",
+        f"FUNCTION_NEXT_PROLOG_AFTER_CANDIDATE={f'0x{ta1_next_prolog:08X}' if ta1_next_prolog is not None else 'NOT_FOUND'}",
+        f"B54D8_PREDECESSOR_INSTRUCTION={ta1_predecessor_text}",
+        f"B54D8_PREDECESSOR_DIRECT_TARGET={f'0x{ta1_predecessor_target:08X}' if ta1_predecessor_target is not None else 'NONE'}",
+        f"JR_RA_BEFORE_B54DC={'YES' if ta1_has_jr_before_target else 'NO'}",
+        f"FUNCTION_MEMBERSHIP={ta1_membership}",
+        f"CONFIDENCE={ta1_confidence}",
+        "METHOD=static MIPS32 little-endian instruction census; no contiguous raw-byte window exported",
+        "REGISTER_WRITE=NONE",
+        "MEMORY_WRITE=NONE",
+        "EMULATOR_RUNS=0",
+    ]
+    (OUT / "SA1_TA1_FUNCTION_BOUNDARY_SUMMARY.txt").write_text("\n".join(ta1_summary) + "\n", encoding="utf-8")
 
     if candidate:
         prolog_pc = candidate["entry"]
