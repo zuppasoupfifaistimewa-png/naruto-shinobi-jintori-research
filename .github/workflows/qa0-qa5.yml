@@ -1,6 +1,6 @@
 name: QA0-QA5 bounded evidence and CONTROL trace
-# TA0 static-only gate. Inclusive source baseline: aa32fbcee97c8f49946a8e589010cfb9ef1a6928.
-# QA4 emulator job remains disabled; this failed run is recorded and no second TA0 run is launched.
+# UA0 static gate completed at QA0 run 42584546705.
+# A push tagged [UA2] skips QA0 and runs only the separate bounded emulator A/B job.
 
 on:
   push:
@@ -19,6 +19,7 @@ concurrency:
 
 jobs:
   qa0:
+    if: ${{ !contains(github.event.head_commit.message, '[UA2]') }}
     name: qa0-static-harness-and-excerpt-audit
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -144,9 +145,9 @@ jobs:
           test "${QA0_EXIT_CODE:-99}" = 0
 
   qa4:
-    name: qa4-headless-readonly-control-trace
+    name: ua2-headless-fee-ab-trace
     needs: [qa0]
-    if: ${{ false }} # TA0 is static-only; TA2 has a separate gate
+    if: ${{ always() && contains(github.event.head_commit.message, '[UA2]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     env:
@@ -162,20 +163,20 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Prepare QA4 source and dependencies
+      - name: Prepare UA2 A/B source and dependencies
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/qa" "$WORK/source" "$WORK/resume" "$OUT" "$WORK/pycache"
-          cp tools/qa/RunQA4Control.pytxt "$RUNNER_TEMP/qa/RunQA4Control.py"
-          python3 - "$RUNNER_TEMP/qa/RunQA4Control.py" "$WORK/pycache/RunQA4Control.pyc" <<'PY'
+          cp tools/qa/RunUA2Control.pytxt "$RUNNER_TEMP/qa/RunUA2Control.py"
+          python3 - "$RUNNER_TEMP/qa/RunUA2Control.py" "$WORK/pycache/RunUA2Control.pyc" <<'PY'
           import py_compile,sys
           py_compile.compile(sys.argv[1],cfile=sys.argv[2],doraise=True)
           PY
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends unzip jq curl xvfb x11-utils zip git
 
-      - name: Restore checkpoint and pinned emulator inputs, then run two CONTROL launches
+      - name: Restore checkpoint and pinned emulator inputs, then run no-input vs periodic-CIRCLE launches
         id: runtime
         shell: bash
         run: |
@@ -272,7 +273,7 @@ jobs:
             export QT_QPA_PLATFORM_PLUGIN_PATH="$APPDIR/usr/plugins/platforms"
             export QML2_IMPORT_PATH="$APPDIR/usr/qml"
             set +e
-            python3 "$RUNNER_TEMP/qa/RunQA4Control.py" \
+            python3 "$RUNNER_TEMP/qa/RunUA2Control.py" \
               --pcsx "$PCSX_BIN" --bios "$WORK/source/bios.bin" --cue "$WORK/source/game-run.cue" \
               --work "$WORK/runtime" --out "$OUT" --state "$WORK/resume/adaptive-cycle-02-f180.sstate"
             RC=$?
@@ -280,18 +281,18 @@ jobs:
             exit "$RC"
           )
           RC=$?
-          echo "QA4_EXIT_CODE=$RC" >> "$GITHUB_ENV"
+          echo "UA2_EXIT_CODE=$RC" >> "$GITHUB_ENV"
           echo "exit_code=$RC" >> "$GITHUB_OUTPUT"
-          if [ ! -s "$OUT/QA4_RUNTIME_SUMMARY.txt" ]; then
+          if [ ! -s "$OUT/UA2_RUNTIME_SUMMARY.txt" ]; then
             {
               echo "STATUS=TIDAK TAHU"
               echo "REASON=artifact_expired_or_input_validation_or_runtime_restore_failed"
               echo "SOURCE_RUN=39907655833"
               echo "ARTIFACT_ID=12482055310"
-              echo "GAMEPLAY_INPUT=NONE"
+              echo "GAMEPLAY_INPUT=NO_INPUT_VS_PERIODIC_CIRCLE"
               echo "COLD_BOOT_FALLBACK=no"
               echo "SETUP_EXIT_CODE=$RC"
-            } > "$OUT/QA4_RUNTIME_SUMMARY.txt"
+            } > "$OUT/UA2_RUNTIME_SUMMARY.txt"
           fi
 
       - name: Remove checkpoint, BIOS, disc, emulator, and temporary source
@@ -312,45 +313,45 @@ jobs:
           set -euo pipefail
           DEST="reports/stage1_economy/qa-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$DEST"
-          find "$OUT" -maxdepth 1 -type f \( -name 'QA4_*.txt' -o -name 'QA4_*.tsv' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
-          RC="${QA4_EXIT_CODE:-TIDAK_TAHU}"
-          QA4_STATUS="$(sed -n 's/^STATUS=//p' "$DEST/QA4_RUNTIME_SUMMARY.txt" | head -n 1 || true)"
-          [ -n "$QA4_STATUS" ] || QA4_STATUS=TIDAK_TAHU
+          find "$OUT" -maxdepth 1 -type f \( -name 'UA2_*.txt' -o -name 'UA2_*.tsv' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
+          RC="${UA2_EXIT_CODE:-TIDAK_TAHU}"
+          UA2_STATUS="$(sed -n 's/^STATUS=//p' "$DEST/UA2_RUNTIME_SUMMARY.txt" | head -n 1 || true)"
+          [ -n "$UA2_STATUS" ] || UA2_STATUS=TIDAK_TAHU
           JOB_ID="$(curl --fail --silent --show-error -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" \
-            | jq -r '.jobs[] | select(.name=="qa4-headless-readonly-control-trace") | .id' | head -n 1)"
+            | jq -r '.jobs[] | select(.name=="ua2-headless-fee-ab-trace") | .id' | head -n 1)"
           {
-            echo "STATUS=$QA4_STATUS"
-            echo "JOB=qa4-headless-readonly-control-trace"
+            echo "STATUS=$UA2_STATUS"
+            echo "JOB=ua2-headless-fee-ab-trace"
             echo "JOB_ID=$JOB_ID"
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "SOURCE_SHA=$GITHUB_SHA"
             echo "EXIT_CODE=$RC"
             echo "CHECKPOINT_RUN=39907655833"
             echo "CHECKPOINT_ARTIFACT=12482055310"
-            echo "GAMEPLAY_INPUT=NONE"
+            echo "GAMEPLAY_INPUT=NO_INPUT_VS_PERIODIC_CIRCLE"
             echo "REGISTER_WRITE=NONE"
             echo "MEMORY_WRITE=NONE"
             echo "PRIVATE_INPUT_COMMITTED=no"
             echo "RELEASES_MODIFIED=no"
-          } > "$DEST/ACTIONS_RUN_SUMMARY_QA4.txt"
+          } > "$DEST/ACTIONS_RUN_SUMMARY_UA2.txt"
           git add -- "$DEST"
           python3 - "$DEST" <<'PY'
           import subprocess,sys
           from pathlib import Path
           dest=Path(sys.argv[1])
           rows=subprocess.check_output(["git","diff","--cached","--name-status"],text=True).splitlines()
-          with (dest/"QA4_PUBLISH_COMMIT_FILES.tsv").open("w",encoding="utf-8",newline="") as f:
+          with (dest/"UA2_PUBLISH_COMMIT_FILES.tsv").open("w",encoding="utf-8",newline="") as f:
               f.write("status\tpath\n")
               for line in rows:
                   status,path=line.split("\t",1);f.write(status+"\t"+path+"\n")
-              f.write("A\t"+str(dest/"QA4_PUBLISH_COMMIT_FILES.tsv")+"\n")
+              f.write("A\t"+str(dest/"UA2_PUBLISH_COMMIT_FILES.tsv")+"\n")
           PY
-          git add -- "$DEST/QA4_PUBLISH_COMMIT_FILES.tsv"
+          git add -- "$DEST/UA2_PUBLISH_COMMIT_FILES.tsv"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c qa4-publish
-          git commit -m "Publish QA4 read-only CONTROL trace $GITHUB_RUN_ID [skip ci]"
+          git commit -m "Publish UA2 fee A/B runtime trace $GITHUB_RUN_ID [skip ci]"
           PUSHED=0
           for attempt in 1 2 3 4 5; do
             if git pull --rebase origin main && git push origin HEAD:main; then PUSHED=1; break; fi
@@ -359,8 +360,8 @@ jobs:
           done
           test "$PUSHED" = 1
           PUBLISH_SHA="$(git rev-parse HEAD)"
-          RAW="https://raw.githubusercontent.com/$RESEARCH_REPO/$PUBLISH_SHA/$DEST/ACTIONS_RUN_SUMMARY_QA4.txt"
-          REPORT="https://raw.githubusercontent.com/$RESEARCH_REPO/$PUBLISH_SHA/$DEST/QA4_RUNTIME_SUMMARY.txt"
+          RAW="https://raw.githubusercontent.com/$RESEARCH_REPO/$PUBLISH_SHA/$DEST/ACTIONS_RUN_SUMMARY_UA2.txt"
+          REPORT="https://raw.githubusercontent.com/$RESEARCH_REPO/$PUBLISH_SHA/$DEST/UA2_RUNTIME_SUMMARY.txt"
           test "$(curl --silent --show-error --location -o /dev/null -w '%{http_code}' "$RAW")" = 200
           test "$(curl --silent --show-error --location -o /dev/null -w '%{http_code}' "$REPORT")" = 200
           echo "PUBLISH_SHA=$PUBLISH_SHA" >> "$GITHUB_STEP_SUMMARY"
@@ -368,8 +369,8 @@ jobs:
           echo "$REPORT" >> "$GITHUB_STEP_SUMMARY"
           echo "dest=$DEST" >> "$GITHUB_OUTPUT"
 
-      - name: Return QA4 runtime result after evidence publication
+      - name: Return UA2 runtime result after evidence publication
         if: always()
         shell: bash
         run: |
-          test "${QA4_EXIT_CODE:-99}" = 0
+          test "${UA2_EXIT_CODE:-99}" = 0
