@@ -129,3 +129,5 @@ bd91cb50d1b09fe683cd175223453a98c8d9dc13	Record RA3 H1 H2 gate as not met	A	repo
 fa2a40e59df379ac46496ad13cbb66244ffbe095	Include latest scheduled monitor in complete Actions ledger [skip ci]	A	reports/stage1_economy/ra4/actions/monitor-run-42535761905.txt
 fa2a40e59df379ac46496ad13cbb66244ffbe095	Include latest scheduled monitor in complete Actions ledger [skip ci]	M	reports/stage1_economy/ra4/RA4_ACTIONS_RUNS.tsv
 fa2a40e59df379ac46496ad13cbb66244ffbe095	Include latest scheduled monitor in complete Actions ledger [skip ci]	M	reports/stage1_economy/ra4/RA4_LEDGER.md
+e0b71793dd7a93d9a277bf5f0d5983f1604b11df	Finalize raw links and record follow-up ledger commits [skip ci]	M	reports/stage1_economy/ra4/RA4_ACTIONS_RAW_LINKS.txt
+e0b71793dd7a93d9a277bf5f0d5983f1604b11df	Finalize raw links and record follow-up ledger commits [skip ci]	M	reports/stage1_economy/ra4/RA4_COMMITS.tsv
