@@ -88,12 +88,12 @@ def main():
     stage=root/"reports"/"stage1_economy"
     baseline=a.baseline
     pa_baseline=a.pa_prune_baseline
-    diff_text=subprocess.check_output(["git","-C",str(root),"diff","--name-status",baseline+"...HEAD"],text=True)
+    diff_text=subprocess.check_output(["git","-C",str(root),"diff","--no-renames","--name-status",baseline+"...HEAD"],text=True)
     changed={}
     for line in diff_text.splitlines():
         fields=line.split("\t",1)
         if len(fields)==2: changed[fields[1]]=fields[0]
-    pa_diff_text=subprocess.check_output(["git","-C",str(root),"diff","--name-status",pa_baseline+"...HEAD"],text=True)
+    pa_diff_text=subprocess.check_output(["git","-C",str(root),"diff","--no-renames","--name-status",pa_baseline+"...HEAD"],text=True)
     pa_changed={}
     for line in pa_diff_text.splitlines():
         fields=line.split("\t",1)

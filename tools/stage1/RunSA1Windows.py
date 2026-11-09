@@ -152,11 +152,11 @@ def main() -> int:
     with (OUT / "SA1_STACK_SLOT_TEST.tsv").open("w", encoding="utf-8", newline="") as f:
         w = csv.writer(f, delimiter="\t", lineterminator="\n")
         w.writerow(["target_pc", "function_entry_candidate", "prolog_sw_ra_offsets", "sp_plus_0x14_static_test",
-                    "caller_pc", "caller_instruction", "direct_call_target", "jal_return_pc"])
+                    "caller_pc", "caller_instruction", "call_target", "call_return_pc"])
         w.writerow([f"0x{TARGET_PC:08X}", f"0x{prolog_pc:08X}" if prolog_pc else "TIDAK_TAHU",
                     ";".join(f"0x{x & 0xFFFF:04X}" for x in store_offsets) if store_offsets else "TIDAK_TAHU",
                     stack_test, f"0x{CALL_PC:08X}", call_ins["text"], call_target_text,
-                    f"0x{return_pc:08X}" if call_ins["op"] == 3 else "TIDAK_TAHU"])
+                    f"0x{return_pc:08X}" ])
 
     runtime_path1 = Path("reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_LAUNCH1_TRACE.tsv")
     runtime_path2 = Path("reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_LAUNCH2_TRACE.tsv")
@@ -183,7 +183,16 @@ def main() -> int:
     except Exception as exc:
         runtime["error"] = type(exc).__name__ + ":" + str(exc)
 
-    status = "PASS" if candidate and stack_test == "YES" and call_ins["op"] == 3 and call_target == prolog_pc and runtime["status"] == "PASS" else "BELUM"
+    is_jal = call_ins["op"] == 3
+    is_jalr = call_ins["op"] == 0 and (call_ins["word"] & 0x3F) == 0x09
+    direct_target_matches = is_jal and call_target == prolog_pc
+    indirect_call_correlated = is_jalr and runtime["status"] == "PASS"
+    caller_link_supported = direct_target_matches or indirect_call_correlated
+    saved_ra_matches_return = (
+        runtime["status"] == "PASS"
+        and all(runtime["saved_values"][i] == [str(return_pc)] for i in (0, 1))
+    )
+    status = "PASS" if candidate and stack_test == "YES" and caller_link_supported and saved_ra_matches_return else "BELUM"
     summary = [
         f"STATUS={status}",
         "EVIDENCE_MODE=STATIC_EXE_AND_DATA_BIN_PLUS_PRIOR_RA1_RUNTIME",
@@ -193,8 +202,11 @@ def main() -> int:
         f"CALL_PC=0x{CALL_PC:08X}",
         f"CALL_FILE_OFFSET=0x{call_offset:X}",
         f"CALL_INSTRUCTION={call_ins['text']}",
+        "CALL_LINK_TYPE=JAL_DIRECT" if is_jal else ("JALR_INDIRECT" if is_jalr else "OTHER_OR_TIDAK_TAHU"),
         f"CALL_TARGET={call_target_text}",
-        f"JAL_RETURN_PC=0x{return_pc:08X}",
+        f"CALL_RETURN_PC=0x{return_pc:08X}",
+        "CALL_TARGET_RESOLUTION=STATIC_DIRECT_MATCH" if direct_target_matches else ("INDIRECT_REGISTER_TARGET_TIDAK_TAHU" if is_jalr else "TIDAK_TAHU"),
+        f"RUNTIME_SAVED_RA_MATCH_CALL_RETURN={'YES' if saved_ra_matches_return else 'NO_OR_TIDAK_TAHU'}",
         f"TARGET_PC=0x{TARGET_PC:08X}",
         f"TARGET_ENTRY1_FILE_OFFSET=0x{ENTRY1_FILE_OFFSET + (TARGET_PC - ENTRY1_BASE):X}",
         f"FUNCTION_ENTRY_CANDIDATE={f'0x{prolog_pc:08X}' if prolog_pc else 'TIDAK_TAHU'}",
