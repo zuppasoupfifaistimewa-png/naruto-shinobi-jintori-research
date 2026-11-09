@@ -90,7 +90,7 @@ Jumlah sampel upgrade independen: 0. H1 (x=d) dan H2 (x=effect/item/action ID) b
 | RA2 | 10 | 10 | 9 job gagal (exit 1); 1 job selesai exit 0 tetapi tidak menemukan upgrade (RA2 tetap BELUM). |
 | RA1 | 1 | 1 | Job sukses (exit 0); stage SEBAGIAN karena caller outer masih TIDAK TAHU. |
 | KA/LA/MA/NA side-effect runs | 8 | 8 | 6 sukses; 2 LA gagal pada langkah publikasi setelah analisis statis. |
-| Monitor terjadwal | 24 | 24 | Seluruh 25 sukses (exit 0), monitor saja—bukan bukti gameplay/adaptive readiness. |
+| Monitor terjadwal | 25 | 25 | Seluruh 25 sukses (exit 0), monitor saja—bukan bukti gameplay/adaptive readiness. |
 | **Total** | **50** | **56** | **39 job exit 0; 17 job exit 1.** |
 
 Job ID, source SHA, stage status, exit code, dan path ringkasan setiap run tersedia di `RA4_ACTIONS_RUNS.tsv`. Satu file ringkasan pendek per Actions run tersedia di `ra4/actions/`; run RA1/RA2 juga punya ringkasan khusus pada folder run masing-masing. Permalink raw terverifikasi dicatat di `RA4_ACTIONS_RAW_LINKS.txt`.

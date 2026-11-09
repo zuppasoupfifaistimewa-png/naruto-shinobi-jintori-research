@@ -131,3 +131,5 @@ fa2a40e59df379ac46496ad13cbb66244ffbe095	Include latest scheduled monitor in com
 fa2a40e59df379ac46496ad13cbb66244ffbe095	Include latest scheduled monitor in complete Actions ledger [skip ci]	M	reports/stage1_economy/ra4/RA4_LEDGER.md
 e0b71793dd7a93d9a277bf5f0d5983f1604b11df	Finalize raw links and record follow-up ledger commits [skip ci]	M	reports/stage1_economy/ra4/RA4_ACTIONS_RAW_LINKS.txt
 e0b71793dd7a93d9a277bf5f0d5983f1604b11df	Finalize raw links and record follow-up ledger commits [skip ci]	M	reports/stage1_economy/ra4/RA4_COMMITS.tsv
+853eb7159df843785c9c5e6c9a4a080c9be9f19f	Correct RA4 total after final scheduled monitor inclusion [skip ci]	M	reports/stage1_economy/ra4/RA4_LEDGER.md
+853eb7159df843785c9c5e6c9a4a080c9be9f19f	Correct RA4 total after final scheduled monitor inclusion [skip ci]	M	reports/stage1_economy/ra4/RA4_COMMITS.tsv
