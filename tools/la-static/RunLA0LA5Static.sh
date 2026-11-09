@@ -1011,7 +1011,11 @@ for line in ub_raw.splitlines():
 wr(out/"UB3_LEDGER_COMMITS.tsv",ub_commits,
    ["sha","parent_sha","date_utc","author","email","class","subject",
     "changed_files","added","modified","removed","renamed","skip_ci"])
-wr(out/"UB3_LEDGER_COMMIT_FILES.tsv",ub_file_events,
+ub_file_event_rows=[
+    {"commit_sha":row[0],"status":row[1],"path":row[2]}
+    for row in ub_file_events
+]
+wr(out/"UB3_LEDGER_COMMIT_FILES.tsv",ub_file_event_rows,
    ["commit_sha","status","path"])
 ub_shas={x["sha"] for x in ub_commits}
 ub_actions=[]
