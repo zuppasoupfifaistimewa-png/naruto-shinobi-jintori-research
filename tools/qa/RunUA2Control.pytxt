@@ -92,16 +92,21 @@ local function finish(reason)
     PCSX.pauseEmulator()
     PCSX.nextTick(function() PCSX.quit(0) end)
 end
+_G.ua2Breakpoints={}
 for _,pc in ipairs(BPS) do
-    PCSX.addBreakpoint(pc,"Exec",4,function(address,width,cause)
-        if not finishing and loaded>0 then
-            local vals=watchValues()
-            feeFile:write(tostring(postFrames).."\t"..string.format("0x%08X",pc).."\t"..table.concat(vals,"\t").."\t"..registers().."\n")
-            feeFile:flush()
-            finish("FEE_BREAKPOINT_"..string.format("0x%08X",pc))
-        end
-        return true
-    end,"UA2_FEE_"..string.format("%08X",pc))
+    _G.ua2Breakpoints[#_G.ua2Breakpoints+1]=PCSX.addBreakpoint(
+        pc,"Exec",4,"UA2 fee breakpoint "..string.format("0x%08X",pc),
+        function(address,width,cause)
+            if not finishing and loaded>0 then
+                local vals=watchValues()
+                feeFile:write(tostring(postFrames).."\t"..string.format("0x%08X",pc).."\t"..table.concat(vals,"\t").."\t"..registers().."\n")
+                feeFile:flush()
+                finish("FEE_BREAKPOINT_"..string.format("0x%08X",pc))
+            end
+            return true
+        end,
+        "UA2_FEE_"..string.format("%08X",pc)
+    )
 end
 _G.ua2Save=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
     loaded=loaded+1
