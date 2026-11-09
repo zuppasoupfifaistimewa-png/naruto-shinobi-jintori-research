@@ -1,0 +1,2 @@
+return_pc	return_bytes	v0_before_delay_slot	delay_slot_pc	delay_slot_bytes	delay_slot_instruction	v0_after_delay_slot	interpretation
+0x80015540	08 00 E0 03	0x80015538 addiu $v0, $v0, 1 [01 00 42 24]	0x80015544	01 00 02 24	addiu $v0, $zero, 1	0x00000001	MIPS executes the JR delay slot before return; v0_after_delay_slot is the actual returned value

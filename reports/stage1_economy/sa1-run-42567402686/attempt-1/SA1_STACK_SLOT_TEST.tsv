@@ -1,0 +1,2 @@
+target_pc	function_entry_candidate	prolog_sw_ra_offsets	sp_plus_0x14_static_test	caller_pc	caller_instruction	call_target	call_return_pc
+0x800B54DC	0x800B50AC	0x0014	YES	0x80011A28	jalr $v0	TIDAK_TAHU	0x80011A30

@@ -1,0 +1,76 @@
+writer_pc	pc	file_offset	bytes	instruction	role	source	reason
+0x800D09C8	0x800D0998	0x010DE548	E7 43 03 08	j 0x800d0f9c	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D099C	0x010DE54C	00 00 00 00	nop	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09A0	0x010DE550	14 80 11 3C	lui $s1, 0x8014	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09A4	0x010DE554	14 80 02 3C	lui $v0, 0x8014	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09A8	0x010DE558	74 EA 42 8C	lw $v0, -0x158c($v0)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09AC	0x010DE55C	00 00 00 00	nop	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09B0	0x010DE560	70 03 42 8C	lw $v0, 0x370($v0)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09B4	0x010DE564	00 00 00 00	nop	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09B8	0x010DE568	B0 EB 22 AE	sw $v0, -0x1450($s1)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09BC	0x010DE56C	02 09 04 0C	jal 0x80102408	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09C0	0x010DE570	14 80 10 3C	lui $s0, 0x8014	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09C4	0x010DE574	21 20 40 00	move $a0, $v0	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09C8	0x010DE578	FC 9E 04 AE	sw $a0, -0x6104($s0)	named fee-global writer	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09CC	0x010DE57C	B0 EB 23 8E	lw $v1, -0x1450($s1)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09D0	0x010DE580	01 00 02 24	addiu $v0, $zero, 1	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09D4	0x010DE584	70 01 62 14	bne $v1, $v0, 0x800d0f98	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09D8	0x010DE588	01 00 83 24	addiu $v1, $a0, 1	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09DC	0x010DE58C	08 00 62 2C	sltiu $v0, $v1, 8	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09E0	0x010DE590	6D 01 40 10	beqz $v0, 0x800d0f98	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09E4	0x010DE594	0B 80 02 3C	lui $v0, 0x800b	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09E8	0x010DE598	C8 DA 42 24	addiu $v0, $v0, -0x2538	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09EC	0x010DE59C	80 18 03 00	sll $v1, $v1, 2	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09F0	0x010DE5A0	21 18 62 00	addu $v1, $v1, $v0	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09F4	0x010DE5A4	00 00 62 8C	lw $v0, ($v1)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800D09C8	0x800D09F8	0x010DE5A8	00 00 00 00	nop	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DF9F8	0x010ED5A8	07 00 04 24	addiu $a0, $zero, 7	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DF9FC	0x010ED5AC	34 01 40 14	bnez $v0, 0x800dfed0	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA00	0x010ED5B0	14 80 11 3C	lui $s1, 0x8014	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA04	0x010ED5B4	14 80 02 3C	lui $v0, 0x8014	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA08	0x010ED5B8	74 EA 42 8C	lw $v0, -0x158c($v0)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA0C	0x010ED5BC	00 00 00 00	nop	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA10	0x010ED5C0	70 03 42 8C	lw $v0, 0x370($v0)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA14	0x010ED5C4	00 00 00 00	nop	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA18	0x010ED5C8	B0 EB 22 AE	sw $v0, -0x1450($s1)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA1C	0x010ED5CC	02 09 04 0C	jal 0x80102408	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA20	0x010ED5D0	14 80 10 3C	lui $s0, 0x8014	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA24	0x010ED5D4	21 20 40 00	move $a0, $v0	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA28	0x010ED5D8	FC 9E 04 AE	sw $a0, -0x6104($s0)	named fee-global writer	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA2C	0x010ED5DC	B0 EB 23 8E	lw $v1, -0x1450($s1)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA30	0x010ED5E0	01 00 02 24	addiu $v0, $zero, 1	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA34	0x010ED5E4	C6 00 62 14	bne $v1, $v0, 0x800dfd50	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA38	0x010ED5E8	14 80 02 3C	lui $v0, 0x8014	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA3C	0x010ED5EC	01 00 83 24	addiu $v1, $a0, 1	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA40	0x010ED5F0	06 00 62 2C	sltiu $v0, $v1, 6	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA44	0x010ED5F4	BF 00 40 10	beqz $v0, 0x800dfd44	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA48	0x010ED5F8	0B 80 02 3C	lui $v0, 0x800b	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA4C	0x010ED5FC	38 E4 42 24	addiu $v0, $v0, -0x1bc8	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA50	0x010ED600	80 18 03 00	sll $v1, $v1, 2	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA54	0x010ED604	21 18 62 00	addu $v1, $v1, $v0	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800DFA28	0x800DFA58	0x010ED608	00 00 62 8C	lw $v0, ($v1)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1A4	0x010F7D54	14 80 02 3C	lui $v0, 0x8014	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1A8	0x010F7D58	BC EA 40 A0	sb $zero, -0x1544($v0)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1AC	0x010F7D5C	14 80 12 3C	lui $s2, 0x8014	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1B0	0x010F7D60	14 80 11 3C	lui $s1, 0x8014	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1B4	0x010F7D64	74 EA 22 8E	lw $v0, -0x158c($s1)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1B8	0x010F7D68	00 00 00 00	nop	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1BC	0x010F7D6C	70 03 42 8C	lw $v0, 0x370($v0)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1C0	0x010F7D70	00 00 00 00	nop	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1C4	0x010F7D74	B0 EB 42 AE	sw $v0, -0x1450($s2)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1C8	0x010F7D78	02 09 04 0C	jal 0x80102408	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1CC	0x010F7D7C	14 80 10 3C	lui $s0, 0x8014	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1D0	0x010F7D80	21 30 40 00	move $a2, $v0	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1D4	0x010F7D84	FC 9E 06 AE	sw $a2, -0x6104($s0)	named fee-global writer	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1D8	0x010F7D88	74 EA 24 8E	lw $a0, -0x158c($s1)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1DC	0x010F7D8C	B0 EB 43 8E	lw $v1, -0x1450($s2)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1E0	0x010F7D90	00 00 00 00	nop	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1E4	0x010F7D94	34 09 83 AC	sw $v1, 0x934($a0)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1E8	0x010F7D98	30 03 82 8C	lw $v0, 0x330($a0)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1EC	0x010F7D9C	00 00 00 00	nop	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1F0	0x010F7DA0	38 09 82 AC	sw $v0, 0x938($a0)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1F4	0x010F7DA4	48 03 82 8C	lw $v0, 0x348($a0)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1F8	0x010F7DA8	00 00 00 00	nop	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA1FC	0x010F7DAC	3C 09 82 AC	sw $v0, 0x93c($a0)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA200	0x010F7DB0	30 09 85 8C	lw $a1, 0x930($a0)	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant
+0x800EA1D4	0x800EA204	0x010F7DB4	00 00 00 00	nop	caller/writer local context	Entry 1 raw bytes	context window only; does not assert a runtime argument constant

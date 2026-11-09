@@ -1,0 +1,3 @@
+pc	correct_file_offset	bytes	instruction	source	reason
+0x800ECA2C	0x010FA5DC	00 00 62 90	lbu $v0, ($v1)	Entry 1 offset formula	lbu tile+0x00; corrected mapping replaces prior offset transcription
+0x800ECA34	0x010FA5E4	0C 00 4A 14	bne $v0, $t2, 0x800eca68	Entry 1 offset formula	branch compare against immediate 5; corrected mapping replaces prior offset transcription

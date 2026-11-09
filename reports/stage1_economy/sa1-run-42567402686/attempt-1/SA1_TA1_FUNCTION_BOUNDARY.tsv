@@ -1,0 +1,4 @@
+category	pc	instruction	branch_target
+ADDIU_SP	0x800B50AC	addiu $sp, $sp, -0x18	
+SW_RA	0x800B50B0	sw $ra, 0x14($sp)	
+BRANCH_TO_B54DC_INTERNAL	0x800B54C0	beqz $v0, 0x800b54dc	0x800B54DC
