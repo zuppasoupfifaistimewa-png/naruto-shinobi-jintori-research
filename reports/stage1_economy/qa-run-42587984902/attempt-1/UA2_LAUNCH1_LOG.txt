@@ -1,0 +1,10 @@
+LAUNCH=1
+INPUT=NONE
+1: (Table) 
+2: (String) [string "src:core/pcsxffi.lua"]:137: PCSX.addBreakpoint needs a cause that is a string 
+3: (String) at =[C]:-1 ([top]) 
+4: (String) at =[C]:-1 (error) 
+5: (String) at src:core/pcsxffi.lua:137 (addBreakpoint) 
+6: (String) at @/tmp/naruto-qa-private-42587984902-1/runtime/launch1/ua2.lua:66 (dofile) 
+7: (String) at internal:dofile.lua:1 ([top]) 
+Runtime error while running LUA code.
