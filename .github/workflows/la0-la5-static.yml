@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: naruto-la0-la5-static
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   la0-la5-static:

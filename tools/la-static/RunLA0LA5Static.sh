@@ -971,6 +971,7 @@ ub1_summary=[
     "B50AC_END_JR_ROW="+(jr_row["instruksi"] if jr_row else "TIDAK TAHU"),
     "B50AC_END_PROLOG_5790="+(prolog_row["instruksi"] if prolog_row else "TIDAK TAHU"),
     "CALLER_CONTEXT_GAP=0x80011A24..0x80011A27 intentionally omitted to separate 28-byte pre-call excerpt from protected 64-byte SA1 window",
+    "REACHING_DEFINITION_POLICY=TIDAK TAHU rows are unresolved placeholders and carry no instruction-byte evidence",
     "RUNTIME=NOT_PERFORMED",
 ]
 txt(out/"UB1_STATIC_SUMMARY.txt","\n".join(ub1_summary)+"\n")
