@@ -5892,7 +5892,6 @@ EXE	0x800468AC	0x000370AC	08 00 80 AC	sw $zero, 8($a0)	8	$a0	base not statically
 EXE	0x800468B0	0x000370B0	37 00 80 A0	sb $zero, 0x37($a0)	55	$a0	base not statically constant; dynamic alias not ruled out
 EXE	0x800468B4	0x000370B4	38 00 80 A0	sb $zero, 0x38($a0)	56	$a0	base not statically constant; dynamic alias not ruled out
 EXE	0x800468B8	0x000370B8	39 00 80 A0	sb $zero, 0x39($a0)	57	$a0	base not statically constant; dynamic alias not ruled out
-EXE	0x800468BC	0x000370BC	00 00 65 A0	sb $a1, ($v1)	0	$v1	base not statically constant; dynamic alias not ruled out
 EXE	0x800468DC	0x000370DC	10 00 B0 AF	sw $s0, 0x10($sp)	16	$sp	base not statically constant; dynamic alias not ruled out
 EXE	0x800468E8	0x000370E8	1C 00 B3 AF	sw $s3, 0x1c($sp)	28	$sp	base not statically constant; dynamic alias not ruled out
 EXE	0x800468F4	0x000370F4	18 00 B2 AF	sw $s2, 0x18($sp)	24	$sp	base not statically constant; dynamic alias not ruled out
@@ -6580,7 +6579,6 @@ EXE	0x8004CB94	0x0003D394	56 00 00 A6	sh $zero, 0x56($s0)	86	$s0	base not static
 EXE	0x8004CB98	0x0003D398	21 00 00 A2	sb $zero, 0x21($s0)	33	$s0	base not statically constant; dynamic alias not ruled out
 EXE	0x8004CB9C	0x0003D39C	20 00 02 A2	sb $v0, 0x20($s0)	32	$s0	base not statically constant; dynamic alias not ruled out
 EXE	0x8004CBA0	0x0003D3A0	14 00 00 A2	sb $zero, 0x14($s0)	20	$s0	base not statically constant; dynamic alias not ruled out
-EXE	0x8004CBA4	0x0003D3A4	90 00 00 AE	sw $zero, 0x90($s0)	144	$s0	base not statically constant; dynamic alias not ruled out
 EXE	0x8004CBA8	0x0003D3A8	1C 00 00 A2	sb $zero, 0x1c($s0)	28	$s0	base not statically constant; dynamic alias not ruled out
 EXE	0x8004CBAC	0x0003D3AC	1D 00 00 A2	sb $zero, 0x1d($s0)	29	$s0	base not statically constant; dynamic alias not ruled out
 EXE	0x8004CBB0	0x0003D3B0	15 00 00 A2	sb $zero, 0x15($s0)	21	$s0	base not statically constant; dynamic alias not ruled out
@@ -6786,7 +6784,6 @@ EXE	0x8004E7FC	0x0003EFFC	1D 00 00 A2	sb $zero, 0x1d($s0)	29	$s0	base not static
 EXE	0x8004E800	0x0003F000	15 00 00 A2	sb $zero, 0x15($s0)	21	$s0	base not statically constant; dynamic alias not ruled out
 EXE	0x8004E804	0x0003F004	16 00 00 A2	sb $zero, 0x16($s0)	22	$s0	base not statically constant; dynamic alias not ruled out
 EXE	0x8004E808	0x0003F008	90 00 02 AE	sw $v0, 0x90($s0)	144	$s0	base not statically constant; dynamic alias not ruled out
-EXE	0x8004E80C	0x0003F00C	94 00 03 AE	sw $v1, 0x94($s0)	148	$s0	base not statically constant; dynamic alias not ruled out
 EXE	0x8004E810	0x0003F010	54 00 04 A6	sh $a0, 0x54($s0)	84	$s0	base not statically constant; dynamic alias not ruled out
 EXE	0x8004E814	0x0003F014	00 00 05 AE	sw $a1, ($s0)	0	$s0	base not statically constant; dynamic alias not ruled out
 EXE	0x8004E818	0x0003F018	08 00 06 AE	sw $a2, 8($s0)	8	$s0	base not statically constant; dynamic alias not ruled out
@@ -7263,7 +7260,6 @@ ENTRY1	0x800B24D8	0x010C0088	48 03 40 AC	sw $zero, 0x348($v0)	840	$v0	base not s
 ENTRY1	0x800B24DC	0x010C008C	61 03 40 A0	sb $zero, 0x361($v0)	865	$v0	base not statically constant; dynamic alias not ruled out
 ENTRY1	0x800B24E8	0x010C0098	54 03 40 AC	sw $zero, 0x354($v0)	852	$v0	base not statically constant; dynamic alias not ruled out
 ENTRY1	0x800B24EC	0x010C009C	58 03 40 AC	sw $zero, 0x358($v0)	856	$v0	base not statically constant; dynamic alias not ruled out
-ENTRY1	0x800B24F0	0x010C00A0	70 03 40 AC	sw $zero, 0x370($v0)	880	$v0	base not statically constant; dynamic alias not ruled out
 ENTRY1	0x800B24F4	0x010C00A4	74 03 40 A0	sb $zero, 0x374($v0)	884	$v0	base not statically constant; dynamic alias not ruled out
 ENTRY1	0x800B2508	0x010C00B8	00 00 62 AC	sw $v0, ($v1)	0	$v1	base not statically constant; dynamic alias not ruled out
 ENTRY1	0x800B2514	0x010C00C4	EC 04 60 A0	sb $zero, 0x4ec($v1)	1260	$v1	base not statically constant; dynamic alias not ruled out
@@ -8418,7 +8414,6 @@ ENTRY1	0x800BE5E8	0x010CC198	20 00 B4 AF	sw $s4, 0x20($sp)	32	$sp	base not stati
 ENTRY1	0x800BE5EC	0x010CC19C	1C 00 B3 AF	sw $s3, 0x1c($sp)	28	$sp	base not statically constant; dynamic alias not ruled out
 ENTRY1	0x800BE5F0	0x010CC1A0	18 00 B2 AF	sw $s2, 0x18($sp)	24	$sp	base not statically constant; dynamic alias not ruled out
 ENTRY1	0x800BE5F4	0x010CC1A4	14 00 B1 AF	sw $s1, 0x14($sp)	20	$sp	base not statically constant; dynamic alias not ruled out
-ENTRY1	0x800BE5FC	0x010CC1AC	10 00 B0 AF	sw $s0, 0x10($sp)	16	$sp	base not statically constant; dynamic alias not ruled out
 ENTRY1	0x800BE6A8	0x010CC258	00 00 43 A4	sh $v1, ($v0)	0	$v0	base not statically constant; dynamic alias not ruled out
 ENTRY1	0x800BE778	0x010CC328	00 00 82 A4	sh $v0, ($a0)	0	$a0	base not statically constant; dynamic alias not ruled out
 ENTRY1	0x800BEA98	0x010CC648	00 00 62 A0	sb $v0, ($v1)	0	$v1	base not statically constant; dynamic alias not ruled out

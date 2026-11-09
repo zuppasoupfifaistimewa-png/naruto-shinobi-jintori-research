@@ -1,4 +1,1 @@
 image	pc	file_offset	bytes	instruksi	expected_target	actual_target	manual_prolog	prolog_reason
-ENTRY1	0x800F5F54	0x01103B04	A7 CA 03 0C	jal 0x800f2a9c	0x800F2A9C	0x800F2A9C	0x800F3658	stack adjustment followed by ra store
-ENTRY1	0x800B54DC	0x010C308C	96 CD 03 0C	jal 0x800f3658	0x800F3658	0x800F3658	0x800B50AC	stack adjustment followed by ra store
-ENTRY1	0x800F5EBC	0x01103A6C	B8 70 03 0C	jal 0x800dc2e0	0x800DC2E0	0x800DC2E0	0x800F3658	stack adjustment followed by ra store
