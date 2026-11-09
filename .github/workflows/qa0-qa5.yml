@@ -1,4 +1,5 @@
 name: QA0-QA5 bounded evidence and CONTROL trace
+# SA0 audit run: baseline is 3d3eff5d9e0e03b0742423be241473cf60bb3736
 
 on:
   push:
