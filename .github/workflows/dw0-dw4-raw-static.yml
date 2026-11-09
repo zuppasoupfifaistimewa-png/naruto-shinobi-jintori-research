@@ -1,4 +1,5 @@
 name: DW0-DW4 raw-byte static economy audit
+# SA1 is emitted from the same private EXE and DATA.BIN extraction step.
 
 on:
   push:
