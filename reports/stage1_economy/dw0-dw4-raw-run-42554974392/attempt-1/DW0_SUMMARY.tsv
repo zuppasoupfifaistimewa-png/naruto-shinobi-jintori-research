@@ -1,0 +1,2 @@
+baseline_inclusive	snapshot_source_sha	head_at_analysis	total_inclusive	human	bot	publication_bot_commit_included	reason
+2d334348b55dd672b3a2b0e428795c8ce817135b	ad16f08322c99f5612f1139f5bf5ae8a7d4f4fa8	ad16f08322c99f5612f1139f5bf5ae8a7d4f4fa8	223	152	71	NO; publication is after analysis snapshot	snapshot_source_sha and HEAD_at_analysis are recorded separately; publication commit is outside this ledger

@@ -1,0 +1,14 @@
+selector	resource_id	data_bin_offset	size_bytes	header_byte	header_count_matches_extent	record_size	record_count_by_extent	size_remainder	count_byte_1	count_byte_5	records_without_byte_00	truncated_records	tile20_initial_word	tile20_bits12_15	tile20_bits8_11	tile20_initialized_record_count	source	reason
+0x000	0x276	0x011DE000	661	0x16	YES	0x1E	22	0	2	0	0	0	0xF020	0xF	0x0	22	CI1 selector inventory + verified DATA.BIN SHA	extent = 1-byte header + N full 0x1E-byte records; N is derived from extent length
+0x001	0x277	0x01232800	991	0x21	YES	0x1E	33	0	2	0	0	0	0xF020	0xF	0x0	33	CI1 selector inventory + verified DATA.BIN SHA	extent = 1-byte header + N full 0x1E-byte records; N is derived from extent length
+0x002	0x278	0x01287000	991	0x21	YES	0x1E	33	0	2	0	0	0	0xF020	0xF	0x0	33	CI1 selector inventory + verified DATA.BIN SHA	extent = 1-byte header + N full 0x1E-byte records; N is derived from extent length
+0x003	0x279	0x012D7800	1021	0x22	YES	0x1E	34	0	3	0	0	0	0xF020	0xF	0x0	34	CI1 selector inventory + verified DATA.BIN SHA	extent = 1-byte header + N full 0x1E-byte records; N is derived from extent length
+0x004	0x27A	0x0132C000	991	0x21	YES	0x1E	33	0	4	0	0	0	0xF020	0xF	0x0	33	CI1 selector inventory + verified DATA.BIN SHA	extent = 1-byte header + N full 0x1E-byte records; N is derived from extent length
+0x005	0x27B	0x0137F800	1291	0x2B	YES	0x1E	43	0	4	0	0	0	0xF020	0xF	0x0	43	CI1 selector inventory + verified DATA.BIN SHA	extent = 1-byte header + N full 0x1E-byte records; N is derived from extent length
+0x006	0x27C	0x013D4000	1141	0x26	YES	0x1E	38	0	3	0	0	0	0xF020	0xF	0x0	38	CI1 selector inventory + verified DATA.BIN SHA	extent = 1-byte header + N full 0x1E-byte records; N is derived from extent length
+0x008	0x27E	0x01474000	661	0x16	YES	0x1E	22	0	2	0	0	0	0xF020	0xF	0x0	22	CI1 selector inventory + verified DATA.BIN SHA	extent = 1-byte header + N full 0x1E-byte records; N is derived from extent length
+0x009	0x27F	0x014C8800	1141	0x26	YES	0x1E	38	0	3	0	0	0	0xF020	0xF	0x0	38	CI1 selector inventory + verified DATA.BIN SHA	extent = 1-byte header + N full 0x1E-byte records; N is derived from extent length
+0x00F	0x285	0x016C2800	1291	0x2B	YES	0x1E	43	0	4	0	0	0	0xF020	0xF	0x0	43	CI1 selector inventory + verified DATA.BIN SHA	extent = 1-byte header + N full 0x1E-byte records; N is derived from extent length
+0x010	0x286	0x01715800	1081	0x24	YES	0x1E	36	0	0	0	0	0	0xF020	0xF	0x0	36	CI1 selector inventory + verified DATA.BIN SHA	extent = 1-byte header + N full 0x1E-byte records; N is derived from extent length
+0x011	0x287	0x01768800	1201	0x28	YES	0x1E	40	0	0	0	0	0	0xF020	0xF	0x0	40	CI1 selector inventory + verified DATA.BIN SHA	extent = 1-byte header + N full 0x1E-byte records; N is derived from extent length
+ALL	TOTAL	MULTIPLE	12462	MULTIPLE	YES_ALL_12	0x1E	415	0	29	0	0	0	0xF020	0xF	0x0	415	verified extents across all 12 selector resources	aggregate row; runtime initializer applies per loaded tile

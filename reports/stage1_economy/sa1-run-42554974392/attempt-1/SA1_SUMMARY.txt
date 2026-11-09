@@ -1,0 +1,3 @@
+STATUS=TIDAK TAHU
+REASON=SA1 analyzer did not produce a summary
+EXIT_CODE=2
