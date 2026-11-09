@@ -26,8 +26,9 @@ local MAX_HITS = 64
 local FRAME_LIMIT = 900
 local MOD = 4294967296
 local loaded, started, post = false, false, 0
-local hits, inputErrors, circlePresses, circleReleases = 0, 0, 0, 0
+local callHits, helperHits, inputErrors, circlePresses, circleReleases = 0, 0, 0, 0, 0
 local bpCall, bpHelper = nil, nil
+local onHit
 local mem = PCSX.getMemPtr()
 local function hx(x)
   if x == nil then return "TIDAK_TAHU" end
@@ -48,15 +49,29 @@ local function log(s)
   pcall(function() io.stdout:flush() end)
 end
 local function arm()
+  if bpCall ~= nil or bpHelper ~= nil then
+    log("UB2_BREAKPOINT_ARM_REQUEST_IGNORED=ALREADY_ARMED")
+    return
+  end
   bpCall = PCSX.addBreakpoint(0x80011A28, "Exec", 4, "UB2 caller jalr 80011A28",
-    function(address) return onHit(address, "CALL_80011A28", bpCall) end)
+    function(address) return onHit(address, "CALL_80011A28") end)
   bpHelper = PCSX.addBreakpoint(0x800B50AC, "Exec", 4, "UB2 helper 800B50AC",
-    function(address) return onHit(address, "HELPER_800B50AC", bpHelper) end)
-  log("UB2_BREAKPOINTS_ARMED call=0x80011A28 helper=0x800B50AC")
+    function(address) return onHit(address, "HELPER_800B50AC") end)
+  log("UB2_BREAKPOINTS_ARMED call=0x80011A28 helper=0x800B50AC per_address_cap=32 total_cap=64")
 end
-function onHit(address, label, current)
+onHit = function(address, label)
+  local keep = true
   local ok, err = pcall(function()
-    hits = hits + 1
+    local addressHits
+    if label == "CALL_80011A28" then
+      if callHits >= 32 then keep=false; return end
+      callHits = callHits + 1
+      addressHits = callHits
+    else
+      if helperHits >= 32 then keep=false; return end
+      helperHits = helperHits + 1
+      addressHits = helperHits
+    end
     local r = PCSX.getRegisters()
     local g = r.GPR
     local a0 = tonumber(g.n.a0) % MOD
@@ -76,15 +91,13 @@ function onHit(address, label, current)
       fields[#fields+1] = "r"..tostring(i).."="..hx(g.r[i])
     end
     log(table.concat(fields, "\t"))
-    if hits >= MAX_HITS then
-      log("UB2_HIT_CAP_REACHED launch="..LAUNCH.." count="..hits)
-      if current == bpCall and bpHelper then pcall(function() bpHelper:disable() end) end
-      if current == bpHelper and bpCall then pcall(function() bpCall:disable() end) end
-      return false
+    if addressHits >= 32 then
+      keep = false
+      log("UB2_HIT_CAP_REACHED launch="..LAUNCH.." breakpoint="..label.." address_hits="..tostring(addressHits).." total_hits="..tostring(callHits+helperHits))
     end
   end)
   if not ok then log("UB2_BREAKPOINT_ERROR launch="..LAUNCH.." error="..tostring(err)); return false end
-  return true
+  return keep
 end
 
 local pad, circle
@@ -253,8 +266,8 @@ def parse_log(launch: str, log: str):
         elif line.startswith("UB2_INPUT\t"):
             p=line.split("\t")
             if len(p)>=7:
-                inputs.append({"launch":p[1],"frame":p[2],"button":p[3],
-                               "action":p[4],"readback":p[5],"status":p[6]})
+                inputs.append({"launch":p[1].strip(),"frame":p[2].strip(),"button":p[3].strip(),
+                               "action":p[4].strip(),"readback":p[5].strip(),"status":p[6].strip()})
     return hits,inputs
 
 def write_tsv(path: Path, fields: list[str], rows: list[dict]) -> None:
@@ -326,7 +339,7 @@ def main() -> int:
         load_ok="UB2_LOAD_CALL_RETURNED=1" in log
         hit_cap="UB2_HIT_CAP_REACHED" in log
         input_ok=all(x["status"]=="PASS" for x in inputs)
-        expected_inputs=16 if mode=="CIRCLE" else 0
+        expected_inputs=14 if mode=="CIRCLE" else 0
         launches.append({
           "launch":launch,"mode":mode,"frames_reached":frames,
           "save_state_loaded":"YES" if loaded else "NO",
@@ -389,7 +402,7 @@ def main() -> int:
       f"CHECKPOINT_SHA256={digest}",
       "CONDITIONS=NO_INPUT x2; CIRCLE press 6 frames at post-load frames 120,240,360,480,600,720,840 x2",
       f"POST_LOAD_FRAMES_PER_LAUNCH={FRAME_LIMIT}",
-      f"MAX_BREAKPOINT_HITS_PER_LAUNCH={MAX_HITS}",
+      f"MAX_BREAKPOINT_HITS_PER_LAUNCH={MAX_HITS} (32 per breakpoint address)",
       "BREAKPOINTS=Exec 0x80011A28 and 0x800B50AC",
       "REGISTERS=r0-r31 plus a0,v1,v0; no writes",
       "MEMORY_READS=read-only 32-bit values at requested current-v1+28*a0+8 and actual current-v1+8",

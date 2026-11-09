@@ -181,7 +181,7 @@ jobs:
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" |
-            jq -r '.jobs[] | select(.name=="ub2-headless-trace") | .id' | head -n 1)"
+            jq -r '.jobs[0].id // empty' | head -n 1)"
           test -n "$JOB_ID" || JOB_ID="TIDAK_TAHU"
           STATUS="$(sed -n 's/^STATUS=//p' "$OUT/ACTIONS_RUN_SUMMARY.txt" | head -n 1)"
           test -n "$STATUS" || STATUS="INCOMPLETE"
