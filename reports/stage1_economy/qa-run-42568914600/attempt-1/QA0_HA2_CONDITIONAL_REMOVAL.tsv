@@ -1,0 +1,3 @@
+source_file	rows_before	rows_after	matching_rows_removed	verification
+reports/stage1_economy/ha2-ha3-static-run-42338608063/attempt-1/HA2_GLOBAL_OPERAND_ACCESS.tsv	4268	4267	0	FAIL_MATCH_COUNT
+reports/stage1_economy/ha2-ha3-static-run-42339837743/attempt-1/HA2_GLOBAL_OPERAND_ACCESS.tsv	4268	4267	0	FAIL_MATCH_COUNT
