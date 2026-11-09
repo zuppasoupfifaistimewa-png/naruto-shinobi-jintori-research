@@ -156,67 +156,77 @@ def maybe_prune_ha2(stage: Path, root: Path, baseline: str, spans):
         if image == "ENTRY1" and end - start > LIMIT
         and start <= HA2_PC < end and start < HA2_END
     ]
-    audit = []
     if not over_target:
-        return audit, True, False
+        return [], True, False
 
     targets = sorted(stage.glob("ha2-ha3-static-run-*/attempt-1/HA2_GLOBAL_OPERAND_ACCESS.tsv"))
     if not targets:
-        return [["TIDAK_TAHU", 0, 0, 0, "FAIL_NO_HA2_SOURCE_FILES"]], False, True
+        return [["TIDAK_TAHU", 0, 0, 0, "TIDAK_TAHU", "TIDAK_TAHU",
+                 "ENTRY1", "?", "FAIL_NO_HA2_SOURCE_FILES"]], False, True
 
+    audit = []
     ok = True
     for path in targets:
         rel = path.relative_to(root).as_posix()
-        before = git(root, "show", f"{baseline}:{rel}")
-        before_lines = before.splitlines(keepends=True)
+        baseline_text = git(root, "show", f"{baseline}:{rel}")
+        baseline_lines = baseline_text.splitlines(keepends=True)
         current_text = path.read_text(encoding="utf-8")
-        header = next(csv.reader(io.StringIO(current_text), delimiter="\t"), [])
-        hmap = {normalize_header(name): index for index, name in enumerate(header)}
-        if not {"pc", "bytes"}.issubset(hmap):
-            audit.append([rel, count_rows(before), count_rows(current_text), 0, "FAIL_HEADER"])
+        base_header = next(csv.reader(io.StringIO(baseline_text), delimiter="\\t"), [])
+        header_map = {normalize_header(name): index for index, name in enumerate(base_header)}
+        if not {"pc", "bytes"}.issubset(header_map):
+            audit.append([rel, count_rows(baseline_text), count_rows(current_text), 0,
+                          "TIDAK_TAHU", "TIDAK_TAHU", "ENTRY1", "M", "FAIL_HEADER"])
             ok = False
             continue
 
         matches = []
-        for line_index, line in enumerate(current_text.splitlines(keepends=True)):
+        match_cells = None
+        for line_index, line in enumerate(baseline_lines):
             if line_index == 0:
                 continue
-            cells = next(csv.reader([line], delimiter="\t"), [])
-            if len(cells) <= max(hmap["pc"], hmap["bytes"]):
+            cells = next(csv.reader([line], delimiter="\\t"), [])
+            if len(cells) <= max(header_map["pc"], header_map["bytes"]):
                 continue
             try:
-                pc = parse_pc(cells[hmap["pc"]])
-                payload = parse_bytes(cells[hmap["bytes"]])
+                pc = parse_pc(cells[header_map["pc"]])
+                payload = parse_bytes(cells[header_map["bytes"]])
             except Exception:
                 continue
             if pc == HA2_PC and len(payload) == 4:
                 matches.append(line_index)
+                match_cells = cells
 
         if len(matches) != 1:
-            audit.append([rel, count_rows(before), count_rows(current_text), len(matches), "FAIL_MATCH_COUNT"])
+            audit.append([rel, count_rows(baseline_text), count_rows(current_text), 0,
+                          "TIDAK_TAHU", "TIDAK_TAHU", "ENTRY1", "M", "FAIL_BASELINE_MATCH_COUNT"])
             ok = False
             continue
 
-        lines = current_text.splitlines(keepends=True)
-        del lines[matches[0]]
-        after_text = "".join(lines)
-        old_lines = before_lines.copy()
-        if matches[0] >= len(old_lines):
-            audit.append([rel, count_rows(before), count_rows(after_text), 1, "FAIL_BASELINE_RANGE"])
-            ok = False
-            continue
-        del old_lines[matches[0]]
-        if after_text != "".join(old_lines):
-            audit.append([rel, count_rows(before), count_rows(after_text), 1, "FAIL_OTHER_CHANGES"])
-            ok = False
-            continue
-        path.write_text(after_text, encoding="utf-8", newline="")
-        after_n = count_rows(after_text)
-        status = "PASS" if after_n == count_rows(before) - 1 else "FAIL_ROW_DELTA"
-        ok = ok and status == "PASS"
-        audit.append([rel, count_rows(before), after_n, 1, status])
+        expected_lines = baseline_lines.copy()
+        del expected_lines[matches[0]]
+        expected_text = "".join(expected_lines)
+        if current_text == baseline_text:
+            # Defensive fallback: apply only the explicitly authorized one-row deletion.
+            current_lines = current_text.splitlines(keepends=True)
+            del current_lines[matches[0]]
+            current_text = "".join(current_lines)
+            path.write_text(current_text, encoding="utf-8", newline="")
+
+        git_diff = git(root, "diff", "--no-renames", "--name-status", baseline, "--", rel).splitlines()
+        git_status = git_diff[0].split("\\t", 1)[0] if git_diff else "?"
+        deleted_rows = count_rows(baseline_text) - count_rows(current_text)
+        exact = current_text == expected_text and deleted_rows == 1 and git_status == "M"
+        verification = "PASS" if exact else "FAIL_NOT_EXACTLY_BASELINE_MINUS_ONE_ROW"
+        pc_text = match_cells[header_map["pc"]]
+        bytes_text = match_cells[header_map["bytes"]]
+        image_text = (match_cells[header_map["image"]]
+                      if "image" in header_map and len(match_cells) > header_map["image"]
+                      else "ENTRY1")
+        audit.append([rel, count_rows(baseline_text), count_rows(current_text), deleted_rows,
+                      pc_text, bytes_text, normalize_image(image_text), git_status, verification])
+        ok = ok and exact
+
     return audit, ok, True
-
 
 def audit_target_deletions(root: Path, baseline: str):
     rows = []
