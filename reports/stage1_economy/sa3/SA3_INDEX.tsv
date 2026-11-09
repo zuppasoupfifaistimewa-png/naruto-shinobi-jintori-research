@@ -6,9 +6,11 @@ SA3_COMMITS_MAIN_PART04.tsv	500	main commits pages 16-20
 SA3_COMMITS_MAIN_PART05.tsv	500	main commits pages 21-25
 SA3_COMMITS_MAIN_PART06.tsv	500	main commits pages 26-30
 SA3_COMMITS_MAIN_PART07.tsv	500	main commits pages 31-35
-SA3_COMMITS_MAIN_PART08.tsv	474	main commits pages 36-40
-SA3_BRANCHES.tsv	6	all repository branch refs at snapshot
-SA3_BRANCH_ONLY_COMMITS.tsv	61	unique commits ahead of main across other refs
-SA3_ACTIONS_RUNS_PART01.tsv	500	all-branch Actions runs pages 1-5
-SA3_ACTIONS_RUNS_PART02.tsv	500	all-branch Actions runs pages 6-10
+SA3_COMMITS_MAIN_PART08.tsv	474	main commits pages 36-40 through prior snapshot 2679c8e
+SA3_COMMITS_MAIN_PART09.tsv	9	newer main ancestry commits after prior snapshot through d80de297
+SA3_BRANCHES.tsv	6	all repository branch refs at snapshot d80de297
+SA3_BRANCH_ONLY_COMMITS.tsv	61	unique commits ahead of main across other refs at snapshot
+SA3_ACTIONS_RUNS_PART01.tsv	500	all-branch Actions runs pages 1-5 through prior run snapshot
+SA3_ACTIONS_RUNS_PART02.tsv	500	all-branch Actions runs pages 6-10 through prior run snapshot
 SA3_ACTIONS_RUNS_PART03.tsv	302	older-date range; duplicate API row removed
+SA3_ACTIONS_RUNS_PART04.tsv	6	newer all-branch Actions runs after prior 1302-row snapshot

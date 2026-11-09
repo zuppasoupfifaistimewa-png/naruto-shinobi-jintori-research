@@ -1,0 +1,7 @@
+run_id	run_number	workflow_name	display_title	event	status	conclusion	attempt	head_sha	workflow_id	branch	created_at	updated_at
+42558598216	10	QA0-QA5 bounded evidence and CONTROL trace	Fix QA0 path deletion audit and SA1 indirect-call handling	push	completed	success	1	0b23ad24c77f31591609adceca365aa3aca944e2	411219076	main	2026-11-09T03:50:59Z	2026-11-09T03:51:58Z
+42558598171	7	NA0-NA5 isolated static upgrade-cost audit	Fix QA0 path deletion audit and SA1 indirect-call handling	push	completed	success	1	0b23ad24c77f31591609adceca365aa3aca944e2	410856275	main	2026-11-09T03:50:59Z	2026-11-09T03:53:25Z
+42558598121	9	LA0-LA5 isolated static upgrade-cost audit	Fix QA0 path deletion audit and SA1 indirect-call handling	push	completed	failure	1	0b23ad24c77f31591609adceca365aa3aca944e2	410715585	main	2026-11-09T03:50:59Z	2026-11-09T03:54:51Z
+42558598094	6	KA0-KA5 isolated static economy audit	Fix QA0 path deletion audit and SA1 indirect-call handling	push	completed	success	1	0b23ad24c77f31591609adceca365aa3aca944e2	410401255	main	2026-11-09T03:50:59Z	2026-11-09T03:53:20Z
+42558598089	7	MA0-MA5 isolated static upgrade-cost audit	Fix QA0 path deletion audit and SA1 indirect-call handling	push	completed	success	1	0b23ad24c77f31591609adceca365aa3aca944e2	410758869	main	2026-11-09T03:50:59Z	2026-11-09T03:52:58Z
+42558598050	6	DW0-DW4 raw-byte static economy audit	Fix QA0 path deletion audit and SA1 indirect-call handling	push	completed	success	1	0b23ad24c77f31591609adceca365aa3aca944e2	408931949	main	2026-11-09T03:50:59Z	2026-11-09T03:51:48Z

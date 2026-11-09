@@ -1,0 +1,10 @@
+commit_sha	committer_date	author	message
+d80de297703c7327f99baf07250378bcecf8a85c	2026-11-09T03:53:20Z	github-actions[bot]	Publish NA0-NA5 static audit run 42558598171 [skip ci]
+80a58f52e6e6144590a19e7ca54cc6f2e495dd5d	2026-11-09T03:53:15Z	github-actions[bot]	Publish KA0-KA5 static audit 42558598094 [skip ci]
+27dbed0f039648437325a208133e4b345dfa6555	2026-11-09T03:52:53Z	github-actions[bot]	Publish MA0-MA5 static upgrade-cost audit run 42558598089 [skip ci]
+61cf4b53236abe69532543f12796a1d81fc1ed76	2026-11-09T03:51:54Z	github-actions[bot]	Publish QA4 read-only CONTROL trace 42558598216 [skip ci]
+7a3aa36b22e0a59dccf3e647d0100e37cf019493	2026-11-09T03:51:44Z	github-actions[bot]	Publish DW0-DW4 static raw-byte audit run 42558598050
+a3452e448c6706ffe8c08151ec8b415f942e9b1b	2026-11-09T03:51:09Z	github-actions[bot]	Publish QA0 harness and excerpt audit 42558598216 [skip ci]
+0b23ad24c77f31591609adceca365aa3aca944e2	2026-11-09T03:50:54Z	zuppasoupfifaistimewa-png	Fix QA0 path deletion audit and SA1 indirect-call handling
+89f3ee149cd608906fec1e8a8f717232f58c5558	2026-11-09T03:27:55Z	zuppasoupfifaistimewa-png	Add SA2 run summary and full SA3 ledger counts
+71e7ee64cd6a9f3d961861295f688ac8534ea5a1	2026-11-09T03:27:09Z	zuppasoupfifaistimewa-png	Publish complete SA3 commit and all-branch Actions ledgers
