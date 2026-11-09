@@ -1,38 +1,38 @@
 STATUS=TUNTAS
 CONFIDENCE=K4
 BASELINE_INCLUSIVE=aa32fbcee97c8f49946a8e589010cfb9ef1a6928
-LEDGER_PARENT_HEAD=302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc
-LEDGER_RANGE=aa32fbcee97c8f49946a8e589010cfb9ef1a6928^..302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc
-COMMITS_TOTAL_INCLUDING_BASELINE=8
-COMMITS_AFTER_BASELINE=7
-COMMITS_HUMAN=6
-COMMITS_BOT=2
-COMMIT_FILE_CHANGE_ROWS=222
-ACTIONS_RUNS_CREATED_SINCE_BASELINE=2
-ACTIONS_JOB_ROWS=3
+LEDGER_PARENT_HEAD=31947bae6ca4b5605981d5c8e6a16ec7e12495ae
+LEDGER_RANGE=aa32fbcee97c8f49946a8e589010cfb9ef1a6928^..31947bae6ca4b5605981d5c8e6a16ec7e12495ae
+COMMITS_TOTAL_INCLUDING_BASELINE=14
+COMMITS_AFTER_BASELINE=13
+COMMITS_HUMAN=11
+COMMITS_BOT=3
+COMMIT_FILE_CHANGE_ROWS=237
+ACTIONS_RUNS_CREATED_SINCE_BASELINE=3
+ACTIONS_JOB_ROWS=5
 ACTIONS_RUNS_SUCCESS=1
-ACTIONS_RUNS_FAILURE=1
+ACTIONS_RUNS_FAILURE=2
 TA0_STATUS=BELUM
-TA0_CONFIDENCE=K4_FAILURE_CONFIRMED; incorrect baseline was passed to the QA0 workflow and publish step failed with unstaged files
+TA0_CONFIDENCE=K4_FAILURE_CONFIRMED; 152 target deletions, workflow isolation, compact SA1 windows and 78/78 compile pass; full union has six >64-byte groups (max 128); QA0 HA2 re-prune check is non-idempotent although direct baseline comparison confirms prior cleanup
 TA0_TARGET_DIRECTORY_DELETIONS=152_PHYSICAL_FILES_DELETED
-TA0_HA2_CONDITIONAL_CLEANUP=PASS; two TSV files each have exactly one 4-byte row removed at 0x800F5D8C
-TA0_AUDIT_METRICS=TIDAK_TAHU; no valid final-head QA0 audit was published
+TA0_HA2_CONDITIONAL_CLEANUP=PHYSICAL_PASS; each of two HA2 TSVs is exactly baseline minus one 4-byte row at 0x800F5D8C; QA0 reported FAIL_MATCH_COUNT because the row was already absent at HEAD
+TA0_AUDIT_METRICS=NOT_PASS; 3766 TSV scanned; 300 header candidates; 210008 valid byte rows; max contiguous 128B; six groups >64B; zero conflicts; zero malformed
 TA1_STATUS=TUNTAS
 TA1_CONFIDENCE=K4
-TA1_RESULT=B54DC_IS_A_BLOCK_IN_THE_B50AC_FUNCTION_CANDIDATE; branch 0x800B54C0 -> 0x800B54DC; zero jr-ra in range; zero external direct branches to B54DC
+TA1_RESULT=B54DC_INSIDE_B50AC_FUNCTION_CANDIDATE; 0x800B50AC addiu $sp,-0x18; 0x800B50B0 sw $ra,0x14($sp); internal branch 0x800B54C0 -> 0x800B54DC; no external direct branch; no jr $ra before target, so exact function end not proven
 TA1_RUN_ID=42567402686
 TA1_JOB_EXIT_CODE=0
 TA1_EMULATOR_RUNS=0
 TA2_STATUS=BELUM
-TA2_REASON=TA0_GATE_DID_NOT_PASS; the requested two 900-frame runs (no-input vs periodic CIRCLE) were not performed
-QA4_UNEXPECTED_JOB=RUN_42566294855_JOB_128993639683; two 180-frame no-input CONTROL launches; explicitly NOT_TA2
-TA3_LEDGER_STATUS=TUNTAS
+TA2_REASON=TA0_GATE_DID_NOT_PASS; requested two 900-frame launches (no-input vs periodic CIRCLE) were not performed
+QA4_UNEXPECTED_JOB=RUN_42566294855_JOB_128993639683; two 180-frame no-input CONTROL launches; explicitly NOT_TA2; latest run 42568914600 correctly skipped QA4
+TA3_LEDGER_STATUS=TUNTAS; all 13 commits after inclusive baseline and all 3 Actions runs through LEDGER_PARENT_HEAD are represented; publication commit for this update excluded
 RA2_UPGRADE_ACTIONS_OBSERVED=0
 RA2_D_SAMPLES_OBSERVED=0
 RA2_DISTINCT_D_VALUES=0
 RA3_STATUS=SKIP
 RA3_REASON=requires at least two different d samples; condition not met
-PUBLICATION_COMMIT_EXCLUDED=YES
+PUBLICATION_COMMIT_EXCLUDED=YES; this ledger update commit is self-referential and excluded
 STATUS_MD_MODIFIED=NO
 RELEASES_MODIFIED=NO
 BINARY_OR_SAVESTATE_COMMITTED=NO
@@ -48,6 +48,12 @@ e29b1f347124329edac4fc6d2a4c231d8a6431fd	221cb91d56c17af34240d3df2c48428f52f5120
 4179543552f49b80c09d2247b69c8514137c848d	e29b1f347124329edac4fc6d2a4c231d8a6431fd	2026-11-09T05:27:58Z	github-actions[bot]	BOT	Publish DW0-DW4 static raw-byte audit run 42567402686	40	40	0	0	0	NO
 302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc	4179543552f49b80c09d2247b69c8514137c848d	2026-11-09T05:29:31Z	zuppasoupfifaistimewa-png	HUMAN	Record TA0 failed Actions result [skip ci]	1	1	0	0	0	YES
 
+408c6c5a8b805e6a460e75183cd33a90daee1a81	302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc	2026-11-09T05:32:03Z	zuppasoupfifaistimewa-png	HUMAN	Publish TA3 incremental commit and Actions ledger [skip ci]	1	1	0	0	0	YES
+25dad92778733ed21693d38a93b5c4aaeed0509b	408c6c5a8b805e6a460e75183cd33a90daee1a81	2026-11-09T05:34:49Z	zuppasoupfifaistimewa-png	HUMAN	Repair TA0 publication staging [skip ci]	1	0	1	0	0	YES
+c63d60600aa42af9615f81c0c4d83cbe2aacacb8	25dad92778733ed21693d38a93b5c4aaeed0509b	2026-11-09T05:35:18Z	zuppasoupfifaistimewa-png	HUMAN	Trigger repaired TA0 final-head audit	0	0	0	0	0	NO
+3cfa92e35737e683e53cba7c9879315909889bd9	c63d60600aa42af9615f81c0c4d83cbe2aacacb8	2026-11-09T05:43:07Z	zuppasoupfifaistimewa-png	HUMAN	Prepare TA0 final-head verification [skip ci]	0	0	0	0	0	YES
+dab4216ef15a3586447e883c6bfeba4819fe5814	3cfa92e35737e683e53cba7c9879315909889bd9	2026-11-09T05:43:15Z	zuppasoupfifaistimewa-png	HUMAN	Run TA0 final-head static verification	1	0	1	0	0	NO
+31947bae6ca4b5605981d5c8e6a16ec7e12495ae	dab4216ef15a3586447e883c6bfeba4819fe5814	2026-11-09T05:43:35Z	github-actions[bot]	BOT	Publish TA0 static gate audit 42568914600 [skip ci]	12	12	0	0	0	YES
 === COMMIT FILES (ALL PATHS) ===
 commit_sha	status	path	additions	deletions
 aa32fbcee97c8f49946a8e589010cfb9ef1a6928	modified	reports/stage1_economy/sa3/SA3_BRANCHES.tsv	1	1
@@ -273,6 +279,21 @@ e29b1f347124329edac4fc6d2a4c231d8a6431fd	modified	tools/stage1/RunSA1Windows.pyt
 4179543552f49b80c09d2247b69c8514137c848d	added	reports/stage1_economy/sa1-run-42567402686/attempt-1/SA1_TA1_FUNCTION_BOUNDARY_SUMMARY.txt	24	0
 302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc	added	reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA0.txt	17	0
 
+408c6c5a8b805e6a460e75183cd33a90daee1a81	added	reports/actions/ta3-ledger-aa32fbce/TA3_LEDGER.txt	286	0
+25dad92778733ed21693d38a93b5c4aaeed0509b	modified	.github/workflows/qa0-qa5.yml	3	2
+dab4216ef15a3586447e883c6bfeba4819fe5814	modified	tools/qa/RunQA0Harness.pytxt	1	1
+31947bae6ca4b5605981d5c8e6a16ec7e12495ae	added	reports/stage1_economy/qa-run-42568914600/attempt-1/ACTIONS_RUN_SUMMARY.txt	10	0
+31947bae6ca4b5605981d5c8e6a16ec7e12495ae	added	reports/stage1_economy/qa-run-42568914600/attempt-1/QA0_BYTE_OVERLAP_CONFLICTS.tsv	1	0
+31947bae6ca4b5605981d5c8e6a16ec7e12495ae	added	reports/stage1_economy/qa-run-42568914600/attempt-1/QA0_CONSOLE.txt	40	0
+31947bae6ca4b5605981d5c8e6a16ec7e12495ae	added	reports/stage1_economy/qa-run-42568914600/attempt-1/QA0_EXCERPT_AUDIT.txt	40	0
+31947bae6ca4b5605981d5c8e6a16ec7e12495ae	added	reports/stage1_economy/qa-run-42568914600/attempt-1/QA0_FULL_ARCHIVE_OVERLIMIT.tsv	7	0
+31947bae6ca4b5605981d5c8e6a16ec7e12495ae	added	reports/stage1_economy/qa-run-42568914600/attempt-1/QA0_FULL_ARCHIVE_SPANS.tsv	17023	0
+31947bae6ca4b5605981d5c8e6a16ec7e12495ae	added	reports/stage1_economy/qa-run-42568914600/attempt-1/QA0_HA2_CONDITIONAL_REMOVAL.tsv	3	0
+31947bae6ca4b5605981d5c8e6a16ec7e12495ae	added	reports/stage1_economy/qa-run-42568914600/attempt-1/QA0_MALFORMED_BYTE_ROWS.tsv	1	0
+31947bae6ca4b5605981d5c8e6a16ec7e12495ae	added	reports/stage1_economy/qa-run-42568914600/attempt-1/QA0_PUBLISH_COMMIT_FILES.tsv	13	0
+31947bae6ca4b5605981d5c8e6a16ec7e12495ae	added	reports/stage1_economy/qa-run-42568914600/attempt-1/QA0_PYCOMPILE.tsv	79	0
+31947bae6ca4b5605981d5c8e6a16ec7e12495ae	added	reports/stage1_economy/qa-run-42568914600/attempt-1/QA0_REPORT.md	47	0
+31947bae6ca4b5605981d5c8e6a16ec7e12495ae	added	reports/stage1_economy/qa-run-42568914600/attempt-1/QA0_TARGET_DIRECTORY_DELETIONS.tsv	4	0
 === ACTIONS RUNS / JOBS ===
 run_id	created_at_utc	workflow	workflow_path	event	source_sha	run_status	run_conclusion	job_id	job_name	job_status	job_conclusion	exit_code	summary_path	raw_permalink
 42566294855	2026-11-09T05:16:00Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	push	5ae17d143f2d2dc91b7b3962d40704cec1b697b1	completed	failure	128993393696	qa0-static-harness-and-excerpt-audit	completed	failure	1	reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA0.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA0.txt
@@ -280,6 +301,8 @@ run_id	created_at_utc	workflow	workflow_path	event	source_sha	run_status	run_con
 42567402686	2026-11-09T05:27:15Z	DW0-DW4 raw-byte static economy audit	.github/workflows/dw0-dw4-raw-static.yml	push	e29b1f347124329edac4fc6d2a4c231d8a6431fd	completed	success	128996817396	dw0-dw4-static	completed	success	0	reports/stage1_economy/sa1-run-42567402686/attempt-1/ACTIONS_RUN_SUMMARY.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/sa1-run-42567402686/attempt-1/ACTIONS_RUN_SUMMARY.txt
 
 === RAW ACTIONS SUMMARY PERMALINKS ===
+42568914600	2026-11-09T05:43:20Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	push	dab4216ef15a3586447e883c6bfeba4819fe5814	completed	failure	129001519075	qa0-static-harness-and-excerpt-audit	completed	failure	1	reports/stage1_economy/qa-run-42568914600/attempt-1/ACTIONS_RUN_SUMMARY.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/31947bae6ca4b5605981d5c8e6a16ec7e12495ae/reports/stage1_economy/qa-run-42568914600/attempt-1/ACTIONS_RUN_SUMMARY.txt
+42568914600	2026-11-09T05:43:20Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	push	dab4216ef15a3586447e883c6bfeba4819fe5814	completed	failure	129001608018	qa4-headless-readonly-control-trace	completed	skipped	SKIPPED	reports/stage1_economy/qa-run-42568914600/attempt-1/ACTIONS_RUN_SUMMARY.txt	QA4 correctly skipped because TA0 is static-only
 https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/actions/ta0-run-42566294855_summary.txt
 https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA0.txt
 https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA4.txt
