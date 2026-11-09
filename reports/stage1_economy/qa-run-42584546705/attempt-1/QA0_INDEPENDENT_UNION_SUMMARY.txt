@@ -1,0 +1,10 @@
+blocked_rows=0
+conflict_count=0
+eligible_files=305
+labels=["ENTRY1", "EXE"]
+max_span=64
+over_64_count=0
+over_64_groups=[]
+unique_addresses=98524
+valid_rows=209834
+status=PASS
