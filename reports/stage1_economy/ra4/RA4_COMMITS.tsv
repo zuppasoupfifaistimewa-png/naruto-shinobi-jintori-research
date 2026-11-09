@@ -123,3 +123,9 @@ bd91cb50d1b09fe683cd175223453a98c8d9dc13	Record RA3 H1 H2 gate as not met	A	repo
 381e1ae77247d5c20d193e493781d93c580f62c6	Complete RA0-RA4 Actions ledger and correct stage statuses [skip ci]	A	reports/stage1_economy/ra4/actions/static-run-42531815506.txt
 381e1ae77247d5c20d193e493781d93c580f62c6	Complete RA0-RA4 Actions ledger and correct stage statuses [skip ci]	M	reports/stage1_economy/ra4/RA4_ACTIONS_RUNS.tsv
 381e1ae77247d5c20d193e493781d93c580f62c6	Complete RA0-RA4 Actions ledger and correct stage statuses [skip ci]	M	reports/stage1_economy/ra4/RA4_LEDGER.md
+9b8a89bba2e179d2be68725966bb7df95fd53f67	Add exact raw permalinks and ledger commit file inventory [skip ci]	M	reports/stage1_economy/ra4/RA4_ACTIONS_RAW_LINKS.txt
+9b8a89bba2e179d2be68725966bb7df95fd53f67	Add exact raw permalinks and ledger commit file inventory [skip ci]	M	reports/stage1_economy/ra4/RA4_LEDGER_COMMIT_FILES.tsv
+9b8a89bba2e179d2be68725966bb7df95fd53f67	Add exact raw permalinks and ledger commit file inventory [skip ci]	M	reports/stage1_economy/ra4/RA4_COMMITS.tsv
+fa2a40e59df379ac46496ad13cbb66244ffbe095	Include latest scheduled monitor in complete Actions ledger [skip ci]	A	reports/stage1_economy/ra4/actions/monitor-run-42535761905.txt
+fa2a40e59df379ac46496ad13cbb66244ffbe095	Include latest scheduled monitor in complete Actions ledger [skip ci]	M	reports/stage1_economy/ra4/RA4_ACTIONS_RUNS.tsv
+fa2a40e59df379ac46496ad13cbb66244ffbe095	Include latest scheduled monitor in complete Actions ledger [skip ci]	M	reports/stage1_economy/ra4/RA4_LEDGER.md

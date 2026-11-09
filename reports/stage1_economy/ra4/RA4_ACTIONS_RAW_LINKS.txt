@@ -1,7 +1,7 @@
 # Raw permalinks for every Actions run in the RA4 ledger
 
-TARGET_SHA=381e1ae77247d5c20d193e493781d93c580f62c6
-RUN_COUNT=49
+TARGET_SHA=PER_LINK_COMMIT_SHA (setiap URL memuat SHA commit penuh masing-masing)
+RUN_COUNT=50
 These immutable raw URLs point to committed text summaries with status, job name, job ID, source SHA, and exit code.
 
 QA run 42531023381: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/5facd666af50fbe687ce479c857deb3fcb1d76cb/reports/stage1_economy/ra4/actions/qa-run-42531023381.txt
@@ -54,3 +54,4 @@ KA0 side workflow run 42531753623: https://raw.githubusercontent.com/zuppasoupfi
 NA0 side workflow run 42531753599: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/381e1ae77247d5c20d193e493781d93c580f62c6/reports/stage1_economy/ra4/actions/static-run-42531753599.txt
 LA0 side workflow run 42531753597: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/381e1ae77247d5c20d193e493781d93c580f62c6/reports/stage1_economy/ra4/actions/static-run-42531753597.txt
 MA0 side workflow run 42531753591: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/381e1ae77247d5c20d193e493781d93c580f62c6/reports/stage1_economy/ra4/actions/static-run-42531753591.txt
+Scheduled monitor run 42535761905: https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/fa2a40e59df379ac46496ad13cbb66244ffbe095/reports/stage1_economy/ra4/actions/monitor-run-42535761905.txt
