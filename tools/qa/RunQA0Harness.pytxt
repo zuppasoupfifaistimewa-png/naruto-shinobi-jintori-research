@@ -299,36 +299,88 @@ def workflow_path_audit(root: Path):
 def sa1_audit(root: Path):
     source = root / "tools" / "stage1" / "RunSA1Windows.pytxt"
     old_source = root / "tools" / "stage1" / "RunSA1Windows.py"
-    text = source.read_text(encoding="utf-8")
+    source_text = source.read_text(encoding="utf-8")
     checks = {
         "OLD_PY_REMOVED": not old_source.exists(),
-        "CALLER_WINDOW_64B": 'window_rows("EXE"' in text and "WINDOW_BYTES = 64" in text,
-        "PROLOG_WINDOW_8B": 'prolog_pc, "ENTRY1_PROLOG_8B", PROLOG_BYTES)' in text
-                            and "PROLOG_BYTES = 8" in text,
-        "IMAGE_LABELS_EXE_ENTRY1": 'window_rows("EXE"' in text and 'window_rows("ENTRY1"' in text,
-        "B54DC_BREAKPOINT_WINDOW_REMOVED": "BREAKPOINT_TARGET" not in text,
+        "CALLER_WINDOW_64B": 'window_rows("EXE"' in source_text and "WINDOW_BYTES = 64" in source_text,
+        "PROLOG_WINDOW_8B": 'prolog_pc, "ENTRY1_PROLOG_8B", PROLOG_BYTES)' in source_text
+                            and "PROLOG_BYTES = 8" in source_text,
+        "IMAGE_LABELS_EXE_ENTRY1": 'window_rows("EXE"' in source_text and 'window_rows("ENTRY1"' in source_text,
+        "B54DC_BREAKPOINT_WINDOW_REMOVED": "BREAKPOINT_TARGET" not in source_text,
     }
-    sa1_dirs = sorted((root / "reports" / "stage1_economy").glob("sa1-run-*/attempt-1"))
-    if sa1_dirs:
-        latest = max(sa1_dirs, key=lambda p: int(re.search(r"sa1-run-(\d+)", str(p)).group(1)))
-        summary_path = latest / "SA1_SUMMARY.txt"
-        action_path = latest / "ACTIONS_RUN_SUMMARY.txt"
+    sa1_dirs = sorted(
+        (root / "reports" / "stage1_economy").glob("sa1-run-*/attempt-1"),
+        key=lambda p: int(re.search(r"sa1-run-(\\d+)", str(p)).group(1))
+    )
+    status_ok = bool(sa1_dirs)
+    instruction_ok = True
+    instruction_count = 0
+    for directory in sa1_dirs:
+        summary_path = directory / "SA1_SUMMARY.txt"
+        action_path = directory / "ACTIONS_RUN_SUMMARY.txt"
         try:
             summary_status = next(
-                line.split("=", 1)[1] for line in summary_path.read_text().splitlines()
+                line.split("=", 1)[1] for line in summary_path.read_text(encoding="utf-8").splitlines()
                 if line.startswith("STATUS=")
             )
             action_status = next(
-                line.split("=", 1)[1] for line in action_path.read_text().splitlines()
+                line.split("=", 1)[1] for line in action_path.read_text(encoding="utf-8").splitlines()
                 if line.startswith("STATUS=")
             )
-            checks["LATEST_SA1_STATUS_MATCHES_ACTIONS_REPORT"] = summary_status == action_status
+            status_ok = status_ok and summary_status == action_status
         except Exception:
-            checks["LATEST_SA1_STATUS_MATCHES_ACTIONS_REPORT"] = False
-    else:
-        checks["LATEST_SA1_STATUS_MATCHES_ACTIONS_REPORT"] = False
-    return checks
+            status_ok = False
 
+        instruction_path = directory / "SA1_INSTRUCTIONS.tsv"
+        if not instruction_path.exists():
+            continue
+        instruction_count += 1
+        try:
+            with instruction_path.open("r", encoding="utf-8-sig", newline="") as handle:
+                reader = csv.DictReader(handle, delimiter="\\t")
+                header_map = {normalize_header(name): name for name in (reader.fieldnames or [])}
+                if not {"image", "pc"}.issubset(header_map):
+                    instruction_ok = False
+                    continue
+                instruction_rows = list(reader)
+            labels_by_pc = []
+            for row in instruction_rows:
+                pc = parse_pc(row[header_map["pc"]])
+                label = normalize_image(row[header_map["image"]])
+                labels_by_pc.append((label, pc))
+            exe_pcs = sorted(pc for label, pc in labels_by_pc if label == "EXE")
+            entry_pcs = sorted(pc for label, pc in labels_by_pc if label == "ENTRY1")
+            expected_exe = list(range(0x80011A28, 0x80011A68, 4))
+            expected_entry = [0x800B50AC, 0x800B50B0]
+            target_window = [
+                pc for _, pc in labels_by_pc
+                if 0x800B54D8 <= pc < 0x800B5518
+            ]
+            instruction_ok = instruction_ok and (
+                len(instruction_rows) == 18
+                and exe_pcs == expected_exe
+                and entry_pcs == expected_entry
+                and not target_window
+                and all(label in {"EXE", "ENTRY1"} for label, _ in labels_by_pc)
+            )
+            summary_text = summary_path.read_text(encoding="utf-8")
+            summary_fields = {
+                line.split("=", 1)[0]: line.split("=", 1)[1]
+                for line in summary_text.splitlines() if "=" in line
+            }
+            instruction_ok = instruction_ok and (
+                summary_fields.get("WINDOWS_BYTES") == "CALLER_64_PROLOG_8"
+                and summary_fields.get("WINDOWS")
+                    == "EXE_CALLER_1A28_64B;ENTRY1_PROLOG_CANDIDATE_8B"
+            )
+        except Exception:
+            instruction_ok = False
+    checks["ALL_SA1_STATUS_MATCHES_ACTIONS_REPORTS"] = status_ok
+    checks["ALL_SA1_INSTRUCTION_WINDOWS_COMPACT_AND_NORMALIZED"] = (
+        instruction_count >= 1 and instruction_ok
+    )
+    checks["LATEST_SA1_STATUS_MATCHES_ACTIONS_REPORT"] = status_ok
+    return checks
 
 def main():
     parser = argparse.ArgumentParser()
@@ -380,6 +432,23 @@ def main():
               ["image", "start_pc", "end_pc_exclusive", "contiguous_bytes"],
               [[image, f"0x{start:08X}", f"0x{end:08X}", size]
                for image, start, end, size in over])
+    over_origin_rows = []
+    for image, start, end, size in over:
+        group_origins = set()
+        for address in range(start, end):
+            for source_file, source_line, row_pc, row_bytes in origins.get((image, address), []):
+                group_origins.add((source_file, source_line, row_pc, row_bytes))
+        for source_file, source_line, row_pc, row_bytes in sorted(group_origins):
+            over_origin_rows.append([
+                image, f"0x{start:08X}", f"0x{end:08X}", size,
+                source_file, source_line, f"0x{row_pc:08X}", row_bytes,
+            ])
+    write_tsv(
+        out / "QA0_OVERLIMIT_ORIGINS.tsv",
+        ["image", "group_start_pc", "group_end_pc_exclusive", "group_bytes",
+         "source_file", "source_line", "row_pc", "row_bytes"],
+        over_origin_rows,
+    )
     conflict_rows = [[image, f"0x{address:08X}",
                       ";".join(f"{source}:{line}" for source, line, _, _ in origins[(image, address)])]
                      for image, address in sorted(conflicts)]
@@ -424,6 +493,7 @@ def main():
         f"IMAGE_LABELS_NORMALIZED={';'.join(labels)}",
         f"UNION_MAX_CONTIGUOUS_BYTES={max((end-start for _, start, end in spans), default=0)}",
         f"UNION_OVER_64_BYTE_GROUPS={len(over)}",
+        f"OVERLIMIT_ORIGIN_ROWS={len(over_origin_rows)}",
         f"BYTE_OVERLAP_CONFLICT_ADDRESSES={len(conflicts)}",
         f"MALFORMED_BYTE_ROWS={len(malformed)}",
         f"HA2_CONDITIONAL_REMOVAL_PERFORMED={'YES' if ha2_performed else 'NO'}",
