@@ -1,0 +1,501 @@
+commit_sha	committer_date	author	message
+49cffc997821aceede919d828a995dc53c4f4929	2026-10-23T00:04:25Z	zuppasoupfifaistimewa-png	Record private screenshot review and card-overlay measurements
+1f31441cb54b66753554ddcb02e5d42b5f28df7f	2026-10-23T00:03:10Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision51 restore-only test of card-overlay checkpoint
+8dbbc1cfe4c369a4004d085d313b43885c4396a3	2026-10-23T00:03:01Z	zuppasoupfifaistimewa-png	Prepend current adaptive player handoff for next chat
+8267dc52319965cc27be8ed7910324bc94593948	2026-10-23T00:02:57Z	zuppasoupfifaistimewa-png	Refresh current checkpoint and link adaptive player handoff
+accb470feb0248a1ac7aa511d5b386820367a25b	2026-10-23T00:02:52Z	zuppasoupfifaistimewa-png	Add authoritative adaptive player checkpoint and continuation plan
+da728ffd7b9b80da7dbbdefb712d8b0be8ced81a	2026-10-23T00:01:40Z	zuppasoupfifaistimewa-png	Test restore-only input suppression invariant
+0ddc5fb879ea20e575a640fa2207f8fc10c9bdce	2026-10-23T00:01:37Z	zuppasoupfifaistimewa-png	Guard restore-only emulator sessions against every button input
+c00ec601b34ac6384c9b82335e18b2e020e3471b	2026-10-22T23:58:09Z	zuppasoupfifaistimewa-png	Persist unattended finisher objective and milestone sequence
+4e8be99e5d05730b512a1d3c8582961b2a7bedb6	2026-10-22T23:58:04Z	zuppasoupfifaistimewa-png	Persist long-term goal for unattended adaptive Story Mode automation
+a0da8a86771c5c149a4b3ac554f21be6b27e6aa5	2026-10-22T23:57:59Z	zuppasoupfifaistimewa-png	Make unattended Story Mode finisher the explicit durable project objective
+f519ee68fa4630a8cfdfd2fb45585aeab4655b23	2026-10-22T23:48:31Z	zuppasoupfifaistimewa-png	Update agent handoff: partial progress, regression passed, restore-only input guard required
+6880dd1c3369eaf0ba9020cc92a90c06538cca01	2026-10-22T23:48:18Z	zuppasoupfifaistimewa-png	Update handoff for new chat: regression passed, restore-only input guard next
+fe46bd8205b675896a56bef2fb533bf6ef36e3f5	2026-10-22T23:48:05Z	zuppasoupfifaistimewa-png	Refresh Story Mode handoff: run50 partial progress, regression result and restore-only blocker
+871988a0718580561ff0721d50735d83846ed0bb	2026-10-22T23:42:30Z	zuppasoupfifaistimewa-png	Prepare chat transfer: regression run status and exact revision51 next gate
+a9e9a537dfd01202779a1194d2c90b793b9044ce	2026-10-22T23:42:25Z	zuppasoupfifaistimewa-png	Record current no-player state and classifier regression handoff
+508d821d2efe02744686c621514449f048ba0f93	2026-10-22T23:42:22Z	zuppasoupfifaistimewa-png	Set latest status to classifier regression run and safe checkpoint handoff
+d8082dcdfa8997df65cddf9e6d0d8d806c8da927	2026-10-22T23:39:55Z	zuppasoupfifaistimewa-png	Test card selection overlay classifier fails closed
+02f39ca3cdf21120e574923a4e8706d66dd16333	2026-10-22T23:39:52Z	zuppasoupfifaistimewa-png	Detect three-card selection overlay and fail closed instead of sending map direction
+bb83817865b4cf3ac68687a912ca113bbdeb8e1e	2026-10-22T23:38:06Z	zuppasoupfifaistimewa-png	Record revision50 gameplay progression and card-selection classifier issue
+3235c987caf0491b4b0af742bc6e537e91fa6fc4	2026-10-22T23:37:52Z	zuppasoupfifaistimewa-png	Handoff revision50 card-overlay state and required classifier fix before run51
+7061bc18be87b1da9a4dbb31223861313b00dd8d	2026-10-22T23:37:28Z	zuppasoupfifaistimewa-png	Record revision50 observed board-to-dialogue-to-card progression and classifier blocker
+119174438989e19ab63f9c113ea84746ef23417c	2026-10-22T23:34:14Z	zuppasoupfifaistimewa-png	Refresh handoff with current active revision50 loop status
+167572d47e3f02e32009ef197c3c29b1d69c8e08	2026-10-22T23:34:10Z	zuppasoupfifaistimewa-png	Refresh handoff with current active revision50 loop status
+278797187992507e214c2d2b94d4f0698af3700f	2026-10-22T23:34:06Z	zuppasoupfifaistimewa-png	Refresh handoff with current active revision50 loop status
+6d1664febb5599fe10b1f73db04f6e293db76dcd	2026-10-22T23:33:10Z	zuppasoupfifaistimewa-png	Record revision49 verified roulette transition and active revision50 restore gate
+9d886d35cfa259387b7f9649b085410b062c4567	2026-10-22T23:33:06Z	zuppasoupfifaistimewa-png	Set handoff to active revision50 board checkpoint restore
+069f924625510f271698be710570a4e651f03c05	2026-10-22T23:33:01Z	zuppasoupfifaistimewa-png	Record current revision50 restore gate and verified Circle roulette rule
+1c30215c9a4b6035b5c24d1bf0befc4819110642	2026-10-22T23:32:19Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision50 restore-only board checkpoint after roulette Circle
+16d7e85a1da7f384b5e688c4ab35aaa8aeddb7a0	2026-10-22T23:32:06Z	zuppasoupfifaistimewa-png	Record revision49 verified roulette-to-board input and revision50 restore gate
+ce0d2197a0ab2cc1a81113d44c33cc1d8f6599d2	2026-10-22T23:31:52Z	zuppasoupfifaistimewa-png	Update handoff after revision49 Circle-versus-WAIT success
+36c220ed0596af180b5aad2d183ce00f5891463b	2026-10-22T23:31:39Z	zuppasoupfifaistimewa-png	Record revision49 verified Circle roulette transition and next restore gate
+c6ba16be236a566a6b7188269320fd1ffde00c1d	2026-10-22T23:13:10Z	zuppasoupfifaistimewa-png	Record active revision49 final Circle-versus-WAIT run
+8443091778b9c8de6aa85c1f059a021074d8ce8c	2026-10-22T23:13:05Z	zuppasoupfifaistimewa-png	Handoff active revision49 fixed recovery A/B
+14e079f37d47ee10323a11db43aaa5685f61d78a	2026-10-22T23:13:01Z	zuppasoupfifaistimewa-png	Document active revision49 A/B under corrected gated timeout
+04102a5f79e81a0f91586af3f348b6f2fb3183fe	2026-10-22T23:12:23Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision49 repeat Circle versus Wait from roulette with validated shutdown recovery
+fcf4b8a9f577fcebcf3a227005d88f8c2bd3e6aa	2026-10-22T23:12:01Z	zuppasoupfifaistimewa-png	Record revision48 valid checkpoints but post-session timeout and revision49 retry
+ce4e238054dee2b9f7c47a25a9fcc450e0f26593	2026-10-22T23:11:57Z	zuppasoupfifaistimewa-png	Record revision48 valid checkpoints but post-session timeout and revision49 retry
+d38c133312c195e388de251634acdc9c01d67ecb	2026-10-22T23:11:52Z	zuppasoupfifaistimewa-png	Record revision48 valid checkpoints but post-session timeout and revision49 retry
+ef82beb99096e6fd939ce5ebc4f80eedc1158546	2026-10-22T23:11:25Z	zuppasoupfifaistimewa-png	Recover only completed-session timeout with valid checkpoint and bound shutdown wait to 60s
+5b854ac386bb57e27e03b729b3c6bbd2412465ea	2026-10-22T23:06:44Z	zuppasoupfifaistimewa-png	Record active revision48 retry with post-save settle window
+d4015ffa48b400849bedf4189852de20d67ed0a4	2026-10-22T23:06:40Z	zuppasoupfifaistimewa-png	Document active revision48 after save-settle workflow fix
+74ba7cd31938b91ca2bacc528dd2e14413fcbc88	2026-10-22T23:06:35Z	zuppasoupfifaistimewa-png	Handoff active revision48 roulette repeat
+eb12d63e0daf45179c30f12d525b43cea90390a4	2026-10-22T23:05:57Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision48 repeat roulette Circle versus Wait with post-save flush window
+ddd8270c32367a9ebe7fa6f5a14815355ac9cbab	2026-10-22T23:05:34Z	zuppasoupfifaistimewa-png	Record revision47 invalid control checkpoint and settle-frame retry
+de7489a7a283ddb5d9d3aa77517d2772ef9c89de	2026-10-22T23:05:30Z	zuppasoupfifaistimewa-png	Record revision47 invalid control checkpoint and settle-frame retry
+fc16bf3202fc907a7358cc1f052ae02436349c8a	2026-10-22T23:04:32Z	zuppasoupfifaistimewa-png	Record revision47 invalid control checkpoint and settle-frame retry
+32f9e4172a670cdd14b92992f62a2e6fc970aba5	2026-10-22T23:03:51Z	zuppasoupfifaistimewa-png	Let savestate file I/O settle for 12 VSync frames before emulator shutdown
+2d68e87913128f35b8271a047ef27200c34006ca	2026-10-22T22:59:29Z	zuppasoupfifaistimewa-png	Record active revision47 wheel-stop comparison
+2e615c8d9768727571ce33a3d40705bf2756f3ba	2026-10-22T22:59:25Z	zuppasoupfifaistimewa-png	Mark active revision47 roulette Circle versus WAIT A/B
+f3e78621db10ffb710988423312ddfe403cfe7aa	2026-10-22T22:59:21Z	zuppasoupfifaistimewa-png	Update handoff active revision47 roulette stop probe
+a626f25110fd0416af6800b00668febd6688c862	2026-10-22T22:58:49Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision47 Circle versus Wait from restored roulette state
+84762191d48ffae7170fc7ba7c309c25a7aad1a7	2026-10-22T22:58:27Z	zuppasoupfifaistimewa-png	Record revision46 roulette restore verification and revision47 paired probe
+f091941e742119256f197049a471a69cc3f82022	2026-10-22T22:58:24Z	zuppasoupfifaistimewa-png	Record revision46 roulette restore verification and revision47 paired probe
+d5b040fc5842417a7e5efaf7df0889828ee6735a	2026-10-22T22:58:19Z	zuppasoupfifaistimewa-png	Record revision46 roulette restore verification and revision47 paired probe
+6f17fefc1322037fac81b157d813824be24021fb	2026-10-22T22:56:18Z	zuppasoupfifaistimewa-png	Document active revision46 restore gate for roulette state
+dd556c0ed3f9e6fdecf8b1484271dc98d6143136	2026-10-22T22:56:14Z	zuppasoupfifaistimewa-png	Mark revision46 active restore-only from valid partial roulette checkpoint
+979700423c2eb9e0553250df969fb0a6f591762c	2026-10-22T22:56:10Z	zuppasoupfifaistimewa-png	Handoff active revision46 roulette checkpoint restore
+096a5cdc411e3ce26fd44f9bde8ff4ed909313c7	2026-10-22T22:55:22Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision46 restore-only validates Circle-opened roulette checkpoint
+6cbbb46bff5931b3f50dbfa4050e997234b05773	2026-10-22T22:54:54Z	zuppasoupfifaistimewa-png	Record revision45 shutdown abort and safe restore retry plan
+117113becbd30ca5ff2b0400bef6f817c34ddae4	2026-10-22T22:54:50Z	zuppasoupfifaistimewa-png	Record revision45 shutdown abort and safe restore retry plan
+8cb9f6a999408eab3bcb72319a8dd27400c280e6	2026-10-22T22:54:46Z	zuppasoupfifaistimewa-png	Record revision45 shutdown abort and safe restore retry plan
+11b308f162aa1ef2f5b5167cd17b4340718a03de	2026-10-22T22:54:20Z	zuppasoupfifaistimewa-png	Validate post-session exit134 checkpoint and permit roulette-state Circle probe
+d2a524a3093a38c4de5403f6c436d93ab7564540	2026-10-22T22:50:24Z	zuppasoupfifaistimewa-png	Record active revision45 contextual Roulette confirmation A/B
+b0bdf017d1699fc1f81bcbdae705784e20eb36c6	2026-10-22T22:50:19Z	zuppasoupfifaistimewa-png	Document active revision45 contextual Circle test
+1f3580b0d9a5f90feacdd48f7ee8dada678e30fc	2026-10-22T22:50:15Z	zuppasoupfifaistimewa-png	Handoff active revision45 Circle-versus-WAIT Roulette menu probe
+c9b1438292041f972b712f248fb7052032635b59	2026-10-22T22:49:49Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision45 contextual Circle confirmation of selected Roulette
+ca33b29d6c820d6e12721c6538a29b1f44ac74c3	2026-10-22T22:49:30Z	zuppasoupfifaistimewa-png	Record revision44 restore proof and revision45 contextual Roulette confirmation test
+2b7f15008ad23fed8f8a45042cdba8ae7ac0ec58	2026-10-22T22:49:25Z	zuppasoupfifaistimewa-png	Record revision44 restore proof and revision45 contextual Roulette confirmation test
+22ca852874cd60e161ccc382b8060f2ec9fa0132	2026-10-22T22:49:20Z	zuppasoupfifaistimewa-png	Record revision44 restore proof and revision45 contextual Roulette confirmation test
+3d7165b952351ef8262a86ff9fa80438b562637f	2026-10-22T22:47:18Z	zuppasoupfifaistimewa-png	Document active revision44 restore verification for Roulette menu
+5ce9034c26418da23ec2fdf52f6ec54ca6674983	2026-10-22T22:47:14Z	zuppasoupfifaistimewa-png	Handoff active revision44 menu-state restore gate
+d448138513a7bd58b7630d87d5c729de1b2d80e0	2026-10-22T22:47:10Z	zuppasoupfifaistimewa-png	Record active revision44 restore-only of Roulette menu checkpoint
+6108a8c95d7a72cc0dbd2d6b59a476902c62587d	2026-10-22T22:46:43Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision44 restore-only menu checkpoint after CROSS
+2ec5011c5c81f00e686690570bf4349f9124c531	2026-10-22T22:46:26Z	zuppasoupfifaistimewa-png	Permit contextual CIRCLE only for menu-state A/B confirm probes
+70a4737a8266cfba0759f608b14cf630d0c3ab88	2026-10-22T22:46:05Z	zuppasoupfifaistimewa-png	Record verified CROSS return-to-menu transition and next restore gate
+f770d24af0c183b9966a86b4f32efd6c54e0954d	2026-10-22T22:46:00Z	zuppasoupfifaistimewa-png	Record verified CROSS return-to-menu transition and next restore gate
+8b6b57ff0062750801d0395d3a88fa7192c6f0c1	2026-10-22T22:45:56Z	zuppasoupfifaistimewa-png	Record verified CROSS return-to-menu transition and next restore gate
+b82e9165463947bfaea76e285858cc763e9ea894	2026-10-22T22:42:29Z	zuppasoupfifaistimewa-png	Record active revision43 corrected CROSS map probe
+26664df825299804fbf3369ceff977aab038a6e6	2026-10-22T22:42:25Z	zuppasoupfifaistimewa-png	Handoff active revision43 corrected CROSS map-return probe
+c969187984ac310f2fdb90d3a353872a3d60a0d3	2026-10-22T22:42:20Z	zuppasoupfifaistimewa-png	Record active corrected revision43 CROSS-versus-WAIT run
+e70dc37a21e62a7eaf22afb0b56dfa24a8b50f43	2026-10-22T22:41:55Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision43 CROSS versus WAIT after whitelist fix
+1166dc712d4781551ed722246cfd56bcde45ed40	2026-10-22T22:41:43Z	zuppasoupfifaistimewa-png	Record revision42 prelaunch allowlist failure and corrected retry
+ceb5b5c2bd0d37bf39a3f6f947a8ce2176d76b45	2026-10-22T22:41:39Z	zuppasoupfifaistimewa-png	Record revision42 prelaunch allowlist failure and corrected retry
+402a4637cc7f1cb55dbed719bbc1a40e5e9640cb	2026-10-22T22:41:35Z	zuppasoupfifaistimewa-png	Record revision42 prelaunch allowlist failure and corrected retry
+417663b21ce0cd9218ef8c312913a90d65381788	2026-10-22T22:41:17Z	zuppasoupfifaistimewa-png	Allow CROSS in final map-state action whitelist
+cb2e594f1aea7dd830fd687aa34ef9f16518fea9	2026-10-22T22:39:42Z	zuppasoupfifaistimewa-png	Document active revision42 CROSS versus WAIT experiment
+78c88ad3a818b0b47911a6ab74ff4cea1d3d2ac4	2026-10-22T22:39:37Z	zuppasoupfifaistimewa-png	Record active revision42 CROSS versus WAIT return-to-menu probe
+3b7e83bddb2de990c47458439fabfb0cd0e02dd4	2026-10-22T22:39:34Z	zuppasoupfifaistimewa-png	Handoff active revision42 map return-menu test
+0fb5636106edc03073517335417db7bf24be2284	2026-10-22T22:38:59Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision42 CROSS versus WAIT from verified map return prompt
+e57d4d27f6690e2d6826db5c96ecda0713447109	2026-10-22T22:38:49Z	zuppasoupfifaistimewa-png	Record revision41 restore proof and revision42 safe return probe
+a739b18d5521cf811ba6afc2f624b08bb34ff99f	2026-10-22T22:38:45Z	zuppasoupfifaistimewa-png	Record revision41 restore proof and revision42 safe return probe
+d3ddc4484ff6333af2446e3bea332a347b5bed40	2026-10-22T22:38:41Z	zuppasoupfifaistimewa-png	Record revision41 restore proof and revision42 safe return probe
+7ac1b2371b7d0ce48b87b59130a8560db771a962	2026-10-22T22:38:20Z	zuppasoupfifaistimewa-png	Permit CROSS-only return action for explicitly observed map-view UI
+813a4b88725c4919f189f1af6666c6ca24e4311d	2026-10-22T13:28:23Z	zuppasoupfifaistimewa-png	Record active revision41 restore-only check
+f5daf787c97e5705e6a60812df82700c6bd38a4f	2026-10-22T13:28:10Z	zuppasoupfifaistimewa-png	Handoff active revision41 restore-only gate
+83320219c8db94385d568ec7691e60b67a9a79e2	2026-10-22T13:27:50Z	zuppasoupfifaistimewa-png	Record active revision41 restore-only checkpoint gate
+3cea3698cb78134356f0801b226e20676c88bc6b	2026-10-22T13:26:46Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] restore-only revision41 validates UP-selected Naruto tile state
+8900eccad0ce78c1d3db9c8487fc27cac2c629b6	2026-10-22T13:26:25Z	zuppasoupfifaistimewa-png	Record revision40 verified UP focus and next restore gate
+202beec89cc716622bfe14ff3dff72e8383fe7ad	2026-10-22T13:25:45Z	zuppasoupfifaistimewa-png	Update handoff with revision40 verified UP input
+bf164b34c9094ef335d0c9a495998a93a4c273f4	2026-10-22T13:25:28Z	zuppasoupfifaistimewa-png	Record revision40 verified UP focus change
+b7629c7131f471def1141e4afec86e96146677d0	2026-10-22T13:25:07Z	zuppasoupfifaistimewa-png	Handoff revision40 UP versus WAIT verified and next restore-only step
+d9c3194d5514f84b3db39417b03e0cd9451b7549	2026-10-22T13:25:03Z	zuppasoupfifaistimewa-png	Record UP tile-focus behavior and revision41 restore gate
+1da987cc2556e4e0d9324f9f8c4471f35a0c9687	2026-10-22T13:21:38Z	zuppasoupfifaistimewa-png	Record revision39 runtime guard failure and active revision40 UP probe
+7155cf69fb6ca542fe6654951d9812dba3da393b	2026-10-22T13:21:34Z	zuppasoupfifaistimewa-png	Record revision39 setup failure and revision40 rerun
+6ab3e25c94cab76f88e0914f61292b4493185b4e	2026-10-22T13:21:29Z	zuppasoupfifaistimewa-png	Handoff revision40 queued after runtime UP guard fix
+db23ff61a50e692044af864bd650d250920f9315	2026-10-22T13:20:49Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision40 UP versus WAIT after runtime guard fix
+d62a04e831ea185f13efafc5e061d5a8dbb945ce	2026-10-22T13:19:16Z	zuppasoupfifaistimewa-png	Allow four directional probe actions in runtime validation
+36dd4272db2c184e5135cac300a1164a67f732f2	2026-10-22T13:17:12Z	zuppasoupfifaistimewa-png	Bound apt network waits and retries in adaptive player setup
+d50f93a66d4b390bd5c07e93f7dd8439fe1e97c1	2026-10-22T13:12:31Z	zuppasoupfifaistimewa-png	Record active revision39 UP versus WAIT map-state test
+3900d1f3fdc95ef9cd8923e4c27a10dee2e760b9	2026-10-22T13:12:15Z	zuppasoupfifaistimewa-png	Update handoff with active revision39 UP-vs-WAIT probe
+68433791e9f41b5f9256bbb1c8e657590c80d68b	2026-10-22T13:11:57Z	zuppasoupfifaistimewa-png	Record active revision39 map UP versus WAIT run
+4615b57129ba13759f377fc563df340d8bc5676d	2026-10-22T13:11:35Z	zuppasoupfifaistimewa-png	Record active revision39 UP-versus-WAIT run and source evidence
+5eb53ee137decc998cf48cd5a3945304836928ba	2026-10-22T13:11:30Z	zuppasoupfifaistimewa-png	Record active revision39 UP versus WAIT gates
+fdbd6367131742e0dc7d00e098cb823da2031686	2026-10-22T13:11:08Z	zuppasoupfifaistimewa-png	Document active revision39 UP navigation test and required gates
+9d90321f02862b486db243538951b9b3871f6a0f	2026-10-22T13:11:04Z	zuppasoupfifaistimewa-png	Handoff active revision39 reverse navigation test
+6c9f21fd7d0af14c6fefb5e62b9c6a74981256ac	2026-10-22T13:10:59Z	zuppasoupfifaistimewa-png	Record active revision39 UP versus WAIT paired test
+8b74fe407dbe0daeb4da102eb4d3ba832fa41841	2026-10-22T13:10:25Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision39 UP versus WAIT from verified cell-140 map state
+4893e1e0eb6cdcaf9fff052c9c794ae62327858a	2026-10-22T13:10:09Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision 39 UP versus WAIT from verified empty-land selection
+0cccff87a2fde75305764c967fb094f4dde61a65	2026-10-22T13:09:41Z	zuppasoupfifaistimewa-png	Handoff revision38 restore caveat and next controlled UP probe
+e8c268562624c1b2dc335603b2eb403ce220c65c	2026-10-22T13:09:36Z	zuppasoupfifaistimewa-png	Record revision38 visual instability and revision39 UP versus WAIT plan
+9d5147605ede67456633b26fb685f14e8dab00c2	2026-10-22T13:09:29Z	zuppasoupfifaistimewa-png	Document revision38 focus stability caveat and revision39 UP probe
+6c8536b92bacd05207e9da3b0e18d2aa7dd267e1	2026-10-22T13:08:48Z	zuppasoupfifaistimewa-png	Record revision38 restore gate and next lateral map probe
+3ce8e09a4a0c951407a44211ac46c0b53667746e	2026-10-22T13:08:33Z	zuppasoupfifaistimewa-png	Update handoff after revision38 restore verification
+92e6b8b64428303960fdd5ef864b5e0f23385d10	2026-10-22T13:08:18Z	zuppasoupfifaistimewa-png	Record revision38 independent restore verification
+5e961068ac0e4707cd9a2a93f0a44fa531be2ccd	2026-10-22T13:07:56Z	zuppasoupfifaistimewa-png	Handoff after revision38 restores post-second-DOWN map state
+385079a55c2576951b0629188c1340302b6b915b	2026-10-22T13:07:51Z	zuppasoupfifaistimewa-png	Record restored revision37 checkpoint and four-direction probe plan
+b3c78426f8c11b406f0fedbffb01bd667e7ffb5e	2026-10-22T13:04:00Z	zuppasoupfifaistimewa-png	Allow controlled directional A/B probes in map state while keeping menu inputs constrained
+8a225627b2b5bad65f80aa6f9fb16356213afaa7	2026-10-22T13:02:58Z	zuppasoupfifaistimewa-png	Record verified revision37 second DOWN focus shift and revision38 restore-only gate
+e4edbd8e7880970ea08d0a277cdc636cff994141	2026-10-22T13:02:54Z	zuppasoupfifaistimewa-png	Record second DOWN focus result and map checkpoint restore gate
+dd7e44e554623ea6e6c35c7cf981290d3c963660	2026-10-22T13:02:50Z	zuppasoupfifaistimewa-png	Update Naruto handoff after revision37 A/B result
+c6904d56efeb41a83151f3f8cfe3002858a27f0a	2026-10-22T13:02:03Z	zuppasoupfifaistimewa-png	Record active revision38 restore-only source and audit gate
+1ff7c3b6d6459b0f041453f5d302e60e3ea4630b	2026-10-22T13:01:58Z	zuppasoupfifaistimewa-png	Handoff active revision38 checkpoint restore audit
+cbd193e7defdc4a019e3932df257ddb6d0f1f242	2026-10-22T13:01:52Z	zuppasoupfifaistimewa-png	Document active revision38 fresh-process restore requirements
+fc31a8ac1674733d1b76154028ed26a578703acc	2026-10-22T13:00:52Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] restore-only revision 38 validates second-DOWN board checkpoint
+0b3628cec36854b829182ecd9eab9ced4fed7f95	2026-10-22T13:00:29Z	zuppasoupfifaistimewa-png	Record revision37 verified second-DOWN board response and revision38 restore gate
+2557c5dcb1fa7dc84f8ee4acfd305fc1872b594d	2026-10-22T13:00:24Z	zuppasoupfifaistimewa-png	Record revision37 second-DOWN board view effect and restore gate
+f56e0c107e4ee66a68ed809038a4853b2db0cb71	2026-10-22T13:00:19Z	zuppasoupfifaistimewa-png	Handoff after revision37 A/B passes, pin next restore source
+b29e5139b8bae99571380f3d2e980300bd2e2e3c	2026-10-22T12:53:47Z	zuppasoupfifaistimewa-png	Record active revision37 second DOWN paired probe
+b0cfd64929084363489cb29541b5de176bb31710	2026-10-22T12:53:42Z	zuppasoupfifaistimewa-png	Document active revision37 repeated DOWN map probe
+fdbccbceaf9ad6e2c2cb6bc405a31b67ce45a932	2026-10-22T12:53:36Z	zuppasoupfifaistimewa-png	Handoff active revision37 from verified scrolled board state
+60b22d1e76b9eeb6ea53d1c98c0ea0d748ab66f0	2026-10-22T12:52:47Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision 37 second DOWN versus WAIT from scrolled map
+b6cd8d09e200eef1f18a413e1c496098e423eebd	2026-10-22T12:52:29Z	zuppasoupfifaistimewa-png	Handoff after revision36 restore of scrolled board checkpoint
+dec35e61328855af4105f6059b539ddf20770932	2026-10-22T12:52:24Z	zuppasoupfifaistimewa-png	Record revision36 fresh-process restore and prepare revision37 second DOWN probe
+c88eafbf0a3d7eea117ee4cbdc7ea7f5f9eaa741	2026-10-22T12:52:19Z	zuppasoupfifaistimewa-png	Record restorable post-DOWN board state and next directional probe
+0cda8234c571208d16d707c9c5c6a707a606c4fc	2026-10-22T12:49:54Z	zuppasoupfifaistimewa-png	Record active revision36 restore test for post-DOWN map checkpoint
+26a8e740e7af3c3263c02ab2d7e00fedd66de7d1	2026-10-22T12:49:49Z	zuppasoupfifaistimewa-png	Document active revision36 restore gate for scrolled map focus
+ce591a86a8aa06f13d29b12e308619f2715e0bc5	2026-10-22T12:49:45Z	zuppasoupfifaistimewa-png	Handoff active revision36 restore-only with exact source and gate
+e0677bc5270e5c2a86e3a5209c3ec1e5ce007dc1	2026-10-22T12:49:06Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] restore-only revision 36 validates scrolled map focus checkpoint
+0067efcd8770ece6dfede7563a1f7533755af893	2026-10-22T12:48:48Z	zuppasoupfifaistimewa-png	Document revision35 DOWN focus/view effect and revision36 restore
+08114c3c23cdb2652a292a7c4aff1435f4dabedf	2026-10-22T12:48:44Z	zuppasoupfifaistimewa-png	Handoff after revision35 paired DOWN from empty-land state
+c64a0cb15ad6f8ce0a84f0dca452bf942ab85380	2026-10-22T12:48:40Z	zuppasoupfifaistimewa-png	Record revision35 verified map focus/view change and restore gate for ACTION output
+943c01eff0cd0163e16839e3b3cd2f7e8be2d014	2026-10-22T12:45:10Z	zuppasoupfifaistimewa-png	Handoff update: revision 35 map DOWN versus WAIT is active
+d8d625611d1f2951dd878569f175ebbde3697773	2026-10-22T12:45:06Z	zuppasoupfifaistimewa-png	Handoff update: revision 35 map DOWN versus WAIT is active
+a0428c22fcc9e93c9fac5c47e9b5e9f2b6bda84b	2026-10-22T12:44:59Z	zuppasoupfifaistimewa-png	Handoff update: revision 35 map DOWN versus WAIT is active
+0d048ed6635b1c5d836c09d865b524bcb81f75d4	2026-10-22T12:44:41Z	zuppasoupfifaistimewa-png	Record active revision35 DOWN versus WAIT from independently restored empty-land focus
+ec741f3dc6a4bab06af5243ee5bee5409688281b	2026-10-22T12:44:33Z	zuppasoupfifaistimewa-png	Document active revision35 probe from empty-land focus
+d1d4f9dd9ce914fcfa9fa14e734f160481f2d308	2026-10-22T12:44:26Z	zuppasoupfifaistimewa-png	Handoff active revision35 exact marker source and audit gates
+94ae6597a369fbd2e59106a1dae41570fa96ee96	2026-10-22T12:43:48Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision 35 DOWN versus WAIT from verified empty-land focus
+3bb2037920c6872be5b875b06abedbe655b6af23	2026-10-22T12:43:33Z	zuppasoupfifaistimewa-png	Record revision34 independently restored empty-land focus and next revision35 probe
+6169b7d7b078a7f80880a2f4df02616ec4afbdfd	2026-10-22T12:43:29Z	zuppasoupfifaistimewa-png	Record restored empty-land checkpoint and next DOWN/WAIT probe
+65d53c59cd09143810b66e41a9d3c1c45e9b3eb0	2026-10-22T12:43:24Z	zuppasoupfifaistimewa-png	Handoff after revision34 restores focused empty-land state
+f37477e42ed2bd09178faeda44f3881e317b3f55	2026-10-22T12:40:57Z	zuppasoupfifaistimewa-png	Record active revision34 restore test requirements
+e4dfcd75a7cff1d35a9c7e5f6eb7411c85a9eec4	2026-10-22T12:40:47Z	zuppasoupfifaistimewa-png	Record active revision34 restore-only verification of board empty-land focus
+4a15bc56c2557019d25f7afe95350eac21f0273c	2026-10-22T12:40:43Z	zuppasoupfifaistimewa-png	Handoff active revision34 restore-only and pinned source SHA
+fa382795585d038c6ef23506d053ff0139207206	2026-10-22T12:40:33Z	zuppasoupfifaistimewa-png	Status: revision 34 restore-only map checkpoint is active
+de1d1fe496d612e265cb56e0dc0494de2d4949fb	2026-10-22T12:40:02Z	zuppasoupfifaistimewa-png	Handoff update: revision 34 map-focus restore is active
+8d57c88080a2f70083ac869cea5e136cd95701d8	2026-10-22T12:39:57Z	zuppasoupfifaistimewa-png	Handoff update: revision 34 map-focus restore is active
+d84a398e6c8adaceddd684d5564a16efbae0b8a7	2026-10-22T12:39:56Z	zuppasoupfifaistimewa-png	Record revision33 verified map tile focus change and next restore gate
+258819d1e17c03714c730515f887c69cf2d0df39	2026-10-22T12:39:51Z	zuppasoupfifaistimewa-png	Record verified DOWN tile-focus behavior and revision34 restore gate
+7fce0d799d210256df4043dc3aa2aeb60ce5191f	2026-10-22T12:39:48Z	zuppasoupfifaistimewa-png	Handoff after revision33 map DOWN A/B passed
+62db1bac757e44a7414a894e716e36f0e36172cc	2026-10-22T12:39:26Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] restore-only revision 34 verifies map empty-land focus checkpoint
+1b3854c1f7f8cc4bf20832453e6e2525bf114b91	2026-10-22T12:39:15Z	zuppasoupfifaistimewa-png	Record verified map DOWN selection and require restore for its checkpoint
+c517de0fd0f7e65f1e46917b612b7e092214b3d6	2026-10-22T12:39:11Z	zuppasoupfifaistimewa-png	Handoff: revision33 verified map focus and revision34 restore gate
+f33f0b015ded0c6289d8c3bbccb78296fd5638f9	2026-10-22T12:39:07Z	zuppasoupfifaistimewa-png	Record verified DOWN selection behavior and guarded checkpoint promotion
+cebf632f7b073f9b471e461c1b1a2542770c01a3	2026-10-22T12:34:20Z	zuppasoupfifaistimewa-png	Handoff update: revision 33 corrected map-state A/B is active
+8928c2639fecd8479076a13cee75b4067f7e13b9	2026-10-22T12:34:17Z	zuppasoupfifaistimewa-png	Handoff update: revision 33 corrected map-state A/B is active
+9a76bbff7050f8ced25558cd69e6bd34d7608735	2026-10-22T12:34:13Z	zuppasoupfifaistimewa-png	Handoff update: revision 33 corrected map-state A/B is active
+6e07fe3de8569c945bab5af8934107768571fff1	2026-10-22T12:33:50Z	zuppasoupfifaistimewa-png	Record active revision33 map directional experiment and hypothesis
+59176b52c73c2f01150d245f2b1926adafd5508e	2026-10-22T12:33:46Z	zuppasoupfifaistimewa-png	Handoff active revision33 with exact run, checkpoint, deadline and gates
+d47b58acf32debcbba7db8e3668b947c2f43c280	2026-10-22T12:33:41Z	zuppasoupfifaistimewa-png	Record active revision 33 map directional A/B with corrected expected-state gate
+05a075862254833b8002be1e53d64a0d9e54359c	2026-10-22T12:33:17Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision 33 map DOWN versus WAIT with explicit map baseline
+0a16924aee11ec937b4d5d7735bf85308ef759aa	2026-10-22T12:32:57Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision 33 map-view DOWN versus WAIT with explicit expected state
+a7fd5769020a883f39225a633ff6a9d052472d9e	2026-10-22T12:32:37Z	zuppasoupfifaistimewa-png	Record revision32 validator failure and prepare corrected revision33 map DOWN A/B
+bdff41523e28e1e5273c58dfc0d8b2d5624b3ea4	2026-10-22T12:32:32Z	zuppasoupfifaistimewa-png	Handoff revision32 paired map probe evidence and correction
+c7c16ac7b33b4c092b6c6bb1633f282e160898a9	2026-10-22T12:32:28Z	zuppasoupfifaistimewa-png	Record revision32 map directional probe hypothesis and corrected gate
+a12124db0cde73e25fc5ab530cc40fb697dbe401	2026-10-22T12:29:20Z	zuppasoupfifaistimewa-png	Correct revision 32 run logic: map precondition may send DOWN but late validator mismatches
+5e973ac57da6e8e0a1e1370e97bfb2a5c1fa446c	2026-10-22T12:29:14Z	zuppasoupfifaistimewa-png	Correct handoff on revision 32 expected-state validator mismatch
+c632c181c9ed260c1bf8398339485fdf450f4c95	2026-10-22T12:29:10Z	zuppasoupfifaistimewa-png	Correct revision32 action/precondition expectation for exact workflow checkout
+a649fc020b05e6befebe73fcf50544acab776f9b	2026-10-22T12:28:05Z	zuppasoupfifaistimewa-png	Handoff: audit active revision 32 expected-state configuration issue
+f7d4ce745a7ff0e12b96613275cf33a555f9d070	2026-10-22T12:28:02Z	zuppasoupfifaistimewa-png	Flag revision 32 missing map expected-state marker while preserving fail-closed rule
+83c2b528ae51cc25241c68bc94caf2cd44383ba5	2026-10-22T12:27:58Z	zuppasoupfifaistimewa-png	Document revision 32 fail-closed marker issue and correction gate
+1507d40000671f86c4f1b19cd3eec284e11905d2	2026-10-22T12:26:07Z	zuppasoupfifaistimewa-png	Record revision 31 independent map-view checkpoint restore and revision 32 directional probe
+2ac88f77778fff777c231f40456cf4759c311812	2026-10-22T12:26:00Z	zuppasoupfifaistimewa-png	Record restorable map-view state and map-direction A/B preconditions
+807069e8d3781c8523b7257a3674dd6300ef918b	2026-10-22T12:25:57Z	zuppasoupfifaistimewa-png	Update handoff after map-view checkpoint restore passes
+19363deb5217cedb80cb54a603be3d1612309d80	2026-10-22T12:25:07Z	zuppasoupfifaistimewa-png	Handoff: revision 32 active, audit requirements and deadline
+bf9004b4ad3b910ed1e8c2a71c5c1d3a5ddee03e	2026-10-22T12:25:04Z	zuppasoupfifaistimewa-png	Record active revision 32 run status
+89b7ea7c2195597dd930244faad7e2a6ca81a3ef	2026-10-22T12:25:00Z	zuppasoupfifaistimewa-png	Agent handoff for active revision 32 map navigation probe
+4c074472e885c75ce618e4e0f5aefd6a8833a0c9	2026-10-22T12:24:22Z	zuppasoupfifaistimewa-png	Allow matched A/B probes from explicitly expected menu or map-view states
+b77f74af5b258dfcd7d8bfbeeeca0c685c5fc7b7	2026-10-22T12:23:15Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision 32 matched DOWN versus WAIT from verified map view
+9bc3cfce5ccb272a41d8c74d86888e804c606b28	2026-10-22T12:23:06Z	zuppasoupfifaistimewa-png	Record verified map-view restore and safe map-navigation experiment
+55136e12f51b4d87bb0f2238efa7f7d5fdb2d199	2026-10-22T12:23:02Z	zuppasoupfifaistimewa-png	Handoff: map view checkpoint restored; revision 32 DOWN probe next
+c60439624917e99de66a7c219ce939795689ea21	2026-10-22T12:22:59Z	zuppasoupfifaistimewa-png	Document map-view restore verification and revision 32 controlled probe
+5f8ae63b4374cb730ef197d797dffd0e823db141	2026-10-22T12:22:12Z	zuppasoupfifaistimewa-png	Allow matched A/B precondition from calibrated map-view state
+01e845271f8b9f68fe292b722e8d07bcb821412b	2026-10-22T12:20:20Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] restore-test revision 31 Triangle map-view checkpoint
+570f1a4363bf59f4e11c8ca3ab76fdac3e836a63	2026-10-22T12:20:11Z	zuppasoupfifaistimewa-png	Document verified Triangle-to-map transition and pending checkpoint restore
+fe330e411b71e97aed0c436ad7b5033bf6f5d136	2026-10-22T12:20:08Z	zuppasoupfifaistimewa-png	Update handoff after revision 30 verified Triangle opens map
+1a2ca96f74bb62a25c792b7ed0fdcd1fdace6435	2026-10-22T12:20:02Z	zuppasoupfifaistimewa-png	Record matched Triangle versus Wait result and revision 31 restore gate
+2723a453682e830809925033229efd9dbb8e3d68	2026-10-22T12:18:43Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] restore-only revision 31 map-view checkpoint
+6ca2c3ca4534144bb725e46bc302bf918350d9ce	2026-10-22T12:18:33Z	zuppasoupfifaistimewa-png	Record verified Triangle-to-map result and map checkpoint restore gate
+243e9957c5886e30c16dc8ae4295b6133b373c2f	2026-10-22T12:18:30Z	zuppasoupfifaistimewa-png	Record verified map entry and restore-only next action
+2639185d8c52bff3a8579d54182045ba64f90916	2026-10-22T12:18:27Z	zuppasoupfifaistimewa-png	Update Naruto handoff after revision 30 Triangle map-view verification
+ca8ad37cdc9f8e1ca8a2113bcf9e315d1ebc6dda	2026-10-22T12:12:55Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] revision 30 matched TRIANGLE versus WAIT from restored map-row checkpoint
+6afd60d4d807d97a159299045a8e1df9e466d92f	2026-10-22T12:12:44Z	zuppasoupfifaistimewa-png	Record independently restored revision 28 ACTION checkpoint and next Triangle test
+0859e59d009becf9c201ab2bdc20d390c5809b81	2026-10-22T12:12:41Z	zuppasoupfifaistimewa-png	Record restored map-row checkpoint and revision 30 Triangle probe
+56231dc04d70b94277b48c3c0b96fa9cb7f937eb	2026-10-22T12:12:37Z	zuppasoupfifaistimewa-png	Update Naruto handoff after revision 29 restore verification
+92cc6c82af52d0dd2aed69775dfe1a32ee527480	2026-10-22T12:09:37Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] restore-test revision 29 A/B action checkpoint
+ce7d6ac7ea919fabd6f1d067be133deb777abc52	2026-10-22T12:09:27Z	zuppasoupfifaistimewa-png	Document verified revision 28 DOWN/NONE result and next restore gate
+fe3c8fcafa48083bedad010a888416714ef7e3bf	2026-10-22T12:09:24Z	zuppasoupfifaistimewa-png	Record verified revision 28 menu rule and guarded next cycle
+730b96de4f5fad863e3777d266fde72c47c0ced7	2026-10-22T12:09:21Z	zuppasoupfifaistimewa-png	Update Naruto handoff after verified revision 28 A/B result
+83c854fbf23227e2c5b6a363863a324ceb63532e	2026-10-22T12:04:05Z	zuppasoupfifaistimewa-png	[NARUTO-RESEARCH] refresh active matched-run status for handoff
+c4b85904cbcbb860417c7b7435298b18464cc78b	2026-10-22T12:04:01Z	zuppasoupfifaistimewa-png	[NARUTO-RESEARCH] refresh active matched-run status for handoff
+67b1d6454ffcd7943116c7c473bc79f7a829b800	2026-10-22T12:03:55Z	zuppasoupfifaistimewa-png	[NARUTO-RESEARCH] refresh active matched-run status for handoff
+4d248d751690ac75da79445042f19a7e390037b4	2026-10-22T12:03:15Z	zuppasoupfifaistimewa-png	[NARUTO-RESEARCH] record queued revision 28 paired experiment
+b79b2ab218ede6a3b0fdb22986a8bae6fbbbd11d	2026-10-22T12:03:10Z	zuppasoupfifaistimewa-png	[NARUTO-RESEARCH] record queued revision 28 paired experiment
+6130e13af3cb07e8c071bb7b9d8c24d36e0a95ac	2026-10-22T12:03:02Z	zuppasoupfifaistimewa-png	[NARUTO-RESEARCH] record queued revision 28 paired experiment
+e31ebb2afbe1145746e480e9a0f020854621a82f	2026-10-22T12:02:37Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] matched DOWN vs NONE from verified Information checkpoint
+4a07b033e6f1eff58d2b192439057d865749a8ac	2026-10-22T12:02:33Z	zuppasoupfifaistimewa-png	[NARUTO-RESEARCH] record successful adaptive restore smoke
+2c1a7419a72fe4f00206510480e393bf8d00c125	2026-10-22T12:02:29Z	zuppasoupfifaistimewa-png	[NARUTO-RESEARCH] record successful adaptive restore smoke
+5f5d65f24a338dc3c1f8e8831a7deb664a455466	2026-10-22T12:02:23Z	zuppasoupfifaistimewa-png	[NARUTO-RESEARCH] record successful adaptive restore smoke
+aec03de54e3dd991985bfb1cdc6a6395d69ef8ce	2026-10-22T11:45:39Z	zuppasoupfifaistimewa-png	Document active revision 27 smoke
+66d5f3a3de588f1147eb3b5b2f56e78761e4a243	2026-10-22T11:45:33Z	zuppasoupfifaistimewa-png	Handoff active revision 27 restore smoke
+a567bea4a2f70e569ead9903af8d1f94cde4be9d	2026-10-22T11:45:28Z	zuppasoupfifaistimewa-png	Record active single-nextTick restore smoke after drain loop reverted
+ce9413eee80b207ad1d3f81f72a6d7d100b093ad	2026-10-22T11:42:47Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] one-cycle restore smoke with established shutdown
+aa11dc1d37cf4bf6635f4dc7532e5f7c0b512a14	2026-10-22T11:42:34Z	zuppasoupfifaistimewa-png	Record paused nextTick chain timeout and next smoke gate
+30172fd6d64e2f5f5568eb2f27e2a047ccb02380	2026-10-22T11:42:22Z	zuppasoupfifaistimewa-png	Handoff paused-drain timeout and next single-nextTick smoke
+f13d3cab323ac65a5bb590fbc33bc4c33f1b6ce4	2026-10-22T11:42:14Z	zuppasoupfifaistimewa-png	Record paused nextTick drain timeout and restore single-nextTick shutdown
+df6e3d5afab0a9efeac89aa8bcb0be2e273ef631	2026-10-22T11:41:13Z	zuppasoupfifaistimewa-png	Use single out-of-VSync quit; chained nextTick drain stalls while paused
+ab39c09dbc798aa472d9a52074931ed97b9adc4d	2026-10-22T11:32:40Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] retry Information DOWN versus NONE with nextTick drain
+dea4141f51103ef1b3351cb48628b3ee5ff2353e	2026-10-22T11:32:26Z	zuppasoupfifaistimewa-png	Record timed-out VSync drain and switch to nextTick drain
+bd9e1cbe4c1aa9d5a514ef2575072d26fdebf014	2026-10-22T11:32:21Z	zuppasoupfifaistimewa-png	Handoff stalled VSync drain and nextTick-based matched retry
+b2463ac4b3854115a44b83ef549343945a0dbd51	2026-10-22T11:32:18Z	zuppasoupfifaistimewa-png	Document drain timeout and nextTick shutdown hypothesis
+f0e22c1c0b02a04f081c1521a065932b83e8b7a9	2026-10-22T11:32:15Z	zuppasoupfifaistimewa-png	Record failed VSync-drain attempt and nextTick shutdown retry
+6da50a16c5517a1f70bc04c440e8fb5803459e68	2026-10-22T11:32:13Z	zuppasoupfifaistimewa-png	Handoff shutdown timeout and nextTick drain retry
+cee7957990270f53d2fe95caa411b80cb627237d	2026-10-22T11:32:09Z	zuppasoupfifaistimewa-png	Record timeout after drain VSync and nextTick shutdown fix for retry
+3e052b8e77cfcd966f5e5e05a2f7341ed2ff0374	2026-10-22T11:30:27Z	zuppasoupfifaistimewa-png	Drain checkpoint writes through paused nextTick loop before quit
+13dd67dab4ae4d75e36866f88c4cae9a58cde99e	2026-10-22T11:25:24Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] retry Information DOWN-versus-NONE with checkpoint drain
+b09bc981c6c7d75a6439c3d1b0cc898468fe0acb	2026-10-22T11:25:14Z	zuppasoupfifaistimewa-png	Record truncated save on Information DOWN experiment and pending drain-window validation
+a161bfcfe7daa8fffb846b0a605d31ac8585b320	2026-10-22T11:25:09Z	zuppasoupfifaistimewa-png	Handoff truncated Information-down A/B checkpoint and drain-window retry
+ed89f5bdef4400766f23eb8c4f0df693e3b9a308	2026-10-22T11:25:02Z	zuppasoupfifaistimewa-png	Document failed Information DOWN branch due truncated checkpoint and bounded shutdown drain fix
+13da48ab08ef40d0be8c8bbc850b7babbb9b107e	2026-10-22T11:24:19Z	zuppasoupfifaistimewa-png	Wait for checkpoint slice flush before adaptive emulator shutdown
+b1fac503f3ec50344a1a584266f3d8c9b2aaa8bd	2026-10-22T11:21:14Z	zuppasoupfifaistimewa-png	Document active Information-down menu test
+84bdb20f8fb7e7d0cfc0211a1d17e4a1555b5953	2026-10-22T11:21:09Z	zuppasoupfifaistimewa-png	Handoff active DOWN probe from Information selection
+2b51e70b77db86db0850dd8e92eeb9dc5c2e6b52	2026-10-22T11:21:03Z	zuppasoupfifaistimewa-png	Record active DOWN-versus-NONE probe from Information selection
+20b1b3d8fce908c2bcdc964f45fb55d817ac631a	2026-10-22T11:20:23Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] test DOWN from Information versus NONE
+c256492b5e737b81caf1f40f5ec023b23fd5a1a5	2026-10-22T11:20:14Z	zuppasoupfifaistimewa-png	Record successful restore of Information-highlight checkpoint
+237dbed8bde2b3fb891a7194879ccac5ddd7d13e	2026-10-22T11:20:08Z	zuppasoupfifaistimewa-png	Handoff Information state restore passed; next test DOWN to map item
+5641545d0b8645300dc912debff20bcd8fe215e0	2026-10-22T11:20:03Z	zuppasoupfifaistimewa-png	Record verified restore of Information menu state and next DOWN probe
+8c1af5fad02fe2e48d9f6e2cfa6d8597ee66e6bd	2026-10-22T11:16:00Z	zuppasoupfifaistimewa-png	Document second verified DOWN step and Triangle test plan
+427bbaa3ef920b61fa7367f67507e6976b6e6140	2026-10-22T11:15:56Z	zuppasoupfifaistimewa-png	Handoff verified second DOWN transition and ready Triangle probe
+9df69791c5e42333f8d98bd236a4b099574d242b	2026-10-22T11:15:52Z	zuppasoupfifaistimewa-png	Record verified second DOWN transition and next Triangle probe
+95efc3c4f646b9ca30a48d3c4c7e31ad8469a665	2026-10-22T11:15:51Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] restore Information-highlight checkpoint in fresh process
+5b67f466f30ef46c300bfc34275f1f1fed2e0bf8	2026-10-22T11:15:40Z	zuppasoupfifaistimewa-png	Document verified second downward menu movement
+92a649e2cc8b78eb0cd8459135ad5c9156477539	2026-10-22T11:15:36Z	zuppasoupfifaistimewa-png	Handoff second DOWN transition verified; restore Information checkpoint next
+dc874e54bfac8a4888e17d70da75c55129966dbd	2026-10-22T11:15:31Z	zuppasoupfifaistimewa-png	Record verified second DOWN menu transition and next restore test
+bfa1ad4dd90642542bf1c8f5e0d2a55414ff2374	2026-10-22T11:12:44Z	zuppasoupfifaistimewa-png	Record current matched next-row probe
+007e4664a52bd6ca32507fbb65bd256823945772	2026-10-22T11:12:39Z	zuppasoupfifaistimewa-png	Handoff second DOWN-vs-NONE menu probe is active
+c66ad00165db16a4da77d30ca62969449efca38b	2026-10-22T11:12:38Z	zuppasoupfifaistimewa-png	Generalize matched menu experiment to test Triangle versus NONE
+ba3ee73f9091cf9883404e03eb2e128f490bcac4	2026-10-22T11:12:34Z	zuppasoupfifaistimewa-png	Record active second menu DOWN versus NONE probe
+f5296358782b1cf8b979b26c3567da2e7ca2dcd3	2026-10-22T11:12:16Z	zuppasoupfifaistimewa-png	Document verified restore of menu-DOWN checkpoint before Triangle probe
+07154fa0f119121770808eb9e3c6d129c674722a	2026-10-22T11:12:12Z	zuppasoupfifaistimewa-png	Handoff verified restore of menu-DOWN branch checkpoint
+d6583b31a06248f414657e6d840eb0119e11f802	2026-10-22T11:12:08Z	zuppasoupfifaistimewa-png	Record verified restore of menu-DOWN checkpoint and next Triangle probe
+ebfbd877e202dacc1b59c04d858c3ef62144fafd	2026-10-22T11:12:03Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] test second DOWN menu transition against NONE
+9a8475540531bb7d8b41653489c74a1a9b1ddea9	2026-10-22T11:11:53Z	zuppasoupfifaistimewa-png	Document restored Ninjutsu menu checkpoint and next DOWN probe
+92af59c84dbd4402cd3d022c1e9a68d07da46c4e	2026-10-22T11:11:49Z	zuppasoupfifaistimewa-png	Handoff verified restoration of menu-Ninjutsu checkpoint
+380db2f5d7b5a694d917590428727202e28a9b07	2026-10-22T11:11:44Z	zuppasoupfifaistimewa-png	Record verified restore of menu-Ninjutsu checkpoint and prepare next menu probe
+03348895005793d8183042bcdf8d8cc83ce751b2	2026-10-22T11:09:20Z	zuppasoupfifaistimewa-png	Document active restore test for matched DOWN checkpoint
+02b1c34670a8ebf27b89fdb1ff1168d9e73a0be7	2026-10-22T11:09:13Z	zuppasoupfifaistimewa-png	Handoff restore-only test of menu-DOWN successor queued
+5a852c698b9dcd08d3bd07821d50373fb69e7eac	2026-10-22T11:09:09Z	zuppasoupfifaistimewa-png	Record fresh-process restore test now queued for matched DOWN checkpoint
+b087e3727dfe26b564e403b956dbcb4e88bfeb40	2026-10-22T11:08:42Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] restore matched DOWN branch checkpoint in fresh process
+cfcb99e42655b4b5b2972026636e67dcbb30109a	2026-10-22T11:08:29Z	zuppasoupfifaistimewa-png	Document verified downward movement in Story Mode menu
+b7b71d0d135a2af12a12ac75781d7cb343fc1f0f	2026-10-22T11:08:26Z	zuppasoupfifaistimewa-png	Handoff verified menu DOWN selection change and next restore test
+8cfa2cb8bb6a66e613408691751d92d8b8a1a39b	2026-10-22T11:08:21Z	zuppasoupfifaistimewa-png	Record verified menu DOWN effect and pending fresh-process restore of action checkpoint
+ac467dc54aacbf8b0453518e18fdb67cf4b4e14b	2026-10-22T11:08:03Z	zuppasoupfifaistimewa-png	Record verified menu DOWN probe and safe Triangle/Map experiment
+daef374225ff581133c3b03183d20c9f88a786c7	2026-10-22T11:07:58Z	zuppasoupfifaistimewa-png	Handoff verified matched menu navigation test and next safe action
+1499e415bce3333fd64b63661bcb157221b7eade	2026-10-22T11:07:54Z	zuppasoupfifaistimewa-png	Record matched DOWN-versus-NONE result from same checkpoint
+f40bae0cec223e43dd7410a0e589b4e220d1fafd	2026-10-22T11:06:05Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] finalize matched menu DOWN-versus-NONE test
+f6191316ed53ad694d0cb2035a25a51d50184287	2026-10-22T11:04:04Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] repeat matched DOWN-versus-NONE with dialogue guard corrected
+f802d616de8d0a9f9b222da134c08112562a789d	2026-10-22T11:03:54Z	zuppasoupfifaistimewa-png	Exclude matched action-control runs from dialogue-required continuation guard
+ed314322a35fe0ca32e0e19e770e5c7c38f4edeb	2026-10-22T11:00:04Z	zuppasoupfifaistimewa-png	Document A/B audit bug and parity evidence
+9cf646188701ddfb93bc8db53d54c7913b523c0e	2026-10-22T11:00:00Z	zuppasoupfifaistimewa-png	Handoff first A/B attempt and corrected rerun
+4e1f6679691c8815cbf22798b18935dd88851df9	2026-10-22T10:59:55Z	zuppasoupfifaistimewa-png	Record A/B report bug, verified initial parity, and corrected rerun
+7231f76917f51217f9a12fdcacbb45611900f322	2026-10-22T10:58:27Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] repeat matched DOWN-versus-NONE after comparison fix
+0041262a4c83edbabdbfb658ff3c572ad9e3a30c	2026-10-22T10:58:14Z	zuppasoupfifaistimewa-png	Fix path formatting in matched-action image comparison
+ad5e69ec02d71f6b0b30d36eefa0179cce8fa31d	2026-10-22T10:52:18Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] matched DOWN-versus-NONE from same checkpoint
+1c1222004c423373cbbeb528cb860d35926d0a25	2026-10-22T10:51:15Z	zuppasoupfifaistimewa-png	Add isolated matched DOWN-versus-NONE checkpoint experiment mode
+cf078ba87fda7d1cb97ee7896026bbf853831b59	2026-10-22T10:49:00Z	zuppasoupfifaistimewa-png	Document successful fresh-process two-cycle checkpoint continuation
+dbbf53990b4649a984036831cb81938e42cb857d	2026-10-22T10:48:56Z	zuppasoupfifaistimewa-png	Handoff verified two-cycle checkpoint continuation
+7322cde5c626ad5de6420b40272ffaa29e5d1c4b	2026-10-22T10:48:53Z	zuppasoupfifaistimewa-png	Record verified two-cycle continuation and menu checkpoint
+f43e9c38c0bf21337208a5fbc1711e129cb8a2c0	2026-10-22T10:43:47Z	zuppasoupfifaistimewa-png	Document verified fresh-process restore and two-cycle continuation gate
+44cede2a6ee38e4efa0105e16e8728b702c7a76a	2026-10-22T10:43:44Z	zuppasoupfifaistimewa-png	Update handoff with verified fresh-process restore and active continuation
+f8736f249c79b98aa77e6e650d78c91ecd3cafb5	2026-10-22T10:43:40Z	zuppasoupfifaistimewa-png	Record verified checkpoint restoration and active two-cycle continuation
+4843d8ec4284010a3974ea7a6973eceb8a4c7026	2026-10-22T10:43:06Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] bounded two-cycle continuation from restored checkpoint
+610a89d1b4828f01ca5ab092ac0af186115dcf90	2026-10-22T10:42:49Z	zuppasoupfifaistimewa-png	Avoid requiring a dialogue skip in board-only continuation smoke
+c709d06850e518be22b0c4948d04d7147c0a7ad8	2026-10-22T10:42:03Z	zuppasoupfifaistimewa-png	Add bounded two-cycle continuation test evidence guard
+bb911ba5f394e317b4c07dac3c11e9f4ea5ae39a	2026-10-22T10:36:29Z	zuppasoupfifaistimewa-png	Document verified smoke checkpoint and pending restore test
+e75674ac4c8fb263014fc6eae52a79f6d1d388cd	2026-10-22T10:36:26Z	zuppasoupfifaistimewa-png	Update handoff after validated one-cycle smoke test
+59d69552f86d1d9c99c0f0757fdfdfe1e3fc1b79	2026-10-22T10:36:23Z	zuppasoupfifaistimewa-png	Record verified one-cycle checkpoint smoke and pending restore test
+7d495e23240c1b4d8e86122f66ed0cf63ddacde9	2026-10-22T10:35:25Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] verify fresh-process restore of smoke checkpoint
+e3d44745e4069f360356ec9c7ea02d3e5b6ae988	2026-10-22T10:34:58Z	zuppasoupfifaistimewa-png	Add immutable checkpoint selector and bounded restore-only verification
+f3a37f3471d138424b38935f90a13c585273a416	2026-10-22T10:29:49Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] one-cycle checkpoint smoke test
+29430d465160a61947ca19ea8db689b8514c996c	2026-10-22T10:29:27Z	zuppasoupfifaistimewa-png	Fix adaptive checkpoint validation timing after emulator exit
+bf521becfae38acff5ef063faceda6a7a3263a17	2026-10-22T10:21:43Z	zuppasoupfifaistimewa-png	Document failed adaptive retries and checkpoint visibility timing hypothesis
+08b03d8c048247720b89d6588ca94e76ef8c8b0f	2026-10-22T10:21:39Z	zuppasoupfifaistimewa-png	Update handoff with completed adaptive run outcomes and checkpoint race
+ef9b60b6825b91c04ac29a26c196e5fbf859d5c8	2026-10-22T10:21:35Z	zuppasoupfifaistimewa-png	Record latest adaptive checkpoint race and failed bounded runs
+7fdf783b25b6f8b0cfcfed98fa13b07c6eb3065f	2026-10-22T10:12:45Z	zuppasoupfifaistimewa-png	Update handoff with invalid checkpoint evidence and current guarded player runs
+4568e42ba44eb64f2c917acc07498c23ba521215	2026-10-22T10:12:18Z	zuppasoupfifaistimewa-png	Update current player checkpoint integrity and queued run status
+a2e2879f82cbfb19badcf6d44eeed6baf4291a90	2026-10-22T10:10:58Z	zuppasoupfifaistimewa-png	Record Oct 22 adaptive classifier and invalid-checkpoint failure evidence
+6c117a78682e62e166732e122481a1e8cf16bff6	2026-10-22T10:10:25Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] validate checkpoint size and deferred shutdown during two-session smoke
+f397404b11e270a074198127d33ed7cc2ff2e601	2026-10-22T10:10:11Z	zuppasoupfifaistimewa-png	Fail fast when bounded-session orchestrator exits before producing required evidence
+4544e62d01942178d623a823d539353b597209d6	2026-10-22T10:09:01Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] two-session checkpoint guard and deferred quit smoke
+6bca6f80853292b5ebe7033ea0e1a0d2d58be569	2026-10-22T10:08:46Z	zuppasoupfifaistimewa-png	Validate raw savestate bytes and defer emulator quit outside VSync; recover only validated shutdown SIGSEGV
+e23327f9534a7feac262509280543a42692669ba	2026-10-22T10:06:30Z	zuppasoupfifaistimewa-png	Update handoff with Oct 22 classifier and checkpoint continuity evidence
+981d6d6e2c1646a6151dfe626fd9d8243ceb830b	2026-10-22T10:04:08Z	zuppasoupfifaistimewa-png	Record Oct 22 adaptive checkpoint and authentic board-transition evidence
+e831cd0c218bdd177d3341849ce00991888106dc	2026-10-22T10:00:38Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] verify two-cycle checkpoint-resume after watchdog race and board-state calibration fixes
+c72fa9955392fe3b27faab319be8acdb80449b47	2026-10-22T09:59:47Z	zuppasoupfifaistimewa-png	Wait for all fresh-session checkpoints and completion marker before watchdog validation
+4116fd8922022a1f32cb090fcf802c3095ee6daf	2026-10-22T09:59:19Z	zuppasoupfifaistimewa-png	Regress classifier against ten authentic frames from latest two-session artifact
+b25e5270028ba40ccd3a0742418c88697545e30f	2026-10-22T09:59:05Z	zuppasoupfifaistimewa-png	Cover authentic board-transition dual-HUD state separately from untrained battle
+358f6b69384c6933754677a2bc9ecde83c4c1100	2026-10-22T09:58:51Z	zuppasoupfifaistimewa-png	Distinguish board transition with dual HUD from untrained battle
+5092b4784862640340804be60aa0a0d0587a3884	2026-10-22T09:52:10Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] verify two fresh emulator sessions after parent-shell export fix
+87e9e407c0b5bf4bb434644ce03986a8a2bef28d	2026-10-22T09:51:56Z	zuppasoupfifaistimewa-png	Export controller setup and cycle count in parent shell before writing session orchestrator
+19a40c9ed0adcc328d2fc84b39422e05eb01b751	2026-10-22T09:49:55Z	zuppasoupfifaistimewa-png	Allow bounded two-process checkpoint resume enough time for authentic X11 observations
+d50cd850f47be10ad0b3d4f44b000198b2cdd93b	2026-10-22T09:49:04Z	zuppasoupfifaistimewa-png	Pass controller setup into isolated sequential-session orchestrator
+cccab716701b7000b7b7f1fcd99765fd4380e3e3	2026-10-22T09:48:53Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] rerun fresh-process checkpoint cycle after PAD_SETUP export fix
+6f51d7111b6213785a445b110c36ab991f0e1737	2026-10-22T09:48:46Z	zuppasoupfifaistimewa-png	Export PCSX controller setup into fresh-process session orchestrator
+4f44a28a49054fb5b8427c7116f41bee8445007e	2026-10-22T09:48:21Z	zuppasoupfifaistimewa-png	Add calibrated START dialogue skip and configurable checkpoint-resumed bounded cycles
+a2cc906c4b36429d75953f39bccff0d481fa1b42	2026-10-22T09:47:52Z	zuppasoupfifaistimewa-png	Use visible calibrated gold dialogue-box border even before text renders
+7449bfa7caea6d9c83869dc6b7643e619b5ba4c8	2026-10-22T09:46:45Z	zuppasoupfifaistimewa-png	Expect START on authentic sparse-dialogue frame, keep untrained battle fail-closed
+8e5f19e360d27a2d5642c9226fbf59da76c935d6	2026-10-22T09:46:02Z	zuppasoupfifaistimewa-png	Test sparse dialogue box action policy with START
+c61c964747e56b5d486b1dd5ab9ab61969cccd11	2026-10-22T09:45:42Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] test fresh-process checkpoint-resume cycles
+a6641b96ed7d61903e1ff473061b0f036a71ee1c	2026-10-22T09:45:41Z	zuppasoupfifaistimewa-png	Recognize authentic gold dialogue frame before text fully renders
+ddb3e6522c10602f43c3cbd4b990702beb51ba97	2026-10-22T09:44:47Z	zuppasoupfifaistimewa-png	Run bounded cycles as fresh emulator processes restored from validated successor checkpoint
+b8a1d7094801f304f405c4eb06a6ea0dc123c2fa	2026-10-22T09:39:47Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] retry bounded two-cycle run with explicit VSync checkpoint resume
+4b18a27e2cd511c177559166e741c2c68d88f42c	2026-10-22T09:39:36Z	zuppasoupfifaistimewa-png	Explicitly resume emulator after non-final VSync checkpoint
+f2407ef8eb8e051fee8ba18fa96a0152b4ac7549	2026-10-22T09:35:21Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] rerun two-cycle external capture after PNG temp extension fix
+90c4984347068ccb62c6d12c0a6da23ec96aa915	2026-10-22T09:34:25Z	zuppasoupfifaistimewa-png	Keep temporary ImageMagick capture filename PNG-typed
+b69eac12944a5e6fe6cc753186b997a61be525e4	2026-10-22T09:33:15Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] retest two-cycle loop with synchronous external X11 capture
+dd9413d19ee374ce2a6b663a551bb9809f2d22da	2026-10-22T09:33:08Z	zuppasoupfifaistimewa-png	Wait for synchronous classifier report before external X11 validation
+67aaed942dea19614a9d508e3f2d6463147c0b01	2026-10-22T09:32:45Z	zuppasoupfifaistimewa-png	Remove blocking cross-cycle gate; capture authentic X11 synchronously per VSync and validate two cycles
+3993673e9ae80596b2399e3159abe30f5225cbe5	2026-10-22T09:24:17Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] run two-cycle hang regression from verified board checkpoint
+6fe832507bedcf4080c8232b21d382e85c12e35f	2026-10-22T09:24:09Z	zuppasoupfifaistimewa-png	Expand adaptive regression to two gated cycles with encounter WAIT assertion
+a8cf10c673fd11d76000c50d78b672e38cb2aeba	2026-10-22T09:21:52Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] verify one-cycle smoke with persisted progress report
+b6f3f7428a1e0fe84ae020d9ceb920b6e6c5778a	2026-10-22T09:21:08Z	zuppasoupfifaistimewa-png	Persist adaptive gameplay progress marker and validate checkpoint header
+91b97903585c9632c618a0df0687264952e19583	2026-10-22T09:19:49Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] one-cycle smoke test after gate fix
+7bc30218312bda0871343d8e71fda1227e33d8a6	2026-10-22T09:19:27Z	zuppasoupfifaistimewa-png	Fix adaptive runner gate handshake; add one-cycle smoke and progress watchdog
+2f2c998d6f917c8afb7c6d47a43c26d92bf6571a	2026-10-22T09:12:05Z	zuppasoupfifaistimewa-png	Record successful classifier regression in current handoff
+ed520acdbf51a961d030ecbf21499dc9c6cf8184	2026-10-22T09:12:02Z	zuppasoupfifaistimewa-png	Record passing authentic-frame classifier regression
+8400aab5d7e216bd7f0c2a6245360b8714b37343	2026-10-22T09:10:39Z	zuppasoupfifaistimewa-png	Align synthetic state regression with battle_untrained label
+d5313eb13368886c35f4f9d2e1aefa4a196927ab	2026-10-22T09:09:31Z	zuppasoupfifaistimewa-png	Add private authentic-frame regression checks for adaptive classifier
+d37010075e78ccabb8a26f3c6939fa0df7a477b0	2026-10-22T09:08:27Z	zuppasoupfifaistimewa-png	Update handoff with private artifact discovery
+9765e505ad27705aa57cbd52ab1d0a9b8df0b19a	2026-10-22T09:08:22Z	zuppasoupfifaistimewa-png	Record calibrated encounter HUD and safe wait behavior
+2ce9dfbcbc47e9e79a7ecb6f37965a9b4a93ff01	2026-10-22T09:08:02Z	zuppasoupfifaistimewa-png	Add regression test for battle HUD state
+4d0182d6282500d3960d0c43d425e0cf64100cbf	2026-10-22T09:07:59Z	zuppasoupfifaistimewa-png	Fail closed on the observed untrained encounter HUD
+e432100b4252f8a92a468473f06cd7ca1cd73504	2026-10-22T09:03:53Z	zuppasoupfifaistimewa-png	Add current adaptive-player handoff for disconnected chats
+ca88f86a46f95a7f81df1ade1ca2dcf5f0a8eac1	2026-10-21T23:23:48Z	zuppasoupfifaistimewa-png	Record observed adaptive loop timeout and private evidence
+f855ad2ba283276fb5f3146758440c26c3b2d8dc	2026-10-21T23:23:45Z	zuppasoupfifaistimewa-png	Update new-chat handoff with adaptive player failure and monitor status
+a0d4520c00dc487799b283cea4870f21046e97f0	2026-10-21T23:23:41Z	zuppasoupfifaistimewa-png	Record adaptive player failure and scheduled monitoring status
+e3142b0383d43d7e1f549652d8c8fca4c5b6a107	2026-10-21T23:23:19Z	zuppasoupfifaistimewa-png	Add scheduled monitor for adaptive Story Mode run health and evidence artifacts
+ebf5493c04a75fd02f71428a7e13fb5020ea4774	2026-10-21T22:39:12Z	zuppasoupfifaistimewa-png	Document initial adaptive Story Mode agent and verified constraints
+69b1cad9a4effcf95b58f96c5458508453117c29	2026-10-21T22:36:08Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] rerun eight-cycle adaptive Story Mode agent after runner validation fixes
+a7f5633019d6dab494c0654a8b5862056ba521d3	2026-10-21T22:36:01Z	zuppasoupfifaistimewa-png	Fix adaptive runner source artifact and stage the tested agent
+7fdd6f3e1fefeda74c7239c6302e6e5f7bc314df	2026-10-21T22:35:26Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ADAPTIVE-PLAYER] execute eight-cycle adaptive Story Mode agent from latest verified board checkpoint
+153d4d0376d41f017e8af2e6fd47c02c7ff3d03b	2026-10-21T22:35:24Z	zuppasoupfifaistimewa-png	Add screenshot-driven adaptive Story Mode checkpoint loop
+f67f3e1b29ca0c46726083f5a7e6053d2805deff	2026-10-21T22:34:23Z	zuppasoupfifaistimewa-png	Test adaptive Story Mode state classifier and safe input policy
+462282c227c215fd682920a6390312f5fb16d5df	2026-10-21T22:34:20Z	zuppasoupfifaistimewa-png	Add conservative screenshot-driven Story Mode state detector and adaptive policy
+a1df86733e062618eb3d99bf45d5f61fd95128e4	2026-10-21T22:21:14Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-NEXT-ROULETTE-CIRCLE-DIFF] compare one Circle tap to no-input from the new wheel reached after START dialogue skip
+983957d6866f2189aa0d2caf94ec9b4a842bce75	2026-10-21T22:21:01Z	zuppasoupfifaistimewa-png	Add controlled Circle-versus-none experiment for roulette reached after START dialogue skip
+f0d678dc43c3a0206ffd300751c417233190830a	2026-10-21T14:52:21Z	zuppasoupfifaistimewa-png	Record Mizuki dialogue and controlled DOWN timing results in Story Mode handoff
+6cf872f5d13c5c0ebc6951a801791d875a6c76fd	2026-10-21T14:52:16Z	zuppasoupfifaistimewa-png	Record Mizuki dialogue and controlled DOWN timing results in Story Mode handoff
+e9fddda19fbf7b03c5ce1d0834460dddd56b017b	2026-10-21T14:52:10Z	zuppasoupfifaistimewa-png	Record Mizuki dialogue and controlled DOWN timing results in Story Mode handoff
+d99b68f96c83b1cdb074dad62639028df4d6a216	2026-10-21T14:52:01Z	zuppasoupfifaistimewa-png	Record Mizuki dialogue and controlled DOWN timing results in Story Mode handoff
+006857157671541ad57e92a30afb79a98cb03a1f	2026-10-21T14:51:56Z	zuppasoupfifaistimewa-png	Record Mizuki dialogue and controlled DOWN timing results in Story Mode handoff
+36a107df75ad3c6c31fef6ed1d9eb405a4a80651	2026-10-21T14:51:49Z	zuppasoupfifaistimewa-png	Record Mizuki dialogue and controlled DOWN timing results in Story Mode handoff
+4fe8cc2bb17bf382a0da801109aa680be95cd604	2026-10-21T14:50:42Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-BARRIER-DIALOG-START] skip live Mizuki Story Mode dialogue with START and inspect successor
+b4371b9e08a01c6fb7bafde965e423690a469154	2026-10-21T14:50:19Z	zuppasoupfifaistimewa-png	Add controlled START-versus-none continuation from verified Mizuki dialogue checkpoint
+2e69bfa75e103b5a4693fc3701ccf92e6106ddd7	2026-10-21T14:49:04Z	zuppasoupfifaistimewa-png	Clean up completed delayed DOWN diagnostic trigger after discovering next Mizuki dialogue in both branches
+d20d5f1ec98d0670ed5b9f64e6d48289b8fdb13b	2026-10-21T14:45:34Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-BARRIER-RESULT-DELAYED-DOWN-DIFF] test DOWN after prior post-barrier animation against no-input control
+c766dda4e5fa04cd566cf86eb28e5fad07a8750f	2026-10-21T14:45:11Z	zuppasoupfifaistimewa-png	Delay DOWN probe until after barrier placement animation; use verified no-input successor
+21e122f8808b820166d35661d0a8e6591cc2ea8b	2026-10-21T14:43:58Z	zuppasoupfifaistimewa-png	Clean up completed post-barrier DOWN differential trigger after checking both branches and successor checkpoints
+6ae465040760c8638d5172bf763893afe14244b1	2026-10-21T14:38:50Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-BARRIER-RESULT-DOWN-DIFF] test one DOWN route movement versus no input from immutable confirmed barrier checkpoint
+a7bda06792098dbc734c217aeae1dc04d34a8a98	2026-10-21T14:38:28Z	zuppasoupfifaistimewa-png	Add controlled DOWN-versus-none follow-through from verified post-barrier checkpoint
+d2081a4bda5f1b8023e0a08c818028553b14e7e2	2026-10-21T14:37:02Z	zuppasoupfifaistimewa-png	Record verified barrier placement and 120 Chakra debit in Story Mode handoff
+f13c76d791dc0d2befe8298d0a991735cee8522b	2026-10-21T14:36:58Z	zuppasoupfifaistimewa-png	Record verified barrier placement and 120 Chakra debit in Story Mode handoff
+eb1d2aa9d77aae25dce1edd9756aa0aa12fedfff	2026-10-21T14:36:54Z	zuppasoupfifaistimewa-png	Record verified barrier placement and 120 Chakra debit in Story Mode handoff
+f78f57100764d4ae955f902c009268ea55de33a3	2026-10-21T14:36:49Z	zuppasoupfifaistimewa-png	Record verified barrier placement and 120 Chakra debit in Story Mode handoff
+34ebac52732735838c0fc91157a02eb7034027d5	2026-10-21T14:36:46Z	zuppasoupfifaistimewa-png	Record verified barrier placement and 120 Chakra debit in Story Mode handoff
+54c7c0db7c9c960afd5923c4ef318a4ed439fa7c	2026-10-21T14:36:40Z	zuppasoupfifaistimewa-png	Record verified barrier placement and 120 Chakra debit in Story Mode handoff
+06a291b03334426d5216ac2a7a3c88a07b443d26	2026-10-21T14:35:33Z	zuppasoupfifaistimewa-png	Clean up completed barrier confirmation trigger after verified placement and Chakra debit
+890ea5b5cd644b33f5080449041244ecc38118f2	2026-10-21T14:33:40Z	zuppasoupfifaistimewa-png	Update Story Mode handoff with verified roulette and map continuation
+0233271fca0e773cff8ade41297167f1fe19ba92	2026-10-21T14:33:33Z	zuppasoupfifaistimewa-png	Update Story Mode handoff with verified roulette and map continuation
+a365472db1502588e6cd5c305b66705e0fae45de	2026-10-21T14:33:22Z	zuppasoupfifaistimewa-png	Update Story Mode handoff with verified roulette and map continuation
+ae1ddc78f8f3f799bd76daa0bf18eb1f0d863abe	2026-10-21T14:33:14Z	zuppasoupfifaistimewa-png	Update Story Mode handoff with verified roulette and map continuation
+36a1787ab679aaf5587ae0d2de788b5c9a850138	2026-10-21T14:33:08Z	zuppasoupfifaistimewa-png	Update Story Mode handoff with verified roulette and map continuation
+ad9b54ef5cc2c13d2cd35a41ad21855801fc7424	2026-10-21T14:33:02Z	zuppasoupfifaistimewa-png	Update Story Mode handoff with verified roulette and map continuation
+d7168c92bd2f4c138d6dc801b438abdf916d481f	2026-10-21T14:30:49Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-BARRIER-CIRCLE-CONFIRM] confirm visible highlighted YES with contextual Circle and inspect barrier/chakra outcome
+1e7ce7d3e735287b8afee067b5291be3f6e4bcb4	2026-10-21T14:29:05Z	zuppasoupfifaistimewa-png	Add controlled Circle confirmation on visible barrier YES prompt after START-skipped dialogue
+bf10856b63ac16289c72b072331c983bc16d1607	2026-10-21T14:27:26Z	zuppasoupfifaistimewa-png	Clean up one-shot START dialogue-skip trigger after verified private artifact
+5dc022cc1b54ade73a1219fe0190863dc62844ac	2026-10-21T14:21:13Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-DOWN-DIALOG-START] skip live Iruka dialogue with START and capture successor
+5f1c905a64200736f0e3381aa3a55ca62aa9828d	2026-10-21T14:20:56Z	zuppasoupfifaistimewa-png	Correct dialogue continuation source artifact to DOWN-branch checkpoint
+e605b47fa411e485c3327bba87e22c4d1494675a	2026-10-21T14:20:36Z	zuppasoupfifaistimewa-png	Add START-only continuation from verified Story Mode Iruka dialogue checkpoint
+388c16c8c4afdfe5a4e1ca12d361ace0104bf042	2026-10-21T14:19:38Z	zuppasoupfifaistimewa-png	Clean up completed map route DOWN experiment trigger from run 39615341661
+b38df09bebee393b328264b403ac0bccb2021b02	2026-10-21T14:15:50Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-MAP-ROUTE-DOWN-DIFF] test one DOWN tap versus none from immutable post-roulette map checkpoint
+b5523e7c320e9f7891d539b5d3c77323a195d647	2026-10-21T14:15:30Z	zuppasoupfifaistimewa-png	Point map route experiment at verified post-roulette map checkpoint artifact
+bdc6ce1e6770db14cc175b65b50411315e5af5ef	2026-10-21T14:15:09Z	zuppasoupfifaistimewa-png	Add controlled map-route DOWN versus no-input experiment from post-roulette checkpoint
+59580e72f265f01ae29378342c7ec747a59ac99e	2026-10-21T14:14:00Z	zuppasoupfifaistimewa-png	Clean up completed post-roulette observation trigger after run 39614665390
+3062f5097855706171b34f91f32d82eece963297	2026-10-21T14:11:25Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ROULETTE-POST-RESULT-OBSERVE] restore Circle result checkpoint in fresh process and verify board continuity
+6d4a26d42354c44617f094be2b5e42cc5e6140f2	2026-10-21T14:11:09Z	zuppasoupfifaistimewa-png	Add fresh-process post-roulette board observation from verified Circle result checkpoint
+9cc13beb26c2772d5fdfa191b9d81706ee95ee81	2026-10-21T14:10:05Z	zuppasoupfifaistimewa-png	Clean up completed roulette Circle-versus-none one-shot trigger from run 39613929898
+6384855485b35c6e77f21ba9b3b5130006d32e29	2026-10-21T14:06:33Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ROULETTE-CIRCLE-STOP-DIFF] rerun corrected controlled Circle versus none experiment
+f310b97c9164e4dbefb451867fc16175894e4968	2026-10-21T14:06:13Z	zuppasoupfifaistimewa-png	Fix shell syntax in controlled roulette Circle-versus-none workflow
+1b3c13df4f937a9ae77fddb9bc150e886fe10dd1	2026-10-21T14:06:09Z	zuppasoupfifaistimewa-png	Remove failed one-shot trigger after shell syntax error in run 39613614822
+6a9e307cda6e3ed15d614be9a843a2367c3f356f	2026-10-21T14:04:34Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ROULETTE-CIRCLE-STOP-DIFF] compare one contextual Circle tap with matched no-input from immutable roulette checkpoint
+5c0cf6171956e8ef8d47b2d0c05ad2981a8442c5	2026-10-21T14:04:15Z	zuppasoupfifaistimewa-png	Add controlled Circle-versus-none roulette stop experiment
+87d934620d1ee1b7621832fb7d9868aba77e85d5	2026-10-21T14:00:50Z	zuppasoupfifaistimewa-png	Remove one-shot trigger after roulette no-input timeout run 39612126429
+47a60f0f2310ff4250ea43b548dab80eb5672917	2026-10-21T13:54:34Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-ROULETTE-SETTLE-OBSERVE] observe roulette for 300 frames without input from verified f120 successor
+af4321ff6a833c47d47229c9e7eb52e313cb0a24	2026-10-21T13:54:08Z	zuppasoupfifaistimewa-png	Point settling workflow at verified roulette successor artifact
+bf46c8ce2a07659ca28b5c07ffb482782701612c	2026-10-21T13:53:38Z	zuppasoupfifaistimewa-png	Add extended controlled roulette settling observation workflow
+71aeb823294b40c164319c8d5dd9d597de3540a9	2026-10-21T13:43:32Z	zuppasoupfifaistimewa-png	Cleanup completed roulette follow-through trigger
+1dbb143931fa53574d7bbcefffb7e5aade534a99	2026-10-21T13:43:11Z	zuppasoupfifaistimewa-png	docs: add verified automation handoff for new chat
+1434d9a627d4179fa49a85a79b5612600247a1d6	2026-10-21T13:36:04Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-CIRCLE-FOLLOWTHROUGH] observe roulette without further input from Circle branch
+8887ccd1f4207d686b0562ac9e011f4f501a2f2c	2026-10-21T13:35:54Z	zuppasoupfifaistimewa-png	Fix token expressions in roulette follow-through workflow
+12de4bc963e589486ed87cb37c006301590f77d8	2026-10-21T13:35:32Z	zuppasoupfifaistimewa-png	Add no-input roulette follow-through observer
+bd9bc0a350c0f1420d63cddc35801df9ca211269	2026-10-21T13:34:24Z	zuppasoupfifaistimewa-png	Cleanup completed f175 controlled input probe trigger
+ddebb2d78d5f329c1978a2c888f2abbea4d8f460	2026-10-21T13:29:03Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-F175-DIRECTION-DIFF] test one Circle confirmation against no-input from f175
+11df4b8276dce667ed617c227a1f21d84b5a250c	2026-10-21T13:28:41Z	zuppasoupfifaistimewa-png	Allow CIRCLE for controlled menu-confirmation probe
+849130ed6f75498c3903911b01fba0c57535c521	2026-10-21T13:28:36Z	zuppasoupfifaistimewa-png	docs: record DOWN menu-navigation evidence and next confirm probe
+ffc1e96b284edbd3f2a71d5756372c44d673f977	2026-10-21T13:28:32Z	zuppasoupfifaistimewa-png	docs: record DOWN menu-navigation evidence and next confirm probe
+553daf72d49a1872530b92d0908defeb9b29c5c7	2026-10-21T13:28:28Z	zuppasoupfifaistimewa-png	docs: record DOWN menu-navigation evidence and next confirm probe
+33ea3cb3424700c3afbb4a2bf18136e2edf01cd4	2026-10-21T13:28:23Z	zuppasoupfifaistimewa-png	docs: record DOWN menu-navigation evidence and next confirm probe
+071f1b45d17d02192158e87dbc00069be40da957	2026-10-21T13:25:44Z	zuppasoupfifaistimewa-png	docs: record f175 controlled input probe and next DOWN test
+02e198c315d10d34bcb4f237b2b7fddabba8454f	2026-10-21T13:25:40Z	zuppasoupfifaistimewa-png	docs: record f175 controlled input probe and next DOWN test
+d612280c56e54452c2377f1dc1e77c06740a7595	2026-10-21T13:25:37Z	zuppasoupfifaistimewa-png	docs: record f175 controlled input probe and next DOWN test
+a0827311cf42a5e80b11c3f28fe0528063ee896c	2026-10-21T13:25:33Z	zuppasoupfifaistimewa-png	docs: record f175 controlled input probe and next DOWN test
+e44cc8d95e4051af3322dab50d3f14ef98233bc1	2026-10-21T13:24:20Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-F175-DIRECTION-DIFF] test one DOWN tap against no-input control from f175
+3229ec5bc6d75a7a5c006bd762def15681388fa7	2026-10-21T13:23:34Z	zuppasoupfifaistimewa-png	Make f175 single-direction probe configurable from marker
+e16a6246ddfef2854a05f03962acc4279bf0a12f	2026-10-21T13:19:06Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-F175-DIRECTION-DIFF] test one RIGHT tap against no-input control from f175
+9553a936f3678ea2b6d9f52d3deab7636043b9dc	2026-10-21T13:18:40Z	zuppasoupfifaistimewa-png	Fix GitHub token expression in f175 gameplay probe
+f74e10b6429871d01e43bf2265c2382204f47bb1	2026-10-21T13:18:08Z	zuppasoupfifaistimewa-png	Add controlled f175 RIGHT-versus-NONE gameplay probe
+3ef199d8437a5534d1754c80ee4cf01fc11cf29d	2026-10-21T13:08:40Z	zuppasoupfifaistimewa-png	docs: add cross-chat automation handoff and immutable checkpoint baseline
+106c136079f670013a0aca1efa7b88d987c718eb	2026-10-21T13:08:36Z	zuppasoupfifaistimewa-png	docs: record approved checkpoint-based Story Mode automation goal
+e1303639a496bc2e83e9e9afa141d2849bbb8e91	2026-10-21T13:08:02Z	zuppasoupfifaistimewa-png	docs: record approved continuous Story Mode automation plan
+fede416c85b2b64293ad32cb69d8d5b824ed55d3	2026-10-21T12:45:11Z	zuppasoupfifaistimewa-png	Remove one-shot barrier confirmation trigger after successful run #39599932467
+f7ec9f84791f8cd92881ebc4e102c8162135ffd0	2026-10-21T12:28:53Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-BARRIER-CONFIRM] test selected barrier YES with one Circle tap per isolated route
+14c3505edc7646ce140c547f3cfbecd45677ae95	2026-10-21T12:28:37Z	zuppasoupfifaistimewa-png	Confirm highlighted barrier YES with one Circle tap in isolated RIGHT/DOWN route branches
+cf2b7068578c6c4b57dce181524a874a2e0a13da	2026-10-21T12:28:00Z	zuppasoupfifaistimewa-png	Load and verify post-Iruka barrier prompt checkpoints for isolated confirmation
+e6fb461679c410163d261ecb66f602302d8281ea	2026-10-21T12:27:46Z	zuppasoupfifaistimewa-png	Prepare isolated barrier confirmation probe from post-Iruka checkpoints
+edc546bdcd1801b8c6af591e1f3a74c618d81c52	2026-10-21T12:26:33Z	zuppasoupfifaistimewa-png	Remove one-shot post-Iruka inspect trigger after run #39599001309
+e9a75ff5e6f42adebd0d118bd7c4607c59e0732d	2026-10-21T12:21:53Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-POST-IRUKA-INSPECT] inspect board after Iruka dialog skip without further input
+7f102b0f076d49b0e02271fefbd81d0fdf89b934	2026-10-21T12:21:35Z	zuppasoupfifaistimewa-png	Inspect board shortly after skipping Iruka hint with no further input, using X11 only
+c21360d93eb650901285c0f291804e674273b4b5	2026-10-21T12:20:35Z	zuppasoupfifaistimewa-png	Remove one-shot Iruka dialogue skip trigger after run #39598292538 completed
+748a121b632d50df182c6e97dad2cd0d23af2844	2026-10-21T12:16:26Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-IRUKA-DIALOG-SKIP] skip Iruka hint using one START tap per RIGHT/DOWN branch
+c3427d26be1c751280f6311a5ee8661686e2a4a2	2026-10-21T12:16:09Z	zuppasoupfifaistimewa-png	Skip Iruka dialogue from isolated RIGHT/DOWN route checkpoints using one START tap
+070d46af75d0b5d3f5663734765f606d470b7ba1	2026-10-21T12:15:15Z	zuppasoupfifaistimewa-png	Remove one-shot route settle trigger after run #39597491313 completed
+e3d6c8dee9590d1edfda9e7841ef902071caa901	2026-10-21T12:10:23Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-ROUTE-SETTLE] observe whether RIGHT and DOWN route movement completes without further input
+04dcd6339aec3ae084c5b65233c052ce952f3bd7	2026-10-21T12:10:08Z	zuppasoupfifaistimewa-png	Observe completion of RIGHT/DOWN route movement from immutable f80 branches using X11 only
+22e9b5122088bc2016496437e5492293fb19231c	2026-10-21T12:07:15Z	zuppasoupfifaistimewa-png	Remove one-shot Konoha route direction differential trigger after run #39596338264
+cda2315c1b6a595628af06884ab55419e91aa510	2026-10-21T12:01:27Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-MAP-DIRECTION-DIFF] compare one-tap RIGHT and DOWN from Roulette result map
+f8b5cc04305c40be20f20f79968552ed88f37a57	2026-10-21T12:01:07Z	zuppasoupfifaistimewa-png	Compare one-tap RIGHT and DOWN route choices from immutable Roulette result checkpoint via X11
+db18eee54ed6336cfabc5b5f83fb94ebb8de771f	2026-10-21T11:59:07Z	zuppasoupfifaistimewa-png	Remove one-shot Roulette result observation trigger after run #39595608648
+53571bb82076a8d58e8ce91b52de4efcb1ba1058	2026-10-21T11:55:43Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-ROULETTE-RESULT] observe roulette follow-through from f160 with no input
+fa7bc4e2950ba98f605986991a2f02286f84e3a8	2026-10-21T11:55:28Z	zuppasoupfifaistimewa-png	Correct download paths for Roulette result observation
+0311c1fa06c9427ebc12376db828a73f5322de91	2026-10-21T11:55:12Z	zuppasoupfifaistimewa-png	Continue from Roulette spin-stop branch with no-input X11 observations
+58a0cbe0afa33d742b328582fa2f4a89c68a55bc	2026-10-21T11:54:27Z	zuppasoupfifaistimewa-png	Remove completed one-shot Roulette stop trigger after run #39595042810
+5a810d22a5384150dab8c3e3f64c670d50c9132c	2026-10-21T11:51:13Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-ROULETTE-STOP] try one Circle tap to stop spinning Roulette wheel
+8a10223c83cdbdbc8c82b950b42cd846e0ef5421	2026-10-21T11:51:04Z	zuppasoupfifaistimewa-png	Correct temporary paths for single Roulette stop probe
+5da4b3ee8530d3a044cf3af02ad48b18bcf15632	2026-10-21T11:50:47Z	zuppasoupfifaistimewa-png	Test one Circle tap on active Roulette wheel from preserved f120 branch
+f7a33bdceab84b991f685234356f93a4524e0519	2026-10-21T11:50:00Z	zuppasoupfifaistimewa-png	Remove completed one-shot Roulette no-input observation trigger after run #39594191633
+9a0b282548bf95d1c6e7ef8e92cb278f85efa774	2026-10-21T11:44:27Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-ROULETTE-CONTINUE] observe Roulette resolution with no input and X11-only captures
+7c21cf229845c4c4046529cbb3cfdc1f5db4ba73	2026-10-21T11:44:19Z	zuppasoupfifaistimewa-png	Correct Roulette continuation artifact download paths
+a65ede2e8d071938877c829aeead1c3a04cf5a50	2026-10-21T11:44:02Z	zuppasoupfifaistimewa-png	Observe Roulette outcome from f120 without input and capture later visuals with external X11 only
+b1a8fac697e1f3af14c6ea118674c56235ef07ed	2026-10-21T11:43:05Z	zuppasoupfifaistimewa-png	Remove completed one-shot Roulette confirm trigger after run #39593536028
+6cf17142e58d6fbfd9536c37a9e2e26b10867e97	2026-10-21T11:39:10Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-ROULETTE-CONFIRM] retry single Roulette confirm after path fix
+f182e39d15c717834536970233f43d48f01a34e0	2026-10-21T11:39:04Z	zuppasoupfifaistimewa-png	Remove failed one-shot Roulette trigger before retrying corrected path
+0cc2e835758984c38e80e600d90a700d0ea5aaa7	2026-10-21T11:38:55Z	zuppasoupfifaistimewa-png	Fix temporary download paths for Konoha Roulette confirm probe
+9f2cf4e6b503ceb0996201dd14d1fd5ac008f07f	2026-10-21T11:37:30Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-ROULETTE-CONFIRM] test one Circle confirm on selected Roulette menu item from f175
+f3f0da3b027ad9282d00f010a8f3620010d37f14	2026-10-21T11:37:14Z	zuppasoupfifaistimewa-png	Confirm selected Konoha Roulette menu item with a single Circle tap from immutable f175 checkpoint
+ad460c8dc4fc99d52449b2745d84c53215c9dad6	2026-10-21T11:35:37Z	zuppasoupfifaistimewa-png	Remove one-shot Konoha direction differential trigger after run #39592501516 completed
+3fffd99f86d9e4a41dbc79177296a9d6ab4756a2	2026-10-21T11:30:47Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-CONTROL-DIFF] retry X11-paused directional comparison from f175
+87a3233997850ca8d8093e9ae6e99e206c637575	2026-10-21T11:30:40Z	zuppasoupfifaistimewa-png	Fix paused X11 capture handshake in Konoha direction differential
+036b033816d1c066f55cbbcf9a83c989fef6afd6	2026-10-21T11:30:20Z	zuppasoupfifaistimewa-png	Remove one-shot Konoha control differential trigger after stalled capture harness run #39591956964
+3a68e6c5a6f4aac338f165ab03e3c4099c52d1f0	2026-10-21T11:26:20Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-CONTROL-DIFF] compare isolated directional inputs against no-input from f175 via external X11
+f3d2549eade545818be6317beb6bd6352c7590b8	2026-10-21T11:26:00Z	zuppasoupfifaistimewa-png	Correct Konoha f175 control differential artifact references
+6de37cbc7adc8026144082bc034d08389cc9a039	2026-10-21T11:25:27Z	zuppasoupfifaistimewa-png	Compare isolated directional inputs from Konoha f175 checkpoint using external X11 only
+6432c1adcbc8c3f83c6b13ca5a2e924d54d590db	2026-10-21T11:23:31Z	zuppasoupfifaistimewa-png	Document Konoha board continuation run #39591032125 in docs/SIGSEGV_FORENSICS_2026-10-21.md
+1f73c5e57e98e68b1077c6ba571b0d0952c20170	2026-10-21T11:23:27Z	zuppasoupfifaistimewa-png	Document Konoha board continuation run #39591032125 in docs/STORYMODE_POST178_CONTINUATION_2026-10-21.md
+9ef298c18b6a414f9c57f579537bbd488ea0b447	2026-10-21T11:23:22Z	zuppasoupfifaistimewa-png	Document Konoha board continuation run #39591032125 in HANDOFF_CHAT_BARU_2026-10-19.md
+dcb1e54f3961e098f0faba83923b50bb061a2b0a	2026-10-21T11:23:18Z	zuppasoupfifaistimewa-png	Document Konoha board continuation run #39591032125 in STATUS.md
+e78e85b6b9ff0be7a95bb8e77934c5d2155c4547	2026-10-21T11:22:45Z	zuppasoupfifaistimewa-png	Remove one-shot Konoha resume trigger after run #39591032125 completed
+8e7f38a11ca4f492036b1d2f3784e20f252f61b3	2026-10-21T11:18:54Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-KONOHA-RESUME] resume preserved Konoha dialog checkpoint with single START and f130 screenshot cutoff
+42ee98897277fbea7c7c89d56dbee37f9bc4cc51	2026-10-21T11:18:22Z	zuppasoupfifaistimewa-png	Correct Konoha resume workflow workspace paths
+08d3778136a143d6f821a977d137917d8908fba7	2026-10-21T11:17:53Z	zuppasoupfifaistimewa-png	Resume Konoha dialog checkpoint with one START and f130 screenshot cutoff

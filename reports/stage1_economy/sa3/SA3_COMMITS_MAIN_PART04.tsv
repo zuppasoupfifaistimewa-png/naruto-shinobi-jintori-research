@@ -1,0 +1,501 @@
+commit_sha	committer_date	author	message
+3b45161b1df268621cbbca441237458be2e2ba5c	2026-10-29T09:07:14Z	zuppasoupfifaistimewa-png	Correct executable discovery output in AA1 workflow
+172d0df70393b0f575563d5088874cb3485d3157	2026-10-29T09:06:58Z	zuppasoupfifaistimewa-png	Run AA1 GDB against the direct PCSX-Redux ELF binary
+cfe9b2efd385c8f2f2e0ad7cd239cc835d1a6b06	2026-10-29T09:05:44Z	github-actions[bot]	Record AA1 checkpoint restore GDB diagnostic
+2946c9f754942bd89ab3e1ba834b6fd743a4aec3	2026-10-29T09:05:14Z	zuppasoupfifaistimewa-png	Fix AA1 GDB case variable expansion
+367241a64300d0ec2e3705e8fb311e5e53c3608e	2026-10-29T09:04:28Z	github-actions[bot]	Record AA1 checkpoint restore GDB diagnostic
+9091d9e6f303399a5de3e1f1de6e92b60f1fca7a	2026-10-29T09:03:54Z	zuppasoupfifaistimewa-png	Correct GDB command script for AA1 restore diagnostic
+4e84898ebdebf301d5f2686a78b028fe148e790e	2026-10-29T09:03:10Z	github-actions[bot]	Record AA1 checkpoint restore GDB diagnostic
+1dc091f31e4bea8bca96fd7171f5ef01c3d3bff1	2026-10-29T09:02:36Z	zuppasoupfifaistimewa-png	Fix AA1 GDB process tracking for emulator restore diagnosis
+76b5490c18865f12eee20db76b0fc62c27873178	2026-10-29T09:00:08Z	zuppasoupfifaistimewa-png	Document static allocator release path and checkpoint header candidate
+99ca3a257cb05755863ead9f696f1a57454fe91a	2026-10-29T08:58:28Z	github-actions[bot]	Record AA1 checkpoint restore GDB diagnostic
+f87fe444d67d8994e20a5048b189375db4e811b8	2026-10-29T08:57:58Z	zuppasoupfifaistimewa-png	Add bounded AA1 savestate GDB diagnostic workflow
+e757c4d41923edb8c5b4e6266eb701dc31c5bd77	2026-10-29T00:15:42Z	zuppasoupfifaistimewa-png	Summarize checkpoint preservation, RAM compare, and strict A2 results
+b26455720d19b6e78ada49bfe0698d1a289bc91a	2026-10-29T00:14:35Z	github-actions[bot]	Record checkpoint preservation and RAM comparison 40792708405
+4c505394ac331225545728261c66566fa3113763	2026-10-29T00:14:06Z	zuppasoupfifaistimewa-png	Preserve checkpoint and compare extracted RAM with DATA.BIN
+ba7d510093c380a61dbed26fb276a91ab2b2c54b	2026-10-28T23:55:41Z	github-actions[bot]	Record read-only static evidence audit 40790387202
+a4a89d6a2669619f15779b75aa76169ab355b1e9	2026-10-28T23:53:41Z	zuppasoupfifaistimewa-png	Update audit log with Actions run outcomes
+198021faef838e13069fcaf4cedfca093d911f22	2026-10-28T23:53:39Z	zuppasoupfifaistimewa-png	Update audit report with seeded-run publication outcome
+c12c272875c419c9120583144ac81620246d7477	2026-10-28T23:53:10Z	zuppasoupfifaistimewa-png	Make static audit report push race-safe and detect arithmetic RNG remainder
+042ef7f02e6116d88030ed81b36a8e4a5da36bd0	2026-10-28T23:51:29Z	zuppasoupfifaistimewa-png	Add sanitized text log for Steps 1-3 audit
+836c5e79705f1297526ad27a512c3390d9940e27	2026-10-28T23:51:27Z	zuppasoupfifaistimewa-png	Record read-only Steps 1-3 audit status and evidence
+f2bb35efb237df3d194cf60eb5a56a2ad271c4ee	2026-10-28T23:48:10Z	zuppasoupfifaistimewa-png	Seed documented function candidates for rebased entry-1 XREF analysis
+ad780e184e9c778acf7313a89714dce3d35fdf37	2026-10-28T23:47:42Z	github-actions[bot]	Record read-only static evidence audit 40789339014
+8b70e004f0df21bbb250a3c0b918a19e76ce0a21	2026-10-28T23:43:43Z	zuppasoupfifaistimewa-png	Fix workflow token interpolation for XREF artifact download
+feff126f47ec0ca58ed75197e8f37732f26b4332	2026-10-28T23:42:34Z	zuppasoupfifaistimewa-png	Add rebased Ghidra XREF and extended static RNG audit
+7d50b1a6d97825731d73c4f005942700402b2fca	2026-10-28T23:29:25Z	zuppasoupfifaistimewa-png	Fix relative links in evidence follow-up report
+966787b6385f2837b5fccd87e2a3a9c7ba472c5a	2026-10-28T23:29:10Z	zuppasoupfifaistimewa-png	Document checkpoint parse and A1–A4/C evidence follow-up
+95119d3d11fb5bdd20ef75a2514403ad8d3c9132	2026-10-28T23:28:43Z	zuppasoupfifaistimewa-png	Add offset-normalized XREF reconciliation counts
+9b06f9374b77c032453af538647eea0aa9ddecd4	2026-10-28T23:28:36Z	zuppasoupfifaistimewa-png	Record sanitized RAM values from Story Mode checkpoint
+ff83b02be767606a021778b7217702823bcefb32	2026-10-28T23:28:25Z	zuppasoupfifaistimewa-png	Add read-only PCSX save-state RAM extraction helper
+6dd461dcc4e0f0199f52cc6a68c5ac6cb3ac1439	2026-10-28T23:19:03Z	github-actions[bot]	Record fixed-schedule RAM comparison run 40785917691
+eeaaa87165113a17b8ca7b52e716d850bda0b955	2026-10-28T23:14:19Z	zuppasoupfifaistimewa-png	Make C visual gates nonblocking and fail closed without hanging replay
+9e34a0de1419ce0b8f39d912b81e0607112bcb51	2026-10-28T23:05:09Z	zuppasoupfifaistimewa-png	Fix same-step workspace variable in replay workflow
+09f2e0c22f62381b774cbebc4943c0602325b24f	2026-10-28T23:04:49Z	github-actions[bot]	Record fixed-schedule RAM comparison run 40784703481
+b679a9976a969571a7e38a452b41376c359d1165	2026-10-28T23:04:25Z	zuppasoupfifaistimewa-png	Add gated fixed-schedule cold-boot RAM replay comparison
+3a88de713de49d9c06f3c25daae6a254f609b895	2026-10-28T23:02:25Z	zuppasoupfifaistimewa-png	Record concise read-only static audit findings
+2a705f8ae2ca20f8a90b1fd062867cf47403ebe7	2026-10-28T23:00:09Z	github-actions[bot]	Record read-only static evidence audit 40783998364
+241224f2fd032e43dcef34d0fecc91ca58d707e2	2026-10-28T22:58:42Z	zuppasoupfifaistimewa-png	Fix static audit outputs and limit resource scan to supported mapping
+2c7623e16dce250e1306a769cdaff166d196c885	2026-10-28T22:53:14Z	zuppasoupfifaistimewa-png	Fix binary-buffer hash report in static audit script
+fe16b855dd41327279c056978f3cbd24302bed69	2026-10-28T22:49:42Z	zuppasoupfifaistimewa-png	Fix release asset token expansion and persist sanitized static audit outputs
+9c2b9980fb210d8c2ce5797181873fbbbce51064	2026-10-28T22:49:07Z	zuppasoupfifaistimewa-png	Count all LUI-based ADDIU address formations in same-block scan
+748daab9dc607077e56817ecfeea87289bb4ae95	2026-10-28T22:48:52Z	zuppasoupfifaistimewa-png	Add bounded read-only static evidence audit workflow
+bc6b2d317a3c2f6632652a40e7a4d7b496b7c1fd	2026-10-28T22:48:26Z	zuppasoupfifaistimewa-png	Correct A1 control sweep to cover each candidate base
+571552eab0e3dda9c2b6d9cb87e46a6fcf06acba	2026-10-28T22:48:14Z	zuppasoupfifaistimewa-png	Add read-only static evidence audit for Step 4–10
+44ee7d7dd032bed34c3d6db18f8989708c6bd6c3	2026-10-28T03:41:41Z	zuppasoupfifaistimewa-png	Inspect shared numeric helper under both entry0 base hypotheses
+f8c4799e37f8320f1a3ae283ce8a3e1cea57556b	2026-10-28T03:39:49Z	zuppasoupfifaistimewa-png	Record full Chakra target gate preconditions
+41a3a80dc61242c6465e23bc0fea46212757c195	2026-10-28T03:39:39Z	zuppasoupfifaistimewa-png	Record full Chakra target gate preconditions
+6b1ce10af47e8c9164572251f3b244f2b2ffd103	2026-10-28T03:39:30Z	zuppasoupfifaistimewa-png	Record full Chakra target gate preconditions
+09552c0713fd4a53551729173b43b98cfb1809a9	2026-10-28T03:39:23Z	zuppasoupfifaistimewa-png	Record full Chakra target gate preconditions
+8796aaec8a900b042d62e2992645e8a5d10be2e7	2026-10-28T03:38:53Z	zuppasoupfifaistimewa-png	Document complete preconditions for target threshold
+2c380391fab26857be148dd1ae7293014160ec0d	2026-10-28T03:37:57Z	zuppasoupfifaistimewa-png	Document negative Chakra branch precondition
+3490e0dd290ee0bbb50bdda4a16a919c12385853	2026-10-28T03:37:48Z	zuppasoupfifaistimewa-png	Document negative Chakra branch precondition
+6c1f4ed8f466163053beff3f099b32b0ff2f50b0	2026-10-28T03:37:39Z	zuppasoupfifaistimewa-png	Document negative Chakra branch precondition
+87f81a88ac3c98a6bfd95b186946845a6db3405b	2026-10-28T03:37:30Z	zuppasoupfifaistimewa-png	Document negative Chakra branch precondition
+192ac5e0febb205d2b77003e0a73f3efccc78a86	2026-10-28T03:36:46Z	zuppasoupfifaistimewa-png	Trace negative Chakra branch before target check
+a7b123d36b73e92e8b99af3bfe88300d0cbb34e2	2026-10-28T03:35:35Z	zuppasoupfifaistimewa-png	Log third numeric helper consumer
+d93da0c30a99cbcb0fadbef6cda6cc41a2b6b222	2026-10-28T03:35:25Z	zuppasoupfifaistimewa-png	Log third numeric helper consumer
+ab06887542e6cd7fad5baa76d5c9f6e63cb04c38	2026-10-28T03:35:17Z	zuppasoupfifaistimewa-png	Log third numeric helper consumer
+c47ec688ec607f629570c1068cfc45827fbac1a8	2026-10-28T03:34:56Z	zuppasoupfifaistimewa-png	Trace third numeric consumer of helper return
+64f13ed2aed4db3e6c897f38de7ca589b8081050	2026-10-28T03:33:51Z	zuppasoupfifaistimewa-png	Record Chakra target threshold producer trace
+58f212b4220e864d33b1b31bbb37c6f4f41897fc	2026-10-28T03:33:43Z	zuppasoupfifaistimewa-png	Record Chakra target threshold producer trace
+ce787a12e450962e1d79de97eefbe4bb6dfffa8e	2026-10-28T03:33:35Z	zuppasoupfifaistimewa-png	Record Chakra target threshold producer trace
+1852d646b9cf681d8b74f757852c61345ddff0d6	2026-10-28T03:33:26Z	zuppasoupfifaistimewa-png	Record Chakra target threshold producer trace
+187d07bde3c16ab2b628778c80016ad08d853387	2026-10-28T03:33:18Z	zuppasoupfifaistimewa-png	Record Chakra target threshold producer trace
+570cc162a91601e45a14f4e91ec1b7bcb058d183	2026-10-28T03:32:51Z	zuppasoupfifaistimewa-png	Cross-check Chakra producer for participant threshold field
+fb73ec85524223505d28ac138b6548e1ee1961c2	2026-10-28T03:31:59Z	zuppasoupfifaistimewa-png	Record target-threshold rule candidate in audit matrix
+0a1bcbbaf889fb77d8d119e3246be027d59ff0b3	2026-10-28T03:31:52Z	zuppasoupfifaistimewa-png	Record target-threshold rule candidate in audit matrix
+81c878916a378e87f007ad9ad1c1ea664c0ce3ce	2026-10-28T03:31:20Z	zuppasoupfifaistimewa-png	Add target threshold rule candidate to Step 8 report
+b16916def812ae840827c2aee7eb8e15bb2e8288	2026-10-28T03:30:01Z	zuppasoupfifaistimewa-png	Record candidate target threshold decision
+1abf7ff409f8a5c8e9c73ca402ff5029899ead19	2026-10-28T03:29:52Z	zuppasoupfifaistimewa-png	Record candidate target threshold decision
+682d794a182e9bd502248c400162d7d4fd645cfd	2026-10-28T03:29:43Z	zuppasoupfifaistimewa-png	Record candidate target threshold decision
+0341c93b4ee477fbe3670ffbb7bc03247450ed05	2026-10-28T03:29:16Z	zuppasoupfifaistimewa-png	Trace candidate target-threshold decision path
+803cb42e50b9f915366328405282236b51b140d8	2026-10-28T03:22:08Z	zuppasoupfifaistimewa-png	Record active loader allocation provenance audit
+40701cafd7e90bb0b8eb8f4500523e4d89b29644	2026-10-28T03:22:01Z	zuppasoupfifaistimewa-png	Record active loader allocation provenance audit
+8f1dd393073fa9b8f6435ebcf14fb760fd0eb2e7	2026-10-28T03:20:33Z	zuppasoupfifaistimewa-png	Trace resource allocation and reader callers
+943727ac3a8d2afc3b57d789f67d92175673eab3	2026-10-28T03:19:28Z	zuppasoupfifaistimewa-png	Log alternate entry0 base test
+1d6c62e2b1157b6b478592e00982cd0a09420044	2026-10-28T03:19:12Z	zuppasoupfifaistimewa-png	Record alternate entry0 base test status
+f4e990737fd1f12edf4a2ecde8125672c0126ac3	2026-10-28T03:18:53Z	zuppasoupfifaistimewa-png	Handoff allocator-derived entry0 mapping test
+40b889d03f49c1d7ba814c411ac0957c22a2aca6	2026-10-28T03:18:04Z	zuppasoupfifaistimewa-png	Document allocator-derived entry0 base test
+b14ac7cbca5ef1786c701daf92e6ac027d0df6e5	2026-10-28T02:53:14Z	zuppasoupfifaistimewa-png	Test allocator-derived alternate entry0 base
+8e958f15883e10f1ec0d1b2b6f1d18bcd723383a	2026-10-28T02:50:18Z	zuppasoupfifaistimewa-png	Record post-bootstrap allocator region
+743b8515b82acca070ee9426f1c225f6168c4ea4	2026-10-28T02:50:12Z	zuppasoupfifaistimewa-png	Record post-bootstrap allocator region
+fdbddd5e39888a7f4cdefccd2ec63c2ffec33386	2026-10-28T02:50:05Z	zuppasoupfifaistimewa-png	Record post-bootstrap allocator region
+14146ccae84b76b5a0a7b8159f39bb7bf4d53a5e	2026-10-28T02:49:47Z	zuppasoupfifaistimewa-png	Trace post-bootstrap arena initialization
+a14c8f827e183c4332553488e45acf4996e8f41e	2026-10-28T02:44:55Z	zuppasoupfifaistimewa-png	Record directory size rounding and read queue trace
+2c189805ab38ab8d138db934e84e25bb236cdad3	2026-10-28T02:44:49Z	zuppasoupfifaistimewa-png	Record directory size rounding and read queue trace
+3325c6c1f3f6c0ea85edeb0b460c32344c97d496	2026-10-28T02:44:43Z	zuppasoupfifaistimewa-png	Record directory size rounding and read queue trace
+4f0e9b39a79a90a6d0e236c90691e99542de2459	2026-10-28T02:44:23Z	zuppasoupfifaistimewa-png	Trace directory length rounding and queued reads
+4d831c5b8d41a1c627e60a52b88528f784170a2f	2026-10-28T02:43:15Z	zuppasoupfifaistimewa-png	Record bootstrap directory loader trace
+1e996e77506de951bc86d60dabd2751916a72d38	2026-10-28T02:43:09Z	zuppasoupfifaistimewa-png	Record bootstrap directory loader trace
+8e3216b05037385d6402525ee4ae3e144c16022b	2026-10-28T02:43:03Z	zuppasoupfifaistimewa-png	Record bootstrap directory loader trace
+ac88b7902f881cf227a49cac3cb1084fd3dc40f9	2026-10-28T02:42:43Z	zuppasoupfifaistimewa-png	Trace bootstrap directory registration and resource reads
+b61aa5c30d5ee2192347a9efe7eb7f20f852e3ca	2026-10-28T02:38:40Z	zuppasoupfifaistimewa-png	Record predicate helper global provenance
+26d7ddd80e1d41024a5f55681ed7d524802c5494	2026-10-28T02:38:33Z	zuppasoupfifaistimewa-png	Record predicate helper global provenance
+6ebd528740127b080e17360020a94071f2f53baa	2026-10-28T02:38:27Z	zuppasoupfifaistimewa-png	Record predicate helper global provenance
+4af296fa26d4743e894b9b89ace6e1c6444a8da8	2026-10-28T02:38:10Z	zuppasoupfifaistimewa-png	Trace predicate helper globals and record lookup
+f7efdd1883ff91121914a8811f26d9dfd21b243e	2026-10-28T02:36:34Z	zuppasoupfifaistimewa-png	Document targeted helper contract conflict
+437095d587eccfe5c34f7bbc11e0c94b09ea1c2c	2026-10-28T02:36:28Z	zuppasoupfifaistimewa-png	Document targeted helper contract conflict
+dd6573d7329b8543bbb4ce57c5e0929688740447	2026-10-28T02:36:22Z	zuppasoupfifaistimewa-png	Document targeted helper contract conflict
+5a28fc3dd7d925cd29614263b920c06a743b74e5	2026-10-28T02:36:03Z	zuppasoupfifaistimewa-png	Record handler audit and caller contract conflict
+7154ae0a586039c02c476974373a08d1795977a5	2026-10-28T02:34:22Z	zuppasoupfifaistimewa-png	Record bootstrap and entry0 overlap constraint
+844cb8cf31727b54fc8884672ee1732fb97e7201	2026-10-28T02:34:16Z	zuppasoupfifaistimewa-png	Record bootstrap and entry0 overlap constraint
+b0e4da01d373a9ca0eec2b7b11e5e995a1f074f3	2026-10-28T02:34:09Z	zuppasoupfifaistimewa-png	Record bootstrap and entry0 overlap constraint
+cbe4e7ffbfab8a0715815ae5878246f7da6707eb	2026-10-28T02:33:45Z	zuppasoupfifaistimewa-png	Document bootstrap and entry0 address range overlap
+8af02be732b5d0fb801966f7b1e39387c495d217	2026-10-28T02:30:16Z	zuppasoupfifaistimewa-png	Trace shared state handler and full-slot continuation
+e693386a8e9b31e79a238048fe55aa55210eec42	2026-10-28T02:30:03Z	zuppasoupfifaistimewa-png	Fix targeted function name formatting
+a96f7d007cff163502ae86a1dd897232f40b63af	2026-10-28T02:28:58Z	zuppasoupfifaistimewa-png	Add bounded entry0 handler target audit
+2d0c3a610e061c43723d9d6cca89ab35ed235225	2026-10-28T02:26:21Z	zuppasoupfifaistimewa-png	Inventory calls to shared cross-resource handler
+c6758e4eca8714540286da4c1d01ee9ec5bfb351	2026-10-28T02:26:16Z	zuppasoupfifaistimewa-png	Inventory calls to shared cross-resource handler
+da99ed9811a9ee2cdf0078af858128db1e2b0774	2026-10-28T02:26:04Z	zuppasoupfifaistimewa-png	Inventory calls to shared cross-resource handler
+3fe8b7da90d662d43db9112649ad6b83130d9fb3	2026-10-28T02:25:50Z	zuppasoupfifaistimewa-png	Inventory entry1 calls to cross-resource handler
+8db1bac21879a1529dc00872e711c325d800b7a5	2026-10-28T02:24:41Z	zuppasoupfifaistimewa-png	Trace full-slot branch state handler
+49bd13ed6922d8f41b90971d5146b7367ba697a0	2026-10-28T02:24:34Z	zuppasoupfifaistimewa-png	Trace full-slot branch state handler
+b1ba7ef1a571dbca5dbafdfe9143825e4bab1578	2026-10-28T02:24:27Z	zuppasoupfifaistimewa-png	Trace full-slot branch state handler
+aadded8c34e50f94c097cb4a4a2d2504e2dca718	2026-10-28T02:24:13Z	zuppasoupfifaistimewa-png	Trace full-record branch into state handler
+0cf4a71504139306c4366c932ca76ec8772789b8	2026-10-28T02:23:17Z	zuppasoupfifaistimewa-png	Record registry category field cross-tab
+ed50d359e037ec8232d5b1aa5ddfb6c64b0353b4	2026-10-28T02:23:12Z	zuppasoupfifaistimewa-png	Record registry category field cross-tab
+5cba554870b4c01e47d23fbcfbac8295f0fe6e34	2026-10-28T02:23:06Z	zuppasoupfifaistimewa-png	Record registry category field cross-tab
+8a55feec641cdeb21c7434133f424132c9e812da	2026-10-28T02:22:54Z	zuppasoupfifaistimewa-png	Cross-tab registry category and field four
+b81c955b88400d32b9631ee3a19f3ef71b184ca5	2026-10-28T02:20:48Z	zuppasoupfifaistimewa-png	Record registry field plus4 consumers
+058d07e8d6e328357c6a4ff897fd9b3fdd8aec28	2026-10-28T02:20:43Z	zuppasoupfifaistimewa-png	Record registry field plus4 consumers
+56109109c2e83292fbeafc5d8456bee2bc8308b9	2026-10-28T02:20:36Z	zuppasoupfifaistimewa-png	Record registry field plus4 consumers
+41f10e7f50eb36157db8df58d43839a5fcc9ff4b	2026-10-28T02:20:23Z	zuppasoupfifaistimewa-png	Trace registry field plus4 branch conditions
+c513fee808624b510fa884f09c80bcadbb8b93c3	2026-10-28T02:17:05Z	zuppasoupfifaistimewa-png	Record signed registry attribute state transition
+e23d2f06742a62eff7fbe3606621cca039677603	2026-10-28T02:16:59Z	zuppasoupfifaistimewa-png	Record signed registry attribute state transition
+7516b0e777bbdd0699a187f5229eea20c163b9fa	2026-10-28T02:16:54Z	zuppasoupfifaistimewa-png	Record signed registry attribute state transition
+9475885b52a6d24a0e90723f4e72136902488ea7	2026-10-28T02:16:40Z	zuppasoupfifaistimewa-png	Trace signed registry attribute state transition
+69e6cdaf03cc334851f42d05f3ad21507e4862d6	2026-10-28T02:12:33Z	zuppasoupfifaistimewa-png	Record full registry field distribution
+8f797dd67e856bae93bb4a2700fe5c388e467e53	2026-10-28T02:12:27Z	zuppasoupfifaistimewa-png	Record full registry field distribution
+0a04e84bc19b4a8a9f9f68bbd818f7842e9c6cb0	2026-10-28T02:12:22Z	zuppasoupfifaistimewa-png	Record full registry field distribution
+dc82d1cca7880145d4403c44ede8daf4779a2b77	2026-10-28T02:12:09Z	zuppasoupfifaistimewa-png	Record full registry field distributions
+6b0cba43de8186a1edb8fdbb107f40a53531c34f	2026-10-28T02:11:26Z	zuppasoupfifaistimewa-png	Record cross-resource address mapping conflict
+951b0131d555d67182fd9534e50395b77c1acc64	2026-10-28T02:11:21Z	zuppasoupfifaistimewa-png	Record cross-resource address mapping conflict
+99aa40c2111080faddf482a86c10901611753e0d	2026-10-28T02:11:14Z	zuppasoupfifaistimewa-png	Record cross-resource address mapping conflict
+ccb595917fb751de64d29fc449b370241365b5d8	2026-10-28T02:11:03Z	zuppasoupfifaistimewa-png	Document cross-resource pointer and overlay conflict
+b69af801545657024acecac5afebdcbcee76f64a	2026-10-28T02:09:23Z	zuppasoupfifaistimewa-png	Log jump-table mapping contradiction
+21e92bf97cc4bd1fc03e32906a0adbc2821e0efa	2026-10-28T02:09:14Z	zuppasoupfifaistimewa-png	Record jump-table mapping contradiction in status
+28508b6268ef26c6b4ad7a5a621c40df7a51b20c	2026-10-28T02:09:05Z	zuppasoupfifaistimewa-png	Handoff jump-table address conflict
+ada72c30b44fbd7e0cc1a4edbe9ae75d9a7d934a	2026-10-28T02:08:56Z	zuppasoupfifaistimewa-png	Record rejected jump table base hypothesis
+da0000f0d1a981eb62dbce48bd597b52478070f6	2026-10-28T02:07:12Z	zuppasoupfifaistimewa-png	Audit entry1 dispatch table in entry0 resource
+c360894a1250dd44dafb28811e85472bba9e5da3	2026-10-28T02:07:04Z	zuppasoupfifaistimewa-png	Add bounded raw jump table audit script
+2cbcd817d6f78c255daf72891a2b68afdc61fe05	2026-10-28T02:04:50Z	zuppasoupfifaistimewa-png	Log sequence ID dispatch static linkage
+701d40124d9424704557a5d75e9f7834b6065a6c	2026-10-28T02:04:40Z	zuppasoupfifaistimewa-png	Update status with ID dispatch chain
+accd749c35bf6fb95a5744b922aa721102560264	2026-10-28T02:04:31Z	zuppasoupfifaistimewa-png	Handoff sequence-to-registry consumer chain
+c37d73bd062c68cb12447ebd77a1d61d6385f15b	2026-10-28T02:04:21Z	zuppasoupfifaistimewa-png	Trace sequence ID into registry dispatch and state
+1dbb850d65aa3b99126c528505d72689078c5ba9	2026-10-28T01:58:36Z	zuppasoupfifaistimewa-png	Log numeric registry field consumer trace
+73ad8a736ffd5f63416b782b8d21f3d0295e1ba3	2026-10-28T01:58:27Z	zuppasoupfifaistimewa-png	Record registry numeric consumer evidence in status
+18d86217221b2537d337c5d3c74a548d9c6e61d9	2026-10-28T01:58:17Z	zuppasoupfifaistimewa-png	Handoff registry field-consumer follow-up
+07f8b641f354b1ed90e92aedc6e194582c24e714	2026-10-28T01:58:08Z	zuppasoupfifaistimewa-png	Extend ID trace with registry fields and consumers
+6d6338f94ffca85a115569f1596b670adf4598f6	2026-10-28T01:56:03Z	zuppasoupfifaistimewa-png	Log ID transfer and consumer static evidence
+0998a5f782771dd8e922664f5efd868f2d1f0e85	2026-10-28T01:55:51Z	zuppasoupfifaistimewa-png	Record ID consumer trace in research status
+7cad49aae6cb2b62db85f4333764202d2f2789f2	2026-10-28T01:55:40Z	zuppasoupfifaistimewa-png	Update handoff with ID consumer trace
+50f7672e668e2c1983b01a1c0b9097bc7bfbdc6f	2026-10-28T01:55:22Z	zuppasoupfifaistimewa-png	Document static ID collection and consumer trace
+28dba03ce0198564ddf10d1a199758f0c2440c27	2026-10-28T01:33:19Z	zuppasoupfifaistimewa-png	Record sequence shift and RNG reshuffle behavior
+4b5644dbd436e0e5915223d16068d7d1e803ba6a	2026-10-28T01:33:14Z	zuppasoupfifaistimewa-png	Record sequence shift and RNG reshuffle behavior
+89046ba1d49f1c5cdd5b4d741fac9e8037d0d09e	2026-10-28T01:33:10Z	zuppasoupfifaistimewa-png	Record sequence shift and RNG reshuffle behavior
+419a84fa0cc26a42c1348c5a63253d0160cf6949	2026-10-28T01:33:04Z	zuppasoupfifaistimewa-png	Record sequence shift and RNG reshuffle behavior
+b8506205fdc7c4a679cd2fe516ce00432b47b76a	2026-10-28T01:32:52Z	zuppasoupfifaistimewa-png	Trace sequence shift, return, and RNG reshuffle helper
+0bb0828fb9592e47196d4b5557c724d5439234ad	2026-10-28T01:32:18Z	zuppasoupfifaistimewa-png	Record three-slot ID storage and transfer behavior
+320a5edd727e5bd28333a5b0e85a76d796a81909	2026-10-28T01:32:13Z	zuppasoupfifaistimewa-png	Record three-slot ID storage and transfer behavior
+de9e5685a3503e1d03ed67050ec9e64295cb0289	2026-10-28T01:32:08Z	zuppasoupfifaistimewa-png	Record three-slot ID storage and transfer behavior
+b749d0d4f998c09748ee7113d4fb401fd2a936ce	2026-10-28T01:32:03Z	zuppasoupfifaistimewa-png	Record three-slot ID storage and transfer behavior
+57be85c59ad6e81e608962ed0ca27472eb6d8dac	2026-10-28T01:31:45Z	zuppasoupfifaistimewa-png	Document four-record ID slots and add/remove behavior
+38ee03018d93f4d0e4c2d3044b8f6b09ea5f3831	2026-10-28T01:30:43Z	zuppasoupfifaistimewa-png	Record RNG-selected ID insertion caller trace
+3511168315eeef403786a34158d315d9d80a2a18	2026-10-28T01:30:39Z	zuppasoupfifaistimewa-png	Record RNG-selected ID insertion caller trace
+ab15e445a87ca0f11df69d3c5ecd0523de16c4e3	2026-10-28T01:30:35Z	zuppasoupfifaistimewa-png	Record RNG-selected ID insertion caller trace
+5ce3cbc182850888bef4caaf9cee39c3c2459dfa	2026-10-28T01:30:29Z	zuppasoupfifaistimewa-png	Record RNG-selected ID insertion caller trace
+8f78358fc7ce9b8753e95b40ed57d7e344214600	2026-10-28T01:30:12Z	zuppasoupfifaistimewa-png	Trace random ID insertion caller and separate list counters
+00556b277e01a584da935f3a90149ac2692e913d	2026-10-28T01:25:55Z	zuppasoupfifaistimewa-png	Trace registry bounds and ID list mutation helpers
+a413a39765efddb64ff7a6b010aa900f5c6e28f2	2026-10-28T01:24:33Z	zuppasoupfifaistimewa-png	Record preset selector reachability cross-check
+daa904fa6a8bc8ed2575990a14f59eaba1f56ea2	2026-10-28T01:24:29Z	zuppasoupfifaistimewa-png	Record preset selector reachability cross-check
+da9550dd901ec5539b37dec8fceb1ca924d453cb	2026-10-28T01:24:24Z	zuppasoupfifaistimewa-png	Record preset selector reachability cross-check
+b59f459d67f0b6b3931d874df46c1280481405e0	2026-10-28T01:24:18Z	zuppasoupfifaistimewa-png	Record preset selector reachability cross-check
+58340592751b84b7b85ba5cb42185063204a9ec9	2026-10-28T01:24:04Z	zuppasoupfifaistimewa-png	Cross-check preset loader selectors against caller descriptor tables
+2cece36b946358ed8a909bb79539b5987cc53fbf	2026-10-28T01:22:49Z	zuppasoupfifaistimewa-png	Record preset-list static trace and savestate restore findings
+e9db576ac5d4567f5e0654bd7ce4680d2bb1dd06	2026-10-28T01:22:30Z	zuppasoupfifaistimewa-png	Record preset-list static trace and savestate restore findings
+7bf2483ce0e1ba3c79085c7db70788355d96759d	2026-10-28T01:22:26Z	zuppasoupfifaistimewa-png	Record preset-list static trace and savestate restore findings
+082bb6489539283dff3a3af4c3e7d229dfed923a	2026-10-28T01:22:20Z	zuppasoupfifaistimewa-png	Record preset-list static trace and savestate restore findings
+1c895b015894ecce9e536c9c2a36f1ad2b2f75ba	2026-10-28T01:21:54Z	zuppasoupfifaistimewa-png	Document indexed preset lists, shuffle helper behavior, and restore diagnostics
+428fde928cb6bfedeafad88a17c844339d6cd681	2026-10-28T01:18:08Z	zuppasoupfifaistimewa-png	Probe sanitized checkpoint with BIOS rehydration after raw restore crash
+c3da684b609b344a961e90076a25f20b77088e66	2026-10-28T01:16:01Z	zuppasoupfifaistimewa-png	Fix runner temp initialization in checkpoint restore verification
+480f7f5e575f8b365acb37c00fbace219475cc79	2026-10-28T01:14:12Z	zuppasoupfifaistimewa-png	Add bounded no-input Story Mode checkpoint restore verification
+c775e584d6b1c6d1d6db12d4557443b51ee41c99	2026-10-28T00:57:46Z	zuppasoupfifaistimewa-png	Record final Step 6(b) static scan results in docs/HANDOFF_REVERSE_ENGINEERING_STEPS4_10_2026-10-28.md
+5e3896eb93adbac293403375bc653c790b0cc6b6	2026-10-28T00:57:43Z	zuppasoupfifaistimewa-png	Record final Step 6(b) static scan results in docs/STEP4_10_CROSSCHECK_2026-10-28.md
+858908994eb04aed8d41de1d289ccae969697651	2026-10-28T00:57:39Z	zuppasoupfifaistimewa-png	Record final Step 6(b) static scan results in ANALYSIS_LOG.md
+b0c506ab96ac4be81b78cfb2dc7b7e5d6ee32426	2026-10-28T00:57:34Z	zuppasoupfifaistimewa-png	Record final Step 6(b) static scan results in STATUS.md
+181974ee6d82fdbdd54c8c843ee94872a66401be	2026-10-28T00:57:27Z	zuppasoupfifaistimewa-png	Record final Step 6(b) static scan results in docs/STEP4_10_TARGETED_AUDIT_2026-10-28.md
+7f430dce8134dacc81f2806e5ef3e1fb60860ea8	2026-10-28T00:56:50Z	zuppasoupfifaistimewa-png	Document Step 6(b) pointer-slot XREF audit results
+e34a1d68e2945725a91c5de93e1d4b463fa45b38	2026-10-28T00:54:42Z	zuppasoupfifaistimewa-png	Handoff current Step 6(b) scan state
+c5809dc33fb513e2e9d3878e9c46158750924a23	2026-10-28T00:54:39Z	zuppasoupfifaistimewa-png	Append Step 6(b) scan status to cross-check
+aeac07a09cd07859521425054bf61e0359955a6b	2026-10-28T00:54:36Z	zuppasoupfifaistimewa-png	Log Step 6(b) pointer-slot scan in progress
+4b98b4810ef1c621739a54ee12eee2004154232c	2026-10-28T00:54:31Z	zuppasoupfifaistimewa-png	Record Step 6(b) diagnostic run status
+11f350a6b5ce1573d3ada1dda85c5d8193781b56	2026-10-28T00:54:25Z	zuppasoupfifaistimewa-png	Record targeted Step 6(b) scan status in audit
+ea148ca60af2e3eeaa1b58141532e1ff5a98dd60	2026-10-28T00:53:38Z	zuppasoupfifaistimewa-png	Add bounded static pointer-slot access census for Step 6(b)
+c99a8025b01b279720db3115f12d59c3335fdf97	2026-10-28T00:52:14Z	zuppasoupfifaistimewa-png	Update handoff with targeted Step 4–10 audit results
+7f97165dd384275df1ea4cdc12658d642d4258c0	2026-10-28T00:52:04Z	zuppasoupfifaistimewa-png	Append targeted artifact findings to Step 4–10 cross-check
+2182c94727707786afb7a5fbfc36920f73b23919	2026-10-28T00:51:57Z	zuppasoupfifaistimewa-png	Log targeted Step 4–10 static artifact audit
+62fa74f0b2f0ab70e6fece307f1232baad07bcda	2026-10-28T00:51:49Z	zuppasoupfifaistimewa-png	Reconcile STATUS with targeted Step 4–10 evidence audit
+89ee5cfce600415ee8a4d155127cb0797b66b356	2026-10-28T00:51:35Z	zuppasoupfifaistimewa-png	Add targeted Step 4–10 evidence audit from verified text artifacts
+4b20564b38c895495755143b2aa777dc7ab6b5e5	2026-10-28T00:39:21Z	zuppasoupfifaistimewa-png	Clarify Step 8(b) UNKNOWN status in cross-check matrix
+02410718d356500b1cf9e0911f3bbf379fc8296a	2026-10-28T00:38:41Z	zuppasoupfifaistimewa-png	Record Step 4–10 evidence cross-check and handoff [RE-CROSSCHECK-2026-10-28]
+7df287bf4ca21f6c32fe2589bc09e8665e62e846	2026-10-28T00:14:34Z	zuppasoupfifaistimewa-png	Correct Step 5 cross-check coverage in matrix [RE-STEP5]
+1cf98892d8420c25f908536d312bea2dae313cce	2026-10-28T00:14:16Z	zuppasoupfifaistimewa-png	Align Step 9 matrix summary with helper test evidence [RUN-STEP9-UNICORN]
+7301d605dabbc2e4a6015063350131ee2fc79509	2026-10-28T00:12:32Z	zuppasoupfifaistimewa-png	Add caller-level RNG semantics and reconcile Step 4–10 checkpoint [RE-STEP4-8]
+d0fb885df843371911d37a86c0e5c6635b6e07e3	2026-10-28T00:08:36Z	zuppasoupfifaistimewa-png	Document verified main-EXE RNG caller operations [RE-STEP4-8]
+8470506f53a2a2b88990d447967befc969ff8de2	2026-10-28T00:05:59Z	zuppasoupfifaistimewa-png	Reconcile Steps 4–10 with verified isolated helper test [RUN-STEP9-UNICORN]
+7f234820f1b83a34654e900592903678365006a5	2026-10-28T00:02:27Z	zuppasoupfifaistimewa-png	Fix helper result table column count [RUN-STEP9-UNICORN]
+2f7e373055cab788292bb7aad164dfad2b3b9c34	2026-10-28T00:00:15Z	zuppasoupfifaistimewa-png	Model timer MMIO in isolated helper test [RUN-STEP9-UNICORN]
+77cce46f7cf145aef30b63ad1b1106b72c92c36b	2026-10-27T23:57:55Z	zuppasoupfifaistimewa-png	Fix isolated Step 9 helper report syntax [RUN-STEP9-UNICORN]
+e19b70d64289da6ae9226cad616b51c32892ef44	2026-10-27T23:57:02Z	zuppasoupfifaistimewa-png	Extend isolated Step 9 tests for helper return path [RUN-STEP9-UNICORN]
+09c04ac78709a4251c5fda24eba99e435a91b0db	2026-10-27T21:24:49Z	zuppasoupfifaistimewa-png	Reconcile latest static analysis artifacts and Actions status
+985a328446295f4b8e526abd9eac9c6f86e70a6e	2026-10-27T15:02:28Z	zuppasoupfifaistimewa-png	Fix inline code formatting in entry-0 caution
+f66e41af95be0c831dcc380537538db378d24d46	2026-10-27T15:02:25Z	zuppasoupfifaistimewa-png	Fix inline code formatting in entry-0 caution
+ff14592b64ecbf6d404758667b8990d0f2376198	2026-10-27T15:02:18Z	zuppasoupfifaistimewa-png	Fix inline code formatting in entry-0 caution
+f502d2c774a181c5b6473513a84cee8633e00249	2026-10-27T15:02:08Z	zuppasoupfifaistimewa-png	Fix inline code formatting in entry-0 caution
+8c7f6f78d3697a1f5b4add0758cf806a9585de60	2026-10-27T15:02:04Z	zuppasoupfifaistimewa-png	Fix inline code formatting in entry-0 caution
+31f5275670bed50436021c687d4e30eb722ea62a	2026-10-27T15:01:59Z	zuppasoupfifaistimewa-png	Fix inline code formatting in entry-0 caution
+ffcc794bb5905ea876e39d6cded0b8bb19b75800	2026-10-27T15:00:53Z	zuppasoupfifaistimewa-png	Correct ETA from comparable Ghidra run duration
+637ec275ff70e9126ac4befbabfd5b13868ec7df	2026-10-27T15:00:48Z	zuppasoupfifaistimewa-png	Correct ETA from comparable Ghidra run duration
+03aa25cfd33f18e872ada6d545f75522f7777e7b	2026-10-27T15:00:39Z	zuppasoupfifaistimewa-png	Correct ETA from comparable Ghidra run duration
+88c01e7c5d93e6748e8cb76394338045d4e56b24	2026-10-27T15:00:33Z	zuppasoupfifaistimewa-png	Correct ETA from comparable Ghidra run duration
+364dac78a32fc6e157850ca97a91930972bc70bf	2026-10-27T14:59:57Z	zuppasoupfifaistimewa-png	Add raw entry-0 candidate-boundary caution
+488a3718a336bfc8eaccd5a5811509b5e47d1797	2026-10-27T14:59:52Z	zuppasoupfifaistimewa-png	Add raw entry-0 candidate-boundary caution
+1243cb528c329976198a59c315d13168ed0baa01	2026-10-27T14:59:47Z	zuppasoupfifaistimewa-png	Add raw entry-0 candidate-boundary caution
+8492f791eb2e48d521cff2b34b739e0eec4456d6	2026-10-27T14:59:42Z	zuppasoupfifaistimewa-png	Add raw entry-0 candidate-boundary caution
+a4c3bf37cf8d906d72e0bd0b70ba08197c916f15	2026-10-27T14:59:35Z	zuppasoupfifaistimewa-png	Add raw entry-0 candidate-boundary caution
+b45c255921a22f3d2971fddd0b48f1948f833fd8	2026-10-27T14:59:28Z	zuppasoupfifaistimewa-png	Add raw entry-0 candidate-boundary caution
+d42b3805cdf6b933bc3a620defcb259ac18b821c	2026-10-27T14:59:00Z	zuppasoupfifaistimewa-png	Correct repository URLs in live checkpoint
+2d91582e8a344a4ebe332e0c7079bf06fb9f44c3	2026-10-27T14:58:56Z	zuppasoupfifaistimewa-png	Correct repository URLs in live checkpoint
+79c3518c9406907de04f0a52d8e9006fdfa13067	2026-10-27T14:58:23Z	zuppasoupfifaistimewa-png	Update closure matrix with entry-0 timeout evidence
+5cb321ebe053fad05ba3c125ee64729024786922	2026-10-27T14:58:03Z	zuppasoupfifaistimewa-png	Record actual Ghidra entry-0 timeout artifact audit
+892da44330d055bbe98829590415104d1feac9f7	2026-10-27T14:57:54Z	zuppasoupfifaistimewa-png	Reconcile latest Ghidra timeout and active run
+0b6c43f73e289668754e2eb637e4dd66ca50a710	2026-10-27T14:57:49Z	zuppasoupfifaistimewa-png	Refresh handoff with latest Ghidra run outcome
+f7c28519f5d3e9fd3c90e65bf6a781da19cdba6a	2026-10-27T14:57:44Z	zuppasoupfifaistimewa-png	Update Actions live state and entry-0 analysis timeout
+faca0e5da3c4411770104318839f3844d3716232	2026-10-27T14:57:09Z	zuppasoupfifaistimewa-png	Document entry-0 Ghidra timeout and weak function boundaries
+bb92cbc86c39de09e545aaa29ad027c7deb44e11	2026-10-27T14:55:59Z	zuppasoupfifaistimewa-png	Refresh detailed Step 4-10 closure criteria with latest evidence
+5d33ed5dbea4801c954dec1a8f1d1d5b5b35da91	2026-10-27T14:53:07Z	zuppasoupfifaistimewa-png	Reconcile Step 7 runtime probe status with current static context
+567bcf4fe8f97a0249b5863d38d45dc479aca3f6	2026-10-27T14:53:03Z	zuppasoupfifaistimewa-png	Add bounded call-context evidence to Step 4 closure
+ff0ae34f487867e7e16b0a9da862e22904bb5620	2026-10-27T14:52:30Z	zuppasoupfifaistimewa-png	Log raw MIPS pointer dereference correction
+ae9f8e243ab4fa81ab8159ddf5214ba0fa4595ca	2026-10-27T14:52:08Z	zuppasoupfifaistimewa-png	Clarify raw MIPS pointer slot in logic checkpoint
+e65a01b98cdc2c4f0778334a7725b606e0ecc858	2026-10-27T14:51:51Z	zuppasoupfifaistimewa-png	Qualify Step 8 criterion with raw-pointer caveat
+f3f10cd99f51ca53be311c56c6ce630265d09830	2026-10-27T14:51:47Z	zuppasoupfifaistimewa-png	Clarify pointer typing caveat in closure report
+c3a73a5c923696c9c3d76d9461ec705b5f4dc27c	2026-10-27T14:51:37Z	zuppasoupfifaistimewa-png	Record raw MIPS pointer-load discrepancy
+d1927fb17e1e078b12e223bd9880e5ebcf8cc3ba	2026-10-27T14:51:23Z	zuppasoupfifaistimewa-png	Clarify pointer dereference discrepancy in status
+4a7ea482e68e15e49ab609e4550299aab5a64bc5	2026-10-27T14:51:05Z	zuppasoupfifaistimewa-png	Clarify raw MIPS pointer-load semantics in Step 5
+1b6637a01a650976824689f8c60005cb81f13b48	2026-10-27T14:50:57Z	zuppasoupfifaistimewa-png	Clarify raw MIPS pointer-load semantics in Step 5
+584c5d6d3e8b2df7d4e15379c6bc0d41f5057e2e	2026-10-27T14:50:53Z	zuppasoupfifaistimewa-png	Clarify raw MIPS pointer-load semantics in Step 5
+346d53e2f2af3fec86139d18b9c89a32ff2cbfc0	2026-10-27T14:50:15Z	zuppasoupfifaistimewa-png	Fix permitted repository links in evidence report
+cd1a4c124544e180b90a1df58f7a17ab2812c973	2026-10-27T14:50:11Z	zuppasoupfifaistimewa-png	Fix permitted repository links in evidence report
+ea47ec1ce03f705400951e3ebb4184fe2e12143e	2026-10-27T14:49:22Z	zuppasoupfifaistimewa-png	Correct repository links in live evidence addendum
+7e8620f472f0702eb9ac81c2c2aae7490861863d	2026-10-27T14:49:14Z	zuppasoupfifaistimewa-png	Correct repository links in live evidence addendum
+1f1a3fef1e70725721b5b7ce6cdc7e7f61357e73	2026-10-27T14:49:10Z	zuppasoupfifaistimewa-png	Correct repository links in live evidence addendum
+74e54e89b81ee15dbca8820c090f93d476802be2	2026-10-27T14:48:56Z	zuppasoupfifaistimewa-png	Refresh logic checkpoint from latest static evidence
+450227ed91e686daf8cccbf9f3c8f0e55c78e113	2026-10-27T14:48:23Z	zuppasoupfifaistimewa-png	Update official Steps 1-10 audit matrix
+c8a25c3c01cba2e7991249fdad8fd8e617966b56	2026-10-27T14:48:04Z	zuppasoupfifaistimewa-png	Add static behavior for candidate entry-1 gate function
+716fc713da97940d1c852c5c1d7fe5dbfff1c8bb	2026-10-27T14:47:59Z	zuppasoupfifaistimewa-png	Refresh Step 7 status after new static audit
+12b814c667dbee89fba63d806ebc112ce1fddcfd	2026-10-27T14:47:55Z	zuppasoupfifaistimewa-png	Record CFG-aware def-use and unresolved alias limits
+22b2da87d8b55f0f51433c801fb776357519364a	2026-10-27T14:47:52Z	zuppasoupfifaistimewa-png	Add CFG SSA provenance update
+2cd43cc8546367be38d7441a306b69d8285b7c87	2026-10-27T14:47:35Z	zuppasoupfifaistimewa-png	Reconcile Step 5 report with verified resource-function comparison
+f7ff4972fe4214c6471122834edf85cb6efe4082	2026-10-27T14:47:31Z	zuppasoupfifaistimewa-png	Add same-boundary Ghidra m2c result for entry-1 candidate
+f0c0e1277c8ddfe201c34f9431dbef10a3719f06	2026-10-27T14:47:26Z	zuppasoupfifaistimewa-png	Add bounded entry-0 RNG setter callsite evidence
+db4584194dfecda951ba8f086e61134ee26b5044	2026-10-27T14:47:08Z	zuppasoupfifaistimewa-png	Log latest entry-1 and CFG SSA static findings
+cc4323dc3722ea100cf54c722eb6205ac8cf14cf	2026-10-27T14:46:41Z	zuppasoupfifaistimewa-png	Refresh reverse engineering handoff from latest runs
+5116c9ecc11e777c8f6cc5f899a956a43426340d	2026-10-27T14:46:18Z	zuppasoupfifaistimewa-png	Reconcile Steps 4-10 with latest verified static evidence
+f20ff8cb7bd617e1c694a3f76aaa07722665d014	2026-10-27T14:46:13Z	zuppasoupfifaistimewa-png	Reconcile Steps 4-10 with latest verified static evidence
+ac594de4bcf8b7e9f61e636308a16f44c216c8a7	2026-10-27T14:45:49Z	zuppasoupfifaistimewa-png	Update authoritative Step 4-10 status from latest static results
+ceb5139d0c8270deaa91c9d5ff8c045296233ff3	2026-10-27T14:45:34Z	zuppasoupfifaistimewa-png	Document CFG-aware Step 6 SSA evidence and limits
+c36b7407631291afd2a4d303f49a8b03392e2bbc	2026-10-27T14:38:14Z	zuppasoupfifaistimewa-png	Correct decimal-size parser regex
+6cb2b6b3912db606008bb12f214926b3051a83d4	2026-10-27T14:37:37Z	zuppasoupfifaistimewa-png	Parse Ghidra function body sizes as decimal
+136210a7acc34518f7c060f6088e0753d2c811f7	2026-10-27T14:36:35Z	zuppasoupfifaistimewa-png	Add CFG-aware SSA field def-use audit script
+2fd58605a780655d2f8dcde5d2fe89650ac4e069	2026-10-27T14:36:00Z	zuppasoupfifaistimewa-png	Add CFG-aware SSA def-use export for entry-1 field writers
+a75d8307257ff1e154eebfdeb97f23a3ce4f1b03	2026-10-27T14:33:54Z	zuppasoupfifaistimewa-png	Create temporary Ghidra project directory before resource analysis
+a62e29d38c695032c786392668d7a8eda6042d8c	2026-10-27T14:30:43Z	zuppasoupfifaistimewa-png	Add focused DATA.BIN entry-1 Ghidra/m2c comparison
+a8556c02d1df3ce28007213cbce51ccda53ac065	2026-10-27T14:26:31Z	zuppasoupfifaistimewa-png	Fix cancellation exception in bounded Ghidra context scan
+2fd0c9798e11a99348a5979ab0028d205cded1ba	2026-10-27T14:23:20Z	zuppasoupfifaistimewa-png	Add raw MIPS bytes and bounded caller-prologue heuristics
+4e17004111a8d870d5c4fc6366fbc8b44add5363	2026-10-27T14:16:56Z	zuppasoupfifaistimewa-png	Reconcile completed Ghidra entry-0 result in live matrix
+2bcac040bf419b12d25ba3d4a207d1e2d1389ac6	2026-10-27T14:16:52Z	zuppasoupfifaistimewa-png	Record completed entry-0 Ghidra resource trace
+6c53e4efc56da467ed62f84c21f4c663199adc7a	2026-10-27T14:05:48Z	zuppasoupfifaistimewa-png	Update audit checklist to final Step 9 status
+965ce67287a05e424a00f7158bba4236b220ac58	2026-10-27T14:05:42Z	zuppasoupfifaistimewa-png	Add isolated accessor evidence without overclaiming game rules
+36c8a9b4b4500a36df0a413b1e3ea647340e9954	2026-10-27T14:05:38Z	zuppasoupfifaistimewa-png	Prepend latest Step 9 isolated accessor results to logic index
+6267523ab4ce47d2307f4fa978aad8d626798bec	2026-10-27T14:05:32Z	zuppasoupfifaistimewa-png	Update handoff with final Step 9 tests
+24c37daba1463395bf5f972fff90146ea70f9b53	2026-10-27T14:05:27Z	zuppasoupfifaistimewa-png	Record final Step 9 boundary test results and current run
+5473b9631ebb7356829153b059f637f0eb782496	2026-10-27T14:05:20Z	zuppasoupfifaistimewa-png	Add authoritative current status for Step 5, Step 6 and Step 9
+88964b76b4060a83bdac9af01b2111e4baad3a57	2026-10-27T14:04:13Z	zuppasoupfifaistimewa-png	Reconcile Step 9 current success in live matrix and Actions list
+37cb493a4328412dd0e1324e2a1161fcf4594e3e	2026-10-27T14:04:07Z	zuppasoupfifaistimewa-png	Record final Step 9 Actions success and cleanup
+e5f226a841726e0bda34adce6b15e844709a403d	2026-10-27T14:03:25Z	zuppasoupfifaistimewa-png	Add Step 9 cleanup confirmation and latest aggregate status
+0e49839e9a6a1115f18d9d53465a116690952d23	2026-10-27T14:03:20Z	zuppasoupfifaistimewa-png	Update Step 9 workflow metadata and cleanup confirmation
+48e87d6a74ae6644c3358a15e625c8b3da29cb6f	2026-10-27T14:03:14Z	zuppasoupfifaistimewa-png	Reconcile Step 9 runner cleanup and job status evidence
+4f7a3d182a8505ce3379def76f13dddb0ce97d9c	2026-10-27T14:02:08Z	zuppasoupfifaistimewa-png	Reconcile Step 9 coverage status after accessor tests
+1e7c339cd3efa38edfe74273d30005fdc6525d50	2026-10-27T14:01:56Z	zuppasoupfifaistimewa-png	Update Step 9 coverage and closure matrix
+f733b8666bd5b2f75d08daeade76df0ad5631bcc	2026-10-27T14:01:48Z	zuppasoupfifaistimewa-png	Reconcile Step 9(b) after isolated accessor test evidence
+54a73479b38b62882252da81547100e50625048a	2026-10-27T14:01:19Z	zuppasoupfifaistimewa-png	Document isolated setter/getter boundary tests and Step 9 scope
+35d83ad1f2592870dd68f0f2f7bd1be0911615fe	2026-10-27T13:59:31Z	zuppasoupfifaistimewa-png	Reconcile current Step 4–10 checkpoint and active Actions
+430b8a3347ca6bb48833e73c1b6006f8667c9c95	2026-10-27T13:58:06Z	zuppasoupfifaistimewa-png	[RUN-STEP9-UNICORN] Validate setter/getter boundary and clamp cases
+24003eaa1619ea660f7bfee89618ebd9b0aff5a6	2026-10-27T13:56:26Z	zuppasoupfifaistimewa-png	Expand Step 9 Unicorn tests to player value setter/getter bounds
+3218e0cc85eb49ec104df79acaee9c8df6fbe07d	2026-10-27T13:55:04Z	zuppasoupfifaistimewa-png	Fix Step 4 artifact digest formatting
+ea9e6751d428179f2b3815d204186b4c730145d9	2026-10-27T13:54:58Z	zuppasoupfifaistimewa-png	Restore Step 4(a) row and fix latest matrix digest formatting
+00fcb896d965d97dedb3261478987fde93906acf	2026-10-27T13:54:35Z	zuppasoupfifaistimewa-png	Add Step 4 and Step 8 consequences of 13-function cross-check
+b1d923695e6078167b7f26d5d673f67ca069b0a1	2026-10-27T13:54:29Z	zuppasoupfifaistimewa-png	Add verified cross-decompiler function semantics and rule boundaries
+63377ce771b4dd36fc35722ba64c17347ae2960d	2026-10-27T13:54:24Z	zuppasoupfifaistimewa-png	Reconcile RNG helper/counter semantics with Step 5 cross-check
+a09958cbcdb8331e6a7dd0f2a13f313cef802bbf	2026-10-27T13:54:19Z	zuppasoupfifaistimewa-png	Add per-function results for nine additional core routines
+61d585126945a50a4475f3f65eea2a36260d4f1e	2026-10-27T13:53:19Z	zuppasoupfifaistimewa-png	Clarify 0x80012A70 has no Ghidra function entry in latest cross-check
+a804f36a916ffb534bc912b2370e8bc01a2671fa	2026-10-27T13:53:14Z	zuppasoupfifaistimewa-png	Update logic index with latest Step 5 13-function result
+4ebf9ffbe3e65af291ce6eb15f4cf5c53e3d219a	2026-10-27T13:53:09Z	zuppasoupfifaistimewa-png	Update handoff to latest successful Step 5 run
+19b84af74f60a1a4c91859d4c796174d15876f6a	2026-10-27T13:53:05Z	zuppasoupfifaistimewa-png	Log successful expanded Step 5 comparison
+606e45b949e7ba190795a4a47b6d304007767d8c	2026-10-27T13:52:59Z	zuppasoupfifaistimewa-png	Record current Step 5 result and Step 5 overall partial scope
+2cf890f17f584f9725366f90f05398d641f2e492	2026-10-27T13:52:52Z	zuppasoupfifaistimewa-png	Update Step 5 scope and final acceptance status
+97e5d5cba3ba4b958284fbcca66e3f7f962310b9	2026-10-27T13:52:48Z	zuppasoupfifaistimewa-png	Update Step 5 closure scope after 13-function comparison
+1c4e44c373bfa6ed773450c38e2483c34f9311a3	2026-10-27T13:52:42Z	zuppasoupfifaistimewa-png	Reconcile Step 5 matrix after 13-function m2c run
+05fe5c0eba023f81a30036190291c64fc9570b01	2026-10-27T13:52:37Z	zuppasoupfifaistimewa-png	Document successful 13-function Step 5 expansion
+56d9eb33b9e0610c08fa927e27cdf76f3a782554	2026-10-27T13:49:48Z	zuppasoupfifaistimewa-png	Update handoff with Step 5 comparison retry status
+a15ed1d12b13e51ab7045abde78908ad274f6b84	2026-10-27T13:49:42Z	zuppasoupfifaistimewa-png	Log Step 5 expanded comparison failure and correction
+3a606cb60fed9e766d96edeb87e14d1403a1e4f3	2026-10-27T13:49:35Z	zuppasoupfifaistimewa-png	Record Step 5 expanded comparison diagnosis and active runs
+1fcc80857af72aba4757c19697e254f9ecb537d3	2026-10-27T13:49:15Z	zuppasoupfifaistimewa-png	Record expanded Step 5 comparison failure and corrected retry
+2b16e67bfafde873c95b577bc030f6e0c9f84c58	2026-10-27T13:48:38Z	zuppasoupfifaistimewa-png	Exclude non-function getter target from Step 5 same-function m2c set
+873db7b4b46fd1f20bb0afb6a8d19a16198a3d01	2026-10-27T13:32:45Z	zuppasoupfifaistimewa-png	Expand Step 5 Ghidra/m2c comparison to core game functions
+929c87bd8675c6ae98aaeaa9ae3189c79d987791	2026-10-27T13:32:28Z	zuppasoupfifaistimewa-png	Export additional core MIPS functions for Step 5 cross-check
+400d8ecf9a030fdf1e9985cd08b2083cec6ad5e8	2026-10-27T13:30:21Z	zuppasoupfifaistimewa-png	Fix inline formatting in Step 6 provenance report
+e0b7ca7134aae90b6790076c5103e51b9f79a612	2026-10-27T13:29:55Z	zuppasoupfifaistimewa-png	Clarify unresolved s0 base-register interpretation
+c6ed213519102a2ecbcbb23e17d79b2dcf113191	2026-10-27T13:29:49Z	zuppasoupfifaistimewa-png	Clarify unresolved s0 base-register interpretation
+6de6c465a259918d1b1e8569ce7d6aa3a1145f59	2026-10-27T13:29:46Z	zuppasoupfifaistimewa-png	Clarify unresolved s0 base-register interpretation
+5dc9219d5ad890c4aedc12f463403258cb4aa4c2	2026-10-27T13:29:40Z	zuppasoupfifaistimewa-png	Clarify unresolved s0 base-register interpretation
+557c06b2eaabad29f47356d6ef8884f75166c3ea	2026-10-27T13:29:34Z	zuppasoupfifaistimewa-png	Clarify unresolved s0 base-register interpretation
+599e80ec37d8bd45b7f69fb59f792e802026fff7	2026-10-27T13:29:22Z	zuppasoupfifaistimewa-png	Clarify unresolved s0 base-register interpretation
+e5aed54821ac2d0ddb1173d748d4bfdce295b5a7	2026-10-27T13:29:18Z	zuppasoupfifaistimewa-png	Clarify unresolved s0 base-register interpretation
+1338f9b6fc5b1f7937783e3afcc245dfa456cd4a	2026-10-27T13:29:00Z	zuppasoupfifaistimewa-png	Clarify unresolved s0 base-register interpretation
+f731e07d1ac6ef0992337bdd79c3cdbb238d6e5c	2026-10-27T13:28:08Z	zuppasoupfifaistimewa-png	Reconcile Step 6 static provenance update in audit checklist
+aecf50ffe23fc9baca85625a3920a0b507b1dfc5	2026-10-27T13:28:04Z	zuppasoupfifaistimewa-png	Add latest bounded Step 6 provenance checkpoint to logic index
+c13b2e686ebad4eefd2d2e9a3d16298fe1c035c5	2026-10-27T13:28:00Z	zuppasoupfifaistimewa-png	Update handoff with latest Step 6 provenance checkpoint
+89219be98b8a133ee81346a20bc7452391c64e2b	2026-10-27T13:27:56Z	zuppasoupfifaistimewa-png	Log successful bounded Step 6 register provenance scan
+201c5d73e570729b1cf7fe52fdaedab16c006b97	2026-10-27T13:27:51Z	zuppasoupfifaistimewa-png	Update status with verified Step 6 register provenance run
+48a535e145a273fd34db3137297a978105736074	2026-10-27T13:27:45Z	zuppasoupfifaistimewa-png	Record Step 6 provenance update without promoting game semantics
+4d16c4e26641ac7212f03f3fec2d4221cc3e40b1	2026-10-27T13:27:41Z	zuppasoupfifaistimewa-png	Add latest Step 6 bounded provenance result to closure report
+3587f7b3dc4f5684fddb050fbc6135fd978bda20	2026-10-27T13:27:38Z	zuppasoupfifaistimewa-png	Reconcile Step 6 provenance scan in live criteria matrix
+7d5e10865cfee3109d8b10ba59d44d390bf7f610	2026-10-27T13:27:32Z	zuppasoupfifaistimewa-png	Document bounded register provenance result
+d9d267a342e93f575ab09adfe2f3c4e9a84c9b02	2026-10-27T13:26:53Z	zuppasoupfifaistimewa-png	Document Step 6 bounded register provenance audit
+0afc0eec4a5c12e4df5a17c771c8b0d28d7a99dd	2026-10-27T13:24:25Z	zuppasoupfifaistimewa-png	Add bounded constant and pointer provenance to Step 6 scan
+d49426e75291a4131d32080a5c818b1f911fb708	2026-10-27T12:54:41Z	zuppasoupfifaistimewa-png	Keep Step 6a criterion partial until base and full scope are proven
+cfadfc6d1b21674c48d36fa9e251e9430de7b52d	2026-10-27T12:54:13Z	zuppasoupfifaistimewa-png	Keep Step 6a criterion partial until base and full scope are proven
+4648cd590a7412d37e97937a1539d6eaaec582fc	2026-10-27T12:53:42Z	zuppasoupfifaistimewa-png	Fix Markdown formatting in live Step 4-10 reconciliation
+a40517a5c132aebf69344a9b6eeea20a7e4ab254	2026-10-27T12:51:42Z	zuppasoupfifaistimewa-png	Reconcile Steps 4-10 with audited Step 6 inventory and criterion statuses
+cc81319cc00037a92a93a3e76552245dd9a9ebf7	2026-10-27T12:38:57Z	zuppasoupfifaistimewa-png	Append latest Step6 displacement inventory evidence to analysis log
+ebea18694c4a5c49544f5288c7211b1892f0c668	2026-10-27T12:38:46Z	zuppasoupfifaistimewa-png	Log latest Step6 full displacement inventory audit
+fa938807973aff92829b0235592ac2225256ba33	2026-10-27T12:38:41Z	zuppasoupfifaistimewa-png	Refresh handoff with latest Step6 audited inventory
+f3a1797afecfc9240462a3aa5a54838b34830492	2026-10-27T12:38:26Z	zuppasoupfifaistimewa-png	Update closure matrix with latest audited Step6 access counts
+5a063799537444ef7019606655b8e436b6b957d2	2026-10-27T12:38:21Z	zuppasoupfifaistimewa-png	Add audited full direct-memory inventory results to Step6 report
+e13cc8449c8c49e97d308a3a1c45926ef2749804	2026-10-27T12:38:17Z	zuppasoupfifaistimewa-png	Update logic index with complete direct displacement counts
+c7550d0560e216ed2db35eba17e42d03391b4310	2026-10-27T12:38:12Z	zuppasoupfifaistimewa-png	Record latest audited Step 6 direct field inventory
+4ab16073f770233edffcb13ad8b489361604b64c	2026-10-27T12:35:32Z	zuppasoupfifaistimewa-png	Remove truncation risk from Step 6 displacement inventory audit
+df144ad5a4330531afd4f45978e4e36f1bc8a447	2026-10-27T12:34:47Z	zuppasoupfifaistimewa-png	Audit normalized Step 6 memory scan and retain complete displacement inventory
+486e2590b45efaedd7972accb4561cd647f8a711	2026-10-27T12:33:02Z	zuppasoupfifaistimewa-png	Normalize Ghidra delay-slot mnemonics and count coprocessor memory operands
+a4ad57b5fb79f1e37297d3149ae156083f3e29f4	2026-10-27T12:31:57Z	zuppasoupfifaistimewa-png	Audit expanded Step 6 direct-memory inventory artifact on runner
+c29c30cd5a8a9500f946309a943ed48a6c9112ef	2026-10-27T12:29:21Z	zuppasoupfifaistimewa-png	Fix memory access classification for Step 6 operand inventory
+1895efa960a83745bf3cf1d481d1f2302688e0b2	2026-10-27T12:29:07Z	zuppasoupfifaistimewa-png	Expand Step 6 scan with uncapped priority operands, base-register hints and full displacement inventory
+1adac7fc0970ae58f104f3dc5d5e3041c3399214	2026-10-27T12:27:58Z	zuppasoupfifaistimewa-png	Rewrite Step 4-10 handoff with latest verified runner checkpoint
+8d00dd076464584af9dd66553a4dd54b4acc1211	2026-10-27T12:27:34Z	zuppasoupfifaistimewa-png	Replace stale in-progress claim in Step4 trace
+548b9fd7b8bcdd5487019d350a88bc2ff63388cc	2026-10-27T12:27:31Z	zuppasoupfifaistimewa-png	Reconcile stale Ghidra-run and Step10 wording in closure report
+e96f4449e0d4c3092f2517b0cc58dbc66ac5f191	2026-10-27T12:27:27Z	zuppasoupfifaistimewa-png	Correct Step10 status language in audit report
+2f54504457a238c5797f64aacd11a5a3ac8f1841	2026-10-27T12:27:24Z	zuppasoupfifaistimewa-png	Align logic index Step 10 status with closure matrix
+60218c294ffecf778df67ae9ba98da3371362474	2026-10-27T12:27:20Z	zuppasoupfifaistimewa-png	Correct stale Step10 and Ghidra status in STATUS current section
+d5b07d03b3fdee17a953580f7c52deca0d738b6f	2026-10-27T12:27:14Z	zuppasoupfifaistimewa-png	Append latest verified Step 4-10 checkpoint
+76fbc9d44e165d16e0f732a39d4007f3a15c2b85	2026-10-27T12:26:13Z	zuppasoupfifaistimewa-png	Reconcile Step 7 result with completed Ghidra audit
+abfdcd84d1678a37a9fe1eeb393009e9d3be9ea9	2026-10-27T12:26:10Z	zuppasoupfifaistimewa-png	Reconcile logic index with latest verified static evidence
+978e8208563805ebe708502fce0020e35722aabe	2026-10-27T12:26:05Z	zuppasoupfifaistimewa-png	Refresh live Step 4-10 checkpoint after runner audit
+8dbd801623b3a4240bad233fa79f9a9d69a30614	2026-10-27T12:25:40Z	zuppasoupfifaistimewa-png	Reconcile latest static evidence in STEP8_FUNCTION_SEMANTICS_AND_GAME_RULES_2026-10-27.md
+db13f31919e9b3491b9c34ef47baa0bb648518e6	2026-10-27T12:25:36Z	zuppasoupfifaistimewa-png	Reconcile latest static evidence in STEP6_TARGET_XREF_SEMANTIC_REVIEW_2026-10-27.md
+3b1bd00e00bc47be198d7eadbf74714bd178413c	2026-10-27T12:25:33Z	zuppasoupfifaistimewa-png	Reconcile latest static evidence in STEP4_RNG_TRACE_2026-10-27.md
+52312f759a84e2c8081827de41da2dc774c3302a	2026-10-27T12:25:28Z	zuppasoupfifaistimewa-png	Reconcile latest static evidence in REVERSE_ENGINEERING_AUDIT_STEPS_1_10_2026-10-27.md
+ce2cc79e70401ce2a0e84f5482a47e1eb00cfe74	2026-10-27T12:25:24Z	zuppasoupfifaistimewa-png	Reconcile latest static evidence in STEP4_10_CLOSURE_REPORT_2026-10-27.md
+555b84a4d178b41e4d04705e1700104bd41ed1d3	2026-10-27T12:22:17Z	zuppasoupfifaistimewa-png	Audit latest Ghidra and Step 6 text artifacts on runner
+f66b59e17bdee146362ee28bf0ff9ba66d42be1b	2026-10-27T12:02:15Z	zuppasoupfifaistimewa-png	Add copy-ready prompt to finish reverse-engineering Steps 4–10
+dfa0bf47dff300384c1f9884aa957c7ce1b48658	2026-10-27T11:57:41Z	zuppasoupfifaistimewa-png	Trace incoming callers of Step 6 pending-field access functions
+4539ad058f3f96dbb2726142eb870e5c13aec3b0	2026-10-27T11:56:18Z	zuppasoupfifaistimewa-png	Expose complete Step 6 field-access function pseudocode on runner
+52ad13276b4e25468e337c7fa214b3dc8e07b956	2026-10-27T11:55:48Z	zuppasoupfifaistimewa-png	Handoff callback dispatch findings and outstanding timing dependency
+a2103ebd0fe07ece8ba7b3c41531d1e9c96dfba2	2026-10-27T11:55:43Z	zuppasoupfifaistimewa-png	Update closure evidence for callback-count source
+da22cf281ff6873aca1557076bab5fe3d0e29128	2026-10-27T11:55:38Z	zuppasoupfifaistimewa-png	Extend official audit with callback dispatch trace
+d2f451fa3d1df16a8f5851f554c51f9beeef1505	2026-10-27T11:55:33Z	zuppasoupfifaistimewa-png	Add static dispatcher/field evidence without game labels
+810711c580157ebff36f269f42f9270e9a102f1e	2026-10-27T11:55:26Z	zuppasoupfifaistimewa-png	Document callback counter initialization and dispatch
+75417df59968690bd8c9133f653ae02432bbe8fa	2026-10-27T11:55:22Z	zuppasoupfifaistimewa-png	Add callback-table behavior with explicit interpretation limits
+62c7d59d30ce3c90b5478c394be75caaa7cddd34	2026-10-27T11:55:17Z	zuppasoupfifaistimewa-png	Log callback dispatcher and callback table raw-MIPS findings
+0f82779990c5ba4d1cd404b50665a656d78bec11	2026-10-27T11:55:12Z	zuppasoupfifaistimewa-png	Record callback dispatcher and callback-slot initialization evidence
+9e28847c8b47152d1600f5a6f249e3671fde86d7	2026-10-27T11:53:48Z	zuppasoupfifaistimewa-png	Inspect callback dispatcher and table initialization on runner
+e7352e49ea3cd2f9f8850ab059e2053843bdb1b5	2026-10-27T11:52:49Z	zuppasoupfifaistimewa-png	Handoff new static callback path and further dispatch work
+94008b00c7c86d0e5920bb6994dbc074e142b3af	2026-10-27T11:52:46Z	zuppasoupfifaistimewa-png	Add new Step4 evidence and retain partial closure status
+97cf24e4348c6e5220efb331fd90c4548a23690c	2026-10-27T11:52:40Z	zuppasoupfifaistimewa-png	Append audited callback-counter dataflow to official audit
+fe2092ef86ac550b10b5bec819d3acd63e4f5be3	2026-10-27T11:52:32Z	zuppasoupfifaistimewa-png	Add static callback/global semantics evidence and limits
+b0ed63ba767598de5ee9d873495b8c81a722e71c	2026-10-27T11:52:27Z	zuppasoupfifaistimewa-png	Add callback-counter initialization trace for helper return
+ae50209b737e301603b50e9d32b0727fd0c62906	2026-10-27T11:52:23Z	zuppasoupfifaistimewa-png	Append callback counter source findings with explicit limits
+a07bd6b08a6f57a6ce2bd4552ddf748fb3cf3ac5	2026-10-27T11:52:18Z	zuppasoupfifaistimewa-png	Log callback-counter init path and helper-return callgraph evidence
+1a37c5da178c9e5592181888fa00ec240afa01fa	2026-10-27T11:52:13Z	zuppasoupfifaistimewa-png	Record callback-counter and one-time initializer static evidence
+57f7b88d92d5e76d62ee6186e264c787aba375c2	2026-10-27T11:51:24Z	zuppasoupfifaistimewa-png	Trace callback dispatcher and callback-table initialization
+07844eaad943e2c577feaf77ae3feb887d513400	2026-10-27T11:50:29Z	zuppasoupfifaistimewa-png	Inspect callback counter initialization and registration functions on runner
+0fc3c0ad4c291929c45808655d90eb5288b072fd	2026-10-27T11:49:29Z	zuppasoupfifaistimewa-png	Trace callback counter initialization and registration callers
+41fbd0234ccbdb047da9d040ee05733b4cbb9ec2	2026-10-27T11:48:40Z	zuppasoupfifaistimewa-png	Expose writer function call graphs in runner-only audit
+9cd6d317f17f9ef988846f184f3b07e33c7064c9	2026-10-27T11:47:59Z	zuppasoupfifaistimewa-png	Inspect caller functions for helper-return global in runner-only audit
+a4c8d50cc107943b735b6e6b35f8516a6b55bf15	2026-10-27T11:46:45Z	zuppasoupfifaistimewa-png	Trace direct callers of helper-return global writer functions
+5cd1cfff9427e76998509a645d86ae8427b0365d	2026-10-27T11:45:47Z	zuppasoupfifaistimewa-png	Handoff direct global xref findings and follow-up order
+741e785240e4536eaee231fa9f9f37dc323a4c23	2026-10-27T11:45:43Z	zuppasoupfifaistimewa-png	Update closure evidence for helper-return global xrefs
+09b845b6589b267cc3579f18a2087b375d78f197	2026-10-27T11:45:39Z	zuppasoupfifaistimewa-png	Add verified global xref findings to audit checkpoint
+1cdf352a9ce158a080cdf58cb236a20999f4974c	2026-10-27T11:45:35Z	zuppasoupfifaistimewa-png	Record xref evidence for helper return global and retain semantic limits
+f2f35c64cafdd441bae39bd51d2fdf706921187b	2026-10-27T11:45:32Z	zuppasoupfifaistimewa-png	Add direct xref findings for helper return global
+61dd8e8d0b2fc5c0d90bc8aa3d3b767b61c405f7	2026-10-27T11:45:28Z	zuppasoupfifaistimewa-png	Add 0x80066E7C xref facts without assigning gameplay semantics
+0989ba7451768e7614b1baa686c7a6a1604d95e3	2026-10-27T11:45:25Z	zuppasoupfifaistimewa-png	Log data xrefs for 0x80066E7C and bounded initialization evidence
+0d0837f38e8747b7c20bca931f1cebee00aa2b03	2026-10-27T11:45:19Z	zuppasoupfifaistimewa-png	Record static xrefs and initialization evidence for helper return global
+8f70c3679a52de044f7687b0ab449d6bb801bd84	2026-10-27T11:44:18Z	zuppasoupfifaistimewa-png	Audit latest helper xrefs and loaded-image data on runner
+d99d72c7fe3703de7099a156ca1c09fe715997ee	2026-10-27T11:43:04Z	zuppasoupfifaistimewa-png	Run helper audit when Ghidra export logic changes
+dc5ad30c1ec97329e2829da33da092d1bf43f5ef	2026-10-27T11:42:53Z	zuppasoupfifaistimewa-png	Export direct xrefs to helper-return global 0x80066E7C
+7f9534ab97720cadf2ec043d9b0214bdbba2f67f	2026-10-27T11:42:30Z	zuppasoupfifaistimewa-png	Audit corrected Step 4 helper artifact on runner
+fa13b52a4c97e84d80fe420430829ea23de525b7	2026-10-27T11:42:09Z	zuppasoupfifaistimewa-png	Fix inline code formatting in updated handoff
+fe84f187f777570815df5f3dfbb2085e8f28ea65	2026-10-27T11:42:06Z	zuppasoupfifaistimewa-png	Fix inline code formatting in field-dataflow addendum
+a5cb08833148da23bc5e64bc5766a6a88d71013a	2026-10-27T11:42:02Z	zuppasoupfifaistimewa-png	Fix inline code formatting in current audit addendum
+1aa93ace9c062f05287c29564a441af7fc0acb86	2026-10-27T11:41:58Z	zuppasoupfifaistimewa-png	Fix inline code formatting in helper return addendum
+2f77fc84eecc250271d152174bff0d561db1f1f2	2026-10-27T11:41:54Z	zuppasoupfifaistimewa-png	Fix inline code formatting in latest dataflow checkpoint
+be7fbb4aad79c8782641172cc8baff46b00dde1d	2026-10-27T11:41:13Z	zuppasoupfifaistimewa-png	Make helper target marker checks case-insensitive
+68a67f992e866b94cefbbb58d533f4d50441d196	2026-10-27T11:40:47Z	zuppasoupfifaistimewa-png	Update handoff with helper return and field dataflow findings
+c60d969a5f02d49cd3f3013c2d4dec18dd00a65b	2026-10-27T11:40:44Z	zuppasoupfifaistimewa-png	Add confirmed helper return and Step6 field dataflow to closure report
+7043d74652fbae473d9ede5a745a29dc55137f95	2026-10-27T11:40:40Z	zuppasoupfifaistimewa-png	Append newest verified Step4 and Step6 evidence to official audit matrix
+5f7790a9ba9c9c549ff81848cf8809955b46e620	2026-10-27T11:40:36Z	zuppasoupfifaistimewa-png	Document new static helper and pending field dataflow evidence
+70eef234f6046140b2a62f229ad7ec16021dc3d0	2026-10-27T11:40:33Z	zuppasoupfifaistimewa-png	Add verified raw MIPS dataflow for B30 B38 B40 and B44
+e659c11a381b54a17d0d6e586342f710cff9b1fc	2026-10-27T11:40:29Z	zuppasoupfifaistimewa-png	Record statically verified return source at helper 0x80037138
+d255a449de8803d3f0c2719f5d77750a08893ff7	2026-10-27T11:40:26Z	zuppasoupfifaistimewa-png	Add latest verified Step 4 and Step 6 static dataflow checkpoint
+eb97b1d9748fc352dc67f9dfa5c7f101b70806e4	2026-10-27T11:40:22Z	zuppasoupfifaistimewa-png	Log verified helper return dataflow and Step 6 pending field reads/writes
+3cb65e57b20ba55b4cab16b49aa0f900771bff75	2026-10-27T11:40:15Z	zuppasoupfifaistimewa-png	Record Step 4 helper-return and Step 6 memory operand findings
+029fdfab8df55dd16001916f0f53b7abd073c334	2026-10-27T11:38:58Z	zuppasoupfifaistimewa-png	Remove duplicated trailing script fragments from Step 4 workflow
+ccba874527f8e0b3e0b56e10f033593578495fd3	2026-10-27T11:38:29Z	zuppasoupfifaistimewa-png	Fix case-insensitive helper target parsing and branch inventory
+2e51931a289d4acbb7f1517e05e759f69a62fc04	2026-10-27T11:37:28Z	zuppasoupfifaistimewa-png	Expose complete helper return paths in runner-only artifact audit
+f192e9dd9f49360629c6498599ddf7464fb65854	2026-10-27T11:36:17Z	zuppasoupfifaistimewa-png	Fix Ghidra target marker validation for helper-return audit
+d4a7740824a544249942e94cab389e6284f0815a	2026-10-27T11:19:22Z	zuppasoupfifaistimewa-png	Audit latest Step 6 and failed Step 4 helper artifacts on runner
+48c262aa77fec58260de39f547f2017a760df571	2026-10-27T11:07:14Z	zuppasoupfifaistimewa-png	Audit extended Step 6 memory operands and their containing functions on runner
+40f48020f53d73e23ee3a40a2e704c5ff2b5cfb7	2026-10-27T11:06:16Z	zuppasoupfifaistimewa-png	Add simpler runner-only seed helper static audit with shell CUE rewrite
+440ab28288b52f8677aa7e74bdebcadc01e40569	2026-10-27T11:05:51Z	zuppasoupfifaistimewa-png	Run Step 6 field context and containing-function dataflow audit
+f256793e57bd3cf864b58c5199cafbea1c565f6a	2026-10-27T11:05:03Z	zuppasoupfifaistimewa-png	Trace pending-field MIPS context and decompile containing functions
+5b825312c646cad1f6a165179cfffe7a0dd5facf	2026-10-27T11:03:54Z	zuppasoupfifaistimewa-png	Repair malformed CUE regex and preserve Python backslashes
+63f4ac420160e3944738efbf76009525b74f122d	2026-10-27T11:03:37Z	zuppasoupfifaistimewa-png	Fix CUE FILE parser escaping for helper audit workflow
+b5876d3da9ba40c057c37b1f8b5d4cde02b5eaa9	2026-10-27T11:02:27Z	zuppasoupfifaistimewa-png	Retry runner-only audit with streamed large-log hashing
+a63b332dd2aeb6ceda0df67a96ee8998fd9b9919	2026-10-27T11:02:08Z	zuppasoupfifaistimewa-png	Add runner-only static decompilation of seed helper return path
+155f280c0557a9f5414445cff424734539e786ab	2026-10-27T11:00:42Z	zuppasoupfifaistimewa-png	Hash large Ghidra logs without loading them into memory
+1eddbed23e2051d5fa095813710b443d2c0cf29e	2026-10-27T11:00:10Z	zuppasoupfifaistimewa-png	Raise bounded text expansion limit for runner-only artifact audit
+a88a47f0b3d06a3486381793e808ad5790649018	2026-10-27T10:59:41Z	zuppasoupfifaistimewa-png	Add bounded Ghidra function-body and xref exporter for seed helper audit
+db7bcc35d5ad3ea0778d513fa2cb976165b93e2d	2026-10-27T10:59:11Z	zuppasoupfifaistimewa-png	Add runner-only audit for latest static Ghidra and Step 6 artifacts
+991449d934a38270c7fb9733855a9bcfd73d797f	2026-10-27T10:35:11Z	zuppasoupfifaistimewa-png	Finish official audit Step 6 scan scope matrix
+ce09d590a21c6dfacf8f67c4728d17736ef0191e	2026-10-27T10:34:58Z	zuppasoupfifaistimewa-png	Log Step 6 full text stores and bounded immediate scan
+c1cae8991913c42c43859e2e90d4efed208d35d5	2026-10-27T10:34:53Z	zuppasoupfifaistimewa-png	Add bounded Step 6 immediate scan result to closure report
+5047212819bfb6e152123e28391d782dd5797c22	2026-10-27T10:34:23Z	zuppasoupfifaistimewa-png	Refresh handoff with actual Actions state and complete Step 6 scan limits
+62acf7ac97d0d0d052da502220775579d1c64838	2026-10-27T10:33:58Z	zuppasoupfifaistimewa-png	Update official audit Step 6 based on full text artifact and bounded immediate scan
+67d802accb55db1b9db0200361dbd402d7cd1386	2026-10-27T10:33:30Z	zuppasoupfifaistimewa-png	Fix Step 6 field scan to inspect MIPS memory displacements
+10dd876bfb991f073cabc8f7aef099ff33c9868f	2026-10-27T10:33:12Z	zuppasoupfifaistimewa-png	Sync handoff with Step 6 field scan and active helper trace
+8c00d4f796110735d352de82cc586363708473d6	2026-10-27T10:31:03Z	zuppasoupfifaistimewa-png	Fix CUE filename normalization in static field scan
+ccaec2217d7a6c992ee16672cf9806ffc09deda2	2026-10-27T10:29:52Z	zuppasoupfifaistimewa-png	Add regression fixture for Step 6 CUE FILE parser
+07d7eee854ba9b36c5fe0c68fdd6a2b26dc37f81	2026-10-27T10:29:16Z	zuppasoupfifaistimewa-png	Fix CUE FILE normalization in Step 6/7 static scan
+6f56cc1f550bf0c944536583c5438b7369be1050	2026-10-27T10:28:55Z	zuppasoupfifaistimewa-png	Record live Step 7 log verification and active Ghidra checkpoint
+24a755b0ef24d0e4a10049c9ec32f7d36aae1227	2026-10-27T10:28:50Z	zuppasoupfifaistimewa-png	Record live Step 7 log verification and active Ghidra checkpoint
+571845fbf19812eb7bcbe470ce27336039214a38	2026-10-27T10:28:45Z	zuppasoupfifaistimewa-png	Record live Step 7 log verification and active Ghidra checkpoint
+03c3864a4c3d4716763c2b7afd377e658ff8113a	2026-10-27T10:28:42Z	zuppasoupfifaistimewa-png	Record live Step 7 log verification and active Ghidra checkpoint
+f4632470058ca0efaff1e1a08d7de7ba4ede13e2	2026-10-27T10:28:36Z	zuppasoupfifaistimewa-png	Record live Step 7 log verification and active Ghidra checkpoint
+212766005014403458c824f8b6f970e250403ba4	2026-10-27T10:28:17Z	zuppasoupfifaistimewa-png	Sync logic index with full Step 6 store inventory
+9ae042870a24af51f24bd3ab0e4244d945120085	2026-10-27T10:28:12Z	zuppasoupfifaistimewa-png	Sync status with newly verified Step 6 field stores
+8ebd45fbe16d1b3b406b2b79179ddb412b2ef619	2026-10-27T10:28:01Z	zuppasoupfifaistimewa-png	Add bounded Step 6/7 static field and resource scan
+138eea909d5a8cd61a19eee24efa340343b9c31d	2026-10-27T10:27:58Z	zuppasoupfifaistimewa-png	Sync closure matrix with verified Step 6 static stores and helper trace
+dfa752238b1bd7d852924d0a44702089fd091edd	2026-10-27T10:27:41Z	zuppasoupfifaistimewa-png	Add Ghidra decoded-instruction scan for Step 6 field offsets
+4f3a80fe3f996d7eacefa01f2823aad02acce65b	2026-10-27T10:27:39Z	zuppasoupfifaistimewa-png	Add bounded Ghidra preparation for Step 6 field scan
+3ad67d2864d60f483e4cd736a0db19619c63d51d	2026-10-27T10:27:21Z	zuppasoupfifaistimewa-png	Add bounded text-only PS1 resource profile scanner
+74eef01956fffd6f2ecba30374d0bfad93c1baef	2026-10-27T10:27:11Z	zuppasoupfifaistimewa-png	Sync logic index with live reverse-engineering checkpoint
+5635653f1072b006ea719696f3ee66f21e67f15c	2026-10-27T10:27:07Z	zuppasoupfifaistimewa-png	Log verified live run and remaining static gap
+25bf0db79b5a9d1bb1dcd00ca3fbda19740119ed	2026-10-27T10:27:03Z	zuppasoupfifaistimewa-png	Record live Ghidra trace checkpoint
+de636dfed90825c460c1e5a1ca21f33f0f78e811	2026-10-27T10:26:58Z	zuppasoupfifaistimewa-png	Refresh Step 4–10 closure checkpoint
+e128fe86da6dbd3848813a376aa5b63f53e39977	2026-10-27T10:26:42Z	zuppasoupfifaistimewa-png	Refresh Step 4–10 handoff with live checkpoint
+7cdf3c8169ce1d570740cb17cf31d88e2f419827	2026-10-27T10:26:26Z	zuppasoupfifaistimewa-png	Correct static artifact internal checksum
+8d247bb9bafd9c65f3679133f0577259e1ec22e7	2026-10-27T10:26:07Z	zuppasoupfifaistimewa-png	Update Step 8 field-store evidence without assigning gameplay meanings
+08ff66fee4dae91e22f61d44fbb2b262f374d7ba	2026-10-27T10:26:02Z	zuppasoupfifaistimewa-png	Correct Step 6 field-store inventory from full text artifact
+2ad2c8dcdcaeee718d656e8696d6853f48ec54a8	2026-10-27T10:25:30Z	zuppasoupfifaistimewa-png	Log detailed static Step 6 dataflow
+d1cb7d2dde42732e4bd2035357df7ee44dc3883c	2026-10-27T10:25:24Z	zuppasoupfifaistimewa-png	Record deeper Step 6 dataflow and remaining fields
+2e3d8052778c371720ff13571cd87a8e0b0b1f1e	2026-10-27T10:25:19Z	zuppasoupfifaistimewa-png	Index detailed static Chakra record trace
+1d55bdef34bc36f3dcfde036c88ecdd7f9adafc6	2026-10-27T10:25:12Z	zuppasoupfifaistimewa-png	Handoff detailed Step 6 candidate dataflow
+ac40a7f7a8f4a052968451e56280370ecbd007ec	2026-10-27T10:25:00Z	zuppasoupfifaistimewa-png	Add record update dataflow to official Step 6/8 audit
+61ebdce92fcbe0b4eb6c32117d26b1b173959dc5	2026-10-27T10:24:57Z	zuppasoupfifaistimewa-png	Add detailed static dataflow limits to closure report
+baf7eca2d1d88bf32609eed754f4d44d1c6b7364	2026-10-27T10:24:53Z	zuppasoupfifaistimewa-png	Clarify Step 8 limits for Chakra record update path
+5994fe15358f9ab983193c2affa7652fc47d92a1	2026-10-27T10:24:50Z	zuppasoupfifaistimewa-png	Trace Chakra record update path in Step 6
+5ed643bc02c683a45a767c92dfee199aa22e349e	2026-10-27T10:23:18Z	zuppasoupfifaistimewa-png	Checkpoint active Ghidra helper-return analysis in handoff
+ed730fb5db4f293833dd1a86f9c774a57d6ec2cc	2026-10-27T10:22:19Z	zuppasoupfifaistimewa-png	Record MIPS delay-slot correction and active static helper trace in official audit
+9fb0826100b4605687827ad0c936b3efcde26ae5	2026-10-27T10:22:16Z	zuppasoupfifaistimewa-png	Clarify that Step 4 static inventory completion is not overall closure
+3f5b920df7885c187530cd669a26c8de5910fdd5	2026-10-27T10:22:12Z	zuppasoupfifaistimewa-png	Clarify Step 4 partial status and static executable sub-scope
+d75946dc2ea6483b1693a3abc8feecbfb34ad3da	2026-10-27T10:21:25Z	zuppasoupfifaistimewa-png	Clarify static report scope and active helper-return audit
+538de08dbe5c2fe97f57755a5e429893a365a44e	2026-10-27T10:21:18Z	zuppasoupfifaistimewa-png	Add delay-slot correction to Steps 4–10 closure
+01793c9c0361aabc53bc3648b6b3ee73b55e4028	2026-10-27T10:20:49Z	zuppasoupfifaistimewa-png	Append raw MIPS semantic trace results and Step 4 correction
+30efc188a468b50667fa62d9898f9c3c19417da8	2026-10-27T10:20:44Z	zuppasoupfifaistimewa-png	Append verified raw MIPS Step 6/8 checkpoint to STATUS
+9c19f2ad2bdfbfe58d722b4552bb3a6c27a40da2	2026-10-27T10:20:39Z	zuppasoupfifaistimewa-png	Index raw MIPS Step 6/8 trace and corrected Step 4 seed caller
+e86c94f1718417a669bcd21813c20c1c485df916	2026-10-27T10:20:35Z	zuppasoupfifaistimewa-png	Refresh reverse engineering handoff with current static findings
+52f077114c01de00cac52527af92e38a1d4a1e3e	2026-10-27T10:20:27Z	zuppasoupfifaistimewa-png	Add correction checkpoint for Step 4 delay-slot interpretation
+e72b16ec95fe3ecc8a8ff437573d16bdbd4d0a3c	2026-10-27T10:20:23Z	zuppasoupfifaistimewa-png	Record MIPS delay-slot correction and active static helper trace
+e9ccf20d3aef2e9f0189e8c486fe5c75f97f92c9	2026-10-27T10:20:19Z	zuppasoupfifaistimewa-png	Record active Ghidra helper-return trace and delay-slot correction
+ffeb8907950441ff5ac4a0f585abebc7e69ae2b3	2026-10-27T10:20:16Z	zuppasoupfifaistimewa-png	Update official audit matrix and raw MIPS addendum
+f73066a79ba74a8357bef3f719dced4c64f9650c	2026-10-27T10:20:13Z	zuppasoupfifaistimewa-png	Update closure report with raw MIPS Step 6/8 evidence
+858552e572d68f02143436bafcdcf99b526b7457	2026-10-27T10:20:09Z	zuppasoupfifaistimewa-png	Clarify Step 8 status from raw MIPS evidence
+64e37b41f2a8cd011643b1d54370fa987e3efae9	2026-10-27T10:20:06Z	zuppasoupfifaistimewa-png	Document raw MIPS evidence for Step 6
+6d4f2b06a586528cb6c43494359e9e172a6ff080	2026-10-27T10:19:49Z	zuppasoupfifaistimewa-png	Update remaining Step 4 xref action after delay-slot review
+b92aa084aba62182ed4edc436cf20d68581be984	2026-10-27T10:18:11Z	zuppasoupfifaistimewa-png	Trace helper return feeding candidate RNG seed setter
+863172943affda707c6b1a6d2314c31531934299	2026-10-27T10:17:32Z	zuppasoupfifaistimewa-png	Correct RNG candidate report for MIPS JAL delay slot
+d8f9cd270ebfd11442b4ddd64754fa0a67c62d2d	2026-10-27T10:16:48Z	zuppasoupfifaistimewa-png	Correct seed-setter argumet conclusion in Step 4 addendum
+b05a1ccd669cf5ff11f06ff608ae5a0a5357bddc	2026-10-27T10:16:44Z	zuppasoupfifaistimewa-png	Correct logic index MIPS delay-slot interpretation
+cd5758e3d3798e37e008ceb89c86aeffd384a526	2026-10-27T10:16:39Z	zuppasoupfifaistimewa-png	Correct Step 4 closure interpretation of setter input

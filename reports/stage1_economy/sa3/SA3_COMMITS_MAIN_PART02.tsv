@@ -1,0 +1,501 @@
+commit_sha	committer_date	author	message
+533d18dbda2e31442163fa82f689b9b92aadb478	2026-11-03T02:07:55Z	github-actions[bot]	Publish BB3 run 41527786379: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+985e5c6461ec3e684b4b51d34197390d15e068f0	2026-11-03T02:07:54Z	github-actions[bot]	Publish BB3 run 41527786379: BB3_SCRIPT_EXIT_CODE.txt
+7f6d40c78699bfeb68695efd5a784a490e730084	2026-11-03T02:07:53Z	github-actions[bot]	Publish BB3 run 41527786379: BB3_PATCHED_BUILD_MANIFEST.txt
+1e2650c98af8b6820350580000b8166cceee6cd4	2026-11-03T02:07:52Z	github-actions[bot]	Publish BB3 run 41527786379: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+46428878cd83ccc60b1ef7e3c28d1b3b9e133509	2026-11-03T02:07:51Z	github-actions[bot]	Publish BB3 run 41527786379: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+7e8468ccb1411f148109b80c87e4bb65e32e0ffc	2026-11-03T02:07:50Z	github-actions[bot]	Publish BB3 run 41527786379: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+4694d2d4f70a98024c0a17d735bb017f3173db58	2026-11-03T02:07:48Z	github-actions[bot]	Publish BB3 run 41527786379: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+5e0566a928d1327b2208dc08416db5bb1b189fb2	2026-11-03T02:07:47Z	github-actions[bot]	Publish BB3 run 41527786379: BB3_ACTION_CALL_SUMMARY.txt
+66b271d0fd68683d8e938a89f5ff04191797d346	2026-11-03T02:07:46Z	github-actions[bot]	Publish BB3 run 41527786379: BB3_ACTION_CALL_RESULTS.tsv
+37c5d11ffd2d6cdaa82459dbbff6bad1ce8d4c2d	2026-11-03T02:07:45Z	github-actions[bot]	Publish BB3 run 41527786379: ACTIONS_RUN_SUMMARY.txt
+751df03627831043c424c00809fd9fac95835040	2026-11-03T02:07:18Z	github-actions[bot]	Publish AQ1 static economy census run 41563802704
+c7464e88b7d6e8d764aa7369aa272044aaa3e19a	2026-11-03T02:04:52Z	github-actions[bot]	Publish BB3 run 41557380908: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+8d9041ddda88ab9179d95a5443c738a7240a1117	2026-11-03T02:04:51Z	github-actions[bot]	Publish BB3 run 41557380908: BB3_SCRIPT_EXIT_CODE.txt
+32b92e1dfa940a19af5fc99a3b305c67d562aac2	2026-11-03T02:04:49Z	github-actions[bot]	Publish BB3 run 41557380908: BB3_PCSX_RELEASE_MANIFEST.txt
+c8432a095cfa89c7a96101720ebbc2fb2e234feb	2026-11-03T02:04:48Z	github-actions[bot]	Publish BB3 run 41557380908: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+3ed5308f320612f4334bad626deb0207f667aeb5	2026-11-03T02:04:47Z	github-actions[bot]	Publish BB3 run 41557380908: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+804f81e460967d0cc7a1a5efd22d9fe59ef45b89	2026-11-03T02:04:45Z	github-actions[bot]	Publish BB3 run 41557380908: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+42fa565ce7c6e61836495f9fe53f5ec7bc5d9e11	2026-11-03T02:04:44Z	github-actions[bot]	Publish BB3 run 41557380908: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+014ef4311fdf38fe210c08ae0a7b7ae58259f87b	2026-11-03T02:04:42Z	github-actions[bot]	Publish BB3 run 41557380908: BB3_ACTION_CALL_SUMMARY.txt
+5ce8476fa840041d083ccd6b7195682f94bff5d8	2026-11-03T02:04:41Z	github-actions[bot]	Publish BB3 run 41557380908: BB3_ACTION_CALL_RESULTS.tsv
+2dc7cbf90ddc47deec8380eb4263f2998b69bfbd	2026-11-03T02:04:39Z	github-actions[bot]	Publish BB3 run 41557380908: ACTIONS_RUN_SUMMARY.txt
+5c50ea0e5f4f361ba548b28322f49ca87a0632b5	2026-11-03T02:04:21Z	zuppasoupfifaistimewa-png	Trace caller of BB2 immediate action-8 writer function
+fed843db8831dba0779a9dacf7a16ae162939297	2026-11-03T01:54:59Z	github-actions[bot]	Publish AQ1 static economy census run 41562521224
+3c6a28d86f73399ed99092129228765396b14712	2026-11-03T01:52:48Z	github-actions[bot]	Publish AQ1 static economy census run 41562193241
+6812dbfb34a5d8cdda00623a5f13c6d9e273f870	2026-11-03T01:52:15Z	zuppasoupfifaistimewa-png	Trace BB2 message object construction and readers
+ceccf517d847909bc931588c7a58ed8c50269190	2026-11-03T01:50:52Z	zuppasoupfifaistimewa-png	Trace BB2 message token through text-window renderers
+24bea9a6878fa4b637dae8eebe80d2bee3d69d44	2026-11-03T01:50:13Z	zuppasoupfifaistimewa-png	Reconcile BB state ledger with final adjacency and Chakra proofs
+ed812253389025f3cf3bb02ef524ebda6c2b6125	2026-11-03T01:49:53Z	github-actions[bot]	Publish AQ1 static economy census run 41561885050
+67d17ca8e5163fed74973a14d13162bff39680e9	2026-11-03T01:46:51Z	github-actions[bot]	Publish AQ1 static economy census run 41561643792
+1e8c7991fae66ce83abfc73a83a7622700700663	2026-11-03T01:46:13Z	zuppasoupfifaistimewa-png	Map BB2 message object data references for token 0xBE
+84fe608682384189f2a95892d66615747e1a904e	2026-11-03T01:45:09Z	zuppasoupfifaistimewa-png	Update BB2 Chakra proof and BB3 completion in state ledger
+c1fbd1dee2125e88e4bc58678933a2198f714172	2026-11-03T01:44:55Z	zuppasoupfifaistimewa-png	Prove positive pending-credit route updates canonical Chakra field
+0dbc053798ae58006a62e9465f991e259038f1b1	2026-11-03T01:43:59Z	zuppasoupfifaistimewa-png	Trace message-window caller for BB2 token 0xBE
+f4441de7805e24b7f13b91add6e90d81dcf25a1b	2026-11-03T01:39:50Z	zuppasoupfifaistimewa-png	Record BB2 message-helper follow-up and BB3 scoped completion
+5c92f44fba20baa0ccd161a838cb8cc9f62b33fe	2026-11-03T01:38:25Z	zuppasoupfifaistimewa-png	Trace message-window helper chain for BB2 token text identification
+d1a1e6d92d614601e85253d1826aa938913c3a72	2026-11-03T01:38:13Z	zuppasoupfifaistimewa-png	Mark BB3 40-launch runtime matrix complete with K5 scoped evidence
+dd44eb3d98da4d645d703cbf488c4068be02adfc	2026-11-03T01:37:48Z	zuppasoupfifaistimewa-png	Extend BB3 report with validated 40-launch matrix result
+61a23faa60670fe299cfecea836a8ced71ea46d8	2026-11-03T01:36:59Z	zuppasoupfifaistimewa-png	Record validated BB3 run 41556732137 status and exit
+412a3d2272cf3524732b55b015de777ed0497140	2026-11-03T01:36:03Z	zuppasoupfifaistimewa-png	Update BB2 queued producer sources and retain BB3 pending matrix status
+a7628434364edda0fa2728579a9e5b675e6e715d	2026-11-03T01:35:45Z	zuppasoupfifaistimewa-png	Trace additional queued-state producers for BB2 action and credit routes
+be88ce642ddeff0f4aed0df06d65a9b1ad882365	2026-11-03T01:35:32Z	github-actions[bot]	Publish BB3 run 41556732137: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+1ee72042f4ca94c947db65214da41bce4922fc98	2026-11-03T01:35:31Z	github-actions[bot]	Publish BB3 run 41556732137: BB3_SCRIPT_EXIT_CODE.txt
+e2ac90f21ad616d4a053dadb7282f6418a41094f	2026-11-03T01:35:30Z	github-actions[bot]	Publish BB3 run 41556732137: BB3_PCSX_RELEASE_MANIFEST.txt
+c708eab39dc1cec84e2ceb5844b310399882f76f	2026-11-03T01:35:28Z	github-actions[bot]	Publish BB3 run 41556732137: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+9b2598fdbf95fa88dffeaf829d2c952ef5526c5d	2026-11-03T01:35:27Z	github-actions[bot]	Publish BB3 run 41556732137: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+a7ef107ce44c70c0197f6a9ae79c7b6b2f4a474f	2026-11-03T01:35:26Z	github-actions[bot]	Publish BB3 run 41556732137: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+d4faad69471f23c0b29c89b18cd180252a86d9f8	2026-11-03T01:35:24Z	github-actions[bot]	Publish BB3 run 41556732137: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+b6fa09684d712a4a0677b70999a142b18ac85953	2026-11-03T01:35:23Z	github-actions[bot]	Publish BB3 run 41556732137: BB3_ACTION_CALL_SUMMARY.txt
+d55c35db2f58a5f91a60953a670aeceba4b39962	2026-11-03T01:35:22Z	github-actions[bot]	Publish BB3 run 41556732137: BB3_ACTION_CALL_RESULTS.tsv
+dfc761732c4c4e7055e46f7a4bc612bb2049d31c	2026-11-03T01:35:20Z	github-actions[bot]	Publish BB3 run 41556732137: ACTIONS_RUN_SUMMARY.txt
+0d01accefb007dcfd9ac5e1f4fdaeeb8c80531b1	2026-11-03T01:29:37Z	zuppasoupfifaistimewa-png	Correct BB2 dynamic action8 details and record Step7 run75 completion
+c1434d2f5732b2bb4def8419c06fd7287f3ac8c3	2026-11-03T01:29:20Z	zuppasoupfifaistimewa-png	Correct delay-slot interpretation and document Step7 helper results
+ee76305f0945915127c111690f9b00eb4a1854b5	2026-11-03T01:27:35Z	zuppasoupfifaistimewa-png	Refresh BB2 producer and BB3/Step7 in-progress workflow ledger
+6005c5ed8c6579daf2b563dac5d674950a1e80f6	2026-11-03T01:27:24Z	github-actions[bot]	Publish AQ1 static economy census run 41559535429
+b057aa5fed021775f88a5bbdc19b5a0e5dd2c293	2026-11-03T01:25:33Z	zuppasoupfifaistimewa-png	Update BB2 dynamic producer and BB3 active run state
+c965445eff5c3dfc97bc8901478e9e73a48f4f64	2026-11-03T01:25:12Z	zuppasoupfifaistimewa-png	Trace indirect action-8 producer through tile selection state
+424743337e525da13d8a376aaede756c0b7f1400	2026-11-03T01:24:24Z	zuppasoupfifaistimewa-png	Trace dynamic action-8 selection and message rendering helpers
+4a14436c992769b3ca160940a96530b826c5ab73	2026-11-03T01:14:34Z	github-actions[bot]	Publish AQ1 static economy census run 41558104325
+a15a0fda198625a3dbdfb04052c1929db90da7bf	2026-11-03T01:11:41Z	zuppasoupfifaistimewa-png	Trace positive-credit tile transition and action prompt helpers
+b94436f2505ba413a7482c195be0ee3695d4f514	2026-11-03T01:10:20Z	zuppasoupfifaistimewa-png	Update BB2 static formula and BB3 active 40-launch run state
+a87d24ac83379317d559dfb3743ea79ff25f8566	2026-11-03T01:08:36Z	zuppasoupfifaistimewa-png	Document BB2 positive-credit formula and separate 3/8 debit flow
+87a0e111c8928a75848dad41d830df594bc011c3	2026-11-03T01:05:18Z	zuppasoupfifaistimewa-png	Prevent BB3 probe runs from cancelling each other
+0ca59bfd2ba99ce21bbfcfdeb50696f8a4fa7592	2026-11-03T01:05:13Z	github-actions[bot]	Publish AQ1 static economy census run 41557054116
+28b3c7380f483e0e158e6089851d7d4a4e72e3e8	2026-11-03T01:02:25Z	zuppasoupfifaistimewa-png	Trace credit helpers and text-ID dispatcher for BB2
+862446fba59d5081938affdc01927e6fee223f42	2026-11-03T01:01:37Z	github-actions[bot]	Publish AQ1 static economy census run 41556598876
+71944a14158e96fc15dbaada294627388ae63ded	2026-11-03T01:01:13Z	github-actions[bot]	Publish BB3 run 41553653484: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+0976de4dac735ced43ecedae50bfb84340d1fdf0	2026-11-03T01:01:12Z	github-actions[bot]	Publish BB3 run 41553653484: BB3_SCRIPT_EXIT_CODE.txt
+447dd84a5994da5ac307fb853b5e3eaf5be8ea8d	2026-11-03T01:01:10Z	github-actions[bot]	Publish BB3 run 41553653484: BB3_PCSX_RELEASE_MANIFEST.txt
+189bd0ca303ffada38b88f72b4f82fa3a46d9e40	2026-11-03T01:01:09Z	github-actions[bot]	Publish BB3 run 41553653484: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+7ded900e59d31289ee551e0a0e6ff8d82ca1020b	2026-11-03T01:01:08Z	github-actions[bot]	Publish BB3 run 41553653484: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+5b53b15621ab33050f65a1c91b0943d179b7959f	2026-11-03T01:01:07Z	github-actions[bot]	Publish BB3 run 41553653484: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+db539a3e132f5ca360648055aeb2b2e5556c1207	2026-11-03T01:01:05Z	github-actions[bot]	Publish BB3 run 41553653484: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+14903f2c90ba69f7750df387e661bab9de696952	2026-11-03T01:01:04Z	github-actions[bot]	Publish BB3 run 41553653484: BB3_ACTION_CALL_SUMMARY.txt
+a24b56b1bd4de4d47ce9e2deef92c6163ae9377a	2026-11-03T01:01:03Z	github-actions[bot]	Publish BB3 run 41553653484: BB3_ACTION_CALL_RESULTS.tsv
+d7b1030b41f94bf4527a84af0f089ca263f2a947	2026-11-03T01:01:02Z	github-actions[bot]	Publish BB3 run 41553653484: ACTIONS_RUN_SUMMARY.txt
+da02cdffeddd63ebd2c012b60bee97277c7246f0	2026-11-03T01:00:05Z	zuppasoupfifaistimewa-png	Update BB2 fee-by-level conclusions and AQ1 census status
+296785adc21e399d8b4882cc75a9fda6c8539045	2026-11-03T00:59:45Z	zuppasoupfifaistimewa-png	Replace stalled BB3 matrix run and cancel superseded run
+216c9782cf75a0f94594c5e831ff19a36bb5f98a	2026-11-03T00:59:42Z	zuppasoupfifaistimewa-png	Add progress markers around BB3 launches
+da1a20d26aeb8b50c6ea893c9d2c4aca58aaff16	2026-11-03T00:58:29Z	zuppasoupfifaistimewa-png	Trace main-EXE helper called by FUN_8010BDFC
+3f912a472d86091d43a0deddd53b673cacbbc22c	2026-11-03T00:57:21Z	github-actions[bot]	Publish AQ1 static economy census run 41556229574
+06fcbfa113ca745e66f200ff7981ed6e419e491e	2026-11-03T00:56:55Z	zuppasoupfifaistimewa-png	Document per-level fee behavior and Entry 630 tile costs
+c2460cb9bcc507786e08e82823fc83bb186de079	2026-11-03T00:55:26Z	zuppasoupfifaistimewa-png	Mark BB1 statically complete with multiplier boundary proof
+d51fcf3d3db08d18be96fd59620344a8868e69dc	2026-11-03T00:55:19Z	zuppasoupfifaistimewa-png	Close BB1 selector multiplier and five-tile cap
+dc0046b205d4490e5a91f1075fe6eab0a082aa50	2026-11-03T00:55:07Z	zuppasoupfifaistimewa-png	Trace FUN_8010BDFC used after action-byte 0x0E
+1346ca796bf3b2542d10c221b77ffaf29082d052	2026-11-03T00:54:24Z	zuppasoupfifaistimewa-png	Update BB state with AQ1 415555 and credit state transition
+d0f950beac863f18ee1c948385e3d8822b65dea7	2026-11-03T00:54:15Z	zuppasoupfifaistimewa-png	Trace BB2 preview to positive pending-credit completion
+d591fb3fe0383f5c13f3306e5f264098a9896d53	2026-11-03T00:51:14Z	github-actions[bot]	Publish AQ1 static economy census run 41555549917
+0f9e4e767254a2f0da2dbe25c9535560d13e3d6b	2026-11-03T00:49:34Z	zuppasoupfifaistimewa-png	Update BB2 ledger with third action-8 writer
+146e8aa6fb2664599a3a7ad3a03501b91a4c5d4e	2026-11-03T00:49:26Z	zuppasoupfifaistimewa-png	Record third immediate action-8 writer in BB2 census
+37beb791fcc48c859b58c312ec1800d44ef77497	2026-11-03T00:49:13Z	zuppasoupfifaistimewa-png	Expand BB2 action-byte producer census across other action values
+c65291170aa477290bb8483c9c6c200d6bd5c999	2026-11-03T00:48:42Z	zuppasoupfifaistimewa-png	Record BB1 successor-limit discrepancy in state ledger
+55d440a7889e459892cd5f7e4802ede5742967e0	2026-11-03T00:48:35Z	zuppasoupfifaistimewa-png	Correct BB1 group counter limit: five successors, up to six total
+99082891b8848b68668fdf4896899ebcf3eb1933	2026-11-03T00:48:26Z	zuppasoupfifaistimewa-png	Update BB state after producer Step7 completion and BB3 runtime status check
+929fd8f4b5c0d65f07d23764678a6439dc463f18	2026-11-03T00:46:26Z	zuppasoupfifaistimewa-png	Add Barrier Release state-2 hypotheses and falsifiers
+4657faba1e6c251328b6d9daba40ce1fd89d29d0	2026-11-03T00:46:12Z	zuppasoupfifaistimewa-png	Correct BB1 completion and BB2 partial scope in state ledger
+b9a4da0f1daefa1f786fdec56846745c128b1b8b	2026-11-03T00:45:59Z	github-actions[bot]	Publish AQ1 static economy census run 41554925881
+da21cb86cb6a36d0315396df8079878854b722dc	2026-11-03T00:45:47Z	zuppasoupfifaistimewa-png	Mark BB1 statically complete after 22-tile adjacency proof
+31462f2168a79de208fa03bbfdf65b5cfad836e7	2026-11-03T00:45:35Z	zuppasoupfifaistimewa-png	Close BB1 adjacency link geometry using existing 22-tile resource table
+dfc4d5576685ee99414bee8c75d07436f4d80058	2026-11-03T00:45:00Z	zuppasoupfifaistimewa-png	Update BB state: BB1 closed, BB2 producer partial, BB3 frame-aligned matrix running
+79c3e5b67fc0067803e5849d1001b0d880236799	2026-11-03T00:44:35Z	zuppasoupfifaistimewa-png	Correct BB1-BB2 report scope and link producer/cluster addendum
+41ba99314f5b6f002ad51f49e36b74afda37d70c	2026-11-03T00:44:32Z	zuppasoupfifaistimewa-png	Record direct positive-credit action-byte producers
+61f38a400ac6982be7702160f3ece49eebe4e1be	2026-11-03T00:44:24Z	zuppasoupfifaistimewa-png	Identify immediate positive-credit action-byte producers
+b68ba43a183519b1a5b3ef499f92c660432ebe8a	2026-11-03T00:43:55Z	zuppasoupfifaistimewa-png	Expand BB2 producer caller and unknown action-8 store census
+2b70eaca5ff85d9d4d2bc9d0c7db5e45244c4e07	2026-11-03T00:43:31Z	zuppasoupfifaistimewa-png	Update BB state with positive-credit trigger trace
+33e62742618aeb67c3cb3dda9fe542ae79b61765	2026-11-03T00:43:23Z	zuppasoupfifaistimewa-png	Trace positive-credit dispatcher trigger states
+9bae79a0f385e262fed741fdda7d647e9b7d8bf5	2026-11-03T00:42:56Z	zuppasoupfifaistimewa-png	Add BB1 linked-chain semantics and BB2 action producers/credit trigger audit
+b07a1fed9cb3e6108b169cbce0c5350ea873961b	2026-11-03T00:41:23Z	zuppasoupfifaistimewa-png	Update BB state after action producer and reward trace
+b1f81338d6dd944c889affffb14ad45a9b5428fa	2026-11-03T00:41:14Z	zuppasoupfifaistimewa-png	Complete BB2 action producers and reward branch audit
+1e60f293405bd96fb1ba37b9157abd3bb4d49387	2026-11-03T00:40:10Z	zuppasoupfifaistimewa-png	Update BB state after linked-chain audit
+e33537adbbf9e79739ca1c7e559ae19f1ea0cd3d	2026-11-03T00:40:01Z	zuppasoupfifaistimewa-png	Complete BB1 linked-chain evidence and falsifiers
+05f714017a86b7b26e1013a48bdd85e209b173eb	2026-11-03T00:38:16Z	zuppasoupfifaistimewa-png	Guard BB3 required 40-case runtime matrix
+52ceed21755588898330fce0762874ef9b692c1b	2026-11-03T00:35:44Z	zuppasoupfifaistimewa-png	Refresh BB state: BB3 extended frame-aligned matrix is running
+dfecb8ceefb07e727f1a8f70d344a53302c31575	2026-11-03T00:33:48Z	github-actions[bot]	Publish BB3 run 41553596296: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+9514edcc6d6da84b3c9c057ae1e619484607d13b	2026-11-03T00:33:46Z	github-actions[bot]	Publish BB3 run 41553596296: BB3_SCRIPT_EXIT_CODE.txt
+b8648f4446ce7e512f505b623292f301c836bc56	2026-11-03T00:33:44Z	github-actions[bot]	Publish BB3 run 41553596296: BB3_PCSX_RELEASE_MANIFEST.txt
+df6761bc951746a3f0e326e7d9624ee71b120a2f	2026-11-03T00:33:43Z	github-actions[bot]	Publish BB3 run 41553596296: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+2523d31a00305ec289fe6201b44389bc1cab2115	2026-11-03T00:33:42Z	github-actions[bot]	Publish BB3 run 41553596296: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+d959f61c3d2925a669238d1661c47e2af22347b1	2026-11-03T00:33:40Z	github-actions[bot]	Publish BB3 run 41553596296: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+f0f993879844afb4dcf1b0f283e80b211852505f	2026-11-03T00:33:39Z	github-actions[bot]	Publish BB3 run 41553596296: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+ea9e5fb6a3dc322dd6c84255c5d5dc4878ace044	2026-11-03T00:33:38Z	github-actions[bot]	Publish BB3 run 41553596296: BB3_ACTION_CALL_SUMMARY.txt
+c2ba3b15e9cf019d6cc1373b25785b4d31eb22be	2026-11-03T00:33:36Z	github-actions[bot]	Publish BB3 run 41553596296: BB3_ACTION_CALL_RESULTS.tsv
+164ce798989155fc656f52bf5ec023d1970df920	2026-11-03T00:33:35Z	github-actions[bot]	Publish BB3 run 41553596296: ACTIONS_RUN_SUMMARY.txt
+889838f3b52a2211881ff64228dceaf22db11ba7	2026-11-03T00:32:58Z	zuppasoupfifaistimewa-png	Fix BB3 multi-tile matrix loop indentation
+c1a81420980eaca43a5369f3ecf7f9af4b534c57	2026-11-03T00:32:28Z	zuppasoupfifaistimewa-png	Align BB3 pre-poke RAM to frame 180 and test two tiles
+4f131429e274c97ef49cf4c440e48968b07c9b30	2026-11-03T00:26:20Z	github-actions[bot]	Publish BB3 run 41552617808: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+ae0c1b233af0ff3d211002c09d7933a3c54acd23	2026-11-03T00:26:19Z	github-actions[bot]	Publish BB3 run 41552617808: BB3_SCRIPT_EXIT_CODE.txt
+da4f8ca077436f4e6bf17e55320e84d5abff8edc	2026-11-03T00:26:18Z	github-actions[bot]	Publish BB3 run 41552617808: BB3_PCSX_RELEASE_MANIFEST.txt
+74ba3d5bc38e52624b3c3dd17d1b2584ed9e80bc	2026-11-03T00:26:16Z	github-actions[bot]	Publish BB3 run 41552617808: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+94bb898a0a97c0df612693c25dd080bb09c44f3a	2026-11-03T00:26:15Z	github-actions[bot]	Publish BB3 run 41552617808: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+f35d564a6302abd3154f6aa243049a2e970200b0	2026-11-03T00:26:14Z	github-actions[bot]	Publish BB3 run 41552617808: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+4be1b478a5f389b9a63c92439de5709ddd96834f	2026-11-03T00:26:13Z	github-actions[bot]	Publish BB3 run 41552617808: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+ee53f2d800e6095c276a085757a3ecf7b1ee4fe1	2026-11-03T00:26:11Z	github-actions[bot]	Publish BB3 run 41552617808: BB3_ACTION_CALL_SUMMARY.txt
+6396a104d162558c356f89f2559b548ac2cd392a	2026-11-03T00:26:10Z	github-actions[bot]	Publish BB3 run 41552617808: BB3_ACTION_CALL_RESULTS.tsv
+ea95e2c12964918f60393a48b70148f8a51de8a0	2026-11-03T00:26:09Z	github-actions[bot]	Publish BB3 run 41552617808: ACTIONS_RUN_SUMMARY.txt
+109742216f46251dfd16648b9ec6795dcdfcccbf	2026-11-03T00:24:23Z	zuppasoupfifaistimewa-png	Capture 2 MiB RAM at H6 load and pre-poke for reference comparison
+fa538bf1a4f5ec365d4f23dba3293236ad89d926	2026-11-03T00:23:27Z	github-actions[bot]	Publish BB3 run 41552359932: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+d14f6203b7dc80e9cce718ffc31f7ee894e238b4	2026-11-03T00:23:26Z	github-actions[bot]	Publish BB3 run 41552359932: BB3_SCRIPT_EXIT_CODE.txt
+064769ea4c1643a2379591873ef290989a00f4e6	2026-11-03T00:23:25Z	github-actions[bot]	Publish BB3 run 41552359932: BB3_PCSX_RELEASE_MANIFEST.txt
+01143c68a9a3df11e2e83ec944dc1c4bb22976e6	2026-11-03T00:23:24Z	github-actions[bot]	Publish BB3 run 41552359932: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+14416779e3a8e624201683db92eb7631f5c9e0fc	2026-11-03T00:23:22Z	github-actions[bot]	Publish BB3 run 41552359932: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+45b8efada7ff04c1d85eef6ea5886bb88c029a01	2026-11-03T00:23:21Z	github-actions[bot]	Publish BB3 run 41552359932: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+4d16b65e4f29a975327c94404d8fafd13cc4a365	2026-11-03T00:23:20Z	github-actions[bot]	Publish BB3 run 41552359932: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+0eb94192ea31a6973c84bf308b26c9bb63114f75	2026-11-03T00:23:19Z	github-actions[bot]	Publish BB3 run 41552359932: BB3_FIRST_NONPASS_A3_L0_ATTEMPT1.txt
+c5212acbe4dad6914313eca17e961929be43af6a	2026-11-03T00:23:17Z	github-actions[bot]	Publish BB3 run 41552359932: BB3_ACTION_CALL_SUMMARY.txt
+ea62b69a6bd711f10fc0d8a45512f3f083f81a4b	2026-11-03T00:23:16Z	github-actions[bot]	Publish BB3 run 41552359932: BB3_ACTION_CALL_RESULTS.tsv
+c9aa7a24f136f003df6154ab663b5e0aef16bbf5	2026-11-03T00:23:15Z	github-actions[bot]	Publish BB3 run 41552359932: ACTIONS_RUN_SUMMARY.txt
+0fb861c38075f4584c111060e7314fdf5b49c711	2026-11-03T00:22:12Z	zuppasoupfifaistimewa-png	Hash live 2 MiB RAM before BB3 pokes against supplied references
+252dafea4e0c340d9d73d3b1622c88a6ac9a267d	2026-11-03T00:20:46Z	github-actions[bot]	Publish BB3 run 41552041884: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+217ccbd22b4f3342fa93addcb5612726370003a3	2026-11-03T00:20:45Z	github-actions[bot]	Publish BB3 run 41552041884: BB3_SCRIPT_EXIT_CODE.txt
+10866752af8c0159df46cfa41848d69d69e2bc64	2026-11-03T00:20:44Z	github-actions[bot]	Publish BB3 run 41552041884: BB3_PCSX_RELEASE_MANIFEST.txt
+ffb5a8739560cf340d2673592f4a94912e91b0d0	2026-11-03T00:20:43Z	github-actions[bot]	Publish BB3 run 41552041884: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+4464c4e68cdb8b07a897603e2f2b278d3d952fa1	2026-11-03T00:20:42Z	github-actions[bot]	Publish BB3 run 41552041884: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+1379448ebee745d11139609168b22e2fcfdab9f6	2026-11-03T00:20:40Z	github-actions[bot]	Publish BB3 run 41552041884: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+1926f5fabc5a1730414fe7ea6efa8a5dec2077c5	2026-11-03T00:20:39Z	github-actions[bot]	Publish BB3 run 41552041884: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+3631fd83ac38ce0a9abd3b134bc81c44bdc1b2ac	2026-11-03T00:20:38Z	github-actions[bot]	Publish BB3 run 41552041884: BB3_FIRST_NONPASS_A3_L0_ATTEMPT1.txt
+0cd24758063670f89512b80d846d56b9b2e7e906	2026-11-03T00:20:36Z	github-actions[bot]	Publish BB3 run 41552041884: BB3_ACTION_CALL_SUMMARY.txt
+a0f6414b7186acc10224fe3ddfddcd88684b89ac	2026-11-03T00:20:35Z	github-actions[bot]	Publish BB3 run 41552041884: BB3_ACTION_CALL_RESULTS.tsv
+abfe63ff5fb88ffea42d1cc004b1d1beae3e5bda	2026-11-03T00:20:34Z	github-actions[bot]	Publish BB3 run 41552041884: ACTIONS_RUN_SUMMARY.txt
+82b647e30496c0234c1f56e09b9c44a892176ba8	2026-11-03T00:19:32Z	zuppasoupfifaistimewa-png	Extend BB3 to level 4 and capture pre-poke 2 MiB RAM hash
+0b6e08d10a5d73f18fddae9c7ab42d57a66b2c06	2026-11-03T00:16:06Z	github-actions[bot]	Publish BB3 run 41529267551: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+84a663a6bdae9be94a86464a3305433b84624949	2026-11-03T00:16:05Z	github-actions[bot]	Publish BB3 run 41529267551: BB3_SCRIPT_EXIT_CODE.txt
+8a342dd917a6794b26bdb5f01f0fe6fbf6ace941	2026-11-03T00:16:03Z	github-actions[bot]	Publish BB3 run 41529267551: BB3_PCSX_RELEASE_MANIFEST.txt
+d4a2ab8ba461b7d709eb0b9c9a67a428121cce51	2026-11-03T00:16:02Z	github-actions[bot]	Publish BB3 run 41529267551: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+3e98cb30697f9f7174c73cfb255296311f7aef33	2026-11-03T00:16:01Z	github-actions[bot]	Publish BB3 run 41529267551: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+c8a536647d460b225fd5a5c76a6f598d6e41af05	2026-11-03T00:16:00Z	github-actions[bot]	Publish BB3 run 41529267551: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+fe70e67245625fcff45100de9ecfb86d59e66099	2026-11-03T00:15:58Z	github-actions[bot]	Publish BB3 run 41529267551: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+b706dde7efa9a31599f58955a27c675806073224	2026-11-03T00:15:57Z	github-actions[bot]	Publish BB3 run 41529267551: BB3_ACTION_CALL_SUMMARY.txt
+11bfd70898c43b748c298f423eb1d6e2db797456	2026-11-03T00:15:56Z	github-actions[bot]	Publish BB3 run 41529267551: BB3_ACTION_CALL_RESULTS.tsv
+7720a5dda547f6795bd573640b225d9039aa78fd	2026-11-03T00:15:55Z	github-actions[bot]	Publish BB3 run 41529267551: ACTIONS_RUN_SUMMARY.txt
+e63da80da31f6e4a99028c8d840c9d5a1f298963	2026-11-03T00:10:17Z	zuppasoupfifaistimewa-png	Close BB3 runtime dispatch probe and update BB handoff
+7c2bb32d6c2f10857d735e088bdd7a6b8b992522	2026-11-03T00:07:55Z	github-actions[bot]	Publish BB3 run 41550406414: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+c44ea6b8f89bb4e84e73a7cec026cbb742019db0	2026-11-03T00:07:54Z	github-actions[bot]	Publish BB3 run 41550406414: BB3_SCRIPT_EXIT_CODE.txt
+7eae498bd942313f938ba2c698515c7681f6d2a5	2026-11-03T00:07:53Z	github-actions[bot]	Publish BB3 run 41550406414: BB3_PCSX_RELEASE_MANIFEST.txt
+4841080942b52c4be7f090cdb488bd5a1876bf74	2026-11-03T00:07:52Z	github-actions[bot]	Publish BB3 run 41550406414: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+b3b568218158184cf98e85226dafcf49db6c4dfb	2026-11-03T00:07:51Z	github-actions[bot]	Publish BB3 run 41550406414: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+608e987c1cc73e65a2589b34df3f3048152e5b4a	2026-11-03T00:07:50Z	github-actions[bot]	Publish BB3 run 41550406414: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+c8e451b79765a67c6769fd335fba7b67508752da	2026-11-03T00:07:49Z	github-actions[bot]	Publish BB3 run 41550406414: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+311bb902dabe96f82be28678df51b89b73f24947	2026-11-03T00:07:48Z	github-actions[bot]	Publish BB3 run 41550406414: BB3_ACTION_CALL_SUMMARY.txt
+d0bcb13129098a0f18d9865a43f70a221893e631	2026-11-03T00:07:47Z	github-actions[bot]	Publish BB3 run 41550406414: BB3_ACTION_CALL_RESULTS.tsv
+b4f5fddfa402f05cb6a5a4c48e17b251817198eb	2026-11-03T00:07:46Z	github-actions[bot]	Publish BB3 run 41550406414: ACTIONS_RUN_SUMMARY.txt
+57ee8f4cba1ff2b15b1a9674d8dfbeb63fcfbf5e	2026-11-03T00:06:16Z	zuppasoupfifaistimewa-png	Fix BB3 Lua fee constant and expose validation predicates
+7f655cda51a4dfdbd9eda227c68e33f5041bc255	2026-11-03T00:04:58Z	github-actions[bot]	Publish BB3 run 41550067749: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+974d48ddc2d40b1bea76c68d785c1a741285c030	2026-11-03T00:04:57Z	github-actions[bot]	Publish BB3 run 41550067749: BB3_SCRIPT_EXIT_CODE.txt
+595c596f5d5f5a19271dbf44b5be75c844fbf169	2026-11-03T00:04:56Z	github-actions[bot]	Publish BB3 run 41550067749: BB3_PCSX_RELEASE_MANIFEST.txt
+da86a524a7ffa0d391693ee0b047621b905d5842	2026-11-03T00:04:55Z	github-actions[bot]	Publish BB3 run 41550067749: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+c3e5469565f9b7b59b8e2a346cf399857ac44874	2026-11-03T00:04:54Z	github-actions[bot]	Publish BB3 run 41550067749: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+71086e05c0c62a4a0193c3620b0a14093472a3af	2026-11-03T00:04:53Z	github-actions[bot]	Publish BB3 run 41550067749: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+8302c1d8549d1cc84ed4ebce583706f0dc6e8186	2026-11-03T00:04:52Z	github-actions[bot]	Publish BB3 run 41550067749: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+749f0c5f4631d851aa5f3211ff6950d26d0306b8	2026-11-03T00:04:50Z	github-actions[bot]	Publish BB3 run 41550067749: BB3_FIRST_NONPASS_A3_L0_ATTEMPT1.txt
+163ce171add9a5da6240ac1f1dd227fc9d747a51	2026-11-03T00:04:49Z	github-actions[bot]	Publish BB3 run 41550067749: BB3_ACTION_CALL_SUMMARY.txt
+cae901f7b1b061bf111b266cf3394d5e8b7e331e	2026-11-03T00:04:48Z	github-actions[bot]	Publish BB3 run 41550067749: BB3_ACTION_CALL_RESULTS.tsv
+b401ef270e6dca07b1489d40d3b8b30a707c9815	2026-11-03T00:04:47Z	github-actions[bot]	Publish BB3 run 41550067749: ACTIONS_RUN_SUMMARY.txt
+9c04073ce5c5a5c6768b07d9f211079c32d707ab	2026-11-03T00:03:35Z	zuppasoupfifaistimewa-png	Probe BB2 dispatch block with recreated function frame
+56d3d8d044fc715ee28c720794e72b9d4dd4779f	2026-11-03T00:02:30Z	github-actions[bot]	Publish BB3 run 41549745261: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+95401080e793573b4c19246bbbbbe9ee9a5cc5b0	2026-11-03T00:02:29Z	github-actions[bot]	Publish BB3 run 41549745261: BB3_SCRIPT_EXIT_CODE.txt
+8d8ea57c7a27018054ed82113776c8b09c205d8e	2026-11-03T00:02:27Z	github-actions[bot]	Publish BB3 run 41549745261: BB3_PCSX_RELEASE_MANIFEST.txt
+5284bccfc5c17aae4af6162bf4a616f4ea23c8bc	2026-11-03T00:02:26Z	github-actions[bot]	Publish BB3 run 41549745261: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+e33937bca417f573603b59c3ff2b992077857785	2026-11-03T00:02:25Z	github-actions[bot]	Publish BB3 run 41549745261: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+1f31b0c22408f07d765a5fc980c0f83f76ab0b94	2026-11-03T00:02:24Z	github-actions[bot]	Publish BB3 run 41549745261: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+f63646607001f862e9ee7202f96f37eb66d43279	2026-11-03T00:02:22Z	github-actions[bot]	Publish BB3 run 41549745261: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+1763dff41d64d1219f097a42fa6e86379407a13e	2026-11-03T00:02:21Z	github-actions[bot]	Publish BB3 run 41549745261: BB3_FIRST_NONPASS_A3_L0_ATTEMPT1.txt
+c42118e98aa73cbc56e4259f9ab626b3d280c92a	2026-11-03T00:02:20Z	github-actions[bot]	Publish BB3 run 41549745261: BB3_ACTION_CALL_SUMMARY.txt
+2620c6d91322789c5399dae316ad22e2c9b3ad0b	2026-11-03T00:02:18Z	github-actions[bot]	Publish BB3 run 41549745261: BB3_ACTION_CALL_RESULTS.tsv
+df694ed6076acd136594b517e9888db488c2c081	2026-11-03T00:02:17Z	github-actions[bot]	Publish BB3 run 41549745261: ACTIONS_RUN_SUMMARY.txt
+cd52c764ff01b89f0cdb147198696232aac138db	2026-11-03T00:01:02Z	zuppasoupfifaistimewa-png	Neutralize H6 state gate in disposable BB3 action probe
+d2983f60d20f7cf97a6ce15d8bd2f8b84ad9a547	2026-11-02T23:59:26Z	github-actions[bot]	Publish BB3 run 41549383103: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+5937a44546b9a6906d3451774da04087b3d1ac6d	2026-11-02T23:59:24Z	github-actions[bot]	Publish BB3 run 41549383103: BB3_SCRIPT_EXIT_CODE.txt
+a3db0375a35a21dfeb6e5ecb5f33fa38c63ae965	2026-11-02T23:59:23Z	github-actions[bot]	Publish BB3 run 41549383103: BB3_PCSX_RELEASE_MANIFEST.txt
+882f30cf12e46225f1522ed86193aa63c3ce2f10	2026-11-02T23:59:22Z	github-actions[bot]	Publish BB3 run 41549383103: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+edcc261b891d06840762ef4e773431f533758303	2026-11-02T23:59:21Z	github-actions[bot]	Publish BB3 run 41549383103: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+ee9a317b6df69f7020bfbce893922775e924b130	2026-11-02T23:59:19Z	github-actions[bot]	Publish BB3 run 41549383103: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+16f251829009c052e590e8bf18b218483f5b7584	2026-11-02T23:59:18Z	github-actions[bot]	Publish BB3 run 41549383103: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+1e7412859a7445298a53627b2cae802e81ca4c27	2026-11-02T23:59:17Z	github-actions[bot]	Publish BB3 run 41549383103: BB3_FIRST_NONPASS_A3_L0_ATTEMPT1.txt
+2e59f30b947e91813e617948535be1df8475b035	2026-11-02T23:59:16Z	github-actions[bot]	Publish BB3 run 41549383103: BB3_ACTION_CALL_SUMMARY.txt
+4ec76c7a347eea3a06dc86ec5ed4c790345de84c	2026-11-02T23:59:14Z	github-actions[bot]	Publish BB3 run 41549383103: BB3_ACTION_CALL_RESULTS.tsv
+b5688bc62687ab0b2d34b88b295a6c7ade41d9b6	2026-11-02T23:59:13Z	github-actions[bot]	Publish BB3 run 41549383103: ACTIONS_RUN_SUMMARY.txt
+6a36f6617a947a35efb992163278aed8449921b8	2026-11-02T23:58:04Z	zuppasoupfifaistimewa-png	Use structured register view for BB3 direct CPU call
+bfa1e20e33e6e8f81975ce6e490c2bd53e593b50	2026-11-02T23:51:55Z	github-actions[bot]	Publish BB3 run 41548473746: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+9ca6a042853407010d6f9e32c8247414acb4bd80	2026-11-02T23:51:53Z	github-actions[bot]	Publish BB3 run 41548473746: BB3_SCRIPT_EXIT_CODE.txt
+be1e77cd60e10bdc820e58738b74ad269e9517d7	2026-11-02T23:51:52Z	github-actions[bot]	Publish BB3 run 41548473746: BB3_PCSX_RELEASE_MANIFEST.txt
+fe04132e02ab069b82035bd8c2efe4c987564cd9	2026-11-02T23:51:51Z	github-actions[bot]	Publish BB3 run 41548473746: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+721e10b88cb03e68d31924d9c7e096c6affdc041	2026-11-02T23:51:49Z	github-actions[bot]	Publish BB3 run 41548473746: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+4d5b0ee89a200e8075c2b2ba2e005a5a177b19e9	2026-11-02T23:51:48Z	github-actions[bot]	Publish BB3 run 41548473746: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+4c81ab6207ab9836128a55e260adc230fd73737f	2026-11-02T23:51:46Z	github-actions[bot]	Publish BB3 run 41548473746: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+d619e0d71765cb816778da4a5289e1c2cad626f0	2026-11-02T23:51:45Z	github-actions[bot]	Publish BB3 run 41548473746: BB3_FIRST_NONPASS_A3_L0_ATTEMPT1.txt
+5ffc24b306148be9583a38612ce00c7f7937dfbf	2026-11-02T23:51:44Z	github-actions[bot]	Publish BB3 run 41548473746: BB3_ACTION_CALL_SUMMARY.txt
+a71c7d587b9b3f0835855339e8ae530995a2ca96	2026-11-02T23:51:43Z	github-actions[bot]	Publish BB3 run 41548473746: BB3_ACTION_CALL_RESULTS.tsv
+834f9023ad32c816a17f4efc949eec39b64f65e3	2026-11-02T23:51:41Z	github-actions[bot]	Publish BB3 run 41548473746: ACTIONS_RUN_SUMMARY.txt
+8ed5a8133b9dcc3dd24c239ffea7ae5a366a0f62	2026-11-02T23:50:30Z	zuppasoupfifaistimewa-png	Run BB3 by direct CPU PC and RA hijack on pinned PCSX
+18dc6bb33052af41e160eda02a95af1844e7eca4	2026-11-02T23:47:57Z	github-actions[bot]	Publish BB3 run 41547245720: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+717d4f3a2c663567bf15cfcf2bb883d84b5db962	2026-11-02T23:47:56Z	github-actions[bot]	Publish BB3 run 41547245720: BB3_SCRIPT_EXIT_CODE.txt
+7f999640bb6d2e8dee9233484f41822c82781a62	2026-11-02T23:47:55Z	github-actions[bot]	Publish BB3 run 41547245720: BB3_PCSX_RELEASE_MANIFEST.txt
+369789d4d215b68a251531525e303324469dcb5e	2026-11-02T23:47:53Z	github-actions[bot]	Publish BB3 run 41547245720: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+fa459219a19d54deb2f1fe0b09eda13a5388eb10	2026-11-02T23:47:52Z	github-actions[bot]	Publish BB3 run 41547245720: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+e9c44ecd87ecbe3a0aa4d491acc869584fb03551	2026-11-02T23:47:50Z	github-actions[bot]	Publish BB3 run 41547245720: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+3a906e4bfa3f134c6147b4c9620de0296522b00a	2026-11-02T23:47:49Z	github-actions[bot]	Publish BB3 run 41547245720: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+b30674eed118526d5818357619e00a69abb02e96	2026-11-02T23:47:47Z	github-actions[bot]	Publish BB3 run 41547245720: BB3_FIRST_NONPASS_A3_L0_ATTEMPT1.txt
+45891ada6cd1b37c0918b4140c4fa07d20d6b387	2026-11-02T23:47:46Z	github-actions[bot]	Publish BB3 run 41547245720: BB3_ACTION_CALL_SUMMARY.txt
+b4b3ff56f831eafe44fd08db1fdf63f7049f0570	2026-11-02T23:47:44Z	github-actions[bot]	Publish BB3 run 41547245720: BB3_ACTION_CALL_RESULTS.tsv
+ae759374a508abf3911c5ab70d1817eae5c34a4b	2026-11-02T23:47:42Z	github-actions[bot]	Publish BB3 run 41547245720: ACTIONS_RUN_SUMMARY.txt
+921754acbe65b575b188f0c4d8096ae2018c6efc	2026-11-02T23:45:27Z	github-actions[bot]	Publish BB3 run 41527251225: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+3b11ed8d3bf56de1b09d1f6a5da834906bea3605	2026-11-02T23:45:26Z	github-actions[bot]	Publish BB3 run 41527251225: BB3_SCRIPT_EXIT_CODE.txt
+730a9c01be2a1b317c84d433a6298363915328ee	2026-11-02T23:45:25Z	github-actions[bot]	Publish BB3 run 41527251225: BB3_PATCHED_BUILD_MANIFEST.txt
+c3dd231da2f880307b82e7636242697e21b65711	2026-11-02T23:45:24Z	github-actions[bot]	Publish BB3 run 41527251225: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+1e6261f30993ecf68ebed28d0b10d9befda22f41	2026-11-02T23:45:23Z	github-actions[bot]	Publish BB3 run 41527251225: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+d11b8caee69af76d46e0e0c1b1b494fa1c011837	2026-11-02T23:45:22Z	github-actions[bot]	Publish BB3 run 41527251225: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+75b51dce1d3aaa5ba26017e7cb5af681cc2c9476	2026-11-02T23:45:21Z	github-actions[bot]	Publish BB3 run 41527251225: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+c1e2316f01c56871ea9c0f1504e394489a0be432	2026-11-02T23:45:20Z	github-actions[bot]	Publish BB3 run 41527251225: BB3_ACTION_CALL_SUMMARY.txt
+803f3224847b397462a1366c1db00710b6328891	2026-11-02T23:45:19Z	github-actions[bot]	Publish BB3 run 41527251225: BB3_ACTION_CALL_RESULTS.tsv
+b6574730dadc4e5f152f3639504b469269512e31	2026-11-02T23:45:18Z	github-actions[bot]	Publish BB3 run 41527251225: ACTIONS_RUN_SUMMARY.txt
+383cccd1599878075c4f564353bd3353bf7f5b98	2026-11-02T23:40:32Z	zuppasoupfifaistimewa-png	Call BB3 guest routine from the active post-load nextTick
+eb88bdc0b4508e576a5d7217248cca46183bb2c1	2026-11-02T23:40:01Z	github-actions[bot]	Publish BB3 run 41546927609: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+958c33a480fc2ec6bc24fb1d5996c44d3d148f46	2026-11-02T23:40:00Z	github-actions[bot]	Publish BB3 run 41546927609: BB3_SCRIPT_EXIT_CODE.txt
+7ac256fbed78bbf5eb1be1fd19c44a833fb184f4	2026-11-02T23:39:59Z	github-actions[bot]	Publish BB3 run 41546927609: BB3_PCSX_RELEASE_MANIFEST.txt
+b7c5dd44bc93ed69d74b73d1cf3d50cb78ce7eb6	2026-11-02T23:39:58Z	github-actions[bot]	Publish BB3 run 41546927609: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+e44c2786c85e3fb1131d655007c7e5ebfdc1976c	2026-11-02T23:39:57Z	github-actions[bot]	Publish BB3 run 41546927609: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+c23bc729f08fc0923a1c961449e1de81dbd18141	2026-11-02T23:39:56Z	github-actions[bot]	Publish BB3 run 41546927609: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+3068e94d50dd5d594d430ef395d8b87f6c17f64e	2026-11-02T23:39:55Z	github-actions[bot]	Publish BB3 run 41546927609: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+bf70ed6087ae47abc5142cb4140f044d89daedb6	2026-11-02T23:39:54Z	github-actions[bot]	Publish BB3 run 41546927609: BB3_FIRST_NONPASS_A3_L0_ATTEMPT1.txt
+baba12b56ff38c2f5956630dabd6005937959381	2026-11-02T23:39:53Z	github-actions[bot]	Publish BB3 run 41546927609: BB3_ACTION_CALL_SUMMARY.txt
+29eaad6e0312d21948a7d68e4899b595d62829f0	2026-11-02T23:39:51Z	github-actions[bot]	Publish BB3 run 41546927609: BB3_ACTION_CALL_RESULTS.tsv
+dbf7e0203ab8589eb06f6270e824a083ab87b82c	2026-11-02T23:39:49Z	github-actions[bot]	Publish BB3 run 41546927609: ACTIONS_RUN_SUMMARY.txt
+890ab1b76e1d5a6523b1ef77f6d8f04f8e817c87	2026-11-02T23:37:57Z	zuppasoupfifaistimewa-png	Trace BB3 guest-call callback and remove intrusive dispatch breakpoints
+57a231ab825d6c4074a9497e4896f6e9df2bc9af	2026-11-02T23:37:01Z	github-actions[bot]	Publish BB3 run 41545858564: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+9326dbefea882e87593da404af9352679fc16144	2026-11-02T23:37:00Z	github-actions[bot]	Publish BB3 run 41545858564: BB3_SCRIPT_EXIT_CODE.txt
+5c6bd87b3be702e96611430a4e5a59667b607057	2026-11-02T23:36:58Z	github-actions[bot]	Publish BB3 run 41545858564: BB3_PCSX_RELEASE_MANIFEST.txt
+84d3d0cf3d4e055fee5f5274dcce77474efc278d	2026-11-02T23:36:57Z	github-actions[bot]	Publish BB3 run 41545858564: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+7e58b90320515405b7c252dc51e32d9d3664e70d	2026-11-02T23:36:56Z	github-actions[bot]	Publish BB3 run 41545858564: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+09717bade9c7b1eaa683954f794b8ee59cd5aed4	2026-11-02T23:36:55Z	github-actions[bot]	Publish BB3 run 41545858564: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+da1b91e5ffe43d6996184ac379991683eeac5d65	2026-11-02T23:36:54Z	github-actions[bot]	Publish BB3 run 41545858564: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+f7ddb07f665dd254bde3b00f81e2202ad3bd4e36	2026-11-02T23:36:53Z	github-actions[bot]	Publish BB3 run 41545858564: BB3_FIRST_NONPASS_A3_L0_ATTEMPT1.txt
+0cff1bfbc98ac99bc4309c700c63c323066372a8	2026-11-02T23:36:51Z	github-actions[bot]	Publish BB3 run 41545858564: BB3_ACTION_CALL_SUMMARY.txt
+c9f959427f5ced6f4b01e898b842d8b9c1bdb1a1	2026-11-02T23:36:50Z	github-actions[bot]	Publish BB3 run 41545858564: BB3_ACTION_CALL_RESULTS.tsv
+26fe03de9a4bc41141a34bedff5fe2bf3e2d4732	2026-11-02T23:36:49Z	github-actions[bot]	Publish BB3 run 41545858564: ACTIONS_RUN_SUMMARY.txt
+fc01e8183f35173672dd1a3113d0b84606cb4e69	2026-11-02T23:29:42Z	zuppasoupfifaistimewa-png	Bound BB3 guest-call cycles and capture stop PC
+c896fa4ca8ac9978b32694a2de81b2078605b054	2026-11-02T23:28:56Z	github-actions[bot]	Publish BB3 run 41544845872: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+a49d4c885f6883b94876569a4f16c13ee8f48391	2026-11-02T23:28:55Z	github-actions[bot]	Publish BB3 run 41544845872: BB3_SCRIPT_EXIT_CODE.txt
+b3d519a82e3146ccfc5907334fd85e9e5c76fde8	2026-11-02T23:28:54Z	github-actions[bot]	Publish BB3 run 41544845872: BB3_PCSX_RELEASE_MANIFEST.txt
+d15840abb8f104d8262ca8d4b82c7f9c42678636	2026-11-02T23:28:53Z	github-actions[bot]	Publish BB3 run 41544845872: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+e8bee566be43b63634c17e8de35302a71fe07ec9	2026-11-02T23:28:52Z	github-actions[bot]	Publish BB3 run 41544845872: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+767bcd1dbba8842073dc7849eda86137acae25fb	2026-11-02T23:28:51Z	github-actions[bot]	Publish BB3 run 41544845872: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+522a8241f0e24bfa06a97b550c45a896a2eb993e	2026-11-02T23:28:50Z	github-actions[bot]	Publish BB3 run 41544845872: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+5293b3b1412fef75f354bccd2e46a4595981d5e0	2026-11-02T23:28:49Z	github-actions[bot]	Publish BB3 run 41544845872: BB3_FIRST_NONPASS_A3_L0_ATTEMPT1.txt
+01163dcb7c1e5b827898c379960daa4b92006d2f	2026-11-02T23:28:47Z	github-actions[bot]	Publish BB3 run 41544845872: BB3_ACTION_CALL_SUMMARY.txt
+45edfe07ddb899392ce0b3bbb092507d0350ca47	2026-11-02T23:28:46Z	github-actions[bot]	Publish BB3 run 41544845872: BB3_ACTION_CALL_RESULTS.tsv
+fab50250f90005db38f0f866429d88e320eac928	2026-11-02T23:28:45Z	github-actions[bot]	Publish BB3 run 41544845872: ACTIONS_RUN_SUMMARY.txt
+916f7da1d5afd50e68325ee46ed8812fc6b13fab	2026-11-02T23:26:34Z	github-actions[bot]	Publish BB3 run 41528133484: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+004cb3fadf6ff764b07ad4b4991d81b517f1c85d	2026-11-02T23:26:33Z	github-actions[bot]	Publish BB3 run 41528133484: BB3_SCRIPT_EXIT_CODE.txt
+fd2b161a9250546127edcee17cb03f4e7be112e5	2026-11-02T23:26:31Z	github-actions[bot]	Publish BB3 run 41528133484: BB3_PATCHED_BUILD_MANIFEST.txt
+5aafdbc02ee6077986a01aa5b36c6f9814721c8a	2026-11-02T23:26:30Z	github-actions[bot]	Publish BB3 run 41528133484: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+6907ae287844a0905b165ec60443bd4b33f47024	2026-11-02T23:26:29Z	github-actions[bot]	Publish BB3 run 41528133484: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+5f1c638e72d4e5ec9140c910849152e8f88cd581	2026-11-02T23:26:27Z	github-actions[bot]	Publish BB3 run 41528133484: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+a37bc62e67a34f4c8aff04113c86020a63dcdc4e	2026-11-02T23:26:25Z	github-actions[bot]	Publish BB3 run 41528133484: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+58fa2d858e070fdbb42834904ca5a828d449bef7	2026-11-02T23:26:24Z	github-actions[bot]	Publish BB3 run 41528133484: BB3_ACTION_CALL_SUMMARY.txt
+eddb15f451d734786d2a395554460570f78eb484	2026-11-02T23:26:22Z	github-actions[bot]	Publish BB3 run 41528133484: BB3_ACTION_CALL_RESULTS.tsv
+d26efe185e40654bccce834b9a96adfcc1136417	2026-11-02T23:26:21Z	github-actions[bot]	Publish BB3 run 41528133484: ACTIONS_RUN_SUMMARY.txt
+927175c67d52f2a6ca13de3a4c1753e98ddffcb5	2026-11-02T23:22:18Z	github-actions[bot]	Publish AJ1 audit and H6 RAM probe run 41544845699 attempt 1
+27cc8d9ad97899aaf58b039e1996500e92990b6c	2026-11-02T23:22:15Z	github-actions[bot]	Publish AS3 H6 K0 K1 K2 breakpoint comparison run 41544845684 attempt 1
+b18bf57a19736418466345212e2dc6c6433bd268	2026-11-02T23:21:43Z	zuppasoupfifaistimewa-png	Keep bundled FFMPEG libraries separate from AppImage glibc
+2c0c25081005b16f1765d0ae2bb3c5d6885f56c0	2026-11-02T23:19:36Z	github-actions[bot]	Publish BB3 run 41544401168: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+74ed0d021c9a0a575fa27bc080a3a2edad7ae346	2026-11-02T23:19:34Z	github-actions[bot]	Publish BB3 run 41544401168: BB3_SCRIPT_EXIT_CODE.txt
+420ab1f2b731282619e7d23d9b229d11e59e9bc0	2026-11-02T23:19:33Z	github-actions[bot]	Publish BB3 run 41544401168: BB3_PCSX_RELEASE_MANIFEST.txt
+c4b963a88aa72a9f4e22705ea548ce7cad807620	2026-11-02T23:19:31Z	github-actions[bot]	Publish BB3 run 41544401168: BB3_ACTION_CALL_SUMMARY.txt
+a6b463e1a5396c67de2a1dd2a7e947f4cdb0a939	2026-11-02T23:19:30Z	github-actions[bot]	Publish BB3 run 41544401168: BB3_ACTION_CALL_RESULTS.tsv
+89a3be47a23910e45ee4610fd68caac2f6fd9acc	2026-11-02T23:19:28Z	github-actions[bot]	Publish BB3 run 41544401168: ACTIONS_RUN_SUMMARY.txt
+a3158cb34cb934a0784b9ff2e39b34766ce557e4	2026-11-02T23:19:11Z	github-actions[bot]	Publish AJ1 audit and H6 RAM probe run 41544400881 attempt 1
+1f253a33b4bac6509808a91eaad2be2b907538c7	2026-11-02T23:18:54Z	github-actions[bot]	Publish AS3 H6 K0 K1 K2 breakpoint comparison run 41544400775 attempt 1
+9eb83400cadb2b7d4a4412d0f2e14af8854a1b33	2026-11-02T23:18:25Z	zuppasoupfifaistimewa-png	Locate bundled FFMPEG libraries for H6 smoke and BB3 guest probe
+06bac842680c6e2c5807322093bd43c215370eb0	2026-11-02T23:17:06Z	github-actions[bot]	Publish BB3 run 41544096390: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+bbb7d2e68f45d0eb8747f6d688e3532d2684a437	2026-11-02T23:17:05Z	github-actions[bot]	Publish BB3 run 41544096390: BB3_SCRIPT_EXIT_CODE.txt
+7900ddbdafe5efac3f92f9961ea02bdb15f7f9a2	2026-11-02T23:17:04Z	github-actions[bot]	Publish BB3 run 41544096390: BB3_PCSX_RELEASE_MANIFEST.txt
+3d01561dfef60f6a137a4de65026a83ee6009f6e	2026-11-02T23:17:03Z	github-actions[bot]	Publish BB3 run 41544096390: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+efc783b6001105d572bdadae13dec4efe9d6e200	2026-11-02T23:17:02Z	github-actions[bot]	Publish BB3 run 41544096390: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+ef292b5fb497adc9f893755ebae608dcef22ebe6	2026-11-02T23:17:01Z	github-actions[bot]	Publish BB3 run 41544096390: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+3e975902b385597479f51430cb4140950f9ec1b0	2026-11-02T23:16:59Z	github-actions[bot]	Publish BB3 run 41544096390: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+4d24322de3bae137fd13a0b94d5859538721f118	2026-11-02T23:16:58Z	github-actions[bot]	Publish BB3 run 41544096390: BB3_ACTION_CALL_SUMMARY.txt
+bfce2ab90ebbed9c998dc1c02c38c2f6267f8b64	2026-11-02T23:16:57Z	github-actions[bot]	Publish BB3 run 41544096390: BB3_ACTION_CALL_RESULTS.tsv
+f7d741ee743b242655e5380dacd7d99c02c0dee6	2026-11-02T23:16:56Z	github-actions[bot]	Publish BB3 run 41544096390: ACTIONS_RUN_SUMMARY.txt
+782012f57fdb741a387ccf0370f0e84e11ba2ed6	2026-11-02T23:16:08Z	zuppasoupfifaistimewa-png	Invoke BB2 guest transaction directly from H6 harness
+f7283c1e17e00e3d52d43c28a0ae7ba5c0de1bb9	2026-11-02T23:13:10Z	github-actions[bot]	Publish BB3 run 41543294021: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+4625a375ccab2e4d0592a5afe7db52b1d6cb237b	2026-11-02T23:13:09Z	github-actions[bot]	Publish BB3 run 41543294021: BB3_SCRIPT_EXIT_CODE.txt
+3d74e94cf8c94f033fa9209f8593cc46e4245716	2026-11-02T23:13:08Z	github-actions[bot]	Publish BB3 run 41543294021: BB3_PCSX_RELEASE_MANIFEST.txt
+6df1e42975b4180279a2cfaf8d1b5588e19f3406	2026-11-02T23:13:06Z	github-actions[bot]	Publish BB3 run 41543294021: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+baf0714f392270917ef87c37b4d0e0d515927bfb	2026-11-02T23:13:05Z	github-actions[bot]	Publish BB3 run 41543294021: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+a0c5e01d1a184516cbb6bd598ce3e26eed569747	2026-11-02T23:13:03Z	github-actions[bot]	Publish BB3 run 41543294021: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+1611cb2d5ada1a1fade047ca696f5c4e536fbfe4	2026-11-02T23:13:02Z	github-actions[bot]	Publish BB3 run 41543294021: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+76bb5990a6f8806a6dccdc76c61043af131e0af2	2026-11-02T23:13:01Z	github-actions[bot]	Publish BB3 run 41543294021: BB3_FIRST_NONPASS_A3_L0_ATTEMPT1.txt
+8a5bf41604b17d1c5e4c8707fe88cf87161bccff	2026-11-02T23:13:00Z	github-actions[bot]	Publish BB3 run 41543294021: BB3_ACTION_CALL_SUMMARY.txt
+649dda7b30c8bd02856fa61913a9eefcace5631a	2026-11-02T23:12:58Z	github-actions[bot]	Publish BB3 run 41543294021: BB3_ACTION_CALL_RESULTS.tsv
+1b0d4c1b52001fe75c49ccc38417b519a85ee3ca	2026-11-02T23:12:57Z	github-actions[bot]	Publish BB3 run 41543294021: ACTIONS_RUN_SUMMARY.txt
+6aef0f74d890bb9ea0ba5e6a797f5ecc2cc322cd	2026-11-02T23:11:29Z	zuppasoupfifaistimewa-png	Update BB state: BB1-BB2 static complete; BB3 runtime open
+c8ddfb90ede88552662ec59c47125a88be2f2092	2026-11-02T23:11:18Z	zuppasoupfifaistimewa-png	Add complete BB1-BB2 static evidence report
+d99f57ba98e5b2fc598299ceb69bf1ecc7a2f4c6	2026-11-02T23:10:12Z	zuppasoupfifaistimewa-png	Define tile fixture constants in BB3 Lua probe
+3e5e2abf5ae4f378c45425422d49756c3eaa54e5	2026-11-02T23:09:23Z	github-actions[bot]	Publish BB3 run 41542947152: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+1cb99301b15faf0b1c30973adf647fafc8309609	2026-11-02T23:09:21Z	github-actions[bot]	Publish BB3 run 41542947152: BB3_SCRIPT_EXIT_CODE.txt
+5035f598f7e21236f4e2468b64583ba833f82d45	2026-11-02T23:09:19Z	github-actions[bot]	Publish BB3 run 41542947152: BB3_PCSX_RELEASE_MANIFEST.txt
+1536ef349e914390b3a04787651fe64c37456dd8	2026-11-02T23:09:17Z	github-actions[bot]	Publish BB3 run 41542947152: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+519a3ae9a532c70956a20f8ee6b643d67f901766	2026-11-02T23:09:16Z	github-actions[bot]	Publish BB3 run 41542947152: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+04d8c9663583347485ad4731f86759bfbd96b0b7	2026-11-02T23:09:14Z	github-actions[bot]	Publish BB3 run 41542947152: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+1707e1465421c4637681a4ae09e65c0dff7140ec	2026-11-02T23:09:12Z	github-actions[bot]	Publish BB3 run 41542947152: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+0a6a8c806467bb728a0725e068e9145cdcefe472	2026-11-02T23:09:09Z	github-actions[bot]	Publish BB3 run 41542947152: BB3_FIRST_NONPASS_A3_L0_ATTEMPT1.txt
+05e96e85f5e909de9e850534b3024f9baed23c0b	2026-11-02T23:09:06Z	github-actions[bot]	Publish BB3 run 41542947152: BB3_ACTION_CALL_SUMMARY.txt
+010dff0f21aceec66fb4f57b9cee0c0e8eaaae08	2026-11-02T23:09:04Z	github-actions[bot]	Publish BB3 run 41542947152: BB3_ACTION_CALL_RESULTS.tsv
+acb7b6678502675f12733243050046cbf302d111	2026-11-02T23:09:02Z	github-actions[bot]	Publish BB3 run 41542947152: ACTIONS_RUN_SUMMARY.txt
+59998bf31c4efee0fc3ed6729d973b2f6f20e031	2026-11-02T23:07:41Z	zuppasoupfifaistimewa-png	Defer BB3 setup until H6 post-load memory settles
+56b16a129dcbbbbd7c94fb9aba4eaadbb068e83f	2026-11-02T23:01:09Z	github-actions[bot]	Publish AQ1 static economy census run 41541667221
+3ef6c43fd1fb3f352546bb538a61aa2ef2ce5a96	2026-11-02T22:58:20Z	zuppasoupfifaistimewa-png	Expand BB static writer and action caller evidence
+f92b4260874574a91584ae9f45b781edee74c616	2026-11-02T22:57:04Z	github-actions[bot]	Publish AQ1 static economy census run 41541206308
+b4baaa6cb65715f5c71223440f23e7d88822d504	2026-11-02T22:54:50Z	zuppasoupfifaistimewa-png	Fix BB tile displacement hex parsing and checkpoint BB state
+ee4d17f1e9de2e37531bec5934b684712929e976	2026-11-02T22:30:25Z	github-actions[bot]	Publish BB3 run 41536404671: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+8658698b8f7e4975532fa828a3518747f7b0e3f1	2026-11-02T22:30:24Z	github-actions[bot]	Publish BB3 run 41536404671: BB3_SCRIPT_EXIT_CODE.txt
+c500e58839ee7115978d5d11724b2ff21c50c6b1	2026-11-02T22:30:23Z	github-actions[bot]	Publish BB3 run 41536404671: BB3_PCSX_RELEASE_MANIFEST.txt
+36314e95f6c73b62907a27349b387aedce860c86	2026-11-02T22:30:22Z	github-actions[bot]	Publish BB3 run 41536404671: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+76a490863f0d462dbefc3eacbfd445ed19ad0a36	2026-11-02T22:30:20Z	github-actions[bot]	Publish BB3 run 41536404671: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+1e983c7ef45382e8c5b4ef07f32a986794d81472	2026-11-02T22:30:19Z	github-actions[bot]	Publish BB3 run 41536404671: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+97c5df188600a77c6e621fc6a3efbb2aa4c2ee05	2026-11-02T22:30:18Z	github-actions[bot]	Publish BB3 run 41536404671: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+59a899c984145446fad0eff092bb246d0f7e5d90	2026-11-02T22:30:16Z	github-actions[bot]	Publish BB3 run 41536404671: BB3_FIRST_NONPASS_A3_L0_ATTEMPT1.txt
+cca27ada3add642aba7fff8416b7049395ed0be9	2026-11-02T22:30:15Z	github-actions[bot]	Publish BB3 run 41536404671: BB3_ACTION_CALL_SUMMARY.txt
+850a8ec17b882ebbdf0d50641ee260ddd26f657c	2026-11-02T22:30:14Z	github-actions[bot]	Publish BB3 run 41536404671: BB3_ACTION_CALL_RESULTS.tsv
+869a2caf3ee8f7952cc60f24fd53b875b32cd9f7	2026-11-02T22:30:13Z	github-actions[bot]	Publish BB3 run 41536404671: ACTIONS_RUN_SUMMARY.txt
+6a5d169deb7843adfc6f99a85b5f04504a0abdeb	2026-11-02T22:23:14Z	github-actions[bot]	Publish BB3 run 41529469001: BB3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+e360ced09b5b16a61baa359b91a9ba752b0057f7	2026-11-02T22:23:13Z	github-actions[bot]	Publish BB3 run 41529469001: BB3_SCRIPT_EXIT_CODE.txt
+f752b40b2a3b4811e4aca01acf4fb6813c01fa88	2026-11-02T22:23:11Z	github-actions[bot]	Publish BB3 run 41529469001: BB3_PCSX_RELEASE_MANIFEST.txt
+53af09862ba8eec6d69b96bd0eba8e1d6da3529a	2026-11-02T22:23:10Z	github-actions[bot]	Publish BB3 run 41529469001: BB3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+7d6d60942716fbb1ca3561f7bdb615f30ec86f46	2026-11-02T22:23:09Z	github-actions[bot]	Publish BB3 run 41529469001: BB3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+ce0f58cbdb7a08a7dfde692bb7867323a7540163	2026-11-02T22:23:08Z	github-actions[bot]	Publish BB3 run 41529469001: BB3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+0557b09b85918acdebaf2aa2ec0c74b05876579c	2026-11-02T22:23:07Z	github-actions[bot]	Publish BB3 run 41529469001: BB3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+676793f642ffafdf3a56a1b8e68bc2466702239a	2026-11-02T22:23:06Z	github-actions[bot]	Publish BB3 run 41529469001: BB3_ACTION_CALL_SUMMARY.txt
+fbdc77da154cf630d0de13ddb86053522357e70d	2026-11-02T22:23:04Z	github-actions[bot]	Publish BB3 run 41529469001: BB3_ACTION_CALL_RESULTS.tsv
+8c12c3cfeda969483816c1ef7b5cbc524347ecea	2026-11-02T22:23:03Z	github-actions[bot]	Publish BB3 run 41529469001: ACTIONS_RUN_SUMMARY.txt
+9223e2a08bfa14f00dfce1e8bc0f52972dc694e2	2026-11-02T22:20:47Z	zuppasoupfifaistimewa-png	Add BB2 census and BB3 diagnostic status update
+4159e1b27018cae970eac64013e25a98c78013ee	2026-11-02T22:20:20Z	zuppasoupfifaistimewa-png	Stop BB3 probe after first failed case and preserve diagnostic
+9d45469d89903f9101e6ec9a8fdd8df822088674	2026-11-02T22:01:35Z	github-actions[bot]	Publish AQ1 static economy census run 41533205025
+111bf1a3f4177f356e513d2fdea1de2c50f6e697	2026-11-02T21:58:45Z	zuppasoupfifaistimewa-png	Export all tile nibble and selector displacement accesses for BB2
+71831215fe278eb0cb6f9e0553be3a890e7cce73	2026-11-02T21:51:54Z	github-actions[bot]	Publish AQ1 static economy census run 41531841659
+a9a8ed21e1a7f972ac0eca9551894a90b93f8ed9	2026-11-02T21:49:23Z	zuppasoupfifaistimewa-png	Add exhaustive BB2 action-byte scan and include tile offset 0x0E
+98ac11a11f983d9e6e2fa87631469f7fced1543e	2026-11-02T21:35:15Z	zuppasoupfifaistimewa-png	Refresh BB3 report with current 16-case Actions step status
+f2a6b90c29e5a7353d92d1d8fbbabf2cac0eb853	2026-11-02T21:34:46Z	zuppasoupfifaistimewa-png	Correct exact smoke run SHA and wall-time units
+3f9b302ef1328f2ef5c7f6c84ba1f033d0368e6c	2026-11-02T21:34:37Z	zuppasoupfifaistimewa-png	Update BB3 report with two verified H6 smoke passes and pending 16-case probe
+227ee88f06d6618c8f4e0726407f70b4e2e75e05	2026-11-02T21:33:45Z	zuppasoupfifaistimewa-png	Run BB3 strict probe independently of stalled previous attempt
+c0b8555493e5ac0ce64a89381a7cbfce2b5f59d3	2026-11-02T21:32:26Z	zuppasoupfifaistimewa-png	Set BB3 probe timeout to twice historical launch upper bound
+1ba22b223c27043fe5e903d387a0e3cae9ea45d9	2026-11-02T21:32:22Z	zuppasoupfifaistimewa-png	Bound BB3 isolated launch watchdog to 360 VSync frames
+733c72314bb9ecb2710db3a3ad143b5d0860453f	2026-11-02T21:30:56Z	github-actions[bot]	Publish BB3 smoke run 41528938163: BB3_SMOKE_WORKFLOW_SCRIPT_EXIT.txt
+e2bbf2c77372b77bbd38a1c1a169145818cad838	2026-11-02T21:30:54Z	github-actions[bot]	Publish BB3 smoke run 41528938163: BB3_SMOKE_SUMMARY.txt
+2f4f7f5dd2eb643ee32a12899d9649074c40b5a1	2026-11-02T21:30:53Z	github-actions[bot]	Publish BB3 smoke run 41528938163: BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+7f8bc7d7be36dca1d66d9c7c5a233653bfb2e5c2	2026-11-02T21:30:52Z	github-actions[bot]	Publish BB3 smoke run 41528938163: BB3_SMOKE_EMULATOR_LOG.txt
+1516bd8b285a6e0d787966661eceeca395b9daf2	2026-11-02T21:30:50Z	github-actions[bot]	Publish BB3 smoke run 41528938163: ACTIONS_RUN_SUMMARY.txt
+4370d13dfa4c9f1aeaaf5ebb36cd3ce93ba8ea0d	2026-11-02T21:30:19Z	zuppasoupfifaistimewa-png	Pass isolated Capstone dependency through H6 smoke launches
+825d74f2d226c6e94a94ab9940b882b96c6f170c	2026-11-02T21:30:16Z	zuppasoupfifaistimewa-png	Pass isolated Capstone dependency through BB3 probe launches
+60e78b573dbfdcf5312cb03e692ff2c66e172a14	2026-11-02T21:26:43Z	zuppasoupfifaistimewa-png	Validate exact BB3 dispatch selection and staged Chakra delta
+2f062e8a1292c4c4e29c28ca220422fe5778e82e	2026-11-02T21:26:26Z	zuppasoupfifaistimewa-png	Verify both tile refresh calls before BB3 runtime probe passes
+503eb7c2ef4b680a91a13ad5a65c8d56472b2c97	2026-11-02T21:25:12Z	zuppasoupfifaistimewa-png	Align BB3 run report metadata with pinned release emulator
+3e0e33d877945590033a0671d41d4fc33f69a7a7	2026-11-02T21:24:58Z	zuppasoupfifaistimewa-png	Use smoke-verified pinned PCSX release for BB3 action probe
+3b46f08652aa2e34e6df7d819668b0cdc30dc53f	2026-11-02T21:23:20Z	github-actions[bot]	Publish BB3 smoke run 41527796204: BB3_SMOKE_WORKFLOW_SCRIPT_EXIT.txt
+18b902eb26daf5c7e5db0b7daa08e5dbd93b4f67	2026-11-02T21:23:19Z	github-actions[bot]	Publish BB3 smoke run 41527796204: BB3_SMOKE_SUMMARY.txt
+fddad2bad88973e95cab8780c9bde0b773499c09	2026-11-02T21:23:18Z	github-actions[bot]	Publish BB3 smoke run 41527796204: BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+1e3fc816155451bb0c3b27246abfcb2bf030aa50	2026-11-02T21:23:17Z	github-actions[bot]	Publish BB3 smoke run 41527796204: BB3_SMOKE_EMULATOR_LOG.txt
+61ff3474857b4c9809e0add7efdbb8949a437f87	2026-11-02T21:23:16Z	github-actions[bot]	Publish BB3 smoke run 41527796204: ACTIONS_RUN_SUMMARY.txt
+25d2436e30ac02cbb751c3463acabbfab0841ce2	2026-11-02T21:22:41Z	zuppasoupfifaistimewa-png	Isolate the bundled Capstone library from AppImage glibc
+1a7d8d70d91d4b25600def9ae7abb70c565049cb	2026-11-02T21:22:37Z	zuppasoupfifaistimewa-png	Isolate the bundled Capstone library from AppImage glibc
+1f07bbabb506080dc34387d843a2e0375e2d6ed6	2026-11-02T21:21:46Z	github-actions[bot]	Publish BB3 smoke run 41527576341: BB3_SMOKE_WORKFLOW_SCRIPT_EXIT.txt
+9805e9e92f8671b0e2aa1dc3dcdf31c22052a668	2026-11-02T21:21:45Z	github-actions[bot]	Publish BB3 smoke run 41527576341: BB3_SMOKE_SUMMARY.txt
+67d89734a776149b5be429d6d921fafdc64a53bc	2026-11-02T21:21:44Z	github-actions[bot]	Publish BB3 smoke run 41527576341: BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+7ca86accba06a9bd5c46dbbe4d9e2c34ed3ed7b5	2026-11-02T21:21:42Z	github-actions[bot]	Publish BB3 smoke run 41527576341: BB3_SMOKE_EMULATOR_LOG.txt
+9f56ce9f0ad49d60e77590647c0d1b3a9a578054	2026-11-02T21:21:41Z	github-actions[bot]	Publish BB3 smoke run 41527576341: ACTIONS_RUN_SUMMARY.txt
+5d4abe5f830ddce06756ae60f7cb6bc0b0b1b9a6	2026-11-02T21:21:16Z	zuppasoupfifaistimewa-png	Discover packaged PCSX runtime libraries before H6 smoke launch
+489c983821e0fe2a1a5b670694d923e574d04746	2026-11-02T21:21:12Z	zuppasoupfifaistimewa-png	Discover packaged PCSX runtime libraries before BB3 smoke launch
+7e440acff270e1b7908cbf1cce869f531deaf9bd	2026-11-02T21:20:23Z	github-actions[bot]	Publish BB3 smoke run 41527261817: BB3_SMOKE_WORKFLOW_SCRIPT_EXIT.txt
+518999b483ad8044bc95d6850c707b8317e515ba	2026-11-02T21:20:21Z	github-actions[bot]	Publish BB3 smoke run 41527261817: BB3_SMOKE_SUMMARY.txt
+25d597f7e26b20be519d272160558093d36982df	2026-11-02T21:20:20Z	github-actions[bot]	Publish BB3 smoke run 41527261817: BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+ad6df229d226d5471bdefd8cda45d108c65110c7	2026-11-02T21:20:19Z	github-actions[bot]	Publish BB3 smoke run 41527261817: BB3_SMOKE_EMULATOR_LOG.txt
+a5bf0e44786a19ec65c678f41ba8feb29282b192	2026-11-02T21:20:17Z	github-actions[bot]	Publish BB3 smoke run 41527261817: ACTIONS_RUN_SUMMARY.txt
+85efa25e0973736f71d61920312f7c3986e3ab34	2026-11-02T21:20:13Z	zuppasoupfifaistimewa-png	Handle integer process exit values in BB3 runtime validator
+852e230edfb7908e33e885d2d853e9260f6e5eec	2026-11-02T21:20:02Z	zuppasoupfifaistimewa-png	Add strict BB3 two-launch runtime assertions and scoped K5 status
+dcbdf1cf0ce90d42b2558ecd4c38a28988087a02	2026-11-02T21:19:13Z	zuppasoupfifaistimewa-png	Replace expired card artifact with disposable card and publish smoke report via API
+435b05824f8f5bd3e767e7b4c643c6655ba74701	2026-11-02T21:19:09Z	zuppasoupfifaistimewa-png	Replace expired card artifact with disposable card and publish BB3 via API
+9fd4a7541da3d63ee84f1e71377bef24754de119	2026-11-02T21:18:18Z	github-actions[bot]	Publish BB3 H6 smoke diagnostics run 41527053511 attempt 1
+8a715f8cc6cbbad7083659ab4d761f72044e91a1	2026-11-02T21:17:52Z	zuppasoupfifaistimewa-png	Use temporary blank memory card in BB3 H6 smoke test
+03685cfd53456256da68839f786bd3966c858ed8	2026-11-02T21:17:49Z	zuppasoupfifaistimewa-png	Use temporary blank memory card in BB3 action probe
+9d32eb1ed4edea9446c044eb78fd259b5593c3bb	2026-11-02T21:16:01Z	github-actions[bot]	Publish BB3 H6 smoke diagnostics run 41526651531 attempt 1
+4516c026312c8af3bace08f3529268afe867dcb7	2026-11-02T21:15:17Z	zuppasoupfifaistimewa-png	Fix H6 savestate path in smoke launch working directory
+1df34332deb8da2404db8dd2eb302779df68c0c4	2026-11-02T21:15:13Z	zuppasoupfifaistimewa-png	Fix H6 savestate path for isolated action probe launches
+ffc47e86f95b267f731e07075344024b1347f667	2026-11-02T21:14:20Z	zuppasoupfifaistimewa-png	Record BB3 H6 probe run 41466426311 blocked result
+1b45eb2c69ded03fe21cd6a16ad9edbf2ab20a8f	2026-11-02T21:14:10Z	zuppasoupfifaistimewa-png	Expose BB3 H6 smoke diagnostics and fix report commit working directory
+6bb698392b16ee45dbc27b38f44cee5103610c16	2026-11-02T15:15:44Z	zuppasoupfifaistimewa-png	Record BB3 isolated test fixture and expected transaction deltas
+a110a7cf8b339ae25222125faa622bb6d0cba52a	2026-11-02T15:12:59Z	zuppasoupfifaistimewa-png	Document exact BB2 transaction instruction addresses and BB3 breakpoints
+e28c55b26cf41efa7bf3045a4972791f75080167	2026-11-02T14:54:37Z	zuppasoupfifaistimewa-png	Fetch expiring private BB3 inputs before lengthy emulator build
+dba19b5e897b93525d976fdf6ebac42507d0ea02	2026-11-02T14:53:36Z	zuppasoupfifaistimewa-png	Probe BB3 H6 with previously validated SPU restore fix
+668bee3787241b1a7d2eb697b300b9ee02686480	2026-11-02T14:47:19Z	zuppasoupfifaistimewa-png	Record BB0-BB3 barrier audit status and runtime blocker
+59c86cb3bb7ea3a1e4fcd493e52cd690c67e0c76	2026-11-02T14:45:25Z	github-actions[bot]	Publish BB3 H6 smoke diagnostics run 41464827189 attempt 1
+7256c5932a9d34e5ea4d04b0ef39604d1843d586	2026-11-02T14:44:32Z	zuppasoupfifaistimewa-png	Fix BB3 smoke Lua command newline escaping
+9cc1b320e4b194d03fefae9e3a0136645dc853fe	2026-11-02T14:40:54Z	github-actions[bot]	Publish BB3 H6 smoke diagnostics run 41461812798 attempt 1
+f8d770673e4f6cec1ebb711e2fda8b73508d2ea7	2026-11-02T14:25:20Z	zuppasoupfifaistimewa-png	Add BB3 H6 memory access smoke diagnostic
+cc78d4f3b65ef19c49f6b12dbce6ec90dd21effd	2026-11-02T14:14:42Z	github-actions[bot]	Publish BB3 H6 action-call probe run 41459907683 attempt 1
+c5fb0ff42a90c0530bd20f65b93e74f121f55cc9	2026-11-02T14:13:30Z	zuppasoupfifaistimewa-png	Add BB3 H6 temporary action-byte function-call probe
+10fe551a169542c812190009caf97bc37621fec3	2026-11-02T09:40:33Z	github-actions[bot]	Publish AQ1 static economy census run 41422227109
+dc4f752e7c653afd4bb8d572d6de153979724e77	2026-11-02T09:37:37Z	zuppasoupfifaistimewa-png	Finalize BA1-BA3 resource audit and correct Actions validator status
+f2d7d621c65380e01fc6e0513ca35ea2d14e385e	2026-11-02T09:23:25Z	github-actions[bot]	Publish BA3 H6 runtime trace run 41419506538 attempt 1
+f70f0f8e75b2375fef3185501299efd253953be3	2026-11-02T09:22:16Z	github-actions[bot]	Publish AQ1 static economy census run 41419756918
+ed788883372aefa1772790e4e8a74e7a677ba633	2026-11-02T09:19:57Z	zuppasoupfifaistimewa-png	Export BA1 mode-state selector matrix and main loader context
+e2636ffb4512d84ce2863b17995e09b19b971bec	2026-11-02T09:19:29Z	zuppasoupfifaistimewa-png	Add static BA1 mode-state resource selector matrix export
+7413d48a7eec7be9d97782a5d8b02400b4b83a57	2026-11-02T09:17:59Z	zuppasoupfifaistimewa-png	Finalize BA1 BA2 BA3 resource mapping and H6 runtime comparison
+292ac8ce84d2db1c8c6ae0f9ba884c19575072ba	2026-11-02T09:13:07Z	github-actions[bot]	Publish BA3 H6 runtime trace run 41418131290 attempt 1
+7a29763f6f68addc9de52d32ba772543db1cb1ff	2026-11-02T09:10:53Z	github-actions[bot]	Publish AQ1 static economy census run 41417885033
+dcf9e8484881a4e9363e7bde746bb2e9742019c1	2026-11-02T09:08:02Z	github-actions[bot]	Publish AQ1 static economy census run 41417842857
+a3f57b45bc57b1cf555d39fef4125c49f59b86f1	2026-11-02T09:07:36Z	zuppasoupfifaistimewa-png	Fix BA3 H6 tile snapshot parser and workflow manifest
+64eb5a2a1b2c8d2e8451f969d2be4c2a2646ddea	2026-11-02T09:06:22Z	github-actions[bot]	Publish BA3 H6 runtime trace run 41417874405 attempt 1
+b0b0292aed1eb09e192a0d24ce520abff33aaa9e	2026-11-02T09:06:19Z	github-actions[bot]	Publish static a1 helper provenance for 0x80043F18 run 41417842770
+62170f613266500d9d25db933836fb534b05e7b9	2026-11-02T09:05:46Z	zuppasoupfifaistimewa-png	Decompile second BA1 selector writer
+9517b9e8478e5ab375f74a3fc4a80d9da60c0846	2026-11-02T09:05:39Z	zuppasoupfifaistimewa-png	Add BA3 two-launch H6 tile source/runtime validator
+c5ccb933675a509869632f045a18c99d527ec852	2026-11-02T09:05:27Z	zuppasoupfifaistimewa-png	Trace BA1 selector context globals in main EXE
+e752d9287b7bace5141bffb67754a8a442e1f743	2026-11-02T09:03:25Z	github-actions[bot]	Publish AQ1 static economy census run 41417201213
+9bcd94713e51303462c6def5a577770ea4aa10ac	2026-11-02T09:00:24Z	zuppasoupfifaistimewa-png	Trace static writers of BA1 resource selector byte
+248bd0abb9ed851ec7e2d05fcf5ac6ddefc4ef79	2026-11-02T08:59:01Z	github-actions[bot]	Publish AQ1 static economy census run 41416683161
+c4ee6edbc98df4a0e285787183ffd3705001434a	2026-11-02T08:56:11Z	zuppasoupfifaistimewa-png	Export BA1 tile-table candidates and resolve Stage 1 resource selector
+9bcebbaa1f35500e0600f298c78b58ef55d4dd5e	2026-11-02T08:50:58Z	github-actions[bot]	Publish AQ1 static economy census run 41415726090
+7b6a3fa3d51deb0d576cb531193006bf85d74c16	2026-11-02T08:48:18Z	zuppasoupfifaistimewa-png	Extend BA1 static export to resource decompressor and resolver
+e64f933ba722fe077736a49fdbcf85d55426ec16	2026-11-02T08:41:38Z	github-actions[bot]	Publish AQ1 static economy census run 41414694038
+51eec40f5746a63a50d1c3dbfbfcff342be436bc	2026-11-02T08:40:37Z	zuppasoupfifaistimewa-png	Update BA_STATE with verified loader mapping and BA1 rerun
+3df981cb65a616c53d042d22665d1b3e1651ddce	2026-11-02T08:39:43Z	zuppasoupfifaistimewa-png	Trace BA1 tile resource caller and container parser
+c1b51f72c87e97339fa22d85c3af1218bd58761a	2026-11-02T08:36:17Z	github-actions[bot]	Publish AQ1 static economy census run 41413850863
+7d0c94e8bba0152df571f16d26afcbf0072dff02	2026-11-02T08:33:56Z	zuppasoupfifaistimewa-png	Checkpoint BA1 progress and pending scope
+0a33f7bb3aa00c1ded456f5874d60d13384d2826	2026-11-02T08:32:41Z	zuppasoupfifaistimewa-png	Fix BA1 Ghidra command continuation
+bc1010c6fa2addf32c28409bc1bb6d960d154683	2026-11-02T08:31:37Z	github-actions[bot]	Publish AQ1 static economy census run 41413492667
+7401c086ae7bba001143cb268c445c59bc30ebd6	2026-11-02T08:29:50Z	zuppasoupfifaistimewa-png	Run BA1 static tile resource mapping and DATA.BIN inventory
+14807de357d5644cb6832be263ec5bf7f1a667b2	2026-11-02T08:29:32Z	zuppasoupfifaistimewa-png	Add bounded DATA.BIN tile resource inventory for BA1
+04a0456aa875f5c2a4736e443177c41dd7fcefe3	2026-11-02T08:29:26Z	zuppasoupfifaistimewa-png	Add static tile resource loader export for BA1
+a3dbdd0375b732928e876954e9a662c69785c00c	2026-11-02T05:14:15Z	zuppasoupfifaistimewa-png	Trace tile price resource bytes through loader into AZ3 debit
+6a29e442da621a76064c11bde481765ff0c1db60	2026-11-02T05:14:11Z	zuppasoupfifaistimewa-png	Add tile-price resource provenance and AZ3 completion evidence
+2156d6c91a26333ceb7dc79126950ea92188ec29	2026-11-02T05:02:57Z	github-actions[bot]	Publish AQ1 static economy census run 41391551410
+e8944c6ff9a8f99590f2ef8d776e5a8378c169a8	2026-11-02T05:00:45Z	zuppasoupfifaistimewa-png	Trace candidate tile price field initializers for AZ3
+c0653d05002d80a56701535fba43ab20c5896c85	2026-11-02T04:59:34Z	zuppasoupfifaistimewa-png	Document static tile purchase and upgrade debit dataflow for AZ3
+5fc92f2d734fde5a0675af67eb660ad56ad3fc4c	2026-11-02T04:59:30Z	zuppasoupfifaistimewa-png	Finalize AZ0-AZ3 status with discovered tile debit path
+3ba203912f79976f15b423873fa01085ec9c2fa5	2026-11-02T04:55:04Z	github-actions[bot]	Publish AQ1 static economy census run 41390871544
+f052a6005bccc852d5fd0a70feaa5f0ec56a9f3f	2026-11-02T04:52:55Z	zuppasoupfifaistimewa-png	Decompile all direct writers and readers of pending amount globals for AZ3
+bc2b6726755316491242e7c2fc3a3475b974c2ed	2026-11-02T04:50:26Z	github-actions[bot]	Publish AQ1 static economy census run 41390473200
+167cd52bcc94193bea0b9b6d92e13d59a7eb390f	2026-11-02T04:48:18Z	zuppasoupfifaistimewa-png	Decompile queued Chakra delta producer for AZ3 cost trace
+9a240eaa7df1d5b85ab41ecc35851332468d2448	2026-11-02T04:47:12Z	github-actions[bot]	Publish AQ1 static economy census run 41390225493
+1b61ed11dc285777245e528333c5245b0781e547	2026-11-02T04:46:25Z	github-actions[bot]	Publish static a1 helper provenance for 0x80043F18 run 41390225508
+980485d6680131187c1e7b09322c9aca22d830b6	2026-11-02T04:45:31Z	zuppasoupfifaistimewa-png	Trace all static xrefs to queued Chakra deltas and event amount globals
+1916f5ba6bf0cc354132ac7c1bd00a93318bc238	2026-11-02T04:44:25Z	github-actions[bot]	Publish AQ1 static economy census run 41389951934
+454c3f06062d27fde5e747736de1cafe10f23dbc	2026-11-02T04:43:03Z	github-actions[bot]	Publish static a1 helper provenance for 0x80043F18 run 41389929800
+0802559834327f21a72c54ef9de46b2baa4790db	2026-11-02T04:42:27Z	zuppasoupfifaistimewa-png	Extend AZ3 static trace into resource delta writers and cost helper callees
+b5639f3280bef48678db143c4a0b8509531485a7	2026-11-02T04:42:11Z	zuppasoupfifaistimewa-png	Generalize selected Ghidra function exporter for Entry 1 and EXE
+e5dd36191ecc3b16dc306e68082ef3bedd90b65b	2026-11-02T04:30:40Z	github-actions[bot]	Publish AQ1 static economy census run 41388731912
+1368ad7e983e468a316b3ee283d76b110b9cb279	2026-11-02T04:29:13Z	zuppasoupfifaistimewa-png	Run AZ3 setter caller decompilation on static audit changes
+3faa89848a23a679b0d63f7dfd5c48cd62f296b6	2026-11-02T04:29:04Z	zuppasoupfifaistimewa-png	Decompile every direct Chakra setter caller for AZ3 audit
+77cd214405bff08816b12ccc0f94bd80e3545121	2026-11-02T01:14:45Z	github-actions[bot]	Publish AQ1 static economy census run 41371318978
+5f7375a003686f29793a4ae2b07e431069167338	2026-11-02T01:13:11Z	zuppasoupfifaistimewa-png	Trace startup chakra globals and table balance setter provenance
+00734bd200a142baa42d5588881247ed68d03c62	2026-11-02T00:46:31Z	zuppasoupfifaistimewa-png	Publish AZ0-AZ3 final status and global chakra seed evidence
+436ab578891336bf6a12c85dfe27544b96c4bc4c	2026-11-02T00:44:16Z	zuppasoupfifaistimewa-png	Finalize AZ0-AZ3 evidence report and trace initial chakra seed global
+119bfa30817541b3a549c85d28f0d4c85fee96f6	2026-11-02T00:40:52Z	github-actions[bot]	Publish AQ1 static economy census run 41368276256
+5822e40f3698e1b928619ee74ec4cef5a4913f70	2026-11-02T00:38:52Z	zuppasoupfifaistimewa-png	Trace AZ3 global chakra initializer and expand global reference census
+d514bdd82c3866543b894c1593085ebde8154cbd	2026-11-02T00:36:48Z	github-actions[bot]	Publish AQ1 static economy census run 41367906993
+253dc96f92d95c76337bdbbf3292d0c388470493	2026-11-02T00:34:52Z	zuppasoupfifaistimewa-png	Trace AZ3 setter caller return producer FUN_80012A44
+d2003184f2acc56a1a90458f76dee529477dfc6c	2026-11-02T00:33:33Z	github-actions[bot]	Publish AQ1 static economy census run 41367620653
+7439029c2cf12fbd0e904f09a680e67ea3e9dca4	2026-11-02T00:31:32Z	zuppasoupfifaistimewa-png	Publish AZ1 V formulas and extend AZ3 direct setter caller evidence
+13679369d3462f8b8f244ae2337fca57977673ab	2026-11-02T00:29:07Z	github-actions[bot]	Publish AQ1 static economy census run 41367221886
+e98a2081e7f6573a75705d416f8a727a10634ced	2026-11-02T00:27:08Z	zuppasoupfifaistimewa-png	Complete AZ0 writer ledger, reconcile AZ1 table flow, expand AZ3 caller scan
+e08366bd82b08f5ce01965b4c86d268bec6dcc71	2026-11-01T23:27:50Z	zuppasoupfifaistimewa-png	Correct AZ2 Entry1 function count and refresh AZ0 inventories

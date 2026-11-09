@@ -1,0 +1,62 @@
+branch_origin	commit_sha	committer_date	author	message
+audit/checkpoint-window-2026-10-29	f3c1c6a8fce500b37a56a216547cc7d9ee1486bd	2026-10-29T00:32:18Z	zuppasoupfifaistimewa-png	Add isolated checkpoint release hash and RAM-window audit
+audit/checkpoint-window-2026-10-29	0e9a35b63d9a1acdac5d23b906536ce9a85cb065	2026-10-29T03:59:52Z	zuppasoupfifaistimewa-png	Add read-only MIPS slot provenance tracer
+audit/checkpoint-window-2026-10-29	31d66b8986a15caa1c5975cacb4954f070569cc0	2026-10-29T04:00:46Z	zuppasoupfifaistimewa-png	Add isolated runner-only slot provenance audit workflow
+audit/checkpoint-window-2026-10-29	b8e8911534a97dcc6fd38319ecd8c4befc14c996	2026-10-29T04:01:06Z	github-actions[bot]	Record slot provenance audit run 40815320809
+audit/checkpoint-window-2026-10-29	33312fc0487472e8b5f9afe91e95250697c8d8d2	2026-10-29T04:01:52Z	zuppasoupfifaistimewa-png	Extend isolated checkpoint audit with full static slot provenance analysis
+audit/checkpoint-window-2026-10-29	6d6957bb8e7a34f1fc0d377be571ef17cd6828f0	2026-10-29T04:03:04Z	zuppasoupfifaistimewa-png	Repair workflow and add read-only disassembly/provenance audit
+audit/checkpoint-window-2026-10-29	779d8de5ee6d58b699fb85ce6820bfb21fb6ea05	2026-10-29T04:42:45Z	zuppasoupfifaistimewa-png	Add read-only W0-W2 release timeline, CFG and savestate RAM audit
+audit/checkpoint-window-2026-10-29	8a545fe6fe11fa42608724118459752f92cc4664	2026-10-29T04:42:59Z	zuppasoupfifaistimewa-png	Fix RAM region end-address formatting in audit tool
+audit/checkpoint-window-2026-10-29	89f0bb67948462ac3c84cd59e3479a978c1bbdb1	2026-10-29T04:43:13Z	zuppasoupfifaistimewa-png	Add Ghidra exporter for complete executable helper functions
+audit/checkpoint-window-2026-10-29	a8409cf87f3720e295421fd6bc77e24c2a26f3b9	2026-10-29T04:43:58Z	zuppasoupfifaistimewa-png	Correct Release attribution and reconcile historical report
+audit/checkpoint-window-2026-10-29	d2a49debc3c3acbb8675d5028129a7a6411402e1	2026-10-29T04:44:11Z	zuppasoupfifaistimewa-png	Use stable section replacement for Release attribution correction
+audit/checkpoint-window-2026-10-29	e85f34ba253ef87d0633ca62c96a5ee214a51a1e	2026-10-29T04:44:35Z	zuppasoupfifaistimewa-png	Run W0-W3 static CFG and checkpoint audit on Actions runner
+audit/checkpoint-window-2026-10-29	8975b643395e2a3594b3b5a0799c496e94354b67	2026-10-29T04:45:33Z	zuppasoupfifaistimewa-png	Fix dataclass import in W0-W2 audit tool
+audit/checkpoint-window-2026-10-29	673b9a6df4b472bfd247e47f36a8767e3d08182c	2026-10-29T04:46:16Z	github-actions[bot]	Record slot provenance audit run 40819533178
+audit/checkpoint-window-2026-10-29	40be932c8993f6b911cf2ecd04e5206572a9b5a5	2026-10-29T04:48:50Z	zuppasoupfifaistimewa-png	Ensure Ghidra executable project directory exists before W3
+audit/checkpoint-window-2026-10-29	dd2e4d6a3d84e9a66ebcb78d331ea1e8dfd6f471	2026-10-29T04:49:51Z	github-actions[bot]	Record slot provenance audit run 40819834347
+audit/checkpoint-window-2026-10-29	035ac177a420bcbf60fa5dc7ec217b7889d85983	2026-10-29T04:51:40Z	zuppasoupfifaistimewa-png	Explain CFG paths for the two misleading linear slot readers
+audit/checkpoint-window-2026-10-29	cee9e04f25e24e32169b1f80495e5a97ff503b68	2026-10-29T04:51:42Z	zuppasoupfifaistimewa-png	Record evidence-based semantics of four helper functions
+audit/checkpoint-window-2026-10-29	dfaa2d3f10547a05e119690e03a4e7014ce2901b	2026-10-29T04:52:41Z	zuppasoupfifaistimewa-png	Broaden W0 scan to all recent workflow runs, not just runs created Oct 28–29
+audit/checkpoint-window-2026-10-29	520969a5474d3757638ea898137b229b6a1922cf	2026-10-29T04:54:28Z	github-actions[bot]	Record slot provenance audit run 40820189600
+audit/checkpoint-window-2026-10-29	c723423beb46e6f3e470d5744b9d4d97194711f2	2026-10-29T05:09:28Z	zuppasoupfifaistimewa-png	Compare all Release steps against published and asset timestamps; resolve tag commit date
+audit/checkpoint-window-2026-10-29	e432c4ba3ced084d0be512762f9a0fb90fcf2aa0	2026-10-29T05:09:51Z	zuppasoupfifaistimewa-png	Parse saved GP and checkpoint accounting words directly for X3
+audit/checkpoint-window-2026-10-29	14e47ec914446cfe0b1801fa0de32250ac18d0b1	2026-10-29T05:10:15Z	zuppasoupfifaistimewa-png	Export helper xrefs and full caller instructions for X2
+audit/checkpoint-window-2026-10-29	a60ebfb146da73e80d5de5ad3e13b43ec65ac922	2026-10-29T05:10:45Z	zuppasoupfifaistimewa-png	Expose internal CFG reaching definitions for X2 static provenance tracing
+audit/checkpoint-window-2026-10-29	5c9808e1797602d76a34d53edb36af01fd943812	2026-10-29T05:11:44Z	zuppasoupfifaistimewa-png	Add CFG-based helper xref, a0 and object-field static audit
+audit/checkpoint-window-2026-10-29	078271be04c7c08cd6b9865f6b49a248b5702448	2026-10-29T05:12:03Z	zuppasoupfifaistimewa-png	Wire X1 release comparisons, X2 helper/caller trace, and X3 saved register parsing
+audit/checkpoint-window-2026-10-29	e24f63f3790be3a1c3c4287e5b16994583cc4003	2026-10-29T05:13:16Z	zuppasoupfifaistimewa-png	Add protobuf field reader required for X3 CPU GP extraction
+audit/checkpoint-window-2026-10-29	5864e9023be80d0b82243f59fd455856665d6731	2026-10-29T05:15:19Z	zuppasoupfifaistimewa-png	Fix syntax in main executable direct-JAL xref record
+audit/checkpoint-window-2026-10-29	b61a03a86e147a203160cf4548b0891a3a3f67e0	2026-10-29T05:16:47Z	zuppasoupfifaistimewa-png	Decode PCSX-Redux GPR array stored as sequential numbered scalar fields
+audit/checkpoint-window-2026-10-29	da1d3bdcce2319b494905b6edd2487deeb7aff3d	2026-10-29T05:16:57Z	zuppasoupfifaistimewa-png	Clarify Release publication vs target commit and competing timestamp-overlap step
+audit/checkpoint-window-2026-10-29	45fc65567a7a9ff71d9ec0d36783d33e891079fa	2026-10-29T05:17:33Z	zuppasoupfifaistimewa-png	Correct V1 handoff to distinguish tag commit, release publication and asset upload
+audit/checkpoint-window-2026-10-29	c1742bc6ae62bdec7db875a8b498327cda25ad25	2026-10-29T05:18:46Z	zuppasoupfifaistimewa-png	Accept hyphenated workflow CLI arguments in X2 audit script
+audit/checkpoint-window-2026-10-29	0f3a9000138b8409252114357f6558aafde05991	2026-10-29T05:22:15Z	zuppasoupfifaistimewa-png	Decode omitted default-zero fields in serialized GPR register message
+audit/checkpoint-window-2026-10-29	10b450585df3c4a5f4285fcd8d3565263a259d77	2026-10-29T05:22:49Z	zuppasoupfifaistimewa-png	Include unrolled loop field accesses and limit X2 xref table to requested helpers
+audit/checkpoint-window-2026-10-29	291575070e8e85e0f7a4b4f46f0332ebd54b136c	2026-10-29T05:23:03Z	zuppasoupfifaistimewa-png	Ensure savestate report contains only GP value and non-value register field diagnostics
+audit/checkpoint-window-2026-10-29	4a87cf79e8f2d88a408ad2c61715e4ab6497d536	2026-10-29T05:24:10Z	zuppasoupfifaistimewa-png	Select a single Ghidra function boundary before building CFG for X2
+audit/checkpoint-window-2026-10-29	79369fc55959dbe7709c4b8261a4b2b356513795	2026-10-29T05:26:39Z	zuppasoupfifaistimewa-png	Use the local memory-access width helper in X2 field analysis
+audit/checkpoint-window-2026-10-29	9f82a573e0d612acaf90aa4c77f49e293262a032	2026-10-29T05:27:46Z	github-actions[bot]	Record slot provenance audit run 40823429023
+audit/checkpoint-window-2026-10-29	47acc35b7cc970106ce2c1c694bf6b18863f446f	2026-10-29T05:28:02Z	zuppasoupfifaistimewa-png	Decode exact raw packed-varint GPR array for checkpoint GP extraction
+audit/checkpoint-window-2026-10-29	03d992e3e5998f553a3b4db3c9016cc99cc89038	2026-10-29T05:29:13Z	github-actions[bot]	Record slot provenance audit run 40823561026
+audit/checkpoint-window-2026-10-29	ed01173d4150270125acd8068a5b71df63f6f658	2026-10-29T05:31:04Z	zuppasoupfifaistimewa-png	Correct Release attribution wording: initial record creator unknown, publication and asset upload separately attributed
+audit/checkpoint-window-2026-10-29	d8d37d708993baf5113b100aeca925db678f4270	2026-10-29T05:31:20Z	zuppasoupfifaistimewa-png	Use TIDAK TAHU for unresolved X2 matches and deduplicate field access rows
+audit/checkpoint-window-2026-10-29	6d68f4c056fe64c3a19188a7462fcefdf9a8ab4a	2026-10-29T05:34:03Z	github-actions[bot]	Record slot provenance audit run 40823880207
+audit/checkpoint-window-2026-10-29	451e319bee57673e496c7d9948fd88cc38f87d99	2026-10-29T05:34:56Z	zuppasoupfifaistimewa-png	Separate algebraic matching n from caller loop range in X2 argument table
+audit/checkpoint-window-2026-10-29	9cdb8b45a4926cf9729f0e4edcfdb4aa57f5a326	2026-10-29T05:36:38Z	zuppasoupfifaistimewa-png	Fix X2 loop range indentation and separate algebraic match n from caller loop n
+audit/checkpoint-window-2026-10-29	6024b7f6d28acffbd07ca100baf3400c9e574c24	2026-10-29T05:38:16Z	github-actions[bot]	Record slot provenance audit run 40824392693
+audit/checkpoint-window-2026-10-29	00e498c9773099d8ff52e643c9cecc711874958d	2026-10-29T05:40:13Z	zuppasoupfifaistimewa-png	Apply requested-helper filter before writing X2 xref CSV so row counts agree
+audit/checkpoint-window-2026-10-29	ae6ab7c4790d01e591fcba9573b7c0ecbdded5f5	2026-10-29T05:41:28Z	github-actions[bot]	Record slot provenance audit run 40824731102
+audit/checkpoint-window-2026-10-29	251b0b40d35474be2d2d535a8804b2cfceeb93d8	2026-10-29T05:44:09Z	zuppasoupfifaistimewa-png	Add evidence-bounded X1-X3 checkpoint audit report
+audit/checkpoint-window-2026-10-29	684355d94c329ba3c8b552cef073be1db6e71688	2026-10-29T05:44:28Z	zuppasoupfifaistimewa-png	Correct exact allocator field SHA-256 values in X1-X3 audit
+audit/checkpoint-window-2026-10-29	7db5f032393bef977aa6587d0f50bea5270d158a	2026-10-29T05:45:10Z	zuppasoupfifaistimewa-png	Clarify saved GP row and pin xref artifact provenance
+audit/checkpoint-window-2026-10-29	aacce00c1bf32485bb4c653bcf8fd304cd013646	2026-10-29T06:03:20Z	zuppasoupfifaistimewa-png	Stabilize Story Mode schedule replay and add 3-run RAM acceptance
+audit/checkpoint-window-2026-10-29	8b22ec029b33e045e6ca3f8bf9ef451bfebd2d74	2026-10-29T06:03:46Z	zuppasoupfifaistimewa-png	Persist start and exit markers for each fixed-schedule replay
+audit/checkpoint-window-2026-10-29	f4a0a55f2d398dd3f85a1133ed7fec9a5b5ae36e	2026-10-29T06:28:19Z	github-actions[bot]	Record fixed-schedule RAM comparison run 40826960999
+audit/checkpoint-window-2026-10-29	2ef56f8e6d3c3612e03357b34cfae1d65cfd23ab	2026-10-29T08:45:39Z	zuppasoupfifaistimewa-png	Diagnose cold-boot pause by deferring PCSX resume to next tick
+audit/checkpoint-window-2026-10-29	7f2919c7bbd19fc6b830f928a963e969e455ea55	2026-10-29T08:58:07Z	github-actions[bot]	Record fixed-schedule RAM comparison run 40844474886
+audit/checkpoint-window-2026-10-29	a7081526546f148a697e8ea659ad24b28878d650	2026-10-29T09:32:32Z	zuppasoupfifaistimewa-png	Record bounded AB1-AB3 restore audit findings
+feat/memory-card-persistence	e5f89b64b8c9ce2e9311c611b818214fddb5468b	2026-10-19T10:36:52Z	zuppasoupfifaistimewa-png	Add explicit private Memory Card persistence workflow
+feat/memory-card-persistence	e6f04fc210f1ec8b8c86018a2f9fa419be82bd12	2026-10-19T10:37:08Z	zuppasoupfifaistimewa-png	Mount persistent Memory Card in all emulator launch paths
+feat/memory-card-persistence	74f5dc0f9bb75c0eebb7315f437f62cf8b863ac3	2026-10-19T11:03:31Z	zuppasoupfifaistimewa-png	Make Memory Card restore fail closed and bound emulator tests
+feat/memory-card-persistence	c3c5b2641148629d0fcff070293f3c447af36c2c	2026-10-19T11:05:17Z	zuppasoupfifaistimewa-png	Remove implicit legacy savestate run fallback

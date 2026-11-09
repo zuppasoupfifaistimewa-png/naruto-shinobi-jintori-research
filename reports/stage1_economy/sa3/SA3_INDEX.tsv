@@ -1,0 +1,14 @@
+file	rows_or_records	description
+SA3_COMMITS_MAIN_PART01.tsv	500	main commits pages 1-5
+SA3_COMMITS_MAIN_PART02.tsv	500	main commits pages 6-10
+SA3_COMMITS_MAIN_PART03.tsv	500	main commits pages 11-15
+SA3_COMMITS_MAIN_PART04.tsv	500	main commits pages 16-20
+SA3_COMMITS_MAIN_PART05.tsv	500	main commits pages 21-25
+SA3_COMMITS_MAIN_PART06.tsv	500	main commits pages 26-30
+SA3_COMMITS_MAIN_PART07.tsv	500	main commits pages 31-35
+SA3_COMMITS_MAIN_PART08.tsv	474	main commits pages 36-40
+SA3_BRANCHES.tsv	6	all repository branch refs at snapshot
+SA3_BRANCH_ONLY_COMMITS.tsv	61	unique commits ahead of main across other refs
+SA3_ACTIONS_RUNS_PART01.tsv	500	all-branch Actions runs pages 1-5
+SA3_ACTIONS_RUNS_PART02.tsv	500	all-branch Actions runs pages 6-10
+SA3_ACTIONS_RUNS_PART03.tsv	302	older-date range; duplicate API row removed

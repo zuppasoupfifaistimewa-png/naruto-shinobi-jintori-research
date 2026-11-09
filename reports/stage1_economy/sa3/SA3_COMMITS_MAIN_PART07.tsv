@@ -1,0 +1,501 @@
+commit_sha	committer_date	author	message
+e1e3a827acbc3db8c240284ad78ec66e0be46833	2026-10-21T11:02:48Z	zuppasoupfifaistimewa-png	Remove one-shot GDB diagnostic trigger after run #39588281198 completed
+8589e956b8e5979f67198f019ade5bce5c3f2f55	2026-10-21T11:02:41Z	zuppasoupfifaistimewa-png	Document GDB diagnostic run #39588281198 in docs/SIGSEGV_FORENSICS_2026-10-21.md
+73a0faf387035e1b85de225b27697e61fe138c10	2026-10-21T11:02:37Z	zuppasoupfifaistimewa-png	Document GDB diagnostic run #39588281198 in docs/STORYMODE_POST178_CONTINUATION_2026-10-21.md
+7e1b124e789bf4f4506efd644e77002db1380b0f	2026-10-21T11:02:34Z	zuppasoupfifaistimewa-png	Document GDB diagnostic run #39588281198 in HANDOFF_CHAT_BARU_2026-10-19.md
+a3e757a8db6c72cedd53ba995bb6b942971758d1	2026-10-21T11:02:30Z	zuppasoupfifaistimewa-png	Document GDB diagnostic run #39588281198 in STATUS.md
+e76d1f0e0240e30e117a71ee66a50f6539a25add	2026-10-21T10:56:42Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] capture natural SIGSEGV with live GDB and no controller input
+df348bbc8cb9e4302c5aa9fae2dfec7425ff6efb	2026-10-21T10:56:24Z	zuppasoupfifaistimewa-png	Fix GDB diagnostic log markers
+aad6471271038cc5f978e6d95f67aac08013f56d	2026-10-21T10:55:50Z	zuppasoupfifaistimewa-png	Use live GDB to capture natural Story Mode SIGSEGV backtrace
+ec55c98c06b63afcf69faa233d07c1e89e8bee47	2026-10-21T10:43:56Z	zuppasoupfifaistimewa-png	Record 60-second natural crash observation with no SIGSEGV
+21f188e39ac8a87a9515d6466fc02a6b5972859e	2026-10-21T10:43:52Z	zuppasoupfifaistimewa-png	Record extended no-input SIGSEGV observation run #39586201539
+faaa278253bf8d9f4ad0adcc0730b480e560b38d	2026-10-21T10:43:48Z	zuppasoupfifaistimewa-png	Handoff: extended catchsegv observation result #39586201539
+2cabda6f4e05617379233ef2b8f18f599b148d5e	2026-10-21T10:43:42Z	zuppasoupfifaistimewa-png	Update status with extended natural-crash window result #39586201539
+1076dd3bf151915551e4469769e3c79541402dbf	2026-10-21T10:42:20Z	zuppasoupfifaistimewa-png	Remove one-shot trigger after natural-crash observation run #39586201539 completed
+4c163ccc3e5a65d91c57bd201d7e74a7c19ad2bb	2026-10-21T10:39:37Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] allow natural crash observation through outer timeout
+a8ad6be1887473ab6debe46acdf24189eb871ff2	2026-10-21T10:39:27Z	zuppasoupfifaistimewa-png	Leave emulator uninterrupted after stall to catch delayed natural SIGSEGV
+22ec92994ed23530d5a59cbd1ae7ac9a676f7b62	2026-10-21T10:38:20Z	zuppasoupfifaistimewa-png	Document no-crash catchsegv run and f153 stall evidence
+e64439387344f321f8029a54066b286b00b26623	2026-10-21T10:38:17Z	zuppasoupfifaistimewa-png	Record latest post-178 diagnostic result #39585486518
+9ced7d371ff81c029bcec05bbb1172cf3f14aaf3	2026-10-21T10:38:13Z	zuppasoupfifaistimewa-png	Handoff: record lightweight SIGSEGV trace run #39585486518
+3aed077cfb0be966aa6dcc0675568197581583d3	2026-10-21T10:38:08Z	zuppasoupfifaistimewa-png	Update running status with #39585486518 signal-handler result
+5944594eacb4fa89c5bb2df56294ba8ef4b4c65c	2026-10-21T10:37:47Z	zuppasoupfifaistimewa-png	Classify catchsegv watchdog stop after stall correctly
+9d7ce0e16b077c6d4ef86019ba1f1330dced1fdb	2026-10-21T10:35:34Z	zuppasoupfifaistimewa-png	Remove one-shot diagnostic trigger after run #39585486518 completed
+4485b68b9589e3b8e43e9afe08aeb20411bf914d	2026-10-21T10:33:42Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] capture natural SIGSEGV with lightweight signal handler
+b9036d531e542302aecc86f19823780db0b37596	2026-10-21T10:33:20Z	zuppasoupfifaistimewa-png	Use lightweight native SIGSEGV tracing to preserve natural renderer timing
+68361c116f677c0eafce112608ac3511eb0c9f76	2026-10-21T09:41:17Z	zuppasoupfifaistimewa-png	Note default renderer restored after softpipe differential
+f56a302924d9590403355f515d573707ef7bc4c0	2026-10-21T09:41:14Z	zuppasoupfifaistimewa-png	Note default renderer restored after softpipe differential
+bfa94e0175a6ac75ff8103757d71bda3639b86f2	2026-10-21T09:41:10Z	zuppasoupfifaistimewa-png	Note default renderer restored after softpipe differential
+923dfdc3faa59931a073aea8d7a5cfe07a55447e	2026-10-21T09:40:55Z	zuppasoupfifaistimewa-png	Record restoration of default renderer after softpipe differential
+90c41929bb3e3a82f70d7a369c475a74d8ea2c0e	2026-10-21T09:40:42Z	zuppasoupfifaistimewa-png	Restore default Mesa renderer for future baseline diagnostics
+6563726ef2e67d4cc1f19d51bef1905ddf7f9e32	2026-10-21T09:40:23Z	zuppasoupfifaistimewa-png	Finalize forensics section after softpipe run
+21daaa82dd6d1c2b247071a3c0754fe6aad64362	2026-10-21T09:40:20Z	zuppasoupfifaistimewa-png	Explicitly mark SIGSEGV root cause unresolved after renderer differential
+ee3fa9c60f142a421190280f2f287ced9741f5d5	2026-10-21T09:40:17Z	zuppasoupfifaistimewa-png	Explicitly mark SIGSEGV root cause unresolved after renderer differential
+ef2ed843dab3bfbb849082cabb9f06671831696a	2026-10-21T09:40:13Z	zuppasoupfifaistimewa-png	Explicitly mark SIGSEGV root cause unresolved after renderer differential
+c524ddc1abf8efc50ddc182c7ec1cbaf78a37fa6	2026-10-21T09:39:14Z	zuppasoupfifaistimewa-png	Record softpipe renderer comparison and update SIGSEGV status
+7a0e3e17583103a2187b450969f85b15f64e9982	2026-10-21T09:39:11Z	zuppasoupfifaistimewa-png	Record softpipe renderer comparison and update SIGSEGV status
+3fd890e30d1161248daa87075332c0794aecc1f3	2026-10-21T09:39:07Z	zuppasoupfifaistimewa-png	Record softpipe renderer comparison and update SIGSEGV status
+452fb4ca7e3aa369a70eef2212f576ac1328e07e	2026-10-21T09:38:54Z	zuppasoupfifaistimewa-png	Record softpipe renderer differential and unresolved SIGSEGV result
+1c9d81276d89d662231942adfa92cd9b5308d175	2026-10-21T09:38:29Z	zuppasoupfifaistimewa-png	Remove one-shot renderer-differential trigger after run #39577891131
+c6cbef3908fe5df7f50427455c1bdee1dfff0dae	2026-10-21T09:34:44Z	zuppasoupfifaistimewa-png	Update Story Mode SIGSEGV forensic status and GDB stall findings
+8a887efe4cf9bc7e0c8ff0d4e438bdfaac91178f	2026-10-21T09:34:40Z	zuppasoupfifaistimewa-png	Update Story Mode SIGSEGV forensic status and GDB stall findings
+c81d055611b82425f50e60c84686f504a49053c0	2026-10-21T09:34:37Z	zuppasoupfifaistimewa-png	Update Story Mode SIGSEGV forensic status and GDB stall findings
+33e6ecd3aa3987c468effe4c39136a69a7592cc4	2026-10-21T09:34:13Z	zuppasoupfifaistimewa-png	Record GDB stall stack and repeated no-input run results
+e3ff8027eecfab775a7a51e6e864fa06976da222	2026-10-21T09:33:29Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] compare softpipe renderer against llvmpipe
+b900afd9f6819485a22d564fd5d861ed8daef059	2026-10-21T09:33:24Z	zuppasoupfifaistimewa-png	Compare softpipe against llvmpipe renderer during VSync stall diagnostics
+ed8556282fba83388c489f239275be129b34aba7	2026-10-21T09:32:39Z	zuppasoupfifaistimewa-png	Remove one-shot diagnostic trigger after run #39577470148
+3a69c373627abf4837d402b5c753c612eeb97a40	2026-10-21T09:31:40Z	zuppasoupfifaistimewa-png	Document SIGSEGV and live GDB stall forensics
+d1ebe40f7325fc52ad53f0ceb26e56d8c9aa5aa8	2026-10-21T09:30:17Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] allow natural crash window before GDB interrupt
+d74454f5466b2b87fee6e268108c220569416b98	2026-10-21T09:30:12Z	zuppasoupfifaistimewa-png	Remove one-shot diagnostic trigger after run #39576905583
+6a34673517333396656da7b2e500c670609f4ff9	2026-10-21T09:30:06Z	zuppasoupfifaistimewa-png	Prefer natural SIGSEGV capture and recognize GDB thread signal output
+859487396a3445386a63e5583cdc790d283898fa	2026-10-21T09:25:56Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] capture live native backtrace
+1b9498a1e9fa846fe98af29731001b4f06371732	2026-10-21T09:25:41Z	zuppasoupfifaistimewa-png	Capture live GDB backtrace on SIGSEGV or VSync stall
+8db1354a40540810bea05797db72f3d02011a592	2026-10-21T09:24:18Z	zuppasoupfifaistimewa-png	Remove one-shot diagnostic trigger after run #39576146808
+9e24c67944f0b41f099abae847bed7a9d33e1144	2026-10-21T09:20:09Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] collect native crash backtrace
+31f680d6fb184b8d34f7d36dd250b870637a9773	2026-10-21T09:19:58Z	zuppasoupfifaistimewa-png	Add native core-dump backtrace collection for Story Mode crash
+2a4de374e573854f770366cf4f55ddaf003c22e3	2026-10-21T09:12:31Z	zuppasoupfifaistimewa-png	Remove one-shot external X11 diagnostic trigger after run #39574435847
+7db2c509b3a15b3629123ef42d93ca04752eb493	2026-10-21T09:12:20Z	zuppasoupfifaistimewa-png	Update handoff with frame-151 X11 capture and SIGSEGV findings
+b90ef981647bb02615cfbb0333c50c1a236823af	2026-10-21T09:12:07Z	zuppasoupfifaistimewa-png	Document external VSync watchdog and core-dump evidence
+8c379b699be63bcee9a0551e245565441c61fa9c	2026-10-21T09:12:01Z	zuppasoupfifaistimewa-png	Record frame-151 X11 capture and SIGSEGV diagnostic
+99b60e6bb6825269687573d208f4d14c9f6402a8	2026-10-21T09:06:51Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] cross-check stall with external-only timestamps
+42ea97ee630b22e249e1e43c74ee8ad3a773f572	2026-10-21T09:06:48Z	zuppasoupfifaistimewa-png	Keep timestamps in external watchdog to reduce Lua callback overhead
+6398fcbac09e65267e48dec59b9eb26c5c213b29	2026-10-21T09:02:54Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] retry no-input watchdog with f135 gate
+a6237789fdd4285364079572de903338abaa9697	2026-10-21T09:02:51Z	zuppasoupfifaistimewa-png	Lower external stall-capture gate to frame 135 after cutoff
+51376c0b63ab395a76227c9f87873385bc8efdac	2026-10-21T08:59:58Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] run no-input VSync watchdog and external X11 capture
+098fd7425bc31d968f651c59286fa2604b65570a	2026-10-21T08:59:29Z	zuppasoupfifaistimewa-png	Handle exited emulator wrapper in VSync watchdog
+e169b0fdb871cbd4f5af25ff6aeec65341b13156	2026-10-21T08:59:11Z	zuppasoupfifaistimewa-png	Add no-input VSync watchdog and external X11 stall captures
+fb8107368c6fcf83a6600040c305d5b47e66172a	2026-10-21T08:42:29Z	zuppasoupfifaistimewa-png	Record paired no-input vs START freeze diagnostic results
+e002a42f11b802de0b640054807eb6db9d04ed77	2026-10-21T08:42:25Z	zuppasoupfifaistimewa-png	Update handoff with paired dialog freeze diagnostic findings
+788575ba048ebec8136a779c8e39322d49845e90	2026-10-21T08:42:21Z	zuppasoupfifaistimewa-png	Document screenshot-free diagnostic and paired START comparison results
+c7ff890e6ecc715712257f23c4c0072793c3c3d7	2026-10-21T08:40:20Z	zuppasoupfifaistimewa-png	Remove one-shot diagnostic trigger after paired run #39570556284 completed
+8982bf019e7bc4e2d2eb3b42dc814c3983e049a8	2026-10-21T08:36:27Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] compare no-input and one-VSync START without late screenshots
+a2f3b20a7e85bfc106175d14cd155ed9d17aa99c	2026-10-21T08:36:11Z	zuppasoupfifaistimewa-png	Compare no-input and one-VSync START while skipping screenshots around frame 150
+036f32d79f52f3605c0e642fef9b4ddf994fa7f0	2026-10-21T08:32:11Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] run isolated no-input VSync diagnostic without late screenshots
+227c71808997d4dc94d69d4d483ed4ca77280b1d	2026-10-21T08:31:54Z	zuppasoupfifaistimewa-png	Harden no-input VSync diagnostic by skipping late screenshots and rejecting blank captures
+47be8d4d34a0af41a8adaae8ec8283761154e0ca	2026-10-21T08:21:58Z	zuppasoupfifaistimewa-png	Record matched no-input vs delayed START diagnostic findings
+60f49f1b1d96220c751b8eb03629179ca1ca6954	2026-10-21T08:21:55Z	zuppasoupfifaistimewa-png	Record matched no-input vs delayed START diagnostic findings
+ac629e849b6465dc95cd40e50391064f04badd59	2026-10-21T08:21:52Z	zuppasoupfifaistimewa-png	Record matched no-input vs delayed START diagnostic findings
+b9f27d9ad8100d6968a1e94a7b07211267eec68c	2026-10-21T07:52:06Z	zuppasoupfifaistimewa-png	Remove one-shot matched-duration trigger after paired run was queued
+a6fdd864d96dbb62053cfe002ae27d8fe262b0f4	2026-10-21T07:51:59Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] extend no-input control to match delayed START observation window
+0146f79e5c663fe3485d2b03b854d210991cd310	2026-10-21T07:51:54Z	zuppasoupfifaistimewa-png	Extend no-input control to matched 210-frame window around delayed START freeze
+62dde9acfd6f62c6889c510f0cbda8a2f9aa2280	2026-10-21T07:48:10Z	zuppasoupfifaistimewa-png	Remove one-shot delayed START trigger after run was queued
+32bc4e13fa842100cef122b7b7c98ebbac2515b5	2026-10-21T07:48:05Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] delay single START tap to frame 120 and observe
+e961dce19960b8558c2a36057f6f3d565d4d23f6	2026-10-21T07:47:59Z	zuppasoupfifaistimewa-png	Delay START until dialogue text can render and observe through frame 210
+83fedbfcfcccb3d49a6dbc580f2571ba3941be84	2026-10-21T07:44:33Z	zuppasoupfifaistimewa-png	Remove one-shot paired-arm diagnostic trigger after Actions queued
+9c2e6576fc5a21a29981869b1c3074fad09ed640	2026-10-21T07:44:27Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] compare one-VSync START with passing no-input control
+4be5914d2c549e9d0ffb78abb925ea02ab49c3f9	2026-10-21T07:44:22Z	zuppasoupfifaistimewa-png	Log every observed START-arm frame for reliable stall classification
+2e470d66545a2c5b305c86c202cef19ed77247ba	2026-10-21T07:44:13Z	zuppasoupfifaistimewa-png	Add matched one-VSync START arm after successful no-input checkpoint control
+916f35e59f5881820fadb66cb636cbb0440bb140	2026-10-21T07:41:43Z	zuppasoupfifaistimewa-png	Remove one-shot diagnostic trigger after corrected run was queued
+6a1b0f756c4de4780cf937634c68b38a10a60f0f	2026-10-21T07:41:34Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] fix missing AppRun extraction before no-input control
+d92e41b4870a68b7f9b5eac2079272c2280c2f05	2026-10-21T07:41:29Z	zuppasoupfifaistimewa-png	Restore AppImage extraction in isolated no-input diagnostic stage
+3e1c1cc925a3a7efb6c016dbf8c393ff8d726b0a	2026-10-21T07:39:33Z	zuppasoupfifaistimewa-png	Remove one-shot diagnostic trigger after corrected run was queued
+9f8f97fc72644735d4575a6c2bc2d841845893d1	2026-10-21T07:39:25Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] retry matched no-input control with SDL display fixed
+27b7a48175cb7fff5d931ff9021d9d3a69c03f1c	2026-10-21T07:39:14Z	zuppasoupfifaistimewa-png	Reuse verified dialog checkpoint and initialize SDL display for no-input control
+baee30b30930dcd05538f4955131800b1100d337	2026-10-21T07:36:53Z	zuppasoupfifaistimewa-png	Remove one-shot dialog-freeze diagnostic trigger marker after run was queued
+527f940a3820869e5e5f05021ce47f189d86c925	2026-10-21T07:36:43Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-DIALOG-FREEZE-DIAGNOSTIC] run matched no-input control before another START attempt
+03408d8eb66e62b0001c5f55cc768d2eabaecec6	2026-10-21T07:36:30Z	zuppasoupfifaistimewa-png	Harden no-input diagnostic timeout handling
+bab0ee33d3ab685b73280a7248db93fe8ce0e6fa	2026-10-21T07:36:00Z	zuppasoupfifaistimewa-png	Add controlled no-input diagnostic for Naruto dialog freeze
+452c520b753528a7a8520c5f7b93fe627ac561a7	2026-10-21T07:27:14Z	zuppasoupfifaistimewa-png	Document Naruto dialog START timeout and screenshot evidence
+b81b1e6f4c4c1d2ae35153c62bcdf9d93a60ca50	2026-10-21T07:27:11Z	zuppasoupfifaistimewa-png	Update Naruto research handoff with START dialog probe findings
+d0da978993cad1a8b674224f21e8e06b09036d48	2026-10-21T07:27:07Z	zuppasoupfifaistimewa-png	Record latest Naruto dialogue START probe result in STATUS
+5fd37943aa6c83e0f96d06827b59517fea300127	2026-10-21T07:26:38Z	zuppasoupfifaistimewa-png	Remove one-shot START dialog probe trigger after completed experiments
+ee3d200af85fb5a9fd3ca2ba496891b226438034	2026-10-21T06:59:58Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-DIALOG-START] test second START tap on remaining dialog
+17dbfd9516610b148282684dcbd2fa15f5fa79c2	2026-10-21T06:59:52Z	zuppasoupfifaistimewa-png	Test a second START tap after the still-visible Naruto dialog screenshot
+d3965329b089f45deb96b36c2f8a00eb879e2b2f	2026-10-21T06:57:07Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-DIALOG-START] test one-frame START tap
+0c23db0e04dc0d41ba35fdf965821b438b3f295b	2026-10-21T06:57:01Z	zuppasoupfifaistimewa-png	Use a one-VSync START tap on Naruto dialogue
+ec4c471d4c26b33a377124f8ae2e43e66a627811	2026-10-21T06:53:14Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-DIALOG-START] retry START at first verified dialog screenshot
+15c45b4ab33ce0079238829a03d25190d6f42488	2026-10-21T06:53:04Z	zuppasoupfifaistimewa-png	Remove accidentally duplicated workflow file
+b61de3ac069e73298b3cc7f5e02885ddd6feb69c	2026-10-21T06:53:02Z	zuppasoupfifaistimewa-png	Press START immediately after confirmed Naruto dialogue screenshot
+d6f0105321734f9be1603db254b88134e3bdc67d	2026-10-21T06:52:44Z	zuppasoupfifaistimewa-png	Use dialog screenshot frame 179 before immediate START input
+3fa2eb9abd0bea56ef4ada9139f00c6e87a8a50e	2026-10-21T06:49:18Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-DIALOG-START] trigger focused START dialog experiment
+723208cd09c707bcdea5391dfffb90d27769c8a7	2026-10-21T06:49:03Z	zuppasoupfifaistimewa-png	Add focused in-process Naruto dialog START probe
+67eaafe996aad5c3ef74ca51954e55fadbba09e8	2026-10-21T06:38:04Z	zuppasoupfifaistimewa-png	docs: record dialog-skip and authentic gameplay screenshot rules
+5b32e9fd295350dc53c1fca72869da8d96b52c02	2026-10-21T06:27:42Z	zuppasoupfifaistimewa-png	Add final validation run status and no-input timeout evidence
+7b4aaed0494177f57f02cd3341cb4bf79fdb5a29	2026-10-21T06:27:37Z	zuppasoupfifaistimewa-png	Update handoff with final post-f180 validation result
+9e9d46d0e9f916313245fef7d5e0e4d58b99ea46	2026-10-21T06:27:32Z	zuppasoupfifaistimewa-png	Record final validation timeout and preserve confirmed Circle evidence
+57dcd31faeebc44f12714229be83cc0131899dd4	2026-10-21T06:22:50Z	zuppasoupfifaistimewa-png	Remove one-shot post-confirm experiment trigger marker
+8784386dd25fc7edbd67d53b8f39016cdcf78061	2026-10-21T06:22:38Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-POST178-ADVANCE] validate corrected f180 assertion and matched controls
+c0e67e2510af2a6f54bc71dd22f19f60c51de28b	2026-10-21T06:21:45Z	zuppasoupfifaistimewa-png	Fix workflow documentation link path
+1885d97ae432948eb42e5959a21b415dda87cb13	2026-10-21T06:21:40Z	zuppasoupfifaistimewa-png	Fix workflow documentation link path
+eb265aaaf93bd1a56f5b9ee18201db827e70d742	2026-10-21T06:20:59Z	zuppasoupfifaistimewa-png	Document matched-VSync Circle transition evidence and runtime instability
+cc8d22d893c5d3ec01fa7971d380344e60af18b0	2026-10-21T06:20:54Z	zuppasoupfifaistimewa-png	Update handoff with verified Circle response and latest run statuses
+7e16346ce1a8301dcd9a6e6a54b50dc40ac028c4	2026-10-21T06:20:49Z	zuppasoupfifaistimewa-png	Record post-confirm Circle transition and checkpoint comparison findings
+544b96641518cbfc2fafdaa7c38e98ed521dd80b	2026-10-21T06:18:49Z	zuppasoupfifaistimewa-png	Keep matched-VSync checkpoint comparison bounded and remove unstable dialogue checkpoint branch
+6c3a7b9f122901cbc8034ede8cee472867d8791d	2026-10-21T06:13:57Z	zuppasoupfifaistimewa-png	Remove one-shot post-confirm experiment trigger marker
+f3df5aa384f496dea8a2cfd5b07ece588658d848	2026-10-21T06:13:43Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-POST178-ADVANCE] verify Circle transition and test Story Mode dialogue controls
+cdf149df26a30b8ff80d3785b3c10c5274dd6caa	2026-10-21T06:13:28Z	zuppasoupfifaistimewa-png	Capture post-Circle dialogue state and test START versus Circle in fresh processes
+a954e740d31d63397324fb25e48e872753239819	2026-10-21T06:08:26Z	zuppasoupfifaistimewa-png	Remove one-shot post-confirm experiment trigger marker
+8ce17c204cca763247282b967544c7cece22b0c5	2026-10-21T06:08:14Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-POST178-ADVANCE] test input controls after longer board stabilization
+0b64efe4ebbd856f54c49c8b2c0c90952672b639	2026-10-21T06:08:11Z	zuppasoupfifaistimewa-png	Extend controls test to 180 VSyncs after board transition
+15480eef3de4778b77aa608a7b1077310f34aaab	2026-10-21T06:05:18Z	zuppasoupfifaistimewa-png	Remove one-shot post-confirm experiment trigger marker
+42411053f8f0cfbce90cfe13f2e4995fcb328f14	2026-10-21T06:05:03Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-POST178-ADVANCE] test D-pad directions after mission panel transition
+176e31dd56e1e95e766562a3ed0f4663a936fb96	2026-10-21T06:05:01Z	zuppasoupfifaistimewa-png	Probe D-pad movement after the post-confirm panel transition
+ce2e2e52095a4015ffb7d58e8270f61ba5efe5f8	2026-10-21T06:02:41Z	zuppasoupfifaistimewa-png	Remove one-shot post-confirm experiment trigger marker
+2819c5ab1cf3976c830005d07845fd2a43a398a3	2026-10-21T06:02:27Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-POST178-ADVANCE] test eight-VSync Circle and START holds on the board
+110ab82ca09831d7699019c81696b517f9879592	2026-10-21T06:02:18Z	zuppasoupfifaistimewa-png	Extend post-panel Circle and START probes to eight VSyncs
+94cfaa657523f843d75d9d011d6c0a6746e61d73	2026-10-21T06:02:14Z	zuppasoupfifaistimewa-png	Remove incorrectly named duplicate post-confirm probe workflow
+15c13d7bf69930a28f7b114370c215615d287a37	2026-10-21T06:01:55Z	zuppasoupfifaistimewa-png	Extend post-panel Circle and START probes to eight VSyncs
+fde6a141d34301ee9c064e1d2a89c7496c6b8ce9	2026-10-21T05:59:39Z	zuppasoupfifaistimewa-png	Remove one-shot post-confirm experiment trigger marker
+a5fd32550c2479909805d955815d3088cf0e05dc	2026-10-21T05:59:30Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-POST178-ADVANCE] compare Circle and START after mission panel transition
+5e6e3247f038201ab9573657af0e4e055fb1b542	2026-10-21T05:59:27Z	zuppasoupfifaistimewa-png	Time Circle and START probes after the mission panel leaves the board
+f8154cc53935b008d7719a4674faad664df0ca97	2026-10-21T05:55:22Z	zuppasoupfifaistimewa-png	Remove one-shot post-confirm experiment trigger marker
+d28e56baa32e56f1e4842472ef6e1bbc3b14c116	2026-10-21T05:55:04Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-POST178-ADVANCE] capture stable post-confirm checkpoint and compare fresh-process controls
+23fe4769a251da301a9e2e4417dea36e09428091	2026-10-21T05:54:38Z	zuppasoupfifaistimewa-png	Add stable post-confirm checkpoint and matched fresh-process controls
+5524211b12c041ea36189f6d095b0edff8b0faee	2026-10-21T04:55:47Z	zuppasoupfifaistimewa-png	Append post-confirmation continuation results to Circle experiment log
+2646830ede29049efa92ee592beb56946589bf34	2026-10-21T04:55:44Z	zuppasoupfifaistimewa-png	Update handoff with post-f178 continuation results
+15357cc27e9e5bdc873edfa6cd13ddb184e39d3c	2026-10-21T04:55:39Z	zuppasoupfifaistimewa-png	Record verified post-f178 continuation findings in status
+79d25b8f44ba323a21cf84402f7eac2dc379d0a2	2026-10-21T04:55:14Z	zuppasoupfifaistimewa-png	Document post-f178 continuation experiment results
+3c2fed1fb1067dbbcb686bff9ce9a48609b44e17	2026-10-21T04:51:55Z	zuppasoupfifaistimewa-png	Remove one-shot post-f178 experiment trigger
+770ad1ae35b9dac54bf8e63d2771178681f66b91	2026-10-21T04:51:41Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-POST178-ADVANCE] run bounded matched-VSync checkpoint comparison
+45aa3cd4ca66b01a6e55143df1de13c1856f929e	2026-10-21T04:51:12Z	zuppasoupfifaistimewa-png	Add bounded post-f178 checkpoint continuation experiment
+bfc3a93de1ca334a84ba7e5dbdb61cc376890230	2026-10-21T04:33:47Z	zuppasoupfifaistimewa-png	Update research status with successful f178 checkpoint restore
+3538d5ceec77044ec3aab372bbb8fef6091f7f17	2026-10-21T04:33:42Z	zuppasoupfifaistimewa-png	Update research status with successful f178 checkpoint restore
+f1070ddd8dfb960498c25f89acbb1e01722e6873	2026-10-21T04:33:29Z	zuppasoupfifaistimewa-png	Record successful f178 checkpoint creation and fresh-process restore
+800f4bea415644f12043a0dabafcd34721d73976	2026-10-21T02:00:14Z	zuppasoupfifaistimewa-png	Remove one-shot Circle follow-up trigger marker
+41d063205edf3be473bd95ef6c4019345e4f68d7	2026-10-21T02:00:06Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-CIRCLE-FOLLOWUP] save post-tap checkpoint at f178 and restore
+1f878d3d48697084ef92a11faf4c98e5d2585e4d	2026-10-21T02:00:00Z	zuppasoupfifaistimewa-png	Save immediate post-tap checkpoint at frame 178 and test fresh-process restore
+93818d8f00b23826285b320810a0010d215a21d1	2026-10-21T01:56:14Z	zuppasoupfifaistimewa-png	Update latest Circle experiment and active restore test
+8977ef4a346b5246a02e3a9db23240fca7a93c71	2026-10-21T01:56:10Z	zuppasoupfifaistimewa-png	Update latest Circle experiment and active restore test
+99c23664a130d370fa4bf1428b8897d83f34d3d3	2026-10-21T01:56:05Z	zuppasoupfifaistimewa-png	Document short Circle tap evidence and early checkpoint restore attempt
+59216db8268d09a64efa96d56f51dc1eb62d907f	2026-10-21T01:55:03Z	zuppasoupfifaistimewa-png	Remove one-shot Circle follow-up trigger marker
+901d1fdc5c033b7cebfb74a166ae0a71ac67272b	2026-10-21T01:54:55Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-CIRCLE-FOLLOWUP] checkpoint first response and fresh-process restore
+5b846d2f8270de98746275bde4ea98571db05753	2026-10-21T01:54:50Z	zuppasoupfifaistimewa-png	Save at frame 184 and test short fresh-process restore
+3476a717b7a6fdefbc9ba9df8af66387fd307cc7	2026-10-21T01:50:58Z	zuppasoupfifaistimewa-png	Update latest Circle confirmation experiment status
+1ae1bb5704da383091367fb72b7a5420cd30ae9d	2026-10-21T01:50:54Z	zuppasoupfifaistimewa-png	Update latest Circle confirmation experiment status
+1a4992a3d947b6be2fb274dc4f359b9aa492202d	2026-10-21T01:50:45Z	zuppasoupfifaistimewa-png	Document third Circle input result and short-tap retry
+ad15cbdfb66b961939256c251a28e8f3b5450aed	2026-10-21T01:50:27Z	zuppasoupfifaistimewa-png	Remove one-shot Circle follow-up trigger marker
+d6abdb1444e6111ae12ae45b39dd780ecf53b460	2026-10-21T01:50:20Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-CIRCLE-FOLLOWUP] test short Circle confirmation tap
+7c3917d9513a18308d107a5d880772cad5d439d2	2026-10-21T01:50:15Z	zuppasoupfifaistimewa-png	Release second Circle shortly after visible confirmation input
+0265a91cd16c0c2ec8d3a511671a7c9169c698c4	2026-10-21T01:47:13Z	zuppasoupfifaistimewa-png	Update latest Circle confirmation run status and evidence
+658099d844e6854b763f48d953d97f54ac19e4b3	2026-10-21T01:47:09Z	zuppasoupfifaistimewa-png	Update latest Circle confirmation run status and evidence
+553f8d29b7331919e60283c2453b679ef3b637d9	2026-10-21T01:46:50Z	zuppasoupfifaistimewa-png	Record frame-180 Circle result and frame-175 retry
+b4e75933286bba639e08d6ff2bf2c3ced7e37cf1	2026-10-21T01:46:32Z	zuppasoupfifaistimewa-png	Remove one-shot Circle follow-up trigger marker
+7a4435faa25ce750e76810fee13b09859bf5a775	2026-10-21T01:46:24Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-CIRCLE-FOLLOWUP] retry Circle confirm from observed frame 175
+1ce467b00145463eb6e4190f73ad2ad9b74aa6f8	2026-10-21T01:46:19Z	zuppasoupfifaistimewa-png	Use visible frame-175 mission prompt for second Circle confirmation test
+7db87c51d861b9415c7cee52e4e38a060271c979	2026-10-21T01:43:41Z	zuppasoupfifaistimewa-png	Record Circle second-confirm probe status and next experiment
+d28ff7b87407de726716e1822bb303bc74412b71	2026-10-21T01:43:37Z	zuppasoupfifaistimewa-png	Record Circle second-confirm probe status and next experiment
+9d4a22c68f0e8d03f4b38af312237fa3f46e197e	2026-10-21T01:43:21Z	zuppasoupfifaistimewa-png	Document Circle second-confirm failed probe and recovery plan
+b8080f39884eb8cec32b3a1b0ee76f117cc2c1b2	2026-10-21T01:42:37Z	zuppasoupfifaistimewa-png	Remove one-shot Circle follow-up trigger marker
+19e2639ee165909beaf3a5182435f11edeadf88d	2026-10-21T01:42:30Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-CIRCLE-FOLLOWUP] recover confirm-panel input and partial evidence
+ebc7c97778bcc0f869fda576ded7cefb94c20267	2026-10-21T01:42:23Z	zuppasoupfifaistimewa-png	Tap Circle at confirmation prompt and preserve partial screenshots on failure
+bbadf93a1ca8ea28a7a2e982a8998b7a8f8ec03b	2026-10-21T01:29:54Z	zuppasoupfifaistimewa-png	Remove one-shot Circle follow-up trigger marker
+f03ca072cef4323a6a503fd80f4f99e0ac73fcd9	2026-10-21T01:29:47Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-CIRCLE-FOLLOWUP] test Circle confirmation and cross-process restore
+f000d929308471a74a0420f1740f8dd1edb25e16	2026-10-21T01:29:33Z	zuppasoupfifaistimewa-png	Fix Circle confirmation report syntax and comparison label
+8f6fddcd313079e72e053188bfc95fda945ad73e	2026-10-21T01:29:09Z	zuppasoupfifaistimewa-png	Extend Circle follow-up with second-confirm branch and private checkpoint restore
+bd7f03f8aa2f7ff11eec4aef6f35db43391c1a12	2026-10-21T01:23:38Z	zuppasoupfifaistimewa-png	Record completed Circle follow-up results and next experiment
+7bc3b99c510b23ebd2ac21101f86ea13fab032b8	2026-10-21T01:23:33Z	zuppasoupfifaistimewa-png	Record completed Circle follow-up results and next experiment
+c1157c766ace97a1eae1465db8ce5e8cc3c2d0b9	2026-10-21T01:23:20Z	zuppasoupfifaistimewa-png	Record successful final validation of Circle follow-up probe
+64063c4f839fbf748717f3b3c2819acae36d74b7	2026-10-21T01:20:29Z	zuppasoupfifaistimewa-png	Update handoff with Circle follow-up findings and report-validation rerun
+a0a1aee428aebc54fcc5abc0c0f51ee869fc1773	2026-10-21T01:20:21Z	zuppasoupfifaistimewa-png	Update handoff with Circle follow-up findings and report-validation rerun
+e0a173dc87bd8d44d05ffde7eb982e30262b18a2	2026-10-21T01:20:02Z	zuppasoupfifaistimewa-png	Remove one-shot Circle follow-up final retry marker
+599b3ceac485d8e18e55989c7d2ad48bb5aba340	2026-10-21T01:19:59Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-CIRCLE-FOLLOWUP] Final report path fix
+fb1d3b779611cb7938370d018290b2e2be7b1328	2026-10-21T01:19:54Z	zuppasoupfifaistimewa-png	Fix follow-up report path and align metrics with captured frames
+458b30e8b35436c5d5660509d787d21739384937	2026-10-21T01:18:54Z	zuppasoupfifaistimewa-png	Record mission objective panel observed after early Circle input
+25152425aeb6becb782b641dd98807a23e227dfb	2026-10-21T01:18:05Z	zuppasoupfifaistimewa-png	Record partial Circle versus START results and corrected retry
+3c7065140f152d119be24248fbe2a84e357eba09	2026-10-21T01:18:01Z	zuppasoupfifaistimewa-png	Record partial Circle versus START results and corrected retry
+e545bbc3f0375e9cac4d56f679f24b8c00ff478f	2026-10-21T01:17:48Z	zuppasoupfifaistimewa-png	Document partial Circle versus START follow-up evidence
+30b4daed7c309ad7b81fec5b2eed29a3913fcd93	2026-10-21T01:17:29Z	zuppasoupfifaistimewa-png	Remove one-shot Circle follow-up retry marker
+3d7046eb75f94a867240da136ad713124e057729	2026-10-21T01:17:26Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-CIRCLE-FOLLOWUP] Retry idle branch cutoff fix
+4551c1ab9de0334caea8c1aa2bea23bcdcacabab	2026-10-21T01:17:21Z	zuppasoupfifaistimewa-png	Shorten idle branch captures and stop baseline at frame 150
+38462809bce6cbee29ed9d25c0f8e05e09b97d1a	2026-10-21T01:10:43Z	zuppasoupfifaistimewa-png	Document follow-up staging failure and corrected retry
+3748f841aab18dbb45e28c3c6b4b3750d12b8f02	2026-10-21T01:10:38Z	zuppasoupfifaistimewa-png	Document follow-up staging failure and corrected retry
+b9061526de2d991c04744e337af78e2259e0ddcc	2026-10-21T01:10:17Z	zuppasoupfifaistimewa-png	Remove one-shot Circle follow-up retry marker
+9a893559496f881db4648f6dca12b760c434abd4	2026-10-21T01:10:13Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-CIRCLE-FOLLOWUP] Retry after staging path fix
+a6c876020545cab836fc8a55ee709b02a7c4caf3	2026-10-21T01:10:06Z	zuppasoupfifaistimewa-png	Fix stale staging paths in Circle follow-up workflow
+708527829b0dcaa4e148a8ed7fb93a78807f54be	2026-10-21T01:09:22Z	zuppasoupfifaistimewa-png	Record active Circle versus START follow-up run
+de27cb21a198c5292e9c6b42ecef2a1e8c1e769d	2026-10-21T01:09:18Z	zuppasoupfifaistimewa-png	Record active Circle versus START follow-up run
+f5e69c1e05ee2b69a622024ae2f42521c8ce03e7	2026-10-21T01:08:14Z	zuppasoupfifaistimewa-png	Remove one-shot Circle follow-up trigger marker
+7277edf88cef51f2c3a484b73f4360a7383ab3df	2026-10-21T01:08:11Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-CIRCLE-FOLLOWUP] Run extended observation
+2d5a20b1a512c4cbb9bd4db14748d62d0e4a633f	2026-10-21T01:07:59Z	zuppasoupfifaistimewa-png	Add extended Circle versus START timeline probe
+3b3ea44c7332c01f791b000f33862bce0aa961c0	2026-10-21T01:07:14Z	zuppasoupfifaistimewa-png	Record completed Circle timeline probe and next steps
+6fe667013830b8687e61a1088b11ca117ca00392	2026-10-21T01:07:09Z	zuppasoupfifaistimewa-png	Record completed Circle timeline probe and next steps
+cfb1516df93d7f9ecb8eb3f6984d429acffcd245	2026-10-21T01:06:57Z	zuppasoupfifaistimewa-png	Document completed Circle timeline probe results
+8a3c18efd16e444440e4b05cadbd4980456a0c8d	2026-10-21T01:00:45Z	zuppasoupfifaistimewa-png	Record shortened Circle probe and timeout lesson
+b31eb4cb53f04b008adc9b697a7ef23ab5aced22	2026-10-21T01:00:39Z	zuppasoupfifaistimewa-png	Record retry window and provisional Circle observation
+4d70109c63ddf0dee1641f35e070eec638c6b585	2026-10-21T01:00:36Z	zuppasoupfifaistimewa-png	Update handoff with active shortened Circle probe
+461d585e640866b1035be4f013801b69a2aa9a87	2026-10-21T01:00:31Z	zuppasoupfifaistimewa-png	Record active shortened Circle probe and completion estimate
+9d5384038dd5e55f65616a66371488015e6cfc0c	2026-10-21T01:00:10Z	zuppasoupfifaistimewa-png	Remove one-shot Circle timeline trigger
+4c078af1743dcfcf8c8bcaef7c84cf081dc318e0	2026-10-21T01:00:06Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-CIRCLE-TIMELINE] Retry with shorter observation window
+3dbb58cd36c625998de075e0017b667bb0c1587f	2026-10-21T00:59:59Z	zuppasoupfifaistimewa-png	Shorten late Circle input timing and screenshot report
+0c04ffdbc115e5fc1eef99910d385772918a0e02	2026-10-21T00:59:41Z	zuppasoupfifaistimewa-png	Shorten Circle timeline probe to avoid per-branch timeout
+61fafecfa64cf62a9796cb62bf2cfaa4a96a6e5b	2026-10-21T00:59:28Z	zuppasoupfifaistimewa-png	Record timeline probe failure and preserved checkpoint integrity
+bed6bb4b3de1a0de9923ba7393d0d3c3de763e19	2026-10-21T00:59:24Z	zuppasoupfifaistimewa-png	Document provisional Circle response observed in timeline probe
+c43a06152f37bb6b6eb6f8310e3fc5fa8f383ea1	2026-10-21T00:59:21Z	zuppasoupfifaistimewa-png	Update handoff after partial Circle timing results
+0f66dc7906c1b5dbf980d2078e0a7696e6a11df6	2026-10-21T00:59:17Z	zuppasoupfifaistimewa-png	Record partial Circle timeline results and timeout diagnosis
+7b6cba5c73d4ed6dbfc88275847eba86a7d30472	2026-10-21T00:44:33Z	zuppasoupfifaistimewa-png	Record successful checkpoint control probe and follow-up timeline run
+ffa7c4e16623ae229ee7d10bcd62cfac24f6c714	2026-10-21T00:44:30Z	zuppasoupfifaistimewa-png	Record preliminary runtime input evidence for Circle
+8e721f69d881d459e703cd88c78233e3bf73d45c	2026-10-21T00:44:27Z	zuppasoupfifaistimewa-png	Update handoff with button probe results and run ETA
+b905d958957d3bbe806142db64da2bc3f4687371	2026-10-21T00:44:23Z	zuppasoupfifaistimewa-png	Record button-probe result and active Circle timeline run
+765d4e2c8dbcfd1bd72a66ec57aa22b7a679067a	2026-10-21T00:43:49Z	zuppasoupfifaistimewa-png	Remove one-shot Circle timeline trigger
+91ca1d44ba95ff349099f96c1c0c71c7f52da836	2026-10-21T00:43:45Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-CIRCLE-TIMELINE] Trigger Circle timing experiment
+364a32f8ca4b7ab14ffdad2a9a6ee9d9d44590c9	2026-10-21T00:43:34Z	zuppasoupfifaistimewa-png	Add short Circle input timeline probe reusing patched emulator
+3cd846bee1f574a06c1206d9e70c79d1de49a804	2026-10-20T23:11:35Z	zuppasoupfifaistimewa-png	Catat integritas checkpoint patched dan probe kontrol selanjutnya
+5f0a9d8237875674d0cd24c812e0031b2d895566	2026-10-20T23:11:31Z	zuppasoupfifaistimewa-png	Perbarui handoff dengan checkpoint hasil probe dan workflow kontrol
+2426328f2c4fa55d6fe089d1469838dcc9af62c6	2026-10-20T23:11:27Z	zuppasoupfifaistimewa-png	Tambahkan status terkini verifikasi checkpoint dan probe kontrol
+17384614ebf79ccbb1cbcf36d2de14d5e670ae0d	2026-10-20T23:10:54Z	zuppasoupfifaistimewa-png	Remove one-shot Story Mode control probe trigger
+2ec67e46c16615fe2f8a5674290811d1c59d4740	2026-10-20T23:10:51Z	zuppasoupfifaistimewa-png	[RUN-NARUTO-STORYMODE-CONTROL-PROBE] Trigger isolated checkpoint controls
+fde550b37102d6bbf3890938cca03ce703718d38	2026-10-20T23:10:43Z	zuppasoupfifaistimewa-png	Add isolated Story Mode checkpoint input probe workflow
+7c29386214632376840861ab5322eaa54391a35b	2026-10-20T23:04:06Z	zuppasoupfifaistimewa-png	Confirm SPU sentinel fix with successful raw savestate probe
+a4d5edceb148849fa12651a3841e2cc59cfa4a07	2026-10-20T23:03:58Z	zuppasoupfifaistimewa-png	Record final cross-process checkpoint restoration pass
+7e9b3fa2acae51c8899b2e46d930290245293a0d	2026-10-20T23:03:52Z	zuppasoupfifaistimewa-png	Handoff confirmed save state restoration and next gameplay step
+3a9f069e89e6f916371aa725d7d5757611e9d575	2026-10-20T23:03:49Z	zuppasoupfifaistimewa-png	Record final successful SPU savestate restoration probe
+9056f5bea08cd07d80dfb815a709dd0ac2b05504	2026-10-20T12:56:50Z	zuppasoupfifaistimewa-png	Update SPU root-cause notes after retry failure
+78edce5da614363e9ebcebac1bc86d0f7b6cf3ad	2026-10-20T12:56:44Z	zuppasoupfifaistimewa-png	Record second SPU probe failure details
+792f5b26f08ef2782aefd845437453c5a74a23a7	2026-10-20T12:56:40Z	zuppasoupfifaistimewa-png	Handoff SPU probe latest failure and next retry
+31fc346e1ffa4fd46de9c3fbcdb051172aae19cf	2026-10-20T12:56:35Z	zuppasoupfifaistimewa-png	Update SPU probe result and latest verification run
+a5dfd5d7c375834e7f7a4c2e7792ad999dd09afa	2026-10-20T12:55:39Z	zuppasoupfifaistimewa-png	Remove temporary SPU probe trigger marker
+3b58b9b6316ec1a5583bbe0a8f52212887b2c94a	2026-10-20T12:55:35Z	zuppasoupfifaistimewa-png	Remove one-shot trigger; keep SPU probe manual dispatch only
+e10504cf9bccfa849bbc0f692b10c0c5bee29ced	2026-10-20T12:55:16Z	zuppasoupfifaistimewa-png	Trigger SPU restore probe with VSync-gated checkpoint
+bd5a9498c9992f4eb4896f9e3688e163752d8d47	2026-10-20T12:54:55Z	zuppasoupfifaistimewa-png	Close restore gate template strings correctly
+4a8f7f55a42a5abd57d6b816ba6ca867468f972d	2026-10-20T12:54:09Z	zuppasoupfifaistimewa-png	Fix YAML indentation and poll restore comparison at each VSync
+ceb600fea8bf180850b8149ff769200055768c42	2026-10-20T12:52:14Z	zuppasoupfifaistimewa-png	Trigger corrected SPU restore verification probe
+794dcc6da443685c9bd746c4a77460b22b9066c2	2026-10-20T12:51:59Z	zuppasoupfifaistimewa-png	Poll restore screenshot gate on VSync and checkpoint only after pass
+27072936b819493c75bdca63e8d1d6f2dfcdee47	2026-10-20T06:57:43Z	zuppasoupfifaistimewa-png	Update SPU sentinel probe findings and retry
+d12a38d700ed3cc8e73ed02b1eb64c48e5739285	2026-10-20T06:57:39Z	zuppasoupfifaistimewa-png	Document timeout mechanism in SPU restore probe
+7d598e7ec0e23c1d0c9fed3aa14c9e2b81075dee	2026-10-20T06:57:35Z	zuppasoupfifaistimewa-png	Handoff latest SPU savestate probe status
+48dd66c1820bcb8eb8216373c74c82c105e55314	2026-10-20T06:57:30Z	zuppasoupfifaistimewa-png	Record SPU restore probe findings and corrected retry
+f2983b9b79edb791b6363dc0a59c36934e9a34e0	2026-10-20T06:56:16Z	zuppasoupfifaistimewa-png	Remove temporary one-shot SPU probe trigger marker
+106b2f3f228e47b16384d75f854736d051994c86	2026-10-20T06:56:13Z	zuppasoupfifaistimewa-png	Remove one-shot probe trigger; keep manual dispatch only
+77d29f09f79e145b9212697a32a489c181f4534e	2026-10-20T06:55:53Z	zuppasoupfifaistimewa-png	Trigger one corrected SPU savestate restoration probe
+8bb5c0ed829cc2ff5e004612445c8fdb88836d04	2026-10-20T06:55:47Z	zuppasoupfifaistimewa-png	Fix savestate probe gate polling after frame 180
+257b5cb0f2cb8496922ecefc030dc4c350d852cf	2026-10-20T05:14:14Z	zuppasoupfifaistimewa-png	Refresh probe progress from verified GitHub job steps
+4961f92bd140580deab030061cf8b866cf7a40e5	2026-10-20T05:14:10Z	zuppasoupfifaistimewa-png	Refresh probe progress from verified GitHub job steps
+6a863d1831ea054728f53b7ec488144836d7418a	2026-10-20T05:14:07Z	zuppasoupfifaistimewa-png	Refresh probe progress from verified GitHub job steps
+95f072cba1a25a6a16844317cd3b2ccbac80fe18	2026-10-20T05:14:03Z	zuppasoupfifaistimewa-png	Refresh probe progress from verified GitHub job steps
+e911a167d3a745c808f368d1e7804e89321ef97e	2026-10-20T05:12:26Z	zuppasoupfifaistimewa-png	Document current probe and distinguish workflow failure from restore evidence
+6483f6a6c3aa9d2da5b967342bb723fddf21fa2f	2026-10-20T05:12:23Z	zuppasoupfifaistimewa-png	Record current probe execution status in root cause analysis
+5d71d564a2b9137195a129de5b7387cebc60d193	2026-10-20T05:12:21Z	zuppasoupfifaistimewa-png	Update handoff with active SPU probe and exact failure cause
+60fa926212d93eae828bed8b15146b994383b2ce	2026-10-20T05:12:18Z	zuppasoupfifaistimewa-png	Record actual SPU probe run and corrected trigger failure diagnosis
+192bf21d05d1dfc559110d66080e25940354eb29	2026-10-20T05:11:07Z	zuppasoupfifaistimewa-png	Remove one-shot SPU probe trigger marker
+e925b438b69bac29003dc73f0908bbc1dd0eae9a	2026-10-20T05:11:00Z	zuppasoupfifaistimewa-png	Remove one-shot probe push trigger; keep input fallback fix
+f1a0d7f0c2a574c07b875e38a3c6f7ffa561daa6	2026-10-20T05:10:43Z	zuppasoupfifaistimewa-png	Trigger one isolated SPU sentinel probe using corrected workflow
+b44efaab64716db2c018212587989103c9ffa83b	2026-10-20T05:10:30Z	zuppasoupfifaistimewa-png	Fix push input fallback and add one-shot scoped probe trigger
+059d282d5f755dd85ad759ff1c8ae0dd37f59220	2026-10-20T05:04:01Z	zuppasoupfifaistimewa-png	Add latest savestate probe launch status to handoff
+19820c441d37d2fa1a4c6f54fba18c28f50fdd1d	2026-10-20T05:03:57Z	zuppasoupfifaistimewa-png	Record self-trigger attempt and verification limitation
+723d7686146dde3968e72365a7d139deffb7d2d8	2026-10-20T05:02:55Z	zuppasoupfifaistimewa-png	Remove one-time SPU probe trigger marker
+ac1aab1874a022f6b00fde4fd32fa0a0d31cee5c	2026-10-20T05:02:51Z	zuppasoupfifaistimewa-png	Remove temporary one-time SPU probe push trigger
+92c7044e9b4c428a9a4c9fa3a33d1913e4709574	2026-10-20T05:02:02Z	zuppasoupfifaistimewa-png	Trigger SPU sentinel savestate probe on main
+514b4641234ac4e8a156092bd83faca056b8bb11	2026-10-20T05:01:57Z	zuppasoupfifaistimewa-png	Add temporary one-file push trigger for savestate probe
+8741c9021e2105229d2f95796438c59239689537	2026-10-20T04:59:14Z	zuppasoupfifaistimewa-png	Record schema preflight display failure and Xvfb correction
+44fc47c752c4e99da69684df265e06aca435e145	2026-10-20T04:59:11Z	zuppasoupfifaistimewa-png	Record schema preflight display failure and Xvfb correction
+2ec43afb10db7b673ffbc89b8e0cfdfc9e0bf1e7	2026-10-20T04:59:05Z	zuppasoupfifaistimewa-png	Record schema preflight display failure and Xvfb correction
+b8ba2fa7586e83690c38c61ba290fcbb9c7fe836	2026-10-20T04:58:50Z	zuppasoupfifaistimewa-png	Upload virtual display diagnostics for schema preflight
+142bd043eb86bc3de8092fe8828b128bdb3e4f23	2026-10-20T04:58:39Z	zuppasoupfifaistimewa-png	Run schema API preflight under Xvfb and preserve actionable failure logs
+6ac7414421f0594425f72bd01f9b2679a681aaf9	2026-10-20T04:08:44Z	zuppasoupfifaistimewa-png	Require fresh-process reload in final savestate acceptance criteria
+cf7c61412b12948b95c2708d12d4aff2f8c8a281	2026-10-20T04:08:29Z	zuppasoupfifaistimewa-png	Correct board restore screenshot-pass manifest check
+4abe8647b4ddabb1210b4a925bfd86d68b71b399	2026-10-20T04:07:56Z	zuppasoupfifaistimewa-png	Document fresh-process reload gate for checkpoint validity
+336f0ec7fad2b38000fda6b7f05d5375d2fc2749	2026-10-20T04:07:52Z	zuppasoupfifaistimewa-png	Document fresh-process reload gate for checkpoint validity
+87f24a68c0ec1f7082e35c915ed56761243a4487	2026-10-20T04:07:49Z	zuppasoupfifaistimewa-png	Document fresh-process reload gate for checkpoint validity
+5cc382351722e5cbb2173e7c27109825e56ccf79	2026-10-20T04:07:32Z	zuppasoupfifaistimewa-png	Clarify second-process checkpoint validation in savestate probe docs
+406f04d863b6737d87660b9233a06566c3c86614	2026-10-20T04:07:18Z	zuppasoupfifaistimewa-png	Correct board screenshot comparison manifest source
+f4ea7b56f260cd378fd683b1a13e31a5c2ddfee4	2026-10-20T04:07:00Z	zuppasoupfifaistimewa-png	Separate board restore and fresh-checkpoint verification evidence
+f7910b7600f775f6abc7b641e8c2fd75e764dc8b	2026-10-20T04:06:04Z	zuppasoupfifaistimewa-png	Require complete fresh-process gates and clear stale screenshot metadata
+aa19eaebcda1bce2f240dded94b32f9766a35128	2026-10-20T04:05:42Z	zuppasoupfifaistimewa-png	Fix screenshot comparator paths and preserve source checkpoint image
+a6870bb0d320613a8285201e98fc49a8b3487590	2026-10-20T04:05:02Z	zuppasoupfifaistimewa-png	Require independent reload and screenshot evidence for next checkpoint
+f44564563f05cd37f01dc6b9ba355fff9532459e	2026-10-20T04:04:18Z	zuppasoupfifaistimewa-png	Add fresh-process reload gate for the emitted checkpoint
+700d7bb57f594a4db29d4d2bcd3b035307aab876	2026-10-20T04:04:00Z	zuppasoupfifaistimewa-png	Prepare isolated fresh-process checkpoint validation gate
+13c4adbf451ef80808d01360c891ab05b16efb3d	2026-10-20T03:59:09Z	zuppasoupfifaistimewa-png	Map savestate protobuf SPU channel fields and record cursor analysis
+74a15f232017b4042050729d6d439b0db7e0fa3a	2026-10-20T03:59:05Z	zuppasoupfifaistimewa-png	Add follow-up diagnosis of PCSX-Redux SPU cursor crash
+b425cec464bb5af8519b0317cc22c66e87d6d650	2026-10-20T03:59:02Z	zuppasoupfifaistimewa-png	Refresh research handoff with SPU sentinel diagnosis and next action
+8b17f125342ac38207dcb76fa7c9173b730ad749	2026-10-20T03:58:59Z	zuppasoupfifaistimewa-png	Record likely SPU cursor root cause and isolated restore probe status
+5b4241d4766c6dd00220332e88e9fac8600753f0	2026-10-20T03:57:22Z	zuppasoupfifaistimewa-png	Remove duplicate schema gates and fix patch hash path
+9b831daf7c4c117438517faf3c2ab12a58fad839	2026-10-20T03:56:56Z	zuppasoupfifaistimewa-png	Harden schema smoke test and precise loader-return tracking
+1f3015e6ca4c92c004d89bb6509f5b6789b13100	2026-10-20T03:55:07Z	zuppasoupfifaistimewa-png	Add isolated PCSX-Redux SPU sentinel-fix restore probe workflow
+3c9e17fab5d3f9554e4ca551b9f61402ced93b7b	2026-10-20T03:53:56Z	zuppasoupfifaistimewa-png	Document likely SPU stopped-cursor savestate crash and isolated fix probe
+e9a545bbf8a297e0fcf68a1c11cb27a642390dbb	2026-10-20T03:52:36Z	zuppasoupfifaistimewa-png	Align probe patch exactly with upstream stopped-cursor fix
+ed7cce4998376aa19a9da41afd2d12a7f8469a21	2026-10-20T03:52:25Z	zuppasoupfifaistimewa-png	Add isolated upstream SPU stopped-cursor fix patch for restore probe
+3922c1cb735a885a981a6eed55967f9a62bd5467	2026-10-20T03:37:19Z	zuppasoupfifaistimewa-png	Clarify schema probe API availability in comparison document
+d56e642be5d9114021c176913e2dd5686a6a5bb3	2026-10-20T03:37:13Z	zuppasoupfifaistimewa-png	Clarify schema probe API availability in savestate handoff
+9fc6954f9bba5d30b0711110789f445e4596d6fc	2026-10-20T03:37:10Z	zuppasoupfifaistimewa-png	Clarify schema probe API availability in savestate handoff
+b5b921df6bc83eedc78ee40f58f219d9218832a3	2026-10-20T03:36:39Z	zuppasoupfifaistimewa-png	Fix savestate schema field formatting in status
+796fb0bfef84d5e9e489e269cbb7d38d5d0c969b	2026-10-20T03:36:04Z	zuppasoupfifaistimewa-png	Record read-only savestate structural comparison in status
+1eff1e65ad4a18ff5f33e95b941c19e06efea21d	2026-10-20T03:35:43Z	zuppasoupfifaistimewa-png	Fix formatting in structural comparison handoff
+963db2237fa6ab1b8dd732a2eabf71b1211eef46	2026-10-20T03:35:27Z	zuppasoupfifaistimewa-png	Add raw savestate structural comparison findings to handoff
+dbe20783f90971f69a1abc56fb492da736882661	2026-10-20T03:35:14Z	zuppasoupfifaistimewa-png	Document read-only raw savestate structural comparison
+8b1defd2268c7dbbf905de4d139b0b364a2e90d4	2026-10-19T19:51:43Z	zuppasoupfifaistimewa-png	Record native savestate load crash and next steps
+4dbfa6cb823d63f4908230df4a93af88006cb78b	2026-10-19T19:51:14Z	zuppasoupfifaistimewa-png	Document GDB raw savestate load crash
+68639076b5b6a971d62bd8a5a73c60a9ba406d11	2026-10-19T19:50:03Z	zuppasoupfifaistimewa-png	Remove temporary GDB trigger
+04d804b958bf1df97285af1e7526822917dff21a	2026-10-19T19:49:00Z	zuppasoupfifaistimewa-png	DIAG: capture fault registers and native mappings
+a5de007f0a01ed1b2d098856c803956f8e4b2c77	2026-10-19T19:47:43Z	zuppasoupfifaistimewa-png	Remove temporary GDB trigger
+83e1755d0c8ade82603bbf685edf6524b79e0608	2026-10-19T19:47:32Z	zuppasoupfifaistimewa-png	DIAG: follow AppImage parent for native backtrace
+7de73cc583f5accdb4347109a3b6f5cbe9572a42	2026-10-19T19:45:58Z	zuppasoupfifaistimewa-png	Remove temporary GDB trigger
+36e5027f9efe14531fc45b135787cbf278549514	2026-10-19T19:45:47Z	zuppasoupfifaistimewa-png	DIAG: rerun GDB receiver with stage fix
+a54afc0a7ef6a276a2255e72ee4d7976a9e4d714	2026-10-19T19:44:52Z	zuppasoupfifaistimewa-png	Remove temporary GDB trigger
+cfd6bfc7fcf455bae672e53f3b51b56467c1b737	2026-10-19T19:44:42Z	zuppasoupfifaistimewa-png	DIAG: dispatch GDB receiver from saved checkpoint
+0b2900c241bfaec2300afb683b997a368e4b081a	2026-10-19T19:44:09Z	zuppasoupfifaistimewa-png	Remove temporary GDB trigger
+ab5f9445d320ac8c71ff45ee4a48975e7243fde3	2026-10-19T19:43:54Z	zuppasoupfifaistimewa-png	DIAG: retry receiver trigger
+0026e8b858ffd294986b8b9181c990a8e8d900a6	2026-10-19T19:42:53Z	zuppasoupfifaistimewa-png	DIAG: GDB raw restore receiver
+eae245622b6f0e524299505d5d732085ce545e5e	2026-10-19T19:36:53Z	zuppasoupfifaistimewa-png	Update handoff after Story Mode raw restore crash
+4058fcadbd0b7f16d4f62900ce307a08e04d89eb	2026-10-19T19:36:36Z	zuppasoupfifaistimewa-png	Record raw Story Mode restore crash diagnostics
+d0b24b64fcc3c6d8d309252a53d0e291d1f2b36f	2026-10-19T19:34:47Z	zuppasoupfifaistimewa-png	Remove temporary raw restore launch trigger
+4c83bae3c35a6c6cbb240250439f128cfff291e3	2026-10-19T19:34:29Z	zuppasoupfifaistimewa-png	Launch raw Story Mode restore from source 39262213468
+edeec40d43dbb60a13570e25050bc0fc579ceaf2	2026-10-19T19:33:43Z	zuppasoupfifaistimewa-png	Remove temporary one-shot raw restore launch trigger
+d5f9bd7d88615caed334cffbf1de4839603cb095	2026-10-19T19:33:05Z	zuppasoupfifaistimewa-png	Launch raw Story Mode restore from source 39262213468
+98b85a7710652b008566ff96b5df2c1641ae0cbf	2026-10-19T19:21:30Z	zuppasoupfifaistimewa-png	Update handoff with Story Mode raw checkpoint and receiver fix
+7a7ff914c1803db6557bbf360f4656b8cac71505	2026-10-19T19:21:15Z	zuppasoupfifaistimewa-png	Record raw Story Mode checkpoint and receiver path failure
+4b0bbe0d838e42a688e907372dcb8682fa80c967	2026-10-19T19:19:39Z	zuppasoupfifaistimewa-png	Fix raw resume artifact workspace path
+085bfb9c5421d8aae4b26e9169b254c409e28250	2026-10-19T13:49:09Z	zuppasoupfifaistimewa-png	Record current raw Story Mode checkpoint experiment
+06aee30cab1de54349463628b33c42329ee2acf3	2026-10-19T13:49:06Z	zuppasoupfifaistimewa-png	Refresh raw savestate continuation handoff
+92107825e2b99bb89efcd5fafaf3732cdf989860	2026-10-19T13:49:03Z	zuppasoupfifaistimewa-png	Document latest raw savestate runner status
+ddcf1e0462bde04a18c65990be1bf9be2e375cbd	2026-10-19T13:44:03Z	zuppasoupfifaistimewa-png	Use a valid fixed workspace for restore workflow
+e396eac00631001b7a0e68d7701c70aec10dec19	2026-10-19T13:40:50Z	zuppasoupfifaistimewa-png	Fix Story Mode watcher environment for source checkpoint capture
+723b33a3e7179af5a0169d00baf77f6626576394	2026-10-19T13:40:30Z	zuppasoupfifaistimewa-png	Fix raw-restore evidence manifest conditional
+410a754aa7cfc7733ef9a790a017da72728606d5	2026-10-19T13:40:03Z	zuppasoupfifaistimewa-png	Add raw Story Mode cross-run restore and continuation workflow
+ded5867641f5b9614af65201f20cc152962a11b5	2026-10-19T13:35:54Z	zuppasoupfifaistimewa-png	Preserve raw Story Mode checkpoints and verify restore screenshots
+a6bc618bd2b408be9afe448b2485f3c58370d05f	2026-10-19T13:09:16Z	zuppasoupfifaistimewa-png	Add isolated sanitizer test using proven raw savestate control
+beb970fdb8ceb482864fca3bdd94242f4f5b4b6d	2026-10-19T12:58:16Z	zuppasoupfifaistimewa-png	Document raw savestate cross-run restore proof
+7bb1478a9586c291264522044d6cfa7a60f9dc73	2026-10-19T12:58:10Z	zuppasoupfifaistimewa-png	Update handoff with raw savestate cross-run proof
+e13a935aee005d87c7cbc7a1aa5d3774bbab2397	2026-10-19T12:58:06Z	zuppasoupfifaistimewa-png	Record successful raw savestate cross-run proof in status
+db19f353003350e1297db6b7576994b7558ca00c	2026-10-19T12:53:02Z	zuppasoupfifaistimewa-png	Validate separate cross-run restore workflow after Run A is registered
+39f4c81b7bdb5912fe0aa643f964b9ff73cfdff2	2026-10-19T12:52:17Z	zuppasoupfifaistimewa-png	Separate raw savestate creation from cross-run restore trigger
+ade910b2652b0e7f6125e982b8ff0160000a6c69	2026-10-19T12:52:08Z	zuppasoupfifaistimewa-png	Add separate raw savestate cross-run restore workflow
+b9bf3c956cafb35f629f3a931b0b867ea24a9247	2026-10-19T12:48:29Z	zuppasoupfifaistimewa-png	Fix raw savestate cross-run workflow inputs
+419c78ae4fd406774ac44256985403233cfa043e	2026-10-19T12:46:55Z	zuppasoupfifaistimewa-png	Add raw savestate cross-run restore experiment
+c18e9130183dda10892a14701933ce482479910f	2026-10-19T12:37:13Z	zuppasoupfifaistimewa-png	Define raw cross-run savestate isolation test
+95f4e8da9e689a72e59e2e98d745626e208700da	2026-10-19T12:37:10Z	zuppasoupfifaistimewa-png	Update handoff with cross-run savestate test plan
+97a3535a3edefc1ee0cbff56f0292b5a99d765e4	2026-10-19T12:37:07Z	zuppasoupfifaistimewa-png	Prioritize raw savestate cross-run portability test
+ffb15928f8e316a4eeaf82629eb3ff4cf2082e30	2026-10-19T12:36:00Z	zuppasoupfifaistimewa-png	Document native roundtrip success and sanitized checkpoint blocker
+2214a45cff605837223e76bbc9aa9e3822caa716	2026-10-19T12:35:57Z	zuppasoupfifaistimewa-png	Update handoff with savestate roundtrip result
+5d67e0f595c46f2c4a759a1ad98efb9e693f8352	2026-10-19T12:35:53Z	zuppasoupfifaistimewa-png	Record limited native savestate roundtrip proof
+301228609369a562771af888ce1193b0adf9cdbf	2026-10-19T12:27:33Z	zuppasoupfifaistimewa-png	Fix continuous native roundtrip probe script preparation
+3922836cf17796b568f84346d8eca23b0677647c	2026-10-19T12:07:41Z	zuppasoupfifaistimewa-png	Test native roundtrip restore without an intermediate pause
+38af3a4810e107a3866b1c4465b51d3c6d43d062	2026-10-19T12:05:17Z	zuppasoupfifaistimewa-png	Update handoff with savestate diagnostic findings
+8bf6e56cd1126561614b4d678a82b2764b330419	2026-10-19T12:05:12Z	zuppasoupfifaistimewa-png	Update Naruto research status with savestate diagnostics
+e70e71fff8d5e2b3109cb1b4443c20b8b3129a24	2026-10-19T12:05:08Z	zuppasoupfifaistimewa-png	Record repeated native savestate crash trace
+0c85b6dba766f64e0bcbb70386bbcc422fa8fe19	2026-10-19T12:02:54Z	zuppasoupfifaistimewa-png	Add clean native savestate roundtrip control
+964e8e85327ec819311395b84c1056ec689ef95c	2026-10-19T12:00:29Z	zuppasoupfifaistimewa-png	Document isolated savestate restore diagnostic findings
+cb68e943abeb9a40ca790615a63efa5c172b6270	2026-10-19T11:58:27Z	zuppasoupfifaistimewa-png	Capture native backtrace during savestate load crash
+f62c8d4e84ce46724d6f87421cd2d7284187b394	2026-10-19T11:54:49Z	zuppasoupfifaistimewa-png	Isolate savestate listener setup from actual load call
+e89b01171271f0821204b9ca5d74fd6405f454a0	2026-10-19T11:50:10Z	zuppasoupfifaistimewa-png	Log early savestate probe events and shorten control window
+fec4dae603d0ac247f22e979a3e8d7872a2fdb27	2026-10-19T11:46:48Z	zuppasoupfifaistimewa-png	Keep savestate diagnostic event listeners alive
+5a75ad0ad61e3fe9601190f5712adb96e8588c01	2026-10-19T11:44:39Z	zuppasoupfifaistimewa-png	Fix diagnostic checkpoint source copy
+02707633b9242016e9848919013b94a26c34500d	2026-10-19T11:43:55Z	zuppasoupfifaistimewa-png	Add isolated savestate restore diagnostic workflow
+50713b9effe1d8510f50b323efaa16e55d1285e3	2026-10-19T11:08:49Z	zuppasoupfifaistimewa-png	Surface current Memory Card workflow and Story Mode status
+614cd7d74be4ebd41abbd1cc47856469f8700066	2026-10-19T11:08:46Z	zuppasoupfifaistimewa-png	Add explicit Memory Card restore and gameplay completion gates
+99990c819d250ff02cc9b123de8ef4e16eb90bc9	2026-10-19T11:08:42Z	zuppasoupfifaistimewa-png	Record Memory Card PR merge and first bounded run
+43a1ad562221ba63e95793b2c3925dc25ed32eaf	2026-10-19T11:08:37Z	zuppasoupfifaistimewa-png	Refresh current Memory Card and Story Mode status in HANDOFF_CHAT_BARU_2026-10-19.md
+761f81be4981626f27c20da5b99efebdb74c7dc0	2026-10-19T11:08:33Z	zuppasoupfifaistimewa-png	Refresh current Memory Card and Story Mode status in HANDOFF_LANJUT.md
+2ac0707ba3b2c6ff721da756da037e4436effc5b	2026-10-19T11:08:29Z	zuppasoupfifaistimewa-png	Refresh current Memory Card and Story Mode status in STATUS.md
+9dc876f08d724b6f809c6da4e2dbea1b549b9d62	2026-10-19T11:05:42Z	zuppasoupfifaistimewa-png	Add bounded Memory Card persistence workflow\n\nMount and persist the PS1 Memory Card explicitly, validate card restore artifacts fail-closed, keep savestate optional, and bound emulator test duration.
+22d47110501204089da17a7e9c0fafd01d96a28b	2026-10-19T10:38:55Z	zuppasoupfifaistimewa-png	Record Memory Card implementation draft and merge safety
+0e6ec96adcf9d84789eb07b4a981752696ffd530	2026-10-19T10:38:47Z	zuppasoupfifaistimewa-png	Record Memory Card implementation draft and merge safety
+3504fa489b15cbf97700c62df38f64d3f7d42ead	2026-10-19T10:38:40Z	zuppasoupfifaistimewa-png	Record Memory Card implementation draft and merge safety
+40bae0a96b1fbfc7ea8ac546047d3448011a6e10	2026-10-19T10:38:33Z	zuppasoupfifaistimewa-png	Record Memory Card implementation draft and merge safety
+ec7b5dc961e4caf62b19c4187e59259c3c704fb2	2026-10-19T10:34:03Z	zuppasoupfifaistimewa-png	Document Memory Card persistence requirement
+4191d2230174568f3bd2d73c6c961b6b82ca9c85	2026-10-19T10:33:57Z	zuppasoupfifaistimewa-png	Document Memory Card persistence requirement
+03db509ddce1c0e24e55237850118b2bc403e153	2026-10-19T10:33:51Z	zuppasoupfifaistimewa-png	Document Memory Card persistence requirement
+e7e2b08b843a3bd1164802d770c8ed9e5aeca963	2026-10-19T10:33:42Z	zuppasoupfifaistimewa-png	Document Memory Card persistence requirement
+3b5b3530304eca772a4613b41a9c352fbf253945	2026-10-19T10:12:17Z	zuppasoupfifaistimewa-png	Update state capture to paused safe point and record crash finding
+2c9f77ba896d12c2b88f4046225012a72be25bdc	2026-10-19T10:12:13Z	zuppasoupfifaistimewa-png	Document current GDB restore finding and checkpoint test
+8b89a2453ebd7b5aeeddf114de80c52d6a79a9a4	2026-10-19T10:12:09Z	zuppasoupfifaistimewa-png	Record safe-point save capture and restore validation sequence
+9e2f71d48bd5ab5d49db472015f418d300eff37e	2026-10-19T10:12:05Z	zuppasoupfifaistimewa-png	Log native invalid pointer during restore and capture-safe-point hypothesis
+ae91328a1bbf0c5bc58f7dca0bd0a589c30f0882	2026-10-19T10:12:00Z	zuppasoupfifaistimewa-png	Handoff new safe-point save run and GDB finding
+1dc762cdcbcb2a5af9e859557900fdff0c6f1115	2026-10-19T10:11:55Z	zuppasoupfifaistimewa-png	Record native restore crash and safe-point save experiment
+40912d8c8e828eeae01dc7ad1368a9481b2d78c6	2026-10-19T10:11:51Z	zuppasoupfifaistimewa-png	Record GDB invalid-pointer finding and safe-point checkpoint test
+be597ce2b4c6da6c8db34be328007806f164ddd7	2026-10-19T10:11:22Z	zuppasoupfifaistimewa-png	Capture savestates at paused safe points for restore validation
+7eba9489ec74d1c08a9aaebdf1386bcd2fba91f1	2026-10-19T10:06:50Z	zuppasoupfifaistimewa-png	Fix GDB dollar escaping for restore crash trace [resume-checkpoint] [restore-gdb]
+83409a5d197b38104129ad51a54748745066c6c0	2026-10-19T10:05:21Z	zuppasoupfifaistimewa-png	Capture crash memory mappings and instruction context [resume-checkpoint] [restore-gdb]
+ef4308714dfa40aac06e99a45e8dc80947e9e6e3	2026-10-19T10:02:42Z	zuppasoupfifaistimewa-png	Follow emulator process for real restore GDB trace [resume-checkpoint] [restore-gdb]
+e3da45913c6e2ab6b26d6d6af16a9f2265694881	2026-10-19T10:01:40Z	zuppasoupfifaistimewa-png	Document GDB-based restore crash diagnosis
+2cb0ba485f07989988d72fec1bfecb1c9f450473	2026-10-19T10:01:36Z	zuppasoupfifaistimewa-png	Update current savestate restore validation
+43ed690f738f396931fe9e4436a47df7be72b29c	2026-10-19T10:01:33Z	zuppasoupfifaistimewa-png	Add GDB trace inspection for checkpoint restore failure
+cf62ebefeba4a2ffddf708fd2e022ee94aee41d8	2026-10-19T10:01:29Z	zuppasoupfifaistimewa-png	Log third failed restore attempt and GDB diagnostic
+71f9770c77631fcef9c879022c27fd1ea33dbdaa	2026-10-19T10:01:25Z	zuppasoupfifaistimewa-png	Handoff GDB trace analysis for save-state restore
+4a1a2724e4d01d893f1d3004a7b98ab1f008f30e	2026-10-19T10:01:20Z	zuppasoupfifaistimewa-png	Record repeated save-state restore crashes and diagnostic run
+e9f4e0ffe2a6d065ea5763ce03633f628537e22e	2026-10-19T10:01:16Z	zuppasoupfifaistimewa-png	Record repeated restore failures and queue GDB stack trace
+680980c66bfb1cf88c688336bfef57ea3f1cda8d	2026-10-19T10:00:56Z	zuppasoupfifaistimewa-png	Trace savestate restore crash with GDB [resume-checkpoint] [restore-gdb]
+b83683a91f4753df550230edda46fb86403deb74	2026-10-19T09:57:02Z	zuppasoupfifaistimewa-png	Document deferred restore experiment and limits
+54f54752d01277d5735bd07c7166385da09c37cd	2026-10-19T09:56:50Z	zuppasoupfifaistimewa-png	Update current savestate restore status
+cb8e728242dafb93d98b978a664ce07552229b4c	2026-10-19T09:56:46Z	zuppasoupfifaistimewa-png	Add deferred paused VSync savestate restore experiment
+e7a3a902899586e4ceb4e523920af3eabdaccb1b	2026-10-19T09:56:42Z	zuppasoupfifaistimewa-png	Record restored BIOS field yet early native loader crash
+fe2afcebe59bda83afe4994c9293ff12669ec0dc	2026-10-19T09:56:38Z	zuppasoupfifaistimewa-png	Handoff deferred restore validation after second failure
+296a2e613cffbb9355dad597a7154cc7902697db	2026-10-19T09:56:34Z	zuppasoupfifaistimewa-png	Update checkpoint restore diagnosis and newest pending run
+529626ff5e12b7570d826d53ddc2afe635385b2a	2026-10-19T09:56:26Z	zuppasoupfifaistimewa-png	Record failed rehydrated restore and deferred VSync restore test
+fa220bead2da2418921b2fcc392d16b87201dd42	2026-10-19T09:56:00Z	zuppasoupfifaistimewa-png	Defer savestate restore to paused first-VSync safe point [resume-checkpoint]
+182b0760af06361148f39563a0c3b3859a8b1c63	2026-10-19T09:52:56Z	zuppasoupfifaistimewa-png	Correct sanitized state restore process for fixed ROM field
+4b773138c8e74d97d0454f4cebb84c80b7ed81da	2026-10-19T09:52:52Z	zuppasoupfifaistimewa-png	Record savestate restore failure and next validation
+ae1e9f4fc1e79ed4055c60d631e28a1a3ae31d18	2026-10-19T09:52:49Z	zuppasoupfifaistimewa-png	Add BIOS field rehydration step to checkpoint restore validation
+53e1afbfa549a6361c6c49da8dd40aadd99ba4bd	2026-10-19T09:52:45Z	zuppasoupfifaistimewa-png	Record failed restore evidence and corrected savestate schema handling
+5fbdd35fc7d52195370d18cdffa11674b57d33ae	2026-10-19T09:52:42Z	zuppasoupfifaistimewa-png	Handoff next restore test after local BIOS field reconstruction
+b6598c29874fecce3f4210e01e476b97c28890f2	2026-10-19T09:52:37Z	zuppasoupfifaistimewa-png	Correct restore failure diagnosis and current validation run
+db55568837a9cfec8baf029f57956e31cff287fe	2026-10-19T09:52:33Z	zuppasoupfifaistimewa-png	Correct checkpoint restore failure and record local BIOS field reconstruction
+f4ea6b0169ef23c70be980602f91a65b3457c02c	2026-10-19T09:52:09Z	zuppasoupfifaistimewa-png	Rehydrate sanitized checkpoint BIOS locally before restore [resume-checkpoint]
+7a3aa794747d0ade0a0a59899f47f6f1f541efcf	2026-10-19T09:49:33Z	zuppasoupfifaistimewa-png	Document tested artifact checkpoint and pending restore validation
+8a93310526942bcd62b3f4d7ab1721489434e6f6	2026-10-19T09:49:29Z	zuppasoupfifaistimewa-png	Document current checkpoint artifact and restore validation status
+a7fc26d66c7ef41e9f9957457771a5e17566daa7	2026-10-19T09:49:26Z	zuppasoupfifaistimewa-png	Add checkpoint restore test and fade classifier issue
+238b61f30ff60ca3f40a6d69ee40328fe703e413	2026-10-19T09:49:22Z	zuppasoupfifaistimewa-png	Record savestate artifact and dialogue fade evidence
+e36d93eaa405311e72595938b346af112d12e31b	2026-10-19T09:49:18Z	zuppasoupfifaistimewa-png	Handoff restore validation from checkpoint run
+b4369ea22fe7c19b6ced27d7b0b81e945d0c4e24	2026-10-19T09:49:14Z	zuppasoupfifaistimewa-png	Record checkpoint artifact and false-positive fade detection
+236944f08de8327b9d86b1becbf3695d08a3c3e0	2026-10-19T09:49:10Z	zuppasoupfifaistimewa-png	Record real private checkpoint and restore test run
+077f576f33e8f65eea0504382383d6cc67d5cff6	2026-10-19T09:48:44Z	zuppasoupfifaistimewa-png	Resume sanitized Story checkpoint and guard dialogue fade detection [resume-checkpoint]
+1cc6ab8b1cbd511c8dc129a99e2b584e7a378bac	2026-10-19T06:11:39Z	zuppasoupfifaistimewa-png	Require in-game evidence and Story Mode completion
+21a6afe15241496db8659eb9f4b9ae9f8eac4795	2026-10-19T06:11:35Z	zuppasoupfifaistimewa-png	Clarify final research goal and evidence standards
+43df2a98c1e7836f9ee2965ace62e1fa82a590b9	2026-10-19T06:11:32Z	zuppasoupfifaistimewa-png	Add checklist for complete Story Mode gameplay rule verification
+b9d9e6e3dc5bc1e605934a46375b3f4f3cd038db	2026-10-19T06:11:28Z	zuppasoupfifaistimewa-png	Record non-negotiable target for verified complete Story Mode rules
+c9a0ccba45b7bbad4b05fc88d38c990469a28f15	2026-10-19T06:11:24Z	zuppasoupfifaistimewa-png	Preserve Story Mode completion objective and rule verification checklist
+f638a1dc2955c769607011ddb1341b82216476a4	2026-10-19T06:11:21Z	zuppasoupfifaistimewa-png	Clarify mandatory Story Mode completion and game-rule evidence taxonomy
+47baafeead1433529ec4b003ea7f8bb532aa52b3	2026-10-19T06:11:17Z	zuppasoupfifaistimewa-png	Emphasize final objective: finish Story Mode and establish verified rules
+8d14a5b529490c1be7770e83482f1b625d730eb9	2026-10-19T05:40:38Z	zuppasoupfifaistimewa-png	Record optimized playthrough crash and restore guard
+4181a558c30cbe32645569054c647d9824114a20	2026-10-19T05:40:35Z	zuppasoupfifaistimewa-png	Record early playthrough crash diagnosis
+860e9d7fdd2e3e7f1068f8355f39ceaed6fc9fff	2026-10-19T05:40:19Z	zuppasoupfifaistimewa-png	Track early crash and sanitized checkpoint validation
+8e4c420ecf947e1627a8a1d2c00551a2c9d265b6	2026-10-19T05:40:15Z	zuppasoupfifaistimewa-png	Log crash evidence and next controlled fix
+f78163d50b4d81564c27c5c735c5e60a911481f3	2026-10-19T05:40:11Z	zuppasoupfifaistimewa-png	Update next action after optimized-runner crash
+68242f5204bec128acfbec10575afffc78774bfc	2026-10-19T05:40:06Z	zuppasoupfifaistimewa-png	Record early emulator crashes and current checkpoint guard test
+14d45ad2939c0e27542f0e51c4fa7aaf800405e3	2026-10-19T05:40:02Z	zuppasoupfifaistimewa-png	Record early crashes during six-hour optimization and latest guard run
+88d5cfa8833ef39e286431f5e8bedf2584485804	2026-10-19T05:39:38Z	zuppasoupfifaistimewa-png	Guard savestate restore against missing checkpoint file
+749f7364f7b141731ed32a691fbbd422a9cb8b93	2026-10-19T05:37:54Z	zuppasoupfifaistimewa-png	Fix playthrough crash and propagate emulator failures
+13ec9776b5011feffe7c5ad8eb9efa3c47a25f82	2026-10-19T05:36:32Z	zuppasoupfifaistimewa-png	Revise save-transfer rules for private checkpoints
+2c85ff324f62436dc5e4504732276af16b0c4760	2026-10-19T05:36:28Z	zuppasoupfifaistimewa-png	Update private save-state transfer policy
+af0a653fbd098a05a3e7a036437813e41a242e97	2026-10-19T05:36:25Z	zuppasoupfifaistimewa-png	Update save-transfer, checkpoint, and playthrough runtime procedure
+9822a71ec106404488843eb5e4529ca51dc6603a	2026-10-19T05:36:21Z	zuppasoupfifaistimewa-png	Record save-state policy revision and workflow optimization
+f7e846ea63d88023c793fcf90e9d855925cc6973	2026-10-19T05:36:16Z	zuppasoupfifaistimewa-png	Document private checkpoint transfer and resume procedure
+f4264c4d35a12e8ac0ff24d703b7bbd0f7349056	2026-10-19T05:36:12Z	zuppasoupfifaistimewa-png	Revise save/checkpoint policy and optimized playthrough workflow
+c28e0f39de2bc0fd59946a6cc22f2fd40b6ea684	2026-10-19T05:36:08Z	zuppasoupfifaistimewa-png	Revise save-transfer policy and record optimized six-hour playthrough
+58d2e8b18feec9dedbb9fbfd9623fc40c1039175	2026-10-19T05:34:29Z	zuppasoupfifaistimewa-png	Optimize Story Mode playthrough and persist private checkpoints
+833f6ca497487c40af8e786036d31b03cb865dd1	2026-10-19T04:57:01Z	zuppasoupfifaistimewa-png	Use Start rather than Circle to advance dialogue
+6cc0d06a9fb355ea66c7d5798a5e0f3a2f47f4a0	2026-10-19T04:56:57Z	zuppasoupfifaistimewa-png	Record user instruction to use Start for dialogue skip
+9f473ac9a1cf6e7a3d42c99f9ddec8a4d9f96c4e	2026-10-19T04:56:53Z	zuppasoupfifaistimewa-png	Add persistent rule for Story dialogue control
+baa704c4d5bc04bca6985836fc16033d6edd73c5	2026-10-19T04:56:49Z	zuppasoupfifaistimewa-png	Add user rule: skip dialogue with Start
+f4cba70beb2867670e2429d9f0ca644338e0c987	2026-10-19T04:56:45Z	zuppasoupfifaistimewa-png	Remember Start-to-skip rule for all Story dialogue
+6b54b66b6ab041652670f0775694499d626ee275	2026-10-19T04:56:30Z	zuppasoupfifaistimewa-png	Use Start to skip verified Story dialogue
+1f31a09b7896feba71e7150d001b7afbdf8dacbb	2026-10-19T04:53:44Z	zuppasoupfifaistimewa-png	Record verified dialogue step and next controlled input
+7ec60001783851fe2068df819a256d15569004b0	2026-10-19T04:53:41Z	zuppasoupfifaistimewa-png	Log screenshots proving Circle advances dialogue
+18755c8928b23b990e7627cbc77d2e19c207731a	2026-10-19T04:53:36Z	zuppasoupfifaistimewa-png	Update handoff with confirmed dialogue advancement
+2369c46077ecab0560bf4abcc4069f9d6524b74b	2026-10-19T04:53:32Z	zuppasoupfifaistimewa-png	Record verified next Story dialogue screen
+9ef413c2b8e3c08e62d8d44aba8302b93ab8a17f	2026-10-19T04:53:29Z	zuppasoupfifaistimewa-png	Record verified dialogue advancement and next gated Circle tap
+a561b8196658dd218bedb5a70e34a1796e3ff9cf	2026-10-19T04:53:14Z	zuppasoupfifaistimewa-png	Advance verified Story dialogue one controlled step
+70e2f9a89cc264ef7a1e81c0095139a107914f79	2026-10-19T02:27:57Z	zuppasoupfifaistimewa-png	Track active Story dialogue advancement test
+28c9600d9d910fc4555cf7b78d17654bc583849b	2026-10-19T02:27:53Z	zuppasoupfifaistimewa-png	Log active Story dialogue experiment and evidence gates
+fe93c180ffe4a54cfe1b338788940f0fbfdfa59c	2026-10-19T02:27:45Z	zuppasoupfifaistimewa-png	Add handoff for active Story dialogue experiment
+fc8f93da206d1009afa8e1028e20217e229e2a5c	2026-10-19T02:27:35Z	zuppasoupfifaistimewa-png	Record active Story dialogue experiment
+31c552d2fcde03083debaf6c95057f2c0726c889	2026-10-19T02:27:30Z	zuppasoupfifaistimewa-png	Record active Story dialogue experiment and continuation checks
+892f16c2b2ea140f41b7e920d09d08261867b377	2026-10-19T02:25:15Z	zuppasoupfifaistimewa-png	Advance opening dialogue after visual verification
+42236c462378a02091d4f56ec5d845ba24c4145e	2026-10-19T02:14:38Z	zuppasoupfifaistimewa-png	Clarify RT-001 acceptance status after verified Story Mode intro
+eef06007543ececab280e9aa29dbffc0cb3156df	2026-10-19T02:14:34Z	zuppasoupfifaistimewa-png	Clarify RT-001 acceptance status after verified Story Mode intro
+c46f05df66600873a9a55ad899d97e676085185a	2026-10-19T02:14:09Z	zuppasoupfifaistimewa-png	Document verified Story Mode intro from run 39183597316
+5b564048e3f35467626fa61a07a223c8336c407c	2026-10-19T02:14:05Z	zuppasoupfifaistimewa-png	Document verified Story Mode intro from run 39183597316
+4574274ff56f5f96e6d8f7dbbc76cadf0e94fcb0	2026-10-19T02:14:01Z	zuppasoupfifaistimewa-png	Document verified Story Mode intro from run 39183597316
+68ba3f19696d554f7d695f8d94ad11fd54fe0b28	2026-10-19T02:13:56Z	zuppasoupfifaistimewa-png	Document verified Story Mode intro from run 39183597316
+f3efb04fdc65ecab499a76d41e3ce289d29e323e	2026-10-19T02:13:52Z	zuppasoupfifaistimewa-png	Document verified Story Mode intro from run 39183597316
+e9a6f985458ad2dd23c939813881918cb9a7f701	2026-10-19T01:03:57Z	zuppasoupfifaistimewa-png	Gate second Circle on verified Mode Select and observe to VSync 9000
+8843e9def6e08092eaeeb85e3340ccaead6bc604	2026-10-19T01:00:27Z	zuppasoupfifaistimewa-png	Record user preference: only show in-game screenshots from our experiments
+94c7d85ad68579a59c6cc5ee539d73a576cf69d5	2026-10-19T00:48:53Z	zuppasoupfifaistimewa-png	Refresh next-chat handoff with verified navigation state
+51bab271356fd9c98f61bd2ecc57cf9f5aa1da47	2026-10-19T00:48:50Z	zuppasoupfifaistimewa-png	Update RT-001 acceptance state from verified navigation run
+45345da9b87bfadb81fbb8e91738201ce296bd70	2026-10-19T00:48:46Z	zuppasoupfifaistimewa-png	Add visual analysis for run 39178662131
+83c68f3dbbc68bd3fe9291fa79f2aa4d97bb2378	2026-10-19T00:48:42Z	zuppasoupfifaistimewa-png	Record verified D-pad navigation and Mode Select result
+6393d8ff84561eac4d0ecdb73c06bc12d84c2ade	2026-10-19T00:48:38Z	zuppasoupfifaistimewa-png	Document verified D-pad and Mode Select result from run 39178662131
+f5484146809c59c1d9386650a9c812c1a61b7354	2026-10-18T23:57:53Z	zuppasoupfifaistimewa-png	Run Start + D-pad navigation + Circle with extended visual observation
+3a7594bf17c13fc294f6cb423ca6e62b68de8315	2026-10-18T23:55:03Z	zuppasoupfifaistimewa-png	docs: add current Naruto PS1 handoff for next chat
+c83fe4ef86992c762533c0712dc2755764ee5b75	2026-10-18T23:49:08Z	zuppasoupfifaistimewa-png	Document Start-only run confirming stable Naruto title menu
+69ab7544ef7aaea40dc8af4ab12132e9997b3575	2026-10-18T23:23:34Z	zuppasoupfifaistimewa-png	Use Start only at Naruto title prompt; remove Circle injection
+ae015c5cf5d0f06800970a201ffce8c7c3511e53	2026-10-18T17:24:27Z	zuppasoupfifaistimewa-png	Replay Start then Circle in one boot after confirming cold-start behavior
+5f89389d3af1f3f6254057ae8b0162667bd5eaf0	2026-10-18T16:57:53Z	zuppasoupfifaistimewa-png	Confirm selected はじめから option with Circle and document Start-menu result
+43bab6c337693eff87d5fa996d450299adc31093	2026-10-18T16:30:26Z	zuppasoupfifaistimewa-png	Test Start after confirmed Naruto title prompt
+ff630b72e1c5a147106813ad2fbb4c382ffa7d1a	2026-10-18T16:27:03Z	zuppasoupfifaistimewa-png	Record Naruto title screen reached and Start prompt timing
+86545c65576d25adbb4d8ba0991f7038f4b25876	2026-10-18T11:18:15Z	zuppasoupfifaistimewa-png	Record copyright screen transition and next menu test
+5eeed6075a76bbaa4c564a176d4aeb2ad6f2e39e	2026-10-18T11:18:10Z	zuppasoupfifaistimewa-png	Record copyright screen transition and next menu test
+66c455f4648c755f185a20746c5da980d00ac942	2026-10-18T11:18:04Z	zuppasoupfifaistimewa-png	Record copyright screen transition and next menu test
+13c4275152870796b7a89da4205f3112df96d042	2026-10-18T11:17:59Z	zuppasoupfifaistimewa-png	Record copyright screen transition and next menu test
+6d76bf3605025202db350148e6cd0b1db168660a	2026-10-18T11:17:52Z	zuppasoupfifaistimewa-png	Record copyright screen transition and next menu test
+7c614e3c005af0cbbbe1e6ad448a8afb0f4bfed2	2026-10-18T11:17:21Z	zuppasoupfifaistimewa-png	Observe Naruto after copyright screen and test menu inputs
+bc7cc664e4830f6f3fa1bd713a0bb76d36858033	2026-10-18T10:49:18Z	zuppasoupfifaistimewa-png	Correct Start timing from inspected framebuffer evidence
+3c2ad1091efc70ef2c0d4935c39be92115201daa	2026-10-18T10:49:12Z	zuppasoupfifaistimewa-png	Correct Start timing from inspected framebuffer evidence

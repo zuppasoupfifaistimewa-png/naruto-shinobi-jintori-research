@@ -1,0 +1,501 @@
+commit_sha	committer_date	author	message
+cdf2fac29c6a58d129861aef68bbff0405ca2143	2026-11-01T23:25:43Z	zuppasoupfifaistimewa-png	Finalize AZ0 commit inventory and SHA-256 manifest; record AZ1 H6 results
+b49ca5aef7f15d39ae697f605d63e77517bdfcc4	2026-11-01T23:20:55Z	zuppasoupfifaistimewa-png	Publish final AZ1 H6 runtime report and preserve run2 parser reconciliation
+ca5b52980c12f35db04f13a4e652923a49a18fca	2026-11-01T23:17:58Z	github-actions[bot]	Publish AZ1 H6 runtime trace run 41360900093 attempt 1
+a6aefc0b88f1ed542666ac8a7660921ea0c78390	2026-11-01T23:13:24Z	zuppasoupfifaistimewa-png	Complete AZ2 Entry1 reader census and correct AZ0 run job summaries
+4c537e3034bd0b2c2c0ad1a51312621843160910	2026-11-01T23:11:35Z	zuppasoupfifaistimewa-png	Fix AZ1 read_snapshot return and u8 state TSV header
+e413f1d0f59667f3f7cb4c25f5a6c6b0b9e9cf5b	2026-11-01T23:10:06Z	github-actions[bot]	Publish AZ1 H6 runtime trace run 41360300315 attempt 1
+330127a2830949d6b722a633a874f7a31a4ca4ba	2026-11-01T23:06:53Z	github-actions[bot]	Publish AQ1 static economy census run 41360300335
+9584198b07e3111c59fc33814bcb6e7d70d4c277	2026-11-01T23:04:46Z	zuppasoupfifaistimewa-png	Fix AZ1 snapshot parser and expand Entry1 manager field reader scan
+e4b377cc3932d53c9574585e5bb890662b5a6c1d	2026-11-01T23:00:45Z	github-actions[bot]	Publish AZ1 H6 runtime trace run 41359528784 attempt 1
+6c1e3b95e54ebfa46468e62b96cd0cd08d85ab9a	2026-11-01T22:55:20Z	zuppasoupfifaistimewa-png	Resolve AZ1 B30 table lookup and complete scoped AZ2 reader census
+f9a6cd896a15876e16121de49537294681c94acc	2026-11-01T22:48:30Z	github-actions[bot]	Publish AZ1 H6 runtime trace run 41358566961 attempt 1
+6b7279604f3540b3b5c66fc0e77f794ce6b9c674	2026-11-01T22:47:59Z	zuppasoupfifaistimewa-png	Add AZ0-AZ1 hypotheses and exhaustive direct setter argument table
+2c5db558a4e3820c3ff2f50a1d133476cbc6ed2d	2026-11-01T22:43:33Z	zuppasoupfifaistimewa-png	Add AZ0 raw writer audit and AZ1 read-only H6 snapshots
+e2a2f4485dfa258d8a4d25599c26cab0c9ac551a	2026-11-01T15:08:40Z	github-actions[bot]	Publish AQ1 static economy census run 41319511985
+20e6e78fb29fe0994d853a162ae13130b6e64bf4	2026-11-01T15:06:24Z	zuppasoupfifaistimewa-png	Apply configuration row validity gate to B30 table
+1774ec81ca26fceab381be94b6be612edf24e558	2026-11-01T15:05:15Z	github-actions[bot]	Publish AQ1 static economy census run 41319244717
+b27de05b2b8d137529e4d2ac4701b4bfc40f5b57	2026-11-01T15:03:20Z	zuppasoupfifaistimewa-png	Trace valid mode-state indices for B30 configuration table
+3cef2dce9cb00190252e56978927b4df1906adb4	2026-11-01T15:01:39Z	github-actions[bot]	Publish AQ1 static economy census run 41318918804
+8da36418b865e5c17e46d48e8a85a457fb96bc7f	2026-11-01T14:59:39Z	zuppasoupfifaistimewa-png	Export static B30 source table values
+f5d648f30b80eb6c7f01f0b16aad87ddbf0f8744	2026-11-01T14:57:13Z	github-actions[bot]	Publish AQ1 static economy census run 41318572706
+9132ad629086a80d3e974f0af47b937b8d4fe1fc	2026-11-01T14:55:19Z	zuppasoupfifaistimewa-png	Disassemble callers supplying the global Chakra base
+47b4a33a3b6afca34dc9b0cca73d1f6ab1737ffa	2026-11-01T14:54:12Z	github-actions[bot]	Publish AQ1 static economy census run 41318371336
+2177d42bb1cbae7be7fc58272f266508c84da454	2026-11-01T14:52:43Z	zuppasoupfifaistimewa-png	Trace callers and values written to Chakra base global
+9bac04fa57767f59b7de6d6ae47913f2949b98f7	2026-11-01T14:50:28Z	github-actions[bot]	Publish AQ1 static economy census run 41318066991
+cedc2e7f3eb842a748b250d6431e84aee791ff59	2026-11-01T14:49:04Z	zuppasoupfifaistimewa-png	Trace global Chakra base and unaligned function pointers
+2a209ca38083f715c64ba5953fba07b82f5b94c5	2026-11-01T14:45:45Z	github-actions[bot]	Publish AQ1 static economy census run 41317621473
+068fb8eee56e78f2c2990a30e5c1c81a55844068	2026-11-01T14:43:42Z	zuppasoupfifaistimewa-png	Disassemble and trace shared Stage 1 economy helper
+a544f766eb3d89f8f5a9707689fe516acf88aea8	2026-11-01T14:42:10Z	github-actions[bot]	Publish AQ1 static economy census run 41317349898
+b2721446d7beb46d89e9104ff4c621fcfc2400dc	2026-11-01T14:40:18Z	zuppasoupfifaistimewa-png	Trace economy setters through delay-slot code and helper bodies
+c715bcfa75fc2fc64af3244f001ae5ccb8d533c6	2026-11-01T14:38:44Z	github-actions[bot]	Publish AQ1 static economy census run 41317073417
+4c423953d032b36fc044379bc299169fb737cce5	2026-11-01T14:36:52Z	zuppasoupfifaistimewa-png	Trace manager B30 B38 store callers and delay-slot PCs
+d53559b0b9ba21b838c0473237c3f4192f2db73a	2026-11-01T14:35:10Z	github-actions[bot]	Publish AQ1 static economy census run 41316699811
+d167304418354e91aedfa2771a3b76940f17b14c	2026-11-01T14:33:16Z	github-actions[bot]	Publish AQ1 static economy census run 41316627800
+6a396ecb431dc11052766869258474ee6665dcca	2026-11-01T14:32:21Z	zuppasoupfifaistimewa-png	Resolve manager-slot based effective addresses
+df33199053e0e8b6e4eb4f80694b9d3d33e44197	2026-11-01T14:31:29Z	zuppasoupfifaistimewa-png	Resolve Ghidra manager aliases and enumerate indirect calls
+94f557fe0d0d82988cc6cea31d47e0c31c1fd73d	2026-11-01T14:28:16Z	github-actions[bot]	Publish AQ1 static economy census run 41316223540
+ba6a381e781e6b331c0fea285c527b4b5b707819	2026-11-01T14:26:39Z	zuppasoupfifaistimewa-png	Fix economy audit script paths and verify raw EXE bytes
+8ad4fd7cddfc471463551c8121aeee601dcbfac6	2026-11-01T14:24:00Z	github-actions[bot]	Publish AQ1 static economy census run 41315862085
+ae6e597d41784641a57caf1f3b2be81fe92e02e9	2026-11-01T14:22:14Z	zuppasoupfifaistimewa-png	Add static manager economy writer and caller audit
+c4dd26d2ad01f60810bd5ac4519193cd3ef4bc6f	2026-11-01T13:06:56Z	github-actions[bot]	Publish AX4 original manager-code runtime results 41309421332 attempt 1
+fd55121deea2ceb6c61b22490bc1ba54e51f280b	2026-11-01T13:03:45Z	zuppasoupfifaistimewa-png	Advance AX4 matrix directly from sentinel nextTick to avoid nested scheduler stall
+2e2b3f0203952780e586dbd0341f808ac87e56ce	2026-11-01T12:35:41Z	github-actions[bot]	Publish AX4 original manager-code runtime results 41305597371 attempt 1
+97a27176455fe920ebb4968c6b84907f144cfc16	2026-11-01T12:15:18Z	zuppasoupfifaistimewa-png	Close AX4 nextTick callback correctly before watchdog branch
+359a59758fe0a8fa416eddbd83be9aa2c28fe16f	2026-11-01T12:14:37Z	github-actions[bot]	Publish AX4 original manager-code runtime results 41305476145 attempt 1
+db410dfd53d7039730d1b276fc7b8d3fcf845b73	2026-11-01T12:14:35Z	zuppasoupfifaistimewa-png	Complete AX1 getter branch-field correction
+bb50da0d79a10aa37534a27b0e8ce93152d21558	2026-11-01T12:14:02Z	github-actions[bot]	Publish AX4 original manager-code runtime results 41305464178 attempt 1
+871cd2e00df474f7cb45b413a08a2abd9094f8d9	2026-11-01T12:13:50Z	zuppasoupfifaistimewa-png	Add Lua parser gate before AX4 emulator execution
+8b3e83dc894959be5690835eaea9f2ac02e8b819	2026-11-01T12:13:41Z	zuppasoupfifaistimewa-png	Fix AX4 Lua VSync block structure and timeout verification
+834bf0d7aee0a429ad0e3e41fdcfc33fed438c96	2026-11-01T11:19:14Z	github-actions[bot]	Publish AX4 original manager-code runtime results 41299796542 attempt 1
+78f6d8f95db863d67bbb437fb19f2f78daf0dbb4	2026-11-01T11:17:20Z	github-actions[bot]	Publish AX4 original manager-code runtime results 41299656659 attempt 1
+c3c5ba93fa762cf6c1204762433f4dcb4515695b	2026-11-01T10:58:49Z	github-actions[bot]	Publish AX4 original manager-code runtime results 41299197819 attempt 1
+a36354c1a4e9c923d3a59ad3f9c5c9b3434042cb	2026-11-01T10:58:30Z	zuppasoupfifaistimewa-png	Replace superseded AX4 run with watchdog-enabled runtime harness
+04c95397a8480ad5bf6d342a68772412f41e4177	2026-11-01T10:56:46Z	github-actions[bot]	Publish AX4 original manager-code runtime results 41299216451 attempt 1
+a9645f4c93cd1df0570bf5148e07c361b85b9021	2026-11-01T10:56:29Z	zuppasoupfifaistimewa-png	Add AX4 VSync watchdog and CPU-state diagnostics for missing setter return
+2f569bea5537785be2ddaa0adeddb2a2cb08b26a	2026-11-01T10:51:07Z	zuppasoupfifaistimewa-png	Complete AX3 B44 access census and terminal-state reader
+520fb238f8402c1acd36b291e73e98a771aa73ab	2026-11-01T10:50:15Z	github-actions[bot]	Publish AX4 original manager-code runtime results 41298963243 attempt 1
+b040515c9a79617e38c66a1b5b55c57c74623f19	2026-11-01T10:50:13Z	zuppasoupfifaistimewa-png	Unblock corrected AX4 run from superseded stuck interpreter attempt
+60f9dd063b6ec50885b360f0ec26500f5071047f	2026-11-01T10:49:58Z	zuppasoupfifaistimewa-png	Cancel superseded AX4 runtime runs after one-shot breakpoint correction
+4f31e913066e93f3066c536ec421cc36c78c6fce	2026-11-01T10:49:30Z	zuppasoupfifaistimewa-png	Make AX4 breakpoints one-shot to isolate six original-code calls
+abc9e940b00d3101f3b21984597fd7928178a3f3	2026-11-01T10:46:43Z	zuppasoupfifaistimewa-png	Fix AX4 workflow token interpolation and document AX2 spot checks
+e2af6d2ba97860ec3ce001a3b21630720bbab902	2026-11-01T10:45:18Z	zuppasoupfifaistimewa-png	Add AX4 original MIPS runtime matrix for two H6 launches
+1f5aa6deab629b2b5b197ee8b17dbacefc701b91	2026-11-01T10:25:17Z	zuppasoupfifaistimewa-png	Complete AX1 corrections and AX2-AX3 static audit
+b3b368cb9d7f6112109af6414da75bf0c5c011a1	2026-11-01T09:54:23Z	zuppasoupfifaistimewa-png	Reconcile outdated AW2 Ghidra run status in final report
+47dad15449c66418afe3f1c973e56ddd0c2a80fd	2026-11-01T09:30:40Z	zuppasoupfifaistimewa-png	Link completed AW2 Ghidra run in final status report
+9b6a666e0ed5b6b9bf3513a432f7beeb302f1b72	2026-11-01T09:29:45Z	zuppasoupfifaistimewa-png	Mark AW2 static census complete and finalize AW3 test-scope status
+834e007137fbba447a6e907f3e1318a0b51435d4	2026-11-01T09:29:41Z	zuppasoupfifaistimewa-png	Complete AW2 Ghidra run findings and Entry 0 limitations
+95219b6b3040482af0944627f67dde0682730aaa	2026-11-01T09:29:37Z	zuppasoupfifaistimewa-png	Record successful Ghidra main and Entry 0 analysis run
+cbabf85e6d374d9b28fc6cf17cc46dc3dba6a3f2	2026-11-01T09:26:55Z	zuppasoupfifaistimewa-png	Clarify AW3 test-scope completion and update AW2 caller triage
+5d5f9acfdd01d94fc1ce60f174abda716ee4d795	2026-11-01T09:26:50Z	zuppasoupfifaistimewa-png	Add helper caller semantic triage to AW1-AW2 report
+c24e09b94170805c260ea90c77439798b9004afb	2026-11-01T09:14:45Z	zuppasoupfifaistimewa-png	Record Ghidra Entry 0 analysis still running status
+6b178a8a3ab5813fece7ab418ee9a0bb2cccc8a0	2026-11-01T09:13:26Z	zuppasoupfifaistimewa-png	Finalize AW0 AW3 status with runtime and strided scan addendum
+d4e182b085baa4b93ade0f11e69f14e61143464f	2026-11-01T09:06:57Z	github-actions[bot]	Publish AW3 controlled direct-call evidence run 41291503009 attempt 1
+fe1a13ef814254004ec248d23d691fc8e113a09d	2026-11-01T09:06:45Z	github-actions[bot]	Publish AQ1 static economy census run 41291576229
+64de9960b60cd0eb629b0c15e9025ca787bf1e84	2026-11-01T09:05:28Z	zuppasoupfifaistimewa-png	Search AW2 multiplier tables with common padded element strides
+2e53cbb26a1eddce05849580bdcef90113e9368d	2026-11-01T09:04:28Z	zuppasoupfifaistimewa-png	Extend AW3 with controlled manager accumulator setter-expression tests
+76a5cd9eb645cb6aa6494523f0c34997436b7d32	2026-11-01T09:00:59Z	zuppasoupfifaistimewa-png	Write consolidated AW1 AW2 static evidence and falsifiable hypotheses
+9403e2e35867a593026b2e69011f21c4def19002	2026-11-01T09:00:18Z	github-actions[bot]	Publish AW3 controlled direct-call evidence run 41290956575 attempt 1
+4e88ee15b189686636b39ca95e62a8a98d1b8651	2026-11-01T08:57:08Z	github-actions[bot]	Publish AW3 controlled direct-call evidence run 41290627762 attempt 1
+4325ccf24132470fb1df5077d285fccd83d8faa0	2026-11-01T08:56:49Z	zuppasoupfifaistimewa-png	Restore full H6 RAM baseline after each AW3 direct call
+38355ce10c8a24974fbe0a3291d69afc9feec237	2026-11-01T08:55:35Z	github-actions[bot]	Publish AQ1 static economy census run 41290779721
+18b926049fac5126118f545cf46ae2f01e5d84f0	2026-11-01T08:54:11Z	zuppasoupfifaistimewa-png	Complete AW2 immediate xref scans and enumerate all Shift-JIS candidates
+472ddbad12378be6b1dee8c2eac7c5082692c8fe	2026-11-01T08:53:59Z	github-actions[bot]	Publish AW3 controlled direct-call evidence run 41290551962 attempt 1
+2339c50db8cc1eeba75ac7d65786b0ae7cb1ef9e	2026-11-01T08:51:52Z	zuppasoupfifaistimewa-png	Correct AW3 tile field selector offsets and signed setter clamp check
+711f4fb22422b79724d5591f55ab72b3a08c77d5	2026-11-01T08:50:43Z	zuppasoupfifaistimewa-png	Repair AW3 Lua syntax, sentinel lifecycle and per-call restore audit
+d7ca8332686e4a60e3f9d9113b7f46140bfc0801	2026-11-01T08:47:55Z	github-actions[bot]	Publish AW3 controlled direct-call evidence run 41282260451 attempt 1
+a9b8fdc860da0e2d7f9b16d7843db2c6163640fd	2026-11-01T07:47:26Z	github-actions[bot]	Publish AW3 controlled direct-call evidence run 41282202942 attempt 1
+ba07c8235558aa1cb218b578188d0bad8a50cf2d	2026-11-01T06:52:44Z	github-actions[bot]	Publish AQ1 static economy census run 41282460129
+80808e81dce62022b7dff3f7c8c23d1e83517c60	2026-11-01T06:51:45Z	zuppasoupfifaistimewa-png	Repair malformed AU1 accessor Markdown code span
+d8d60a0d2f7df6eef8579f33f46cc6c224154827	2026-11-01T06:51:23Z	github-actions[bot]	Publish AQ1 static economy census run 41282394808
+71d7e05449da3bf7f1782d10bb1db9cf614cfd69	2026-11-01T06:51:01Z	zuppasoupfifaistimewa-png	Verify helper dispatch offset and export all helper caller windows
+db3719c54c40d4ea2706894c071e6215205389d0	2026-11-01T06:50:01Z	zuppasoupfifaistimewa-png	Expand AW1 manager field context and AW2 Shift-JIS/table scan
+9445d79af7e192e2a90f2942ed532ed82ff72310	2026-11-01T06:47:55Z	zuppasoupfifaistimewa-png	Fix AW3 Lua FFI types and direct-call result parser
+c5c1c88fe62653b734f7a4311a5feac02eb07440	2026-11-01T06:47:00Z	zuppasoupfifaistimewa-png	Add AW3 controlled direct-call H6 interpreter test
+e3bdf645f0311bcc8753b8a623bee69991a6d37e	2026-11-01T06:10:01Z	github-actions[bot]	Publish AQ1 static economy census run 41279573060
+ae0884834f3858dcb60dc0905a5ecf83e6b5dede	2026-11-01T06:08:46Z	github-actions[bot]	Publish AQ1 static economy census run 41279536787
+ce2391d8a7e5299a4df7964b87fa6228ededb47a	2026-11-01T06:07:58Z	zuppasoupfifaistimewa-png	Fix B44 access scan operand regex
+c95ad1ffc8834ff660f1dcbb88e681e29dea0546	2026-11-01T06:07:28Z	zuppasoupfifaistimewa-png	Run manager AW1 analysis in Entry 1 and correct failed run summary
+39fc36198ce86f0448d56cfebc9032fd8c3b1503	2026-11-01T06:06:02Z	github-actions[bot]	Publish AQ1 static economy census run 41279330674
+ab00a62e7ccc2bc0776b0385706fa64513598967	2026-11-01T06:04:23Z	zuppasoupfifaistimewa-png	Allow Markdown text output in AW2 static scan validation
+644df7c8d8cb51ac880190f95d3b1263b330ee7f	2026-11-01T06:04:07Z	github-actions[bot]	Publish AQ1 static economy census run 41279241109
+ee245b6138c418aff4d0b6d895d0cb5447e870af	2026-11-01T06:03:01Z	zuppasoupfifaistimewa-png	Extend AW1 Ghidra and AW2 binary static scans
+272c0728d766187e1b4d431cbae8b472f14f94ac	2026-11-01T06:01:18Z	zuppasoupfifaistimewa-png	Correct AW0 getter BLTZ-taken register provenance
+5954e1839d03313d37c9b90ac5da4ac01a75ba3c	2026-11-01T05:47:53Z	zuppasoupfifaistimewa-png	Fix AV2 calibration retention and pin target checkpoint input
+4af986ac6fb111e8a85187ea8a3b816bd52e390f	2026-11-01T05:47:10Z	zuppasoupfifaistimewa-png	Add AV2 interpreter RAM write-watchpoint experiment
+b01ae6f112c6d25ebc736c5d3dfb35ff9505e4f9	2026-11-01T05:27:05Z	zuppasoupfifaistimewa-png	Correct AU0 inventory header to match 114-path diff
+b4f1b344dfcfb48290f0426aef852941351560b9	2026-11-01T05:26:32Z	zuppasoupfifaistimewa-png	Finalize AU0 report with completed AU1 AU2 AU3 and latest diff
+e7925cfcd69c6487a5bb2ab8cce672b5a589a099	2026-11-01T05:26:04Z	zuppasoupfifaistimewa-png	Integrate completed AU3 runtime evidence into AT3 audit
+896cc8980013c5e358fdc4174ad3e7f789a3608b	2026-11-01T05:25:46Z	zuppasoupfifaistimewa-png	Publish completed AU3 interpreter runtime audit
+25966b34dadfe15f209cb6bf1dc48f85b783eed1	2026-11-01T05:25:27Z	zuppasoupfifaistimewa-png	Replace stale AU3 in-progress status with final PASS
+5136f1938f76d9770168f35354473be50683a095	2026-11-01T05:25:24Z	zuppasoupfifaistimewa-png	Complete AU3 Actions run summary with HIBRIDA identity
+e8d61005245098e124811665c66dca8eb01f0e9a	2026-11-01T05:25:20Z	zuppasoupfifaistimewa-png	Finalize AU3 summary and enforce HIBRIDA label
+d35ace2b76ff29b70b5c94a100b34611bd453c98	2026-11-01T05:06:58Z	github-actions[bot]	Publish AU3 A C interpreter setter/helper trace run 41274625876 attempt 1
+d884c7a232d8441222cc12163195378fb6d18707	2026-11-01T05:03:12Z	zuppasoupfifaistimewa-png	Refresh AU0 report against latest pre-report HEAD
+7225f88575bd613acff8d5fbc73c2858fd8c952e	2026-11-01T05:02:47Z	zuppasoupfifaistimewa-png	Clarify AU0 report file is already in compared path inventory
+aa4044946b7291da5cc9b0fd3693210e6ec9362f	2026-11-01T05:02:01Z	zuppasoupfifaistimewa-png	Refresh AU0 report with current full diff inventory
+df1812539747ec634a3e8d7199ba13a0353edeef	2026-11-01T05:01:39Z	zuppasoupfifaistimewa-png	Document architectural zero register in AU1 disassembly
+d7e205c7755f926b7234bac19d9eb4ed85d7671b	2026-11-01T04:59:43Z	zuppasoupfifaistimewa-png	Clarify AU2 final a1 formation in setter call delay slot
+ab83ee08a8957ea2bc90f93a90ab311b03dfd948	2026-11-01T04:59:06Z	zuppasoupfifaistimewa-png	Record live AU3 Actions status without inventing exit code
+1282e4d1c4fad4c09ad404a49e7110dca83a555b	2026-11-01T04:58:50Z	zuppasoupfifaistimewa-png	Correct AU0 commit-count audit summary
+a01de1fda1a03d3045cf593c8f6692d0882b6e32	2026-11-01T04:58:39Z	zuppasoupfifaistimewa-png	Correct AU0 inventory source HEAD
+db8a8001889a6de399f505174d55b625003bdba9	2026-11-01T04:58:21Z	zuppasoupfifaistimewa-png	Publish AU0 final audit and name-status inventory
+4e71d5eb9e9d1cafade9508b534d8f80a684ad2e	2026-11-01T04:57:49Z	zuppasoupfifaistimewa-png	Add precise AT3 K2 getter setter helper hit counts
+6474b503ab70fca9beff7863db51c8d5385d29a8	2026-11-01T04:57:27Z	zuppasoupfifaistimewa-png	Use HIBRIDA label consistently for all H6 references
+7572e5a81365544448645f542295cb09d7596db4	2026-11-01T04:56:54Z	zuppasoupfifaistimewa-png	Add exact a0 and a1 source instructions to AU2 setter table
+02f632be987c3f44c74f4d490971e7ea3a762eb9	2026-11-01T04:55:16Z	zuppasoupfifaistimewa-png	Record corrected AU1 accessor Actions target summary
+2b5cf90cfa41a7f780b37458781db81b0f4ae02c	2026-11-01T04:55:13Z	zuppasoupfifaistimewa-png	Remove remaining obsolete getter operand wording in AT1 audit
+f69727f1132dc147b93a01c4e5ccd8875e28926d	2026-11-01T04:54:53Z	zuppasoupfifaistimewa-png	Complete AT3 replication audit with full hashes and failed-run accounting
+e5f2a7cd0f150506ffb98756865057216676c4b8	2026-11-01T04:54:37Z	zuppasoupfifaistimewa-png	Document AT2 dynarec and interpreter H6 hybrid comparison
+5397cdf5cfddf6559591e1d14439857ac456e200	2026-11-01T04:53:54Z	zuppasoupfifaistimewa-png	Correct AT1 final report branch and getter operands
+141a5a84490e496ed412d821ffa3b70dd90c14e5	2026-11-01T04:53:51Z	zuppasoupfifaistimewa-png	Finish AU1 correction in AT1 static audit
+609bb4e450414e21da18dc2d7877421d5c63a261	2026-11-01T04:53:49Z	zuppasoupfifaistimewa-png	Correct getter callsite table using full AU1 accessor body
+c6725b19b354288306a20f1c76b638d4ba94703d	2026-11-01T04:53:26Z	zuppasoupfifaistimewa-png	Publish AU2 caller register origins for all 14 setter calls
+5fe78f2fae12240fdda8b46c813affffab07685e	2026-11-01T04:53:16Z	zuppasoupfifaistimewa-png	Publish full AU1 getter and setter disassembly with runtime reconciliation
+36d2195b4045a929c9dd828a214c392c55889d54	2026-11-01T04:53:00Z	zuppasoupfifaistimewa-png	Correct AT1 getter operand analysis using full accessor disassembly
+9f47510c8951214874a463d2839571187d872316	2026-11-01T04:50:54Z	github-actions[bot]	Publish static a1 helper provenance for 0x80043F18 run 41274567492
+214d6641b67b035300d7d8efbd117318d7a3f81b	2026-11-01T04:50:31Z	zuppasoupfifaistimewa-png	Add AU3 interpreter setter and helper runtime probe
+ef19fec4a2213c43301bc543d41646a24e68e71d	2026-11-01T04:50:09Z	github-actions[bot]	Publish static a1 helper provenance for 0x80043F18 run 41274555827
+c0139fc9b9484b3ddb5cd0e1885990445aa8e7fa	2026-11-01T04:49:54Z	zuppasoupfifaistimewa-png	Add AU3 interpreter setter and helper trace workflow
+7def692176e0ac7e21bff0d4a9a5eca8baf70880	2026-11-01T04:49:34Z	zuppasoupfifaistimewa-png	Add getter and setter function targets to AU1 Ghidra export
+344dff3ca0374388b06c766e99b057420195bb81	2026-11-01T04:49:22Z	zuppasoupfifaistimewa-png	Export complete getter and setter disassembly for AU1
+16fa6f139a55b107d042b2da822331295c95cb1e	2026-11-01T01:31:04Z	github-actions[bot]	Publish AT1 DATA BIN helper a1 provenance run 41260683654
+6e72c08f8f5fcbaf7821628797c56eb285a5c77d	2026-11-01T01:29:47Z	github-actions[bot]	Publish AT1 DATA BIN helper a1 provenance run 41258067708
+398dad882d9f55db5a2939e3edff49cc96a422ab	2026-11-01T01:26:31Z	github-actions[bot]	Publish AT3 AN2 A C K0 K2 trace run 41259662960 attempt 1
+cddb8d3bee70b7309b56785039c7fe4c2324928f	2026-11-01T01:23:32Z	zuppasoupfifaistimewa-png	Document AT3 failed replication and corrected emulator executable path
+a76ee7acad5f13495798984a613f3fc480a43ef2	2026-11-01T01:22:53Z	zuppasoupfifaistimewa-png	Finalize AT1 helper provenance report with passing Actions runs
+236f63d86ecb1f7f194b9bcb0b5afe4a88a23b51	2026-11-01T01:22:20Z	github-actions[bot]	Publish AT1 DATA BIN helper a1 provenance run 41260751877
+03f0657188c3bb8b3d01e7913adc40fbd9c981f9	2026-11-01T01:22:18Z	zuppasoupfifaistimewa-png	Document AT1 a1 helper provenance chain and unknown return value
+03e1570096955729dda2817091fb3ef0f0dc3068	2026-11-01T01:22:01Z	github-actions[bot]	Publish static a1 helper provenance for 0x80043F18 run 41260739233
+4aba615a8d5603afe81cd8a5671ee4b088409350	2026-11-01T01:21:25Z	zuppasoupfifaistimewa-png	Unblock corrected AT1 helper provenance workflow revision
+8e2eeed39fd36b5224c1e660daed812ccf2365dc	2026-11-01T01:21:14Z	zuppasoupfifaistimewa-png	Fix end-of-file parsing in static helper provenance validator
+2429a4f78c8054053426bf1f7179dd2e9a12e727	2026-11-01T01:20:27Z	zuppasoupfifaistimewa-png	Skip unnecessary package installation in AT1 when runner tools exist
+968c1a55731e09f815a1d1d385e1bf3edf792279	2026-11-01T01:06:35Z	zuppasoupfifaistimewa-png	Fix AT3 PCSX Redux executable path to verified AppImage location
+ac7a6dd0e7a9b30d3875084acd198b50c5102034	2026-11-01T01:00:37Z	github-actions[bot]	Publish static a1 helper provenance for 0x80043F18 run 41259079319
+e154ca132edde3e8b5afc47d02cada1c31af3fc1	2026-11-01T00:58:17Z	zuppasoupfifaistimewa-png	Trace final nested renderer 0x80043AB8 for getter a1
+a323c1a16570727d1eaadd6f5c221e29120184d3	2026-11-01T00:57:05Z	github-actions[bot]	Publish static a1 helper provenance for 0x80043F18 run 41258911810
+24779cb46987ddf64114ad0b62ac7e77e78dc7ed	2026-11-01T00:55:58Z	zuppasoupfifaistimewa-png	Trace nested caller-saved register helper 0x80043F18
+e5e9d4c63f2b1350af05ecd29c0de23397856e79	2026-11-01T00:54:07Z	github-actions[bot]	Publish AQ1 static economy census run 41258690146
+51ec907222a8f9e2c2754d7a732de8ab3ae4d57d	2026-11-01T00:52:58Z	zuppasoupfifaistimewa-png	Export DATA BIN helper 0x80105BCC from Entry 1
+70ec6651f701930805551a1987400b977561730a	2026-11-01T00:50:26Z	zuppasoupfifaistimewa-png	Record AT1 Entry 1 no-job configuration failure
+4fd59cc67eb75e820de3b474ece618e54e101907	2026-11-01T00:49:04Z	github-actions[bot]	Publish AT3 AN2 A C K0 K2 trace run 41258300049 attempt 1
+7aafeb06eaa326ecb238bdf7662a5ee7df7ec38f	2026-11-01T00:47:34Z	zuppasoupfifaistimewa-png	Correct AT3 K0 breakpoint status and audit runtime captures
+405431bf61d36e91ad0f5a729968b62773d9caf0	2026-11-01T00:45:28Z	github-actions[bot]	Publish AT3 AN2 A C K0 K2 trace run 41256458701 attempt 1
+df039ab1e578141b7f1d6539f1e7f29892f5912e	2026-11-01T00:44:26Z	zuppasoupfifaistimewa-png	Fix runner temp context in AT1 Entry 1 workflow
+58011e50d346d1a994622054f3e9c56a49b6f966	2026-11-01T00:43:40Z	zuppasoupfifaistimewa-png	Add DATA BIN Entry 1 static helper a1 provenance workflow
+b5110ca1da254156b81d0d557e6f8ad1beb7499d	2026-11-01T00:41:55Z	zuppasoupfifaistimewa-png	Correct incomplete DATA BIN helper provenance audit summary
+ab15f8bd99119ae7c01e9498289e3e82f57c1da5	2026-11-01T00:40:36Z	github-actions[bot]	Publish static a1 helper provenance for 0x80105BCC run 41257708406
+b954f02c77ba01687433c3c4af199b6fd5511ad4	2026-11-01T00:39:34Z	zuppasoupfifaistimewa-png	Extend static Ghidra audit to trace getter a1 helper
+6e89303c7dffe1d1573d6702baf3ed5fc4f78983	2026-11-01T00:35:17Z	zuppasoupfifaistimewa-png	Finalize AT1 getter branch audit status
+e1998c1fa7d284d680cf77bc787cf475ca359701	2026-11-01T00:34:28Z	zuppasoupfifaistimewa-png	Document getter v0 delay-slot overwrite
+f3185d9fbaa06e6c5e94773e732dd2e6985d179d	2026-11-01T00:33:42Z	zuppasoupfifaistimewa-png	Clarify AT1 getter v0 branch delay-slot behavior
+e9ad03e6cc28851a80f4491fdebc07f0faa5f7fd	2026-11-01T00:33:26Z	zuppasoupfifaistimewa-png	Make AT1 register alias counts explicit
+b08bcb19d08228562731b2449b3b901a2d860028	2026-11-01T00:31:28Z	github-actions[bot]	Publish AT2 H6 F1 F2 comparison run 41256330348 attempt 1
+381826f6fcc8eb396816b788b100ad8ae5fe435a	2026-11-01T00:31:11Z	zuppasoupfifaistimewa-png	Correct failed AT2 AT3 run summaries with verified failure causes
+8efda2478ca1e6ae4c0484d16f16d4bb5902fd7a	2026-11-01T00:30:20Z	zuppasoupfifaistimewa-png	Clarify AT1 getter edge arguments and branch flow
+eda8acb10acd07c68af9aafbee3d7f9042038e66	2026-11-01T00:29:25Z	zuppasoupfifaistimewa-png	Publish AT1 setter, getter, and FIELD reconciliation
+2df2bcf0ef375c0263c73566ae33455bd9180923	2026-11-01T00:23:21Z	zuppasoupfifaistimewa-png	Link AT1 static report to structured getter setter and FIELD artifacts
+7659306d19bdac7e9a831b4ed7355f60c8dc1dc0	2026-11-01T00:22:21Z	zuppasoupfifaistimewa-png	Ignore AN2 schedule B when AT3 requests A and C only
+af176d6fb72cbdc11e74f1360fbf151fd1b7d38f	2026-11-01T00:21:31Z	github-actions[bot]	Publish AT3 AN2 A C K0 K2 trace run 41256334815 attempt 1
+b2591db5ddad9b7b0c2a123590414ec6d88d5a06	2026-11-01T00:21:17Z	zuppasoupfifaistimewa-png	Correct AT1 getter branch-specific register provenance
+3c84f1c088f434624a4eed3b2aef7d28346708bb	2026-11-01T00:21:04Z	zuppasoupfifaistimewa-png	Publish AT1 two getter callsite and branch register table
+832ccdfe2cc15f0622be23fbfff33f8d104e0a6a	2026-11-01T00:20:40Z	zuppasoupfifaistimewa-png	Fix GitHub Actions expression escaping for runtime credentials
+9e5a60cb468593c7d9049691d55f687e059066e5	2026-11-01T00:20:36Z	zuppasoupfifaistimewa-png	Fix GitHub Actions expression escaping for runtime credentials
+cbbab4d4573234e72b05c797926bd1030294a3ce	2026-11-01T00:20:09Z	zuppasoupfifaistimewa-png	Add AT3 AN2 schedule K0 K2 runtime workflow
+7d0e7565ee92d3eecdc091550c137ccb9444f2d7	2026-11-01T00:19:48Z	zuppasoupfifaistimewa-png	Add AT3 AN2 schedule K0 K2 runtime runner
+390e989e87840232ee30fb3bc5a2aaf831a3419a	2026-11-01T00:19:00Z	zuppasoupfifaistimewa-png	Add AT2 F1 F2 runtime workflow
+c2aa1c1aa83be431bf2f1e3469e8c5ea1fefedb4	2026-11-01T00:18:38Z	zuppasoupfifaistimewa-png	Add AT2 H6 emulator flag comparison runner
+78d3081e692e29b3f301d302eab9cd0cc7a704bc	2026-11-01T00:18:02Z	zuppasoupfifaistimewa-png	Publish AT1 per-run FIELD count summary
+26cdc4d00ec781c657961fd4e77065b4ee3c3583	2026-11-01T00:17:59Z	zuppasoupfifaistimewa-png	Publish AT1 per-run FIELD PC function diff
+11f77da6a3ed2778b34314197e79d05815ae5a7a	2026-11-01T00:17:46Z	zuppasoupfifaistimewa-png	Publish AT1 14 setter callsite instruction table
+ee2618e9a80ed9184d45764f1e14ad14b9087296	2026-11-01T00:17:30Z	zuppasoupfifaistimewa-png	Publish AT1 static audit results
+a065e7d2a8932569a4e0a819e5562b365bb29c6e	2026-10-31T22:54:02Z	zuppasoupfifaistimewa-png	Record previous final-report ledger publication commit
+08e9cfde74a0b03f49a37909dd6827604561128a	2026-10-31T22:53:12Z	zuppasoupfifaistimewa-png	Complete commit ledger with AS3 runtime and first final-report publication
+53a444515e514f31c49917a7cad30494746e9f59	2026-10-31T22:52:12Z	zuppasoupfifaistimewa-png	Finalize AS1 AS2 AS3 verified Stage 1 economy audit
+3e2c77c8df7dafff03b0c9da472a446ede427dd5	2026-10-31T22:49:38Z	github-actions[bot]	Publish AS3 H6 K0 K1 K2 breakpoint comparison run 41249145093 attempt 1
+0bd4904965d94da629155f1781c74374e9f88cad	2026-10-31T22:47:10Z	github-actions[bot]	Publish AQ1 static economy census run 41249611249
+cfff7709f745f1f68ba01134e49c65b991528eb2	2026-10-31T22:45:35Z	zuppasoupfifaistimewa-png	Recover verified EA84 global-base xref missing from Ghidra reference map
+3e8cafdd14bce98631ea51bbe72f75d961e7e9e4	2026-10-31T22:44:11Z	github-actions[bot]	Publish AQ1 static economy census run 41249411706
+d74cf2aaa162c399d31362b9421f567be294f27c	2026-10-31T22:42:48Z	zuppasoupfifaistimewa-png	Extend AQ1 Ghidra FIELD discrepancy audit to FUN_800E0B3C
+ffeb5e48c417189d4f2997444ce10dbae6d883b6	2026-10-31T22:41:49Z	github-actions[bot]	Publish AQ1 static economy census run 41249242776
+3016fa0a10f3d672d52c1d1101d1daa403a07f95	2026-10-31T22:40:28Z	zuppasoupfifaistimewa-png	Audit Ghidra body and instruction count for AQ1 FIELD discrepancy
+f5beedd207f9c77090bd609188c29a2cbff4b55f	2026-10-31T22:39:07Z	zuppasoupfifaistimewa-png	Fix AS3 frame360 direct emulator exit and use 900s launch timeout
+4412575e45c09bd42df5455af7b4f1ae7a480830	2026-10-31T20:46:49Z	github-actions[bot]	Publish AS3 H6 K0 K1 K2 breakpoint comparison run 41213474358 attempt 1
+e4189fb4858c8950091c27cb6a2ebc2e18bc7dbc	2026-10-31T17:46:09Z	github-actions[bot]	Publish AS3 H6 K0 K1 K2 breakpoint comparison run 41211621962 attempt 1
+b551ae1852f25069af64cbcdd7ebe76b0e873fec	2026-10-31T15:10:08Z	github-actions[bot]	Publish AQ1 static economy census run 41213474394
+3c1b0d3ace50e790be05d8dadb881435e997e560	2026-10-31T15:09:53Z	zuppasoupfifaistimewa-png	Correct participant stride instruction excerpt in AS1 AS2 report
+1c7ff2f85861020af859f152f68d4cd71f1b6f20	2026-10-31T15:09:08Z	zuppasoupfifaistimewa-png	Publish AS1 AS2 audit report and record AS3 runtime in-progress status
+27f4ae7212a839e6f00d5158ec4996282c03ee7a	2026-10-31T14:46:53Z	github-actions[bot]	Publish AQ1 static economy census run 41211621969
+8894686395afdca97328a9fb2af5007a29406584	2026-10-31T14:45:37Z	zuppasoupfifaistimewa-png	Add AS1 AS2 deep Ghidra export and AS3 H6 K0 K1 K2 A/B
+5f026f9b2f97275ff427b022ab6a4e2156d3d503	2026-10-31T14:21:55Z	zuppasoupfifaistimewa-png	Publish complete AR1 AR2 AR3 audit report
+8a6e64d0a844394af8376da730a0e714ca80fa6c	2026-10-31T14:18:53Z	zuppasoupfifaistimewa-png	Record exact AR3 H6 runtime Actions job id
+d3477f4522a01009416da22aec18890671e31426	2026-10-31T14:18:50Z	zuppasoupfifaistimewa-png	Record exact AQ1 static Ghidra Actions job id
+dbdcd9f49fa7d8edf7cd2ebf264fb6d32a17dd0a	2026-10-31T14:16:32Z	github-actions[bot]	Publish AR3 H6 runtime trace run 41208953906 attempt 1
+23256848bcf298aee545bad447669eb26c3da2c7	2026-10-31T14:12:16Z	zuppasoupfifaistimewa-png	Publish AR1 unknown function caller excerpts capped at 64 bytes
+b6785f741a3e325ab3ed1ddd7dc620225157f249	2026-10-31T14:12:07Z	zuppasoupfifaistimewa-png	Publish AR1 base-register-separated access recount
+a6002e5c016f9cdc954eec7c799e4e43df2464b5	2026-10-31T14:11:07Z	zuppasoupfifaistimewa-png	Fix AR3 local helper import for Actions runner
+d1faa0e4500fbd3899937b1c55163b43edb4ac93	2026-10-31T14:10:44Z	zuppasoupfifaistimewa-png	Publish AR2 setter callsite instruction and a1 provenance table
+20d9156fe28275e080376f3e931007b0fb4d1b10	2026-10-31T14:10:35Z	github-actions[bot]	Publish AR3 H6 runtime trace run 41208874219 attempt 1
+2406c86ef5595dae296497734f54c3638b38a6a1	2026-10-31T14:10:06Z	zuppasoupfifaistimewa-png	Fix GitHub Actions expressions in AR3 H6 workflow
+a7f42355b58541f0558125a34c8574245d6835b8	2026-10-31T14:07:49Z	zuppasoupfifaistimewa-png	Add AR3 bounded H6 hybrid runtime breakpoint workflow
+612c193c7b72d9791e531d42a7939d2136c4b6f5	2026-10-31T14:06:39Z	zuppasoupfifaistimewa-png	Add bounded AR3 H6 hybrid runtime breakpoint trace
+e05e45401ec58410019bc96448b93c86fa2560cf	2026-10-31T14:05:22Z	github-actions[bot]	Publish AQ1 static economy census run 41208394883
+a3cc4bfde7784858840e9cc98cc12e9bd70a2efe	2026-10-31T14:03:59Z	zuppasoupfifaistimewa-png	Extend AQ1 census with 12-instruction setter callsite windows for AR2
+120dbabeb253f26435107d25b751a713d3d5d936	2026-10-31T13:50:52Z	github-actions[bot]	Publish Stage 1 raw permalink curl verification run 41207396993
+d39be4f1b4ac5fed20a99be53a5925a6ffc72cd3	2026-10-31T13:50:42Z	zuppasoupfifaistimewa-png	Verify raw links for first permalink-check summary
+cb80bd9ad5335b20282b565c21e5cb0dec976398	2026-10-31T13:49:56Z	github-actions[bot]	Publish Stage 1 raw permalink curl verification run 41207325486
+11d292940ee5a95f2a16ebe8d7b0cc0ebf8d418b	2026-10-31T13:49:43Z	zuppasoupfifaistimewa-png	Publish AQ1-AQ3 detailed audit and readings
+a00e9a33c2c4da28d7917603ad05e9571860cf87	2026-10-31T05:11:23Z	zuppasoupfifaistimewa-png	Correct AQ1 run metadata and document raw curl result
+fd25db3a745c9c5dced8a9bc1b9ba1b0c20bb270	2026-10-31T05:09:20Z	github-actions[bot]	Publish Stage 1 raw permalink curl verification run 41171434910
+226a7294205648fa584432f221331b068438cf09	2026-10-31T05:09:09Z	zuppasoupfifaistimewa-png	Make raw link check independent of Actions jobs API
+ac7c6b4a99ffef64258a2d300634adc0c6099bdb	2026-10-31T05:08:19Z	zuppasoupfifaistimewa-png	Verify raw links with authenticated curl status capture
+73670f3fd386ce5b71b3f4ad1e99cbd414eb0cc4	2026-10-31T05:07:44Z	zuppasoupfifaistimewa-png	Fix shell expansion in raw permalink verification
+f6de3c329374e4a9485e1e20e59e617d3f749d68	2026-10-31T05:06:53Z	zuppasoupfifaistimewa-png	Add curl verification for Stage 1 raw permalinks
+44ecc294692be49d54fee9a759cb3d489b534d37	2026-10-31T05:04:51Z	zuppasoupfifaistimewa-png	Document AQ1 AQ2 AQ3 Stage 1 economy results
+49a4ec5871f5f15ab81adc4135ec5d4bed90d40d	2026-10-31T04:59:33Z	github-actions[bot]	Publish AQ2 H6 economy snapshot run 41169411368
+f480e7184cda57544dd751120646c6858f94ce4d	2026-10-31T04:46:50Z	zuppasoupfifaistimewa-png	Correct AQ1 Actions job ID in run summary
+814298ea11d4b488c7d6fb08309fcaab16af5719	2026-10-31T04:39:36Z	github-actions[bot]	Publish AQ1 static economy census run 41169411383
+55d6619c95477e5188347133154f286973ce6e44	2026-10-31T04:38:40Z	zuppasoupfifaistimewa-png	Fix AQ1 TSV columns and AQ2 helper import path
+72e8ddf9686da0031c48a89f671cbab0874ef63d	2026-10-31T04:37:42Z	github-actions[bot]	Publish AQ1 static economy census run 41169277980
+832faa055eb8a0e972f49061b572bf2f582a631f	2026-10-31T04:37:14Z	github-actions[bot]	Publish AQ2 H6 economy snapshot run 41169277947
+d4b3034bb722d1de92a8101ed0bd20f5878af40d	2026-10-31T04:36:36Z	zuppasoupfifaistimewa-png	Fix Actions token expressions for AQ1 and AQ2 publication
+9cd3f68fe3720d83cf8dd434601d2377168a39aa	2026-10-31T04:34:52Z	zuppasoupfifaistimewa-png	Add AQ1 static census and AQ2 no-input H6 economy snapshot
+4a97f2579e96307c6ffa9298f71cf18b6076ae61	2026-10-31T04:11:38Z	zuppasoupfifaistimewa-png	docs: align static audit summary with B44 Chakra path
+8a24d08b5e165d15a29edd26aae24f4a64e20af3	2026-10-31T04:10:31Z	zuppasoupfifaistimewa-png	docs: reconcile Stage 1 B44 evidence across reports
+4beb1c03f92e1b3e8c4379af311b7c5b98a8cb00	2026-10-31T04:09:26Z	zuppasoupfifaistimewa-png	research: finalize Stage 1 economy evidence checkpoint
+bd5dc51274a3361d0db748fcbf8df8c7dc90fe53	2026-10-31T04:07:59Z	zuppasoupfifaistimewa-png	docs: correct raw instruction excerpt byte count
+cdf93db21403f1a0503e48b9733a8f4c33f394c5	2026-10-31T04:07:34Z	zuppasoupfifaistimewa-png	docs: close malformed code spans in Stage 1 handoff
+c581939053ebe1fbcbf9438a11baf43350a2247f	2026-10-31T04:07:31Z	zuppasoupfifaistimewa-png	docs: close malformed code spans in static findings
+38d4bfdda3bc65efec86e21d4390c6f7baa1a9de	2026-10-31T04:07:06Z	zuppasoupfifaistimewa-png	status: reference Stage 1 economy Actions text summaries
+5c0c3e73e3734f8eed10565252426dc42c26b67f	2026-10-31T04:07:02Z	zuppasoupfifaistimewa-png	docs: reference Stage 1 static Actions summaries in handoff
+0395c2c6563495612475dbaef53b84c988c9d293	2026-10-31T04:06:53Z	zuppasoupfifaistimewa-png	research: index completed static Stage 1 economy Actions runs
+cf5531bea9f1e417bba62c64434a13d9f8411b22	2026-10-31T04:06:44Z	zuppasoupfifaistimewa-png	docs: fix Stage 1 handoff markup
+ec8b114a5457471fe5f1e063c842b1e4c27e4083	2026-10-31T04:06:42Z	zuppasoupfifaistimewa-png	docs: fix Stage 1 static report markup
+e22eedd1bb603fb7fbb20aac1c8b4933a54c7e52	2026-10-31T04:04:03Z	zuppasoupfifaistimewa-png	status: clarify Stage 1 pending field evidence and remaining unknowns
+a31d895fe6b755f1933e8504fc62a6bbb77fc92f	2026-10-31T04:03:51Z	zuppasoupfifaistimewa-png	docs: clarify pending Chakra fields in Stage 1 handoff
+a6f9208f6eccc6cb309f80d42cf3749ab27ae77e	2026-10-31T04:03:49Z	zuppasoupfifaistimewa-png	research: clarify B44 display field and rebase pending participant delta
+ae9cd2fdb379268b6e7df4768a40c44b220b88cb	2026-10-31T04:02:53Z	zuppasoupfifaistimewa-png	research: distinguish B44 display field from participant pending Chakra delta
+823063d47f9d1b650ebc31b5c47aa7b04a745aeb	2026-10-31T04:02:51Z	zuppasoupfifaistimewa-png	research: separate Stage 1 economy anchors from ledger evidence
+ab1ac2704acef2746471883ed33cbb8728a74cfc	2026-10-31T04:02:48Z	zuppasoupfifaistimewa-png	research: normalize Stage 1 ledger tile-owner notation
+ad1dd4d9c7a05458cda20c1000e83c154bb3e73c	2026-10-31T04:01:23Z	zuppasoupfifaistimewa-png	audit: scan Entry 1 participant offsets 0x2EE and 0xB44
+d20095b07ac7e2b0209c906112bfda05140957bf	2026-10-31T04:00:12Z	zuppasoupfifaistimewa-png	status: append Stage 1 economy evidence checkpoint
+b82d550d4ea5feaed676b37d9b7d7eb364cb0f0d	2026-10-31T04:00:01Z	zuppasoupfifaistimewa-png	docs: add Stage 1 economy research handoff
+8d8c460793201cc1872b6bbcdf95318780b3b58f	2026-10-31T03:59:36Z	zuppasoupfifaistimewa-png	research: document Stage 1 per-record fee and static tracing limits
+9defac99e4f19bc701d49a7464d1297243bc7a27	2026-10-31T03:58:56Z	zuppasoupfifaistimewa-png	research: record competing Stage 1 economy hypotheses and falsifiers
+f88fdf0e5cd0ef683961aa56a90fe7e9c5527819	2026-10-31T03:58:40Z	zuppasoupfifaistimewa-png	research: correct Stage 1 ledger player and tile notation
+38241575cf7e62108568ea22f62d1c4dfa5eb801	2026-10-31T03:58:35Z	zuppasoupfifaistimewa-png	research: add Stage 1 video observation ledger with explicit gaps
+d0ef96970724c85d8bcd2c5c7fb8ba58bac04072	2026-10-31T02:43:31Z	zuppasoupfifaistimewa-png	audit: trace toll commit callback and pending delta writer families
+818dcc0a913608ad5c50b65924fb523b5cb5784f	2026-10-31T02:41:16Z	zuppasoupfifaistimewa-png	audit: trace toll callbacks to pending Chakra transaction processor
+844f9bfa32a211c8cea5bb0417bfba050ccd53cb	2026-10-31T02:37:22Z	zuppasoupfifaistimewa-png	audit: trace pending participant fee delta reads and writes
+0357f0c3679094ee16432bd803cb68434d87e185	2026-10-31T02:36:58Z	zuppasoupfifaistimewa-png	audit: add Entry 1 pending Chakra delta access scanner
+54090de31574c912cc36c339879239bfa362d558	2026-10-31T02:34:45Z	zuppasoupfifaistimewa-png	audit: trace toll payment and Barrier level-up pending handlers
+cf8a4bab9841e12e386eb1f3f68c484b595fa01b	2026-10-31T02:32:16Z	zuppasoupfifaistimewa-png	audit: decompile board and turn handlers around per-record fee calls
+a2a81dc96059901e4a70b7b46850d9b2c81353d5	2026-10-31T02:31:55Z	zuppasoupfifaistimewa-png	ci: record complete direct caller census for per-record helper
+7a2e9423eb3cf814f6cc00895512a74e421f1a8c	2026-10-31T02:31:52Z	zuppasoupfifaistimewa-png	docs: record complete direct caller census for per-record fee helper
+374fe6b208b051b6d25671c35f01fb4e378779b8	2026-10-31T02:30:12Z	zuppasoupfifaistimewa-png	ci: record caller graph script path failure
+b35627cc33eae555f613d47bf194e2626523212a	2026-10-31T02:30:09Z	zuppasoupfifaistimewa-png	docs: record caller graph workflow path failure and correction
+1b3ee51115342e1d484a019866f0a681067a3639	2026-10-31T02:29:45Z	zuppasoupfifaistimewa-png	fix: use Ghidra script directory for caller graph exporter
+4b52d14ecbf104e7fed88540db424289b9e31331	2026-10-31T02:29:42Z	zuppasoupfifaistimewa-png	audit: place caller graph exporter in Ghidra script directory
+dc168c2eed2914210d4f199142cc97243b65d5af	2026-10-31T02:28:46Z	zuppasoupfifaistimewa-png	audit: include full caller graph for per-record fee helper
+96aa9c6349801cb609aad886196a807c401a0f06	2026-10-31T02:28:18Z	zuppasoupfifaistimewa-png	audit: add Entry 1 per-record caller graph exporter
+8fff513f9882a217e83717dc424ca59ee33a3a14	2026-10-31T02:27:40Z	zuppasoupfifaistimewa-png	ci: record per-record value caller analysis
+c8b924e85c4f106a0809dc38ce2b60ab87e220e5	2026-10-31T02:27:37Z	zuppasoupfifaistimewa-png	docs: record negative toll display and per-record caller roles
+20346f89463bb1ca8792317de1496e228470ebf8	2026-10-31T02:23:41Z	zuppasoupfifaistimewa-png	audit: inspect per-record value helper callers in Entry 1
+3dcd0c2899d8b0ffae2ab757dd6f28be631a268c	2026-10-31T02:23:22Z	zuppasoupfifaistimewa-png	ci: record Entry 1 per-record value multiplier audit
+8bacfd0eca4a76b84573007a73b609399b629a23	2026-10-31T02:23:19Z	zuppasoupfifaistimewa-png	docs: add per-record value multiplier trace for Entry 1
+682cb7a4fc49428992d34cc1ee654b794a7de106	2026-10-31T02:21:57Z	zuppasoupfifaistimewa-png	ci: record corrected Entry 1 buffer-base static audit
+dd4e3d1e22dc269bb10aaa83e519c8a7f5769673	2026-10-31T02:21:53Z	zuppasoupfifaistimewa-png	docs: add corrected Entry 1 buffer-base helper analysis
+934c735a39b7ccc2f650e685d78e0aa91c407840	2026-10-31T02:19:56Z	zuppasoupfifaistimewa-png	audit: trace per-record contribution helper and correct offsets
+9a6dc0532e865701c654f7650967857c3c8c2c8a	2026-10-31T02:17:11Z	zuppasoupfifaistimewa-png	audit: reanalyze Entry 1 under loader buffer base candidate
+d05e9476fe78454453ce289e81a43aedf82a7f20	2026-10-31T02:15:13Z	zuppasoupfifaistimewa-png	ci: record scene resource token and entry1 load path result
+9232e060f50195cf2fffcec14d84dc76346b0daa	2026-10-31T02:15:10Z	zuppasoupfifaistimewa-png	docs: trace scene resource token and conditional entry1 loads
+be061a58fd81886735bef89513735b3e2e4f46ff	2026-10-31T02:12:33Z	zuppasoupfifaistimewa-png	audit: trace scene resource token globals and transition helpers
+21a29b9a46329d33a2eb99564a03f74bb9c63682	2026-10-31T02:12:19Z	zuppasoupfifaistimewa-png	ci: record descriptor state machine trace result
+b5317fafc250bd9ddbf292f8944001e07573f06f	2026-10-31T02:12:16Z	zuppasoupfifaistimewa-png	docs: trace descriptor state machine to resource loader
+d1f0e9d2ab14885337e18cbc092679518e3086e8	2026-10-31T02:08:49Z	zuppasoupfifaistimewa-png	audit: trace descriptor table readers and startup callback callers
+7d7d2d5e190f36e93032136304da5ffbd77cc8b3	2026-10-31T02:08:38Z	zuppasoupfifaistimewa-png	ci: record startup pointer static analysis result
+6b9aa2fa7cac560b92e8c1f027171ebf1c3b38cb	2026-10-31T02:08:35Z	zuppasoupfifaistimewa-png	docs: correct bootstrap index and record startup buffer pointer
+7f88eb437fbbb23e317647f3b783a7bd5a5ac744	2026-10-31T02:04:09Z	zuppasoupfifaistimewa-png	audit: dump startup entry pointer and resource index tables
+61cc5b83338d50b31156a87f74bb3d045199d430	2026-10-31T02:03:41Z	zuppasoupfifaistimewa-png	audit: add read-only static executable data table exporter
+2e1a9497bf499dd9c1dc574f775d2981df8faeba	2026-10-31T02:00:11Z	zuppasoupfifaistimewa-png	audit: trace callers requesting initial DATA.BIN resource indices
+2c688c570e02196ffd4037bcbd24c9e8c500c94f	2026-10-31T01:59:57Z	zuppasoupfifaistimewa-png	ci: record loader callback static audit result
+ac881da9c1eb48eafe7b173f869973191c6a5134	2026-10-31T01:59:54Z	zuppasoupfifaistimewa-png	docs: add resource size lookup and post-read callback trace
+eafbe6f8bc7c4a11d2530d6154d076d25785bf1d	2026-10-31T01:57:22Z	zuppasoupfifaistimewa-png	audit: trace resource size lookup and post-read callbacks
+336f73a8313186469c347e0532c30431aab93f04	2026-10-31T01:57:07Z	zuppasoupfifaistimewa-png	ci: record loader static audit Actions result
+d660cbebccb8323b06586c3e24038128fd01395a	2026-10-31T01:57:04Z	zuppasoupfifaistimewa-png	ci: record loader static audit Actions result
+0fba3b0fb9a3ef8fd8046e7c67541fb549415fb9	2026-10-31T01:57:01Z	zuppasoupfifaistimewa-png	ci: record loader static audit Actions result
+d58c55b76e3d896cac85f8c793ad6e9811da6547	2026-10-31T01:56:58Z	zuppasoupfifaistimewa-png	docs: record loader trace and DATA.BIN directory index mapping
+44ca8548fe9c4d9d8c66007b020e4987275ad6d8	2026-10-31T01:54:32Z	zuppasoupfifaistimewa-png	audit: map DATA.BIN directory rows to code slice offsets
+7c26a58a24739415930c3fe2d786110fa0be53e4	2026-10-31T01:49:56Z	zuppasoupfifaistimewa-png	fix: normalize expected executable SHA in loader trace workflow
+9a797fdd6d8918b642cf2ecedcd37d220560e2d6	2026-10-31T01:49:49Z	zuppasoupfifaistimewa-png	audit: add targeted loader payload trace workflow
+e913fdb736b67562eb2656624f18528140ffde1c	2026-10-31T01:43:29Z	zuppasoupfifaistimewa-png	docs: record Stage 1 cost immediate scan results
+513939e5ea8492624fb104a77c76aab81c1e72db	2026-10-31T01:40:34Z	zuppasoupfifaistimewa-png	audit: scan Stage 1 economy price constants and pending-state callers
+e327e310392947808d1420e532a97e2695a128dc	2026-10-31T01:38:03Z	zuppasoupfifaistimewa-png	docs: add completed helper-base audit and Stage 1 economy conclusions
+3a6028659ff63082de64757277842cddb17220af	2026-10-31T01:35:29Z	zuppasoupfifaistimewa-png	docs: record Stage 1 economy static audit findings
+2ea8aa554a2c9b45187e8d72815dd2282b56bd51	2026-10-31T01:31:54Z	zuppasoupfifaistimewa-png	audit: add targeted Stage 1 economy static tracing
+fd3306bda2e337b2f51c4a46a35c55b9c93b4e14	2026-10-30T23:50:44Z	zuppasoupfifaistimewa-png	docs: add deep dive of Naruto vs Mizuki stage 1
+654d34a08d849b1aa11b8057b3fbbc3700e9fbe6	2026-10-30T23:17:47Z	zuppasoupfifaistimewa-png	docs: link chronological video-only play guide in handoff
+dbb4da064bece252071202e632561f838d3dae30	2026-10-30T23:17:29Z	zuppasoupfifaistimewa-png	docs: add chronological video-only Naruto Jintori play guide
+d9db9de4f607623df816aa3381aa87151f45e0b9	2026-10-30T23:07:29Z	zuppasoupfifaistimewa-png	Add handoff for YouTube gameplay analysis
+ecbf9d202c611f126ae649e23aaa6a3e6e96a616	2026-10-30T23:07:01Z	zuppasoupfifaistimewa-png	Prioritize controlled ROM tests from video gameplay analysis
+5f63725d8928022dc0ad390d0866fb9bf138f231	2026-10-30T23:06:44Z	zuppasoupfifaistimewa-png	Cross-check video observations against static game rules
+52bb4c7e0d22b78e663175fd1272f9d2e737593c	2026-10-30T23:05:47Z	zuppasoupfifaistimewa-png	Record completed YouTube visual gameplay analysis
+cb547e6499157346d0ae8cd2ebcec9416889b6ef	2026-10-30T23:05:44Z	zuppasoupfifaistimewa-png	Update transcript report with completed visual analysis
+c9b980143cdf32a8c70aaa7467662e23efd7b911	2026-10-30T23:05:18Z	zuppasoupfifaistimewa-png	Publish timestamped Naruto Jintori video scene analysis
+285f11ef498615e1ed9a0c0f13f185eabc4260d6	2026-10-30T22:58:21Z	zuppasoupfifaistimewa-png	Record preliminary timestamped gameplay transcript notes
+31b7f5f5bf1af68b455dd47f6c6cba08b3582ae3	2026-10-30T22:56:18Z	zuppasoupfifaistimewa-png	Correct public third-party video analysis access requirements
+8ff205db60fa65164d94760d6bfd4d1ad9e27e57	2026-10-30T22:54:04Z	zuppasoupfifaistimewa-png	Record VidIQ and audiovisual access checkpoint
+56a8a99b8d69e1ff7dde2b6e9596c02eb8b472df	2026-10-30T22:42:39Z	zuppasoupfifaistimewa-png	Record YouTube metadata checker and Actions results
+019414d9497dc7d15f3bb82032196257461b8c19	2026-10-30T22:41:12Z	github-actions[bot]	Record YouTube source metadata check run 41139735708
+eff405eeef552cad4fab7e3c6eff0242c2cacd55	2026-10-30T22:41:02Z	zuppasoupfifaistimewa-png	Use current Node 24 compatible GitHub Actions
+1c093b9e49eb94ca4b81bfbd83571ff4477fd458	2026-10-30T22:40:33Z	github-actions[bot]	Record YouTube source metadata check run 41139666002
+2769a55f2b71bf227e9717a71900b21cf24685ea	2026-10-30T22:40:24Z	zuppasoupfifaistimewa-png	Run YouTube source check on pipeline changes
+da4511912d76894d8f6d293604deec82cc3b0730	2026-10-30T22:39:59Z	zuppasoupfifaistimewa-png	Add manual YouTube metadata access workflow
+33df4e7a55483ad0e255b19f86e6d237d9760a5e	2026-10-30T22:39:43Z	zuppasoupfifaistimewa-png	Test metadata-only YouTube source checker
+77d7a5d493a49b04bc7f76143dccf88ee30127e9	2026-10-30T22:39:36Z	zuppasoupfifaistimewa-png	Add metadata-only YouTube source checker
+56acc92add28a78c40a8514015b23900248cf015	2026-10-30T22:36:24Z	zuppasoupfifaistimewa-png	Document YouTube gameplay analysis pipeline plan
+17a83a587031328d841c80bc4b7273efc376e6a0	2026-10-30T15:48:24Z	zuppasoupfifaistimewa-png	Update project status with final AN1 AN2 AN3 results
+a52e81021ed5e1fc1a9ca748c5a3bf50ea03c238	2026-10-30T15:48:04Z	zuppasoupfifaistimewa-png	Add AN1 AN2 AN3 research handoff
+808a3beff96e7d6fb63ef4e1ce397c63d13d1e65	2026-10-30T15:47:32Z	zuppasoupfifaistimewa-png	Publish final AN1 AN2 AN3 verification report
+2c047d427c555cd2cebf15404e0cbbf7885e64d7	2026-10-30T15:40:42Z	github-actions[bot]	Publish AN2_AN3 H6 Circle A-B replay run 41080663095 attempt 1
+6800d4452af6e79aae29e394e8130305448b0f12	2026-10-30T15:25:57Z	zuppasoupfifaistimewa-png	AN2/AN3: enable six-launch H6 replay after diagnostic pass
+f848e7014fa74633282112a896aabaf63dd876dd	2026-10-30T15:25:07Z	github-actions[bot]	Publish AN2_AN3 H6 Circle A-B replay run 41079972127 attempt 1
+136fd817192ab1bb9864ed4c1a611311fff2dbb4	2026-10-30T15:23:02Z	github-actions[bot]	Publish AN2_AN3 H6 Circle A-B replay run 41079756661 attempt 1
+c8d344e6879704fae312dfc879148e72617f820a	2026-10-30T15:21:33Z	zuppasoupfifaistimewa-png	AN2/AN3: fix Lua diagnostic log unbound press variable
+1b9ba1e37290fe3de4e8942eeae9b4974dc70d41	2026-10-30T15:20:11Z	zuppasoupfifaistimewa-png	AN2/AN3: bound emulator process group and retain diagnostic logs
+8f2356749e030ba5ff19075093bcaef339b38ce6	2026-10-30T15:19:20Z	github-actions[bot]	Publish AN2_AN3 H6 Circle A-B replay run 41078632012 attempt 1
+2d8d25037c4a2902bfea58cc89c93c2388e21f2a	2026-10-30T15:13:34Z	github-actions[bot]	Publish AN2_AN3 H6 Circle A-B replay run 41078417753 attempt 1
+a49ef988e958d5d01725e8e65924d0ff36eb9677	2026-10-30T15:12:58Z	zuppasoupfifaistimewa-png	AN2/AN3: publish diagnostic text logs with summaries
+b6db71acc0e8acf474d6723bb388f08dc39495f2	2026-10-30T15:11:58Z	github-actions[bot]	Publish AN2_AN3 H6 Circle A-B replay run 41078402898 attempt 1
+38b24af3da03ccb9c1fc63970e86c883e6a497ed	2026-10-30T15:11:37Z	zuppasoupfifaistimewa-png	AN2/AN3: preserve text diagnostics and fix RNG summary key
+3510ec5a367b18933adb3c752d92ac644b7d6821	2026-10-30T15:11:31Z	zuppasoupfifaistimewa-png	AN2/AN3: run bounded single-launch diagnostic before full replay
+d326424a6f65a406cfc1ba0c6e4f59679b36acf4	2026-10-30T14:57:08Z	github-actions[bot]	Publish AN2_AN3 H6 Circle A-B replay run 41067396027 attempt 1
+0c64b694e584b862c42f2616ef91e86721f12e51	2026-10-30T13:56:42Z	zuppasoupfifaistimewa-png	AN2/AN3: correct preflight diagnosis and exit status
+a4d1c05c7772971e21c7a64fbdf2315aac084020	2026-10-30T13:56:39Z	zuppasoupfifaistimewa-png	AN2/AN3: correct preflight diagnosis and exit status
+875d8b519e2dfb29fd74fb0370d24943f336caef	2026-10-30T13:56:36Z	zuppasoupfifaistimewa-png	AN2/AN3: correct preflight diagnosis and exit status
+54f0551deab3acef0d38ad44ff8eb581b9ec5ad4	2026-10-30T13:56:32Z	zuppasoupfifaistimewa-png	AN2/AN3: correct preflight diagnosis and exit status
+af23a756191b18eb9872a41e894877d18039f41e	2026-10-30T13:56:05Z	zuppasoupfifaistimewa-png	AN2/AN3: align private artifact paths with runner workspace
+ec6507d13de8dab9d3d86ff739173733c009bdac	2026-10-30T13:55:34Z	zuppasoupfifaistimewa-png	AN2/AN3: clarify preflight failure and no runtime evidence
+ae33183e6eddcda9be6689683f152cda19d2d546	2026-10-30T13:55:30Z	zuppasoupfifaistimewa-png	AN2/AN3: correct failed preflight run summary exit code
+863af4502ed81427fa59c819887f428cb387ddf2	2026-10-30T13:55:12Z	github-actions[bot]	Publish AN2_AN3 H6 Circle A-B replay run 41067214814 attempt 1
+9fa54236cfc28464f6a4aef4234e07e5ce4305f0	2026-10-30T13:54:49Z	zuppasoupfifaistimewa-png	AN2/AN3: resolve private artifacts by pinned size and verify SHA
+3c3af5e032e7bc73d7b9306a2009111b5a57184d	2026-10-30T13:53:03Z	github-actions[bot]	Publish AN2_AN3 H6 Circle A-B replay run 41066719273 attempt 1
+17dc8032ea0fd007d9f3b6034ad88487a47943ce	2026-10-30T13:52:38Z	github-actions[bot]	Publish AN2_AN3 H6 Circle A-B replay run 41065252719 attempt 1
+4a4f1fbfdd09aca578ab3e6a3585736fe66156b1	2026-10-30T13:51:23Z	zuppasoupfifaistimewa-png	AN2/AN3: serialize final replay and preserve runner exit code
+813220ad2b7811ca551d7f2e5d3ed1cc7357a639	2026-10-30T13:50:29Z	zuppasoupfifaistimewa-png	AN2/AN3: limit block label to verified first byte
+a6b9a2efcac68b1490512b1f7a37ee7b7aaf9540	2026-10-30T13:43:06Z	zuppasoupfifaistimewa-png	AN1: correct byte tally and Actions identity in AM report
+675416f94faffdad63bfcb397aedf56a2f7d5d54	2026-10-30T13:42:53Z	zuppasoupfifaistimewa-png	AN1: append correction errata to AL handoff
+1aedc00b0ba93e0fa46009b05e8a65b63ed7dbbb	2026-10-30T13:41:48Z	zuppasoupfifaistimewa-png	AN2/AN3: name isolated replay workspace consistently
+d380c77e1fc36d0d374c04831ddcaedebd184125	2026-10-30T13:41:02Z	zuppasoupfifaistimewa-png	AN2/AN3: add headless H6 C/A/B isolated Memory Card Actions workflow
+56666774108150b2348a1cbfa410cf0393ea02e2	2026-10-30T13:40:24Z	zuppasoupfifaistimewa-png	AN2/AN3: define no-input and Circle timing schedules
+3d8dafa6e8375601efa263d925bf38ab22c3c837	2026-10-30T13:40:00Z	zuppasoupfifaistimewa-png	AN2/AN3: add H6 isolated Memory Card replay and byte-diff runner
+daddd3f5147fe6f5b3a6734d1f6cee72f3d519f7	2026-10-30T13:33:34Z	zuppasoupfifaistimewa-png	AN1: add verified correction errata
+b25788299cd4ca67f3e854c5d06ca749a18da09c	2026-10-30T11:46:17Z	zuppasoupfifaistimewa-png	AM report: finalize AM1-AM3 verified results and handoff
+51a66a060f3d4efda7eac7ada408b8d8ac88fe4c	2026-10-30T11:43:33Z	github-actions[bot]	Publish AM3 H6 Circle A-B replay run 41048937290 attempt 1
+4fbbbdf278ca71e0c84cb651287096561e9b4878	2026-10-30T11:33:31Z	zuppasoupfifaistimewa-png	Fix AM3 workflow token expressions; record failed setup run
+123654ee3a2159befb477980286d460313a61420	2026-10-30T11:32:19Z	github-actions[bot]	Publish AM3 H6 Circle A-B replay run 41048752354 attempt 1
+240c448205b047f6dcbcb475c8f8b9cfca20c30a	2026-10-30T11:31:57Z	zuppasoupfifaistimewa-png	AM3 add fixed H6 CIRCLE timing A-B headless replay runner
+f699b73be9f2941328bcc53496ddbcf006504a52	2026-10-30T11:29:19Z	zuppasoupfifaistimewa-png	AM1 correct AL2 byte relabel; add AM2 RNG LCG results and AM3 fixed schedule
+a97db92b221086298919cdd304f01585b53d0457	2026-10-30T10:53:37Z	zuppasoupfifaistimewa-png	Docs: save verified AL1-AL4 handoff checkpoint
+5f16e7c31aff56b952e3b68fc0dae2ee221836f2	2026-10-30T10:52:37Z	zuppasoupfifaistimewa-png	AL2: add runtime pointer and first-byte cross-check
+73e127a5d3fdda21a32cbd030f84258e78ceed33	2026-10-30T10:52:05Z	zuppasoupfifaistimewa-png	AL: clarify H6 hybrid identity and runtime-verified AL2 byte attribution
+99bf6d870d40a64683e7ee67a5f5d7c65ddf2a7d	2026-10-30T10:52:02Z	zuppasoupfifaistimewa-png	AL2: document exact byte and repeated pointer runtime cross-check
+16db27feb0fced530bfdb985f3d276629bcb9eb0	2026-10-30T10:51:58Z	zuppasoupfifaistimewa-png	AL2: cross-check pointer slot and first block byte from committed runtime captures
+493e6bf6bc4f2cc54c2221fe29a3e0d69ce70fd4	2026-10-30T10:50:41Z	github-actions[bot]	Publish AK1-AK3 replay and RAM diff run 41042679829 attempt 1
+41f5a23bde1a68fe8abe0dd1475055d6ad95926a	2026-10-30T10:43:32Z	github-actions[bot]	Publish AK1-AK3 replay and RAM diff run 41041627786 attempt 1
+7e457a0ccae1fc9d499dc8d1c5020a4bab73b079	2026-10-30T10:42:10Z	zuppasoupfifaistimewa-png	AL: correct GDB normal-exit regex
+7bbe8ec64b8728e68e0d53c4a1b869013048b235	2026-10-30T10:41:32Z	zuppasoupfifaistimewa-png	AL: enforce exact H6 AK1 frame 180/240/360 RAM hash baselines
+07e14cbc7b4f33b437776346c561be8082632da5	2026-10-30T10:40:14Z	zuppasoupfifaistimewa-png	AL: recognize GDB normal exit as decimal zero
+8f6dd448268ed5db2ab0d6b6f8469a2d00c0d396	2026-10-30T10:34:11Z	zuppasoupfifaistimewa-png	AL: publish AL1-AL4 verification outputs
+c11ce716b389d474c02f20966bbfbf1528637dd8	2026-10-30T10:33:33Z	zuppasoupfifaistimewa-png	AL: fix emulator exit, capture H6 early RAM and reconstruct AE2 hybrids
+50ba6146524d8e9a510f13d646bee6901a17faad	2026-10-30T09:41:21Z	github-actions[bot]	Publish AK1-AK3 replay and RAM diff run 41032514102 attempt 1
+cd5df223aefab86c9de781e73c69800d5e631213	2026-10-30T09:23:00Z	zuppasoupfifaistimewa-png	Record AK1-AK3 Actions run in-progress status
+f2b12986546072c60b4b6a860dfd3c1602f6dd01	2026-10-30T09:21:52Z	zuppasoupfifaistimewa-png	Document AK3 evidence scale and unresolved AE2 digests
+b7f230947d632e024243a4e12f63c9af46c33a2e	2026-10-30T09:18:50Z	zuppasoupfifaistimewa-png	Fix GitHub Actions expression interpolation in AK replay workflow
+0d7263bba2e03f5f3a33b08d1997be11c38f13f3	2026-10-30T09:17:43Z	github-actions[bot]	Publish AK1-AK3 replay and RAM diff run 41032338902 attempt 1
+da800c422e9abed1dbdaeedb5c40cad244373956	2026-10-30T09:17:22Z	zuppasoupfifaistimewa-png	Add AK1-AK3 pinned multi-frame H6 replay workflow
+3e2e6b88a91f22768554147f9ce6834e071bfe10	2026-10-30T09:16:17Z	zuppasoupfifaistimewa-png	Add AK1-AK3 H6 multi-frame replay and RAM diff probe
+38e2a891c627ee34d813fddd3a64b187086f8770	2026-10-30T09:01:23Z	zuppasoupfifaistimewa-png	Publish final AJ1-AJ3 H6 runtime and replay report
+2463afa06b7e041269010d5744817a6b70198c2e	2026-10-30T08:59:30Z	zuppasoupfifaistimewa-png	Resolve AJ1 H6 hybrid digest from committed AE2 record
+cdd3daa1ca0620bdb09f4bcb924aefb074b07999	2026-10-30T08:54:06Z	zuppasoupfifaistimewa-png	Correct H6 hybrid temporary savestate byte size in final report
+b3334d6d9a2d73aa8b478207799d0f9c2ed0d389	2026-10-30T08:53:37Z	zuppasoupfifaistimewa-png	Publish final AJ1-AJ3 audit and H6 RAM report
+a260d9e3eb4f7849aa55a0983c972084726b8207	2026-10-30T08:52:58Z	zuppasoupfifaistimewa-png	Correct AJ1 AE4 snapshot interpretation from raw logs
+1ce129afcc643af4ee3636fe295f373e08cf6b3b	2026-10-30T08:52:56Z	zuppasoupfifaistimewa-png	Mark H6 fingerprint verified by two runtime captures
+d923ec4c6f8a1c54d7813e8a84d0b771a3d8ec76	2026-10-30T08:52:52Z	zuppasoupfifaistimewa-png	Update AJ3 with verified H6 two-launch determinism
+c28f436e37b1e43bc6ea7f42f84d6bacc7da365c	2026-10-30T08:50:44Z	github-actions[bot]	Publish AJ1 audit and H6 RAM probe run 41028457166 attempt 1
+c9102de00a14019f44b0716a22108ffa6d0283c6	2026-10-30T08:50:30Z	zuppasoupfifaistimewa-png	Record H6 hybrid fingerprint without committing savestate
+1ef30814b4473fcc753c96585ad0c42377c79ff9	2026-10-30T08:50:04Z	zuppasoupfifaistimewa-png	Document AJ1 raw log and manifest provenance discrepancies
+a1f821502b8edf0d033a6d14a1104541a3703987	2026-10-30T08:48:58Z	zuppasoupfifaistimewa-png	Record AJ3 H6 replay determinism plan and parked host/RSI search
+5bffeda14ccc8757ae5d8f5145a46398881bcbf1	2026-10-30T08:44:10Z	zuppasoupfifaistimewa-png	Fix Actions expression interpolation for H6 asset downloads
+098303aba6d8f3e1908cb49451803a4f4d05dd95	2026-10-30T08:43:33Z	github-actions[bot]	Publish AJ1 audit and H6 RAM probe run 41028349650 attempt 1
+d6194a6ce0463d23da52dc4fc72a9c8b3bc82b33	2026-10-30T08:43:14Z	zuppasoupfifaistimewa-png	Add run-isolated AJ1 audit and H6 two-launch RAM probe
+846545c238a94f84739e995e6928d182f758a431	2026-10-30T08:42:34Z	zuppasoupfifaistimewa-png	Isolate AE1 evidence publication by run and attempt
+3a62991ff82c2e127fa5e7a61ff9875aa16b16a5	2026-10-30T08:42:21Z	zuppasoupfifaistimewa-png	Add bounded two-launch H6 RAM and word probe
+761dcd21bc8b897a9849ab5f3febdf9a8ea702a6	2026-10-30T08:41:40Z	zuppasoupfifaistimewa-png	Add AJ1 exact-commit raw-log audit and SHA manifest generator
+69019281d6c9300cd5dbccaa035792b4253bebe8	2026-10-30T03:59:40Z	zuppasoupfifaistimewa-png	Fix raw permalink to committed AH3 exit trace
+cea09a6d78adf792c69d59ff63bde243d00301f0	2026-10-30T03:59:15Z	zuppasoupfifaistimewa-png	Correct AH1-AH4 evidence permalinks and preserve exit-code trace
+c618637e40f9b4c4c0b09fa5291975222fe9d713	2026-10-30T03:57:10Z	zuppasoupfifaistimewa-png	Add verified AH1-AH4 audit addendum
+43e56561b00043f20b22cdd93c055a980ed57cd1	2026-10-30T03:49:39Z	zuppasoupfifaistimewa-png	Record active AH1 Actions retry status
+2f9ea427ebe52a7af79127aad003479e13dc4821	2026-10-30T03:49:25Z	zuppasoupfifaistimewa-png	Publish AH1-AH4 runtime and static audit report
+86768fd702c110246f98ad3cec6834b1ece9655b	2026-10-30T03:47:35Z	zuppasoupfifaistimewa-png	Record AH2 Actions run summary
+f7808b28079b6a5a175a898b87411879282cc4a1	2026-10-30T03:35:11Z	github-actions[bot]	Publish concise AC1-AC4 restore report
+53fe55ff8d5eeab020bedce9fdfe482eac4cac04	2026-10-30T03:35:09Z	github-actions[bot]	Record sanitized AA1 AC2 AC4 evidence
+572e10b76df40f3dc9f5dec21444c377ffe08b55	2026-10-30T03:32:59Z	zuppasoupfifaistimewa-png	Trigger AH2 GDB diagnostics from c963-identical workflow
+ee48de43577d08eeca77f6930d7f49a250cbba83	2026-10-29T23:20:16Z	github-actions[bot]	Publish recursive AE1 SPU channel-field evidence
+2e28dccfee187e5146754aff7d3fa426e38be8cd	2026-10-29T23:02:49Z	zuppasoupfifaistimewa-png	Record concise AG1 AA1 run status and per-launch outcomes
+09aa4ff085cdf0353424cd36bf89aa290849a575	2026-10-29T23:01:20Z	github-actions[bot]	Publish concise AC1-AC4 restore report
+e7739bd272b5be4c3c371e8af04db6582e86b0c8	2026-10-29T23:01:18Z	github-actions[bot]	Record sanitized AA1 AC2 AC4 evidence
+c9636874dd6480a2b6d00bc8a759f6ef8ceeba5b	2026-10-29T23:00:49Z	zuppasoupfifaistimewa-png	Harden one-shot RAM snapshot and report pure-target RSI hypothesis
+9f3da08b8793b99fa4a8ac81fb6daa941b614fad	2026-10-29T23:00:01Z	zuppasoupfifaistimewa-png	Publish AG2 full GDB and AG4 control-only RAM snapshot evidence
+6048b34a82b2ad6d7c3cfa567e08d3ff92a13fa3	2026-10-29T22:59:09Z	zuppasoupfifaistimewa-png	Add full GDB logs, time-to-180 and control RAM snapshot diagnostics
+c0d5b5e7df392b7cb8c42b46dc23e4dd67c55f91	2026-10-29T22:56:08Z	zuppasoupfifaistimewa-png	Append exact AF2 attempt-2 logs and withdraw unsupported AC3 conclusion
+feac56d0ef229d896cf6a415a764d5efc6688cea	2026-10-29T22:55:44Z	zuppasoupfifaistimewa-png	Align AF1-AF5 summary with verified pointer count and provenance corrections
+9debf025352cd722ae7ac48b7e5dc48b34d58968	2026-10-29T22:55:30Z	zuppasoupfifaistimewa-png	Correct AF1 pointer count and withdraw unsupported AF4 build conclusion
+b676881aedccd7a492ebef8817656d8c1dd29e73	2026-10-29T22:38:15Z	github-actions[bot]	Publish concise AC1-AC4 restore report
+2d97e3d507a72fbf3e2834718d8e41389fd9a243	2026-10-29T22:38:13Z	github-actions[bot]	Record sanitized AA1 AC2 AC4 evidence
+69538f09f5251d3b91a0d405db671d204b0d4b16	2026-10-29T22:36:23Z	zuppasoupfifaistimewa-png	Add AF1-AF5 audit report, 24-channel pointer table and provenance excerpts
+19d26af1a91e273b5c3bb2717af5032823239b09	2026-10-29T22:34:49Z	zuppasoupfifaistimewa-png	Fix SPU probe shutdown and retry evidence publication safely
+f71f23126e9c79e53fdbbcb4734c395a91a52e0e	2026-10-29T15:28:10Z	zuppasoupfifaistimewa-png	Correct AE2 necessity from long-timeout job log and explain publication failure
+f04bcd8f6a37ca0e0283914a4a245bebc65309b6	2026-10-29T15:25:20Z	zuppasoupfifaistimewa-png	Publish AE1-AE4 continuation report with timeout limitations
+47db6d3d876cf9c1490425c6c767272e61bac01b	2026-10-29T15:22:35Z	zuppasoupfifaistimewa-png	Add isolated AE4 RAM snapshots with longer restore timeout
+46b34c94690d43ae7eeb138695b5af86aa24533b	2026-10-29T15:20:45Z	github-actions[bot]	Publish recursive AE1 SPU channel-field evidence
+b8ac9eba871fc05eff75baace38d2cdb545eedf7	2026-10-29T15:11:50Z	zuppasoupfifaistimewa-png	Run AE4 RAM probes for AD3 successful hybrids
+99fca1ca181a73f14323b48736d84dcd3a46f0a3	2026-10-29T15:11:37Z	zuppasoupfifaistimewa-png	Add conditional AE4 snapshots for verified AD3 hybrids
+c3e01889178fe701fa0bfe59c7ffebac9f07c2e8	2026-10-29T15:10:02Z	github-actions[bot]	Publish recursive AE1 SPU channel-field evidence
+65522cd174782e6d65cb765811b43440e95b33c3	2026-10-29T15:02:41Z	zuppasoupfifaistimewa-png	Include AE2 current-pointer necessity check in focused audit
+29ea35b45fb7c34e0713587b7972b53348f96518	2026-10-29T15:02:26Z	zuppasoupfifaistimewa-png	Add AE2 necessity test for minimal current-pointer field
+9aac883ff1df75fd7f749498c77349d635cd7bf7	2026-10-29T15:01:02Z	github-actions[bot]	Publish recursive AE1 SPU channel-field evidence
+e5c98fb5aeb9fce0292ec6b2540b347d2e8d4e96	2026-10-29T14:53:55Z	zuppasoupfifaistimewa-png	Fix recursive bisect workflow path context
+aaee865b4127b3eeb94f5bf4efcc7eb1692c11b9	2026-10-29T14:53:03Z	zuppasoupfifaistimewa-png	Run recursive AE1 SPU channel child-field bisect
+eb1a597da00afb99d592be92397f1fc409af3b50	2026-10-29T14:51:47Z	zuppasoupfifaistimewa-png	Correct nested channel bisection to start from control payload
+8e5fae315fd7eec8d6d7923d964ba66f394a2ce0	2026-10-29T14:51:23Z	zuppasoupfifaistimewa-png	Add recursive SPU channel field bisector
+9c1287c436522a5b333a3399d734dd8cc8c566c0	2026-10-29T14:38:59Z	zuppasoupfifaistimewa-png	Refine AE1 SPU channel 2 condition syntax fix
+9d7c062b8457ecdf118be01fcc6c6fe65bcfe070	2026-10-29T14:38:36Z	zuppasoupfifaistimewa-png	Refine AE1 SPU channel 2 with long timeout
+291989135139a48b8bb5ace7aa106016c811da40	2026-10-29T14:37:48Z	zuppasoupfifaistimewa-png	Add long-timeout refinement for AE1 SPU channel 2
+4d83df976b0c44dd1ad9230173322018a245be0f	2026-10-29T14:33:23Z	github-actions[bot]	Publish concise AC1-AC4 restore report
+4e028d91d769eacc09f600a1c9484333218cec61	2026-10-29T14:33:21Z	github-actions[bot]	Record sanitized AA1 AC2 AC4 evidence
+579c94e26baea0e9bf8fe86a5f5f68c7c00a07ce	2026-10-29T14:14:01Z	zuppasoupfifaistimewa-png	Run AE1-AE4 SPU protobuf and restore necessity tests
+4537925322df5fe5318d9240e1ed77cd4bc4e091	2026-10-29T14:13:32Z	zuppasoupfifaistimewa-png	Ensure full AE raw PCSX logs are retained
+585385b7c99c4c94bca61a14454477cdebafbef5	2026-10-29T14:12:41Z	zuppasoupfifaistimewa-png	Add reproducible AE1-AE4 savestate protobuf bisector
+8433b51660d4607efd3f87497919ee118c356b3c	2026-10-29T11:16:02Z	zuppasoupfifaistimewa-png	Correct AD2 symbolization results from mapped ELF evidence
+e9581f38d8b4d8c16ed8367bd8c358962b3f21bb	2026-10-29T11:15:16Z	github-actions[bot]	Publish final AD1-AD6 audit report
+ae083f2b8a88f5762ae863c6b685009786c6658f	2026-10-29T11:15:14Z	github-actions[bot]	Preserve AD1-AD6 text evidence and raw log hashes
+008268d03d3ca5620ac11ce8554b8a5d15eb3560	2026-10-29T11:14:45Z	zuppasoupfifaistimewa-png	Fix AD2 Python indentation and preserve literal disassembly syntax
+0acf3ddd6372fac3ebc864ddf028da1659c14ac3	2026-10-29T11:13:40Z	zuppasoupfifaistimewa-png	Symbolize against runtime-mapped AppImage ELF and PT_LOAD offsets
+17865156bf51ce522ef7b1810c9c32a22b342495	2026-10-29T11:13:16Z	github-actions[bot]	Publish final AD1-AD6 audit report
+8663cb5bb0b526b7980cb29a72029756f9f46217	2026-10-29T11:13:15Z	github-actions[bot]	Preserve AD1-AD6 text evidence and raw log hashes
+d9b54be8ec95a2407def572c56b3933a40007c27	2026-10-29T11:12:51Z	zuppasoupfifaistimewa-png	Close AD2 evidence block in publication workflow
+252e2f919368184943932be54f06e26a4db52d55	2026-10-29T11:12:16Z	zuppasoupfifaistimewa-png	Make AD1-AD6 publication idempotent and race-safe
+f447fcc291efb8a8bcb60d51676eb2fb3c0a5972	2026-10-29T11:11:33Z	zuppasoupfifaistimewa-png	Add race-safe publication recovery for AD1-AD6 text evidence
+66149f13cf0d1b4ca9dfb7645bd2dea3aeaefce7	2026-10-29T11:00:40Z	zuppasoupfifaistimewa-png	Fix Lua post-load VSync branch syntax on ubuntu-26.04
+9fef28ece340e09db0367e6463404882cc34be87	2026-10-29T10:55:55Z	zuppasoupfifaistimewa-png	Start and verify Xvfb for ubuntu-26.04 target restore
+1278a46805fbc14781b1ccb87116c47523512df3	2026-10-29T10:54:51Z	zuppasoupfifaistimewa-png	Remove stray duplicated YAML tail from AD4 retry
+460855932a53c2572c9c1a9da66c4a8049b7603f	2026-10-29T10:54:17Z	zuppasoupfifaistimewa-png	Repair canonical binary discovery line in ubuntu-26.04 retry
+20035df57a4370202921e3bf8b7e2a6f2dd07837	2026-10-29T10:53:32Z	zuppasoupfifaistimewa-png	Use canonical pinned AppImage binary path for ubuntu-26.04
+82bb1f07893d5d1c4193c5dfbf7963ea8d18e182	2026-10-29T10:52:11Z	zuppasoupfifaistimewa-png	Resolve AppImage bundled library paths on ubuntu-26.04
+2855cd17ed8a1d26af131de25845def3df6539d2	2026-10-29T10:50:56Z	zuppasoupfifaistimewa-png	Fix AppImage execute permission for ubuntu-26.04 retry
+0810b74912e5ca619ce5ad7dd5a87e2134fab15b	2026-10-29T10:50:14Z	zuppasoupfifaistimewa-png	Add isolated ubuntu-26.04 target restore retry with text-only evidence
+8670c10f64e569800f169a148f17f66ab2a1295c	2026-10-29T10:47:55Z	zuppasoupfifaistimewa-png	Fix Actions token expressions and AD audit evidence paths
+c21269d9c8f504f0e4081409bbfb2e0a6c3a093b	2026-10-29T10:46:39Z	github-actions[bot]	Publish AD1-AD6 audit with fixed evidence permalinks
+baa7a53ce9a8dbb1153ea27c1a329219bf9a43d5	2026-10-29T10:45:53Z	zuppasoupfifaistimewa-png	Add bounded AD1-AD6 text-only restore and history audit
+089c19cb107d6556e1bc4fd27e2b27b6f7c58592	2026-10-29T09:59:51Z	zuppasoupfifaistimewa-png	Shorten final AC1-AC4 report and add explicit runtime comparison table
+d1f65d766993db07a038c89936ef26ba374c3ac6	2026-10-29T09:58:49Z	github-actions[bot]	Publish concise AC1-AC4 restore report
+1689239d81d215b4efc8296b1b896fc8115a12f7	2026-10-29T09:58:47Z	github-actions[bot]	Record sanitized AA1 AC2 AC4 evidence
+528fc3164fda9e14b96831403d1f1f1ebd483be6	2026-10-29T09:55:50Z	zuppasoupfifaistimewa-png	Clarify AA1 stack and historical runtime evidence in report
+98743c1ef2a2a983b07e82cec84817f51c9200f7	2026-10-29T09:52:58Z	github-actions[bot]	Publish concise AC1-AC4 restore report
+7277f48e2663d9c089aea756cd6bd07b80b2e79e	2026-10-29T09:52:56Z	github-actions[bot]	Record sanitized AA1 AC2 AC4 evidence
+ff0173997dd1425285cd22bb2fc7659a40d96398	2026-10-29T09:49:46Z	zuppasoupfifaistimewa-png	Make anonymous Release audit resilient to API rate limits
+052518f4a2da32ae5a59afa4df6f80b3e27cf2e2	2026-10-29T09:46:54Z	zuppasoupfifaistimewa-png	Fix AA1 GDB capture and add static savestate and anonymous access audit
+7aa299153661f0f8613dd2e6fd67b6a461e42642	2026-10-29T09:37:35Z	zuppasoupfifaistimewa-png	Record bounded AA1 AC2 AC3 AC4 evidence status
+3b7340ae0a5700634359fdb7798a3a285a743504	2026-10-29T09:19:50Z	zuppasoupfifaistimewa-png	Clarify AA1 target versus control restore result and confidence
+c6f20d5995c1b84c3d0ca75cbc616fc7c2d86bcf	2026-10-29T09:18:32Z	zuppasoupfifaistimewa-png	Add statically traced allocator call and release site to AA3
+7593abe21083f235d861fc24534c88569363de66	2026-10-29T09:17:37Z	github-actions[bot]	Record AA1 checkpoint restore GDB diagnostic
+64be99b0ea2d927216a7195dd95e85fbf8cd3612	2026-10-29T09:15:42Z	zuppasoupfifaistimewa-png	Capture executable paths without SIGPIPE in AA1 diagnostic
+8ac2cd59569af4087d1a0cc44c9587d6a5e747a4	2026-10-29T09:15:09Z	github-actions[bot]	Record AA1 checkpoint restore GDB diagnostic
+9af29693376fba076a2fe7f465a1331021eaac2c	2026-10-29T09:14:36Z	zuppasoupfifaistimewa-png	Avoid SIGPIPE while capturing AppImage layout for AA1
+e279953d497b6a09982dc4ce129e3a8138bf171a	2026-10-29T09:12:38Z	github-actions[bot]	Record AA1 checkpoint restore GDB diagnostic
+8da0a78706296f1e90d8de96d1332876f2103fc5	2026-10-29T09:12:12Z	zuppasoupfifaistimewa-png	Follow AppImage symlinks when locating PCSX executable
+715778da4d6c877489c09f89ce2557b85ae203fc	2026-10-29T09:11:12Z	github-actions[bot]	Record AA1 checkpoint restore GDB diagnostic
+13b95e3bab15be767d2a16b5567af8337f98e848	2026-10-29T09:10:46Z	zuppasoupfifaistimewa-png	Fix AA1 AppImage layout report path
+7e7b79eec55f2902120aa89f8eccf9325e2b7c38	2026-10-29T09:09:40Z	github-actions[bot]	Record AA1 checkpoint restore GDB diagnostic
+0a10565e3b1f365d719bea7a58f061b2ebec7ba2	2026-10-29T09:09:17Z	zuppasoupfifaistimewa-png	Search whole AppImage and record launcher details for AA1

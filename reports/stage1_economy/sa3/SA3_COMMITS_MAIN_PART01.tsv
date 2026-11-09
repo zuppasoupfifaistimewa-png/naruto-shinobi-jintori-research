@@ -1,0 +1,501 @@
+commit_sha	committer_date	author	message
+2679c8eaf119b562eb580fbb2e766661b3318502	2026-11-09T03:19:34Z	github-actions[bot]	Publish RA2 bounded upgrade probe 42555699212 [skip ci]
+ca23ea4bdbe87903bd76a4945e11ca5fc474452f	2026-11-09T03:18:43Z	zuppasoupfifaistimewa-png	Publish full SA2 scenario traces and keep runtime summary
+36521130f5c05c8cdaa519db357e09001f47b742	2026-11-09T03:17:19Z	github-actions[bot]	Publish RA2 bounded upgrade probe 42555495195 [skip ci]
+0edcc08758a6995793275c12f87a26527b8b0087	2026-11-09T03:16:32Z	zuppasoupfifaistimewa-png	Add no-input control and full-register bounded RA2 scenarios
+57e0efa8761d70de1a6d681a4a0be73acb7531ab	2026-11-09T03:13:38Z	github-actions[bot]	Publish DW0-DW4 static raw-byte audit run 42555137254
+b9ab74e4c524088979adea57984204dbf98ece99	2026-11-09T03:12:50Z	zuppasoupfifaistimewa-png	Trigger SA1 static EXE and Entry 1 extraction
+73984766875a3f6dc4418ac9ae262c7dab9f333a	2026-11-09T03:11:58Z	github-actions[bot]	Publish DW0-DW4 static raw-byte audit run 42554974392
+fa18394bf2aef3dfe430be5aba855c5db01c89c4	2026-11-09T03:11:24Z	zuppasoupfifaistimewa-png	Add SA1 static decoder and record rejected QA workflow run [skip ci]
+ad16f08322c99f5612f1139f5bf5ae8a7d4f4fa8	2026-11-09T03:11:06Z	zuppasoupfifaistimewa-png	Wire SA1 bounded static analysis into existing DW workflow
+089a544c18c280fdadfc9ea59b5d59fd16ec9e54	2026-11-09T03:08:32Z	github-actions[bot]	Publish QA4 read-only CONTROL trace 42554626237 [skip ci]
+621201b6c41f8f26e44ea384cbd3bdbdca6b10c9	2026-11-09T03:07:51Z	github-actions[bot]	Publish QA0 harness and excerpt audit 42554626237 [skip ci]
+00859dc61750f2eb66391048c1d14f1b561644b9	2026-11-09T03:07:30Z	zuppasoupfifaistimewa-png	Fix QA0 workflow summary indentation
+0df69f6f79ce091915f14ffec62bf4bfe8e410cb	2026-11-09T03:06:40Z	zuppasoupfifaistimewa-png	Correct QA0 PA file baseline count and Actions summary baseline
+d98b0b25b94cdad52386cffc5a6748acbbeb2011	2026-11-09T03:02:07Z	github-actions[bot]	Publish QA4 read-only CONTROL trace 42554041029 [skip ci]
+91fdb9606022b0eed5c40a494a76344e371a7dbb	2026-11-09T03:01:23Z	github-actions[bot]	Publish QA0 harness and excerpt audit 42554041029 [skip ci]
+56d6eaf765234c59372f271c83454bfbdc14d1f4	2026-11-09T03:01:06Z	zuppasoupfifaistimewa-png	Trigger final SA0 bounded QA0 audit
+9dbd97084b1eb99d781eb7e47e84e601b8ea99ce	2026-11-09T03:00:47Z	zuppasoupfifaistimewa-png	Separate SA0 cleanup audit and preserve historical PA verification [skip ci]
+78e1a32d8cea7be759ecca418a5d2b12b8b87e6f	2026-11-09T02:59:28Z	zuppasoupfifaistimewa-png	Remove obsolete KA MA NA outputs and RA2 duplicate trigger [skip ci]
+3d3eff5d9e0e03b0742423be241473cf60bb3736	2026-11-09T02:30:26Z	zuppasoupfifaistimewa-png	Log final RA4 ledger count correction [skip ci]
+483aebcfa6cc741ebd13042effd85f131003e8f8	2026-11-09T02:29:47Z	zuppasoupfifaistimewa-png	Correct final RA4 ledger run and job total [skip ci]
+e27a06dd0d586fd7c7e437106fedd2d05cc70c8a	2026-11-09T02:16:38Z	zuppasoupfifaistimewa-png	Align scheduled monitor row counts in RA4 ledger [skip ci]
+853eb7159df843785c9c5e6c9a4a080c9be9f19f	2026-11-09T02:16:22Z	zuppasoupfifaistimewa-png	Correct RA4 total after final scheduled monitor inclusion [skip ci]
+e0b71793dd7a93d9a277bf5f0d5983f1604b11df	2026-11-09T02:15:45Z	zuppasoupfifaistimewa-png	Finalize raw links and record follow-up ledger commits [skip ci]
+fa2a40e59df379ac46496ad13cbb66244ffbe095	2026-11-09T02:15:25Z	zuppasoupfifaistimewa-png	Include latest scheduled monitor in complete Actions ledger [skip ci]
+9b8a89bba2e179d2be68725966bb7df95fd53f67	2026-11-09T02:14:11Z	zuppasoupfifaistimewa-png	Add exact raw permalinks and ledger commit file inventory [skip ci]
+381e1ae77247d5c20d193e493781d93c580f62c6	2026-11-09T02:13:45Z	zuppasoupfifaistimewa-png	Complete RA0-RA4 Actions ledger and correct stage statuses [skip ci]
+700e772c127e935ee2fe82956a5a3821907ed08e	2026-11-08T23:54:36Z	zuppasoupfifaistimewa-png	Index raw permalinks for every RA4 Actions run [skip ci]
+5facd666af50fbe687ce479c857deb3fcb1d76cb	2026-11-08T23:54:04Z	zuppasoupfifaistimewa-png	Add RA4 run and commit ledger with per-run summaries [skip ci]
+bd91cb50d1b09fe683cd175223453a98c8d9dc13	2026-11-08T23:44:10Z	zuppasoupfifaistimewa-png	Record RA3 H1 H2 gate as not met [skip ci]
+c9547370fa7c281dd45758cb9b41b193d5d7be9d	2026-11-08T23:43:51Z	zuppasoupfifaistimewa-png	Clarify RA1 saved return address and unresolved outer caller [skip ci]
+130e1c2473dfcf9e4a9962a6ac7b6839c4d7e834	2026-11-08T23:41:59Z	github-actions[bot]	Publish RA1 read-only stack trace 42536371222 [skip ci]
+0f5790f03b87e4fb63fa5b098dcd86ad225560a5	2026-11-08T23:41:21Z	zuppasoupfifaistimewa-png	Add RA1 read-only stack chain probe with two identical restores
+bda5824f04590f6ded7abec46b659d9ae78456a0	2026-11-08T23:41:04Z	zuppasoupfifaistimewa-png	Document RA2 identical traces and no observed upgrade [skip ci]
+61c11df64d98fa4c06f7648e63376d921064c07c	2026-11-08T23:39:21Z	github-actions[bot]	Publish RA2 bounded upgrade probe 42536155267 [skip ci]
+739febf493d0648068cd47f5bba188fcca90fc93	2026-11-08T23:38:36Z	zuppasoupfifaistimewa-png	Define RA2 tile limit inside embedded Lua and self-test it
+6941b3ce85247182b0b2c96eabe2412469cf2956	2026-11-08T23:37:10Z	github-actions[bot]	Publish RA2 bounded upgrade probe 42535674901 [skip ci]
+1e5dd7c10114819ac71e9506dde1a2375f37061e	2026-11-08T23:32:38Z	zuppasoupfifaistimewa-png	Align RA2 self-test with typed read-only memory API
+6601b7c4c2f8251fa3ced660e5877fcf3b157499	2026-11-08T23:27:11Z	github-actions[bot]	Publish RA2 bounded upgrade probe 42535223372 [skip ci]
+8ac19e87c3d2e85dbf2b331af356ec71e831f245	2026-11-08T23:26:56Z	zuppasoupfifaistimewa-png	Use typed read-only memory loads for RA2 snapshot guards
+8051367926d5bfc4793987b30306aea99877bc01	2026-11-08T23:25:36Z	github-actions[bot]	Publish RA2 bounded upgrade probe 42534757870 [skip ci]
+31de6c0bf7b101ad6d5593b182bdc6ab7eb9cbe1	2026-11-08T23:21:03Z	zuppasoupfifaistimewa-png	Accept verified checkpoint within private artifact bundle
+eb05d98fa5a2956a1b5dae789b09ac971644e0c4	2026-11-08T23:20:00Z	github-actions[bot]	Publish RA2 bounded upgrade probe 42534641532 [skip ci]
+3a71e572e11a26daf7f801d4bf124917bcfbc7fa	2026-11-08T23:19:42Z	zuppasoupfifaistimewa-png	Validate RA2 downloaded checkpoint contents
+61f02c69619cb512d590fe7f953eb2ff7c80ebd3	2026-11-08T23:19:21Z	zuppasoupfifaistimewa-png	Use artifact action for RA2 checkpoint and record HTTP 415 [skip ci]
+f03322c84eb1a8664fc7ee15706489416b06c98a	2026-11-08T23:18:15Z	github-actions[bot]	Publish RA2 bounded upgrade probe 42534501546 [skip ci]
+7b53416d563292582bcfc3f1343848a4f0ac57d3	2026-11-08T23:18:00Z	zuppasoupfifaistimewa-png	Fix RA2 workflow expressions and record failed attempts
+ec65242a04b3f26dfd97620730419f38d4405aad	2026-11-08T22:52:10Z	zuppasoupfifaistimewa-png	Isolate RA2 paths from generic Python workflow filters
+66c2d9f8ef88088179ed98e4b600a1b61138034d	2026-11-08T22:52:06Z	zuppasoupfifaistimewa-png	Store RA2 harness as .pytxt to avoid other Python workflow filters
+2ece9d8f247979e91610c655248554eb9373fa73	2026-11-08T22:49:39Z	github-actions[bot]	Publish NA0-NA5 static audit run 42531815501 [skip ci]
+d7a82d4472e273a95876330bd2e147a1a7d20d97	2026-11-08T22:49:25Z	github-actions[bot]	Publish KA0-KA5 static audit 42531815506 [skip ci]
+a048d4c24f26b40068fb87645f33fec3105a19f1	2026-11-08T22:48:57Z	github-actions[bot]	Publish MA0-MA5 static audit run 42531815503 [skip ci]
+67d2ad5c4bda90f2e2301c42dacce71994dc9f3b	2026-11-08T22:47:14Z	github-actions[bot]	Publish NA0-NA5 static audit run 42531753599 [skip ci]
+8b6029909cd0dca228e0bd2224838786169515df	2026-11-08T22:47:09Z	github-actions[bot]	Publish KA0-KA5 static audit 42531753623 [skip ci]
+7ba8617f337adca1c25f5a4eb8c9f41bd51e0c2b	2026-11-08T22:47:06Z	github-actions[bot]	Publish MA0-MA5 static audit run 42531753591 [skip ci]
+6ac2e13cd35589d8e51a439eae48a381aa5a356b	2026-11-08T22:45:37Z	zuppasoupfifaistimewa-png	Use absolute workspace path for RA2 runtime harness
+74a73e355d76671c712844a36f537eeb027e49b6	2026-11-08T22:45:29Z	zuppasoupfifaistimewa-png	Fix RA2 runtime path, breakpoint capture, and action tile-diff reporting
+207408634a7a67e7777b03a8e18bab1bee7749e5	2026-11-08T22:44:45Z	zuppasoupfifaistimewa-png	Add bounded RA2 headless upgrade confirmation probe
+613f4164d1927c52b294440fbdaf313ccddb1029	2026-11-08T22:37:08Z	github-actions[bot]	Publish QA4 read-only CONTROL trace 42531023381 [skip ci]
+dbdb9da795ec0ac9d99c916b8b3ed4e95acb4039	2026-11-08T22:36:28Z	github-actions[bot]	Publish QA0 harness and excerpt audit 42531023381 [skip ci]
+823d91910494b635a61a584390bf267b4cd42e05	2026-11-08T22:36:13Z	github-actions[bot]	Publish QA4 read-only CONTROL trace 42530988325 [skip ci]
+fb16eccf44422ed9b3fc3dea0f9ede1782447aac	2026-11-08T22:35:43Z	zuppasoupfifaistimewa-png	Fix QA0 harness summary quoting
+a0bfbe359710a35e0ade9248497b735cec2e298d	2026-11-08T22:35:33Z	github-actions[bot]	Publish QA0 harness and excerpt audit 42530988325 [skip ci]
+4572ffed5ecb520dccc4ee840c5d9b8d63ae3268	2026-11-08T22:35:19Z	zuppasoupfifaistimewa-png	Fix QA0 physical deletion verification and byte-wise union audit
+5e4f98eb37f23309083a1804394aec2887e5222f	2026-11-08T22:21:28Z	zuppasoupfifaistimewa-png	RA0 run audit against inclusive RA baseline [skip ci]
+1ca0c87055eb64545faf56cc380ac905d092acf0	2026-11-08T22:21:19Z	zuppasoupfifaistimewa-png	RA0 enforce zero overlimit groups in actual archive union [skip ci]
+9acb339d28200aa62a002fa2dee294dadc38a81c	2026-11-08T22:21:03Z	zuppasoupfifaistimewa-png	RA0 restore hard gate to complete archive union [skip ci]
+77ae9549ba59bc88d1681af18ef3281acdb0bcce	2026-11-08T22:11:54Z	zuppasoupfifaistimewa-png	RA0 physically prune overlimit PA quote rows pa-run-42484169218-static [skip ci]
+59cf333d3650b24379df1e513e8f55e5dda064c7	2026-11-08T22:11:50Z	zuppasoupfifaistimewa-png	RA0 physically prune overlimit PA quote rows pa-run-42484169218-static [skip ci]
+2eb0554f757ec449a0847f8d9c7660b4149500ca	2026-11-08T22:11:46Z	zuppasoupfifaistimewa-png	RA0 physically prune overlimit PA quote rows pa-run-42484127968-static [skip ci]
+255a29c71e79d6200244780f186184e39acd7a09	2026-11-08T22:11:21Z	zuppasoupfifaistimewa-png	RA0 physically prune overlimit PA quote rows pa-run-42484127968-static [skip ci]
+4c7c1a8b6c56db92628d6d348ce45473984e364a	2026-11-08T22:11:15Z	zuppasoupfifaistimewa-png	RA0 physically prune overlimit PA quote rows pa-run-42483585195-static [skip ci]
+43cf78984aec79e43fd9f6b4c45f511d522863b3	2026-11-08T22:11:13Z	zuppasoupfifaistimewa-png	RA0 physically prune overlimit PA quote rows pa-run-42483585195-static [skip ci]
+642954c81ce7f3cf8dea6396a12ae4b72e4b2d94	2026-11-08T22:11:10Z	zuppasoupfifaistimewa-png	RA0 physically prune overlimit PA quote rows pa-run-42483585195-static [skip ci]
+a5c2de8496105b8fe19712ab2dd147492025812e	2026-11-08T22:11:06Z	zuppasoupfifaistimewa-png	RA0 physically prune overlimit PA quote rows pa-run-42482696764-static [skip ci]
+33f9f87fe1872ad162f12ba7e13b9031b717b72e	2026-11-08T22:11:03Z	zuppasoupfifaistimewa-png	RA0 physically prune overlimit PA quote rows pa-run-42482696764-static [skip ci]
+4dfef1a70471288997a350975b2d439778deb9d9	2026-11-08T22:11:01Z	zuppasoupfifaistimewa-png	RA0 physically prune overlimit PA quote rows pa-run-42482696764-static [skip ci]
+42542e2789c89d5d1af7ce9493c7c00d4de98041	2026-11-08T22:10:56Z	zuppasoupfifaistimewa-png	RA0 physically prune overlimit PA quote rows pa-run-42482327357-static [skip ci]
+e35068c381d79afeacbe3eec499ffd2611f71df2	2026-11-08T22:10:54Z	zuppasoupfifaistimewa-png	RA0 physically prune overlimit PA quote rows pa-run-42482327357-static [skip ci]
+76c6c209ad9b6b85495d1a43f1b80e35a7ea5566	2026-11-08T22:10:51Z	zuppasoupfifaistimewa-png	RA0 physically prune overlimit PA quote rows pa-run-42482327357-static [skip ci]
+a133f0b266f211a31f26439d3a04ac8705b515e4	2026-11-08T15:35:31Z	github-actions[bot]	Publish QA4 read-only CONTROL trace 42495514432 [skip ci]
+bab5938092ee723285c33fd2e9e4bf232d6b87dc	2026-11-08T15:34:53Z	github-actions[bot]	Publish QA0 harness and excerpt audit 42495514432 [skip ci]
+5a8f314f188c1071683257680315886313a8c7d6	2026-11-08T15:34:36Z	zuppasoupfifaistimewa-png	Fix QA0 pruning pass criterion and add recheck summary
+13ce7ccca0336b70b29e990f43e329fe99db443a	2026-11-08T15:31:57Z	zuppasoupfifaistimewa-png	Finalize bounded QA1-QA5 CONTROL evidence review
+f19fde4c52ea9831c597a0d17e73874dcd5403fb	2026-11-08T15:02:52Z	zuppasoupfifaistimewa-png	Exclude QA0 generated TSVs from future raw scans [skip ci]
+7f676865ffb6558fa5980d77af5c1766d79159d8	2026-11-08T15:00:50Z	zuppasoupfifaistimewa-png	Correct QA4 trace normalization and add PA3 label audit [skip ci]
+ee645077e5c32000907d26847a14b67821a3c0b8	2026-11-08T14:53:56Z	github-actions[bot]	Publish QA4 read-only CONTROL trace 42491968139 [skip ci]
+a0f4b8240c607853f2ea9a29d17d9225bf2f2df6	2026-11-08T14:53:10Z	github-actions[bot]	Publish QA0 harness and excerpt audit 42491968139 [skip ci]
+1f766de7ba18c919e0f8eec8f2f2f756546a3700	2026-11-08T14:52:51Z	zuppasoupfifaistimewa-png	Fix QA4 Lua checkpoint filename binding
+c5032819c15d17445217b43b1930cb45654c41d0	2026-11-08T14:50:55Z	github-actions[bot]	Publish QA4 read-only CONTROL trace 42491758050 [skip ci]
+ad512f5b6cffec2816fbfa30a0f8cbe0193f0e25	2026-11-08T14:50:29Z	github-actions[bot]	Publish QA0 harness and excerpt audit 42491758050 [skip ci]
+8ba4f48937518d0044d82062739155893da528c0	2026-11-08T14:50:14Z	zuppasoupfifaistimewa-png	Fix QA workflow environment and token interpolation
+ef995de316ffa9c9250d04307aa9c595a6c969ba	2026-11-08T14:48:49Z	zuppasoupfifaistimewa-png	Add isolated QA0-QA5 harness and read-only CONTROL trace
+88c7c185b638a2fdd22e3212055fe50cb88b4d81	2026-11-08T13:21:46Z	github-actions[bot]	Publish PA5 symbolic falsifier audit 42484169218 [skip ci]
+74d4992064e75ff1263e3d81f8f156ea618d0c29	2026-11-08T13:21:00Z	github-actions[bot]	Publish PA0-PA3 static audit 42484169218 [skip ci]
+58b2ca696ea78522f513cb1b8baeb6b861130e34	2026-11-08T13:18:54Z	github-actions[bot]	Publish PA5 symbolic falsifier audit 42484127968 [skip ci]
+3269034b0af1e63619f7c5c221885c62c193039e	2026-11-08T13:18:10Z	github-actions[bot]	Publish PA0-PA3 static audit 42484127968 [skip ci]
+2063eff698cb7e8e990bc7139960d0612fb2b510	2026-11-08T13:16:29Z	zuppasoupfifaistimewa-png	Fix PA2 absolute file offsets for all instruction excerpts [PA_STATIC_ONLY]
+ea559aea2c772c97f5a6e027ec1f8db966be945a	2026-11-08T13:15:57Z	zuppasoupfifaistimewa-png	Fix PA2 DATA.BIN offsets and log over-limit origins [PA_STATIC_ONLY]
+457c7fdca570bf293a22c012bb51fc0ee3b6d7d3	2026-11-08T13:12:19Z	github-actions[bot]	Publish PA5 symbolic falsifier audit 42483585195 [skip ci]
+27192f100a917100fb67667d3874df64a3474d5d	2026-11-08T13:11:33Z	github-actions[bot]	Publish PA0-PA3 static audit 42483585195 [skip ci]
+ad14376c2d21d5ae42228329e165339608a83a4a	2026-11-08T13:09:15Z	zuppasoupfifaistimewa-png	Repair PA offset and excerpt audits; static-only follow-up [PA_STATIC_ONLY]
+fad438257d52010bf2da48db3d91524adaef50b1	2026-11-08T13:08:17Z	zuppasoupfifaistimewa-png	Fix PA5 scalar table lookup to use canonical RAM keys [skip ci]
+2546f6fe4c318e0c93fbb6fa3eb0890ed026c5cf	2026-11-08T13:05:44Z	zuppasoupfifaistimewa-png	Add PA0 validator diagnosis and PA5 TSV reconciliation correction [skip ci]
+cd9879e135024c5dddc72f5527c0cc9be4700ad3	2026-11-08T13:04:46Z	zuppasoupfifaistimewa-png	Correct PA5 scalar and M-region reconciliation from published PA4 TSVs [skip ci]
+00a6b15294812f1f176bfa3d94910f859767b63e	2026-11-08T13:01:51Z	github-actions[bot]	Publish PA5 symbolic falsifier audit 42482696764 [skip ci]
+2c6fd1e7b51274945ed9cf2ec8dd465743225df4	2026-11-08T13:01:43Z	zuppasoupfifaistimewa-png	Preserve lowercase hex prefix in PA5 RAM address parser [skip ci]
+f30d12e49995d050555f71d2ed5bc85dc2a76b2b	2026-11-08T13:01:09Z	github-actions[bot]	Publish PA4 HA4 CONTROL decimal snapshots 42482696764 [skip ci]
+5c88599d9b50605600c3bbfe350f90c301c997f6	2026-11-08T13:00:00Z	github-actions[bot]	Publish PA0-PA3 static audit 42482696764 [skip ci]
+c94964daffbf7154cefa1151f85ad26d451644c5	2026-11-08T12:59:16Z	zuppasoupfifaistimewa-png	Record PA4 CONTROL outcome and failed publication [skip ci]
+5e03369540f34c45f2eea587be926924749939dd	2026-11-08T12:58:13Z	zuppasoupfifaistimewa-png	Fix PA3 CFG shadow and publisher rebase identity
+6b1e9a4be2262d4e6389c8eeb96165fbab4a1b75	2026-11-08T12:57:08Z	github-actions[bot]	Publish PA5 symbolic falsifier audit 42482327357 [skip ci]
+3bc19101bbad2051e271e92bae10a1be097f741c	2026-11-08T12:54:50Z	github-actions[bot]	Publish PA0-PA3 static audit 42482327357 [skip ci]
+9c55c9ded9663b0acb8bb7c0439585db94aaa6bb	2026-11-08T12:53:14Z	zuppasoupfifaistimewa-png	Fix PA workflow shell escapes and Python compile steps
+8a48b8769115173e6b4f0bf1448a4d9d27500ada	2026-11-08T12:49:18Z	zuppasoupfifaistimewa-png	Add PA0-PA5 isolated harness repair and CONTROL workflow
+3f730c73dc628d02f360b7ac12961e6f3e4b1584	2026-11-08T12:12:06Z	zuppasoupfifaistimewa-png	Publish OA0-OA5 partial audit and verified CONTROL result [skip ci]
+1c9e83471a280b3ebd3fc9d14ac0d9af5e25f185	2026-11-08T12:06:11Z	github-actions[bot]	Publish NA0-NA5 static audit run 42478491448 [skip ci]
+f76af655656df4e3ec7cf0e85c5ee94da158e38c	2026-11-08T12:06:07Z	github-actions[bot]	Publish MA0-MA5 static audit run 42478491465 [skip ci]
+151d00dd1844babca09f7254906b45bded0c2640	2026-11-08T12:05:53Z	github-actions[bot]	Publish KA0-KA5 static audit 42478491517 [skip ci]
+744a8f2ae7527cf7ef1781667c93735c293acb24	2026-11-08T12:03:53Z	zuppasoupfifaistimewa-png	Add isolated OA0-OA5 static and H6 CONTROL workflow
+dc7a78f3882ff9c22ae6b09df8b8b8e657bb6137	2026-11-08T04:03:05Z	zuppasoupfifaistimewa-png	Record final NA Actions job outcomes [skip ci]
+a526918de860968d0a0d9ce10ccb5324f5b8caa0	2026-11-08T04:01:14Z	github-actions[bot]	Publish NA0-NA5 static audit run 42444870382 [skip ci]
+c5c551a0b3bc3349834baf1260629e50905c84a3	2026-11-08T03:59:33Z	github-actions[bot]	Publish NA0-NA5 static audit run 42444821172 [skip ci]
+1b13991b29ece205ad26dba656eb9e23d6240af0	2026-11-08T03:58:12Z	zuppasoupfifaistimewa-png	Correct exact x field writer matcher
+4d0a963012c01ecc46cb1d531927205debaaf9b8	2026-11-08T03:57:24Z	zuppasoupfifaistimewa-png	Improve NA static evidence closure and audit windows
+833cb9c40c005831f193e83035898bbbf3564125	2026-11-08T03:46:06Z	zuppasoupfifaistimewa-png	Record final NA Actions run status [skip ci]
+e92ca39c2942295303da697a9e5b8cb329ad0667	2026-11-08T03:38:24Z	github-actions[bot]	Publish NA0-NA5 static audit run 42443412431 [skip ci]
+4cc242dbd482303ff8204bd92d4a56202eba2423	2026-11-08T03:36:09Z	zuppasoupfifaistimewa-png	Add isolated NA0-NA5 static follow-up
+7bcfef67d0adf89b7ab0cb20e040790f15766017	2026-11-08T01:09:41Z	github-actions[bot]	Publish MA0-MA5 static audit run 42432850750 [skip ci]
+d7f5e73e599ffde3f81405ade31b579f05e99732	2026-11-08T01:07:20Z	zuppasoupfifaistimewa-png	Extend MA1 scene record boundary scan across mapped EXE
+f8ddaa57de718fff3a98440b6404b2940e92450c	2026-11-08T00:51:30Z	zuppasoupfifaistimewa-png	Add MA static follow-up and selector writer cross-check
+4963c3e3a54f546ac9cfbb02cf7141daf79d9a16	2026-11-08T00:27:52Z	github-actions[bot]	Publish MA0-MA5 static audit run 42429723141 [skip ci]
+66f5672e19a0c624ca787b482fcaa298822b9de5	2026-11-08T00:25:58Z	zuppasoupfifaistimewa-png	Refine MA0-MA5 static audit and safe publication
+0e4dcc64e03bd28b8b74e2f3b6df26121d915a0e	2026-11-08T00:11:46Z	zuppasoupfifaistimewa-png	Record MA0-MA5 partial run summary and recovery findings
+fccce38b8cd2aa8fc3ee1ae121ad295e8f1b19fe	2026-11-08T00:06:17Z	github-actions[bot]	Publish KA0-KA5 static audit 42428060234 [skip ci]
+819303553e51b0499c81e94c197616e454cfb2a0	2026-11-08T00:04:03Z	zuppasoupfifaistimewa-png	Add isolated MA0-MA5 static upgrade-cost audit
+662833da768f473349539eb3fe304dc7fa51a16c	2026-11-07T23:37:21Z	zuppasoupfifaistimewa-png	[skip ci] Include all LA Ghidra helpers in workflow path filter
+944ab2f741b0afae7426717f4fd28c6a4729fcdb	2026-11-07T23:36:17Z	zuppasoupfifaistimewa-png	[skip ci] Reconcile final inclusive HEAD ledger snapshot
+c57b11d6075ba52a8165e62f1c745265e92ec4e4	2026-11-07T23:34:15Z	zuppasoupfifaistimewa-png	[skip ci] Fix target-address prolog detection in LA3 report
+3ca8dbce61279bd1346b553e37c35c8feaba84b4	2026-11-07T23:17:21Z	zuppasoupfifaistimewa-png	Reconcile LA0 final ledger at verified HEAD snapshot [skip ci]
+acac6d04cb060d661a40f37096e80004c0fab3e6	2026-11-07T23:16:34Z	zuppasoupfifaistimewa-png	Isolate KA Ghidra temporary logs from analyzer output [skip ci]
+b3c1789556a5719fcbe0af063037594ab0660cdb	2026-11-07T22:55:41Z	zuppasoupfifaistimewa-png	Add final HEAD counts to LA0 report
+c89a3b46a090950212c553223c070219d3953cd8	2026-11-07T22:55:31Z	zuppasoupfifaistimewa-png	Reconcile LA ledger through final repository HEAD
+c0eec1cfe8a8c323a458aca6d3fcbef9fd984a47	2026-11-07T22:55:28Z	zuppasoupfifaistimewa-png	Record final HEAD commit counts
+732ec44c4bb4e0e7aab5f239720ad7eba4890449	2026-11-07T22:55:26Z	zuppasoupfifaistimewa-png	Add final HEAD commit ledger reconciliation
+279dd1902c11c47da48171525b070d8b0148cb69	2026-11-07T22:54:07Z	zuppasoupfifaistimewa-png	Document dynamic store census scope and limits
+bb723761db14ce5468296f09f1573bf6aa7aca10	2026-11-07T22:54:05Z	zuppasoupfifaistimewa-png	Remove unqualified dynamic-store candidate noise
+778d6efa62676a262e0dba0097bedf61cb7b47e1	2026-11-07T22:53:15Z	zuppasoupfifaistimewa-png	Add final LA post-run corrections
+cd900e9ef4c119f48bcc7a33e088fc4e6c1f8ea5	2026-11-07T22:53:13Z	zuppasoupfifaistimewa-png	Finalize LA evidence corrections and aggregate excerpt audit
+4b4b8b526d99c078e379c00abc87166ef46ad8f4	2026-11-07T22:53:09Z	zuppasoupfifaistimewa-png	Finalize LA evidence corrections and aggregate excerpt audit
+1ecd50b90a2c3db884612d66de14b4e09400eba5	2026-11-07T22:53:06Z	zuppasoupfifaistimewa-png	Finalize LA evidence corrections and aggregate excerpt audit
+bb12d0526105ac057667e3630765ddb4b36900bc	2026-11-07T22:53:03Z	zuppasoupfifaistimewa-png	Finalize LA evidence corrections and aggregate excerpt audit
+916ff98eb764962ada841ceaccb37333c7a959b8	2026-11-07T22:51:53Z	zuppasoupfifaistimewa-png	Add bounded replacement caller-window excerpts
+f409a905762c01b4d889ff6f9cbd6151fa10c8f6	2026-11-07T22:47:37Z	github-actions[bot]	Publish LA0-LA5 static audit run 42421741871
+191492f06ffebaec0a34cbfe1f131790f0d89627	2026-11-07T22:40:52Z	zuppasoupfifaistimewa-png	Make the two approved JA removals idempotent
+31d99b523b5a4c5450402c1166a3d7a4c27ed6e5	2026-11-07T22:40:11Z	zuppasoupfifaistimewa-png	Fix LA3 manual boundary row initialization
+0e399c2f903038f088cc008de9987d34b4c63c01	2026-11-07T22:39:51Z	github-actions[bot]	Publish LA0-LA5 static audit run 42421556109
+70b198b12df722609cee97f89eb72e8ace35398c	2026-11-07T22:38:27Z	zuppasoupfifaistimewa-png	Fix LA workflow expressions and partial-run summary guards
+74d5cd91a15017c322f3e8e186a72845ac8948da	2026-11-07T22:38:00Z	zuppasoupfifaistimewa-png	Add isolated LA0-LA5 static audit workflow
+0dfa7244dfebb5a0d963e9975d32a5446e80bdf4	2026-11-07T22:36:52Z	zuppasoupfifaistimewa-png	Filter LA scans to Ghidra-listed code and add boundary refs
+8a8a8fd1e1d18c490048540ad7009ee120a56232	2026-11-07T22:23:50Z	zuppasoupfifaistimewa-png	Fix caller-saved argument trace boundaries
+2c8ed30ae7080161f505835483ff4ecd66f75062	2026-11-07T22:22:42Z	zuppasoupfifaistimewa-png	Add LA0-LA5 static analysis helper
+5a4cd3167beb3a0dba61a48bc6471496ec6fe34f	2026-11-07T14:45:02Z	zuppasoupfifaistimewa-png	Finalize KA0-KA5 static report and reconcile Actions result
+20b9f58205eaaff375ac266f0cbd55f6d786fcf3	2026-11-07T14:38:22Z	github-actions[bot]	Publish KA0-KA5 static audit 42382353606 [skip ci]
+495592eb62ef776fde30d50a96c358e4d2737d3a	2026-11-07T14:35:35Z	zuppasoupfifaistimewa-png	Add isolated KA0-KA5 static audit workflow and analyzer
+656503e9e21cb4baf3185969abf7b15d05a149c6	2026-11-07T11:26:12Z	zuppasoupfifaistimewa-png	Add JA0-JA5 finalization and bounded static evidence
+a762127e097eab2f19fb190559c1b28dba0c50e4	2026-11-07T11:20:34Z	github-actions[bot]	Publish JA0-JA5 static audit 42367635732 [skip ci]
+570f19c472b5238349909873ac6c68afc84359df	2026-11-07T11:18:38Z	zuppasoupfifaistimewa-png	Add isolated JA0-JA5 static audit workflow
+09c071e6c496b61b0689499a641faa3aa482b145	2026-11-07T09:28:13Z	github-actions[bot]	Publish IA0-IA5 static audit run 42359729128
+be2d6a4b4d2fd2e3dbc250245aa7046ee5cfc509	2026-11-07T09:26:10Z	zuppasoupfifaistimewa-png	Fix isolated Ghidra script path for IA audit
+336827b3801c4848a86496e9345ffe8a341b4940	2026-11-07T09:25:07Z	github-actions[bot]	Publish IA0-IA5 static audit run 42359584354
+60639dbac379c5eb201cd261fcee1cde12d6ea58	2026-11-07T09:24:06Z	zuppasoupfifaistimewa-png	Capture Ghidra failure diagnostics in IA-only output
+0fbab973af9333e93c9a31f245b1141bfacc1806	2026-11-07T09:21:24Z	github-actions[bot]	Publish IA0-IA5 static audit run 42359320395
+aeee289d93e7438b09c8c603de3b49e68703ff0d	2026-11-07T09:20:26Z	zuppasoupfifaistimewa-png	Fix IA analyzer syntax and robust text-only publication
+52b82ef901362d9f97ed88edce88001b37c8539f	2026-11-07T09:18:33Z	zuppasoupfifaistimewa-png	Correct EXE image offset mapping in IA static analysis
+545a6935e166049f9e781f11b9b16f02a5783a54	2026-11-07T09:17:00Z	zuppasoupfifaistimewa-png	Fix isolated IA workflow and record validation failure
+8e54f2792029e741089ee4d80694b4d4ef075b71	2026-11-07T09:14:23Z	zuppasoupfifaistimewa-png	Add isolated IA0-IA5 static audit workflow
+b9bd69a5c59ca5103a2144deef3604a6b5f5c4a9	2026-11-07T07:03:50Z	zuppasoupfifaistimewa-png	Publish revised final HA0-HA5 addendum with MIPS delay-slot correction
+16f4a8e49eb3de5e2f5f8d1eba23935d81023952	2026-11-07T07:02:35Z	zuppasoupfifaistimewa-png	Publish final HA0-HA5 audit addendum with H6 CONTROL result
+cf23c20cda4bd6731f2aaa4c90780a3a9d6fdb09	2026-11-07T07:00:23Z	zuppasoupfifaistimewa-png	Record scheduled adaptive player monitor run 42349259001
+5f99df7dc7e8caf4678502cf66a192e876af8458	2026-11-07T06:59:41Z	zuppasoupfifaistimewa-png	Commit HA4 CONTROL result summary from run 42349173401
+f11b28751b38b44201ca9416c1d77054186b9468	2026-11-07T06:55:36Z	zuppasoupfifaistimewa-png	Add single-launch H6 CONTROL check without watchpoints
+d8febb59ad2aa4798e2feceb8fcbdcf384209f05	2026-11-07T05:26:37Z	github-actions[bot]	Publish HA2 bound and helper-table static probe 42342725357 [skip ci]
+7e10c6d04ec936dd603be8355894d96d0767af42	2026-11-07T05:26:12Z	zuppasoupfifaistimewa-png	Derive HA2 bound from sentinel-terminated table
+ac266cd05b84fdf5cd418a4aa32aed7309f0753a	2026-11-07T05:24:58Z	github-actions[bot]	Publish HA2 bound and helper-table static probe 42342593255 [skip ci]
+437db807195f75431590ac3989bcbe5591c96bb2	2026-11-07T05:24:20Z	zuppasoupfifaistimewa-png	Trace HA2 bound writer and correct EXE offsets
+ef1ef36e5f1814185124fd787e5a2f78fee36480	2026-11-07T05:22:57Z	github-actions[bot]	Publish HA2 bound and helper-table static probe 42342464750 [skip ci]
+aeb027f020b8f6c850f6e34ea58e0b04efd483bf	2026-11-07T05:22:27Z	zuppasoupfifaistimewa-png	Fix HA2 bound probe token and result accounting
+eae31305ed161e790c2b2318ac0febb8ba7b2af2	2026-11-07T05:21:49Z	github-actions[bot]	Publish HA2 bound and helper-table static probe 42342367468 [skip ci]
+e5b92bf27e939771699e8b35fdc5e8f92e13d429	2026-11-07T05:21:05Z	zuppasoupfifaistimewa-png	Add static HA2 bound and helper-table probe
+a149f8be630426db68d06e07efcdf70a24c7f4ad	2026-11-07T04:58:51Z	zuppasoupfifaistimewa-png	Add HA0-HA5 final evidence and status report
+077941187650cb8e4b4920c48ac8012567ee5b97	2026-11-07T04:54:42Z	github-actions[bot]	Publish HA2-HA3 static manager upgrade audit 42339837743
+b65ef33c4fc0f4d67e2258ebf77a528000a78241	2026-11-07T04:45:39Z	zuppasoupfifaistimewa-png	Fix HA2-HA3 static analysis summary and validate TSV instruction excerpts
+ccf5efff1a273227ef216be8c6c49f70ab4d84c7	2026-11-07T04:36:28Z	github-actions[bot]	Publish HA2-HA3 static manager upgrade audit 42338608063
+9509c103be662959909f443118499d25e511d3ae	2026-11-07T04:32:47Z	zuppasoupfifaistimewa-png	Record HA0 summary for incidental Ghidra Actions run 42338608064
+55aab58da159dec71589ae04c3ecfd1f681256e0	2026-11-07T04:30:05Z	github-actions[bot]	DN1: publish resolved 272-PC destination audit [skip ci]
+58db32c696fe830b6558c6828529a3801be753e0	2026-11-07T04:28:24Z	zuppasoupfifaistimewa-png	Add HA1 corrections and HA2-HA3 static Actions audit
+14dccd2e1d2f92b1b919ad7f0686bf019c71dbf4	2026-11-07T03:25:11Z	zuppasoupfifaistimewa-png	Finalize GA0 inclusive commit ledger
+6f51afa01a68841bc58a32e9672419ac0d42edfc	2026-11-07T03:24:32Z	zuppasoupfifaistimewa-png	Add GA0-GA5 static upgrade-cost audit
+6987a76e12b0adf86f8061d47dcc4078e79cda21	2026-11-06T23:51:41Z	zuppasoupfifaistimewa-png	Add FA0-FA5 session verification and evidence addendum
+b8a47c1b80611dd2e167323a58b63dfc228f3267	2026-11-06T23:43:39Z	zuppasoupfifaistimewa-png	Finalize FA0-FA5 evidence status reconciliation
+0491530cc2bc72338849046572422f5958e4a5b2	2026-11-06T23:32:07Z	zuppasoupfifaistimewa-png	Record FA4 run blocked by expired CONTROL artifact
+43d2bed4ceb468583ffa5a03730fdb07939e6677	2026-11-06T23:29:49Z	zuppasoupfifaistimewa-png	Add bounded FA4 H6 action-8 write-watchpoint runtime
+be22dc10c1264eaa4bd65948c6e48881a38b6117	2026-11-06T23:11:39Z	zuppasoupfifaistimewa-png	Add FA0-FA5 audit reconciliation for Naruto Jintori
+214326f955b0d8c2c8a7f7cf4ad4574fa71e2e42	2026-11-06T22:51:11Z	github-actions[bot]	Publish DX0-DX4 full-image static audit run 42307609951
+f74961b844d068a164732c08c78a363d5267e569	2026-11-06T22:49:52Z	zuppasoupfifaistimewa-png	Trigger one-time DX0-DX4 EA compatibility revalidation
+b6fbdf25fdaa45b4d05f4dc5055e18fb6597b9b5	2026-11-06T13:54:20Z	zuppasoupfifaistimewa-png	[skip ci] Finalize EA0-EA4 static audit and compatibility fix
+06baf4f5950a50d6a9abc93d08409c5859255061	2026-11-06T13:38:59Z	github-actions[bot]	Publish DX0-DX4 full-image static audit run 42227045813
+56d1ba6a0ac7e874a3229a494e896336a38e7380	2026-11-06T13:37:41Z	zuppasoupfifaistimewa-png	Add EA0-EA4 focused static economy audit
+5fea251ad45f6a44d31ad92c14452c0bb510323f	2026-11-06T09:13:16Z	github-actions[bot]	Publish DX0-DX4 full-image static audit run 42193229458
+8762d766044fc5e1adfd740ef2498b45dbbe5c29	2026-11-06T09:12:01Z	zuppasoupfifaistimewa-png	Audit DZ0-DZ4 static tile fee and level sources
+c405f9261c3beea2ed4e3695222108c51a7ad636	2026-11-06T08:37:30Z	zuppasoupfifaistimewa-png	[skip ci] Add final DY0-DY4 audit and repair static script syntax
+f56435ad90bd6001a7360b48950eb3585ababe23	2026-11-06T08:31:24Z	github-actions[bot]	Publish DX0-DX4 full-image static audit run 42188220758
+2c462adc93cc7e3088e88202d07883887c224f0e	2026-11-06T08:30:40Z	zuppasoupfifaistimewa-png	Refine DY2-DY4 provenance and explicit loop audit
+f8b9e9b18f0c187c6cae0a5abe3bebb3d25f5d38	2026-11-06T08:11:03Z	github-actions[bot]	Publish DX0-DX4 full-image static audit run 42185794833
+c191c117ba567607df0feab8e4fc11adce015807	2026-11-06T08:10:22Z	zuppasoupfifaistimewa-png	Extend DX static analyzer with DY0-DY4 economy provenance
+f76a096862ceb88920df19b021a30870c74a9496	2026-11-06T06:53:09Z	zuppasoupfifaistimewa-png	Add DX0-DX4 static audit reconciliation report
+49c274660d01fd96492ba1ca9d29d8150f560297	2026-11-06T06:15:04Z	github-actions[bot]	Publish DX0-DX4 full-image static audit run 42173196076
+a1f2b3250afe0819e2b9882677df4c876c8b3027	2026-11-06T06:14:34Z	zuppasoupfifaistimewa-png	Fix DX snapshot fallback and include final +0x2EE delay-slot PC
+b185149b465575b129683a03940e80235eae34a4	2026-11-06T06:11:44Z	github-actions[bot]	Publish DX0-DX4 full-image static audit run 42172857714
+43c09007a736a21e9d2b984aed8e1f8d95800ad3	2026-11-06T06:11:19Z	zuppasoupfifaistimewa-png	Add DX0-DX4 full-image static audit workflow
+815a20fe1a1f43c7ff809b020a83628cebdbf311	2026-11-06T06:10:30Z	zuppasoupfifaistimewa-png	Add DX0-DX4 full-image static economy analyzer
+2d5becc3a70716cf78563233504b800b3c9609e0	2026-11-06T04:53:01Z	zuppasoupfifaistimewa-png	Correct DV3 economy-loop Entry 1 file offsets
+634aba5645622aae04a7f2cd70a301c8d89fa50d	2026-11-06T04:19:20Z	github-actions[bot]	Publish DW0-DW4 static raw-byte audit run 42161706493
+7be66ab4deaee8bf328667af8f88e5e80efe51c9	2026-11-06T04:18:37Z	github-actions[bot]	Publish DW0-DW4 static raw-byte audit run 42161675076
+9312869ef66f7deaad7ab2e791391abe2b72e099	2026-11-06T04:18:17Z	zuppasoupfifaistimewa-png	Validate every DW1 resource header count
+26bcab51a7e93b10f7e8e902f040eb223df07396	2026-11-06T04:17:58Z	zuppasoupfifaistimewa-png	Complete static delay-slot, dispatcher and fee CFG analysis
+5d207883abadd2ba9efd56e02d75fa2ed5c9dbcc	2026-11-06T04:13:31Z	github-actions[bot]	Publish DW0-DW4 static raw-byte audit run 42161171455
+7c4abdc5166ee69b79e4a2e0f9da8adbd89a2bb9	2026-11-06T04:12:59Z	zuppasoupfifaistimewa-png	Add DW0-DW4 private-input static audit workflow
+adbfa79005a8e7b320dc5382f7583ee1c0238f4a	2026-11-06T04:12:28Z	zuppasoupfifaistimewa-png	Fix DW2 fee-flow address literal
+9b6a3cb62785cfe3381ebde8f9de41d93e25fc90	2026-11-06T04:11:25Z	zuppasoupfifaistimewa-png	Add DW0-DW4 raw-byte static audit analyzer
+2d334348b55dd672b3a2b0e428795c8ce817135b	2026-11-05T23:01:57Z	zuppasoupfifaistimewa-png	Correct DV0-DV4 static report and document confirmed tile fields
+407612565c23300cdbb9a766e083ce044e4cffbe	2026-11-05T22:53:31Z	github-actions[bot]	Publish DT0-DT4 raw-byte static audit run 42125095938
+fed79376ccd639ffaad6f30ddf6feb080e6a8b3b	2026-11-05T22:52:15Z	zuppasoupfifaistimewa-png	Run DV0-DV4 audit from verified raw-byte workflow
+0b40ec75a7f4eaefb9ebf26ec1373158f97d0413	2026-11-05T22:52:10Z	zuppasoupfifaistimewa-png	Add DV0-DV4 raw-byte static audit extension
+7040cd08a79107a45de6571e875de4fadb165c8a	2026-11-05T22:18:10Z	zuppasoupfifaistimewa-png	Correct DT1 CLEAR census and static dispatch/return findings
+867d82e72d8385dbc36570f4d9d052461b7e7520	2026-11-05T22:13:04Z	github-actions[bot]	Publish DT0-DT4 raw-byte static audit run 42119505916
+524d2421e72ce8707c37d9564f4e95eb5cc9fcb9	2026-11-05T22:12:31Z	zuppasoupfifaistimewa-png	Complete DT1 clear census, dispatch tables and DU5 models
+13c883950279ce37f8339a542ad0430dfad5af83	2026-11-05T22:10:34Z	github-actions[bot]	Publish DT0-DT4 raw-byte static audit run 42119041813
+dd91e9df41ccc05f48917abfc91d44366bde458b	2026-11-05T22:09:25Z	zuppasoupfifaistimewa-png	Fix DT0-DT4 workflow token expressions
+2f72b3a2807f1022048083d6d07ad527adaa7cf7	2026-11-05T21:54:16Z	zuppasoupfifaistimewa-png	Record DT0-DT4 Actions run failure summary
+4dab11cee78944fc14fd19bc5286e85296350487	2026-11-05T21:52:05Z	zuppasoupfifaistimewa-png	Add DT0-DT4 raw-byte static audit
+cc0fead8501722a6ea76fefda8caf2f41df4cd3c	2026-11-05T12:47:42Z	zuppasoupfifaistimewa-png	Count all DS0 commits through corrected audit snapshot
+72897f45c6401e289102a91c9ad785362a9d9b20	2026-11-05T12:45:16Z	zuppasoupfifaistimewa-png	Clarify DS1 conditional fee-byte store
+4889f8fba8efedc87394e72f93260893a082c23d	2026-11-05T12:44:18Z	zuppasoupfifaistimewa-png	Normalize DS0 ledger DS1 pointer artifact path
+48b1b428d69387e81290f684dcca0e228352138d	2026-11-05T12:43:35Z	zuppasoupfifaistimewa-png	Fix DS1 pointer writer path and preserve raw context
+0151b29fe94022949f2adb4b8ae559752031d581	2026-11-05T12:42:22Z	zuppasoupfifaistimewa-png	Correct DS0 ledger and DS2 return evidence
+88663e7549a6e819b7fe631a4cb903b1eded8c87	2026-11-05T12:02:00Z	github-actions[bot]	Publish DS0-DS4 raw-byte static audit run 42023666552
+96e03675286f7b7999eee4549f3b6a71a1765c47	2026-11-05T12:01:27Z	zuppasoupfifaistimewa-png	Add one-run DS0-DS4 raw-byte static audit
+c6204f38495c9be76b18c76a9943f17ca835f2f3	2026-11-05T11:33:54Z	zuppasoupfifaistimewa-png	Correct DQ1-DQ3 run status and document DR0-DR3 provenance
+d7f676bc2a87e742867d93f342ecbca4dd094d12	2026-11-05T10:43:43Z	github-actions[bot]	Publish DQ1-DQ3 raw-byte static audit run 42013037160
+122ef33695c4a1d10bf3829c95d5502f9972c043	2026-11-05T10:43:10Z	zuppasoupfifaistimewa-png	Fix raw static workflow CUE parsing and text publication quoting
+3e13415f8f08b9ba490b9f6680d424c790b80d4e	2026-11-05T10:40:51Z	zuppasoupfifaistimewa-png	Add raw-byte DQ1-DQ3 static economy audit workflow
+2136f3df739937b87a790844bca59e8a837d3484	2026-11-05T07:04:24Z	zuppasoupfifaistimewa-png	Correct DP1 debit instruction context to available contiguous window
+50f10e29e72a739d422dba7a3c2abc340c12abb4	2026-11-05T07:02:58Z	zuppasoupfifaistimewa-png	Add DP0-DP3 static debit and tile fee audit
+d6bf7d1723f2b1bb22041eb94d2526254840c185	2026-11-05T06:27:54Z	zuppasoupfifaistimewa-png	Complete DO0-DO3 static economy audit and reconcile DN1
+a2416ef822266f4f566d6f745d6136a2345fe9ce	2026-11-05T05:48:53Z	zuppasoupfifaistimewa-png	Finalize DN0 ledger through pre-refresh HEAD
+087e0e9a91d50c824352fa0ab0d823a7cf471858	2026-11-05T05:48:09Z	zuppasoupfifaistimewa-png	Refresh DN0 report through current pre-refresh HEAD
+78a293ac95de956960bc9b5212fbf98f7b62a557	2026-11-05T05:48:06Z	zuppasoupfifaistimewa-png	Include current HEAD in DN0 commit ledger
+0056979e910d7f435ec52f001d110579ecbbc0ad	2026-11-05T05:45:15Z	zuppasoupfifaistimewa-png	Update DN0 commit ledger through DN1 destination audit
+df1995715259339fa06091de1425ce1f40d62526	2026-11-05T05:41:43Z	zuppasoupfifaistimewa-png	Record verified DN1 Actions job ID
+b556d988882cd10abac00a7d74c2e3d94aa9d80f	2026-11-05T05:37:21Z	github-actions[bot]	DN1: publish resolved 272-PC destination audit [skip ci]
+d7d96b02a802b37e353f99e16a9216b3902cd8bb	2026-11-05T05:35:58Z	zuppasoupfifaistimewa-png	Fix DN1 finalizer census header parsing
+6cf9a5a82e6eaac8a71fc59b08c339b3e0c2b9e7	2026-11-05T05:31:56Z	zuppasoupfifaistimewa-png	Add DN1 destination audit publication step
+0811ca883dc9af6b9f05c0ebde383f26ee867fe6	2026-11-05T05:23:45Z	zuppasoupfifaistimewa-png	Add remaining DN1 writer destination provenance details
+3a702202db57fd10e547250be322edcf6e02ee35	2026-11-05T05:18:25Z	zuppasoupfifaistimewa-png	Add focused DN1 base-provenance audit for FUN_800BB36C
+c8b211d3630583f7e4dc78b064dad24d85fa3f33	2026-11-05T05:14:45Z	zuppasoupfifaistimewa-png	Add focused DN1 base-provenance audit for FUN_800F7450
+44c0ee7a2e4e44f6461acb2f0ad16fe32ea48f72	2026-11-05T05:06:49Z	zuppasoupfifaistimewa-png	Ignore store operands when tracing local register definitions
+54693fbe7fa831f139c57d1fc6544d5b6ded52df	2026-11-05T04:58:50Z	zuppasoupfifaistimewa-png	Correct DN1 Entry 1 base and verify all 272 writer PCs
+33509b1d2f9462e9517e0a350162314a35daae65	2026-11-05T03:32:30Z	zuppasoupfifaistimewa-png	Record partial cancelled DN1 Ghidra run summary
+523227c18677aa9fcb0ddcda5cbc9fd09b9636bc	2026-11-05T03:12:32Z	zuppasoupfifaistimewa-png	Bound DN1 writer-window decoding and skip unrelated entry0 helper export
+9833382064e1361a9d0412b730e205b1d6ba87cb	2026-11-05T03:03:39Z	zuppasoupfifaistimewa-png	Remove unavailable date field from DN0 ledger
+6e3f89bd68dca39b6d558f2d93bba31802d40352	2026-11-05T03:02:56Z	zuppasoupfifaistimewa-png	Correct DN0 author metadata and verify all commit rows
+bef18cc12fced306c8e2c357bfa8004129302d49	2026-11-05T03:02:11Z	zuppasoupfifaistimewa-png	Update DN0 ledger through current Ghidra run source
+1982a1babeb276a1ca0e971348fc5d060e194104	2026-11-05T02:53:27Z	zuppasoupfifaistimewa-png	Replace stale Ghidra analysis run with corrected overlay export
+1b9bf18ad44a55a7a7e735abf96baec5d418810c	2026-11-05T02:44:12Z	zuppasoupfifaistimewa-png	Fix DN0 commit ledger file-level rows
+87d281fcb6277e798de7e558dfd11dc36211232d	2026-11-05T02:43:38Z	zuppasoupfifaistimewa-png	Add DN0 commit ledger from baseline through DK1 lookup
+5705c32fade9815a0cbdd1f08deee98c233cf8e7	2026-11-05T02:38:26Z	zuppasoupfifaistimewa-png	Publish DK1 X to LV1-LV5 resource lookup table
+2e8c4fabc449ea3cff4c597493cc8b6aea9c05b6	2026-11-05T02:36:04Z	zuppasoupfifaistimewa-png	Fix DN1 overlay export TSV escaping
+601b69fa928dae9828c80a746f4b56b0a8a01fdd	2026-11-05T02:34:49Z	zuppasoupfifaistimewa-png	Export DN1 writers from both static overlay images
+45a26823e0b30df102b057a60a9d735d634fe3b3	2026-11-05T02:32:17Z	zuppasoupfifaistimewa-png	Record DN2 H6 live tile resource cross-check
+f39417465eb0e12be83b40af31b4666d4f1932ce	2026-11-05T02:29:21Z	zuppasoupfifaistimewa-png	Add DN1 Ghidra writer instruction export
+e194391094fbecbcb11564b3290d66b5826e3f7d	2026-11-05T02:05:04Z	zuppasoupfifaistimewa-png	Reconcile DM0 ledger and static DM1-DM3 evidence
+eee699b1180c0befd8c2e7b4fd97f2bc95b9c929	2026-11-05T01:15:40Z	zuppasoupfifaistimewa-png	Add DM0-DM3 static LV writer and selector audit
+6fa859e1f9cfdad7b968cd0df36f19a7fe50a5c1	2026-11-05T00:10:22Z	zuppasoupfifaistimewa-png	Record DL0-DL3 static audit and corrected commit ledger
+1d1d60ff1b9fc18713a21a679fb3d5d2c06ed32d	2026-11-04T11:01:19Z	github-actions[bot]	Publish DK0-DK3 static DATA.BIN audit run 41817953399
+c7684b30cb720b40282679f0616408b8703a32b6	2026-11-04T11:00:01Z	zuppasoupfifaistimewa-png	Fix DATA.BIN loader stride base and runtime extra fields
+0a6b61816446c47aaebabc5959b85d75099e1f27	2026-11-04T10:55:53Z	github-actions[bot]	Publish DK0-DK3 static DATA.BIN audit run 41817415683
+c71d656735e1704ac3edac52422f9db2dca8508c	2026-11-04T10:55:19Z	zuppasoupfifaistimewa-png	Correct runtime tile offsets for DK0-DK3 resource audit
+9da947fd5c46c30bc9f732d6dcbf0abad8c0213a	2026-11-04T10:48:33Z	github-actions[bot]	Publish DK0-DK3 static DATA.BIN audit run 41816597358
+217ce9df11f8ad1223a5196fa6c00a4c8fd0fd8a	2026-11-04T10:48:09Z	zuppasoupfifaistimewa-png	Correct DK0-DK3 source field offsets from tile loader
+fc4d649eb94994f8f5bf0e128fe67b09b711618a	2026-11-04T10:41:23Z	github-actions[bot]	Publish DK0-DK3 static DATA.BIN audit run 41815588375
+f9645cdcc79da3a370ae36334000f94bbd5841d5	2026-11-04T10:39:09Z	zuppasoupfifaistimewa-png	Add one-job static DK0-DK3 DATA.BIN audit
+8141a8bd851b00e183797007563168d9ea6fdcdf	2026-11-04T10:13:44Z	zuppasoupfifaistimewa-png	Complete CI0 ledger through first audit publication
+b81db45b4ac13d6c69923e25e3c00a4611818d18	2026-11-04T10:12:01Z	zuppasoupfifaistimewa-png	Publish CI0-CI3 static selector and level-bank audit
+447631d02db0649abb07f7064ddf250bba81d779	2026-11-04T09:47:41Z	zuppasoupfifaistimewa-png	Publish complete CH0-CH2 tile level-bank audit
+b4af1946598a36b2683d6a53b5a787bd19c70242	2026-11-04T09:45:04Z	zuppasoupfifaistimewa-png	Correct CH2 reader-window TSV column labels
+4a6dd39ebcf6cf85b3d3477bd4b1f6c57187cf53	2026-11-04T09:44:52Z	zuppasoupfifaistimewa-png	Complete CH0 ledger through pre-audit HEAD 38af8e7
+38af8e7796226ef9a3b73535608b2274ec7545ba	2026-11-04T09:36:52Z	zuppasoupfifaistimewa-png	Extend CH2 audit with per-owner level-value aggregation path
+fcd6678ce64c560077e7aac890c1002f0171b3f9	2026-11-04T09:34:24Z	zuppasoupfifaistimewa-png	Publish CH2 subtype-scaled tile level-bank audit
+56eb46d739c1a34708377f68b0d1aeb6edbc6d10	2026-11-04T09:33:36Z	zuppasoupfifaistimewa-png	Add numeric job ID to successful CH2 static run summary
+8308adf3ab3bbb1360dbe0ac4620adaa2f4b4ef0	2026-11-04T09:33:01Z	github-actions[bot]	Publish static CH2 level-bank subtype expansion run 41808407107
+81d4a336dc4c9e8152d6c88f4d7608d4429d88a6	2026-11-04T09:32:49Z	zuppasoupfifaistimewa-png	Correct CH2 TSV delimiter and newline handling
+b0e1de1a0746c94025a13094a58d7ace1e591e14	2026-11-04T09:32:37Z	zuppasoupfifaistimewa-png	Fix static CH2 level-bank TSV delimiter handling
+e03da947ebbe53d7338bd2c2ab61436194f6fc96	2026-11-04T09:32:28Z	zuppasoupfifaistimewa-png	Record failed static CH2 expansion run 41808275888
+d87c3914e9b4edc473d7a27862ce9641b2fac20b	2026-11-04T09:31:53Z	zuppasoupfifaistimewa-png	Add static tile level-bank subtype expansion script
+0014a6b252e86e813f500600391bad62a9064389	2026-11-04T09:31:31Z	zuppasoupfifaistimewa-png	Add static CH2 level-bank subtype expansion workflow
+9c5cef8dba7afc31d7ae861e9dc86d2e93030fb0	2026-11-04T09:28:17Z	zuppasoupfifaistimewa-png	Complete CH0 publication commit supplement through CH2 audit
+3184a6bb1e09570bf28ae08bd1a5d98954f1067c	2026-11-04T09:27:16Z	zuppasoupfifaistimewa-png	Publish CH0-CH2 completeness and reader-window findings
+608df3e36083177df150ed72ac908cb977fddb98	2026-11-04T09:26:02Z	zuppasoupfifaistimewa-png	Record complete raw windows for indexed tile level-bank readers
+2bbdbfafc145844a9c8ba086d725f56ac93c66b8	2026-11-04T09:25:34Z	zuppasoupfifaistimewa-png	Add CH0 publication-commit ledger supplement
+a20b4b3027604347bd4febbc92ea3d6c82f006da	2026-11-04T09:15:50Z	zuppasoupfifaistimewa-png	Publish complete CH0-CH2 static tile value audit
+a5f50cc11128378eebfc1902c65bb7788d5cae4b	2026-11-04T09:12:26Z	zuppasoupfifaistimewa-png	Include CH0 ledger publication commit in complete ledger
+349dfe1665fe18b237afba3b90c7b582d7974ad1	2026-11-04T09:11:20Z	zuppasoupfifaistimewa-png	Add final static Actions run summaries to CH0 ledger
+8daa7013a39395b5ec7a4f82564c4c3fce87c5b8	2026-11-04T09:10:59Z	zuppasoupfifaistimewa-png	Correct and record static Actions run summaries
+609b42b1c0247419bc3c67bc9799c7340ddcf26a	2026-11-04T09:09:16Z	zuppasoupfifaistimewa-png	Complete CH0 commit ledger through static run 41803736009
+e8dbdf5bcd17494727e6e9a098ae597c684f92c7	2026-11-04T09:03:00Z	github-actions[bot]	Publish AQ1 static economy census run 41803736009
+ea74c1a2f02e0ef9e4bc558032773f8db3f4c769	2026-11-04T09:01:16Z	zuppasoupfifaistimewa-png	Publish complete CH0 commit ledger since requested baseline
+1f1da03c654a992c552fb1407928e5642ff1860d	2026-11-04T09:00:51Z	zuppasoupfifaistimewa-png	Extend CH0 ledger with commits 14 through 25
+63d9ff8c624dcc8cdad14651c4ad48d3b8d227f6	2026-11-04T09:00:19Z	zuppasoupfifaistimewa-png	Start CH0 ledger for commits since requested baseline
+c9dceb52d3f4b8b0885a480c17cadde597c1c469	2026-11-04T08:59:19Z	github-actions[bot]	Publish AQ1 static economy census run 41803298049
+48c16d73d788d69657c05b494f1a06d86fd5485b	2026-11-04T08:59:16Z	zuppasoupfifaistimewa-png	Export functions calling the tile level-value getter
+63bf90b0a24c46ccb7b59cb953fb4f2e34b747f3	2026-11-04T08:55:56Z	zuppasoupfifaistimewa-png	Inspect display text rendering callees for tile values
+1d1cf3f544524aa4a7244d1d8eff6947db23d799	2026-11-04T08:55:53Z	zuppasoupfifaistimewa-png	Include tile base-value +0x0E in Ghidra access scan
+e00a0dbd3c4e85e8f0643d8ed86c07428f0627c3	2026-11-04T08:55:51Z	zuppasoupfifaistimewa-png	Include tile base-value +0x0E in raw access scan
+f49e1c0345e9dcb05c1d10c5ff36a0ec3afdd542	2026-11-04T08:53:42Z	github-actions[bot]	Publish AQ1 static economy census run 41802560703
+dd790e2965d88ad82e1ba11d50a23b343ac4190d	2026-11-04T08:52:03Z	zuppasoupfifaistimewa-png	Add duplicate-X tile table consistency audit
+c29772d5b05465386cf5ebd862bf9d1a256c18ad	2026-11-04T08:52:00Z	zuppasoupfifaistimewa-png	Add per-cell user observation comparison for resource 630
+ec3ba6dcf0c9bbbbbc5c2765614a4c05819dab14	2026-11-04T08:50:10Z	zuppasoupfifaistimewa-png	Add static detail for tile-value display and base-value callees
+23127ad2354c154014132bdb2e4cf44f405d00ba	2026-11-04T08:45:10Z	github-actions[bot]	Publish AQ1 static economy census run 41801621667
+b8efccaa2605dfe09608bf4a96a3231a7765a4e9	2026-11-04T08:42:49Z	zuppasoupfifaistimewa-png	Fix Java character literals in tile level access exporter
+7907bc8d574d1d5ec710de8cccc2ccbd2935e70b	2026-11-04T08:40:54Z	github-actions[bot]	Publish AQ1 static economy census run 41801147922
+5777c6aca85bbe1b5489e37f37c0de66f2ad5226	2026-11-04T08:39:04Z	zuppasoupfifaistimewa-png	Fix Step 7 Ghidra script continuation
+944e6ea60f11f8b680aae8dc58c400880328605d	2026-11-04T08:36:20Z	github-actions[bot]	Publish AQ1 static economy census run 41800173595
+0357eeb981d64f6261720b56b85eb18e8a361539	2026-11-04T08:33:54Z	github-actions[bot]	Publish AQ1 static economy census run 41800043936
+d46b65d506dfa03bbaad4a947a2ff5c84457d511	2026-11-04T08:31:58Z	zuppasoupfifaistimewa-png	Publish all resource 630 tile records as u16 TSV
+178be910c55cdcc52393ef06e74ea5d9218f2ee9	2026-11-04T08:31:32Z	zuppasoupfifaistimewa-png	Wire static tile level-table access scan into Step 7
+bea872974d722b00f429e38ab37c2ed3538b33e7	2026-11-04T08:31:18Z	zuppasoupfifaistimewa-png	Add Ghidra export for tile level-table field access
+6b9b9ac96434a91859ef8e4a7adedd7e31f0978b	2026-11-04T08:31:15Z	zuppasoupfifaistimewa-png	Add raw MIPS scan for tile level-table fields
+4b459d00185374df7ebe9a6c42d631ea3ccdc604	2026-11-04T08:30:30Z	zuppasoupfifaistimewa-png	Add static tile-level table export and raw reader scan
+2c3b7719e77569b0257716a9ee29b97794627607	2026-11-04T05:19:04Z	zuppasoupfifaistimewa-png	Complete CG0 ledger and add CG3 second two-launch evidence
+0afef96546fc892bfd8923891a0a664ac19f7dff	2026-11-04T05:17:34Z	github-actions[bot]	Publish CG3 H6 read-only watchpoint run 41775298933
+b238dd63cd2a790b09331f0ca8c726ee734e5c16	2026-11-04T05:14:09Z	zuppasoupfifaistimewa-png	Update CG0 ledger and correct CG3 H6 runtime audit
+7b62ad0c9d48f7ef5fbc41f54e6c058c028daa06	2026-11-04T05:00:43Z	github-actions[bot]	Publish CG3 H6 read-only watchpoint run 41775137231
+89b3a74d53fafdabb0f17c82560d62e6cb22fa38	2026-11-04T04:54:37Z	zuppasoupfifaistimewa-png	Add CG0-CG3 audit report for raw EA8 writers and H6
+c7cd70313663c0d5a48adec499fad9d3266d7f36	2026-11-04T04:50:45Z	zuppasoupfifaistimewa-png	Record CG3 H6 two-launch run summary 41773084992
+f1ee369f670e39a67ab89c22b51da881e5cc9258	2026-11-04T04:47:19Z	zuppasoupfifaistimewa-png	Allow CG3 report commit from trusted checkout
+6fd71b25b8a7e5f1695dd6fd32e5f993958b59f1	2026-11-04T04:45:41Z	zuppasoupfifaistimewa-png	Allow CG3 report commit in container checkout
+0d26b2f0fe668ef83847c5d9082f7fa2c8ba21fe	2026-11-04T04:25:05Z	zuppasoupfifaistimewa-png	Fix CG3 report publication from checkout working directory
+9f2bd9a98c722b57979c62b7ce031d467f6370c4	2026-11-04T04:00:29Z	zuppasoupfifaistimewa-png	Fix CG3 report commit cwd and preserve raw driver errors
+7b6800c8a3d9d515910038b35f314bc65d4fc045	2026-11-04T03:51:50Z	github-actions[bot]	Publish AQ1 static economy census run 41769361956
+773fef1a34643ebb34f832346dd9fb0ca14f98d2	2026-11-04T03:48:23Z	zuppasoupfifaistimewa-png	Export full CG1 EA8 writers and CG2 tile fee candidate functions
+0ad31c376c8c49f3f8c2ae03cd3b32d797dbc6fb	2026-11-04T03:41:39Z	zuppasoupfifaistimewa-png	Add two-launch H6 read-only PCSX watchpoint workflow
+4045f5f6825e5bab9e8c4ddba375a54df674095d	2026-11-04T03:39:12Z	zuppasoupfifaistimewa-png	Add read-only two-launch H6 write-watchpoint probe
+8f95b519258eb7bd7fc26624eee8d228b22eef46	2026-11-04T03:39:07Z	github-actions[bot]	Publish AQ1 static economy census run 41768087823
+27a716552d7638feedc09fb103c6f3545431765e	2026-11-04T03:35:38Z	zuppasoupfifaistimewa-png	Wire raw EA8 and tile-fee offset audits into Step 7
+d5420993701c0c636317a4d550aa993fbd094749	2026-11-04T03:34:09Z	zuppasoupfifaistimewa-png	Add decoded EA8 and tile fee field audit
+2b5326e9d744544a85b76e4429d905525b778675	2026-11-04T03:33:42Z	zuppasoupfifaistimewa-png	Add raw MIPS offset candidate scanner
+b841ece9a121c48cc30a14be87813af0ff2b6fa7	2026-11-04T03:16:36Z	zuppasoupfifaistimewa-png	Audit CF0-CF3 and correct CE3 runtime report
+012367cf0518e519520fe590845d62792289276a	2026-11-04T00:49:51Z	github-actions[bot]	Publish CE3 run 41749255678: CE3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+4581f12904e0630c46569d5229aeda806facd8b2	2026-11-04T00:49:49Z	github-actions[bot]	Publish CE3 run 41749255678: CE3_STEP0_BUILD_VALIDATION.txt
+855fa98b16a684a63b96ceae899e7524786d52f2	2026-11-04T00:49:48Z	github-actions[bot]	Publish CE3 run 41749255678: CE3_STEP0_BUILD_EXIT_CODE.txt
+d9144af54c171022006fa0d9741da6a2abe7cbd9	2026-11-04T00:49:46Z	github-actions[bot]	Publish CE3 run 41749255678: CE3_SCRIPT_EXIT_CODE.txt
+31d95c3c0b3db192c99feb1d488c9cd2c44bec2c	2026-11-04T00:49:45Z	github-actions[bot]	Publish CE3 run 41749255678: CE3_PCSX_RELEASE_MANIFEST.txt
+7377c7c16a9f57594211df9102d3b9d35f9f2e0d	2026-11-04T00:49:44Z	github-actions[bot]	Publish CE3 run 41749255678: CE3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+7166be498b2b7b1a4476d8245780f5ff1d8e144a	2026-11-04T00:49:42Z	github-actions[bot]	Publish CE3 run 41749255678: CE3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+91910d418f3612deeefbf0cd19ba9c98ac7a3415	2026-11-04T00:49:41Z	github-actions[bot]	Publish CE3 run 41749255678: CE3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+acf3e59859b8cab1b11280156cd1bf19947a601a	2026-11-04T00:49:39Z	github-actions[bot]	Publish CE3 run 41749255678: CE3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+340ec917a6f97522b3cab258033ee8553ad90f6e	2026-11-04T00:49:38Z	github-actions[bot]	Publish CE3 run 41749255678: CE3_H6_CREDIT_SUMMARY.txt
+1a888a09dec6f2b69ac2e51844004f180e4e4ea0	2026-11-04T00:49:37Z	github-actions[bot]	Publish CE3 run 41749255678: CE3_H6_CREDIT_RESULTS.tsv
+786f708df6d8ce77fbe34877060ad1781716864b	2026-11-04T00:49:35Z	github-actions[bot]	Publish CE3 run 41749255678: CE3_H6_CREDIT_LAUNCHES.tsv
+30980f6fe2829ecc404adb5d4078181124901c8b	2026-11-04T00:49:34Z	github-actions[bot]	Publish CE3 run 41749255678: CE3_FIRST_NONPASS_TILE4_LEVEL0_ATTEMPT1.txt
+9904f41167654f54f99cf7c31ed6d0ba98fc12e5	2026-11-04T00:49:33Z	github-actions[bot]	Publish CE3 run 41749255678: ACTIONS_RUN_SUMMARY.txt
+b2ccb20041c31496b23ce531eec3434753db7868	2026-11-04T00:45:51Z	zuppasoupfifaistimewa-png	Run one bounded CE3 H6 gate diagnostic with extended timeout
+75d5e5c6f37f9ee4aa7807b3191eef723112424e	2026-11-04T00:45:48Z	zuppasoupfifaistimewa-png	Add read-only state-2 gate preflight and CE3 diagnostic mode
+604c25c3c74fd31709dcd6db9e6d6f603922b239	2026-11-04T00:37:34Z	zuppasoupfifaistimewa-png	Document CE3 positive-credit runtime blocker and state-2 gate
+9928ee9ed3db578e7ea81b6d23a471082c2a0a51	2026-11-03T23:52:38Z	github-actions[bot]	Publish CE3 run 41740957322: CE3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+ce7b2d29f9dc93e04db88816ce334bd900df9d33	2026-11-03T23:52:37Z	github-actions[bot]	Publish CE3 run 41740957322: CE3_STEP0_BUILD_VALIDATION.txt
+072da5c4c0bf295e91d0321012c57971adf38eb5	2026-11-03T23:52:36Z	github-actions[bot]	Publish CE3 run 41740957322: CE3_STEP0_BUILD_EXIT_CODE.txt
+06b4997e0b3a9aa46c45bebefb78a38646901df7	2026-11-03T23:52:35Z	github-actions[bot]	Publish CE3 run 41740957322: CE3_SCRIPT_EXIT_CODE.txt
+b703996b358d7d43196991eec6a8ccbd71d857f0	2026-11-03T23:52:34Z	github-actions[bot]	Publish CE3 run 41740957322: CE3_PCSX_RELEASE_MANIFEST.txt
+f5e943ed8f684c2e1ab656e421209149c51ea9b5	2026-11-03T23:52:32Z	github-actions[bot]	Publish CE3 run 41740957322: CE3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+088297e7d77ac389e85a6c25c7c1b68967cd3a2d	2026-11-03T23:52:31Z	github-actions[bot]	Publish CE3 run 41740957322: CE3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+940662b9e6a55364d613f7c273128c2e2d53d563	2026-11-03T23:52:30Z	github-actions[bot]	Publish CE3 run 41740957322: CE3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+e5f87997438a328eeb5fdeebebe24644c5f728b5	2026-11-03T23:52:29Z	github-actions[bot]	Publish CE3 run 41740957322: CE3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+0551d246ee144003b8c47c6f796ae75aeb5964c3	2026-11-03T23:52:27Z	github-actions[bot]	Publish CE3 run 41740957322: CE3_H6_CREDIT_SUMMARY.txt
+2bf5fcebf0774b7385f4728b5ffa55202d76cf61	2026-11-03T23:52:26Z	github-actions[bot]	Publish CE3 run 41740957322: CE3_H6_CREDIT_RESULTS.tsv
+2ff3f047f9ae433a750bcac116170e92664819ee	2026-11-03T23:52:25Z	github-actions[bot]	Publish CE3 run 41740957322: CE3_H6_CREDIT_LAUNCHES.tsv
+f2c52d4a158a81cbffd010f6c0f83424c87ce3df	2026-11-03T23:52:24Z	github-actions[bot]	Publish CE3 run 41740957322: CE3_FIRST_NONPASS_TILE4_LEVEL0_ATTEMPT1.txt
+b273ba3a044ccabbb9de76179cac3a12cb271b9e	2026-11-03T23:52:22Z	github-actions[bot]	Publish CE3 run 41740957322: ACTIONS_RUN_SUMMARY.txt
+252743b84ff436760a18e1ca2824e17fb3fb7895	2026-11-03T23:41:16Z	github-actions[bot]	Publish CE3 run 41740884342: CE3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+963656b2a5d2016ed315bea3f7bfb0d39311e1bb	2026-11-03T23:41:15Z	github-actions[bot]	Publish CE3 run 41740884342: CE3_STEP0_BUILD_VALIDATION.txt
+cfa15216f0b04c0cabee57204fc4276dc7aab5f9	2026-11-03T23:41:13Z	github-actions[bot]	Publish CE3 run 41740884342: CE3_STEP0_BUILD_EXIT_CODE.txt
+e151eec84cfd500ec59c455a38702f855358f0d8	2026-11-03T23:41:12Z	github-actions[bot]	Publish CE3 run 41740884342: CE3_SCRIPT_EXIT_CODE.txt
+4ba08135cfd8c57b7883a101052e37ef593922a8	2026-11-03T23:41:11Z	github-actions[bot]	Publish CE3 run 41740884342: CE3_PCSX_RELEASE_MANIFEST.txt
+4dd16b6425eb96fdcd8794f701d402f6ac97555b	2026-11-03T23:41:09Z	github-actions[bot]	Publish CE3 run 41740884342: CE3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+95ffd17bf519d57d36b69ed7c5564d98f99153c5	2026-11-03T23:41:08Z	github-actions[bot]	Publish CE3 run 41740884342: CE3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+a113743b3d3a102b75e848f57de2acaa323d105e	2026-11-03T23:41:07Z	github-actions[bot]	Publish CE3 run 41740884342: CE3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+f0a5869170047ab90dfdbf69fd7ea7b80265b739	2026-11-03T23:41:05Z	github-actions[bot]	Publish CE3 run 41740884342: CE3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+28f41afc05fb2cc5f4d4a434c3662061f26d8a64	2026-11-03T23:41:04Z	github-actions[bot]	Publish CE3 run 41740884342: CE3_H6_CREDIT_SUMMARY.txt
+6dc32664840950e57bf0c4a05e4c5d302b872fd2	2026-11-03T23:41:03Z	github-actions[bot]	Publish CE3 run 41740884342: CE3_H6_CREDIT_RESULTS.tsv
+722fa4e146db61bf25dd95b81a72703171d1ab08	2026-11-03T23:41:01Z	github-actions[bot]	Publish CE3 run 41740884342: CE3_H6_CREDIT_LAUNCHES.tsv
+c3ffcb9ad8ed9b84d0e86809e74bc68121cda036	2026-11-03T23:41:00Z	github-actions[bot]	Publish CE3 run 41740884342: ACTIONS_RUN_SUMMARY.txt
+2aa7549ddb5bc86ef898147881f0bf0654390f80	2026-11-03T23:40:21Z	zuppasoupfifaistimewa-png	Correct CE3 run 41740281514 exit status and failure details
+c9e89ab1f811940349bfd0e61d6b64d89ff6526d	2026-11-03T23:40:07Z	zuppasoupfifaistimewa-png	Use CE3 probe process exit code in Actions summary
+9fc931e95b081133cfcb8e7398b0a106bde61814	2026-11-03T23:40:04Z	zuppasoupfifaistimewa-png	Fix CE3 launch report RAM byte fields
+6e6ae5472f2bbed763bba8180d68a6d9bce205d6	2026-11-03T23:39:27Z	zuppasoupfifaistimewa-png	Fix CE3 Lua tile stride initialization
+045add220dfcc997fffc10207a68e8bd6673f0f4	2026-11-03T23:39:21Z	github-actions[bot]	Publish CE3 run 41740281514: CE3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+53b47e9f974e065def83811c428e2f460ceafe20	2026-11-03T23:39:19Z	github-actions[bot]	Publish CE3 run 41740281514: CE3_STEP0_BUILD_VALIDATION.txt
+ef651162d955432c9d750a9843e1d4325011fd47	2026-11-03T23:39:18Z	github-actions[bot]	Publish CE3 run 41740281514: CE3_STEP0_BUILD_EXIT_CODE.txt
+db4dace9d83446871866589b7015774c36da2ac8	2026-11-03T23:39:17Z	github-actions[bot]	Publish CE3 run 41740281514: CE3_SCRIPT_EXIT_CODE.txt
+8730f966ffcafad15fdb63c18b881270b2fdb813	2026-11-03T23:39:15Z	github-actions[bot]	Publish CE3 run 41740281514: CE3_PCSX_RELEASE_MANIFEST.txt
+9d424db2a5f42ce0136841ddb9c7a0239ad88dfa	2026-11-03T23:39:14Z	github-actions[bot]	Publish CE3 run 41740281514: CE3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+f622d8b50af4379072385fd2d1a59e5dfc57ee90	2026-11-03T23:39:13Z	github-actions[bot]	Publish CE3 run 41740281514: CE3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+e3f7946a0c4103844ee0b34c47203209f37aafca	2026-11-03T23:39:11Z	github-actions[bot]	Publish CE3 run 41740281514: CE3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+39df9589d690525ce612d7fab3cd60ab53312b73	2026-11-03T23:39:10Z	github-actions[bot]	Publish CE3 run 41740281514: CE3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+0929ccdf89622b15beb26bd43495ac48d1a19bee	2026-11-03T23:39:09Z	github-actions[bot]	Publish CE3 run 41740281514: CE3_H6_CREDIT_SUMMARY.txt
+1b6845fedc55a3702e8f8869a55292fd79bce38c	2026-11-03T23:39:07Z	github-actions[bot]	Publish CE3 run 41740281514: CE3_H6_CREDIT_RESULTS.tsv
+fc39a6a01e7b94d1355e82e8bf492cd4e3c5a2f3	2026-11-03T23:39:06Z	github-actions[bot]	Publish CE3 run 41740281514: CE3_H6_CREDIT_LAUNCHES.tsv
+bb548b21375bc92c9f1205dbafb9ffcb9f723f0b	2026-11-03T23:39:05Z	github-actions[bot]	Publish CE3 run 41740281514: CE3_FIRST_NONPASS_TILE4_LEVEL0_ATTEMPT1.txt
+f55088cc281bd6aae5e1acc988c1a9067d322cb2	2026-11-03T23:39:03Z	github-actions[bot]	Publish CE3 run 41740281514: ACTIONS_RUN_SUMMARY.txt
+3abfba705d478a1a0bc44e92003d7a7ef149191c	2026-11-03T23:36:14Z	zuppasoupfifaistimewa-png	Correct CE3 run 41740037209 job id and Step0 summary
+416534fc2ad0e928a87319104c3975a708acf60c	2026-11-03T23:35:42Z	github-actions[bot]	Publish CE3 run 41740084140: CE3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+088f0c8aebd5a7c28f261b216dc6df0be5b1c70f	2026-11-03T23:35:41Z	github-actions[bot]	Publish CE3 run 41740084140: CE3_STEP0_BUILD_VALIDATION.txt
+ca75ab004360fbbb87176c23b14e4bfcf81b89e6	2026-11-03T23:35:39Z	github-actions[bot]	Publish CE3 run 41740084140: CE3_STEP0_BUILD_EXIT_CODE.txt
+bf991d537fe5eabaaadf1f8edf05304788ccd4e1	2026-11-03T23:35:38Z	github-actions[bot]	Publish CE3 run 41740084140: CE3_SCRIPT_EXIT_CODE.txt
+a5ae814fab45fe1c973bc0fb19bfaed4efbc11c6	2026-11-03T23:35:37Z	github-actions[bot]	Publish CE3 run 41740084140: CE3_PCSX_RELEASE_MANIFEST.txt
+9f7365a6c8e73e61c2cddb33373e9e61c83c25cd	2026-11-03T23:35:36Z	github-actions[bot]	Publish CE3 run 41740084140: CE3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+c8afa2f98dd13f8ae0346bd1e3e1f1f8809020ab	2026-11-03T23:35:35Z	github-actions[bot]	Publish CE3 run 41740084140: CE3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+d27fbf6780b220e7137e4f99e31837903f2ce196	2026-11-03T23:35:33Z	github-actions[bot]	Publish CE3 run 41740084140: CE3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+7203b0c38184de1a5296a7b1edeed8c33362d55c	2026-11-03T23:35:32Z	github-actions[bot]	Publish CE3 run 41740084140: CE3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+e1bf12113e0cf2f3771330e64427e2671368412a	2026-11-03T23:35:31Z	github-actions[bot]	Publish CE3 run 41740084140: CE3_H6_CREDIT_SUMMARY.txt
+2497eedd2d7f4511c9ae9966f3df3f7732899f93	2026-11-03T23:35:30Z	github-actions[bot]	Publish CE3 run 41740084140: CE3_H6_CREDIT_RESULTS.tsv
+f5a906284e8a71014db0db8c5d7129b7a951335b	2026-11-03T23:35:29Z	github-actions[bot]	Publish CE3 run 41740084140: CE3_H6_CREDIT_LAUNCHES.tsv
+89b3e9f461c5f16d41ef8008b0d3f45b7b44b0c2	2026-11-03T23:35:28Z	github-actions[bot]	Publish CE3 run 41740084140: ACTIONS_RUN_SUMMARY.txt
+b9b449dddd71455a633ad761c0bbb15a4829a0bb	2026-11-03T23:34:53Z	zuppasoupfifaistimewa-png	Correct CE3 Step 0 player Chakra address validation
+84a073a518611da97fef1166e344fcef2427939e	2026-11-03T23:34:25Z	github-actions[bot]	Publish CE3 run 41740037209: CE3_WORKFLOW_SCRIPT_PROCESS_EXIT.txt
+d8491123859ba4f4ba57dd2d554a27b2f7fe773a	2026-11-03T23:34:24Z	github-actions[bot]	Publish CE3 run 41740037209: CE3_STEP0_BUILD_VALIDATION.txt
+a0cda6123bd32e3f0f6b299c72fc1c4de54d192f	2026-11-03T23:34:23Z	github-actions[bot]	Publish CE3 run 41740037209: CE3_STEP0_BUILD_EXIT_CODE.txt
+29438355d3cfc0a6fee5b80b9544cf516892575f	2026-11-03T23:34:21Z	github-actions[bot]	Publish CE3 run 41740037209: CE3_SCRIPT_EXIT_CODE.txt
+6cfb94ab332a7b6afeb592d33bcf83ec236f6208	2026-11-03T23:34:20Z	github-actions[bot]	Publish CE3 run 41740037209: CE3_PCSX_RELEASE_MANIFEST.txt
+b51fa9d4296aee357c63d71a04842959420c92c1	2026-11-03T23:34:19Z	github-actions[bot]	Publish CE3 run 41740037209: CE3_H6_PATCHED_BB3_SMOKE_SUMMARY.txt
+0f232128ba564f88b5f1e2ce39b982c020be1dde	2026-11-03T23:34:17Z	github-actions[bot]	Publish CE3 run 41740037209: CE3_H6_PATCHED_BB3_SMOKE_SCRIPT_EXIT_CODE.txt
+90f0ecdc29125bd3e333a41c80c56de1e21e32de	2026-11-03T23:34:16Z	github-actions[bot]	Publish CE3 run 41740037209: CE3_H6_PATCHED_BB3_SMOKE_EMULATOR_LOG.txt
+d566aae9463056b18bc6cc814bbd8343d36babd7	2026-11-03T23:34:15Z	github-actions[bot]	Publish CE3 run 41740037209: CE3_H6_PATCHED_ACTIONS_RUN_SUMMARY.txt
+c7fdbc17a660db7919f05af32b5b1fa4af316b04	2026-11-03T23:34:13Z	github-actions[bot]	Publish CE3 run 41740037209: CE3_H6_CREDIT_SUMMARY.txt
+e370f170206561221203c52429c1f0ba4f5bbc0f	2026-11-03T23:34:12Z	github-actions[bot]	Publish CE3 run 41740037209: CE3_H6_CREDIT_RESULTS.tsv
+a92c9ad6e55742d851db06747cafb30175c61a29	2026-11-03T23:34:11Z	github-actions[bot]	Publish CE3 run 41740037209: CE3_H6_CREDIT_LAUNCHES.tsv
+8e09cf0010ca90381b323daa8b9592436632793c	2026-11-03T23:34:09Z	github-actions[bot]	Publish CE3 run 41740037209: ACTIONS_RUN_SUMMARY.txt
+7c054c3edc741b1ac8fb4173671fbc6f024edc96	2026-11-03T23:33:23Z	zuppasoupfifaistimewa-png	Fix CE3 workflow job label and summary paths
+f5339ca1af67ea2150c355850c1f7c7386794ef3	2026-11-03T23:33:04Z	zuppasoupfifaistimewa-png	Add CE3 H6 positive-credit runtime workflow
+4b6c4f2c0801f22c05bd69017a11d408120de48f	2026-11-03T23:32:27Z	zuppasoupfifaistimewa-png	Isolate per-player CE3 pending queues in H6 fixture
+cae2cd6305977f50ed4baa289f52bfed3b95e720	2026-11-03T23:30:53Z	zuppasoupfifaistimewa-png	Fix canonical Chakra readback in CE3 harness logs
+1175dff10a68a3f44f9d1c822e39951014ac27e7	2026-11-03T23:30:12Z	zuppasoupfifaistimewa-png	Add CE3 H6 positive-credit runtime harness
+d1195d4d14a5e0a8525b91897d837528c0974a5d	2026-11-03T23:28:02Z	github-actions[bot]	Publish AQ1 static economy census run 41738996928
+4104626043d012a6c91d09bec8cf7c4e68256b9d	2026-11-03T23:25:08Z	zuppasoupfifaistimewa-png	Export FUN_800BE5D8 raw entry for CE3 credit harness
+b51889a0c954b1fec0c33126212320f78f254e9f	2026-11-03T23:23:36Z	zuppasoupfifaistimewa-png	Add CE0-CE2 static audit and ledger correction
+cd90b281f45cada726e80c3f87661e5ae5494303	2026-11-03T22:34:24Z	zuppasoupfifaistimewa-png	Record CD0-CD3 audit findings and commit ledger 2026-11-04
+072b251e620c86cbe72742ffccfe74282445b7ea	2026-11-03T22:27:08Z	zuppasoupfifaistimewa-png	Correct CD1 run 417302 Actions status and exit code
+a433ec2c7a0a1a557c3d784570bc5c1d133948d4	2026-11-03T22:27:05Z	zuppasoupfifaistimewa-png	Correct CD1 run 417302 summary and preserve scanner success plus Ghidra failure
+7c0f0bf9236efc2ae39977d82218884d014313fb	2026-11-03T22:26:15Z	github-actions[bot]	Publish AQ1 static economy census run 41730277650
+fffa1b6bfbb5ea23b27db89fbd12c138e881097b	2026-11-03T22:24:45Z	zuppasoupfifaistimewa-png	Annotate run 417299 summary: CD1 scanner not run
+83182ea678cb820c498f4d44801503b286036d00	2026-11-03T22:24:42Z	zuppasoupfifaistimewa-png	Correct run 417299 CD1 scanner status (not invoked)
+cc5f979c2b55fc31909950582ba23a85df8aeb7e	2026-11-03T22:23:48Z	github-actions[bot]	Publish AQ1 static economy census run 41729988835
+f3e666a653b66566cccc56ca386e2275cfb440bc	2026-11-03T22:22:46Z	zuppasoupfifaistimewa-png	Invoke bounded CD1 JALR scan before private input cleanup
+ab0ac17c29dc96ec6b727b631a8feba72943394c	2026-11-03T22:21:27Z	zuppasoupfifaistimewa-png	Correct CD1 attempt run summary to reflect workflow failure
+95e6d8a2277cb4efa985f8a47277ff9f2089f362	2026-11-03T22:20:48Z	zuppasoupfifaistimewa-png	Fix CD1 status echo quoting in Step 7 workflow
+eeba76256c6b2c729c9b65e4e30db0f36dd42b7f	2026-11-03T22:20:00Z	github-actions[bot]	Publish AQ1 static economy census run 41729541613
+de1e4c9568e543b6dc5af6f7c54c25e5123cbd11	2026-11-03T22:17:49Z	zuppasoupfifaistimewa-png	Run CD1 indirect-call scan over EXE Entry 1 and DATA.BIN
+1b1341cdab80da2c92004edf3364a584cf8e3e2f	2026-11-03T22:17:27Z	zuppasoupfifaistimewa-png	Add bounded raw MIPS indirect-call candidate scanner
+181d3c4bbe78993a0c8c55c53baaddb1e34b97a4	2026-11-03T22:13:34Z	zuppasoupfifaistimewa-png	Record CD0 Actions probe run 41728269961 summary
+7ec489f7f4df87f41677446be413a1fb5383be62	2026-11-03T22:09:21Z	zuppasoupfifaistimewa-png	Add minimal CD0 GitHub Actions trigger probe
+c7457a73d6378ee62be4f344add796c132ed0144	2026-11-03T13:48:53Z	zuppasoupfifaistimewa-png	Publish CC1-CC3 static Barrier cost and Chakra credit audit
+b515f481b3997b3f498305b19974cd0a36127a4a	2026-11-03T13:27:34Z	zuppasoupfifaistimewa-png	Add CC0 text-only write and Actions probe
+db1a49b9ae3d3d3c9b5b76f2cffb19da3dcd5395	2026-11-03T11:37:34Z	zuppasoupfifaistimewa-png	docs: add CB2 static barrier cost and credit audit
+405a7dafe031a8b0c92f9aa65391116a36138bcf	2026-11-03T11:36:40Z	zuppasoupfifaistimewa-png	data: extract 22 resource economy records for CB1
+87268e54fc501ea2a809010e989602e30a23d675	2026-11-03T11:22:31Z	zuppasoupfifaistimewa-png	test: verify text-only write and Actions trigger for CB
+4cfbf9b006733b54499a6232cc8aa481e1ef0928	2026-11-03T03:09:15Z	github-actions[bot]	Publish AQ1 static economy census run 41570141744
+7ef8bf05c1023979432266f6b3110412015dd789	2026-11-03T03:08:45Z	zuppasoupfifaistimewa-png	Record pending BB2 helper export status in BB state
+f1a6602f8ed72751f0dbcb629e1d65f770f6ff2e	2026-11-03T03:06:05Z	zuppasoupfifaistimewa-png	Export BB2 action 3 helper functions and callers
+69dcca010a500510385d25142707e72ae3c39583	2026-11-03T03:05:10Z	zuppasoupfifaistimewa-png	Record final BB audit commits in BB state
+04124773d510e4c169db018cbecbddef455f704a	2026-11-03T03:05:00Z	zuppasoupfifaistimewa-png	Add BB1 resource 630 geometry erratum
+49b64f339893f65dbd2b2d9194a6feb25494ec5f	2026-11-03T03:04:44Z	zuppasoupfifaistimewa-png	Correct BB1 resource 630 geometry status in BB state
+d9816107a9dab4410d30da362083e318dd1ec4d1	2026-11-03T03:04:30Z	zuppasoupfifaistimewa-png	Correct BB1 geometry evidence for resource 630
+1e9eec6aa4aae43e722fe0859cb6079b2d9dbe2d	2026-11-03T03:03:02Z	zuppasoupfifaistimewa-png	Update BB state after static BB2 run 41567828353
+946528849ef40dd4c5f523064179988642fe1a61	2026-11-03T03:02:38Z	zuppasoupfifaistimewa-png	Add BB2 findings from AQ1 run 41567828353
+72dd85caf4965d94d02c0c352a2b3e706e10db8c	2026-11-03T02:52:13Z	github-actions[bot]	Publish AQ1 static economy census run 41568369172
+b59549ef519255b3d32034c8a3a040df14a6cec1	2026-11-03T02:48:46Z	github-actions[bot]	Publish AQ1 static economy census run 41567828353
+e895c319c9009a22a7291402fed13448b9315939	2026-11-03T02:48:25Z	zuppasoupfifaistimewa-png	Add BB2 message and selector helper decompilation targets
+5f24d257e2a407f02fc500beec9b459104a764f9	2026-11-03T02:47:28Z	zuppasoupfifaistimewa-png	Record BB2 upgrade identification and remaining unknowns
+6f7ea3a256f109d7d94aeb7b4c16c0f2370826c0	2026-11-03T02:45:26Z	github-actions[bot]	Publish AQ1 static economy census run 41567757209
+723bd7181489b98238978d700293e38315d7f42e	2026-11-03T02:43:03Z	zuppasoupfifaistimewa-png	Add focused BB2 FUN_800D15A8 decompilation
+2869fd35ff8b1e09ea8086ed436d3716bcddad64	2026-11-03T02:42:17Z	zuppasoupfifaistimewa-png	Add BB2 event instruction provenance windows
+51bee6df1283b647939b76d2a766306a2bbbdaf6	2026-11-03T02:35:31Z	github-actions[bot]	Publish AQ1 static economy census run 41566798431
+cdaf593b0610ab87cfdbb9601cee6c61e91ab51f	2026-11-03T02:32:46Z	zuppasoupfifaistimewa-png	Expand BB2 event trace and uncapped DATA.BIN text scan
+ee43568581217dacacfd3de25013f8f6442c12c5	2026-11-03T02:28:27Z	github-actions[bot]	Publish AQ1 static economy census run 41566033549
+b38dec2b691e70bd75c30de73626e1ab38402aaa	2026-11-03T02:27:46Z	zuppasoupfifaistimewa-png	Record BB2 full DATA.BIN and message audit
+6c4774f24ecad51d436a7ac4da270c822179476a	2026-11-03T02:25:29Z	zuppasoupfifaistimewa-png	Extend BB2 event and message caller trace
+95a5e0cce1861fa795c68fbaca15bc23ed473186	2026-11-03T02:22:20Z	github-actions[bot]	Publish AQ1 static economy census run 41565392810
+6d5a70e73ada1d68b279093272a76bf154028213	2026-11-03T02:19:26Z	zuppasoupfifaistimewa-png	Extend BB2 text audit across full DATA.BIN
+595cbdd10a772db3df295bb0e5fc32b28246fef1	2026-11-03T02:09:00Z	zuppasoupfifaistimewa-png	Record final BB audit and remaining verified gaps

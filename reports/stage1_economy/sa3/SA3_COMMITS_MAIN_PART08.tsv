@@ -1,0 +1,475 @@
+commit_sha	committer_date	author	message
+38408861ce43aee3994955d5b5eb6abe981ddf88	2026-10-18T10:49:06Z	zuppasoupfifaistimewa-png	Correct Start timing from inspected framebuffer evidence
+313895f735440782504921bc2effbe79bcbf85d9	2026-10-18T10:49:01Z	zuppasoupfifaistimewa-png	Correct Start timing from inspected framebuffer evidence
+128f73f7d29b20c5d9f3cbfee2047a5918d5e797	2026-10-18T10:48:55Z	zuppasoupfifaistimewa-png	Correct Start timing from inspected framebuffer evidence
+e9f753833b0689723fc22fe07afbd55fce92eb05	2026-10-18T10:48:17Z	zuppasoupfifaistimewa-png	Test Start after confirmed health advisory frame
+015221d7a99ed7a374fcd9e134d19e8ccc6544fd	2026-10-18T10:27:34Z	zuppasoupfifaistimewa-png	Record active post-advisory Start test run
+6f3f3425b9e47adf4d5a9f8b2740a7013f8badb2	2026-10-18T10:27:26Z	zuppasoupfifaistimewa-png	Record active post-advisory Start test run
+0e769c9aff69e7182252cb17b69014a2e128fe56	2026-10-18T10:27:18Z	zuppasoupfifaistimewa-png	Record active post-advisory Start test run
+2e16c15611c90fb3f93a1db8bca9191b1b2d0462	2026-10-18T10:27:10Z	zuppasoupfifaistimewa-png	Record active post-advisory Start test run
+6a060c1b291a1a1f1b9500894b0d364f0f554a0a	2026-10-18T10:27:01Z	zuppasoupfifaistimewa-png	Record active post-advisory Start test run
+57de951b24cb8ec4e37d587a0a75ac36f926ec94	2026-10-18T10:26:28Z	zuppasoupfifaistimewa-png	Test Start after health advisory in Naruto startup
+f3d691d76e73878d7233c24f99a060737262d859	2026-10-18T10:26:03Z	zuppasoupfifaistimewa-png	Document Dimps and health-advisory input timing findings
+f1f9fb3550cd0df06069bfc91e5eb5cb249e702a	2026-10-18T10:25:54Z	zuppasoupfifaistimewa-png	Document Dimps and health-advisory input timing findings
+b15649b695c63b0191338c4365e86856be823549	2026-10-18T10:25:49Z	zuppasoupfifaistimewa-png	Document Dimps and health-advisory input timing findings
+fbedc08d3314c26501fb27922e4a365bba617c45	2026-10-18T10:25:45Z	zuppasoupfifaistimewa-png	Document Dimps and health-advisory input timing findings
+bec5e616263d1cff489ce1138437a2e031392f3e	2026-10-18T10:25:40Z	zuppasoupfifaistimewa-png	Document Dimps and health-advisory input timing findings
+3bb0f78089448b3a80cb5450c66cfdd825a875fa	2026-10-18T09:54:11Z	zuppasoupfifaistimewa-png	Record Naruto startup health advisory evidence and active follow-up
+ce5cbb9a844701c012b3ff86ce79ba9c0d533cd3	2026-10-18T09:54:04Z	zuppasoupfifaistimewa-png	Record Naruto startup health advisory evidence and active follow-up
+da286b287e8c3affa57821c97c8b1e1d55c4dccb	2026-10-18T09:53:57Z	zuppasoupfifaistimewa-png	Record Naruto startup health advisory evidence and active follow-up
+442afbd371f542e51b78e61d69e630873bb53abf	2026-10-18T09:53:52Z	zuppasoupfifaistimewa-png	Record Naruto startup health advisory evidence and active follow-up
+1741625955df8d97990c2dfa0e4ec7c33478b1c7	2026-10-18T09:53:33Z	zuppasoupfifaistimewa-png	Record health warning progression and next startup input test
+bbaf544afe3f64879a88253dd5fe949dbbd6e517	2026-10-18T09:53:02Z	zuppasoupfifaistimewa-png	Continue Naruto startup after health advisory with longer observation
+25998b13cdefa7f9029ee782447ad8de3a070d1e	2026-10-18T05:54:00Z	zuppasoupfifaistimewa-png	Start after EXE handoff and observe Naruto startup through 1500 VSync
+934c9930b00c36062b723009c4db58a0dc291954	2026-10-18T05:47:14Z	zuppasoupfifaistimewa-png	Record extended Naruto intro timing and correct inputs
+0f94d01a8da12fadc189a0bd92e15ce785bf9912	2026-10-18T05:47:08Z	zuppasoupfifaistimewa-png	Record extended Naruto intro timing and correct inputs
+5d9a3796e77b3ef541487d51629bccb11fa6e55e	2026-10-18T05:47:00Z	zuppasoupfifaistimewa-png	Record extended Naruto intro timing and correct inputs
+0f13646593dbffb579ec5b765e787d37e7fa29cc	2026-10-18T05:46:55Z	zuppasoupfifaistimewa-png	Record extended Naruto intro timing and correct inputs
+7f9b4fc507501c4e622f073b13140ff35288b42d	2026-10-18T05:42:29Z	zuppasoupfifaistimewa-png	Correct Naruto startup and confirm button sequence
+7139ab5f6011d835bd6b55876ebfc3b5a386c30a	2026-10-18T05:42:24Z	zuppasoupfifaistimewa-png	Correct Naruto startup and confirm button sequence
+68dbd807a95b0b7ad894c9feaeb175e6f2269cf7	2026-10-18T05:42:20Z	zuppasoupfifaistimewa-png	Correct Naruto startup and confirm button sequence
+297644f04b6d4b9fe6441ef1769cae815dad2154	2026-10-18T05:42:16Z	zuppasoupfifaistimewa-png	Correct Naruto startup and confirm button sequence
+dcf31d022e43e8eaf32c8a31ae4686720044f354	2026-10-18T05:41:48Z	zuppasoupfifaistimewa-png	Use Start and Circle for Naruto start and menu confirmation
+312fbffc8c5a43806355908072848078f0db3c85	2026-10-18T05:40:42Z	zuppasoupfifaistimewa-png	Extend SCPH-7502 boot observation and controller confirmation window
+51853e06de2d4ac7b951d3f339911bb6a3615ef6	2026-10-18T05:37:04Z	zuppasoupfifaistimewa-png	Append PC and local control-flow follow-up
+6dc7c3bbc1b38a5415f50c2140b7a13a98bb4cbe	2026-10-18T05:36:53Z	zuppasoupfifaistimewa-png	Record SCPH-7502 PC and code-window diagnostic
+266cc60f03a1d5876c6f06399b1925d1566121d3	2026-10-18T05:36:49Z	zuppasoupfifaistimewa-png	Record SCPH-7502 PC and code-window diagnostic
+04df190652491698846b96af1e5d0e87686ae041	2026-10-18T05:36:45Z	zuppasoupfifaistimewa-png	Record SCPH-7502 PC and code-window diagnostic
+16e8a403329f7cdfe612a8711cbed9cc842d13d7	2026-10-18T05:36:41Z	zuppasoupfifaistimewa-png	Record SCPH-7502 PC and code-window diagnostic
+b4d849c4d555f092e1d5b406bdd67c1aa5aa3205	2026-10-18T05:36:21Z	zuppasoupfifaistimewa-png	Restore dynarec for SCPH-7502 code progress probe
+1a35c21ac385fd3786ecdd7fc61b42aed8a11a25	2026-10-18T05:33:23Z	zuppasoupfifaistimewa-png	Summarize local guest control flow around sampled PCs
+d16c58d9d5a601a760d87de850693bff38ce011b	2026-10-18T05:30:25Z	zuppasoupfifaistimewa-png	Record SCPH-7502 GPU traffic investigation result
+4a40f48588413e6a2495a093b08d05aaea1b1736	2026-10-18T05:30:21Z	zuppasoupfifaistimewa-png	Record SCPH-7502 GPU traffic investigation result
+7914678e3f57427a9076deab110d832c110df021	2026-10-18T05:30:17Z	zuppasoupfifaistimewa-png	Record SCPH-7502 GPU traffic investigation result
+c4ef7c1e26c9c1c598caaf03cb27b6cbb842cf35	2026-10-18T05:30:13Z	zuppasoupfifaistimewa-png	Record SCPH-7502 GPU traffic investigation result
+d1125a9b49068f5d55862a87b6c6951c0f0ca101	2026-10-18T05:29:52Z	zuppasoupfifaistimewa-png	Correlate SCPH-7502 GPU traffic with low-rate PC samples
+7b0fcccee525a58cf752ff4113bff03e70cd824a	2026-10-18T05:29:23Z	zuppasoupfifaistimewa-png	Document SCPH-7502 GPU traffic and VRAM result
+f68799906a40466a2617daea87c4f72d5a756b9d	2026-10-18T05:23:53Z	zuppasoupfifaistimewa-png	Include private emulator window captures in GPU diagnostic artifact
+f6c640468c0c9107c2e2132d064018379479dec8	2026-10-18T05:23:22Z	zuppasoupfifaistimewa-png	Add SCPH-7502 GPU traffic diagnostic
+424db1fec9482aa8fcbaec175fd28922ff6be1a3	2026-10-18T05:19:22Z	zuppasoupfifaistimewa-png	Document SCPH-7502 low-rate runtime probe result
+2566da091954aebc641a6126d9ab4959668f1730	2026-10-18T04:52:49Z	zuppasoupfifaistimewa-png	Add low-rate SCPH-7502 runtime progress probe
+28f5d64b8706e42d7aec296c5a1d4e3fb1519ae3	2026-10-18T04:32:08Z	zuppasoupfifaistimewa-png	Document RT-001 visual and GP0 audit
+7cbb173c4853961e15adc570dc6cd8252d862951	2026-10-18T04:32:06Z	zuppasoupfifaistimewa-png	Document RT-001 visual and GP0 audit
+534986cebee569fd46149490d1789cae33ddd77d	2026-10-18T04:32:02Z	zuppasoupfifaistimewa-png	Document RT-001 visual and GP0 audit
+f6f508b9acb0e128dd43ff6dac6ad61aaefd6fbf	2026-10-18T04:31:58Z	zuppasoupfifaistimewa-png	Document RT-001 visual and GP0 audit
+f1ecc9ac6da124d621f7fad99f620f58512a017d	2026-10-18T04:31:55Z	zuppasoupfifaistimewa-png	Document RT-001 visual and GP0 audit
+aea19d17407f872f03495850b505a488ec69dbdf	2026-10-18T04:31:50Z	zuppasoupfifaistimewa-png	Document RT-001 visual and GP0 audit
+e2b58858bc71444770a241a0fe8826a164afd505	2026-10-18T04:27:35Z	zuppasoupfifaistimewa-png	Repair SoftGPU capture workflow validation and diagnostics
+bfe2a235c3c04bdfc5f2cade4425c9f4e06d7ec4	2026-10-18T04:26:31Z	zuppasoupfifaistimewa-png	Fix SoftGPU screenshot capture and runtime diagnostics
+62570549738fd75c0a7f3b2a77122ec583350bd1	2026-10-18T04:16:10Z	zuppasoupfifaistimewa-png	Probe SCPH-7502 internal SoftGPU frames and minimal RSP
+4b763f1ec528dfed4a83f00ef098ea5b97cbd81c	2026-10-18T03:54:45Z	zuppasoupfifaistimewa-png	Add controlled SCPH-7502 software-GPU A/B probe
+94a1e530b49b6b959cc27a1b27e5948b962fb240	2026-10-18T03:46:24Z	zuppasoupfifaistimewa-png	Record SCPH-7502 boot probe results
+13694aa9b900eb6be5ce5b6366805e87fc8d5416	2026-10-18T03:46:20Z	zuppasoupfifaistimewa-png	Record SCPH-7502 boot probe results
+075f62b6825de6c0a922f81eaa491925b5089c9f	2026-10-18T03:46:15Z	zuppasoupfifaistimewa-png	Record SCPH-7502 boot probe results
+4ab7e230f89ee3440bb05cfdf537b7cdd2d096b2	2026-10-18T03:41:51Z	zuppasoupfifaistimewa-png	Add private SCPH-7502 PCSX-Redux boot probe
+ddb7865e698e54d9005288a65218043b7491cbce	2026-10-18T03:40:59Z	zuppasoupfifaistimewa-png	Fix SCPH-7502 hash field mapping
+4d8855d2086b0b051841593a6ae6dabc8994d9b6	2026-10-18T03:40:50Z	zuppasoupfifaistimewa-png	Add private SCPH-7502 BIOS identity check
+121cfbce5536b3e527cf119df7b5e1fa57d5acaa	2026-10-18T03:29:16Z	zuppasoupfifaistimewa-png	Record BIOS candidate evidence and compatibility limits
+8cff4b2a581d6d8b90d9d5d401336c5f8dc839fa	2026-10-18T03:29:11Z	zuppasoupfifaistimewa-png	Record BIOS candidate evidence and compatibility limits
+7a92eded8ab79c79f0d0f48c303046f70b39fa9f	2026-10-18T03:29:08Z	zuppasoupfifaistimewa-png	Record BIOS candidate evidence and compatibility limits
+c08e9ea4f146070c4a6a112f8c41bc83c999fa9a	2026-10-18T03:29:04Z	zuppasoupfifaistimewa-png	Record BIOS candidate evidence and compatibility limits
+f29dc23ae74c01b2dbd46351889b955767132d88	2026-10-18T03:29:00Z	zuppasoupfifaistimewa-png	Record BIOS candidate evidence and compatibility limits
+5f0d9ed7f117d49f3ca549cb7fabc2ab2078aaf3	2026-10-18T03:28:39Z	zuppasoupfifaistimewa-png	Document BIOS compatibility evidence and available assets
+b5555142f58b720e333f124763cfcc47dbf22d0c	2026-10-18T03:28:12Z	zuppasoupfifaistimewa-png	Add OpenBIOS shell-menu candidate to controlled GUI comparison
+dc89203311de94e11f9dfab26a5ab9b24c946939	2026-10-18T01:10:29Z	zuppasoupfifaistimewa-png	Document final pinned-build OpenGL diagnostic and guest findings
+f2fb94858b9ad419473ad4849e78fdeee4af6af1	2026-10-18T01:10:25Z	zuppasoupfifaistimewa-png	Update runtime plan with final OpenGL and memory-region findings
+0626de15c02504dcf5fe953f8489007119ff503f	2026-10-18T01:10:23Z	zuppasoupfifaistimewa-png	Record completed OpenGL and guest memory-region diagnostics
+602e3472253bef45e685fa5dffee126c937f9467	2026-10-18T01:10:20Z	zuppasoupfifaistimewa-png	Record completed OpenGL and guest memory-region diagnostics
+bd3a6c3c7fdd5912db72296d660e1734e9c01e7b	2026-10-18T01:10:17Z	zuppasoupfifaistimewa-png	Record completed OpenGL and guest memory-region diagnostics
+bbb5c72a20f7e1c076320d493295f51dfb6e954b	2026-10-18T01:09:07Z	zuppasoupfifaistimewa-png	Preserve standalone Mesa OpenGL diagnostic report
+bd393895c32e1621b4b421965aa72595cc7cbf13	2026-10-18T00:50:50Z	zuppasoupfifaistimewa-png	Document memory-region probe output policy and active run
+7ff8d3dd9b14dfd5603fddf1fc46a27c40e6bf7d	2026-10-18T00:50:47Z	zuppasoupfifaistimewa-png	Record active memory-region probe and current runtime status
+42fc948160d041176eab39dc6382a3d9bb5c3e59	2026-10-18T00:50:44Z	zuppasoupfifaistimewa-png	Record active private memory-region diagnostic run in handoff
+eb29067ba3405637d342929bb0997808ad09102d	2026-10-18T00:50:39Z	zuppasoupfifaistimewa-png	Record active private memory-region diagnostic run in handoff
+5f224eff6cb0519a5afc190103d50752ad4e2d17	2026-10-18T00:50:34Z	zuppasoupfifaistimewa-png	Record active private memory-region diagnostic run in handoff
+fbe766cffdb4ee72c3765364e96a8a01b6678ec6	2026-10-18T00:48:29Z	zuppasoupfifaistimewa-png	Classify BNE load operand address region without emitting raw addresses
+a0aea3e2b42c18b254b43dfefd775403bae1806c	2026-10-18T00:47:50Z	zuppasoupfifaistimewa-png	Document BNE operand producer categories and provenance limit
+d6c3bcf908754fc5d75eabf9d588ccb9d5ad0155	2026-10-18T00:47:46Z	zuppasoupfifaistimewa-png	Record source-category evidence and next load address probe
+9cdbcf54458e54eefe7dd30eb8db95277e71cc84	2026-10-18T00:47:42Z	zuppasoupfifaistimewa-png	Record completed branch source-category probe and next diagnostic
+5460938fad79facb465e19bc42bf8b4eaa8a2acf	2026-10-18T00:47:38Z	zuppasoupfifaistimewa-png	Record completed branch source-category probe and next diagnostic
+4dd4a7b753a64421e10206862eebf9c5436b285b	2026-10-18T00:47:33Z	zuppasoupfifaistimewa-png	Record completed branch source-category probe and next diagnostic
+8f75c3d558afd2261fb644e0fa192d5972ff3236	2026-10-18T00:44:01Z	zuppasoupfifaistimewa-png	Let CPU sampler flush safe summaries on graceful shutdown
+df93b6467314b483b409de35f6e1bd07f3cb2c80	2026-10-18T00:41:38Z	zuppasoupfifaistimewa-png	Summarize branch operand producer categories without register values or raw instructions
+3a9d87b64808fec71e4834c3c9631c0756ea1f87	2026-10-18T00:40:46Z	zuppasoupfifaistimewa-png	Record successful OpenGL backend VRAM cross-check
+0ae0dae8c934e18cb99533ed79efea3144c0e4fc	2026-10-18T00:40:42Z	zuppasoupfifaistimewa-png	Record completed OpenGL backend and VRAM test
+690841de7b67b9d2e9f4c8fc1af435838c5b3954	2026-10-18T00:40:39Z	zuppasoupfifaistimewa-png	Finalize actual OpenGL backend result in research log
+e0aa0e11cb76b10dec6bd02e8be40c33820e73e1	2026-10-18T00:40:36Z	zuppasoupfifaistimewa-png	Finalize actual OpenGL backend result in research log
+f31bb7c5277d3d5dd3cc37139b63980bbb633264	2026-10-18T00:40:31Z	zuppasoupfifaistimewa-png	Finalize actual OpenGL backend result in research log
+6e8f7ef978876f2b81af8dd0233d217565abf8cf	2026-10-18T00:37:00Z	zuppasoupfifaistimewa-png	Document confirmed OpenGL backend selection and screenshot API limitation
+b2f96a8323ea2a9f23f80fc4ab58acd21de5a3ae	2026-10-18T00:36:56Z	zuppasoupfifaistimewa-png	Update runtime plan with actual OpenGL selection and extended run status
+ccd9d8d860a5f04251c5ad04dff77bef3fc04560	2026-10-18T00:36:54Z	zuppasoupfifaistimewa-png	Handoff confirmed OpenGL backend run and 170s extension
+6a9357a23d0b76e1888c899e10731b3c64e24813	2026-10-18T00:36:50Z	zuppasoupfifaistimewa-png	Update analysis with true OpenGL backend test and timeout evidence
+5d0b1a12c46c0a248a7255d3055e4adbc3c39f14	2026-10-18T00:36:46Z	zuppasoupfifaistimewa-png	Update backend state with first confirmed OpenGL run and extended follow-up
+ca4729858e8f008660984b0c252ecbceb4463eae	2026-10-18T00:36:15Z	zuppasoupfifaistimewa-png	Extend true OpenGL backend observation to reach VSync 300 [openglgpu-probe]
+c1b2eb87ba14bca4c0463a313498b1ece8f38d16	2026-10-18T00:33:12Z	zuppasoupfifaistimewa-png	Document OpenGL backend flags and screenshot API caveat at pinned commit
+e73e831b1c949985a05f02b99f990ef5033b3ae6	2026-10-18T00:33:09Z	zuppasoupfifaistimewa-png	Correct runtime plan after branch relations and pending true OpenGL backend test
+0cb92f0323592a0ff3e42d981c0057cf1ae2ca2a	2026-10-18T00:33:05Z	zuppasoupfifaistimewa-png	Handoff latest branch loop evidence and actual OpenGL backend test status
+69824be56b3af0cbf02a438d7a9d138948e8d5e6	2026-10-18T00:33:01Z	zuppasoupfifaistimewa-png	Correct analysis log for branch relation evidence and OpenGL selector correction
+86c2d8cbe39bcba2c033b5de805d96ebce511ad5	2026-10-18T00:32:58Z	zuppasoupfifaistimewa-png	Update status with completed branch-relation test and corrected OpenGL backend probe state
+eb9cb4d250c48a926f672b298cc51e2babf29a75	2026-10-18T00:32:32Z	zuppasoupfifaistimewa-png	Fix event-based OpenGL backend selection for one-commit probe [openglgpu-probe]
+8d9d7819e63e77368654f9b4ab55213bbdb1da6d	2026-10-18T00:28:59Z	zuppasoupfifaistimewa-png	Add one-commit OpenGL backend probe while preserving software default [openglgpu-probe]
+cd86216acb37c1326a2f6a05cce9e7fdf610ef1b	2026-10-18T00:24:30Z	zuppasoupfifaistimewa-png	Document VRAM versus screenshot black-pixel cross-check
+f9d8db0d05b2e41d195884668bbbc08638a3cbbe	2026-10-18T00:24:26Z	zuppasoupfifaistimewa-png	Correct runtime plan with completed VRAM and branch-type evidence
+6b18110e9ccc6af9b84aa439782a79ec4c1d4262	2026-10-18T00:24:22Z	zuppasoupfifaistimewa-png	Handoff current verified state and active branch relation sampler
+05fa195cebecb236b72d604f4ba428fa3ece6ffc	2026-10-18T00:24:18Z	zuppasoupfifaistimewa-png	Consolidate latest GLX and guest rendering diagnosis findings
+d4b04df420c6ce9835888c123e907f3774171a21	2026-10-18T00:24:14Z	zuppasoupfifaistimewa-png	Consolidate current GLX, CPU loop, input and VRAM evidence
+a544975d774f5f4a24424b202fa9694d9fa7ad64	2026-10-18T00:23:35Z	zuppasoupfifaistimewa-png	Import Counter for private branch-relation summary
+1361855c0b0ef881c0f15884e0a233a6c0690bbe	2026-10-18T00:23:17Z	zuppasoupfifaistimewa-png	Summarize register relations at repeated BNE target entries without raw values
+e915b10586cc338a9de8a2e48c6bab770c4bd9e7	2026-10-18T00:20:05Z	zuppasoupfifaistimewa-png	Measure PS1 VRAM pixel diversity privately alongside blank screen capture
+f4898d789e23d954a4e9f2a93ac282d4f077781b	2026-10-18T00:15:32Z	zuppasoupfifaistimewa-png	Document pinned Lua pad override API and current software screenshot measurements
+feb3e40f2ed219b95971825683706d733ee758de	2026-10-18T00:15:29Z	zuppasoupfifaistimewa-png	Update plan with input readback, blank screenshot metrics and pending branch-type probe
+f1a5619d0438a5810464b67f6ba3392f69583796	2026-10-18T00:15:25Z	zuppasoupfifaistimewa-png	Handoff virtual pad injection results and blank framebuffer diagnosis
+31de666be33ca3da228981f5dbce73e9b0e7874f	2026-10-18T00:15:22Z	zuppasoupfifaistimewa-png	Analyze successful controller override readback but unchanged game loop and black capture
+6f68fbdc7aca90a3fa1d5469d55d70acd381dd0e	2026-10-18T00:15:17Z	zuppasoupfifaistimewa-png	Record controller API readback and black screenshot metrics from completed run
+bbb34ba183be63086611c22ee6f6bddf8ab7357f	2026-10-18T00:14:42Z	zuppasoupfifaistimewa-png	Label static branch edge types without exposing operands
+dc2d98d34fc154b421232bacae2eeffb753cd1eb	2026-10-18T00:11:52Z	zuppasoupfifaistimewa-png	Probe scripted Port 1 buttons and screenshot pixel statistics privately
+cee3227901683ea0da3a3ce808f145d8e778b2c8	2026-10-18T00:09:40Z	zuppasoupfifaistimewa-png	Update runtime plan with completed control-flow edge evidence
+5ff4602752d8e2bd9604c5326606a40bedd688d2	2026-10-18T00:09:37Z	zuppasoupfifaistimewa-png	Handoff verified static control-flow loop and input API audit next step
+647ae13f7e7dcb7213706059dfba257950756356	2026-10-18T00:09:33Z	zuppasoupfifaistimewa-png	Document matching runtime PCs and static branch targets in guest loop
+80f27664d82f5607e6b7d62363157c182cf822ca	2026-10-18T00:09:29Z	zuppasoupfifaistimewa-png	Record static control-flow cycle from latest private CPU sampler
+542b89b204d3bfe612fc0c790b6ce23d03cddebb	2026-10-18T00:06:47Z	zuppasoupfifaistimewa-png	Update runtime plan with completed adaptive PC sample and pending flow-edge probe
+be64274299c14308bad3d2ef67a2a28380a33782	2026-10-18T00:06:43Z	zuppasoupfifaistimewa-png	Handoff adaptive PC sample and pending static control-flow edge run
+b5d2755ca7ca4b782d5b0365a403a03252e6e4ae	2026-10-18T00:06:39Z	zuppasoupfifaistimewa-png	Analyze two-PC hotspot sample histogram and plan control-flow edge check
+1ca848a3a058e48a485503eaac5b2b762eb98aed	2026-10-18T00:06:36Z	zuppasoupfifaistimewa-png	Record adaptive PC hotspot sampling result and follow-up flow-edge probe
+18d39b730ccd900d24726a2a7b543b53f70e84e5	2026-10-18T00:06:13Z	zuppasoupfifaistimewa-png	Summarize guest control-flow edges in repeated PC window
+39eaee83192b1cd718519ab82d182c9f3eb7bfd7	2026-10-18T00:04:07Z	zuppasoupfifaistimewa-png	Correct runtime plan status and record current adaptive sampler run
+a8215c8f0e09587bdc05c61a54ef636767086add	2026-10-18T00:03:27Z	zuppasoupfifaistimewa-png	Sample repeated executable PC window at higher rate without raw code output
+7489ebe3f9fdb98b166b42478a2b7332d0c8191e	2026-10-18T00:01:43Z	zuppasoupfifaistimewa-png	Record successful CPU memory-window statistics without raw code
+520781688cb408eef689fd6eece25fdcba01cad8	2026-10-18T00:01:40Z	zuppasoupfifaistimewa-png	Plan higher-rate PC sampling around repeated executable PCs
+96ff0a8672531bf570bbb23c706b5c4d88ed8682	2026-10-18T00:01:33Z	zuppasoupfifaistimewa-png	Plan higher-rate PC sampling around repeated executable PCs
+925bba3cb9c92f090818e71e966ec6799d47892e	2026-10-18T00:01:32Z	zuppasoupfifaistimewa-png	Handoff completed CPU/GPU probe and next control-flow step
+0a8acb1b6040d1bd5668ff3aba3f573b6364435b	2026-10-18T00:01:28Z	zuppasoupfifaistimewa-png	Log completed CPU/GPU run and safe branch-category evidence
+3c74a654c01b45d09ad9d1b8a75e643a019667c9	2026-10-18T00:01:24Z	zuppasoupfifaistimewa-png	Record completed latest CPU/GPU run and local instruction category results
+6eb93cee7d0c4c1e217c9f601ebcf267d0beba73	2026-10-18T00:00:24Z	zuppasoupfifaistimewa-png	Handoff latest GPU traffic and pending CPU code-window evidence
+2dca00286f9673f04f46f53939a2837b3623d87b	2026-10-18T00:00:21Z	zuppasoupfifaistimewa-png	Update plan with latest completed and incomplete GPU probe evidence
+ebba599ca23327d62a207fc5b78656b7cb6f773c	2026-10-18T00:00:18Z	zuppasoupfifaistimewa-png	Log latest guest GP0 output and active private CPU control-flow probe
+7c74dec2486e0b3e16c0f366e0544dd413c8b569	2026-10-18T00:00:14Z	zuppasoupfifaistimewa-png	Record latest complete GPU run, cancelled partial run, and active CPU code-window probe
+91dd6dbd11ee0d97a42a7cc4be1d8b9b29518053	2026-10-17T23:59:01Z	zuppasoupfifaistimewa-png	Handoff latest OpenGL result and pinned capture API limitation
+bfa664fa9b31deb13c712d1418334dbe90c12565	2026-10-17T23:58:57Z	zuppasoupfifaistimewa-png	Record current GLX capability and screenshot backend caveat
+dc87a03e287eb8cf0aa774beb7b70b761d38f475	2026-10-17T23:58:54Z	zuppasoupfifaistimewa-png	Update runtime plan with validated host OpenGL gate
+ad4242ff76d91d7d5e0695cf47f29036ae9f3314	2026-10-17T23:58:51Z	zuppasoupfifaistimewa-png	Log standalone Mesa GLX verification and screenshot API findings
+1630c3149113c23fa76a0afd8ee3a1a9916783e2	2026-10-17T23:58:48Z	zuppasoupfifaistimewa-png	Record successful standalone OpenGL diagnosis and pinned screenshot API audit
+1edab8366f250a1cb380b8a87e2f5fb2d7baaf62	2026-10-17T23:57:47Z	zuppasoupfifaistimewa-png	Emit code-window instruction statistics before sampler shutdown
+cf16162c85001d1006fee32725ce01407843ac35	2026-10-17T23:57:36Z	zuppasoupfifaistimewa-png	Validate reported OpenGL contexts in standalone Mesa diagnostic
+887a7167cf658fc3b30cd2d7a01c47f5e0542dce	2026-10-17T23:56:45Z	zuppasoupfifaistimewa-png	Fix code-window sampler indentation so Python executes
+965eaff8447cf23b38f36891dd3fe2e462325352	2026-10-17T23:53:17Z	zuppasoupfifaistimewa-png	Include private code-window category summary in artifact
+d4a3e2bf1e0146f0fb9b2e8de0922435fbfefbbf	2026-10-17T23:51:33Z	zuppasoupfifaistimewa-png	Fix CPU code-window sampler indentation
+cc58dd74eb9c65168f21ad726f8cf2e87d50cc3f	2026-10-17T23:51:11Z	zuppasoupfifaistimewa-png	Summarize instruction categories from private MIPS code windows
+568bf978bc208db20bd6e44abafdf4fdbd6ece5d	2026-10-17T23:48:25Z	zuppasoupfifaistimewa-png	Plan control-flow diagnostics based on GP0 VSync buckets
+d6c52292abccc28c39e41939d09b017068942ace	2026-10-17T23:48:22Z	zuppasoupfifaistimewa-png	Record VSync-bucket GP0 timing and plan private control-flow probe
+405cb8067d89f46934917990ca1cfa19421a1c1d	2026-10-17T23:48:19Z	zuppasoupfifaistimewa-png	Plan control-flow diagnostics based on GP0 VSync buckets
+351d1aa00cd6f29daa18905c2dcdbbed27431077	2026-10-17T23:48:16Z	zuppasoupfifaistimewa-png	Record VSync-bucket GP0 timing and plan private control-flow probe
+0685e41cc480cde92ba44b757a226c33b8f0f397	2026-10-17T23:48:13Z	zuppasoupfifaistimewa-png	Record VSync-bucket GP0 timing and plan private control-flow probe
+178b0375d4f030a720d1ca204005815d1328c558	2026-10-17T23:45:33Z	zuppasoupfifaistimewa-png	Bucket GP0 command-family counts by live VSync interval
+d7d16153c70513bf54b0ada64851d520952180db	2026-10-17T23:44:52Z	zuppasoupfifaistimewa-png	Record CPU and GP0 opcode analysis from VSync 300 run
+5e35921c6318918a4a52ed4102ece72239f00d79	2026-10-17T23:44:49Z	zuppasoupfifaistimewa-png	Record CPU and GP0 opcode analysis from VSync 300 run
+646dd576dff41d8c8663bf3e4137e38788d5a0f6	2026-10-17T23:44:46Z	zuppasoupfifaistimewa-png	Plan GP0 VSync-bucket analysis after CPU correlation
+33138eb2478a681434fccca5b220c08b2299fefb	2026-10-17T23:44:43Z	zuppasoupfifaistimewa-png	Record CPU and GP0 opcode analysis from VSync 300 run
+2eb8c54dc3d55699c061b718585383aa95c8e55a	2026-10-17T23:44:39Z	zuppasoupfifaistimewa-png	Plan GP0 VSync-bucket analysis after CPU correlation
+ef92257e4f104713a4ba61dfb30693cf36d08b8c	2026-10-17T23:41:17Z	zuppasoupfifaistimewa-png	Timestamp CPU loader markers and summarize GP0 command families
+e08922c1e96cb5be42846290edc55b5f17efafdd	2026-10-17T23:37:31Z	zuppasoupfifaistimewa-png	Enable GDB RSP for CPU bulk register correlation sampler
+22890cf2324a317544e3e10e83b62a0c144751bb	2026-10-17T23:37:00Z	zuppasoupfifaistimewa-png	Clarify actual 90-second timeout for GPU traffic run
+b240331994e949f5c05253e139121803a3d75afe	2026-10-17T23:36:56Z	zuppasoupfifaistimewa-png	Clarify actual 90-second timeout for GPU traffic run
+ca111c4ccf61f02ec71c7cfe53e39e26ba6ebbf2	2026-10-17T23:36:03Z	zuppasoupfifaistimewa-png	Record full GPU traffic result and CPU correlation probe
+ed646b8931591ff7ec2ed9f9dcb0d80e436188c5	2026-10-17T23:36:00Z	zuppasoupfifaistimewa-png	Record full GPU traffic result and CPU correlation probe
+6bf83250dd9326817c5522676a77617771af5c67	2026-10-17T23:35:56Z	zuppasoupfifaistimewa-png	Record full GPU traffic result and CPU correlation probe
+4edbf174ad9a6aa024ff68b7c5380e6fe0d6c4a1	2026-10-17T23:35:53Z	zuppasoupfifaistimewa-png	Update runtime plan with final GPU traffic analysis
+789a1396df81a6f0602f7a8c1b3e372253abc662	2026-10-17T23:35:50Z	zuppasoupfifaistimewa-png	Update runtime plan with final GPU traffic analysis
+30cd69d61a5ab01761baa7f3a209a386f205b650	2026-10-17T23:35:14Z	zuppasoupfifaistimewa-png	Fix CPU state summary artifact and timestamp loader markers
+24bef27cdc52f6b7a70753ccddf55039fd05aeb2	2026-10-17T23:34:50Z	zuppasoupfifaistimewa-png	Correlate post-handoff CPU state with GPU traffic over a longer sample window
+240c6ad6afea700208d464eb09c9ca8ba1ea29cb	2026-10-17T23:33:43Z	zuppasoupfifaistimewa-png	Record confirmed GL and guest GPU traffic evidence
+2c828e2114f640120a1583989837e4934b187816	2026-10-17T23:33:39Z	zuppasoupfifaistimewa-png	Record confirmed GL and guest GPU traffic evidence
+5c395451f2c3d808752c46418103df9ff4ef4a70	2026-10-17T23:33:36Z	zuppasoupfifaistimewa-png	Update rendering diagnosis and next runtime test
+7956be1f2a517682b865ec5fd85b3f86e55029ee	2026-10-17T23:33:33Z	zuppasoupfifaistimewa-png	Record confirmed GL and guest GPU traffic evidence
+240df7da1878af6bd4105336cd5b1827ab130ff8	2026-10-17T23:33:30Z	zuppasoupfifaistimewa-png	Update rendering diagnosis and next runtime test
+fcf69868a16f1fae8d3b4505b477ae24fc9c426b	2026-10-17T23:30:28Z	zuppasoupfifaistimewa-png	Install mesa-utils for GPU traffic run renderer logging
+7b9391563fb793294f758ad4a7bc753a6340f12f	2026-10-17T23:30:19Z	zuppasoupfifaistimewa-png	Add private GPU traffic summary probe without uploading raw dumps
+0ba7c858a0fac6f2286f08d15a3ba59b23b8d7e3	2026-10-17T23:26:57Z	zuppasoupfifaistimewa-png	Initialize interval sampler correctly in subshell
+89700d37b5d47cf6539d5032ad9bd763b4956ea4	2026-10-17T23:26:48Z	zuppasoupfifaistimewa-png	Use X11 window capture and avoid unsupported GPU screenshot API
+8af38b4f57c87cd63f47468fd543fac406b10920	2026-10-17T23:24:29Z	zuppasoupfifaistimewa-png	Test soft PS1 GPU backend and capture VRAM after executable handoff
+f691b4656d30f89e8bf63e0adabcef5cff1bf489	2026-10-17T23:23:38Z	zuppasoupfifaistimewa-png	Document VRAM callback and pre-handoff findings
+de8dbd16797115cd805bc52669736e3f8b49ce60	2026-10-17T23:23:34Z	zuppasoupfifaistimewa-png	Update next VRAM probe plan and callback findings
+27409d2860c3014b54e5910f02bacfe53f3407de	2026-10-17T23:23:30Z	zuppasoupfifaistimewa-png	Update next VRAM probe plan and callback findings
+dd9d814a2dfec04cd1ffab8828959b10a6cdea94	2026-10-17T23:23:26Z	zuppasoupfifaistimewa-png	Document VRAM callback and pre-handoff findings
+8a922b7268b67593f46a0f2eaa71ec7aeac8a1fa	2026-10-17T23:23:22Z	zuppasoupfifaistimewa-png	Document VRAM callback and pre-handoff findings
+3a69fcef242563ecf45de8c920bec3443db3e956	2026-10-17T23:21:50Z	zuppasoupfifaistimewa-png	Defer VRAM readback to PCSX UI thread to avoid OpenGL context deadlock
+776439848fccb0becc57ffa9ae667fb503e200b8	2026-10-17T23:19:43Z	zuppasoupfifaistimewa-png	Capture VRAM directly on pinned PCSX GPU VSync callbacks
+f07fa08731b30496d733adf010cf67496663a96e	2026-10-17T16:36:47Z	zuppasoupfifaistimewa-png	Add timed VRAM and display capture checkpoints after boot handoff
+a415d47f809f9c7c3f98102ab3bc1acebbbe83a3	2026-10-17T16:33:14Z	zuppasoupfifaistimewa-png	Add private VRAM checkpoints for fastboot rendering diagnosis
+51fe539373ba5964a103cf4700c7da6171578753	2026-10-17T16:32:14Z	zuppasoupfifaistimewa-png	Log OpenGL preflight and screenshot API findings
+ce60e512028ce11fde4d2acf78e82791a8e48ddb	2026-10-17T16:32:11Z	zuppasoupfifaistimewa-png	Update handoff with confirmed Mesa GL results
+4dab0fb22963f4fc82a899f0ed1d52f81fd42ada	2026-10-17T16:32:08Z	zuppasoupfifaistimewa-png	Plan VRAM probe after confirmed Mesa software GL
+5b92cb348e3f5967f0bcaef7c31aacf690568fcb	2026-10-17T16:32:06Z	zuppasoupfifaistimewa-png	Document pinned screenshot and VRAM API behavior
+af2daaf3d1ef82762cc23fc321153e3443c41331	2026-10-17T16:32:02Z	zuppasoupfifaistimewa-png	Record standalone Mesa OpenGL diagnostic results
+3e92e100abf17a51e4e335e92ea7b70632293933	2026-10-17T16:30:15Z	zuppasoupfifaistimewa-png	Add standalone Mesa GLX and OpenGL 3.3 diagnostic
+3f1d7e005136bdc917a1dc62cfb89ad29688852f	2026-10-17T16:03:43Z	zuppasoupfifaistimewa-png	Fix cloud visual probe runner temp environment setup
+ef4390573a0029cf4498518ee0b8aaffa24d00f8	2026-10-17T16:02:29Z	zuppasoupfifaistimewa-png	Probe Naruto boot with PCSX-Redux framebuffer captures on Actions
+f884ff8131612314e5b4ffed47e3e066304d159e	2026-10-17T11:51:33Z	zuppasoupfifaistimewa-png	Use bulk RSP snapshots and timestamp loader markers
+dc6df30d6bbad40de562a84f7210d3f4ce1dd838	2026-10-17T11:50:40Z	zuppasoupfifaistimewa-png	Document CPU polling diagnosis #39029860914 (HANDOFF_LANJUT.md)
+db0ad91102ff97734394c4b84e493a4a61d074a2	2026-10-17T11:50:36Z	zuppasoupfifaistimewa-png	Document CPU polling diagnosis #39029860914 (docs/PCSX_REDUX_PACKAGE.md)
+d9b02bc8bff5c2070c08e78426fa5924f3b4793b	2026-10-17T11:50:34Z	zuppasoupfifaistimewa-png	Document CPU polling diagnosis #39029860914 (docs/RUNTIME_TEST_PLAN.md)
+24ee1fdbdbfafe8568932dfb4cff6b67e5620cbb	2026-10-17T11:50:31Z	zuppasoupfifaistimewa-png	Document CPU polling diagnosis #39029860914 (ANALYSIS_LOG.md)
+997dcee607c9d334ae60df234d40f7b4b80c59a3	2026-10-17T11:50:28Z	zuppasoupfifaistimewa-png	Document CPU polling diagnosis #39029860914 (STATUS.md)
+89927d14ed48b05cfb9b7ddca38428390e745c76	2026-10-17T11:44:42Z	zuppasoupfifaistimewa-png	Add fastboot CPU and CP0 polling experiment
+c58228dd5f33f8e25f7630b344d6953b9b88b46c	2026-10-17T11:35:37Z	zuppasoupfifaistimewa-png	Record final Actions #39021127913 findings in docs/RUNTIME_TEST_PLAN.md
+e9907cf828fc03d20134b2ded95d69aa73eb225d	2026-10-17T11:35:34Z	zuppasoupfifaistimewa-png	Record final Actions #39021127913 findings in HANDOFF_LANJUT.md
+5a3bcb2ed31a8e5a32dc5d3581a7eb36725a3bb8	2026-10-17T11:35:31Z	zuppasoupfifaistimewa-png	Record final Actions #39021127913 findings in ANALYSIS_LOG.md
+0f0c3d8738921ed8d32f720ce5fccfa13f3a5635	2026-10-17T11:35:27Z	zuppasoupfifaistimewa-png	Record final Actions #39021127913 findings in STATUS.md
+01af2b4ca881eec6a4efb466438c8d71afd8ad4c	2026-10-17T09:26:51Z	zuppasoupfifaistimewa-png	Record latest PCSX-Redux entry-breakpoint probe in docs/RUNTIME_TEST_PLAN.md
+02afe4382f979679a57a9a395b2a2a6ec8a9dfaf	2026-10-17T09:26:48Z	zuppasoupfifaistimewa-png	Record latest PCSX-Redux entry-breakpoint probe in HANDOFF_LANJUT.md
+f0b8952ae07c2560225fca534490aa9a02b82447	2026-10-17T09:26:44Z	zuppasoupfifaistimewa-png	Record latest PCSX-Redux entry-breakpoint probe in ANALYSIS_LOG.md
+fbec83f1e166396e00a2d26cf84dff1b5610b312	2026-10-17T09:26:41Z	zuppasoupfifaistimewa-png	Record latest PCSX-Redux entry-breakpoint probe in STATUS.md
+a8d8db8a0c3b84967a14c3a0905e046dbed24cf9	2026-10-17T09:26:20Z	zuppasoupfifaistimewa-png	Match known-good Analog controller boot setup and extend entry breakpoint window
+88f88b28f22760a02786b7b30c0028f05e844720	2026-10-17T09:25:15Z	zuppasoupfifaistimewa-png	Refresh latest RSP diagnostic run in docs/RUNTIME_TEST_PLAN.md
+7beda9da1780a5c0627847c2e6c1539c4ea736f9	2026-10-17T09:25:11Z	zuppasoupfifaistimewa-png	Refresh latest RSP diagnostic run in ANALYSIS_LOG.md
+7f1bb4bda79d6c6416db53486882895258dd3e1a	2026-10-17T09:25:06Z	zuppasoupfifaistimewa-png	Refresh latest RSP diagnostic run in STATUS.md
+ae62176483a10d9360ced7d5b86822a01755f376	2026-10-17T09:22:48Z	zuppasoupfifaistimewa-png	Send correct RSP interrupt byte during timeout recovery
+56db5438352bea1b0359bc562e60737c1a90fb4e	2026-10-17T09:22:06Z	zuppasoupfifaistimewa-png	Correct RSP watchpoint interpretation in docs/RUNTIME_TEST_PLAN.md
+22f8cf14720d27dda49d7783047512adc8eb8c09	2026-10-17T09:22:02Z	zuppasoupfifaistimewa-png	Correct RSP watchpoint interpretation in HANDOFF_LANJUT.md
+8ab0e8f5a263404a518ef735c0ffdc276df5ed86	2026-10-17T09:21:59Z	zuppasoupfifaistimewa-png	Correct RSP watchpoint interpretation in ANALYSIS_LOG.md
+585f99bdc1c897ddc31aa6a7c8135b1e1a7fb21c	2026-10-17T09:21:55Z	zuppasoupfifaistimewa-png	Correct RSP watchpoint interpretation in STATUS.md
+5055074671acf8cb2f2512182f8484dc2815552d	2026-10-17T09:21:24Z	zuppasoupfifaistimewa-png	Fix RSP console packets vs real stop-event handling
+e9410a3bfa7db05915447a8b0393798f64e29bb4	2026-10-17T08:31:59Z	zuppasoupfifaistimewa-png	Document PCSX-Redux RSP findings and GPU-watchpoint handoff (docs/RUNTIME_TEST_PLAN.md)
+65045f535f3d0a7669ca3ba4d72626e8d6acd1dc	2026-10-17T08:31:56Z	zuppasoupfifaistimewa-png	Document PCSX-Redux RSP findings and GPU-watchpoint handoff (HANDOFF_LANJUT.md)
+6911b3f2a6516659db73309f844ba8f1ed4b6020	2026-10-17T08:31:53Z	zuppasoupfifaistimewa-png	Document PCSX-Redux RSP findings and GPU-watchpoint handoff (ANALYSIS_LOG.md)
+26b7d3ff2e1a4381649c8b7ed9d748f263ee72f7	2026-10-17T08:31:51Z	zuppasoupfifaistimewa-png	Document PCSX-Redux RSP findings and GPU-watchpoint handoff (STATUS.md)
+7d57bddd6b2bda91585e768aa3256614d54ae0c7	2026-10-17T08:30:40Z	zuppasoupfifaistimewa-png	Probe PCSX-Redux GPU MMIO writes with supported RSP watchpoints
+b2f40ebb1d6bdc229d8e15daa75c651bf2391a0b	2026-10-17T08:24:56Z	zuppasoupfifaistimewa-png	Add minimal RSP probe for PCSX-Redux fastboot diagnostics
+39224f61e170f8c276023763a351dc8bdc650696	2026-10-17T08:14:34Z	zuppasoupfifaistimewa-png	Record primary emulator decision and final external GDB probe state
+014f68c7ecd0ae55a2de7d55130142a87175e1b1	2026-10-17T08:14:31Z	zuppasoupfifaistimewa-png	Record primary emulator decision and final external GDB probe state
+6a0b4466a525f0f6a45b5ca14a87eb14a7fad0c0	2026-10-17T08:14:28Z	zuppasoupfifaistimewa-png	Record primary emulator decision and final external GDB probe state
+22c768f0dca753afb8c2eee9f6c8291967c40fd4	2026-10-17T08:14:24Z	zuppasoupfifaistimewa-png	Record primary emulator decision and final external GDB probe state
+3c87bbf7cb177c1f4faaa44ab1785ac13d0dab47	2026-10-17T08:14:20Z	zuppasoupfifaistimewa-png	Record primary emulator decision and final external GDB probe state
+e0bfac4451ba8a7a964f4e6ce89c99cfe494014f	2026-10-17T08:10:08Z	zuppasoupfifaistimewa-png	Record active external GDB PC snapshot follow-up
+d374f919a60fb452a013eaa9be301559e91fdbc2	2026-10-17T08:10:04Z	zuppasoupfifaistimewa-png	Record active external GDB PC snapshot follow-up
+ff14d16e143f7625aaffbdf2739e79f101dde779	2026-10-17T08:09:59Z	zuppasoupfifaistimewa-png	Record active external GDB PC snapshot follow-up
+98674a1c99ec0902986c778b66c95232bfd50d40	2026-10-17T08:09:55Z	zuppasoupfifaistimewa-png	Record active external GDB PC snapshot follow-up
+1464ca74ade351708f29550a9f7e5694fb379bd4	2026-10-17T08:09:51Z	zuppasoupfifaistimewa-png	Record active external GDB PC snapshot follow-up
+d8871702ad3a80d69bdb1e508eb92f5b9dd052e3	2026-10-17T08:09:00Z	zuppasoupfifaistimewa-png	Add private fastboot post-entry PC snapshots through external GDB
+723c8032963d24b0281c8b13aece13f294810a6f	2026-10-17T08:08:20Z	zuppasoupfifaistimewa-png	Record default OpenGL A/B black-frame result and next GDB diagnostic
+e17cb4546c31c040797054677663e4cc80390630	2026-10-17T08:08:16Z	zuppasoupfifaistimewa-png	Record default OpenGL A/B black-frame result and next GDB diagnostic
+31f8706b880daaec62633c14c97efd2ab9ebf2c1	2026-10-17T08:08:13Z	zuppasoupfifaistimewa-png	Record default OpenGL A/B black-frame result and next GDB diagnostic
+f0cdded04936889875c617aade648252a9261968	2026-10-17T08:08:08Z	zuppasoupfifaistimewa-png	Record default OpenGL A/B black-frame result and next GDB diagnostic
+e154a71efe196347b94526298ce9f03f0dd87e18	2026-10-17T08:08:04Z	zuppasoupfifaistimewa-png	Record default OpenGL A/B black-frame result and next GDB diagnostic
+cc0ac659ec58d5107fcdb1298812281b18201502	2026-10-17T08:04:08Z	zuppasoupfifaistimewa-png	Record valid fastboot window still black and start OpenGL backend A/B
+1dc3c602e7d9d90daf7b3c68feb99639f9f1e0f8	2026-10-17T08:04:04Z	zuppasoupfifaistimewa-png	Record valid fastboot window still black and start OpenGL backend A/B
+e13a708f8b239db6133669753e20672d9c3fee4f	2026-10-17T08:03:59Z	zuppasoupfifaistimewa-png	Record valid fastboot window still black and start OpenGL backend A/B
+1a3ca57ae4038aad44ff97a583332e86cf98ba63	2026-10-17T08:03:54Z	zuppasoupfifaistimewa-png	Record valid fastboot window still black and start OpenGL backend A/B
+137ef64e028f7fb29d9fbab67f6e5e4840090ac7	2026-10-17T08:03:42Z	zuppasoupfifaistimewa-png	Record valid fastboot window still black and start OpenGL backend A/B
+a3a2756bf06c8606afba335af9e56f3a7fe280a8	2026-10-17T08:03:12Z	zuppasoupfifaistimewa-png	Compare default OpenGL renderer against black softgpu fastboot run
+8deb5fcbdb308317b5465c7a6a803417cbbf315f	2026-10-17T08:00:15Z	zuppasoupfifaistimewa-png	Bound X11 focus operation to prevent a stalled key-input probe
+d154261eb4e2985ecea0fc6122bdde9032c6d96c	2026-10-17T07:59:03Z	zuppasoupfifaistimewa-png	Record X11 tree window discovery and corrected selector rerun
+412e229c0bc0e15e2f335b1243e74e759f297088	2026-10-17T07:58:59Z	zuppasoupfifaistimewa-png	Record X11 tree window discovery and corrected selector rerun
+7de4b00854d34872b1e83de68f2db3c5c8c215f2	2026-10-17T07:58:54Z	zuppasoupfifaistimewa-png	Record X11 tree window discovery and corrected selector rerun
+ee4a5935241f879446398977eb4e4ce4e0479cd8	2026-10-17T07:58:51Z	zuppasoupfifaistimewa-png	Record X11 tree window discovery and corrected selector rerun
+e333844ba8902c39ff96c149133d4017013076e7	2026-10-17T07:58:46Z	zuppasoupfifaistimewa-png	Record X11 tree window discovery and corrected selector rerun
+1acd87e9960c0caeb334cffc48ed8aea212212e1	2026-10-17T07:58:22Z	zuppasoupfifaistimewa-png	Resolve emulator XID from X11 tree and focus it before input
+d7bdcf2e42f25bd0066e119f6ebf05a6681bd70b	2026-10-17T07:56:13Z	zuppasoupfifaistimewa-png	Correct root Xvfb capture misclassification and document valid evidence gate
+a4541a7e772567cfa621243b06e960fe40a7e6a6	2026-10-17T07:56:09Z	zuppasoupfifaistimewa-png	Correct root Xvfb capture misclassification and document valid evidence gate
+d44468904cf754b8a64c682ce604bdd914cc0bc5	2026-10-17T07:56:04Z	zuppasoupfifaistimewa-png	Correct root Xvfb capture misclassification and document valid evidence gate
+db65e773e7c17484fbb6c4c749d75eb4b15c8776	2026-10-17T07:56:00Z	zuppasoupfifaistimewa-png	Correct root Xvfb capture misclassification and document valid evidence gate
+cf3ea8e9a0c388653ff4f3f851404547947307d1	2026-10-17T07:55:57Z	zuppasoupfifaistimewa-png	Correct root Xvfb capture misclassification and document valid evidence gate
+83173bb10cfbf905a296f59720c0a63c95bc3a32	2026-10-17T07:55:10Z	zuppasoupfifaistimewa-png	Exclude Xvfb root from emulator-window captures
+730e5685f46e4ad1fe0f9a92eebb6a51bcce0d24	2026-10-17T07:54:18Z	zuppasoupfifaistimewa-png	Record fastboot entry with black GUI and safe-monitoring retest
+c67b9b3453b0b7dec0d83e666b9f85503a5bb931	2026-10-17T07:54:07Z	zuppasoupfifaistimewa-png	Record fastboot entry with black GUI and safe-monitoring retest
+87fd12a83b9be47b3273bf7b95e098fe257f2749	2026-10-17T07:54:03Z	zuppasoupfifaistimewa-png	Record fastboot entry with black GUI and safe-monitoring retest
+931fa2c8d4538942eb829d300e57301f32f51d5f	2026-10-17T07:53:57Z	zuppasoupfifaistimewa-png	Record fastboot entry with black GUI and safe-monitoring retest
+493ea0775087e06ab3413444e36733265c5d79f1	2026-10-17T07:53:49Z	zuppasoupfifaistimewa-png	Record fastboot entry with black GUI and safe-monitoring retest
+a20bec42325878db7f2e380c697852c8f4bd0a51	2026-10-17T07:53:01Z	zuppasoupfifaistimewa-png	Remove unsafe VSync CPU-register sampling from fastboot GUI probe
+dc2cda9c2c08590c877e443803be30e4f85aa1a8	2026-10-17T07:51:10Z	zuppasoupfifaistimewa-png	Record source-current black-screen and OpenBIOS variant results
+09b0064a4d7477ada9905c171756279b0c86dd98	2026-10-17T07:51:07Z	zuppasoupfifaistimewa-png	Record source-current black-screen and OpenBIOS variant results
+608a6d38136527a357e3d03b0d543d21e6b41a76	2026-10-17T07:51:03Z	zuppasoupfifaistimewa-png	Record source-current black-screen and OpenBIOS variant results
+c7c571a7f9e20a31de7fc8889b410576aa7eab8f	2026-10-17T07:50:59Z	zuppasoupfifaistimewa-png	Record source-current black-screen and OpenBIOS variant results
+37b122d4c871ba05155b84ee713207361f25e6ad	2026-10-17T07:50:56Z	zuppasoupfifaistimewa-png	Record source-current black-screen and OpenBIOS variant results
+f25ca615ce239c0f3507ac2ac8d54e99436f9bfc	2026-10-17T07:50:24Z	zuppasoupfifaistimewa-png	Probe fastboot OpenBIOS with generic X11 window discovery
+713357a37d61b4c586b8ee7165b09439a8026752	2026-10-17T07:26:03Z	zuppasoupfifaistimewa-png	Add private OpenBIOS fastboot vs chunked GUI A/B probe
+9e78aeb8a2316ee0f7427ebdd53133227383a90d	2026-10-17T07:15:38Z	zuppasoupfifaistimewa-png	Record DuckStation BIOS gate and select PCSX-Redux next path
+bb5d101c04eaac191bbe017aa61b0e4b3e92a62a	2026-10-17T07:15:35Z	zuppasoupfifaistimewa-png	Record DuckStation BIOS gate and select PCSX-Redux next path
+8a87fccf0660c119c7a2352c21c1ef0c13096041	2026-10-17T07:15:31Z	zuppasoupfifaistimewa-png	Record DuckStation BIOS gate and select PCSX-Redux next path
+56f834c65b0a658e1429073a7d0bb88499d44ff3	2026-10-17T07:15:26Z	zuppasoupfifaistimewa-png	Record DuckStation BIOS gate and select PCSX-Redux next path
+70e9da98bb2ffd96ca704b7ad78b2872e29f59a5	2026-10-17T07:15:23Z	zuppasoupfifaistimewa-png	Record DuckStation BIOS gate and select PCSX-Redux next path
+d9f38ea38e0354861e5c2afbb071c430c2eb97ac	2026-10-17T07:12:38Z	zuppasoupfifaistimewa-png	Record DuckStation EGL launch failure and dependency retest
+b9c0db7e85a0c6887f52915ce5a516f5aef8adc3	2026-10-17T07:12:34Z	zuppasoupfifaistimewa-png	Record DuckStation EGL launch failure and dependency retest
+a7902ade0d575f7978288e00583d91840ae58224	2026-10-17T07:12:31Z	zuppasoupfifaistimewa-png	Record DuckStation EGL launch failure and dependency retest
+1cb757e4ab216249f7c860621e7080ab1d6a7d48	2026-10-17T07:12:27Z	zuppasoupfifaistimewa-png	Record DuckStation EGL launch failure and dependency retest
+df4634fbb3b16c55c88ab89f961c9b2874c99b1c	2026-10-17T07:12:23Z	zuppasoupfifaistimewa-png	Record DuckStation EGL launch failure and dependency retest
+5afd32eca0d32ee191de7f2963f74b53aed89448	2026-10-17T07:11:12Z	zuppasoupfifaistimewa-png	Add missing EGL runtime library for DuckStation probe
+8468c0aede32fee3a30370b1df42c25935bb83b2	2026-10-17T07:09:28Z	zuppasoupfifaistimewa-png	Record actual DuckStation probe failure and corrected retest state
+a3f1445168c7c3d9d7599f1c3dea4a1e01afc272	2026-10-17T07:09:24Z	zuppasoupfifaistimewa-png	Record actual DuckStation probe failure and corrected retest state
+604525eeb272f8e8fd4b03cfdd10558bcfca176f	2026-10-17T07:09:21Z	zuppasoupfifaistimewa-png	Record actual DuckStation probe failure and corrected retest state
+1bf809b6e05f646721d9a4b4270cc5e414239ee0	2026-10-17T07:09:17Z	zuppasoupfifaistimewa-png	Record actual DuckStation probe failure and corrected retest state
+0e7f71b396de2af3c9c43223f473e393e4353a54	2026-10-17T07:09:13Z	zuppasoupfifaistimewa-png	Record actual DuckStation probe failure and corrected retest state
+058aadea1c664712b62a63cf01fcb3e5598ef047	2026-10-17T07:08:12Z	zuppasoupfifaistimewa-png	Fix DuckStation GL runtime dependencies and capture artifact glob
+c6fc074f327173fd4da8d5c0a88c7163709d158a	2026-10-17T07:03:51Z	zuppasoupfifaistimewa-png	Record DuckStation private compatibility probe
+ff8a6f34a688e99f783b6b61733d7f68c8070efa	2026-10-17T07:03:47Z	zuppasoupfifaistimewa-png	Record DuckStation private compatibility probe
+3ab8998dfae9afd5f2a8efbebdf53585987f621a	2026-10-17T07:03:44Z	zuppasoupfifaistimewa-png	Record DuckStation private compatibility probe
+57303a8875c27048247e43fdcc702670759f9059	2026-10-17T07:03:39Z	zuppasoupfifaistimewa-png	Record DuckStation private compatibility probe
+213246920073e12c5d1c49daa16a71e00d60d182	2026-10-17T07:03:32Z	zuppasoupfifaistimewa-png	Record DuckStation private compatibility probe
+30dda0b4bac135cfc4aa1f2ce523bb553c50e49e	2026-10-17T07:03:18Z	zuppasoupfifaistimewa-png	Test private Naruto boot with DuckStation and OpenBIOS
+4e68d583a30b87dfa6ba0447a1146bea643f7e39	2026-10-17T07:01:41Z	zuppasoupfifaistimewa-png	Record latest runtime probe status and handoff
+4c1597206557bad7a2d4a7f13aa6600fc1eddcd3	2026-10-17T07:01:38Z	zuppasoupfifaistimewa-png	Record latest runtime probe status and handoff
+88a21d2286f00797ff666c8bcbd486cd9eb1ad56	2026-10-17T07:01:35Z	zuppasoupfifaistimewa-png	Record latest runtime probe status and handoff
+0c21976510a73c3bbc00b99ad0f82d109c12a042	2026-10-17T07:01:30Z	zuppasoupfifaistimewa-png	Record latest runtime probe status and handoff
+43cdb084192d342e646bee43d10c04f152d53374	2026-10-17T07:01:27Z	zuppasoupfifaistimewa-png	Record latest runtime probe status and handoff
+0654ceb514e22eec8c5ff8f2682e45a9009b58b4	2026-10-17T06:57:41Z	zuppasoupfifaistimewa-png	Probe Naruto boot on current upstream PCSX-Redux
+49d5cdc4c5170f2e43b8fb66396018c0ca764f94	2026-10-17T06:52:23Z	zuppasoupfifaistimewa-png	Add private guest-screen capture test
+f31f8f8226f3a8bcad823cb54c71fe6a1a160610	2026-10-17T06:40:31Z	zuppasoupfifaistimewa-png	Record final 90-second CPU trace results
+fb34dc7c43d4ba4ff7f18d7c85043a66ccdcdba7	2026-10-17T05:04:51Z	zuppasoupfifaistimewa-png	Record active CPU-trace follow-up and public-log audit
+42b98f0fedf5436515284a046815592777389190	2026-10-17T04:55:39Z	zuppasoupfifaistimewa-png	Record source-version differential for boot diagnosis
+3828fb7c05caed0648d5e79f848203a5b56e8f7f	2026-10-17T04:55:34Z	zuppasoupfifaistimewa-png	Record source-version differential for boot diagnosis
+4e2cddb3805d922d0d391b8e704e563764e025fb	2026-10-17T04:55:30Z	zuppasoupfifaistimewa-png	Record source-version differential for boot diagnosis
+fddc0f4609436e624cb1305b78428586c51a8a16	2026-10-17T04:55:26Z	zuppasoupfifaistimewa-png	Record source-version differential for boot diagnosis
+c190d025219e8d7c96767e81cfb971532059731c	2026-10-17T04:55:22Z	zuppasoupfifaistimewa-png	Record source-version differential for boot diagnosis
+f89a28613b519cec146c7b56fa6d36fa74d136fc	2026-10-17T04:52:27Z	zuppasoupfifaistimewa-png	Record completed CPU trace and boot diagnosis
+ec93de87e293862139ccef2e713a4c282ba9bcda	2026-10-17T04:52:24Z	zuppasoupfifaistimewa-png	Record completed CPU trace and boot diagnosis
+d6bb54003d5a9860a08eba1e17aece51c7c3205e	2026-10-17T04:52:20Z	zuppasoupfifaistimewa-png	Record completed CPU trace and boot diagnosis
+32769c93ab9aa91d3a99c1ec7e477a419e52461c	2026-10-17T04:52:16Z	zuppasoupfifaistimewa-png	Record completed CPU trace and boot diagnosis
+c068d1aa5dbdcc9f99cd72fb72968807d5847658	2026-10-17T04:52:13Z	zuppasoupfifaistimewa-png	Record completed CPU trace and boot diagnosis
+a004b01315c7555fcb5415fba0d3c663fc9969fe	2026-10-17T04:41:47Z	zuppasoupfifaistimewa-png	Record GUI A/B rerun results and CPU trace build status
+6fb27be6d84c8dbebf10d25af24cfc27803a27fe	2026-10-17T04:31:59Z	zuppasoupfifaistimewa-png	Document current GUI A/B harness failure and fix
+4b095433efcc6f5bb7b09836edee99eddfc267b8	2026-10-17T04:31:56Z	zuppasoupfifaistimewa-png	Update runtime gate after GUI harness fix
+76847707422c3bdefe086fce530026071412b2e8	2026-10-17T04:31:52Z	zuppasoupfifaistimewa-png	Handoff current GUI A/B fix and CPU trace state
+7e9db69d8f05d9ef917ee2e26488c5a14eaea5dc	2026-10-17T04:31:49Z	zuppasoupfifaistimewa-png	Log GUI A/B harness root cause and correction
+67880d0405f57a5e0567e2a0f23efc4bbeaac04a	2026-10-17T04:31:45Z	zuppasoupfifaistimewa-png	Record actual GUI A/B harness failure and retest status
+e07e7a2a0c844ea2f49c11fd363bf9f38219982b	2026-10-17T04:22:55Z	zuppasoupfifaistimewa-png	Verify current PCSX-Redux upstream revision
+ae48cc06367be300f578af2296fe37241abe4ba7	2026-10-17T04:22:52Z	zuppasoupfifaistimewa-png	Record current upstream PCSX-Redux revision
+70137097c2a4e15269b962c364ea067ac3b09d46	2026-10-17T04:21:51Z	zuppasoupfifaistimewa-png	Document cloud emulator comparison: docs/PCSX_REDUX_PACKAGE.md
+1797179c862b763ee85face7790729da551190b3	2026-10-17T04:21:40Z	zuppasoupfifaistimewa-png	Document cloud emulator comparison: docs/RUNTIME_TEST_PLAN.md
+9aba5776f217bce417e9e6b47d7644c7c7def82a	2026-10-17T04:21:29Z	zuppasoupfifaistimewa-png	Document cloud emulator comparison: HANDOFF_LANJUT.md
+d83ce312a59f1b1ae41b05f3a7c29ca6bc52f248	2026-10-17T04:21:25Z	zuppasoupfifaistimewa-png	Document cloud emulator comparison: ANALYSIS_LOG.md
+5cb6a96b0c053fb46497988c6307a601404c04e7	2026-10-17T04:21:21Z	zuppasoupfifaistimewa-png	Document cloud emulator comparison: STATUS.md
+faa28bd11e558572a45dcfdaeb127501cdbf59ae	2026-10-17T03:59:24Z	zuppasoupfifaistimewa-png	Document GUI boot diagnostics in cloud retest
+f8c9535241835125340aac0edfdb10bb4c19bfb5	2026-10-17T03:59:20Z	zuppasoupfifaistimewa-png	Document GUI boot diagnostics in cloud retest
+fc08939ad61d6fc525b0b1f7c9ca7a1d9e6408bf	2026-10-17T03:59:16Z	zuppasoupfifaistimewa-png	Document GUI boot diagnostics in cloud retest
+540b789f5bdfad71ac5cdd0f0b35f36f29c161b6	2026-10-17T03:59:12Z	zuppasoupfifaistimewa-png	Document GUI boot diagnostics in cloud retest
+3d8383e4415ddfa0f957747a19a0c95bea9fa43a	2026-10-17T03:56:06Z	zuppasoupfifaistimewa-png	Record corrected GUI-window retest result
+edddd9f58a23165160913ffd00033b730b3fc695	2026-10-17T03:56:02Z	zuppasoupfifaistimewa-png	Record corrected GUI-window retest result
+5cb10337a69677705fca464da280c4e48c58592d	2026-10-17T03:55:59Z	zuppasoupfifaistimewa-png	Record corrected GUI-window retest result
+5e6d6b4835757332ff871b0505994ead84012c68	2026-10-17T03:55:55Z	zuppasoupfifaistimewa-png	Record corrected GUI-window retest result
+4e9a044f44331ad401bf2a272941d445f6880792	2026-10-17T03:55:10Z	zuppasoupfifaistimewa-png	Record verified cloud emulator status and compatibility retests
+b2d11b8383697a64eee22af4b2d63fb8b9db1aa8	2026-10-17T03:52:10Z	zuppasoupfifaistimewa-png	Record cloud emulator verification and retest status
+3b0b6c721af2892bf639d793de8d8af38a7d5873	2026-10-17T03:52:06Z	zuppasoupfifaistimewa-png	Record cloud emulator verification and retest status
+a5d48e71d2c6249e9043ec91f4c9ffb83b6ed6d2	2026-10-17T03:52:02Z	zuppasoupfifaistimewa-png	Record cloud emulator verification and retest status
+bb891bfc174a7e7beded68db8397cdd4f0c8db34	2026-10-17T03:51:58Z	zuppasoupfifaistimewa-png	Record cloud emulator verification and retest status
+9ce00630aa6de16ebeecb55a63cb7611eec07f13	2026-10-16T22:30:07Z	zuppasoupfifaistimewa-png	Add latest GUI and CPU trace run links
+906df874448d342e4d333804318586acc91ad53d	2026-10-16T22:29:46Z	zuppasoupfifaistimewa-png	Update ongoing GUI and CPU trace runs
+df08259cd44496173b10f65ea2ebcfe38fbcd6c9	2026-10-16T22:29:41Z	zuppasoupfifaistimewa-png	Record extended GUI and source trace runs
+95891eb2efb334172f0e6e0dd501e33f7fc2ae56	2026-10-16T22:29:17Z	zuppasoupfifaistimewa-png	Refresh runtime status and GUI timing gates
+78f6cb72da20c82c7134210b11cfdf313d310faf	2026-10-16T22:27:41Z	zuppasoupfifaistimewa-png	Update handoff for GUI timing and source trace
+bf9ec593e123f67ae6230b0f052efed5a5262aa9	2026-10-16T22:27:21Z	zuppasoupfifaistimewa-png	Clarify GUI screenshot timing interpretation
+76c5458cf9eefe27856bf88ccb5cb3d3ca4751dc	2026-10-16T22:27:17Z	zuppasoupfifaistimewa-png	Clarify early black frames and pending source trace
+c79f76ea45ed56858e8ce841e09770ead65b44c4	2026-10-16T22:23:58Z	zuppasoupfifaistimewa-png	Correct latest CPU tracing workflow status
+07175e284e7ed48ebc022a1cfb8711d06779befd	2026-10-16T22:23:54Z	zuppasoupfifaistimewa-png	Correct trace API availability and document source build
+ea030554dbd69b8d4ac83a5a285c7f94c350d256	2026-10-16T22:21:46Z	zuppasoupfifaistimewa-png	Correct handoff for missing CPU trace API
+50b057e6a96351466ff8e3e8f96c6d7bacd4d20c	2026-10-16T22:21:41Z	zuppasoupfifaistimewa-png	Record trace API mismatch and correct emulator build
+9492416960ff955de60e4c388b896b05368ce8d7	2026-10-16T22:21:39Z	zuppasoupfifaistimewa-png	Record CPU trace API mismatch and HEAD rerun
+fec29c66e3d783aece96f5a8e60c8569948cab06	2026-10-16T22:18:18Z	zuppasoupfifaistimewa-png	Update status after stable VSync counter
+e78993b3963effde9d744bf5ecc5d3b679a691ee	2026-10-16T22:18:14Z	zuppasoupfifaistimewa-png	Record stable VSync counter and sparse PC retry
+ca478a84b811160523a78d016c297f5d4d84e4dd	2026-10-16T22:17:07Z	zuppasoupfifaistimewa-png	Handoff updated for counter-only VSync isolation
+3592e200ba3d9acbfee8830b52617b76c9043b05	2026-10-16T22:17:04Z	zuppasoupfifaistimewa-png	Update CPU trace status and counter-only test
+1a731c46db1b0d551b252f6185def4f3b22f0ac4	2026-10-16T22:17:00Z	zuppasoupfifaistimewa-png	Record CPU trace sampling and isolate register reads
+b130dc4d7e32b205936ad184b833eac13c2736a1	2026-10-16T22:15:20Z	zuppasoupfifaistimewa-png	Correct CPU trace handoff details
+075fdc77d3e31d582fb553fc72927dba18844970	2026-10-16T22:15:15Z	zuppasoupfifaistimewa-png	Clarify CPU trace second attempt cause
+58b7780bd6ce9ecabb66aefddece064233070654	2026-10-16T22:15:11Z	zuppasoupfifaistimewa-png	Explain invalid Lua trace attempt and retry
+2246dcb4ee26b3322b229c3dd959d1ecdbefd438	2026-10-16T22:13:53Z	zuppasoupfifaistimewa-png	Add CPU trace retry to handoff
+7f946ef89209d37338870d56590500851d4304d1	2026-10-16T22:13:46Z	zuppasoupfifaistimewa-png	Record CPU trace instrumentation issue
+d18f857fcf34b6d26e904add4db758a8deb0217a	2026-10-16T22:13:37Z	zuppasoupfifaistimewa-png	Record inconclusive CPU trace attempt
+16abce7055732350ecacfb036a28613c0d8e4439	2026-10-16T22:12:17Z	zuppasoupfifaistimewa-png	Update runtime plan after GUI and add CPU tracing
+f1b7aaeb709e78881142de993814b2e5ad2bd788	2026-10-16T22:12:13Z	zuppasoupfifaistimewa-png	Handoff black GUI result to CPU trace
+73e47f9621ca32176cf3e4f362e1f043aceb042e	2026-10-16T22:12:09Z	zuppasoupfifaistimewa-png	Record black GUI result and CPU trace
+0dd0e1a32b8fd1e951802ea61a0d3b06c636499c	2026-10-16T22:12:05Z	zuppasoupfifaistimewa-png	Record black GUI probe and launch CPU trace
+84076a7294d45d15eb0c945ccadd17bdf3aefb26	2026-10-16T22:08:56Z	zuppasoupfifaistimewa-png	Update runtime test plan after Analog probe
+c5de59613a0344258c444b8e80cc330e6c2e500e	2026-10-16T22:06:49Z	zuppasoupfifaistimewa-png	Update handoff after Analog runtime test
+9d1bab0b68b7c93a496b24167913b3e54666d2e4	2026-10-16T22:06:45Z	zuppasoupfifaistimewa-png	Update runtime status after Analog probe
+60ca907460cee28e38c613de816b199c7011cc4a	2026-10-16T22:06:41Z	zuppasoupfifaistimewa-png	Record Analog-port result and GUI probe
+6e434ba0421f11fd484f749d290fbf8b287c798d	2026-10-16T22:03:09Z	zuppasoupfifaistimewa-png	Point handoff to corrected Analog probe
+85867fe0ed3616d5d0d984ff5f64a6153ac72b7f	2026-10-16T22:03:02Z	zuppasoupfifaistimewa-png	Correct final workflow link label
+d662cc8462ba9b08695d8bff038b8ec2d512df8c	2026-10-16T22:02:50Z	zuppasoupfifaistimewa-png	Clarify final Analog probe workflow
+a35c995f5a6ee584d752fe3bb854d26c84d51f1a	2026-10-16T22:02:42Z	zuppasoupfifaistimewa-png	Record controller workflow YAML correction
+237fe25bc29805f92c13281ee639c7c009bcb9c3	2026-10-16T22:01:57Z	zuppasoupfifaistimewa-png	Update handoff for Analog-port probe
+42ae944343ce19365e3789fec4f1c374bd03387f	2026-10-16T22:01:40Z	zuppasoupfifaistimewa-png	Record pending Analog controller probe
+675e22996f13f7fa57f0416bfc21bdd5943a577c	2026-10-16T22:01:23Z	zuppasoupfifaistimewa-png	Document Analog-port emulator probe
+8fc278539564c324fec957db6f6e454a757b9017	2026-10-16T12:13:46Z	zuppasoupfifaistimewa-png	Fix authenticated download of private emulator release assets
+2a5451b093d85490a9b65cac0664bf01067a20c1	2026-10-16T12:13:05Z	zuppasoupfifaistimewa-png	Add short GitHub Actions runner smoke test for Naruto emulator research
+c5d90b19799330eb318020906382e83c08800a94	2026-10-16T11:24:20Z	zuppasoupfifaistimewa-png	Record preferred AnyLinux artifact in Library
+e8040a717557762765fb408d84bb0cbe98afc1df	2026-10-16T11:22:04Z	zuppasoupfifaistimewa-png	Recommend AnyLinux PCSX-Redux for glibc 2.41
+34fdb246548d05cf7e5e8768e113a1372037bfd2	2026-10-16T11:05:15Z	zuppasoupfifaistimewa-png	Document extracted PCSX-Redux package and compatibility
+95a160d8754be0763170a7298ff90e216d28ed69	2026-10-16T10:55:36Z	zuppasoupfifaistimewa-png	Document OpenBIOS CD read stall hypothesis
+35e142e38cceca2a058078594295016f5074eed9	2026-10-16T08:38:28Z	zuppasoupfifaistimewa-png	Clarify PCSX-Redux controller-type diagnostic
+6e6b2699f66bb9df13906e5bd79dbac2ffac04e9	2026-10-16T06:53:02Z	zuppasoupfifaistimewa-png	Record emulator runtime blocker after Library restore
+f1b035c4d830b78fdb7e22c1a2acbf5ecd26dc0d	2026-10-16T06:52:58Z	zuppasoupfifaistimewa-png	Record emulator runtime blocker after Library restore
+e4827e2bac0a2b9c9e40219e95e5cc7fc7a2e415	2026-10-16T06:52:55Z	zuppasoupfifaistimewa-png	Record emulator runtime blocker after Library restore
+c34e9c3e40daae34ab42f75e2d400e8eb5a5ed17	2026-10-16T06:43:51Z	zuppasoupfifaistimewa-png	Record PCSX-Redux alternative ZIP in ChatGPT Library
+72d9cbddd31d1decd49e3fbe45852c88d56eb737	2026-10-15T23:37:26Z	zuppasoupfifaistimewa-png	Document PCSX-Redux ZIP Library storage limit and recovery path
+4bc4d9722acc8c0e888c47689883edf58daec2fa	2026-10-15T23:20:02Z	zuppasoupfifaistimewa-png	Document current emulator boot blocker and next diagnostic
+decab3cf2e0e584f6622d0578313632715d8c04e	2026-10-15T23:19:59Z	zuppasoupfifaistimewa-png	Document current emulator boot blocker and next diagnostic
+63a80d0f24b0cc8f0699cb728ffaad023ef5b849	2026-10-15T23:18:38Z	zuppasoupfifaistimewa-png	Refresh latest emulator boot findings and next steps
+0b8c35f7fc057ce1dc0eb6c9750b643c776ccfd2	2026-10-15T23:18:34Z	zuppasoupfifaistimewa-png	Refresh latest emulator boot findings and next steps
+aee0b9054d86be00764e46f246929dadb0217d1a	2026-10-15T23:18:31Z	zuppasoupfifaistimewa-png	Refresh latest emulator boot findings and next steps
+3dd9fe41f42283335306e0cfb89c3d81a42aff9c	2026-10-15T07:12:50Z	zuppasoupfifaistimewa-png	Test one-sector-per-read OpenBIOS to bypass multi-sector CD-ROM stall
+6d9d35c60e9c9c4a28e5291235e5f7a210d95a29	2026-10-15T07:11:26Z	zuppasoupfifaistimewa-png	Log OpenBIOS CD-ROM payload read stall and instrumented build
+8e1c44588fd2f0bf5b558bf507ae730bcdc84bb1	2026-10-15T07:11:22Z	zuppasoupfifaistimewa-png	Persist boot troubleshooting state in handoff
+941a36c7535f3c1cbff5a2148b41835b39c1b1a3	2026-10-15T07:11:18Z	zuppasoupfifaistimewa-png	Record CD-ROM boot stall and 8-sector diagnostic
+7accc8fd4e5b07b1bd9c1f4f3685f31e628ae0ab	2026-10-15T07:09:10Z	zuppasoupfifaistimewa-png	Build instrumented 8-sector OpenBIOS variant to locate CD read stall
+79f6defc2aaad8c8bc25b56402c3ae1ecf800476	2026-10-15T07:03:34Z	zuppasoupfifaistimewa-png	Keep all OpenBIOS build artifacts in a consistent directory
+9f8cccbda3487291b0e967c456bf5fecdb3e27fa	2026-10-15T07:02:58Z	zuppasoupfifaistimewa-png	Fix chunked OpenBIOS checksum and patch output paths
+c1de25881fdabaa869edee284010625cfd5ddf7c	2026-10-15T07:02:27Z	zuppasoupfifaistimewa-png	Build experimental chunked-read OpenBIOS to isolate CD boot hang
+e6f12a3a365c22c673fadde018f64fd19380b0d8	2026-10-15T06:45:31Z	zuppasoupfifaistimewa-png	Log inconclusive fastboot test
+35e3a1472dc67483ad7a06d988d5e21df59b7ae3	2026-10-15T06:45:28Z	zuppasoupfifaistimewa-png	Persist fastboot status in handoff
+b1664b42b0dc076a539aa6a65b6406609dc6603b	2026-10-15T06:45:24Z	zuppasoupfifaistimewa-png	Record fastboot build hashes and inconclusive boot test
+fb967ed1baa5991347954832c4a52a6350732a84	2026-10-15T06:45:21Z	zuppasoupfifaistimewa-png	Update runtime test plan with inconclusive fastboot result
+05154b12b25f5081247b89d764c9e32d7028eb4c	2026-10-15T06:45:17Z	zuppasoupfifaistimewa-png	Record fastboot OpenBIOS result and unresolved boot
+7c86a927e444ceb1feb2de5aec8f592c96a903ec	2026-10-15T06:44:48Z	zuppasoupfifaistimewa-png	Include both OpenBIOS variants in durable runtime kit artifact
+16f88ba516f4b1cd9a14400a6387292edc489996	2026-10-15T06:43:24Z	zuppasoupfifaistimewa-png	Log verified OpenBIOS package and inconclusive boot test
+cf58ef34336e9d564d39ea5b883201e42de6760e	2026-10-15T06:43:19Z	zuppasoupfifaistimewa-png	Update handoff with current emulator and BIOS asset status
+d11775bc081fdcf20357332039faf28f050a7738	2026-10-15T06:43:16Z	zuppasoupfifaistimewa-png	Document successful OpenBIOS build and unresolved game boot
+4c5352324b43e0b17d58897d9ba60830feedaa11	2026-10-15T06:43:12Z	zuppasoupfifaistimewa-png	Update runtime plan with OpenBIOS package availability
+d739fee098988c459a1876b42e17809ea61aae94	2026-10-15T06:43:09Z	zuppasoupfifaistimewa-png	Update emulator workflow status after OpenBIOS build
+e85af8db90f778cb2f9683bb880cb252986f71cf	2026-10-15T06:41:21Z	zuppasoupfifaistimewa-png	Build both shell and fast-CD-boot OpenBIOS variants
+75fbe44fbe630a9cbb2bf5f1a32082a2f57653e3	2026-10-15T06:36:43Z	zuppasoupfifaistimewa-png	Log emulator package installation and BIOS blocker
+56fb518869a5325806df28850533b620d62d165f	2026-10-15T06:36:39Z	zuppasoupfifaistimewa-png	Persist emulator download instructions for future chats
+521ebc77bc3678b869b85521e5bfc812c99a8fa2	2026-10-15T06:36:36Z	zuppasoupfifaistimewa-png	Record PCSX-Redux release asset and BIOS boot blocker
+36f46dc99f586de8d646090701c9ec418d6d8cce	2026-10-15T06:36:32Z	zuppasoupfifaistimewa-png	Update runtime plan with installed emulator and BIOS requirement
+74feeb7c71077d68693b7bd14bb8f99894431236	2026-10-15T06:36:29Z	zuppasoupfifaistimewa-png	Record verified emulator release asset and no-BIOS boot blocker
+5dbce0f4d850499a3c140c812e8d2814641fa040	2026-10-15T06:35:49Z	zuppasoupfifaistimewa-png	Pin OpenBIOS source to complete upstream commit SHA
+2a1bad53a6ec40e52720d114793fd387577aecc5	2026-10-15T06:35:27Z	zuppasoupfifaistimewa-png	Fix OpenBIOS checksum verification working directory
+9f10b28e149edf19068d1dc8b41764927df0d88e	2026-10-15T06:34:15Z	zuppasoupfifaistimewa-png	Add reproducible OpenBIOS build for emulator research
+7aa8c89cf0642953de05aca84a38421b172411b4	2026-10-15T06:27:48Z	zuppasoupfifaistimewa-png	Record headless launch smoke test without blocking verified asset upload
+f03b010fdabeebe26666966bb394b7d8f634f479	2026-10-15T06:26:45Z	zuppasoupfifaistimewa-png	Fix workflow expression interpolation for emulator release
+ce2316b0317b2c1138ca976d62a54d59e0ef1a06	2026-10-15T06:26:31Z	zuppasoupfifaistimewa-png	Add verified PCSX-Redux emulator publishing workflow
+ea78d4e8efecda0c192230d09c7c4d3963b2a2ad	2026-10-15T06:20:08Z	zuppasoupfifaistimewa-png	Log emulator-first decision and current execution constraints
+bc02dcc85bad123a9fee33fa8ab0ae056587c648	2026-10-15T06:20:05Z	zuppasoupfifaistimewa-png	Record emulator availability and runtime-validation status
+ce6dc32819d41fea2f90bfdd6afd3d9efbe82417	2026-10-15T06:20:01Z	zuppasoupfifaistimewa-png	Add emulator-first policy and handoff status
+3f5e9e9aa49d120621c2d728f2d39ad0233b6eba	2026-10-15T06:19:58Z	zuppasoupfifaistimewa-png	Make emulator runtime path primary and record current execution blocker
+dbc281d709269f41c93f74a249784f0200af990d	2026-10-15T06:19:32Z	zuppasoupfifaistimewa-png	Add emulator-first runtime research workflow
+ee909273c711047584c35cb37b14f0547f165cd7	2026-10-15T06:12:06Z	zuppasoupfifaistimewa-png	Clarify staged Chakra-change state machine
+e46cf0591737709cf840e0cc2cada6d037ebf331	2026-10-15T06:12:03Z	zuppasoupfifaistimewa-png	Clarify staged Chakra-change state machine
+7ae1ff31891f82d8a22cce8fe189233d4832673c	2026-10-15T06:11:59Z	zuppasoupfifaistimewa-png	Clarify staged Chakra-change state machine
+428f43b7d46cdf0ed23484d7b366f24351c008b3	2026-10-15T06:11:56Z	zuppasoupfifaistimewa-png	Clarify staged Chakra-change state machine
+1b55d435f35562d8c5b4bbbb59f8cd55122a2097	2026-10-15T06:09:02Z	zuppasoupfifaistimewa-png	Update status with current Chakra comparison and unresolved cost path
+6c9a81c970ced4ad9e5a23bc6f1d95ae31d59bf1	2026-10-15T06:08:22Z	zuppasoupfifaistimewa-png	Add actionable Chakra trace notes to handoff
+1d830b15e24f60347b717f809357b73d141c5761	2026-10-15T06:08:18Z	zuppasoupfifaistimewa-png	Log static callsite analysis and distinguish Chakra delta from costs
+413000ea7cfd704c95b1195e62b1a261df1ea78d	2026-10-15T06:08:15Z	zuppasoupfifaistimewa-png	Document Chakra setter callsite limits and generic delta event
+f1ebad90e2ee2b2c52dadc9fdea7a32a1f72902a	2026-10-15T06:02:38Z	zuppasoupfifaistimewa-png	Clean byte-boundary notation in overlay mapping
+fa90ec9c2b659bc93a5f8c955f3c7270f8cc631f	2026-10-15T06:02:33Z	zuppasoupfifaistimewa-png	Record UI-source evidence and limits on universal barrier costs
+9053e422ab70d52a74272a1e6305d16e2e3c2458	2026-10-15T06:01:41Z	zuppasoupfifaistimewa-png	Remove reliance on laptop ROM from handoff workflow
+fbd7383e7c837b89a17c0a2bcc3806bf6998371f	2026-10-15T06:01:38Z	zuppasoupfifaistimewa-png	Prioritize gameplay call-chain research over container cataloguing
+a083f2cd6048fea621d76f4e0f79eda03cf35e64	2026-10-15T05:59:59Z	zuppasoupfifaistimewa-png	Log static trace for Chakra configuration and low-bandwidth workflow
+eaf6f3c610e0c67dd55a031451b107c9082d01c3	2026-10-15T05:59:54Z	zuppasoupfifaistimewa-png	Update research status with verified configuration-table evidence
+171adc1296ad71e653aeec88c4236d9a97c42fd4	2026-10-15T05:59:51Z	zuppasoupfifaistimewa-png	Persist low-bandwidth Library-first workflow and latest rule findings
+066c42a46d15ccb325ff293cc0f2ec288700aff5	2026-10-15T05:59:48Z	zuppasoupfifaistimewa-png	Update victory-condition summary and configured Chakra thresholds
+bfdc3c2c380af4e04b98573f11beeabbe7507e8f	2026-10-15T05:59:07Z	zuppasoupfifaistimewa-png	Correct overlay map and document Chakra configuration traces
+c933a0d36a079dda8b84e6f618db1254bedc28c4	2026-10-15T05:59:04Z	zuppasoupfifaistimewa-png	Clarify configured Chakra targets and victory condition evidence
+c133a54842784608a426ea3133eba02fae495fbf	2026-10-15T05:40:01Z	zuppasoupfifaistimewa-png	docs: archive extracted files in Library for cross-chat research
+233407908bb229a317c08f4c1bbbedb25a50c4fa	2026-10-15T05:29:59Z	zuppasoupfifaistimewa-png	docs: record resource directory findings and research handoff
+187c09c87e517cbb85b9b26026704413bdbf4004	2026-10-15T04:54:36Z	zuppasoupfifaistimewa-png	docs: correct SYSTEM.CNF boot path escaping
+8db6792de86831d41d2bf4a2b09c0476c403aadf	2026-10-15T04:54:16Z	zuppasoupfifaistimewa-png	chore: keep ROM images and runtime dumps out of repository
+470bba72b44fc6cf6ca05bd1f58626bf028d8bdb	2026-10-15T04:54:13Z	zuppasoupfifaistimewa-png	docs: preserve chronological analysis handoff notes
+9e7079647e540f2d0f9b4d7f246535ab84f4d5b6	2026-10-15T04:54:11Z	zuppasoupfifaistimewa-png	docs: catalog external references and evidence caveats
+45295ba820ee853eef535bc35dbbf0f3c5c0e874	2026-10-15T04:54:08Z	zuppasoupfifaistimewa-png	docs: add emulator and debugger validation plan
+b73306c4cad86f3619eb33b74fb042b938018897	2026-10-15T04:54:06Z	zuppasoupfifaistimewa-png	docs: document rule findings and evidence levels
+6d225bbaa8500fc22dd07fef64d6de970da63977	2026-10-15T04:54:04Z	zuppasoupfifaistimewa-png	docs: record preliminary loader and overlay map
+e18895f62c643f91e8a3d3e43b68d32ee485ed0a	2026-10-15T04:54:01Z	zuppasoupfifaistimewa-png	docs: document ROM identity and filesystem layout
+3f9cf39302648024e60e2eeb8b3bcc4fc38f52a1	2026-10-15T04:53:59Z	zuppasoupfifaistimewa-png	docs: record research status and open questions
+9500e2e6e5ea4d2273ff1ee117a47e7e5765554d	2026-10-15T04:53:56Z	zuppasoupfifaistimewa-png	docs: add research overview and evidence policy
+673cac96eb59d1f1d82d19b31969ebe3075c92c3	2026-10-15T04:49:08Z	zuppasoupfifaistimewa-png	docs: add read-only protection instructions for Claude
