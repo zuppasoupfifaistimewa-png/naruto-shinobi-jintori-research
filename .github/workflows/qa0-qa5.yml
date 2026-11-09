@@ -1,5 +1,5 @@
 name: QA0-QA5 bounded evidence and CONTROL trace
-# UA0 static gate completed at QA0 run 42584546705.
+# UB0 gate: merged 64-byte union plus protected four-byte trim audit, tested at the pushed SHA.
 # A push tagged [UA2] skips QA0 and runs only the separate bounded emulator A/B job.
 
 on:
