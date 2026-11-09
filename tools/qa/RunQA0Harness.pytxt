@@ -172,7 +172,7 @@ def maybe_prune_ha2(stage: Path, root: Path, baseline: str, spans):
         baseline_text = git(root, "show", f"{baseline}:{rel}")
         baseline_lines = baseline_text.splitlines(keepends=True)
         current_text = path.read_text(encoding="utf-8")
-        base_header = next(csv.reader(io.StringIO(baseline_text), delimiter="\\t"), [])
+        base_header = next(csv.reader(io.StringIO(baseline_text), delimiter="\t"), [])
         header_map = {normalize_header(name): index for index, name in enumerate(base_header)}
         if not {"pc", "bytes"}.issubset(header_map):
             audit.append([rel, count_rows(baseline_text), count_rows(current_text), 0,
@@ -185,7 +185,7 @@ def maybe_prune_ha2(stage: Path, root: Path, baseline: str, spans):
         for line_index, line in enumerate(baseline_lines):
             if line_index == 0:
                 continue
-            cells = next(csv.reader([line], delimiter="\\t"), [])
+            cells = next(csv.reader([line], delimiter="\t"), [])
             if len(cells) <= max(header_map["pc"], header_map["bytes"]):
                 continue
             try:
@@ -214,7 +214,7 @@ def maybe_prune_ha2(stage: Path, root: Path, baseline: str, spans):
             path.write_text(current_text, encoding="utf-8", newline="")
 
         git_diff = git(root, "diff", "--no-renames", "--name-status", baseline, "--", rel).splitlines()
-        git_status = git_diff[0].split("\\t", 1)[0] if git_diff else "?"
+        git_status = git_diff[0].split("\t", 1)[0] if git_diff else "?"
         deleted_rows = count_rows(baseline_text) - count_rows(current_text)
         exact = current_text == expected_text and deleted_rows == 1 and git_status == "M"
         verification = "PASS" if exact else "FAIL_NOT_EXACTLY_BASELINE_MINUS_ONE_ROW"
