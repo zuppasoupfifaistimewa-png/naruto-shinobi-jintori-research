@@ -1,6 +1,6 @@
 name: QA0-QA5 bounded evidence and CONTROL trace
-# SA0 audit run: baseline is 3d3eff5d9e0e03b0742423be241473cf60bb3736
-# SA0 strict final-head recheck requested 2026-11-09; QA0 thresholds and behavior unchanged.
+# TA0 static-only gate. Inclusive source baseline: aa32fbcee97c8f49946a8e589010cfb9ef1a6928.
+# QA4 emulator job remains disabled; this failed run is recorded and no second TA0 run is launched.
 
 on:
   push:
@@ -44,7 +44,7 @@ jobs:
           set +e
           python3 "$RUNNER_TEMP/qa/RunQA0Harness.py" \
             --root "$GITHUB_WORKSPACE" --out "$OUT" \
-            --baseline 3d3eff5d9e0e03b0742423be241473cf60bb3736 \
+            --baseline aa32fbcee97c8f49946a8e589010cfb9ef1a6928 \
             > "$OUT/QA0_CONSOLE.txt" 2>&1
           RC=$?
           set -e
@@ -56,11 +56,11 @@ jobs:
           {
             echo "# QA0 harness and merged excerpt audit"
             echo
-            echo "Baseline inclusive: a133f0b266f211a31f26439d3a04ac8705b515e4"
+            echo "Baseline inclusive: aa32fbcee97c8f49946a8e589010cfb9ef1a6928"
             echo
             cat "$OUT/QA0_EXCERPT_AUDIT.txt"
             echo
-            echo "Legacy JA/KA/LA/MA/NA/OA/PA files were not modified."
+            echo "TA0 audits physical deletions, every eligible Stage1 TSV, and isolated workflow triggers."
             echo "Only text/TSV files are published. This audit is not a gameplay proof."
           } > "$OUT/QA0_REPORT.md"
 
@@ -102,6 +102,7 @@ jobs:
             echo "RELEASES_MODIFIED=no"
           } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
           git add -- "$DEST"
+          git add -A -- reports/stage1_economy/ha2-ha3-static-run-*/attempt-1/HA2_GLOBAL_OPERAND_ACCESS.tsv
           python3 - "$DEST" <<'PY'
           import subprocess,sys
           from pathlib import Path
@@ -117,7 +118,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c qa0-publish
-          git commit -m "Publish QA0 harness and excerpt audit $GITHUB_RUN_ID [skip ci]"
+          git commit -m "Publish TA0 static gate audit $GITHUB_RUN_ID [skip ci]"
           PUSHED=0
           for attempt in 1 2 3 4 5; do
             if git pull --rebase origin main && git push origin HEAD:main; then PUSHED=1; break; fi
@@ -144,7 +145,7 @@ jobs:
   qa4:
     name: qa4-headless-readonly-control-trace
     needs: [qa0]
-    if: always()
+    if: ${{ false }} # TA0 is static-only; TA2 has a separate gate
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     env:
