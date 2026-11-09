@@ -1,0 +1,5 @@
+condition	symbolic_result	status
+if runtime x supplied to F2A9C is proven in 0..51 and helper 0x8001552C is proven to consume H[x]	H(x)=u32[0x80055CF4 + 16*x] (conditional table lookup only)	CONDITIONAL; x identity/range not proven in LA2
+x=d for level jump d>=2	TIDAK TAHU; x=d not established	UNPROVEN
+x outside 0..51	TIDAK TAHU; out-of-range guard and memory behavior not established	UNPROVEN
+numerical upgrade cost	TIDAK TAHU; no numeric formula derived	UNKNOWN

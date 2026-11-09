@@ -1,0 +1,5 @@
+POINTER_WORDS_AT=0x80055904,0x80055920
+OBSERVED_SPACING=0x0000001C
+TABLE_BASE_AND_STRIDE=candidate spacing(s)=0x0000001C; repeated entries alone do not prove table base/stride without an indexed load+jump user
+TABLE_USER_EVIDENCE=see LA1_B50AC_TABLE_USERS.tsv; require base + scaled index + lw + jalr/jr chain before naming a dispatch table
+CALLERS=see LA1_B50AC_DIRECT_CALLS.tsv and pointer-word candidates; absence of a resolved indirect dispatch is not a zero-caller proof
