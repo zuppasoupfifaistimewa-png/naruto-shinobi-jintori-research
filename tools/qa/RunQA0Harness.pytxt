@@ -310,7 +310,7 @@ def sa1_audit(root: Path):
     }
     sa1_dirs = sorted(
         (root / "reports" / "stage1_economy").glob("sa1-run-*/attempt-1"),
-        key=lambda p: int(re.search(r"sa1-run-(\\d+)", str(p)).group(1))
+        key=lambda p: int(re.search(r"sa1-run-(\d+)", str(p)).group(1))
     )
     status_ok = bool(sa1_dirs)
     instruction_ok = True
