@@ -14,7 +14,7 @@ SCOPE=50 Actions runs / 56 jobs yang tercatat dalam ledger: QA0/QA4, RA2, RA1, d
 | RA2 | BELUM | K1 untuk aksi upgrade; K5 subklaim fungsi | Dua restore identik dan 180 VSYNC tiap peluncuran. FUN_800D15A8 terkena 48 hit/peluncuran, tetapi tidak ada perubahan level/petak/uang dan tidak ada hit jalur pembacaan biaya. |
 | RA1 | SEBAGIAN | K5 untuk observasi stack; K4 untuk decoding statis | Caller langsung BE5D8 = JAL di B54F4 terbukti; B54DC dan B54F4 terdekode dari Entry 1. Stack RA tersimpan 0x80011A30 pada 360/360 hit. Kandidat caller terluar 0x80011A28 belum punya byte/target terverifikasi. |
 | RA3 | BELUM | K1 | Tidak ada sampel upgrade independen dengan d berbeda; H1 dan H2 belum dibandingkan. |
-| RA4 | TUNTAS | K4 | 49 run / 55 job dicatat, termasuk semua gagal, job terjadwal, dan delapan run sampingan KA/LA/MA/NA. |
+| RA4 | TUNTAS | K4 | 50 run / 56 job dicatat, termasuk semua gagal, job terjadwal, dan delapan run sampingan KA/LA/MA/NA. |
 
 ## RA0 — verifikasi fisik dan union aktual
 
@@ -105,4 +105,4 @@ Job ID, source SHA, stage status, exit code, dan path ringkasan setiap run terse
 - Tidak ada workflow baru dalam pembaruan ledger ini; tidak ada filter path workflow lain yang dilonggarkan.
 - Semua klaim runtime K5 berasal dari dua peluncuran identik; klaim statis tertinggi K4.
 
-Daftar file yang berubah pada commit pembaruan ini disediakan terpisah dalam laporan commit dan daftar berkas ledger.
+**Koreksi final jumlah ledger:** ringkasan tahap RA4 di tabel telah diselaraskan dengan 50 run unik dan 56 baris job pada `RA4_ACTIONS_RUNS.tsv` (25 monitor terjadwal). Commit koreksi ini hanya mengubah berkas `reports/stage1_economy/ra4/RA4_LEDGER.md`.
