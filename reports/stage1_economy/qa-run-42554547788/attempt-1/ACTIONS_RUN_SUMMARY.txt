@@ -1,0 +1,10 @@
+STATUS=FAIL
+JOB=workflow_validation_before_job_creation
+JOB_ID=NONE
+RUN_ID=42554547788
+SOURCE_SHA=0df69f6f79ce091915f14ffec62bf4bfe8e410cb
+EXIT_CODE=NOT_STARTED
+WORKFLOW_NAME=.github/workflows/qa0-qa5.yml
+WORKFLOW_ID=411219076
+CONCLUSION=failure
+REASON=GitHub created no jobs for this run; validation failed before runner startup

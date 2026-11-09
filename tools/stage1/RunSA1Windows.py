@@ -1,0 +1,224 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+import csv, hashlib, struct, sys
+from pathlib import Path
+from capstone import Cs, CS_ARCH_MIPS, CS_MODE_MIPS32, CS_MODE_LITTLE_ENDIAN
+
+EXE_PATH, DATA_PATH, OUT = map(Path, sys.argv[1:4])
+OUT.mkdir(parents=True, exist_ok=True)
+
+EXE_LOAD_BASE = 0x80010000
+EXE_HEADER_SIZE = 0x800
+CALL_PC = 0x80011A28
+CALL_FILE_OFFSET = 0x2228
+ENTRY1_BASE = 0x800AD450
+ENTRY1_FILE_OFFSET = 0x10BB000
+ENTRY1_EXPECTED_SIZE = 596412
+ENTRY1_EXPECTED_SHA = "9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a"
+EXE_EXPECTED_SIZE = 385024
+EXE_EXPECTED_SHA = "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569"
+DATA_EXPECTED_SIZE = 66015232
+DATA_EXPECTED_SHA = "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822"
+TARGET_PC = 0x800B54DC
+WINDOW_BYTES = 64
+
+def sha256(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+def hx(data: bytes) -> str:
+    return " ".join(f"{b:02X}" for b in data)
+
+def write_tsv(name: str, rows: list[dict], fields: list[str]) -> None:
+    with (OUT / name).open("w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=fields, delimiter="\t", lineterminator="\n", extrasaction="ignore")
+        w.writeheader()
+        w.writerows(rows)
+
+def decode_word(data: bytes, pc: int):
+    if len(data) != 4:
+        return None
+    ins = next(MD.disasm(data, pc, count=1), None)
+    word = int.from_bytes(data, "little")
+    op = word >> 26
+    rs = (word >> 21) & 31
+    rt = (word >> 16) & 31
+    imm = ((word & 0xFFFF) ^ 0x8000) - 0x8000
+    return {
+        "pc": pc, "word": word, "op": op, "rs": rs, "rt": rt, "imm": imm,
+        "text": (ins.mnemonic + " " + ins.op_str).strip() if ins else f".word 0x{word:08X}",
+        "mnemonic": ins.mnemonic if ins else ".word",
+    }
+
+def window_rows(image: str, blob: bytes, base_pc: int, file_base: int, start_pc: int, label: str) -> list[dict]:
+    if start_pc % 4:
+        raise RuntimeError(f"UNALIGNED_WINDOW_{label}")
+    off = start_pc - base_pc
+    if off < 0 or off + WINDOW_BYTES > len(blob):
+        raise RuntimeError(f"WINDOW_OUT_OF_BOUNDS_{label}")
+    segment = blob[off:off + WINDOW_BYTES]
+    if len(segment) != WINDOW_BYTES:
+        raise RuntimeError(f"WINDOW_SIZE_INVALID_{label}")
+    rows = []
+    for n in range(0, WINDOW_BYTES, 4):
+        b = segment[n:n + 4]
+        pc = start_pc + n
+        rows.append({
+            "image": image, "pc": f"0x{pc:08X}",
+            "file_offset": f"0x{file_base + off + n:X}",
+            "bytes": hx(b), "instruksi": decode_word(b, pc)["text"],
+        })
+    return rows
+
+def main() -> int:
+    exe_file = EXE_PATH.read_bytes()
+    data_file = DATA_PATH.read_bytes()
+    if len(exe_file) != EXE_EXPECTED_SIZE or sha256(exe_file) != EXE_EXPECTED_SHA:
+        raise SystemExit("SA1_EXE_IDENTITY_MISMATCH")
+    if len(data_file) != DATA_EXPECTED_SIZE or sha256(data_file) != DATA_EXPECTED_SHA:
+        raise SystemExit("SA1_DATA_BIN_IDENTITY_MISMATCH")
+    if len(exe_file) <= EXE_HEADER_SIZE + (CALL_PC - EXE_LOAD_BASE) + WINDOW_BYTES:
+        raise SystemExit("SA1_EXE_WINDOW_OUT_OF_BOUNDS")
+    # Raw PS-X EXE has a 0x800-byte header; loaded PC 0x80010000 maps to file 0x800.
+    call_offset = EXE_HEADER_SIZE + (CALL_PC - EXE_LOAD_BASE)
+    if call_offset != CALL_FILE_OFFSET:
+        raise SystemExit("SA1_CALL_FILE_OFFSET_FORMULA_MISMATCH")
+    lbn, entry_size = struct.unpack_from("<II", data_file, 0x4C)
+    entry_offset = (lbn - 212) * 2048
+    entry1 = data_file[entry_offset:entry_offset + entry_size]
+    if (lbn, entry_size, entry_offset, len(entry1), sha256(entry1)) != (
+        8778, ENTRY1_EXPECTED_SIZE, ENTRY1_FILE_OFFSET, ENTRY1_EXPECTED_SIZE, ENTRY1_EXPECTED_SHA
+    ):
+        raise SystemExit("SA1_ENTRY1_DIRECTORY_MAPPING_MISMATCH")
+    if ENTRY1_FILE_OFFSET + (TARGET_PC - ENTRY1_BASE) + WINDOW_BYTES > len(data_file):
+        raise SystemExit("SA1_TARGET_FILE_OFFSET_OUT_OF_BOUNDS")
+
+    global MD
+    MD = Cs(CS_ARCH_MIPS, CS_MODE_MIPS32 | CS_MODE_LITTLE_ENDIAN)
+    MD.detail = False
+
+    rows = []
+    rows += window_rows("SLPS_035.53", exe_file[EXE_HEADER_SIZE:], EXE_LOAD_BASE,
+                        EXE_HEADER_SIZE, CALL_PC, "CALLER_EXE_1A28")
+
+    call_ins = decode_word(exe_file[call_offset:call_offset + 4], CALL_PC)
+    call_target = None
+    return_pc = CALL_PC + 8
+    if call_ins["op"] == 3:
+        call_target = (((CALL_PC + 4) & 0xF0000000) | ((call_ins["word"] & 0x03FFFFFF) << 2)) & 0xFFFFFFFF
+
+    ins_map = {}
+    for off in range(0, len(entry1) - 3, 4):
+        ins_map[ENTRY1_BASE + off] = decode_word(entry1[off:off + 4], ENTRY1_BASE + off)
+
+    prologs = []
+    for pc, ins in ins_map.items():
+        if pc > TARGET_PC:
+            break
+        if ins["op"] == 9 and ins["rs"] == 29 and ins["rt"] == 29 and ins["imm"] < 0:
+            stores = []
+            for probe_pc in range(pc, min(pc + WINDOW_BYTES, ENTRY1_BASE + len(entry1)), 4):
+                probe = ins_map.get(probe_pc)
+                if not probe:
+                    continue
+                if probe["op"] == 0x2B and probe["rs"] == 29 and probe["rt"] == 31:
+                    stores.append({"pc": probe_pc, "offset": probe["imm"]})
+            if stores:
+                prologs.append({"entry": pc, "stores": stores})
+    candidate = max((p for p in prologs if p["entry"] <= TARGET_PC),
+                    key=lambda p: p["entry"], default=None)
+
+    if candidate:
+        prolog_pc = candidate["entry"]
+        rows += window_rows("DATA.BIN:ENTRY1", entry1, ENTRY1_BASE, ENTRY1_FILE_OFFSET,
+                            prolog_pc, "FUNCTION_PROLOG_CANDIDATE")
+    else:
+        prolog_pc = None
+
+    target_off = TARGET_PC - ENTRY1_BASE
+    if target_off >= 0 and target_off + WINDOW_BYTES <= len(entry1):
+        rows += window_rows("DATA.BIN:ENTRY1", entry1, ENTRY1_BASE, ENTRY1_FILE_OFFSET,
+                            TARGET_PC, "BREAKPOINT_TARGET")
+
+    # Each of the three disassembly windows is independently capped at 64 contiguous bytes.
+    with (OUT / "SA1_INSTRUCTIONS.tsv").open("w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=["image", "pc", "file_offset", "bytes", "instruksi"],
+                           delimiter="\t", lineterminator="\n")
+        w.writeheader()
+        w.writerows(rows)
+
+    call_target_text = f"0x{call_target:08X}" if call_target is not None else "TIDAK_TAHU"
+    store_offsets = sorted({x["offset"] for x in candidate["stores"]}) if candidate else []
+    stack_test = "YES" if 0x14 in store_offsets else "NO_OR_TIDAK_TAHU"
+    with (OUT / "SA1_STACK_SLOT_TEST.tsv").open("w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f, delimiter="\t", lineterminator="\n")
+        w.writerow(["target_pc", "function_entry_candidate", "prolog_sw_ra_offsets", "sp_plus_0x14_static_test",
+                    "caller_pc", "caller_instruction", "direct_call_target", "jal_return_pc"])
+        w.writerow([f"0x{TARGET_PC:08X}", f"0x{prolog_pc:08X}" if prolog_pc else "TIDAK_TAHU",
+                    ";".join(f"0x{x & 0xFFFF:04X}" for x in store_offsets) if store_offsets else "TIDAK_TAHU",
+                    stack_test, f"0x{CALL_PC:08X}", call_ins["text"], call_target_text,
+                    f"0x{return_pc:08X}" if call_ins["op"] == 3 else "TIDAK_TAHU"])
+
+    runtime_path1 = Path("reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_LAUNCH1_TRACE.tsv")
+    runtime_path2 = Path("reports/stage1_economy/ra1-run-42536371222/attempt-1/RA1_LAUNCH2_TRACE.tsv")
+    runtime = {"status": "TIDAK_TAHU", "count": 0, "saved_values": [], "same": False,
+               "hits_target": [0, 0], "launch_rows": [0, 0]}
+    try:
+        normalized = []
+        for index, path in enumerate((runtime_path1, runtime_path2)):
+            with path.open("r", encoding="utf-8", newline="") as f:
+                reader = csv.DictReader(f, delimiter="\t")
+                rows1 = list(reader)
+            runtime["launch_rows"][index] = len(rows1)
+            normalized.append([tuple(row[k] for k in reader.fieldnames if k != "launch") for row in rows1])
+            subset = [r for r in rows1 if r.get("pc") == f"0x{TARGET_PC:08X}"]
+            runtime["hits_target"][index] = len(subset)
+            vals = sorted({r.get("saved_ra_sp14", "") for r in subset})
+            runtime["saved_values"].append(vals)
+        runtime["same"] = normalized[0] == normalized[1]
+        runtime["count"] = sum(runtime["hits_target"])
+        valid = all(runtime["launch_rows"][i] == 180 for i in (0, 1))
+        valid = valid and runtime["same"] and all(runtime["hits_target"][i] > 0 for i in (0, 1))
+        valid = valid and all(runtime["saved_values"][i] == [str(return_pc)] for i in (0, 1))
+        runtime["status"] = "PASS" if valid else "TIDAK TAHU"
+    except Exception as exc:
+        runtime["error"] = type(exc).__name__ + ":" + str(exc)
+
+    status = "PASS" if candidate and stack_test == "YES" and call_ins["op"] == 3 and call_target == prolog_pc and runtime["status"] == "PASS" else "BELUM"
+    summary = [
+        f"STATUS={status}",
+        "EVIDENCE_MODE=STATIC_EXE_AND_DATA_BIN_PLUS_PRIOR_RA1_RUNTIME",
+        f"EXE_SHA256={sha256(exe_file)}",
+        f"DATA_BIN_SHA256={sha256(data_file)}",
+        f"ENTRY1_SHA256={sha256(entry1)}",
+        f"CALL_PC=0x{CALL_PC:08X}",
+        f"CALL_FILE_OFFSET=0x{call_offset:X}",
+        f"CALL_INSTRUCTION={call_ins['text']}",
+        f"CALL_TARGET={call_target_text}",
+        f"JAL_RETURN_PC=0x{return_pc:08X}",
+        f"TARGET_PC=0x{TARGET_PC:08X}",
+        f"TARGET_ENTRY1_FILE_OFFSET=0x{ENTRY1_FILE_OFFSET + (TARGET_PC - ENTRY1_BASE):X}",
+        f"FUNCTION_ENTRY_CANDIDATE={f'0x{prolog_pc:08X}' if prolog_pc else 'TIDAK_TAHU'}",
+        f"PROLOG_SW_RA_OFFSETS={';'.join(f'0x{x & 0xFFFF:04X}' for x in store_offsets) if store_offsets else 'TIDAK_TAHU'}",
+        f"SP_PLUS_0X14_STATIC_TEST={stack_test}",
+        f"RA1_RUNTIME_TEST={runtime['status']}",
+        f"RA1_LAUNCH1_ROWS={runtime['launch_rows'][0]}",
+        f"RA1_LAUNCH2_ROWS={runtime['launch_rows'][1]}",
+        f"RA1_LAUNCH1_TARGET_HITS={runtime['hits_target'][0]}",
+        f"RA1_LAUNCH2_TARGET_HITS={runtime['hits_target'][1]}",
+        f"RA1_LAUNCH1_SAVED_RA_SP14={';'.join(runtime['saved_values'][0]) if runtime['saved_values'] else 'TIDAK_TAHU'}",
+        f"RA1_LAUNCH2_SAVED_RA_SP14={';'.join(runtime['saved_values'][1]) if runtime['saved_values'] else 'TIDAK_TAHU'}",
+        f"RA1_TRACES_IDENTICAL_EXCLUDING_LAUNCH_FIELD={'YES' if runtime['same'] else 'NO_OR_TIDAK_TAHU'}",
+        "WINDOWS_BYTES=64_EACH",
+        "WINDOWS=CALLER_EXE_1A28;FUNCTION_PROLOG_CANDIDATE;BREAKPOINT_TARGET",
+        "REGISTER_WRITE=NONE",
+        "MEMORY_WRITE=NONE",
+        "BINARY_OUTPUT=NONE",
+    ]
+    if "error" in runtime:
+        summary.append("RA1_RUNTIME_ERROR=" + runtime["error"])
+    (OUT / "SA1_SUMMARY.txt").write_text("\n".join(summary) + "\n", encoding="utf-8")
+    print("\n".join(summary))
+    return 0 if status == "PASS" else 1
+
+if __name__ == "__main__":
+    raise SystemExit(main())
