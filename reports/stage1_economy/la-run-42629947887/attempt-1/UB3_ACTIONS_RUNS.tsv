@@ -1,0 +1,7 @@
+run_id	workflow	path	event	status	conclusion	head_sha	created_at
+42629947887	LA0-LA5 isolated static upgrade-cost audit	.github/workflows/la0-la5-static.yml	push	in_progress	TIDAK TAHU	19f9d938581968bdcd49cb0dd56db4722d0940f6	2026-11-09T13:56:51Z
+42628044945	LA0-LA5 isolated static upgrade-cost audit	.github/workflows/la0-la5-static.yml	push	completed	success	64da9c22524be4199b4be20c390b1ff3fc5d5e4b	2026-11-09T13:43:58Z
+42627175414	LA0-LA5 isolated static upgrade-cost audit	.github/workflows/la0-la5-static.yml	push	completed	success	5f03ee25ad5bfa0aa51988458f20bcacd0f5a18c	2026-11-09T13:37:56Z
+42626728802	LA0-LA5 isolated static upgrade-cost audit	.github/workflows/la0-la5-static.yml	push	completed	cancelled	b6860626a23ac53da5c7146ecd672ce7b07b8bd1	2026-11-09T13:34:56Z
+42623838639	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	push	completed	success	3cbff61a8c3f01c6a6076c86badadbd443e77bf4	2026-11-09T13:15:14Z
+42610754807	Naruto Story Mode adaptive player monitor	.github/workflows/naruto-storymode-adaptive-monitor.yml	schedule	completed	success	8a5aa492904b4fecafba318adabdb902d3801f67	2026-11-09T11:39:22Z

@@ -1,0 +1,3 @@
+image	pc	file_offset	bytes	instruksi	register	writer_pc	classification
+EXE	0x800114C8	0x00001CC8	07 80 1C 3C	lui $gp, 0x8007	$gp	0x800114C8	REGISTER_DEFINITION
+EXE	0x800114CC	0x00001CCC	7C D6 9C 27	addiu $gp, $gp, -0x2984	$gp	0x800114CC	REGISTER_DEFINITION
