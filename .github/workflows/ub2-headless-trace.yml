@@ -19,7 +19,7 @@ jobs:
   ub2-headless-trace:
     name: Four 900-frame read-only breakpoint launches
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 25
     env:
       GH_TOKEN: ${{ github.token }}
       RESEARCH_REPO: ${{ github.repository }}
@@ -135,7 +135,7 @@ jobs:
             --cue "$WORK/source/game-run.cue" \
             --source "$WORK/source-checkpoint.sstate" \
             --card-dir "$WORK/card-template" \
-            --timeout-seconds 600
+            --timeout-seconds 120
           rc=$?
           set -e
           echo "UB2_SCRIPT_EXIT_CODE=$rc" | tee "$OUT/UB2_SCRIPT_EXIT_CODE.txt"
