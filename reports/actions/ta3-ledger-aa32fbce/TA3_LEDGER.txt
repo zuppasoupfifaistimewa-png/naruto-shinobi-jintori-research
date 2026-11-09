@@ -44,7 +44,7 @@ TA1_EMULATOR_RUNS=0
 TA2_STATUS=BELUM
 TA2_REASON=TA0_GATE_DID_NOT_PASS; requested two 900-frame launches (no-input vs periodic CIRCLE) were not performed
 QA4_UNEXPECTED_JOB=RUN_42566294855_JOB_128993639683; two 180-frame no-input CONTROL launches; explicitly NOT_TA2; runs 42568914600, 42570934141 and 42571105641 correctly skipped QA4
-TA3_LEDGER_STATUS=TUNTAS; all 24 commits after inclusive baseline and all 6 Actions runs through 292c422cedf54afc6f8df83ee615c2c1bbecd067 are represented; prior ledger publication 1b1ed031466380d4817ae00414f90e4924de1d2a is excluded as self-referential
+TA3_LEDGER_STATUS=TUNTAS; 16 commits inclusive from 292c422 through 0e564623 and all 6 Actions runs/10 jobs are inventoried; previous self-referential publication commit df559f71 is now included as a prior commit
 RA2_UPGRADE_ACTIONS_OBSERVED=0
 RA2_D_SAMPLES_OBSERVED=0
 RA2_DISTINCT_D_VALUES=0
@@ -56,7 +56,7 @@ UA0_STATUS=TUNTAS
 UA1_STATUS=TUNTAS
 UA2_STATUS=SEBAGIAN
 UA3_STATUS=TUNTAS; all incremental records through 0e564623 verified; current publication commit excluded
-ACTIONS_RUNS_TOTAL_REPOSITORY_AT_CHECK=1320; before this UA0 chat 1318; two UA2 pushes (42587984902 and 42588961435) raised it to 1320; each QA0 job was skipped
+ACTIONS_RUNS_TOTAL_REPOSITORY_AT_CHECK=1320; pre-UA2 total after QA0 plus two LA runs was 1318; UA2 runs 42587984902 and 42588961435 raised it to 1320; both QA0 jobs were skipped
 UA2_RUN_42587984902=FAILURE; SOURCE_SHA=db01b8db42c023b584d43c3390c0f425ee551fe3; JOB=129062324323; EXIT_CODE=1; cause: PCSX.addBreakpoint callback was passed before required cause string; frame rows=0; QA0 job skipped; summary raw is in incremental Actions table
 UA2_RUN_42588961435=SUCCESS; SOURCE_SHA=c0949d5bc7e3f9371d106fccb52b46f61e5a5805; JOB=129065561294; EXIT_CODE=0; QA0 job 129065563709 skipped; 900 frames per launch; checkpoint SHA=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
 UA2_LAUNCHES=launch1 no input; launch2 CIRCLE 6 frames every 120; same checkpoint and pinned PCSX/game/BIOS hashes; 1 SaveStateLoaded per launch; 900 post-restore frames each; early_stop=NO
