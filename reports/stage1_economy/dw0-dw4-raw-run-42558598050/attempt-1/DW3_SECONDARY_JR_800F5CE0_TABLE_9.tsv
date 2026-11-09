@@ -1,0 +1,10 @@
+selector	slot_pc	file_offset	bytes	target	source	reason
+0	0x800AEB78	0x010BC728	E8 5C 0F 80	0x800F5CE8	DATA.BIN Entry 1 table bytes	index 0..8 allowed by sltiu at 0x800F5CC0
+1	0x800AEB7C	0x010BC72C	F8 5C 0F 80	0x800F5CF8	DATA.BIN Entry 1 table bytes	index 0..8 allowed by sltiu at 0x800F5CC0
+2	0x800AEB80	0x010BC730	08 5D 0F 80	0x800F5D08	DATA.BIN Entry 1 table bytes	index 0..8 allowed by sltiu at 0x800F5CC0
+3	0x800AEB84	0x010BC734	18 5D 0F 80	0x800F5D18	DATA.BIN Entry 1 table bytes	index 0..8 allowed by sltiu at 0x800F5CC0
+4	0x800AEB88	0x010BC738	28 5D 0F 80	0x800F5D28	DATA.BIN Entry 1 table bytes	index 0..8 allowed by sltiu at 0x800F5CC0
+5	0x800AEB8C	0x010BC73C	38 5D 0F 80	0x800F5D38	DATA.BIN Entry 1 table bytes	index 0..8 allowed by sltiu at 0x800F5CC0
+6	0x800AEB90	0x010BC740	88 5D 0F 80	0x800F5D88	DATA.BIN Entry 1 table bytes	index 0..8 allowed by sltiu at 0x800F5CC0
+7	0x800AEB94	0x010BC744	48 5D 0F 80	0x800F5D48	DATA.BIN Entry 1 table bytes	index 0..8 allowed by sltiu at 0x800F5CC0
+8	0x800AEB98	0x010BC748	80 5D 0F 80	0x800F5D80	DATA.BIN Entry 1 table bytes	index 0..8 allowed by sltiu at 0x800F5CC0
