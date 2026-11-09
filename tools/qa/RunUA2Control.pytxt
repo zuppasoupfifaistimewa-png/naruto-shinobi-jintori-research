@@ -48,15 +48,15 @@ local function log(s) print(s);pcall(function() io.stdout:flush() end) end
 local pad=PCSX.SIO0.slots[1].pads[1]
 local B=PCSX.CONSTS.PAD.BUTTON
 assert(B.CIRCLE~=nil,"UA2_BUTTON_CIRCLE_MISSING")
-local mem32=ffi.cast("const uint32_t *",PCSX.getMemPtr())
-local mem16=ffi.cast("const uint16_t *",PCSX.getMemPtr())
+local mem=PCSX.getMemoryAsFile()
 local function watchValues()
     local out={}
     for _,w in ipairs(WATCH) do
-        local off=w.address-0x80000000
         local value
-        if w.kind=="u16" then value=tonumber(mem16[math.floor(off/2)])
-        else value=tonumber(mem32[math.floor(off/4)]) end
+        local ok,raw=pcall(function() return tonumber(mem:readU32At(w.address)) end)
+        if ok and raw~=nil then
+            if w.kind=="u16" then value=raw%65536 else value=raw end
+        end
         out[#out+1]=tostring(value or "TIDAK_TAHU")
     end
     return out
