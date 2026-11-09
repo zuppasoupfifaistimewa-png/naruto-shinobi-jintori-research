@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/dw0-dw4-raw-static.yml"
       - "tools/stage1/RunDW0DW4Raw.py"
+      - "tools/stage1/RunSA1Windows.py"
 
 permissions:
   contents: write
@@ -125,6 +126,20 @@ jobs:
             } > "$out/ANALYSIS_FAILURE.txt"
           fi
 
+      - name: Run SA1 bounded static windows
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/dw0-dw4-output"
+          mkdir -p "$out"
+          set +e
+          python3 tools/stage1/RunSA1Windows.py "$RUNNER_TEMP/dw0-dw4-private/input/SLPS_035.53" "$RUNNER_TEMP/dw0-dw4-private/input/DATA.BIN" "$out"
+          rc=$?
+          set -e
+          echo "$rc" > "$RUNNER_TEMP/sa1-analysis-exit.txt"
+          if [ ! -s "$out/SA1_SUMMARY.txt" ]; then
+            printf 'STATUS=TIDAK TAHU\nREASON=SA1 analyzer did not produce a summary\nEXIT_CODE=%s\n' "$rc" > "$out/SA1_SUMMARY.txt"
+          fi
       - name: Remove private disc and extracted binary inputs
         if: always()
         shell: bash
@@ -148,8 +163,16 @@ jobs:
           dest="reports/stage1_economy/dw0-dw4-raw-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$dest"
           if [ -d "$out" ]; then
-            find "$out" -maxdepth 1 -type f \( -name '*.md' -o -name '*.tsv' -o -name '*.txt' \) -exec cp {} "$dest/" \;
+            find "$out" -maxdepth 1 -type f \( -name '*.md' -o -name '*.tsv' -o -name '*.txt' \) ! -name 'SA1_*' -exec cp {} "$dest/" \;
           fi
+          sa1_dest="reports/stage1_economy/sa1-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$sa1_dest"
+          if [ -d "$out" ]; then
+            find "$out" -maxdepth 1 -type f -name 'SA1_*' -exec cp {} "$sa1_dest/" \;
+          fi
+          sa1_rc="$(cat "$RUNNER_TEMP/sa1-analysis-exit.txt" 2>/dev/null || echo TIDAK_TAHU)"
+          sa1_status="$(sed -n 's/^STATUS=//p' "$sa1_dest/SA1_SUMMARY.txt" | head -n 1 || true)"
+          [ -n "$sa1_status" ] || sa1_status=TIDAK_TAHU
 
           rc="$(cat "$RUNNER_TEMP/dw0-dw4-analysis-exit.txt" 2>/dev/null || echo TIDAK_TAHU)"
           cleanup="$(cat "$RUNNER_TEMP/dw0-dw4-cleanup.txt" 2>/dev/null || echo PRIVATE_BINARY_CLEANUP=UNKNOWN)"
@@ -179,6 +202,8 @@ jobs:
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "SOURCE_SHA=$GITHUB_SHA"
             echo "EXIT_CODE=$rc"
+            echo "SA1_STATUS=$sa1_status"
+            echo "SA1_EXIT_CODE=$sa1_rc"
             echo "$stage"
             echo "$cleanup"
             echo "GAME_OR_EMULATOR_EXECUTED=no"
@@ -186,12 +211,22 @@ jobs:
             echo "BINARY_COMMITTED=no"
             echo "OUTPUT=TEXT_ONLY"
           } > "$dest/ACTIONS_RUN_SUMMARY.txt"
+          {
+            echo "STATUS=$sa1_status"
+            echo "JOB=dw0-dw4-static"
+            echo "JOB_ID=$JOB_ID"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "EXIT_CODE=$sa1_rc"
+            echo "BINARY_COMMITTED=no"
+            echo "WINDOW_LIMIT_BYTES=64"
+          } > "$sa1_dest/ACTIONS_RUN_SUMMARY.txt"
 
-          bad="$(find "$dest" -type f ! \( -name '*.md' -o -name '*.tsv' -o -name '*.txt' \) -print)"
+          bad="$(find "$dest" "$sa1_dest" -type f ! \( -name '*.md' -o -name '*.tsv' -o -name '*.txt' \) -print)"
           test -z "$bad"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$dest"
+          git add "$dest" "$sa1_dest"
           if ! git diff --cached --quiet; then
             git commit -m "Publish DW0-DW4 static raw-byte audit run $GITHUB_RUN_ID"
             pushed=0
