@@ -1,6 +1,0 @@
-run_id	workflow	status	conclusion	event	head_sha
-42531815468	.github/workflows/ra2-upgrade-probe.yml	completed	failure	push	74a73e355d76671c712844a36f537eeb027e49b6
-42531815501	.github/workflows/na0-na5-static.yml	in_progress	TIDAK TAHU	push	74a73e355d76671c712844a36f537eeb027e49b6
-42531815297	.github/workflows/la0-la5-static.yml	in_progress	TIDAK TAHU	push	74a73e355d76671c712844a36f537eeb027e49b6
-42531815503	.github/workflows/ma0-ma5-static.yml	completed	success	push	74a73e355d76671c712844a36f537eeb027e49b6
-42531815506	.github/workflows/ka0-ka5-static.yml	completed	success	push	74a73e355d76671c712844a36f537eeb027e49b6

@@ -1,7 +1,0 @@
-image	pc	file_offset	bytes	instruksi	site_pc	role	conditional_domain
-ENTRY1	0x800D49D0	0x010E2580	00 00 62 90	lbu $v0, ($v1)	0x800D49D8	VALUE_SOURCE	0..255 conditional on executing path; source EA dynamic
-ENTRY1	0x800D49D8	0x010E2588	30 05 C2 AC	sw $v0, 0x530($a2)	0x800D49D8	X_STORE	0..255 conditional on executing path; source EA dynamic
-ENTRY1	0x800EC81C	0x010FA3CC	C7 9E 02 92	lbu $v0, -0x6139($s0)	0x800EC844	VALUE_SOURCE	0..255 conditional on executing path
-ENTRY1	0x800EC844	0x010FA3F4	30 05 62 AC	sw $v0, 0x530($v1)	0x800EC844	X_STORE	0..255 conditional on executing path
-ENTRY1	0x800EC81C	0x010FA3CC	C7 9E 02 92	lbu $v0, -0x6139($s0)	0x800EC868	VALUE_SOURCE	0..255 conditional on executing path
-ENTRY1	0x800EC868	0x010FA418	30 05 62 AC	sw $v0, 0x530($v1)	0x800EC868	X_STORE	0..255 conditional on executing path

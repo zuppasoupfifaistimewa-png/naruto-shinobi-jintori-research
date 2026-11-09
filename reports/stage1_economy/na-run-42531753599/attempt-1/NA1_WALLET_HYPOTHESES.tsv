@@ -1,4 +1,0 @@
-hypothesis	support_1	support_2	falsifier
-H1 participant+0x04 wallet	Participant records use stride 0xB4.	Prior field access patterns are compatible with wallet-like state but no closed reader/writer path proves it.	Complete closure shows +0x04 is cache, flag, or unrelated state.
-H2 manager+0x4F4 wallet/settlement	Prior static sequence reads and sign-normalizes manager+0x4F4.	Nearby completion path clears +0x4F4, consistent with transient settlement but not conclusive.	Complete producer/consumer closure proves this is not persistent wallet state.
-H3 FUN_80014F10 wallet setter	Function has a participant-indexed max-update pattern.	Known target writes participant record +0x94, not proven wallet +0x04.	Complete trace identifies another wallet setter and proves FUN_80014F10 unrelated.

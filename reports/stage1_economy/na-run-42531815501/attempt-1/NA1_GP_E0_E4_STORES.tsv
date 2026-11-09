@@ -1,5 +1,0 @@
-image	pc	file_offset	bytes	instruksi	excerpt_id	target	source	constant	source_expression	record_index
-EXE	0x800116C4	0x00001EC4	E0 00 82 AF	sw $v0, 0xe0($gp)	NA1_GP_E0_E4	0x00E0($gp)	$v0	0x00000027	(0+39)	TIDAK TAHU: store value not proven as record index
-EXE	0x800116C8	0x00001EC8	E4 00 82 AF	sw $v0, 0xe4($gp)	NA1_GP_E0_E4	0x00E4($gp)	$v0	0x00000027	(0+39)	TIDAK TAHU: store value not proven as record index
-EXE	0x8001198C	0x0000218C	E4 00 82 AF	sw $v0, 0xe4($gp)	NA1_GP_E0_E4	0x00E4($gp)	$v0	TIDAK TAHU	MEM32[INCOMING_$gp+224]	TIDAK TAHU: store value not proven as record index
-EXE	0x80011A60	0x00002260	E0 00 84 AF	sw $a0, 0xe0($gp)	NA1_GP_E0_E4	0x00E0($gp)	$a0	TIDAK TAHU	INCOMING_$a0	TIDAK TAHU: store value not proven as record index

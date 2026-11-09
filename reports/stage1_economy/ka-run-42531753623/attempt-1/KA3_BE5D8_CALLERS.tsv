@@ -1,3 +1,0 @@
-image	pc	file_offset	bytes	instruksi	kind	target	caller_function	classification
-ENTRY1	0x800B54F4	0x010C30A4	76 F9 02 0C	jal 0x800be5d8	Ghidra reference UNCONDITIONAL_CALL	0x800BE5D8	FUN_800b50ac	TIDAK TAHU
-ENTRY1	0x800B54F4	0x010C30A4	76 F9 02 0C	jal 0x800be5d8	J/JAL	0x800BE5D8	TIDAK TAHU	Ghidra instruction listing

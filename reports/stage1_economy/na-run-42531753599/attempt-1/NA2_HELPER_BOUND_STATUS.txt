@@ -1,4 +1,0 @@
-SW_0x118_GP_COUNT=2
-GP_ASSIGNMENT_COUNT=2
-HELPER_800154D4=lw $v0,0x118($gp); jr $ra; nop
-BOUND_52=TIDAK TAHU; recognized writers and GP provenance are not closed.

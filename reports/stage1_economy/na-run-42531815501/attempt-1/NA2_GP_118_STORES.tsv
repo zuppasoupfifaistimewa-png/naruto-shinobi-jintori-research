@@ -1,3 +1,0 @@
-image	pc	file_offset	bytes	instruksi	excerpt_id	source	source_constant	source_expression	source_class
-EXE	0x800121AC	0x000029AC	18 01 80 AF	sw $zero, 0x118($gp)	NA2_SW_118_GP	$zero	0x00000000	0	KONSTANTA
-EXE	0x800121F4	0x000029F4	18 01 83 AF	sw $v1, 0x118($gp)	NA2_SW_118_GP	$v1	TIDAK TAHU	INCOMING_$v1	TIDAK TAHU

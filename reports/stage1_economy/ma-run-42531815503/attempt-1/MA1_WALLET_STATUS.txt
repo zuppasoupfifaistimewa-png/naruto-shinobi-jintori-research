@@ -1,2 +1,0 @@
-WALLET_AUTHORITATIVE_SETTER=TIDAK TAHU
-No complete static producer/consumer closure ties a candidate field to the persistent visible wallet.
