@@ -8406,7 +8406,6 @@ ENTRY1	0x800BE3FC	0x010CBFAC	F9 04 52 A0	sb $s2, 0x4f9($v0)	1273	$v0	base not st
 ENTRY1	0x800BE420	0x010CBFD0	D1 05 62 A0	sb $v0, 0x5d1($v1)	1489	$v1	base not statically constant; dynamic alias not ruled out
 ENTRY1	0x800BE514	0x010CC0C4	38 00 47 A4	sh $a3, 0x38($v0)	56	$v0	base not statically constant; dynamic alias not ruled out
 ENTRY1	0x800BE588	0x010CC138	38 00 43 A4	sh $v1, 0x38($v0)	56	$v0	base not statically constant; dynamic alias not ruled out
-ENTRY1	0x800BE5BC	0x010CC16C	38 00 62 A4	sh $v0, 0x38($v1)	56	$v1	base not statically constant; dynamic alias not ruled out
 ENTRY1	0x800BE5DC	0x010CC18C	2C 00 BF AF	sw $ra, 0x2c($sp)	44	$sp	base not statically constant; dynamic alias not ruled out
 ENTRY1	0x800BE5E0	0x010CC190	28 00 B6 AF	sw $s6, 0x28($sp)	40	$sp	base not statically constant; dynamic alias not ruled out
 ENTRY1	0x800BE5E4	0x010CC194	24 00 B5 AF	sw $s5, 0x24($sp)	36	$sp	base not statically constant; dynamic alias not ruled out
