@@ -167,7 +167,7 @@ _G.ub2VsyncListener = PCSX.Events.createEventListener("GPU::Vsync", function()
   end
 
   if post == FRAME_LIMIT then
-    log("UB2_FRAME_LIMIT_REACHED launch="..LAUNCH.." frames="..post.." hits="..hits)
+    log("UB2_FRAME_LIMIT_REACHED launch="..LAUNCH.." frames="..post.." hits="..tostring(callHits+helperHits))
     PCSX.nextTick(function() PCSX.quit(inputErrors == 0 and 0 or 52) end)
   end
 end)
