@@ -1,12 +1,12 @@
 MISSING_COMMIT_HASHES_VERIFIED_PRESENT=f80ff6e4cbf22c1f33de5f7a73d68bd155bbdd8a;8f9c93a3492b7aaa227c19382e50dbeb2313c6ef;73ada82c500e1883ba5252324c61299acf0c9492;292c422cedf54afc6f8df83ee615c2c1bbecd067
 COUNT_RECONCILIATION_261_262=git compare aa32fbce..292c422 returns 262 net changed paths; one is the self-referential reports/actions/ta3-ledger-aa32fbce/TA3_LEDGER.txt; excluding that ledger path gives 261. The 280 historical per-commit file-event rows are a different metric.
-INCREMENTAL_COMMIT_FILE_CHANGE_ROWS=167 including 292 baseline; 154 after 292 baseline
-INCREMENTAL_COMMIT_COUNT_FROM_292_INCLUSIVE=9 (292 baseline included; 8 descendants through 0370a97)
-ACTIONS_RUNS_CREATED_FROM_292_INCLUSIVE=4 (42571813319 anchor; 42584546705 QA0 pass; 42585188841 LA initial success; 42585667069 LA corrected publication success)
-UA3_RESULT=Historical commit/event ledger retained through 292c422; incremental commit+file and Actions job ledger extended from 292c422 inclusive through 0370a97; exact 261/262 net-path reconciliation recorded below
+INCREMENTAL_COMMIT_FILE_CHANGE_ROWS=195 including 292 baseline; 182 after 292 baseline (all 15 descendant commits through 0e564623)
+INCREMENTAL_COMMIT_COUNT_FROM_292_INCLUSIVE=16 (292 baseline included; 15 descendants through 0e564623; current ledger publication commit is excluded)
+ACTIONS_RUNS_CREATED_FROM_292_INCLUSIVE=6 (42571813319 failed anchor; 42584546705 QA0 pass; 42585188841 and 42585667069 LA success; 42587984902 UA2 harness failure; 42588961435 UA2 success)
+UA3_RESULT=Historical ledger retained; incremental commit/file/job ledger extended from 292c422 inclusive through 0e564623; 16 commits inclusive, 195 incremental file-event rows including 292 baseline, 6 Actions runs/10 job rows, and exact 261/262 reconciliation preserved
 UA3_CONFIDENCE=K4
-UA2_REASON=Existing QA4 control runner only has no-input 180-frame controls and no fee breakpoints, periodic CIRCLE condition, or r0-r31-at-fee capture; wallet/money address also TIDAK TAHU. No emulator launched.
-UA2_CONFIDENCE=K1
+UA2_REASON=Run 42587984902 BELUM/K0: wrong PCSX.addBreakpoint cause argument caused timeout before frame 1; run 42588961435 SEBAGIAN/K3: two 900-frame launches from identical adaptive-cycle-02-f180 checkpoint, no-input vs CIRCLE 6 frames every 120; 900 per-frame comparisons; 0 fee breakpoint hits; authoritative wallet remains TIDAK TAHU.
+UA2_CONFIDENCE=K3_RUNTIME_ONE_LAUNCH_PER_CONDITION; K5 NOT MET
 UA1_CAVEAT=instruction-form census restricted to Ghidra CODE_INSTRUCTION map; pointer u32 scan covered EXE and Entry 1; no direct static load proved that candidate pointers feed $v0 at jalr 0x80011A28
 UA1_SOURCE_SHA=a22274fbc0bafcfebb24362e65a6f112f40bca55
 UA1_RUN_ID=42585667069
@@ -16,20 +16,20 @@ UA0_SOURCE_SHA=37f44eb8c520b4cd50178ee95ac81c553421cf64
 UA0_RUN_ID=42584546705
 UA0_RESULT=118 overlapping rows physically removed from 42 TSV files; 0 protected-range intersections; 11/11 repr delimiter/regex checks PASS; SA1 checks PASS; py_compile 78/78; HA2 conditional removal not performed and audit PASS
 UA0_CONFIDENCE=K4
-STATUS=TUNTAS
-CONFIDENCE=K4 (UA0/UA1/UA3 static ledger; UA2 remains BELUM K1)
+STATUS=SEBAGIAN
+CONFIDENCE=K4 for static UA0/UA1/UA3; UA2 runtime K3; overall partial because UA2 has one launch per condition and no fee hit
 BASELINE_INCLUSIVE=aa32fbcee97c8f49946a8e589010cfb9ef1a6928
-LEDGER_PARENT_HEAD=0370a97fdf5fd9a20cffbcb9f85d58196b150642
-LEDGER_RANGE=aa32fbcee97c8f49946a8e589010cfb9ef1a6928^..292c422cedf54afc6f8df83ee615c2c1bbecd067
-COMMITS_TOTAL_INCLUDING_BASELINE=25
-COMMITS_AFTER_BASELINE=24
-COMMITS_HUMAN=19
-COMMITS_BOT=6
-COMMIT_FILE_CHANGE_ROWS=280
-ACTIONS_RUNS_CREATED_SINCE_BASELINE=6
-ACTIONS_JOB_ROWS=11
-ACTIONS_RUNS_SUCCESS=1
-ACTIONS_RUNS_FAILURE=5
+LEDGER_PARENT_HEAD=0e564623967cab4ea444c65fb63477fa5540d9f0
+LEDGER_RANGE=292c422cedf54afc6f8df83ee615c2c1bbecd067^..0e564623967cab4ea444c65fb63477fa5540d9f0 (incremental section; historical section starts at aa32fbce)
+COMMITS_TOTAL_INCLUDING_BASELINE=40
+COMMITS_AFTER_BASELINE=39
+COMMITS_HUMAN=29
+COMMITS_BOT=11
+COMMIT_FILE_CHANGE_ROWS=462 (280 through 292c422 plus 182 descendants through 0e564623)
+ACTIONS_RUNS_CREATED_SINCE_BASELINE=11
+ACTIONS_JOB_ROWS=19
+ACTIONS_RUNS_SUCCESS=5
+ACTIONS_RUNS_FAILURE=6
 TA0_STATUS=TUNTAS K4; corrected gate run 42584546705 passed on source SHA 37f44eb8c520b4cd50178ee95ac81c553421cf64
 TA0_CONFIDENCE=K4; static max, no emulator
 TA0_TARGET_DIRECTORY_DELETIONS=152_PHYSICAL_FILES_DELETED
@@ -54,9 +54,22 @@ PUBLICATION_COMMIT_EXCLUDED=YES; this ledger's own publishing commit is self-ref
 EXCLUDED_INTERMEDIATE_LEDGER_PUBLICATION=1b1ed031466380d4817ae00414f90e4924de1d2a
 UA0_STATUS=TUNTAS
 UA1_STATUS=TUNTAS
-UA2_STATUS=BELUM
-UA3_STATUS=TUNTAS
-ACTIONS_RUNS_TOTAL_REPOSITORY_AT_CHECK=1318; baseline pre-UA0 count 1315; one QA0 run raised it to 1316; two LA runs raised it to 1318
+UA2_STATUS=SEBAGIAN
+UA3_STATUS=TUNTAS; all incremental records through 0e564623 verified; current publication commit excluded
+ACTIONS_RUNS_TOTAL_REPOSITORY_AT_CHECK=1320; before this UA0 chat 1318; two UA2 pushes (42587984902 and 42588961435) raised it to 1320; each QA0 job was skipped
+UA2_RUN_42587984902=FAILURE; SOURCE_SHA=db01b8db42c023b584d43c3390c0f425ee551fe3; JOB=129062324323; EXIT_CODE=1; cause: PCSX.addBreakpoint callback was passed before required cause string; frame rows=0; QA0 job skipped; summary raw is in incremental Actions table
+UA2_RUN_42588961435=SUCCESS; SOURCE_SHA=c0949d5bc7e3f9371d106fccb52b46f61e5a5805; JOB=129065561294; EXIT_CODE=0; QA0 job 129065563709 skipped; 900 frames per launch; checkpoint SHA=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
+UA2_LAUNCHES=launch1 no input; launch2 CIRCLE 6 frames every 120; same checkpoint and pinned PCSX/game/BIOS hashes; 1 SaveStateLoaded per launch; 900 post-restore frames each; early_stop=NO
+UA2_CIRCLE_INPUT=48 held frames total; pulse starts at 1,121,241,361,481,601,721,841; pad setOverride/clearOverride; no register or memory writes
+UA2_PER_FRAME=900 rows each; 900 paired comparisons; 447 frames with 0 GPR difference; 453 frames with at least 1 GPR difference; histogram 1 diff=279, 2 diffs=171, 3 diffs=3
+UA2_GPR_DIFF_FREQUENCY=r2=345 frames; r26=279 frames; r17=6 frames; register-difference counts overlap; raw per-frame comparison TSV retained; no gameplay meaning inferred from GPR differences
+UA2_CANDIDATES=0 candidate-field differences across 900 paired frames; initial values same in both: record0+0x04=12, record1+0x04=10, record2+0x04=0, record3+0x04=0, global 0x80139EFC u16=0; these are candidates, not proven money
+UA2_FEE=0x800D2520 hits=0; 0x800D46EC hits=0; no r0-r31-at-fee sample exists because neither breakpoint was reached in either 900-frame launch
+UA2_MONEY=TIDAK TAHU; authoritative wallet address not proven; unchanged candidate fields do not prove wallet stayed unchanged
+UA2_CONFIDENCE_NOTE=K3 only; one launch per input condition; repeat pair per condition not performed; K5 not met
+UA2_CLEANUP=PASS; BIOS, disc, checkpoint, emulator temporary files removed from runner; no binary/savestate/dump committed; STATUS.md and Releases unchanged
+UA3_MISSING_HASHES=f80ff6e4cbf22c1f33de5f7a73d68bd155bbdd8a;8f9c93a3492b7aaa227c19382e50dbeb2313c6ef;73ada82c500e1883ba5252324c61299acf0c9492;292c422cedf54afc6f8df83ee615c2c1bbecd067 are present in historical/incremental ledger
+UA3_261_262_EXPLANATION=261 is the net changed-path count excluding TA3_LEDGER.txt itself; 262 includes that self-referential ledger path; commit file-event row counts are separate
 STATUS_MD_MODIFIED=NO
 RELEASES_MODIFIED=NO
 BINARY_OR_SAVESTATE_COMMITTED=NO
@@ -413,6 +426,13 @@ sha	parent	author	class	changed_file_count	subject
 a22274fbc0bafcfebb24362e65a6f112f40bca55	774ef5d1df0dc7f79c6d103c5738e51ecb51ccfe	zuppasoupfifaistimewa-png	HUMAN	1	Publish UA1-prefixed static audit outputs
 0ac54246d7b5a5c237aa220dbe241f5b8b7cd45f	a22274fbc0bafcfebb24362e65a6f112f40bca55	github-actions[bot]	BOT	47	Publish LA0-LA5 static audit run 42585667069
 0370a97fdf5fd9a20cffbcb9f85d58196b150642	0ac54246d7b5a5c237aa220dbe241f5b8b7cd45f	zuppasoupfifaistimewa-png	HUMAN	1	Cap D49D0 excerpt at 64 bytes [skip ci]
+df559f71bc4ceb0bfac3b0f55688e08b97a285f5	0370a97fdf5fd9a20cffbcb9f85d58196b150642	2026-11-09T08:38:23Z	zuppasoupfifaistimewa-png	HUMAN	1	Complete UA0-UA3 incremental audit ledger [skip ci]
+58e0f525ad2dd5049bda4a7ff1353a98c5f28063	df559f71bc4ceb0bfac3b0f55688e08b97a285f5	2026-11-09T08:42:17Z	zuppasoupfifaistimewa-png	HUMAN	1	Add bounded UA2 fee A/B runtime harness [skip ci]
+db01b8db42c023b584d43c3390c0f425ee551fe3	58e0f525ad2dd5049bda4a7ff1353a98c5f28063	2026-11-09T08:43:08Z	zuppasoupfifaistimewa-png	HUMAN	1	[UA2] Enable isolated fee A/B runtime job; skip QA0
+9dec53ca991e40f6bf36a2c763be2321825f9f4f	db01b8db42c023b584d43c3390c0f425ee551fe3	2026-11-09T08:47:14Z	zuppasoupfifaistimewa-png	HUMAN	1	Fix UA2 breakpoint signature and retain breakpoint handles [skip ci]
+de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	9dec53ca991e40f6bf36a2c763be2321825f9f4f	2026-11-09T08:48:50Z	github-actions[bot]	BOT	9	Publish UA2 fee A/B runtime trace 42587984902 [skip ci]
+c0949d5bc7e3f9371d106fccb52b46f61e5a5805	de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	2026-11-09T08:51:15Z	zuppasoupfifaistimewa-png	HUMAN	1	[UA2] Use bounded PCSX memory reader for candidate fields
+0e564623967cab4ea444c65fb63477fa5540d9f0	c0949d5bc7e3f9371d106fccb52b46f61e5a5805	2026-11-09T08:52:24Z	github-actions[bot]	BOT	14	Publish UA2 fee A/B runtime trace 42588961435 [skip ci]
 
 === INCREMENTAL COMMIT FILES (EXACT PATH INVENTORY) ===
 commit_sha	status	path	additions	deletions
@@ -583,6 +603,34 @@ a22274fbc0bafcfebb24362e65a6f112f40bca55	modified	.github/workflows/la0-la5-stat
 0ac54246d7b5a5c237aa220dbe241f5b8b7cd45f	added	reports/stage1_economy/la-run-42585667069/attempt-1/UA1_TARGET_REFERENCE_SUMMARY.txt	21	0
 0ac54246d7b5a5c237aa220dbe241f5b8b7cd45f	added	reports/stage1_economy/la-run-42585667069/attempt-1/cleanup.txt	1	0
 0370a97fdf5fd9a20cffbcb9f85d58196b150642	modified	tools/la-static/RunLA0LA5Static.sh	1	1
+df559f71bc4ceb0bfac3b0f55688e08b97a285f5	modified	reports/actions/ta3-ledger-aa32fbce/TA3_LEDGER.txt	234	12
+58e0f525ad2dd5049bda4a7ff1353a98c5f28063	added	tools/qa/RunUA2Control.pytxt	358	0
+db01b8db42c023b584d43c3390c0f425ee551fe3	modified	.github/workflows/qa0-qa5.yml	31	30
+9dec53ca991e40f6bf36a2c763be2321825f9f4f	modified	tools/qa/RunUA2Control.pytxt	14	9
+de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	added	reports/stage1_economy/qa-run-42587984902/attempt-1/ACTIONS_RUN_SUMMARY_UA2.txt	13	0
+de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	added	reports/stage1_economy/qa-run-42587984902/attempt-1/UA2_FEE_BREAKPOINT_HITS.tsv	1	0
+de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	added	reports/stage1_economy/qa-run-42587984902/attempt-1/UA2_LAUNCH1_FEE_HITS.tsv	1	0
+de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	added	reports/stage1_economy/qa-run-42587984902/attempt-1/UA2_LAUNCH1_LOG.txt	10	0
+de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	added	reports/stage1_economy/qa-run-42587984902/attempt-1/UA2_LAUNCH1_PER_FRAME.tsv	1	0
+de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	added	reports/stage1_economy/qa-run-42587984902/attempt-1/UA2_PER_FRAME_COMPARISON.tsv	1	0
+de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	added	reports/stage1_economy/qa-run-42587984902/attempt-1/UA2_PUBLISH_COMMIT_FILES.tsv	10	0
+de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	added	reports/stage1_economy/qa-run-42587984902/attempt-1/UA2_RUNTIME_SUMMARY.txt	41	0
+de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7	added	reports/stage1_economy/qa-run-42587984902/attempt-1/cleanup.txt	1	0
+c0949d5bc7e3f9371d106fccb52b46f61e5a5805	modified	tools/qa/RunUA2Control.pytxt	5	5
+0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/ACTIONS_RUN_SUMMARY_UA2.txt	13	0
+0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_FEE_BREAKPOINT_HITS.tsv	1	0
+0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH1_FEE_HITS.tsv	1	0
+0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH1_LOG.txt	44	0
+0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH1_PER_FRAME.tsv	901	0
+0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH1_STATUS.txt	9	0
+0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH2_FEE_HITS.tsv	1	0
+0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH2_LOG.txt	44	0
+0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH2_PER_FRAME.tsv	901	0
+0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH2_STATUS.txt	9	0
+0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_PER_FRAME_COMPARISON.tsv	901	0
+0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_PUBLISH_COMMIT_FILES.tsv	15	0
+0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_RUNTIME_SUMMARY.txt	41	0
+0e564623967cab4ea444c65fb63477fa5540d9f0	added	reports/stage1_economy/qa-run-42588961435/attempt-1/cleanup.txt	1	0
 
 === INCREMENTAL ACTIONS RUNS / JOBS (BASELINE 292c422 INCLUSIVE) ===
 run_id	created_at_utc	workflow	workflow_path	source_sha	run_conclusion	job_id	job_name	job_conclusion	exit_code	summary_path	raw_permalink
@@ -592,6 +640,10 @@ run_id	created_at_utc	workflow	workflow_path	source_sha	run_conclusion	job_id	jo
 42584546705	2026-11-09T08:14:51Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	37f44eb8c520b4cd50178ee95ac81c553421cf64	success	129051244253	qa4-headless-readonly-control-trace	skipped	SKIPPED	reports/stage1_economy/qa-run-42584546705/attempt-1/ACTIONS_RUN_SUMMARY.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/36fb63d7472b78bd7d4a4711ca49b48f33e47121/reports/stage1_economy/qa-run-42584546705/attempt-1/ACTIONS_RUN_SUMMARY.txt
 42585188841	2026-11-09T08:20:09Z	LA0-LA5 isolated static upgrade-cost audit	.github/workflows/la0-la5-static.yml	61cf4621749f4e642864986a189f25b1a5a308ba	success	129053209238	la0-la5-static	success	0	reports/stage1_economy/la-run-42585188841/attempt-1/ACTIONS_RUN_SUMMARY.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/774ef5d1df0dc7f79c6d103c5738e51ecb51ccfe/reports/stage1_economy/la-run-42585188841/attempt-1/ACTIONS_RUN_SUMMARY.txt
 42585667069	2026-11-09T08:24:04Z	LA0-LA5 isolated static upgrade-cost audit	.github/workflows/la0-la5-static.yml	a22274fbc0bafcfebb24362e65a6f112f40bca55	success	129054767699	la0-la5-static	success	0	reports/stage1_economy/la-run-42585667069/attempt-1/ACTIONS_RUN_SUMMARY.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/0ac54246d7b5a5c237aa220dbe241f5b8b7cd45f/reports/stage1_economy/la-run-42585667069/attempt-1/ACTIONS_RUN_SUMMARY.txt
+42587984902	2026-11-09T08:43:10Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	db01b8db42c023b584d43c3390c0f425ee551fe3	failure	129062324323	ua2-headless-fee-ab-trace	failure	1	reports/stage1_economy/qa-run-42587984902/attempt-1/ACTIONS_RUN_SUMMARY_UA2.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7/reports/stage1_economy/qa-run-42587984902/attempt-1/ACTIONS_RUN_SUMMARY_UA2.txt
+42587984902	2026-11-09T08:43:10Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	db01b8db42c023b584d43c3390c0f425ee551fe3	failure	129062325690	qa0-static-harness-and-excerpt-audit	skipped	SKIPPED	reports/stage1_economy/qa-run-42587984902/attempt-1/ACTIONS_RUN_SUMMARY_UA2.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/de6a013bf0c3e11fa9b123a8a0cb90cd10637cc7/reports/stage1_economy/qa-run-42587984902/attempt-1/ACTIONS_RUN_SUMMARY_UA2.txt
+42588961435	2026-11-09T08:51:17Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	c0949d5bc7e3f9371d106fccb52b46f61e5a5805	success	129065561294	ua2-headless-fee-ab-trace	success	0	reports/stage1_economy/qa-run-42588961435/attempt-1/ACTIONS_RUN_SUMMARY_UA2.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/0e564623967cab4ea444c65fb63477fa5540d9f0/reports/stage1_economy/qa-run-42588961435/attempt-1/ACTIONS_RUN_SUMMARY_UA2.txt
+42588961435	2026-11-09T08:51:17Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	c0949d5bc7e3f9371d106fccb52b46f61e5a5805	success	129065563709	qa0-static-harness-and-excerpt-audit	skipped	SKIPPED	reports/stage1_economy/qa-run-42588961435/attempt-1/ACTIONS_RUN_SUMMARY_UA2.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/0e564623967cab4ea444c65fb63477fa5540d9f0/reports/stage1_economy/qa-run-42588961435/attempt-1/ACTIONS_RUN_SUMMARY_UA2.txt
 
 === CURRENT UA1 DETAIL ===
 TARGET=0x800B50AC
