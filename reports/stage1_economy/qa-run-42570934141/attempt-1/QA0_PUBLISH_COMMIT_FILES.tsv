@@ -1,0 +1,8 @@
+status	path
+A	reports/stage1_economy/qa-run-42570934141/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A	reports/stage1_economy/qa-run-42570934141/attempt-1/QA0_CONSOLE.txt
+A	reports/stage1_economy/qa-run-42570934141/attempt-1/QA0_EXCERPT_AUDIT.txt
+A	reports/stage1_economy/qa-run-42570934141/attempt-1/QA0_PYCOMPILE.tsv
+A	reports/stage1_economy/qa-run-42570934141/attempt-1/QA0_REPORT.md
+A	reports/stage1_economy/qa-run-42570934141/attempt-1/QA0_TARGET_DIRECTORY_DELETIONS.tsv
+A	reports/stage1_economy/qa-run-42570934141/attempt-1/QA0_PUBLISH_COMMIT_FILES.tsv

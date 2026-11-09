@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/runner/work/_temp/qa/RunQA0Harness.py", line 455, in <module>
+    main()
+  File "/home/runner/work/_temp/qa/RunQA0Harness.py", line 364, in main
+    ha2_audit, ha2_ok, ha2_performed = maybe_prune_ha2(stage, root, args.baseline, spans)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/_temp/qa/RunQA0Harness.py", line 175, in maybe_prune_ha2
+    base_header = next(csv.reader(io.StringIO(baseline_text), delimiter="\\t"), [])
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: "delimiter" must be a 1-character string

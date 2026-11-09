@@ -1,0 +1,2 @@
+STATUS=TIDAK TAHU
+REASON=QA0 analyzer did not produce audit output
