@@ -133,3 +133,4 @@ e0b71793dd7a93d9a277bf5f0d5983f1604b11df	Finalize raw links and record follow-up
 e0b71793dd7a93d9a277bf5f0d5983f1604b11df	Finalize raw links and record follow-up ledger commits [skip ci]	M	reports/stage1_economy/ra4/RA4_COMMITS.tsv
 853eb7159df843785c9c5e6c9a4a080c9be9f19f	Correct RA4 total after final scheduled monitor inclusion [skip ci]	M	reports/stage1_economy/ra4/RA4_LEDGER.md
 853eb7159df843785c9c5e6c9a4a080c9be9f19f	Correct RA4 total after final scheduled monitor inclusion [skip ci]	M	reports/stage1_economy/ra4/RA4_COMMITS.tsv
+483aebcfa6cc741ebd13042effd85f131003e8f8	Correct final RA4 ledger run and job total [skip ci]	M	reports/stage1_economy/ra4/RA4_LEDGER.md
