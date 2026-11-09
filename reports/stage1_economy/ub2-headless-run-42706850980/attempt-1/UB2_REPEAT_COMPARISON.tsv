@@ -1,0 +1,3 @@
+condition	launch1	launch2	launch1_hit_count	launch2_hit_count	event_trace_identical	both_launches_complete	inputs_valid	repeat_K5
+NO_INPUT	NO_INPUT_1	NO_INPUT_2	64	64	YES	YES	YES	PASS
+CIRCLE	CIRCLE_1	CIRCLE_2	64	64	YES	YES	YES	PASS
