@@ -1,0 +1,5 @@
+commit_sha	committer_date	author	message
+516a945e246a387c5aae1f97453d2af1fc033d0c	2026-11-09T04:05:34Z	github-actions[bot]	Publish QA4 read-only CONTROL trace 42559773799 [skip ci]
+757b94b093f9a68c3b20182d81f6436bbb5c8bd4	2026-11-09T04:04:55Z	github-actions[bot]	Publish QA0 harness and excerpt audit 42559773799 [skip ci]
+78c119c6bf32da4f736a855b53f46af229b32665	2026-11-09T04:04:40Z	zuppasoupfifaistimewa-png	Re-run strict QA0 against final SA evidence tree
+7744075b6a68381069559d9e62ec8cebe3c50398	2026-11-09T03:58:22Z	zuppasoupfifaistimewa-png	[skip ci] Refresh SA3 all-branch ledgers through 2026-11-09
