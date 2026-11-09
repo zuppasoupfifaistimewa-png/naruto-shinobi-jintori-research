@@ -1,0 +1,15 @@
+status	path
+A	reports/stage1_economy/qa-run-42588961435/attempt-1/ACTIONS_RUN_SUMMARY_UA2.txt
+A	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_FEE_BREAKPOINT_HITS.tsv
+A	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH1_FEE_HITS.tsv
+A	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH1_LOG.txt
+A	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH1_PER_FRAME.tsv
+A	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH1_STATUS.txt
+A	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH2_FEE_HITS.tsv
+A	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH2_LOG.txt
+A	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH2_PER_FRAME.tsv
+A	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_LAUNCH2_STATUS.txt
+A	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_PER_FRAME_COMPARISON.tsv
+A	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_RUNTIME_SUMMARY.txt
+A	reports/stage1_economy/qa-run-42588961435/attempt-1/cleanup.txt
+A	reports/stage1_economy/qa-run-42588961435/attempt-1/UA2_PUBLISH_COMMIT_FILES.tsv
