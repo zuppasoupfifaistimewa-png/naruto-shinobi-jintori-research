@@ -69,7 +69,8 @@ def selftest():
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--root",required=True,type=Path);ap.add_argument("--out",required=True,type=Path)
-    ap.add_argument("--baseline",default="a133f0b266f211a31f26439d3a04ac8705b515e4")
+    ap.add_argument("--baseline",default="3d3eff5d9e0e03b0742423be241473cf60bb3736")
+    ap.add_argument("--pa-prune-baseline",default="a133f0b266f211a31f26439d3a04ac8705b515e4")
     a=ap.parse_args();root=a.root.resolve();out=a.out.resolve();out.mkdir(parents=True,exist_ok=True)
     (out/"QA0_HARNESS_SELFTEST.txt").write_text(selftest(),encoding="utf-8",newline="")
     tracked=subprocess.check_output(["git","-C",str(root),"ls-files","-z"]).decode().split("\0")
@@ -86,11 +87,17 @@ def main():
 
     stage=root/"reports"/"stage1_economy"
     baseline=a.baseline
+    pa_baseline=a.pa_prune_baseline
     diff_text=subprocess.check_output(["git","-C",str(root),"diff","--name-status",baseline+"...HEAD"],text=True)
     changed={}
     for line in diff_text.splitlines():
         fields=line.split("\t",1)
         if len(fields)==2: changed[fields[1]]=fields[0]
+    pa_diff_text=subprocess.check_output(["git","-C",str(root),"diff","--name-status",pa_baseline+"...HEAD"],text=True)
+    pa_changed={}
+    for line in pa_diff_text.splitlines():
+        fields=line.split("\t",1)
+        if len(fields)==2: pa_changed[fields[1]]=fields[0]
 
     # Audit the exact 15 physical deletions against the inclusive baseline.
     runs=("42482327357","42482696764","42483585195","42484127968","42484169218")
@@ -104,7 +111,7 @@ def main():
             ("0x800D7D2C","95 5F 03 08")]
     affected=[]; physical_deleted=[]; target_rows=[]; physical_ok=True
     for rel,specs in sorted(targets.items()):
-        before=subprocess.check_output(["git","-C",str(root),"show",baseline+":"+rel],text=True)
+        before=subprocess.check_output(["git","-C",str(root),"show",pa_baseline+":"+rel],text=True)
         current=(root/rel).read_text(encoding="utf-8")
         before_rows=list(csv.DictReader(io.StringIO(before),delimiter="\t"))
         after_rows=list(csv.DictReader(io.StringIO(current),delimiter="\t"))
@@ -123,7 +130,7 @@ def main():
         exact=(all(found.get(s,0)==1 for s in specs)
                and all(remaining.get(s,0)==0 for s in specs)
                and current=="".join(kept)
-               and changed.get(rel)=="M"
+               and pa_changed.get(rel)=="M"
                and len(before_rows)-len(after_rows)==expected_n)
         physical_ok=physical_ok and exact
         affected.append([rel,changed.get(rel,"MISSING"),len(before_rows),expected_n,
@@ -251,18 +258,49 @@ def main():
     with (out/"QA0_WORKFLOW_PATHS_AUDIT.txt").open("w",encoding="utf-8",newline="") as f:
         f.write(f"WORKFLOW_FILES={len(list(wfdir.glob('*.yml')))}\nPATH_FILTER_ENTRIES={len(wfpaths)}\nCOLLISIONS={len(collisions)}\n")
         f.write("COLLISION_DETAILS="+(";".join(f"{x[0]}:{x[1]}->{x[2]}" for x in collisions) or "none")+"\n")
+    # SA0 may remove only these six previously enumerated output directories.
+    side_dirs=(
+      ("ka-run-42531753623",28),("ma-run-42531753591",48),("na-run-42531753599",76),
+      ("ka-run-42531815506",28),("ma-run-42531815503",48),("na-run-42531815501",76))
+    side_removed_paths=set();side_audit=[];side_cleanup_ok=True
+    for dirname,expected_n in side_dirs:
+        prefix=f"reports/stage1_economy/{dirname}/"
+        before_paths=subprocess.check_output(["git","-C",str(root),"ls-tree","-r","--name-only",baseline,"--",prefix],text=True).splitlines()
+        head_paths=subprocess.check_output(["git","-C",str(root),"ls-tree","-r","--name-only","HEAD","--",prefix],text=True).splitlines()
+        delta={p:s for p,s in changed.items() if p.startswith(prefix)}
+        exact=(len(before_paths)==expected_n and not head_paths and len(delta)==expected_n
+               and set(before_paths)==set(delta) and all(s=="D" for s in delta.values()))
+        side_cleanup_ok=side_cleanup_ok and exact
+        side_removed_paths.update(before_paths)
+        side_audit.append([dirname,expected_n,len(before_paths),len(delta),len(head_paths),"PASS" if exact else "FAIL"])
+    with (out/"QA0_SA0_DIRECTORY_VERIFICATION.tsv").open("w",encoding="utf-8",newline="") as f:
+        w=csv.writer(f,delimiter="\t",lineterminator="\n")
+        w.writerow(["directory","expected_files","files_at_SA_baseline","deleted_files","files_at_HEAD","verification"])
+        w.writerows(side_audit)
+    duplicate_path="tools/ra/RunRA2UpgradeProbe.py"
+    duplicate_before=subprocess.check_output(["git","-C",str(root),"ls-tree","-r","--name-only",baseline,"--",duplicate_path],text=True).splitlines()
+    duplicate_after=subprocess.check_output(["git","-C",str(root),"ls-tree","-r","--name-only","HEAD","--",duplicate_path],text=True).splitlines()
+    duplicate_deleted=(len(duplicate_before)==1 and not duplicate_after and changed.get(duplicate_path)=="D")
     protected_file_patterns=("PA1_CALLSITE_A2_A3.tsv","PA1_CALL_WINDOWS.tsv")
     protected_files_changed=[p for p in changed if Path(p).name in protected_file_patterns]
     legacy_changed=[p for p in changed if any(part.startswith(("ja-run-","ka-run-","la-run-","ma-run-","na-run-","oa-run-")) for part in Path(p).parts)]
+    unexpected_legacy_changed=[p for p in legacy_changed if p not in side_removed_paths or changed.get(p)!="D"]
     forbidden_changed=[p for p in changed if p=="STATUS.md" or p.startswith("releases/") or p.startswith("Release/")]
     protected_removed=sum(1 for row in physical_deleted if row[3] in {f"0x{x:08X}" for x in PROTECTED})
+    sa_verified_dirs=sum(1 for r in side_audit if r[5]=="PASS")
+    sa_baseline_files=sum(r[2] for r in side_audit)
+    sa_deleted_files=sum(r[3] for r in side_audit)
+    sa_remaining_files=sum(r[4] for r in side_audit)
+    sa_cleanup_status="PASS" if side_cleanup_ok else "FAIL"
+    duplicate_status="YES" if duplicate_deleted else "NO"
     workflow_files=list(wfdir.glob("*.yml"))
     all_ok=(physical_ok and len(physical_deleted)==15 and len(affected)==10
-            and protected_removed==0 and not protected_files_changed and not legacy_changed
+            and side_cleanup_ok and duplicate_deleted
+            and protected_removed==0 and not protected_files_changed and not unexpected_legacy_changed
             and not forbidden_changed and not full_bad and not rebuilt_bad
             and not byte_conflicts and not malformed and not collisions
             and sum(x[1]=="PASS" for x in compiled)==len(compiled))
-    status="TUNTAS" if all_ok else ("BELUM" if not physical_ok or protected_files_changed or legacy_changed or forbidden_changed else "SEBAGIAN")
+    status="TUNTAS" if all_ok else ("BELUM" if not physical_ok or not side_cleanup_ok or not duplicate_deleted or protected_files_changed or unexpected_legacy_changed or forbidden_changed else "SEBAGIAN")
     over_rows=[[im,f"0x{x:08X}",f"0x{y:08X}",y-x] for im,x,y in full_bad]
     summary=[
       "BASELINE_INCLUSIVE="+baseline,
@@ -275,7 +313,16 @@ def main():
       f"UNIQUE_BYTE_ADDRESSES={len(values)}",
       f"BYTE_OVERLAP_CONFLICT_ADDRESSES={len(byte_conflicts)}",
       f"MALFORMED_BYTE_ROWS={len(malformed)}",
+      "PA_PRUNE_BASELINE="+pa_baseline,
       "PHYSICAL_DELETE_EXPECTED_ROWS=15",
+      "SA0_EXPECTED_DIRECTORIES=6",
+      f"SA0_VERIFIED_DIRECTORIES={sa_verified_dirs}",
+      "SA0_EXPECTED_FILES=304",
+      f"SA0_BASELINE_FILES={sa_baseline_files}",
+      f"SA0_DELETED_FILES={sa_deleted_files}",
+      f"SA0_HEAD_FILES_REMAINING={sa_remaining_files}",
+      f"SA0_CLEANUP_STATUS={sa_cleanup_status}",
+      f"DUPLICATE_TRIGGER_DELETED={duplicate_status}",
       f"PHYSICAL_DELETE_VERIFIED_ROWS={len(physical_deleted) if physical_ok else 0}",
       "PHYSICAL_DELETE_EXPECTED_FILES=10",
       f"PHYSICAL_DELETE_VERIFIED_FILES={sum(1 for r in affected if r[1]=='M' and r[5]=='PASS')}",
@@ -284,6 +331,7 @@ def main():
       f"PROTECTED_CALLSITE_ROWS_REMOVED={protected_removed}",
       f"PROTECTED_CALLSITE_FILES_CHANGED={len(protected_files_changed)}",
       f"JA_KA_LA_MA_NA_OA_FILES_CHANGED={len(legacy_changed)}",
+      f"UNEXPECTED_LEGACY_FILES_CHANGED={len(unexpected_legacy_changed)}",
       f"STATUS_MD_OR_RELEASE_FILES_CHANGED={len(forbidden_changed)}",
       f"UNION_MAX_CONTIGUOUS_BYTES={max((y-x for _,x,y in full_spans),default=0)}",
       f"UNION_OVER_64_BYTE_GROUPS={len(full_bad)}",

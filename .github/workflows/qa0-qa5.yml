@@ -42,7 +42,7 @@ jobs:
           set +e
           python3 "$RUNNER_TEMP/qa/RunQA0Harness.py" \
             --root "$GITHUB_WORKSPACE" --out "$OUT" \
-            --baseline a133f0b266f211a31f26439d3a04ac8705b515e4 \
+            --baseline 3d3eff5d9e0e03b0742423be241473cf60bb3736 \
             > "$OUT/QA0_CONSOLE.txt" 2>&1
           RC=$?
           set -e
