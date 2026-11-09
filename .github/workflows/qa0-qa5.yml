@@ -114,14 +114,15 @@ jobs:
                   status,path=line.split("\t",1);f.write(status+"\t"+path+"\n")
               f.write("A\t"+str(dest/"QA0_PUBLISH_COMMIT_FILES.tsv")+"\n")
           PY
-          git add -- "$DEST/QA0_PUBLISH_COMMIT_FILES.tsv"
+          git add -A -- "$DEST" reports/stage1_economy/ha2-ha3-static-run-*/attempt-1/HA2_GLOBAL_OPERAND_ACCESS.tsv
+          git diff --quiet && git diff --cached --quiet || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c qa0-publish
           git commit -m "Publish TA0 static gate audit $GITHUB_RUN_ID [skip ci]"
           PUSHED=0
           for attempt in 1 2 3 4 5; do
-            if git pull --rebase origin main && git push origin HEAD:main; then PUSHED=1; break; fi
+            if git -c rebase.autoStash=true pull --rebase origin main && git push origin HEAD:main; then PUSHED=1; break; fi
             git rebase --abort >/dev/null 2>&1 || true
             sleep $((attempt * 2))
           done
