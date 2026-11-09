@@ -1,0 +1,7 @@
+selector	slot_pc	file_offset	bytes	target	points_into_dispatcher_area	source	reason
+9	0x800AEA44	0x010BC5F4	AC 5D 0F 80	0x800F5DAC	YES	DATA.BIN Entry 1 table bytes at 0x800AEA20	little-endian 32-bit table entry; dispatcher area bounded 0x800F5C98..0x800F5E00
+10	0x800AEA48	0x010BC5F8	BC 5D 0F 80	0x800F5DBC	YES	DATA.BIN Entry 1 table bytes at 0x800AEA20	little-endian 32-bit table entry; dispatcher area bounded 0x800F5C98..0x800F5E00
+12	0x800AEA50	0x010BC600	CC 5D 0F 80	0x800F5DCC	YES	DATA.BIN Entry 1 table bytes at 0x800AEA20	little-endian 32-bit table entry; dispatcher area bounded 0x800F5C98..0x800F5E00
+13	0x800AEA54	0x010BC604	DC 5D 0F 80	0x800F5DDC	YES	DATA.BIN Entry 1 table bytes at 0x800AEA20	little-endian 32-bit table entry; dispatcher area bounded 0x800F5C98..0x800F5E00
+14	0x800AEA58	0x010BC608	EC 5D 0F 80	0x800F5DEC	YES	DATA.BIN Entry 1 table bytes at 0x800AEA20	little-endian 32-bit table entry; dispatcher area bounded 0x800F5C98..0x800F5E00
+51	0x800AEAEC	0x010BC69C	FC 5D 0F 80	0x800F5DFC	YES	DATA.BIN Entry 1 table bytes at 0x800AEA20	little-endian 32-bit table entry; dispatcher area bounded 0x800F5C98..0x800F5E00
