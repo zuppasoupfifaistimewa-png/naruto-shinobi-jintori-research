@@ -1,0 +1,358 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import csv
+import os
+import shutil
+import subprocess
+from pathlib import Path
+
+RUN_ID = 39907655833
+ARTIFACT_ID = 12482055310
+ARTIFACT_SHA = "a0f45156dfd489f24c8dc8e122c33a048c7b9ac34b935ac828523593d21ca2a8"
+STATE_NAME = "adaptive-cycle-02-f180.sstate"
+STATE_SIZE = 21162799
+STATE_SHA = "705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35"
+GAME_SIZE = 325989552
+GAME_SHA = "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88"
+BIOS_SHA = "5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1"
+PCSX_SHA = "c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c"
+FEE_BPS = [0x800D2520, 0x800D46EC]
+FRAME_LIMIT = 900
+REGS = [f"r{i}" for i in range(32)]
+WATCHES = [
+    ("REC0_PLUS04_U32_CANDIDATE", 0x80070EA4, "u32"),
+    ("REC1_PLUS04_U32_CANDIDATE", 0x80070F58, "u32"),
+    ("REC2_PLUS04_U32_CANDIDATE", 0x8007100C, "u32"),
+    ("REC3_PLUS04_U32_CANDIDATE", 0x800710C0, "u32"),
+    ("GLOBAL_80139EFC_U16_MGR_PLUS4F4_CANDIDATE", 0x80139EFC, "u16"),
+]
+LUA = r'''
+local LAUNCH=__LAUNCH__
+local CIRCLE_MODE=__CIRCLE__
+local LIMIT=900
+local BPS=__BPS__
+local WATCH=__WATCH__
+local STATE_NAME="adaptive-cycle-02-f180.sstate"
+local postFrames,preFrames,loaded,restorePending=0,0,0,false
+local finishing=false
+local stopReason="FRAME_LIMIT"
+local circleHeld=false
+local baselines=nil
+local frameFile=assert(io.open("frame_trace.tsv","w"))
+local feeFile=assert(io.open("fee_hits.tsv","w"))
+frameFile:write("frame\tcircle_held\t__WATCH_HEADERS__\t__REGS__\n")
+feeFile:write("frame\tpc\t__WATCH_HEADERS__\t__REGS__\n")
+local function log(s) print(s);pcall(function() io.stdout:flush() end) end
+local pad=PCSX.SIO0.slots[1].pads[1]
+local B=PCSX.CONSTS.PAD.BUTTON
+assert(B.CIRCLE~=nil,"UA2_BUTTON_CIRCLE_MISSING")
+local mem32=ffi.cast("const uint32_t *",PCSX.getMemPtr())
+local mem16=ffi.cast("const uint16_t *",PCSX.getMemPtr())
+local function watchValues()
+    local out={}
+    for _,w in ipairs(WATCH) do
+        local off=w.address-0x80000000
+        local value
+        if w.kind=="u16" then value=tonumber(mem16[math.floor(off/2)])
+        else value=tonumber(mem32[math.floor(off/4)]) end
+        out[#out+1]=tostring(value or "TIDAK_TAHU")
+    end
+    return out
+end
+local function registers()
+    local r=PCSX.getRegisters()
+    local out={}
+    for i=0,31 do out[#out+1]=tostring(tonumber(r.GPR.r[i])) end
+    return table.concat(out,"\t")
+end
+local function writeResult(reason)
+    local f=assert(io.open("result.txt","w"))
+    f:write("STATUS="..(reason=="FRAME_LIMIT" and "PASS" or "STOPPED_EARLY").."\n")
+    f:write("LAUNCH="..tostring(LAUNCH).."\n")
+    f:write("CIRCLE_MODE="..(CIRCLE_MODE and "PERIODIC" or "NONE").."\n")
+    f:write("FRAMES="..tostring(postFrames).."\n")
+    f:write("STOP_REASON="..reason.."\n")
+    f:write("SAVE_STATE_EVENTS="..tostring(loaded).."\n")
+    f:write("FEE_BREAKPOINT_HIT="..(string.find(reason,"FEE_BREAKPOINT",1,true) and "YES" or "NO").."\n")
+    f:write("CANDIDATE_VALUE_CHANGED="..(string.find(reason,"CANDIDATE_CHANGED",1,true) and "YES" or "NO").."\n")
+    f:write("AUTHORITATIVE_MONEY_ADDRESS=TIDAK TAHU\n")
+    f:close()
+end
+local function finish(reason)
+    if finishing then return end
+    finishing=true
+    stopReason=reason
+    pcall(function() frameFile:flush();frameFile:close() end)
+    pcall(function() feeFile:flush();feeFile:close() end)
+    pcall(function() writeResult(reason) end)
+    log("UA2_STOP_REASON="..reason)
+    log("UA2_POST_RESTORE_FRAMES="..tostring(postFrames))
+    PCSX.pauseEmulator()
+    PCSX.nextTick(function() PCSX.quit(0) end)
+end
+for _,pc in ipairs(BPS) do
+    PCSX.addBreakpoint(pc,"Exec",4,function(address,width,cause)
+        if not finishing and loaded>0 then
+            local vals=watchValues()
+            feeFile:write(tostring(postFrames).."\t"..string.format("0x%08X",pc).."\t"..table.concat(vals,"\t").."\t"..registers().."\n")
+            feeFile:flush()
+            finish("FEE_BREAKPOINT_"..string.format("0x%08X",pc))
+        end
+        return true
+    end,"UA2_FEE_"..string.format("%08X",pc))
+end
+_G.ua2Save=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
+    loaded=loaded+1
+    postFrames=0
+    log("UA2_STATE_LOADED=1")
+end)
+_G.ua2Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
+    preFrames=preFrames+1
+    if loaded==0 and not restorePending then
+        restorePending=true
+        PCSX.pauseEmulator()
+        PCSX.nextTick(function()
+            local ok,file=pcall(function() return assert(Support.File.open("resume/"..STATE_NAME)) end)
+            if not ok or not file then log("UA2_STATE_OPEN_FAIL="..tostring(file));PCSX.quit(50);return end
+            local yes,err=pcall(function() PCSX.loadSaveState(file) end)
+            file:close()
+            if not yes then log("UA2_RESTORE_FAIL="..tostring(err));PCSX.quit(51);return end
+            log("UA2_RESTORE_RETURNED=1")
+            PCSX.resumeEmulator()
+        end)
+        return
+    end
+    if loaded>0 and not finishing then
+        postFrames=postFrames+1
+        if CIRCLE_MODE then
+            local phase=(postFrames-1)%120
+            if phase==0 then pad.setOverride(B.CIRCLE);circleHeld=true end
+            if phase==6 then pad.clearOverride(B.CIRCLE);circleHeld=false end
+        else
+            pad.clearOverride(B.CIRCLE)
+            circleHeld=false
+        end
+        local vals=watchValues()
+        if postFrames==1 then
+            baselines={}
+            for i,v in ipairs(vals) do baselines[i]=v end
+        end
+        local changed={}
+        if baselines then
+            for i,v in ipairs(vals) do
+                if v~=baselines[i] then changed[#changed+1]=WATCH[i].name end
+            end
+        end
+        frameFile:write(tostring(postFrames).."\t"..(circleHeld and "1" or "0").."\t"..table.concat(vals,"\t").."\t"..registers().."\n")
+        frameFile:flush()
+        if #changed>0 then
+            finish("UNVERIFIED_CANDIDATE_CHANGED:"..table.concat(changed,";"))
+        elseif postFrames>=LIMIT then
+            finish("FRAME_LIMIT")
+        end
+    end
+end)
+log("UA2_READY=1 frames=900 circle="..(CIRCLE_MODE and "periodic_6_of_120" or "none")..
+    " fee_breakpoints=2 memory_write=NONE register_write=NONE ram_dump=NONE")
+'''
+def lua_source(launch_number: int, circle: bool) -> str:
+    bps = "{" + ",".join(str(x) for x in FEE_BPS) + "}"
+    watches = "{" + ",".join(
+        "{name=%r,address=%d,kind=%r}" % (name, address, kind)
+        for name, address, kind in WATCHES
+    ) + "}"
+    watch_headers = "\t".join(name for name, _, _ in WATCHES)
+    return (
+        LUA.replace("__LAUNCH__", str(launch_number))
+        .replace("__CIRCLE__", "true" if circle else "false")
+        .replace("__BPS__", bps)
+        .replace("__WATCH__", watches)
+        .replace("__WATCH_HEADERS__", watch_headers)
+        .replace("__REGS__", "\t".join(REGS))
+    )
+def parse_kv(path: Path) -> dict[str, str]:
+    values = {}
+    if path.is_file():
+        for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            if "=" in line:
+                key, value = line.split("=", 1)
+                values[key] = value
+    return values
+def read_tsv(path: Path) -> list[dict[str, str]]:
+    if not path.is_file():
+        return []
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        return list(csv.DictReader(handle, delimiter="\t"))
+def launch(number: int, circle: bool, pcsx: Path, bios: Path, cue: Path,
+           work: Path, out: Path, state: Path) -> dict[str, object]:
+    d = work / f"launch{number}"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "resume").mkdir(exist_ok=True)
+    shutil.copy2(state, d / "resume" / STATE_NAME)
+    card = d / "control.mcd"
+    card.write_bytes(bytes(131072))
+    lua = d / "ua2.lua"
+    lua.write_text(lua_source(number, circle), encoding="utf-8")
+    home = d / "home"
+    home.mkdir(exist_ok=True)
+    env = os.environ.copy()
+    env.update({
+        "HOME": str(home),
+        "XDG_CONFIG_HOME": str(home / ".config"),
+        "XDG_DATA_HOME": str(home / ".data"),
+        "XDG_RUNTIME_DIR": str(home / ".runtime"),
+    })
+    for key in ("XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_RUNTIME_DIR"):
+        Path(env[key]).mkdir(parents=True, exist_ok=True)
+    Path(env["XDG_RUNTIME_DIR"]).chmod(0o700)
+    stdout = d / "pcsx.stdout.txt"
+    pcsxlog = d / "pcsx.log"
+    cmd = [
+        "timeout", "--signal=INT", "--kill-after=10s", "300s", str(pcsx),
+        "-noupdate", "-no-ui", "-testmode", "-debugger", "-interpreter",
+        "-bios", str(bios), "-iso", str(cue), "-memcard1", str(card),
+        "-dofile", str(lua), "-softgpu", "-logfile", str(pcsxlog), "-run",
+    ]
+    with stdout.open("w", encoding="utf-8") as handle:
+        handle.write(f"LAUNCH={number}\nINPUT={'CIRCLE_PERIODIC' if circle else 'NONE'}\n")
+        handle.flush()
+        try:
+            rc = subprocess.run(cmd, cwd=d, env=env, stdout=handle,
+                                stderr=subprocess.STDOUT, check=False).returncode
+        except Exception as exc:
+            rc = 255
+            handle.write("LAUNCH_EXCEPTION=" + repr(exc) + "\n")
+    log_text = stdout.read_text(encoding="utf-8", errors="replace")
+    (out / f"UA2_LAUNCH{number}_LOG.txt").write_text(log_text, encoding="utf-8")
+    result_path = d / "result.txt"
+    trace_path = d / "frame_trace.tsv"
+    fee_path = d / "fee_hits.tsv"
+    if result_path.is_file():
+        shutil.copy2(result_path, out / f"UA2_LAUNCH{number}_STATUS.txt")
+    if trace_path.is_file():
+        shutil.copy2(trace_path, out / f"UA2_LAUNCH{number}_PER_FRAME.tsv")
+    if fee_path.is_file():
+        shutil.copy2(fee_path, out / f"UA2_LAUNCH{number}_FEE_HITS.tsv")
+    result = parse_kv(result_path)
+    frames = int(result.get("FRAMES", "0") or 0)
+    loaded = int(result.get("SAVE_STATE_EVENTS", log_text.count("UA2_STATE_LOADED=1")) or 0)
+    trace_rows = read_tsv(trace_path)
+    return {
+        "rc": rc, "loaded": loaded, "frames": frames,
+        "trace_rows": len(trace_rows), "valid": rc == 0 and loaded == 1 and len(trace_rows) >= 1 and result_path.is_file(),
+        "stop_reason": result.get("STOP_REASON", "TIDAK TAHU"),
+        "result": result, "trace": trace_rows,
+        "circle": circle,
+    }
+def write_comparison(a: dict[str, object] | None, b: dict[str, object] | None, out: Path) -> int:
+    rows_a = {int(r["frame"]): r for r in (a or {}).get("trace", [])}
+    rows_b = {int(r["frame"]): r for r in (b or {}).get("trace", [])}
+    max_frame = max([0, *rows_a.keys(), *rows_b.keys()])
+    watch_names = [name for name, _, _ in WATCHES]
+    with (out / "UA2_PER_FRAME_COMPARISON.tsv").open("w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f, delimiter="\t", lineterminator="\n")
+        writer.writerow(["frame", "no_input_present", "circle_present", "gpr_diff_count",
+                         "gpr_diff_registers", "candidate_diff_count", "candidate_diff_fields",
+                         "comparison_status"])
+        for frame in range(1, max_frame + 1):
+            x, y = rows_a.get(frame), rows_b.get(frame)
+            if x and y:
+                gpr = [name for name in REGS if x.get(name) != y.get(name)]
+                watch = [name for name in watch_names if x.get(name) != y.get(name)]
+                status = "BOTH_SAMPLED"
+                writer.writerow([frame, "YES", "YES", len(gpr), ";".join(gpr),
+                                 len(watch), ";".join(watch), status])
+            else:
+                writer.writerow([frame, "YES" if x else "NO", "YES" if y else "NO",
+                                 "TIDAK TAHU", "TIDAK TAHU", "TIDAK TAHU",
+                                 "TIDAK TAHU", "ONE_OR_BOTH_MISSING"])
+    return max_frame
+def combine_fee_hits(out: Path) -> int:
+    all_rows = []
+    for number in (1, 2):
+        p = out / f"UA2_LAUNCH{number}_FEE_HITS.tsv"
+        for row in read_tsv(p):
+            all_rows.append([number, row.get("frame", ""), row.get("pc", "")] +
+                            [row.get(name, "") for name, _, _ in WATCHES] +
+                            [row.get(name, "") for name in REGS])
+    target = out / "UA2_FEE_BREAKPOINT_HITS.tsv"
+    with target.open("w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f, delimiter="\t", lineterminator="\n")
+        writer.writerow(["launch", "frame", "pc"] + [x[0] for x in WATCHES] + REGS)
+        writer.writerows(all_rows)
+    return len(all_rows)
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    for name in ("pcsx", "bios", "cue", "work", "out", "state"):
+        ap.add_argument("--" + name, required=True, type=Path)
+    args = ap.parse_args()
+    args.out.mkdir(parents=True, exist_ok=True)
+    args.work.mkdir(parents=True, exist_ok=True)
+    if not args.state.is_file() or args.state.stat().st_size != STATE_SIZE:
+        raise SystemExit("UA2_CHECKPOINT_SIZE_FAIL")
+    import hashlib
+    if hashlib.sha256(args.state.read_bytes()).hexdigest() != STATE_SHA:
+        raise SystemExit("UA2_CHECKPOINT_SHA_FAIL")
+    first = launch(1, False, args.pcsx, args.bios, args.cue, args.work, args.out, args.state)
+    second = None
+    if first["valid"]:
+        second = launch(2, True, args.pcsx, args.bios, args.cue, args.work, args.out, args.state)
+    comparison_rows = write_comparison(first if first["valid"] else None,
+                                       second if second and second["valid"] else None, args.out)
+    fee_rows = combine_fee_hits(args.out)
+    both_valid = bool(first["valid"] and second and second["valid"])
+    early = bool(
+        first.get("stop_reason") != "FRAME_LIMIT" or
+        (second and second.get("stop_reason") != "FRAME_LIMIT")
+    )
+    lines = [
+        "STATUS=" + ("SEBAGIAN" if both_valid else "BELUM"),
+        "CONFIDENCE=" + ("K3_RUNTIME_ONE_LAUNCH_PER_CONDITION" if both_valid else "K0"),
+        f"SOURCE_RUN={RUN_ID}",
+        f"ARTIFACT_ID={ARTIFACT_ID}",
+        f"ARTIFACT_ZIP_SHA256={ARTIFACT_SHA}",
+        f"CHECKPOINT={STATE_NAME}",
+        f"CHECKPOINT_SHA256={STATE_SHA}",
+        f"GAME_SHA256={GAME_SHA}",
+        f"PCSX_REDUX_SHA256={PCSX_SHA}",
+        "LAUNCHES_REQUESTED=2",
+        f"LAUNCH1_EXIT={first['rc']}",
+        f"LAUNCH1_VALID={'YES' if first['valid'] else 'NO'}",
+        f"LAUNCH1_FRAMES={first['frames']}",
+        f"LAUNCH1_STOP_REASON={first['stop_reason']}",
+        f"LAUNCH1_FEE_ROWS={len(read_tsv(args.out / 'UA2_LAUNCH1_FEE_HITS.tsv'))}",
+        f"LAUNCH2_EXIT={second['rc'] if second else 'NOT_RUN'}",
+        f"LAUNCH2_VALID={'YES' if second and second['valid'] else 'NO'}",
+        f"LAUNCH2_FRAMES={second['frames'] if second else 'NOT_RUN'}",
+        f"LAUNCH2_STOP_REASON={second['stop_reason'] if second else 'NOT_RUN'}",
+        f"LAUNCH2_FEE_ROWS={len(read_tsv(args.out / 'UA2_LAUNCH2_FEE_HITS.tsv'))}",
+        f"FRAME_COMPARISON_ROWS={comparison_rows}",
+        f"FEE_BREAKPOINT_HIT_ROWS={fee_rows}",
+        "FEE_BREAKPOINTS=0x800D2520;0x800D46EC",
+        "FRAME_LIMIT_PER_LAUNCH=900",
+        "LAUNCH1_INPUT=NONE",
+        "LAUNCH2_INPUT=CIRCLE_6_FRAMES_EVERY_120_FRAMES",
+        "CHECKPOINT_START=adaptive-cycle-02-f180",
+        "AUTHORITATIVE_MONEY_ADDRESS=TIDAK TAHU",
+        "MONEY_CHANGE_STOP=NOT_PROVEN; candidate fields are monitored and candidate changes stop a launch",
+        "MONEY_CANDIDATES=participant_record_plus0x04_u32;global_0x80139EFC_u16_manager_plus0x4F4",
+        "CANDIDATE_FIELD_CHANGES_ARE_NOT_PROOF_OF_MONEY=YES",
+        "PER_FRAME_STATE=GPR_r0_to_r31_plus_candidate_fields; no full RAM hashing or dump",
+        "FEE_BREAKPOINT_REGISTER_CAPTURE=GPR_r0_to_r31",
+        "REGISTER_WRITE=NONE",
+        "MEMORY_WRITE=NONE",
+        "RAM_DUMP=NONE",
+        "SCREENSHOT=NONE",
+        "PRIVATE_BINARY_COMMITTED=no",
+        "RELEASES_MODIFIED=no",
+        "K5_NOT_MET=only one launch per input condition; no repeated pair per condition",
+        "EARLY_STOP_OBSERVED=" + ("YES" if early else "NO"),
+    ]
+    (args.out / "UA2_RUNTIME_SUMMARY.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print("\n".join(lines))
+    if not both_valid:
+        raise SystemExit(1)
+if __name__ == "__main__":
+    main()
