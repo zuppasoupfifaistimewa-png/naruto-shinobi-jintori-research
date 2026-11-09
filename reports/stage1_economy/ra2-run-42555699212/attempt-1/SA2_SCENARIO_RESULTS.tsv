@@ -1,0 +1,3 @@
+scenario	launches_completed	launch1_exit	launch1_frames	launch2_exit	launch2_frames	trace_identical	board_identical	launch1_tiles_before	launch1_tiles_after	launch2_tiles_before	launch2_tiles_after	launch1_hit_800D15A8	launch1_hit_800D2520	launch1_hit_800D46EC	launch2_hit_800D15A8	launch2_hit_800D2520	launch2_hit_800D46EC
+CONTROL_NO_INPUT	2	0	180	0	180	NO_OR_TIDAK_TAHU	YES	22	22	22	22	42	0	0	39	0	0
+CIRCLE_CONFIRM_30_35	2	0	180	0	180	NO_OR_TIDAK_TAHU	YES	22	22	22	22	40	0	0	42	0	0

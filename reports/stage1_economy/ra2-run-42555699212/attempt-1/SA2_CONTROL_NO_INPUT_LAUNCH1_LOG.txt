@@ -1,0 +1,52 @@
+LAUNCH=1
+SCENARIO=CONTROL_NO_INPUT
+GAMEPLAY_INPUT=NONE
+Loading memory card /tmp/naruto-ra2-42555699212-1/runtime/CONTROL_NO_INPUT/launch1/control.mcd
+The memory card /tmp/naruto-ra2-42555699212-1/runtime/CONTROL_NO_INPUT/launch1/home/.config/pcsx-redux/memcard2.mcd doesn't exist - creating it
+Audio: driver dummy, 44100 Hz, 441 frames per period
+Loaded CD Image: /tmp/naruto-ra2-42555699212-1/source/game-run.cue[+cue].
+Track 01 (DATA) - Start 00:02:00, Length 30:48:01
+CD-ROM Label: SLPS-03553
+CD-ROM ID: SLPS03553
+CD-ROM EXE Name: SLPS_035.53;1
+PCSX-Redux Lua Console 
+LuaJIT 2.1.1785598229 
+JIT: ON SSE3 SSE4.1 BMI2 fold cse dce fwd dse narrow loop abc sink fuse 
+PCSX-Redux booting
+Copyright (C) 2019-2025 PCSX-Redux authors
+CPU type: Interpreted
+Loaded BIOS: /tmp/naruto-ra2-42555699212-1/source/bios.bin
+Known BIOS detected: SCPH-7502 (EU) (318178bf)
+RA2_READY=1 scenario=CONTROL_NO_INPUT memory=READ_ONLY breakpoints=EXEC 
+RA2_INPUT=NONE 
+BIOS Trace1: 0x0f
+BIOS Trace1: 0x0e
+BIOS Trace1: 0x01
+BIOS Trace1: 0x02
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x01
+BIOS Trace1: 0x03
+BIOS Trace1: 0x04
+BIOS Trace1: 0x05
+BIOS Trace1: 0x06
+BIOS Trace1: 0x02
+BIOS Trace1: 0x05
+
+PS-X Realtime Kernel Ver.2.5
+Copyright 1993,1994 (C) Sony Computer Entertainment Inc. 
+BIOS Trace1: 0x06
+KERNEL SETUP!
+
+Configuration : EvCB	0x10		TCB	0x04
+BIOS Trace1: 0x07
+RA2_STATE_LOADED=1 
+RA2_RESTORE_RETURNED=1 
+RA2_SNAPSHOT tag=BEFORE_CONFIRM frame=20 tile_count=22 
+RA2_SNAPSHOT tag=AFTER_CONFIRM frame=180 tile_count=22 
+RA2_TRACE_ROWS=42 
+RA2_TRACE_OVERFLOW=0 
+RA2_BOARD_ROWS=44 
+RA2_BOARD_OVERFLOW=0 
+RA2_FRAMES=180 
+RA2_LAUNCH_COMPLETE=1 
