@@ -230,7 +230,7 @@ jobs:
           set -euo pipefail
           DEST="reports/stage1_economy/la-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$DEST"
-          find "$OUT" -maxdepth 1 -type f \( -name 'LA*.txt' -o -name 'LA*.tsv' -o -name 'LA*.md' -o -name 'UA1*.txt' -o -name 'UA1*.tsv' -o -name 'UB1*.txt' -o -name 'UB1*.tsv' -o -name 'UB3*.txt' -o -name 'UB3*.tsv' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
+          find "$OUT" -maxdepth 1 -type f \( -name 'LA0_ANALYZER_STATUS.txt' -o -name 'LA0_ARCHIVE_UNION*.txt' -o -name 'LA0_ARCHIVE_UNION*.tsv' -o -name 'UB1*.txt' -o -name 'UB1*.tsv' -o -name 'UB3*.txt' -o -name 'UB3*.tsv' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
           EXE_RC="$(sed -n 's/^EXE_GHIDRA_EXIT=//p' "$OUT/GHIDRA_DIAGNOSTICS.txt" 2>/dev/null | head -n 1 || true)"
           [ -n "$EXE_RC" ] || EXE_RC=TIDAK_TAHU
           ENTRY_RC="$(sed -n 's/^ENTRY1_GHIDRA_EXIT=//p' "$OUT/GHIDRA_DIAGNOSTICS.txt" 2>/dev/null | head -n 1 || true)"

@@ -44,7 +44,10 @@ def write_tsv(path, fields, rows):
 def evidence_paths(stage,new_output):
     paths=set(p for p in stage.rglob("*.tsv") if p.is_file())
     if new_output and new_output.exists():
-        paths.update(p for p in new_output.rglob("*.tsv") if p.is_file())
+        # Only UB1 is the new byte-evidence deliverable for this run.
+        # LA1-LA5/UA1 outputs already exist in the historical archive and
+        # are deliberately not republished as duplicate current-run excerpts.
+        paths.update(p for p in new_output.rglob("UB1*.tsv") if p.is_file())
     return sorted(paths,key=lambda p:str(p))
 
 def scan(paths,root,new_output):
