@@ -547,7 +547,7 @@ txt(out/"LA1_WALLET_STATUS.txt","WALLET_AUTHORITATIVE_SETTER=TIDAK TAHU\n"+
 site=0x800D49D0
 formula=expr_reg(ci,3,site,ENTRY_BASE)
 a2expr=expr_reg(ci,6,0x800D49D8,ENTRY_BASE)
-drows=rows_window(ci,0x800D49A4,"D49D0_ADDRESS_DATAFLOW_64B_A",0,16)
+drows=rows_window(ci,0x800D49A4,"D49D0_ADDRESS_DATAFLOW_64B_A",0,15)
 wr(out/"LA2_D49D0_ADDRESS_DATAFLOW.tsv",drows,["image","pc","file_offset","bytes","instruksi","excerpt_id"])
 xrows=[]
 for g in (0x8013EA6E,0x8013EB1C,0x8013EA74,0x8013EA88,0x80139EFC):
