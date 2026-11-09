@@ -4,6 +4,9 @@
 from __future__ import annotations
 
 import argparse
+import ast
+import json
+import sys
 import csv
 import fnmatch
 import io
@@ -337,7 +340,7 @@ def sa1_audit(root: Path):
         instruction_count += 1
         try:
             with instruction_path.open("r", encoding="utf-8-sig", newline="") as handle:
-                reader = csv.DictReader(handle, delimiter="\\t")
+                reader = csv.DictReader(handle, delimiter="\t")
                 header_map = {normalize_header(name): name for name in (reader.fieldnames or [])}
                 if not {"image", "pc"}.issubset(header_map):
                     instruction_ok = False
@@ -382,6 +385,270 @@ def sa1_audit(root: Path):
     checks["LATEST_SA1_STATUS_MATCHES_ACTIONS_REPORT"] = status_ok
     return checks
 
+
+TRIM_RANGES = (
+    ("ENTRY1", 0x800D77C4, 0x800D77C8),
+    ("ENTRY1", 0x800D7D4C, 0x800D7D50),
+    ("ENTRY1", 0x800F5DCC, 0x800F5DD0),
+    ("EXE", 0x80011A1C, 0x80011A28),
+)
+PROTECTED_RANGES = (
+    ("EXE", 0x80011A28, 0x80011A68),
+    ("ENTRY1", 0x800B50AC, 0x800B50B4),
+)
+
+
+def prune_target_rows(stage: Path, root: Path, out: Path):
+    removed = []
+    changed_paths = []
+    eligible_files = 0
+    guard_failures = []
+    for path in sorted(stage.rglob("*.tsv")):
+        original = path.read_bytes()
+        has_bom = original.startswith(b"\xef\xbb\xbf")
+        try:
+            text = original.decode("utf-8-sig")
+            physical_lines = text.splitlines(keepends=True)
+            reader = csv.reader(io.StringIO(text, newline=""), delimiter="\t")
+            header = next(reader)
+        except (UnicodeDecodeError, csv.Error, StopIteration):
+            continue
+        header_end = reader.line_num
+        header_map = {normalize_header(name): index for index, name in enumerate(header)}
+        if not {"image", "pc", "bytes"}.issubset(header_map):
+            continue
+        eligible_files += 1
+        kept_lines = physical_lines[:header_end]
+        cursor = header_end
+        file_removed = 0
+        for cells in reader:
+            end_line = reader.line_num
+            record_lines = physical_lines[cursor:end_line]
+            cursor = end_line
+            if not cells or len(cells) <= max(header_map["image"], header_map["pc"], header_map["bytes"]):
+                kept_lines.extend(record_lines)
+                continue
+            try:
+                image = normalize_image(cells[header_map["image"]])
+                pc = parse_pc(cells[header_map["pc"]])
+                payload = parse_bytes(cells[header_map["bytes"]])
+            except Exception:
+                kept_lines.extend(record_lines)
+                continue
+            if not payload:
+                kept_lines.extend(record_lines)
+                continue
+            overlaps = [
+                (label, start, end)
+                for label, start, end in TRIM_RANGES
+                if image == label and pc < end and pc + len(payload) > start
+            ]
+            if not overlaps:
+                kept_lines.extend(record_lines)
+                continue
+            protected = [
+                (label, start, end)
+                for label, start, end in PROTECTED_RANGES
+                if image == label and pc < end and pc + len(payload) > start
+            ]
+            if protected:
+                guard_failures.append([
+                    path.relative_to(root).as_posix(), end_line,
+                    image, f"0x{pc:08X}", len(payload),
+                    ";".join(f"{label}:0x{start:08X}-0x{end-1:08X}"
+                             for label, start, end in protected),
+                ])
+                kept_lines.extend(record_lines)
+                continue
+            overlap_names = ";".join(
+                f"{label}:0x{start:08X}-0x{end-1:08X}"
+                for label, start, end in overlaps
+            )
+            removed.append([
+                path.relative_to(root).as_posix(), end_line, image,
+                f"0x{pc:08X}", len(payload), overlap_names,
+            ])
+            file_removed += 1
+        if cursor < len(physical_lines):
+            kept_lines.extend(physical_lines[cursor:])
+        if file_removed:
+            rewritten = "".join(kept_lines).encode("utf-8")
+            if has_bom:
+                rewritten = b"\xef\xbb\xbf" + rewritten
+            path.write_bytes(rewritten)
+            changed_paths.append(path.relative_to(root).as_posix())
+    if changed_paths:
+        git(root, "add", "--", *changed_paths)
+    write_tsv(
+        out / "QA0_TRIM_REMOVALS.tsv",
+        ["source_file", "source_line_end", "image", "pc", "byte_count", "trim_range"],
+        removed,
+    )
+    write_tsv(
+        out / "QA0_TRIM_PROTECTED_WINDOW_GUARDS.tsv",
+        ["source_file", "source_line_end", "image", "pc", "byte_count", "protected_range"],
+        guard_failures,
+    )
+    return removed, changed_paths, eligible_files, not guard_failures
+
+
+def literal_repr_audit(root: Path, out: Path):
+    source_path = root / "tools" / "qa" / "RunQA0Harness.pytxt"
+    tree = ast.parse(source_path.read_text(encoding="utf-8"), filename=str(source_path))
+    rows = []
+    ok = True
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        fn = node.func
+        fn_name = fn.attr if isinstance(fn, ast.Attribute) else (fn.id if isinstance(fn, ast.Name) else "")
+        for keyword in node.keywords:
+            if keyword.arg != "delimiter":
+                continue
+            try:
+                value = ast.literal_eval(keyword.value)
+            except Exception:
+                value = None
+            passed = value == "\t"
+            rows.append(["DELIMITER", node.lineno, repr(value), "PASS" if passed else "FAIL_EXPECTED_SINGLE_TAB"])
+            ok = ok and passed
+        if isinstance(fn, ast.Attribute) and isinstance(fn.value, ast.Name) and fn.value.id == "re":
+            if fn_name in {"sub", "search", "match", "fullmatch", "compile"} and node.args:
+                try:
+                    pattern = ast.literal_eval(node.args[0])
+                except Exception:
+                    continue
+                passed = isinstance(pattern, str) and "\\\\" not in pattern
+                rows.append(["REGEX", node.lineno, repr(pattern), "PASS" if passed else "FAIL_DOUBLE_BACKSLASH"])
+                ok = ok and passed
+    write_tsv(out / "QA0_LITERAL_REPR.tsv", ["kind", "line", "repr_value", "status"], rows)
+    return ok, rows
+
+
+def independent_union_check(stage: Path, out: Path):
+    independent_script = r'''
+import csv, json, re, sys
+from collections import defaultdict
+from pathlib import Path
+
+stage = Path(sys.argv[1])
+values = {}
+conflicts = set()
+valid_rows = 0
+eligible_files = 0
+labels = set()
+blocked_rows = 0
+blocked = (
+    ("ENTRY1", 0x800D77C4, 0x800D77C8),
+    ("ENTRY1", 0x800D7D4C, 0x800D7D50),
+    ("ENTRY1", 0x800F5DCC, 0x800F5DD0),
+    ("EXE", 0x80011A1C, 0x80011A28),
+)
+for path in sorted(stage.rglob("*.tsv")):
+    try:
+        with path.open("r", encoding="utf-8-sig", newline="") as stream:
+            reader = csv.DictReader(stream, delimiter="\t")
+            headers = {str(name).strip().lower(): name for name in (reader.fieldnames or [])}
+            if not {"image", "pc", "bytes"}.issubset(headers):
+                continue
+            eligible_files += 1
+            for row in reader:
+                raw = (row.get(headers["image"]) or "").strip().upper()
+                compact = re.sub(r"[^A-Z0-9]", "", raw)
+                if "ENTRY1" in compact:
+                    image = "ENTRY1"
+                elif compact in {"EXE", "SLPS03553", "SLPS03553EXE"} or "SLPS03553" in compact:
+                    image = "EXE"
+                else:
+                    image = re.sub(r"[^A-Z0-9]+", "_", raw).strip("_") or "TIDAK_TAHU"
+                pc_text = (row.get(headers["pc"]) or "").strip()
+                byte_text = (row.get(headers["bytes"]) or "").strip()
+                if not pc_text or not byte_text or image == "TIDAK_TAHU":
+                    continue
+                tokens = byte_text.split()
+                if not tokens or any(len(token) != 2 for token in tokens):
+                    continue
+                try:
+                    pc = int(pc_text, 16)
+                    payload = bytes(int(token, 16) for token in tokens)
+                except Exception:
+                    continue
+                valid_rows += 1
+                labels.add(image)
+                if any(image == label and pc < end and pc + len(payload) > start
+                       for label, start, end in blocked):
+                    blocked_rows += 1
+                for index, byte in enumerate(payload):
+                    key = (image, pc + index)
+                    old = values.get(key)
+                    if old is not None and old != byte:
+                        conflicts.add(key)
+                    else:
+                        values[key] = byte
+    except Exception:
+        continue
+by_image = defaultdict(list)
+for image, address in values:
+    by_image[image].append(address)
+spans = []
+for image, addresses in by_image.items():
+    addresses.sort()
+    if not addresses:
+        continue
+    start = previous = addresses[0]
+    for address in addresses[1:]:
+        if address != previous + 1:
+            spans.append((image, start, previous + 1))
+            start = address
+        previous = address
+    spans.append((image, start, previous + 1))
+over = [
+    {"image": image, "start": f"0x{start:08X}", "end_exclusive": f"0x{end:08X}",
+     "bytes": end - start}
+    for image, start, end in spans if end - start > 64
+]
+print(json.dumps({
+    "eligible_files": eligible_files,
+    "valid_rows": valid_rows,
+    "unique_addresses": len(values),
+    "labels": sorted(labels),
+    "max_span": max((end - start for _, start, end in spans), default=0),
+    "over_64_groups": over,
+    "over_64_count": len(over),
+    "conflict_count": len(conflicts),
+    "blocked_rows": blocked_rows,
+}, sort_keys=True))
+'''
+    result = subprocess.run(
+        [sys.executable, "-c", independent_script, str(stage)],
+        capture_output=True, text=True, check=False,
+    )
+    if result.returncode != 0:
+        summary = {"status": "FAIL", "reason": "independent_process_exit",
+                   "exit_code": result.returncode, "stderr": result.stderr[-1000:]}
+        ok = False
+    else:
+        try:
+            summary = json.loads(result.stdout.strip().splitlines()[-1])
+            ok = (
+                summary.get("over_64_count") == 0
+                and summary.get("conflict_count") == 0
+                and summary.get("blocked_rows") == 0
+            )
+            summary["status"] = "PASS" if ok else "FAIL"
+        except Exception as exc:
+            summary = {"status": "FAIL", "reason": "independent_output_parse",
+                       "detail": type(exc).__name__ + ":" + str(exc)}
+            ok = False
+    (out / "QA0_INDEPENDENT_UNION_SUMMARY.txt").write_text(
+        "\n".join(f"{key}={json.dumps(value, sort_keys=True) if isinstance(value, (dict, list)) else value}"
+                  for key, value in summary.items()) + "\n",
+        encoding="utf-8",
+    )
+    return summary, ok
+
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", required=True, type=Path)
@@ -411,12 +678,16 @@ def main():
               ["directory", "baseline_files", "deleted_files", "head_files_remaining", "verification"],
               deletion_rows)
 
+    trim_rows, trim_files, trim_eligible_files, trim_ok = prune_target_rows(stage, root, out)
+    literal_ok, literal_rows = literal_repr_audit(root, out)
+
     rows, total_tsv, evidence_files, malformed, labels = read_evidence(stage)
     values, origins, conflicts, spans = byte_union(rows)
     ha2_audit, ha2_ok, ha2_performed = maybe_prune_ha2(stage, root, args.baseline, spans)
     if ha2_performed:
         rows, total_tsv, evidence_files, malformed, labels = read_evidence(stage)
         values, origins, conflicts, spans = byte_union(rows)
+    independent_summary, independent_ok = independent_union_check(stage, out)
     write_tsv(out / "QA0_HA2_CONDITIONAL_REMOVAL.tsv",
               ["source_file", "baseline_rows", "head_rows", "deleted_rows", "pc", "bytes",
                "image", "git_status", "verification"],
@@ -470,6 +741,9 @@ def main():
     all_ok = (
         all_deletions_ok
         and ha2_ok
+        and trim_ok
+        and literal_ok
+        and independent_ok
         and not over
         and not conflicts
         and not malformed
@@ -498,6 +772,16 @@ def main():
         f"MALFORMED_BYTE_ROWS={len(malformed)}",
         f"HA2_CONDITIONAL_REMOVAL_PERFORMED={'YES' if ha2_performed else 'NO'}",
         f"HA2_CONDITIONAL_REMOVAL_STATUS={'PASS' if ha2_ok else 'FAIL'}",
+        f"TRIMMED_OVERLAP_ROWS={len(trim_rows)}",
+        f"TRIMMED_TSV_FILES={len(trim_files)}",
+        f"TRIM_ELIGIBLE_TSV_FILES={trim_eligible_files}",
+        f"TRIM_STATUS={'PASS' if trim_ok else 'FAIL'}",
+        f"LITERAL_REPR_STATUS={'PASS' if literal_ok else 'FAIL'}",
+        f"LITERAL_REPR_CHECKS={len(literal_rows)}",
+        f"INDEPENDENT_UNION_STATUS={independent_summary.get('status', 'FAIL')}",
+        f"INDEPENDENT_UNION_MAX_CONTIGUOUS_BYTES={independent_summary.get('max_span', 'TIDAK_TAHU')}",
+        f"INDEPENDENT_UNION_OVER_64_GROUPS={independent_summary.get('over_64_count', 'TIDAK_TAHU')}",
+        f"INDEPENDENT_BLOCKED_ROWS={independent_summary.get('blocked_rows', 'TIDAK_TAHU')}",
         f"WORKFLOW_FILES={workflow['workflow_count']}",
         f"PATH_FILTER_PATTERNS={workflow['path_pattern_count']}",
         f"CATCHALL_PY_FILTERS={';'.join(workflow['catchalls']) or 'NONE'}",
