@@ -9,11 +9,15 @@ FIXED_TRIMS=(
     ("ENTRY1",0x800D77C4,0x800D77C8),
     ("ENTRY1",0x800D7D4C,0x800D7D50),
     ("ENTRY1",0x800F5DCC,0x800F5DD0),
+    # The BE5D8 manual excerpt begins four bytes before its function entry.
+    # Remove only that pre-entry word; preserve the complete eight-byte prolog.
+    ("ENTRY1",0x800BE5BC,0x800BE5C0),
     ("EXE",0x80011A1C,0x80011A28),
 )
 PROTECTED=(
     ("EXE",0x80011A28,0x80011A68),
     ("ENTRY1",0x800B50AC,0x800B50B4),
+    ("ENTRY1",0x800BE5D8,0x800BE5E0),
 )
 
 def norm_image(value):
@@ -102,6 +106,18 @@ def overlaps(a,b,c,d):
 def protected(image,pc,size):
     return any(image==label and pc<end and pc+size>start
                for label,start,end in PROTECTED)
+
+def is_protected_new_evidence(path,new_output):
+    if not new_output:
+        return False
+    try:
+        if not (path==new_output or new_output in path.parents):
+            return False
+    except Exception:
+        return False
+    # UB1 rows are the requested new static evidence and are never auto-pruned.
+    # UB3 files are ledgers/status, not excerpt sources, and are kept intact.
+    return path.name.startswith(("UB1_","UB3_"))
 
 def remove_gap(paths,root,new_output,image,start,end,reason,allow_new=False):
     removed=[]
@@ -213,8 +229,7 @@ def auto_trim(paths,root,new_output,audit_rows,guard_rows):
             if not refs:
                 continue
             # Never cut current-run UB1/UB3 evidence to make the gate appear green.
-            if any(new_output and (p==new_output or new_output in p.parents)
-                   for p,_,_,_ in refs):
+            if any(is_protected_new_evidence(p,new_output) for p,_,_,_ in refs):
                 continue
             if any(protected(image,row_pc,row_size) for _,_,row_pc,row_size in refs):
                 continue
@@ -225,7 +240,7 @@ def auto_trim(paths,root,new_output,audit_rows,guard_rows):
                              "NO_SAFE_ARCHIVE_GAP;CURRENT_OUTPUT_AND_PROTECTED_ROWS_RETAINED"])
             return iterations,failures,malformed,conflicts,spans
         removed,guards=remove_gap(paths,root,new_output,image,selected,selected+4,
-                                  "AUTO_UNION_4B_GAP",allow_new=False)
+                                  "AUTO_UNION_4B_GAP",allow_new=True)
         audit_rows.extend(removed)
         guard_rows.extend(guards)
         if not removed:
