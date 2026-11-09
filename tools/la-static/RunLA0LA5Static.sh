@@ -787,6 +787,379 @@ report=("# LA0-LA5 static audit — SLPS-03553\n\n"+
  "- Rumus numerik biaya upgrade untuk lompatan level d>=2.\n\n"+
  "Setiap baris bukti instruksi memiliki image, PC, file offset, bytes, instruksi. Setiap kutipan kontigu dipotong maksimum 64 byte. Static only.\n")
 txt(out/"LA0_LA5_STATIC_REPORT.md",report)
+
+# UB1 — statically bound caller registers, GP-relative writers, and candidate record words.
+def ub_rows_for_register(register,before,site,tag="EXE",code=None,lo=None):
+    code=ce if code is None else code
+    lo=EXE_BASE if lo is None else lo
+    chain=trace_defs(code,register,before,lo,site)
+    result=[]
+    if not chain:
+        result.append({
+            "register":reg(register),"depth":0,"image":tag,"pc":"TIDAK TAHU",
+            "file_offset":"TIDAK TAHU","bytes":"TIDAK TAHU","instruksi":"TIDAK TAHU",
+            "origin_expression":"TIDAK TAHU_NO_STATIC_REACHING_DEFINITION",
+            "site":h32(site),"status":"INCOMING_OR_UNRESOLVED"
+        })
+    else:
+        for x in chain:
+            result.append({
+                "register":reg(register),"depth":x["depth"],"image":tag,
+                "pc":x["pc"],"file_offset":x["file_offset"],"bytes":x["bytes"],
+                "instruksi":x["instruksi"],"origin_expression":x["origin_expression"],
+                "site":h32(site),"status":"STATIC_LINEAR_DEF_NOT_PATH_SSA"
+            })
+    return result
+
+ub1_defs=[]
+ub1_defs.extend(ub_rows_for_register(3,0x80011A1C,0x80011A28))
+ub1_defs.extend(ub_rows_for_register(4,0x80011A10,0x80011A28))
+ub1_defs.extend(ub_rows_for_register(28,0x80011A08,0x80011A28))
+wr(out/"UB1_REGISTER_REACHING_DEFS.tsv",ub1_defs,
+   ["register","depth","image","pc","file_offset","bytes","instruksi",
+    "origin_expression","site","status"])
+
+v1_def=last_def(ce,3,0x80011A1C,EXE_BASE)
+a0_def=last_def(ce,4,0x80011A10,EXE_BASE)
+gp_def=last_def(ce,28,0x80011A08,EXE_BASE)
+v1_expr=expr_reg(ce,3,0x80011A1C,EXE_BASE)
+a0_expr=expr_reg(ce,4,0x80011A10,EXE_BASE)
+gp_expr=expr_reg(ce,28,0x80011A08,EXE_BASE)
+gp_call_value,gp_call_reason=const_value(ce,28,0x80011A08,EXE_BASE)
+gp_call_text=h32(gp_call_value) if gp_call_value is not None else "TIDAK TAHU"
+caller_context=[]
+for q in (0x80011A08,0x80011A0C,0x80011A10,0x80011A14,0x80011A18,
+          0x80011A1C,0x80011A20,0x80011A28):
+    ins=ce_all.get(q)
+    if not ins:
+        caller_context.append({"image":"EXE","pc":h32(q),"file_offset":h32(fileoff(q,"EXE")),
+            "bytes":"TIDAK TAHU","instruksi":"TIDAK TAHU","role":"MISSING_DECODE",
+            "ghidra_code_map":"NO"})
+        continue
+    role=("JALR_CALLSITE" if q==0x80011A28 else
+          "INDEX_LOAD" if q==0x80011A08 else
+          "SCALE_7X4" if q in (0x80011A10,0x80011A14,0x80011A18) else
+          "BASE_PLUS_28X_INDEX" if q==0x80011A1C else
+          "FUNCTION_POINTER_LOAD" if q==0x80011A20 else "DELAY_OR_CONTEXT")
+    row=base_row(ins)
+    row["role"]=role
+    row["ghidra_code_map"]="YES" if q in exe_code_pcs else "NO"
+    caller_context.append(row)
+wr(out/"UB1_CALLER_11A28_CONTEXT.tsv",caller_context,
+   ["image","pc","file_offset","bytes","instruksi","role","ghidra_code_map"])
+
+gp_reg_rows=[]
+gp_offset_rows=[]
+for tag,code,lo in (("EXE",ce,EXE_BASE),("ENTRY1",ci,ENTRY_BASE)):
+    gp_at_site, gp_at_site_reason = const_value(
+        code,28,0x80011A08 if tag=="EXE" else ENTRY_BASE,lo
+    )
+    for pc,ins in sorted(code.items()):
+        if dest(ins)==28:
+            z=base_row(ins)
+            z.update({"register":"$gp","writer_pc":h32(pc),"classification":"REGISTER_DEFINITION"})
+            gp_reg_rows.append(z)
+        if ins["op"] not in STORES:
+            continue
+        matched=[]
+        if ins["rs"]==28 and ins["imm"] in (0xE4,0x118):
+            matched.append((ins["imm"],"DIRECT_GP_RELATIVE",None))
+        else:
+            gp_value,gp_why=const_value(code,28,pc,lo)
+            base_value,base_why=const_value(code,ins["rs"],pc,lo)
+            if gp_value is not None and base_value is not None:
+                effective=(base_value+ins["imm"])&0xffffffff
+                for wanted in (0xE4,0x118):
+                    if effective==((gp_value+wanted)&0xffffffff):
+                        matched.append((wanted,"STATIC_ABSOLUTE_ALIAS",effective))
+        for wanted,mode,effective in matched:
+            z=base_row(ins)
+            z.update({
+                "writer_pc":h32(pc),"target_gp_offset":f"0x{wanted:03X}",
+                "base_register":reg(ins["rs"]),"store_offset_signed":ins["imm"],
+                "effective_address":h32(effective) if effective is not None else "TIDAK TAHU_GP_RUNTIME",
+                "writer_mode":mode,"value_register":reg(ins["rt"]),
+                "gp_at_writer":h32(gp_value) if mode!="DIRECT_GP_RELATIVE" and gp_value is not None
+                               else "TIDAK TAHU"
+            })
+            gp_offset_rows.append(z)
+wr(out/"UB1_GP_REGISTER_WRITERS.tsv",gp_reg_rows,
+   ["image","pc","file_offset","bytes","instruksi","register","writer_pc","classification"])
+wr(out/"UB1_GP_OFFSET_WRITERS.tsv",gp_offset_rows,
+   ["image","pc","file_offset","bytes","instruksi","writer_pc","target_gp_offset",
+    "base_register","store_offset_signed","effective_address","writer_mode",
+    "value_register","gp_at_writer"])
+
+table_base=0x800558FC
+table_rows=[]
+for index in range(-2,5):
+    slot=(table_base+8+28*index)&0xffffffff
+    off=EXE_FILE+slot-EXE_BASE
+    raw=exe[off:off+4] if 0<=off and off+4<=len(exe) else b""
+    if len(raw)==4:
+        value=int.from_bytes(raw,"little")
+        printable="".join(chr(x) if 32<=x<127 else "." for x in raw)
+        target_tag="EXE" if value in ce else "ENTRY1" if value in ci else "NONE"
+        target_ins=(ce.get(value) or ci.get(value))
+        target_text=target_ins["text"] if target_ins else "TIDAK TAHU_NOT_CODE_MAP"
+        status="WORD_READ_OK"
+        byte_text=hx(raw)
+        value_text=h32(value)
+    else:
+        printable="TIDAK TAHU";target_tag="TIDAK TAHU";target_text="TIDAK TAHU"
+        status="OUT_OF_IMAGE";byte_text="TIDAK TAHU";value_text="TIDAK TAHU"
+    table_rows.append({
+        "image":"EXE","index":index,"candidate_base":h32(table_base),
+        "slot_va":h32(slot),"file_offset":h32(off),"bytes":byte_text,
+        "word_u32":value_text,"ascii_le":printable,"target_image":target_tag,
+        "target_instruction":target_text,"status":status
+    })
+wr(out/"UB1_TABLE_BASE_800558FC_WORDS.tsv",table_rows,
+   ["image","index","candidate_base","slot_va","file_offset","bytes","word_u32",
+    "ascii_le","target_image","target_instruction","status"])
+
+end_rows=[]
+for q in range(0x800B5780,0x800B5798,4):
+    ins=ci_all.get(q)
+    if not ins:
+        end_rows.append({"image":"ENTRY1","pc":h32(q),
+            "file_offset":h32(fileoff(q,"ENTRY1")),"bytes":"TIDAK TAHU",
+            "instruksi":"TIDAK TAHU","role":"MISSING_DECODE","ghidra_code_map":"NO"})
+        continue
+    if q==0x800B5780:
+        role="EXPECTED_JR_RA"
+    elif q==0x800B5784:
+        role="JR_RA_DELAY_SLOT_CANDIDATE"
+    elif q==0x800B5790:
+        role="NEXT_PROLOG_START_CANDIDATE"
+    elif q==0x800B5794:
+        role="NEXT_PROLOG_CONTINUATION_CANDIDATE"
+    else:
+        role="FUNCTION_END_CONTEXT"
+    z=base_row(ins)
+    z["role"]=role
+    z["ghidra_code_map"]="YES" if q in entry_code_pcs else "NO"
+    end_rows.append(z)
+wr(out/"UB1_B50AC_END_CONTEXT.tsv",end_rows,
+   ["image","pc","file_offset","bytes","instruksi","role","ghidra_code_map"])
+
+gp_writer_e4=sum(1 for x in gp_offset_rows if x["target_gp_offset"]=="0x0E4")
+gp_writer_118=sum(1 for x in gp_offset_rows if x["target_gp_offset"]=="0x118")
+table_targets=[x for x in table_rows if x["target_image"] in ("EXE","ENTRY1")]
+jr_row=next((x for x in end_rows if x["pc"]=="0x800B5780"),None)
+prolog_row=next((x for x in end_rows if x["pc"]=="0x800B5790"),None)
+ub1_summary=[
+    "STATUS=SEBAGIAN",
+    "CONFIDENCE=K4_STATIC_BYTES; K3_LINEAR_REACHING_DEFINITION_HEURISTIC",
+    "CALLSITE=0x80011A28",
+    "A0_LOAD=0x80011A08 lw $a0,0xE4($gp); expression="+a0_expr,
+    "A0_LAST_STATIC_DEF="+(h32(a0_def["pc"])+" "+a0_def["text"] if a0_def else "TIDAK TAHU"),
+    "V1_PRE_ADD_EXPRESSION="+v1_expr,
+    "V1_LAST_STATIC_DEF="+(h32(v1_def["pc"])+" "+v1_def["text"] if v1_def else "TIDAK TAHU_INCOMING_OR_CALL_BOUNDARY"),
+    "GP_BEFORE_1A08_EXPRESSION="+gp_expr,
+    "GP_LAST_STATIC_DEF="+(h32(gp_def["pc"])+" "+gp_def["text"] if gp_def else "TIDAK TAHU_INCOMING"),
+    "GP_VALUE_BEFORE_1A08="+gp_call_text,
+    "GP_VALUE_REASON="+gp_call_reason,
+    "DIRECT_OR_STATIC_ALIAS_WRITERS_GP_PLUS_E4="+str(gp_writer_e4),
+    "DIRECT_OR_STATIC_ALIAS_WRITERS_GP_PLUS_118="+str(gp_writer_118),
+    "GP_REGISTER_DEFINITION_ROWS="+str(len(gp_reg_rows)),
+    "CANDIDATE_TABLE_BASE=0x800558FC",
+    "CANDIDATE_TABLE_FORMULA=MEM32[0x800558FC + 8 + 28*index]",
+    "CANDIDATE_INDEX_RANGE=-2..+4",
+    "CANDIDATE_WORDS_READ="+str(sum(1 for x in table_rows if x["status"]=="WORD_READ_OK")),
+    "CANDIDATE_WORDS_MAPPING_TO_GHIDRA_CODE="+str(len(table_targets)),
+    "B50AC_END_JR_ROW="+(jr_row["instruksi"] if jr_row else "TIDAK TAHU"),
+    "B50AC_END_PROLOG_5790="+(prolog_row["instruksi"] if prolog_row else "TIDAK TAHU"),
+    "CALLER_CONTEXT_GAP=0x80011A24..0x80011A27 intentionally omitted to separate 28-byte pre-call excerpt from protected 64-byte SA1 window",
+    "RUNTIME=NOT_PERFORMED",
+]
+txt(out/"UB1_STATIC_SUMMARY.txt","\n".join(ub1_summary)+"\n")
+
+# UB3 — incremental commit/file-event ledger inclusive from UB baseline.
+UB_BASELINE="8a5aa492904b4fecafba318adabdb902d3801f67"
+subprocess.run(["git","cat-file","-e",f"{UB_BASELINE}^{{commit}}"],check=True)
+def ub_git(*args):
+    return subprocess.check_output(["git",*args]).decode("utf-8","replace")
+ub_raw=ub_git("log","--reverse","--format=%H%x1f%P%x1f%an%x1f%ae%x1f%aI%x1f%s",
+              f"{UB_BASELINE}^..{source}")
+ub_commits=[]
+ub_file_events=[]
+for line in ub_raw.splitlines():
+    parts=line.split("\x1f",5)
+    if len(parts)!=6: continue
+    sha,parent,author,email,date,subject=parts
+    cls="BOT" if ("[bot]" in author.lower() or "bot" in author.lower() or "dependabot" in author.lower()) else "HUMAN"
+    event_text=ub_git("show","--format=","--name-status","--no-renames",sha).strip()
+    events=[]
+    for ev in event_text.splitlines():
+        p=ev.split("\t")
+        if len(p)>=2 and p[0] not in (""):
+            events.append((p[0],p[-1]))
+            ub_file_events.append([sha,p[0],p[-1]])
+    added=sum(1 for st,_ in events if st=="A")
+    modified=sum(1 for st,_ in events if st=="M")
+    removed=sum(1 for st,_ in events if st=="D")
+    renamed=sum(1 for st,_ in events if st.startswith("R"))
+    ub_commits.append({
+        "sha":sha,"parent_sha":parent.split()[0] if parent else "",
+        "date_utc":date,"author":author,"email":email,"class":cls,
+        "subject":subject,"changed_files":len(events),"added":added,
+        "modified":modified,"removed":removed,"renamed":renamed,
+        "skip_ci":"YES" if "[skip ci]" in subject.lower() else "NO"
+    })
+wr(out/"UB3_LEDGER_COMMITS.tsv",ub_commits,
+   ["sha","parent_sha","date_utc","author","email","class","subject",
+    "changed_files","added","modified","removed","renamed","skip_ci"])
+wr(out/"UB3_LEDGER_COMMIT_FILES.tsv",ub_file_events,
+   ["commit_sha","status","path"])
+ub_shas={x["sha"] for x in ub_commits}
+ub_actions=[]
+for action in allruns:
+    if action.get("head_sha") not in ub_shas:
+        continue
+    ub_actions.append({
+        "run_id":action.get("id"),"workflow":action.get("name"),
+        "path":action.get("path"),"event":action.get("event"),
+        "status":action.get("status"),"conclusion":action.get("conclusion") or "TIDAK TAHU",
+        "head_sha":action.get("head_sha"),"created_at":action.get("created_at")
+    })
+wr(out/"UB3_ACTIONS_RUNS.tsv",ub_actions,
+   ["run_id","workflow","path","event","status","conclusion","head_sha","created_at"])
+ub_human=sum(x["class"]=="HUMAN" for x in ub_commits)
+ub_bot=sum(x["class"]=="BOT" for x in ub_commits)
+ub_summary=[
+    "BASELINE_INCLUSIVE="+UB_BASELINE,
+    "SOURCE_SHA="+source,
+    "HEAD_AT_ANALYSIS="+head_sha,
+    "COMMITS_TOTAL_INCLUDING_BASELINE="+str(len(ub_commits)),
+    "COMMITS_AFTER_BASELINE="+str(max(0,len(ub_commits)-1)),
+    "COMMITS_HUMAN="+str(ub_human),
+    "COMMITS_BOT="+str(ub_bot),
+    "COMMIT_FILE_EVENT_ROWS_NO_RENAMES="+str(len(ub_file_events)),
+    "ACTIONS_RUNS_FOR_INCLUDED_COMMIT_SHAS="+str(len(ub_actions)),
+    "ACTIONS_RUN_IDS="+(";".join(str(x["run_id"]) for x in ub_actions) or "NONE"),
+    "ACTIONS_SUCCESS_AT_CAPTURE="+str(sum(x["conclusion"]=="success" for x in ub_actions)),
+    "ACTIONS_FAILURE_AT_CAPTURE="+str(sum(x["conclusion"]=="failure" for x in ub_actions)),
+    "ACTIONS_IN_PROGRESS_AT_CAPTURE="+str(sum(x["status"]!="completed" for x in ub_actions)),
+    "LEDGER_SCOPE=incremental from UB baseline inclusive through source SHA; own later publication commit excluded",
+]
+txt(out/"UB3_LEDGER_SUMMARY.txt","\n".join(ub_summary)+"\n")
+
+# Correct the older TA3 header using its exact historical range.
+TA3_BASE="aa32fbcee97c8f49946a8e589010cfb9ef1a6928"
+TA3_END="59887632dbe9fed142f1c4d5c448382addab462e"
+TA3_NEXT="292c422cedf54afc6f8df83ee615c2c1bbecd067"
+ta3_log=ub_git("log","--reverse","--format=%H%x1f%an%x1f%ae",f"{TA3_BASE}^..{TA3_END}")
+ta3_commits=[]
+for line in ta3_log.splitlines():
+    p=line.split("\x1f",2)
+    if len(p)!=3: continue
+    cls="BOT" if ("[bot]" in p[1].lower() or "bot" in p[1].lower() or "dependabot" in p[1].lower()) else "HUMAN"
+    ta3_commits.append((p[0],cls))
+ta3_no_renames=ub_git("diff","--name-status","--no-renames",TA3_BASE,TA3_NEXT).splitlines()
+ta3_with_renames=ub_git("diff","--name-status","--find-renames",TA3_BASE,TA3_NEXT).splitlines()
+self_path="reports/actions/ta3-ledger-aa32fbce/TA3_LEDGER.txt"
+def count_change_rows(lines):
+    total=0
+    excluding=0
+    for item in lines:
+        p=item.split("\t")
+        if not p or not p[0]: continue
+        total+=1
+        path=p[-1]
+        if path!=self_path:
+            excluding+=1
+    return total,excluding
+nr_total,nr_excl=count_change_rows(ta3_no_renames)
+rn_total,rn_excl=count_change_rows(ta3_with_renames)
+missing_intermediate=not any(x[0]=="1b1ed031466380d4817ae00414f90e4924de1d2a" for x in ta3_commits)
+ta3_path=Path(self_path)
+ta3_text=ta3_path.read_text(encoding="utf-8")
+inter_sha="1b1ed031466380d4817ae00414f90e4924de1d2a"
+inter_row=ub_git("show","-s","--format=%H%x1f%P%x1f%aI%x1f%an%x1f%s",inter_sha).strip().split("\x1f",4)
+if missing_intermediate:
+    if len(inter_row)!=5:
+        raise SystemExit("TA3_INTERMEDIATE_COMMIT_METADATA_UNAVAILABLE")
+    csha,parent,date,author,subject=inter_row
+    ins=ub_git("show","--format=","--name-status","--no-renames",inter_sha).strip().splitlines()
+    event_statuses=[x.split("\t",1)[0] for x in ins if "\t" in x]
+    line=(f"{csha}\t{parent}\t{date}\t{author}\tHUMAN\t{subject}\t"
+          f"{len(ins)}\t{sum(x=='A' for x in event_statuses)}\t"
+          f"{sum(x=='M' for x in event_statuses)}\t{sum(x=='D' for x in event_statuses)}\t"
+          f"{sum(x.startswith('R') for x in event_statuses)}\t"
+          f"{'YES' if '[skip ci]' in subject.lower() else 'NO'}")
+    marker="73ada82c500e1883ba5252324c61299acf0c9492\t"
+    if marker not in ta3_text:
+        raise SystemExit("TA3_INSERTION_ANCHOR_MISSING")
+    ta3_text=ta3_text.replace(marker,line+"\n"+marker,1)
+def replace_ta3_field(content,key,value):
+    prefix=key+"="
+    found=0
+    result=[]
+    for line in content.splitlines():
+        if line.startswith(prefix):
+            result.append(prefix+str(value));found+=1
+        else:
+            result.append(line)
+    if found!=1:
+        raise SystemExit("TA3_FIELD_EXPECTED_ONCE_"+key+"_FOUND_"+str(found))
+    return "\n".join(result)+"\n"
+if len(ta3_commits)==47 and sum(c=="HUMAN" for _,c in ta3_commits)==36 and sum(c=="BOT" for _,c in ta3_commits)==11:
+    ta3_text=replace_ta3_field(ta3_text,"COMMITS_TOTAL_INCLUDING_BASELINE",47)
+    ta3_text=replace_ta3_field(ta3_text,"COMMITS_AFTER_BASELINE",46)
+    ta3_text=replace_ta3_field(ta3_text,"COMMITS_HUMAN",36)
+    ta3_text=replace_ta3_field(ta3_text,"COMMITS_BOT",11)
+else:
+    raise SystemExit("TA3_EXPECTED_47_36_11_NOT_MATCH_ACTUAL_"+str((len(ta3_commits),sum(c=="HUMAN" for _,c in ta3_commits),sum(c=="BOT" for _,c in ta3_commits))))
+if nr_total==266 and nr_excl==265 and rn_total==262 and rn_excl==261:
+    ta3_text=replace_ta3_field(
+        ta3_text,"COUNT_RECONCILIATION_261_262",
+        "Range aa32fbce..292c422: --no-renames = 266 changed-path records (265 excluding this TA3 ledger path); rename detection = 262 records (261 excluding this TA3 ledger path). Four detected rename pairs collapse eight add/delete path records into four rename records. Per-commit file-event row totals are a separate metric."
+    ) if "COUNT_RECONCILIATION_261_262=" in ta3_text else ta3_text
+else:
+    raise SystemExit("TA3_PATH_COUNT_EXPECTED_266_262_NOT_MATCH_ACTUAL_"+str((nr_total,nr_excl,rn_total,rn_excl)))
+if "EXCLUDED_INTERMEDIATE_LEDGER_PUBLICATION="+inter_sha in ta3_text:
+    ta3_text=replace_ta3_field(
+        ta3_text,"EXCLUDED_INTERMEDIATE_LEDGER_PUBLICATION",
+        inter_sha+"; now recorded as an included HUMAN commit in the corrected 47-commit baseline-inclusive inventory"
+    )
+ta3_path.write_text(ta3_text,encoding="utf-8")
+subprocess.run(["git","add","--",self_path],check=True)
+ta3_recon=[
+    "STATUS=PASS",
+    "TA3_RANGE_INCLUSIVE="+TA3_BASE+".."+TA3_END,
+    "TA3_COMMITS_TOTAL_INCLUDING_BASELINE="+str(len(ta3_commits)),
+    "TA3_COMMITS_HUMAN="+str(sum(c=="HUMAN" for _,c in ta3_commits)),
+    "TA3_COMMITS_BOT="+str(sum(c=="BOT" for _,c in ta3_commits)),
+    "INTERMEDIATE_1B1ED031_INCLUDED="+("YES" if any(x[0]==inter_sha for x in ta3_commits) else "NO"),
+    "NO_RENAMES_CHANGED_PATH_ROWS="+str(nr_total),
+    "NO_RENAMES_EXCLUDING_TA3_SELF_PATH="+str(nr_excl),
+    "RENAME_DETECTION_CHANGED_PATH_ROWS="+str(rn_total),
+    "RENAME_DETECTION_EXCLUDING_TA3_SELF_PATH="+str(rn_excl),
+    "RENAME_RECONCILIATION=4 rename pairs; no-renames represents each pair as an add plus delete",
+    "RA3_DECISION=SKIP",
+    "RA3_AVAILABLE_INDEPENDENT_UPGRADE_SAMPLES=0",
+    "RA3_REASON=no two distinct observed d values; existing RA3 gate remains unchanged",
+]
+txt(out/"UB3_TA3_HEADER_RECONCILIATION.txt","\n".join(ta3_recon)+"\n")
+ra3_status=Path("reports/stage1_economy/ra3/RA3_H1_H2_STATUS.txt")
+if ra3_status.exists():
+    ra3_text=ra3_status.read_text(encoding="utf-8",errors="replace")
+    samples=re.search(r"AVAILABLE_INDEPENDENT_UPGRADE_SAMPLES=(\d+)",ra3_text)
+    sample_count=int(samples.group(1)) if samples else 0
+else:
+    sample_count=0
+txt(out/"UB3_RA3_DECISION.txt",
+    "DECISION="+("RUN" if sample_count>=2 else "SKIP")+"\n"+
+    "AVAILABLE_INDEPENDENT_UPGRADE_SAMPLES="+str(sample_count)+"\n"+
+    "REQUIRED=at least two independently grounded upgrade actions with distinct d values\n"+
+    "RA3_EXISTING_STATUS=UNCHANGED\n"+
+    "REASON="+("variation gate met" if sample_count>=2 else "TIDAK TAHU/no two independent d samples; do not run RA3")+"\n")
+print("UB1_STATIC=EXPORTED")
+print("UB3_COMMITS="+str(len(ub_commits))+" HUMAN="+str(ub_human)+" BOT="+str(ub_bot))
+print("UB3_TA3_CORRECTION=PASS")
+print("UB3_RA3_DECISION="+("RUN" if sample_count>=2 else "SKIP"))
+
 bad=[str(p) for p in out.rglob("*") if p.is_file() and p.suffix.lower() not in {".txt",".tsv",".md"}]
 if bad:raise SystemExit("NON_TEXT_OUTPUT_BLOCKED="+repr(bad))
 print("LA_ANALYSIS=PASS")
@@ -827,3 +1200,4 @@ print("LA2_EC7_WRITERS="+str(len(gw))+" PLUS530_STORES="+str(len(xstores))+" X_E
 print("LA3_BE5D8_CALLERS="+str(len(bcalls))+" B24C8_PROLOG="+(h32(bentry) if bentry else "TIDAK_TAHU"))
 print("EMULATOR_LAUNCHES=0")
 PY
+python3 "$(dirname "$0")/EnforceArchiveExcerptUnion.py" --root "$(git rev-parse --show-toplevel)" --new-output "$OUT" --out "$OUT"
