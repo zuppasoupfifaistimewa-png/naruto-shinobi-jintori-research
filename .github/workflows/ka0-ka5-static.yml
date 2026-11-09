@@ -9,7 +9,6 @@ on:
       - "tools/ka-*/**"
       - "tools/ia-ghidra/*.java"
       - "tools/ja-ghidra/*.java"
-      - "**/*.py"
   workflow_dispatch:
 
 permissions:

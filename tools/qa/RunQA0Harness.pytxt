@@ -1,26 +1,112 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse,csv,fnmatch,io,subprocess
+
+import argparse
+import csv
+import fnmatch
+import io
+import re
+import subprocess
 from collections import defaultdict
 from pathlib import Path
 
-LIMIT=64
-PROTECTED={0x800F5F54,0x800B54DC,0x800F5EBC}
-PREFIXES=("ja-run-","ka-run-","la-run-","ma-run-","na-run-","oa-run-","pa-run-","qa-run-")
+LIMIT = 64
+BASELINE_DEFAULT = "aa32fbcee97c8f49946a8e589010cfb9ef1a6928"
+TARGET_DIRS = (
+    "ka-run-42558598094",
+    "ma-run-42558598089",
+    "na-run-42558598171",
+)
+HA2_PC = 0x800F5D8C
+HA2_END = 0x800F5DD0
 
-def spans(rows):
-    by=defaultdict(list)
-    for z in rows: by[z["image"]].append((z["pc"],z["end"]))
-    out=[]
-    for im,items in by.items():
-        cur=None
-        for x,y in sorted(items):
-            if cur is None or x>cur[1]:
-                if cur: out.append((im,cur[0],cur[1]))
-                cur=[x,y]
-            else: cur[1]=max(cur[1],y)
-        if cur: out.append((im,cur[0],cur[1]))
-    return sorted(out)
+
+def git(root: Path, *args: str) -> str:
+    return subprocess.check_output(["git", "-C", str(root), *args], text=True)
+
+
+def normalize_header(value: str) -> str:
+    return (value or "").strip().lower()
+
+
+def normalize_image(value: str) -> str:
+    raw = (value or "").strip().upper()
+    compact = re.sub(r"[^A-Z0-9]", "", raw)
+    if "ENTRY1" in compact:
+        return "ENTRY1"
+    if compact in {"EXE", "SLPS03553", "SLPS03553EXE"} or "SLPS03553" in compact:
+        return "EXE"
+    return re.sub(r"[^A-Z0-9]+", "_", raw).strip("_") or "TIDAK_TAHU"
+
+
+def parse_pc(value: str) -> int:
+    return int((value or "").strip(), 16)
+
+
+def parse_bytes(value: str) -> bytes:
+    tokens = (value or "").strip().split()
+    if not tokens or any(len(token) != 2 for token in tokens):
+        raise ValueError("bytes must be whitespace-separated two-digit hex")
+    return bytes(int(token, 16) for token in tokens)
+
+
+def count_rows(text: str) -> int:
+    rows = list(csv.reader(io.StringIO(text), delimiter="\t"))
+    return max(0, len(rows) - 1)
+
+
+def read_evidence(stage: Path):
+    rows = []
+    candidate_files = []
+    malformed = []
+    labels = set()
+    total_tsv = 0
+    for path in sorted(stage.rglob("*.tsv")):
+        total_tsv += 1
+        rel = path.relative_to(stage.parent.parent).as_posix()
+        try:
+            with path.open("r", encoding="utf-8-sig", newline="") as handle:
+                reader = csv.DictReader(handle, delimiter="\t")
+                if not reader.fieldnames:
+                    continue
+                header_map = {normalize_header(name): name for name in reader.fieldnames}
+                if not {"image", "pc", "bytes"}.issubset(header_map):
+                    continue
+                candidate_files.append(rel)
+                for row in reader:
+                    raw_bytes = (row.get(header_map["bytes"]) or "").strip()
+                    raw_image = (row.get(header_map["image"]) or "").strip()
+                    raw_pc = (row.get(header_map["pc"]) or "").strip()
+                    if not raw_bytes or raw_bytes.upper() in {
+                        "TIDAK TAHU", "UNKNOWN", "N/A", "NONE", "-"
+                    }:
+                        continue
+                    try:
+                        image = normalize_image(raw_image)
+                        pc = parse_pc(raw_pc)
+                        payload = parse_bytes(raw_bytes)
+                        if image == "TIDAK_TAHU" or not (0 <= pc <= 0xFFFFFFFF):
+                            raise ValueError("invalid image label or PC")
+                    except Exception as exc:
+                        malformed.append([
+                            rel, reader.line_num, raw_image, raw_pc, raw_bytes,
+                            type(exc).__name__ + ":" + str(exc),
+                        ])
+                        continue
+                    labels.add(image)
+                    rows.append({
+                        "image": image,
+                        "pc": pc,
+                        "end": pc + len(payload),
+                        "raw": payload,
+                        "source": rel,
+                        "line": reader.line_num,
+                    })
+        except Exception as exc:
+            malformed.append([
+                rel, 0, "", "", "", "FILE_READ_" + type(exc).__name__ + ":" + str(exc)
+            ])
+    return rows, total_tsv, candidate_files, malformed, sorted(labels)
 
 
 def byte_union(rows):
@@ -36,320 +122,321 @@ def byte_union(rows):
                 conflicts.add(key)
             else:
                 values[key] = value
+
     by_image = defaultdict(list)
     for image, address in values:
         by_image[image].append(address)
-    result = []
+    spans = []
     for image, addresses in by_image.items():
         addresses.sort()
         if not addresses:
             continue
-        start = prev = addresses[0]
+        start = previous = addresses[0]
         for address in addresses[1:]:
-            if address != prev + 1:
-                result.append((image, start, prev + 1))
+            if address != previous + 1:
+                spans.append((image, start, previous + 1))
                 start = address
-            prev = address
-        result.append((image, start, prev + 1))
-    return values, origins, conflicts, sorted(result)
+            previous = address
+        spans.append((image, start, previous + 1))
+    return values, origins, conflicts, sorted(spans)
 
-def line_count(text):
-    reader = csv.DictReader(io.StringIO(text), delimiter="\t")
-    return len(list(reader))
 
-def selftest():
-    fixture="image\tpc\tbytes\nENTRY1\t0x1000\t"+" ".join(["00"]*65)+"\n"
-    rows=list(csv.DictReader(io.StringIO(fixture),delimiter="\t"))
-    assert len(rows)==1 and len(bytes.fromhex(rows[0]["bytes"]))==65
-    assert any(y-x>64 for _,x,y in spans([{"image":"ENTRY1","pc":0x1000,"end":0x1041}]))
-    assert not any(y-x>64 for _,x,y in spans([{"image":"ENTRY1","pc":0x1000,"end":0x1040}]))
-    assert "\t" in fixture and "\\t" not in fixture
-    return "FIXTURE_65_BYTES=DETECTED\nFIXTURE_64_BYTES=PASS\nTSV_DELIMITER=ONE_LITERAL_TAB\nLITERAL_BACKSLASH_T_ABSENT=PASS\n"
+def write_tsv(path: Path, header, rows):
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle, delimiter="\t", lineterminator="\n")
+        writer.writerow(header)
+        writer.writerows(rows)
+
+
+def maybe_prune_ha2(stage: Path, root: Path, baseline: str, spans):
+    over_target = [
+        (image, start, end)
+        for image, start, end in spans
+        if image == "ENTRY1" and end - start > LIMIT
+        and start <= HA2_PC < end and start < HA2_END
+    ]
+    audit = []
+    if not over_target:
+        return audit, True, False
+
+    targets = sorted(stage.glob("ha2-ha3-static-run-*/attempt-1/HA2_GLOBAL_OPERAND_ACCESS.tsv"))
+    if not targets:
+        return [["TIDAK_TAHU", 0, 0, 0, "FAIL_NO_HA2_SOURCE_FILES"]], False, True
+
+    ok = True
+    for path in targets:
+        rel = path.relative_to(root).as_posix()
+        before = git(root, "show", f"{baseline}:{rel}")
+        before_lines = before.splitlines(keepends=True)
+        current_text = path.read_text(encoding="utf-8")
+        header = next(csv.reader(io.StringIO(current_text), delimiter="\t"), [])
+        hmap = {normalize_header(name): index for index, name in enumerate(header)}
+        if not {"pc", "bytes"}.issubset(hmap):
+            audit.append([rel, count_rows(before), count_rows(current_text), 0, "FAIL_HEADER"])
+            ok = False
+            continue
+
+        matches = []
+        for line_index, line in enumerate(current_text.splitlines(keepends=True)):
+            if line_index == 0:
+                continue
+            cells = next(csv.reader([line], delimiter="\t"), [])
+            if len(cells) <= max(hmap["pc"], hmap["bytes"]):
+                continue
+            try:
+                pc = parse_pc(cells[hmap["pc"]])
+                payload = parse_bytes(cells[hmap["bytes"]])
+            except Exception:
+                continue
+            if pc == HA2_PC and len(payload) == 4:
+                matches.append(line_index)
+
+        if len(matches) != 1:
+            audit.append([rel, count_rows(before), count_rows(current_text), len(matches), "FAIL_MATCH_COUNT"])
+            ok = False
+            continue
+
+        lines = current_text.splitlines(keepends=True)
+        del lines[matches[0]]
+        after_text = "".join(lines)
+        old_lines = before_lines.copy()
+        if matches[0] >= len(old_lines):
+            audit.append([rel, count_rows(before), count_rows(after_text), 1, "FAIL_BASELINE_RANGE"])
+            ok = False
+            continue
+        del old_lines[matches[0]]
+        if after_text != "".join(old_lines):
+            audit.append([rel, count_rows(before), count_rows(after_text), 1, "FAIL_OTHER_CHANGES"])
+            ok = False
+            continue
+        path.write_text(after_text, encoding="utf-8", newline="")
+        after_n = count_rows(after_text)
+        status = "PASS" if after_n == count_rows(before) - 1 else "FAIL_ROW_DELTA"
+        ok = ok and status == "PASS"
+        audit.append([rel, count_rows(before), after_n, 1, status])
+    return audit, ok, True
+
+
+def audit_target_deletions(root: Path, baseline: str):
+    rows = []
+    statuses = {}
+    for dirname in TARGET_DIRS:
+        prefix = f"reports/stage1_economy/{dirname}/"
+        before = git(root, "ls-tree", "-r", "--name-only", baseline, "--", prefix).splitlines()
+        head = git(root, "ls-tree", "-r", "--name-only", "HEAD", "--", prefix).splitlines()
+        diff = git(root, "diff", "--no-renames", "--name-status", baseline, "HEAD", "--", prefix)
+        changed = {}
+        for line in diff.splitlines():
+            parts = line.split("\t", 1)
+            if len(parts) == 2:
+                changed[parts[1]] = parts[0]
+        exact = bool(before) and not head and len(changed) == len(before) and all(
+            changed.get(path) == "D" for path in before
+        )
+        rows.append([dirname, len(before), sum(1 for x in changed.values() if x == "D"),
+                     len(head), "PASS" if exact else "FAIL"])
+        statuses[dirname] = exact
+    return rows, statuses
+
+
+def workflow_path_audit(root: Path):
+    workflow_dir = root / ".github" / "workflows"
+    workflows = sorted(workflow_dir.glob("*.yml"))
+    patterns = []
+    catchalls = []
+    legacy_refs = []
+    for path in workflows:
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        if any(re.search(r"RunSA1Windows\.py(?:['\"\s]|$)", line) for line in lines):
+            legacy_refs.append(path.name)
+        for index, line in enumerate(lines):
+            if line.strip() != "paths:":
+                continue
+            indent = len(line) - len(line.lstrip())
+            cursor = index + 1
+            while cursor < len(lines):
+                candidate = lines[cursor]
+                if candidate.strip() and len(candidate) - len(candidate.lstrip()) <= indent:
+                    break
+                item = candidate.strip()
+                if item.startswith("-"):
+                    pattern = item[1:].strip().strip('"').strip("'")
+                    patterns.append((path.name, pattern))
+                    if pattern == "**/*.py":
+                        catchalls.append(path.name)
+                cursor += 1
+
+    last_commit_files = git(root, "diff", "--name-only", "HEAD^", "HEAD").splitlines()
+    trigger_matches = sorted({
+        workflow for workflow, pattern in patterns
+        for changed_path in last_commit_files
+        if fnmatch.fnmatchcase(changed_path, pattern)
+    })
+    previous_subject = git(root, "log", "-1", "--format=%s", "HEAD^").strip()
+    return {
+        "workflow_count": len(workflows),
+        "path_pattern_count": len(patterns),
+        "catchalls": sorted(set(catchalls)),
+        "legacy_refs": sorted(set(legacy_refs)),
+        "last_commit_files": last_commit_files,
+        "trigger_matches": trigger_matches,
+        "prep_commit_skip_ci": "[skip ci]" in previous_subject.lower(),
+    }
+
+
+def sa1_audit(root: Path):
+    source = root / "tools" / "stage1" / "RunSA1Windows.pytxt"
+    old_source = root / "tools" / "stage1" / "RunSA1Windows.py"
+    text = source.read_text(encoding="utf-8")
+    checks = {
+        "OLD_PY_REMOVED": not old_source.exists(),
+        "CALLER_WINDOW_64B": 'window_rows("EXE"' in text and "WINDOW_BYTES = 64" in text,
+        "PROLOG_WINDOW_8B": 'prolog_pc, "ENTRY1_PROLOG_8B", PROLOG_BYTES)' in text
+                            and "PROLOG_BYTES = 8" in text,
+        "IMAGE_LABELS_EXE_ENTRY1": 'window_rows("EXE"' in text and 'window_rows("ENTRY1"' in text,
+        "B54DC_BREAKPOINT_WINDOW_REMOVED": "BREAKPOINT_TARGET" not in text,
+    }
+    sa1_dirs = sorted((root / "reports" / "stage1_economy").glob("sa1-run-*/attempt-1"))
+    if sa1_dirs:
+        latest = max(sa1_dirs, key=lambda p: int(re.search(r"sa1-run-(\d+)", str(p)).group(1)))
+        summary_path = latest / "SA1_SUMMARY.txt"
+        action_path = latest / "ACTIONS_RUN_SUMMARY.txt"
+        try:
+            summary_status = next(
+                line.split("=", 1)[1] for line in summary_path.read_text().splitlines()
+                if line.startswith("STATUS=")
+            )
+            action_status = next(
+                line.split("=", 1)[1] for line in action_path.read_text().splitlines()
+                if line.startswith("STATUS=")
+            )
+            checks["LATEST_SA1_STATUS_MATCHES_ACTIONS_REPORT"] = summary_status == action_status
+        except Exception:
+            checks["LATEST_SA1_STATUS_MATCHES_ACTIONS_REPORT"] = False
+    else:
+        checks["LATEST_SA1_STATUS_MATCHES_ACTIONS_REPORT"] = False
+    return checks
+
 
 def main():
-    ap=argparse.ArgumentParser()
-    ap.add_argument("--root",required=True,type=Path);ap.add_argument("--out",required=True,type=Path)
-    ap.add_argument("--baseline",default="3d3eff5d9e0e03b0742423be241473cf60bb3736")
-    ap.add_argument("--pa-prune-baseline",default="a133f0b266f211a31f26439d3a04ac8705b515e4")
-    a=ap.parse_args();root=a.root.resolve();out=a.out.resolve();out.mkdir(parents=True,exist_ok=True)
-    (out/"QA0_HARNESS_SELFTEST.txt").write_text(selftest(),encoding="utf-8",newline="")
-    tracked=subprocess.check_output(["git","-C",str(root),"ls-files","-z"]).decode().split("\0")
-    paths=[root/x for x in tracked if x.endswith((".py",".pytxt")) and (root/x).is_file()]
-    for p in sorted((root/"tools"/"qa").glob("*.pytxt")):
-        if p not in paths: paths.append(p)
-    compiled=[]
-    for p in paths:
-        try: compile(p.read_text(encoding="utf-8"),str(p),"exec");compiled.append((p.relative_to(root).as_posix(),"PASS",""))
-        except Exception as e: compiled.append((p.relative_to(root).as_posix(),"FAIL",type(e).__name__+":"+str(e)))
-    with (out/"QA0_PYCOMPILE.tsv").open("w",encoding="utf-8",newline="") as f:
-        w=csv.writer(f,delimiter="\t",lineterminator="\n");w.writerow(["path","status","reason"]);w.writerows(compiled)
-    if not compiled or any(x[1]!="PASS" for x in compiled): raise SystemExit("PY_COMPILE_FAIL")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--root", required=True, type=Path)
+    parser.add_argument("--out", required=True, type=Path)
+    parser.add_argument("--baseline", default=BASELINE_DEFAULT)
+    args = parser.parse_args()
+    root = args.root.resolve()
+    out = args.out.resolve()
+    out.mkdir(parents=True, exist_ok=True)
+    stage = root / "reports" / "stage1_economy"
 
-    stage=root/"reports"/"stage1_economy"
-    baseline=a.baseline
-    pa_baseline=a.pa_prune_baseline
-    diff_text=subprocess.check_output(["git","-C",str(root),"diff","--no-renames","--name-status",baseline+"...HEAD"],text=True)
-    changed={}
-    for line in diff_text.splitlines():
-        fields=line.split("\t",1)
-        if len(fields)==2: changed[fields[1]]=fields[0]
-    pa_diff_text=subprocess.check_output(["git","-C",str(root),"diff","--no-renames","--name-status",pa_baseline+"...HEAD"],text=True)
-    pa_changed={}
-    for line in pa_diff_text.splitlines():
-        fields=line.split("\t",1)
-        if len(fields)==2: pa_changed[fields[1]]=fields[0]
+    compiled = []
+    tracked = git(root, "ls-files", "-z").split("\0")
+    compile_paths = [root / path for path in tracked
+                     if path.endswith((".py", ".pytxt")) and (root / path).is_file()]
+    for path in sorted(compile_paths):
+        try:
+            compile(path.read_text(encoding="utf-8"), str(path), "exec")
+            compiled.append([path.relative_to(root).as_posix(), "PASS", ""])
+        except Exception as exc:
+            compiled.append([path.relative_to(root).as_posix(), "FAIL",
+                             type(exc).__name__ + ":" + str(exc)])
+    write_tsv(out / "QA0_PYCOMPILE.tsv", ["path", "status", "reason"], compiled)
 
-    # Audit the exact 15 physical deletions against the inclusive baseline.
-    runs=("42482327357","42482696764","42483585195","42484127968","42484169218")
-    targets={}
-    for run in runs:
-        folder=f"reports/stage1_economy/pa-run-{run}-static/attempt-1/"
-        targets[folder+"PA2_GLOBAL_POINTER_SELECTOR_ACCESSES.tsv"]=[
-            ("0x800F5D8C","74 EA 42 8C")]
-        targets[folder+"PA2_V0_STORE_WINDOWS.tsv"]=[
-            ("0x800D77A4","95 5F 03 08"),
-            ("0x800D7D2C","95 5F 03 08")]
-    affected=[]; physical_deleted=[]; target_rows=[]; physical_ok=True
-    for rel,specs in sorted(targets.items()):
-        before=subprocess.check_output(["git","-C",str(root),"show",pa_baseline+":"+rel],text=True)
-        current=(root/rel).read_text(encoding="utf-8")
-        before_rows=list(csv.DictReader(io.StringIO(before),delimiter="\t"))
-        after_rows=list(csv.DictReader(io.StringIO(current),delimiter="\t"))
-        kept=[]; found={spec:0 for spec in specs}
-        for line_no,line in enumerate(before.splitlines(keepends=True),1):
-            fields=line.rstrip("\r\n").split("\t")
-            if len(fields)>=4 and (fields[1],fields[3]) in found:
-                spec=(fields[1],fields[3]);found[spec]+=1
-                row=next((r for r in before_rows
-                          if r.get("pc")==spec[0] and r.get("bytes")==spec[1]),{})
-                physical_deleted.append([rel,line_no,fields[0],spec[0],spec[1],row.get("excerpt_id","")])
-            else:
-                kept.append(line)
-        remaining={spec:sum(1 for r in after_rows if r.get("pc")==spec[0] and r.get("bytes")==spec[1]) for spec in specs}
-        expected_n=len(specs)
-        exact=(all(found.get(s,0)==1 for s in specs)
-               and all(remaining.get(s,0)==0 for s in specs)
-               and current=="".join(kept)
-               and pa_changed.get(rel)=="M"
-               and len(before_rows)-len(after_rows)==expected_n)
-        physical_ok=physical_ok and exact
-        affected.append([rel,pa_changed.get(rel,"MISSING"),len(before_rows),expected_n,
-                         len(after_rows),"PASS" if exact else "FAIL"])
-        for spec in specs:
-            target_rows.append([rel,spec[0],spec[1],found.get(spec,0),remaining.get(spec,0),
-                                "PASS" if found.get(spec,0)==1 and remaining.get(spec,0)==0 and exact else "FAIL"])
-    with (out/"QA0_AFFECTED_FILE_COUNTS.tsv").open("w",encoding="utf-8",newline="") as f:
-        w=csv.writer(f,delimiter="\t",lineterminator="\n")
-        w.writerow(["source_file","git_status_vs_baseline","rows_before","expected_removed","rows_after","verification"])
-        w.writerows(affected)
-    with (out/"QA0_PHYSICAL_DELETION_VERIFICATION.tsv").open("w",encoding="utf-8",newline="") as f:
-        w=csv.writer(f,delimiter="\t",lineterminator="\n")
-        w.writerow(["source_file","pc","bytes","rows_found_at_baseline","rows_remaining_at_head","verification"])
-        w.writerows(target_rows)
-    with (out/"QA0_DELETED_ROWS.tsv").open("w",encoding="utf-8",newline="") as f:
-        w=csv.writer(f,delimiter="\t",lineterminator="\n")
-        w.writerow(["source_file","source_line","image","pc","bytes","excerpt_id"])
-        w.writerows(physical_deleted)
+    deletion_rows, deletion_statuses = audit_target_deletions(root, args.baseline)
+    write_tsv(out / "QA0_TARGET_DIRECTORY_DELETIONS.tsv",
+              ["directory", "baseline_files", "deleted_files", "head_files_remaining", "verification"],
+              deletion_rows)
 
-    # Scan all real source TSVs in the JA/KA/LA/MA/NA/OA/PA/QA archives.
-    # QA0_* TSVs are generated audit derivatives, not independent source excerpts.
-    rows=[]; files=[]; evidence_files=[]; generated_excluded=[]; malformed=[]
-    for p in sorted(stage.rglob("*.tsv")):
-        rel=p.relative_to(root).as_posix()
-        if not any(part.startswith(PREFIXES) for part in p.relative_to(stage).parts): continue
-        if p.name.startswith("QA0_"):
-            generated_excluded.append(rel);continue
-        files.append(p)
-        with p.open(encoding="utf-8",newline="") as f:
-            rd=csv.DictReader(f,delimiter="\t")
-            if not rd.fieldnames or not {"image","pc","bytes"}.issubset(set(rd.fieldnames)): continue
-            evidence_files.append(rel)
-            for z in rd:
-                raw=(z.get("bytes") or "").strip(); im=(z.get("image") or "").strip()
-                if not raw or raw.upper() in {"TIDAK TAHU","UNKNOWN","N/A","NONE","-"}: continue
-                try:
-                    pc=int((z.get("pc") or "").strip(),16)
-                    tokens=raw.split()
-                    if not im or not tokens or any(len(x)!=2 for x in tokens): raise ValueError("invalid image or byte token")
-                    b=bytes(int(x,16) for x in tokens)
-                except Exception as exc:
-                    malformed.append([rel,rd.line_num,z.get("pc",""),raw,type(exc).__name__+":"+str(exc)])
-                    continue
-                rows.append({"image":im,"pc":pc,"end":pc+len(b),"raw":b,
-                             "source":rel,"line":rd.line_num,"excerpt":z.get("excerpt_id","")})
+    rows, total_tsv, evidence_files, malformed, labels = read_evidence(stage)
+    values, origins, conflicts, spans = byte_union(rows)
+    ha2_audit, ha2_ok, ha2_performed = maybe_prune_ha2(stage, root, args.baseline, spans)
+    if ha2_performed:
+        rows, total_tsv, evidence_files, malformed, labels = read_evidence(stage)
+        values, origins, conflicts, spans = byte_union(rows)
+    write_tsv(out / "QA0_HA2_CONDITIONAL_REMOVAL.tsv",
+              ["source_file", "rows_before", "rows_after", "matching_rows_removed", "verification"],
+              ha2_audit)
 
-    values,origins,byte_conflicts,full_spans=byte_union(rows)
-    full_bad=[x for x in full_spans if x[2]-x[1]>LIMIT]
-    pa_qa_rows=[z for z in rows if "/pa-run-" in z["source"] or "/qa-run-" in z["source"]]
-    rebuilt_spans=spans(pa_qa_rows)
-    rebuilt_bad=[x for x in rebuilt_spans if x[2]-x[1]>LIMIT]
-    def save_spans(name,data):
-        with (out/name).open("w",encoding="utf-8",newline="") as f:
-            w=csv.writer(f,delimiter="\t",lineterminator="\n")
-            w.writerow(["image","start_pc","end_pc_exclusive","contiguous_bytes"])
-            for im,x,y in data:w.writerow([im,f"0x{x:08X}",f"0x{y:08X}",y-x])
-    save_spans("QA0_FULL_ARCHIVE_SPANS.tsv",full_spans)
-    save_spans("QA0_PA_QA_REPLACEMENT_SPANS.tsv",rebuilt_spans)
-    for name,data,header in [
-        ("QA0_FULL_ARCHIVE_OVERLIMIT.tsv",full_bad,["image","start_pc","end_pc_exclusive","contiguous_bytes"]),
-        ("QA0_PA_QA_OVERLIMIT.tsv",rebuilt_bad,["image","start_pc","end_pc_exclusive","contiguous_bytes"])]:
-        with (out/name).open("w",encoding="utf-8",newline="") as f:
-            w=csv.writer(f,delimiter="\t",lineterminator="\n");w.writerow(header)
-            for im,x,y in data:w.writerow([im,f"0x{x:08X}",f"0x{y:08X}",y-x])
-    origin_rows=[]
-    for im,x,y in full_bad:
-        for z in rows:
-            if z["image"]==im and z["pc"]<y and z["end"]>x:
-                origin_rows.append([im,f"0x{x:08X}",f"0x{y:08X}",y-x,z["source"],z["line"],f"0x{z['pc']:08X}",len(z["raw"])])
-    with (out/"QA0_OVERLIMIT_ORIGINS.tsv").open("w",encoding="utf-8",newline="") as f:
-        w=csv.writer(f,delimiter="\t",lineterminator="\n")
-        w.writerow(["image","group_start_pc","group_end_pc_exclusive","group_bytes","source_file","source_line","row_pc","row_bytes"])
-        w.writerows(origin_rows)
-    conflict_rows=[[im,f"0x{pc:08X}",",".join(f"{s}:{ln}" for s,ln,_,_ in origins[(im,pc)])]
-                   for im,pc in sorted(byte_conflicts)]
-    with (out/"QA0_BYTE_OVERLAP_CONFLICTS.tsv").open("w",encoding="utf-8",newline="") as f:
-        w=csv.writer(f,delimiter="\t",lineterminator="\n");w.writerow(["image","address","origins"]);w.writerows(conflict_rows)
-    with (out/"QA0_MALFORMED_BYTE_ROWS.tsv").open("w",encoding="utf-8",newline="") as f:
-        w=csv.writer(f,delimiter="\t",lineterminator="\n")
-        w.writerow(["source_file","source_line","pc","bytes","reason"]);w.writerows(malformed)
-    # Correct erroneous PA3 control-transfer labels in a companion TSV only.
-    pa3_label_rows=[]
-    for p in sorted(stage.rglob("PA3_B24C8_REACHABILITY.tsv")):
-        rel=p.relative_to(root).as_posix()
-        if not any(part.startswith(("pa-run-","qa-run-")) for part in p.relative_to(stage).parts):
-            continue
-        with p.open("r",encoding="utf-8",newline="") as f:
-            rd=csv.DictReader(f,delimiter="\t")
-            for z in rd:
-                candidate=(z.get("control_transfer_candidate") or "").strip()
-                if not candidate.lower().startswith("lw "):
-                    continue
-                candidate_pc=(z.get("control_transfer_candidate_pc") or "").strip()
-                pred=(z.get("predecessor_pc") or "").strip()
-                target=(z.get("target_pc") or "").strip()
-                if candidate_pc=="0x800B24C0" and pred=="0x800B24C4" and target=="0x800B24C8":
-                    corrected_pc="NONE"
-                    corrected="FALLTHROUGH"
-                    reason="0x800B24C0 is lw, not control transfer; 0x800B24C4 nop falls through to target 0x800B24C8"
-                else:
-                    corrected_pc="TIDAK TAHU"
-                    corrected="TIDAK TAHU"
-                    reason="candidate instruction is lw; independent control-flow review required"
-                pa3_label_rows.append([rel,rd.line_num,candidate_pc,candidate,pred,z.get("predecessor_instruction",""),
-                                       target,corrected_pc,corrected,reason])
-    with (out/"QA0_PA3_CONTROL_TRANSFER_LABEL_AUDIT.tsv").open("w",encoding="utf-8",newline="") as f:
-        w=csv.writer(f,delimiter="\t",lineterminator="\n")
-        w.writerow(["source_file","source_line","original_candidate_pc","original_candidate","predecessor_pc",
-                    "predecessor_instruction","target_pc","corrected_candidate_pc","corrected_candidate","correction_reason"])
-        w.writerows(pa3_label_rows)
-    wfdir=root/".github"/"workflows"; wfpaths=[]
-    for p in sorted(wfdir.glob("*.yml")):
-        ls=p.read_text(encoding="utf-8",errors="replace").splitlines()
-        for i,line in enumerate(ls):
-            if line.strip()=="paths:":
-                ind=len(line)-len(line.lstrip());j=i+1
-                while j<len(ls):
-                    if ls[j].strip() and len(ls[j])-len(ls[j].lstrip())<=ind:break
-                    v=ls[j].strip()
-                    if v.startswith("-"):wfpaths.append((p.name,v[1:].strip().strip('"').strip("'")))
-                    j+=1
-    targets=[".github/workflows/qa0-qa5.yml","tools/qa/RunQA0Harness.pytxt","tools/qa/RunQA4Control.pytxt"]
-    collisions=[(wf,pat,t) for wf,pat in wfpaths if wf!="qa0-qa5.yml" for t in targets if fnmatch.fnmatchcase(t,pat)]
-    with (out/"QA0_WORKFLOW_PATHS_AUDIT.txt").open("w",encoding="utf-8",newline="") as f:
-        f.write(f"WORKFLOW_FILES={len(list(wfdir.glob('*.yml')))}\nPATH_FILTER_ENTRIES={len(wfpaths)}\nCOLLISIONS={len(collisions)}\n")
-        f.write("COLLISION_DETAILS="+(";".join(f"{x[0]}:{x[1]}->{x[2]}" for x in collisions) or "none")+"\n")
-    # SA0 may remove only these six previously enumerated output directories.
-    side_dirs=(
-      ("ka-run-42531753623",28),("ma-run-42531753591",48),("na-run-42531753599",76),
-      ("ka-run-42531815506",28),("ma-run-42531815503",48),("na-run-42531815501",76))
-    side_removed_paths=set();side_audit=[];side_cleanup_ok=True
-    for dirname,expected_n in side_dirs:
-        prefix=f"reports/stage1_economy/{dirname}/"
-        before_paths=subprocess.check_output(["git","-C",str(root),"ls-tree","-r","--name-only",baseline,"--",prefix],text=True).splitlines()
-        head_paths=subprocess.check_output(["git","-C",str(root),"ls-tree","-r","--name-only","HEAD","--",prefix],text=True).splitlines()
-        delta={p:s for p,s in changed.items() if p.startswith(prefix)}
-        exact=(len(before_paths)==expected_n and not head_paths and len(delta)==expected_n
-               and set(before_paths)==set(delta) and all(s=="D" for s in delta.values()))
-        side_cleanup_ok=side_cleanup_ok and exact
-        side_removed_paths.update(before_paths)
-        side_audit.append([dirname,expected_n,len(before_paths),len(delta),len(head_paths),"PASS" if exact else "FAIL"])
-    with (out/"QA0_SA0_DIRECTORY_VERIFICATION.tsv").open("w",encoding="utf-8",newline="") as f:
-        w=csv.writer(f,delimiter="\t",lineterminator="\n")
-        w.writerow(["directory","expected_files","files_at_SA_baseline","deleted_files","files_at_HEAD","verification"])
-        w.writerows(side_audit)
-    duplicate_path="tools/ra/RunRA2UpgradeProbe.py"
-    duplicate_before=subprocess.check_output(["git","-C",str(root),"ls-tree","-r","--name-only",baseline,"--",duplicate_path],text=True).splitlines()
-    duplicate_after=subprocess.check_output(["git","-C",str(root),"ls-tree","-r","--name-only","HEAD","--",duplicate_path],text=True).splitlines()
-    duplicate_deleted=(len(duplicate_before)==1 and not duplicate_after and changed.get(duplicate_path)=="D")
-    protected_file_patterns=("PA1_CALLSITE_A2_A3.tsv","PA1_CALL_WINDOWS.tsv")
-    protected_files_changed=[p for p in changed if Path(p).name in protected_file_patterns]
-    legacy_changed=[p for p in changed if any(part.startswith(("ja-run-","ka-run-","la-run-","ma-run-","na-run-","oa-run-")) for part in Path(p).parts)]
-    unexpected_legacy_changed=[p for p in legacy_changed if p not in side_removed_paths or changed.get(p)!="D"]
-    forbidden_changed=[p for p in changed if p=="STATUS.md" or p.startswith("releases/") or p.startswith("Release/")]
-    protected_removed=sum(1 for row in physical_deleted if row[3] in {f"0x{x:08X}" for x in PROTECTED})
-    sa_verified_dirs=sum(1 for r in side_audit if r[5]=="PASS")
-    sa_baseline_files=sum(r[2] for r in side_audit)
-    sa_deleted_files=sum(r[3] for r in side_audit)
-    sa_remaining_files=sum(r[4] for r in side_audit)
-    sa_cleanup_status="PASS" if side_cleanup_ok else "FAIL"
-    duplicate_status="YES" if duplicate_deleted else "NO"
-    workflow_files=list(wfdir.glob("*.yml"))
-    all_ok=(physical_ok and len(physical_deleted)==15 and len(affected)==10
-            and side_cleanup_ok and duplicate_deleted
-            and protected_removed==0 and not protected_files_changed and not unexpected_legacy_changed
-            and not forbidden_changed and not full_bad and not rebuilt_bad
-            and not byte_conflicts and not malformed and not collisions
-            and sum(x[1]=="PASS" for x in compiled)==len(compiled))
-    status="TUNTAS" if all_ok else ("BELUM" if not physical_ok or not side_cleanup_ok or not duplicate_deleted or protected_files_changed or unexpected_legacy_changed or forbidden_changed else "SEBAGIAN")
-    over_rows=[[im,f"0x{x:08X}",f"0x{y:08X}",y-x] for im,x,y in full_bad]
-    summary=[
-      "BASELINE_INCLUSIVE="+baseline,
-      "STATUS="+status,
-      "CONFIDENCE=K4",
-      f"TSV_CANDIDATE_FILES={len(files)+len(generated_excluded)}",
-      f"QA0_GENERATED_TSV_EXCLUDED={len(generated_excluded)}",
-      f"EVIDENCE_TSV_FILES={len(evidence_files)}",
-      f"HEX_BYTE_ROWS={len(rows)}",
-      f"UNIQUE_BYTE_ADDRESSES={len(values)}",
-      f"BYTE_OVERLAP_CONFLICT_ADDRESSES={len(byte_conflicts)}",
-      f"MALFORMED_BYTE_ROWS={len(malformed)}",
-      "PA_PRUNE_BASELINE="+pa_baseline,
-      "PHYSICAL_DELETE_EXPECTED_ROWS=15",
-      "SA0_EXPECTED_DIRECTORIES=6",
-      f"SA0_VERIFIED_DIRECTORIES={sa_verified_dirs}",
-      "SA0_EXPECTED_FILES=304",
-      f"SA0_BASELINE_FILES={sa_baseline_files}",
-      f"SA0_DELETED_FILES={sa_deleted_files}",
-      f"SA0_HEAD_FILES_REMAINING={sa_remaining_files}",
-      f"SA0_CLEANUP_STATUS={sa_cleanup_status}",
-      f"DUPLICATE_TRIGGER_DELETED={duplicate_status}",
-      f"PHYSICAL_DELETE_VERIFIED_ROWS={len(physical_deleted) if physical_ok else 0}",
-      "PHYSICAL_DELETE_EXPECTED_FILES=10",
-      f"PHYSICAL_DELETE_VERIFIED_FILES={sum(1 for r in affected if r[1]=='M' and r[5]=='PASS')}",
-      f"PA_FILE_ROW_COUNTS=QA0_AFFECTED_FILE_COUNTS.tsv",
-      f"PA_DELETE_VERIFICATION=QA0_PHYSICAL_DELETION_VERIFICATION.tsv",
-      f"PROTECTED_CALLSITE_ROWS_REMOVED={protected_removed}",
-      f"PROTECTED_CALLSITE_FILES_CHANGED={len(protected_files_changed)}",
-      f"JA_KA_LA_MA_NA_OA_FILES_CHANGED={len(legacy_changed)}",
-      f"UNEXPECTED_LEGACY_FILES_CHANGED={len(unexpected_legacy_changed)}",
-      f"STATUS_MD_OR_RELEASE_FILES_CHANGED={len(forbidden_changed)}",
-      f"UNION_MAX_CONTIGUOUS_BYTES={max((y-x for _,x,y in full_spans),default=0)}",
-      f"UNION_OVER_64_BYTE_GROUPS={len(full_bad)}",
-      f"PA_QA_CURRENT_OVER_64_BYTE_GROUPS={len(rebuilt_bad)}",
-      "UNION_OVERLIMIT_FILE=QA0_FULL_ARCHIVE_OVERLIMIT.tsv",
-      "UNION_OVERLIMIT_ORIGINS=QA0_OVERLIMIT_ORIGINS.tsv",
-      f"WORKFLOW_FILES={len(workflow_files)}",
-      f"PATH_FILTER_ENTRIES={len(wfpaths)}",
-      f"PATH_FILTER_COLLISIONS={len(collisions)}",
-      f"SELFTEST=PASS",
-      f"PY_COMPILE={sum(x[1]=='PASS' for x in compiled)}/{len(compiled)}",
-      "BYTE_UNION_METHOD=per-address byte comparison from each hexadecimal bytes field; identical overlaps merged; conflicting overlaps reported",
-      "DERIVED_OUTPUT_POLICY=QA0_* outputs excluded from raw evidence to prevent generated reports from reintroducing removed source bytes",
-      "STATUS_BASIS=physical baseline-to-HEAD diff verified, then actual source-byte union over JA/KA/LA/MA/NA/OA/PA/QA evidence TSVs",
-      "LIMIT_BYTES=64"
+    over = [(image, start, end, end - start) for image, start, end in spans
+            if end - start > LIMIT]
+    write_tsv(out / "QA0_FULL_ARCHIVE_SPANS.tsv",
+              ["image", "start_pc", "end_pc_exclusive", "contiguous_bytes"],
+              [[image, f"0x{start:08X}", f"0x{end:08X}", end - start]
+               for image, start, end in spans])
+    write_tsv(out / "QA0_FULL_ARCHIVE_OVERLIMIT.tsv",
+              ["image", "start_pc", "end_pc_exclusive", "contiguous_bytes"],
+              [[image, f"0x{start:08X}", f"0x{end:08X}", size]
+               for image, start, end, size in over])
+    conflict_rows = [[image, f"0x{address:08X}",
+                      ";".join(f"{source}:{line}" for source, line, _, _ in origins[(image, address)])]
+                     for image, address in sorted(conflicts)]
+    write_tsv(out / "QA0_BYTE_OVERLAP_CONFLICTS.tsv", ["image", "address", "origins"], conflict_rows)
+    write_tsv(out / "QA0_MALFORMED_BYTE_ROWS.tsv",
+              ["source_file", "source_line", "image", "pc", "bytes", "reason"], malformed)
+
+    workflow = workflow_path_audit(root)
+    workflow_checks = {
+        "NO_CATCHALL_PY_FILTERS": not workflow["catchalls"],
+        "NO_LEGACY_SA1_WORKFLOW_REFS": not workflow["legacy_refs"],
+        "PREPARATION_COMMIT_HAS_SKIP_CI": workflow["prep_commit_skip_ci"],
+        "LAST_COMMIT_ONLY_QA0_TRIGGER": workflow["last_commit_files"] == ["tools/qa/RunQA0Harness.pytxt"]
+                                         and workflow["trigger_matches"] == ["qa0-qa5.yml"],
+    }
+    sa1_checks = sa1_audit(root)
+
+    all_deletions_ok = all(deletion_statuses.values()) and sum(row[1] for row in deletion_rows) == 152
+    all_ok = (
+        all_deletions_ok
+        and ha2_ok
+        and not over
+        and not conflicts
+        and not malformed
+        and all(row[1] == "PASS" for row in compiled)
+        and all(workflow_checks.values())
+        and all(sa1_checks.values())
+    )
+    status = "TUNTAS" if all_ok else "BELUM"
+    summary = [
+        f"BASELINE_INCLUSIVE={args.baseline}",
+        f"STATUS={status}",
+        "CONFIDENCE=K4",
+        f"TARGET_DIRECTORIES={len(TARGET_DIRS)}",
+        f"TARGET_FILES_AT_BASELINE={sum(row[1] for row in deletion_rows)}",
+        f"TARGET_FILES_DELETED={sum(row[2] for row in deletion_rows)}",
+        f"TARGET_FILES_REMAINING={sum(row[3] for row in deletion_rows)}",
+        f"ALL_STAGE1_TSV_FILES_SCANNED={total_tsv}",
+        f"TSV_WITH_IMAGE_PC_BYTES_HEADERS={len(evidence_files)}",
+        f"VALID_BYTE_ROWS={len(rows)}",
+        f"UNIQUE_BYTE_ADDRESSES={len(values)}",
+        f"IMAGE_LABELS_NORMALIZED={';'.join(labels)}",
+        f"UNION_MAX_CONTIGUOUS_BYTES={max((end-start for _, start, end in spans), default=0)}",
+        f"UNION_OVER_64_BYTE_GROUPS={len(over)}",
+        f"BYTE_OVERLAP_CONFLICT_ADDRESSES={len(conflicts)}",
+        f"MALFORMED_BYTE_ROWS={len(malformed)}",
+        f"HA2_CONDITIONAL_REMOVAL_PERFORMED={'YES' if ha2_performed else 'NO'}",
+        f"HA2_CONDITIONAL_REMOVAL_STATUS={'PASS' if ha2_ok else 'FAIL'}",
+        f"WORKFLOW_FILES={workflow['workflow_count']}",
+        f"PATH_FILTER_PATTERNS={workflow['path_pattern_count']}",
+        f"CATCHALL_PY_FILTERS={';'.join(workflow['catchalls']) or 'NONE'}",
+        f"LEGACY_SA1_WORKFLOW_REFERENCES={';'.join(workflow['legacy_refs']) or 'NONE'}",
+        f"PREPARATION_COMMIT_SKIP_CI={'YES' if workflow['prep_commit_skip_ci'] else 'NO'}",
+        f"LAST_COMMIT_FILES={';'.join(workflow['last_commit_files'])}",
+        f"TRIGGER_MATCH_WORKFLOWS={';'.join(workflow['trigger_matches'])}",
+        f"PY_COMPILE={sum(row[1]=='PASS' for row in compiled)}/{len(compiled)}",
+        "EMULATOR_RUNS=0",
+        "BINARY_OUTPUT=NONE",
+        "STATUS_MD_MODIFIED=NO",
+        "RELEASES_MODIFIED=NO",
     ]
-    (out/"QA0_EXCERPT_AUDIT.txt").write_text("\n".join(summary)+"\n",encoding="utf-8",newline="")
+    for key, passed in workflow_checks.items():
+        summary.append(f"WORKFLOW_CHECK_{key}={'PASS' if passed else 'FAIL'}")
+    for key, passed in sa1_checks.items():
+        summary.append(f"SA1_CHECK_{key}={'PASS' if passed else 'FAIL'}")
+    (out / "QA0_EXCERPT_AUDIT.txt").write_text("\n".join(summary) + "\n", encoding="utf-8")
     print("\n".join(summary))
-    if status!="TUNTAS":raise SystemExit(1)
+    if not all_ok:
+        raise SystemExit(1)
 
-if __name__=="__main__":main()
+
+if __name__ == "__main__":
+    main()

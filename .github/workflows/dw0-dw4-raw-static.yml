@@ -7,7 +7,7 @@ on:
     paths:
       - ".github/workflows/dw0-dw4-raw-static.yml"
       - "tools/stage1/RunDW0DW4Raw.py"
-      - "tools/stage1/RunSA1Windows.py"
+      - "tools/stage1/RunSA1Windows.pytxt"
 
 permissions:
   contents: write
@@ -134,7 +134,7 @@ jobs:
           out="$RUNNER_TEMP/dw0-dw4-output"
           mkdir -p "$out"
           set +e
-          python3 tools/stage1/RunSA1Windows.py "$RUNNER_TEMP/dw0-dw4-private/input/SLPS_035.53" "$RUNNER_TEMP/dw0-dw4-private/input/DATA.BIN" "$out"
+          python3 tools/stage1/RunSA1Windows.pytxt "$RUNNER_TEMP/dw0-dw4-private/input/SLPS_035.53" "$RUNNER_TEMP/dw0-dw4-private/input/DATA.BIN" "$out"
           rc=$?
           set -e
           echo "$rc" > "$RUNNER_TEMP/sa1-analysis-exit.txt"

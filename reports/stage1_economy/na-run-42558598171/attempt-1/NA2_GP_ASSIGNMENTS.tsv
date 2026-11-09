@@ -1,3 +1,0 @@
-image	pc	file_offset	bytes	instruksi	excerpt_id	destination	source_expression	constant_value
-EXE	0x800114C8	0x00001CC8	07 80 1C 3C	lui $gp, 0x8007	NA2_GP_ASSIGN	$gp	0x80070000	0x80070000
-EXE	0x800114CC	0x00001CCC	7C D6 9C 27	addiu $gp, $gp, -0x2984	NA2_GP_ASSIGN	$gp	(0x80070000-10628)	0x8006D67C

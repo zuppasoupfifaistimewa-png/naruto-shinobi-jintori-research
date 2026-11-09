@@ -8,7 +8,6 @@ on:
       - "tools/ma-static/**"
       - "tools/ia-ghidra/**"
       - "tools/ja-ghidra/**"
-      - "**/*.py"
 
 permissions:
   contents: write

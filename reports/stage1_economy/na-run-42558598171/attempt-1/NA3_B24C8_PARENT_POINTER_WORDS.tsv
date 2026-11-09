@@ -1,2 +1,0 @@
-image	pc	file_offset	bytes	instruksi	value	classification
-EXE	0x80055900	0x00046100	88 1E 0B 80	DATA_POINTER_WORD	0x800B1E88	POINTER_WORD

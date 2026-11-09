@@ -21,6 +21,7 @@ DATA_EXPECTED_SIZE = 66015232
 DATA_EXPECTED_SHA = "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822"
 TARGET_PC = 0x800B54DC
 WINDOW_BYTES = 64
+PROLOG_BYTES = 8
 
 def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
@@ -49,17 +50,17 @@ def decode_word(data: bytes, pc: int):
         "mnemonic": ins.mnemonic if ins else ".word",
     }
 
-def window_rows(image: str, blob: bytes, base_pc: int, file_base: int, start_pc: int, label: str) -> list[dict]:
+def window_rows(image: str, blob: bytes, base_pc: int, file_base: int, start_pc: int, label: str, window_bytes: int = window_bytes) -> list[dict]:
     if start_pc % 4:
         raise RuntimeError(f"UNALIGNED_WINDOW_{label}")
     off = start_pc - base_pc
-    if off < 0 or off + WINDOW_BYTES > len(blob):
+    if off < 0 or off + window_bytes > len(blob):
         raise RuntimeError(f"WINDOW_OUT_OF_BOUNDS_{label}")
-    segment = blob[off:off + WINDOW_BYTES]
-    if len(segment) != WINDOW_BYTES:
+    segment = blob[off:off + window_bytes]
+    if len(segment) != window_bytes:
         raise RuntimeError(f"WINDOW_SIZE_INVALID_{label}")
     rows = []
-    for n in range(0, WINDOW_BYTES, 4):
+    for n in range(0, window_bytes, 4):
         b = segment[n:n + 4]
         pc = start_pc + n
         rows.append({
@@ -97,7 +98,7 @@ def main() -> int:
     MD.detail = False
 
     rows = []
-    rows += window_rows("SLPS_035.53", exe_file[EXE_HEADER_SIZE:], EXE_LOAD_BASE,
+    rows += window_rows("EXE", exe_file[EXE_HEADER_SIZE:], EXE_LOAD_BASE,
                         EXE_HEADER_SIZE, CALL_PC, "CALLER_EXE_1A28")
 
     call_ins = decode_word(exe_file[call_offset:call_offset + 4], CALL_PC)
@@ -129,17 +130,13 @@ def main() -> int:
 
     if candidate:
         prolog_pc = candidate["entry"]
-        rows += window_rows("DATA.BIN:ENTRY1", entry1, ENTRY1_BASE, ENTRY1_FILE_OFFSET,
-                            prolog_pc, "FUNCTION_PROLOG_CANDIDATE")
+        rows += window_rows("ENTRY1", entry1, ENTRY1_BASE, ENTRY1_FILE_OFFSET,
+                            prolog_pc, "ENTRY1_PROLOG_8B", PROLOG_BYTES)
     else:
         prolog_pc = None
 
-    target_off = TARGET_PC - ENTRY1_BASE
-    if target_off >= 0 and target_off + WINDOW_BYTES <= len(entry1):
-        rows += window_rows("DATA.BIN:ENTRY1", entry1, ENTRY1_BASE, ENTRY1_FILE_OFFSET,
-                            TARGET_PC, "BREAKPOINT_TARGET")
 
-    # Each of the three disassembly windows is independently capped at 64 contiguous bytes.
+    # Caller window is 64 bytes; the candidate prolog is restricted to 8 bytes.
     with (OUT / "SA1_INSTRUCTIONS.tsv").open("w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=["image", "pc", "file_offset", "bytes", "instruksi"],
                            delimiter="\t", lineterminator="\n")
@@ -220,8 +217,10 @@ def main() -> int:
         f"RA1_LAUNCH1_SAVED_RA_SP14={';'.join(runtime['saved_values'][0]) if runtime['saved_values'] else 'TIDAK_TAHU'}",
         f"RA1_LAUNCH2_SAVED_RA_SP14={';'.join(runtime['saved_values'][1]) if runtime['saved_values'] else 'TIDAK_TAHU'}",
         f"RA1_TRACES_IDENTICAL_EXCLUDING_LAUNCH_FIELD={'YES' if runtime['same'] else 'NO_OR_TIDAK_TAHU'}",
-        "WINDOWS_BYTES=64_EACH",
-        "WINDOWS=CALLER_EXE_1A28;FUNCTION_PROLOG_CANDIDATE;BREAKPOINT_TARGET",
+        "WINDOWS_BYTES=CALLER_64_PROLOG_8",
+        "IMAGE_LABELS=EXE;ENTRY1",
+        "WINDOWS=EXE_CALLER_1A28_64B;ENTRY1_PROLOG_CANDIDATE_8B",
+        "BREAKPOINT_WINDOW_OUTPUT=NONE",
         "REGISTER_WRITE=NONE",
         "MEMORY_WRITE=NONE",
         "BINARY_OUTPUT=NONE",

@@ -1,1 +1,0 @@
-WALLET_SETTER=TIDAK TAHU; no complete producer/consumer closure.
