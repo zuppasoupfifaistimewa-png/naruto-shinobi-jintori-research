@@ -1,0 +1,8 @@
+RAW_DECODED_EXE_INSTRUCTIONS=91541
+RAW_DECODED_ENTRY1_INSTRUCTIONS=147412
+GHIDRA_CODE_EXE=64420
+GHIDRA_CODE_ENTRY1=138446
+B24C8_EXACT_RAW_BRANCH_JUMP_OR_CONSTANT_JR_MATCHES=0
+BE5D8_RAW_JALR_STATIC_TARGET_MATCHES=0
+BE5D8_RAW_JALR_LUI_OR_ADDIU_PREDEFINITION_CANDIDATES=0
+INTERPRETATION=Raw aligned decode includes data words; matches outside Ghidra code are unverified. No exact match or zero match is not proof of absence when control-flow or indirect targets remain unresolved.
