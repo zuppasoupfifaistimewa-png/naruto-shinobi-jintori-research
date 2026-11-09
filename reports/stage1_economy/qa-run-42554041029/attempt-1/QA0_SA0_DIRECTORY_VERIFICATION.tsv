@@ -1,0 +1,7 @@
+directory	expected_files	files_at_SA_baseline	deleted_files	files_at_HEAD	verification
+ka-run-42531753623	28	28	28	0	PASS
+ma-run-42531753591	48	48	48	0	PASS
+na-run-42531753599	76	76	76	0	PASS
+ka-run-42531815506	28	28	28	0	PASS
+ma-run-42531815503	48	48	48	0	PASS
+na-run-42531815501	76	76	76	0	PASS
