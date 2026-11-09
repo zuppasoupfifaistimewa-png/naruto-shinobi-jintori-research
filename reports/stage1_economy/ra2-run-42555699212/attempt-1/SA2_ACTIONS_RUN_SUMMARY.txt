@@ -1,0 +1,14 @@
+STATUS=BELUM
+JOB=ra2-two-identical-headless-upgrade-confirmation-launches
+JOB_ID=128960778672
+RUN_ID=42555699212
+SOURCE_SHA=ca23ea4bdbe87903bd76a4945e11ca5fc474452f
+EXIT_CODE=1
+SCENARIOS=CONTROL_NO_INPUT;CIRCLE_CONFIRM_30_35
+LAUNCHES_PER_SCENARIO=2
+LAUNCHES_COMPLETED=4_OF_4
+BREAKPOINTS=EXEC 0x800D15A8,0x800D2520,0x800D46EC
+MEMORY_WRITE=NONE
+REGISTER_WRITE=NONE
+PRIVATE_BINARY_COMMITTED=no
+REASON=all four launches reached 180 frames and captured 22 tiles; board snapshots matched but register traces differed; no upgrade/debit observed; K5 repeatability gate not met
