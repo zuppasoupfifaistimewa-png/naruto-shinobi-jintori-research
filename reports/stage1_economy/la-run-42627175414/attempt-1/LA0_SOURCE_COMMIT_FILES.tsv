@@ -1,0 +1,3 @@
+status	path
+M	.github/workflows/la0-la5-static.yml
+M	tools/la-static/RunLA0LA5Static.sh

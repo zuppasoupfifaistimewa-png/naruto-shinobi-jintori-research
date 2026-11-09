@@ -1,0 +1,2 @@
+range_start	range_end_exclusive	first_jr_ra_pc	first_jr_ra_instruction	next_prolog_pc	next_prolog_instruction	next_prolog_sw_ra_pc	status
+0x800B54E0	0x800B5800	0x800B5780	jr $ra	0x800B5790	addiu $sp, $sp, -0x30	0x800B5794	RETURN_AND_NEXT_PROLOG_FOUND

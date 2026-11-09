@@ -1,0 +1,3 @@
+WALLET_AUTHORITATIVE_SETTER=TIDAK TAHU
+FUN_80014F10 core: participant-indexed max-update at +0x94; this is not proof of the authoritative wallet setter.
+The +0x04 and +0x4F4 candidates remain competing K1 hypotheses; see LA1_WALLET_HYPOTHESES.tsv.

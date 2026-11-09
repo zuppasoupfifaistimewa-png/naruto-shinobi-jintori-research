@@ -1,0 +1,9 @@
+LOAD_PC=0x800D49D0
+LOAD_INSTRUCTION=lbu $v0, ($v1)
+V1_EXPRESSION=((MEM32[0x8013EA74]+16)+(MEM8[0x8013EB1C]+(((MEM16[0x8013EA6E]<<3)+MEM16[0x8013EA6E])<<4)))
+A2_MANAGER_BASE_EXPRESSION=MEM32[0x8013EA74]
+EXPECTED_REDUCTION_FROM_LOCAL_CHAIN=MEM32[0x8013EA74] + 0x10 + MEM8[0x8013EB1C] + (MEM16[0x8013EA6E] * 144)
+INTERPRETATION=address depends on a runtime-loaded manager pointer and two mutable global fields; it is not a fixed file address on this proof
+STATIC_TABLE=NO_STATIC_TABLE_BASE_PROVEN
+BYTE_SET_OF_LBU_RESULT=TIDAK TAHU (data bytes are selected through runtime state; no static byte set can be claimed)
+LIMIT=nearest-definition slice only; not path-sensitive; global aliases/writers remain separate
