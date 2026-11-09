@@ -64,9 +64,15 @@ def scan(paths,root,new_output):
                     if image is None:
                         ignored+=1
                         continue
+                    pc_text=(row.get(names["pc"]) or "").strip()
+                    bytes_text=(row.get(names["bytes"]) or "").strip()
+                    # TIDAK TAHU is an explicit unresolved placeholder, not malformed byte evidence.
+                    if "TIDAK TAHU" in pc_text.upper() or "TIDAK TAHU" in bytes_text.upper():
+                        ignored+=1
+                        continue
                     try:
-                        pc=parse_pc(row.get(names["pc"]) or "")
-                        payload=parse_payload(row.get(names["bytes"]) or "")
+                        pc=parse_pc(pc_text)
+                        payload=parse_payload(bytes_text)
                     except Exception as exc:
                         malformed.append([display_path(path,root,new_output),line,image,
                                           row.get(names["pc"]) or "",row.get(names["bytes"]) or "",
@@ -286,7 +292,7 @@ def main():
       "AUTO_UNION_TRIM_ROWS="+str(sum(1 for r in audit if r[-1]=="AUTO_UNION_4B_GAP")),
       "AUTO_UNION_ITERATIONS="+str(iterations),
       "PROTECTED_WINDOW_INTERSECTIONS="+str(len(guards)),
-      "UNKNOWN_IMAGE_ROWS_IGNORED="+str(ignored),
+      "UNRESOLVED_OR_UNKNOWN_ROWS_IGNORED="+str(ignored),
       "F5DCC_FIXED_TRIM_ROWS="+str(sum(1 for r in audit if r[2]=="ENTRY1" and r[5]=="0x800F5DCC-0x800F5DCF")),
       "CURRENT_OUTPUT_EVIDENCE_CUT=NO",
       "STATUS_MD_MODIFIED=NO",
