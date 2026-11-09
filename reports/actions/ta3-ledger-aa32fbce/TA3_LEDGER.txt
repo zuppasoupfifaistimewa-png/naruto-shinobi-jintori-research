@@ -1,22 +1,22 @@
 STATUS=TUNTAS
 CONFIDENCE=K4
 BASELINE_INCLUSIVE=aa32fbcee97c8f49946a8e589010cfb9ef1a6928
-LEDGER_PARENT_HEAD=31947bae6ca4b5605981d5c8e6a16ec7e12495ae
-LEDGER_RANGE=aa32fbcee97c8f49946a8e589010cfb9ef1a6928^..31947bae6ca4b5605981d5c8e6a16ec7e12495ae
-COMMITS_TOTAL_INCLUDING_BASELINE=14
-COMMITS_AFTER_BASELINE=13
-COMMITS_HUMAN=11
-COMMITS_BOT=3
-COMMIT_FILE_CHANGE_ROWS=237
-ACTIONS_RUNS_CREATED_SINCE_BASELINE=3
-ACTIONS_JOB_ROWS=5
+LEDGER_PARENT_HEAD=6fa9da88dda389fce3168026386a5062a873161e
+LEDGER_RANGE=aa32fbcee97c8f49946a8e589010cfb9ef1a6928^..6fa9da88dda389fce3168026386a5062a873161e
+COMMITS_TOTAL_INCLUDING_BASELINE=21
+COMMITS_AFTER_BASELINE=20
+COMMITS_HUMAN=16
+COMMITS_BOT=5
+COMMIT_FILE_CHANGE_ROWS=261
+ACTIONS_RUNS_CREATED_SINCE_BASELINE=5
+ACTIONS_JOB_ROWS=9
 ACTIONS_RUNS_SUCCESS=1
-ACTIONS_RUNS_FAILURE=2
+ACTIONS_RUNS_FAILURE=4
 TA0_STATUS=BELUM
-TA0_CONFIDENCE=K4_FAILURE_CONFIRMED; 152 target deletions, workflow isolation, compact SA1 windows and 78/78 compile pass; full union has six >64-byte groups (max 128); QA0 HA2 re-prune check is non-idempotent although direct baseline comparison confirms prior cleanup
+TA0_CONFIDENCE=K4_FAILURE_CONFIRMED; physical cleanup and workflow isolation pass, SA1 windows compact, full union audit final run 42571105641 still has six >64-byte groups (max 128); no zero-overlimit gate
 TA0_TARGET_DIRECTORY_DELETIONS=152_PHYSICAL_FILES_DELETED
-TA0_HA2_CONDITIONAL_CLEANUP=PHYSICAL_PASS; each of two HA2 TSVs is exactly baseline minus one 4-byte row at 0x800F5D8C; QA0 reported FAIL_MATCH_COUNT because the row was already absent at HEAD
-TA0_AUDIT_METRICS=NOT_PASS; 3766 TSV scanned; 300 header candidates; 210008 valid byte rows; max contiguous 128B; six groups >64B; zero conflicts; zero malformed
+TA0_HA2_CONDITIONAL_CLEANUP=PASS; final QA0 verified each of two HA2 TSVs is baseline minus exactly one 4-byte row at 0x800F5D8C; baseline_rows=4268; head_rows=4267; git_status=M
+TA0_AUDIT_METRICS=NOT_PASS; final run 42571105641 scanned 3777 TSVs; 301 image/pc/bytes candidates; 210008 valid byte rows; max contiguous 128B; six groups >64B; zero conflicts; zero malformed; HA2 deletion audit PASS
 TA1_STATUS=TUNTAS
 TA1_CONFIDENCE=K4
 TA1_RESULT=B54DC_INSIDE_B50AC_FUNCTION_CANDIDATE; 0x800B50AC addiu $sp,-0x18; 0x800B50B0 sw $ra,0x14($sp); internal branch 0x800B54C0 -> 0x800B54DC; no external direct branch; no jr $ra before target, so exact function end not proven
@@ -25,8 +25,8 @@ TA1_JOB_EXIT_CODE=0
 TA1_EMULATOR_RUNS=0
 TA2_STATUS=BELUM
 TA2_REASON=TA0_GATE_DID_NOT_PASS; requested two 900-frame launches (no-input vs periodic CIRCLE) were not performed
-QA4_UNEXPECTED_JOB=RUN_42566294855_JOB_128993639683; two 180-frame no-input CONTROL launches; explicitly NOT_TA2; latest run 42568914600 correctly skipped QA4
-TA3_LEDGER_STATUS=TUNTAS; all 13 commits after inclusive baseline and all 3 Actions runs through LEDGER_PARENT_HEAD are represented; publication commit for this update excluded
+QA4_UNEXPECTED_JOB=RUN_42566294855_JOB_128993639683; two 180-frame no-input CONTROL launches; explicitly NOT_TA2; runs 42568914600, 42570934141 and 42571105641 correctly skipped QA4
+TA3_LEDGER_STATUS=TUNTAS; all 20 commits after inclusive baseline and all 5 Actions runs through LEDGER_PARENT_HEAD are represented; this ledger publication commit is excluded
 RA2_UPGRADE_ACTIONS_OBSERVED=0
 RA2_D_SAMPLES_OBSERVED=0
 RA2_DISTINCT_D_VALUES=0
@@ -54,6 +54,13 @@ c63d60600aa42af9615f81c0c4d83cbe2aacacb8	25dad92778733ed21693d38a93b5c4aaeed0509
 3cfa92e35737e683e53cba7c9879315909889bd9	c63d60600aa42af9615f81c0c4d83cbe2aacacb8	2026-11-09T05:43:07Z	zuppasoupfifaistimewa-png	HUMAN	Prepare TA0 final-head verification [skip ci]	0	0	0	0	0	YES
 dab4216ef15a3586447e883c6bfeba4819fe5814	3cfa92e35737e683e53cba7c9879315909889bd9	2026-11-09T05:43:15Z	zuppasoupfifaistimewa-png	HUMAN	Run TA0 final-head static verification	1	0	1	0	0	NO
 31947bae6ca4b5605981d5c8e6a16ec7e12495ae	dab4216ef15a3586447e883c6bfeba4819fe5814	2026-11-09T05:43:35Z	github-actions[bot]	BOT	Publish TA0 static gate audit 42568914600 [skip ci]	12	12	0	0	0	YES
+18c3f3451a81db7d6d6d4c4829e531a03362539c	31947bae6ca4b5605981d5c8e6a16ec7e12495ae	2026-11-09T05:49:52Z	zuppasoupfifaistimewa-png	HUMAN	Update TA3 incremental commit and Actions ledger through TA0 final-head audit [skip ci]	1	0	1	0	0	YES
+d0075b90f46080582ca5fb8be86f716324a3d0c3	18c3f3451a81db7d6d6d4c4829e531a03362539c	2026-11-09T06:04:52Z	zuppasoupfifaistimewa-png	HUMAN	Make TA0 HA2 one-row deletion audit idempotent [skip ci]	1	0	1	0	0	YES
+5dcb949c761b9bd6f9c2a3fcacd6f607fd900d53	d0075b90f46080582ca5fb8be86f716324a3d0c3	2026-11-09T06:05:07Z	zuppasoupfifaistimewa-png	HUMAN	Run TA0 final-head static verification	1	0	1	0	0	NO
+dc3713ed3e42456ffea8c6e4beb807044ae7cac3	5dcb949c761b9bd6f9c2a3fcacd6f607fd900d53	2026-11-09T06:05:21Z	github-actions[bot]	BOT	Publish TA0 static gate audit 42570934141 [skip ci]	7	7	0	0	0	YES
+3396c5434196a39d604632e4d737a4bff1bee8f0	dc3713ed3e42456ffea8c6e4beb807044ae7cac3	2026-11-09T06:06:42Z	zuppasoupfifaistimewa-png	HUMAN	Fix QA0 TSV delimiter in HA2 audit [skip ci]	1	0	1	0	0	YES
+fc3a37ec00db9a6c018b98640f9a5477206b29b8	3396c5434196a39d604632e4d737a4bff1bee8f0	2026-11-09T06:06:54Z	zuppasoupfifaistimewa-png	HUMAN	Re-run TA0 final-head static verification	1	0	1	0	0	NO
+6fa9da88dda389fce3168026386a5062a873161e	fc3a37ec00db9a6c018b98640f9a5477206b29b8	2026-11-09T06:07:11Z	github-actions[bot]	BOT	Publish TA0 static gate audit 42571105641 [skip ci]	12	12	0	0	0	YES
 === COMMIT FILES (ALL PATHS) ===
 commit_sha	status	path	additions	deletions
 aa32fbcee97c8f49946a8e589010cfb9ef1a6928	modified	reports/stage1_economy/sa3/SA3_BRANCHES.tsv	1	1
@@ -294,11 +301,42 @@ dab4216ef15a3586447e883c6bfeba4819fe5814	modified	tools/qa/RunQA0Harness.pytxt	1
 31947bae6ca4b5605981d5c8e6a16ec7e12495ae	added	reports/stage1_economy/qa-run-42568914600/attempt-1/QA0_PYCOMPILE.tsv	79	0
 31947bae6ca4b5605981d5c8e6a16ec7e12495ae	added	reports/stage1_economy/qa-run-42568914600/attempt-1/QA0_REPORT.md	47	0
 31947bae6ca4b5605981d5c8e6a16ec7e12495ae	added	reports/stage1_economy/qa-run-42568914600/attempt-1/QA0_TARGET_DIRECTORY_DELETIONS.tsv	4	0
+18c3f3451a81db7d6d6d4c4829e531a03362539c	modified	reports/actions/ta3-ledger-aa32fbce/TA3_LEDGER.txt	41	18
+d0075b90f46080582ca5fb8be86f716324a3d0c3	modified	tools/qa/RunQA0Harness.pytxt	44	34
+5dcb949c761b9bd6f9c2a3fcacd6f607fd900d53	modified	tools/qa/RunQA0Harness.pytxt	3	1
+dc3713ed3e42456ffea8c6e4beb807044ae7cac3	added	reports/stage1_economy/qa-run-42570934141/attempt-1/ACTIONS_RUN_SUMMARY.txt	10	0
+dc3713ed3e42456ffea8c6e4beb807044ae7cac3	added	reports/stage1_economy/qa-run-42570934141/attempt-1/QA0_CONSOLE.txt	10	0
+dc3713ed3e42456ffea8c6e4beb807044ae7cac3	added	reports/stage1_economy/qa-run-42570934141/attempt-1/QA0_EXCERPT_AUDIT.txt	2	0
+dc3713ed3e42456ffea8c6e4beb807044ae7cac3	added	reports/stage1_economy/qa-run-42570934141/attempt-1/QA0_PUBLISH_COMMIT_FILES.tsv	8	0
+dc3713ed3e42456ffea8c6e4beb807044ae7cac3	added	reports/stage1_economy/qa-run-42570934141/attempt-1/QA0_PYCOMPILE.tsv	79	0
+dc3713ed3e42456ffea8c6e4beb807044ae7cac3	added	reports/stage1_economy/qa-run-42570934141/attempt-1/QA0_REPORT.md	9	0
+dc3713ed3e42456ffea8c6e4beb807044ae7cac3	added	reports/stage1_economy/qa-run-42570934141/attempt-1/QA0_TARGET_DIRECTORY_DELETIONS.tsv	4	0
+3396c5434196a39d604632e4d737a4bff1bee8f0	modified	tools/qa/RunQA0Harness.pytxt	3	3
+fc3a37ec00db9a6c018b98640f9a5477206b29b8	modified	tools/qa/RunQA0Harness.pytxt	1	1
+6fa9da88dda389fce3168026386a5062a873161e	added	reports/stage1_economy/qa-run-42571105641/attempt-1/ACTIONS_RUN_SUMMARY.txt	10	0
+6fa9da88dda389fce3168026386a5062a873161e	added	reports/stage1_economy/qa-run-42571105641/attempt-1/QA0_BYTE_OVERLAP_CONFLICTS.tsv	1	0
+6fa9da88dda389fce3168026386a5062a873161e	added	reports/stage1_economy/qa-run-42571105641/attempt-1/QA0_CONSOLE.txt	40	0
+6fa9da88dda389fce3168026386a5062a873161e	added	reports/stage1_economy/qa-run-42571105641/attempt-1/QA0_EXCERPT_AUDIT.txt	40	0
+6fa9da88dda389fce3168026386a5062a873161e	added	reports/stage1_economy/qa-run-42571105641/attempt-1/QA0_FULL_ARCHIVE_OVERLIMIT.tsv	7	0
+6fa9da88dda389fce3168026386a5062a873161e	added	reports/stage1_economy/qa-run-42571105641/attempt-1/QA0_FULL_ARCHIVE_SPANS.tsv	17023	0
+6fa9da88dda389fce3168026386a5062a873161e	added	reports/stage1_economy/qa-run-42571105641/attempt-1/QA0_HA2_CONDITIONAL_REMOVAL.tsv	3	0
+6fa9da88dda389fce3168026386a5062a873161e	added	reports/stage1_economy/qa-run-42571105641/attempt-1/QA0_MALFORMED_BYTE_ROWS.tsv	1	0
+6fa9da88dda389fce3168026386a5062a873161e	added	reports/stage1_economy/qa-run-42571105641/attempt-1/QA0_PUBLISH_COMMIT_FILES.tsv	13	0
+6fa9da88dda389fce3168026386a5062a873161e	added	reports/stage1_economy/qa-run-42571105641/attempt-1/QA0_PYCOMPILE.tsv	79	0
+6fa9da88dda389fce3168026386a5062a873161e	added	reports/stage1_economy/qa-run-42571105641/attempt-1/QA0_REPORT.md	47	0
+6fa9da88dda389fce3168026386a5062a873161e	added	reports/stage1_economy/qa-run-42571105641/attempt-1/QA0_TARGET_DIRECTORY_DELETIONS.tsv	4	0
 === ACTIONS RUNS / JOBS ===
 run_id	created_at_utc	workflow	workflow_path	event	source_sha	run_status	run_conclusion	job_id	job_name	job_status	job_conclusion	exit_code	summary_path	raw_permalink
 42566294855	2026-11-09T05:16:00Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	push	5ae17d143f2d2dc91b7b3962d40704cec1b697b1	completed	failure	128993393696	qa0-static-harness-and-excerpt-audit	completed	failure	1	reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA0.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA0.txt
 42566294855	2026-11-09T05:16:00Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	push	5ae17d143f2d2dc91b7b3962d40704cec1b697b1	completed	failure	128993639683	qa4-headless-readonly-control-trace	completed	success	0	reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA4.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA4.txt
 42567402686	2026-11-09T05:27:15Z	DW0-DW4 raw-byte static economy audit	.github/workflows/dw0-dw4-raw-static.yml	push	e29b1f347124329edac4fc6d2a4c231d8a6431fd	completed	success	128996817396	dw0-dw4-static	completed	success	0	reports/stage1_economy/sa1-run-42567402686/attempt-1/ACTIONS_RUN_SUMMARY.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/sa1-run-42567402686/attempt-1/ACTIONS_RUN_SUMMARY.txt
+
+42568914600	2026-11-09T05:43:20Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	push	dab4216ef15a3586447e883c6bfeba4819fe5814	completed	failure	129001519075	qa0-static-harness-and-excerpt-audit	completed	failure	1	reports/stage1_economy/qa-run-42568914600/attempt-1/ACTIONS_RUN_SUMMARY.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/31947bae6ca4b5605981d5c8e6a16ec7e12495ae/reports/stage1_economy/qa-run-42568914600/attempt-1/ACTIONS_RUN_SUMMARY.txt
+42568914600	2026-11-09T05:43:20Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	push	dab4216ef15a3586447e883c6bfeba4819fe5814	completed	failure	129001608018	qa4-headless-readonly-control-trace	completed	skipped	SKIPPED	reports/stage1_economy/qa-run-42568914600/attempt-1/ACTIONS_RUN_SUMMARY.txt	QA4 correctly skipped because TA0 is static-only
+42570934141	2026-11-09T06:05:09Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	push	5dcb949c761b9bd6f9c2a3fcacd6f607fd900d53	completed	failure	129007888471	qa0-static-harness-and-excerpt-audit	completed	failure	1	reports/stage1_economy/qa-run-42570934141/attempt-1/ACTIONS_RUN_SUMMARY.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/dc3713ed3e42456ffea8c6e4beb807044ae7cac3/reports/stage1_economy/qa-run-42570934141/attempt-1/ACTIONS_RUN_SUMMARY.txt
+42570934141	2026-11-09T06:05:09Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	push	5dcb949c761b9bd6f9c2a3fcacd6f607fd900d53	completed	failure	129007976161	qa4-headless-readonly-control-trace	completed	skipped	SKIPPED	reports/stage1_economy/qa-run-42570934141/attempt-1/ACTIONS_RUN_SUMMARY.txt	QA4 correctly skipped; see failed QA0 run summary
+42571105641	2026-11-09T06:06:57Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	push	fc3a37ec00db9a6c018b98640f9a5477206b29b8	completed	failure	129008431376	qa0-static-harness-and-excerpt-audit	completed	failure	1	reports/stage1_economy/qa-run-42571105641/attempt-1/ACTIONS_RUN_SUMMARY.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/6fa9da88dda389fce3168026386a5062a873161e/reports/stage1_economy/qa-run-42571105641/attempt-1/ACTIONS_RUN_SUMMARY.txt
+42571105641	2026-11-09T06:06:57Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	push	fc3a37ec00db9a6c018b98640f9a5477206b29b8	completed	failure	129008517692	qa4-headless-readonly-control-trace	completed	skipped	SKIPPED	reports/stage1_economy/qa-run-42571105641/attempt-1/ACTIONS_RUN_SUMMARY.txt	QA4 correctly skipped; see failed QA0 run summary
 
 === RAW ACTIONS SUMMARY PERMALINKS ===
 42568914600	2026-11-09T05:43:20Z	QA0-QA5 bounded evidence and CONTROL trace	.github/workflows/qa0-qa5.yml	push	dab4216ef15a3586447e883c6bfeba4819fe5814	completed	failure	129001519075	qa0-static-harness-and-excerpt-audit	completed	failure	1	reports/stage1_economy/qa-run-42568914600/attempt-1/ACTIONS_RUN_SUMMARY.txt	https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/31947bae6ca4b5605981d5c8e6a16ec7e12495ae/reports/stage1_economy/qa-run-42568914600/attempt-1/ACTIONS_RUN_SUMMARY.txt
@@ -307,3 +345,7 @@ https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jinto
 https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA0.txt
 https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/qa-run-42566294855/attempt-1/ACTIONS_RUN_SUMMARY_QA4.txt
 https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/302454a3d4e2f0fdf5ea4ea5b5dde62f8844fbcc/reports/stage1_economy/sa1-run-42567402686/attempt-1/ACTIONS_RUN_SUMMARY.txt
+42570934141	STATUS=TIDAK TAHU; JOB=qa0-static-harness-and-excerpt-audit; SOURCE_SHA=5dcb949c761b9bd6f9c2a3fcacd6f607fd900d53; EXIT_CODE=1
+https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/dc3713ed3e42456ffea8c6e4beb807044ae7cac3/reports/stage1_economy/qa-run-42570934141/attempt-1/ACTIONS_RUN_SUMMARY.txt
+42571105641	STATUS=BELUM; JOB=qa0-static-harness-and-excerpt-audit; SOURCE_SHA=fc3a37ec00db9a6c018b98640f9a5477206b29b8; EXIT_CODE=1
+https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/6fa9da88dda389fce3168026386a5062a873161e/reports/stage1_economy/qa-run-42571105641/attempt-1/ACTIONS_RUN_SUMMARY.txt
