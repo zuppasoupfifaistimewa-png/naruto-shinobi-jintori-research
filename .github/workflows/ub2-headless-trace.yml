@@ -1,0 +1,212 @@
+name: UB2 — bounded headless breakpoint A/B from adaptive-cycle-02-f180
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/ub2-headless-trace.yml"
+      - "experiments/ub2_headless_trace.py"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: naruto-ub2-headless-trace
+  cancel-in-progress: true
+
+jobs:
+  ub2-headless-trace:
+    name: Four 900-frame read-only breakpoint launches
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: \${{ github.token }}
+      RESEARCH_REPO: \${{ github.repository }}
+      WORK: /tmp/naruto-ub2-\${{ github.run_id }}-\${{ github.run_attempt }}
+      OUT: /tmp/naruto-ub2-output-\${{ github.run_id }}-\${{ github.run_attempt }}
+    steps:
+      - name: Checkout repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Allocate private workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$WORK"/{source,checkpoint,app,logs,card-template,output}
+          mkdir -p "$OUT"
+
+      - name: Download immutable adaptive-cycle-02-f180 source artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: "39907655833"
+          repository: \${{ github.repository }}
+          github-token: \${{ github.token }}
+          path: \${{ env.WORK }}/checkpoint
+
+      - name: Download and verify emulator, game disc and retail BIOS
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK/source"
+          API="https://api.github.com/repos/$RESEARCH_REPO"
+          curl --fail --silent --show-error --location --max-time 60 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; dest="$2"; size="$3"; digest="$4"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            test -n "$id" && test "$id" != null
+            curl --fail --silent --show-error --location --retry 2 --max-time 600 \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/octet-stream" \
+              "$API/releases/assets/$id" -o "$dest"
+            test "$(stat -c %s "$dest")" = "$size"
+            echo "$digest  $dest" | sha256sum --check -
+          }
+          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage 65747557 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.bin game.bin 325989552 58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88
+          fetch_asset Naruto.-.Shinobi.no.Sato.no.Jintori.Gassen.Japan.cue game.cue 116 be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8
+          fetch_asset scph7502.zip scph7502.zip 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, stat, zipfile
+          with zipfile.ZipFile("scph7502.zip") as z:
+              found=[]; total=0
+              for x in z.infolist():
+                  p=Path(x.filename); mode=(x.external_attr>>16)&0xffff; total+=x.file_size
+                  if p.is_absolute() or ".." in p.parts or (mode and stat.S_ISLNK(mode)):
+                      raise SystemExit("unsafe BIOS member")
+                  if x.file_size>2*1024*1024 or total>4*1024*1024:
+                      raise SystemExit("BIOS expansion bound")
+                  if not x.is_dir() and x.file_size==524288: found.append(x)
+              if len(found)!=1: raise SystemExit("expected one BIOS-sized member")
+              bios=z.read(found[0])
+              digest=hashlib.sha256(bios).hexdigest()
+              if digest!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1":
+                  raise SystemExit("BIOS SHA256 mismatch")
+              Path("scph7502.bin").write_bytes(bios)
+          lines=Path("game.cue").read_text(encoding="utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          ix=[i for i,s in enumerate(lines) if s.strip().upper().startswith("FILE ")]
+          if len(ix)!=1: raise SystemExit("expected one CUE FILE row")
+          lines[ix[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          APPDIR="$WORK/source/squashfs-root"
+          test -x "$APPDIR/AppRun"
+          PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 | grep -E '/(pcsx-redux|pcsx-redux[^/]*)$' | head -n 1)"
+          test -n "$PCSX_BIN" && test -x "$PCSX_BIN"
+          echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
+          echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
+          echo "UB2_INPUTS_VERIFIED=YES" >> "$GITHUB_ENV"
+
+      - name: Verify exact checkpoint bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE="$WORK/checkpoint/adaptive-cycle-02-f180.sstate"
+          test -f "$SOURCE"
+          test "$(stat -c %s "$SOURCE")" = 21162799
+          echo "705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35  $SOURCE" | sha256sum --check -
+          cp "$SOURCE" "$WORK/source-checkpoint.sstate"
+          chmod 400 "$WORK/source-checkpoint.sstate"
+          echo "UB2_CHECKPOINT_SOURCE=PASS" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Run UB2 four-launch headless read-only probe
+        id: probe
+        shell: bash
+        env:
+          SOURCE_SHA: \${{ github.sha }}
+        run: |
+          set +e
+          python3 experiments/ub2_headless_trace.py \
+            --work "$WORK" \
+            --out "$OUT" \
+            --pcsx-bin "$PCSX_BIN" \
+            --appdir "$APPDIR" \
+            --bios "$WORK/source/scph7502.bin" \
+            --cue "$WORK/source/game-run.cue" \
+            --source "$WORK/source-checkpoint.sstate" \
+            --card-dir "$WORK/card-template" \
+            --timeout-seconds 600
+          rc=$?
+          set -e
+          echo "UB2_SCRIPT_EXIT_CODE=$rc" | tee "$OUT/UB2_SCRIPT_EXIT_CODE.txt"
+          exit "$rc"
+
+      - name: Remove private ROM, BIOS, checkpoint, card and emulator state
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$WORK"
+          test ! -e "$WORK"
+          echo "PRIVATE_BINARY_CLEANUP=PASS" > "$OUT/cleanup.txt"
+
+      - name: Validate and publish only UB2 text results
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          if [ ! -s "$OUT/ACTIONS_RUN_SUMMARY.txt" ]; then
+            {
+              echo "STATUS=INCOMPLETE"
+              echo "JOB=ub2-headless-trace"
+              echo "RUN_ID=$GITHUB_RUN_ID"
+              echo "SOURCE_SHA=$GITHUB_SHA"
+              echo "EXIT_CODE=TIDAK_TAHU"
+            } > "$OUT/ACTIONS_RUN_SUMMARY.txt"
+          fi
+          python3 - "$OUT" <<'PY'
+          from pathlib import Path
+          import sys
+          root=Path(sys.argv[1])
+          allowed={".txt",".tsv"}
+          bad=[str(p) for p in root.rglob("*") if p.is_file() and p.suffix.lower() not in allowed]
+          if bad: raise SystemExit("private/non-text result blocked: "+repr(bad))
+          PY
+          DEST="reports/stage1_economy/ub2-headless-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$DEST"
+          cp "$OUT"/*.txt "$DEST/" 2>/dev/null || true
+          cp "$OUT"/*.tsv "$DEST/" 2>/dev/null || true
+          JOB_ID="$(curl --fail --silent --show-error \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" |
+            jq -r '.jobs[] | select(.name=="ub2-headless-trace") | .id' | head -n 1)"
+          test -n "$JOB_ID" || JOB_ID="TIDAK_TAHU"
+          STATUS="$(sed -n 's/^STATUS=//p' "$OUT/ACTIONS_RUN_SUMMARY.txt" | head -n 1)"
+          test -n "$STATUS" || STATUS="INCOMPLETE"
+          EXIT_CODE="$(sed -n 's/^EXIT_CODE=//p' "$OUT/ACTIONS_RUN_SUMMARY.txt" | head -n 1)"
+          test -n "$EXIT_CODE" || EXIT_CODE="TIDAK_TAHU"
+          {
+            echo "STATUS=$STATUS"
+            echo "JOB=ub2-headless-trace"
+            echo "JOB_ID=$JOB_ID"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "EXIT_CODE=$EXIT_CODE"
+          } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$DEST"
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish UB2 headless breakpoint trace run $GITHUB_RUN_ID"
+            pushed=0
+            for n in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main || { git rebase --abort; sleep "$n"; continue; }
+              if git push origin HEAD:main; then pushed=1; break; fi
+              sleep "$n"
+            done
+            test "$pushed" -eq 1
+          fi
+          echo "UB2_REPORT_PATH=$DEST"
