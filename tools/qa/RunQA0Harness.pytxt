@@ -133,7 +133,7 @@ def main():
                and pa_changed.get(rel)=="M"
                and len(before_rows)-len(after_rows)==expected_n)
         physical_ok=physical_ok and exact
-        affected.append([rel,changed.get(rel,"MISSING"),len(before_rows),expected_n,
+        affected.append([rel,pa_changed.get(rel,"MISSING"),len(before_rows),expected_n,
                          len(after_rows),"PASS" if exact else "FAIL"])
         for spec in specs:
             target_rows.append([rel,spec[0],spec[1],found.get(spec,0),remaining.get(spec,0),
