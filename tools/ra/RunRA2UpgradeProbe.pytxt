@@ -329,7 +329,7 @@ def main():
       f"BOARD_DIFF_ROWS={len(tile_diffs)}","UPGRADE_ACTIONS_OBSERVED=0 unless a mapped level change and corresponding money debit are evidenced",
       "HIT_ZERO_MEANS=not executed during that bounded scenario; not proof of unreachability",
       f"TRACE_OVERFLOW={overflow}","BIOS_ROM_SAVESTATE_RAM_DUMP_COMMITTED=no"]
-    (a.out/"SA2_RUNTIME_SUMMARY.txt").write_text("\n".join(lines)+"\n",encoding="utf-8")
+    (a.out/"RA2_RUNTIME_SUMMARY.txt").write_text("\n".join(lines)+"\n",encoding="utf-8")
     print("\n".join(lines))
     if not all_complete or not all_identical or not tile_counts_ok or overflow:raise SystemExit(1)
 if __name__=="__main__":main()

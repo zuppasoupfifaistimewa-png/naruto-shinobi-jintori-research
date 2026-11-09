@@ -199,7 +199,7 @@ jobs:
               echo "REGISTER_WRITE=NONE"
             } > "$OUT/RA2_RUNTIME_SUMMARY.txt"
           fi
-          find "$OUT" -maxdepth 1 -type f \( -name 'RA2_*.txt' -o -name 'RA2_*.tsv' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
+          find "$OUT" -maxdepth 1 -type f \( -name 'RA2_*.txt' -o -name 'RA2_*.tsv' -o -name 'SA2_*.txt' -o -name 'SA2_*.tsv' -o -name 'cleanup.txt' \) -exec cp {} "$DEST/" \;
           RC="${RA2_EXIT_CODE:-1}"
           STATUS="$(sed -n 's/^STATUS=//p' "$DEST/RA2_RUNTIME_SUMMARY.txt" | head -n 1 || true)"
           [ -n "$STATUS" ] || STATUS=BELUM
