@@ -375,3 +375,5 @@ jobs:
         shell: bash
         run: |
           test "${UA2_EXIT_CODE:-99}" = 0
+
+# UB final-HEAD QA0 recheck 2026-11-10; no runtime or workflow behavior change.
