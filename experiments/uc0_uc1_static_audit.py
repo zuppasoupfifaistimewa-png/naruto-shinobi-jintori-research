@@ -112,26 +112,26 @@ def audit_uc0(root,out):
     (out/"UC0_SUMMARY.txt").write_text("\n".join(lines)+"\n",encoding="utf-8")
     return lines
 
-def u32(data,base,pc):
-    off=pc-base
+def u32(data,base,pc,file_off=0):
+    off=pc-base+file_off
     if off<0 or off+4>len(data):return None
     return struct.unpack_from("<I",data,off)[0]
 def parts(w):return ((w>>26)&63,(w>>21)&31,(w>>16)&31,(w>>11)&31,(w>>6)&31,w&63,w&0xffff)
-def prolog(data,base,pc):
-    w=u32(data,base,pc)
+def prolog(data,base,pc,file_off=0):
+    w=u32(data,base,pc,file_off)
     if w is None:return False
     op,rs,rt,rd,sh,fn,imm=parts(w)
     if not(op==9 and rs==29 and rt==29 and (imm&0x8000)):return False
     for n in range(1,13):
-        q=u32(data,base,pc+4*n)
+        q=u32(data,base,pc+4*n,file_off)
         if q is None:break
         o,s,t,d,h,f,im=parts(q)
         if o==0x2B and s==29 and t==31:return True
     return False
 def maps_at(pc,images):
-    return [(n,d,b) for n,d,b in images if b<=pc<b+len(d) and prolog(d,b,pc)]
-def calls_in_function(data,base,start,max_bytes=0x1000):
-    off=start-base
+    return [(n,d,b) for n,d,b in images if b<=pc<b+len(d) and prolog(d,b,pc,EXE_OFF if n=="EXE" else 0)]
+def calls_in_function(data,base,start,max_bytes=0x1000,file_off=0):
+    off=start-base+file_off
     if off<0 or off+4>len(data):return [],False
     regs={0:0}; rows=[]; ended=False
     for ins in md.disasm(data[off:min(len(data),off+max_bytes)],start):
@@ -176,7 +176,7 @@ def audit_uc1(exe,data,out):
     for i in range(8):
         base=TABLE+STRIDE*i; words=[]
         for c in range(8):
-            pc=base+4*c;v=u32(exe,EXE_BASE,pc);words.append(v)
+            pc=base+4*c;v=u32(exe,EXE_BASE,pc,EXE_OFF);words.append(v)
             cols.append({"entry":i,"record_base":f"0x{base:08X}","column":c,"field_offset":f"+0x{4*c:X}",
                          "address":f"0x{pc:08X}","word_u32":f"0x{v:08X}" if v is not None else "TIDAK TAHU",
                          "field_role":"FUNCTION_POINTER" if c==2 else "OTHER_WORD",
@@ -186,11 +186,11 @@ def audit_uc1(exe,data,out):
                          "handler_target":f"0x{target:08X}" if target is not None else "TIDAK TAHU",
                          "candidate_images":";".join(x[0] for x in cands) if cands else "TIDAK TAHU",
                          "mapping_status":"PROLOG_CONFIRMED" if len(cands)==1 else ("AMBIGUOUS_PROLOG_MAP" if len(cands)>1 else "TIDAK TAHU_NO_PROLOG")})
-        queue=[(n,d,b,target,0) for n,d,b in cands];seen=set()
+        queue=[(n,d,b,target,0,EXE_OFF if n=="EXE" else 0) for n,d,b in cands];seen=set()
         while queue:
-            name,buf,b,fn,depth=queue.pop(0)
+            name,buf,b,fn,depth,fo=queue.pop(0)
             if (name,fn) in seen or depth>3:continue
-            seen.add((name,fn)); cr,ended=calls_in_function(buf,b,fn)
+            seen.add((name,fn)); cr,ended=calls_in_function(buf,b,fn,file_off=fo)
             for call in cr:
                 t=call["target"];tm=maps_at(t,images) if t is not None else []
                 edges.append({"handler_entry":i,"handler_target":f"0x{target:08X}","depth":depth,
@@ -198,7 +198,7 @@ def audit_uc1(exe,data,out):
                               "kind":call["kind"],"target_pc":f"0x{t:08X}" if t is not None else "TIDAK TAHU",
                               "target_images":";".join(x[0] for x in tm) if tm else "TIDAK TAHU","resolution":call["status"]})
                 if t is not None and depth<3:
-                    queue.extend((tn,td,tb,t,depth+1) for tn,td,tb in tm)
+                    queue.extend((tn,td,tb,t,depth+1,EXE_OFF if tn=="EXE" else 0) for tn,td,tb in tm)
             if not ended:
                 edges.append({"handler_entry":i,"handler_target":f"0x{target:08X}","depth":depth,
                               "source_image":name,"function_start":f"0x{fn:08X}","call_pc":"TIDAK TAHU",
@@ -208,7 +208,7 @@ def audit_uc1(exe,data,out):
         for t,label in TARGETS.items():
             found=[x for x in local if x["target_pc"]==f"0x{t:08X}"]
             unknown=any(x["resolution"] in {"TIDAK_TAHU_DYNAMIC","NO_JR_RA_WITHIN_0x1000"} for x in local)
-            st="REACHED" if found else ("TIDAK TAHU_DYNAMIC_OR_UNBOUNDED" if unknown else "NOT_SEEN_WITHIN_DEPTH_3")
+            st="REACHED" if found else ("TIDAK TAHU_NO_HANDLER_MAPPING" if not cands else ("TIDAK TAHU_DYNAMIC_OR_UNBOUNDED" if unknown else "NOT_SEEN_WITHIN_DEPTH_3"))
             reach.append({"handler_entry":i,"handler_target":f"0x{target:08X}" if target is not None else "TIDAK TAHU",
                           "target":f"0x{t:08X}","target_role":label,"status":st,
                           "matching_call_pcs":";".join(x["call_pc"] for x in found)})

@@ -169,7 +169,7 @@ jobs:
             --timeout-seconds 120
           rc=$?
           set -e
-          echo "UC2_SCRIPT_EXIT_CODE=$rc" | tee "$OUT/UB2_SCRIPT_EXIT_CODE.txt"
+          echo "UC2_SCRIPT_EXIT_CODE=$rc" | tee "$OUT/UC2_SCRIPT_EXIT_CODE.txt"
           exit "$rc"
 
       - name: Remove private ROM, BIOS, checkpoint, card and emulator state

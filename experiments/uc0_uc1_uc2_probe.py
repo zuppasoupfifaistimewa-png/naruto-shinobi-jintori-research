@@ -79,7 +79,7 @@ _G.uc2Loaded=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",fu
 end)
 _G.uc2Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
   if not started then
-    started=true;local path=os.getenv("UC2_SOURCE_STATE") or "resume/source.sstate"
+    started=true;local path=os.getenv("UB2_SOURCE_STATE") or "resume/source.sstate"
     log("UC2_LOAD_BEGIN=1 path="..path.." mode="..MODE);PCSX.pauseEmulator()
     PCSX.nextTick(function()
       local okf,f=pcall(function() return assert(Support.File.open(path)) end)
@@ -158,6 +158,7 @@ def main():
         stdout=d/"emulator.stdout.txt"
         rc,wall,_=run_emulator(pcsx,appdir,bios,cue,card,state,lua,d/"home",stdout,a.timeout_seconds,pad_exec() if mode=="CIRCLE" else None)
         log=read_log_text(stdout);ss,ww,cc,ii=parse_log(log)
+        (out/("UC2_"+launch+"_EMULATOR_LOG.txt")).write_text("\\n".join(log.splitlines()[-160:])+"\\n",encoding="utf-8")
         samples+=ss;writers+=ww;calls+=cc;inputs+=ii
         frames=0
         for line in log.splitlines():
@@ -194,7 +195,7 @@ def main():
       "CALLSITE=EXEC 0x80011A28; cap 8 hits in each 100-frame window; records PC, RA and r0-r31/a0/v1/v0",
       "WRITER_VALUE=v0 before store; MEM32[0x8006D760] read before store",
       "PROBE_MEMORY_OR_REGISTER_WRITES=NONE; CIRCLE pad override only", "RAW_DUMP=NONE",
-      f"MEMCARD_TEMPLATE_SHA256={cardhash}",f"MEMCARD_WARMUP_EXIT_CODE={warmrc}",
+      f"MEMCARD_TEMPLATE_SHA256={cardhash}","CHECKPOINT_ENV=UB2_SOURCE_STATE (matches legacy run_emulator helper)",f"MEMCARD_WARMUP_EXIT_CODE={warmrc}",
       f"NO_INPUT_SAMPLE_ROWS={sum(x['launch']=='NO_INPUT_SAMPLE' for x in samples)}",
       f"CIRCLE_SAMPLE_ROWS={sum(x['launch']=='CIRCLE_SAMPLE' for x in samples)}",
       f"WRITER_800116C8_HITS={writer1}",f"WRITER_8001198C_HITS={writer2}",
