@@ -1,4 +1,4 @@
-name: UB2 — bounded headless breakpoint A/B from adaptive-cycle-02-f180
+name: UC0–UC2 — static TSV/handler audit and read-only headless trace
 
 on:
   push:
@@ -6,6 +6,8 @@ on:
     paths:
       - ".github/workflows/ub2-headless-trace.yml"
       - "experiments/ub2_headless_trace.py"
+      - "experiments/uc0_uc1_static_audit.py"
+      - "experiments/uc0_uc1_uc2_probe.py"
 
 permissions:
   contents: write
@@ -17,7 +19,7 @@ concurrency:
 
 jobs:
   ub2-headless-trace:
-    name: Four 900-frame read-only breakpoint launches
+    name: UC0/UC1 static audit and four 900-frame read-only launches
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
@@ -119,14 +121,43 @@ jobs:
           chmod 400 "$WORK/source-checkpoint.sstate"
           echo "UB2_CHECKPOINT_SOURCE=PASS" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Run UB2 four-launch headless read-only probe
+      - name: Install static extraction dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends bchunk xorriso python3-pip
+          python3 -m pip install --break-system-packages "capstone==5.0.3"
+
+      - name: Run UC0/UC1 audit from verified EXE and DATA.BIN
+        shell: bash
+        run: |
+          set -euo pipefail
+          STATIC="$WORK/static"
+          mkdir -p "$STATIC/extracted"
+          bchunk "$WORK/source/game.bin" "$WORK/source/game-run.cue" "$STATIC/track"
+          ISO="$(find "$STATIC" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          test -n "$ISO"
+          xorriso -osirrox on -indev "$ISO" -extract / "$STATIC/extracted" > "$STATIC/extract.log" 2>&1
+          EXE="$(find "$STATIC/extracted" -type f -iname 'SLPS_035.53' -print -quit)"
+          DATA="$(find "$STATIC/extracted" -type f -iname 'DATA.BIN' -print -quit)"
+          test -n "$EXE" && test -n "$DATA"
+          test "$(stat -c %s "$EXE")" = 385024
+          echo "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569  $EXE" | sha256sum --check --status
+          test "$(stat -c %s "$DATA")" = 66015232
+          echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $DATA" | sha256sum --check --status
+          python3 experiments/uc0_uc1_static_audit.py --root "$GITHUB_WORKSPACE" --exe "$EXE" --data "$DATA" --out "$OUT"
+          rm -rf "$STATIC"
+          test ! -e "$STATIC"
+
+      - name: Run UC2 four-launch read-only probe
         id: probe
         shell: bash
         env:
           SOURCE_SHA: ${{ github.sha }}
         run: |
           set +e
-          python3 experiments/ub2_headless_trace.py \
+          python3 experiments/uc0_uc1_uc2_probe.py \
             --work "$WORK" \
             --out "$OUT" \
             --pcsx-bin "$PCSX_BIN" \
@@ -138,7 +169,7 @@ jobs:
             --timeout-seconds 120
           rc=$?
           set -e
-          echo "UB2_SCRIPT_EXIT_CODE=$rc" | tee "$OUT/UB2_SCRIPT_EXIT_CODE.txt"
+          echo "UC2_SCRIPT_EXIT_CODE=$rc" | tee "$OUT/UB2_SCRIPT_EXIT_CODE.txt"
           exit "$rc"
 
       - name: Remove private ROM, BIOS, checkpoint, card and emulator state
@@ -173,7 +204,7 @@ jobs:
           bad=[str(p) for p in root.rglob("*") if p.is_file() and p.suffix.lower() not in allowed]
           if bad: raise SystemExit("private/non-text result blocked: "+repr(bad))
           PY
-          DEST="reports/stage1_economy/ub2-headless-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          DEST="reports/stage1_economy/uc0-uc2-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$DEST"
           cp "$OUT"/*.txt "$DEST/" 2>/dev/null || true
           cp "$OUT"/*.tsv "$DEST/" 2>/dev/null || true
@@ -199,7 +230,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$DEST"
           if ! git diff --cached --quiet; then
-            git commit -m "Publish UB2 headless breakpoint trace run $GITHUB_RUN_ID"
+            git commit -m "Publish UC0-UC2 static and read-only trace run $GITHUB_RUN_ID [skip ci]"
             pushed=0
             for n in 1 2 3; do
               git fetch origin main
@@ -209,4 +240,4 @@ jobs:
             done
             test "$pushed" -eq 1
           fi
-          echo "UB2_REPORT_PATH=$DEST"
+          echo "UC0_UC2_REPORT_PATH=$DEST"
