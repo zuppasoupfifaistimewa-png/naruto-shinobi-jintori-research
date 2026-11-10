@@ -1,0 +1,6 @@
+STATUS=SUCCESS
+JOB=monitor
+SOURCE_SHA=dc18ff4f375680b1f37e7ceca7f64405a4554230
+EXIT_CODE=TIDAK TAHU
+EXIT_CODE_BASIS=No explicit process exit code in job logs; workflow/job conclusion is success
+RUN_ID=42751965600
