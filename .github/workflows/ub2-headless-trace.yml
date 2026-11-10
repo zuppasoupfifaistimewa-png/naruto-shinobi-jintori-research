@@ -1,4 +1,4 @@
-name: UC0–UC2 — static TSV/handler audit and read-only headless trace
+name: UD0–UD2 — union gate, static reverse audit and read-only headless trace
 
 on:
   push:
@@ -8,6 +8,8 @@ on:
       - "experiments/ub2_headless_trace.py"
       - "experiments/uc0_uc1_static_audit.py"
       - "experiments/uc0_uc1_uc2_probe.py"
+      - "experiments/ud1_static_audit.py"
+      - "tools/union_gate.py"
 
 permissions:
   contents: write
@@ -19,7 +21,7 @@ concurrency:
 
 jobs:
   ub2-headless-trace:
-    name: UC0/UC1 static audit and four 900-frame read-only launches
+    name: UD0/UD1 static audit and four 900-frame read-only launches
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
@@ -146,7 +148,13 @@ jobs:
           echo "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569  $EXE" | sha256sum --check --status
           test "$(stat -c %s "$DATA")" = 66015232
           echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $DATA" | sha256sum --check --status
+          set +e
+          python3 tools/union_gate.py --root "$GITHUB_WORKSPACE" --out "$OUT"
+          gate_rc=$?
+          set -e
+          echo "$gate_rc" > "$OUT/UC0_UNION_GATE_EXIT_CODE.txt"
           python3 experiments/uc0_uc1_static_audit.py --root "$GITHUB_WORKSPACE" --exe "$EXE" --data "$DATA" --out "$OUT"
+          python3 experiments/ud1_static_audit.py --root "$GITHUB_WORKSPACE" --exe "$EXE" --data "$DATA" --out "$OUT"
           rm -rf "$STATIC"
           test ! -e "$STATIC"
 
@@ -204,7 +212,7 @@ jobs:
           bad=[str(p) for p in root.rglob("*") if p.is_file() and p.suffix.lower() not in allowed]
           if bad: raise SystemExit("private/non-text result blocked: "+repr(bad))
           PY
-          DEST="reports/stage1_economy/uc0-uc2-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          DEST="reports/stage1_economy/ud0-ud2-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$DEST"
           cp "$OUT"/*.txt "$DEST/" 2>/dev/null || true
           cp "$OUT"/*.tsv "$DEST/" 2>/dev/null || true
@@ -229,8 +237,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$DEST"
+          if [ -s "$OUT/UC0_TRIMMED_FILES.txt" ]; then
+            while IFS= read -r source_file; do
+              [ -n "$source_file" ] && [ -f "$source_file" ] && git add -- "$source_file"
+            done < "$OUT/UC0_TRIMMED_FILES.txt"
+          fi
           if ! git diff --cached --quiet; then
-            git commit -m "Publish UC0-UC2 static and read-only trace run $GITHUB_RUN_ID [skip ci]"
+            git commit -m "Publish UD0-UD2 static and read-only trace run $GITHUB_RUN_ID [skip ci]"
             pushed=0
             for n in 1 2 3; do
               git fetch origin main
@@ -240,4 +253,5 @@ jobs:
             done
             test "$pushed" -eq 1
           fi
-          echo "UC0_UC2_REPORT_PATH=$DEST"
+          echo "UD0_UD2_REPORT_PATH=$DEST"
+          if [ "$GATE_RC" != "0" ]; then exit 4; fi

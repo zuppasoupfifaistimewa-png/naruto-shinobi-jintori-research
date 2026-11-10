@@ -32,9 +32,10 @@ def blob_bytes(s):
     p=s.split()
     if not p or any(len(x)!=2 for x in p):raise ValueError("noncanonical byte string")
     return bytes(int(x,16) for x in p)
-def label_for(img,fo,source):
-    raw=(img or "").strip().upper(); compact="".join(c for c in raw if c.isalnum())
-    if compact:
+def label_for(img,region,fo,source):
+    raw=(img or "").strip().upper() or (region or "").strip().upper()
+    compact="".join(c for c in raw if c.isalnum())
+    if compact and compact not in {"TIDAKTAHU","UNKNOWN","NA","NONE"}:
         if "ENTRY0" in compact or "DATA0" in compact:return "ENTRY0"
         if "ENTRY1" in compact:return "ENTRY1"
         if compact in {"EXE","SLPS03553","SLPS03553EXE"} or "SLPS03553" in compact:return "EXE"
@@ -43,10 +44,7 @@ def label_for(img,fo,source):
         if EXE_OFF<=fo<EXE_OFF+EXE_SIZE:return "EXE"
         if E0_OFF<=fo<E0_OFF+E0_SIZE:return "ENTRY0"
         if E1_OFF<=fo<E1_OFF+E1_SIZE:return "ENTRY1"
-    p=source.upper()
-    if "ENTRY0" in p or "ENTRY_0" in p:return "ENTRY0"
-    if "ENTRY1" in p or "ENTRY_1" in p:return "ENTRY1"
-    if "EXE" in p or "SLPS_035.53" in p:return "EXE"
+    # Missing identity is deliberately isolated per source TSV.
     return "UNRESOLVED:"+source
 
 def audit_uc0(root,out):
@@ -70,7 +68,7 @@ def audit_uc0(root,out):
                     try:
                         pc=hx(rp); data=blob_bytes(rb)
                         fo=hx(row.get(hm["file_offset"],"")) if "file_offset" in hm and row.get(hm["file_offset"],"").strip() else None
-                        label=label_for(row.get(hm["image"],"") if "image" in hm else "",fo,rel)
+                        label=label_for(row.get(hm["image"],"") if "image" in hm else "",row.get(hm["region"],"") if "region" in hm else "",fo,rel)
                     except Exception as e:
                         malformed.append({"source":rel,"line":rd.line_num,"reason":type(e).__name__+":"+str(e)});continue
                     if label.startswith("UNRESOLVED:"):unresolved.add(label)
@@ -107,8 +105,8 @@ def audit_uc0(root,out):
            f"CONTIGUOUS_GROUPS={len(groups)}",f"GROUPS_OVER_64B={len(over)}",
            f"CONFLICTING_IMAGE_ADDRESS_BYTES={len(conflicts)}",f"MALFORMED_ROWS={len(malformed)}",
            f"UNRESOLVED_LABELS={len(unresolved)}",
-           "UNRESOLVED_LABEL_POLICY=kept separate per source TSV; no cross-file merge without defensible image identity",
-           "LIMIT_POLICY=64 bytes per contiguous group; audit-only; no old TSV edited or deleted"]
+           "UNRESOLVED_LABEL_POLICY=rows without image/region/file_offset remain isolated per source TSV; no filename-based inference",
+           "LIMIT_POLICY=source TSV rows trimmed by tools/union_gate.py; no TSV file deleted; key UC1 tables excluded"]
     (out/"UC0_SUMMARY.txt").write_text("\n".join(lines)+"\n",encoding="utf-8")
     return lines
 
