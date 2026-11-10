@@ -1,0 +1,26 @@
+UC2_READ_ONLY_CHECKPOINT_TRACE
+STATUS=INCOMPLETE
+SOURCE_SHA=b3566b0b2f0bf46bc980c06899da029efe1ea7aa
+RUN_ID=42755318255
+CHECKPOINT_SHA256=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
+LAUNCH_PLAN=NO_INPUT sample-only + instrumented; CIRCLE sample-only + instrumented; 900 post-load frames each
+SAMPLE=MEM32[0x8006D760] every 10 frames in SAMPLE_ONLY launches; no breakpoints
+WRITERS=EXEC breakpoints 0x800116C8 and 0x8001198C; 32 hits/address/trace launch
+CALLSITE=EXEC 0x80011A28; cap 8 hits in each 100-frame window; records PC, RA and r0-r31/a0/v1/v0
+WRITER_VALUE=v0 before store; MEM32[0x8006D760] read before store
+PROBE_MEMORY_OR_REGISTER_WRITES=NONE; CIRCLE pad override only
+RAW_DUMP=NONE
+MEMCARD_TEMPLATE_SHA256=78b6d4ac9ab4d23caf7e5f04f83539bf5d994cccfb0a709d14ac53d05c8e21ef
+CHECKPOINT_ENV=UB2_SOURCE_STATE (matches legacy run_emulator helper)
+MEMCARD_WARMUP_EXIT_CODE=0
+NO_INPUT_SAMPLE_ROWS=90
+CIRCLE_SAMPLE_ROWS=90
+WRITER_800116C8_HITS=0
+WRITER_8001198C_HITS=0
+CALLSITE_HITS=0
+CALLSITE_A0_VALUES={'NO_INPUT_TRACE': [], 'CIRCLE_TRACE': []}
+K5_NOT_CLAIMED=two launches per condition use complementary capture modes; no identical repeated-trace comparison
+LAUNCHES_COMPLETE=YES
+SAMPLES_COMPLETE=YES
+INPUTS_VALID=NO
+EXIT_CODE=2
