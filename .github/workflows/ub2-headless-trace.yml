@@ -1,4 +1,4 @@
-name: UD0–UD2 — union gate, static reverse audit and read-only headless trace
+name: UE0–UE2 — immutable byte gate, ENTRY1 scene audit and read-only trace
 
 on:
   push:
@@ -10,6 +10,9 @@ on:
       - "experiments/uc0_uc1_uc2_probe.py"
       - "experiments/ud1_static_audit.py"
       - "tools/union_gate.py"
+      - "tools/ue0_union_gate.py"
+      - "experiments/ue1_entry1_scene_audit.py"
+      - "experiments/ue2_scene_trace.py"
 
 permissions:
   contents: write
@@ -21,14 +24,14 @@ concurrency:
 
 jobs:
   ub2-headless-trace:
-    name: UD0/UD1 static audit and four 900-frame read-only launches
+    name: UE0/UE1 static audit and six 900-frame read-only launches
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
       GH_TOKEN: ${{ github.token }}
       RESEARCH_REPO: ${{ github.repository }}
-      WORK: /tmp/naruto-ub2-${{ github.run_id }}-${{ github.run_attempt }}
-      OUT: /tmp/naruto-ub2-output-${{ github.run_id }}-${{ github.run_attempt }}
+      WORK: /tmp/naruto-ue2-${{ github.run_id }}-${{ github.run_attempt }}
+      OUT: /tmp/naruto-ue2-output-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Checkout repository history
         uses: actions/checkout@v4
@@ -131,41 +134,46 @@ jobs:
           sudo apt-get install -y --no-install-recommends bchunk xorriso python3-pip
           python3 -m pip install --break-system-packages "capstone==5.0.3"
 
-      - name: Run UC0/UC1 audit from verified EXE and DATA.BIN
+      - name: UE0 — archive exact baseline and run immutable byte union gate
         shell: bash
         run: |
           set -euo pipefail
-          STATIC="$WORK/static"
-          mkdir -p "$STATIC/extracted"
-          bchunk "$WORK/source/game.bin" "$WORK/source/game-run.cue" "$STATIC/track"
-          ISO="$(find "$STATIC" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
-          test -n "$ISO"
-          xorriso -osirrox on -indev "$ISO" -extract / "$STATIC/extracted" > "$STATIC/extract.log" 2>&1
-          EXE="$(find "$STATIC/extracted" -type f -iname 'SLPS_035.53' -print -quit)"
-          DATA="$(find "$STATIC/extracted" -type f -iname 'DATA.BIN' -print -quit)"
-          test -n "$EXE" && test -n "$DATA"
-          test "$(stat -c %s "$EXE")" = 385024
-          echo "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569  $EXE" | sha256sum --check --status
-          test "$(stat -c %s "$DATA")" = 66015232
-          echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $DATA" | sha256sum --check --status
+          UE0_BASELINE="9a6ccb7969a8cf377006dba01f468fb2c9dc4b05"
+          BASELINE_TSV="$WORK/ue0-baseline-tsv"
+          mkdir -p "$BASELINE_TSV"
+          git archive --format=tar "$UE0_BASELINE" -- '*.tsv' | tar -xf - -C "$BASELINE_TSV"
+          test "$(find "$BASELINE_TSV" -type f -name '*.tsv' | wc -l)" -gt 0
           set +e
-          python3 tools/union_gate.py --root "$GITHUB_WORKSPACE" --out "$OUT"
-          gate_rc=$?
+          python3 tools/ue0_union_gate.py --root "$BASELINE_TSV" --out "$OUT" --baseline "$UE0_BASELINE"
+          ue0_rc=$?
           set -e
-          echo "$gate_rc" > "$OUT/UC0_UNION_GATE_EXIT_CODE.txt"
-          python3 experiments/uc0_uc1_static_audit.py --root "$GITHUB_WORKSPACE" --exe "$EXE" --data "$DATA" --out "$OUT"
-          python3 experiments/ud1_static_audit.py --root "$GITHUB_WORKSPACE" --exe "$EXE" --data "$DATA" --out "$OUT"
-          rm -rf "$STATIC"
-          test ! -e "$STATIC"
+          echo "$ue0_rc" > "$OUT/UE0_GATE_EXIT_CODE.txt"
+          echo "UE0_BASELINE=$UE0_BASELINE" >> "$GITHUB_STEP_SUMMARY"
+          echo "UE0_GATE_EXIT_CODE=$ue0_rc" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Run UC2 four-launch read-only probe
-        id: probe
+      - name: UE1 — verify scene chain and references in complete ENTRY1 only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 experiments/ue1_entry1_scene_audit.py --data "$DATA" --out "$OUT"
+
+      - name: UE2 — local post-processing regression test on committed UD logs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 experiments/ue2_scene_trace.py \
+            --postprocess-self-test \
+            --reports "$GITHUB_WORKSPACE/reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1" \
+            --out "$OUT"
+
+      - name: UE2 — six read-only headless launches, seven breakpoints
+        id: ue2-probe
         shell: bash
         env:
           SOURCE_SHA: ${{ github.sha }}
         run: |
           set +e
-          python3 experiments/uc0_uc1_uc2_probe.py \
+          python3 experiments/ue2_scene_trace.py \
             --work "$WORK" \
             --out "$OUT" \
             --pcsx-bin "$PCSX_BIN" \
@@ -174,10 +182,10 @@ jobs:
             --cue "$WORK/source/game-run.cue" \
             --source "$WORK/source-checkpoint.sstate" \
             --card-dir "$WORK/card-template" \
-            --timeout-seconds 120
+            --timeout-seconds 180
           rc=$?
           set -e
-          echo "UC2_SCRIPT_EXIT_CODE=$rc" | tee "$OUT/UC2_SCRIPT_EXIT_CODE.txt"
+          echo "$rc" | tee "$OUT/UE2_SCRIPT_EXIT_CODE.txt"
           exit "$rc"
 
       - name: Remove private ROM, BIOS, checkpoint, card and emulator state
@@ -189,22 +197,18 @@ jobs:
           test ! -e "$WORK"
           echo "PRIVATE_BINARY_CLEANUP=PASS" > "$OUT/cleanup.txt"
 
-      - name: Validate and publish only UB2 text results
+      - name: Validate and publish only UE0–UE2 text results
         if: always()
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
-          if [ ! -s "$OUT/ACTIONS_RUN_SUMMARY.txt" ]; then
-            SCRIPT_RC="$(cat "$OUT/UC2_SCRIPT_EXIT_CODE.txt" 2>/dev/null || echo TIDAK_TAHU)"
-            {
-              echo "STATUS=INCOMPLETE"
-              echo "JOB=UD0/UD1 static audit and four 900-frame read-only launches"
-              echo "RUN_ID=$GITHUB_RUN_ID"
-              echo "SOURCE_SHA=$GITHUB_SHA"
-              echo "EXIT_CODE=$SCRIPT_RC"
-            } > "$OUT/ACTIONS_RUN_SUMMARY.txt"
-          fi
+          UE0_RC="$(cat "$OUT/UE0_GATE_EXIT_CODE.txt" 2>/dev/null || echo 1)"
+          UE2_RC="$(cat "$OUT/UE2_SCRIPT_EXIT_CODE.txt" 2>/dev/null || echo 1)"
+          case "$UE0_RC:$UE2_RC" in
+            0:0) STATUS="completed/success"; FINAL_RC=0 ;;
+            *) STATUS="completed/failure"; FINAL_RC=1 ;;
+          esac
           python3 - "$OUT" <<'PY'
           from pathlib import Path
           import sys
@@ -213,7 +217,7 @@ jobs:
           bad=[str(p) for p in root.rglob("*") if p.is_file() and p.suffix.lower() not in allowed]
           if bad: raise SystemExit("private/non-text result blocked: "+repr(bad))
           PY
-          DEST="reports/stage1_economy/ud0-ud2-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          DEST="reports/stage1_economy/ue0-ue2-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$DEST"
           cp "$OUT"/*.txt "$DEST/" 2>/dev/null || true
           cp "$OUT"/*.tsv "$DEST/" 2>/dev/null || true
@@ -223,29 +227,21 @@ jobs:
             "https://api.github.com/repos/$RESEARCH_REPO/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100" |
             jq -r '.jobs[0].id // empty' | head -n 1)"
           test -n "$JOB_ID" || JOB_ID="TIDAK_TAHU"
-          STATUS="$(sed -n 's/^STATUS=//p' "$OUT/ACTIONS_RUN_SUMMARY.txt" | head -n 1)"
-          test -n "$STATUS" || STATUS="INCOMPLETE"
-          EXIT_CODE="$(sed -n 's/^EXIT_CODE=//p' "$OUT/ACTIONS_RUN_SUMMARY.txt" | head -n 1)"
-          test -n "$EXIT_CODE" || EXIT_CODE="TIDAK_TAHU"
-          GATE_RC="$(cat "$OUT/UC0_UNION_GATE_EXIT_CODE.txt" 2>/dev/null || echo TIDAK_TAHU)"
           {
             echo "STATUS=$STATUS"
-            echo "JOB=UD0/UD1 static audit and four 900-frame read-only launches"
+            echo "JOB=UE0/UE1 static audit and UE2 six-launch read-only trace"
             echo "JOB_ID=$JOB_ID"
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "SOURCE_SHA=$GITHUB_SHA"
-            echo "EXIT_CODE=$EXIT_CODE"
+            echo "UE0_EXIT_CODE=$UE0_RC"
+            echo "UE2_EXIT_CODE=$UE2_RC"
+            echo "EXIT_CODE=$FINAL_RC"
           } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$DEST"
-          if [ -s "$OUT/UC0_TRIMMED_FILES.txt" ]; then
-            while IFS= read -r source_file; do
-              [ -n "$source_file" ] && [ -f "$source_file" ] && git add -- "$source_file"
-            done < "$OUT/UC0_TRIMMED_FILES.txt"
-          fi
           if ! git diff --cached --quiet; then
-            git commit -m "Publish UD0-UD2 static and read-only trace run $GITHUB_RUN_ID [skip ci]"
+            git commit -m "Publish UE0-UE2 audit and read-only trace run $GITHUB_RUN_ID [skip ci]"
             pushed=0
             for n in 1 2 3; do
               git fetch origin main
@@ -255,5 +251,5 @@ jobs:
             done
             test "$pushed" -eq 1
           fi
-          echo "UD0_UD2_REPORT_PATH=$DEST"
-          if [ "$GATE_RC" != "0" ]; then exit 4; fi
+          echo "UE0_UE2_REPORT_PATH=$DEST"
+          exit "$FINAL_RC"
