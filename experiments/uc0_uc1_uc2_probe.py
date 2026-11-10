@@ -13,7 +13,7 @@ def lua_probe(mode,launch,instrumented):
 local ffi=require("ffi")
 local MODE="''' + mode + r'''"
 local LAUNCH="''' + launch + r'''"
-local INSTRUMENTED='''+inst+r'''
+local INSTRUMENTED = (LAUNCH:match("_TRACE$") ~= nil)
 local MOD=4294967296
 local FRAME_LIMIT=900
 local WRITER_CAP=32
@@ -21,6 +21,7 @@ local CALL_CAP=8
 local loaded,started,post=false,false,0
 local samples,w1,w2=0,0,0
 local callWindow,callCount,callActive=-1,0,false
+local bpCall,bpWriter1,bpWriter2=nil,nil,nil
 local inputErrors=0
 local mem=PCSX.getMemPtr()
 local function hx(x) if x==nil then return "TIDAK TAHU" end return string.format("0x%08X",tonumber(x)%MOD) end
@@ -56,12 +57,12 @@ local function callHit(address)
 end
 local function armCall()
   if callActive then return end
-  PCSX.addBreakpoint(0x80011A28,"Exec",4,"UC2 caller per-window cap",function(a) return callHit(a) end)
+  bpCall=PCSX.addBreakpoint(0x80011A28,"Exec",4,"UC2 caller per-window cap",function(a) return callHit(a) end)
   callActive=true
 end
 local function armAll()
-  PCSX.addBreakpoint(0x800116C8,"Exec",4,"UC2 writer 116C8",function(a) return writerHit(a,"W1_800116C8") end)
-  PCSX.addBreakpoint(0x8001198C,"Exec",4,"UC2 writer 1198C",function(a) return writerHit(a,"W2_8001198C") end)
+  bpWriter1=PCSX.addBreakpoint(0x800116C8,"Exec",4,"UC2 writer 116C8",function(a) return writerHit(a,"W1_800116C8") end)
+  bpWriter2=PCSX.addBreakpoint(0x8001198C,"Exec",4,"UC2 writer 1198C",function(a) return writerHit(a,"W2_8001198C") end)
   armCall()
   log("UC2_BREAKPOINTS_ARMED writers=0x800116C8,0x8001198C caller=0x80011A28 cap_writer=32 cap_call=8_per_100_frames")
 end
@@ -120,7 +121,7 @@ def parse_log(log):
     for line in log.splitlines():
         if line.startswith("UC2_A0_SAMPLE\t"):
             p=line.split("\t")
-            if len(p)>=4:samples.append({"launch":p[1],"frame":p[2],"value":p[3]})
+            if len(p)>=4:samples.append({"launch":p[1].strip(),"frame":p[2].strip(),"value":p[3].strip()})
         elif line.startswith("UC2_WRITER\t"):
             p=line.split("\t")
             if len(p)>=11:writers.append({"launch":p[1],"frame":p[2],"writer":p[3],"breakpoint_pc":p[4],"pc":p[5],
@@ -134,7 +135,7 @@ def parse_log(log):
                 calls.append(r)
         elif line.startswith("UC2_INPUT\t"):
             p=line.split("\t")
-            if len(p)>=7:inputs.append({"launch":p[1],"frame":p[2],"button":p[3],"action":p[4],"readback":p[5],"status":p[6]})
+            if len(p)>=7:inputs.append({"launch":p[1].strip(),"frame":p[2].strip(),"button":p[3].strip(),"action":p[4].strip(),"readback":p[5].strip(),"status":p[6].strip()})
     return samples,writers,calls,inputs
 
 def main():

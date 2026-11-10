@@ -1,36 +1,54 @@
 # Status audit UC0–UC3 — 10 November 2026
 
-Baseline repo `main`: `dc18ff4f375680b1f37e7ceca7f64405a4554230` (inclusive). The baseline audit for physical harness deletion remains `aa32fbcee97c8f49946a8e589010cfb9ef1a6928`. Repo HEAD matched the requested UC baseline before this report-only publication.
+Baseline repo main: dc18ff4f375680b1f37e7ceca7f64405a4554230 (inclusive). Baseline audit for physical harness deletion remains aa32fbcee97c8f49946a8e589010cfb9ef1a6928. STATUS.md and Releases remain untouched.
 
-## Ringkasan status
+## Ringkasan
 
-| Tahap | Status | Tingkat bukti dan batas |
+| Tahap | Status | Bukti dan batas |
 |---|---|---|
-| UC0 | BELUM TUNTAS | QA0 lama K4 untuk skema lama saja; tidak mencakup variasi `instruction_pc` / `instruction_bytes` dan fallback label dari `file_offset` yang diminta sekarang. |
-| UC1 | BELUM DIKERJAKAN PADA BASELINE UC | Pembacaan entry 0 `0x800558B0`, delapan pointer handler, seluruh kolom record, dan graph `jal/jalr` depth 3 belum terdapat pada artefak yang diverifikasi di sini. Target kredit/fee: TIDAK TAHU. |
-| UC2 | BELUM TUNTAS UNTUK PROTOKOL UC | UB2 lama PASS K5 untuk protokol sebelumnya, tetapi breakpoint lama adalah EXEC `0x80011A28` dan EXEC `0x800B50AC`; bukan dua writer yang diminta. Sampel tiap 10 frame tanpa breakpoint dan batas delapan hit per jendela 100 frame juga belum dibuktikan. |
-| UC3 | TUNTAS UNTUK DELTA BASELINE INI | Satu commit HUMAN, tiga file-event tanpa rename, satu Actions run baru dan halaman run tercatat. K4 untuk data GitHub yang diperiksa ulang. |
+| UC0 | AUDIT SELESAI DENGAN BATAS | K4 untuk union byte atas 1.936 TSV yang memiliki alias kolom dikenali; 3.264 grup >64 B, 265 konflik, 9 baris malformed, 253 label belum terpetakan. 4.120 TSV terlacak; 2.184 TSV tidak memenuhi pasangan header yang dikenali. Semua grup dan sumber tersedia di artefak run 42755318255. |
+| UC1 | PARSIAL | K4 untuk pembacaan delapan record × delapan word pada tabel EXE; empat target memiliki prolog yang cocok pada Entry 1. Empat lainnya tetap TIDAK TAHU sebagai pemetaan fungsi. Graph adalah kandidat statis linear-terbatas, bukan CFG tervalidasi; target kredit/fee belum terbukti. |
+| UC2 | PARSIAL; K5 SEMPIT | Empat peluncuran 900 frame selesai. Untuk nilai global MEM32[0x8006D760] yang disampel tiap 10 frame, dua urutan per kondisi identik dan semua titik bernilai 3 (K5 terbatas pada titik sampel). Input CIRCLE readback 28/28 PASS setelah trim. Breakpoint caller/writer tidak terpasang karena instrumented=nil; tidak ada data PC/RA/a0 per hit. |
+| UC3 | TUNTAS UNTUK DELTA HINGGA COMMIT REKONSILIASI | Tujuh commit dari baseline hingga commit rekonsiliasi ini, tiga Actions run, dan 58 file-event --no-renames tercatat. Commit publikasi ledger itu sendiri dikecualikan agar tidak self-referential. K4 untuk enumerasi GitHub. |
 
-## Detail UC0
+## UC0 — byte union lintas TSV
 
-QA0 final lama (`run 42745502822`) mengaudit 4.039 TSV di cakupan Stage 1; 428 file cocok dengan header `image/pc/bytes`, 309.960 baris byte valid, 160.516 alamat unik, union maksimum 64 B, nol grup >64 B, nol konflik dan nol baris malformed. Namun, parser QA0 menerima hanya tiga header tersebut. Audit LA0 sebelumnya lebih sempit lagi: 4.029 file dipindai, 318 byte-eligible. Kedua hasil tersebut bukan audit lintas semua alias/header UC0. Karena itu UC0 tidak dinaikkan menjadi PASS. Tidak ada berkas lama yang dihapus atau dipangkas dalam publikasi ini.
+Run 42755318255 memindai seluruh 4.120 TSV terlacak di checkout sebelum hasil run tersebut ditambahkan. Sebanyak 1.936 file memiliki pasangan kolom pc atau instruction_pc dan bytes atau instruction_bytes; 1.469 file memakai alias/fallback label. Parser menghasilkan 746.115 baris-byte valid, 767.636 alamat byte unik, dan 71.440 grup kontigu.
 
-## Detail UC1 dan caller yang sudah diketahui
+Ada 3.264 grup lebih panjang dari 64 byte. Daftar lengkap setiap grup dan daftar sumber TSV-nya ada di UC0_OVER_64B_GROUPS.tsv; union semua grup ada di UC0_BYTE_UNION_GROUPS.tsv. Terdapat 265 konflik byte pada alamat/image yang sama, 9 baris malformed (termasuk baris ringkasan yang terbaca sebagai data), dan 253 label unresolved. Label unresolved dipisahkan per file; tidak digabung lintas file tanpa identitas image yang dapat dipertanggungjawabkan. Ini audit saja: tidak ada TSV historis yang dihapus, dipotong, atau ditulis ulang. Gerbang 64 B tetap berlaku bagi TSV baru.
 
-Artefak UB1 lama menyokong konteks statis caller `0x80011A28`: caller menggunakan `MEM32[0x800558A8 + 28*a0 + 8]`, dan ringkasan UB1 mengaitkan load `a0` dengan `MEM32[0x8006D760]`. Data `UB1_TABLE_BASE_800558FC_WORDS.tsv` hanya membaca kandidat record di sekitar `0x800558FC`; ia bukan pembacaan entry-0 `0x800558B0` dan tidak membuktikan bahwa `0x800558FC` adalah base indeks nol. Penentuan handler dari entry 0–7 dan graph panggilan tetap TIDAK TAHU. Jangkauan ke `FUN_800D15A8`, `0x800D2520`, dan `0x800D46EC` belum dinilai.
+## UC1 — tabel handler dan graph panggilan
 
-Keterangan tentang penulis `a0` di `0x800116C8` dan `0x8001198C`, serta nilai runtime `a0=3` pada frame 1–63 setelah checkpoint, dipertahankan sebagai konteks/observasi yang diberikan untuk tahap UC; belum diklaim sebagai hasil pemeriksaan runtime baru dalam tahap ini.
+Identitas input statis lolos pemeriksaan hash: EXE SHA-256 a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569; DATA.BIN SHA-256 69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822. Pemetaan EXE menggunakan file offset 0x800 + (PC - 0x80010000). Entry 0/1 DATA.BIN dipakai sebagai image slice statis; basis itu bukan pernyataan basis runtime.
 
-## Detail UC2
+Formula slot: 0x800558A8 + 28*entry + 8. Delapan word pointer pada slot +8:
+- entry 0, slot 0x800558B0 → 0x800AD9A4 (tidak ada prolog yang terkonfirmasi; pemetaan fungsi TIDAK TAHU)
+- entry 1, slot 0x800558CC → 0x800AD5F0 (TIDAK TAHU)
+- entry 2, slot 0x800558E8 → 0x800AF748 (TIDAK TAHU)
+- entry 3, slot 0x80055904 → 0x800B50AC (prolog cocok di Entry 1)
+- entry 4, slot 0x80055920 → 0x800B50AC (prolog cocok di Entry 1)
+- entry 5, slot 0x8005593C → 0x8011CE2C (prolog cocok di Entry 1)
+- entry 6, slot 0x80055958 → 0x8011CE2C (prolog cocok di Entry 1)
+- entry 7, slot 0x80055974 → 0x800ADF3C (TIDAK TAHU)
 
-UB2 run lama `42706850980` mencatat NO_INPUT x2 dan CIRCLE x2, masing-masing 900 frame; trace repetisi identik untuk kedua kondisi, dengan pembatas 32 hit per alamat breakpoint. Probe read-only dan tidak menghasilkan dump biner. Akan tetapi, alamat breakpoint-nya adalah EXEC `0x80011A28` dan EXEC `0x800B50AC`. Permintaan UC2 saat ini membutuhkan watchpoint tulis/exec pada dua writer `0x800116C8` dan `0x8001198C`, sampel `MEM32[0x8006D760]` setiap 10 frame pada sesi tanpa breakpoint, serta callsite dengan cap 8 hit per jendela 100 frame. Jadi status UC2 tetap belum tuntas untuk protokol yang diperbarui.
+Seluruh kolom word +0x0 sampai +0x1C untuk setiap record dibaca. Graph menghasilkan 7.760 baris: 7.696 kandidat JAL, 46 JALR, dan 18 penanda batas fungsi. Graph hanya dapat dimulai dari entry 3–6 yang punya prolog terkonfirmasi; entry 0,1,2,7 tidak diberi pemetaan fungsi. Scan bersifat linear dan dibatasi sampai jr ra atau 0x1000 byte, tidak merekonstruksi CFG lengkap. Tidak ditemukan edge langsung dalam keluaran ke FUN_800D15A8, 0x800D2520, atau 0x800D46EC; untuk entry 3–6 statusnya tetap TIDAK TAHU_DYNAMIC_OR_UNBOUNDED karena JALR dinamis/pemindaian tidak tuntas. Untuk entry 0,1,2,7 status TIDAK TAHU_NO_HANDLER_MAPPING. Tidak ada kesimpulan bahwa kredit/fee tidak pernah dipanggil.
 
-## Detail UC3
+## UC2 — headless read-only
 
-Commit inklusif baseline UC adalah `dc18ff4f375680b1f37e7ceca7f64405a4554230`, parent `10fb09a7228f301dbbf4214ffc3013652a14d823`, klasifikasi HUMAN. Diff dengan `--no-renames`: tiga baris file-event, semuanya modified.
+Checkpoint identik: 21.162.799 byte, SHA-256 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35. Run 42755318255 menyelesaikan empat peluncuran masing-masing 900 frame; semua proses emulator exit 0, save-state load terkonfirmasi, hash memory-card sebelum/sesudah sama, dan cleanup aset privat lulus.
 
-Satu Actions run setelah baseline: `42751965600`, event `schedule`, job `monitor` ID `129617431295`, workflow dan job completed/success pada source SHA baseline. Log mengatakan tidak ada adaptive-player run yang terlihat di latest 50 Actions runs, dan menegaskan ini bukan keberhasilan atau penyelesaian Story Mode. Exit code proses tidak dicetak (TIDAK TAHU); upload artefak ringkasan tidak terjadi karena `monitoring-report.txt` tidak ditemukan.
+Nilai MEM32[0x8006D760] pada 90 titik frame 10..900 per peluncuran selalu 0x00000003. Dua urutan NO_INPUT identik dan dua urutan CIRCLE identik: K5 hanya untuk nilai global pada titik sampling ini. CIRCLE readback menghasilkan true saat tekan dan false saat lepas, 14 event per peluncuran × dua peluncuran = 28 event PASS setelah whitespace di-trim.
 
-## Batas publikasi
+Namun dua log peluncuran trace mencatat instrumented=nil, sehingga cabang pemasangan breakpoint tidak berjalan. Karena itu nol hit pada 0x800116C8, 0x8001198C, dan 0x80011A28 tidak dapat ditafsirkan sebagai ketiadaan eksekusi. Nilai $a0 per-call, variasi $a0 pada hit, serta PC/RA/nilai writer tetap TIDAK TAHU. UC2_RECONCILIATION.txt menjelaskan parser false-negative input dan cacat flag trace. Kode parser dan pemasangan breakpoint diperbaiki dalam commit rekonsiliasi [skip ci], tanpa run tambahan.
 
-Audit ini bersifat dokumentasi/rekonsiliasi saja. Tidak ada ROM, EXE, DATA.BIN, BIOS, memory card, savestate, dump RAM, video atau biner lain yang dimasukkan. `STATUS.md` dan Release tidak diubah. Tidak ada emulator diluncurkan dan tidak ada Actions run baru dipicu oleh publikasi ledger ini. Kutipan byte tidak ditambahkan.
+## UC3 — ledger inkremental
+
+Baseline inklusif dc18ff4f375680b1f37e7ceca7f64405a4554230, parent 10fb09a7228f301dbbf4214ffc3013652a14d823. Hingga commit rekonsiliasi run 7: 7 commit (5 HUMAN, 2 BOT), 58 file-event tanpa rename (50 added, 8 modified, 0 deleted), dan 3 Actions run:
+- 42751965600: monitor terjadwal, completed/success; process exit code TIDAK TAHU (log tidak mencetak kode).
+- 42755015135: run UC0–UC2 pertama, completed/failure, exit code 2.
+- 42755318255: run UC0–UC2 koreksi, completed/failure, exit code 2; hasil statis dan sampel runtime tetap dipublikasikan.
+Tidak ada klaim penyelesaian Story Mode. Commit yang memublikasikan ledger ini dikecualikan dari hitungan karena ledger tidak dapat menyertakan SHA dirinya sendiri; akan menjadi titik awal delta selanjutnya.
+
+## Batas
+
+Tidak ada ROM/EXE/DATA.BIN/BIOS/memory card/savestate/dump RAM/video/biner yang dikomit. STATUS.md dan Releases tidak berubah. Semua perubahan laporan/ledger memakai [skip ci]; tidak ada run baru setelah run 7.

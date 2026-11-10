@@ -1,0 +1,30 @@
+UC2_RECONCILIATION_RUN=42755318255
+SOURCE_SHA=b3566b0b2f0bf46bc980c06899da029efe1ea7aa
+JOB_ID=129628237579
+ACTIONS_STATUS=completed/failure
+PROBE_EXIT_CODE=2
+CHECKPOINT_SHA256=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
+LAUNCHES=4; each reached 900 frames; all emulator exit codes 0; save-state loaded YES; memory-card hashes unchanged YES.
+
+A0_SAMPLING
+NO_INPUT_SAMPLE=90 points, frames 10..900, every value 0x00000003
+NO_INPUT_TRACE=90 points, frames 10..900, every value 0x00000003
+CIRCLE_SAMPLE=90 points, frames 10..900, every value 0x00000003
+CIRCLE_TRACE=90 points, frames 10..900, every value 0x00000003
+REPEAT_COMPARISON=the two 90-point sequences are identical within NO_INPUT; the two 90-point sequences are identical within CIRCLE.
+CONFIDENCE=K5 narrowly for the sampled MEM32[0x8006D760] sequence at 10-frame intervals under this checkpoint and these two input conditions. This does not prove the value between samples or the a0 register at each callsite.
+
+CIRCLE_INPUT
+Each CIRCLE launch emitted 14 events: 7 press readbacks true and 7 release readbacks false. All 28 event rows in UC2_INPUT_EVENTS.tsv have status PASS after trimming trailing whitespace.
+FALSE_NEGATIVE=UC2_LAUNCHES.tsv says INPUT_VALIDATION=FAIL because parse_log preserved trailing whitespace in some status fields (literal PASS ). This is a parser error, not a failed pad readback.
+
+BREAKPOINT_LIMITATION
+The trace-launch logs print UC2_SCRIPT_READY ... instrumented=nil for NO_INPUT_TRACE and CIRCLE_TRACE. The Lua condition if INSTRUMENTED then armAll() end therefore did not execute; no caller/writer breakpoint was installed in those launches.
+ZERO_HITS=not evidence of non-execution; writer hits 0 and callsite hits 0 are unusable for judging game control flow.
+CALLSITE_A0_VARIATION=TIDAK TAHU; no valid per-call register capture was obtained.
+WRITER_PC_RA_VALUE=TIDAK TAHU; no valid breakpoint capture was obtained.
+K5_SCOPE=does not extend to handler execution, writers, call graph, credit or fee.
+NO_MEMORY_OR_REGISTER_WRITES=YES; pad overrides were used only for the CIRCLE input condition. No ROM/binary/dump was committed.
+
+HARNESS_FIX_FOR_FUTURE
+The Lua instrumentation flag is now derived from the launch name suffix _TRACE, the breakpoint handles are retained in Lua locals, and parser fields are stripped before classification. This is a source correction only; no further Actions run was triggered in this correction commit.
