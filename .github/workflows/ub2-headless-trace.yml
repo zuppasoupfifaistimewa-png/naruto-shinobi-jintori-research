@@ -196,12 +196,13 @@ jobs:
           set -euo pipefail
           mkdir -p "$OUT"
           if [ ! -s "$OUT/ACTIONS_RUN_SUMMARY.txt" ]; then
+            SCRIPT_RC="$(cat "$OUT/UC2_SCRIPT_EXIT_CODE.txt" 2>/dev/null || echo TIDAK_TAHU)"
             {
               echo "STATUS=INCOMPLETE"
-              echo "JOB=ub2-headless-trace"
+              echo "JOB=UD0/UD1 static audit and four 900-frame read-only launches"
               echo "RUN_ID=$GITHUB_RUN_ID"
               echo "SOURCE_SHA=$GITHUB_SHA"
-              echo "EXIT_CODE=TIDAK_TAHU"
+              echo "EXIT_CODE=$SCRIPT_RC"
             } > "$OUT/ACTIONS_RUN_SUMMARY.txt"
           fi
           python3 - "$OUT" <<'PY'
@@ -226,9 +227,10 @@ jobs:
           test -n "$STATUS" || STATUS="INCOMPLETE"
           EXIT_CODE="$(sed -n 's/^EXIT_CODE=//p' "$OUT/ACTIONS_RUN_SUMMARY.txt" | head -n 1)"
           test -n "$EXIT_CODE" || EXIT_CODE="TIDAK_TAHU"
+          GATE_RC="$(cat "$OUT/UC0_UNION_GATE_EXIT_CODE.txt" 2>/dev/null || echo TIDAK_TAHU)"
           {
             echo "STATUS=$STATUS"
-            echo "JOB=ub2-headless-trace"
+            echo "JOB=UD0/UD1 static audit and four 900-frame read-only launches"
             echo "JOB_ID=$JOB_ID"
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "SOURCE_SHA=$GITHUB_SHA"

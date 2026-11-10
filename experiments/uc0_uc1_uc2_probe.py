@@ -9,6 +9,9 @@ LAUNCHES=("NO_INPUT_1","NO_INPUT_2","CIRCLE_1","CIRCLE_2")
 ADDRS=((0x80011A28,"CALLER_80011A28"),(0x800D15A8,"TARGET_800D15A8"),
        (0x800D2520,"TARGET_800D2520"),(0x800D46EC,"TARGET_800D46EC"))
 
+def hx(value: int) -> str:
+    return f"0x{int(value) & 0xFFFFFFFF:08X}"
+
 def lua_probe(mode,launch):
     specs=",".join("{"+f"0x{a:08X}"+',"'+name+'"}' for a,name in ADDRS)
     return r'''

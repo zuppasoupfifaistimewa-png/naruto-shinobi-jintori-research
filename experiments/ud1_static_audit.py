@@ -13,6 +13,8 @@ E0_SHA="56ee7d3b195b0708bd5f9163d354f0173a828430c9467d410e822b1793d316d4"
 E1_SHA="9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a"
 TABLE,STRIDE=0x800558A8,0x1C
 WRAPPER=0x800F5DAC
+KNOWN_CALLSITE_PC=0x800F5DAC
+KNOWN_CALL_TARGET=0x800D15A8
 FIXED=(0x800F5DAC,0x800D2520,0x800D46EC)
 STOP_FIXED={0x800B50AC,0x8011CE2C}
 def hx(v):return f"0x{v:08X}" if v is not None else "TIDAK TAHU"
@@ -42,9 +44,10 @@ def containing_fn(im,pc):
     st=ordered[i]
     if pc-st>0x10000:return None,None
     return st,starts[st]
-def map_function(images,pc):
+def map_function(images,pc,preferred_image=None):
     c=[]
     for im in image_for_pc(images,pc):
+        if preferred_image is not None and im["name"]!=preferred_image:continue
         st,kind=containing_fn(im,pc)
         if st is not None:c.append((im["name"],st,kind))
     return c
@@ -197,7 +200,7 @@ def main():
     fields=table_fields(exe)
     stops=set(STOP_FIXED)|{r["raw"] for r in fields if r["raw"] not in (None,0)}
     code=scan_code_refs(images)
-    fixed_data=read_data_refs(images,set(FIXED)|stops)
+    fixed_data=read_data_refs(images,set(FIXED)|stops|{KNOWN_CALL_TARGET})
     # Function status for every +04/+0C table field.
     scene=[]
     for r in fields:
@@ -219,7 +222,7 @@ def main():
         callee,depth=queue.popleft()
         if depth>=6:continue
         for r in code.get(callee,[]):
-            funcs=map_function(images,r["call_pc"])
+            funcs=map_function(images,r["call_pc"],r["image"])
             fn=funcs[0][1] if funcs else None
             fimg=funcs[0][0] if funcs else "TIDAK TAHU"
             fkind=funcs[0][2] if funcs else "TIDAK TAHU_NO_BOUNDARY"
@@ -232,13 +235,13 @@ def main():
                 seen.add((fn,depth+1));queue.append((fn,depth+1))
     # Full reference inventory for the three requested targets, including raw data words.
     xrows=[]
-    for target in FIXED:
+    for target in (*FIXED,KNOWN_CALL_TARGET):
         for r in code.get(target,[]):
-            funcs=map_function(images,r["call_pc"]);fn=funcs[0][1] if funcs else None
+            funcs=map_function(images,r["call_pc"],r["image"]);fn=funcs[0][1] if funcs else None
             xrows.append({"target":hx(target),"image":r["image"],"reference_pc":hx(r["call_pc"]),"kind":r["kind"],
               "containing_function":hx(fn),"function_boundary":funcs[0][2] if funcs else "TIDAK TAHU"})
         for r in fixed_data.get(target,[]):
-            funcs=map_function(images,r["call_pc"]);fn=funcs[0][1] if funcs else None
+            funcs=map_function(images,r["call_pc"],r["image"]);fn=funcs[0][1] if funcs else None
             xrows.append({"target":hx(target),"image":r["image"],"reference_pc":hx(r["call_pc"]),"kind":"DATA_WORD",
               "containing_function":hx(fn),"function_boundary":funcs[0][2] if funcs else "DATA_OR_TIDAK_TAHU"})
     # Validation: code instruction bytes are compared with all tracked byte-bearing TSV rows at the PC.
@@ -258,7 +261,7 @@ def main():
                 off=pc-ims[0]["base"];edge_refs.setdefault(pc,set()).add(ims[0]["data"][off:off+4])
     validation=validate_bytes_tsv(root,tracked(root),edge_refs)
     vrows=[{"pc":hx(pc),"validation":validation.get(pc,"TIDAK TAHU")} for pc in sorted(edge_refs)]
-    known_call=any(int(r["reference_pc"],16)==0x800D15A8 and r["target"]==hx(WRAPPER) and r["kind"]=="JAL" for r in xrows)
+    known_call=any(r["call_pc"]==KNOWN_CALLSITE_PC and r["kind"]=="JAL" for r in code.get(KNOWN_CALL_TARGET,[]) if r["image"]=="ENTRY1")
     write_tsv(out/"UD1_CALLER_CHAINS.tsv",["depth","callee_function","image","call_pc","caller_function","caller_image","caller_boundary","kind","stop_reached","stop_reason"],chains)
     write_tsv(out/"UD1_TARGET_XREFS.tsv",["target","image","reference_pc","kind","containing_function","function_boundary"],xrows)
     write_tsv(out/"UD1_SCENE_FIELD_FUNCTIONS.tsv",["entry","record_base","field_offset","field_address","value","candidate_images","function_start","boundary_methods"],scene)
@@ -271,7 +274,7 @@ def main():
       f"WRAPPER_TARGET={hx(WRAPPER)}",
       f"WRAPPER_FUNCTION_START={hx(wrapper_start)}",
       f"WRAPPER_BOUNDARY_METHOD={wrapper_method}",
-      f"KNOWN_CALLSITE_0x800D15A8_JAL_TO_WRAPPER={'FOUND' if known_call else 'TIDAK TAHU'}",
+      f"KNOWN_CALLSITE_PC_0x800F5DAC_TO_TARGET_0x800D15A8={'FOUND' if known_call else 'TIDAK TAHU'}",
       f"CALLER_EDGES_DEPTH_1={levels[1]}",
       f"CALLER_EDGES_DEPTH_2={levels[2]}",
       f"CALLER_EDGES_DEPTH_3={levels[3]}",
