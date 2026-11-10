@@ -1,2 +1,8 @@
 commit_sha	parent_sha	author	class	date_utc	subject	changed_files
 dc18ff4f375680b1f37e7ceca7f64405a4554230	10fb09a7228f301dbbf4214ffc3013652a14d823	zuppasoupfifaistimewa-png	HUMAN	2026-11-10T02:53:52Z	Finalize UB ledger through QA0 run 42745502822 [skip ci]	3
+ff417aaf67308835f8acf63a9d1485f8e0191726	dc18ff4f375680b1f37e7ceca7f64405a4554230	zuppasoupfifaistimewa-png	HUMAN	2026-11-10T04:05:23Z	UC0-UC3: publish bounded status and incremental ledger [skip ci]	6
+caebec8e08744f0765332582c660d1c11ca4e48f	ff417aaf67308835f8acf63a9d1485f8e0191726	zuppasoupfifaistimewa-png	HUMAN	2026-11-10T04:18:20Z	UC0-UC2: audit TSV aliases, entry-0 handlers and read-only headless trace	3
+df9ec61810bdb084c63a555cc05b4093c9463240	caebec8e08744f0765332582c660d1c11ca4e48f	github-actions[bot]	BOT	2026-11-10T04:19:25Z	Publish UC0-UC2 static and read-only trace run 42755015135 [skip ci]	18
+b3566b0b2f0bf46bc980c06899da029efe1ea7aa	df9ec61810bdb084c63a555cc05b4093c9463240	zuppasoupfifaistimewa-png	HUMAN	2026-11-10T04:21:10Z	Fix UC1 EXE file mapping and UC2 checkpoint environment path	3
+48e41535055de7c2d38497c584b660bd1d2e800d	b3566b0b2f0bf46bc980c06899da029efe1ea7aa	github-actions[bot]	BOT	2026-11-10T04:23:13Z	Publish UC0-UC2 static and read-only trace run 42755318255 [skip ci]	22
+4150e83affc09d5979c0284a16e989770ba8746c	48e41535055de7c2d38497c584b660bd1d2e800d	zuppasoupfifaistimewa-png	HUMAN	2026-11-10T04:27:22Z	Reconcile UC2 sampling and repair trace instrumentation [skip ci]	3

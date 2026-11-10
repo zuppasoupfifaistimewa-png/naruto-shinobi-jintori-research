@@ -43,7 +43,7 @@ Namun dua log peluncuran trace mencatat instrumented=nil, sehingga cabang pemasa
 
 ## UC3 — ledger inkremental
 
-Baseline inklusif dc18ff4f375680b1f37e7ceca7f64405a4554230, parent 10fb09a7228f301dbbf4214ffc3013652a14d823. Hingga commit rekonsiliasi run 7: 7 commit (5 HUMAN, 2 BOT), 58 file-event tanpa rename (50 added, 8 modified, 0 deleted), dan 3 Actions run:
+Baseline inklusif dc18ff4f375680b1f37e7ceca7f64405a4554230, parent 10fb09a7228f301dbbf4214ffc3013652a14d823. Hingga commit rekonsiliasi run 7: 7 commit (5 HUMAN, 2 BOT), 58 file-event tanpa rename (49 added, 9 modified, 0 deleted), dan 3 Actions run:
 - 42751965600: monitor terjadwal, completed/success; process exit code TIDAK TAHU (log tidak mencetak kode).
 - 42755015135: run UC0–UC2 pertama, completed/failure, exit code 2.
 - 42755318255: run UC0–UC2 koreksi, completed/failure, exit code 2; hasil statis dan sampel runtime tetap dipublikasikan.
