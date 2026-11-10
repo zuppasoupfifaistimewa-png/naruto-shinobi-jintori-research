@@ -1,0 +1,10 @@
+UD2_RECONCILIATION
+Run #42789941079 ended with workflow conclusion failure, but all four emulator launch loops finished successfully.
+The probe wrote UD2_BREAKPOINT_EVENTS.tsv, UD2_INPUT_EVENTS.tsv, UD2_CAP_EVENTS.tsv and UD2_LAUNCHES.tsv before raising NameError: hx is not defined during derived report generation. The later publication shell separately failed because GATE_RC was step-local and not reloaded; the bot report commit had already been pushed.
+All UD2 derived tables in this commit are reconciled from the already-committed event/launch/input/cap data. No emulator rerun was performed.
+Repeatability: NO_INPUT_1 and NO_INPUT_2 match exactly (88 event rows each, all captured registers); CIRCLE_1 and CIRCLE_2 also match exactly. K5 is limited to these captured traces.
+Cross-condition contrast: each paired NO_INPUT/CIRCLE comparison differs in 18 register fields: r26=13, r5=4, r6=1. Frame, label, PC, RA and a0 remain unchanged. No gameplay semantics are inferred from these registers.
+Caller cap 0x80011A28: 8 recorded hits by frame 15 in each 100-frame window; subsequent cap frames 115,215,315,415,515,615,715,815.
+Target cap 0x800D15A8: 16 recorded hits by frame 31 in every launch. Both caps are exhausted within the first 100 frames.
+0x800D2520 and 0x800D46EC have no hits in these four bounded launches; this is not evidence of global non-execution.
+All four launches loaded the checkpoint, reached 900 frames, exited 0, and left the memory-card hash unchanged. CIRCLE readbacks were 14/14 PASS per launch. No game-memory/register writes were made.

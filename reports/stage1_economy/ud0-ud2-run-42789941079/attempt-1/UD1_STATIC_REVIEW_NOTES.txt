@@ -1,0 +1,18 @@
+UD1_STATIC_REVIEW_NOTES
+WRAPPER_ADDRESS=0x800F5DAC
+BOUNDARY_CANDIDATE=0x800F3658
+BOUNDARY_METHOD=nearest preceding recognized negative ADDIU SP prolog
+BOUNDARY_CONFIDENCE=K2; linear boundary scan does not provide complete CFG/overlay disambiguation
+CALLER_EDGE_CANDIDATE=call_pc 0x800B54DC -> 0x800F3658; source_image=ENTRY1; prior caller_image/function was selected as ENTRY0 because ENTRY0/ENTRY1 address windows overlap
+CALLER_ATTRIBUTION=TIDAK TAHU until the callsite is resolved only inside its source image; do not accept 0x800B53F8/ENTRY0 as a unique containing-function result
+DEPTHS_2_TO_6=NO_ADDITIONAL_EDGE_REPORTED; not proof of no callers because image attribution and indirect paths remain unresolved
+KNOWN_CALL_CONTEXT=provided candidate callsite is PC 0x800F5DAC -> target 0x800D15A8; the old summary field checked the reverse direction and is not applicable
+RUNTIME_CONTEXT=breakpoint 0x800D15A8 hit 16 times per launch; RA was 0x800F5DB4 on all 64 hits, so RA-8 is 0x800F5DAC; consistent with that callsite but does not distinguish JAL from JALR or independently validate static bytes
+STATIC_OPCODE_AT_0x800F5DAC=TIDAK TAHU in run 42789941079
+FEE_0x800D2520_AND_0x800D46EC=0 static direct-JAL/LUI-pair/data-word references reported and 0 hits in these four launches; no global absence claim
+SCENE_TABLE_FIELDS=16 total; 9 exact recognized function starts, 7 inside a candidate function, 0 unresolved by the simple scan
+SCENE_FIELD_LIMIT=ENTRY0 and ENTRY1 static address windows overlap; candidate image/function attribution is not automatically a unique runtime overlay result
+EDGE_BYTE_VALIDATION=1 PC/byte match reported; the original validation was PC-based, not fully image-qualified; keep K2 pending per-image matching
+UD1_SCRIPT_CORRECTION=commit 189989c3d0a615c0561c829f83aa5709a9898c9c now restricts caller-boundary resolution to the reference source image and checks the known call direction; this correction was not rerun under the one-run limit
+NO_ABSENCE_CLAIM=YES
+NO_GAMEPLAY_SEMANTICS_CLAIM=YES

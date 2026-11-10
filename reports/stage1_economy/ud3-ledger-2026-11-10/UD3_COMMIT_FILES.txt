@@ -1,0 +1,50 @@
+UD3_COMMIT_FILE_LISTS_NO_RENAMES
+
+COMMIT_721B93A0B20C1CFBA7969CE21D584DFE4E641565 — HUMAN — 5 FILES
+M  .github/workflows/ub2-headless-trace.yml
+M  experiments/uc0_uc1_static_audit.py
+M  experiments/uc0_uc1_uc2_probe.py
+A  experiments/ud1_static_audit.py
+A  tools/union_gate.py
+
+COMMIT_76D98E6BC8227CEFE756D9EA37C0E3575674E8B4 — BOT — 1158 FILES
+M  1127 existing byte-evidence TSV files; exact paths are one per line in reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC0_TRIMMED_FILES.txt
+A  31 new text reports under reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/:
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/ACTIONS_RUN_SUMMARY.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC0_BYTE_UNION_GROUPS.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC0_MALFORMED_ROWS.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC0_OVER_64B_GROUPS.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC0_SUMMARY.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC0_TRIMMED_FILES.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC0_TRIMMED_ROWS.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC0_UC1_SUMMARY.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC0_UNION_GATE_EXIT_CODE.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC0_UNION_GATE_SUMMARY.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC0_UNRESOLVED_OVER_64_GROUPS_COUNT.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC1_CALL_EDGES.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC1_HANDLERS.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC1_TABLE_COLUMNS.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC1_TARGET_REACHABILITY.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UC2_SCRIPT_EXIT_CODE.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD1_CALLER_CHAINS.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD1_DX1_LA2_COMPARISON.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD1_EDGE_BYTE_VALIDATION.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD1_SCENE_FIELD_FUNCTIONS.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD1_STATIC_SUMMARY.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD1_TARGET_XREFS.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD2_BREAKPOINT_EVENTS.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD2_CAP_EVENTS.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD2_CIRCLE_1_EMULATOR_LOG.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD2_CIRCLE_2_EMULATOR_LOG.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD2_INPUT_EVENTS.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD2_LAUNCHES.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD2_NO_INPUT_1_EMULATOR_LOG.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD2_NO_INPUT_2_EMULATOR_LOG.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/cleanup.txt
+
+COMMIT_189989C3D0A615C0561C829F83AA5709A9898C9C — HUMAN — 3 FILES
+M  .github/workflows/ub2-headless-trace.yml
+M  experiments/uc0_uc1_uc2_probe.py
+M  experiments/ud1_static_audit.py
+
+NO DELETED FILES; NO RENAMES; STATUS.md and Releases unchanged.

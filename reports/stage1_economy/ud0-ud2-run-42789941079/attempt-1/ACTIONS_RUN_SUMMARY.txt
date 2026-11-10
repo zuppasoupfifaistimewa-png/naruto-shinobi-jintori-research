@@ -1,6 +1,7 @@
-STATUS=INCOMPLETE
-JOB=ub2-headless-trace
+STATUS=completed/failure
+JOB=UD0/UD1 static audit and four 900-frame read-only launches
 JOB_ID=129740494928
 RUN_ID=42789941079
 SOURCE_SHA=721b93a0b20c1cfba7969ce21d584dfe4e641565
-EXIT_CODE=TIDAK_TAHU
+EXIT_CODE=1
+EXIT_CODE_BASIS=UD2 Python post-processing NameError hx; publication step also failed on unbound GATE_RC. Emulator launches and static audit had completed; report outputs were committed.

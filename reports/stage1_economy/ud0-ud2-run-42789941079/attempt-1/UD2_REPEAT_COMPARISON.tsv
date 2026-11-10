@@ -1,0 +1,5 @@
+comparison	condition	launch_1	launch_2	events_1	events_2	exact_trace_equal	differing_event_fields	differing_registers	confidence
+NO_INPUT_1_vs_NO_INPUT_2	NO_INPUT	NO_INPUT_1	NO_INPUT_2	88	88	YES	0	NONE	K5 for captured register/event trace only
+CIRCLE_1_vs_CIRCLE_2	CIRCLE	CIRCLE_1	CIRCLE_2	88	88	YES	0	NONE	K5 for captured register/event trace only
+NO_INPUT_1_vs_CIRCLE_1	CROSS_CONDITION	NO_INPUT_1	CIRCLE_1	88	88	NO	18	r26;r5;r6	cross-condition comparison; not repeatability
+NO_INPUT_2_vs_CIRCLE_2	CROSS_CONDITION	NO_INPUT_2	CIRCLE_2	88	88	NO	18	r26;r5;r6	cross-condition comparison; not repeatability

@@ -1,0 +1,2 @@
+run_id	run_number	event	workflow	job	job_id	status	conclusion	source_sha	exit_code	exit_code_basis	created_at_utc	updated_at_utc
+42789941079	8	push	UD0–UD2 — static union gate, reverse audit and read-only headless trace	UD0/UD1 static audit and four 900-frame read-only launches	129740494928	completed	failure	721b93a0b20c1cfba7969ce21d584dfe4e641565	1	UD2 NameError hx; publication step failed because GATE_RC was not defined in that shell	2026-11-10T09:20:52Z	2026-11-10T09:23:14Z
