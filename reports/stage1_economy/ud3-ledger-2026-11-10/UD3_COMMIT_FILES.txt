@@ -47,4 +47,23 @@ M  .github/workflows/ub2-headless-trace.yml
 M  experiments/uc0_uc1_uc2_probe.py
 M  experiments/ud1_static_audit.py
 
+COMMIT_E7D58096186BAD7906706C733668009489071FA7 — HUMAN — 14 FILES
+M  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/ACTIONS_RUN_SUMMARY.txt
+M  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD1_STATIC_SUMMARY.txt
+M  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD1_DX1_LA2_COMPARISON.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD1_STATIC_REVIEW_NOTES.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD2_BREAKPOINT_COUNTS.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD2_A0_VARIATION.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD2_REPEAT_COMPARISON.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD2_CONDITION_REGISTER_DIFFS.tsv
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD2_SUMMARY.txt
+A  reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1/UD2_RECONCILIATION.txt
+A  reports/stage1_economy/ud3-ledger-2026-11-10/UD3_SUMMARY.txt
+A  reports/stage1_economy/ud3-ledger-2026-11-10/UD3_COMMITS.tsv
+A  reports/stage1_economy/ud3-ledger-2026-11-10/UD3_ACTIONS_RUNS.tsv
+A  reports/stage1_economy/ud3-ledger-2026-11-10/UD3_COMMIT_FILES.txt
+
+COMMIT_53CE5B915E0CEFE3426F09BA990C4A7815951406 — HUMAN — 1 FILE
+M  reports/stage1_economy/ud3-ledger-2026-11-10/UD3_COMMITS.tsv
+
 NO DELETED FILES; NO RENAMES; STATUS.md and Releases unchanged.
