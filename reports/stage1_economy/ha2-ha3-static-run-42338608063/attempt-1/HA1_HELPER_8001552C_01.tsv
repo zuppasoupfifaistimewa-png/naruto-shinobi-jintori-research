@@ -1,4 +1,0 @@
-pc	file_offset	bytes	instruksi
-0x8001556C	0x5D6C	10 00 B0 8F	lw $s0, 0x10($sp)
-0x80015570	0x5D70	08 00 E0 03	jr $ra
-0x80015574	0x5D74	18 00 BD 27	addiu $sp, $sp, 0x18

@@ -1,0 +1,2 @@
+target	image	reference_pc	kind	containing_function	function_boundary
+0x800F5DAC	ENTRY1	0x800AEA44	DATA_WORD	0x800AE818	PROLOG_ADDUI_SP

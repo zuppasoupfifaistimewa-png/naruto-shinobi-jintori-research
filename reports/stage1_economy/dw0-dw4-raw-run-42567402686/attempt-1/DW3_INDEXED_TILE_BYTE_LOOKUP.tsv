@@ -16,5 +16,3 @@ pc	file_offset	bytes	instruction	role	source	reason
 0x800F5CB0	0x01103860	80 10 02 00	sll $v0, $v0, 2	shifts to index*0x124	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
 0x800F5CB4	0x01103864	21 10 44 00	addu $v0, $v0, $a0	adds second tile-array base pointer	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
 0x800F5CB8	0x01103868	00 00 43 90	lbu $v1, ($v0)	reads selected tile record byte +0x00; value becomes JR selector	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
-0x800F5CC0	0x01103870	09 00 62 2C	sltiu $v0, $v1, 9	checks selector < 9	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown
-0x800F5CC4	0x01103874	30 00 40 10	beqz $v0, 0x800f5d88	branches to fallback when selector >= 9	Entry 1 raw-byte decode	specific static dataflow role; dynamic pointer/index values remain unknown

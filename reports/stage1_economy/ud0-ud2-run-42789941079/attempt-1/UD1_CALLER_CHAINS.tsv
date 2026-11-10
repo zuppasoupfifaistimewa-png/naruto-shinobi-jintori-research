@@ -1,0 +1,2 @@
+depth	callee_function	image	call_pc	caller_function	caller_image	caller_boundary	kind	stop_reached	stop_reason
+1	0x800F3658	ENTRY1	0x800B54DC	0x800B53F8	ENTRY0	PROLOG_ADDUI_SP	JAL	NO	CONTINUE

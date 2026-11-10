@@ -1,3 +1,0 @@
-pc	file_offset	bytes	instruksi
-0x800F2E0C	0x011009BC	23 10 02 00	negu $v0, $v0
-0x800F2E64	0x01100A14	23 10 02 00	negu $v0, $v0

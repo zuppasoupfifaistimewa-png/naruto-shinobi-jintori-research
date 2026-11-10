@@ -1,3 +1,2 @@
 image	pc	file_offset	bytes	instruksi	x	H_raw_u32	H_signed	F2CF8	F2E38	F2E68	scope
 ENTRY1	0x800E8174	0x010F5D24	30 05 40 AC	sw $zero, 0x530($v0)	0 conditional reset only	0x00000096	150	low16(H(0)*(G-2))	low16(-H(0)*(G-1-Q))	low16(-H(0))	Only if helper reads the field after this reset writer; not a proven active gameplay x.
-ENTRY1	0x800D49D8	0x010E2588	30 05 C2 AC	sw $v0, 0x530($a2)	TIDAK TAHU for dynamic writers	TIDAK TAHU	TIDAK TAHU	low16(H(x)*(G-2))	low16(-H(x)*(G-1-Q))	low16(-H(x))	Dynamic x domain not closed by JA2; no d mapping/fitting.

@@ -1,0 +1,10 @@
+source	line	reason
+reports/stage1_economy/AZ3_GLOBAL_70C80_SEED_FLOW_2026-11-02.tsv	5	ValueError:noncanonical byte string
+reports/stage1_economy/dt0-dt4-raw-run-42125095938/attempt-1/DV2_REPRESENTATIVE_PATHS.tsv	47	ValueError:missing hex
+reports/stage1_economy/dw0-dw4-raw-run-42161171455/attempt-1/DW3_SELECTOR_INDEX_ORIGIN.tsv	8	ValueError:invalid literal for int() with base 16: 'SUMMARY'
+reports/stage1_economy/dw0-dw4-raw-run-42161675076/attempt-1/DW3_SELECTOR_INDEX_ORIGIN.tsv	8	ValueError:invalid literal for int() with base 16: 'SUMMARY'
+reports/stage1_economy/dw0-dw4-raw-run-42161706493/attempt-1/DW3_SELECTOR_INDEX_ORIGIN.tsv	8	ValueError:invalid literal for int() with base 16: 'SUMMARY'
+reports/stage1_economy/dw0-dw4-raw-run-42554974392/attempt-1/DW3_SELECTOR_INDEX_ORIGIN.tsv	8	ValueError:invalid literal for int() with base 16: 'SUMMARY'
+reports/stage1_economy/dw0-dw4-raw-run-42555137254/attempt-1/DW3_SELECTOR_INDEX_ORIGIN.tsv	8	ValueError:invalid literal for int() with base 16: 'SUMMARY'
+reports/stage1_economy/dw0-dw4-raw-run-42558598050/attempt-1/DW3_SELECTOR_INDEX_ORIGIN.tsv	8	ValueError:invalid literal for int() with base 16: 'SUMMARY'
+reports/stage1_economy/dw0-dw4-raw-run-42567402686/attempt-1/DW3_SELECTOR_INDEX_ORIGIN.tsv	8	ValueError:invalid literal for int() with base 16: 'SUMMARY'

@@ -1,7 +1,0 @@
-image	pc	file_offset	bytes	instruksi	argument	role	origin_detail	certainty
-ENTRY1	0x800DD1B4	0x010EAD64	20 00 44 94	lhu $a0, 0x20($v0)	a0	SOURCE_LOAD	u16 loaded from effective address ($v0+0x20); full source-object base remains TIDAK TAHU	K4 static instruction
-ENTRY1	0x800DD1D0	0x010EAD80	02 23 04 00	srl $a0, $a0, 0xc	a0	JAL_DELAY_SLOT_TRANSFORM	jal delay slot executes before callee; a0 becomes loaded_u16 >> 12, i.e. packed high nibble/owner field	K4 static instruction
-ENTRY1	0x800DD1B8	0x010EAD68	F4 04 A5 8C	lw $a1, 0x4f4($a1)	a1	SOURCE_LOAD	load signed word from ($a1+0x4f4); identity of incoming $a1 base is TIDAK TAHU	K4 static instruction
-ENTRY1	0x800DD1C0	0x010EAD70	02 00 A1 04	bgez $a1, 0x800dd1cc	a1	CONDITIONAL_SIGN_PATH	nonnegative value branches directly to call; negative value falls through to negation	K4 static instruction
-ENTRY1	0x800DD1C8	0x010EAD78	23 28 05 00	negu $a1, $a1	a1	CONDITIONAL_ABSOLUTE_VALUE	on negative path, negate loaded value; value supplied is abs(*(s32*)($a1_in+0x4f4))	K4 static instruction
-ENTRY1	0x800DD1CC	0x010EAD7C	C4 53 00 0C	jal 0x80014f10	call	DIRECT_CALL	caller function FUN_800dc2e0; after delay slot, a0 is owner nibble and a1 is absolute loaded +0x4f4 word; not proof +0x4f4 is wallet	K4 static instruction

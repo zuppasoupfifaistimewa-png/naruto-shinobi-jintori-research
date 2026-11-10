@@ -1,4 +1,0 @@
-image	pc	file_offset	bytes	instruksi	site_pc	function_entry	source_class	domain	mask	conclusion
-ENTRY1	0x800D49D8	0x010E2588	30 05 C2 AC	sw $v0, 0x530($a2)	0x800D49D8	0x800D15A8	lbu from dynamic EA; base addu left=ADDIU source=EA=0x8013EA74 immediate=0x00000010 right=addu left=EA=0x8013EB1C right=SLL source=addu left=SLL source=EA=0x8013EA6E right=EA=0x8013EA6E	TIDAK TAHU	NONE	VALUE_SOURCE_NOT_CLOSED
-ENTRY1	0x800EC844	0x010FA3F4	30 05 62 AC	sw $v0, 0x530($v1)	0x800EC844	0x800EC574	ANDI source=EA=0x80139EC7 immediate=0x000000FF	0..255 conditional LOW8 only	LOW8	VALUE_SOURCE_NOT_CLOSED
-ENTRY1	0x800EC868	0x010FA418	30 05 62 AC	sw $v0, 0x530($v1)	0x800EC868	0x800EC574	ANDI source=ANDI source=EA=0x80139EC7 immediate=0x000000FF immediate=0x000000FF	0..255 conditional LOW8 only	LOW8	VALUE_SOURCE_NOT_CLOSED

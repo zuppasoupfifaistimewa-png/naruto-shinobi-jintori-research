@@ -8,13 +8,3 @@ pc	file_offset	bytes	instruction	source	reason
 0x800F5CB0	0x01103860	80 10 02 00	sll $v0, $v0, 2	Entry 1 verified bytes	complete requested inclusive range 0x800F5C98..0x800F5CE0
 0x800F5CB4	0x01103864	21 10 44 00	addu $v0, $v0, $a0	Entry 1 verified bytes	complete requested inclusive range 0x800F5C98..0x800F5CE0
 0x800F5CB8	0x01103868	00 00 43 90	lbu $v1, ($v0)	Entry 1 verified bytes	complete requested inclusive range 0x800F5C98..0x800F5CE0
-0x800F5CBC	0x0110386C	00 00 00 00	nop	Entry 1 verified bytes	complete requested inclusive range 0x800F5C98..0x800F5CE0
-0x800F5CC0	0x01103870	09 00 62 2C	sltiu $v0, $v1, 9	Entry 1 verified bytes	complete requested inclusive range 0x800F5C98..0x800F5CE0
-0x800F5CC4	0x01103874	30 00 40 10	beqz $v0, 0x800f5d88	Entry 1 verified bytes	complete requested inclusive range 0x800F5C98..0x800F5CE0
-0x800F5CC8	0x01103878	0B 80 02 3C	lui $v0, 0x800b	Entry 1 verified bytes	complete requested inclusive range 0x800F5C98..0x800F5CE0
-0x800F5CCC	0x0110387C	78 EB 42 24	addiu $v0, $v0, -0x1488	Entry 1 verified bytes	complete requested inclusive range 0x800F5C98..0x800F5CE0
-0x800F5CD0	0x01103880	80 18 03 00	sll $v1, $v1, 2	Entry 1 verified bytes	complete requested inclusive range 0x800F5C98..0x800F5CE0
-0x800F5CD4	0x01103884	21 18 62 00	addu $v1, $v1, $v0	Entry 1 verified bytes	complete requested inclusive range 0x800F5C98..0x800F5CE0
-0x800F5CD8	0x01103888	00 00 62 8C	lw $v0, ($v1)	Entry 1 verified bytes	complete requested inclusive range 0x800F5C98..0x800F5CE0
-0x800F5CDC	0x0110388C	00 00 00 00	nop	Entry 1 verified bytes	complete requested inclusive range 0x800F5C98..0x800F5CE0
-0x800F5CE0	0x01103890	08 00 40 00	jr $v0	Entry 1 verified bytes	complete requested inclusive range 0x800F5C98..0x800F5CE0

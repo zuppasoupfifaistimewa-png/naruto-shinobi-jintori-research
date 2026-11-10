@@ -1,2 +1,0 @@
-image	pc	file_offset	bytes	instruksi	word	target	target_name
-ENTRY1	0x800DD1CC	0x010EAD7C	C4 53 00 0C	jal 0x80014f10	0x0C0053C4	0x80014F10	FUN_80014F10

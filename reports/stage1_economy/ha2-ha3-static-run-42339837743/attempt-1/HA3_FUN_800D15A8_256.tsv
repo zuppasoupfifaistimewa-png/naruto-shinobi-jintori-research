@@ -1,2 +1,0 @@
-pc	file_offset	bytes	instruksi
-0x800D55A8	0x10E3158	14 80 05 3C	lui $a1, 0x8014

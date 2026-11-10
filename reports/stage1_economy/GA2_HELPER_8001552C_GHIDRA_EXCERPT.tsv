@@ -15,6 +15,3 @@ pc	file_offset	bytes	instruksi	role
 0x80015560	0x00005D60	00 00 00 00	nop	delay slot
 0x80015564	0x00005D64	21 10 00 00	move $v0,$zero	out-of-range return zero (alias for addu v0,zero,zero)
 0x80015568	0x00005D68	14 00 BF 8F	lw $ra,0x14($sp)	restore ra
-0x8001556C	0x00005D6C	10 00 B0 8F	lw $s0,0x10($sp)	restore s0
-0x80015570	0x00005D70	08 00 E0 03	jr $ra	return
-0x80015574	0x00005D74	18 00 BD 27	addiu $sp,$sp,0x18	delay slot stack restore

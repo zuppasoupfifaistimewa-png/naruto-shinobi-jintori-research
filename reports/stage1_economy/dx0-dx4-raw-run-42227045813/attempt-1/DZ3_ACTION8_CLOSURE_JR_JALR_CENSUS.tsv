@@ -77,15 +77,6 @@ pc	file_offset	bytes	instruction	function	static_register_target	kind	source	rea
 0x800CE5CC	0x010DC17C	08 00 E0 03	jr $ra	FUN_800CE440	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800CE610	0x010DC1C0	08 00 E0 03	jr $ra	FUN_800CE440	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800CE620	0x010DC1D0	08 00 E0 03	jr $ra	FUN_800CE440	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
-0x800D15FC	0x010DF1AC	08 00 40 00	jr $v0	FUN_800D15A8	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
-0x800D1A98	0x010DF648	08 00 40 00	jr $v0	FUN_800D15A8	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
-0x800D22A4	0x010DFE54	08 00 40 00	jr $v0	FUN_800D15A8	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
-0x800D26D4	0x010E0284	08 00 40 00	jr $v0	FUN_800D15A8	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
-0x800D2F60	0x010E0B10	08 00 40 00	jr $v0	FUN_800D15A8	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
-0x800D2FA8	0x010E0B58	08 00 40 00	jr $v0	FUN_800D15A8	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
-0x800D3B14	0x010E16C4	08 00 40 00	jr $v0	FUN_800D15A8	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
-0x800D449C	0x010E204C	08 00 40 00	jr $v0	FUN_800D15A8	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
-0x800D4A2C	0x010E25DC	08 00 40 00	jr $v0	FUN_800D15A8	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800D5BB8	0x010E3768	08 00 E0 03	jr $ra	FUN_800D15A8	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800D6E74	0x010E4A24	08 00 E0 03	jr $ra	FUN_800D5BC0	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800D6ECC	0x010E4A7C	08 00 40 00	jr $v0	FUN_800D6E7C	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
@@ -97,9 +88,6 @@ pc	file_offset	bytes	instruction	function	static_register_target	kind	source	rea
 0x800DB368	0x010E8F18	08 00 40 00	jr $v0	FUN_800DB29C	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800DBE40	0x010E99F0	08 00 40 00	jr $v0	FUN_800DB29C	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800DC2D8	0x010E9E88	08 00 E0 03	jr $ra	FUN_800DB29C	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
-0x800DC354	0x010E9F04	08 00 40 00	jr $v0	FUN_800DC2E0	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
-0x800DC8F8	0x010EA4A8	08 00 40 00	jr $v0	FUN_800DC2E0	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
-0x800DD7B8	0x010EB368	08 00 E0 03	jr $ra	FUN_800DC2E0	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800DD80C	0x010EB3BC	08 00 40 00	jr $v0	FUN_800DD7C0	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800DD9CC	0x010EB57C	08 00 40 00	jr $v0	FUN_800DD7C0	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800DE758	0x010EC308	08 00 E0 03	jr $ra	FUN_800DD7C0	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
@@ -147,8 +135,6 @@ pc	file_offset	bytes	instruction	function	static_register_target	kind	source	rea
 0x800E87B8	0x010F6368	08 00 E0 03	jr $ra	FUN_800E8190	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800EB4A4	0x010F9054	08 00 40 00	jr $v0	FUN_800EB434	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800EC56C	0x010FA11C	08 00 E0 03	jr $ra	FUN_800EB434	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
-0x800EC8AC	0x010FA45C	08 00 40 00	jr $v0	FUN_800EC574	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
-0x800EDD60	0x010FB910	08 00 E0 03	jr $ra	FUN_800EC574	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800EDDD8	0x010FB988	08 00 40 00	jr $v0	FUN_800EDD68	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800F0C08	0x010FE7B8	08 00 E0 03	jr $ra	FUN_800EF9A4	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800F0C58	0x010FE808	08 00 40 00	jr $v0	FUN_800F0C10	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
@@ -157,7 +143,6 @@ pc	file_offset	bytes	instruction	function	static_register_target	kind	source	rea
 0x800F2488	0x01100038	08 00 E0 03	jr $ra	FUN_800F1290	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800F24E0	0x01100090	08 00 40 00	jr $v0	FUN_800F2490	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800F2A94	0x01100644	08 00 E0 03	jr $ra	FUN_800F2490	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
-0x800F30F8	0x01100CA8	08 00 E0 03	jr $ra	FUN_800F2A9C	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800F32FC	0x01100EAC	08 00 40 00	jr $v0	FUN_800F32B4	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800F34C8	0x01101078	08 00 E0 03	jr $ra	FUN_800F32B4	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through
 0x800F6344	0x01103EF4	08 00 E0 03	jr $ra	FUN_800F6078	TIDAK TAHU	JR	JR/JALR in action-8 direct and known-table-expanded closure	unknown indirect destination is not treated as ordinary fall-through

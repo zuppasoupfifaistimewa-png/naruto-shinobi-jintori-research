@@ -1,9 +1,1 @@
-image	pc	file_offset	bytes	instruksi	x_value_range	possible_H_indices	what_is_proven	remaining_unknown
-ENTRY1	0x800D49D0	0x010E2580	00 00 62 90	lbu $v0, ($v1)	0..255 by lbu result	0..51 only if x<52; actual subset TIDAK TAHU	D49D8 stores this byte to manager+0x530; effective source address is dynamic, assembled from code using globals near 0x8013EA6E and 0x8013EB1C	which byte values are concretely reachable and whether selector is delta/effect/item
-ENTRY1	0x800D49D8	0x010E2588	30 05 C2 AC	sw $v0, 0x530($a2)	0..255 conditional on writer execution	0..51 only if x<52; actual subset TIDAK TAHU	stored x is the preceding lbu result	writer reachability and table bounds are TIDAK TAHU
-ENTRY1	0x800EC81C	0x010FA3CC	C7 9E 02 92	lbu $v0, -0x6139($s0)	0..255 by lbu result	0..51 only if x<52; actual subset TIDAK TAHU	static effective address resolves to 0x80139EC7	semantic identity of the global byte is TIDAK TAHU
-ENTRY1	0x800EC840	0x010FA3F0	FF 00 42 30	andi $v0, $v0, 0xff	0..255	0..51 only if x<52; actual subset TIDAK TAHU	first EC844 writer masks same byte to low 8 bits	no proof of bound x<52
-ENTRY1	0x800EC844	0x010FA3F4	30 05 62 AC	sw $v0, 0x530($v1)	0..255 conditional on writer execution	0..51 only if x<52; actual subset TIDAK TAHU	stores low byte of 0x80139EC7-derived value	writer reachability and selector meaning TIDAK TAHU
-ENTRY1	0x800EC864	0x010FA414	FF 00 42 30	andi $v0, $v0, 0xff	0..255	0..51 only if x<52; actual subset TIDAK TAHU	second EC868 path masks the same low byte again	no proof of bound x<52
-ENTRY1	0x800EC868	0x010FA418	30 05 62 AC	sw $v0, 0x530($v1)	0..255 conditional on writer execution	0..51 only if x<52; actual subset TIDAK TAHU	stores low byte of 0x80139EC7-derived value	writer reachability and selector meaning TIDAK TAHU
 ENTRY1	0x800E8174	0x010F5D24	30 05 40 AC	sw $zero, 0x530($v0)	0 (conditional reset only)	index 0 only if subsequently consumed	proves a write of zero, not a read by F2A9C	operational reachability is TIDAK TAHU

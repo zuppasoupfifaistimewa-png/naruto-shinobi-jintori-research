@@ -1,8 +1,4 @@
 pc	file_offset	bytes	instruction	function	base_origin	stored_value_origin
 0x800E408C	0x010F1C3C	EE 02 62 A4	sh $v0, 0x2ee($v1)	FUN_800E3E74	SLOT_0x8013EA74;SLOT_0x8013EA88	0x800E4088 negu $v0, $v0 <- $zero , 0x800E4080 lhu $v0, -0x144c($a2) [load 0x8013EBB4; base $a2]
 0x800F0F08	0x010FEAB8	EE 02 62 A4	sh $v0, 0x2ee($v1)	FUN_800F0C10	SLOT_0x8013EA74;SLOT_0x8013EA88	0x800F0F04 negu $v0, $v0 <- $zero , 0x800F0EFC lhu $v0, 0xe($a2) [load alamat dinamis; base $a2]
-0x800DC4FC	0x010EA0AC	EE 02 43 A4	sh $v1, 0x2ee($v0)	FUN_800DC2E0	SLOT_0x8013EA74;SLOT_0x8013EA88	0x800DC4F4 lhu $v1, 0x4f4($a0) [load alamat dinamis; base $a0]
-0x800DD088	0x010EAC38	EE 02 43 A4	sh $v1, 0x2ee($v0)	FUN_800DC2E0	SLOT_0x8013EA74;SLOT_0x8013EA88	0x800DD080 lhu $v1, 0x4f4($a0) [load alamat dinamis; base $a0]
 0x800E66E8	0x010F4298	EE 02 43 A4	sh $v1, 0x2ee($v0)	FUN_800E6470	SLOT_0x8013EA74;SLOT_0x8013EA88	0x800E66E0 lhu $v1, 0x4f4($a0) [load alamat dinamis; base $a0]
-0x800F2CF8	0x011008A8	EE 02 82 A4	sh $v0, 0x2ee($a0)	FUN_800F2A9C	SLOT_0x8013EA74	0x800F2CF4 mflo $v0 <- 0x800F2CF0 mult $v0, $v1 (return JAL 0x8001552C; 0x800F2CEC addiu $v1, $v1, -2 <- 0x800F2CE4 lbu $v1, -0x158f($s2) [load 0x8013EA71; base $s2])
-0x800F2E38	0x011009E8	EE 02 A2 A4	sh $v0, 0x2ee($a1)	FUN_800F2A9C	SLOT_0x8013EA74	0x800F2E30 mflo $v0 <- 0x800F2E2C mult $v0, $a0 (0x800F2E0C negu $v0, $v0 <- $zero , return JAL 0x8001552C; 0x800F2E28 subu $a0, $a0, $v1 <- 0x800F2E18 addiu $a0, $a0, -1 <- 0x800F2E10 lbu $a0, -0x158f($s3) [load 0x8013EA71; base $s3] , 0x800F2E20 lw $v1, -0x6104($v1) [load 0x80139EFC; base $v1])
