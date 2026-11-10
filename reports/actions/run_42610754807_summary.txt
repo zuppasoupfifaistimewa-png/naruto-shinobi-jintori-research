@@ -1,0 +1,10 @@
+STATUS=SUCCESS
+JOB=monitor
+JOB_ID=129138256269
+RUN_ID=42610754807
+SOURCE_SHA=8a5aa492904b4fecafba318adabdb902d3801f67
+EXIT_CODE=0
+EXIT_CODE_SOURCE=GitHub job conclusion success; no separate inner-process exit code was emitted
+MONITOR_RESULT=NO_ADAPTIVE_PLAYER_RUN_VISIBLE_IN_LATEST_50_ACTIONS_RUNS
+GAMEPLAY_PROGRESS=NOT_ESTABLISHED
+REPORT_SCOPE=Actions health and artifact availability only; not a gameplay or Story Mode completion proof
