@@ -1,25 +1,32 @@
 UH2_HEADLESS_READ_ONLY_STATUS
-STATUS=BELUM
-EVIDENCE_LEVEL=K0_FOR_REQUESTED_RUNTIME_VALUES_AND_WRITE_WATCHES
-CODE_SOURCE_SHA=c7da18bef75f6e6905d495b72710f50aaf1bb5b0
-REQUEST=Two NO_INPUT launches x 900 frames from existing checkpoint; numeric petak fields at frames 1 and 900; all-hit write watchpoints with PC/RA; instrumented=true; Memory Card 0444 hash unchanged; pyflakes; dry fail-fast.
-EXISTING_RUNNER=experiments/ue2_scene_trace.py and experiments/ub2_headless_trace.py
-EXISTING_UE2_LAUNCHES=NO_INPUT_1,NO_INPUT_2,CIRCLE_1,CIRCLE_2,DOWN_CIRCLE_1,DOWN_CIRCLE_2
-EXISTING_UE2_BREAKPOINTS=Exec only: 0x800D15A8,0x800B54DC,0x800F3658,0x800F5DAC
-PCSX_API=PCSX.addBreakpoint supports Write watchpoints; callback can read PC and RA. API support alone does not identify safe petak addresses.
-ARRAY_POINTER=slot 0x8013EA84 is a dynamic pointer slot, not itself a proven contiguous RAM address for all petak.
-ARRAY_EXTENT=TIDAK TAHU; exact count/index bounds for every petak were not resolved in the pinned static source.
-FIELDS=The +0x1A/+0x1C/+0x1E writes are not all proven aliases of slot 0x8013EA84; +0x20 writers are alias-proven in selected ENTRY1 census only.
-SAFETY_DECISION=NO_EMULATOR_LAUNCH; no watchpoint was placed at a guessed address/range because it could capture unrelated memory or miss petak records.
-LAUNCH_COUNT=0
-FRAME_VALUES_TSV=NOT_CREATED
-WRITE_WATCH_HIT_COUNTS=NOT_CREATED
-INSTRUMENTED=true=NOT_CLAIMED
-MEMORY_CARD=NOT_CREATED_OR_COPIED; no before/after hash exists
-FAIL_FAST_TEST=NOT_RUN
-PYFLAKES=NOT_RUN; no runner/workflow source was modified. Local raw.githubusercontent.com fetch failed DNS resolution, so a local source checkout was unavailable.
-YAML_PARSE=NOT_RUN; no workflow file changed. Same local source-fetch blocker.
-MAX_ACTIONS_RUNS=0 used in this task; no new Actions run dispatched.
-NEXT_BLOCKER_TO_CLEAR=Prove active petak array pointer, exact record count/bounds and field semantics on the same runtime layout before arming write watches.
+STATUS=SEBAGIAN
+EVIDENCE_LEVEL=K5_FOR_REPEAT_OF_HISTORICAL_EXEC_TRACE; K0_FOR_REQUESTED_PETAK_FRAME_VALUES_AND_WRITE_WATCHES
+CODE_BASELINE_SHA=c7da18bef75f6e6905d495b72710f50aaf1bb5b0
+PRIOR_UE2_RUN=42965928825 (historical, before the UH baseline; not a rerun on baseline source)
+PRIOR_UE2_SOURCE_SHA=0ff400d97cd1a39a9356d1c2af65690e837be72f
+PRIOR_UE2_JOB=130343034778; status=completed/success; UG2_EXIT_CODE=0; EXIT_CODE=0
+PRIOR_UE2_CONDITIONS=NO_INPUT_1,NO_INPUT_2,CIRCLE_1,CIRCLE_2,DOWN_CIRCLE_1,DOWN_CIRCLE_2
+NO_INPUT_LAUNCHES=2; each reached 900 frames; save state loaded; emulator exit code 0
+NO_INPUT_EXEC_BREAKPOINTS=0x800D15A8,0x800B54DC,0x800F3658,0x800F5DAC
+NO_INPUT_TOTAL_HITS=450 per breakpoint per launch
+NO_INPUT_CAPTURED_ROWS=32 per launch (8 per breakpoint, capture cap in initial frame-1-to-30 window)
+NO_INPUT_REPEAT=IDENTICAL for 32 events by frame, breakpoint label/address, PC, RA, a0 and r0-r31; K5 applies only to this repeated Exec trace
+MEMCARD_MODE=read-only 0444
+MEMCARD_SHA256_BEFORE_AFTER=78b6d4ac9ab4d23caf7e5f04f83539bf5d994cccfb0a709d14ac53d05c8e21ef (unchanged both NO_INPUT launches)
+CHECKPOINT_SHA256=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35 (unchanged after both launches)
+REQUESTED_FRAME_FIELD_VALUES=NOT_CAPTURED; no numeric petak field snapshot at frame 1 or frame 900
+WRITE_WATCHPOINTS=NOT_INSTALLED; prior run used Exec breakpoints only
+WRITE_WATCH_PC_RA_HITS=NOT_AVAILABLE; do not interpret missing rows as zero hits
+WRITE_WATCH_INSTRUMENTED=true=NOT_CLAIMED
+ARRAY_POINTER=slot 0x8013EA84 is a dynamic pointer slot, not itself a proven contiguous RAM base for every petak
+ARRAY_EXTENT=TIDAK TAHU; exact active record count/index bounds for the UE2 checkpoint not proven by UH1 census
+FIELDS=+0x1A/+0x1C/+0x1E stores are not all proven aliases of slot 0x8013EA84; +0x20 aliases are proven only in the selected ENTRY1 census
+SAFETY_DECISION=NO_NEW_EMULATOR_LAUNCH; no watchpoint was placed on a guessed address/range
+OLD_RUN_VALIDATION=UG2 trace passed; postprocess self-test passed; pyflakes target exit 0; run source SHA predates c7 baseline, so this is not a fresh baseline validation
+PYFLAKES_ALL=exit 1 non-blocking; 59 diagnostic lines; 0 undefined-name and 0 syntax-error diagnostics
+CURRENT_BASELINE_PYFLAKES=NOT_RUN_IN_THIS_AUDIT
+YAML_PARSE_AND_DRY_FAILFAST=NOT_RUN_IN_THIS_AUDIT
+NEW_ACTIONS_RUNS_DISPATCHED=0
+NEXT_BLOCKER_TO_CLEAR=Prove active petak record pointer, count/bounds and safe named field addresses on the target runtime, then obtain field snapshots and all-hit write-watch traces in a separately authorized runtime pass
 NO_PRIVATE_ASSET_UPLOADED=YES
 NO_ROM_BIOS_MEMORY_CARD_SAVESTATE_RAM_DUMP_OR_BINARY_COMMITTED=YES

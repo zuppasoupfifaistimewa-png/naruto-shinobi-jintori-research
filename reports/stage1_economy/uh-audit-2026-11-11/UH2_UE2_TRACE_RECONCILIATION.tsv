@@ -1,0 +1,12 @@
+item	result	evidence_path	confidence	limitation
+Actions run	42965928825; completed/success; job 130343034778; source 0ff400d97cd1a39a9356d1c2af65690e837be72f	reports/stage1_economy/ug0-ug2-run-42965928825/attempt-1/ACTIONS_RUN_SUMMARY.txt	K4	Historical source SHA predates UH baseline c7da18bef75f6e6905d495b72710f50aaf1bb5b0
+NO_INPUT launch count	2 launches, each 900 frames, save state loaded, emulator exit 0	UE2_LAUNCHES.tsv	K4	Historical launch data; no new launch in this audit
+Exec breakpoints	0x800D15A8; 0x800B54DC; 0x800F3658; 0x800F5DAC	UE2_SUMMARY.txt; UE2_BREAKPOINT_COUNTS.tsv	K4	Execution breakpoints only, not write watches
+Total breakpoint hits	450 hits per breakpoint per NO_INPUT launch	UE2_BREAKPOINT_COUNTS.tsv	K4	Hit counters are not petak memory write counts
+Captured records	32 events per NO_INPUT launch; 8 per breakpoint in initial 1-30 frame window	UE2_BREAKPOINT_EVENTS.tsv	K4	No event captures at frame 900
+Repeat comparison	32 normalized event tuples identical across launches: frame, label, address, PC, RA, a0, r0-r31	UE2_BREAKPOINT_EVENTS.tsv	K5	K5 scoped to identical historical Exec breakpoint traces only
+Memory Card	0444 read-only; hash before/after same: 78b6d4ac9ab4d23caf7e5f04f83539bf5d994cccfb0a709d14ac53d05c8e21ef	UE2_LAUNCHES.tsv; UE2_SUMMARY.txt	K4	No copy/write performed by the two NO_INPUT launches
+Checkpoint	SHA-256 after both launches: 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35	UE2_LAUNCHES.tsv	K4	Does not identify field values
+Named petak field snapshot	Not captured at frame 1 or 900	UE2_BREAKPOINT_EVENTS.tsv; UE2_LAUNCHES.tsv	K0	GPR registers are not a RAM snapshot
+Write-watchpoint hits	Not installed and not emitted	UE2_SUMMARY.txt	K0	Missing hits are not evidence of zero writes
+Current-baseline runtime	No run on c7da18bef75f6e6905d495b72710f50aaf1bb5b0 in this audit	UH2_BLOCKER.txt	K0	No baseline-specific runtime result
