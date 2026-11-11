@@ -1,0 +1,12 @@
+STATUS=completed/failure
+JOB=UE0/UE1 static audit and UE2 six-launch read-only trace
+JOB_ID=130242734346
+RUN_ID=42934992875
+SOURCE_SHA=43af6180f938448447c0db0f4ad61828b17b1c1c
+EXIT_CODE=1
+UE0_EXIT_CODE=0
+UE1_EXIT_CODE=0
+UE2_SELF_TEST=FAIL
+UE2_SELF_TEST_ERROR=TypeError: delimiter must be a 1-character string
+UE2_EMULATOR=SKIPPED
+PUBLICATION=FAILED; UE0_UNION_GROUPS.tsv exceeded the 80 MiB safety guard at 171726182 bytes.

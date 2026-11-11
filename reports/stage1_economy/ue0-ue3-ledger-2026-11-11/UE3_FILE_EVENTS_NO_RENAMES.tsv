@@ -1,0 +1,12 @@
+commit_sha	status	additions	deletions	changes	path
+0fedd2ac28890b5fefc75f4575d1b94c5e72855a	M	2	0	2	reports/stage1_economy/ud3-ledger-2026-11-10/UD3_COMMITS.tsv
+0fedd2ac28890b5fefc75f4575d1b94c5e72855a	M	19	0	19	reports/stage1_economy/ud3-ledger-2026-11-10/UD3_COMMIT_FILES.txt
+0fedd2ac28890b5fefc75f4575d1b94c5e72855a	M	9	7	16	reports/stage1_economy/ud3-ledger-2026-11-10/UD3_SUMMARY.txt
+d2a6cfb619c80667bed67cbb4310cb8cb43ab280	M	53	57	110	.github/workflows/ub2-headless-trace.yml
+d2a6cfb619c80667bed67cbb4310cb8cb43ab280	A	158	0	158	experiments/ue1_entry1_scene_audit.py
+d2a6cfb619c80667bed67cbb4310cb8cb43ab280	A	234	0	234	experiments/ue2_scene_trace.py
+d2a6cfb619c80667bed67cbb4310cb8cb43ab280	A	213	0	213	tools/ue0_union_gate.py
+43af6180f938448447c0db0f4ad61828b17b1c1c	M	71	22	93	.github/workflows/ub2-headless-trace.yml
+43af6180f938448447c0db0f4ad61828b17b1c1c	M	16	15	31	experiments/ue1_entry1_scene_audit.py
+43af6180f938448447c0db0f4ad61828b17b1c1c	M	30	15	45	experiments/ue2_scene_trace.py
+43af6180f938448447c0db0f4ad61828b17b1c1c	M	191	177	368	tools/ue0_union_gate.py

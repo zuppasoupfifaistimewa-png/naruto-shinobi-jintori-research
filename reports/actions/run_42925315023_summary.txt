@@ -1,0 +1,7 @@
+STATUS=completed/failure
+JOB=UE0/UE1 static audit and UE2 six-launch read-only trace
+JOB_ID=130210196829
+RUN_ID=42925315023
+SOURCE_SHA=d2a6cfb619c80667bed67cbb4310cb8cb43ab280
+EXIT_CODE=1
+CAUSE=UE1 step referenced unset DATA variable; publication also attempted two reports larger than GitHub's 100 MB per-file limit.

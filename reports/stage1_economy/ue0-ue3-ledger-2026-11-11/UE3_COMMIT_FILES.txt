@@ -1,0 +1,26 @@
+UE3_COMMIT_FILE_LISTS_NO_RENAMES
+BASELINE_INCLUSIVE=0fedd2ac28890b5fefc75f4575d1b94c5e72855a
+COVERAGE_END=43af6180f938448447c0db0f4ad61828b17b1c1c
+
+COMMIT_0FED D2A — HUMAN — 3 FILES
+M  reports/stage1_economy/ud3-ledger-2026-11-10/UD3_COMMITS.tsv
+M  reports/stage1_economy/ud3-ledger-2026-11-10/UD3_COMMIT_FILES.txt
+M  reports/stage1_economy/ud3-ledger-2026-11-10/UD3_SUMMARY.txt
+
+COMMIT_D2A6CFB — HUMAN — 4 FILES
+M  .github/workflows/ub2-headless-trace.yml
+A  experiments/ue1_entry1_scene_audit.py
+A  experiments/ue2_scene_trace.py
+A  tools/ue0_union_gate.py
+
+COMMIT_43AF618 — HUMAN — 4 FILES
+M  .github/workflows/ub2-headless-trace.yml
+M  experiments/ue1_entry1_scene_audit.py
+M  experiments/ue2_scene_trace.py
+M  tools/ue0_union_gate.py
+
+NO DELETED FILES
+NO RENAMES
+STATUS.md UNCHANGED
+RELEASES UNCHANGED
+NO ROM/EXE/DATA.BIN/BIOS/MEMORY-CARD/SAVESTATE/RAM-DUMP/BINARY COMMITTED
