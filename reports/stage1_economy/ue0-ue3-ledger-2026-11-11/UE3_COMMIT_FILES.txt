@@ -1,6 +1,6 @@
 UE3_COMMIT_FILE_LISTS_NO_RENAMES
 BASELINE_INCLUSIVE=0fedd2ac28890b5fefc75f4575d1b94c5e72855a
-COVERAGE_END=148ffbcf0b513ebe79757adf3762315c44ea4df6
+COVERAGE_END=628cf0e545d189f980a700f9152fc2e7b170606c
 
 COMMIT_0FED D2A — HUMAN — 3 FILES
 M  reports/stage1_economy/ud3-ledger-2026-11-10/UD3_COMMITS.tsv
@@ -39,6 +39,30 @@ COMMIT_148FF — HUMAN — 3 FILES
 M  .github/workflows/ub2-headless-trace.yml
 M  experiments/ue2_scene_trace.py
 M  tools/ue0_union_gate.py
+
+NO DELETED FILES
+NO RENAMES
+STATUS.md UNCHANGED
+RELEASES UNCHANGED
+NO ROM/EXE/DATA.BIN/BIOS/MEMORY-CARD/SAVESTATE/RAM-DUMP/BINARY COMMITTED
+
+COMMIT_C5E6 — HUMAN — 7 FILES
+A  reports/actions/run_42944487243_summary.txt
+A  reports/stage1_economy/ue0-ue2-run-42944487243/attempt-1/UE0_UE2_RESULTS.txt
+M  reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_ACTIONS_RUNS.tsv
+M  reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_COMMITS.tsv
+M  reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_COMMIT_FILES.txt
+M  reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_FILE_EVENTS_NO_RENAMES.tsv
+M  reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_SUMMARY.txt
+
+COMMIT_24E1 — HUMAN — 2 FILES
+M  reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_COMMITS.tsv
+M  reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_COMMIT_FILES.txt
+
+COMMIT_628CF0 — HUMAN — 3 FILES
+A  reports/stage1_economy/ue0-ue2-run-42944487243/attempt-1/UE0_LEGACY_3998_GROUP_CROSSCHECK.txt
+A  reports/stage1_economy/ue0-ue2-run-42944487243/attempt-1/UE0_LEGACY_3998_GROUP_REGISTRY.tsv
+M  reports/stage1_economy/ue0-ue2-run-42944487243/attempt-1/UE0_UE2_RESULTS.txt
 
 NO DELETED FILES
 NO RENAMES
