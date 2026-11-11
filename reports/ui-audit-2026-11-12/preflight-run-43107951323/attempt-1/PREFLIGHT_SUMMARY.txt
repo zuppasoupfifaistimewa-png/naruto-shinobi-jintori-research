@@ -1,0 +1,11 @@
+STATUS=PASS
+JOB=ui0-ui1-preflight
+RUN_ID=43107951323
+SOURCE_SHA=d231dd043b370cf2d3e0f0f561f6a074f8707bf5
+PY_COMPILE=required scripts
+PYFLAKES=installed and run with pip
+YAML_PARSE=required workflow
+FAKE_MEMORY_AND_BYTE_TESTS=required scripts
+EXIT_CODE=0
+EMULATOR_GATE=OPEN only after all checks passed
+BINARY_OR_PRIVATE_ASSET_COMMITTED=NO
