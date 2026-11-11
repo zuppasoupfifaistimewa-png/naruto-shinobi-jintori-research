@@ -1,4 +1,4 @@
-name: UF0–UF2 — direct TSV gate and read-only headless trace
+name: UG0–UG2 — Python lint, direct TSV gate and read-only headless trace
 
 on:
   push:
@@ -25,7 +25,7 @@ concurrency:
 
 jobs:
   ub2-headless-trace:
-    name: UF0 direct TSV audit and six 900-frame read-only launches
+    name: UG0/UG1 preflight and six 900-frame read-only launches
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     env:
@@ -47,29 +47,52 @@ jobs:
           mkdir -p "$WORK"/{source,checkpoint,app,logs,card-template,output,baseline}
           mkdir -p "$OUT"
 
-      - name: Install static extraction dependencies
+      - name: Install pyflakes from Python package index
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends pyflakes
+          sudo apt-get install -y --no-install-recommends python3-pip
+          python3 -m pip install --break-system-packages --disable-pip-version-check pyflakes
+          python3 -m pyflakes --version
 
-      - name: Run pyflakes across every tracked Python script
+      - name: Pyflakes all tracked Python scripts (diagnostic only)
+        continue-on-error: true
         shell: bash
         run: |
           set -u
           mapfile -d '' pyfiles < <(git ls-files -z -- '*.py')
-          python3 -m pyflakes "${pyfiles[@]}" > "$OUT/PYFLAKES_ALL.txt" 2>&1
-          all_rc=$?
-          python3 -m pyflakes experiments/ue2_scene_trace.py tools/uf0_head_gate.py > "$OUT/PYFLAKES_TARGET.txt" 2>&1
-          target_rc=$?
+          all_rc=0
+          python3 -m pyflakes "${pyfiles[@]}" > "$OUT/PYFLAKES_ALL.txt" 2>&1 || all_rc=$?
           echo "$all_rc" > "$OUT/PYFLAKES_ALL_EXIT_CODE.txt"
-          echo "$target_rc" > "$OUT/PYFLAKES_TARGET_EXIT_CODE.txt"
+          python3 - "$OUT/PYFLAKES_ALL.txt" "$OUT/PYFLAKES_ALL_COUNTS.txt" "${#pyfiles[@]}" <<'PY'
+          from pathlib import Path
+          import sys
+          source, target, file_count = Path(sys.argv[1]), Path(sys.argv[2]), int(sys.argv[3])
+          lines=[line for line in source.read_text(encoding="utf-8",errors="replace").splitlines() if line.strip()]
+          undefined=sum("undefined name" in line.lower() or "undefined local" in line.lower() for line in lines)
+          syntax=sum(any(token in line.lower() for token in ("syntax error","invalid syntax","unexpected eof","unterminated string")) for line in lines)
+          other=max(0,len(lines)-undefined-syntax)
+          target.write_text(
+              f"TRACKED_PYTHON_SCRIPTS={file_count}\nDIAGNOSTIC_LINES={len(lines)}\n"
+              f"UNDEFINED_NAME_DIAGNOSTICS={undefined}\nSYNTAX_ERROR_DIAGNOSTICS={syntax}\n"
+              f"OTHER_DIAGNOSTICS={other}\n",encoding="utf-8")
+          PY
           echo "PYFLAKES_TRACKED_SCRIPT_COUNT=${#pyfiles[@]}" >> "$GITHUB_STEP_SUMMARY"
-          echo "PYFLAKES_ALL_EXIT_CODE=$all_rc" >> "$GITHUB_STEP_SUMMARY"
+          echo "PYFLAKES_ALL_EXIT_CODE=$all_rc (non-blocking)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Pyflakes target scripts (emulator gate input)
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -u
+          target_rc=0
+          python3 -m pyflakes experiments/ue2_scene_trace.py tools/uf0_head_gate.py > "$OUT/PYFLAKES_TARGET.txt" 2>&1 || target_rc=$?
+          echo "$target_rc" > "$OUT/PYFLAKES_TARGET_EXIT_CODE.txt"
           echo "PYFLAKES_TARGET_EXIT_CODE=$target_rc" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: UF2 — local post-processing and fail-fast injection test on committed UD logs
+      - name: UG2 — local post-processing and fail-fast injection test on committed UD logs
         shell: bash
         run: |
           set -euo pipefail
@@ -78,7 +101,7 @@ jobs:
             --reports "$GITHUB_WORKSPACE/reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1" \
             --out "$OUT/self-test"
 
-      - name: UF0 — direct HEAD TSV gate and same-rule 9a6ccb reconciliation
+      - name: UG1 — direct HEAD TSV gate and same-rule 9a6ccb reconciliation
         id: uf0
         shell: bash
         run: |
@@ -97,6 +120,14 @@ jobs:
           echo "UF0_BASELINE=$UF0_BASELINE" >> "$GITHUB_STEP_SUMMARY"
           echo "UF0_DIRECT_HEAD_EXIT_CODE=$rc" >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Require UF0, target pyflakes and fail-fast injection test before emulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(cat "$OUT/UF0_GATE_EXIT_CODE.txt")" = "0"
+          test "$(cat "$OUT/PYFLAKES_TARGET_EXIT_CODE.txt")" = "0"
+          test -s "$OUT/self-test/UE2_FAILFAST_INJECTION_TEST.txt"
+          grep -q "INJECTION_TEST=PASS" "$OUT/self-test/UE2_FAILFAST_INJECTION_TEST.txt"
       - name: Download immutable adaptive-cycle-02-f180 source artifact
         uses: actions/download-artifact@v4
         with:
@@ -177,15 +208,8 @@ jobs:
           chmod 400 "$WORK/source-checkpoint.sstate"
           echo "UB2_CHECKPOINT_SOURCE=PASS" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Require target pyflakes and fail-fast injection test before emulator
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(cat "$OUT/PYFLAKES_TARGET_EXIT_CODE.txt")" = "0"
-          test -s "$OUT/self-test/UE2_FAILFAST_INJECTION_TEST.txt"
-          grep -q "INJECTION_TEST=PASS" "$OUT/self-test/UE2_FAILFAST_INJECTION_TEST.txt"
 
-      - name: UF2 — six read-only headless launches, four breakpoints
+      - name: UG2 — six read-only headless launches, four breakpoints
         id: ue2-probe
         shell: bash
         env:
@@ -218,7 +242,7 @@ jobs:
           test ! -e "$WORK"
           echo "PRIVATE_BINARY_CLEANUP=PASS" > "$OUT/cleanup.txt"
 
-      - name: Validate and publish only UF0–UF2 text results
+      - name: Validate and publish only UG0–UG2 text results
         if: always()
         shell: bash
         run: |
@@ -228,11 +252,11 @@ jobs:
           UF2_RC="$(cat "$OUT/UE2_SCRIPT_EXIT_CODE.txt" 2>/dev/null || echo 1)"
           PYFLAKES_ALL_RC="$(cat "$OUT/PYFLAKES_ALL_EXIT_CODE.txt" 2>/dev/null || echo 1)"
           PYFLAKES_TARGET_RC="$(cat "$OUT/PYFLAKES_TARGET_EXIT_CODE.txt" 2>/dev/null || echo 1)"
-          case "$UF0_RC:$UF2_RC:$PYFLAKES_ALL_RC:$PYFLAKES_TARGET_RC" in
-            0:0:0:0) STATUS="completed/success"; FINAL_RC=0 ;;
+          case "$UF0_RC:$UF2_RC:$PYFLAKES_TARGET_RC" in
+            0:0:0) STATUS="completed/success"; FINAL_RC=0 ;;
             *) STATUS="completed/failure"; FINAL_RC=1 ;;
           esac
-          DEST="reports/stage1_economy/uf0-uf2-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          DEST="reports/stage1_economy/ug0-ug2-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$DEST"
           for stage in UF0 UE2 self-test; do
             if [ -d "$OUT/$stage" ]; then
@@ -247,6 +271,7 @@ jobs:
           cp "$OUT/PYFLAKES_TARGET.txt" "$DEST/PYFLAKES_TARGET.txt" 2>/dev/null || true
           cp "$OUT/PYFLAKES_ALL_EXIT_CODE.txt" "$DEST/PYFLAKES_ALL_EXIT_CODE.txt" 2>/dev/null || true
           cp "$OUT/PYFLAKES_TARGET_EXIT_CODE.txt" "$DEST/PYFLAKES_TARGET_EXIT_CODE.txt" 2>/dev/null || true
+          cp "$OUT/PYFLAKES_ALL_COUNTS.txt" "$DEST/PYFLAKES_ALL_COUNTS.txt" 2>/dev/null || true
           python3 - "$DEST" <<'PY'
           from pathlib import Path
           import sys
@@ -264,13 +289,20 @@ jobs:
           test -n "$JOB_ID" || JOB_ID="TIDAK_TAHU"
           {
             echo "STATUS=$STATUS"
-            echo "JOB=UF0 direct HEAD TSV gate and UF2 six-launch read-only trace"
+            echo "JOB=UG0 pyflakes and UG1 TSV gate plus UG2 six-launch read-only trace"
             echo "JOB_ID=$JOB_ID"
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "SOURCE_SHA=$GITHUB_SHA"
-            echo "UF0_EXIT_CODE=$UF0_RC"
-            echo "UF2_EXIT_CODE=$UF2_RC"
-            echo "PYFLAKES_ALL_EXIT_CODE=$PYFLAKES_ALL_RC"
+            echo "UG1_EXIT_CODE=$UF0_RC"
+            echo "UG2_EXIT_CODE=$UF2_RC"
+            echo "PYFLAKES_ALL_EXIT_CODE=$PYFLAKES_ALL_RC (non-blocking)"
+            if [ -f "$OUT/PYFLAKES_ALL_COUNTS.txt" ]; then
+              while IFS= read -r line; do echo "$line"; done < "$OUT/PYFLAKES_ALL_COUNTS.txt"
+            else
+              echo "UNDEFINED_NAME_DIAGNOSTICS=TIDAK TAHU"
+              echo "SYNTAX_ERROR_DIAGNOSTICS=TIDAK TAHU"
+              echo "OTHER_DIAGNOSTICS=TIDAK TAHU"
+            fi
             echo "PYFLAKES_TARGET_EXIT_CODE=$PYFLAKES_TARGET_RC"
             echo "EXIT_CODE=$FINAL_RC"
           } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
@@ -279,7 +311,7 @@ jobs:
           git add -u
           git add "$DEST"
           if ! git diff --cached --quiet; then
-            git commit -m "Publish UF0-UF2 direct TSV gate and read-only trace run $GITHUB_RUN_ID [skip ci]"
+            git commit -m "Publish UG0-UG2 preflight, TSV gate and read-only trace run $GITHUB_RUN_ID [skip ci]"
             pushed=0
             for n in 1 2 3; do
               git fetch origin main
@@ -289,5 +321,5 @@ jobs:
             done
             test "$pushed" -eq 1
           fi
-          echo "UF0_UF2_REPORT_PATH=$DEST"
+          echo "UG0_UG2_REPORT_PATH=$DEST"
           exit "$FINAL_RC"

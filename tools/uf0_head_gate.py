@@ -311,7 +311,9 @@ def scan(root: Path, selected_columns: tuple[str, ...] = BYTE_COLUMNS,
         "valid_counts": valid_counts, "unknown_counts": unknown_counts,
         "decimal_counts": decimal_counts, "manifest": manifest,
         "conflicts": conflicts, "conflict_samples": conflict_samples,
-        "eligible_files": eligible_files, "no_pc_rows": len(no_pc_groups),
+        "eligible_files": eligible_files,
+        "no_pc_rows": len({(item["origin"][0], item["origin"][1], item["origin"][2]) for item in no_pc_groups}),
+        "no_pc_byte_cells": len(no_pc_groups),
         "unique_address_bytes": sum(len(addresses) for addresses in maps.values()),
     }
 
@@ -408,9 +410,13 @@ def main() -> int:
 
     final_over = over64_groups(current)
     files_unchanged = set(current_initial["files"]) == set(current["files"])
+    unresolved_initial = sum(
+        1 for group in current_initial["groups"] if group["label"].startswith("UNRESOLVED:")
+    )
     unresolved_total = sum(
         1 for group in current["groups"] if group["label"].startswith("UNRESOLVED:")
     )
+    malformed_cells = sum(current_initial["malformed"].values())
     label_counts = Counter(group["label"] for group in current["groups"])
     label_unique_bytes = Counter()
     for group in current["groups"]:
@@ -462,12 +468,16 @@ def main() -> int:
         f"CONTIGUOUS_BYTES_DECIMAL_CELLS_SKIPPED={sum(current_initial['decimal_counts'].values())}",
         f"HEAD_INITIAL_GROUPS={len(current_initial['groups'])}",
         f"HEAD_INITIAL_GROUPS_OVER_64B={len(initial_over)}",
-        f"HEAD_ROWS_TRIMMED={len(trim_report)}",
+        f"HEAD_UNIQUE_SOURCE_ROWS_TRIMMED={len({(row['source'],row['line_start'],row['line_end']) for row in trim_report})}",
+        f"HEAD_ROW_TO_OVERSIZED_GROUP_ASSOCIATIONS={len(trim_report)}",
         f"HEAD_FILES_WITH_ROWS_TRIMMED={len({row['source'] for row in trim_report})}",
         f"HEAD_POST_PRUNE_GROUPS_OVER_64B={len(final_over)}",
+        f"HEAD_UNRESOLVED_GROUPS_INITIAL={unresolved_initial}",
         f"HEAD_UNRESOLVED_GROUPS_AFTER_PRUNE={unresolved_total}",
         f"HEAD_BYTE_CONFLICTS_INITIAL={current_initial['conflicts']}",
-        f"HEAD_NO_PC_ROWS_INITIAL={current_initial['no_pc_rows']}",
+        f"HEAD_NO_PC_SOURCE_ROWS_INITIAL={current_initial['no_pc_rows']}",
+        f"HEAD_NO_PC_BYTE_CELLS_INITIAL={current_initial['no_pc_byte_cells']}",
+        f"HEAD_MALFORMED_BYTE_CELLS_INITIAL={malformed_cells}",
         f"HEAD_MALFORMED_SOURCE_FIELD_PAIRS_INITIAL={len(current_initial['malformed'])}",
         f"HEAD_UNIQUE_ADDRESS_BYTES_AFTER_PRUNE={current['unique_address_bytes']}",
         f"BASELINE_9A6_LEGACY_COLUMNS_LABELED_PC_GROUPS_OVER_64B={legacy_count}",
@@ -485,11 +495,21 @@ def main() -> int:
         "TRIM_REGISTRY=UF0_TRIMMED_ROWS.tsv records each source row removed; no bytes emitted",
         "UNION_PUBLICATION=compact label counts and metadata only; full union omitted",
         "FILE_POLICY=no files deleted; tracked TSV path set unchanged",
-        f"FILES_UNCHANGED={str(files_unchanged).upper()}",
         f"HISTORICAL_RESULTS_UNRESOLVED_GROUPS_TOTAL={HISTORICAL_RESULT_NUMBERS['UNRESOLVED_GROUPS_TOTAL']}",
+        f"UNRESOLVED_GROUPS_DELTA_VS_HISTORICAL={unresolved_initial-HISTORICAL_RESULT_NUMBERS['UNRESOLVED_GROUPS_TOTAL']}",
         f"HISTORICAL_RESULTS_BYTE_CONFLICTS={HISTORICAL_RESULT_NUMBERS['BYTE_CONFLICTS']}",
+        f"BYTE_CONFLICTS_DELTA_VS_HISTORICAL={current_initial['conflicts']-HISTORICAL_RESULT_NUMBERS['BYTE_CONFLICTS']}",
         f"HISTORICAL_RESULTS_NO_PC_ROWS={HISTORICAL_RESULT_NUMBERS['NO_PC_ROWS']}",
+        f"NO_PC_BYTE_CELLS_DELTA_VS_HISTORICAL={current_initial['no_pc_byte_cells']-HISTORICAL_RESULT_NUMBERS['NO_PC_ROWS']}",
         f"HISTORICAL_RESULTS_MALFORMED_SOURCE_FIELD_PAIRS={HISTORICAL_RESULT_NUMBERS['MALFORMED_SOURCE_FIELD_PAIRS']}",
+        f"MALFORMED_SOURCE_FIELD_PAIRS_DELTA_VS_HISTORICAL={len(current_initial['malformed'])-HISTORICAL_RESULT_NUMBERS['MALFORMED_SOURCE_FIELD_PAIRS']}",
+        "HISTORICAL_COMPARISON_RULE=compare using matching metric definitions; deltas are descriptive until historical parser semantics are reproduced byte-for-byte",
+        "UNRESOLVED_METRIC=initial union groups with unresolved image label; key includes source TSV identity",
+        "BYTE_CONFLICT_METRIC=per labelled coordinate with a differing strict-hex value encountered; no winner is chosen",
+        "NO_PC_METRICS=source TSV rows and byte-field cells without PC or file_offset are counted separately",
+        "MALFORMED_METRICS=malformed byte cells and distinct source-file/byte-column pairs with at least one malformed cell are counted separately",
+        f"TRACKED_TSV_PATH_SET_UNCHANGED={str(files_unchanged).upper()}",
+        "NO_TSV_FILES_DELETED=YES",
         f"STATUS={'PASS' if not final_over and files_unchanged and reconciliation else 'FAIL'}",
         f"EXIT_CODE={0 if not final_over and files_unchanged and reconciliation else 1}",
     ]
