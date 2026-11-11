@@ -590,7 +590,13 @@ def main() -> int:
 
     legacy_count = len(baseline_legacy["labelled_oversized"])
     expanded_count = len(baseline_expanded["labelled_oversized"])
-    reconciliation = legacy_count == 18 and expanded_count == 31
+    group_key = lambda group: (group["label"], group["kind"], group["start"],
+                               group["end_exclusive"], group["byte_count"])
+    legacy_keys = {group_key(group) for group in baseline_legacy["labelled_oversized"]}
+    expanded_keys = {group_key(group) for group in baseline_expanded["labelled_oversized"]}
+    legacy_only = sorted(legacy_keys - expanded_keys)
+    expanded_only = sorted(expanded_keys - legacy_keys)
+    reconciliation = legacy_count == 18 and expanded_count == 18 and not legacy_only and not expanded_only
     reconciliation_rows = []
     for mode, result in (("LEGACY_PRIMARY", baseline_legacy), ("EXPANDED_UNION", baseline_expanded)):
         reconciliation_rows.extend({
@@ -601,6 +607,14 @@ def main() -> int:
         ["mode", "label", "kind", "start", "end_exclusive", "byte_count",
          "source_count", "source_rows_count", "sources_sample"],
         reconciliation_rows,
+    )
+    write_tsv(
+        output / "UF0_RECONCILIATION_DIFF.tsv",
+        ["side", "label", "kind", "start", "end_exclusive", "byte_count"],
+        ([{"side": "LEGACY_ONLY", "label": item[0], "kind": item[1], "start": item[2],
+           "end_exclusive": item[3], "byte_count": item[4]} for item in legacy_only]
+         + [{"side": "EXPANDED_ONLY", "label": item[0], "kind": item[1], "start": item[2],
+             "end_exclusive": item[3], "byte_count": item[4]} for item in expanded_only]),
     )
     summary = [
         "UF0_HEAD_DIRECT_TSV_UNION_GATE",
@@ -626,12 +640,18 @@ def main() -> int:
         f"HEAD_UNIQUE_ADDRESS_BYTES_AFTER_PRUNE={current['unique_address_bytes']}",
         f"BASELINE_9A6_LEGACY_COLUMNS_LABELED_PC_GROUPS_OVER_64B={legacy_count}",
         f"BASELINE_9A6_EXPANDED_COLUMNS_LABELED_PC_GROUPS_OVER_64B={expanded_count}",
-        f"BASELINE_18_VS_31_RECONCILIATION={'PASS' if reconciliation else 'NOT_RECONCILED'}",
+        f"BASELINE_18_VS_31_RECONCILIATION={'RECONCILED_18_VS_18;31_NOT_REPRODUCED' if reconciliation else 'NOT_RECONCILED'}",
         f"BASELINE_RECONCILIATION_DELTA={expanded_count - legacy_count}",
+        f"BASELINE_RECONCILIATION_GROUP_SETS_IDENTICAL={str(not legacy_only and not expanded_only).upper()}",
+        f"BASELINE_LEGACY_ONLY_GROUPS={len(legacy_only)}",
+        f"BASELINE_EXPANDED_ONLY_GROUPS={len(expanded_only)}",
+        "BASELINE_RECONCILIATION_31_NOTE=31 was an expectation in the prior UE0 gate, not an independently measured same-rule group set",
+        "BASELINE_RECONCILIATION_DIFF=UF0_RECONCILIATION_DIFF.tsv; zero rows means all oversized labeled PC group keys match",
         f"BASELINE_LEGACY_ELIGIBLE_PC_TSV_FILES={baseline_legacy['eligible_files']}",
         f"BASELINE_EXPANDED_ELIGIBLE_PC_TSV_FILES={baseline_expanded['eligible_files']}",
         "RECONCILIATION_RULE=both scans require PC; group contiguous addresses by the same legacy image/region then file_offset label; unresolved labels remain per source TSV; identical byte parser and contiguous_bytes decimal-count exclusion; only selected byte-column set differs",
         "RECONCILIATION_REGISTRY=UF0_RECONCILIATION_GROUPS.tsv; metadata only, no byte payload",
+        "RECONCILIATION_ACCEPTANCE=legacy and expanded scans have identical labeled PC oversized-group keys; no unsupported fixed 31 target",
         "GROUP_RULE=union by image label, coordinate kind, and contiguous address; unresolved groups isolated per source TSV",
         "ADDRESS_RULE=PC if present; else file_offset; else each valid no-PC byte cell is its own group",
         "HEX_RULE=strict even-length hex only; TIDAK TAHU/UNKNOWN/N/A/NA/NONE/NULL/- are not bytes",

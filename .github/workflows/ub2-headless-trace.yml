@@ -292,6 +292,7 @@ jobs:
           cp "$OUT/PYFLAKES_ALL_EXIT_CODE.txt" "$DEST/PYFLAKES_ALL_EXIT_CODE.txt" 2>/dev/null || true
           cp "$OUT/PYFLAKES_TARGET_EXIT_CODE.txt" "$DEST/PYFLAKES_TARGET_EXIT_CODE.txt" 2>/dev/null || true
           cp "$OUT/PYFLAKES_ALL_COUNTS.txt" "$DEST/PYFLAKES_ALL_COUNTS.txt" 2>/dev/null || true
+          cp "$OUT/PYTHON_SYNTAX_ERRORS.txt" "$DEST/PYTHON_SYNTAX_ERRORS.txt" 2>/dev/null || true
           python3 - "$DEST" <<'PY'
           from pathlib import Path
           import sys

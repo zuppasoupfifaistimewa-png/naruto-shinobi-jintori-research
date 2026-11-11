@@ -199,7 +199,7 @@ def main():
     source.chmod(0o444);carddir.mkdir(parents=True,exist_ok=True)
     template=carddir/"memory-card-template.mcd";warm=work/"ue2-warmup.lua";warm.write_text(lua_warmup(),encoding="utf-8")
     warmrc,_,_=run_emulator(pcsx,appdir,bios,cue,template,None,warm,work/"warm-home",work/"warm.stdout.txt",120)
-    if not template.is_file() or template.stat().st_size!=EXPECTED_CARD_BYTES:raise SystemExit("UE2_MEMCARD_WARMUP_FAIL")
+    if warmrc != 0 or not template.is_file() or template.stat().st_size!=EXPECTED_CARD_BYTES:raise SystemExit("UE2_MEMCARD_WARMUP_FAIL")
     cardhash=sha(template);launchrows=[];all_events=[];all_inputs=[];all_totals={}
     for launch in LAUNCHES:
         mode="NO_INPUT" if launch.startswith("NO_INPUT") else ("CIRCLE" if launch.startswith("CIRCLE") else "DOWN_CIRCLE")
@@ -259,7 +259,7 @@ def main():
     write_tsv(out/"UE2_BREAKPOINT_COUNTS.tsv",list(counts[0].keys()),counts)
     write_tsv(out/"UE2_LAUNCHES.tsv",list(launchrows[0].keys()),launchrows)
     instok=all(x["instrumented"]=="true" and x["armed"]==EXPECTED_BP_COUNT for x in launchrows)
-    complete=all(x["frames_reached"]==900 and x["save_state_loaded"]=="YES" and x["instrumented"]=="true" and
+    complete=warmrc==0 and all(x["frames_reached"]==900 and x["save_state_loaded"]=="YES" and x["instrumented"]=="true" and
                  x["armed"]==EXPECTED_BP_COUNT and x["all_bp_total_counters"]=="YES" and x["emulator_exit_code"]==0 and
                  x["memory_card_unchanged"]=="YES" and x["memory_card_read_only"]=="true" and
                  x["checkpoint_sha256_after"]==SOURCE_SHA256 for x in launchrows)
@@ -273,6 +273,7 @@ def main():
       "CAPTURE=first 8 hits per breakpoint in frames 1-30 and each input-relative 30-frame window; a0, RA and r0-r31 included",
       "INPUT=CIRCLE press 6 frames then release; DPAD_DOWN press 6 frames/release then CIRCLE press 6 frames/release",
       f"MEMCARD_TEMPLATE_SHA256={cardhash}",f"MEMCARD_WARMUP_EXIT_CODE={warmrc}",
+      f"MEMORY_CARD_WARMUP_VALID={'YES' if warmrc==0 else 'NO'}",
       f"CAPTURED_EVENTS={len(all_events)}",f"INPUT_ROWS={len(all_inputs)}",
       f"LAUNCHES_COMPLETE={'YES' if complete else 'NO'}",f"INPUTS_VALID={'YES' if inputs_ok else 'NO'}",
       f"ALL_BREAKPOINT_INSTALLS_VALID={'YES' if instok else 'NO'}",f"EXIT_CODE={rc}",
