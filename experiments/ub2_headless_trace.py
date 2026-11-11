@@ -229,7 +229,10 @@ def run_emulator(pcsx: Path, appdir: Path, bios: Path, cue: Path, card: Path,
         cmd.extend(["-exec",extra_exec])
     cmd.append("-run")
     env=app_env(appdir,home)
-    if state is not None: env["UB2_SOURCE_STATE"]=str(state)
+    if state is not None:
+        # UE2 probe reads UE2_SOURCE_STATE; retain UB2_SOURCE_STATE for the older probe.
+        env["UE2_SOURCE_STATE"]=str(state)
+        env["UB2_SOURCE_STATE"]=str(state)
     t=time.monotonic()
     with stdout.open("wb") as f:
         try:
