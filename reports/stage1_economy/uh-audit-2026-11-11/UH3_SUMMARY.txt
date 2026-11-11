@@ -1,0 +1,27 @@
+UH3_LEDGER_FROM_BASELINE
+BASELINE_INCLUSIVE=c7da18bef75f6e6905d495b72710f50aaf1bb5b0
+HEAD_BEFORE_THIS_REPORT_COMMIT=02ad6ea61443abe838568b7f07fa558a63b1fe5b
+COMMITS_IN_LEDGER=2 (baseline c7 plus its direct child 02ad6)
+NO_RENAMES_FILE_EVENTS=6
+ADDITIONS_IN_LEDGER_COMMITS=599
+DELETIONS_IN_LEDGER_COMMITS=383
+ACTIONS_RUNS_SINCE_BASELINE=1
+SCHEDULE_RUNS=1
+PUSH_RUNS=0
+WORKFLOW_DISPATCH_RUNS=0
+OTHER_EVENT_RUNS=0
+RUN_ID=42977820741
+RUN_EVENT=schedule
+RUN_STATUS=completed/success
+JOB=monitor
+JOB_ID=130380930819
+JOB_CONCLUSION=success
+RUN_CREATED_UTC=2026-11-11T07:12:39Z
+RUN_CREATED_WIB=2026-11-11 14:12:39 WIB
+RUN_SOURCE_SHA=c7da18bef75f6e6905d495b72710f50aaf1bb5b0
+RUN_EXIT_CODE=0 inferred from job success; process code not separately printed
+ARTIFACT=none; upload step reported monitoring-report.txt not found
+POST_BASELINE_COMMIT=02ad6ea61443abe838568b7f07fa558a63b1fe5b adds 12-line run summary
+RUN_SUMMARY_RAW=https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/02ad6ea61443abe838568b7f07fa558a63b1fe5b/reports/stage1_economy/uh-ledger-2026-11-11/UH3_ACTIONS_RUN_SUMMARY.txt
+STORYMODE_COMPLETION=NOT_PROVEN
+CHECK=GitHub Actions API query since baseline returned total_count=1; all returned run entries and monitor job inspected.

@@ -1,0 +1,25 @@
+UH2_HEADLESS_READ_ONLY_STATUS
+STATUS=BELUM
+EVIDENCE_LEVEL=K0_FOR_REQUESTED_RUNTIME_VALUES_AND_WRITE_WATCHES
+CODE_SOURCE_SHA=c7da18bef75f6e6905d495b72710f50aaf1bb5b0
+REQUEST=Two NO_INPUT launches x 900 frames from existing checkpoint; numeric petak fields at frames 1 and 900; all-hit write watchpoints with PC/RA; instrumented=true; Memory Card 0444 hash unchanged; pyflakes; dry fail-fast.
+EXISTING_RUNNER=experiments/ue2_scene_trace.py and experiments/ub2_headless_trace.py
+EXISTING_UE2_LAUNCHES=NO_INPUT_1,NO_INPUT_2,CIRCLE_1,CIRCLE_2,DOWN_CIRCLE_1,DOWN_CIRCLE_2
+EXISTING_UE2_BREAKPOINTS=Exec only: 0x800D15A8,0x800B54DC,0x800F3658,0x800F5DAC
+PCSX_API=PCSX.addBreakpoint supports Write watchpoints; callback can read PC and RA. API support alone does not identify safe petak addresses.
+ARRAY_POINTER=slot 0x8013EA84 is a dynamic pointer slot, not itself a proven contiguous RAM address for all petak.
+ARRAY_EXTENT=TIDAK TAHU; exact count/index bounds for every petak were not resolved in the pinned static source.
+FIELDS=The +0x1A/+0x1C/+0x1E writes are not all proven aliases of slot 0x8013EA84; +0x20 writers are alias-proven in selected ENTRY1 census only.
+SAFETY_DECISION=NO_EMULATOR_LAUNCH; no watchpoint was placed at a guessed address/range because it could capture unrelated memory or miss petak records.
+LAUNCH_COUNT=0
+FRAME_VALUES_TSV=NOT_CREATED
+WRITE_WATCH_HIT_COUNTS=NOT_CREATED
+INSTRUMENTED=true=NOT_CLAIMED
+MEMORY_CARD=NOT_CREATED_OR_COPIED; no before/after hash exists
+FAIL_FAST_TEST=NOT_RUN
+PYFLAKES=NOT_RUN; no runner/workflow source was modified. Local raw.githubusercontent.com fetch failed DNS resolution, so a local source checkout was unavailable.
+YAML_PARSE=NOT_RUN; no workflow file changed. Same local source-fetch blocker.
+MAX_ACTIONS_RUNS=0 used in this task; no new Actions run dispatched.
+NEXT_BLOCKER_TO_CLEAR=Prove active petak array pointer, exact record count/bounds and field semantics on the same runtime layout before arming write watches.
+NO_PRIVATE_ASSET_UPLOADED=YES
+NO_ROM_BIOS_MEMORY_CARD_SAVESTATE_RAM_DUMP_OR_BINARY_COMMITTED=YES

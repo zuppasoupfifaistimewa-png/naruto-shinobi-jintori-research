@@ -1,0 +1,25 @@
+UH1_TILE_WRITER_AUDIT
+SOURCE_SHA=c7da18bef75f6e6905d495b72710f50aaf1bb5b0
+TARGET_ARRAY_BASE_SLOT=0x8013EA84
+TILE_STRIDE=0x124 (scope given; not proven per-PC for every writer in this audit)
+PROVEN_SH_PLUS20_WRITERS=42
+PROVEN_SH_PLUS1A_WRITERS=2
+UNRESOLVED_NONSTACK_SB_CANDIDATES=42
+UNRESOLVED_SB_PLUS1A=6
+UNRESOLVED_SB_PLUS1C=18
+UNRESOLVED_SB_PLUS1E=18
+AUDIT_TABLE_ROWS=86
+PROVEN_PLUS1C_WRITERS=0
+PROVEN_PLUS1E_WRITERS=0
+ENTRY0_WRITERS=TIDAK TAHU; no matching ENTRY0 inventory in source census set
+SW_PLUS1A_PLUS1C_PLUS1E_INVENTORY=INCOMPLETE; MA2 is SB census only
+SH_PLUS1A_PLUS1C_PLUS1E_INVENTORY=INCOMPLETE; DX1 only provides the two base-proven +1A stores; no global SH census for those offsets
+SB_CENSUS_SCOPE=MA2 covers EXE and ENTRY1; 139 SB store instructions use exact displacements +1A/+1C/+1E; 97 are stack-based and excluded from potential record candidates; 42 are non-stack candidates but no EA84 alias/stride proof
+PLUS1A_PROOF=Two SH stores in FUN_800F7ADC at 0x800F7D9C and 0x800F7DB0. Base pointer is loaded from slot 0x8013EA84 (s3-0x157c); preceding index arithmetic computes 0x124*index. Source values are bytes loaded from the loader source buffer; not a gameplay-upgrade store.
+PLUS20_PROOF=42 SH stores in 16 ENTRY1 functions, each in DY2 with tile_array_alias_proven=YES via slot 0x8013EA84. Only one in FUN_800D15A8: PC 0x800D5A1C, sh $v1,0x20($v0), preceding instruction at 0x800D5A18 sets v1=0xF020. This is constant store, not level+1 arithmetic.
+D15A8_CALL_BEHAVIOR=Runtime breakpoint sampling in UG found target and wrappers active on every odd frame in tested conditions. That only shows function invocation. The tile +0x20 store is one branch-reachable site, not an unconditional per-call increment. Exact predicate/CFG gate for reaching PC 0x800D5A1C remains TIDAK TAHU.
+UNKNOWN_CANDIDATES=42 non-stack SB candidates at +1A/+1C/+1E are recorded in the TSV with original base expression/source expression but are not resolved to EA84*index+0x124; several reference other global slots (e.g. EA74/ EAC0) or incoming register bases.
+NO_COST_FORMULA=400/800/1600 remains K1 hypothesis; no direct arithmetic/cost table evidence in these writer sets.
+EVIDENCE=K4 for source instructions with slot-anchored array provenance; K2 for non-stack candidates; K1 for candidate fee values.
+NO_CODE_OR_WORKFLOW_CHANGED=YES
+NO_BINARY_OR_RUNTIME_DUMP=YES
