@@ -10,3 +10,14 @@ d2a6cfb619c80667bed67cbb4310cb8cb43ab280	A	213	0	213	tools/ue0_union_gate.py
 43af6180f938448447c0db0f4ad61828b17b1c1c	M	16	15	31	experiments/ue1_entry1_scene_audit.py
 43af6180f938448447c0db0f4ad61828b17b1c1c	M	30	15	45	experiments/ue2_scene_trace.py
 43af6180f938448447c0db0f4ad61828b17b1c1c	M	191	177	368	tools/ue0_union_gate.py
+39881d1f421fba46f0281008e4744873d49d34fe	A	7	0	7	reports/actions/run_42925315023_summary.txt
+39881d1f421fba46f0281008e4744873d49d34fe	A	12	0	12	reports/actions/run_42934992875_summary.txt
+39881d1f421fba46f0281008e4744873d49d34fe	A	58	0	58	reports/stage1_economy/ue0-ue2-run-42934992875/attempt-1/UE0_UE2_PARTIAL_STATUS.txt
+39881d1f421fba46f0281008e4744873d49d34fe	A	3	0	3	reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_ACTIONS_RUNS.tsv
+39881d1f421fba46f0281008e4744873d49d34fe	A	4	0	4	reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_COMMITS.tsv
+39881d1f421fba46f0281008e4744873d49d34fe	A	26	0	26	reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_COMMIT_FILES.txt
+39881d1f421fba46f0281008e4744873d49d34fe	A	12	0	12	reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_FILE_EVENTS_NO_RENAMES.tsv
+39881d1f421fba46f0281008e4744873d49d34fe	A	24	0	24	reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_SUMMARY.txt
+148ffbcf0b513ebe79757adf3762315c44ea4df6	M	7	0	7	.github/workflows/ub2-headless-trace.yml
+148ffbcf0b513ebe79757adf3762315c44ea4df6	M	13	12	25	experiments/ue2_scene_trace.py
+148ffbcf0b513ebe79757adf3762315c44ea4df6	M	79	59	138	tools/ue0_union_gate.py

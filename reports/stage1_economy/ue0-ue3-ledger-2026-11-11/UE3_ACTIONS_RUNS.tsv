@@ -1,3 +1,4 @@
 run_id	status	job	job_id	source_sha	exit_code	comment
 42925315023	completed/failure	UE0/UE1 static audit and UE2 six-launch read-only trace	130210196829	d2a6cfb619c80667bed67cbb4310cb8cb43ab280	1	DATA variable unset; large-report push rejected
 42934992875	completed/failure	UE0/UE1 static audit and UE2 six-launch read-only trace	130242734346	43af6180f938448447c0db0f4ad61828b17b1c1c	1	postprocess delimiter TypeError; emulator skipped; large-report guard
+42944487243	completed/failure	UE0/UE1 static audit and six 900-frame read-only launches	130273879090	148ffbcf0b513ebe79757adf3762315c44ea4df6	1	UE0 and UE1 passed; UE2 self-test passed then NameError in fail-fast report (armed undefined); publication blocked by >80 MiB text outputs
