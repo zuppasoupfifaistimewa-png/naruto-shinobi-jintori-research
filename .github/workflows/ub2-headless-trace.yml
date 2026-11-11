@@ -1,4 +1,4 @@
-name: UE0–UE2 — immutable byte gate, ENTRY1 scene audit and read-only trace
+name: UF0–UF2 — direct TSV gate and read-only headless trace
 
 on:
   push:
@@ -11,6 +11,7 @@ on:
       - "experiments/ud1_static_audit.py"
       - "tools/union_gate.py"
       - "tools/ue0_union_gate.py"
+      - "tools/uf0_head_gate.py"
       - "experiments/ue1_entry1_scene_audit.py"
       - "experiments/ue2_scene_trace.py"
 
@@ -24,7 +25,7 @@ concurrency:
 
 jobs:
   ub2-headless-trace:
-    name: UE0/UE1 static audit and six 900-frame read-only launches
+    name: UF0 direct TSV audit and six 900-frame read-only launches
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     env:
@@ -43,8 +44,58 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$WORK"/{source,checkpoint,app,logs,card-template,output}
+          mkdir -p "$WORK"/{source,checkpoint,app,logs,card-template,output,baseline}
           mkdir -p "$OUT"
+
+      - name: Install static extraction dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends pyflakes
+
+      - name: Run pyflakes across every tracked Python script
+        shell: bash
+        run: |
+          set -u
+          mapfile -d '' pyfiles < <(git ls-files -z -- '*.py')
+          python3 -m pyflakes "${pyfiles[@]}" > "$OUT/PYFLAKES_ALL.txt" 2>&1
+          all_rc=$?
+          python3 -m pyflakes experiments/ue2_scene_trace.py tools/uf0_head_gate.py > "$OUT/PYFLAKES_TARGET.txt" 2>&1
+          target_rc=$?
+          echo "$all_rc" > "$OUT/PYFLAKES_ALL_EXIT_CODE.txt"
+          echo "$target_rc" > "$OUT/PYFLAKES_TARGET_EXIT_CODE.txt"
+          echo "PYFLAKES_TRACKED_SCRIPT_COUNT=${#pyfiles[@]}" >> "$GITHUB_STEP_SUMMARY"
+          echo "PYFLAKES_ALL_EXIT_CODE=$all_rc" >> "$GITHUB_STEP_SUMMARY"
+          echo "PYFLAKES_TARGET_EXIT_CODE=$target_rc" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: UF2 — local post-processing and fail-fast injection test on committed UD logs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 experiments/ue2_scene_trace.py \
+            --postprocess-self-test \
+            --reports "$GITHUB_WORKSPACE/reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1" \
+            --out "$OUT/self-test"
+
+      - name: UF0 — direct HEAD TSV gate and same-rule 9a6ccb reconciliation
+        id: uf0
+        shell: bash
+        run: |
+          set -u
+          UF0_BASELINE="9a6ccb7969a8cf377006dba01f468fb2c9dc4b05"
+          BASELINE_ROOT="$WORK/ue0-baseline"
+          mkdir -p "$OUT/UF0"
+          git worktree add --detach "$BASELINE_ROOT" "$UF0_BASELINE"
+          test "$(git -C "$BASELINE_ROOT" rev-parse HEAD)" = "$UF0_BASELINE"
+          set +e
+          python3 tools/uf0_head_gate.py --root "$GITHUB_WORKSPACE" --baseline-root "$BASELINE_ROOT" \
+            --out "$OUT/UF0" --baseline "$UF0_BASELINE"
+          rc=$?
+          set -e
+          echo "$rc" > "$OUT/UF0_GATE_EXIT_CODE.txt"
+          echo "UF0_BASELINE=$UF0_BASELINE" >> "$GITHUB_STEP_SUMMARY"
+          echo "UF0_DIRECT_HEAD_EXIT_CODE=$rc" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Download immutable adaptive-cycle-02-f180 source artifact
         uses: actions/download-artifact@v4
@@ -126,89 +177,15 @@ jobs:
           chmod 400 "$WORK/source-checkpoint.sstate"
           echo "UB2_CHECKPOINT_SOURCE=PASS" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Install static extraction dependencies
+      - name: Require target pyflakes and fail-fast injection test before emulator
         shell: bash
         run: |
           set -euo pipefail
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends bchunk xorriso python3-pip
-          python3 -m pip install --break-system-packages "capstone==5.0.3"
+          test "$(cat "$OUT/PYFLAKES_TARGET_EXIT_CODE.txt")" = "0"
+          test -s "$OUT/self-test/UE2_FAILFAST_INJECTION_TEST.txt"
+          grep -q "INJECTION_TEST=PASS" "$OUT/self-test/UE2_FAILFAST_INJECTION_TEST.txt"
 
-      - name: UE0 — exact legacy 18 vs expanded byte union on baseline 9a6ccb
-        id: ue0
-        shell: bash
-        run: |
-          set -euo pipefail
-          UE0_BASELINE="9a6ccb7969a8cf377006dba01f468fb2c9dc4b05"
-          LEGACY_ROOT="$WORK/ue0-legacy"
-          FULL_ROOT="$WORK/ue0-full"
-          mkdir -p "$OUT/legacy" "$OUT/UE0"
-          git worktree add --detach "$LEGACY_ROOT" "$UE0_BASELINE"
-          git worktree add --detach "$FULL_ROOT" "$UE0_BASELINE"
-          test "$(git -C "$LEGACY_ROOT" rev-parse HEAD)" = "$UE0_BASELINE"
-          test "$(git -C "$FULL_ROOT" rev-parse HEAD)" = "$UE0_BASELINE"
-          set +e
-          python3 "$GITHUB_WORKSPACE/tools/union_gate.py" --root "$LEGACY_ROOT" --out "$OUT/legacy"
-          legacy_rc=$?
-          set -e
-          echo "$legacy_rc" > "$OUT/legacy/LEGACY_GATE_EXIT_CODE.txt"
-          test -s "$OUT/legacy/UC0_UNION_GATE_SUMMARY.txt"
-          set +e
-          python3 tools/ue0_union_gate.py --root "$FULL_ROOT" --out "$OUT/UE0" \
-            --baseline "$UE0_BASELINE" --legacy-summary "$OUT/legacy/UC0_UNION_GATE_SUMMARY.txt"
-          ue0_rc=$?
-          set -e
-          echo "$ue0_rc" > "$OUT/UE0_GATE_EXIT_CODE.txt"
-          cp "$OUT/legacy/UC0_UNION_GATE_SUMMARY.txt" "$OUT/UE0/UE0_LEGACY_SUMMARY.txt"
-          echo "UE0_BASELINE=$UE0_BASELINE" >> "$GITHUB_STEP_SUMMARY"
-          echo "UE0_LEGACY_GATE_EXIT_CODE=$legacy_rc" >> "$GITHUB_STEP_SUMMARY"
-          echo "UE0_EXPANDED_GATE_EXIT_CODE=$ue0_rc" >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Extract and verify DATA.BIN for ENTRY1 audit
-        shell: bash
-        run: |
-          set -euo pipefail
-          STATIC="$WORK/static"
-          mkdir -p "$STATIC/extracted"
-          bchunk "$WORK/source/game.bin" "$WORK/source/game-run.cue" "$STATIC/track"
-          ISO="$(find "$STATIC" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
-          test -n "$ISO"
-          xorriso -osirrox on -indev "$ISO" -extract / "$STATIC/extracted" > "$STATIC/extract.log" 2>&1
-          DATA="$(find "$STATIC/extracted" -type f -iname 'DATA.BIN' -print -quit)"
-          test -n "$DATA"
-          test "$(stat -c %s "$DATA")" = 66015232
-          echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $DATA" | sha256sum --check --status
-          echo "DATA=$DATA" >> "$GITHUB_ENV"
-          echo "UE1_DATA_BIN_SIZE=66015232" >> "$GITHUB_STEP_SUMMARY"
-
-      - name: UE1 — verify scene chain and references in complete ENTRY1 only
-        id: ue1
-        shell: bash
-        run: |
-          set +e
-          python3 experiments/ue1_entry1_scene_audit.py --data "$DATA" --out "$OUT/UE1"
-          rc=$?
-          set -e
-          echo "$rc" > "$OUT/UE1_SCRIPT_EXIT_CODE.txt"
-          exit 0
-
-      - name: UE2 — local post-processing regression test on committed UD logs
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 experiments/ue2_scene_trace.py \
-            --postprocess-self-test \
-            --reports "$GITHUB_WORKSPACE/reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1" \
-            --out "$OUT/self-test"
-
-      - name: Require UE0 and UE1 static preflight before emulator
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(cat "$OUT/UE0_GATE_EXIT_CODE.txt")" = "0"
-          test "$(cat "$OUT/UE1_SCRIPT_EXIT_CODE.txt")" = "0"
-
-      - name: UE2 — six read-only headless launches, seven breakpoints
+      - name: UF2 — six read-only headless launches, four breakpoints
         id: ue2-probe
         shell: bash
         env:
@@ -235,38 +212,41 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git worktree remove --force "$WORK/ue0-legacy" 2>/dev/null || true
-          git worktree remove --force "$WORK/ue0-full" 2>/dev/null || true
+          git worktree remove --force "$WORK/ue0-baseline" 2>/dev/null || true
           rm -rf "$WORK"
           git worktree prune
           test ! -e "$WORK"
           echo "PRIVATE_BINARY_CLEANUP=PASS" > "$OUT/cleanup.txt"
 
-      - name: Validate and publish only UE0–UE2 text results
+      - name: Validate and publish only UF0–UF2 text results
         if: always()
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
-          UE0_RC="$(cat "$OUT/UE0_GATE_EXIT_CODE.txt" 2>/dev/null || echo 1)"
-          UE1_RC="$(cat "$OUT/UE1_SCRIPT_EXIT_CODE.txt" 2>/dev/null || echo 1)"
-          UE2_RC="$(cat "$OUT/UE2_SCRIPT_EXIT_CODE.txt" 2>/dev/null || echo 1)"
-          case "$UE0_RC:$UE1_RC:$UE2_RC" in
-            0:0:0) STATUS="completed/success"; FINAL_RC=0 ;;
+          UF0_RC="$(cat "$OUT/UF0_GATE_EXIT_CODE.txt" 2>/dev/null || echo 1)"
+          UF2_RC="$(cat "$OUT/UE2_SCRIPT_EXIT_CODE.txt" 2>/dev/null || echo 1)"
+          PYFLAKES_ALL_RC="$(cat "$OUT/PYFLAKES_ALL_EXIT_CODE.txt" 2>/dev/null || echo 1)"
+          PYFLAKES_TARGET_RC="$(cat "$OUT/PYFLAKES_TARGET_EXIT_CODE.txt" 2>/dev/null || echo 1)"
+          case "$UF0_RC:$UF2_RC:$PYFLAKES_ALL_RC:$PYFLAKES_TARGET_RC" in
+            0:0:0:0) STATUS="completed/success"; FINAL_RC=0 ;;
             *) STATUS="completed/failure"; FINAL_RC=1 ;;
           esac
-          DEST="reports/stage1_economy/ue0-ue2-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          DEST="reports/stage1_economy/uf0-uf2-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$DEST"
-          for stage in UE0 UE1 UE2 self-test; do
+          for stage in UF0 UE2 self-test; do
             if [ -d "$OUT/$stage" ]; then
               cp "$OUT/$stage"/*.txt "$DEST/" 2>/dev/null || true
               cp "$OUT/$stage"/*.tsv "$DEST/" 2>/dev/null || true
             fi
           done
           cp "$OUT/cleanup.txt" "$DEST/" 2>/dev/null || true
-          cp "$OUT/UE0_GATE_EXIT_CODE.txt" "$DEST/UE0_GATE_EXIT_CODE.txt" 2>/dev/null || true
-          cp "$OUT/UE1_SCRIPT_EXIT_CODE.txt" "$DEST/UE1_SCRIPT_EXIT_CODE.txt" 2>/dev/null || true
-          cp "$OUT/UE2_SCRIPT_EXIT_CODE.txt" "$DEST/UE2_SCRIPT_EXIT_CODE.txt" 2>/dev/null || true
+          cp "$OUT/UF0_GATE_EXIT_CODE.txt" "$DEST/UF0_GATE_EXIT_CODE.txt" 2>/dev/null || true
+          cp "$OUT/UE2_SCRIPT_EXIT_CODE.txt" "$DEST/UF2_SCRIPT_EXIT_CODE.txt" 2>/dev/null || true
+          cp "$OUT/PYFLAKES_ALL.txt" "$DEST/PYFLAKES_ALL.txt" 2>/dev/null || true
+          cp "$OUT/PYFLAKES_TARGET.txt" "$DEST/PYFLAKES_TARGET.txt" 2>/dev/null || true
+          cp "$OUT/PYFLAKES_ALL_EXIT_CODE.txt" "$DEST/PYFLAKES_ALL_EXIT_CODE.txt" 2>/dev/null || true
+          cp "$OUT/PYFLAKES_TARGET_EXIT_CODE.txt" "$DEST/PYFLAKES_TARGET_EXIT_CODE.txt" 2>/dev/null || true
           python3 - "$DEST" <<'PY'
           from pathlib import Path
           import sys
@@ -284,20 +264,22 @@ jobs:
           test -n "$JOB_ID" || JOB_ID="TIDAK_TAHU"
           {
             echo "STATUS=$STATUS"
-            echo "JOB=UE0/UE1 static audit and UE2 six-launch read-only trace"
+            echo "JOB=UF0 direct HEAD TSV gate and UF2 six-launch read-only trace"
             echo "JOB_ID=$JOB_ID"
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "SOURCE_SHA=$GITHUB_SHA"
-            echo "UE0_EXIT_CODE=$UE0_RC"
-            echo "UE1_EXIT_CODE=$UE1_RC"
-            echo "UE2_EXIT_CODE=$UE2_RC"
+            echo "UF0_EXIT_CODE=$UF0_RC"
+            echo "UF2_EXIT_CODE=$UF2_RC"
+            echo "PYFLAKES_ALL_EXIT_CODE=$PYFLAKES_ALL_RC"
+            echo "PYFLAKES_TARGET_EXIT_CODE=$PYFLAKES_TARGET_RC"
             echo "EXIT_CODE=$FINAL_RC"
           } > "$DEST/ACTIONS_RUN_SUMMARY.txt"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -u
           git add "$DEST"
           if ! git diff --cached --quiet; then
-            git commit -m "Publish UE0-UE2 audit and read-only trace run $GITHUB_RUN_ID [skip ci]"
+            git commit -m "Publish UF0-UF2 direct TSV gate and read-only trace run $GITHUB_RUN_ID [skip ci]"
             pushed=0
             for n in 1 2 3; do
               git fetch origin main
@@ -307,5 +289,5 @@ jobs:
             done
             test "$pushed" -eq 1
           fi
-          echo "UE0_UE2_REPORT_PATH=$DEST"
+          echo "UF0_UF2_REPORT_PATH=$DEST"
           exit "$FINAL_RC"

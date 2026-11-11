@@ -7,9 +7,9 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from experiments.ub2_headless_trace import SOURCE_SHA256,EXPECTED_CARD_BYTES,sha,lua_warmup,pad_exec,run_emulator,read_log_text,write_tsv
 FRAME_LIMIT=900
-BP=((0x80011A28,"CALLER_80011A28"),(0x800D15A8,"TARGET_800D15A8"),(0x800D2520,"TARGET_800D2520"),
-    (0x800D46EC,"TARGET_800D46EC"),(0x800B54DC,"SCENE_CALL_800B54DC"),(0x800F3658,"WRAPPER_800F3658"),
-    (0x800F5DAC,"WRAPPER_CALL_800F5DAC"))
+BP=((0x800D15A8,"TARGET_800D15A8"),(0x800B54DC,"SCENE_CALL_800B54DC"),
+    (0x800F3658,"WRAPPER_800F3658"),(0x800F5DAC,"WRAPPER_CALL_800F5DAC"))
+EXPECTED_BP_COUNT=len(BP)
 LAUNCHES=("NO_INPUT_1","NO_INPUT_2","CIRCLE_1","CIRCLE_2","DOWN_CIRCLE_1","DOWN_CIRCLE_2")
 def hx(v): return f"0x{int(v)&0xffffffff:08X}"
 def lua_probe(mode,launch):
@@ -18,6 +18,7 @@ def lua_probe(mode,launch):
 local MODE="''' + mode + r'''"
 local LAUNCH="''' + launch + r'''"
 local FRAME_LIMIT=900
+local EXPECTED_BP_COUNT=4
 local MOD=4294967296
 local loaded,started,post=false,false,0
 local handles={}
@@ -38,6 +39,7 @@ local function hit(address,label)
         n=n+1;windowCaptures[key]=n
         local z={"UE2_BP",LAUNCH,MODE,tostring(post),label,hx(address),hx(r.pc),hx(g.n.ra),
                  "WINDOW="..w.id,"WINDOW_START="..tostring(w.start),"HIT_IN_WINDOW="..tostring(n)}
+        z[#z+1]="a0="..hx(g.n.a0)
         for i=0,31 do z[#z+1]="r"..tostring(i).."="..hx(g.r[i]) end
         log(table.concat(z,"\t"))
       end
@@ -54,7 +56,7 @@ local function armAll()
     if ok and h~=nil then handles[label]=h;totals[label]=0;armed=armed+1
     else log("UE2_BREAKPOINT_INSTALL_FAIL\t"..label.."\t"..tostring(h)) end
   end
-  log("instrumented="..tostring(armed==7).." armed="..tostring(armed))
+  log("instrumented="..tostring(armed==EXPECTED_BP_COUNT).." armed="..tostring(armed))
   return armed
 end
 local pad,circle,down
@@ -85,7 +87,7 @@ _G.ue2Loaded=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",fu
   loaded=true;post=0
   log("UE2_SAVE_STATE_LOADED=1 launch="..LAUNCH)
   local armed=armAll()
-  if armed~=7 then PCSX.nextTick(function() PCSX.quit(3) end) end
+  if armed~=EXPECTED_BP_COUNT then PCSX.nextTick(function() PCSX.quit(3) end) end
 end)
 _G.ue2Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
   if not started then
@@ -116,7 +118,7 @@ _G.ue2Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
     PCSX.nextTick(function() PCSX.quit(inputErrors==0 and 0 or 2) end)
   end
 end)
-log("UE2_SCRIPT_READY launch="..LAUNCH.." mode="..MODE.." frames=900 requested_breakpoints=7 instrumented=true")
+log("UE2_SCRIPT_READY launch="..LAUNCH.." mode="..MODE.." frames=900 requested_breakpoints=4 instrumented=true")
 '''.lstrip()
 def parse_log(log):
     events=[];inputs=[];totals={};armed=[]
@@ -143,8 +145,12 @@ def build_counts(events,totals):
             rows.append({"launch":launch,"condition":condition,"address":hx(addr),"label":label,
                 "total_hits":totals.get((launch,label),"TIDAK TAHU"),
                 "captured_records":sum(1 for e in events if e.get("launch")==launch and e.get("label")==label),
-                "cap_rule":"all hits counted; first 8 captured per 30-frame input window and frames 1-30"})
+                "cap_rule":"all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30"})
     return rows
+def write_failfast(path,launch,armed_count,expected):
+    path.write_text(
+      f"STATUS=FAIL_FAST\nLAUNCH={launch}\nARMED={armed_count}\nEXPECTED={expected}\n"
+      "NO_FURTHER_LAUNCHES=YES\n",encoding="utf-8")
 def self_test(reports,out):
     event_path=reports/"UD2_BREAKPOINT_EVENTS.tsv";input_path=reports/"UD2_INPUT_EVENTS.tsv"
     if not event_path.is_file() or not input_path.is_file():raise SystemExit("UE2_SELF_TEST_INPUT_MISSING")
@@ -171,6 +177,13 @@ def self_test(reports,out):
       f"BREAKPOINT_GROUPS={len(by)}\n"
       f"COUNTER_TABLE_ROWS={len(reread)}\n"
       f"ADDRESS_FORMAT_TESTS={len(rendered)}\nNO_NAMEERROR=YES\n",encoding="utf-8")
+    failfast_path=out/"UE2_FAILFAST_INJECTION_TEST.txt"
+    write_failfast(failfast_path,"INJECTED_FAILURE",2,EXPECTED_BP_COUNT)
+    failfast_text=failfast_path.read_text(encoding="utf-8")
+    if "ARMED=2" not in failfast_text or "EXPECTED=4" not in failfast_text:
+        raise SystemExit("UE2_FAILFAST_INJECTION_TEST_FAIL")
+    with failfast_path.open("a",encoding="utf-8") as stream:
+        stream.write("INJECTION_TEST=PASS; no NameError\n")
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--work");ap.add_argument("--out",required=True);ap.add_argument("--pcsx-bin");ap.add_argument("--appdir")
@@ -192,7 +205,7 @@ def main():
         mode="NO_INPUT" if launch.startswith("NO_INPUT") else ("CIRCLE" if launch.startswith("CIRCLE") else "DOWN_CIRCLE")
         d=work/launch.lower();d.mkdir(parents=True,exist_ok=True)
         state=d/"source.sstate";shutil.copyfile(source,state);state.chmod(0o444)
-        card=d/"memory-card.mcd";shutil.copyfile(template,card);before=sha(card)
+        card=d/"memory-card.mcd";shutil.copyfile(template,card);before=sha(card);card.chmod(0o444)
         lua=d/"ue2.lua";lua.write_text(lua_probe(mode,launch),encoding="utf-8")
         stdout=d/"emulator.stdout.txt"
         rc,wall,_=run_emulator(pcsx,appdir,bios,cue,card,state,lua,d/"home",stdout,a.timeout_seconds,pad_exec() if mode!="NO_INPUT" else None)
@@ -201,50 +214,73 @@ def main():
         (out/("UE2_"+launch+"_EMULATOR_LOG.txt")).write_text("\n".join(log.splitlines()[-220:])+"\n",encoding="utf-8")
         frames=900 if "UE2_FRAME_LIMIT_REACHED launch="+launch+" frames=900" in log else 0
         armed_count=max([int(x.get("armed","0")) for x in aa] or [0])
-        instrumented=any(x.get("instrumented")=="true" and x.get("armed")=="7" for x in aa) and armed_count==7
+        instrumented=any(x.get("instrumented")=="true" and x.get("armed")==str(EXPECTED_BP_COUNT) for x in aa) and armed_count==EXPECTED_BP_COUNT
         expected={"NO_INPUT":0,"CIRCLE":2,"DOWN_CIRCLE":4}[mode]
         valid=len(ii)==expected and all(x["status"]=="PASS" for x in ii)
         after=sha(card) if card.exists() else "TIDAK TAHU"
+        card_read_only=card.exists() and (card.stat().st_mode & 0o222)==0
         launchrows.append({"launch":launch,"condition":mode,"frames_reached":frames,
           "save_state_loaded":"YES" if "UE2_SAVE_STATE_LOADED=1 launch="+launch in log else "NO",
-          "instrumented":"YES" if instrumented else "NO","armed":armed_count,
-          "logged_total_counter_rows":len(tt),"captured_event_rows":len(ev),"input_rows":len(ii),"all_bp_total_counters":"YES" if len(tt)==7 else "NO",
+          "instrumented":"true" if instrumented else "false","armed":armed_count,
+          "logged_total_counter_rows":len(tt),"captured_event_rows":len(ev),"input_rows":len(ii),"all_bp_total_counters":"YES" if len(tt)==EXPECTED_BP_COUNT else "NO",
           "input_expected":expected,"input_validation":"PASS" if valid else "FAIL","emulator_exit_code":rc,
           "wall_seconds":f"{wall:.3f}","memory_card_sha256_before":before,"memory_card_sha256_after":after,
           "memory_card_unchanged":"YES" if after==before else "NO",
+          "memory_card_read_only":"true" if card_read_only else "false",
           "checkpoint_sha256_after":sha(state) if state.exists() else "TIDAK TAHU"})
-        if not instrumented or armed_count!=7:
-            (out/"UE2_BREAKPOINT_INSTALL_FAILURE.txt").write_text(
-              f"STATUS=FAIL_FAST\\nLAUNCH={launch}\\nARMED={armed}\\nEXPECTED=7\\n"
-              "NO_FURTHER_LAUNCHES=YES\\n",encoding="utf-8")
+        if not instrumented or armed_count!=EXPECTED_BP_COUNT:
+            write_failfast(out/"UE2_BREAKPOINT_INSTALL_FAILURE.txt",launch,armed_count,EXPECTED_BP_COUNT)
+            event_fields=["launch","condition","frame","label","address","pc","ra","a0","window","window_start","hit_in_window"]+[f"r{i}" for i in range(32)]
+            write_tsv(out/"UE2_BREAKPOINT_EVENTS.tsv",event_fields,all_events)
+            write_tsv(out/"UE2_INPUT_EVENTS.tsv",["launch","frame","button","action","readback","status"],all_inputs)
+            partial_counts=build_counts(all_events,all_totals)
+            write_tsv(out/"UE2_BREAKPOINT_COUNTS.tsv",list(partial_counts[0].keys()),partial_counts)
+            write_tsv(out/"UE2_LAUNCHES.tsv",list(launchrows[0].keys()),launchrows)
+            (out/"UE2_SUMMARY.txt").write_text("\n".join([
+              "UE2_READ_ONLY_HEADLESS_TRACE","STATUS=FAIL_FAST",
+              f"SOURCE_SHA={os.getenv('GITHUB_SHA','TIDAK TAHU')}",
+              f"RUN_ID={os.getenv('GITHUB_RUN_ID','TIDAK TAHU')}",
+              f"LAUNCHES_ATTEMPTED={len(launchrows)}","NO_FURTHER_LAUNCHES=YES",
+              f"BREAKPOINTS={','.join(hx(item[0]) for item in BP)}",
+              f"ARMED_COUNT={armed_count}",f"INSTRUMENTED={'true' if instrumented else 'false'}",
+              "ALL_HIT_TOTALS=TIDAK TAHU; fail-fast occurred before frame limit",
+              f"CAPTURED_EVENTS={len(all_events)}",f"INPUT_ROWS={len(all_inputs)}",
+              f"MEMORY_CARD_READ_ONLY={'true' if card_read_only else 'false'}",
+              f"MEMORY_CARD_UNCHANGED={'true' if after==before else 'false'}",
+              f"CHECKPOINT_SHA256_AFTER={sha(state) if state.exists() else 'TIDAK TAHU'}",
+              "EXIT_CODE=3","RAW_DUMP=NONE"
+            ])+"\n",encoding="utf-8")
             raise SystemExit(3)
         state.unlink(missing_ok=True);card.unlink(missing_ok=True)
-    event_fields=["launch","condition","frame","label","address","pc","ra","window","window_start","hit_in_window"]+[f"r{i}" for i in range(32)]
+    event_fields=["launch","condition","frame","label","address","pc","ra","a0","window","window_start","hit_in_window"]+[f"r{i}" for i in range(32)]
     write_tsv(out/"UE2_BREAKPOINT_EVENTS.tsv",event_fields,all_events)
     write_tsv(out/"UE2_INPUT_EVENTS.tsv",["launch","frame","button","action","readback","status"],all_inputs)
     counts=build_counts(all_events,all_totals)
     write_tsv(out/"UE2_BREAKPOINT_COUNTS.tsv",list(counts[0].keys()),counts)
     write_tsv(out/"UE2_LAUNCHES.tsv",list(launchrows[0].keys()),launchrows)
-    instok=all(x["instrumented"]=="YES" and x["armed"]==7 for x in launchrows)
-    complete=all(x["frames_reached"]==900 and x["save_state_loaded"]=="YES" and x["instrumented"]=="YES" and
-                 x["armed"]==7 and x["all_bp_total_counters"]=="YES" and x["emulator_exit_code"]==0 and x["memory_card_unchanged"]=="YES" and x["checkpoint_sha256_after"]==SOURCE_SHA256 for x in launchrows)
+    instok=all(x["instrumented"]=="true" and x["armed"]==EXPECTED_BP_COUNT for x in launchrows)
+    complete=all(x["frames_reached"]==900 and x["save_state_loaded"]=="YES" and x["instrumented"]=="true" and
+                 x["armed"]==EXPECTED_BP_COUNT and x["all_bp_total_counters"]=="YES" and x["emulator_exit_code"]==0 and
+                 x["memory_card_unchanged"]=="YES" and x["memory_card_read_only"]=="true" and
+                 x["checkpoint_sha256_after"]==SOURCE_SHA256 for x in launchrows)
     inputs_ok=all(x["input_validation"]=="PASS" for x in launchrows)
     rc=0 if complete and inputs_ok else 3
     lines=["UE2_READ_ONLY_HEADLESS_TRACE",f"STATUS={'PASS' if rc==0 else 'INCOMPLETE'}",
       f"SOURCE_SHA={os.getenv('GITHUB_SHA','TIDAK TAHU')}",f"RUN_ID={os.getenv('GITHUB_RUN_ID','TIDAK TAHU')}",
       f"CHECKPOINT_SHA256={SOURCE_SHA256}","CONDITIONS=NO_INPUT,CIRCLE,DPAD_BAWAH_THEN_CIRCLE; TWO_LAUNCHES_EACH",
       "FRAMES_PER_LAUNCH=900","BREAKPOINTS="+",".join(hx(x[0]) for x in BP),
-      "TOTAL_HIT_COUNTER=all hits; capture cap is separate (8 per breakpoint/window)",
-      "CAPTURE=first 8 hits in frames 1-30 and first 8 hits in each 30-frame window after every input event; RA and r0-r31 included",
+      "TOTAL_HIT_COUNTER=all hits; capture cap is separate (8 per breakpoint/window); exactly 4 breakpoints",
+      "CAPTURE=first 8 hits per breakpoint in frames 1-30 and each input-relative 30-frame window; a0, RA and r0-r31 included",
       "INPUT=CIRCLE press 6 frames then release; DPAD_DOWN press 6 frames/release then CIRCLE press 6 frames/release",
       f"MEMCARD_TEMPLATE_SHA256={cardhash}",f"MEMCARD_WARMUP_EXIT_CODE={warmrc}",
       f"CAPTURED_EVENTS={len(all_events)}",f"INPUT_ROWS={len(all_inputs)}",
       f"LAUNCHES_COMPLETE={'YES' if complete else 'NO'}",f"INPUTS_VALID={'YES' if inputs_ok else 'NO'}",
       f"ALL_BREAKPOINT_INSTALLS_VALID={'YES' if instok else 'NO'}",f"EXIT_CODE={rc}",
+      "MEMORY_CARD_MODE=read-only (0444) each launch; SHA256 checked before/after",
       "NO_GAME_MEMORY_OR_REGISTER_WRITES=YES; pad overrides only","RAW_DUMP=NONE"]
     (out/"UE2_SUMMARY.txt").write_text("\n".join(lines)+"\n",encoding="utf-8")
     (out/"ACTIONS_RUN_SUMMARY.txt").write_text("\n".join([f"STATUS={'completed/success' if rc==0 else 'completed/failure'}",
-      "JOB=UE0/UE1 static audit and UE2 six-launch read-only trace",f"RUN_ID={os.getenv('GITHUB_RUN_ID','TIDAK TAHU')}",
+      "JOB=UF0 direct HEAD TSV gate and UF2 six-launch read-only trace",f"RUN_ID={os.getenv('GITHUB_RUN_ID','TIDAK TAHU')}",
       f"SOURCE_SHA={os.getenv('GITHUB_SHA','TIDAK TAHU')}",f"EXIT_CODE={rc}"])+"\n",encoding="utf-8")
     print("\n".join(lines));return rc
 if __name__=="__main__":raise SystemExit(main())
