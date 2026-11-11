@@ -1,0 +1,12 @@
+UH3_ACTIONS_RUN_SUMMARY
+RUN_ID=42977820741
+STATUS=completed/success
+EVENT=schedule
+WORKFLOW=Naruto Story Mode adaptive player monitor
+JOB=monitor
+JOB_ID=130380930819
+SOURCE_SHA=c7da18bef75f6e6905d495b72710f50aaf1bb5b0
+EXIT_CODE=0 (job completed/success; no separate numeric process exit was printed)
+MONITOR_RESULT=no adaptive player run visible in latest 50 Actions runs
+ARTIFACT=none; upload step reported monitoring-report.txt not found
+GAMEPLAY_OR_STORYMODE_COMPLETION=NOT_PROVEN
