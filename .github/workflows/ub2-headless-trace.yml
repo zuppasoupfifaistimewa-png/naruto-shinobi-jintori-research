@@ -201,6 +201,13 @@ jobs:
             --reports "$GITHUB_WORKSPACE/reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1" \
             --out "$OUT/self-test"
 
+      - name: Require UE0 and UE1 static preflight before emulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(cat "$OUT/UE0_GATE_EXIT_CODE.txt")" = "0"
+          test "$(cat "$OUT/UE1_SCRIPT_EXIT_CODE.txt")" = "0"
+
       - name: UE2 — six read-only headless launches, seven breakpoints
         id: ue2-probe
         shell: bash

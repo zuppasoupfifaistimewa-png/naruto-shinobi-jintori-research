@@ -161,16 +161,16 @@ def self_test(reports,out):
     test_table=out/"UE2_POSTPROCESS_SELF_TEST_COUNTS.tsv"
     write_tsv(test_table,list(rows[0].keys()),rows)
     with test_table.open("r",encoding="utf-8",newline="") as f:
-        reread=list(csv.DictReader(f,delimiter="\\t"))
+        reread=list(csv.DictReader(f,delimiter="\t"))
     if len(reread)!=len(LAUNCHES)*len(BP):raise SystemExit("UE2_SELF_TEST_COUNTS_ROUNDTRIP_FAIL")
     rendered=[hx(int(e["address"],16)) for e in events[:min(8,len(events))]]
     (out/"UE2_POSTPROCESS_SELF_TEST.txt").write_text(
-      "STATUS=PASS\\nSOURCE=committed UD2 breakpoint/input TSV\\n"
-      f"UD2_EVENT_ROWS={len(events)}\\nUD2_INPUT_ROWS={len(inputs)}\\n"
-      f"LAUNCHES={len({e['launch'] for e in events})}\\n"
-      f"BREAKPOINT_GROUPS={len(by)}\\n"
-      f"COUNTER_TABLE_ROWS={len(reread)}\\n"
-      f"ADDRESS_FORMAT_TESTS={len(rendered)}\\nNO_NAMEERROR=YES\\n",encoding="utf-8")
+      "STATUS=PASS\nSOURCE=committed UD2 breakpoint/input TSV\n"
+      f"UD2_EVENT_ROWS={len(events)}\nUD2_INPUT_ROWS={len(inputs)}\n"
+      f"LAUNCHES={len({e['launch'] for e in events})}\n"
+      f"BREAKPOINT_GROUPS={len(by)}\n"
+      f"COUNTER_TABLE_ROWS={len(reread)}\n"
+      f"ADDRESS_FORMAT_TESTS={len(rendered)}\nNO_NAMEERROR=YES\n",encoding="utf-8")
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--work");ap.add_argument("--out",required=True);ap.add_argument("--pcsx-bin");ap.add_argument("--appdir")
@@ -200,19 +200,20 @@ def main():
         for k,v in tt.items():all_totals[k]=v
         (out/("UE2_"+launch+"_EMULATOR_LOG.txt")).write_text("\n".join(log.splitlines()[-220:])+"\n",encoding="utf-8")
         frames=900 if "UE2_FRAME_LIMIT_REACHED launch="+launch+" frames=900" in log else 0
-        instrumented=any(x.get("instrumented")=="true" and x.get("armed")=="7" for x in aa)
+        armed_count=max([int(x.get("armed","0")) for x in aa] or [0])
+        instrumented=any(x.get("instrumented")=="true" and x.get("armed")=="7" for x in aa) and armed_count==7
         expected={"NO_INPUT":0,"CIRCLE":2,"DOWN_CIRCLE":4}[mode]
         valid=len(ii)==expected and all(x["status"]=="PASS" for x in ii)
         after=sha(card) if card.exists() else "TIDAK TAHU"
         launchrows.append({"launch":launch,"condition":mode,"frames_reached":frames,
           "save_state_loaded":"YES" if "UE2_SAVE_STATE_LOADED=1 launch="+launch in log else "NO",
-          "instrumented":"YES" if instrumented else "NO","armed":max([int(x.get("armed","0")) for x in aa] or [0]),
-          "logged_total_counter_rows":len(tt),"captured_event_rows":len(ev),"input_rows":len(ii),
+          "instrumented":"YES" if instrumented else "NO","armed":armed_count,
+          "logged_total_counter_rows":len(tt),"captured_event_rows":len(ev),"input_rows":len(ii),"all_bp_total_counters":"YES" if len(tt)==7 else "NO",
           "input_expected":expected,"input_validation":"PASS" if valid else "FAIL","emulator_exit_code":rc,
           "wall_seconds":f"{wall:.3f}","memory_card_sha256_before":before,"memory_card_sha256_after":after,
           "memory_card_unchanged":"YES" if after==before else "NO",
           "checkpoint_sha256_after":sha(state) if state.exists() else "TIDAK TAHU"})
-        if not instrumented or armed!=7:
+        if not instrumented or armed_count!=7:
             (out/"UE2_BREAKPOINT_INSTALL_FAILURE.txt").write_text(
               f"STATUS=FAIL_FAST\\nLAUNCH={launch}\\nARMED={armed}\\nEXPECTED=7\\n"
               "NO_FURTHER_LAUNCHES=YES\\n",encoding="utf-8")
@@ -226,7 +227,7 @@ def main():
     write_tsv(out/"UE2_LAUNCHES.tsv",list(launchrows[0].keys()),launchrows)
     instok=all(x["instrumented"]=="YES" and x["armed"]==7 for x in launchrows)
     complete=all(x["frames_reached"]==900 and x["save_state_loaded"]=="YES" and x["instrumented"]=="YES" and
-                 x["armed"]==7 and x["emulator_exit_code"]==0 and x["memory_card_unchanged"]=="YES" and x["checkpoint_sha256_after"]==SOURCE_SHA256 for x in launchrows)
+                 x["armed"]==7 and x["all_bp_total_counters"]=="YES" and x["emulator_exit_code"]==0 and x["memory_card_unchanged"]=="YES" and x["checkpoint_sha256_after"]==SOURCE_SHA256 for x in launchrows)
     inputs_ok=all(x["input_validation"]=="PASS" for x in launchrows)
     rc=0 if complete and inputs_ok else 3
     lines=["UE2_READ_ONLY_HEADLESS_TRACE",f"STATUS={'PASS' if rc==0 else 'INCOMPLETE'}",
