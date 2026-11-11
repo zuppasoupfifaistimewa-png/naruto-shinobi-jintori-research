@@ -1,0 +1,11 @@
+STATUS=BLOCKED
+JOB=ui0-ui1-preflight
+RUN_ID=43107870709
+SOURCE_SHA=fe81d138974b076234611d220e3213b5dd8aedc9
+PY_COMPILE=required scripts
+PYFLAKES=installed and run with pip
+YAML_PARSE=required workflow
+FAKE_MEMORY_AND_BYTE_TESTS=required scripts
+EXIT_CODE=1
+EMULATOR_GATE=CLOSED; no emulator process may start
+BINARY_OR_PRIVATE_ASSET_COMMITTED=NO
