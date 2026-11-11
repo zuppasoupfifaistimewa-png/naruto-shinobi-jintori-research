@@ -4,21 +4,30 @@ CHILD=b74d931cf9855c16c3d3e22b10a11cf94c7c2d04
 FILES_CHANGED=336
 MODIFIED_FILES=319
 ADDED_FILES=17
-MODIFIED_WITH_DELETIONS=316
-PATCH_FILES_WITH_DELETIONS=84
-BLOB_LCS_FILES_WITH_DELETIONS=232
-PER_FILE_DELETION_SUM=61810
+REMOVED_FILES=0
+TRIM_SOURCE=reports/stage1_economy/ug0-ug2-run-42962387096/attempt-1/UF0_TRIMMED_ROWS.tsv (metadata artifact; no byte values)
+TRIM_SOURCE_ROWS=63121
+UNIQUE_PARENT_ROW_KEYS=63121
+TRIMMED_FILES=319
+MANIFEST_PARENT_LINE_SUM=63121
+MANIFEST_RANGE_COUNT=5536
+LINE_NUMBERING=1-based physical parent-file lines; inclusive intervals; adjacent lines compressed
+DUPLICATE_SOURCE_ROW_KEYS=0
+MULTILINE_SOURCE_ROWS=0
 COMMIT_STATS_ADDITIONS=64892
 COMMIT_STATS_DELETIONS=63121
-UNALLOCATED_COMMIT_DELETIONS=1311
-PATCH_RANGE_DELETION_SUM=16694
-BLOB_LCS_RANGE_DELETION_SUM=45116
-RANGE_MANIFEST_ROWS=319
-RANGE_COUNT_MISMATCHES=0
-RANGE_CORRECTIONS_APPLIED=11
-METHODS=API_PATCH for 84 patch-bearing files; BLOB_LCS_ONE_VALID_ALIGNMENT for 232 patch-omitted files
-LINE_NUMBERING=1-based parent-file lines; inclusive intervals
-BLOB_LCS=deterministic Hunt-Szymanski LCS over exact UTF-8 lines; duplicate-line cases can admit more than one optimal alignment
+API_PER_FILE_DELETIONS_SUM=61810
+API_PER_FILE_DELETION_DELTA=1311
+DELTA_ATTRIBUTED_FILES=3
+DELTA_FILE_1=reports/stage1_economy/aq1-run-41318572706/attempt-1/aw1-helper-call-windows.tsv; trim=650; API_deletions=0
+DELTA_FILE_2=reports/stage1_economy/aq1-run-41559535429/attempt-1/aw1-helper-call-windows.tsv; trim=650; API_deletions=0
+DELTA_FILE_3=reports/stage1_economy/aq1-run-41803736009/attempt-1/bb2-tile-nibble-access.tsv; trim=11; API_deletions=0
+DELTA_ATTRIBUTED_TOTAL=1311
+ALLOCATION_RULE=per-file parent-line positions come from committed UF0_TRIMMED_ROWS metadata; commit-level statistic is reconciled by those source row keys, not by API per-file deletion counters
+CONFLICT_OBSERVATION_DEFINITION=For each composite coordinate (label, coordinate kind, unresolved-source identity when applicable, address), keep the first strict-hex byte; each later strict-hex observation whose byte differs from that first byte increments the conflict-observation counter; the first byte is not replaced
+GATE_CONFLICT_OBSERVATIONS=14001
+UNIQUE_COORDINATES_WITH_CONFLICT=3512
+ADDITIONAL_CONFLICT_OBSERVATIONS_AT_ALREADY_CONFLICTING_COORDINATES=10489
+CONFLICT_RELATION=14001 - 3512 = 10489; this is not the number of pairwise combinations
 NO_CONTENT_BYTES_STORED=YES
-NO_TSV_ROWS_DELETED=YES
-NOTE=GitHub commit-level deletion statistic exceeds sum of per-file deletion fields by 1,311; no file/range attribution is fabricated.
+NO_TSV_ROWS_DELETED_BY_THIS_AUDIT=YES

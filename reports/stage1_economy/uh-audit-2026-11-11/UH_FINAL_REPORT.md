@@ -1,59 +1,58 @@
 # Audit UH0–UH3 — baseline c7da18…
 
-**Repo baseline:** `c7da18bef75f6e6905d495b72710f50aaf1bb5b0` (inklusif). Audit report-only; kode dan workflow tidak diubah.
+**Baseline inklusif:** `c7da18bef75f6e6905d495b72710f50aaf1bb5b0`. Analisis statis membaca repo pada baseline; laporan ini diterbitkan setelah addendum statis. Tidak ada kode emulasi atau workflow yang diubah.
 
-| Bagian | Status | Level | Hasil |
+| Bagian | Status | Level | Ringkasan |
 |---|---|---:|---|
-| UH0 manifest b74d931 | SEBAGIAN | K4 | 319 file modifikasi memiliki rentang baris induk; hitungan rentang cocok dengan total per-file 61.810. Statistik commit menyebut 63.121, selisih 1.311 tidak dapat dialokasikan ke file. |
-| UH0 konflik byte | TUNTAS untuk definisi/hitung UG0 | K4 | 14.001 observasi konflik pada gate; 3.512 koordinat unik dengan konflik; selisih 10.489 adalah observasi konflik tambahan pada koordinat yang sama. |
-| UH1 writer | SEBAGIAN | K4 untuk instruksi/basis yang terikat; K2 kandidat; K0 ENTRY0 | 42 writer `sh +0x20` punya alias basis ke slot 0x8013EA84, tetapi stride 0x124 belum terbukti per-PC; dua writer `sh +0x1A` adalah loader; 42 kandidat `sb` belum beralias; Entry0 tidak menghasilkan census writer. |
-| UH2 runtime watch | BELUM | K0 | Tidak ada run: batas dan jumlah record petak belum terbukti, sehingga alamat watchpoint aman belum diketahui. |
-| UH3 ledger | TUNTAS dalam jendela API | K4 | Empat commit termasuk baseline, 22 event file no-renames; satu Actions run schedule 42977820741; tidak ada push/workflow_dispatch run yang dikembalikan API sejak baseline. |
+| UH0 manifest b74d931 | **TUNTAS** | K4 | 63.121 baris induk dipetakan ke 319 berkas dalam 5.536 rentang inklusif; selisih API 1.311 dialokasikan tepat ke 3 berkas. |
+| UH0 konflik byte | **TUNTAS** | K4 | Gate: 14.001 observasi konflik; 3.512 koordinat konflik unik; 10.489 observasi tambahan pada koordinat yang sama. |
+| UH1 writer | **SEBAGIAN** | K4/K2/K0 | 307 PC writer terinventaris dalam cakupan census EXE/ENTRY1 yang tersedia; cakupan SW, SH +1C/+1E, dan ENTRY0 belum lengkap. |
+| UH2 runtime | **BELUM** | K0 | Tidak ada launch/watchpoint; batas array dan alamat aman belum diketahui. |
+| UH3 ledger | **TUNTAS** | K4 | 7 commit termasuk baseline, 33 event no-renames, 1.361 tambahan/439 penghapusan; 1 Actions schedule run, tanpa push/dispatch. |
 
-## UH0 — manifest pemangkasan
+## UH0 — baris yang dipangkas dan konflik byte
 
-Manifest berisi 319 file yang dimodifikasi pada `b74d931cf9855c16c3d3e22b10a11cf94c7c2d04` relatif ke parent `c87e124daeb4e007c555bc07eab811bfe61e6afb`. 84 file memakai baris minus dari patch GitHub; 232 file yang patch-nya dihilangkan direkonstruksi dengan satu alignment LCS deterministik atas baris teks UTF-8, tanpa menyimpan byte konten. Setiap baris rentang dalam manifest telah divalidasi ulang terhadap jumlah deletion per-file API: 0 mismatch. Tiga file modified lain tidak memiliki baris terhapus.
+Commit yang diperiksa: parent `c87e124daeb4e007c555bc07eab811bfe61e6afb`, child `b74d931cf9855c16c3d3e22b10a11cf94c7c2d04`. Perubahan commit: 336 path (319 modified, 17 added, 0 removed). Manifest bersumber dari metadata gate `UF0_TRIMMED_ROWS.tsv`: 63.121 row keys unik pada 319 berkas, digabung menjadi 5.536 rentang nomor baris induk 1-based dan inklusif. Tidak ada byte nilai yang disimpan. Tidak ada baris TSV yang dihapus oleh audit ini.
 
-**Batas agregat:** jumlah deletion per-file API adalah 61.810. Statistik commit GitHub mencatat 63.121. Sisa 1.311 tidak memiliki atribusi per-file di respons API yang diterima; manifest tidak membuat-buat rentang untuknya. Tidak ada baris TSV yang dihapus dalam audit ini.
+GitHub REST melaporkan total commit deletion 63.121, tetapi penjumlahan field deletion per-file hanya 61.810. Seluruh selisih 1.311 teralokasi dari registry trim:
+- `aq1-run-41318572706/attempt-1/aw1-helper-call-windows.tsv`: 650 baris;
+- `aq1-run-41559535429/attempt-1/aw1-helper-call-windows.tsv`: 650 baris;
+- `aq1-run-41803736009/attempt-1/bb2-tile-nibble-access.tsv`: 11 baris.
+Ketiga field deletion per-file API bernilai 0; metadata trim tetap menyediakan path dan nomor baris induknya. Jumlah 650+650+11 = 1.311; tidak ada selisih tersisa yang perlu ditebak.
 
-Konflik byte didefinisikan sebagai observasi berikutnya pada koordinat berlabel yang nilainya berbeda dari observasi acuan pertama pada koordinat yang sama. Gate menghitung 14.001 observasi seperti itu. Hitungan independen berdasarkan koordinat unik adalah 3.512. Jadi 10.489 adalah observasi konflik tambahan pada koordinat yang sudah konflik—bukan koordinat konflik baru dan bukan hitungan seluruh pasangan kombinatorial.
+Definisi konflik gate: pada setiap koordinat komposit (label image, jenis koordinat, identitas sumber bila label belum terselesaikan, alamat), byte strict-hex pertama dijadikan nilai acuan. Setiap observasi berikutnya yang berbeda dari nilai pertama menambah satu *observasi konflik*; nilai acuan tidak diganti. Jadi 14.001 adalah hitungan per-observasi, sedangkan 3.512 adalah koordinat unik yang mengalami konflik. Selisih 10.489 merupakan observasi tambahan pada koordinat yang sudah konflik, bukan jumlah pasangan semua nilai yang berbeda.
 
-## UH1 — penulisan medan record
+## UH1 — store medan petak dan D15A8
 
-Di set census yang diperiksa, 42 penulisan `sh` ke displacement `+0x20` dalam ENTRY1 memiliki alias tabel terbukti melalui slot `0x8013EA84`, tersebar pada 16 fungsi. Untuk satu PC saja, `0x800D5A1C` di `FUN_800D15A8`, dekompilasi BB2 kini mengikat basis ke `DAT_8013eb20 * 0x124 + DAT_8013ea84`; jadi stride `0x124` terbukti pada PC itu, sedangkan 41 writer lainnya tetap belum terbukti stride per-PC. Store memakai immediate `0xF020`, bukan penambahan level aritmetis `+1`.
+Tabel gabungan berisi 307 PC unik pada EXE/ENTRY1: 139 store SB pada +0x1A/+0x1C/+0x1E (MA2), 130 write pada +0x1A (DX1; 123 SH dan 7 SB), serta 42 store SH +0x20 yang alias basisnya ke slot 0x8013EA84 (DY2). PC duplikat lintas census dicatat sekali. Dari 139 SB, 97 berbasis stack ditandai stack-local, bukan penulisan petak terverifikasi; 42 non-stack adalah kandidat yang alias dan stride-nya belum terbukti. Dua SH +0x1A di FUN_800F7ADC (PC 0x800F7D9C dan 0x800F7DB0) beralias EA84 dan memakai 0x124*index, tetapi keduanya loader copy, bukan biaya upgrade.
 
-Dua penulisan `sh +0x1A` di `FUN_800F7ADC` (PC `0x800F7D9C`, `0x800F7DB0`) juga memuat basis dari slot `0x8013EA84`. Rantai indeks yang dilacak membentuk `(73 * index) * 4 = 0x124 * index`. Kedua nilai berasal dari byte loader buffer, sehingga ini merupakan penyalinan/loader record, bukan bukti biaya upgrade.
+Untuk +0x20, 42 SH store pada 16 fungsi ENTRY1 memiliki alias basis ke slot EA84. Hanya PC 0x800D5A1C juga telah dikonfirmasi dengan ekspresi indeks *per-PC* 0x124. Pada FUN_800D15A8, store itu berada di state case 0x15: counter DAT_80139ec2 bertambah, dan store dilakukan hanya ketika hasil kenaikan sama dengan 0x21 (33). Nilai yang ditulis adalah konstanta 0xF020 sebagai bagian dari inisialisasi beberapa field record, lalu counter direset dan state menjadi 8. Ini bukan increment level setiap pemanggilan. Makna gameplay state dan nibble halfword +0x20 tetap TIDAK TAHU.
 
-Census global `sb` mencatat 139 instruksi memakai displacement tepat `+0x1A/+0x1C/+0x1E`: 97 menggunakan `$sp` dan dikeluarkan dari kandidat record; 42 non-stack tetap belum terbukti aliasnya ke `0x8013EA84 + index*0x124`. Rinciannya 6/+1A, 18/+1C, 18/+1E; tersebar pada EXE dan ENTRY1. Scan literal `+0x1A` terpisah (DX1) berisi 172 akses, termasuk 130 write (43 EXE, 87 ENTRY1); hanya dua write `FUN_800F7ADC` yang terikat ke slot EA84, dan keduanya loader copy. Tidak tersedia census global `sh/sw` lengkap untuk `+0x1C/+0x1E`.
+Batas inventaris: belum tersedia census global SW untuk +1A/+1C/+1E, census global SH untuk +1C/+1E, dan writer census ENTRY0. ENTRY0 artifact run 41290779708 hanya mengeluarkan indeks fungsi parsial; Ghidra timeout pada 1.800 detik dengan body-overlap errors; alamat RAM 0x800AD000 masih hipotesis dan runtime mapping tidak tervalidasi. Writer petak ENTRY0 tetap TIDAK TAHU (K0). Karena itu UH1 tetap SEBAGIAN.
 
-`ENTRY0` kini diperiksa lewat artefak teks Ghidra run 41290779708. Run mengekspor 38 baris fungsi, tetapi autoanalysis timeout pada 1.800 detik dan ada kegagalan repair body; tidak ada census `sb/sh/sw` per-PC. Basis `0x800AD000` berstatus hipotesis statis dan runtime mapping belum tervalidasi. Jadi writer petak ENTRY0 tetap `TIDAK TAHU` (K0). Rinciannya ada di `UH1_ENTRY0_ARTIFACT_AUDIT.txt`.
+**Rumus biaya upgrade lompat level d>=2: TIDAK TAHU.** Nilai 400/800/1600 tetap K1/hipotesis. Belum ada rantai debit atau konstanta biaya yang terikat ke transaksi upgrade.
 
-`FUN_800D15A8` terlihat dipanggil pada tick ganjil dalam trace UG; hit fungsi bukan bukti bahwa store terjadi pada setiap pemanggilan. BB2 dekompilasi statis memperjelas kontrol alirnya: fungsi memakai `switch(DAT_80139f03)`. Jalur tertentu dari case `0x02` menetapkan state `0x14`; case `0x14` menaikkan state ke `0x15` dan mereset `DAT_80139ec2`. Dalam case `0x15`, counter bertambah; saat hasilnya `0x21` (33), fungsi menginisialisasi record indeks `DAT_8013eb20 * 0x124 + DAT_8013ea84`, menulis `0xF020` ke `+0x20`, mengisi banyak field lain, memanggil `FUN_800BE0E4`, mengurangi byte objek `+0x4CC`, mereset counter, lalu mengubah state ke `8`. Jika counter belum `0x21`, cabang alternatif hanya mengurangi field `+0x44/+0x46` sebesar `0x80` ketika byte record `+0x00 == 5` dan nibble atas `+0x20` cocok dengan global `_DAT_8013EA8A`. Ini menutup kondisi statis untuk store tersebut, tetapi bukan makna aksi/gameplay-nya. Halfword `+0x20` juga dibaca sebagai beberapa nibble di fungsi yang sama; label semantik setiap nibble tetap `TIDAK TAHU`. Jadi tidak terbukti ada level increment per pemanggilan, biaya upgrade, atau debit Chakra. Rincian: `UH1_D15A8_CONTROL_FLOW_ADDENDUM.md`.
+## UH2 — runtime read-only
 
-Biaya upgrade lompat level `d>=2` dengan nilai 400/800/1600 tetap **K1 / hipotesis**. Rumus biaya: **TIDAK TAHU**, belum ada aritmetika atau tabel konstanta biaya langsung yang terikat ke transaksi upgrade.
+Tidak ada emulator launch untuk UH2. Slot 0x8013EA84 adalah pointer dinamis, bukan alamat awal RAM final yang cukup untuk menentukan rentang seluruh record. Jumlah record, indeks yang sah, dan seluruh alias medan belum terbukti; karena itu tidak dipasang watchpoint pada alamat tebakan. Tidak ada TSV nilai bernama di frame 1/900, jumlah hit watchpoint PC/RA, status instrumented=true, ataupun hash Memory Card sebelum/sesudah. Tidak ada run Actions UH2 baru.
 
-## UH2 — runtime
-
-Tidak ada emulator launch. Runner yang ada hanya memasang empat Exec breakpoint dan menjalankan enam kondisi; requested write watch memerlukan rentang alamat petak dan jumlah record yang pasti. Slot `0x8013EA84` adalah lokasi pointer dinamis, bukan alamat dasar RAM yang cukup untuk menetapkan rentang aman tanpa membaca/menentukan pointer dan batas array. Kandidat `sb +1A/+1C/+1E` juga belum beralias ke slot tersebut. Watchpoint spekulatif berisiko merekam objek lain atau melewatkan petak.
-
-Tidak ada TSV nilai frame 1/900, write-hit counters/PC/RA, Memory Card clone/hash, atau status `instrumented=true` dari UH2. Tidak ada run Actions baru yang digunakan. Pyflakes, parse YAML lokal, dan dry fail-fast tidak dijalankan karena tidak ada perubahan skrip/workflow dan checkout lokal tidak dapat diambil (DNS gagal saat mencoba `raw.githubusercontent.com`).
+Pyflakes/YAML/dry fail-fast tidak dijalankan pada sesi ini karena tidak ada skrip atau workflow yang diubah; pyflakes tidak tersedia lokal. Tidak ada source SHA run baru: tidak ada emulasi UH2. Kode yang dianalisis tetap baseline c7da18be….
 
 ## UH3 — ledger baseline-inclusive
 
-Ledger mencakup baseline c7, commit anak 02ad6, commit laporan statis 46948, addendum ENTRY0 c3fd, koreksi ledger 2ba02b4, dan addendum D15A8 7676e8e; ada 27 event file berdasarkan status Git (no-renames). Sejak waktu baseline, query Actions API mengembalikan satu run schedule, #42977820741, workflow monitor, job `monitor` sukses. Source SHA run sama dengan baseline. Tidak ada run `push` atau `workflow_dispatch` di rentang query. Job sukses adalah hasil monitor; bukan bukti Story Mode selesai. Ringkasan run terdahulu tersedia pada permalink raw di `UH3_SUMMARY.txt`.
+Ledger dari baseline sampai HEAD pra-publikasi `14e911b706f9ea27dff96cd9f735e043bfd8b066` mencakup 7 commit (termasuk baseline), 33 event file no-renames, 1.361 additions, dan 439 deletions. Commit berurutan: `c7da18be`, `02ad6ea6`, `46948b55`, `c3fd42bc`, `2ba02b4f`, `7676e8e3`, `14e911b7`.
 
-## Validasi dan batas
+Query Actions sejak 2026-11-11 05:38:31Z menghasilkan total_count=1: run `42977820741`, event schedule, 2026-11-11 07:12:39Z (14:12:39 WIB), status completed/success, job `monitor` id `130380930819`, source SHA baseline c7da18be…. Log tidak mencetak exit code proses terpisah; 0 hanya inferensi dari job success. Artifact monitoring tidak diunggah karena `monitoring-report.txt` tidak ditemukan. Monitor menyatakan tidak ada adaptive player run pada latest 50; ini bukan progres gameplay atau bukti Story Mode selesai. Tidak ada push atau workflow_dispatch run yang ditemukan.
 
-- Validasi internal laporan: 319 baris manifest; 0 mismatch antara panjang rentang dan deletion per-file; 86 baris tabel writer; 130 write literal `+0x1A` pada EXE/ENTRY1; Entry0 artifact diverifikasi sebagai ekspor parsial; satu dari 42 writer `sh +0x20` kini punya stride per-PC terverifikasi; ledger 6 commit/27 event/1 run.
-- Tidak ada kode atau workflow yang diubah; tidak ada source SHA emulator UH2 karena run UH2 tidak dilakukan. Code SHA baseline yang dianalisis tetap `c7da18bef75f6e6905d495b72710f50aaf1bb5b0`.
-- Tidak mengubah `STATUS.md`, Release, atau menghapus baris TSV. Tidak menyertakan ROM, BIOS, Memory Card, savestate, dump RAM, atau biner.
-- Tingkat K5 tidak diberikan: tidak ada runtime UH2 yang dijalankan.
+## Berkas yang diubah oleh publikasi koreksi ini
 
+- `reports/stage1_economy/uh-audit-2026-11-11/UH0_B74_DELETED_LINE_MANIFEST.tsv`
+- `reports/stage1_economy/uh-audit-2026-11-11/UH0_SUMMARY.txt`
+- `reports/stage1_economy/uh-audit-2026-11-11/UH1_TILE_WRITER_AUDIT.tsv`
+- `reports/stage1_economy/uh-audit-2026-11-11/UH1_SUMMARY.txt`
+- `reports/stage1_economy/uh-audit-2026-11-11/UH3_COMMITS.tsv`
+- `reports/stage1_economy/uh-audit-2026-11-11/UH3_FILE_EVENTS_NO_RENAMES.tsv`
+- `reports/stage1_economy/uh-audit-2026-11-11/UH3_SUMMARY.txt`
+- `reports/stage1_economy/uh-audit-2026-11-11/UH_FINAL_REPORT.md`
 
-## Addendum D15A8 dan pembaruan ledger
-
-Addendum statis D15A8 dipublikasikan pada commit `7676e8e3ecb688dafe5922eacd21ece97f1e91e5`; file baru: `UH1_D15A8_CONTROL_FLOW_ADDENDUM.md`. Permalink raw:
-
-https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/7676e8e3ecb688dafe5922eacd21ece97f1e91e5/reports/stage1_economy/uh-audit-2026-11-11/UH1_D15A8_CONTROL_FLOW_ADDENDUM.md
-
-Ledger saat ini memasukkan koreksi `2ba02b4fbadcdd2974ce77b54a6c4e70d0708a2d` dan addendum `7676e8e3ecb688dafe5922eacd21ece97f1e91e5`; commit koreksi ledger berikutnya sendiri belum termasuk dalam snapshot ledger ini.
+Ledger snapshot mengecualikan commit publikasi ini sendiri. STATUS.md dan Release tidak diubah; tidak ada ROM, BIOS, Memory Card, savestate, RAM dump, executable, DATA.BIN, atau biner yang ditambahkan.
