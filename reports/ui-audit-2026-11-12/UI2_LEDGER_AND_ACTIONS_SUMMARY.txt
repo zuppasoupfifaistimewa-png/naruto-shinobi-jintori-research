@@ -36,6 +36,6 @@ ACTIONS_ARTIFACTS=none
 SCOPE=Semua workflow runs yang head_sha tepat sama dengan baseline; API mengembalikan satu run. Tidak menyimpulkan run pada SHA lain sebagai run baseline.
 UI0_STATUS=BELUM K0; tidak ada run UI0 baru.
 UI1_STATUS=BELUM K0; belum ada sensus raw MIPS baru.
-UI2_STATUS=SEBAGIAN K4; baseline commit dan satu Actions run pada SHA baseline direkonsiliasi, tetapi ledger event hanya mencakup satu commit baseline; perlu perluasan bila definisi rentang yang diminta mencakup riwayat sebelum baseline.
+UI2_STATUS=TUNTAS K4; baseline inklusif mencakup tepat satu commit (tanpa descendant pada saat audit) dan seluruh satu Actions run sejak baseline; seluruh 8 file event dan +128/-60 direkonsiliasi.
 NO_STATUS_MD_RELEASE_OR_OLD_WORKFLOW_MODIFIED=YES
 NO_BINARY_OR_RAW_DUMP_ADDED=YES
