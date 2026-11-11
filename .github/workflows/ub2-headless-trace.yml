@@ -26,7 +26,7 @@ jobs:
   ub2-headless-trace:
     name: UE0/UE1 static audit and six 900-frame read-only launches
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 50
     env:
       GH_TOKEN: ${{ github.token }}
       RESEARCH_REPO: ${{ github.repository }}
@@ -134,28 +134,63 @@ jobs:
           sudo apt-get install -y --no-install-recommends bchunk xorriso python3-pip
           python3 -m pip install --break-system-packages "capstone==5.0.3"
 
-      - name: UE0 — archive exact baseline and run immutable byte union gate
+      - name: UE0 — exact legacy 18 vs expanded byte union on baseline 9a6ccb
+        id: ue0
         shell: bash
         run: |
           set -euo pipefail
           UE0_BASELINE="9a6ccb7969a8cf377006dba01f468fb2c9dc4b05"
-          BASELINE_TSV="$WORK/ue0-baseline-tsv"
-          mkdir -p "$BASELINE_TSV"
-          git archive --format=tar "$UE0_BASELINE" -- '*.tsv' | tar -xf - -C "$BASELINE_TSV"
-          test "$(find "$BASELINE_TSV" -type f -name '*.tsv' | wc -l)" -gt 0
+          LEGACY_ROOT="$WORK/ue0-legacy"
+          FULL_ROOT="$WORK/ue0-full"
+          mkdir -p "$OUT/legacy" "$OUT/UE0"
+          git worktree add --detach "$LEGACY_ROOT" "$UE0_BASELINE"
+          git worktree add --detach "$FULL_ROOT" "$UE0_BASELINE"
+          test "$(git -C "$LEGACY_ROOT" rev-parse HEAD)" = "$UE0_BASELINE"
+          test "$(git -C "$FULL_ROOT" rev-parse HEAD)" = "$UE0_BASELINE"
           set +e
-          python3 tools/ue0_union_gate.py --root "$BASELINE_TSV" --out "$OUT" --baseline "$UE0_BASELINE"
+          python3 "$GITHUB_WORKSPACE/tools/union_gate.py" --root "$LEGACY_ROOT" --out "$OUT/legacy"
+          legacy_rc=$?
+          set -e
+          echo "$legacy_rc" > "$OUT/legacy/LEGACY_GATE_EXIT_CODE.txt"
+          test -s "$OUT/legacy/UC0_UNION_GATE_SUMMARY.txt"
+          set +e
+          python3 tools/ue0_union_gate.py --root "$FULL_ROOT" --out "$OUT/UE0" \
+            --baseline "$UE0_BASELINE" --legacy-summary "$OUT/legacy/UC0_UNION_GATE_SUMMARY.txt"
           ue0_rc=$?
           set -e
           echo "$ue0_rc" > "$OUT/UE0_GATE_EXIT_CODE.txt"
+          cp "$OUT/legacy/UC0_UNION_GATE_SUMMARY.txt" "$OUT/UE0/UE0_LEGACY_SUMMARY.txt"
           echo "UE0_BASELINE=$UE0_BASELINE" >> "$GITHUB_STEP_SUMMARY"
-          echo "UE0_GATE_EXIT_CODE=$ue0_rc" >> "$GITHUB_STEP_SUMMARY"
+          echo "UE0_LEGACY_GATE_EXIT_CODE=$legacy_rc" >> "$GITHUB_STEP_SUMMARY"
+          echo "UE0_EXPANDED_GATE_EXIT_CODE=$ue0_rc" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: UE1 — verify scene chain and references in complete ENTRY1 only
+      - name: Extract and verify DATA.BIN for ENTRY1 audit
         shell: bash
         run: |
           set -euo pipefail
-          python3 experiments/ue1_entry1_scene_audit.py --data "$DATA" --out "$OUT"
+          STATIC="$WORK/static"
+          mkdir -p "$STATIC/extracted"
+          bchunk "$WORK/source/game.bin" "$WORK/source/game-run.cue" "$STATIC/track"
+          ISO="$(find "$STATIC" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          test -n "$ISO"
+          xorriso -osirrox on -indev "$ISO" -extract / "$STATIC/extracted" > "$STATIC/extract.log" 2>&1
+          DATA="$(find "$STATIC/extracted" -type f -iname 'DATA.BIN' -print -quit)"
+          test -n "$DATA"
+          test "$(stat -c %s "$DATA")" = 66015232
+          echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $DATA" | sha256sum --check --status
+          echo "DATA=$DATA" >> "$GITHUB_ENV"
+          echo "UE1_DATA_BIN_SIZE=66015232" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: UE1 — verify scene chain and references in complete ENTRY1 only
+        id: ue1
+        shell: bash
+        run: |
+          set +e
+          python3 experiments/ue1_entry1_scene_audit.py --data "$DATA" --out "$OUT/UE1"
+          rc=$?
+          set -e
+          echo "$rc" > "$OUT/UE1_SCRIPT_EXIT_CODE.txt"
+          exit 0
 
       - name: UE2 — local post-processing regression test on committed UD logs
         shell: bash
@@ -164,7 +199,7 @@ jobs:
           python3 experiments/ue2_scene_trace.py \
             --postprocess-self-test \
             --reports "$GITHUB_WORKSPACE/reports/stage1_economy/ud0-ud2-run-42789941079/attempt-1" \
-            --out "$OUT"
+            --out "$OUT/self-test"
 
       - name: UE2 — six read-only headless launches, seven breakpoints
         id: ue2-probe
@@ -175,7 +210,7 @@ jobs:
           set +e
           python3 experiments/ue2_scene_trace.py \
             --work "$WORK" \
-            --out "$OUT" \
+            --out "$OUT/UE2" \
             --pcsx-bin "$PCSX_BIN" \
             --appdir "$APPDIR" \
             --bios "$WORK/source/scph7502.bin" \
@@ -188,12 +223,15 @@ jobs:
           echo "$rc" | tee "$OUT/UE2_SCRIPT_EXIT_CODE.txt"
           exit "$rc"
 
-      - name: Remove private ROM, BIOS, checkpoint, card and emulator state
+      - name: Remove private ROM, BIOS, checkpoint, Memory Card and emulator state
         if: always()
         shell: bash
         run: |
           set -euo pipefail
+          git worktree remove --force "$WORK/ue0-legacy" 2>/dev/null || true
+          git worktree remove --force "$WORK/ue0-full" 2>/dev/null || true
           rm -rf "$WORK"
+          git worktree prune
           test ! -e "$WORK"
           echo "PRIVATE_BINARY_CLEANUP=PASS" > "$OUT/cleanup.txt"
 
@@ -204,23 +242,33 @@ jobs:
           set -euo pipefail
           mkdir -p "$OUT"
           UE0_RC="$(cat "$OUT/UE0_GATE_EXIT_CODE.txt" 2>/dev/null || echo 1)"
+          UE1_RC="$(cat "$OUT/UE1_SCRIPT_EXIT_CODE.txt" 2>/dev/null || echo 1)"
           UE2_RC="$(cat "$OUT/UE2_SCRIPT_EXIT_CODE.txt" 2>/dev/null || echo 1)"
-          case "$UE0_RC:$UE2_RC" in
-            0:0) STATUS="completed/success"; FINAL_RC=0 ;;
+          case "$UE0_RC:$UE1_RC:$UE2_RC" in
+            0:0:0) STATUS="completed/success"; FINAL_RC=0 ;;
             *) STATUS="completed/failure"; FINAL_RC=1 ;;
           esac
-          python3 - "$OUT" <<'PY'
-          from pathlib import Path
-          import sys
-          root=Path(sys.argv[1])
-          allowed={".txt",".tsv"}
-          bad=[str(p) for p in root.rglob("*") if p.is_file() and p.suffix.lower() not in allowed]
-          if bad: raise SystemExit("private/non-text result blocked: "+repr(bad))
-          PY
           DEST="reports/stage1_economy/ue0-ue2-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
           mkdir -p "$DEST"
-          cp "$OUT"/*.txt "$DEST/" 2>/dev/null || true
-          cp "$OUT"/*.tsv "$DEST/" 2>/dev/null || true
+          for stage in UE0 UE1 UE2 self-test; do
+            if [ -d "$OUT/$stage" ]; then
+              cp "$OUT/$stage"/*.txt "$DEST/" 2>/dev/null || true
+              cp "$OUT/$stage"/*.tsv "$DEST/" 2>/dev/null || true
+            fi
+          done
+          cp "$OUT/cleanup.txt" "$DEST/" 2>/dev/null || true
+          cp "$OUT/UE0_GATE_EXIT_CODE.txt" "$DEST/UE0_GATE_EXIT_CODE.txt" 2>/dev/null || true
+          cp "$OUT/UE1_SCRIPT_EXIT_CODE.txt" "$DEST/UE1_SCRIPT_EXIT_CODE.txt" 2>/dev/null || true
+          cp "$OUT/UE2_SCRIPT_EXIT_CODE.txt" "$DEST/UE2_SCRIPT_EXIT_CODE.txt" 2>/dev/null || true
+          python3 - "$DEST" <<'PY'
+          from pathlib import Path
+          import sys
+          root=Path(sys.argv[1]);allowed={".txt",".tsv"}
+          bad=[str(p) for p in root.rglob("*") if p.is_file() and p.suffix.lower() not in allowed]
+          huge=[(str(p),p.stat().st_size) for p in root.rglob("*") if p.is_file() and p.stat().st_size>80*1024*1024]
+          if bad: raise SystemExit("private/non-text result blocked: "+repr(bad))
+          if huge: raise SystemExit("per-file publication safety limit exceeded: "+repr(huge))
+          PY
           JOB_ID="$(curl --fail --silent --show-error \
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
@@ -234,6 +282,7 @@ jobs:
             echo "RUN_ID=$GITHUB_RUN_ID"
             echo "SOURCE_SHA=$GITHUB_SHA"
             echo "UE0_EXIT_CODE=$UE0_RC"
+            echo "UE1_EXIT_CODE=$UE1_RC"
             echo "UE2_EXIT_CODE=$UE2_RC"
             echo "EXIT_CODE=$FINAL_RC"
           } > "$DEST/ACTIONS_RUN_SUMMARY.txt"

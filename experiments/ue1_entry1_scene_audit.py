@@ -2,6 +2,7 @@
 """UE1: Entry-1-only static scene/caller audit. No binary outputs."""
 from __future__ import annotations
 import argparse,csv,hashlib,struct
+from bisect import bisect_right
 from collections import defaultdict,deque
 from pathlib import Path
 
@@ -29,21 +30,21 @@ def direct(w,pc):
     op=w>>26&63
     if op in (2,3):return ("J" if op==2 else "JAL",((pc+4)&0xF0000000)|((w&0x03ffffff)<<2))
     return None
-def owner(pc,starts,data):
-    lo=[x for x in starts if x<=pc]
-    if not lo:return None
-    st=lo[-1]
-    for p in range(st,pc,4):
-        if jrra(u32(data,p)):return None
+def owner(pc,starts,data,jr):
+    i=bisect_right(starts,pc)-1
+    if i<0:return None
+    st=starts[i]
+    j=bisect_right(jr,st-1)
+    if j<len(jr) and jr[j]<pc:return None
     return st
-def scan_refs(data,starts):
+def scan_refs(data,starts,jr):
     refs=[]
     words=[u32(data,BASE+i*4) for i in range(len(data)//4)]
     for i,w in enumerate(words):
         if w is None:continue
         pc=BASE+i*4;d=direct(w,pc)
         if d and d[1] in FEE:
-            refs.append((d[1],pc,d[0],owner(pc,starts,data)))
+            refs.append((d[1],pc,d[0],owner(pc,starts,data,jr)))
         op,rs,rt,rd,sh,fn,imm=fields(w)
         if op==15:
             reg=rt;hi=imm
@@ -53,15 +54,15 @@ def scan_refs(data,starts):
                 w2=words[j];o,s,t,dd,ss,ff,ii=fields(w2)
                 if o==9 and s==reg and t==reg:
                     dest=((hi<<16)+((ii^0x8000)-0x8000))&0xffffffff
-                    if dest in FEE:refs.append((dest,pc,"LUI_ADDIU",owner(pc,starts,data)))
+                    if dest in FEE:refs.append((dest,pc,"LUI_ADDIU",owner(pc,starts,data,jr)))
                     break
                 if o==13 and s==reg and t==reg:
                     dest=(hi<<16)|ii
-                    if dest in FEE:refs.append((dest,pc,"LUI_ORI",owner(pc,starts,data)))
+                    if dest in FEE:refs.append((dest,pc,"LUI_ORI",owner(pc,starts,data,jr)))
                     break
                 if o in (8,9,12,13,14,15) and t==reg:break
         if w in FEE:
-            refs.append((w,pc,"DATA_WORD",owner(pc,starts,data)))
+            refs.append((w,pc,"DATA_WORD",owner(pc,starts,data,jr)))
     return sorted(set(refs),key=lambda x:(x[0],x[1],x[2]))
 def main():
     ap=argparse.ArgumentParser();ap.add_argument("--data",required=True);ap.add_argument("--out",required=True);a=ap.parse_args()
@@ -85,7 +86,7 @@ def main():
     to_mid=[]
     for i in range(len(data)//4):
         pc=BASE+i*4;d=direct(u32(data,pc),pc)
-        if d and d[1]==MID:to_mid.append({"pc":hx(pc),"kind":d[0],"target":hx(d[1]),"caller_function":hx(owner(pc,starts,data))})
+        if d and d[1]==MID:to_mid.append({"pc":hx(pc),"kind":d[0],"target":hx(d[1]),"caller_function":hx(owner(pc,starts,data,jr))})
     write("UE1_ALL_JUMP_TO_F3658.tsv",["pc","kind","target","caller_function"],to_mid)
     direct_b=u32(data,0x800B54DC);direct_f=u32(data,0x800F5DAC)
     b=direct(direct_b,0x800B54DC) if direct_b is not None else None
@@ -95,13 +96,13 @@ def main():
     # Direct call graph within ENTRY1; reverse graph preserves bounded caller ancestry.
     callers=defaultdict(set);indirect=defaultdict(int)
     for i in range(len(data)//4):
-        pc=BASE+i*4;w=u32(data,pc);fn=owner(pc,starts,data)
+        pc=BASE+i*4;w=u32(data,pc);fn=owner(pc,starts,data,jr)
         if fn is None:continue
         op,rs,rt,rd,sh,fun,imm=fields(w)
         if op==0 and fun==9:indirect[fn]+=1
         d=direct(w,pc)
         if d and d[1] in starts:callers[d[1]].add(fn)
-    refs=scan_refs(data,starts); rrows=[]; chain_rows=[]
+    refs=scan_refs(data,starts,jr); rrows=[]; chain_rows=[]
     for target,pc,kind,fn in refs:
         if fn is None:
             status="TIDAK TAHU_NO_FUNCTION_OWNER";chain="TIDAK TAHU"
@@ -154,5 +155,5 @@ def main():
       "SCOPE=ENTRY1_ONLY; EXE and ENTRY0 are not scanned", "OUTPUT=addresses/metrics only; no bytes excerpt"]
     (out/"UE1_SUMMARY.txt").write_text("\n".join(summary)+"\n",encoding="utf-8")
     print("\n".join(summary))
-    return 0
+    return 0 if chain_ok else 2
 if __name__=="__main__":raise SystemExit(main())

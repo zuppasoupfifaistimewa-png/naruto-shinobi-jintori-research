@@ -135,6 +135,16 @@ def parse_log(log):
         elif line.strip().startswith("instrumented="):
             armed.append({x.split("=",1)[0]:x.split("=",1)[1] for x in line.strip().split() if "=" in x})
     return events,inputs,totals,armed
+def build_counts(events,totals):
+    rows=[]
+    for launch in LAUNCHES:
+        condition="NO_INPUT" if launch.startswith("NO_INPUT") else ("CIRCLE" if launch.startswith("CIRCLE") else "DOWN_CIRCLE")
+        for addr,label in BP:
+            rows.append({"launch":launch,"condition":condition,"address":hx(addr),"label":label,
+                "total_hits":totals.get((launch,label),"TIDAK TAHU"),
+                "captured_records":sum(1 for e in events if e.get("launch")==launch and e.get("label")==label),
+                "cap_rule":"all hits counted; first 8 captured per 30-frame input window and frames 1-30"})
+    return rows
 def self_test(reports,out):
     event_path=reports/"UD2_BREAKPOINT_EVENTS.tsv";input_path=reports/"UD2_INPUT_EVENTS.tsv"
     if not event_path.is_file() or not input_path.is_file():raise SystemExit("UE2_SELF_TEST_INPUT_MISSING")
@@ -145,16 +155,22 @@ def self_test(reports,out):
     by=defaultdict(int)
     for e in events: by[(e["launch"],e["label"])]+=1
     if not inputs:raise SystemExit("UE2_SELF_TEST_INPUT_PARSE_FAIL")
-    # Exercise the exact count-address formatting helper used by output generation.
-    rendered=[hx(int(e["address"],16)) for e in events[:min(8,len(events))]]
+    # Exercise the same counter-table builder and writer used by the live run.
+    rows=build_counts(events,{})
     out.mkdir(parents=True,exist_ok=True)
+    test_table=out/"UE2_POSTPROCESS_SELF_TEST_COUNTS.tsv"
+    write_tsv(test_table,list(rows[0].keys()),rows)
+    with test_table.open("r",encoding="utf-8",newline="") as f:
+        reread=list(csv.DictReader(f,delimiter="\\t"))
+    if len(reread)!=len(LAUNCHES)*len(BP):raise SystemExit("UE2_SELF_TEST_COUNTS_ROUNDTRIP_FAIL")
+    rendered=[hx(int(e["address"],16)) for e in events[:min(8,len(events))]]
     (out/"UE2_POSTPROCESS_SELF_TEST.txt").write_text(
-      "STATUS=PASS\nSOURCE=UD2 logs already committed in repository\n"
-      f"UD2_EVENT_ROWS={len(events)}\nUD2_INPUT_ROWS={len(inputs)}\n"
-      f"LAUNCHES={len({e['launch'] for e in events})}\n"
-      f"BREAKPOINT_GROUPS={len(by)}\n"
-      f"REGISTER_FIELDS_PER_EVENT={len(need)-7}\n"
-      f"ADDRESS_FORMAT_TESTS={len(rendered)}\nNO_NAMEERROR=YES\n",encoding="utf-8")
+      "STATUS=PASS\\nSOURCE=committed UD2 breakpoint/input TSV\\n"
+      f"UD2_EVENT_ROWS={len(events)}\\nUD2_INPUT_ROWS={len(inputs)}\\n"
+      f"LAUNCHES={len({e['launch'] for e in events})}\\n"
+      f"BREAKPOINT_GROUPS={len(by)}\\n"
+      f"COUNTER_TABLE_ROWS={len(reread)}\\n"
+      f"ADDRESS_FORMAT_TESTS={len(rendered)}\\nNO_NAMEERROR=YES\\n",encoding="utf-8")
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--work");ap.add_argument("--out",required=True);ap.add_argument("--pcsx-bin");ap.add_argument("--appdir")
@@ -196,17 +212,16 @@ def main():
           "wall_seconds":f"{wall:.3f}","memory_card_sha256_before":before,"memory_card_sha256_after":after,
           "memory_card_unchanged":"YES" if after==before else "NO",
           "checkpoint_sha256_after":sha(state) if state.exists() else "TIDAK TAHU"})
+        if not instrumented or armed!=7:
+            (out/"UE2_BREAKPOINT_INSTALL_FAILURE.txt").write_text(
+              f"STATUS=FAIL_FAST\\nLAUNCH={launch}\\nARMED={armed}\\nEXPECTED=7\\n"
+              "NO_FURTHER_LAUNCHES=YES\\n",encoding="utf-8")
+            raise SystemExit(3)
         state.unlink(missing_ok=True);card.unlink(missing_ok=True)
     event_fields=["launch","condition","frame","label","address","pc","ra","window","window_start","hit_in_window"]+[f"r{i}" for i in range(32)]
     write_tsv(out/"UE2_BREAKPOINT_EVENTS.tsv",event_fields,all_events)
     write_tsv(out/"UE2_INPUT_EVENTS.tsv",["launch","frame","button","action","readback","status"],all_inputs)
-    counts=[]
-    for l in LAUNCHES:
-        for addr,label in BP:
-            counts.append({"launch":l,"condition":"NO_INPUT" if l.startswith("NO_INPUT") else ("CIRCLE" if l.startswith("CIRCLE") else "DOWN_CIRCLE"),
-              "address":hx(addr),"label":label,"total_hits":all_totals.get((l,label),"TIDAK TAHU"),
-              "captured_records":sum(1 for e in all_events if e["launch"]==l and e["label"]==label),
-              "cap_rule":"first 8 hits per 30-frame window after each input event and frames 1-30"})
+    counts=build_counts(all_events,all_totals)
     write_tsv(out/"UE2_BREAKPOINT_COUNTS.tsv",list(counts[0].keys()),counts)
     write_tsv(out/"UE2_LAUNCHES.tsv",list(launchrows[0].keys()),launchrows)
     instok=all(x["instrumented"]=="YES" and x["armed"]==7 for x in launchrows)
