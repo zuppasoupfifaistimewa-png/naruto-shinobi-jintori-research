@@ -318,6 +318,138 @@ def scan(root: Path, selected_columns: tuple[str, ...] = BYTE_COLUMNS,
     }
 
 
+
+
+def compatibility_label(row: dict[str, str], header_map: dict[str, str], source: str) -> str:
+    """Replicate the old UC0 label rule, identically for legacy and expanded columns."""
+    raw = ""
+    for column in ("image", "region"):
+        if column in header_map:
+            value = (row.get(header_map[column]) or "").strip().upper()
+            if value and value not in UNKNOWN:
+                raw = value
+                break
+    compact = re.sub(r"[^A-Z0-9]", "", raw)
+    if compact:
+        if "ENTRY0" in compact or "DATA0" in compact:
+            return "ENTRY0"
+        if "ENTRY1" in compact:
+            return "ENTRY1"
+        if compact in {"EXE", "SLPS03553", "SLPS03553EXE"} or "SLPS03553" in compact:
+            return "EXE"
+        return "IMAGE:" + compact
+    if "file_offset" in header_map:
+        file_offset = parse_address(row.get(header_map["file_offset"], ""))
+        if file_offset is not None:
+            for label, (file_start, file_size, _pc_start, _pc_size) in RANGES.items():
+                if file_start <= file_offset < file_start + file_size:
+                    return label
+    return "UNRESOLVED:" + source
+
+
+def compatibility_bytes(value: str | None, column: str) -> bytes | None:
+    """One byte decoder shared by both sides; digit-only contiguous lengths are not payloads."""
+    text = (value or "").strip()
+    if not text or text.upper() in UNKNOWN:
+        return None
+    if column == "contiguous_bytes" and re.fullmatch(r"[0-9]+", text):
+        return None
+    parts = text.split()
+    if len(parts) == 1 and len(parts[0]) > 2 and len(parts[0]) % 2 == 0:
+        parts = [parts[0][index:index + 2] for index in range(0, len(parts[0]), 2)]
+    if not parts or any(len(part) != 2 for part in parts):
+        return None
+    try:
+        return bytes(int(part, 16) for part in parts)
+    except ValueError:
+        return None
+
+
+def compatibility_scan(root: Path, expanded: bool) -> dict:
+    """PC-only UC0 grouping rule, run twice with identical labels/decoder/grouping."""
+    files = tracked_tsv(root)
+    address_origins = defaultdict(lambda: defaultdict(set))
+    eligible = 0
+    for relative in files:
+        path = root / relative
+        try:
+            with path.open("r", encoding="utf-8-sig", newline="") as stream:
+                reader = csv.DictReader(stream, delimiter="\t")
+                if not reader.fieldnames:
+                    continue
+                header_map = {norm(name): name for name in reader.fieldnames if name}
+                pc_column = header_map.get("pc") or header_map.get("instruction_pc")
+                if not pc_column:
+                    continue
+                if expanded:
+                    byte_fields = [(name, header_map[name]) for name in BYTE_COLUMNS if name in header_map]
+                else:
+                    selected = header_map.get("bytes") or header_map.get("instruction_bytes")
+                    byte_fields = [] if not selected else [
+                        ("bytes" if "bytes" in header_map else "instruction_bytes", selected)
+                    ]
+                if not byte_fields:
+                    continue
+                eligible += 1
+                previous_line = reader.line_num
+                for row in reader:
+                    line_start = previous_line + 1
+                    previous_line = reader.line_num
+                    pc = parse_address(row.get(pc_column, ""))
+                    if pc is None:
+                        continue
+                    label = compatibility_label(row, header_map, relative)
+                    for column, original_column in byte_fields:
+                        data = compatibility_bytes(row.get(original_column, ""), column)
+                        if data is None:
+                            continue
+                        origin = f"{relative}:{line_start}:{column}"
+                        for displacement in range(len(data)):
+                            address_origins[label][pc + displacement].add(origin)
+        except (OSError, UnicodeError, csv.Error):
+            continue
+
+    groups = []
+    for label, origins in address_origins.items():
+        addresses = sorted(origins)
+        if not addresses:
+            continue
+        start = previous = addresses[0]
+
+        def emit(first: int, last: int) -> None:
+            refs = set()
+            for address in range(first, last + 1):
+                refs.update(origins[address])
+            sources = sorted({ref.split(":", 1)[0] for ref in refs})
+            groups.append({
+                "label": label,
+                "kind": "PC",
+                "start": first,
+                "end_exclusive": last + 1,
+                "byte_count": last - first + 1,
+                "source_count": len(sources),
+                "source_rows_count": len(refs),
+                "sources_sample": ";".join(sources[:3]),
+            })
+
+        for address in addresses[1:]:
+            if address != previous + 1:
+                emit(start, previous)
+                start = address
+            previous = address
+        emit(start, previous)
+
+    oversized = [group for group in groups if group["byte_count"] > 64]
+    labelled = [group for group in oversized if not group["label"].startswith("UNRESOLVED:")]
+    return {
+        "files": files,
+        "eligible_files": eligible,
+        "groups": groups,
+        "oversized": oversized,
+        "labelled_oversized": labelled,
+    }
+
+
 def labelled_pc_over64(result: dict) -> int:
     return sum(
         1 for group in result["groups"]
@@ -390,8 +522,9 @@ def main() -> int:
     output = Path(args.out)
     output.mkdir(parents=True, exist_ok=True)
 
-    baseline_legacy = scan(baseline_root, LEGACY_COLUMNS, conflict_sample_limit=0)
-    baseline_expanded = scan(baseline_root, BYTE_COLUMNS, conflict_sample_limit=0)
+    # Reconcile historical 18 vs 31 using one exact PC-only grouping/label/parser rule.
+    baseline_legacy = compatibility_scan(baseline_root, expanded=False)
+    baseline_expanded = compatibility_scan(baseline_root, expanded=True)
     current_initial = scan(root)
     initial_over = over64_groups(current_initial)
     over_rows = [public_group(group) for group in initial_over]
@@ -455,9 +588,20 @@ def main() -> int:
         current_initial["manifest"],
     )
 
-    legacy_count = labelled_pc_over64(baseline_legacy)
-    expanded_count = labelled_pc_over64(baseline_expanded)
+    legacy_count = len(baseline_legacy["labelled_oversized"])
+    expanded_count = len(baseline_expanded["labelled_oversized"])
     reconciliation = legacy_count == 18 and expanded_count == 31
+    reconciliation_rows = []
+    for mode, result in (("LEGACY_PRIMARY", baseline_legacy), ("EXPANDED_UNION", baseline_expanded)):
+        reconciliation_rows.extend({
+            "mode": mode, **group
+        } for group in result["labelled_oversized"])
+    write_tsv(
+        output / "UF0_RECONCILIATION_GROUPS.tsv",
+        ["mode", "label", "kind", "start", "end_exclusive", "byte_count",
+         "source_count", "source_rows_count", "sources_sample"],
+        reconciliation_rows,
+    )
     summary = [
         "UF0_HEAD_DIRECT_TSV_UNION_GATE",
         f"HEAD_SOURCE={subprocess.check_output(['git','-C',str(root),'rev-parse','HEAD'],text=True).strip()}",
@@ -484,6 +628,10 @@ def main() -> int:
         f"BASELINE_9A6_EXPANDED_COLUMNS_LABELED_PC_GROUPS_OVER_64B={expanded_count}",
         f"BASELINE_18_VS_31_RECONCILIATION={'PASS' if reconciliation else 'NOT_RECONCILED'}",
         f"BASELINE_RECONCILIATION_DELTA={expanded_count - legacy_count}",
+        f"BASELINE_LEGACY_ELIGIBLE_PC_TSV_FILES={baseline_legacy['eligible_files']}",
+        f"BASELINE_EXPANDED_ELIGIBLE_PC_TSV_FILES={baseline_expanded['eligible_files']}",
+        "RECONCILIATION_RULE=both scans require PC; group contiguous addresses by the same legacy image/region then file_offset label; unresolved labels remain per source TSV; identical byte parser and contiguous_bytes decimal-count exclusion; only selected byte-column set differs",
+        "RECONCILIATION_REGISTRY=UF0_RECONCILIATION_GROUPS.tsv; metadata only, no byte payload",
         "GROUP_RULE=union by image label, coordinate kind, and contiguous address; unresolved groups isolated per source TSV",
         "ADDRESS_RULE=PC if present; else file_offset; else each valid no-PC byte cell is its own group",
         "HEX_RULE=strict even-length hex only; TIDAK TAHU/UNKNOWN/N/A/NA/NONE/NULL/- are not bytes",

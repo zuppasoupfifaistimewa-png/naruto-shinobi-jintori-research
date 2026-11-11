@@ -54,8 +54,21 @@ jobs:
           set -euo pipefail
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends python3-pip
-          python3 -m pip install --break-system-packages --disable-pip-version-check pyflakes
+          python3 -m pip install --break-system-packages --disable-pip-version-check pyflakes PyYAML
           python3 -m pyflakes --version
+
+      - name: Validate workflow YAML syntax on runner
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import yaml
+          path=Path(".github/workflows/ub2-headless-trace.yml")
+          yaml.compose(path.read_text(encoding="utf-8"))
+          print("WORKFLOW_YAML_SYNTAX=PASS")
+          PY
 
       - name: Pyflakes all tracked Python scripts (diagnostic only)
         continue-on-error: true
@@ -66,18 +79,25 @@ jobs:
           all_rc=0
           python3 -m pyflakes "${pyfiles[@]}" > "$OUT/PYFLAKES_ALL.txt" 2>&1 || all_rc=$?
           echo "$all_rc" > "$OUT/PYFLAKES_ALL_EXIT_CODE.txt"
-          python3 - "$OUT/PYFLAKES_ALL.txt" "$OUT/PYFLAKES_ALL_COUNTS.txt" "${#pyfiles[@]}" <<'PY'
+          python3 - "$OUT/PYFLAKES_ALL.txt" "$OUT/PYFLAKES_ALL_COUNTS.txt" "${#pyfiles[@]}" "${pyfiles[@]}" <<'PY'
           from pathlib import Path
           import sys
           source, target, file_count = Path(sys.argv[1]), Path(sys.argv[2]), int(sys.argv[3])
+          paths=sys.argv[4:]
           lines=[line for line in source.read_text(encoding="utf-8",errors="replace").splitlines() if line.strip()]
           undefined=sum("undefined name" in line.lower() or "undefined local" in line.lower() for line in lines)
-          syntax=sum(any(token in line.lower() for token in ("syntax error","invalid syntax","unexpected eof","unterminated string")) for line in lines)
-          other=max(0,len(lines)-undefined-syntax)
+          syntax_diagnostics=sum(any(token in line.lower() for token in ("syntax error","invalid syntax","unexpected eof","unterminated string")) for line in lines)
+          syntax_files=[]
+          for name in paths:
+              try: compile(Path(name).read_bytes(), name, "exec")
+              except (SyntaxError, UnicodeError) as exc: syntax_files.append(f"{name}:{getattr(exc,'lineno',0)}:{exc}")
+          other=max(0,len(lines)-undefined-syntax_diagnostics)
           target.write_text(
               f"TRACKED_PYTHON_SCRIPTS={file_count}\nDIAGNOSTIC_LINES={len(lines)}\n"
-              f"UNDEFINED_NAME_DIAGNOSTICS={undefined}\nSYNTAX_ERROR_DIAGNOSTICS={syntax}\n"
+              f"UNDEFINED_NAME_DIAGNOSTICS={undefined}\nSYNTAX_ERROR_DIAGNOSTICS={len(syntax_files)}\n"
               f"OTHER_DIAGNOSTICS={other}\n",encoding="utf-8")
+          Path(str(target.parent/"PYTHON_SYNTAX_ERRORS.txt")).write_text(
+              "\n".join(syntax_files)+("\n" if syntax_files else "NONE\n"),encoding="utf-8")
           PY
           echo "PYFLAKES_TRACKED_SCRIPT_COUNT=${#pyfiles[@]}" >> "$GITHUB_STEP_SUMMARY"
           echo "PYFLAKES_ALL_EXIT_CODE=$all_rc (non-blocking)" >> "$GITHUB_STEP_SUMMARY"
