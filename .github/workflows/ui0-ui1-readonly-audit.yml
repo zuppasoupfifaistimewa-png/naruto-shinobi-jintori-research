@@ -102,9 +102,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 55
     env:
-      GH_TOKEN: \${{ github.token }}
-      WORK: \${{ runner.temp }}/naruto-ui0-ui1-private-\${{ github.run_id }}-\${{ github.run_attempt }}
-      OUT: \${{ runner.temp }}/naruto-ui0-ui1-output-\${{ github.run_id }}-\${{ github.run_attempt }}
+      GH_TOKEN: ${{ github.token }}
+      WORK: ${{ runner.temp }}/naruto-ui0-ui1-private-${{ github.run_id }}-${{ github.run_attempt }}
+      OUT: ${{ runner.temp }}/naruto-ui0-ui1-output-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Checkout exact triggering source
         uses: actions/checkout@v4
@@ -193,9 +193,9 @@ jobs:
         with:
           name: naruto-storymode-adaptive-player-private
           run-id: "39907655833"
-          repository: \${{ github.repository }}
-          github-token: \${{ github.token }}
-          path: \${{ env.WORK }}/checkpoint
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: ${{ env.WORK }}/checkpoint
 
       - name: Download and verify PCSX-Redux, retail BIOS and disc boot inputs
         shell: bash
