@@ -1,0 +1,131 @@
+UI0_UI1_UI2_FINAL_AUDIT
+BASELINE_INCLUSIVE=7aa998c05a1aeb971a9a000f8dba5cb2ffb8ce46
+BASELINE_PARENT=73ca2708ca47be05d89e85a5a6978d1c1de0ec88
+HEAD_AT_LEDGER_SNAPSHOT=7efd92f824397b5e68059dfc4f39a191f70570dc
+MAIN_AT_LEDGER_SNAPSHOT=7efd92f824397b5e68059dfc4f39a191f70570dc
+LEDGER_STATUS=TUNTAS K4
+COMMITS_INCLUSIVE_AT_SNAPSHOT=13 (baseline included)
+NO_RENAMES_FILE_EVENTS=31
+ADDITIONS=6583
+DELETIONS=72
+LEDGER_SCOPE=parent of baseline through HEAD snapshot; each commit compared separately with --no-renames semantics
+LEDGER_PUBLICATION_NOTE=this file is added after the snapshot; its own publication commit is excluded to avoid self-reference and adds only this text file
+
+COMMIT_LEDGER
+7aa998c05a1aeb971a9a000f8dba5cb2ffb8ce46 | parent=73ca2708ca47be05d89e85a5a6978d1c1de0ec88 | 2026-11-11T14:30:07Z | Reconcile UH1 Entry0 and UH2 trace evidence; extend UH3 ledger [skip ci]
+c3b6dd0ee56d33a992ee4ccb378df4500303300c | parent=7aa998c05a1aeb971a9a000f8dba5cb2ffb8ce46 | 2026-11-11T21:44:08Z | Add baseline-inclusive UI2 ledger and Actions summary [skip ci]
+0ec21176e676d07f37ece1aec0fe451f78b26c34 | parent=c3b6dd0ee56d33a992ee4ccb378df4500303300c | 2026-11-11T21:44:21Z | Correct UI2 baseline ledger addition total [skip ci]
+ce481fc21e8ec4f51fd006635b9bc0ea99fce33c | parent=0ec21176e676d07f37ece1aec0fe451f78b26c34 | 2026-11-11T21:44:37Z | Finalize UI2 baseline-inclusive ledger status [skip ci]
+d72ccb1f0769f5bc023717d6ce1b938af695a7fe | parent=ce481fc21e8ec4f51fd006635b9bc0ea99fce33c | 2026-11-11T21:54:49Z | Add UI1 linear raw MIPS census script
+ed52fd9c0223eeb3f2cff389572015d7c2bb3e94 | parent=d72ccb1f0769f5bc023717d6ce1b938af695a7fe | 2026-11-11T21:55:15Z | Add UI0 two-launch read-only RAM snapshot probe
+beed55b90878e2d6b2cbdce45a1c0bb1f10f7075 | parent=ed52fd9c0223eeb3f2cff389572015d7c2bb3e94 | 2026-11-11T21:58:35Z | Add gated UI0 UI1 read-only audit workflow
+440a16e73b26d30d03b68d3c08185b30532df9c0 | parent=beed55b90878e2d6b2cbdce45a1c0bb1f10f7075 | 2026-11-11T21:59:02Z | Fix GitHub Actions expression interpolation in UI0 UI1 workflow
+fe81d138974b076234611d220e3213b5dd8aedc9 | parent=440a16e73b26d30d03b68d3c08185b30532df9c0 | 2026-11-11T21:59:29Z | Use supported fixed temporary paths in UI0 UI1 Actions
+90cc3a877cd97b9fcb86e87b653308756fac63c7 | parent=fe81d138974b076234611d220e3213b5dd8aedc9 | 2026-11-11T21:59:47Z | Record UI0 UI1 preflight result for run 43107870709 [skip ci]
+d231dd043b370cf2d3e0f0f561f6a074f8707bf5 | parent=90cc3a877cd97b9fcb86e87b653308756fac63c7 | 2026-11-11T22:00:02Z | Remove unsupported setup-python cache option
+3d28059261e5fdbcb22819d83065e8e0f1f99d13 | parent=d231dd043b370cf2d3e0f0f561f6a074f8707bf5 | 2026-11-11T22:00:22Z | Record UI0 UI1 preflight result for run 43107951323 [skip ci]
+7efd92f824397b5e68059dfc4f39a191f70570dc | parent=3d28059261e5fdbcb22819d83065e8e0f1f99d13 | 2026-11-11T22:01:34Z | Publish UI0 UI1 read-only audit results for run 43107951323 [skip ci]
+
+NO_RENAMES_FILE_EVENTS
+7aa998c0 | modified +14/-6 | reports/stage1_economy/uh-audit-2026-11-11/UH1_ENTRY0_ARTIFACT_AUDIT.txt
+7aa998c0 | modified +14/-7 | reports/stage1_economy/uh-audit-2026-11-11/UH1_SUMMARY.txt
+7aa998c0 | modified +29/-22 | reports/stage1_economy/uh-audit-2026-11-11/UH2_BLOCKER.txt
+7aa998c0 | added +12/-0 | reports/stage1_economy/uh-audit-2026-11-11/UH2_UE2_TRACE_RECONCILIATION.tsv
+7aa998c0 | modified +1/-0 | reports/stage1_economy/uh-audit-2026-11-11/UH3_COMMITS.tsv
+7aa998c0 | modified +8/-0 | reports/stage1_economy/uh-audit-2026-11-11/UH3_FILE_EVENTS_NO_RENAMES.tsv
+7aa998c0 | modified +9/-6 | reports/stage1_economy/uh-audit-2026-11-11/UH3_SUMMARY.txt
+7aa998c0 | modified +41/-19 | reports/stage1_economy/uh-audit-2026-11-11/UH_FINAL_REPORT.md
+c3b6dd0 | added +41/-0 | reports/ui-audit-2026-11-12/UI2_LEDGER_AND_ACTIONS_SUMMARY.txt
+0ec21176 | modified +1/-1 | reports/ui-audit-2026-11-12/UI2_LEDGER_AND_ACTIONS_SUMMARY.txt
+ce481fc | modified +1/-1 | reports/ui-audit-2026-11-12/UI2_LEDGER_AND_ACTIONS_SUMMARY.txt
+d72ccb1 | added +101/-0 | tools/stage1/RunUI1MipsCensus.py
+ed52fd9 | added +249/-0 | experiments/ui0_readonly_snapshot.py
+beed55b | added +377/-0 | .github/workflows/ui0-ui1-readonly-audit.yml
+440a16e | modified +6/-6 | .github/workflows/ui0-ui1-readonly-audit.yml
+fe81d13 | modified +3/-3 | .github/workflows/ui0-ui1-readonly-audit.yml
+90cc3a8 | added +11/-0 | reports/ui-audit-2026-11-12/preflight-run-43107870709/attempt-1/PREFLIGHT_SUMMARY.txt
+d231dd0 | modified +0/-1 | .github/workflows/ui0-ui1-readonly-audit.yml
+3d28059 | added +11/-0 | reports/ui-audit-2026-11-12/preflight-run-43107951323/attempt-1/PREFLIGHT_SUMMARY.txt
+7efd92f | added +12/-0 | reports/ui-audit-2026-11-12/ui0-ui1-run-43107951323/attempt-1/ACTIONS_RUN_SUMMARY.txt
+7efd92f | added +1/-0 | reports/ui-audit-2026-11-12/ui0-ui1-run-43107951323/attempt-1/PRIVATE_CLEANUP.txt
+7efd92f | added +1309/-0 | reports/ui-audit-2026-11-12/ui0-ui1-run-43107951323/attempt-1/UI0_COMPARISON.tsv
+7efd92f | added +54/-0 | reports/ui-audit-2026-11-12/ui0-ui1-run-43107951323/attempt-1/UI0_EXECUTION_LOG.txt
+7efd92f | added +1/-0 | reports/ui-audit-2026-11-12/ui0-ui1-run-43107951323/attempt-1/UI0_EXIT_CODE.txt
+7efd92f | added +3/-0 | reports/ui-audit-2026-11-12/ui0-ui1-run-43107951323/attempt-1/UI0_LAUNCHES.tsv
+7efd92f | added +54/-0 | reports/ui-audit-2026-11-12/ui0-ui1-run-43107951323/attempt-1/UI0_SUMMARY.txt
+7efd92f | added +1309/-0 | reports/ui-audit-2026-11-12/ui0-ui1-run-43107951323/attempt-1/UI0_VALUES.tsv
+7efd92f | added +40/-0 | reports/ui-audit-2026-11-12/ui0-ui1-run-43107951323/attempt-1/UI1_EXECUTION_LOG.txt
+7efd92f | added +1/-0 | reports/ui-audit-2026-11-12/ui0-ui1-run-43107951323/attempt-1/UI1_EXIT_CODE.txt
+7efd92f | added +2830/-0 | reports/ui-audit-2026-11-12/ui0-ui1-run-43107951323/attempt-1/UI1_MIPS_FIELD_CENSUS.tsv
+7efd92f | added +40/-0 | reports/ui-audit-2026-11-12/ui0-ui1-run-43107951323/attempt-1/UI1_SUMMARY.txt
+
+ACTIONS_RUNS_SINCE_BASELINE=5
+RUN_43047897861 | event=schedule | created=2026-11-11T15:23:33Z | status=completed/success | source_sha=7aa998c05a1aeb971a9a000f8dba5cb2ffb8ce46 | job=monitor (130616687379; success) | exit_code=TIDAK TAHU (process code not separately exported) | pre-existing summary=reports/ui-audit-2026-11-12/UI2_LEDGER_AND_ACTIONS_SUMMARY.txt
+RUN_43107744139 | event=push | created=2026-11-11T21:58:37Z | status=completed/failure | source_sha=beed55b90878e2d6b2cbdce45a1c0bb1f10f7075 | jobs=0; job=TIDAK ADA | exit_code=NOT_APPLICABLE (no job/process allocated; workflow validation failed before job creation)
+RUN_43107807394 | event=push | created=2026-11-11T21:59:04Z | status=completed/failure | source_sha=440a16e73b26d30d03b68d3c08185b30532df9c0 | jobs=0; job=TIDAK ADA | exit_code=NOT_APPLICABLE (no job/process allocated; workflow validation failed before job creation)
+RUN_43107870709 | event=push | created=2026-11-11T21:59:31Z | status=completed/failure | source_sha=fe81d138974b076234611d220e3213b5dd8aedc9 | preflight=130815849298/failure; audit=130816011741/skipped | exit_code=1 (setup-python rejected unsupported cache=false; emulator gate closed; no emulator started) | summary=reports/ui-audit-2026-11-12/preflight-run-43107870709/attempt-1/PREFLIGHT_SUMMARY.txt
+RUN_43107951323 | event=push | created=2026-11-11T22:00:05Z | status=completed/success | source_sha=d231dd043b370cf2d3e0f0f561f6a074f8707bf5 | preflight=130816122032/success/exit0; ui0-ui1-audit=130816298545/success/exit0; UI0_EXIT_CODE=0; UI1_EXIT_CODE=0; private_cleanup=PASS | summary=reports/ui-audit-2026-11-12/ui0-ui1-run-43107951323/attempt-1/ACTIONS_RUN_SUMMARY.txt
+
+UI0_RUNTIME_SNAPSHOT
+STATUS=TUNTAS
+EVIDENCE=K5 (two NO_INPUT launches, each post-load 900 frames; requested snapshots complete and matching at each same frame)
+RUN_ID=43107951323
+CHECKPOINT_SOURCE_RUN_ID=39907655833
+CHECKPOINT_SHA256=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35; source before/after identical; both per-launch copies unchanged
+CONDITIONS=NO_INPUT_1,NO_INPUT_2
+POST_LOAD_FRAMES=900 per launch
+MEMCARD_SETUP=one 12-frame setup-only PCSX startup generated a blank 128KiB Memory Card; not a measured gameplay condition
+MEMCARD_MODE=0444 for both measured launches
+MEMCARD_SHA256=78b6d4ac9ab4d23caf7e5f04f83539bf5d994cccfb0a709d14ac53d05c8e21ef; before/after identical for each launch
+RAM_READS=READ_ONLY; no write-watchpoints; no input override
+POINTER_SLOT=0x8013EA84:u32
+POINTER_VALUE_P=0x8013B818; valid within 0x80000000..0x801FFFFF at frames 1 and 900 on both launches
+SCALAR_0x8013EB20=u32:0x00000000
+SCALAR_0x8013EAB0=u32:0x801F0510
+SCALAR_0x8013EA8A=u16:0x0000
+SCALAR_0x8013EA74=u32:0x801EFBB8
+SCALAR_0x80139F03=u8:0x00
+SCALAR_0x80139EC2=u16:0x0000
+RECORD_FORMULA=P+i*0x124+0x48; candidate i=0..63; each candidate base and five requested field reads remained within RAM
+RECORD_FIELDS=+0x00:u8,+0x1A:u16,+0x1C:u16,+0x1E:u16,+0x20:u16
+VALUE_ROWS=1308 (4 snapshots x 327 values; 327=7 scalar+320 record-field reads)
+SNAPSHOTS=NO_INPUT_1 frame1, NO_INPUT_1 frame900, NO_INPUT_2 frame1, NO_INPUT_2 frame900; each 327/327 expected reads present
+SAME_FRAME_VALUES_IDENTICAL_BETWEEN_LAUNCHES=YES
+FRAME1_VS_900_CHANGED_ROWS=0 for both launches
+ACTIVE_RECORD_COUNT=TIDAK TAHU; 64 is candidate scan cap, not claimed active count
+FIELD_SEMANTICS_AND_VALID_VALUE_RANGES=TIDAK TAHU; raw values only, do not infer gameplay meanings
+EXIT_CODE=0
+
+UI1_RAW_MIPS_CENSUS
+STATUS=TUNTAS
+EVIDENCE=K4 for byte decode and file-offset arithmetic; K0 for executable-code membership, base-register provenance, runtime mapping of Entry1, and gameplay semantics
+INPUT_EXE_BYTES=385024; SHA256=a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569
+INPUT_DATA_BIN_BYTES=66015232; SHA256=69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822
+ENTRY0=110536 bytes; DATA.BIN offset=0x5F800; SHA256=56ee7d3b195b0708bd5f9163d354f0173a828430c9467d410e822b1793d316d4; PC/base_origin=TIDAK TAHU
+ENTRY1=596412 bytes; DATA.BIN offset=0x10BB000; SHA256=9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a
+EXE_PC_MAPPING=0x80010000+(file_offset-0x800)
+ENTRY1_FILE_MAPPING=0x10BB000+entry_relative_offset
+ENTRY1_PC_CANDIDATE=0x800AD450+entry_relative_offset; not runtime validated
+SCAN=linear 4-byte-aligned little-endian raw-word scan; SB/SH/SW imm 0x1A/0x1C/0x1E/0x20; LB/LBU/LH/LHU/LW imm 0x1A/0x1C/0x1E
+TOTAL_MATCHES=2829; EXE=1060; ENTRY0=429; ENTRY1=1340
+ENTRY0_COUNTS=lb:0,lbu:13,lh:14,lhu:5,lw:58,sb:29,sh:141,sw:169
+ENTRY1_COUNTS=lb:0,lbu:21,lh:36,lhu:43,lw:240,sb:107,sh:303,sw:590
+EXE_COUNTS=lb:0,lbu:19,lh:11,lhu:28,lw:287,sb:61,sh:131,sw:523
+BASE_REGISTER_ORIGIN=TIDAK TAHU; scanner decodes rs only and does not perform dataflow tracing
+CLASSIFICATION_LIMIT=raw aligned MIPS candidate; linear scan can match non-code/data or unreachable regions; function membership not proven
+ACTIVE_RECORD_COUNT=TIDAK TAHU
+EXIT_CODE=0
+
+FORMULA_CONCLUSION
+UPGRADE_COST_FOR_LEVEL_SKIP_D_GE_2=TIDAK TAHU
+400_800_1600=K1_HYPOTHESES_ONLY
+WHY=UI0 measures a stable read-only NO_INPUT state, not a controlled tile upgrade or level-skip event; UI1 is a raw static operand census without validated function semantics or cost arithmetic
+NO_COST_FORMULA_DERIVED_FROM_UI0_OR_UI1=YES
+
+PROTECTED_SCOPE
+STATUS_MD=NOT_MODIFIED
+RELEASES=NOT_MODIFIED
+EXISTING_WORKFLOWS=NOT_MODIFIED
+EXISTING_SOURCE_FILES=NOT_MODIFIED; additions only except new workflow file corrections within the newly-added path
+NO_ROM_BIOS_MEMORY_CARD_SAVESTATE_RAM_DUMP_EXE_DATA_BIN_OR_BINARY_COMMITTED=YES
+PRIVATE_INPUTS_CLEANED_UP=YES
