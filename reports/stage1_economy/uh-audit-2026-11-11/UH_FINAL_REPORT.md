@@ -8,7 +8,7 @@
 | UH0 konflik byte | TUNTAS untuk definisi/hitung UG0 | K4 | 14.001 observasi konflik pada gate; 3.512 koordinat unik dengan konflik; selisih 10.489 adalah observasi konflik tambahan pada koordinat yang sama. |
 | UH1 writer | SEBAGIAN | K4 untuk instruksi/basis yang terikat; K2 kandidat; K0 ENTRY0 | 42 writer `sh +0x20` punya alias basis ke slot 0x8013EA84, tetapi stride 0x124 belum terbukti per-PC; dua writer `sh +0x1A` adalah loader; 42 kandidat `sb` belum beralias; Entry0 tidak menghasilkan census writer. |
 | UH2 runtime watch | BELUM | K0 | Tidak ada run: batas dan jumlah record petak belum terbukti, sehingga alamat watchpoint aman belum diketahui. |
-| UH3 ledger | TUNTAS dalam jendela API | K4 | Tiga commit termasuk baseline, 16 event file no-renames; satu Actions run schedule 42977820741; tidak ada push/workflow_dispatch run yang dikembalikan API sejak baseline. |
+| UH3 ledger | TUNTAS dalam jendela API | K4 | Empat commit termasuk baseline, 22 event file no-renames; satu Actions run schedule 42977820741; tidak ada push/workflow_dispatch run yang dikembalikan API sejak baseline. |
 
 ## UH0 — manifest pemangkasan
 
@@ -40,11 +40,11 @@ Tidak ada TSV nilai frame 1/900, write-hit counters/PC/RA, Memory Card clone/has
 
 ## UH3 — ledger baseline-inclusive
 
-Ledger mencakup baseline c7, commit anak 02ad6, dan commit laporan statis 46948; ada 16 event file berdasarkan status Git (no-renames). Sejak waktu baseline, query Actions API mengembalikan satu run schedule, #42977820741, workflow monitor, job `monitor` sukses. Source SHA run sama dengan baseline. Tidak ada run `push` atau `workflow_dispatch` di rentang query. Job sukses adalah hasil monitor; bukan bukti Story Mode selesai. Ringkasan run terdahulu tersedia pada permalink raw di `UH3_SUMMARY.txt`.
+Ledger mencakup baseline c7, commit anak 02ad6, commit laporan statis 46948, dan addendum ENTRY0 c3fd; ada 22 event file berdasarkan status Git (no-renames). Sejak waktu baseline, query Actions API mengembalikan satu run schedule, #42977820741, workflow monitor, job `monitor` sukses. Source SHA run sama dengan baseline. Tidak ada run `push` atau `workflow_dispatch` di rentang query. Job sukses adalah hasil monitor; bukan bukti Story Mode selesai. Ringkasan run terdahulu tersedia pada permalink raw di `UH3_SUMMARY.txt`.
 
 ## Validasi dan batas
 
-- Validasi internal laporan: 319 baris manifest; 0 mismatch antara panjang rentang dan deletion per-file; 86 baris tabel writer; 130 write literal `+0x1A` pada EXE/ENTRY1; Entry0 artifact diverifikasi sebagai ekspor parsial; ledger 3 commit/16 event/1 run.
+- Validasi internal laporan: 319 baris manifest; 0 mismatch antara panjang rentang dan deletion per-file; 86 baris tabel writer; 130 write literal `+0x1A` pada EXE/ENTRY1; Entry0 artifact diverifikasi sebagai ekspor parsial; ledger 4 commit/22 event/1 run.
 - Tidak ada kode atau workflow yang diubah; tidak ada source SHA emulator UH2 karena run UH2 tidak dilakukan. Code SHA baseline yang dianalisis tetap `c7da18bef75f6e6905d495b72710f50aaf1bb5b0`.
 - Tidak mengubah `STATUS.md`, Release, atau menghapus baris TSV. Tidak menyertakan ROM, BIOS, Memory Card, savestate, dump RAM, atau biner.
 - Tingkat K5 tidak diberikan: tidak ada runtime UH2 yang dijalankan.
