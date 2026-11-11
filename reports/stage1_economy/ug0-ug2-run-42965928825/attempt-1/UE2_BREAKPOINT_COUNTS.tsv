@@ -1,0 +1,25 @@
+launch	condition	address	label	total_hits	captured_records	cap_rule
+NO_INPUT_1	NO_INPUT	0x800D15A8	TARGET_800D15A8	450	8	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+NO_INPUT_1	NO_INPUT	0x800B54DC	SCENE_CALL_800B54DC	450	8	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+NO_INPUT_1	NO_INPUT	0x800F3658	WRAPPER_800F3658	450	8	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+NO_INPUT_1	NO_INPUT	0x800F5DAC	WRAPPER_CALL_800F5DAC	450	8	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+NO_INPUT_2	NO_INPUT	0x800D15A8	TARGET_800D15A8	450	8	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+NO_INPUT_2	NO_INPUT	0x800B54DC	SCENE_CALL_800B54DC	450	8	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+NO_INPUT_2	NO_INPUT	0x800F3658	WRAPPER_800F3658	450	8	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+NO_INPUT_2	NO_INPUT	0x800F5DAC	WRAPPER_CALL_800F5DAC	450	8	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+CIRCLE_1	CIRCLE	0x800D15A8	TARGET_800D15A8	450	24	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+CIRCLE_1	CIRCLE	0x800B54DC	SCENE_CALL_800B54DC	450	24	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+CIRCLE_1	CIRCLE	0x800F3658	WRAPPER_800F3658	450	24	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+CIRCLE_1	CIRCLE	0x800F5DAC	WRAPPER_CALL_800F5DAC	450	24	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+CIRCLE_2	CIRCLE	0x800D15A8	TARGET_800D15A8	450	24	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+CIRCLE_2	CIRCLE	0x800B54DC	SCENE_CALL_800B54DC	450	24	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+CIRCLE_2	CIRCLE	0x800F3658	WRAPPER_800F3658	450	24	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+CIRCLE_2	CIRCLE	0x800F5DAC	WRAPPER_CALL_800F5DAC	450	24	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+DOWN_CIRCLE_1	DOWN_CIRCLE	0x800D15A8	TARGET_800D15A8	450	40	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+DOWN_CIRCLE_1	DOWN_CIRCLE	0x800B54DC	SCENE_CALL_800B54DC	450	40	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+DOWN_CIRCLE_1	DOWN_CIRCLE	0x800F3658	WRAPPER_800F3658	450	40	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+DOWN_CIRCLE_1	DOWN_CIRCLE	0x800F5DAC	WRAPPER_CALL_800F5DAC	450	40	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+DOWN_CIRCLE_2	DOWN_CIRCLE	0x800D15A8	TARGET_800D15A8	450	40	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+DOWN_CIRCLE_2	DOWN_CIRCLE	0x800B54DC	SCENE_CALL_800B54DC	450	40	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+DOWN_CIRCLE_2	DOWN_CIRCLE	0x800F3658	WRAPPER_800F3658	450	40	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
+DOWN_CIRCLE_2	DOWN_CIRCLE	0x800F5DAC	WRAPPER_CALL_800F5DAC	450	40	all hits counted; first 8 captured per 30-frame input-relative window and frames 1-30
