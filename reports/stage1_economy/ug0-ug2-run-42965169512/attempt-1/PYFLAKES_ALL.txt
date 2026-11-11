@@ -1,0 +1,59 @@
+experiments/ae1_ae4_refine_channel2.py:4:1: 'hashlib' imported but unused
+experiments/ae1_ae4_restore_bisect.py:639:5: local variable 'min_name' is assigned to but never used
+experiments/ae1_channel_fields_bisect.py:3:1: 'shutil' imported but unused
+experiments/ae1_channel_fields_bisect.py:176:35: local variable 'cache' is assigned to but never used
+experiments/ae4_ad3_ram_snapshots.py:3:1: 'shutil' imported but unused
+experiments/ae4_ad3_ram_snapshots.py:5:1: 'collections.defaultdict' imported but unused
+experiments/aj2_h6_ram_probe.py:203:5: local variable 'target_spu' is assigned to but never used
+experiments/aj2_h6_ram_probe.py:268:5: local variable 'target_words_map' is assigned to but never used
+experiments/ak1_ak3_h6_replay.py:5:1: 'hashlib' imported but unused
+experiments/ak1_ak3_h6_replay.py:665:16: local variable 'diff_summary' is assigned to but never used
+experiments/ar3_h6_runtime_trace.py:353:9: f-string is missing placeholders
+experiments/as3_h6_breakpoint_ab.py:228:13: local variable 'anydiff' is assigned to but never used
+experiments/av2_ram_write_watchpoints.py:454:7: f-string is missing placeholders
+experiments/az1_h6_economy_runtime.py:11:1: 're' imported but unused
+experiments/ba3_h6_tile_resource_runtime.py:11:1: 're' imported but unused
+experiments/cg3_h6_readonly_watchpoint.py:6:1: 'hashlib' imported but unused
+experiments/cg3_h6_readonly_watchpoint.py:7:1: 'math' imported but unused
+experiments/cg3_h6_readonly_watchpoint.py:10:1: 'shutil' imported but unused
+experiments/fa4_h6_upgrade_watchpoints.py:8:1: 'shutil' imported but unused
+experiments/ub2_headless_trace.py:402:7: f-string is missing placeholders
+experiments/ub2_headless_trace.py:403:7: f-string is missing placeholders
+experiments/uc0_uc1_uc2_probe.py:3:1: 'hashlib' imported but unused
+tests/test_storymode_adaptive_agent.py:5:1: 'numpy as np' imported but unused
+tools/ja-static/RunJA0JA5Static.py:543:37: local variable 'entry' is assigned to but never used
+tools/ja-static/RunJA0JA5Static.py:864:5: local variable 'f2_calls' is assigned to but never used
+tools/ka-static/RunKA0KA5Static.py:214:5: local variable 'pyfiles' is assigned to but never used
+tools/la-static/EnforceArchiveExcerptUnion.py:3:1: 'sys' imported but unused
+tools/ma-static/RunMA0MA5Static.py:474:9: f-string is missing placeholders
+tools/ma-static/RunMA0MA5Static.py:698:5: local variable 'x_proven' is assigned to but never used
+tools/oa/RunOA0OA5.py:3:1: 're' imported but unused
+tools/oa/RunOA0OA5.py:3:1: 'struct' imported but unused
+tools/oa/RunOA0OA5.py:4:1: 'collections.deque' imported but unused
+tools/oa/RunOA0OA5.py:279:9: local variable 'ex' is assigned to but never used
+tools/oa/RunOA0OA5.py:494:5: local variable 'ea6e' is assigned to but never used
+tools/oa/RunOA0OA5.py:495:5: local variable 'ea88' is assigned to but never used
+tools/oa/RunOA0OA5.py:496:5: local variable 'ec' is assigned to but never used
+tools/oa/RunOA0OA5.py:634:7: f-string is missing placeholders
+tools/oa/RunOA0OA5.py:635:7: f-string is missing placeholders
+tools/oa/RunOA0OA5.py:636:7: f-string is missing placeholders
+tools/oa/RunOA4Control.py:3:1: 'sys' imported but unused
+tools/oa/RunOA4Control.py:3:1: 'time' imported but unused
+tools/psx_resource_profile_scan.py:113:11: f-string is missing placeholders
+tools/stage1/RunDT0DT4Raw.py:3:1: 're' imported but unused
+tools/stage1/RunDT0DT4Raw.py:132:14: local variable 'rd' is assigned to but never used
+tools/stage1/RunDW0DW4Raw.py:4:1: 'collections.defaultdict' imported but unused
+tools/stage1/RunHA2HA3Static.py:5:1: 'collections.defaultdict' imported but unused
+tools/stage1/RunHA2HA3Static.py:149:5: local variable 'm' is assigned to but never used
+tools/stage1/RunHA2HA3Static.py:260:5: local variable 'base' is assigned to but never used
+tools/step2_xref_rng_audit.py:5:1: 'collections.defaultdict' imported but unused
+tools/step4_10_static_evidence_audit.py:4:1: 'os' imported but unused
+tools/step4_10_static_evidence_audit.py:316:5: local variable 'exe_jals' is assigned to but never used
+tools/step5_m2c_compare.py:12:1: 'shutil' imported but unused
+tools/step5_m2c_compare.py:14:1: 'sys' imported but unused
+tools/step5_m2c_compare.py:206:19: f-string is missing placeholders
+tools/step7/ScanIndirectCallCandidates.py:46:13: local variable 'rd' is assigned to but never used
+tools/step7/ScanIndirectCallCandidates.py:75:13: local variable 'rd' is assigned to but never used
+tools/step9_unicorn_rng_probe.py:13:1: 'json' imported but unused
+tools/union_gate.py:3:1: 'io' imported but unused
+tools/union_gate.py:140:5: local variable 'protected_left' is assigned to but never used
