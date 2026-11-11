@@ -1,3 +1,4 @@
 commit_sha	parent_sha	author_date_utc	message	files_changed	additions	deletions	role
 c7da18bef75f6e6905d495b72710f50aaf1bb5b0	92bed04069414a5aa81b2d4121bd19bb5fb06878	2026-11-11T05:38:31Z	Finalize UG3 baseline-inclusive Actions and no-renames ledger after UG2 success	5	587	383	AUDIT_BASELINE_INCLUSIVE
 02ad6ea61443abe838568b7f07fa558a63b1fe5b	c7da18bef75f6e6905d495b72710f50aaf1bb5b0	2026-11-11T09:20:10Z	Record UH3 scheduled monitor run 42977820741 summary [skip ci]	1	12	0	POST_BASELINE_RUN_SUMMARY
+46948b552b5d79b5f33f31dfd6ed7875d377b185	02ad6ea61443abe838568b7f07fa558a63b1fe5b	2026-11-11T12:49:41Z	Add UH0-UH3 static audit and baseline ledger [skip ci]	10	568	0	POST_BASELINE_STATIC_AUDIT_PUBLICATION
