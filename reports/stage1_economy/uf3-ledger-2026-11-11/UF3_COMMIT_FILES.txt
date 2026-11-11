@@ -1,0 +1,24 @@
+UF3_BASELINE_INCLUSIVE_FILE_INVENTORY
+BASELINE=4d9b1cb9c2db9327d04fab6bddf5c9deea3d9cf7
+COVERAGE_END_BEFORE_LEDGER_PUBLICATION=ed07b7375d0c529ead0929d221705b17d780b1fb
+
+4d9b1cb9c2db9327d04fab6bddf5c9deea3d9cf7
+  ADDED reports/stage1_economy/ue0-ue2-run-42944487243/attempt-1/UE1_ENTRY1_DETAIL.txt
+  MODIFIED reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_COMMITS.tsv
+  MODIFIED reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_COMMIT_FILES.txt
+  MODIFIED reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_FILE_EVENTS_NO_RENAMES.tsv
+  MODIFIED reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_SUMMARY.txt
+
+1c22a2ccce24c57a73a5e16bd5b5e0e2299f740f
+  MODIFIED .github/workflows/ub2-headless-trace.yml
+  MODIFIED experiments/ue2_scene_trace.py
+  ADDED tools/uf0_head_gate.py
+
+ed07b7375d0c529ead0929d221705b17d780b1fb
+  ADDED reports/stage1_economy/uf0-uf2-run-42955640625/attempt-1/ACTIONS_RUN_SUMMARY.txt
+  ADDED reports/stage1_economy/uf0-uf2-run-42955640625/attempt-1/cleanup.txt
+
+FILES_CHANGED_CUMULATIVE=10
+ADDED=4
+MODIFIED=6
+DELETED=0

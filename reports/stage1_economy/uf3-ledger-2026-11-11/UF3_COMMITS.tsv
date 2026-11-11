@@ -1,0 +1,4 @@
+commit_sha	parent_sha	commit_time_utc	message	files_changed	added_files	modified_files	deleted_files	additions	deletions
+4d9b1cb9c2db9327d04fab6bddf5c9deea3d9cf7	48509feee086635006770d2645f23c85d0eabfae	2026-11-11T03:23:59Z	Add detailed UE1 ENTRY1 report and extend UE3 coverage to prior ledger commit	5	1	4	0	70	12
+1c22a2ccce24c57a73a5e16bd5b5e0e2299f740f	4d9b1cb9c2db9327d04fab6bddf5c9deea3d9cf7	2026-11-11T03:53:08Z	Implement UF0 strict HEAD TSV gate and repair UF2 read-only trace	3	1	2	0	643	123
+ed07b7375d0c529ead0929d221705b17d780b1fb	1c22a2ccce24c57a73a5e16bd5b5e0e2299f740f	2026-11-11T03:53:28Z	Publish UF0-UF2 direct TSV gate and read-only trace run 42955640625 [skip ci]	2	2	0	0	11	0

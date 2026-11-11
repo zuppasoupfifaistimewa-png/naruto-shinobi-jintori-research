@@ -1,0 +1,2 @@
+run_id	event	workflow_name	workflow_id	run_number	status	conclusion	head_sha	created_at_utc	job_id	job_name
+42955640625	push	UF0–UF2 — direct TSV gate and read-only headless trace	412605080	12	completed	failure	1c22a2ccce24c57a73a5e16bd5b5e0e2299f740f	2026-11-11T03:53:12Z	130309955540	UF0 direct TSV audit and six 900-frame read-only launches
