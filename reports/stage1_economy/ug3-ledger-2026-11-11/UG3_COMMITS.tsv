@@ -2,3 +2,10 @@ commit_sha	parent_sha	commit_time_utc	file_events	added	modified	deleted	inserti
 ccbf548b607eb4e3fa183c115297c9cece9b498e	ed07b7375d0c529ead0929d221705b17d780b1fb	2026-11-11T03:55:51Z	6	6	0	0	86	0	Add UF3 baseline-inclusive ledger and correct prior Actions count [skip ci]
 c87e124daeb4e007c555bc07eab811bfe61e6afb	ccbf548b607eb4e3fa183c115297c9cece9b498e	2026-11-11T04:55:43Z	2	0	2	0	87	35	Repair UG0 pyflakes bootstrap and refine direct TSV gate metrics
 b74d931cf9855c16c3d3e22b10a11cf94c7c2d04	c87e124daeb4e007c555bc07eab811bfe61e6afb	2026-11-11T04:58:36Z	336	17	319	0	64892	63121	Publish UG0-UG2 preflight, TSV gate and read-only trace run 42962387096 [skip ci]
+d1143fc3ad2f73a23e6e8d1de764cf73c5fb6a88	b74d931cf9855c16c3d3e22b10a11cf94c7c2d04	2026-11-11T05:02:21Z	5	5	0	0	744	0	Publish UG3 baseline-inclusive no-renames commit and Actions ledger [skip ci]
+34803b3e9bd5afec58650300e35378dae3293406	d1143fc3ad2f73a23e6e8d1de764cf73c5fb6a88	2026-11-11T05:20:51Z	2	0	2	0	177	9	Fix UG1 apples-to-apples legacy byte-union reconciliation and strengthen UG0 validation
+74b2e652aab754302bcea1e25e5333571e224127	34803b3e9bd5afec58650300e35378dae3293406	2026-11-11T05:22:28Z	18	18	0	0	1752	0	Publish UG0-UG2 preflight, TSV gate and read-only trace run 42965169512 [skip ci]
+7b1da168046b93285b445ce58e701aa125cd893f	74b2e652aab754302bcea1e25e5333571e224127	2026-11-11T05:23:45Z	3	0	3	0	26	4	Resolve UG1 same-rule group parity and harden UG2 Memory Card warm-up
+36169da03519a1a0ec4ec72de553018c1a3841cd	7b1da168046b93285b445ce58e701aa125cd893f	2026-11-11T05:25:26Z	28	28	0	0	1896	0	Publish UG0-UG2 preflight, TSV gate and read-only trace run 42965488210 [skip ci]
+0ff400d97cd1a39a9356d1c2af65690e837be72f	36169da03519a1a0ec4ec72de553018c1a3841cd	2026-11-11T05:27:52Z	1	0	1	0	4	1	Fix UE2 checkpoint state environment variable before six-launch probe
+92bed04069414a5aa81b2d4121bd19bb5fb06878	0ff400d97cd1a39a9356d1c2af65690e837be72f	2026-11-11T05:30:52Z	32	32	0	0	3472	0	Publish UG0-UG2 preflight, TSV gate and read-only trace run 42965928825 [skip ci]

@@ -1,2 +1,5 @@
 run_id	event	workflow_name	workflow_id	run_number	status	conclusion	source_sha	created_at_utc	job_id	job_name	exit_code
 42962387096	push	UG0–UG2 — Python lint, direct TSV gate and read-only headless trace	412605080	13	completed	failure	c87e124daeb4e007c555bc07eab811bfe61e6afb	2026-11-11T04:55:48Z	130331711591	UG0/UG1 preflight and six 900-frame read-only launches	1
+42965169512	push	UG0–UG2 — Python lint, direct TSV gate and read-only headless trace	412605080	14	completed	failure	34803b3e9bd5afec58650300e35378dae3293406	2026-11-11T05:20:56Z	130340589877	UG0/UG1 preflight and six 900-frame read-only launches	1
+42965488210	push	UG0–UG2 — Python lint, direct TSV gate and read-only headless trace	412605080	15	completed	failure	7b1da168046b93285b445ce58e701aa125cd893f	2026-11-11T05:23:49Z	130341609861	UG0/UG1 preflight and six 900-frame read-only launches	1
+42965928825	push	UG0–UG2 — Python lint, direct TSV gate and read-only headless trace	412605080	16	completed	success	0ff400d97cd1a39a9356d1c2af65690e837be72f	2026-11-11T05:27:57Z	130343034778	UG0/UG1 preflight and six 900-frame read-only launches	0
