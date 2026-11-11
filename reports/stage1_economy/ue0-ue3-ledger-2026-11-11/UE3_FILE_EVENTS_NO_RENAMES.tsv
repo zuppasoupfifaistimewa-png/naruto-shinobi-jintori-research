@@ -32,4 +32,7 @@ c5e6e6dab8c746432ac7ef39b68ad08abd475ca3	M	13	12	25	reports/stage1_economy/ue0-u
 24e1d7de3800b86740ef5549b67223c25606293c	M	1	1	2	reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_COMMIT_FILES.txt
 628cf0e545d189f980a700f9152fc2e7b170606c	A	29	0	29	reports/stage1_economy/ue0-ue2-run-42944487243/attempt-1/UE0_LEGACY_3998_GROUP_CROSSCHECK.txt
 628cf0e545d189f980a700f9152fc2e7b170606c	A	3999	0	3999	reports/stage1_economy/ue0-ue2-run-42944487243/attempt-1/UE0_LEGACY_3998_GROUP_REGISTRY.tsv
-628cf0e545d189f980a700f9152fc2e7b170606c	M	11	0	11	reports/stage1_economy/ue0-ue2-run-42944487243/attempt-1/UE0_UE2_RESULTS.txt
+628cf0e545d189f980a700f9152fc2e7b170606c	M	11	0	11	reports/stage1_economy/ue0-ue2-run-42944487243/attempt-1/UE0_UE2_RESULTS.txt48509feee086635006770d2645f23c85d0eabfae	M	3	1	reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_COMMITS.tsv
+48509feee086635006770d2645f23c85d0eabfae	M	25	1	reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_COMMIT_FILES.txt
+48509feee086635006770d2645f23c85d0eabfae	M	12	0	reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_FILE_EVENTS_NO_RENAMES.tsv
+48509feee086635006770d2645f23c85d0eabfae	M	11	11	reports/stage1_economy/ue0-ue3-ledger-2026-11-11/UE3_SUMMARY.txt
