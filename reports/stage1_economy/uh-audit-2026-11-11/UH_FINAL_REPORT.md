@@ -20,7 +20,7 @@ Konflik byte didefinisikan sebagai observasi berikutnya pada koordinat berlabel 
 
 ## UH1 — penulisan medan record
 
-Di set census yang diperiksa, 42 penulisan `sh` ke displacement `+0x20` dalam ENTRY1 memiliki alias tabel terbukti melalui slot `0x8013EA84`, tersebar pada 16 fungsi. Hanya satu penulisan berada di `FUN_800D15A8`: PC `0x800D5A1C`, sumber immediate di PC sebelumnya adalah `0xF020`. Itu bukan penambahan level aritmetis `+1`.
+Di set census yang diperiksa, 42 penulisan `sh` ke displacement `+0x20` dalam ENTRY1 memiliki alias tabel terbukti melalui slot `0x8013EA84`, tersebar pada 16 fungsi. Untuk satu PC saja, `0x800D5A1C` di `FUN_800D15A8`, dekompilasi BB2 kini mengikat basis ke `DAT_8013eb20 * 0x124 + DAT_8013ea84`; jadi stride `0x124` terbukti pada PC itu, sedangkan 41 writer lainnya tetap belum terbukti stride per-PC. Store memakai immediate `0xF020`, bukan penambahan level aritmetis `+1`.
 
 Dua penulisan `sh +0x1A` di `FUN_800F7ADC` (PC `0x800F7D9C`, `0x800F7DB0`) juga memuat basis dari slot `0x8013EA84`. Rantai indeks yang dilacak membentuk `(73 * index) * 4 = 0x124 * index`. Kedua nilai berasal dari byte loader buffer, sehingga ini merupakan penyalinan/loader record, bukan bukti biaya upgrade.
 
@@ -28,7 +28,7 @@ Census global `sb` mencatat 139 instruksi memakai displacement tepat `+0x1A/+0x1
 
 `ENTRY0` kini diperiksa lewat artefak teks Ghidra run 41290779708. Run mengekspor 38 baris fungsi, tetapi autoanalysis timeout pada 1.800 detik dan ada kegagalan repair body; tidak ada census `sb/sh/sw` per-PC. Basis `0x800AD000` berstatus hipotesis statis dan runtime mapping belum tervalidasi. Jadi writer petak ENTRY0 tetap `TIDAK TAHU` (K0). Rinciannya ada di `UH1_ENTRY0_ARTIFACT_AUDIT.txt`.
 
-`FUN_800D15A8` terlihat dipanggil pada tick ganjil dalam trace UG, tetapi hit fungsi bukan bukti bahwa store terjadi pada setiap pemanggilan. Satu-satunya store array `+0x20` di fungsi tersebut adalah konstanta `0xF020` pada satu jalur. Fungsi memiliki percabangan; predikat yang tepat untuk mencapai store tetap `TIDAK TAHU`. Jadi tidak terbukti bahwa fungsi menaikkan level setiap pemanggilan; juga belum cukup untuk menamai aturan gate gameplay.
+`FUN_800D15A8` terlihat dipanggil pada tick ganjil dalam trace UG; hit fungsi bukan bukti bahwa store terjadi pada setiap pemanggilan. BB2 dekompilasi statis memperjelas kontrol alirnya: fungsi memakai `switch(DAT_80139f03)`. Jalur tertentu dari case `0x02` menetapkan state `0x14`; case `0x14` menaikkan state ke `0x15` dan mereset `DAT_80139ec2`. Dalam case `0x15`, counter bertambah; saat hasilnya `0x21` (33), fungsi menginisialisasi record indeks `DAT_8013eb20 * 0x124 + DAT_8013ea84`, menulis `0xF020` ke `+0x20`, mengisi banyak field lain, memanggil `FUN_800BE0E4`, mengurangi byte objek `+0x4CC`, mereset counter, lalu mengubah state ke `8`. Jika counter belum `0x21`, cabang alternatif hanya mengurangi field `+0x44/+0x46` sebesar `0x80` ketika byte record `+0x00 == 5` dan nibble atas `+0x20` cocok dengan global `_DAT_8013EA8A`. Ini menutup kondisi statis untuk store tersebut, tetapi bukan makna aksi/gameplay-nya. Halfword `+0x20` juga dibaca sebagai beberapa nibble di fungsi yang sama; label semantik setiap nibble tetap `TIDAK TAHU`. Jadi tidak terbukti ada level increment per pemanggilan, biaya upgrade, atau debit Chakra. Rincian: `UH1_D15A8_CONTROL_FLOW_ADDENDUM.md`.
 
 Biaya upgrade lompat level `d>=2` dengan nilai 400/800/1600 tetap **K1 / hipotesis**. Rumus biaya: **TIDAK TAHU**, belum ada aritmetika atau tabel konstanta biaya langsung yang terikat ke transaksi upgrade.
 
@@ -40,11 +40,20 @@ Tidak ada TSV nilai frame 1/900, write-hit counters/PC/RA, Memory Card clone/has
 
 ## UH3 — ledger baseline-inclusive
 
-Ledger mencakup baseline c7, commit anak 02ad6, commit laporan statis 46948, dan addendum ENTRY0 c3fd; ada 22 event file berdasarkan status Git (no-renames). Sejak waktu baseline, query Actions API mengembalikan satu run schedule, #42977820741, workflow monitor, job `monitor` sukses. Source SHA run sama dengan baseline. Tidak ada run `push` atau `workflow_dispatch` di rentang query. Job sukses adalah hasil monitor; bukan bukti Story Mode selesai. Ringkasan run terdahulu tersedia pada permalink raw di `UH3_SUMMARY.txt`.
+Ledger mencakup baseline c7, commit anak 02ad6, commit laporan statis 46948, addendum ENTRY0 c3fd, koreksi ledger 2ba02b4, dan addendum D15A8 7676e8e; ada 27 event file berdasarkan status Git (no-renames). Sejak waktu baseline, query Actions API mengembalikan satu run schedule, #42977820741, workflow monitor, job `monitor` sukses. Source SHA run sama dengan baseline. Tidak ada run `push` atau `workflow_dispatch` di rentang query. Job sukses adalah hasil monitor; bukan bukti Story Mode selesai. Ringkasan run terdahulu tersedia pada permalink raw di `UH3_SUMMARY.txt`.
 
 ## Validasi dan batas
 
-- Validasi internal laporan: 319 baris manifest; 0 mismatch antara panjang rentang dan deletion per-file; 86 baris tabel writer; 130 write literal `+0x1A` pada EXE/ENTRY1; Entry0 artifact diverifikasi sebagai ekspor parsial; ledger 4 commit/22 event/1 run.
+- Validasi internal laporan: 319 baris manifest; 0 mismatch antara panjang rentang dan deletion per-file; 86 baris tabel writer; 130 write literal `+0x1A` pada EXE/ENTRY1; Entry0 artifact diverifikasi sebagai ekspor parsial; satu dari 42 writer `sh +0x20` kini punya stride per-PC terverifikasi; ledger 6 commit/27 event/1 run.
 - Tidak ada kode atau workflow yang diubah; tidak ada source SHA emulator UH2 karena run UH2 tidak dilakukan. Code SHA baseline yang dianalisis tetap `c7da18bef75f6e6905d495b72710f50aaf1bb5b0`.
 - Tidak mengubah `STATUS.md`, Release, atau menghapus baris TSV. Tidak menyertakan ROM, BIOS, Memory Card, savestate, dump RAM, atau biner.
 - Tingkat K5 tidak diberikan: tidak ada runtime UH2 yang dijalankan.
+
+
+## Addendum D15A8 dan pembaruan ledger
+
+Addendum statis D15A8 dipublikasikan pada commit `7676e8e3ecb688dafe5922eacd21ece97f1e91e5`; file baru: `UH1_D15A8_CONTROL_FLOW_ADDENDUM.md`. Permalink raw:
+
+https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/7676e8e3ecb688dafe5922eacd21ece97f1e91e5/reports/stage1_economy/uh-audit-2026-11-11/UH1_D15A8_CONTROL_FLOW_ADDENDUM.md
+
+Ledger saat ini memasukkan koreksi `2ba02b4fbadcdd2974ce77b54a6c4e70d0708a2d` dan addendum `7676e8e3ecb688dafe5922eacd21ece97f1e91e5`; commit koreksi ledger berikutnya sendiri belum termasuk dalam snapshot ledger ini.

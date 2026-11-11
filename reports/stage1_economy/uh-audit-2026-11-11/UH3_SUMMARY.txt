@@ -1,10 +1,10 @@
 UH3_LEDGER_FROM_BASELINE
 BASELINE_INCLUSIVE=c7da18bef75f6e6905d495b72710f50aaf1bb5b0
-HEAD_BEFORE_THIS_LEDGER_CORRECTION=c3fd42bcb68ed72db13f1ac844ffe155c4dbccfe
-COMMITS_IN_LEDGER=4 (baseline c7, child 02ad6, static-report commit 46948, Entry0 addendum c3fd)
-NO_RENAMES_FILE_EVENTS=22
-ADDITIONS_IN_LEDGER_COMMITS=1238
-DELETIONS_IN_LEDGER_COMMITS=408
+HEAD_BEFORE_THIS_LEDGER_CORRECTION=7676e8e3ecb688dafe5922eacd21ece97f1e91e5
+COMMITS_IN_LEDGER=6 (baseline c7, child 02ad6, static-report commit 46948, Entry0 addendum c3fd, ledger correction 2ba02b4, D15A8 addendum 7676e8e)
+NO_RENAMES_FILE_EVENTS=27
+ADDITIONS_IN_LEDGER_COMMITS=1327
+DELETIONS_IN_LEDGER_COMMITS=427
 ACTIONS_RUNS_SINCE_BASELINE=1
 SCHEDULE_RUNS=1
 PUSH_RUNS=0
@@ -27,3 +27,5 @@ POST_BASELINE_ENTRY0_ADDENDUM_COMMIT=c3fd42bcb68ed72db13f1ac844ffe155c4dbccfe ad
 RUN_SUMMARY_RAW=https://raw.githubusercontent.com/zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research/02ad6ea61443abe838568b7f07fa558a63b1fe5b/reports/stage1_economy/uh-ledger-2026-11-11/UH3_ACTIONS_RUN_SUMMARY.txt
 STORYMODE_COMPLETION=NOT_PROVEN
 CHECK=Actions API query since baseline returned total_count=1; the one run was schedule 42977820741; no push/workflow_dispatch events appeared.
+POST_BASELINE_LEDGER_CORRECTION_COMMIT=2ba02b4fbadcdd2974ce77b54a6c4e70d0708a2d modifies 4 report files (27 additions, 19 deletions)
+POST_BASELINE_D15A8_ADDENDUM_COMMIT=7676e8e3ecb688dafe5922eacd21ece97f1e91e5 adds 1 text report (62 lines)
