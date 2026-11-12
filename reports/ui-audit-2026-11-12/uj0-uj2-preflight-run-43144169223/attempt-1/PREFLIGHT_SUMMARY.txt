@@ -1,0 +1,11 @@
+STATUS=BLOCKED
+JOB=uj0-uj2-preflight
+RUN_ID=43144169223
+SOURCE_SHA=9e5de8479aef45d7403402c47f1555a3aa3e6eaf
+PY_COMPILE=required scripts
+PYFLAKES=installed and run with pip
+YAML_PARSE=required workflow
+FAKE_MEMORY_AND_BYTE_TESTS=required scripts
+EXIT_CODE=1
+EMULATOR_GATE=CLOSED; no emulator process may start
+BINARY_OR_PRIVATE_ASSET_COMMITTED=NO
