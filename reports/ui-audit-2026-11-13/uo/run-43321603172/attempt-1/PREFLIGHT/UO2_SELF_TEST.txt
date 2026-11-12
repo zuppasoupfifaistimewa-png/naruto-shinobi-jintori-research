@@ -1,0 +1,1 @@
+UO2_SELF_TEST=PASS inclusive baseline and ledger schemas

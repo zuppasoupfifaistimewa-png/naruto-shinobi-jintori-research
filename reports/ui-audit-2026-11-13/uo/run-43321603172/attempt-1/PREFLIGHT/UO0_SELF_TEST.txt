@@ -1,0 +1,1 @@
+UO0_SELF_TEST=PASS branch targets, byte decode and EA84/index*0x124 derived-memory def-chain
