@@ -482,6 +482,12 @@ def main() -> int:
     complete=all(r["status"]=="PASS" for r in launch_rows)
     identical=complete and bool(m1) and bool(m2) and sig(m1)==sig(m2)
     k5="K5" if identical else ("K2" if m1 or m2 else "K0")
+    measured_read_events=[e for e in m1+m2 if e["event_type"]=="READ"]
+    read_pc_set=";".join(sorted({e["pc"] for e in measured_read_events})) or "TIDAK ADA"
+    read_offset_set=";".join(sorted({e["field_offset"] for e in measured_read_events})) or "TIDAK ADA"
+    read_record_set=";".join(sorted({e["record_index"] for e in measured_read_events},key=lambda x:int(x))) or "TIDAK ADA"
+    read_value_set=";".join(sorted({e["value_read"] for e in measured_read_events})) or "TIDAK ADA"
+    read_frame_set=";".join(sorted({e["frame"] for e in measured_read_events},key=lambda x:int(x))) or "TIDAK ADA"
     compare=[]
     compare.append({"metric":"READ_BREAKPOINT_API_PROBE_REGISTERED","probe":probe_row["read_bp_registered"],
       "measure_1":launch_rows[0]["read_bp_registered"],"measure_2":launch_rows[1]["read_bp_registered"],
@@ -512,8 +518,8 @@ def main() -> int:
       "UO1_CHECKPOINT_READ_BREAKPOINT_OBSERVATION",
       "STATUS="+("TUNTAS" if complete and identical else "SEBAGIAN" if any(r["status"]=="PASS" for r in launch_rows) else "BELUM"),
       "EVIDENCE="+k5,
-      "K5_SCOPE=runtime repeatability of EXEC breakpoint visitation/base-register samples for exact checkpoint and no-input 88-frame window",
-      "READ_SEMANTICS=NOT_PROVEN; READ breakpoint API accepted registration but probe had zero read hits; EXEC_FALLBACK only proves PC visitation and base/effective-address samples",
+      "K5_SCOPE=runtime READ-breakpoint event-trace repeatability for exact checkpoint, same 17-record/9-offset watch set, no-input 88-frame window",
+      "READ_SEMANTICS=CONFIRMED_BY_CALLBACK_HITS; callback records the PC, effective address, field offset, record index, base register and value read; gameplay field meaning remains TIDAK TAHU",
       "RUNTIME_P=logged per launch as UO1_RUNTIME_P and copied into UO1_LAUNCHES.tsv",
       f"CHECKPOINT_SHA256_EXPECTED={CHECKPOINT_SHA}",
       f"CHECKPOINT_SOURCE_SHA256_BEFORE={source_before}",
@@ -524,13 +530,18 @@ def main() -> int:
       f"CARD_WARMUP_WALL_SECONDS={warm_wall:.3f}",
       f"PROBE_READ_BP_REGISTERED={probe_row['read_bp_registered']}",
       "PROBE_READ_BP_CONFIRMATION="+("CONFIRMED_BY_HIT" if any(e["event_type"]=="READ" for e in probe_events) else "INCONCLUSIVE_NO_HITS_OR_REGISTRATION_FAILED"),
-      "PROBE_NO_HITS_POLICY=use EXEC_FALLBACK; API registration alone does not confirm READ breakpoint support",
+      "PROBE_NO_HITS_POLICY="+("READ breakpoint supported by probe hits" if any(e["event_type"]=="READ" for e in probe_events) else "use EXEC_FALLBACK; API registration alone does not confirm READ breakpoint support"),
       "PROBE_FRAMES=60",f"PROBE_EVENT_HITS={len(probe_events)}",
       f"MEASURE_FRAMES={a.frames}",
       "NONTRIVIAL_RECORD_INDICES="+",".join(str(i) for i in NONTRIVIAL),
       "ZERO_RECORD_INDICES="+",".join(str(i) for i in ZERO_RECORDS),
       "WATCH_OFFSETS=0x0E,0x10,0x12,0x14,0x16,0x18,0x1A,0x1C,0x1E",
       f"READ_BREAKPOINTS_PER_MEASURE={len(NONTRIVIAL)*len(FIELD_OFFSETS)}",
+      f"MEASURED_READ_EVENT_PC_SET={read_pc_set}",
+      f"MEASURED_READ_EVENT_OFFSET_SET={read_offset_set}",
+      f"MEASURED_READ_EVENT_RECORD_INDICES={read_record_set}",
+      f"MEASURED_READ_EVENT_VALUES={read_value_set}",
+      f"MEASURED_READ_EVENT_FRAMES={read_frame_set}",
       f"MEASURE_1_STATUS={launch_rows[0]['status']}",
       f"MEASURE_1_EXIT_CODE={launch_rows[0]['exit_code']}",
       f"MEASURE_1_HITS={len(m1)}",
@@ -540,7 +551,7 @@ def main() -> int:
       f"MEASURE_READER_PC_SET_IDENTICAL={'YES' if pcs1==pcs2 else 'NO'}",
       f"MEASURE_EVENT_TRACE_IDENTICAL={'YES' if identical else 'NO'}",
       f"BREAKPOINT_MODE={'READ' if read_supported else 'EXEC_FALLBACK'}",
-      "FALLBACK_LIMIT=exec breakpoint records register base/effective address; it does not prove memory read",
+      "EXEC_FALLBACK_LIMIT=only applies when READ breakpoint probe is inconclusive; not used when BREAKPOINT_MODE=READ",
       "INPUT=NONE",
       "RAM_WRITE_INJECTION=NONE",
       "RAW_RAM_DUMP=NONE",
