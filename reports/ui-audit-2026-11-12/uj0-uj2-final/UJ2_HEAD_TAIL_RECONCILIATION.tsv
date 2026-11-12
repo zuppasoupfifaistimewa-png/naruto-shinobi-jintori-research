@@ -1,0 +1,16 @@
+UJ2_HEAD_TAIL_RECONCILIATION
+baseline_inclusive	prior_ledger_head	coverage_head_before_this_addendum	commit_rows_including_baseline	file_events_no_renames
+d2c57a796215696dc91be91fb18f36907fa5203c	d7838e0332d61a76335381dfe0ca7687fd10e33a	1c892d9716af68917b51fafd90b9bc4c89ff0f40	26	64
+
+commit_sha	created_at_utc	status_no_renames	additions	deletions	path
+e3a01298e09f50b42449498a700612080753777b	2026-11-12T03:09:07Z	A	56	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ0_UJ2_FINAL_REPORT.txt
+0ec96283bc711ca15ebad59a876ef825ad20e40f	2026-11-12T03:09:09Z	A	51	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ0_FUNCTION_CONTEXT.txt
+fcfccd50efba6e4bb8b628067b5a4378db2ff07d	2026-11-12T03:09:12Z	A	22	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ2_COMMITS.tsv
+81fb377e0f89f6f1702beb68c6e0778344a20da9	2026-11-12T03:09:15Z	A	60	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ2_FILE_EVENTS.tsv
+1c892d9716af68917b51fafd90b9bc4c89ff0f40	2026-11-12T03:09:17Z	A	19	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ2_ACTIONS_RUNS.txt
+
+PRIOR_COVERAGE	21 commits including baseline; 59 file events --no-renames through d7838e0332d61a76335381dfe0ca7687fd10e33a
+TAIL_COVERAGE	5 subsequent commits; 5 added text files; 5 file events; no deletions
+COMBINED_COVERAGE	26 commits including baseline; 64 file events --no-renames through 1c892d9716af68917b51fafd90b9bc4c89ff0f40
+ACTIONS_RUNS	5 run IDs; 9 job records, including monitor 43109652913
+PUBLICATION_NOTE	This addendum is committed after the coverage_head and is excluded from its own ledger to avoid self-reference. No prior file was edited.
