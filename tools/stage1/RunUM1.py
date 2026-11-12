@@ -92,6 +92,14 @@ local um0ExecBp=nil
 local um0WriteBpByAddress={}
 local um0PendingReadbacks={}
 local um0ExecHits,um0WriteHits=0,0
+local inputPresses,inputReleases,inputErrors=0,0,0
+local pad=PCSX.SIO0.slots[1].pads[1]
+PCSX.settings.pads[1].DeviceType="Analog"
+PCSX.settings.pads[1].Connected=true
+pad.map()
+local circle=PCSX.CONSTS.PAD.BUTTON.CIRCLE
+pcall(function() pad.clearOverride(circle) end)
+log("UM1_PAD_READY=CIRCLE_ONLY launch="..LAUNCH)
 local function arm_um0_writer()
  if um0ExecBp~=nil then return end
  um0ExecBp=PCSX.addBreakpoint(0x800D5A1C,"Exec",4,"UM0 special writer 800D5A1C",function(address,width,cause)
@@ -217,7 +225,21 @@ _G.um1Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
  if not loaded then return end
  post=post+1
  if post==1 then snapshot() end
+ if post>=120 and (post-120)%120==0 then
+  local ok,readback=pcall(function() pad.setOverride(circle); return pad.getButton(circle) end)
+  local pass=ok and readback==true
+  inputPresses=inputPresses+1
+  if not pass then inputErrors=inputErrors+1 end
+  log("UM1_INPUT\t"..LAUNCH.."\t"..tostring(post).."\tCIRCLE\tPRESS\t"..tostring(readback).."\t"..(pass and "PASS" or "FAIL"))
+ elseif post>=126 and (post-126)%120==0 then
+  local ok,readback=pcall(function() pad.clearOverride(circle); return pad.getButton(circle) end)
+  local pass=ok and readback==false
+  inputReleases=inputReleases+1
+  if not pass then inputErrors=inputErrors+1 end
+  log("UM1_INPUT\t"..LAUNCH.."\t"..tostring(post).."\tCIRCLE\tRELEASE\t"..tostring(readback).."\t"..(pass and "PASS" or "FAIL"))
+ end
  if post==900 then
+  log("UM1_INPUT_SUMMARY\t"..LAUNCH.."\t"..tostring(inputPresses).."\t"..tostring(inputReleases).."\t"..tostring(inputErrors))
   finish_um0_monitor()
   log("UM1_RUNTIME_WINDOW_COMPLETE=YES launch="..LAUNCH.." post_load_frames="..tostring(post))
   PCSX.nextTick(function() PCSX.quit(snapshot_done and 0 or 54) end)
@@ -253,6 +275,24 @@ def parse_log(log: str, launch: str) -> tuple[list[dict], list[dict], list[dict]
             p = line.split("\t")
             if len(p) == 5:
                 um0_rows.append({"launch":p[1],"frame":p[2],"event":"READBACK","address":p[3],"readback_u16":p[4]})
+        elif line.startswith("UM1_INPUT\t"):
+            p = line.split("\t")
+            if len(p) == 7:
+                um0_rows.append({"launch":p[1],"frame":p[2],"event":"INPUT_"+p[4],"button":p[3],"readback":p[5],"status":p[6]})
+        elif line.startswith("UM0_WRITER_EXEC_BP_ARMED=YES"):
+            launch_name = line.rsplit("launch=",1)[1] if "launch=" in line else launch
+            um0_rows.append({"launch":launch_name,"frame":"0","event":"BP_ARMED","pc":"0x800D5A1C"})
+        elif line.startswith("UM0_WRITER_MONITOR_END"):
+            p = line.split("\t")
+            if len(p) == 5:
+                um0_rows.append({"launch":p[1],"frame":p[2],"event":"MONITOR_END","sequence":"exec="+p[3]+";write="+p[4]})
+        elif line.startswith("UM1_RUNTIME_WINDOW_COMPLETE=YES"):
+            launch_name = line.rsplit("launch=",1)[1].split()[0] if "launch=" in line else launch
+            um0_rows.append({"launch":launch_name,"frame":"900","event":"WINDOW_COMPLETE"})
+        elif line.startswith("UM1_INPUT_SUMMARY"):
+            p = line.split("\t")
+            if len(p) == 5:
+                um0_rows.append({"launch":p[1],"frame":"900","event":"INPUT_SUMMARY","sequence":"press="+p[2]+";release="+p[3]+";errors="+p[4]})
     valid = True
     if len(byte_rows) != 7008 or len(scalar_rows) != 7:
         valid = False
@@ -460,7 +500,7 @@ def main() -> int:
     source_after = sha(source) if source.exists() else "TIDAK TAHU"
     write_tsv(out / "UM1_BYTES.tsv", BYTE_FIELDS, all_bytes)
     write_tsv(out / "UM1_SCALARS.tsv", SCALAR_FIELDS, all_scalars)
-    um0_fields = ["launch","frame","event","sequence","pc","p","index","v0","v1","destination","register_destination","before_u16","address","width","cause","readback_u16"]
+    um0_fields = ["launch","frame","event","sequence","pc","p","index","v0","v1","destination","register_destination","before_u16","address","width","cause","readback_u16","button","readback","status"]
     write_tsv(out / "UM0_RUNTIME_EVENTS.tsv", um0_fields, all_um0)
     def um0_signature(name):
         return [tuple(row.get(k,"") for k in um0_fields[1:]) for row in all_um0 if row.get("launch")==name]
@@ -469,7 +509,15 @@ def main() -> int:
     um0_exec2 = sum(1 for r in all_um0 if r.get("launch")=="MEASURE_2" and r.get("event")=="EXEC")
     um0_write1 = sum(1 for r in all_um0 if r.get("launch")=="MEASURE_1" and r.get("event")=="WRITE")
     um0_write2 = sum(1 for r in all_um0 if r.get("launch")=="MEASURE_2" and r.get("event")=="WRITE")
-    um0_k5 = um0_exec1 > 0 and um0_exec2 > 0 and um0_write1 > 0 and um0_write2 > 0 and u1 == u2
+    armed1 = any(r.get("launch")=="MEASURE_1" and r.get("event")=="BP_ARMED" for r in all_um0)
+    armed2 = any(r.get("launch")=="MEASURE_2" and r.get("event")=="BP_ARMED" for r in all_um0)
+    complete1 = any(r.get("launch")=="MEASURE_1" and r.get("event")=="WINDOW_COMPLETE" for r in all_um0)
+    complete2 = any(r.get("launch")=="MEASURE_2" and r.get("event")=="WINDOW_COMPLETE" for r in all_um0)
+    inputs1 = [r for r in all_um0 if r.get("launch")=="MEASURE_1" and r.get("event") in ("INPUT_PRESS","INPUT_RELEASE")]
+    inputs2 = [r for r in all_um0 if r.get("launch")=="MEASURE_2" and r.get("event") in ("INPUT_PRESS","INPUT_RELEASE")]
+    inputs_ok = len([r for r in inputs1 if r.get("event")=="INPUT_PRESS"])==7 and len([r for r in inputs1 if r.get("event")=="INPUT_RELEASE"])==7 and len([r for r in inputs2 if r.get("event")=="INPUT_PRESS"])==7 and len([r for r in inputs2 if r.get("event")=="INPUT_RELEASE"])==7 and all(r.get("status")=="PASS" for r in inputs1+inputs2)
+    um0_k5 = armed1 and armed2 and complete1 and complete2 and inputs_ok and u1 == u2
+    um0_exec_k5 = um0_k5 and um0_exec1 > 0 and um0_exec2 > 0 and um0_write1 > 0 and um0_write2 > 0
     offset_rows, lv_rows = derive(validated_bytes, read_lv_table(a.lv_table)) if validated_bytes else ([], [])
     write_tsv(out / "UM1_OFFSET_SUMMARY.tsv", ["launch","offset","record_count","distinct_values","status","values_hex"], offset_rows)
     write_tsv(out / "UM1_LV_U16_MATCHES.tsv", ["launch","record","X_2xu16_plus_1A","status","LV","table_value","match_count","matching_u16_offsets"], lv_rows)
@@ -494,7 +542,13 @@ def main() -> int:
         f"MEASURED_LAUNCHES={len(launch_rows)-1}", f"SUCCESSFUL_SNAPSHOTS={len(successful)}", f"BYTE_ROWS_RAW_ALL_LAUNCHES={len(all_bytes)}", f"SCALAR_ROWS_RAW_ALL_LAUNCHES={len(all_scalars)}",
         f"BYTE_ROWS_VALIDATED_SNAPSHOTS={len(validated_bytes)}",
         "RECORDS=A:0..21;A:22;A:43; each 0x124 bytes", "SCALARS=P:u32,0x8013EB20:u32,0x8013EAB0:u32,0x8013EA8A:u16,0x8013EA74:u32,0x80139F03:u8,0x80139EC2:u16",
-        "FRAME=first GPU::Vsync after SaveStateLoaded snapshot; continued bounded 900 post-load frames with no input; PC 0x800D5A1C Exec breakpoint and dynamic destination Write watchpoints are observation-only",
+        "FRAME=first GPU::Vsync after SaveStateLoaded snapshot; then CIRCLE press 6 frames/release at post-load frames 120,240,360,480,600,720,840; two identical measured launches",
+        f"UM0_BREAKPOINT_ARMED_MEASURE_1={'YES' if armed1 else 'NO'}", f"UM0_BREAKPOINT_ARMED_MEASURE_2={'YES' if armed2 else 'NO'}",
+        f"UM0_RUNTIME_WINDOW_COMPLETE_MEASURE_1={'YES' if complete1 else 'NO'}", f"UM0_RUNTIME_WINDOW_COMPLETE_MEASURE_2={'YES' if complete2 else 'NO'}",
+        f"UM0_RUNTIME_INPUTS_VALID={'YES' if inputs_ok else 'NO'}",
+        f"UM0_RUNTIME_CONDITION_EVIDENCE={'K5' if um0_k5 else 'K1'}",
+        f"UM0_WRITER_EXECUTION_EVIDENCE={'K5' if um0_exec_k5 else 'K0'}",
+        "UM0_WRITER_PATH_K5_REQUIRES_ACTUAL_EXEC_AND_DYNAMIC_WRITE_HITS_IN_BOTH_LAUNCHES; repeated empty traces only establish no-hit for the exact tested input condition",
         f"UM0_RUNTIME_EXEC_HITS_MEASURE_1={um0_exec1}", f"UM0_RUNTIME_EXEC_HITS_MEASURE_2={um0_exec2}",
         f"UM0_RUNTIME_WRITE_HITS_MEASURE_1={um0_write1}", f"UM0_RUNTIME_WRITE_HITS_MEASURE_2={um0_write2}",
         f"UM0_RUNTIME_TRACE_IDENTICAL={'YES' if u1 == u2 else 'NO'}",
@@ -511,14 +565,18 @@ def main() -> int:
     um0_summary = [
         "UM0_SPECIAL_WRITER_RUNTIME_CROSSCHECK",
         f"STATUS={'TUNTAS' if um0_k5 else 'BELUM'}",
-        f"EVIDENCE={'K5' if um0_k5 else ('K2' if um0_exec1 or um0_exec2 else 'K1')}",
+        f"EVIDENCE={'K5' if um0_k5 else 'K1'}",
+        f"WRITER_EXECUTION_EVIDENCE={'K5' if um0_exec_k5 else 'K0'}",
         "TARGET_PC=0x800D5A1C",
         "CHECKPOINT_SHA256="+CHECKPOINT_SHA,
-        "INPUT=NO_INPUT",
+        "INPUT=CIRCLE: 7 verified press/release pairs, 6 frames each, post-load frames 120..840",
         "RUNTIME_WINDOW_POST_LOAD_FRAMES=900",
         f"MEASURE_1_EXEC_HITS={um0_exec1}", f"MEASURE_2_EXEC_HITS={um0_exec2}",
         f"MEASURE_1_WRITE_HITS={um0_write1}", f"MEASURE_2_WRITE_HITS={um0_write2}",
         f"EVENT_TRACE_IDENTICAL={'YES' if u1 == u2 else 'NO'}",
+        f"BREAKPOINT_ARMED_BOTH={'YES' if armed1 and armed2 else 'NO'}",
+        f"INPUTS_VALID_BOTH={'YES' if inputs_ok else 'NO'}",
+        f"WRITER_EXECUTION_K5={'YES' if um0_exec_k5 else 'NO'}",
         f"K5_RULE_MET={'YES' if um0_k5 else 'NO'}",
         "SEMANTIC_MEANING=TIDAK TAHU",
         "EXIT_CODE=0" if um0_k5 else "EXIT_CODE=2",
