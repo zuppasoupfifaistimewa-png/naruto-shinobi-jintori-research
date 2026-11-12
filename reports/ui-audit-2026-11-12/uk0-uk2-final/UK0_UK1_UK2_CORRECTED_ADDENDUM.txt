@@ -1,0 +1,89 @@
+UK0-UK2 — ADDENDUM KOREKSI DAN HASIL PEMERIKSAAN LANJUTAN
+Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+Baseline UK2 inklusif: b54ff5d5e52d5196459ea190a5322d8746b96eb1
+HEAD yang diperiksa sebelum publikasi addendum ini: f5945b7037caf45d7f0e2f165029d16cba7362ae
+
+KOREKSI PENTING
+Dokumen UK0_UK1_UK2_STATUS.md sebelumnya keliru menyebut HEAD saat pemeriksaan sama dengan baseline, dan menghitung 1 commit / 0 file events. Pemeriksaan GitHub commit search + compare yang dilakukan ulang menunjukkan 6 commit setelah baseline, atau 7 commit rows bila baseline dihitung inklusif. Jumlah file events individual --no-renames pada rentang tersebut adalah 5; ada satu empty commit.
+
+STATUS TERKINI
+UK0 = BELUM, K0 untuk scan khusus UK0.
+UK1 = BELUM, K0 untuk snapshot khusus UK1.
+UK2 = TUNTAS, K4 untuk ledger commit dan Actions sesuai rentang/pengecualian eksplisit yang ditetapkan.
+Keseluruhan UK0-UK2 belum tuntas karena UK0 dan UK1 belum memiliki data yang diminta.
+
+UK0 — HASIL YANG BISA DAN TIDAK BISA DIGUNAKAN
+Hasil UJ0 terdahulu bukan pengganti UK0. Ia membuktikan:
+- EXE 385024 byte, SHA-256 a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569.
+- DATA.BIN 66015232 byte, SHA-256 69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822.
+- Entry 1 596412 byte, SHA-256 9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a.
+- Rumus EXE 0x800+(PC-0x80010000); Entry 1 0x10BB000+(PC-0x800AD450).
+- Satu kutipan stride 0x124 pada PC 0x800B41B8..0x800B41D4 dengan slot 0x8013EA84; dan satu kutipan writer +0x20 di 0x800D5A00..0x800D5A1C.
+
+Namun UJ0 tidak memindai semua EXE/Entry 1 untuk idiom yang diminta UK0, tidak membangun jendela 24 instruksi per kecocokan, dan tidak mengeluarkan tabel lengkap load/store semua offset rekaman 0x00..0x123. UI1_MIPS_FIELD_CENSUS.tsv hanya menyaring instruksi load/store pada immediate tertentu; tidak berisi seluruh instruksi ALU sehingga tidak cukup untuk membuktikan daftar hit/miss stride atau register pointer. Fungsi yang terlihat di kutipan tidak boleh dianggap sebagai seluruh pemakai rekaman.
+
+Kutipan terverifikasi yang tersedia (32 byte, <=64 byte):
+PC 0x800B41B8..0x800B41D4:
+lui $v0,0x8014
+lw $a0,-0x157c($v0) ; slot efektif 0x8013EA84
+sll $v0,$v1,3
+addu $v0,$v0,$v1
+sll $v0,$v0,3
+addu $v0,$v0,$v1
+sll $v0,$v0,2
+addu $a0,$v0,$a0
+Ini membentuk 292*i = 0x124*i dan menambahkan ke a0. Satu kecocokan yang terbukti bukan daftar lengkap.
+
+PC 0x800D5A00..0x800D5A1C:
+sll $v0,$v1,3
+addu $v0,$v0,$v1
+sll $v0,$v0,3
+addu $v0,$v0,$v1
+sll $v0,$v0,2
+addu $v0,$v0,$a0
+ori $v1,$zero,0xF020
+sh $v1,0x20($v0)
+Bukti penulisan +0x20 saja; tidak mengungkap semua medan.
+
+Batas: pointer yang telah dihitung sebelum jendela, diwariskan sebagai argumen, atau memakai konstruksi berbeda dapat luput dari pencarian pola eksplisit. Asal +0x48 dan semantik medan tetap TIDAK TAHU.
+
+UK1 — DATA UJ1 LAMA TIDAK MEMENUHI SPESIFIKASI UK1
+Run 43144307299 (source SHA e0ad8bf89ca43dda6b84272382ab468f0bdb28ef) memang menyelesaikan dua launch NO_INPUT dan mengambil snapshot frame 1 serta frame 900. Tetapi skripnya mengambil lima medan terpilih per record, dua basis A/B, 44 indeks per basis. UK1 meminta semua byte 0x00..0x123 hanya untuk A:i 0..21 plus kontrol A:22/A:43, dan hanya snapshot frame 1. Dengan demikian data frame-1 terdahulu tidak dapat dipakai sebagai pengganti semua-byte TSV. Tidak ada run emulator UK1 yang dilakukan dalam cakupan ini.
+
+Checkpoint historis: artifact run 39907655833, adaptive-cycle-02-f180.sstate, SHA-256 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35.
+Memory Card historis: SHA-256 78b6d4ac9ab4d23caf7e5f04f83539bf5d994cccfb0a709d14ac53d05c8e21ef.
+Hash tersebut berasal dari run UJ1 terdahulu; bukan verifikasi run UK1 baru.
+Tidak ada klaim hash before/after UK1 baru.
+
+Penghalang eksekusi: workflow uj0-uj2-readonly-audit.yml tidak memiliki workflow_dispatch, hanya trigger push pada lima path kode/workflow tertentu, dan job audit memiliki exact-SHA guard e0ad8bf89ca43dda6b84272382ab468f0bdb28ef. Spesifikasi UK melarang mengubah workflow lama maupun file kode lama dan mengizinkan hanya file baru di folder laporan. Karena itu perubahan laporan tidak memicu job, sedangkan memicu lewat path kode akan menjalankan workflow UJ lama yang salah spesifikasi dan guard-nya tidak cocok untuk SHA baru. Tidak ada mekanisme dispatch/runner langsung yang tersedia melalui integrasi pada sesi ini. Menjalankan workflow lama akan melanggar batas UK1 dan tidak dilakukan.
+
+UK2 — LEDGER KOREKSI
+Rentang: baseline inklusif b54ff5d5e52d5196459ea190a5322d8746b96eb1 sampai HEAD sebelum publikasi addendum ini, f5945b7037caf45d7f0e2f165029d16cba7362ae.
+Jumlah commit rows inklusif: 7 (baseline + 6 commit sesudahnya).
+Jumlah file events --no-renames: 5.
+Daftar commit sesudah baseline:
+1de0fbc36c21ce6e3fd6f30001b2450ae7011bef — tambah UK_STATUS_AND_UK2_LEDGER.txt.
+b707cee58c17bd351a5159f06eb9d3c3fb2bce1b — empty commit, tidak ada file event.
+6e7263cadfa250b470544b44f22a39855e8eb08d — ubah UK_STATUS_AND_UK2_LEDGER.txt.
+becbe0354c1b2f4c6db34eddbe2ee8fbd2ed8be1 — ubah UK_STATUS_AND_UK2_LEDGER.txt.
+753d41e01381918b73f139933d5fcbe02b2deb2c — tambah UK2_LEDGER_CORRECTED_AND_UK_STATUS.txt.
+f5945b7037caf45d7f0e2f165029d16cba7362ae — tambah UK0_UK1_UK2_STATUS.md.
+Jumlah file events: A=3, M=2, D=0, R=0. Semua file events berada di reports/ui-audit-2026-11-12/uk0-uk2-final/. Tidak ada file di luar folder tersebut berubah dalam rentang ini.
+
+Actions:
+- 43109652913 | monitor | schedule | created 2026-11-11T22:11:36Z | completed/success | job monitor success | exit 0 | source SHA d2c57a796215696dc91be91fb18f36907fa5203c.
+- 43145985922 | monitor | schedule | created 2026-11-12T03:06:56Z | completed/success | job monitor success | exit 0 | source SHA d7838e0332d61a76335381dfe0ca7687fd10e33a.
+
+Kedua monitor dimasukkan karena diminta eksplisit, meskipun timestamp keduanya mendahului baseline. Metadata SHA sumber dipertahankan persis; tidak disamakan dengan baseline. Pemeriksaan ledger terdahulu mencatat Actions API page pertama per saat audit (100 run terbaru, total_count=1362) tidak memiliki run created_at >= 2026-11-12T03:34:22Z, sehingga tidak ada halaman lebih lama yang diperlukan untuk menemukan run setelah baseline pada saat audit. Tidak ada run Actions baru setelah pemeriksaan itu yang teridentifikasi dari commit setelah baseline; semua commit setelah baseline berlabel [skip ci] kecuali publikasi status pertama yang hanya menyentuh folder laporan dan tidak termasuk path pemicu workflow. Total run yang termasuk UK2: 2 (keduanya monitor).
+
+DAFTAR BERKAS BERUBAH PADA RENTANG UK2
+- reports/ui-audit-2026-11-12/uk0-uk2-final/UK_STATUS_AND_UK2_LEDGER.txt (A lalu M dua kali)
+- reports/ui-audit-2026-11-12/uk0-uk2-final/UK2_LEDGER_CORRECTED_AND_UK_STATUS.txt (A)
+- reports/ui-audit-2026-11-12/uk0-uk2-final/UK0_UK1_UK2_STATUS.md (A)
+
+VALIDASI
+Tidak ada py_compile/pyflakes/parse YAML/actionlint untuk kode UK baru, karena implementasi UK0/UK1 baru tidak dibuat dan tidak dijalankan. Actionlint PASS yang pernah dicatat berlaku pada preflight UJ run 43144307299, bukan validasi workflow UK baru. Tidak ada emulator UK1 dijalankan. Tidak ada biner privat dikomit. STATUS.md, Release, dan workflow lama tidak diubah.
+
+KESIMPULAN
+UK2 TUNTAS K4 untuk rentang yang ditentukan.
+UK0 BELUM dan UK1 BELUM. Tidak ada dasar untuk menulis TUNTAS: UK0 membutuhkan scan byte lengkap EXE/Entry 1 yang belum tersedia; UK1 membutuhkan dua peluncuran frame-1-only dengan seluruh byte record yang belum dijalankan. Batasan "hanya berkas baru di folder laporan", "workflow lama tidak diubah", serta tidak adanya dispatch/runner tool yang tersedia membuat penyelesaian UK0/UK1 tidak dapat dilakukan dalam sesi ini tanpa melanggar aturan proyek.
