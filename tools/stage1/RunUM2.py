@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """UM2: inclusive main-history and Actions ledger, including every run past UL cutoff."""
 from __future__ import annotations
-import argparse, csv, json, os, subprocess, urllib.request
+import argparse, csv, html, json, os, re, subprocess, urllib.request
 from pathlib import Path
 
 BASELINE = "77df5627cba56a17503f54cb7664f02129893ab7"
@@ -117,6 +117,41 @@ def actions_ledger(repo: str, token: str, out: Path, source_sha: str) -> tuple[i
     return len(included), len(job_rows), api_ok, ";".join(errors) or "NONE", included, [f"CURRENT_RUN_SOURCE_SHA_MATCH={'YES' if source_match else 'NO'}"]
 
 
+
+def actions_page_check(repo: str, token: str, out: Path) -> tuple[bool, str, list[str], bool]:
+    """Fetch the public Actions UI HTML itself, independently of the Actions REST API."""
+    url = f"https://github.com/{repo}/actions"
+    try:
+        req = urllib.request.Request(url, headers={
+            "Authorization": "Bearer " + token,
+            "Accept": "text/html",
+            "User-Agent": "Mozilla/5.0 UM2-Actions-page-audit",
+        })
+        with urllib.request.urlopen(req, timeout=60) as response:
+            status = response.status
+            body = response.read().decode("utf-8", errors="replace")
+        ids = sorted(set(re.findall(r"/actions/runs/(\d+)", body)), key=int)
+        text_body = html.unescape(re.sub(r"<[^>]+>", " ", body))
+        text_body = re.sub(r"\s+", " ", text_body)
+        monitor_visible = ("Naruto Story Mode adaptive player monitor" in text_body
+                           or "naruto-storymode-adaptive-monitor.yml" in body)
+        scheduled_visible = monitor_visible and bool(re.search(r"schedule|scheduled", body, re.I))
+        result = [
+            f"URL={url}", f"HTTP_STATUS={status}", "FETCH_MODE=GitHub Actions HTML UI, independently fetched (not Actions REST API)",
+            f"PAGE_RUN_LINK_COUNT={len(ids)}", f"PAGE_RUN_IDS={';'.join(ids) if ids else '0'}",
+            f"STORY_MODE_MONITOR_VISIBLE={'YES' if monitor_visible else 'NO'}",
+            f"STORY_MODE_SCHEDULE_MARKER_VISIBLE={'YES' if scheduled_visible else 'NO'}",
+        ]
+        ok = status == 200 and bool(ids) and monitor_visible and scheduled_visible
+        result.append(f"PAGE_CHECK={'PASS' if ok else 'SEBAGIAN'}")
+        (out / "UM2_ACTIONS_PAGE.txt").write_text("\n".join(result) + "\n", encoding="utf-8")
+        return ok, "PASS" if ok else "SEBAGIAN", ids, scheduled_visible
+    except Exception as exc:
+        result = [f"URL={url}", "HTTP_STATUS=NOT_RUN", "PAGE_CHECK=NOT_RUN",
+                  f"ERROR={type(exc).__name__}:{exc}"]
+        (out / "UM2_ACTIONS_PAGE.txt").write_text("\n".join(result) + "\n", encoding="utf-8")
+        return False, "NOT_RUN", [], False
+
 def self_test() -> None:
     assert len(BASELINE) == 40 and len(HARNESS_AUDIT_REFERENCE) == 40
     assert ACTIONS_CUTOFF == 43192191539
@@ -140,10 +175,11 @@ def main() -> int:
         raise SystemExit(f"SOURCE_SHA_MISMATCH env={source_sha} checkout={checkout_sha}")
     head, ncommits, nevents, counts, baseline_date = commit_ledger(a.out_dir)
     nruns, njobs, api_ok, api_error, ids, current = actions_ledger(a.repo, a.token, a.out_dir, source_sha)
+    page_ok, page_status, page_ids, scheduled_visible = actions_page_check(a.repo, a.token, a.out_dir)
     current_run = int(os.getenv("GITHUB_RUN_ID", "0"))
     run_present = current_run in ids
     current_row = next((r for r in current if r.startswith("CURRENT_RUN_SOURCE_SHA_MATCH=")), "CURRENT_RUN_SOURCE_SHA_MATCH=NO")
-    status = "TUNTAS" if api_ok and current_row.endswith("YES") and run_present and source_sha in [x[0] for x in read_commit_rows(a.out_dir / "UM2_COMMITS.tsv")] else "SEBAGIAN"
+    status = "TUNTAS" if api_ok and page_ok and current_row.endswith("YES") and run_present and source_sha in [x[0] for x in read_commit_rows(a.out_dir / "UM2_COMMITS.tsv")] else "SEBAGIAN"
     summary = [
         "UM2_MAIN_COMMIT_AND_ACTIONS_LEDGER", f"STATUS={status}", "EVIDENCE=K4 (Git commit graph, no-renames file diffs, Actions run/job API; Actions page UI cross-check recorded separately)",
         f"BASELINE_INCLUSIVE={BASELINE}", f"BASELINE_COMMITTER_DATE={baseline_date}", f"HARNESS_DELETION_AUDIT_REFERENCE_ONLY={HARNESS_AUDIT_REFERENCE}",
@@ -155,6 +191,8 @@ def main() -> int:
         f"ACTIONS_RUN_ID_STRICTLY_GREATER_THAN={ACTIONS_CUTOFF}", f"ACTIONS_RUN_ROWS={nruns}", f"ACTIONS_JOB_ROWS={njobs}",
         f"CURRENT_RUN_ID={current_run}", f"CURRENT_RUN_INCLUDED={'YES' if run_present else 'NO'}", current_row,
         f"ACTIONS_API={'PASS' if api_ok else 'SEBAGIAN'}", f"ACTIONS_API_ERRORS={api_error}",
+        f"ACTIONS_PAGE_HTML={page_status}", f"ACTIONS_PAGE_RUN_IDS={'/'.join(page_ids) if page_ids else '0'}",
+        f"STORY_MODE_SCHEDULE_MARKER_VISIBLE={'YES' if scheduled_visible else 'NO'}",
         f"ACTIONS_IDS={'/'.join(str(x) for x in ids) if ids else '0'}",
         "REPORT_CLOSEOUT_COMMIT_INCLUDED=NO (ledger captured before this run's text report publication; explicit self-closing report commit will be listed separately)",
         "OLD_FILES_OR_WORKFLOWS_MODIFIED=NO (verified by workflow path-only commit)", "STATUS_MD_RELEASE_TAG_MODIFIED=NO",
