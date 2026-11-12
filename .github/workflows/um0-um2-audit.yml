@@ -306,7 +306,7 @@ jobs:
             fetch_asset scph7502.zip scph7502.zip 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a || rc=4
           fi
           if [ "$rc" -eq 0 ]; then
-            python - <<'PY'
+            if python - <<'PY'
           from pathlib import Path
           import hashlib, stat, zipfile
           with zipfile.ZipFile("scph7502.zip") as archive:
@@ -333,7 +333,11 @@ jobs:
           lines[files[0]] = 'FILE "game.bin" BINARY'
           Path("game-run.cue").write_text("\n".join(lines) + "\n", encoding="ascii")
           PY
-            [ "$?" -eq 0 ] || rc=5
+            then
+              :
+            else
+              rc=5
+            fi
           fi
           if [ "$rc" -eq 0 ]; then chmod +x pcsx-redux.AppImage; ./pcsx-redux.AppImage --appimage-extract >/dev/null || rc=6; fi
           if [ "$rc" -eq 0 ]; then
