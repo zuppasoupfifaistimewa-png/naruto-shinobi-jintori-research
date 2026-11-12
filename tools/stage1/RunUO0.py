@@ -359,7 +359,7 @@ def forward_sites(ins: list[dict], starts: list[int], blob: bytes, region: str,
             if stop==func_end: end_reason="AKHIR_FUNGSI_JR_RA"
         used=[]
         for j in range(i,stop):
-            d=ins[j]; raw=blob[j*4:j*4+4]; pcj=base_pc+j*4
+            d=ins[j]; raw=blob[j*4:j*4+4]
             before=set(taint); used_regs=set(d["reads"]) & before
             cls="TIDAK_MENGGUNAKAN_NILAI"; detail=""
             if used_regs:

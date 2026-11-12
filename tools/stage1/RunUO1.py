@@ -332,7 +332,7 @@ end'''
       'local function arm_read()\n if MODE=="EXEC_FALLBACK" then log("UO1_READ_BP_REGISTERED=NO launch="..LAUNCH.." reason=probe_read_breakpoint_unavailable"); arm_exec(); return end\n local okw=build_watches()\n if not okw then log("UO1_POINTER_OR_WATCH_RANGE_INVALID=YES launch="..LAUNCH); log("UO1_READ_BP_REGISTERED=NO launch="..LAUNCH.." reason=invalid_runtime_P_or_watch_range"); arm_exec(); MODE="EXEC_FALLBACK"; return end\n local failed=false')
     stdout=d/"emulator.stdout.txt"; home=d/"home"
     before_state=sha(state); before_source=sha(source); before_card=sha(card)
-    start=f"STAGE_START\t{name}\tframes={frames}\tindices="+",".join(str(x) for x in indexes)+"\n"
+    start="STAGE_START\t"+name+"\tframes="+str(frames)+"\tindices="+",".join(str(x) for x in indexes)+"\n"
     with (out/"UO1_STAGE_MARKERS.txt").open("a",encoding="utf-8") as f: f.write(start); f.flush()
     (out/f"UO1_STAGE_START_{name}.txt").write_text(start,encoding="utf-8")
     rc,wall=run_emulator(pcsx,appdir,bios,cue,card,state,lua,home,stdout,timeout_s)
