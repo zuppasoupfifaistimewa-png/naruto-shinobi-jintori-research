@@ -1,0 +1,1 @@
+UO1_SELF_TEST=PASS indexes=17 halfword_offsets=9 watches=153 probe_frames=60 measure_frames=88
