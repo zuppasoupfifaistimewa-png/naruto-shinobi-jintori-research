@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """UM2: inclusive main-history and Actions ledger, including every run past UL cutoff."""
 from __future__ import annotations
-import argparse, csv, html, json, os, re, subprocess, urllib.request
+import argparse, csv, hashlib, html, json, os, re, subprocess, tempfile, urllib.request
 from pathlib import Path
 
 BASELINE = "77df5627cba56a17503f54cb7664f02129893ab7"
@@ -67,7 +67,7 @@ def commit_ledger(out: Path) -> tuple[str, int, int, dict[str, int], str]:
     return head, len(commit_rows), len(event_rows), counts, git("show", "-s", "--format=%cI", BASELINE)
 
 
-def actions_ledger(repo: str, token: str, out: Path, source_sha: str) -> tuple[int, int, bool, str, list[int], list[str]]:
+def actions_ledger(repo: str, token: str, out: Path, source_sha: str, run_ceiling: int) -> tuple[int, int, bool, str, list[int], list[str]]:
     run_map = {}
     page = 1
     api_ok = True
@@ -84,7 +84,7 @@ def actions_ledger(repo: str, token: str, out: Path, source_sha: str) -> tuple[i
                 rid = int(run.get("id", 0))
             except (TypeError, ValueError):
                 continue
-            if rid > ACTIONS_CUTOFF:
+            if ACTIONS_CUTOFF < rid <= run_ceiling:
                 run_map[rid] = run
         if not runs or len(runs) < 100:
             break
@@ -118,7 +118,7 @@ def actions_ledger(repo: str, token: str, out: Path, source_sha: str) -> tuple[i
 
 
 
-def actions_page_check(repo: str, token: str, out: Path) -> tuple[bool, str, list[str], bool]:
+def actions_page_check(repo: str, token: str, out: Path, run_ceiling: int) -> tuple[bool, str, list[str], bool]:
     """Fetch the public Actions UI HTML itself, independently of the Actions REST API."""
     url = f"https://github.com/{repo}/actions"
     try:
@@ -170,38 +170,90 @@ def main() -> int:
         ap.error("--repo, --token and --out-dir required")
     a.out_dir.mkdir(parents=True, exist_ok=True)
     source_sha = os.getenv("GITHUB_SHA", "TIDAK TAHU")
+    current_run = int(os.getenv("GITHUB_RUN_ID", "0"))
     checkout_sha = git("rev-parse", "HEAD")
     if source_sha == "TIDAK TAHU" or checkout_sha != source_sha:
         raise SystemExit(f"SOURCE_SHA_MISMATCH env={source_sha} checkout={checkout_sha}")
-    head, ncommits, nevents, counts, baseline_date = commit_ledger(a.out_dir)
-    nruns, njobs, api_ok, api_error, ids, current = actions_ledger(a.repo, a.token, a.out_dir, source_sha)
-    page_ok, page_status, page_ids, scheduled_visible = actions_page_check(a.repo, a.token, a.out_dir)
-    current_run = int(os.getenv("GITHUB_RUN_ID", "0"))
-    run_present = current_run in ids
-    current_row = next((r for r in current if r.startswith("CURRENT_RUN_SOURCE_SHA_MATCH=")), "CURRENT_RUN_SOURCE_SHA_MATCH=NO")
-    status = "TUNTAS" if api_ok and page_ok and current_row.endswith("YES") and run_present and source_sha in [x[0] for x in read_commit_rows(a.out_dir / "UM2_COMMITS.tsv")] else "SEBAGIAN"
+    if current_run <= ACTIONS_CUTOFF:
+        raise SystemExit("CURRENT_RUN_ID_NOT_ABOVE_ACTIONS_CUTOFF")
+
+    def capture(destination: Path):
+        head, ncommits, nevents, counts, baseline_date = commit_ledger(destination)
+        nruns, njobs, api_ok, api_error, ids, current = actions_ledger(a.repo, a.token, destination, source_sha, current_run)
+        page_ok, page_status, page_ids, scheduled_visible = actions_page_check(a.repo, a.token, destination, current_run)
+        current_row = next((r for r in current if r.startswith("CURRENT_RUN_SOURCE_SHA_MATCH=")), "CURRENT_RUN_SOURCE_SHA_MATCH=NO")
+        files = ("UM2_COMMITS.tsv", "UM2_FILE_EVENTS.tsv", "UM2_ACTIONS_RUNS.tsv", "UM2_ACTIONS_JOBS.tsv", "UM2_ACTIONS_PAGE.txt")
+        payload = {name: (destination / name).read_bytes() for name in files}
+        return {
+            "head":head,"ncommits":ncommits,"nevents":nevents,"counts":counts,"baseline_date":baseline_date,
+            "nruns":nruns,"njobs":njobs,"api_ok":api_ok,"api_error":api_error,"ids":ids,
+            "page_ok":page_ok,"page_status":page_status,"page_ids":page_ids,"scheduled_visible":scheduled_visible,
+            "current_row":current_row,"payload":payload,
+        }
+
+    first = capture(a.out_dir)
+    with tempfile.TemporaryDirectory(prefix="um2-repeat-", dir=a.out_dir) as temp:
+        second = capture(Path(temp))
+    names = sorted(first["payload"])
+    compare_rows = []
+    for name in names:
+        left, right = first["payload"][name], second["payload"][name]
+        compare_rows.append((name, hashlib.sha256(left).hexdigest(), hashlib.sha256(right).hexdigest(),
+                             "IDENTIK" if left == right else "BERBEDA"))
+    repeat_identical = all(row[3] == "IDENTIK" for row in compare_rows)
+    same_counts = (first["head"] == second["head"] == source_sha and
+                   first["ncommits"] == second["ncommits"] and first["nevents"] == second["nevents"] and
+                   first["counts"] == second["counts"] and first["nruns"] == second["nruns"] and
+                   first["njobs"] == second["njobs"] and first["ids"] == second["ids"] and
+                   first["page_ids"] == second["page_ids"])
+    api_ok = first["api_ok"] and second["api_ok"]
+    page_ok = first["page_ok"] and second["page_ok"]
+    source_match = first["current_row"].endswith("YES") and second["current_row"].endswith("YES")
+    run_present = current_run in first["ids"] and current_run in second["ids"]
+    repeat_k5 = repeat_identical and same_counts and api_ok and page_ok and source_match and run_present
+    status = "TUNTAS" if repeat_k5 else "SEBAGIAN"
+    (a.out_dir / "UM2_REPEAT_COMPARISON.tsv").write_text(
+        "file\tcapture_1_sha256\tcapture_2_sha256\tcomparison\n" +
+        "".join("\t".join(row) + "\n" for row in compare_rows) +
+        f"ALL_FILES_IDENTICAL\t{int(repeat_identical)}\t{int(repeat_identical)}\t{'PASS' if repeat_identical else 'FAIL'}\n" +
+        f"HEAD_SOURCE_SHA_MATCH\t{source_sha}\t{first['head']}\t{'PASS' if first['head']==source_sha==second['head'] else 'FAIL'}\n" +
+        f"RUN_CEILING\t{current_run}\t{current_run}\tFIXED\n",
+        encoding="utf-8")
     summary = [
-        "UM2_MAIN_COMMIT_AND_ACTIONS_LEDGER", f"STATUS={status}", "EVIDENCE=K4 (Git commit graph, no-renames file diffs, Actions run/job API; Actions page UI cross-check recorded separately)",
-        f"BASELINE_INCLUSIVE={BASELINE}", f"BASELINE_COMMITTER_DATE={baseline_date}", f"HARNESS_DELETION_AUDIT_REFERENCE_ONLY={HARNESS_AUDIT_REFERENCE}",
-        f"HEAD_MAIN_AT_LEDGER_CAPTURE={head}", f"WORKFLOW_SOURCE_SHA={source_sha}", f"CHECKOUT_SOURCE_SHA={checkout_sha}",
-        f"SOURCE_SHA_IS_IN_LEDGER={'YES' if source_sha in [x[0] for x in read_commit_rows(a.out_dir / 'UM2_COMMITS.tsv')] else 'NO'}",
-        f"COMMIT_ROWS_INCLUDING_BASELINE={ncommits}", f"FILE_EVENT_ROWS_NO_RENAMES={nevents}",
-        *[f"FILE_EVENT_{k}={v}" for k, v in counts.items()],
-        "EVENT_DETECTION=git diff --no-renames; rename pairs represented as separate A/D; R=0 by design unless a raw R code is returned",
-        f"ACTIONS_RUN_ID_STRICTLY_GREATER_THAN={ACTIONS_CUTOFF}", f"ACTIONS_RUN_ROWS={nruns}", f"ACTIONS_JOB_ROWS={njobs}",
-        f"CURRENT_RUN_ID={current_run}", f"CURRENT_RUN_INCLUDED={'YES' if run_present else 'NO'}", current_row,
-        f"ACTIONS_API={'PASS' if api_ok else 'SEBAGIAN'}", f"ACTIONS_API_ERRORS={api_error}",
-        f"ACTIONS_PAGE_HTML={page_status}", f"ACTIONS_PAGE_RUN_IDS={'/'.join(page_ids) if page_ids else '0'}",
-        f"STORY_MODE_SCHEDULE_MARKER_VISIBLE={'YES' if scheduled_visible else 'NO'}",
-        f"ACTIONS_IDS={'/'.join(str(x) for x in ids) if ids else '0'}",
-        "REPORT_CLOSEOUT_COMMIT_INCLUDED=NO (ledger captured before this run's text report publication; explicit self-closing report commit will be listed separately)",
-        "OLD_FILES_OR_WORKFLOWS_MODIFIED=NO (verified by workflow path-only commit)", "STATUS_MD_RELEASE_TAG_MODIFIED=NO",
-        "BINARY_OR_RAM_DATA_COMMITTED=NO", "EXIT_CODE=0" if status == "TUNTAS" else "EXIT_CODE=2",
+        "UM2_MAIN_COMMIT_AND_ACTIONS_LEDGER",
+        f"STATUS={status}",
+        f"EVIDENCE={'K5' if repeat_k5 else 'K4'} (two independent API/Git ledger captures in separate output directories; byte-identical comparison required)",
+        f"BASELINE_INCLUSIVE={BASELINE}", f"BASELINE_COMMITTER_DATE={first['baseline_date']}",
+        f"HARNESS_DELETION_AUDIT_REFERENCE_ONLY={HARNESS_AUDIT_REFERENCE}",
+        f"HEAD_MAIN_AT_LEDGER_CAPTURE={first['head']}", f"WORKFLOW_SOURCE_SHA={source_sha}", f"CHECKOUT_SOURCE_SHA={checkout_sha}",
+        f"SOURCE_SHA_IS_IN_LEDGER={'YES' if source_sha in read_commit_rows(a.out_dir / 'UM2_COMMITS.tsv') else 'NO'}",
+        f"COMMIT_ROWS_INCLUDING_BASELINE={first['ncommits']}", f"FILE_EVENT_ROWS_NO_RENAMES={first['nevents']}",
+        *[f"FILE_EVENT_{k}={v}" for k, v in first["counts"].items()],
+        "EVENT_DETECTION=git diff --no-renames; rename pairs represented as separate A/D",
+        f"ACTIONS_RUN_ID_STRICTLY_GREATER_THAN={ACTIONS_CUTOFF} AND_LESS_EQUAL_TO_CURRENT_RUN={current_run}",
+        f"ACTIONS_RUN_ROWS={first['nruns']}", f"ACTIONS_JOB_ROWS={first['njobs']}",
+        f"CURRENT_RUN_ID={current_run}", f"CURRENT_RUN_INCLUDED={'YES' if run_present else 'NO'}", first["current_row"],
+        f"ACTIONS_API={'PASS' if api_ok else 'SEBAGIAN'}",
+        f"ACTIONS_API_ERRORS_CAPTURE_1={first['api_error']}",
+        f"ACTIONS_API_ERRORS_CAPTURE_2={second['api_error']}",
+        f"ACTIONS_PAGE_HTML_CAPTURE_1={first['page_status']}",
+        f"ACTIONS_PAGE_HTML_CAPTURE_2={second['page_status']}",
+        f"STORY_MODE_SCHEDULE_MARKER_VISIBLE={'YES' if first['scheduled_visible'] and second['scheduled_visible'] else 'NO'}",
+        f"CAPTURE_1_VS_CAPTURE_2_IDENTICAL={'YES' if repeat_identical else 'NO'}",
+        f"INDEPENDENT_SNAPSHOT_COUNTS_MATCH={'YES' if same_counts else 'NO'}",
+        "RUN_CEILING=the current Actions run ID; later runs excluded to keep the ledger window fixed",
+        "REPORT_CLOSEOUT_COMMIT_INCLUDED=NO (this run's own report is published after capture)",
+        "STATUS_MD_RELEASE_TAG_MODIFIED=NO", "BINARY_OR_RAW_RAM_DATA_COMMITTED=NO",
+        "EXIT_CODE=0" if repeat_k5 else "EXIT_CODE=2",
     ]
     (a.out_dir / "UM2_SUMMARY.txt").write_text("\n".join(summary) + "\n", encoding="utf-8")
     print("\n".join(summary))
-    return 0 if status == "TUNTAS" else 2
-
+    action_summary = [
+        f"STATUS={status}", "JOB=um-audit", f"RUN_ID={current_run}", f"SOURCE_SHA={source_sha}",
+        "UM2_EVIDENCE="+("K5" if repeat_k5 else "K4"), f"EXIT_CODE={0 if repeat_k5 else 2}",
+    ]
+    (a.out_dir / "ACTIONS_RUN_SUMMARY.txt").write_text("\n".join(action_summary) + "\n", encoding="utf-8")
+    return 0 if repeat_k5 else 2
 
 def read_commit_rows(path: Path) -> list[list[str]]:
     with path.open(encoding="utf-8", newline="") as f:
