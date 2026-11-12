@@ -1,0 +1,6 @@
+STATUS=BELUM
+JOB=ul0-ul1-preflight
+RUN_ID=43187505853
+SOURCE_SHA=e396f2640e6ee7824563fa40ada5525814bd8325
+EXIT_CODE=1
+REASON=preflight ended before summary
