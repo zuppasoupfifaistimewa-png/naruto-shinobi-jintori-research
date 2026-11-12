@@ -1,0 +1,1 @@
+UN0_SEBAGIAN_K4 sites=44 forward_rows=135 LH_LHU=467 proven=7 candidates=326

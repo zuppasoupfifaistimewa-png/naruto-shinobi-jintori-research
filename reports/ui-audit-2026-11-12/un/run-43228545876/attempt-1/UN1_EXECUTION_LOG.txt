@@ -1,0 +1,1 @@
+UN1_TUNTAS K5=True DN1=48/48 selected=24/24 full=24/24 pairs=9
