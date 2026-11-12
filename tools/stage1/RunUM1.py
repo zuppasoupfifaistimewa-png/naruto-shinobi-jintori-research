@@ -87,6 +87,63 @@ local function readv(a,w)
  if not ok or v==nil then return nil,"READ_ERROR" end
  return v,nil
 end
+local snapshot_done=false
+local um0ExecBp=nil
+local um0WriteBpByAddress={}
+local um0PendingReadbacks={}
+local um0ExecHits,um0WriteHits=0,0
+local function arm_um0_writer()
+ if um0ExecBp~=nil then return end
+ um0ExecBp=PCSX.addBreakpoint(0x800D5A1C,"Exec",4,"UM0 special writer 800D5A1C",function(address,width,cause)
+  if um0ExecHits>=64 then return false end
+  local ok,err=pcall(function()
+   um0ExecHits=um0ExecHits+1
+   local r=PCSX.getRegisters()
+   local g=r.GPR
+   local p,pe=readv(0x8013EA84,4)
+   local idx,ie=readv(0x8013EB20,4)
+   local v0=tonumber(g.n.v0)%MOD
+   local v1=tonumber(g.n.v1)%MOD
+   local pc=tonumber(r.pc)%MOD
+   if pe or ie or p==nil or idx==nil then
+    log("UM0_WRITER_EXEC\\t"..LAUNCH.."\\t"..tostring(um0ExecHits).."\\t"..hx(pc).."\\t"..tostring(pe).."\\t"..tostring(ie).."\\t"..hx(v0).."\\t"..hx(v1).."\\tUNAVAILABLE")
+    return
+   end
+   local dest=(p+idx*0x124+0x20)%MOD
+   local regdest=(v0+0x20)%MOD
+   local before,be=readv(dest,2)
+   log("UM0_WRITER_EXEC\\t"..LAUNCH.."\\t"..tostring(um0ExecHits).."\\t"..hx(pc).."\\t"..hx(p).."\\t"..hx(idx).."\\t"..hx(v0).."\\t"..hx(v1).."\\t"..hx(dest).."\\t"..hx(regdest).."\\t"..(be or hx(before,2)))
+   if dest==regdest and v1==0xF020 and dest>=RAM_START and dest+2<=RAM_END and um0WriteBpByAddress[dest]==nil then
+    local watched=dest
+    um0WriteBpByAddress[watched]=PCSX.addBreakpoint(watched,"Write",2,"UM0 dynamic destination write",function(writeAddress,writeWidth,writeCause)
+     local ok2,err2=pcall(function()
+      um0WriteHits=um0WriteHits+1
+      local rr=PCSX.getRegisters()
+      log("UM0_WRITER_WRITE\\t"..LAUNCH.."\\t"..tostring(um0WriteHits).."\\t"..hx(writeAddress).."\\t"..tostring(writeWidth).."\\t"..hx(rr.pc).."\\t"..tostring(writeCause))
+      um0PendingReadbacks[#um0PendingReadbacks+1]=watched
+     end)
+     if not ok2 then log("UM0_WRITER_WRITE_ERROR\\t"..LAUNCH.."\\t"..tostring(err2)) end
+     if um0WriteHits>=64 then return false end
+     return true
+    end)
+   end
+  end)
+  if not ok then log("UM0_WRITER_EXEC_ERROR\\t"..LAUNCH.."\\t"..tostring(err)) end
+  return true
+ end)
+ log("UM0_WRITER_EXEC_BP_ARMED=YES launch="..LAUNCH.." pc=0x800D5A1C")
+end
+local function finish_um0_monitor()
+ local seen={}
+ for _,address in ipairs(um0PendingReadbacks) do
+  if not seen[address] then
+   seen[address]=true
+   local value,err=readv(address,2)
+   log("UM0_WRITER_READBACK\\t"..LAUNCH.."\\t"..hx(address).."\\t"..(err or hx(value,2)))
+  end
+ end
+ log("UM0_WRITER_MONITOR_END\\t"..LAUNCH.."\\t900\\t"..tostring(um0ExecHits).."\\t"..tostring(um0WriteHits))
+end
 local function snapshot()
  log("UM1_POST_LOAD_VSYNC_1=YES launch="..LAUNCH)
  log("UM1_SNAPSHOT_BEGIN launch="..LAUNCH.." frame=1")
@@ -131,10 +188,10 @@ local function snapshot()
  local endpoint=p+44*0x124
  local ok=(total==7008 and invalid==0 and endpoint==0x8013EA48)
  log("UM1_SNAPSHOT_COMPLETE="..(ok and "YES" or "NO").." launch="..LAUNCH.." bytes="..tostring(total).." scalars=7 endpoint="..string.format("0x%08X",endpoint))
- PCSX.nextTick(function() PCSX.quit(ok and 0 or 54) end)
+ snapshot_done=ok
 end
 _G.um1Loaded=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
- loaded=true; post=0; log("UM1_SAVE_STATE_LOADED=YES launch="..LAUNCH)
+ loaded=true; post=0; log("UM1_SAVE_STATE_LOADED=YES launch="..LAUNCH); arm_um0_writer()
 end)
 _G.um1Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
  if not card_marked then
@@ -160,8 +217,13 @@ _G.um1Vsync=PCSX.Events.createEventListener("GPU::Vsync",function()
  if not loaded then return end
  post=post+1
  if post==1 then snapshot() end
+ if post==900 then
+  finish_um0_monitor()
+  log("UM1_RUNTIME_WINDOW_COMPLETE=YES launch="..LAUNCH.." post_load_frames="..tostring(post))
+  PCSX.nextTick(function() PCSX.quit(snapshot_done and 0 or 54) end)
+ end
 end)
-log("UM1_SCRIPT_READY launch="..LAUNCH.." frame1_only=YES memory_write=NO write_watch=NO input=NO")
+log("UM1_SCRIPT_READY launch="..LAUNCH.." frame1_snapshot=YES runtime_window_frames=900 UM0_breakpoint_monitor=YES input=NO")
 '''.lstrip()
 
 
