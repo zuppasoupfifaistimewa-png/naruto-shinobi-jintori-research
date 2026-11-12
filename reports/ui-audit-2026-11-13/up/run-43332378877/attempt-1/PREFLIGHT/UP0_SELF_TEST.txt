@@ -1,0 +1,1 @@
+UP0_SELF_TEST=PASS independent decoder, delay slot, HI/LO, jr-ra and jal clobber
