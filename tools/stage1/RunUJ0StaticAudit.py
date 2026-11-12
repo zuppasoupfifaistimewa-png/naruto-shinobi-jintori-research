@@ -80,7 +80,9 @@ def quote(label,blob,start_pc,end_pc,pc_base):
     return lines
 def header(exe):
     if exe[:8]!=b"PS-X EXE": raise ValueError("PS-X EXE magic mismatch")
-    pc0,t_addr,t_size=struct.unpack_from("<III",exe,0x10)
+    pc0=struct.unpack_from("<I",exe,0x10)[0]
+    t_addr=struct.unpack_from("<I",exe,0x18)[0]
+    t_size=struct.unpack_from("<I",exe,0x1C)[0]
     if t_addr==0 or t_size==0 or 0x800+t_size>len(exe): raise ValueError("invalid PS-X EXE text segment bounds")
     return pc0,t_addr,t_size
 def self_test():
