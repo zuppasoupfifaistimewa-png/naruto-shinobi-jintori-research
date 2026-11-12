@@ -1,0 +1,42 @@
+UM0 K5 SCOPE CLARIFICATION
+REPOSITORY=zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+BASELINE_UM_INCLUSIVE=77df5627cba56a17503f54cb7664f02129893ab7
+RUN_ID=43219606838
+WORKFLOW_SOURCE_SHA=56b7e5f3283971ddd9c89c5a40f9a816e49431cc
+
+STATIC_WRITER_LINEAGE
+STATUS=TUNTAS
+EVIDENCE=K4
+SITES=224
+TRACE_INSTRUCTION_ROWS=5376
+OFFSETS_WITH_WRITES=40
+SEMANTIC_FIELD_MEANINGS=TIDAK TAHU
+
+REPEATED_RUNTIME_CONDITION
+STATUS=TUNTAS
+EVIDENCE=K5 (condition-specific negative observation only)
+CHECKPOINT_SHA256=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35
+INPUT_CONDITION=CIRCLE, seven press/release pairs; six frames each; post-load frames 120/126 through 840/846
+MEASURED_LAUNCHES=2
+POST_LOAD_FRAMES_PER_LAUNCH=900
+BREAKPOINT_PC=0x800D5A1C
+BREAKPOINT_ARMED_BOTH=YES
+INPUT_READBACK_VALID_BOTH=YES
+EXEC_HITS=0 in MEASURE_1 and MEASURE_2
+DYNAMIC_WRITE_HITS=0 in MEASURE_1 and MEASURE_2
+EVENT_TRACES_IDENTICAL=YES
+CONCLUSION=K5 proves no hit at this writer PC under this exact checkpoint and CIRCLE schedule in two identical launches. It does not prove that the writer is unreachable in other game states.
+
+TARGET_WRITER_EXECUTION
+EVIDENCE=K0
+STATUS=TIDAK TERBUKTI
+REASON=No execution breakpoint hit and no dynamic destination write was observed in either measured launch.
+FALSIFIER=Any valid launch under a stated condition that reaches PC 0x800D5A1C and records the matching destination write/readback.
+NO_OVERCLAIM=Do not label the static writer code or all 224 UM0 sites K5 from these zero-hit launches. Static instruction lineage remains K4; positive runtime execution for this writer remains K0.
+
+RELATED_REPORTS
+UM0_STATIC=UM0/UM0_SUMMARY.txt
+UM0_RUNTIME=UM1/UM0_RUNTIME_SUMMARY.txt
+UM0_EVENTS=UM1/UM0_RUNTIME_EVENTS.tsv
+UM1=UM1/UM1_SUMMARY.txt
+UM2=UM2/UM2_SUMMARY.txt
