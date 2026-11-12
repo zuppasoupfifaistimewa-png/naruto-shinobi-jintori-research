@@ -1,0 +1,5 @@
+STATUS=BELUM
+EVIDENCE=K0
+REASON=checkpoint or emulator input verification not passed
+LAST_STAGE=PRE_LAUNCH
+EXIT_CODE=2

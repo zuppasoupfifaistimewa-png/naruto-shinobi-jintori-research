@@ -1,0 +1,13 @@
+commit_sha	parents	author	author_date	subject
+77df5627cba56a17503f54cb7664f02129893ab7	9a6974e038d1d91f191f7b54da4a5a239ebe7dea	zuppasoupfifaistimewa-png	2026-11-12T16:52:33+07:00	Add UL0-UL2 final closeout ledger
+f68e567af79b61d4bcd90329c47472a374ec3742	77df5627cba56a17503f54cb7664f02129893ab7	zuppasoupfifaistimewa-png	2026-11-12T17:40:36+07:00	Add UM2 commit and Actions ledger
+a22e5c043fb9165f36fb876bcdc91f06539e6340	f68e567af79b61d4bcd90329c47472a374ec3742	zuppasoupfifaistimewa-png	2026-11-12T17:41:06+07:00	Add UM0 writer value-lineage analysis
+dba48eb3806bae505d980f5233e58c1d9c7c844d	a22e5c043fb9165f36fb876bcdc91f06539e6340	zuppasoupfifaistimewa-png	2026-11-12T17:44:33+07:00	Add bounded UM1 frame-1 read-only probe
+fc726d6fd5ebe3d44f21d01ad6966aef8851e25e	dba48eb3806bae505d980f5233e58c1d9c7c844d	zuppasoupfifaistimewa-png	2026-11-12T17:52:53+07:00	Fix UM0 source register labels
+731dd5c0c0b93c274ca8dd5d6957aa0f67b39b46	fc726d6fd5ebe3d44f21d01ad6966aef8851e25e	zuppasoupfifaistimewa-png	2026-11-12T17:52:56+07:00	Add direct GitHub Actions page cross-check to UM2
+5e01e81920e8353303f367a22ea597272799b3d7	731dd5c0c0b93c274ca8dd5d6957aa0f67b39b46	zuppasoupfifaistimewa-png	2026-11-12T17:56:35+07:00	Add isolated UM0-UM2 workflow
+a41d8c616d496db7435dff03b96c7b677a0d18c0	5e01e81920e8353303f367a22ea597272799b3d7	zuppasoupfifaistimewa-png	2026-11-12T17:58:31+07:00	Fix shellcheck findings in UM workflow
+ac78fe828a4063f9531a733f78e56873516bd495	a41d8c616d496db7435dff03b96c7b677a0d18c0	zuppasoupfifaistimewa-png	2026-11-12T18:02:08+07:00	Fix remaining UM workflow shellcheck warning
+336ee66f1ee6ccde01aa4cfcb440aa380fbf80c9	ac78fe828a4063f9531a733f78e56873516bd495	zuppasoupfifaistimewa-png	2026-11-12T18:02:58+07:00	Remove remaining indirect status test in UM CUE extraction
+1562adfc7300a9f5ebf0b2aa28e00ad743860969	336ee66f1ee6ccde01aa4cfcb440aa380fbf80c9	zuppasoupfifaistimewa-png	2026-11-12T18:03:58+07:00	Replace broken CUE heredoc with checked awk rewrite
+cf9ebe704aa9ba89c2db96e653bfe41bfb80f390	1562adfc7300a9f5ebf0b2aa28e00ad743860969	zuppasoupfifaistimewa-png	2026-11-12T18:05:06+07:00	Remove invalid duplicated tail from UM workflow
