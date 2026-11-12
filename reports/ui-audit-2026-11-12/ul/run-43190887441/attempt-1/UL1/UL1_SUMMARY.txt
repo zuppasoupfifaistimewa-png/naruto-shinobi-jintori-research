@@ -1,0 +1,4 @@
+STATUS=BELUM
+EVIDENCE=K0
+REASON=stage did not produce a summary
+EXIT_CODE=2
