@@ -26,7 +26,7 @@ REGS=("zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t
 EVENT_FIELDS=["launch","mode","frame","pc","address","field_offset","record_index",
               "base_register","base_value","value_read","calculated_address","event_type"]
 LAUNCH_FIELDS=["launch","status","exit_code","frames_requested","frames_observed",
-               "read_bp_registered","breakpoint_mode","event_hits","checkpoint_before",
+               "read_bp_registered","breakpoint_mode","event_hits","runtime_P","checkpoint_before",
                "checkpoint_after","card_before","card_after","card_mode_0444","last_marker",
                "wall_seconds"]
 AGG_FIELDS=["launch","mode","pc","field_offset","event_type","hit_count","records_seen","frames_seen"]
@@ -134,6 +134,7 @@ local EXEC_SITES={''' + exec_table + r'''}
 local RAM_START=0x80000000
 local RAM_END=0x80200000
 local MOD=4294967296
+local STRIDE=0x124
 local mem=PCSX.getMemPtr()
 local loaded,started,post,finished=false,false,0,false
 local runtimeP=nil
@@ -447,7 +448,7 @@ def main() -> int:
         return 2
     template.chmod(0o444)
     # Probe first: one populated record, nine halfword read breakpoints, 60 post-load frames.
-    probe_row,probe_events,_probe_log=launch_stage("PROBE_READ_BP",60,(1,),False,source,template,
+    probe_row,probe_events,_probe_log=launch_stage("PROBE_READ_BP",60,(4,),False,source,template,
       work,out,a.pcsx_bin,a.appdir,a.bios,a.cue,readers,exec_sites,a.timeout_seconds)
     read_supported=(probe_row["read_bp_registered"]=="YES" and
                     any(e["event_type"]=="READ" for e in probe_events))
