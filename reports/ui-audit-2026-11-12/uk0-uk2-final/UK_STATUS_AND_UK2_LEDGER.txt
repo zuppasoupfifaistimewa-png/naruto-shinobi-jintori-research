@@ -1,0 +1,33 @@
+UK0-UK2 — STATUS DAN LEDGER ACTIONS
+Repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+Baseline UK2 inklusif: b54ff5d5e52d5196459ea190a5322d8746b96eb1
+Waktu commit baseline: 2026-11-12T03:34:22Z
+Branch diperiksa: main
+
+STATUS
+UK0: BELUM (K0). Tidak dilakukan pemindaian EXE/Entry 1 karena lingkungan percakapan tidak memiliki berkas input biner lokal dan workflow yang tersedia tidak menerima dispatch/parameter UK. Mengambil disc/EXE/DATA.BIN secara manual akan mengunduh ratusan MB dan tidak diperlukan untuk menjaga batas kuota/Actions. Tidak ada klaim hasil scan.
+UK1: BELUM (K0). Tidak ada run emulator UK1. Workflow lama uj0-uj2-readonly-audit.yml hanya terpicu push pada empat path spesifik (workflow lama, experiments/uj1_readonly_snapshot.py, tools/stage1/RunUJ0StaticAudit.py, tools/stage1/RunUJ2Ledger.py, tools/stage1/RunUI1MipsCensus.py); workflow itu tidak memiliki workflow_dispatch. Instruksi UK hanya mengizinkan file baru di reports/ui-audit-2026-11-12/uk0-uk2-final/ dan melarang perubahan workflow lama. Karena itu tidak ada jalur aman untuk menjalankan kode UK1 lewat Actions tanpa melanggar batas path tersebut. Tidak ada emulator dijalankan.
+UK2: TUNTAS K4 untuk commit/run yang dapat diverifikasi melalui GitHub API.
+
+UK2 — KOMIT
+Cakupan commit dari baseline inklusif sampai sebelum publikasi laporan:
+commit rows termasuk baseline = 1
+file events --no-renames = 0
+Tidak ada commit sesudah baseline sebelum laporan ini.
+
+UK2 — ACTIONS
+Permintaan eksplisit mencakup monitor run 43145985922, sehingga run ini disertakan walaupun timestamp run lebih awal daripada waktu commit baseline.
+run_id	workflow	event	created_at	status	conclusion	job	job_conclusion	exit_code	source_sha
+43145985922	Naruto Story Mode adaptive player monitor	schedule	2026-11-12T03:06:56Z	completed	success	monitor	success	0	d7838e0332d61a76335381dfe0ca7687fd10e33a
+
+Keterangan:
+- Run 43145985922 dibuat 2026-11-12T03:06:56Z, sedangkan commit baseline b54ff5d dibuat 2026-11-12T03:34:22Z (run mendahului baseline 27 menit 26 detik).
+- Source SHA run adalah d7838e0332d61a76335381dfe0ca7687fd10e33a, bukan b54ff5d5e52d5196459ea190a5322d8746b96eb1. Source SHA tidak dinormalisasi atau diganti.
+- Job monitor selesai success; langkah inspeksi monitor dan upload monitoring report success.
+- Query Actions API untuk created >= 2026-11-12T03:34:22Z mengembalikan total_count=0. Jadi tidak ada run Actions baru sesudah baseline saat audit ini dilakukan.
+- Jumlah run Actions yang dilaporkan untuk UK2: 1 (monitor 43145985922, dimasukkan sesuai instruksi eksplisit).
+
+BATASAN
+Tidak ada run emulator baru, tidak ada unduhan disc/ROM/BIOS, dan tidak ada berkas biner yang dikomit.
+Tidak ada file lama, STATUS.md, Release, atau workflow yang diubah.
+Commit laporan ini sendiri berada setelah cakupan ledger dan dikecualikan dari hitungan UK2.
