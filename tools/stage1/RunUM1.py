@@ -106,29 +106,29 @@ local function arm_um0_writer()
    local v1=tonumber(g.n.v1)%MOD
    local pc=tonumber(r.pc)%MOD
    if pe or ie or p==nil or idx==nil then
-    log("UM0_WRITER_EXEC\\t"..LAUNCH.."\\t"..tostring(um0ExecHits).."\\t"..hx(pc).."\\t"..tostring(pe).."\\t"..tostring(ie).."\\t"..hx(v0).."\\t"..hx(v1).."\\tUNAVAILABLE")
+    log("UM0_WRITER_EXEC\t"..LAUNCH.."\t"..tostring(um0ExecHits).."\t"..hx(pc).."\t"..tostring(pe).."\t"..tostring(ie).."\t"..hx(v0).."\t"..hx(v1).."\tUNAVAILABLE")
     return
    end
    local dest=(p+idx*0x124+0x20)%MOD
    local regdest=(v0+0x20)%MOD
    local before,be=readv(dest,2)
-   log("UM0_WRITER_EXEC\\t"..LAUNCH.."\\t"..tostring(um0ExecHits).."\\t"..hx(pc).."\\t"..hx(p).."\\t"..hx(idx).."\\t"..hx(v0).."\\t"..hx(v1).."\\t"..hx(dest).."\\t"..hx(regdest).."\\t"..(be or hx(before,2)))
+   log("UM0_WRITER_EXEC\t"..LAUNCH.."\t"..tostring(post).."\t"..tostring(um0ExecHits).."\t"..hx(pc).."\t"..hx(p).."\t"..hx(idx).."\t"..hx(v0).."\t"..hx(v1).."\t"..hx(dest).."\t"..hx(regdest).."\t"..(be or hx(before,2)))
    if dest==regdest and v1==0xF020 and dest>=RAM_START and dest+2<=RAM_END and um0WriteBpByAddress[dest]==nil then
     local watched=dest
     um0WriteBpByAddress[watched]=PCSX.addBreakpoint(watched,"Write",2,"UM0 dynamic destination write",function(writeAddress,writeWidth,writeCause)
      local ok2,err2=pcall(function()
       um0WriteHits=um0WriteHits+1
       local rr=PCSX.getRegisters()
-      log("UM0_WRITER_WRITE\\t"..LAUNCH.."\\t"..tostring(um0WriteHits).."\\t"..hx(writeAddress).."\\t"..tostring(writeWidth).."\\t"..hx(rr.pc).."\\t"..tostring(writeCause))
+      log("UM0_WRITER_WRITE\t"..LAUNCH.."\t"..tostring(post).."\t"..tostring(um0WriteHits).."\t"..hx(writeAddress).."\t"..tostring(writeWidth).."\t"..hx(rr.pc).."\t"..tostring(writeCause))
       um0PendingReadbacks[#um0PendingReadbacks+1]=watched
      end)
-     if not ok2 then log("UM0_WRITER_WRITE_ERROR\\t"..LAUNCH.."\\t"..tostring(err2)) end
+     if not ok2 then log("UM0_WRITER_WRITE_ERROR\t"..LAUNCH.."\t"..tostring(err2)) end
      if um0WriteHits>=64 then return false end
      return true
     end)
    end
   end)
-  if not ok then log("UM0_WRITER_EXEC_ERROR\\t"..LAUNCH.."\\t"..tostring(err)) end
+  if not ok then log("UM0_WRITER_EXEC_ERROR\t"..LAUNCH.."\t"..tostring(err)) end
   return true
  end)
  log("UM0_WRITER_EXEC_BP_ARMED=YES launch="..LAUNCH.." pc=0x800D5A1C")
@@ -139,10 +139,10 @@ local function finish_um0_monitor()
   if not seen[address] then
    seen[address]=true
    local value,err=readv(address,2)
-   log("UM0_WRITER_READBACK\\t"..LAUNCH.."\\t"..hx(address).."\\t"..(err or hx(value,2)))
+   log("UM0_WRITER_READBACK\t"..LAUNCH.."\t"..tostring(post).."\t"..hx(address).."\t"..(err or hx(value,2)))
   end
  end
- log("UM0_WRITER_MONITOR_END\\t"..LAUNCH.."\\t900\\t"..tostring(um0ExecHits).."\\t"..tostring(um0WriteHits))
+ log("UM0_WRITER_MONITOR_END\t"..LAUNCH.."\t900\t"..tostring(um0ExecHits).."\t"..tostring(um0WriteHits))
 end
 local function snapshot()
  log("UM1_POST_LOAD_VSYNC_1=YES launch="..LAUNCH)
@@ -227,8 +227,8 @@ log("UM1_SCRIPT_READY launch="..LAUNCH.." frame1_snapshot=YES runtime_window_fra
 '''.lstrip()
 
 
-def parse_log(log: str, launch: str) -> tuple[list[dict], list[dict], bool, str]:
-    byte_rows, scalar_rows = [], []
+def parse_log(log: str, launch: str) -> tuple[list[dict], list[dict], list[dict], bool, str]:
+    byte_rows, scalar_rows, um0_rows = [], [], []
     for line in log.splitlines():
         if line.startswith("UM1_BYTE\t"):
             p = line.split("\t")
@@ -238,6 +238,21 @@ def parse_log(log: str, launch: str) -> tuple[list[dict], list[dict], bool, str]
             p = line.split("\t")
             if len(p) == 7:
                 scalar_rows.append(dict(zip(SCALAR_FIELDS, p[1:])))
+        elif line.startswith("UM0_WRITER_EXEC\t"):
+            p = line.split("\t")
+            if len(p) == 12:
+                um0_rows.append({"launch":p[1],"frame":p[2],"event":"EXEC","sequence":p[3],"pc":p[4],
+                                 "p":p[5],"index":p[6],"v0":p[7],"v1":p[8],"destination":p[9],
+                                 "register_destination":p[10],"before_u16":p[11]})
+        elif line.startswith("UM0_WRITER_WRITE\t"):
+            p = line.split("\t")
+            if len(p) == 8:
+                um0_rows.append({"launch":p[1],"frame":p[2],"event":"WRITE","sequence":p[3],
+                                 "address":p[4],"width":p[5],"pc":p[6],"cause":p[7]})
+        elif line.startswith("UM0_WRITER_READBACK\t"):
+            p = line.split("\t")
+            if len(p) == 5:
+                um0_rows.append({"launch":p[1],"frame":p[2],"event":"READBACK","address":p[3],"readback_u16":p[4]})
     valid = True
     if len(byte_rows) != 7008 or len(scalar_rows) != 7:
         valid = False
@@ -285,7 +300,7 @@ def parse_log(log: str, launch: str) -> tuple[list[dict], list[dict], bool, str]
                          ("UM1_SNAPSHOT_COMPLETE=YES", "SNAPSHOT_COMPLETE")):
         if marker in log:
             last = name
-    return byte_rows, scalar_rows, valid and endpoint_ok and complete_marker, last
+    return byte_rows, scalar_rows, um0_rows, valid and endpoint_ok and complete_marker, last
 
 
 def read_lv_table(path: Path) -> dict[int, list[int]]:
@@ -386,7 +401,7 @@ def main() -> int:
                     "wall_seconds": f"{warm_wall:.3f}"}]
     tail_text(warm_stdout, out / "UM1_CARD_WARMUP_STDOUT_TAIL.txt")
     tail_text(warm_stdout.with_suffix(".pcsx.log"), out / "UM1_CARD_WARMUP_PCSX_TAIL.txt")
-    all_bytes, all_scalars = [], []
+    all_bytes, all_scalars, all_um0 = [], [], []
     validated_bytes = []
     successful = []
     if warm_ok:
@@ -404,8 +419,8 @@ def main() -> int:
             log = runner.read_log_text(stdout)
             tail_text(stdout, out / f"UM1_{attempt:02d}_STDOUT_TAIL.txt")
             tail_text(stdout.with_suffix(".pcsx.log"), out / f"UM1_{attempt:02d}_PCSX_TAIL.txt")
-            b_rows, s_rows, parsed_ok, last = parse_log(log, launch)
-            all_bytes.extend(b_rows); all_scalars.extend(s_rows)
+            b_rows, s_rows, u_rows, parsed_ok, last = parse_log(log, launch)
+            all_bytes.extend(b_rows); all_scalars.extend(s_rows); all_um0.extend(u_rows)
             state_hash_after = sha(state) if state.exists() else "TIDAK TAHU"
             source_hash_after = sha(source) if source.exists() else "TIDAK TAHU"
             card_hash_after = sha(card) if card.exists() else "TIDAK TAHU"
@@ -445,6 +460,16 @@ def main() -> int:
     source_after = sha(source) if source.exists() else "TIDAK TAHU"
     write_tsv(out / "UM1_BYTES.tsv", BYTE_FIELDS, all_bytes)
     write_tsv(out / "UM1_SCALARS.tsv", SCALAR_FIELDS, all_scalars)
+    um0_fields = ["launch","frame","event","sequence","pc","p","index","v0","v1","destination","register_destination","before_u16","address","width","cause","readback_u16"]
+    write_tsv(out / "UM0_RUNTIME_EVENTS.tsv", um0_fields, all_um0)
+    def um0_signature(name):
+        return [tuple(row.get(k,"") for k in um0_fields[1:]) for row in all_um0 if row.get("launch")==name]
+    u1, u2 = um0_signature("MEASURE_1"), um0_signature("MEASURE_2")
+    um0_exec1 = sum(1 for r in all_um0 if r.get("launch")=="MEASURE_1" and r.get("event")=="EXEC")
+    um0_exec2 = sum(1 for r in all_um0 if r.get("launch")=="MEASURE_2" and r.get("event")=="EXEC")
+    um0_write1 = sum(1 for r in all_um0 if r.get("launch")=="MEASURE_1" and r.get("event")=="WRITE")
+    um0_write2 = sum(1 for r in all_um0 if r.get("launch")=="MEASURE_2" and r.get("event")=="WRITE")
+    um0_k5 = um0_exec1 > 0 and um0_exec2 > 0 and um0_write1 > 0 and um0_write2 > 0 and u1 == u2
     offset_rows, lv_rows = derive(validated_bytes, read_lv_table(a.lv_table)) if validated_bytes else ([], [])
     write_tsv(out / "UM1_OFFSET_SUMMARY.tsv", ["launch","offset","record_count","distinct_values","status","values_hex"], offset_rows)
     write_tsv(out / "UM1_LV_U16_MATCHES.tsv", ["launch","record","X_2xu16_plus_1A","status","LV","table_value","match_count","matching_u16_offsets"], lv_rows)
@@ -469,7 +494,12 @@ def main() -> int:
         f"MEASURED_LAUNCHES={len(launch_rows)-1}", f"SUCCESSFUL_SNAPSHOTS={len(successful)}", f"BYTE_ROWS_RAW_ALL_LAUNCHES={len(all_bytes)}", f"SCALAR_ROWS_RAW_ALL_LAUNCHES={len(all_scalars)}",
         f"BYTE_ROWS_VALIDATED_SNAPSHOTS={len(validated_bytes)}",
         "RECORDS=A:0..21;A:22;A:43; each 0x124 bytes", "SCALARS=P:u32,0x8013EB20:u32,0x8013EAB0:u32,0x8013EA8A:u16,0x8013EA74:u32,0x80139F03:u8,0x80139EC2:u16",
-        "FRAME=first GPU::Vsync after ExecutionFlow::SaveStateLoaded only; no input; no write-watch; all loads const/read-only",
+        "FRAME=first GPU::Vsync after SaveStateLoaded snapshot; continued bounded 900 post-load frames with no input; PC 0x800D5A1C Exec breakpoint and dynamic destination Write watchpoints are observation-only",
+        f"UM0_RUNTIME_EXEC_HITS_MEASURE_1={um0_exec1}", f"UM0_RUNTIME_EXEC_HITS_MEASURE_2={um0_exec2}",
+        f"UM0_RUNTIME_WRITE_HITS_MEASURE_1={um0_write1}", f"UM0_RUNTIME_WRITE_HITS_MEASURE_2={um0_write2}",
+        f"UM0_RUNTIME_TRACE_IDENTICAL={'YES' if u1 == u2 else 'NO'}",
+        f"UM0_RUNTIME_EVIDENCE={'K5' if um0_k5 else ('K2' if um0_exec1 or um0_exec2 else 'K1')}",
+        "UM0_RUNTIME_K5_RULE=both independent measured launches must hit the static writer and dynamic write watchpoint with byte-identical event traces; otherwise no K5 claim",
         f"A43_END_EXCLUSIVE_CHECK={'PASS' if any('UM1_A43_END_EXCLUSIVE=0x8013EA48' in (work / f'measure_{i}' / 'emulator.stdout.txt').read_text(encoding='utf-8',errors='replace') for i in range(1,4) if (work / f'measure_{i}' / 'emulator.stdout.txt').exists()) else 'NOT_PASSED'} expected=0x8013EA48",
         f"LAST_STAGE_MARKER={last_overall if last_overall != 'NONE' else warm_marker}", f"IDENTICAL_SUCCESSFUL_LAUNCH_PAIR={'YES' if pair_identical else 'NO'}",
         f"IDENTICAL_PAIR_NAMES={found_pair if pair_identical else 'TIDAK ADA'}", f"TABLE_X_RECORD_ROWS={sum(1 for r in lv_rows if r.get('status')=='TABLE_X_MATCHED')}",
@@ -478,6 +508,22 @@ def main() -> int:
     ]
     (out / "UM1_SUMMARY.txt").write_text("\n".join(summary) + "\n", encoding="utf-8")
     print("\n".join(summary))
+    um0_summary = [
+        "UM0_SPECIAL_WRITER_RUNTIME_CROSSCHECK",
+        f"STATUS={'TUNTAS' if um0_k5 else 'BELUM'}",
+        f"EVIDENCE={'K5' if um0_k5 else ('K2' if um0_exec1 or um0_exec2 else 'K1')}",
+        "TARGET_PC=0x800D5A1C",
+        "CHECKPOINT_SHA256="+CHECKPOINT_SHA,
+        "INPUT=NO_INPUT",
+        "RUNTIME_WINDOW_POST_LOAD_FRAMES=900",
+        f"MEASURE_1_EXEC_HITS={um0_exec1}", f"MEASURE_2_EXEC_HITS={um0_exec2}",
+        f"MEASURE_1_WRITE_HITS={um0_write1}", f"MEASURE_2_WRITE_HITS={um0_write2}",
+        f"EVENT_TRACE_IDENTICAL={'YES' if u1 == u2 else 'NO'}",
+        f"K5_RULE_MET={'YES' if um0_k5 else 'NO'}",
+        "SEMANTIC_MEANING=TIDAK TAHU",
+        "EXIT_CODE=0" if um0_k5 else "EXIT_CODE=2",
+    ]
+    (out / "UM0_RUNTIME_SUMMARY.txt").write_text("\n".join(um0_summary)+"\n",encoding="utf-8")
     return 0 if pair_identical else 2
 
 if __name__ == "__main__":
