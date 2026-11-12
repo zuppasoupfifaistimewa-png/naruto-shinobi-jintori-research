@@ -47,7 +47,6 @@ jobs:
           rc=0
           report="$RUNNER_TEMP/UL_PREFLIGHT_SUMMARY.txt"
           : > "$report"
-          echo "SOURCE_SHA=$GITHUB_SHA" >> "$report"
           python -m py_compile tools/stage1/RunUL0.py tools/stage1/RunUL1.py tools/stage1/RunUL2.py
           compile_rc=$?
           if python -m pip install --disable-pip-version-check --no-input pyflakes PyYAML; then
@@ -83,10 +82,8 @@ jobs:
           python tools/stage1/RunUL2.py --self-test; ul2_rc=$?
           actionlint_version="1.7.12"
           if curl --fail --silent --show-error --location --max-time 60 "https://github.com/rhysd/actionlint/releases/download/v${actionlint_version}/actionlint_${actionlint_version}_linux_amd64.tar.gz" -o "$RUNNER_TEMP/actionlint.tar.gz"; then
-            tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
-            if [ "$?" = "0" ]; then
-              "$RUNNER_TEMP/actionlint" .github/workflows/ul0-ul1-readonly.yml
-              actionlint_rc=$?
+            if tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint; then
+              if "$RUNNER_TEMP/actionlint" .github/workflows/ul0-ul1-readonly.yml; then actionlint_rc=0; else actionlint_rc=1; fi
             else
               actionlint_rc=2
             fi
@@ -115,11 +112,13 @@ jobs:
           elif [ "$partial" -eq 1 ]; then status=SEBAGIAN; pass=true
           else status=TUNTAS; pass=true
           fi
-          echo "STATUS=$status" >> "$report"
-          echo "JOB=ul0-ul1-preflight" >> "$report"
-          echo "RUN_ID=$GITHUB_RUN_ID" >> "$report"
-          echo "SOURCE_SHA=$GITHUB_SHA" >> "$report"
-          echo "EXIT_CODE=$rc" >> "$report"
+          {
+            echo "STATUS=$status"
+            echo "JOB=ul0-ul1-preflight"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "EXIT_CODE=$rc"
+          } >> "$report"
           echo "source_sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
           echo "preflight_pass=$pass" >> "$GITHUB_OUTPUT"
           cp "$report" "$RUNNER_TEMP/UL_PREFLIGHT_RESULT.txt"
@@ -396,7 +395,9 @@ jobs:
             done
             test "$pushed" -eq 1
           fi
-          echo "UL_REPORT_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
-          echo "OVERALL_ANALYSIS_STATUS=$status" >> "$GITHUB_STEP_SUMMARY"
-          echo "OVERALL_ANALYSIS_EXIT_CODE=$final_rc" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "UL_REPORT_COMMIT=$(git rev-parse HEAD)"
+            echo "OVERALL_ANALYSIS_STATUS=$status"
+            echo "OVERALL_ANALYSIS_EXIT_CODE=$final_rc"
+          } >> "$GITHUB_STEP_SUMMARY"
           exit "$final_rc"
