@@ -1,0 +1,159 @@
+UK0–UK2 — ADDENDUM LEDGER TERKINI DAN REKONSILIASI STATUS
+Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+Branch: main
+Baseline UK2 inklusif: b54ff5d5e52d5196459ea190a5322d8746b96eb1
+HEAD sebelum publikasi addendum ini: 55a134730db8a5e207d58cde705c5fd68f00c5e1
+Tanggal baseline UTC: 2026-11-12T03:34:22Z
+Tanggal HEAD UTC: 2026-11-12T04:38:59Z
+Rentang ledger commit: baseline inklusif sampai HEAD 55a1347… inklusif; commit addendum ini sendiri dikecualikan.
+
+STATUS
+UK0: SEBAGIAN. Ada bukti K2 terbatas untuk akses yang ditelusuri ke slot 0x8013EA84 dan stride 0x124; census instruksi penuh EXE + Entry 1, jendela <=24 instruksi per kecocokan, dan tabel semua akses medan 0x00..0x123 belum tersedia.
+UK1: SEBAGIAN. Snapshot frame-1 historis UJ1 memberi bukti K5 hanya untuk 127 nilai terpilih per launch pada 24 rekaman A; seluruh byte 292-byte per rekaman tidak direkam. Spesifikasi UK1 penuh belum dilaksanakan.
+UK2: TUNTAS K4 untuk rentang commit baseline–HEAD dan enam run Actions relevan yang diinventaris di bawah; dua monitor dimasukkan eksplisit walau dibuat sebelum timestamp baseline. Tidak ditemukan run baru setelah timestamp baseline pada halaman Actions terkini.
+Keseluruhan UK0–UK2: BELUM TUNTAS karena keluaran wajib UK0 dan UK1 belum lengkap.
+
+UK0 — BUKTI STATIS YANG DAPAT DIPAKAI ULANG
+Input biner yang teridentifikasi dari run UJ sebelumnya:
+- EXE 385.024 byte; SHA-256 a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569.
+- DATA.BIN 66.015.232 byte; SHA-256 69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822.
+- Entry 1 596.412 byte; SHA-256 9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a.
+- PC ke file offset EXE: 0x800 + (PC - 0x80010000).
+- PC ke offset DATA.BIN Entry 1: 0x10BB000 + (PC - 0x800AD450).
+
+Hasil reuse laporan static yang sudah ada:
+1. +0x00 — DW3:
+   - 237 kandidat reader.
+   - 224/237 stored traces memperlihatkan urutan aritmetika lengkap 8i+i, <<3, +i, <<2 (=292*i) dan load slot melalui -0x157c dari register hasil lui 0x8014.
+   - 13/237 trace yang tersimpan tidak memperlihatkan urutan lengkap; ini bukan bukti miss.
+   - 12/12 kandidat writer mempunyai rantai lengkap tersebut.
+   - Contoh reader FUN_800D15A8: PC 0x800D5B3C..0x800D5B5C, 36 byte kontigu; instruksi terakhir lbu $v1,($a0).
+   - Contoh writer FUN_800D15A8: PC 0x800D59D0..0x800D59F4, 40 byte kontigu; instruksi terakhir sb $v1,($v0).
+2. +0x1A — DX1:
+   - 13 akses dengan asal base slot 0x8013EA84: 11 lhu reader dan 2 sh writer.
+   - Reader PC: 0x800D0AE4, 0x800D2520, 0x800D2ADC, 0x800D2B5C, 0x800D3EE4, 0x800D3F74, 0x800D4628, 0x800D46EC, 0x800E3FBC, 0x800EB570, 0x800EEC54.
+   - Writer PC: 0x800F7D9C dan 0x800F7DB0. Keduanya adalah table-loader store pada FUN_800F7ADC, bukan bukti upgrade.
+3. +0x20 — DX3/UH1:
+   - Reader PC 0x800EB534 (lhu $a1,0x20($a0)), 0x800EBB2C (lhu $a0,0x20($v1)), 0x800EC200 (lhu $v0,0x20($a0)); ketiganya terlapor berasal dari EA84 dan stride 292*i.
+   - Writer PC 0x800D5A1C pada FUN_800D15A8: sh $v1,0x20($v0), setelah pembentukan 292*i dan penjumlahan ke base argument $a0.
+   - Kutipan kontigu writer 32 byte (<=64):
+     0x800D5A00 C0 10 03 00  sll $v0,$v1,3
+     0x800D5A04 21 10 43 00  addu $v0,$v0,$v1
+     0x800D5A08 C0 10 02 00  sll $v0,$v0,3
+     0x800D5A0C 21 10 43 00  addu $v0,$v0,$v1
+     0x800D5A10 80 10 02 00  sll $v0,$v0,2
+     0x800D5A14 21 10 44 00  addu $v0,$v0,$a0
+     0x800D5A18 20 F0 03 34  ori $v1,$zero,0xF020
+     0x800D5A1C 20 00 43 A4  sh $v1,0x20($v0)
+4. +0x1C / +0x1E:
+   - UH1 writer table memuat 42 kandidat +0x1C dan 90 kandidat +0x1E, tetapi tidak satu pun baris tersebut dibuktikan sebagai EA84 + 292*i writer.
+   - Untuk +0x1C: 0/42 base-alias EA84, 0/42 stride-YES; 18 unresolved non-stack dan 24 stack local.
+   - Untuk +0x1E: 0/90 base-alias EA84, 0/90 stride-YES; 18 unresolved non-stack dan 72 stack local.
+   - Ini klasifikasi baris pada tabel tersebut, bukan bukti bahwa writer/read lain tidak ada.
+5. Census linear UI1 lama berisi 2.829 kandidat immediate load/store pada offset terbatas +0x1A/+0x1C/+0x1E/+0x20 di EXE, Entry 0 dan Entry 1. Ia tidak memindai semua offset 0x00..0x123 atau semua instruksi ALU dan bukan census UK0 lengkap.
+6. Makna semua medan, sumber +0x48, fungsi gameplay yang memakai setiap medan, dan hubungan akses tersebut ke biaya upgrade tetap TIDAK TAHU.
+
+Batas UK0 yang belum tertutup:
+- full raw-byte scan EXE text + seluruh Entry 1 untuk idiom pointer-slot/stride;
+- inventaris hit dan non-hit yang eksplisit;
+- penelusuran register dasar per match maksimum 24 instruksi sampai overwrite;
+- seluruh load/store untuk offset 0x00..0x123, PC/fungsi/lebar/akses/register nilai;
+- kutipan reader dan writer untuk +0x00,+0x1A,+0x1C,+0x1E,+0x20 yang diambil dari hasil scan lengkap.
+Satu match atau laporan targeted def-chain tidak boleh diperlakukan sebagai census lengkap.
+
+UK1 — REUSE SNAPSHOT FRAME 1 (BUKAN RUN UK1 BARU)
+Run historis: 43144307299; source SHA e0ad8bf89ca43dda6b84272382ab468f0bdb28ef; job uj0-uj2-audit ID 130938585082; conclusion success; exit 0.
+Checkpoint artifact run 39907655833:
+- checkpoint adaptive-cycle-02-f180.sstate SHA-256 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35.
+- Memory Card historis SHA-256 78b6d4ac9ab4d23caf7e5f04f83539bf5d994cccfb0a709d14ac53d05c8e21ef; 131.072 byte; mode 0444 untuk dua measured launches.
+Nilai hash tersebut merupakan hasil run UJ sebelumnya, bukan hash before/after UK1.
+Data frame-1 yang dapat dipakai ulang:
+- record A:0..A:21 + kontrol A:22 dan A:43 = 24 record.
+- 7 scalar + 5 field terpilih per record (+00 u8,+1A u16,+1C u16,+1E u16,+20 u16) = 127 nilai per launch.
+- dua launch NO_INPUT identik pada seluruh 127 pasangan alamat/nilai yang diukur; K5 hanya berlaku untuk subset terpilih itu.
+- kedua launch lama juga mengambil frame 900, basis B, dan memakai bootstrap Memory Card 12 frame; bukan konfigurasi UK1 yang diminta.
+Variasi nilai pada A:0..A:21 (subset, bukan semua byte):
+- +0x00: 5 nilai berbeda.
+- +0x1A: 6 nilai berbeda.
+- +0x1C: 6 nilai berbeda.
+- +0x1E: 9 nilai berbeda.
+- +0x20: 3 nilai berbeda.
+Lookup X=2*(+0x1A) dari tabel DN1/DK1 yang tersedia:
+- A:1,A:2,A:3,A:21: X=100; LV1..LV5=50,110,220,440,880.
+- A:4,A:6,A:8,A:9,A:10,A:19,A:20: X=200; LV1..LV5=100,220,440,880,1760.
+- A:7: X=240; LV1..LV5=120,270,530,1050,2120.
+- A:12,A:13,A:15,A:16: X=300; LV1..LV5=150,330,660,1320,2640.
+- A:14: X=400; TIDAK ADA pada tabel (tanpa interpolasi).
+- Rekaman dengan +1A=0 tidak masuk aturan +1A>0; kontrol A:22/A:43 bernilai nol pada subset yang diukur.
+Nilai LV di atas adalah lookup tabel, bukan pengukuran langsung nilai gameplay atau bukti biaya upgrade.
+
+Belum ada untuk UK1:
+- TSV semua byte offset 0x00..0x123 bagi 24 record A;
+- variasi per setiap offset byte 0x00..0x123;
+- pencarian offset u16 yang sama dengan masing-masing LV1..LV5 pada rekaman berdasarkan seluruh data;
+- dua launch UK1 frame-1-only yang sesuai spesifikasi;
+- hash checkpoint/Card before-after khusus UK1;
+- ringkasan preflight UK1 baru.
+Status UK1 karena itu tetap SEBAGIAN, belum TUNTAS.
+
+UK2 — LEDGER COMMIT
+Cakupan: baseline b54ff5d5e52d5196459ea190a5322d8746b96eb1 inklusif sampai HEAD 55a134730db8a5e207d58cde705c5fd68f00c5e1 inklusif.
+- Commit rows termasuk baseline: 12.
+- Commit setelah baseline: 11.
+- File events setelah baseline (--no-renames): 10.
+- Peristiwa: A=8, M=2, D=0, R=0.
+- Satu commit kosong: b707cee58c17bd351a5159f06eb9d3c3fb2bce1b.
+- Delapan path unik yang terkena event semuanya berada di reports/ui-audit-2026-11-12/uk0-uk2-final/.
+
+COMMIT ROWS (baseline inklusif; urut kronologis)
+b54ff5d5e52d5196459ea190a5322d8746b96eb1 | BASELINE | Add missing UJ2 ledger tail rows without editing prior evidence [skip ci]
+1de0fbc36c21ce6e3fd6f30001b2450ae7011bef | A UK_STATUS_AND_UK2_LEDGER.txt
+b707cee58c17bd351a5159f06eb9d3c3fb2bce1b | EMPTY COMMIT
+6e7263cadfa250b470544b44f22a39855e8eb08d | M UK_STATUS_AND_UK2_LEDGER.txt
+becbe0354c1b2f4c6db34eddbe2ee8fbd2ed8be1 | M UK_STATUS_AND_UK2_LEDGER.txt
+753d41e01381918b73f139933d5fcbe02b2deb2c | A UK2_LEDGER_CORRECTED_AND_UK_STATUS.txt
+f5945b7037caf45d7f0e2f165029d16cba7362ae | A UK0_UK1_UK2_STATUS.md
+823438cf0efd55c8af877afee147c7df84794f00 | A UK0_UK1_UK2_CORRECTED_ADDENDUM.txt
+5476a66673ca6c789b3bc4bfdde1cf7efaeb852b | A UK2_ACTIONS_RUN_SUMMARY.txt
+de03993a7ccb6f92937c329827138c9231dc61b3 | A UK0_UK1_UK2_FINAL_RECONCILIATION.txt
+c2985937ded60afeee72fd1bf77a694433dff49f | A UK0_UK1_EXISTING_EVIDENCE_ADDENDUM.txt
+55a134730db8a5e207d58cde705c5fd68f00c5e1 | A UK0_UK1_REUSE_RESULTS_2026-11-12.txt
+
+FILE EVENTS --no-renames (baseline commit excluded from event count)
+1de0fbc36c21ce6e3fd6f30001b2450ae7011bef | A | reports/ui-audit-2026-11-12/uk0-uk2-final/UK_STATUS_AND_UK2_LEDGER.txt
+b707cee58c17bd351a5159f06eb9d3c3fb2bce1b | NO EVENT | empty commit
+6e7263cadfa250b470544b44f22a39855e8eb08d | M | reports/ui-audit-2026-11-12/uk0-uk2-final/UK_STATUS_AND_UK2_LEDGER.txt
+becbe0354c1b2f4c6db34eddbe2ee8fbd2ed8be1 | M | reports/ui-audit-2026-11-12/uk0-uk2-final/UK_STATUS_AND_UK2_LEDGER.txt
+753d41e01381918b73f139933d5fcbe02b2deb2c | A | reports/ui-audit-2026-11-12/uk0-uk2-final/UK2_LEDGER_CORRECTED_AND_UK_STATUS.txt
+f5945b7037caf45d7f0e2f165029d16cba7362ae | A | reports/ui-audit-2026-11-12/uk0-uk2-final/UK0_UK1_UK2_STATUS.md
+823438cf0efd55c8af877afee147c7df84794f00 | A | reports/ui-audit-2026-11-12/uk0-uk2-final/UK0_UK1_UK2_CORRECTED_ADDENDUM.txt
+5476a66673ca6c789b3bc4bfdde1cf7efaeb852b | A | reports/ui-audit-2026-11-12/uk0-uk2-final/UK2_ACTIONS_RUN_SUMMARY.txt
+de03993a7ccb6f92937c329827138c9231dc61b3 | A | reports/ui-audit-2026-11-12/uk0-uk2-final/UK0_UK1_UK2_FINAL_RECONCILIATION.txt
+c2985937ded60afeee72fd1bf77a694433dff49f | A | reports/ui-audit-2026-11-12/uk0-uk2-final/UK0_UK1_EXISTING_EVIDENCE_ADDENDUM.txt
+55a134730db8a5e207d58cde705c5fd68f00c5e1 | A | reports/ui-audit-2026-11-12/uk0-uk2-final/UK0_UK1_REUSE_RESULTS_2026-11-12.txt
+
+ACTIONS RUNS / JOBS
+Actions API: halaman terbaru berisi 100 run; repository total_count pada saat pemeriksaan = 1362. Run terbaru pada halaman tersebut adalah 43145985922 (2026-11-12T03:06:56Z). Waktu baseline adalah 03:34:22Z, sehingga halaman terbaru sudah membuktikan tidak ada run created_at pada/selepas baseline; halaman lebih lama tidak dapat berisi run yang lebih baru.
+Enam run relevan yang dicatat (empat UJ0-UJ2 run terkait plus dua monitor yang diminta). Dua monitor disertakan eksplisit walau mendahului baseline:
+43144169223 | UJ0-UJ2 | push | 2026-11-12T02:50:41Z | completed/failure | uj0-uj2-preflight job 130937970408 failure exit 1; uj0-uj2-audit job 130938179562 skipped, no exit | source SHA 9e5de8479aef45d7403402c47f1555a3aa3e6eaf
+43144307299 | UJ0-UJ2 | push | 2026-11-12T02:51:57Z | completed/success | uj0-uj2-preflight job 130938413573 success exit 0; uj0-uj2-audit job 130938585082 success exit 0 | source SHA e0ad8bf89ca43dda6b84272382ab468f0bdb28ef
+43144355162 | UJ0-UJ2 | push | 2026-11-12T02:52:23Z | completed/cancelled | uj0-uj2-preflight job 130939017753 success exit 0; uj0-uj2-audit job 130939131044 cancelled, no script exit | source SHA cf34b96719275cc709cfc9330385c189fe620374
+43144586564 | UJ0-UJ2 | push | 2026-11-12T02:54:29Z | completed/success | uj0-uj2-preflight job 130939360089 success exit 0; uj0-uj2-audit job 130939458664 skipped by exact-SHA guard, not run | source SHA 2e9993948923d0a4cd1a3504ca83010d87d6fb08
+43109652913 | monitor | schedule | 2026-11-11T22:11:36Z | completed/success | monitor job 130821994581 success exit 0 | source SHA d2c57a796215696dc91be91fb18f36907fa5203c
+43145985922 | monitor | schedule | 2026-11-12T03:06:56Z | completed/success | monitor job 130943778885 success exit 0 | source SHA d7838e0332d61a76335381dfe0ca7687fd10e33a
+Jumlah Actions run baru created_at >= timestamp baseline: 0. Tidak ada source SHA run yang disamakan dengan baseline. Status success monitor hanya hasil job monitor, bukan bukti player berjalan atau Story Mode selesai.
+Jumlah job row enam run ini: 10.
+
+VALIDASI / KEAMANAN
+- Tidak ada run emulator UK1 baru. Job UJ0-UJ2 lama tidak memiliki workflow_dispatch, dibatasi push ke lima path kode/workflow lama, dan job audit dikunci pada source SHA e0ad8bf89ca43dda6b84272382ab468f0bdb28ef. Spesifikasi ini hanya membolehkan file baru di folder laporan dan melarang perubahan workflow/script lama; karena itu tidak ada trigger UK1 yang sesuai. Tidak dilakukan bypass.
+- py_compile, pyflakes, YAML parse, dan actionlint tidak dijalankan untuk implementasi UK baru; tidak ada implementasi UK baru yang dibuat. Hasil preflight UJ historis tidak diperlakukan sebagai validasi UK.
+- Checkpoint/Card hash historis berasal dari UJ1, bukan UK1.
+- Tidak ada ROM, BIOS, Memory Card, savestate, dump RAM, EXE, DATA.BIN, atau biner lain yang dikomit.
+- STATUS.md, Release, dan workflow/script lama tidak diubah pada rentang setelah baseline.
+
+BERKAS YANG DITAMBAHKAN OLEH PUBLIKASI ADDENDUM INI
+- reports/ui-audit-2026-11-12/uk0-uk2-final/UK2_LEDGER_AT_55A_ADDENDUM.txt
+
+KESIMPULAN
+UK2 TUNTAS K4 untuk 12 commit rows (baseline inklusif), 10 peristiwa file --no-renames setelah baseline, dan 6 run Actions relevan yang diperiksa; tidak ada run baru pasca-baseline.
+UK0 masih SEBAGIAN; UK1 masih SEBAGIAN. Tidak ada dasar bukti untuk menyebut kedua tahap TUNTAS. Makna field, asal +0x48, dan formula biaya upgrade lompat level tetap TIDAK TAHU.
