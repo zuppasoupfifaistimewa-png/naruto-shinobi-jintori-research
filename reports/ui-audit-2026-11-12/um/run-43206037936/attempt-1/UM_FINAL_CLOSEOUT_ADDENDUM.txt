@@ -23,8 +23,8 @@ UM1_CHECKPOINT_MEMBER_SHA256=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b55
 UM1_LAUNCHES=0; BYTE_ROWS=0; SCALAR_ROWS=0
 UM1_NO_ZERO_HIT_CONCLUSION=YES; LV/u16 scan and A:43 check were not run
 UM2_STATUS=TUNTAS; EVIDENCE=K4
-UM2_COMMITS_INCLUDING_BASELINE=14
-UM2_FILE_EVENTS_NO_RENAMES=40 (A=31; M=9; D=0; R=0; OTHER=0)
+UM2_COMMITS_INCLUDING_BASELINE=16
+UM2_FILE_EVENTS_NO_RENAMES=49 (A=33; M=16; D=0; R=0; OTHER=0)
 UM2_ACTIONS_RUNS_ID_GT_43192191539=6; all six run rows now include final run conclusion
 UM2_ACTIONS_JOB_ROWS=10 (two rows correspond to zero-job workflow-parse failures)
 UM2_ACTIONS_PAGE_HTML_HTTP_200=YES
@@ -53,4 +53,11 @@ LEDGER_RECONCILIATION_SELF_COMMIT_INCLUDED=NO
 UM0_SPECIAL_SITE_0x800D5A1C=K4; site_id=52; store_u16(P + 0x124*I + 0x20, 0xF020); P=load_u32(0x8013EA84); I=load_u32(0x8013EB20); semantic meaning TIDAK TAHU
 UM0_SPECIAL_SITE_REPORT=reports/ui-audit-2026-11-12/um/run-43206037936/attempt-1/UM0/UM0_SPECIAL_SITE_0x800D5A1C.txt
 UM1_CURRENT_WORKFLOW_CHECKPOINT_SHA=705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35 (corrected after the captured run; no new emulator run was launched)
-
+MAIN_HEAD_AT_FINAL_RECONCILIATION=aab2bcb6744372ffde3041ccaf47115e1c4483ee
+UM2_MONITOR_WORKFLOW_SOURCE=.github/workflows/naruto-storymode-adaptive-monitor.yml
+UM2_MONITOR_CRON=*/15 * * * *; also workflow_dispatch and workflow_run configured
+UM2_SCHEDULE_RUNS_ABOVE_CUTOFF=0 (six runs all have event=push; schedule is configured but no schedule event is present in the six-run slice)
+UM2_LEDGER_COVERAGE_HEAD=aab2bcb6744372ffde3041ccaf47115e1c4483ee
+UM2_LEDGER_SELF_COMMIT_INCLUDED=NO (final ledger reconciliation excluded from its own ledger)
+UM0_SPECIAL_SITE_STATIC_RESULT=site_id=52; PC=0x800D5A1C; SH writes 0xF020 to P + I*0x124 + 0x20; P=load_u32(0x8013EA84), I=load_u32(0x8013EB20); field meaning TIDAK TAHU
+UM1_RUN_FINAL_STATUS=BELUM K0; source hash correction is committed, but no second Actions/emulator launch was performed; snapshot=0 bytes, 0 scalars
