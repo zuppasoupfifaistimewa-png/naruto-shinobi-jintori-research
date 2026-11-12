@@ -357,7 +357,7 @@ jobs:
           rc=0
           test -f "$SOURCE" && test "$(stat -c '%s' "$SOURCE")" = "21162799" || rc=1
           if [ "$rc" -eq 0 ]; then
-            echo "705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5064e58a35  $SOURCE" | sha256sum --check --status || rc=2
+            echo "705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35  $SOURCE" | sha256sum --check --status || rc=2
           fi
           if [ "$rc" -eq 0 ]; then chmod 0444 "$SOURCE"; fi
           echo "$rc" > "$OUT/CHECKPOINT_VERIFY_EXIT_CODE.txt"

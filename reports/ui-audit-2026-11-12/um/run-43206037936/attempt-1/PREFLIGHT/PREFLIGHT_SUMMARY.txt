@@ -1,1 +1,18 @@
-
+UM_PREFLIGHT_SUMMARY
+JOB=um-preflight
+RUN_ID=43206037936
+SOURCE_SHA=cf9ebe704aa9ba89c2db96e653bfe41bfb80f390
+JOB_CONCLUSION=success
+LOCAL_PY_COMPILE=NOT_RUN
+LOCAL_PYFLAKES=NOT_RUN
+LOCAL_YAML_PARSE=NOT_RUN
+LOCAL_ACTIONLINT=NOT_RUN
+ACTIONS_PY_COMPILE=PASS (preflight gate passed; compile error would fail the gate)
+ACTIONS_PYFLAKES=NOT_RUN (pip install returned nonzero; pyflakes_rc=2; installer stderr was not persisted)
+ACTIONS_YAML_PARSE=PASS (UM_WORKFLOW_YAML=PASS in job log)
+ACTIONS_UM0_SELF_TEST=PASS
+ACTIONS_UM1_SELF_TEST=PASS (24 records; 292 bytes per record; A:43 exclusive=0x8013EA48)
+ACTIONS_UM2_SELF_TEST=PASS
+ACTIONS_ACTIONLINT=PASS (actionlint binary invocation completed; no diagnostics; preflight gate passed)
+PREFLIGHT_STATUS=SEBAGIAN (pyflakes NOT_RUN)
+PREFLIGHT_EXIT_CODE=0
