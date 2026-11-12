@@ -1,0 +1,21 @@
+commit_sha	author	author_date	subject	A	M	D	R	OTHER	file_event_count
+abd084c4157f75f356a3867bbd68e49dbc3850d8	zuppasoupfifaistimewa-png	2026-11-12T11:47:03+07:00	Add current UK2 ledger reconciliation through 55a1347 [skip ci]	1	0	0	0	0	1
+2991e97ceac03d9dacd992e662c5191b0a90a212	zuppasoupfifaistimewa-png	2026-11-12T15:55:59+07:00	Add UL pre-push validation record	1	0	0	0	0	1
+b049db8fcb373e1aa2bb45c40b9f71a907dc1616	zuppasoupfifaistimewa-png	2026-11-12T15:56:02+07:00	Add UL source changeset record	1	0	0	0	0	1
+ecbe6f77203d962d78dff4124aa9f0761dd66fc3	zuppasoupfifaistimewa-png	2026-11-12T15:56:23+07:00	Add UL2 inclusive Git and Actions ledger	1	0	0	0	0	1
+20e9581f79e217d8f21975858b98d03520e064de	zuppasoupfifaistimewa-png	2026-11-12T15:57:08+07:00	Add UL0 full MIPS stride and access census	1	0	0	0	0	1
+7c8beb1ecdd8fdc1b34befbcadd9d31731a4e5fb	zuppasoupfifaistimewa-png	2026-11-12T15:58:09+07:00	Add UL1 two-launch full-byte readonly snapshot	1	0	0	0	0	1
+e396f2640e6ee7824563fa40ada5525814bd8325	zuppasoupfifaistimewa-png	2026-11-12T15:59:32+07:00	Add UL0-UL2 readonly audit workflow	1	0	0	0	0	1
+bbfa0803f0f2412a1f4712e2cdabe0530b9dd912	github-actions[bot]	2026-11-12T08:59:46Z	Record UL preflight result for run 43187505853 [skip ci]	1	0	0	0	0	1
+34e0346fac826a53b225863238a87efa0140264b	zuppasoupfifaistimewa-png	2026-11-12T16:00:47+07:00	Fix UL workflow ShellCheck preflight blockers	0	1	0	0	0	1
+518863d326886eef26e781df340ba4897895b00f	github-actions[bot]	2026-11-12T09:01:06Z	Record UL preflight result for run 43187690502 [skip ci]	1	0	0	0	0	1
+8ad86518d37e58d9c9988160e2abcd5ad75cef51	github-actions[bot]	2026-11-12T09:08:49Z	Record UL0-UL2 audit results for run 43187690502 [skip ci]	22	0	0	0	0	22
+a15512415d20b3f55e21adfe7dafb824cfec4856	zuppasoupfifaistimewa-png	2026-11-12T16:21:32+07:00	Correct UL0 target reader and UL2 ancestry; disable used UL1 runtime budget	1	3	0	0	0	4
+18bc89e3a2a28671f72c3aecd0a5b81fbeb65de9	github-actions[bot]	2026-11-12T09:21:52Z	Record UL preflight result for run 43190765505 [skip ci]	1	0	0	0	0	1
+60a49fb7105a68a5f60ef4dd249357b14a799e48	zuppasoupfifaistimewa-png	2026-11-12T16:22:23+07:00	Align UL0 reader self-test with direct target instruction	0	1	0	0	0	1
+5dccdd13559bcb7cb25652ea8f3109d9404e762a	github-actions[bot]	2026-11-12T09:22:38Z	Record UL preflight result for run 43190887441 [skip ci]	1	0	0	0	0	1
+123e16067f52980259b7aceac500abffed4f0e6a	github-actions[bot]	2026-11-12T09:23:57Z	Record UL0-UL2 audit results for run 43190887441 [skip ci]	20	0	0	0	0	20
+965860f251b6bf49d4b8f693f56057d021b7dfb1	zuppasoupfifaistimewa-png	2026-11-12T16:30:38+07:00	Add UL0 reader context window and clarify partial audit status	1	2	0	0	0	3
+861c8f80fe8ce932b25dba5a0ae5c7d68253a367	github-actions[bot]	2026-11-12T09:30:56Z	Record UL preflight result for run 43192100365 [skip ci]	1	0	0	0	0	1
+77757f786840d0562537872089115dfab7a9a0b6	zuppasoupfifaistimewa-png	2026-11-12T16:31:15+07:00	Remove literal NULs from UL0 synthetic reader self-test	0	1	0	0	0	1
+bcde5f29d6f7ebd3a0949710a3715773b05b4a23	github-actions[bot]	2026-11-12T09:31:32Z	Record UL preflight result for run 43192191539 [skip ci]	1	0	0	0	0	1
