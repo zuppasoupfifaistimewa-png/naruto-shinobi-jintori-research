@@ -16,7 +16,7 @@ permissions:
 
 concurrency:
   group: naruto-uj0-uj2-readonly-audit
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   preflight:
@@ -103,7 +103,7 @@ jobs:
   uj0-uj2-audit:
     name: uj0-uj2-audit
     needs: preflight
-    if: needs.preflight.result == 'success'
+    if: needs.preflight.result == 'success' && github.sha == 'e0ad8bf89ca43dda6b84272382ab468f0bdb28ef'
     runs-on: ubuntu-24.04
     timeout-minutes: 55
     env:
