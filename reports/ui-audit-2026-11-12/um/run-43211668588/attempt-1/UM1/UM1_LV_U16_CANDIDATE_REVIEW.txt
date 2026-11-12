@@ -1,0 +1,63 @@
+UM1 LV/U16 MATCH REVIEW — CANDIDATE CORRELATIONS ONLY
+RUN_ID=43211668588
+SOURCE_SHA=d637f0680dee87ccaedd2e8cac83ebf9186ecaf1
+REPORT_COMMIT=32b8267ed7c44cbc8d6db55b7201ee2e9caaae26
+TABLE_SOURCE=reports/stage1_economy/DN1_DK1_X_LV_TABLE_2026-11-05.tsv
+SNAPSHOT=first GPU VSync after SaveStateLoaded; read-only; no input
+SNAPSHOT_EVIDENCE=K5 (MEASURE_1 and MEASURE_2 byte/scalar snapshots identical)
+RECORDS_PER_LAUNCH=24 (A:0..21; A:22; A:43)
+BYTES_PER_RECORD=0x124 (292)
+BYTE_ROWS_VALIDATED=14016; DIFFERENCES_BETWEEN_MEASURE_LAUNCHES=0
+SCALAR_ROWS=14 (7 per launch; all scalar values equal across launches)
+LV_MATCH_TABLE_ROWS=230 (46 per LV1..LV5)
+X_NOT_IN_TABLE_ROWS=2 (A:14, X=400, one per launch)
+NONZERO_TABLE_TARGET_ROWS=160
+NONZERO_TARGET_ROWS_WITH_AT_LEAST_ONE_U16_MATCH=64
+NONZERO_TARGET_ROWS_WITH_ZERO_U16_MATCH=96
+NONZERO_TARGET_U16_MATCHES=70
+ALL_TARGET_ROWS_FOR_X=0_ARE_NONINFORMATIVE=YES (zero value matched at many zero-filled/overlapping offsets)
+SCAN_METHOD=for each record, X=2*little_endian_u16(record+0x1A); then scan every overlapping little-endian u16 at offsets 0x000..0x122 for each table LV1..LV5 value
+WARNING=overlapping U16 scan returns coincidences; offset equality alone does not prove semantic field identity
+
+CANDIDATE A — X=100, rows A:2/A:3/A:21
+TABLE_ROW_X=100
+TABLE_VALUES_LV1..LV5=50;110;220;440;880
+OBSERVED_U16_MATCHES_IN_EACH_OF_A2_A3_A21:
+offset_0x012=110 (LV2)
+offset_0x014=220 (LV3)
+offset_0x016=440 (LV4)
+offset_0x018=880 (LV5)
+OTHER_MATCHES=offset 0x01A=50 (LV1, tautological because X is computed from the same u16); offset 0x010=50 (an additional duplicate match, not uniquely attributable)
+CANDIDATE_STRENGTH=K2 (repeated cross-record table-value correlation; semantics and writer/reader relationship are not proven)
+SUPPORT_1=three distinct records A:2, A:3 and A:21 independently contain the LV2..LV5 target sequence at the same offsets
+SUPPORT_2=the two independent identical runtime snapshots reproduce those bytes exactly, and the X=100 source-table row lists precisely 110/220/440/880 for LV2..LV5
+FALSIFIER_1=A:1 also has X=100 but has no nonzero LV2..LV5 U16 matches in the scan
+FALSIFIER_2=the same X does not make every record share the candidate sequence; therefore this is not a universal per-record invariant
+INTERPRETATION=possible LV value mirror/copy in a subset of records; TIDAK TAHU
+
+CANDIDATE B — X=300, rows A:12/A:13/A:15/A:16
+TABLE_ROW_X=300
+TABLE_VALUES_LV1..LV5=150;330;660;1320;2640
+OBSERVED_MATCH=each of the four records has LV2 target 330 at offset 0x024
+OTHER_MATCH=offset 0x01A=150 is derived from X and is therefore tautological for LV1
+LV3_LV4_LV5=NO U16 MATCH IN THE SCAN FOR THESE FOUR RECORDS
+CANDIDATE_STRENGTH=K2 (repeated table-value correlation limited to LV2; no evidence that all five values are mirrored)
+SUPPORT_1=four distinct records share the same LV2=330 match at offset 0x024
+SUPPORT_2=both independent runtime snapshots reproduce all bytes exactly and the X=300 table row gives LV2=330
+FALSIFIER_1=the candidate does not extend to LV3/LV4/LV5 on those records
+FALSIFIER_2=other records with nonzero X/table values frequently have no LV2 match, so this is not a universal offset rule
+INTERPRETATION=possible isolated LV2-related value or numeric coincidence; TIDAK TAHU
+
+COUNTEREXAMPLES_AND_FILTERS
+A:1 (X=100) has no LV2..LV5 matches
+A:19 (X=200) has no LV2..LV5 matches
+A:14 (X=400) is outside the supplied source table; no LV result can be inferred for it
+Offsets 0x01A (the X input) must not be counted as independent validation of LV1
+Rows whose table target is zero must be excluded from positive semantic matching; they match many zero-filled/overlapping positions
+The 96 zero-match rows are actual completed scans, not missing/incomplete snapshots
+The 2 X=400 rows are source-table coverage gaps, not zero-hit rows
+
+CONCLUSION
+K5 establishes repeatability of the captured frame-1 bytes for this checkpoint/boot condition only.
+K2 is assigned to the repeated LV-value correlations above; the game-level meaning of offsets 0x012..0x024 and their relation to LV upgrade costs remains TIDAK TAHU.
+No formula, ownership rule, cost equation, or gameplay trigger is established by these numeric coincidences alone.
