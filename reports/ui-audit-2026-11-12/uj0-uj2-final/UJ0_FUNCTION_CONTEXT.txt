@@ -1,0 +1,51 @@
+UJ0_FUNCTION_CONTEXT
+Byte/decode quotes from private DATA.BIN Entry 1; no binaries published.
+
+[Pointer slot 0x8013EA84 + stride example; PC 0x800B41B8..0x800B41D4; 32 B]
+0x800B41B8 14 80 02 3C  lui $v0,0x8014
+0x800B41BC 84 EA 44 8C  lw $a0,-0x157c($v0) ; EA = 0x8013EA84
+0x800B41C0 C0 10 03 00  sll $v0,$v1,0x3
+0x800B41C4 21 10 43 00  addu $v0,$v0,$v1
+0x800B41C8 C0 10 02 00  sll $v0,$v0,0x3
+0x800B41CC 21 10 43 00  addu $v0,$v0,$v1
+0x800B41D0 80 10 02 00  sll $v0,$v0,0x2
+0x800B41D4 21 20 44 00  addu $a0,$v0,$a0
+v1*9*8? More precisely 8v1+v1=9v1; then *8=72v1; +v1=73v1; *4=292v1=0x124*v1; then add pointer loaded from 0x8013EA84. lw is pointer-slot load.
+
+[FUN_800D15A8; PC 0x800D5A00..0x800D5A1C; 32 B]
+0x800D5A00 C0 10 03 00 sll $v0,$v1,0x3
+0x800D5A04 21 10 43 00 addu $v0,$v0,$v1
+0x800D5A08 C0 10 02 00 sll $v0,$v0,0x3
+0x800D5A0C 21 10 43 00 addu $v0,$v0,$v1
+0x800D5A10 80 10 02 00 sll $v0,$v0,0x2
+0x800D5A14 21 10 44 00 addu $v0,$v0,$a0
+0x800D5A18 20 F0 03 34 ori $v1,$zero,0xF020
+0x800D5A1C 20 00 43 A4 sh $v1,0x20($v0)
+This computes v1*0x124 + a0 and writes 0xF020 to +0x20. The window itself does not load EA84; a0 is already a base argument.
+
+[FUN_800D15A8; global 0x8013EB20; PC 0x800D494C..0x800D4960; 24 B]
+0x800D494C 14 80 02 3C lui $v0,0x8014
+0x800D4950 67 EF 02 0C jal 0x800BBD9C
+0x800D4954 14 80 10 3C lui $s0,0x8014
+0x800D4958 20 EB 02 AE sw $v0,-0x14E0($s0) ; EA 0x8013EB20
+0x800D495C 5A EB 03 0C jal 0x800FAD68
+0x800D4960 21 20 40 00 move $a0,$v0
+The global gets the return value of 0x800BBD9C. Its role as per-record index is NOT proven; UJ1 sees it as 0 at both sampled frames. Do not conflate with 0x8013EB0C.
+
+[FUN_800F7ADC; PC 0x800F7D80..0x800F7DB0; 52 B]
+0x800F7D80 00 00 00 00 sll $zero,$zero,0
+0x800F7D84 00 12 02 00 sll $v0,$v0,0x8
+0x800F7D88 25 18 62 00 or $v1,$v1,$v0
+0x800F7D8C 18 00 83 A4 sh $v1,0x18($a0)
+0x800F7D90 02 00 31 26 addiu $s1,$s1,0x2
+0x800F7D94 00 00 23 92 lbu $v1,0x0($s1)
+0x800F7D98 00 00 00 00 sll $zero,$zero,0
+0x800F7D9C 1A 00 83 A4 sh $v1,0x1A($a0)
+0x800F7DA0 01 00 22 92 lbu $v0,0x1($s1)
+0x800F7DA4 00 00 00 00 sll $zero,$zero,0
+0x800F7DA8 00 12 02 00 sll $v0,$v0,0x8
+0x800F7DAC 25 18 62 00 or $v1,$v1,$v0
+0x800F7DB0 1A 00 83 A4 sh $v1,0x1A($a0)
+This writes +0x18/+0x1A relative to a0 from s1 bytes; no EA84 load, 0x124 arithmetic, or +0x48 in this excerpt. a0 is already the destination base.
+
++0x48 provenance: baseline experiments/ui0_readonly_snapshot.py hardcodes STRIDE=0x124; RECORD_OFF=0x48 and reads P+i*STRIDE+RECORD_OFF. The static code above does not derive +0x48. TIDAK TAHU (K0); basis B in UJ1 remains a candidate sample, not proof.
