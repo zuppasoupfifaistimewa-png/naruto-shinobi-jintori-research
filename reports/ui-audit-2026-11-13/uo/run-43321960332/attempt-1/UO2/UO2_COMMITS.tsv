@@ -1,0 +1,19 @@
+commit_sha	parent_shas	author	date	subject
+1ecb9d45ab54542896775b6b559de66028ee89d9	5ec5d3278cdfcebf762894ff89446431839c00ef	zuppasoupfifaistimewa-png	2026-11-13T05:39:43+07:00	Clarify UO1 K5 read-breakpoint evidence summary
+5ec5d3278cdfcebf762894ff89446431839c00ef	dabfa88ff01ca0a1cec4ddef8f51a555d086cffd	github-actions[bot]	2026-11-12T22:38:47Z	Record UO0-UO2 audit results for run 43321603172 [skip ci]
+dabfa88ff01ca0a1cec4ddef8f51a555d086cffd	6be4e53b88467807a8e96226c36003284cc8507c	zuppasoupfifaistimewa-png	2026-11-13T05:37:21+07:00	Retain UO1 PCSX breakpoint handles across runtime frames
+6be4e53b88467807a8e96226c36003284cc8507c	aae83996f30ff68d1b61461f2fb1613a12451298	github-actions[bot]	2026-11-12T22:36:23Z	Record UO0-UO2 audit results for run 43321214483 [skip ci]
+aae83996f30ff68d1b61461f2fb1613a12451298	1eaf1b1e6af4164e505a5d2a9631a71b2bb55621	zuppasoupfifaistimewa-png	2026-11-13T05:34:46+07:00	Fix UO1 fallback stride and probe active record index
+1eaf1b1e6af4164e505a5d2a9631a71b2bb55621	9223893174dc9e5e816070a412abdcee92a2c0bc	github-actions[bot]	2026-11-12T22:34:01Z	Record UO0-UO2 audit results for run 43320839397 [skip ci]
+9223893174dc9e5e816070a412abdcee92a2c0bc	35d30fb19becde2b3f66951f4f33b89aaee9ea07	zuppasoupfifaistimewa-png	2026-11-13T05:32:23+07:00	Bound UO1 to stable 88-frame trace and map runtime record indices
+35d30fb19becde2b3f66951f4f33b89aaee9ea07	5facd4d9dcb992d0ff3163c0beab53f4573d4b57	github-actions[bot]	2026-11-12T22:28:40Z	Record UO0-UO2 audit results for run 43320059968 [skip ci]
+5facd4d9dcb992d0ff3163c0beab53f4573d4b57	e4449c49f8d256fe18521483f3c6530535274872	zuppasoupfifaistimewa-png	2026-11-13T05:27:19+07:00	Fix UO1 read-watch Lua scope and extend measured window
+e4449c49f8d256fe18521483f3c6530535274872	e67958b4d77a614165c8958905a41c4d8832a915	github-actions[bot]	2026-11-12T22:25:37Z	Record UO0-UO2 audit results for run 43319557892 [skip ci]
+e67958b4d77a614165c8958905a41c4d8832a915	766d543947ca5c47e8f3da667776c8830a4fa1e8	zuppasoupfifaistimewa-png	2026-11-13T05:24:07+07:00	Fix UO1 Lua launch and complete UO0 def-chain tracing
+766d543947ca5c47e8f3da667776c8830a4fa1e8	9817c6e2a22dee836f6fffcf4329e5fc3a335d15	github-actions[bot]	2026-11-12T21:53:57Z	Record UO0-UO2 audit results for run 43314521388 [skip ci]
+9817c6e2a22dee836f6fffcf4329e5fc3a335d15	8c5f58f1ffc67da43e497f4997c5decab0bf217f	zuppasoupfifaistimewa-png	2026-11-13T04:52:31+07:00	Fix final UO1 preflight warning and UO0 call-argument taint
+8c5f58f1ffc67da43e497f4997c5decab0bf217f	4088f5cecce54ffaf2eb9b4b67db40753a28c9dc	github-actions[bot]	2026-11-12T21:51:53Z	Record UO0-UO2 audit results for run 43314285987 [skip ci]
+4088f5cecce54ffaf2eb9b4b67db40753a28c9dc	90bc2e76d6839d40e75b3c6f055cdbc5c9f2121c	zuppasoupfifaistimewa-png	2026-11-13T04:51:01+07:00	Fix UO0/UO1 pyflakes preflight findings
+90bc2e76d6839d40e75b3c6f055cdbc5c9f2121c	e66150f3c37f2ba3b141fca8fe8d3f1a72734034	github-actions[bot]	2026-11-12T21:50:22Z	Record UO0-UO2 audit results for run 43313984115 [skip ci]
+e66150f3c37f2ba3b141fca8fe8d3f1a72734034	98a3f67f9375321ddd542a0227dbe38e34c7cbcf	zuppasoupfifaistimewa-png	2026-11-13T04:49:09+07:00	Add UO0-UO2 static, runtime and ledger audit
+98a3f67f9375321ddd542a0227dbe38e34c7cbcf	68cb9ec1539b9c7b87f3eb04589c43bd1c99685c	github-actions[bot]	2026-11-12T13:34:59Z	Record UN0-UN2 audit results for run 43228545876 [skip ci]
