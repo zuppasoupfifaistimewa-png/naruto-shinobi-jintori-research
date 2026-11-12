@@ -1,0 +1,402 @@
+name: UL0-UL2 — full static audit and frame-1 read-only snapshot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/ul0-ul1-readonly.yml"
+      - "tools/stage1/RunUL0.py"
+      - "tools/stage1/RunUL1.py"
+      - "tools/stage1/RunUL2.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: naruto-ul0-ul2-readonly-audit
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    name: ul0-ul1-preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    outputs:
+      source_sha: ${{ steps.gate.outputs.source_sha }}
+      preflight_pass: ${{ steps.gate.outputs.preflight_pass }}
+    steps:
+      - name: Checkout exact triggering source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile, pip lint, YAML parse, actionlint and self-tests
+        id: gate
+        shell: bash
+        run: |
+          set -uo pipefail
+          rc=0
+          report="$RUNNER_TEMP/UL_PREFLIGHT_SUMMARY.txt"
+          : > "$report"
+          echo "SOURCE_SHA=$GITHUB_SHA" >> "$report"
+          python -m py_compile tools/stage1/RunUL0.py tools/stage1/RunUL1.py tools/stage1/RunUL2.py
+          compile_rc=$?
+          if python -m pip install --disable-pip-version-check --no-input pyflakes PyYAML; then
+            pip_status=PASS
+            python -m pyflakes tools/stage1/RunUL0.py tools/stage1/RunUL1.py tools/stage1/RunUL2.py
+            lint_rc=$?
+            python - <<'PY'
+          from pathlib import Path
+          import yaml
+          p=Path(".github/workflows/ul0-ul1-readonly.yml")
+          yaml.compose(p.read_text(encoding="utf-8"), Loader=yaml.SafeLoader)
+          print("UL_WORKFLOW_YAML=PASS")
+          PY
+            yaml_rc=$?
+          else
+            pip_status=FAIL
+            lint_rc=2
+            if python -c 'import yaml' >/dev/null 2>&1; then
+              python - <<'PY'
+          from pathlib import Path
+          import yaml
+          p=Path(".github/workflows/ul0-ul1-readonly.yml")
+          yaml.compose(p.read_text(encoding="utf-8"), Loader=yaml.SafeLoader)
+          print("UL_WORKFLOW_YAML=PASS")
+          PY
+              yaml_rc=$?
+            else
+              yaml_rc=2
+            fi
+          fi
+          python tools/stage1/RunUL0.py --self-test; ul0_rc=$?
+          python tools/stage1/RunUL1.py --self-test; ul1_rc=$?
+          python tools/stage1/RunUL2.py --self-test; ul2_rc=$?
+          actionlint_version="1.7.12"
+          if curl --fail --silent --show-error --location --max-time 60 "https://github.com/rhysd/actionlint/releases/download/v${actionlint_version}/actionlint_${actionlint_version}_linux_amd64.tar.gz" -o "$RUNNER_TEMP/actionlint.tar.gz"; then
+            tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
+            if [ "$?" = "0" ]; then
+              "$RUNNER_TEMP/actionlint" .github/workflows/ul0-ul1-readonly.yml
+              actionlint_rc=$?
+            else
+              actionlint_rc=2
+            fi
+          else
+            actionlint_rc=2
+          fi
+          record_check() {
+            name="$1"; code="$2"
+            if [ "$code" = "0" ]; then state=PASS
+            elif [ "$code" = "2" ]; then state=NOT_RUN
+            else state=FAIL; rc=1
+            fi
+            echo "$name=$state" | tee -a "$report" >> "$GITHUB_STEP_SUMMARY"
+          }
+          record_check PY_COMPILE "$compile_rc"
+          record_check PYFLAKES_PIP "$lint_rc"
+          record_check YAML_PARSE "$yaml_rc"
+          record_check UL0_SELF_TEST "$ul0_rc"
+          record_check UL1_SELF_TEST "$ul1_rc"
+          record_check UL2_SELF_TEST "$ul2_rc"
+          record_check ACTIONLINT_RELEASE_BINARY "$actionlint_rc"
+          echo "PIP_INSTALL=$pip_status" | tee -a "$report" >> "$GITHUB_STEP_SUMMARY"
+          partial=0
+          for code in "$lint_rc" "$yaml_rc" "$actionlint_rc"; do [ "$code" = "2" ] && partial=1; done
+          if [ "$rc" -ne 0 ]; then status=BELUM; pass=false
+          elif [ "$partial" -eq 1 ]; then status=SEBAGIAN; pass=true
+          else status=TUNTAS; pass=true
+          fi
+          echo "STATUS=$status" >> "$report"
+          echo "JOB=ul0-ul1-preflight" >> "$report"
+          echo "RUN_ID=$GITHUB_RUN_ID" >> "$report"
+          echo "SOURCE_SHA=$GITHUB_SHA" >> "$report"
+          echo "EXIT_CODE=$rc" >> "$report"
+          echo "source_sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+          echo "preflight_pass=$pass" >> "$GITHUB_OUTPUT"
+          cp "$report" "$RUNNER_TEMP/UL_PREFLIGHT_RESULT.txt"
+          echo "PREFLIGHT_EXIT_CODE=$rc" >> "$GITHUB_STEP_SUMMARY"
+          exit "$rc"
+
+      - name: Commit preflight result as text only
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          dest="reports/ui-audit-2026-11-12/ul/preflight-run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$dest"
+          cp "$RUNNER_TEMP/UL_PREFLIGHT_RESULT.txt" "$dest/PREFLIGHT_SUMMARY.txt" 2>/dev/null || {
+            printf 'STATUS=BELUM\nJOB=ul0-ul1-preflight\nRUN_ID=%s\nSOURCE_SHA=%s\nEXIT_CODE=1\nREASON=preflight ended before summary\n' "$GITHUB_RUN_ID" "$GITHUB_SHA" > "$dest/PREFLIGHT_SUMMARY.txt"
+          }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$dest"
+          if ! git diff --cached --quiet; then
+            git commit -m "Record UL preflight result for run $GITHUB_RUN_ID [skip ci]"
+            pushed=0
+            for n in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main || { git rebase --abort; sleep "$n"; continue; }
+              if git push origin HEAD:main; then pushed=1; break; fi
+              sleep "$n"
+            done
+            test "$pushed" -eq 1
+          fi
+
+  ul0-ul2-audit:
+    name: ul0-ul2-audit
+    needs: preflight
+    if: needs.preflight.result == 'success' && needs.preflight.outputs.preflight_pass == 'true' && github.sha == needs.preflight.outputs.source_sha
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      GH_TOKEN: ${{ github.token }}
+      WORK: /tmp/naruto-ul-private-${{ github.run_id }}-${{ github.run_attempt }}
+      OUT: /tmp/naruto-ul-output-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Checkout exact final code SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify source SHA and prepare private workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir -p "$WORK/source" "$WORK/extracted" "$WORK/input" "$WORK/checkpoint" "$WORK/emulator" "$WORK/cards" "$OUT/UL0" "$OUT/UL1" "$OUT/UL2"
+          echo "CODE_SOURCE_SHA=$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Install disc extraction tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends bchunk xorriso jq unzip
+
+      - name: Download and verify disc; privately extract EXE and DATA.BIN
+        shell: bash
+        run: |
+          set -euo pipefail
+          API="https://api.github.com/repos/$GITHUB_REPOSITORY"
+          bin="$WORK/source/naruto-disc.bin"
+          cue_raw="$WORK/source/original.cue"
+          cue="$WORK/source/naruto-disc.cue"
+          curl --fail --location --silent --show-error --retry 2 --max-time 600 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$API/releases/assets/647346873" -o "$bin"
+          test "$(stat -c '%s' "$bin")" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $bin" | sha256sum --check --status
+          curl --fail --location --silent --show-error --retry 2 --max-time 60 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$API/releases/assets/647354760" -o "$cue_raw"
+          test "$(stat -c '%s' "$cue_raw")" = "116"
+          echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $cue_raw" | sha256sum --check --status
+          python - "$cue_raw" "$cue" <<'PY'
+          from pathlib import Path
+          import re,sys
+          source,destination=map(Path,sys.argv[1:3]); out=[]; replaced=0
+          for line in source.read_text(encoding="utf-8").splitlines():
+              if line.lstrip().upper().startswith("FILE "):
+                  m=re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)$',line,re.I)
+                  if not m: raise SystemExit("CUE_FILE_DIRECTIVE_INVALID")
+                  line=m.group(1)+'"naruto-disc.bin"'+m.group(2); replaced+=1
+              out.append(line)
+          if replaced!=1: raise SystemExit(f"CUE_FILE_DIRECTIVE_COUNT={replaced}")
+          destination.write_text("\n".join(out)+"\n",encoding="utf-8")
+          PY
+          bchunk "$bin" "$cue" "$WORK/source/track"
+          iso="$(find "$WORK/source" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          test -n "$iso"
+          xorriso -osirrox on -indev "$iso" -extract / "$WORK/extracted" > "$WORK/disc-extract.log" 2>&1
+          exe="$(find "$WORK/extracted" -type f -iname 'SLPS_035.53' -print -quit)"
+          data="$(find "$WORK/extracted" -type f -iname 'DATA.BIN' -print -quit)"
+          test -n "$exe" && test -n "$data"
+          test "$(stat -c '%s' "$exe")" = "385024"
+          echo "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569  $exe" | sha256sum --check --status
+          test "$(stat -c '%s' "$data")" = "66015232"
+          echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $data" | sha256sum --check --status
+          cp "$exe" "$WORK/input/SLPS_035.53"
+          cp "$data" "$WORK/input/DATA.BIN"
+
+      - name: UL0 — complete EXE and Entry 1 stride scan; no emulator
+        id: ul0
+        shell: bash
+        run: |
+          set +e
+          python tools/stage1/RunUL0.py --exe "$WORK/input/SLPS_035.53" --data-bin "$WORK/input/DATA.BIN" --out-dir "$OUT/UL0" > "$OUT/UL0_EXECUTION_LOG.txt" 2>&1
+          rc=$?
+          echo "$rc" > "$OUT/UL0_EXIT_CODE.txt"
+          if [ "$rc" -ne 0 ] && [ ! -s "$OUT/UL0/UL0_SUMMARY.txt" ]; then
+            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=UL0 extraction or scan failed\nEXIT_CODE=%s\n' "$rc" > "$OUT/UL0/UL0_SUMMARY.txt"
+          fi
+          echo "UL0_EXIT_CODE=$rc" >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+
+      - name: Download exact checkpoint artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: naruto-storymode-adaptive-player-private
+          run-id: "39907655833"
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          path: /tmp/naruto-ul-private-${{ github.run_id }}-${{ github.run_attempt }}/checkpoint
+
+      - name: Download and verify PCSX-Redux, retail BIOS and disc boot inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$WORK/source"
+          API="https://api.github.com/repos/$GITHUB_REPOSITORY"
+          curl --fail --silent --show-error --location --max-time 60 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API/releases/tags/research-emulator-pcsx-redux-2026-10-15" -o release.json
+          fetch_asset() {
+            name="$1"; dest="$2"; size="$3"; digest="$4"
+            id="$(jq -r --arg name "$name" '.assets[]? | select(.name == $name) | .id' release.json | head -n 1)"
+            test -n "$id" && test "$id" != null
+            curl --fail --silent --show-error --location --retry 2 --max-time 600 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$API/releases/assets/$id" -o "$dest"
+            test "$(stat -c %s "$dest")" = "$size"
+            echo "$digest  $dest" | sha256sum --check -
+          }
+          fetch_asset PCSX-Redux-0c3572c3d-anylinux-x86_64.AppImage pcsx-redux.AppImage 65747557 c04b3e0a592abbb38bac34fb75551694aaf3a7d4ff18e9fc7b8e2c05bd60fc0c
+          cp "$WORK/source/naruto-disc.bin" game.bin
+          test "$(stat -c '%s' game.bin)" = "325989552"
+          echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  game.bin" | sha256sum --check --status
+          cp "$WORK/source/naruto-disc.cue" game.cue
+          fetch_asset scph7502.zip scph7502.zip 283463 b436489c574457560489bfaad11b2a2171c684edba34d69de107b7b26dfc0e3a
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,stat,zipfile
+          with zipfile.ZipFile("scph7502.zip") as archive:
+              members=[]; total=0
+              for item in archive.infolist():
+                  name=Path(item.filename); mode=(item.external_attr>>16)&0xffff; total+=item.file_size
+                  if name.is_absolute() or ".." in name.parts or (mode and stat.S_ISLNK(mode)): raise SystemExit("BIOS_ARCHIVE_UNSAFE_MEMBER")
+                  if item.file_size>2*1024*1024 or total>4*1024*1024: raise SystemExit("BIOS_ARCHIVE_EXPANSION_BOUND")
+                  if not item.is_dir() and item.file_size==524288: members.append(item)
+              if len(members)!=1: raise SystemExit("BIOS_EXPECTED_ONE_512K_MEMBER")
+              bios=archive.read(members[0]); digest=hashlib.sha256(bios).hexdigest()
+              if digest!="5e84a94818cf5282f4217591fefd88be36b9b174b3cc7cb0bcd75199beb450f1": raise SystemExit("BIOS_SHA256_MISMATCH")
+              Path("scph7502.bin").write_bytes(bios)
+          lines=Path("game.cue").read_text(encoding="utf-8-sig").replace("\r\n","\n").replace("\r","\n").splitlines()
+          files=[i for i,line in enumerate(lines) if line.strip().upper().startswith("FILE ")]
+          if len(files)!=1: raise SystemExit("CUE_EXPECTED_ONE_FILE_ROW")
+          lines[files[0]]='FILE "game.bin" BINARY'
+          Path("game-run.cue").write_text("\n".join(lines)+"\n",encoding="ascii")
+          PY
+          chmod +x pcsx-redux.AppImage
+          ./pcsx-redux.AppImage --appimage-extract >/dev/null
+          APPDIR="$WORK/source/squashfs-root"
+          test -x "$APPDIR/AppRun"
+          PCSX_BIN="$(find -L "$APPDIR" -maxdepth 8 -type f -perm /111 | grep -E '/(pcsx-redux|pcsx-redux[^/]*)$' | head -n 1)"
+          test -n "$PCSX_BIN" && test -x "$PCSX_BIN"
+          cp scph7502.bin "$WORK/input/scph7502.bin"
+          cp game-run.cue "$WORK/input/game-run.cue"
+          echo "APPDIR=$APPDIR" >> "$GITHUB_ENV"
+          echo "PCSX_BIN=$PCSX_BIN" >> "$GITHUB_ENV"
+
+      - name: Verify immutable checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE="$WORK/checkpoint/adaptive-cycle-02-f180.sstate"
+          test -f "$SOURCE" && test "$(stat -c '%s' "$SOURCE")" = "21162799"
+          echo "705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35  $SOURCE" | sha256sum --check --status
+          chmod 0444 "$SOURCE"
+
+      - name: UL1 — two NO_INPUT frame-1-only launches
+        id: ul1
+        shell: bash
+        run: |
+          set +e
+          python tools/stage1/RunUL1.py --work "$WORK/emulator" --out "$OUT/UL1" --pcsx-bin "$PCSX_BIN" --appdir "$APPDIR" \
+            --bios "$WORK/input/scph7502.bin" --cue "$WORK/input/game-run.cue" \
+            --source "$WORK/checkpoint/adaptive-cycle-02-f180.sstate" --card-dir "$WORK/cards" \
+            --lv-table reports/stage1_economy/DN1_DK1_X_LV_TABLE_2026-11-05.tsv --timeout-seconds 180 > "$OUT/UL1_EXECUTION_LOG.txt" 2>&1
+          rc=$?
+          echo "$rc" > "$OUT/UL1_EXIT_CODE.txt"
+          if [ "$rc" -ne 0 ] && [ ! -s "$OUT/UL1/UL1_SUMMARY.txt" ]; then
+            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=UL1 runtime snapshot failed\nEXIT_CODE=%s\n' "$rc" > "$OUT/UL1/UL1_SUMMARY.txt"
+          fi
+          echo "UL1_EXIT_CODE=$rc" >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+
+      - name: Remove private ROM, BIOS, checkpoint, Memory Card and emulator state
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          rm -rf "$WORK"
+          if [ -d "$WORK" ]; then echo "PRIVATE_CLEANUP=FAIL" >> "$GITHUB_STEP_SUMMARY"; else echo "PRIVATE_CLEANUP=PASS" >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - name: UL2 — inclusive commit and paginated Actions run/job ledger
+        if: always()
+        id: ul2
+        shell: bash
+        run: |
+          set +e
+          python tools/stage1/RunUL2.py --repo "$GITHUB_REPOSITORY" --baseline abd084c4157f75f356a3867bbd68e49dbc3850d8 \
+            --threshold 43145985922 --token "$GH_TOKEN" --out-dir "$OUT/UL2" --current-run "$GITHUB_RUN_ID" > "$OUT/UL2_EXECUTION_LOG.txt" 2>&1
+          rc=$?
+          echo "$rc" > "$OUT/UL2_EXIT_CODE.txt"
+          if [ "$rc" -ne 0 ] && [ ! -s "$OUT/UL2/UL2_SUMMARY.txt" ]; then
+            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=UL2 GitHub API or Git ledger failed\nEXIT_CODE=%s\n' "$rc" > "$OUT/UL2/UL2_SUMMARY.txt"
+          fi
+          echo "UL2_EXIT_CODE=$rc" >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+
+      - name: Commit text-only reports and Actions summary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          for stage in UL0 UL1 UL2; do
+            mkdir -p "$OUT/$stage"
+            if [ ! -f "$OUT/${stage}_EXIT_CODE.txt" ]; then echo 2 > "$OUT/${stage}_EXIT_CODE.txt"; fi
+            if [ ! -f "$OUT/${stage}_EXECUTION_LOG.txt" ]; then printf 'STATUS=BELUM\nREASON=stage did not reach execution step\nEXIT_CODE=2\n' > "$OUT/${stage}_EXECUTION_LOG.txt"; fi
+            if [ ! -f "$OUT/$stage/${stage}_SUMMARY.txt" ]; then printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=stage did not produce a summary\nEXIT_CODE=2\n' > "$OUT/$stage/${stage}_SUMMARY.txt"; fi
+          done
+          rc0="$(cat "$OUT/UL0_EXIT_CODE.txt")"; rc1="$(cat "$OUT/UL1_EXIT_CODE.txt")"; rc2="$(cat "$OUT/UL2_EXIT_CODE.txt")"
+          final_rc=0; [ "$rc0" = "0" ] || final_rc=2; [ "$rc1" = "0" ] || final_rc=2; [ "$rc2" = "0" ] || final_rc=2
+          [ "$final_rc" = "0" ] && status=TUNTAS || status=SEBAGIAN
+          mkdir -p "$OUT/ACTIONS"
+          {
+            echo "STATUS=$status"
+            echo "JOB=ul0-ul2-audit"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "UL0_EXIT_CODE=$rc0"
+            echo "UL1_EXIT_CODE=$rc1"
+            echo "UL2_EXIT_CODE=$rc2"
+            echo "EXIT_CODE=$final_rc"
+          } > "$OUT/ACTIONS/ACTIONS_RUN_SUMMARY.txt"
+          git fetch origin main
+          git switch -C ul-report-publish origin/main
+          dest="reports/ui-audit-2026-11-12/ul/run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$dest"
+          cp -R "$OUT/UL0" "$OUT/UL1" "$OUT/UL2" "$dest/"
+          cp "$OUT/UL0_EXECUTION_LOG.txt" "$OUT/UL1_EXECUTION_LOG.txt" "$OUT/UL2_EXECUTION_LOG.txt" "$OUT/ACTIONS/ACTIONS_RUN_SUMMARY.txt" "$dest/"
+          cp "$OUT/UL0_EXIT_CODE.txt" "$OUT/UL1_EXIT_CODE.txt" "$OUT/UL2_EXIT_CODE.txt" "$dest/"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$dest"
+          if ! git diff --cached --quiet; then
+            git commit -m "Record UL0-UL2 audit results for run $GITHUB_RUN_ID [skip ci]"
+            pushed=0
+            for n in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main || { git rebase --abort; sleep "$n"; continue; }
+              if git push origin HEAD:main; then pushed=1; break; fi
+              sleep "$n"
+            done
+            test "$pushed" -eq 1
+          fi
+          echo "UL_REPORT_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          echo "OVERALL_ANALYSIS_STATUS=$status" >> "$GITHUB_STEP_SUMMARY"
+          echo "OVERALL_ANALYSIS_EXIT_CODE=$final_rc" >> "$GITHUB_STEP_SUMMARY"
+          exit "$final_rc"
