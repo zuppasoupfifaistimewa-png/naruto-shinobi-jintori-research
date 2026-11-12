@@ -1,0 +1,262 @@
+UJ0_UJ1_UJ2 — LAPORAN PENYELESAIAN FINAL
+Repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+Baseline UJ inklusif: d2c57a796215696dc91be91fb18f36907fa5203c
+Coverage HEAD sebelum publikasi laporan ini: afab99843275e3239505cb763113ee01bcd39b54
+Branch: main
+
+STATUS AKHIR
+UJ0: TUNTAS K4 sebagai audit byte/header/MIPS yang diminta. Nilai yang tidak dapat dipastikan diberi TIDAK TAHU/K0, bukan ditebak.
+UJ1: TUNTAS K5 untuk pengulangan identik dua kondisi NO_INPUT; ini bukan validasi semantik field.
+UJ2: TUNTAS K4; ledger mencakup 27 commit termasuk baseline, 65 peristiwa file --no-renames, lima run Actions dan sembilan job.
+Status keseluruhan lingkup UJ0-UJ2: TUNTAS. Batas semantik di bawah tetap eksplisit.
+
+UJ0a — HEADER PS-X EXE DAN PEMETAAN PC
+EXE size=385024 (0x5E000), SHA256=a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569.
+PS-X EXE header:
+offset 0x10 pc0 bytes 48 14 01 80 => 0x80011448
+offset 0x18 t_addr bytes 00 00 01 80 => 0x80010000
+offset 0x1C t_size bytes 00 D8 05 00 => 0x0005D800
+Text file range = 0x800..0x5DFFF (end-exclusive 0x5E000).
+PC -> file offset = 0x800 + (PC - 0x80010000).
+File offset -> PC = 0x80010000 + (file_offset - 0x800).
+Alasan: file PS-X EXE memiliki header 0x800 byte sebelum text; t_addr adalah alamat awal text. Rumus diverifikasi terhadap header, ukuran EXE, dan pemadanan byte instruksi mentah. Bukti K4.
+
+UJ0b — REKONSILIASI 307 PC UH1
+MATCH=265
+SHIFTED(-0x800)=42
+SHIFTED(+0x800)=0
+NONE=0
+Semua 307 baris di UJ0_UH1_RECONCILE.tsv memiliki bytes_4B, decode, status, serta lokasi byte mentah yang cocok.
+Ke-42 EXE +0x1A pada PC-0x800:
+0x80011E48, 0x80018328, 0x8001AFA4, 0x8001AFF4, 0x8001B418, 0x8001BC44, 0x8001C188, 0x8001C484, 0x8001E994, 0x8001E998, 0x8001EA68, 0x80023654, 0x80023788, 0x800239BC, 0x80023EE8, 0x80023FD0, 0x80024284, 0x80024630, 0x80024F38, 0x80025078, 0x80025178, 0x8002520C, 0x80025228, 0x8002579C, 0x80025CD8, 0x8002C8D8, 0x80031E8C, 0x80032FFC, 0x80033148, 0x80033420, 0x8003EED4, 0x800438C8, 0x80045F64, 0x80046374, 0x8004BD34, 0x8004C338, 0x8004C4EC, 0x8004D378, 0x8004DC1C, 0x8004EFE4, 0x80050B78, 0x80051C48.
+Rekonsiliasi DX1 vs UI1: DX1 menghitung offset relatif terhadap t_addr; file offset PS-X EXE memasukkan header 0x800. UI1 mengonversi posisi byte mentah kembali ke PC dengan mengurangi 0x800. Pergeseran 42 baris adalah konversi koordinat, bukan kode duplikat. Bukti K4.
+
+UJ0c — POINTER, INDEKS, STRIDE, DAN +0x48
+DATA.BIN entry 1 offset=0x10BB000, bytes=596412, SHA256=9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a. Pemetaan kandidat PC entry1 ke file offset: 0x10BB000 + (PC - 0x800AD450).
+
+Kutipan pointer slot + stride (PC 0x800B41B8..0x800B41D4; 32 byte):
+0x800B41B8  14 80 02 3C  lui $v0,0x8014
+0x800B41BC  84 EA 44 8C  lw $a0,-0x157c($v0) ; effective address 0x8013EA84
+0x800B41C0  C0 10 03 00  sll $v0,$v1,3
+0x800B41C4  21 10 43 00  addu $v0,$v0,$v1
+0x800B41C8  C0 10 02 00  sll $v0,$v0,3
+0x800B41CC  21 10 43 00  addu $v0,$v0,$v1
+0x800B41D0  80 10 02 00  sll $v0,$v0,2
+0x800B41D4  21 20 44 00  addu $a0,$v0,$a0
+Alamat 0x8013EA84 memang dibaca dengan lw pada instruksi tersebut; itu pembacaan pointer dari slot global. Operasi indeks: 8i+i=9i; lalu *8=72i; +i=73i; *4=292i=0x124i. Pointer kemudian ditambah stride-index tersebut.
+
+FUN_800D15A8 — kutipan kontigu PC 0x800D5A00..0x800D5A1C (32 byte):
+0x800D5A00  C0 10 03 00  sll $v0,$v1,3
+0x800D5A04  21 10 43 00  addu $v0,$v0,$v1
+0x800D5A08  C0 10 02 00  sll $v0,$v0,3
+0x800D5A0C  21 10 43 00  addu $v0,$v0,$v1
+0x800D5A10  80 10 02 00  sll $v0,$v0,2
+0x800D5A14  21 10 44 00  addu $v0,$v0,$a0
+0x800D5A18  20 F0 03 34  ori $v1,$zero,0xF020
+0x800D5A1C  20 00 43 A4  sh $v1,0x20($v0)
+Jendela ini menghitung v1*0x124 + a0 lalu menulis nilai immediate 0xF020 pada offset +0x20. Slot EA84 tidak dimuat ulang di jendela ini; a0 sudah merupakan base yang masuk ke blok tersebut.
+
+FUN_800D15A8 — penulisan global EB20 (PC 0x800D494C..0x800D4960; 24 byte):
+0x800D494C  14 80 02 3C  lui $v0,0x8014
+0x800D4950  67 EF 02 0C  jal 0x800BBD9C
+0x800D4954  14 80 10 3C  lui $s0,0x8014
+0x800D4958  20 EB 02 AE  sw $v0,-0x14E0($s0) ; effective address 0x8013EB20
+0x800D495C  5A EB 03 0C  jal 0x800FAD68
+0x800D4960  21 20 40 00  move $a0,$v0
+0x8013EB20 menerima return value helper 0x800BBD9C. Ini membuktikan penulisan global, bukan bahwa global tersebut menjadi indeks rekaman pada hitungan stride di 0x800D5A00. Dalam jendela 0x800D5A00, indeks yang dipakai adalah register v1. UJ1 membaca EB20=0 di empat snapshot. Relasi EB20 -> v1/indeks tidak terbukti: TIDAK TAHU (K0).
+
+FUN_800F7ADC — kutipan kontigu PC 0x800F7D80..0x800F7DB0 (52 byte):
+0x800F7D80  00 00 00 00  sll $zero,$zero,0
+0x800F7D84  00 12 02 00  sll $v0,$v0,8
+0x800F7D88  25 18 62 00  or $v1,$v1,$v0
+0x800F7D8C  18 00 83 A4  sh $v1,0x18($a0)
+0x800F7D90  02 00 31 26  addiu $s1,$s1,2
+0x800F7D94  00 00 23 92  lbu $v1,0($s1)
+0x800F7D98  00 00 00 00  sll $zero,$zero,0
+0x800F7D9C  1A 00 83 A4  sh $v1,0x1A($a0)
+0x800F7DA0  01 00 22 92  lbu $v0,1($s1)
+0x800F7DA4  00 00 00 00  sll $zero,$zero,0
+0x800F7DA8  00 12 02 00  sll $v0,$v0,8
+0x800F7DAC  25 18 62 00  or $v1,$v1,$v0
+0x800F7DB0  1A 00 83 A4  sh $v1,0x1A($a0)
+Jendela F7ADC membaca data byte melalui s1 dan menulis +0x18/+0x1A relatif terhadap a0. Tidak ada load slot EA84, perkalian stride 0x124, atau konstanta +0x48 pada jendela tersebut.
+
+Konstanta tambahan:
+- +0x48 tidak ditemukan sebagai derivasi pada kutipan fungsi di atas dan tidak ada dasar kode yang ditunjukkan untuk basis B.
+- File experiment lama menetapkan RECORD_OFF=0x48 secara literal; experiment UJ1 juga secara sengaja mengambil basis B=P+i*0x124+0x48 sesuai permintaan audit. Itu hanya sampling hipotesis, bukan pembuktian.
+- Offset yang benar-benar terlihat di kutipan: +0x20 (dengan nilai yang ditulis 0xF020), serta +0x18 dan +0x1A pada F7ADC. Tidak boleh digeneralisasi di luar kutipan.
+UJ0c tuntas sebagai audit instruksi dan batas pengetahuan; makna indeks EB20 dan asal +0x48 tetap TIDAK TAHU/K0.
+
+UJ1 — DUA PELUNCURAN READ-ONLY
+Run pengukuran: 43144307299; source SHA e0ad8bf89ca43dda6b84272382ab468f0bdb28ef; job ID 130938585082; job exit 0.
+Dua peluncuran terukur: NO_INPUT_1 dan NO_INPUT_2. Keduanya memuat checkpoint yang sama dan mencapai 900 frame pasca-load, emulator exit 0. Tidak ada input override, write-watchpoint, atau write memory.
+Snapshot di frame 1 dan frame 900 saja. Tujuh skalar per snapshot:
+EA84:u32; EB20:u32; EAB0:u32; EA8A:u16; EA74:u32; 9F03:u8; 9EC2:u16.
+Rekaman i=0..43 (44 kandidat, bukan jumlah aktif yang disimpulkan), dua basis:
+A=P+i*0x124
+B=P+i*0x124+0x48
+Medan +00:u8, +1A:u16, +1C:u16, +1E:u16, +20:u16.
+Setiap snapshot = 7 + (44*2*5) = 447 nilai; 4 snapshot = 1788 nilai.
+Nilai skalar pada semua empat snapshot:
+P/0x8013EA84=0x8013B818
+0x8013EB20=0x00000000
+0x8013EAB0=0x801F0510
+0x8013EA8A=0x0000
+0x8013EA74=0x801EFBB8
+0x80139F03=0x00
+0x80139EC2=0x0000
+Contoh rekaman pertama:
+A:0 => +00 00, +1A 0000, +1C 0000, +1E 0000, +20 F020
+B:0 => +00 00, +1A 0080, +1C 0000, +1E 0000, +20 1000
+Perbandingan semua nilai: same-frame antara dua launch identik; frame1 vs frame900 berubah 0 baris. Semua 1788 nilai tersedia sebagai UJ1_VALUES.tsv; tabel perbandingan sebagai UJ1_COMPARISON.tsv.
+Memory Card 131072 byte, mode 0444 per measured launch. SHA-256 sebelum/sesudah tiap launch = 78b6d4ac9ab4d23caf7e5f04f83539bf5d994cccfb0a709d14ac53d05c8e21ef; tidak berubah.
+Checkpoint artifact dari run 39907655833. SHA-256 sebelum/sesudah = 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35; tidak berubah.
+Transparansi setup: satu bootstrap emulator 12-frame hanya untuk membuat Memory Card kosong yang valid. Bootstrap bukan salah satu dari dua measured launches 900-frame. Tidak ada dump raw RAM.
+Bukti K5 hanya untuk repeatability dengan checkpoint/kondisi NO_INPUT ini; tidak membuktikan makna field, active record count, atau validitas B/+0x48.
+
+UJ2 — LEDGER LENGKAP
+Baseline inklusif d2c57a796215696dc91be91fb18f36907fa5203c.
+Ledger lengkap sampai prior HEAD afab99843275e3239505cb763113ee01bcd39b54 (sebelum file laporan ini):
+- 27 commit rows termasuk baseline.
+- 65 file events dengan --no-renames.
+- 5 run IDs; 9 job rows.
+Run monitor 43109652913 dibuat 2026-11-11T22:11:36Z. Timestamp baseline commit adalah 2026-11-11T22:03:39Z; jadi monitor terjadi 7m57s SETELAH baseline dan memang termasuk cakupan.
+Run details:
+- 43144169223: preflight gagal exit 1 karena assert decoder format; audit skipped; tidak ada emulator.
+- 43144307299: preflight success exit 0; audit success exit 0; satu-satunya run yang mengeksekusi dua peluncuran NO_INPUT.
+- 43144355162: preflight success exit 0; audit cancelled di checkpoint artifact download; emulator step tidak dijalankan.
+- 43144586564: preflight success exit 0; audit skipped oleh exact-SHA guard; tidak ada emulator.
+- 43109652913: monitor success exit 0.
+Actionlint: PASS pada successful preflight run 43144307299. Log memperlihatkan perintah go install actionlint dan pemanggilan actionlint; seluruh rantai perintah diwajibkan mengatur rc=1 bila gagal, sedangkan job preflight selesai success/exit 0. Catatan lama TIDAK TAHU dikoreksi berdasarkan log dan hasil job.
+Semua ringkasan job, source SHA, exit code dan ID terdaftar di ledger Actions di bawah.
+Tidak ada run emulator tambahan setelah run 43144307299.
+
+UJ2_COMMITS_COMPLETE.tsv
+commit_sha	parents	author	author_date	subject
+d2c57a796215696dc91be91fb18f36907fa5203c	7efd92f824397b5e68059dfc4f39a191f70570dc	zuppasoupfifaistimewa-png	2026-11-12T05:03:39+07:00	Add final UI0 UI1 UI2 ledger and evidence summary [skip ci]
+d79758a2b389e9636b7c9582f31a0c785acccf04	d2c57a796215696dc91be91fb18f36907fa5203c	zuppasoupfifaistimewa-png	2026-11-12T09:43:01+07:00	Add UJ0 raw-byte reconciliation for UH1 PC audit
+f5522763a912aac82eaedc4a5c4564a2681f8e35	d79758a2b389e9636b7c9582f31a0c785acccf04	zuppasoupfifaistimewa-png	2026-11-12T09:44:00+07:00	Correct UJ0 PC shift matching against UI1 census
+bfe3079c81427aa0855f7d64a3b1cdd74d013384	f5522763a912aac82eaedc4a5c4564a2681f8e35	zuppasoupfifaistimewa-png	2026-11-12T09:47:38+07:00	Add UJ0 static header and raw-byte audit
+7b2ce58c7a1dbe299c3e9c4b845d99fb1be717f6	bfe3079c81427aa0855f7d64a3b1cdd74d013384	zuppasoupfifaistimewa-png	2026-11-12T09:47:52+07:00	Add UJ1 dual-basis 44-record read-only snapshot
+24284e149dc0f97ca1d7db31dd5c912ac0e0c297	7b2ce58c7a1dbe299c3e9c4b845d99fb1be717f6	zuppasoupfifaistimewa-png	2026-11-12T09:48:00+07:00	Fix UJ0 MIPS register formatter
+44f5473b22ef99d1c7668938da38499d1e950f74	24284e149dc0f97ca1d7db31dd5c912ac0e0c297	zuppasoupfifaistimewa-png	2026-11-12T09:48:06+07:00	Read PS-X EXE header fields at correct offsets
+5a04d7c871ed7a0476b7c5727a87ba8a2fed1a45	44f5473b22ef99d1c7668938da38499d1e950f74	zuppasoupfifaistimewa-png	2026-11-12T09:48:22+07:00	Correct UJ1 report metadata
+d9777b55e4b3ceb83fe91d15f0bb09457a4473b0	5a04d7c871ed7a0476b7c5727a87ba8a2fed1a45	zuppasoupfifaistimewa-png	2026-11-12T09:48:54+07:00	Fix UJ0 script root import path
+36d1eb14be25fb7a320c617d9407cfbf874865fc	d9777b55e4b3ceb83fe91d15f0bb09457a4473b0	zuppasoupfifaistimewa-png	2026-11-12T09:49:08+07:00	Add UJ2 commit and Actions ledger generator
+4e32221bf7ee75c95adf4cefdbb259789be293b2	36d1eb14be25fb7a320c617d9407cfbf874865fc	zuppasoupfifaistimewa-png	2026-11-12T09:49:14+07:00	Remove unused UJ2 ledger imports
+9e5de8479aef45d7403402c47f1555a3aa3e6eaf	4e32221bf7ee75c95adf4cefdbb259789be293b2	zuppasoupfifaistimewa-png	2026-11-12T09:50:38+07:00	Add one-run UJ0 UJ1 UJ2 readonly audit workflow
+af99e42cfedfe58f5a311fda2ba67de81adc98aa	9e5de8479aef45d7403402c47f1555a3aa3e6eaf	github-actions[bot]	2026-11-12T02:51:13Z	Record UJ1 UI1 preflight result for run 43144169223 [skip ci]
+e0ad8bf89ca43dda6b84272382ab468f0bdb28ef	af99e42cfedfe58f5a311fda2ba67de81adc98aa	zuppasoupfifaistimewa-png	2026-11-12T09:51:55+07:00	Fix UJ0 MIPS register formatting self-test
+cf34b96719275cc709cfc9330385c189fe620374	e0ad8bf89ca43dda6b84272382ab468f0bdb28ef	zuppasoupfifaistimewa-png	2026-11-12T09:52:21+07:00	Use prebuilt actionlint binary in UJ preflight
+2bd58a4abff0966cf6d50d2484888f4846f0e1e2	cf34b96719275cc709cfc9330385c189fe620374	github-actions[bot]	2026-11-12T02:52:21Z	Record UJ1 UI1 preflight result for run 43144307299 [skip ci]
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	2bd58a4abff0966cf6d50d2484888f4846f0e1e2	github-actions[bot]	2026-11-12T02:53:37Z	Publish UJ0 UJ1 UJ2 read-only audit results for run 43144307299 [skip ci]
+1f05be97f30f2a5e35463547d24d9b36e81409c4	7cfd102ef63b92f04ee8405fd180a234dc58e8bc	github-actions[bot]	2026-11-12T02:53:53Z	Record UJ1 UI1 preflight result for run 43144355162 [skip ci]
+2e9993948923d0a4cd1a3504ca83010d87d6fb08	1f05be97f30f2a5e35463547d24d9b36e81409c4	zuppasoupfifaistimewa-png	2026-11-12T09:54:27+07:00	Guard UJ workflow against duplicate emulator runs
+9f9504ab782ccf6306d478cbfd66efc7e088a914	2e9993948923d0a4cd1a3504ca83010d87d6fb08	github-actions[bot]	2026-11-12T02:54:35Z	Publish UJ0 UJ1 UJ2 read-only audit results for run 43144355162 [skip ci]
+d7838e0332d61a76335381dfe0ca7687fd10e33a	9f9504ab782ccf6306d478cbfd66efc7e088a914	github-actions[bot]	2026-11-12T02:54:52Z	Record UJ1 UI1 preflight result for run 43144586564 [skip ci]
+e3a01298e09f50b42449498a700612080753777b	d7838e0332d61a76335381dfe0ca7687fd10e33a	zuppasoupfifaistimewa-png	2026-11-12T03:09:07Z	Publish final UJ0 UJ1 UJ2 ledger and findings [skip ci]
+0ec96283bc711ca15ebad59a876ef825ad20e40f	e3a01298e09f50b42449498a700612080753777b	zuppasoupfifaistimewa-png	2026-11-12T03:09:09Z	Publish final UJ0 UJ1 UJ2 ledger and findings [skip ci]
+fcfccd50efba6e4bb8b628067b5a4378db2ff07d	0ec96283bc711ca15ebad59a876ef825ad20e40f	zuppasoupfifaistimewa-png	2026-11-12T03:09:12Z	Publish final UJ0 UJ1 UJ2 ledger and findings [skip ci]
+81fb377e0f89f6f1702beb68c6e0778344a20da9	fcfccd50efba6e4bb8b628067b5a4378db2ff07d	zuppasoupfifaistimewa-png	2026-11-12T03:09:15Z	Publish final UJ0 UJ1 UJ2 ledger and findings [skip ci]
+1c892d9716af68917b51fafd90b9bc4c89ff0f40	81fb377e0f89f6f1702beb68c6e0778344a20da9	zuppasoupfifaistimewa-png	2026-11-12T03:09:17Z	Publish final UJ0 UJ1 UJ2 ledger and findings [skip ci]
+afab99843275e3239505cb763113ee01bcd39b54	1c892d9716af68917b51fafd90b9bc4c89ff0f40	zuppasoupfifaistimewa-png	2026-11-12T03:16:55Z	Complete UJ2 ledger through prior main HEAD [skip ci]
+
+UJ2_FILE_EVENTS_COMPLETE.tsv
+commit_sha	status_no_renames	additions	deletions	path
+d2c57a796215696dc91be91fb18f36907fa5203c	A	131	0	reports/ui-audit-2026-11-12/UI2_FINAL_LEDGER.txt
+d79758a2b389e9636b7c9582f31a0c785acccf04	A	308	0	reports/ui-audit-2026-11-12/uj0/UJ0_UH1_RECONCILE.tsv
+f5522763a912aac82eaedc4a5c4564a2681f8e35	M	42	42	reports/ui-audit-2026-11-12/uj0/UJ0_UH1_RECONCILE.tsv
+bfe3079c81427aa0855f7d64a3b1cdd74d013384	A	129	0	tools/stage1/RunUJ0StaticAudit.py
+7b2ce58c7a1dbe299c3e9c4b845d99fb1be717f6	A	252	0	experiments/uj1_readonly_snapshot.py
+44f5473b22ef99d1c7668938da38499d1e950f74	M	3	1	tools/stage1/RunUJ0StaticAudit.py
+5a04d7c871ed7a0476b7c5727a87ba8a2fed1a45	M	2	2	experiments/uj1_readonly_snapshot.py
+d9777b55e4b3ceb83fe91d15f0bb09457a4473b0	M	2	0	tools/stage1/RunUJ0StaticAudit.py
+36d1eb14be25fb7a320c617d9407cfbf874865fc	A	115	0	tools/stage1/RunUJ2Ledger.py
+4e32221bf7ee75c95adf4cefdbb259789be293b2	M	2	2	tools/stage1/RunUJ2Ledger.py
+9e5de8479aef45d7403402c47f1555a3aa3e6eaf	A	430	0	.github/workflows/uj0-uj2-readonly-audit.yml
+af99e42cfedfe58f5a311fda2ba67de81adc98aa	A	11	0	reports/ui-audit-2026-11-12/uj0-uj2-preflight-run-43144169223/attempt-1/PREFLIGHT_SUMMARY.txt
+e0ad8bf89ca43dda6b84272382ab468f0bdb28ef	M	8	8	tools/stage1/RunUJ0StaticAudit.py
+cf34b96719275cc709cfc9330385c189fe620374	M	1	1	.github/workflows/uj0-uj2-readonly-audit.yml
+2bd58a4abff0966cf6d50d2484888f4846f0e1e2	A	11	0	reports/ui-audit-2026-11-12/uj0-uj2-preflight-run-43144307299/attempt-1/PREFLIGHT_SUMMARY.txt
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	14	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/ACTIONS_RUN_SUMMARY.txt
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	1	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/PRIVATE_CLEANUP.txt
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	40	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UI1_EXECUTION_LOG.txt
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	1	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UI1_EXIT_CODE.txt
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	2830	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UI1_MIPS_FIELD_CENSUS.tsv
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	40	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UI1_SUMMARY.txt
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	25	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ0_EXECUTION_LOG.txt
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	1	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ0_EXIT_CODE.txt
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	23	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ0_FUNCTION_BYTES.txt
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	25	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ0_SUMMARY.txt
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	308	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ0_UH1_RECONCILE.tsv
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	1789	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ1_COMPARISON.tsv
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	54	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ1_EXECUTION_LOG.txt
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	1	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ1_EXIT_CODE.txt
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	3	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ1_LAUNCHES.tsv
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	54	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ1_SUMMARY.txt
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	1789	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ1_VALUES.tsv
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	5	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ2_ACTIONS_RUNS.tsv
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	17	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ2_COMMITS.tsv
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	12	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ2_EXECUTION_LOG.txt
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	1	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ2_EXIT_CODE.txt
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	16	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ2_FILE_EVENTS.tsv
+7cfd102ef63b92f04ee8405fd180a234dc58e8bc	A	12	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ2_LEDGER_SUMMARY.txt
+1f05be97f30f2a5e35463547d24d9b36e81409c4	A	11	0	reports/ui-audit-2026-11-12/uj0-uj2-preflight-run-43144355162/attempt-1/PREFLIGHT_SUMMARY.txt
+2e9993948923d0a4cd1a3504ca83010d87d6fb08	M	2	2	.github/workflows/uj0-uj2-readonly-audit.yml
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	14	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/ACTIONS_RUN_SUMMARY.txt
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	1	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/PRIVATE_CLEANUP.txt
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	40	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UI1_EXECUTION_LOG.txt
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	1	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UI1_EXIT_CODE.txt
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	2830	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UI1_MIPS_FIELD_CENSUS.tsv
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	40	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UI1_SUMMARY.txt
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	25	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UJ0_EXECUTION_LOG.txt
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	1	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UJ0_EXIT_CODE.txt
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	23	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UJ0_FUNCTION_BYTES.txt
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	25	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UJ0_SUMMARY.txt
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	308	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UJ0_UH1_RECONCILE.tsv
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	1	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UJ1_SUMMARY.txt
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	7	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UJ2_ACTIONS_RUNS.tsv
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	20	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UJ2_COMMITS.tsv
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	12	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UJ2_EXECUTION_LOG.txt
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	1	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UJ2_EXIT_CODE.txt
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	41	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UJ2_FILE_EVENTS.tsv
+9f9504ab782ccf6306d478cbfd66efc7e088a914	A	12	0	reports/ui-audit-2026-11-12/uj0-uj2-run-43144355162/attempt-1/UJ2_LEDGER_SUMMARY.txt
+d7838e0332d61a76335381dfe0ca7687fd10e33a	A	11	0	reports/ui-audit-2026-11-12/uj0-uj2-preflight-run-43144586564/attempt-1/PREFLIGHT_SUMMARY.txt
+e3a01298e09f50b42449498a700612080753777b	A	56	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ0_UJ2_FINAL_REPORT.txt
+0ec96283bc711ca15ebad59a876ef825ad20e40f	A	51	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ0_FUNCTION_CONTEXT.txt
+fcfccd50efba6e4bb8b628067b5a4378db2ff07d	A	22	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ2_COMMITS.tsv
+81fb377e0f89f6f1702beb68c6e0778344a20da9	A	60	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ2_FILE_EVENTS.tsv
+1c892d9716af68917b51fafd90b9bc4c89ff0f40	A	19	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ2_ACTIONS_RUNS.txt
+afab99843275e3239505cb763113ee01bcd39b54	A	16	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ2_HEAD_TAIL_RECONCILIATION.tsv
+
+UJ2_ACTIONS_JOBS_COMPLETE.tsv
+run_id	job_id	job	status	job_exit_code	source_sha	notes
+43109652913	130821994581	monitor	SUCCESS	0	d2c57a796215696dc91be91fb18f36907fa5203c	Scheduled monitor; created 2026-11-11T22:11:36Z, 7m57s after baseline commit timestamp
+43144169223	130937970408	uj0-uj2-preflight	FAILURE	1	9e5de8479aef45f5a311fda2ba67efc7e088a914	Self-test decoder assertion failed; fixed before successful measured run
+43144169223	130938179562	uj0-uj2-audit	SKIPPED	N/A	9e5de8479aef45f5a311fda2ba67efc7e088a914	No emulator; preflight dependency failed
+43144307299	130938413573	uj0-uj2-preflight	SUCCESS	0	e0ad8bf89ca43dda6b84272382ab468f0bdb28ef	py_compile, pyflakes, YAML, fake byte/memory self-tests and actionlint passed
+43144307299	130938585082	uj0-uj2-audit	SUCCESS	0	e0ad8bf89ca43dda6b84272382ab468f0bdb28ef	Only measured UJ1 run; two 900-frame NO_INPUT launches
+43144355162	130939017753	uj0-uj2-preflight	SUCCESS	0	cf34b96719275cc709cfc9330385c189fe620374	Preflight passed
+43144355162	130939131044	uj0-uj2-audit	CANCELLED	N/A	cf34b96719275cc709cfc9330385c189fe620374	Cancelled at checkpoint artifact download; emulator step skipped
+43144586564	130939360089	uj0-uj2-preflight	SUCCESS	0	2e9993948923d0a4cd1a3504ca83010d87d6fb08	Preflight passed
+43144586564	130939458664	uj0-uj2-audit	SKIPPED	N/A	2e9993948923d0a4cd1a3504ca83010d87d6fb08	Exact-SHA guard; no emulator
+
+PENGAMAN REPO
+STATUS.md identik byte/blob dengan baseline.
+.github/workflows/ui0-ui1-readonly-audit.yml identik byte/blob dengan baseline; tidak diubah.
+experiments/ui0_readonly_snapshot.py identik byte/blob dengan baseline; tidak diubah.
+Tidak ada Release, workflow lama, atau berkas lama yang diubah pada penyelesaian ini. Tidak ada ROM, BIOS, Memory Card, savestate, dump RAM, EXE, DATA.BIN, atau biner lain yang dikomit. Artefak hasil yang dipublikasikan hanya teks/TSV.
+
+LINKS
+UJ0_UH1_RECONCILE.tsv:
+reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ0_UH1_RECONCILE.tsv
+UJ1_VALUES.tsv:
+reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ1_VALUES.tsv
+UJ1_COMPARISON.tsv:
+reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ1_COMPARISON.tsv
+UJ1_LAUNCHES.tsv:
+reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/UJ1_LAUNCHES.tsv
+ACTIONS_RUN_SUMMARY.txt:
+reports/ui-audit-2026-11-12/uj0-uj2-run-43144307299/attempt-1/ACTIONS_RUN_SUMMARY.txt
+
+Catatan self-reference: laporan ini akan dikomit sebagai satu berkas teks setelah coverage HEAD afab99843275e3239505cb763113ee01bcd39b54. Commit publikasi laporan ini dilaporkan terpisah; tidak dimasukkan ke dalam ledger yang dikandung berkas itu sendiri.
