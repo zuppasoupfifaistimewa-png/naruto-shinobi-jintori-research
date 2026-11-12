@@ -1,0 +1,5 @@
+run_id	workflow	event	created_at	run_status	run_conclusion	source_sha	job	job_status	job_conclusion_exit_code
+43109652913	Naruto Story Mode adaptive player monitor	schedule	2026-11-11T22:11:36Z	completed	success	d2c57a796215696dc91be91fb18f36907fa5203c	monitor	completed	success:0
+43144169223	UJ0-UJ2 — static audit and dual-basis read-only snapshot	push	2026-11-12T02:50:41Z	completed	failure	9e5de8479aef45d7403402c47f1555a3aa3e6eaf	uj0-uj2-preflight	completed	failure:TIDAK TAHU
+43144169223	UJ0-UJ2 — static audit and dual-basis read-only snapshot	push	2026-11-12T02:50:41Z	completed	failure	9e5de8479aef45d7403402c47f1555a3aa3e6eaf	uj0-uj2-audit	completed	skipped:N/A
+43144355162	UJ0-UJ2 — static audit and dual-basis read-only snapshot	push	2026-11-12T02:52:23Z	pending		cf34b96719275cc709cfc9330385c189fe620374	TIDAK TAHU	TIDAK TAHU	TIDAK TAHU

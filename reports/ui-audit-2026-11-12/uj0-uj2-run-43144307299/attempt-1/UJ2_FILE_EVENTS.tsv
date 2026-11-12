@@ -1,0 +1,16 @@
+commit_sha	status_no_renames	additions	deletions	path
+d2c57a796215696dc91be91fb18f36907fa5203c	A	131	0	reports/ui-audit-2026-11-12/UI2_FINAL_LEDGER.txt
+d79758a2b389e9636b7c9582f31a0c785acccf04	A	308	0	reports/ui-audit-2026-11-12/uj0/UJ0_UH1_RECONCILE.tsv
+f5522763a912aac82eaedc4a5c4564a2681f8e35	M	42	42	reports/ui-audit-2026-11-12/uj0/UJ0_UH1_RECONCILE.tsv
+bfe3079c81427aa0855f7d64a3b1cdd74d013384	A	129	0	tools/stage1/RunUJ0StaticAudit.py
+7b2ce58c7a1dbe299c3e9c4b845d99fb1be717f6	A	252	0	experiments/uj1_readonly_snapshot.py
+44f5473b22ef99d1c7668938da38499d1e950f74	M	3	1	tools/stage1/RunUJ0StaticAudit.py
+5a04d7c871ed7a0476b7c5727a87ba8a2fed1a45	M	2	2	experiments/uj1_readonly_snapshot.py
+d9777b55e4b3ceb83fe91d15f0bb09457a4473b0	M	2	0	tools/stage1/RunUJ0StaticAudit.py
+36d1eb14be25fb7a320c617d9407cfbf874865fc	A	115	0	tools/stage1/RunUJ2Ledger.py
+4e32221bf7ee75c95adf4cefdbb259789be293b2	M	2	2	tools/stage1/RunUJ2Ledger.py
+9e5de8479aef45d7403402c47f1555a3aa3e6eaf	A	430	0	.github/workflows/uj0-uj2-readonly-audit.yml
+af99e42cfedfe58f5a311fda2ba67de81adc98aa	A	11	0	reports/ui-audit-2026-11-12/uj0-uj2-preflight-run-43144169223/attempt-1/PREFLIGHT_SUMMARY.txt
+e0ad8bf89ca43dda6b84272382ab468f0bdb28ef	M	8	8	tools/stage1/RunUJ0StaticAudit.py
+cf34b96719275cc709cfc9330385c189fe620374	M	1	1	.github/workflows/uj0-uj2-readonly-audit.yml
+2bd58a4abff0966cf6d50d2484888f4846f0e1e2	A	11	0	reports/ui-audit-2026-11-12/uj0-uj2-preflight-run-43144307299/attempt-1/PREFLIGHT_SUMMARY.txt

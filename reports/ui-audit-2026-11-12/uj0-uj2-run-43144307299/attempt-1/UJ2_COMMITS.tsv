@@ -1,0 +1,17 @@
+commit_sha	parents	author	author_date	subject
+d2c57a796215696dc91be91fb18f36907fa5203c	7efd92f824397b5e68059dfc4f39a191f70570dc	zuppasoupfifaistimewa-png	2026-11-12T05:03:39+07:00	Add final UI0 UI1 UI2 ledger and evidence summary [skip ci]
+d79758a2b389e9636b7c9582f31a0c785acccf04	d2c57a796215696dc91be91fb18f36907fa5203c	zuppasoupfifaistimewa-png	2026-11-12T09:43:01+07:00	Add UJ0 raw-byte reconciliation for UH1 PC audit
+f5522763a912aac82eaedc4a5c4564a2681f8e35	d79758a2b389e9636b7c9582f31a0c785acccf04	zuppasoupfifaistimewa-png	2026-11-12T09:44:00+07:00	Correct UJ0 PC shift matching against UI1 census
+bfe3079c81427aa0855f7d64a3b1cdd74d013384	f5522763a912aac82eaedc4a5c4564a2681f8e35	zuppasoupfifaistimewa-png	2026-11-12T09:47:38+07:00	Add UJ0 static header and raw-byte audit
+7b2ce58c7a1dbe299c3e9c4b845d99fb1be717f6	bfe3079c81427aa0855f7d64a3b1cdd74d013384	zuppasoupfifaistimewa-png	2026-11-12T09:47:52+07:00	Add UJ1 dual-basis 44-record read-only snapshot
+24284e149dc0f97ca1d7db31dd5c912ac0e0c297	7b2ce58c7a1dbe299c3e9c4b845d99fb1be717f6	zuppasoupfifaistimewa-png	2026-11-12T09:48:00+07:00	Fix UJ0 MIPS register formatter
+44f5473b22ef99d1c7668938da38499d1e950f74	24284e149dc0f97ca1d7db31dd5c912ac0e0c297	zuppasoupfifaistimewa-png	2026-11-12T09:48:06+07:00	Read PS-X EXE header fields at correct offsets
+5a04d7c871ed7a0476b7c5727a87ba8a2fed1a45	44f5473b22ef99d1c7668938da38499d1e950f74	zuppasoupfifaistimewa-png	2026-11-12T09:48:22+07:00	Correct UJ1 report metadata
+d9777b55e4b3ceb83fe91d15f0bb09457a4473b0	5a04d7c871ed7a0476b7c5727a87ba8a2fed1a45	zuppasoupfifaistimewa-png	2026-11-12T09:48:54+07:00	Fix UJ0 script root import path
+36d1eb14be25fb7a320c617d9407cfbf874865fc	d9777b55e4b3ceb83fe91d15f0bb09457a4473b0	zuppasoupfifaistimewa-png	2026-11-12T09:49:08+07:00	Add UJ2 commit and Actions ledger generator
+4e32221bf7ee75c95adf4cefdbb259789be293b2	36d1eb14be25fb7a320c617d9407cfbf874865fc	zuppasoupfifaistimewa-png	2026-11-12T09:49:14+07:00	Remove unused UJ2 ledger imports
+9e5de8479aef45d7403402c47f1555a3aa3e6eaf	4e32221bf7ee75c95adf4cefdbb259789be293b2	zuppasoupfifaistimewa-png	2026-11-12T09:50:38+07:00	Add one-run UJ0 UJ1 UJ2 readonly audit workflow
+af99e42cfedfe58f5a311fda2ba67de81adc98aa	9e5de8479aef45d7403402c47f1555a3aa3e6eaf	github-actions[bot]	2026-11-12T02:51:13Z	Record UJ1 UI1 preflight result for run 43144169223 [skip ci]
+e0ad8bf89ca43dda6b84272382ab468f0bdb28ef	af99e42cfedfe58f5a311fda2ba67de81adc98aa	zuppasoupfifaistimewa-png	2026-11-12T09:51:55+07:00	Fix UJ0 MIPS register formatting self-test
+cf34b96719275cc709cfc9330385c189fe620374	e0ad8bf89ca43dda6b84272382ab468f0bdb28ef	zuppasoupfifaistimewa-png	2026-11-12T09:52:21+07:00	Use prebuilt actionlint binary in UJ preflight
+2bd58a4abff0966cf6d50d2484888f4846f0e1e2	cf34b96719275cc709cfc9330385c189fe620374	github-actions[bot]	2026-11-12T02:52:21Z	Record UJ1 UI1 preflight result for run 43144307299 [skip ci]
