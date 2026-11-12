@@ -148,8 +148,13 @@ def main():
     if checkout_head!=source: raise RuntimeError(f"CHECKOUT_SHA_MISMATCH:HEAD={checkout_head}:SOURCE={source}")
     nruns,njobs,nschedule,schedule,run_rows,job_rows=actions_ledger(a.repo,a.token,a.threshold,a.out_dir)
     ledger_head=sync_main(a.repo,a.token)
-    if ledger_head!=source and not git("merge-base","--is-ancestor",source,ledger_head):
-        raise RuntimeError(f"MAIN_NOT_DESCENDANT_OF_SOURCE:SOURCE={source}:MAIN={ledger_head}")
+    if ledger_head!=source:
+        ancestor=subprocess.run(["git","merge-base","--is-ancestor",source,ledger_head],
+          stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,check=False)
+        if ancestor.returncode not in (0,1):
+            raise RuntimeError(f"MERGE_BASE_CHECK_FAILED:EXIT={ancestor.returncode}:{ancestor.stderr[:400]}")
+        if ancestor.returncode==1:
+            raise RuntimeError(f"MAIN_NOT_DESCENDANT_OF_SOURCE:SOURCE={source}:MAIN={ledger_head}")
     ncommits,nevents,totals=commit_ledger(a.baseline,ledger_head,a.out_dir)
     current=next((r for r in run_rows if int(r["run_id"])==a.current_run),None)
     current_jobs=[j for j in job_rows if int(j["run_id"])==a.current_run]

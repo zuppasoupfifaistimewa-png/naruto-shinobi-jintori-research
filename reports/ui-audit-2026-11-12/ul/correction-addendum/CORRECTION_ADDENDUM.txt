@@ -1,0 +1,5 @@
+UL0-UL2 CORRECTION ADDENDUM
+
+- UL0: exact PC 0x800D5B3C is now checked as a direct MIPS instruction and memory-read operation, not incorrectly required to start a second 0x124 stride idiom. A 4-byte target disassembly TSV is emitted; no field meaning inferred.
+- UL2: Git ancestry test now checks the process exit code from git merge-base --is-ancestor; stdout is correctly expected to be empty.
+- UL1: new push-triggered audits skip emulator runtime. The workflow_dispatch input run_ul1 defaults false and requires explicit true. The two-launch allowance was consumed by run 43187690502; this correction does not run another emulator process.

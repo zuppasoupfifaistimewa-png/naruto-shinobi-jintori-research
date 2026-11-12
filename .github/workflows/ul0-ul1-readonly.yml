@@ -9,6 +9,12 @@ on:
       - "tools/stage1/RunUL1.py"
       - "tools/stage1/RunUL2.py"
   workflow_dispatch:
+    inputs:
+      run_ul1:
+        description: Run UL1 emulator only if the two-launch allowance remains unused
+        required: false
+        default: 'false'
+        type: boolean
 
 permissions:
   contents: write
@@ -309,6 +315,7 @@ jobs:
           chmod 0444 "$SOURCE"
 
       - name: UL1 — two NO_INPUT frame-1-only launches
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_ul1 == 'true'
         id: ul1
         shell: bash
         run: |
@@ -357,7 +364,7 @@ jobs:
           for stage in UL0 UL1 UL2; do
             mkdir -p "$OUT/$stage"
             if [ ! -f "$OUT/${stage}_EXIT_CODE.txt" ]; then echo 2 > "$OUT/${stage}_EXIT_CODE.txt"; fi
-            if [ ! -f "$OUT/${stage}_EXECUTION_LOG.txt" ]; then printf 'STATUS=BELUM\nREASON=stage did not reach execution step\nEXIT_CODE=2\n' > "$OUT/${stage}_EXECUTION_LOG.txt"; fi
+            if [ ! -f "$OUT/${stage}_EXECUTION_LOG.txt" ]; then printf 'STATUS=BELUM\nREASON=stage did not reach execution step; UL1 skipped on push because the two-launch allowance was consumed\nEXIT_CODE=2\n' > "$OUT/${stage}_EXECUTION_LOG.txt"; fi
             if [ ! -f "$OUT/$stage/${stage}_SUMMARY.txt" ]; then printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=stage did not produce a summary\nEXIT_CODE=2\n' > "$OUT/$stage/${stage}_SUMMARY.txt"; fi
           done
           rc0="$(cat "$OUT/UL0_EXIT_CODE.txt")"; rc1="$(cat "$OUT/UL1_EXIT_CODE.txt")"; rc2="$(cat "$OUT/UL2_EXIT_CODE.txt")"
