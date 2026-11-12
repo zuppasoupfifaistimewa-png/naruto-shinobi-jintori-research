@@ -130,7 +130,7 @@ def actions_page_check(repo: str, token: str, out: Path, run_ceiling: int) -> tu
         with urllib.request.urlopen(req, timeout=60) as response:
             status = response.status
             body = response.read().decode("utf-8", errors="replace")
-        ids = sorted(set(re.findall(r"/actions/runs/(\d+)", body)), key=int)
+        ids = sorted({x for x in re.findall(r"/actions/runs/(\d+)", body) if int(x) <= run_ceiling}, key=int)
         text_body = html.unescape(re.sub(r"<[^>]+>", " ", body))
         text_body = re.sub(r"\s+", " ", text_body)
         monitor_visible = ("Naruto Story Mode adaptive player monitor" in text_body
@@ -226,7 +226,7 @@ def main() -> int:
         f"BASELINE_INCLUSIVE={BASELINE}", f"BASELINE_COMMITTER_DATE={first['baseline_date']}",
         f"HARNESS_DELETION_AUDIT_REFERENCE_ONLY={HARNESS_AUDIT_REFERENCE}",
         f"HEAD_MAIN_AT_LEDGER_CAPTURE={first['head']}", f"WORKFLOW_SOURCE_SHA={source_sha}", f"CHECKOUT_SOURCE_SHA={checkout_sha}",
-        f"SOURCE_SHA_IS_IN_LEDGER={'YES' if source_sha in read_commit_rows(a.out_dir / 'UM2_COMMITS.tsv') else 'NO'}",
+        f"SOURCE_SHA_IS_IN_LEDGER={'YES' if source_sha in [row[0] for row in read_commit_rows(a.out_dir / 'UM2_COMMITS.tsv')] else 'NO'}",
         f"COMMIT_ROWS_INCLUDING_BASELINE={first['ncommits']}", f"FILE_EVENT_ROWS_NO_RENAMES={first['nevents']}",
         *[f"FILE_EVENT_{k}={v}" for k, v in first["counts"].items()],
         "EVENT_DETECTION=git diff --no-renames; rename pairs represented as separate A/D",
