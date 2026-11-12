@@ -141,6 +141,8 @@ local runtimeP=nil
 local readEnabled=false
 local totalHits=0
 local registered,registerError=0,0
+local readBreakpoints={}
+local execBreakpoints={}
 local function log(s) print(s); pcall(function() io.stdout:flush() end) end
 local function hx(v,w)
  if v==nil then return "TIDAK_TAHU" end
@@ -214,10 +216,10 @@ local function arm_exec()
    return PCSX.addBreakpoint(s.pc,"Exec",4,"UO1 fallback exec "..string.format("%08X",s.pc),
      function(address,width,cause) return record_exec(s,address,width,cause) end)
   end)
-  if ok and bp~=nil then okCount=okCount+1
+  if ok and bp~=nil then okCount=okCount+1; execBreakpoints[#execBreakpoints+1]=bp
   else registerError=registerError+1; log("UO1_EXEC_BP_ERROR\\t"..LAUNCH.."\\t"..string.format("0x%08X",s.pc).."\\t"..tostring(bp)) end
  end
- log("UO1_EXEC_BP_REGISTERED="..tostring(okCount).." launch="..LAUNCH)
+ log("UO1_EXEC_BP_REGISTERED="..tostring(okCount).." launch="..LAUNCH.." handles_retained="..tostring(#execBreakpoints))
 end
 local function arm_read()
  local failed=false
@@ -226,7 +228,7 @@ local function arm_read()
    return PCSX.addBreakpoint(w.a,"Read",2,"UO1 read "..string.format("%08X",w.a),
      function(address,width,cause) return record_read(w,address,width,cause) end)
   end)
-  if ok and bp~=nil then registered=registered+1
+  if ok and bp~=nil then registered=registered+1; readBreakpoints[#readBreakpoints+1]=bp
   else
    registerError=registerError+1; failed=true
    log("UO1_READ_BP_ERROR\\t"..LAUNCH.."\\t"..hx(w.a).."\\t"..tostring(bp))
@@ -240,7 +242,7 @@ local function arm_read()
   MODE="EXEC_FALLBACK"
  else
   readEnabled=true
-  log("UO1_READ_BP_REGISTERED=YES launch="..LAUNCH.." count="..tostring(registered))
+  log("UO1_READ_BP_REGISTERED=YES launch="..LAUNCH.." count="..tostring(registered).." handles_retained="..tostring(#readBreakpoints))
  end
 end
 _G.uoLoaded=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
