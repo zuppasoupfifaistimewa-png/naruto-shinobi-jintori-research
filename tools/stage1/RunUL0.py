@@ -213,7 +213,7 @@ def self_test():
     target=decode(bytes(blob[(0x800D5B3C-E1_PC):(0x800D5B3C-E1_PC)+4]))
     assert target.get("mem") is not None and target["mem"][1]=="R",target
     assert next(x for x in hits if x["pc"]==0x800D5A00)["pointer_origin"]=="YA"
-    assert any(x["rw"]=="R" and x["offset"]==0x1a for h in hits for x in h["accesses"])
+    assert target["mem"][1]=="R" and target["mem"][2]==0x1a,target
     alt_hit=next(x for x in hits if x["pc"]==0x800D5C00)
     assert alt_hit["kind"]=="CONST_0x124_MULT_MFLO" and any(x["offset"]==0x24 for x in alt_hit["accesses"])
     header=bytearray(16); header[:4]=it(9,0,7,0x124)
