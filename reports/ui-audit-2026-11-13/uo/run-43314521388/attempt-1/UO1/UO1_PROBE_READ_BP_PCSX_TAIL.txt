@@ -1,0 +1,13 @@
+Loading memory card /tmp/naruto-uo-private-43314521388-1/emulator/probe_read_bp/memory-card.mcd
+The memory card /tmp/naruto-uo-private-43314521388-1/emulator/probe_read_bp/home/.config/pcsx-redux/memcard2.mcd doesn't exist - creating it
+Audio: driver dummy, 44100 Hz, 441 frames per period
+Loaded CD Image: /tmp/naruto-uo-private-43314521388-1/source/game-run.cue[+cue].
+Track 01 (DATA) - Start 00:02:00, Length 30:48:01
+CD-ROM Label: SLPS-03553
+CD-ROM ID: SLPS03553
+CD-ROM EXE Name: SLPS_035.53;1
+PCSX-Redux booting
+Copyright (C) 2019-2025 PCSX-Redux authors
+CPU type: Interpreted
+Loaded BIOS: /tmp/naruto-uo-private-43314521388-1/input/scph7502.bin
+Known BIOS detected: SCPH-7502 (EU) (318178bf)

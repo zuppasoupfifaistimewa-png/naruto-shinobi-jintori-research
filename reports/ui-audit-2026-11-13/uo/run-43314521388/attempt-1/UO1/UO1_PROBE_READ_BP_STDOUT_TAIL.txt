@@ -1,0 +1,181 @@
+ALSA lib confmisc.c:855:(parse_card) [error.core] cannot find card '0'
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) [error.core] error evaluating strings
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) [error.core] error evaluating name
+ALSA lib conf.c:5211:(_snd_config_evaluate) [error.core] function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5734:(snd_config_expand) [error.core] Evaluate error: No such file or directory
+ALSA lib pcm.c:2722:(snd_pcm_open_noupdate) [error.pcm] Unknown PCM sysdefault
+1: (Table) 
+2: (String) LuaException: filesystem error: status: File name too long [
+local ffi=require("ffi")
+local LAUNCH="PROBE_READ_BP"
+local CARD_PATH="/tmp/naruto-uo-private-43314521388-1/emulator/probe_read_bp/memory-card.mcd"
+local FRAME_LIMIT=60
+local MAX_HITS=256
+local MODE="READ"
+local READERS={[0x800B3F24]={29,16,"$sp"},[0x800B49F0]={29,24,"$sp"},[0x800B68C8]={29,16,"$sp"},[0x800B7794]={2,16,"$v0"},[0x800B77D4]={2,16,"$v0"},[0x800B783C]={2,16,"$v0"},[0x800B7884]={2,16,"$v0"},[0x800B78D0]={2,16,"$v0"},[0x800B9BEC]={2,16,"$v0"},[0x800C399C]={2,30,"$v0"},[0x800C3A78]={2,14,"$v0"},[0x800C8140]={2,26,"$v0"},[0x800C92E4]={2,16,"$v0"},[0x800C9990]={2,14,"$v0"},[0x800CA748]={2,26,"$v0"},[0x800CB3BC]={3,14,"$v1"},[0x800CBC7C]={16,14,"$s0"},[0x800CBD9C]={2,14,"$v0"},[0x800CCBCC]={2,14,"$v0"},[0x800CCC0C]={2,14,"$v0"},[0x800CDA64]={2,14,"$v0"},[0x800CDAF8]={3,14,"$v1"},[0x800CDB7C]={2,14,"$v0"},[0x800CDC10]={3,14,"$v1"},[0x800CDF64]={3,26,"$v1"},[0x800CE0F4]={2,16,"$v0"},[0x800CE818]={2,26,"$v0"},[0x800CFF7C]={16,16,"$s0"},[0x800D0AE4]={2,26,"$v0"},[0x800D0D70]={2,16,"$v0"},[0x800D2520]={5,26,"$a1"},[0x800D2768]={2,14,"$v0"},[0x800D2ADC]={2,26,"$v0"},[0x800D2B5C]={2,26,"$v0"},[0x800D3BBC]={2,14,"$v0"},[0x800D3EE4]={2,26,"$v0"},[0x800D3F74]={2,26,"$v0"},[0x800D4628]={2,26,"$v0"},[0x800D46EC]={2,26,"$v0"},[0x800D5268]={3,28,"$v1"},[0x800D5278]={3,30,"$v1"},[0x800D52D8]={3,30,"$v1"},[0x800D52F4]={3,28,"$v1"},[0x800D57F8]={3,30,"$v1"},[0x800D580C]={3,28,"$v1"},[0x800D5888]={3,28,"$v1"},[0x800D5898]={3,30,"$v1"},[0x800E3FBC]={2,26,"$v0"},[0x800EB570]={4,26,"$a0"},[0x800EEC54]={4,26,"$a0"},[0x800F0CD0]={2,14,"$v0"},[0x800F0D34]={2,14,"$v0"},[0x800F0EDC]={6,14,"$a2"},[0x800F0EFC]={6,14,"$a2"},[0x800F6370]={4,18,"$a0"},[0x800F637C]={4,16,"$a0"},[0x800F63B4]={3,18,"$v1"},[0x800F63C0]={3,16,"$v1"},[0x800F83F0]={29,22,"$sp"},[0x800F8444]={29,20,"$sp"},[0x800F856C]={29,18,"$sp"},[0x800F8570]={29,22,"$sp"},[0x800F86C0]={29,20,"$sp"},[0x800F8850]={29,16,"$sp"},[0x800F8854]={29,20,"$sp"},[0x800F8A14]={29,16,"$sp"},[0x800F8A18]={29,20,"$sp"},[0x800F8C38]={29,20,"$sp"},[0x800F8F64]={4,16,"$a0"},[0x800F8F74]={4,18,"$a0"},[0x800F9618]={3,16,"$v1"},[0x800F961C]={3,20,"$v1"},[0x800F9660]={3,16,"$v1"},[0x800F9664]={3,20,"$v1"},[0x800FBE30]={3,14,"$v1"},[0x800FC68C]={6,14,"$a2"},[0x800FC930]={3,14,"$v1"},[0x800FD654]={3,14,"$v1"},[0x800FE234]={3,14,"$v1"},[0x800FE5C4]={3,14,"$v1"},[0x800FE950]={3,14,"$v1"},[0x800FEEA0]={2,16,"$v0"},[0x8010014C]={2,16,"$v0"},[0x80101B04]={3,14,"$v1"},[0x80101B08]={3,14,"$v1"},[0x80101B84]={3,14,"$v1"},[0x80101B88]={3,14,"$v1"},[0x80101C4C]={2,14,"$v0"},[0x80101CD4]={2,14,"$v0"},[0x801025CC]={6,16,"$a2"},[0x801025D0]={6,18,"$a2"},[0x80102800]={3,18,"$v1"},[0x80102820]={2,16,"$v0"},[0x80102824]={2,18,"$v0"},[0x801033A8]={22,28,"$s6"},[0x801033B8]={22,30,"$s6"},[0x801033BC]={22,30,"$s6"},[0x80103520]={22,30,"$s6"},[0x80103570]={22,30,"$s6"},[0x80103B24]={22,30,"$s6"},[0x80105264]={3,24,"$v1"},[0x80105268]={3,26,"$v1"},[0x8010652C]={2,24,"$v0"},[0x80106538]={2,26,"$v0"},[0x801068CC]={5,24,"$a1"},[0x801068D0]={5,26,"$a1"},[0x80107454]={29,16,"$sp"},[0x801074B4]={29,16,"$sp"},[0x80107610]={29,16,"$sp"},[0x80107664]={29,16,"$sp"},[0x80107738]={29,16,"$sp"},[0x8010773C]={29,18,"$sp"},[0x801077E4]={29,16,"$sp"},[0x801077E8]={29,18,"$sp"},[0x80108B84]={29,20,"$sp"},[0x8010C058]={19,14,"$s3"},[0x8010C078]={19,14,"$s3"},[0x8010CAC8]={29,20,"$sp"},[0x8010CAD8]={29,22,"$sp"},[0x8010DDD8]={4,28,"$a0"},[0x8010DF4C]={4,28,"$a0"},[0x8010E44C]={4,28,"$a0"},[0x8010EB6C]={16,16,"$s0"},[0x8010EB80]={16,18,"$s0"},[0x8010ED24]={16,16,"$s0"},[0x8010ED34]={16,18,"$s0"},[0x8010F074]={17,18,"$s1"},[0x8010F0D8]={2,18,"$v0"},[0x8010F10C]={16,16,"$s0"},[0x8010F2F4]={3,28,"$v1"},[0x8010F2F8]={3,30,"$v1"},[0x8010F924]={29,20,"$sp"},[0x8010F944]={29,22,"$sp"},[0x8010F984]={29,20,"$sp"},[0x8010F990]={29,22,"$sp"},[0x80110870]={29,20,"$sp"},[0x8011159C]={2,14,"$v0"},[0x801115D4]={2,14,"$v0"},[0x8011160C]={2,14,"$v0"},[0x80111A44]={4,14,"$a0"},[0x80111AE0]={9,14,"$t1"},[0x80111B7C]={9,24,"$t1"},[0x80111B90]={9,28,"$t1"},[0x80111BD4]={9,20,"$t1"},[0x80111C0C]={29,20,"$sp"},[0x80111C1C]={29,22,"$sp"},[0x80111CB4]={21,14,"$s5"},[0x80111DC8]={4,14,"$a0"},[0x80112174]={2,14,"$v0"},[0x801133AC]={29,22,"$sp"},[0x80114028]={3,24,"$v1"},[0x8011402C]={3,26,"$v1"},[0x801160E0]={17,14,"$s1"},[0x80117648]={2,18,"$v0"},[0x801176EC]={2,18,"$v0"},[0x801177F8]={4,16,"$a0"},[0x80117804]={4,18,"$a0"},[0x8011782C]={3,16,"$v1"},[0x80117838]={3,18,"$v1"},[0x8011789C]={2,18,"$v0"},[0x80117914]={6,18,"$a2"},[0x80117A00]={3,16,"$v1"},[0x80117A0C]={3,18,"$v1"},[0x80117A44]={2,16,"$v0"},[0x80117A4C]={2,18,"$v0"},[0x80117A84]={2,16,"$v0"},[0x801195A8]={29,16,"$sp"},[0x80119D8C]={3,22,"$v1"},[0x80119E84]={3,20,"$v1"},[0x80119E90]={3,22,"$v1"},[0x80119F28]={3,20,"$v1"},[0x80119F34]={3,22,"$v1"},[0x80119F44]={3,20,"$v1"},[0x80119FE4]={3,22,"$v1"},[0x80119FF8]={3,22,"$v1"},[0x8011A00C]={3,22,"$v1"},[0x8011A020]={3,22,"$v1"},[0x8011A18C]={2,22,"$v0"},[0x8011AEE8]={3,22,"$v1"},[0x8011AEF4]={3,20,"$v1"},[0x8011AF24]={3,20,"$v1"},[0x8011AFE4]={3,20,"$v1"},[0x8011AFF0]={3,22,"$v1"},[0x8011B060]={4,20,"$a0"},[0x8011B078]={4,22,"$a0"},[0x8011B1EC]={4,20,"$a0"},[0x8011B248]={3,22,"$v1"},[0x8011B284]={2,20,"$v0"},[0x8011B288]={2,22,"$v0"},[0x8011B60C]={2,20,"$v0"},[0x8011B858]={20,14,"$s4"},[0x8011B9D0]={20,14,"$s4"},[0x8011CD1C]={3,28,"$v1"},[0x8011CD34]={2,28,"$v0"},[0x8011E7C0]={9,28,"$t1"},[0x8011E8EC]={9,28,"$t1"},[0x8011EB2C]={17,28,"$s1"},[0x8011ED04]={2,30,"$v0"},[0x8011ED20]={2,30,"$v0"},[0x8011ED7C]={2,30,"$v0"},[0x8011ED98]={2,30,"$v0"},[0x8011EE44]={8,28,"$t0"},[0x8011F0B4]={5,28,"$a1"},[0x8011F3BC]={3,30,"$v1"},[0x8011F544]={3,30,"$v1"},[0x8011F5EC]={2,16,"$v0"},[0x8011F610]={2,16,"$v0"},[0x8011F634]={2,16,"$v0"},[0x8011F694]={3,16,"$v1"},[0x8011F698]={3,16,"$v1"},[0x8011F6E0]={3,16,"$v1"},[0x8011F800]={2,16,"$v0"},[0x8011F890]={3,30,"$v1"},[0x8011F894]={3,28,"$v1"},[0x8011F8BC]={2,16,"$v0"},[0x8011F8EC]={3,18,"$v1"},[0x8011F910]={5,16,"$a1"},[0x80120B8C]={3,16,"$v1"},[0x80120B90]={2,18,"$v0"},[0x80120EEC]={29,16,"$sp"},[0x80120EF8]={29,18,"$sp"},[0x80120F04]={29,24,"$sp"},[0x80120F10]={29,26,"$sp"},[0x80121690]={29,24,"$sp"},[0x801216A0]={29,26,"$sp"},[0x8012176C]={29,16,"$sp"},[0x80121790]={29,18,"$sp"},[0x801217DC]={29,24,"$sp"},[0x801217FC]={29,26,"$sp"},[0x80121834]={29,20,"$sp"},[0x80121840]={29,22,"$sp"},[0x80121850]={29,16,"$sp"},[0x80121854]={29,18,"$sp"},[0x80121864]={29,16,"$sp"},[0x801218AC]={29,18,"$sp"},[0x801218D0]={29,24,"$sp"},[0x801218DC]={29,26,"$sp"},[0x801219E4]={29,20,"$sp"},[0x80121A04]={29,22,"$sp"},[0x80121A5C]={29,20,"$sp"},[0x801240A8]={2,24,"$v0"},[0x80127D08]={16,14,"$s0"},[0x80127E0C]={3,24,"$v1"},[0x80127E14]={2,26,"$v0"},[0x80127E64]={16,14,"$s0"},[0x80128428]={29,26,"$sp"},[0x80128464]={29,26,"$sp"},[0x80128490]={29,16,"$sp"},[0x80128494]={29,20,"$sp"},[0x801284A0]={29,24,"$sp"},[0x801284C8]={29,18,"$sp"},[0x801284CC]={29,22,"$sp"},[0x801284D8]={29,26,"$sp"},[0x80128500]={29,16,"$sp"},[0x8012850C]={29,28,"$sp"},[0x8012851C]={29,26,"$sp"},[0x80128528]={29,30,"$sp"},[0x80128534]={29,24,"$sp"},[0x80128544]={29,18,"$sp"},[0x8012858C]={2,28,"$v0"},[0x8012859C]={2,30,"$v0"},[0x801285E4]={29,28,"$sp"},[0x80128788]={2,22,"$v0"},[0x801287B0]={2,22,"$v0"},[0x80128880]={2,20,"$v0"},[0x801289E4]={3,20,"$v1"},[0x80128A08]={3,20,"$v1"},[0x80128BEC]={3,20,"$v1"},[0x80128C14]={3,20,"$v1"},[0x80128C98]={3,20,"$v1"},[0x80128D40]={2,20,"$v0"},[0x80128E20]={3,20,"$v1"},[0x801290AC]={2,22,"$v0"},[0x80129114]={3,22,"$v1"},[0x80129224]={3,22,"$v1"},[0x8012924C]={2,22,"$v0"},[0x801292E8]={2,22,"$v0"},[0x80129334]={3,22,"$v1"},[0x80129354]={2,22,"$v0"},[0x801293A8]={3,22,"$v1"},[0x80129424]={3,22,"$v1"},[0x80129458]={2,22,"$v0"},[0x801296B0]={3,22,"$v1"},[0x80129734]={4,22,"$a0"},[0x8012975C]={4,22,"$a0"},[0x80129850]={3,22,"$v1"},[0x801298B4]={3,22,"$v1"},[0x80129968]={3,22,"$v1"},[0x801299A0]={2,22,"$v0"},[0x801299CC]={3,22,"$v1"},[0x801299E8]={2,22,"$v0"},[0x80129AEC]={3,22,"$v1"},[0x8012A624]={3,14,"$v1"},[0x8012A6AC]={4,14,"$a0"},[0x8012A6DC]={3,14,"$v1"},[0x8012A788]={3,14,"$v1"},[0x8012A81C]={4,14,"$a0"},[0x8012A84C]={16,14,"$s0"},[0x8012B23C]={3,14,"$v1"},[0x8012B2FC]={3,14,"$v1"},[0x8012B3BC]={3,14,"$v1"},[0x8012B44C]={2,14,"$v0"},[0x8012B48C]={2,14,"$v0"},[0x8012B4CC]={4,14,"$a0"},[0x8012C140]={16,14,"$s0"},[0x8012C164]={16,14,"$s0"},[0x8012CCA0]={6,24,"$a2"},[0x8012CE74]={20,14,"$s4"},[0x8012D0B8]={20,28,"$s4"},[0x8012D174]={20,14,"$s4"},[0x8012D180]={5,14,"$a1"},[0x8012D24C]={20,14,"$s4"},[0x8012D258]={4,14,"$a0"},[0x8012D2D8]={20,14,"$s4"},[0x8012D560]={20,14,"$s4"},[0x8012D5F8]={20,14,"$s4"},[0x8012D680]={20,14,"$s4"},[0x8012D740]={20,14,"$s4"},[0x8012D7B8]={20,14,"$s4"},[0x8012D7F4]={20,14,"$s4"},[0x8012D810]={6,14,"$a2"},[0x8012EDB4]={3,30,"$v1"},[0x8012EDF4]={2,16,"$v0"},[0x8012EE74]={2,20,"$v0"},[0x8012F4B0]={16,14,"$s0"},[0x8012F610]={16,14,"$s0"},[0x8012F8D0]={4,14,"$a0"},[0x8012F8D4]={17,14,"$s1"},[0x8012FAD4]={29,20,"$sp"},[0x8012FAE4]={29,22,"$sp"},[0x8012FBA4]={29,20,"$sp"},[0x8012FBB4]={29,22,"$sp"},[0x8012FD98]={17,14,"$s1"},[0x8012FED8]={17,14,"$s1"},[0x8012FFF0]={16,14,"$s0"},[0x80131410]={2,16,"$v0"},[0x80131940]={4,14,"$a0"},[0x80131958]={4,14,"$a0"},[0x80131984]={4,14,"$a0"},[0x8013199C]={4,14,"$a0"},[0x80131ED8]={17,14,"$s1"},[0x80132EF8]={18,14,"$s2"},[0x80132F48]={18,14,"$s2"},[0x80132FAC]={18,14,"$s2"},[0x80133254]={17,14,"$s1"},[0x80133258]={16,14,"$s0"},[0x80133700]={17,28,"$s1"},[0x801337D8]={3,28,"$v1"},[0x80134784]={3,14,"$v1"},[0x80134834]={3,14,"$v1"},[0x801348D8]={2,14,"$v0"},[0x80134D5C]={4,14,"$a0"},[0x80135414]={4,14,"$a0"},[0x801378E4]={29,16,"$sp"},[0x801378F0]={29,18,"$sp"},[0x801378FC]={29,24,"$sp"},[0x80137908]={29,26,"$sp"},[0x80137B6C]={3,16,"$v1"},[0x80137B78]={3,18,"$v1"},[0x80137B84]={3,16,"$v1"},[0x80137B98]={3,18,"$v1"},[0x80137BA4]={3,16,"$v1"},[0x80137BB0]={3,18,"$v1"},[0x80137BC4]={3,16,"$v1"},[0x80137BD8]={3,18,"$v1"},[0x80137C98]={3,28,"$v1"},[0x8013872C]={6,16,"$a2"},[0x80138730]={5,16,"$a1"},[0x80138740]={6,18,"$a2"},[0x80138744]={5,18,"$a1"},[0x801387A4]={3,16,"$v1"},[0x801387B8]={3,18,"$v1"},[0x80138C6C]={2,18,"$v0"},[0x80138D08]={2,28,"$v0"},[0x80138D8C]={2,28,"$v0"},[0x80138F40]={3,18,"$v1"},[0x80138F9C]={3,28,"$v1"},[0x80139010]={2,28,"$v0"}}
+local WATCHES={}
+local function build_watches()
+ local pval=readv(0x8013EA84,4)
+ if not pval then return false end
+ local p=tonumber(pval)
+ if p<RAM_START or p>=RAM_END then return false end
+ for _,ix in ipairs({1}) do
+  local first=p+ix*0x124
+  if first<RAM_START or first+0x123>=RAM_END then return false end
+  for _,off in ipairs({14,16,18,20,22,24,26,28,30}) do
+   WATCHES[#WATCHES+1]={a=first+off,i=ix,o=off}
+  end
+ end
+ return true
+end
+local EXEC_SITES={{pc=0x800B7794,r=2,d=16,n="$v0"},{pc=0x800B77D4,r=2,d=16,n="$v0"},{pc=0x800B783C,r=2,d=16,n="$v0"},{pc=0x800B7884,r=2,d=16,n="$v0"},{pc=0x800B78D0,r=2,d=16,n="$v0"},{pc=0x800CE0F4,r=2,d=16,n="$v0"},{pc=0x800D0D70,r=2,d=16,n="$v0"}}
+local RAM_START=0x80000000
+local RAM_END=0x80200000
+local MOD=4294967296
+local mem=PCSX.getMemPtr()
+local loaded,started,post,finished=false,false,0,false
+local readEnabled=false
+local totalHits=0
+local registered,registerError=0,0
+local function log(s) print(s); pcall(function() io.stdout:flush() end) end
+local function hx(v,w)
+ if v==nil then return "TIDAK_TAHU" end
+ if w==2 then return string.format("0x%04X",tonumber(v)%65536) end
+ return string.format("0x%08X",tonumber(v)%MOD)
+end
+local function readv(a,w)
+ local va=tonumber(a)%MOD
+ local phys=va%0x20000000
+ if va<RAM_START or va>=RAM_END or va+w>RAM_END or phys+w>0x200000 then return nil,"OUTSIDE_RAM" end
+ local ok,v=pcall(function()
+  if w==1 then return tonumber(ffi.cast("const uint8_t *",mem+phys)[0]) end
+  if w==2 then return tonumber(ffi.cast("const uint16_t *",mem+phys)[0]) end
+  return tonumber(ffi.cast("const uint32_t *",mem+phys)[0])
+ end)
+ if not ok or v==nil then return nil,"READ_ERROR" end
+ return v,nil
+end
+local function file_size(path)
+ local ok,f=pcall(function() return io.open(path,"rb") end)
+ if not ok or not f then return -1 end
+ local ok2,n=pcall(function() return f:seek("end") end); f:close()
+ if not ok2 or n==nil then return -1 end
+ return tonumber(n)
+end
+local function record_read(w,address,width,cause)
+ if not readEnabled then return false end
+ if totalHits>=MAX_HITS then
+  log("UO1_HIT_CAP_REACHED launch="..LAUNCH.." cap="..tostring(MAX_HITS))
+  return false
+ end
+ totalHits=totalHits+1
+ local r=PCSX.getRegisters()
+ local pc=tonumber(r.pc)%MOD
+ local meta=READERS[pc]
+ local ri=meta and meta[1] or -1
+ local disp=meta and meta[2] or -1
+ local name=meta and meta[3] or "TIDAK_TAHU"
+ local base=(ri>=0 and tonumber(r.GPR.r[ri])) or nil
+ local calculated=(base and disp>=0) and ((base+disp)%MOD) or nil
+ local v,err=readv(address or w.a,2)
+ log(table.concat({"UO1_READ_HIT",LAUNCH,tostring(post),hx(pc),hx(address or w.a),
+   string.format("0x%02X",w.o),tostring(w.i),name,hx(base),err or hx(v,2),
+   hx(calculated),"READ"}, "\t"))
+ return true
+end
+local function record_exec(s,address,width,cause)
+ if totalHits>=MAX_HITS then
+  log("UO1_HIT_CAP_REACHED launch="..LAUNCH.." cap="..tostring(MAX_HITS))
+  return false
+ end
+ totalHits=totalHits+1
+ local r=PCSX.getRegisters()
+ local base=(s.r>=0) and tonumber(r.GPR.r[s.r]) or nil
+ local calc=base and ((base+s.d)%MOD) or nil
+ local v,err
+ if calc then v,err=readv(calc,2) else err="BASE_REGISTER_UNKNOWN" end
+ log(table.concat({"UO1_EXEC_HIT",LAUNCH,tostring(post),hx(r.pc),hx(calc),
+   string.format("0x%02X",s.d),"-",s.n,hx(base),err or hx(v,2),hx(calc),"EXEC"}, "\t"))
+ return true
+end
+local function arm_exec()
+ local okCount=0
+ for _,s in ipairs(EXEC_SITES) do
+  local ok,bp=pcall(function()
+   return PCSX.addBreakpoint(s.pc,"Exec",4,"UO1 fallback exec "..string.format("%08X",s.pc),
+     function(address,width,cause) return record_exec(s,address,width,cause) end)
+  end)
+  if ok and bp~=nil then okCount=okCount+1
+  else registerError=registerError+1; log("UO1_EXEC_BP_ERROR\\t"..LAUNCH.."\\t"..string.format("0x%08X",s.pc).."\\t"..tostring(bp)) end
+ end
+ log("UO1_EXEC_BP_REGISTERED="..tostring(okCount).." launch="..LAUNCH)
+end
+local function arm_read()
+ if MODE=="EXEC_FALLBACK" then log("UO1_READ_BP_REGISTERED=NO launch="..LAUNCH.." reason=probe_read_breakpoint_unavailable"); arm_exec(); return end
+ local okw=build_watches()
+ if not okw then log("UO1_POINTER_OR_WATCH_RANGE_INVALID=YES launch="..LAUNCH); log("UO1_READ_BP_REGISTERED=NO launch="..LAUNCH.." reason=invalid_runtime_P_or_watch_range"); arm_exec(); MODE="EXEC_FALLBACK"; return end
+ local failed=false
+ for _,w in ipairs(WATCHES) do
+  local ok,bp=pcall(function()
+   return PCSX.addBreakpoint(w.a,"Read",2,"UO1 read "..string.format("%08X",w.a),
+     function(address,width,cause) return record_read(w,address,width,cause) end)
+  end)
+  if ok and bp~=nil then registered=registered+1
+  else
+   registerError=registerError+1; failed=true
+   log("UO1_READ_BP_ERROR\\t"..LAUNCH.."\\t"..hx(w.a).."\\t"..tostring(bp))
+   break
+  end
+ end
+ if failed then
+  readEnabled=false
+  log("UO1_READ_BP_REGISTERED=NO launch="..LAUNCH.." count="..tostring(registered))
+  arm_exec()
+  MODE="EXEC_FALLBACK"
+ else
+  readEnabled=true
+  log("UO1_READ_BP_REGISTERED=YES launch="..LAUNCH.." count="..tostring(registered))
+ end
+end
+_G.uoLoaded=PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded",function()
+ loaded=true; post=0
+ log("UO1_SAVE_STATE_LOADED=YES launch="..LAUNCH)
+ arm_read()
+end)
+_G.uoVsync=PCSX.Events.createEventListener("GPU::Vsync",function()
+ if finished then return end
+ if not started then
+  if file_size(CARD_PATH)~=131072 then return end
+  started=true
+  local path=os.getenv("UE2_SOURCE_STATE") or "resume/source.sstate"
+  log("UO1_LOAD_STATE_START launch="..LAUNCH.." path="..path)
+  PCSX.pauseEmulator()
+  PCSX.nextTick(function()
+   local okf,f=pcall(function() return assert(Support.File.open(path)) end)
+   if not okf or not f then log("UO1_STATE_OPEN_FAIL="..tostring(f)); finished=true; PCSX.quit(50); return end
+   local ok,e=pcall(function() PCSX.loadSaveState(f) end); f:close()
+   if not ok then log("UO1_STATE_LOAD_FAIL="..tostring(e)); finished=true; PCSX.quit(51); return end
+   log("UO1_LOAD_STATE_CALL_RETURNED=YES launch="..LAUNCH)
+   PCSX.resumeEmulator()
+  end)
+  return
+ end
+ if not loaded then return end
+ post=post+1
+ if post>=FRAME_LIMIT then
+  log("UO1_STAGE_FRAME_LIMIT=YES launch="..LAUNCH.." frames="..tostring(post).." hits="..tostring(totalHits).." mode="..MODE)
+  finished=true
+  PCSX.nextTick(function() PCSX.quit(0) end)
+ end
+end)
+log("UO1_SCRIPT_READY launch="..LAUNCH.." frames="..tostring(FRAME_LIMIT).." input=NONE ram_writes=NONE")
+] 
+3: (String) at =[C]:-1 ([top]) 
+4: (String) at =[C]:-1 (loadfile) 
+5: (String) at src:lua/extra.lua:29 (dofile) 
+6: (String) at internal:dofile.lua:1 ([top]) 
+Runtime error while running LUA code.
+terminate called without an active exception
+timeout: the monitored command dumped core

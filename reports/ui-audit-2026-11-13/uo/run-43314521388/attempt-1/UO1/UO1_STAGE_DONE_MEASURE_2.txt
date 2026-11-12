@@ -1,0 +1,1 @@
+STAGE_DONE	MEASURE_2	exit=-6	frames=120	hits=0

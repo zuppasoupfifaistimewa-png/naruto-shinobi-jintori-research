@@ -1,0 +1,5 @@
+run_id	name	path	event	status	conclusion	head_sha	created_at	source_sha_match	preflight_marker_status	workflow_class
+43286279321	Naruto Story Mode adaptive player monitor	.github/workflows/naruto-storymode-adaptive-monitor.yml	schedule	completed	success	98a3f67f9375321ddd542a0227dbe38e34c7cbcf	2026-11-12T19:03:52Z	NO	NOT_APPLICABLE_MONITOR	STORYMODE_MONITOR_ONLY
+43313984115	UO0-UO2 — static reader audit, checkpoint breakpoint probe and ledger	.github/workflows/uo0-uo2-audit.yml	push	completed	failure	e66150f3c37f2ba3b141fca8fe8d3f1a72734034	2026-11-12T21:49:15Z	NO	PASS	UO_CODE_RUN
+43314285987	UO0-UO2 — static reader audit, checkpoint breakpoint probe and ledger	.github/workflows/uo0-uo2-audit.yml	push	completed	failure	4088f5cecce54ffaf2eb9b4b67db40753a28c9dc	2026-11-12T21:51:06Z	NO	PASS	UO_CODE_RUN
+43314521388	UO0-UO2 — static reader audit, checkpoint breakpoint probe and ledger	.github/workflows/uo0-uo2-audit.yml	push	in_progress		9817c6e2a22dee836f6fffcf4329e5fc3a335d15	2026-11-12T21:52:35Z	YES	PASS	UO_CODE_RUN

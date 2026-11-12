@@ -1,0 +1,1 @@
+UO0_SELF_TEST=PASS branch targets, little-endian MIPS and lh/lhu
