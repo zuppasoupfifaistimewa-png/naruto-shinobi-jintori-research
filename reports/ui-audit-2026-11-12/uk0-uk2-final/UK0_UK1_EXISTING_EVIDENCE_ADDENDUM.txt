@@ -1,0 +1,119 @@
+UK0 / UK1 — ADDENDUM BUKTI YANG SUDAH TERSEDIA
+Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+Source HEAD untuk pemeriksaan laporan: de03993a7ccb6f92937c329827138c9231dc61b3
+Baseline UK2: b54ff5d5e52d5196459ea190a5322d8746b96eb1
+Tanggal: 2026-11-12 (WIB)
+
+STATUS
+UK0: SEBAGIAN, K2 untuk akses terpilih +0x00, +0x1A, +0x20. UK0 BELUM TUNTAS karena census penuh EXE + Entry 1, seluruh offset 0x00..0x123, daftar lengkap hit/miss idiom, dan tabel semua load/store belum tersedia.
+UK1: BELUM, K0. Tidak ada launch UK1, TSV semua-byte, analisis variasi, atau pencocokan X/LV baru.
+UK2: status sebelumnya tetap TUNTAS K4 untuk ledger baseline inklusif sampai pre-publication HEAD 5476a66673ca6c789b3bc4bfdde1cf7efaeb852b. Addendum ini merupakan publikasi setelah rentang tersebut dan dikecualikan dari ledger yang dirujuk.
+
+KOREKSI CATATAN PEMBACAAN
+Pembaruan sementara di percakapan yang menyebut jejak DW3 +0x00 sebagai 36*i adalah keliru. Pemeriksaan ulang urutan instruksi menunjukkan dua shift-left 3, dua addu penambahan indeks, satu shift-left 2, dan addu ke pointer. Nilainya:
+8i + i = 9i
+9i << 3 = 72i
+72i + i = 73i
+73i << 2 = 292i = 0x124i
+Hitungan di bawah memakai urutan instruksi yang tercatat, bukan sekadar jumlah mnemonic.
+
+UK0 — +0x00
+Sumber DW3:
+- Reader candidates: 237 baris.
+- 224/237 trace memiliki urutan aritmetika lengkap + load lw -0x157c(reg) yang diturunkan dari lui reg,0x8014; pola itu menghitung 292*i dan menambahkan hasil ke pointer record.
+- 13/237 trace yang tersimpan tidak menampilkan urutan lengkap tersebut. Ini bukan bukti bahwa aksesnya tidak memakai stride; trace bisa terpotong, pointer diwariskan, atau konstruksi berbeda.
+- Writer candidates: 12 baris; 12/12 trace memperlihatkan pola lengkap yang sama dan load melalui slot 0x8013EA84.
+- +0x00 access yang ditunjukkan adalah lbu/sb, lebar 1 byte. Array identity terbatas pada chain statis yang dilaporkan, bukan semantik gameplay seluruhnya.
+
+Contoh reader terperiksa, PC 0x800D5B5C, fungsi FUN_800D15A8, 36 byte kontigu:
+0x800D5B3C  14 80 02 3C  lui $v0,0x8014
+0x800D5B40  84 EA 44 8C  lw $a0,-0x157c($v0)
+0x800D5B44  C0 10 03 00  sll $v0,$v1,3
+0x800D5B48  21 10 43 00  addu $v0,$v0,$v1
+0x800D5B4C  C0 10 02 00  sll $v0,$v0,3
+0x800D5B50  21 10 43 00  addu $v0,$v0,$v1
+0x800D5B54  80 10 02 00  sll $v0,$v0,2
+0x800D5B58  21 20 44 00  addu $a0,$v0,$a0
+0x800D5B5C  00 00 83 90  lbu $v1,($a0)
+
+Contoh writer terperiksa, PC 0x800D59F4, fungsi FUN_800D15A8, 40 byte kontigu:
+0x800D59D0  14 80 06 3C  lui $a2,0x8014
+0x800D59D4  84 EA C4 8C  lw $a0,-0x157c($a2)
+0x800D59D8  C0 10 03 00  sll $v0,$v1,3
+0x800D59DC  21 10 43 00  addu $v0,$v0,$v1
+0x800D59E0  C0 10 02 00  sll $v0,$v0,3
+0x800D59E4  21 10 43 00  addu $v0,$v0,$v1
+0x800D59E8  80 10 02 00  sll $v0,$v0,2
+0x800D59EC  21 10 44 00  addu $v0,$v0,$a0
+0x800D59F0  04 00 03 24  addiu $v1,$zero,4
+0x800D59F4  00 00 43 A0  sb $v1,($v0)
+
+UK0 — +0x1A
+Sumber DX1 berisi 13 akses kandidat dengan asal base slot 0x8013EA84: 11 pembacaan lhu dan 2 penulisan sh. Trace setiap baris memuat dua sll ...,3, satu sll ...,2, tiga addu, serta load melalui -0x157c dan lui 0x8014.
+- Reader PC: 0x800D0AE4, 0x800D2520, 0x800D2ADC, 0x800D2B5C, 0x800D3EE4, 0x800D3F74, 0x800D4628, 0x800D46EC, 0x800E3FBC, 0x800EB570, 0x800EEC54.
+- Writer PC: 0x800F7D9C dan 0x800F7DB0.
+- Kedua writer FUN_800F7ADC ditandai laporan UH1 sebagai TABLE_LOADER_STORE_NOT_UPGRADE. Maka keduanya bukan bukti biaya upgrade atau perubahan level petak.
+- Contoh reader +0x1A: PC 0x800EB570, 1A 00 83 94 — lhu $v1,0x1a($a0).
+- Contoh writer +0x1A (table loader), 52 byte kontigu:
+0x800F7D80  00 00 00 00  sll $zero,$zero,0
+0x800F7D84  00 12 02 00  sll $v0,$v0,8
+0x800F7D88  25 18 62 00  or $v1,$v1,$v0
+0x800F7D8C  18 00 83 A4  sh $v1,0x18($a0)
+0x800F7D90  02 00 31 26  addiu $s1,$s1,2
+0x800F7D94  00 00 23 92  lbu $v1,0($s1)
+0x800F7D98  00 00 00 00  sll $zero,$zero,0
+0x800F7D9C  1A 00 83 A4  sh $v1,0x1a($a0)
+0x800F7DA0  01 00 22 92  lbu $v0,1($s1)
+0x800F7DA4  00 00 00 00  sll $zero,$zero,0
+0x800F7DA8  00 12 02 00  sll $v0,$v0,8
+0x800F7DAC  25 18 62 00  or $v1,$v1,$v0
+0x800F7DB0  1A 00 83 A4  sh $v1,0x1a($a0)
+
+UK0 — +0x20
+- DX3 records three reads in FUN_800EB434, each with EA84 pointer origin and 292*i trace:
+  - 0x800EB534 20 00 85 94 — lhu $a1,0x20($a0).
+  - 0x800EBB2C 20 00 64 94 — lhu $a0,0x20($v1).
+  - 0x800EC200 20 00 82 94 — lhu $v0,0x20($a0).
+- UH1 also classifies 0x800D5A1C sh $v1,0x20($v0) in FUN_800D15A8 as base_alias_proven=YES and stride_0x124_proven=YES, classification TILE_ARRAY_ALIAS_PROVEN_PACKED_FIELD_SEMANTICS_UNKNOWN.
+- Contiguous quote 0x800D5A00..0x800D5A1C, 32 bytes:
+0x800D5A00  C0 10 03 00  sll $v0,$v1,3
+0x800D5A04  21 10 43 00  addu $v0,$v0,$v1
+0x800D5A08  C0 10 02 00  sll $v0,$v0,3
+0x800D5A0C  21 10 43 00  addu $v0,$v0,$v1
+0x800D5A10  80 10 02 00  sll $v0,$v0,2
+0x800D5A14  21 10 44 00  addu $v0,$v0,$a0
+0x800D5A18  20 F0 03 34  ori $v1,$zero,0xF020
+0x800D5A1C  20 00 43 A4  sh $v1,0x20($v0)
+
+UK0 — +0x1C / +0x1E
+TIDAK TAHU. UH1 contains many literal +0x1C/+0x1E candidate stores, but its rows have stride_0x124_proven=NO; most are stack locals or unresolved incoming pointers. None is established by this evidence as an EA84 + 292*i record access. No read/write quote is asserted for these offsets.
+
+UK0 — BATAS CAKUPAN
+The DW3 files are targeted EA84/+0x00 analyses and the DX1/DX3/UH1 files are targeted field scans, not a single full linear disassembly of every EXE and Entry 1 instruction. The 224 reader and 12 writer matches are evidence from stored def-chains, not a globally complete list. Any pointer already computed before the recorded window, passed as an argument, or built with a different sequence may be omitted. No complete hit/miss inventory for the exact UK0 idiom or complete all-field memory-access table exists. +0x48 origin and field semantics remain TIDAK TAHU.
+
+SOURCE REPORTS (all inspected at source HEAD de03993a7ccb6f92937c329827138c9231dc61b3)
+- reports/stage1_economy/dw0-dw4-raw-run-42161675076/attempt-1/DW3_EA84_TILE_BYTE00_READERS.tsv — 237 reader rows.
+- reports/stage1_economy/dw0-dw4-raw-run-42161675076/attempt-1/DW3_EA84_TILE_BYTE00_WRITERS.tsv — 12 writer rows.
+- reports/stage1_economy/dx0-dx4-raw-run-42173196076/attempt-1/DX1_ALL_PLUS1A_ACCESS.tsv — 172 all-offset +1A candidates; 13 EA84 rows.
+- reports/stage1_economy/dx0-dx4-raw-run-42193229458/attempt-1/DX3_TILE_PLUS20_READ_WRITE.tsv — 7 total rows; 3 EA84 +0x20 reads.
+- reports/stage1_economy/uh-audit-2026-11-11/UH1_TILE_WRITER_AUDIT.tsv — 307 writer candidates; 3 rows with stride_0x124_proven=YES.
+
+UK1 — BELUM
+No UK1 emulator run was started. No all-byte TSV, per-offset constant/variable analysis, X/LV lookup, checkpoint/card before-after hash, or bootstrap measurement exists for UK1.
+Historical UJ1 run 43144307299 is not UK1: it measured two 900-frame launches, frame 1 and 900, both A and B bases, and five selected fields rather than all 292 bytes for A records. Its prior checkpoint/Card hashes are not UK1 evidence.
+The old workflow remains unchanged and is not usable for UK1:
+- no workflow_dispatch;
+- the audit job is guarded by exact SHA e0ad8bf89ca43dda6b84272382ab468f0bdb28ef;
+- it runs the old 900-frame A/B experiment rather than the UK1 specification;
+- the only workflow push trigger paths are old code/workflow files, while this scope permits new files only in this report folder.
+The available GitHub integration has repository read and text-file publication, but no Actions workflow dispatch. The local shell could not resolve github.com. Starting the old workflow would be noncompliant and could consume Actions minutes without producing UK1. No emulator, Memory Card bootstrap, or Actions run was performed.
+
+UK2
+Previously completed at K4 for baseline-inclusive ledger through pre-publication HEAD 5476a66673ca6c789b3bc4bfdde1cf7efaeb852b. This addendum is a publication-only file after that coverage head; it does not amend the audited range.
+
+BERKAS YANG DITAMBAHKAN OLEH PUBLIKASI INI
+- reports/ui-audit-2026-11-12/uk0-uk2-final/UK0_UK1_EXISTING_EVIDENCE_ADDENDUM.txt
+
+KESIMPULAN
+UK0 has additional direct, bounded K2 evidence for +0x00, +0x1A, and +0x20; it is still SEBAGIAN, not TUNTAS.
+UK1 remains BELUM K0. The required exact one-run frame-1 all-byte measurement was not executed. Claiming either phase TUNTAS would be unsupported.
