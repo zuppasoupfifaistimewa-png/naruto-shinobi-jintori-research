@@ -29,12 +29,12 @@ def write_tsv(path: Path, fields: list[str], rows: list[list]) -> None:
         w.writerow(fields); w.writerows(rows)
 
 
-def commit_ledger(out: Path) -> tuple[str, int, int, dict[str, int], str]:
+def commit_ledger(out: Path, target_sha: str) -> tuple[str, int, int, dict[str, int], str]:
     git("fetch", "origin", "main", "--quiet")
-    head = git("rev-parse", "origin/main")
-    commits = [BASELINE] + git("rev-list", "--reverse", "--ancestry-path", BASELINE + "..origin/main").splitlines()
-    if not commits or commits[0] != BASELINE or git("merge-base", BASELINE, "origin/main") != BASELINE:
-        raise RuntimeError("BASELINE_NOT_ANCESTOR_OF_MAIN")
+    head = git("rev-parse", target_sha)
+    commits = [BASELINE] + git("rev-list", "--reverse", "--ancestry-path", BASELINE + ".." + target_sha).splitlines()
+    if head != target_sha or not commits or commits[0] != BASELINE or git("merge-base", BASELINE, target_sha) != BASELINE:
+        raise RuntimeError("BASELINE_NOT_ANCESTOR_OF_PINNED_SOURCE_SHA")
     commit_rows, event_rows = [], []
     counts = {"A": 0, "M": 0, "D": 0, "R": 0, "OTHER": 0}
     for sha in commits:
@@ -178,7 +178,7 @@ def main() -> int:
         raise SystemExit("CURRENT_RUN_ID_NOT_ABOVE_ACTIONS_CUTOFF")
 
     def capture(destination: Path):
-        head, ncommits, nevents, counts, baseline_date = commit_ledger(destination)
+        head, ncommits, nevents, counts, baseline_date = commit_ledger(destination, source_sha)
         nruns, njobs, api_ok, api_error, ids, current = actions_ledger(a.repo, a.token, destination, source_sha, current_run)
         page_ok, page_status, page_ids, scheduled_visible = actions_page_check(a.repo, a.token, destination, current_run)
         current_row = next((r for r in current if r.startswith("CURRENT_RUN_SOURCE_SHA_MATCH=")), "CURRENT_RUN_SOURCE_SHA_MATCH=NO")
