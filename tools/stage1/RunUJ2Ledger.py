@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """UJ2: enumerate commits and Actions runs since the inclusive baseline; text/TSV only."""
 from __future__ import annotations
-import argparse, csv, json, subprocess, urllib.request, urllib.error
-from datetime import datetime, timezone
+import argparse, csv, json, subprocess, urllib.request
+from datetime import datetime
 from pathlib import Path
 
 BASELINE_DEFAULT="d2c57a796215696dc91be91fb18f36907fa5203c"
