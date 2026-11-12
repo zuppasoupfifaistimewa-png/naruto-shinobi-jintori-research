@@ -1,0 +1,100 @@
+UK0-UK2 — FINAL RECONCILIATION (HEAD BEFORE THIS REPORT)
+Repository: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+Branch: main
+Baseline UK2 inclusive: b54ff5d5e52d5196459ea190a5322d8746b96eb1
+HEAD before this report: 5476a66673ca6c789b3bc4bfdde1cf7efaeb852b
+Date: 2026-11-12 (WIB)
+
+FINAL STATUS
+UK0 = BELUM, K0 for the complete requested scan.
+UK1 = BELUM, K0 for the requested two-launch, frame-1, all-byte snapshot.
+UK2 = TUNTAS, K4 for the specified baseline-to-pre-publication commit and Actions ledger.
+Overall UK0-UK2 = BELUM TUNTAS. No evidence level is promoted to replace missing source bytes or runtime captures.
+
+UK0 — WHAT IS VERIFIED
+Existing UJ evidence is retained only as partial, directly inspectable evidence:
+- EXE size 385024 bytes; SHA-256 a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569.
+- DATA.BIN size 66015232 bytes; SHA-256 69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822.
+- Entry 1 size 596412 bytes; SHA-256 9c531036e66c88849bc8fd16ee1717f10b1a7e42132f2a616635c122c809c60a.
+- EXE PC mapping: 0x800 + (PC - 0x80010000).
+- Entry 1 mapping: 0x10BB000 + (PC - 0x800AD450).
+- One observed 0x124 stride construction with 0x8013EA84 pointer slot at PC 0x800B41B8..0x800B41D4.
+- One observed writer to record-relative +0x20 at PC 0x800D5A00..0x800D5A1C.
+
+UK0 still NOT performed:
+- complete raw EXE and Entry 1 scan for the exact requested stride-292 idiom and pointer provenance;
+- up-to-24-instruction tracing per match until base register overwrite;
+- all record-field load/store rows with PC, function, offset, width, access type and value register;
+- separate complete hit and miss inventories;
+- contiguous <=64-byte evidence for each requested field's readers and writers.
+The UJ census contains only filtered memory-access instructions and cannot substitute for an ALU-complete scan. A single observed idiom is not a complete census. Precomputed pointers or pointer arguments can escape this explicit-pattern search. Base +0x48 and field meanings remain TIDAK TAHU.
+
+Execution blocker (verified against the current setup):
+- The only workflow present for UJ0/UJ1 has no workflow_dispatch; its audit job is guarded by exact source SHA e0ad8bf89ca43dda6b84272382ab468f0bdb28ef.
+- Its push trigger is restricted to five existing code/workflow paths. A report-only commit does not trigger it.
+- The task's restrictions allow new report files only and prohibit edits to the old workflow and scripts.
+- The available GitHub integration exposes repository reads and file publication but no workflow-dispatch action; GitHub fetch rejects binary downloads.
+- The local shell cannot resolve github.com. The published disc image asset is 325989552 bytes. No EXE/DATA.BIN bytes were locally available for a complete scan during this run.
+No UK0 scan output was fabricated or inferred from the partial UJ data.
+
+UK1 — EXACT SPECIFICATION NOT EXECUTED
+Required: same checkpoint, two NO_INPUT launches, frame 1 only, no input/no write-watchpoint; export every byte 0x00..0x123 from A:i for i=0..21 plus A:22 and A:43; seven listed scalars; offline variability and X-to-LV table matches; verify checkpoint/Card hashes before and after.
+No UK1 runtime launch was made in this scope. Do not reuse the old UJ1 result as UK1:
+- UJ1 run 43144307299 captured frames 1 and 900, not frame 1 only;
+- it sampled A and B bases, not just A;
+- it sampled five selected fields, not every byte of each 0x124-byte record;
+- it used two 900-frame measured launches, with a separate 12-frame Memory Card bootstrap.
+The historical checkpoint SHA-256 705d4005dacee3b492ae99f273b1572bb5be3e3b66ad32c0b556dd5065e58a35 and historical Memory Card SHA-256 78b6d4ac9ab4d23caf7e5f04f83539bf5d994cccfb0a709d14ac53d05c8e21ef are context from UJ1, not UK1 before/after evidence.
+No bootstrap, checkpoint restore, emulator launch, Memory Card mutation, UK1 TSV, byte-variability analysis or X/LV match table is claimed.
+
+UK2 — COMPLETE LEDGER
+Range: baseline inclusive b54ff5d5e52d5196459ea190a5322d8746b96eb1 through HEAD 5476a66673ca6c789b3bc4bfdde1cf7efaeb852b immediately before this report.
+Commit rows including baseline: 9.
+Commits after baseline: 8.
+File events --no-renames: 7 (A=5, M=2, D=0, R=0).
+One commit is empty (b707cee58c17bd351a5159f06eb9d3c3fb2bce1b).
+All seven file events are under reports/ui-audit-2026-11-12/uk0-uk2-final/.
+
+COMMIT ROWS (baseline inclusive)
+b54ff5d5e52d5196459ea190a5322d8746b96eb1  BASELINE
+1de0fbc36c21ce6e3fd6f30001b2450ae7011bef  add UK_STATUS_AND_UK2_LEDGER.txt
+b707cee58c17bd351a5159f06eb9d3c3fb2bce1b  empty commit
+6e7263cadfa250b470544b44f22a39855e8eb08d  modify UK_STATUS_AND_UK2_LEDGER.txt
+becbe0354c1b2f4c6db34eddbe2ee8fbd2ed8be1  modify UK_STATUS_AND_UK2_LEDGER.txt
+753d41e01381918b73f139933d5fcbe02b2deb2c  add UK2_LEDGER_CORRECTED_AND_UK_STATUS.txt
+f5945b7037caf45d7f0e2f165029d16cba7362ae  add UK0_UK1_UK2_STATUS.md
+823438cf0efd55c8af877afee147c7df84794f00  add UK0_UK1_UK2_CORRECTED_ADDENDUM.txt
+5476a66673ca6c789b3bc4bfdde1cf7efaeb852b  add UK2_ACTIONS_RUN_SUMMARY.txt
+
+FILE EVENTS --no-renames
+1de0fbc36c21ce6e3fd6f30001b2450ae7011bef  A  reports/ui-audit-2026-11-12/uk0-uk2-final/UK_STATUS_AND_UK2_LEDGER.txt
+b707cee58c17bd351a5159f06eb9d3c3fb2bce1b  (empty commit; no file event)
+6e7263cadfa250b470544b44f22a39855e8eb08d  M  reports/ui-audit-2026-11-12/uk0-uk2-final/UK_STATUS_AND_UK2_LEDGER.txt
+becbe0354c1b2f4c6db34eddbe2ee8fbd2ed8be1  M  reports/ui-audit-2026-11-12/uk0-uk2-final/UK_STATUS_AND_UK2_LEDGER.txt
+753d41e01381918b73f139933d5fcbe02b2deb2c  A  reports/ui-audit-2026-11-12/uk0-uk2-final/UK2_LEDGER_CORRECTED_AND_UK_STATUS.txt
+f5945b7037caf45d7f0e2f165029d16cba7362ae  A  reports/ui-audit-2026-11-12/uk0-uk2-final/UK0_UK1_UK2_STATUS.md
+823438cf0efd55c8af877afee147c7df84794f00  A  reports/ui-audit-2026-11-12/uk0-uk2-final/UK0_UK1_UK2_CORRECTED_ADDENDUM.txt
+5476a66673ca6c789b3bc4bfdde1cf7efaeb852b  A  reports/ui-audit-2026-11-12/uk0-uk2-final/UK2_ACTIONS_RUN_SUMMARY.txt
+
+ACTIONS RUN INVENTORY
+Actions API page 1 contained 100 latest runs (repository total_count=1362). The newest run on the page was 43145985922 at 2026-11-12T03:06:56Z. Baseline commit timestamp is 2026-11-12T03:34:22Z, later by 27m26s. Therefore no page-1 run is at/after baseline and no older page is needed to identify post-baseline runs at that inspection point.
+Two monitor runs are still included explicitly as requested even though they predate baseline:
+43109652913 | schedule | completed/success | job monitor 130821994581 success | exit 0 | source SHA d2c57a796215696dc91be91fb18f36907fa5203c | created 2026-11-11T22:11:36Z
+43145985922 | schedule | completed/success | job monitor 130943778885 success | exit 0 | source SHA d7838e0332d61a76335381dfe0ca7687fd10e33a | created 2026-11-12T03:06:56Z
+No new Actions runs at/after the baseline timestamp were found. Do not rewrite either run's source SHA to the baseline.
+In-progress run count at verification: 0.
+
+PREFLIGHT / VALIDATION
+No UK-specific scripts or workflow were created because only the report directory may be changed. Consequently py_compile, pyflakes, YAML parse and actionlint were not run on a UK implementation. The historical UJ preflight result is not counted as UK validation.
+No UK1 emulator Actions run was created; no run status/job/SHA/exit summary can be truthfully attributed to UK1.
+No ROM/BIOS/Memory Card/savestate/RAM dump/EXE/DATA.BIN or other binary was committed.
+STATUS.md blob remains ee7b9c226631c71cae1c9fb0270994ccf3e67c07.
+Old workflow blob remains b6560f1661bc52972c6c0669640bb7ec7765fe91.
+No Release or old workflow/script was changed.
+
+BERKAS YANG DIUBAH OLEH PUBLIKASI LAPORAN INI
+- reports/ui-audit-2026-11-12/uk0-uk2-final/UK0_UK1_UK2_FINAL_RECONCILIATION.txt
+
+CONCLUSION
+UK2 is complete at K4 for the explicitly bounded ledger, including both requested monitor runs and all eight post-baseline commits through the pre-report HEAD.
+UK0 and UK1 remain BELUM. Completing them requires permitted access to the exact game binary inputs and a supported single-run execution route that does not edit protected old files. Without those, claiming TUNTAS would be false.
