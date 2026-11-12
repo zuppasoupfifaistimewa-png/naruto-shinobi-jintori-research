@@ -6,7 +6,7 @@ Branch diperiksa: main
 
 STATUS
 UK0: BELUM (K0). Tidak dilakukan pemindaian EXE/Entry 1 karena lingkungan percakapan tidak memiliki berkas input biner lokal dan workflow yang tersedia tidak menerima dispatch/parameter UK. Mengambil disc/EXE/DATA.BIN secara manual akan mengunduh ratusan MB dan tidak diperlukan untuk menjaga batas kuota/Actions. Tidak ada klaim hasil scan.
-UK1: BELUM (K0). Tidak ada run emulator UK1. Workflow lama uj0-uj2-readonly-audit.yml hanya terpicu push pada empat path spesifik (workflow lama, experiments/uj1_readonly_snapshot.py, tools/stage1/RunUJ0StaticAudit.py, tools/stage1/RunUJ2Ledger.py, tools/stage1/RunUI1MipsCensus.py); workflow itu tidak memiliki workflow_dispatch. Instruksi UK hanya mengizinkan file baru di reports/ui-audit-2026-11-12/uk0-uk2-final/ dan melarang perubahan workflow lama. Karena itu tidak ada jalur aman untuk menjalankan kode UK1 lewat Actions tanpa melanggar batas path tersebut. Tidak ada emulator dijalankan.
+UK1: BELUM (K0). Tidak ada run emulator UK1. Workflow lama uj0-uj2-readonly-audit.yml hanya terpicu push pada lima path spesifik (workflow lama, experiments/uj1_readonly_snapshot.py, tools/stage1/RunUJ0StaticAudit.py, tools/stage1/RunUJ2Ledger.py, tools/stage1/RunUI1MipsCensus.py); workflow itu tidak memiliki workflow_dispatch. Instruksi UK hanya mengizinkan file baru di reports/ui-audit-2026-11-12/uk0-uk2-final/ dan melarang perubahan workflow lama. Karena itu tidak ada jalur aman untuk menjalankan kode UK1 lewat Actions tanpa melanggar batas path tersebut. Tidak ada emulator dijalankan.
 UK2: TUNTAS K4 untuk commit/run yang dapat diverifikasi melalui GitHub API.
 
 UK2 — KOMIT
