@@ -229,7 +229,7 @@ def main():
       x["memory_card_unchanged"]=="YES" and x["memory_card_read_only_0444"]=="YES" and x["checkpoint_unchanged"]=="YES" for x in launches)
     k5=complete and identical
     summary=["UJ1_READ_ONLY_RUNTIME_SNAPSHOT",f"STATUS={'TUNTAS' if k5 else ('SEBAGIAN' if complete else 'BELUM')}",
-      f"EVIDENCE={'K5' if k5 else ('K2' if complete else 'K0')}","JOB=uj1-ui1-audit",
+      f"EVIDENCE={'K5' if k5 else ('K2' if complete else 'K0')}","JOB=uj0-uj2-audit",
       f"SOURCE_SHA={os.getenv('GITHUB_SHA','TIDAK TAHU')}",f"RUN_ID={os.getenv('GITHUB_RUN_ID','TIDAK TAHU')}",
       "CHECKPOINT_ARTIFACT_RUN_ID=39907655833",f"CHECKPOINT_SHA256_EXPECTED={SOURCE_SHA256}",
       f"CHECKPOINT_SHA256_SOURCE_BEFORE={source_before}",f"CHECKPOINT_SHA256_SOURCE_AFTER={source_after}",
@@ -240,7 +240,7 @@ def main():
       f"MEMORY_CARD_BOOTSTRAP_WALL_SECONDS={warm_wall:.3f}","MEMORY_CARD_MODE_PER_LAUNCH=0444",
       "SCALARS=EA84:u32;EB20:u32;EAB0:u32;EA8A:u16;EA74:u32;9F03:u8;9EC2:u16",
       "RECORDS=A:P+i*0x124; B:P+i*0x124+0x48; i=0..43; fields +00:u8,+1A:u16,+1C:u16,+1E:u16,+20:u16",
-      "ACTIVE_RECORD_COUNT=TIDAK TAHU; max 64 candidate slots, not inferred active count",
+      "ACTIVE_RECORD_COUNT=TIDAK TAHU; 44 candidate indices per basis, not inferred active count",
       "VALUE_RANGE_ASSESSMENT=TIDAK TAHU; semantics/ranges unknown; raw hex retained",
       f"SNAPSHOT_ROWS={len(values)}",f"SNAPSHOTS_COMPLETE={'YES' if snapshots_ok else 'NO'}",*detail,
       f"SAME_FRAME_LAUNCH_VALUES_IDENTICAL={'YES' if identical else 'NO'}",
