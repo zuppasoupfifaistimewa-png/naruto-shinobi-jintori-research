@@ -1,0 +1,310 @@
+name: UN0-UN2 static byte audit and history ledger
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/un0-un2-audit.yml"
+      - "tools/stage1/RunUN0.py"
+      - "tools/stage1/RunUN1.py"
+      - "tools/stage1/RunUN2.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: naruto-un0-un2-audit
+  cancel-in-progress: false
+
+jobs:
+  un-audit:
+    name: un-audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      WORK: /tmp/naruto-un-private-${{ github.run_id }}-${{ github.run_attempt }}
+      OUT: /tmp/naruto-un-output-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Preflight compile, lint, YAML, actionlint and self-tests
+        id: gate
+        shell: bash
+        run: |
+          set +e
+          mkdir -p "$OUT/PREFLIGHT"
+          P="$OUT/PREFLIGHT/PREFLIGHT_RESULT.txt"
+          I="$OUT/PREFLIGHT/PYFLAKES_INSTALL_STDERR.txt"
+          : >"$P"
+          : >"$I"
+          python -m py_compile tools/stage1/RunUN0.py tools/stage1/RunUN1.py tools/stage1/RunUN2.py
+          C=$?
+          python -m pip install --disable-pip-version-check --no-input pyflakes PyYAML >"$RUNNER_TEMP/pip-python.log" 2>&1
+          P1=$?
+          P2=0
+          APT=0
+          if [ "$P1" -ne 0 ]; then
+            python3 -m pip install --disable-pip-version-check --no-input pyflakes PyYAML >"$RUNNER_TEMP/pip-python3.log" 2>&1
+            P2=$?
+            {
+              echo "=== python -m pip install ==="
+              cat "$RUNNER_TEMP/pip-python.log"
+              echo "=== python3 -m pip install ==="
+              cat "$RUNNER_TEMP/pip-python3.log"
+            } >>"$I"
+          fi
+          if [ "$P1" -ne 0 ] && [ "$P2" -ne 0 ]; then
+            sudo apt-get update -qq >"$RUNNER_TEMP/apt-update.log" 2>&1
+            APT=$?
+            if [ "$APT" -eq 0 ]; then
+              sudo apt-get install -y --no-install-recommends python3-pyflakes python3-yaml >"$RUNNER_TEMP/apt-install.log" 2>&1
+              APT=$?
+            fi
+            {
+              echo "=== apt-get update/install ==="
+              cat "$RUNNER_TEMP/apt-update.log" "$RUNNER_TEMP/apt-install.log" 2>/dev/null
+            } >>"$I"
+          fi
+          if python -m pyflakes --version >/dev/null 2>&1; then
+            python -m pyflakes tools/stage1/RunUN0.py tools/stage1/RunUN1.py tools/stage1/RunUN2.py
+            F=$?
+            FR="python -m pyflakes"
+          elif command -v pyflakes >/dev/null 2>&1; then
+            pyflakes tools/stage1/RunUN0.py tools/stage1/RunUN1.py tools/stage1/RunUN2.py
+            F=$?
+            FR="pyflakes executable"
+          else
+            F=2
+            FR="NOT_RUN: pyflakes unavailable after pip/python3-pip/apt fallback"
+          fi
+          if python -c 'import yaml' >/dev/null 2>&1; then
+            python - <<'PY'
+          from pathlib import Path
+          import yaml
+          yaml.compose(Path(".github/workflows/un0-un2-audit.yml").read_text(encoding="utf-8"), Loader=yaml.SafeLoader)
+          print("YAML_PARSE=PASS")
+          PY
+            Y=$?
+            YR="PyYAML"
+          elif command -v ruby >/dev/null 2>&1; then
+            ruby -e 'require "yaml"; YAML.parse_file(".github/workflows/un0-un2-audit.yml"); puts "YAML_PARSE=PASS"'
+            Y=$?
+            YR="Ruby YAML"
+          else
+            Y=2
+            YR="NOT_RUN: PyYAML and Ruby unavailable"
+          fi
+          python tools/stage1/RunUN0.py --self-test
+          T0=$?
+          python tools/stage1/RunUN1.py --self-test
+          T1=$?
+          python tools/stage1/RunUN2.py --self-test
+          T2=$?
+          L=2
+          LR="NOT_RUN: actionlint download unavailable"
+          V=1.7.12
+          if curl --fail --silent --show-error --location --max-time 60 "https://github.com/rhysd/actionlint/releases/download/v$V/actionlint_$V_linux_amd64.tar.gz" -o "$RUNNER_TEMP/actionlint.tar.gz"; then
+            if tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint; then
+              "$RUNNER_TEMP/actionlint" .github/workflows/un0-un2-audit.yml
+              L=$?
+              LR="actionlint $V"
+            else
+              LR="NOT_RUN: actionlint archive extraction failed"
+            fi
+          fi
+          state() {
+            if [ "$1" -eq 0 ]; then echo PASS
+            elif [ "$1" -eq 2 ]; then echo NOT_RUN
+            else echo FAIL
+            fi
+          }
+          {
+            echo "PY_COMPILE=$(state "$C")"
+            echo "PYFLAKES=$(state "$F") reason=$FR"
+            echo "YAML_PARSE=$(state "$Y") reason=$YR"
+            echo "ACTIONLINT=$(state "$L") reason=$LR"
+            echo "UN0_SELF_TEST=$(state "$T0")"
+            echo "UN1_SELF_TEST=$(state "$T1")"
+            echo "UN2_SELF_TEST=$(state "$T2")"
+            echo "PIP_PYTHON_EXIT=$P1"
+            echo "PIP_PYTHON3_EXIT=$P2"
+            echo "APT_FALLBACK_EXIT=$APT"
+            echo "INSTALL_LOG=PYFLAKES_INSTALL_STDERR.txt"
+          } >>"$P"
+          HARD=0
+          for X in "$C" "$T0" "$T1" "$T2" "$F" "$Y" "$L"; do
+            [ "$X" -eq 1 ] && HARD=1
+          done
+          for X in "$C" "$T0" "$T1" "$T2"; do
+            [ "$X" -ne 0 ] && HARD=1
+          done
+          PARTIAL=0
+          for X in "$F" "$Y" "$L"; do [ "$X" -eq 2 ] && PARTIAL=1; done
+          if [ "$HARD" -ne 0 ]; then S=BELUM; OK=false
+          elif [ "$PARTIAL" -ne 0 ]; then S=SEBAGIAN; OK=true
+          else S=TUNTAS; OK=true
+          fi
+          {
+            echo "STATUS=$S"
+            echo "JOB=un-audit"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "EXIT_CODE=$HARD"
+          } >>"$P"
+          echo "ok=$OK" >>"$GITHUB_OUTPUT"
+          echo "PREFLIGHT_STATUS=$S" >>"$GITHUB_STEP_SUMMARY"
+          exit "$HARD"
+
+      - name: Prepare private workspace
+        if: steps.gate.outputs.ok == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir -p "$WORK/source" "$WORK/extracted" "$WORK/input" "$OUT/UN0" "$OUT/UN1" "$OUT/UN2"
+          echo "SOURCE_SHA=$GITHUB_SHA" >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Privately download and verify disc; extract EXE and DATA.BIN
+        if: steps.gate.outputs.ok == 'true'
+        shell: bash
+        run: |
+          set +e
+          API="https://api.github.com/repos/$GITHUB_REPOSITORY"
+          BIN="$WORK/source/disc.bin"
+          CUE_RAW="$WORK/source/original.cue"
+          CUE="$WORK/source/game.cue"
+          RC=0
+          sudo apt-get update -qq >"$WORK/apt-update.log" 2>&1 || RC=10
+          if [ "$RC" -eq 0 ]; then
+            sudo apt-get install -y --no-install-recommends bchunk xorriso >"$WORK/apt-install.log" 2>&1 || RC=11
+          fi
+          if [ "$RC" -eq 0 ]; then
+            curl --fail --location --silent --show-error --retry 2 --max-time 600 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$API/releases/assets/647346873" -o "$BIN" || RC=12
+          fi
+          if [ "$RC" -eq 0 ]; then
+            test "$(stat -c '%s' "$BIN")" = "325989552" || RC=13
+            echo "58c389a794375b7b81b3a18877ef7965356a1332285a3590170efbf2359a3b88  $BIN" | sha256sum --check --status || RC=14
+          fi
+          if [ "$RC" -eq 0 ]; then
+            curl --fail --location --silent --show-error --retry 2 --max-time 60 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/octet-stream" "$API/releases/assets/647354760" -o "$CUE_RAW" || RC=15
+          fi
+          if [ "$RC" -eq 0 ]; then
+            test "$(stat -c '%s' "$CUE_RAW")" = "116" || RC=16
+            echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $CUE_RAW" | sha256sum --check --status || RC=17
+          fi
+          if [ "$RC" -eq 0 ]; then
+            awk 'BEGIN{n=0} /^[[:space:]]*FILE[[:space:]]/ {print "FILE \"disc.bin\" BINARY";n++;next} {print} END{if(n!=1)exit 1}' "$CUE_RAW" >"$CUE" || RC=18
+          fi
+          if [ "$RC" -eq 0 ]; then bchunk "$BIN" "$CUE" "$WORK/source/track" >"$WORK/bchunk.log" 2>&1 || RC=19; fi
+          ISO="$(find "$WORK/source" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
+          if [ "$RC" -eq 0 ]; then
+            [ -n "$ISO" ] || RC=20
+            xorriso -osirrox on -indev "$ISO" -extract / "$WORK/extracted" >"$WORK/xorriso.log" 2>&1 || RC=21
+          fi
+          if [ "$RC" -eq 0 ]; then
+            EXE="$(find "$WORK/extracted" -type f -iname 'SLPS_035.53' -print -quit)"
+            DATA="$(find "$WORK/extracted" -type f -iname 'DATA.BIN' -print -quit)"
+            [ -n "$EXE" ] && [ -n "$DATA" ] || RC=22
+          fi
+          if [ "$RC" -eq 0 ]; then
+            test "$(stat -c '%s' "$EXE")" = "385024" || RC=23
+            echo "a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569  $EXE" | sha256sum --check --status || RC=24
+            test "$(stat -c '%s' "$DATA")" = "66015232" || RC=25
+            echo "69df081aaeb5dd0cff13a177693f6ef6d62aa2b36417c63f031ec7ee4de51822  $DATA" | sha256sum --check --status || RC=26
+          fi
+          if [ "$RC" -eq 0 ]; then cp "$EXE" "$WORK/input/SLPS_035.53"; cp "$DATA" "$WORK/input/DATA.BIN"; fi
+          echo "$RC" >"$OUT/DISC_EXTRACT_EXIT_CODE.txt"
+          echo "DISC_EXTRACT_EXIT_CODE=$RC" >>"$GITHUB_STEP_SUMMARY"
+          exit 0
+
+      - name: Run UN0, UN1 and UN2; static only, no emulator
+        if: steps.gate.outputs.ok == 'true'
+        shell: bash
+        run: |
+          set +e
+          if [ -s "$WORK/input/SLPS_035.53" ] && [ -s "$WORK/input/DATA.BIN" ]; then
+            python tools/stage1/RunUN0.py --exe "$WORK/input/SLPS_035.53" --data-bin "$WORK/input/DATA.BIN" --out-dir "$OUT/UN0" >"$OUT/UN0_EXECUTION_LOG.txt" 2>&1
+            R0=$?
+          else
+            R0=1
+            printf 'STATUS=BELUM\nEVIDENCE=K0\nREASON=private EXE/DATA.BIN extraction failed\n' >"$OUT/UN0/UN0_SUMMARY.tsv"
+            echo "UN0_INPUTS_MISSING" >"$OUT/UN0_EXECUTION_LOG.txt"
+          fi
+          python tools/stage1/RunUN1.py --out-dir "$OUT/UN1" >"$OUT/UN1_EXECUTION_LOG.txt" 2>&1
+          R1=$?
+          python tools/stage1/RunUN2.py --repo "$GITHUB_REPOSITORY" --token "$GH_TOKEN" --out-dir "$OUT/UN2" >"$OUT/UN2_EXECUTION_LOG.txt" 2>&1
+          R2=$?
+          MISSING=0
+          for F in "$OUT/UN0/UN0_SUMMARY.tsv" "$OUT/UN1/UN1_SUMMARY.tsv" "$OUT/UN2/UN2_SUMMARY.tsv"; do [ -s "$F" ] || MISSING=1; done
+          if [ "$MISSING" -eq 1 ]; then S=BELUM; RC=1
+          elif [ "$R0" -eq 2 ] && [ "$R1" -eq 0 ] && [ "$R2" -eq 2 ]; then S=SEBAGIAN; RC=0
+          else S=SEBAGIAN; RC=0
+          fi
+          {
+            echo "STATUS=$S"
+            echo "JOB=un-audit"
+            echo "SOURCE_SHA=$GITHUB_SHA"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "UN0_EXIT_CODE=$R0"
+            echo "UN1_EXIT_CODE=$R1"
+            echo "UN2_EXIT_CODE=$R2"
+            echo "PROCESS_EXIT_CODE=$RC"
+            echo "UN0_EVIDENCE_MAX=K4_STATIC"
+            echo "UN1_OBSERVATION_TARGET=K5"
+            echo "UN2_EVIDENCE_MAX=K4_STATIC"
+            echo "EMULATOR_USED=NO"
+            echo "CLOSEOUT_COMMIT_INCLUDED=NO"
+          } >"$OUT/AUDIT_RESULT.txt"
+          cat "$OUT/AUDIT_RESULT.txt" >>"$GITHUB_STEP_SUMMARY"
+          exit "$RC"
+
+      - name: Commit text-only reports and Actions run summary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST="reports/ui-audit-2026-11-12/un/run-$GITHUB_RUN_ID/attempt-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$DEST"
+          if [ -d "$OUT" ]; then cp -a "$OUT/." "$DEST/"; fi
+          if [ ! -s "$DEST/PREFLIGHT/PREFLIGHT_RESULT.txt" ]; then
+            mkdir -p "$DEST/PREFLIGHT"
+            printf 'STATUS=BELUM\nPY_COMPILE=NOT_RUN reason=preflight did not write marker\nPYFLAKES=NOT_RUN reason=preflight did not write marker\nYAML_PARSE=NOT_RUN reason=preflight did not write marker\nACTIONLINT=NOT_RUN reason=preflight did not write marker\n' >"$DEST/PREFLIGHT/PREFLIGHT_RESULT.txt"
+          fi
+          if [ ! -s "$DEST/AUDIT_RESULT.txt" ]; then
+            printf 'STATUS=BELUM\nJOB=un-audit\nSOURCE_SHA=%s\nRUN_ID=%s\nPROCESS_EXIT_CODE=1\nREASON=preflight gate prevented run\nCLOSEOUT_COMMIT_INCLUDED=NO\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" >"$DEST/AUDIT_RESULT.txt"
+          fi
+          SUMMARY="reports/actions/run_$GITHUB_RUN_ID""_summary.txt"
+          S="$(grep -m1 '^STATUS=' "$DEST/AUDIT_RESULT.txt" | cut -d= -f2- || echo BELUM)"
+          RC="$(grep -m1 '^PROCESS_EXIT_CODE=' "$DEST/AUDIT_RESULT.txt" | cut -d= -f2- || echo 1)"
+          {
+            echo "STATUS=$S"
+            echo "JOB=un-audit"
+            echo "RUN_ID=$GITHUB_RUN_ID"
+            echo "SHA=$GITHUB_SHA"
+            echo "EXIT_CODE=$RC"
+            echo "CLOSEOUT_COMMIT_INCLUDED=NO"
+          } >"$SUMMARY"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$DEST" "$SUMMARY"
+          git commit -m "Record UN0-UN2 audit results for run $GITHUB_RUN_ID [skip ci]"
+          PUSHED=0
+          for N in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort || true; sleep "$N"; continue; }
+            if git push origin HEAD:main; then PUSHED=1; break; fi
+            sleep "$N"
+          done
+          test "$PUSHED" -eq 1
