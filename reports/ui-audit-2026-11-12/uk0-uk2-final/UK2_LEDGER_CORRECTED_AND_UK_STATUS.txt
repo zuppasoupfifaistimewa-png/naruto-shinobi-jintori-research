@@ -1,0 +1,38 @@
+UK0-UK2 — LAPORAN KOREKSI DAN LEDGER FINAL
+Repo: zuppasoupfifaistimewa-png/naruto-shinobi-jintori-research
+Baseline UK2 inklusif: b54ff5d5e52d5196459ea190a5322d8746b96eb1
+HEAD sebelum publikasi koreksi: becbe0354c1b2f4c6db34eddbe2ee8fbd2ed8be1
+Waktu baseline: 2026-11-12T03:34:22Z
+
+STATUS
+UK0=BELUM; EVIDENCE=K0.
+Alasan: belum ada pemindaian EXE dan Entry 1 untuk idiom stride 292, penelusuran register dasar, serta tabel akses medan yang diminta. Run UJ0 terdahulu bukan audit UK0; hasilnya tidak dapat menggantikan pencarian khusus ini.
+UK1=BELUM; EVIDENCE=K0.
+Alasan: belum ada dua peluncuran NO_INPUT pada checkpoint yang sama dengan snapshot hanya frame 1, semua byte A:i 0..21 ditambah kontrol A:22/A:43 dan tujuh skalar. Run 43144307299 bukan pengganti: workflow lama menjalankan dua peluncuran 900 frame, merekam subset medan dan basis A/B. Tidak ada run emulator UK1 pada audit ini.
+UK2=TUNTAS; EVIDENCE=K4 untuk metadata commit/Actions yang diperiksa melalui GitHub API.
+
+UK2 — KOMIT
+Cakupan: baseline inklusif sampai HEAD sebelum publikasi file koreksi ini.
+Jumlah commit rows termasuk baseline: 5.
+Rinciannya:
+- b54ff5d5e52d5196459ea190a5322d8746b96eb1 — baseline inklusif.
+- 1de0fbc36c21ce6e3fd6f30001b2450ae7011bef — tambah UK_STATUS_AND_UK2_LEDGER.txt.
+- b707cee58c17bd351a5159f06eb9d3c3fb2bce1b — empty commit; tidak ada file event.
+- 6e7263cadfa250b470544b44f22a39855e8eb08d — ubah UK_STATUS_AND_UK2_LEDGER.txt.
+- becbe0354c1b2f4c6db34eddbe2ee8fbd2ed8be1 — ubah UK_STATUS_AND_UK2_LEDGER.txt.
+Jumlah file events --no-renames: 3 (A=1, M=2, D=0, R=0).
+Semua event berada di reports/ui-audit-2026-11-12/uk0-uk2-final/UK_STATUS_AND_UK2_LEDGER.txt. Tidak ada file lain yang berubah pada rentang tersebut.
+
+UK2 — ACTIONS
+Dua monitor yang diminta disertakan walaupun dibuat sebelum timestamp baseline:
+run_id 43109652913 | workflow Naruto Story Mode adaptive player monitor | event schedule | created 2026-11-11T22:11:36Z | conclusion success | job monitor success | exit_code 0 | source_sha d2c57a796215696dc91be91fb18f36907fa5203c
+run_id 43145985922 | workflow Naruto Story Mode adaptive player monitor | event schedule | created 2026-11-12T03:06:56Z | conclusion success | job monitor success | exit_code 0 | source_sha d7838e0332d61a76335381dfe0ca7687fd10e33a
+Jumlah run yang masuk ledger: 2.
+Actions API halaman pertama (100 run terbaru; total_count=1362) tidak menunjukkan run dengan created_at >= 2026-11-12T03:34:22Z. Karena halaman pertama sudah lebih baru daripada seluruh periode baseline, tidak ada halaman lanjutan yang diperlukan untuk menemukan run pasca-baseline.
+SHA sumber dipertahankan persis seperti metadata run; tidak disamakan.
+Run 43144307299, 43144586564, dan 43144169223 dibuat sebelum baseline, sehingga tidak termasuk cakupan UK2 ini.
+
+BATASAN DAN KEAMANAN
+Tidak ada emulator dijalankan untuk UK1. Tidak ada ROM, BIOS, Memory Card, savestate, dump RAM, EXE, DATA.BIN, atau biner lain dikomit.
+STATUS.md, Release, dan workflow lama tidak diubah oleh publikasi koreksi ini.
+Koreksi ini sendiri diterbitkan setelah rentang ledger dan tidak dihitung dalam jumlah commit UK2.
