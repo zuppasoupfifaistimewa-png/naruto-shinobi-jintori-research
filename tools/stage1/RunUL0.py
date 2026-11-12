@@ -215,7 +215,7 @@ def self_test():
     blob=bytearray(E1_SIZE)
     writer=[r(0,3,2,3),r(2,3,2,0,0x21),r(0,2,2,3),r(2,3,2,0,0x21),r(0,2,2,2),
       r(2,5,2,0,0x21),it(13,0,3,0xf020),it(0x29,2,3,0x20)]
-    reader=[it(15,0,2,0x8014)]+[b"    "]*7+[it(0x24,4,5,0x1a)]
+    reader=[it(15,0,2,0x8014)]+[bytes(4)]*7+[it(0x24,4,5,0x1a)]
     for pc,seq in ((0x800D5A00,writer),(0x800D5B3C,reader)):
         start=pc-E1_PC
         for n,b in enumerate(seq): blob[start+n*4:start+n*4+4]=b
