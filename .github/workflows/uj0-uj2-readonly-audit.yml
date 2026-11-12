@@ -58,7 +58,7 @@ jobs:
             python tools/stage1/RunUI1MipsCensus.py --self-test || rc=1
           fi
           echo "$rc" > "$RUNNER_TEMP/UJ0_UJ2_PREFLIGHT_EXIT_CODE.txt"
-          if command -v go >/dev/null 2>&1; then go install github.com/rhysd/actionlint/cmd/actionlint@latest && "$HOME/go/bin/actionlint" .github/workflows/uj0-uj2-readonly-audit.yml && echo "ACTIONLINT=PASS" >> "$GITHUB_STEP_SUMMARY" || rc=1; else echo "ACTIONLINT=NOT_AVAILABLE" >> "$GITHUB_STEP_SUMMARY"; fi
+          if curl --fail --silent --show-error --location --max-time 60 "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz" -o "$RUNNER_TEMP/actionlint.tar.gz"; then tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint && "$RUNNER_TEMP/actionlint" .github/workflows/uj0-uj2-readonly-audit.yml && echo "ACTIONLINT=PASS" >> "$GITHUB_STEP_SUMMARY" || rc=1; else echo "ACTIONLINT=NOT_AVAILABLE_DOWNLOAD_FAILED" >> "$GITHUB_STEP_SUMMARY"; fi
           echo "$rc" > "$RUNNER_TEMP/UJ0_UJ2_PREFLIGHT_EXIT_CODE.txt"
           echo "PREFLIGHT_EXIT_CODE=$rc" >> "$GITHUB_STEP_SUMMARY"
           exit "$rc"
