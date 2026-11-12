@@ -1,0 +1,11 @@
+STATUS=PASS
+JOB=uj0-uj2-preflight
+RUN_ID=43144355162
+SOURCE_SHA=cf34b96719275cc709cfc9330385c189fe620374
+PY_COMPILE=required scripts
+PYFLAKES=installed and run with pip
+YAML_PARSE=required workflow
+FAKE_MEMORY_AND_BYTE_TESTS=required scripts
+EXIT_CODE=0
+EMULATOR_GATE=OPEN only after all checks passed
+BINARY_OR_PRIVATE_ASSET_COMMITTED=NO
