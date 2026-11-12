@@ -12,11 +12,11 @@ POST_SNAPSHOT_CANDIDATE_REVIEW_COMMIT=2306ac5dd7b5632a2249740dfee3205e0faa4138
 POST_SNAPSHOT_CANDIDATE_REVIEW_COMMIT_PARENT=32b8267ed7c44cbc8d6db55b7201ee2e9caaae26
 POST_SNAPSHOT_CANDIDATE_REVIEW_COMMIT_SUBJECT=Document UM1 LV/u16 candidate evidence and closeout [skip ci]
 POST_SNAPSHOT_CANDIDATE_REVIEW_COMMIT_EVENTS=2 A; 0 M; 0 D; 0 R
-FINAL_COVERAGE_THROUGH=1b58537fe3bc7b800d9dd0795fe1316b430c7c8e
-FINAL_COMMIT_COUNT_INCLUDING_BASELINE=23
-FINAL_FILE_EVENT_COUNT_NO_RENAMES=95
+FINAL_COVERAGE_THROUGH=ffca7985abc2bffb0f810f3480d30e3cee5fbc45
+FINAL_COMMIT_COUNT_INCLUDING_BASELINE=24
+FINAL_FILE_EVENT_COUNT_NO_RENAMES=96
 FINAL_FILE_EVENT_A=71
-FINAL_FILE_EVENT_M=24
+FINAL_FILE_EVENT_M=25
 FINAL_FILE_EVENT_D=0
 FINAL_FILE_EVENT_R=0
 FINAL_FILE_EVENT_OTHER=0
@@ -48,9 +48,10 @@ POST_SNAPSHOT_COMMIT_ROWS
 commit_sha	parent_sha	author	date	subject	events
 32b8267ed7c44cbc8d6db55b7201ee2e9caaae26	d637f0680dee87ccaedd2e8cac83ebf9186ecaf1	github-actions[bot]	2026-11-12T11:45:01Z	Record UM0-UM2 audit results for run 43211668588 [skip ci]	35A
 2306ac5dd7b5632a2249740dfee3205e0faa4138	32b8267ed7c44cbc8d6db55b7201ee2e9caaae26	zuppasoupfifaistimewa-png	2026-11-12T11:50:53Z	Document UM1 LV/u16 candidate evidence and closeout [skip ci]	2A
-1bd8fadab46fae0b8933a82841f44d048e1a9955	2306ac5dd7b5632a2249740dfee3205e0faa4138	github-actions[bot]	2026-11-12T11:52:12Z	Add final UM2 ledger supplement [skip ci]	1A
+1bd8fadab46fae0b8933a82841f44d048e1a9955	2306ac5dd7b5632a2249740dfee3205e0faa4138	zuppasoupfifaistimewa-png	2026-11-12T11:52:56Z	Add final UM2 ledger supplement through K5 run and candidate review [skip ci]	1A
 fa692036618e57694c80fbcd1088e443b7b205b8	1bd8fadab46fae0b8933a82841f44d048e1a9955	zuppasoupfifaistimewa-png	2026-11-12T11:53:36Z	Correct UM2 final ledger reconciliation counts [skip ci]	1M
 1b58537fe3bc7b800d9dd0795fe1316b430c7c8e	fa692036618e57694c80fbcd1088e443b7b205b8	zuppasoupfifaistimewa-png	2026-11-12T11:54:07Z	Clarify UM2 supplement self-commit coverage boundary [skip ci]	1M
+ffca7985abc2bffb0f810f3480d30e3cee5fbc45	1b58537fe3bc7b800d9dd0795fe1316b430c7c8e	zuppasoupfifaistimewa-png	2026-11-12T11:55:55Z	Extend UM2 final ledger through the supplement correction commits [skip ci]	1M
 
 FILES_ADDED_BY_RESULT_COMMIT_32b8267ed7c44cbc8d6db55b7201ee2e9caaae26
 ACTIONS/ACTIONS_RUN_SUMMARY.txt	A
@@ -98,5 +99,6 @@ POST_SNAPSHOT_LEDGER_SUPPLEMENT_PARENT=2306ac5dd7b5632a2249740dfee3205e0faa4138
 POST_SNAPSHOT_LEDGER_SUPPLEMENT_EVENTS=1 A; file=reports/ui-audit-2026-11-12/um/run-43211668588/attempt-1/UM2/UM2_FINAL_LEDGER_RECONCILIATION_SUPPLEMENT.txt
 POST_SNAPSHOT_LEDGER_CORRECTION_1=fa692036618e57694c80fbcd1088e443b7b205b8; 1 M event on the same supplement file
 POST_SNAPSHOT_LEDGER_CORRECTION_2=1b58537fe3bc7b800d9dd0795fe1316b430c7c8e; 1 M event on the same supplement file
-FINAL_FILE_EVENT_COUNTS=71 A + 24 M = 95 total; D=0; R=0
-RECONCILIATION_RULE=The 18-row/55-event UM2 files are the capture at source SHA d637f...; the result commit adds 35 A, the candidate review commit adds 2 A, the initial supplement adds 1 A, and two subsequent ledger corrections add 2 M. Coverage therefore reaches 23 commits including baseline and 95 file events. The next finalization commit that modifies this supplement is excluded from its own coverage.
+POST_SNAPSHOT_LEDGER_CORRECTION_3=ffca7985abc2bffb0f810f3480d30e3cee5fbc45; 1 M event on the same supplement file
+FINAL_FILE_EVENT_COUNTS=71 A + 25 M = 96 total; D=0; R=0
+RECONCILIATION_RULE=The 18-row/55-event UM2 files are the capture at source SHA d637f...; the result commit adds 35 A, the candidate review commit adds 2 A, the initial supplement adds 1 A, and three subsequent ledger corrections add 3 M. Coverage therefore reaches 24 commits including baseline and 96 file events. The next finalization commit that modifies this supplement is excluded from its own coverage.
