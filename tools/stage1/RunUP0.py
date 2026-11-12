@@ -227,7 +227,7 @@ def provenance(ins: list[dict], start: int, end: int, base_reg: int, arg_values:
                 elif a and a[0] in ("memval","derived"):
                     val=("derived",a,d["mn"],d["simm"] if d["mn"] in ("addiu","addi") else d["imm"])
         elif d["mem"] and d["mem"][1]=="R":
-            _,_,disp,rs,_=d["mem"]
+            width,_,disp,rs,_=d["mem"]
             a=resolve(rs,di,depth+1)
             if a and a[0]=="const" and ((a[1]+disp)&0xFFFFFFFF)==RAM_POINTER and d["mn"]=="lw":
                 val=("pointer",RAM_POINTER,"P_FROM_8013EA84")
@@ -872,6 +872,7 @@ def main_up0(a):
           "return_v0":next((x["return_v0"] for x in fsum if x["site_id"]==sid),"TIDAK TAHU")})
     defs_rows=[]
     for bb,nn,pp,oo,ii,ss in regions: defs_rows.extend(scan_region(bb,nn,pp,oo)[2])
+    out=a.out_dir;out.mkdir(parents=True,exist_ok=True)
     entry_rows=[];selector_rows=[];r=rmap["ENTRY1"];ii=r[4];ss=r[5]
     for target in sorted(targets):
         ix=(target-r[2])//4
@@ -918,7 +919,6 @@ def main_up0(a):
           "bytes_4B":rawhex,"instruction":instr,"independent_instruction":ind["text"],
           "independent_control_target":f"0x{ind['target']:08X}" if ind["target"] is not None else "",
           "match":"YES" if ok else "NO"})
-    out=a.out_dir;out.mkdir(parents=True,exist_ok=True)
     write_tsv(out/"UP0_FORWARD_7_SITES.tsv",FWD+["trace_pc","tainted_after"],fwd)
     write_tsv(out/"UP0_FORWARD_SUMMARY.tsv",["site_id","pc","status","decoded_instructions","terminal_reason","destinations","return_v0"],fsum)
     write_tsv(out/"UP0_FORWARD_CALLS.tsv",["site_id","site_pc","call_pc","target_pc","tainted_arguments"],fcalls)
