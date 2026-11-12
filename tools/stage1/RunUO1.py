@@ -314,8 +314,8 @@ def launch_stage(name: str, frames: int, indexes: tuple[int,...], supported: boo
                     "local WATCHES={} -- replaced by runtime pointer builder")
     # Replace the literal watcher table with runtime addresses from the RAM pointer after restore.
     old='local WATCHES={} -- replaced by runtime pointer builder'
-    new=r'''local WATCHES={}
-local function build_watches()
+    new="local WATCHES={}"
+    watch_builder=r'''local function build_watches()
  local pval=readv(0x8013EA84,4)
  if not pval then return false end
  local p=tonumber(pval)
@@ -329,7 +329,9 @@ local function build_watches()
  end
  return true
 end'''
+
     lua=lua.replace(old,new)
+    lua=lua.replace("local function file_size(path)",watch_builder+"\nlocal function file_size(path)")
     lua=lua.replace('local function arm_read()\n local failed=false',
       'local function arm_read()\n if MODE=="EXEC_FALLBACK" then log("UO1_READ_BP_REGISTERED=NO launch="..LAUNCH.." reason=probe_read_breakpoint_unavailable"); arm_exec(); return end\n local okw=build_watches()\n if not okw then log("UO1_POINTER_OR_WATCH_RANGE_INVALID=YES launch="..LAUNCH); log("UO1_READ_BP_REGISTERED=NO launch="..LAUNCH.." reason=invalid_runtime_P_or_watch_range"); arm_exec(); MODE="EXEC_FALLBACK"; return end\n local failed=false')
     lua_path=d/"uo1-breakpoints.lua"
@@ -377,13 +379,13 @@ def self_test():
     assert 17*len(FIELD_OFFSETS)==153
     e=parse_events("UO1_READ_HIT\tMEASURE_1\t12\t0x800C9990\t0x8013EA9A\t0x10\t1\t$v0\t0x8013EA8A\t0x0023\t0x8013EA9A\tREAD","MEASURE_1")
     assert len(e)==1 and e[0]["frame"]=="12"
-    print("UO1_SELF_TEST=PASS indexes=17 halfword_offsets=9 watches=153 probe_frames=60 measure_frames=120")
+    print("UO1_SELF_TEST=PASS indexes=17 halfword_offsets=9 watches=153 probe_frames=60 measure_frames=122")
 
 def main() -> int:
     ap=argparse.ArgumentParser()
     for name in ("work","out","pcsx-bin","appdir","bios","cue","source","static-readers"):
         ap.add_argument("--"+name,type=Path)
-    ap.add_argument("--frames",type=int,default=120)
+    ap.add_argument("--frames",type=int,default=122)
     ap.add_argument("--timeout-seconds",type=int,default=150)
     ap.add_argument("--self-test",action="store_true")
     a=ap.parse_args()
@@ -391,8 +393,8 @@ def main() -> int:
         self_test(); return 0
     if not all((a.work,a.out,a.pcsx_bin,a.appdir,a.bios,a.cue,a.source,a.static_readers)):
         ap.error("runtime paths required")
-    if a.frames!=120 or a.timeout_seconds!=150:
-        ap.error("bounded UO1 policy is fixed to 120 measured frames and 150 seconds per process")
+    if a.frames!=122 or a.timeout_seconds!=150:
+        ap.error("bounded UO1 policy is fixed to 122 measured frames and 150 seconds per process")
     work,out=a.work,a.out; work.mkdir(parents=True,exist_ok=True); out.mkdir(parents=True,exist_ok=True)
     source=a.source
     if not source.is_file() or source.stat().st_size!=CHECKPOINT_BYTES or sha(source)!=CHECKPOINT_SHA:
