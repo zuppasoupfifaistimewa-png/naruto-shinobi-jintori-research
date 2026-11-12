@@ -362,12 +362,13 @@ def forward_sites(ins: list[dict], starts: list[int], blob: bytes, region: str,
             d=ins[j]; raw=blob[j*4:j*4+4]
             before=set(taint); used_regs=set(d["reads"]) & before
             cls="TIDAK_MENGGUNAKAN_NILAI"; detail=""
-            if used_regs:
-                if d["mn"]=="jal":
-                    args=sorted(before & {4,5,6,7})
-                    cls="ARGUMEN_JAL" if args else "JAL_TIDAK_MEMBAWA_ARGUMEN_TAINT"
-                    detail=f"jal target=0x{d['target']:08X}; tainted_args="+",".join(reg(x) for x in args)
-                elif d["mn"] in ("beq","bne","blez","bgtz","bltz","bgez","slt","sltu","slti","sltiu"):
+            call_args=sorted(before & {4,5,6,7}) if d["mn"] in ("jal","jalr") else []
+            if call_args:
+                cls="ARGUMEN_JAL"
+                target=(f"0x{d['target']:08X}" if d["target"] is not None else "INDIRECT")
+                detail=f"{d['mn']} target={target}; tainted_args="+",".join(reg(x) for x in call_args)
+            elif used_regs:
+                if d["mn"] in ("beq","bne","blez","bgtz","bltz","bgez","slt","sltu","slti","sltiu"):
                     cls="DIBANDINGKAN"; detail=f"{d['mn']} target="+(f"0x{d['target']:08X}" if d["target"] else "NON_BRANCH")
                 elif d["mn"] in ("mult","multu","div","divu"):
                     cls="DIKALI_ATAU_DIBAGI"; detail=d["mn"]

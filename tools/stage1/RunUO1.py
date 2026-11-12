@@ -491,7 +491,7 @@ def main() -> int:
       f"CARD_WARMUP_EXIT_CODE={warm_rc}",
       f"CARD_WARMUP_WALL_SECONDS={warm_wall:.3f}",
       f"PROBE_READ_BP_REGISTERED={probe_row['read_bp_registered']}",
-      f"PROBE_FRAMES=60",f"PROBE_EVENT_HITS={len(probe_events)}",
+      "PROBE_FRAMES=60",f"PROBE_EVENT_HITS={len(probe_events)}",
       f"MEASURE_FRAMES={a.frames}",
       "NONTRIVIAL_RECORD_INDICES="+",".join(str(i) for i in NONTRIVIAL),
       "ZERO_RECORD_INDICES="+",".join(str(i) for i in ZERO_RECORDS),
