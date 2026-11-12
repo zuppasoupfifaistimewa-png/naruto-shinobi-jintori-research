@@ -1,0 +1,18 @@
+record_type	commit_sha	parents	author	author_date	subject	status_no_renames	additions	deletions	path
+COMMIT	e3a01298e09f50b42449498a700612080753777b	d7838e0332d61a76335381dfe0ca7687fd10e33a	zuppasoupfifaistimewa-png	2026-11-12T03:09:07Z	Publish final UJ0 UJ1 UJ2 ledger and findings [skip ci]				
+COMMIT	0ec96283bc711ca15ebad59a876ef825ad20e40f	e3a01298e09f50b42449498a700612080753777b	zuppasoupfifaistimewa-png	2026-11-12T03:09:09Z	Publish final UJ0 UJ1 UJ2 ledger and findings [skip ci]				
+COMMIT	fcfccd50efba6e4bb8b628067b5a4378db2ff07d	0ec96283bc711ca15ebad59a876ef825ad20e40f	zuppasoupfifaistimewa-png	2026-11-12T03:09:12Z	Publish final UJ0 UJ1 UJ2 ledger and findings [skip ci]				
+COMMIT	81fb377e0f89f6f1702beb68c6e0778344a20da9	fcfccd50efba6e4bb8b628067b5a4378db2ff07d	zuppasoupfifaistimewa-png	2026-11-12T03:09:15Z	Publish final UJ0 UJ1 UJ2 ledger and findings [skip ci]				
+COMMIT	1c892d9716af68917b51fafd90b9bc4c89ff0f40	81fb377e0f89f6f1702beb68c6e0778344a20da9	zuppasoupfifaistimewa-png	2026-11-12T03:09:17Z	Publish final UJ0 UJ1 UJ2 ledger and findings [skip ci]				
+COMMIT	afab99843275e3239505cb763113ee01bcd39b54	1c892d9716af68917b51fafd90b9bc4c89ff0f40	zuppasoupfifaistimewa-png	2026-11-12T03:16:55Z	Complete UJ2 ledger through prior main HEAD [skip ci]				
+FILE_EVENT	e3a01298e09f50b42449498a700612080753777b					A	56	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ0_UJ2_FINAL_REPORT.txt
+FILE_EVENT	0ec96283bc711ca15ebad59a876ef825ad20e40f					A	51	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ0_FUNCTION_CONTEXT.txt
+FILE_EVENT	fcfccd50efba6e4bb8b628067b5a4378db2ff07d					A	22	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ2_COMMITS.tsv
+FILE_EVENT	81fb377e0f89f6f1702beb68c6e0778344a20da9					A	60	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ2_FILE_EVENTS.tsv
+FILE_EVENT	1c892d9716af68917b51fafd90b9bc4c89ff0f40					A	19	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ2_ACTIONS_RUNS.txt
+FILE_EVENT	afab99843275e3239505cb763113ee01bcd39b54					A	16	0	reports/ui-audit-2026-11-12/uj0-uj2-final/UJ2_HEAD_TAIL_RECONCILIATION.tsv
+# Combined with UJ2_COMMITS.tsv (21 rows incl baseline) and UJ2_FILE_EVENTS.tsv (59 events): 27 commit rows incl baseline and 65 file events through afab99843275e3239505cb763113ee01bcd39b54.
+# BASELINE_INCLUSIVE=d2c57a796215696dc91be91fb18f36907fa5203c
+# PRIOR_DETAIL_HEAD=d7838e0332d61a76335381dfe0ca7687fd10e33a
+# CURRENT_HEAD_BEFORE_THIS_ADDENDUM=d30dd423b6e5dc5279f68eb5163b9cd1e3525420 (publication-only report commit; excluded from audited range).
+# NEW_ADDENDUM_COMMIT_IS_PUBLICATION_ONLY_AND_EXCLUDED_FROM_ITS_OWN_LEDGER.
