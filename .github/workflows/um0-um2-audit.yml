@@ -205,14 +205,17 @@ jobs:
             echo "be70d64f856e17aadc02cdcba7510234f5a11523216baddb3b247c95cec820b8  $cue_raw" | sha256sum --check --status || rc=16
           fi
           if [ "$rc" -eq 0 ]; then
-            if python - "$cue_raw" "$cue" <<'PY'
-          from pathlib import Path
-          import re, sys
-          source, destination = map(Path, sys.argv[1:3])
-          out, replaced = [], 0
-          for line in source.read_text(encoding="utf-8").splitlines():
-              if line.lstrip().upper().startswith("FILE "):
-                  match = re.match(r'^(\s*FILE\s+)(?:"[^"]*"|\S+)(\s+\S+\s*)
+            if awk '
+              BEGIN { n=0 }
+              /^[[:space:]]*FILE[[:space:]]/ { print "FILE \"naruto-disc.bin\" BINARY"; n++; next }
+              { print }
+              END { if (n != 1) exit 1 }
+            ' "$cue_raw" > "$cue"; then
+              echo "CUE_REWRITE=PASS" >> "$GITHUB_STEP_SUMMARY"
+            else
+              rc=17
+            fi
+          fi
           if [ "$rc" -eq 0 ]; then bchunk "$bin" "$cue" "$WORK/source/track" >/tmp/um-bchunk.log 2>&1 || rc=18; fi
           iso="$(find "$WORK/source" -maxdepth 1 -type f -iname 'track*.iso' -print -quit)"
           if [ "$rc" -eq 0 ]; then
