@@ -3,6 +3,8 @@
 from __future__ import annotations
 import argparse, csv, hashlib, re, struct
 from pathlib import Path
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
 from tools.stage1.RunUI1MipsCensus import entries
 EXE_SIZE=385024
 EXE_SHA="a97b3ebea329b267c186ae52fd21edb1891d66377d475cef32db5f133c296569"
