@@ -1,0 +1,37 @@
+launch	frame	event	sequence	pc	p	index	v0	v1	destination	register_destination	before_u16	address	width	cause	readback_u16	button	readback	status
+MEASURE_1	0	BP_ARMED		0x800D5A1C														
+MEASURE_1	120	INPUT_PRESS														CIRCLE	true	PASS
+MEASURE_1	126	INPUT_RELEASE														CIRCLE	false	PASS
+MEASURE_1	240	INPUT_PRESS														CIRCLE	true	PASS
+MEASURE_1	246	INPUT_RELEASE														CIRCLE	false	PASS
+MEASURE_1	360	INPUT_PRESS														CIRCLE	true	PASS
+MEASURE_1	366	INPUT_RELEASE														CIRCLE	false	PASS
+MEASURE_1	480	INPUT_PRESS														CIRCLE	true	PASS
+MEASURE_1	486	INPUT_RELEASE														CIRCLE	false	PASS
+MEASURE_1	600	INPUT_PRESS														CIRCLE	true	PASS
+MEASURE_1	606	INPUT_RELEASE														CIRCLE	false	PASS
+MEASURE_1	720	INPUT_PRESS														CIRCLE	true	PASS
+MEASURE_1	726	INPUT_RELEASE														CIRCLE	false	PASS
+MEASURE_1	840	INPUT_PRESS														CIRCLE	true	PASS
+MEASURE_1	846	INPUT_RELEASE														CIRCLE	false	PASS
+MEASURE_1	900	INPUT_SUMMARY	press=7;release=7;errors=0 															
+MEASURE_1	900	MONITOR_END	exec=0;write=0 															
+MEASURE_1	900	WINDOW_COMPLETE																
+MEASURE_2	0	BP_ARMED		0x800D5A1C														
+MEASURE_2	120	INPUT_PRESS														CIRCLE	true	PASS
+MEASURE_2	126	INPUT_RELEASE														CIRCLE	false	PASS
+MEASURE_2	240	INPUT_PRESS														CIRCLE	true	PASS
+MEASURE_2	246	INPUT_RELEASE														CIRCLE	false	PASS
+MEASURE_2	360	INPUT_PRESS														CIRCLE	true	PASS
+MEASURE_2	366	INPUT_RELEASE														CIRCLE	false	PASS
+MEASURE_2	480	INPUT_PRESS														CIRCLE	true	PASS
+MEASURE_2	486	INPUT_RELEASE														CIRCLE	false	PASS
+MEASURE_2	600	INPUT_PRESS														CIRCLE	true	PASS
+MEASURE_2	606	INPUT_RELEASE														CIRCLE	false	PASS
+MEASURE_2	720	INPUT_PRESS														CIRCLE	true	PASS
+MEASURE_2	726	INPUT_RELEASE														CIRCLE	false	PASS
+MEASURE_2	840	INPUT_PRESS														CIRCLE	true	PASS
+MEASURE_2	846	INPUT_RELEASE														CIRCLE	false	PASS
+MEASURE_2	900	INPUT_SUMMARY	press=7;release=7;errors=0 															
+MEASURE_2	900	MONITOR_END	exec=0;write=0 															
+MEASURE_2	900	WINDOW_COMPLETE																
