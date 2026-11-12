@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/runner/work/naruto-shinobi-jintori-research/naruto-shinobi-jintori-research/tools/stage1/RunUL2.py", line 170, in <module>
+    if __name__=="__main__": raise SystemExit(main())
+                                              ^^^^^^
+  File "/home/runner/work/naruto-shinobi-jintori-research/naruto-shinobi-jintori-research/tools/stage1/RunUL2.py", line 152, in main
+    raise RuntimeError(f"MAIN_NOT_DESCENDANT_OF_SOURCE:SOURCE={source}:MAIN={ledger_head}")
+RuntimeError: MAIN_NOT_DESCENDANT_OF_SOURCE:SOURCE=34e0346fac826a53b225863238a87efa0140264b:MAIN=518863d326886eef26e781df340ba4897895b00f
